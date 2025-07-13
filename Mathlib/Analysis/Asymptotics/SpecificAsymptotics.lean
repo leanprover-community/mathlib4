@@ -10,7 +10,7 @@ import Mathlib.Analysis.SpecificLimits.Basic
 # A collection of specific asymptotic results
 
 This file contains specific lemmas about asymptotics which don't have their place in the general
-theory developed in `Mathlib.Analysis.Asymptotics.Asymptotics`.
+theory developed in `Mathlib/Analysis/Asymptotics/Asymptotics.lean`.
 -/
 
 
@@ -33,7 +33,7 @@ end NormedField
 
 section LinearOrderedField
 
-variable {𝕜 : Type*} [LinearOrderedField 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
 
 theorem pow_div_pow_eventuallyEq_atTop {p q : ℕ} :
     (fun x : 𝕜 => x ^ p / x ^ q) =ᶠ[atTop] fun x => x ^ ((p : ℤ) - q) := by
@@ -63,9 +63,10 @@ end LinearOrderedField
 
 section NormedLinearOrderedField
 
-variable {𝕜 : Type*} [NormedLinearOrderedField 𝕜]
+variable {𝕜 : Type*} [NormedField 𝕜]
 
-theorem Asymptotics.isLittleO_pow_pow_atTop_of_lt [OrderTopology 𝕜] {p q : ℕ} (hpq : p < q) :
+theorem Asymptotics.isLittleO_pow_pow_atTop_of_lt
+    [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [OrderTopology 𝕜] {p q : ℕ} (hpq : p < q) :
     (fun x : 𝕜 => x ^ p) =o[atTop] fun x => x ^ q := by
   refine (isLittleO_iff_tendsto' ?_).mpr (tendsto_pow_div_pow_atTop_zero hpq)
   exact (eventually_gt_atTop 0).mono fun x hx hxq => (pow_ne_zero q hx.ne' hxq).elim
@@ -145,7 +146,8 @@ end Real
 
 section NormedLinearOrderedField
 
-variable {R : Type*} [NormedLinearOrderedField R] [OrderTopology R] [FloorRing R]
+variable {R : Type*} [NormedField R] [LinearOrder R] [IsStrictOrderedRing R]
+  [OrderTopology R] [FloorRing R]
 
 theorem Asymptotics.isEquivalent_nat_floor :
     (fun (x : R) ↦ ↑⌊x⌋₊) ~[atTop] (fun x ↦ x) := by

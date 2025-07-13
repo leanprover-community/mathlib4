@@ -116,7 +116,7 @@ instance isEmpty_empty : IsEmpty Language.empty.Symbols := by
   simp only [Language.Symbols, isEmpty_sum, isEmpty_sigma]
   exact ⟨fun _ => inferInstance, fun _ => inferInstance⟩
 
-instance Countable.countable_functions [h : Countable L.Symbols] : Countable (Σl, L.Functions l) :=
+instance Countable.countable_functions [h : Countable L.Symbols] : Countable (Σ l, L.Functions l) :=
   @Function.Injective.countable _ _ h _ Sum.inl_injective
 
 @[simp]
@@ -742,24 +742,30 @@ instance sumStructure : (L₁.sum L₂).Structure S where
 variable {L₁ L₂ S}
 
 @[simp]
-theorem funMap_sum_inl {n : ℕ} (f : L₁.Functions n) :
+theorem funMap_sumInl {n : ℕ} (f : L₁.Functions n) :
     @funMap (L₁.sum L₂) S _ n (Sum.inl f) = funMap f :=
   rfl
 
 @[simp]
-theorem funMap_sum_inr {n : ℕ} (f : L₂.Functions n) :
+theorem funMap_sumInr {n : ℕ} (f : L₂.Functions n) :
     @funMap (L₁.sum L₂) S _ n (Sum.inr f) = funMap f :=
   rfl
 
 @[simp]
-theorem relMap_sum_inl {n : ℕ} (R : L₁.Relations n) :
+theorem relMap_sumInl {n : ℕ} (R : L₁.Relations n) :
     @RelMap (L₁.sum L₂) S _ n (Sum.inl R) = RelMap R :=
   rfl
 
 @[simp]
-theorem relMap_sum_inr {n : ℕ} (R : L₂.Relations n) :
+theorem relMap_sumInr {n : ℕ} (R : L₂.Relations n) :
     @RelMap (L₁.sum L₂) S _ n (Sum.inr R) = RelMap R :=
   rfl
+
+@[deprecated (since := "2025-02-21")] alias funMap_sum_inl := funMap_sumInl
+@[deprecated (since := "2025-02-21")] alias funMap_sum_inr := funMap_sumInr
+@[deprecated (since := "2025-02-21")] alias relMap_sum_inl := relMap_sumInl
+@[deprecated (since := "2025-02-21")] alias relMap_sum_inr := relMap_sumInr
+
 
 end SumStructure
 
@@ -805,8 +811,6 @@ end FirstOrder
 namespace Equiv
 
 open FirstOrder FirstOrder.Language FirstOrder.Language.Structure
-
-open FirstOrder
 
 variable {L : Language} {M : Type*} {N : Type*} [L.Structure M]
 

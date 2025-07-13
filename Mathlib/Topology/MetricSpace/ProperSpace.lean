@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 
-import Mathlib.Topology.Algebra.Support
 import Mathlib.Topology.MetricSpace.Pseudo.Basic
 import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 import Mathlib.Topology.MetricSpace.Pseudo.Pi
@@ -117,11 +116,20 @@ instance prod_properSpace {α : Type*} {β : Type*} [PseudoMetricSpace α] [Pseu
     exact (isCompact_closedBall x r).prod (isCompact_closedBall y r)
 
 /-- A finite product of proper spaces is proper. -/
-instance pi_properSpace {π : β → Type*} [Fintype β] [∀ b, PseudoMetricSpace (π b)]
-    [h : ∀ b, ProperSpace (π b)] : ProperSpace (∀ b, π b) := by
+instance pi_properSpace {X : β → Type*} [Fintype β] [∀ b, PseudoMetricSpace (X b)]
+    [h : ∀ b, ProperSpace (X b)] : ProperSpace (∀ b, X b) := by
   refine .of_isCompact_closedBall_of_le 0 fun x r hr => ?_
   rw [closedBall_pi _ hr]
   exact isCompact_univ_pi fun _ => isCompact_closedBall _ _
+
+/-- A closed subspace of a proper space is proper.
+This is true for any proper lipschitz map. See `LipschitzWith.properSpace`. -/
+lemma ProperSpace.of_isClosed {X : Type*} [PseudoMetricSpace X] [ProperSpace X]
+    {s : Set X} (hs : IsClosed s) :
+    ProperSpace s :=
+  ⟨fun x r ↦ Topology.IsEmbedding.subtypeVal.isCompact_iff.mpr
+    ((isCompact_closedBall x.1 r).of_isClosed_subset
+    (hs.isClosedMap_subtype_val _ isClosed_closedBall) (Set.image_subset_iff.mpr subset_rfl))⟩
 
 end ProperSpace
 

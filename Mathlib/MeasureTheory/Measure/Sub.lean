@@ -3,7 +3,7 @@ Copyright (c) 2022 Martin Zinkevich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Zinkevich
 -/
-import Mathlib.MeasureTheory.Measure.Typeclasses
+import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
 
 /-!
 # Subtraction of measures
@@ -55,6 +55,13 @@ theorem zero_sub : 0 - μ = 0 :=
 @[simp]
 theorem sub_self : μ - μ = 0 :=
   sub_eq_zero_of_le le_rfl
+
+@[simp]
+protected theorem sub_zero : μ - 0 = μ := by
+  rw [sub_def]
+  apply le_antisymm
+  · simp [sInf_le]
+  · simp
 
 /-- This application lemma only works in special circumstances. Given knowledge of
 when `μ ≤ ν` and `ν ≤ μ`, a more general application lemma can be written. -/

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Algebra.GroupWithZero.Indicator
-import Mathlib.Topology.ContinuousOn
+import Mathlib.Topology.Piecewise
 import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
@@ -284,7 +284,7 @@ theorem lowerSemicontinuousWithinAt_iff_le_liminf {f : α → γ} :
   · intro hf; unfold LowerSemicontinuousWithinAt at hf
     contrapose! hf
     obtain ⟨y, lty, ylt⟩ := exists_between hf; use y
-    exact ⟨ylt, fun h => lty.not_le
+    exact ⟨ylt, fun h => lty.not_ge
       (le_liminf_of_le (by isBoundedDefault) (h.mono fun _ hx => le_of_lt hx))⟩
   exact fun hf y ylt => eventually_lt_of_lt_liminf (ylt.trans_le hf)
 
@@ -324,7 +324,7 @@ theorem lowerSemicontinuous_iff_isClosed_epigraph {f : α → γ} :
           simpa using (eventually_principal.2 fun (_ : α × γ) ↦ id).filter_mono h
     _ = y := h'.2.liminf_eq
   · rw [lowerSemicontinuous_iff_isClosed_preimage]
-    exact fun hf y ↦ hf.preimage (Continuous.Prod.mk_left y)
+    exact fun hf y ↦ hf.preimage (.prodMk_left y)
 
 alias ⟨LowerSemicontinuous.isClosed_epigraph, _⟩ := lowerSemicontinuous_iff_isClosed_epigraph
 
@@ -348,9 +348,8 @@ theorem ContinuousAt.comp_lowerSemicontinuousWithinAt {g : γ → δ} {f : α �
       exists_Ioc_subset_of_mem_nhds (hg (Ioi_mem_nhds hy)) h
     filter_upwards [hf z zlt] with a ha
     calc
-      y < g (min (f x) (f a)) := hz (by simp [zlt, ha, le_refl])
+      y < g (min (f x) (f a)) := hz (by simp [zlt, ha])
       _ ≤ g (f a) := gmon (min_le_right _ _)
-
   · simp only [not_exists, not_lt] at h
     exact Filter.Eventually.of_forall fun a => hy.trans_le (gmon (h (f a)))
 
@@ -407,8 +406,8 @@ end
 
 section
 
-variable {ι : Type*} {γ : Type*} [LinearOrderedAddCommMonoid γ] [TopologicalSpace γ]
-  [OrderTopology γ]
+variable {ι : Type*} {γ : Type*} [AddCommMonoid γ] [LinearOrder γ] [IsOrderedAddMonoid γ]
+  [TopologicalSpace γ] [OrderTopology γ]
 
 /-- The sum of two lower semicontinuous functions is lower semicontinuous. Formulated with an
 explicit continuity assumption on addition, for application to `EReal`. The unprimed version of
@@ -432,27 +431,25 @@ theorem LowerSemicontinuousWithinAt.add' {f g : α → γ} (hf : LowerSemicontin
       have A1 : min (f z) (f x) ∈ u := by
         by_cases H : f z ≤ f x
         · simpa [H] using h₁ ⟨h₁z, H⟩
-        · simpa [le_of_not_le H]
+        · simpa [le_of_not_ge H]
       have A2 : min (g z) (g x) ∈ v := by
         by_cases H : g z ≤ g x
         · simpa [H] using h₂ ⟨h₂z, H⟩
-        · simpa [le_of_not_le H]
+        · simpa [le_of_not_ge H]
       have : (min (f z) (f x), min (g z) (g x)) ∈ u ×ˢ v := ⟨A1, A2⟩
       calc
         y < min (f z) (f x) + min (g z) (g x) := h this
         _ ≤ f z + g z := add_le_add (min_le_left _ _) (min_le_left _ _)
-
     · simp only [not_exists, not_lt] at hx₂
       filter_upwards [hf z₁ z₁lt] with z h₁z
       have A1 : min (f z) (f x) ∈ u := by
         by_cases H : f z ≤ f x
         · simpa [H] using h₁ ⟨h₁z, H⟩
-        · simpa [le_of_not_le H]
+        · simpa [le_of_not_ge H]
       have : (min (f z) (f x), g x) ∈ u ×ˢ v := ⟨A1, xv⟩
       calc
         y < min (f z) (f x) + g x := h this
         _ ≤ f z + g z := add_le_add (min_le_left _ _) (hx₂ (g z))
-
   · simp only [not_exists, not_lt] at hx₁
     by_cases hx₂ : ∃ l, l < g x
     · obtain ⟨z₂, z₂lt, h₂⟩ : ∃ z₂ < g x, Ioc z₂ (g x) ⊆ v :=
@@ -461,7 +458,7 @@ theorem LowerSemicontinuousWithinAt.add' {f g : α → γ} (hf : LowerSemicontin
       have A2 : min (g z) (g x) ∈ v := by
         by_cases H : g z ≤ g x
         · simpa [H] using h₂ ⟨h₂z, H⟩
-        · simpa [le_of_not_le H] using h₂ ⟨z₂lt, le_rfl⟩
+        · simpa [le_of_not_ge H] using h₂ ⟨z₂lt, le_rfl⟩
       have : (f x, min (g z) (g x)) ∈ u ×ˢ v := ⟨xu, A2⟩
       calc
         y < f x + min (g z) (g x) := h this
@@ -538,7 +535,7 @@ theorem lowerSemicontinuousWithinAt_sum {f : ι → α → γ} {a : Finset ι}
   classical
     induction a using Finset.induction_on with
     | empty => exact lowerSemicontinuousWithinAt_const
-    | insert ia IH =>
+    | insert _ _ ia IH =>
       simp only [ia, Finset.sum_insert, not_false_iff]
       exact
         LowerSemicontinuousWithinAt.add (ha _ (Finset.mem_insert_self ..))
@@ -904,8 +901,8 @@ end
 
 section
 
-variable {ι : Type*} {γ : Type*} [LinearOrderedAddCommMonoid γ] [TopologicalSpace γ]
-  [OrderTopology γ]
+variable {ι : Type*} {γ : Type*} [AddCommMonoid γ] [LinearOrder γ] [IsOrderedAddMonoid γ]
+  [TopologicalSpace γ] [OrderTopology γ]
 
 /-- The sum of two upper semicontinuous functions is upper semicontinuous. Formulated with an
 explicit continuity assumption on addition, for application to `EReal`. The unprimed version of
@@ -914,7 +911,7 @@ theorem UpperSemicontinuousWithinAt.add' {f g : α → γ} (hf : UpperSemicontin
     (hg : UpperSemicontinuousWithinAt g s x)
     (hcont : ContinuousAt (fun p : γ × γ => p.1 + p.2) (f x, g x)) :
     UpperSemicontinuousWithinAt (fun z => f z + g z) s x :=
-  @LowerSemicontinuousWithinAt.add' α _ x s γᵒᵈ _ _ _ _ _ hf hg hcont
+  LowerSemicontinuousWithinAt.add' (γ := γᵒᵈ) hf hg hcont
 
 /-- The sum of two upper semicontinuous functions is upper semicontinuous. Formulated with an
 explicit continuity assumption on addition, for application to `EReal`. The unprimed version of
@@ -977,7 +974,7 @@ theorem UpperSemicontinuous.add {f g : α → γ} (hf : UpperSemicontinuous f)
 theorem upperSemicontinuousWithinAt_sum {f : ι → α → γ} {a : Finset ι}
     (ha : ∀ i ∈ a, UpperSemicontinuousWithinAt (f i) s x) :
     UpperSemicontinuousWithinAt (fun z => ∑ i ∈ a, f i z) s x :=
-  @lowerSemicontinuousWithinAt_sum α _ x s ι γᵒᵈ _ _ _ _ f a ha
+  lowerSemicontinuousWithinAt_sum (γ := γᵒᵈ) ha
 
 theorem upperSemicontinuousAt_sum {f : ι → α → γ} {a : Finset ι}
     (ha : ∀ i ∈ a, UpperSemicontinuousAt (f i) x) :
@@ -1108,7 +1105,7 @@ theorem continuousOn_iff_lower_upperSemicontinuousOn {f : α → γ} :
 
 theorem continuous_iff_lower_upperSemicontinuous {f : α → γ} :
     Continuous f ↔ LowerSemicontinuous f ∧ UpperSemicontinuous f := by
-  simp_rw [continuous_iff_continuousOn_univ, continuousOn_iff_lower_upperSemicontinuousOn,
+  simp_rw [← continuousOn_univ, continuousOn_iff_lower_upperSemicontinuousOn,
     lowerSemicontinuousOn_univ_iff, upperSemicontinuousOn_univ_iff]
 
 end

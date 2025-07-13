@@ -45,7 +45,7 @@ F.obj j     | p
 This is constructed by transfinite induction on `j`:
 * When `j = ⊥`, this is `f`;
 * In order to pass from `j` to `Order.succ j`, we use the assumption that
-`F.obj j ⟶ F.obj (Order.succ j)` has the left lifting property with respect to `p`;
+  `F.obj j ⟶ F.obj (Order.succ j)` has the left lifting property with respect to `p`;
 * When `j` is a limit element, we use the "continuity" of `F`.
 
 -/
@@ -206,7 +206,7 @@ include hF hc
 variable {c f g} (sq : CommSq f (c.ι.app ⊥) p g)
 
 lemma hasLift : sq.HasLift := by
-  obtain ⟨s, hs⟩ := (wellOrderInductionData c f g hF).surjective { w₂ := sq.w }
+  obtain ⟨s, hs⟩ := (wellOrderInductionData c f g hF).surjective { w₂ := sq.w, .. }
   replace hs := congr_arg SqStruct.f' hs
   dsimp at hs
   let t : Cocone F := Cocone.mk X
@@ -247,12 +247,30 @@ lemma transfiniteCompositionsOfShape_le_llp_rlp :
   rw [isStableUnderTransfiniteCompositionOfShape_iff] at this
   exact le_trans (transfiniteCompositionsOfShape_monotone J W.le_llp_rlp) this
 
+lemma transfiniteCompositionsOfShape_pushouts_coproducts_le_llp_rlp :
+    (coproducts.{w} W).pushouts.transfiniteCompositionsOfShape J ≤ W.rlp.llp := by
+  simpa using transfiniteCompositionsOfShape_le_llp_rlp (coproducts.{w} W).pushouts J
+
+lemma retracts_transfiniteCompositionsOfShape_pushouts_coproducts_le_llp_rlp :
+    ((coproducts.{w} W).pushouts.transfiniteCompositionsOfShape J).retracts ≤ W.rlp.llp := by
+  rw [le_llp_iff_le_rlp, rlp_retracts, ← le_llp_iff_le_rlp]
+  apply transfiniteCompositionsOfShape_pushouts_coproducts_le_llp_rlp
+
 lemma transfiniteCompositions_le_llp_rlp :
     transfiniteCompositions.{w} W ≤ W.rlp.llp := by
   intro _ _ f hf
   rw [transfiniteCompositions_iff] at hf
   obtain ⟨_, _, _, _, _, hf⟩ := hf
   exact W.transfiniteCompositionsOfShape_le_llp_rlp _ _ hf
+
+lemma transfiniteCompositions_pushouts_coproducts_le_llp_rlp :
+    (transfiniteCompositions.{w} (coproducts.{w} W).pushouts) ≤ W.rlp.llp := by
+  simpa using transfiniteCompositions_le_llp_rlp (coproducts.{w} W).pushouts
+
+lemma retracts_transfiniteComposition_pushouts_coproducts_le_llp_rlp :
+    (transfiniteCompositions.{w} (coproducts.{w} W).pushouts).retracts ≤ W.rlp.llp := by
+  rw [le_llp_iff_le_rlp, rlp_retracts, ← le_llp_iff_le_rlp]
+  apply transfiniteCompositions_pushouts_coproducts_le_llp_rlp
 
 end MorphismProperty
 

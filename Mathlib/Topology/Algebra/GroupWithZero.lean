@@ -6,7 +6,6 @@ Authors: Yury Kudryashov
 import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.GroupWithZero.Units.Equiv
 import Mathlib.Topology.Algebra.Monoid
-import Mathlib.Topology.Homeomorph
 
 /-!
 # Topological group with zero
@@ -23,7 +22,7 @@ and `Continuous`. As a special case, we provide `*.div_const` operations that re
 `DivInvMonoid` and `ContinuousMul` instances.
 
 All lemmas about `(⁻¹)` use `inv₀` in their names because lemmas without `₀` are used for
-`TopologicalGroup`s. We also use `'` in the typeclass name `HasContinuousInv₀` for the sake of
+`IsTopologicalGroup`s. We also use `'` in the typeclass name `HasContinuousInv₀` for the sake of
 consistency of notation.
 
 On a `GroupWithZero` with continuous multiplication, we also define left and right multiplication
@@ -218,12 +217,12 @@ theorem ContinuousAt.comp_div_cases {f g : α → G₀} (h : α → G₀ → β)
     (hg : ContinuousAt g a) (hh : g a ≠ 0 → ContinuousAt (↿h) (a, f a / g a))
     (h2h : g a = 0 → Tendsto (↿h) (𝓝 a ×ˢ ⊤) (𝓝 (h a 0))) :
     ContinuousAt (fun x => h x (f x / g x)) a := by
-  show ContinuousAt (↿h ∘ fun x => (x, f x / g x)) a
+  change ContinuousAt (↿h ∘ fun x => (x, f x / g x)) a
   by_cases hga : g a = 0
   · rw [ContinuousAt]
     simp_rw [comp_apply, hga, div_zero]
-    exact (h2h hga).comp (continuousAt_id.prod_mk tendsto_top)
-  · exact ContinuousAt.comp (hh hga) (continuousAt_id.prod (hf.div hg hga))
+    exact (h2h hga).comp (continuousAt_id.tendsto.prodMk tendsto_top)
+  · fun_prop (disch := assumption)
 
 /-- `h x (f x / g x)` is continuous under certain conditions, even if the denominator is sometimes
   `0`. See docstring of `ContinuousAt.comp_div_cases`. -/
@@ -317,7 +316,7 @@ theorem continuousAt_zpow₀ (x : G₀) (m : ℤ) (h : x ≠ 0 ∨ 0 ≤ m) :
   rcases m with m | m
   · simpa only [Int.ofNat_eq_coe, zpow_natCast] using continuousAt_pow x m
   · simp only [zpow_negSucc]
-    have hx : x ≠ 0 := h.resolve_right (Int.negSucc_lt_zero m).not_le
+    have hx : x ≠ 0 := h.resolve_right (Int.negSucc_lt_zero m).not_ge
     exact (continuousAt_pow x (m + 1)).inv₀ (pow_ne_zero _ hx)
 
 theorem continuousOn_zpow₀ (m : ℤ) : ContinuousOn (fun x : G₀ => x ^ m) {0}ᶜ := fun _x hx =>

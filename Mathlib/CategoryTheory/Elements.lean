@@ -41,7 +41,7 @@ variable {C : Type u} [Category.{v} C]
 is a pair `(X : C, x : F.obj X)`.
 -/
 def Functor.Elements (F : C ⥤ Type w) :=
-  Σc : C, F.obj c
+  Σ c : C, F.obj c
 
 /-- Constructor for the type `F.Elements` when `F` is a functor to types. -/
 abbrev Functor.elementsMk (F : C ⥤ Type w) (X : C) (x : F.obj X) : F.Elements := ⟨X, x⟩
@@ -56,7 +56,7 @@ lemma Functor.Elements.ext {F : C ⥤ Type w} (x y : F.Elements) (h₁ : x.fst =
 
 /-- The category structure on `F.Elements`, for `F : C ⥤ Type`.
     A morphism `(X, x) ⟶ (Y, y)` is a morphism `f : X ⟶ Y` in `C`, so `F.map f` takes `x` to `y`.
- -/
+-/
 instance categoryOfElements (F : C ⥤ Type w) : Category.{v} F.Elements where
   Hom p q := { f : p.1 ⟶ q.1 // (F.map f) p.2 = q.2 }
   id p := ⟨𝟙 p.1, by simp⟩

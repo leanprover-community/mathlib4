@@ -110,7 +110,7 @@ lemma cosKernel_neg (a : UnitAddCircle) (x : ℝ) : cosKernel (-a) x = cosKernel
   | H => simp [← QuotientAddGroup.mk_neg, ← ofReal_inj, cosKernel_def]
 
 lemma continuousOn_evenKernel (a : UnitAddCircle) : ContinuousOn (evenKernel a) (Ioi 0) := by
-  induction' a using QuotientAddGroup.induction_on with a'
+  induction a using QuotientAddGroup.induction_on with | H a' =>
   apply continuous_re.comp_continuousOn (f := fun x ↦ (evenKernel a' x : ℂ))
   simp only [evenKernel_def]
   refine continuousOn_of_forall_continuousAt (fun x hx ↦ .mul (by fun_prop) ?_)
@@ -118,7 +118,7 @@ lemma continuousOn_evenKernel (a : UnitAddCircle) : ContinuousOn (evenKernel a) 
     (f := fun u : ℝ ↦ (a' * I * u, I * u)) (by fun_prop)
 
 lemma continuousOn_cosKernel (a : UnitAddCircle) : ContinuousOn (cosKernel a) (Ioi 0) := by
-  induction' a using QuotientAddGroup.induction_on with a'
+  induction a using QuotientAddGroup.induction_on with | H a' =>
   apply continuous_re.comp_continuousOn (f := fun x ↦ (cosKernel a' x : ℂ))
   simp only [cosKernel_def]
   refine continuousOn_of_forall_continuousAt (fun x hx ↦ ?_)
@@ -127,10 +127,10 @@ lemma continuousOn_cosKernel (a : UnitAddCircle) : ContinuousOn (cosKernel a) (I
 
 lemma evenKernel_functional_equation (a : UnitAddCircle) (x : ℝ) :
     evenKernel a x = 1 / x ^ (1 / 2 : ℝ) * cosKernel a (1 / x) := by
-  rcases le_or_lt x 0 with hx | hx
+  rcases le_or_gt x 0 with hx | hx
   · rw [evenKernel_undef _ hx, cosKernel_undef, mul_zero]
     exact div_nonpos_of_nonneg_of_nonpos zero_le_one hx
-  induction' a using QuotientAddGroup.induction_on with a
+  induction a using QuotientAddGroup.induction_on with | H a =>
   rw [← ofReal_inj, ofReal_mul, evenKernel_def, cosKernel_def, jacobiTheta₂_functional_equation]
   have h1 : I * ↑(1 / x) = -1 / (I * x) := by
     push_cast
@@ -219,7 +219,7 @@ lemma hasSum_nat_cosKernel₀ (a : ℝ) {t : ℝ} (ht : 0 < t) :
 `a = 0` and `L = 0` otherwise. -/
 lemma isBigO_atTop_evenKernel_sub (a : UnitAddCircle) : ∃ p : ℝ, 0 < p ∧
     (evenKernel a · - (if a = 0 then 1 else 0)) =O[atTop] (rexp <| -p * ·) := by
-  induction' a using QuotientAddGroup.induction_on with b
+  induction a using QuotientAddGroup.induction_on with | H b =>
   obtain ⟨p, hp, hp'⟩ := HurwitzKernelBounds.isBigO_atTop_F_int_zero_sub b
   refine ⟨p, hp, (EventuallyEq.isBigO ?_).trans hp'⟩
   filter_upwards [eventually_gt_atTop 0] with t h
@@ -228,7 +228,7 @@ lemma isBigO_atTop_evenKernel_sub (a : UnitAddCircle) : ∃ p : ℝ, 0 < p ∧
 /-- The function `cosKernel a - 1` has exponential decay at `+∞`, for any `a`. -/
 lemma isBigO_atTop_cosKernel_sub (a : UnitAddCircle) :
     ∃ p, 0 < p ∧ IsBigO atTop (cosKernel a · - 1) (fun x ↦ Real.exp (-p * x)) := by
-  induction' a using QuotientAddGroup.induction_on with a
+  induction a using QuotientAddGroup.induction_on with | H a =>
   obtain ⟨p, hp, hp'⟩ := HurwitzKernelBounds.isBigO_atTop_F_nat_zero_sub zero_le_one
   refine ⟨p, hp, (Eventually.isBigO ?_).trans (hp'.const_mul_left 2)⟩
   filter_upwards [eventually_gt_atTop 0] with t ht
@@ -255,7 +255,9 @@ def hurwitzEvenFEPair (a : UnitAddCircle) : WeakFEPair ℂ where
     measurableSet_Ioi
   hg_int := (continuous_ofReal.comp_continuousOn (continuousOn_cosKernel a)).locallyIntegrableOn
     measurableSet_Ioi
+  k := 1 / 2
   hk := one_half_pos
+  ε := 1
   hε := one_ne_zero
   f₀ := if a = 0 then 1 else 0
   hf_top r := by
@@ -267,8 +269,7 @@ def hurwitzEvenFEPair (a : UnitAddCircle) : WeakFEPair ℂ where
   g₀ := 1
   hg_top r := by
     obtain ⟨p, hp, hp'⟩ := isBigO_atTop_cosKernel_sub a
-    rw [← isBigO_norm_left] at hp' ⊢
-    simpa [← abs_ofReal] using hp'.trans (isLittleO_exp_neg_mul_rpow_atTop hp _).isBigO
+    simpa using isBigO_ofReal_left.mpr <| hp'.trans (isLittleO_exp_neg_mul_rpow_atTop hp r).isBigO
   h_feq x hx := by simp [← ofReal_mul, evenKernel_functional_equation, inv_rpow (le_of_lt hx)]
 
 @[simp]
@@ -418,7 +419,7 @@ lemma differentiable_completedHurwitzZetaEven₀ (a : UnitAddCircle) :
 lemma differentiableAt_one_completedHurwitzZetaEven_sub_completedHurwitzZetaEven
     (a b : UnitAddCircle) :
     DifferentiableAt ℂ (fun s ↦ completedHurwitzZetaEven a s - completedHurwitzZetaEven b s) 1 := by
-  have (s) : completedHurwitzZetaEven a s - completedHurwitzZetaEven b s =
+  have (s : _) : completedHurwitzZetaEven a s - completedHurwitzZetaEven b s =
       completedHurwitzZetaEven₀ a s - completedHurwitzZetaEven₀ b s -
       ((if a = 0 then 1 else 0) - (if b = 0 then 1 else 0)) / s := by
     simp_rw [completedHurwitzZetaEven_eq, sub_div]
@@ -449,7 +450,7 @@ private lemma tendsto_div_two_punctured_nhds (a : ℂ) :
 /-- The residue of `completedHurwitzZetaEven a s` at `s = 1` is equal to `1`. -/
 lemma completedHurwitzZetaEven_residue_one (a : UnitAddCircle) :
     Tendsto (fun s ↦ (s - 1) * completedHurwitzZetaEven a s) (𝓝[≠] 1) (𝓝 1) := by
-  have h1 : Tendsto (fun s : ℂ ↦ (s - ↑(1  / 2 : ℝ)) * _) (𝓝[≠] ↑(1  / 2 : ℝ))
+  have h1 : Tendsto (fun s : ℂ ↦ (s - ↑(1 / 2 : ℝ)) * _) (𝓝[≠] ↑(1 / 2 : ℝ))
     (𝓝 ((1 : ℂ) * (1 : ℂ))) := (hurwitzEvenFEPair a).Λ_residue_k
   simp only [push_cast, one_mul] at h1
   refine (h1.comp <| tendsto_div_two_punctured_nhds 1).congr (fun s ↦ ?_)
@@ -462,7 +463,7 @@ lemma completedHurwitzZetaEven_residue_zero (a : UnitAddCircle) :
   have h1 : Tendsto (fun s : ℂ ↦ s * _) (𝓝[≠] 0)
     (𝓝 (-(if a = 0 then 1 else 0))) := (hurwitzEvenFEPair a).Λ_residue_zero
   have : -(if a = 0 then (1 : ℂ) else 0) = (if a = 0 then -1 else 0) := by { split_ifs <;> simp }
-  simp only [this, push_cast, one_mul] at h1
+  simp only [this, push_cast] at h1
   refine (h1.comp <| zero_div (2 : ℂ) ▸ (tendsto_div_two_punctured_nhds 0)).congr (fun s ↦ ?_)
   simp [completedHurwitzZetaEven, div_mul_eq_mul_div, mul_div_assoc]
 
@@ -499,7 +500,7 @@ lemma hasSum_int_completedCosZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
   · apply (((summable_one_div_int_add_rpow 0 s.re).mpr hs).div_const 2).of_norm_bounded
     intro i
     simp only [c, (by { push_cast; ring } : 2 * π * I * a * i = ↑(2 * π * a * i) * I), norm_div,
-      RCLike.norm_ofNat, norm_norm, Complex.norm_exp_ofReal_mul_I, add_zero, norm_one,
+      RCLike.norm_ofNat, Complex.norm_exp_ofReal_mul_I, add_zero, norm_one,
       norm_of_nonneg (by positivity : 0 ≤ |(i : ℝ)| ^ s.re), div_right_comm, le_rfl]
   · simp [c, ← Int.cast_abs, div_right_comm, mul_div_assoc]
 
@@ -567,7 +568,7 @@ lemma differentiableAt_update_of_residue
     have S_nhds : {(1 : ℂ)}ᶜ ∈ 𝓝 (0 : ℂ) := isOpen_compl_singleton.mem_nhds hs'
     refine ((Complex.differentiableOn_update_limUnder_of_isLittleO S_nhds
       (fun t ht ↦ (claim t ht.2 ht.1).differentiableWithinAt) ?_) 0 hs').differentiableAt S_nhds
-    simp only [Gammaℝ, zero_div, div_zero, Complex.Gamma_zero, mul_zero, cpow_zero, sub_zero]
+    simp only [Gammaℝ, zero_div, div_zero, Complex.Gamma_zero, mul_zero, sub_zero]
     -- Remains to show completed zeta is `o (s ^ (-1))` near 0.
     refine (isBigO_const_of_tendsto claim2 <| one_ne_zero' ℂ).trans_isLittleO ?_
     rw [isLittleO_iff_tendsto']
@@ -575,7 +576,7 @@ lemma differentiableAt_update_of_residue
     · exact eventually_of_mem self_mem_nhdsWithin fun x hx hx' ↦ (hx <| inv_eq_zero.mp hx').elim
 
 /-- The even part of the Hurwitz zeta function, i.e. the meromorphic function of `s` which agrees
-with `1 / 2 * ∑' (n : ℤ), 1 / |n + a| ^ s` for `1 < re s`-/
+with `1 / 2 * ∑' (n : ℤ), 1 / |n + a| ^ s` for `1 < re s` -/
 noncomputable def hurwitzZetaEven (a : UnitAddCircle) :=
   Function.update (fun s ↦ completedHurwitzZetaEven a s / Gammaℝ s)
   0 (if a = 0 then -1 / 2 else 0)
@@ -650,7 +651,7 @@ lemma differentiable_hurwitzZetaEven_sub_hurwitzZetaEven (a b : UnitAddCircle) :
   intro z
   rcases ne_or_eq z 1 with hz | rfl
   · exact (differentiableAt_hurwitzZetaEven a hz).sub (differentiableAt_hurwitzZetaEven b hz)
-  · convert (differentiableAt_hurwitzZetaEven_sub_one_div a).sub
+  · convert (differentiableAt_hurwitzZetaEven_sub_one_div a).fun_sub
       (differentiableAt_hurwitzZetaEven_sub_one_div b) using 2 with s
     abel
 
@@ -712,7 +713,7 @@ lemma differentiableAt_cosZeta (a : UnitAddCircle) {s : ℂ} (hs' : s ≠ 1 ∨ 
   rcases ne_or_eq s 1 with hs' | rfl
   · exact differentiableAt_update_of_residue (fun _ ht ht' ↦
       differentiableAt_completedCosZeta a ht (Or.inl ht')) (completedCosZeta_residue_zero a) s hs'
-  · apply ((differentiableAt_completedCosZeta a one_ne_zero hs').mul
+  · apply ((differentiableAt_completedCosZeta a one_ne_zero hs').fun_mul
       (differentiable_Gammaℝ_inv.differentiableAt)).congr_of_eventuallyEq
     filter_upwards [isOpen_compl_singleton.mem_nhds one_ne_zero] with x hx
     rw [cosZeta, Function.update_of_ne hx, div_eq_mul_inv]

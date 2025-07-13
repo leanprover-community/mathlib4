@@ -6,7 +6,7 @@ Authors: Joseph Myers, Yury Kudryashov
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
+import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 import Mathlib.Topology.Instances.RealVectorSpace
 
 
@@ -34,7 +34,7 @@ open AffineMap
 
 theorem AffineSubspace.isClosed_direction_iff (s : AffineSubspace 𝕜 Q) :
     IsClosed (s.direction : Set W) ↔ IsClosed (s : Set Q) := by
-  rcases s.eq_bot_or_nonempty with (rfl | ⟨x, hx⟩); · simp [isClosed_singleton]
+  rcases s.eq_bot_or_nonempty with (rfl | ⟨x, hx⟩); · simp
   rw [← (IsometryEquiv.vaddConst x).toHomeomorph.symm.isClosed_image,
     AffineSubspace.coe_direction_eq_vsub_set_right hx]
   rfl
@@ -256,11 +256,7 @@ def AffineMap.ofMapMidpoint (f : P → Q) (h : ∀ x y, f (midpoint ℝ x y) = m
   let c := Classical.arbitrary P
   AffineMap.mk' f (↑((AddMonoidHom.ofMapMidpoint ℝ ℝ
     ((AffineEquiv.vaddConst ℝ (f <| c)).symm ∘ f ∘ AffineEquiv.vaddConst ℝ c) (by simp)
-    fun x y => by -- Porting note: was `by simp [h]`
-      simp only [c, Function.comp_apply, AffineEquiv.vaddConst_apply,
-        AffineEquiv.vaddConst_symm_apply]
-      conv_lhs => rw [(midpoint_self ℝ (Classical.arbitrary P)).symm, midpoint_vadd_midpoint, h, h,
-          midpoint_vsub_midpoint]).toRealLinearMap <| by
+    fun x y => by simp [h]).toRealLinearMap <| by
         apply_rules [Continuous.vadd, Continuous.vsub, continuous_const, hfc.comp, continuous_id]))
     c fun p => by simp
 
@@ -271,7 +267,7 @@ section
 open Dilation
 
 variable {𝕜 E : Type*} [NormedDivisionRing 𝕜] [SeminormedAddCommGroup E]
-variable [Module 𝕜 E] [BoundedSMul 𝕜 E] {P : Type*} [PseudoMetricSpace P] [NormedAddTorsor E P]
+variable [Module 𝕜 E] [NormSMulClass 𝕜 E] {P : Type*} [PseudoMetricSpace P] [NormedAddTorsor E P]
 
 -- TODO: define `ContinuousAffineEquiv` and reimplement this as one of those.
 /-- Scaling by an element `k` of the scalar ring as a `DilationEquiv` with ratio `‖k‖₊`, mapping
@@ -286,7 +282,7 @@ def DilationEquiv.smulTorsor (c : P) {k : 𝕜} (hk : k ≠ 0) : E ≃ᵈ P wher
     rw [show edist (k • x +ᵥ c) (k • y +ᵥ c) = _ from (IsometryEquiv.vaddConst c).isometry ..]
     exact edist_smul₀ ..⟩
 
-@[simp]
+-- Cannot be @[simp] because `x` and `y` can not be inferred by `simp`.
 lemma DilationEquiv.smulTorsor_ratio {c : P} {k : 𝕜} (hk : k ≠ 0) {x y : E}
     (h : dist x y ≠ 0) : ratio (smulTorsor c hk) = ‖k‖₊ :=
   Eq.symm <| ratio_unique_of_dist_ne_zero h <| by simp [dist_eq_norm, ← smul_sub, norm_smul]

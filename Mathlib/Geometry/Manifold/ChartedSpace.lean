@@ -128,7 +128,6 @@ open Set PartialHomeomorph Manifold  -- Porting note: Added `Manifold`
 
 /-! ### Structure groupoids -/
 
-
 section Groupoid
 
 /-! One could add to the definition of a structure groupoid the fact that the restriction of an
@@ -272,14 +271,14 @@ necessary from the definition). -/
 def idGroupoid (H : Type u) [TopologicalSpace H] : StructureGroupoid H where
   members := {PartialHomeomorph.refl H} ∪ { e : PartialHomeomorph H H | e.source = ∅ }
   trans' e e' he he' := by
-    cases' he with he he
+    rcases he with he | he
     · simpa only [mem_singleton_iff.1 he, refl_trans]
     · have : (e ≫ₕ e').source ⊆ e.source := sep_subset _ _
       rw [he] at this
       have : e ≫ₕ e' ∈ { e : PartialHomeomorph H H | e.source = ∅ } := eq_bot_iff.2 this
       exact (mem_union _ _ _).2 (Or.inr this)
   symm' e he := by
-    cases' (mem_union _ _ _).1 he with E E
+    rcases (mem_union _ _ _).1 he with E | E
     · simp [mem_singleton_iff.mp E]
     · right
       simpa only [e.toPartialEquiv.image_source_eq_target.symm, mfld_simps] using E
@@ -294,7 +293,7 @@ def idGroupoid (H : Type u) [TopologicalSpace H] : StructureGroupoid H where
       have x's : x ∈ (e.restr s).source := by
         rw [restr_source, open_s.interior_eq]
         exact ⟨hx, xs⟩
-      cases' hs with hs hs
+      rcases hs with hs | hs
       · replace hs : PartialHomeomorph.restr e s = PartialHomeomorph.refl H := by
           simpa only using hs
         have : (e.restr s).source = univ := by
@@ -310,7 +309,7 @@ def idGroupoid (H : Type u) [TopologicalSpace H] : StructureGroupoid H where
         rw [mem_setOf_eq] at hs
         rwa [hs] at x's
   mem_of_eqOnSource' e e' he he'e := by
-    cases' he with he he
+    rcases he with he | he
     · left
       have : e = e' := by
         refine eq_of_eqOnSource_univ (Setoid.symm he'e) ?_ ?_ <;>
@@ -327,7 +326,7 @@ instance instStructureGroupoidOrderBot : OrderBot (StructureGroupoid H) where
     intro u f hf
     have hf : f ∈ {PartialHomeomorph.refl H} ∪ { e : PartialHomeomorph H H | e.source = ∅ } := hf
     simp only [singleton_union, mem_setOf_eq, mem_insert_iff] at hf
-    cases' hf with hf hf
+    rcases hf with hf | hf
     · rw [hf]
       apply u.id_mem
     · apply u.locality
@@ -517,7 +516,7 @@ theorem closedUnderRestriction_iff_id_le (G : StructureGroupoid H) :
     -- simp only [mfld_simps]
     ext
     · rw [PartialHomeomorph.restr_apply, PartialHomeomorph.refl_apply, id, ofSet_apply, id_eq]
-    · simp [hs]
+    · simp
     · simp [hs.interior_eq]
   · intro h
     constructor
@@ -535,7 +534,6 @@ instance : ClosedUnderRestriction (continuousGroupoid H) :=
 end Groupoid
 
 /-! ### Charted spaces -/
-
 
 /-- A charted space is a topological space endowed with an atlas, i.e., a set of local
 homeomorphisms taking value in a model space `H`, called charts, such that the domains of the charts
@@ -586,32 +584,6 @@ lemma isEmpty_of_chartedSpace (H : Type*) {M : Type*} [TopologicalSpace H] [Topo
   · exact (IsEmpty.false (chartAt H x x)).elim
 
 section ChartedSpace
-
-/-- An empty type is a charted space over any topological space. -/
-def ChartedSpace.empty (H : Type*) [TopologicalSpace H]
-    (M : Type*) [TopologicalSpace M] [IsEmpty M] : ChartedSpace H M where
-  atlas := ∅
-  chartAt x := (IsEmpty.false x).elim
-  mem_chart_source x := (IsEmpty.false x).elim
-  chart_mem_atlas x := (IsEmpty.false x).elim
-
-/-- Any space is a `ChartedSpace` modelled over itself, by just using the identity chart. -/
-instance chartedSpaceSelf (H : Type*) [TopologicalSpace H] : ChartedSpace H H where
-  atlas := {PartialHomeomorph.refl H}
-  chartAt _ := PartialHomeomorph.refl H
-  mem_chart_source x := mem_univ x
-  chart_mem_atlas _ := mem_singleton _
-
-/-- In the trivial `ChartedSpace` structure of a space modelled over itself through the identity,
-the atlas members are just the identity. -/
-@[simp, mfld_simps]
-theorem chartedSpaceSelf_atlas {H : Type*} [TopologicalSpace H] {e : PartialHomeomorph H H} :
-    e ∈ atlas H H ↔ e = PartialHomeomorph.refl H :=
-  Iff.rfl
-
-/-- In the model space, `chartAt` is always the identity. -/
-theorem chartAt_self_eq {H : Type*} [TopologicalSpace H] {x : H} :
-    chartAt H x = PartialHomeomorph.refl H := rfl
 
 section
 
@@ -705,13 +677,13 @@ theorem ChartedSpace.locallyConnectedSpace [LocallyConnectedSpace H] : LocallyCo
     exact hsconn.isPreconnected.image _ ((e x).continuousOn_symm.mono hssubset)
 
 /-- If a topological space `M` admits an atlas with locally path-connected charts,
-  then `M` itself is locally path-connected. -/
+then `M` itself is locally path-connected. -/
 theorem ChartedSpace.locPathConnectedSpace [LocPathConnectedSpace H] : LocPathConnectedSpace M := by
   refine ⟨fun x ↦ ⟨fun s ↦ ⟨fun hs ↦ ?_, fun ⟨u, hu⟩ ↦ Filter.mem_of_superset hu.1.1 hu.2⟩⟩⟩
   let e := chartAt H x
   let t := s ∩ e.source
   have ht : t ∈ 𝓝 x := Filter.inter_mem hs (chart_source_mem_nhds _ _)
-  refine ⟨e.symm '' pathComponentIn (e x) (e '' t), ⟨?_, ?_⟩, (?_ : _ ⊆ t).trans inter_subset_left⟩
+  refine ⟨e.symm '' pathComponentIn (e '' t) (e x), ⟨?_, ?_⟩, (?_ : _ ⊆ t).trans inter_subset_left⟩
   · nth_rewrite 1 [← e.left_inv (mem_chart_source _ _)]
     apply e.symm.image_mem_nhds (by simp [e])
     exact pathComponentIn_mem_nhds <| e.image_mem_nhds (mem_chart_source _ _) ht
@@ -748,7 +720,70 @@ theorem ChartedSpace.t1Space [T1Space H] : T1Space M := by
       exact (chartAt H x).injOn.ne (ChartedSpace.mem_chart_source x) hy hxy
   · exact ⟨(chartAt H x).source, (chartAt H x).open_source, ChartedSpace.mem_chart_source x, hy⟩
 
+/-- A charted space over a discrete space is discrete. -/
+theorem ChartedSpace.discreteTopology [DiscreteTopology H] : DiscreteTopology M := by
+  apply singletons_open_iff_discrete.1 (fun x ↦ ?_)
+  have : IsOpen ((chartAt H x).source ∩ (chartAt H x) ⁻¹' {chartAt H x x}) :=
+    isOpen_inter_preimage _ (isOpen_discrete _)
+  convert this
+  refine Subset.antisymm (by simp) ?_
+  simp only [subset_singleton_iff, mem_inter_iff, mem_preimage, mem_singleton_iff, and_imp]
+  intro y hy h'y
+  exact (chartAt H x).injOn hy (mem_chart_source _ x) h'y
+
 end
+
+section Constructions
+
+/-- An empty type is a charted space over any topological space. -/
+def ChartedSpace.empty (H : Type*) [TopologicalSpace H]
+    (M : Type*) [TopologicalSpace M] [IsEmpty M] : ChartedSpace H M where
+  atlas := ∅
+  chartAt x := (IsEmpty.false x).elim
+  mem_chart_source x := (IsEmpty.false x).elim
+  chart_mem_atlas x := (IsEmpty.false x).elim
+
+/-- Any space is a `ChartedSpace` modelled over itself, by just using the identity chart. -/
+instance chartedSpaceSelf (H : Type*) [TopologicalSpace H] : ChartedSpace H H where
+  atlas := {PartialHomeomorph.refl H}
+  chartAt _ := PartialHomeomorph.refl H
+  mem_chart_source x := mem_univ x
+  chart_mem_atlas _ := mem_singleton _
+
+/-- In the trivial `ChartedSpace` structure of a space modelled over itself through the identity,
+the atlas members are just the identity. -/
+@[simp, mfld_simps]
+theorem chartedSpaceSelf_atlas {H : Type*} [TopologicalSpace H] {e : PartialHomeomorph H H} :
+    e ∈ atlas H H ↔ e = PartialHomeomorph.refl H :=
+  Iff.rfl
+
+/-- In the model space, `chartAt` is always the identity. -/
+theorem chartAt_self_eq {H : Type*} [TopologicalSpace H] {x : H} :
+    chartAt H x = PartialHomeomorph.refl H := rfl
+
+/-- Any discrete space is a charted space over a singleton set.
+We keep this as a definition (not an instance) to avoid instance search trying to search for
+`DiscreteTopology` or `Unique` instances.
+-/
+def ChartedSpace.of_discreteTopology [TopologicalSpace M] [TopologicalSpace H]
+    [DiscreteTopology M] [h : Unique H] : ChartedSpace H M where
+  atlas :=
+    letI f := fun x : M ↦ PartialHomeomorph.const
+      (isOpen_discrete {x}) (isOpen_discrete {h.default})
+    Set.image f univ
+  chartAt x := PartialHomeomorph.const (isOpen_discrete {x}) (isOpen_discrete {h.default})
+  mem_chart_source x := by simp
+  chart_mem_atlas x := by simp
+
+/-- A chart on the discrete space is the constant chart. -/
+@[simp, mfld_simps]
+lemma chartedSpace_of_discreteTopology_chartAt [TopologicalSpace M] [TopologicalSpace H]
+    [DiscreteTopology M] [h : Unique H] {x : M} :
+    haveI := ChartedSpace.of_discreteTopology (M := M) (H := H)
+    chartAt H x = PartialHomeomorph.const (isOpen_discrete {x}) (isOpen_discrete {h.default}) :=
+  rfl
+
+section Products
 
 library_note "Manifold type tags" /-- For technical reasons we introduce two type tags:
 
@@ -834,7 +869,7 @@ theorem prodChartedSpace_chartAt :
 
 theorem chartedSpaceSelf_prod : prodChartedSpace H H H' H' = chartedSpaceSelf (H × H') := by
   ext1
-  · simp [prodChartedSpace, atlas, ChartedSpace.atlas]
+  · simp [atlas, ChartedSpace.atlas]
   · ext1
     simp only [prodChartedSpace_chartAt, chartAt_self_eq, refl_prod_refl]
     rfl
@@ -857,6 +892,8 @@ theorem piChartedSpace_chartAt {ι : Type*} [Finite ι] (H : ι → Type*)
     [∀ i, ChartedSpace (H i) (M i)] (f : ∀ i, M i) :
     chartAt (H := ModelPi H) f = PartialHomeomorph.pi fun i ↦ chartAt (H i) (f i) :=
   rfl
+
+end Products
 
 section sum
 
@@ -914,13 +951,13 @@ lemma ChartedSpace.sum_chartAt_inr (x' : M') :
   simp only [chartAt, sum, nonempty_of_chartedSpace x', ↓reduceDIte]
   rfl
 
-@[simp] lemma sum_chartAt_inl_apply {x y : M} :
+@[simp, mfld_simps] lemma sum_chartAt_inl_apply {x y : M} :
     (chartAt H (.inl x : M ⊕ M')) (Sum.inl y) = (chartAt H x) y := by
   haveI : Nonempty H := nonempty_of_chartedSpace x
   rw [ChartedSpace.sum_chartAt_inl]
   exact PartialHomeomorph.lift_openEmbedding_apply _ _
 
-@[simp] lemma sum_chartAt_inr_apply {x y : M'} :
+@[simp, mfld_simps] lemma sum_chartAt_inr_apply {x y : M'} :
     (chartAt H (.inr x : M ⊕ M')) (Sum.inr y) = (chartAt H x) y := by
   haveI : Nonempty H := nonempty_of_chartedSpace x
   rw [ChartedSpace.sum_chartAt_inr]
@@ -938,10 +975,11 @@ lemma ChartedSpace.mem_atlas_sum [h : Nonempty H]
 
 end sum
 
+end Constructions
+
 end ChartedSpace
 
 /-! ### Constructing a topology from an atlas -/
-
 
 /-- Sometimes, one may want to construct a charted space structure on a space which does not yet
 have a topological structure, where the topology would come from the charts. For this, one needs
@@ -1029,8 +1067,6 @@ def toChartedSpace : @ChartedSpace H _ M c.toTopologicalSpace :=
 end ChartedSpaceCore
 
 /-! ### Charted space with a given structure groupoid -/
-
-
 section HasGroupoid
 
 variable [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
@@ -1076,8 +1112,8 @@ instance hasGroupoid_continuousGroupoid : HasGroupoid M (continuousGroupoid H) :
   rw [continuousGroupoid, mem_groupoid_of_pregroupoid]
   simp only [and_self_iff]
 
-/-- If `G` is closed under restriction, the transition function between
-  the restriction of two charts `e` and `e'` lies in `G`. -/
+/-- If `G` is closed under restriction, the transition function between the restriction of two
+charts `e` and `e'` lies in `G`. -/
 theorem StructureGroupoid.trans_restricted {e e' : PartialHomeomorph M H} {G : StructureGroupoid H}
     (he : e ∈ atlas H M) (he' : e' ∈ atlas H M)
     [HasGroupoid M G] [ClosedUnderRestriction G] {s : Opens M} (hs : Nonempty s) :
@@ -1247,14 +1283,14 @@ protected instance instChartedSpace : ChartedSpace H s where
     use x
 
 /-- If `s` is a non-empty open subset of `M`, every chart of `s` is the restriction
- of some chart on `M`. -/
+of some chart on `M`. -/
 lemma chart_eq {s : Opens M} (hs : Nonempty s) {e : PartialHomeomorph s H} (he : e ∈ atlas H s) :
     ∃ x : s, e = (chartAt H (x : M)).subtypeRestr hs := by
   rcases he with ⟨xset, ⟨x, hx⟩, he⟩
   exact ⟨x, mem_singleton_iff.mp (by convert he)⟩
 
 /-- If `t` is a non-empty open subset of `H`,
-  every chart of `t` is the restriction of some chart on `H`. -/
+every chart of `t` is the restriction of some chart on `H`. -/
 -- XXX: can I unify this with `chart_eq`?
 lemma chart_eq' {t : Opens H} (ht : Nonempty t) {e' : PartialHomeomorph t H}
     (he' : e' ∈ atlas H t) : ∃ x : t, e' = (chartAt H ↑x).subtypeRestr ht := by
@@ -1389,7 +1425,7 @@ def Structomorph.trans (e : Structomorph G M M') (e' : Structomorph G M' M'') :
         _ ≈ (c.symm ≫ₕ f₁).restr s ≫ₕ f₂ ≫ₕ c' := by rw [trans_of_set']
         _ ≈ ((c.symm ≫ₕ f₁) ≫ₕ f₂ ≫ₕ c').restr s := by rw [restr_trans]
         _ ≈ (c.symm ≫ₕ (f₁ ≫ₕ f₂) ≫ₕ c').restr s := by
-          simp only [EqOnSource.restr, trans_assoc, _root_.refl]
+          simp only [trans_assoc, _root_.refl]
         _ ≈ F₂ := by simp only [F₂, feq, _root_.refl]
       have : F₂ ∈ G := G.mem_of_eqOnSource A (Setoid.symm this)
       exact this }

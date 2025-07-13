@@ -102,11 +102,11 @@ protected theorem castLE {h : l ≤ n} (hφ : IsQF φ) : (φ.castLE h).IsQF :=
 end IsQF
 
 theorem not_all_isQF (φ : L.BoundedFormula α (n + 1)) : ¬φ.all.IsQF := fun con => by
-  cases' con with _ con
+  obtain - | con := con
   exact φ.not_all_isAtomic con
 
 theorem not_ex_isQF (φ : L.BoundedFormula α (n + 1)) : ¬φ.ex.IsQF := fun con => by
-  cases' con with _ con _ _ con
+  obtain - | con | con := con
   · exact φ.not_ex_isAtomic con
   · exact not_all_isQF _ con
 
@@ -248,14 +248,7 @@ theorem realize_toPrenexImp {φ ψ : L.BoundedFormula α n} (hφ : IsPrenex φ) 
     rw [realize_ex]
     refine _root_.trans (exists_congr fun _ => ih hψ.liftAt) ?_
     simp only [realize_imp, realize_liftAt_one_self, snoc_comp_castSucc, realize_all]
-    refine ⟨?_, fun h' => ?_⟩
-    · rintro ⟨a, ha⟩ h
-      exact ha (h a)
-    · by_cases h : ψ.Realize v xs
-      · inhabit M
-        exact ⟨default, fun _h'' => h⟩
-      · obtain ⟨a, ha⟩ := not_forall.1 (h ∘ h')
-        exact ⟨a, fun h => (ha h).elim⟩
+    exact Iff.symm forall_imp_iff_exists_imp
   | ex _ ih =>
     intro ψ hψ
     refine _root_.trans (forall_congr' fun _ => ih hψ.liftAt) ?_

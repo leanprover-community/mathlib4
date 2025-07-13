@@ -48,8 +48,6 @@ instance Arrow.finite {C : Type u} [SmallCategory C] [FinCategory C] :
 def Arrow.opEquiv (C : Type u) [Category.{v} C] : Arrow Cᵒᵖ ≃ Arrow C where
   toFun f := Arrow.mk f.hom.unop
   invFun g := Arrow.mk g.hom.op
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp]
 lemma hasCardinalLT_arrow_op_iff (C : Type u) [Category.{v} C] (κ : Cardinal.{w}) :
@@ -86,7 +84,7 @@ noncomputable def Arrow.shrinkEquiv (C : Type u) [Category.{v} C] [Small.{w} C] 
   toFun := (Shrink.equivalence C).inverse.mapArrow.obj
   invFun := (Shrink.equivalence C).functor.mapArrow.obj
   left_inv _ := Arrow.ext (Equiv.apply_symm_apply _ _)
-      ((Equiv.apply_symm_apply _ _)) (by simp ; rfl)
+      ((Equiv.apply_symm_apply _ _)) (by simp; rfl)
   right_inv _ := Arrow.ext (by simp [Shrink.equivalence])
     (by simp [Shrink.equivalence]) (by simp [Shrink.equivalence])
 

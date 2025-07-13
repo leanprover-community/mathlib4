@@ -97,6 +97,11 @@ def Units.ofPow (u : Mˣ) (x : M) {n : ℕ} (hn : n ≠ 0) (hu : x ^ n = u) : M�
 @[to_additive]
 lemma isUnit_pow_succ_iff : IsUnit (a ^ (n + 1)) ↔ IsUnit a := isUnit_pow_iff n.succ_ne_zero
 
+lemma isUnit_pow_iff_of_not_isUnit (hx : ¬ IsUnit a) {n : ℕ} :
+    IsUnit (a ^ n) ↔ n = 0 := by
+  rcases n with (_|n) <;>
+  simp [hx]
+
 /-- If `a ^ n = 1`, `n ≠ 0`, then `a` is a unit. -/
 @[to_additive (attr := simps!) "If `n • x = 0`, `n ≠ 0`, then `x` is an additive unit."]
 def Units.ofPowEqOne (a : M) (n : ℕ) (ha : a ^ n = 1) (hn : n ≠ 0) : Mˣ := Units.ofPow 1 a hn ha
@@ -114,13 +119,25 @@ lemma IsUnit.of_pow_eq_one (ha : a ^ n = 1) (hn : n ≠ 0) : IsUnit a :=
 
 end Monoid
 
-section DivisionMonoid
+namespace Commute
+
 variable [DivisionMonoid M] {a b c d : M}
 
 @[to_additive]
-lemma Commute.div_eq_div_iff_of_isUnit (hbd : Commute b d) (hb : IsUnit b) (hd : IsUnit d) :
+lemma div_eq_div_iff_of_isUnit (hbd : Commute b d) (hb : IsUnit b) (hd : IsUnit d) :
     a / b = c / d ↔ a * d = c * b := by
   rw [← (hb.mul hd).mul_left_inj, ← mul_assoc, hb.div_mul_cancel, ← mul_assoc, hbd.right_comm,
     hd.div_mul_cancel]
 
-end DivisionMonoid
+@[to_additive]
+lemma mul_inv_eq_mul_inv_iff_of_isUnit (hbd : Commute b d) (hb : IsUnit b) (hd : IsUnit d) :
+    a * b⁻¹ = c * d⁻¹ ↔ a * d = c * b := by
+  rw [← div_eq_mul_inv, ← div_eq_mul_inv, hbd.div_eq_div_iff_of_isUnit hb hd]
+
+@[to_additive]
+lemma inv_mul_eq_inv_mul_iff_of_isUnit (hbd : Commute b d) (hb : IsUnit b) (hd : IsUnit d) :
+    b⁻¹ * a = d⁻¹ * c ↔ d * a = b * c := by
+  rw [← (hd.mul hb).mul_right_inj, ← mul_assoc, mul_assoc d, hb.mul_inv_cancel, mul_one,
+    ← mul_assoc, mul_assoc d, hbd.symm.left_comm, hd.mul_inv_cancel, mul_one]
+
+end Commute

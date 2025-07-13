@@ -137,7 +137,7 @@ attribute [instance] HasExplicitFiniteCoproducts.hasProp
 
 instance [HasExplicitFiniteCoproducts.{w} P] (α : Type w) [Finite α] :
     HasColimitsOfShape (Discrete α) (CompHausLike P) where
-  has_colimit _ := hasColimitOfIso Discrete.natIsoFunctor
+  has_colimit _ := hasColimit_of_iso Discrete.natIsoFunctor
 
 instance [HasExplicitFiniteCoproducts.{w} P] : HasFiniteCoproducts (CompHausLike.{max u w} P) where
   out n := by
@@ -154,9 +154,6 @@ lemma finiteCoproduct.isOpenEmbedding_ι (a : α) :
     IsOpenEmbedding (finiteCoproduct.ι X a) :=
   .sigmaMk (σ := fun a ↦ X a)
 
-@[deprecated (since := "2024-10-18")]
-alias finiteCoproduct.openEmbedding_ι := finiteCoproduct.isOpenEmbedding_ι
-
 /-- The inclusion maps into the abstract finite coproduct are open embeddings. -/
 lemma Sigma.isOpenEmbedding_ι (a : α) :
     IsOpenEmbedding (Sigma.ι X a) := by
@@ -167,13 +164,10 @@ lemma Sigma.isOpenEmbedding_ι (a : α) :
   change (Sigma.ι X a ≫ _) x = _
   simp
 
-@[deprecated (since := "2024-10-18")]
-alias Sigma.openEmbedding_ι := Sigma.isOpenEmbedding_ι
-
 /-- The functor to `TopCat` preserves finite coproducts if they exist. -/
 instance (P) [HasExplicitFiniteCoproducts.{0} P] :
     PreservesFiniteCoproducts (compHausLikeToTop P) := by
-  refine ⟨fun J hJ ↦ ⟨fun {F} ↦ ?_⟩⟩
+  refine ⟨fun _ ↦ ⟨fun {F} ↦ ?_⟩⟩
   suffices PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) (compHausLikeToTop P) from
     preservesColimit_of_iso_diagram _ Discrete.natIsoFunctor.symm
   apply preservesColimit_of_preserves_colimit_cocone (CompHausLike.finiteCoproduct.isColimit _)
@@ -240,10 +234,7 @@ def pullback.lift {Z : CompHausLike P} (a : Z ⟶ X) (b : Z ⟶ Y) (w : a ≫ f 
     Z ⟶ pullback f g :=
   TopCat.ofHom
   { toFun := fun z ↦ ⟨⟨a z, b z⟩, by apply_fun (fun q ↦ q z) at w; exact w⟩
-    continuous_toFun := by
-      apply Continuous.subtype_mk
-      rw [continuous_prod_mk]
-      exact ⟨a.hom.continuous, b.hom.continuous⟩ }
+    continuous_toFun := by fun_prop }
 
 @[reassoc (attr := simp)]
 lemma pullback.lift_fst {Z : CompHausLike P} (a : Z ⟶ X) (b : Z ⟶ Y) (w : a ≫ f = b ≫ g) :
@@ -314,7 +305,7 @@ class HasExplicitPullbacks : Prop where
 attribute [instance] HasExplicitPullbacks.hasProp
 
 instance [HasExplicitPullbacks P] : HasPullbacks (CompHausLike P) where
-  has_limit F := hasLimitOfIso (diagramIsoCospan F).symm
+  has_limit F := hasLimit_of_iso (diagramIsoCospan F).symm
 
 variable (P) in
 /--
@@ -371,7 +362,7 @@ section Terminal
 variable {P : TopCat.{u} → Prop}
 
 /-- A one-element space is terminal in `CompHaus` -/
-def isTerminalPUnit [HasProp P PUnit.{u+1}] :
+def isTerminalPUnit [HasProp P PUnit.{u + 1}] :
     IsTerminal (CompHausLike.of P PUnit.{u + 1}) :=
   haveI : ∀ X, Unique (X ⟶ CompHausLike.of P PUnit.{u + 1}) := fun _ ↦
     ⟨⟨ofHom _ ⟨fun _ ↦ PUnit.unit, continuous_const⟩⟩, fun _ ↦ rfl⟩

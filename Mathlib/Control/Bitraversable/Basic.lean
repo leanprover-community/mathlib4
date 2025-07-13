@@ -55,10 +55,9 @@ def bisequence {t m} [Bitraversable t] [Applicative m] {α β} : t (m α) (m β)
 open Functor
 
 /-- Bifunctor. This typeclass asserts that a lawless bitraversable bifunctor is lawful. -/
-class LawfulBitraversable (t : Type u → Type u → Type u) [Bitraversable t] extends
-  LawfulBifunctor t : Prop where
-  -- Porting note: need to specify `m := Id` because `id` no longer has a `Monad` instance
-  id_bitraverse : ∀ {α β} (x : t α β), bitraverse (m := Id) pure pure x = pure x
+class LawfulBitraversable (t : Type u → Type u → Type u) [Bitraversable t] : Prop
+  extends LawfulBifunctor t where
+  id_bitraverse : ∀ {α β} (x : t α β), (bitraverse pure pure x : Id _) = pure x
   comp_bitraverse :
     ∀ {F G} [Applicative F] [Applicative G] [LawfulApplicative F] [LawfulApplicative G]
       {α α' β β' γ γ'} (f : β → F γ) (f' : β' → F γ') (g : α → G β) (g' : α' → G β') (x : t α α'),

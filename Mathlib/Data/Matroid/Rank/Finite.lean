@@ -31,82 +31,85 @@ def IsRkFinite (M : Matroid α) (X : Set α) : Prop := (M ↾ X).RankFinite
 lemma IsRkFinite.rankFinite (hX : M.IsRkFinite X) : (M ↾ X).RankFinite :=
   hX
 
-lemma Basis'.finite_iff_isRkFinite (hI : M.Basis' I X) : I.Finite ↔ M.IsRkFinite X :=
-  ⟨fun h ↦ ⟨I, hI, h⟩, fun (_ : (M ↾ X).RankFinite) ↦ hI.base_restrict.finite⟩
+@[simp] lemma RankFinite.isRkFinite [RankFinite M] (X : Set α) : M.IsRkFinite X :=
+  inferInstanceAs (M ↾ X).RankFinite
 
-alias ⟨_, Basis'.finite_of_isRkFinite⟩ := Basis'.finite_iff_isRkFinite
+lemma IsBasis'.finite_iff_isRkFinite (hI : M.IsBasis' I X) : I.Finite ↔ M.IsRkFinite X :=
+  ⟨fun h ↦ ⟨I, hI, h⟩, fun (_ : (M ↾ X).RankFinite) ↦ hI.isBase_restrict.finite⟩
 
-lemma Basis.finite_iff_isRkFinite (hI : M.Basis I X) : I.Finite ↔ M.IsRkFinite X :=
-  hI.basis'.finite_iff_isRkFinite
+alias ⟨_, IsBasis'.finite_of_isRkFinite⟩ := IsBasis'.finite_iff_isRkFinite
 
-alias ⟨_, Basis.finite_of_isRkFinite⟩ := Basis.finite_iff_isRkFinite
+lemma IsBasis.finite_iff_isRkFinite (hI : M.IsBasis I X) : I.Finite ↔ M.IsRkFinite X :=
+  hI.isBasis'.finite_iff_isRkFinite
 
-lemma Basis'.isRkFinite_of_finite (hI : M.Basis' I X) (hIfin : I.Finite) : M.IsRkFinite X :=
+alias ⟨_, IsBasis.finite_of_isRkFinite⟩ := IsBasis.finite_iff_isRkFinite
+
+lemma IsBasis'.isRkFinite_of_finite (hI : M.IsBasis' I X) (hIfin : I.Finite) : M.IsRkFinite X :=
   ⟨I, hI, hIfin⟩
 
-lemma Basis.isRkFinite_of_finite (hI : M.Basis I X) (hIfin : I.Finite) : M.IsRkFinite X :=
-  ⟨I, hI.basis', hIfin⟩
+lemma IsBasis.isRkFinite_of_finite (hI : M.IsBasis I X) (hIfin : I.Finite) : M.IsRkFinite X :=
+  ⟨I, hI.isBasis', hIfin⟩
 
-/-- A `Basis'` of an `IsRkFinite` set is finite. -/
-lemma IsRkFinite.finite_of_basis' (h : M.IsRkFinite X) (hI : M.Basis' I X) : I.Finite :=
+/-- A basis' of an `IsRkFinite` set is finite. -/
+lemma IsRkFinite.finite_of_isBasis' (h : M.IsRkFinite X) (hI : M.IsBasis' I X) : I.Finite :=
   have := h.rankFinite
-  (base_restrict_iff'.2 hI).finite
+  (isBase_restrict_iff'.2 hI).finite
 
-lemma IsRkFinite.finite_of_basis (h : M.IsRkFinite X) (hI : M.Basis I X) : I.Finite :=
-  h.finite_of_basis' hI.basis'
+lemma IsRkFinite.finite_of_isBasis (h : M.IsRkFinite X) (hI : M.IsBasis I X) : I.Finite :=
+  h.finite_of_isBasis' hI.isBasis'
 
-/-- An `IsRkFinite` set has a finite `Basis'`-/
-lemma IsRkFinite.exists_finite_basis' (h : M.IsRkFinite X) : ∃ I, M.Basis' I X ∧ I.Finite :=
-  h.exists_finite_base
+/-- An `IsRkFinite` set has a finite basis' -/
+lemma IsRkFinite.exists_finite_isBasis' (h : M.IsRkFinite X) : ∃ I, M.IsBasis' I X ∧ I.Finite :=
+  h.exists_finite_isBase
 
-/-- An `IsRkFinite` set has a finset `Basis'` -/
-lemma IsRkFinite.exists_finset_basis' (h : M.IsRkFinite X) : ∃ (I : Finset α), M.Basis' I X :=
-  let ⟨I, hI, hIfin⟩ := h.exists_finite_basis'
+/-- An `IsRkFinite` set has a finset basis' -/
+lemma IsRkFinite.exists_finset_isBasis' (h : M.IsRkFinite X) : ∃ (I : Finset α), M.IsBasis' I X :=
+  let ⟨I, hI, hIfin⟩ := h.exists_finite_isBasis'
   ⟨hIfin.toFinset, by simpa⟩
 
-/-- A set satisfies `IsRkFinite` iff it has a finite `Basis'` -/
-lemma isRkFinite_iff_exists_basis' : M.IsRkFinite X ↔ ∃ I, M.Basis' I X ∧ I.Finite :=
-  ⟨IsRkFinite.exists_finite_basis', fun ⟨_, hIX, hI⟩ ↦ hIX.isRkFinite_of_finite hI⟩
+/-- A set satisfies `IsRkFinite` iff it has a finite basis' -/
+lemma isRkFinite_iff_exists_isBasis' : M.IsRkFinite X ↔ ∃ I, M.IsBasis' I X ∧ I.Finite :=
+  ⟨IsRkFinite.exists_finite_isBasis', fun ⟨_, hIX, hI⟩ ↦ hIX.isRkFinite_of_finite hI⟩
 
 lemma IsRkFinite.subset (h : M.IsRkFinite X) (hXY : Y ⊆ X) : M.IsRkFinite Y := by
-  obtain ⟨I, hI⟩ := M.exists_basis' Y
-  obtain ⟨J, hJ, hIJ⟩ := hI.indep.subset_basis'_of_subset (hI.subset.trans hXY)
+  obtain ⟨I, hI⟩ := M.exists_isBasis' Y
+  obtain ⟨J, hJ, hIJ⟩ := hI.indep.subset_isBasis'_of_subset (hI.subset.trans hXY)
   exact hI.isRkFinite_of_finite <| (hJ.finite_of_isRkFinite h).subset hIJ
 
 @[simp]
 lemma isRkFinite_inter_ground_iff : M.IsRkFinite (X ∩ M.E) ↔ M.IsRkFinite X :=
-  let ⟨_I, hI⟩ := M.exists_basis' X
-  ⟨fun h ↦ hI.isRkFinite_of_finite (hI.basis_inter_ground.finite_of_isRkFinite h),
+  let ⟨_I, hI⟩ := M.exists_isBasis' X
+  ⟨fun h ↦ hI.isRkFinite_of_finite (hI.isBasis_inter_ground.finite_of_isRkFinite h),
     fun h ↦ h.subset inter_subset_left⟩
 
 lemma IsRkFinite.inter_ground (h : M.IsRkFinite X) : M.IsRkFinite (X ∩ M.E) :=
   isRkFinite_inter_ground_iff.2 h
 
 lemma isRkFinite_iff (hX : X ⊆ M.E := by aesop_mat) :
-    M.IsRkFinite X ↔ ∃ I, M.Basis I X ∧ I.Finite := by
-  simp_rw [isRkFinite_iff_exists_basis', M.basis'_iff_basis hX]
+    M.IsRkFinite X ↔ ∃ I, M.IsBasis I X ∧ I.Finite := by
+  simp_rw [isRkFinite_iff_exists_isBasis', M.isBasis'_iff_isBasis hX]
 
 lemma Indep.isRkFinite_iff_finite (hI : M.Indep I) : M.IsRkFinite I ↔ I.Finite :=
-  hI.basis_self.finite_iff_isRkFinite.symm
+  hI.isBasis_self.finite_iff_isRkFinite.symm
 
 alias ⟨Indep.finite_of_isRkFinite, _⟩ := Indep.isRkFinite_iff_finite
 
+@[simp]
 lemma isRkFinite_of_finite (M : Matroid α) (hX : X.Finite) : M.IsRkFinite X :=
-  let ⟨_, hI⟩ := M.exists_basis' X
+  let ⟨_, hI⟩ := M.exists_isBasis' X
   hI.isRkFinite_of_finite (hX.subset hI.subset)
 
-lemma Indep.subset_finite_basis'_of_subset_of_isRkFinite (hI : M.Indep I) (hIX : I ⊆ X)
-    (hX : M.IsRkFinite X) : ∃ J, M.Basis' J X ∧ I ⊆ J ∧ J.Finite :=
-  (hI.subset_basis'_of_subset hIX).imp fun _ hJ => ⟨hJ.1, hJ.2, hJ.1.finite_of_isRkFinite hX⟩
+lemma Indep.subset_finite_isBasis'_of_subset_of_isRkFinite (hI : M.Indep I) (hIX : I ⊆ X)
+    (hX : M.IsRkFinite X) : ∃ J, M.IsBasis' J X ∧ I ⊆ J ∧ J.Finite :=
+  (hI.subset_isBasis'_of_subset hIX).imp fun _ hJ => ⟨hJ.1, hJ.2, hJ.1.finite_of_isRkFinite hX⟩
 
-lemma Indep.subset_finite_basis_of_subset_of_isRkFinite (hI : M.Indep I) (hIX : I ⊆ X)
-    (hX : M.IsRkFinite X) (hXE : X ⊆ M.E := by aesop_mat) : ∃ J, M.Basis J X ∧ I ⊆ J ∧ J.Finite :=
-  (hI.subset_basis_of_subset hIX).imp fun _ hJ => ⟨hJ.1, hJ.2, hJ.1.finite_of_isRkFinite hX⟩
+lemma Indep.subset_finite_isBasis_of_subset_of_isRkFinite (hI : M.Indep I) (hIX : I ⊆ X)
+    (hX : M.IsRkFinite X) (hXE : X ⊆ M.E := by aesop_mat) : ∃ J, M.IsBasis J X ∧ I ⊆ J ∧ J.Finite :=
+  (hI.subset_isBasis_of_subset hIX).imp fun _ hJ => ⟨hJ.1, hJ.2, hJ.1.finite_of_isRkFinite hX⟩
 
-lemma isRkFinite_singleton : M.IsRkFinite {e} :=
-  isRkFinite_of_finite M (finite_singleton e)
+lemma isRkFinite_singleton : M.IsRkFinite {e} := by
+  simp
 
-@[simp]
 lemma IsRkFinite.empty (M : Matroid α) : M.IsRkFinite ∅ :=
   isRkFinite_of_finite M finite_empty
 
@@ -126,8 +129,8 @@ lemma Indep.finite_of_subset_isRkFinite (hI : M.Indep I) (hIX : I ⊆ X) (hX : M
   hX.finite_of_indep_subset hI hIX
 
 lemma IsRkFinite.closure (h : M.IsRkFinite X) : M.IsRkFinite (M.closure X) :=
-  let ⟨_, hI⟩ := M.exists_basis' X
-  hI.basis_closure_right.isRkFinite_of_finite <| hI.finite_of_isRkFinite h
+  let ⟨_, hI⟩ := M.exists_isBasis' X
+  hI.isBasis_closure_right.isRkFinite_of_finite <| hI.finite_of_isRkFinite h
 
 @[simp]
 lemma isRkFinite_closure_iff : M.IsRkFinite (M.closure X) ↔ M.IsRkFinite X := by
@@ -135,8 +138,8 @@ lemma isRkFinite_closure_iff : M.IsRkFinite (M.closure X) ↔ M.IsRkFinite X := 
   exact ⟨fun h ↦ h.subset <| M.inter_ground_subset_closure X, fun h ↦ by simpa using h.closure⟩
 
 lemma IsRkFinite.union (hX : M.IsRkFinite X) (hY : M.IsRkFinite Y) : M.IsRkFinite (X ∪ Y) := by
-  obtain ⟨I, hI, hIfin⟩ := hX.exists_finite_basis'
-  obtain ⟨J, hJ, hJfin⟩ := hY.exists_finite_basis'
+  obtain ⟨I, hI, hIfin⟩ := hX.exists_finite_isBasis'
+  obtain ⟨J, hJ, hJfin⟩ := hY.exists_finite_isBasis'
   rw [← isRkFinite_inter_ground_iff]
   refine (M.isRkFinite_of_finite (hIfin.union hJfin)).closure.subset ?_
   rw [closure_union_congr_left hI.closure_eq_closure,
@@ -173,17 +176,17 @@ lemma IsRkFinite.diff_singleton_iff : M.IsRkFinite (X \ {e}) ↔ M.IsRkFinite X 
   rw [isRkFinite_singleton.isRkFinite_diff_iff]
 
 lemma isRkFinite_set (M : Matroid α) [RankFinite M] (X : Set α) : M.IsRkFinite X :=
-  let ⟨_, hI⟩ := M.exists_basis' X
+  let ⟨_, hI⟩ := M.exists_isBasis' X
   hI.isRkFinite_of_finite hI.indep.finite
 
 /-- A union of finitely many `IsRkFinite` sets is `IsRkFinite`. -/
-lemma IsRkFinite.iUnion {ι : Type*} [Fintype ι] {Xs : ι → Set α} (h : ∀ i, M.IsRkFinite (Xs i)) :
+lemma IsRkFinite.iUnion {ι : Type*} [Finite ι] {Xs : ι → Set α} (h : ∀ i, M.IsRkFinite (Xs i)) :
     M.IsRkFinite (⋃ i, Xs i) := by
-  choose Is hIs using fun i ↦ M.exists_basis' (Xs i)
-  have hfin : (⋃ i, Is i).Finite := finite_iUnion <| fun i ↦ (h i).finite_of_basis' (hIs i)
+  choose Is hIs using fun i ↦ M.exists_isBasis' (Xs i)
+  have hfin : (⋃ i, Is i).Finite := finite_iUnion <| fun i ↦ (h i).finite_of_isBasis' (hIs i)
   refine isRkFinite_inter_ground_iff.1 <| (M.isRkFinite_of_finite hfin).closure.subset ?_
   rw [iUnion_inter, iUnion_subset_iff]
-  exact fun i ↦ (hIs i).basis_inter_ground.subset_closure.trans <| M.closure_subset_closure <|
+  exact fun i ↦ (hIs i).isBasis_inter_ground.subset_closure.trans <| M.closure_subset_closure <|
     subset_iUnion ..
 
 end Matroid

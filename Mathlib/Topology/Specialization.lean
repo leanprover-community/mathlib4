@@ -35,16 +35,16 @@ variable {α β γ : Type*}
 
 -- In Lean 3, `dsimp` would use theorems proved by `Iff.rfl`.
 -- If that were still the case, this would useful as a `@[simp]` lemma,
--- despite the fact that it is provable by `simp` (by not `dsimp`).
+-- despite the fact that it is provable by `simp` (but not `dsimp`).
 @[simp, nolint simpNF] -- See https://github.com/leanprover-community/mathlib4/issues/10675
 lemma toEquiv_inj {a b : α} : toEquiv a = toEquiv b ↔ a = b := Iff.rfl
 
 -- In Lean 3, `dsimp` would use theorems proved by `Iff.rfl`.
 -- If that were still the case, this would useful as a `@[simp]` lemma,
--- despite the fact that it is provable by `simp` (by not `dsimp`).
+-- despite the fact that it is provable by `simp` (but not `dsimp`).
 @[simp, nolint simpNF] -- See https://github.com/leanprover-community/mathlib4/issues/10675
 lemma ofEquiv_inj {a b : Specialization α} : ofEquiv a = ofEquiv b ↔ a = b :=
-Iff.rfl
+  Iff.rfl
 
 /-- A recursor for `Specialization`. Use as `induction x`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]

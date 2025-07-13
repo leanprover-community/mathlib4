@@ -31,15 +31,10 @@ noncomputable instance :
     simp only [ShortComplex.ab_exact_iff_ker_le_range] at hS ⊢
     intro x (hx : _ = _)
     dsimp at hx
-    -- The type ascription around `rfl` works around a `HasForget`/`ConcreteCategory` mismatch,
-    -- and should be removed when `Concrete.colimit_exists_rep` takes `ConcreteCategory`.
-    rcases Concrete.colimit_exists_rep S.X₂ x with ⟨j, y, (rfl : (colimit.ι S.X₂ j) y = _)⟩
+    rcases Concrete.colimit_exists_rep S.X₂ x with ⟨j, y, rfl⟩
     rw [← ConcreteCategory.comp_apply, colimMap_eq, colimit.ι_map, ConcreteCategory.comp_apply,
       ← map_zero (colimit.ι S.X₃ j).hom] at hx
-    -- The type ascription around `hk` works around a `HasForget`/`ConcreteCategory` mismatch,
-    -- and should be removed when `Concrete.colimit_exists_rep` takes `ConcreteCategory`.
-    rcases Concrete.colimit_exists_of_rep_eq.{u, u, u} S.X₃ _ _ hx
-      with ⟨k, e₁, e₂, hk : (S.X₃.map e₁) _ = S.X₃.map e₂ 0⟩
+    rcases Concrete.colimit_exists_of_rep_eq.{u, u, u} S.X₃ _ _ hx with ⟨k, e₁, e₂, hk⟩
     rw [map_zero, ← ConcreteCategory.comp_apply, ← NatTrans.naturality, ConcreteCategory.comp_apply]
       at hk
     rcases hS k hk with ⟨t, ht⟩
@@ -62,7 +57,7 @@ attribute [local instance] Abelian.hasFiniteBiproducts
 instance : AB4 AddCommGrp.{u} := AB4.of_AB5 _
 
 instance : HasExactLimitsOfShape (Discrete J) (AddCommGrp.{u}) := by
-  apply ( config := {allowSynthFailures := true} ) hasExactLimitsOfShape_of_preservesEpi
+  apply (config := { allowSynthFailures := true }) hasExactLimitsOfShape_of_preservesEpi
   exact {
     preserves {X Y} f hf := by
       let iX : limit X ≅ AddCommGrp.of ((i : J) → X.obj ⟨i⟩) := (Pi.isoLimit X).symm ≪≫
@@ -70,7 +65,7 @@ instance : HasExactLimitsOfShape (Discrete J) (AddCommGrp.{u}) := by
       let iY : limit Y ≅ AddCommGrp.of ((i : J) → Y.obj ⟨i⟩) := (Pi.isoLimit Y).symm ≪≫
           (limit.isLimit _).conePointUniqueUpToIso (AddCommGrp.HasLimit.productLimitCone _).isLimit
       have : Pi.map (fun i ↦ f.app ⟨i⟩) = iX.inv ≫ lim.map f ≫ iY.hom := by
-        simp only [Functor.comp_obj, Discrete.functor_obj_eq_as, Discrete.mk_as, Pi.isoLimit,
+        simp only [Discrete.functor_obj_eq_as, Discrete.mk_as, Pi.isoLimit,
           IsLimit.conePointUniqueUpToIso, limit.cone, AddCommGrp.HasLimit.productLimitCone,
           Iso.trans_inv, Functor.mapIso_inv, IsLimit.uniqueUpToIso_inv, Cones.forget_map,
           IsLimit.liftConeMorphism_hom, limit.isLimit_lift, Iso.symm_inv, Functor.mapIso_hom,
@@ -79,8 +74,8 @@ instance : HasExactLimitsOfShape (Discrete J) (AddCommGrp.{u}) := by
           Pi.cone_pt, iX, iY]
         ext g j
         change _ = (_ ≫ limit.π (Discrete.functor fun j ↦ Y.obj { as := j }) ⟨j⟩) _
-        simp only [Discrete.functor_obj_eq_as, Functor.comp_obj, Discrete.mk_as, productIsProduct',
-          limit.lift_π, Fan.mk_pt, Fan.mk_π_app, Pi.map_apply]
+        simp only [Discrete.functor_obj_eq_as, productIsProduct', limit.lift_π, Fan.mk_pt,
+          Fan.mk_π_app, Pi.map_apply]
         change _ = (_ ≫ _ ≫ limit.π Y ⟨j⟩) _
         simp
       suffices Epi (iX.hom ≫ (iX.inv ≫ lim.map f ≫ iY.hom) ≫ iY.inv) by simpa using this

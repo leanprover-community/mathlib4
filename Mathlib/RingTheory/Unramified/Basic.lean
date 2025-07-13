@@ -115,7 +115,7 @@ theorem ext [FormallyUnramified R A] (hI : IsNilpotent I) {g₁ g₂ : A →ₐ[
     (H : ∀ x, Ideal.Quotient.mk I (g₁ x) = Ideal.Quotient.mk I (g₂ x)) : g₁ = g₂ :=
   FormallyUnramified.lift_unique I hI g₁ g₂ (AlgHom.ext H)
 
-theorem lift_unique_of_ringHom [FormallyUnramified R A] {C : Type*} [CommRing C]
+theorem lift_unique_of_ringHom [FormallyUnramified R A] {C : Type*} [Ring C]
     (f : B →+* C) (hf : IsNilpotent <| RingHom.ker f) (g₁ g₂ : A →ₐ[R] B)
     (h : f.comp ↑g₁ = f.comp (g₂ : A →+* B)) : g₁ = g₂ :=
   FormallyUnramified.lift_unique _ hf _ _
@@ -125,15 +125,39 @@ theorem lift_unique_of_ringHom [FormallyUnramified R A] {C : Type*} [CommRing C]
       simpa only [Ideal.Quotient.eq, Function.comp_apply, AlgHom.coe_comp, Ideal.Quotient.mkₐ_eq_mk,
         RingHom.mem_ker, map_sub, sub_eq_zero])
 
-theorem ext' [FormallyUnramified R A] {C : Type*} [CommRing C] (f : B →+* C)
+theorem ext' [FormallyUnramified R A] {C : Type*} [Ring C] (f : B →+* C)
     (hf : IsNilpotent <| RingHom.ker f) (g₁ g₂ : A →ₐ[R] B) (h : ∀ x, f (g₁ x) = f (g₂ x)) :
     g₁ = g₂ :=
   FormallyUnramified.lift_unique_of_ringHom f hf g₁ g₂ (RingHom.ext h)
 
-theorem lift_unique' [FormallyUnramified R A] {C : Type*} [CommRing C]
+theorem lift_unique' [FormallyUnramified R A] {C : Type*} [Ring C]
     [Algebra R C] (f : B →ₐ[R] C) (hf : IsNilpotent <| RingHom.ker (f : B →+* C))
     (g₁ g₂ : A →ₐ[R] B) (h : f.comp g₁ = f.comp g₂) : g₁ = g₂ :=
   FormallyUnramified.ext' _ hf g₁ g₂ (AlgHom.congr_fun h)
+
+theorem ext_of_iInf [FormallyUnramified R A] (hI : ⨅ i, I ^ i = ⊥) {g₁ g₂ : A →ₐ[R] B}
+    (H : ∀ x, Ideal.Quotient.mk I (g₁ x) = Ideal.Quotient.mk I (g₂ x)) : g₁ = g₂ := by
+  have (i : ℕ) :
+      (Ideal.Quotient.mkₐ R (I ^ i)).comp g₁ = (Ideal.Quotient.mkₐ R (I ^ i)).comp g₂ := by
+    by_cases hi : i = 0
+    · ext x
+      have : Subsingleton (B ⧸ I ^ i) := by
+        rw [hi, pow_zero, Ideal.one_eq_top]
+        infer_instance
+      exact Subsingleton.elim _ _
+    apply ext (I.map (algebraMap _ _)) ⟨i, by simp [← Ideal.map_pow]⟩
+    intro x
+    dsimp
+    rw [Ideal.Quotient.eq, ← map_sub, ← Ideal.mem_comap, Ideal.comap_map_of_surjective',
+      sup_eq_left.mpr, ← Ideal.Quotient.eq]
+    · exact H _
+    · simpa using Ideal.pow_le_self hi
+    · exact Ideal.Quotient.mk_surjective
+  ext x
+  rw [← sub_eq_zero, ← Ideal.mem_bot, ← hI, Ideal.mem_iInf]
+  intro i
+  rw [← Ideal.Quotient.eq_zero_iff_mem, map_sub, sub_eq_zero]
+  exact DFunLike.congr_fun (this i) x
 
 end
 
@@ -262,8 +286,8 @@ instance [FormallyUnramified R S] (M : Submonoid S) : FormallyUnramified R (Loca
 /-- This actually does not need the localization instance, and is stated here again for
 consistency. See `Algebra.FormallyUnramified.of_comp` instead.
 
- The intended use is for copying proofs between `Formally{Unramified, Smooth, Etale}`
- without the need to change anything (including removing redundant arguments). -/
+The intended use is for copying proofs between `Formally{Unramified, Smooth, Etale}`
+without the need to change anything (including removing redundant arguments). -/
 -- @[nolint unusedArguments] -- Porting note: removed
 theorem localization_base [FormallyUnramified R Sₘ] : FormallyUnramified Rₘ Sₘ :=
   -- Porting note: added

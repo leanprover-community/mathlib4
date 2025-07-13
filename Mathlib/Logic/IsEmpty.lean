@@ -43,7 +43,8 @@ protected theorem Function.isEmpty [IsEmpty β] (f : α → β) : IsEmpty α :=
 theorem Function.Surjective.isEmpty [IsEmpty α] {f : α → β} (hf : f.Surjective) : IsEmpty β :=
   ⟨fun y ↦ let ⟨x, _⟩ := hf y; IsEmpty.false x⟩
 
-instance {p : α → Sort*} [h : Nonempty α] [∀ x, IsEmpty (p x)] : IsEmpty (∀ x, p x) :=
+-- See note [instance argument order]
+instance {p : α → Sort*} [∀ x, IsEmpty (p x)] [h : Nonempty α] : IsEmpty (∀ x, p x) :=
   h.elim fun x ↦ Function.isEmpty <| Function.eval x
 
 instance PProd.isEmpty_left [IsEmpty α] : IsEmpty (PProd α β) :=
@@ -106,7 +107,7 @@ protected def elim {α : Sort u} (_ : IsEmpty α) {p : α → Sort*} (a : α) : 
   isEmptyElim a
 
 /-- Non-dependent version of `IsEmpty.elim`. Helpful if the elaborator cannot elaborate `h.elim a`
-  correctly. -/
+correctly. -/
 protected def elim' {β : Sort*} (h : IsEmpty α) (a : α) : β :=
   (h.false a).elim
 
@@ -221,7 +222,7 @@ theorem rightTotal_empty [IsEmpty β] : RightTotal R := by
   simp only [RightTotal, IsEmpty.forall_iff]
 
 theorem rightTotal_iff_isEmpty_right [IsEmpty α] : RightTotal R ↔ IsEmpty β := by
-  simp only [RightTotal, IsEmpty.exists_iff, isEmpty_iff, imp_self]
+  simp only [RightTotal, IsEmpty.exists_iff, isEmpty_iff]
 
 @[simp]
 theorem biTotal_empty [IsEmpty α] [IsEmpty β] : BiTotal R :=

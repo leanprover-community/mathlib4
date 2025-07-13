@@ -19,7 +19,7 @@ This file implements the reconstruction.
 The public facing declaration in this file is `proveFalseByLinarith`.
 -/
 
-open Lean Elab Tactic Meta Mathlib
+open Lean Elab Tactic Meta
 
 namespace Qq
 
@@ -38,7 +38,7 @@ def ofNatQ (α : Q(Type $u)) (_ : Q(Semiring $α)) (n : ℕ) : Q($α) :=
 
 end Qq
 
-namespace Linarith
+namespace Mathlib.Tactic.Linarith
 
 open Ineq
 open Qq
@@ -64,12 +64,12 @@ def mulExpr (n : ℕ) (e : Expr) : MetaM Expr := do
 def addExprs' {u : Level} {α : Q(Type $u)} (_inst : Q(AddMonoid $α)) : List Q($α) → Q($α)
   | []   => q(0)
   | h::t => go h t
-    where
-    /-- Inner loop for `addExprs'`. -/
-    go (p : Q($α)) : List Q($α) → Q($α)
-    | [] => p
-    | [q] => q($p + $q)
-    | q::t => go q($p + $q) t
+where
+  /-- Inner loop for `addExprs'`. -/
+  go (p : Q($α)) : List Q($α) → Q($α)
+  | [] => p
+  | [q] => q($p + $q)
+  | q::t => go q($p + $q) t
 
 /-- `addExprs L` creates an `Expr` representing the sum of the elements of `L`, associated left. -/
 def addExprs : List Expr → MetaM Expr
@@ -110,16 +110,16 @@ def mkLTZeroProof : List (Expr × ℕ) → MetaM Expr
       let (iq, h') ← mkSingleCompZeroOf c h
       let (_, t) ← t.foldlM (fun pr ce ↦ step pr.1 pr.2 ce.1 ce.2) (iq, h')
       return t
-  where
-    /--
-    `step c pf npf coeff` assumes that `pf` is a proof of `t1 R1 0` and `npf` is a proof
-    of `t2 R2 0`. It uses `mkSingleCompZeroOf` to prove `t1 + coeff*t2 R 0`, and returns `R`
-    along with this proof.
-    -/
-    step (c : Ineq) (pf npf : Expr) (coeff : ℕ) : MetaM (Ineq × Expr) := do
-      let (iq, h') ← mkSingleCompZeroOf coeff npf
-      let (nm, niq) := addIneq c iq
-      return (niq, ← mkAppM nm #[pf, h'])
+where
+  /--
+  `step c pf npf coeff` assumes that `pf` is a proof of `t1 R1 0` and `npf` is a proof
+  of `t2 R2 0`. It uses `mkSingleCompZeroOf` to prove `t1 + coeff*t2 R 0`, and returns `R`
+  along with this proof.
+  -/
+  step (c : Ineq) (pf npf : Expr) (coeff : ℕ) : MetaM (Ineq × Expr) := do
+    let (iq, h') ← mkSingleCompZeroOf coeff npf
+    let (nm, niq) := addIneq c iq
+    return (niq, ← mkAppM nm #[pf, h'])
 
 /-- If `prf` is a proof of `t R s`, `leftOfIneqProof prf` returns `t`. -/
 def leftOfIneqProof (prf : Expr) : MetaM Expr := do
@@ -136,7 +136,7 @@ def typeOfIneqProof (prf : Expr) : MetaM Expr := do
 where the numerals are natively of type `tp`.
 -/
 def mkNegOneLtZeroProof (tp : Expr) : MetaM Expr := do
-  let zero_lt_one ← mkAppOptM ``Linarith.zero_lt_one #[tp, none]
+  let zero_lt_one ← mkAppOptM ``Linarith.zero_lt_one #[tp, none, none, none]
   mkAppM `neg_neg_of_pos #[zero_lt_one]
 
 /--
@@ -239,4 +239,4 @@ where
   detailTrace {α} (s : String) (f : MetaM α) : MetaM α :=
     withTraceNode `linarith.detail (return m!"{exceptEmoji ·} {s}") f
 
-end Linarith
+end Mathlib.Tactic.Linarith

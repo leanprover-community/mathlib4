@@ -9,6 +9,7 @@ import Mathlib.Data.Ordering.Basic
 import Mathlib.Order.MinMax
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Use
+import Mathlib.Algebra.Regular.Basic
 
 /-!
 # Ordered monoids
@@ -281,7 +282,7 @@ theorem mul_right_cancel'' [MulRightReflectLE α] {a b c : α}
   haveI := mulRightMono_of_mulRightStrictMono α
   refine ⟨fun h ↦ ?_, by rintro ⟨rfl, rfl⟩; rfl⟩
   simp only [eq_iff_le_not_lt, ha, hb, true_and]
-  refine ⟨fun ha ↦ h.not_lt ?_, fun hb ↦ h.not_lt ?_⟩
+  refine ⟨fun ha ↦ h.not_gt ?_, fun hb ↦ h.not_gt ?_⟩
   exacts [mul_lt_mul_of_lt_of_le ha hb, mul_lt_mul_of_le_of_lt ha hb]
 
 @[to_additive] theorem mul_eq_mul_iff_eq_and_eq [MulLeftStrictMono α]
@@ -313,6 +314,18 @@ end PartialOrder
 
 section LinearOrder
 variable [LinearOrder α] {a b c d : α}
+
+@[to_additive]
+theorem trichotomy_of_mul_eq_mul
+    [MulLeftStrictMono α] [MulRightStrictMono α]
+    (h : a * b = c * d) : (a = c ∧ b = d) ∨ a < c ∨ b < d := by
+  obtain hac | rfl | hca := lt_trichotomy a c
+  · right; left; exact hac
+  · left; simpa using mul_right_inj_of_comparable (LinearOrder.le_total d b)|>.1 h
+  · obtain hbd | rfl | hdb := lt_trichotomy b d
+    · right; right; exact hbd
+    · exact False.elim <| ne_of_lt (mul_lt_mul_right' hca b) h.symm
+    · exact False.elim <| ne_of_lt (mul_lt_mul_of_lt_of_lt hca hdb) h.symm
 
 @[to_additive]
 lemma mul_max [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) :
@@ -1031,11 +1044,11 @@ variable [MulLeftMono α] {a b : α}
 
 @[to_additive eq_zero_of_add_nonneg_left]
 theorem eq_one_of_one_le_mul_left (ha : a ≤ 1) (hb : b ≤ 1) (hab : 1 ≤ a * b) : a = 1 :=
-  ha.eq_of_not_lt fun h => hab.not_lt <| mul_lt_one_of_lt_of_le h hb
+  ha.eq_of_not_lt fun h => hab.not_gt <| mul_lt_one_of_lt_of_le h hb
 
 @[to_additive]
 theorem eq_one_of_mul_le_one_left (ha : 1 ≤ a) (hb : 1 ≤ b) (hab : a * b ≤ 1) : a = 1 :=
-  ha.eq_of_not_gt fun h => hab.not_lt <| one_lt_mul_of_lt_of_le' h hb
+  ha.eq_of_not_lt' fun h => hab.not_gt <| one_lt_mul_of_lt_of_le' h hb
 
 end Left
 
@@ -1045,11 +1058,11 @@ variable [MulRightMono α] {a b : α}
 
 @[to_additive eq_zero_of_add_nonneg_right]
 theorem eq_one_of_one_le_mul_right (ha : a ≤ 1) (hb : b ≤ 1) (hab : 1 ≤ a * b) : b = 1 :=
-  hb.eq_of_not_lt fun h => hab.not_lt <| Right.mul_lt_one_of_le_of_lt ha h
+  hb.eq_of_not_lt fun h => hab.not_gt <| Right.mul_lt_one_of_le_of_lt ha h
 
 @[to_additive]
 theorem eq_one_of_mul_le_one_right (ha : 1 ≤ a) (hb : 1 ≤ b) (hab : a * b ≤ 1) : b = 1 :=
-  hb.eq_of_not_gt fun h => hab.not_lt <| Right.one_lt_mul_of_le_of_lt ha h
+  hb.eq_of_not_lt' fun h => hab.not_gt <| Right.one_lt_mul_of_le_of_lt ha h
 
 end Right
 
@@ -1344,7 +1357,7 @@ theorem Contravariant.MulLECancellable [Mul α] [LE α] [MulLeftReflectLE α]
   fun _ _ => le_of_mul_le_mul_left'
 
 @[to_additive (attr := simp)]
-theorem mulLECancellable_one [Monoid α] [LE α] : MulLECancellable (1 : α) := fun a b => by
+theorem mulLECancellable_one [MulOneClass α] [LE α] : MulLECancellable (1 : α) := fun a b => by
   simpa only [one_mul] using id
 
 namespace MulLECancellable
@@ -1353,6 +1366,11 @@ namespace MulLECancellable
 protected theorem Injective [Mul α] [PartialOrder α] {a : α} (ha : MulLECancellable a) :
     Injective (a * ·) :=
   fun _ _ h => le_antisymm (ha h.le) (ha h.ge)
+
+@[to_additive]
+protected theorem isLeftRegular [Mul α] [PartialOrder α] {a : α}
+    (ha : MulLECancellable a) : IsLeftRegular a :=
+  ha.Injective
 
 @[to_additive]
 protected theorem inj [Mul α] [PartialOrder α] {a b c : α} (ha : MulLECancellable a) :

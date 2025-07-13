@@ -186,11 +186,13 @@ theorem coeff_zero (g : G) : coeff (0 : SkewMonoidAlgebra k G) g = 0 := rfl
 @[simp]
 theorem mem_support_iff {f : SkewMonoidAlgebra k G} {a : G} : a ∈ f.support ↔ f.coeff a ≠ 0 := by
   rcases f with ⟨⟩
-  simp only [coeff, support_ofFinsupp, Finsupp.mem_support_iff, ne_eq, implies_true]
+  simp only [coeff, support_ofFinsupp, Finsupp.mem_support_iff, ne_eq]
 
-theorem not_mem_support_iff {f : SkewMonoidAlgebra k G} {a : G} :
+theorem notMem_support_iff {f : SkewMonoidAlgebra k G} {a : G} :
     a ∉ f.support ↔ f.coeff a = 0 := by
   simp only [mem_support_iff, ne_eq, not_not]
+
+@[deprecated (since := "2025-05-23")] alias not_mem_support_iff := notMem_support_iff
 
 theorem ext_iff {p q : SkewMonoidAlgebra k G} : p = q ↔ ∀ n, coeff p n = coeff q n := by
   rcases p with ⟨f : G →₀ k⟩
@@ -258,8 +260,6 @@ to `SkewMonoidAlgebra`. -/
 def toFinsuppAddEquiv : SkewMonoidAlgebra k G ≃+ (G →₀ k) where
   toFun        := toFinsupp
   invFun       := ofFinsupp
-  left_inv     := fun ⟨_p⟩ ↦ rfl
-  right_inv _p := rfl
   map_add'     := toFinsupp_add
 
 theorem smul_single {S} [SMulZeroClass S k] (s : S) (a : G) (b : k) :
@@ -301,7 +301,7 @@ theorem ofFinsupp_eq_one {a} :
     (⟨a⟩ : SkewMonoidAlgebra k G) = 1 ↔ a = Finsupp.single 1 1 := by
   rw [← ofFinsupp_one, ofFinsupp_inj]
 
-theorem single_one_one  : single 1 (1 : k) = 1 := rfl
+theorem single_one_one : single 1 (1 : k) = 1 := rfl
 
 theorem one_def : (1 : SkewMonoidAlgebra k G) = single 1 1 := rfl
 
@@ -350,7 +350,7 @@ theorem toFinsupp_sum' {k' G' : Type*} [AddCommMonoid k'] (f : SkewMonoidAlgebra
   _root_.map_sum toFinsuppAddEquiv (fun a ↦ g a (f.coeff a)) f.toFinsupp.support
 
 theorem ofFinsupp_sum {k' G' : Type*} [AddCommMonoid k'] (f : G →₀ k)
-    (g : G → k → G' →₀ k'):
+    (g : G → k → G' →₀ k') :
     (⟨Finsupp.sum f g⟩ : SkewMonoidAlgebra k' G') = sum ⟨f⟩ (⟨g · ·⟩) := by
   apply toFinsupp_injective; simp only [toFinsupp_sum']
 
@@ -413,7 +413,7 @@ theorem mul_sum {S : Type*} [NonUnitalNonAssocSemiring S] (b : S) (s : SkewMonoi
 theorem sum_ite_eq' {N : Type*} [AddCommMonoid N] [DecidableEq G] (f : SkewMonoidAlgebra k G)
     (a : G) (b : G → k → N) : (f.sum fun (x : G) (v : k) ↦ if x = a then b x v else 0) =
       if a ∈ f.support then b a (f.coeff a) else 0 := by
-  simp only [sum_def', Finsupp.sum, f.toFinsupp.support.sum_ite_eq', support]
+  simp only [sum_def', f.toFinsupp.support.sum_ite_eq', support]
 
 theorem smul_sum {M : Type*} {R : Type*} [AddCommMonoid M] [DistribSMul R M]
     {v : SkewMonoidAlgebra k G} {c : R} {h : G → k → M} :

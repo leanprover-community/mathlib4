@@ -161,8 +161,8 @@ def maxTrivHom (f : M →ₗ⁅R,L⁆ N) : maxTrivSubmodule R L M →ₗ⁅R,L�
   toFun m := ⟨f m, fun x =>
     (LieModuleHom.map_lie _ _ _).symm.trans <|
       (congr_arg f (m.property x)).trans (LieModuleHom.map_zero _)⟩
-  map_add' m n := by ext; simp [Function.comp_apply]
-  map_smul' t m := by ext; simp [Function.comp_apply]
+  map_add' m n := by ext; simp
+  map_smul' t m := by ext; simp
   map_lie' {x m} := by simp
 
 @[norm_cast, simp]
@@ -175,8 +175,8 @@ def maxTrivEquiv (e : M ≃ₗ⁅R,L⁆ N) : maxTrivSubmodule R L M ≃ₗ⁅R,L
   { maxTrivHom (e : M →ₗ⁅R,L⁆ N) with
     toFun := maxTrivHom (e : M →ₗ⁅R,L⁆ N)
     invFun := maxTrivHom (e.symm : N →ₗ⁅R,L⁆ M)
-    left_inv := fun m => by ext; simp [LieModuleEquiv.coe_toLieModuleHom]
-    right_inv := fun n => by ext; simp [LieModuleEquiv.coe_toLieModuleHom] }
+    left_inv := fun m => by ext; simp
+    right_inv := fun n => by ext; simp }
 
 @[norm_cast, simp]
 theorem coe_maxTrivEquiv_apply (e : M ≃ₗ⁅R,L⁆ N) (m : maxTrivSubmodule R L M) :

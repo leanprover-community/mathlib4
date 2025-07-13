@@ -14,12 +14,12 @@ import Mathlib.Data.Matrix.Diagonal
 This file defines vector and matrix multiplication
 
 ## Main definitions
- * `dotProduct`: the dot product between two vectors
- * `Matrix.mul`: multiplication of two matrices
- * `Matrix.mulVec`: multiplication of a matrix with a vector
- * `Matrix.vecMul`: multiplication of a vector with a matrix
- * `Matrix.vecMulVec`: multiplication of a vector with a vector to get a matrix
- * `Matrix.instRing`: square matrices form a ring
+* `dotProduct`: the dot product between two vectors
+* `Matrix.mul`: multiplication of two matrices
+* `Matrix.mulVec`: multiplication of a matrix with a vector
+* `Matrix.vecMul`: multiplication of a vector with a matrix
+* `Matrix.vecMulVec`: multiplication of a vector with a vector to get a matrix
+* `Matrix.instRing`: square matrices form a ring
 
 ## Notation
 
@@ -59,7 +59,9 @@ section DotProduct
 
 variable [Fintype m] [Fintype n]
 
-/-- `dotProduct v w` is the sum of the entrywise products `v i * w i` -/
+/-- `dotProduct v w` is the sum of the entrywise products `v i * w i`.
+
+See also `dotProductEquiv`. -/
 def dotProduct [Mul α] [AddCommMonoid α] (v w : m → α) : α :=
   ∑ i, v i * w i
 
@@ -76,7 +78,7 @@ theorem dotProduct_assoc [NonUnitalSemiring α] (u : m → α) (w : n → α) (v
 
 @[deprecated (since := "2024-12-12")] protected alias Matrix.dotProduct_assoc := dotProduct_assoc
 
-theorem dotProduct_comm [AddCommMonoid α] [CommSemigroup α] (v w : m → α) : v ⬝ᵥ w = w ⬝ᵥ v := by
+theorem dotProduct_comm [AddCommMonoid α] [CommMagma α] (v w : m → α) : v ⬝ᵥ w = w ⬝ᵥ v := by
   simp_rw [dotProduct, mul_comm]
 
 @[deprecated (since := "2024-12-12")] protected alias Matrix.dotProduct_comm := dotProduct_comm
@@ -140,11 +142,13 @@ theorem dotProduct_add : u ⬝ᵥ (v + w) = u ⬝ᵥ v + u ⬝ᵥ w := by
 @[deprecated (since := "2024-12-12")] protected alias Matrix.dotProduct_add := dotProduct_add
 
 @[simp]
-theorem sum_elim_dotProduct_sum_elim : Sum.elim u x ⬝ᵥ Sum.elim v y = u ⬝ᵥ v + x ⬝ᵥ y := by
+theorem sumElim_dotProduct_sumElim : Sum.elim u x ⬝ᵥ Sum.elim v y = u ⬝ᵥ v + x ⬝ᵥ y := by
   simp [dotProduct]
 
 @[deprecated (since := "2024-12-12")]
-protected alias Matrix.sum_elim_dotProduct_sum_elim := sum_elim_dotProduct_sum_elim
+protected alias Matrix.sum_elim_dotProduct_sum_elim := sumElim_dotProduct_sumElim
+@[deprecated (since := "2025-02-21")]
+alias sum_elim_dotProduct_sum_elim := sumElim_dotProduct_sumElim
 
 /-- Permuting a vector on the left of a dot product can be transferred to the right. -/
 @[simp]
@@ -166,8 +170,7 @@ protected alias Matrix.dotProduct_comp_equiv_symm := dotProduct_comp_equiv_symm
 /-- Permuting vectors on both sides of a dot product is a no-op. -/
 @[simp]
 theorem comp_equiv_dotProduct_comp_equiv (e : m ≃ n) : x ∘ e ⬝ᵥ y ∘ e = x ⬝ᵥ y := by
-  -- Porting note: was `simp only` with all three lemmas
-  rw [← dotProduct_comp_equiv_symm]; simp only [Function.comp_def, Equiv.apply_symm_apply]
+  simp [← dotProduct_comp_equiv_symm, Function.comp_def _ e.symm]
 
 @[deprecated (since := "2024-12-12")]
 protected alias Matrix.comp_equiv_dotProduct_comp_equiv := comp_equiv_dotProduct_comp_equiv
@@ -207,8 +210,8 @@ protected alias Matrix.dotProduct_diagonal' := dotProduct_diagonal'
 
 @[simp]
 theorem single_dotProduct (x : α) (i : m) : Pi.single i x ⬝ᵥ v = x * v i := by
-  -- Porting note: (implicit arg) added `(f := fun _ => α)`
-  have : ∀ j ≠ i, Pi.single (f := fun _ => α) i x j * v j = 0 := fun j hij => by
+-- Porting note: added `(_ : m → α)`
+  have : ∀ j ≠ i, (Pi.single i x : m → α) j * v j = 0 := fun j hij => by
     simp [Pi.single_eq_of_ne hij]
   convert Finset.sum_eq_single i (fun j _ => this j) _ using 1 <;> simp
 
@@ -216,8 +219,8 @@ theorem single_dotProduct (x : α) (i : m) : Pi.single i x ⬝ᵥ v = x * v i :=
 
 @[simp]
 theorem dotProduct_single (x : α) (i : m) : v ⬝ᵥ Pi.single i x = v i * x := by
-  -- Porting note: (implicit arg) added `(f := fun _ => α)`
-  have : ∀ j ≠ i, v j * Pi.single (f := fun _ => α) i x j = 0 := fun j hij => by
+-- Porting note: added `(_ : m → α)`
+  have : ∀ j ≠ i, v j * (Pi.single i x : m → α) j = 0 := fun j hij => by
     simp [Pi.single_eq_of_ne hij]
   convert Finset.sum_eq_single i (fun j _ => this j) _ using 1 <;> simp
 
@@ -237,14 +240,14 @@ theorem one_dotProduct_one : (1 : n → α) ⬝ᵥ 1 = Fintype.card n := by
 protected alias Matrix.one_dotProduct_one := one_dotProduct_one
 
 theorem dotProduct_single_one [DecidableEq n] (v : n → α) (i : n) :
-    dotProduct v (Pi.single i 1) = v i := by
+    v ⬝ᵥ Pi.single i 1 = v i := by
   rw [dotProduct_single, mul_one]
 
 @[deprecated (since := "2024-12-12")]
 protected alias Matrix.dotProduct_single_one := dotProduct_single_one
 
 theorem single_one_dotProduct [DecidableEq n] (i : n) (v : n → α) :
-    dotProduct (Pi.single i 1) v = v i := by
+    Pi.single i 1 ⬝ᵥ v = v i := by
   rw [single_dotProduct, one_mul]
 
 @[deprecated (since := "2024-12-12")]
@@ -325,10 +328,10 @@ theorem mul_apply [Fintype m] [Mul α] [AddCommMonoid α] {M : Matrix l m α} {N
 instance [Fintype n] [Mul α] [AddCommMonoid α] : Mul (Matrix n n α) where mul M N := M * N
 
 theorem mul_apply' [Fintype m] [Mul α] [AddCommMonoid α] {M : Matrix l m α} {N : Matrix m n α}
-    {i k} : (M * N) i k = (fun j => M i j) ⬝ᵥ fun j => N j k :=
+    {i k} : (M * N) i k = (M i) ⬝ᵥ fun j => N j k :=
   rfl
 
-theorem two_mul_expl {R : Type*} [CommRing R] (A B : Matrix (Fin 2) (Fin 2) R) :
+theorem two_mul_expl {R : Type*} [NonUnitalNonAssocSemiring R] (A B : Matrix (Fin 2) (Fin 2) R) :
     (A * B) 0 0 = A 0 0 * B 0 0 + A 0 1 * B 1 0 ∧
     (A * B) 0 1 = A 0 0 * B 0 1 + A 0 1 * B 1 1 ∧
     (A * B) 1 0 = A 1 0 * B 0 0 + A 1 1 * B 1 0 ∧
@@ -475,7 +478,7 @@ instance nonAssocSemiring [Fintype n] [DecidableEq n] : NonAssocSemiring (Matrix
     mul_one := Matrix.mul_one }
 
 @[simp]
-theorem map_mul [Fintype n] {L : Matrix m n α} {M : Matrix n o α} [NonAssocSemiring β]
+protected theorem map_mul [Fintype n] {L : Matrix m n α} {M : Matrix n o α} [NonAssocSemiring β]
     {f : α →+* β} : (L * M).map f = L.map f * M.map f := by
   ext
   simp [mul_apply, map_sum]
@@ -586,13 +589,20 @@ open Matrix
 namespace Matrix
 
 /-- For two vectors `w` and `v`, `vecMulVec w v i j` is defined to be `w i * v j`.
-    Put another way, `vecMulVec w v` is exactly `col w * row v`. -/
+Put another way, `vecMulVec w v` is exactly `replicateCol ι w * replicateRow ι v` for
+`Unique ι`; see `vecMulVec_eq`. -/
 def vecMulVec [Mul α] (w : m → α) (v : n → α) : Matrix m n α :=
   of fun x y => w x * v y
 
 -- TODO: set as an equation lemma for `vecMulVec`, see https://github.com/leanprover-community/mathlib4/pull/3024
 theorem vecMulVec_apply [Mul α] (w : m → α) (v : n → α) (i j) : vecMulVec w v i j = w i * v j :=
   rfl
+
+lemma row_vecMulVec [Mul α] (w : m → α) (v : n → α) (i : m) :
+    (vecMulVec w v).row i = w i • v := rfl
+
+lemma col_vecMulVec [Mul α] (w : m → α) (v : n → α) (j : n) :
+    (vecMulVec w v).col j = MulOpposite.op (v j) • w := rfl
 
 section NonUnitalNonAssocSemiring
 
@@ -708,13 +718,13 @@ theorem add_vecMul [Fintype m] (A : Matrix m n α) (x y : m → α) :
   ext
   apply add_dotProduct
 
-theorem vecMul_smul [Fintype n] [Monoid R] [NonUnitalNonAssocSemiring S] [DistribMulAction R S]
+theorem vecMul_smul [Fintype n] [NonUnitalNonAssocSemiring S] [DistribSMul R S]
     [IsScalarTower R S S] (M : Matrix n m S) (b : R) (v : n → S) :
     (b • v) ᵥ* M = b • v ᵥ* M := by
   ext i
   simp only [vecMul, dotProduct, Finset.smul_sum, Pi.smul_apply, smul_mul_assoc]
 
-theorem mulVec_smul [Fintype n] [Monoid R] [NonUnitalNonAssocSemiring S] [DistribMulAction R S]
+theorem mulVec_smul [Fintype n] [NonUnitalNonAssocSemiring S] [DistribSMul R S]
     [SMulCommClass R S S] (M : Matrix m n S) (b : R) (v : n → S) :
     M *ᵥ (b • v) = b • M *ᵥ v := by
   ext i
@@ -722,21 +732,21 @@ theorem mulVec_smul [Fintype n] [Monoid R] [NonUnitalNonAssocSemiring S] [Distri
 
 @[simp]
 theorem mulVec_single [Fintype n] [DecidableEq n] [NonUnitalNonAssocSemiring R] (M : Matrix m n R)
-    (j : n) (x : R) : M *ᵥ Pi.single j x = MulOpposite.op x • Mᵀ j :=
+    (j : n) (x : R) : M *ᵥ Pi.single j x = MulOpposite.op x • M.col j :=
   funext fun _ => dotProduct_single _ _ _
 
 @[simp]
 theorem single_vecMul [Fintype m] [DecidableEq m] [NonUnitalNonAssocSemiring R] (M : Matrix m n R)
-    (i : m) (x : R) : Pi.single i x ᵥ* M = x • M i :=
+    (i : m) (x : R) : Pi.single i x ᵥ* M = x • M.row i :=
   funext fun _ => single_dotProduct _ _ _
 
 theorem mulVec_single_one [Fintype n] [DecidableEq n] [NonAssocSemiring R]
     (M : Matrix m n R) (j : n) :
-    M *ᵥ Pi.single j 1 = Mᵀ j := by ext; simp
+    M *ᵥ Pi.single j 1 = M.col j := by ext; simp
 
 theorem single_one_vecMul [Fintype m] [DecidableEq m] [NonAssocSemiring R]
     (i : m) (M : Matrix m n R) :
-    Pi.single i 1 ᵥ* M = M i := by ext; simp
+    Pi.single i 1 ᵥ* M = M.row i := by ext; simp
 
 theorem diagonal_mulVec_single [Fintype n] [DecidableEq n] [NonUnitalNonAssocSemiring R] (v : n → R)
     (j : n) (x : R) : diagonal v *ᵥ Pi.single j x = Pi.single j (v j * x) := by
@@ -850,22 +860,22 @@ section NonUnitalNonAssocRing
 
 variable [NonUnitalNonAssocRing α]
 
-theorem neg_vecMul [Fintype m] (v : m → α) (A : Matrix m n α) : (-v) ᵥ* A = - (v ᵥ* A) := by
+theorem neg_vecMul [Fintype m] (v : m → α) (A : Matrix m n α) : (-v) ᵥ* A = -(v ᵥ* A) := by
   ext
   apply neg_dotProduct
 
-theorem vecMul_neg [Fintype m] (v : m → α) (A : Matrix m n α) : v ᵥ* (-A) = - (v ᵥ* A) := by
+theorem vecMul_neg [Fintype m] (v : m → α) (A : Matrix m n α) : v ᵥ* (-A) = -(v ᵥ* A) := by
   ext
   apply dotProduct_neg
 
 lemma neg_vecMul_neg [Fintype m] (v : m → α) (A : Matrix m n α) : (-v) ᵥ* (-A) = v ᵥ* A := by
   rw [vecMul_neg, neg_vecMul, neg_neg]
 
-theorem neg_mulVec [Fintype n] (v : n → α) (A : Matrix m n α) : (-A) *ᵥ v = - (A *ᵥ v) := by
+theorem neg_mulVec [Fintype n] (v : n → α) (A : Matrix m n α) : (-A) *ᵥ v = -(A *ᵥ v) := by
   ext
   apply neg_dotProduct
 
-theorem mulVec_neg [Fintype n] (v : n → α) (A : Matrix m n α) : A *ᵥ (-v) = - (A *ᵥ v) := by
+theorem mulVec_neg [Fintype n] (v : n → α) (A : Matrix m n α) : A *ᵥ (-v) = -(A *ᵥ v) := by
   ext
   apply dotProduct_neg
 
@@ -960,7 +970,7 @@ section Transpose
 open Matrix
 
 @[simp]
-theorem transpose_mul [AddCommMonoid α] [CommSemigroup α] [Fintype n] (M : Matrix m n α)
+theorem transpose_mul [AddCommMonoid α] [CommMagma α] [Fintype n] (M : Matrix m n α)
     (N : Matrix n l α) : (M * N)ᵀ = Nᵀ * Mᵀ := by
   ext
   apply dotProduct_comm
@@ -1047,7 +1057,7 @@ theorem map_dotProduct [NonAssocSemiring R] [NonAssocSemiring S] (f : R →+* S)
   simp only [dotProduct, map_sum f, f.map_mul, Function.comp]
 
 theorem map_vecMul [NonAssocSemiring R] [NonAssocSemiring S] (f : R →+* S) (M : Matrix n m R)
-    (v : n → R) (i : m) : f ((v ᵥ* M) i) =  ((f ∘ v) ᵥ* M.map f) i := by
+    (v : n → R) (i : m) : f ((v ᵥ* M) i) = ((f ∘ v) ᵥ* M.map f) i := by
   simp only [Matrix.vecMul, Matrix.map_apply, RingHom.map_dotProduct, Function.comp_def]
 
 theorem map_mulVec [NonAssocSemiring R] [NonAssocSemiring S] (f : R →+* S) (M : Matrix m n R)

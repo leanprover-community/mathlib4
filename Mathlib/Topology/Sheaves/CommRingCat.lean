@@ -95,6 +95,7 @@ variable {X : TopCat.{w}} {C : Type u} [Category.{v} C]
 -- note: this was specialized to `CommRingCat` in #19757
 /-- A subpresheaf with a submonoid structure on each of the components. -/
 structure SubmonoidPresheaf (F : X.Presheaf CommRingCat) where
+  /-- The submonoid structure for each component -/
   obj : ∀ U, Submonoid (F.obj U)
   map : ∀ {U V : (Opens X)ᵒᵖ} (i : U ⟶ V), obj U ≤ (obj V).comap (F.map i).hom
 
@@ -157,7 +158,8 @@ noncomputable def totalQuotientPresheaf : X.Presheaf CommRingCat.{w} :=
 noncomputable def toTotalQuotientPresheaf : F ⟶ F.totalQuotientPresheaf :=
   SubmonoidPresheaf.toLocalizationPresheaf _
 
--- Porting note: deriving `Epi` failed
+-- The following instance should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 instance : Epi (toTotalQuotientPresheaf F) := epi_toLocalizationPresheaf _
 
 instance (F : X.Sheaf CommRingCat.{w}) : Mono F.presheaf.toTotalQuotientPresheaf := by
@@ -373,7 +375,7 @@ theorem objSupIsoProdEqLocus_inv_eq_iff {X : TopCat.{u}} (F : X.Sheaf CommRingCa
   constructor
   · rintro rfl
     rw [← TopCat.Sheaf.objSupIsoProdEqLocus_inv_fst, ← TopCat.Sheaf.objSupIsoProdEqLocus_inv_snd]
-    simp only [← CommRingCat.comp_apply, ← Functor.map_comp, ← op_comp, Category.assoc,
+    simp only [← CommRingCat.comp_apply, ← Functor.map_comp, ← op_comp,
       homOfLE_comp, and_self]
   · rintro ⟨e₁, e₂⟩
     refine F.eq_of_locally_eq₂
@@ -381,10 +383,10 @@ theorem objSupIsoProdEqLocus_inv_eq_iff {X : TopCat.{u}} (F : X.Sheaf CommRingCa
     · rw [← inf_sup_right]
       exact le_inf e le_rfl
     · rw [← e₁, ← TopCat.Sheaf.objSupIsoProdEqLocus_inv_fst]
-      simp only [← CommRingCat.comp_apply, ← Functor.map_comp, ← op_comp, Category.assoc,
+      simp only [← CommRingCat.comp_apply, ← Functor.map_comp, ← op_comp,
         homOfLE_comp]
     · rw [← e₂, ← TopCat.Sheaf.objSupIsoProdEqLocus_inv_snd]
-      simp only [← CommRingCat.comp_apply, ← Functor.map_comp, ← op_comp, Category.assoc,
+      simp only [← CommRingCat.comp_apply, ← Functor.map_comp, ← op_comp,
         homOfLE_comp]
 
 end TopCat.Sheaf

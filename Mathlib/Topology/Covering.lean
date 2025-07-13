@@ -107,8 +107,8 @@ protected theorem isLocalHomeomorphOn (hf : IsCoveringMapOn f s) :
           map_target' := fun p hp => ⟨hp, rfl⟩
           left_inv' := fun p hp => Prod.ext rfl hp.2.symm
           right_inv' := fun p _ => rfl
-          continuousOn_toFun := continuous_fst.continuousOn
-          continuousOn_invFun := (continuous_id'.prod_mk continuous_const).continuousOn },
+          continuousOn_toFun := continuousOn_fst
+          continuousOn_invFun := by fun_prop },
       ⟨he, by rwa [e.toPartialHomeomorph.symm_symm, e.proj_toFun x he],
         (hf (f x) hx).toTrivialization_apply⟩,
       fun p h => (e.proj_toFun p h.1).symm⟩
@@ -143,7 +143,7 @@ variable (hf : IsCoveringMap f)
 include hf
 
 protected theorem continuous : Continuous f :=
-  continuous_iff_continuousOn_univ.mpr hf.isCoveringMapOn.continuousOn
+  continuousOn_univ.mp hf.isCoveringMapOn.continuousOn
 
 protected theorem isLocalHomeomorph : IsLocalHomeomorph f :=
   isLocalHomeomorph_iff_isLocalHomeomorphOn_univ.mpr hf.isCoveringMapOn.isLocalHomeomorphOn

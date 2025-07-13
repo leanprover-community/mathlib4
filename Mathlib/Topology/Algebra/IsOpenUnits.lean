@@ -37,8 +37,10 @@ class IsOpenUnits (M : Type*) [Monoid M] [TopologicalSpace M] : Prop where
   isOpenEmbedding_unitsVal : IsOpenEmbedding (Units.val : Mˣ → M)
 
 instance (priority := 900) (M : Type*) [Monoid M] [TopologicalSpace M] [DiscreteTopology M] :
-    IsOpenUnits M := ⟨.of_continuous_injective_isOpenMap Units.continuous_val Units.ext
-      fun _ _ ↦ isOpen_discrete _⟩
+    IsOpenUnits M where
+  isOpenEmbedding_unitsVal :=
+    .of_continuous_injective_isOpenMap Units.continuous_val Units.val_injective
+      fun _ _ ↦ isOpen_discrete _
 
 instance (priority := 900) {M : Type*} [Group M] [TopologicalSpace M] [ContinuousInv M] :
     IsOpenUnits M where
@@ -55,15 +57,14 @@ instance (priority := 900) {M : Type*} [GroupWithZero M]
 
 /-- If `R` has the `I`-adic topology where `I` is contained in the jacobson radical
 (e.g. when `R` is complete or local), then `Rˣ` is an open subspace of `R`. -/
-lemma IsOpenUnits.of_isAdic {R : Type*} [CommRing R] [TopologicalSpace R] [TopologicalRing R]
+lemma IsOpenUnits.of_isAdic {R : Type*} [CommRing R] [TopologicalSpace R] [IsTopologicalRing R]
     {I : Ideal R}
     (hR : IsAdic I) (hI : I ≤ Ideal.jacobson ⊥) :
     IsOpenUnits R := by
-  refine ⟨.of_continuous_injective_isOpenMap Units.continuous_val Units.ext ?_⟩
+  refine ⟨.of_continuous_injective_isOpenMap Units.continuous_val Units.val_injective ?_⟩
   refine (TopologicalGroup.isOpenMap_iff_nhds_one (f := Units.coeHom R)).mpr ?_
   rw [nhds_induced, nhds_prod_eq]
-  simp only [Units.embedProduct_apply, Units.val_one, inv_one, MulOpposite.op_one,
-    Prod.mk_one_one, Prod.fst_one, Prod.snd_one]
+  simp only [Units.embedProduct_apply, Units.val_one, inv_one, MulOpposite.op_one]
   intro s hs
   have H := hR ▸ Ideal.hasBasis_nhds_adic I 1
   have := (H.prod (H.comap MulOpposite.opHomeomorph.symm))

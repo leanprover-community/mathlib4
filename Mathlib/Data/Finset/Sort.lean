@@ -3,16 +3,14 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Order.RelIso.Set
-import Mathlib.Data.Multiset.Sort
-import Mathlib.Data.List.NodupEquivFin
 import Mathlib.Data.Finset.Max
-import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.EquivFin
+import Mathlib.Data.Multiset.Sort
+import Mathlib.Order.RelIso.Set
 
 /-!
 # Construct a sorted list from a finset.
 -/
-
 
 namespace Finset
 
@@ -26,6 +24,7 @@ variable {α β : Type*}
 section sort
 
 variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [IsAntisymm α r] [IsTotal α r]
+variable (r' : β → β → Prop) [DecidableRel r'] [IsTrans β r'] [IsAntisymm β r'] [IsTotal β r']
 
 /-- `sort s` constructs a sorted list from the unordered set `s`.
   (Uses merge sort algorithm.) -/
@@ -35,6 +34,9 @@ def sort (s : Finset α) : List α :=
 @[simp]
 theorem sort_val (s : Finset α) : Multiset.sort r s.val = sort r s :=
   rfl
+
+@[simp]
+theorem sort_mk {s : Multiset α} (h : s.Nodup) : sort r ⟨s, h⟩ = s.sort r := rfl
 
 @[simp]
 theorem sort_sorted (s : Finset α) : List.Sorted r (sort r s) :=
@@ -67,6 +69,16 @@ theorem sort_empty : sort r ∅ = [] :=
 @[simp]
 theorem sort_singleton (a : α) : sort r {a} = [a] :=
   Multiset.sort_singleton r a
+
+theorem map_sort (f : α ↪ β) (s : Finset α)
+    (hs : ∀ a ∈ s, ∀ b ∈ s, r a b ↔ r' (f a) (f b)) :
+    (s.sort r).map f = (s.map f).sort r' :=
+  Multiset.map_sort _ _ _ _ hs
+
+theorem _root_.StrictMonoOn.map_finsetSort [LinearOrder α] [LinearOrder β]
+    (f : α ↪ β) (s : Finset α) (hf : StrictMonoOn f s) :
+    (s.sort (· ≤ ·)).map f = (s.map f).sort (· ≤ ·) :=
+  Finset.map_sort _ _ _ _ fun _a ha _b hb => (hf.le_iff_le ha hb).symm
 
 theorem sort_cons {a : α} {s : Finset α} (h₁ : ∀ b ∈ s, r a b) (h₂ : a ∉ s) :
     sort r (cons a s h₂) = a :: sort r s := by
@@ -187,8 +199,25 @@ theorem range_orderEmbOfFin (s : Finset α) {k : ℕ} (h : s.card = k) :
     Set.range (s.orderEmbOfFin h) = s := by
   simp only [orderEmbOfFin, Set.range_comp ((↑) : _ → α) (s.orderIsoOfFin h),
   RelEmbedding.coe_trans, Set.image_univ, Finset.orderEmbOfFin, RelIso.range_eq,
-    OrderEmbedding.subtype_apply, OrderIso.coe_toOrderEmbedding, eq_self_iff_true,
-    Subtype.range_coe_subtype, Finset.setOf_mem, Finset.coe_inj]
+    OrderEmbedding.coe_subtype, OrderIso.coe_toOrderEmbedding,
+    Subtype.range_coe_subtype, Finset.setOf_mem]
+
+@[simp]
+theorem image_orderEmbOfFin_univ (s : Finset α) {k : ℕ} (h : s.card = k) :
+    Finset.image (s.orderEmbOfFin h) Finset.univ = s := by
+  apply Finset.coe_injective
+  simp
+
+@[simp]
+theorem map_orderEmbOfFin_univ (s : Finset α) {k : ℕ} (h : s.card = k) :
+    Finset.map (s.orderEmbOfFin h).toEmbedding Finset.univ = s := by
+  simp [map_eq_image]
+
+@[simp]
+theorem listMap_orderEmbOfFin_finRange (s : Finset α) {k : ℕ} (h : s.card = k) :
+    (List.finRange k).map (s.orderEmbOfFin h) = s.sort (· ≤ ·) := by
+  obtain rfl : k = (s.sort (· ≤ ·)).length := by simp [h]
+  exact List.finRange_map_getElem (s.sort (· ≤ ·))
 
 /-- The bijection `orderEmbOfFin s h` sends `0` to the minimum of `s`. -/
 theorem orderEmbOfFin_zero {s : Finset α} {k : ℕ} (h : s.card = k) (hz : 0 < k) :
@@ -245,6 +274,29 @@ theorem orderEmbOfCardLe_mem (s : Finset α) {k : ℕ} (h : k ≤ s.card) (a) :
     orderEmbOfCardLe s h a ∈ s := by
   simp only [orderEmbOfCardLe, RelEmbedding.coe_trans, Finset.orderEmbOfFin_mem,
     Function.comp_apply]
+
+lemma orderEmbOfFin_compl_singleton {n : ℕ} {i : Fin (n + 1)} {k : ℕ}
+    (h : ({i}ᶜ : Finset _).card = k) :
+    ({i}ᶜ : Finset _).orderEmbOfFin h =
+      (Fin.castOrderIso <| by simp_all [card_compl]).toOrderEmbedding.trans
+        (Fin.succAboveOrderEmb i) := by
+  apply DFunLike.coe_injective
+  rw [eq_comm]
+  convert orderEmbOfFin_unique _ (fun x ↦ ?_)
+    ((Fin.strictMono_succAbove _).comp (Fin.cast_strictMono _))
+  · simp
+  · simp [← h, card_compl]
+
+@[simp]
+lemma orderEmbOfFin_compl_singleton_eq_succAboveOrderEmb {n : ℕ} (i : Fin (n + 1)) :
+    ({i}ᶜ : Finset _).orderEmbOfFin (by simp [card_compl]) = Fin.succAboveOrderEmb i :=
+  orderEmbOfFin_compl_singleton _
+
+lemma orderEmbOfFin_compl_singleton_apply {n : ℕ} {i : Fin (n + 1)} {k : ℕ}
+    (h : ({i}ᶜ : Finset _).card = k) (j : Fin k) : ({i}ᶜ : Finset _).orderEmbOfFin h j =
+      Fin.succAbove i (Fin.cast (h.symm.trans (by simp [card_compl])) j) := by
+  rw [orderEmbOfFin_compl_singleton]
+  simp
 
 end SortLinearOrder
 

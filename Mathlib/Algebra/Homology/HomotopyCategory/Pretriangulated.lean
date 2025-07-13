@@ -72,20 +72,17 @@ lemma inr_f_triangle_mor₃_f (p : ℤ) : (inr φ).f p ≫ (triangle φ).mor₃.
     Preadditive.comp_neg, inr_f_fst_v, neg_zero]
 
 @[reassoc (attr := simp)]
-lemma inr_triangleδ : inr φ ≫ (triangle φ).mor₃ = 0 := by ext; dsimp; simp
+lemma inr_triangleδ : inr φ ≫ (triangle φ).mor₃ = 0 := by ext; simp
 
 /-- The (distinguished) triangle in the homotopy category that is associated to
 a morphism `φ : K ⟶ L` in the category `CochainComplex C ℤ`. -/
 noncomputable abbrev triangleh : Triangle (HomotopyCategory C (ComplexShape.up ℤ)) :=
   (HomotopyCategory.quotient _ _).mapTriangle.obj (triangle φ)
 
-variable (K)
-
+variable (K) in
 /-- The mapping cone of the identity is contractible. -/
 noncomputable def homotopyToZeroOfId : Homotopy (𝟙 (mappingCone (𝟙 K))) 0 :=
   descHomotopy (𝟙 K) _ _ 0 (inl _) (by simp) (by simp)
-
-variable {K}
 
 section mapOfHomotopy
 
@@ -168,7 +165,7 @@ lemma map_comp (comm' : φ₂ ≫ b' = a' ≫ φ₃) :
     map φ₁ φ₃ (a ≫ a') (b ≫ b') (by rw [reassoc_of% comm, comm', assoc]) =
       map φ₁ φ₂ a b comm ≫ map φ₂ φ₃ a' b' comm' := by
   ext n
-  simp [ext_from_iff _ (n+1) n rfl, map]
+  simp [ext_from_iff _ (n + 1) n rfl, map]
 
 /-- The morphism `triangle φ₁ ⟶ triangle φ₂` that is induced by a commutative square. -/
 @[simps]
@@ -311,7 +308,7 @@ noncomputable def rotateTrianglehIso :
   Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
     (((HomotopyCategory.quotient C (ComplexShape.up ℤ)).commShiftIso (1 : ℤ)).symm.app K ≪≫
       HomotopyCategory.isoOfHomotopyEquiv (rotateHomotopyEquiv φ))
-        (by dsimp; simp) (by dsimp; simp) (by
+        (by simp) (by simp) (by
         dsimp
         rw [CategoryTheory.Functor.map_id, comp_id, assoc, ← Functor.map_comp_assoc,
           rotateHomotopyEquiv_comm₃, Functor.map_neg, Preadditive.neg_comp,
@@ -399,7 +396,7 @@ lemma map_δ :
       (triangle ((G.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).mor₃ := by
   ext n
   dsimp [mapHomologicalComplexIso]
-  rw [mapHomologicalComplexXIso_eq φ G n (n+1) rfl, mapHomologicalComplexXIso'_hom]
+  rw [mapHomologicalComplexXIso_eq φ G n (n + 1) rfl, mapHomologicalComplexXIso'_hom]
   simp only [Functor.mapHomologicalComplex_obj_X, add_comp, assoc, inl_v_triangle_mor₃_f,
     shiftFunctor_obj_X, shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl, Iso.refl_inv,
     comp_neg, comp_id, inr_f_triangle_mor₃_f, comp_zero, add_zero]
@@ -547,7 +544,7 @@ end Pretriangulated
 
 variable [HasZeroObject C]
 
-instance : Pretriangulated (HomotopyCategory C (ComplexShape.up ℤ)) where
+noncomputable instance : Pretriangulated (HomotopyCategory C (ComplexShape.up ℤ)) where
   distinguishedTriangles := Pretriangulated.distinguishedTriangles C
   isomorphic_distinguished := Pretriangulated.isomorphic_distinguished
   contractible_distinguished := Pretriangulated.contractible_distinguished

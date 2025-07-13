@@ -19,14 +19,14 @@ This file concerns modules where the scalars are the natural numbers or the inte
 
 ## Main results
 
- * `AddCommMonoid.uniqueNatModule`: there is an unique `AddCommMonoid ℕ M` structure for any `M`
+* `AddCommMonoid.uniqueNatModule`: there is an unique `AddCommMonoid ℕ M` structure for any `M`
 
 ## Tags
 
 semimodule, module, vector space
 -/
 
-assert_not_exists Field Invertible Multiset Pi.single_smul₀ Set.indicator
+assert_not_exists RelIso Field Invertible Multiset Pi.single_smul₀ Set.indicator
 
 open Function Set
 
@@ -62,8 +62,7 @@ instance AddCommGroup.toIntModule : Module ℤ M where
 
 end AddCommGroup
 
-variable (R)
-
+variable (R) in
 /-- An `AddCommMonoid` that is a `Module` over a `Ring` carries a natural `AddCommGroup`
 structure.
 See note [reducible non-instances]. -/
@@ -78,9 +77,7 @@ abbrev Module.addCommMonoidToAddCommGroup
     zsmul := fun z a => (z : R) • a
     zsmul_zero' := fun a => by simpa only [Int.cast_zero] using zero_smul R a
     zsmul_succ' := fun z a => by simp [add_comm, add_smul]
-    zsmul_neg' := fun z a => by simp [← smul_assoc, neg_one_smul] }
-
-variable {R}
+    zsmul_neg' := fun z a => by simp [← smul_assoc] }
 
 section AddCommMonoid
 
@@ -126,7 +123,7 @@ end AddCommMonoid
 theorem map_natCast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*} [FunLike F M M₂]
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [Semiring R] [Semiring S] [Module R M]
     [Module S M₂] (x : ℕ) (a : M) : f ((x : R) • a) = (x : S) • f a := by
-  simp only [Nat.cast_smul_eq_nsmul, AddMonoidHom.map_nsmul, map_nsmul]
+  simp only [Nat.cast_smul_eq_nsmul, map_nsmul]
 
 theorem Nat.smul_one_eq_cast {R : Type*} [NonAssocSemiring R] (m : ℕ) : m • (1 : R) = ↑m := by
   rw [nsmul_eq_mul, mul_one]

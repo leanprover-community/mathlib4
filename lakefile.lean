@@ -2,7 +2,6 @@ import Lake
 
 open Lake DSL
 
-
 /-!
 ## Mathlib dependencies on upstream projects
 -/
@@ -10,7 +9,7 @@ open Lake DSL
 require "leanprover-community" / "batteries" @ git "main"
 require "leanprover-community" / "Qq" @ git "master"
 require "leanprover-community" / "aesop" @ git "master"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.52-pre2" -- ProofWidgets should always be pinned to a specific version
+require "leanprover-community" / "proofwidgets" @ git "v0.0.67" -- ProofWidgets should always be pinned to a specific version
   with NameMap.empty.insert `errorOnBuild
     "ProofWidgets not up-to-date. \
     Please run `lake exe cache get` to fetch the latest ProofWidgets. \
@@ -23,33 +22,20 @@ require "leanprover-community" / "plausible" @ git "main"
 ## Options for building mathlib
 -/
 
-/-- These options are used
-* as `leanOptions`, prefixed by `` `weak``, so that `lake build` uses them;
-* as `moreServerArgs`, to set their default value in mathlib
-  (as well as `Archive`, `Counterexamples` and `test`). -/
+/-- These options are used as `leanOptions`, prefixed by `` `weak``, so that
+`lake build` uses them, as well as `Archive` and `Counterexamples`. -/
 abbrev mathlibOnlyLinters : Array LeanOption := #[
-  -- The `docPrime` linter is disabled: https://github.com/leanprover-community/mathlib4/issues/20560
-  ⟨`linter.docPrime, false⟩,
-  ⟨`linter.hashCommand, true⟩,
-  ⟨`linter.oldObtain, true,⟩,
-  ⟨`linter.refine, true⟩,
-  ⟨`linter.style.cdot, true⟩,
-  ⟨`linter.style.dollarSyntax, true⟩,
-  ⟨`linter.style.header, true⟩,
-  ⟨`linter.style.lambdaSyntax, true⟩,
-  ⟨`linter.style.longLine, true⟩,
+  ⟨`linter.mathlibStandardSet, true⟩,
   ⟨`linter.style.longFile, .ofNat 1500⟩,
   -- `latest_import.yml` uses this comment: if you edit it, make sure that the workflow still works
-  ⟨`linter.style.missingEnd, true⟩,
-  ⟨`linter.style.multiGoal, true⟩,
-  ⟨`linter.style.setOption, true⟩
 ]
 
 /-- These options are passed as `leanOptions` to building mathlib, as well as the
 `Archive` and `Counterexamples`. (`tests` omits the first two options.) -/
 abbrev mathlibLeanOptions := #[
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
-    ⟨`autoImplicit, false⟩
+    ⟨`autoImplicit, false⟩,
+    ⟨`maxSynthPendingDepth, .ofNat 3⟩
   ] ++ -- options that are used in `lake build`
     mathlibOnlyLinters.map fun s ↦ { s with name := `weak ++ s.name }
 
@@ -67,9 +53,8 @@ package mathlib where
 
 @[default_target]
 lean_lib Mathlib where
+  -- Enforce Mathlib's default linters and style options.
   leanOptions := mathlibLeanOptions
-  -- Mathlib also enforces these linter options, which are not active by default.
-  moreServerOptions := mathlibOnlyLinters
 
 -- NB. When adding further libraries, check if they should be excluded from `getLeanLibs` in
 -- `scripts/mk_all.lean`.
@@ -81,11 +66,9 @@ lean_lib MathlibTest where
 
 lean_lib Archive where
   leanOptions := mathlibLeanOptions
-  moreServerOptions := mathlibOnlyLinters
 
 lean_lib Counterexamples where
   leanOptions := mathlibLeanOptions
-  moreServerOptions := mathlibOnlyLinters
 
 /-- Additional documentation in the form of modules that only contain module docstrings. -/
 lean_lib docs where
@@ -129,6 +112,9 @@ lean_exe shake where
 /-- `lake exe lint-style` runs text-based style linters. -/
 lean_exe «lint-style» where
   srcDir := "scripts"
+  supportInterpreter := true
+  -- Executables which import `Lake` must set `-lLake`.
+  weakLinkArgs := #["-lLake"]
 
 /--
 `lake exe pole` queries the Mathlib speedcenter for build times for the current commit,
@@ -172,22 +158,15 @@ post_update pkg do
   let rootPkg ← getRootPackage
   if rootPkg.name = pkg.name then
     return -- do not run in Mathlib itself
-  /-
-  Once Lake updates the toolchains,
-  this toolchain copy will be unnecessary.
-  https://github.com/leanprover/lean4/issues/2752
-  -/
-  let wsToolchainFile := rootPkg.dir / "lean-toolchain"
-  let mathlibToolchain := ← IO.FS.readFile <| pkg.dir / "lean-toolchain"
-  IO.FS.writeFile wsToolchainFile mathlibToolchain
   if (← IO.getEnv "MATHLIB_NO_CACHE_ON_UPDATE") != some "1" then
-    /-
-    Instead of building and running cache via the Lake API,
-    spawn a new `lake` since the toolchain may have changed.
-    -/
-    let exitCode ← IO.Process.spawn {
-      cmd := "elan"
-      args := #["run", "--install", mathlibToolchain.trim, "lake", "exe", "cache", "get"]
-    } >>= (·.wait)
+    let exeFile ← runBuild cache.fetch
+    -- Run the command in the root package directory,
+    -- which is the one that holds the .lake folder and lean-toolchain file.
+    let cwd ← IO.Process.getCurrentDir
+    let exitCode ← try
+      IO.Process.setCurrentDir rootPkg.dir
+      env exeFile.toString #["get"]
+    finally
+      IO.Process.setCurrentDir cwd
     if exitCode ≠ 0 then
-      logError s!"{pkg.name}: failed to fetch cache"
+      error s!"{pkg.name}: failed to fetch cache"

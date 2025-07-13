@@ -8,6 +8,7 @@ import Mathlib.Algebra.Category.MonCat.ForgetCorepresentable
 import Mathlib.Algebra.Category.Grp.ForgetCorepresentable
 import Mathlib.Algebra.Category.Grp.Preadditive
 import Mathlib.Algebra.Category.MonCat.Limits
+import Mathlib.Algebra.Group.Subgroup.Ker
 import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 
@@ -43,7 +44,7 @@ def sectionsSubgroup : Subgroup (∀ j, F.obj j) :=
   { MonCat.sectionsSubmonoid (F ⋙ forget₂ Grp MonCat) with
     carrier := (F ⋙ forget Grp).sections
     inv_mem' := fun {a} ah j j' f => by
-      simp only [Functor.comp_map, Pi.inv_apply, MonoidHom.map_inv, inv_inj]
+      simp only [Functor.comp_map, Pi.inv_apply]
       dsimp [Functor.sections] at ah ⊢
       rw [(F.map f).hom.map_inv (a j), ah f] }
 
@@ -323,8 +324,8 @@ instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J CommGrp.{u} where
 /-- The category of commutative groups has all limits. -/
 @[to_additive "The category of additive commutative groups has all limits.",
   to_additive_relevant_arg 2]
-instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} CommGrp.{u}
-  where has_limits_of_shape _ _ := { }
+instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} CommGrp.{u} where
+  has_limits_of_shape _ _ := { }
 
 @[to_additive]
 instance hasLimits : HasLimits CommGrp.{u} :=
@@ -457,7 +458,7 @@ def kernelIsoKer {G H : AddCommGrp.{u}} (f : G ⟶ H) :
     { toFun := fun g => ⟨kernel.ι f g, ConcreteCategory.congr_hom (kernel.condition f) g⟩
       map_zero' := by
         refine Subtype.ext ?_
-        simp only [Functor.comp_obj, map_zero, ZeroMemClass.coe_zero]
+        simp only [map_zero, ZeroMemClass.coe_zero]
       map_add' := fun g g' => by
         refine Subtype.ext ?_
         simp }

@@ -10,7 +10,7 @@ import Mathlib.Algebra.GroupWithZero.Units.Basic
 # Center of a group with zero
 -/
 
-assert_not_exists Finset Ring Subsemigroup
+assert_not_exists RelIso Finset Ring Subsemigroup
 
 variable {M₀ G₀ : Type*}
 
@@ -19,9 +19,8 @@ section MulZeroClass
 variable [MulZeroClass M₀] {s : Set M₀}
 
 @[simp] lemma zero_mem_center : (0 : M₀) ∈ center M₀ where
-  comm _ := by rw [zero_mul, mul_zero]
+  comm _ := by rw [commute_iff_eq, zero_mul, mul_zero]
   left_assoc _ _ := by rw [zero_mul, zero_mul, zero_mul]
-  mid_assoc _ _ := by rw [mul_zero, zero_mul, mul_zero]
   right_assoc _ _ := by rw [mul_zero, mul_zero, mul_zero]
 
 @[simp] lemma zero_mem_centralizer : (0 : M₀) ∈ centralizer s := by simp [mem_centralizer_iff]

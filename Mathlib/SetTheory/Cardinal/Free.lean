@@ -3,8 +3,9 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Daniel Weber
 -/
+import Mathlib.Algebra.Equiv.TransferInstance
+import Mathlib.Algebra.FreeAbelianGroup.Finsupp
 import Mathlib.Data.Finsupp.Fintype
-import Mathlib.GroupTheory.FreeAbelianGroupFinsupp
 import Mathlib.GroupTheory.FreeGroup.Reduce
 import Mathlib.RingTheory.FreeCommRing
 import Mathlib.SetTheory.Cardinal.Arithmetic
@@ -14,7 +15,7 @@ import Mathlib.SetTheory.Cardinal.Finsupp
 # Cardinalities of free constructions
 
 This file shows that all the free constructions over `α` have cardinality `max #α ℵ₀`,
-and are thus infinite.
+and are thus infinite, and specifically countable over countable generators.
 
 Combined with the ring `Fin n` for the finite cases, this lets us show that there is a `CommRing` of
 any cardinality.
@@ -42,6 +43,26 @@ instance : Infinite (FreeCommRing α) := by unfold FreeCommRing; infer_instance
 
 end Infinite
 
+section Countable
+
+variable [Countable α]
+
+@[to_additive]
+instance : Countable (FreeMonoid α) := by unfold FreeMonoid; infer_instance
+
+@[to_additive]
+instance : Countable (FreeGroup α) := Quotient.countable
+
+instance : Countable (FreeAbelianGroup α) := Quotient.countable
+
+instance : Countable (FreeRing α) := Quotient.countable
+
+instance : Countable (FreeCommRing α) := by
+  unfold FreeCommRing Multiplicative
+  infer_instance
+
+end Countable
+
 namespace Cardinal
 
 theorem mk_abelianization_le (G : Type u) [Group G] :
@@ -57,7 +78,7 @@ theorem mk_freeGroup [Nonempty α] : #(FreeGroup α) = max #α ℵ₀ := by
   apply le_antisymm
   · apply (mk_le_of_injective (FreeGroup.toWord_injective (α := α))).trans_eq
     simp [Cardinal.mk_list_eq_max_mk_aleph0]
-    obtain hα | hα := lt_or_le #α ℵ₀
+    obtain hα | hα := lt_or_ge #α ℵ₀
     · simp only [hα.le, max_eq_right, max_eq_right_iff]
       exact (mul_lt_aleph0 hα (nat_lt_aleph0 2)).le
     · rw [max_eq_left hα, max_eq_left (hα.trans <| Cardinal.le_mul_right two_ne_zero),
@@ -93,7 +114,7 @@ instance nonempty_commRing [Nonempty α] : Nonempty (CommRing α) := by
     have : NeZero (Fintype.card α) := ⟨by inhabit α; simp⟩
     classical
     obtain ⟨e⟩ := Fintype.truncEquivFin α
-    exact ⟨e.commRing⟩
+    exact ⟨open scoped Fin.CommRing in e.commRing⟩
   · have ⟨e⟩ : Nonempty (α ≃ FreeCommRing α) := by simp [← Cardinal.eq]
     exact ⟨e.commRing⟩
 

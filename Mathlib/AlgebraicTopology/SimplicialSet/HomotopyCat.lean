@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Emily Riehl, Joël Riou
 -/
 
+import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 import Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal
 import Mathlib.CategoryTheory.Category.ReflQuiv
 import Mathlib.Combinatorics.Quiver.ReflQuiver
@@ -27,24 +28,19 @@ the data that is not used for the construction of the homotopy category) and the
 analogously defined `SSet.hoFunctor₂ : SSet.Truncated.{u} 2 ⥤ Cat.{u,u}` implemented relative to
 the syntax of the 2-truncated simplex category.
 
-TODO: Future work will show the functor `SSet.hoFunctor` to be left adjoint to the nerve by
-providing an analogous decomposition of the nerve functor, made by possible by the fact that nerves
-of categories are 2-coskeletal, and then composing a pair of adjunctions, which factor through the
-category of 2-truncated simplicial sets.
+In the file `Mathlib/AlgebraicTopology/SimplicialSet/NerveAdjunction.lean` we show the functor
+`SSet.hoFunctor` to be left adjoint to the nerve by providing an analogous decomposition of the
+nerve functor, made by possible by the fact that nerves of categories are 2-coskeletal, and then
+composing a pair of adjunctions, which factor through the category of 2-truncated simplicial sets.
 -/
 
 namespace SSet
 open CategoryTheory Category Limits Functor Opposite Simplicial Nerve
+open SimplexCategory.Truncated SimplicialObject.Truncated
+
 universe v u
 
 section
-
-local macro:1000 (priority := high) X:term " _⦋" n:term "⦌₂" : term =>
-    `(($X : SSet.Truncated 2).obj (Opposite.op ⟨SimplexCategory.mk $n, by decide⟩))
-
-set_option quotPrecheck false
-local macro:max (priority := high) "⦋" n:term "⦌₂" : term =>
-  `((⟨SimplexCategory.mk $n, by decide⟩ : SimplexCategory.Truncated 2))
 
 /-- A 2-truncated simplicial set `S` has an underlying refl quiver with `S _⦋0⦌₂` as its underlying
 type. -/
@@ -56,13 +52,26 @@ abbrev δ₂ {n} (i : Fin (n + 2)) (hn := by decide) (hn' := by decide) :
 
 /-- Abbreviations for degeneracy maps in the 2-truncated simplex category. -/
 abbrev σ₂ {n} (i : Fin (n + 1)) (hn := by decide) (hn' := by decide) :
-    (⟨⦋n+1⦌, hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨⦋n⦌, hn'⟩ := SimplexCategory.σ i
+    (⟨⦋n + 1⦌, hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨⦋n⦌, hn'⟩ := SimplexCategory.σ i
 
 @[reassoc (attr := simp)]
-lemma δ₂_zero_comp_σ₂_zero : δ₂ (0 : Fin 2) ≫ σ₂ 0 = 𝟙 _ := SimplexCategory.δ_comp_σ_self
+lemma δ₂_zero_comp_σ₂_zero {n} (hn := by decide) (hn' := by decide) :
+    δ₂ (n := n) 0 hn hn' ≫ σ₂ 0 hn' hn = 𝟙 _ := SimplexCategory.δ_comp_σ_self
+
+@[reassoc]
+lemma δ₂_zero_comp_σ₂_one : δ₂ (0 : Fin 3) ≫ σ₂ 1 = σ₂ 0 ≫ δ₂ 0 :=
+  SimplexCategory.δ_comp_σ_of_le (i := 0) (j := 0) (Fin.zero_le _)
 
 @[reassoc (attr := simp)]
-lemma δ₂_one_comp_σ₂_zero : δ₂ (1 : Fin 2) ≫ σ₂ 0 = 𝟙 _ := SimplexCategory.δ_comp_σ_succ
+lemma δ₂_one_comp_σ₂_zero {n} (hn := by decide) (hn' := by decide) :
+    δ₂ (n := n) 1 hn hn' ≫ σ₂ 0 hn' hn = 𝟙 _ := SimplexCategory.δ_comp_σ_succ
+
+@[reassoc (attr := simp)]
+lemma δ₂_two_comp_σ₂_one : δ₂ (2 : Fin 3) ≫ σ₂ 1 = 𝟙 _ := SimplexCategory.δ_comp_σ_succ' (by decide)
+
+@[reassoc]
+lemma δ₂_two_comp_σ₂_zero : δ₂ (2 : Fin 3) ≫ σ₂ 0 = σ₂ 0 ≫ δ₂ 1 :=
+  SimplexCategory.δ_comp_σ_of_gt' (by decide)
 
 /-- The hom-types of the refl quiver underlying a simplicial set `S` are types of edges in `S _⦋1⦌₂`
 together with source and target equalities. -/
@@ -109,6 +118,14 @@ def oneTruncation₂ : SSet.Truncated.{u} 2 ⥤ ReflQuiv.{u, u} where
 lemma OneTruncation₂.hom_ext {S : SSet.Truncated 2} {x y : OneTruncation₂ S} {f g : x ⟶ y} :
     f.edge = g.edge → f = g := OneTruncation₂.Hom.ext
 
+@[simp]
+lemma OneTruncation₂.homOfEq_edge
+    {X : SSet.Truncated.{u} 2} {x₁ y₁ x₂ y₂ : OneTruncation₂ X}
+    (f : x₁ ⟶ y₁) (hx : x₁ = x₂) (hy : y₁ = y₂) :
+    (Quiver.homOfEq f hx hy).edge = f.edge := by
+  subst hx hy
+  rfl
+
 section
 variable {C : Type u} [Category.{v} C]
 
@@ -120,7 +137,6 @@ def OneTruncation₂.nerveEquiv :
   toFun X := X.obj' 0
   invFun X := .mk₀ X
   left_inv _ := ComposableArrows.ext₀ rfl
-  right_inv _ := rfl
 
 /-- A hom equivalence over the function `OneTruncation₂.nerveEquiv`. -/
 def OneTruncation₂.nerveHomEquiv (X Y : OneTruncation₂ ((SSet.truncation 2).obj (nerve C))) :
@@ -144,14 +160,14 @@ def OneTruncation₂.ofNerve₂ (C : Type u) [Category.{u} C] :
   intro X
   unfold nerveEquiv nerveHomEquiv
   simp only [Cat.of_α, op_obj, ComposableArrows.obj', Fin.zero_eta, Fin.isValue, Equiv.coe_fn_mk,
-    nerveEquiv_apply, Nat.reduceAdd, id_edge, SimplexCategory.len_mk, id_eq, eqToHom_refl, comp_id,
-    id_comp, ReflQuiver.id_eq_id]
+    nerveEquiv_apply, Nat.reduceAdd, id_edge, eqToHom_refl, comp_id, id_comp, ReflQuiver.id_eq_id]
   unfold nerve truncation SimplicialObject.truncation SimplexCategory.Truncated.inclusion
-  simp only [fullSubcategoryInclusion.obj, SimplexCategory.len_mk, Nat.reduceAdd, Fin.isValue,
+  -- the following was obtained by `simp?`
+  simp only [ObjectProperty.ι_obj, SimplexCategory.len_mk, Nat.reduceAdd, Fin.isValue,
     SimplexCategory.toCat_map, whiskeringLeft_obj_obj, Functor.comp_map, op_obj, op_map,
-    Quiver.Hom.unop_op, fullSubcategoryInclusion.map, ComposableArrows.whiskerLeft_map,
-    Fin.zero_eta, Monotone.functor_obj, Fin.mk_one, homOfLE_leOfHom]
-  show X.map (𝟙 _) = _
+    Quiver.Hom.unop_op, ObjectProperty.ι_map, ComposableArrows.whiskerLeft_map, Fin.zero_eta,
+    Monotone.functor_obj, Fin.mk_one, homOfLE_leOfHom]
+  change X.map (𝟙 _) = _
   rw [X.map_id]
   rfl
 
@@ -169,10 +185,9 @@ def OneTruncation₂.ofNerve₂.natIso :
       unfold SSet.oneTruncation₂ nerveFunctor₂ SSet.truncation SimplicialObject.truncation
         nerveFunctor toReflPrefunctor
       simp only [comp_obj, whiskeringLeft_obj_obj, ReflQuiv.of_val, Functor.comp_map,
-        whiskeringLeft_obj_map, whiskerLeft_app, op_obj, whiskeringRight_obj_obj, ofNerve₂,
-        Cat.of_α, nerveEquiv, ComposableArrows.obj', Fin.zero_eta, Fin.isValue,
-        ReflQuiv.comp_eq_comp, Nat.reduceAdd, SimplexCategory.len_mk, id_eq, op_map,
-        Quiver.Hom.unop_op, nerve_map, SimplexCategory.toCat_map, ReflPrefunctor.comp_obj,
+        whiskeringLeft_obj_map, whiskerLeft_app, op_obj, ofNerve₂, Cat.of_α, nerveEquiv,
+        ComposableArrows.obj', Fin.zero_eta, Fin.isValue, ReflQuiv.comp_eq_comp, Nat.reduceAdd,
+        op_map, Quiver.Hom.unop_op, nerve_map, SimplexCategory.toCat_map, ReflPrefunctor.comp_obj,
         ReflPrefunctor.comp_map]
       simp [nerveHomEquiv, ReflQuiv.isoOfEquiv, ReflQuiv.isoOfQuivIso, Quiv.isoOfEquiv])
 
@@ -180,12 +195,11 @@ end
 
 section
 
-private lemma map_map_of_eq.{w}  {C : Type u} [Category.{v} C] (V : Cᵒᵖ ⥤ Type w) {X Y Z : C}
+private lemma map_map_of_eq.{w} {C : Type u} [Category.{v} C] (V : Cᵒᵖ ⥤ Type w) {X Y Z : C}
     {α : X ⟶ Y} {β : Y ⟶ Z} {γ : X ⟶ Z} {φ} :
     α ≫ β = γ → V.map α.op (V.map β.op φ) = V.map γ.op φ := by
   rintro rfl
-  change (V.map _ ≫ V.map _) _ = _
-  rw [← map_comp]; rfl
+  simp
 
 variable {V : SSet}
 

@@ -64,6 +64,10 @@ theorem span_union (s t : Set α) : span (s ∪ t) = span s ⊔ span t :=
 theorem span_iUnion {ι} (s : ι → Set α) : span (⋃ i, s i) = ⨆ i, span (s i) :=
   Submodule.span_iUnion _
 
+theorem iSup_eq_span {ι} (p : ι → Ideal α) :
+    ⨆ i, p i = span (⋃ i, ↑(p i)) :=
+  Submodule.iSup_eq_span p
+
 theorem mem_span {s : Set α} (x) : x ∈ span s ↔ ∀ p : Ideal α, s ⊆ p → x ∈ p :=
   mem_iInter₂
 
@@ -73,6 +77,7 @@ theorem subset_span {s : Set α} : s ⊆ span s :=
 theorem span_le {s : Set α} {I} : span s ≤ I ↔ s ⊆ I :=
   Submodule.span_le
 
+@[gcongr]
 theorem span_mono {s t : Set α} : s ⊆ t → span s ≤ span t :=
   Submodule.span_mono
 
@@ -123,6 +128,10 @@ theorem span_singleton_ne_top {α : Type*} [CommSemiring α] {x : α} (hx : ¬Is
 
 @[simp]
 theorem span_zero : span (0 : Set α) = ⊥ := by rw [← Set.singleton_zero, span_singleton_eq_bot]
+
+@[simp]
+theorem span_insert_zero {s : Set α} : span (insert (0 : α) s) = span s :=
+  Submodule.span_insert_zero
 
 @[simp]
 theorem span_one : span (1 : Set α) = ⊤ := by rw [← Set.singleton_one, span_singleton_one]
@@ -197,10 +206,18 @@ theorem span_singleton_le_span_singleton {x y : α} :
     span ({x} : Set α) ≤ span ({y} : Set α) ↔ y ∣ x :=
   span_le.trans <| singleton_subset_iff.trans mem_span_singleton
 
-theorem span_singleton_eq_span_singleton {α : Type u} [CommRing α] [IsDomain α] {x y : α} :
+theorem span_singleton_eq_span_singleton {α : Type u} [CommSemiring α] [IsDomain α] {x y : α} :
     span ({x} : Set α) = span ({y} : Set α) ↔ Associated x y := by
   rw [← dvd_dvd_iff_associated, le_antisymm_iff, and_comm]
   apply and_congr <;> rw [span_singleton_le_span_singleton]
+
+@[simp]
+theorem span_pair_eq_span_left_iff_dvd : span {a, b} = span {a} ↔ a ∣ b := by
+  rw [Ideal.span_insert, sup_eq_left, span_singleton_le_span_singleton]
+
+@[simp]
+theorem span_pair_eq_span_right_iff_dvd : span {a, b} = span {b} ↔ b ∣ a := by
+  rw [Ideal.span_insert, sup_eq_right, span_singleton_le_span_singleton]
 
 theorem span_singleton_mul_right_unit {a : α} (h2 : IsUnit a) (x : α) :
     span ({x * a} : Set α) = span {x} := by rw [mul_comm, span_singleton_mul_left_unit h2]
@@ -211,7 +228,7 @@ theorem span_singleton_eq_top {x} : span ({x} : Set α) = ⊤ ↔ IsUnit x := by
 
 theorem factors_decreasing [IsDomain α] (b₁ b₂ : α) (h₁ : b₁ ≠ 0) (h₂ : ¬IsUnit b₂) :
     span ({b₁ * b₂} : Set α) < span {b₁} :=
-  lt_of_le_not_le
+  lt_of_le_not_ge
     (Ideal.span_le.2 <| singleton_subset_iff.2 <| Ideal.mem_span_singleton.2 ⟨b₂, rfl⟩) fun h =>
     h₂ <| isUnit_of_dvd_one <|
         (mul_dvd_mul_iff_left h₁).1 <| by rwa [mul_one, ← Ideal.span_singleton_le_span_singleton]
@@ -235,6 +252,12 @@ theorem span_singleton_neg (x : α) : (span {-x} : Ideal α) = span {x} := by
   simp only [mem_span_singleton']
   exact ⟨fun ⟨y, h⟩ => ⟨-y, h ▸ neg_mul_comm y x⟩, fun ⟨y, h⟩ => ⟨-y, h ▸ neg_mul_neg y x⟩⟩
 
+@[simp]
+theorem span_singleton_abs [LinearOrder α] (x : α) :
+    span {|x|} = span {x} := by
+  obtain h | h := abs_choice x <;>
+  simp [h]
+
 end Ideal
 
 end Ring
@@ -249,7 +272,7 @@ theorem ker_toSpanSingleton_eq_span :
   rw [Ideal.mem_span_singleton']
   refine ⟨fun h ↦ ⟨x, by rw [mul_sub, show x * e = 0 from h, mul_one, sub_zero]⟩, fun h ↦ ?_⟩
   obtain ⟨x, rfl⟩ := h
-  show x * (1 - e) * e = 0
+  change x * (1 - e) * e = 0
   rw [mul_assoc, sub_mul, one_mul, he, sub_self, mul_zero]
 
 theorem ker_toSpanSingleton_one_sub_eq_span :
@@ -257,3 +280,10 @@ theorem ker_toSpanSingleton_one_sub_eq_span :
   rw [ker_toSpanSingleton_eq_span he.one_sub, sub_sub_cancel]
 
 end IsIdempotentElem
+
+section PrincipalIdeal
+
+instance {R : Type*} [Semiring R] {x : R} : (Ideal.span {x}).IsPrincipal :=
+  ⟨x, rfl⟩
+
+end PrincipalIdeal

@@ -16,12 +16,12 @@ We split them into their own file.
 This file also contains a few convenient auxiliary functions.
 -/
 
-open Lean Elab Tactic Meta Qq Mathlib
+open Lean Elab Tactic Meta Qq
 
 initialize registerTraceClass `linarith
 initialize registerTraceClass `linarith.detail
 
-namespace Linarith
+namespace Mathlib.Tactic.Linarith
 
 /-- A shorthand for getting the types of a list of proofs terms, to trace. -/
 def linarithGetProofsMessage (l : List Expr) : MetaM MessageData := do
@@ -145,7 +145,7 @@ def Comp.scale (c : Comp) (n : Nat) : Comp :=
 `Comp.add c1 c2` adds the expressions represented by `c1` and `c2`.
 The coefficient of variable `a` in `c1.add c2`
 is the sum of the coefficients of `a` in `c1` and `c2`.
- -/
+-/
 def Comp.add (c1 c2 : Comp) : Comp :=
   ⟨c1.str.max c2.str, c1.coeffs.add c2.coeffs⟩
 
@@ -160,7 +160,7 @@ def Comp.cmp : Comp → Comp → Ordering
 /--
 A `Comp` represents a contradiction if its expression has no coefficients and its strength is <,
 that is, it represents the fact `0 < 0`.
- -/
+-/
 def Comp.isContr (c : Comp) : Bool := c.coeffs.isEmpty && c.str = Ineq.lt
 
 instance Comp.ToFormat : ToFormat Comp :=
@@ -184,7 +184,7 @@ The return type is `List Expr`, since some preprocessing steps may create multip
 and some may remove a hypothesis from the list.
 A "no-op" preprocessor should return its input as a singleton list.
 -/
-structure Preprocessor extends PreprocessorBase : Type where
+structure Preprocessor : Type extends PreprocessorBase where
   /-- Replace a hypothesis by a list of hypotheses. These expressions are the proof terms. -/
   transform : Expr → MetaM (List Expr)
 
@@ -193,7 +193,7 @@ Some preprocessors need to examine the full list of hypotheses instead of workin
 As with `Preprocessor`, the input to a `GlobalPreprocessor` is replaced by, not added to, its
 output.
 -/
-structure GlobalPreprocessor extends PreprocessorBase : Type where
+structure GlobalPreprocessor : Type extends PreprocessorBase where
   /-- Replace the collection of all hypotheses with new hypotheses.
   These expressions are proof terms. -/
   transform : List Expr → MetaM (List Expr)
@@ -213,7 +213,7 @@ Each branch is independent, so hypotheses that appear in multiple branches shoul
 The preprocessor is responsible for making sure that each branch contains the correct goal
 metavariable.
 -/
-structure GlobalBranchingPreprocessor extends PreprocessorBase : Type where
+structure GlobalBranchingPreprocessor : Type extends PreprocessorBase where
   /-- Given a goal, and a list of hypotheses,
   produce a list of pairs (consisting of a goal and list of hypotheses). -/
   transform : MVarId → List Expr → MetaM (List Branch)
@@ -305,4 +305,4 @@ def mkSingleCompZeroOf (c : Nat) (h : Expr) : MetaM (Ineq × Expr) := do
     let e' ← mkAppM iq.toConstMulName #[h, ex]
     return (iq, e')
 
-end Linarith
+end Mathlib.Tactic.Linarith

@@ -54,7 +54,7 @@ section
 @[to_additive "Measurability of the action of the additive topological group `G` on the left-coset
   space `G / Γ`."]
 instance QuotientGroup.measurableSMul {G : Type*} [Group G] {Γ : Subgroup G} [MeasurableSpace G]
-    [TopologicalSpace G] [TopologicalGroup G] [BorelSpace G] [BorelSpace (G ⧸ Γ)] :
+    [TopologicalSpace G] [IsTopologicalGroup G] [BorelSpace G] [BorelSpace (G ⧸ Γ)] :
     MeasurableSMul G (G ⧸ Γ) where
   measurable_const_smul g := (continuous_const_smul g).measurable
   measurable_smul_const _ := (continuous_id.smul continuous_const).measurable
@@ -63,7 +63,7 @@ end
 
 section smulInvariantMeasure
 
-variable {G : Type*} [Group G] [MeasurableSpace G]  (ν : Measure G) {Γ : Subgroup G}
+variable {G : Type*} [Group G] [MeasurableSpace G] (ν : Measure G) {Γ : Subgroup G}
   {μ : Measure (G ⧸ Γ)}
   [QuotientMeasureEqMeasurePreimage ν μ]
 
@@ -79,7 +79,7 @@ theorem measurePreserving_quotientGroup_mk_of_QuotientMeasureEqMeasurePreimage
 
 local notation "π" => @QuotientGroup.mk G _ Γ
 
-variable [TopologicalSpace G] [TopologicalGroup G] [BorelSpace G] [PolishSpace G]
+variable [TopologicalSpace G] [IsTopologicalGroup G] [BorelSpace G] [PolishSpace G]
   [T2Space (G ⧸ Γ)] [SecondCountableTopology (G ⧸ Γ)]
 
 /-- If `μ` satisfies `QuotientMeasureEqMeasurePreimage` relative to a both left- and right-
@@ -112,7 +112,7 @@ end smulInvariantMeasure
 
 section normal
 
-variable {G : Type*} [Group G] [MeasurableSpace G] [TopologicalSpace G] [TopologicalGroup G]
+variable {G : Type*} [Group G] [MeasurableSpace G] [TopologicalSpace G] [IsTopologicalGroup G]
   [BorelSpace G] [PolishSpace G] {Γ : Subgroup G} [Subgroup.Normal Γ]
   [T2Space (G ⧸ Γ)] [SecondCountableTopology (G ⧸ Γ)] {μ : Measure (G ⧸ Γ)}
 
@@ -244,9 +244,9 @@ theorem MeasureTheory.QuotientMeasureEqMeasurePreimage.haarMeasure_quotient [Loc
     apply measure_mono
     refine interior_subset.trans ?_
     rw [QuotientGroup.coe_mk']
-    show (K : Set G) ⊆ π ⁻¹' (π '' K)
+    change (K : Set G) ⊆ π ⁻¹' (π '' K)
     exact subset_preimage_image π K
-  · show ν (π ⁻¹' (π '' K) ∩ s) ≠ ⊤
+  · change ν (π ⁻¹' (π '' K) ∩ s) ≠ ⊤
     apply ne_of_lt
     refine lt_of_le_of_lt ?_ finiteCovol.lt_top
     apply measure_mono
@@ -319,7 +319,7 @@ end normal
 
 section UnfoldingTrick
 
-variable {G : Type*} [Group G] [MeasurableSpace G] [TopologicalSpace G] [TopologicalGroup G]
+variable {G : Type*} [Group G] [MeasurableSpace G] [TopologicalSpace G] [IsTopologicalGroup G]
   [BorelSpace G] {μ : Measure G} {Γ : Subgroup G}
 
 variable {𝓕 : Set G} (h𝓕 : IsFundamentalDomain Γ.op 𝓕 μ)
@@ -396,6 +396,7 @@ lemma QuotientGroup.integral_eq_integral_automorphize {E : Type*} [NormedAddComm
   · rw [← h𝓕.lintegral_eq_tsum'' (‖f ·‖ₑ)]
     exact ne_of_lt hf₁.2
 
+-- we can't use `to_additive`, because it tries to translate `*` into `+`
 /-- This is the **Unfolding Trick**: Given a subgroup `Γ` of a group `G`, the integral of a
   function `f` on `G` times the lift to `G` of a function `g` on the quotient `G ⧸ Γ` with respect
   to a right-invariant measure `μ` on `G`, is equal to the integral over the quotient of the
@@ -431,11 +432,10 @@ end UnfoldingTrick
 section
 
 variable {G' : Type*} [AddGroup G'] [MeasurableSpace G'] [TopologicalSpace G']
-  [TopologicalAddGroup G'] [BorelSpace G']
-  {μ' : Measure G'}
-  {Γ' : AddSubgroup G'}
+  [IsTopologicalAddGroup G'] [BorelSpace G'] {μ' : Measure G'} {Γ' : AddSubgroup G'}
+  {𝓕' : Set G'} (h𝓕 : IsAddFundamentalDomain Γ'.op 𝓕' μ')
   [Countable Γ'] [MeasurableSpace (G' ⧸ Γ')] [BorelSpace (G' ⧸ Γ')]
-  {𝓕' : Set G'}
+include h𝓕
 
 local notation "μ_𝓕" => Measure.map (@QuotientAddGroup.mk G' _ Γ') (μ'.restrict 𝓕')
 
@@ -447,8 +447,7 @@ lemma QuotientAddGroup.integral_mul_eq_integral_automorphize_mul {K : Type*} [No
     [NormedSpace ℝ K] [μ'.IsAddRightInvariant] {f : G' → K}
     (f_ℒ_1 : Integrable f μ') {g : G' ⧸ Γ' → K} (hg : AEStronglyMeasurable g μ_𝓕)
     (g_ℒ_infinity : essSup (‖g ·‖ₑ) μ_𝓕 ≠ ∞)
-    (F_ae_measurable : AEStronglyMeasurable (QuotientAddGroup.automorphize f) μ_𝓕)
-    (h𝓕 : IsAddFundamentalDomain Γ'.op 𝓕' μ') :
+    (F_ae_measurable : AEStronglyMeasurable (QuotientAddGroup.automorphize f) μ_𝓕) :
     ∫ x : G', g (x : G' ⧸ Γ') * (f x) ∂μ'
       = ∫ x : G' ⧸ Γ', g x * (QuotientAddGroup.automorphize f x) ∂μ_𝓕 := by
   let π : G' → G' ⧸ Γ' := QuotientAddGroup.mk
@@ -471,6 +470,3 @@ lemma QuotientAddGroup.integral_mul_eq_integral_automorphize_mul {K : Type*} [No
   apply QuotientAddGroup.integral_eq_integral_automorphize h𝓕 H₁ H₂
 
 end
-
-attribute [to_additive existing QuotientGroup.integral_mul_eq_integral_automorphize_mul]
-  QuotientAddGroup.integral_mul_eq_integral_automorphize_mul

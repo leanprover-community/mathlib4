@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
-import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 import Mathlib.RingTheory.FiniteType
+import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
+import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
 import Mathlib.RingTheory.Polynomial.IntegralNormalization
 import Mathlib.RingTheory.Polynomial.ScaleRoots
+import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 /-!
 # # Integral closure as a characteristic predicate
@@ -257,6 +257,31 @@ theorem IsIntegral.tmul (x : A) {y : B} (h : IsIntegral R y) : IsIntegral A (x �
     (Algebra.TensorProduct.includeRight (R := R) (A := A) (B := B)).toRingHom
     Algebra.TensorProduct.includeLeftRingHom_comp_algebraMap)
 
+section Pushout
+
+variable (R S A) [Algebra R S] [int : Algebra.IsIntegral R S]
+
+instance Algebra.IsIntegral.tensorProduct : Algebra.IsIntegral A (A ⊗[R] S) where
+  isIntegral p := p.induction_on isIntegral_zero (fun _ s ↦ .tmul _ <| int.1 s) (fun _ _ ↦ .add)
+
+variable (SA : Type*) [CommRing SA] [Algebra R SA] [Algebra S SA] [Algebra A SA]
+  [IsScalarTower R S SA] [IsScalarTower R A SA]
+
+theorem Algebra.IsPushout.isIntegral' [IsPushout R A S SA] : Algebra.IsIntegral A SA :=
+  (equiv R A S SA).isIntegral_iff.mp inferInstance
+
+theorem Algebra.IsPushout.isIntegral [h : IsPushout R S A SA] : Algebra.IsIntegral A SA :=
+  h.symm.isIntegral'
+
+attribute [local instance] Polynomial.algebra in
+instance : Algebra.IsIntegral R[X] S[X] := Algebra.IsPushout.isIntegral R _ S _
+
+attribute [local instance] MvPolynomial.algebraMvPolynomial in
+instance {σ} : Algebra.IsIntegral (MvPolynomial σ R) (MvPolynomial σ S) :=
+  Algebra.IsPushout.isIntegral R _ S _
+
+end Pushout
+
 section
 
 variable (p : R[X]) (x : S)
@@ -338,7 +363,7 @@ lemma Polynomial.Monic.quotient_isIntegral {g : S[X]} (mon : g.Monic) {I : Ideal
           as_sum_range_C_mul_X_pow g', map_sum]
         simp only [Polynomial.C_mul', ← map_pow, map_smul]
       exact this ▸ (aeval_mem_adjoin_singleton S ((Ideal.Quotient.mk I) Polynomial.X))
-  exact fun a ↦ (eq_top ▸ (adjoin_le_integralClosure (mon.quotient_isIntegralElem h)))
+  exact fun a ↦ (eq_top ▸ adjoin_le_integralClosure <| mon.quotient_isIntegralElem h)
     Algebra.mem_top
 
 end
@@ -368,7 +393,7 @@ protected theorem isIntegral [Algebra R A] [IsScalarTower R A B] (x : A) : IsInt
 theorem isIntegral_algebra [Algebra R A] [IsScalarTower R A B] : Algebra.IsIntegral R A :=
   ⟨fun x => IsIntegralClosure.isIntegral R B x⟩
 
-theorem noZeroSMulDivisors [Algebra R A] [IsScalarTower R A B] [NoZeroSMulDivisors R B] :
+theorem noZeroSMulDivisors [SMul R A] [IsScalarTower R A B] [NoZeroSMulDivisors R B] :
     NoZeroSMulDivisors R A := by
   refine
     Function.Injective.noZeroSMulDivisors _ (IsIntegralClosure.algebraMap_injective A R B)
@@ -516,7 +541,7 @@ protected theorem RingHom.IsIntegral.trans
 
 /-- If `R → A → B` is an algebra tower, `C` is the integral closure of `R` in `B`
 and `A` is integral over `R`, then `C` is the integral closure of `A` in `B`. -/
-lemma IsIntegralClosure.tower_top {B C : Type*} [CommRing C] [CommRing B]
+lemma IsIntegralClosure.tower_top {B C : Type*} [CommSemiring C] [CommRing B]
     [Algebra R B] [Algebra A B] [Algebra C B] [IsScalarTower R A B]
     [IsIntegralClosure C R B] [Algebra.IsIntegral R A] :
     IsIntegralClosure C A B :=
@@ -526,10 +551,6 @@ lemma IsIntegralClosure.tower_top {B C : Type*} [CommRing C] [CommRing B]
 
 theorem RingHom.isIntegral_of_surjective (hf : Function.Surjective f) : f.IsIntegral :=
   fun x ↦ (hf x).recOn fun _y hy ↦ hy ▸ f.isIntegralElem_map
-
-theorem Algebra.isIntegral_of_surjective (h : Function.Surjective (algebraMap R A)) :
-    Algebra.IsIntegral R A :=
-  ⟨(algebraMap R A).isIntegral_of_surjective h⟩
 
 /-- If `R → A → B` is an algebra tower with `A → B` injective,
 then if the entire tower is an integral extension so is `R → A` -/
@@ -556,7 +577,7 @@ theorem Algebra.IsIntegral.tower_bot [Algebra R S] [Algebra R T] [Algebra S T]
     exact h.isIntegral
 
 theorem IsIntegral.tower_bot_of_field {R A B : Type*} [CommRing R] [Field A]
-    [CommRing B] [Nontrivial B] [Algebra R A] [Algebra A B] [Algebra R B] [IsScalarTower R A B]
+    [Ring B] [Nontrivial B] [Algebra R A] [Algebra A B] [Algebra R B] [IsScalarTower R A B]
     {x : A} (h : IsIntegral R (algebraMap A B x)) : IsIntegral R x :=
   h.tower_bot (algebraMap A B).injective
 

@@ -184,7 +184,7 @@ theorem mul_dist_le_mul_dist_add_mul_dist (a b c d : P) :
   · rw [dist_self, zero_mul, zero_add]
   rcases eq_or_ne c a with (rfl | hc)
   · rw [dist_self, zero_mul]
-    apply_rules [add_nonneg, mul_nonneg, dist_nonneg]
+    positivity
   rcases eq_or_ne d a with (rfl | hd)
   · rw [dist_self, mul_zero, add_zero, dist_comm d, dist_comm d, mul_comm]
   /- Otherwise, we apply the triangle inequality to `EuclideanGeometry.inversion a 1 b`,

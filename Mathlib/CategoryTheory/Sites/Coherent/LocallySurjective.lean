@@ -75,11 +75,9 @@ lemma extensiveTopology.surjective_of_isLocallySurjective_sheaf_of_types [Finita
   intro ⟨a⟩
   simp only [Functor.comp_obj, Discrete.opposite_inverse_obj, Functor.op_obj, Discrete.functor_obj,
     Functor.mapCone_pt, Cone.whisker_pt, Cocone.op_pt, Cofan.mk_pt, Functor.const_obj_obj,
-    Functor.mapCone_π_app, Cone.whisker_π, Cocone.op_π, whiskerLeft_app, NatTrans.op_app,
+    Functor.mapCone_π_app, Cone.whisker_π, Cocone.op_π, Functor.whiskerLeft_app, NatTrans.op_app,
     Cofan.mk_ι_app]
-  have : f.app ⟨Y a⟩ (y a) = G.map (π a).op x := (h' a).choose_spec
-  change _ = G.map (π a).op x
-  rw [← this]
+  rw [← (h' a).choose_spec]
   erw [← NatTrans.naturality_apply (φ := f)]
   change f.app _ ((i.hom ≫ F.map (π a).op) y) = _
   erw [IsLimit.map_π]
@@ -95,7 +93,8 @@ lemma extensiveTopology.presheafIsLocallySurjective_iff [FinitaryPreExtensive C]
         ∀ (X : C), Function.Surjective (f.app (op X)) := by
   constructor
   · rw [Presheaf.isLocallySurjective_iff_whisker_forget (J := extensiveTopology C)]
-    exact fun h _ ↦ surjective_of_isLocallySurjective_sheaf_of_types (whiskerRight f (forget D)) h
+    exact fun h _ ↦
+      surjective_of_isLocallySurjective_sheaf_of_types (Functor.whiskerRight f (forget D)) h
   · intro h
     refine ⟨fun {X} y ↦ ?_⟩
     obtain ⟨x, hx⟩ := h X y
@@ -130,11 +129,7 @@ lemma regularTopology.isLocallySurjective_sheaf_of_types [Preregular C] [Finitar
     simp only [Functor.comp_obj, Functor.op_obj, Discrete.functor_obj, Functor.mapCone_pt,
       Cocone.op_pt, Cofan.mk_pt, Functor.const_obj_obj, Functor.mapCone_π_app, Cocone.op_π,
       NatTrans.op_app, Cofan.mk_ι_app, Functor.mapIso_symm, Iso.symm_hom, Iso.trans_hom,
-      Functor.mapIso_inv, types_comp_apply, i']
-    -- Work around a `ConcreteCategory`/`HasForget` mismatch:
-    -- (the `simp only` used to be part of the `simp` above)
-    show G.map _ (f.app _ _) = _
-    simp only [← elementwise_of% NatTrans.naturality f (Sigma.ι Z a).op]
+      Functor.mapIso_inv, types_comp_apply, i', ← NatTrans.naturality_apply f (Sigma.ι Z a).op]
     have : f.app ⟨Z a⟩ (x a) = G.map (π a).op y := (h' a).choose_spec
     convert this
     · change F.map _ (F.map _ _) = _

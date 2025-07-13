@@ -18,7 +18,7 @@ A subsingleton type is `w`-small for any `w`.
 
 If `α ≃ β`, then `Small.{w} α ↔ Small.{w} β`.
 
-See `Mathlib.Logic.Small.Basic` for further instances and theorems.
+See `Mathlib/Logic/Small/Basic.lean` for further instances and theorems.
 -/
 
 universe u w v v'
@@ -59,8 +59,13 @@ protected noncomputable def Shrink.rec {α : Type*} [Small.{w} α] {F : Shrink �
     (h : ∀ X, F (equivShrink _ X)) : ∀ X, F X :=
   fun X => ((equivShrink _).apply_symm_apply X) ▸ (h _)
 
--- Porting note: Priority changed to 101
-instance (priority := 101) small_self (α : Type v) : Small.{v} α :=
+@[simp]
+lemma Shrink.rec_equivShrink {α : Type*} [Small.{w} α] {F : Shrink α → Sort v}
+    {f : (a : α) → F (equivShrink α a)} (a : α) : Shrink.rec f (equivShrink _ a) = f a := by
+  simp only [Shrink.rec, eqRec_eq_cast, cast_eq_iff_heq]
+  rw [Equiv.symm_apply_apply]
+
+instance small_self (α : Type v) : Small.{v} α :=
   Small.mk' <| Equiv.refl α
 
 theorem small_map {α : Type*} {β : Type*} [hβ : Small.{w} β] (e : α ≃ β) : Small.{w} α :=
@@ -94,13 +99,13 @@ theorem small_congr {α : Type*} {β : Type*} (e : α ≃ β) : Small.{w} α ↔
   ⟨fun h => @small_map _ _ h e.symm, fun h => @small_map _ _ h e⟩
 
 instance small_sigma {α} (β : α → Type*) [Small.{w} α] [∀ a, Small.{w} (β a)] :
-    Small.{w} (Σa, β a) :=
-  ⟨⟨Σa' : Shrink α, Shrink (β ((equivShrink α).symm a')),
+    Small.{w} (Σ a, β a) :=
+  ⟨⟨Σ a' : Shrink α, Shrink (β ((equivShrink α).symm a')),
       ⟨Equiv.sigmaCongr (equivShrink α) fun a => by simpa using equivShrink (β a)⟩⟩⟩
 
 theorem not_small_type : ¬Small.{u} (Type max u v)
   | ⟨⟨S, ⟨e⟩⟩⟩ =>
-    @Function.cantor_injective (Σα, e.symm α) (fun a => ⟨_, cast (e.3 _).symm a⟩) fun a b e => by
+    @Function.cantor_injective (Σ α, e.symm α) (fun a => ⟨_, cast (e.3 _).symm a⟩) fun a b e => by
       dsimp at e
       injection e with h₁ h₂
       simpa using h₂

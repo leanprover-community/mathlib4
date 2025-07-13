@@ -3,8 +3,6 @@ Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Data.Finsupp.Antidiagonal
 import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
@@ -130,12 +128,13 @@ theorem le_weight (w : σ → ℕ) {s : σ} (hs : w s ≠ 0) (f : σ →₀ ℕ)
     refine le_trans ?_ (Nat.le_add_right _ _)
     apply Nat.le_mul_of_pos_right
     exact Nat.zero_lt_of_ne_zero hs
-  · simp only [not_mem_support_iff] at h
+  · simp only [notMem_support_iff] at h
     rw [h]
     apply zero_le
 
-variable [OrderedAddCommMonoid M] (w : σ → M)
-  {R : Type*} [OrderedCommSemiring R] [CanonicallyOrderedAdd R] [NoZeroDivisors R] [Module R M]
+variable [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M] (w : σ → M)
+  {R : Type*} [CommSemiring R] [PartialOrder R] [IsOrderedRing R]
+  [CanonicallyOrderedAdd R] [NoZeroDivisors R] [Module R M]
 
 instance : SMulPosMono ℕ M :=
   ⟨fun b hb m m' h ↦ by
@@ -159,13 +158,14 @@ end OrderedAddCommMonoid
 
 section CanonicallyOrderedAddCommMonoid
 
-variable {M : Type*} [OrderedAddCommMonoid M] [CanonicallyOrderedAdd M] (w : σ → M)
+variable {M : Type*} [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M]
+  [CanonicallyOrderedAdd M] (w : σ → M)
 
 theorem le_weight_of_ne_zero' {s : σ} {f : σ →₀ ℕ} (hs : f s ≠ 0) :
     w s ≤ weight w f :=
   le_weight_of_ne_zero (fun _ ↦ zero_le _) hs
 
-/-- If `M` is a `CanonicallyOrderedAddCommMonoid`, then `weight f` is zero iff `f=0. -/
+/-- If `M` is a `CanonicallyOrderedAddCommMonoid`, then `weight f` is zero iff `f = 0`. -/
 theorem weight_eq_zero_iff_eq_zero
     (w : σ → M) [NonTorsionWeight ℕ w] {f : σ →₀ ℕ} :
     weight w f = 0 ↔ f = 0 := by
@@ -207,6 +207,9 @@ variable {R : Type*} [AddCommMonoid R]
 /-- The degree of a finsupp function. -/
 def degree (d : σ →₀ R) : R := ∑ i ∈ d.support, d i
 
+theorem degree_eq_sum [Fintype σ] (f : σ →₀ R) : f.degree = ∑ i, f i := by
+  rw [degree, Finset.sum_subset] <;> simp
+
 @[simp]
 theorem degree_add (a b : σ →₀ R) : (a + b).degree = a.degree + b.degree :=
   sum_add_index' (h := fun _ ↦ id) (congrFun rfl) fun _ _ ↦ congrFun rfl
@@ -218,24 +221,26 @@ theorem degree_single (a : σ) (r : R) : (Finsupp.single a r).degree = r :=
 @[simp]
 theorem degree_zero : degree (0 : σ →₀ R) = 0 := by simp [degree]
 
-lemma degree_eq_zero_iff {R : Type*} [OrderedAddCommMonoid R] [CanonicallyOrderedAdd R]
+lemma degree_eq_zero_iff {R : Type*}
+    [AddCommMonoid R] [PartialOrder R] [CanonicallyOrderedAdd R]
     (d : σ →₀ R) :
     degree d = 0 ↔ d = 0 := by
   simp only [degree, Finset.sum_eq_zero_iff, mem_support_iff, ne_eq, _root_.not_imp_self,
     DFunLike.ext_iff, coe_zero, Pi.zero_apply]
 
-theorem le_degree {R : Type*} [OrderedAddCommMonoid R] [CanonicallyOrderedAdd R]
+theorem le_degree {R : Type*}
+    [AddCommMonoid R] [PartialOrder R] [IsOrderedAddMonoid R] [CanonicallyOrderedAdd R]
     (s : σ) (f : σ →₀ R) :
     f s ≤ degree f := by
   by_cases h : s ∈ f.support
   · exact CanonicallyOrderedAddCommMonoid.single_le_sum h
-  · simp only [not_mem_support_iff] at h
+  · simp only [notMem_support_iff] at h
     simp only [h, zero_le]
 
 theorem degree_eq_weight_one {R : Type*} [Semiring R] :
     degree (R := R) (σ := σ) = weight (fun _ ↦ 1) := by
   ext d
-  simp only [degree, weight_apply, Pi.one_apply, smul_eq_mul, mul_one, Finsupp.sum]
+  simp only [degree, weight_apply, smul_eq_mul, mul_one, Finsupp.sum]
 
 theorem finite_of_degree_le [Finite σ] (n : ℕ) :
     {f : σ →₀ ℕ | degree f ≤ n}.Finite := by

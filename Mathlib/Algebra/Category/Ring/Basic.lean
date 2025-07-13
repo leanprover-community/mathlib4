@@ -16,6 +16,7 @@ We introduce the bundled categories:
 * `RingCat`
 * `CommSemiRingCat`
 * `CommRingCat`
+
 along with the relevant forgetful functors between them.
 -/
 
@@ -124,14 +125,10 @@ lemma ofHom_comp {R S T : Type u} [Semiring R] [Semiring S] [Semiring T]
 lemma ofHom_apply {R S : Type u} [Semiring R] [Semiring S]
     (f : R →+* S) (r : R) : ofHom f r = f r := rfl
 
-@[simp]
 lemma inv_hom_apply {R S : SemiRingCat} (e : R ≅ S) (r : R) : e.inv (e.hom r) = r := by
-  rw [← comp_apply]
   simp
 
-@[simp]
 lemma hom_inv_apply {R S : SemiRingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) = s := by
-  rw [← comp_apply]
   simp
 
 instance : Inhabited SemiRingCat :=
@@ -278,14 +275,10 @@ lemma ofHom_comp {R S T : Type u} [Ring R] [Ring S] [Ring T]
 lemma ofHom_apply {R S : Type u} [Ring R] [Ring S]
     (f : R →+* S) (r : R) : ofHom f r = f r := rfl
 
-@[simp]
 lemma inv_hom_apply {R S : RingCat} (e : R ≅ S) (r : R) : e.inv (e.hom r) = r := by
-  rw [← comp_apply]
   simp
 
-@[simp]
 lemma hom_inv_apply {R S : RingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) = s := by
-  rw [← comp_apply]
   simp
 
 instance : Inhabited RingCat :=
@@ -313,6 +306,14 @@ instance hasForgetToSemiRingCat : HasForget₂ RingCat SemiRingCat where
   forget₂ :=
     { obj := fun R ↦ SemiRingCat.of R
       map := fun f ↦ SemiRingCat.ofHom f.hom }
+
+/-- The forgetful functor from `RingCat` to `SemiRingCat` is fully faithful. -/
+def fullyFaithfulForget₂ToSemiRingCat :
+    (forget₂ RingCat SemiRingCat).FullyFaithful where
+  preimage f := ofHom f.hom
+
+instance : (forget₂ RingCat SemiRingCat).Full :=
+  fullyFaithfulForget₂ToSemiRingCat.full
 
 instance hasForgetToAddCommGrp : HasForget₂ RingCat AddCommGrp where
   forget₂ :=
@@ -437,14 +438,10 @@ lemma ofHom_comp {R S T : Type u} [CommSemiring R] [CommSemiring S] [CommSemirin
 lemma ofHom_apply {R S : Type u} [CommSemiring R] [CommSemiring S]
     (f : R →+* S) (r : R) : ofHom f r = f r := rfl
 
-@[simp]
 lemma inv_hom_apply {R S : CommSemiRingCat} (e : R ≅ S) (r : R) : e.inv (e.hom r) = r := by
-  rw [← comp_apply]
   simp
 
-@[simp]
 lemma hom_inv_apply {R S : CommSemiRingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) = s := by
-  rw [← comp_apply]
   simp
 
 instance : Inhabited CommSemiRingCat :=
@@ -468,6 +465,14 @@ instance hasForgetToSemiRingCat : HasForget₂ CommSemiRingCat SemiRingCat where
   forget₂ :=
     { obj := fun R ↦ ⟨R⟩
       map := fun f ↦ ⟨f.hom⟩ }
+
+/-- The forgetful functor from `CommSemiRingCat` to `SemiRingCat` is fully faithful. -/
+def fullyFaithfulForget₂ToSemiRingCat :
+    (forget₂ CommSemiRingCat SemiRingCat).FullyFaithful where
+  preimage f := ofHom f.hom
+
+instance : (forget₂ CommSemiRingCat SemiRingCat).Full :=
+  fullyFaithfulForget₂ToSemiRingCat.full
 
 /-- The forgetful functor from commutative rings to (multiplicative) commutative monoids. -/
 instance hasForgetToCommMonCat : HasForget₂ CommSemiRingCat CommMonCat where
@@ -594,14 +599,10 @@ lemma ofHom_comp {R S T : Type u} [CommRing R] [CommRing S] [CommRing T]
 lemma ofHom_apply {R S : Type u} [CommRing R] [CommRing S]
     (f : R →+* S) (r : R) : ofHom f r = f r := rfl
 
-@[simp]
 lemma inv_hom_apply {R S : CommRingCat} (e : R ≅ S) (r : R) : e.inv (e.hom r) = r := by
-  rw [← comp_apply]
   simp
 
-@[simp]
 lemma hom_inv_apply {R S : CommRingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) = s := by
-  rw [← comp_apply]
   simp
 
 instance : Inhabited CommRingCat :=
@@ -628,6 +629,14 @@ instance hasForgetToRingCat : HasForget₂ CommRingCat RingCat where
   forget₂ :=
     { obj := fun R ↦ RingCat.of R
       map := fun f ↦ RingCat.ofHom f.hom }
+
+/-- The forgetful functor from `CommRingCat` to `RingCat` is fully faithful. -/
+def fullyFaithfulForget₂ToRingCat :
+    (forget₂ CommRingCat RingCat).FullyFaithful where
+  preimage f := ofHom f.hom
+
+instance : (forget₂ CommRingCat RingCat).Full :=
+  fullyFaithfulForget₂ToRingCat.full
 
 @[simp] lemma forgetToRingCat_map_hom {R S : CommRingCat} (f : R ⟶ S) :
     ((forget₂ CommRingCat RingCat).map f).hom = f.hom :=
@@ -695,23 +704,6 @@ def commRingCatIsoToRingEquiv {R S : CommRingCat.{u}} (e : R ≅ S) : R ≃+* S 
   (e.commRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
 
 end CategoryTheory.Iso
-
--- Porting note: typemax hacks to fix universe complaints
-/-- An alias for `SemiringCat.{max u v}`, to deal around unification issues. -/
-@[nolint checkUnivs]
-abbrev SemiRingCatMax.{u1, u2} := SemiRingCat.{max u1 u2}
-
-/-- An alias for `RingCat.{max u v}`, to deal around unification issues. -/
-@[nolint checkUnivs]
-abbrev RingCatMax.{u1, u2} := RingCat.{max u1 u2}
-
-/-- An alias for `CommSemiRingCat.{max u v}`, to deal around unification issues. -/
-@[nolint checkUnivs]
-abbrev CommSemiRingCatMax.{u1, u2} := CommSemiRingCat.{max u1 u2}
-
-/-- An alias for `CommRingCat.{max u v}`, to deal around unification issues. -/
-@[nolint checkUnivs]
-abbrev CommRingCatMax.{u1, u2} := CommRingCat.{max u1 u2}
 
 lemma RingCat.forget_map_apply {R S : RingCat} (f : R ⟶ S)
     (x : (CategoryTheory.forget RingCat).obj R) :

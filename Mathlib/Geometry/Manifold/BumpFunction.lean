@@ -135,7 +135,7 @@ theorem image_eq_inter_preimage_of_subset_support {s : Set M} (hs : s ⊆ suppor
     extChartAt I c '' s =
       closedBall (extChartAt I c c) f.rOut ∩ range I ∩ (extChartAt I c).symm ⁻¹' s := by
   rw [support_eq_inter_preimage, subset_inter_iff, ← extChartAt_source I, ← image_subset_iff] at hs
-  cases' hs with hse hsf
+  obtain ⟨hse, hsf⟩ := hs
   apply Subset.antisymm
   · refine subset_inter (subset_inter (hsf.trans ball_subset_closedBall) ?_) ?_
     · rintro _ ⟨x, -, rfl⟩; exact mem_range_self _
@@ -146,7 +146,7 @@ theorem image_eq_inter_preimage_of_subset_support {s : Set M} (hs : s ⊆ suppor
 
 theorem mem_Icc : f x ∈ Icc (0 : ℝ) 1 := by
   have : f x = 0 ∨ f x = _ := indicator_eq_zero_or_self _ _ _
-  cases' this with h h <;> rw [h]
+  rcases this with h | h <;> rw [h]
   exacts [left_mem_Icc.2 zero_le_one, ⟨f.nonneg, f.le_one⟩]
 
 theorem nonneg : 0 ≤ f x :=
@@ -293,12 +293,8 @@ protected theorem contMDiff : ContMDiff I 𝓘(ℝ) ∞ f := by
     (chartAt H c).open_source.mem_nhds this
   exact f.contDiffAt.contMDiffAt.comp _ (contMDiffAt_extChartAt' this)
 
-@[deprecated (since := "2024-11-20")] alias smooth := SmoothBumpFunction.contMDiff
-
 protected theorem contMDiffAt {x} : ContMDiffAt I 𝓘(ℝ) ∞ f x :=
   f.contMDiff.contMDiffAt
-
-@[deprecated (since := "2024-11-20")] alias smoothAt := SmoothBumpFunction.contMDiffAt
 
 protected theorem continuous : Continuous f :=
   f.contMDiff.continuous
@@ -317,7 +313,5 @@ theorem contMDiff_smul {G} [NormedAddCommGroup G] [NormedSpace ℝ G] {g : M →
   --   _ ⊆ (chart_at _ c).source := f.tsupport_subset_chartAt_source
     f.tsupport_subset_chartAt_source <| tsupport_smul_subset_left _ _ hx
   exact f.contMDiffAt.smul ((hg _ this).contMDiffAt <| (chartAt _ _).open_source.mem_nhds this)
-
-@[deprecated (since := "2024-11-20")] alias smooth_smul := contMDiff_smul
 
 end SmoothBumpFunction

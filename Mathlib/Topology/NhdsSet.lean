@@ -3,7 +3,7 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Patrick Massot
 -/
-import Mathlib.Topology.Basic
+import Mathlib.Topology.Neighborhoods
 
 /-!
 # Neighborhoods of a set
@@ -21,8 +21,8 @@ There are a couple different notions equivalent to `s ∈ 𝓝ˢ t`:
 Furthermore, we have the following results:
 * `monotone_nhdsSet`: `𝓝ˢ` is monotone
 * In T₁-spaces, `𝓝ˢ`is strictly monotone and hence injective:
-  `strict_mono_nhdsSet`/`injective_nhdsSet`. These results are in `Mathlib.Topology.Separation`.
-
+  `strict_mono_nhdsSet`/`injective_nhdsSet`. These results are in
+  `Mathlib/Topology/Separation/Basic.lean`.
 -/
 
 open Set Filter Topology
@@ -42,7 +42,7 @@ lemma nhdsSet_le : 𝓝ˢ s ≤ f ↔ ∀ x ∈ s, 𝓝 x ≤ f := by simp [nhds
 
 theorem bUnion_mem_nhdsSet {t : X → Set X} (h : ∀ x ∈ s, t x ∈ 𝓝 x) : (⋃ x ∈ s, t x) ∈ 𝓝ˢ s :=
   mem_nhdsSet_iff_forall.2 fun x hx => mem_of_superset (h x hx) <|
-    subset_iUnion₂ (s := fun x _ => t x) x hx -- Porting note: fails to find `s`
+    subset_iUnion₂ (s := fun x _ => t x) x hx
 
 theorem subset_interior_iff_mem_nhdsSet : s ⊆ interior t ↔ t ∈ 𝓝ˢ s := by
   simp_rw [mem_nhdsSet_iff_forall, subset_interior_iff_nhds]
@@ -99,7 +99,7 @@ nonrec theorem Filter.EventuallyEq.self_of_nhdsSet {Y} {f g : X → Y} (h : f =�
 
 @[simp]
 theorem nhdsSet_eq_principal_iff : 𝓝ˢ s = 𝓟 s ↔ IsOpen s := by
-  rw [← principal_le_nhdsSet.le_iff_eq, le_principal_iff, mem_nhdsSet_iff_forall,
+  rw [← principal_le_nhdsSet.ge_iff_eq', le_principal_iff, mem_nhdsSet_iff_forall,
     isOpen_iff_mem_nhds]
 
 alias ⟨_, IsOpen.nhdsSet_eq⟩ := nhdsSet_eq_principal_iff

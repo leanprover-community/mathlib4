@@ -125,7 +125,8 @@ theorem πSummand_comp_cofan_inj_id_comp_PInfty_eq_PInfty (n : ℕ) :
     s.πSummand (IndexSet.id (op ⦋n⦌)) ≫ (s.cofan _).inj (IndexSet.id (op ⦋n⦌)) ≫ PInfty.f n =
       PInfty.f n := by
   conv_rhs => rw [← id_comp (PInfty.f n)]
-  erw [s.decomposition_id, Preadditive.sum_comp]
+  dsimp only [AlternatingFaceMapComplex.obj_X]
+  rw [s.decomposition_id, Preadditive.sum_comp]
   rw [Fintype.sum_eq_single (IndexSet.id (op ⦋n⦌)), assoc]
   rintro A (hA : ¬A.EqId)
   rw [assoc, s.cofan_inj_comp_PInfty_eq_zero A hA, comp_zero]
@@ -188,8 +189,9 @@ noncomputable def toKaroubiNondegComplexIsoN₁ :
           comm' := fun i j _ => by
             dsimp
             slice_rhs 1 1 => rw [← id_comp (K[X].d i j)]
-            erw [s.decomposition_id]
-            rw [sum_comp, sum_comp, Finset.sum_eq_single (IndexSet.id (op ⦋i⦌)), assoc, assoc]
+            dsimp only [AlternatingFaceMapComplex.obj_X]
+            rw [s.decomposition_id, sum_comp, sum_comp, Finset.sum_eq_single (IndexSet.id (op ⦋i⦌)),
+                assoc, assoc]
             · intro A _ hA
               simp only [assoc, s.ιSummand_comp_d_comp_πSummand_eq_zero _ _ _ hA, comp_zero]
             · simp only [Finset.mem_univ, not_true, IsEmpty.forall_iff] }
@@ -248,9 +250,7 @@ noncomputable def toKaroubiNondegComplexFunctorIsoN₁ :
   NatIso.ofComponents (fun S => S.s.toKaroubiNondegComplexIsoN₁) fun Φ => by
     ext n
     dsimp
-    simp only [Karoubi.comp_f, toKaroubi_map_f, HomologicalComplex.comp_f,
-      nondegComplexFunctor_map_f, Splitting.toKaroubiNondegComplexIsoN₁_hom_f_f, N₁_map_f,
-      AlternatingFaceMapComplex.map_f, assoc, PInfty_f_idem_assoc]
+    simp only [assoc, PInfty_f_idem_assoc]
     erw [← Split.cofan_inj_naturality_symm_assoc Φ (Splitting.IndexSet.id (op ⦋n⦌))]
     rw [PInfty_f_naturality]
 

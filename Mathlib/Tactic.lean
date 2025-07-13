@@ -36,6 +36,7 @@ import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
 import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
 import Mathlib.Tactic.CategoryTheory.Coherence.PureCoherence
 import Mathlib.Tactic.CategoryTheory.Elementwise
+import Mathlib.Tactic.CategoryTheory.IsoReassoc
 import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
 import Mathlib.Tactic.CategoryTheory.Monoidal.Datatypes
 import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
@@ -71,6 +72,7 @@ import Mathlib.Tactic.DeriveCountable
 import Mathlib.Tactic.DeriveEncodable
 import Mathlib.Tactic.DeriveFintype
 import Mathlib.Tactic.DeriveTraversable
+import Mathlib.Tactic.ENatToNat
 import Mathlib.Tactic.Eqns
 import Mathlib.Tactic.ErwQuestion
 import Mathlib.Tactic.Eval
@@ -99,7 +101,6 @@ import Mathlib.Tactic.FunProp.Differentiable
 import Mathlib.Tactic.FunProp.Elab
 import Mathlib.Tactic.FunProp.FunctionData
 import Mathlib.Tactic.FunProp.Mor
-import Mathlib.Tactic.FunProp.StateList
 import Mathlib.Tactic.FunProp.Theorems
 import Mathlib.Tactic.FunProp.ToBatteries
 import Mathlib.Tactic.FunProp.Types
@@ -107,6 +108,9 @@ import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.GCongr.CoreAttrs
 import Mathlib.Tactic.GCongr.ForwardAttr
+import Mathlib.Tactic.GRewrite
+import Mathlib.Tactic.GRewrite.Core
+import Mathlib.Tactic.GRewrite.Elab
 import Mathlib.Tactic.Generalize
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.Group
@@ -141,8 +145,12 @@ import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.LinearCombination'
 import Mathlib.Tactic.LinearCombination.Lemmas
 import Mathlib.Tactic.Linter
-import Mathlib.Tactic.Linter.AdmitLinter
+import Mathlib.Tactic.Linter.CommandStart
+import Mathlib.Tactic.Linter.DeprecatedModule
+import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
+import Mathlib.Tactic.Linter.DirectoryDependency
 import Mathlib.Tactic.Linter.DocPrime
+import Mathlib.Tactic.Linter.DocString
 import Mathlib.Tactic.Linter.FlexibleLinter
 import Mathlib.Tactic.Linter.GlobalAttributeIn
 import Mathlib.Tactic.Linter.HashCommandLinter
@@ -153,7 +161,6 @@ import Mathlib.Tactic.Linter.MinImports
 import Mathlib.Tactic.Linter.Multigoal
 import Mathlib.Tactic.Linter.OldObtain
 import Mathlib.Tactic.Linter.PPRoundtrip
-import Mathlib.Tactic.Linter.RefineLinter
 import Mathlib.Tactic.Linter.Style
 import Mathlib.Tactic.Linter.TextBased
 import Mathlib.Tactic.Linter.UnusedTactic
@@ -182,14 +189,18 @@ import Mathlib.Tactic.NormNum.Eq
 import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.NormNum.Ineq
 import Mathlib.Tactic.NormNum.Inv
+import Mathlib.Tactic.NormNum.Irrational
 import Mathlib.Tactic.NormNum.IsCoprime
 import Mathlib.Tactic.NormNum.LegendreSymbol
+import Mathlib.Tactic.NormNum.NatFactorial
 import Mathlib.Tactic.NormNum.NatFib
+import Mathlib.Tactic.NormNum.NatLog
 import Mathlib.Tactic.NormNum.NatSqrt
 import Mathlib.Tactic.NormNum.OfScientific
 import Mathlib.Tactic.NormNum.Pow
 import Mathlib.Tactic.NormNum.PowMod
 import Mathlib.Tactic.NormNum.Prime
+import Mathlib.Tactic.NormNum.RealSqrt
 import Mathlib.Tactic.NormNum.Result
 import Mathlib.Tactic.NthRewrite
 import Mathlib.Tactic.Observe
@@ -199,6 +210,7 @@ import Mathlib.Tactic.Order.CollectFacts
 import Mathlib.Tactic.Order.Graph.Basic
 import Mathlib.Tactic.Order.Graph.Tarjan
 import Mathlib.Tactic.Order.Preprocessing
+import Mathlib.Tactic.PNatToNat
 import Mathlib.Tactic.PPWithUniv
 import Mathlib.Tactic.Peel
 import Mathlib.Tactic.Polyrith
@@ -207,10 +219,9 @@ import Mathlib.Tactic.Positivity.Basic
 import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.Positivity.Finset
 import Mathlib.Tactic.ProdAssoc
-import Mathlib.Tactic.ProjectionNotation
 import Mathlib.Tactic.Propose
 import Mathlib.Tactic.ProxyType
-import Mathlib.Tactic.PushNeg
+import Mathlib.Tactic.Push
 import Mathlib.Tactic.Qify
 import Mathlib.Tactic.RSuffices
 import Mathlib.Tactic.Recall
@@ -227,6 +238,7 @@ import Mathlib.Tactic.Rify
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Ring.Basic
 import Mathlib.Tactic.Ring.Compare
+import Mathlib.Tactic.Ring.NamePolyVars
 import Mathlib.Tactic.Ring.PNat
 import Mathlib.Tactic.Ring.RingNF
 import Mathlib.Tactic.Sat.FromLRAT
@@ -236,6 +248,8 @@ import Mathlib.Tactic.Set
 import Mathlib.Tactic.SetLike
 import Mathlib.Tactic.SimpIntro
 import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Simproc.ExistsAndEq
+import Mathlib.Tactic.Simproc.Factors
 import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.Simps.NotationClass
 import Mathlib.Tactic.SplitIfs
@@ -269,7 +283,9 @@ import Mathlib.Tactic.Widget.CongrM
 import Mathlib.Tactic.Widget.Conv
 import Mathlib.Tactic.Widget.GCongr
 import Mathlib.Tactic.Widget.InteractiveUnfold
+import Mathlib.Tactic.Widget.LibraryRewrite
 import Mathlib.Tactic.Widget.SelectInsertParamsClass
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Tactic.Widget.StringDiagram
+import Mathlib.Tactic.WithoutCDot
 import Mathlib.Tactic.Zify

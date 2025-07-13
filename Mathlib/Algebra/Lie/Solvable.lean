@@ -85,7 +85,7 @@ theorem derivedSeriesOfIdeal_le {I J : LieIdeal R L} {k l : ℕ} (h₁ : I ≤ J
   revert l; induction' k with k ih <;> intro l h₂
   · rw [le_zero_iff] at h₂; rw [h₂, derivedSeriesOfIdeal_zero]; exact h₁
   · have h : l = k.succ ∨ l ≤ k := by rwa [le_iff_eq_or_lt, Nat.lt_succ_iff] at h₂
-    cases' h with h h
+    rcases h with h | h
     · rw [h, derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_succ]
       exact LieSubmodule.mono_lie (ih (le_refl k)) (ih (le_refl k))
     · rw [derivedSeriesOfIdeal_succ]; exact le_trans (LieSubmodule.lie_le_left _ _) (ih h)
@@ -129,8 +129,7 @@ open TensorProduct in
       (derivedSeriesOfIdeal R L k I).baseChange A := by
   induction k with
   | zero => simp
-  | succ k ih => simp only [derivedSeriesOfIdeal_succ, ih, ← LieSubmodule.baseChange_top,
-    LieSubmodule.lie_baseChange]
+  | succ k ih => simp only [derivedSeriesOfIdeal_succ, ih, LieSubmodule.lie_baseChange]
 
 open TensorProduct in
 @[simp] theorem derivedSeries_baseChange {A : Type*} [CommRing A] [Algebra R A] (k : ℕ) :
@@ -235,7 +234,7 @@ theorem coe_derivedSeries_eq_int (k : ℕ) :
     rw [LieSubmodule.lieIdeal_oper_eq_linear_span', LieSubmodule.lieIdeal_oper_eq_linear_span']
     rw [Set.ext_iff] at ih
     simp only [SetLike.mem_coe, LieSubmodule.mem_toSubmodule] at ih
-    simp only [Subtype.exists, exists_prop, ih]
+    simp only [ih]
     apply le_antisymm
     · exact coe_derivedSeries_eq_int_aux _ _ L k ih
     · simp only [← ih]
@@ -432,7 +431,7 @@ instance : Unique {x // x ∈ (⊥ : LieIdeal R L)} :=
 theorem abelian_derivedAbelianOfIdeal (I : LieIdeal R L) :
     IsLieAbelian (derivedAbelianOfIdeal I) := by
   dsimp only [derivedAbelianOfIdeal]
-  cases' h : derivedLengthOfIdeal R L I with k
+  rcases h : derivedLengthOfIdeal R L I with - | k
   · dsimp; infer_instance
   · rw [derivedSeries_of_derivedLength_succ] at h; exact h.1
 

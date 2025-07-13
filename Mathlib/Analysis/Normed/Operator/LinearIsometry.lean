@@ -66,9 +66,9 @@ A map `f` between an `R`-module and an `S`-module over a ring homomorphism `σ :
 is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 `f (c • x) = (σ c) • f x`. -/
 class SemilinearIsometryClass (𝓕 : Type*) {R R₂ : outParam Type*} [Semiring R] [Semiring R₂]
-  (σ₁₂ : outParam <| R →+* R₂) (E E₂ : outParam Type*) [SeminormedAddCommGroup E]
-  [SeminormedAddCommGroup E₂] [Module R E] [Module R₂ E₂] [FunLike 𝓕 E E₂] extends
-  SemilinearMapClass 𝓕 σ₁₂ E E₂ : Prop where
+    (σ₁₂ : outParam <| R →+* R₂) (E E₂ : outParam Type*) [SeminormedAddCommGroup E]
+    [SeminormedAddCommGroup E₂] [Module R E] [Module R₂ E₂] [FunLike 𝓕 E E₂] : Prop
+    extends SemilinearMapClass 𝓕 σ₁₂ E E₂ where
   norm_map : ∀ (f : 𝓕) (x : E), ‖f x‖ = ‖x‖
 
 /-- `LinearIsometryClass F R E E₂` asserts `F` is a type of bundled `R`-linear isometries
@@ -196,6 +196,10 @@ theorem norm_map (x : E) : ‖f x‖ = ‖x‖ :=
 @[simp] -- Should be replaced with `SemilinearIsometryClass.nnorm_map` when https://github.com/leanprover/lean4/issues/3107 is fixed.
 theorem nnnorm_map (x : E) : ‖f x‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_map f x
+
+@[simp] -- Should be replaced with `SemilinearIsometryClass.enorm_map` when https://github.com/leanprover/lean4/issues/3107 is fixed.
+theorem enorm_map (x : E) : ‖f x‖ₑ = ‖x‖ₑ := by
+  simp [enorm]
 
 protected theorem isometry : Isometry f :=
   AddMonoidHomClass.isometry_of_norm f.toLinearMap (norm_map _)
@@ -430,8 +434,8 @@ is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 class SemilinearIsometryEquivClass (𝓕 : Type*) {R R₂ : outParam Type*} [Semiring R]
   [Semiring R₂] (σ₁₂ : outParam <| R →+* R₂) {σ₂₁ : outParam <| R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁]
   [RingHomInvPair σ₂₁ σ₁₂] (E E₂ : outParam Type*) [SeminormedAddCommGroup E]
-  [SeminormedAddCommGroup E₂] [Module R E] [Module R₂ E₂] [EquivLike 𝓕 E E₂]
-  extends SemilinearEquivClass 𝓕 σ₁₂ E E₂ : Prop where
+  [SeminormedAddCommGroup E₂] [Module R E] [Module R₂ E₂] [EquivLike 𝓕 E E₂] : Prop
+  extends SemilinearEquivClass 𝓕 σ₁₂ E E₂ where
   norm_map : ∀ (f : 𝓕) (x : E), ‖f x‖ = ‖x‖
 
 /-- `LinearIsometryEquivClass F R E E₂` asserts `F` is a type of bundled `R`-linear isometries
@@ -470,8 +474,8 @@ instance instEquivLike : EquivLike (E ≃ₛₗᵢ[σ₁₂] E₂) E E₂ where
   coe e := e.toFun
   inv e := e.invFun
   coe_injective' f g h₁ h₂ := by
-    cases' f with f' _
-    cases' g with g' _
+    obtain ⟨f', _⟩ := f
+    obtain ⟨g', _⟩ := g
     cases f'
     cases g'
     simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, DFunLike.coe_fn_eq] at h₁
@@ -486,7 +490,7 @@ instance instSemilinearIsometryEquivClass :
   norm_map e := e.norm_map'
 
 /-- Shortcut instance, saving 8.5% of compilation time in
-`Mathlib.Analysis.InnerProductSpace.Adjoint`.
+`Mathlib/Analysis/InnerProductSpace/Adjoint.lean`.
 
 (This instance was pinpointed by benchmarks; we didn't do an in depth investigation why it is
 specifically needed.)
@@ -649,16 +653,33 @@ theorem symm_bijective : Function.Bijective (symm : (E₂ ≃ₛₗᵢ[σ₂₁]
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 @[simp]
-theorem toLinearEquiv_symm : e.toLinearEquiv.symm = e.symm.toLinearEquiv :=
+theorem toLinearEquiv_symm : e.symm.toLinearEquiv = e.toLinearEquiv.symm :=
   rfl
 
 @[simp]
-theorem toIsometryEquiv_symm : e.toIsometryEquiv.symm = e.symm.toIsometryEquiv :=
+theorem coe_symm_toLinearEquiv : ⇑e.toLinearEquiv.symm = e.symm := rfl
+
+@[simp]
+theorem toContinuousLinearEquiv_symm :
+    e.symm.toContinuousLinearEquiv = e.toContinuousLinearEquiv.symm := rfl
+
+@[simp]
+theorem coe_symm_toContinuousLinearEquiv : ⇑e.toContinuousLinearEquiv.symm = e.symm :=
   rfl
 
 @[simp]
-theorem toHomeomorph_symm : e.toHomeomorph.symm = e.symm.toHomeomorph :=
+theorem toIsometryEquiv_symm : e.symm.toIsometryEquiv = e.toIsometryEquiv.symm :=
   rfl
+
+@[simp]
+theorem coe_symm_toIsometryEquiv : ⇑e.toIsometryEquiv.symm = e.symm := rfl
+
+@[simp]
+theorem toHomeomorph_symm : e.symm.toHomeomorph = e.toHomeomorph.symm :=
+  rfl
+
+@[simp]
+theorem coe_symm_toHomeomorph : ⇑e.toHomeomorph.symm = e.symm := rfl
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
   because it is a composition of multiple projections. -/
@@ -691,6 +712,16 @@ theorem trans_apply (e₁ : E ≃ₛₗᵢ[σ₁₂] E₂) (e₂ : E₂ ≃ₛ�
 @[simp]
 theorem toLinearEquiv_trans (e' : E₂ ≃ₛₗᵢ[σ₂₃] E₃) :
     (e.trans e').toLinearEquiv = e.toLinearEquiv.trans e'.toLinearEquiv :=
+  rfl
+
+@[simp]
+theorem toIsometryEquiv_trans (e' : E₂ ≃ₛₗᵢ[σ₂₃] E₃) :
+    (e.trans e').toIsometryEquiv = e.toIsometryEquiv.trans e'.toIsometryEquiv :=
+  rfl
+
+@[simp]
+theorem toHomeomorph_trans (e' : E₂ ≃ₛₗᵢ[σ₂₃] E₃) :
+    (e.trans e').toHomeomorph = e.toHomeomorph.trans e'.toHomeomorph :=
   rfl
 
 @[simp]
@@ -795,10 +826,6 @@ instance instCoeTCContinuousLinearMap : CoeTC (E ≃ₛₗᵢ[σ₁₂] E₂) (E
 @[simp]
 theorem coe_coe : ⇑(e : E ≃SL[σ₁₂] E₂) = e :=
   rfl
-
--- @[simp] -- Porting note: now a syntactic tautology
--- theorem coe_coe' : ((e : E ≃SL[σ₁₂] E₂) : E →SL[σ₁₂] E₂) = e :=
---   rfl
 
 @[simp]
 theorem coe_coe'' : ⇑(e : E →SL[σ₁₂] E₂) = e :=
@@ -917,7 +944,8 @@ theorem coe_ofSurjective (f : F →ₛₗᵢ[σ₁₂] E₂) (hfr : Function.Sur
 def ofLinearIsometry (f : E →ₛₗᵢ[σ₁₂] E₂) (g : E₂ →ₛₗ[σ₂₁] E)
     (h₁ : f.toLinearMap.comp g = LinearMap.id) (h₂ : g.comp f.toLinearMap = LinearMap.id) :
     E ≃ₛₗᵢ[σ₁₂] E₂ :=
-  { LinearEquiv.ofLinear f.toLinearMap g h₁ h₂ with norm_map' := fun x => f.norm_map x }
+  { toLinearEquiv := LinearEquiv.ofLinear f.toLinearMap g h₁ h₂
+    norm_map' := fun x => f.norm_map x }
 
 @[simp]
 theorem coe_ofLinearIsometry (f : E →ₛₗᵢ[σ₁₂] E₂) (g : E₂ →ₛₗ[σ₂₁] E)
@@ -931,13 +959,10 @@ theorem coe_ofLinearIsometry_symm (f : E →ₛₗᵢ[σ₁₂] E₂) (g : E₂ 
     ((ofLinearIsometry f g h₁ h₂).symm : E₂ → E) = (g : E₂ → E) :=
   rfl
 
-variable (R)
-
+variable (R) in
 /-- The negation operation on a normed space `E`, considered as a linear isometry equivalence. -/
 def neg : E ≃ₗᵢ[R] E :=
   { LinearEquiv.neg R with norm_map' := norm_neg }
-
-variable {R}
 
 @[simp]
 theorem coe_neg : (neg R : E → E) = fun x => -x :=
@@ -1007,7 +1032,7 @@ theorem Basis.ext_linearIsometryEquiv {ι : Type*} (b : Basis ι R E) {f₁ f₂
   LinearIsometryEquiv.toLinearEquiv_injective <| b.ext' h
 
 /-- Reinterpret a `LinearIsometry` as a `LinearIsometryEquiv` to the range. -/
-@[simps! apply_coe] -- Porting note: `toLinearEquiv` projection does not simplify using itself
+@[simps! apply_coe]
 noncomputable def LinearIsometry.equivRange {R S : Type*} [Semiring R] [Ring S] [Module S E]
     [Module R F] {σ₁₂ : R →+* S} {σ₂₁ : S →+* R} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
     (f : F →ₛₗᵢ[σ₁₂] E) : F ≃ₛₗᵢ[σ₁₂] (LinearMap.range f.toLinearMap) :=

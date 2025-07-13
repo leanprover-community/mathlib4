@@ -38,7 +38,7 @@ variable {R n : Type*} [Fintype n] [DecidableEq n]
 
 section LinearOrderedSemifield
 
-variable [LinearOrderedSemifield R] {M : Matrix n n R}
+variable [Semifield R] [LinearOrder R] [IsStrictOrderedRing R] {M : Matrix n n R}
 
 /--
 If M is a positive scalar multiple of a doubly stochastic matrix, then there is a permutation matrix
@@ -50,10 +50,10 @@ private lemma exists_perm_eq_zero_implies_eq_zero [Nonempty n] {s : R} (hs : 0 <
   rw [exists_mem_doublyStochastic_eq_smul_iff hs.le] at hM
   let f (i : n) : Finset n := {j | M i j ≠ 0}
   have hf (A : Finset n) : #A ≤ #(A.biUnion f) := by
-    have (i) : ∑ j ∈ f i, M i j = s := by simp [f, sum_subset (filter_subset _ _), hM.2.1]
+    have (i : _) : ∑ j ∈ f i, M i j = s := by simp [f, sum_subset (filter_subset _ _), hM.2.1]
     have h₁ : ∑ i ∈ A, ∑ j ∈ f i, M i j = #A * s := by simp [this]
     have h₂ : ∑ i, ∑ j ∈ A.biUnion f, M i j = #(A.biUnion f) * s := by
-      simp [sum_comm (t := A.biUnion f), hM.2.2, mul_comm s]
+      simp [sum_comm (t := A.biUnion f), hM.2.2]
     suffices #A * s ≤ #(A.biUnion f) * s by exact_mod_cast le_of_mul_le_mul_right this hs
     rw [← h₁, ← h₂]
     trans ∑ i ∈ A, ∑ j ∈ A.biUnion f, M i j
@@ -72,7 +72,7 @@ end LinearOrderedSemifield
 
 section LinearOrderedField
 
-variable [LinearOrderedField R] {M : Matrix n n R}
+variable [Field R] [LinearOrder R] [IsStrictOrderedRing R] {M : Matrix n n R}
 
 /--
 If M is a scalar multiple of a doubly stochastic matrix, then it is a conical combination of

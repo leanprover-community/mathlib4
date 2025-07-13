@@ -167,9 +167,8 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
 theorem exists_sum_eq_one_iff_pairwise_coprime' [Fintype I] [Nonempty I] [DecidableEq I] :
     (∃ μ : I → R, (∑ i : I, μ i * ∏ j ∈ {i}ᶜ, s j) = 1) ↔ Pairwise (IsCoprime on s) := by
   convert exists_sum_eq_one_iff_pairwise_coprime Finset.univ_nonempty (s := s) using 1
-  simp only [Function.onFun, pairwise_subtype_iff_pairwise_finset', coe_univ, Set.pairwise_univ]
+  simp only [pairwise_subtype_iff_pairwise_finset', coe_univ, Set.pairwise_univ]
 
--- Porting note: a lot of the capitalization wasn't working
 theorem pairwise_coprime_iff_coprime_prod [DecidableEq I] :
     Pairwise (IsCoprime on fun i : t ↦ s i) ↔ ∀ i ∈ t, IsCoprime (s i) (∏ j ∈ t \ {i}, s j) := by
   refine ⟨fun hp i hi ↦ IsCoprime.prod_right_iff.mpr fun j hj ↦ ?_, fun hp ↦ ?_⟩

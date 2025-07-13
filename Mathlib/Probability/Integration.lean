@@ -3,7 +3,7 @@ Copyright (c) 2021 Martin Zinkevich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Zinkevich, Vincent Beffara
 -/
-import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.MeasureTheory.Integral.Bochner.Set
 import Mathlib.Probability.Independence.Basic
 
 /-!
@@ -53,7 +53,7 @@ theorem lintegral_mul_indicator_eq_lintegral_mul_lintegral_indicator {Mf mΩ : M
     simp_rw [← inter_indicator_mul]
     rw [lintegral_indicator (MeasurableSet.inter (hMf _ h_meas_s') h_meas_T),
       lintegral_indicator (hMf _ h_meas_s'), lintegral_indicator h_meas_T]
-    simp only [measurable_const, lintegral_const, univ_inter, lintegral_const_mul,
+    simp only [lintegral_const, univ_inter,
       MeasurableSet.univ, Measure.restrict_apply]
     rw [IndepSets_iff] at h_ind
     rw [mul_mul_mul_comm, h_ind s' T h_meas_s' (Set.mem_singleton _)]
@@ -120,34 +120,26 @@ theorem lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun' (h_meas_f : AEMeas
     lintegral_congr_ae fg_ae]
   apply lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun h_meas_f.measurable_mk
       h_meas_g.measurable_mk
-  exact h_indep_fun.ae_eq h_meas_f.ae_eq_mk h_meas_g.ae_eq_mk
+  exact h_indep_fun.congr h_meas_f.ae_eq_mk h_meas_g.ae_eq_mk
 
 theorem lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' (h_meas_f : AEMeasurable f μ)
     (h_meas_g : AEMeasurable g μ) (h_indep_fun : IndepFun f g μ) :
     ∫⁻ ω, f ω * g ω ∂μ = (∫⁻ ω, f ω ∂μ) * ∫⁻ ω, g ω ∂μ :=
   lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun' h_meas_f h_meas_g h_indep_fun
 
-theorem lintegral_prod_eq_prod_lintegral_of_indepFun {ι : Type*} [DecidableEq ι]
-    (s : Finset ι) (X : ι → Ω → ℝ≥0∞)
-    (hX : iIndepFun (fun _ ↦ ENNReal.measurableSpace) X μ)
+theorem lintegral_prod_eq_prod_lintegral_of_indepFun {ι : Type*}
+    (s : Finset ι) (X : ι → Ω → ℝ≥0∞) (hX : iIndepFun X μ)
     (x_mea : ∀ i, Measurable (X i)) :
     ∫⁻ ω, ∏ i ∈ s, (X i ω) ∂μ = ∏ i ∈ s, ∫⁻ ω, X i ω ∂μ := by
   have : IsProbabilityMeasure μ := hX.isProbabilityMeasure
-  induction s using Finset.induction
-  case empty => simp only [Finset.prod_empty, lintegral_const, measure_univ, mul_one]
-  case insert _ j s hj v =>
-    calc  ∫⁻ (ω : Ω), ∏ i ∈ insert j s, X i ω ∂μ
-      _ = ∫⁻ (ω : Ω), (∏ i ∈ insert j s, X i) ω ∂μ := by simp only [Finset.prod_apply]
-      _ =  ∫⁻ (ω : Ω), (X j * ∏ i ∈ s, X i) ω ∂μ :=
-        lintegral_congr fun ω ↦ congrFun (Finset.prod_insert hj) ω
-      _ = (∫⁻ ω, X j ω ∂μ) * ∫⁻ ω, (∏ i ∈ s, X i) ω ∂μ := by
-        apply lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'
-        · exact (x_mea j).aemeasurable
-        · exact s.aemeasurable_prod' (fun i _ ↦ (x_mea i).aemeasurable)
-        · exact (iIndepFun.indepFun_finset_prod_of_not_mem hX (fun i ↦ x_mea i) hj).symm
-      _ = ∏ i' ∈ insert j s, ∫⁻ ω, X i' ω ∂μ := by
-        simp only [Finset.prod_apply]
-        rw [v, Finset.prod_insert hj]
+  induction s using Finset.cons_induction with
+  | empty => simp only [Finset.prod_empty, lintegral_const, measure_univ, mul_one]
+  | cons j s hj ihs =>
+    simp only [← Finset.prod_apply, Finset.prod_cons, ← ihs]
+    apply lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'
+    · exact (x_mea j).aemeasurable
+    · exact s.aemeasurable_prod' (fun i _ ↦ (x_mea i).aemeasurable)
+    · exact (iIndepFun.indepFun_finset_prod_of_notMem hX x_mea hj).symm
 
 /-- The product of two independent, integrable, real-valued random variables is integrable. -/
 theorem IndepFun.integrable_mul {β : Type*} [MeasurableSpace β] {X Y : Ω → β}
@@ -168,7 +160,8 @@ theorem IndepFun.integrable_mul {β : Type*} [MeasurableSpace β] {X Y : Ω → 
 /-- If the product of two independent real-valued random variables is integrable and
 the second one is not almost everywhere zero, then the first one is integrable. -/
 theorem IndepFun.integrable_left_of_integrable_mul {β : Type*} [MeasurableSpace β] {X Y : Ω → β}
-    [NormedDivisionRing β] [BorelSpace β] (hXY : IndepFun X Y μ) (h'XY : Integrable (X * Y) μ)
+    [NormedDivisionRing β] [OpensMeasurableSpace β]
+    (hXY : IndepFun X Y μ) (h'XY : Integrable (X * Y) μ)
     (hX : AEStronglyMeasurable X μ) (hY : AEStronglyMeasurable Y μ) (h'Y : ¬Y =ᵐ[μ] 0) :
     Integrable X μ := by
   refine ⟨hX, ?_⟩
@@ -180,14 +173,15 @@ theorem IndepFun.integrable_left_of_integrable_mul {β : Type*} [MeasurableSpace
   refine hasFiniteIntegral_iff_enorm.mpr <| lt_top_iff_ne_top.2 fun H => ?_
   have J : IndepFun (‖X ·‖ₑ) (‖Y ·‖ₑ) μ := hXY.comp measurable_enorm measurable_enorm
   have A : ∫⁻ ω, ‖X ω * Y ω‖ₑ ∂μ < ∞ := h'XY.2
-  simp only [enorm_mul, ENNReal.coe_mul] at A
+  simp only [enorm_mul] at A
   rw [lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' hX.enorm hY.enorm J, H] at A
   simp only [ENNReal.top_mul I, lt_self_iff_false] at A
 
 /-- If the product of two independent real-valued random variables is integrable and the
 first one is not almost everywhere zero, then the second one is integrable. -/
 theorem IndepFun.integrable_right_of_integrable_mul {β : Type*} [MeasurableSpace β] {X Y : Ω → β}
-    [NormedDivisionRing β] [BorelSpace β] (hXY : IndepFun X Y μ) (h'XY : Integrable (X * Y) μ)
+    [NormedDivisionRing β] [OpensMeasurableSpace β]
+    (hXY : IndepFun X Y μ) (h'XY : Integrable (X * Y) μ)
     (hX : AEStronglyMeasurable X μ) (hY : AEStronglyMeasurable Y μ) (h'X : ¬X =ᵐ[μ] 0) :
     Integrable Y μ := by
   refine ⟨hY, ?_⟩
@@ -200,7 +194,7 @@ theorem IndepFun.integrable_right_of_integrable_mul {β : Type*} [MeasurableSpac
   have J : IndepFun (fun ω => ‖X ω‖ₑ : Ω → ℝ≥0∞) (fun ω => ‖Y ω‖ₑ : Ω → ℝ≥0∞) μ :=
     IndepFun.comp hXY measurable_enorm measurable_enorm
   have A : ∫⁻ ω, ‖X ω * Y ω‖ₑ ∂μ < ∞ := h'XY.2
-  simp only [enorm_mul, ENNReal.coe_mul] at A
+  simp only [enorm_mul] at A
   rw [lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' hX.enorm hY.enorm J, H] at A
   simp only [ENNReal.mul_top I, lt_self_iff_false] at A
 
@@ -285,7 +279,7 @@ theorem IndepFun.integral_mul (hXY : IndepFun X Y μ) (hX : AEStronglyMeasurable
       filter_upwards [h'Y] with ω hω
       simp [hω]
     simp only [integral_congr_ae h'Y, integral_congr_ae h', Pi.zero_apply, integral_const,
-      Algebra.id.smul_eq_mul, mul_zero, zero_mul]
+      Algebra.id.smul_eq_mul, mul_zero]
   by_cases h : Integrable (X * Y) μ
   · have HX : Integrable X μ := hXY.integrable_left_of_integrable_mul h hX hY h'Y
     have HY : Integrable Y μ := hXY.integrable_right_of_integrable_mul h hX hY h'X
@@ -295,7 +289,7 @@ theorem IndepFun.integral_mul (hXY : IndepFun X Y μ) (hX : AEStronglyMeasurable
       rintro ⟨HX, HY⟩
       exact h (hXY.integrable_mul HX HY)
     rw [not_and_or] at I
-    cases' I with I I <;> simp [integral_undef I]
+    rcases I with I | I <;> simp [integral_undef I]
 
 theorem IndepFun.integral_mul' (hXY : IndepFun X Y μ) (hX : AEStronglyMeasurable X μ)
     (hY : AEStronglyMeasurable Y μ) :
@@ -317,9 +311,9 @@ theorem indepFun_iff_integral_comp_mul [IsFiniteMeasure μ] {β β' : Type*} {m�
     h (measurable_one.indicator hA) (measurable_one.indicator hB)
       ((integrable_const 1).indicator (hfm.comp measurable_id hA))
       ((integrable_const 1).indicator (hgm.comp measurable_id hB))
-  rwa [← ENNReal.toReal_eq_toReal (measure_ne_top μ _), ENNReal.toReal_mul, ←
-    integral_indicator_one ((hfm hA).inter (hgm hB)), ← integral_indicator_one (hfm hA), ←
-    integral_indicator_one (hgm hB), Set.inter_indicator_one]
+  rwa [← ENNReal.toReal_eq_toReal (measure_ne_top μ _), ENNReal.toReal_mul, ← measureReal_def,
+    ← measureReal_def, ← measureReal_def, ← integral_indicator_one ((hfm hA).inter (hgm hB)),
+    ← integral_indicator_one (hfm hA), ← integral_indicator_one (hgm hB), Set.inter_indicator_one]
   exact ENNReal.mul_ne_top (measure_ne_top μ _) (measure_ne_top μ _)
 
 end ProbabilityTheory

@@ -37,7 +37,7 @@ see `preperfect_iff_perfect_closure`.
 
 ## See also
 
-`Mathlib.Topology.MetricSpace.Perfect`, for properties of perfect sets in metric spaces,
+`Mathlib/Topology/MetricSpace/Perfect.lean`, for properties of perfect sets in metric spaces,
 namely Polish spaces.
 
 ## References
@@ -184,7 +184,8 @@ lemma IsPreconnected.preperfect_of_nontrivial [T1Space α] {U : Set α} (hu : U.
     apply subset_closure
     simp [hy]
   · apply Set.Nonempty.right at h
-    rw [Set.singleton_inter_nonempty, mem_closure_iff_clusterPt, ← acc_principal_iff_cluster] at h
+    rw [Set.singleton_inter_nonempty, mem_closure_iff_clusterPt,
+      ← accPt_principal_iff_clusterPt] at h
     exact h
 
 end Preperfect
@@ -200,7 +201,7 @@ theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
   let V := ⋃ U ∈ v, U
   let D := C \ V
   have Vct : (V ∩ C).Countable := by
-    simp only [V, iUnion_inter, mem_sep_iff]
+    simp only [V, iUnion_inter]
     apply Countable.biUnion
     · exact Countable.mono inter_subset_left bct
     · exact inter_subset_right

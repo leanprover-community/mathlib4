@@ -6,8 +6,8 @@ Authors: Kim Morrison
 import Mathlib.Algebra.Group.PUnit
 import Mathlib.Algebra.Group.TypeTags.Hom
 import Mathlib.Algebra.Group.ULift
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.CategoryTheory.Functor.ReflectsIso
+import Mathlib.CategoryTheory.Elementwise
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
 # Category instances for `Monoid`, `AddMonoid`, `CommMonoid`, and `AddCommMmonoid`.
@@ -17,6 +17,7 @@ We introduce the bundled categories:
 * `AddMonCat`
 * `CommMonCat`
 * `AddCommMonCat`
+
 along with the relevant forgetful functors between them.
 -/
 
@@ -170,14 +171,12 @@ lemma ofHom_comp {M N P : Type u} [Monoid M] [Monoid N] [Monoid P]
 lemma ofHom_apply {X Y : Type u} [Monoid X] [Monoid Y] (f : X →* Y) (x : X) :
     (ofHom f) x = f x := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma inv_hom_apply {M N : MonCat} (e : M ≅ N) (x : M) : e.inv (e.hom x) = x := by
-  rw [← comp_apply]
   simp
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma hom_inv_apply {M N : MonCat} (e : M ≅ N) (s : N) : e.hom (e.inv s) = s := by
-  rw [← comp_apply]
   simp
 
 @[to_additive]
@@ -355,14 +354,12 @@ lemma ofHom_comp {M N P : Type u} [CommMonoid M] [CommMonoid N] [CommMonoid P]
 lemma ofHom_apply {X Y : Type u} [CommMonoid X] [CommMonoid Y] (f : X →* Y) (x : X) :
     (ofHom f) x = f x := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma inv_hom_apply {M N : CommMonCat} (e : M ≅ N) (x : M) : e.inv (e.hom x) = x := by
-  rw [← comp_apply]
   simp
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma hom_inv_apply {M N : CommMonCat} (e : M ≅ N) (s : N) : e.hom (e.inv s) = s := by
-  rw [← comp_apply]
   simp
 
 @[to_additive]
@@ -390,6 +387,16 @@ instance hasForgetToMonCat : HasForget₂ CommMonCat MonCat where
 @[to_additive (attr := simp)] lemma forget₂_map_ofHom {X Y : Type u} [CommMonoid X] [CommMonoid Y]
     (f : X →* Y) :
     (forget₂ CommMonCat MonCat).map (ofHom f) = MonCat.ofHom f := rfl
+
+/-- The forgetful functor from `CommMonCat` to `MonCat` is fully faithful. -/
+@[to_additive fullyFaithfulForgetToAddMonCat
+  "The forgetful functor from `AddCommMonCat` to `AddMonCat` is fully faithful."]
+def fullyFaithfulForgetToMonCat : (forget₂ CommMonCat.{u} MonCat.{u}).FullyFaithful where
+  preimage f := ofHom f.hom
+
+@[to_additive]
+instance : (forget₂ CommMonCat.{u} MonCat.{u}).Full :=
+  fullyFaithfulForgetToMonCat.full
 
 @[to_additive]
 instance : Coe CommMonCat.{u} MonCat.{u} where coe := (forget₂ CommMonCat MonCat).obj

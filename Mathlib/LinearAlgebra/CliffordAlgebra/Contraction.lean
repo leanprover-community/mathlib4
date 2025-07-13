@@ -3,10 +3,10 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
-import Mathlib.LinearAlgebra.CliffordAlgebra.Fold
 import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
-import Mathlib.LinearAlgebra.Dual
+import Mathlib.LinearAlgebra.CliffordAlgebra.Fold
+import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
+import Mathlib.LinearAlgebra.Dual.Defs
 
 /-!
 # Contraction in Clifford Algebras
@@ -79,7 +79,6 @@ def contractLeft : Module.Dual R M →ₗ[R] CliffordAlgebra Q →ₗ[R] Cliffor
   toFun d := foldr' Q (contractLeftAux Q d) (contractLeftAux_contractLeftAux Q d) 0
   map_add' d₁ d₂ :=
     LinearMap.ext fun x => by
-      dsimp only
       rw [LinearMap.add_apply]
       induction x using CliffordAlgebra.left_induction with
       | algebraMap => simp_rw [foldr'_algebraMap, smul_zero, zero_add]
@@ -90,7 +89,6 @@ def contractLeft : Module.Dual R M →ₗ[R] CliffordAlgebra Q →ₗ[R] Cliffor
         rw [sub_add_sub_comm, mul_add, LinearMap.add_apply, add_smul]
   map_smul' c d :=
     LinearMap.ext fun x => by
-      dsimp only
       rw [LinearMap.smul_apply, RingHom.id_apply]
       induction x using CliffordAlgebra.left_induction with
       | algebraMap => simp_rw [foldr'_algebraMap, smul_zero]
@@ -117,18 +115,14 @@ local infixl:70 "⌋" => contractLeft (R := R) (M := M)
 
 local infixl:70 "⌊" => contractRight (R := R) (M := M) (Q := Q)
 
--- Porting note: Lean needs to be reminded of this instance otherwise the statement of the
--- next result times out
-instance : SMul R (CliffordAlgebra Q) := inferInstance
-
-/-- This is [grinberg_clifford_2016][] Theorem 6  -/
+/-- This is [grinberg_clifford_2016][] Theorem 6 -/
 theorem contractLeft_ι_mul (a : M) (b : CliffordAlgebra Q) :
     d⌋(ι Q a * b) = d a • b - ι Q a * (d⌋b) := by
 -- Porting note: Lean cannot figure out anymore the third argument
   refine foldr'_ι_mul _ _ ?_ _ _ _
   exact fun m x fx ↦ contractLeftAux_contractLeftAux Q d m x fx
 
-/-- This is [grinberg_clifford_2016][] Theorem 12  -/
+/-- This is [grinberg_clifford_2016][] Theorem 12 -/
 theorem contractRight_mul_ι (a : M) (b : CliffordAlgebra Q) :
     b * ι Q a⌊d = d a • b - b⌊d * ι Q a := by
   rw [contractRight_eq, reverse.map_mul, reverse_ι, contractLeft_ι_mul, map_sub, map_smul,
@@ -281,10 +275,7 @@ theorem changeForm_ι (m : M) : changeForm h (ι (M := M) Q m) = ι (M := M) Q' 
     Eq.symm <| by rw [changeFormAux_apply_apply, mul_one, contractLeft_one, sub_zero]
 
 theorem changeForm_ι_mul (m : M) (x : CliffordAlgebra Q) :
-    changeForm h (ι (M := M) Q m * x) = ι (M := M) Q' m * changeForm h x
-    - contractLeft (Q := Q') (B m) (changeForm h x) :=
--- Porting note: original statement
---    - BilinForm.toLin B m⌋changeForm h x :=
+    changeForm h (ι Q m * x) = ι Q' m * changeForm h x - B m⌋changeForm h x :=
   (foldr_mul _ _ _ _ _ _).trans <| by rw [foldr_ι]; rfl
 
 theorem changeForm_ι_mul_ι (m₁ m₂ : M) :
@@ -293,9 +284,7 @@ theorem changeForm_ι_mul_ι (m₁ m₂ : M) :
 
 /-- Theorem 23 of [grinberg_clifford_2016][] -/
 theorem changeForm_contractLeft (d : Module.Dual R M) (x : CliffordAlgebra Q) :
-    -- Porting note: original statement
-    --    changeForm h (d⌋x) = d⌋changeForm h x := by
-    changeForm h (contractLeft (Q := Q) d x) = contractLeft (Q := Q') d (changeForm h x) := by
+    changeForm h (d⌋x) = d⌋(changeForm h x) := by
   induction x using CliffordAlgebra.left_induction with
   | algebraMap => simp only [contractLeft_algebraMap, changeForm_algebraMap, map_zero]
   | add _ _ hx hy => rw [map_add, map_add, map_add, map_add, hx, hy]
@@ -339,11 +328,9 @@ def changeFormEquiv : CliffordAlgebra Q ≃ₗ[R] CliffordAlgebra Q' :=
     toFun := changeForm h
     invFun := changeForm (changeForm.neg_proof h)
     left_inv := fun x => by
-      dsimp only
       exact (changeForm_changeForm _ _ x).trans <|
         by simp_rw [(add_neg_cancel B), changeForm_self_apply]
     right_inv := fun x => by
-      dsimp only
       exact (changeForm_changeForm _ _ x).trans <|
         by simp_rw [(neg_add_cancel B), changeForm_self_apply] }
 

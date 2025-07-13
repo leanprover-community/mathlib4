@@ -22,19 +22,19 @@ private theorem modifyLast.go_concat (f : α → α) (a : α) (tl : List α) (r 
     rw [modifyLast.go, modifyLast.go]
     case x_3 | x_3 => exact append_ne_nil_of_right_ne_nil tl (cons_ne_nil a [])
     rw [modifyLast.go_concat _ _ tl _, modifyLast.go_concat _ _ tl (Array.push #[] hd)]
-    simp only [Array.toListAppend_eq, Array.push_toList, Array.toList_toArray, nil_append,
+    simp only [Array.toListAppend_eq, Array.toList_push, nil_append,
       append_assoc]
 
 theorem modifyLast_concat (f : α → α) (a : α) (l : List α) :
     modifyLast f (l ++ [a]) = l ++ [f a] := by
   cases l with
   | nil =>
-    simp only [nil_append, modifyLast, modifyLast.go, Array.toListAppend_eq, Array.toList_toArray]
+    simp only [nil_append, modifyLast, modifyLast.go, Array.toListAppend_eq]
   | cons _ tl =>
     simp only [cons_append, modifyLast]
     rw [modifyLast.go]
     case x_3 => exact append_ne_nil_of_right_ne_nil tl (cons_ne_nil a [])
-    rw [modifyLast.go_concat, Array.toListAppend_eq, Array.push_toList, Array.toList_toArray,
+    rw [modifyLast.go_concat, Array.toListAppend_eq, Array.toList_push, List.toList_toArray,
       nil_append, cons_append, nil_append, cons_inj_right]
     exact modifyLast_concat _ _ tl
 

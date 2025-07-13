@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.Ring.GrindInstances
 import Mathlib.Algebra.Ring.Commute
 import Mathlib.Algebra.Ring.Invertible
 import Mathlib.Order.Synonym
@@ -71,6 +72,13 @@ protected theorem Commute.inv_add_inv (hab : Commute a b) (ha : a ≠ 0) (hb : b
     a⁻¹ + b⁻¹ = (a + b) / (a * b) := by
   rw [inv_eq_one_div, inv_eq_one_div, hab.one_div_add_one_div ha hb]
 
+variable [NeZero (2 : K)]
+
+@[simp] lemma add_self_div_two (a : K) : (a + a) / 2 = a := by
+  rw [← mul_two, mul_div_cancel_right₀ a two_ne_zero]
+
+@[simp] lemma add_halves (a : K) : a / 2 + a / 2 = a := by rw [← add_div, add_self_div_two]
+
 end DivisionSemiring
 
 section DivisionRing
@@ -121,6 +129,11 @@ protected theorem Commute.inv_sub_inv (hab : Commute a b) (ha : a ≠ 0) (hb : b
     a⁻¹ - b⁻¹ = (b - a) / (a * b) := by
   simp only [inv_eq_one_div, (Commute.one_right a).div_sub_div hab ha hb, one_mul, mul_one]
 
+variable [NeZero (2 : K)]
+
+lemma sub_half (a : K) : a - a / 2 = a / 2 := by rw [sub_eq_iff_eq_add, add_halves]
+lemma half_sub (a : K) : a / 2 - a = -(a / 2) := by rw [← neg_sub, sub_half]
+
 end DivisionRing
 
 section Semifield
@@ -142,6 +155,10 @@ end Semifield
 section Field
 
 variable [Field K]
+
+instance (priority := 100) Field.toGrindField [Field K] : Lean.Grind.Field K :=
+  { CommRing.toGrindCommRing K, ‹Field K› with
+    zero_ne_one := zero_ne_one' K }
 
 attribute [local simp] mul_assoc mul_comm mul_left_comm
 

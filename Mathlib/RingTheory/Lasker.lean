@@ -33,7 +33,7 @@ section IsLasker
 variable (R : Type*) [CommSemiring R]
 
 /-- A ring `R` satisfies `IsLasker R` when any `I : Ideal R` can be decomposed into
-finitely many primary ideals.-/
+finitely many primary ideals. -/
 def IsLasker : Prop :=
   ∀ I : Ideal R, ∃ s : Finset (Ideal R), s.inf id = I ∧ ∀ ⦃J⦄, J ∈ s → J.IsPrimary
 
@@ -44,16 +44,16 @@ namespace Ideal
 lemma decomposition_erase_inf [DecidableEq (Ideal R)] {I : Ideal R}
     {s : Finset (Ideal R)} (hs : s.inf id = I) :
     ∃ t : Finset (Ideal R), t ⊆ s ∧ t.inf id = I ∧ (∀ ⦃J⦄, J ∈ t → ¬ (t.erase J).inf id ≤ J) := by
-  induction s using Finset.strongInductionOn
-  rename_i _ s IH
-  by_cases H : ∀ J ∈ s, ¬ (s.erase J).inf id ≤ J
-  · exact ⟨s, Finset.Subset.rfl, hs, H⟩
-  push_neg at H
-  obtain ⟨J, hJ, hJ'⟩ := H
-  refine (IH (s.erase J) (Finset.erase_ssubset hJ) ?_).imp
-    fun t ↦ And.imp_left (fun ht ↦ ht.trans (Finset.erase_subset _ _))
-  rw [← Finset.insert_erase hJ] at hs
-  simp [← hs, hJ']
+  induction s using Finset.eraseInduction with
+  | H s IH =>
+    by_cases H : ∀ J ∈ s, ¬ (s.erase J).inf id ≤ J
+    · exact ⟨s, Finset.Subset.rfl, hs, H⟩
+    push_neg at H
+    obtain ⟨J, hJ, hJ'⟩ := H
+    refine (IH _ hJ ?_).imp
+      fun t ↦ And.imp_left (fun ht ↦ ht.trans (Finset.erase_subset _ _))
+    rw [← Finset.insert_erase hJ] at hs
+    simp [← hs, hJ']
 
 open scoped Function -- required for scoped `on` notation
 
@@ -62,7 +62,7 @@ lemma isPrimary_decomposition_pairwise_ne_radical {I : Ideal R}
     ∃ t : Finset (Ideal R), t.inf id = I ∧ (∀ ⦃J⦄, J ∈ t → J.IsPrimary) ∧
       (t : Set (Ideal R)).Pairwise ((· ≠ ·) on radical) := by
   classical
-  refine ⟨(s.image (fun J ↦ s.filter (fun I ↦ I.radical = J.radical))).image fun t ↦ t.inf id,
+  refine ⟨(s.image (fun J ↦ {I ∈ s | I.radical = J.radical})).image fun t ↦ t.inf id,
     ?_, ?_, ?_⟩
   · rw [← hs]
     refine le_antisymm ?_ ?_ <;> intro x hx

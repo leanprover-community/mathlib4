@@ -92,7 +92,7 @@ namespace InnerProductSpaceable
 
 variable {𝕜} (E)
 
--- Porting note: prime added to avoid clashing with public `innerProp`
+-- This has a prime added to avoid clashing with public `innerProp`
 /-- Auxiliary definition for the `add_left` property. -/
 private def innerProp' (r : 𝕜) : Prop :=
   ∀ x y : E, inner_ 𝕜 (r • x) y = conj r * inner_ 𝕜 x y
@@ -105,7 +105,7 @@ theorem _root_.Continuous.inner_ {f g : ℝ → E} (hf : Continuous f) (hg : Con
   fun_prop
 
 theorem inner_.norm_sq (x : E) : ‖x‖ ^ 2 = re (inner_ 𝕜 x x) := by
-  simp only [inner_, normSq_apply, ofNat_re, ofNat_im, map_sub, map_add, map_zero, map_mul,
+  simp only [inner_, normSq_apply, ofNat_re, ofNat_im, map_sub, map_add,
     ofReal_re, ofReal_im, mul_re, inv_re, mul_im, I_re, inv_im]
   have h₁ : ‖x - x‖ = 0 := by simp
   have h₂ : ‖x + x‖ = 2 • ‖x‖ := by convert norm_nsmul 𝕜 2 x using 2; module
@@ -229,8 +229,8 @@ noncomputable def InnerProductSpace.ofNorm
     InnerProductSpace 𝕜 E :=
   haveI : InnerProductSpaceable E := ⟨h⟩
   { inner := inner_ 𝕜
-    norm_sq_eq_inner := inner_.norm_sq
-    conj_symm := inner_.conj_symm
+    norm_sq_eq_re_inner := inner_.norm_sq
+    conj_inner_symm := inner_.conj_symm
     add_left := InnerProductSpaceable.add_left
     smul_left := fun _ _ _ => innerProp _ _ _ }
 
@@ -243,8 +243,8 @@ parallelogram identity can be given a compatible inner product. Do
 `InnerProductSpace 𝕜 E`. -/
 theorem nonempty_innerProductSpace : Nonempty (InnerProductSpace 𝕜 E) :=
   ⟨{  inner := inner_ 𝕜
-      norm_sq_eq_inner := inner_.norm_sq
-      conj_symm := inner_.conj_symm
+      norm_sq_eq_re_inner := inner_.norm_sq
+      conj_inner_symm := inner_.conj_symm
       add_left := add_left
       smul_left := fun _ _ _ => innerProp _ _ _ }⟩
 
