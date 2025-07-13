@@ -330,18 +330,17 @@ end Primrec
 def Primrec₂ {α β σ} [Primcodable α] [Primcodable β] [Primcodable σ] (f : α → β → σ) :=
   Primrec fun p : α × β => f p.1 p.2
 
-/-- `PrimrecPred p` means `p : α → Prop` is a (decidable)
+/-- `PrimrecPred p` means `p : α → Prop` is a
   primitive recursive predicate, which is to say that
   `decide ∘ p : α → Bool` is primitive recursive. -/
-def PrimrecPred {α} [Primcodable α] (p : α → Prop) [DecidablePred p] :=
-  Primrec fun a => decide (p a)
+def PrimrecPred {α} [Primcodable α] (p : α → Prop) :=
+  ∃ (_ : DecidablePred p), Primrec fun a => decide (p a)
 
-/-- `PrimrecRel p` means `p : α → β → Prop` is a (decidable)
+/-- `PrimrecRel p` means `p : α → β → Prop` is a
   primitive recursive relation, which is to say that
   `decide ∘ p : α → β → Bool` is primitive recursive. -/
-def PrimrecRel {α β} [Primcodable α] [Primcodable β] (s : α → β → Prop)
-    [∀ a b, Decidable (s a b)] :=
-  Primrec₂ fun a b => decide (s a b)
+def PrimrecRel {α β} [Primcodable α] [Primcodable β] (s : α → β → Prop) :=
+  PrimrecPred fun p : α × β => s p.1 p.2
 
 namespace Primrec₂
 
@@ -408,29 +407,53 @@ theorem Primrec₂.comp₂ {f : γ → δ → σ} {g : α → β → γ} {h : α
     (hg : Primrec₂ g) (hh : Primrec₂ h) : Primrec₂ fun a b => f (g a b) (h a b) :=
   hf.comp hg hh
 
-theorem PrimrecPred.comp {p : β → Prop} [DecidablePred p] {f : α → β} :
-    PrimrecPred p → Primrec f → PrimrecPred fun a => p (f a) :=
-  Primrec.comp
+protected lemma PrimrecPred.decide {p : α → Prop} [DecidablePred p] (hp : PrimrecPred p) :
+    Primrec (fun a => decide (p a)) := by
+  convert hp.choose_spec
 
-theorem PrimrecRel.comp {R : β → γ → Prop} [∀ a b, Decidable (R a b)] {f : α → β} {g : α → γ} :
-    PrimrecRel R → Primrec f → Primrec g → PrimrecPred fun a => R (f a) (g a) :=
-  Primrec₂.comp
+lemma Primrec.primrecPred {p : α → Prop} [DecidablePred p]
+    (hp : Primrec (fun a => decide (p a))) : PrimrecPred p :=
+  ⟨inferInstance, hp⟩
 
-theorem PrimrecRel.comp₂ {R : γ → δ → Prop} [∀ a b, Decidable (R a b)] {f : α → β → γ}
-    {g : α → β → δ} :
+lemma primrecPred_iff_primrec_decide {p : α → Prop} [DecidablePred p] :
+    PrimrecPred p ↔ Primrec (fun a => decide (p a)) where
+  mp := PrimrecPred.decide
+  mpr := Primrec.primrecPred
+
+theorem PrimrecPred.comp {p : β → Prop} {f : α → β} :
+    (hp : PrimrecPred p) → (hf : Primrec f) → PrimrecPred fun a => p (f a)
+  | ⟨_, hp⟩, hf => (hp.comp hf).primrecPred
+
+protected lemma PrimrecRel.decide {R : α → β → Prop} [DecidableRel R] (hR : PrimrecRel R) :
+    Primrec₂ (fun a b => decide (R a b)) :=
+  PrimrecPred.decide hR
+
+lemma Primrec₂.primrecRel {R : α → β → Prop} [DecidableRel R]
+    (hp : Primrec₂ (fun a b => decide (R a b))) : PrimrecRel R :=
+  Primrec.primrecPred hp
+
+lemma primrecRel_iff_primrec_decide {R : α → β → Prop} [DecidableRel R] :
+    PrimrecRel R ↔ Primrec₂ (fun a b => decide (R a b)) where
+  mp := PrimrecRel.decide
+  mpr := Primrec₂.primrecRel
+
+theorem PrimrecRel.comp {R : β → γ → Prop} {f : α → β} {g : α → γ}
+    (hR : PrimrecRel R) (hf : Primrec f) (hg : Primrec g) : PrimrecPred fun a => R (f a) (g a) :=
+  PrimrecPred.comp hR (hf.pair hg)
+
+theorem PrimrecRel.comp₂ {R : γ → δ → Prop} {f : α → β → γ} {g : α → β → δ} :
     PrimrecRel R → Primrec₂ f → Primrec₂ g → PrimrecRel fun a b => R (f a b) (g a b) :=
   PrimrecRel.comp
 
 end Comp
 
-theorem PrimrecPred.of_eq {α} [Primcodable α] {p q : α → Prop} [DecidablePred p] [DecidablePred q]
+theorem PrimrecPred.of_eq {α} [Primcodable α] {p q : α → Prop}
     (hp : PrimrecPred p) (H : ∀ a, p a ↔ q a) : PrimrecPred q :=
-  Primrec.of_eq hp fun a => Bool.decide_congr (H a)
+  funext (fun a => propext (H a)) ▸ hp
 
 theorem PrimrecRel.of_eq {α β} [Primcodable α] [Primcodable β] {r s : α → β → Prop}
-    [∀ a b, Decidable (r a b)] [∀ a b, Decidable (s a b)] (hr : PrimrecRel r)
-    (H : ∀ a b, r a b ↔ s a b) : PrimrecRel s :=
-  Primrec₂.of_eq hr fun a b => Bool.decide_congr (H a b)
+    (hr : PrimrecRel r) (H : ∀ a b, r a b ↔ s a b) : PrimrecRel s :=
+  funext₂ (fun a b => propext (H a b)) ▸ hr
 
 namespace Primrec₂
 
@@ -439,7 +462,11 @@ variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
 open Nat.Primrec
 
-theorem swap {f : α → β → σ} (h : Primrec₂ f) : Primrec₂ (swap f) :=
+protected theorem swap {f : α → β → σ} (h : Primrec₂ f) : Primrec₂ (swap f) :=
+  h.comp₂ Primrec₂.right Primrec₂.left
+
+protected theorem _root_.PrimrecRel.swap {r : α → β → Prop} (h : PrimrecRel r) :
+    PrimrecRel (swap r) :=
   h.comp₂ Primrec₂.right Primrec₂.left
 
 theorem nat_iff {f : α → β → σ} : Primrec₂ f ↔ Nat.Primrec
@@ -465,7 +492,11 @@ variable {α : Type*} {β : Type*} {σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
 theorem to₂ {f : α × β → σ} (hf : Primrec f) : Primrec₂ fun a b => f (a, b) :=
-  hf.of_eq fun _ => rfl
+  hf
+
+lemma _root_.PrimrecPred.primrecRel {p : α × β → Prop} (hp : PrimrecPred p) :
+    PrimrecRel fun a b => p (a, b) :=
+  hp
 
 theorem nat_rec {f : α → β} {g : α → ℕ × β → β} (hf : Primrec f) (hg : Primrec₂ g) :
     Primrec₂ fun a (n : ℕ) => n.rec (motive := fun _ => β) (f a) fun n IH => g a (n, IH) :=
@@ -571,14 +602,14 @@ theorem cond {c : α → Bool} {f : α → σ} {g : α → σ} (hc : Primrec c) 
 
 theorem ite {c : α → Prop} [DecidablePred c] {f : α → σ} {g : α → σ} (hc : PrimrecPred c)
     (hf : Primrec f) (hg : Primrec g) : Primrec fun a => if c a then f a else g a := by
-  simpa [Bool.cond_decide] using cond hc hf hg
+  simpa [Bool.cond_decide] using cond hc.decide hf hg
 
 theorem nat_le : PrimrecRel ((· ≤ ·) : ℕ → ℕ → Prop) :=
-  (nat_casesOn nat_sub (const true) (const false).to₂).of_eq fun p => by
+  Primrec₂.primrecRel ((nat_casesOn nat_sub (const true) (const false).to₂).of_eq fun p => by
     dsimp [swap]
     rcases e : p.1 - p.2 with - | n
     · simp [Nat.sub_eq_zero_iff_le.1 e]
-    · simp [not_le.2 (Nat.lt_of_sub_eq_succ e)]
+    · simp [not_le.2 (Nat.lt_of_sub_eq_succ e)])
 
 theorem nat_min : Primrec₂ (@min ℕ _) :=
   ite nat_le fst snd
@@ -602,30 +633,31 @@ protected theorem and : Primrec₂ and :=
 protected theorem or : Primrec₂ or :=
   dom_bool₂ _
 
-theorem _root_.PrimrecPred.not {p : α → Prop} [DecidablePred p] (hp : PrimrecPred p) :
-    PrimrecPred fun a => ¬p a :=
-  (Primrec.not.comp hp).of_eq fun n => by simp
+theorem _root_.PrimrecPred.not {p : α → Prop} :
+    (hp : PrimrecPred p) → PrimrecPred fun a => ¬p a
+  | ⟨_, hp⟩ => ((Primrec.not.comp hp).of_eq fun n => by simp).primrecPred
 
-theorem _root_.PrimrecPred.and {p q : α → Prop} [DecidablePred p] [DecidablePred q]
-    (hp : PrimrecPred p) (hq : PrimrecPred q) : PrimrecPred fun a => p a ∧ q a :=
-  (Primrec.and.comp hp hq).of_eq fun n => by simp
+theorem _root_.PrimrecPred.and {p q : α → Prop} :
+    (hp : PrimrecPred p) → (hq : PrimrecPred q) → PrimrecPred fun a => p a ∧ q a
+  | ⟨_, hp⟩, ⟨_, hq⟩ => ((Primrec.and.comp hp hq).of_eq fun n => by simp).primrecPred
 
-theorem _root_.PrimrecPred.or {p q : α → Prop} [DecidablePred p] [DecidablePred q]
-    (hp : PrimrecPred p) (hq : PrimrecPred q) : PrimrecPred fun a => p a ∨ q a :=
-  (Primrec.or.comp hp hq).of_eq fun n => by simp
+theorem _root_.PrimrecPred.or {p q : α → Prop} :
+    (hp : PrimrecPred p) → (hq : PrimrecPred q) → PrimrecPred fun a => p a ∨ q a
+  | ⟨_, hp⟩, ⟨_, hq⟩ => ((Primrec.or.comp hp hq).of_eq fun n => by simp).primrecPred
 
-protected theorem beq [DecidableEq α] : Primrec₂ (@BEq.beq α _) :=
+protected theorem eq : PrimrecRel (@Eq α) :=
   have : PrimrecRel fun a b : ℕ => a = b :=
     (PrimrecPred.and nat_le nat_le.swap).of_eq fun a => by simp [le_antisymm_iff]
-  (this.comp₂ (Primrec.encode.comp₂ Primrec₂.left) (Primrec.encode.comp₂ Primrec₂.right)).of_eq
+  (this.decide.comp₂ (Primrec.encode.comp₂ Primrec₂.left)
+      (Primrec.encode.comp₂ Primrec₂.right)).primrecRel.of_eq
     fun _ _ => encode_injective.eq_iff
 
-protected theorem eq [DecidableEq α] : PrimrecRel (@Eq α) := Primrec.beq
+protected theorem beq [DecidableEq α] : Primrec₂ (@BEq.beq α _) := Primrec.eq.decide
 
 theorem nat_lt : PrimrecRel ((· < ·) : ℕ → ℕ → Prop) :=
   (nat_le.comp snd fst).not.of_eq fun p => by simp
 
-theorem option_guard {p : α → β → Prop} [∀ a b, Decidable (p a b)] (hp : PrimrecRel p) {f : α → β}
+theorem option_guard {p : α → β → Prop} [DecidableRel p] (hp : PrimrecRel p) {f : α → β}
     (hf : Primrec f) : Primrec fun a => Option.guard (p a) (f a) :=
   ite (by simpa using hp.comp Primrec.id hf) (option_some_iff.2 hf) (const none)
 
@@ -634,7 +666,7 @@ theorem option_orElse : Primrec₂ ((· <|> ·) : Option α → Option α → Op
 
 protected theorem decode₂ : Primrec (decode₂ α) :=
   option_bind .decode <|
-    option_guard (Primrec.beq.comp₂ (by exact encode_iff.mpr snd) (by exact fst.comp fst)) snd
+    option_guard (Primrec.eq.comp₂ (by exact encode_iff.mpr snd) (by exact fst.comp fst)) snd
 
 theorem list_findIdx₁ {p : α → β → Bool} (hp : Primrec₂ p) :
     ∀ l : List β, Primrec fun a => l.findIdx (p a)
@@ -661,7 +693,7 @@ theorem dom_fintype [Finite α] (f : α → σ) : Primrec f :=
 def PrimrecBounded (f : α → β) : Prop :=
   ∃ g : α → ℕ, Primrec g ∧ ∀ x, encode (f x) ≤ g x
 
-theorem nat_findGreatest {f : α → ℕ} {p : α → ℕ → Prop} [∀ x n, Decidable (p x n)]
+theorem nat_findGreatest {f : α → ℕ} {p : α → ℕ → Prop} [DecidableRel p]
     (hf : Primrec f) (hp : PrimrecRel p) : Primrec fun x => (f x).findGreatest (p x) :=
   (nat_rec' (h := fun x nih => if p x (nih.1 + 1) then nih.1 + 1 else nih.2)
     hf (const 0) (ite (hp.comp fst (snd |> fst.comp |> succ.comp))
@@ -1096,7 +1128,7 @@ open Primrec
 /-- A subtype of a primitive recursive predicate is `Primcodable`. -/
 def subtype {p : α → Prop} [DecidablePred p] (hp : PrimrecPred p) : Primcodable (Subtype p) :=
   ⟨have : Primrec fun n => (@decode α _ n).bind fun a => Option.guard p a :=
-    option_bind .decode (option_guard (hp.comp snd).to₂ snd)
+    option_bind .decode (option_guard (hp.comp snd).primrecRel snd)
   nat_iff.1 <| (encode_iff.2 this).of_eq fun n =>
     show _ = encode ((@decode α _ n).bind fun _ => _) by
       rcases @decode α _ n with - | a; · rfl
@@ -1107,7 +1139,7 @@ instance fin {n} : Primcodable (Fin n) :=
   @ofEquiv _ _ (subtype <| nat_lt.comp .id (const n)) Fin.equivSubtype
 
 instance vector {n} : Primcodable (List.Vector α n) :=
-  subtype ((@Primrec.eq ℕ _ _).comp list_length (const _))
+  subtype ((@Primrec.eq ℕ _).comp list_length (const _))
 
 instance finArrow {n} : Primcodable (Fin n → α) :=
   ofEquiv _ (Equiv.vectorEquivFin _ _).symm

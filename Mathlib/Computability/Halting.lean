@@ -136,6 +136,29 @@ end Partrec
 def ComputablePred {α} [Primcodable α] (p : α → Prop) :=
   ∃ _ : DecidablePred p, Computable fun a => decide (p a)
 
+section decide
+
+variable {α} [Primcodable α]
+
+protected lemma ComputablePred.decide {p : α → Prop} [DecidablePred p] (hp : ComputablePred p) :
+    Computable (fun a => decide (p a)) := by
+  convert hp.choose_spec
+
+lemma Computable.computablePred {p : α → Prop} [DecidablePred p]
+    (hp : Computable (fun a => decide (p a))) : ComputablePred p :=
+  ⟨inferInstance, hp⟩
+
+lemma computablePred_iff_computable_decide {p : α → Prop} [DecidablePred p] :
+    ComputablePred p ↔ Computable (fun a => decide (p a)) where
+  mp := ComputablePred.decide
+  mpr := Computable.computablePred
+
+lemma PrimrecPred.to_comp {α} [Primcodable α] {p : α → Prop} :
+    (hp : PrimrecPred p) → ComputablePred p
+  | ⟨_, hp⟩ => hp.to_comp.computablePred
+
+end decide
+
 /-- A recursively enumerable predicate is one which is the domain of a computable partial function.
 -/
 def REPred {α} [Primcodable α] (p : α → Prop) :=
@@ -296,7 +319,7 @@ theorem to_part {n f} (pf : @Partrec' n f) : _root_.Partrec f := by
   | rfind _ hf =>
     have := hf.comp (vector_cons.comp snd fst)
     have :=
-      ((Primrec.eq.comp _root_.Primrec.id (_root_.Primrec.const 0)).to_comp.comp
+      ((Primrec.eq.decide.comp _root_.Primrec.id (_root_.Primrec.const 0)).to_comp.comp
         this).to₂.partrec₂
     exact _root_.Partrec.rfind this
 
