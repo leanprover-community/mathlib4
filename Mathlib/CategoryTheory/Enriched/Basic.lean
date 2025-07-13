@@ -321,7 +321,7 @@ theorem ForgetEnrichment.homTo_comp {X Y Z : ForgetEnrichment W C} (f : X ⟶ Y)
   rfl
 
 theorem ForgetEnrichment.homOf_comp {X Y Z : C} (f : 𝟙_ W ⟶ (X ⟶[W] Y)) (g : 𝟙_ W ⟶ (Y ⟶[W] Z)) :
-    homOf W f ≫ homOf W g = homOf W (((λ_ _).inv ≫ (f ⊗ₘ g)) ≫ eComp W ..) :=
+    homOf W (((λ_ _).inv ≫ (f ⊗ₘ g)) ≫ eComp W ..) = homOf W f ≫ homOf W g :=
   rfl
 
 /-- The isomorphism in `ForgetEnrichment W C` induced by a `W`-enriched iso in `C`. -/
@@ -330,10 +330,26 @@ def ForgetEnrichment.isoOf {X Y : C} (I : EnrichedIso W X Y) :
     ForgetEnrichment.of W X ≅ ForgetEnrichment.of W Y where
   hom := homOf W I.hom
   inv := homOf W I.inv
-  hom_inv_id := by simp [homOf_comp, congr_arg (homOf W) I.hom_inv]
-  inv_hom_id := by simp [homOf_comp, congr_arg (homOf W) I.inv_hom]
+  hom_inv_id := by simp [← homOf_comp, congr_arg (homOf W) I.hom_inv]
+  inv_hom_id := by simp [← homOf_comp, congr_arg (homOf W) I.inv_hom]
+
+@[simp]
+lemma ForgetEnrichment.isoOf_refl (X : C) :
+    isoOf W (EnrichedIso.refl X) = Iso.refl (of W X) := by
+  ext; simp
+
+@[simp]
+lemma ForgetEnrichment.isoOf_symm {X Y : C} (I : EnrichedIso W X Y) :
+    isoOf W (EnrichedIso.symm I) = Iso.symm (isoOf W I) := by
+  rfl
+
+@[simp]
+lemma ForgetEnrichment.isoOf_trans {X Y Z : C} (I : EnrichedIso W X Y) (J : EnrichedIso W Y Z) :
+    isoOf W (I.trans J) = (isoOf W I).trans (isoOf W J) := by
+  ext; simp [← Category.assoc, homOf_comp]
 
 /-- The `W`-enriched isomorphism in `C` associated to an iso `X ≅ Y` in `ForgetEnrichment W C`. -/
+@[simps]
 def ForgetEnrichment.isoTo {X Y : ForgetEnrichment W C} (I : X ≅ Y) :
     EnrichedIso W (ForgetEnrichment.to W X) (ForgetEnrichment.to W Y) where
   hom := homTo W I.hom
@@ -342,6 +358,21 @@ def ForgetEnrichment.isoTo {X Y : ForgetEnrichment W C} (I : X ≅ Y) :
     rw [← Category.assoc, ← homTo_comp, congr_arg (homTo W) I.hom_inv_id, homTo_id]
   inv_hom := by
     rw [← Category.assoc, ← homTo_comp, congr_arg (homTo W) I.inv_hom_id, homTo_id]
+
+@[simp]
+lemma ForgetEnrichment.isoTo_rfl {X : ForgetEnrichment W C} :
+    isoTo W (.refl X) = EnrichedIso.refl (ForgetEnrichment.to W X) := by
+  ext <;> simp
+
+@[simp]
+lemma ForgetEnrichment.isoTo_symm {X Y : ForgetEnrichment W C} (I : X ≅ Y) :
+    isoTo W I.symm = EnrichedIso.symm (isoTo W I) := by
+  ext <;> simp
+
+@[simp]
+lemma ForgetEnrichment.isoTo_trans {X Y Z : ForgetEnrichment W C} (I : X ≅ Y) (J : Y ≅ Z) :
+    isoTo W (I.trans J) = EnrichedIso.trans (isoTo W I) (isoTo W J) := by
+  ext <;> simp
 
 /-- The type equivalence between isos in `ForgetEnrichment W C` and `W`-enriched isos in `C`. -/
 def ForgetEnrichment.equivIsoEnrichedIso (X Y : ForgetEnrichment W C) :
