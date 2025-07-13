@@ -24,11 +24,8 @@ lemma not_lt_of_not_le {α : Type u} [Preorder α] {x y : α} (h : ¬(x ≤ y)) 
   (h ·.le)
 
 lemma le_of_not_lt_le {α : Type u} [Preorder α] {x y : α} (h1 : ¬(x < y)) (h2 : x ≤ y) :
-    y ≤ x := by
-  rw [not_lt_iff_not_le_or_ge] at h1
-  rcases h1 with (h1 | h1)
-  · exact False.elim (h1 h2)
-  · assumption
+    y ≤ x :=
+  not_lt_iff_le_imp_ge.mp h1 h2
 
 end Lemmas
 
@@ -53,8 +50,7 @@ def replaceBotTop (facts : Array AtomicFact) (idxToAtom : Std.HashMap Nat Expr) 
 
 /-- Preprocesses facts for preorders. Replaces `x < y` with two equivalent facts: `x ≤ y` and
 `¬ (y ≤ x)`. Replaces `x = y` with `x ≤ y`, `y ≤ x` and removes `x ≠ y`. -/
-def preprocessFactsPreorder (facts : Array AtomicFact) :
-    MetaM <| Array AtomicFact := do
+def preprocessFactsPreorder (facts : Array AtomicFact) : MetaM <| Array AtomicFact := do
   let mut res : Array AtomicFact := #[]
   for fact in facts do
     match fact with
@@ -73,14 +69,14 @@ def preprocessFactsPreorder (facts : Array AtomicFact) :
 /-- Preprocesses facts for partial orders. Replaces `x < y`, `¬ (x ≤ y)`, and `x = y` with
 equivalent facts involving only `≤`, `≠`, and `≮`. For each fact `x = y ⊔ z` adds `y ≤ x`
 and `z ≤ x` facts, and similarly for `⊓`. -/
-def preprocessFactsPartial (facts : Array AtomicFact)
-    (idxToAtom : Std.HashMap Nat Expr) : MetaM <| Array AtomicFact := do
+def preprocessFactsPartial (facts : Array AtomicFact) (idxToAtom : Std.HashMap Nat Expr) :
+    MetaM <| Array AtomicFact := do
   let mut res : Array AtomicFact := #[]
   for fact in facts do
     match fact with
     | .lt lhs rhs proof =>
-      res := res.push <| .ne lhs rhs (← mkAppM ``LT.lt.ne #[proof])
-      res := res.push <| .le lhs rhs (← mkAppM ``LT.lt.le #[proof])
+      res := res.push <| .ne lhs rhs (← mkAppM ``ne_of_lt #[proof])
+      res := res.push <| .le lhs rhs (← mkAppM ``le_of_lt #[proof])
     | .nle lhs rhs proof =>
       res := res.push <| .ne lhs rhs (← mkAppM ``ne_of_not_le #[proof])
       res := res.push <| .nlt lhs rhs (← mkAppM ``not_lt_of_not_le #[proof])
@@ -106,14 +102,14 @@ def preprocessFactsPartial (facts : Array AtomicFact)
 /-- Preprocesses facts for linear orders. Replaces `x < y`, `¬ (x ≤ y)`, `¬ (x < y)`, and `x = y`
 with equivalent facts involving only `≤` and `≠`. For each fact `x = y ⊔ z` adds `y ≤ x`
 and `z ≤ x` facts, and similarly for `⊓`. -/
-def preprocessFactsLinear (facts : Array AtomicFact)
-    (idxToAtom : Std.HashMap Nat Expr) : MetaM <| Array AtomicFact := do
+def preprocessFactsLinear (facts : Array AtomicFact) (idxToAtom : Std.HashMap Nat Expr) :
+    MetaM <| Array AtomicFact := do
   let mut res : Array AtomicFact := #[]
   for fact in facts do
     match fact with
     | .lt lhs rhs proof =>
-      res := res.push <| .ne lhs rhs (← mkAppM ``LT.lt.ne #[proof])
-      res := res.push <| .le lhs rhs (← mkAppM ``LT.lt.le #[proof])
+      res := res.push <| .ne lhs rhs (← mkAppM ``ne_of_lt #[proof])
+      res := res.push <| .le lhs rhs (← mkAppM ``le_of_lt #[proof])
     | .nle lhs rhs proof =>
       res := res.push <| .ne lhs rhs (← mkAppM ``ne_of_not_le #[proof])
       res := res.push <| .le rhs lhs (← mkAppM ``le_of_not_ge #[proof])

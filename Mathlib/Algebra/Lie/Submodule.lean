@@ -557,9 +557,7 @@ nonrec theorem eq_bot_iff : N = ⊥ ↔ ∀ m : M, m ∈ N → m = 0 := by rw [e
 
 instance subsingleton_of_bot : Subsingleton (LieSubmodule R L (⊥ : LieSubmodule R L M)) := by
   apply subsingleton_of_bot_eq_top
-  ext ⟨_, hx⟩
-  simp only [mem_bot, mk_eq_zero, mem_top, iff_true]
-  exact hx
+  subsingleton
 
 instance : IsModularLattice (LieSubmodule R L M) where
   sup_inf_le_assoc_of_le _ _ := by

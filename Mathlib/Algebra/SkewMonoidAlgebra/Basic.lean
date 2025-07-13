@@ -350,7 +350,7 @@ theorem toFinsupp_sum' {k' G' : Type*} [AddCommMonoid k'] (f : SkewMonoidAlgebra
   _root_.map_sum toFinsuppAddEquiv (fun a ↦ g a (f.coeff a)) f.toFinsupp.support
 
 theorem ofFinsupp_sum {k' G' : Type*} [AddCommMonoid k'] (f : G →₀ k)
-    (g : G → k → G' →₀ k'):
+    (g : G → k → G' →₀ k') :
     (⟨Finsupp.sum f g⟩ : SkewMonoidAlgebra k' G') = sum ⟨f⟩ (⟨g · ·⟩) := by
   apply toFinsupp_injective; simp only [toFinsupp_sum']
 

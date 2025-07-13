@@ -137,7 +137,7 @@ theorem exp_multiset_sum (s : Multiset ℂ) : exp s.sum = (s.map exp).prod :=
 
 theorem exp_sum {α : Type*} (s : Finset α) (f : α → ℂ) :
     exp (∑ x ∈ s, f x) = ∏ x ∈ s, exp (f x) :=
-  map_prod (β := Multiplicative ℂ) expMonoidHom f s
+  map_prod (M := Multiplicative ℂ) expMonoidHom f s
 
 lemma exp_nsmul (x : ℂ) (n : ℕ) : exp (n • x) = exp x ^ n :=
   @MonoidHom.map_pow (Multiplicative ℂ) ℂ _ _  expMonoidHom _ _
@@ -213,7 +213,7 @@ theorem exp_multiset_sum (s : Multiset ℝ) : exp s.sum = (s.map exp).prod :=
 
 theorem exp_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
     exp (∑ x ∈ s, f x) = ∏ x ∈ s, exp (f x) :=
-  map_prod (β := Multiplicative ℝ) expMonoidHom f s
+  map_prod (M := Multiplicative ℝ) expMonoidHom f s
 
 lemma exp_nsmul (x : ℝ) (n : ℕ) : exp (n • x) = exp x ^ n :=
   @MonoidHom.map_pow (Multiplicative ℝ) ℝ _ _  expMonoidHom _ _

@@ -207,7 +207,7 @@ noncomputable instance Γ_preservesLimits : PreservesLimits Γ.{u}.rightOp := in
 noncomputable instance forgetToScheme_preservesLimits : PreservesLimits forgetToScheme := by
   apply (config := { allowSynthFailures := true })
     @preservesLimits_of_natIso _ _ _ _ _ _
-      (isoWhiskerRight equivCommRingCat.unitIso forgetToScheme).symm
+      (Functor.isoWhiskerRight equivCommRingCat.unitIso forgetToScheme).symm
   change PreservesLimits (equivCommRingCat.functor ⋙ Scheme.Spec)
   infer_instance
 

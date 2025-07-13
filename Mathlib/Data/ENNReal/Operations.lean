@@ -536,6 +536,45 @@ theorem iInf_add_iInf (h : ∀ i j, ∃ k, f k + g k ≤ f i + g j) : iInf f + i
       le_iInf₂ fun a a' => let ⟨k, h⟩ := h a a'; iInf_le_of_le k h
     _ = iInf f + iInf g := by simp_rw [iInf_add, add_iInf]
 
+lemma iInf_add_iInf_of_monotone {ι : Type*} [Preorder ι] [IsDirected ι (· ≥ ·)] {f g : ι → ℝ≥0∞}
+    (hf : Monotone f) (hg : Monotone g) : iInf f + iInf g = ⨅ a, f a + g a :=
+  iInf_add_iInf fun i j ↦ (exists_le_le i j).imp fun _k ⟨hi, hj⟩ ↦ by gcongr <;> apply_rules
+
+lemma add_iInf₂ {κ : ι → Sort*} (f : (i : ι) → κ i → ℝ≥0∞) :
+    a + ⨅ (i) (j), f i j = ⨅ (i) (j), a + f i j := by
+  simp [add_iInf]
+
+lemma iInf₂_add {κ : ι → Sort*} (f : (i : ι) → κ i → ℝ≥0∞) :
+    (⨅ (i) (j), f i j) + a = ⨅ (i) (j), f i j + a := by
+  simp only [add_comm, add_iInf₂]
+
+lemma add_sInf {s : Set ℝ≥0∞} : a + sInf s = ⨅ b ∈ s, a + b := by
+  rw [sInf_eq_iInf, add_iInf₂]
+
+variable {κ : Sort*}
+
+lemma le_iInf_add_iInf {g : κ → ℝ≥0∞} (h : ∀ i j, a ≤ f i + g j) :
+    a ≤ iInf f + iInf g := by
+  simp_rw [iInf_add, add_iInf]; exact le_iInf₂ h
+
+lemma le_iInf₂_add_iInf₂ {q₁ : ι → Sort*} {q₂ : κ → Sort*}
+    {f : (i : ι) → q₁ i → ℝ≥0∞} {g : (k : κ) → q₂ k → ℝ≥0∞}
+    (h : ∀ i pi k qk, a ≤ f i pi + g k qk) :
+    a ≤ (⨅ (i) (qi), f i qi) + ⨅ (k) (qk), g k qk := by
+  simp_rw [iInf₂_add, add_iInf₂]
+  exact le_iInf₂ fun i hi => le_iInf₂ (h i hi)
+
+@[simp] lemma iInf_gt_eq_self (a : ℝ≥0∞) : ⨅ b, ⨅ _ : a < b, b = a := by
+  refine le_antisymm ?_ (le_iInf₂ fun b hb ↦ hb.le)
+  refine le_of_forall_gt fun c hac ↦ ?_
+  obtain ⟨d, had, hdc⟩ := exists_between hac
+  exact (iInf₂_le_of_le d had le_rfl).trans_lt hdc
+
+lemma exists_add_lt_of_add_lt {x y z : ℝ≥0∞} (h : y + z < x) :
+    ∃ y' > y, ∃ z' > z, y' + z' < x := by
+  contrapose! h
+  simpa using le_iInf₂_add_iInf₂ h
+
 end iInf
 
 section iSup

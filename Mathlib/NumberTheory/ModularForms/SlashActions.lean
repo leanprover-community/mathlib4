@@ -96,7 +96,7 @@ private theorem add_slash (k : ℤ) (A : GL (Fin 2) ℝ) (f g : ℍ → ℂ) :
 private theorem slash_one (k : ℤ) (f : ℍ → ℂ) : f ∣[k] 1 = f :=
   funext <| by simp [slash, σ, denom]
 
-private theorem zero_slash (k : ℤ) (A : GL (Fin 2) ℝ) : (0 : ℍ → ℂ) ∣[k]A = 0 :=
+private theorem zero_slash (k : ℤ) (A : GL (Fin 2) ℝ) : (0 : ℍ → ℂ) ∣[k] A = 0 :=
   funext fun _ => by simp [slash]
 
 instance : SlashAction ℤ (GL (Fin 2) ℝ) (ℍ → ℂ) ℂ where

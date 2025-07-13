@@ -17,7 +17,7 @@ example (a b c : Nat) (h1 : a = b) (h2 : b = c) : a = c := by
 example (a b : Int) (h1 : ¬(a < b)) (h2 : ¬(b < a)) : a = b := by
   order
 
-variable {α : Type}
+variable {α : Type*}
 
 example [LinearOrder α] (a b : α) (h1 : ¬(a < b)) (h2 : ¬(b < a)) : a = b := by
   order
@@ -46,9 +46,6 @@ example [Preorder α] (a b c d : α) (h1 : a ≤ b) (h2 : b ≤ c) (h3 : ¬(a < 
   order
 
 example [Preorder α] (a b : α) (h1 : a < b) : b > a := by
-  order
-
-example [Preorder α] (a b : α) (h1 : a > b) : b < a := by
   order
 
 example [PartialOrder α] [OrderTop α] (a : α) (h1 : ⊤ ≤ a) : a = ⊤ := by
@@ -84,13 +81,56 @@ example (a b : α) [Lattice α] : a ⊔ b = b ⊔ a := by
 example (a b c : α) [Lattice α] : a ⊓ (b ⊔ c) ≥ (a ⊓ b) ⊔ (a ⊓ c) := by
   order
 
+set_option trace.order true in
+/--
+error: No contradiction found.
+
+Additional diagnostic information may be available using the `set_option trace.order true` command.
+---
+trace:
+[order] Working on type α (partial order)
+[order] Collected atoms:
+    #0 := a ⊓ (b ⊔ c)
+    #1 := a
+    #2 := b ⊔ c
+    #3 := b
+    #4 := c
+    #5 := a ⊓ b ⊔ a ⊓ c
+    #6 := a ⊓ b
+    #7 := a ⊓ c
+[order] Collected facts:
+    #2 := #3 ⊔ #4
+    #0 := #1 ⊓ #2
+    #6 := #1 ⊓ #3
+    #7 := #1 ⊓ #4
+    #5 := #6 ⊔ #7
+    ¬ #0 ≤ #5
+[order] Working on type ℕ (linear order)
+[order] Collected atoms:
+    #0 := x
+    #1 := y
+[order] Collected facts:
+    #0 < #1
+-/
+#guard_msgs in
+example (a b c : α) (x y : Nat) (h : x < y) [Lattice α] : a ⊓ (b ⊔ c) ≤ (a ⊓ b) ⊔ (a ⊓ c) := by
+  order
+
+-- This used to work when a different matching strategy was used in `order`.
+-- This example is now considered outside the scope of the `order` tactic.
+/--
+error: No contradiction found.
+
+Additional diagnostic information may be available using the `set_option trace.order true` command.
+-/
+#guard_msgs in
 example (a b c : Set α) : a ∩ (b ∪ c) ≥ (a ∩ b) ∪ (a ∩ c) := by
   order
 
--- example {n : Nat} (A B C : Matrix (Fin n) (Fin n) ℚ) : (A * B * C).rank ≤ A.rank ⊓ C.rank := by
---   have h1 := Matrix.rank_mul_le A B
---   have h2 := Matrix.rank_mul_le (A * B) C
---   order
+example {n : Nat} (A B C : Matrix (Fin n) (Fin n) ℚ) : (A * B * C).rank ≤ A.rank ⊓ C.rank := by
+  have h1 := Matrix.rank_mul_le A B
+  have h2 := Matrix.rank_mul_le (A * B) C
+  order
 
 -- worst case for the current algorithm
 example [PartialOrder α]

@@ -231,6 +231,7 @@
   "Mathlib.Tactic.Subsingleton": ["Mathlib.Logic.Basic", "Std.Logic"],
   "Mathlib.Tactic.Simps.Basic": ["Batteries.Data.String.Basic"],
   "Mathlib.Tactic.Says": ["Batteries.Data.String.Basic"],
+  "Mathlib.Tactic.Ring.NamePolyVars": ["Mathlib.Algebra.MvPolynomial.Basic"],
   "Mathlib.Tactic.ReduceModChar":
   ["Mathlib.Data.ZMod.Basic", "Mathlib.RingTheory.Polynomial.Basic"],
   "Mathlib.Tactic.Qify": ["Mathlib.Data.NNRat.Defs"],
@@ -349,12 +350,9 @@
   ["Mathlib.Algebra.DirectSum.Internal"],
   "Mathlib.RingTheory.KrullDimension.Basic":
   ["Mathlib.Algebra.MvPolynomial.CommRing", "Mathlib.Algebra.Polynomial.Basic"],
-  "Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs":
-  ["Mathlib.Tactic.Algebraize"],
   "Mathlib.RingTheory.Ideal.Norm.AbsNorm":
   ["Mathlib.LinearAlgebra.FreeModule.IdealQuotient"],
-  "Mathlib.RingTheory.Finiteness.Defs":
-  ["Mathlib.Data.Finsupp.Defs", "Mathlib.Tactic.Algebraize"],
+  "Mathlib.RingTheory.Finiteness.Defs": ["Mathlib.Data.Finsupp.Defs"],
   "Mathlib.RingTheory.Adjoin.Basic": ["Mathlib.LinearAlgebra.Finsupp.SumProd"],
   "Mathlib.RepresentationTheory.FdRep":
   ["Mathlib.CategoryTheory.Monoidal.Rigid.Braided"],
@@ -386,6 +384,7 @@
   "Mathlib.Logic.Nontrivial.Defs": ["Mathlib.Init.Logic"],
   "Mathlib.Logic.Function.Defs": ["Mathlib.Tactic.AdaptationNote"],
   "Mathlib.Logic.Function.Basic": ["Batteries.Tactic.Init"],
+  "Mathlib.Logic.Equiv.Prod": ["Mathlib.Data.Prod.PProd"],
   "Mathlib.Logic.Equiv.Defs":
   ["Mathlib.Data.Bool.Basic", "Mathlib.Data.Subtype"],
   "Mathlib.Logic.Basic": ["Batteries.Tactic.Trans"],
@@ -500,6 +499,10 @@
   ["Mathlib.Util.Superscript"],
   "Mathlib.AlgebraicTopology.DoldKan.Notations":
   ["Mathlib.AlgebraicTopology.AlternatingFaceMapComplex"],
+  "Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Basic":
+  ["Mathlib.Tactic.Ring.NamePolyVars"],
+  "Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Basic":
+  ["Mathlib.Tactic.Ring.NamePolyVars"],
   "Mathlib.Algebra.Star.Module": ["Mathlib.Algebra.Module.LinearMap.Star"],
   "Mathlib.Algebra.Ring.Int.Defs": ["Mathlib.Algebra.Ring.GrindInstances"],
   "Mathlib.Algebra.Ring.CentroidHom": ["Mathlib.Algebra.Algebra.Defs"],
