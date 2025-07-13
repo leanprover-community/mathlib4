@@ -111,10 +111,9 @@ variable
 variable (F G) in
 lemma hexagon_forward (H : C ⥤ V)
     [DayConvolution F G] [DayConvolution G H] [DayConvolution F (G ⊛ H)]
-    [DayConvolution (F ⊛ G) H] [DayConvolution (G ⊗ H) F]
-    [DayConvolution H F] [DayConvolution G (H ⊛ F)] [DayConvolution (G ⊛ H) F]
-    [DayConvolution G F] [DayConvolution (G ⊛ F) H] [DayConvolution F H]
-    [DayConvolution G (F ⊛ H)] :
+    [DayConvolution (F ⊛ G) H] [DayConvolution H F] [DayConvolution G (H ⊛ F)]
+    [DayConvolution (G ⊛ H) F] [DayConvolution G F] [DayConvolution (G ⊛ F) H]
+    [DayConvolution F H] [DayConvolution G (F ⊛ H)] :
     (associator F G H).hom ≫ (braiding F (G ⊛ H)).hom ≫ (associator G H F).hom =
     (DayConvolution.map (braiding F G).hom (𝟙 H)) ≫ (associator G F H).hom ≫
       (DayConvolution.map (𝟙 G) (braiding F H).hom) := by
