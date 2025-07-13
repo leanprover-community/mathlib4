@@ -17,7 +17,7 @@ extend a (dependant) function defined on the complement of a singleton.
 variable {ι : Type*} [DecidableEq ι] (i₀ : ι)
 
 /-- The bijection `Unit ⊕ { i // i ≠ i₀ } ≃ ι` for any `i₀ : ι` -/
-noncomputable def unitSumSubtypeNeEquiv :
+def unitSumSubtypeNeEquiv :
     Unit ⊕ { i // i ≠ i₀ } ≃ ι where
   toFun x := match x with
     | Sum.inl _ => i₀
