@@ -16,6 +16,14 @@ and the structure sheaf of `Spec R`, for some commutative ring `R`.
 
 A morphism of schemes is just a morphism of the underlying locally ringed spaces.
 
+## Notation
+
+`Spec R` typechecks only for `R : CommRingCat`. It happens quite often that we want to take Spec of
+an unbundled ring, and this can be spelled `Spec (CommRingCat.of R)`, or `Spec (.of R)` using
+anonymous dot notation. This is such a common situation that we have dedicated notation: `Spec(R)`
+
+Note that one can write `Spec(R)` for `R : CommRingCat`, but one shouldn't: This is `Spec (.of ↑R)`
+under the hood, which simplifies to `Spec R`.
 -/
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
