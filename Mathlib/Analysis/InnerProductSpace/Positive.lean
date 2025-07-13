@@ -258,13 +258,17 @@ theorem IsPositive.re_inner_nonneg_right {T : E →ₗ[𝕜] E} (hT : IsPositive
   rw [inner_re_symm]
   exact hT.re_inner_nonneg_left x
 
-lemma isPositive_toContinuousLinearMap_iff [CompleteSpace E] (T : E →ₗ[𝕜] E) :
+lemma isPositive_toContinuousLinearMap_iff (T : E →ₗ[𝕜] E) :
+    have : CompleteSpace E := FiniteDimensional.complete 𝕜 _
     T.toContinuousLinearMap.IsPositive ↔ T.IsPositive := by
+  intro
   simp [ContinuousLinearMap.IsPositive, IsPositive, isSelfAdjoint_toContinuousLinearMap_iff T,
     ContinuousLinearMap.reApplyInnerSelf]
 
-lemma _root_.ContinuousLinearMap.isPositive_toLinearMap_iff [CompleteSpace E] (T : E →L[𝕜] E) :
+lemma _root_.ContinuousLinearMap.isPositive_toLinearMap_iff (T : E →L[𝕜] E) :
+    have := FiniteDimensional.complete 𝕜 E
     (T : E →ₗ[𝕜] E).IsPositive ↔ T.IsPositive := by
+  intro
   simp [ContinuousLinearMap.IsPositive, IsPositive, isSelfAdjoint_toLinearMap_iff T,
     ContinuousLinearMap.reApplyInnerSelf]
 
