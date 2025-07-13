@@ -163,7 +163,7 @@ lemma curry_unit_app_comp_ev_app_app (x y : C) :
   dsimp at this
   rw [this]
 
-lemma ev_naturality_app {G' H' : C ⥤ V} (ℌ' : DayConvolutionInternalHom F G' H)
+lemma ev_naturality_app {G' H' : C ⥤ V} (ℌ' : DayConvolutionInternalHom F G' H')
     [DayConvolution F H'] (η : G ⟶ G') :
     DayConvolution.map (𝟙 F) (ℌ.map η ℌ') ≫ ℌ'.ev_app =
     ℌ.ev_app ≫ η := by
