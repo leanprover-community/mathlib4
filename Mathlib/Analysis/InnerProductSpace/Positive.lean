@@ -235,6 +235,19 @@ theorem IsIdempotentElem.isPositive_iff_isSelfAdjoint
     {p : E →L[𝕜] E} (hp : IsIdempotentElem p) : p.IsPositive ↔ IsSelfAdjoint p :=
   ⟨fun h => h.isSelfAdjoint, fun h => IsPositive.of_isStarPojection ⟨hp, h⟩⟩
 
+/-- For idempotent operator `p`, TFAE:
+* `p` is normal
+* `p` is self-adjoint
+* `p` is positive
+* `(range p)ᗮ = ker p` -/
+theorem IsIdempotentElem.TFAE {p : E →L[𝕜] E} (hp : IsIdempotentElem p) :
+    [IsStarNormal p, IsSelfAdjoint p, p.IsPositive,
+      (LinearMap.range p)ᗮ = LinearMap.ker p].TFAE := by
+  tfae_have 1 ↔ 2 := hp.isSelfAdjoint_iff_isStarNormal.symm
+  tfae_have 2 ↔ 3 := hp.isPositive_iff_isSelfAdjoint.symm
+  tfae_have 2 ↔ 4 := hp.isSelfAdjoint_iff_orthogonal_range
+  tfae_finish
+
 end ContinuousLinearMap
 
 namespace LinearMap
