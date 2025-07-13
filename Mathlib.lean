@@ -6374,6 +6374,7 @@ import Mathlib.Topology.IsClosedRestrict
 import Mathlib.Topology.IsLocalHomeomorph
 import Mathlib.Topology.JacobsonSpace
 import Mathlib.Topology.KrullDimension
+import Mathlib.Topology.Kuratowski
 import Mathlib.Topology.List
 import Mathlib.Topology.LocalAtTarget
 import Mathlib.Topology.LocallyClosed
