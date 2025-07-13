@@ -136,7 +136,7 @@ category structure.
 This category is equivalent to `J`.
 -/
 abbrev Decomposed (J : Type u₁) [Category.{v₁} J] :=
-  Σj : ConnectedComponents J, j.Component
+  Σ j : ConnectedComponents J, j.Component
 
 -- This name may cause clashes further down the road, and so might need to be changed.
 /--

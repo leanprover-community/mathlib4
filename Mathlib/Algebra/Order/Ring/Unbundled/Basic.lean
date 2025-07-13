@@ -562,7 +562,7 @@ theorem mul_self_inj [PosMulStrictMono R] [MulPosMono R]
 lemma sign_cases_of_C_mul_pow_nonneg [PosMulStrictMono R]
     (h : ∀ n, 0 ≤ a * b ^ n) : a = 0 ∨ 0 < a ∧ 0 ≤ b := by
   have : 0 ≤ a := by simpa only [pow_zero, mul_one] using h 0
-  refine this.eq_or_gt.imp_right fun ha ↦ ⟨ha, nonneg_of_mul_nonneg_right ?_ ha⟩
+  refine this.eq_or_lt'.imp_right fun ha ↦ ⟨ha, nonneg_of_mul_nonneg_right ?_ ha⟩
   simpa only [pow_one] using h 1
 
 theorem mul_pos_iff [ExistsAddOfLE R] [PosMulStrictMono R] [MulPosStrictMono R]
@@ -828,7 +828,7 @@ lemma sub_mul_sub_nonneg_iff [MulPosStrictMono R] [PosMulStrictMono R] [AddLeftM
     and_iff_right_of_imp h.trans, and_iff_left_of_imp h.trans', or_comm]
 
 lemma sub_mul_sub_nonpos_iff [MulPosStrictMono R] [PosMulStrictMono R] [AddLeftMono R]
-    (x : R) (h : a ≤ b) :  (x - a) * (x - b) ≤ 0 ↔ a ≤ x ∧ x ≤ b := by
+    (x : R) (h : a ≤ b) : (x - a) * (x - b) ≤ 0 ↔ a ≤ x ∧ x ≤ b := by
   rw [mul_nonpos_iff, sub_nonneg, sub_nonneg, sub_nonpos, sub_nonpos, or_iff_left_iff_imp, and_comm]
   exact And.imp h.trans h.trans'
 
