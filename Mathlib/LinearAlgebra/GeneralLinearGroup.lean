@@ -72,7 +72,7 @@ namespace LinearEquiv
 
 variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] (T : M →ₗ[R] M)
 
-/-- any invertible linear map can be written as a linear equivalence -/
+/-- Any invertible linear map can be written as a linear equivalence. -/
 def ofInvertible [Invertible T] : M ≃ₗ[R] M :=
   LinearMap.GeneralLinearGroup.toLinearEquiv (unitOfInvertible T)
 
