@@ -52,8 +52,8 @@ alias ⟨_, _root_.Set.Mapsto.mem_invtSubmodule⟩ := mem_invtSubmodule_iff_maps
 
 /-- `p` is `f.symm` invariant if and only if `p ⊆ f(p)`. -/
 lemma mem_invtSubmodule_symm_iff_le_map {p : Submodule R M} (f : M ≃ₗ[R] M) :
-    p ∈ Module.End.invtSubmodule f.symm ↔ p ≤ p.map f :=
-  (Module.End.mem_invtSubmodule_iff_map _ _).trans (f.toEquiv.symm.subset_symm_image _ _).symm
+    p ∈ invtSubmodule f.symm ↔ p ≤ p.map f :=
+  (mem_invtSubmodule_iff_map _ _).trans (f.toEquiv.symm.subset_symm_image _ _).symm
 
 namespace invtSubmodule
 
