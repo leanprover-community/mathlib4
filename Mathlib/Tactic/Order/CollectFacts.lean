@@ -110,35 +110,35 @@ where
     if !(← isProp type) then
       return
     let ⟨u, type, expr⟩ ← inferTypeQ expr
-    have : u =QL 0 := ⟨⟩
+    let _ : u =QL 0 := ⟨⟩
     match type with
     | ~q(@Eq ($α : Type _) $x $y) =>
       if (← synthInstance? (q(Preorder $α))).isSome then
-        let xIdx := ← addAtom α x
-        let yIdx := ← addAtom α y
+        let xIdx ← addAtom α x
+        let yIdx ← addAtom α y
         addFact α <| .eq xIdx yIdx expr
     | ~q(@LE.le $α $inst $x $y) =>
-      let xIdx := ← addAtom α x
-      let yIdx := ← addAtom α y
+      let xIdx ← addAtom α x
+      let yIdx ← addAtom α y
       addFact α <| .le xIdx yIdx expr
     | ~q(@LT.lt $α $inst $x $y) =>
-      let xIdx := ← addAtom α x
-      let yIdx := ← addAtom α y
+      let xIdx ← addAtom α x
+      let yIdx ← addAtom α y
       addFact α <| .lt xIdx yIdx expr
     | ~q(@Ne ($α : Type _) $x $y) =>
       if (← synthInstance? (q(Preorder $α))).isSome then
-        let xIdx := ← addAtom α x
-        let yIdx := ← addAtom α y
+        let xIdx ← addAtom α x
+        let yIdx ← addAtom α y
         addFact α <| .ne xIdx yIdx expr
     | ~q(Not $p) =>
       match p with
       | ~q(@LE.le $α $inst $x $y) =>
-        let xIdx := ← addAtom α x
-        let yIdx := ← addAtom α y
+        let xIdx ← addAtom α x
+        let yIdx ← addAtom α y
         addFact α <| .nle xIdx yIdx expr
       | ~q(@LT.lt $α $inst $x $y) =>
-        let xIdx := ← addAtom α x
-        let yIdx := ← addAtom α y
+        let xIdx ← addAtom α x
+        let yIdx ← addAtom α y
         addFact α <| .nlt xIdx yIdx expr
       | _ => return
     | ~q($p ∧ $q) =>

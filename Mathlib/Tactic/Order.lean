@@ -292,7 +292,7 @@ elab_rules : tactic
     let args ← ((args.map (TSepArray.getElems)).getD {}).mapM (elabOrderArg `linarith)
     commitIfNoEx do liftMetaFinishingTactic <| orderCore o.isSome args
 
-/-- Finishing tactic for solving goals in arbitrary `Preorder`, `PartialOrder`,
+/-- A finishing tactic for solving goals in arbitrary `Preorder`, `PartialOrder`,
 or `LinearOrder`. Supports `⊤`, `⊥`, and lattice operations. -/
 macro "order" args:orderArgs : tactic => `(tactic|
   · intros
