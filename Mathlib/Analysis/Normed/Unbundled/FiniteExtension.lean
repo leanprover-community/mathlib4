@@ -181,7 +181,7 @@ theorem exists_nonarchimedean_pow_mul_seminorm_of_finiteDimensional (hfd : Finit
     ∃ f : AlgebraNorm K L, IsPowMul f ∧ (∀ (x : K), f ((algebraMap K L) x) = ‖x‖) ∧
       IsNonarchimedean f := by
   -- Choose a basis B = {1, e2,..., en} of the K-vector space L
-  set h1 : LinearIndependent K fun x : ({1} : Set L) ↦ (x : L) :=
+  set h1 : LinearIndepOn K id ({1} : Set L) :=
     LinearIndepOn.id_singleton _ one_ne_zero
   set ι := { x // x ∈ LinearIndepOn.extend h1 (Set.subset_univ ({1} : Set L)) }
   set B : Basis ι K L := Basis.extend h1
