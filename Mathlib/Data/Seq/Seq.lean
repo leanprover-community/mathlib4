@@ -274,7 +274,10 @@ def corec (f : β → Option (α × β)) (b : β) : Seq α := by
     · rfl
     dsimp [Corec.f] at h
     dsimp [Corec.f]
-    grind
+    revert h; rcases h₁ : f b with - | s <;> intro h
+    · rfl
+    · obtain ⟨a, b'⟩ := s
+      contradiction
   · rw [Stream'.corec'_eq (Corec.f f) (Corec.f f o).2, Stream'.corec'_eq (Corec.f f) o]
     exact IH (Corec.f f o).2
 
