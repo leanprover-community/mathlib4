@@ -287,15 +287,23 @@ def _root_.IsCovariantDerivativeOn.convexCombination' {ι : Type*} {s : Finset �
   leibniz X σ g x hσ hg hx := by
     calc ∑ i ∈ s, f i x • (cov i) X (g • σ) x
       _ = ∑ i ∈ s, ((g • (f i • (cov i) X σ)) x
-            + f i x • (bar (g x)) ((mfderiv I 𝓘(𝕜, 𝕜) g x) (X x)) • σ x) :=
-        sorry -- rewrite using (cov i).leibniz
-      _ = ∑ i ∈ s, ((g • (f i • (cov i) X σ)) x
-        + ∑ i ∈ s, f i x • (bar (g x)) ((mfderiv I 𝓘(𝕜, 𝕜) g x) (X x)) • σ x) := by
+            + f i x • (bar (g x)) ((mfderiv I 𝓘(𝕜) g x) (X x)) • σ x) := by
+        congr
+        ext i
+        rw [(h i).leibniz _ hσ hg]
+        simp_rw [Pi.smul_apply', smul_add, add_left_inj]
+        rw [smul_comm]
+      _ = ∑ i ∈ s, ((g • (f i • (cov i) X σ)) x)
+        + ∑ i ∈ s, f i x • (bar (g x)) ((mfderiv I 𝓘(𝕜) g x) (X x)) • σ x := by
         rw [Finset.sum_add_distrib]
-        simp; sorry
-      _ = (g • ∑ i ∈ s, f i • (cov i) X σ) x + (bar (g x)) ((mfderiv I 𝓘(𝕜, 𝕜) g x) (X x)) • σ x :=
-        -- use hf and pull out g...
-        sorry
+      _ = (g • ∑ i ∈ s, f i • (cov i) X σ) x + (bar (g x)) ((mfderiv I 𝓘(𝕜) g x) (X x)) • σ x := by
+        -- There has to be a shorter proof!
+        simp only [Finset.smul_sum, Pi.smul_apply', Finset.sum_apply, add_right_inj]
+        set B := (bar (g x)) ((mfderiv I 𝓘(𝕜) g x) (X x)) • σ x
+        trans (∑ i ∈ s, f i x) • B
+        · rw [Finset.sum_smul]
+        have : ∑ i ∈ s, f i x = 1 := by convert congr_fun hf x; simp
+        rw [this, one_smul]
     simp
 
 /-- A finite convex combination of covariant derivatives is a covariant derivative. -/
