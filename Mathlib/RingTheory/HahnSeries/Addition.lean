@@ -549,6 +549,17 @@ def embDomainLinearMap (f : Γ ↪o Γ') : HahnSeries Γ R →ₗ[R] HahnSeries 
 
 end Domain
 
+/-- `HahnSeries.truncate` as a linear map. -/
+@[simps]
+def truncateLinearMap [PartialOrder Γ] (c : Γ) : HahnSeries Γ V →ₗ[R] HahnSeries Γ V where
+  toFun := truncate c
+  map_add' x y := by
+    ext i
+    by_cases h : c ≤ i <;> simp [h]
+  map_smul' s x := by
+    ext i
+    simp
+
 end Module
 
 end HahnSeries
