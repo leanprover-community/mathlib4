@@ -76,7 +76,7 @@ lemma orderPred_succ {n : ℕ} (i : Fin n) :
     Order.pred i.succ = i.castSucc :=
   rfl
 
-theorem val_add_one_of_lt' {n : ℕ} [NeZero n] {i j : Fin n} (hij : i < j) :
+theorem val_add_one_of_lt' {n : ℕ} [NeZero n] {i : Fin n} (h : i + 1 < n) :
     (i + 1).1 = i.1 + 1 := by
   simpa [add_def] using Nat.mod_eq_of_lt (by omega)
 
