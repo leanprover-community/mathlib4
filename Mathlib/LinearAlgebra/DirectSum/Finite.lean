@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel
 -/
 import Mathlib.Algebra.DirectSum.Module
-import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 import Mathlib.RingTheory.Finiteness.Finsupp
 
 /-!
