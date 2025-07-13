@@ -143,7 +143,8 @@ theorem cycleRange_of_gt {n : ℕ} {i j : Fin n} (h : i < j) : cycleRange i j = 
 theorem cycleRange_of_le {n : ℕ} [NeZero n] {i j : Fin n} (h : j ≤ i) :
     cycleRange i j = if j = i then 0 else j + 1 := by
   have jin : j ∈ Set.range ⇑(castLEEmb (n := i + 1) (by omega)) := by
-    simp only [coe_castLEEmb, range_castLE, Set.mem_setOf_eq]; omega
+    simp only [coe_castLEEmb, range_castLE, Set.mem_setOf_eq]
+    omega
   have : (castLEEmb (by omega)).toEquivRange (castLT j (by omega)) = ⟨j, jin⟩ := by
     simpa only [coe_castLEEmb] using by rfl
   rw [cycleRange, (finRotate (i + 1)).extendDomain_apply_subtype (castLEEmb
@@ -153,9 +154,12 @@ theorem cycleRange_of_le {n : ℕ} [NeZero n] {i j : Fin n} (h : j ≤ i) :
       simpa only [coe_castLEEmb, ← this, symm_apply_apply] using eq_of_val_eq (by simp [ch])
     rw [this, finRotate_last]
     rfl
-  · have hij := lt_of_le_of_ne h ch
-    have hij': (j.castLT (by omega) : Fin (i + 1)) < (i.castLT (by omega) : Fin (i + 1)) := hij
-    exact eq_of_val_eq (by simp [← this, val_add_one_of_lt' hij, val_add_one_of_lt' hij'])
+  · have hj1 : (j + 1).1 = j.1 + 1 := val_add_one_of_lt' (by omega)
+    have hj2 : (j.castLT (by omega) + 1 : Fin (i + 1)).1
+        = (j.castLT (by omega): Fin (i + 1)).1 + 1 :=
+      val_add_one_of_lt' (by simp [lt_of_le_of_ne h ch])
+    refine eq_of_val_eq ?_
+    simp [← this, hj1, hj2]
 
 theorem coe_cycleRange_of_le {n : ℕ} {i j : Fin n} (h : j ≤ i) :
     (cycleRange i j : ℕ) = if j = i then 0 else (j : ℕ) + 1 := by
