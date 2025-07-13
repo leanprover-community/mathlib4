@@ -213,7 +213,7 @@ lemma EnrichedIso.iso_symm {X Y : C} (I : EnrichedIso V X Y) :
   ext; simp
 
 @[simp]
-lemma EnrichedIso.iso_tranx {X Y Z : C} (I : EnrichedIso V X Y) (J : EnrichedIso V Y Z) :
+lemma EnrichedIso.iso_trans {X Y Z : C} (I : EnrichedIso V X Y) (J : EnrichedIso V Y Z) :
     EnrichedIso.iso V (I.trans J) = (EnrichedIso.iso V I).trans (EnrichedIso.iso V J) := by
   ext; simp [eHomEquiv_symm_comp]
 
