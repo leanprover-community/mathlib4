@@ -5,7 +5,6 @@ Authors: Dexin Zhang
 -/
 import Mathlib.ModelTheory.Semantics
 
-
 /-!
 # Presburger arithmetic
 
