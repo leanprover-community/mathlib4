@@ -16,7 +16,8 @@ This file defines the first-order language of Presburger arithmetic as (0,S,+).
 
 ## TODO
 
-- Generalize `presburger.finsum` for a class like `FirstOrder.Language.IsOrdered`.
+- Generalize `presburger.finsum` (maybe also `presburger.natCast` and `presburger.nsmul`) for
+  classes like `FirstOrder.Language.IsOrdered`.
 - Define the theory of Presburger arithmetic and prove its properties (quantifier elimination,
   completeness, etc).
 
@@ -26,6 +27,7 @@ variable {α : Type*}
 
 namespace FirstOrder
 
+/-- The type of Presburger arithmetic functions, defined as (0,S,+) -/
 inductive presburgerFunc : ℕ → Type
   | zero : presburgerFunc 0
   | succ : presburgerFunc 1
@@ -45,6 +47,7 @@ variable {t t₁ t₂ : presburger.Term α}
 instance : Zero (presburger.Term α) where
   zero := Constants.term .zero
 
+/-- `presburger.succ t` is the successor of `t`, applying `presburgerFunc.succ` on `t`. -/
 def succ (t : presburger.Term α) := Functions.apply₁ presburgerFunc.succ t
 
 instance : Add (presburger.Term α) where
