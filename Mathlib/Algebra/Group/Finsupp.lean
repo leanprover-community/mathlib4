@@ -56,7 +56,7 @@ noncomputable def _root_.AddEquiv.finsuppUnique {ι : Type*} [Unique ι] :
 
 @[simp]
 lemma _root_.AddEquiv.finsuppUnique_apply {ι : Type*} [Unique ι] (v : ι →₀ M) :
-    AddEquiv.finsuppUnique v = v default := rfl
+    AddEquiv.finsuppUnique v = Equiv.finsuppUnique v := rfl
 
 instance instIsRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd (ι →₀ M) where
   add_right_cancel _ _ _ h := ext fun x => add_right_cancel <| DFunLike.congr_fun h x

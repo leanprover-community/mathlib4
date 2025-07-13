@@ -34,7 +34,10 @@ def FreeAbelianGroup.toFinsupp : FreeAbelianGroup X →+ X →₀ ℤ :=
 def Finsupp.toFreeAbelianGroup : (X →₀ ℤ) →+ FreeAbelianGroup X :=
   Finsupp.liftAddHom fun x => (smulAddHom ℤ (FreeAbelianGroup X)).flip (FreeAbelianGroup.of x)
 
-@[simp] lemma Finsupp.toFreeAbelianGroup_single (x : X) (n : ℕ) :
+@[simp] lemma FreeAbelianGroup.toFinsupp_of (x : X) : toFinsupp (of x) = .single x 1 := by
+  simp [toFinsupp]
+
+@[simp] lemma Finsupp.toFreeAbelianGroup_single (x : X) (n : ℤ) :
     toFreeAbelianGroup (single x n) = n • .of x := by simp [toFreeAbelianGroup]
 
 open Finsupp FreeAbelianGroup
@@ -43,9 +46,7 @@ open Finsupp FreeAbelianGroup
 theorem Finsupp.toFreeAbelianGroup_comp_singleAddHom (x : X) :
     Finsupp.toFreeAbelianGroup.comp (Finsupp.singleAddHom x) =
       (smulAddHom ℤ (FreeAbelianGroup X)).flip (of x) := by
-  ext
-  simp only [AddMonoidHom.coe_comp, Finsupp.singleAddHom_apply, Function.comp_apply,
-    toFreeAbelianGroup, Finsupp.liftAddHom_apply_single]
+  ext; simp
 
 @[simp]
 theorem FreeAbelianGroup.toFinsupp_comp_toFreeAbelianGroup :
