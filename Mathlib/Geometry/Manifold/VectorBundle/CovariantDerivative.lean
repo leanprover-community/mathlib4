@@ -731,38 +731,6 @@ omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ
     localExtensionOn_apply_self _ _ (FiberBundle.mem_baseSet_trivializationAt' x) v
 
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)] in
-/-- If `ψ: M → ℝ` a smooth bump function and `s` is a section of a smooth vector bundle `V → M`,
-the scalar product `ψ s` is `C^n` if `s` is `C^n` on an open set containing `tsupport ψ`.
-This is a vector bundle analogue of `contMDiff_of_tsupport`: the total space of `V` has no zero,
-but we only consider sections of the form `ψ s`. -/
-lemma _root_.contMDiff_section_of_smul_smoothBumpFunction [T2Space M] [IsManifold I ∞ M]
-    {s : Π (x : M), V x} {ψ : SmoothBumpFunction I x} {t : Set M}
-    (hs : ContMDiffOn I (I.prod 𝓘(ℝ, F)) n (T% s) t)
-    (ht : IsOpen t) (ht' : tsupport ψ ⊆ t) (hn : n ≤ ∞) :
-    ContMDiff I (I.prod 𝓘(ℝ, F)) n (T% fun x ↦ (ψ x • s x)) := by
-  apply contMDiff_of_contMDiffOn_union_of_isOpen
-      ((ψ.contMDiff.of_le hn).contMDiffOn.smul_section hs) ?_ ?_ ht
-      (isOpen_compl_iff.mpr <| isClosed_tsupport ψ)
-  · apply ((contMDiff_zeroSection _ _).contMDiffOn (s := (tsupport ψ)ᶜ)).congr
-    intro y hy
-    simp [image_eq_zero_of_notMem_tsupport hy, zeroSection]
-  · exact Set.compl_subset_iff_union.mp <| Set.compl_subset_compl.mpr ht'
-
--- unused, but might be nice to have
-omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)] in
-/-- If `ψ: M → ℝ` a smooth bump function and `s` is a section of a smooth vector bundle `V → M`,
-the scalar product `ψ s` is `C^n` if `s` is `C^n` at each `x ∈ tsupport ψ`.
-This is a vector bundle analogue of `contMDiff_of_tsupport`: the total space of `V` has no zero,
-but we only consider sections of the form `ψ s`. -/
-lemma _root_.contMDiff_section_of_smul_smoothBumpFunction' [T2Space M] [IsManifold I ∞ M]
-    {s : Π (x : M), V x} {ψ : SmoothBumpFunction I x} (hn : n ≤ ∞)
-    (hs : ∀ x ∈ tsupport ψ,
-      ContMDiffAt I (I.prod 𝓘(ℝ, F)) n (T% fun x ↦ (ψ x • s x)) x) :
-    ContMDiff I (I.prod 𝓘(ℝ, F)) n (T% fun x ↦ (ψ x • s x)) := by
-  -- apply contMDiff_of_smul_smoothBumpFunction (s := s) (hn := hn) --?_ ?_ ?_ ?_
-  sorry
-
-omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)] in
 lemma contMDiff_extend [IsManifold I ∞ M] [FiniteDimensional ℝ F] [T2Space M]
     [ContMDiffVectorBundle ∞ F V I] {x : M} (σ₀ : V x) :
     ContMDiff I (I.prod 𝓘(ℝ, F)) ∞ (T% extend I F σ₀) := by
@@ -773,7 +741,7 @@ lemma contMDiff_extend [IsManifold I ∞ M] [FiniteDimensional ℝ F] [T2Space M
   -- XXX: extract ψ and hψ as helper declarations, perhaps private to prevent API leakage?
   let hψ :=
     Classical.choose_spec <| (SmoothBumpFunction.nhds_basis_support (I := I) ht).mem_iff.1 ht
-  apply _root_.contMDiff_section_of_smul_smoothBumpFunction _ ?_ t.open_baseSet hψ.1 le_rfl
+  apply ψ.contMDiff.contMDiffOn.smul_section_of_tsupport t.open_baseSet hψ.1
   apply contMDiffOn_localExtensionOn _ hx
 
 variable (F I) in
