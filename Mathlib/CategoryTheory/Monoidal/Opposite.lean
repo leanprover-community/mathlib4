@@ -319,7 +319,8 @@ variable (C)
   .trans (MonoidalOpposite.unmopEquiv Cᴹᵒᵖ) (MonoidalOpposite.unmopEquiv C)
 
 @[simps!]
-instance : (MonoidalOpposite.mopMopEquivalence C).functor.Monoidal where
+instance MonoidalOpposite.mopMopEquivalenceFunctorMonoidal :
+    (MonoidalOpposite.mopMopEquivalence C).functor.Monoidal where
   ε := 𝟙 _
   δ X Y := 𝟙 _
   μ X Y := 𝟙 _
