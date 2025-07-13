@@ -6,6 +6,7 @@ Authors: Frédéric Dupuis
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Analysis.Normed.Module.Dual
 import Mathlib.Analysis.Normed.Group.NullSubmodule
+import Mathlib.Topology.Algebra.Module.PerfectPairing
 
 /-!
 # The Fréchet-Riesz representation theorem
@@ -50,7 +51,7 @@ section Seminormed
 
 variable [RCLike 𝕜] [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 local postfix:90 "†" => starRingEnd _
 
@@ -88,7 +89,7 @@ end Seminormed
 section Normed
 variable [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 local postfix:90 "†" => starRingEnd _
 
@@ -155,7 +156,7 @@ def toDual : E ≃ₗᵢ⋆[𝕜] NormedSpace.Dual 𝕜 E :=
           sub_eq_zero.mp (Eq.symm h₃)
         have h₄ :=
           calc
-            ⟪(ℓ z† / ⟪z, z⟫) • z, x⟫ = ℓ z / ⟪z, z⟫ * ⟪z, x⟫ := by simp [inner_smul_left, conj_conj]
+            ⟪(ℓ z† / ⟪z, z⟫) • z, x⟫ = ℓ z / ⟪z, z⟫ * ⟪z, x⟫ := by simp [inner_smul_left]
             _ = ℓ z * ⟪z, x⟫ / ⟪z, z⟫ := by rw [← div_mul_eq_mul_div]
             _ = ℓ x * ⟪z, z⟫ / ⟪z, z⟫ := by rw [h₂]
             _ = ℓ x := by field_simp [inner_self_ne_zero.2 z_ne_0]
@@ -196,5 +197,14 @@ theorem unique_continuousLinearMapOfBilin {v f : E} (is_lax_milgram : ∀ w, ⟪
   exact is_lax_milgram w
 
 end Normed
+
+instance [NormedAddCommGroup E] [CompleteSpace E] [InnerProductSpace ℝ E] :
+    (innerₗ E).IsContPerfPair where
+  continuous_uncurry := continuous_inner
+  bijective_left := (InnerProductSpace.toDual ℝ E).bijective
+  bijective_right := by
+    convert (InnerProductSpace.toDual ℝ E).bijective
+    ext y
+    simp
 
 end InnerProductSpace

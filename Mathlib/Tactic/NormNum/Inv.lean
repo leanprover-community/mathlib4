@@ -140,7 +140,7 @@ theorem isNat_inv_zero {α} [DivisionSemiring α] : {a : α} →
 
 theorem isInt_inv_neg_one {α} [DivisionRing α] : {a : α} →
     IsInt a (.negOfNat (nat_lit 1)) → IsInt a⁻¹ (.negOfNat (nat_lit 1))
-  | _, ⟨rfl⟩ => ⟨by simp [inv_neg_one]⟩
+  | _, ⟨rfl⟩ => ⟨by simp⟩
 
 theorem isRat_inv_neg {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} :
     IsRat a (.negOfNat (Nat.succ n)) d → IsRat a⁻¹ (.negOfNat d) (Nat.succ n) := by

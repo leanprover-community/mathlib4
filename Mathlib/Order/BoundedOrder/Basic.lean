@@ -123,7 +123,7 @@ alias ⟨IsTop.eq_top, _⟩ := isTop_iff_eq_top
 
 @[simp]
 theorem top_le_iff : ⊤ ≤ a ↔ a = ⊤ :=
-  le_top.le_iff_eq.trans eq_comm
+  le_top.ge_iff_eq
 
 theorem top_unique (h : ⊤ ≤ a) : a = ⊤ :=
   le_top.antisymm h
@@ -154,8 +154,10 @@ theorem Ne.lt_top' (h : ⊤ ≠ a) : a < ⊤ :=
 theorem ne_top_of_le_ne_top (hb : b ≠ ⊤) (hab : a ≤ b) : a ≠ ⊤ :=
   (hab.trans_lt hb.lt_top).ne
 
-lemma top_not_mem_iff {s : Set α} : ⊤ ∉ s ↔ ∀ x ∈ s, x < ⊤ :=
+lemma top_notMem_iff {s : Set α} : ⊤ ∉ s ↔ ∀ x ∈ s, x < ⊤ :=
   ⟨fun h x hx ↦ Ne.lt_top (fun hx' : x = ⊤ ↦ h (hx' ▸ hx)), fun h h₀ ↦ (h ⊤ h₀).false⟩
+
+@[deprecated (since := "2025-05-23")] alias top_not_mem_iff := top_notMem_iff
 
 variable [Nontrivial α]
 
@@ -293,7 +295,7 @@ alias ⟨IsBot.eq_bot, _⟩ := isBot_iff_eq_bot
 
 @[simp]
 theorem le_bot_iff : a ≤ ⊥ ↔ a = ⊥ :=
-  bot_le.le_iff_eq
+  bot_le.ge_iff_eq'
 
 theorem bot_unique (h : a ≤ ⊥) : a = ⊥ :=
   h.antisymm bot_le
@@ -312,7 +314,7 @@ theorem not_bot_lt_iff : ¬⊥ < a ↔ a = ⊥ :=
   bot_lt_iff_ne_bot.not_left
 
 theorem eq_bot_or_bot_lt (a : α) : a = ⊥ ∨ ⊥ < a :=
-  bot_le.eq_or_gt
+  bot_le.eq_or_lt'
 
 theorem eq_bot_of_minimal (h : ∀ b, ¬b < a) : a = ⊥ :=
   (eq_bot_or_bot_lt a).resolve_right (h ⊥)
@@ -326,8 +328,10 @@ theorem Ne.bot_lt' (h : ⊥ ≠ a) : ⊥ < a :=
 theorem ne_bot_of_le_ne_bot (hb : b ≠ ⊥) (hab : b ≤ a) : a ≠ ⊥ :=
   (hb.bot_lt.trans_le hab).ne'
 
-lemma bot_not_mem_iff {s : Set α} : ⊥ ∉ s ↔ ∀ x ∈ s, ⊥ < x :=
-  top_not_mem_iff (α := αᵒᵈ)
+lemma bot_notMem_iff {s : Set α} : ⊥ ∉ s ↔ ∀ x ∈ s, ⊥ < x :=
+  top_notMem_iff (α := αᵒᵈ)
+
+@[deprecated (since := "2025-05-23")] alias bot_not_mem_iff := bot_notMem_iff
 
 variable [Nontrivial α]
 
@@ -384,6 +388,10 @@ theorem bot_apply [∀ i, Bot (α' i)] (i : ι) : (⊥ : ∀ i, α' i) i = ⊥ :
 theorem bot_def [∀ i, Bot (α' i)] : (⊥ : ∀ i, α' i) = fun _ => ⊥ :=
   rfl
 
+@[simp]
+theorem bot_comp {α β γ : Type*} [Bot γ] (x : α → β) : (⊥ : β → γ) ∘ x = ⊥ := by
+  rfl
+
 instance [∀ i, Top (α' i)] : Top (∀ i, α' i) :=
   ⟨fun _ => ⊤⟩
 
@@ -392,6 +400,10 @@ theorem top_apply [∀ i, Top (α' i)] (i : ι) : (⊤ : ∀ i, α' i) i = ⊤ :
   rfl
 
 theorem top_def [∀ i, Top (α' i)] : (⊤ : ∀ i, α' i) = fun _ => ⊤ :=
+  rfl
+
+@[simp]
+theorem top_comp {α β γ : Type*} [Top γ] (x : α → β) : (⊤ : β → γ) ∘ x = ⊤ := by
   rfl
 
 instance instOrderTop [∀ i, LE (α' i)] [∀ i, OrderTop (α' i)] : OrderTop (∀ i, α' i) where

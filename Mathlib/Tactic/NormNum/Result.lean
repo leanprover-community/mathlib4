@@ -87,7 +87,7 @@ def mkRawRatLit (q : ℚ) : Q(ℚ) :=
 def rawIntLitNatAbs (n : Q(ℤ)) : (m : Q(ℕ)) × Q(Int.natAbs $n = $m) :=
   if n.isAppOfArity ``Int.ofNat 1 then
     have m : Q(ℕ) := n.appArg!
-    ⟨m, show Q(Int.natAbs (Int.ofNat $m) = $m) from q(Int.natAbs_ofNat $m)⟩
+    ⟨m, show Q(Int.natAbs (Int.ofNat $m) = $m) from q(Int.natAbs_natCast $m)⟩
   else if n.isAppOfArity ``Int.negOfNat 1 then
     have m : Q(ℕ) := n.appArg!
     ⟨m, show Q(Int.natAbs (Int.negOfNat $m) = $m) from q(Int.natAbs_neg $m)⟩

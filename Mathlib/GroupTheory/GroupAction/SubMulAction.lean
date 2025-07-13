@@ -136,6 +136,9 @@ variable {N α : Type*} [SetLike S α] [SMul M N] [SMul M α] [Monoid N]
 instance (priority := 50) smul' : SMul M s where
   smul r x := ⟨r • x.1, smul_one_smul N r x.1 ▸ smul_mem _ x.2⟩
 
+instance (priority := 50) : IsScalarTower M N s where
+  smul_assoc m n x := Subtype.ext (smul_assoc m n x.1)
+
 @[to_additive (attr := simp, norm_cast)]
 protected theorem val_smul_of_tower (r : M) (x : s) : (↑(r • x) : α) = r • (x : α) :=
   rfl
@@ -208,7 +211,7 @@ theorem copy_eq (p : SubMulAction R M) (s : Set M) (hs : s = ↑p) : p.copy s hs
 instance : Bot (SubMulAction R M) where
   bot :=
     { carrier := ∅
-      smul_mem' := fun _c h => Set.not_mem_empty h }
+      smul_mem' := fun _c h => Set.notMem_empty h }
 
 @[to_additive]
 instance : Inhabited (SubMulAction R M) :=
@@ -236,13 +239,11 @@ variable {p} in
 theorem val_smul (r : R) (x : p) : (↑(r • x) : M) = r • (x : M) :=
   rfl
 
--- Porting note: no longer needed because of defeq structure eta
-
 /-- Embedding of a submodule `p` to the ambient space `M`. -/
 @[to_additive "Embedding of a submodule `p` to the ambient space `M`."]
 protected def subtype : p →[R] M where
   toFun := Subtype.val
-  map_smul' := by simp [val_smul]
+  map_smul' := by simp
 
 variable {p} in
 @[to_additive (attr := simp)]
@@ -404,6 +405,15 @@ theorem stabilizer_of_subMul {p : SubMulAction R M} (m : p) :
   rw [← Subgroup.toSubmonoid_inj]
   exact stabilizer_of_subMul.submonoid m
 
+/-- SubMulAction on the complement of an invariant subset -/
+@[to_additive "SubAddAction on the complement of an invariant subset"]
+instance : HasCompl (SubMulAction R M) where
+  compl s := ⟨sᶜ, by simp⟩
+
+@[to_additive]
+theorem compl_def (s : SubMulAction R M) :
+  sᶜ.carrier = (s : Set M)ᶜ := rfl
+
 end MulActionGroup
 
 section Module
@@ -469,7 +479,7 @@ variable {M α : Type*} [Monoid M] [MulAction M α]
 
 
 /-- The inclusion of a SubMulAction into the ambient set, as an equivariant map -/
-@[to_additive  "The inclusion of a SubAddAction into the ambient set, as an equivariant map."]
+@[to_additive "The inclusion of a SubAddAction into the ambient set, as an equivariant map."]
 def inclusion (s : SubMulAction M α) : s →[M] α where
 -- The inclusion map of the inclusion of a SubMulAction
   toFun := Subtype.val

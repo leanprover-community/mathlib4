@@ -90,12 +90,12 @@ lemma accumulate_last {i n m : ℕ} (hin : i < n) (hmi : m = i + 1) (t : Fin n �
 
 lemma accumulate_injective {n m} (hnm : n ≤ m) : Function.Injective (accumulate n m) := by
   refine fun t s he ↦ funext fun i ↦ ?_
-  obtain h|h := lt_or_le (i.1 + 1) m
+  obtain h|h := lt_or_ge (i.1 + 1) m
   · have := accumulate_rec i.2 h s
     rwa [← he, accumulate_rec i.2 h t, add_right_cancel_iff] at this
   · have := h.antisymm (i.2.nat_succ_le.trans hnm)
     rw [← accumulate_last i.2 this t, ← accumulate_last i.2 this s, he]
-    iterate 2 { intro j hj; exact ((j.2.trans_le hnm).not_le hj).elim }
+    iterate 2 { intro j hj; exact ((j.2.trans_le hnm).not_ge hj).elim }
 
 lemma accumulate_invAccumulate {n m} (hmn : m ≤ n) {s : Fin m → ℕ} (hs : Antitone s) :
     accumulate n m (invAccumulate n m s) = s := funext <| fun ⟨i, hi⟩ ↦ by
@@ -110,7 +110,7 @@ lemma accumulate_invAccumulate {n m} (hmn : m ≤ n) {s : Fin m → ℕ} (hs : A
     rw [accumulate_last (hm.trans_le hmn) this, invAccumulate, dif_pos hm, dif_neg this.not_gt,
       Nat.sub_zero]
     intro j hj
-    rw [invAccumulate, dif_neg hj.not_lt, Nat.zero_sub]
+    rw [invAccumulate, dif_neg hj.not_gt, Nat.zero_sub]
 
 end accumulate
 
@@ -186,7 +186,7 @@ private lemma supDegree_monic_esymm [Nontrivial R] {i : ℕ} (him : i < m) :
   simp_rw [← mem_sdiff] at hne
   have hkm := mem_sdiff.1 (min'_mem _ hne)
   refine ⟨min' _ hne, fun k hk ↦ ?_, ?_⟩
-  all_goals simp only [Pi.toLex_apply, ofLex_toLex, Finsupp.indicator_apply]
+  all_goals simp only [ofLex_toLex, Finsupp.indicator_apply]
   · have hki := mem_Iic.2 (hk.le.trans <| mem_Iic.1 hkm.1)
     rw [dif_pos hki, dif_pos]
     by_contra h
@@ -244,7 +244,7 @@ lemma IsSymmetric.antitone_supDegree [LinearOrder σ] {p : MvPolynomial σ R} (h
   rw [Antitone]
   by_contra! h
   obtain ⟨i, j, hle, hlt⟩ := h
-  apply (le_sup (s := p.support) (f := toLex) _).not_lt
+  apply (le_sup (s := p.support) (f := toLex) _).not_gt
   pick_goal 3
   · rw [← hp (Equiv.swap i j), mem_support_iff, coeff_rename_mapDomain _ (Equiv.injective _)]
     rw [Ne, ← leadingCoeff_eq_zero toLex.injective, leadingCoeff_toLex] at h0
@@ -262,8 +262,6 @@ section CommRing
 
 variable (R)
 variable [Fintype σ] [CommRing R]
-
-open AddMonoidAlgebra
 
 /- Also holds for a cancellative CommSemiring. -/
 lemma esymmAlgHom_fin_injective (h : n ≤ m) :

@@ -4,17 +4,20 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
 import Mathlib.Analysis.InnerProductSpace.Adjoint
+import Mathlib.Analysis.InnerProductSpace.Spectrum
 
 /-!
 # Positive operators
 
-In this file we define positive operators in a Hilbert space. We follow Bourbaki's choice
+In this file we define when an operator in a Hilbert space is positive. We follow Bourbaki's choice
 of requiring self adjointness in the definition.
 
 ## Main definitions
 
-* `IsPositive` : a continuous linear map is positive if it is self adjoint and
-  `∀ x, 0 ≤ re ⟪T x, x⟫`
+* `LinearMap.IsPositive` : a linear map is positive if it is self adjoint and
+  `∀ x, 0 ≤ re ⟪T x, x⟫`.
+* `ContinuousLinearMap.IsPositive` : a continuous linear map is positive if it is self adjoint and
+  `∀ x, 0 ≤ re ⟪T x, x⟫`.
 
 ## Main statements
 
@@ -22,7 +25,7 @@ of requiring self adjointness in the definition.
   then for any `S : E →L[𝕜] F`, `S ∘L T ∘L S†` is also positive.
 * `ContinuousLinearMap.isPositive_iff_complex` : in a ***complex*** Hilbert space,
   checking that `⟪T x, x⟫` is a nonnegative real number for all `x` suffices to prove that
-  `T` is positive
+  `T` is positive.
 
 ## References
 
@@ -33,19 +36,19 @@ of requiring self adjointness in the definition.
 Positive operator
 -/
 
-
-open InnerProductSpace RCLike ContinuousLinearMap
+open InnerProductSpace RCLike LinearMap ContinuousLinearMap
 
 open scoped InnerProduct ComplexConjugate
-
-namespace ContinuousLinearMap
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
 variable [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 F]
-variable [CompleteSpace E] [CompleteSpace F]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
+
+namespace ContinuousLinearMap
+
+variable [CompleteSpace E] [CompleteSpace F]
 
 /-- A continuous linear endomorphism `T` of a Hilbert space is **positive** if it is self adjoint
   and `∀ x, 0 ≤ re ⟪T x, x⟫`. -/
@@ -55,44 +58,94 @@ def IsPositive (T : E →L[𝕜] E) : Prop :=
 theorem IsPositive.isSelfAdjoint {T : E →L[𝕜] E} (hT : IsPositive T) : IsSelfAdjoint T :=
   hT.1
 
-theorem IsPositive.inner_nonneg_left {T : E →L[𝕜] E} (hT : IsPositive T) (x : E) :
+theorem IsPositive.inner_left_eq_inner_right {T : E →L[𝕜] E} (hT : IsPositive T) (x : E) :
+    ⟪T x, x⟫ = ⟪x, T x⟫ := by
+  rw [← adjoint_inner_left, hT.isSelfAdjoint.adjoint_eq]
+
+theorem IsPositive.re_inner_nonneg_left {T : E →L[𝕜] E} (hT : IsPositive T) (x : E) :
     0 ≤ re ⟪T x, x⟫ :=
   hT.2 x
 
-theorem IsPositive.inner_nonneg_right {T : E →L[𝕜] E} (hT : IsPositive T) (x : E) :
-    0 ≤ re ⟪x, T x⟫ := by rw [inner_re_symm]; exact hT.inner_nonneg_left x
+theorem IsPositive.re_inner_nonneg_right {T : E →L[𝕜] E} (hT : IsPositive T) (x : E) :
+    0 ≤ re ⟪x, T x⟫ := by rw [inner_re_symm]; exact hT.re_inner_nonneg_left x
 
+open ComplexOrder in
+theorem isPositive_iff (T : E →L[𝕜] E) :
+    IsPositive T ↔ IsSelfAdjoint T ∧ ∀ x, 0 ≤ ⟪T x, x⟫ := by
+  simp_rw [IsPositive, and_congr_right_iff, ← RCLike.ofReal_nonneg (K := 𝕜), reApplyInnerSelf_apply]
+  intro hT
+  have := hT.isSymmetric.coe_re_inner_apply_self
+  simp_all
+
+open ComplexOrder in
+theorem IsPositive.inner_nonneg_left {T : E →L[𝕜] E} (hT : IsPositive T) (x : E) :
+    0 ≤ ⟪T x, x⟫ :=
+  ((isPositive_iff T).mp hT).right x
+
+open ComplexOrder in
+theorem IsPositive.inner_nonneg_right {T : E →L[𝕜] E} (hT : IsPositive T) (x : E) :
+    0 ≤ ⟪x, T x⟫ := by
+  rw [← hT.inner_left_eq_inner_right]
+  exact inner_nonneg_left hT x
+
+@[simp]
 theorem isPositive_zero : IsPositive (0 : E →L[𝕜] E) := by
   refine ⟨.zero _, fun x => ?_⟩
-  change 0 ≤ re ⟪_, _⟫
-  rw [zero_apply, inner_zero_left, ZeroHomClass.map_zero]
+  simp [reApplyInnerSelf_apply]
 
+@[simp]
 theorem isPositive_one : IsPositive (1 : E →L[𝕜] E) :=
   ⟨.one _, fun _ => inner_self_nonneg⟩
 
+@[simp]
+theorem isPositive_natCast {n : ℕ} : IsPositive (n : E →L[𝕜] E) := by
+  refine ⟨IsSelfAdjoint.natCast n, ?_⟩
+  intro x
+  simpa [reApplyInnerSelf_apply, ← Nat.cast_smul_eq_nsmul 𝕜, inner_smul_left] using
+    mul_nonneg n.cast_nonneg' inner_self_nonneg
+
+@[simp]
+theorem isPositive_ofNat {n : ℕ} [n.AtLeastTwo] : IsPositive (ofNat(n) : E →L[𝕜] E) :=
+  isPositive_natCast
+
+@[aesop safe apply]
 theorem IsPositive.add {T S : E →L[𝕜] E} (hT : T.IsPositive) (hS : S.IsPositive) :
     (T + S).IsPositive := by
   refine ⟨hT.isSelfAdjoint.add hS.isSelfAdjoint, fun x => ?_⟩
   rw [reApplyInnerSelf, add_apply, inner_add_left, map_add]
-  exact add_nonneg (hT.inner_nonneg_left x) (hS.inner_nonneg_left x)
+  exact add_nonneg (hT.re_inner_nonneg_left x) (hS.re_inner_nonneg_left x)
 
+open ComplexOrder in
+@[aesop safe apply]
+theorem IsPositive.smul_of_nonneg {T : E →L[𝕜] E} (hT : T.IsPositive) {c : 𝕜} (hc : 0 ≤ c) :
+    (c • T).IsPositive := by
+  have hc' : starRingEnd 𝕜 c = c := by
+    simp [conj_eq_iff_im, ← (le_iff_re_im.mp hc).right]
+  apply And.intro
+  · exact IsSelfAdjoint.smul hc' hT.left
+  · intro x
+    rw [reApplyInnerSelf, smul_apply, inner_smul_left, hc', mul_re, conj_eq_iff_im.mp hc', zero_mul,
+      sub_zero]
+    exact mul_nonneg ((re_nonneg_of_nonneg hc').mpr hc) (re_inner_nonneg_left hT x)
+
+@[aesop safe apply]
 theorem IsPositive.conj_adjoint {T : E →L[𝕜] E} (hT : T.IsPositive) (S : E →L[𝕜] F) :
     (S ∘L T ∘L S†).IsPositive := by
   refine ⟨hT.isSelfAdjoint.conj_adjoint S, fun x => ?_⟩
   rw [reApplyInnerSelf, comp_apply, ← adjoint_inner_right]
-  exact hT.inner_nonneg_left _
+  exact hT.re_inner_nonneg_left _
 
+@[aesop safe apply]
 theorem IsPositive.adjoint_conj {T : E →L[𝕜] E} (hT : T.IsPositive) (S : F →L[𝕜] E) :
     (S† ∘L T ∘L S).IsPositive := by
   convert hT.conj_adjoint (S†)
   rw [adjoint_adjoint]
 
-theorem IsPositive.conj_orthogonalProjection (U : Submodule 𝕜 E) {T : E →L[𝕜] E} (hT : T.IsPositive)
-    [CompleteSpace U] :
-    (U.subtypeL ∘L
-        U.orthogonalProjection ∘L T ∘L U.subtypeL ∘L U.orthogonalProjection).IsPositive := by
-  have := hT.conj_adjoint (U.subtypeL ∘L U.orthogonalProjection)
-  rwa [(orthogonalProjection_isSelfAdjoint U).adjoint_eq] at this
+theorem IsPositive.conj_starProjection (U : Submodule 𝕜 E) {T : E →L[𝕜] E} (hT : T.IsPositive)
+    [U.HasOrthogonalProjection] :
+    (U.starProjection ∘L T ∘L U.starProjection).IsPositive := by
+  have := hT.conj_adjoint (U.starProjection)
+  rwa [(isSelfAdjoint_starProjection U).adjoint_eq] at this
 
 theorem IsPositive.orthogonalProjection_comp {T : E →L[𝕜] E} (hT : T.IsPositive) (U : Submodule 𝕜 E)
     [CompleteSpace U] : (U.orthogonalProjection ∘L T ∘L U.subtypeL).IsPositive := by
@@ -144,20 +197,16 @@ section PartialOrder
 `StarOrderedRing`. -/
 instance instLoewnerPartialOrder : PartialOrder (E →L[𝕜] E) where
   le f g := (g - f).IsPositive
-  le_refl _ := by simpa using isPositive_zero
+  le_refl _ := by simp
   le_trans _ _ _ h₁ h₂ := by simpa using h₁.add h₂
   le_antisymm f₁ f₂ h₁ h₂ := by
     rw [← sub_eq_zero]
     have h_isSymm := isSelfAdjoint_iff_isSymmetric.mp <| IsPositive.isSelfAdjoint h₂
     exact_mod_cast h_isSymm.inner_map_self_eq_zero.mp fun x ↦ by
-      apply RCLike.ext
-      · rw [map_zero]
-        apply le_antisymm
-        · rw [← neg_nonneg, ← map_neg, ← inner_neg_left]
-          simpa using h₁.inner_nonneg_left _
-        · exact h₂.inner_nonneg_left _
-      · rw [coe_sub, LinearMap.sub_apply, coe_coe, coe_coe, map_zero, ← sub_apply,
-          ← h_isSymm.coe_reApplyInnerSelf_apply (T := f₁ - f₂) x, RCLike.ofReal_im]
+      open scoped ComplexOrder in
+      refine le_antisymm ?_ (h₂.inner_nonneg_left x)
+      rw [← neg_nonneg, ← inner_neg_left]
+      simpa using h₁.inner_nonneg_left x
 
 lemma le_def (f g : E →L[𝕜] E) : f ≤ g ↔ (g - f).IsPositive := Iff.rfl
 
@@ -166,4 +215,177 @@ lemma nonneg_iff_isPositive (f : E →L[𝕜] E) : 0 ≤ f ↔ f.IsPositive := b
 
 end PartialOrder
 
+/-- A star projection operator is positive.
+
+The proof of this will soon be simplified to `IsStarProjection.nonneg` when we
+have `StarOrderedRing (E →L[𝕜] E)`. -/
+@[aesop 10% apply, grind →]
+theorem IsPositive.of_isStarPojection {p : E →L[𝕜] E}
+    (hp : IsStarProjection p) : p.IsPositive := by
+  refine ⟨hp.isSelfAdjoint, ?_⟩
+  rw [← hp.isIdempotentElem.eq]
+  simp_rw [reApplyInnerSelf_apply, ContinuousLinearMap.mul_apply]
+  intro x
+  simp_rw [← ContinuousLinearMap.adjoint_inner_right _ _ x, isSelfAdjoint_iff'.mp hp.isSelfAdjoint]
+  exact inner_self_nonneg
+
+/-- An idempotent operator is positive if and only if it is self-adjoint. -/
+@[grind →]
+theorem IsIdempotentElem.isPositive_iff_isSelfAdjoint
+    {p : E →L[𝕜] E} (hp : IsIdempotentElem p) : p.IsPositive ↔ IsSelfAdjoint p :=
+  ⟨fun h => h.isSelfAdjoint, fun h => IsPositive.of_isStarPojection ⟨hp, h⟩⟩
+
 end ContinuousLinearMap
+
+namespace LinearMap
+
+variable [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F]
+
+/-- A linear map `T` of a Hilbert space is **positive** if it is self adjoint and
+  `∀ x, 0 ≤ re ⟪T x, x⟫`. -/
+def IsPositive (T : E →ₗ[𝕜] E) : Prop :=
+  IsSelfAdjoint T ∧ ∀ x, 0 ≤ re ⟪T x, x⟫
+
+theorem IsPositive.isSelfAdjoint {T : E →ₗ[𝕜] E} (hT : IsPositive T) :
+    IsSelfAdjoint T := hT.1
+
+theorem IsPositive.re_inner_nonneg_left {T : E →ₗ[𝕜] E} (hT : IsPositive T)
+    (x : E) : 0 ≤ re ⟪T x, x⟫ :=
+  hT.2 x
+
+theorem IsPositive.re_inner_nonneg_right {T : E →ₗ[𝕜] E} (hT : IsPositive T)
+    (x : E) : 0 ≤ re ⟪x, T x⟫ := by
+  rw [inner_re_symm]
+  exact hT.re_inner_nonneg_left x
+
+lemma isPositive_toContinuousLinearMap_iff (T : E →ₗ[𝕜] E) :
+    have : CompleteSpace E := FiniteDimensional.complete 𝕜 _
+    T.toContinuousLinearMap.IsPositive ↔ T.IsPositive := by
+  intro
+  simp [ContinuousLinearMap.IsPositive, IsPositive, isSelfAdjoint_toContinuousLinearMap_iff T,
+    ContinuousLinearMap.reApplyInnerSelf]
+
+lemma _root_.ContinuousLinearMap.isPositive_toLinearMap_iff (T : E →L[𝕜] E) :
+    have := FiniteDimensional.complete 𝕜 E
+    (T : E →ₗ[𝕜] E).IsPositive ↔ T.IsPositive := by
+  intro
+  simp [ContinuousLinearMap.IsPositive, IsPositive, isSelfAdjoint_toLinearMap_iff T,
+    ContinuousLinearMap.reApplyInnerSelf]
+
+section Complex
+
+variable {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace ℂ E'] [FiniteDimensional ℂ E']
+
+theorem isPositive_iff_complex (T : E' →ₗ[ℂ] E') :
+    IsPositive T ↔ ∀ x, (re ⟪T x, x⟫_ℂ : ℂ) = ⟪T x, x⟫_ℂ ∧ 0 ≤ re ⟪T x, x⟫_ℂ := by
+  simp_rw [IsPositive, forall_and, ← isSymmetric_iff_isSelfAdjoint,
+    LinearMap.isSymmetric_iff_inner_map_self_real, conj_eq_iff_re, re_to_complex,
+    Complex.coe_algebraMap]
+
+end Complex
+
+theorem IsPositive.isSymmetric {T : E →ₗ[𝕜] E} (hT : IsPositive T) :
+    IsSymmetric T := (isSymmetric_iff_isSelfAdjoint T).mpr hT.isSelfAdjoint
+
+open ComplexOrder in
+theorem isPositive_iff (T : E →ₗ[𝕜] E) :
+    IsPositive T ↔ IsSelfAdjoint T ∧ ∀ x, 0 ≤ ⟪T x, x⟫ := by
+  simp_rw [IsPositive, and_congr_right_iff, ← RCLike.ofReal_nonneg (K := 𝕜)]
+  intro hT
+  simp [isSymmetric_iff_isSelfAdjoint _ |>.mpr hT]
+
+open ComplexOrder in
+theorem IsPositive.inner_nonneg_left {T : E →ₗ[𝕜] E} (hT : IsPositive T) (x : E) : 0 ≤ ⟪T x, x⟫ :=
+  ((isPositive_iff T).mp hT).right x
+
+open ComplexOrder in
+theorem IsPositive.inner_nonneg_right {T : E →ₗ[𝕜] E} (hT : IsPositive T) (x : E) :
+    0 ≤ ⟪x, T x⟫ := by
+  rw [← hT.isSymmetric]
+  exact hT.inner_nonneg_left x
+
+@[simp]
+theorem isPositive_zero : IsPositive (0 : E →ₗ[𝕜] E) := ⟨.zero _, by simp⟩
+
+@[simp]
+theorem isPositive_one : IsPositive (1 : E →ₗ[𝕜] E) := ⟨.one _, fun _ => inner_self_nonneg⟩
+
+@[simp]
+theorem isPositive_natCast {n : ℕ} : IsPositive (n : E →ₗ[𝕜] E) := by
+  refine ⟨IsSelfAdjoint.natCast n, ?_⟩
+  intro x
+  simp only [Module.End.natCast_apply, ← Nat.cast_smul_eq_nsmul 𝕜, inner_smul_left, map_natCast,
+    mul_re, natCast_re, inner_self_im, mul_zero, sub_zero]
+  exact mul_nonneg n.cast_nonneg' inner_self_nonneg
+
+@[simp]
+theorem isPositive_ofNat {n : ℕ} [n.AtLeastTwo] : IsPositive (ofNat(n) : E →ₗ[𝕜] E) :=
+  isPositive_natCast
+
+@[aesop safe apply]
+theorem IsPositive.add {T S : E →ₗ[𝕜] E} (hT : T.IsPositive) (hS : S.IsPositive) :
+    (T + S).IsPositive := by
+  refine ⟨hT.isSelfAdjoint.add hS.isSelfAdjoint, fun x => ?_⟩
+  rw [add_apply, inner_add_left, map_add]
+  exact add_nonneg (hT.re_inner_nonneg_left x) (hS.re_inner_nonneg_left x)
+
+open ComplexOrder in
+@[aesop safe apply]
+theorem IsPositive.smul_of_nonneg {T : E →ₗ[𝕜] E} (hT : T.IsPositive) {c : 𝕜} (hc : 0 ≤ c) :
+    (c • T).IsPositive := by
+  have hc' : starRingEnd 𝕜 c = c := by
+    simp [conj_eq_iff_im, ← (le_iff_re_im.mp hc).right]
+  apply And.intro
+  · exact IsSelfAdjoint.smul hc' hT.left
+  · intro x
+    rw [smul_apply, inner_smul_left, hc', mul_re, conj_eq_iff_im.mp hc', zero_mul, sub_zero]
+    exact mul_nonneg ((re_nonneg_of_nonneg hc').mpr hc) (re_inner_nonneg_left hT x)
+
+@[aesop safe apply]
+theorem IsPositive.conj_adjoint {T : E →ₗ[𝕜] E} (hT : T.IsPositive) (S : E →ₗ[𝕜] F) :
+    (S ∘ₗ T ∘ₗ S.adjoint).IsPositive := by
+  refine And.intro ?_ ?_
+  · rw [isSelfAdjoint_iff', adjoint_comp, adjoint_comp, adjoint_adjoint, ← star_eq_adjoint, hT.1,
+      comp_assoc]
+  · intro x
+    rw [comp_apply, ← adjoint_inner_right]
+    exact hT.re_inner_nonneg_left _
+
+@[aesop safe apply]
+theorem IsPositive.adjoint_conj {T : E →ₗ[𝕜] E} (hT : T.IsPositive) (S : F →ₗ[𝕜] E) :
+    (S.adjoint ∘ₗ T ∘ₗ S).IsPositive := by
+  convert hT.conj_adjoint S.adjoint
+  rw [adjoint_adjoint]
+
+theorem IsPositive.nonneg_eigenvalues {T : E →ₗ[𝕜] E} {n : ℕ} (hT : T.IsPositive)
+    (hn : Module.finrank 𝕜 E = n) (i : Fin n) : 0 ≤ hT.isSymmetric.eigenvalues hn i := by
+  have h := hT.right (hT.isSymmetric.eigenvectorBasis hn i)
+  rw [hT.isSymmetric.apply_eigenvectorBasis, inner_smul_real_left, RCLike.smul_re,
+    inner_self_eq_norm_sq, OrthonormalBasis.norm_eq_one, one_pow, mul_one] at h
+  exact h
+
+section PartialOrder
+
+/-- The (Loewner) partial order on linear maps on a Hilbert space determined by `f ≤ g`
+if and only if `g - f` is a positive linear map (in the sense of `LinearMap.IsPositive`). -/
+instance instLoewnerPartialOrder : PartialOrder (E →ₗ[𝕜] E) where
+  le f g := (g - f).IsPositive
+  le_refl _ := by simp
+  le_trans _ _ _ h₁ h₂ := by simpa using h₁.add h₂
+  le_antisymm f₁ f₂ h₁ h₂ := by
+    rw [← sub_eq_zero]
+    have h_isSymm := (isSymmetric_iff_isSelfAdjoint (f₁ - f₂)).mpr h₂.isSelfAdjoint
+    exact h_isSymm.inner_map_self_eq_zero.mp fun x ↦ by
+      open scoped ComplexOrder in
+      refine le_antisymm ?_ (h₂.inner_nonneg_left x)
+      rw [← neg_nonneg, ← inner_neg_left]
+      simpa using h₁.inner_nonneg_left x
+
+lemma le_def (f g : E →ₗ[𝕜] E) : f ≤ g ↔ (g - f).IsPositive := Iff.rfl
+
+lemma nonneg_iff_isPositive (f : E →ₗ[𝕜] E) : 0 ≤ f ↔ f.IsPositive := by
+  simpa using le_def 0 f
+
+end PartialOrder
+
+end LinearMap

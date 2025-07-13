@@ -52,7 +52,7 @@ attribute [local instance] Module.finitePresentation_of_projective in
 lemma smoothLocus_eq_compl_support_inter [EssFiniteType R A] :
     smoothLocus R A = (Module.support A (H1Cotangent R A))ᶜ ∩ Module.freeLocus A (Ω[A⁄R]) := by
   ext p
-  simp only [Set.mem_inter_iff, Set.mem_compl_iff, Module.not_mem_support_iff,
+  simp only [Set.mem_inter_iff, Set.mem_compl_iff, Module.notMem_support_iff,
     Module.mem_freeLocus]
   refine Algebra.FormallySmooth.iff_subsingleton_and_projective.trans ?_
   congr! 1

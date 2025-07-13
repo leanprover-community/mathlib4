@@ -73,7 +73,7 @@ theorem coe_iSup_of_directed {ι} [Nonempty ι] {S : ι → Submonoid M} (hS : D
 theorem mem_sSup_of_directedOn {S : Set (Submonoid M)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) {x : M} : x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
   haveI : Nonempty S := Sne.to_subtype
-  simp [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, SetCoe.exists, Subtype.coe_mk]
+  simp [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val]
 
 @[to_additive]
 theorem coe_sSup_of_directedOn {S : Set (Submonoid M)} (Sne : S.Nonempty)
@@ -333,7 +333,7 @@ abbrev groupPowers {x : M} {n : ℕ} (hpos : 0 < n) (hx : x ^ n = 1) : Group (po
   zpow_neg' m x := Subtype.ext <| by
     obtain ⟨_, k, rfl⟩ := x
     simp only [← pow_mul, Int.natMod, SubmonoidClass.coe_pow]
-    rw [Int.negSucc_eq, ← Int.natCast_succ, ← Int.add_mul_emod_self (b := (m + 1 : ℕ))]
+    rw [Int.negSucc_eq, ← Int.natCast_succ, ← Int.add_mul_emod_self_right (b := (m + 1 : ℕ))]
     nth_rw 1 [← mul_one ((m + 1 : ℕ) : ℤ)]
     rw [← sub_eq_neg_add, ← Int.mul_sub, ← Int.natCast_pred_of_pos hpos]; norm_cast
     simp only [Int.toNat_natCast]
@@ -503,13 +503,7 @@ section mul_add
 theorem ofMul_image_powers_eq_multiples_ofMul [Monoid M] {x : M} :
     Additive.ofMul '' (Submonoid.powers x : Set M) = AddSubmonoid.multiples (Additive.ofMul x) := by
   ext
-  constructor
-  · rintro ⟨y, ⟨n, hy1⟩, hy2⟩
-    use n
-    simpa [← ofMul_pow, hy1]
-  · rintro ⟨n, hn⟩
-    refine ⟨x ^ n, ⟨n, rfl⟩, ?_⟩
-    rwa [ofMul_pow]
+  exact Set.mem_image_iff_of_inverse (congrFun rfl) (congrFun rfl)
 
 theorem ofAdd_image_multiples_eq_powers_ofAdd [AddMonoid A] {x : A} :
     Multiplicative.ofAdd '' (AddSubmonoid.multiples x : Set A) =

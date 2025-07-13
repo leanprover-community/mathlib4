@@ -42,7 +42,7 @@ noncomputable section
 
 namespace CategoryTheory
 
-open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
+open CategoryTheory CategoryTheory.Category CategoryTheory.Limits CategoryTheory.Functor
 
 variable {C : Type u₁} [Category.{v₁} C] {X Y Z : C}
 variable {D : Type u₂} [Category.{v₂} D]
@@ -53,10 +53,10 @@ This isn't skeletal, so it's not a partial order.
 Later we define `Subobject X` as the quotient of this by isomorphisms.
 -/
 def MonoOver (X : C) :=
-  FullSubcategory fun f : Over X => Mono f.hom
+  ObjectProperty.FullSubcategory fun f : Over X => Mono f.hom
 
 instance (X : C) : Category (MonoOver X) :=
-  FullSubcategory.category _
+  ObjectProperty.FullSubcategory.category _
 
 namespace MonoOver
 
@@ -70,7 +70,7 @@ def mk' {X A : C} (f : A ⟶ X) [hf : Mono f] : MonoOver X where
 
 /-- The inclusion from monomorphisms over X to morphisms over X. -/
 def forget (X : C) : MonoOver X ⥤ Over X :=
-  fullSubcategoryInclusion _
+  ObjectProperty.ι _
 
 instance : CoeOut (MonoOver X) C where coe Y := Y.obj.left
 
@@ -96,13 +96,13 @@ theorem forget_obj_hom {f} : ((forget X).obj f).hom = f.arrow :=
 
 /-- The forget functor `MonoOver X ⥤ Over X` is fully faithful. -/
 def fullyFaithfulForget (X : C) : (forget X).FullyFaithful :=
-  fullyFaithfulFullSubcategoryInclusion _
+  ObjectProperty.fullyFaithfulι _
 
 instance : (forget X).Full :=
-  FullSubcategory.full _
+  ObjectProperty.full_ι _
 
 instance : (forget X).Faithful :=
-  FullSubcategory.faithful _
+  ObjectProperty.faithful_ι _
 
 instance mono (f : MonoOver X) : Mono f.arrow :=
   f.property

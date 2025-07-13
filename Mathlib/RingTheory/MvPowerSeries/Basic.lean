@@ -52,11 +52,11 @@ conditions for (a power of) an indeterminate to divide a `MvPowerSeries`
 
 This file sets up the (semi)ring structure on multivariate power series:
 additional results are in:
-* `Mathlib.RingTheory.MvPowerSeries.Inverse` : invertibility,
+* `Mathlib/RingTheory/MvPowerSeries/Inverse.lean` : invertibility,
   formal power series over a local ring form a local ring;
-* `Mathlib.RingTheory.MvPowerSeries.Trunc`: truncation of power series.
+* `Mathlib/RingTheory/MvPowerSeries/Trunc.lean`: truncation of power series.
 
-In `Mathlib.RingTheory.PowerSeries.Basic`, formal power series in one variable
+In `Mathlib/RingTheory/PowerSeries/Basic.lean`, formal power series in one variable
 will be obtained as a particular case, defined by
   `PowerSeries R := MvPowerSeries Unit R`.
 See that file for a specific description.
@@ -343,7 +343,7 @@ variable (σ) (R)
 def C : R →+* MvPowerSeries σ R :=
   { monomial R (0 : σ →₀ ℕ) with
     map_one' := rfl
-    map_mul' := fun a b => (monomial_mul_monomial 0 0 a b).symm
+    map_mul' := fun a b => Eq.trans (by simp) (monomial_mul_monomial _ _ a b).symm
     map_zero' := (monomial R 0).map_zero }
 
 variable {σ} {R}
@@ -430,7 +430,7 @@ def constantCoeff : MvPowerSeries σ R →+* R :=
   { coeff R (0 : σ →₀ ℕ) with
     toFun := coeff R (0 : σ →₀ ℕ)
     map_one' := coeff_zero_one
-    map_mul' := fun φ ψ => by classical simp [coeff_mul, support_single_ne_zero]
+    map_mul' := fun φ ψ => by classical simp [coeff_mul]
     map_zero' := LinearMap.map_zero _ }
 
 variable {σ} {R}
@@ -469,7 +469,7 @@ theorem constantCoeff_smul {S : Type*} [Semiring S] [Module R S]
     constantCoeff σ S (a • φ) = a • constantCoeff σ S φ := rfl
 
 /-- If a multivariate formal power series is invertible,
- then so is its constant coefficient. -/
+then so is its constant coefficient. -/
 theorem isUnit_constantCoeff (φ : MvPowerSeries σ R) (h : IsUnit φ) :
     IsUnit (constantCoeff σ R φ) :=
   h.map _
@@ -515,8 +515,8 @@ def map : MvPowerSeries σ R →+* MvPowerSeries σ S where
         classical
         rw [coeff_one, coeff_one]
         split_ifs with h
-        · simp only [ite_true, map_one, h]
-        · simp only [ite_false, map_zero, h]
+        · simp only [map_one]
+        · simp only [map_zero]
   map_add' φ ψ :=
     ext fun n => show f ((coeff R n) (φ + ψ)) = f ((coeff R n) φ) + f ((coeff R n) ψ) by simp
   map_mul' φ ψ :=
@@ -599,7 +599,7 @@ theorem X_pow_dvd_iff {s : σ} {n : ℕ} {φ : MvPowerSeries σ R} :
           rw [← hij, ← hi, Prod.mk_inj]
           refine ⟨rfl, ?_⟩
           ext t
-          simp only [add_tsub_cancel_left, Finsupp.add_apply, Finsupp.tsub_apply]
+          simp only [add_tsub_cancel_left]
         · exact zero_mul _
       · intro hni
         exfalso
@@ -621,7 +621,7 @@ theorem X_pow_dvd_iff {s : σ} {n : ℕ} {φ : MvPowerSeries σ R} :
         by_cases hst : s = t
         · subst t
           simpa using tsub_add_cancel_of_le H
-        · simp [Finsupp.single_apply, hst]
+        · simp [hst]
 
 theorem X_dvd_iff {s : σ} {φ : MvPowerSeries σ R} :
     (X s : MvPowerSeries σ R) ∣ φ ↔ ∀ m : σ →₀ ℕ, m s = 0 → coeff R m φ = 0 := by
@@ -650,7 +650,7 @@ theorem coeff_prod [DecidableEq σ]
     split_ifs
     · simp only [card_singleton, Nat.cast_one]
     · simp only [card_empty, Nat.cast_zero]
-  | @insert a s ha ih =>
+  | insert a s ha ih =>
     rw [finsuppAntidiag_insert ha, prod_insert ha, coeff_mul, sum_biUnion]
     · apply Finset.sum_congr rfl
       simp only [mem_antidiagonal, sum_map, Function.Embedding.coeFn_mk, coe_update, Prod.forall]
@@ -834,11 +834,10 @@ theorem coe_X (s : σ) : ((X s : MvPolynomial σ R) : MvPowerSeries σ R) = MvPo
 
 variable (σ R)
 
-theorem coe_injective : Function.Injective (Coe.coe : MvPolynomial σ R → MvPowerSeries σ R) :=
-    fun x y h => by
+theorem coe_injective : Function.Injective ((↑) : MvPolynomial σ R → MvPowerSeries σ R) := by
+  intro x y h
   ext
-  simp_rw [← coeff_coe]
-  congr
+  simp_rw [← coeff_coe, h]
 
 variable {σ R φ ψ}
 
@@ -889,7 +888,7 @@ as an algebra homomorphism.
 -/
 def coeToMvPowerSeries.algHom : MvPolynomial σ R →ₐ[R] MvPowerSeries σ A :=
   { (MvPowerSeries.map σ (algebraMap R A)).comp coeToMvPowerSeries.ringHom with
-    commutes' := fun r => by simp [algebraMap_apply, MvPowerSeries.algebraMap_apply] }
+    commutes' := fun r => by simp [MvPowerSeries.algebraMap_apply] }
 
 @[simp]
 theorem coeToMvPowerSeries.algHom_apply :
