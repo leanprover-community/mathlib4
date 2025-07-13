@@ -301,11 +301,10 @@ theorem sub_seq (f g : FreeAbelianGroup (α → β)) (x : FreeAbelianGroup α) :
 
 /-- If `f : FreeAbelianGroup (α → β)`, then `f <*>` is an additive morphism
 `FreeAbelianGroup α →+ FreeAbelianGroup β`. -/
-def seqAddGroupHom (f : FreeAbelianGroup (α → β)) : FreeAbelianGroup α →+ FreeAbelianGroup β :=
-  AddMonoidHom.mk' (f <*> ·) fun x y ↦
-    show lift (· <$> (x + y)) _ = _ by
-      simp only [FreeAbelianGroup.map_add]
-      exact lift_add_apply f _ _
+def seqAddGroupHom (f : FreeAbelianGroup (α → β)) : FreeAbelianGroup α →+ FreeAbelianGroup β := by
+  refine .mk' (f <*> ·) fun x y ↦ ?_
+  change lift (· <$> (x + y)) _ = lift (· <$> x) _ + lift (· <$> y) _
+  simp [← Pi.add_def]
 
 @[simp]
 theorem seq_zero (f : FreeAbelianGroup (α → β)) : f <*> 0 = 0 :=
