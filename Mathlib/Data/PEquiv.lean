@@ -286,7 +286,13 @@ def single (a : α) (b : β) :
   toFun x := if x = a then some b else none
   invFun x := if x = b then some a else none
   inv x y := by
-    grind
+    split_ifs with h1 h2
+    · simp [*]
+    · simp only [some.injEq, iff_false] at *
+      exact Ne.symm h2
+    · simp only [some.injEq, false_iff] at *
+      exact Ne.symm h1
+    · simp
 
 theorem mem_single (a : α) (b : β) : b ∈ single a b a :=
   if_pos rfl
