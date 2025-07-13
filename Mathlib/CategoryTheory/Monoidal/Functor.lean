@@ -121,33 +121,33 @@ theorem associativity_inv (X Y Z : C) :
     F.map_id, comp_id]
 
 @[reassoc]
-lemma tensorHom_ε_left_μ {X : C} {Y : D} (f : Y ⟶ F.obj X) :
+lemma ε_tensorHom_comp_μ {X : C} {Y : D} (f : Y ⟶ F.obj X) :
     (ε F ⊗ₘ f) ≫ μ F (𝟙_ C) X = 𝟙_ D ◁ f ≫ (λ_ (F.obj X)).hom ≫ F.map (λ_ X).inv := by
   rw [left_unitality]; simp [tensorHom_def']
 
 @[reassoc]
-lemma tensorHom_ε_right_μ {X : C} {Y : D} (f : Y ⟶ F.obj X) :
+lemma tensorHom_ε_comp_μ {X : C} {Y : D} (f : Y ⟶ F.obj X) :
     (f ⊗ₘ ε F) ≫ μ F X (𝟙_ C) = f ▷ 𝟙_ D ≫ (ρ_ (F.obj X)).hom ≫ F.map (ρ_ X).inv := by
   rw [right_unitality]; simp [tensorHom_def]
 
 @[reassoc]
-lemma wiskerLeft_left_unitality {X : C} {Y : D} (f : Y ⟶ F.obj X) :
+lemma tensorUnit_wiskerLeft_comp_leftUnitor_hom {X : C} {Y : D} (f : Y ⟶ F.obj X) :
     𝟙_ D ◁ f ≫ (λ_ (F.obj X)).hom = (ε F ⊗ₘ f) ≫ μ F (𝟙_ C) X ≫ F.map (λ_ X).hom := by
   rw [left_unitality]; simp [tensorHom_def']
 
 @[reassoc]
-lemma wiskerRight_right_unitality {X : C} {Y : D} (f : Y ⟶ F.obj X) :
+lemma wiskerRight_tensorUnit_comp_rightUnitor_hom {X : C} {Y : D} (f : Y ⟶ F.obj X) :
     f ▷ 𝟙_ D ≫ (ρ_ (F.obj X)).hom = (f ⊗ₘ ε F) ≫ μ F X (𝟙_ C) ≫ F.map (ρ_ X).hom := by
   rw [right_unitality]; simp [tensorHom_def]
 
 @[reassoc]
-lemma whiskerRight_μ_μ (X Y Z : C) :
+lemma μ_whiskerRight_comp_μ (X Y Z : C) :
     μ F X Y ▷ F.obj Z ≫ μ F (X ⊗ Y) Z = (α_ (F.obj X) (F.obj Y) (F.obj Z)).hom ≫
       F.obj X ◁ μ F Y Z ≫ μ F X (Y ⊗ Z) ≫ F.map (α_ X Y Z).inv := by
   rw [← associativity_assoc, ← F.map_comp, Iso.hom_inv_id, map_id, Category.comp_id]
 
 @[reassoc]
-lemma whiskerLeft_μ_μ (X Y Z : C) :
+lemma whiskerLeft_μ_comp_μ (X Y Z : C) :
     F.obj X ◁ μ F Y Z ≫ μ F X (Y ⊗ Z) = (α_ (F.obj X) (F.obj Y) (F.obj Z)).inv ≫
       μ F X Y ▷ F.obj Z ≫ μ F (X ⊗ Y) Z ≫ F.map (α_ X Y Z).hom := by
   rw [associativity, Iso.inv_hom_id_assoc]
