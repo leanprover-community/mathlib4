@@ -204,7 +204,7 @@ def coev_app : G ⟶ H where
           simp [MonoidalClosed.curry_eq])
   naturality {c c'} f := by
     dsimp
-    apply Limits.Wedge.IsLimit.hom_ext (ℌ.isLimitWedge c')
+    apply Limits.Wedge.IsLimit.hom_ext <| ℌ.isLimitWedge c'
     intro (j : C)
     simp [Limits.multicospanIndexEnd_left,
       Limits.Multifork.ofι_pt, Limits.Wedge.mk_ι, Category.assoc]
@@ -236,7 +236,7 @@ lemma coev_naturality_app {G' : C ⥤ V} [DayConvolution F G'] (η : G ⟶ G')
     ℌ.coev_app ≫ ℌ.map (DayConvolution.map (𝟙 _) η) ℌ'' := by
   ext c
   dsimp
-  apply Limits.Wedge.IsLimit.hom_ext (ℌ''.isLimitWedge c)
+  apply Limits.Wedge.IsLimit.hom_ext <| ℌ''.isLimitWedge c
   intro j
   apply MonoidalClosed.uncurry_injective
   dsimp
@@ -264,7 +264,7 @@ theorem right_triangle_component (G : C ⥤ V) [DayConvolution F H]
     (ℌ' : DayConvolutionInternalHom F (F ⊛ H) H') :
     ℌ'.coev_app ≫ ℌ'.map ℌ.ev_app ℌ = 𝟙 H := by
   ext c
-  apply Limits.Wedge.IsLimit.hom_ext (ℌ.isLimitWedge c)
+  apply Limits.Wedge.IsLimit.hom_ext <| ℌ.isLimitWedge c
   intro j
   apply MonoidalClosed.uncurry_injective
   simp [MonoidalClosed.uncurry_natural_right]
