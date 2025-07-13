@@ -1,6 +1,8 @@
 import Mathlib.Data.Matrix.Rank
 import Mathlib.Tactic.Order
 
+#eval IO.setRandSeed 42
+
 example (a b c : Nat) (h1 : a ≤ b) (h2 : b ≤ c) : a ≤ c := by
   order
 
@@ -52,8 +54,8 @@ example (L : Type) [Lattice L] :
     (∀ a b c : L, a ⊔ (b ⊓ c) = (a ⊔ b) ⊓ (a ⊔ c)) ↔
     (∀ a b c : L, a ⊓ (b ⊔ c) = (a ⊓ b) ⊔ (a ⊓ c)) := by
   refine ⟨fun h a b c ↦ ?_, fun h a b c ↦ ?_⟩
-  · order [h (a ⊓ b) c a, h c a b]
-  · order [h (a ⊔ b) c a, h c a b]
+  · order only [h (a ⊓ b) c a, h c a b]
+  · order only [h (a ⊔ b) c a, h c a b]
 
 example [Preorder α] (a b c d : α) (h1 : a ≤ b) (h2 : b ≤ c) (h3 : ¬(a < c))
     (h4 : a ≤ d) :
