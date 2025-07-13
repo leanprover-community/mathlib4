@@ -494,6 +494,78 @@ lemma hausdorffMeasure_of_finrank_lt [MeasurableSpace E] [BorelSpace E] {d : ℝ
   rw [dimH_univ_eq_finrank]
   exact mod_cast hd
 
+/-- The Hausdorff dimension of the unit interval is 1. -/
+theorem dimH_Icc01 : dimH (Icc (0 : ℝ) 1) = 1 := by
+  have : (interior (Icc (0 : ℝ) 1)).Nonempty := by simp
+  calc
+    dimH (Icc (0 : ℝ) 1) = ↑(finrank ℝ ℝ) := by
+        simpa [Module.finrank_self, ENNReal.coe_one] using Real.dimH_of_nonempty_interior this
+    _ = 1 := by simp
+
+omit [FiniteDimensional ℝ E]
+
+/-- The Hausdorff dimension of a non-degenerate segment in a real normed space is 1. -/
+theorem dimH_segment {x y : E} (h : x ≠ y) :
+    dimH (segment ℝ x y) = 1 := by
+  have seg_eq : segment ℝ x y =
+    (fun t : ℝ ↦ (1 - t) • x + t • y) '' Icc (0 : ℝ) 1 := segment_eq_image ℝ x y
+  set f : ℝ → E := fun t ↦ (1 - t) • x + t • y with hf
+  set s := Icc (0 : ℝ) 1 with hs
+  observe hxy : y - x ≠ 0
+  observe hC : ‖y - x‖₊ ≠ 0
+  have hL : LipschitzWith ‖y - x‖₊ f := by
+    refine LipschitzWith.of_dist_le_mul fun a b ↦ ?_
+    calc
+      dist (f a) (f b) = ‖(1 - a) • x + a • y - ((1 - b) • x + b • y)‖ := by simp [hf, dist_eq_norm]
+      _ = ‖(a - b) • (y - x)‖ := by
+        rw [@add_sub_add_comm, ← sub_smul, sub_sub_sub_cancel_left, ← sub_smul]
+        have : (b - a) • x = -((a - b) • x) := by
+          simp [← neg_smul]
+        rw [this, ← neg_smul, add_comm]
+        have : (a - b) • y + -(a - b) • x = (a - b) • (y - x) := by
+          simp [smul_sub]
+          rw [sub_smul, sub_smul, sub_smul, ← sub_smul]
+          observe : - (a • x - b • x) = (b • x - a • x)
+          rw [← this]
+          simp only [sub_eq_add_neg]
+        expose_names; rw [this]
+      _ = |a - b| * ‖y - x‖ := by rw [norm_smul, Real.norm_eq_abs]
+      _ ≤ ‖y - x‖ * dist a b := by simp [dist_eq_norm, mul_comm]
+  have hA : AntilipschitzWith ((‖y - x‖₊)⁻¹) f := by
+    refine AntilipschitzWith.of_le_mul_dist fun a b ↦ ?_
+    calc
+      dist a b = |a - b| := by simp [dist_eq_norm]
+      _ = ↑‖y - x‖₊⁻¹ * ‖(a - b) • (y - x)‖ := by
+        simp only [norm_smul, NNReal.coe_inv]
+        rw [mul_comm]
+        aesop
+      _ = ↑‖y - x‖₊⁻¹ * dist (f a) (f b) := by
+        simp [hf, dist_eq_norm]
+        left
+        rw [@add_sub_add_comm, ← sub_smul, sub_sub_sub_cancel_left, ← sub_smul]
+        have : (b - a) • x = -((a - b) • x) := by
+          simp [← neg_smul]
+        rw [this, ← neg_smul, add_comm]
+        have : (a - b) • y + -(a - b) • x = (a - b) • (y - x) := by
+          simp [smul_sub]
+          rw [sub_smul, sub_smul, sub_smul, ← sub_smul]
+          observe : - (a • x - b • x) = (b • x - a • x)
+          rw [← this]
+          simp only [sub_eq_add_neg]
+        expose_names; rw [this]
+      _ ≤ _ := le_rfl
+  have L : dimH (segment ℝ x y) ≤ 1 := by calc
+      dimH (segment ℝ x y) = dimH (f '' s) := by rw [seg_eq]
+      _ ≤ dimH s := hL.dimH_image_le _
+      _ ≤ 1 := by rw [hs, ← dimH_Icc01]
+  have R : 1 ≤ dimH (segment ℝ x y) := by calc
+    1 = dimH s := by exact Eq.symm dimH_Icc01
+    _ ≤ dimH (f '' s) := by
+      rw [hs]
+      exact AntilipschitzWith.le_dimH_image hA (Icc 0 1)
+    _ = dimH (segment ℝ x y) := by exact congrArg dimH (id (Eq.symm seg_eq))
+  exact le_antisymm L R
+
 end Real
 
 variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
