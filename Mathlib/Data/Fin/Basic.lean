@@ -804,7 +804,7 @@ theorem castPred_eq_zero [NeZero n] {i : Fin (n + 1)} (h : i ≠ last n) :
   rw [← castPred_zero, castPred_inj]
 
 theorem castPred_ne_zero [NeZero n] {i : Fin (n + 1)} (h₁ : i ≠ last n) (h₂ : i ≠ 0) :
-    Fin.castPred i h₁ ≠ 0 :=
+    castPred i h₁ ≠ 0 :=
   (castPred_eq_zero h₁).not.mpr h₂
 
 @[simp]
