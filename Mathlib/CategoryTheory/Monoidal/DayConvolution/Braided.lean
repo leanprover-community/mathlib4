@@ -10,7 +10,12 @@ import Mathlib.CategoryTheory.Monoidal.DayConvolution
 
 In this file, we show that if `C` is a braided monoidal category and
 `V` also a braided monoidal category, then the day convolution monoidal structure
-on `C ⥤ V` is
+on `C ⥤ V` is also braided monoidal. We prove it by constructing an explicit
+braiding isomorphism whenever sufficient day convolutions exist, and we
+prove that it satisfies the forward and reverse hexagon identities.
+
+Furthermore, we show that when both `C` and `V` are symmetric monoidal
+categories, then the Day convolution monoidal structure is symmetric as well.
 -/
 
 universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
@@ -175,6 +180,21 @@ lemma hexagon_reverse (H : C ⥤ V)
   dsimp at this
   simp only [Category.assoc, Iso.map_hom_inv_id, Category.comp_id] at this
   rw [← this, comp_whiskerRight_assoc]
+  simp [← Functor.map_comp]
+
+end
+
+section
+
+variable {C : Type u₁} [Category.{v₁} C] {V : Type u₂} [Category.{v₂} V]
+  [MonoidalCategory C] [SymmetricCategory C]
+  [MonoidalCategory V] [SymmetricCategory V]
+  (F G : C ⥤ V)
+
+lemma symmetry [DayConvolution F G] [DayConvolution G F] :
+    (braiding F G).hom ≫ (braiding G F).hom = 𝟙 _ := by
+  apply Functor.hom_ext_of_isLeftKanExtension (F ⊛ G) (unit F G)
+  ext ⟨x, y⟩
   simp [← Functor.map_comp]
 
 end
