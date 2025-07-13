@@ -6,6 +6,11 @@ Authors: Nailin Guan, Yongle Hu
 import Mathlib.RingTheory.CohenMacaulay.Basic
 import Mathlib.Algebra.Polynomial.FieldDivision
 
+/-!
+# Polynomial Ring Over CM ring is CM
+
+-/
+
 universe u
 
 variable (R : Type u) [CommRing R]
@@ -20,8 +25,31 @@ lemma Polynomial.localization_at_comap_maximal_isCM_isCM [IsNoetherianRing R]
   have qle : q ≤ p := by simpa [q, ← max] using map_comap_le
   have ker : RingHom.ker (Polynomial.mapRingHom (IsLocalRing.residue R)) = q := by
     simpa only [residue, ker_mapRingHom, q] using congrArg (Ideal.map C) (Quotient.mkₐ_ker R _)
+  have cm := (isCohenMacaulayLocalRing_def R).mp ‹_›
+  have ne := (depth_ne_top (ModuleCat.of R R)).lt_top
+  rw [depth_eq_sSup_length_regular] at cm ne
+  rcases @ENat.sSup_mem_of_nonempty_of_lt_top _ (by
+    use 0, []
+    simpa using IsRegular.nil _ _ ) ne with ⟨rs, reg, mem, len⟩
+  rw [← len] at cm
+  have : IsRegular (Localization.AtPrime p) (rs.map (algebraMap R (Localization.AtPrime p))) := by
+    constructor
+    · let _ : Module.Flat R (Localization.AtPrime p) := by
+
+        sorry
+      exact IsWeaklyRegular.of_flat reg.1
+    · simp only [smul_eq_mul, mul_top]
+      apply (ne_top_of_le_ne_top (b := maximalIdeal _) IsPrime.ne_top' _).symm
+      simp only [span_le, List.mem_map]
+      intro r ⟨s, smem, eq⟩
+      rw [← eq, IsScalarTower.algebraMap_eq R R[X], RingHom.comp_apply]
+      apply Ideal.mem_comap.mp
+      rw [IsLocalization.AtPrime.comap_maximalIdeal (Localization.AtPrime p) p, ← Ideal.mem_comap,
+        Polynomial.algebraMap_eq, max]
+      exact mem s smem
   by_cases eq0 : p.map (Polynomial.mapRingHom (IsLocalRing.residue R)) = ⊥
   · have eq : p = q := le_antisymm (by simpa [← ker, ← Ideal.map_eq_bot_iff_le_ker]) qle
+    have ht1 : p.height = (maximalIdeal R).height := sorry
 
     sorry
   · have prin : (p.map (Polynomial.mapRingHom (IsLocalRing.residue R))).IsPrincipal := inferInstance
