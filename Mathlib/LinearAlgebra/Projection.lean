@@ -604,7 +604,7 @@ lemma subtype_comp_linearProjOfIsCompl_range_eq (hf : IsIdempotentElem f) :
 /-- `U` is `⅟T` invariant if and only if `U ⊆ T(U)`. -/
 lemma _root_.Module.End.mem_invtSubmodule_invOf_iff_le_map [Invertible T] (U : Submodule R E) :
     U ∈ Module.End.invtSubmodule (⅟T) ↔ U ≤ U.map T :=
-  Module.End.mem_invtSubmodule_symm_iff_le_map (LinearEquiv.ofInvertible T)
+  Module.End.mem_invtSubmodule_symm_iff_le_map (LinearEquiv.ofInvertible T) _
 
 lemma conj_eq_of_range_mem_invtSubmodule (hf : IsIdempotentElem f)
     (h : range f ∈ Module.End.invtSubmodule T) : f ∘ₗ T ∘ₗ f = T ∘ₗ f := by
