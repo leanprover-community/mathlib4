@@ -1,4 +1,4 @@
--- import Mathlib.Data.Matrix.Rank
+import Mathlib.Data.Matrix.Rank
 import Mathlib.Tactic.Order
 
 example (a b c : Nat) (h1 : a ≤ b) (h2 : b ≤ c) : a ≤ c := by
@@ -33,20 +33,20 @@ example [PartialOrder α] (a b c d : α) (h1 : a ≤ b) (h2 : b ≤ c) (h3 : ¬(
     c ≤ d := by
   order
 
-example {α : Type u} (a b : α) [LinearOrder α] (h1 : ¬ (a = b)) : a ≠ b := by
+example [PartialOrder α] (a : α) : ¬ (a < a) := by
   order
 
-example {α : Type u} (a b : α) [LinearOrder α] (h1 : a < b ∧ b < a) : False := by
+example (a b : α) [PartialOrder α] (h1 : a < b ∧ b < a) : False := by
   order
 
-example {α : Type u} (a b : α) [LinearOrder α] : a ≤ b ∨ b ≤ a := by
+example (a b : α) [LinearOrder α] : a ≤ b ∨ b ≤ a := by
   order
 
-example {α : Type u} (a b : α) [Preorder α] (h : ∃ c, a < c ∧ c < b) : a ≠ b := by
+example (a b : α) [Preorder α] (h : ∃ c, a < c ∧ c < b) : a ≠ b := by
   order
 
--- example {n : Nat} (A B C : Matrix (Fin n) (Fin n) ℚ) : (A * B * C).rank ≤ A.rank ⊓ C.rank := by
---   order [Matrix.rank_mul_le A B, Matrix.rank_mul_le (A * B) C]
+example {n : Nat} (A B C : Matrix (Fin n) (Fin n) ℚ) : (A * B * C).rank ≤ A.rank ⊓ C.rank := by
+  order [Matrix.rank_mul_le A B, Matrix.rank_mul_le (A * B) C]
 
 example (L : Type) [Lattice L] :
     (∀ a b c : L, a ⊔ (b ⊓ c) = (a ⊔ b) ⊓ (a ⊔ c)) ↔
