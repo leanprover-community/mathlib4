@@ -155,7 +155,7 @@ section NormedField
 
 open scoped Valued
 
-protected lemma isNonarchimedean_norm : IsNonarchimedean ((‖·‖): L → ℝ) := Valued.norm_add_le
+protected lemma isNonarchimedean_norm : IsNonarchimedean ((‖·‖) : L → ℝ) := Valued.norm_add_le
 
 instance : IsUltrametricDist L :=
   ⟨fun x y z ↦ by

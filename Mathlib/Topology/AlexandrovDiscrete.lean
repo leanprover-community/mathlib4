@@ -184,6 +184,17 @@ lemma gc_nhdsKer_interior : GaloisConnection (nhdsKer : Set α → Set α) inter
 
 @[deprecated (since := "2025-07-09")] alias principal_exterior := principal_nhdsKer
 
+lemma principal_nhdsKer_singleton (a : α) : 𝓟 (nhdsKer {a}) = 𝓝 a := by
+  rw [principal_nhdsKer, nhdsSet_singleton]
+
+lemma nhdsSet_basis_nhdsKer (s : Set α) :
+    (𝓝ˢ s).HasBasis (fun _ : Unit => True) (fun _ => nhdsKer s) :=
+  principal_nhdsKer s ▸ hasBasis_principal (nhdsKer s)
+
+lemma nhds_basis_nhdsKer_singleton (a : α) :
+    (𝓝 a).HasBasis (fun _ : Unit => True) (fun _ => nhdsKer {a}) :=
+  principal_nhdsKer_singleton a ▸ hasBasis_principal (nhdsKer {a})
+
 lemma isOpen_iff_forall_specializes : IsOpen s ↔ ∀ x y, x ⤳ y → y ∈ s → x ∈ s := by
   simp only [← nhdsKer_subset_iff_isOpen, Set.subset_def, mem_nhdsKer_iff_specializes, exists_imp,
     and_imp, @forall_swap (_ ⤳ _)]
@@ -210,8 +221,8 @@ instance Quotient.instAlexandrovDiscrete {s : Setoid α} : AlexandrovDiscrete (Q
 instance Sum.instAlexandrovDiscrete : AlexandrovDiscrete (α ⊕ β) :=
   alexandrovDiscrete_coinduced.sup alexandrovDiscrete_coinduced
 
-instance Sigma.instAlexandrovDiscrete {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
-    [∀ i, AlexandrovDiscrete (π i)] : AlexandrovDiscrete (Σ i, π i) :=
+instance Sigma.instAlexandrovDiscrete {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
+    [∀ i, AlexandrovDiscrete (X i)] : AlexandrovDiscrete (Σ i, X i) :=
   alexandrovDiscrete_iSup fun _ ↦ alexandrovDiscrete_coinduced
 
 end
