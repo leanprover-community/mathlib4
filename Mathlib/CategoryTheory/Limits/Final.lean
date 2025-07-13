@@ -1123,8 +1123,8 @@ theorem initial_ι {C : Type u₁} [Category.{v₁} C] (P : ObjectProperty C)
   · have : Nonempty (CostructuredArrow P.ι d) := ⟨⟨d, hd⟩, ⟨⟨⟩⟩, 𝟙 _⟩
     refine zigzag_isConnected fun ⟨c₁, ⟨⟨⟩⟩, g₁⟩ ⟨c₂, ⟨⟨⟩⟩, g₂⟩ =>
       Zigzag.trans (j₂ := ⟨⟨d, hd⟩, ⟨⟨⟩⟩, 𝟙 _⟩) (.of_hom ?_) (.of_inv ?_)
-    · apply CostructuredArrow.homMk g₁
-    · apply CostructuredArrow.homMk g₂
+    · exact CostructuredArrow.homMk (InducedCategory.homMk g₁)
+    · exact CostructuredArrow.homMk (InducedCategory.homMk g₂)
   · exact h d hd
 
 end ObjectProperty
