@@ -118,3 +118,14 @@ def finCycle (k : Fin n) : Equiv.Perm (Fin n) where
   invFun i := i - k
   left_inv i := by haveI := NeZero.of_pos k.pos; simp
   right_inv i := by haveI := NeZero.of_pos k.pos; simp
+
+lemma finCycle_eq_finRotate_iterate {k : Fin n} : finCycle k = (finRotate n)^[k.1] := by
+  match n with
+  | 0 => exact k.elim0
+  | n + 1 =>
+    ext i; induction k using Fin.induction with
+    | zero => simp
+    | succ k ih =>
+      rw [Fin.val_eq_val, Fin.coe_castSucc] at ih
+      rw [Fin.val_succ, Function.iterate_succ', Function.comp_apply, ← ih, finRotate_succ_apply,
+        finCycle_apply, finCycle_apply, add_assoc, Fin.coeSucc_eq_succ]
