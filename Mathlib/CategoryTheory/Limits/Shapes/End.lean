@@ -241,6 +241,7 @@ lemma end_.map_id : end_.map (𝟙 F) = 𝟙 _ := by aesop_cat
 
 end
 
+variable (J C) in
 @[simps]
 noncomputable def endFunctor [∀ (F : Jᵒᵖ ⥤ J ⥤ C), HasEnd F] :
     (Jᵒᵖ ⥤ J ⥤ C) ⥤ C where
@@ -311,6 +312,7 @@ lemma coend.map_id : coend.map (𝟙 F) = 𝟙 _ := by aesop_cat
 
 end
 
+variable (J C) in
 @[simps]
 noncomputable def coendFunctor [∀ (F : Jᵒᵖ ⥤ J ⥤ C), HasCoend F] :
     (Jᵒᵖ ⥤ J ⥤ C) ⥤ C where
