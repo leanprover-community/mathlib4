@@ -234,13 +234,13 @@ theorem isInt_zpow_neg {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb ne 
 
 theorem isNNRat_zpow_pos {α : Type*} [DivisionSemiring α] {a : α} {b : ℤ} {nb : ℕ}
     {num : ℕ} {den : ℕ}
-    (pb : IsNat b nb) (pe' : IsNNRat (a^nb) num den) :
+    (pb : IsNat b nb) (pe' : IsNNRat (a ^ nb) num den) :
     IsNNRat (a^b) num den := by
   rwa [pb.out, zpow_natCast]
 
 theorem isNNRat_zpow_neg {α : Type*} [DivisionSemiring α] {a : α} {b : ℤ} {nb : ℕ}
     {num : ℕ} {den : ℕ}
-    (pb : IsInt b (Int.negOfNat nb)) (pe' : IsNNRat ((a^nb)⁻¹) num den) :
+    (pb : IsInt b (Int.negOfNat nb)) (pe' : IsNNRat ((a ^ nb)⁻¹) num den) :
     IsNNRat (a^b) num den := by
   rwa [pb.out, Int.cast_negOfNat, zpow_neg, zpow_natCast]
 

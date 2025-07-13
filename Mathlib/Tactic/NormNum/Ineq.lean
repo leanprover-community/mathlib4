@@ -100,12 +100,12 @@ theorem isNNRat_lt_true [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] 
 theorem isNNRat_le_false [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [Nontrivial α]
     {a b : α} {na nb : ℕ} {da db : ℕ}
     (ha : IsNNRat a na da) (hb : IsNNRat b nb db) (h : decide (nb * da < na * db)) : ¬a ≤ b :=
-  not_le_of_lt (isNNRat_lt_true hb ha h)
+  not_le_of_gt (isNNRat_lt_true hb ha h)
 
 theorem isNNRat_lt_false [Semiring α] [LinearOrder α] [IsStrictOrderedRing α]
     {a b : α} {na nb : ℕ} {da db : ℕ}
     (ha : IsNNRat a na da) (hb : IsNNRat b nb db) (h : decide (nb * da ≤ na * db)) : ¬a < b :=
-  not_lt_of_le (isNNRat_le_true hb ha h)
+  not_lt_of_ge (isNNRat_le_true hb ha h)
 
 theorem isRat_le_true [Ring α] [LinearOrder α] [IsStrictOrderedRing α] :
     {a b : α} → {na nb : ℤ} → {da db : ℕ} →
