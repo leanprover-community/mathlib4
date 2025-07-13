@@ -235,7 +235,7 @@ lemma isClosed_iff_isLower : IsClosed s ↔ IsLowerSet s := by
   rw [← isOpen_compl_iff, isOpen_iff_isUpperSet,
     isLowerSet_compl.symm, compl_compl]
 
-@[simp] lemma closure_eq_lowerClosure {s : Set α} : closure s = lowerClosure s := by
+lemma closure_eq_lowerClosure {s : Set α} : closure s = lowerClosure s := by
   rw [subset_antisymm_iff]
   refine ⟨?_, lowerClosure_min subset_closure (isClosed_iff_isLower.1 isClosed_closure)⟩
   · apply closure_minimal subset_lowerClosure _
@@ -335,7 +335,7 @@ instance toAlexandrovDiscrete : AlexandrovDiscrete α := IsUpperSet.toAlexandrov
 lemma isClosed_iff_isUpper : IsClosed s ↔ IsUpperSet s := by
   rw [← isOpen_compl_iff, isOpen_iff_isLowerSet, isUpperSet_compl.symm, compl_compl]
 
-@[simp] lemma closure_eq_upperClosure {s : Set α} : closure s = upperClosure s :=
+lemma closure_eq_upperClosure {s : Set α} : closure s = upperClosure s :=
   IsUpperSet.closure_eq_lowerClosure (α := αᵒᵈ)
 
 /--
