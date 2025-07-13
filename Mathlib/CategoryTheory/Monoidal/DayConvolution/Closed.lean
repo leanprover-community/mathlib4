@@ -22,7 +22,7 @@ the Day convolution monoidal structure.
 constructions here to produce actual `CategoryTheory.MonoidalClosed` instances.
 -/
 
-universe v₁ v₂ u₁ u₂
+universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory.MonoidalCategory
 open scoped ExternalProduct
@@ -266,6 +266,47 @@ theorem right_triangle_component (G : C ⥤ V) [DayConvolution F H]
   simp [MonoidalClosed.uncurry_natural_right]
 
 end DayConvolutionInternalHom
+
+end
+
+section
+
+open LawfulDayConvolutionMonoidalCategoryStruct
+
+class LawfulDayConvolutionClosedMonoidalCategoryStruct
+    (C : Type u₁) [Category.{v₁} C] (V : Type u₂) [Category.{v₂} V]
+    [MonoidalCategory C] [MonoidalCategory V] [MonoidalClosed V]
+    (D : Type u₃) [Category.{v₃} D] [MonoidalCategoryStruct D]
+    [LawfulDayConvolutionMonoidalCategoryStruct C V D] where
+  ihom (d : D) : D ⥤ D
+  ihomDayConvolutionInternalHom (d d' : D) :
+    DayConvolutionInternalHom
+      (ι C V D|>.obj d) (ι C V D|>.obj d') (ι C V D|>.obj <| (ihom d).obj d')
+  ihomMap (d : D) {d' d'' : D} (f : d' ⟶ d'') (c j : C) :
+    (ι C V D|>.map <| (ihom d).map f).app c ≫
+      (ihomDayConvolutionInternalHom d d'').π c j =
+    (ihomDayConvolutionInternalHom d d').π c j ≫
+      (CategoryTheory.ihom <| (ι C V D|>.obj d).obj j).map
+        (ι C V D|>.map f|>.app <| j ⊗ c)
+
+namespace LawfulDayConvolutionClosedMonoidalCategoryStruct
+
+variable (C : Type u₁) [Category.{v₁} C] (V : Type u₂) [Category.{v₂} V]
+    [MonoidalCategory C] [MonoidalCategory V] [MonoidalClosed V]
+
+noncomputable def ofHasEnd
+    (D : Type u₃) [Category.{v₃} D] [MonoidalCategoryStruct D]
+    [LawfulDayConvolutionMonoidalCategoryStruct C V D]
+    [∀ (d d' : D) (c : C),
+      Limits.HasEnd <|
+        internalHomDiagramFunctor (ι C V D |>.obj d) |>.obj (ι C V D |>.obj d') |>.obj c] 
+    LawfulDayConvolutionClosedMonoidalCategoryStruct C V D where
+  ihom d := sorry
+  ihomDayConvolutionInternalHom := sorry
+  ihomMap := sorry
+
+
+end
 
 end
 
