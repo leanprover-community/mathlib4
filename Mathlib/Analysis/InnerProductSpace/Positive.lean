@@ -229,9 +229,6 @@ theorem IsPositive.of_isStarProjection {p : E →L[𝕜] E}
   simp_rw [← ContinuousLinearMap.adjoint_inner_right _ _ x, isSelfAdjoint_iff'.mp hp.isSelfAdjoint]
   exact inner_self_nonneg
 
-@[deprecated (since := "13-07-2025")] alias IsPositive.of_isStarPojection :=
-  IsPositive.of_isStarProjection
-
 /-- An idempotent operator is positive if and only if it is self-adjoint. -/
 @[grind →]
 theorem IsIdempotentElem.isPositive_iff_isSelfAdjoint
