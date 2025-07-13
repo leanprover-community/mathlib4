@@ -190,7 +190,7 @@ where
   core {u : Level} {α : Q(Type u)} (lα : Q(LE $α)) {a b : Q($α)}
     (ra : NormNum.Result a) (rb : NormNum.Result b) : MetaM (NormNum.Result q($a ≤ $b)) := do
   let e := q($a ≤ $b)
-  let intArm : MetaM (Result e) := do
+  let rec intArm : MetaM (Result e) := do
     let ⟨_ir, _, _i⟩ ← inferOrderedRing α
     haveI' : $e =Q ($a ≤ $b) := ⟨⟩
     let ⟨za, na, pa⟩ ← ra.toInt q($_ir)
@@ -204,7 +204,7 @@ where
       return .isFalse q(isInt_le_false $pa $pb $r)
     else
       failure
-  let ratArm : MetaM (Result e) := do
+  let rec ratArm : MetaM (Result e) := do
     let ⟨_if, _, _i⟩ ← inferLinearOrderedField α
     haveI' : $e =Q ($a ≤ $b) := ⟨⟩
     let ⟨qa, na, da, pa⟩ ← ra.toRat' q(Field.toDivisionRing)
@@ -255,7 +255,7 @@ where
   core {u : Level} {α : Q(Type u)} (lα : Q(LT $α)) {a b : Q($α)}
     (ra : NormNum.Result a) (rb : NormNum.Result b) : MetaM (NormNum.Result q($a < $b)) := do
   let e := q($a < $b)
-  let intArm : MetaM (Result e) := do
+  let rec intArm : MetaM (Result e) := do
     let ⟨_ir, _, _i⟩ ← inferOrderedRing α
     haveI' : $e =Q ($a < $b) := ⟨⟩
     let ⟨za, na, pa⟩ ← ra.toInt q($_ir)
@@ -270,7 +270,7 @@ where
     else
       let r : Q(decide ($nb ≤ $na) = true) := (q(Eq.refl true) : Expr)
       return .isFalse q(isInt_lt_false $pa $pb $r)
-  let nnratArm : MetaM (Result e) := do
+  let rec nnratArm : MetaM (Result e) := do
     -- We need a division ring with an order, and `LinearOrderedField` is the closest mathlib has.
     /-
        NOTE: after the ordered algebra refactor, this is not true anymore,
@@ -287,7 +287,7 @@ where
     else
       let r : Q(decide ($nb * $da ≤ $na * $db) = true) := (q(Eq.refl true) : Expr)
       return .isFalse q(isNNRat_lt_false $pa $pb $r)
-  let ratArm : MetaM (Result e) := do
+  let rec ratArm : MetaM (Result e) := do
     -- We need a division ring with an order, and `LinearOrderedField` is the closest mathlib has.
     /-
        NOTE: after the ordered algebra refactor, this is not true anymore,
