@@ -155,8 +155,7 @@ theorem cycleRange_of_le {n : ℕ} [NeZero n] {i j : Fin n} (h : j ≤ i) :
     rw [this, finRotate_last]
     rfl
   · have hj1 : (j + 1).1 = j.1 + 1 := val_add_one_of_lt' (by omega)
-    have hj2 : (j.castLT (by omega) + 1 : Fin (i + 1)).1
-        = (j.castLT (by omega): Fin (i + 1)).1 + 1 :=
+    have hj2 : (j.castLT (by omega) + 1 : Fin (i + 1)).1 = (j.castLT (by omega): Fin (i + 1)) + 1 :=
       val_add_one_of_lt' (by simp [lt_of_le_of_ne h ch])
     exact eq_of_val_eq (by simp [← this, hj1, hj2])
 
