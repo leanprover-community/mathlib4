@@ -332,7 +332,7 @@ For example, `xy + 2xy = 3xy` is a `.nonzero` overlap, while `xy + xz` returns `
 and `xy + -xy = 0` is a `.zero` overlap.
 -/
 def evalAddOverlap {a b : Q($α)} (va : ExProd sα a) (vb : ExProd sα b) :
-    MetaM (Overlap sα q($a + $b)) := do
+    OptionT MetaM (Overlap sα q($a + $b)) := do
   Lean.Core.checkSystem decl_name%.toString
   match va, vb with
   | .const za ha, .const zb hb => do
@@ -350,7 +350,7 @@ def evalAddOverlap {a b : Q($α)} (va : ExProd sα a) (vb : ExProd sα b) :
     | .zero p => pure <| .zero (q(add_overlap_pf_zero $a₁ $a₂ $p) : Expr)
     | .nonzero ⟨_, vc, p⟩ =>
       pure <| .nonzero ⟨_, .mul va₁ va₂ vc, (q(add_overlap_pf $a₁ $a₂ $p) : Expr)⟩
-  | _, _ => failure
+  | _, _ => OptionT.fail
 
 theorem add_pf_zero_add (b : R) : 0 + b = b := by simp
 
@@ -384,7 +384,7 @@ partial def evalAdd {a b : Q($α)} (va : ExSum sα a) (vb : ExSum sα b) :
   | .zero, vb => return ⟨b, vb, q(add_pf_zero_add $b)⟩
   | va, .zero => return ⟨a, va, q(add_pf_add_zero $a)⟩
   | .add (a := a₁) (b := _a₂) va₁ va₂, .add (a := b₁) (b := _b₂) vb₁ vb₂ =>
-    match ← (Lean.observing? <| evalAddOverlap sα va₁ vb₁) with
+    match ← (evalAddOverlap sα va₁ vb₁).run with
     | some (.nonzero ⟨_, vc₁, pc₁⟩) =>
       let ⟨_, vc₂, pc₂⟩ ← evalAdd va₂ vb₂
       return ⟨_, .add vc₁ vc₂, q(add_pf_add_overlap $pc₁ $pc₂)⟩
@@ -448,7 +448,7 @@ partial def evalMulProd {a b : Q($α)} (va : ExProd sα a) (vb : ExProd sα b) :
     return ⟨_, .mul vb₁ vb₂ vc, (q(mul_pf_right $b₁ $b₂ $pc) : Expr)⟩
   | .mul (x := xa) (e := ea) vxa vea va₂, .mul (x := xb) (e := eb) vxb veb vb₂ => do
     if vxa.eq vxb then
-      if let some (.nonzero ⟨_, ve, pe⟩) ← (Lean.observing? <| evalAddOverlap sℕ vea veb) then
+      if let some (.nonzero ⟨_, ve, pe⟩) ← (evalAddOverlap sℕ vea veb).run then
         let ⟨_, vc, pc⟩ ← evalMulProd va₂ vb₂
         return ⟨_, .mul vxa ve vc, (q(mul_pp_pf_overlap $xa $pe $pc) : Expr)⟩
     if let .lt := (vxa.cmp vxb).then (vea.cmp veb) then
