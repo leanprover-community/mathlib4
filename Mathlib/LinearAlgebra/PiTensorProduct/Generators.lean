@@ -23,12 +23,12 @@ open TensorProduct
 
 namespace PiTensorProduct
 
-variable (R : Type*) [CommRing R]
+variable (R : Type*)
 
 section equivTensorPiTensorComplSingleto
 
 variable {ι : Type*} [DecidableEq ι] (M : ι → Type*)
-  [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
+  [CommSemiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
 
 /-- The linear equivalence between `⨂[R] i, M i` and the tensor product of `M i₀`
 (for some `i₀ : ι`) and the pi tensor product indexed by the complement of `{i₀}`. -/
@@ -70,9 +70,11 @@ lemma equivTensorPiTensorComplSingleton_symm_tmul (i₀ : ι)
 
 end equivTensorPiTensorComplSingleto
 
-variable {R} {ι : Type*} [Finite ι]
-  {M : ι → Type*} [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
-  {N : Type*} [AddCommGroup N] [Module R N]
+variable {R} {ι : Type*} [Finite ι] {M : ι → Type*} {N : Type*}
+
+section AddCommMonoid
+variable
+  [CommSemiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)] [AddCommMonoid N] [Module R N]
   {γ : ι → Type*} {g : ⦃i : ι⦄ → (j : γ i) → M i}
 
 lemma ext_of_span_eq_top
@@ -137,6 +139,13 @@ lemma _root_.MultilinearMap.ext_of_span_eq_top
     ext m
     simpa using DFunLike.congr_fun this (tprod _ m)
   exact PiTensorProduct.ext_of_span_eq_top hg (fun j ↦ by simpa using h j)
+
+end AddCommMonoid
+
+
+variable
+  [CommRing R] [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)] [AddCommMonoid N] [Module R N]
+  {γ : ι → Type*} {g : ⦃i : ι⦄ → (j : γ i) → M i}
 
 lemma submodule_span_eq_top
     (hg : ∀ i, Submodule.span R (Set.range (@g i)) = ⊤) :
