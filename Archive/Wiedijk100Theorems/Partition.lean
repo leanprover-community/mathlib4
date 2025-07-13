@@ -95,21 +95,19 @@ open scoped Classical in
 def indicatorSeries (α : Type*) [Semiring α] (s : Set ℕ) : PowerSeries α :=
   PowerSeries.mk fun n => if n ∈ s then 1 else 0
 
-open scoped Classical in
-theorem coeff_indicator (s : Set ℕ) [Semiring α] (n : ℕ) :
-    coeff α n (indicatorSeries _ s) = if n ∈ s then 1 else 0 :=
-  coeff_mk _ _
+theorem coeff_indicator (s : Set ℕ) [Semiring α] (n : ℕ) [Decidable (n ∈ s)] :
+    coeff α n (indicatorSeries _ s) = if n ∈ s then 1 else 0 := by
+  convert coeff_mk _ _
 
-theorem coeff_indicator_pos (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∈ s) :
+theorem coeff_indicator_pos (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∈ s) [Decidable (n ∈ s)] :
     coeff α n (indicatorSeries _ s) = 1 := by rw [coeff_indicator, if_pos h]
 
-theorem coeff_indicator_neg (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∉ s) :
+theorem coeff_indicator_neg (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∉ s) [Decidable (n ∈ s)] :
     coeff α n (indicatorSeries _ s) = 0 := by rw [coeff_indicator, if_neg h]
 
-open scoped Classical in
-theorem constantCoeff_indicator (s : Set ℕ) [Semiring α] :
-    constantCoeff α (indicatorSeries _ s) = if 0 ∈ s then 1 else 0 :=
-  rfl
+theorem constantCoeff_indicator (s : Set ℕ) [Semiring α] [Decidable (0 ∈ s)] :
+    constantCoeff α (indicatorSeries _ s) = if 0 ∈ s then 1 else 0 := by
+  simp [indicatorSeries]
 
 theorem two_series (i : ℕ) [Semiring α] :
     1 + (X : PowerSeries α) ^ i.succ = indicatorSeries α {0, i.succ} := by
@@ -130,7 +128,7 @@ theorem num_series' [Field α] (i : ℕ) :
       simp only [coeff_one, if_false, mul_sub, mul_one, coeff_indicator,
         LinearMap.map_sub, reduceCtorEq]
       simp_rw [coeff_mul, coeff_X_pow, coeff_indicator, @boole_mul _ _ _ _]
-      rw [sum_ite (hp := fun _ ↦ Classical.propDecidable _), sum_ite]
+      rw [sum_ite, sum_ite]
       simp_rw [@filter_filter _ _ _ _ _, sum_const_zero, add_zero, sum_const, nsmul_eq_mul, mul_one,
         sub_eq_iff_eq_add, zero_add]
       symm
