@@ -382,7 +382,9 @@ lemma nonsingular_smul (P : Fin 3 → R) {u : R} (hu : IsUnit u) :
     refine (nonsingular_iff P).mpr ⟨(equation_smul P hu).mp hP, ?_⟩
     contrapose! hP'
     simp only [smul_fin3_ext]
-    grind
+    exact ⟨by linear_combination (norm := ring1) u ^ 2 * hP'.left,
+      by linear_combination (norm := ring1) u ^ 2 * hP'.right.left,
+      by linear_combination (norm := ring1) u ^ 2 * hP'.right.right⟩
   ⟨hP hu, fun h => hP hu.unit⁻¹.isUnit <| by rwa [smul_smul, hu.val_inv_mul, one_smul]⟩
 
 lemma nonsingular_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : W'.Nonsingular P ↔ W'.Nonsingular Q := by
