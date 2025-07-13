@@ -3,7 +3,6 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Init.Meta
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Order.CollectFacts
 import Mathlib.Tactic.Order.Preprocessing
