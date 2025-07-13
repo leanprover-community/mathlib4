@@ -242,6 +242,8 @@ lemma end_.map_id : end_.map (𝟙 F) = 𝟙 _ := by aesop_cat
 end
 
 variable (J C) in
+/-- If all bifunctors `Jᵒᵖ ⥤ J ⥤ C` have an end, then the construction
+`F ↦ end_ F` defines a functor `(Jᵒᵖ ⥤ J ⥤ C) ⥤ C`. -/
 @[simps]
 noncomputable def endFunctor [∀ (F : Jᵒᵖ ⥤ J ⥤ C), HasEnd F] :
     (Jᵒᵖ ⥤ J ⥤ C) ⥤ C where
@@ -313,6 +315,8 @@ lemma coend.map_id : coend.map (𝟙 F) = 𝟙 _ := by aesop_cat
 end
 
 variable (J C) in
+/-- If all bifunctors `Jᵒᵖ ⥤ J ⥤ C` have a coend, then the construction
+`F ↦ coend F` defines a functor `(Jᵒᵖ ⥤ J ⥤ C) ⥤ C`. -/
 @[simps]
 noncomputable def coendFunctor [∀ (F : Jᵒᵖ ⥤ J ⥤ C), HasCoend F] :
     (Jᵒᵖ ⥤ J ⥤ C) ⥤ C where
