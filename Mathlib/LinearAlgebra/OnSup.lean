@@ -42,8 +42,8 @@ variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] {P Q : Submodule R
 /-- If `P` and `Q` are two `R`-submodules of `M`, then the quotient
   `(P × Q) / ker (fun ((p, q) : P × Q) ↦ p + q)` is isomorphic to `P ⊔ Q` as an `R`-module. -/
 noncomputable def Submodule.quotientCoprodAddEquiv :
-    ((P × Q) ⧸ (ker ((inclusion (le_sup_left (b := Q))).coprod
-      (inclusion (le_sup_right (a := P)))))) ≃ₗ[R] (P + Q) :=
+    ((P × Q) ⧸ ker ((inclusion le_sup_left).coprod (inclusion le_sup_right) : _ →ₗ[R] ↥(P ⊔ Q)))
+      ≃ₗ[R] (P + Q) :=
   quotKerEquivOfSurjective _ (by
     rw [← range_eq_top, eq_top_iff]
     rintro ⟨x, hx⟩ _
