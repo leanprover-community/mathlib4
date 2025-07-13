@@ -488,9 +488,9 @@ partial def _root_.Lean.MVarId.gcongr
       | some hole => pure (tpl.findMVar? (· == hole)).isSome
     unless hasHole do
       try withDefault g.applyRfl; return (true, names, #[])
-      catch ex => throwTacticEx `gcongr g m!"\
+      catch _ => throwTacticEx `gcongr g m!"\
         subgoal {← withReducible g.getType'} is not allowed by the provided pattern \
-        and is not closed by `rfl`\n{ex.toMessageData}"
+        and is not closed by `rfl`"
     -- (ii) if the template is *not* `?_` then continue on.
   -- Check that the goal is of the form `rel (lhsHead _ ... _) (rhsHead _ ... _)`
   let rel ← withReducible g.getType'

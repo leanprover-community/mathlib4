@@ -60,9 +60,7 @@ example (h : b ~ d) : myAdd a (myAdd b c) ~ myAdd a (myAdd d c) := by
   gcongr
 
 /--
-error: gcongr failed, subgoal a~a is not allowed by the provided pattern and is not closed by `rfl`
-tactic 'rfl' failed, no @[refl] lemma registered for relation
-  rel
+error: tactic 'gcongr' failed, subgoal a~a is not allowed by the provided pattern and is not closed by `rfl`
 case a
 a b c d : ℕ
 h : b~d
