@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
 import Mathlib.Tactic.Order.CollectFacts
-import Mathlib.Data.Fin.Tuple.Basic
+-- import Mathlib.Data.Fin.Tuple.Basic
+import Batteries.Data.List.Pairwise
+import Mathlib.Tactic.GeneralizeProofs
 
 /-!
 # Translating linear orders to ℤ
@@ -21,67 +23,45 @@ the problem becomes NP-hard, and the idea is to reuse some smart and efficient p
 ## TODO
 
 Migrate to `grind` when it is ready.
-
 -/
 
 namespace Mathlib.Tactic.Order.ToInt
 
-variable {α : Type*} [LinearOrder α]
-
-lemma exists_max {n : ℕ} (val : Fin (n + 1) → α) :
-    ∃ imax, ∀ j, val j ≤ val imax := by
-  induction n with
-  | zero => simp [Fin.forall_fin_one, Fin.exists_fin_one]
-  | succ n ih =>
-    cases val using Fin.consCases with | _ x val =>
-    obtain ⟨i, hi⟩ := ih val
-    by_cases h_max : val i < x
-    · use 0
-      intro j
-      cases j using Fin.cases with
-      | zero => simp
-      | succ j =>
-        simp only [Fin.cons_succ, Fin.cons_zero]
-        apply (hi _).trans
-        exact le_of_lt h_max
-    · use i.succ
-      intro j
-      cases j using Fin.cases with
-      | zero => simpa using h_max
-      | succ j => simp [hi]
-
-lemma exists_bound {n : ℕ} (tr : Fin n → ℤ) : ∃ M, ∀ i, tr i < M := by
-  cases n with
-  | zero => simp
-  | succ n =>
-    obtain ⟨i, hi⟩ := exists_max tr
-    use tr i + 1
-    intro j
-    specialize hi j
-    omega
-
-variable {n : ℕ} (val : Fin n → α)
+variable {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α)
 
 theorem exists_translation : ∃ tr : Fin n → ℤ, ∀ i j, val i ≤ val j ↔ tr i ≤ tr j := by
-  induction n with
-  | zero => simp
-  | succ n ih =>
-    obtain ⟨imax, h_imax⟩ := exists_max val
-    obtain ⟨tr, h2⟩ := ih (Fin.removeNth imax val)
-    by_cases h_imax' : ∃ j : Fin n, val (imax.succAbove j) = val imax
-    · obtain ⟨imax2, h3⟩ := h_imax'
-      use Fin.insertNth imax (tr imax2) tr
-      intro i j
-      cases i using Fin.succAboveCases imax <;> cases j using Fin.succAboveCases imax
-        <;> simp [← h3, ← h2, Fin.removeNth]
-    · push_neg at h_imax'
-      obtain ⟨M, hM⟩ : ∃ M, ∀ i, tr i < M := exists_bound tr
-      use Fin.insertNth imax M tr
-      have h_succ (i : Fin n) : val (Fin.succAbove imax i) < val imax :=
-        lt_of_le_of_ne (h_imax (Fin.succAbove imax i)) (h_imax' i)
-      intro i j
-      cases i using Fin.succAboveCases imax <;> cases j using Fin.succAboveCases imax
-        <;> simp [(hM _).not_le, (hM _).le, h_succ, h_imax, ← h2, Fin.removeNth]
+  let li := List.ofFn val
+  let sli := li.mergeSort
+  have (i : Fin n) : ∃ j : Fin sli.length, sli[j] = val i := by
+    apply List.get_of_mem
+    rw [List.Perm.mem_iff (List.mergeSort_perm _ _)]
+    simp [li]
+  use fun i ↦ (this i).choose
+  intro i j
+  simp
+  by_cases h_eq : val i = val j
+  · simp [h_eq]
+  generalize_proofs _ hi hj
+  constructor
+  · intro h
+    rw [← hi.choose_spec, ← hj.choose_spec] at h h_eq
+    contrapose! h
+    have := List.sorted_mergeSort (l := li) (le := fun a b ↦ decide (a ≤ b))
+        (by simpa using Preorder.le_trans) (by simpa using LinearOrder.le_total)
+    rw [List.pairwise_iff_get] at this
+    specialize this hj.choose hi.choose (by simpa)
+    simp at this
+    apply lt_of_le_of_ne this
+    symm
+    exact h_eq
+  · intro h
+    rw [← hi.choose_spec, ← hj.choose_spec] at h_eq ⊢
+    have := List.sorted_mergeSort (l := li) (le := fun a b ↦ decide (a ≤ b))
+        (by simpa using Preorder.le_trans) (by simpa using LinearOrder.le_total)
+    rw [List.pairwise_iff_get] at this
+    specialize this hi.choose hj.choose
+      (by apply lt_of_le_of_ne h; contrapose! h_eq; simp [h_eq])
+    simpa using this
 
 /-- Auxiliary definition used by the `order` tactic to transfer facts in a linear order to `ℤ`. -/
 noncomputable def toInt (k : Fin n) : ℤ :=
