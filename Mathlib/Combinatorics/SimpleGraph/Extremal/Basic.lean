@@ -169,7 +169,7 @@ edges. -/
 theorem isExtremal_free_iff :
     G.IsExtremal H.Free ↔ H.Free G ∧ #G.edgeFinset = extremalNumber (card V) H := by
   rw [IsExtremal, and_congr_right_iff, ← extremalNumber_le_iff]
-  exact fun h ↦ ⟨eq_of_le_of_le (card_edgeFinset_le_extremalNumber h), ge_of_eq⟩
+  exact fun h ↦ ⟨eq_of_le_of_ge (card_edgeFinset_le_extremalNumber h), ge_of_eq⟩
 
 lemma card_edgeFinset_of_isExtremal_free (h : G.IsExtremal H.Free) :
     #G.edgeFinset = extremalNumber (card V) H := (isExtremal_free_iff.mp h).2

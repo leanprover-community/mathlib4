@@ -384,6 +384,15 @@ lemma lift_rightUnitor_hom {X Y : C} (f : X ⟶ Y) (g : X ⟶ 𝟙_ C) :
   rw [← Iso.eq_comp_inv]
   aesop_cat
 
+/-- Universal property of the cartesian product: Maps to `X ⊗ Y` correspond to pairs of maps to `X`
+and to `Y`. -/
+@[simps]
+def homEquivToProd {X Y Z : C} : (Z ⟶ X ⊗ Y) ≃ (Z ⟶ X) × (Z ⟶ Y) where
+  toFun f := ⟨f ≫ fst _ _, f ≫ snd _ _⟩
+  invFun f := lift f.1 f.2
+  left_inv _ := by simp
+  right_inv _ := by simp
+
 section BraidedCategory
 
 variable [BraidedCategory C]

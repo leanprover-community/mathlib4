@@ -24,7 +24,7 @@ as an open normal subgroup. It is, in fact, clopen. -/
 as an open normal additive subgroup. It is, in fact, clopen."]
 def OpenNormalSubgroup.pathComponentOne [Group G]
     [IsTopologicalGroup G] [LocPathConnectedSpace G] :
-    OpenNormalSubgroup (G) where
+    OpenNormalSubgroup G where
   toSubgroup := .pathComponentOne G
   isOpen' := .pathComponent 1
   isNormal' := .pathComponentOne G
