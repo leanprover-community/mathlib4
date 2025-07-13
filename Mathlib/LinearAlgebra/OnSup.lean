@@ -14,17 +14,17 @@ import Mathlib.LinearAlgebra.Isomorphisms
 Let `R` be a ring, `M, N` be `A`-modules, and `P, Q` be `A`-submodules of `X`.
 
 Given two linear maps `f : P →ₗ[A] N` and `g : Q →ₗ[A] N` that agree on `P ⊓ Q`,
-there is a unique linear map `P ⊔ Q →ₗ[R] N` that simultaneously extends `f` and `g`.
+there is a unique linear map `↥(P ⊔ Q) →ₗ[R] N` that simultaneously extends `f` and `g`.
 
 ## Main definitions
 * `Submodule.quotientCoprodAddEquiv`: if `P` and `Q` are two `R`-submodules of `M`, then the
   quotient `(P × Q) / ker (fun ((p, q) : P × Q) ↦ p + q)` is isomorphic to `P ⊔ Q` as an `R`-module.
 * `LinearMap.onSup`: given two linear maps `f : P →ₗ[R] N` and `g : Q →ₗ[R] N` that agree on
-  `P ⊓ Q`, this is the linear map `P ⊔ Q →ₗ[R] N` that simultaneously extends `f` and `g`.
+  `P ⊓ Q`, this is the linear map `↥(P ⊔ Q) →ₗ[R] N` that simultaneously extends `f` and `g`.
 * `LinearMap.onSupEquiv`: the bijection between the set of linear maps `P + Q →ₗ[R] N` and the
   set of pairs of linear maps `(P →ₗ[R] N) × (Q →ₗ[R] N))` that agree on the intersection `P ⊓ Q`.
 * `LinearMap.onSupLinearEquiv`: the `R`-linear equivalence between the module of linear maps
-  `P ⊔ Q →ₗ[R] N` and the module of pairs of linear maps `(P →ₗ[R] N) × (Q →ₗ[R] N))` that agree
+  `↥(P ⊔ Q) →ₗ[R] N` and the module of pairs of linear maps `(P →ₗ[R] N) × (Q →ₗ[R] N))` that agree
   on the intersection `M ⊓ N`. This requires `R` to be commutative.
 
 ## Main results
@@ -56,7 +56,7 @@ namespace LinearMap
 variable {N : Type*} [AddCommGroup N] [Module R N] {f : P →ₗ[R] N} {g : Q →ₗ[R] N}
 
 /-- Given two linear maps `f : P →ₗ[R] N` and `g : Q →ₗ[R] N` that agree on `P ⊓ Q`, this is
-the linear map `P ⊔ Q →ₗ[R] N` that simultaneously extends `f` and `g`. -/
+the linear map `↥(P ⊔ Q) →ₗ[R] N` that simultaneously extends `f` and `g`. -/
 noncomputable def onSup
     -- (h : ∀ x (hP : x ∈ P) (hQ : x ∈ Q), f ⟨x, hP⟩ = g ⟨x, hQ⟩) :
     (h : f ∘ₗ inclusion inf_le_left = g ∘ₗ inclusion inf_le_right) :
@@ -128,7 +128,7 @@ theorem onSup_unique
 
 variable (M N Y)
 
-/-- The bijection between the set of maps `P ⊔ Q →ₗ[R] N` and the set of pairs of maps
+/-- The bijection between the set of maps `↥(P ⊔ Q) →ₗ[R] N` and the set of pairs of maps
   `(P →ₗ[R] N) × (Q →ₗ[R] N))` that agree on the intersection `P ⊓ Q`. -/
 noncomputable def onSupEquiv : (↥(P ⊔ Q) →ₗ[R] N) ≃
     {(fg : (P →ₗ[R] N) × (Q →ₗ[R] N)) | fg.1.comp (inclusion inf_le_left) =
@@ -156,7 +156,7 @@ noncomputable example : (P + Q →ₗ[R] N) ≃ₗ[R] eqLocus
       (lcomp R N (inclusion le_sup_right))) (fun _ ↦ by ext; simp [inclusion_apply]))
     (onSupEquiv M N).bijective
 
-/-- The `R`-linear equivalence between the module of linear maps `P ⊔ Q →ₗ[R] N` and the module of
+/-- The `R`-linear equivalence between the module of linear maps `↥(P ⊔ Q) →ₗ[R] N` and the module of
   pairs of linear maps `(P →ₗ[R] N) × (Q →ₗ[R] N))` that agree on the intersection `P ⊓ Q`. -/
 noncomputable def onSupLinearEquiv : (↥(P ⊔ Q) →ₗ[R] N) ≃ₗ[R] eqLocus
     ((lcomp R N (inclusion (inf_le_left (a := P) (b := Q)))).comp (fst R _ _))
