@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.Order.Group.Units
-import Mathlib.Algebra.Order.Hom.MonoidWithZero
 import Mathlib.Data.Int.Interval
 import Mathlib.GroupTheory.Archimedean
 import Mathlib.GroupTheory.OrderOfElement

@@ -123,6 +123,8 @@ instance : AddMonoid (HahnSeries Γ R) := fast_instance%
 
 theorem coeff_nsmul {x : HahnSeries Γ R} {n : ℕ} : (n • x).coeff = n • x.coeff := coeff_smul' _ _
 
+@[deprecated (since := "2025-01-31")] alias nsmul_coeff := coeff_nsmul
+
 @[simp]
 protected lemma map_add [AddMonoid S] (f : R →+ S) {x y : HahnSeries Γ R} :
     ((x + y).map f : HahnSeries Γ S) = x.map f + y.map f := by
@@ -360,12 +362,13 @@ instance : Neg (HahnSeries Γ R) where
         rw [Function.support_neg]
         exact x.isPWO_support }
 
-
 @[simp]
 theorem coeff_neg' (x : HahnSeries Γ R) : (-x).coeff = -x.coeff :=
   rfl
 
-theorem coeff_neg {x : HahnSeries Γ R} : (-x).coeff = -x.coeff :=
+@[deprecated (since := "2025-01-31")] alias neg_coeff' := coeff_neg'
+
+theorem coeff_neg {x : HahnSeries Γ R} {a : Γ} : (-x).coeff a = -x.coeff a :=
   rfl
 
 @[deprecated (since := "2025-01-31")] alias neg_coeff := coeff_neg
@@ -428,8 +431,8 @@ theorem leadingCoeff_neg {x : HahnSeries Γ R} : (-x).leadingCoeff = -x.leadingC
 @[simp]
 theorem zsmul_coeff {x : HahnSeries Γ R} {n : ℤ} : (n • x).coeff = n • x.coeff := by
   cases n with
-  | ofNat n => simp_all only [Int.ofNat_eq_coe, natCast_zsmul, coeff_nsmul]
-  | negSucc _ => simp_all only [negSucc_zsmul, coeff_neg, coeff_nsmul]
+  | ofNat n => simp [Int.ofNat_eq_coe, natCast_zsmul]
+  | negSucc _ => simp [negSucc_zsmul]
 
 @[simp]
 protected lemma map_sub [AddGroup S] (f : R →+ S) {x y : HahnSeries Γ R} :

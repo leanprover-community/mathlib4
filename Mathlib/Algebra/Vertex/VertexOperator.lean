@@ -602,27 +602,25 @@ theorem resProd_nat_one_right_apply (n : ℕ) (A : VertexOperator R V) :
   · rw [show -m - 1 + m.toNat = -1 by omega, one_ncoeff_neg_one, resProdRight_apply_ncoeff]
     rw [finsum_eq_single _ (n - m).toNat fun _ _ ↦ (by rw [one_ncoeff_ne_neg_one (by omega)]; simp)]
     by_cases hmn : m ≤ n
-    · have : n + (-m - 1) - (n - m).toNat = -1 := by omega
-      have hmn1 : (n - m).toNat = n - m.toNat := by omega
-      rw [this, one_ncoeff_neg_one, LinearMap.map_zero, Pi.zero_apply, LinearMap.zero_apply,
-        sub_eq_zero, ← smul_assoc (n : ℤ).negOnePow]
+    · rw [show n + (-m - 1) - (n - m).toNat = -1 by omega, one_ncoeff_neg_one, LinearMap.map_zero,
+        Pi.zero_apply, LinearMap.zero_apply, sub_eq_zero, ← smul_assoc (n : ℤ).negOnePow]
       congr 2
       · rw [Units.ext_iff, Units.val_smul, Units.smul_def, zsmul_eq_mul', Int.cast_eq,
           ← Units.val_mul, ← Int.negOnePow_sub]
         simp [h, hmn]
       · rw [Ring.choose_eq_nat_choose, Ring.choose_eq_nat_choose]
         refine Int.ofNat_inj.mpr ?_
-        rw [← Nat.choose_symm (by omega), hmn1]
+        rw [← Nat.choose_symm (by omega), show (n - m).toNat = n - m.toNat by omega]
       · simp [h, hmn]
     · rw [Ring.choose_eq_nat_choose, Ring.choose_eq_nat_choose, Nat.choose_eq_zero_of_lt (by omega),
         one_ncoeff_ne_neg_one (by omega)]
       simp
-  · rw [one_ncoeff_ne_neg_one (by omega), resProdRight_apply_ncoeff]
-    rw [finsum_eq_single _ (n - m).toNat fun _ _ ↦ (by rw [one_ncoeff_ne_neg_one (by omega)]; simp)]
-    rw [Ring.choose_eq_nat_choose n (n - m).toNat, Nat.choose_eq_zero_of_lt (by omega)]
+  · rw [one_ncoeff_ne_neg_one (by omega), resProdRight_apply_ncoeff,
+      finsum_eq_single _ (n - m).toNat fun _ _ ↦ (by rw [one_ncoeff_ne_neg_one (by omega)]; simp),
+      Ring.choose_eq_nat_choose n (n - m).toNat, Nat.choose_eq_zero_of_lt (by omega)]
     simp
 
---residue products with 1, interaction with Hasse derivatives.
+--interaction with Hasse derivatives.
 
 /-!
 /-- A(x)B(y)C(z) - B(y)A(x)C(z) = C(z)A(x)B(y) - C(z)B(y)A(x). For any integers k,l,m, and any
