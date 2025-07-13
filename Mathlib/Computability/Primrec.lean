@@ -334,7 +334,7 @@ def Primrec₂ {α β σ} [Primcodable α] [Primcodable β] [Primcodable σ] (f 
   primitive recursive predicate, which is to say that
   `decide ∘ p : α → Bool` is primitive recursive. -/
 def PrimrecPred {α} [Primcodable α] (p : α → Prop) :=
-  ∃ (_ : DecidablePred p), Primrec fun a => decide (p a)
+  open scoped Classical in Primrec fun a => decide (p a)
 
 /-- `PrimrecRel p` means `p : α → β → Prop` is a
   primitive recursive relation, which is to say that
@@ -409,20 +409,20 @@ theorem Primrec₂.comp₂ {f : γ → δ → σ} {g : α → β → γ} {h : α
 
 protected lemma PrimrecPred.decide {p : α → Prop} [DecidablePred p] (hp : PrimrecPred p) :
     Primrec (fun a => decide (p a)) := by
-  convert hp.choose_spec
+  convert (config := {transparency := .default}) hp
 
 lemma Primrec.primrecPred {p : α → Prop} [DecidablePred p]
-    (hp : Primrec (fun a => decide (p a))) : PrimrecPred p :=
-  ⟨inferInstance, hp⟩
+    (hp : Primrec (fun a => decide (p a))) : PrimrecPred p := by
+  convert (config := {transparency := .default}) hp
 
 lemma primrecPred_iff_primrec_decide {p : α → Prop} [DecidablePred p] :
     PrimrecPred p ↔ Primrec (fun a => decide (p a)) where
   mp := PrimrecPred.decide
   mpr := Primrec.primrecPred
 
-theorem PrimrecPred.comp {p : β → Prop} {f : α → β} :
-    (hp : PrimrecPred p) → (hf : Primrec f) → PrimrecPred fun a => p (f a)
-  | ⟨_, hp⟩, hf => (hp.comp hf).primrecPred
+theorem PrimrecPred.comp {p : β → Prop} {f : α → β}
+    (hp : PrimrecPred p) (hf : Primrec f) : PrimrecPred fun a => p (f a) :=
+  Primrec.comp hp hf
 
 protected lemma PrimrecRel.decide {R : α → β → Prop} [DecidableRel R] (hR : PrimrecRel R) :
     Primrec₂ (fun a b => decide (R a b)) :=
@@ -633,17 +633,17 @@ protected theorem and : Primrec₂ and :=
 protected theorem or : Primrec₂ or :=
   dom_bool₂ _
 
-theorem _root_.PrimrecPred.not {p : α → Prop} :
-    (hp : PrimrecPred p) → PrimrecPred fun a => ¬p a
-  | ⟨_, hp⟩ => ((Primrec.not.comp hp).of_eq fun n => by simp).primrecPred
+theorem _root_.PrimrecPred.not {p : α → Prop}
+    (hp : PrimrecPred p) : PrimrecPred fun a => ¬p a :=
+  (Primrec.not.comp hp).of_eq fun n => by simp
 
-theorem _root_.PrimrecPred.and {p q : α → Prop} :
-    (hp : PrimrecPred p) → (hq : PrimrecPred q) → PrimrecPred fun a => p a ∧ q a
-  | ⟨_, hp⟩, ⟨_, hq⟩ => ((Primrec.and.comp hp hq).of_eq fun n => by simp).primrecPred
+theorem _root_.PrimrecPred.and {p q : α → Prop}
+    (hp : PrimrecPred p) (hq : PrimrecPred q) : PrimrecPred fun a => p a ∧ q a :=
+  (Primrec.and.comp hp hq).of_eq fun n => by classical simp
 
-theorem _root_.PrimrecPred.or {p q : α → Prop} :
-    (hp : PrimrecPred p) → (hq : PrimrecPred q) → PrimrecPred fun a => p a ∨ q a
-  | ⟨_, hp⟩, ⟨_, hq⟩ => ((Primrec.or.comp hp hq).of_eq fun n => by simp).primrecPred
+theorem _root_.PrimrecPred.or {p q : α → Prop}
+    (hp : PrimrecPred p) (hq : PrimrecPred q) : PrimrecPred fun a => p a ∨ q a :=
+  (Primrec.or.comp hp hq).of_eq fun n => by classical simp
 
 protected theorem eq : PrimrecRel (@Eq α) :=
   have : PrimrecRel fun a b : ℕ => a = b :=
