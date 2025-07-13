@@ -495,17 +495,28 @@ section Semiring
 
 open LinearMap
 
-variable {M₂₁ M₂₂ : Type*} [Semiring R] [AddCommMonoid M₁] [AddCommMonoid M₂]
-  [AddCommMonoid M₂₁] [AddCommMonoid M₂₂] [Module R M₁] [Module R M₂] [Module R M₂₁] [Module R M₂₂]
+section Semilinear
+
+variable {R₁ R₂ R₁' R₂' : Type*} {M₁' M₂' : Type*}
+variable [Semiring R₁] [Semiring R₂] [Semiring R₁'] [Semiring R₂']
+variable [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₁'] [AddCommMonoid M₂']
+variable [Module R₁ M₁] [Module R₂ M₂] [Module R₁' M₁'] [Module R₂' M₂']
+variable {σ₁₂ : R₁ →+* R₂} {σ₂₁ : R₂ →+* R₁} {σ₁'₂' : R₁' →+* R₂'} {σ₂'₁' : R₂' →+* R₁'}
+variable {σ₁₁' : R₁ →+* R₁'} {σ₂₂' : R₂ →+* R₂'}
+variable {σ₂₁' : R₂ →+* R₁'} {σ₁₂' : R₁ →+* R₂'}
+variable [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
+variable [RingHomInvPair σ₁'₂' σ₂'₁'] [RingHomInvPair σ₂'₁' σ₁'₂']
+variable [RingHomCompTriple σ₁₁' σ₁'₂' σ₁₂'] [RingHomCompTriple σ₂₁ σ₁₂' σ₂₂']
+variable [RingHomCompTriple σ₂₂' σ₂'₁' σ₂₁'] [RingHomCompTriple σ₁₂ σ₂₁' σ₁₁']
 
 /-- A linear isomorphism between the domains and codomains of two spaces of linear maps gives an
 additive isomorphism between the two function spaces.
 
 See also `LinearEquiv.arrowCongr` for the linear version of this isomorphism. -/
-@[simps] def arrowCongrAddEquiv (e₁ : M₁ ≃ₗ[R] M₂) (e₂ : M₂₁ ≃ₗ[R] M₂₂) :
-    (M₁ →ₗ[R] M₂₁) ≃+ (M₂ →ₗ[R] M₂₂) where
-  toFun f := e₂.comp (f.comp e₁.symm.toLinearMap)
-  invFun f := e₂.symm.comp (f.comp e₁.toLinearMap)
+@[simps] def arrowCongrAddEquiv (e₁ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₂ : M₁' ≃ₛₗ[σ₁'₂'] M₂') :
+    (M₁ →ₛₗ[σ₁₁'] M₁') ≃+ (M₂ →ₛₗ[σ₂₂'] M₂') where
+  toFun f := (e₂.comp f).comp e₁.symm.toLinearMap
+  invFun f := (e₂.symm.comp f).comp e₁.toLinearMap
   left_inv f := by
     ext x
     simp only [symm_apply_apply, Function.comp_apply, coe_comp, coe_coe]
@@ -516,20 +527,23 @@ See also `LinearEquiv.arrowCongr` for the linear version of this isomorphism. -/
     ext x
     simp only [map_add, add_apply, Function.comp_apply, coe_comp, coe_coe]
 
-/-- A linear isomorphism between the domains an codomains of two spaces of linear maps gives a
-linear isomorphism with respect to an action on the domains. -/
-@[simps] def domMulActCongrRight [Semiring S] [Module S M₁] [SMulCommClass R S M₁]
-    (e₂ : M₂₁ ≃ₗ[R] M₂₂) : (M₁ →ₗ[R] M₂₁) ≃ₗ[Sᵈᵐᵃ] (M₁ →ₗ[R] M₂₂) where
-  __ := arrowCongrAddEquiv (.refl ..) e₂
-  map_smul' := DomMulAct.mk.forall_congr_right.mp fun _ _ ↦ by ext; simp
-
 /-- If `M` and `M₂` are linearly isomorphic then the endomorphism rings of `M` and `M₂`
 are isomorphic.
 
 See `LinearEquiv.conj` for the linear version of this isomorphism. -/
-@[simps!] def conjRingEquiv (e : M₁ ≃ₗ[R] M₂) : Module.End R M₁ ≃+* Module.End R M₂ where
+@[simps!] def conjRingEquiv (e : M₁ ≃ₛₗ[σ₁₂] M₂) : Module.End R₁ M₁ ≃+* Module.End R₂ M₂ where
   __ := arrowCongrAddEquiv e e
   map_mul' _ _ := by ext; simp [arrowCongrAddEquiv]
+
+/-- A linear isomorphism between the domains an codomains of two spaces of linear maps gives a
+linear isomorphism with respect to an action on the domains. -/
+@[simps] def domMulActCongrRight [Semiring S] [Module S M₁] [Module S M₂]
+    [SMulCommClass R₁ S M₁] [RingHomCompTriple σ₁₂' σ₂'₁' σ₁₁']
+    (e₂ : M₁' ≃ₛₗ[σ₁'₂'] M₂') : (M₁ →ₛₗ[σ₁₁'] M₁') ≃ₗ[Sᵈᵐᵃ] (M₁ →ₛₗ[σ₁₂'] M₂') where
+  __ := arrowCongrAddEquiv (.refl ..) e₂
+  map_smul' := DomMulAct.mk.forall_congr_right.mp fun _ _ ↦ by ext; simp
+
+end Semilinear
 
 end Semiring
 
