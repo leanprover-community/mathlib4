@@ -1140,12 +1140,12 @@ lemma affineCombination_mem_closedInterior_iff {n : ℕ} {s : Simplex k P n} {w 
   exact hw'01
 
 lemma interior_subset_affineSpan {n : ℕ} {s : Simplex k P n} :
-   s.interior ⊆ affineSpan k (Set.range s.points) := by
+    s.interior ⊆ affineSpan k (Set.range s.points) := by
   rintro p ⟨w, hw, hi, rfl⟩
   exact affineCombination_mem_affineSpan_of_nonempty hw _
 
 lemma closedInterior_subset_affineSpan {n : ℕ} {s : Simplex k P n} :
-   s.closedInterior ⊆ affineSpan k (Set.range s.points) := by
+    s.closedInterior ⊆ affineSpan k (Set.range s.points) := by
   rintro p ⟨w, hw, hi, rfl⟩
   exact affineCombination_mem_affineSpan_of_nonempty hw _
 
