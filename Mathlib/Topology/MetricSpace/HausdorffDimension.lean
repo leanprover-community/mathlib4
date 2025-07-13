@@ -554,17 +554,8 @@ theorem dimH_segment {x y : E} (h : x ≠ y) :
           simp only [sub_eq_add_neg]
         expose_names; rw [this]
       _ ≤ _ := le_rfl
-  have L : dimH (segment ℝ x y) ≤ 1 := by calc
-      dimH (segment ℝ x y) = dimH (f '' s) := by rw [seg_eq]
-      _ ≤ dimH s := hL.dimH_image_le _
-      _ ≤ 1 := by rw [hs, ← dimH_Icc01]
-  have R : 1 ≤ dimH (segment ℝ x y) := by calc
-    1 = dimH s := by exact Eq.symm dimH_Icc01
-    _ ≤ dimH (f '' s) := by
-      rw [hs]
-      exact AntilipschitzWith.le_dimH_image hA (Icc 0 1)
-    _ = dimH (segment ℝ x y) := by exact congrArg dimH (id (Eq.symm seg_eq))
-  exact le_antisymm L R
+  rw [seg_eq, ← dimH_Icc01]
+  apply le_antisymm (hL.dimH_image_le _) (hA.le_dimH_image _)
 
 end Real
 
