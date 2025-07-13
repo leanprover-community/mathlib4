@@ -337,7 +337,7 @@ theorem Matrix.toLin'_apply (M : Matrix m n R) (v : n → R) : Matrix.toLin' M v
 @[simp]
 theorem LinearMap.toMatrix'_mulVec (f : (n → R) →ₗ[R] m → R) (v : n → R) :
     LinearMap.toMatrix' f *ᵥ v = f v := by
-  simp [← Matrix.toLin'_apply (LinearMap.toMatrix' f)]
+  rw [← toLin'_apply, toLin'_toMatrix']
 
 @[simp]
 theorem Matrix.toLin'_one : Matrix.toLin' (1 : Matrix n n R) = LinearMap.id :=
