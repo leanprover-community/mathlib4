@@ -106,8 +106,7 @@ theorem nodup_theClosedSix_theFourteen_iff : (theClosedSix s).Nodup ↔ TheSixIn
     tauto
   · intro h -- Introduce `TheSixIneq` as an assumption.
     repeat obtain ⟨_, h⟩ := h -- Split the hypothesis into six different inequalities.
-    repeat apply And.intro
-           rotate_left -- Split the goals into the 15 inequalities that we want to show.
+    repeat refine .symm (.intro ?_ ?_) -- Split the goal into 15 inequalities.
     any_goals rw [ne_comm]
               try assumption
     -- Solve trivial goals (the six inequalities contained in `TheSixIneq`).
@@ -121,8 +120,7 @@ theorem nodup_theClosedSix_theFourteen_iff : (theClosedSix s).Nodup ↔ TheSixIn
                try repeat rw [kckckck_eq_kck, eq_comm]
                assumption)
     -- One last goal (`k (k (k sᶜ)ᶜ)ᶜ ≠ k s`) needs some other simplifying steps:
-    · apply mt (congr_arg (k ·ᶜ))
-      apply mt (congr_arg (k ·ᶜ))
+    · apply mt (congr_arg fun s ↦ k (k sᶜ)ᶜ)
       rw [kckckck_eq_kck]
       assumption
 
