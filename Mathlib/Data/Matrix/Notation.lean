@@ -406,7 +406,7 @@ alias submatrix_updateColumn_succAbove := submatrix_updateCol_succAbove
 
 end Submatrix
 
-section Vec
+section Vec2AndVec3
 
 section One
 
@@ -479,9 +479,6 @@ theorem mul_fin_three [AddCommMonoid α] [Mul α]
   fin_cases i <;> fin_cases j
     <;> simp [Matrix.mul_apply, Fin.sum_univ_succ, ← add_assoc]
 
-theorem vec1_eq {a b : α} (h : a = b) : ![a] = ![b] := by
-  simp [h]
-
 theorem vec2_eq {a₀ a₁ b₀ b₁ : α} (h₀ : a₀ = b₀) (h₁ : a₁ = b₁) : ![a₀, a₁] = ![b₀, b₁] := by
   simp [h₀, h₁]
 
@@ -489,17 +486,11 @@ theorem vec3_eq {a₀ a₁ a₂ b₀ b₁ b₂ : α} (h₀ : a₀ = b₀) (h₁ 
     ![a₀, a₁, a₂] = ![b₀, b₁, b₂] := by
   simp [h₀, h₁, h₂]
 
-theorem vec1_add [Add α] (a b : α) : ![a] + ![b] = ![a + b] := by
-  simp
-
 theorem vec2_add [Add α] (a₀ a₁ b₀ b₁ : α) : ![a₀, a₁] + ![b₀, b₁] = ![a₀ + b₀, a₁ + b₁] := by
   simp
 
 theorem vec3_add [Add α] (a₀ a₁ a₂ b₀ b₁ b₂ : α) :
     ![a₀, a₁, a₂] + ![b₀, b₁, b₂] = ![a₀ + b₀, a₁ + b₁, a₂ + b₂] := by
-  simp
-
-theorem smul_vec1 {R : Type*} [SMul R α] (x : R) (a : α) : x • ![a] = ![x • a] := by
   simp
 
 theorem smul_vec2 {R : Type*} [SMul R α] (x : R) (a₀ a₁ : α) :
@@ -511,13 +502,6 @@ theorem smul_vec3 {R : Type*} [SMul R α] (x : R) (a₀ a₁ a₂ : α) :
   simp
 
 variable [AddCommMonoid α] [Mul α]
-
-theorem vec1_dotProduct' {a b : α} : ![a] ⬝ᵥ ![b] = a * b := by
-  simp
-
-@[simp]
-theorem vec1_dotProduct (v w : Fin 1 → α) : v ⬝ᵥ w = v 0 * w 0 :=
-  vec1_dotProduct'
 
 theorem vec2_dotProduct' {a₀ a₁ b₀ b₁ : α} : ![a₀, a₁] ⬝ᵥ ![b₀, b₁] = a₀ * b₀ + a₁ * b₁ := by
   simp
@@ -535,7 +519,7 @@ theorem vec3_dotProduct' {a₀ a₁ a₂ b₀ b₁ b₂ : α} :
 theorem vec3_dotProduct (v w : Fin 3 → α) : v ⬝ᵥ w = v 0 * w 0 + v 1 * w 1 + v 2 * w 2 :=
   vec3_dotProduct'
 
-end Vec
+end Vec2AndVec3
 
 end Matrix
 
