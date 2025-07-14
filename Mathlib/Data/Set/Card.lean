@@ -546,6 +546,9 @@ theorem ncard_mono [Finite α] : @Monotone (Set α) _ _ _ ncard := fun _ _ ↦ n
 
 @[simp] theorem ncard_univ (α : Type*) : (univ : Set α).ncard = Nat.card α := Nat.card_univ
 
+theorem ncard_le_card [Finite α] (s : Set α) : s.ncard ≤ Nat.card α :=
+  ncard_univ α ▸ ncard_le_ncard s.subset_univ
+
 @[simp] theorem ncard_empty (α : Type*) : (∅ : Set α).ncard = 0 := by
   rw [ncard_eq_zero]
 
@@ -734,6 +737,9 @@ theorem ncard_lt_ncard (h : s ⊂ t) (ht : t.Finite := by toFinite_tac) :
     s.ncard < t.ncard := by
   rw [← Nat.cast_lt (α := ℕ∞), ht.cast_ncard_eq, (ht.subset h.subset).cast_ncard_eq]
   exact (ht.subset h.subset).encard_lt_encard h
+
+theorem ncard_lt_card [Finite α] (h : s ≠ univ) : s.ncard < Nat.card α :=
+  ncard_univ α ▸ ncard_lt_ncard (ssubset_univ_iff.mpr h)
 
 theorem ncard_strictMono [Finite α] : @StrictMono (Set α) _ _ _ ncard :=
   fun _ _ h ↦ ncard_lt_ncard h
@@ -940,6 +946,31 @@ lemma odd_ncard_compl_iff [Finite α] (heven : Even (Nat.card α)) (s : Set α) 
     Odd sᶜ.ncard ↔ Odd s.ncard := by
   rw [← Nat.not_even_iff_odd, even_ncard_compl_iff heven, Nat.not_even_iff_odd]
 
+theorem nonempty_inter_of_lt_ncard_add_ncard [Finite α]
+    (h : Nat.card α < s.ncard + t.ncard) : (s ∩ t).Nonempty := by
+  rw [← ncard_union_add_ncard_inter s t] at h
+  replace h := (s ∪ t).ncard_le_card.trans_lt h
+  rwa [lt_add_iff_pos_right, ncard_pos] at h
+
+theorem nonempty_inter_of_le_ncard_add_ncard [Finite α]
+    (h' : Nat.card α ≤ s.ncard + t.ncard) (h : s ∪ t ≠ univ) :
+    (s ∩ t).Nonempty := by
+  rw [← ncard_union_add_ncard_inter s t] at h'
+  replace h := (ncard_lt_card h).trans_le h'
+  rwa [lt_add_iff_pos_right, ncard_pos] at h
+
+theorem union_ne_univ_of_ncard_add_ncard_lt
+    (h : s.ncard + t.ncard < Nat.card α) : s ∪ t ≠ univ := by
+  contrapose! h
+  rw [← ncard_univ, ← h]
+  exact ncard_union_le s t
+
+theorem nonempty_inter_compl_of_ncard_add_ncard_lt
+    (h : s.ncard + t.ncard < Nat.card α) : (sᶜ ∩ tᶜ).Nonempty := by
+  rw [← compl_union, nonempty_compl]
+  exact union_ne_univ_of_ncard_add_ncard_lt h
+
+
 end Lattice
 
 /-- Given a subset `s` of a set `t`, of sizes at most and at least `n` respectively, there exists a
@@ -1096,6 +1127,7 @@ theorem ncard_eq_two : s.ncard = 2 ↔ ∃ x y, x ≠ y ∧ s = {x, y} := by
 theorem ncard_eq_three : s.ncard = 3 ↔ ∃ x y z, x ≠ y ∧ x ≠ z ∧ y ≠ z ∧ s = {x, y, z} := by
   rw [← encard_eq_three, ncard_def]
   simp
+
 
 end ncard
 end Set

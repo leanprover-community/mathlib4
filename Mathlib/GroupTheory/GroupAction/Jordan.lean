@@ -43,44 +43,6 @@ a cycle of prime order contains the alternating group (Wielandt, 13.9).
 
 -/
 
-
-section PigeonHole
-
-namespace Set
-
-variable {α : Type*} {s t : Set α}
-
-variable (s) in
-theorem ncard_le_card [Finite α] : s.ncard ≤ Nat.card α :=
-  ncard_univ α ▸ ncard_le_ncard s.subset_univ
-
-theorem ncard_lt_card [Finite α] (h : s ≠ univ) : s.ncard < Nat.card α :=
-  ncard_univ α ▸ ncard_lt_ncard (ssubset_univ_iff.mpr h)
-
-theorem ncard_pigeonhole [Finite α] (h : Nat.card α < s.ncard + t.ncard) : (s ∩ t).Nonempty := by
-  rw [← ncard_union_add_ncard_inter s t] at h
-  replace h := (s ∪ t).ncard_le_card.trans_lt h
-  rwa [lt_add_iff_pos_right, ncard_pos] at h
-
-theorem ncard_pigeonhole' [Finite α] (h' : Nat.card α ≤ s.ncard + t.ncard) (h : s ∪ t ≠ univ) :
-    (s ∩ t).Nonempty := by
-  rw [← ncard_union_add_ncard_inter s t] at h'
-  replace h := (ncard_lt_card h).trans_le h'
-  rwa [lt_add_iff_pos_right, ncard_pos] at h
-
-theorem ncard_pigeonhole_compl' (h : s.ncard + t.ncard < Nat.card α) : s ∪ t ≠ univ := by
-  contrapose! h
-  rw [← ncard_univ, ← h]
-  exact ncard_union_le s t
-
-theorem ncard_pigeonhole_compl (h : s.ncard + t.ncard < Nat.card α) : (sᶜ ∩ tᶜ).Nonempty := by
-  rw [← compl_union, nonempty_compl]
-  exact ncard_pigeonhole_compl' h
-
-end Set
-
-end PigeonHole
-
 open MulAction SubMulAction Subgroup
 
 open scoped Pointwise
@@ -203,13 +165,13 @@ theorem MulAction.IsPreprimitive.is_two_motive_of_is_motive
       refine ⟨this, fun hs_prim ↦ ?_⟩
       have ht_prim : IsPreprimitive (fixingSubgroup G t) (ofFixingSubgroup G t) := by
         apply IsPreprimitive.isPreprimitive_ofFixingSubgroup_inter hs_prim
-        apply Set.ncard_pigeonhole_compl'
+        apply Set.union_ne_univ_of_ncard_add_ncard_lt
         rwa [Set.ncard_smul_set, hsn, ← two_mul]
       apply (hrec (t.ncard - 1) hmn hG htm htm').2 ht_prim
     intro hs_trans
     have ht_trans : IsPretransitive (fixingSubgroup G t) (ofFixingSubgroup G t) :=
       IsPretransitive.isPretransitive_ofFixingSubgroup_inter hs_trans (by
-        apply Set.ncard_pigeonhole_compl'
+        apply Set.union_ne_univ_of_ncard_add_ncard_lt
         rwa [Set.ncard_smul_set, hsn, ← two_mul])
     apply (hrec (t.ncard - 1) hmn hG htm ?_).1 ht_trans
     apply lt_trans _ hsn'
@@ -235,8 +197,7 @@ theorem MulAction.IsPreprimitive.is_two_motive_of_is_motive
     have htm : t.ncard = t.ncard - 1 + 1 := by
       apply (Nat.sub_eq_iff_eq_add ?_).mp rfl
       rw [Nat.one_le_iff_ne_zero, ← Nat.pos_iff_ne_zero, Set.ncard_pos]
-      -- Pigeon hole lemma
-      apply Set.ncard_pigeonhole'
+      apply Set.nonempty_inter_of_le_ncard_add_ncard
       · rw [Set.ncard_smul_set, ← two_mul, hsn]; exact hn2
       · exact fun h ↦ ha (by rw [h]; trivial)
     have hmn : t.ncard - 1 < n := by
