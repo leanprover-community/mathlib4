@@ -77,12 +77,99 @@ lemma theorem2_iii_i (a : α) (h : IsLatticeCon (ker (fun x => a ⊔ x))) : IsDi
   simp
 
 lemma theorem3_i_ii (a : α) (h : IsStandard a) :
-    IsLatticeCon (fun x y => ∃ a₁, a₁ ≤ a ∧ (x ⊓ y) ⊔ a₁ = x ⊔ y) where
-  refl := sorry
-  symm := sorry
-  trans := sorry
+    IsLatticeCon (fun x y => ∃ a₁, a₁ ≤ a ∧ (x ⊓ y) ⊔ a₁ = x ⊔ y) := by
+  rw [isLatticCon_iff]
+  constructor
+  · constructor
+    · intro x
+      use x ⊓ a
+      constructor
+      · exact inf_le_right
+      · simp only [le_refl, inf_of_le_left, inf_le_left, sup_of_le_left]
+  · constructor
+    · intro x y
+      constructor
+      · intro h
+        obtain ⟨a₁, ha1, ha2⟩ := h
+        use a₁
+        constructor
+        · exact ha1
+        · rw [← ha2]
+          simp only [le_sup_left, inf_of_le_left, sup_of_le_right]
+      · intro h
+        obtain ⟨a₁, ha1, ha2⟩ := h
+        use a₁
+        constructor
+        · exact ha1
+        · have e1 : x ⊓ y ⊔ (x ⊔ y) = x ⊔ y := sup_of_le_right inf_le_sup
+          rw [e1] at ha2
+          have e2 : x ⊓ y ⊓ (x ⊔ y) = x ⊓ y := inf_of_le_left inf_le_sup
+          rw [e2] at ha2
+          exact ha2
+    · constructor
+      · intro x y z hxy hyz h1 h2
+        obtain ⟨a₁, ha11, ha12⟩ := h1
+        obtain ⟨a₂, ha21, ha22⟩ := h2
+        use a₁ ⊔ a₂
+        constructor
+        · exact sup_le ha11 ha21
+        · have exyi : x ⊓ y = x := by
+            apply inf_eq_left.mpr hxy
+          have exys : x ⊔ y = y := by
+            apply sup_eq_right.mpr hxy
+          rw [exyi, exys] at ha12
+          have eyzi : y ⊓ z = y := by
+            apply inf_eq_left.mpr hyz
+          have eyzs : y ⊔ z = z := by
+            apply sup_eq_right.mpr hyz
+          rw [eyzi, eyzs] at ha22
+          have exzi : x ⊓ z = x := by
+            apply inf_eq_left.mpr
+            exact Preorder.le_trans x y z hxy hyz
+          have exzs : x ⊔ z = z := by
+            apply sup_eq_right.mpr
+            exact Preorder.le_trans x y z hxy hyz
+          rw [exzi, exzs]
+          rw [← ha22]
+          rw [← ha12]
+          rw [← sup_assoc]
+
+            --exact?
+      · sorry
+
+
+
+
+
+
+
+/-
+  refl := by
+    intro x
+    use x ⊓ a
+    constructor
+    · exact inf_le_right
+    · simp only [le_refl, inf_of_le_left, inf_le_left, sup_of_le_left]
+  symm := by
+    intro x y h
+    obtain ⟨a₁, ha1, ha2⟩ := h
+    use a₁
+    constructor
+    · exact ha1
+    · rw [sup_comm y x, inf_comm, ha2]
+  trans := by
+    intro x y z h1 h2
+    obtain ⟨a₁, ha11, ha12⟩ := h1
+    obtain ⟨a₂, ha21, ha22⟩ := h2
+    use a₁ ⊓ a₂
+    constructor
+    · exact inf_le_of_right_le ha21
+    ·
+
   inf := sorry
   sup := sorry
+-/
+
 
 lemma theorem3_iii_i (a : α) (h1 : IsDistrib a)
     (h2 : ∀ x y : α, a ⊓ x = a ⊓ y ∧ a ⊔ x = a ⊔ y → x = y) : IsStandard a := fun x y => h2 _  _
