@@ -28,7 +28,7 @@ instance instGLAction : MulAction (LinearMap.GeneralLinearGroup K V) (ℙ K V) w
   mul_smul g g' x := congr_fun (Projectivization.map_comp
     g'.toLinearEquiv.toLinearMap _ g.toLinearEquiv.toLinearMap _ _) x
 
-lemma smul_apply
+lemma smul_def
     (g : LinearMap.GeneralLinearGroup K V) (x : ℙ K V) :
     g • x = x.map g.toLinearEquiv.toLinearMap g.toLinearEquiv.injective := by
   rfl
@@ -49,7 +49,7 @@ instance instGLFinAction : MulAction (GL n K) (ℙ K (n → K)) :=
   .compHom _ Matrix.GeneralLinearGroup.toLin.toMonoidHom
 
 @[simp]
-lemma pi_smul_apply (g : GL n K) {v : n → K} (hv : v ≠ 0) :
+lemma pi_smul_mk (g : GL n K) {v : n → K} (hv : v ≠ 0) :
     g • mk K v hv = mk K (g.val *ᵥ v) (g.toLin.toLinearEquiv.map_ne_zero_iff.mpr hv) := by
   rfl
 

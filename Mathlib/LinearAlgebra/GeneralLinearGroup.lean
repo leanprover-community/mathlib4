@@ -40,7 +40,7 @@ def toLinearEquiv (f : GeneralLinearGroup R M) : M ≃ₗ[R] M :=
     left_inv := fun m ↦ show (f.inv * f.val) m = m by rw [f.inv_val]; simp
     right_inv := fun m ↦ show (f.val * f.inv) m = m by rw [f.val_inv]; simp }
 
-@[simp] lemma toLinearEquiv_toFun (f : GeneralLinearGroup R M) :
+@[simp] lemma coe_toLinearEquiv (f : GeneralLinearGroup R M) :
     f.toLinearEquiv = (f : M → M) := rfl
 
 /-- An equivalence from `M` to itself determines an invertible linear map. -/
