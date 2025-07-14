@@ -21,11 +21,11 @@ This file defines bundled isomorphisms of `R`-bialgebras. We simply mimic the ea
 * `A ≃ₐc[R] B` : `R`-bialgebra equivalence from `A` to `B`.
 -/
 
-universe u v w u₁ v₁
+universe u v w u₁
 
 variable {R : Type u} {A : Type v} {B : Type w} {C : Type u₁}
 
-open Bialgebra
+open TensorProduct Coalgebra Bialgebra Function
 
 /-- An equivalence of bialgebras is an invertible bialgebra homomorphism. -/
 structure BialgEquiv (R : Type u) [CommSemiring R] (A : Type v) (B : Type w)
@@ -286,18 +286,26 @@ theorem ofBialgHom_symm (f : A →ₐc[R] B) (g : B →ₐc[R] A) (h₁ h₂) :
     (ofBialgHom f g h₁ h₂).symm = ofBialgHom g f h₂ h₁ :=
   rfl
 
-variable {f : A →ₐc[R] B} (hf : Function.Bijective f)
-
-/-- Promotes a bijective coalgebra homomorphism to a coalgebra equivalence. -/
-@[simps apply]
-noncomputable def ofBijective : A ≃ₐc[R] B where
-  toFun := f
+/-- Construct a bialgebra equiv from an algebra equiv respecting counit and comultiplication. -/
+@[simps apply] def ofAlgEquiv (f : A ≃ₐ[R] B) (counit_comp : counit ∘ₗ f.toLinearMap = counit)
+    (map_comp_comul : map f.toLinearMap f.toLinearMap ∘ₗ comul = comul ∘ₗ f.toLinearMap) :
+    A ≃ₐc[R] B where
   __ := f
-  __ := AlgEquiv.ofBijective (f : A →ₐ[R] B) hf
+  map_smul' := map_smul f
+  counit_comp := counit_comp
+  map_comp_comul := map_comp_comul
 
 @[simp]
-theorem coe_ofBijective : (BialgEquiv.ofBijective hf : A → B) = f :=
-  rfl
+lemma toLinearMap_ofAlgEquiv (f : A ≃ₐ[R] B) (counit_comp map_comp_comul) :
+    (ofAlgEquiv f counit_comp map_comp_comul : A →ₗ[R] B) = f := rfl
+
+/-- Promotes a bijective bialgebra homomorphism to a bialgebra equivalence. -/
+@[simps! apply]
+noncomputable def ofBijective (f : A →ₐc[R] B) (hf : Bijective f) : A ≃ₐc[R] B :=
+  .ofAlgEquiv (.ofBijective (f : A →ₐ[R] B) hf) (by ext; simp) (by ext; simp)
+
+@[simp]
+lemma coe_ofBijective (f : A →ₐc[R] B) (hf : Bijective f) : (ofBijective f hf : A → B) = f := rfl
 
 end
 end BialgEquiv

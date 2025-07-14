@@ -471,7 +471,7 @@ variable {α β : Type*}
 /-- free monoids over isomorphic types are isomorphic -/
 @[to_additive "if two types are isomorphic, the additive free monoids over those types are
 isomorphic"]
-def freeMonoidCongr (e : α ≃ β) :  FreeMonoid α ≃* FreeMonoid β where
+def freeMonoidCongr (e : α ≃ β) : FreeMonoid α ≃* FreeMonoid β where
   toFun := FreeMonoid.map ⇑e
   invFun := FreeMonoid.map ⇑e.symm
   left_inv _ := map_symm_apply_map_eq e

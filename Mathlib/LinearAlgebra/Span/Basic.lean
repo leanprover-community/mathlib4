@@ -548,7 +548,7 @@ lemma biSup_comap_eq_top_of_surjective {ι : Type*} (s : Set ι) (hs : s.Nonempt
   suffices (⨆ i ∈ s, (p i).comap f) ⊔ LinearMap.ker f = ⊤ by
     rw [← this, left_eq_sup]; exact le_trans f.ker_le_comap (le_biSup (fun i ↦ (p i).comap f) hk)
   rw [iSup_subtype'] at hp ⊢
-  rw [← comap_map_eq, map_iSup_comap_of_sujective hf, hp, comap_top]
+  rw [← comap_map_eq, map_iSup_comap_of_surjective hf, hp, comap_top]
 
 lemma biSup_comap_eq_top_of_range_eq_biSup
     {R R₂ : Type*} [Semiring R] [Ring R₂] {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]

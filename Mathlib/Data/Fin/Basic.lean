@@ -67,7 +67,6 @@ instance {n : ℕ} : CanLift ℕ (Fin n) Fin.val (· < n) where
 def rec0 {α : Fin 0 → Sort*} (i : Fin 0) : α i := absurd i.2 (Nat.not_lt_zero _)
 
 variable {n m : ℕ}
---variable {a b : Fin n} -- this *really* breaks stuff
 
 theorem val_injective : Function.Injective (@Fin.val n) :=
   @Fin.eq_of_val_eq n
@@ -110,8 +109,6 @@ theorem ne_iff_vne (a b : Fin n) : a ≠ b ↔ a.1 ≠ b.1 :=
 
 theorem mk_eq_mk {a h a' h'} : @mk n a h = @mk n a' h' ↔ a = a' :=
   Fin.ext_iff
-
--- syntactic tautologies now
 
 /-- Assume `k = l`. If two functions defined on `Fin k` and `Fin l` are equal on each element,
 then they coincide (in the heq sense). -/

@@ -35,7 +35,7 @@ explicitly (see `MonoidWithZeroHom.mem_valueGroup_iff_of_comm`).
 all coincide: see `valueMonoid_eq_valueGroup` for an equality as submonoids and
 `valueMonoid_eq_valueGroup'` for an equality as subsets.
 * When `B` is a *commutative* group with zero, `MonoidWithZeroHom.valueGroup` can be
-explicitly described as the elements that are ratios of terms in `range f` , see
+explicitly described as the elements that are ratios of terms in `range f`, see
 `MonoidWithZeroHom.mem_valueGroup_iff_of_comm`.
 
 ## Implementation details
@@ -65,6 +65,10 @@ def valueMonoid : Submonoid Bˣ where
     use y * y'
     rw [map_mul, hy, hy', @Units.val_mul]
   one_mem' := ⟨1, by simp⟩
+
+lemma one_mem_valueMonoid : 1 ∈ valueMonoid f := ⟨1, map_one ..⟩
+
+lemma coe_one : (⟨(1 : Bˣ), (one_mem_valueMonoid f)⟩ : valueMonoid f) = 1 := rfl
 
 lemma mem_valueMonoid_iff {b : Bˣ} : b ∈ valueMonoid f ↔ b ∈ (↑)⁻¹' (range f) := Iff.rfl
 
