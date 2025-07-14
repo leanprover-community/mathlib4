@@ -179,6 +179,12 @@ theorem rank_mul_le (A : Matrix m n R) (B : Matrix n o R) :
     (A * B).rank ≤ min A.rank B.rank :=
   le_min (rank_mul_le_left _ _) (rank_mul_le_right _ _)
 
+theorem rank_vecMulVec_le (w : m → R) (v : n → R) : (Matrix.vecMulVec w v).rank ≤ 1 := by
+  rw [Matrix.vecMulVec_eq Unit]
+  refine le_trans (rank_mul_le_left _ _) ?_
+  nontriviality R
+  exact rank_le_card_width _
+
 theorem rank_unit [Nontrivial R] [DecidableEq n] (A : (Matrix n n R)ˣ) :
     (A : Matrix n n R).rank = Fintype.card n := by
   apply le_antisymm (rank_le_card_width (A : Matrix n n R)) _
@@ -454,3 +460,12 @@ lemma rank_add_rank_le_card_of_mul_eq_zero [Field R] [Finite l] [Fintype m]
   rw [LinearMap.range_le_ker_iff, ← Matrix.toLin_mul, hAB, map_zero]
 
 end Matrix
+
+-- TODO: generalize to `cRank` then deprecate
+theorem Matrix.rank_vecMulVec.{u} {K m n : Type u} [CommRing K] [Fintype n]
+    [DecidableEq n] (w : m → K) (v : n → K) : (Matrix.vecMulVec w v).toLin'.rank ≤ 1 := by
+  nontriviality K
+  rw [Matrix.vecMulVec_eq (Fin 1), Matrix.toLin'_mul]
+  refine le_trans (LinearMap.rank_comp_le_left _ _) ?_
+  refine (LinearMap.rank_le_domain _).trans_eq ?_
+  rw [rank_fun', Fintype.card_ofSubsingleton, Nat.cast_one]

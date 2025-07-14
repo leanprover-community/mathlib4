@@ -715,6 +715,28 @@ theorem associator_monoidal (X₁ X₂ X₃ Y₁ Y₂ Y₃ : C) :
           rw [braiding_tensor_right_hom]; monoidal
     _ = _ := by rw [whisker_exchange, braiding_tensor_left_hom]; monoidal
 
+@[reassoc]
+lemma tensorμ_comp_μ_tensorHom_μ_comp_μ (F : C ⥤ D) [F.LaxBraided] (W X Y Z : C) :
+    tensorμ (F.obj W) (F.obj X) (F.obj Y) (F.obj Z) ≫
+      (μ F W Y ⊗ₘ μ F X Z) ≫ μ F (W ⊗ Y) (X ⊗ Z) =
+      (μ F W X ⊗ₘ μ F Y Z) ≫ μ F (W ⊗ X) (Y ⊗ Z) ≫ F.map (tensorμ W X Y Z) := by
+  rw [tensorHom_def]
+  simp only [tensorμ, Category.assoc]
+  rw [whiskerLeft_μ_comp_μ,
+    associator_inv_naturality_left_assoc, ← pentagon_inv_assoc,
+    ← comp_whiskerRight_assoc, ← comp_whiskerRight_assoc, Category.assoc, μ_whiskerRight_comp_μ,
+    whiskerLeft_hom_inv_assoc, Iso.inv_hom_id_assoc, comp_whiskerRight_assoc,
+    comp_whiskerRight_assoc, μ_natural_left_assoc, associator_inv_naturality_middle_assoc,
+    ← comp_whiskerRight_assoc, ← comp_whiskerRight_assoc, ← MonoidalCategory.whiskerLeft_comp,
+    ← Functor.LaxBraided.braided,
+    MonoidalCategory.whiskerLeft_comp_assoc, μ_natural_right, whiskerLeft_μ_comp_μ_assoc,
+    comp_whiskerRight_assoc, comp_whiskerRight_assoc, comp_whiskerRight_assoc,
+    comp_whiskerRight_assoc, pentagon_inv_assoc, μ_natural_left_assoc, μ_natural_left_assoc,
+    Iso.hom_inv_id_assoc, ← associator_inv_naturality_left_assoc, μ_whiskerRight_comp_μ_assoc,
+    Iso.inv_hom_id_assoc, ← tensorHom_def_assoc]
+  simp only [← Functor.map_comp, whisker_assoc, Category.assoc, pentagon_inv_inv_hom_hom_inv,
+    pentagon_inv_hom_hom_hom_inv_assoc]
+
 end Tensor
 
 end MonoidalCategory
