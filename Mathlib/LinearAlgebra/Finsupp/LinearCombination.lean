@@ -448,17 +448,8 @@ lemma Submodule.mem_span_finset {s : Finset M} {x : M} :
 /-- An variant of `Submodule.mem_span_finset` using `s` as the index type. -/
 lemma Submodule.mem_span_finset' {s : Finset M} {x : M} :
     x ∈ span R s ↔ ∃ f : s → R, ∑ a : s, f a • a.1 = x := by
-  rw [mem_span_finset]
-  constructor
-  · rintro ⟨f, _, rfl⟩
-    refine ⟨f ∘ Subtype.val, ?_⟩
-    erw [Finset.sum_coe_sort_eq_attach, Finset.sum_attach s (fun a => f a • a)]
-  · intro ⟨f, hx⟩
-    classical
-    refine ⟨fun a => if h : a ∈ s then f ⟨a, h⟩ else 0, ?_, ?_⟩
-    · simpa using fun x hx _ => hx
-    · rw [← Finset.sum_attach]
-      simpa [← Finset.sum_coe_sort_eq_attach]
+  rw [← Subtype.range_val (s := s.toSet), ← Fintype.range_linearCombination]
+  rfl
 
 /-- An element `m ∈ M` is contained in the `R`-submodule spanned by a set `s ⊆ M`, if and only if
 `m` can be written as a finite `R`-linear combination of elements of `s`.
