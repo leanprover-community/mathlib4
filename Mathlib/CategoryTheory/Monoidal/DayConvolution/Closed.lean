@@ -155,7 +155,7 @@ lemma map_comp (ℌ : DayConvolutionInternalHom F G H)
 def transport (ℌ : DayConvolutionInternalHom F G H) {H' : C ⥤ V} (e : H' ≅ H) :
     DayConvolutionInternalHom F G H' where
   π c j := e.hom.app c ≫ ℌ.π c j
-  hπ c i j f := by simp
+  hπ c i j f := by simp [hπ]
   isLimitWedge c := by
     apply Limits.IsLimit.equivOfNatIsoOfIso (.refl _) _ _ _ (ℌ.isLimitWedge _)
     exact Limits.Wedge.ext (e.symm.app c) (fun j ↦ by
