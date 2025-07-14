@@ -157,7 +157,7 @@ lemma rhs_aux_addX : rhs_aux I (X + X') Y Z = rhs_aux I X Y Z + rhs_aux I X' Y Z
   ext x
   simp [rhs_aux]
 
-variable (X Y Y' Z) in
+variable (X) in
 lemma rhs_aux_addY (hY : MDiff (T% Y)) (hY' : MDiff (T% Y')) (hZ : MDiff (T% Z)) :
     rhs_aux I X (Y + Y') Z = rhs_aux I X Y Z + rhs_aux I X Y' Z := by
   ext x
@@ -165,7 +165,7 @@ lemma rhs_aux_addY (hY : MDiff (T% Y)) (hY' : MDiff (T% Y')) (hZ : MDiff (T% Z))
   rw [product_add_left, mfderiv_add ((foo hY hZ) x) ((foo hY' hZ) x)]
   simp; congr
 
-variable (X Y Z Z') in
+variable (X) in
 lemma rhs_aux_addZ (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) (hZ' : MDiff (T% Z')) :
   rhs_aux I X Y (Z + Z') = rhs_aux I X Y Z + rhs_aux I X Y Z' := by
   unfold rhs_aux
@@ -178,7 +178,7 @@ lemma rhs_aux_smulX (f : M → ℝ) : rhs_aux I (f • X) Y Z = f • rhs_aux I 
   ext x
   simp [rhs_aux]
 
-variable (X Y Z Z') in
+variable (X) in
 lemma rhs_aux_smulY {f : M → ℝ} (hf : MDiff f) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
     letI A (x) : ℝ := (mfderiv I 𝓘(ℝ, ℝ) f x) (X x)
     rhs_aux I X (f • Y) Z = f • rhs_aux I X Y Z + A • ⟪Y, Z⟫ := by
@@ -186,7 +186,7 @@ lemma rhs_aux_smulY {f : M → ℝ} (hf : MDiff f) (hY : MDiff (T% Y)) (hZ : MDi
   rw [rhs_aux, product_smul_left, mfderiv_smul (foo hY hZ x) (hf x)]
   congr
 
-variable (X Y Z) in
+variable (X) in
 lemma rhs_aux_smulZ {f : M → ℝ} (hf : MDiff f) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
     letI A (x) : ℝ := (mfderiv I 𝓘(ℝ, ℝ) f x) (X x)
     rhs_aux I X Y (f • Z) = f • rhs_aux I X Y Z + A • ⟪Y, Z⟫ := by
@@ -348,7 +348,7 @@ variable {I} in
 /-- If two vector fields `X` and `X'` on `M` satisfy the relation `⟨X, Z⟩ = ⟨X', Z⟩` for all
 vector fields `Z`, then `X = X'`. XXX up to differentiability? -/
 -- TODO: is this true if E is infinite-dimensional? trace the origin of the `Fintype` assumptions!
-lemma congr_of_forall_product [FiniteDimensional ℝ E] {X X' : Π x : M, TangentSpace I x}
+lemma congr_of_forall_product [FiniteDimensional ℝ E]
     (h : ∀ Z : Π x : M, TangentSpace I x, ⟪X, Z⟫ = ⟪X', Z⟫) : X = X' := by
   by_cases hE : Subsingleton E
   · sorry
