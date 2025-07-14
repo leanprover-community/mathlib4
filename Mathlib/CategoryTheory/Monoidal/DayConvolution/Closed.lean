@@ -134,14 +134,12 @@ lemma map_app_comp_π (ℌ : DayConvolutionInternalHom F G H)
       (H'.obj c) (ℌ'.π c) (ℌ'.hπ c),
     Limits.Wedge.IsLimit.lift_ι (ℌ'.isLimitWedge c)]
 
-
 @[simp]
 lemma map_id (ℌ : DayConvolutionInternalHom F G H) : ℌ.map (𝟙 _) ℌ = 𝟙 _ := by
   ext
   apply Limits.Wedge.IsLimit.hom_ext (ℌ.isLimitWedge _)
   aesop_cat
 
-@[simp]
 lemma map_comp (ℌ : DayConvolutionInternalHom F G H)
     {G' : C ⥤ V} {H' : C ⥤ V}
     (f : G ⟶ G') (ℌ' : DayConvolutionInternalHom F G' H')
