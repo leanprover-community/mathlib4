@@ -194,12 +194,12 @@ instance : HasCoproducts.{w} (FormalCoproduct.{w} C) :=
 
 /-- The arbitrary choice of the coproduct is isomorphic to our constructed coproduct `cofan 𝒜 f`.
 -/
-noncomputable def coproductIsoCofan : ∐ f ≅ (cofan 𝒜 f).pt :=
+noncomputable def coproductIsoCofanPt : ∐ f ≅ (cofan 𝒜 f).pt :=
   colimit.isoColimitCocone ⟨_, isColimitCofan _ _⟩
 
 variable {𝒜 f} in
-@[reassoc (attr := simp)] lemma ι_comp_coproductIsoCofan (i) :
-    Sigma.ι f i ≫ (coproductIsoCofan 𝒜 f).hom = (cofan 𝒜 f).inj i :=
+@[reassoc (attr := simp)] lemma ι_comp_coproductIsoCofanPt (i) :
+    Sigma.ι f i ≫ (coproductIsoCofanPt 𝒜 f).hom = (cofan 𝒜 f).inj i :=
   colimit.isoColimitCocone_ι_hom _ _
 
 /-- Each `X : FormalCoproduct.{w} C` is actually itself a coproduct of objects of the original
@@ -210,23 +210,23 @@ def toFun (X : FormalCoproduct.{w} C) : X.I → FormalCoproduct.{w} C :=
 
 /-- The witness that each `X : FormalCoproduct.{w} C` is itself a coproduct of objects of the
 original category (after coercion using `incl C`), specified by `X.toFun`. -/
-def coproductCoconeIsoSelf : (cofan X.I X.toFun).pt ≅ X :=
+def cofanPtIsoSelf : (cofan X.I X.toFun).pt ≅ X :=
   isoOfComponents (Equiv.sigmaPUnit X.I) fun i ↦ Iso.refl (X.obj i.fst)
 
 @[reassoc (attr := simp)]
-lemma inj_comp_coproductCoconeIsoSelf_hom (i : X.I) :
-    (cofan X.I X.toFun).inj i ≫ (coproductCoconeIsoSelf X).hom = .fromIncl i (𝟙 (X.obj i)) :=
+lemma inj_comp_cofanPtIsoSelf_hom (i : X.I) :
+    (cofan X.I X.toFun).inj i ≫ (cofanPtIsoSelf X).hom = .fromIncl i (𝟙 (X.obj i)) :=
   hom_ext rfl (fun i => by aesop)
 
 @[reassoc (attr := simp)]
-lemma fromIncl_comp_coproductCoconeIsoSelf_inv (i : X.I) :
-    Hom.fromIncl i (𝟙 (X.obj i)) ≫ (coproductCoconeIsoSelf X).inv = (cofan X.I X.toFun).inj i :=
-  (Iso.comp_inv_eq _).2 (inj_comp_coproductCoconeIsoSelf_hom _ _).symm
+lemma fromIncl_comp_cofanPtIsoSelf_inv (i : X.I) :
+    Hom.fromIncl i (𝟙 (X.obj i)) ≫ (cofanPtIsoSelf X).inv = (cofan X.I X.toFun).inj i :=
+  (Iso.comp_inv_eq _).2 (inj_comp_cofanPtIsoSelf_hom _ _).symm
 
 /-- The isomorphism between the coproduct of `X.toFun` and the object `X` itself. -/
 @[simps!] noncomputable def coproductIsoSelf :
     ∐ X.toFun ≅ X :=
-  coproductIsoCofan _ _ ≪≫ coproductCoconeIsoSelf X
+  coproductIsoCofanPt _ _ ≪≫ cofanPtIsoSelf X
 
 @[reassoc (attr := simp)] lemma ι_comp_coproductIsoSelf_hom (i : X.I) :
     Sigma.ι _ i ≫ (coproductIsoSelf X).hom = .fromIncl i (𝟙 (X.obj i)) := by
@@ -299,7 +299,7 @@ universal property of pullbacks. -/
   right_inv s := by ext <;> simp
 
 /-- `pullbackCone f g pb` is a pullback. -/
-def isLimitPullback : IsLimit (pullbackCone f g pb) := by
+def isLimitPullbackCone : IsLimit (pullbackCone f g pb) := by
   refine PullbackCone.IsLimit.mk
     (fst := (pullbackCone f g pb).fst) (snd := (pullbackCone f g pb).snd) _
     (fun s ↦ (homPullbackEquiv f g pb hpb s.pt).2 ⟨(s.fst, s.snd), s.condition⟩)
@@ -313,14 +313,14 @@ def isLimitPullback : IsLimit (pullbackCone f g pb) := by
 
 -- Arguments cannot be inferred.
 include pb hpb in
-theorem hasPullback_of_PullbackCone : HasPullback f g :=
-  ⟨⟨⟨_, isLimitPullback f g pb hpb⟩⟩⟩
+theorem hasPullback_of_pullbackCone : HasPullback f g :=
+  ⟨⟨⟨_, isLimitPullbackCone f g pb hpb⟩⟩⟩
 
 omit pb
 variable [HasPullbacks C]
 
 instance : HasPullback f g :=
-  hasPullback_of_PullbackCone f g (fun _ ↦ pullback.cone _ _) (fun _ ↦ pullback.isLimit _ _)
+  hasPullback_of_pullbackCone f g (fun _ ↦ pullback.cone _ _) (fun _ ↦ pullback.isLimit _ _)
 
 instance : HasPullbacks (FormalCoproduct.{w} C) :=
   hasPullbacks_of_hasLimit_cospan _
@@ -330,7 +330,7 @@ include pb
 /-- The arbitrary choice of pullback is isomorphic to the explicitly constructed pullback
 `pullbackCone f g pb`. -/
 noncomputable def pullbackIsoPullbackConePt : pullback f g ≅ (pullbackCone f g pb).pt :=
-  limit.isoLimitCone ⟨_, isLimitPullback f g pb hpb⟩
+  limit.isoLimitCone ⟨_, isLimitPullbackCone f g pb hpb⟩
 
 @[reassoc (attr := simp)] lemma pullbackIsoPullbackConePt_hom_fst :
     (pullbackIsoPullbackConePt f g pb hpb).hom ≫ (pullbackCone f g pb).fst = pullback.fst f g :=
