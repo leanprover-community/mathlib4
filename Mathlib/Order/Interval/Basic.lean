@@ -102,6 +102,8 @@ instance : Preorder (NonemptyInterval α) :=
 
 theorem toDualProd_mono : Monotone (toDualProd : _ → αᵒᵈ × α) := fun _ _ => id
 
+theorem toDualProd_strictMono : StrictMono (toDualProd : _ → αᵒᵈ × α) := fun _ _ => id
+
 instance : Coe (NonemptyInterval α) (Set α) :=
   ⟨fun s => Icc s.fst s.snd⟩
 
