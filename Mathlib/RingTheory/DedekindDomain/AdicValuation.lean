@@ -344,17 +344,6 @@ theorem valuation_exists_uniformizer : ∃ π : K,
   rw [valuation_def, Valuation.extendToLocalization_apply_map_apply]
   exact hr
 
-lemma valuation_surjective :
-    Function.Surjective (v.valuation K) := by
-  intro x
-  induction x with
-  | zero => simp
-  | coe x =>
-    induction x with | ofAdd x
-    obtain ⟨π, hπ⟩ := v.valuation_exists_uniformizer K
-    refine ⟨π ^ (- x), ?_⟩
-    simp [hπ, ← WithZero.coe_zpow, ← ofAdd_zsmul]
-
 /-- Uniformizers are nonzero. -/
 theorem valuation_uniformizer_ne_zero : Classical.choose (v.valuation_exists_uniformizer K) ≠ 0 :=
   haveI hu := Classical.choose_spec (v.valuation_exists_uniformizer K)
@@ -412,10 +401,6 @@ abbrev adicCompletion := (v.valuation K).Completion
 
 theorem valuedAdicCompletion_def {x : v.adicCompletion K} : Valued.v x = Valued.extension x :=
   rfl
-
-lemma valuedAdicCompletion_surjective :
-    Function.Surjective (Valued.v : (v.adicCompletion K) → ℤᵐ⁰) :=
-  Valued.valuedCompletion_surjective_iff.mpr (v.valuation_surjective K)
 
 -- Porting note: replaced by `Coe`
 -- instance AdicCompletion.hasLiftT : HasLiftT K (v.adicCompletion K) :=
