@@ -164,7 +164,6 @@ section simp_lemmas
 variable {𝒜 f}
 
 theorem cofan_inj (i : 𝒜) : (cofan 𝒜 f).inj i = ⟨fun x ↦ ⟨i, x⟩, fun x ↦ 𝟙 ((f i).obj x)⟩ := rfl
--- JH: this is probably a bad theorem? At least not good for simp
 
 @[simp] lemma cofan_inj_f_fst (i : 𝒜) (x) : (((cofan 𝒜 f).inj i).f x).1 = i := rfl
 
