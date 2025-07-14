@@ -245,7 +245,7 @@ lemma coev_naturality_app {G' H' : C ⥤ V} [DayConvolution F G'] (η : G ⟶ G'
 
 end coev
 
-theorem left_triangle_component (G : C ⥤ V) [DayConvolution F G]
+theorem left_triangle_components (G : C ⥤ V) [DayConvolution F G]
     (ℌ : DayConvolutionInternalHom F (F ⊛ G) H) [DayConvolution F H] :
     DayConvolution.map (𝟙 F) ℌ.coev_app ≫ ℌ.ev_app = 𝟙 (F ⊛ G) := by
   apply DayConvolution.corepresentableBy F G|>.homEquiv.injective
@@ -254,7 +254,7 @@ theorem left_triangle_component (G : C ⥤ V) [DayConvolution F G]
   apply MonoidalClosed.curry_injective
   simp [MonoidalClosed.curry_natural_left]
 
-theorem right_triangle_component (G : C ⥤ V) [DayConvolution F H]
+theorem right_triangle_components (G : C ⥤ V) [DayConvolution F H]
     (ℌ : DayConvolutionInternalHom F G H) {H' : C ⥤ V}
     (ℌ' : DayConvolutionInternalHom F (F ⊛ H) H') :
     ℌ'.coev_app ≫ ℌ'.map ℌ.ev_app ℌ = 𝟙 H := by
