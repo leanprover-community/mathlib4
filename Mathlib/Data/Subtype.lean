@@ -187,7 +187,7 @@ theorem map_eq {p : α → Prop} {q : β → Prop} {f g : α → β}
 
 theorem map_ne {p : α → Prop} {q : β → Prop} {f g : α → β}
     (h₁ : ∀ a : α, p a → q (f a)) (h₂ : ∀ a : α, p a → q (g a))
-    (x y : Subtype p) :
+    {x y : Subtype p} :
     map f h₁ x ≠ map g h₂ y ↔ f x ≠ g y :=
   map_eq h₁ h₂ x y |>.not
 
