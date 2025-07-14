@@ -92,17 +92,15 @@ lemma sl2SubalgebraOfRoot_as_H_submodule_eq_sup (α : Weight K H L) (hα : α.Is
     -- Show x is in the supremum
     rw [hx_eq]
     apply add_mem
-    apply add_mem
-    · -- c₁ • e ∈ genWeightSpace L α.toLinear
-      apply Submodule.smul_mem
-      apply Submodule.mem_sup_left
-      apply Submodule.mem_sup_left
-      exact heα
-    · -- c₂ • f ∈ genWeightSpace L (-α).toLinear
-      apply Submodule.smul_mem
-      apply Submodule.mem_sup_left
-      apply Submodule.mem_sup_right
-      exact hfα
+    · apply add_mem
+      · apply Submodule.smul_mem
+        apply Submodule.mem_sup_left
+        apply Submodule.mem_sup_left
+        exact heα
+      · apply Submodule.smul_mem
+        apply Submodule.mem_sup_left
+        apply Submodule.mem_sup_right
+        exact hfα
     · -- c₃ • ⁅e, f⁆ ∈ H_α α
       apply Submodule.smul_mem
       apply Submodule.mem_sup_right
