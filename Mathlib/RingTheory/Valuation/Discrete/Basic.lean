@@ -5,8 +5,9 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import Mathlib.Algebra.GroupWithZero.Range
 import Mathlib.Algebra.Order.Group.Cyclic
-import Mathlib.Algebra.Order.Group.Units
-import Mathlib.RingTheory.Valuation.ValuationSubring
+import Mathlib.Analysis.Normed.Ring.Lemmas
+import Mathlib.RingTheory.DedekindDomain.AdicValuation
+import Mathlib.RingTheory.DiscreteValuationRing.Basic
 
 /-!
 # Discrete Valuations
@@ -87,7 +88,7 @@ lemma exists_generator_lt_one : ∃ (γ : Γˣ), zpowers γ = valueGroup v ∧ �
 the value group that is `< 1`. -/
 noncomputable def generator : Γˣ := (exists_generator_lt_one v).choose
 
-lemma generator_zpowers_eq_valueGroup [IsRankOneDiscrete v] :
+lemma generator_zpowers_eq_valueGroup :
     (Subgroup.zpowers (generator v)) = valueGroup v :=
   (exists_generator_lt_one v).choose_spec.1
 
