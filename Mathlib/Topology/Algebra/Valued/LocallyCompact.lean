@@ -159,12 +159,9 @@ lemma totallyBounded_iff_finite_residueField [(Valued.v : Valuation K Γ₀).Ran
     have : {y : 𝒪[K] | v (y : K) ≤ v (p : K) ^ n} = Metric.closedBall 0 (‖p‖ ^ n)  := by
       ext
       simp [← norm_pow]
-    simp only [Ideal.univ_eq_iUnion_image_add (𝓂[K] ^ n),
-      hp.maximalIdeal_pow_eq_setOf_le_v_coe_pow,
-      this,
-      AddSubgroupClass.coe_norm,
-      Set.image_univ, Set.mem_range, Set.iUnion_exists, Set.iUnion_iUnion_eq',
-      Set.iUnion_subset_iff, Metric.vadd_closedBall, vadd_eq_add, add_zero]
+    simp only [Ideal.univ_eq_iUnion_image_add (𝓂[K] ^ n), hp.maximalIdeal_pow_eq_setOf_le_v_coe_pow,
+      this, AddSubgroupClass.coe_norm, Set.image_univ, Set.mem_range, Set.iUnion_exists,
+      Set.iUnion_iUnion_eq', Set.iUnion_subset_iff, Metric.vadd_closedBall, vadd_eq_add, add_zero]
     intro
     exact (Metric.closedBall_subset_ball hn).trans (Set.subset_iUnion_of_subset _ le_rfl)
 
