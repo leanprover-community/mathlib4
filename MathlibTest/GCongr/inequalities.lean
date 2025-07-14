@@ -218,7 +218,7 @@ example (s : Finset ℕ) (h : ∀ i ∈ s, f i ≤ f (2 * i)) : ∑ i ∈ s, f i
 
 def dontUnfoldMe : Nat → List Bool → Nat
   | 0, _ => 0
-  | n+1, l => dontUnfoldMe n (true::l) + dontUnfoldMe n (false::l)
+  | n + 1, l => dontUnfoldMe n (true::l) + dontUnfoldMe n (false::l)
 
 -- times out if a certain reducibility setting in `gcongr`'s implementation is not correct
 example {x y : ℕ} (h : x ≤ y) (l) : dontUnfoldMe 14 l + x ≤ 0 + y := by

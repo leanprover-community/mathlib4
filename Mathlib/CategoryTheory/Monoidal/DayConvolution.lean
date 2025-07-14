@@ -12,8 +12,9 @@ import Mathlib.CategoryTheory.Products.Associator
 Given functors `F G : C ⥤ V` between two monoidal categories,
 this file defines a typeclass `DayConvolution` on functors `F` `G` that contains
 a functor `F ⊛ G`, as well as the required data to exhibit `F ⊛ G` as a pointwise
-left Kan extension of `F ⊠ G` (see `CategoryTheory/Monoidal/ExternalProduct` for the definition)
-along the tensor product of `C`. Such a functor is called a Day convolution of `F` and `G`, and
+left Kan extension of `F ⊠ G` (see `Mathlib/CategoryTheory/Monoidal/ExternalProduct/Basic.lean`
+for the definition) along the tensor product of `C`.
+Such a functor is called a Day convolution of `F` and `G`, and
 although we do not show it yet, this operation defines a monoidal structure on `C ⥤ V`.
 
 We also define a typeclass `DayConvolutionUnit` on a functor `U : C ⥤ V` that bundle the data

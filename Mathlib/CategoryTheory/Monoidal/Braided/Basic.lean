@@ -200,28 +200,33 @@ theorem hexagon_reverse_inv (X Y Z : C) :
 
 end BraidedCategory
 
+-- FIXME: `reassoc_of%` should unfold `autoParam`.
 /--
 Verifying the axioms for a braiding by checking that the candidate braiding is sent to a braiding
 by a faithful monoidal functor.
 -/
-def braidedCategoryOfFaithful {C D : Type*} [Category C] [Category D] [MonoidalCategory C]
+def BraidedCategory.ofFaithful {C D : Type*} [Category C] [Category D] [MonoidalCategory C]
     [MonoidalCategory D] (F : C ⥤ D) [F.Monoidal] [F.Faithful] [BraidedCategory D]
     (β : ∀ X Y : C, X ⊗ Y ≅ Y ⊗ X)
-    (w : ∀ X Y, μ F _ _ ≫ F.map (β X Y).hom = (β_ _ _).hom ≫ μ F _ _) : BraidedCategory C where
+    (w : ∀ X Y, μ F _ _ ≫ F.map (β X Y).hom = (β_ _ _).hom ≫ μ F _ _ := by aesop_cat) :
+    BraidedCategory C where
   braiding := β
   braiding_naturality_left := by
+    unfold autoParam at w
     intros
     apply F.map_injective
     refine (cancel_epi (μ F ?_ ?_)).1 ?_
     rw [Functor.map_comp, ← μ_natural_left_assoc, w, Functor.map_comp,
       reassoc_of% w, braiding_naturality_left_assoc, μ_natural_right]
   braiding_naturality_right := by
+    unfold autoParam at w
     intros
     apply F.map_injective
     refine (cancel_epi (μ F ?_ ?_)).1 ?_
     rw [Functor.map_comp, ← μ_natural_right_assoc, w, Functor.map_comp,
       reassoc_of% w, braiding_naturality_right_assoc, μ_natural_left]
   hexagon_forward := by
+    unfold autoParam at w
     intros
     apply F.map_injective
     refine (cancel_epi (μ F _ _)).1 ?_
@@ -234,6 +239,7 @@ def braidedCategoryOfFaithful {C D : Type*} [Category C] [Category D] [MonoidalC
       reassoc_of% w, braiding_naturality_right_assoc,
       Functor.LaxMonoidal.associativity, hexagon_forward_assoc]
   hexagon_reverse := by
+    unfold autoParam at w
     intros
     apply F.map_injective
     refine (cancel_epi (μ F _ _)).1 ?_
@@ -245,14 +251,16 @@ def braidedCategoryOfFaithful {C D : Type*} [Category C] [Category D] [MonoidalC
       ← comp_whiskerRight_assoc, w, comp_whiskerRight_assoc, reassoc_of% w,
       braiding_naturality_left_assoc, Functor.LaxMonoidal.associativity_inv, hexagon_reverse_assoc]
 
+@[deprecated (since := "2025-07-12")] alias braidedCategoryOfFaithful := BraidedCategory.ofFaithful
+
 /-- Pull back a braiding along a fully faithful monoidal functor. -/
-noncomputable def braidedCategoryOfFullyFaithful {C D : Type*} [Category C] [Category D]
+noncomputable def BraidedCategory.ofFullyFaithful {C D : Type*} [Category C] [Category D]
     [MonoidalCategory C] [MonoidalCategory D] (F : C ⥤ D) [F.Monoidal] [F.Full]
     [F.Faithful] [BraidedCategory D] : BraidedCategory C :=
-  braidedCategoryOfFaithful F
-    (fun X Y => F.preimageIso
-      ((μIso F _ _).symm ≪≫ β_ (F.obj X) (F.obj Y) ≪≫ (μIso F _ _)))
-    (by simp)
+  .ofFaithful F fun X Y ↦ F.preimageIso ((μIso F _ _).symm ≪≫ β_ (F.obj X) (F.obj Y) ≪≫ μIso F _ _)
+
+@[deprecated (since := "2025-07-12")]
+alias braidedCategoryOfFullyFaithful := BraidedCategory.ofFullyFaithful
 
 section
 
