@@ -138,8 +138,8 @@ noncomputable def tensorIso {X₁ X₂ Y₁ Y₂ : GradedObject I C} (e : X₁ �
     tensorObj X₁ Y₁ ≅ tensorObj X₂ Y₂ where
   hom := tensorHom e.hom e'.hom
   inv := tensorHom e.inv e'.inv
-  hom_inv_id := by simp [tensorHom_comp_id_tensorHomHom]
-  inv_hom_id := by simp [tensorHom_comp_id_tensorHomHom]
+  hom_inv_id := by simp [tensorHom_comp_tensorHom]
+  inv_hom_id := by simp [tensorHom_comp_tensorHom]
 
 lemma tensorHom_def {X₁ X₂ Y₁ Y₂ : GradedObject I C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂)
     [HasTensor X₁ Y₁] [HasTensor X₂ Y₂] [HasTensor X₂ Y₁] :
