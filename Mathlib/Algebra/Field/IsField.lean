@@ -56,6 +56,9 @@ lemma IsField.isDomain {R : Type u} [Semiring R] (h : IsField R) : IsDomain R wh
     simpa [mul_assoc, hx] using congr_arg (· * x) hb
   exists_pair_ne := h.exists_pair_ne
 
+instance {R : Type u} [Semifield R] : IsDomain R :=
+  (Semifield.toIsField _).isDomain
+
 @[simp]
 theorem not_isField_of_subsingleton (R : Type u) [Semiring R] [Subsingleton R] : ¬IsField R :=
   fun h =>

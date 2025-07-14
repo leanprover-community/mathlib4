@@ -9,17 +9,13 @@ import Mathlib.RingTheory.SimpleRing.Field
 import Mathlib.RingTheory.TwoSidedIdeal.Operations
 
 /-!
-# A simple ring is trivially a principal ideal d
+# A commutative simple ring is trivially a principal ideal domain
 
 -/
 
 variable {R : Type*} [CommRing R] [IsSimpleRing R]
 
-instance : IsSimpleOrder (Ideal R) :=
-  ⟨fun I ↦ (eq_bot_or_eq_top I.toTwoSided).imp
-    -- could also be done through the `gc`?
-    (by simp [TwoSidedIdeal.ext_iff, Ideal.ext_iff])
-    (by simp [TwoSidedIdeal.ext_iff, Ideal.ext_iff])⟩
+instance : IsSimpleOrder (Ideal R) := TwoSidedIdeal.orderIsoIdeal.symm.isSimpleOrder
 
 instance IsPrincipalIdealRing.of_isSimpleRing :
     IsPrincipalIdealRing R :=
