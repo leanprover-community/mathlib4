@@ -301,6 +301,9 @@ instance : (forget C).Faithful where
 @[simp]
 theorem forget₂Mon_comp_forget : forget₂Mon_ C ⋙ Mon_.forget C = forget C := rfl
 
+instance {G H : Grp_ C} {f : G ⟶ H} [IsIso f] : IsIso f.hom :=
+  inferInstanceAs <| IsIso <| (forget C).map f
+
 end
 
 /-- Construct an isomorphism of group objects by giving a monoid isomorphism between the underlying
