@@ -213,18 +213,31 @@ section leviCivita_rhs
 
 variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)]
 
-variable (X X' Y Z) in
-lemma leviCivita_rhs_addX' : (2 : ℝ) • leviCivita_rhs I (X + X') Y Z =
-    (2 : ℝ) • leviCivita_rhs I X Y Z + (2 : ℝ) • leviCivita_rhs I X Y Z := by
+lemma leviCivita_rhs_addX' [CompleteSpace E]
+    (hX : MDiff (T% X)) (hX' : MDiff (T% X')) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
+    (2 : ℝ) • leviCivita_rhs I (X + X') Y Z =
+      (2 : ℝ) • leviCivita_rhs I X Y Z + (2 : ℝ) • leviCivita_rhs I X' Y Z := by
   have : ((2 : ℝ) • (2 : ℝ)⁻¹) = 1 := by simp
   simp only [leviCivita_rhs, one_div, ← smul_assoc, this, one_smul]
   -- Now, continue without the scalar multiplication.
-  -- similar to the addZ proof below...
-  sorry
+  ext x
+  have h : VectorField.mlieBracket I (X + X') Y =
+    VectorField.mlieBracket I X Y + VectorField.mlieBracket I X' Y := by
+    ext x
+    simp [VectorField.mlieBracket_add_left (W := Y) (hX x) (hX' x)]
+  have h' : VectorField.mlieBracket I (X + X') Z =
+    VectorField.mlieBracket I X Z + VectorField.mlieBracket I X' Z := by
+    ext x
+    simp [VectorField.mlieBracket_add_left (W := Z) (hX x) (hX' x)]
+  simp only [rhs_aux_addX, h, h', Pi.add_apply, Pi.sub_apply]
+  rw [rhs_aux_addY, rhs_aux_addZ] <;> try assumption
+  rw [product_add_left, product_add_right, product_add_right]
+  simp only [Pi.add_apply]
+  abel
 
-variable (X X' Y Z) in
-lemma leviCivita_rhs_addX : leviCivita_rhs I (X + X') Y Z =
-    leviCivita_rhs I X Y Z + leviCivita_rhs I X' Y Z := by
+lemma leviCivita_rhs_addX [CompleteSpace E]
+    (hX : MDiff (T% X)) (hX' : MDiff (T% X')) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
+    leviCivita_rhs I (X + X') Y Z = leviCivita_rhs I X Y Z + leviCivita_rhs I X' Y Z := by
   sorry -- divide the previous equation by 2
 
 variable (X Y Z) in
@@ -454,9 +467,22 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
     (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e] :
     IsCovariantDerivativeOn E (TangentSpace I) (lcCandidate_aux I (M := M) e) e.baseSet where
   addX X X' σ x := by
+    have hX : MDiff (T% X) := sorry -- seems necessary now!
+    have hX' : MDiff (T% X') := sorry
+    have hσ : MDiff (T% σ) := sorry
     intro hx
     unfold lcCandidate_aux
-    simp [← Finset.sum_add_distrib, ← add_smul, leviCivita_rhs_addX]
+    simp [← Finset.sum_add_distrib, ← add_smul]
+    congr; ext i
+    rw [leviCivita_rhs_addX] <;> try assumption
+    · abel
+    · have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := sorry
+      set f := ((Basis.ofVectorSpace ℝ E).orthonormalFrame e i)
+      have : MDiffAt (T% f) x := -- missing API lemma!
+        (contMDiffAt_orthonormalFrame_of_mem (Basis.ofVectorSpace ℝ E) e i hx)
+          |>.mdifferentiableAt le_rfl
+      -- TODO: need a local version of leviCivita_rhs_addX!
+      sorry
   smulX X σ g x hx := by
     unfold lcCandidate_aux
     dsimp
