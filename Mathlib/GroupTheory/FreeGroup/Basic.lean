@@ -562,6 +562,13 @@ element to the equivalence class of the letter that is the element. -/
 def of (x : α) : FreeGroup α :=
   mk [(x, true)]
 
+@[to_additive (attr := elab_as_elim, induction_eliminator)]
+protected lemma induction_on {C : FreeGroup α → Prop} (z : FreeGroup α) (C1 : C 1)
+    (of : ∀ x, C <| of x) (inv_of : ∀ x, C (.of x) → C (.of x)⁻¹)
+    (mul : ∀ x y, C x → C y → C (x * y)) : C z :=
+  Quot.inductionOn z fun L ↦ L.recOn C1 fun ⟨x, b⟩ _tl ih ↦
+    b.recOn (mul _ _ (inv_of _ <| of x) ih) (mul _ _ (of x) ih)
+
 @[to_additive]
 theorem Red.exact : mk L₁ = mk L₂ ↔ Join Red L₁ L₂ :=
   calc
@@ -631,9 +638,14 @@ theorem lift.unique (g : FreeGroup α →* β) (hg : ∀ x, g (FreeGroup.of x) =
 See note [partially-applied ext lemmas]. -/
 @[to_additive (attr := ext) "Two homomorphisms out of a free additive group are equal if they are
   equal on generators. See note [partially-applied ext lemmas]."]
-theorem ext_hom {G : Type*} [Group G] (f g : FreeGroup α →* G) (h : ∀ a, f (of a) = g (of a)) :
-    f = g :=
-  lift.symm.injective <| funext h
+theorem ext_hom {M : Type*} [Monoid M] (f g : FreeGroup α →* M) (h : ∀ a, f (of a) = g (of a)) :
+    f = g := by
+  ext x
+  have this (x) : f (of x)⁻¹ = g (of x)⁻¹ := by
+    trans f (of x)⁻¹ * f (of x) * g (of x)⁻¹
+    · simp_rw [mul_assoc, h, ← _root_.map_mul, mul_inv_cancel, _root_.map_one, mul_one]
+    · simp_rw [← _root_.map_mul, inv_mul_cancel, _root_.map_one, one_mul]
+  induction x <;> simp [*]
 
 @[to_additive]
 theorem lift_of_eq_id (α) : lift of = MonoidHom.id (FreeGroup α) :=
@@ -853,13 +865,6 @@ instance : Monad FreeGroup.{u} where
   map {_α _β f} := map f
   bind {_α _β x f} := lift f x
 
-@[to_additive (attr := elab_as_elim, induction_eliminator)]
-protected theorem induction_on {C : FreeGroup α → Prop} (z : FreeGroup α) (C1 : C 1)
-    (Cp : ∀ x, C <| pure x) (Ci : ∀ x, C (pure x) → C (pure x)⁻¹)
-    (Cm : ∀ x y, C x → C y → C (x * y)) : C z :=
-  Quot.inductionOn z fun L =>
-    List.recOn L C1 fun ⟨x, b⟩ _tl ih => Bool.recOn b (Cm _ _ (Ci _ <| Cp x) ih) (Cm _ _ (Cp x) ih)
-
 @[to_additive]
 theorem map_pure (f : α → β) (x : α) : f <$> (pure x : FreeGroup α) = pure (f x) :=
   map.of
@@ -898,18 +903,10 @@ instance : LawfulMonad FreeGroup.{u} := LawfulMonad.mk'
     FreeGroup.induction_on x (map_one id) (fun x => map_pure id x) (fun x ih => by rw [map_inv, ih])
       fun x y ihx ihy => by rw [map_mul, ihx, ihy])
   (pure_bind := fun x f => pure_bind f x)
-  (bind_assoc := fun x =>
-    FreeGroup.induction_on x
-      (by intros; iterate 3 rw [one_bind])
-      (fun x => by intros; iterate 2 rw [pure_bind])
-      (fun x ih => by intros; (iterate 3 rw [inv_bind]); rw [ih])
-      (fun x y ihx ihy => by intros; (iterate 3 rw [mul_bind]); rw [ihx, ihy]))
-  (bind_pure_comp := fun f x =>
-    FreeGroup.induction_on x
-      (by rw [one_bind, map_one])
-      (fun x => by rw [pure_bind, map_pure])
-      (fun x ih => by rw [inv_bind, map_inv, ih])
-      (fun x y ihx ihy => by rw [mul_bind, map_mul, ihx, ihy]))
+  (bind_assoc := fun x => by
+    refine FreeGroup.induction_on x ?_ ?_ ?_ ?_ <;> simp +contextual [instMonad])
+  (bind_pure_comp := fun f x => by
+    refine FreeGroup.induction_on x ?_ ?_ ?_ ?_ <;> simp +contextual [instMonad])
 
 end Category
 
