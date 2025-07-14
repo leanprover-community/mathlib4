@@ -7,7 +7,7 @@ import Mathlib.Algebra.Group.Shrink
 import Mathlib.Algebra.Ring.TransferInstance
 
 /-!
-# Transfer ring structures from `α` to `Shrink α`.
+# Transfer ring structures from `α` to `Shrink α`
 -/
 
 noncomputable section
