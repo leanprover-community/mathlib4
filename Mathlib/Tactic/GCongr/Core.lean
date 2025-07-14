@@ -463,9 +463,6 @@ partial def _root_.Lean.MVarId.gcongr
     (sideGoalDischarger : MVarId → MetaM Unit := gcongrDischarger) :
     MetaM (Bool × List (TSyntax ``binderIdent) × Array MVarId) := g.withContext do
   withTraceNode `Meta.gcongr (fun _ => return m!"gcongr: ⊢ {← g.getType}") do
-  match depth with
-  | 0 => try mainGoalDischarger g; return (true, names, #[]) catch _ => return (false, names, #[g])
-  | depth + 1 =>
   match template with
   | none =>
     -- A. If there is no template, try to resolve the goal by the provided tactic
@@ -497,6 +494,9 @@ partial def _root_.Lean.MVarId.gcongr
         subgoal {← withReducible g.getType'} is not allowed by the provided pattern \
         and is not closed by `rfl`"
     -- (ii) if the template is *not* `?_` then continue on.
+  match depth with
+  | 0 => try mainGoalDischarger g; return (true, names, #[]) catch _ => return (false, names, #[g])
+  | depth + 1 =>
   -- Check that the goal is of the form `rel (lhsHead _ ... _) (rhsHead _ ... _)`
   let rel ← withReducible g.getType'
   let some (relName, lhs, rhs) := getRel rel | throwTacticEx `gcongr g m!"{rel} is not a relation"
