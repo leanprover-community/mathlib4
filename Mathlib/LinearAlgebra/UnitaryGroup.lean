@@ -3,10 +3,11 @@ Copyright (c) 2021 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
 -/
+import Mathlib.Algebra.Star.Unitary
+import Mathlib.Data.Matrix.Reflection
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
-import Mathlib.Algebra.Star.Unitary
 
 /-!
 # The Unitary Group
@@ -253,16 +254,14 @@ theorem mem_specialOrthogonalGroup_iff :
     A ∈ specialOrthogonalGroup n R ↔ A ∈ orthogonalGroup n R ∧ A.det = 1 :=
   Iff.rfl
 
-lemma mem_specialOrthogonalGroup_fin_two_iff {M : Matrix (Fin 2) (Fin 2) R} :
-    M ∈ Matrix.specialOrthogonalGroup (Fin 2) R ↔
-      M 0 0 = M 1 1 ∧ M 0 1 = - M 1 0 ∧ M 0 0 ^ 2 + M 0 1 ^ 2 = 1 := by
-  obtain ⟨a, b, c, d, rfl⟩ : ∃ a b c d, M = !![a, b; c, d] :=
-    ⟨M 0 0, M 0 1, M 1 0, M 1 1, by ext i j; fin_cases i, j <;> rfl⟩
+@[simp]
+lemma of_mem_specialOrthogonalGroup_fin_two_iff {a b c d : R} :
+    !![a, b; c, d] ∈ Matrix.specialOrthogonalGroup (Fin 2) R ↔
+      a = d ∧ b = -c ∧ a ^ 2 + b ^ 2 = 1 := by
   trans ((a * a + b * b = 1 ∧ a * c + b * d = 0) ∧
     c * a + d * b = 0 ∧ c * c + d * d = 1) ∧ a * d - b * c = 1
   · simp [Matrix.mem_specialOrthogonalGroup_iff, Matrix.mem_orthogonalGroup_iff,
       ← Matrix.ext_iff, Fin.forall_fin_succ, Matrix.vecHead, Matrix.vecTail]
-  dsimp
   refine ⟨?_, ?_⟩
   · rintro ⟨⟨⟨h₀, h₁⟩, -, h₂⟩, h₃⟩
     refine ⟨?_, ?_, ?_⟩
@@ -273,7 +272,12 @@ lemma mem_specialOrthogonalGroup_fin_two_iff {M : Matrix (Fin 2) (Fin 2) R} :
     ring_nf at H ⊢
     tauto
 
+lemma mem_specialOrthogonalGroup_fin_two_iff {M : Matrix (Fin 2) (Fin 2) R} :
+    M ∈ Matrix.specialOrthogonalGroup (Fin 2) R ↔
+      M 0 0 = M 1 1 ∧ M 0 1 = - M 1 0 ∧ M 0 0 ^ 2 + M 0 1 ^ 2 = 1 := by
+  rw [← M.etaExpand_eq]
+  exact of_mem_specialOrthogonalGroup_fin_two_iff
+
 end specialOrthogonalGroup
 
 end Matrix
-
