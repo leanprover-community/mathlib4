@@ -317,7 +317,7 @@ theorem rescaleAlgHom_apply (r : R) :
   rw [rescale_eq, RingHom.coe_coe, rescaleAlgHom_def, MvPowerSeries.rescaleAlgHom_apply]
 
 /-- When `p` is linear, substitution of `p` and then a scalar homothety is substitution of
-  the homothety then `p`. -/
+the homothety then `p`. -/
 lemma subst_linear_subst_scalar_comm (a : R) {σ : Type*} (p : MvPowerSeries σ R)
     (hp_lin : ∀ d ∈ Function.support p, d.degree = 1) (f : PowerSeries R) :
     subst p (rescale a f) = MvPowerSeries.rescale (Function.const σ a) (subst p f) := by
@@ -328,8 +328,7 @@ lemma subst_linear_subst_scalar_comm (a : R) {σ : Type*} (p : MvPowerSeries σ 
     simp only [MvPowerSeries.IsHomogeneous, MvPowerSeries.IsWeightedHomogeneous, ne_eq]
     intro d hd
     convert hp_lin d hd using 1
-    simp [Finsupp.weight, Finsupp.linearCombination, Finsupp.degree]
-    rfl
+    simp [Finsupp.weight, Finsupp.linearCombination, Finsupp.degree, Finsupp.sum]
   rw [rescale_eq_subst, MvPowerSeries.rescale_eq_subst,
     subst_comp_subst_apply (HasSubst.smul_X' a) hp]
   nth_rewrite 3 [subst]

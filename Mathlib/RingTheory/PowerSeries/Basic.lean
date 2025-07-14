@@ -624,8 +624,8 @@ theorem rescale_mul (a b : R) : rescale (a * b) = (rescale b).comp (rescale a) :
   ext
   simp [← rescale_rescale]
 
-theorem rescale_map_eq_map_rescale' {S : Type*} [CommSemiring S] (φ : R →+* S) (r : R) (f : R⟦X⟧) :
-    rescale (φ r) (PowerSeries.map φ f) =
+theorem rescale_map_eq_map_rescale_of_ringHom {S : Type*} [CommSemiring S] (φ : R →+* S) (r : R)
+    (f : R⟦X⟧) : rescale (φ r) (PowerSeries.map φ f) =
       PowerSeries.map (φ : R →+* S) (rescale r f) := by
   ext n
   simp [coeff_rescale, coeff_map, map_mul, map_pow]
@@ -634,7 +634,7 @@ theorem rescale_map_eq_map_rescale {A S : Type*} [CommSemiring A] [Algebra A R] 
     [Algebra A S] (φ : R →ₐ[A] S) (a : A) (f : R⟦X⟧) :
     rescale (algebraMap A S a) (PowerSeries.map φ f) =
       PowerSeries.map (φ : R →+* S) (rescale (algebraMap A R a) f) := by
-  rw [← rescale_map_eq_map_rescale', RingHom.coe_coe, AlgHom.commutes]
+  rw [← rescale_map_eq_map_rescale_of_ringHom, RingHom.coe_coe, AlgHom.commutes]
 
 end CommSemiring
 
