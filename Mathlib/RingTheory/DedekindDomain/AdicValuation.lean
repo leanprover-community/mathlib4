@@ -558,15 +558,16 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
   · rw [notMem_adicCompletionIntegers] at ha
     -- let ϖ be a uniformiser
     obtain ⟨ϖ, hϖ⟩ := intValuation_exists_uniformizer v
-    have : Valued.v (algebraMap R (v.adicCompletion K) ϖ) = ofAdd (-1 : ℤ) := by
-      rw [valuedAdicCompletion_eq_valuation, valuation_of_algebraMap, hϖ]
+    have : Valued.v (algebraMap R (v.adicCompletion K) ϖ) = (exp (1 : ℤ))⁻¹ := by
+      simp [valuedAdicCompletion_eq_valuation, valuation_of_algebraMap, hϖ, exp]
     have hϖ0 : ϖ ≠ 0 := by rintro rfl; simp at hϖ
     refine ⟨ϖ^(WithZero.log (Valued.v a)).natAbs, pow_mem (mem_nonZeroDivisors_of_ne_zero hϖ0) _,
       ?_⟩
     -- now manually translate the goal (an inequality in ℤᵐ⁰) to an inequality of "log" of ℤ
-    simp only [mem_adicCompletionIntegers, map_mul, map_pow, map_mul, this, Int.reduceNeg,
-      ofAdd_neg, coe_inv, inv_pow, ← WithZero.coe_pow, ← ofAdd_nsmul, nsmul_one]
-    exact mul_inv_le_one_of_le₀ (le_coe_ofAdd_log _) (zero_le _)
+    simp only [map_pow, mem_adicCompletionIntegers, map_mul, this, inv_pow, ← exp_nsmul, nsmul_one,
+      Int.natCast_natAbs]
+    refine mul_inv_le_one_of_le₀ ((le_exp_log (Valued.v a)).trans ?_) (zero_le _)
+    simp [le_abs_self]
 
 section AbsoluteValue
 
