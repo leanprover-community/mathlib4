@@ -30,26 +30,27 @@ variable {R : Type*} [Ring R] {E : Type*} [AddCommGroup E] [Module R E]
 variable {F : Type*} [AddCommGroup F] [Module R F] {G : Type*} [AddCommGroup G] [Module R G]
 variable (p q : Submodule R E)
 variable {S : Type*} [Semiring S] {M : Type*} [AddCommMonoid M] [Module S M] (m : Submodule S M)
-variable {E' : Type*} [AddCommGroup E'] [Module S E'] {p' : Submodule S E'}
-
 namespace LinearMap
 
 variable {p}
 
 open Submodule
 
-theorem ker_id_sub_eq_of_proj {f : E' →ₗ[S] p'} (hf : ∀ x : p', f x = x) :
-    ker (id - p'.subtype.comp f) = p' := by
+theorem ker_id_sub_eq_of_proj [Module S E] {p : Submodule S E}
+    {f : E →ₗ[S] p} (hf : ∀ x : p, f x = x) :
+    ker (id - p.subtype.comp f) = p := by
   ext x
   simp only [comp_apply, mem_ker, subtype_apply, sub_apply, id_apply, sub_eq_zero]
   exact ⟨fun h => h.symm ▸ Submodule.coe_mem _, fun hx => by rw [hf ⟨x, hx⟩, Subtype.coe_mk]⟩
 
-theorem range_eq_of_proj {f : E' →ₗ[S] p'} (hf : ∀ x : p', f x = x) : range f = ⊤ :=
+theorem range_eq_of_proj [Module S E] {p : Submodule S E}
+    {f : E →ₗ[S] p} (hf : ∀ x : p, f x = x) : range f = ⊤ :=
   range_eq_top.2 fun x => ⟨x, hf x⟩
 
-theorem isCompl_of_proj {f : E' →ₗ[S] p'} (hf : ∀ x : p', f x = x) : IsCompl p' (ker f) := by
-  let f' := p'.subtype ∘ₗ f
-  have hf' : ∀ x : p', f' x = x := fun x => by simp [f', hf]
+theorem isCompl_of_proj [Module S E] {p : Submodule S E}
+    {f : E →ₗ[S] p} (hf : ∀ x : p, f x = x) : IsCompl p (ker f) := by
+  let f' := p.subtype ∘ₗ f
+  have hf' : ∀ x : p, f' x = x := fun x => by simp [f', hf]
   constructor
   · rw [disjoint_iff_inf_le]
     rintro x ⟨hpx, hfx⟩
@@ -65,7 +66,7 @@ theorem isCompl_of_proj {f : E' →ₗ[S] p'} (hf : ∀ x : p', f x = x) : IsCom
       ext x
       simp [f', hf]
     simp_rw [this]
-    have : range f' = p' := by
+    have : range f' = p := by
       rw [range_comp, range_eq_of_proj hf]
       simp
     simp_rw [← this]
@@ -435,7 +436,8 @@ theorem codRestrict_apply_cod {f : M →ₗ[S] M} (h : IsProj m f) (x : m) : h.c
 theorem codRestrict_ker {f : M →ₗ[S] M} (h : IsProj m f) : ker h.codRestrict = ker f :=
   f.ker_codRestrict m _
 
-theorem isCompl {f : E' →ₗ[S] E'} (h : IsProj p' f) : IsCompl p' (ker f) := by
+theorem isCompl [Module S E] {p : Submodule S E} {f : E →ₗ[S] E}
+    (h : IsProj p f) : IsCompl p (ker f) := by
   rw [← codRestrict_ker]
   exact isCompl_of_proj h.codRestrict_apply_cod
 
@@ -502,7 +504,7 @@ theorem IsIdempotentElem.comp_eq_right_iff {q : M →ₗ[S] M} (hq : IsIdempoten
 
 open LinearMap in
 /-- Idempotent operators are equal iff their range and kernels are. -/
-lemma IsIdempotentElem.ext_iff {p q : E' →ₗ[S] E'}
+lemma IsIdempotentElem.ext_iff [Module S E] {p q : E →ₗ[S] E}
     (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) :
     p = q ↔ range p = range q ∧ ker p = ker q := by
   refine ⟨fun h => ⟨congrArg range h, congrArg ker h⟩, fun ⟨hr, hk⟩ => ?_⟩
