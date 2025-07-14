@@ -21,8 +21,6 @@ instance : IsSimpleOrder (Ideal R) :=
     (by simp [TwoSidedIdeal.ext_iff, Ideal.ext_iff])
     (by simp [TwoSidedIdeal.ext_iff, Ideal.ext_iff])⟩
 
-instance : IsField R := (isSimpleRing_iff_isField _).mp ‹_›
-
 instance IsPrincipalIdealRing.of_isSimpleRing :
     IsPrincipalIdealRing R :=
   ((isSimpleRing_iff_isField _).mp ‹_›).isPrincipalIdealRing
