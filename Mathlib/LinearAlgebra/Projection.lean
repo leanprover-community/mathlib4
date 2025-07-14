@@ -61,10 +61,9 @@ theorem isCompl_of_proj [Module S E] {p : Submodule S E}
     rw [codisjoint_iff_le_sup]
     intro x _
     rw [mem_sup']
-    refine ⟨⟨f' x, ?_⟩, ⟨x - f' x, ?_⟩, ?_⟩
+    refine ⟨⟨f' x, ?_⟩, ⟨x - f' x, ?_⟩, add_sub_cancel _ _⟩
     · simp only [mem_range, exists_apply_eq_apply]
     · simp [mem_ker, map_sub, f', hf]
-    · simp only [add_sub_cancel]
 
 end LinearMap
 
