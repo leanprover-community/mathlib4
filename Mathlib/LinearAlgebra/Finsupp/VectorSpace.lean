@@ -3,6 +3,8 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Mathlib.Algebra.FreeAbelianGroup.Finsupp
+import Mathlib.Algebra.MonoidAlgebra.Defs
 import Mathlib.LinearAlgebra.Basis.Defs
 import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.FreeModule.Basic
@@ -179,3 +181,24 @@ theorem Basis.repr_smul' (i : ι) (r : R) (s : S) :
   rw [← smul_eq_mul, ← smul_eq_mul, algebraMap_smul, map_smul, Finsupp.smul_apply]
 
 end Algebra
+
+namespace FreeAbelianGroup
+
+instance {σ : Type*} : Module.Free ℤ (FreeAbelianGroup σ) where
+  exists_basis := ⟨σ, ⟨(FreeAbelianGroup.equivFinsupp _).toIntLinearEquiv⟩⟩
+
+end FreeAbelianGroup
+
+namespace AddMonoidAlgebra
+variable {ι R S : Type*} [Semiring R] [Semiring S] [Module R S] [Module.Free R S]
+
+instance moduleFree : Module.Free R S[ι] := .finsupp ..
+
+end AddMonoidAlgebra
+
+namespace MonoidAlgebra
+variable {ι R S : Type*} [Semiring R] [Semiring S] [Module R S] [Module.Free R S]
+
+instance moduleFree : Module.Free R (MonoidAlgebra S ι) := .finsupp ..
+
+end MonoidAlgebra
