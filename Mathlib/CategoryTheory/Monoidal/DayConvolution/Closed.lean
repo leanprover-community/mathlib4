@@ -154,14 +154,12 @@ lemma map_comp (ℌ : DayConvolutionInternalHom F G H)
 def transport (ℌ : DayConvolutionInternalHom F G H) {H' : C ⥤ V} (e : H' ≅ H) :
     DayConvolutionInternalHom F G H' where
   π c j := e.hom.app c ≫ ℌ.π c j
-  hπ c i j f := by
-    simp
+  hπ c i j f := by simp
   isLimitWedge c := by
     apply Limits.IsLimit.equivOfNatIsoOfIso (.refl _) _ _ _ (ℌ.isLimitWedge _)
     exact Limits.Wedge.ext (e.symm.app c) (fun j ↦ by
       simp [Limits.Cones.postcompose, Limits.Multifork.ι])
-  obj_map_comp_π f j := by
-    simp
+  map_comp_π f j := by simp
 
 section
 
@@ -193,8 +191,7 @@ noncomputable def dayConvolutionInternalHomOfHasEnds
       Limits.Wedge.ext
         (Iso.refl _)
         (fun j ↦ by dsimp; rw [Category.id_comp]; rfl)
-  obj_map_comp_π {c c'} f j := by
-    simp
+  map_comp_π {c c'} f j := by simp
 
 end
 
