@@ -78,6 +78,9 @@ of PresheafedSpaces
 abbrev SheafedSpace.IsOpenImmersion {X Y : SheafedSpace C} (f : X ⟶ Y) : Prop :=
   PresheafedSpace.IsOpenImmersion f.hom
 
+lemma SheafedSpace.isOpenImmersion_iff_hom {X Y : SheafedSpace C} (f : X ⟶ Y) :
+    SheafedSpace.IsOpenImmersion f ↔ PresheafedSpace.IsOpenImmersion f.hom := Iff.rfl
+
 /-- A morphism of LocallyRingedSpaces is an open immersion if it is an open immersion as a morphism
 of SheafedSpaces
 -/
@@ -687,27 +690,25 @@ instance sheafedSpace_hasPullback_of_right : HasPullback g f :=
 /-- Open immersions are stable under base-change. -/
 instance sheafedSpace_pullback_snd_of_left :
     SheafedSpace.IsOpenImmersion (pullback.snd f g) := by
-  sorry
-  /-delta pullback.snd
-  have : _ = limit.π (cospan f g) right := preservesLimitIso_hom_π forget (cospan f g) right
+  rw [SheafedSpace.isOpenImmersion_iff_hom]
+  have : _ = (pullback.snd f g).hom := preservesLimitIso_hom_π forget (cospan f g) right
   rw [← this]
   have := HasLimit.isoOfNatIso_hom_π (diagramIsoCospan (cospan f g ⋙ forget)) right
-  erw [Category.comp_id] at this
+  dsimp at this
+  rw [Category.comp_id] at this
   rw [← this]
-  dsimp
-  infer_instance-/
+  infer_instance
 
 instance sheafedSpace_pullback_fst_of_right :
     SheafedSpace.IsOpenImmersion (pullback.fst g f) := by
-  sorry
-  /-delta pullback.fst
-  have : _ = limit.π (cospan g f) left := preservesLimitIso_hom_π forget (cospan g f) left
+  rw [SheafedSpace.isOpenImmersion_iff_hom]
+  have : _ = (pullback.fst g f).hom := preservesLimitIso_hom_π forget (cospan g f) left
   rw [← this]
   have := HasLimit.isoOfNatIso_hom_π (diagramIsoCospan (cospan g f ⋙ forget)) left
-  erw [Category.comp_id] at this
+  dsimp at this
+  rw [Category.comp_id] at this
   rw [← this]
-  dsimp
-  infer_instance-/
+  infer_instance
 
 instance sheafedSpace_pullback_to_base_isOpenImmersion [SheafedSpace.IsOpenImmersion g] :
     SheafedSpace.IsOpenImmersion (limit.π (cospan f g) one : pullback f g ⟶ Z) := by
