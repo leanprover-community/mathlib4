@@ -36,7 +36,8 @@ The internal hom functor for Day convolution `[F, -]` is naturally isomorphic
 to the functor `G ↦ c ↦ end_ (c₁ c₂ ↦ ihom (F c₁) (G.obj (c₂ ⊗ c)))`, hence
 this definition. -/
 @[simps!]
-def internalHomDiagramFunctor (F : C ⥤ V) : (C ⥤ V) ⥤ C ⥤ Cᵒᵖ ⥤ C ⥤ V where
+def dayConvolutionInternalHomDiagramFunctor (F : C ⥤ V) :
+    (C ⥤ V) ⥤ C ⥤ Cᵒᵖ ⥤ C ⥤ V where
   obj G :=
     { obj c := Functor.whiskeringLeft₂ _|>.obj F.op|>.obj
         (tensorRight c ⋙ G)|>.obj MonoidalClosed.internalHom
@@ -49,8 +50,8 @@ def internalHomDiagramFunctor (F : C ⥤ V) : (C ⥤ V) ⥤ C ⥤ Cᵒᵖ ⥤ C 
       naturality {c c'} f := by
         ext j k
         dsimp
-        simpa [-NatTrans.naturality] using congr_arg (ihom <| F.obj <| unop j).map
-          (η.naturality <| k ◁ f) }
+        simpa [-NatTrans.naturality] using
+          congr_arg (ihom <| F.obj <| unop j).map (η.naturality <| k ◁ f) }
 
 /-- `DayConvolutionInternalHom F G H` asserts that `H` is the value at `G` of
 an internal hom functor of `F` for the Day convolution monoidal structure.
@@ -69,7 +70,8 @@ structure DayConvolutionInternalHom (F : C ⥤ V) (G : C ⥤ V) (H : C ⥤ V) wh
   an end of `internalHomDiagramFunctor F G|>.obj c`. -/
   isLimitWedge c :
     Limits.IsLimit <|
-      Limits.Wedge.mk (F := internalHomDiagramFunctor F|>.obj G|>.obj c)
+      Limits.Wedge.mk
+        (F := dayConvolutionInternalHomDiagramFunctor F|>.obj G|>.obj c)
         (H.obj c) (π c) (hπ c)
   /-- The functoriality of `H.obj G` identifies (through
   `Limits.Wedge.IsLimit.hom_ext`) with the functoriality on ends induced by
@@ -94,10 +96,12 @@ def map (ℌ : DayConvolutionInternalHom F G H) {G' : C ⥤ V} {H' : C ⥤ V}
     H ⟶ H' where
   app c := Limits.Wedge.IsLimit.lift (ℌ'.isLimitWedge c)
     (fun j ↦ (ℌ.π c j) ≫
-      (internalHomDiagramFunctor F|>.map f|>.app c|>.app (op j)|>.app j))
+      (dayConvolutionInternalHomDiagramFunctor
+        F|>.map f|>.app c|>.app (op j)|>.app j))
     (fun ⦃j j'⦄ φ ↦ by
       haveI := congrArg (fun t ↦ t.app j') <|
-        internalHomDiagramFunctor F|>.map f|>.app c|>.naturality φ.op
+        dayConvolutionInternalHomDiagramFunctor
+          F|>.map f|>.app c|>.naturality φ.op
       dsimp at this
       dsimp
       rw [Category.assoc, ← (ihom (F.obj j)).map_comp, ← f.naturality,
@@ -108,9 +112,11 @@ def map (ℌ : DayConvolutionInternalHom F G H) {G' : C ⥤ V} {H' : C ⥤ V}
     intro j
     dsimp
     simp only [Category.assoc, obj_map_comp_π]
-    rw [← Limits.Wedge.mk_ι (F := internalHomDiagramFunctor F|>.obj _|>.obj c')
+    rw [← Limits.Wedge.mk_ι
+        (F := dayConvolutionInternalHomDiagramFunctor F|>.obj _|>.obj c')
         (H'.obj c') (ℌ'.π c') (ℌ'.hπ c'),
-      ← Limits.Wedge.mk_ι (F := internalHomDiagramFunctor F|>.obj _|>.obj c)
+      ← Limits.Wedge.mk_ι
+        (F := dayConvolutionInternalHomDiagramFunctor F|>.obj _|>.obj c)
         (H'.obj c) (ℌ'.π c) (ℌ'.hπ c),
       Limits.Wedge.IsLimit.lift_ι (ℌ'.isLimitWedge c'),
       Limits.Wedge.IsLimit.lift_ι_assoc (ℌ'.isLimitWedge c) ]
@@ -123,10 +129,10 @@ lemma map_app_comp_π (ℌ : DayConvolutionInternalHom F G H)
     (ℌ.map f ℌ').app c ≫ ℌ'.π c j =
     ℌ.π c j ≫ (ihom <| F.obj j).map (f.app <| j ⊗ c) := by
   dsimp [map]
-  rw [← Limits.Wedge.mk_ι (F := internalHomDiagramFunctor F|>.obj _|>.obj c)
+  rw [← Limits.Wedge.mk_ι
+      (F := dayConvolutionInternalHomDiagramFunctor F|>.obj _|>.obj c)
       (H'.obj c) (ℌ'.π c) (ℌ'.hπ c),
     Limits.Wedge.IsLimit.lift_ι (ℌ'.isLimitWedge c)]
-
 
 @[simp]
 lemma map_id (ℌ : DayConvolutionInternalHom F G H) : ℌ.map (𝟙 _) ℌ = 𝟙 _ := by
@@ -134,7 +140,6 @@ lemma map_id (ℌ : DayConvolutionInternalHom F G H) : ℌ.map (𝟙 _) ℌ = �
   apply Limits.Wedge.IsLimit.hom_ext (ℌ.isLimitWedge _)
   aesop_cat
 
-@[simp]
 lemma map_comp (ℌ : DayConvolutionInternalHom F G H)
     {G' : C ⥤ V} {H' : C ⥤ V}
     (f : G ⟶ G') (ℌ' : DayConvolutionInternalHom F G' H')
@@ -166,24 +171,28 @@ variable (F G)
 functor `C ⥤ V` that is an internal hom of `F` and `G`. -/
 @[simps]
 noncomputable def ihomOfHasEnds
-    [∀ c : C, Limits.HasEnd <| internalHomDiagramFunctor F |>.obj G |>.obj c] :
+    [∀ c : C, Limits.HasEnd <|
+      dayConvolutionInternalHomDiagramFunctor F |>.obj G |>.obj c] :
     C ⥤ V where
   obj c := Limits.end_ <|
-    internalHomDiagramFunctor F |>.obj G |>.obj c
+    dayConvolutionInternalHomDiagramFunctor F |>.obj G |>.obj c
   map f := Limits.end_.map <|
-    internalHomDiagramFunctor F |>.obj G |>.map f
+    dayConvolutionInternalHomDiagramFunctor F |>.obj G |>.map f
 
 /-- If the relevant ends exist, the functor `ihomOfHasEnds F G` is indeed
 an internal hom for Day convolution. -/
 @[simps]
 noncomputable def dayConvolutionInternalHomOfHasEnds
-    [∀ c : C, Limits.HasEnd <| internalHomDiagramFunctor F |>.obj G |>.obj c] :
+    [∀ c : C, Limits.HasEnd <|
+      dayConvolutionInternalHomDiagramFunctor F |>.obj G |>.obj c] :
     DayConvolutionInternalHom F G (ihomOfHasEnds F G) where
   π c j := Limits.end_.π _ _
   hπ c _ _ φ := Limits.end_.condition _ φ
   isLimitWedge c :=
-    Limits.IsLimit.ofIsoLimit (Limits.limit.isLimit _)
-      (Limits.Wedge.ext (Iso.refl _) (fun j ↦ by dsimp; rw [Category.id_comp]; rfl))
+    Limits.IsLimit.ofIsoLimit (Limits.limit.isLimit _) <|
+      Limits.Wedge.ext
+        (Iso.refl _)
+        (fun j ↦ by dsimp; rw [Category.id_comp]; rfl)
   obj_map_comp_π {c c'} f j := by
     simp
 
@@ -265,9 +274,11 @@ def coev_app : G ⟶ H where
     intro (j : C)
     simp [Limits.multicospanIndexEnd_left,
       Limits.Multifork.ofι_pt, Limits.Wedge.mk_ι, Category.assoc]
-    rw [← Limits.Wedge.mk_ι (F := internalHomDiagramFunctor F|>.obj _|>.obj c)
+    rw [← Limits.Wedge.mk_ι
+        (F := dayConvolutionInternalHomDiagramFunctor F|>.obj _|>.obj c)
         (H.obj c) (ℌ.π c) (ℌ.hπ c),
-      ← Limits.Wedge.mk_ι (F := internalHomDiagramFunctor F|>.obj _|>.obj c')
+      ← Limits.Wedge.mk_ι
+        (F := dayConvolutionInternalHomDiagramFunctor F|>.obj _|>.obj c')
         (H.obj c') (ℌ.π c') (ℌ.hπ c'),
       Limits.Wedge.IsLimit.lift_ι_assoc, Limits.Wedge.IsLimit.lift_ι]
     haveI := DayConvolution.unit_naturality F G (𝟙 j) f
@@ -282,7 +293,8 @@ lemma coev_app_comp_π (c j : C) :
     ℌ.coev_app.app c ≫ ℌ.π c j =
     MonoidalClosed.curry ((DayConvolution.unit F G).app (j, c)) := by
   dsimp [coev_app]
-  rw [← Limits.Wedge.mk_ι (F := internalHomDiagramFunctor F|>.obj _|>.obj c)
+  rw [← Limits.Wedge.mk_ι
+      (F := dayConvolutionInternalHomDiagramFunctor F|>.obj _|>.obj c)
       (H.obj c) (ℌ.π c) (ℌ.hπ c),
     Limits.Wedge.IsLimit.lift_ι]
 
@@ -331,12 +343,22 @@ section
 
 open LawfulDayConvolutionMonoidalCategoryStruct
 
+/-- When there is a `LawfulDayConvolutionMonoidalCategoryStruct C V D`
+instance aroun, a `LawfulDayConvolutionClosedMonoidalCategoryStruct C V D`
+bundles the data to define a well-behaved internal hom functor on
+the Day convolution monoidal structure on `D`. It bundles the
+data part with equations stating that after applying `ι C V D`, one
+gets the corresponding objects (internal homs, `DayConvolutionInternalHom`,
+co/evaluation morphisms) at the level of functors. -/
 class LawfulDayConvolutionClosedMonoidalCategoryStruct
     (C : Type u₁) [Category.{v₁} C] (V : Type u₂) [Category.{v₂} V]
     [MonoidalCategory C] [MonoidalCategory V] [MonoidalClosed V]
     (D : Type u₃) [Category.{v₃} D] [MonoidalCategoryStruct D]
     [LawfulDayConvolutionMonoidalCategoryStruct C V D] where
+  /-- The chosen ihom functor at `d : D`. -/
   ihom (C) (V) (d : D) : D ⥤ D
+  /-- For every `d d' : D`, `ι C V D|>.obj <| (ihom d).obj d'` is
+  indeed a `DayConvolutionInternalHom`. -/
   ihomDayConvolutionInternalHom (C) (V) (d d' : D) :
     DayConvolutionInternalHom
       (ι C V D|>.obj d) (ι C V D|>.obj d') (ι C V D|>.obj <| (ihom d).obj d')
@@ -344,7 +366,11 @@ class LawfulDayConvolutionClosedMonoidalCategoryStruct
     (ι C V D|>.map <| (ihom d).map f) =
     (ihomDayConvolutionInternalHom d d').map ((ι C V D).map f)
       (ihomDayConvolutionInternalHom d d'')
+  /-- A chosen preimage by `ι` of (a component of) the coevaluation natural
+  transformation. -/
   coev_app (C) (V) (d d' : D) : d' ⟶ (ihom d).obj (d ⊗ d')
+  /-- A chosen preimage by `ι` of (a component of) the evaluation natural
+  transformation. -/
   ev_app (C) (V) (d d' : D) : d ⊗ (ihom d).obj d' ⟶ d'
   ι_map_ev_app (C) (V) d d' :
     letI := convolution C V D d d'
@@ -367,7 +393,7 @@ variable (D : Type u₃) [Category.{v₃} D] [MonoidalCategoryStruct D]
   [LawfulDayConvolutionMonoidalCategoryStruct C V D]
   [∀ (d d' : D) (c : C),
     Limits.HasEnd <|
-      internalHomDiagramFunctor (ι C V D |>.obj d) |>.obj
+      dayConvolutionInternalHomDiagramFunctor (ι C V D |>.obj d) |>.obj
         (ι C V D |>.obj d') |>.obj c]
 
 /-- Given `d d' : D`, this is the functor in `C ⥤ V` that corresponds to the
@@ -377,25 +403,37 @@ exist. This is an auxiliary construction to construct internal homs in
 @[simps]
 noncomputable def ihom' (d d' : D) : (C ⥤ V) where
   obj c := Limits.end_ <|
-    internalHomDiagramFunctor (ι C V D|>.obj d) |>.obj
+    dayConvolutionInternalHomDiagramFunctor (ι C V D|>.obj d) |>.obj
       (ι C V D|>.obj d') |>.obj c
   map {c c'} f := Limits.end_.map <|
-    internalHomDiagramFunctor (ι C V D|>.obj d) |>.obj
+    dayConvolutionInternalHomDiagramFunctor (ι C V D|>.obj d) |>.obj
       (ι C V D|>.obj d') |>.map f
 
+/-- Given `d d' : D`, this is the object in `D`_ that corresponds to the
+internal hom of `ι C V D|>.obj d` and `ι C V D|>.obj d'` whenever
+`ihom' d d'` is in the essential image of ι. -/
 noncomputable def ihomObj (d d' : D)
     (h : (ι C V D).essImage (ihom' C V D d d')) : D :=
   h.witness
 
 open DayConvolutionInternalHom
 
+/-- A `DayConvolutionInternalHom` structure on `iHomObj d d'`, obtained
+by transporting the "canonical" one for `ihom'` along the isomorphism
+`(ι C V D).map (iHomObj d d') ≅ ihom' d d'`. -/
 noncomputable def ihomObjDayConvolutionInternalHom (d d' : D)
     (h : (ι C V D).essImage (ihom' C V D d d')) :
     DayConvolutionInternalHom (ι C V D|>.obj d) (ι C V D|>.obj d')
       (ι C V D|>.obj <| ihomObj C V D d d' h) :=
   dayConvolutionInternalHomOfHasEnds _ _|>.transport h.getIso
 
-noncomputable def ofHasEnd
+attribute [local instance] convolution in
+/--
+Assuming existence of relevant ends, the fact that the essential
+image of `ι` contains the relevant objects, and fullness of ι,
+noncomputably define a `LawfulDayConvolutionClosedMonoidalCategoryStruct C V D`.
+-/
+noncomputable def ofHasEnds
     (h : ∀ d d', (ι C V D).essImage (ihom' C V D d d'))
     [(ι C V D).Full] :
     LawfulDayConvolutionClosedMonoidalCategoryStruct C V D where
@@ -412,12 +450,10 @@ noncomputable def ofHasEnd
   ihomDayConvolutionInternalHom d d' :=
     ihomObjDayConvolutionInternalHom C V D d d' (h d d')
   coev_app d d' :=
-    letI := convolution C V D d d'
     (ι C V D).preimage <|
       (ihomObjDayConvolutionInternalHom C V D d (d ⊗ d') (h _ _)).coev_app
         (G := (ι C V D).obj d')
   ev_app d d' :=
-    letI := convolution C V D d (ihomObj C V D d d' (h d d'))
     (ι C V D).preimage <|
       (ihomObjDayConvolutionInternalHom C V D d d' (h _ _)).ev_app
         (G := (ι C V D).obj d')
