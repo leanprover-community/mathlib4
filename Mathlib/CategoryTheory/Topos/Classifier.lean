@@ -127,8 +127,8 @@ instance {c : Classifier C} : ∀ Y : C, Unique (Y ⟶ c.Ω₀) := fun Y =>
           _ = c.χ₀ Y ≫ c.truth := by simp [← (c.isPullback (𝟙 Y)).w]
       Mono.right_cancellation _ _ this }
 
-/-- `Ω₀` is a terminal object. Prefer `c.χ₀` over `c.isTerminalΩ₀.from` as per
-instance below. -/
+/-- Given `c : Classifier C`, `c.Ω₀` is a terminal object.
+Prefer `c.χ₀` over `c.isTerminalΩ₀.from`. -/
 def isTerminalΩ₀ {c : Classifier C} : IsTerminal c.Ω₀ := IsTerminal.ofUnique c.Ω₀
 
 @[simp]
