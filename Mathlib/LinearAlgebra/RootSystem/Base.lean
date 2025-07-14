@@ -344,7 +344,6 @@ lemma exists_root_eq_sum_nat_or_neg (i : ι) :
     refine ⟨f + g, ?_, by simp [hf', hg', add_smul, Finset.sum_add_distrib]⟩
     exact (support_add f g).trans <| union_subset_iff.mpr ⟨hf, hg⟩
 
--- TODO Upgrade to point of strict positivity / negativity belongs to `b.support`?
 lemma exists_root_eq_sum_int [CharZero R] (i : ι) :
     ∃ f : ι → ℤ, f.support ⊆ b.support ∧ (0 < f ∨ f < 0) ∧
       P.root i = ∑ j ∈ b.support, f j • P.root j := by
