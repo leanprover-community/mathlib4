@@ -149,7 +149,7 @@ lemma IsTree.existsUnique_path (hG : G.IsTree) : ∀ v w, ∃! p : G.Walk v w, p
   (isTree_iff_existsUnique_path.1 hG).2
 
 theorem IsAcyclic.isPath_iff_chain' [DecidableEq V] (hG : G.IsAcyclic) {v w : V}
-    (p : G.Walk v w) : p.IsPath ↔ List.Chain' (fun x y => x ≠ y) p.edges := by
+    (p : G.Walk v w) : p.IsPath ↔ List.Chain' (fun x y ↦ x ≠ y) p.edges := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · exact List.Pairwise.chain' <| edges_nodup_of_support_nodup <| p.isPath_def |>.mp h
   · induction p with
