@@ -574,8 +574,8 @@ M₁' ←⎯⎯σ₁'₂'⎯⎯→ M₂' ←⎯⎯σ₂'₃'⎯⎯→ M₃
 ↓               ↓
 M₁''←⎯σ₁''₂''⎯→ M₂''
 ```
-where the horizontal direction is needed for `arrowCongr_trans` and the vertical direction is needed
-for `arrowCongr_comp`.
+where the horizontal direction corresponds to the `≃ₛₗ`s, and is needed for `arrowCongr_trans`,
+while the vertical direction corresponds to the `→ₛₗ`s, and is needed `arrowCongr_comp`.
 
 `Rᵢ` is not necessarily commutative, but `Rᵢ'` and `Rᵢ''` are.
 -/
