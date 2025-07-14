@@ -603,7 +603,7 @@ lemma not_denselyOrdered_withZeroInt : ¬ DenselyOrdered ℤᵐ⁰ :=
   mt (by simp [denselyOrdered_withZero_iff, denselyOrdered_multiplicative_iff])
     Int.not_denselyOrdered
 
-lemma Int.set_denselyOrdered_iff_subsingleton {s : Set ℤ} :
+lemma Int.denselyOrdered_set_iff_subsingleton {s : Set ℤ} :
     DenselyOrdered s ↔ s.Subsingleton := by
   refine ⟨fun H ↦ ?_, fun h ↦ h.denselyOrdered⟩
   rw [← Set.not_nontrivial_iff]
@@ -654,7 +654,7 @@ lemma denselyOrdered_units_withZeroInt_set_iff_subsingleton {s : Set ℤᵐ⁰} 
       · contrapose! hs
         rw [← WithZero.exp_log ha.right, ← WithZero.exp_log hb.right, hs]
     replace this : ¬ DenselyOrdered (WithZero.exp ⁻¹' s) := by
-      simp [Int.set_denselyOrdered_iff_subsingleton, this]
+      simp [Int.denselyOrdered_set_iff_subsingleton, this]
     contrapose! this
     constructor
     simp only [Subtype.exists, Set.mem_preimage, Subtype.forall, Subtype.mk_lt_mk,
