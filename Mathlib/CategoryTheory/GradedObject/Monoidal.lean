@@ -113,7 +113,7 @@ noncomputable abbrev whiskerRight {X₁ X₂ : GradedObject I C} (φ : X₁ ⟶ 
   tensorHom φ (𝟙 Y)
 
 @[simp]
-lemma tensor_id (X Y : GradedObject I C) [HasTensor X Y] :
+lemma id_tensorHom_id (X Y : GradedObject I C) [HasTensor X Y] :
     tensorHom (𝟙 X) (𝟙 Y) = 𝟙 _ := by
   dsimp [tensorHom, mapBifunctorMapMap]
   simp only [Functor.map_id, NatTrans.id_app, comp_id, mapMap_id]
@@ -136,8 +136,8 @@ noncomputable def tensorIso {X₁ X₂ Y₁ Y₂ : GradedObject I C} (e : X₁ �
     tensorObj X₁ Y₁ ≅ tensorObj X₂ Y₂ where
   hom := tensorHom e.hom e'.hom
   inv := tensorHom e.inv e'.inv
-  hom_inv_id := by simp only [← tensor_comp, Iso.hom_inv_id, tensor_id]
-  inv_hom_id := by simp only [← tensor_comp, Iso.inv_hom_id, tensor_id]
+  hom_inv_id := by simp only [← tensor_comp, Iso.hom_inv_id, id_tensorHom_id]
+  inv_hom_id := by simp only [← tensor_comp, Iso.inv_hom_id, id_tensorHom_id]
 
 lemma tensorHom_def {X₁ X₂ Y₁ Y₂ : GradedObject I C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂)
     [HasTensor X₁ Y₁] [HasTensor X₂ Y₂] [HasTensor X₂ Y₁] :
@@ -461,8 +461,8 @@ lemma pentagon : tensorHom (associator X₁ X₂ X₃).hom (𝟙 X₄) ≫
   rw [← cancel_epi (associator (tensorObj X₁ X₂) X₃ X₄).inv,
     ← cancel_epi (associator X₁ X₂ (tensorObj X₃ X₄)).inv, Iso.inv_hom_id_assoc,
     Iso.inv_hom_id, ← pentagon_inv_assoc, ← tensor_comp_assoc, id_comp, Iso.inv_hom_id,
-    tensor_id, id_comp, Iso.inv_hom_id_assoc, ← tensor_comp, id_comp, Iso.inv_hom_id,
-    tensor_id]
+    id_tensorHom_id, id_comp, Iso.inv_hom_id_assoc, ← tensor_comp, id_comp, Iso.inv_hom_id,
+    id_tensorHom_id]
 
 end Pentagon
 
