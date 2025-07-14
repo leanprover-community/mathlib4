@@ -7,7 +7,7 @@ import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Analysis.Normed.Ring.Lemmas
 import Mathlib.Data.Nat.Choose.Dvd
 import Mathlib.Data.ZMod.Units
-import Mathlib.GroupTheory.SpecificGroups.ZGroup
+import Mathlib.FieldTheory.Finite.Basic
 
 /-! # Cyclicity of the units of `ZMod n`
 

@@ -12,8 +12,9 @@ import Mathlib.CategoryTheory.Products.Associator
 Given functors `F G : C ⥤ V` between two monoidal categories,
 this file defines a typeclass `DayConvolution` on functors `F` `G` that contains
 a functor `F ⊛ G`, as well as the required data to exhibit `F ⊛ G` as a pointwise
-left Kan extension of `F ⊠ G` (see `CategoryTheory/Monoidal/ExternalProduct` for the definition)
-along the tensor product of `C`. Such a functor is called a Day convolution of `F` and `G`, and
+left Kan extension of `F ⊠ G` (see `Mathlib/CategoryTheory/Monoidal/ExternalProduct/Basic.lean`
+for the definition) along the tensor product of `C`.
+Such a functor is called a Day convolution of `F` and `G`, and
 although we do not show it yet, this operation defines a monoidal structure on `C ⥤ V`.
 
 We also define a typeclass `DayConvolutionUnit` on a functor `U : C ⥤ V` that bundle the data
@@ -332,7 +333,7 @@ lemma pentagon (H K : C ⥤ V)
     [DayConvolution G H] [DayConvolution (F ⊛ G) H] [DayConvolution F (G ⊛ H)]
     [DayConvolution H K] [DayConvolution G (H ⊛ K)] [DayConvolution (G ⊛ H) K]
     [DayConvolution ((F ⊛ G) ⊛ H) K] [DayConvolution (F ⊛ G) (H ⊛ K)]
-    [DayConvolution (F ⊛ G ⊛ H) K] [DayConvolution F  (G ⊛ H ⊛ K)]
+    [DayConvolution (F ⊛ G ⊛ H) K] [DayConvolution F (G ⊛ H ⊛ K)]
     [DayConvolution F ((G ⊛ H) ⊛ K)] :
     map (associator F G H).hom (𝟙 K) ≫
         (associator F (G ⊛ H) K).hom ≫ map (𝟙 F) (associator G H K).hom =
@@ -828,7 +829,7 @@ attribute [local instance] convolutionUnit
 open DayConvolutionUnit in
 lemma ι_map_leftUnitor_hom_eq_leftUnitor_hom (d : D)
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
-      (CostructuredArrow (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)]:
+      (CostructuredArrow (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)] :
     (ι C V D).map (λ_ d).hom =
     (DayConvolutionUnit.leftUnitor
       (ι C V D|>.obj <| 𝟙_ D) (ι C V D|>.obj d)).hom := by
@@ -844,7 +845,7 @@ lemma ι_map_leftUnitor_hom_eq_leftUnitor_hom (d : D)
 open DayConvolutionUnit in
 lemma ι_map_rightUnitor_hom_eq_rightUnitor_hom (d : D)
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
-      (CostructuredArrow (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorLeft v)]:
+      (CostructuredArrow (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorLeft v)] :
     (ι C V D).map (ρ_ d).hom =
     (DayConvolutionUnit.rightUnitor
       (ι C V D|>.obj <| 𝟙_ D) (ι C V D|>.obj d)).hom := by

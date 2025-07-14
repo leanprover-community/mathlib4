@@ -548,7 +548,7 @@ lemma iInf₂_add {κ : ι → Sort*} (f : (i : ι) → κ i → ℝ≥0∞) :
     (⨅ (i) (j), f i j) + a = ⨅ (i) (j), f i j + a := by
   simp only [add_comm, add_iInf₂]
 
-lemma add_sInf {s : Set ℝ≥0∞}: a + sInf s = ⨅ b ∈ s, a + b := by
+lemma add_sInf {s : Set ℝ≥0∞} : a + sInf s = ⨅ b ∈ s, a + b := by
   rw [sInf_eq_iInf, add_iInf₂]
 
 variable {κ : Sort*}
