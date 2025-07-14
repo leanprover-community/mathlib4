@@ -566,7 +566,7 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
     -- now manually translate the goal (an inequality in ℤᵐ⁰) to an inequality of "log" of ℤ
     simp only [map_pow, mem_adicCompletionIntegers, map_mul, this, inv_pow, ← exp_nsmul, nsmul_one,
       Int.natCast_natAbs]
-    refine mul_inv_le_one_of_le₀ ((le_exp_log (Valued.v a)).trans ?_) (zero_le _)
+    refine mul_inv_le_one_of_le₀ (le_exp_log.trans ?_) (zero_le _)
     simp [le_abs_self]
 
 section AbsoluteValue
