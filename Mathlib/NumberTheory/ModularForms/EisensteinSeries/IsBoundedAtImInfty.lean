@@ -44,7 +44,7 @@ lemma summable_norm_eisSummand {k : ℤ} (hk : 3 ≤ k) (z : ℍ) :
 
 /-- The norm of the restricted sum is less than the full sum of the norms. -/
 lemma norm_le_tsum_norm (N : ℕ) (a : Fin 2 → ZMod N) (k : ℤ) (hk : 3 ≤ k) (z : ℍ) :
-    ‖eisensteinSeries a k z‖  ≤ ∑' (x : Fin 2 → ℤ), ‖eisSummand k x z‖ := by
+    ‖eisensteinSeries a k z‖ ≤ ∑' (x : Fin 2 → ℤ), ‖eisSummand k x z‖ := by
   simp_rw [eisensteinSeries]
   apply le_trans (norm_tsum_le_tsum_norm ((summable_norm_eisSummand hk z).subtype _))
     (Summable.tsum_subtype_le (fun (x : Fin 2 → ℤ) ↦ ‖(eisSummand k x z)‖) _ (fun _ ↦ norm_nonneg _)

@@ -135,10 +135,10 @@ variable (σ : F ⟶ G) (τ : G ⟶ H)
 
 @[simp]
 theorem map_comp_apply (f : X ⟶ Y) (g : Y ⟶ Z) (a : F.obj X) :
-    (F.map (f ≫ g)) a = (F.map g) ((F.map f) a) := by simp [types_comp]
+    (F.map (f ≫ g)) a = (F.map g) ((F.map f) a) := by simp
 
 @[simp]
-theorem map_id_apply (a : F.obj X) : (F.map (𝟙 X)) a = a := by simp [types_id]
+theorem map_id_apply (a : F.obj X) : (F.map (𝟙 X)) a = a := by simp
 
 theorem naturality (f : X ⟶ Y) (x : F.obj X) : σ.app Y ((F.map f) x) = (G.map f) (σ.app X x) :=
   congr_fun (σ.naturality f) x
@@ -173,6 +173,17 @@ theorem hom_inv_id_app_apply (α : F ≅ G) (X) (x) : α.inv.app X (α.hom.app X
 @[simp]
 theorem inv_hom_id_app_apply (α : F ≅ G) (X) (x) : α.hom.app X (α.inv.app X x) = x :=
   congr_fun (α.inv_hom_id_app X) x
+
+lemma naturality_symm {F G : C ⥤ Type*} (e : ∀ j, F.obj j ≃ G.obj j)
+    (naturality : ∀ {j j'} (f : j ⟶ j'), e j' ∘ F.map f = G.map f ∘ e j) {j j' : C}
+    (f : j ⟶ j') :
+    (e j').symm ∘ G.map f = F.map f ∘ (e j).symm := by
+  ext x
+  obtain ⟨y, rfl⟩ := (e j).surjective x
+  apply (e j').injective
+  dsimp
+  simp only [Equiv.apply_symm_apply, Equiv.symm_apply_apply]
+  exact (congr_fun (naturality f) y).symm
 
 end FunctorToTypes
 

@@ -28,7 +28,7 @@ theorem vAdd_width_periodic (hn : ↑Γ.width ∣ n) (τ : ℍ) :
     f ((n : ℝ) +ᵥ τ) = f τ := by
   rw [← modular_T_zpow_smul τ, SlashInvariantForm.slash_action_eqn' (k := k) f
     (Γ.T_zpow_mem_iff.mpr hn)]
-  simp [← zpow_natCast, ← zpow_mul, ModularGroup.coe_T_zpow]
+  simp [ModularGroup.coe_T_zpow]
 
 theorem T_zpow_width_invariant (hn : ↑Γ.width ∣ n) (τ : ℍ) :
     f (ModularGroup.T ^ n • τ) = f τ := by

@@ -20,6 +20,36 @@ IFS=$'\n\t'
 # Default values
 AUTO="no"
 
+# Set MATHLIB_REPO to current repository if not provided
+if [ -z "${MATHLIB_REPO:-}" ]; then
+  MATHLIB_REPO="leanprover-community/mathlib4"
+fi
+
+# Function to validate and setup remotes
+setup_remotes() {
+  echo "### Validating remote configuration..."
+
+  # Check if we have a remote for the main mathlib4 repository
+  MAIN_REMOTE=$(find_remote "leanprover-community/mathlib4")
+  if [ -z "$MAIN_REMOTE" ]; then
+    echo "Adding remote 'upstream' for leanprover-community/mathlib4"
+    git remote add upstream https://github.com/leanprover-community/mathlib4.git
+    MAIN_REMOTE="upstream"
+  fi
+
+  # Check if we have a remote for the nightly-testing fork
+  NIGHTLY_REMOTE=$(find_remote "leanprover-community/mathlib4-nightly-testing")
+  if [ -z "$NIGHTLY_REMOTE" ]; then
+    echo "Adding remote 'nightly-testing' for leanprover-community/mathlib4-nightly-testing"
+    git remote add nightly-testing https://github.com/leanprover-community/mathlib4-nightly-testing.git
+    NIGHTLY_REMOTE="nightly-testing"
+  fi
+
+  echo "Remote configuration:"
+  echo "  Main repository ($MAIN_REMOTE): leanprover-community/mathlib4"
+  echo "  Nightly testing ($NIGHTLY_REMOTE): leanprover-community/mathlib4-nightly-testing"
+}
+
 # Function to display usage
 usage() {
   echo "Usage: $0 <BUMPVERSION> <NIGHTLYDATE>"
@@ -30,6 +60,14 @@ usage() {
   echo "NIGHTLYSHA: The SHA of the nightly toolchain that we want to adapt to"
   echo "AUTO: Optional flag to specify automatic mode, default is 'no'"
   exit 1
+}
+
+# Function to find remote for a given repository
+find_remote() {
+  local repo_pattern="$1"
+  # Use || true to prevent script exit if any command in the pipeline fails
+  # This handles cases where git remote fails or grep doesn't find matches
+  git remote -v | grep -E "$repo_pattern(\.git)? \(fetch\)" | head -n1 | cut -f1 || true
 }
 
 # Parse arguments
@@ -75,6 +113,9 @@ if ! command -v gh &> /dev/null; then
     exit 1
 fi
 
+# Setup and validate remotes
+setup_remotes
+
 echo "### Creating a PR for the nightly adaptation for $NIGHTLYDATE"
 
 echo
@@ -86,14 +127,14 @@ echo
 echo "### [auto] checkout master and pull the latest changes"
 
 git checkout master
-git pull
+git pull $MAIN_REMOTE master
 
 echo
-echo "### [auto] checkout 'bump/$BUMPVERSION' and merge the latest changes from 'origin/master'"
+echo "### [auto] checkout 'bump/$BUMPVERSION' and merge the latest changes from '$MAIN_REMOTE/master'"
 
 git checkout "bump/$BUMPVERSION"
-git pull
-git merge --no-edit origin/master || true # ignore error if there are conflicts
+git pull $MAIN_REMOTE "bump/$BUMPVERSION"
+git merge --no-edit $MAIN_REMOTE/master || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
@@ -122,7 +163,7 @@ fi
 while git diff --name-only --diff-filter=U | grep -q . || ! git diff-index --quiet HEAD --; do
   echo
   echo "### [user] Conflict resolution"
-  echo "We are merging the latest changes from 'origin/master' into 'bump/$BUMPVERSION'"
+  echo "We are merging the latest changes from '$MAIN_REMOTE/master' into 'bump/$BUMPVERSION'"
   echo "There seem to be conflicts or uncommitted files"
   echo ""
   echo "  1) Open `pwd` in a new terminal and run 'git status'"
@@ -135,7 +176,7 @@ echo "Proceeding with git push..."
 git push
 
 echo
-echo "### [auto] create a new branch 'bump/nightly-$NIGHTLYDATE' and merge the latest changes from 'origin/nightly-testing'"
+echo "### [auto] create a new branch 'bump/nightly-$NIGHTLYDATE' and merge the latest changes from nightly-testing"
 
 git checkout -b "bump/nightly-$NIGHTLYDATE" || git checkout "bump/nightly-$NIGHTLYDATE"
 git merge --no-edit $NIGHTLYSHA || true # ignore error if there are conflicts
@@ -160,8 +201,8 @@ fi
 if git diff --name-only --diff-filter=U | grep -q .; then
   echo
   echo "### [user] Conflict resolution"
-  echo "We are merging the latest changes from 'origin/nightly-testing' into 'bump/nightly-$NIGHTLYDATE'"
-  echo "Specifically, we are merging the following version of 'origin/nightly-testing':"
+  echo "We are merging the latest changes from nightly-testing into 'bump/nightly-$NIGHTLYDATE'"
+  echo "Specifically, we are merging the following version of nightly-testing:"
   echo "$NIGHTLYSHA"
   echo "There seem to be conflicts: please resolve them"
   echo ""
@@ -179,7 +220,7 @@ pr_title="chore: adaptations for nightly-$NIGHTLYDATE"
 # as the user might have inadvertently already committed changes
 # In general, we do not want this command to fail.
 git commit --allow-empty -m "$pr_title"
-git push --set-upstream origin "bump/nightly-$NIGHTLYDATE"
+git push --set-upstream $NIGHTLY_REMOTE "bump/nightly-$NIGHTLYDATE"
 
 # Check if there is a diff between bump/nightly-$NIGHTLYDATE and bump/$BUMPVERSION
 if git diff --name-only bump/$BUMPVERSION bump/nightly-$NIGHTLYDATE | grep -q .; then
@@ -188,7 +229,7 @@ if git diff --name-only bump/$BUMPVERSION bump/nightly-$NIGHTLYDATE | grep -q .;
   echo "### [auto] create a PR for the new branch"
   echo "Creating a pull request. Setting the base of the PR to 'bump/$BUMPVERSION'"
   echo "Running the following 'gh' command to do this:"
-  gh_command="gh pr create -t \"$pr_title\" -b '' -B bump/$BUMPVERSION"
+  gh_command="gh pr create -t \"$pr_title\" -b '' -B bump/$BUMPVERSION --repo leanprover-community/mathlib4-nightly-testing"
   echo "> $gh_command"
   gh_output=$(eval $gh_command)
   # Extract the PR number from the output
@@ -197,8 +238,8 @@ if git diff --name-only bump/$BUMPVERSION bump/nightly-$NIGHTLYDATE | grep -q .;
   echo
   echo "### [auto] post a link to the PR on Zulip"
 
-  zulip_title="#$pr_number adaptations for nightly-$NIGHTLYDATE"
-  zulip_body=$(printf "> %s\n\nPlease review this PR. At the end of the month this diff will land in 'master'." "$pr_title #$pr_number")
+  zulip_title="nightly#$pr_number adaptations for nightly-$NIGHTLYDATE"
+  zulip_body=$(printf "> %s\n\nPlease review this PR. At the end of the month this diff will land in 'master'." "$pr_title nightly#$pr_number")
 
   echo "Posting the link to the PR in a new thread on the #nightly-testing channel on Zulip"
   echo "Here is the message:"
@@ -233,7 +274,7 @@ echo
 echo "### [auto] checkout the 'nightly-testing' branch and merge the new branch into it"
 
 git checkout nightly-testing
-git pull
+git pull $NIGHTLY_REMOTE nightly-testing
 git merge --no-edit "bump/nightly-$NIGHTLYDATE" || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
@@ -275,7 +316,7 @@ done
 
 echo "All conflicts resolved and committed."
 echo "Proceeding with git push..."
-git push
+git push $NIGHTLY_REMOTE nightly-testing
 
 echo
 echo "### [auto] finished: checkout the original branch"

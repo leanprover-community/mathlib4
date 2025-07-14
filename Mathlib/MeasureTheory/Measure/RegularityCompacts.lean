@@ -47,7 +47,7 @@ lemma innerRegularWRT_isCompact_isClosed_iff_innerRegularWRT_isCompact_closure
   constructor <;> intro h A hA r hr
   · obtain ⟨K, hK1, ⟨hK2, _⟩, hK4⟩ := h hA r hr
     refine ⟨K, hK1, ?_, hK4⟩
-    simp only [closure_closure, Function.comp_apply]
+    simp only [Function.comp_apply]
     exact hK2.closure
   · obtain ⟨K, hK1, hK2, hK3⟩ := h hA r hr
     refine ⟨closure K, closure_minimal hK1 hA, ?_, ?_⟩

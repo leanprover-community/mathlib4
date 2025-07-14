@@ -259,7 +259,7 @@ instance : LawfulTraversable FreeMagma.{u} :=
         rw [traverse_mul, ih1, ih2, seq_pure, map_pure, map_pure]
     comp_traverse := fun f g x ↦
       FreeMagma.recOnPure x
-        (fun x ↦ by simp only [Function.comp_def, traverse_pure, traverse_pure', functor_norm])
+        (fun x ↦ by simp only [Function.comp_def, traverse_pure, functor_norm])
         (fun x y ih1 ih2 ↦ by
           rw [traverse_mul, ih1, ih2, traverse_mul]
           simp [Functor.Comp.map_mk, Functor.map_map, Function.comp_def, Comp.seq_mk, seq_map_assoc,

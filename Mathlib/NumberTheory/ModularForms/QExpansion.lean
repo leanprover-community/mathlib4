@@ -168,7 +168,7 @@ theorem bounded_at_infty_comp_ofComplex :
 variable [NeZero h] (hΓ : Γ.width ∣ h)
 include hΓ
 
-theorem differentiableAt_cuspFunction  (hq : ‖q‖ < 1) :
+theorem differentiableAt_cuspFunction (hq : ‖q‖ < 1) :
     DifferentiableAt ℂ (cuspFunction h f) q := by
   have npos : 0 < (h : ℝ) := mod_cast (Nat.pos_iff_ne_zero.mpr (NeZero.ne _))
   rcases eq_or_ne q 0 with rfl | hq'
@@ -188,7 +188,7 @@ lemma analyticAt_cuspFunction_zero :
 
 lemma hasSum_qExpansion_of_abs_lt (hq : ‖q‖ < 1) :
     HasSum (fun m ↦ (qExpansion h f).coeff ℂ m • q ^ m) (cuspFunction h f q) := by
-  simp only [qExpansion_coeff, ← eq_cuspFunction f hΓ]
+  simp only [qExpansion_coeff]
   have hdiff : DifferentiableOn ℂ (cuspFunction h f) (Metric.ball 0 1) := by
     refine fun z hz ↦ (differentiableAt_cuspFunction f hΓ ?_).differentiableWithinAt
     simpa using hz
@@ -319,7 +319,7 @@ namespace CuspFormClass
 variable [hF : CuspFormClass F Γ k]
 include hF
 
-theorem exp_decay_atImInfty (hΓ : Γ.width ∣ h):
+theorem exp_decay_atImInfty (hΓ : Γ.width ∣ h) :
     f =O[atImInfty] fun τ ↦ Real.exp (-2 * π * τ.im / h) :=
   IsZeroAtImInfty.exp_decay_atImInfty_of_width_dvd (by simpa using zero_at_infty f 1) hΓ
 

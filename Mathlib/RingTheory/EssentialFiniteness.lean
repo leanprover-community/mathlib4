@@ -95,7 +95,7 @@ lemma EssFiniteType.of_isLocalization (M : Submonoid R) [IsLocalization M S] :
     EssFiniteType R S := by
   rw [essFiniteType_iff]
   use ∅
-  simp only [Finset.coe_empty, Algebra.adjoin_empty, exists_and_left, Algebra.mem_bot,
+  simp only [Finset.coe_empty, Algebra.adjoin_empty, Algebra.mem_bot,
     Set.mem_range, exists_exists_eq_and]
   intro s
   obtain ⟨⟨x, t⟩, e⟩ := IsLocalization.surj M s
@@ -221,13 +221,7 @@ lemma EssFiniteType.algHom_ext [EssFiniteType R S]
   suffices f.comp (IsScalarTower.toAlgHom R _ S) = g.comp (IsScalarTower.toAlgHom R _ S) by
     ext; exact AlgHom.congr_fun this _
   apply AlgHom.ext_of_adjoin_eq_top (s := { x | x.1 ∈ finset R S })
-  · rw [← top_le_iff]
-    rintro ⟨x, hx⟩ _
-    refine Algebra.adjoin_induction ?_ ?_ ?_ ?_ hx
-    · intro x hx; exact Algebra.subset_adjoin hx
-    · intro r; exact Subalgebra.algebraMap_mem _ _
-    · intro x y _ _ hx hy; exact add_mem hx hy
-    · intro x y _ _ hx hy; exact mul_mem hx hy
+  · exact adjoin_mem_finset R S
   · rintro ⟨x, hx⟩ hx'; exact H x hx'
 
 end Algebra
@@ -253,7 +247,7 @@ def EssFiniteType.finset (hf : f.EssFiniteType) : Finset S :=
 
 lemma FiniteType.essFiniteType (hf : f.FiniteType) : f.EssFiniteType := by
   algebraize [f]
-  show Algebra.EssFiniteType R S
+  change Algebra.EssFiniteType R S
   infer_instance
 
 lemma EssFiniteType.ext (hf : f.EssFiniteType) {g₁ g₂ : S →+* T}
