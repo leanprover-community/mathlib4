@@ -109,7 +109,7 @@ partial def explodeCore (e : Expr) (depth : Nat) (entries : Entries) (start : Bo
   | .letE varName varType val body _ => do
     trace[explode] ".letE"
     let varType := varType.cleanupAnnotations
-    Meta.withLocalDeclD varName varType fun var => do
+    Meta.withLetDecl varName varType val fun var => do
       let (valEntry?, entries) ← explodeCore val depth entries
       -- Add a synonym so that the substituted fvars refer to `valEntry?`
       let entries := valEntry?.map (entries.addSynonym var) |>.getD entries

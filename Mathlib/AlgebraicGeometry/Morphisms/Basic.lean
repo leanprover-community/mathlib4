@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.AlgebraicGeometry.Pullbacks
-import Mathlib.AlgebraicGeometry.Limits
 import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.Data.List.TFAE
 
@@ -159,7 +158,7 @@ lemma of_iSup_eq_top {ι} (U : ι → Y.Opens) (hU : iSup U = ⊤)
     (Y.openCoverOfISupEqTop (s := Set.range U) Subtype.val (by ext; simp [← hU]))).mpr fun i ↦ ?_
   obtain ⟨_, i, rfl⟩ := i
   refine (P.arrow_mk_iso_iff (morphismRestrictOpensRange f _)).mp ?_
-  show P (f ∣_ (U i).ι.opensRange)
+  change P (f ∣_ (U i).ι.opensRange)
   rw [Scheme.Opens.opensRange_ι]
   exact H i
 
@@ -183,7 +182,7 @@ lemma of_range_subset_iSup [P.RespectsRight @IsOpenImmersion] {ι : Type*} (U : 
   rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := P) (U := fun i : ι ↦ (⨆ i, U i).ι ⁻¹ᵁ U i)]
   · intro i
     have heq : g ⁻¹ᵁ (⨆ i, U i).ι ⁻¹ᵁ U i = f ⁻¹ᵁ U i := by
-      show (g ≫ (⨆ i, U i).ι) ⁻¹ᵁ U i = _
+      change (g ≫ (⨆ i, U i).ι) ⁻¹ᵁ U i = _
       simp [g]
     let e : Arrow.mk (g ∣_ (⨆ i, U i).ι ⁻¹ᵁ U i) ≅ Arrow.mk (f ∣_ U i) :=
         Arrow.isoMk (X.isoOfEq heq) (Scheme.Opens.isoOfLE (le_iSup U i)) <| by
@@ -300,7 +299,7 @@ lemma isLocalAtTarget [P.IsMultiplicative]
 
 lemma sigmaDesc {X : Scheme.{u}} {ι : Type v} [Small.{u} ι] {Y : ι → Scheme.{u}}
     {f : ∀ i, Y i ⟶ X} (hf : ∀ i, P (f i)) : P (Sigma.desc f) := by
-  rw [IsLocalAtSource.iff_of_openCover (P := P) (sigmaOpenCover _)]
+  rw [IsLocalAtSource.iff_of_openCover (P := P) (Scheme.IsLocallyDirected.openCover _)]
   exact fun i ↦ by simp [hf]
 
 instance top : IsLocalAtSource (⊤ : MorphismProperty Scheme.{u}) where
