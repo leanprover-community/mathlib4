@@ -50,8 +50,8 @@ variable [CompleteSemilatticeSup α] {s t : Set α} {a b : α}
 theorem sSup_le_sSup_of_isCofinalFor (h : IsCofinalFor s t) : sSup s ≤ sSup t :=
   IsLeast.mono (isLUB_sSup t) (isLUB_sSup s) <| upperBounds_mono_of_isCofinalFor h
 
-theorem sSup_le_sSup_of_forall_exists_le (h : ∀ x ∈ s, ∃ y ∈ t, x ≤ y) : sSup s ≤ sSup t :=
-  sSup_le_sSup_of_isCofinalFor h
+-- theorem sSup_le_sSup_of_forall_exists_le (h : ∀ x ∈ s, ∃ y ∈ t, x ≤ y) : sSup s ≤ sSup t :=
+--   sSup_le_sSup_of_isCofinalFor h
 
 -- We will generalize this to conditionally complete lattices in `csSup_singleton`.
 @[simp]
@@ -67,8 +67,8 @@ variable [CompleteSemilatticeInf α] {s t : Set α} {a b : α}
 theorem sInf_le_sInf_of_isCoinitialFor (h : IsCoinitialFor s t) : sInf t ≤ sInf s :=
   IsGreatest.mono (isGLB_sInf t) (isGLB_sInf s) <| lowerBounds_mono_of_isCoinitialFor h
 
-theorem sInf_le_sInf_of_forall_exists_le (h : ∀ x ∈ s, ∃ y ∈ t, y ≤ x) : sInf t ≤ sInf s :=
-  sInf_le_sInf_of_isCoinitialFor h
+-- theorem sInf_le_sInf_of_forall_exists_le (h : ∀ x ∈ s, ∃ y ∈ t, y ≤ x) : sInf t ≤ sInf s :=
+--   sInf_le_sInf_of_isCoinitialFor h
 
 -- We will generalize this to conditionally complete lattices in `csInf_singleton`.
 @[simp]
