@@ -78,6 +78,11 @@ lemma ENNReal.tsum_ofReal_exp_lt_top {c : ℝ} (hc : c < 0) {f : ℕ → ℝ} (h
     have h_sum : Summable fun i : ℕ ↦ rexp (i * c) := Real.summable_exp_nat_mul_iff.mpr hc
     simp [← ENNReal.ofReal_tsum_of_nonneg (fun _ ↦ by positivity) h_sum]
 
+lemma inv_sqrt_two_sub_one : (√2 - 1)⁻¹ = √2 + 1 := by
+  rw [← one_div, div_eq_iff (sub_ne_zero_of_ne (by simp))]
+  ring_nf
+  norm_num
+
 end Aux
 
 namespace ProbabilityTheory
@@ -155,7 +160,10 @@ lemma measure_le_mul_measure_gt_le_of_map_rotation_eq_self [SFinite μ]
 
 section AnnulusIntegralBound
 
-/-- A sequence of real thresholds that will be used to cut the space into annuli. -/
+/-- A sequence of real thresholds that will be used to cut the space into annuli.
+Chosen such that for a rotation invariant measure, an application of lemma
+`measure_le_mul_measure_gt_le_of_map_rotation_eq_self` gives
+`μ {x | ‖x‖ ≤ a} * μ {x | normThreshold a (n + 1) < ‖x‖} ≤ μ {x | normThreshold a n < ‖x‖} ^ 2`. -/
 private noncomputable def normThreshold (a : ℝ) : ℕ → ℝ
 | 0 => a
 | n + 1 => √2 * normThreshold a n + a
@@ -164,6 +172,13 @@ private lemma normThreshold_zero : normThreshold a 0 = a := rfl
 
 private lemma normThreshold_add_one (n : ℕ) :
     normThreshold a (n + 1) = √2 * normThreshold a n + a := rfl
+
+lemma measure_le_mul_measure_gt_normThreshold_le_of_map_rotation_eq_self [SFinite μ]
+    (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ) (a : ℝ) (n : ℕ) :
+    μ {x | ‖x‖ ≤ a} * μ {x | normThreshold a (n + 1) < ‖x‖}
+      ≤ μ {x | normThreshold a n < ‖x‖} ^ 2 := by
+  convert measure_le_mul_measure_gt_le_of_map_rotation_eq_self h_rot _ _
+  simp [normThreshold_add_one]
 
 private lemma lt_normThreshold_zero (ha_pos : 0 < a) :
     a / (1 - √2) < normThreshold a 0 := by
@@ -176,22 +191,16 @@ private lemma normThreshold_strictMono (ha_pos : 0 < a) : StrictMono (normThresh
   arithmeticGeometric_strictMono normThreshold_add_one Real.one_lt_sqrt_two
     (lt_normThreshold_zero ha_pos)
 
-private lemma normThreshold_tendsto_atTop (ha_pos : 0 < a) :
+private lemma tendsto_normThreshold_atTop (ha_pos : 0 < a) :
     Tendsto (normThreshold a) atTop atTop :=
   tendsto_arithmeticGeometric_atTop_of_one_lt normThreshold_add_one Real.one_lt_sqrt_two
     (lt_normThreshold_zero ha_pos)
 
 private lemma normThreshold_eq (n : ℕ) : normThreshold a n = a * (1 + √2) * (√2 ^ (n + 1) - 1) := by
-  rw [arithmeticGeometric_eq normThreshold_add_one (by simp), pow_succ]
-  simp only [normThreshold_zero]
-  have : 1 - √2 ≠ 0 := sub_ne_zero_of_ne (Ne.symm (by simp))
-  field_simp
-  ring_nf
-  have h3 : √2 ^ 3 = 2 * √2 := by rw [pow_succ, Real.sq_sqrt (by positivity)]
-  rw [Real.sq_sqrt (by positivity), h3]
-  ring
+  rw [arithmeticGeometric_eq_of_TODO' normThreshold_add_one rfl (by simp), ← mul_one_div,
+    one_div, inv_sqrt_two_sub_one, add_comm √2]
 
-private lemma normThreshold_add_one_le (n : ℕ) :
+private lemma sq_normThreshold_add_one_le (n : ℕ) :
     normThreshold a (n + 1) ^ 2 ≤ a ^ 2 * (1 + √2) ^ 2 * 2 ^ (n + 2) := by
   simp_rw [normThreshold_eq, mul_pow, mul_assoc]
   gcongr
@@ -214,17 +223,16 @@ lemma measure_gt_normThreshold_le_rpow [IsProbabilityMeasure μ]
   have hc_lt_top : c < ∞ := measure_lt_top _ _
   induction n with
   | zero =>
-    simp only [pow_zero, pow_one]
+    simp only [pow_zero, pow_one, normThreshold_zero]
     rw [ENNReal.mul_div_cancel hc_pos.ne' hc_lt_top.ne]
     refine le_of_eq ?_
     rw [← prob_compl_eq_one_sub (measurableSet_le (by fun_prop) (by fun_prop))]
     congr with x
-    simp [normThreshold_zero]
+    simp
   | succ n hn =>
     have h_mul_le : c * μ {x | normThreshold a (n + 1) < ‖x‖}
-        ≤ μ {x | normThreshold a n < ‖x‖} ^ 2 := by
-      convert measure_le_mul_measure_gt_le_of_map_rotation_eq_self h_rot _ _
-      simp [normThreshold_add_one]
+        ≤ μ {x | normThreshold a n < ‖x‖} ^ 2 :=
+      measure_le_mul_measure_gt_normThreshold_le_of_map_rotation_eq_self h_rot _ _
     calc μ {x | normThreshold a (n + 1) < ‖x‖}
     _ = c⁻¹ * (c * μ {x | normThreshold a (n + 1) < ‖x‖}) := by
       rw [← mul_assoc, ENNReal.inv_mul_cancel hc_pos.ne' hc_lt_top.ne, one_mul]
@@ -314,7 +322,7 @@ lemma logRatio_mul_normThreshold_add_one_le {c : ℝ≥0∞}
   _ ≤ logRatio c * (a ^ 2 * (1 + √2) ^ 2 * 2 ^ (n + 2)) * a⁻¹ ^ 2 := by
     gcongr
     · exact (logRatio_pos hc_gt hc_lt).le
-    · exact normThreshold_add_one_le n
+    · exact sq_normThreshold_add_one_le n
   _ = 2⁻¹ * Real.log (c.toReal / (1 - c).toReal) * 2 ^ n := by
     unfold logRatio
     field_simp
@@ -418,7 +426,7 @@ lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]
       Set.mem_diff, not_le, true_iff]
     simp_rw [and_comm (b := t _ < ‖x‖)]
     exact (normThreshold_strictMono ha_pos).exists_between_of_tendsto_atTop
-      (normThreshold_tendsto_atTop ha_pos) _
+      (tendsto_normThreshold_atTop ha_pos) _
   rw [← setLIntegral_univ, h_iUnion]
   have : ∫⁻ x in closedBall 0 (t 0) ∪ ⋃ n, closedBall 0 (t (n + 1)) \ closedBall 0 (t n),
         .ofReal (rexp (C * ‖x‖ ^ 2)) ∂μ

@@ -39,6 +39,34 @@ lemma arithmeticGeometric_eq' (hu : ∀ n, u (n + 1) = a * u n + b) (ha : a ≠ 
   ext
   exact arithmeticGeometric_eq hu ha _
 
+lemma arithmeticGeometric_eq_of_TODO (hu : ∀ n, u (n + 1) = a * u n + b) (h0 : u 0 = b)
+    (ha : a ≠ 1) (n : ℕ) :
+    u n = b * (1 - a ^ (n + 1)) / (1 - a) := by
+  rw [arithmeticGeometric_eq hu ha n, h0]
+  have : 1 - a ≠ 0 := sub_ne_zero.mpr ha.symm
+  field_simp
+  ring
+
+lemma arithmeticGeometric_eq_of_TODO' (hu : ∀ n, u (n + 1) = a * u n + b) (h0 : u 0 = b)
+    (ha : a ≠ 1) (n : ℕ) :
+    u n = b * (a ^ (n + 1) - 1) / (a - 1) := by
+  rw [arithmeticGeometric_eq_of_TODO hu h0 ha n, ← neg_sub _ a, div_neg, ← neg_sub  _ (a ^ (n + 1)),
+    mul_neg, neg_div, neg_neg]
+
+lemma arithmeticGeometric_eq_of_TODO'' (hu : ∀ n, u (n + 1) = a * u n + b) (h0 : u 0 = 0)
+    (ha : a ≠ 1) (n : ℕ) :
+    u n = b * (1 - a ^ n) / (1 - a) := by
+  rw [arithmeticGeometric_eq hu ha n, h0]
+  have : 1 - a ≠ 0 := sub_ne_zero.mpr ha.symm
+  field_simp
+  ring
+
+lemma arithmeticGeometric_eq_of_TODO''' (hu : ∀ n, u (n + 1) = a * u n + b) (h0 : u 0 = 0)
+    (ha : a ≠ 1) (n : ℕ) :
+    u n = b * (a ^ n - 1) / (a - 1) := by
+  rw [arithmeticGeometric_eq_of_TODO'' hu h0 ha n, ← neg_sub _ a, div_neg, ← neg_sub  _ (a ^ n),
+    mul_neg, neg_div, neg_neg]
+
 variable [LinearOrder R] [IsStrictOrderedRing R]
 
 lemma div_lt_arithmeticGeometric (hu : ∀ n, u (n + 1) = a * u n + b)
