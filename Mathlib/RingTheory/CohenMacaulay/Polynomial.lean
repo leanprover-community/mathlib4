@@ -14,9 +14,19 @@ import Mathlib.Algebra.Polynomial.FieldDivision
 universe u
 
 variable (R : Type u) [CommRing R]
+
 section Polynomial
 
 open RingTheory.Sequence IsLocalRing Polynomial Ideal
+
+lemma Polynomial.exist_monic_mem {F : Type u} [Field F] {I : Ideal F[X]} (ne : I ≠ ⊥) :
+    ∃ f ∈ I, f.Monic := by
+  obtain ⟨g, gmem, gne⟩ : ∃ g ∈ I, g ≠ 0 := by
+    by_contra!
+    exact ne ((Submodule.eq_bot_iff I).mpr this)
+  use C g.leadingCoeff⁻¹ * g
+  refine ⟨mul_mem_left I (C g.leadingCoeff⁻¹) gmem, ?_⟩
+  simpa [Monic] using inv_mul_cancel₀ (leadingCoeff_ne_zero.mpr gne)
 
 lemma Polynomial.localization_at_comap_maximal_isCM_isCM [IsNoetherianRing R]
     [IsCohenMacaulayLocalRing R] (p : Ideal R[X]) [p.IsPrime] (max : p.comap C = maximalIdeal R) :
@@ -60,31 +70,14 @@ lemma Polynomial.localization_at_comap_maximal_isCM_isCM [IsNoetherianRing R]
     apply le_trans ht1 (le_sSup _)
     use (rs.map (algebraMap R (Localization.AtPrime p))), reg
     simpa [cm] using mem'
-  · have prin : (p.map (Polynomial.mapRingHom (IsLocalRing.residue R))).IsPrincipal := inferInstance
-    rcases prin with ⟨g, hg⟩
-    have ne0 : g.leadingCoeff ≠ 0 := by
-      apply Polynomial.leadingCoeff_ne_zero.mpr
-      by_contra zero
-      simp [hg, zero] at eq0
-    have mong : ((C g.leadingCoeff⁻¹) * g).Monic := by
-      simp only [Monic, leadingCoeff_mul, leadingCoeff_C]
-      apply inv_mul_cancel₀ ne0
-    have : C g.leadingCoeff⁻¹ * g ∈ lifts (IsLocalRing.residue R) :=
-      Polynomial.map_surjective _ IsLocalRing.residue_surjective _
-    have hg' : Ideal.map (mapRingHom (IsLocalRing.residue R)) p =
-      Submodule.span (IsLocalRing.ResidueField R)[X] {C g.leadingCoeff⁻¹ * g} := by
-      rw [hg]
-      apply span_singleton_eq_span_singleton.mpr
-      have : IsUnit (C g.leadingCoeff⁻¹) := by
-        rw [isUnit_C, isUnit_iff_exists_inv]
-        use g.leadingCoeff
-        exact inv_mul_cancel₀ ne0
-      use this.unit
-      simp [mul_comm]
+  · rcases exist_monic_mem eq0 with ⟨g, gmem, mong⟩
+    have : g ∈ lifts (IsLocalRing.residue R) := map_surjective _ IsLocalRing.residue_surjective _
     rcases Polynomial.lifts_and_natDegree_eq_and_monic this mong with ⟨f, hf, deg, monf⟩
     have fmem : f ∈ p := by
-
-      sorry
+      simp only [← hf, ← coe_mapRingHom, ← mem_comap] at gmem
+      rw [comap_map_of_surjective' _ (map_surjective _ IsLocalRing.residue_surjective),
+        sup_of_le_left (by simpa [ker_mapRingHom, ker_residue] using qle)] at gmem
+      exact gmem
     have reg'' : IsWeaklyRegular R[X] (rs.map (algebraMap R R[X])) := IsWeaklyRegular.of_flat reg.1
     have reg' : IsWeaklyRegular R[X] ((rs.map (algebraMap R R[X])) ++ [f]) := by
       refine ⟨fun i hi ↦ ?_⟩
@@ -94,10 +87,15 @@ lemma Polynomial.localization_at_comap_maximal_isCM_isCM [IsNoetherianRing R]
       rcases lt_or_eq_of_le hi with lt|eq
       · simpa only [← List.getElem_append_left' lt [f]] using reg''.1 i lt
       · rw [List.getElem_concat_length eq, List.take_of_length_le (ge_of_eq eq), smul_eq_mul,
-          mul_top, ← map_ofList]
-        apply isSMulRegular_of_smul_eq_zero_imp_eq_zero (fun x eq0 ↦ ?_)
-
-        sorry
+          mul_top, ← map_ofList, algebraMap_eq]
+        let _ : Algebra R[X] (R ⧸ ofList rs)[X] := RingHom.toAlgebra
+          (Polynomial.mapRingHom (Ideal.Quotient.mk _))
+        apply (Equiv.isSMulRegular_congr (r := f) (s := f)
+          (e := (Ideal.polynomialQuotientEquivQuotientPolynomial (ofList rs)).toEquiv)
+          (fun x ↦ by simp [Algebra.smul_def])).mp
+        apply isSMulRegular_of_smul_eq_zero_imp_eq_zero
+        simpa only [Algebra.smul_def, algebraMap_def, Quotient.algebraMap_eq, coe_mapRingHom,
+          mul_comm, ← mem_nonZeroDivisors_iff] using (monf.map _).mem_nonZeroDivisors
     have mem'' : ∀ r ∈ (((rs.map (algebraMap R R[X])) ++ [f]).map
       (algebraMap R[X] (Localization.AtPrime p))), r ∈ maximalIdeal (Localization.AtPrime p) := by
       intro r hr
