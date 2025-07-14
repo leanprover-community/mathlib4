@@ -26,7 +26,10 @@ def of (C : Type u) [EnrichedCategory.{w} V C] : EnrichedCat.{w, v, u} V :=
 
 open EnrichedCategory
 
-def whiskerLeft {C D E : EnrichedCat.{w, v, u} V}
+variable {C D E E' : EnrichedCat.{w, v, u} V}
+
+@[simps]
+def whiskerLeft
     (F : EnrichedFunctor V C D) {G H : EnrichedFunctor V D E} (α : EnrichedNatTrans G H) :
     EnrichedFunctor.comp V F G ⟶ EnrichedFunctor.comp V F H where
   app X := α.app (F.obj X)
@@ -36,13 +39,43 @@ def whiskerLeft {C D E : EnrichedCat.{w, v, u} V}
      ← whiskerRight_comp_tensorHom]
     simp
 
-def whiskerRight {C D E : EnrichedCat.{w, v, u} V}
+@[simps]
+def whiskerRight
     {F G : EnrichedFunctor V C D} (α : EnrichedNatTrans F G) (H : EnrichedFunctor V D E) :
     EnrichedFunctor.comp V F H ⟶ EnrichedFunctor.comp V G H where
   app X := α.app X ≫ H.map _ _
   naturality X Y := by
     simp only [Category.assoc, EnrichedFunctor.comp_obj, F.comp_map, tensor_comp]
     rw [← H.map_comp, reassoc_of% (GradedNatTrans.naturality α X Y)]
+    simp
+
+def leftUnitor (F : EnrichedFunctor V C D) :
+    EnrichedFunctor.comp V (EnrichedFunctor.id V _) F ≅ F :=
+  EnrichedFunctor.isoOfComponents (fun X => EnrichedIso.refl _) fun X Y => by
+    simp only [EnrichedFunctor.comp_obj, EnrichedFunctor.id_obj, EnrichedFunctor.comp_map,
+      EnrichedFunctor.id_map, Category.id_comp, EnrichedIso.refl_hom]
+    rw [tensorHom_def, Category.assoc, (Iso.inv_comp_eq _).mp (e_comp_id ..),
+      tensorHom_def', Category.assoc, (Iso.inv_comp_eq _).mp (e_id_comp ..)]
+    simp
+
+def rightUnitor (F : EnrichedFunctor V C D) :
+    EnrichedFunctor.comp V F (EnrichedFunctor.id V _) ≅ F :=
+  EnrichedFunctor.isoOfComponents (fun X => EnrichedIso.refl _) fun X Y => by
+    simp only [EnrichedFunctor.comp_obj, EnrichedFunctor.id_obj, EnrichedFunctor.comp_map,
+      EnrichedFunctor.id_map, Category.comp_id, EnrichedIso.refl_hom]
+    rw [tensorHom_def, Category.assoc, (Iso.inv_comp_eq _).mp (e_comp_id ..),
+      tensorHom_def', Category.assoc, (Iso.inv_comp_eq _).mp (e_id_comp ..)]
+    simp
+
+def associator (F : EnrichedFunctor V C D) (G : EnrichedFunctor V D E)
+    (H : EnrichedFunctor V E E') :
+    EnrichedFunctor.comp V (EnrichedFunctor.comp V F G) H ≅
+    EnrichedFunctor.comp V F (EnrichedFunctor.comp V G H) :=
+  EnrichedFunctor.isoOfComponents (fun X => EnrichedIso.refl _) fun X Y => by
+    simp only [EnrichedFunctor.comp_obj, EnrichedFunctor.comp_map, Category.assoc,
+      EnrichedIso.refl_hom]
+    rw [tensorHom_def, Category.assoc, (Iso.inv_comp_eq _).mp (e_comp_id ..),
+      tensorHom_def', Category.assoc, (Iso.inv_comp_eq _).mp (e_id_comp ..)]
     simp
 
 /-- Bicategory structure on `Cat` -/
@@ -52,11 +85,20 @@ instance bicategory : Bicategory (EnrichedCat.{w, v, u} V) where
   comp F G := EnrichedFunctor.comp V F G
   whiskerLeft F G H α := whiskerLeft V F α
   whiskerRight α H := whiskerRight V α H
-  associator F G H := _ --Functor.associator
-  leftUnitor {_} _ := _ --Functor.leftUnitor
-  rightUnitor {_} _ := _ --Functor.rightUnitor
-  pentagon := fun {_} {_} {_} {_} {_} => _ --Functor.pentagon
-  triangle {_} {_} {_} := _ --Functor.triangle
+  associator F G H := associator V F G H
+  leftUnitor F := leftUnitor V F
+  rightUnitor F := rightUnitor V F
+  pentagon F G H I := by
+    sorry
+  triangle F G := sorry
+  id_whiskerLeft := sorry
+  comp_whiskerLeft := sorry
+  id_whiskerRight := sorry
+  comp_whiskerRight := sorry
+  whiskerRight_id := sorry
+  whiskerRight_comp := sorry
+  whisker_assoc := sorry
+  whisker_exchange := sorry
 
 end EnrichedCat
 
