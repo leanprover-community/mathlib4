@@ -40,7 +40,7 @@ def toLinearEquiv (f : GeneralLinearGroup R M) : M ≃ₗ[R] M :=
     left_inv := fun m ↦ show (f.inv * f.val) m = m by rw [f.inv_val]; simp
     right_inv := fun m ↦ show (f.val * f.inv) m = m by rw [f.val_inv]; simp }
 
-@[simp] lemma toLinearEquiv_toFun (f : GeneralLinearGroup R M) :
+@[simp] lemma coe_toLinearEquiv (f : GeneralLinearGroup R M) :
     f.toLinearEquiv = (f : M → M) := rfl
 
 /-- An equivalence from `M` to itself determines an invertible linear map. -/
@@ -71,18 +71,21 @@ theorem coeFn_generalLinearEquiv (f : GeneralLinearGroup R M) :
 
 section Functoriality
 
-variable {S N : Type*} [Semiring S] [AddCommGroup N] [Module S N]
+variable {S N : Type*} [Semiring S] [AddCommMonoid N] [Module S N]
   {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
 
 /-- A semilinear equivalence from `V` to `W` determines an isomorphism of general linear
 groups. -/
-@[simps apply]
-def compLinearEquiv (e : M ≃ₛₗ[σ] N) : GeneralLinearGroup R M ≃* GeneralLinearGroup S N where
-  toFun g := ofLinearEquiv (e.symm.trans <| g.toLinearEquiv.trans e)
-  invFun h := ofLinearEquiv (e.trans <| h.toLinearEquiv.trans e.symm)
-  map_mul' g g' := Units.ext <| LinearMap.ext <| by simp
-  left_inv g := Units.ext <| LinearMap.ext <| by simp
-  right_inv h := Units.ext <| LinearMap.ext <| by simp
+def compLinearEquiv (e : M ≃ₛₗ[σ] N) : GeneralLinearGroup R M ≃* GeneralLinearGroup S N :=
+  Units.mapEquiv (LinearEquiv.conjRingEquiv e).toMulEquiv
+
+@[simp] lemma compLinearEquiv_apply (e : M ≃ₛₗ[σ] N) (g : GeneralLinearGroup R M) :
+    compLinearEquiv e g = ofLinearEquiv (e.symm.trans <| g.toLinearEquiv.trans e) :=
+  rfl
+
+@[simp] lemma compLinearEquiv_symm (e : M ≃ₛₗ[σ] N) :
+    (compLinearEquiv e).symm = compLinearEquiv e.symm :=
+  rfl
 
 end Functoriality
 

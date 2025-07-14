@@ -257,7 +257,7 @@ theorem subset_center_units : ((↑) : Mˣ → M) ⁻¹' center M ⊆ Set.center
   fun _ ha => by
   rw [_root_.Semigroup.mem_center_iff]
   intro _
-  rw [← Units.eq_iff, Units.val_mul, Units.val_mul, ha.comm]
+  rw [← Units.val_inj, Units.val_mul, Units.val_mul, ha.comm]
 
 @[to_additive (attr := simp)]
 theorem units_inv_mem_center {a : Mˣ} (ha : ↑a ∈ Set.center M) : ↑a⁻¹ ∈ Set.center M := by
