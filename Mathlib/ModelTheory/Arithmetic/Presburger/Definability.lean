@@ -49,7 +49,6 @@ definable.
 - Seymour Ginsburg and Edwin H. Spanier, Bounded Algol-Like Languages.
 - Seymour Ginsburg and Edwin H. Spanier, Semigroups, Presburger Formulas, and Languages.
 - Samuel Eilenberg and M. P. Schützenberger, Rational Sets in Commutative Monoids.
-
 -/
 
 universe u v w
@@ -1004,9 +1003,9 @@ lemma term_realize_eq_add_dotProduct (t : presburger[[A]].Term α) :
         refine ⟨0, 0, fun v => ?_⟩
         rw [withConstants_funMap_sumInl]
         simp
-      | succ =>
-        refine ⟨k 0 + 1, u 0, fun v => ?_⟩
-        rw [withConstants_funMap_sumInl, add_right_comm]
+      | one =>
+        refine ⟨1, 0, fun v => ?_⟩
+        rw [withConstants_funMap_sumInl]
         simp [ih]
       | add =>
         refine ⟨k 0 + k 1, u 0 + u 1, fun v => ?_⟩
