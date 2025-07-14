@@ -63,7 +63,8 @@ def whiskerRight {M₁ M₂ : ModuleCat R} (f : M₁ ⟶ M₂) (N : ModuleCat R)
     tensorObj M₁ N ⟶ tensorObj M₂ N :=
   ofHom <| f.hom.rTensor N
 
-theorem id_tensorHom_id (M N : ModuleCat R) : tensorHom (𝟙 M) (𝟙 N) = 𝟙 (ModuleCat.of R (M ⊗ N)) := by
+theorem id_tensorHom_id (M N : ModuleCat R) :
+    tensorHom (𝟙 M) (𝟙 N) = 𝟙 (ModuleCat.of R (M ⊗ N)) := by
   ext : 1
   -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): even with high priority `ext` fails to find this.
   apply TensorProduct.ext
