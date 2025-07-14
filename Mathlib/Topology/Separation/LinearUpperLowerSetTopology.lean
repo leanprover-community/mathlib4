@@ -13,7 +13,8 @@ import Mathlib.Topology.Separation.Regular
 
 open Set Topology.IsUpperSet
 
-instance {α : Type*} [TopologicalSpace α] [LinearOrder α] [Topology.IsUpperSet α] :
+instance (priority := low) {α : Type*}
+    [TopologicalSpace α] [LinearOrder α] [Topology.IsUpperSet α] :
     CompletelyNormalSpace α where
   completely_normal s t hcst hsct := by
     obtain (rfl | ⟨a, ha⟩) := s.eq_empty_or_nonempty
@@ -28,3 +29,6 @@ instance {α : Type*} [TopologicalSpace α] [LinearOrder α] [Topology.IsUpperSe
     conv at hcst => equals a < b => simp
     conv at hsct => equals b < a => simp
     exact lt_asymm hcst hsct
+
+instance : CompletelyNormalSpace Prop :=
+  inferInstance
