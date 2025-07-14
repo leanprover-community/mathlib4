@@ -372,7 +372,7 @@ instance (x y : OneTruncation₂ ((truncation 2).obj Δ[0])) : Unique (x ⟶ y) 
     exact this.allEq _ _
 
 /-- The category `hoFunctor.obj (Δ[0])` is terminal. -/
-def hoFunctorDeltaZeroIsTerminal : IsTerminal (hoFunctor.obj (Δ[0])) := by
+def isTerminalHoFunctorDeltaZero : IsTerminal (hoFunctor.obj (Δ[0])) := by
   letI : Unique ((truncation 2).obj Δ[0]).HomotopyCategory :=
     inferInstanceAs (Unique <| CategoryTheory.Quotient Truncated.HoRel₂)
   letI sub : Subsingleton ((truncation 2).obj Δ[0]).HomotopyCategory := by infer_instance
