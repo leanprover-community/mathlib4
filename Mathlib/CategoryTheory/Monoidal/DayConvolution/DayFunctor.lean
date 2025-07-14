@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
 import Mathlib.CategoryTheory.Monoidal.DayConvolution
+import Mathlib.CategoryTheory.Monoidal.DayConvolution.Closed
 
 /-!
 # Day functors
@@ -121,6 +122,9 @@ instance : LawfulDayConvolutionMonoidalCategoryStruct C V (C ⊛⥤ V) :=
     (equiv C V).fullyFaithfulFunctor
     (fun _ _ => ⟨_, ⟨equiv C V|>.counitIso.app _⟩⟩)
     (⟨_, ⟨equiv C V|>.counitIso.app _⟩⟩)
+
+open LawfulDayConvolutionMonoidalCategoryStruct in
+instance : ι C V (C ⊛⥤ V)|>.Full := inferInstanceAs (equiv C V).functor.Full
 
 /-- The functor underlying `𝟙_ C ⊛⥤ V` is a DayConvolutionUnit.
 We’re not making this a global instance given that `DayConvolution` and
@@ -412,6 +416,87 @@ instance isLeftKanExtensionExtensionUnitRight (F G : C ⊛⥤ V) (K : D ⥤ V) :
     ExternalProduct.extensionUnitRight _ (DayConvolution.unit F.functor G.functor) K
 
 end
+
+
+section Closed
+
+variable [MonoidalClosed V]
+    [∀ (F G : C ⥤ V) (c : C),
+      Limits.HasEnd <|
+        dayConvolutionInternalHomDiagramFunctor F |>.obj G |>.obj c]
+
+instance : LawfulDayConvolutionClosedMonoidalCategoryStruct C V (C ⊛⥤ V) :=
+  .ofHasEnds C V _ (fun _ _ ↦ ⟨_, ⟨equiv C V|>.counitIso.app _⟩⟩)
+
+instance closed : MonoidalClosed (C ⊛⥤ V) :=
+  LawfulDayConvolutionClosedMonoidalCategoryStruct.monoidalClosed C V _
+
+open LawfulDayConvolutionClosedMonoidalCategoryStruct
+
+variable (F G : C ⊛⥤ V)
+
+/-- The canonical family of maps that exhibits
+`(F ⟶[C ⊛⥤ V] G).functor.obj c` as an end of `F - ⟶[V] G.obj (- ⊗ c)`. -/
+def ihom.π (c j : C) :
+    (F ⟶[C ⊛⥤ V] G).functor.obj c ⟶
+      (F.functor.obj j ⟶[V] G.functor.obj (j ⊗ c)) :=
+  ihomDayConvolutionInternalHom C V F G|>.π c j
+
+@[reassoc]
+lemma ihom.hπ (c : C) ⦃j j' : C⦄ (φ : j ⟶ j') :
+    ihom.π F G c j ≫ (ihom (F.functor.obj j)).map (G.functor.map <| φ ▷ c) =
+    ihom.π F G c j' ≫
+      (MonoidalClosed.pre <| F.functor.map φ).app (G.functor.obj <| j' ⊗ c) :=
+  ihomDayConvolutionInternalHom C V F G|>.hπ c φ
+
+/-- The wedge on `F - ⟶[V] G.obj (- ⊗ c)` defined by `ihom.π` and `ihom.hπ` is
+a limit wedge. -/
+def ihom.isLimitWedge (c : C) :
+    Limits.IsLimit <|
+      (Limits.Wedge.mk
+        (F := dayConvolutionInternalHomDiagramFunctor
+          F.functor |>.obj G.functor |>.obj c)
+        ((F ⟶[C ⊛⥤ V] G).functor.obj c) (ihom.π F G c) (ihom.hπ F G c)) :=
+  ihomDayConvolutionInternalHom C V F G|>.isLimitWedge c
+
+@[reassoc (attr := simp)]
+lemma ihom_functor_map_comp_π {c c' : C} (f : c ⟶ c') (j : C) :
+    ((F ⟶[C ⊛⥤ V] G).functor.map f) ≫ ihom.π F G c' j =
+    ihom.π F G c j ≫ (ihom <| F.functor.obj j).map (G.functor.map <| j ◁ f) :=
+  ihomDayConvolutionInternalHom C V F G|>.map_comp_π f j
+
+@[reassoc (attr := simp)]
+lemma unit_app_ev_natTrans_app_app (x y : C) :
+    (η F (F ⟶[_] G)).app (x, y) ≫ ((ihom.ev F).app G).natTrans.app (x ⊗ y) =
+    MonoidalClosed.uncurry (ihom.π F G y x) := by
+  change _ ≫ ((ι C V (C ⊛⥤ V)).map (ev_app C V F G)).app _ = _
+  rw [ι_map_ev_app C V F G]
+  letI := convolution C V (C ⊛⥤ V)
+  exact ihomDayConvolutionInternalHom C V F G|>.unit_app_ev_app_app x y
+
+@[reassoc (attr := simp)]
+lemma coev_app_π (c j : C) :
+    (ihom.coev F|>.app G).natTrans.app c ≫ ihom.π F (F ⊗ G) c j =
+    MonoidalClosed.curry (η F G|>.app (j, c)) := by
+  change ((ι C V (C ⊛⥤ V)).map (coev_app C V F G)).app _ ≫ _ = _
+  rw [ι_map_coev_app C V F G]
+  letI := convolution C V (C ⊛⥤ V)
+  exact ihomDayConvolutionInternalHom C V F (F ⊗ G)|>.coev_app_π
+    (F := ι C V (C ⊛⥤ V)|>.obj F) (G := ι C V (C ⊛⥤ V)|>.obj G) c j
+
+variable {G} in
+@[reassoc (attr := simp)]
+lemma ihom_map_comp_π {G' : C ⊛⥤ V} (f : G ⟶ G') (c j : C) :
+    ((ihom F).map f).natTrans.app c ≫ ihom.π F G' c j =
+    ihom.π F G c j ≫
+      (ihom <| F.functor.obj j).map (f.natTrans.app <| j ⊗ c) := by
+  change (ι C V (C ⊛⥤ V)|>.map <|
+    LawfulDayConvolutionClosedMonoidalCategoryStruct.ihom C V F|>.map _).app
+      _ ≫ _ = _
+  rw [ι_map_ihom_map]
+  exact ihomDayConvolutionInternalHom C V F G|>.map_app_comp_π _ _ c j
+
+end Closed
 
 end DayFunctor
 
