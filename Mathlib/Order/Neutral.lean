@@ -143,13 +143,11 @@ lemma theorem3_i_ii (a : α) (h : IsStandard a) :
               apply le_trans (b := x ⊔ a₁) _ (sup_le_sup_left ha1 x)
               rw [ha2]
               exact inf_le_left
-              --exact sup_le_sup_left ha1 x
             rw [inf_eq_left.mpr e2]
             rw [le_antisymm_iff]
-            constructor
-            · exact le_sup_right
-            · simp only [le_inf_iff, sup_le_iff, inf_le_left, and_true, inf_le_right, and_self]
-              exact inf_le_of_left_le hxy
+            exact ⟨le_sup_right,
+              le_inf_iff.mpr ⟨sup_le_iff.mpr ⟨inf_le_of_left_le hxy, inf_le_left⟩,
+                sup_le_iff.mpr ⟨inf_le_right, inf_le_right⟩⟩⟩
         · use a₁
           constructor
           · exact ha1
