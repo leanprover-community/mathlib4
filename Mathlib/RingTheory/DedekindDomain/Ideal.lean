@@ -638,6 +638,12 @@ theorem Ideal.dvd_iff_le {I J : Ideal A} : I ∣ J ↔ J ≤ I :=
     refine coeIdeal_injective (show (J : FractionalIdeal A⁰ (FractionRing A)) = ↑(I * H) from ?_)
     rw [coeIdeal_mul, hH, ← mul_assoc, mul_inv_cancel₀ hI', one_mul]⟩
 
+theorem Ideal.liesOver_iff_dvd_map [Algebra R A] {p : Ideal R} {P : Ideal A} (hP : P ≠ ⊤)
+    [p.IsMaximal] :
+    P.LiesOver p ↔ P ∣ Ideal.map (algebraMap R A) p := by
+  rw [liesOver_iff, dvd_iff_le, under_def, map_le_iff_le_comap,
+    IsCoatom.le_iff_eq (by rwa [← isMaximal_def]) (comap_ne_top _ hP), eq_comm]
+
 theorem Ideal.dvdNotUnit_iff_lt {I J : Ideal A} : DvdNotUnit I J ↔ J < I :=
   ⟨fun ⟨hI, H, hunit, hmul⟩ =>
     lt_of_le_of_ne (Ideal.dvd_iff_le.mp ⟨H, hmul⟩)
@@ -1599,6 +1605,23 @@ theorem coe_primesOverFinset : primesOverFinset p B = primesOver p B := by
     (fun ⟨hPp, h⟩ => ⟨hPp, ⟨hpm.eq_of_le (comap_ne_top _ hPp.ne_top) (le_comap_of_map_le h)⟩⟩)
     (fun ⟨hPp, h⟩ => ⟨hPp, map_le_of_le_comap h.1.le⟩)
 
+namespace IsDedekindDomain.HeightOneSpectrum
+
+noncomputable def equivPrimesOver (hp : p ≠ 0) :
+    {v : HeightOneSpectrum B // v.asIdeal ∣ map (algebraMap A B) p} ≃ (p.primesOver B) :=
+  Set.BijOn.equiv HeightOneSpectrum.asIdeal
+    ⟨fun v hv ↦ ⟨v.isPrime, by rwa [liesOver_iff_dvd_map v.isPrime.ne_top]⟩,
+    fun _ _ _ _ h ↦ HeightOneSpectrum.ext_iff.mpr h,
+    fun Q hQ ↦ ⟨⟨Q, hQ.1, ne_bot_of_mem_primesOver hp hQ⟩,
+      (liesOver_iff_dvd_map hQ.1.ne_top).mp hQ.2, rfl⟩⟩
+
+@[simp]
+theorem equivPrimesOver_apply (hp : p ≠ 0)
+    (v : {v : HeightOneSpectrum B // v.asIdeal ∣ map (algebraMap A B) p}) :
+    equivPrimesOver B hp v = v.1.asIdeal := rfl
+
+end IsDedekindDomain.HeightOneSpectrum
+
 variable (p) [Algebra.IsIntegral A B]
 
 theorem primesOver_finite : (primesOver p B).Finite := by
@@ -1609,6 +1632,8 @@ theorem primesOver_finite : (primesOver p B).Finite := by
     exact Set.finite_singleton ⊥
   · rw [← coe_primesOverFinset hpb B]
     exact (primesOverFinset p B).finite_toSet
+
+noncomputable instance : Fintype (p.primesOver B) := Set.Finite.fintype (primesOver_finite p B)
 
 theorem primesOver_ncard_ne_zero : (primesOver p B).ncard ≠ 0 := by
   rcases exists_ideal_liesOver_maximal_of_isIntegral p B with ⟨P, hPm, hp⟩
