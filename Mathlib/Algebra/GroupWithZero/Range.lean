@@ -49,6 +49,16 @@ namespace MonoidWithZeroHom
 
 open Set Subgroup Submonoid
 
+lemma mrange_nontrivial {G H : Type*} [MulZeroOneClass G] [MulZeroOneClass H] [Nontrivial H]
+    (f : G →*₀ H) :
+    Nontrivial (MonoidHom.mrange f) :=
+  ⟨⟨1, 1, by simp⟩, ⟨0, 0, by simp⟩, by simp⟩
+
+lemma range_nontrivial {G H : Type*} [MulZeroOneClass G] [MulZeroOneClass H] [Nontrivial H]
+    (f : G →*₀ H) :
+    (Set.range f).Nontrivial :=
+  Set.nontrivial_coe_sort.mp f.mrange_nontrivial
+
 variable {A B F : Type*} [FunLike F A B] (f : F)
 
 section MonoidWithZero
