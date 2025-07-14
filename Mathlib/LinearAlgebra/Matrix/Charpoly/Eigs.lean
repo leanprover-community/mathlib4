@@ -88,56 +88,51 @@ variable {𝕜 : Type*} [RCLike 𝕜]
 variable {A : Matrix n n 𝕜}
 
 theorem IsHermitian.charpoly_roots_eq_eigenvalues (hA : A.IsHermitian) :
-    A.charpoly.roots = Multiset.map (RCLike.ofReal ∘ hA.eigenvalues) Finset.univ.val := by
+    roots A.charpoly = Multiset.map (RCLike.ofReal ∘ hA.eigenvalues) Finset.univ.val := by
   -- Since M is Hermitian, its characteristic polynomial splits into linear factors over the reals.
-  have h_split : A.charpoly = Multiset.prod (Multiset.map (fun (e : ℝ) => Polynomial.X - Polynomial.C (RCLike.ofReal e))
-    (Multiset.map (fun (i : n) => hA.eigenvalues i) Finset.univ.val)) := by
-    -- Since M is Hermitian, it is diagonalizable, and its characteristic polynomial splits into linear factors over the reals.
-    have h_diag : ∃ P : Matrix n n 𝕜, P.det ≠ 0 ∧ ∃ D : Matrix n n 𝕜, D = Matrix.diagonal
-        (fun i => RCLike.ofReal (hA.eigenvalues i)) ∧ A = P * D * P⁻¹ := by
-      have := hA.spectral_theorem;
-      refine' ⟨ hA.eigenvectorUnitary, _, _ ⟩;
-      -- Case 1
-      · -- Since the eigenvector unitary is a unitary matrix, its determinant is a unit, hence non-zero.
-        have h_det_unitary : IsUnit (Matrix.det (hA.eigenvectorUnitary : Matrix n n 𝕜)) := by
-          exact UnitaryGroup.det_isUnit hA.eigenvectorUnitary
-        exact h_det_unitary.ne_zero;
-      -- Case 2
-      · refine' ⟨ _, rfl, this.trans _ ⟩;
-        rw [ Matrix.inv_eq_left_inv ];
-        congr!;
-        bound;
-    -- Since M is similar to D, their characteristic polynomials are the same.
-    have h_char_poly : A.charpoly = Matrix.charpoly (Matrix.diagonal (fun i =>
+  have h_split : A.charpoly = ((Finset.univ.val.map hA.eigenvalues).map
+      (fun e ↦ .X - .C (RCLike.ofReal e))).prod := by
+    have h_diag : ∃ P, P.det ≠ 0 ∧ ∃ D, D = diagonal (RCLike.ofReal <| hA.eigenvalues ·) ∧
+        A = P * D * P⁻¹ := by
+      use hA.eigenvectorUnitary
+      -- Since A.eigenvectorUnitary is a unitary matrix, its determinant is a unit, hence non-zero.
+      use (UnitaryGroup.det_isUnit hA.eigenvectorUnitary).ne_zero
+      refine ⟨_, rfl, hA.spectral_theorem.trans ?_⟩
+      rw [inv_eq_left_inv]
+      congr
+      simp
+    -- Since A is similar to D, their characteristic polynomials are the same.
+    have h_char_poly : A.charpoly = charpoly (diagonal (fun i =>
         RCLike.ofReal (hA.eigenvalues i))) := by
-      rcases h_diag with ⟨P, left, ⟨D, left_1, rfl⟩⟩
-      rw [ ← left_1, Matrix.charpoly, Matrix.charpoly ];
-      simp +decide [ Matrix.charmatrix, Matrix.mul_assoc ];
-      -- Since $w$ is invertible, we can simplify the determinant.
-      have h_inv : (P.map (⇑Polynomial.C : 𝕜 → Polynomial 𝕜)) * (P⁻¹.map (⇑Polynomial.C : 𝕜 → Polynomial 𝕜)) = 1 := by
-        simp ( config := { decide := Bool.true } ) [ ← Matrix.map_mul, left ];
-      -- Since $w$ is invertible, we can simplify the determinant using the fact that the determinant of a product is the product of the determinants.
-      have h_det_prod : Matrix.det ((Matrix.diagonal (fun _ => Polynomial.X) - P.map (⇑Polynomial.C : 𝕜 → Polynomial 𝕜) * (D.map (⇑Polynomial.C : 𝕜 → Polynomial 𝕜) * P⁻¹.map (⇑Polynomial.C : 𝕜 → Polynomial 𝕜)))) = Matrix.det ((P.map (⇑Polynomial.C : 𝕜 → Polynomial 𝕜)) * (Matrix.diagonal (fun _ => Polynomial.X) - D.map (⇑Polynomial.C : 𝕜 → Polynomial 𝕜)) * (P⁻¹.map (⇑Polynomial.C : 𝕜 → Polynomial 𝕜))) := by
-        simp ( config := { decide := Bool.true } ) only [ mul_sub, sub_mul, Matrix.mul_assoc, h_inv ];
-        -- Since Matrix.diagonal (fun _ => Polynomial.X) is a scalar matrix, it commutes with any matrix.
-        have h_comm : Matrix.diagonal (fun _ => Polynomial.X) * P⁻¹.map Polynomial.C = P⁻¹.map Polynomial.C * Matrix.diagonal (fun _ => Polynomial.X) := by
-          ext i j; by_cases hi : i = j <;> simp ( config := { decide := Bool.true } ) [ hi ];
-        simp ( config := { decide := Bool.true } ) only [ h_comm, Matrix.mul_assoc ];
-        simp ( config := { decide := Bool.true } ) [ ← mul_assoc, h_inv ];
-      rw [ h_det_prod, Matrix.det_mul, Matrix.det_mul ];
-      -- Since the determinant of the product of two matrices is the product of their determinants, and the determinant of the identity matrix is 1, we have:
-      have h_det_identity : Matrix.det (P.map (⇑Polynomial.C : 𝕜 → Polynomial 𝕜)) * Matrix.det (P⁻¹.map (⇑Polynomial.C : 𝕜 → Polynomial 𝕜)) = 1 := by
-        rw [ ← Matrix.det_mul, h_inv, Matrix.det_one ];
-      rw [ mul_right_comm, h_det_identity, one_mul ];
-    rw [h_char_poly];
-    simp ( config := { decide := Bool.true } ) [ Matrix.charpoly, Matrix.det_diagonal ];
-  rw [ h_split, Polynomial.roots_multiset_prod ];
-  -- Case 1
-  · erw [ Multiset.bind_map ];
-    aesop;
-  -- Case 2
-  · -- Since the eigenvalues are real, and we're working over the complex numbers (since 𝕜 is a real closed field), the polynomial X - C(e) would be zero only if e is zero. But if e is zero, then the polynomial would be X, which isn't zero. So 0 can't be in the multiset.
-    simp [Polynomial.X_sub_C_ne_zero]
+      rcases h_diag with ⟨P, hP, ⟨D, hD, rfl⟩⟩
+      rw [← hD]
+      -- Since P is invertible, we can simplify the determinant.
+      have h_inv : P.map C * P⁻¹.map C = 1 := by
+        simp [← Matrix.map_mul, hP]
+      -- Since P is invertible, we can simplify the determinant using the fact that the
+      -- determinant of a product is the product of the determinants.
+      have h_det_prod : det ((diagonal (fun _ ↦ X) - P.map C * (D.map C * P⁻¹.map C))) =
+          det (P.map C * (diagonal (fun _ => X) - D.map C) * P⁻¹.map C) := by
+        -- Since Matrix.diagonal (fun _ => X) is a scalar matrix, it commutes with any matrix.
+        have h_comm : diagonal (fun _ ↦ X) * P⁻¹.map C = P⁻¹.map C * diagonal (fun _ ↦ X) := by
+          ext i j
+          by_cases hi : i = j <;> simp [hi];
+        rw [mul_sub, sub_mul, mul_assoc]
+        simp [h_comm, ← mul_assoc, h_inv]
+      -- Since the determinant of the product of two matrices is the product of their determinants,
+      -- and the determinant of the identity matrix is 1, we have:
+      have h_det_identity : det (P.map C) * det (P⁻¹.map C) = 1 := by
+        rw [← det_mul, h_inv, det_one]
+      simp [charpoly, charmatrix, mul_assoc]
+      rw [h_det_prod, det_mul, det_mul, mul_right_comm, h_det_identity, one_mul]
+    simp [↓h_char_poly, charpoly]
+  rw [h_split, roots_multiset_prod]
+  · simp [Multiset.bind_map]
+  · -- Since the eigenvalues are real, and we're working over the complex numbers
+    -- (since 𝕜 is a real closed field), the polynomial X - C(e) would be zero only if e is zero.
+    -- But if e is zero, then the polynomial would be X, which isn't zero. So 0 can't be in the
+    -- multiset.
+    simp [X_sub_C_ne_zero]
 
 end RCLike
 
