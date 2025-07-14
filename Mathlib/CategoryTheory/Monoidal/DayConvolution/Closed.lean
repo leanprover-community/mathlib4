@@ -76,7 +76,7 @@ structure DayConvolutionInternalHom (F : C ⥤ V) (G : C ⥤ V) (H : C ⥤ V) wh
   /-- The functoriality of `H.obj G` identifies (through
   `Limits.Wedge.IsLimit.hom_ext`) with the functoriality on ends induced by
   functoriality of `internalHomDiagramFunctor F|>.obj G`. -/
-  obj_map_comp_π {c c' : C} (f : c ⟶ c') (j : C) :
+  map_comp_π {c c' : C} (f : c ⟶ c') (j : C) :
     H.map f ≫ π c' j =
     π c j ≫ (ihom <| F.obj j).map (G.map <| j ◁ f)
 
@@ -84,7 +84,7 @@ namespace DayConvolutionInternalHom
 
 open scoped DayConvolution
 
-attribute [reassoc (attr := simp)] obj_map_comp_π hπ
+attribute [reassoc (attr := simp)] map_comp_π hπ
 
 variable {F : C ⥤ V} {G : C ⥤ V} {H : C ⥤ V}
 
@@ -111,7 +111,7 @@ def map (ℌ : DayConvolutionInternalHom F G H) {G' : C ⥤ V} {H' : C ⥤ V}
     apply Limits.Wedge.IsLimit.hom_ext (ℌ'.isLimitWedge c')
     intro j
     dsimp
-    simp only [Category.assoc, obj_map_comp_π]
+    simp only [Category.assoc, map_comp_π]
     rw [← Limits.Wedge.mk_ι
         (F := dayConvolutionInternalHomDiagramFunctor F|>.obj _|>.obj c')
         (H'.obj c') (ℌ'.π c') (ℌ'.hπ c'),
@@ -154,14 +154,12 @@ lemma map_comp (ℌ : DayConvolutionInternalHom F G H)
 def transport (ℌ : DayConvolutionInternalHom F G H) {H' : C ⥤ V} (e : H' ≅ H) :
     DayConvolutionInternalHom F G H' where
   π c j := e.hom.app c ≫ ℌ.π c j
-  hπ c i j f := by
-    simp
+  hπ c i j f := by simp
   isLimitWedge c := by
     apply Limits.IsLimit.equivOfNatIsoOfIso (.refl _) _ _ _ (ℌ.isLimitWedge _)
     exact Limits.Wedge.ext (e.symm.app c) (fun j ↦ by
       simp [Limits.Cones.postcompose, Limits.Multifork.ι])
-  obj_map_comp_π f j := by
-    simp
+  map_comp_π f j := by simp
 
 section
 
@@ -193,8 +191,7 @@ noncomputable def dayConvolutionInternalHomOfHasEnds
       Limits.Wedge.ext
         (Iso.refl _)
         (fun j ↦ by dsimp; rw [Category.id_comp]; rfl)
-  obj_map_comp_π {c c'} f j := by
-    simp
+  map_comp_π {c c'} f j := by simp
 
 end
 
@@ -214,7 +211,7 @@ def ev_app : F ⊛ H ⟶ G :=
         dsimp at this ⊢
         simp only [whiskerLeft_comp] at this
         simp only [Category.assoc, MonoidalClosed.uncurry_eq, Functor.id_obj]
-        rw [← whiskerLeft_comp_assoc, obj_map_comp_π]
+        rw [← whiskerLeft_comp_assoc, map_comp_π]
         simp [← whisker_exchange_assoc, tensorHom_def,
           ← ihom.ev_naturality_assoc]
         rw [reassoc_of% this]
