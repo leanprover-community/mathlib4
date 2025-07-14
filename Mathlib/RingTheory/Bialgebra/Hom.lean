@@ -24,7 +24,7 @@ This file defines bundled homomorphisms of `R`-bialgebras. We simply mimic
 
 -/
 
-open TensorProduct Bialgebra Coalgebra
+open TensorProduct Bialgebra Coalgebra Function
 
 universe u v w
 
