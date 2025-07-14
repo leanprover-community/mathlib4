@@ -5,6 +5,7 @@ Authors: Christopher Hoskin
 -/
 
 import Mathlib.Order.Lattice
+import Mathlib.Tactic.TFAE
 
 /-!
 # Distributive, Standard and Neutral elements
@@ -80,6 +81,19 @@ lemma theorem2_iii_i (a : α) (h : IsLatticeCon (ker (fun x => a ⊔ x))) : IsDi
   rw [e1]
   simp
 
+open List in
+theorem theorem2 (a : α) : TFAE [
+    IsDistrib a,
+    IsLatticeHom (fun x => a ⊔ x),
+    IsLatticeCon (ker (fun x => a ⊔ x))] := by
+  tfae_have 1 → 2
+  | h => by (expose_names; exact theorem2_i_ii a h_1)
+  tfae_have 2 → 3
+  | h => by (expose_names; exact theorem2_ii_iii a h_1)
+  tfae_have 3 → 1
+  | h => by (expose_names; exact theorem2_iii_i a h_1)
+  tfae_finish
+
 lemma theorem3_i_ii (a : α) (h : IsStandard a) :
     IsLatticeCon (fun x y => ∃ a₁, a₁ ≤ a ∧ (x ⊓ y) ⊔ a₁ = x ⊔ y) := by
   rw [isLatticCon_iff]
@@ -140,6 +154,24 @@ lemma theorem3_iii_i (a : α) (h1 : IsDistrib a)
   by
     rw [h1, sup_of_le_right le_sup_left, ← h1]
     exact le_antisymm (sup_le_sup_left le_sup_right _) (by simp [← sup_assoc])⟩
+
+open List in
+theorem theorem3 (a : α) : TFAE [
+    IsStandard a,
+    IsLatticeCon (fun x y => ∃ a₁, a₁ ≤ a ∧ (x ⊓ y) ⊔ a₁ = x ⊔ y),
+    IsDistrib a ∧ ∀ x y : α, a ⊓ x = a ⊓ y ∧ a ⊔ x = a ⊔ y → x = y] := by
+  tfae_have 1 → 2
+  | h => by (expose_names; exact theorem3_i_ii a h_1)
+  tfae_have 2 → 3
+  | h => by
+    constructor
+    · sorry
+    · intro x y ⟨h₁, h₂⟩
+      sorry
+  tfae_have 3 → 1
+  | ⟨h1,h2⟩ => by exact theorem3_iii_i a h1 h2
+  tfae_finish
+
 
 /-
 lemma theorem4_i_ii (a : α) (h1 : IsNeutral a) : IsDistrib a := by
