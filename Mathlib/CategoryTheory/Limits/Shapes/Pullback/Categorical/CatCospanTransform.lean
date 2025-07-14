@@ -67,7 +67,7 @@ variable {A : Type u₁} {B : Type u₂} {C : Type u₃}
   (F : A ⥤ B) (G : C ⥤ B)
 
 attribute [local instance] CatCommSq.vId in
-/-- The identitiy `CatCospanTransform` -/
+/-- The identity `CatCospanTransform` -/
 @[simps]
 def id : CatCospanTransform F G F G where
   left := 𝟭 A
@@ -148,7 +148,7 @@ instance category : Category (CatCospanTransform F G F' G') where
 
 attribute [local ext] CatCospanTransformMorphism in
 @[ext]
-lemma hom_ext {ψ ψ' : CatCospanTransform F G F' G'} {θ θ': ψ ⟶ ψ'}
+lemma hom_ext {ψ ψ' : CatCospanTransform F G F' G'} {θ θ' : ψ ⟶ ψ'}
     (hl : θ.left = θ'.left) (hr : θ.right = θ'.right) (hb : θ.base = θ'.base) :
     θ = θ' := by
   apply CatCospanTransformMorphism.ext <;> assumption
