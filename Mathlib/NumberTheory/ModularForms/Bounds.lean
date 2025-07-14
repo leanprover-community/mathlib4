@@ -296,11 +296,10 @@ lemma ModularFormClass.qExpansion_isBigO {k : ℤ} (hk : 0 ≤ k) {Γ : Subgroup
   filter_upwards [eventually_gt_atTop 0] with n hn
   rw [qExpansion_coeff_eq_intervalIntegral (t := 1 / n) f hΓ _ (by positivity),
     ← intervalIntegral.integral_const_mul]
-  simp only [ofReal_div, ofReal_one, ofReal_natCast, norm_norm]
+  simp only [ofReal_div, ofReal_one, ofReal_natCast]
   refine intervalIntegral.norm_integral_le_integral_norm (by positivity) |>.trans ?_
   let F (x : ℝ) : ℝ := ‖1 / ↑h * (1 / 𝕢 h ((x : ℂ) + 1 / n * I) ^ n
       * f ⟨(x : ℂ) + 1 / n * Complex.I, by simp [hn]⟩)‖
-  show ∫ x in (0)..(h), F x ≤ _
   have (x : ℝ) : F x ≤ 1 / h * ((1 / Real.exp (-2 * Real.pi / ↑h))) * (C * n ^ k) := by
     simp only [F]
     rw [norm_mul, norm_mul, norm_div, norm_natCast, norm_one, norm_div, norm_one, norm_pow,
