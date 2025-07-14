@@ -456,4 +456,10 @@ lemma lt_mul_exp_iff_le {x y : ℤᵐ⁰} (hy : y ≠ 0) : x < y * exp 1 ↔ x �
   lift x to Multiplicative ℤ using hx
   rw [← log_le_log, ← log_lt_log] <;> simp [log_mul, Int.lt_add_one_iff]
 
+lemma le_coe_ofAdd_log (x : Gᵐ⁰) :
+    x ≤ Multiplicative.ofAdd (log x) := by
+  cases x
+  · simp
+  · rfl
+
 end WithZero
