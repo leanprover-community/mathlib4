@@ -386,7 +386,6 @@ coming from the ambient braiding on `V`.)
 /-- The type of `A`-graded natural transformations between `V`-functors `F` and `G`.
 This is the type of morphisms in `V` from `A` to the `V`-object of natural transformations.
 -/
-@[ext]
 structure GradedNatTrans (A : Center V) (F G : EnrichedFunctor V C D) where
   /-- The `A`-graded transformation from `F` to `G` -/
   app : ∀ X : C, A.1 ⟶ F.obj X ⟶[V] G.obj X
@@ -416,6 +415,14 @@ def id : EnrichedNatTrans F F where
     simp
 
 variable {F} {G H : EnrichedFunctor V C D}
+
+@[ext]
+def ext {α β : EnrichedNatTrans F G} (h : ∀ X, α.app X = β.app X) : α = β := by
+  cases α
+  cases β
+  congr
+  funext
+  apply h
 
 /-- The naturality condition of an enriched natural transformation from `F` to `G` as an equality
 of morphisms `Hom X Y ⟶ Hom (F.obj X) (G.obj Y)` for `X, Y : C`. -/
@@ -489,6 +496,7 @@ end EnrichedNatTrans
 
 open EnrichedCategory
 
+@[simps]
 def EnrichedFunctor.isoOfComponents {F G : EnrichedFunctor V C D}
     (app : ∀ (X : C), EnrichedIso V (F.obj X) (G.obj X))
     (naturality : ∀ X Y, (ρ_ _).inv ≫ (F.map X Y ⊗ₘ (app Y).hom) ≫ eComp V .. =
@@ -533,12 +541,10 @@ def EnrichedFunctor.isoOfComponents {F G : EnrichedFunctor V C D}
                  tensorHom_def_assoc]
                monoidal }
   hom_inv_id := by
-    apply GradedNatTrans.ext
-    funext X
+    refine EnrichedNatTrans.ext fun X => ?_
     simp [← unitors_inv_equal, (app X).hom_inv]
   inv_hom_id := by
-    apply GradedNatTrans.ext
-    funext X
+    refine EnrichedNatTrans.ext fun X => ?_
     simp [← unitors_inv_equal, (app X).inv_hom]
 
 variable [BraidedCategory V]

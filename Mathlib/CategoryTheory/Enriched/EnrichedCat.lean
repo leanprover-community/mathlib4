@@ -89,13 +89,33 @@ instance bicategory : Bicategory (EnrichedCat.{w, v, u} V) where
   leftUnitor F := leftUnitor V F
   rightUnitor F := rightUnitor V F
   pentagon F G H I := by
-    sorry
-  triangle F G := sorry
-  id_whiskerLeft := sorry
+    refine EnrichedNatTrans.ext fun X => ?_
+    simp [whiskerRight, whiskerLeft, associator, tensorHom_def]
+  triangle F G := by
+    refine EnrichedNatTrans.ext fun X => ?_
+    simp [whiskerRight, whiskerLeft, associator, leftUnitor, rightUnitor, tensorHom_def]
+  id_whiskerLeft α := by
+    refine EnrichedNatTrans.ext fun X => ?_
+    simp only [Center.tensorUnit_fst, EnrichedFunctor.comp_obj, EnrichedFunctor.id_obj, whiskerLeft,
+      leftUnitor, EnrichedNatTrans.comp_app, EnrichedFunctor.isoOfComponents_hom_app,
+      EnrichedIso.refl_hom, EnrichedFunctor.isoOfComponents_inv_app, EnrichedIso.refl_inv,
+      tensorHom_def, whiskerRight_id, Category.assoc, e_comp_id, Category.comp_id,
+      Iso.inv_hom_id_assoc]
+    rw [rightUnitor_inv_naturality_assoc, ← whisker_exchange_assoc,
+      (Iso.inv_comp_eq _).mp (e_id_comp ..)]
+    monoidal
   comp_whiskerLeft := sorry
-  id_whiskerRight := sorry
+  id_whiskerRight F G := by
+    refine EnrichedNatTrans.ext fun X => ?_
+    simp [whiskerRight]
   comp_whiskerRight := sorry
-  whiskerRight_id := sorry
+  whiskerRight_id α := by
+    refine EnrichedNatTrans.ext fun X => ?_
+    with_panel_widgets [Mathlib.Tactic.Widget.StringDiagram]
+    simp [whiskerRight, rightUnitor, tensorHom_def]
+    rw [rightUnitor_inv_naturality_assoc, ← whisker_exchange_assoc,
+      (Iso.inv_comp_eq _).mp (e_id_comp ..)]
+    monoidal
   whiskerRight_comp := sorry
   whisker_assoc := sorry
   whisker_exchange := sorry
