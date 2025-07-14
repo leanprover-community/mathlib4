@@ -30,6 +30,7 @@ variable {R : Type*} [Ring R] {E : Type*} [AddCommGroup E] [Module R E]
 variable {F : Type*} [AddCommGroup F] [Module R F] {G : Type*} [AddCommGroup G] [Module R G]
 variable (p q : Submodule R E)
 variable {S : Type*} [Semiring S] {M : Type*} [AddCommMonoid M] [Module S M] (m : Submodule S M)
+
 namespace LinearMap
 
 variable {p}
