@@ -140,6 +140,8 @@ def IsLeviCivitaConnection : Prop := cov.IsCompatible ∧ cov.IsTorsionFree
 variable (X Y Z) in
 noncomputable abbrev rhs_aux : M → ℝ := fun x ↦ (mfderiv I 𝓘(ℝ) ⟪Y, Z⟫ x (X x))
 
+section rhs_aux
+
 omit [IsManifold I ∞ M] in
 lemma rhs_aux_swap : rhs_aux I X Y Z = rhs_aux I X Z Y := by
   ext x
@@ -191,6 +193,8 @@ lemma rhs_aux_smulZ {f : M → ℝ} (hf : MDiff f) (hY : MDiff (T% Y)) (hZ : MDi
   rw [rhs_aux_swap, rhs_aux_smulY, rhs_aux_swap, product_swap]
   exacts [hf, hZ, hY]
 
+end rhs_aux
+
 -- XXX: inlining rhs_aux here makes things not typecheck any more!
 variable (X Y Z) in
 /-- Auxiliary quantity used in the uniqueness proof of the Levi-Civita connection:
@@ -205,48 +209,7 @@ noncomputable def leviCivita_rhs : M → ℝ := (1 / 2 : ℝ) • (
 
 -- XXX: is introducing leviCivita_rhs' which is twice the previous quantity useful?
 
-variable (X Y Z) in
-lemma aux (h : cov.IsLeviCivitaConnection) : rhs_aux I X Y Z =
-    ⟪cov X Y, Z⟫ + ⟪Y, cov Z X⟫ + ⟪Y, VectorField.mlieBracket I X Z⟫ := by
-  trans ⟪cov X Y, Z⟫ + ⟪Y, cov X Z⟫
-  · ext x
-    exact h.1 X Y Z x
-  · simp [← isTorsionFree_iff.mp h.2 X Z, product_sub_right]
-
-lemma isolate_aux {α : Type*} [AddCommGroup α]
-    (A D E F X Y Z : α) (h : X + Y - Z = A + A + D + E - F) :
-    A + A = X + Y - Z - D - E + F := by
-  trans (X + Y - Z) - D - E + F
-  · rw [h]; abel
-  · abel
-
-variable (X Y Z) in
-/-- Auxiliary lemma towards the uniquness of the Levi-Civita connection: expressing the term
-⟨∇ X Y, Z⟩ for all differentiable vector fields X, Y and Z, without reference to ∇. -/
-lemma isLeviCivitaConnection_uniqueness_aux (h : cov.IsLeviCivitaConnection) :
-    ⟪cov X Y, Z⟫ = leviCivita_rhs I X Y Z := by
-  set A := ⟪cov X Y, Z⟫
-  set B := ⟪cov Z X, Y⟫
-  set C := ⟪cov Y Z, X⟫
-  set D := ⟪Y, VectorField.mlieBracket I X Z⟫ with D_eq
-  set E := ⟪Z, VectorField.mlieBracket I Y X⟫ with E_eq
-  set F := ⟪X, VectorField.mlieBracket I Z Y⟫ with F_eq
-  have eq1 : rhs_aux I X Y Z = A + B + D := by
-    simp only [aux I X Y Z cov h, A, B, D, product_swap _ Y (cov Z X)]
-  have eq2 : rhs_aux I Y Z X = C + A + E := by
-    simp only [aux I Y Z X cov h, A, C, E, product_swap _ (cov X Y) Z]
-  have eq3 : rhs_aux I Z X Y = B + C + F := by
-    simp only [aux I Z X Y cov h, B, C, F, product_swap _ X (cov Y Z)]
-  -- add (I) and (II), subtract (III)
-  have : rhs_aux I X Y Z + rhs_aux I Y Z X - rhs_aux I Z X Y = A + A + D + E - F := by
-    rw [eq1, eq2, eq3]; abel
-
-  -- solve for ⟪cov X Y, Z⟫ and obtain the claim
-  simp only [leviCivita_rhs] -- - D - E + F
-  ext x
-  have almost := isolate_aux A D E F (rhs_aux I X Y Z) (rhs_aux I Y Z X) (rhs_aux I Z X Y)
-    (by simp [this])
-  sorry -- obvious: if A + A = stuff, A = 1/2 stuff
+section leviCivita_rhs
 
 variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)]
 
@@ -323,6 +286,51 @@ lemma leviCivita_rhs_smulZ [CompleteSpace E] {f : M → ℝ} {Z' : Π x : M, Tan
   simp; abel_nf
   sorry
 
+end leviCivita_rhs
+
+variable (X Y Z) in
+lemma aux (h : cov.IsLeviCivitaConnection) : rhs_aux I X Y Z =
+    ⟪cov X Y, Z⟫ + ⟪Y, cov Z X⟫ + ⟪Y, VectorField.mlieBracket I X Z⟫ := by
+  trans ⟪cov X Y, Z⟫ + ⟪Y, cov X Z⟫
+  · ext x
+    exact h.1 X Y Z x
+  · simp [← isTorsionFree_iff.mp h.2 X Z, product_sub_right]
+
+lemma isolate_aux {α : Type*} [AddCommGroup α]
+    (A D E F X Y Z : α) (h : X + Y - Z = A + A + D + E - F) :
+    A + A = X + Y - Z - D - E + F := by
+  trans (X + Y - Z) - D - E + F
+  · rw [h]; abel
+  · abel
+
+variable (X Y Z) in
+/-- Auxiliary lemma towards the uniquness of the Levi-Civita connection: expressing the term
+⟨∇ X Y, Z⟩ for all differentiable vector fields X, Y and Z, without reference to ∇. -/
+lemma isLeviCivitaConnection_uniqueness_aux (h : cov.IsLeviCivitaConnection) :
+    ⟪cov X Y, Z⟫ = leviCivita_rhs I X Y Z := by
+  set A := ⟪cov X Y, Z⟫
+  set B := ⟪cov Z X, Y⟫
+  set C := ⟪cov Y Z, X⟫
+  set D := ⟪Y, VectorField.mlieBracket I X Z⟫ with D_eq
+  set E := ⟪Z, VectorField.mlieBracket I Y X⟫ with E_eq
+  set F := ⟪X, VectorField.mlieBracket I Z Y⟫ with F_eq
+  have eq1 : rhs_aux I X Y Z = A + B + D := by
+    simp only [aux I X Y Z cov h, A, B, D, product_swap _ Y (cov Z X)]
+  have eq2 : rhs_aux I Y Z X = C + A + E := by
+    simp only [aux I Y Z X cov h, A, C, E, product_swap _ (cov X Y) Z]
+  have eq3 : rhs_aux I Z X Y = B + C + F := by
+    simp only [aux I Z X Y cov h, B, C, F, product_swap _ X (cov Y Z)]
+  -- add (I) and (II), subtract (III)
+  have : rhs_aux I X Y Z + rhs_aux I Y Z X - rhs_aux I Z X Y = A + A + D + E - F := by
+    rw [eq1, eq2, eq3]; abel
+
+  -- solve for ⟪cov X Y, Z⟫ and obtain the claim
+  simp only [leviCivita_rhs] -- - D - E + F
+  ext x
+  have almost := isolate_aux A D E F (rhs_aux I X Y Z) (rhs_aux I Y Z X) (rhs_aux I Z X Y)
+    (by simp [this])
+  sorry -- obvious: if A + A = stuff, A = 1/2 stuff
+
 -- TODO: move to Data.Fintype.EquivFin
 /-- Choose an arbitrary linear order on a `Fintype`: this is not an instance because in most
 situations, choosing a linear order extending a given preorder, or a particular linear order
@@ -333,6 +341,8 @@ noncomputable def Fintype.instLinearOrder {α : Type*} [Fintype α] : LinearOrde
 section
 
 attribute [local instance] Fintype.toOrderBot Fintype.toLocallyFiniteOrder Fintype.instLinearOrder
+
+variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)]
 
 variable {I} in
 /-- If two vector fields `X` and `X'` on `M` satisfy the relation `⟨X, Z⟩ = ⟨X', Z⟩` for all
@@ -458,6 +468,8 @@ lemma isCovariantDerivativeOn_existence_candidate [FiniteDimensional ℝ E]
   sorry -- need some IsCovariantDerivativeOn_congr + lemma bar
 
 end
+
+variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)]
 
 -- TODO: make g part of the notation!
 variable (M) in
