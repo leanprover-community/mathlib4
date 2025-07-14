@@ -80,7 +80,7 @@ lemma binomialSeries_nat [CommSemiring A] [Algebra R A] (d : ℕ) :
       · rw [Polynomial.leadingCoeff_X_add_C, one_pow]
         exact one_ne_zero
   · rw [binomialSeries_coeff, add_comm, add_pow]
-    simp only [zsmul_eq_mul, mul_one, one_pow, map_sum]
+    simp only [mul_one, one_pow, map_sum]
     rw [sum_eq_single_of_mem n (by simp only [mem_range]; omega) ?_, coeff_X_pow_mul',
       Ring.choose_eq_nat_choose]
     · simp [Nat.cast_smul_eq_nsmul]
@@ -88,7 +88,7 @@ lemma binomialSeries_nat [CommSemiring A] [Algebra R A] (d : ℕ) :
       rw [mul_comm, ← map_natCast (C A), coeff_C_mul_X_pow]
       exact if_neg (Ne.symm hkn)
 
-lemma binomialSeries_zero [CommSemiring A] [Algebra R A]  :
+lemma binomialSeries_zero [CommSemiring A] [Algebra R A] :
     binomialSeries A (0 : R) = (1 : A⟦X⟧) := by
   rw [show (0 : R) = Nat.cast (R := R) 0 by norm_cast,
     binomialSeries_nat (R := R) (A := A) 0, pow_zero]
