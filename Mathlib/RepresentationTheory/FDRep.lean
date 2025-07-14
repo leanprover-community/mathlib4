@@ -148,6 +148,14 @@ instance : HasForget₂ (FDRep R G) (Rep R G) where
 theorem forget₂_ρ (V : FDRep R G) : ((forget₂ (FDRep R G) (Rep R G)).obj V).ρ = V.ρ := by
   ext g v; rfl
 
+instance [IsNoetherianRing R] : PreservesFiniteLimits (forget₂ (FDRep R G) (Rep R G)) := by
+  change PreservesFiniteLimits ((forget₂ (FGModuleCat R) (ModuleCat R)).mapAction G)
+  infer_instance
+
+instance : PreservesFiniteColimits (forget₂ (FDRep R G) (Rep R G)) := by
+  change PreservesFiniteColimits ((forget₂ (FGModuleCat R) (ModuleCat R)).mapAction G)
+  infer_instance
+
 -- Verify that the monoidal structure is available.
 example : MonoidalCategory (FDRep R G) := by infer_instance
 
