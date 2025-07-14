@@ -564,15 +564,15 @@ section arrowCongr
 /-!
 The modules for `arrowCongr` and its lemmas below are related via the semilinearities
 ```
-M₁   ----σ₁₂---- M₂  ----σ₂₃---- M₃
-|                |               |
-σ₁₁'             σ₂₂'            σ₃₃'
-|                |               |
-M₁'  ---σ₁'₂'--- M₂' ---σ₂'₃'--- M₃
-|                |
-σ₁'₁''           σ₂'₂''
-|                |
-M₁'' --σ₁''₂''-- M₂''
+M₁  ←⎯⎯⎯σ₁₂⎯⎯⎯→ M₂  ←⎯⎯⎯σ₂₃⎯⎯⎯→ M₃
+⏐               ⏐               ⏐
+σ₁₁'            σ₂₂'            σ₃₃'
+↓               ↓               ↓
+M₁' ←⎯⎯σ₁'₂'⎯⎯→ M₂' ←⎯⎯σ₂'₃'⎯⎯→ M₃
+⏐               ⏐
+σ₁'₁''          σ₂'₂''
+↓               ↓
+M₁''←⎯σ₁''₂''⎯→ M₂''
 ```
 where the horizontal direction is needed for `arrowCongr_trans` and the vertical direction is needed
 for `arrowCongr_comp`.
