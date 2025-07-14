@@ -689,7 +689,6 @@ end AddCommGroup
 end IsLinearMap
 
 /-- Reinterpret an additive homomorphism as an `ℕ`-linear map. -/
-@[simps]
 def AddMonoidHom.toNatLinearMap [AddCommMonoid M] [AddCommMonoid M₂] (f : M →+ M₂) :
     M →ₗ[ℕ] M₂ where
   toFun := f
@@ -708,7 +707,6 @@ theorem AddMonoidHom.coe_toNatLinearMap [AddCommMonoid M] [AddCommMonoid M₂] (
   rfl
 
 /-- Reinterpret an additive homomorphism as a `ℤ`-linear map. -/
-@[simps]
 def AddMonoidHom.toIntLinearMap [AddCommGroup M] [AddCommGroup M₂] (f : M →+ M₂) : M →ₗ[ℤ] M₂ where
   toFun := f
   map_add' := f.map_add
