@@ -461,7 +461,7 @@ def ihom.isLimitWedge (c : C) :
 
 @[reassoc (attr := simp)]
 lemma ihom_functor_map_comp_π {c c' : C} (f : c ⟶ c') (j : C) :
-    ((F ⟶[C ⊛⥤ V] G).functor.map f) ≫ ihom.π F G c' j =
+    (F ⟶[C ⊛⥤ V] G).functor.map f ≫ ihom.π F G c' j =
     ihom.π F G c j ≫ (ihom <| F.functor.obj j).map (G.functor.map <| j ◁ f) :=
   ihomDayConvolutionInternalHom C V F G|>.map_comp_π f j
 
