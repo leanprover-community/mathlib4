@@ -187,10 +187,12 @@ theorem orthogonal_range (T : E →L[𝕜] F) :
   rw [← (LinearMap.ker (T†)).orthogonal_orthogonal, (T†).orthogonal_ker]
   simp
 
+omit [CompleteSpace E] in
 theorem ker_le_ker_iff_range_le_range [FiniteDimensional 𝕜 E] {T U : E →L[𝕜] E}
     (hT : T.IsSymmetric) (hU : U.IsSymmetric) :
     LinearMap.ker U ≤ LinearMap.ker T ↔ LinearMap.range T ≤ LinearMap.range U := by
   refine ⟨fun h ↦ ?_, LinearMap.ker_le_ker_of_range hT hU⟩
+  have := FiniteDimensional.complete 𝕜 E
   simpa [orthogonal_ker, hT, hU] using Submodule.orthogonal_le h
 
 /-- `E →L[𝕜] E` is a star algebra with the adjoint as the star operation. -/
@@ -532,12 +534,14 @@ theorem im_inner_adjoint_mul_self_eq_zero (T : E →ₗ[𝕜] E) (x : E) :
   simp only [adjoint_inner_right, inner_self_eq_norm_sq_to_K]
   norm_cast
 
-theorem isSelfAdjoint_toContinuousLinearMap_iff [CompleteSpace E] (T : E →ₗ[𝕜] E) :
+theorem isSelfAdjoint_toContinuousLinearMap_iff (T : E →ₗ[𝕜] E) :
+    have := FiniteDimensional.complete 𝕜 E
     IsSelfAdjoint T.toContinuousLinearMap ↔ IsSelfAdjoint T := by
   simp [IsSelfAdjoint, star, adjoint,
     ContinuousLinearMap.toLinearMap_eq_iff_eq_toContinuousLinearMap]
 
-theorem _root_.ContinuousLinearMap.isSelfAdjoint_toLinearMap_iff [CompleteSpace E] (T : E →L[𝕜] E) :
+theorem _root_.ContinuousLinearMap.isSelfAdjoint_toLinearMap_iff (T : E →L[𝕜] E) :
+    have := FiniteDimensional.complete 𝕜 E
     IsSelfAdjoint T.toLinearMap ↔ IsSelfAdjoint T := by
   simp only [IsSelfAdjoint, star, adjoint, LinearEquiv.trans_apply,
     coe_toContinuousLinearMap_symm,
