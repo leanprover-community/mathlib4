@@ -641,7 +641,7 @@ example {f g : ℕ → ℝ≥0∞} (h : ∀ n, f n ≤ g n) : ⨆ n, f n ≤ ⨆
   exact h i
 ```
 -/
-elab "gcongr" template:(colGt term)?
+elab "gcongr" template:(ppSpace colGt term)?
     withArg:((" with" (ppSpace colGt binderIdent)+)?) : tactic => do
   let g ← getMainGoal
   g.withContext do
