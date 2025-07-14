@@ -736,7 +736,7 @@ theorem isGLB_sInf (s : Set (WithTop α)) : IsGLB s (sInf s) := by
 
 noncomputable instance : CompleteLinearOrder (WithTop α) where
   __ := linearOrder
-  __ := LinearOrder.toBiheytingAlgebra (WithTop α)
+  __ := linearOrder.toBiheytingAlgebra
   le_sSup s := (isLUB_sSup s).1
   sSup_le s := (isLUB_sSup s).2
   le_sInf s := (isGLB_sInf s).2
