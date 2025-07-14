@@ -445,7 +445,7 @@ lemma Submodule.mem_span_finset {s : Finset M} {x : M} :
     simp +contextual [Function.support_subset_iff'.1 hf]
   mpr := by rintro ⟨f, -, rfl⟩; exact sum_mem fun x hx ↦ smul_mem _ _ <| subset_span <| hx
 
-/-- An variant of `Submodule.mem_span_finset` using `s` as the index type. -/
+/-- A variant of `Submodule.mem_span_finset` using `s` as the index type. -/
 lemma Submodule.mem_span_finset' {s : Finset M} {x : M} :
     x ∈ span R s ↔ ∃ f : s → R, ∑ a : s, f a • a.1 = x := by
   rw [← Subtype.range_val (s := s.toSet), ← Fintype.range_linearCombination]
