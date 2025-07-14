@@ -219,7 +219,7 @@ def ev_app : F ⊛ H ⟶ G :=
         simp }
 
 @[reassoc (attr := simp)]
-lemma curry_unit_app_comp_ev_app_app (x y : C) :
+lemma unit_app_ev_app_app (x y : C) :
     ((DayConvolution.unit F H).app (x, y) ≫ (ℌ.ev_app).app (x ⊗ y)) =
     MonoidalClosed.uncurry (ℌ.π y x) := by
   simp [ev_app]
@@ -237,8 +237,8 @@ lemma ev_naturality_app {G' H' : C ⥤ V} (ℌ' : DayConvolutionInternalHom F G'
   dsimp
   simp only [DayConvolution.unit_app_map_app_assoc,
     externalProductBifunctor_obj_obj, NatTrans.id_app, id_tensorHom,
-    curry_unit_app_comp_ev_app_app, MonoidalClosed.uncurry_eq,
-    Functor.id_obj, curry_unit_app_comp_ev_app_app_assoc, Category.assoc]
+    unit_app_ev_app_app, MonoidalClosed.uncurry_eq,
+    Functor.id_obj, unit_app_ev_app_app_assoc, Category.assoc]
   rw [← whiskerLeft_comp_assoc, map_app_comp_π]
   simp
 
@@ -287,7 +287,7 @@ def coev_app : G ⟶ H where
     simp [MonoidalClosed.curry_eq]
 
 @[reassoc (attr := simp)]
-lemma coev_app_comp_π (c j : C) :
+lemma coev_app_π (c j : C) :
     ℌ.coev_app.app c ≫ ℌ.π c j =
     MonoidalClosed.curry ((DayConvolution.unit F G).app (j, c)) := by
   dsimp [coev_app]
@@ -306,8 +306,8 @@ lemma coev_naturality_app {G' H' : C ⥤ V} [DayConvolution F G'] (η : G ⟶ G'
   intro j
   apply MonoidalClosed.uncurry_injective
   dsimp
-  simp only [Category.assoc, coev_app_comp_π, Functor.comp_obj, tensor_obj,
-    map_app_comp_π, coev_app_comp_π_assoc, MonoidalClosed.uncurry_natural_right,
+  simp only [Category.assoc, coev_app_π, Functor.comp_obj, tensor_obj,
+    map_app_comp_π, coev_app_π_assoc, MonoidalClosed.uncurry_natural_right,
     MonoidalClosed.uncurry_curry, DayConvolution.unit_app_map_app,
     NatTrans.id_app, id_tensorHom]
   simp [MonoidalClosed.uncurry_natural_left]
