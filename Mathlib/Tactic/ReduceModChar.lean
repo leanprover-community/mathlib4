@@ -49,10 +49,11 @@ lemma CharP.isInt_of_mod {e' r : ℤ} {α : Type*} [Ring α] {n n' : ℕ} (inst 
     (he : IsInt e e') (hn : IsNat n n') (h₂ : IsInt (e' % n') r) : IsInt e r :=
   ⟨by rw [he.out, CharP.intCast_eq_intCast_mod α n, show n = n' from hn.out, h₂.out, Int.cast_id]⟩
 
-lemma CharP.isNat_pow {α} [Semiring α] : ∀ {a : α} {a' b b' c n n' : ℕ},
-    CharP α n → IsNat a a' → IsNat b b' → IsNat n n' →
-    Nat.mod (Nat.pow a' b') n' = c → IsNat (a ^ b) c
-  | _, a, _, b, _, _, n, _, ⟨h⟩, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨by
+-- See note [norm_num lemma function equality]
+lemma CharP.isNat_pow {α} [Semiring α] : ∀ {f : α → ℕ → α} {a : α} {a' b b' c n n' : ℕ},
+    CharP α n → f = HPow.hPow → IsNat a a' → IsNat b b' → IsNat n n' →
+    Nat.mod (Nat.pow a' b') n' = c → IsNat (f a b) c
+  | _, _, a, _, b, _, _, n, _, rfl, ⟨h⟩, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨by
     rw [h, Nat.cast_id, Nat.pow_eq, ← Nat.cast_pow, CharP.natCast_eq_natCast_mod α n]
     rfl⟩
 
@@ -72,13 +73,15 @@ mutual
       modulo `n` recursively and then calculates `a ^ b` using fast modular exponentiation. -/
   partial def normPow {α : Q(Type u)} (n n' : Q(ℕ)) (pn : Q(IsNat «$n» «$n'»)) (e : Q($α))
       (_ : Q(Ring $α)) (instCharP : Q(CharP $α $n)) : MetaM (Result e) := do
-    let ~q($a ^ ($b : ℕ)) := e | failure
+    let .app (.app (f : Q($α → ℕ → $α)) (a : Q($α))) (b : Q(ℕ)) ← whnfR e | failure
     let .isNat sα na pa ← normIntNumeral' n n' pn a _ instCharP | failure
     let ⟨nb, pb⟩ ← Mathlib.Meta.NormNum.deriveNat b q(instAddMonoidWithOneNat)
+    guard <|← withNewMCtxDepth <| isDefEq f q(HPow.hPow (α := $α))
     haveI' : $e =Q $a ^ $b := ⟨⟩
+    haveI' : $f =Q HPow.hPow := ⟨⟩
     have ⟨c, r⟩ := evalNatPowMod na nb n'
     assumeInstancesCommute
-    return .isNat sα c q(CharP.isNat_pow $instCharP $pa $pb $pn $r)
+    return .isNat sα c q(CharP.isNat_pow (f := $f) $instCharP (.refl $f) $pa $pb $pn $r)
 
   /-- If `e` is of the form `a ^ b`, reduce it using fast modular exponentiation, otherwise
       reduce it using `norm_num`. -/
