@@ -23,7 +23,7 @@ def AddMonoidHom.sum (M : Type*) [AddCommMonoid M] : M × M →+ M where
     dsimp
     rw [add_assoc, ← add_assoc y₁, add_comm y₁, add_assoc, add_assoc]
 
-/-namespace CategoryTheory
+namespace CategoryTheory
 
 variable {C₁ C₂ D : Type*} [Category C₁] [Category C₂] [Category D]
 
@@ -37,19 +37,18 @@ class Shift₂Data (D : Type*) [Category D] (M : Type*) [AddCommMonoid M] [HasSh
 
 variable [Shift₂Data D M]
 
-def twistShiftData : TwistShiftData (PullbackShift D (.sum M)) (M × M) := sorry
-
+/-def twistShiftData : TwistShiftData (PullbackShift D (.sum M)) (M × M) := sorry
 
 abbrev TwistShift₂ : Type _ := TwistShift (twistShiftData D M)
 
 noncomputable def twistShift₂Iso (m₁ m₂ m : M) (hm : m₁ + m₂ = m) :
     shiftFunctor (TwistShift₂ D M) (m₁, m₂) ≅
       shiftFunctor D m :=
-  eqToIso (by aesop)
+  eqToIso (by aesop)-/
 
 end
 
-namespace Functor
+/-namespace Functor
 
 variable (F : C₁ ⥤ C₂ ⥤ D) (M : Type*) [AddCommMonoid M]
   [HasShift C₁ M] [HasShift C₂ M] [HasShift D M] [Shift₂Data D M]
@@ -117,7 +116,6 @@ noncomputable def iso (m₁ m₂ : M) :
   currying.functor.mapIso (F.commShift₂Iso' m₁ m₂ _ rfl) ≪≫
     NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
-@[simp]
 lemma iso_hom_app (m₁ m₂ : M) (X₁ : C₁) (X₂ : C₂) :
     (iso F m₁ m₂).hom.app (X₁, X₂) =
     ((F.obj (X₁⟦m₁⟧)).commShiftIso m₂).hom.app X₂ ≫
@@ -135,10 +133,14 @@ noncomputable def commshift₂'OfCommShift₂ [F.CommShift₂ M] :
     ext ⟨X₁, X₂⟩
     rw [CommShift.isoZero_hom_app]
     dsimp
-    simp
+    simp [iso_hom_app (D := D)]
     sorry
-  add := sorry
+  add m n := by
+    ext ⟨X₁, X₂⟩
+    dsimp
+    simp [iso_hom_app (D := D)]
+    sorry
 
-end Functor
+end Functor-/
 
-end CategoryTheory-/
+end CategoryTheory
