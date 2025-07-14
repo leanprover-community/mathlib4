@@ -150,22 +150,6 @@ theorem notMem_of_lt_σsInf (h : a < sInf s) (hs : s.Countable) : a ∉ s :=
 theorem notMem_of_σsSup_lt (h : sSup s < a) (hs : s.Countable) : a ∉ s :=
   notMem_of_lt_σsInf (α := αᵒᵈ) h hs
 
-/-- Introduction rule to prove that `b` is the supremum of `s`: it suffices to check that `b`
-is larger than all elements of `s`, and that this is not the case of any `w<b`.
-See `sSup_eq_of_forall_le_of_forall_lt_exists_gt` for a version in complete lattices. -/
-theorem σsSup_eq_of_forall_le_of_forall_lt_exists_gt (hs : s.Countable) (h₁ : ∀ a ∈ s, a ≤ b)
-    (h₂ : ∀ w, w < b → ∃ a ∈ s, w < a) : sSup s = b :=
-  (eq_of_le_of_not_lt (σsSup_le hs h₁)) fun hb =>
-    let ⟨_, ha, ha'⟩ := h₂ _ hb
-    lt_irrefl _ <| ha'.trans_le <| le_σsSup hs ha
-
-/-- Introduction rule to prove that `b` is the infimum of `s`: it suffices to check that `b`
-is smaller than all elements of `s`, and that this is not the case of any `w>b`.
-See `sInf_eq_of_forall_ge_of_forall_gt_exists_lt` for a version in complete lattices. -/
-theorem σsInf_eq_of_forall_ge_of_forall_gt_exists_lt (hs : s.Countable) (h₁ : ∀ a ∈ s, b ≤ a)
-    (h₂ : ∀ w, b < w → ∃ a ∈ s, a < w) : sInf s = b :=
-  σsSup_eq_of_forall_le_of_forall_lt_exists_gt (α := αᵒᵈ) hs h₁ h₂
-
 theorem lt_σsSup_of_lt (hs : s.Countable) (ha : a ∈ s) (h : b < a) : b < sSup s :=
   lt_of_lt_of_le h (le_σsSup hs ha)
 
