@@ -555,3 +555,130 @@ lemma WithZero.mulArchimedean_iff {α} [CommGroup α] [PartialOrder α] :
   constructor <;> intro _
   · exact OrderMonoidIso.unitsWithZero.mulArchimedean
   · infer_instance
+
+section DenselyOrdered
+
+variable {X : Type*} [LT X]
+
+instance [Subsingleton X] : DenselyOrdered X :=
+  ⟨fun a b hab ↦ ⟨a, hab.trans_eq (by subsingleton), hab⟩⟩
+
+lemma denselyOrdered_additive_iff : DenselyOrdered (Additive X) ↔ DenselyOrdered X := Iff.rfl
+lemma denselyOrdered_multiplicative_iff : DenselyOrdered (Multiplicative X) ↔ DenselyOrdered X :=
+  Iff.rfl
+
+instance [DenselyOrdered X] : DenselyOrdered (Multiplicative X) :=
+  denselyOrdered_multiplicative_iff.2 ‹_›
+instance [DenselyOrdered X] : DenselyOrdered (Additive X) :=
+  denselyOrdered_additive_iff.2 ‹_›
+
+lemma denselyOrdered_withZero_iff {M : Type*} [Preorder M] [NoMinOrder M] :
+    DenselyOrdered (WithZero M) ↔ DenselyOrdered M := by
+  constructor <;> intro h <;> constructor
+  · intro a b hab
+    obtain ⟨c, hc⟩ := exists_between (WithZero.coe_lt_coe.mpr hab)
+    induction c with
+    | zero => simp at hc
+    | coe c => exact ⟨c, by simpa using hc⟩
+  · intro a b hab
+    induction b with
+    | zero => simp at hab
+    | coe b =>
+      induction a with
+      | zero =>
+        obtain ⟨a, ha⟩ := exists_lt b
+        exact ⟨a, by simp [ha]⟩
+      | coe a =>
+      obtain ⟨c, hc⟩ := exists_between (WithZero.coe_lt_coe.mp hab)
+      exact ⟨c, by simpa using hc⟩
+
+instance {X : Type*} [Preorder X] [NoMinOrder X] [DenselyOrdered X] :
+    DenselyOrdered (WithZero X) :=
+  denselyOrdered_withZero_iff.mpr ‹_›
+
+lemma Int.not_denselyOrdered : ¬ DenselyOrdered ℤ :=
+  (LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered ℤ).mp ⟨.refl _⟩
+
+lemma not_denselyOrdered_withZeroInt : ¬ DenselyOrdered ℤᵐ⁰ :=
+  mt (by simp [denselyOrdered_withZero_iff, denselyOrdered_multiplicative_iff])
+    Int.not_denselyOrdered
+
+lemma Int.set_denselyOrdered_iff_subsingleton {s : Set ℤ} :
+    DenselyOrdered s ↔ s.Subsingleton := by
+  constructor
+  · intro H
+    refine s.subsingleton_or_nontrivial.resolve_right fun hs ↦ ?_
+    obtain ⟨a, ha, b, hb, h⟩ := hs
+    wlog hab : a < b generalizing a b
+    · push_neg at hab
+      exact this _ hb _ ha h.symm (lt_of_le_of_ne hab h.symm)
+    choose f hf hf' using H.dense ⟨a, ha⟩
+    let g : {x : s | a < x} → {x : s | a < x} := fun x ↦ ⟨f x x.prop, hf _ _⟩
+    have hg x : g x < x := hf' _ _
+    have hg' k x : g^[k + 1] x < x - (k : ℤ) := by
+        induction k with
+        | zero => simp [hg]
+        | succ k h =>
+        rw [Nat.cast_add_one, Function.iterate_succ', Function.comp_apply]
+        specialize hg (g^[k + 1] x)
+        simp only [← Subtype.coe_lt_coe] at hg
+        linarith
+    let c := g^[(b - a).toNat + 1] ⟨⟨b, hb⟩, hab⟩
+    have hc : a < c := c.prop
+    have hc' : c < a := by simpa [c, hab.le] using hg' (b - a).toNat ⟨⟨b, hb⟩, hab⟩
+    linarith
+  · intro h
+    have : Subsingleton s := (Set.subsingleton_coe s).mpr h
+    infer_instance
+
+lemma denselyOrdered_units_withZeroInt_set_iff_subsingleton {s : Set ℤᵐ⁰} :
+    DenselyOrdered s ↔ s.Subsingleton := by
+  constructor
+  · intro H
+    rcases (s \ {0}).subsingleton_or_nontrivial with hs | hs
+    · intro x hx y hy
+      cases x <;> cases y
+      · rfl
+      · rename_i x
+        have : (⟨0, hx⟩ : s) < ⟨x, hy⟩ := by simp
+        obtain ⟨⟨y, hys⟩, hy0, hxy⟩ := exists_between this
+        simp only [Subtype.mk_lt_mk, zero_lt_iff] at hxy hy0
+        exact absurd (hs (by simp_all) (by simp_all)) hxy.ne
+      · rename_i x
+        have : (⟨0, ‹_›⟩ : s) < ⟨x, ‹_›⟩ := by simp
+        obtain ⟨⟨y, hys⟩, hy0, hxy⟩ := exists_between this
+        simp only [Subtype.mk_lt_mk, zero_lt_iff] at hxy hy0
+        exact absurd (hs (by simp_all) (by simp_all)) hxy.ne
+      · exact hs (by simp_all) (by simp_all)
+    · have : (WithZero.exp ⁻¹' s).Nontrivial := by
+        obtain ⟨a, ha, b, hb, hs⟩ := hs
+        simp only [Set.mem_diff, Set.mem_singleton_iff] at ha hb
+        refine ⟨a.log, ?_, b.log, ?_, ?_⟩
+        · simp_all [WithZero.exp_log]
+        · simp_all [WithZero.exp_log]
+        · contrapose! hs
+          rw [← WithZero.exp_log ha.right, ← WithZero.exp_log hb.right, hs]
+      replace this : ¬ DenselyOrdered (WithZero.exp ⁻¹' s) := by
+        simp [Int.set_denselyOrdered_iff_subsingleton, this]
+      contrapose! this
+      constructor
+      simp only [Subtype.exists, Set.mem_preimage, Subtype.forall, Subtype.mk_lt_mk,
+        exists_and_right, exists_prop]
+      intro a ha b hb hab
+      have hab' : (⟨_, ha⟩ : s) < ⟨_, hb⟩ := by simp [hab]
+      obtain ⟨c, hc⟩ := exists_between hab'
+      have hc0 : (c : ℤᵐ⁰) ≠ 0 := by
+        intro h
+        simp [← Subtype.coe_lt_coe, h] at hc
+      refine ⟨WithZero.log c, ⟨?_, ?_⟩, ?_,⟩
+      · rw [WithZero.exp_log hc0]
+        exact c.prop
+      · rw [WithZero.lt_log_iff_exp_lt hc0]
+        exact hc.left
+      · rw [WithZero.log_lt_iff_lt_exp hc0]
+        exact hc.right
+  · intro h
+    have : Subsingleton s := (Set.subsingleton_coe s).mpr h
+    infer_instance
+
+end DenselyOrdered
