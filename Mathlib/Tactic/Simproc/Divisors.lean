@@ -15,8 +15,6 @@ This file implements simprocs to compute various objects related to divisors:
 
 -/
 
---TODO: these simprocs can probably be made a lot more efficient. See the discussion in #23026.
-
 open Lean Meta Qq
 
 /-- The `Nat.divisorsEq` computes the finset `Nat.divisors n` when `n` is a natural number
