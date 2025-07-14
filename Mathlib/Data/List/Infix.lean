@@ -159,14 +159,8 @@ theorem infix_singleton_iff (xs : List α) (x : α) :
     · simp
 
 lemma infix_antisymm {l₁ l₂ : List α} (h₁ : l₁ <:+: l₂) (h₂ : l₂ <:+: l₁) :
-    l₁ = l₂ := by
-  obtain ⟨a, b, h₁⟩ := h₁
-  obtain ⟨d, e, h₂⟩ := h₂
-  have : l₂.length = a.length + l₁.length + b.length := by simp [← h₁, ← Nat.add_assoc]
-  have : l₁.length = d.length + l₂.length + e.length := by simp [← h₂, ← Nat.add_assoc]
-  have t₁ : a = [] := List.eq_nil_iff_length_eq_zero.mpr (by omega)
-  have t₂ : b = [] := List.eq_nil_iff_length_eq_zero.mpr (by omega)
-  simp [← h₁, t₁, t₂]
+    l₁ = l₂ :=
+  h₁.sublist.antisymm h₂.sublist
 
 instance : IsPartialOrder (List α) (· <+: ·) where
   refl _ := prefix_rfl
