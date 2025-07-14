@@ -1428,7 +1428,8 @@ lemma ofNNReal_liminf {u : ι → ℝ≥0} (hf : f.IsCoboundedUnder (· ≥ ·) 
   rw [coe_le_coe, le_liminf_iff, le_liminf_iff]
   simp [forall_ennreal]
 
-theorem liminf_add_of_right_tendsto_zero (u : Filter ι) (f : ι → ℝ≥0∞) {g : ι → ℝ≥0∞} (hg : u.Tendsto g (𝓝 0)) :
+theorem liminf_add_of_right_tendsto_zero (u : Filter ι)
+  (f : ι → ℝ≥0∞) {g : ι → ℝ≥0∞} (hg : u.Tendsto g (𝓝 0)) :
     u.liminf (f + g) = u.liminf f := by
   have h_eps {ε} (hε : ε > 0) : ∃ v ∈ u, ∀ n ∈ v, g n < ε := by
     simpa [eventually_iff_exists_mem] using hg.eventually (gt_mem_nhds hε)
@@ -1453,7 +1454,8 @@ theorem liminf_add_of_right_tendsto_zero (u : Filter ι) (f : ι → ℝ≥0∞)
   · refine liminf_le_liminf (Eventually.of_forall ?_)
     simp
 
-theorem limsup_add_of_right_tendsto_zero (u : Filter ι) (f : ι → ℝ≥0∞) {g : ι → ℝ≥0∞} (hg : u.Tendsto g (𝓝 0)) :
+theorem limsup_add_of_right_tendsto_zero (u : Filter ι)
+  (f : ι → ℝ≥0∞) {g : ι → ℝ≥0∞} (hg : u.Tendsto g (𝓝 0)) :
     u.limsup (f + g) = u.limsup f := by
   have h_eps {ε} (hε : ε > 0) : ∃ v ∈ u, ∀ n ∈ v, g n < ε := by
     simpa [eventually_iff_exists_mem] using hg.eventually (gt_mem_nhds hε)
