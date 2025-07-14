@@ -151,6 +151,7 @@ lemma theorem3_i_ii (a : α) (h : IsStandard a) :
               apply le_trans (b := x ⊔ a₁)
               rw [ha2]
               exact inf_le_left
+              exact sup_le_sup_left ha1 x
             rw [inf_eq_left.mpr e2]
             rw [le_antisymm_iff]
             constructor
@@ -169,44 +170,6 @@ lemma theorem3_i_ii (a : α) (h : IsStandard a) :
             rw [← e1]
             simp only [le_sup_left, inf_of_le_left, sup_of_le_right]
 
-
-
-
-
-
-
-
-
-
-
-/-
-  refl := by
-    intro x
-    use x ⊓ a
-    constructor
-    · exact inf_le_right
-    · simp only [le_refl, inf_of_le_left, inf_le_left, sup_of_le_left]
-  symm := by
-    intro x y h
-    obtain ⟨a₁, ha1, ha2⟩ := h
-    use a₁
-    constructor
-    · exact ha1
-    · rw [sup_comm y x, inf_comm, ha2]
-  trans := by
-    intro x y z h1 h2
-    obtain ⟨a₁, ha11, ha12⟩ := h1
-    obtain ⟨a₂, ha21, ha22⟩ := h2
-    use a₁ ⊓ a₂
-    constructor
-    · exact inf_le_of_right_le ha21
-    ·
-
-  inf := sorry
-  sup := sorry
--/
-
-
 lemma theorem3_iii_i (a : α) (h1 : IsDistrib a)
     (h2 : ∀ x y : α, a ⊓ x = a ⊓ y ∧ a ⊔ x = a ⊔ y → x = y) : IsStandard a := fun x y => h2 _  _
   ⟨le_antisymm (by
@@ -218,6 +181,7 @@ lemma theorem3_iii_i (a : α) (h1 : IsDistrib a)
     rw [h1, sup_of_le_right le_sup_left, ← h1]
     exact le_antisymm (sup_le_sup_left le_sup_right _) (by simp [← sup_assoc])⟩
 
+/-
 lemma theorem4_i_ii (a : α) (h1 : IsNeutral a) : IsDistrib a := by
   intro x y
   have e1 (h : a ≤ x) : a ⊔ (x ⊓ y) = x ⊓ (a ⊔ y) :=
@@ -227,3 +191,4 @@ lemma theorem4_i_ii (a : α) (h1 : IsNeutral a) : IsDistrib a := by
         rw [inf_comm]
         apply inf_le_inf_right
       _ = x ⊓ (a ⊔ y) := sorry
+-/
