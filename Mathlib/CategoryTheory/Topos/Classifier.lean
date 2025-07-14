@@ -99,7 +99,7 @@ attribute [instance] mono_truth
 
 /-- More explicit constructor in case `Ω₀` is already known to be a terminal object. -/
 @[simps]
-def mkOfTerminalΩ
+def mkOfTerminalΩ₀
     (Ω₀ : C)
     (t : IsTerminal Ω₀)
     (Ω : C)
