@@ -288,7 +288,7 @@ lemma isDiscreteValuationRing_of_compactSpace [hv : (Valued.v : Valuation K Γ�
   exact {
     not_a_field' := by
       -- here is the other place where the nontriviality of the valuation comes in,
-      -- since if we had `v x = 0 ∨ x = 1`, then the maximal ideal would be `⊥`.
+      -- since if we had `v x = 0 ∨ v x = 1`, then the maximal ideal would be `⊥`.
       simp only [ne_eq, Ideal.ext_iff, IsLocalRing.mem_maximalIdeal, mem_nonunits_iff,
         Ideal.mem_bot, not_forall, Valuation.Integer.not_isUnit_iff_valuation_lt_one]
       refine ⟨⟨x, hx'.le⟩, ?_⟩
