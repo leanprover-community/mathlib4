@@ -1607,6 +1607,10 @@ theorem coe_primesOverFinset : primesOverFinset p B = primesOver p B := by
 
 namespace IsDedekindDomain.HeightOneSpectrum
 
+/--
+The bijection between the elements of the height one prime spectrum of `B` that divides the lift
+of the maximal ideal `p` in `B` and the primes over `p` in `B`.
+-/
 noncomputable def equivPrimesOver (hp : p ≠ 0) :
     {v : HeightOneSpectrum B // v.asIdeal ∣ map (algebraMap A B) p} ≃ (p.primesOver B) :=
   Set.BijOn.equiv HeightOneSpectrum.asIdeal
