@@ -270,7 +270,7 @@ def _root_.IsCovariantDerivativeOn.convexCombination' {ι : Type*} {s : Finset �
     ext i
     simp [(h i).smulX]
     module
-  addσ X σ σ' x hx hσ hσ' := by
+  addσ X σ σ' x hσ hσ' hx := by
     -- XXX: is this nicer using induction?
     classical
     induction s using Finset.induction with
@@ -360,6 +360,28 @@ lemma convexCombination'_isRegular [IsManifold I 1 M] {ι : Type*} {s : Finset �
 -- Future: prove a version with a locally finite sum, and deduce that C^k connections always
 -- exist (using a partition of unity argument)
 
+section add_one_form
+
+omit [IsManifold I 0 M] [VectorBundle 𝕜 F V] in
+lemma _root_.IsCovariantDerivativeOn.add_one_form (hf : IsCovariantDerivativeOn F V f s)
+    (A : Π x : M, TangentSpace I x →L[𝕜] V x →L[𝕜] V x) :
+    IsCovariantDerivativeOn F V (fun X σ x ↦ f X σ x + A x (X x) (σ x)) s where
+  addX X X' σ x hx := by
+    simp [hf.addX]
+    module
+  smulX X σ g x hx := by
+    simp [hf.smulX]
+  addσ X σ σ' x hσ hσ' hx := by
+    simp [hf.addσ X hσ hσ']
+    module
+  smul_const_σ X {σ a} x hx := by
+    simp [hf.smul_const_σ]
+  leibniz X σ g x hσ hg hx := by
+    simp [hf.leibniz X hσ hg]
+    module
+
+end add_one_form
+
 section trivial_bundle
 
 omit [IsManifold I 0 M] in
@@ -395,7 +417,7 @@ lemma mfderiv_smul {f : M → F} {s : M → 𝕜} {x : M} (hf : MDiffAt f x)
 variable (I M F) in
 @[simps]
 noncomputable def trivial : CovariantDerivative I F (Trivial M F) where
-  toFun X s := fun x ↦ mfderiv I 𝓘(𝕜, F) s x (X x)
+  toFun X s x := mfderiv I 𝓘(𝕜, F) s x (X x)
   isCovariantDerivativeOn :=
   { addX X X' σ x _ := by simp
     smulX X σ c' x _ := by simp
@@ -462,33 +484,20 @@ lemma trivial_isSmooth : IsCkConnection (𝕜 := 𝕜) (trivial 𝓘(𝕜, E) E 
     -- or perhaps a contMDiffOn version of this lemma?
     sorry
 
-
-lemma of_endomorophism_isCovariantDerivativeOn (A : E → E →L[𝕜] E' →L[𝕜] E') :
-    IsCovariantDerivativeOn E' (Bundle.Trivial E E')
-      (fun (X : Π x : E, TangentSpace 𝓘(𝕜, E) x) (σ : E → E') x ↦
-        fderiv 𝕜 σ x (X x) + A x (X x) (σ x)) univ where
-  addX X X' σ x _ := by
-    by_cases h : DifferentiableAt 𝕜 σ x
-    · simp [map_add]; abel
-    · simp [fderiv_zero_of_not_differentiableAt h]
-  smulX X σ c' := by simp
-  addσ X σ σ' x hσ hσ' hx := by
-    rw [Bundle.Trivial.mdifferentiableAt_iff] at hσ hσ'
-    simp [fderiv_add hσ hσ']
-    abel
-  smul_const_σ X σ a x hx := by simp [fderiv_const_smul_of_field a]
-  leibniz X σ f x hσ hf hx := by
-    rw [Bundle.Trivial.mdifferentiableAt_iff] at hσ
-    rw [mdifferentiableAt_iff_differentiableAt] at hf
-    have : fderiv 𝕜 (f • σ) x = f x • fderiv 𝕜 σ x + (fderiv 𝕜 f x).smulRight (σ x) :=
-      fderiv_smul (by simp_all) (by simp_all)
-    simp [this, bar]
-    module
+lemma of_endomorophism_isCovariantDerivativeOn (A : (x : M) → TangentSpace I x →L[𝕜] F →L[𝕜] F) :
+    IsCovariantDerivativeOn F (Trivial M F)
+      (fun (X : Π x : M, TangentSpace I x) (s : M → F) x ↦
+        letI d : F := mfderiv I 𝓘(𝕜, F) s x (X x)
+        d + A x (X x) (s x)) univ :=
+  trivial I M F |>.isCovariantDerivativeOn.add_one_form A
 
 noncomputable def of_endomorphism (A : E → E →L[𝕜] E' →L[𝕜] E') :
-    CovariantDerivative 𝓘(𝕜, E) E' (Bundle.Trivial E E') where
+    CovariantDerivative 𝓘(𝕜, E) E' (Trivial E E') where
   toFun X σ := fun x ↦ fderiv 𝕜 σ x (X x) + A x (X x) (σ x)
-  isCovariantDerivativeOn := of_endomorophism_isCovariantDerivativeOn A
+  isCovariantDerivativeOn := by
+    convert of_endomorophism_isCovariantDerivativeOn (I := 𝓘(𝕜, E)) A
+    ext f x v
+    rw [mfderiv_eq_fderiv]
 
 section real
 
