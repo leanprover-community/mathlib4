@@ -627,50 +627,44 @@ lemma Int.denselyOrdered_set_iff_subsingleton {s : Set ℤ} :
   have hc' : c < a := by simpa [c, hab.le] using hg' (b - a).toNat ⟨⟨b, hb⟩, hab⟩
   linarith
 
+lemma denselyOrdered_multiplicativeInt_set_iff_subsingleton {s : Set (Multiplicative ℤ)} :
+    DenselyOrdered s ↔ s.Subsingleton :=
+  Int.denselyOrdered_set_iff_subsingleton
+
+open WithZero in
 lemma denselyOrdered_withZeroInt_set_iff_subsingleton {s : Set ℤᵐ⁰} :
     DenselyOrdered s ↔ s.Subsingleton := by
   refine ⟨fun H ↦ ?_, fun h ↦ h.denselyOrdered⟩
-  rcases (s \ {0}).subsingleton_or_nontrivial with hs | hs
-  · intro x hx y hy
-    cases x <;> cases y
-    · rfl
-    · rename_i x
-      have : (⟨0, hx⟩ : s) < ⟨x, hy⟩ := by simp
+  rcases (Units.val ⁻¹' s).subsingleton_or_nontrivial with hs | hs
+  · simp only [Set.Subsingleton, «forall», implies_true, zero_ne_coe, imp_false, true_and,
+    coe_ne_zero, coe_inj]
+    have : ∀ (x : Multiplicative ℤ), (x : ℤᵐ⁰) ∈ s → 0 ∈ s → False := by
+      intro x hx h0
+      have : (⟨0, h0⟩ : s) < ⟨x, hx⟩ := by simp
       obtain ⟨⟨y, hys⟩, hy0, hxy⟩ := exists_between this
-      simp only [Subtype.mk_lt_mk, zero_lt_iff] at hxy hy0
-      exact absurd (hs (by simp_all) (by simp_all)) hxy.ne
-    · rename_i x
-      have : (⟨0, ‹_›⟩ : s) < ⟨x, ‹_›⟩ := by simp
-      obtain ⟨⟨y, hys⟩, hy0, hxy⟩ := exists_between this
-      simp only [Subtype.mk_lt_mk, zero_lt_iff] at hxy hy0
-      exact absurd (hs (by simp_all) (by simp_all)) hxy.ne
-    · exact hs (by simp_all) (by simp_all)
-  · have : (WithZero.exp ⁻¹' s).Nontrivial := by
-      obtain ⟨a, ha, b, hb, hs⟩ := hs
-      simp only [Set.mem_diff, Set.mem_singleton_iff] at ha hb
-      refine ⟨a.log, ?_, b.log, ?_, ?_⟩
-      · simp_all [WithZero.exp_log]
-      · simp_all [WithZero.exp_log]
-      · contrapose! hs
-        rw [← WithZero.exp_log ha.right, ← WithZero.exp_log hb.right, hs]
-    replace this : ¬ DenselyOrdered (WithZero.exp ⁻¹' s) := by
-      simp [Int.denselyOrdered_set_iff_subsingleton, this]
+      refine hxy.ne ?_
+      simpa [← Units.val_inj] using @hs (Units.mk0 y (by simpa using hy0.ne')) (by simp [hys])
+        (Units.mk0 x (by simp)) (by simp [hx])
+    refine ⟨fun h0 x hx ↦ this x hx h0, fun x hx ↦ ⟨this x hx, fun y hy ↦ ?_⟩⟩
+    simpa [← Units.val_inj] using @hs (Units.mk0 x (by simp)) (by simp_all)
+      (Units.mk0 y (by simp)) (by simp_all)
+  · have : (unitsWithZeroEquiv.symm ⁻¹' (Units.val ⁻¹' s)).Nontrivial := by
+      exact Nontrivial.preimage hs (MulEquiv.surjective _)
+    absurd H
+    rw [← Set.not_subsingleton_iff, ← denselyOrdered_multiplicativeInt_set_iff_subsingleton] at this
     contrapose! this
     constructor
-    simp only [Subtype.exists, Set.mem_preimage, Subtype.forall, Subtype.mk_lt_mk,
-      exists_and_right, exists_prop]
-    intro a ha b hb hab
-    have hab' : (⟨_, ha⟩ : s) < ⟨_, hb⟩ := by simp [hab]
-    obtain ⟨c, hc⟩ := exists_between hab'
-    have hc0 : (c : ℤᵐ⁰) ≠ 0 := by
-      intro h
-      simp [← Subtype.coe_lt_coe, h] at hc
-    refine ⟨WithZero.log c, ⟨?_, ?_⟩, ?_,⟩
-    · rw [WithZero.exp_log hc0]
-      exact c.prop
-    · rw [WithZero.lt_log_iff_exp_lt hc0]
-      exact hc.left
-    · rw [WithZero.log_lt_iff_lt_exp hc0]
-      exact hc.right
+    simp only [Subtype.exists, mem_preimage, unitsWithZeroEquiv_symm_apply, Units.val_mk0,
+      Multiplicative.exists, Subtype.forall, Subtype.mk_lt_mk, exists_and_right,
+      Multiplicative.forall, Multiplicative.ofAdd_lt, exists_prop]
+    intro x hx y hy hxy
+    rw [← exp] at hx hy
+    have : (⟨_, hx⟩ : s) < ⟨_, hy⟩ := exp_lt_exp.mpr hxy
+    obtain ⟨z, hz⟩ := exists_between this
+    simp only [← Subtype.coe_lt_coe] at hz
+    have hz0 : z.val ≠ 0 := (hz.left.trans_le' (zero_le _)).ne'
+    refine ⟨log z, ⟨?_, lt_log_of_exp_lt hz.left⟩, (log_lt_iff_lt_exp hz0).mpr hz.right⟩
+    rw [← exp, exp_log hz0]
+    simp
 
 end DenselyOrdered
