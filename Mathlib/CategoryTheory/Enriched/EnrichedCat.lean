@@ -1,5 +1,23 @@
+/-
+Copyright (c) 2025 Jakob von Raumer. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jakob von Raumer
+-/
 import Mathlib.CategoryTheory.Enriched.Basic
 import Mathlib.CategoryTheory.Bicategory.Basic
+
+/-!
+# The bicategory of `V`-enriched categories
+
+We define the bicategory `EnrichedCat V` of (bundled) `V`-enriched categories for a fixed monoidal
+category `V`.
+
+## Future work
+
+* Define change of base and `ForgetEnrichment` as 2-functors.
+* Define the bicategory of enriched ordinary categories.
+-/
+
 
 universe w v u u₁ u₂
 
@@ -28,6 +46,7 @@ open EnrichedCategory
 
 variable {C D E E' : EnrichedCat.{w, v, u} V}
 
+/-- Whisker a `V`-enriched natural transformation on the left. -/
 @[simps]
 def whiskerLeft
     (F : EnrichedFunctor V C D) {G H : EnrichedFunctor V D E} (α : EnrichedNatTrans G H) :
@@ -39,6 +58,7 @@ def whiskerLeft
      ← whiskerRight_comp_tensorHom]
     simp
 
+/-- Whisker a `V`-enriched natural transformation on the right. -/
 @[simps]
 def whiskerRight
     {F G : EnrichedFunctor V C D} (α : EnrichedNatTrans F G) (H : EnrichedFunctor V D E) :
@@ -49,6 +69,7 @@ def whiskerRight
     rw [← H.map_comp, reassoc_of% (GradedNatTrans.naturality α X Y)]
     simp
 
+/-- Composing the `V`-enriched identity functor with any functor is isomorphic to that functor. -/
 def leftUnitor (F : EnrichedFunctor V C D) :
     EnrichedFunctor.comp V (EnrichedFunctor.id V _) F ≅ F :=
   EnrichedFunctor.isoOfComponents (fun X => EnrichedIso.refl _) fun X Y => by
@@ -58,6 +79,8 @@ def leftUnitor (F : EnrichedFunctor V C D) :
       tensorHom_def', Category.assoc, (Iso.inv_comp_eq _).mp (e_id_comp ..)]
     simp
 
+/-- Composing any `V`-enriched functor with the identity functor is isomorphic to the former
+functor. -/
 def rightUnitor (F : EnrichedFunctor V C D) :
     EnrichedFunctor.comp V F (EnrichedFunctor.id V _) ≅ F :=
   EnrichedFunctor.isoOfComponents (fun X => EnrichedIso.refl _) fun X Y => by
@@ -67,6 +90,7 @@ def rightUnitor (F : EnrichedFunctor V C D) :
       tensorHom_def', Category.assoc, (Iso.inv_comp_eq _).mp (e_id_comp ..)]
     simp
 
+/-- Composition of `V`-enriched functors is associative up to isomorphism. -/
 def associator (F : EnrichedFunctor V C D) (G : EnrichedFunctor V D E)
     (H : EnrichedFunctor V E E') :
     EnrichedFunctor.comp V (EnrichedFunctor.comp V F G) H ≅
@@ -78,7 +102,7 @@ def associator (F : EnrichedFunctor V C D) (G : EnrichedFunctor V D E)
       tensorHom_def', Category.assoc, (Iso.inv_comp_eq _).mp (e_id_comp ..)]
     simp
 
-/-- Bicategory structure on `Cat` -/
+/-- The bicategory structure on `EnrichedCat V` for a monoidal category `V`. -/
 instance bicategory : Bicategory (EnrichedCat.{w, v, u} V) where
   Hom C D := EnrichedFunctor V C D
   id C := EnrichedFunctor.id V C
