@@ -125,6 +125,10 @@ protected lemma Pi.partialSups_apply {τ : Type*} {π : τ → Type*} [∀ t, Se
     partialSups f i t = partialSups (f · t) i := by
   simp only [partialSups_apply, Finset.sup'_apply]
 
+lemma comp_partialSups {F : Type*} [FunLike F α β] [SupHomClass F α β] (f : ι → α) (g : F) :
+    partialSups (g ∘ f) = g ∘ partialSups f := by
+  funext _; simp [partialSups]
+
 end Preorder
 
 @[simp]
@@ -146,10 +150,6 @@ theorem partialSups_bot [PartialOrder ι] [LocallyFiniteOrder ι] [OrderBot ι]
   -- should we add a lemma `Finset.Iic_bot`?
   suffices Iic (⊥ : ι) = {⊥} by simp only [this, sup'_singleton]
   simp only [← coe_eq_singleton, coe_Iic, Set.Iic_bot]
-
-lemma comp_partialSups {F : Type*} [Preorder ι] [LocallyFiniteOrderBot ι] [FunLike F α β]
-    [SupHomClass F α β] (f : ι → α) (g : F) : partialSups (g ∘ f) = g ∘ partialSups f := by
-  funext _; simp [partialSups]
 
 /-!
 ### Functions out of `ℕ`
