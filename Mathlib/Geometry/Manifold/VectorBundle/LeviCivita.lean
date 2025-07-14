@@ -470,7 +470,7 @@ lemma bar [FiniteDimensional ℝ E] (e : Trivialization E (TotalSpace.proj: Tang
 -- The candidate definition is a covariant derivative on each local frame's domain.
 lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
     (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e] :
-    IsCovariantDerivativeOn E (TangentSpace I) (lcCandidate_aux I (M := M) e) e.baseSet where
+    IsCovariantDerivativeOn E (lcCandidate_aux I (M := M) e) e.baseSet where
   addX X X' σ x := by
     -- these three sorries seem to be necessary!
     have hX : MDiff (T% X) := sorry
@@ -528,7 +528,7 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
 -- The candidate definition is a covariant derivative on each local frame's domain.
 lemma isCovariantDerivativeOn_existence_candidate [FiniteDimensional ℝ E]
     (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e] :
-    IsCovariantDerivativeOn E (TangentSpace I) (lcCandidate I M) e.baseSet := by
+    IsCovariantDerivativeOn E (lcCandidate I M) e.baseSet := by
   sorry -- need some IsCovariantDerivativeOn_congr + lemma bar
 
 end
