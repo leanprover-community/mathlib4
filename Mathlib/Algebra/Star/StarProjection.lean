@@ -105,7 +105,7 @@ theorem sub_of_mul_eq_right [NonAssocRing R] [StarRing R]
   (by simpa [hp.isSelfAdjoint.star_eq, hq.isSelfAdjoint.star_eq] using congr(star $(hqp)))
 
 /-- `q - p` is a star projection iff `p * q = p`. -/
-theorem IsStarProjection.sub_iff_mul_eq_left [Ring R] [StarRing R] [IsAddTorsionFree R]
+theorem sub_iff_mul_eq_left [Ring R] [StarRing R] [IsAddTorsionFree R]
     {p q : R} (hp : IsStarProjection p) (hq : IsStarProjection q) :
     IsStarProjection (q - p) ↔ p * q = p := by
   rw [isStarProjection_iff, hp.isIdempotentElem.sub_iff hq.isIdempotentElem]
@@ -116,7 +116,7 @@ theorem IsStarProjection.sub_iff_mul_eq_left [Ring R] [StarRing R] [IsAddTorsion
   simp_rw [and_self]
 
 /-- `q - p` is a star projection iff `q * p = p`. -/
-theorem IsStarProjection.sub_iff_mul_eq_right [Ring R] [StarRing R] [IsAddTorsionFree R]
+theorem sub_iff_mul_eq_right [Ring R] [StarRing R] [IsAddTorsionFree R]
     {p q : R} (hp : IsStarProjection p) (hq : IsStarProjection q) :
     IsStarProjection (q - p) ↔ q * p = p := by
   rw [isStarProjection_iff, hp.isIdempotentElem.sub_iff hq.isIdempotentElem]
