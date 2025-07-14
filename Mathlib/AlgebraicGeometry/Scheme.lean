@@ -407,7 +407,7 @@ lemma Hom.copyBase_eq {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g
     f.copyBase g h = f := by
   subst h
   obtain ⟨⟨⟨f₁, f₂⟩, f₃⟩, f₄⟩ := f
-  simp only [Hom.copyBase, LocallyRingedSpace.Hom.toShHom_mk]
+  simp only [Hom.copyBase]
   congr
   aesop_cat
 

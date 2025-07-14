@@ -109,7 +109,7 @@ def lowerCone
     naturality := by
       rintro x y e
       simp only [Functor.const_obj_obj, Functor.comp_obj, Functor.const_obj_map,
-        Functor.op_obj, ObjectProperty.ι_obj, Functor.pointwiseRightKanExtension_obj,
+        Functor.op_obj, Functor.pointwiseRightKanExtension_obj,
         Category.id_comp, Functor.comp_map, Category.assoc]
       rw [← S.w ((projSup Us).map e), Category.assoc]
       congr 1
@@ -155,7 +155,7 @@ def isLimit {X : TopCat.{v}} [Preorder X] [Topology.IsUpperSet X]
     symm
     ext ⟨_, x, f⟩
     simp only [lowerCone_pt, comp_obj, limit.lift_π, lowerCone_π_app, const_obj_obj, projSup_obj,
-      op_obj, ObjectProperty.ι_obj, pointwiseRightKanExtension_obj]
+      op_obj, pointwiseRightKanExtension_obj]
     specialize hm ⟨principalOpen x, ?_⟩
     · apply exists_le_of_le_sup
       exact f.unop.le

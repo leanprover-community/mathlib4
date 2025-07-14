@@ -48,8 +48,8 @@ def affineCover (X : Scheme.{u}) : OpenCover X where
   f x := x
   covers := by
     intro x
-    simp only [LocallyRingedSpace.comp_toShHom, SheafedSpace.comp_hom_base, TopCat.hom_comp,
-      ContinuousMap.coe_comp]
+    --simp only [LocallyRingedSpace.comp_toShHom, SheafedSpace.comp_hom_base, TopCat.hom_comp,
+    --  ContinuousMap.coe_comp]
     sorry
     --rw [Set.range_comp, Set.range_eq_univ.mpr, Set.image_univ]
     --· erw [Subtype.range_coe_subtype]

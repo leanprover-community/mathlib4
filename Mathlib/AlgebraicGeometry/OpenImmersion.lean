@@ -568,11 +568,11 @@ lemma image_preimage_eq_preimage_image_of_isPullback {X Y U V : Scheme.{u}}
   ext x
   by_cases hx : x ∈ Set.range iU.base
   · obtain ⟨x, rfl⟩ := hx
-    simp only [IsOpenMap.coe_functor_obj, TopologicalSpace.Opens.map_coe,
-      iU.isOpenEmbedding.injective.mem_set_image, Set.mem_preimage, SetLike.mem_coe,
-      ← Scheme.comp_base_apply, ← H.w]
-    simp only [Scheme.comp_coeBase, TopCat.comp_app,
-      iV.isOpenEmbedding.injective.mem_set_image, SetLike.mem_coe]
+    --simp only [IsOpenMap.coe_functor_obj, TopologicalSpace.Opens.map_coe,
+    --  iU.isOpenEmbedding.injective.mem_set_image, Set.mem_preimage, SetLike.mem_coe,
+    --  ← Scheme.comp_base_apply, ← H.w]
+    --simp only [Scheme.comp_coeBase, TopCat.comp_app,
+    --  iV.isOpenEmbedding.injective.mem_set_image, SetLike.mem_coe]
     sorry
   · constructor
     · rintro ⟨x, hx, rfl⟩; cases hx ⟨x, rfl⟩
