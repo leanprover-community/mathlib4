@@ -35,10 +35,10 @@ scoped[Topology] notation:50 f " =ᵇ " g:50 => Filter.EventuallyEq (residual _)
 
 /-- Notation to say that a property of points in a topological space holds
 almost everywhere in the sense of Baire category. That is, on a residual set. -/
-scoped[Topology] notation3 "∀ᵇ "(...)", "r:(scoped p => Filter.Eventually p <| residual _) => r
+scoped[Topology] notation3 "∀ᵇ " (...) ", " r:(scoped p => Filter.Eventually p <| residual _) => r
 
 /-- Notation to say that a property of points in a topological space holds on a non meager set. -/
-scoped[Topology] notation3 "∃ᵇ "(...)", "r:(scoped p => Filter.Frequently p <| residual _) => r
+scoped[Topology] notation3 "∃ᵇ " (...) ", " r:(scoped p => Filter.Frequently p <| residual _) => r
 
 variable {α}
 
@@ -170,7 +170,7 @@ theorem IsMeagre.preimage_of_isOpenMap (hc : Continuous f) (ho : IsOpenMap f)
 
 /-- The preimage of a `BaireMeasurableSet` under a continuous open map is Baire measurable. -/
 theorem BaireMeasurableSet.preimage (hc : Continuous f) (ho : IsOpenMap f)
-    {s : Set β} (h : BaireMeasurableSet s) : BaireMeasurableSet (f⁻¹' s) := by
+    {s : Set β} (h : BaireMeasurableSet s) : BaireMeasurableSet (f ⁻¹' s) := by
   rcases h with ⟨u, hu, hsu⟩
   refine ⟨f ⁻¹' u, ?_, hsu.filter_mono <| tendsto_residual_of_isOpenMap hc ho⟩
   borelize α β

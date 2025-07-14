@@ -143,7 +143,7 @@ variable (hf : IsCoveringMap f)
 include hf
 
 protected theorem continuous : Continuous f :=
-  continuous_iff_continuousOn_univ.mpr hf.isCoveringMapOn.continuousOn
+  continuousOn_univ.mp hf.isCoveringMapOn.continuousOn
 
 protected theorem isLocalHomeomorph : IsLocalHomeomorph f :=
   isLocalHomeomorph_iff_isLocalHomeomorphOn_univ.mpr hf.isCoveringMapOn.isLocalHomeomorphOn

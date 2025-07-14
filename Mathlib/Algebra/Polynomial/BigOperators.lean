@@ -187,16 +187,7 @@ theorem natDegree_multiset_prod_of_monic (h : ∀ f ∈ t, Monic f) :
     t.prod.natDegree = (t.map natDegree).sum := by
   nontriviality R
   apply natDegree_multiset_prod'
-  suffices (t.map fun f => leadingCoeff f).prod = 1 by
-    rw [this]
-    simp
-  convert prod_replicate (Multiset.card t) (1 : R)
-  · simp only [eq_replicate, Multiset.card_map, true_and]
-    rintro i hi
-    obtain ⟨i, hi, rfl⟩ := Multiset.mem_map.mp hi
-    apply h
-    assumption
-  · simp
+  simp_all
 
 theorem degree_multiset_prod_of_monic [Nontrivial R] (h : ∀ f ∈ t, Monic f) :
     t.prod.degree = (t.map degree).sum := by
