@@ -50,37 +50,28 @@ theorem range_eq_of_proj {f : E' →ₗ[S] p'} (hf : ∀ x : p', f x = x) : rang
 theorem isCompl_of_proj {f : E' →ₗ[S] p'} (hf : ∀ x : p', f x = x) : IsCompl p' (ker f) := by
   let f' := p'.subtype ∘ₗ f
   have hf' : ∀ x : p', f' x = x := fun x => by simp [f', hf]
-  have : range f' = p' := by
-    rw [range_comp, range_eq_of_proj hf]
-    simp
-  simp_rw [← this]
-  have : ker f = ker f' := by
-    rw [ker_comp]
-    simp
-  simp_rw [this]
-  have hf' : IsIdempotentElem f' := by
-    rw [IsIdempotentElem, Module.End.mul_eq_comp]
-    ext x
-    simp [f', hf]
-  symm
   constructor
-  · rw [disjoint_iff]
-    ext x
-    simp only [mem_bot, mem_inf, mem_ker, mem_range]
-    constructor <;> intro h'
-    · rcases h'.2 with ⟨y, rfl⟩
-      rw [← hf'.eq, Module.End.mul_apply]
-      exact h'.1
-    · rw [h', map_zero, eq_self_iff_true, true_and]
-      use x
-      simp only [h', map_zero]
-  · suffices ∀ x : E', ∃ v : ker f', ∃ w : range f', x = v + w by
-      rw [codisjoint_iff]
+  · rw [disjoint_iff_inf_le]
+    rintro x ⟨hpx, hfx⟩
+    rw [SetLike.mem_coe, mem_ker, hf ⟨x, hpx⟩, mk_eq_zero] at hfx
+    simp only [hfx, zero_mem]
+  · symm
+    rw [codisjoint_iff_le_sup]
+    have : ker f = ker f' := by
+      rw [ker_comp]
+      simp
+    have hf' : IsIdempotentElem f' := by
+      rw [IsIdempotentElem, Module.End.mul_eq_comp]
       ext x
-      rcases this x with ⟨v, w, rfl⟩
-      simp only [mem_top, iff_true]
-      exact add_mem_sup (SetLike.coe_mem v) (SetLike.coe_mem w)
-    refine fun x => ⟨⟨x - f' x, ?_⟩, ⟨f' x, ?_⟩, ?_⟩
+      simp [f', hf]
+    simp_rw [this]
+    have : range f' = p' := by
+      rw [range_comp, range_eq_of_proj hf]
+      simp
+    simp_rw [← this]
+    intro x _
+    rw [mem_sup']
+    refine ⟨⟨x - f' x, ?_⟩, ⟨f' x, ?_⟩, ?_⟩
     · rw [mem_ker, map_sub, ← Module.End.mul_apply, hf'.eq, sub_self]
     · simp only [mem_range, exists_apply_eq_apply]
     · simp only [sub_add_cancel]
