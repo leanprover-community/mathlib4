@@ -734,8 +734,8 @@ protected lemma mgf_le_of_mem_Icc [IsProbabilityMeasure μ] {a b t : ℝ} (hm : 
     mgf X μ t ≤ exp ((‖b - a‖₊ / 2) ^ 2 * t ^ 2 / 2) := by
   have hi (u : ℝ) : Integrable (fun ω ↦ exp (u * X ω)) μ := integrable_exp_mul_of_mem_Icc hm hb
   have hs : Set.Icc 0 t ⊆ interior (integrableExpSet X μ) := by simp [hi, integrableExpSet]
-  obtain ⟨u, h1, h2⟩ := exists_iteratedDeriv_two_cgf_mul_eq_cgf ht hc hs
-  rw [← exp_cgf (hi t), exp_le_exp, ← h2]
+  obtain ⟨u, h1, h2⟩ := exists_cgf_eq_iteratedDeriv_two_cgf_mul ht hc hs
+  rw [← exp_cgf (hi t), exp_le_exp, h2]
   gcongr
   calc
   _ = Var[X; μ.tilted (u * X ·)] := by

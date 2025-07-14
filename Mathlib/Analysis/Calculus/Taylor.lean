@@ -337,6 +337,22 @@ theorem taylor_mean_remainder_lagrange {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ
   rw [h, neg_div, ← div_neg, neg_mul, neg_neg]
   field_simp [xy_ne y hy, Nat.factorial]; ring
 
+/-- A corollary of Taylor's theorem with the Lagrange form of the remainder. -/
+lemma taylor_mean_remainder_lagrange_iteratedDeriv {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ} (hx : x₀ < x)
+    (hf : ContDiffOn ℝ (n + 1) f (Icc x₀ x)) :
+    ∃ x' ∈ Ioo x₀ x, f x - taylorWithinEval f n (Icc x₀ x) x₀ x =
+      iteratedDeriv (n + 1) f x' * (x - x₀) ^ (n + 1) / (n + 1)! := by
+  have hu : UniqueDiffOn ℝ (Icc x₀ x) := uniqueDiffOn_Icc hx
+  have hd : DifferentiableOn ℝ (iteratedDerivWithin n f (Icc x₀ x)) (Ioo x₀ x) := by
+    convert (hf.differentiableOn_iteratedDerivWithin _ hu).mono Ioo_subset_Icc_self
+    norm_cast
+    norm_num
+  obtain ⟨x', h1, h2⟩ := taylor_mean_remainder_lagrange hx hf.of_succ hd
+  use x', h1
+  rw [h2, iteratedDeriv_eq_iteratedFDeriv, iteratedDerivWithin_eq_iteratedFDerivWithin,
+    iteratedFDerivWithin_eq_iteratedFDeriv hu _ ⟨le_of_lt h1.1, le_of_lt h1.2⟩]
+  exact hf.contDiffAt (Icc_mem_nhds_iff.2 h1)
+
 /-- **Taylor's theorem** with the Cauchy form of the remainder.
 
 We assume that `f` is `n+1`-times continuously differentiable on the closed set `Icc x₀ x` and

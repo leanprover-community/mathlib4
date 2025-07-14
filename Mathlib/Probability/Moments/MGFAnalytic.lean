@@ -271,28 +271,18 @@ lemma iteratedDeriv_two_cgf_eq_integral (h : v ∈ interior (integrableExpSet X 
     congr with ω
     ring
 
-lemma exists_iteratedDeriv_two_cgf_mul_eq_cgf [IsZeroOrProbabilityMeasure μ] (ht : 0 < t)
+lemma exists_cgf_eq_iteratedDeriv_two_cgf_mul [IsZeroOrProbabilityMeasure μ] (ht : 0 < t)
     (hc : μ[X] = 0) (hs : Set.Icc 0 t ⊆ interior (integrableExpSet X μ)) :
-    ∃ u ∈ Set.Ioo 0 t, (iteratedDeriv 2 (cgf X μ) u) * t ^ 2 / 2 = cgf X μ t := by
+    ∃ u ∈ Set.Ioo 0 t, cgf X μ t = (iteratedDeriv 2 (cgf X μ) u) * t ^ 2 / 2 := by
   have hu : UniqueDiffOn ℝ (Set.Icc 0 t) := uniqueDiffOn_Icc ht
-  have hd (n : ℕ) : ContDiffOn ℝ n (cgf X μ) (Set.Icc 0 t) := (analyticOn_cgf.mono hs).contDiffOn hu
-  have hw : derivWithin (cgf X μ) (Set.Icc 0 t) 0 = 0 := by
+  rw [← sub_zero (cgf X μ t)]
+  nth_rw 3 [← sub_zero t]
+  convert taylor_mean_remainder_lagrange_iteratedDeriv ht ((analyticOn_cgf.mono hs).contDiffOn hu)
+  have hd : derivWithin (cgf X μ) (Set.Icc 0 t) 0 = 0 := by
     convert (analyticAt_cgf (hs ⟨le_refl 0, le_of_lt ht⟩)).differentiableAt.derivWithin _
     · simpa [hc] using (deriv_cgf_zero (hs ⟨le_refl 0, le_of_lt ht⟩)).symm
     · exact hu 0 ⟨le_refl 0, le_of_lt ht⟩
-  have h : ∃ u ∈ Set.Ioo 0 t,
-    (cgf X μ) t = iteratedDerivWithin 2 (cgf X μ) (Set.Icc 0 t) u * t ^ 2 / 2 := by
-    rw [← sub_zero (cgf X μ t)]
-    nth_rw 4 [← sub_zero t]
-    convert taylor_mean_remainder_lagrange ht (hd 1) _
-    · simp [hw]
-    · apply ((hd 2).differentiableOn_iteratedDerivWithin (by norm_num) hu).mono
-      exact Set.Ioo_subset_Icc_self
-  obtain ⟨u, h1, h2⟩ := h
-  use u, h1
-  rw [h2, iteratedDeriv_eq_iteratedFDeriv, iteratedDerivWithin_eq_iteratedFDerivWithin,
-    iteratedFDerivWithin_eq_iteratedFDeriv hu _ ⟨le_of_lt h1.1, le_of_lt h1.2⟩]
-  exact (hd 2).contDiffAt (Icc_mem_nhds_iff.2 h1)
+  simp [hd]
 
 end DerivCGF
 
