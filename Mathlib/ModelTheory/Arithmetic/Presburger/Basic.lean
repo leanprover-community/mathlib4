@@ -21,7 +21,6 @@ This file defines the first-order language of Presburger arithmetic as (0,1,+).
   `FirstOrder.Language.IsOrdered`.
 - Define the theory of Presburger arithmetic and prove its properties (quantifier elimination,
   completeness, etc).
-
 -/
 
 variable {α : Type*}
