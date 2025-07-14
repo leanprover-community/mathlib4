@@ -970,7 +970,6 @@ theorem nonempty_inter_compl_of_ncard_add_ncard_lt
   rw [← compl_union, nonempty_compl]
   exact union_ne_univ_of_ncard_add_ncard_lt h
 
-
 end Lattice
 
 /-- Given a subset `s` of a set `t`, of sizes at most and at least `n` respectively, there exists a
@@ -1127,7 +1126,6 @@ theorem ncard_eq_two : s.ncard = 2 ↔ ∃ x y, x ≠ y ∧ s = {x, y} := by
 theorem ncard_eq_three : s.ncard = 3 ↔ ∃ x y z, x ≠ y ∧ x ≠ z ∧ y ≠ z ∧ s = {x, y, z} := by
   rw [← encard_eq_three, ncard_def]
   simp
-
 
 end ncard
 end Set
