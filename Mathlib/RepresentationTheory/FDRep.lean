@@ -179,6 +179,14 @@ def forget₂HomLinearEquiv (X Y : FDRep R G) :
   left_inv _ := by ext; rfl
   right_inv _ := by ext; rfl
 
+instance : (forget₂ (FDRep R G) (Rep R G)).Full := by
+  dsimp [forget₂, HasForget₂.forget₂]
+  infer_instance
+
+instance : (forget₂ (FDRep R G) (Rep R G)).Faithful := by
+  dsimp [forget₂, HasForget₂.forget₂]
+  infer_instance
+
 end FDRep
 
 namespace FDRep

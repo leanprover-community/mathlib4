@@ -10,6 +10,7 @@ import Mathlib.CategoryTheory.Conj
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.SingleObj
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # `Action V G`, the category of actions of a monoid `G` inside some category `V`.
@@ -395,6 +396,21 @@ def mapAction (F : V ⥤ W) (G : Type*) [Monoid G] : Action V G ⥤ Action W G w
       comm := fun g => by dsimp; rw [← F.map_comp, f.comm, F.map_comp] }
   map_id M := by ext; simp only [Action.id_hom, F.map_id]
   map_comp f g := by ext; simp only [Action.comp_hom, F.map_comp]
+
+instance (F : V ⥤ W) (G : Type*) [Monoid G] [F.Faithful] : (F.mapAction G).Faithful where
+  map_injective eq := by
+    ext
+    apply_fun (fun f ↦ f.hom) at eq
+    exact F.map_injective eq
+
+instance (F : V ⥤ W) (G : Type*) [Monoid G] [F.Faithful] [F.Full] : (F.mapAction G).Full where
+  map_surjective {X Y} f := by
+    have comm : ∀ (a : G), X.ρ a ≫ F.preimage f.hom  = F.preimage f.hom  ≫ Y.ρ a := by
+      intro a
+      refine F.map_injective ?_
+      simp only [map_comp, map_preimage]
+      exact f.comm a
+    exact ⟨⟨F.preimage f.hom , comm⟩, by ext; simp⟩
 
 variable (G : Type*) [Monoid G]
 
