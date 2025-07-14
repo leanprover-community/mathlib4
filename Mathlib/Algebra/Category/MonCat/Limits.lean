@@ -5,6 +5,7 @@ Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.Algebra.Group.Shrink
+import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Limits.Types.Limits
 

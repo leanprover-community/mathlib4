@@ -184,7 +184,7 @@ theorem smeval_C_mul : (C r * p).smeval x = r • p.smeval x := by
 
 variable [NatPowAssoc S]
 
-theorem smeval_at_natCast (q : ℕ[X]) : ∀(n : ℕ), q.smeval (n : S) = q.smeval n := by
+theorem smeval_at_natCast (q : ℕ[X]) : ∀ (n : ℕ), q.smeval (n : S) = q.smeval n := by
   induction q using Polynomial.induction_on' with
   | add p q ph qh =>
     intro n

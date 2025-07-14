@@ -197,6 +197,11 @@ example (f g : ℕ → ℕ) (s : Finset ℕ) (h : ∀ i ∈ s, f i ^ 2 + 1 ≤ g
   gcongr ∑ _i ∈ s, (3 + ?_) with i hi
   linarith [h i hi]
 
+example (f g : ℕ → ℕ) (s : Finset ℕ) (h : ∀ i ∈ s, f i ^ 2 + 1 ≤ g i ^ 2 + 1) :
+    ∑ i ∈ s, (f i ^ 2 / 5) ≤ ∑ i ∈ s, (g i ^ 2 / 5) := by
+  gcongr 2 with i hi
+  linarith [h i hi]
+
 axiom f : ℕ → ℕ
 
 example {x y : ℕ} (h : f x ≤ f y) : f x ≤ f y := by
@@ -225,7 +230,7 @@ example (s : Finset ℕ) (h : ∀ i ∈ s, f i ≤ f (2 * i)) : ∑ i ∈ s, f i
 
 def dontUnfoldMe : Nat → List Bool → Nat
   | 0, _ => 0
-  | n+1, l => dontUnfoldMe n (true::l) + dontUnfoldMe n (false::l)
+  | n + 1, l => dontUnfoldMe n (true::l) + dontUnfoldMe n (false::l)
 
 -- times out if a certain reducibility setting in `gcongr`'s implementation is not correct
 example {x y : ℕ} (h : x ≤ y) (l) : dontUnfoldMe 14 l + x ≤ 0 + y := by
