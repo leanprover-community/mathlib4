@@ -65,7 +65,6 @@ structure Hom (X Y : FormalCoproduct.{w} C) where
 -- presheaves of sets on `C` which are coproducts of representable presheaves
 @[simps!] instance category : Category (FormalCoproduct.{w} C) where
   Hom := Hom
-  -- JH: 𝟙 below should be eqToHom so that Lean does not check if the objects are defeq?
   id X := { f := id, φ := fun _ ↦ 𝟙 _ }
   comp α β := { f := β.f ∘ α.f, φ := fun _ ↦ α.φ _ ≫ β.φ _ }
 
