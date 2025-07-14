@@ -1428,67 +1428,51 @@ lemma ofNNReal_liminf {u : ι → ℝ≥0} (hf : f.IsCoboundedUnder (· ≥ ·) 
   rw [coe_le_coe, le_liminf_iff, le_liminf_iff]
   simp [forall_ennreal]
 
-theorem liminf_add_tendsTo_zero [Preorder ι] [IsDirected ι (· ≤ ·)] [Nonempty ι]
-  (f g : ι → ℝ≥0∞) (hg : atTop.Tendsto g (𝓝 0)) :
-    atTop.liminf (f + g) = atTop.liminf f := by
-  have h_eps {ε} (hε : ε > 0) : ∃ N, ∀ n ≥ N, g n < ε := by
-    simpa using hg.eventually (gt_mem_nhds hε)
+theorem liminf_add_of_right_tendsto_zero (u : Filter ι) (f : ι → ℝ≥0∞) {g : ι → ℝ≥0∞} (hg : u.Tendsto g (𝓝 0)) :
+    u.liminf (f + g) = u.liminf f := by
+  have h_eps {ε} (hε : ε > 0) : ∃ v ∈ u, ∀ n ∈ v, g n < ε := by
+    simpa [eventually_iff_exists_mem] using hg.eventually (gt_mem_nhds hε)
   apply le_antisymm
   · refine le_of_forall_gt_imp_ge_of_dense fun x hx ↦ ?_
     rw [liminf_eq] at hx ⊢
-    apply csSup_le ⟨⊥, by simp⟩
+    apply sSup_le
     intro y a
-    simp only [gt_iff_lt, ge_iff_le, eventually_atTop, mem_setOf_eq] at *
-    obtain ⟨w, h⟩ := a
+    simp only [eventually_iff_exists_mem, mem_setOf_eq] at *
+    obtain ⟨w, hw₁, hw₂⟩ := a
     contrapose! hx
-    obtain ⟨N, hN⟩ := h_eps (tsub_pos_iff_lt.mpr hx)
-    apply le_csSup (OrderTop.bddAbove _)
-    obtain ⟨w_max, hw⟩ := directed_of (· ≤ ·) N w
-    use w_max
-    intro n hn
-    specialize hN n (hw.1.trans hn)
-    contrapose! hN
-    rw [tsub_le_iff_left]
-    exact (h n (hw.2.trans hn)).trans (add_le_add_right hN.le _)
-  · apply csSup_le ⟨⊥, by simp⟩
-    intros x hx
-    apply le_csSup (OrderTop.bddAbove _)
-    simp only [eventually_map, eventually_atTop, mem_setOf_eq] at *
-    peel hx with h
-    exact le_add_right h
+    apply le_sSup
+    simp only [mem_setOf_eq]
+    obtain ⟨N, hN₁, hN₂⟩ := h_eps (tsub_pos_of_lt hx)
+    refine ⟨_, u.inter_sets hw₁ hN₁, fun v hv ↦ ?_⟩
+    specialize hN₂ v (mem_of_mem_inter_right hv)
+    specialize hw₂ v (mem_of_mem_inter_left hv)
+    rw [← ENNReal.add_le_add_iff_right hN₂.ne_top]
+    trans y
+    · exact add_le_of_le_tsub_left_of_le hx.le hN₂.le
+    · assumption
+  · refine liminf_le_liminf (Eventually.of_forall ?_)
+    simp
 
-theorem limsup_add_tendsTo_zero [Preorder ι] [IsDirected ι (· ≤ ·)] [Nonempty ι]
-  (f g : ι → ℝ≥0∞) (hg : atTop.Tendsto g (𝓝 0)) :
-    atTop.limsup (f + g) = atTop.limsup f := by
-  have h_eps {ε} (hε : ε > 0) : ∃ N, ∀ n ≥ N, g n < ε := by
-    simpa using hg.eventually (gt_mem_nhds hε)
-  rw [limsup_eq, limsup_eq]
+theorem limsup_add_of_right_tendsto_zero (u : Filter ι) (f : ι → ℝ≥0∞) {g : ι → ℝ≥0∞} (hg : u.Tendsto g (𝓝 0)) :
+    u.limsup (f + g) = u.limsup f := by
+  have h_eps {ε} (hε : ε > 0) : ∃ v ∈ u, ∀ n ∈ v, g n < ε := by
+    simpa [eventually_iff_exists_mem] using hg.eventually (gt_mem_nhds hε)
   apply le_antisymm
-  · have h_forall_a : ∀ a ∈ {a : ℝ≥0∞ | ∀ᶠ n in atTop, f n ≤ a},
-        ∀ ε > 0, ∃ a' ∈ {a : ℝ≥0∞ | ∀ᶠ n in atTop, (f + g) n ≤ a}, a' ≤ a + ε := by
-      simp only [eventually_atTop, mem_setOf_eq, forall_exists_index] at *
-      intro a x hx ε ε_pos;
-      rcases h_eps ε_pos with ⟨N, hN⟩
-      refine ⟨a + ε, ?_, le_rfl⟩
-      obtain ⟨w_max , hw⟩ := directed_of (· ≤ ·) x N
-      use w_max
-      intro n hn
-      exact add_le_add (hx n (hw.1.trans hn)) (hN n (hw.2.trans hn)).le
-    apply le_of_forall_le
-    intro c a
-    simp only [eventually_atTop, mem_setOf_eq, forall_exists_index, le_sInf_iff] at *
-    intro b x h
-    contrapose! a
-    simp only [exists_and_right]
-    rcases ENNReal.lt_iff_exists_add_pos_lt.1 a with ⟨ε, ε_pos, hε⟩
-    peel h_forall_a b x h ε (mod_cast ε_pos) with ha'
-    apply lt_of_le_of_lt ha' hε
-  · apply le_csInf ⟨⊤, by simp⟩
-    intro x hx
-    apply csInf_le (OrderBot.bddBelow _)
-    simp only [eventually_atTop, mem_setOf_eq] at hx ⊢
-    peel hx with h
-    exact (le_add_right le_rfl).trans h
+  · refine le_of_forall_gt_imp_ge_of_dense fun y hx ↦ ?_
+    rw [limsup_eq] at hx ⊢
+    apply sInf_le
+    rw [sInf_lt_iff] at hx
+    simp only [eventually_iff_exists_mem, mem_setOf_eq, Pi.add_apply] at hx ⊢
+    obtain ⟨x, ⟨w, hw₁, hw₂⟩, hx⟩ := hx
+    obtain ⟨N, hN₁, hN₂⟩ := h_eps (tsub_pos_of_lt hx)
+    refine ⟨_, u.inter_sets hw₁ hN₁, fun v hv ↦ ?_⟩
+    specialize hN₂ v (mem_of_mem_inter_right hv)
+    specialize hw₂ v (mem_of_mem_inter_left hv)
+    trans x + g v
+    · gcongr
+    · exact add_le_of_le_tsub_left_of_le hx.le hN₂.le
+  · refine limsup_le_limsup (Eventually.of_forall ?_)
+    simp
 
 end LimsupLiminf
 
