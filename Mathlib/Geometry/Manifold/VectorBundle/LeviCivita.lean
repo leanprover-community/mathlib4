@@ -233,28 +233,48 @@ lemma leviCivita_rhs_smulX {f : M → ℝ} (hf : MDiff f) (hX : MDiff (T% X)) :
   -- TODO: do I need to assume X is differentiable?
   sorry
 
-lemma leviCivita_rhs_addZ (Z Z' : Π x : M, TangentSpace I x) [CompleteSpace E]
-    (hZ : MDiff (T% Z)) (hZ' : MDiff (T% Z')) :
-    leviCivita_rhs I X Y (Z + Z') = leviCivita_rhs I X Y Z + leviCivita_rhs I X Y Z' := by
-  -- A bit too painful, and have missing differentiability assumptions.
-  simp only [leviCivita_rhs]
-  set A : M → ℝ := (1 : M → ℝ) / 2
-  --rw [← left_distrib]
-  --apply congrArg
+variable (X Z) in
+lemma leviCivita_rhs_addY' [CompleteSpace E] (hY : MDiff (T% Y)) (hY' : MDiff (T% Y')) :
+    (2 : ℝ) • leviCivita_rhs I X (Y + Y') Z =
+      (2 : ℝ) • leviCivita_rhs I X Y Z + (2 : ℝ) • leviCivita_rhs I X Y' Z := by
+  have : ((2 : ℝ) • (2 : ℝ)⁻¹) = 1 := by simp
+  simp only [leviCivita_rhs, one_div, ← smul_assoc, this, one_smul]
+  -- continue without scalar multiplication
+  sorry
+
+variable (X Z) in
+lemma leviCivita_rhs_addY [CompleteSpace E] (hY : MDiff (T% Y)) (hY' : MDiff (T% Y')) :
+    leviCivita_rhs I X (Y + Y') Z = leviCivita_rhs I X Y Z + leviCivita_rhs I X Y' Z := by
+  sorry -- divide the previous equation by 2
+
+lemma leviCivita_rhs_addZ' [CompleteSpace E]
+    (hX : MDiff (T% X)) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) (hZ' : MDiff (T% Z')) :
+    (2 : ℝ) • leviCivita_rhs I X Y (Z + Z') =
+      (2 : ℝ) • leviCivita_rhs I X Y Z + (2 : ℝ) • leviCivita_rhs I X Y Z' := by
+  have : ((2 : ℝ) • (2 : ℝ)⁻¹) = 1 := by simp
+  simp only [leviCivita_rhs, one_div, ← smul_assoc, this, one_smul]
+  -- continue without scalar multiplication
   ext x
-  have h1 : VectorField.mlieBracket I X (Z + Z') =
+  have h : VectorField.mlieBracket I X (Z + Z') =
     VectorField.mlieBracket I X Z + VectorField.mlieBracket I X Z' := by
     ext x
     simp [VectorField.mlieBracket_add_right (V := X) (hZ x) (hZ' x)]
-  have h2 : VectorField.mlieBracket I (Z + Z') Y =
+  have h' : VectorField.mlieBracket I (Z + Z') Y =
     VectorField.mlieBracket I Z Y + VectorField.mlieBracket I Z' Y := by
     ext x
     simp [VectorField.mlieBracket_add_left (W := Y) (hZ x) (hZ' x)]
-  simp [h1, h2, rhs_aux_addX] -- rhs_aux_addY, rhs_aux_addZ
-  sorry -- module
+  simp only [rhs_aux_addX, h, h', Pi.add_apply, Pi.sub_apply]
+  rw [rhs_aux_addY, rhs_aux_addZ] <;> try assumption
+  rw [product_add_left, product_add_right, product_add_right]
+  simp only [Pi.add_apply]
+  abel
 
-lemma leviCivita_rhs_smulZ [CompleteSpace E] {f : M → ℝ} {Z' : Π x : M, TangentSpace I x}
-    (hf : MDiff f) (hZ : MDiff (T% Z)) :
+lemma leviCivita_rhs_addZ [CompleteSpace E]
+    (hX : MDiff (T% X)) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) (hZ' : MDiff (T% Z')) :
+    leviCivita_rhs I X Y (Z + Z') = leviCivita_rhs I X Y Z + leviCivita_rhs I X Y Z' := by
+  sorry -- divide previous equation by two
+
+lemma leviCivita_rhs_smulZ [CompleteSpace E] {f : M → ℝ} (hf : MDiff f) (hZ : MDiff (T% Z)) :
     leviCivita_rhs I X Y (f • Z) = f • leviCivita_rhs I X Y Z := by
   simp only [leviCivita_rhs]
   simp [rhs_aux_smulX]--, rhs_aux_smulY, rhs_aux_smulZ]
