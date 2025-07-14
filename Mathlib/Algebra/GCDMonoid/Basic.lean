@@ -564,10 +564,8 @@ theorem exists_associated_pow_of_mul_eq_pow [GCDMonoid α] {a b c : α} (hab : I
     rw [hb]
     exact gcd_zero_right' a
   obtain rfl | hk := k.eq_zero_or_pos
-  · use 1
-    rw [pow_zero] at h ⊢
-    use Units.mkOfMulEqOne _ _ h
-    rw [Units.val_mkOfMulEqOne, one_mul]
+  · simp_all only [pow_zero, exists_const]
+    exact Associated.symm (associated_one_of_mul_eq_one b h)
   have hc : c ∣ a * b := by
     rw [h]
     exact dvd_pow_self _ hk.ne'
