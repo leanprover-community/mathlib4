@@ -197,8 +197,9 @@ private lemma tendsto_normThreshold_atTop (ha_pos : 0 < a) :
     (lt_normThreshold_zero ha_pos)
 
 private lemma normThreshold_eq (n : ℕ) : normThreshold a n = a * (1 + √2) * (√2 ^ (n + 1) - 1) := by
-  rw [arithmeticGeometric_eq_of_TODO' normThreshold_add_one rfl (by simp), ← mul_one_div,
-    one_div, inv_sqrt_two_sub_one, add_comm √2]
+  rw [arithmeticGeometric_eq_mul_div_of_apply_zero_eq normThreshold_add_one rfl (by simp),
+    div_eq_mul_inv, inv_sqrt_two_sub_one]
+  ring
 
 private lemma sq_normThreshold_add_one_le (n : ℕ) :
     normThreshold a (n + 1) ^ 2 ≤ a ^ 2 * (1 + √2) ^ 2 * 2 ^ (n + 2) := by
