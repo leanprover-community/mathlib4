@@ -47,6 +47,15 @@ theorem Field.toIsField (R : Type u) [Field R] : IsField R :=
 theorem IsField.nontrivial {R : Type u} [Semiring R] (h : IsField R) : Nontrivial R :=
   ⟨h.exists_pair_ne⟩
 
+lemma IsField.isDomain {R : Type u} [Semiring R] (h : IsField R) : IsDomain R where
+  mul_left_cancel_of_ne_zero ha hb := by
+    obtain ⟨x, hx⟩ := h.mul_inv_cancel ha
+    simpa [← mul_assoc, h.mul_comm, hx] using congr_arg (x * ·) hb
+  mul_right_cancel_of_ne_zero ha hb := by
+    obtain ⟨x, hx⟩ := h.mul_inv_cancel ha
+    simpa [mul_assoc, hx] using congr_arg (· * x) hb
+  exists_pair_ne := h.exists_pair_ne
+
 @[simp]
 theorem not_isField_of_subsingleton (R : Type u) [Semiring R] [Subsingleton R] : ¬IsField R :=
   fun h =>
