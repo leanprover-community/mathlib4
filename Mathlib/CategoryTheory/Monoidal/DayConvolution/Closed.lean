@@ -76,7 +76,7 @@ structure DayConvolutionInternalHom (F : C ⥤ V) (G : C ⥤ V) (H : C ⥤ V) wh
   /-- The functoriality of `H.obj G` identifies (through
   `Limits.Wedge.IsLimit.hom_ext`) with the functoriality on ends induced by
   functoriality of `internalHomDiagramFunctor F|>.obj G`. -/
-  obj_map_comp_π {c c' : C} (f : c ⟶ c') (j : C) :
+  map_comp_π {c c' : C} (f : c ⟶ c') (j : C) :
     H.map f ≫ π c' j =
     π c j ≫ (ihom <| F.obj j).map (G.map <| j ◁ f)
 
@@ -84,7 +84,7 @@ namespace DayConvolutionInternalHom
 
 open scoped DayConvolution
 
-attribute [reassoc (attr := simp)] obj_map_comp_π hπ
+attribute [reassoc (attr := simp)] map_comp_π hπ
 
 variable {F : C ⥤ V} {G : C ⥤ V} {H : C ⥤ V}
 
@@ -111,7 +111,7 @@ def map (ℌ : DayConvolutionInternalHom F G H) {G' : C ⥤ V} {H' : C ⥤ V}
     apply Limits.Wedge.IsLimit.hom_ext (ℌ'.isLimitWedge c')
     intro j
     dsimp
-    simp only [Category.assoc, obj_map_comp_π]
+    simp only [Category.assoc, map_comp_π]
     rw [← Limits.Wedge.mk_ι
         (F := dayConvolutionInternalHomDiagramFunctor F|>.obj _|>.obj c')
         (H'.obj c') (ℌ'.π c') (ℌ'.hπ c'),
@@ -214,7 +214,7 @@ def ev_app : F ⊛ H ⟶ G :=
         dsimp at this ⊢
         simp only [whiskerLeft_comp] at this
         simp only [Category.assoc, MonoidalClosed.uncurry_eq, Functor.id_obj]
-        rw [← whiskerLeft_comp_assoc, obj_map_comp_π]
+        rw [← whiskerLeft_comp_assoc, map_comp_π]
         simp [← whisker_exchange_assoc, tensorHom_def,
           ← ihom.ev_naturality_assoc]
         rw [reassoc_of% this]
