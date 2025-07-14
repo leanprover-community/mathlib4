@@ -162,7 +162,7 @@ lemma cartanMatrix_nondegenerate
   cartanMatrixIn_nondegenerate ℤ b
 
 /-- A characterisation of the connectedness of the Dynkin diagram for irreducible root pairings. -/
-lemma induction_on_cartanMatrix [NoZeroSMulDivisors ℤ M] [P.IsReduced] [P.IsIrreducible]
+lemma induction_on_cartanMatrix [P.IsReduced] [P.IsIrreducible]
     (p : b.support → Prop) {i j : b.support} (hi : p i)
     (hp : ∀ i j, p i → b.cartanMatrix j i ≠ 0 → p j) :
     p j := by
