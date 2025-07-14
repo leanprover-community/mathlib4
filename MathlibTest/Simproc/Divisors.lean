@@ -3,7 +3,8 @@ import Mathlib.NumberTheory.Primorial
 
 open Nat
 
-example : Nat.divisors 1710 = {1, 2, 3, 5, 6, 9, 10, 15, 18, 19, 30, 38, 45, 57,
+example :
+    Nat.divisors 1710 = {1, 2, 3, 5, 6, 9, 10, 15, 18, 19, 30, 38, 45, 57,
       90, 95, 114, 171, 190, 285, 342, 570, 855, 1710} := by
   simp only [Nat.divisors_ofNat]
 
