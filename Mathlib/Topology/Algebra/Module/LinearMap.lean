@@ -1141,11 +1141,10 @@ theorem ContinuousLinearMap.closedComplemented_ker_of_rightInverse {R : Type*} [
 namespace ContinuousLinearMap
 variable {R M : Type*} [Ring R] [TopologicalSpace M]
   [AddCommGroup M] [Module R M] [IsTopologicalAddGroup M]
-  {S : Type*} [Semiring S] [Module S M]
 
 omit [IsTopologicalAddGroup M] in
 /-- Idempotent operators are equal iff their range and kernels are. -/
-lemma IsIdempotentElem.ext_iff {p q : M →L[S] M}
+lemma IsIdempotentElem.ext_iff {S : Type*} [Semiring S] [Module S M] {p q : M →L[S] M}
     (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) :
     p = q ↔ range p = range q ∧ ker p = ker q := by
   simpa using LinearMap.IsIdempotentElem.ext_iff
