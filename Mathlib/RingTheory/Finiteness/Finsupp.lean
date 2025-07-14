@@ -3,9 +3,9 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-import Mathlib.RingTheory.Finiteness.Basic
+import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.Quotient.Basic
+import Mathlib.RingTheory.Finiteness.Basic
 
 /-!
 # Finiteness of (sub)modules and finitely supported functions
@@ -115,12 +115,15 @@ theorem _root_.Module.Finite.of_submodule_quotient (N : Submodule R M) [Module.F
 
 end Submodule
 
-section
+variable {R V} [Semiring R] [AddCommMonoid V] [Module R V] {ι : Type*} [_root_.Finite ι]
 
-variable {R V} [Semiring R] [AddCommMonoid V] [Module R V]
-
-instance Module.Finite.finsupp {ι : Type*} [_root_.Finite ι] [Module.Finite R V] :
+instance Module.Finite.finsupp [Module.Finite R V] :
     Module.Finite R (ι →₀ V) :=
   Module.Finite.equiv (Finsupp.linearEquivFunOnFinite R V ι).symm
 
-end
+variable (M : ι → Type*) [∀ i : ι, AddCommMonoid (M i)] [∀ i : ι, Module R (M i)]
+
+instance [∀ (i : ι), Module.Finite R (M i)] :
+    Module.Finite R (Π₀ (i : ι), M i) :=
+  letI : Fintype ι := Fintype.ofFinite _
+  Module.Finite.equiv DFinsupp.linearEquivFunOnFintype.symm
