@@ -619,7 +619,7 @@ lemma ProperLinear.compl [Fintype α] (hs : s.ProperLinear) : sᶜ.Semilinear :=
   classical
   rcases hs with ⟨v, t₁, ht₁, hs⟩
   have ht₁' := linearIndepOn_toRatVec ht₁
-  
+
   let t := Finite.toFinset
     (s := ht₁'.extend (@subset_union_left _ (t₁ : Set (α → ℕ))
       ((Finset.univ : Finset α).image (Pi.basisFun ℕ α))))
@@ -643,7 +643,7 @@ lemma ProperLinear.compl [Fintype α] (hs : s.ProperLinear) : sᶜ.Semilinear :=
     ext j
     simp [toRatVec, Pi.single_apply]
   rw [image_eq_range] at htspan
-  
+
   let b := Basis.mk htindep htspan
   have hb : ∀ i, b i = toRatVec i.1 := by simp [b]
   let f : (α → ℕ) → t → ℤ := fun x i => ⌊b.repr (toRatVec x - toRatVec v) i⌋
@@ -730,7 +730,7 @@ lemma ProperLinear.compl [Fintype α] (hs : s.ProperLinear) : sᶜ.Semilinear :=
       simp [← hb, Finsupp.single_apply]
     · rw [hg_toRatVec, add_sub_cancel_left]
       simp [← hb, Finsupp.single_apply, Int.fract_lt_one]
-  
+
   have hs' : ∀ x, x ∈ s ↔ g x = v ∧ ∀ i, 0 ≤ f x i ∧ (i.1 ∉ t₁ → f x i = 0) := by
     intro x
     simp only [hs, mem_vadd_set, SetLike.mem_coe, vadd_eq_add]
@@ -760,13 +760,13 @@ lemma ProperLinear.compl [Fintype α] (hs : s.ProperLinear) : sᶜ.Semilinear :=
         · simp
         · simp [(hfx i).2 hi]
       · simp [Int.toNat_eq_zero.2 (neg_nonpos.2 (hfx i).1)]
-  
+
   let s₁ : Set (α → ℕ) := {x | x ≠ v ∧ ∃ y, x = g y}
   have hs₁ : s₁.Finite := by
     apply (Finset.Iic (v + ∑ i : t, i.1)).finite_toSet.subset
     rintro _ ⟨_, x, rfl⟩
     simpa only [Finset.coe_Iic, mem_Iic] using hg_le_v_add x
-  
+
   let s₁' : Set (α → ℕ) := {x | g x ≠ v}
   have hs₁' : s₁'.Semilinear := by
     convert_to (⋃ u ∈ s₁, {x | ∃ y ∈ span ℕ t, ∃ y' ∈ span ℕ t, x + y' = u + y}).Semilinear using 1
@@ -798,7 +798,7 @@ lemma ProperLinear.compl [Fintype α] (hs : s.ProperLinear) : sᶜ.Semilinear :=
           simp only [mem_setOf, zero_add]
           conv => rhs; rw [← Sum.elim_comp_inl_inr x, ← Sum.elim_comp_inl_inr (x ∘ Sum.inl)]
           simp [-Sum.elim_comp_inl_inr]
-  
+
   let s₂ : Set (α → ℕ) := {x | g x = v ∧ ∃ i, f x i < 0 ∨ i.1 ∉ t₁ ∧ 0 < f x i}
   have hs₂ : s₂.Semilinear := by
     convert_to ((⋃ i : t,
@@ -939,7 +939,7 @@ lemma ProperLinear.compl [Fintype α] (hs : s.ProperLinear) : sᶜ.Semilinear :=
                 rw [← Sum.elim_comp_inl_inr x, ← Sum.elim_comp_inl_inr (x ∘ Sum.inl),
                   ← Sum.elim_comp_inl_inr ((x ∘ Sum.inl) ∘ Sum.inl)]
               simp [-Sum.elim_comp_inl_inr, add_assoc]
-  
+
   convert hs₁'.union hs₂ using 1
   ext x
   simp only [s₁', s₂, mem_compl_iff, hs', Subtype.forall, not_and, not_forall, ne_eq,
