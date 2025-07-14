@@ -44,12 +44,10 @@ variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] {P Q : Submodule R
 noncomputable def Submodule.quotientCoprodAddEquiv :
     ((P × Q) ⧸ ker ((inclusion le_sup_left).coprod (inclusion le_sup_right) : _ →ₗ[R] ↥(P ⊔ Q)))
       ≃ₗ[R] (P + Q) :=
-  quotKerEquivOfSurjective _ (by
-    rw [← range_eq_top, eq_top_iff]
-    rintro ⟨x, hx⟩ _
+  quotKerEquivOfSurjective _ <| by
+    rintro ⟨x, hx⟩
     obtain ⟨y, hy, z, hz, rfl⟩ := mem_sup.mp hx
-    use ⟨⟨y, hy⟩, ⟨z, hz⟩⟩
-    simp [coprod_apply, ← Subtype.coe_inj, coe_add, coe_inclusion])
+    exact ⟨⟨⟨y, hy⟩, ⟨z, hz⟩⟩, rfl⟩
 
 namespace LinearMap
 
@@ -57,9 +55,7 @@ variable {N : Type*} [AddCommGroup N] [Module R N] {f : P →ₗ[R] N} {g : Q �
 
 /-- Given two linear maps `f : P →ₗ[R] N` and `g : Q →ₗ[R] N` that agree on `P ⊓ Q`, this is
 the linear map `↥(P ⊔ Q) →ₗ[R] N` that simultaneously extends `f` and `g`. -/
-noncomputable def onSup
-    -- (h : ∀ x (hP : x ∈ P) (hQ : x ∈ Q), f ⟨x, hP⟩ = g ⟨x, hQ⟩) :
-    (h : f ∘ₗ inclusion inf_le_left = g ∘ₗ inclusion inf_le_right) :
+noncomputable def onSup (h : f ∘ₗ inclusion inf_le_left = g ∘ₗ inclusion inf_le_right) :
     ↥(P ⊔ Q) →ₗ[R] N := by
   apply comp ((ker _).liftQ (f.coprod g) ?_) quotientCoprodAddEquiv.symm.toLinearMap
   rintro ⟨⟨x, hx⟩, ⟨y, hy⟩⟩ hxy
@@ -71,8 +67,7 @@ noncomputable def onSup
   rw [show -⟨y, hy⟩ = inclusion inf_le_right ⟨x, hx'⟩ by simp [← Subtype.coe_inj, hxy]]
   simp only [← LinearMap.comp_apply, h]
 
-theorem onSup_apply_left
-    (h : f ∘ₗ inclusion inf_le_left = g ∘ₗ inclusion inf_le_right)
+theorem onSup_apply_left (h : f ∘ₗ inclusion inf_le_left = g ∘ₗ inclusion inf_le_right)
     {x : M} (hx : x ∈ P) : onSup h ⟨x, le_sup_left (b := Q) hx⟩ = f ⟨x, hx⟩ := by
   have h : (quotientCoprodAddEquiv (P := P) (Q := Q)).symm ⟨x, le_sup_left (b := Q) hx⟩ =
       Submodule.Quotient.mk ⟨⟨x, hx⟩, (0 : Q)⟩ := by
@@ -80,8 +75,7 @@ theorem onSup_apply_left
   simp only [add_eq_sup, onSup, comp_apply] at h ⊢
   simp [h, liftQ_apply]
 
-theorem onSup_apply_right
-    (h : f ∘ₗ inclusion inf_le_left = g ∘ₗ inclusion inf_le_right)
+theorem onSup_apply_right (h : f ∘ₗ inclusion inf_le_left = g ∘ₗ inclusion inf_le_right)
     {x} (hx : x ∈ Q) : onSup h ⟨x, le_sup_right (a := P) hx⟩ = g ⟨x, hx⟩ := by
   have h : (quotientCoprodAddEquiv (P := P) (Q := Q)).symm ⟨x, le_sup_right (a := P) hx⟩ =
       Submodule.Quotient.mk ⟨(0 : P), ⟨x, hx⟩⟩ := by
@@ -89,17 +83,18 @@ theorem onSup_apply_right
   simp only [add_eq_sup, onSup, comp_apply] at h ⊢
   simp [h, liftQ_apply]
 
-theorem onSup_apply
-    (h : f ∘ₗ inclusion inf_le_left = g ∘ₗ inclusion inf_le_right)
+theorem onSup_apply (h : f ∘ₗ inclusion inf_le_left = g ∘ₗ inclusion inf_le_right)
     {x y} (hx : x ∈ P) (hy : y ∈ Q) :
     onSup h ⟨x + y, add_mem_sup hx hy⟩ = f ⟨x, hx⟩ + g ⟨y, hy⟩ := by
   simp [← onSup_apply_left h hx, ← onSup_apply_right h hy, ← map_add]
 
+@[simp]
 theorem onSup_comp_left (h : f ∘ₗ inclusion inf_le_left = g ∘ₗ inclusion inf_le_right) :
     (onSup h).comp (inclusion le_sup_left) = f := by
   ext ⟨x, hx⟩
   simp [← onSup_apply_left h, inclusion_apply]
 
+@[simp]
 theorem onSup_comp_right (h : f ∘ₗ inclusion inf_le_left = g ∘ₗ inclusion inf_le_right) :
     (onSup h).comp (inclusion le_sup_right) = g := by
   ext ⟨x, hx⟩
@@ -116,12 +111,10 @@ theorem sup_ext {f g : ↥(P ⊔ Q) →ₗ[R] N}
     simp only [this, map_add, ← LinearMap.comp_apply, left, right]
   simp only [← Subtype.coe_inj, coe_add, coe_inclusion, hx']
 
-theorem onSup_unique
-    (h : f ∘ₗ inclusion inf_le_left = g ∘ₗ inclusion inf_le_right)
-    {u : ↥(P ⊔ Q) →ₗ[R] N}
-    (huf : u.comp (inclusion le_sup_left) = f) (hug : u.comp (inclusion le_sup_right) = g) :
-    onSup h = u := by
-  ext : 1 <;> simp [huf, hug, onSup_comp_left, onSup_comp_right]
+theorem onSup_unique (h : f ∘ₗ inclusion inf_le_left = g ∘ₗ inclusion inf_le_right)
+    {u : ↥(P ⊔ Q) →ₗ[R] N} (huf : u.comp (inclusion le_sup_left) = f)
+    (hug : u.comp (inclusion le_sup_right) = g) :
+    onSup h = u := by ext : 1 <;> simp [huf, hug]
 
 variable (M N Y)
 
@@ -134,24 +127,14 @@ noncomputable def onSupEquiv : (↥(P ⊔ Q) →ₗ[R] N) ≃
   invFun h := onSup h.prop
   left_inv u := by
     simp only
-    apply onSup_unique h <;>
+    apply onSup_unique <;>
       ext <;> rfl
-  right_inv h := by
-    ext ⟨x, hx⟩ <;> simp
-    · rw [← onSup_apply_left h.prop hx]; rfl
-    · rw [← onSup_apply_right h.prop hx]; rfl
+  right_inv h := by ext ⟨x, hx⟩ <;> simp
 
 section Comm
 
 variable {R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M]
   [AddCommGroup N] [Module R N] (P Q : Submodule R M)
-
-noncomputable example : (P + Q →ₗ[R] N) ≃ₗ[R] eqLocus
-        ((lcomp R N (inclusion (inf_le_left (a := P) (b := Q)))).comp (fst R _ _))
-    ((lcomp R N (inclusion (inf_le_right (a := P) (b := Q)))).comp (snd R _ _)) :=
-  ofBijective (codRestrict _ ((lcomp R N (inclusion le_sup_left)).prod
-      (lcomp R N (inclusion le_sup_right))) (fun _ ↦ by ext; simp [inclusion_apply]))
-    (onSupEquiv M N).bijective
 
 /-- The `R`-linear equivalence between the module of linear maps `↥(P ⊔ Q) →ₗ[R] N` and the module
 of pairs of linear maps `(P →ₗ[R] N) × (Q →ₗ[R] N))` that agree on the intersection `P ⊓ Q`. -/
