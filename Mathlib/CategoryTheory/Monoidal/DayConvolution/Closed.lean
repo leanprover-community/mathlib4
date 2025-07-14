@@ -453,6 +453,7 @@ attribute [local instance] convolution in
 the Day convolution monoidal structure on `D` exist, then the data
 of a `LawfulDayConvolutionClosedMonoidalCategoryStruct` defines a
 `MonoidalClosed` structure on `D`. -/
+@[simps! -isSimp]
 def monoidalClosed
     [LawfulDayConvolutionClosedMonoidalCategoryStruct C V D] :
     letI := monoidalOfLawfulDayConvolutionMonoidalCategoryStruct C V D
@@ -493,10 +494,19 @@ def monoidalClosed
             dsimp
             apply (ι C V D).map_injective
             rw [Functor.map_comp, ← id_tensorHom,
-              ι_map_tensorHom_hom_eq_tensorHom, Functor.map_id, Functor.map_id]
-            exact left_triangle_components
-
-          right_triangle_components d' := sorry } } }
+              ι_map_tensorHom_hom_eq_tensorHom, Functor.map_id, Functor.map_id,
+              ι_map_coev_app, ι_map_ev_app]
+            exact ihomDayConvolutionInternalHom
+                C V d (d ⊗ d')|>.left_triangle_components (ι C V D|>.obj d')
+          right_triangle_components d' := by
+            dsimp
+            apply (ι C V D).map_injective
+            rw [Functor.map_comp, ι_map_coev_app, Functor.map_id,
+              ι_map_ihom_map, ι_map_ev_app]
+            exact ihomDayConvolutionInternalHom
+                C V d d'|>.right_triangle_components
+              (ι C V D|>.obj d')
+              (ihomDayConvolutionInternalHom C V d (d ⊗ _)) } } }
 
 end MonoidalClosed
 
