@@ -300,23 +300,23 @@ theorem associativity_inv (X Y Z : C) :
     ← Category.assoc, ← F.map_comp, Iso.inv_hom_id, F.map_id, id_comp]
 
 @[reassoc]
-lemma δ_tensorHom_η_left {X : C} {Y : D} (f : F.obj X ⟶ Y) :
+lemma δ_comp_η_tensorHom {X : C} {Y : D} (f : F.obj X ⟶ Y) :
     δ F (𝟙_ C) X ≫ (η F ⊗ₘ f) = F.map (λ_ X).hom ≫ (λ_ (F.obj X)).inv ≫ 𝟙_ D ◁ f := by
   rw [left_unitality]; simp [tensorHom_def]
 
 @[reassoc]
-lemma δ_tensorHom_η_right {X : C} {Y : D} (f : F.obj X ⟶ Y) :
+lemma δ_comp_tensorHom_η {X : C} {Y : D} (f : F.obj X ⟶ Y) :
     δ F X (𝟙_ C) ≫ (f ⊗ₘ η F) = F.map (ρ_ X).hom ≫ (ρ_ (F.obj X)).inv ≫ f ▷ 𝟙_ D := by
   rw [right_unitality]; simp [tensorHom_def']
 
 @[reassoc]
-lemma δ_whiskerRight_δ (X Y Z : C) :
+lemma δ_comp_δ_whiskerRight (X Y Z : C) :
     δ F (X ⊗ Y) Z ≫ δ F X Y ▷ F.obj Z = F.map (α_ X Y Z).hom ≫
       δ F X (Y ⊗ Z) ≫ F.obj X ◁ δ F Y Z ≫ (α_ (F.obj X) (F.obj Y) (F.obj Z)).inv := by
   rw [← associativity_assoc, Iso.hom_inv_id, Category.comp_id]
 
 @[reassoc]
-lemma δ_whiskerLeft_δ (X Y Z : C) :
+lemma δ_comp_whiskerLeft_δ (X Y Z : C) :
     δ F X (Y ⊗ Z) ≫ F.obj X ◁ δ F Y Z = F.map (α_ X Y Z).inv ≫
       δ F (X ⊗ Y) Z ≫ δ F X Y ▷ F.obj Z ≫ (α_ (F.obj X) (F.obj Y) (F.obj Z)).hom := by
   rw [associativity, ← F.map_comp_assoc, Iso.inv_hom_id, Functor.map_id, Category.id_comp]
