@@ -84,7 +84,8 @@ namespace DayConvolutionInternalHom
 
 open scoped DayConvolution
 
-attribute [reassoc (attr := simp)] map_comp_π hπ
+attribute [reassoc (attr := simp)] map_comp_π
+attribute [reassoc] hπ
 
 variable {F : C ⥤ V} {G : C ⥤ V} {H : C ⥤ V}
 
