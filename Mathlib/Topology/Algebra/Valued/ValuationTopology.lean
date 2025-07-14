@@ -40,16 +40,16 @@ theorem subgroups_basis : RingSubgroupsBasis fun γ : Γ₀ˣ => (v.ltAddSubgrou
   { inter := by
       rintro γ₀ γ₁
       use min γ₀ γ₁
-      simp only [ltAddSubgroup, Units.min_val, lt_min_iff,
-        AddSubgroup.mk_le_mk, setOf_subset_setOf, le_inf_iff, and_imp, imp_self, implies_true,
-        and_true]
+      simp only [ltAddSubgroup, Units.min_val, lt_inf_iff, le_inf_iff, AddSubgroup.mk_le_mk,
+        AddSubmonoid.mk_le_mk, AddSubsemigroup.mk_le_mk, setOf_subset_setOf]
       tauto
     mul := by
       rintro γ
       obtain ⟨γ₀, h⟩ := exists_square_le γ
       use γ₀
       rintro - ⟨r, r_in, s, s_in, rfl⟩
-      simp only [ltAddSubgroup, AddSubgroup.coe_set_mk, mem_setOf_eq] at r_in s_in
+      simp only [ltAddSubgroup, AddSubgroup.coe_set_mk, AddSubmonoid.coe_set_mk,
+        AddSubsemigroup.coe_set_mk, mem_setOf_eq] at r_in s_in
       calc
         (v (r * s) : Γ₀) = v r * v s := Valuation.map_mul _ _ _
         _ < γ₀ * γ₀ := by gcongr <;> exact zero_le'
