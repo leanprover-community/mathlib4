@@ -170,6 +170,10 @@ run_cmd Lean.Elab.Command.liftTermElabM do
   Lean.Meta.registerCoercion ``DFunLike.coe
     (some { numArgs := 5, coercee := 4, type := .coeFun })
 
+instance {α β} : DFunLike (∀ a, β a) α β where
+  coe x := x
+  coe_injective' _ _ h := h
+
 instance {F α β} {p : F → Prop} [DFunLike F α β] : DFunLike (Subtype p) α β where
   coe x := DFunLike.coe x.val
   coe_injective' _ _ h := Subtype.ext (DFunLike.coe_injective' h)
