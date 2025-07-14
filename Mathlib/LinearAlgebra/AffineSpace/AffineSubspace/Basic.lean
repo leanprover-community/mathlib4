@@ -291,8 +291,7 @@ theorem vectorSpan_range_eq_span_range_vsub_left_ne (p : ι → P) (i₀ : ι) :
       Submodule.span k (Set.range fun i : { x // x ≠ i₀ } => p i₀ -ᵥ p i) := by
   rw [← Set.image_univ, vectorSpan_image_eq_span_vsub_set_left_ne k _ (Set.mem_univ i₀)]
   congr with v
-  simp only [Set.mem_range, Set.mem_image, Set.mem_diff, Set.mem_singleton_iff, Subtype.exists,
-    Subtype.coe_mk]
+  simp only [Set.mem_range, Set.mem_image, Set.mem_diff, Set.mem_singleton_iff, Subtype.exists]
   constructor
   · rintro ⟨x, ⟨i₁, ⟨⟨_, hi₁⟩, rfl⟩⟩, hv⟩
     exact ⟨i₁, hi₁, hv⟩
@@ -305,8 +304,7 @@ theorem vectorSpan_range_eq_span_range_vsub_right_ne (p : ι → P) (i₀ : ι) 
       Submodule.span k (Set.range fun i : { x // x ≠ i₀ } => p i -ᵥ p i₀) := by
   rw [← Set.image_univ, vectorSpan_image_eq_span_vsub_set_right_ne k _ (Set.mem_univ i₀)]
   congr with v
-  simp only [Set.mem_range, Set.mem_image, Set.mem_diff, Set.mem_singleton_iff, Subtype.exists,
-    Subtype.coe_mk]
+  simp only [Set.mem_range, Set.mem_image, Set.mem_diff, Set.mem_singleton_iff, Subtype.exists]
   constructor
   · rintro ⟨x, ⟨i₁, ⟨⟨_, hi₁⟩, rfl⟩⟩, hv⟩
     exact ⟨i₁, hi₁, hv⟩
@@ -534,11 +532,7 @@ theorem mem_map {f : P₁ →ᵃ[k] P₂} {x : P₂} {s : AffineSubspace k P₁}
 theorem mem_map_of_mem {x : P₁} {s : AffineSubspace k P₁} (h : x ∈ s) : f x ∈ s.map f :=
   Set.mem_image_of_mem _ h
 
--- The simpNF linter says that the LHS can be simplified via `AffineSubspace.mem_map`.
--- However this is a higher priority lemma.
--- It seems the side condition `hf` is not applied by `simpNF`.
--- https://github.com/leanprover/std4/issues/207
-@[simp 1100, nolint simpNF]
+@[simp 1100]
 theorem mem_map_iff_mem_of_injective {f : P₁ →ᵃ[k] P₂} {x : P₁} {s : AffineSubspace k P₁}
     (hf : Function.Injective f) : f x ∈ s.map f ↔ x ∈ s :=
   hf.mem_set_image
@@ -574,8 +568,12 @@ theorem map_span (s : Set P₁) : (affineSpan k s).map f = affineSpan k (f '' s)
   · exact ⟨f p, mem_image_of_mem f (subset_affineSpan k _ hp),
           subset_affineSpan k _ (mem_image_of_mem f hp)⟩
 
+@[gcongr]
+theorem map_mono {s₁ s₂ : AffineSubspace k P₁} (h : s₁ ≤ s₂) : s₁.map f ≤ s₂.map f :=
+  Set.image_mono h
+
 section inclusion
-variable {S₁ S₂ : AffineSubspace k P₁} [Nonempty S₁] [Nonempty S₂]
+variable {S₁ S₂ : AffineSubspace k P₁} [Nonempty S₁]
 
 attribute [local instance] AffineSubspace.toAddTorsor
 
@@ -583,10 +581,13 @@ attribute [local instance] AffineSubspace.toAddTorsor
 
 This is the affine version of `Submodule.inclusion`. -/
 @[simps linear]
-def inclusion (h : S₁ ≤ S₂) : S₁ →ᵃ[k] S₂ where
-  toFun := Set.inclusion h
-  linear := Submodule.inclusion <| AffineSubspace.direction_le h
-  map_vadd' := fun ⟨_,_⟩ ⟨_,_⟩ => rfl
+def inclusion (h : S₁ ≤ S₂) :
+    letI := Nonempty.map (Set.inclusion h) ‹_›
+    S₁ →ᵃ[k] S₂ :=
+  letI := Nonempty.map (Set.inclusion h) ‹_›
+  { toFun := Set.inclusion h
+    linear := Submodule.inclusion <| AffineSubspace.direction_le h
+    map_vadd' := fun ⟨_,_⟩ ⟨_,_⟩ => rfl }
 
 @[simp]
 theorem coe_inclusion_apply (h : S₁ ≤ S₂) (x : S₁) : (inclusion h x : P₁) = x :=

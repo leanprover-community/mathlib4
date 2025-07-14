@@ -127,8 +127,8 @@ theorem mabs_div_le_of_one_le_of_le {a b n : G} (one_le_a : 1 ≤ a) (a_le_n : a
   rw [mabs_div_le_iff, div_le_iff_le_mul, div_le_iff_le_mul]
   exact ⟨le_mul_of_le_of_one_le a_le_n one_le_b, le_mul_of_le_of_one_le b_le_n one_le_a⟩
 
-/-- `|a - b| < n` if `0 ≤ a < n` and `0 ≤ b < n`. -/
-@[to_additive "`|a / b|ₘ < n` if `1 ≤ a < n` and `1 ≤ b < n`."]
+/-- `|a / b|ₘ < n` if `1 ≤ a < n` and `1 ≤ b < n`. -/
+@[to_additive "`|a - b| < n` if `0 ≤ a < n` and `0 ≤ b < n`."]
 theorem mabs_div_lt_of_one_le_of_lt {a b n : G} (one_le_a : 1 ≤ a) (a_lt_n : a < n)
     (one_le_b : 1 ≤ b) (b_lt_n : b < n) : |a / b|ₘ < n := by
   rw [mabs_div_lt_iff, div_lt_iff_lt_mul, div_lt_iff_lt_mul]
@@ -178,6 +178,15 @@ theorem mabs_div_le (a b c : G) : |a / c|ₘ ≤ |a / b|ₘ * |b / c|ₘ :=
   calc
     |a / c|ₘ = |a / b * (b / c)|ₘ := by rw [div_mul_div_cancel]
     _ ≤ |a / b|ₘ * |b / c|ₘ := mabs_mul _ _
+
+@[to_additive]
+theorem mabs_div_le_max_div {a b c : G} (hac : a ≤ b) (hcd : b ≤ c) (d : G) :
+    |b / d|ₘ ≤ max (c / d) (d / a) := by
+  rcases le_total d b with h | h
+  · rw [mabs_of_one_le <| one_le_div'.mpr h]
+    exact le_max_of_le_left <| div_le_div_right' hcd _
+  · rw [mabs_of_le_one <| div_le_one'.mpr h, inv_div]
+    exact le_max_of_le_right <| div_le_div_left' hac _
 
 @[to_additive]
 theorem mabs_mul_three (a b c : G) : |a * b * c|ₘ ≤ |a|ₘ * |b|ₘ * |c|ₘ :=

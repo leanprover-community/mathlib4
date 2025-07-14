@@ -34,7 +34,7 @@ private theorem rexp_neg_injOn_aux : univ.InjOn (rexp ∘ Neg.neg) :=
 
 private theorem rexp_cexp_aux (x : ℝ) (s : ℂ) (f : E) :
     rexp (-x) • cexp (-↑x) ^ (s - 1) • f = cexp (-s * ↑x) • f := by
-  show (rexp (-x) : ℂ) • _ = _ • f
+  change (rexp (-x) : ℂ) • _ = _ • f
   rw [← smul_assoc, smul_eq_mul]
   push_cast
   conv in cexp _ * _ => lhs; rw [← cpow_one (cexp _)]

@@ -118,7 +118,7 @@ example {α β : Type u} [Fintype α] [Fintype β] : Fintype.card α = Fintype.c
   · guard_target = α = β
     exact test_sorry
   · rename_i inst1 inst2 h
-    guard_target = HEq inst1 inst2
+    guard_target = inst1 ≍ inst2
     have : Subsingleton (Fintype α) := test_sorry
     congr!
 

@@ -198,7 +198,7 @@ variable [AddMonoidWithOne R]
 
 instance (S : Type*) [Semiring S] (p) [ExpChar R p] [ExpChar S p] : ExpChar (R × S) p := by
   obtain hp | ⟨hp⟩ := ‹ExpChar R p›
-  · have := Prod.charZero_of_left R S; exact .zero
+  · constructor
   obtain _ | _ := ‹ExpChar S p›
   · exact (Nat.not_prime_one hp).elim
   · have := Prod.charP R S p; exact .prime hp
@@ -207,14 +207,10 @@ end AddMonoidWithOne
 
 section CommRing
 
-#adaptation_note
-/-- 2025-04-19 `IsCharP` has `n` as an outparam, but `CharP` does not.
-Remove after https://github.com/leanprover-community/mathlib4/pull/24216 is merged.
--/
-set_option synthInstance.checkSynthOrder false in
-instance (α : Type*) [CommRing α] (n : ℕ) [CharP α n] : Lean.Grind.IsCharP α n where
-  ofNat_eq_zero_iff m := by
-    rw [CommRing.toGrindCommRing_ofNat]
-    simpa [← Nat.dvd_iff_mod_eq_zero] using CharP.cast_eq_zero_iff α n m
+instance (α : Type*) [Semiring α] [IsLeftCancelAdd α] (n : ℕ) [CharP α n] :
+    Lean.Grind.IsCharP α n where
+  ofNat_ext_iff {a b} := by
+    rw [Lean.Grind.Semiring.ofNat_eq_natCast, Lean.Grind.Semiring.ofNat_eq_natCast]
+    exact CharP.cast_eq_iff_mod_eq α n
 
 end CommRing
