@@ -235,6 +235,36 @@ theorem IsIdempotentElem.isPositive_iff_isSelfAdjoint
     {p : E →L[𝕜] E} (hp : IsIdempotentElem p) : p.IsPositive ↔ IsSelfAdjoint p :=
   ⟨fun h => h.isSelfAdjoint, fun h => IsPositive.of_isStarProjection ⟨hp, h⟩⟩
 
+/-- For star projection operators `p,q` in a complex-Hilbert space,
+we have `p ≤ q` iff `p ∘ q = p`. -/
+theorem IsStarProjection.le_iff_comp_eq_self [InnerProductSpace ℂ E] {p q : E →L[ℂ] E}
+    (hp : IsStarProjection p) (hq : IsStarProjection q) : p ≤ q ↔ p ∘L q = p := by
+  refine ⟨fun ⟨h1, h2⟩ => ?_, fun hpq ↦
+    IsPositive.of_isStarProjection (hp.sub_of_mul_eq_left hq hpq)⟩
+  rw [← sub_eq_zero, ← coe_inj, coe_zero, ← inner_map_self_eq_zero]
+  intro x
+  specialize h2 ((1 - q) x)
+  simp [reApplyInnerSelf_apply] at h2
+  simp_rw [← ContinuousLinearMap.mul_apply, hq.1.eq, sub_self, zero_sub, mul_apply,
+    ← map_sub, inner_neg_left, Complex.neg_re, le_neg, neg_zero] at h2
+  rw [← hp.1.eq, ContinuousLinearMap.mul_apply, ← adjoint_inner_right,
+    isSelfAdjoint_iff'.mp hp.2, ← RCLike.re_eq_complex_re, re_inner_self_nonpos] at h2
+  simp [sub_eq_zero] at h2
+  simp [h2]
+
+/-- In a complex-Hilbert space, `U.starProjection ≤ V.starProjection` iff `U ≤ V`. -/
+theorem starProjection_le_starProjection_iff [InnerProductSpace ℂ E]
+    (U V : Submodule ℂ E) [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] :
+    U.starProjection ≤ V.starProjection ↔ U ≤ V := by
+  rw [IsStarProjection.le_iff_comp_eq_self (isStarProjection_starProjection _)
+      (isStarProjection_starProjection _), ← star_inj,
+    (isStarProjection_starProjection _).isSelfAdjoint, star_eq_adjoint, adjoint_comp]
+  simp_rw [← star_eq_adjoint, (isStarProjection_starProjection _).isSelfAdjoint.star_eq]
+  rw [← coe_inj, coe_comp, LinearMap.IsIdempotentElem.comp_eq_right_iff]
+  · have : ∀ p : E →L[ℂ] E, LinearMap.range p.toLinearMap = LinearMap.range p := fun p => rfl
+    simp_rw [this, Submodule.range_starProjection]
+  · exact congr(LinearMapClass.linearMap $((isStarProjection_starProjection V).isIdempotentElem.eq))
+
 end ContinuousLinearMap
 
 namespace LinearMap
