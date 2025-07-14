@@ -591,7 +591,7 @@ instance existsAddOfLE : ExistsAddOfLE Ordinal :=
   ⟨fun h => ⟨_, (Ordinal.add_sub_cancel_of_le h).symm⟩⟩
 
 instance canonicallyOrderedAdd : CanonicallyOrderedAdd Ordinal where
-  le_self_add a b := le_add_right a b
+  le_self_add := le_add_right
 
 @[simp]
 theorem sub_zero (a : Ordinal) : a - 0 = a := by simpa only [zero_add] using add_sub_cancel 0 a
