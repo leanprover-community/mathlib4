@@ -197,4 +197,28 @@ lemma symmetry [DayConvolution F G] [DayConvolution G F] :
 
 end
 
+section
+
+open LawfulDayConvolutionMonoidalCategoryStruct
+
+class LawfulDayConvolutionBraidedMonoidalCategoryStruct
+    (C : Type u₁) [Category.{v₁} C] (V : Type u₂) [Category.{v₂} V]
+    [MonoidalCategory C] [BraidedCategory C]
+    [MonoidalCategory V] [BraidedCategory V]
+    (D : Type u₃) [Category.{v₃} D] [MonoidalCategoryStruct D]
+    [LawfulDayConvolutionMonoidalCategoryStruct C V D] where
+  braiding (C) (V) (d d' : D) : d ⊗ d' ≅ d' ⊗ d
+  unit_app_braiding_hom_app (d d' : D) (x y : C) :
+    (convolutionExtensionUnit C V d d').app (x, y) ≫
+      ((ι C V D).map (braiding d d').hom).app (x ⊗ y) =
+    (β_ _ _).hom ≫ (convolutionExtensionUnit C V d' d).app (_, _) ≫
+      ((ι C V D).obj (d' ⊗ d)).map (β_ _ _).hom
+  unit_app_braiding_inv_app (d d' : D) (x y : C) :
+    (convolutionExtensionUnit C V d d').app (x, y) ≫
+      ((ι C V D).map (braiding d d').hom).app (x ⊗ y) =
+    (β_ _ _).hom ≫ (convolutionExtensionUnit C V d' d).app (_, _) ≫
+      ((ι C V D).obj (d' ⊗ d)).map (β_ _ _).hom
+
+end
+
 end CategoryTheory.MonoidalCategory.DayConvolution
