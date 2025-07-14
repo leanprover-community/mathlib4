@@ -748,12 +748,14 @@ noncomputable def difference [∀ x, FiniteDimensional ℝ (V x)] [∀ x, T2Spac
     [FiniteDimensional ℝ F] [T2Space M] [FiniteDimensional ℝ E] [IsManifold I ∞ M]
     [FiniteDimensional ℝ E] [VectorBundle ℝ F V] [ContMDiffVectorBundle ∞ F V I]
     {cov cov' : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)}
-    {s : Set M} {x : M}
+    {s : Set M}
     (hcov : IsCovariantDerivativeOn F cov s)
     (hcov' : IsCovariantDerivativeOn F cov' s)
-    (hx : x ∈ s := by trivial) : TangentSpace I x →L[ℝ] V x →L[ℝ] V x :=
+    (x : M) : TangentSpace I x →L[ℝ] V x →L[ℝ] V x :=
   haveI : FiniteDimensional ℝ (TangentSpace I x) := by assumption
-  (isBilinearMap_differenceAux (F := F) hcov hcov').toContinuousLinearMap
+  open Classical in
+  if hx : x ∈ s then (isBilinearMap_differenceAux (F := F) hcov hcov').toContinuousLinearMap
+  else 0
 
 lemma difference_def [∀ x, FiniteDimensional ℝ (V x)] [∀ x, T2Space (V x)]
     [FiniteDimensional ℝ F] [T2Space M] [IsManifold I ∞ M] [FiniteDimensional ℝ E]
@@ -763,8 +765,10 @@ lemma difference_def [∀ x, FiniteDimensional ℝ (V x)] [∀ x, T2Space (V x)]
     (hcov : IsCovariantDerivativeOn F cov s)
     (hcov' : IsCovariantDerivativeOn F cov' s)
     (hx : x ∈ s := by trivial) (X₀ : TangentSpace I x) (σ₀ : V x) :
-    difference hcov hcov' hx X₀ σ₀ =
-      cov (extend I E X₀) (extend I F σ₀) x - cov' (extend I E X₀) (extend I F σ₀) x := rfl
+    difference hcov hcov' x X₀ σ₀ =
+      cov (extend I E X₀) (extend I F σ₀) x - cov' (extend I E X₀) (extend I F σ₀) x := by
+  simp only [difference, hx, reduceDIte]
+  rfl
 
 @[simp]
 lemma difference_apply [∀ x, FiniteDimensional ℝ (V x)] [∀ x, T2Space (V x)]
@@ -776,44 +780,42 @@ lemma difference_apply [∀ x, FiniteDimensional ℝ (V x)] [∀ x, T2Space (V x
     (hcov' : IsCovariantDerivativeOn F cov' s)
     (hx : x ∈ s := by trivial) (X : Π x, TangentSpace I x) {σ : Π x, V x}
     (hσ : MDiffAt (T% σ) x) :
-    difference hcov hcov' hx (X x) (σ x) =
-      cov X σ x - cov' X σ x :=
-  hcov.differenceAux_tensorial hcov' (mdifferentiable_extend ..) hσ (extend_apply_self _)
+    difference hcov hcov' x (X x) (σ x) =
+      cov X σ x - cov' X σ x := by
+  simp only [difference, hx, reduceDIte]
+  exact hcov.differenceAux_tensorial hcov' (mdifferentiable_extend ..) hσ (extend_apply_self _)
     (extend_apply_self _) hx
 
 -- The classification of real connections over a trivial bundle
 section classification
-
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace ℝ E']
-
-
 /-- Classification of covariant derivatives over a trivial vector bundle: every connection
 is of the form `D + A`, where `D` is the trivial covariant derivative, and `A` a zeroth-order term
-
-For technical reasons, this is only almost true: the left hand sides agree for all `X`, `σ` and `x`
-such that `σ` is differentiable at `x`. (Since the literature mostly considers smooth connections,
-this is not an issue for mathematical practice at all.)
-The reason is because of the construction of a covariant derivative from a zero-order term `A`:
-`of_endomorphism A X₀ σ₀` is defined by turning the tangent vectors `X₀` and `σ₀` at `x`
-into vector fields near `x` --- which are smooth by construction. Thus, if `σ` is not differentiable
-at `x`, `of_endomorphism A` at `x` uses a smooth extension of `σ x`, with different results.
 -/
-lemma exists_endomorph [FiniteDimensional ℝ E] [FiniteDimensional ℝ E']
-    (cov : CovariantDerivative 𝓘(ℝ, E) E' (Bundle.Trivial E E')) :
-    ∃ (A : E → E →L[ℝ] E' →L[ℝ] E'),
-    ∀ X : (x : E) → TangentSpace 𝓘(ℝ, E) x, ∀ σ : (x : E) → Trivial E E' x, ∀ x : E,
+lemma exists_endomorph [FiniteDimensional ℝ E] [FiniteDimensional ℝ F]
+    [T2Space M] [IsManifold I ∞ M]
+    (cov : (Π x : M, TangentSpace I x) → (M → F) → (M → F))
+    {s : Set M}
+    (hcov : IsCovariantDerivativeOn F cov s) :
+    ∃ (A : (x : M) → TangentSpace I x →L[ℝ] F →L[ℝ] F),
+    ∀ X : (x : M) → TangentSpace I x, ∀ σ : M → F, ∀ x ∈ s,
     MDiffAt (T% σ) x →
-    cov X σ x = (CovariantDerivative.of_endomorphism A) X σ x := by
-  use fun x ↦ difference cov.isCovariantDerivativeOn
-    (CovariantDerivative.trivial 𝓘(ℝ, E) E E').isCovariantDerivativeOn (mem_univ x)
-  intro X σ x hσ
-  simp only [CovariantDerivative.of_endomorphism]
-  erw [difference_apply cov.isCovariantDerivativeOn
-    (CovariantDerivative.trivial 𝓘(ℝ, E) E E').isCovariantDerivativeOn _ X hσ,
-    CovariantDerivative.trivial]
-  simp only [mfderiv_eq_fderiv]
-  module
+    letI d : F := mfderiv I 𝓘(ℝ, F) σ x (X x)
+    cov X σ x = d + A x (X x) (σ x) := by
+  use fun x ↦ hcov.difference (trivial I M F |>.mono <| subset_univ s) x
+  intro X σ x hx hσ
+  rw [difference_apply]
+  · module
+  · assumption
+
+lemma _root_.CovariantDerivative.exists_endomorph [FiniteDimensional ℝ E] [FiniteDimensional ℝ F]
+    [T2Space M] [IsManifold I ∞ M]
+    (cov : CovariantDerivative I F (Bundle.Trivial M F)) :
+    ∃ (A : (x : M) → TangentSpace I x →L[ℝ] F →L[ℝ] F),
+    ∀ X : (x : M) → TangentSpace I x, ∀ σ : M → F, ∀ x,
+    MDiffAt (T% σ) x →
+    letI d : F := mfderiv I 𝓘(ℝ, F) σ x (X x)
+    cov X σ x = d + A x (X x) (σ x) := by
+  simpa using cov.isCovariantDerivativeOn.exists_endomorph
 
 end classification
 
