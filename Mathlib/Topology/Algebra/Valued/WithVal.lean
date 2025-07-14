@@ -84,7 +84,11 @@ variable [Ring R] (v : Valuation R Γ₀)
 /-- Canonical ring equivalence between `WithVal v` and `R`. -/
 def equiv : WithVal v ≃+* R := RingEquiv.refl _
 
+@[simp]
 theorem apply_equiv (r : WithVal v) : v (WithVal.equiv v r) = v r := rfl
+
+@[simp]
+theorem apply_symm_equiv (r : R) : v ((WithVal.equiv v).symm r) = v r := rfl
 
 end WithVal
 
