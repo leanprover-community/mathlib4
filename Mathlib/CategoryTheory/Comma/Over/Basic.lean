@@ -172,14 +172,18 @@ theorem map_obj_hom : ((map f).obj U).hom = U.hom ≫ f :=
 @[simp]
 theorem map_map_left : ((map f).map g).left = g.left :=
   rfl
-end
 
 /-- If `f` is an isomorphism, `map f` is an equivalence of categories. -/
-def mapIso {Y : T} (f : X ≅ Y) : Over X ≌ Over Y :=
+def mapIso (f : X ≅ Y) : Over X ≌ Over Y :=
   Comma.mapRightIso _ <| Discrete.natIso fun _ ↦ f
 
 @[simp] lemma mapIso_functor {Y : T} (f : X ≅ Y) : (mapIso f).functor = map f.hom := rfl
 @[simp] lemma mapIso_inverse {Y : T} (f : X ≅ Y) : (mapIso f).inverse = map f.inv := rfl
+
+instance [IsIso f] : (Over.map f).IsEquivalence :=
+  inferInstanceAs <| (Over.mapIso <| asIso f).functor.IsEquivalence
+
+end
 
 section coherences
 /-!
@@ -586,7 +590,6 @@ theorem map_obj_hom : ((map f).obj U).hom = f ≫ U.hom :=
 @[simp]
 theorem map_map_right : ((map f).map g).right = g.right :=
   rfl
-end
 
 /-- If `f` is an isomorphism, `map f` is an equivalence of categories. -/
 def mapIso {Y : T} (f : X ≅ Y) : Under Y ≌ Under X :=
@@ -594,6 +597,11 @@ def mapIso {Y : T} (f : X ≅ Y) : Under Y ≌ Under X :=
 
 @[simp] lemma mapIso_functor {Y : T} (f : X ≅ Y) : (mapIso f).functor = map f.hom := rfl
 @[simp] lemma mapIso_inverse {Y : T} (f : X ≅ Y) : (mapIso f).inverse = map f.inv := rfl
+
+instance [IsIso f] : (Under.map f).IsEquivalence :=
+  inferInstanceAs <| (Under.mapIso <| asIso f).functor.IsEquivalence
+
+end
 
 section coherences
 /-!
