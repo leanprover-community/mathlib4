@@ -13,8 +13,8 @@ import Mathlib.Data.Matrix.ColumnRowPartitioned
 import Mathlib.Data.Pi.Interval
 import Mathlib.Data.Rat.Floor
 import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.ModelTheory.Definability
 import Mathlib.ModelTheory.Arithmetic.Presburger.Basic
+import Mathlib.ModelTheory.Definability
 import Mathlib.RingTheory.Localization.Module
 
 /-!
