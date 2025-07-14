@@ -455,7 +455,7 @@ protected theorem IsWF.insert (h : IsWF s) (a : α) : IsWF (insert a s) :=
   isWF_insert.2 h
 
 theorem _root_.exists_minimal_le_of_isPWO {a} (hs : s.IsPWO) (ha : a ∈ s) :
-    ∃ b ≤ a, Minimal s b := by
+    ∃ b ≤ a, Minimal (· ∈ s) b := by
   let t : Set s := {x | x ≤ a}
   let h : t.Nonempty := ⟨⟨a, ha⟩, le_rfl⟩
   refine ⟨hs.wellFounded.min t h, hs.wellFounded.min_mem t h,
