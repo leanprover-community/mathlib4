@@ -102,7 +102,7 @@ by `PUnit`, the type with one element. -/
   obj X := ⟨PUnit, fun _ ↦ X⟩
   map f := ⟨fun _ ↦ PUnit.unit, fun _ ↦ f⟩
 
-section mkOf
+section fromIncl
 
 variable {X : C} {Y : FormalCoproduct.{w} C}
 
@@ -120,7 +120,7 @@ lemma Hom.fromIncl_asSigma (f : (incl C).obj X ⟶ Y) :
     Hom.fromIncl f.asSigma.fst f.asSigma.snd = f := by
   ext <;> aesop
 
-end mkOf
+end fromIncl
 
 -- This is probably some form of adjunction?
 /-- A map `incl(X) ⟶ Y` is specified by an element of `Y`'s indexing set, and then a morphism
@@ -133,14 +133,14 @@ end mkOf
   right_inv _ := rfl
 
 /-- `incl` is fully faithful, which means that `(X ⟶ Y) ≃ (incl(X) ⟶ incl(Y))`. -/
-@[simps!] def fullyFaithfulOf : (incl C).FullyFaithful where
+@[simps!] def fullyFaithfulIncl : (incl C).FullyFaithful where
   preimage f := f.φ PUnit.unit
 
 instance : (incl C).Full :=
-  fullyFaithfulOf.full
+  fullyFaithfulIncl.full
 
 instance : (incl C).Faithful :=
-  fullyFaithfulOf.faithful
+  fullyFaithfulIncl.faithful
 
 /-- A family of maps with the same target can be turned into one arrow in the category of formal
 coproducts. This is used in Čech cohomology. -/
@@ -243,12 +243,12 @@ section Terminal
 
 /-- Given a terminal object `T` in the original category, we show that `incl(T)` is a terminal
 object in the category of formal coproducts. -/
-def isTerminalOf (T : C) (ht : IsTerminal T) : IsTerminal ((incl C).obj T) :=
+def isTerminalIncl (T : C) (ht : IsTerminal T) : IsTerminal ((incl C).obj T) :=
   IsTerminal.ofUniqueHom (fun _ ↦ ⟨fun _ ↦ PUnit.unit, fun _ ↦ ht.from _⟩)
     (fun _ _ ↦ hom_ext (funext fun _ ↦ rfl) (fun _ ↦ ht.hom_ext _ _))
 
 instance [HasTerminal C] : HasTerminal (FormalCoproduct.{w} C) :=
-  (isTerminalOf (⊤_ C) terminalIsTerminal).hasTerminal
+  (isTerminalIncl (⊤_ C) terminalIsTerminal).hasTerminal
 
 end Terminal
 
