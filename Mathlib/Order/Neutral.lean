@@ -113,15 +113,11 @@ lemma theorem3_i_ii (a : α) (h : IsStandard a) :
         use a₁ ⊔ a₂
         constructor
         · exact sup_le ha11 ha21
-        · have exyi : x ⊓ y = x := by
-            apply inf_eq_left.mpr hxy
-          have exys : x ⊔ y = y := by
-            apply sup_eq_right.mpr hxy
+        · have exyi : x ⊓ y = x := inf_eq_left.mpr hxy
+          have exys : x ⊔ y = y := sup_eq_right.mpr hxy
           rw [exyi, exys] at ha12
-          have eyzi : y ⊓ z = y := by
-            apply inf_eq_left.mpr hyz
-          have eyzs : y ⊔ z = z := by
-            apply sup_eq_right.mpr hyz
+          have eyzi : y ⊓ z = y := inf_eq_left.mpr hyz
+          have eyzs : y ⊔ z = z := sup_eq_right.mpr hyz
           rw [eyzi, eyzs] at ha22
           have exzi : x ⊓ z = x := by
             apply inf_eq_left.mpr
@@ -133,9 +129,49 @@ lemma theorem3_i_ii (a : α) (h : IsStandard a) :
           rw [← ha22]
           rw [← ha12]
           rw [← sup_assoc]
+      · intro x y t hxy h
+        obtain ⟨a₁, ha1, ha2⟩ := h
+        constructor
+        · use y ⊓ t ⊓ a
+          constructor
+          · exact inf_le_right
+          · rw [inf_assoc]
+            simp only [inf_le_right, inf_of_le_right]
+            rw [IsStandard] at h
+            have e1 : (y ⊓ t) ⊓ (x ⊔ a) = ((y ⊓ t) ⊓ x) ⊔ ((y ⊓ t) ⊓ a) := by
+              rw [sup_comm]
+              rw [h (y ⊓ t) x]
+              rw [sup_comm]
+            rw [inf_comm]
+            rw [← e1]
+            have exyi : x ⊓ y = x := inf_eq_left.mpr hxy
+            have exys : x ⊔ y = y := sup_eq_right.mpr hxy
+            rw [exyi, exys] at ha2
+            have e2 : y ⊓ t ≤ x ⊔ a := by
+              apply le_trans (b := x ⊔ a₁)
+              rw [ha2]
+              exact inf_le_left
+            rw [inf_eq_left.mpr e2]
+            rw [le_antisymm_iff]
+            constructor
+            · exact le_sup_right
+            · simp only [le_inf_iff, sup_le_iff, inf_le_left, and_true, inf_le_right, and_self]
+              exact inf_le_of_left_le hxy
+        · use a₁
+          constructor
+          · exact ha1
+          · have exyi : x ⊓ y = x := inf_eq_left.mpr hxy
+            have exys : x ⊔ y = y := sup_eq_right.mpr hxy
+            rw [exyi, exys] at ha2
+            have e1 : (x ⊔ t) ⊔ a₁ = y ⊔ t := by
+              rw [← ha2]
+              rw [sup_assoc, sup_comm t, ← sup_assoc]
+            rw [← e1]
+            simp only [le_sup_left, inf_of_le_left, sup_of_le_right]
 
-            --exact?
-      · sorry
+
+
+
 
 
 
