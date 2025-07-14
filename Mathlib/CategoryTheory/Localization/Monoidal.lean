@@ -226,6 +226,8 @@ lemma tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : LocalizedMonoidal L W ε}
 lemma id_tensorHom_id (X₁ X₂ : LocalizedMonoidal L W ε) : 𝟙 X₁ ⊗ₘ 𝟙 X₂ = 𝟙 (X₁ ⊗ X₂) := by
   simp [monoidalCategoryStruct]
 
+@[deprecated (since := "2025-07-14")] alias tensor_id := id_tensorHom_id
+
 @[reassoc]
 theorem whiskerLeft_comp (Q : LocalizedMonoidal L W ε) {X Y Z : LocalizedMonoidal L W ε}
     (f : X ⟶ Y) (g : Y ⟶ Z) :

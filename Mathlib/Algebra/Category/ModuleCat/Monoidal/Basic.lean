@@ -69,6 +69,8 @@ theorem id_tensorHom_id (M N : ModuleCat R) : tensorHom (𝟙 M) (𝟙 N) = 𝟙
   apply TensorProduct.ext
   rfl
 
+@[deprecated (since := "2025-07-14")] alias tensor_id := id_tensorHom_id
+
 theorem tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : ModuleCat R} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁)
     (g₂ : Y₂ ⟶ Z₂) : tensorHom (f₁ ≫ g₁) (f₂ ≫ g₂) = tensorHom f₁ f₂ ≫ tensorHom g₁ g₂ := by
   ext : 1
