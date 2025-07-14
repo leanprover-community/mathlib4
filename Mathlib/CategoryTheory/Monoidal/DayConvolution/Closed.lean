@@ -17,9 +17,6 @@ day convolutions and the data of the canonical morphisms to the aforementioned
 ends can be organised as data that exhibit `F` as monoidal closed in `C ⥤ V` for
 the Day convolution monoidal structure.
 
-## TODOs
-* When `LawfulDayConvolutionMonoidalStruct` (#26820) lands, transport the
-constructions here to produce actual `CategoryTheory.MonoidalClosed` instances.
 -/
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
@@ -130,6 +127,68 @@ lemma map_app_comp_π (ℌ : DayConvolutionInternalHom F G H)
       (H'.obj c) (ℌ'.π c) (ℌ'.hπ c),
     Limits.Wedge.IsLimit.lift_ι (ℌ'.isLimitWedge c)]
 
+
+@[simp]
+lemma map_id (ℌ : DayConvolutionInternalHom F G H) : ℌ.map (𝟙 _) ℌ = 𝟙 _ := by
+  ext
+  apply Limits.Wedge.IsLimit.hom_ext (ℌ.isLimitWedge _)
+  aesop_cat
+
+@[simp]
+lemma map_comp (ℌ : DayConvolutionInternalHom F G H)
+    {G' : C ⥤ V} {H' : C ⥤ V}
+    (f : G ⟶ G') (ℌ' : DayConvolutionInternalHom F G' H')
+    {G'' : C ⥤ V} {H'' : C ⥤ V}
+    (g : G' ⟶ G'') (ℌ'' : DayConvolutionInternalHom F G'' H'') :
+    ℌ.map (f ≫ g) ℌ'' = ℌ.map f ℌ' ≫ ℌ'.map g ℌ'' := by
+  ext
+  apply Limits.Wedge.IsLimit.hom_ext (ℌ''.isLimitWedge _)
+  aesop_cat
+
+/-- transport a `DayConvolutionInternalHom F G H` along a natural isomorphism. -/
+def transport (ℌ : DayConvolutionInternalHom F G H) {H' : C ⥤ V} (e : H' ≅ H) :
+    DayConvolutionInternalHom F G H' where
+  π c j := e.hom.app c ≫ ℌ.π c j
+  hπ c i j f := by
+    simp
+  isLimitWedge c := by
+    apply Limits.IsLimit.equivOfNatIsoOfIso (.refl _) _ _ _ (ℌ.isLimitWedge _)
+    exact Limits.Wedge.ext (e.symm.app c) (fun j ↦ by
+      simp [Limits.Cones.postcompose, Limits.Multifork.ι])
+  obj_map_comp_π f j := by
+    simp
+
+section
+
+variable (F G)
+
+/-- If the relevant ends exist, (noncomputably) construct a
+functor `C ⥤ V` that is an internal hom of `F` and `G`. -/
+@[simps]
+noncomputable def ihomOfHasEnds
+    [∀ c : C, Limits.HasEnd <| internalHomDiagramFunctor F |>.obj G |>.obj c] :
+    C ⥤ V where
+  obj c := Limits.end_ <|
+    internalHomDiagramFunctor F |>.obj G |>.obj c
+  map f := Limits.end_.map <|
+    internalHomDiagramFunctor F |>.obj G |>.map f
+
+/-- If the relevant ends exist, the functor `ihomOfHasEnds F G` is indeed
+an internal hom for Day convolution. -/
+@[simps]
+noncomputable def dayConvolutionInternalHomOfHasEnds
+    [∀ c : C, Limits.HasEnd <| internalHomDiagramFunctor F |>.obj G |>.obj c] :
+    DayConvolutionInternalHom F G (ihomOfHasEnds F G) where
+  π c j := Limits.end_.π _ _
+  hπ c _ _ φ := Limits.end_.condition _ φ
+  isLimitWedge c :=
+    Limits.IsLimit.ofIsoLimit (Limits.limit.isLimit _)
+      (Limits.Wedge.ext (Iso.refl _) (fun j ↦ by dsimp; rw [Category.id_comp]; rfl))
+  obj_map_comp_π {c c'} f j := by
+    simp
+
+end
+
 section ev
 
 variable [DayConvolution F H] (ℌ : DayConvolutionInternalHom F G H)
@@ -228,8 +287,8 @@ lemma coev_app_comp_π (c j : C) :
     Limits.Wedge.IsLimit.lift_ι]
 
 @[simp]
-lemma coev_naturality_app {G' : C ⥤ V} [DayConvolution F G'] (η : G ⟶ G')
-    (ℌ'' : DayConvolutionInternalHom F (F ⊛ G') H) :
+lemma coev_naturality_app {G' H' : C ⥤ V} [DayConvolution F G'] (η : G ⟶ G')
+    (ℌ'' : DayConvolutionInternalHom F (F ⊛ G') H') :
     η ≫ ℌ''.coev_app =
     ℌ.coev_app ≫ ℌ.map (DayConvolution.map (𝟙 _) η) ℌ'' := by
   ext c
@@ -278,35 +337,171 @@ class LawfulDayConvolutionClosedMonoidalCategoryStruct
     [MonoidalCategory C] [MonoidalCategory V] [MonoidalClosed V]
     (D : Type u₃) [Category.{v₃} D] [MonoidalCategoryStruct D]
     [LawfulDayConvolutionMonoidalCategoryStruct C V D] where
-  ihom (d : D) : D ⥤ D
-  ihomDayConvolutionInternalHom (d d' : D) :
+  ihom (C) (V) (d : D) : D ⥤ D
+  ihomDayConvolutionInternalHom (C) (V) (d d' : D) :
     DayConvolutionInternalHom
       (ι C V D|>.obj d) (ι C V D|>.obj d') (ι C V D|>.obj <| (ihom d).obj d')
-  ihomMap (d : D) {d' d'' : D} (f : d' ⟶ d'') (c j : C) :
-    (ι C V D|>.map <| (ihom d).map f).app c ≫
-      (ihomDayConvolutionInternalHom d d'').π c j =
-    (ihomDayConvolutionInternalHom d d').π c j ≫
-      (CategoryTheory.ihom <| (ι C V D|>.obj d).obj j).map
-        (ι C V D|>.map f|>.app <| j ⊗ c)
+  ι_map_ihom_map (C) (V) (d : D) {d' d'' : D} (f : d' ⟶ d'') :
+    (ι C V D|>.map <| (ihom d).map f) =
+    (ihomDayConvolutionInternalHom d d').map ((ι C V D).map f)
+      (ihomDayConvolutionInternalHom d d'')
+  coev_app (C) (V) (d d' : D) : d' ⟶ (ihom d).obj (d ⊗ d')
+  ev_app (C) (V) (d d' : D) : d ⊗ (ihom d).obj d' ⟶ d'
+  ι_map_ev_app (C) (V) d d' :
+    letI := convolution C V D d d'
+    letI := convolution C V D d ((ihom d).obj d')
+    (ι C V D).map (ev_app d d') =
+    (ihomDayConvolutionInternalHom d d').ev_app
+  ι_map_coev_app (C) (V) d d' :
+    letI := convolution C V D d d'
+    (ι C V D).map (coev_app d d') =
+    (ihomDayConvolutionInternalHom d _).coev_app
 
 namespace LawfulDayConvolutionClosedMonoidalCategoryStruct
 
 variable (C : Type u₁) [Category.{v₁} C] (V : Type u₂) [Category.{v₂} V]
     [MonoidalCategory C] [MonoidalCategory V] [MonoidalClosed V]
 
+section ofHasEnds
+
+variable (D : Type u₃) [Category.{v₃} D] [MonoidalCategoryStruct D]
+  [LawfulDayConvolutionMonoidalCategoryStruct C V D]
+  [∀ (d d' : D) (c : C),
+    Limits.HasEnd <|
+      internalHomDiagramFunctor (ι C V D |>.obj d) |>.obj
+        (ι C V D |>.obj d') |>.obj c]
+
+/-- Given `d d' : D`, this is the functor in `C ⥤ V` that corresponds to the
+internal hom of `ι C V D|>.obj d` and `ι C V D|>.obj d'`, if the relevant ends
+exist. This is an auxiliary construction to construct internal homs in
+`D`. -/
+@[simps]
+noncomputable def ihom' (d d' : D) : (C ⥤ V) where
+  obj c := Limits.end_ <|
+    internalHomDiagramFunctor (ι C V D|>.obj d) |>.obj
+      (ι C V D|>.obj d') |>.obj c
+  map {c c'} f := Limits.end_.map <|
+    internalHomDiagramFunctor (ι C V D|>.obj d) |>.obj
+      (ι C V D|>.obj d') |>.map f
+
+noncomputable def ihomObj (d d' : D)
+    (h : (ι C V D).essImage (ihom' C V D d d')) : D :=
+  h.witness
+
+open DayConvolutionInternalHom
+
+noncomputable def ihomObjDayConvolutionInternalHom (d d' : D)
+    (h : (ι C V D).essImage (ihom' C V D d d')) :
+    DayConvolutionInternalHom (ι C V D|>.obj d) (ι C V D|>.obj d')
+      (ι C V D|>.obj <| ihomObj C V D d d' h) :=
+  dayConvolutionInternalHomOfHasEnds _ _|>.transport h.getIso
+
 noncomputable def ofHasEnd
-    (D : Type u₃) [Category.{v₃} D] [MonoidalCategoryStruct D]
-    [LawfulDayConvolutionMonoidalCategoryStruct C V D]
-    [∀ (d d' : D) (c : C),
-      Limits.HasEnd <|
-        internalHomDiagramFunctor (ι C V D |>.obj d) |>.obj (ι C V D |>.obj d') |>.obj c] 
+    (h : ∀ d d', (ι C V D).essImage (ihom' C V D d d'))
+    [(ι C V D).Full] :
     LawfulDayConvolutionClosedMonoidalCategoryStruct C V D where
-  ihom d := sorry
-  ihomDayConvolutionInternalHom := sorry
-  ihomMap := sorry
+  ihom d :=
+    { obj d' := ihomObj C V D d d' (h d d')
+      map {d' d''} f := (ι C V D).preimage <|
+        (ihomObjDayConvolutionInternalHom C V D d d' (h d d')).map
+          ((ι C V D).map f)
+          (ihomObjDayConvolutionInternalHom C V D d d'' (h d d''))
+      map_comp f g := by
+        apply (ι C V D).map_injective
+        simp only [Functor.map_comp, Functor.map_preimage]
+        exact map_comp _ _ _ _ _ }
+  ihomDayConvolutionInternalHom d d' :=
+    ihomObjDayConvolutionInternalHom C V D d d' (h d d')
+  coev_app d d' :=
+    letI := convolution C V D d d'
+    (ι C V D).preimage <|
+      (ihomObjDayConvolutionInternalHom C V D d (d ⊗ d') (h _ _)).coev_app
+        (G := (ι C V D).obj d')
+  ev_app d d' :=
+    letI := convolution C V D d (ihomObj C V D d d' (h d d'))
+    (ι C V D).preimage <|
+      (ihomObjDayConvolutionInternalHom C V D d d' (h _ _)).ev_app
+        (G := (ι C V D).obj d')
+  ι_map_ev_app := by simp
+  ι_map_coev_app := by simp
+  ι_map_ihom_map := by simp
 
+end ofHasEnds
 
-end
+section MonoidalClosed
+variable
+    (D : Type u₃) [Category.{v₃} D]
+    [MonoidalCategoryStruct D]
+    [LawfulDayConvolutionMonoidalCategoryStruct C V D]
+    [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
+      (CostructuredArrow (tensor C) d) (tensorLeft v)]
+    [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
+      (CostructuredArrow (tensor C) d) (tensorRight v)]
+    [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
+      (CostructuredArrow (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorLeft v)]
+    [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
+      (CostructuredArrow (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)]
+    [∀ (v : V) (d : C × C),
+      Limits.PreservesColimitsOfShape
+        (CostructuredArrow ((𝟭 C).prod <| Functor.fromPUnit.{0} <| 𝟙_ C) d)
+        (tensorRight v)]
+    [∀ (v : V) (d : C × C),
+      Limits.PreservesColimitsOfShape
+        (CostructuredArrow ((tensor C).prod (𝟭 C)) d) (tensorRight v)]
+
+attribute [local instance] convolution in
+/-- If we have a `LawfulDayConvolutionMonoidalCategoryStruct C V D` and
+the Day convolution monoidal structure on `D` exist, then the data
+of a `LawfulDayConvolutionClosedMonoidalCategoryStruct` defines a
+`MonoidalClosed` structure on `D`. -/
+def monoidalClosed
+    [LawfulDayConvolutionClosedMonoidalCategoryStruct C V D] :
+    letI := monoidalOfLawfulDayConvolutionMonoidalCategoryStruct C V D
+    MonoidalClosed D :=
+  letI := monoidalOfLawfulDayConvolutionMonoidalCategoryStruct C V D
+  { closed d :=
+    { rightAdj := LawfulDayConvolutionClosedMonoidalCategoryStruct.ihom C V d
+      adj :=
+        { unit :=
+            { app d' := coev_app C V d d'
+              naturality {d' d''} f := by
+                apply (ι C V D).map_injective
+                haveI := ihomDayConvolutionInternalHom
+                      C V d (d ⊗ d')|>.coev_naturality_app
+                    (ι C V D|>.map f)
+                    (ihomDayConvolutionInternalHom C V d (d ⊗ d''))
+                simp only [Functor.id_obj, Functor.comp_obj,
+                  curriedTensor_obj_obj, Functor.id_map, Functor.map_comp,
+                  Functor.comp_map, curriedTensor_obj_map]
+                rw [ι_map_coev_app, ι_map_coev_app, this, ι_map_ihom_map,
+                  ← id_tensorHom, ι_map_tensorHom_hom_eq_tensorHom,
+                  Functor.map_id] }
+          counit :=
+            { app d' := ev_app C V d d'
+              naturality {d' d''} f := by
+                apply (ι C V D).map_injective
+                haveI := ihomDayConvolutionInternalHom
+                    C V d d'|>.ev_naturality_app
+                  (ihomDayConvolutionInternalHom C V d d'')
+                  (ι C V D|>.map f)
+                simp only [Functor.id_obj, Functor.comp_obj,
+                  curriedTensor_obj_obj, Functor.id_map, Functor.map_comp,
+                  Functor.comp_map, curriedTensor_obj_map]
+                rw [ι_map_ev_app, ι_map_ev_app, ← this,
+                  ← id_tensorHom, ι_map_tensorHom_hom_eq_tensorHom,
+                  Functor.map_id, ι_map_ihom_map] }
+          left_triangle_components d' := by
+            dsimp
+            apply (ι C V D).map_injective
+            rw [Functor.map_comp, ← id_tensorHom, 
+              ι_map_tensorHom_hom_eq_tensorHom, Functor.map_id, Functor.map_id]
+            exact left_triangle_components
+
+          right_triangle_components d' := sorry } } }
+
+end MonoidalClosed
+
+end LawfulDayConvolutionClosedMonoidalCategoryStruct
 
 end
 
