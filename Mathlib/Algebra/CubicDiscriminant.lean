@@ -477,10 +477,9 @@ theorem disc_ne_zero_iff_roots_ne (ha : P.a ≠ 0) (h3 : (map φ P).roots = {x, 
 theorem disc_ne_zero_iff_roots_nodup (ha : P.a ≠ 0) (h3 : (map φ P).roots = {x, y, z}) :
     P.disc ≠ 0 ↔ (map φ P).roots.Nodup := by
   rw [disc_ne_zero_iff_roots_ne ha h3, h3]
-  change _ ↔ (x ::ₘ y ::ₘ {z}).Nodup
-  rw [nodup_cons, nodup_cons, mem_cons, mem_singleton, mem_singleton]
-  simp only [nodup_singleton]
-  tauto
+  simp only [ne_eq, insert_eq_cons, nodup_cons, mem_cons, mem_singleton, not_or,
+    nodup_singleton, and_true]
+  exact Iff.symm and_assoc
 
 theorem card_roots_of_disc_ne_zero [DecidableEq K] (ha : P.a ≠ 0) (h3 : (map φ P).roots = {x, y, z})
     (hd : P.disc ≠ 0) : (map φ P).roots.toFinset.card = 3 := by
