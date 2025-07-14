@@ -128,17 +128,9 @@ lemma theorem3_i_ii (a : α) (h : IsStandard a) :
         · use y ⊓ t ⊓ a
           constructor
           · exact inf_le_right
-          · rw [inf_assoc]
-            simp only [inf_le_right, inf_of_le_right]
-            have e1 : (y ⊓ t) ⊓ (x ⊔ a) = ((y ⊓ t) ⊓ x) ⊔ ((y ⊓ t) ⊓ a) := by
-              rw [sup_comm]
-              rw [h (y ⊓ t) x]
-              rw [sup_comm]
-            rw [inf_comm]
-            rw [← e1]
-            have exyi : x ⊓ y = x := inf_eq_left.mpr hxy
-            have exys : x ⊔ y = y := sup_eq_right.mpr hxy
-            rw [exyi, exys] at ha2
+          · rw [inf_assoc, inf_of_le_right inf_le_right, inf_comm, sup_comm, ←  h (y ⊓ t) x,
+              sup_comm]
+            rw [inf_eq_left.mpr hxy, sup_eq_right.mpr hxy] at ha2
             have e2 : y ⊓ t ≤ x ⊔ a := by
               apply le_trans (b := x ⊔ a₁) _ (sup_le_sup_left ha1 x)
               rw [ha2]
