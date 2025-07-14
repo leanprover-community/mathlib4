@@ -627,7 +627,7 @@ lemma Int.denselyOrdered_set_iff_subsingleton {s : Set ℤ} :
   have hc' : c < a := by simpa [c, hab.le] using hg' (b - a).toNat ⟨⟨b, hb⟩, hab⟩
   linarith
 
-lemma denselyOrdered_units_withZeroInt_set_iff_subsingleton {s : Set ℤᵐ⁰} :
+lemma denselyOrdered_withZeroInt_set_iff_subsingleton {s : Set ℤᵐ⁰} :
     DenselyOrdered s ↔ s.Subsingleton := by
   refine ⟨fun H ↦ ?_, fun h ↦ h.denselyOrdered⟩
   rcases (s \ {0}).subsingleton_or_nontrivial with hs | hs
