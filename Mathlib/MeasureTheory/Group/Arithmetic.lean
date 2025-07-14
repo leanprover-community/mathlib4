@@ -858,7 +858,7 @@ theorem List.measurable_fun_prod (l : List (α → M)) (hl : ∀ f ∈ l, Measur
   simpa only [← Pi.list_prod_apply] using l.measurable_prod hl
 
 @[to_additive (attr := measurability, fun_prop)]
-theorem List.aeMeasurable_fun_prod (l : List (α → M)) (hl : ∀ f ∈ l, AEMeasurable f μ) :
+theorem List.aemeasurable_fun_prod (l : List (α → M)) (hl : ∀ f ∈ l, AEMeasurable f μ) :
     AEMeasurable (fun x => (l.map fun f : α → M => f x).prod) μ := by
   simpa only [← Pi.list_prod_apply] using l.aemeasurable_prod hl
 
