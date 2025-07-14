@@ -50,33 +50,22 @@ theorem range_eq_of_proj [Module S E] {p : Submodule S E}
 
 theorem isCompl_of_proj [Module S E] {p : Submodule S E}
     {f : E →ₗ[S] p} (hf : ∀ x : p, f x = x) : IsCompl p (ker f) := by
-  let f' := p.subtype ∘ₗ f
-  have hf' : ∀ x : p, f' x = x := fun x => by simp [f', hf]
   constructor
   · rw [disjoint_iff_inf_le]
     rintro x ⟨hpx, hfx⟩
     rw [SetLike.mem_coe, mem_ker, hf ⟨x, hpx⟩, mk_eq_zero] at hfx
     simp only [hfx, zero_mem]
-  · symm
+  · let f' := p.subtype ∘ₗ f
+    suffices Codisjoint (range f') (ker f') by
+      simpa [f', ker_comp, range_comp, range_eq_of_proj hf] using this
     rw [codisjoint_iff_le_sup]
-    have : ker f = ker f' := by
-      rw [ker_comp]
-      simp
-    have hf' : IsIdempotentElem f' := by
-      rw [IsIdempotentElem, Module.End.mul_eq_comp]
-      ext x
-      simp [f', hf]
-    simp_rw [this]
-    have : range f' = p := by
-      rw [range_comp, range_eq_of_proj hf]
-      simp
-    simp_rw [← this]
     intro x _
     rw [mem_sup']
-    refine ⟨⟨x - f' x, ?_⟩, ⟨f' x, ?_⟩, ?_⟩
-    · rw [mem_ker, map_sub, ← Module.End.mul_apply, hf'.eq, sub_self]
+    refine ⟨⟨f' x, ?_⟩, ⟨x - f' x, ?_⟩, ?_⟩
     · simp only [mem_range, exists_apply_eq_apply]
-    · simp only [sub_add_cancel]
+    · rw [mem_ker, map_sub]
+      simp [f', hf]
+    · simp only [add_sub_cancel]
 
 end LinearMap
 
