@@ -16,15 +16,19 @@ TODO: Consider merging this into `Order.Lattice`.
 
 variable {α β : Type*}
 
+/-- Element is distributive -/
 def IsDistrib [Lattice α] (a : α) : Prop :=
   ∀ (x y : α), a ⊔ (x ⊓ y) = (a ⊔ x) ⊓ (a ⊔ y)
 
+/-- Element is standard -/
 def IsStandard [Lattice α] (a : α) : Prop :=
   ∀ (x y : α), x ⊓ (a ⊔ y) = (x ⊓ a) ⊔ (x ⊓ y)
 
+/-- Element is neutral -/
 def IsNeutral [Lattice α] (a : α) : Prop :=
   ∀ (x y : α), (a ⊓ x) ⊔ (a ⊓ y) ⊔ (x ⊓ y) = (a ⊔ x) ⊓ (a ⊔ y) ⊓ (x ⊔ y)
 
+/-- Kernel of a function -/
 def ker (f : α → β) : α → α → Prop := fun a b => f a = f b
 
 lemma equiv_ker (f : α → β) : Equivalence (ker f) where
@@ -34,15 +38,15 @@ lemma equiv_ker (f : α → β) : Equivalence (ker f) where
 
 variable [Lattice α] [Lattice β]
 
-
-
-
-
+/-- The set of neutral elements of a lattice -/
 def Set.neutral : Set α :=
   { z | IsNeutral z }
 
+/-- Lattice homomorphism is a structure preserving map between lattices -/
 structure IsLatticeHom (f : α → β) : Prop where
+  /-- f preserves inf -/
   map_inf (a b : α) : f (a ⊓ b) = f a ⊓ f b
+  /-- f preserves sup -/
   map_sup (a b : α) : f (a ⊔ b) = f a ⊔ f b
 
 lemma kercong (f : α → β) (h : IsLatticeHom f) :  IsLatticeCon (ker f) := {
@@ -96,20 +100,14 @@ lemma theorem3_i_ii (a : α) (h : IsStandard a) :
         · exact ha1
         · rw [← ha2]
           simp only [le_sup_left, inf_of_le_left, sup_of_le_right]
-      · intro h
-        obtain ⟨a₁, ha1, ha2⟩ := h
+      · intro ⟨a₁, ha1, ha2⟩
         use a₁
         constructor
         · exact ha1
-        · have e1 : x ⊓ y ⊔ (x ⊔ y) = x ⊔ y := sup_of_le_right inf_le_sup
-          rw [e1] at ha2
-          have e2 : x ⊓ y ⊓ (x ⊔ y) = x ⊓ y := inf_of_le_left inf_le_sup
-          rw [e2] at ha2
+        · rw [sup_of_le_right inf_le_sup, inf_of_le_left inf_le_sup] at ha2
           exact ha2
     · constructor
-      · intro x y z hxy hyz h1 h2
-        obtain ⟨a₁, ha11, ha12⟩ := h1
-        obtain ⟨a₂, ha21, ha22⟩ := h2
+      · intro x y z hxy hyz ⟨a₁, ha11, ha12⟩ ⟨a₂, ha21, ha22⟩
         use a₁ ⊔ a₂
         constructor
         · exact sup_le ha11 ha21
@@ -119,25 +117,19 @@ lemma theorem3_i_ii (a : α) (h : IsStandard a) :
           have eyzi : y ⊓ z = y := inf_eq_left.mpr hyz
           have eyzs : y ⊔ z = z := sup_eq_right.mpr hyz
           rw [eyzi, eyzs] at ha22
-          have exzi : x ⊓ z = x := by
-            apply inf_eq_left.mpr
-            exact Preorder.le_trans x y z hxy hyz
-          have exzs : x ⊔ z = z := by
-            apply sup_eq_right.mpr
-            exact Preorder.le_trans x y z hxy hyz
-          rw [exzi, exzs]
+          rw [inf_eq_left.mpr (Preorder.le_trans x y z hxy hyz),
+            sup_eq_right.mpr (Preorder.le_trans x y z hxy hyz)]
+
           rw [← ha22]
           rw [← ha12]
           rw [← sup_assoc]
-      · intro x y t hxy h
-        obtain ⟨a₁, ha1, ha2⟩ := h
+      · intro x y t hxy ⟨a₁, ha1, ha2⟩
         constructor
         · use y ⊓ t ⊓ a
           constructor
           · exact inf_le_right
           · rw [inf_assoc]
             simp only [inf_le_right, inf_of_le_right]
-            rw [IsStandard] at h
             have e1 : (y ⊓ t) ⊓ (x ⊔ a) = ((y ⊓ t) ⊓ x) ⊔ ((y ⊓ t) ⊓ a) := by
               rw [sup_comm]
               rw [h (y ⊓ t) x]
@@ -148,10 +140,10 @@ lemma theorem3_i_ii (a : α) (h : IsStandard a) :
             have exys : x ⊔ y = y := sup_eq_right.mpr hxy
             rw [exyi, exys] at ha2
             have e2 : y ⊓ t ≤ x ⊔ a := by
-              apply le_trans (b := x ⊔ a₁)
+              apply le_trans (b := x ⊔ a₁) _ (sup_le_sup_left ha1 x)
               rw [ha2]
               exact inf_le_left
-              exact sup_le_sup_left ha1 x
+              --exact sup_le_sup_left ha1 x
             rw [inf_eq_left.mpr e2]
             rw [le_antisymm_iff]
             constructor
