@@ -292,7 +292,7 @@ theorem Semilinear.of_linear_equation [Fintype β] (u v : α → ℕ) (A B : Mat
   simp only [mem_setOf_eq, mem_add]
   constructor
   · intro hx
-    obtain ⟨y, hy₁, hy₂⟩ := exists_minimal_le_of_isPWO hpwo hx
+    obtain ⟨y, hy₁, hy₂⟩ := hpwo.exists_le_minimal hx
     refine ⟨y, hy₂, x - y, ?_, add_tsub_cancel_of_le hy₁⟩
     rw [← add_tsub_cancel_of_le hy₁] at hx
     simp only [mulVec_add, ← add_assoc] at hx
