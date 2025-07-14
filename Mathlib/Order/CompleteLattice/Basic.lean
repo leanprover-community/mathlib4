@@ -47,11 +47,11 @@ section
 
 variable [CompleteSemilatticeSup α] {s t : Set α} {a b : α}
 
+theorem sSup_le_sSup_of_isCofinalFor (h : IsCofinalFor s t) : sSup s ≤ sSup t :=
+  IsLeast.mono (isLUB_sSup t) (isLUB_sSup s) <| upperBounds_mono_of_isCofinalFor h
+
 theorem sSup_le_sSup_of_forall_exists_le (h : ∀ x ∈ s, ∃ y ∈ t, x ≤ y) : sSup s ≤ sSup t :=
-  le_sSup_iff.2 fun _ hb =>
-    sSup_le fun a ha =>
-      let ⟨_, hct, hac⟩ := h a ha
-      hac.trans (hb hct)
+  sSup_le_sSup_of_isCofinalFor h
 
 -- We will generalize this to conditionally complete lattices in `csSup_singleton`.
 @[simp]
@@ -64,8 +64,11 @@ section
 
 variable [CompleteSemilatticeInf α] {s t : Set α} {a b : α}
 
+theorem sInf_le_sInf_of_isCoinitialFor (h : IsCoinitialFor s t) : sInf t ≤ sInf s :=
+  IsGreatest.mono (isGLB_sInf t) (isGLB_sInf s) <| lowerBounds_mono_of_isCoinitialFor h
+
 theorem sInf_le_sInf_of_forall_exists_le (h : ∀ x ∈ s, ∃ y ∈ t, y ≤ x) : sInf t ≤ sInf s :=
-  le_sInf fun x hx ↦ let ⟨_y, hyt, hyx⟩ := h x hx; sInf_le_of_le hyt hyx
+  sInf_le_sInf_of_isCoinitialFor h
 
 -- We will generalize this to conditionally complete lattices in `csInf_singleton`.
 @[simp]
