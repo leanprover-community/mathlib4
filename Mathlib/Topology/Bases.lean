@@ -191,6 +191,12 @@ theorem IsTopologicalBasis.open_eq_iUnion {B : Set (Set α)} (hB : IsTopological
     rw [← sUnion_eq_iUnion]
     apply hB.open_eq_sUnion' ou, fun s => And.left s.2⟩
 
+@[elab_as_elim]
+lemma IsTopologicalBasis.isOpen_induction {P : Set α → Prop} (hB : IsTopologicalBasis B)
+    (basis : ∀ b ∈ B, P b) (sUnion : ∀ S, (∀ s ∈ S, P s) → P (⋃₀ S)) {s : Set α} (hs : IsOpen s) :
+    P s := by
+  obtain ⟨S, hS, rfl⟩ := hB.open_eq_sUnion hs; exact sUnion _ fun b hb ↦ basis _ <| hS hb
+
 lemma IsTopologicalBasis.subset_of_forall_subset {t : Set α} (hB : IsTopologicalBasis B)
     (hs : IsOpen s) (h : ∀ U ∈ B, U ⊆ s → U ⊆ t) : s ⊆ t := by
   rw [hB.open_eq_sUnion' hs]; simpa [sUnion_subset_iff]
@@ -875,7 +881,7 @@ variable {ι : Type*} {E : ι → Type*} [∀ i, TopologicalSpace (E i)]
 topological bases on each of the parts of the space. -/
 theorem IsTopologicalBasis.sigma {s : ∀ i : ι, Set (Set (E i))}
     (hs : ∀ i, IsTopologicalBasis (s i)) :
-    IsTopologicalBasis (⋃ i : ι, (fun u => (Sigma.mk i '' u : Set (Σi, E i))) '' s i) := by
+    IsTopologicalBasis (⋃ i : ι, (fun u => (Sigma.mk i '' u : Set (Σ i, E i))) '' s i) := by
   refine .of_hasBasis_nhds fun a ↦ ?_
   rw [Sigma.nhds_eq]
   convert (((hs a.1).nhds_hasBasis).map _).to_image_id
@@ -883,8 +889,8 @@ theorem IsTopologicalBasis.sigma {s : ∀ i : ι, Set (Set (E i))}
 
 /-- A countable disjoint union of second countable spaces is second countable. -/
 instance [Countable ι] [∀ i, SecondCountableTopology (E i)] :
-    SecondCountableTopology (Σi, E i) := by
-  let b := ⋃ i : ι, (fun u => (Sigma.mk i '' u : Set (Σi, E i))) '' countableBasis (E i)
+    SecondCountableTopology (Σ i, E i) := by
+  let b := ⋃ i : ι, (fun u => (Sigma.mk i '' u : Set (Σ i, E i))) '' countableBasis (E i)
   have A : IsTopologicalBasis b := IsTopologicalBasis.sigma fun i => isBasis_countableBasis _
   have B : b.Countable := countable_iUnion fun i => (countable_countableBasis _).image _
   exact A.secondCountableTopology B

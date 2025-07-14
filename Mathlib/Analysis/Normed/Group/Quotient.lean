@@ -357,7 +357,7 @@ theorem norm_normedMk_le (S : AddSubgroup M) : ‖S.normedMk‖ ≤ 1 :=
 
 theorem _root_.QuotientAddGroup.norm_lift_apply_le {S : AddSubgroup M} (f : NormedAddGroupHom M N)
     (hf : ∀ x ∈ S, f x = 0) (x : M ⧸ S) : ‖lift S f.toAddMonoidHom hf x‖ ≤ ‖f‖ * ‖x‖ := by
-  cases (norm_nonneg f).eq_or_gt with
+  cases (norm_nonneg f).eq_or_lt' with
   | inl h =>
     rcases mk_surjective x with ⟨x, rfl⟩
     simpa [h] using le_opNorm f x

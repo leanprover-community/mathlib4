@@ -192,7 +192,7 @@ theorem smaller_mono {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) : smaller C o₁ 
   refine ⟨?_, ?_⟩
   · use ⟨l, Products.isGood_mono C h gl⟩
     ext x
-    rw [eval, ← Products.eval_πs' _ h (Products.prop_of_isGood  C _ gl), eval]
+    rw [eval, ← Products.eval_πs' _ h (Products.prop_of_isGood C _ gl), eval]
   · rw [← LocallyConstant.coe_inj, coe_πs C o₂, ← LocallyConstant.toFun_eq_coe, coe_πs',
       Function.comp_assoc, projRestricts_comp_projRestrict C _, coe_πs]
     rfl
@@ -228,7 +228,7 @@ theorem GoodProducts.union : range C = ⋃ (e : {o' // o' < o}), (smaller C e.va
     rw [contained_eq_proj C o hsC, Products.limitOrdinal C ho] at hl
     obtain ⟨o', ho'⟩ := hl
     refine ⟨o', ho'.1, eval (π C (ord I · < o')) ⟨l, ho'.2⟩, ⟨l, ho'.2, rfl⟩, ?_⟩
-    exact Products.eval_πs C (Products.prop_of_isGood  C _ ho'.2)
+    exact Products.eval_πs C (Products.prop_of_isGood C _ ho'.2)
   · obtain ⟨o', h, _, ⟨l, hl, rfl⟩, rfl⟩ := hp
     refine ⟨l, ?_, (Products.eval_πs C (Products.prop_of_isGood  C _ hl)).symm⟩
     rw [contained_eq_proj C o hsC]

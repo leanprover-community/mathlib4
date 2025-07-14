@@ -5,7 +5,7 @@ Authors: Matias Heikkilä
 -/
 import Mathlib.Topology.UrysohnsLemma
 import Mathlib.Topology.UnitInterval
-import Mathlib.Topology.StoneCech
+import Mathlib.Topology.Compactification.StoneCech
 
 /-!
 # Completely regular topological spaces.
