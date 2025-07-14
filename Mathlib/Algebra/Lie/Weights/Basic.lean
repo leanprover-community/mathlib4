@@ -78,8 +78,7 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
   -- Unpack the statement of the goal.
   intro m₃
   simp only [TensorProduct.mapIncl, LinearMap.mem_range, LinearMap.coe_comp,
-    LieModuleHom.coe_toLinearMap, Function.comp_apply, Pi.add_apply, exists_imp,
-    Module.End.mem_maxGenEigenspace]
+    LieModuleHom.coe_toLinearMap, Function.comp_apply, exists_imp, Module.End.mem_maxGenEigenspace]
   rintro t rfl
   -- Set up some notation.
   let F : Module.End R M₃ := toEnd R L M₃ x - (χ₁ + χ₂) • ↑1
@@ -104,8 +103,7 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
       Module.End.one_apply, LieModuleHom.coe_toLinearMap, LinearMap.smul_apply, Function.comp_apply,
       LinearMap.coe_comp, LinearMap.rTensor_tmul, LieModuleHom.map_add, LinearMap.add_apply,
       LieModuleHom.map_sub, LinearMap.sub_apply, LinearMap.lTensor_tmul,
-      AlgebraTensorModule.curry_apply, TensorProduct.curry_apply, LinearMap.toFun_eq_coe,
-      LinearMap.coe_restrictScalars]
+      AlgebraTensorModule.curry_apply, TensorProduct.curry_apply, LinearMap.coe_restrictScalars]
     abel
   rsuffices ⟨k, hk⟩ : ∃ k : ℕ, ((f₁ + f₂) ^ k) (m₁ ⊗ₜ m₂) = 0
   · use k
@@ -125,11 +123,10 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
   have hf_comm : Commute f₁ f₂ := by
     ext m₁ m₂
     simp only [f₁, f₂, Module.End.mul_apply, LinearMap.rTensor_tmul, LinearMap.lTensor_tmul,
-      AlgebraTensorModule.curry_apply, LinearMap.toFun_eq_coe, LinearMap.lTensor_tmul,
-      TensorProduct.curry_apply, LinearMap.coe_restrictScalars]
+      AlgebraTensorModule.curry_apply, LinearMap.lTensor_tmul, TensorProduct.curry_apply,
+      LinearMap.coe_restrictScalars]
   rw [hf_comm.add_pow']
-  simp only [TensorProduct.mapIncl, Submodule.subtype_apply, Finset.sum_apply, Submodule.coe_mk,
-    LinearMap.coeFn_sum, TensorProduct.map_tmul, LinearMap.smul_apply]
+  simp only [Finset.sum_apply, LinearMap.coeFn_sum, LinearMap.smul_apply]
   -- The required sum is zero because each individual term is zero.
   apply Finset.sum_eq_zero
   rintro ⟨i, j⟩ hij

@@ -210,11 +210,11 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
       refine ⟨⟨x, self_mem_engel K x⟩, ?_, ?_⟩
       · exact Subtype.coe_ne_coe.mp hx₀
       · dsimp only [z] at hz₀
-        simp only [coe_bracket_of_module, hz₀, LieHom.map_zero, LinearMap.zero_apply]
+        simp only [hz₀, LieHom.map_zero, LinearMap.zero_apply]
     -- If `z ≠ 0`, then `⁅α • u + x, z⁆` vanishes per axiom of Lie algebras
     refine ⟨⟨z, hUle z.2⟩, ?_, ?_⟩
     · simpa only [coe_bracket_of_module, ne_eq, Submodule.mk_eq_zero, Subtype.ext_iff] using hz₀
-    · show ⁅z, _⁆ = (0 : E)
+    · change ⁅z, _⁆ = (0 : E)
       ext
       exact lie_self z.1
   -- We are left with the case `i ≠ 0`, and want to show `coeff χ i = 0`.
@@ -244,12 +244,11 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     -- From this we deduce that there exists an `n` such that `⁅x, _⁆ ^ n` vanishes on `⁅x, z⁆`.
     -- On the other hand, our goal is to show `z = 0` in `Q`,
     -- which is equivalent to showing that `⁅x, _⁆ ^ n` vanishes on `z`, for some `n`.
-    simp only [coe_bracket_of_module, LieSubmodule.mem_mk_iff', LieSubalgebra.mem_toSubmodule,
-      mem_engel_iff, LieSubmodule.Quotient.mk'_apply, LieSubmodule.Quotient.mk_eq_zero', E, Q]
-      at this ⊢
+    simp only [LieSubmodule.mem_mk_iff', LieSubalgebra.mem_toSubmodule, mem_engel_iff,
+      LieSubmodule.Quotient.mk'_apply, LieSubmodule.Quotient.mk_eq_zero', E, Q] at this ⊢
     -- Hence we win.
     obtain ⟨n, hn⟩ := this
-    use n+1
+    use n + 1
     rwa [pow_succ]
   -- Now we find a subset `s` of `K` of size `≥ r`
   -- such that `constantCoeff ψ` takes non-zero values on all of `s`.
@@ -305,7 +304,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   -- Fix an element `z` in the Engel subalgebra of `y`.
   intro z hz
   -- We need to show that `z` is in `E`, or alternatively that `z = 0` in `Q`.
-  show z ∈ E
+  change z ∈ E
   rw [← LieSubmodule.Quotient.mk_eq_zero]
   -- We denote the image of `z` in `Q` by `z'`.
   set z' : Q := LieSubmodule.Quotient.mk' E z

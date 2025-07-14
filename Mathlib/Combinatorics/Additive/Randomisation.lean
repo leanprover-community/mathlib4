@@ -35,7 +35,7 @@ lemma AddDissociated.randomisation (c : AddChar G ℂ → ℝ) (d : AddChar G �
         Fintype.sum_eq_single ∅ fun t ht ↦ mul_eq_zero_of_left ?_ _
     _ = ∏ ψ, (c ψ : ℂ) := by simp
   simp only [map_mul, prod_div_distrib, prod_add, prod_const, ← expect_div, expect_sum_comm,
-    div_eq_zero_iff, pow_eq_zero_iff', OfNat.ofNat_ne_zero, ne_eq, card_eq_zero, compl_eq_empty_iff,
+    div_eq_zero_iff, pow_eq_zero_iff', OfNat.ofNat_ne_zero, ne_eq, card_eq_zero,
     false_and, or_false]
   refine sum_eq_zero fun u _ ↦ ?_
   calc

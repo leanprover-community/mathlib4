@@ -92,12 +92,12 @@ instance : IsLocalAtTarget @IsImmersion := by
   · refine { precomp := ?_, postcomp := ?_ }
     · intro X Y Z i hi f hf
       change IsIso i at hi
-      show IsLocallyClosed _
+      change IsLocallyClosed _
       simpa only [Scheme.comp_coeBase, TopCat.coe_comp, Set.range_comp,
         Set.range_eq_univ.mpr i.surjective, Set.image_univ]
     · intro X Y Z i hi f hf
       change IsIso i at hi
-      show IsLocallyClosed _
+      change IsLocallyClosed _
       simp only [Scheme.comp_coeBase, TopCat.coe_comp, Set.range_comp]
       refine hf.image i.homeomorph.isInducing ?_
       rw [Set.range_eq_univ.mpr i.surjective]

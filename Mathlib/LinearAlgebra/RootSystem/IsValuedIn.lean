@@ -243,8 +243,8 @@ lemma rootSpan_dualAnnihilator_map_eq_iInf_ker_root' :
   suffices (P.rootSpan R).dualAnnihilator.map P.toDualRight.symm = {x | ∀ i, P.root' i x = 0} from
     SetLike.coe_injective <| by ext; simp [this]
   ext x
-  rw [rootSpan, Submodule.map_coe, Submodule.coe_dualAnnihilator_span, ← EquivLike.coe_coe,
-    ← LinearEquiv.coe_toEquiv_symm, ← Equiv.setOf_apply_symm_eq_image_setOf, Equiv.symm_symm]
+  rw [rootSpan, Submodule.map_coe, Submodule.coe_dualAnnihilator_span,
+    ← LinearEquiv.coe_symm_toEquiv, ← Equiv.setOf_apply_symm_eq_image_setOf, Equiv.symm_symm]
   simp [Set.range_subset_iff]
 
 lemma corootSpan_dualAnnihilator_map_eq_iInf_ker_coroot' :

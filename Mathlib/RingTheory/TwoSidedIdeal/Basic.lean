@@ -93,8 +93,6 @@ lemma le_iff {I J : TwoSidedIdeal R} : I ≤ J ↔ (I : Set R) ⊆ (J : Set R) :
 def orderIsoRingCon : TwoSidedIdeal R ≃o RingCon R where
   toFun := TwoSidedIdeal.ringCon
   invFun := .mk
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_rel_iff' {I J} := Iff.symm <| le_iff.trans ⟨fun h x y r => by rw [rel_iff] at r ⊢; exact h r,
     fun h x hx => by rw [SetLike.mem_coe, mem_iff] at hx ⊢; exact h hx⟩
 
@@ -240,8 +238,6 @@ Two-sided-ideals of `A` and that of `Aᵒᵖ` corresponds bijectively to each ot
 def opOrderIso : TwoSidedIdeal R ≃o TwoSidedIdeal Rᵐᵒᵖ where
   toFun := op
   invFun := unop
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_rel_iff' {I' J'} := by simpa [ringCon_le_iff] using RingCon.opOrderIso.map_rel_iff
 
 end NonUnitalNonAssocRing
