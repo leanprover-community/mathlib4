@@ -94,9 +94,8 @@ theorem coeff_expand {p : ℕ} (hp : 0 < p) (f : R[X]) (n : ℕ) :
       intro hb3
       apply hb2
       rw [← hb3, Nat.mul_div_cancel_left b hp]
-    · intro hn
-      rw [notMem_support_iff.1 hn]
-      split_ifs <;> rfl
+    · simp only [mem_support_iff, ne_eq, not_not, ite_eq_right_iff]
+      exact fun a a_1 ↦ a
   · rw [Finset.sum_eq_zero]
     intro k _
     rw [if_neg]

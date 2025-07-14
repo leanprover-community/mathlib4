@@ -512,10 +512,7 @@ theorem Monic.isRegular {R : Type*} [Ring R] {p : R[X]} (hp : Monic p) : IsRegul
 theorem degree_smul_of_smul_regular {S : Type*} [SMulZeroClass S R] {k : S}
     (p : R[X]) (h : IsSMulRegular R k) : (k • p).degree = p.degree := by
   refine le_antisymm ?_ ?_
-  · rw [degree_le_iff_coeff_zero]
-    intro m hm
-    rw [degree_lt_iff_coeff_zero] at hm
-    simp [hm m le_rfl]
+  · exact degree_smul_le k p
   · rw [degree_le_iff_coeff_zero]
     intro m hm
     rw [degree_lt_iff_coeff_zero] at hm
