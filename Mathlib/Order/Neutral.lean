@@ -89,68 +89,46 @@ lemma theorem3_i_ii (a : α) (h : IsStandard a) :
       use x ⊓ a
       constructor
       · exact inf_le_right
-      · simp only [le_refl, inf_of_le_left, inf_le_left, sup_of_le_left]
+      · rw [inf_idem, sup_idem, sup_of_le_left inf_le_left]
   · constructor
     · intro x y
       constructor
-      · intro h
-        obtain ⟨a₁, ha1, ha2⟩ := h
-        use a₁
-        constructor
-        · exact ha1
-        · rw [← ha2]
-          simp only [le_sup_left, inf_of_le_left, sup_of_le_right]
       · intro ⟨a₁, ha1, ha2⟩
         use a₁
         constructor
         · exact ha1
-        · rw [sup_of_le_right inf_le_sup, inf_of_le_left inf_le_sup] at ha2
-          exact ha2
+        · rw [← ha2, inf_of_le_left le_sup_left, sup_of_le_right le_sup_left]
+      · intro ⟨a₁, ha1, ha2⟩
+        rw [sup_of_le_right inf_le_sup, inf_of_le_left inf_le_sup] at ha2
+        use a₁
     · constructor
       · intro x y z hxy hyz ⟨a₁, ha11, ha12⟩ ⟨a₂, ha21, ha22⟩
         use a₁ ⊔ a₂
         constructor
         · exact sup_le ha11 ha21
-        · have exyi : x ⊓ y = x := inf_eq_left.mpr hxy
-          have exys : x ⊔ y = y := sup_eq_right.mpr hxy
-          rw [exyi, exys] at ha12
-          have eyzi : y ⊓ z = y := inf_eq_left.mpr hyz
-          have eyzs : y ⊔ z = z := sup_eq_right.mpr hyz
-          rw [eyzi, eyzs] at ha22
+        · rw [inf_eq_left.mpr hxy, sup_eq_right.mpr hxy] at ha12
+          rw [inf_eq_left.mpr hyz, sup_eq_right.mpr hyz] at ha22
           rw [inf_eq_left.mpr (Preorder.le_trans x y z hxy hyz),
-            sup_eq_right.mpr (Preorder.le_trans x y z hxy hyz)]
-
-          rw [← ha22]
-          rw [← ha12]
-          rw [← sup_assoc]
+            sup_eq_right.mpr (Preorder.le_trans x y z hxy hyz), ← ha22, ← ha12, ← sup_assoc]
       · intro x y t hxy ⟨a₁, ha1, ha2⟩
         constructor
         · use y ⊓ t ⊓ a
           constructor
           · exact inf_le_right
-          · rw [inf_assoc, inf_of_le_right inf_le_right, inf_comm, sup_comm, ←  h (y ⊓ t) x,
-              sup_comm]
-            rw [inf_eq_left.mpr hxy, sup_eq_right.mpr hxy] at ha2
-            have e2 : y ⊓ t ≤ x ⊔ a := by
-              apply le_trans (b := x ⊔ a₁) _ (sup_le_sup_left ha1 x)
-              rw [ha2]
-              exact inf_le_left
-            rw [inf_eq_left.mpr e2]
-            rw [le_antisymm_iff]
-            exact ⟨le_sup_right,
+          · rw [inf_eq_left.mpr hxy, sup_eq_right.mpr hxy] at ha2
+            rw [inf_assoc, inf_of_le_right inf_le_right, inf_comm, sup_comm, ←  h (y ⊓ t) x,
+              sup_comm, inf_eq_left.mpr
+              (le_trans (b := x ⊔ a₁) (by rw [ha2]; exact inf_le_left) (sup_le_sup_left ha1 x))]
+            exact le_antisymm_iff.mpr ⟨le_sup_right,
               le_inf_iff.mpr ⟨sup_le_iff.mpr ⟨inf_le_of_left_le hxy, inf_le_left⟩,
                 sup_le_iff.mpr ⟨inf_le_right, inf_le_right⟩⟩⟩
         · use a₁
           constructor
           · exact ha1
-          · have exyi : x ⊓ y = x := inf_eq_left.mpr hxy
-            have exys : x ⊔ y = y := sup_eq_right.mpr hxy
-            rw [exyi, exys] at ha2
-            have e1 : (x ⊔ t) ⊔ a₁ = y ⊔ t := by
-              rw [← ha2]
-              rw [sup_assoc, sup_comm t, ← sup_assoc]
-            rw [← e1]
-            simp only [le_sup_left, inf_of_le_left, sup_of_le_right]
+          · rw [inf_eq_left.mpr hxy, sup_eq_right.mpr hxy] at ha2
+            rw [←  ha2, sup_assoc, sup_comm a₁ t, ← sup_assoc, inf_of_le_left le_sup_left,
+              sup_of_le_right le_sup_left]
+
 
 lemma theorem3_iii_i (a : α) (h1 : IsDistrib a)
     (h2 : ∀ x y : α, a ⊓ x = a ⊓ y ∧ a ⊔ x = a ⊔ y → x = y) : IsStandard a := fun x y => h2 _  _
