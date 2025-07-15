@@ -367,7 +367,7 @@ lemma Algebra.intNorm_zero : Algebra.intNorm A B 0 = 0 := by
     IsIntegralClosure.isLocalization _ (FractionRing A) _ _
   haveI : FiniteDimensional (FractionRing A) (FractionRing B) := .of_isLocalization A B A⁰
   apply IsFractionRing.injective A (FractionRing A)
-  simp only [algebraMap_intNorm_fractionRing, map_zero, norm_zero]
+  simp
 
 variable {A B}
 

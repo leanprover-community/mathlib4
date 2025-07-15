@@ -21,7 +21,7 @@ structures and various properties of the rings involved. This file contains a co
 instances.
 
 ## Implementation details
-In general one wants all the results below for any algebra satisfyng `IsLocalization`, but those
+In general one wants all the results below for any algebra satisfying `IsLocalization`, but those
 cannot be instances (since Lean has no way of guessing the submonoid). Having the instances in the
 special case of *the* localization at a prime ideal is useful in working with Dedekind domains.
 
@@ -121,10 +121,6 @@ instance : IsScalarTower Rₚ Sₚ L := by
     ← RingHom.comp_assoc, ← IsScalarTower.algebraMap_eq S Sₚ L, IsScalarTower.algebraMap_eq Rₚ K L,
     RingHom.comp_assoc, ← IsScalarTower.algebraMap_eq, ← IsScalarTower.algebraMap_eq,
     ← IsScalarTower.algebraMap_eq]
-
-instance : IsDomain Sₚ :=
-  isDomain_localization <| algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul _
-    P.primeCompl_le_nonZeroDivisors
 
 instance [IsDedekindDomain S] : IsDedekindDomain Sₚ :=
   isDedekindDomain S
