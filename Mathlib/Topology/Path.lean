@@ -139,7 +139,7 @@ def symm (γ : Path x y) : Path y x where
 @[simp]
 theorem symm_symm (γ : Path x y) : γ.symm.symm = γ := by
   ext t
-  show γ (σ (σ t)) = γ t
+  change γ (σ (σ t)) = γ t
   rw [unitInterval.symm_symm]
 
 theorem symm_bijective : Function.Bijective (Path.symm : Path x y → Path y x) :=
@@ -190,7 +190,7 @@ theorem continuous_extend : Continuous γ.extend :=
 
 theorem _root_.Filter.Tendsto.pathExtend
     {l r : Y → X} {y : Y} {l₁ : Filter ℝ} {l₂ : Filter X} {γ : ∀ y, Path (l y) (r y)}
-    (hγ : Tendsto (↿γ) (𝓝 y ×ˢ l₁.map (projIcc 0 1 zero_le_one)) l₂) :
+    (hγ : Tendsto ↿γ (𝓝 y ×ˢ l₁.map (projIcc 0 1 zero_le_one)) l₂) :
     Tendsto (↿fun x => ⇑(γ x).extend) (𝓝 y ×ˢ l₁) l₂ :=
   Filter.Tendsto.IccExtend _ hγ
 
@@ -198,7 +198,7 @@ theorem _root_.Filter.Tendsto.pathExtend
 alias _root_.Filter.Tendsto.path_extend := Filter.Tendsto.pathExtend
 
 theorem _root_.ContinuousAt.pathExtend {g : Y → ℝ} {l r : Y → X} (γ : ∀ y, Path (l y) (r y))
-    {y : Y} (hγ : ContinuousAt (↿γ) (y, projIcc 0 1 zero_le_one (g y))) (hg : ContinuousAt g y) :
+    {y : Y} (hγ : ContinuousAt ↿γ (y, projIcc 0 1 zero_le_one (g y))) (hg : ContinuousAt g y) :
     ContinuousAt (fun i => (γ i).extend (g i)) y :=
   hγ.IccExtend (fun x => γ x) hg
 

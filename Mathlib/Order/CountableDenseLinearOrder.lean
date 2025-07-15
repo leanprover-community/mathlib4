@@ -64,7 +64,7 @@ theorem exists_between_finsets [DenselyOrdered α] [NoMinOrder α]
         fun m ↦ ⟨m, fun x hx ↦ (nlo ⟨x, hx⟩).elim, fun y hy ↦ (nhi ⟨y, hy⟩).elim⟩
 
 lemma exists_orderEmbedding_insert [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β]
-    [nonem : Nonempty β]  (S : Finset α) (f : S ↪o β) (a : α) :
+    [nonem : Nonempty β] (S : Finset α) (f : S ↪o β) (a : α) :
     ∃ (g : (insert a S : Finset α) ↪o β),
       g ∘ (Set.inclusion ((S.subset_insert a) : ↑S ⊆ ↑(insert a S))) = f := by
   let Slt := {x ∈ S.attach | x.val < a}.image f

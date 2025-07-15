@@ -46,10 +46,10 @@ lemma obj_eq_of_cons_eq_cons {p : Path a b} {p' : Path a c}
     {e : b ⟶ d} {e' : c ⟶ d} (h : p.cons e = p'.cons e') : b = c := by injection h
 
 lemma heq_of_cons_eq_cons {p : Path a b} {p' : Path a c}
-    {e : b ⟶ d} {e' : c ⟶ d} (h : p.cons e = p'.cons e') : HEq p p' := by injection h
+    {e : b ⟶ d} {e' : c ⟶ d} (h : p.cons e = p'.cons e') : p ≍ p' := by injection h
 
 lemma hom_heq_of_cons_eq_cons {p : Path a b} {p' : Path a c}
-    {e : b ⟶ d} {e' : c ⟶ d} (h : p.cons e = p'.cons e') : HEq e e' := by injection h
+    {e : b ⟶ d} {e' : c ⟶ d} (h : p.cons e = p'.cons e') : e ≍ e' := by injection h
 
 /-- The length of a path is the number of arrows it uses. -/
 def length {a : V} : ∀ {b : V}, Path a b → ℕ
@@ -205,10 +205,10 @@ def BoundedPaths (v w : V) (n : ℕ) : Sort _ :=
 /-- Bounded paths of length zero between two vertices form a subsingleton. -/
 instance instSubsingletonBddPaths (v w : V) : Subsingleton (BoundedPaths v w 0) where
   allEq := fun ⟨p, hp⟩ ⟨q, hq⟩ =>
-   match v, w, p, q with
-   | _, _, .nil, .nil => rfl
-   | _, _, .cons _ _, _ => by simp [Quiver.Path.length] at hp
-   | _, _, _, .cons _ _ => by simp [Quiver.Path.length] at hq
+    match v, w, p, q with
+    | _, _, .nil, .nil => rfl
+    | _, _, .cons _ _, _ => by simp [Quiver.Path.length] at hp
+    | _, _, _, .cons _ _ => by simp [Quiver.Path.length] at hq
 
 /-- Bounded paths of length zero between two vertices have decidable equality. -/
 def decidableEqBddPathsZero (v w : V) : DecidableEq (BoundedPaths v w 0) :=

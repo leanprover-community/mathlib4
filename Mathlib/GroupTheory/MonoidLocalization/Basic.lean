@@ -341,7 +341,7 @@ variable {R R₁ R₂ : Type*}
 theorem smul_mk [SMul R M] [IsScalarTower R M M] (c : R) (a b) :
     c • (mk a b : Localization S) = mk (c • a) b := by
   rw [mk, mk, ← OreLocalization.smul_one_oreDiv_one_smul, OreLocalization.oreDiv_smul_oreDiv]
-  show (c • 1) • a /ₒ (b * 1) = _
+  change (c • 1) • a /ₒ (b * 1) = _
   rw [smul_assoc, one_smul, mul_one]
 
 -- move me
@@ -666,7 +666,7 @@ for all `x y : M`."]
 theorem eq_of_eq (hg : ∀ y : S, IsUnit (g y)) {x y} (h : f.toMap x = f.toMap y) : g x = g y := by
   obtain ⟨c, hc⟩ := f.eq_iff_exists.1 h
   rw [← one_mul (g x), ← IsUnit.liftRight_inv_mul (g.restrict S) hg c]
-  show _ * g c * _ = _
+  change _ * g c * _ = _
   rw [mul_assoc, ← g.map_mul, hc, mul_comm, mul_inv_left hg, g.map_mul]
 
 /-- Given `CommMonoid`s `M, P`, Localization maps `f : M →* N, k : P →* Q` for Submonoids
@@ -902,7 +902,7 @@ theorem map_comp : (f.map hy k).comp f.toMap = k.toMap.comp g :=
 @[to_additive (attr := simp)]
 theorem map_mk' (x) (y : S) : f.map hy k (f.mk' x y) = k.mk' (g x) ⟨g y, hy y⟩ := by
   rw [map, lift_mk', mul_inv_left]
-  show k.toMap (g x) = k.toMap (g y) * _
+  change k.toMap (g x) = k.toMap (g y) * _
   rw [mul_mk'_eq_mk'_of_mul]
   exact (k.mk'_mul_cancel_left (g x) ⟨g y, hy y⟩).symm
 
@@ -956,9 +956,9 @@ theorem map_comp_map {A : Type*} [CommMonoid A] {U : Submonoid A} {R} [CommMonoi
     (k.map hl j).comp (f.map hy k) =
     f.map (fun x ↦ show l.comp g x ∈ U from hl ⟨g x, hy x⟩) j := by
   ext z
-  show j.toMap _ * _ = j.toMap (l _) * _
+  change j.toMap _ * _ = j.toMap (l _) * _
   rw [mul_inv_left, ← mul_assoc, mul_inv_right]
-  show j.toMap _ * j.toMap (l (g _)) = j.toMap (l _) * _
+  change j.toMap _ * j.toMap (l (g _)) = j.toMap (l _) * _
   rw [← j.toMap.map_mul, ← j.toMap.map_mul, ← l.map_mul, ← l.map_mul]
   exact
     k.comp_eq_of_eq hl j

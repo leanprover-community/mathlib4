@@ -109,7 +109,7 @@ letters can come from the same summand. -/
 structure Word where
   /-- A `Word` is a `List (Σ i, M i)`, such that `1` is not in the list, and no
   two adjacent letters are from the same summand -/
-  toList : List (Σi, M i)
+  toList : List (Σ i, M i)
   /-- A reduced word does not contain `1` -/
   ne_one : ∀ l ∈ toList, Sigma.snd l ≠ 1
   /-- Adjacent letters are not from the same summand. -/
@@ -143,7 +143,7 @@ universal property of the free product, characterizing it as a categorical copro
 @[simps symm_apply]
 def lift : (∀ i, M i →* N) ≃ (CoprodI M →* N) where
   toFun fi :=
-    Con.lift _ (FreeMonoid.lift fun p : Σi, M i => fi p.fst p.snd) <|
+    Con.lift _ (FreeMonoid.lift fun p : Σ i, M i => fi p.fst p.snd) <|
       Con.conGen_le <| by
         simp_rw [Con.ker_rel]
         rintro _ _ (i | ⟨x, y⟩) <;> simp
@@ -372,13 +372,7 @@ theorem mem_rcons_iff {i j : ι} (p : Pair M i) (m : M j) :
     ⟨_, m⟩ ∈ (rcons p).toList ↔ ⟨_, m⟩ ∈ p.tail.toList ∨
       m ≠ 1 ∧ (∃ h : i = j, m = h ▸ p.head) := by
   simp only [rcons, cons, ne_eq]
-  by_cases hij : i = j
-  · subst i
-    by_cases hm : m = p.head
-    · subst m
-      split_ifs <;> simp_all
-    · split_ifs <;> simp_all
-  · split_ifs <;> simp_all [Ne.symm hij]
+  grind
 
 end
 
@@ -629,7 +623,7 @@ open Word
 
 /-- The list represented by a given `NeWord` -/
 @[simp]
-def toList : ∀ {i j} (_w : NeWord M i j), List (Σi, M i)
+def toList : ∀ {i j} (_w : NeWord M i j), List (Σ i, M i)
   | i, _, singleton x _ => [⟨i, x⟩]
   | _, _, append w₁ _ w₂ => w₁.toList ++ w₂.toList
 
@@ -994,7 +988,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
   clear this
   refine Function.Injective.comp ?_ (MulEquiv.injective freeGroupEquivCoprodI)
   -- Step two: Invoke the ping-pong lemma for free products
-  show Function.Injective (lift fun i : ι => FreeGroup.lift fun _ => a i)
+  change Function.Injective (lift fun i : ι => FreeGroup.lift fun _ => a i)
   -- Prepare to instantiate lift_injective_of_ping_pong
   let H : ι → Type _ := fun _i => FreeGroup Unit
   let f : ∀ i, H i →* G := fun i => FreeGroup.lift fun _ => a i
@@ -1010,7 +1004,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
     · exact hXYdisj i j
     · exact (hXYdisj j i).symm
     · exact hYdisj hij
-  · show Pairwise fun i j => ∀ h : H i, h ≠ 1 → f i h • X' j ⊆ X' i
+  · change Pairwise fun i j => ∀ h : H i, h ≠ 1 → f i h • X' j ⊆ X' i
     rintro i j hij
     -- use free_group unit ≃ ℤ
     refine FreeGroup.freeGroupUnitEquivInt.forall_congr_left.mpr ?_

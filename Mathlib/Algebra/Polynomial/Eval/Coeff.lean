@@ -71,10 +71,7 @@ variable (f : R →+* S)
 @[simp]
 theorem coeff_map (n : ℕ) : coeff (p.map f) n = f (coeff p n) := by
   rw [map, eval₂_def, coeff_sum, sum]
-  conv_rhs => rw [← sum_C_mul_X_pow_eq p, coeff_sum, sum, map_sum]
-  refine Finset.sum_congr rfl fun x _hx => ?_
-  simp only [RingHom.coe_comp, Function.comp, coeff_C_mul_X_pow]
-  split_ifs <;> simp [f.map_zero]
+  simp_all
 
 lemma coeff_map_eq_comp (p : R[X]) (f : R →+* S) : (p.map f).coeff = f ∘ p.coeff := by
   ext n; exact coeff_map ..

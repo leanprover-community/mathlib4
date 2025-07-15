@@ -391,7 +391,7 @@ theorem alternatingGroup_le_of_index_le_two
     alternatingGroup α ≤ G := by
   rcases G.index.eq_zero_or_pos with h | h
   · exact (index_ne_zero_of_finite h).elim
-  rcases (Nat.succ_le_iff.mpr h).eq_or_gt with h | h
+  rcases (Nat.succ_le_iff.mpr h).eq_or_lt' with h | h
   · exact index_eq_one.mp h ▸ le_top
   rw [eq_alternatingGroup_of_index_eq_two (hG.antisymm h)]
 

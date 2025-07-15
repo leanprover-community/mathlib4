@@ -320,7 +320,7 @@ theorem primrec_recOn' {α σ}
   iterate 4 rcases n with - | n; · simp [ofNatCode_eq, ofNatCode]; rfl
   simp only [G]; rw [List.length_map, List.length_range]
   let m := n.div2.div2
-  show G₁ ((a, (List.range (n + 4)).map fun n => F a (ofNat Code n)), n, m)
+  change G₁ ((a, (List.range (n + 4)).map fun n => F a (ofNat Code n)), n, m)
     = some (F a (ofNat Code (n + 4)))
   have hm : m < n + 4 := by
     simp only [m, div2_val]
@@ -435,7 +435,7 @@ theorem computable_recOn {α σ} [Primcodable α] [Primcodable σ] {c : α → C
   iterate 4 rcases n with - | n; · simp [ofNatCode_eq, ofNatCode]; rfl
   simp only [G]; rw [List.length_map, List.length_range]
   let m := n.div2.div2
-  show G₁ ((a, (List.range (n + 4)).map fun n => F a (ofNat Code n)), n, m)
+  change G₁ ((a, (List.range (n + 4)).map fun n => F a (ofNat Code n)), n, m)
     = some (F a (ofNat Code (n + 4)))
   have hm : m < n + 4 := by
     simp only [m, div2_val]

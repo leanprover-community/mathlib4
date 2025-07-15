@@ -266,7 +266,7 @@ instance : InfSet (GrothendieckTopology C) where
 
 lemma mem_sInf (s : Set (GrothendieckTopology C)) {X : C} (S : Sieve X) :
     S ∈ sInf s X ↔ ∀ t ∈ s, S ∈ t X := by
-  show S ∈ sInf (sieves '' s) X ↔ _
+  change S ∈ sInf (sieves '' s) X ↔ _
   simp
 
 @[stacks 00Z7]
