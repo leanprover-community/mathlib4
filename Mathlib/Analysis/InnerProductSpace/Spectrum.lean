@@ -215,7 +215,7 @@ private theorem hasEigenvector_eigenvectorBasis_helper (hT : T.IsSymmetric)
   change HasEigenvector T (RCLike.re μ) v
   have key : HasEigenvector T μ v := by
     have H₁ : v ∈ eigenspace T μ := by
-      simp_rw [v, unsortedEigenvectorBasis]
+      simp_rw -congrConsts [v, unsortedEigenvectorBasis]
       exact
         hT.direct_sum_isInternal.subordinateOrthonormalBasis_subordinate hn i
           hT.orthogonalFamily_eigenspaces'
