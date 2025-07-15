@@ -383,16 +383,8 @@ theorem sub_convs_eq {ifp : IntFractPair K}
     have : 0 ≤ pB := (cast_nonneg _).trans pB_ineq
     have : 0 < ifp.fr :=
       ifp_fr_ne_zero.lt_of_le' <| IntFractPair.nth_stream_fr_nonneg stream_nth_eq
-    have : pB + ifp.fr⁻¹ * B ≠ 0 := by positivity
-    -- finally, let's do the rewriting
-    calc
-      (pA + ifp.fr⁻¹ * A) / (pB + ifp.fr⁻¹ * B) - A / B =
-          ((pA + ifp.fr⁻¹ * A) * B - (pB + ifp.fr⁻¹ * B) * A) / ((pB + ifp.fr⁻¹ * B) * B) := by
-        rw [div_sub_div _ _ this zero_lt_B.ne']
-      _ = (pA * B + ifp.fr⁻¹ * A * B - (pB * A + ifp.fr⁻¹ * B * A)) / _ := by repeat' rw [add_mul]
-      _ = (pA * B - pB * A) / ((pB + ifp.fr⁻¹ * B) * B) := by ring
-      _ = (-1) ^ n / ((pB + ifp.fr⁻¹ * B) * B) := by rw [determinant_eq]
-      _ = (-1) ^ n / (B * (ifp.fr⁻¹ * B + pB)) := by ac_rfl
+    field_simp
+    grind
 
 /-- Shows that `|v - Aₙ / Bₙ| ≤ 1 / (Bₙ * Bₙ₊₁)`. -/
 theorem abs_sub_convs_le (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
