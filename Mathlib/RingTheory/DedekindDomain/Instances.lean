@@ -122,10 +122,6 @@ instance : IsScalarTower Rₚ Sₚ L := by
     RingHom.comp_assoc, ← IsScalarTower.algebraMap_eq, ← IsScalarTower.algebraMap_eq,
     ← IsScalarTower.algebraMap_eq]
 
-instance : IsDomain Sₚ :=
-  isDomain_localization <| algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul _
-    P.primeCompl_le_nonZeroDivisors
-
 instance [IsDedekindDomain S] : IsDedekindDomain Sₚ :=
   isDedekindDomain S
     (algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul _ P.primeCompl_le_nonZeroDivisors) _
