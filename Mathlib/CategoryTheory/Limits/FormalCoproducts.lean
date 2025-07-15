@@ -3,7 +3,6 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Kenny Lau
 -/
-
 import Mathlib.CategoryTheory.Limits.Opposites
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.Products
@@ -29,7 +28,6 @@ In this file we construct the category of formal coproducts given a category.
 * `FormalCoproduct.incl C : C ⥤ FormalCoproduct.{w} C` probably preserves every limit?
 
 -/
-
 
 universe w w₁ w₂ w₃ v v₁ v₂ v₃ u u₁ u₂ u₃
 
@@ -147,7 +145,6 @@ coproducts. This is used in Čech cohomology. -/
     FormalCoproduct.mk _ f ⟶ (incl C).obj X :=
   ⟨fun _ ↦ PUnit.unit, φ⟩
 
-
 section Coproduct
 
 variable (𝒜 : Type w) (f : 𝒜 → FormalCoproduct.{w} C) (t X : FormalCoproduct.{w} C)
@@ -236,7 +233,6 @@ lemma fromIncl_comp_cofanPtIsoSelf_inv (i : X.I) :
 
 end Coproduct
 
-
 section Terminal
 
 /-- Given a terminal object `T` in the original category, we show that `incl(T)` is a terminal
@@ -249,7 +245,6 @@ instance [HasTerminal C] : HasTerminal (FormalCoproduct.{w} C) :=
   (isTerminalIncl (⊤_ C) terminalIsTerminal).hasTerminal
 
 end Terminal
-
 
 section Pullback
 
@@ -348,7 +343,6 @@ noncomputable def pullbackIsoPullbackConePt : pullback f g ≅ (pullbackCone f g
 
 end Pullback
 
-
 noncomputable section HasCoproducts
 
 variable [HasCoproducts.{w} A] (C) (J : Type w) (f : J → FormalCoproduct.{w} C) (F : C ⥤ A)
@@ -386,7 +380,6 @@ instance : PreservesColimitsOfShape (Discrete J) ((eval.{w} C A).obj F) :=
 
 end HasCoproducts
 
-
 noncomputable section HasProducts
 
 variable [HasProducts.{w} A] (C) (J : Type w) (f : J → FormalCoproduct.{w} C) (F : Cᵒᵖ ⥤ A)
@@ -418,7 +411,6 @@ instance : PreservesLimit (Discrete.functor (op ∘ f)) ((evalOp.{w} C A).obj F)
     ((Cofan.IsColimit.op (isColimitCofan J f)).uniqueUpToIso hc))⟩⟩
 
 end HasProducts
-
 
 end FormalCoproduct
 
