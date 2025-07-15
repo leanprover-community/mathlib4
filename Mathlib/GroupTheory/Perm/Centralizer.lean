@@ -207,8 +207,7 @@ structure Basis (g : Equiv.Perm α) where
   /-- For each cycle, the chosen element belongs to the cycle -/
   (mem_support_self' : ∀ (c : g.cycleFactorsFinset), toFun c ∈ c.val.support)
 
-instance (g : Perm α) :
-    DFunLike (Basis g) (g.cycleFactorsFinset) (fun _ => α) where
+instance (g : Perm α) : FunLike (Basis g) g.cycleFactorsFinset α where
   coe a := a.toFun
   coe_injective' a a' _ := by cases a; cases a'; congr
 

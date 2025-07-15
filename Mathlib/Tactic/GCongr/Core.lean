@@ -30,11 +30,12 @@ x ^ 2 * ?_ + ?_
 (with inputs `a`, `c` on the left and `b`, `d` on the right); after the use of
 `gcongr`, we have the simpler goals `a ≤ b` and `c ≤ d`.
 
-A pattern can be provided explicitly; this is useful if a non-maximal match is desired:
+A depth limit, or a pattern can be provided explicitly;
+this is useful if a non-maximal match is desired:
 ```
 example {a b c d x : ℝ} (h : a + c + 1 ≤ b + d + 1) :
     x ^ 2 * (a + c) + 5 ≤ x ^ 2 * (b + d) + 5 := by
-  gcongr x ^ 2 * ?_ + 5
+  gcongr x ^ 2 * ?_ + 5 -- or `gcongr 2`
   linarith
 ```
 
@@ -404,11 +405,15 @@ is a user-provided template, first check that the template asks us to descend th
 match. -/
 partial def _root_.Lean.MVarId.gcongr
     (g : MVarId) (template : Option Expr) (names : List (TSyntax ``binderIdent))
+    (depth : Nat := 1000000)
     (grewriteHole : Option MVarId := none)
     (mainGoalDischarger : MVarId → MetaM Unit := gcongrForwardDischarger)
     (sideGoalDischarger : MVarId → MetaM Unit := gcongrDischarger) :
     MetaM (Bool × List (TSyntax ``binderIdent) × Array MVarId) := g.withContext do
   withTraceNode `Meta.gcongr (fun _ => return m!"gcongr: ⊢ {← g.getType}") do
+  match depth with
+  | 0 => try mainGoalDischarger g; return (true, names, #[]) catch _ => return (false, names, #[g])
+  | depth + 1 =>
   match template with
   | none =>
     -- A. If there is no template, try to resolve the goal by the provided tactic
@@ -513,7 +518,7 @@ partial def _root_.Lean.MVarId.gcongr
           pure e
         -- Recurse: call ourself (`Lean.MVarId.gcongr`) on the subgoal with (if available) the
         -- appropriate template
-        let (_, names2, subgoals2) ← mvarId.gcongr tpl names2 grewriteHole mainGoalDischarger
+        let (_, names2, subgoals2) ← mvarId.gcongr tpl names2 depth grewriteHole mainGoalDischarger
           sideGoalDischarger
         (names, subgoals) := (names2, subgoals ++ subgoals2)
       let mut out := #[]
@@ -562,11 +567,12 @@ x ^ 2 * ?_ + ?_
 (with inputs `a`, `c` on the left and `b`, `d` on the right); after the use of
 `gcongr`, we have the simpler goals `a ≤ b` and `c ≤ d`.
 
-A pattern can be provided explicitly; this is useful if a non-maximal match is desired:
+A depth limit, or a pattern can be provided explicitly;
+this is useful if a non-maximal match is desired:
 ```
 example {a b c d x : ℝ} (h : a + c + 1 ≤ b + d + 1) :
     x ^ 2 * (a + c) + 5 ≤ x ^ 2 * (b + d) + 5 := by
-  gcongr x ^ 2 * ?_ + 5
+  gcongr x ^ 2 * ?_ + 5 -- or `gcongr 2`
   linarith
 ```
 
@@ -596,16 +602,19 @@ elab "gcongr" template:(ppSpace colGt term)?
   g.withContext do
   let some (_rel, lhs, _rhs) := getRel (← withReducible g.getType')
     | throwError "gcongr failed, not a relation"
-  -- Elaborate the template (e.g. `x * ?_ + _`), if the user gave one
-  let template ← template.mapM fun e => do
-    let template ← Term.elabPattern e (← inferType lhs)
-    unless ← containsHole template do
-      throwError "invalid template {template}, it doesn't contain any `?_`"
-    pure template
   -- Get the names from the `with x y z` list
   let names := (withArg.raw[1].getArgs.map TSyntax.mk).toList
   -- Time to actually run the core tactic `Lean.MVarId.gcongr`!
-  let (progress, _, unsolvedGoalStates) ← g.gcongr template names
+  let (progress, _, unsolvedGoalStates) ← match template with
+    | none => g.gcongr none names
+    | some e => match e.raw.isNatLit? with
+      | some depth => g.gcongr none names (depth := depth)
+      | none =>
+        -- Elaborate the template (e.g. `x * ?_ + _`)
+        let template ← Term.elabPattern e (← inferType lhs)
+        unless ← containsHole template do
+          throwError "invalid template {template}, it doesn't contain any `?_`"
+        g.gcongr template names
   if progress then
     replaceMainGoal unsolvedGoalStates.toList
   else
