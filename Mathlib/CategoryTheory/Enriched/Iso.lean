@@ -5,8 +5,6 @@ Authors: Jakob von Raumer
 -/
 import Mathlib.CategoryTheory.Enriched.Basic
 
-universe w v u₁
-
 /-!
 # Isomorphisms in ordinary categories
 
@@ -14,6 +12,8 @@ We define the notion of `V`-enriched isomorphisms in `V`-enriched categories and
 to the isomorphisms in the category `ForgetEnrichment V C`.
 -/
 
+
+universe w v u₁
 
 namespace CategoryTheory
 
