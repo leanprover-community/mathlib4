@@ -139,6 +139,24 @@ def pushFormatError (fs : Array FormatError) (f : FormatError) : Array FormatErr
   -- Otherwise, we are adding a further error of the same kind and we therefore merge the two.
   fs.pop.push {back with length := back.length + f.length, srcStartPos := f.srcEndPos}
 
+/-- Extract the `leading` and the `trailing` substring of a `SourceInfo`. -/
+def _root_.Lean.SourceInfo.getLeadTrail : SourceInfo → String × String
+  | .original lead _ trail _ => (lead.toString, trail.toString)
+  | _ => default
+
+/--
+Splays the input syntax into a string.
+
+There is a slight subtlety about `choice` nodes, that are traversed only once.
+-/
+partial
+def _root_.Lean.Syntax.regString : Syntax → String
+  | .node _ `choice args => (args.take 1).foldl (init := "") (· ++ ·.regString)
+  | .node _ _ args => args.foldl (init := "") (· ++ ·.regString)
+  | .ident i raw _ _ => let (l, t) := i.getLeadTrail; l ++ raw.toString ++ t
+  | .atom i s => let (l, t) := i.getLeadTrail; l ++ s ++ t
+  | .missing => ""
+
 /--
 Scan the two input strings `L` and `M`, assuming `M` is the pretty-printed version of `L`.
 This almost means that `L` and `M` only differ in whitespace.
@@ -371,6 +389,8 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   if (← get).messages.hasErrors then
     return
+  if stx.getSubstring?.map toString != some stx.regString then
+    dbg_trace stx.regString
   if stx.find? (·.isOfKind ``runCmd) |>.isSome then
     return
   let comps := (← getMainModule).components
