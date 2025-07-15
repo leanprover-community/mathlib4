@@ -23,10 +23,15 @@ We show that this notion is invariant under reparameterization by a monotone map
 `pathELength_comp_of_monotoneOn`.
 
 We define `riemannianEDist x y` as the infimum of the length of `C^1` paths between `x`
-and `y`. We show that this can be realized using `C^1` paths that are locally constant around the
-endpoints, in `exists_lt_locally_constant_of_riemannianEDist_lt`. Such paths can be glued while
-retaining the `C^1` property. We deduce that `riemannianEDist` satisfies the triangle inequality,
-in `riemannianEDist_triangle`.
+and `y`. We prove, in `exists_lt_locally_constant_of_riemannianEDist_lt`, that it is also the
+infimum on such path that are moreover locally constant near their endpoints. Such paths can be
+glued while retaining the `C^1` property. We deduce that `riemannianEDist` satisfies the triangle
+inequality, in `riemannianEDist_triangle`.
+
+Note that `riemannianEDist x y` could also be named `finslerEDist x y` as we do not require that
+the metric comes from an inner product space. However, as all the current applications in mathlib
+are to Riemannian spaces we stick with the simpler name. This could be changed when Finsler
+manifolds are studied in mathlib.
 -/
 
 open Set MeasureTheory
@@ -102,6 +107,9 @@ lemma pathELength_add (h : a ≤ b) (h' : b ≤ c) :
 
 attribute [local instance] Measure.Subtype.measureSpace
 
+/-- Given a path `γ` defined on the manifold with boundary `[a, b]`, its length (as the integral of
+the norm of its manifold derivative) coincides with `pathELength` of the lift of `γ` to the real
+line, between `a` and `b`. -/
 lemma lintegral_norm_mfderiv_Icc_eq_pathELength_projIcc {a b : ℝ}
     [h : Fact (a < b)] {γ : Icc a b → M} :
     ∫⁻ t, ‖mfderiv (𝓡∂ 1) I γ t 1‖ₑ = pathELength I (γ ∘ (projIcc a b h.out.le)) a b := by
@@ -120,6 +128,7 @@ open MeasureTheory
 
 variable [∀ (x : M), ENormSMulClass ℝ (TangentSpace I x)]
 
+/-- The length of a path in a manifold is invariant under a monotone reparametrization. -/
 lemma pathELength_comp_of_monotoneOn {f : ℝ → ℝ} (h : a ≤ b) (hf : MonotoneOn f (Icc a b))
     (h'f : DifferentiableOn ℝ f (Icc a b)) (hγ : MDifferentiableOn 𝓘(ℝ) I γ (Icc (f a) (f b))) :
     pathELength I (γ ∘ f) a b = pathELength I γ (f a) (f b) := by
@@ -152,6 +161,7 @@ lemma pathELength_comp_of_monotoneOn {f : ℝ → ℝ} (h : a ≤ b) (hf : Monot
   have : 0 ≤ derivWithin f (Icc a b) t := hf.derivWithin_nonneg
   simp only [map_smul, enorm_smul, ← Real.enorm_of_nonneg this, f_im]
 
+/-- The length of a path in a manifold is invariant under an antitone reparametrization. -/
 lemma pathELength_comp_of_antitoneOn {f : ℝ → ℝ} (h : a ≤ b) (hf : AntitoneOn f (Icc a b))
     (h'f : DifferentiableOn ℝ f (Icc a b)) (hγ : MDifferentiableOn 𝓘(ℝ) I γ (Icc (f b) (f a))) :
     pathELength I (γ ∘ f) a b = pathELength I γ (f b) (f a) := by
@@ -223,11 +233,9 @@ lemma riemannianEDist_le_pathELength {γ : ℝ → M} (hγ : ContMDiffOn 𝓘(�
     apply pathELength_congr (fun t ht ↦ ?_)
     simp only [Function.comp_apply, ht, projIcc_of_mem]
     rfl
-  have ha : a = η 0 := by simp [η, ContinuousAffineMap.coe_lineMap_eq]
-  have hb : b = η 1 := by simp [η, ContinuousAffineMap.coe_lineMap_eq]
-  rw [E, ha, hb]
-  apply pathELength_comp_of_monotoneOn zero_le_one _ η.differentiableOn
-  · simpa [← ha, ← hb] using hγ.mdifferentiableOn le_rfl
+  rw [E, pathELength_comp_of_monotoneOn zero_le_one _ η.differentiableOn]
+  · simp [η, ContinuousAffineMap.coe_lineMap_eq]
+  · simpa [η, ContinuousAffineMap.coe_lineMap_eq] using hγ.mdifferentiableOn le_rfl
   · apply (AffineMap.lineMap_mono hab).monotoneOn
 
 omit [∀ (x : M), ENormSMulClass ℝ (TangentSpace I x)] in
@@ -255,7 +263,10 @@ lemma exists_lt_locally_constant_of_riemannianEDist_lt
   /- We start from a path from `x` to `y` defined on `[0, 1]` with length `< r`. Then, we
   reparameterize it using a smooth monotone map `η` from `[a, b]` to `[0, 1]` which is moreover
   locally constant around `a` and `b`.
-  Such a map is easy to build with `Real.smoothTransition`. -/
+  Such a map is easy to build with `Real.smoothTransition`.
+
+  Note that this is a very standard construction in differential topology.
+  TODO: refactor once we have more differential topology in Mathlib and this gets duplicated. -/
   rcases exists_lt_of_riemannianEDist_lt hr with ⟨γ, hγx, hγy, γ_smooth, hγ⟩
   rcases exists_between hab with ⟨a', haa', ha'b⟩
   rcases exists_between ha'b with ⟨b', ha'b', hb'b⟩
@@ -333,19 +344,7 @@ lemma riemannianEDist_triangle :
   have : riemannianEDist I x z ≤ pathELength I γ 0 2 := by
     apply riemannianEDist_le_pathELength
     · apply ContMDiff.contMDiffOn
-      intro t
-      rcases lt_trichotomy t 1 with ht | rfl | ht
-      · apply (hγ₁_smooth t).congr_of_eventuallyEq
-        filter_upwards [Iio_mem_nhds ht] with t' (ht' : t' < 1)
-        simp [γ, ht'.le]
-      · have : ContMDiffAt 𝓘(ℝ) I 1 (fun (_ : ℝ) ↦ y) 1 := contMDiffAt_const
-        apply this.congr_of_eventuallyEq_of_mem _ (mem_univ _)
-        simp only [nhdsWithin_univ, γ]
-        filter_upwards [hγ₁_const, hγ₂_const] with t ht h't
-        by_cases ht_mem : t ∈ Iic 1 <;> simp [ht_mem, ht, h't]
-      · apply (hγ₂_smooth t).congr_of_eventuallyEq
-        filter_upwards [Ioi_mem_nhds ht] with t' (ht' : 1 < t')
-        simp [γ, ht']
+      exact ContMDiff.piecewise_Iic hγ₁_smooth hγ₂_smooth (hγ₁_const.trans hγ₂_const.symm)
     · simp [γ, hγ₁0]
     · simp [γ, hγ₂2]
     · exact zero_le_two

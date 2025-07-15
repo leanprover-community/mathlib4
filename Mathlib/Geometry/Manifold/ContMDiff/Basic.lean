@@ -258,6 +258,39 @@ alias contMDiffAt_of_not_mem := contMDiffAt_of_notMem
 @[to_additive existing contMDiffAt_of_not_mem, deprecated (since := "2025-05-23")]
 alias contMDiffAt_of_not_mem_mulTSupport := contMDiffAt_of_notMem_mulTSupport
 
+/-- Given two `C^n` functions `f` and `g` which coincide locally around the frontier of a set `s`,
+then the piecewise function defined using `f` on `s` and `g` elsewhere is `C^n`. -/
+lemma ContMDiff.piecewise
+    {f g : M → M'} {s : Set M} [DecidablePred (· ∈ s)]
+    (hf : ContMDiff I I' n f) (hg : ContMDiff I I' n g)
+    (hfg : ∀ x ∈ frontier s, f =ᶠ[𝓝 x] g) :
+    ContMDiff I I' n (piecewise s f g) := by
+  intro x
+  by_cases hx : x ∈ interior s
+  · apply (hf x).congr_of_eventuallyEq
+    filter_upwards [isOpen_interior.mem_nhds hx] with y hy
+    rw [piecewise_eq_of_mem]
+    apply interior_subset hy
+  by_cases h'x : x ∈ closure s
+  · have : x ∈ frontier s := ⟨h'x, hx⟩
+    apply (hf x).congr_of_eventuallyEq
+    filter_upwards [hfg x this] with y hy
+    simp [Set.piecewise, hy]
+  · apply (hg x).congr_of_eventuallyEq
+    filter_upwards [isClosed_closure.isOpen_compl.mem_nhds h'x] with y hy
+    rw [piecewise_eq_of_notMem]
+    contrapose! hy
+    simpa using subset_closure hy
+
+/-- Given two `C^n` functions `f` and `g` from `ℝ` to a real manifold which coincide locally
+around a point `s`, then the piecewise function using `f` before `t` and `g` after is `C^n`. -/
+lemma ContMDiff.piecewise_Iic
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
+    {I : ModelWithCorners ℝ E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+    {f g : ℝ → M} {s : ℝ}
+    (hf : ContMDiff 𝓘(ℝ) I n f) (hg : ContMDiff 𝓘(ℝ) I n g) (hfg : f =ᶠ[𝓝 s] g) :
+    ContMDiff 𝓘(ℝ) I n (Set.piecewise (Iic s) f g) :=
+  hf.piecewise hg (by simpa using hfg)
 
 /-! ### Being `C^k` on a union of open sets can be tested on each set -/
 section contMDiff_union
