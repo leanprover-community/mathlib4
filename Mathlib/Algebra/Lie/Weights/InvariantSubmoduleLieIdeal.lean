@@ -7,6 +7,8 @@ import Mathlib.Algebra.Module.Submodule.Invariant
 import Mathlib.Order.CompleteLattice.Basic
 import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 
+set_option maxHeartbeats 1000000
+
 variable {K L : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L]
 variable [LieAlgebra.IsKilling K L] [FiniteDimensional K L]
 
@@ -698,7 +700,6 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
           · -- Case: χ ∉ q (general case without invariance)
             -- Key insight: if χ ∉ q but α ∈ q, then χ + α and χ - α cannot be roots
             -- This follows from RootPairing.root_mem_submodule_iff_of_add_mem_invtSubmodule
-
             -- First show that genWeightSpace L (χ.toLinear + α.1.toLinear) = ⊥
             have h_plus_bot : genWeightSpace L (χ.toLinear + α.1.toLinear) = ⊥ := by
               by_contra h_ne_bot
@@ -900,7 +901,7 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
                 rw [hj]
                 have h_neg_smul : (-α.1).toLinear = (-1 : K) • α.1.toLinear := by
                   -- This follows from negation of weights
-                  sorry
+                  simp only [Weight.toLinear_neg, neg_smul, one_smul]
                 rw [h_neg_smul]
                 exact q.smul_mem (-1) α.2.1
 
