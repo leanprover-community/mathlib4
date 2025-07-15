@@ -251,20 +251,19 @@ theorem σiInf_const_mem : ⨅ (_ : ι), a ∈ ({⊤, a} : Set α) :=
 
 theorem σiSup₂_le_σiSup :
     ⨆ (i) (_ : κ i), f i ≤ ⨆ i, f i :=
-  have h i : ⨆ (_ : κ i), f i ∈ (Set.range f).insert ⊥ := by
+  have h : {⨆ (_ : κ i), f i | i : ι} ⊆ (Set.range f).insert ⊥ := by
+    rw [Set.setOf_subset]
+    intro x ⟨i, hi⟩
+    rw [←hi]
     exact Set.mem_of_subset_of_mem
       (Set.insert_subset_insert (Set.singleton_subset_iff.mpr (Set.mem_range_self i)))
       σiSup_const_mem
+
   σiSup₂_le
     (fun i => (Set.countable_singleton (f i)).mono Set.range_const_subset)
-    -- ∀ i, ⨆ _ : κ i, f i ∈ {⊥, f i} by σiSup_const_mem
-    -- {x | ∃ i, ⨆ _, f i = x} ⊆ (Set.range f).insert ⊥
-    -- countable insert mono subset
-    (by
-      simp only [Set.setOf_exists]
-      exact (Set.countable_insert.mpr ‹_›).mono
-        (Set.iUnion_subset fun i => (Set.singleton_subset_iff.2 (h i))) )
+    ((Set.Countable.insert ⊥ ‹_›).mono h)
     (fun i _ => le_σiSup i)
+
 
 theorem σiInf_le_σiInf₂ : ⨅ i, f i ≤ ⨅ (i) (_ : κ i), f i :=
   σiSup₂_le_σiSup (α := αᵒᵈ)
