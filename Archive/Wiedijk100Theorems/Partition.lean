@@ -184,7 +184,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
     simp only [φ, mem_filter]
     rw [mem_finsuppAntidiag]
     dsimp only [ne_eq, smul_eq_mul, id_eq, eq_mpr_eq_cast, le_eq_subset, Finsupp.coe_mk]
-    simp only [mem_univ, mem_filter, true_and] at ha
+    rw [mem_filter_univ] at ha
     refine ⟨⟨?_, fun i ↦ ?_⟩, fun i _ ↦ ⟨a.parts.count i, ha.1 i, rfl⟩⟩
     · conv_rhs => simp [← a.parts_sum]
       rw [sum_multiset_count_of_subset _ s]
@@ -197,7 +197,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
   · dsimp only
     intro p₁ hp₁ p₂ hp₂ h
     apply Nat.Partition.ext
-    simp only [true_and, mem_univ, mem_filter] at hp₁ hp₂
+    rw [mem_filter_univ] at hp₁ hp₂
     ext i
     simp only [φ, ne_eq, smul_eq_mul, Finsupp.mk.injEq] at h
     by_cases hi : i = 0
@@ -209,7 +209,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
     · rw [← mul_left_inj' hi]
       rw [funext_iff] at h
       exact h.2 i
-  · simp only [φ, mem_filter, mem_finsuppAntidiag, mem_univ, exists_prop, true_and, and_assoc]
+  · simp_rw [φ, mem_filter_univ, mem_filter, mem_finsuppAntidiag, exists_prop, and_assoc]
     rintro f ⟨hf, hf₃, hf₄⟩
     have hf' : f ∈ finsuppAntidiag s n := mem_finsuppAntidiag.mpr ⟨hf, hf₃⟩
     simp only [mem_finsuppAntidiag] at hf'

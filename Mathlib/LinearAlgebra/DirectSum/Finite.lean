@@ -8,7 +8,9 @@ import Mathlib.RingTheory.Finiteness.Finsupp
 
 /-!
 # A finite direct sum of finite modules is finite
+
 This file defines a `Module.Finite` instance for a finite direct sum of finite modules.
+
 -/
 
 open DirectSum

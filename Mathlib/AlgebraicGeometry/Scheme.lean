@@ -704,8 +704,7 @@ lemma zeroLocus_map {U V : X.Opens} (i : U ≤ V) (s : Set Γ(X, V)) :
   ext x
   suffices (∀ f ∈ s, x ∈ U → x ∉ X.basicOpen f) ↔ x ∈ U → (∀ f ∈ s, x ∉ X.basicOpen f) by
     simpa [or_iff_not_imp_right]
-  conv_lhs => enter [i]; rw [forall_comm (β := x ∈ U)] -- why doesn't simp fire on this
-  rw [forall_comm (β := x ∈ U)]
+  grind
 
 lemma zeroLocus_map_of_eq {U V : X.Opens} (i : U = V) (s : Set Γ(X, V)) :
     X.zeroLocus ((X.presheaf.map (eqToHom i).op).hom '' s) = X.zeroLocus s := by
