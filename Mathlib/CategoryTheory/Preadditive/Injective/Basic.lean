@@ -304,7 +304,7 @@ theorem injective_of_map_injective_fully_faithful_and_preserves_mono [F.Full] [F
     [F.PreservesMonomorphisms] (I : C) (hI : Injective (F.obj I)) : Injective I where
   factors g f _ := by
     obtain ⟨h, fac⟩ := hI.factors (F.map g) (F.map f)
-    exact ⟨F.preimage h,F.map_injective (by simp [fac])⟩
+    exact ⟨F.preimage h, F.map_injective (by simp [fac])⟩
 
 end Functor
 
