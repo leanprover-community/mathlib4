@@ -1340,11 +1340,11 @@ def mkLawfulDayConvolutionMonoidalCategoryStruct :
         convolutions C V _ _
       apply DayConvolution.associator_hom_unit_unit
     leftUnitor_hom_unit_app _ _ := by
-      simp only [Functor.comp_obj, tensor_obj, leftUnitor, Functor.mapIso_hom,
+      simp only [Functor.comp_obj, tensor_obj, leftUnitor,
         Functor.FullyFaithful.preimageIso_hom, Functor.FullyFaithful.map_preimage]
       apply DayConvolutionUnit.leftUnitor_hom_unit_app
     rightUnitor_hom_unit_app _ _ := by
-      simp only [Functor.comp_obj, tensor_obj, rightUnitor, Functor.mapIso_hom,
+      simp only [Functor.comp_obj, tensor_obj, rightUnitor,
         Functor.FullyFaithful.preimageIso_hom, Functor.FullyFaithful.map_preimage]
       apply DayConvolutionUnit.rightUnitor_hom_unit_app }
 
