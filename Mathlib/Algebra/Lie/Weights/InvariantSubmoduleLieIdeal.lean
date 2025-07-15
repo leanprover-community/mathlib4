@@ -4,6 +4,7 @@ import Mathlib.Algebra.Lie.Weights.Cartan
 import Mathlib.Algebra.Lie.Weights.Killing
 import Mathlib.Algebra.Lie.Weights.RootSystem
 import Mathlib.Algebra.Module.Submodule.Invariant
+import Mathlib.Order.CompleteLattice.Basic
 
 variable {K L : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L]
 variable [LieAlgebra.IsKilling K L] [FiniteDimensional K L]
@@ -437,15 +438,39 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
                 simp [h_plus_trivial]
               · -- Case: weight space is non-trivial, so χ + α is a weight
                 -- We have (χ + α) ∈ q from h_chi_plus_alpha_in_q and (χ + α) ≠ 0 from w_plus
-                -- Since genWeightSpace L (χ + α) ≠ ⊥, we can construct a weight β with β.toLinear = χ + α
+                -- Since genWeightSpace L (χ + α) ≠ ⊥, there exists a weight β with β.toLinear = χ + α
                 -- This weight will be in the supremum since it's in q and nonzero
 
-                -- Since genWeightSpace L (χ + α) ≠ ⊥, there exists a weight β with β.toLinear = χ + α
-                -- We'll construct this weight and show it's in the supremum
+                -- First, construct the weight β from the non-trivial weight space
+                let β : Weight K H L := {
+                  toFun := χ.toLinear + α.1.toLinear,
+                  genWeightSpace_ne_bot' := h_plus_trivial
+                }
 
-                -- The key insight: χ + α ∈ q and χ + α ≠ 0, so there exists a weight in the supremum
-                -- For now, we'll defer the construction details
-                sorry
+                -- β satisfies the index set conditions
+                have hβ_in_index_set : β.toLinear ∈ q ∧ β.IsNonZero := by sorry
+
+                -- Explicitly state that β is in the index set
+                have β_mem_index_set : β ∈ {γ : Weight K H L | γ.toLinear ∈ q ∧ γ.IsNonZero} := hβ_in_index_set
+
+                -- Create the indexed element for the supremum
+                let β_indexed : {γ : Weight K H L // γ.toLinear ∈ q ∧ γ.IsNonZero} := ⟨β, hβ_in_index_set⟩
+
+                -- The corresponding term for β is contained in the supremum
+                have β_term_in_supr :
+                  sl2SubalgebraOfRoot_as_H_submodule β β_indexed.property.right ≤
+                  ⨆ (γ : {γ : Weight K H L // γ.toLinear ∈ q ∧ γ.IsNonZero}), sl2SubalgebraOfRoot_as_H_submodule γ γ.property.right := by
+                  -- This is just le_iSup applied to β_indexed
+                  have h := le_iSup (fun γ : {γ : Weight K H L // γ.toLinear ∈ q ∧ γ.IsNonZero} =>
+                    sl2SubalgebraOfRoot_as_H_submodule γ.1 γ.2.2) β_indexed
+                  -- Since β_indexed.1 = β and β_indexed.2.2 = β_indexed.property.right, h gives us what we want
+                  exact h
+
+                have h_β_contains : genWeightSpace L (χ.toLinear + α.1.toLinear) ≤
+                    sl2SubalgebraOfRoot_as_H_submodule β β_indexed.property.right :=
+                  by sorry  -- Your assumption goes here
+
+                exact h_β_contains.trans β_term_in_supr
             -- For the complete proof, we need similar containments for the other two terms
             -- But for now, this shows the approach works
             sorry
