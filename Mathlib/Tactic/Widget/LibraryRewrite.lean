@@ -536,6 +536,7 @@ elab stx:"rw?" : tactic => do
   Widget.savePanelWidgetInfo (hash LibraryRewriteComponent.javascript)
     (pure <| json% { replaceRange : $range }) stx
 
+/-- `rw??` has been renamed to `rw?` -/
 elab "rw??" : tactic => do
   logWarning "`rw??` has been renamed to `rw?`"
 
