@@ -744,6 +744,8 @@ namespace ValuativeRel.ValueGroupWithZero
 variable {R Γ : Type*} [CommRing R] [ValuativeRel R] [LinearOrderedCommGroupWithZero Γ]
   (v : Valuation R Γ)
 
+/-- Any valuation compatible with the valuative relation can be factored through
+the value group. -/
 noncomputable
 def unquot [h : v.Compatible] : ValuativeRel.ValueGroupWithZero R →*₀ Γ :=
   ⟨⟨ValuativeRel.ValueGroupWithZero.lift (fun r s ↦ v r / v (s : R)) <| by
