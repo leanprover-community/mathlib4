@@ -52,10 +52,10 @@ lemma of_hasBasis_pair [TopologicalSpace R]
     by_cases hr : valuation R r = 0
     · simp [hr, eq_comm] at h
     · refine ⟨⟨r, s⟩, ⟨by simpa [valuation_eq_zero_iff] using hr, s.prop⟩, ?_⟩
-      simp only [← h, Set.setOf_subset_setOf, and_imp]
-      intro x hx hx'
+      simp only [← h, Set.setOf_subset_setOf]
+      intro x hx
       rw [lt_div_iff₀ (by simp [zero_lt_iff])]
-      simp [valuation, hx, hx']
+      simp [valuation, hx]
 
 lemma of_hasBasis_compatible {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ₀] [TopologicalSpace R]
     {v : Valuation R Γ₀} [v.Compatible]
@@ -84,16 +84,16 @@ lemma hasBasis_nhds_zero_pair :
     (𝓝 (0 : R)).HasBasis (fun rs : R × R ↦ rs.1 ∈ posSubmonoid R ∧ rs.2 ∈ posSubmonoid R)
       fun rs  ↦ { x | x * rs.2 <ᵥ rs.1 } := by
   refine (hasBasis_nhds_zero R).to_hasBasis ?_ ?_
-  · simp only [posSubmonoid_def, setOf_subset_setOf, and_imp, Prod.exists, forall_const]
+  · simp only [posSubmonoid_def, setOf_subset_setOf, Prod.exists, forall_const]
     intro γ
     obtain ⟨r, s, h⟩ := valuation_surjective γ.val
     by_cases hr : valuation R r = 0
     · simp [hr, eq_comm] at h
     · refine ⟨r, s, ⟨by simpa [valuation_eq_zero_iff] using hr, s.prop⟩, ?_⟩
       simp only [← h]
-      intro x hx hx'
+      intro x hx
       rw [lt_div_iff₀ (by simp [zero_lt_iff])]
-      simp [valuation, hx, hx']
+      simp [valuation, hx]
   · rintro ⟨r, s⟩ ⟨hr, hs⟩
     refine ⟨Units.mk0 (.mk r ⟨s, hs⟩) ?_, trivial, ?_⟩
     · simpa using hr

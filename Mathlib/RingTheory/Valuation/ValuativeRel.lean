@@ -100,7 +100,10 @@ namespace ValuativeRel
 variable {R : Type*} [CommRing R] [ValuativeRel R]
 
 /-- The strict version of the valuative relation. -/
-notation:50 (name := valuativeRelLt) x:50 " <ᵥ " y:51 => x ≤ᵥ y ∧ ¬ y ≤ᵥ x
+def rel_lt (x y : R) : Prop := x ≤ᵥ y ∧ ¬ y ≤ᵥ x
+
+@[inherit_doc ValuativeRel.rel]
+notation:50 (name := valuativeRelLt) x:50 " <ᵥ " y:51 => binrel% ValuativeRel.rel_lt x y
 
 lemma rel_lt_iff (x y : R) : x <ᵥ y ↔ x ≤ᵥ y ∧ ¬ y ≤ᵥ x := Iff.rfl
 
@@ -554,7 +557,7 @@ lemma isEquiv {Γ₁ Γ₂ : Type*}
 lemma _root_.Valuation.Compatible.rel_lt_iff_lt {Γ₀ : Type*}
     [LinearOrderedCommMonoidWithZero Γ₀] {v : Valuation R Γ₀} [v.Compatible] {x y : R} :
     x <ᵥ y ↔ v x < v y := by
-  simp [lt_iff_le_not_ge, ← Valuation.Compatible.rel_iff_le]
+  simp [lt_iff_le_not_ge, ← Valuation.Compatible.rel_iff_le, rel_lt_iff]
 
 variable (R) in
 /-- An alias for endowing a ring with a preorder defined as the valuative relation. -/
