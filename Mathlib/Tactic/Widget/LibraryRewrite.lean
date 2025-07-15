@@ -536,6 +536,8 @@ elab stx:"rw?" : tactic => do
   Widget.savePanelWidgetInfo (hash LibraryRewriteComponent.javascript)
     (pure <| json% { replaceRange : $range }) stx
 
+elab "rw??" : tactic => do
+  logWarning "`rw??` has been renamed to `rw?`"
 
 /-- Represent a `Rewrite` as `MessageData`. -/
 def Rewrite.toMessageData (rw : Rewrite) (name : Name) : MetaM MessageData := do
