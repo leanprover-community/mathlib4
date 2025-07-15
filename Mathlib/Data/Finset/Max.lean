@@ -245,6 +245,22 @@ theorem min'_eq_inf' : s.min' H = s.inf' H id := rfl
 @[simp]
 theorem max'_singleton (a : α) : ({a} : Finset α).max' (singleton_nonempty _) = a := by simp [max']
 
+lemma min'_eq_iff (a : α) :
+    s.min' H = a ↔ a ∈ s ∧ ∀ (b : α), b ∈ s → a ≤ b := by
+  constructor
+  · rintro rfl
+    exact ⟨min'_mem _ _, min'_le _⟩
+  · rintro ⟨h₁, h₂⟩
+    exact le_antisymm (min'_le _ _ h₁) (by rwa [le_min'_iff])
+
+lemma max'_eq_iff (a : α) :
+    s.max' H = a ↔ a ∈ s ∧ ∀ (b : α), b ∈ s → b ≤ a := by
+  constructor
+  · rintro rfl
+    exact ⟨max'_mem _ _, le_max' _⟩
+  · rintro ⟨h₁, h₂⟩
+    exact le_antisymm (by rwa [max'_le_iff]) (le_max' _ _ h₁)
+
 theorem min'_le_max' (hs : s.Nonempty) : s.min' hs ≤ s.max' hs := min'_le _ _ (max'_mem _ _)
 
 theorem min'_lt_max' {i j} (H1 : i ∈ s) (H2 : j ∈ s) (H3 : i ≠ j) :
