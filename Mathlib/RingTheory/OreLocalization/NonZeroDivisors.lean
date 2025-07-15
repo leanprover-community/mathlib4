@@ -14,6 +14,8 @@ open scoped nonZeroDivisors
 
 namespace OreLocalization
 
+section MonoidWithZero
+
 variable {R : Type*} [MonoidWithZero R] {S : Submonoid R} [OreSet S]
 
 theorem nontrivial_of_nonZeroDivisors [Nontrivial R] (hS : S ≤ R⁰) :
@@ -69,5 +71,19 @@ protected theorem mul_inv_cancel (x : R[R⁰⁻¹]) (h : x ≠ 0) : x * x⁻¹ =
 protected theorem inv_zero : (0 : R[R⁰⁻¹])⁻¹ = 0 := by
   rw [OreLocalization.zero_def, OreLocalization.inv_def]
   simp
+
+noncomputable instance : GroupWithZero R[R⁰⁻¹] where
+  inv_zero := OreLocalization.inv_zero
+  mul_inv_cancel := OreLocalization.mul_inv_cancel
+
+end MonoidWithZero
+
+section CommMonoidWithZero
+
+variable {R : Type*} [CommMonoidWithZero R] [Nontrivial R] [OreSet R⁰] [NoZeroDivisors R]
+
+noncomputable instance : CommGroupWithZero R[R⁰⁻¹] where
+
+end CommMonoidWithZero
 
 end OreLocalization
