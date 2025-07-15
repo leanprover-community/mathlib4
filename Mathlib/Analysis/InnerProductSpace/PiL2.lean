@@ -984,7 +984,8 @@ the `OrthogonalFamily` in question. -/
 theorem DirectSum.IsInternal.subordinateOrthonormalBasis_subordinate (a : Fin n)
     (hV' : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) :
     hV.subordinateOrthonormalBasis hn hV' a ∈ V (hV.subordinateOrthonormalBasisIndex hn a hV') := by
-  simpa only [DirectSum.IsInternal.subordinateOrthonormalBasis, OrthonormalBasis.coe_reindex,
+  simpa -congrConsts only [
+    DirectSum.IsInternal.subordinateOrthonormalBasis, OrthonormalBasis.coe_reindex,
     DirectSum.IsInternal.subordinateOrthonormalBasisIndex] using
     hV.collectedOrthonormalBasis_mem hV' (fun i => stdOrthonormalBasis 𝕜 (V i))
       ((hV.sigmaOrthonormalBasisIndexEquiv hn hV').symm a)
