@@ -150,7 +150,6 @@ def natAdd_castLEEmb (hmn : n ≤ m) : Fin n ↪ Fin m :=
 lemma natAdd_castLEEmb_apply {n m : ℕ} (hmn : n ≤ m) (k : Fin n) :
     ((natAdd_castLEEmb hmn) k).1 = k.1 + (m - n) := by simp
 
-@[simp]
 lemma range_natAdd_castLEEmb {n m : ℕ} (hmn : n ≤ m) :
     Set.range (natAdd_castLEEmb hmn) = {i | m - n ≤ i.1} := by
   simp [natAdd_castLEEmb]
