@@ -298,7 +298,7 @@ noncomputable def gramSchmidtOrthonormalBasis {x} [Fintype ι]
 @[simp]
 theorem gramSchmidtOrthonormalBasis_coe [Fintype ι] {x} (hs : LinearIndependent ℝ (s · x))
     (hs' : ⊤ ≤ Submodule.span ℝ (Set.range (s · x))) :
-    (gramSchmidtOrthonormalBasis hs hs' : ι → E x) = (gramSchmidtNormed s · x) := by
+    gramSchmidtOrthonormalBasis hs hs' = (gramSchmidtNormed s · x) := by
   simp [gramSchmidtOrthonormalBasis]
 
 theorem gramSchmidtOrthonormalBasis_apply_of_orthonormal [Fintype ι] {x}
