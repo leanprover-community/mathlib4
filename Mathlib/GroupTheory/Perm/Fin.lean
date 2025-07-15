@@ -143,7 +143,7 @@ theorem cycleRange_of_gt {n : ℕ} {i j : Fin n} (h : i < j) : cycleRange i j = 
 theorem cycleRange_of_le {n : ℕ} [NeZero n] {i j : Fin n} (h : j ≤ i) :
     cycleRange i j = if j = i then 0 else j + 1 := by
   have jin : j ∈ Set.range ⇑(castLEEmb (n := i + 1) (by omega)) := by
-    simp only [coe_castLEEmb, range_castLE, Set.mem_setOf_eq]
+    rw [coe_castLEEmb, range_castLE, Set.mem_setOf_eq]
     omega
   have : (castLEEmb (by omega)).toEquivRange (castLT j (by omega)) = ⟨j, jin⟩ := by
     simpa only [coe_castLEEmb] using by rfl
@@ -326,7 +326,7 @@ def cycleIcc (i j : Fin n) : Perm (Fin n) := if hij : i ≤ j then (cycleRange (
 
 theorem cycleIcc_of_lt (hij : i ≤ j) (h : k < i) : (cycleIcc i j) k = k := by
   simpa [cycleIcc, hij] using Perm.extendDomain_apply_not_subtype _ _ (by
-    simp only [range_natAdd_castLEEmb, tsub_le_iff_right, Set.mem_setOf_eq, not_le]; omega)
+    rw [range_natAdd_castLEEmb, Set.mem_setOf_eq, not_le]; omega)
 
 private lemma cycleIcc_aux (hij : i ≤ j) (kin : k ∈ Set.range ⇑(natAdd_castLEEmb (Nat.sub_le n i)))
     : (cycleIcc i j) k = (natAdd_castLEEmb (Nat.sub_le n i)) (((j - i).castLT
@@ -349,7 +349,7 @@ theorem cycleIcc_of_gt (hij : i ≤ j) (h : j < k) : (cycleIcc i j) k = k := by
       (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩))
       = subNat i.1 (k.cast (by omega)) (by simp [le_of_lt (lt_of_le_of_lt hij h)]) := by
     rw [cycleIcc_simp_lemma (le_of_lt (lt_of_le_of_lt hij h)), cycleRange_of_gt]
-    exact lt_def.mpr (by simp only [coe_castLT, sub_val_of_le hij, coe_subNat, coe_cast]; omega)
+    exact lt_def.mpr (by rw [coe_castLT, sub_val_of_le hij, coe_subNat, coe_cast]; omega)
   simpa only [cycleIcc_aux hij kin, natAdd_castLEEmb, this] using eq_of_val_eq (by
     simp only [Function.Embedding.trans_apply, addNatEmb_apply, coe_toEmbedding, finCongr_apply,
       coe_cast, coe_addNat, coe_subNat]; omega)
@@ -358,7 +358,7 @@ theorem cycleIcc_of (h1 : i ≤ k) (h2 : k ≤ j) [NeZero n] :
     (cycleIcc i j) k = if k = j then i else k + 1 := by
   have hij : i ≤ j := le_trans h1 h2
   have kin : k ∈ Set.range ⇑(natAdd_castLEEmb (Nat.sub_le n i)) := by
-    simp only [range_natAdd_castLEEmb, tsub_le_iff_right, Set.mem_setOf_eq]
+    rw [range_natAdd_castLEEmb, Set.mem_setOf_eq]
     omega
   simp only [cycleIcc_aux hij kin, natAdd_castLEEmb, cycleIcc_simp_lemma h1,
     Function.Embedding.trans_apply, addNatEmb_apply, coe_toEmbedding, finCongr_apply]
