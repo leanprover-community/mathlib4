@@ -809,13 +809,13 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
                 rw [hj]
                 exact α.2.1
 
-              sorry
               -- Therefore S.root i = χ.toLinear ∈ q
-              --have h_i_in_q : S.root i ∈ (q_invt : Submodule K (Dual K H)) := h_equiv.mpr h_j_in_q
+              have h_i_in_q : S.root i ∈ (q_as_invt : Submodule K (Dual K H)) :=
+                h_equiv.mpr h_j_in_q
 
               -- But this contradicts h_chi_in_q : χ.toLinear ∉ q
-              -- rw [hi] at h_i_in_q
-              --exact h_chi_in_q h_i_in_q
+              rw [hi] at h_i_in_q
+              exact h_chi_in_q h_i_in_q
             sorry -- Requires detailed sl2 representation analysis for χ ∉ q case
 
         | zero =>
