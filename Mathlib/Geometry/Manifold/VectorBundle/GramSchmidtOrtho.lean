@@ -275,9 +275,19 @@ theorem gramSchmidtOrthonormalBasis_apply_of_orthonormal [Fintype ι]
 
 end VectorBundle
 
-#exit
-
 /-! The Gram-Schmidt process preserves smoothness of sections -/
+section smoothness
+
+-- Let `V` be a smooth vector bundle with a `C^n` Riemannian structure over a `C^k` manifold `B`.
+variable
+  {EB : Type*} [NormedAddCommGroup EB] [NormedSpace ℝ EB]
+  {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners ℝ EB HB} {n : WithTop ℕ∞}
+  {B : Type*} [TopologicalSpace B] [ChartedSpace HB B]
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+  {E : B → Type*} [TopologicalSpace (TotalSpace F E)] [∀ x, NormedAddCommGroup (E x)]
+  [∀ x, InnerProductSpace ℝ (E x)] [FiberBundle F E] [VectorBundle ℝ F E]
+  [IsManifold IB n B] [ContMDiffVectorBundle n F E IB]
+  [IsContMDiffRiemannianBundle IB n F E]
 
 variable {n : WithTop ℕ∞}
 
@@ -331,6 +341,8 @@ end helper
 
 variable {s : ι → (x : B) → E x} {u : Set B} {x : B} {i : ι}
 
+attribute [local instance] IsWellOrder.toHasWellFounded
+
 lemma gramSchmidt_contMDiffWithinAt (hs : ∀ i, CMDiffAt[u] n (T% (s i)) x)
     {i : ι} (hs' : LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι))) :
     CMDiffAt[u] n (T% (VectorBundle.gramSchmidt s i)) x := by
@@ -345,7 +357,7 @@ lemma gramSchmidt_contMDiffWithinAt (hs : ∀ i, CMDiffAt[u] n (T% (s i)) x)
     intro ⟨x, hx⟩ ⟨x', hx'⟩ h
     simp_all only [Subtype.mk.injEq, aux]
   apply ContMDiffWithinAt.orthogonalProjection (gramSchmidt_contMDiffWithinAt hs this) (hs i)
-  apply VectorBundle.gramSchmidt_ne_zero_coe _ _ this
+  apply VectorBundle.gramSchmidt_ne_zero_coe _ this
 termination_by i
 decreasing_by exact (LocallyFiniteOrderBot.finset_mem_Iio i i').mp hi'
 
@@ -390,3 +402,5 @@ lemma gramSchmidtNormed_contMDiff (hs : ∀ i, CMDiff n (T% (s i)))
     (hs' : ∀ x, LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι))) :
     CMDiff n (T% (VectorBundle.gramSchmidtNormed s i)) :=
   fun x ↦ gramSchmidtNormed_contMDiffAt (fun i ↦ hs i x) (hs' x)
+
+end smoothness
