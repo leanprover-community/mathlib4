@@ -86,7 +86,7 @@ lemma isLocalizedEquivalence :
     Functor.IsLocalization.mk' _ _
       (h.strictUniversalPropertyFixedTarget' hW _)
       (h.strictUniversalPropertyFixedTarget' hW _)
-  LocalizerMorphism.IsLocalizedEquivalence.of_isLocalization_of_isLocalization _ (W'.Q)
+  LocalizerMorphism.IsLocalizedEquivalence.of_isLocalization_of_isLocalization _ W'.Q
 
 end FactorsThroughLocalization
 
