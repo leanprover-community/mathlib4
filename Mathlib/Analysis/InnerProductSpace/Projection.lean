@@ -1011,6 +1011,12 @@ theorem topologicalClosure_eq_top_iff [CompleteSpace E] :
 
 end Submodule
 
+open ContinuousLinearMap in
+theorem ContinuousLinearMap.IsIdempotentElem.hasOrthogonalProjection_range [CompleteSpace E]
+    {p : E →L[𝕜] E} (hp : IsIdempotentElem p) : (LinearMap.range p).HasOrthogonalProjection :=
+  have := hp.isClosed_range.completeSpace_coe
+  .ofCompleteSpace _
+
 namespace Dense
 
 /- TODO: Move to another file? -/

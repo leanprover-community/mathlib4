@@ -1141,6 +1141,16 @@ theorem ContinuousLinearMap.closedComplemented_ker_of_rightInverse {R : Type*} [
 namespace ContinuousLinearMap
 variable {R M : Type*} [Ring R] [TopologicalSpace M] [AddCommGroup M] [Module R M]
 
+/-- Idempotent operators are equal iff their range and kernels are. -/
+lemma IsIdempotentElem.ext_iff {p q : M →L[R] M}
+    (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) :
+    p = q ↔ range p = range q ∧ ker p = ker q := by
+  simpa using LinearMap.IsIdempotentElem.ext_iff
+    congr(LinearMapClass.linearMap $hp.eq)
+    congr(LinearMapClass.linearMap $hq.eq)
+
+alias ⟨_, IsIdempotentElem.ext⟩ := IsIdempotentElem.ext_iff
+
 /-- `range f` is invariant under `T` if and only if `f ∘L T ∘L f = T ∘L f`,
 for idempotent `f`. -/
 lemma IsIdempotentElem.range_mem_invtSubmodule_iff_conj_eq {f T : M →L[R] M}
