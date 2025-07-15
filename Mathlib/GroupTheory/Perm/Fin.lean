@@ -147,8 +147,8 @@ theorem cycleRange_of_le {n : ℕ} [NeZero n] {i j : Fin n} (h : j ≤ i) :
     omega
   have : (castLEEmb (by omega)).toEquivRange (castLT j (by omega)) = ⟨j, jin⟩ := by
     simpa only [coe_castLEEmb] using by rfl
-  rw [cycleRange, (finRotate (i + 1)).extendDomain_apply_subtype (castLEEmb
-    (by omega)).toEquivRange jin, Function.Embedding.toEquivRange_apply]
+  rw [cycleRange, (finRotate (i + 1)).extendDomain_apply_subtype (castLEEmb (by omega)).toEquivRange
+    jin, Function.Embedding.toEquivRange_apply]
   split_ifs with ch
   · have : ((castLEEmb (by omega)).toEquivRange.symm ⟨j, jin⟩) = last i := by
       simpa only [coe_castLEEmb, ← this, symm_apply_apply] using eq_of_val_eq (by simp [ch])
@@ -156,7 +156,7 @@ theorem cycleRange_of_le {n : ℕ} [NeZero n] {i j : Fin n} (h : j ≤ i) :
     rfl
   · have hj1 : (j + 1).1 = j.1 + 1 := val_add_one_of_lt' (by omega)
     have hj2 : (j.castLT (by omega) + 1 : Fin (i + 1)).1 = (j.castLT (by omega): Fin (i + 1)) + 1 :=
-      val_add_one_of_lt' (by simp [lt_of_le_of_ne h ch])
+      val_add_one_of_lt' (by rw [coe_castLT, add_lt_add_iff_right, val_fin_lt]; omega)
     exact eq_of_val_eq (by simp [← this, hj1, hj2])
 
 theorem coe_cycleRange_of_le {n : ℕ} {i j : Fin n} (h : j ≤ i) :
