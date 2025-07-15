@@ -467,8 +467,15 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
                   exact h
 
                 have h_β_contains : genWeightSpace L (χ.toLinear + α.1.toLinear) ≤
-                    sl2SubalgebraOfRoot_as_H_submodule β β_indexed.property.right :=
-                  by sorry  -- Your assumption goes here
+                    sl2SubalgebraOfRoot_as_H_submodule β β_indexed.property.right := by
+                  -- Use sl2SubalgebraOfRoot_as_H_submodule_eq_sup
+                  rw [sl2SubalgebraOfRoot_as_H_submodule_eq_sup]
+                  -- genWeightSpace L β.toLinear is the first component of the supremum
+                  apply le_sup_of_le_left
+                  apply le_sup_of_le_left
+                  -- Since β.toLinear = χ.toLinear + α.1.toLinear, we have equality
+                  have h_eq : β.toLinear = χ.toLinear + α.1.toLinear := rfl
+                  rw [h_eq]
 
                 exact h_β_contains.trans β_term_in_supr
             -- For the complete proof, we need similar containments for the other two terms
