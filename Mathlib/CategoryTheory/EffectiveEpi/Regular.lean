@@ -15,7 +15,8 @@ https://github.com/UniMath/UniMath/blob/master/UniMath/CategoryTheory/RegularAnd
 
 set_option linter.unusedSimpArgs false
 set_option linter.style.multiGoal false
-set_option linter.style.missingEnd false
+set_option linter.unusedSectionVars false
+set_option linter.style.docString false
 set_option linter.style.commandStart false
 
 universe u v
@@ -40,29 +41,26 @@ class Regular extends HasFiniteLimits C where
 
 variable {C}
 
+/--
+A `RegularEpiFactorisation` of a morphism `f : X ⟶ Y` in a category
+`C` is a factorisation of `f` into a regular epimorphism `ι`
+followed by a monomorphism `π`.
+-/
 structure RegularEpiFactorisation {X Y : C} (f : X ⟶ Y)
     extends Factorisation f where
   regular_epi : RegularEpi ι
   mono : Mono π
 
--- a good test for the definition.
--- ref: 8.3. Proposition of Barrs and Wells
--- In a regular category, every morphism `f : X ⟶ Y`
--- can be factored as `f = e ≫ m`,
--- where `e` is a regular epimorphism and `m` is a monomorphism.
-
 variable [HasPullbacks C] {A B C' : C} (f : A ⟶ B) (g : B ⟶ C')
 
+/-- The pullback of `(f ≫ g)` with itself. -/
 def Khh := pullback (f ≫ g) (f ≫ g)
 
+/-- The pullback of `g` with itself. -/
 def Kgg := pullback g g
 
-/-
-Borceux - Lemma 2.1.2 :
-Given a regular epimorphism `f : A ⟶ B`
-and an arbitrary morphism `g : B ⟶ C`,
-the induced map ` f ×C f : A ×c A ⟶ B ×c B`
-is an epimorphism.
+/--
+The canonical map between the pullbacks of two morphisms `f` and `h`.
 -/
 def kernel_pair_map : Khh f g ⟶ Kgg g := by
     let h := (pullback.fst (f ≫ g) (f ≫ g) ≫ f)
@@ -75,44 +73,68 @@ def kernel_pair_map : Khh f g ⟶ Kgg g := by
     simp only [assoc]
     exact pullback.condition
 
-def Kgg_new := pullback g g
+-- def Kgg_new := pullback g g
 
-def Khh_new (h : A ⟶ C') := pullback h h
+-- def Khh_new (h : A ⟶ C') := pullback h h
 
-def kernel_pair_map'' (h : A ⟶ C')
-  (p : f ≫ g = h) : Khh_new h ⟶ Kgg_new g := by
-  let PullbackPr1Khh := (pullback.fst h h ≫ f)
-  let PullbackPr2Khh := (pullback.snd h h ≫ f)
-  have w : PullbackPr1Khh ≫ g = PullbackPr2Khh ≫ g := by {
-    unfold PullbackPr1Khh  PullbackPr2Khh
-    simp only [assoc]
-    rw [p]
-    exact pullback.condition}
-  apply CategoryTheory.IsPullback.lift ?_
-  · exact w
-  · exact pullback.fst g g
-  · exact pullback.snd g g
-  · exact IsPullback.of_hasPullback g g
+-- def kernel_pair_map'' (h : A ⟶ C')
+--   (p : f ≫ g = h) : Khh_new h ⟶ Kgg_new g := by
+--   let PullbackPr1Khh := (pullback.fst h h ≫ f)
+--   let PullbackPr2Khh := (pullback.snd h h ≫ f)
+--   have w : PullbackPr1Khh ≫ g = PullbackPr2Khh ≫ g := by {
+--     unfold PullbackPr1Khh  PullbackPr2Khh
+--     simp only [assoc]
+--     rw [p]
+--     exact pullback.condition}
+--   apply CategoryTheory.IsPullback.lift ?_
+--   · exact w
+--   · exact pullback.fst g g
+--   · exact pullback.snd g g
+--   · exact IsPullback.of_hasPullback g g
 
+/-- The pullback of a morphism `f` along the first projection from
+ the pullback of another morphism `g` with itself. -/
 def Kl := pullback f (pullback.fst g g)
 
+/-- The pullback of a morphism `f` along the
+  second projection from the pullback of `g` with itself. -/
 def Kr := pullback f (pullback.snd g g)
 
+/-- The projection morphism from the pullback of `f` and
+ the first projection of the pullback of `g` with itself. -/
 def PullbackPr2Kl := pullback.snd f (pullback.fst g g)
+
+/-- The second projection from
+the pullback of `f` and the second projection from the pullback of `g` with itself.
+-/
 def PullbackPr2Kr := pullback.snd f (pullback.snd g g)
 
 variable [RegularEpi f]
 
+/--
+  In a regular category, the second projection from the pullback of
+   morphisms `f` and `g`
+  is a regular epimorphism, by stability of regular epis under pullback.
+-/
 def is_regular_epi_left [Regular C] :
   RegularEpi (PullbackPr2Kl f g) := by
   apply Regular.pullback_stability
   infer_instance
 
+/--
+Given a regular epimorphism `f`, the pullback of `f` along itself
+ yields another regular epimorphism.
+-/
 def is_regular_epi_right [Regular C] :
   RegularEpi (pullback.snd f (pullback.snd g g)) := by
   apply Regular.pullback_stability
   infer_instance
 
+/--
+Given morphisms `f` and `g`, constructs a morphism from `Khh` to
+ `Kl` using the universal property of the pullback, relating kernel
+ pairs and pullbacks.
+-/
 def map_to_pullback_left :
   Khh f g ⟶ Kl f g := by {
   apply CategoryTheory.IsPullback.lift ?_
@@ -126,6 +148,10 @@ def map_to_pullback_left :
   · exact PullbackPr2Kl f g
   exact IsPullback.of_hasPullback f (pullback.fst g g)}
 
+/--
+Constructs a morphism from `Khh h` to `Kr f g` using the universal
+ property of the pullback.
+-/
 def map_to_pullback_right :
   Khh f g ⟶ Kr f g := by {
   apply CategoryTheory.IsPullback.lift ?_
@@ -140,7 +166,12 @@ def map_to_pullback_right :
   · exact pullback.snd f (pullback.snd g g)
   exact IsPullback.of_hasPullback f (pullback.snd g g)}
 
-def map_to_pullback_sqr : map_to_pullback_left f g ≫ (PullbackPr2Kl f g) =
+/--
+Establishes the equality between two compositions involving the morphisms
+`map_to_pullback_left` and `map_to_pullback_right` with pullback projections,
+using properties of pullbacks.
+-/
+lemma map_to_pullback_sqr : map_to_pullback_left f g ≫ (PullbackPr2Kl f g) =
    map_to_pullback_right f g ≫ pullback.snd f (pullback.snd g g) := by {
     unfold map_to_pullback_left map_to_pullback_right
     simp only [IsPullback.lift_snd, id_eq]}
@@ -192,6 +223,10 @@ lemma is_pullback_sqr_mor_eq :
     simp only [assoc]
   }
 
+/--
+Constructs a morphism `w ⟶ Khh f g` using the universal property of pullbacks,
+given morphisms `k₁` and `k₂` and appropriate pullback data.
+-/
 def is_pullback_sqr_mor : w ⟶ Khh f g:= by {
   unfold Khh
   apply CategoryTheory.IsPullback.lift ?_
@@ -276,7 +311,7 @@ lemma is_pullback_sqr_mor_pr2 :
     · simp only [assoc, IsPullback.lift_snd, IsPullback.lift_snd_assoc]
       rw [PullbackSqrCommutesKr]}
 
-def is_pullback_sqr_unique :
+lemma is_pullback_sqr_unique :
   ∃! hk, (hk ≫ (map_to_pullback_left f g ) = k₁ ∧
     hk ≫ map_to_pullback_right f g = k₂) := by {
     constructor
@@ -291,7 +326,7 @@ def is_pullback_sqr_unique :
         · sorry
     }
 
-def is_pullback_sqr : IsPullback (map_to_pullback_left f g)
+lemma is_pullback_sqr : IsPullback (map_to_pullback_left f g)
  (map_to_pullback_right f g)
  (PullbackPr2Kl f g) (pullback.snd f (pullback.snd g g)) := by {
   constructor
@@ -332,10 +367,12 @@ instance regularEpiOfIsoComp {X Y Z: C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] [h
       simp [this]
       congr!
 
-
-    -- convert IsColimit.extendIsoEquiv (inv f) |>.symm ?_
-
-def isEpi_kernel_pair_map [Regular C] :
+/--
+Borceux - Lemma 2.1.2:
+Let `f : A ⟶ B` be a regular epimorphism and `g : B ⟶ C` any morphism in a category.
+Then the induced morphism `f ×C f : A ×c A ⟶ B ×c B` (the product over `C`)
+is also an epimorphism. -/
+lemma isEpi_kernel_pair_map [Regular C] :
   Epi (kernel_pair_map f g) := by {
     have PullbackSqrCommutesKr : pullback.fst f (pullback.snd g g) ≫ f
       = pullback.snd f (pullback.snd g g) ≫ (pullback.snd g g) :=
@@ -363,8 +400,7 @@ def isEpi_kernel_pair_map [Regular C] :
         have h₂ := IsPullback.of_hasPullback f (pullback.snd g g)
         have hR := h₂.paste_vert h₁.flip
         have h := IsPullback.of_hasPullback (f ≫ g) (f ≫ g)
-        have hq : q ≫ pullback.fst f (pullback.snd g g) =
-          pullback.snd (f ≫ g) (f ≫ g) := by
+        have hq : q ≫ pullback.fst f (pullback.snd g g) = pullback.snd (f ≫ g) (f ≫ g) := by
           simp [q, map_to_pullback_right, kernel_pair_map]
         rw [← hq] at h
         have hL := by
@@ -387,6 +423,7 @@ def isEpi_kernel_pair_map [Regular C] :
 
 variable [Regular C]
 
+/-- `K` is defined as the pullback of the morphism `f` with itself. -/
 def K := pullback f f
 
 instance regular_epi_mono_factorization_image
@@ -396,24 +433,38 @@ instance regular_epi_mono_factorization_image
       unfold IsKernelPair
       exact IsPullback.of_hasPullback f f}
 
+/-- The image of a morphism `f`, defined as the coequalizer of the
+ two projections from the pullback of `f` with itself. -/
 def im := coequalizer (pullback.fst f f) (pullback.snd f f)
 
+/-- The canonical morphism from `A` to the image of `f`, given
+ by the coequalizer of the two projections from the pullback of `f` with itself. -/
 def regular_epi_mono_factorization_epi : A ⟶ im f :=
   coequalizer.π (pullback.fst f f) (pullback.snd f f)
 
+/-- The epimorphism part of the regular epi-mono factorization of `f`. -/
 def e := regular_epi_mono_factorization_epi f
 
+/-- The canonical morphism from the image of `f` to `B` in the
+  regular epi-mono factorization. -/
 def regular_epi_mono_factorization_mono : im f ⟶ B :=
   coequalizer.desc f (pullback.condition)
 
+/-- The mono part of the regular epi-mono factorization of `f`. -/
 def m := regular_epi_mono_factorization_mono f
 
+/--
+  Proves that the morphism obtained from the epi-mono
+  factorization is a regular epimorphism,
+  using the coequalizer of the pullback projections of `f`.
+-/
 def regular_epi_mono_factorization_is_regular_epi : RegularEpi (e f) :=
   coequalizerRegular (pullback.fst f f) (pullback.snd f f)
 
+/-- `K'` is defined as the pullback of the morphism `m f` with itself. -/
 def K' := pullback (m f) (m f)
 
-def regular_epi_mono_factorization_is_regular_is_monic_eq : pullback.fst f f ≫
+lemma regular_epi_mono_factorization_is_regular_is_monic_eq : pullback.fst f f ≫
     (coequalizer.π (pullback.fst f f) (pullback.snd f f)) ≫  (m f) =
     pullback.snd f f ≫
     (coequalizer.π (pullback.fst f f) (pullback.snd f f)) ≫  (m f) := by {
@@ -422,13 +473,16 @@ def regular_epi_mono_factorization_is_regular_is_monic_eq : pullback.fst f f ≫
       exact pullback.condition
     }
 
-def regular_epi_mono_factorization_comm : f = e f ≫ m f := by {
+lemma regular_epi_mono_factorization_comm : f = e f ≫ m f := by {
   unfold e m
   unfold regular_epi_mono_factorization_epi
     regular_epi_mono_factorization_mono
   simp only [colimit.ι_desc, Cofork.ofπ_pt, Cofork.ofπ_ι_app]}
 
 omit IsPullbacketc in
+/-- Constructs a morphism between the kernels `K f` and `K' f` in
+ the context of the regular epi-mono factorization,
+   using the universal property of pullbacks. -/
 def regular_epi_mono_factorization_is_regular_is_monic_mor :
   K f ⟶ K' f := by {
     unfold K'
@@ -442,6 +496,8 @@ def regular_epi_mono_factorization_is_regular_is_monic_mor :
     · exact (pullback.fst f f) ≫ (e f)
     }
 
+/-- The morphism `φ` is the canonical map from `K f` to `K' f` arising from the
+  regular epi-mono factorization of `f` and `g`. -/
 def φ : K f ⟶ K' f := regular_epi_mono_factorization_is_regular_is_monic_mor f g
 
 omit k₁ k₂ IsPullbacketc in
@@ -473,25 +529,24 @@ lemma monic_mor_pr1 :
   apply CategoryTheory.IsPullback.lift_fst
 
 omit w k₁ k₂ IsPullbacketc in
-def monic_mor_pr2 :
+lemma monic_mor_pr2 :
   φ f g ≫ pullback.snd (m f) (m f) = pullback.fst f f ≫
     coequalizer.π (pullback.fst f f) (pullback.snd f f) := by
   apply CategoryTheory.IsPullback.lift_snd
 
 omit w k₁ k₂ IsPullbacketc in
-def monic_mor_eq :
+include g in
+lemma monic_mor_eq :
   pullback.fst (m f) (m f) =
   pullback.snd (m f) (m f) := by {
-  have Hepi := (is_epi_monic_mor f g)
-  -- Example usage of Epi.left_cancellation:
+  let Hepi := (is_epi_monic_mor f g)
   have Hepi_prop :=
     Hepi.left_cancellation
      (pullback.fst (m f) (m f)) (pullback.snd (m f) (m f))
   simp only at Hepi_prop
   apply Hepi_prop
   rw [monic_mor_pr1 f g]
-  rw [monic_mor_pr2 f g]
-  }
+  rw [monic_mor_pr2 f g]}
 
 include g in
 omit w k₁ k₂ IsPullbacketc in
@@ -506,10 +561,16 @@ lemma regular_epi_mono_factorization_is_regular_is_monic :
   have h1 := IsPullback.lift_fst hP g' h p
   have h2 := IsPullback.lift_snd hP g' h p
   rw [← h1]
-  have := monic_mor_eq f g
+  let := monic_mor_eq f g
   simp_all only [IsPullback.lift_fst]}
 
-def regularEpiFactorization [Regular C] (f : A ⟶ B) [RegularEpi f] :
+/--
+In a regular category, every morphism `f : X ⟶ Y` can be factored as `f = e ≫ m`,
+where `e` is a regular epimorphism and `m` is a monomorphism.
+This is a useful test for the definition of regular categories, and corresponds to
+Proposition 8.3 in Barrs and Wells.
+-/
+def regularEpiFactorization [Regular C] (f : A ⟶ B) [RegularEpi f]:
   RegularEpiFactorisation f where
     mid := im f
     ι := e f
@@ -517,3 +578,46 @@ def regularEpiFactorization [Regular C] (f : A ⟶ B) [RegularEpi f] :
     ι_π := (regular_epi_mono_factorization_comm f).symm
     regular_epi := regular_epi_mono_factorization_is_regular_epi f
     mono := regular_epi_mono_factorization_is_regular_is_monic f g
+
+-- def regularEpiFactorization' {A A' : C} [Regular C] (f : A ⟶ A') :
+--   RegularEpiFactorisation f where
+--     mid := by {
+--       let K := pullback f f
+--       let d0 : K ⟶ A := pullback.fst f f
+--       let d1 : K ⟶ A := pullback.snd f f
+--       haveI kernelPair : IsKernelPair f d0 d1 :=
+--         IsPullback.of_hasPullback f f
+--       haveI := Regular.equiv_rel_coeq f d0 d1 kernelPair
+--       exact coequalizer d0 d1}
+--     ι := by {
+--       let K := pullback f f
+--       let d0 : K ⟶ A := pullback.fst f f
+--       let d1 : K ⟶ A := pullback.snd f f
+--       haveI kernelPair : IsKernelPair f d0 d1 :=
+--         IsPullback.of_hasPullback f f
+--       haveI := Regular.equiv_rel_coeq f d0 d1 kernelPair
+--       -- let g be the coequalizer of d0 and d1.
+--       let g : A ⟶ coequalizer d0 d1 := coequalizer.π d0 d1
+--       exact g
+--     }
+--     π := by {
+--       let K := pullback f f
+--       let d0 : K ⟶ A := pullback.fst f f
+--       let d1 : K ⟶ A := pullback.snd f f
+--       haveI kernelPair : IsKernelPair f d0 d1 :=
+--         IsPullback.of_hasPullback f f
+--       haveI := Regular.equiv_rel_coeq f d0 d1 kernelPair
+--       apply CategoryTheory.Limits.coequalizer.desc f
+--       exact pullback.condition}
+--     ι_π := by {
+--       simp only [colimit.ι_desc, Cofork.ofπ_pt, Cofork.ofπ_ι_app] }
+--     regular_epi := by {
+--       let K := pullback f f
+--       let d0 : K ⟶ A := pullback.fst f f
+--       let d1 : K ⟶ A := pullback.snd f f
+--       haveI kernelPair : IsKernelPair f d0 d1 := IsPullback.of_hasPullback f f
+--       haveI := Regular.equiv_rel_coeq f d0 d1 kernelPair
+--       let g : A ⟶ coequalizer d0 d1 := coequalizer.π d0 d1
+--       simp only
+--       constructor
+--       exact coequalizerIsCoequalizer (pullback.fst f f) (pullback.snd f f)}
