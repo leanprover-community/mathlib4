@@ -407,23 +407,19 @@ lemma gramSchmidtNormed_continuous (hs : ∀ i, Continuous (T% (s i)))
 
 end continuity
 
-#exit
-
 /-! The Gram-Schmidt process preserves smoothness of sections -/
 section smoothness
 
 -- Let `V` be a smooth vector bundle with a `C^n` Riemannian structure over a `C^k` manifold `B`.
 variable
   {EB : Type*} [NormedAddCommGroup EB] [NormedSpace ℝ EB]
-  {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners ℝ EB HB} {n : WithTop ℕ∞}
+  {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners ℝ EB HB} {k n : WithTop ℕ∞}
   {B : Type*} [TopologicalSpace B] [ChartedSpace HB B]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
   {E : B → Type*} [TopologicalSpace (TotalSpace F E)] [∀ x, NormedAddCommGroup (E x)]
   [∀ x, InnerProductSpace ℝ (E x)] [FiberBundle F E] [VectorBundle ℝ F E]
-  [IsManifold IB n B] [ContMDiffVectorBundle n F E IB]
+  [IsManifold IB k B] [ContMDiffVectorBundle n F E IB]
   [IsContMDiffRiemannianBundle IB n F E]
-
-variable {n : WithTop ℕ∞}
 
 -- TODO: fix pretty-printing of the new differential geometry elaborators!
 set_option linter.style.commandStart false
