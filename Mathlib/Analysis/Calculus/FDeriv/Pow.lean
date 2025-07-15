@@ -136,16 +136,27 @@ theorem Differentiable.pow (hf : Differentiable 𝕜 f) (n : ℕ) : Differentiab
 theorem differentiable_pow (n : ℕ) : Differentiable 𝕜 fun x : 𝔸 => x ^ n :=
   differentiable_id.pow _
 
-theorem fderiv_pow' (n : ℕ) (hf : DifferentiableAt 𝕜 f x) :
+theorem fderiv_fun_pow' (n : ℕ) (hf : DifferentiableAt 𝕜 f x) :
     fderiv 𝕜 (fun x ↦ f x ^ n) x
       = (∑ i ∈ Finset.range n, f x ^ (n.pred - i) •> fderiv 𝕜 f x <• f x ^ i) :=
   hf.hasFDerivAt.pow' n |>.fderiv
 
-theorem fderivWithin_pow' (hxs : UniqueDiffWithinAt 𝕜 s x)
+theorem fderiv_pow' (n : ℕ) (hf : DifferentiableAt 𝕜 f x) :
+    fderiv 𝕜 (f ^ n) x
+      = (∑ i ∈ Finset.range n, f x ^ (n.pred - i) •> fderiv 𝕜 f x <• f x ^ i) :=
+  fderiv_fun_pow' n hf
+
+theorem fderivWithin_fun_pow' (hxs : UniqueDiffWithinAt 𝕜 s x)
     (n : ℕ) (hf : DifferentiableWithinAt 𝕜 f s x) :
     fderivWithin 𝕜 (fun x ↦ f x ^ n) s x
       = (∑ i ∈ Finset.range n, f x ^ (n.pred - i) •> fderivWithin 𝕜 f s x <• f x ^ i) :=
   hf.hasFDerivWithinAt.pow' n |>.fderivWithin hxs
+
+theorem fderivWithin_pow' (hxs : UniqueDiffWithinAt 𝕜 s x)
+    (n : ℕ) (hf : DifferentiableWithinAt 𝕜 f s x) :
+    fderivWithin 𝕜 (f ^ n) s x
+      = (∑ i ∈ Finset.range n, f x ^ (n.pred - i) •> fderivWithin 𝕜 f s x <• f x ^ i) :=
+  fderivWithin_fun_pow' hxs n hf
 
 end NormedRing
 
@@ -189,13 +200,22 @@ theorem hasFDerivAt_pow (n : ℕ) {x : 𝔸} :
       (fun x : 𝔸 ↦ x ^ n) ((n • x ^ (n - 1)) • ContinuousLinearMap.id 𝕜 𝔸) x :=
   hasFDerivAt_id _ |>.pow n
 
-theorem fderiv_pow (n : ℕ) (hf : DifferentiableAt 𝕜 f x) :
+theorem fderiv_fun_pow (n : ℕ) (hf : DifferentiableAt 𝕜 f x) :
     fderiv 𝕜 (fun x ↦ f x ^ n) x = (n • f x ^ (n - 1)) • fderiv 𝕜 f x :=
   hf.hasFDerivAt.pow n |>.fderiv
 
-theorem fderivWithin_pow (hxs : UniqueDiffWithinAt 𝕜 s x)
+theorem fderiv_pow (n : ℕ) (hf : DifferentiableAt 𝕜 f x) :
+    fderiv 𝕜 (fun x ↦ f x ^ n) x = (n • f x ^ (n - 1)) • fderiv 𝕜 f x :=
+  fderiv_fun_pow n hf
+
+theorem fderivWithin_fun_pow (hxs : UniqueDiffWithinAt 𝕜 s x)
     (n : ℕ) (hf : DifferentiableWithinAt 𝕜 f s x) :
     fderivWithin 𝕜 (fun x ↦ f x ^ n) s x = (n • f x ^ (n - 1)) • fderivWithin 𝕜 f s x :=
   hf.hasFDerivWithinAt.pow n |>.fderivWithin hxs
+
+theorem fderivWithin_pow (hxs : UniqueDiffWithinAt 𝕜 s x)
+    (n : ℕ) (hf : DifferentiableWithinAt 𝕜 f s x) :
+    fderivWithin 𝕜 (f ^ n) s x = (n • f x ^ (n - 1)) • fderivWithin 𝕜 f s x :=
+  fderivWithin_fun_pow hxs n hf
 
 end NormedCommRing
