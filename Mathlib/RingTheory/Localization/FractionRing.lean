@@ -256,6 +256,10 @@ theorem injective_comp_algebraMap :
     Function.Injective fun (f : K →+* L) => f.comp (algebraMap A K) :=
   fun _ _ h => ringHom_ext (fun x => RingHom.congr_fun h x)
 
+lemma lift_injective (hg : Injective g) :
+    Function.Injective (lift hg : K →+* L) := by
+  simp [lift, IsLocalization.lift_injective_iff, hg.eq_iff]
+
 section liftAlgHom
 
 variable [Algebra R A] [Algebra R K] [IsScalarTower R A K] [Algebra R L]
@@ -313,6 +317,12 @@ noncomputable def map {A B K L : Type*} [CommRing A] [CommRing B] [IsDomain B] [
   IsLocalization.map L j
     (show nonZeroDivisors A ≤ (nonZeroDivisors B).comap j from
       nonZeroDivisors_le_comap_nonZeroDivisors_of_injective j hj)
+
+lemma map_injective {A B K L : Type*} [CommRing A] [CommRing B] [IsDomain B] [CommRing K]
+    [Algebra A K] [IsFractionRing A K] [CommRing L] [Algebra B L] [IsFractionRing B L] {j : A →+* B}
+    (hj : Injective j) :
+    Function.Injective (map hj : K →+* L) := by
+  simp [map, IsLocalization.map, IsLocalization.lift_injective_iff, hj.eq_iff]
 
 section ringEquivOfRingEquiv
 
@@ -539,6 +549,11 @@ lemma algebraMap_liftAlgebra :
     have := (FaithfulSMul.algebraMap_injective R K).isDomain
     algebraMap (FractionRing R) K = IsFractionRing.lift (FaithfulSMul.algebraMap_injective R _) :=
   rfl
+
+instance : FaithfulSMul (FractionRing R) K := by
+  haveI : IsDomain R := (FaithfulSMul.algebraMap_injective R K).isDomain
+  rw [faithfulSMul_iff_algebraMap_injective, algebraMap_liftAlgebra]
+  exact IsFractionRing.lift_injective (FaithfulSMul.algebraMap_injective R K)
 
 instance {R₀} [SMul R₀ R] [IsScalarTower R₀ R R] [SMul R₀ K] [IsScalarTower R₀ R K] :
     IsScalarTower R₀ (FractionRing R) K where

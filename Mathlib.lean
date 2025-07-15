@@ -13,6 +13,7 @@ import Mathlib.Algebra.Algebra.Hom
 import Mathlib.Algebra.Algebra.Hom.Rat
 import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
+import Mathlib.Algebra.Algebra.NonZeroDivisors
 import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Algebra.Algebra.Opposite
 import Mathlib.Algebra.Algebra.Pi
@@ -5399,6 +5400,7 @@ import Mathlib.RingTheory.Localization.Cardinality
 import Mathlib.RingTheory.Localization.Defs
 import Mathlib.RingTheory.Localization.Finiteness
 import Mathlib.RingTheory.Localization.FractionRing
+import Mathlib.RingTheory.Localization.FractionRingAlgebra
 import Mathlib.RingTheory.Localization.Free
 import Mathlib.RingTheory.Localization.Ideal
 import Mathlib.RingTheory.Localization.Integer
