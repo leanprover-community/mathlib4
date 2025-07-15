@@ -254,11 +254,8 @@ theorem ValueGroupWithZero'.ind {motive : ValueGroupWithZero' R → Prop}
 instance : CommMonoidWithZero (ValueGroupWithZero' R) :=
   Localization.instCommMonoidWithZero
 
-instance : Inv (ValueGroupWithZero' R) :=
-  OreLocalization.inv'
-
-instance : CommGroupWithZero (ValueGroupWithZero' R) where
-
+instance : CommGroupWithZero (ValueGroupWithZero' R) :=
+  OreLocalization.instCommGroupWithZeroNonZeroDivisors
 
 variable (R) in
 /-- The setoid used to construct `ValueGroupWithZero R`. -/
