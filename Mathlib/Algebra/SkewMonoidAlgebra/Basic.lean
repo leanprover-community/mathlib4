@@ -472,8 +472,10 @@ section mapDomain
 variable {G' G'' : Type*} (f : G → G') {g : G' → G''} (v : SkewMonoidAlgebra k G)
 
 /-- Given `f : G → G'` and `v : SkewMonoidAlgebra k G`, `mapDomain f v : SkewMonoidAlgebra k G'`
-is the finitely supported function whose value at `a : G'` is the sum of `v x` over all `x`
-such that `f x = a`. -/
+is the finitely supported additive homomorphism whose value at `a : G'` is the sum of `v x` over
+all `x` such that `f x = a`.
+Note that `SkewMonoidAlgebra.mapDomain` is defined as an `AddHom`, while `MonoidAlgebra.mapDomain`
+is defined as a function. -/
 @[simps]
 def mapDomain :
     SkewMonoidAlgebra k G →+ SkewMonoidAlgebra k G' where
