@@ -135,7 +135,7 @@ theorem mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_zero {a b c d p : P}
 /-- A point lies on the sphere if and only if its power with respect to
 the sphere is zero. -/
 theorem Sphere.power_eq_zero_iff_mem_sphere {s : Sphere P} {p : P} (hr : 0 ≤ s.radius) :
-  s.power p = 0 ↔ p ∈ s := by
+    s.power p = 0 ↔ p ∈ s := by
   simp only [Sphere.power, mem_sphere, sub_eq_zero]
   constructor
   · intro hp
