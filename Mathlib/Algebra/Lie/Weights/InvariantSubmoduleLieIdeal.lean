@@ -5,6 +5,7 @@ import Mathlib.Algebra.Lie.Weights.Killing
 import Mathlib.Algebra.Lie.Weights.RootSystem
 import Mathlib.Algebra.Module.Submodule.Invariant
 import Mathlib.Order.CompleteLattice.Basic
+import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 
 variable {K L : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L]
 variable [LieAlgebra.IsKilling K L] [FiniteDimensional K L]
@@ -695,7 +696,65 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
             -- Now apply this to the bracket decomposition
             exact h_total_containment h_bracket_decomp
           · -- Case: χ ∉ q (general case without invariance)
-            sorry
+            -- Key insight: if χ ∉ q but α ∈ q, then χ + α and χ - α cannot be roots
+            -- This follows from RootPairing.root_mem_submodule_iff_of_add_mem_invtSubmodule
+
+            -- First show that genWeightSpace L (χ.toLinear + α.1.toLinear) = ⊥
+            have h_plus_bot : genWeightSpace L (χ.toLinear + α.1.toLinear) = ⊥ := by
+              by_contra h_ne_bot
+              -- If the weight space is non-trivial, then χ + α corresponds to a root
+              -- We'll use RootPairing.root_mem_submodule_iff_of_add_mem_invtSubmodule to derive a contradiction
+
+              -- Step 1: Establish that we're working with the root system from IsKilling
+              let S := LieAlgebra.IsKilling.rootSystem H
+
+              -- Step 2: q defines an invariant root submodule
+              -- From the assumption hq: ∀ (i : { x // x ∈ LieSubalgebra.root }), q ∈ End.invtSubmodule ((rootSystem H).reflection i)
+              -- we know q is invariant under all root reflections in the root system
+              have q_invt : q ∈ S.invtRootSubmodule := by
+                -- This should follow from hq and the definition of invtRootSubmodule
+                sorry -- Technical: convert hq to membership in invtRootSubmodule
+
+              -- Step 3: Show that χ + α is a root (since its weight space is non-trivial)
+              -- In our context, non-trivial weight spaces correspond to elements in H.root
+              have h_chi_plus_alpha_is_root : χ.toLinear + α.1.toLinear ∈ Set.range S.root := by
+                -- This requires showing the connection between genWeightSpace L μ ≠ ⊥ and μ being a root
+                -- The key insight is that for Cartan subalgebras, this correspondence holds
+                sorry -- Technical: weight space ≠ ⊥ ⟺ root
+
+              -- Step 4: Apply RootPairing.root_mem_submodule_iff_of_add_mem_invtSubmodule
+              -- We need indices i, j such that S.root i = χ.toLinear and S.root j = α.1.toLinear
+              -- and S.root i + S.root j ∈ range S.root
+              obtain ⟨i, hi⟩ : ∃ i, S.root i = χ.toLinear := by
+                sorry -- Technical: χ corresponds to a root index
+              obtain ⟨j, hj⟩ : ∃ j, S.root j = α.1.toLinear := by
+                -- α.1 is a root by definition (α ∈ index set means α.1.toLinear is a root)
+                sorry -- Technical: extract root index from α
+
+              have h_sum_in_range : S.root i + S.root j ∈ Set.range S.root := by
+                rw [hi, hj]
+                exact h_chi_plus_alpha_is_root
+
+              -- Apply the root system lemma
+              -- We need to package q as an element of S.invtRootSubmodule
+              let q_as_invt : S.invtRootSubmodule := ⟨q, q_invt⟩
+              have h_equiv : S.root i ∈ (q_as_invt : Submodule K (Dual K H)) ↔
+                            S.root j ∈ (q_as_invt : Submodule K (Dual K H)) :=
+                RootPairing.root_mem_submodule_iff_of_add_mem_invtSubmodule q_as_invt h_sum_in_range
+
+              -- We know S.root j = α.1.toLinear ∈ q (since α is in our index set)
+              have h_j_in_q : S.root j ∈ (q_as_invt : Submodule K (Dual K H)) := by
+                rw [hj]
+                exact α.2.1
+
+              sorry
+              -- Therefore S.root i = χ.toLinear ∈ q
+              --have h_i_in_q : S.root i ∈ (q_invt : Submodule K (Dual K H)) := h_equiv.mpr h_j_in_q
+
+              -- But this contradicts h_chi_in_q : χ.toLinear ∉ q
+              -- rw [hi] at h_i_in_q
+              --exact h_chi_in_q h_i_in_q
+            sorry -- Requires detailed sl2 representation analysis for χ ∉ q case
 
         | zero =>
           simp only [LieSubmodule.iSup_toSubmodule, Submodule.carrier_eq_coe, lie_zero,
