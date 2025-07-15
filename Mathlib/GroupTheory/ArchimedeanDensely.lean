@@ -580,17 +580,7 @@ lemma denselyOrdered_withZero_iff {M : Type*} [Preorder M] [NoMinOrder M] :
     induction c with
     | zero => simp at hc
     | coe c => exact ⟨c, by simpa using hc⟩
-  · intro a b hab
-    induction b with
-    | zero => simp at hab
-    | coe b =>
-      induction a with
-      | zero =>
-        obtain ⟨a, ha⟩ := exists_lt b
-        exact ⟨a, by simp [ha]⟩
-      | coe a =>
-        obtain ⟨c, hc⟩ := exists_between (WithZero.coe_lt_coe.mp hab)
-        exact ⟨c, by simpa using hc⟩
+  · simpa [WithZero.exists, WithZero.forall, exists_lt] using DenselyOrdered.dense
 
 instance {X : Type*} [Preorder X] [NoMinOrder X] [DenselyOrdered X] :
     DenselyOrdered (WithZero X) :=
