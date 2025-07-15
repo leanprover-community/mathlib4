@@ -124,7 +124,7 @@ Product rule for Lie Brackets: given two vector fields `V W : E → E` and a fun
 we have `[V, f • W] = (df V) • W + f • [V, W]`
 -/
 lemma lieBracketWithin_smul_right {f : E → 𝕜} (hf : DifferentiableWithinAt 𝕜 f s x)
-    (hW : DifferentiableWithinAt 𝕜 W s x) (hs: UniqueDiffWithinAt 𝕜 s x) :
+    (hW : DifferentiableWithinAt 𝕜 W s x) (hs : UniqueDiffWithinAt 𝕜 s x) :
     lieBracketWithin 𝕜 V (fun y ↦ f y • W y) s x =
       (fderivWithin 𝕜 f s x) (V x) • (W x) + (f x) • lieBracketWithin 𝕜 V W s x := by
   simp [lieBracketWithin, fderivWithin_fun_smul hs hf hW, map_smul, add_comm, smul_sub,
@@ -146,7 +146,7 @@ Product rule for Lie Brackets: given two vector fields `V W : E → E` and a fun
 we have `[f • V, W] = - (df W) • V + f • [V, W]`
 -/
 lemma lieBracketWithin_smul_left {f : E → 𝕜} (hf : DifferentiableWithinAt 𝕜 f s x)
-    (hV : DifferentiableWithinAt 𝕜 V s x) (hs: UniqueDiffWithinAt 𝕜 s x) :
+    (hV : DifferentiableWithinAt 𝕜 V s x) (hs : UniqueDiffWithinAt 𝕜 s x) :
     lieBracketWithin 𝕜 (fun y ↦ f y • V y) W s x =
       - (fderivWithin 𝕜 f s x) (W x) • (V x)  + (f x) • lieBracketWithin 𝕜 V W s x := by
   rw [lieBracketWithin_swap, Pi.neg_apply, lieBracketWithin_smul_right hf hV hs,
@@ -178,6 +178,26 @@ lemma lieBracket_add_left (hV : DifferentiableAt 𝕜 V x) (hV₁ : Differentiab
   simp only [lieBracket, Pi.add_apply, map_add]
   rw [fderiv_add hV hV₁, ContinuousLinearMap.add_apply]
   abel
+
+/-- We have `[0, W] = 0` for all vector fields `W`: this depends on the junk value 0
+if `W` is not differentiable. Version within a set. -/
+@[simp]
+lemma lieBracketWithin_zero_left : lieBracketWithin 𝕜 0 W s = 0 := by ext; simp [lieBracketWithin]
+
+/-- We have `[W, 0] = 0` for all vector fields `W`: this depends on the junk value 0
+if `W` is not differentiable. Version within a set. -/
+@[simp]
+lemma lieBracketWithin_zero_right : lieBracketWithin 𝕜 W 0 s = 0 := by ext; simp [lieBracketWithin]
+
+/-- We have `[0, W] = 0` for all vector fields `W`: this depends on the junk value 0
+if `W` is not differentiable. -/
+@[simp]
+lemma lieBracket_zero_left : lieBracket 𝕜 0 W = 0 := by simp [← lieBracketWithin_univ]
+
+/-- We have `[W, 0] = 0` for all vector fields `W`: this depends on the junk value 0
+if `W` is not differentiable. -/
+@[simp]
+lemma lieBracket_zero_right : lieBracket 𝕜 W 0 = 0 := by simp [← lieBracketWithin_univ]
 
 lemma lieBracketWithin_add_right (hW : DifferentiableWithinAt 𝕜 W s x)
     (hW₁ : DifferentiableWithinAt 𝕜 W₁ s x) (hs : UniqueDiffWithinAt 𝕜 s x) :

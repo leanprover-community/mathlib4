@@ -59,8 +59,7 @@ variable {R}
 
 theorem incMatrix_apply [Zero R] [One R] [DecidableEq α] [DecidableRel G.Adj] {a : α} {e : Sym2 α} :
     G.incMatrix R a e = (G.incidenceSet a).indicator 1 e := by
-  simp only [incMatrix, Set.indicator, Pi.one_apply]
-  rfl
+  simp [incMatrix, Set.indicator]
 
 /-- Entries of the incidence matrix can be computed given additional decidable instances. -/
 theorem incMatrix_apply' [Zero R] [One R] [DecidableEq α] [DecidableRel G.Adj] {a : α}
@@ -72,7 +71,7 @@ variable [MulZeroOneClass R] [DecidableEq α] [DecidableRel G.Adj] {a b : α} {e
 
 theorem incMatrix_apply_mul_incMatrix_apply : G.incMatrix R a e * G.incMatrix R b e =
     (G.incidenceSet a ∩ G.incidenceSet b).indicator 1 e := by
-  simp [incMatrix_apply',  Set.indicator_apply, ← ite_and, and_comm]
+  simp [incMatrix_apply', Set.indicator_apply, ← ite_and, and_comm]
 
 theorem incMatrix_apply_mul_incMatrix_apply_of_not_adj (hab : a ≠ b) (h : ¬G.Adj a b) :
     G.incMatrix R a e * G.incMatrix R b e = 0 := by
@@ -123,7 +122,7 @@ theorem sum_incMatrix_apply_of_mem_edgeSet [Fintype α] :
   simp only [incMatrix_apply', sum_boole, mk'_mem_incidenceSet_iff, h]
   congr 2
   ext e
-  simp only [mem_filter, mem_univ, true_and, mem_insert, mem_singleton]
+  simp
 
 theorem sum_incMatrix_apply_of_notMem_edgeSet [Fintype α] (h : e ∉ G.edgeSet) :
     ∑ a, G.incMatrix R a e = 0 :=

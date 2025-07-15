@@ -444,7 +444,7 @@ theorem mdifferentiable_iff :
           DifferentiableOn 𝕜 (extChartAt I' y ∘ f ∘ (extChartAt I x).symm)
             ((extChartAt I x).target ∩
               (extChartAt I x).symm ⁻¹' (f ⁻¹' (extChartAt I' y).source)) := by
-  simp [← mdifferentiableOn_univ, mdifferentiableOn_iff, continuous_iff_continuousOn_univ]
+  simp [← mdifferentiableOn_univ, mdifferentiableOn_iff, continuousOn_univ]
 
 /-- One can reformulate smoothness as continuity and smoothness in any extended chart in the
 target. -/
@@ -453,7 +453,7 @@ theorem mdifferentiable_iff_target :
       Continuous f ∧ ∀ y : M',
         MDifferentiableOn I 𝓘(𝕜, E') (extChartAt I' y ∘ f) (f ⁻¹' (extChartAt I' y).source) := by
   rw [← mdifferentiableOn_univ, mdifferentiableOn_iff_target]
-  simp [continuous_iff_continuousOn_univ]
+  simp [continuousOn_univ]
 
 end IsManifold
 
@@ -1013,6 +1013,23 @@ theorem HasMFDerivAt.congr_of_eventuallyEq (h : HasMFDerivAt I I' f x f') (h₁ 
   apply h.congr_of_eventuallyEq _ (mem_of_mem_nhds h₁ :)
   rwa [nhdsWithin_univ]
 
+theorem mdifferentiableWithinAt_congr (h₁ : ∀ y ∈ s, f₁ y = f y) (hx : f₁ x = f x) :
+    MDifferentiableWithinAt I I' f₁ s x ↔ MDifferentiableWithinAt I I' f s x :=
+  differentiableWithinAt_localInvariantProp.liftPropWithinAt_congr_iff h₁ hx
+
+theorem MDifferentiableWithinAt.congr_of_mem
+    (h : MDifferentiableWithinAt I I' f s x) (h₁ : ∀ y ∈ s, f₁ y = f y) (hx : x ∈ s) :
+    MDifferentiableWithinAt I I' f₁ s x :=
+  differentiableWithinAt_localInvariantProp.liftPropWithinAt_congr_of_mem h h₁ hx
+
+theorem mdifferentiableWithinAt_congr_of_mem (h₁ : ∀ y ∈ s, f₁ y = f y) (hx : x ∈ s) :
+    MDifferentiableWithinAt I I' f₁ s x ↔ MDifferentiableWithinAt I I' f s x :=
+  differentiableWithinAt_localInvariantProp.liftPropWithinAt_congr_iff_of_mem h₁ hx
+
+theorem Filter.EventuallyEq.mdifferentiablefWithinAt_iff (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) :
+    MDifferentiableWithinAt I I' f₁ s x ↔ MDifferentiableWithinAt I I' f s x :=
+  differentiableWithinAt_localInvariantProp.liftPropWithinAt_congr_iff_of_eventuallyEq h₁ hx
+
 theorem MDifferentiableWithinAt.congr_of_eventuallyEq (h : MDifferentiableWithinAt I I' f s x)
     (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) : MDifferentiableWithinAt I I' f₁ s x :=
   (h.hasMFDerivWithinAt.congr_of_eventuallyEq h₁ hx).mdifferentiableWithinAt
@@ -1046,6 +1063,18 @@ theorem MDifferentiableWithinAt.congr_mono (h : MDifferentiableWithinAt I I' f s
 theorem MDifferentiableWithinAt.congr (h : MDifferentiableWithinAt I I' f s x)
     (ht : ∀ x ∈ s, f₁ x = f x) (hx : f₁ x = f x) : MDifferentiableWithinAt I I' f₁ s x :=
   (HasMFDerivWithinAt.congr_mono h.hasMFDerivWithinAt ht hx (Subset.refl _)).mdifferentiableWithinAt
+
+theorem Filter.EventuallyEq.mdifferentiableAt_iff (h₁ : f₁ =ᶠ[𝓝 x] f) :
+    MDifferentiableAt I I' f₁ x ↔ MDifferentiableAt I I' f x :=
+  differentiableWithinAt_localInvariantProp.liftPropAt_congr_iff_of_eventuallyEq h₁
+
+theorem MDifferentiableOn.congr (h : MDifferentiableOn I I' f s) (h₁ : ∀ y ∈ s, f₁ y = f y) :
+    MDifferentiableOn I I' f₁ s :=
+  differentiableWithinAt_localInvariantProp.liftPropOn_congr h h₁
+
+theorem mdifferentiableOn_congr (h₁ : ∀ y ∈ s, f₁ y = f y) :
+    MDifferentiableOn I I' f₁ s ↔ MDifferentiableOn I I' f s :=
+  differentiableWithinAt_localInvariantProp.liftPropOn_congr_iff h₁
 
 theorem MDifferentiableOn.congr_mono (h : MDifferentiableOn I I' f s) (h' : ∀ x ∈ t, f₁ x = f x)
     (h₁ : t ⊆ s) : MDifferentiableOn I I' f₁ t := fun x hx =>
@@ -1099,7 +1128,6 @@ theorem mfderivWithin_congr_of_mem (hL : ∀ x ∈ s, f₁ x = f x) (hx : x ∈ 
 theorem tangentMapWithin_congr (h : ∀ x ∈ s, f x = f₁ x) (p : TangentBundle I M) (hp : p.1 ∈ s) :
     tangentMapWithin I I' f s p = tangentMapWithin I I' f₁ s p := by
   refine TotalSpace.ext (h p.1 hp) ?_
-  -- This used to be `simp only`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   rw [tangentMapWithin, h p.1 hp, tangentMapWithin, mfderivWithin_congr h (h _ hp)]
 
 theorem Filter.EventuallyEq.mfderiv_eq (hL : f₁ =ᶠ[𝓝 x] f) :
