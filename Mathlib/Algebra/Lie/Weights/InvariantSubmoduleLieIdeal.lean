@@ -455,8 +455,8 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
                     exact h_chi_plus_alpha_in_q
                   · -- β.IsNonZero
                     -- β.IsNonZero means ¬ (β : H → K) = 0
-                    -- Since β.toFun = χ.toLinear + α.1.toLinear, we have β =
-                    -- χ.toLinear + α.1.toLinear
+                    -- Since β.toFun = χ.toLinear + α.1.toLinear,
+                    -- we have β = χ.toLinear + α.1.toLinear
                     intro h_eq
                     -- h_eq : β = 0
                     -- We need to show contradiction with w_plus : ¬(χ.toLinear + α.1.toLinear = 0)
@@ -505,6 +505,100 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
                   apply le_sup_of_le_left
                   -- Since β.toLinear = χ.toLinear + α.1.toLinear, we have equality
                   have h_eq : β.toLinear = χ.toLinear + α.1.toLinear := rfl
+                  rw [h_eq]
+
+                exact h_β_contains.trans β_term_in_supr
+
+            -- Second step: show genWeightSpace L (χ - α) ≤ supremum
+            have h_chi_minus_alpha_in_q : χ.toLinear - α.1.toLinear ∈ q := by
+              -- q is a submodule, so it's closed under subtraction
+              -- χ.toLinear - α.1.toLinear = χ.toLinear + (-α.1.toLinear)
+              -- Since χ.toLinear ∈ q and (-α.1.toLinear) ∈ q, their sum is in q
+              rw [sub_eq_add_neg]
+              apply q.add_mem h_chi_in_q
+              -- Need to show -α.1.toLinear ∈ q
+              -- Since q is a submodule, it's closed under scalar multiplication
+              -- -α.1.toLinear = (-1) • α.1.toLinear, and α.1.toLinear ∈ q
+              have h_neg_smul : -α.1.toLinear = (-1 : K) • α.1.toLinear := by simp
+              rw [h_neg_smul]
+              exact q.smul_mem (-1) α.2.1
+
+            have h_minus_containment :
+              genWeightSpace L (χ.toLinear - α.1.toLinear) ≤
+              ⨆ β : {β : Weight K H L // β.toLinear ∈ q ∧ β.IsNonZero},
+                sl2SubalgebraOfRoot_as_H_submodule β.1 β.2.2 := by
+              by_cases h_minus_trivial : genWeightSpace L (χ.toLinear - α.1.toLinear) = ⊥
+              · -- Case: weight space is trivial
+                simp [h_minus_trivial]
+              · -- Case: weight space is non-trivial, so χ - α is a weight
+                -- We have (χ - α) ∈ q from h_chi_minus_alpha_in_q and (χ - α) ≠ 0 from w_minus
+                -- Since genWeightSpace L (χ - α) ≠ ⊥,
+                -- there exists a weight β with β.toLinear = χ - α
+                -- This weight will be in the supremum since it's in q and nonzero
+
+                -- First, construct the weight β from the non-trivial weight space
+                let β : Weight K H L := {
+                  toFun := χ.toLinear - α.1.toLinear,
+                  genWeightSpace_ne_bot' := h_minus_trivial
+                }
+
+                -- β satisfies the index set conditions
+                have hβ_in_index_set : β.toLinear ∈ q ∧ β.IsNonZero := by
+                  constructor
+                  · -- β.toLinear ∈ q
+                    exact h_chi_minus_alpha_in_q
+                  · -- β.IsNonZero
+                    -- β.IsNonZero means ¬ (β : H → K) = 0
+                    -- Since β.toFun = χ.toLinear - α.1.toLinear,
+                    -- we have β = χ.toLinear - α.1.toLinear
+                    intro h_eq
+                    -- h_eq : β = 0
+                    -- We need to show contradiction with w_minus : ¬(χ.toLinear - α.1.toLinear = 0)
+                    apply w_minus
+                    -- Need to show: χ.toLinear - α.1.toLinear = 0
+                    -- Since β.IsZero and β.toFun = χ.toLinear - α.1.toLinear, we have the result
+                    -- β.IsZero means (β : H → K) = 0
+                    have h_beta_zero : (β : H → K) = 0 := h_eq
+                    -- And β.toFun = ⇑(χ.toLinear) - ⇑(α.1.toLinear) by definition
+                    have h_beta_def : (β : H → K) = ⇑(χ.toLinear) - ⇑(α.1.toLinear) := rfl
+                    -- From h_beta_zero and h_beta_def, we get ⇑(χ.toLinear) - ⇑(α.1.toLinear) = 0
+                    have h_coe_zero : ⇑(χ.toLinear) - ⇑(α.1.toLinear) = 0 := by
+                      rw [← h_beta_def]
+                      exact h_beta_zero
+                    -- Convert to function equality
+                    ext h
+                    have := congr_fun h_coe_zero h
+                    simpa using this
+
+                -- Explicitly state that β is in the index set
+                have β_mem_index_set : β ∈ {γ : Weight K H L | γ.toLinear ∈ q ∧ γ.IsNonZero} :=
+                  hβ_in_index_set
+
+                -- Create the indexed element for the supremum
+                let β_indexed : {γ : Weight K H L // γ.toLinear ∈ q ∧ γ.IsNonZero} :=
+                  ⟨β, hβ_in_index_set⟩
+
+                -- The corresponding term for β is contained in the supremum
+                have β_term_in_supr :
+                    sl2SubalgebraOfRoot_as_H_submodule β β_indexed.property.right ≤
+                    ⨆ (γ : {γ : Weight K H L // γ.toLinear ∈ q ∧ γ.IsNonZero}),
+                    sl2SubalgebraOfRoot_as_H_submodule γ γ.property.right := by
+                  -- This is just le_iSup applied to β_indexed
+                  have h := le_iSup (fun γ : {γ : Weight K H L // γ.toLinear ∈ q ∧ γ.IsNonZero} =>
+                    sl2SubalgebraOfRoot_as_H_submodule γ.1 γ.2.2) β_indexed
+                  -- Since β_indexed.1 = β and β_indexed.2.2 = β_indexed.property.right,
+                  -- h gives us what we want
+                  exact h
+
+                have h_β_contains : genWeightSpace L (χ.toLinear - α.1.toLinear) ≤
+                    sl2SubalgebraOfRoot_as_H_submodule β β_indexed.property.right := by
+                  -- Use sl2SubalgebraOfRoot_as_H_submodule_eq_sup
+                  rw [sl2SubalgebraOfRoot_as_H_submodule_eq_sup]
+                  -- genWeightSpace L β.toLinear is the first component of the supremum
+                  apply le_sup_of_le_left
+                  apply le_sup_of_le_left
+                  -- Since β.toLinear = χ.toLinear - α.1.toLinear, we have equality
+                  have h_eq : β.toLinear = χ.toLinear - α.1.toLinear := rfl
                   rw [h_eq]
 
                 exact h_β_contains.trans β_term_in_supr
