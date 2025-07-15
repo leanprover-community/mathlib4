@@ -31,7 +31,6 @@ and outputs a set of orthogonal vectors which have the same span.
   an indexed set of vectors of the right size
 -/
 
-
 open Finset Submodule Module
 
 variable (𝕜 : Type*) {E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
@@ -120,7 +119,7 @@ theorem gramSchmidt_inv_triangular (v : ι → E) {i j : ι} (hij : i < j) :
   have : ⟪b j, b k⟫ = 0 := gramSchmidt_orthogonal 𝕜 v (hki.trans hij).ne'
   simp [this]
 
-open Submodule Set Order
+open Set
 
 theorem mem_span_gramSchmidt (f : ι → E) {i j : ι} (hij : i ≤ j) :
     f i ∈ span 𝕜 (gramSchmidt 𝕜 f '' Set.Iic j) := by
@@ -236,14 +235,14 @@ variable (𝕜) in
 noncomputable def gramSchmidtNormed (f : ι → E) (n : ι) : E :=
   (‖gramSchmidt 𝕜 f n‖ : 𝕜)⁻¹ • gramSchmidt 𝕜 f n
 
-theorem gramSchmidtNormed_unit_length_coe {f : ι → E} (n : ι)
+theorem gramSchmidtNormed_unit_length_coe {f : ι → E} {n : ι}
     (h₀ : LinearIndependent 𝕜 (f ∘ ((↑) : Set.Iic n → ι))) : ‖gramSchmidtNormed 𝕜 f n‖ = 1 := by
   simp only [gramSchmidt_ne_zero_coe n h₀, gramSchmidtNormed, norm_smul_inv_norm, Ne,
     not_false_iff]
 
 theorem gramSchmidtNormed_unit_length {f : ι → E} (n : ι) (h₀ : LinearIndependent 𝕜 f) :
     ‖gramSchmidtNormed 𝕜 f n‖ = 1 :=
-  gramSchmidtNormed_unit_length_coe _ (LinearIndependent.comp h₀ _ Subtype.coe_injective)
+  gramSchmidtNormed_unit_length_coe (LinearIndependent.comp h₀ _ Subtype.coe_injective)
 
 theorem gramSchmidtNormed_unit_length' {f : ι → E} {n : ι} (hn : gramSchmidtNormed 𝕜 f n ≠ 0) :
     ‖gramSchmidtNormed 𝕜 f n‖ = 1 := by
@@ -279,8 +278,6 @@ theorem gramSchmidtNormed_orthonormal' (f : ι → E) :
 
 @[deprecated (since := "2025-07-10")]
 alias gramSchmidt_orthonormal' := gramSchmidtNormed_orthonormal'
-
-open Submodule Set Order
 
 theorem span_gramSchmidtNormed (f : ι → E) (s : Set ι) :
     span 𝕜 (gramSchmidtNormed 𝕜 f '' s) = span 𝕜 (gramSchmidt 𝕜 f '' s) := by
