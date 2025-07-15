@@ -86,7 +86,7 @@ private lemma recursion' (n : ℕ) :
     ring
   have hv₁ (x) : HasDerivAt v₁ (v₁' x) x := (hasDerivAt_mul_const θ).sin
   have hu₂ (x) : HasDerivAt u₂ (u₂' x) x := by
-    convert (hasDerivAt_id' x).mul ((hf x).pow _) using 1
+    convert (hasDerivAt_id' x).fun_mul ((hf x).fun_pow _) using 1
     simp only [u₂']
     ring
   have hv₂ (x) : HasDerivAt v₂ (v₂' x) x := (hasDerivAt_mul_const θ).cos

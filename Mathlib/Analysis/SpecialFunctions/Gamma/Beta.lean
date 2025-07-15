@@ -556,7 +556,7 @@ theorem Gamma_mul_Gamma_add_half (s : ℂ) :
     refine DifferentiableOn.analyticOnNhd ?_ isOpen_univ
     refine (Differentiable.mul ?_ (differentiable_const _)).differentiableOn
     apply Differentiable.mul
-    · exact differentiable_one_div_Gamma.comp (differentiable_id'.const_mul _)
+    · exact differentiable_one_div_Gamma.comp (differentiable_id.const_mul _)
     · refine fun t => DifferentiableAt.const_cpow ?_ (Or.inl two_ne_zero)
       exact DifferentiableAt.sub_const (differentiableAt_id.const_mul _) _
   have h3 : Tendsto ((↑) : ℝ → ℂ) (𝓝[≠] 1) (𝓝[≠] 1) := by

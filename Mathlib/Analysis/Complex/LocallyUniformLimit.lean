@@ -185,7 +185,7 @@ theorem hasSum_deriv_of_summable_norm {u : ι → ℝ} (hu : Summable u)
   convert (hc.deriv (Eventually.of_forall fun s =>
     DifferentiableOn.fun_sum fun i _ => hf i) hU).tendsto_at hz using 1
   ext1 s
-  exact (deriv_sum fun i _ => (hf i).differentiableAt (hU.mem_nhds hz)).symm
+  exact (deriv_fun_sum fun i _ => (hf i).differentiableAt (hU.mem_nhds hz)).symm
 
 end Tsums
 

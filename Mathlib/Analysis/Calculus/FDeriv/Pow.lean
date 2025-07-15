@@ -88,32 +88,50 @@ theorem hasFDerivAt_pow' (n : ℕ) {x : 𝔸} :
   hasFDerivAt_id _ |>.pow' n
 
 @[fun_prop]
-theorem DifferentiableWithinAt.pow (hf : DifferentiableWithinAt 𝕜 f s x) (n : ℕ) :
+theorem DifferentiableWithinAt.fun_pow (hf : DifferentiableWithinAt 𝕜 f s x) (n : ℕ) :
     DifferentiableWithinAt 𝕜 (fun x => f x ^ n) s x :=
   let ⟨_, hf'⟩ := hf; ⟨_, hf'.pow' n⟩
+
+@[fun_prop]
+theorem DifferentiableWithinAt.pow (hf : DifferentiableWithinAt 𝕜 f s x) :
+    ∀ n : ℕ, DifferentiableWithinAt 𝕜 (f ^ n) s x :=
+  hf.fun_pow
 
 theorem differentiableWithinAt_pow (n : ℕ) {x : 𝔸} {s : Set 𝔸} :
     DifferentiableWithinAt 𝕜 (fun x : 𝔸 => x ^ n) s x :=
   differentiableWithinAt_id.pow _
 
 @[simp, fun_prop]
-theorem DifferentiableAt.pow (hf : DifferentiableAt 𝕜 f x) (n : ℕ) :
+theorem DifferentiableAt.fun_pow (hf : DifferentiableAt 𝕜 f x) (n : ℕ) :
     DifferentiableAt 𝕜 (fun x => f x ^ n) x :=
   differentiableWithinAt_univ.mp <| hf.differentiableWithinAt.pow n
+
+@[simp, fun_prop]
+theorem DifferentiableAt.pow (hf : DifferentiableAt 𝕜 f x) (n : ℕ) :
+    DifferentiableAt 𝕜 (f ^ n) x := hf.fun_pow n
 
 theorem differentiableAt_pow (n : ℕ) {x : 𝔸} : DifferentiableAt 𝕜 (fun x : 𝔸 => x ^ n) x :=
   differentiableAt_id.pow _
 
 @[fun_prop]
-theorem DifferentiableOn.pow (ha : DifferentiableOn 𝕜 f s) (n : ℕ) :
-    DifferentiableOn 𝕜 (fun x => f x ^ n) s := fun x h => (ha x h).pow n
+theorem DifferentiableOn.fun_pow (hf : DifferentiableOn 𝕜 f s) (n : ℕ) :
+    DifferentiableOn 𝕜 (fun x => f x ^ n) s := fun x h => (hf x h).pow n
+
+@[fun_prop]
+theorem DifferentiableOn.pow (hf : DifferentiableOn 𝕜 f s) (n : ℕ) :
+    DifferentiableOn 𝕜 (f ^ n) s := hf.fun_pow n
 
 theorem differentiableOn_pow (n : ℕ) {s : Set 𝔸} : DifferentiableOn 𝕜 (fun x : 𝔸 => x ^ n) s :=
   differentiableOn_id.pow n
 
 @[simp, fun_prop]
-theorem Differentiable.pow (ha : Differentiable 𝕜 f) (n : ℕ) : Differentiable 𝕜 fun x => f x ^ n :=
-  fun x => (ha x).pow n
+theorem Differentiable.fun_pow (hf : Differentiable 𝕜 f) (n : ℕ) :
+    Differentiable 𝕜 fun x => f x ^ n :=
+  fun x => (hf x).pow n
+
+@[simp, fun_prop]
+theorem Differentiable.pow (hf : Differentiable 𝕜 f) (n : ℕ) : Differentiable 𝕜 (f ^ n) :=
+  hf.fun_pow n
 
 theorem differentiable_pow (n : ℕ) : Differentiable 𝕜 fun x : 𝔸 => x ^ n :=
   differentiable_id.pow _

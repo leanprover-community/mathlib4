@@ -43,16 +43,28 @@ theorem HasDerivAt.pow' (h : HasDerivAt f f' x) (n : ℕ) :
   simpa using h.hasFDerivAt.pow' n |>.hasDerivAt
 
 @[simp low]
-theorem derivWithin_pow'
+theorem derivWithin_fun_pow'
     (h : DifferentiableWithinAt 𝕜 f s x) (hu : UniqueDiffWithinAt 𝕜 s x) (n : ℕ) :
     derivWithin (fun x => f x ^ n) s x =
       ∑ i ∈ Finset.range n, f x ^ (n.pred - i) * derivWithin f s x * f x ^ i :=
   (h.hasDerivWithinAt.pow' n).derivWithin hu
 
 @[simp low]
-theorem deriv_pow' (h : DifferentiableAt 𝕜 f x) (n : ℕ) :
+theorem derivWithin_pow'
+    (h : DifferentiableWithinAt 𝕜 f s x) (hu : UniqueDiffWithinAt 𝕜 s x) (n : ℕ) :
+    derivWithin (f ^ n) s x =
+      ∑ i ∈ Finset.range n, f x ^ (n.pred - i) * derivWithin f s x * f x ^ i :=
+  derivWithin_fun_pow' h hu n
+
+@[simp low]
+theorem deriv_fun_pow' (h : DifferentiableAt 𝕜 f x) (n : ℕ) :
     deriv (fun x => f x ^ n) x = ∑ i ∈ Finset.range n, f x ^ (n.pred - i) * deriv f x * f x ^ i :=
   (h.hasDerivAt.pow' n).deriv
+
+@[simp low]
+theorem deriv_pow' (h : DifferentiableAt 𝕜 f x) (n : ℕ) :
+    deriv (f ^ n) x = ∑ i ∈ Finset.range n, f x ^ (n.pred - i) * deriv f x * f x ^ i :=
+  deriv_fun_pow' h n
 
 end NormedRing
 
@@ -62,31 +74,50 @@ variable [NormedAlgebra 𝕜 𝔸] {f : 𝕜 → 𝔸} {f' : 𝔸} {x : 𝕜} {s
 
 open scoped RightActions
 
-nonrec theorem HasStrictDerivAt.pow (h : HasStrictDerivAt f f' x) (n : ℕ) :
+nonrec theorem HasStrictDerivAt.fun_pow (h : HasStrictDerivAt f f' x) (n : ℕ) :
     HasStrictDerivAt (fun x ↦ f x ^ n) (n * f x ^ (n - 1) * f') x := by
   unfold HasStrictDerivAt
   convert h.pow n
   ext
   simp [mul_assoc]
 
-nonrec theorem HasDerivWithinAt.pow (h : HasDerivWithinAt f f' s x) (n : ℕ) :
+nonrec theorem HasStrictDerivAt.pow (h : HasStrictDerivAt f f' x) (n : ℕ) :
+    HasStrictDerivAt (f ^ n) (n * f x ^ (n - 1) * f') x := h.fun_pow n
+
+nonrec theorem HasDerivWithinAt.fun_pow (h : HasDerivWithinAt f f' s x) (n : ℕ) :
     HasDerivWithinAt (fun x ↦ f x ^ n) (n * f x ^ (n - 1) * f') s x := by
   simpa using h.hasFDerivWithinAt.pow n |>.hasDerivWithinAt
 
-theorem HasDerivAt.pow (h : HasDerivAt f f' x) (n : ℕ) :
+nonrec theorem HasDerivWithinAt.pow (h : HasDerivWithinAt f f' s x) (n : ℕ) :
+    HasDerivWithinAt (f ^ n) (n * f x ^ (n - 1) * f') s x := h.fun_pow n
+
+theorem HasDerivAt.fun_pow (h : HasDerivAt f f' x) (n : ℕ) :
     HasDerivAt (fun x ↦ f x ^ n) (n * f x ^ (n - 1) * f') x := by
   simpa using h.hasFDerivAt.pow n |>.hasDerivAt
 
+theorem HasDerivAt.pow (h : HasDerivAt f f' x) (n : ℕ) :
+    HasDerivAt (f ^ n) (n * f x ^ (n - 1) * f') x := h.fun_pow n
+
 @[simp]
-theorem derivWithin_pow
+theorem derivWithin_fun_pow
     (h : DifferentiableWithinAt 𝕜 f s x) (hu : UniqueDiffWithinAt 𝕜 s x) (n : ℕ) :
     derivWithin (fun x => f x ^ n) s x = n * f x ^ (n - 1) * derivWithin f s x :=
   (h.hasDerivWithinAt.pow n).derivWithin hu
 
 @[simp]
-theorem deriv_pow (h : DifferentiableAt 𝕜 f x) (n : ℕ) :
-    deriv (fun x => f x ^ n) x = n * f x ^ (n - 1) *   deriv f x  :=
+theorem derivWithin_pow
+    (h : DifferentiableWithinAt 𝕜 f s x) (hu : UniqueDiffWithinAt 𝕜 s x) (n : ℕ) :
+    derivWithin (fun x => f x ^ n) s x = n * f x ^ (n - 1) * derivWithin f s x :=
+  derivWithin_fun_pow h hu n
+
+@[simp]
+theorem deriv_fun_pow (h : DifferentiableAt 𝕜 f x) (n : ℕ) :
+    deriv (fun x => f x ^ n) x = n * f x ^ (n - 1) * deriv f x  :=
   (h.hasDerivAt.pow n).deriv
+
+@[simp]
+theorem deriv_pow (h : DifferentiableAt 𝕜 f x) (n : ℕ) :
+    deriv (f ^ n) x = n * f x ^ (n - 1) * deriv f x := deriv_fun_pow h n
 
 end NormedCommRing
 

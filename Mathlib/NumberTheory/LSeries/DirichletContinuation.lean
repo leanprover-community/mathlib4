@@ -132,7 +132,7 @@ private lemma LFunction_changeLevel_aux {M N : ℕ} [NeZero M] [NeZero N] (hMN :
     exact (differentiableAt_LFunction _ _ (.inl hs)).differentiableWithinAt
   · refine DifferentiableOn.analyticOnNhd (fun s hs ↦ ?_) isOpen_compl_singleton
     refine ((differentiableAt_LFunction _ _ (.inl hs)).mul ?_).differentiableWithinAt
-    refine .finset_prod fun i h ↦ ?_
+    refine .fun_finset_prod fun i h ↦ ?_
     have : NeZero i := ⟨(Nat.pos_of_mem_primeFactors h).ne'⟩
     fun_prop
   · refine eventually_of_mem ?_  (fun t (ht : 1 < t.re) ↦ ?_)
@@ -357,7 +357,7 @@ lemma deriv_LFunctionTrivChar₁_apply_of_ne_one {s : ℂ} (hs : s ≠ 1) :
       deriv (fun w ↦ (w - 1) * LFunctionTrivChar n w) s := by
     refine eventuallyEq_iff_exists_mem.mpr ?_ |>.deriv_eq
     exact ⟨_, isOpen_ne.mem_nhds hs, fun _ hw ↦ Function.update_of_ne (Set.mem_setOf.mp hw) ..⟩
-  rw [H, deriv_mul (by fun_prop) (differentiableAt_LFunction _ s (.inl hs)), deriv_sub_const,
+  rw [H, deriv_fun_mul (by fun_prop) (differentiableAt_LFunction _ s (.inl hs)), deriv_sub_const,
     deriv_id'', one_mul, add_comm]
 
 /-- The negative logarithmtic derivative of `s ↦ (s - 1) * L χ s` for a trivial
