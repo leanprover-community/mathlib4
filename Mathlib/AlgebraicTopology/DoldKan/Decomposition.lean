@@ -58,7 +58,7 @@ theorem decomposition_Q (n q : ℕ) :
     · rw [Q_is_eventually_constant (show n + 1 ≤ q by omega), hq]
       congr 1
       ext ⟨x, hx⟩
-      simp only [Finset.mem_filter, Finset.mem_univ, true_and]
+      simp_rw [Finset.mem_filter_univ]
       omega
     · obtain ⟨a, ha⟩ := Nat.le.dest (Nat.succ_le_succ_iff.mp hqn)
       rw [Q_succ, HomologicalComplex.sub_f_apply, HomologicalComplex.comp_f, hq]
