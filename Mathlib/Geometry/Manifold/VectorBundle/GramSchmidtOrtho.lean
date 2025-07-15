@@ -28,16 +28,13 @@ vector bundle, bundle metric, orthonormal frame, Gram-Schmidt
 open Manifold Bundle ContinuousLinearMap ENat Bornology
 open scoped ContDiff Topology
 
--- Let `E` be a smooth vector bundle with a `C^n` Riemannian structure over a `C^k` manifold `B`.
-variable
-  {EB : Type*} [NormedAddCommGroup EB] [NormedSpace ℝ EB]
-  {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners ℝ EB HB} {k n : WithTop ℕ∞}
-  {B : Type*} [TopologicalSpace B] [ChartedSpace HB B]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+-- Let `E` be a topological vector bundle over a topological space `B`,
+-- with a continuous Riemannian structure.
+variable {B F : Type*} [TopologicalSpace B]
+  [NormedAddCommGroup F] [NormedSpace ℝ F]
   {E : B → Type*} [TopologicalSpace (TotalSpace F E)] [∀ x, NormedAddCommGroup (E x)]
   [∀ x, InnerProductSpace ℝ (E x)] [FiberBundle F E] [VectorBundle ℝ F E]
-  [IsManifold IB k B] [ContMDiffVectorBundle n F E IB]
-  [IsContMDiffRiemannianBundle IB n F E]
+  [IsContinuousRiemannianBundle F E]
 
 variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrderBot ι] [WellFoundedLT ι]
 
