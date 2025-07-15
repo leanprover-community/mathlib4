@@ -109,13 +109,13 @@ partial def explodeCore (e : Expr) (depth : Nat) (entries : Entries) (start : Bo
   | .letE varName varType val body _ => do
     trace[explode] ".letE"
     let varType := varType.cleanupAnnotations
-    Meta.withLocalDeclD varName varType fun var => do
+    Meta.withLetDecl varName varType val fun var => do
       let (valEntry?, entries) ← explodeCore val depth entries
       -- Add a synonym so that the substituted fvars refer to `valEntry?`
       let entries := valEntry?.map (entries.addSynonym var) |>.getD entries
       explodeCore (body.instantiate1 var) depth entries
   | _ => do
-    -- Right now all of these are caught by this case case:
+    -- Right now all of these are caught by this case:
     --   Expr.lit, Expr.forallE, Expr.const, Expr.sort, Expr.mvar, Expr.fvar, Expr.bvar
     --   (Note: Expr.mdata is stripped by cleanupAnnotations)
     -- Might be good to handle them individually.
@@ -271,3 +271,7 @@ elab "#explode " stx:term : command => withoutModifyingEnv <| Command.runTermEla
     let entries ← explode e
     let fitchTable : MessageData ← entriesToMessageData entries
     logInfo <|← addMessageContext m!"{heading}\n\n{fitchTable}\n"
+
+end Explode
+
+end Mathlib

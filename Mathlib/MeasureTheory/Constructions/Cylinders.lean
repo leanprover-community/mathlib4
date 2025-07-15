@@ -1,12 +1,11 @@
 /-
 Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rémy Degenne, Peter Pfaffelhuber
+Authors: Rémy Degenne, Peter Pfaffelhuber, Yaël Dillies, Kin Yau James Wong
 -/
+import Mathlib.MeasureTheory.MeasurableSpace.Constructions
 import Mathlib.MeasureTheory.PiSystem
-import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.Topology.Constructions
-import Mathlib.MeasureTheory.MeasurableSpace.Basic
 
 /-!
 # π-systems of cylinders and square cylinders
@@ -29,6 +28,8 @@ a product set.
   all `i` in the finset defining the box, the projection to `α i` belongs to `C i`. The main
   application of this is with `C i = {s : Set (α i) | MeasurableSet s}`.
 * `measurableCylinders`: set of all cylinders with measurable base sets.
+* `cylinderEvents Δ`: The σ-algebra of cylinder events on `Δ`. It is the smallest σ-algebra making
+  the projections on the `i`-th coordinate continuous for all `i ∈ Δ`.
 
 ## Main statements
 
@@ -39,7 +40,7 @@ a product set.
 
 -/
 
-open Set
+open Function Set
 
 namespace MeasureTheory
 
@@ -57,7 +58,7 @@ def squareCylinders (C : ∀ i, Set (Set (α i))) : Set (Set (∀ i, α i)) :=
 theorem squareCylinders_eq_iUnion_image (C : ∀ i, Set (Set (α i))) :
     squareCylinders C = ⋃ s : Finset ι, (fun t ↦ (s : Set ι).pi t) '' univ.pi C := by
   ext1 f
-  simp only [squareCylinders, mem_iUnion, mem_image, mem_univ_pi, exists_prop, mem_setOf_eq,
+  simp only [squareCylinders, mem_iUnion, mem_image, mem_univ_pi, mem_setOf_eq,
     eq_comm (a := f)]
 
 theorem isPiSystem_squareCylinders {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsPiSystem (C i))
@@ -70,11 +71,11 @@ theorem isPiSystem_squareCylinders {C : ∀ i, Set (Set (α i))} (hC : ∀ i, Is
   have h1 : ∀ i ∈ (s₁ : Set ι), t₁ i = t₁' i :=
     fun i hi ↦ (Finset.piecewise_eq_of_mem _ _ _ hi).symm
   have h1' : ∀ i ∉ (s₁ : Set ι), t₁' i = univ :=
-    fun i hi ↦ Finset.piecewise_eq_of_not_mem _ _ _ hi
+    fun i hi ↦ Finset.piecewise_eq_of_notMem _ _ _ hi
   have h2 : ∀ i ∈ (s₂ : Set ι), t₂ i = t₂' i :=
     fun i hi ↦ (Finset.piecewise_eq_of_mem _ _ _ hi).symm
   have h2' : ∀ i ∉ (s₂ : Set ι), t₂' i = univ :=
-    fun i hi ↦ Finset.piecewise_eq_of_not_mem _ _ _ hi
+    fun i hi ↦ Finset.piecewise_eq_of_notMem _ _ _ hi
   rw [Set.pi_congr rfl h1, Set.pi_congr rfl h2, ← union_pi_inter h1' h2']
   refine ⟨s₁ ∪ s₂, fun i ↦ t₁' i ∩ t₂' i, ?_, ?_⟩
   · rw [mem_univ_pi]
@@ -109,7 +110,7 @@ theorem comap_eval_le_generateFrom_squareCylinders_singleton
     MeasurableSpace.comap (Function.eval i) (m i) ≤
       MeasurableSpace.generateFrom
         ((fun t ↦ ({i} : Set ι).pi t) '' univ.pi fun i ↦ {s : Set (α i) | MeasurableSet s}) := by
-  simp only [Function.eval, singleton_pi, ge_iff_le]
+  simp only [singleton_pi]
   rw [MeasurableSpace.comap_eq_generateFrom]
   refine MeasurableSpace.generateFrom_mono fun S ↦ ?_
   simp only [mem_setOf_eq, mem_image, mem_univ_pi, forall_exists_index, and_imp]
@@ -117,13 +118,13 @@ theorem comap_eval_le_generateFrom_squareCylinders_singleton
   classical
   refine ⟨fun j ↦ if hji : j = i then by convert t else univ, fun j ↦ ?_, ?_⟩
   · by_cases hji : j = i
-    · simp only [hji, eq_self_iff_true, eq_mpr_eq_cast, dif_pos]
+    · simp only [hji, eq_mpr_eq_cast, dif_pos]
       convert ht
-      simp only [id_eq, cast_heq]
+      simp only [cast_heq]
     · simp only [hji, not_false_iff, dif_neg, MeasurableSet.univ]
-  · simp only [id_eq, eq_mpr_eq_cast, ← h]
+  · simp only [eq_mpr_eq_cast, ← h]
     ext1 x
-    simp only [singleton_pi, Function.eval, cast_eq, dite_eq_ite, ite_true, mem_preimage]
+    simp only [Function.eval, cast_eq, dite_eq_ite, ite_true, mem_preimage]
 
 /-- The square cylinders formed from measurable sets generate the product σ-algebra. -/
 theorem generateFrom_squareCylinders [∀ i, MeasurableSpace (α i)] :
@@ -150,11 +151,11 @@ section cylinder
 /-- Given a finite set `s` of indices, a cylinder is the preimage of a set `S` of `∀ i : s, α i` by
 the projection from `∀ i, α i` to `∀ i : s, α i`. -/
 def cylinder (s : Finset ι) (S : Set (∀ i : s, α i)) : Set (∀ i, α i) :=
-  (fun (f : ∀ i, α i) (i : s) ↦ f i) ⁻¹' S
+  s.restrict ⁻¹' S
 
 @[simp]
 theorem mem_cylinder (s : Finset ι) (S : Set (∀ i : s, α i)) (f : ∀ i, α i) :
-    f ∈ cylinder s S ↔ (fun i : s ↦ f i) ∈ S :=
+    f ∈ cylinder s S ↔ s.restrict f ∈ S :=
   mem_preimage
 
 @[simp]
@@ -178,17 +179,17 @@ theorem cylinder_eq_empty_iff [h_nonempty : Nonempty (∀ i, α i)] (s : Finset 
   let f' : ∀ i, α i := fun i ↦ if hi : i ∈ s then f ⟨i, hi⟩ else h_nonempty.some i
   have hf' : f' ∈ cylinder s S := by
     rw [mem_cylinder]
-    simpa only [f', Finset.coe_mem, dif_pos]
+    simpa only [Finset.restrict_def, Finset.coe_mem, dif_pos, f']
   rw [h] at hf'
-  exact not_mem_empty _ hf'
+  exact notMem_empty _ hf'
 
 theorem inter_cylinder (s₁ s₂ : Finset ι) (S₁ : Set (∀ i : s₁, α i)) (S₂ : Set (∀ i : s₂, α i))
     [DecidableEq ι] :
     cylinder s₁ S₁ ∩ cylinder s₂ S₂ =
       cylinder (s₁ ∪ s₂)
-        ((fun f ↦ fun j : s₁ ↦ f ⟨j, Finset.mem_union_left s₂ j.prop⟩) ⁻¹' S₁ ∩
-          (fun f ↦ fun j : s₂ ↦ f ⟨j, Finset.mem_union_right s₁ j.prop⟩) ⁻¹' S₂) := by
-  ext1 f; simp only [mem_inter_iff, mem_cylinder, mem_setOf_eq]; rfl
+        (Finset.restrict₂ Finset.subset_union_left ⁻¹' S₁ ∩
+          Finset.restrict₂ Finset.subset_union_right ⁻¹' S₂) := by
+  ext1 f; simp only [mem_inter_iff, mem_cylinder]; rfl
 
 theorem inter_cylinder_same (s : Finset ι) (S₁ : Set (∀ i : s, α i)) (S₂ : Set (∀ i : s, α i)) :
     cylinder s S₁ ∩ cylinder s S₂ = cylinder s (S₁ ∩ S₂) := by
@@ -198,9 +199,9 @@ theorem union_cylinder (s₁ s₂ : Finset ι) (S₁ : Set (∀ i : s₁, α i))
     [DecidableEq ι] :
     cylinder s₁ S₁ ∪ cylinder s₂ S₂ =
       cylinder (s₁ ∪ s₂)
-        ((fun f ↦ fun j : s₁ ↦ f ⟨j, Finset.mem_union_left s₂ j.prop⟩) ⁻¹' S₁ ∪
-          (fun f ↦ fun j : s₂ ↦ f ⟨j, Finset.mem_union_right s₁ j.prop⟩) ⁻¹' S₂) := by
-  ext1 f; simp only [mem_union, mem_cylinder, mem_setOf_eq]; rfl
+        (Finset.restrict₂ Finset.subset_union_left ⁻¹' S₁ ∪
+          Finset.restrict₂ Finset.subset_union_right ⁻¹' S₂) := by
+  ext1 f; simp only [mem_union, mem_cylinder]; rfl
 
 theorem union_cylinder_same (s : Finset ι) (S₁ : Set (∀ i : s, α i)) (S₂ : Set (∀ i : s, α i)) :
     cylinder s S₁ ∪ cylinder s S₂ = cylinder s (S₁ ∪ S₂) := by
@@ -217,7 +218,7 @@ theorem diff_cylinder_same (s : Finset ι) (S T : Set (∀ i : s, α i)) :
 theorem eq_of_cylinder_eq_of_subset [h_nonempty : Nonempty (∀ i, α i)] {I J : Finset ι}
     {S : Set (∀ i : I, α i)} {T : Set (∀ i : J, α i)} (h_eq : cylinder I S = cylinder J T)
     (hJI : J ⊆ I) :
-    S = (fun f : ∀ i : I, α i ↦ fun j : J ↦ f ⟨j, hJI j.prop⟩) ⁻¹' T := by
+    S = Finset.restrict₂ hJI ⁻¹' T := by
   rw [Set.ext_iff] at h_eq
   simp only [mem_cylinder] at h_eq
   ext1 f
@@ -225,22 +226,20 @@ theorem eq_of_cylinder_eq_of_subset [h_nonempty : Nonempty (∀ i, α i)] {I J :
   classical
   specialize h_eq fun i ↦ if hi : i ∈ I then f ⟨i, hi⟩ else h_nonempty.some i
   have h_mem : ∀ j : J, ↑j ∈ I := fun j ↦ hJI j.prop
-  simp only [Finset.coe_mem, dite_true, h_mem] at h_eq
-  exact h_eq
+  simpa only [Finset.restrict_def, Finset.coe_mem, dite_true, h_mem] using h_eq
 
 theorem cylinder_eq_cylinder_union [DecidableEq ι] (I : Finset ι) (S : Set (∀ i : I, α i))
     (J : Finset ι) :
     cylinder I S =
-      cylinder (I ∪ J) ((fun f ↦ fun j : I ↦ f ⟨j, Finset.mem_union_left J j.prop⟩) ⁻¹' S) := by
-  ext1 f; simp only [mem_cylinder, mem_preimage]
+      cylinder (I ∪ J) (Finset.restrict₂ Finset.subset_union_left ⁻¹' S) := by
+  ext1 f; simp only [mem_cylinder, Finset.restrict_def, Finset.restrict₂_def, mem_preimage]
 
 theorem disjoint_cylinder_iff [Nonempty (∀ i, α i)] {s t : Finset ι} {S : Set (∀ i : s, α i)}
     {T : Set (∀ i : t, α i)} [DecidableEq ι] :
     Disjoint (cylinder s S) (cylinder t T) ↔
       Disjoint
-        ((fun f : ∀ i : (s ∪ t : Finset ι), α i
-          ↦ fun j : s ↦ f ⟨j, Finset.mem_union_left t j.prop⟩) ⁻¹' S)
-        ((fun f ↦ fun j : t ↦ f ⟨j, Finset.mem_union_right s j.prop⟩) ⁻¹' T) := by
+        (Finset.restrict₂ Finset.subset_union_left ⁻¹' S)
+        (Finset.restrict₂ Finset.subset_union_right ⁻¹' T) := by
   simp_rw [Set.disjoint_iff, subset_empty_iff, inter_cylinder, cylinder_eq_empty_iff]
 
 theorem IsClosed.cylinder [∀ i, TopologicalSpace (α i)] (s : Finset ι) {S : Set (∀ i : s, α i)}
@@ -251,6 +250,12 @@ theorem _root_.MeasurableSet.cylinder [∀ i, MeasurableSpace (α i)] (s : Finse
     {S : Set (∀ i : s, α i)} (hS : MeasurableSet S) :
     MeasurableSet (cylinder s S) :=
   measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _) hS
+
+/-- The indicator of a cylinder only depends on the variables whose the cylinder depends on. -/
+theorem dependsOn_cylinder_indicator_const {M : Type*} [Zero M] {I : Finset ι}
+    (S : Set (Π i : I, α i)) (c : M) :
+    DependsOn ((cylinder I S).indicator (fun _ ↦ c)) I :=
+  fun x y hxy ↦ Set.indicator_const_eq_indicator_const (by simp [Finset.restrict_def, hxy])
 
 end cylinder
 
@@ -273,6 +278,12 @@ variable [∀ i, MeasurableSpace (α i)] {s t : Set (∀ i, α i)}
 theorem mem_measurableCylinders (t : Set (∀ i, α i)) :
     t ∈ measurableCylinders α ↔ ∃ s S, MeasurableSet S ∧ t = cylinder s S := by
   simp_rw [measurableCylinders, mem_iUnion, exists_prop, mem_singleton_iff]
+
+@[measurability]
+theorem _root_.MeasurableSet.of_mem_measurableCylinders {s : Set (Π i, α i)}
+    (hs : s ∈ measurableCylinders α) : MeasurableSet s := by
+  obtain ⟨I, t, mt, rfl⟩ := (mem_measurableCylinders s).1 hs
+  exact mt.cylinder
 
 /-- A finset `s` such that `t = cylinder s S`. `S` is given by `measurableCylinders.set`. -/
 noncomputable def measurableCylinders.finset (ht : t ∈ measurableCylinders α) : Finset ι :=
@@ -304,8 +315,8 @@ theorem inter_mem_measurableCylinders (hs : s ∈ measurableCylinders α)
   obtain ⟨s₂, S₂, hS₂, rfl⟩ := ht
   classical
   refine ⟨s₁ ∪ s₂,
-    (fun f ↦ (fun i ↦ f ⟨i, Finset.mem_union_left s₂ i.prop⟩ : ∀ i : s₁, α i)) ⁻¹' S₁ ∩
-      {f | (fun i ↦ f ⟨i, Finset.mem_union_right s₁ i.prop⟩ : ∀ i : s₂, α i) ∈ S₂}, ?_, ?_⟩
+    Finset.restrict₂ Finset.subset_union_left ⁻¹' S₁ ∩
+      {f | Finset.restrict₂ Finset.subset_union_right f ∈ S₂}, ?_, ?_⟩
   · refine MeasurableSet.inter ?_ ?_
     · exact measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _) hS₁
     · exact measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _) hS₂
@@ -348,13 +359,102 @@ theorem generateFrom_measurableCylinders :
   · refine iSup_le fun i ↦ ?_
     refine (comap_eval_le_generateFrom_squareCylinders_singleton α i).trans ?_
     refine MeasurableSpace.generateFrom_mono (fun x ↦ ?_)
-    simp only [singleton_pi, Function.eval, mem_image, mem_pi, mem_univ, mem_setOf_eq,
-      forall_true_left, mem_measurableCylinders, exists_prop, forall_exists_index, and_imp]
+    simp only [singleton_pi, mem_image, mem_pi, mem_univ, mem_setOf_eq,
+      forall_true_left, mem_measurableCylinders, forall_exists_index, and_imp]
     rintro t ht rfl
     refine ⟨{i}, {f | f ⟨i, Finset.mem_singleton_self i⟩ ∈ t i}, measurable_pi_apply _ (ht i), ?_⟩
     ext1 x
-    simp only [singleton_pi, Function.eval, mem_preimage, mem_cylinder, mem_setOf_eq]
+    simp only [mem_preimage, Function.eval, mem_cylinder, mem_setOf_eq, Finset.restrict]
+
+/-- The cylinders of a product space indexed by `ℕ` can be seen as depending on the first
+coordinates. -/
+theorem measurableCylinders_nat {X : ℕ → Type*} [∀ n, MeasurableSpace (X n)] :
+    measurableCylinders X = ⋃ (a) (S) (_ : MeasurableSet S), {cylinder (Finset.Iic a) S} := by
+  ext s
+  simp only [mem_measurableCylinders, exists_prop, mem_iUnion]
+  refine ⟨?_, fun ⟨N, S, mS, s_eq⟩ ↦ ⟨Finset.Iic N, S, mS, s_eq⟩⟩
+  rintro ⟨t, S, mS, rfl⟩
+  refine ⟨t.sup id, Finset.restrict₂ t.subset_Iic_sup_id ⁻¹' S,
+    Finset.measurable_restrict₂ _ mS, ?_⟩
+  unfold cylinder
+  rw [← preimage_comp, Finset.restrict₂_comp_restrict]
+  exact mem_singleton _
 
 end cylinders
 
+/-! ### Cylinder events as a sigma-algebra -/
+
+section cylinderEvents
+
+variable {α ι : Type*} {X : ι → Type*} {mα : MeasurableSpace α} [m : ∀ i, MeasurableSpace (X i)]
+  {Δ Δ₁ Δ₂ : Set ι} {i : ι}
+
+/-- The σ-algebra of cylinder events on `Δ`. It is the smallest σ-algebra making the projections
+on the `i`-th coordinate measurable for all `i ∈ Δ`. -/
+def cylinderEvents (Δ : Set ι) : MeasurableSpace (∀ i, X i) := ⨆ i ∈ Δ, (m i).comap fun σ ↦ σ i
+
+@[simp] lemma cylinderEvents_univ : cylinderEvents (X := X) univ = MeasurableSpace.pi := by
+  simp [cylinderEvents, MeasurableSpace.pi]
+
+@[gcongr]
+lemma cylinderEvents_mono (h : Δ₁ ⊆ Δ₂) : cylinderEvents (X := X) Δ₁ ≤ cylinderEvents Δ₂ :=
+  biSup_mono h
+
+lemma cylinderEvents_le_pi : cylinderEvents (X := X) Δ ≤ MeasurableSpace.pi := by
+  simpa using cylinderEvents_mono (subset_univ _)
+
+lemma measurable_cylinderEvents_iff {g : α → ∀ i, X i} :
+    @Measurable _ _ _ (cylinderEvents Δ) g ↔ ∀ ⦃i⦄, i ∈ Δ → Measurable fun a ↦ g a i := by
+  simp_rw [measurable_iff_comap_le, cylinderEvents, MeasurableSpace.comap_iSup,
+    MeasurableSpace.comap_comp, Function.comp_def, iSup_le_iff]
+
+@[fun_prop, aesop safe 100 apply (rule_sets := [Measurable])]
+lemma measurable_cylinderEvent_apply (hi : i ∈ Δ) :
+    Measurable[cylinderEvents Δ] fun f : ∀ i, X i => f i :=
+  measurable_cylinderEvents_iff.1 measurable_id hi
+
+@[aesop safe 100 apply (rule_sets := [Measurable])]
+lemma Measurable.eval_cylinderEvents {g : α → ∀ i, X i} (hi : i ∈ Δ)
+    (hg : @Measurable _ _ _ (cylinderEvents Δ) g) : Measurable fun a ↦ g a i :=
+  (measurable_cylinderEvent_apply hi).comp hg
+
+@[fun_prop, aesop safe 100 apply (rule_sets := [Measurable])]
+lemma measurable_cylinderEvents_lambda (f : α → ∀ i, X i) (hf : ∀ i, Measurable fun a ↦ f a i) :
+    Measurable f :=
+  measurable_pi_iff.mpr hf
+
+/-- The function `(f, x) ↦ update f a x : (Π a, X a) × X a → Π a, X a` is measurable. -/
+lemma measurable_update_cylinderEvents' [DecidableEq ι] :
+    @Measurable _ _ (.prod (cylinderEvents Δ) (m i)) (cylinderEvents Δ)
+      (fun p : (∀ i, X i) × X i ↦ update p.1 i p.2) := by
+  rw [measurable_cylinderEvents_iff]
+  intro j hj
+  dsimp [update]
+  split_ifs with h
+  · subst h
+    dsimp
+    exact measurable_snd
+  · exact measurable_cylinderEvents_iff.1 measurable_fst hj
+
+lemma measurable_uniqueElim_cylinderEvents [Unique ι] :
+    Measurable (uniqueElim : X (default : ι) → ∀ i, X i) := by
+  simp_rw [measurable_pi_iff, Unique.forall_iff, uniqueElim_default]; exact measurable_id
+
+/-- The function `update f a : X a → Π a, X a` is always measurable.
+This doesn't require `f` to be measurable.
+This should not be confused with the statement that `update f a x` is measurable. -/
+@[measurability]
+lemma measurable_update_cylinderEvents (f : ∀ a : ι, X a) {a : ι} [DecidableEq ι] :
+    @Measurable _ _ _ (cylinderEvents Δ) (update f a) :=
+  measurable_update_cylinderEvents'.comp measurable_prodMk_left
+
+lemma measurable_update_cylinderEvents_left {a : ι} [DecidableEq ι] {x : X a} :
+    @Measurable _ _ (cylinderEvents Δ) (cylinderEvents Δ) (update · a x) :=
+  measurable_update_cylinderEvents'.comp measurable_prodMk_right
+
+lemma measurable_restrict_cylinderEvents (Δ : Set ι) :
+    Measurable[cylinderEvents (X := X) Δ] (restrict Δ) := by
+  rw [@measurable_pi_iff]; exact fun i ↦ measurable_cylinderEvent_apply i.2
+
+end cylinderEvents
 end MeasureTheory

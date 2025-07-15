@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Order.UpperLower.Basic
-import Mathlib.Topology.Separation
-
-#align_import topology.order.priestley from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
+import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-!
 # Priestley spaces
@@ -39,7 +37,6 @@ variable {α : Type*}
 separated by a clopen upper set. Compactness is often assumed, but we do not include it here. -/
 class PriestleySpace (α : Type*) [Preorder α] [TopologicalSpace α] : Prop where
   priestley {x y : α} : ¬x ≤ y → ∃ U : Set α, IsClopen U ∧ IsUpperSet U ∧ x ∈ U ∧ y ∉ U
-#align priestley_space PriestleySpace
 
 variable [TopologicalSpace α]
 
@@ -50,13 +47,11 @@ variable [Preorder α] [PriestleySpace α] {x y : α}
 theorem exists_isClopen_upper_of_not_le :
     ¬x ≤ y → ∃ U : Set α, IsClopen U ∧ IsUpperSet U ∧ x ∈ U ∧ y ∉ U :=
   PriestleySpace.priestley
-#align exists_clopen_upper_of_not_le exists_isClopen_upper_of_not_le
 
 theorem exists_isClopen_lower_of_not_le (h : ¬x ≤ y) :
     ∃ U : Set α, IsClopen U ∧ IsLowerSet U ∧ x ∉ U ∧ y ∈ U :=
   let ⟨U, hU, hU', hx, hy⟩ := exists_isClopen_upper_of_not_le h
   ⟨Uᶜ, hU.compl, hU'.compl, Classical.not_not.2 hx, hy⟩
-#align exists_clopen_lower_of_not_le exists_isClopen_lower_of_not_le
 
 end Preorder
 
@@ -66,17 +61,16 @@ variable [PartialOrder α] [PriestleySpace α] {x y : α}
 
 theorem exists_isClopen_upper_or_lower_of_ne (h : x ≠ y) :
     ∃ U : Set α, IsClopen U ∧ (IsUpperSet U ∨ IsLowerSet U) ∧ x ∈ U ∧ y ∉ U := by
-  obtain h | h := h.not_le_or_not_le
+  obtain h | h := h.not_le_or_not_ge
   · exact (exists_isClopen_upper_of_not_le h).imp fun _ ↦ And.imp_right <| And.imp_left Or.inl
   · obtain ⟨U, hU, hU', hy, hx⟩ := exists_isClopen_lower_of_not_le h
     exact ⟨U, hU, Or.inr hU', hx, hy⟩
-#align exists_clopen_upper_or_lower_of_ne exists_isClopen_upper_or_lower_of_ne
 
 -- See note [lower instance priority]
-instance (priority := 100) PriestleySpace.toT2Space : T2Space α :=
-  ⟨fun _ _ h ↦
-    let ⟨U, hU, _, hx, hy⟩ := exists_isClopen_upper_or_lower_of_ne h
-    ⟨U, Uᶜ, hU.isOpen, hU.compl.isOpen, hx, hy, disjoint_compl_right⟩⟩
-#align priestley_space.to_t2_space PriestleySpace.toT2Space
+instance (priority := 100) PriestleySpace.toTotallySeparatedSpace : TotallySeparatedSpace α where
+  isTotallySeparated_univ _ _ _ _ h :=
+    (exists_isClopen_upper_or_lower_of_ne h).elim fun U ⟨hU, _, hx, hy⟩ =>
+      ⟨U, Uᶜ, hU.isOpen, hU.compl.isOpen, hx, hy,
+        union_compl_self U ▸ subset_rfl, disjoint_compl_right⟩
 
 end PartialOrder

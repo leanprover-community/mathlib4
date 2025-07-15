@@ -17,20 +17,20 @@ The file contains definitions and results about roots of Lie algebras with non-d
 forms.
 
 ## Main definitions
- * `LieAlgebra.IsKilling.ker_restrict_eq_bot_of_isCartanSubalgebra`: if the Killing form of
-   a Lie algebra is non-singular, it remains non-singular when restricted to a Cartan subalgebra.
- * `LieAlgebra.IsKilling.instIsLieAbelianOfIsCartanSubalgebra`: if the Killing form of a Lie
-   algebra is non-singular, then its Cartan subalgebras are Abelian.
- * `LieAlgebra.IsKilling.isSemisimple_ad_of_mem_isCartanSubalgebra`: over a perfect field, if a Lie
-   algebra has non-degenerate Killing form, Cartan subalgebras contain only semisimple elements.
- * `LieAlgebra.IsKilling.span_weight_eq_top`: given a splitting Cartan subalgebra `H` of a
-   finite-dimensional Lie algebra with non-singular Killing form, the corresponding roots span the
-   dual space of `H`.
- * `LieAlgebra.IsKilling.coroot`: the coroot corresponding to a root.
- * `LieAlgebra.IsKilling.isCompl_ker_weight_span_coroot`: given a root `α` with respect to a Cartan
-   subalgebra `H`, we have a natural decomposition of `H` as the kernel of `α` and the span of the
-   coroot corresponding to `α`.
- * `LieAlgebra.IsKilling.finrank_rootSpace_eq_one`: root spaces are one-dimensional.
+* `LieAlgebra.IsKilling.ker_restrict_eq_bot_of_isCartanSubalgebra`: if the Killing form of
+  a Lie algebra is non-singular, it remains non-singular when restricted to a Cartan subalgebra.
+* `LieAlgebra.IsKilling.instIsLieAbelianOfIsCartanSubalgebra`: if the Killing form of a Lie
+  algebra is non-singular, then its Cartan subalgebras are Abelian.
+* `LieAlgebra.IsKilling.isSemisimple_ad_of_mem_isCartanSubalgebra`: over a perfect field, if a Lie
+  algebra has non-degenerate Killing form, Cartan subalgebras contain only semisimple elements.
+* `LieAlgebra.IsKilling.span_weight_eq_top`: given a splitting Cartan subalgebra `H` of a
+  finite-dimensional Lie algebra with non-singular Killing form, the corresponding roots span the
+  dual space of `H`.
+* `LieAlgebra.IsKilling.coroot`: the coroot corresponding to a root.
+* `LieAlgebra.IsKilling.isCompl_ker_weight_span_coroot`: given a root `α` with respect to a Cartan
+  subalgebra `H`, we have a natural decomposition of `H` as the kernel of `α` and the span of the
+  coroot corresponding to `α`.
+* `LieAlgebra.IsKilling.finrank_rootSpace_eq_one`: root spaces are one-dimensional.
 
 -/
 
@@ -38,9 +38,13 @@ variable (R K L : Type*) [CommRing R] [LieRing L] [LieAlgebra R L] [Field K] [Li
 
 namespace LieAlgebra
 
+lemma restrict_killingForm (H : LieSubalgebra R L) :
+    (killingForm R L).restrict H = LieModule.traceForm R H L :=
+  rfl
+
 namespace IsKilling
 
-variable [IsKilling R L] [Module.Finite R L] [Module.Free R L]
+variable [IsKilling R L]
 
 /-- If the Killing form of a Lie algebra is non-singular, it remains non-singular when restricted
 to a Cartan subalgebra. -/
@@ -48,19 +52,15 @@ lemma ker_restrict_eq_bot_of_isCartanSubalgebra
     [IsNoetherian R L] [IsArtinian R L] (H : LieSubalgebra R L) [H.IsCartanSubalgebra] :
     LinearMap.ker ((killingForm R L).restrict H) = ⊥ := by
   have h : Codisjoint (rootSpace H 0) (LieModule.posFittingComp R H L) :=
-    (LieModule.isCompl_weightSpace_zero_posFittingComp R H L).codisjoint
+    (LieModule.isCompl_genWeightSpace_zero_posFittingComp R H L).codisjoint
   replace h : Codisjoint (H : Submodule R L) (LieModule.posFittingComp R H L : Submodule R L) := by
-    rwa [codisjoint_iff, ← LieSubmodule.coe_toSubmodule_eq_iff, LieSubmodule.sup_coe_toSubmodule,
-      LieSubmodule.top_coeSubmodule, rootSpace_zero_eq R L H, LieSubalgebra.coe_toLieSubmodule,
+    rwa [codisjoint_iff, ← LieSubmodule.toSubmodule_inj, LieSubmodule.sup_toSubmodule,
+      LieSubmodule.top_toSubmodule, rootSpace_zero_eq R L H, LieSubalgebra.coe_toLieSubmodule,
       ← codisjoint_iff] at h
   suffices this : ∀ m₀ ∈ H, ∀ m₁ ∈ LieModule.posFittingComp R H L, killingForm R L m₀ m₁ = 0 by
     simp [LinearMap.BilinForm.ker_restrict_eq_of_codisjoint h this]
   intro m₀ h₀ m₁ h₁
   exact killingForm_eq_zero_of_mem_zeroRoot_mem_posFitting R L H (le_zeroRootSubalgebra R L H h₀) h₁
-
-lemma restrict_killingForm (H : LieSubalgebra R L) :
-    (killingForm R L).restrict H = LieModule.traceForm R H L :=
-  rfl
 
 @[simp] lemma ker_traceForm_eq_bot_of_isCartanSubalgebra
     [IsNoetherian R L] [IsArtinian R L] (H : LieSubalgebra R L) [H.IsCartanSubalgebra] :
@@ -71,6 +71,8 @@ lemma traceForm_cartan_nondegenerate
     [IsNoetherian R L] [IsArtinian R L] (H : LieSubalgebra R L) [H.IsCartanSubalgebra] :
     (LieModule.traceForm R H L).Nondegenerate := by
   simp [LinearMap.BilinForm.nondegenerate_iff_ker_eq_bot]
+
+variable [Module.Free R L] [Module.Finite R L]
 
 instance instIsLieAbelianOfIsCartanSubalgebra
     [IsDomain R] [IsPrincipalIdealRing R] [IsArtinian R L]
@@ -83,11 +85,13 @@ end IsKilling
 
 section Field
 
-open FiniteDimensional LieModule Set
+open Module LieModule Set
 open Submodule (span subset_span)
 
-variable [FiniteDimensional K L]
-  (H : LieSubalgebra K L) [H.IsCartanSubalgebra] [IsTriangularizable K H L]
+variable [FiniteDimensional K L] (H : LieSubalgebra K L) [H.IsCartanSubalgebra]
+
+section
+variable [IsTriangularizable K H L]
 
 /-- For any `α` and `β`, the corresponding root spaces are orthogonal with respect to the Killing
 form, provided `α + β ≠ 0`. -/
@@ -102,15 +106,15 @@ lemma killingForm_apply_eq_zero_of_mem_rootSpace_of_add_ne_zero {α β : H → K
   However the semisimplicity of `ad R L z` is (a) non-trivial and (b) requires the assumption
   that `K` is a perfect field and `L` has non-degenerate Killing form. -/
   let σ : (H → K) → (H → K) := fun γ ↦ α + (β + γ)
-  have hσ : ∀ γ, σ γ ≠ γ := fun γ ↦ by simpa only [σ, ← add_assoc] using add_left_ne_self.mpr hαβ
+  have hσ : ∀ γ, σ γ ≠ γ := fun γ ↦ by simpa only [σ, ← add_assoc] using add_ne_right.mpr hαβ
   let f : Module.End K L := (ad K L x) ∘ₗ (ad K L y)
   have hf : ∀ γ, MapsTo f (rootSpace H γ) (rootSpace H (σ γ)) := fun γ ↦
-    (mapsTo_toEnd_weightSpace_add_of_mem_rootSpace K L H L α (β + γ) hx).comp <|
-      mapsTo_toEnd_weightSpace_add_of_mem_rootSpace K L H L β γ hy
+    (mapsTo_toEnd_genWeightSpace_add_of_mem_rootSpace K L H L α (β + γ) hx).comp <|
+      mapsTo_toEnd_genWeightSpace_add_of_mem_rootSpace K L H L β γ hy
   classical
-  have hds := DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top
-    (LieSubmodule.independent_iff_coe_toSubmodule.mp <| independent_weightSpace K H L)
-    (LieSubmodule.iSup_eq_top_iff_coe_toSubmodule.mp <| iSup_weightSpace_eq_top K H L)
+  have hds := DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top
+    (LieSubmodule.iSupIndep_toSubmodule.mpr <| iSupIndep_genWeightSpace K H L)
+    (LieSubmodule.iSup_toSubmodule_eq_top.mpr <| iSup_genWeightSpace_eq_top K H L)
   exact LinearMap.trace_eq_zero_of_mapsTo_ne hds σ hσ hf
 
 /-- Elements of the `α` root space which are Killing-orthogonal to the `-α` root space are
@@ -121,17 +125,68 @@ lemma mem_ker_killingForm_of_mem_rootSpace_of_forall_rootSpace_neg
     x ∈ LinearMap.ker (killingForm K L) := by
   rw [LinearMap.mem_ker]
   ext y
-  have hy : y ∈ ⨆ β, rootSpace H β := by simp [iSup_weightSpace_eq_top K H L]
+  have hy : y ∈ ⨆ β, rootSpace H β := by simp [iSup_genWeightSpace_eq_top K H L]
   induction hy using LieSubmodule.iSup_induction' with
-  | hN β y hy =>
+  | mem β y hy =>
     by_cases hαβ : α + β = 0
     · exact hx' _ (add_eq_zero_iff_neg_eq.mp hαβ ▸ hy)
     · exact killingForm_apply_eq_zero_of_mem_rootSpace_of_add_ne_zero K L H hx hy hαβ
-  | h0 => simp
-  | hadd => simp_all
+  | zero => simp
+  | add => simp_all
+end
+
+end Field
+
+end LieAlgebra
+
+namespace LieModule
+
+namespace Weight
+
+open LieAlgebra IsKilling
+
+variable {K L}
+
+variable [FiniteDimensional K L] [IsKilling K L]
+  {H : LieSubalgebra K L} [H.IsCartanSubalgebra] [IsTriangularizable K H L] {α : Weight K H L}
+
+instance : InvolutiveNeg (Weight K H L) where
+  neg α := ⟨-α, by
+    by_cases hα : α.IsZero
+    · convert α.genWeightSpace_ne_bot; rw [hα, neg_zero]
+    · intro e
+      obtain ⟨x, hx, x_ne0⟩ := α.exists_ne_zero
+      have := mem_ker_killingForm_of_mem_rootSpace_of_forall_rootSpace_neg K L H hx
+        (fun y hy ↦ by rw [rootSpace, e] at hy; rw [hy, map_zero])
+      rw [ker_killingForm_eq_bot] at this
+      exact x_ne0 this⟩
+  neg_neg α := by ext; simp
+
+@[simp] lemma coe_neg : ((-α : Weight K H L) : H → K) = -α := rfl
+
+lemma IsZero.neg (h : α.IsZero) : (-α).IsZero := by ext; rw [coe_neg, h, neg_zero]
+
+@[simp] lemma isZero_neg : (-α).IsZero ↔ α.IsZero := ⟨fun h ↦ neg_neg α ▸ h.neg, fun h ↦ h.neg⟩
+
+lemma IsNonZero.neg (h : α.IsNonZero) : (-α).IsNonZero := fun e ↦ h (by simpa using e.neg)
+
+@[simp] lemma isNonZero_neg {α : Weight K H L} : (-α).IsNonZero ↔ α.IsNonZero := isZero_neg.not
+
+@[simp] lemma toLinear_neg {α : Weight K H L} : (-α).toLinear = -α.toLinear := rfl
+
+end Weight
+
+end LieModule
+
+namespace LieAlgebra
+
+open Module LieModule Set
+open Submodule renaming span → span
+open Submodule renaming subset_span → subset_span
 
 namespace IsKilling
 
+variable [FiniteDimensional K L] (H : LieSubalgebra K L) [H.IsCartanSubalgebra]
 variable [IsKilling K L]
 
 /-- If a Lie algebra `L` has non-degenerate Killing form, the only element of a Cartan subalgebra
@@ -141,13 +196,26 @@ Over a perfect field a much stronger result is true, see
 `LieAlgebra.IsKilling.isSemisimple_ad_of_mem_isCartanSubalgebra`. -/
 lemma eq_zero_of_isNilpotent_ad_of_mem_isCartanSubalgebra {x : L} (hx : x ∈ H)
     (hx' : _root_.IsNilpotent (ad K L x)) : x = 0 := by
-  suffices ⟨x, hx⟩ ∈ LinearMap.ker (traceForm K H L) by simpa using this
+  suffices ⟨x, hx⟩ ∈ LinearMap.ker (traceForm K H L) by
+    simp only [ker_traceForm_eq_bot_of_isCartanSubalgebra, Submodule.mem_bot] at this
+    exact (AddSubmonoid.mk_eq_zero H.toAddSubmonoid).mp this
   simp only [LinearMap.mem_ker]
   ext y
   have comm : Commute (toEnd K H L ⟨x, hx⟩) (toEnd K H L y) := by
     rw [commute_iff_lie_eq, ← LieHom.map_lie, trivial_lie_zero, LieHom.map_zero]
-  rw [traceForm_apply_apply, ← LinearMap.mul_eq_comp, LinearMap.zero_apply]
+  rw [traceForm_apply_apply, ← Module.End.mul_eq_comp, LinearMap.zero_apply]
   exact (LinearMap.isNilpotent_trace_of_isNilpotent (comm.isNilpotent_mul_left hx')).eq_zero
+
+@[simp]
+lemma corootSpace_zero_eq_bot :
+    corootSpace (0 : H → K) = ⊥ := by
+  refine eq_bot_iff.mpr fun x hx ↦ ?_
+  suffices {x | ∃ y ∈ H, ∃ z ∈ H, ⁅y, z⁆ = x} = {0} by simpa [mem_corootSpace, this] using hx
+  refine eq_singleton_iff_unique_mem.mpr ⟨⟨0, H.zero_mem, 0, H.zero_mem, zero_lie 0⟩, ?_⟩
+  rintro - ⟨y, hy, z, hz, rfl⟩
+  suffices ⁅(⟨y, hy⟩ : H), (⟨z, hz⟩ : H)⁆ = 0 by
+    simpa only [Subtype.ext_iff, LieSubalgebra.coe_bracket, ZeroMemClass.coe_zero] using this
+  simp
 
 variable {K L} in
 /-- The restriction of the Killing form to a Cartan subalgebra, as a linear equivalence to the
@@ -157,7 +225,25 @@ noncomputable def cartanEquivDual :
     H ≃ₗ[K] Module.Dual K H :=
   (traceForm K H L).toDual <| traceForm_cartan_nondegenerate K L H
 
-variable {K L H} in
+variable {K L H}
+
+/-- The coroot corresponding to a root. -/
+noncomputable def coroot (α : Weight K H L) : H :=
+  2 • (α <| (cartanEquivDual H).symm α)⁻¹ • (cartanEquivDual H).symm α
+
+lemma traceForm_coroot (α : Weight K H L) (x : H) :
+    traceForm K H L (coroot α) x = 2 • (α <| (cartanEquivDual H).symm α)⁻¹ • α x := by
+  have : cartanEquivDual H ((cartanEquivDual H).symm α) x = α x := by
+    rw [LinearEquiv.apply_symm_apply, Weight.toLinear_apply]
+  rw [coroot, map_nsmul, map_smul, LinearMap.smul_apply, LinearMap.smul_apply]
+  congr 2
+
+@[simp] lemma coroot_neg [IsTriangularizable K H L] (α : Weight K H L) :
+    coroot (-α) = -coroot α := by
+  simp [coroot]
+
+variable [IsTriangularizable K H L]
+
 lemma lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg_aux
     {α : Weight K H L} {e f : L} (heα : e ∈ rootSpace H α) (hfα : f ∈ rootSpace H (-α))
     (aux : ∀ (h : H), ⁅h, e⁆ = α h • e) :
@@ -167,7 +253,7 @@ lemma lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg_aux
   apply mem_ker_killingForm_of_mem_rootSpace_of_forall_rootSpace_neg (α := (0 : H → K))
   · simp only [rootSpace_zero_eq, LieSubalgebra.mem_toLieSubmodule]
     refine sub_mem ?_ (H.smul_mem _ α'.property)
-    simpa using mapsTo_toEnd_weightSpace_add_of_mem_rootSpace K L H L α (-α) heα hfα
+    simpa using mapsTo_toEnd_genWeightSpace_add_of_mem_rootSpace K L H L α (-α) heα hfα
   · intro z hz
     replace hz : z ∈ H := by simpa using hz
     have he : ⁅z, e⁆ = α ⟨z, hz⟩ • e := aux ⟨z, hz⟩
@@ -181,7 +267,7 @@ assuming `K` has characteristic zero). -/
 lemma cartanEquivDual_symm_apply_mem_corootSpace (α : Weight K H L) :
     (cartanEquivDual H).symm α ∈ corootSpace α := by
   obtain ⟨e : L, he₀ : e ≠ 0, he : ∀ x, ⁅x, e⁆ = α x • e⟩ := exists_forall_lie_eq_smul K H L α
-  have heα : e ∈ rootSpace H α := (mem_weightSpace L α e).mpr fun x ↦ ⟨1, by simp [← he x]⟩
+  have heα : e ∈ rootSpace H α := (mem_genWeightSpace L α e).mpr fun x ↦ ⟨1, by simp [← he x]⟩
   obtain ⟨f, hfα, hf⟩ : ∃ f ∈ rootSpace H (-α), killingForm K L e f ≠ 0 := by
     contrapose! he₀
     simpa using mem_ker_killingForm_of_mem_rootSpace_of_forall_rootSpace_neg K L H heα he₀
@@ -199,10 +285,11 @@ lemma span_weight_eq_top :
   rw [← traceForm_flip K H L, ← LinearMap.dualAnnihilator_ker_eq_range_flip,
     ker_traceForm_eq_bot_of_isCartanSubalgebra, Submodule.dualAnnihilator_bot]
 
+variable (K L H) in
 @[simp]
 lemma span_weight_isNonZero_eq_top :
     span K ({α : Weight K H L | α.IsNonZero}.image (Weight.toLinear K H L)) = ⊤ := by
-  rw [← span_weight_eq_top K L H]
+  rw [← span_weight_eq_top]
   refine le_antisymm (Submodule.span_mono <| by simp) ?_
   suffices range (Weight.toLinear K H L) ⊆
     insert 0 ({α : Weight K H L | α.IsNonZero}.image (Weight.toLinear K H L)) by
@@ -218,20 +305,7 @@ lemma iInf_ker_weight_eq_bot :
     Submodule.dualAnnihilator_bot]
   simp [← LinearMap.range_dualMap_eq_dualAnnihilator_ker, ← Submodule.span_range_eq_iSup]
 
-@[simp]
-lemma corootSpace_zero_eq_bot :
-    corootSpace (0 : H → K) = ⊥ := by
-  refine eq_bot_iff.mpr fun x hx ↦ ?_
-  suffices {x | ∃ y ∈ H, ∃ z ∈ H, ⁅y, z⁆ = x} = {0} by simpa [mem_corootSpace, this] using hx
-  refine eq_singleton_iff_unique_mem.mpr ⟨⟨0, H.zero_mem, 0, H.zero_mem, zero_lie 0⟩, ?_⟩
-  rintro - ⟨y, hy, z, hz, rfl⟩
-  suffices ⁅(⟨y, hy⟩ : H), (⟨z, hz⟩ : H)⁆ = 0 by
-    simpa only [Subtype.ext_iff, LieSubalgebra.coe_bracket, ZeroMemClass.coe_zero] using this
-  simp
-
 section PerfectField
-
-variable {K L H}
 
 variable [PerfectField K]
 
@@ -246,27 +320,28 @@ lemma isSemisimple_ad_of_mem_isCartanSubalgebra {x : L} (hx : x ∈ H) :
   /- Note that the semisimple part `S` is just a scalar action on each root space. -/
   have aux {α : H → K} {y : L} (hy : y ∈ rootSpace H α) : S y = α x' • y := by
     replace hy : y ∈ (ad K L x).maxGenEigenspace (α x') :=
-      (weightSpace_le_weightSpaceOf L x' α) hy
+      (genWeightSpace_le_genWeightSpaceOf L x' α) hy
     rw [maxGenEigenspace_eq] at hy
     set k := maxGenEigenspaceIndex (ad K L x) (α x')
-    rw [apply_eq_of_mem_genEigenspace_of_comm_of_isSemisimple_of_isNilpotent_sub hy hS₀ hS hN]
+    rw [apply_eq_of_mem_of_comm_of_isFinitelySemisimple_of_isNil hy hS₀ hS.isFinitelySemisimple hN]
   /- So `S` obeys the derivation axiom if we restrict to root spaces. -/
   have h_der (y z : L) (α β : H → K) (hy : y ∈ rootSpace H α) (hz : z ∈ rootSpace H β) :
       S ⁅y, z⁆ = ⁅S y, z⁆ + ⁅y, S z⁆ := by
     have hyz : ⁅y, z⁆ ∈ rootSpace H (α + β) :=
-      mapsTo_toEnd_weightSpace_add_of_mem_rootSpace K L H L α β hy hz
+      mapsTo_toEnd_genWeightSpace_add_of_mem_rootSpace K L H L α β hy hz
     rw [aux hy, aux hz, aux hyz, smul_lie, lie_smul, ← add_smul, ← Pi.add_apply]
   /- Thus `S` is a derivation since root spaces span. -/
   replace h_der (y z : L) : S ⁅y, z⁆ = ⁅S y, z⁆ + ⁅y, S z⁆ := by
-    have hy : y ∈ ⨆ α : H → K, rootSpace H α := by simp [iSup_weightSpace_eq_top]
-    have hz : z ∈ ⨆ α : H → K, rootSpace H α := by simp [iSup_weightSpace_eq_top]
-    induction hy using LieSubmodule.iSup_induction'
-    · induction hz using LieSubmodule.iSup_induction'
-      · next α y hy β z hz => exact h_der y z α β hy hz
-      · simp
-      · next h h' => simp only [lie_add, map_add, h, h']; abel
-    · simp
-    · next h h' => simp only [add_lie, map_add, h, h']; abel
+    have hy : y ∈ ⨆ α : H → K, rootSpace H α := by simp [iSup_genWeightSpace_eq_top]
+    have hz : z ∈ ⨆ α : H → K, rootSpace H α := by simp [iSup_genWeightSpace_eq_top]
+    induction hy using LieSubmodule.iSup_induction' with
+    | mem α y hy =>
+      induction hz using LieSubmodule.iSup_induction' with
+      | mem β z hz => exact h_der y z α β hy hz
+      | zero => simp
+      | add _ _ _ _ h h' => simp only [lie_add, map_add, h, h']; abel
+    | zero => simp
+    | add _ _ _ _ h h' => simp only [add_lie, map_add, h, h']; abel
   /- An equivalent form of the derivation axiom used in `LieDerivation`. -/
   replace h_der : ∀ y z : L, S ⁅y, z⁆ = ⁅y, S z⁆ - ⁅z, S y⁆ := by
     simp_rw [← lie_skew (S _) _, add_comm, ← sub_eq_add_neg] at h_der; assumption
@@ -277,7 +352,7 @@ lemma isSemisimple_ad_of_mem_isCartanSubalgebra {x : L} (hx : x ∈ H) :
   /- `y` commutes with all elements of `H` because `S` has eigenvalue 0 on `H`, `S = ad K L y`. -/
   have hy' (z : L) (hz : z ∈ H) : ⁅y, z⁆ = 0 := by
     rw [← LieSubalgebra.mem_toLieSubmodule, ← rootSpace_zero_eq] at hz
-    simp [← ad_apply (R := K), ← LieDerivation.coe_ad_apply_eq_ad_apply, hy, aux hz]
+    simp [S', ← ad_apply (R := K), ← LieDerivation.coe_ad_apply_eq_ad_apply, hy, aux hz]
   /- Thus `y` belongs to `H` since `H` is self-normalizing. -/
   replace hy' : y ∈ H := by
     suffices y ∈ H.normalizer by rwa [LieSubalgebra.IsCartanSubalgebra.self_normalizing] at this
@@ -294,9 +369,10 @@ lemma isSemisimple_ad_of_mem_isCartanSubalgebra {x : L} (hx : x ∈ H) :
 lemma lie_eq_smul_of_mem_rootSpace {α : H → K} {x : L} (hx : x ∈ rootSpace H α) (h : H) :
     ⁅h, x⁆ = α h • x := by
   replace hx : x ∈ (ad K L h).maxGenEigenspace (α h) :=
-    weightSpace_le_weightSpaceOf L h α hx
+    genWeightSpace_le_genWeightSpaceOf L h α hx
   rw [(isSemisimple_ad_of_mem_isCartanSubalgebra
-    h.property).maxGenEigenspace_eq_eigenspace, Module.End.mem_eigenspace_iff] at hx
+    h.property).isFinitelySemisimple.maxGenEigenspace_eq_eigenspace,
+    Module.End.mem_eigenspace_iff] at hx
   simpa using hx
 
 lemma lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg
@@ -315,21 +391,19 @@ lemma coe_corootSpace_eq_span_singleton' (α : Weight K H L) :
       rw [lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg heα hfα, SetLike.mem_coe,
         Submodule.mem_span_singleton]
       exact ⟨killingForm K L e f, rfl⟩
-    simp only [LieSubmodule.mem_coeSubmodule, mem_corootSpace] at hx'
+    simp only [LieSubmodule.mem_toSubmodule, mem_corootSpace] at hx'
     replace this := Submodule.span_mono this hx'
     rw [Submodule.span_span] at this
     rw [Submodule.mem_span_singleton] at this ⊢
     obtain ⟨t, rfl⟩ := this
-    use t
-    simp [Subtype.ext_iff]
-  · simp only [Submodule.span_singleton_le_iff_mem, LieSubmodule.mem_coeSubmodule]
-    exact cartanEquivDual_symm_apply_mem_corootSpace K L H α
+    solve_by_elim
+  · simp only [Submodule.span_singleton_le_iff_mem, LieSubmodule.mem_toSubmodule]
+    exact cartanEquivDual_symm_apply_mem_corootSpace α
 
 end PerfectField
 
 section CharZero
 
-variable {K H L}
 variable [CharZero K]
 
 /-- The contrapositive of this result is very useful, taking `x` to be the element of `H`
@@ -342,7 +416,7 @@ lemma eq_zero_of_apply_eq_zero_of_mem_corootSpace
   replace hx : x ∈ ⨅ β : Weight K H L, β.ker := by
     refine (Submodule.mem_iInf _).mpr fun β ↦ ?_
     obtain ⟨a, b, hb, hab⟩ :=
-      exists_forall_mem_corootSpace_smul_add_eq_zero L α β hα β.weightSpace_ne_bot
+      exists_forall_mem_corootSpace_smul_add_eq_zero L α β hα β.genWeightSpace_ne_bot
     simpa [hαx, hb.ne'] using hab _ hx
   simpa using hx
 
@@ -353,29 +427,18 @@ lemma disjoint_ker_weight_corootSpace (α : Weight K H L) :
   replace hαx : α x = 0 := by simpa using hαx
   exact eq_zero_of_apply_eq_zero_of_mem_corootSpace x α hαx hx
 
-/-- The coroot corresponding to a root. -/
-noncomputable def coroot (α : Weight K H L) : H :=
-  2 • (α <| (cartanEquivDual H).symm α)⁻¹ • (cartanEquivDual H).symm α
-
 lemma root_apply_cartanEquivDual_symm_ne_zero {α : Weight K H L} (hα : α.IsNonZero) :
     α ((cartanEquivDual H).symm α) ≠ 0 := by
   contrapose! hα
   suffices (cartanEquivDual H).symm α ∈ α.ker ⊓ corootSpace α by
     rw [(disjoint_ker_weight_corootSpace α).eq_bot] at this
     simpa using this
-  exact Submodule.mem_inf.mp ⟨hα, cartanEquivDual_symm_apply_mem_corootSpace K L H α⟩
+  exact Submodule.mem_inf.mp ⟨hα, cartanEquivDual_symm_apply_mem_corootSpace α⟩
 
 lemma root_apply_coroot {α : Weight K H L} (hα : α.IsNonZero) :
     α (coroot α) = 2 := by
   rw [← Weight.coe_coe]
-  simpa [coroot] using inv_mul_cancel (root_apply_cartanEquivDual_symm_ne_zero hα)
-
-lemma traceForm_coroot (α : Weight K H L) (x : H) :
-    traceForm K H L (coroot α) x = 2 • (α <| (cartanEquivDual H).symm α)⁻¹ • α x := by
-  have : cartanEquivDual H ((cartanEquivDual H).symm α) x = α x := by
-    rw [LinearEquiv.apply_symm_apply, Weight.toLinear_apply]
-  rw [coroot, map_nsmul, map_smul, LinearMap.smul_apply, LinearMap.smul_apply]
-  congr 2
+  simpa [coroot] using inv_mul_cancel₀ (root_apply_cartanEquivDual_symm_ne_zero hα)
 
 @[simp] lemma coroot_eq_zero_iff {α : Weight K H L} :
     coroot α = 0 ↔ α.IsZero := by
@@ -396,12 +459,12 @@ lemma coe_corootSpace_eq_span_singleton (α : Weight K H L) :
     suffices (K ∙ coroot α) = K ∙ α' by rw [coe_corootSpace_eq_span_singleton']; exact this.symm
     have : IsUnit (2 * (α α')⁻¹) := by simpa using root_apply_cartanEquivDual_symm_ne_zero hα
     change (K ∙ (2 • (α α')⁻¹ • α')) = _
-    simpa [nsmul_eq_smul_cast (R := K), smul_smul] using Submodule.span_singleton_smul_eq this _
+    simpa [← Nat.cast_smul_eq_nsmul K, smul_smul] using Submodule.span_singleton_smul_eq this _
 
 @[simp]
 lemma corootSpace_eq_bot_iff {α : Weight K H L} :
     corootSpace α = ⊥ ↔ α.IsZero := by
-  simp [← LieSubmodule.coeSubmodule_eq_bot_iff, coe_corootSpace_eq_span_singleton α]
+  simp [← LieSubmodule.toSubmodule_eq_bot, coe_corootSpace_eq_span_singleton α]
 
 lemma isCompl_ker_weight_span_coroot (α : Weight K H L) :
     IsCompl α.ker (K ∙ coroot α) := by
@@ -413,22 +476,22 @@ lemma isCompl_ker_weight_span_coroot (α : Weight K H L) :
     apply Module.Dual.isCompl_ker_of_disjoint_of_ne_bot (by aesop)
       (disjoint_ker_weight_corootSpace α)
     replace hα : corootSpace α ≠ ⊥ := by simpa using hα
-    rwa [ne_eq, ← LieSubmodule.coe_toSubmodule_eq_iff] at hα
+    rwa [ne_eq, ← LieSubmodule.toSubmodule_inj] at hα
 
 lemma traceForm_eq_zero_of_mem_ker_of_mem_span_coroot {α : Weight K H L} {x y : H}
     (hx : x ∈ α.ker) (hy : y ∈ K ∙ coroot α) :
     traceForm K H L x y = 0 := by
-  rw [← coe_corootSpace_eq_span_singleton, LieSubmodule.mem_coeSubmodule, mem_corootSpace'] at hy
-  induction hy using Submodule.span_induction'
-  · next z hz =>
+  rw [← coe_corootSpace_eq_span_singleton, LieSubmodule.mem_toSubmodule, mem_corootSpace'] at hy
+  induction hy using Submodule.span_induction with
+  | mem z hz =>
     obtain ⟨u, hu, v, -, huv⟩ := hz
     change killingForm K L (x : L) (z : L) = 0
     replace hx : α x = 0 := by simpa using hx
     rw [← huv, ← traceForm_apply_lie_apply, ← LieSubalgebra.coe_bracket_of_module,
       lie_eq_smul_of_mem_rootSpace hu, hx, zero_smul, map_zero, LinearMap.zero_apply]
-  · simp
-  · next hx hy => simp [hx, hy]
-  · next hz => simp [hz]
+  | zero => simp
+  | add _ _ _ _ hx hy => simp [hx, hy]
+  | smul _ _ _ hz => simp [hz]
 
 @[simp] lemma orthogonal_span_coroot_eq_ker (α : Weight K H L) :
     (traceForm K H L).orthogonal (K ∙ coroot α) = α.ker := by
@@ -477,13 +540,15 @@ lemma exists_isSl2Triple_of_weight_isNonZero {α : Weight K H L} (hα : α.IsNon
   have hef := lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg heα hfα
   let h : H := ⟨⁅e, f'⁆, hef ▸ Submodule.smul_mem _ _ (Submodule.coe_mem _)⟩
   have hh : α h ≠ 0 := by
-    have : h = killingForm K L e f' • (cartanEquivDual H).symm α := by simp [Subtype.ext_iff, hef]
+    have : h = killingForm K L e f' • (cartanEquivDual H).symm α := by
+      simp only [h, Subtype.ext_iff, hef]
+      rw [Submodule.coe_smul_of_tower]
     rw [this, map_smul, smul_eq_mul, ne_eq, mul_eq_zero, not_or]
     exact ⟨hf, root_apply_cartanEquivDual_symm_ne_zero hα⟩
   let f := (2 * (α h)⁻¹) • f'
   replace hef : ⁅⁅e, f⁆, e⁆ = 2 • e := by
     have : ⁅⁅e, f'⁆, e⁆ = α h • e := lie_eq_smul_of_mem_rootSpace heα h
-    rw [lie_smul, smul_lie, this, ← smul_assoc, smul_eq_mul, mul_assoc, inv_mul_cancel hh,
+    rw [lie_smul, smul_lie, this, ← smul_assoc, smul_eq_mul, mul_assoc, inv_mul_cancel₀ hh,
       mul_one, two_smul, two_smul]
   refine ⟨⁅e, f⁆, e, f, ⟨fun contra ↦ ?_, rfl, hef, ?_⟩, heα, Submodule.smul_mem _ _ hfα⟩
   · rw [contra] at hef
@@ -495,7 +560,7 @@ lemma exists_isSl2Triple_of_weight_isNonZero {α : Weight K H L} (hα : α.IsNon
     simp [← smul_assoc, f, hh, mul_comm _ (2 * (α h)⁻¹)]
 
 lemma _root_.IsSl2Triple.h_eq_coroot {α : Weight K H L} (hα : α.IsNonZero)
-    {h e f : L} (ht : IsSl2Triple h e f) (heα : e ∈ rootSpace H α) (hfα : f ∈ rootSpace H (- α)) :
+    {h e f : L} (ht : IsSl2Triple h e f) (heα : e ∈ rootSpace H α) (hfα : f ∈ rootSpace H (-α)) :
     h = coroot α := by
   have hef := lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg heα hfα
   lift h to H using by simpa only [← ht.lie_e_f, hef] using H.smul_mem _ (Submodule.coe_mem _)
@@ -510,18 +575,21 @@ lemma _root_.IsSl2Triple.h_eq_coroot {α : Weight K H L} (hα : α.IsNonZero)
     rwa [this, one_smul] at hs
   set α' := (cartanEquivDual H).symm α with hα'
   have h_eq : h = killingForm K L e f • α' := by
-    simp only [hα', Subtype.ext_iff, Submodule.coe_smul_of_tower, ← ht.lie_e_f, hef]
+    simp only [hα', Subtype.ext_iff, ← ht.lie_e_f, hef]
+    rw [Submodule.coe_smul_of_tower]
   use (2 • (α α')⁻¹) * (killingForm K L e f)⁻¹
   have hef₀ : killingForm K L e f ≠ 0 := by
     have := ht.h_ne_zero
     contrapose! this
     simpa [this] using h_eq
-  rw [h_eq, smul_smul, mul_assoc, inv_mul_cancel hef₀, mul_one, smul_assoc, coroot]
+  rw [h_eq, smul_smul, mul_assoc, inv_mul_cancel₀ hef₀, mul_one, smul_assoc, coroot]
 
 lemma finrank_rootSpace_eq_one (α : Weight K H L) (hα : α.IsNonZero) :
     finrank K (rootSpace H α) = 1 := by
   suffices ¬ 1 < finrank K (rootSpace H α) by
-    have h₀ : finrank K (rootSpace H α) ≠ 0 := by simpa using α.weightSpace_ne_bot
+    have h₀ : finrank K (rootSpace H α) ≠ 0 := by
+      convert_to finrank K (rootSpace H α).toSubmodule ≠ 0
+      simpa using α.genWeightSpace_ne_bot
     omega
   intro contra
   obtain ⟨h, e, f, ht, heα, hfα⟩ := exists_isSl2Triple_of_weight_isNonZero hα
@@ -532,65 +600,59 @@ lemma finrank_rootSpace_eq_one (α : Weight K H L) (hα : α.IsNonZero) :
     have : killingForm K L y f = 0 := by simpa [F, traceForm_comm] using hy
     simpa [this] using lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg hyα hfα
   have P : ht.symm.HasPrimitiveVectorWith y (-2 : K) :=
-    { ne_zero := by simpa using hy₀
-      lie_h := by simp only [neg_smul, neg_lie, neg_inj, ht.h_eq_coroot hα heα hfα,
+    { ne_zero := by simpa [LieSubmodule.mk_eq_zero] using hy₀
+      lie_h := by simp only [neg_smul, neg_lie, ht.h_eq_coroot hα heα hfα,
         ← H.coe_bracket_of_module, lie_eq_smul_of_mem_rootSpace hyα (coroot α),
         root_apply_coroot hα]
       lie_e := by rw [← lie_skew, hy, neg_zero] }
   obtain ⟨n, hn⟩ := P.exists_nat
-  replace hn : -2 = (n : ℤ) := by norm_cast at hn
-  omega
+  assumption_mod_cast
+
+/-- The embedded `sl₂` associated to a root. -/
+noncomputable def sl2SubalgebraOfRoot {α : Weight K H L} (hα : α.IsNonZero) :
+    LieSubalgebra K L := by
+  choose h e f t ht using exists_isSl2Triple_of_weight_isNonZero hα
+  exact t.toLieSubalgebra K
+
+lemma mem_sl2SubalgebraOfRoot_iff {α : Weight K H L} (hα : α.IsNonZero) {h e f : L}
+    (t : IsSl2Triple h e f) (hte : e ∈ rootSpace H α) (htf : f ∈ rootSpace H (-α)) {x : L} :
+    x ∈ sl2SubalgebraOfRoot hα ↔ ∃ c₁ c₂ c₃ : K, x = c₁ • e + c₂ • f + c₃ • ⁅e, f⁆ := by
+  simp only [sl2SubalgebraOfRoot, IsSl2Triple.mem_toLieSubalgebra_iff]
+  generalize_proofs _ _ _ he hf
+  obtain ⟨ce, hce⟩ : ∃ c : K, he.choose = c • e := by
+    obtain ⟨c, hc⟩ := (finrank_eq_one_iff_of_nonzero' ⟨e, hte⟩ (by simpa using t.e_ne_zero)).mp
+      (finrank_rootSpace_eq_one α hα) ⟨_, he.choose_spec.choose_spec.2.1⟩
+    exact ⟨c, by simpa using hc.symm⟩
+  obtain ⟨cf, hcf⟩ : ∃ c : K, hf.choose = c • f := by
+    obtain ⟨c, hc⟩ := (finrank_eq_one_iff_of_nonzero' ⟨f, htf⟩ (by simpa using t.f_ne_zero)).mp
+      (finrank_rootSpace_eq_one (-α) (by simpa)) ⟨_, hf.choose_spec.2.2⟩
+    exact ⟨c, by simpa using hc.symm⟩
+  have hce₀ : ce ≠ 0 := by
+    rintro rfl
+    simp only [zero_smul] at hce
+    exact he.choose_spec.choose_spec.1.e_ne_zero hce
+  have hcf₀ : cf ≠ 0 := by
+    rintro rfl
+    simp only [zero_smul] at hcf
+    exact he.choose_spec.choose_spec.1.f_ne_zero hcf
+  simp_rw [hcf, hce]
+  refine ⟨fun ⟨c₁, c₂, c₃, hx⟩ ↦ ⟨c₁ * ce, c₂ * cf, c₃ * cf * ce, ?_⟩,
+    fun ⟨c₁, c₂, c₃, hx⟩ ↦ ⟨c₁ * ce⁻¹, c₂ * cf⁻¹, c₃ * ce⁻¹ * cf⁻¹, ?_⟩⟩
+  · simp [hx, mul_smul]
+  · simp [hx, mul_smul, hce₀, hcf₀]
+
+/-- The collection of roots as a `Finset`. -/
+noncomputable abbrev _root_.LieSubalgebra.root : Finset (Weight K H L) := {α | α.IsNonZero}
+
+lemma restrict_killingForm_eq_sum :
+    (killingForm K L).restrict H = ∑ α ∈ H.root, (α : H →ₗ[K] K).smulRight (α : H →ₗ[K] K) := by
+  rw [restrict_killingForm, traceForm_eq_sum_finrank_nsmul' K H L]
+  refine Finset.sum_congr rfl fun χ hχ ↦ ?_
+  replace hχ : χ.IsNonZero := by simpa [LieSubalgebra.root] using hχ
+  simp [finrank_rootSpace_eq_one _ hχ]
 
 end CharZero
 
 end IsKilling
 
-end Field
-
 end LieAlgebra
-
-namespace LieModule
-
-namespace Weight
-
-open LieAlgebra IsKilling
-
-variable {K L}
-
-variable [FiniteDimensional K L]
-variable [IsKilling K L] {H : LieSubalgebra K L} [H.IsCartanSubalgebra] [IsTriangularizable K H L]
-variable {α : Weight K H L}
-
-instance : InvolutiveNeg (Weight K H L) where
-  neg α := ⟨-α, by
-    by_cases hα : α.IsZero
-    · convert α.weightSpace_ne_bot; rw [hα, neg_zero]
-    · intro e
-      obtain ⟨x, hx, x_ne0⟩ := α.exists_ne_zero
-      have := mem_ker_killingForm_of_mem_rootSpace_of_forall_rootSpace_neg K L H hx
-        (fun y hy ↦ by rw [rootSpace, e] at hy; rw [hy, map_zero])
-      rw [ker_killingForm_eq_bot] at this
-      exact x_ne0 this⟩
-  neg_neg α := by ext; simp
-
-@[simp] lemma coe_neg : ((-α : Weight K H L) : H → K) = -α := rfl
-
-lemma IsZero.neg (h : α.IsZero) : (-α).IsZero := by ext; rw [coe_neg, h, neg_zero]
-
-@[simp] lemma isZero_neg : (-α).IsZero ↔ α.IsZero := ⟨fun h ↦ neg_neg α ▸ h.neg, fun h ↦ h.neg⟩
-
-lemma IsNonZero.neg (h : α.IsNonZero) : (-α).IsNonZero := fun e ↦ h (by simpa using e.neg)
-
-@[simp] lemma isNonZero_neg {α : Weight K H L} : (-α).IsNonZero ↔ α.IsNonZero := isZero_neg.not
-
-@[simp] lemma toLinear_neg {α : Weight K H L} : (-α).toLinear = -α.toLinear := rfl
-
-variable [CharZero K]
-
-@[simp]
-lemma _root_.LieAlgebra.IsKilling.coroot_neg (α : Weight K H L) : coroot (-α) = -coroot α := by
-  simp [coroot]
-
-end Weight
-
-end LieModule

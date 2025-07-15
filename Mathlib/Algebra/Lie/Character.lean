@@ -5,9 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Lie.Abelian
 import Mathlib.Algebra.Lie.Solvable
-import Mathlib.LinearAlgebra.Dual
-
-#align_import algebra.lie.character from "leanprover-community/mathlib"@"132328c4dd48da87adca5d408ca54f315282b719"
+import Mathlib.LinearAlgebra.Dual.Defs
 
 /-!
 # Characters of Lie algebras
@@ -36,14 +34,11 @@ variable (R : Type u) (L : Type v) [CommRing R] [LieRing L] [LieAlgebra R L]
 /-- A character of a Lie algebra is a morphism to the scalars. -/
 abbrev LieCharacter :=
   L →ₗ⁅R⁆ R
-#align lie_algebra.lie_character LieAlgebra.LieCharacter
 
 variable {R L}
 
--- @[simp] -- Porting note: simp normal form is the LHS of `lieCharacter_apply_lie'`
 theorem lieCharacter_apply_lie (χ : LieCharacter R L) (x y : L) : χ ⁅x, y⁆ = 0 := by
   rw [LieHom.map_lie, LieRing.of_associative_ring_bracket, mul_comm, sub_self]
-#align lie_algebra.lie_character_apply_lie LieAlgebra.lieCharacter_apply_lie
 
 @[simp]
 theorem lieCharacter_apply_lie' (χ : LieCharacter R L) (x y : L) : ⁅χ x, χ y⁆ = 0 := by
@@ -52,13 +47,12 @@ theorem lieCharacter_apply_lie' (χ : LieCharacter R L) (x y : L) : ⁅χ x, χ 
 theorem lieCharacter_apply_of_mem_derived (χ : LieCharacter R L) {x : L}
     (h : x ∈ derivedSeries R L 1) : χ x = 0 := by
   rw [derivedSeries_def, derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_zero, ←
-    LieSubmodule.mem_coeSubmodule, LieSubmodule.lieIdeal_oper_eq_linear_span] at h
-  refine Submodule.span_induction h ?_ ?_ ?_ ?_
+    LieSubmodule.mem_toSubmodule, LieSubmodule.lieIdeal_oper_eq_linear_span] at h
+  refine Submodule.span_induction ?_ ?_ ?_ ?_ h
   · rintro y ⟨⟨z, hz⟩, ⟨⟨w, hw⟩, rfl⟩⟩; apply lieCharacter_apply_lie
   · exact χ.map_zero
-  · intro y z hy hz; rw [LieHom.map_add, hy, hz, add_zero]
-  · intro t y hy; rw [LieHom.map_smul, hy, smul_zero]
-#align lie_algebra.lie_character_apply_of_mem_derived LieAlgebra.lieCharacter_apply_of_mem_derived
+  · intro y z _ _ hy hz; rw [LieHom.map_add, hy, hz, add_zero]
+  · intro t y _ hy; rw [LieHom.map_smul, hy, smul_zero]
 
 /-- For an Abelian Lie algebra, characters are just linear forms. -/
 @[simps! apply symm_apply]
@@ -69,8 +63,5 @@ def lieCharacterEquivLinearDual [IsLieAbelian L] : LieCharacter R L ≃ Module.D
       map_lie' := fun {x y} => by
         rw [LieModule.IsTrivial.trivial, LieRing.of_associative_ring_bracket, mul_comm, sub_self,
           LinearMap.toFun_eq_coe, LinearMap.map_zero] }
-  left_inv χ := by ext; rfl
-  right_inv ψ := by ext; rfl
-#align lie_algebra.lie_character_equiv_linear_dual LieAlgebra.lieCharacterEquivLinearDual
 
 end LieAlgebra

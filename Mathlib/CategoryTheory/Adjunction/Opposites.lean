@@ -7,8 +7,6 @@ import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.CategoryTheory.Opposites
 
-#align_import category_theory.adjunction.opposites from "leanprover-community/mathlib"@"0148d455199ed64bf8eb2f493a1e7eb9211ce170"
-
 /-!
 # Opposite adjunctions
 
@@ -29,92 +27,57 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 namespace CategoryTheory.Adjunction
 
-/-- If `G.op` is adjoint to `F.op` then `F` is adjoint to `G`. -/
--- Porting note: in mathlib3 we generated all the default `simps` lemmas.
--- However the `simpNF` linter correctly flags some of these as unsuitable simp lemmas.
--- `unit_app` and `counit_app` appear to suffice (tested in mathlib3).
--- See also the porting note on opAdjointOpOfAdjoint
-@[simps! unit_app counit_app]
-def adjointOfOpAdjointOp (F : C ⥤ D) (G : D ⥤ C) (h : G.op ⊣ F.op) : F ⊣ G :=
-  Adjunction.mkOfHomEquiv {
-    homEquiv := fun {X Y} =>
-      ((h.homEquiv (Opposite.op Y) (Opposite.op X)).trans (opEquiv _ _)).symm.trans
-        (opEquiv _ _)
-    homEquiv_naturality_left_symm := by
-      -- Porting note: This proof was handled by `obviously` in mathlib3.
-      intros X' X Y f g
-      dsimp [opEquiv]
-      -- Porting note: Why is `erw` needed here?
-      -- https://github.com/leanprover-community/mathlib4/issues/5164
-      erw [homEquiv_unit, homEquiv_unit]
-      simp
-    homEquiv_naturality_right := by
-      -- Porting note: This proof was handled by `obviously` in mathlib3.
-      intros X Y Y' f g
-      dsimp [opEquiv]
-      -- Porting note: Why is `erw` needed here?
-      -- https://github.com/leanprover-community/mathlib4/issues/5164
-      erw [homEquiv_counit, homEquiv_counit]
-      simp }
-#align category_theory.adjunction.adjoint_of_op_adjoint_op CategoryTheory.Adjunction.adjointOfOpAdjointOp
-
-/-- If `G` is adjoint to `F.op` then `F` is adjoint to `G.unop`. -/
-def adjointUnopOfAdjointOp (F : C ⥤ D) (G : Dᵒᵖ ⥤ Cᵒᵖ) (h : G ⊣ F.op) : F ⊣ G.unop :=
-  adjointOfOpAdjointOp F G.unop (h.ofNatIsoLeft G.opUnopIso.symm)
-#align category_theory.adjunction.adjoint_unop_of_adjoint_op CategoryTheory.Adjunction.adjointUnopOfAdjointOp
-
-/-- If `G.op` is adjoint to `F` then `F.unop` is adjoint to `G`. -/
-def unopAdjointOfOpAdjoint (F : Cᵒᵖ ⥤ Dᵒᵖ) (G : D ⥤ C) (h : G.op ⊣ F) : F.unop ⊣ G :=
-  adjointOfOpAdjointOp _ _ (h.ofNatIsoRight F.opUnopIso.symm)
-#align category_theory.adjunction.unop_adjoint_of_op_adjoint CategoryTheory.Adjunction.unopAdjointOfOpAdjoint
+attribute [local simp] homEquiv_unit homEquiv_counit
 
 /-- If `G` is adjoint to `F` then `F.unop` is adjoint to `G.unop`. -/
-def unopAdjointUnopOfAdjoint (F : Cᵒᵖ ⥤ Dᵒᵖ) (G : Dᵒᵖ ⥤ Cᵒᵖ) (h : G ⊣ F) : F.unop ⊣ G.unop :=
-  adjointUnopOfAdjointOp F.unop G (h.ofNatIsoRight F.opUnopIso.symm)
-#align category_theory.adjunction.unop_adjoint_unop_of_adjoint CategoryTheory.Adjunction.unopAdjointUnopOfAdjoint
+@[simps]
+def unop {F : Cᵒᵖ ⥤ Dᵒᵖ} {G : Dᵒᵖ ⥤ Cᵒᵖ} (h : G ⊣ F) : F.unop ⊣ G.unop where
+  unit := NatTrans.unop h.counit
+  counit := NatTrans.unop h.unit
+  left_triangle_components _ := Quiver.Hom.op_inj (h.right_triangle_components _)
+  right_triangle_components _ := Quiver.Hom.op_inj (h.left_triangle_components _)
+
+@[deprecated (since := "2025-01-01")] alias adjointOfOpAdjointOp := unop
+@[deprecated (since := "2025-01-01")] alias adjointUnopOfAdjointOp := unop
+@[deprecated (since := "2025-01-01")] alias unopAdjointOfOpAdjoint := unop
+@[deprecated (since := "2025-01-01")] alias unopAdjointUnopOfAdjoint := unop
 
 /-- If `G` is adjoint to `F` then `F.op` is adjoint to `G.op`. -/
-@[simps! unit_app counit_app]
--- Porting note: in mathlib3 we generated all the default `simps` lemmas.
--- However the `simpNF` linter correctly flags some of these as unsuitable simp lemmas.
--- `unit_app` and `counit_app` appear to suffice (tested in mathlib3).
--- See also the porting note on adjointOfOpAdjointOp
-def opAdjointOpOfAdjoint (F : C ⥤ D) (G : D ⥤ C) (h : G ⊣ F) : F.op ⊣ G.op :=
-  Adjunction.mkOfHomEquiv {
-    homEquiv := fun X Y =>
-      (opEquiv _ Y).trans ((h.homEquiv _ _).symm.trans (opEquiv X (Opposite.op _)).symm)
-    homEquiv_naturality_left_symm := by
-      -- Porting note: This proof was handled by `obviously` in mathlib3.
-      intros X' X Y f g
-      dsimp [opEquiv]
-      -- Porting note: Why is `erw` needed here?
-      -- https://github.com/leanprover-community/mathlib4/issues/5164
-      erw [homEquiv_unit, homEquiv_unit]
-      simp
-    homEquiv_naturality_right := by
-      -- Porting note: This proof was handled by `obviously` in mathlib3.
-      intros X' X Y f g
-      dsimp [opEquiv]
-      -- Porting note: Why is `erw` needed here?
-      -- https://github.com/leanprover-community/mathlib4/issues/5164
-      erw [homEquiv_counit, homEquiv_counit]
-      simp }
-#align category_theory.adjunction.op_adjoint_op_of_adjoint CategoryTheory.Adjunction.opAdjointOpOfAdjoint
+@[simps]
+def op {F : C ⥤ D} {G : D ⥤ C} (h : G ⊣ F) : F.op ⊣ G.op where
+  unit := NatTrans.op h.counit
+  counit := NatTrans.op h.unit
+  left_triangle_components _ := Quiver.Hom.unop_inj (by simp)
+  right_triangle_components _ := Quiver.Hom.unop_inj (by simp)
 
-/-- If `G` is adjoint to `F.unop` then `F` is adjoint to `G.op`. -/
-def adjointOpOfAdjointUnop (F : Cᵒᵖ ⥤ Dᵒᵖ) (G : D ⥤ C) (h : G ⊣ F.unop) : F ⊣ G.op :=
-  (opAdjointOpOfAdjoint F.unop _ h).ofNatIsoLeft F.opUnopIso
-#align category_theory.adjunction.adjoint_op_of_adjoint_unop CategoryTheory.Adjunction.adjointOpOfAdjointUnop
+@[deprecated (since := "2025-01-01")] alias opAdjointOpOfAdjoint := op
+@[deprecated (since := "2025-01-01")] alias adjointOpOfAdjointUnop := op
+@[deprecated (since := "2025-01-01")] alias opAdjointOfUnopAdjoint := op
+@[deprecated (since := "2025-01-01")] alias adjointOfUnopAdjointUnop := op
 
-/-- If `G.unop` is adjoint to `F` then `F.op` is adjoint to `G`. -/
-def opAdjointOfUnopAdjoint (F : C ⥤ D) (G : Dᵒᵖ ⥤ Cᵒᵖ) (h : G.unop ⊣ F) : F.op ⊣ G :=
-  (opAdjointOpOfAdjoint _ G.unop h).ofNatIsoRight G.opUnopIso
-#align category_theory.adjunction.op_adjoint_of_unop_adjoint CategoryTheory.Adjunction.opAdjointOfUnopAdjoint
+/-- If `F` is adjoint to `G.leftOp` then `G` is adjoint to `F.leftOp`. -/
+@[simps]
+def leftOp {F : C ⥤ Dᵒᵖ} {G : D ⥤ Cᵒᵖ} (a : F ⊣ G.leftOp) : G ⊣ F.leftOp where
+  unit := NatTrans.unop a.counit
+  counit := NatTrans.op a.unit
+  left_triangle_components X := congr($(a.right_triangle_components (.op X)).op)
+  right_triangle_components X := congr($(a.left_triangle_components X.unop).unop)
 
-/-- If `G.unop` is adjoint to `F.unop` then `F` is adjoint to `G`. -/
-def adjointOfUnopAdjointUnop (F : Cᵒᵖ ⥤ Dᵒᵖ) (G : Dᵒᵖ ⥤ Cᵒᵖ) (h : G.unop ⊣ F.unop) : F ⊣ G :=
-  (adjointOpOfAdjointUnop _ _ h).ofNatIsoRight G.opUnopIso
-#align category_theory.adjunction.adjoint_of_unop_adjoint_unop CategoryTheory.Adjunction.adjointOfUnopAdjointUnop
+/-- If `F.rightOp` is adjoint to `G` then `G.rightOp` is adjoint to `F`. -/
+@[simps]
+def rightOp {F : Cᵒᵖ ⥤ D} {G : Dᵒᵖ ⥤ C} (a : F.rightOp ⊣ G) : G.rightOp ⊣ F where
+  unit := NatTrans.unop a.counit
+  counit := NatTrans.op a.unit
+  left_triangle_components X := congr($(a.right_triangle_components (.op X)).op)
+  right_triangle_components X := congr($(a.left_triangle_components X.unop).unop)
+
+lemma leftOp_eq {F : C ⥤ Dᵒᵖ} {G : D ⥤ Cᵒᵖ} (a : F ⊣ G.leftOp) :
+    a.leftOp = (opOpEquivalence D).symm.toAdjunction.comp a.op := by
+  ext X; simp [Equivalence.unit]
+
+lemma rightOp_eq {F : Cᵒᵖ ⥤ D} {G : Dᵒᵖ ⥤ C} (a : F.rightOp ⊣ G) :
+    a.rightOp = (opOpEquivalence D).symm.toAdjunction.comp a.op := by
+  ext X; simp [Equivalence.unit]
 
 /-- If `F` and `F'` are both adjoint to `G`, there is a natural isomorphism
 `F.op ⋙ coyoneda ≅ F'.op ⋙ coyoneda`.
@@ -125,7 +88,6 @@ def leftAdjointsCoyonedaEquiv {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (a
   NatIso.ofComponents fun X =>
     NatIso.ofComponents fun Y =>
       ((adj1.homEquiv X.unop Y).trans (adj2.homEquiv X.unop Y).symm).toIso
-#align category_theory.adjunction.left_adjoints_coyoneda_equiv CategoryTheory.Adjunction.leftAdjointsCoyonedaEquiv
 
 /-- Given two adjunctions, if the right adjoints are naturally isomorphic, then so are the left
 adjoints.
@@ -138,7 +100,6 @@ def natIsoOfRightAdjointNatIso {F F' : C ⥤ D} {G G' : D ⥤ C}
     (adj1 : F ⊣ G) (adj2 : F' ⊣ G') (r : G ≅ G') : F ≅ F' :=
   NatIso.removeOp ((Coyoneda.fullyFaithful.whiskeringRight _).isoEquiv.symm
     (leftAdjointsCoyonedaEquiv adj2 (adj1.ofNatIsoRight r)))
-#align category_theory.adjunction.nat_iso_of_right_adjoint_nat_iso CategoryTheory.Adjunction.natIsoOfRightAdjointNatIso
 
 /-- Given two adjunctions, if the left adjoints are naturally isomorphic, then so are the right
 adjoints.
@@ -147,8 +108,31 @@ Note: it is generally better to use `Adjunction.natIsoEquiv`, see the file `Adju
 -/
 def natIsoOfLeftAdjointNatIso {F F' : C ⥤ D} {G G' : D ⥤ C}
     (adj1 : F ⊣ G) (adj2 : F' ⊣ G') (l : F ≅ F') : G ≅ G' :=
-  NatIso.removeOp (natIsoOfRightAdjointNatIso (opAdjointOpOfAdjoint _ F' adj2)
-    (opAdjointOpOfAdjoint _ _ adj1) (NatIso.op l))
-#align category_theory.adjunction.nat_iso_of_left_adjoint_nat_iso CategoryTheory.Adjunction.natIsoOfLeftAdjointNatIso
+  NatIso.removeOp (natIsoOfRightAdjointNatIso (op adj2) (op adj1) (NatIso.op l))
 
-end CategoryTheory.Adjunction
+end Adjunction
+
+namespace Functor
+
+instance IsLeftAdjoint.op {F : C ⥤ D} [F.IsLeftAdjoint] : F.op.IsRightAdjoint :=
+  ⟨F.rightAdjoint.op, ⟨.op <| .ofIsLeftAdjoint _⟩⟩
+
+instance IsRightAdjoint.op {F : C ⥤ D} [F.IsRightAdjoint] : F.op.IsLeftAdjoint :=
+  ⟨F.leftAdjoint.op, ⟨.op <| .ofIsRightAdjoint _⟩⟩
+
+instance IsLeftAdjoint.leftOp {F : C ⥤ Dᵒᵖ} [F.IsLeftAdjoint] : F.leftOp.IsRightAdjoint :=
+  ⟨F.rightAdjoint.rightOp, ⟨.leftOp <| .ofIsLeftAdjoint _⟩⟩
+
+-- TODO: Do we need to introduce `Adjunction.leftUnop`?
+instance IsRightAdjoint.leftOp {F : C ⥤ Dᵒᵖ} [F.IsRightAdjoint] : F.leftOp.IsLeftAdjoint :=
+  inferInstanceAs (F.op ⋙ (opOpEquivalence D).functor).IsLeftAdjoint
+
+-- TODO: Do we need to introduce `Adjunction.rightUnop`?
+instance IsLeftAdjoint.rightOp {F : Cᵒᵖ ⥤ D} [F.IsLeftAdjoint] : F.rightOp.IsRightAdjoint :=
+  inferInstanceAs ((opOpEquivalence C).inverse ⋙ F.op).IsRightAdjoint
+
+instance IsRightAdjoint.rightOp {F : Cᵒᵖ ⥤ D} [F.IsRightAdjoint] : F.rightOp.IsLeftAdjoint :=
+  ⟨F.leftAdjoint.leftOp, ⟨.rightOp <| .ofIsRightAdjoint _⟩⟩
+
+end Functor
+end CategoryTheory

@@ -3,8 +3,8 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-
 import Mathlib.CategoryTheory.Sites.Sheaf
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 
 /-!
 
@@ -47,6 +47,8 @@ the following sources:
 
 namespace CategoryTheory
 
+universe w w'
+
 variable {C D : Type _} [Category C] [Category D]
 
 open Limits
@@ -65,6 +67,12 @@ This is used in the definition of a coverage.
 def FactorsThruAlong {X Y : C} (S : Presieve Y) (T : Presieve X) (f : Y ⟶ X) : Prop :=
   ∀ ⦃Z : C⦄ ⦃g : Z ⟶ Y⦄, S g →
   ∃ (W : C) (i : Z ⟶ W) (e : W ⟶ X), T e ∧ i ≫ e = g ≫ f
+
+lemma FactorsThruAlong.pullbackArrows [HasPullbacks C] {X Y : C} (f : X ⟶ Y)
+    (R : Presieve Y) :
+    (Presieve.pullbackArrows f R).FactorsThruAlong R f := by
+  intro Z g ⟨W, b, hb⟩
+  refine ⟨_, pullback.fst _ _, b, hb, pullback.condition⟩
 
 /--
 Given `S T : Presieve X`, we say that `S` factors through `T` if any morphism in `S`
@@ -101,7 +109,7 @@ lemma isSheafFor_of_factorsThru
     (P : Cᵒᵖ ⥤ Type*)
     (H : S.FactorsThru T) (hS : S.IsSheafFor P)
     (h : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, T f → ∃ (R : Presieve Y),
-      R.IsSeparatedFor P ∧ R.FactorsThruAlong S f):
+      R.IsSeparatedFor P ∧ R.FactorsThruAlong S f) :
     T.IsSheafFor P := by
   simp only [← Presieve.isSeparatedFor_and_exists_isAmalgamation_iff_isSheafFor] at *
   choose W i e h1 h2 using H
@@ -178,13 +186,13 @@ lemma ofGrothendieck_iff {X : C} {S : Presieve X} (J : GrothendieckTopology C) :
 An auxiliary definition used to define the Grothendieck topology associated to a
 coverage. See `Coverage.toGrothendieck`.
 -/
-inductive saturate (K : Coverage C) : (X : C) → Sieve X → Prop where
-  | of (X : C) (S : Presieve X) (hS : S ∈ K X) : saturate K X (Sieve.generate S)
-  | top (X : C) : saturate K X ⊤
+inductive Saturate (K : Coverage C) : (X : C) → Sieve X → Prop where
+  | of (X : C) (S : Presieve X) (hS : S ∈ K X) : Saturate K X (Sieve.generate S)
+  | top (X : C) : Saturate K X ⊤
   | transitive (X : C) (R S : Sieve X) :
-    saturate K X R →
-    (∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, R f → saturate K Y (S.pullback f)) →
-    saturate K X S
+    Saturate K X R →
+    (∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, R f → Saturate K Y (S.pullback f)) →
+    Saturate K X S
 
 lemma eq_top_pullback {X Y : C} {S T : Sieve X} (h : S ≤ T) (f : Y ⟶ X) (hf : S f) :
     T.pullback f = ⊤ := by
@@ -195,11 +203,11 @@ lemma eq_top_pullback {X Y : C} {S T : Sieve X} (h : S ≤ T) (f : Y ⟶ X) (hf 
   exact hf
 
 lemma saturate_of_superset (K : Coverage C) {X : C} {S T : Sieve X} (h : S ≤ T)
-    (hS : saturate K X S) : saturate K X T := by
-  apply saturate.transitive _ _ _ hS
+    (hS : Saturate K X S) : Saturate K X T := by
+  apply Saturate.transitive _ _ _ hS
   intro Y g hg
   rw [eq_top_pullback (h := h)]
-  · apply saturate.top
+  · apply Saturate.top
   · assumption
 
 variable (C) in
@@ -216,7 +224,7 @@ associated Grothendieck topology is pullback stable, and so an additional constr
 in the inductive construction is not needed.
 -/
 def toGrothendieck (K : Coverage C) : GrothendieckTopology C where
-  sieves := saturate K
+  sieves := Saturate K
   top_mem' := .top
   pullback_stable' := by
     intro X Y S f hS
@@ -224,25 +232,25 @@ def toGrothendieck (K : Coverage C) : GrothendieckTopology C where
     | of X S hS =>
       obtain ⟨R,hR1,hR2⟩ := K.pullback f S hS
       suffices Sieve.generate R ≤ (Sieve.generate S).pullback f from
-        saturate_of_superset _ this (saturate.of _ _ hR1)
+        saturate_of_superset _ this (Saturate.of _ _ hR1)
       rintro Z g ⟨W, i, e, h1, h2⟩
       obtain ⟨WW, ii, ee, hh1, hh2⟩ := hR2 h1
       refine ⟨WW, i ≫ ii, ee, hh1, ?_⟩
       simp only [hh2, reassoc_of% h2, Category.assoc]
-    | top X => apply saturate.top
+    | top X => apply Saturate.top
     | transitive X R S _ hS H1 _ =>
-      apply saturate.transitive
+      apply Saturate.transitive
       · apply H1 f
       intro Z g hg
       rw [← Sieve.pullback_comp]
       exact hS hg
-  transitive' X S hS R hR := .transitive _ _ _ hS hR
+  transitive' _ _ hS _ hR := .transitive _ _ _ hS hR
 
 instance : PartialOrder (Coverage C) where
   le A B := A.covering ≤ B.covering
-  le_refl A X := le_refl _
-  le_trans A B C h1 h2 X := le_trans (h1 X) (h2 X)
-  le_antisymm A B h1 h2 := Coverage.ext A B <| funext <|
+  le_refl _ _ := le_refl _
+  le_trans _ _ _ h1 h2 X := le_trans (h1 X) (h2 X)
+  le_antisymm _ _ h1 h2 := Coverage.ext <| funext <|
     fun X => le_antisymm (h1 X) (h2 X)
 
 variable (C) in
@@ -255,13 +263,13 @@ def gi : GaloisInsertion (toGrothendieck C) (ofGrothendieck C) where
   choice_eq := fun _ _ => rfl
   le_l_u J X S hS := by
     rw [← Sieve.generate_sieve S]
-    apply saturate.of
+    apply Saturate.of
     dsimp [ofGrothendieck]
     rwa [Sieve.generate_sieve S]
   gc K J := by
     constructor
     · intro H X S hS
-      exact H _ <| saturate.of _ _ hS
+      exact H _ <| Saturate.of _ _ hS
     · intro H X S hS
       induction hS with
       | of X S hS => exact H _ hS
@@ -283,7 +291,7 @@ theorem toGrothendieck_eq_sInf (K : Coverage C) : toGrothendieck _ K =
     | transitive X R S _ _ H1 H2 => exact J.transitive H1 _ H2
   · apply sInf_le
     intro X S hS
-    apply saturate.of _ _ hS
+    apply Saturate.of _ _ hS
 
 instance : SemilatticeSup (Coverage C) where
   sup x y :=
@@ -309,10 +317,41 @@ Any sieve that contains a covering presieve for a coverage is a covering sieve f
 Grothendieck topology.
 -/
 theorem mem_toGrothendieck_sieves_of_superset (K : Coverage C) {X : C} {S : Sieve X}
-    {R : Presieve X} (h : R ≤ S) (hR : R ∈ K.covering X) : S ∈ (K.toGrothendieck C).sieves X :=
-  K.saturate_of_superset ((Sieve.sets_iff_generate _ _).mpr h) (Coverage.saturate.of X _ hR)
+    {R : Presieve X} (h : R ≤ S) (hR : R ∈ K.covering X) : S ∈ (K.toGrothendieck C) X :=
+  K.saturate_of_superset ((Sieve.generate_le_iff _ _).mpr h) (Coverage.Saturate.of X _ hR)
+
+/-- A coverage is stable under base change if pullbacks of covering presieves
+are covering presieves.
+Note: This is stronger than the analogous requirement for a `Pretopology`, because
+`IsPullback` does not imply equality with the (arbitrarily) chosen pullbacks in `C`. -/
+class IsStableUnderBaseChange (J : Coverage C) : Prop where
+  mem_covering_of_isPullback {ι : Type w} {S : C} {X : ι → C} (f : ∀ i, X i ⟶ S)
+    (hR : Presieve.ofArrows X f ∈ J S) {Y : C} (g : Y ⟶ S)
+    {P : ι → C} (p₁ : ∀ i, P i ⟶ Y) (p₂ : ∀ i, P i ⟶ X i)
+    (h : ∀ i, IsPullback (p₁ i) (p₂ i) g (f i)) :
+    .ofArrows P p₁ ∈ J Y
+
+/-- A coverage is stable under composition if the indexed composition
+of coverings is again a covering.
+Note: This is stronger than the analogous requirement for a `Pretopology`, because
+this is in general not equal to a `Presieve.bind`. -/
+class IsStableUnderComposition (J : Coverage C) : Prop where
+  mem_covering_comp {ι : Type w}
+    {S : C} {X : ι → C} (f : ∀ i, X i ⟶ S) (hf : Presieve.ofArrows X f ∈ J S)
+    {σ : ι → Type w'} {Y : ∀ (i : ι), σ i → C}
+    (g : ∀ i j, Y i j ⟶ X i) (hg : ∀ i, Presieve.ofArrows (Y i) (g i) ∈ J (X i)) :
+    .ofArrows (fun p : Σ i, σ i ↦ Y _ p.2) (fun _ ↦ g _ _ ≫ f _) ∈ J S
+
+alias mem_covering_of_isPullback := IsStableUnderBaseChange.mem_covering_of_isPullback
+
+alias mem_covering_comp := IsStableUnderComposition.mem_covering_comp
 
 end Coverage
+
+/-- Any pretopology is a coverage. -/
+def Pretopology.toCoverage [HasPullbacks C] (J : Pretopology C) : Coverage C where
+  covering := J
+  pullback _ _ f R hR := ⟨R.pullbackArrows f, J.pullbacks _ _ hR, .pullbackArrows f R⟩
 
 open Coverage
 
@@ -329,7 +368,7 @@ theorem isSheaf_coverage (K : Coverage C) (P : Cᵒᵖ ⥤ Type*) :
   constructor
   · intro H X R hR
     rw [Presieve.isSheafFor_iff_generate]
-    apply H _ <| saturate.of _ _ hR
+    apply H _ <| Saturate.of _ _ hR
   · intro H X S hS
     -- This is the key point of the proof:
     -- We must generalize the induction in the correct way.
@@ -405,7 +444,7 @@ theorem isSheaf_sup (K L : Coverage C) (P : Cᵒᵖ ⥤ Type*) :
   rw [isSheaf_coverage, isSheaf_coverage] at h
   rw [isSheaf_coverage]
   intro X R hR
-  cases' hR with hR hR
+  rcases hR with hR | hR
   · exact h.1 R hR
   · exact h.2 R hR
 

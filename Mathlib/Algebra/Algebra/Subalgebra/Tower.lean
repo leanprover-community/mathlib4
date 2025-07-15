@@ -3,10 +3,8 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Anne Baanen
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 import Mathlib.Algebra.Algebra.Tower
-
-#align_import algebra.algebra.subalgebra.tower from "leanprover-community/mathlib"@"a35ddf20601f85f78cd57e7f5b09ed528d71b7af"
 
 /-!
 # Subalgebras in towers of algebras
@@ -19,12 +17,12 @@ compatibility condition `(r • s) • a = r • (s • a)`.
 
 ## Main results
 
- * `IsScalarTower.Subalgebra`: if `A/S/R` is a tower and `S₀` is a subalgebra
-   between `S` and `R`, then `A/S/S₀` is a tower
- * `IsScalarTower.Subalgebra'`: if `A/S/R` is a tower and `S₀` is a subalgebra
-   between `S` and `R`, then `A/S₀/R` is a tower
- * `Subalgebra.restrictScalars`: turn an `S`-subalgebra of `A` into an `R`-subalgebra of `A`,
-   given that `A/S/R` is a tower
+* `IsScalarTower.Subalgebra`: if `A/S/R` is a tower and `S₀` is a subalgebra
+  between `S` and `R`, then `A/S/S₀` is a tower
+* `IsScalarTower.Subalgebra'`: if `A/S/R` is a tower and `S₀` is a subalgebra
+  between `S` and `R`, then `A/S₀/R` is a tower
+* `Subalgebra.restrictScalars`: turn an `S`-subalgebra of `A` into an `R`-subalgebra of `A`,
+  given that `A/S/R` is a tower
 
 -/
 
@@ -43,7 +41,6 @@ variable {A}
 
 theorem lmul_algebraMap (x : R) : Algebra.lmul R A (algebraMap R A x) = Algebra.lsmul R R A x :=
   Eq.symm <| LinearMap.ext <| smul_def x
-#align algebra.lmul_algebra_map Algebra.lmul_algebraMap
 
 end Algebra
 
@@ -56,14 +53,12 @@ variable [Algebra R S] [Algebra S A]
 
 instance subalgebra (S₀ : Subalgebra R S) : IsScalarTower S₀ S A :=
   of_algebraMap_eq fun _ ↦ rfl
-#align is_scalar_tower.subalgebra IsScalarTower.subalgebra
 
 variable [Algebra R A] [IsScalarTower R S A]
 
 instance subalgebra' (S₀ : Subalgebra R S) : IsScalarTower R S₀ A :=
   @IsScalarTower.of_algebraMap_eq R S₀ A _ _ _ _ _ _ fun _ ↦
-    (IsScalarTower.algebraMap_apply R S A _ : _)
-#align is_scalar_tower.subalgebra' IsScalarTower.subalgebra'
+    (IsScalarTower.algebraMap_apply R S A _ :)
 
 end Semiring
 
@@ -86,33 +81,27 @@ def restrictScalars (U : Subalgebra S A) : Subalgebra R A :=
     algebraMap_mem' := fun x ↦ by
       rw [algebraMap_apply R S A]
       exact U.algebraMap_mem _ }
-#align subalgebra.restrict_scalars Subalgebra.restrictScalars
 
 @[simp]
 theorem coe_restrictScalars {U : Subalgebra S A} : (restrictScalars R U : Set A) = (U : Set A) :=
   rfl
-#align subalgebra.coe_restrict_scalars Subalgebra.coe_restrictScalars
 
 @[simp]
 theorem restrictScalars_top : restrictScalars R (⊤ : Subalgebra S A) = ⊤ :=
   SetLike.coe_injective <| by dsimp -- Porting note: why does `rfl` not work instead of `by dsimp`?
-#align subalgebra.restrict_scalars_top Subalgebra.restrictScalars_top
 
 @[simp]
 theorem restrictScalars_toSubmodule {U : Subalgebra S A} :
     Subalgebra.toSubmodule (U.restrictScalars R) = U.toSubmodule.restrictScalars R :=
   SetLike.coe_injective rfl
-#align subalgebra.restrict_scalars_to_submodule Subalgebra.restrictScalars_toSubmodule
 
 @[simp]
 theorem mem_restrictScalars {U : Subalgebra S A} {x : A} : x ∈ restrictScalars R U ↔ x ∈ U :=
   Iff.rfl
-#align subalgebra.mem_restrict_scalars Subalgebra.mem_restrictScalars
 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : Subalgebra S A → Subalgebra R A) := fun U V H ↦
   ext fun x ↦ by rw [← mem_restrictScalars R, H, mem_restrictScalars]
-#align subalgebra.restrict_scalars_injective Subalgebra.restrictScalars_injective
 
 /-- Produces an `R`-algebra map from `U.restrictScalars R` given an `S`-algebra map from `U`.
 
@@ -120,7 +109,6 @@ This is a special case of `AlgHom.restrictScalars` that can be helpful in elabor
 @[simp]
 def ofRestrictScalars (U : Subalgebra S A) (f : U →ₐ[S] B) : U.restrictScalars R →ₐ[R] B :=
   f.restrictScalars R
-#align subalgebra.of_restrict_scalars Subalgebra.ofRestrictScalars
 
 end Semiring
 
@@ -131,9 +119,7 @@ lemma range_isScalarTower_toAlgHom [CommSemiring R] [CommSemiring A]
     [Algebra R A] (S : Subalgebra R A) :
     LinearMap.range (IsScalarTower.toAlgHom R S A) = Subalgebra.toSubmodule S := by
   ext
-  simp only [← Submodule.range_subtype (Subalgebra.toSubmodule S), LinearMap.mem_range,
-    IsScalarTower.coe_toAlgHom', Subalgebra.mem_toSubmodule]
-  rfl
+  simp [algebraMap_eq]
 
 end CommSemiring
 
@@ -156,6 +142,5 @@ theorem adjoin_range_toAlgHom (t : Set A) :
         rw [this]
       ext z
       exact ⟨fun ⟨⟨_, y, h1⟩, h2⟩ ↦ ⟨y, h2 ▸ h1⟩, fun ⟨y, hy⟩ ↦ ⟨⟨z, y, hy⟩, rfl⟩⟩
-#align is_scalar_tower.adjoin_range_to_alg_hom IsScalarTower.adjoin_range_toAlgHom
 
 end IsScalarTower

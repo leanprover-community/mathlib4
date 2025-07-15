@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yourong Zang
 -/
 import Mathlib.Analysis.NormedSpace.ConformalLinearMap
-import Mathlib.Analysis.InnerProductSpace.Basic
-
-#align_import analysis.inner_product_space.conformal_linear_map from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
+import Mathlib.Analysis.InnerProductSpace.LinearMap
 
 /-!
 # Conformal maps between inner product spaces
@@ -37,8 +35,7 @@ theorem isConformalMap_iff (f : E →L[ℝ] F) :
     obtain ⟨c, hc, rfl⟩ : ∃ c : ℝ, 0 < c ∧ c₁ = c * c :=
       ⟨√c₁, Real.sqrt_pos.2 hc₁, (Real.mul_self_sqrt hc₁.le).symm⟩
     refine ⟨c, hc.ne', (c⁻¹ • f : E →ₗ[ℝ] F).isometryOfInner fun u v => ?_, ?_⟩
-    · simp only [real_inner_smul_left, real_inner_smul_right, huv, mul_assoc, coe_smul,
+    · simp only [real_inner_smul_left, real_inner_smul_right, huv, mul_assoc,
         inv_mul_cancel_left₀ hc.ne', LinearMap.smul_apply, ContinuousLinearMap.coe_coe]
     · ext1 x
       exact (smul_inv_smul₀ hc.ne' (f x)).symm
-#align is_conformal_map_iff isConformalMap_iff

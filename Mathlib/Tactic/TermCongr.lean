@@ -6,7 +6,7 @@ Authors: Kyle Miller
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Meta.CongrTheorems
 import Mathlib.Logic.Basic
-import Mathlib.Tactic.Congr!
+import Mathlib.Tactic.CongrExclamation
 
 /-! # `congr(...)` congruence quotations
 
@@ -47,7 +47,7 @@ it eagerly wants to solve for instance arguments. The current version is able to
 expected LHS and RHS to fill in arguments before solving for instance arguments.
 -/
 
-set_option autoImplicit true
+universe u
 
 namespace Mathlib.Tactic.TermCongr
 open Lean Elab Meta
@@ -55,7 +55,7 @@ open Lean Elab Meta
 initialize registerTraceClass `Elab.congr
 
 /--
-`congr(expr)` generates an congruence from an expression containing
+`congr(expr)` generates a congruence from an expression containing
 congruence holes of the form `$h` or `$(h)`.
 In these congruence holes, `h : a = b` indicates that, in the generated congruence,
 on the left-hand side `a` is substituted for `$h`
@@ -103,8 +103,8 @@ Note that there is no relation between `val` and the proof.
 We need to decouple these to support letting the proof's elaboration be deferred until
 we know whether we want an iff, eq, or heq, while also allowing it to choose
 to elaborate as an iff, eq, or heq.
-Later, the congruence generator handles any discrepencies.
-See `Mathlib.Tactic.TermCongr.CongrResult`. -/
+Later, the congruence generator handles any discrepancies.
+See `Mathlib/Tactic/TermCongr/CongrResult.lean`. -/
 @[reducible, nolint unusedArguments]
 def cHole {α : Sort u} (val : α) {p : Prop} (_pf : p) : α := val
 
@@ -139,7 +139,7 @@ def cHole? (e : Expr) (mvarCounterSaved? : Option Nat := none) : Option (Bool ×
     return (forLhs, val, pf)
   | _ => none
 
-/-- Returns any subexpression that is a recent congruence hole.  -/
+/-- Returns any subexpression that is a recent congruence hole. -/
 def hasCHole (mvarCounterSaved : Nat) (e : Expr) : Option Expr :=
   e.find? fun e' => (cHole? e' mvarCounterSaved).isSome
 
@@ -288,7 +288,7 @@ def CongrResult.eq (res : CongrResult) : MetaM Expr := do
   | some pf => pf .eq
   | none => mkEqRefl res.lhs
 
-/-- Returns the proof that `HEq lhs rhs`. Fails if the `CongrResult` is inapplicable.
+/-- Returns the proof that `lhs ≍ rhs`. Fails if the `CongrResult` is inapplicable.
 If `pf? = none`, this returns the `rfl` proof. -/
 def CongrResult.heq (res : CongrResult) : MetaM Expr := do
   match res.pf? with
@@ -416,7 +416,7 @@ def CongrResult.mkDefault' (mvarCounterSaved : Nat) (lhs rhs : Expr) : MetaM Con
   CongrResult.mkDefault lhs rhs
 
 /-- Throw an internal error. -/
-def throwCongrEx (lhs rhs : Expr) (msg : MessageData) : MetaM α := do
+def throwCongrEx {α : Type} (lhs rhs : Expr) (msg : MessageData) : MetaM α := do
   throwError "congr(...) failed with left-hand side{indentD lhs}\n\
     and right-hand side {indentD rhs}\n{msg}"
 
@@ -638,3 +638,7 @@ def elabTermCongr : Term.TermElab := fun stx expectedType? => do
     let ty ← mkEq res.lhs res.rhs
     mkExpectedTypeHint pf ty
   | _ => throwUnsupportedSyntax
+
+end TermCongr
+
+end Mathlib.Tactic

@@ -5,8 +5,6 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Combinatorics.SimpleGraph.Regularity.Increment
 
-#align_import combinatorics.simple_graph.regularity.lemma from "leanprover-community/mathlib"@"1d4d3ca5ec44693640c4f5e407a6b611f77accc8"
-
 /-!
 # Szemerédi's Regularity Lemma
 
@@ -73,7 +71,7 @@ variable {α : Type*} [DecidableEq α] [Fintype α] (G : SimpleGraph α) [Decida
 `ε`-uniform equipartition of bounded size (where the bound does not depend on the graph). -/
 theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
     ∃ P : Finpartition univ,
-      P.IsEquipartition ∧ l ≤ P.parts.card ∧ P.parts.card ≤ bound ε l ∧ P.IsUniform G ε := by
+      P.IsEquipartition ∧ l ≤ #P.parts ∧ #P.parts ≤ bound ε l ∧ P.IsUniform G ε := by
   obtain hα | hα := le_total (card α) (bound ε l)
   -- If `card α ≤ bound ε l`, then the partition into singletons is acceptable.
   · refine ⟨⊥, bot_isEquipartition _, ?_⟩
@@ -81,7 +79,7 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
     exact ⟨hl, hα, bot_isUniform _ hε⟩
   -- Else, let's start from a dummy equipartition of size `initialBound ε l`.
   let t := initialBound ε l
-  have htα : t ≤ (univ : Finset α).card :=
+  have htα : t ≤ #(univ : Finset α) :=
     (initialBound_le_bound _ _).trans (by rwa [Finset.card_univ])
   obtain ⟨dum, hdum₁, hdum₂⟩ :=
     exists_equipartition_card_eq (univ : Finset α) (initialBound_pos _ _).ne' htα
@@ -95,30 +93,33 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
   have : Nonempty α := by
     rw [← Fintype.card_pos_iff]
     exact (bound_pos _ _).trans_le hα
-  suffices h : ∀ i, ∃ P : Finpartition (univ : Finset α), P.IsEquipartition ∧ t ≤ P.parts.card ∧
-    P.parts.card ≤ stepBound^[i] t ∧ (P.IsUniform G ε ∨ ε ^ 5 / 4 * i ≤ P.energy G) by
+  suffices h : ∀ i, ∃ P : Finpartition (univ : Finset α), P.IsEquipartition ∧ t ≤ #P.parts ∧
+    #P.parts ≤ stepBound^[i] t ∧ (P.IsUniform G ε ∨ ε ^ 5 / 4 * i ≤ P.energy G) by
   -- For `i > 4 / ε ^ 5` we know that the partition we get can't have energy `≥ ε ^ 5 / 4 * i > 1`,
   -- so it must instead be `ε`-uniform and we won.
     obtain ⟨P, hP₁, hP₂, hP₃, hP₄⟩ := h (⌊4 / ε ^ 5⌋₊ + 1)
     refine ⟨P, hP₁, (le_initialBound _ _).trans hP₂, hP₃.trans ?_,
       hP₄.resolve_right fun hPenergy => lt_irrefl (1 : ℝ) ?_⟩
-    · rw [iterate_succ_apply']
-      exact mul_le_mul_left' (pow_le_pow_left (by norm_num) (by norm_num) _) _
+    · rw [iterate_succ_apply', stepBound, bound]
+      gcongr
+      norm_num
     calc
       (1 : ℝ) = ε ^ 5 / ↑4 * (↑4 / ε ^ 5) := by
-        rw [mul_comm, div_mul_div_cancel 4 (pow_pos hε 5).ne']; norm_num
+        rw [mul_comm, div_mul_div_cancel₀ (pow_pos hε 5).ne']; norm_num
       _ < ε ^ 5 / 4 * (⌊4 / ε ^ 5⌋₊ + 1) :=
         ((mul_lt_mul_left <| by positivity).2 (Nat.lt_floor_add_one _))
       _ ≤ (P.energy G : ℝ) := by rwa [← Nat.cast_add_one]
       _ ≤ 1 := mod_cast P.energy_le_one G
   -- Let's do the actual induction.
   intro i
-  induction' i with i ih
+  induction i with
   -- For `i = 0`, the dummy equipartition is enough.
-  · refine ⟨dum, hdum₁, hdum₂.ge, hdum₂.le, Or.inr ?_⟩
+  | zero =>
+    refine ⟨dum, hdum₁, hdum₂.ge, hdum₂.le, Or.inr ?_⟩
     rw [Nat.cast_zero, mul_zero]
     exact mod_cast dum.energy_nonneg G
   -- For the induction step at `i + 1`, find `P` the equipartition at `i`.
+  | succ i ih =>
   obtain ⟨P, hP₁, hP₂, hP₃, hP₄⟩ := ih
   by_cases huniform : P.IsUniform G ε
   -- If `P` is already uniform, then no need to break it up further. We can just return `P` again.
@@ -128,18 +129,18 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
   -- Else, `P` must instead have energy at least `ε ^ 5 / 4 * i`.
   replace hP₄ := hP₄.resolve_left huniform
   -- We gather a few numerical facts.
-  have hεl' : 100 ≤ 4 ^ P.parts.card * ε ^ 5 :=
+  have hεl' : 100 ≤ 4 ^ #P.parts * ε ^ 5 :=
     (hundred_lt_pow_initialBound_mul hε l).le.trans
-      (mul_le_mul_of_nonneg_right (pow_le_pow_right (by norm_num) hP₂) <| by positivity)
+      (mul_le_mul_of_nonneg_right (pow_right_mono₀ (by norm_num) hP₂) <| by positivity)
   have hi : (i : ℝ) ≤ 4 / ε ^ 5 := by
     have hi : ε ^ 5 / 4 * ↑i ≤ 1 := hP₄.trans (mod_cast P.energy_le_one G)
-    rw [div_mul_eq_mul_div, div_le_iff (show (0 : ℝ) < 4 by norm_num)] at hi
-    set_option tactic.skipAssignedInstances false in norm_num at hi
-    rwa [le_div_iff' (pow_pos hε _)]
-  have hsize : P.parts.card ≤ stepBound^[⌊4 / ε ^ 5⌋₊] t :=
+    rw [div_mul_eq_mul_div, div_le_iff₀ (show (0 : ℝ) < 4 by norm_num)] at hi
+    norm_num at hi
+    rwa [le_div_iff₀' (pow_pos hε _)]
+  have hsize : #P.parts ≤ stepBound^[⌊4 / ε ^ 5⌋₊] t :=
     hP₃.trans (monotone_iterate_of_id_le le_stepBound (Nat.le_floor hi) _)
-  have hPα : P.parts.card * 16 ^ P.parts.card ≤ card α :=
-    (Nat.mul_le_mul hsize (Nat.pow_le_pow_of_le_right (by norm_num) hsize)).trans hα
+  have hPα : #P.parts * 16 ^ #P.parts ≤ card α :=
+    (Nat.mul_le_mul hsize (Nat.pow_le_pow_right (by norm_num) hsize)).trans hα
   -- We return the increment equipartition of `P`, which has energy `≥ ε ^ 5 / 4 * (i + 1)`.
   refine ⟨increment hP₁ G ε, increment_isEquipartition hP₁ G ε, ?_, ?_, Or.inr <| le_trans ?_ <|
     energy_increment hP₁ ((seven_le_initialBound ε l).trans hP₂) hεl' hPα huniform hε.le hε₁⟩
@@ -148,5 +149,4 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
   · rw [card_increment hPα huniform, iterate_succ_apply']
     exact stepBound_mono hP₃
   · rw [Nat.cast_succ, mul_add, mul_one]
-    exact add_le_add_right hP₄ _
-#align szemeredi_regularity szemeredi_regularity
+    gcongr

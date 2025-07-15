@@ -1,43 +1,143 @@
 /-
 Copyright (c) 2021 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alexander Bentkamp
+Authors: Alexander Bentkamp, Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Cone.Basic
-import Mathlib.Analysis.InnerProductSpace.Projection
-
-#align_import analysis.convex.cone.dual from "leanprover-community/mathlib"@"915591b2bb3ea303648db07284a161a7f2a9e3d4"
+import Mathlib.Analysis.Convex.Cone.Dual
+import Mathlib.Analysis.InnerProductSpace.Adjoint
 
 /-!
-# Convex cones in inner product spaces
+# Inner dual cone of a set
 
-We define `Set.innerDualCone` to be the cone consisting of all points `y` such that for
-all points `x` in a given set `0 ≤ ⟪ x, y ⟫`.
+We define the inner dual cone of a set `s` in an inner product space to be the proper cone
+consisting of all points `y` such that `0 ≤ ⟪x, y⟫` for all `x ∈ s`.
 
 ## Main statements
 
 We prove the following theorems:
-* `ConvexCone.innerDualCone_of_innerDualCone_eq_self`:
-  The `innerDualCone` of the `innerDualCone` of a nonempty, closed, convex cone is itself.
-* `ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem`:
+* `ProperCone.innerDual_innerDual`: The double inner dual of a proper convex cone is itself.
+* `ProperCone.hyperplane_separation'`:
   This variant of the
   [hyperplane separation theorem](https://en.wikipedia.org/wiki/Hyperplane_separation_theorem)
-  states that given a nonempty, closed, convex cone `K` in a complete, real inner product space `H`
+  states that given a nonempty, closed, convex cone `C` in a complete, real inner product space `E`
   and a point `b` disjoint from it, there is a vector `y` which separates `b` from `K` in the sense
   that for all points `x` in `K`, `0 ≤ ⟪x, y⟫_ℝ` and `⟪y, b⟫_ℝ < 0`. This is also a geometric
   interpretation of the
   [Farkas lemma](https://en.wikipedia.org/wiki/Farkas%27_lemma#Geometric_interpretation).
+
+## Implementation notes
+
+We do not provide `ConvexCone`- nor `PointedCone`-valued versions of `ProperCone.innerDual` since
+the inner dual cone of any set is always closed and contains `0`, ie is a proper cone.
+Furthermore, the strict version `{y | ∀ x ∈ s, 0 < ⟪x, y⟫}` is a candidate to the name
+`ConvexCone.innerDual`.
 -/
 
-open Set LinearMap
+open Set LinearMap Pointwise
+open scoped RealInnerProductSpace
 
-open scoped Classical
-open Pointwise
+variable {R E F : Type*}
+  [NormedAddCommGroup E] [InnerProductSpace ℝ E] [CompleteSpace E]
+  [NormedAddCommGroup F] [InnerProductSpace ℝ F] [CompleteSpace F]
+  {s t : Set E} {x x₀ y : E}
 
-variable {𝕜 E F G : Type*}
+open Function
 
-/-! ### The dual cone -/
+namespace ProperCone
 
+/-- The dual cone of a set `s` is the cone consisting of all points `y` such that for all points
+`x ∈ s` we have `0 ≤ ⟪x, y⟫`. -/
+@[simps! toSubmodule]
+def innerDual (s : Set E) : ProperCone ℝ E := .dual (innerₗ E) s
+
+@[simp] lemma mem_innerDual : y ∈ innerDual s ↔ ∀ ⦃x⦄, x ∈ s → 0 ≤ ⟪x, y⟫ := .rfl
+
+@[simp] lemma innerDual_empty : innerDual (∅ : Set E) = ⊤ := by ext; simp
+
+/-- Dual cone of the convex cone `{0}` is the total space. -/
+@[simp] lemma innerDual_zero : innerDual (0 : Set E) = ⊤ := by ext; simp
+
+/-- Dual cone of the total space is the convex cone `{0}`. -/
+@[simp]
+lemma innerDual_univ : innerDual (univ : Set E) = ⊥ :=
+  le_antisymm (fun x hx ↦ by simpa [← real_inner_self_nonpos] using hx (mem_univ (-x))) (by simp)
+
+@[gcongr] lemma innerDual_le_innerDual (h : t ⊆ s) : innerDual s ≤ innerDual t :=
+  fun _y hy _x hx ↦ hy (h hx)
+
+/-- The inner dual cone of a singleton is given by the preimage of the positive cone under the
+linear map `fun y ↦ ⟪x, y⟫`. -/
+lemma innerDual_singleton (x : E) :
+    innerDual ({x} : Set E) = (positive ℝ ℝ).comap (innerSL ℝ x) := by ext; simp
+
+lemma innerDual_union (s t : Set E) : innerDual (s ∪ t) = innerDual s ⊓ innerDual t :=
+  le_antisymm (le_inf (fun _ hx _ hy ↦ hx <| .inl hy) fun _ hx _ hy ↦ hx <| .inr hy)
+    fun _ hx _ => Or.rec (fun h ↦ hx.1 h) (fun h ↦ hx.2 h)
+
+lemma innerDual_insert (x : E) (s : Set E) :
+    innerDual (insert x s) = innerDual {x} ⊓ innerDual s := by
+  rw [insert_eq, innerDual_union]
+
+lemma innerDual_iUnion {ι : Sort*} (f : ι → Set E) :
+    innerDual (⋃ i, f i) = ⨅ i, innerDual (f i) := by
+  ext; simp [forall_swap (α := E)]
+
+lemma innerDual_sUnion (S : Set (Set E)) : innerDual (⋃₀ S) = sInf (innerDual '' S) := by
+  ext; simp [forall_swap (α := E)]
+
+/-! ### Farkas' lemma and double dual of a cone in a Hilbert space -/
+
+/-- Geometric interpretation of **Farkas' lemma**. Also stronger version of the
+**Hahn-Banach separation theorem** for proper cones. -/
+theorem hyperplane_separation' (C : ProperCone ℝ E) (hx₀ : x₀ ∉ C) :
+    ∃ y, (∀ x ∈ C, 0 ≤ ⟪x, y⟫) ∧ ⟪x₀, y⟫ < 0 := by
+  obtain ⟨f, hf, hf₀⟩ := C.hyperplane_separation_point hx₀
+  refine ⟨(InnerProductSpace.toDual ℝ E).symm f, ?_⟩
+  simpa [← real_inner_comm _ ((InnerProductSpace.toDual ℝ E).symm f), *]
+
+/-- The inner dual of inner dual of a proper cone is itself. -/
+@[simp] theorem innerDual_innerDual (C : ProperCone ℝ E) :
+    innerDual (innerDual (C : Set E)) = C := by
+  simpa using C.dual_flip_dual (innerₗ E)
+
+open scoped InnerProductSpace
+
+/-- Relative geometric interpretation of **Farkas' lemma**. Also stronger version of the
+**Hahn-Banach separation theorem** for proper cones. -/
+theorem relative_hyperplane_separation {C : ProperCone ℝ E} {f : E →L[ℝ] F} {b : F} :
+    b ∈ C.map f ↔ ∀ y : F, f.adjoint y ∈ innerDual C → 0 ≤ ⟪b, y⟫_ℝ where
+  mp := by
+    -- suppose `b ∈ C.map f`
+    simp only [map, ClosedSubmodule.map, Submodule.closure, Submodule.topologicalClosure,
+      AddSubmonoid.topologicalClosure, Submodule.coe_toAddSubmonoid, Submodule.map_coe,
+      ContinuousLinearMap.coe_restrictScalars', ClosedSubmodule.coe_toSubmodule,
+      ClosedSubmodule.mem_mk, Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk,
+      mem_closure_iff_seq_limit, mem_image, SetLike.mem_coe, Classical.skolem, forall_and,
+      mem_innerDual, ContinuousLinearMap.adjoint_inner_right, forall_exists_index, and_imp]
+          -- there is a sequence `seq : ℕ → F` in the image of `f` that converges to `b`
+    rintro x seq hmem hx htends y hinner
+    obtain rfl : f ∘ seq = x := funext hx
+    have h n : 0 ≤ ⟪f (seq n), y⟫_ℝ := by simpa [real_inner_comm] using hinner (hmem n)
+    exact ge_of_tendsto' ((continuous_id.inner continuous_const).seqContinuous htends) h
+  mpr h := by
+    -- By contradiction, suppose `b ∉ C.map f`.
+    contrapose! h
+    -- as `b ∉ C.map f`, there is a hyperplane `y` separating `b` from `C.map f`
+    obtain ⟨y, hxy, hyb⟩ := (C.map f).hyperplane_separation' h
+    -- the rest of the proof is a straightforward algebraic manipulation
+    refine ⟨y, fun x hx ↦ ?_, hyb⟩
+    simpa [ContinuousLinearMap.adjoint_inner_right]
+      using hxy (f x) (subset_closure <| mem_image_of_mem _ hx)
+
+theorem hyperplane_separation_of_notMem (K : ProperCone ℝ E) {f : E →L[ℝ] F} {b : F}
+    (disj : b ∉ K.map f) :
+    ∃ y : F, ContinuousLinearMap.adjoint f y ∈ innerDual K ∧ ⟪b, y⟫_ℝ < 0 := by
+  contrapose! disj; rwa [K.relative_hyperplane_separation]
+
+@[deprecated (since := "2025-05-24")]
+alias hyperplane_separation_of_nmem := ProperCone.hyperplane_separation_of_notMem
+
+end ProperCone
 
 section Dual
 
@@ -47,6 +147,7 @@ open RealInnerProductSpace
 
 /-- The dual cone is the cone consisting of all points `y` such that for
 all points `x` in a given set `0 ≤ ⟪ x, y ⟫`. -/
+@[deprecated ProperCone.innerDual (since := "2025-07-06")]
 def Set.innerDualCone (s : Set H) : ConvexCone ℝ H where
   carrier := { y | ∀ x ∈ s, 0 ≤ ⟪x, y⟫ }
   smul_mem' c hc y hy x hx := by
@@ -55,58 +156,64 @@ def Set.innerDualCone (s : Set H) : ConvexCone ℝ H where
   add_mem' u hu v hv x hx := by
     rw [inner_add_right]
     exact add_nonneg (hu x hx) (hv x hx)
-#align set.inner_dual_cone Set.innerDualCone
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated ProperCone.mem_innerDual (since := "2025-07-06")]
 theorem mem_innerDualCone (y : H) (s : Set H) : y ∈ s.innerDualCone ↔ ∀ x ∈ s, 0 ≤ ⟪x, y⟫ :=
   Iff.rfl
-#align mem_inner_dual_cone mem_innerDualCone
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated ProperCone.innerDual_empty (since := "2025-07-06")]
 theorem innerDualCone_empty : (∅ : Set H).innerDualCone = ⊤ :=
   eq_top_iff.mpr fun _ _ _ => False.elim
-#align inner_dual_cone_empty innerDualCone_empty
 
-/-- Dual cone of the convex cone {0} is the total space. -/
-@[simp]
+set_option linter.deprecated false in
+@[deprecated ProperCone.innerDual_zero (since := "2025-07-06")]
 theorem innerDualCone_zero : (0 : Set H).innerDualCone = ⊤ :=
   eq_top_iff.mpr fun _ _ y (hy : y = 0) => hy.symm ▸ (inner_zero_left _).ge
-#align inner_dual_cone_zero innerDualCone_zero
 
+set_option linter.deprecated false in
 /-- Dual cone of the total space is the convex cone {0}. -/
-@[simp]
+@[deprecated ProperCone.innerDual_univ (since := "2025-07-06")]
 theorem innerDualCone_univ : (univ : Set H).innerDualCone = 0 := by
   suffices ∀ x : H, x ∈ (univ : Set H).innerDualCone → x = 0 by
     apply SetLike.coe_injective
     exact eq_singleton_iff_unique_mem.mpr ⟨fun x _ => (inner_zero_right _).ge, this⟩
   exact fun x hx => by simpa [← real_inner_self_nonpos] using hx (-x) (mem_univ _)
-#align inner_dual_cone_univ innerDualCone_univ
 
+variable {s t} in
+set_option linter.deprecated false in
+@[deprecated ProperCone.innerDual_le_innerDual (since := "2025-07-06")]
 theorem innerDualCone_le_innerDualCone (h : t ⊆ s) : s.innerDualCone ≤ t.innerDualCone :=
   fun _ hy x hx => hy x (h hx)
-#align inner_dual_cone_le_inner_dual_cone innerDualCone_le_innerDualCone
 
+set_option linter.deprecated false in
+@[deprecated ProperCone.pointed_toConvexCone (since := "2025-07-06")]
 theorem pointed_innerDualCone : s.innerDualCone.Pointed := fun x _ => by rw [inner_zero_right]
-#align pointed_inner_dual_cone pointed_innerDualCone
 
+set_option linter.deprecated false in
 /-- The inner dual cone of a singleton is given by the preimage of the positive cone under the
 linear map `fun y ↦ ⟪x, y⟫`. -/
+@[deprecated ProperCone.innerDual_singleton (since := "2025-07-06")]
 theorem innerDualCone_singleton (x : H) :
     ({x} : Set H).innerDualCone = (ConvexCone.positive ℝ ℝ).comap (innerₛₗ ℝ x) :=
   ConvexCone.ext fun _ => forall_eq
-#align inner_dual_cone_singleton innerDualCone_singleton
 
+set_option linter.deprecated false in
+@[deprecated ProperCone.innerDual_union (since := "2025-07-06")]
 theorem innerDualCone_union (s t : Set H) :
     (s ∪ t).innerDualCone = s.innerDualCone ⊓ t.innerDualCone :=
   le_antisymm (le_inf (fun _ hx _ hy => hx _ <| Or.inl hy) fun _ hx _ hy => hx _ <| Or.inr hy)
     fun _ hx _ => Or.rec (hx.1 _) (hx.2 _)
-#align inner_dual_cone_union innerDualCone_union
 
+set_option linter.deprecated false in
+@[deprecated ProperCone.innerDual_insert (since := "2025-07-06")]
 theorem innerDualCone_insert (x : H) (s : Set H) :
     (insert x s).innerDualCone = Set.innerDualCone {x} ⊓ s.innerDualCone := by
   rw [insert_eq, innerDualCone_union]
-#align inner_dual_cone_insert innerDualCone_insert
 
+set_option linter.deprecated false in
+@[deprecated ProperCone.innerDual_iUnion (since := "2025-07-06")]
 theorem innerDualCone_iUnion {ι : Sort*} (f : ι → Set H) :
     (⋃ i, f i).innerDualCone = ⨅ i, (f i).innerDualCone := by
   refine le_antisymm (le_iInf fun i x hx y hy => hx _ <| mem_iUnion_of_mem _ hy) ?_
@@ -114,32 +221,33 @@ theorem innerDualCone_iUnion {ι : Sort*} (f : ι → Set H) :
   rw [ConvexCone.mem_iInf] at hx
   obtain ⟨j, hj⟩ := mem_iUnion.mp hy
   exact hx _ _ hj
-#align inner_dual_cone_Union innerDualCone_iUnion
 
+set_option linter.deprecated false in
+@[deprecated ProperCone.innerDual_sUnion (since := "2025-07-06")]
 theorem innerDualCone_sUnion (S : Set (Set H)) :
     (⋃₀ S).innerDualCone = sInf (Set.innerDualCone '' S) := by
   simp_rw [sInf_image, sUnion_eq_biUnion, innerDualCone_iUnion]
-#align inner_dual_cone_sUnion innerDualCone_sUnion
 
+set_option linter.deprecated false in
 /-- The dual cone of `s` equals the intersection of dual cones of the points in `s`. -/
+@[deprecated "No replacement" (since := "2025-07-06")]
 theorem innerDualCone_eq_iInter_innerDualCone_singleton :
     (s.innerDualCone : Set H) = ⋂ i : s, (({↑i} : Set H).innerDualCone : Set H) := by
   rw [← ConvexCone.coe_iInf, ← innerDualCone_iUnion, iUnion_of_singleton_coe]
-#align inner_dual_cone_eq_Inter_inner_dual_cone_singleton innerDualCone_eq_iInter_innerDualCone_singleton
 
+set_option linter.deprecated false in
+@[deprecated ProperCone.isClosed (since := "2025-07-06")]
 theorem isClosed_innerDualCone : IsClosed (s.innerDualCone : Set H) := by
   -- reduce the problem to showing that dual cone of a singleton `{x}` is closed
   rw [innerDualCone_eq_iInter_innerDualCone_singleton]
   apply isClosed_iInter
   intro x
   -- the dual cone of a singleton `{x}` is the preimage of `[0, ∞)` under `inner x`
-  have h : ({↑x} : Set H).innerDualCone = (inner x : H → ℝ) ⁻¹' Set.Ici 0 := by
+  have h : ({↑x} : Set H).innerDualCone = (inner ℝ (x : H)) ⁻¹' Set.Ici 0 := by
     rw [innerDualCone_singleton, ConvexCone.coe_comap, ConvexCone.coe_positive, innerₛₗ_apply_coe]
   -- the preimage is closed as `inner x` is continuous and `[0, ∞)` is closed
   rw [h]
   exact isClosed_Ici.preimage (continuous_const.inner continuous_id')
-
-#align is_closed_inner_dual_cone isClosed_innerDualCone
 
 theorem ConvexCone.pointed_of_nonempty_of_isClosed (K : ConvexCone ℝ H) (ne : (K : Set H).Nonempty)
     (hc : IsClosed (K : Set H)) : K.Pointed := by
@@ -159,15 +267,33 @@ theorem ConvexCone.pointed_of_nonempty_of_isClosed (K : ConvexCone ℝ H) (ne : 
   -- as 0 ∈ closure f (0, ∞) and closure f (0, ∞) ⊆ K, 0 ∈ K.
   have f₀ : f 0 = 0 := zero_smul ℝ x
   simpa only [f₀, ConvexCone.Pointed, ← SetLike.mem_coe] using mem_of_subset_of_mem clf mem₀
-#align convex_cone.pointed_of_nonempty_of_is_closed ConvexCone.pointed_of_nonempty_of_isClosed
+
+namespace PointedCone
+
+set_option linter.deprecated false in
+@[deprecated "Now irrelevant" (since := "2025-07-06")]
+lemma toConvexCone_dual (C : PointedCone ℝ H) :
+    (dual (innerₗ H) (C : Set H)).toConvexCone = (C : Set H).innerDualCone := rfl
+
+end PointedCone
+
+namespace ProperCone
+
+set_option linter.deprecated false in
+@[deprecated "Now irrelevant" (since := "2025-07-06")]
+lemma coe_dual [CompleteSpace H] (C : ProperCone ℝ H) :
+    dual (innerₗ H) C = (C : Set H).innerDualCone := rfl
+
+end ProperCone
 
 section CompleteSpace
 
 variable [CompleteSpace H]
 
+open scoped InnerProductSpace in
 /-- This is a stronger version of the Hahn-Banach separation theorem for closed convex cones. This
 is also the geometric interpretation of Farkas' lemma. -/
-theorem ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem (K : ConvexCone ℝ H)
+theorem ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_notMem (K : ConvexCone ℝ H)
     (ne : (K : Set H).Nonempty) (hc : IsClosed (K : Set H)) {b : H} (disj : b ∉ K) :
     ∃ y : H, (∀ x : H, x ∈ K → 0 ≤ ⟪x, y⟫_ℝ) ∧ ⟪y, b⟫_ℝ < 0 := by
   -- let `z` be the point in `K` closest to `b`
@@ -193,15 +319,19 @@ theorem ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem (K : Co
     rw [← neg_zero, lt_neg, ← neg_one_mul, ← real_inner_smul_left, smul_sub, neg_smul, one_smul,
       neg_smul, neg_sub_neg, one_smul]
     calc
-      0 < ⟪b - z, b - z⟫_ℝ := lt_of_not_le ((Iff.not real_inner_self_nonpos).2 hbz)
+      0 < ⟪b - z, b - z⟫_ℝ := lt_of_not_ge ((Iff.not real_inner_self_nonpos).2 hbz)
       _ = ⟪b - z, b - z⟫_ℝ + 0 := (add_zero _).symm
       _ ≤ ⟪b - z, b - z⟫_ℝ + ⟪b - z, z⟫_ℝ := add_le_add rfl.ge hinner₀
       _ = ⟪b - z, b - z + z⟫_ℝ := (inner_add_right _ _ _).symm
       _ = ⟪b - z, b⟫_ℝ := by rw [sub_add_cancel]
 
-#align convex_cone.hyperplane_separation_of_nonempty_of_is_closed_of_nmem ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem
+@[deprecated (since := "2025-05-24")]
+alias ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem :=
+  ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_notMem
 
-/-- The inner dual of inner dual of a non-empty, closed convex cone is itself.  -/
+set_option linter.deprecated false in
+/-- The inner dual of inner dual of a non-empty, closed convex cone is itself. -/
+@[deprecated ProperCone.innerDual_innerDual (since := "2025-07-06")]
 theorem ConvexCone.innerDualCone_of_innerDualCone_eq_self (K : ConvexCone ℝ H)
     (ne : (K : Set H).Nonempty) (hc : IsClosed (K : Set H)) :
     ((K : Set H).innerDualCone : Set H).innerDualCone = K := by
@@ -209,11 +339,22 @@ theorem ConvexCone.innerDualCone_of_innerDualCone_eq_self (K : ConvexCone ℝ H)
   constructor
   · rw [mem_innerDualCone, ← SetLike.mem_coe]
     contrapose!
-    exact K.hyperplane_separation_of_nonempty_of_isClosed_of_nmem ne hc
+    exact K.hyperplane_separation_of_nonempty_of_isClosed_of_notMem ne hc
   · rintro hxK y h
     specialize h x hxK
     rwa [real_inner_comm]
-#align convex_cone.inner_dual_cone_of_inner_dual_cone_eq_self ConvexCone.innerDualCone_of_innerDualCone_eq_self
+
+namespace ProperCone
+variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+
+set_option linter.deprecated false in
+/-- The dual of the dual of a proper cone is itself. -/
+@[deprecated ProperCone.innerDual_innerDual (since := "2025-07-06")]
+theorem dual_dual (K : ProperCone ℝ H) : innerDual (innerDual (K : Set H)) = K :=
+  ProperCone.toPointedCone_injective <| PointedCone.toConvexCone_injective <|
+    (K : ConvexCone ℝ H).innerDualCone_of_innerDualCone_eq_self K.nonempty K.isClosed
+
+end ProperCone
 
 end CompleteSpace
 

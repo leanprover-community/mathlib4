@@ -7,8 +7,6 @@ import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.LinearAlgebra.Dimension.Constructions
 import Mathlib.LinearAlgebra.Dimension.Finite
 
-#align_import field_theory.finiteness from "leanprover-community/mathlib"@"039a089d2a4b93c761b234f3e5f5aeb752bac60f"
-
 /-!
 # A module over a division ring is noetherian if and only if it is finite.
 
@@ -16,9 +14,6 @@ import Mathlib.LinearAlgebra.Dimension.Finite
 
 
 universe u v
-
-open scoped Classical
-open Cardinal
 
 open Cardinal Submodule Module Function
 
@@ -41,14 +36,10 @@ theorem iff_rank_lt_aleph0 : IsNoetherian K V ↔ Module.rank K V < ℵ₀ := by
         (id ?_)
     refine isNoetherian_of_fg_of_noetherian _ ⟨Set.Finite.toFinset hbfinite, ?_⟩
     rw [Set.Finite.coe_toFinset, ← b.span_eq, Basis.coe_ofVectorSpace, Subtype.range_coe]
-#align is_noetherian.iff_rank_lt_aleph_0 IsNoetherian.iff_rank_lt_aleph0
-
-#align is_noetherian.rank_lt_aleph_0 rank_lt_aleph0
 
 /-- In a noetherian module over a division ring, all bases are indexed by a finite type. -/
 noncomputable def fintypeBasisIndex {ι : Type*} [IsNoetherian K V] (b : Basis ι K V) : Fintype ι :=
   b.fintypeIndexOfRankLtAleph0 (rank_lt_aleph0 K V)
-#align is_noetherian.fintype_basis_index IsNoetherian.fintypeBasisIndex
 
 /-- In a noetherian module over a division ring,
 `Basis.ofVectorSpace` is indexed by a finite type. -/
@@ -60,7 +51,6 @@ if a basis is indexed by a set, that set is finite. -/
 theorem finite_basis_index {ι : Type*} {s : Set ι} [IsNoetherian K V] (b : Basis s K V) :
     s.Finite :=
   b.finite_index_of_rank_lt_aleph0 (rank_lt_aleph0 K V)
-#align is_noetherian.finite_basis_index IsNoetherian.finite_basis_index
 
 variable (K V)
 
@@ -68,36 +58,43 @@ variable (K V)
 there exists a finite basis. This is the indexing `Finset`. -/
 noncomputable def finsetBasisIndex [IsNoetherian K V] : Finset V :=
   (finite_basis_index (Basis.ofVectorSpace K V)).toFinset
-#align is_noetherian.finset_basis_index IsNoetherian.finsetBasisIndex
 
 @[simp]
 theorem coe_finsetBasisIndex [IsNoetherian K V] :
     (↑(finsetBasisIndex K V) : Set V) = Basis.ofVectorSpaceIndex K V :=
   Set.Finite.coe_toFinset _
-#align is_noetherian.coe_finset_basis_index IsNoetherian.coe_finsetBasisIndex
 
 @[simp]
 theorem coeSort_finsetBasisIndex [IsNoetherian K V] :
     (finsetBasisIndex K V : Type _) = Basis.ofVectorSpaceIndex K V :=
   Set.Finite.coeSort_toFinset _
-#align is_noetherian.coe_sort_finset_basis_index IsNoetherian.coeSort_finsetBasisIndex
 
 /-- In a noetherian module over a division ring, there exists a finite basis.
 This is indexed by the `Finset` `IsNoetherian.finsetBasisIndex`.
 This is in contrast to the result `finite_basis_index (Basis.ofVectorSpace K V)`,
-which provides a set and a `Set.finite`.
+which provides a set and a `Set.Finite`.
 -/
 noncomputable def finsetBasis [IsNoetherian K V] : Basis (finsetBasisIndex K V) K V :=
   (Basis.ofVectorSpace K V).reindex (by rw [coeSort_finsetBasisIndex])
-#align is_noetherian.finset_basis IsNoetherian.finsetBasis
 
 @[simp]
 theorem range_finsetBasis [IsNoetherian K V] :
     Set.range (finsetBasis K V) = Basis.ofVectorSpaceIndex K V := by
   rw [finsetBasis, Basis.range_reindex, Basis.range_ofVectorSpace]
-#align is_noetherian.range_finset_basis IsNoetherian.range_finsetBasis
 
 variable {K V}
+
+theorem _root_.Module.card_eq_pow_finrank [Fintype K] [Fintype V] :
+    Fintype.card V = Fintype.card K ^ Module.finrank K V := by
+  let b := IsNoetherian.finsetBasis K V
+  rw [Module.card_fintype b, ← Module.finrank_eq_card_basis b]
+
+@[deprecated (since := "2025-03-14")] alias _root_.card_eq_pow_finrank := Module.card_eq_pow_finrank
+
+theorem _root_.Module.natCard_eq_pow_finrank [Module.Finite K V] :
+    Nat.card V = Nat.card K ^ finrank K V := by
+  let b := IsNoetherian.finsetBasis K V
+  rw [Nat.card_congr b.equivFun.toEquiv, Nat.card_fun, finrank_eq_nat_card_basis b]
 
 /-- A module over a division ring is noetherian if and only if it is finitely generated. -/
 theorem iff_fg : IsNoetherian K V ↔ Module.Finite K V := by
@@ -110,6 +107,5 @@ theorem iff_fg : IsNoetherian K V ↔ Module.Finite K V := by
   · rintro ⟨s, hs⟩
     rw [IsNoetherian.iff_rank_lt_aleph0, ← rank_top, ← hs]
     exact lt_of_le_of_lt (rank_span_le _) s.finite_toSet.lt_aleph0
-#align is_noetherian.iff_fg IsNoetherian.iff_fg
 
 end IsNoetherian

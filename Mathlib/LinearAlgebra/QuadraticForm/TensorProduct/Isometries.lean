@@ -20,12 +20,12 @@ These results are separate from the definition of `QuadraticForm.tmul` as that f
 * `QuadraticForm.tensorLId`: `TensorProduct.lid` as a `QuadraticForm.IsometryEquiv`
 -/
 
-suppress_compilation
-
 universe uR uM₁ uM₂ uM₃ uM₄
 variable {R : Type uR} {M₁ : Type uM₁} {M₂ : Type uM₂} {M₃ : Type uM₃} {M₄ : Type uM₄}
 
 open scoped TensorProduct
+
+open QuadraticMap
 
 namespace QuadraticForm
 
@@ -39,9 +39,9 @@ theorem tmul_comp_tensorMap
     {Q₃ : QuadraticForm R M₃} {Q₄ : QuadraticForm R M₄}
     (f : Q₁ →qᵢ Q₂) (g : Q₃ →qᵢ Q₄) :
     (Q₂.tmul Q₄).comp (TensorProduct.map f.toLinearMap g.toLinearMap) = Q₁.tmul Q₃ := by
-  have h₁ : Q₁ = Q₂.comp f.toLinearMap := QuadraticForm.ext fun x => (f.map_app x).symm
-  have h₃ : Q₃ = Q₄.comp g.toLinearMap := QuadraticForm.ext fun x => (g.map_app x).symm
-  refine (QuadraticForm.associated_rightInverse R).injective ?_
+  have h₁ : Q₁ = Q₂.comp f.toLinearMap := QuadraticMap.ext fun x => (f.map_app x).symm
+  have h₃ : Q₃ = Q₄.comp g.toLinearMap := QuadraticMap.ext fun x => (g.map_app x).symm
+  refine (QuadraticMap.associated_rightInverse R).injective ?_
   ext m₁ m₃ m₁' m₃'
   simp [-associated_apply, h₁, h₃, associated_tmul]
 
@@ -56,7 +56,7 @@ theorem tmul_tensorMap_apply
 namespace Isometry
 
 /-- `TensorProduct.map` for `Quadraticform.Isometry`s -/
-def tmul
+def _root_.QuadraticMap.Isometry.tmul
     {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
     {Q₃ : QuadraticForm R M₃} {Q₄ : QuadraticForm R M₄}
     (f : Q₁ →qᵢ Q₂) (g : Q₃ →qᵢ Q₄) : (Q₁.tmul Q₃) →qᵢ (Q₂.tmul Q₄) where
@@ -64,7 +64,7 @@ def tmul
   map_app' := tmul_tensorMap_apply f g
 
 @[simp]
-theorem tmul_apply
+theorem _root_.QuadraticMap.Isometry.tmul_apply
     {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
     {Q₃ : QuadraticForm R M₃} {Q₄ : QuadraticForm R M₄}
     (f : Q₁ →qᵢ Q₂) (g : Q₃ →qᵢ Q₄) (x : M₁ ⊗[R] M₃) :
@@ -78,10 +78,10 @@ section tensorComm
 @[simp]
 theorem tmul_comp_tensorComm (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) :
     (Q₂.tmul Q₁).comp (TensorProduct.comm R M₁ M₂) = Q₁.tmul Q₂ := by
-  refine (QuadraticForm.associated_rightInverse R).injective ?_
+  refine (QuadraticMap.associated_rightInverse R).injective ?_
   ext m₁ m₂ m₁' m₂'
   dsimp [-associated_apply]
-  simp only [associated_tmul, QuadraticForm.associated_comp]
+  simp only [associated_tmul, QuadraticMap.associated_comp]
   exact mul_comm _ _
 
 @[simp]
@@ -114,16 +114,16 @@ section tensorAssoc
 theorem tmul_comp_tensorAssoc
     (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) (Q₃ : QuadraticForm R M₃) :
     (Q₁.tmul (Q₂.tmul Q₃)).comp (TensorProduct.assoc R M₁ M₂ M₃) = (Q₁.tmul Q₂).tmul Q₃ := by
-  refine (QuadraticForm.associated_rightInverse R).injective ?_
+  refine (QuadraticMap.associated_rightInverse R).injective ?_
   ext m₁ m₂ m₁' m₂' m₁'' m₂''
   dsimp [-associated_apply]
-  simp only [associated_tmul, QuadraticForm.associated_comp]
+  simp only [associated_tmul, QuadraticMap.associated_comp]
   exact mul_assoc _ _ _
 
 @[simp]
 theorem tmul_tensorAssoc_apply
     (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) (Q₃ : QuadraticForm R M₃)
-    (x : (M₁ ⊗[R] M₂) ⊗[R] M₃):
+    (x : (M₁ ⊗[R] M₂) ⊗[R] M₃) :
     Q₁.tmul (Q₂.tmul Q₃) (TensorProduct.assoc R M₁ M₂ M₃ x) = (Q₁.tmul Q₂).tmul Q₃ x :=
   DFunLike.congr_fun (tmul_comp_tensorAssoc Q₁ Q₂ Q₃) x
 
@@ -152,10 +152,10 @@ section tensorRId
 
 theorem comp_tensorRId_eq (Q₁ : QuadraticForm R M₁) :
     Q₁.comp (TensorProduct.rid R M₁) = Q₁.tmul (sq (R := R)) := by
-  refine (QuadraticForm.associated_rightInverse R).injective ?_
+  refine (QuadraticMap.associated_rightInverse R).injective ?_
   ext m₁ m₁'
   dsimp [-associated_apply]
-  simp only [associated_tmul, QuadraticForm.associated_comp]
+  simp only [associated_tmul, QuadraticMap.associated_comp]
   simp [-associated_apply, one_mul]
 
 @[simp]
@@ -166,7 +166,7 @@ theorem tmul_tensorRId_apply
 
 /-- `TensorProduct.rid` preserves tensor products of quadratic forms. -/
 @[simps toLinearEquiv]
-def tensorRId (Q₁ : QuadraticForm R M₁):
+def tensorRId (Q₁ : QuadraticForm R M₁) :
     (Q₁.tmul (sq (R := R))).IsometryEquiv Q₁ where
   toLinearEquiv := TensorProduct.rid R M₁
   map_app' := tmul_tensorRId_apply Q₁
@@ -184,23 +184,23 @@ end tensorRId
 section tensorLId
 
 theorem comp_tensorLId_eq (Q₂ : QuadraticForm R M₂) :
-    Q₂.comp (TensorProduct.lid R M₂) = (sq (R := R)).tmul Q₂ := by
-  refine (QuadraticForm.associated_rightInverse R).injective ?_
+    Q₂.comp (TensorProduct.lid R M₂) = QuadraticForm.tmul (sq (R := R)) Q₂ := by
+  refine (QuadraticMap.associated_rightInverse R).injective ?_
   ext m₂ m₂'
   dsimp [-associated_apply]
-  simp only [associated_tmul, QuadraticForm.associated_comp]
+  simp only [associated_tmul, QuadraticMap.associated_comp]
   simp [-associated_apply, mul_one]
 
 @[simp]
 theorem tmul_tensorLId_apply
     (Q₂ : QuadraticForm R M₂) (x : R ⊗[R] M₂) :
-    Q₂ (TensorProduct.lid R M₂ x) = (sq (R := R)).tmul Q₂ x :=
+    Q₂ (TensorProduct.lid R M₂ x) = QuadraticForm.tmul (sq (R := R)) Q₂ x :=
   DFunLike.congr_fun (comp_tensorLId_eq Q₂) x
 
 /-- `TensorProduct.lid` preserves tensor products of quadratic forms. -/
 @[simps toLinearEquiv]
-def tensorLId (Q₂ : QuadraticForm R M₂):
-    ((sq (R := R)).tmul Q₂).IsometryEquiv Q₂ where
+def tensorLId (Q₂ : QuadraticForm R M₂) :
+    (QuadraticForm.tmul (sq (R := R)) Q₂).IsometryEquiv Q₂ where
   toLinearEquiv := TensorProduct.lid R M₂
   map_app' := tmul_tensorLId_apply Q₂
 

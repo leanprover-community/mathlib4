@@ -17,6 +17,8 @@ the morphism `f₂` in `HomologicalComplex C c₂` (TODO).
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 open CategoryTheory Category Limits
 
 variable {C₁ C₂ D I₁ I₂ J : Type*} [Category C₁] [Category C₂] [Category D]
@@ -47,7 +49,7 @@ lemma ιMapBifunctor_hom₁ (i₁ i₁' : I₁) (i₂ : I₂) (j j' : J)
     (h : ComplexShape.π c₁ c₂ c (i₁', i₂) = j) (h' : c₁.prev i₁' = i₁) :
     ιMapBifunctor K₁ K₂ F c i₁' i₂ j h ≫ hom₁ h₁ f₂ F c j j' = ComplexShape.ε₁ c₁ c₂ c (i₁, i₂) •
       (F.map (h₁.hom i₁' i₁)).app (K₂.X i₂) ≫ (F.obj (L₁.X i₁)).map (f₂.f i₂) ≫
-        ιMapBifunctorOrZero L₁ L₂ F c _ _ j':= by
+        ιMapBifunctorOrZero L₁ L₂ F c _ _ j' := by
   subst h'
   simp [hom₁]
 
@@ -93,13 +95,14 @@ lemma comm₁ (j : J) :
           (mapBifunctor L₁ L₂ F c).d (c.prev j) j +
       (mapBifunctorMap f₁' f₂ F c).f j := by
   ext i₁ i₂ h
-  simp? [h₁.comm i₁, dFrom, fromNext, toPrev, dTo] says
-    simp only [Functor.mapBifunctorHomologicalComplex_obj_obj_X_X, ι_mapBifunctorMap,
-      h₁.comm i₁, dNext_eq_dFrom_fromNext, dFrom, fromNext, AddMonoidHom.mk'_apply,
-      prevD_eq_toPrev_dTo, toPrev, dTo, Functor.map_add, Functor.map_comp, NatTrans.app_add,
-      NatTrans.comp_app, Preadditive.add_comp, assoc, HomologicalComplex₂.total_d,
+  simp? [HomologicalComplex₂.total_d, h₁.comm i₁, dFrom, fromNext, toPrev, dTo] says
+    simp only [ι_mapBifunctorMap, h₁.comm i₁, dNext_eq_dFrom_fromNext, dFrom, fromNext,
+      AddMonoidHom.mk'_apply, prevD_eq_toPrev_dTo, toPrev, dTo, Functor.map_add,
+      Functor.map_comp, NatTrans.app_add, NatTrans.comp_app,
+      Preadditive.add_comp, assoc, HomologicalComplex₂.total_d,
       Functor.mapBifunctorHomologicalComplex_obj_obj_toGradedObject, Preadditive.comp_add,
-      HomologicalComplex₂.ι_D₁_assoc, HomologicalComplex₂.ι_D₂_assoc, add_left_inj]
+      HomologicalComplex₂.ι_D₁_assoc, Functor.mapBifunctorHomologicalComplex_obj_obj_X_X,
+      HomologicalComplex₂.ι_D₂_assoc, add_left_inj]
   have : ∀ {X Y : D} (a b c d e f : X ⟶ Y), a = c → b = e → f = -d →
       a + b = c + d + (e + f) := by rintro X Y a b _ d _ _ rfl rfl rfl; abel
   apply this

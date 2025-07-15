@@ -3,8 +3,7 @@ Copyright (c) 2022 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Topology.Instances.NNReal
+import Mathlib.Analysis.Normed.Group.Uniform
 
 /-!
 # Further lemmas about normed groups

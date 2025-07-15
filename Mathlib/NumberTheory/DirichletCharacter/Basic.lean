@@ -3,6 +3,7 @@ Copyright (c) 2023 Ashvni Narayanan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan, Moritz Firsching, Michael Stoll
 -/
+import Mathlib.Algebra.Group.EvenFunction
 import Mathlib.Data.ZMod.Units
 import Mathlib.NumberTheory.MulChar.Basic
 
@@ -18,7 +19,7 @@ Main definitions:
 - `DirichletCharacter`: The type representing a Dirichlet character.
 - `changeLevel`: Extend the Dirichlet character χ of level `n` to level `m`, where `n` divides `m`.
 - `conductor`: The conductor of a Dirichlet character.
-- `isPrimitive`: If the level is equal to the conductor.
+- `IsPrimitive`: If the level is equal to the conductor.
 
 ## Tags
 
@@ -40,7 +41,9 @@ namespace DirichletCharacter
 
 lemma toUnitHom_eq_char' {a : ZMod n} (ha : IsUnit a) : χ a = χ.toUnitHom ha.unit := by simp
 
-lemma toUnitHom_eq_iff (ψ : DirichletCharacter R n) : toUnitHom χ = toUnitHom ψ ↔ χ = ψ := by simp
+lemma toUnitHom_inj (ψ : DirichletCharacter R n) : toUnitHom χ = toUnitHom ψ ↔ χ = ψ := by simp
+
+@[deprecated (since := "2024-12-29")] alias toUnitHom_eq_iff := toUnitHom_inj
 
 lemma eval_modulus_sub (x : ZMod n) : χ (n - x) = χ (-x) := by simp
 
@@ -69,7 +72,7 @@ lemma changeLevel_injective {m : ℕ} [NeZero m] (hm : n ∣ m) :
   intro _ _ h
   ext1 y
   obtain ⟨z, rfl⟩ := ZMod.unitsMap_surjective hm y
-  rw [ext_iff] at h
+  rw [MulChar.ext_iff] at h
   simpa [changeLevel_def] using h z
 
 @[simp]
@@ -90,9 +93,7 @@ lemma changeLevel_trans {m d : ℕ} (hm : n ∣ m) (hd : m ∣ d) :
 
 lemma changeLevel_eq_cast_of_dvd {m : ℕ} (hm : n ∣ m) (a : Units (ZMod m)) :
     (changeLevel hm χ) a = χ (ZMod.cast (a : ZMod m)) := by
-  set_option tactic.skipAssignedInstances false in
-  simpa [changeLevel_def, Function.comp_apply, MonoidHom.coe_comp] using
-      toUnitHom_eq_char' _ <| ZMod.IsUnit_cast_of_dvd hm a
+  simp [changeLevel_def, ZMod.unitsMap_val]
 
 /-- `χ` of level `n` factors through a Dirichlet character `χ₀` of level `d` if `d ∣ n` and
 `χ₀ = χ ∘ (ZMod n → ZMod d)`. -/
@@ -159,9 +160,13 @@ instance : Subsingleton (DirichletCharacter R 1) := by
 
 noncomputable instance : Unique (DirichletCharacter R 1) := Unique.mk' (DirichletCharacter R 1)
 
+/-- A Dirichlet character of modulus `≠ 1` maps `0` to `0`. -/
+lemma map_zero' (hn : n ≠ 1) : χ 0 = 0 :=
+  have := ZMod.nontrivial_iff.mpr hn; χ.map_zero
+
 lemma changeLevel_one {d : ℕ} (h : d ∣ n) :
     changeLevel h (1 : DirichletCharacter R d) = 1 := by
-  simp [changeLevel]
+  simp
 
 lemma factorsThrough_one_iff : FactorsThrough χ 1 ↔ χ = 1 := by
   refine ⟨fun ⟨_, χ₀, hχ₀⟩ ↦ ?_,
@@ -226,14 +231,14 @@ lemma conductor_le_conductor_mem_conductorSet {d : ℕ} (hd : d ∈ conductorSet
 variable (χ)
 
 /-- A character is primitive if its level is equal to its conductor. -/
-def isPrimitive : Prop := conductor χ = n
+def IsPrimitive : Prop := conductor χ = n
 
-lemma isPrimitive_def : isPrimitive χ ↔ conductor χ = n := Iff.rfl
+lemma isPrimitive_def : IsPrimitive χ ↔ conductor χ = n := Iff.rfl
 
-lemma isPrimitive_one_level_one : isPrimitive (1 : DirichletCharacter R 1) :=
+lemma isPrimitive_one_level_one : IsPrimitive (1 : DirichletCharacter R 1) :=
   Nat.dvd_one.mp (conductor_dvd_level _)
 
-lemma isPritive_one_level_zero : isPrimitive (1 : DirichletCharacter R 0) :=
+lemma isPritive_one_level_zero : IsPrimitive (1 : DirichletCharacter R 0) :=
   conductor_eq_zero_iff_level_eq_zero.mpr rfl
 
 lemma conductor_one_dvd (n : ℕ) : conductor (1 : DirichletCharacter R 1) ∣ n := by
@@ -244,7 +249,7 @@ lemma conductor_one_dvd (n : ℕ) : conductor (1 : DirichletCharacter R 1) ∣ n
 noncomputable def primitiveCharacter : DirichletCharacter R χ.conductor :=
   Classical.choose (factorsThrough_conductor χ).choose_spec
 
-lemma primitiveCharacter_isPrimitive : isPrimitive (χ.primitiveCharacter) := by
+lemma primitiveCharacter_isPrimitive : IsPrimitive (χ.primitiveCharacter) := by
   by_cases h : χ.conductor = 0
   · rw [isPrimitive_def]
     convert conductor_eq_zero_iff_level_eq_zero.mpr h
@@ -273,8 +278,8 @@ lemma mul_def {n m : ℕ} {χ : DirichletCharacter R n} {ψ : DirichletCharacter
     χ.primitive_mul ψ = primitiveCharacter (mul χ ψ) :=
   rfl
 
-lemma isPrimitive.primitive_mul {m : ℕ} (ψ : DirichletCharacter R m) :
-    (primitive_mul χ ψ).isPrimitive :=
+lemma primitive_mul_isPrimitive {m : ℕ} (ψ : DirichletCharacter R m) :
+    IsPrimitive (primitive_mul χ ψ) :=
   primitiveCharacter_isPrimitive _
 
 /-
@@ -283,7 +288,7 @@ lemma isPrimitive.primitive_mul {m : ℕ} (ψ : DirichletCharacter R m) :
 
 section CommRing
 
-variable {S : Type} [CommRing S] {m : ℕ} (ψ : DirichletCharacter S m)
+variable {S : Type*} [CommRing S] {m : ℕ} (ψ : DirichletCharacter S m)
 
 /-- A Dirichlet character is odd if its value at -1 is -1. -/
 def Odd : Prop := ψ (-1) = -1
@@ -295,12 +300,22 @@ lemma even_or_odd [NoZeroDivisors S] : ψ.Even ∨ ψ.Odd := by
   suffices ψ (-1) ^ 2 = 1 by convert sq_eq_one_iff.mp this
   rw [← map_pow _, neg_one_sq, map_one]
 
+lemma not_even_and_odd [NeZero (2 : S)] : ¬(ψ.Even ∧ ψ.Odd) := by
+  rintro ⟨(h : _ = 1), (h' : _ = -1)⟩
+  simp only [h', neg_eq_iff_add_eq_zero, one_add_one_eq_two, two_ne_zero] at h
+
+lemma Even.not_odd [NeZero (2 : S)] (hψ : Even ψ) : ¬Odd ψ :=
+  not_and.mp ψ.not_even_and_odd hψ
+
+lemma Odd.not_even [NeZero (2 : S)] (hψ : Odd ψ) : ¬Even ψ :=
+  not_and'.mp ψ.not_even_and_odd hψ
+
 lemma Odd.toUnitHom_eval_neg_one (hψ : ψ.Odd) : ψ.toUnitHom (-1) = -1 := by
-  rw [← Units.eq_iff, MulChar.coe_toUnitHom]
+  rw [← Units.val_inj, MulChar.coe_toUnitHom]
   exact hψ
 
 lemma Even.toUnitHom_eval_neg_one (hψ : ψ.Even) : ψ.toUnitHom (-1) = 1 := by
-  rw [← Units.eq_iff, MulChar.coe_toUnitHom]
+  rw [← Units.val_inj, MulChar.coe_toUnitHom]
   exact hψ
 
 lemma Odd.eval_neg (x : ZMod m) (hψ : ψ.Odd) : ψ (- x) = - ψ x := by
@@ -312,6 +327,14 @@ lemma Even.eval_neg (x : ZMod m) (hψ : ψ.Even) : ψ (- x) = ψ x := by
   rw [Even] at hψ
   rw [← neg_one_mul, map_mul]
   simp [hψ]
+
+/-- An even Dirichlet character is an even function. -/
+lemma Even.to_fun {χ : DirichletCharacter S m} (hχ : Even χ) : Function.Even χ :=
+  fun _ ↦ by rw [← neg_one_mul, map_mul, hχ, one_mul]
+
+/-- An odd Dirichlet character is an odd function. -/
+lemma Odd.to_fun {χ : DirichletCharacter S m} (hχ : Odd χ) : Function.Odd χ :=
+  fun _ ↦ by rw [← neg_one_mul, map_mul, hχ, neg_one_mul]
 
 end CommRing
 

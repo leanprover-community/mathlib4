@@ -3,7 +3,7 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Set.Finite.Lattice
 
 /-!
 # Partitions based on membership of a sequence of sets
@@ -54,7 +54,7 @@ lemma disjoint_memPartition (f : ℕ → Set α) (n : ℕ) {u v : Set α}
   induction n with
   | zero =>
     intro u v hu hv huv
-    simp only [Nat.zero_eq, memPartition_zero, mem_insert_iff, mem_singleton_iff] at hu hv
+    simp only [memPartition_zero, mem_singleton_iff] at hu hv
     rw [hu, hv] at huv
     exact absurd rfl huv
   | succ n ih =>
@@ -78,7 +78,7 @@ lemma sUnion_memPartition (f : ℕ → Set α) (n : ℕ) : ⋃₀ memPartition f
     rw [memPartition_succ]
     ext x
     have : x ∈ ⋃₀ memPartition f n := by simp [ih]
-    simp only [mem_sUnion, mem_iUnion, mem_insert_iff, mem_singleton_iff, exists_prop, mem_univ,
+    simp only [mem_sUnion, mem_univ,
       iff_true] at this ⊢
     obtain ⟨t, ht, hxt⟩ := this
     by_cases hxf : x ∈ f n
@@ -118,7 +118,6 @@ lemma memPartitionSet_succ (f : ℕ → Set α) (n : ℕ) (a : α) [Decidable (a
     memPartitionSet f (n + 1) a
       = if a ∈ f n then memPartitionSet f n a ∩ f n else memPartitionSet f n a \ f n := by
   simp [memPartitionSet]
-  congr
 
 lemma memPartitionSet_mem (f : ℕ → Set α) (n : ℕ) (a : α) :
     memPartitionSet f n a ∈ memPartition f n := by

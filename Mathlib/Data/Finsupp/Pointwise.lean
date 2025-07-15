@@ -1,13 +1,12 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Algebra.Ring.Pi
-import Mathlib.Data.Finsupp.Defs
-
-#align_import data.finsupp.pointwise from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
+import Mathlib.Data.Finsupp.Single
 
 /-!
 # The pointwise product on `Finsupp`.
@@ -43,27 +42,26 @@ instance : Mul (α →₀ β) :=
 
 theorem coe_mul (g₁ g₂ : α →₀ β) : ⇑(g₁ * g₂) = g₁ * g₂ :=
   rfl
-#align finsupp.coe_mul Finsupp.coe_mul
 
 @[simp]
 theorem mul_apply {g₁ g₂ : α →₀ β} {a : α} : (g₁ * g₂) a = g₁ a * g₂ a :=
   rfl
-#align finsupp.mul_apply Finsupp.mul_apply
 
 @[simp]
 theorem single_mul (a : α) (b₁ b₂ : β) : single a (b₁ * b₂) = single a b₁ * single a b₂ :=
   (zipWith_single_single _ _ _ _ _).symm
 
+lemma support_mul_subset_left {g₁ g₂ : α →₀ β} :
+    (g₁ * g₂).support ⊆ g₁.support := fun x hx => by
+  aesop
+
+lemma support_mul_subset_right {g₁ g₂ : α →₀ β} :
+    (g₁ * g₂).support ⊆ g₂.support := fun x hx => by
+  aesop
+
 theorem support_mul [DecidableEq α] {g₁ g₂ : α →₀ β} :
-    (g₁ * g₂).support ⊆ g₁.support ∩ g₂.support := by
-  intro a h
-  simp only [mul_apply, mem_support_iff] at h
-  simp only [mem_support_iff, mem_inter, Ne]
-  rw [← not_or]
-  intro w
-  apply h
-  cases' w with w w <;> (rw [w]; simp)
-#align finsupp.support_mul Finsupp.support_mul
+    (g₁ * g₂).support ⊆ g₁.support ∩ g₂.support :=
+  subset_inter support_mul_subset_left support_mul_subset_right
 
 instance : MulZeroClass (α →₀ β) :=
   DFunLike.coe_injective.mulZeroClass _ coe_zero coe_mul
@@ -106,16 +104,13 @@ instance pointwiseScalar [Semiring β] : SMul (α → β) (α →₀ β) where
       intro x hx h
       apply hx
       rw [h, smul_zero])
-#align finsupp.pointwise_scalar Finsupp.pointwiseScalar
 
 @[simp]
 theorem coe_pointwise_smul [Semiring β] (f : α → β) (g : α →₀ β) : ⇑(f • g) = f • ⇑g :=
   rfl
-#align finsupp.coe_pointwise_smul Finsupp.coe_pointwise_smul
 
 /-- The pointwise multiplicative action of functions on finitely supported functions -/
 instance pointwiseModule [Semiring β] : Module (α → β) (α →₀ β) :=
   Function.Injective.module _ coeFnAddHom DFunLike.coe_injective coe_pointwise_smul
-#align finsupp.pointwise_module Finsupp.pointwiseModule
 
 end Finsupp

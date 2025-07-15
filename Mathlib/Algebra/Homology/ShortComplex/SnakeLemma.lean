@@ -78,7 +78,7 @@ structure SnakeInput where
   h₀ : IsLimit (KernelFork.ofι _ w₀₂)
   /-- `L₃` is the cokernel of `v₁₂ : L₁ ⟶ L₂`. -/
   h₃ : IsColimit (CokernelCofork.ofπ _ w₁₃)
-  L₁_exact  : L₁.Exact
+  L₁_exact : L₁.Exact
   epi_L₁_g : Epi L₁.g
   L₂_exact : L₂.Exact
   mono_L₂_f : Mono L₂.f
@@ -182,7 +182,7 @@ instance epi_v₂₃_τ₂ : Epi S.v₂₃.τ₂ := epi_of_isColimit_cofork S.h�
 instance epi_v₂₃_τ₃ : Epi S.v₂₃.τ₃ := epi_of_isColimit_cofork S.h₃τ₃
 
 /-- The lower part of the first column of the snake diagram is exact. -/
-lemma exact_C₁_down: (ShortComplex.mk S.v₁₂.τ₁ S.v₂₃.τ₁
+lemma exact_C₁_down : (ShortComplex.mk S.v₁₂.τ₁ S.v₂₃.τ₁
     (by rw [← comp_τ₁, S.w₁₃, zero_τ₁])).Exact :=
   exact_of_g_is_cokernel _ S.h₃τ₁
 
@@ -221,7 +221,7 @@ object in the construction of the morphism `δ : L₀.X₃ ⟶ L₃.X₁`. -/
 noncomputable def P := pullback S.L₁.g S.v₀₁.τ₃
 
 /-- The canonical map `P ⟶ L₂.X₂`. -/
-noncomputable def φ₂ : S.P ⟶ S.L₂.X₂ := pullback.fst ≫ S.v₁₂.τ₂
+noncomputable def φ₂ : S.P ⟶ S.L₂.X₂ := pullback.fst _ _ ≫ S.v₁₂.τ₂
 
 @[reassoc (attr := simp)]
 lemma lift_φ₂ {A : C} (a : A ⟶ S.L₁.X₂) (b : A ⟶ S.L₀.X₃) (h : a ≫ S.L₁.g = b ≫ S.v₀₁.τ₃) :
@@ -241,7 +241,7 @@ noncomputable def L₀' : ShortComplex C where
   X₂ := S.P
   X₃ := S.L₀.X₃
   f := pullback.lift S.L₁.f 0 (by simp)
-  g := pullback.snd
+  g := pullback.snd _ _
   zero := by simp
 
 @[reassoc (attr := simp)] lemma L₁_f_φ₁ : S.L₀'.f ≫ S.φ₁ = S.v₁₂.τ₁ := by
@@ -252,13 +252,13 @@ noncomputable def L₀' : ShortComplex C where
 instance : Epi S.L₀'.g := by dsimp only [L₀']; infer_instance
 
 instance [Mono S.L₁.f] : Mono S.L₀'.f :=
-  mono_of_mono_fac (show S.L₀'.f ≫ pullback.fst = S.L₁.f by simp [L₀'])
+  mono_of_mono_fac (show S.L₀'.f ≫ pullback.fst _ _ = S.L₁.f by simp [L₀'])
 
 lemma L₀'_exact : S.L₀'.Exact := by
   rw [ShortComplex.exact_iff_exact_up_to_refinements]
   intro A x₂ hx₂
   dsimp [L₀'] at x₂ hx₂
-  obtain ⟨A', π, hπ, x₁, fac⟩ := S.L₁_exact.exact_up_to_refinements (x₂ ≫ pullback.fst)
+  obtain ⟨A', π, hπ, x₁, fac⟩ := S.L₁_exact.exact_up_to_refinements (x₂ ≫ pullback.fst _ _)
     (by rw [assoc, pullback.condition, reassoc_of% hx₂, zero_comp])
   exact ⟨A', π, hπ, x₁, pullback.hom_ext (by simpa [L₀'] using fac) (by simp [L₀', hx₂])⟩
 
@@ -267,14 +267,14 @@ noncomputable def δ : S.L₀.X₃ ⟶ S.L₃.X₁ :=
   S.L₀'_exact.desc (S.φ₁ ≫ S.v₂₃.τ₁) (by simp only [L₁_f_φ₁_assoc, w₁₃_τ₁])
 
 @[reassoc (attr := simp)]
-lemma snd_δ : (pullback.snd : S.P ⟶ _) ≫ S.δ = S.φ₁ ≫ S.v₂₃.τ₁ :=
+lemma snd_δ : (pullback.snd _ _ : S.P ⟶ _) ≫ S.δ = S.φ₁ ≫ S.v₂₃.τ₁ :=
   S.L₀'_exact.g_desc _ _
 
 /-- The pushout of `L₂.X₂` and `L₃.X₁` along `L₂.X₁`. -/
 noncomputable def P' := pushout S.L₂.f S.v₂₃.τ₁
 
-lemma snd_δ_inr : (pullback.snd : S.P ⟶ _) ≫ S.δ ≫ (pushout.inr : _ ⟶ S.P') =
-    pullback.fst ≫ S.v₁₂.τ₂ ≫ pushout.inl := by
+lemma snd_δ_inr : (pullback.snd _ _ : S.P ⟶ _) ≫ S.δ ≫ (pushout.inr _ _ : _ ⟶ S.P') =
+    pullback.fst _ _ ≫ S.v₁₂.τ₂ ≫ pushout.inl _ _ := by
   simp only [snd_δ_assoc, ← pushout.condition, φ₂, φ₁_L₂_f_assoc, assoc]
 
 /-- The canonical morphism `L₀.X₂ ⟶ P`. -/
@@ -282,7 +282,7 @@ lemma snd_δ_inr : (pullback.snd : S.P ⟶ _) ≫ S.δ ≫ (pushout.inr : _ ⟶ 
 noncomputable def L₀X₂ToP : S.L₀.X₂ ⟶ S.P := pullback.lift S.v₀₁.τ₂ S.L₀.g S.v₀₁.comm₂₃
 
 @[reassoc]
-lemma L₀X₂ToP_comp_pullback_snd : S.L₀X₂ToP ≫ pullback.snd = S.L₀.g := by simp
+lemma L₀X₂ToP_comp_pullback_snd : S.L₀X₂ToP ≫ pullback.snd _ _ = S.L₀.g := by simp
 
 @[reassoc]
 lemma L₀X₂ToP_comp_φ₁ : S.L₀X₂ToP ≫ S.φ₁ = 0 := by
@@ -290,12 +290,14 @@ lemma L₀X₂ToP_comp_φ₁ : S.L₀X₂ToP ≫ S.φ₁ = 0 := by
     pullback.lift_fst_assoc, w₀₂_τ₂, zero_comp]
 
 lemma L₀_g_δ : S.L₀.g ≫ S.δ = 0 := by
-  erw [← L₀X₂ToP_comp_pullback_snd, assoc, S.L₀'_exact.g_desc,
-    L₀X₂ToP_comp_φ₁_assoc, zero_comp]
+  rw [← L₀X₂ToP_comp_pullback_snd, assoc]
+  erw [S.L₀'_exact.g_desc]
+  rw [L₀X₂ToP_comp_φ₁_assoc, zero_comp]
 
 lemma δ_L₃_f : S.δ ≫ S.L₃.f = 0 := by
-  erw [← cancel_epi S.L₀'.g, S.L₀'_exact.g_desc_assoc, assoc, S.v₂₃.comm₁₂, S.φ₁_L₂_f_assoc,
-    φ₂, assoc, w₁₃_τ₂, comp_zero, comp_zero]
+  rw [← cancel_epi S.L₀'.g]
+  erw [S.L₀'_exact.g_desc_assoc]
+  simp [S.v₂₃.comm₁₂, φ₂]
 
 /-- The short complex `L₀.X₂ ⟶ L₀.X₃ ⟶ L₃.X₁`. -/
 @[simps]
@@ -317,12 +319,12 @@ lemma L₁'_exact : S.L₁'.Exact := by
   obtain ⟨A₂, π₂, hπ₂, x₁, hx₁⟩ := S.exact_C₁_down.exact_up_to_refinements (p ≫ S.φ₁) hp'
   dsimp at x₁ hx₁
   let x₂' := x₁ ≫ S.L₁.f
-  let x₂ := π₂ ≫ p ≫ pullback.fst
+  let x₂ := π₂ ≫ p ≫ pullback.fst _ _
   have hx₂' : (x₂ - x₂') ≫ S.v₁₂.τ₂ = 0 := by
     simp only [x₂, x₂', sub_comp, assoc, ← S.v₁₂.comm₁₂, ← reassoc_of% hx₁, φ₂, φ₁_L₂_f, sub_self]
   let k₂ : A₂ ⟶ S.L₀.X₂ := S.exact_C₂_up.lift _ hx₂'
   have hk₂ : k₂ ≫ S.v₀₁.τ₂ = x₂ - x₂' := S.exact_C₂_up.lift_f _ _
-  have hk₂' : k₂ ≫ S.L₀.g = π₂ ≫ p ≫ pullback.snd := by
+  have hk₂' : k₂ ≫ S.L₀.g = π₂ ≫ p ≫ pullback.snd _ _ := by
     simp only [x₂, x₂', ← cancel_mono S.v₀₁.τ₃, assoc, ← S.v₀₁.comm₂₃, reassoc_of% hk₂,
       sub_comp, S.L₁.zero, comp_zero, sub_zero, pullback.condition]
   exact ⟨A₂, π₂ ≫ π₁, epi_comp _ _, k₂, by simp only [assoc, L₁'_f, ← hk₂', hp]⟩
@@ -334,8 +336,8 @@ noncomputable def PIsoUnopOpP' : S.P ≅ Opposite.unop S.op.P' := pullbackIsoUno
 noncomputable def P'IsoUnopOpP : S.P' ≅ Opposite.unop S.op.P := pushoutIsoUnopPullback _ _
 
 lemma op_δ : S.op.δ = S.δ.op := Quiver.Hom.unop_inj (by
-  rw [Quiver.Hom.unop_op, ← cancel_mono (pushout.inr : _ ⟶ S.P'),
-    ← cancel_epi (pullback.snd : S.P ⟶ _), S.snd_δ_inr,
+  rw [Quiver.Hom.unop_op, ← cancel_mono (pushout.inr _ _ : _ ⟶ S.P'),
+    ← cancel_epi (pullback.snd _ _ : S.P ⟶ _), S.snd_δ_inr,
     ← cancel_mono S.P'IsoUnopOpP.hom, ← cancel_epi S.PIsoUnopOpP'.inv,
     P'IsoUnopOpP, PIsoUnopOpP', assoc, assoc, assoc, assoc,
     pushoutIsoUnopPullback_inr_hom, pullbackIsoUnopPushout_inv_snd_assoc,
@@ -345,7 +347,7 @@ lemma op_δ : S.op.δ = S.δ.op := Quiver.Hom.unop_inj (by
 
 /-- The duality isomorphism `S.L₂'.op ≅ S.op.L₁'`. -/
 noncomputable def L₂'OpIso : S.L₂'.op ≅ S.op.L₁' :=
-  ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _) (by aesop_cat)
+  ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp)
     (by dsimp; simp only [id_comp, comp_id, S.op_δ])
 
 /-- Exactness of `L₀.X₃ ⟶ L₃.X₁ ⟶ L₃.X₂`. -/
@@ -376,12 +378,26 @@ lemma δ_eq {A : C} (x₃ : A ⟶ S.L₀.X₃) (x₂ : A ⟶ S.L₁.X₂) (x₁ 
   congr 1
   simp only [← cancel_mono S.L₂.f, assoc, φ₁_L₂_f, lift_φ₂, h₁]
 
+theorem mono_δ (h₀ : IsZero S.L₀.X₂) : Mono S.δ :=
+  (S.L₁'.exact_iff_mono (IsZero.eq_zero_of_src h₀ S.L₁'.f)).1 S.L₁'_exact
+
+theorem epi_δ (h₃ : IsZero S.L₃.X₂) : Epi S.δ :=
+  (S.L₂'.exact_iff_epi (IsZero.eq_zero_of_tgt h₃ S.L₂'.g)).1 S.L₂'_exact
+
+theorem isIso_δ (h₀ : IsZero S.L₀.X₂) (h₃ : IsZero S.L₃.X₂) : IsIso S.δ :=
+  @Balanced.isIso_of_mono_of_epi _ _ _ _ _ S.δ (S.mono_δ h₀) (S.epi_δ h₃)
+
+/-- When `L₀₂` and `L₃₂` are trivial, `δ` defines an isomorphism `L₀₃ ≅ L₃₁`. -/
+noncomputable def δIso (h₀ : IsZero S.L₀.X₂) (h₃ : IsZero S.L₃.X₂) :
+    S.L₀.X₃ ≅ S.L₃.X₁ :=
+  @asIso _ _ _ _ S.δ (SnakeInput.isIso_δ S h₀ h₃)
+
 variable (S₁ S₂ S₃ : SnakeInput C)
 
 /-- A morphism of snake inputs involve four morphisms of short complexes
 which make the obvious diagram commute. -/
 @[ext]
-structure Hom :=
+structure Hom where
   /-- a morphism between the zeroth lines -/
   f₀ : S₁.L₀ ⟶ S₂.L₀
   /-- a morphism between the first lines -/
@@ -475,7 +491,7 @@ noncomputable def functorP : SnakeInput C ⥤ C where
   obj S := S.P
   map f := pullback.map _ _ _ _ f.f₁.τ₂ f.f₀.τ₃ f.f₁.τ₃ f.f₁.comm₂₃.symm
       (congr_arg ShortComplex.Hom.τ₃ f.comm₀₁.symm)
-  map_id _ := by dsimp [P]; aesop_cat
+  map_id _ := by dsimp [P]; simp
   map_comp _ _ := by dsimp [P]; aesop_cat
 
 @[reassoc]
@@ -489,7 +505,7 @@ lemma naturality_φ₁ (f : S₁ ⟶ S₂) : S₁.φ₁ ≫ f.f₂.τ₁ = funct
 
 @[reassoc]
 lemma naturality_δ (f : S₁ ⟶ S₂) : S₁.δ ≫ f.f₃.τ₁ = f.f₀.τ₃ ≫ S₂.δ := by
-  rw [← cancel_epi (pullback.snd : S₁.P ⟶ _), S₁.snd_δ_assoc, ← comp_τ₁, ← f.comm₂₃,
+  rw [← cancel_epi (pullback.snd _ _ : S₁.P ⟶ _), S₁.snd_δ_assoc, ← comp_τ₁, ← f.comm₂₃,
     comp_τ₁, naturality_φ₁_assoc, ← S₂.snd_δ, functorP_map, pullback.lift_snd_assoc, assoc]
 
 /-- The functor which sends `S : SnakeInput C` to `S.L₁'` which is

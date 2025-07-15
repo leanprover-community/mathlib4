@@ -3,10 +3,8 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.LinearAlgebra.Dimension.LinearMap
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-
-#align_import linear_algebra.free_module.finite.matrix from "leanprover-community/mathlib"@"b1c23399f01266afe392a0d8f71f599a0dad4f7b"
+import Mathlib.LinearAlgebra.Dimension.Finite
 
 /-!
 # Finite and free modules using matrices
@@ -28,7 +26,7 @@ variable (R : Type u) (S : Type u') (M : Type v) (N : Type w)
 
 open Module.Free (chooseBasis ChooseBasisIndex)
 
-open FiniteDimensional (finrank)
+open Module (finrank)
 
 section Ring
 
@@ -41,33 +39,30 @@ private noncomputable def linearMapEquivFun : (M →ₗ[R] N) ≃ₗ[S] ChooseBa
 
 instance Module.Free.linearMap [Module.Free S N] : Module.Free S (M →ₗ[R] N) :=
   Module.Free.of_equiv (linearMapEquivFun R S M N).symm
-#align module.free.linear_map Module.Free.linearMap
 
 instance Module.Finite.linearMap [Module.Finite S N] : Module.Finite S (M →ₗ[R] N) :=
   Module.Finite.equiv (linearMapEquivFun R S M N).symm
-#align module.finite.linear_map Module.Finite.linearMap
 
 variable [StrongRankCondition R] [StrongRankCondition S] [Module.Free S N]
 
 open Cardinal
-theorem FiniteDimensional.rank_linearMap :
+theorem Module.rank_linearMap :
     Module.rank S (M →ₗ[R] N) = lift.{w} (Module.rank R M) * lift.{v} (Module.rank S N) := by
   rw [(linearMapEquivFun R S M N).rank_eq, rank_fun_eq_lift_mul,
     ← finrank_eq_card_chooseBasisIndex, ← finrank_eq_rank R, lift_natCast]
 
 /-- The finrank of `M →ₗ[R] N` as an `S`-module is `(finrank R M) * (finrank S N)`. -/
-theorem FiniteDimensional.finrank_linearMap :
+theorem Module.finrank_linearMap :
     finrank S (M →ₗ[R] N) = finrank R M * finrank S N := by
   simp_rw [finrank, rank_linearMap, toNat_mul, toNat_lift]
-#align finite_dimensional.finrank_linear_map FiniteDimensional.finrank_linearMap
 
 variable [Module R S] [SMulCommClass R S S]
 
-theorem FiniteDimensional.rank_linearMap_self :
+theorem Module.rank_linearMap_self :
     Module.rank S (M →ₗ[R] S) = lift.{u'} (Module.rank R M) := by
   rw [rank_linearMap, rank_self, lift_one, mul_one]
 
-theorem FiniteDimensional.finrank_linearMap_self : finrank S (M →ₗ[R] S) = finrank R M := by
+theorem Module.finrank_linearMap_self : finrank S (M →ₗ[R] S) = finrank R M := by
   rw [finrank_linearMap, finrank_self, mul_one]
 
 end Ring
@@ -82,16 +77,19 @@ instance Finite.algHom : Finite (M →ₐ[K] L) :=
 
 open Cardinal
 
-theorem cardinal_mk_algHom_le_rank : #(M →ₐ[K] L) ≤ lift.{v} (Module.rank K M) := by
+theorem cardinalMk_algHom_le_rank : #(M →ₐ[K] L) ≤ lift.{v} (Module.rank K M) := by
   convert (linearIndependent_algHom_toLinearMap K M L).cardinal_lift_le_rank
   · rw [lift_id]
   · have := Module.nontrivial K L
-    rw [lift_id, FiniteDimensional.rank_linearMap_self]
+    rw [lift_id, Module.rank_linearMap_self]
 
+@[deprecated (since := "2024-11-10")] alias cardinal_mk_algHom_le_rank := cardinalMk_algHom_le_rank
+
+@[stacks 09HS]
 theorem card_algHom_le_finrank : Nat.card (M →ₐ[K] L) ≤ finrank K M := by
-  convert toNat_le_toNat (cardinal_mk_algHom_le_rank K M L) ?_
+  convert toNat_le_toNat (cardinalMk_algHom_le_rank K M L) ?_
   · rw [toNat_lift, finrank]
-  · rw [lift_lt_aleph0]; have := Module.nontrivial K L; apply rank_lt_aleph0
+  · rw [lift_lt_aleph0]; have := Module.nontrivial K L; apply Module.rank_lt_aleph0
 
 end AlgHom
 
@@ -101,20 +99,9 @@ variable [AddCommGroup M] [Module.Finite ℤ M] [Module.Free ℤ M] [AddCommGrou
 
 instance Module.Finite.addMonoidHom [Module.Finite ℤ N] : Module.Finite ℤ (M →+ N) :=
   Module.Finite.equiv (addMonoidHomLequivInt ℤ).symm
-#align module.finite.add_monoid_hom Module.Finite.addMonoidHom
 
 instance Module.Free.addMonoidHom [Module.Free ℤ N] : Module.Free ℤ (M →+ N) :=
   letI : Module.Free ℤ (M →ₗ[ℤ] N) := Module.Free.linearMap _ _ _ _
   Module.Free.of_equiv (addMonoidHomLequivInt ℤ).symm
-#align module.free.add_monoid_hom Module.Free.addMonoidHom
 
 end Integer
-
-theorem Matrix.rank_vecMulVec {K m n : Type u} [CommRing K] [Fintype n]
-    [DecidableEq n] (w : m → K) (v : n → K) : (Matrix.vecMulVec w v).toLin'.rank ≤ 1 := by
-  nontriviality K
-  rw [Matrix.vecMulVec_eq, Matrix.toLin'_mul]
-  refine le_trans (LinearMap.rank_comp_le_left _ _) ?_
-  refine (LinearMap.rank_le_domain _).trans_eq ?_
-  rw [rank_fun', Fintype.card_unit, Nat.cast_one]
-#align matrix.rank_vec_mul_vec Matrix.rank_vecMulVec

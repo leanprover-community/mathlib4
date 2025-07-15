@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Topaz, Nick Kuhn, Dagur Asgeirsson
+Authors: Adam Topaz, Nikolas Kuhn, Dagur Asgeirsson
 -/
 import Mathlib.Topology.Category.Profinite.EffectiveEpi
 import Mathlib.Topology.Category.Stonean.EffectiveEpi
@@ -19,8 +19,8 @@ between sheaves on these two sites. With the terminology of nLab, `Stonean` is a
 Since Stonean spaces are the projective objects in `CompHaus`, which has enough projectives,
 and the notions of effective epimorphism, epimorphism and surjective continuous map are equivalent
 in `CompHaus` and `Stonean`, we can use the general setup in
-`Mathlib.CategoryTheory.Sites.Coherent.SheafComparison` to deduce the equivalence of categories.
-We give the corresponding statements for `Profinite` as well.
+`Mathlib/CategoryTheory/Sites/Coherent/SheafComparison.lean` to deduce the equivalence of
+categories. We give the corresponding statements for `Profinite` as well.
 
 ## Main results
 
@@ -61,7 +61,7 @@ instance : Stonean.toProfinite.ReflectsEffectiveEpis where
     ((Stonean.effectiveEpi_tfae f).out 0 2).mpr (((Profinite.effectiveEpi_tfae _).out 0 2).mp h)
 
 /--
-An effective presentation of an `X : Profinite` with respect to the inclusion functor from `Stonean`
+An effective presentation of an `X : Profinite` with respect to the inclusion functor from `Stonean`
 -/
 noncomputable def stoneanToProfiniteEffectivePresentation (X : Profinite) :
     Stonean.toProfinite.EffectivePresentation X where

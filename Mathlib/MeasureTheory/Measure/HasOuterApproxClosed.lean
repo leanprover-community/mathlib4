@@ -3,7 +3,7 @@ Copyright (c) 2022 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.MeasureTheory.Integral.Lebesgue
+import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 import Mathlib.Topology.MetricSpace.ThickenedIndicator
 
 /-!
@@ -19,22 +19,22 @@ convergence in distribution for random variables behave somewhat well in spaces 
 
 ## Main definitions
 
- * `HasOuterApproxClosed`: the typeclass for topological spaces in which indicator functions of
-   closed sets have sequences of bounded continuous functions approximating them.
- * `IsClosed.apprSeq`: a (non-constructive) choice of an approximating sequence to the indicator
-   function of a closed set.
+* `HasOuterApproxClosed`: the typeclass for topological spaces in which indicator functions of
+  closed sets have sequences of bounded continuous functions approximating them.
+* `IsClosed.apprSeq`: a (non-constructive) choice of an approximating sequence to the indicator
+  function of a closed set.
 
 ## Main results
 
- * `instHasOuterApproxClosed`: Any pseudo-emetrizable space has the property `HasOuterApproxClosed`.
- * `tendsto_lintegral_apprSeq`: The integrals of the approximating functions to the indicator of a
-   closed set tend to the measure of the set.
- * `ext_of_forall_lintegral_eq_of_IsFiniteMeasure`: Two finite measures are equal if the integrals
-   of all bounded continuous functions with respect to both agree.
+* `instHasOuterApproxClosed`: Any pseudo-emetrizable space has the property `HasOuterApproxClosed`.
+* `tendsto_lintegral_apprSeq`: The integrals of the approximating functions to the indicator of a
+  closed set tend to the measure of the set.
+* `ext_of_forall_lintegral_eq_of_IsFiniteMeasure`: Two finite measures are equal if the integrals
+  of all bounded continuous functions with respect to both agree.
 
 -/
 
-open MeasureTheory Topology Metric Filter Set ENNReal NNReal
+open BoundedContinuousFunction MeasureTheory Topology Metric Filter Set ENNReal NNReal
 open scoped Topology ENNReal NNReal BoundedContinuousFunction
 
 section auxiliary
@@ -47,11 +47,11 @@ variable {Ω : Type*} [TopologicalSpace Ω] [MeasurableSpace Ω] [OpensMeasurabl
 If bounded continuous non-negative functions are uniformly bounded by a constant and tend to a
 limit, then their integrals against the finite measure tend to the integral of the limit.
 This formulation assumes:
- * the functions tend to a limit along a countably generated filter;
- * the limit is in the almost everywhere sense;
- * boundedness holds almost everywhere;
- * integration is `MeasureTheory.lintegral`, i.e., the functions and their integrals are
-   `ℝ≥0∞`-valued.
+* the functions tend to a limit along a countably generated filter;
+* the limit is in the almost everywhere sense;
+* boundedness holds almost everywhere;
+* integration is `MeasureTheory.lintegral`, i.e., the functions and their integrals are
+  `ℝ≥0∞`-valued.
 -/
 theorem tendsto_lintegral_nn_filter_of_le_const {ι : Type*} {L : Filter ι} [L.IsCountablyGenerated]
     (μ : Measure Ω) [IsFiniteMeasure μ] {fs : ι → Ω →ᵇ ℝ≥0} {c : ℝ≥0}
@@ -59,21 +59,20 @@ theorem tendsto_lintegral_nn_filter_of_le_const {ι : Type*} {L : Filter ι} [L.
     (fs_lim : ∀ᵐ ω : Ω ∂μ, Tendsto (fun i ↦ fs i ω) L (𝓝 (f ω))) :
     Tendsto (fun i ↦ ∫⁻ ω, fs i ω ∂μ) L (𝓝 (∫⁻ ω, f ω ∂μ)) := by
   refine tendsto_lintegral_filter_of_dominated_convergence (fun _ ↦ c)
-    (eventually_of_forall fun i ↦ (ENNReal.continuous_coe.comp (fs i).continuous).measurable) ?_
+    (Eventually.of_forall fun i ↦ (ENNReal.continuous_coe.comp (fs i).continuous).measurable) ?_
     (@lintegral_const_lt_top _ _ μ _ _ (@ENNReal.coe_ne_top c)).ne ?_
   · simpa only [Function.comp_apply, ENNReal.coe_le_coe] using fs_le_const
   · simpa only [Function.comp_apply, ENNReal.tendsto_coe] using fs_lim
-#align measure_theory.finite_measure.tendsto_lintegral_nn_filter_of_le_const MeasureTheory.tendsto_lintegral_nn_filter_of_le_const
 
 /-- If bounded continuous functions tend to the indicator of a measurable set and are
 uniformly bounded, then their integrals against a finite measure tend to the measure of the set.
 This formulation assumes:
- * the functions tend to a limit along a countably generated filter;
- * the limit is in the almost everywhere sense;
- * boundedness holds almost everywhere.
+* the functions tend to a limit along a countably generated filter;
+* the limit is in the almost everywhere sense;
+* boundedness holds almost everywhere.
 -/
 theorem measure_of_cont_bdd_of_tendsto_filter_indicator {ι : Type*} {L : Filter ι}
-    [L.IsCountablyGenerated] [TopologicalSpace Ω] [OpensMeasurableSpace Ω] (μ : Measure Ω)
+    [L.IsCountablyGenerated] (μ : Measure Ω)
     [IsFiniteMeasure μ] {c : ℝ≥0} {E : Set Ω} (E_mble : MeasurableSet E) (fs : ι → Ω →ᵇ ℝ≥0)
     (fs_bdd : ∀ᶠ i in L, ∀ᵐ ω : Ω ∂μ, fs i ω ≤ c)
     (fs_lim : ∀ᵐ ω ∂μ, Tendsto (fun i ↦ fs i ω) L (𝓝 (indicator E (fun _ ↦ (1 : ℝ≥0)) ω))) :
@@ -81,9 +80,8 @@ theorem measure_of_cont_bdd_of_tendsto_filter_indicator {ι : Type*} {L : Filter
   convert tendsto_lintegral_nn_filter_of_le_const μ fs_bdd fs_lim
   have aux : ∀ ω, indicator E (fun _ ↦ (1 : ℝ≥0∞)) ω = ↑(indicator E (fun _ ↦ (1 : ℝ≥0)) ω) :=
     fun ω ↦ by simp only [ENNReal.coe_indicator, ENNReal.coe_one]
-  simp_rw [← aux, lintegral_indicator _ E_mble]
+  simp_rw [← aux, lintegral_indicator E_mble]
   simp only [lintegral_one, Measure.restrict_apply, MeasurableSet.univ, univ_inter]
-#align measure_theory.measure_of_cont_bdd_of_tendsto_filter_indicator MeasureTheory.measure_of_cont_bdd_of_tendsto_filter_indicator
 
 /-- If a sequence of bounded continuous functions tends to the indicator of a measurable set and
 the functions are uniformly bounded, then their integrals against a finite measure tend to the
@@ -92,7 +90,7 @@ measure of the set.
 A similar result with more general assumptions is
 `MeasureTheory.measure_of_cont_bdd_of_tendsto_filter_indicator`.
 -/
-theorem measure_of_cont_bdd_of_tendsto_indicator [OpensMeasurableSpace Ω]
+theorem measure_of_cont_bdd_of_tendsto_indicator
     (μ : Measure Ω) [IsFiniteMeasure μ] {c : ℝ≥0} {E : Set Ω} (E_mble : MeasurableSet E)
     (fs : ℕ → Ω →ᵇ ℝ≥0) (fs_bdd : ∀ n ω, fs n ω ≤ c)
     (fs_lim : Tendsto (fun n ω ↦ fs n ω) atTop (𝓝 (indicator E fun _ ↦ (1 : ℝ≥0)))) :
@@ -102,8 +100,7 @@ theorem measure_of_cont_bdd_of_tendsto_indicator [OpensMeasurableSpace Ω]
     rw [tendsto_pi_nhds] at fs_lim
     exact fun ω ↦ fs_lim ω
   apply measure_of_cont_bdd_of_tendsto_filter_indicator μ E_mble fs
-    (eventually_of_forall fun n ↦ eventually_of_forall (fs_bdd n)) (eventually_of_forall fs_lim')
-#align measure_theory.measure_of_cont_bdd_of_tendsto_indicator MeasureTheory.measure_of_cont_bdd_of_tendsto_indicator
+    (Eventually.of_forall fun n ↦ Eventually.of_forall (fs_bdd n)) (Eventually.of_forall fs_lim')
 
 /-- The integrals of thickened indicators of a closed set against a finite measure tend to the
 measure of the closed set if the thickening radii tend to zero. -/
@@ -117,7 +114,6 @@ theorem tendsto_lintegral_thickenedIndicator_of_isClosed {Ω : Type*} [Measurabl
     (fun n ↦ thickenedIndicator (δs_pos n) F) fun n ω ↦ thickenedIndicator_le_one (δs_pos n) F ω
   have key := thickenedIndicator_tendsto_indicator_closure δs_pos δs_lim F
   rwa [F_closed.closure_eq] at key
-#align measure_theory.tendsto_lintegral_thickened_indicator_of_is_closed MeasureTheory.tendsto_lintegral_thickenedIndicator_of_isClosed
 
 end MeasureTheory -- namespace
 
@@ -159,20 +155,20 @@ lemma indicator_le_apprSeq (n : ℕ) :
   intro x
   by_cases hxF : x ∈ F
   · simp only [hxF, indicator_of_mem, apprSeq_apply_eq_one hF n, le_refl]
-  · simp only [hxF, not_false_eq_true, indicator_of_not_mem, zero_le]
+  · simp only [hxF, not_false_eq_true, indicator_of_notMem, zero_le]
 
 /-- The measure of a closed set is at most the integral of any function in a decreasing
 approximating sequence to the indicator of the set. -/
 theorem measure_le_lintegral [MeasurableSpace X] [OpensMeasurableSpace X] (μ : Measure X) (n : ℕ) :
     μ F ≤ ∫⁻ x, (hF.apprSeq n x : ℝ≥0∞) ∂μ := by
   convert_to ∫⁻ x, (F.indicator (fun _ ↦ (1 : ℝ≥0∞))) x ∂μ ≤ ∫⁻ x, hF.apprSeq n x ∂μ
-  · rw [lintegral_indicator _ hF.measurableSet]
+  · rw [lintegral_indicator hF.measurableSet]
     simp only [lintegral_one, MeasurableSet.univ, Measure.restrict_apply, univ_inter]
   · apply lintegral_mono
     intro x
     by_cases hxF : x ∈ F
     · simp only [hxF, indicator_of_mem, apprSeq_apply_eq_one hF n hxF, ENNReal.coe_one, le_refl]
-    · simp only [hxF, not_false_eq_true, indicator_of_not_mem, zero_le]
+    · simp only [hxF, not_false_eq_true, indicator_of_notMem, zero_le]
 
 /-- The integrals along a decreasing approximating sequence to the indicator of a closed set
 tend to the measure of the closed set. -/
@@ -214,14 +210,14 @@ theorem measure_isClosed_eq_of_forall_lintegral_eq_of_isFiniteMeasure {Ω : Type
     have whole := h 1
     simp only [BoundedContinuousFunction.coe_one, Pi.one_apply, ENNReal.coe_one, lintegral_const,
       one_mul] at whole
-    simpa [← whole] using IsFiniteMeasure.measure_univ_lt_top
+    simp [← whole]
   have obs_μ := HasOuterApproxClosed.tendsto_lintegral_apprSeq F_closed μ
   have obs_ν := HasOuterApproxClosed.tendsto_lintegral_apprSeq F_closed ν
   simp_rw [h] at obs_μ
   exact tendsto_nhds_unique obs_μ obs_ν
 
-/-- Two finite Borel measures are equal if the integrals of all bounded continuous functions with
-respect to both agree. -/
+/-- Two finite Borel measures are equal if the integrals of all non-negative bounded continuous
+functions with respect to both agree. -/
 theorem ext_of_forall_lintegral_eq_of_IsFiniteMeasure {Ω : Type*}
     [MeasurableSpace Ω] [TopologicalSpace Ω] [HasOuterApproxClosed Ω]
     [BorelSpace Ω] {μ ν : Measure Ω} [IsFiniteMeasure μ]
@@ -232,6 +228,21 @@ theorem ext_of_forall_lintegral_eq_of_IsFiniteMeasure {Ω : Type*}
   · exact fun F F_closed ↦ key F_closed
   · exact key isClosed_univ
   · rw [BorelSpace.measurable_eq (α := Ω), borel_eq_generateFrom_isClosed]
+
+/-- Two finite Borel measures are equal if the integrals of all bounded continuous functions with
+respect to both agree. -/
+theorem ext_of_forall_integral_eq_of_IsFiniteMeasure {Ω : Type*}
+    [MeasurableSpace Ω] [TopologicalSpace Ω] [HasOuterApproxClosed Ω]
+    [BorelSpace Ω] {μ ν : Measure Ω} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+    (h : ∀ (f : Ω →ᵇ ℝ), ∫ x, f x ∂μ = ∫ x, f x ∂ν) :
+    μ = ν := by
+  apply ext_of_forall_lintegral_eq_of_IsFiniteMeasure
+  intro f
+  apply (ENNReal.toReal_eq_toReal_iff' (lintegral_lt_top_of_nnreal μ f).ne
+      (lintegral_lt_top_of_nnreal ν f).ne).mp
+  rw [toReal_lintegral_coe_eq_integral f μ, toReal_lintegral_coe_eq_integral f ν]
+  exact h ⟨⟨fun x => (f x).toReal, Continuous.comp' NNReal.continuous_coe f.continuous⟩,
+      f.map_bounded'⟩
 
 end MeasureTheory -- namespace
 

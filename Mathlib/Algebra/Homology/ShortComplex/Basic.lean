@@ -12,11 +12,6 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 This file defines the category `ShortComplex C` of diagrams
 `X₁ ⟶ X₂ ⟶ X₃` such that the composition is zero.
 
-TODO: A homology API for these objects shall be developed
-in the folder `Algebra.Homology.ShortComplex` and eventually
-the homology of objects in `HomologicalComplex C c` shall be
-redefined using this.
-
 Note: This structure `ShortComplex C` was first introduced in
 the Liquid Tensor Experiment.
 
@@ -92,7 +87,7 @@ instance : Category (ShortComplex C) where
 
 @[ext]
 lemma hom_ext (f g : S₁ ⟶ S₂) (h₁ : f.τ₁ = g.τ₁) (h₂ : f.τ₂ = g.τ₂) (h₃ : f.τ₃ = g.τ₃) : f = g :=
-  Hom.ext _ _ h₁ h₂ h₃
+  Hom.ext h₁ h₂ h₃
 
 /-- A constructor for morphisms in `ShortComplex C` when the commutativity conditions
 are not obvious. -/
@@ -205,7 +200,7 @@ def _root_.CategoryTheory.Functor.mapShortComplex (F : C ⥤ D) [F.PreservesZero
         dsimp
         simp only [← F.map_comp, φ.comm₂₃] }
 
-/-- A constructor for isomorphisms in the category `ShortComplex C`-/
+/-- A constructor for isomorphisms in the category `ShortComplex C` -/
 @[simps]
 def isoMk (e₁ : S₁.X₁ ≅ S₂.X₁) (e₂ : S₁.X₂ ≅ S₂.X₂) (e₃ : S₁.X₃ ≅ S₂.X₃)
     (comm₁₂ : e₁.hom ≫ S₂.f = S₁.f ≫ e₂.hom := by aesop_cat)

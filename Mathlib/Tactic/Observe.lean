@@ -3,6 +3,7 @@ Copyright (c) 2023 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Init
 import Lean.Meta.Tactic.TryThis
 import Lean.Elab.Tactic.ElabTerm
 import Lean.Meta.Tactic.LibrarySearch
@@ -42,7 +43,7 @@ elab_rules : tactic |
     else
       let v := (← instantiateMVars (mkMVar goal)).headBeta
       if trace.isSome then
-        addHaveSuggestion tk (some name) type v
+        addHaveSuggestion tk (some name) type v (checkState? := (← saveState))
       let (_, newGoal) ← (← getMainGoal).note name v
       replaceMainGoal [newGoal]
 

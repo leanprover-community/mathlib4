@@ -4,71 +4,118 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Adjunction.Restrict
-import Mathlib.CategoryTheory.Sites.CoverPreserving
+import Mathlib.CategoryTheory.Functor.Flat
+import Mathlib.CategoryTheory.Sites.Continuous
 import Mathlib.CategoryTheory.Sites.LeftExact
-
-#align_import category_theory.sites.pushforward from "leanprover-community/mathlib"@"e2e38c005fc6f715502490da6cb0ec84df9ed228"
 
 /-!
 # Pullback of sheaves
 
 ## Main definitions
 
-* `CategoryTheory.Functor.sheafPullback`: the functor `Sheaf J A ⥤ Sheaf K A` obtained
-as an extension of a functor `G : C ⥤ D` between the underlying categories.
+* `CategoryTheory.Functor.sheafPullback`: when `G : C ⥤ D` is a continuous functor
+  between sites (for topologies `J` on `C` and `K` on `D`) such that the functor
+  `G.sheafPushforwardContinuous A J K : Sheaf K A ⥤ Sheaf J A` has a left adjoint,
+  this is the pullback functor defined as a chosen left adjoint.
 
 * `CategoryTheory.Functor.sheafAdjunctionContinuous`: the adjunction
-`G.sheafPullback A J K ⊣ G.sheafPushforwardContinuous A J K` when the functor
-`G` is continuous. In case `G` is representably flat, the pullback functor
-on sheaves commutes with finite limits: this is a morphism of sites in the
-sense of SGA 4 IV 4.9.
+  `G.sheafPullback A J K ⊣ G.sheafPushforwardContinuous A J K` when the functor
+  `G` is continuous. In case `G` is representably flat, the pullback functor
+  on sheaves commutes with finite limits: this is a morphism of sites in the
+  sense of SGA 4 IV 4.9.
 
 -/
 
 
-universe v₁ u₁
+universe v₁ v₂ v₃ u₁ u₂ u₃
 
 noncomputable section
 
-open CategoryTheory.Limits
+namespace CategoryTheory.Functor
 
-namespace CategoryTheory
+open Limits
 
-variable {C : Type v₁} [SmallCategory C] {D : Type v₁} [SmallCategory D] (G : C ⥤ D)
-variable (A : Type u₁) [Category.{v₁} A]
-variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
+section GeneralUniverses
 
--- Porting note: there was an explicit call to
--- CategoryTheory.Sheaf.CategoryTheory.SheafToPresheaf.CategoryTheory.createsLimits.{u₁, v₁, v₁}
--- but it is not necessary (it was not either in mathlib)
-instance [HasLimits A] : CreatesLimits (sheafToPresheaf J A) := inferInstance
+variable {C : Type u₂} [Category.{v₂} C] {D : Type u₃} [Category.{v₃} D] (G : C ⥤ D)
+  (A : Type u₁) [Category.{v₁} A]
+  (J : GrothendieckTopology C) (K : GrothendieckTopology D)
+  [Functor.IsContinuous.{v₁} G J K]
 
--- The assumptions so that we have sheafification
-variable [ConcreteCategory.{v₁} A] [PreservesLimits (forget A)] [HasColimits A] [HasLimits A]
-variable [PreservesFilteredColimits (forget A)] [(forget A).ReflectsIsomorphisms]
+section
 
-attribute [local instance] reflectsLimitsOfReflectsIsomorphisms
-
-instance {X : C} : IsCofiltered (J.Cover X) :=
-  inferInstance
+variable [(G.sheafPushforwardContinuous A J K).IsRightAdjoint]
 
 /-- The pullback functor `Sheaf J A ⥤ Sheaf K A` associated to a functor `G : C ⥤ D` in the
 same direction as `G`. -/
-@[simps!]
-def Functor.sheafPullback : Sheaf J A ⥤ Sheaf K A :=
-  sheafToPresheaf J A ⋙ lan G.op ⋙ presheafToSheaf K A
-#align category_theory.sites.pushforward CategoryTheory.Functor.sheafPullback
-
-instance [RepresentablyFlat G] : PreservesFiniteLimits (G.sheafPullback A J K) := by
-  have : PreservesFiniteLimits (lan (Functor.op G) ⋙ presheafToSheaf K A) :=
-    compPreservesFiniteLimits _ _
-  apply compPreservesFiniteLimits
+def sheafPullback : Sheaf J A ⥤ Sheaf K A :=
+  (G.sheafPushforwardContinuous A J K).leftAdjoint
 
 /-- The pullback functor is left adjoint to the pushforward functor. -/
-def Functor.sheafAdjunctionContinuous [Functor.IsContinuous.{v₁} G J K] :
+def sheafAdjunctionContinuous :
     G.sheafPullback A J K ⊣ G.sheafPushforwardContinuous A J K :=
-  ((Lan.adjunction A G.op).comp (sheafificationAdjunction K A)).restrictFullyFaithful
-    (fullyFaithfulSheafToPresheaf J A) (Functor.FullyFaithful.id _) (Iso.refl _) (Iso.refl _)
-#align category_theory.sites.pullback_pushforward_adjunction CategoryTheory.Functor.sheafAdjunctionContinuous
+  Adjunction.ofIsRightAdjoint (G.sheafPushforwardContinuous A J K)
 
-end CategoryTheory
+end
+
+namespace sheafPullbackConstruction
+
+variable [∀ (F : Cᵒᵖ ⥤ A), G.op.HasLeftKanExtension F]
+
+/-- Construction of the pullback of sheaves using a left Kan extension. -/
+def sheafPullback [HasWeakSheafify K A] : Sheaf J A ⥤ Sheaf K A :=
+  sheafToPresheaf J A ⋙ G.op.lan ⋙ presheafToSheaf K A
+
+/-- The constructed `sheafPullback G A J K` is left adjoint
+to `G.sheafPushforwardContinuous A J K`. -/
+def sheafAdjunctionContinuous [Functor.IsContinuous.{v₁} G J K] [HasWeakSheafify K A] :
+    sheafPullback G A J K ⊣ G.sheafPushforwardContinuous A J K :=
+  ((G.op.lanAdjunction A).comp (sheafificationAdjunction K A)).restrictFullyFaithful
+    (fullyFaithfulSheafToPresheaf J A) (Functor.FullyFaithful.id _) (Iso.refl _) (Iso.refl _)
+
+instance [HasWeakSheafify K A] :
+    (G.sheafPushforwardContinuous A J K).IsRightAdjoint :=
+  (sheafAdjunctionContinuous G A J K).isRightAdjoint
+
+/-- The constructed pullback of sheaves is isomorphic to the abstract one. -/
+def sheafPullbackIso [HasWeakSheafify K A] :
+    Functor.sheafPullback G A J K ≅ sheafPullback G A J K :=
+  Adjunction.leftAdjointUniq (Functor.sheafAdjunctionContinuous G A J K)
+    (sheafAdjunctionContinuous G A J K)
+
+variable [RepresentablyFlat G] [HasSheafify K A] [HasSheafify J A]
+  [PreservesFiniteLimits (G.op.lan : (_ ⥤ _ ⥤ A))]
+
+instance : PreservesFiniteLimits (sheafPullback G A J K) := by
+  have : PreservesFiniteLimits (G.op.lan ⋙ presheafToSheaf K A) :=
+    comp_preservesFiniteLimits _ _
+  apply comp_preservesFiniteLimits
+
+instance preservesFiniteLimits : PreservesFiniteLimits (Functor.sheafPullback G A J K) :=
+  preservesFiniteLimits_of_natIso (sheafPullbackIso G A J K).symm
+
+end sheafPullbackConstruction
+
+end GeneralUniverses
+
+namespace SmallCategories
+
+variable {C : Type v₁} [SmallCategory C] {D : Type v₁} [SmallCategory D] (G : C ⥤ D)
+  (A : Type u₁) [Category.{v₁} A]
+  (J : GrothendieckTopology C) (K : GrothendieckTopology D)
+
+-- The favourable assumptions under which we have sheafification
+variable {FA : A → A → Type*} {CA : A → Type v₁} [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)]
+variable [ConcreteCategory.{v₁} A FA] [PreservesLimits (forget A)] [HasColimits A] [HasLimits A]
+  [PreservesFilteredColimits (forget A)] [(forget A).ReflectsIsomorphisms]
+  [Functor.IsContinuous.{v₁} G J K]
+
+example : (G.sheafPushforwardContinuous A J K).IsRightAdjoint := inferInstance
+
+attribute [local instance] reflectsLimits_of_reflectsIsomorphisms in
+instance [RepresentablyFlat G] : PreservesFiniteLimits (G.sheafPullback A J K) := by
+  apply sheafPullbackConstruction.preservesFiniteLimits
+
+end SmallCategories
+
+end CategoryTheory.Functor

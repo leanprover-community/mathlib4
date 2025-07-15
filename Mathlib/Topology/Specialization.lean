@@ -5,8 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Order.Category.Preord
 import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Topology.ContinuousFunction.Basic
-import Mathlib.Topology.Separation
+import Mathlib.Topology.ContinuousMap.Basic
 import Mathlib.Topology.Order.UpperLowerSetTopology
 
 /-!
@@ -26,21 +25,32 @@ variable {α β γ : Type*}
 /-- `toEquiv` is the "identity" function to the `Specialization` of a type. -/
 @[match_pattern] def toEquiv : α ≃ Specialization α := Equiv.refl _
 
-/-- `ofEquiv` is the identity function from the `Specialization` of a type.  -/
+/-- `ofEquiv` is the identity function from the `Specialization` of a type. -/
 @[match_pattern] def ofEquiv : Specialization α ≃ α := Equiv.refl _
 
 @[simp] lemma toEquiv_symm : (@toEquiv α).symm = ofEquiv := rfl
 @[simp] lemma ofEquiv_symm : (@ofEquiv α).symm = toEquiv := rfl
 @[simp] lemma toEquiv_ofEquiv (a : Specialization α) : toEquiv (ofEquiv a) = a := rfl
 @[simp] lemma ofEquiv_toEquiv (a : α) : ofEquiv (toEquiv a) = a := rfl
--- The following two are eligible for `dsimp`
-@[simp, nolint simpNF] lemma toEquiv_inj {a b : α} : toEquiv a = toEquiv b ↔ a = b := Iff.rfl
-@[simp, nolint simpNF] lemma ofEquiv_inj {a b : Specialization α} : ofEquiv a = ofEquiv b ↔ a = b :=
-Iff.rfl
 
-/-- A recursor for `Specialization`. Use as `induction x using Specialization.rec`. -/
-protected def rec {β : Specialization α → Sort*} (h : ∀ a, β (toEquiv a)) (a : α) : β a :=
-h (ofEquiv a)
+-- In Lean 3, `dsimp` would use theorems proved by `Iff.rfl`.
+-- If that were still the case, this would useful as a `@[simp]` lemma,
+-- despite the fact that it is provable by `simp` (but not `dsimp`).
+@[simp, nolint simpNF] -- See https://github.com/leanprover-community/mathlib4/issues/10675
+lemma toEquiv_inj {a b : α} : toEquiv a = toEquiv b ↔ a = b := Iff.rfl
+
+-- In Lean 3, `dsimp` would use theorems proved by `Iff.rfl`.
+-- If that were still the case, this would useful as a `@[simp]` lemma,
+-- despite the fact that it is provable by `simp` (but not `dsimp`).
+@[simp, nolint simpNF] -- See https://github.com/leanprover-community/mathlib4/issues/10675
+lemma ofEquiv_inj {a b : Specialization α} : ofEquiv a = ofEquiv b ↔ a = b :=
+  Iff.rfl
+
+/-- A recursor for `Specialization`. Use as `induction x`. -/
+@[elab_as_elim, cases_eliminator, induction_eliminator]
+protected def rec {β : Specialization α → Sort*} (h : ∀ a, β (toEquiv a)) (a : Specialization α) :
+    β a :=
+  h (ofEquiv a)
 
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
@@ -61,7 +71,7 @@ instance instPartialOrder [T0Space α] : PartialOrder (Specialization α) := spe
 orders. -/
 def map (f : C(α, β)) : Specialization α →o Specialization β where
   toFun := toEquiv ∘ f ∘ ofEquiv
-  monotone' := f.continuous.specialization_monotone
+  monotone' := (map_continuous f).specialization_monotone
 
 @[simp] lemma map_id : map (ContinuousMap.id α) = OrderHom.id := rfl
 @[simp] lemma map_comp (g : C(β, γ)) (f : C(α, β)) : map (g.comp f) = (map g).comp (map f) := rfl
@@ -85,5 +95,5 @@ def homeoWithUpperSetTopologyorderIso (α : Type*) [TopologicalSpace α] [Alexan
 /-- Sends a topological space to its specialisation order. -/
 @[simps]
 def topToPreord : TopCat ⥤ Preord where
-  obj X := Preord.of <| Specialization X
-  map := Specialization.map
+  obj X := .of <| Specialization X
+  map f := Preord.ofHom <| Specialization.map f.hom

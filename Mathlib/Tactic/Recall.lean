@@ -3,6 +3,7 @@ Copyright (c) 2023 Mac Malone. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mac Malone, Kyle Miller
 -/
+import Mathlib.Init
 import Lean.Elab.Command
 import Lean.Elab.DeclUtil
 
@@ -43,7 +44,8 @@ elab_rules : command
       | throwError "unknown constant '{declName}'"
     let declConst : Expr := mkConst declName <| info.levelParams.map Level.param
     discard <| liftTermElabM <| addTermInfo id declConst
-    let newId := mkIdentFrom id (← mkAuxName declName 1)
+    let newId := ({ namePrefix := declName : DeclNameGenerator }.mkUniqueName (← getEnv) `recall).1
+    let newId := mkIdentFrom id newId
     if let some val := val? then
       let some infoVal := info.value?
         | throwErrorAt val "constant '{declName}' has no defined value"
@@ -66,7 +68,7 @@ elab_rules : command
         runTermElabM fun vars => do
           withAutoBoundImplicit do
             elabBinders binders.getArgs fun xs => do
-              let xs ← addAutoBoundImplicits xs
+              let xs ← addAutoBoundImplicits xs none
               let type ← elabType type
               Term.synthesizeSyntheticMVarsNoPostponing
               let type ← mkForallFVars xs type
@@ -76,3 +78,5 @@ elab_rules : command
       else
         unless binders.getNumArgs == 0 do
           throwError "expected type after ':'"
+
+end Mathlib.Tactic.Recall

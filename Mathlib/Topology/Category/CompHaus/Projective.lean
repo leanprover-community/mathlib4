@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Topology.Category.CompHaus.Basic
-import Mathlib.Topology.StoneCech
-import Mathlib.CategoryTheory.Preadditive.Projective
-
-#align_import topology.category.CompHaus.projective from "leanprover-community/mathlib"@"829895f162a1f29d0133f4b3538f4cd1fb5bffd3"
+import Mathlib.Topology.Compactification.StoneCech
+import Mathlib.CategoryTheory.Preadditive.Projective.Basic
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
 /-!
 # CompHaus has enough projectives
@@ -35,8 +34,6 @@ open CategoryTheory Function
 
 namespace CompHaus
 
-attribute [local instance] ConcreteCategory.instFunLike
-
 instance projective_ultrafilter (X : Type*) : Projective (of <| Ultrafilter X) where
   factors {Y Z} f g hg := by
     rw [epi_iff_surjective] at hg
@@ -44,30 +41,23 @@ instance projective_ultrafilter (X : Type*) : Projective (of <| Ultrafilter X) w
     let t : X → Y := g' ∘ f ∘ (pure : X → Ultrafilter X)
     let h : Ultrafilter X → Y := Ultrafilter.extend t
     have hh : Continuous h := continuous_ultrafilter_extend _
-    use ⟨h, hh⟩
-    apply (forget CompHaus).map_injective
-    simp only [Functor.map_comp, ContinuousMap.coe_mk, coe_comp]
-    convert denseRange_pure.equalizer (g.continuous.comp hh) f.continuous _
-    -- Porting note: We need to get the coercions to functions under control.
-    -- The next two lines should not be needed.
-    let g'' : ContinuousMap Y Z := g
-    have : g'' ∘ g' = id := hg'.comp_eq_id
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [comp.assoc, ultrafilter_extend_extends, ← comp.assoc, this, id_comp]
-set_option linter.uppercaseLean3 false in
-#align CompHaus.projective_ultrafilter CompHaus.projective_ultrafilter
+    use CompHausLike.ofHom _ ⟨h, hh⟩
+    apply ConcreteCategory.coe_ext
+    have : g.hom ∘ g' = id := hg'.comp_eq_id
+    convert denseRange_pure.equalizer (g.hom.continuous.comp hh) f.hom.continuous _
+    -- This used to be `rw`, but we need `rw; rfl` after https://github.com/leanprover/lean4/pull/2644
+    rw [comp_assoc, ultrafilter_extend_extends, ← comp_assoc, this, id_comp]
+    rfl
 
 /-- For any compact Hausdorff space `X`,
   the natural map `Ultrafilter X → X` is a projective presentation. -/
 def projectivePresentation (X : CompHaus) : ProjectivePresentation X where
   p := of <| Ultrafilter X
-  f := ⟨_, continuous_ultrafilter_extend id⟩
+  f := CompHausLike.ofHom _ ⟨_, continuous_ultrafilter_extend id⟩
   projective := CompHaus.projective_ultrafilter X
   epi :=
     ConcreteCategory.epi_of_surjective _ fun x =>
       ⟨(pure x : Ultrafilter X), congr_fun (ultrafilter_extend_extends (𝟙 X)) x⟩
-set_option linter.uppercaseLean3 false in
-#align CompHaus.projective_presentation CompHaus.projectivePresentation
 
 instance : EnoughProjectives CompHaus where presentation X := ⟨projectivePresentation X⟩
 

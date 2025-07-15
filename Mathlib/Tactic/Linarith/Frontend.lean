@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
 import Mathlib.Control.Basic
-import Mathlib.Data.HashMap
 import Mathlib.Tactic.Linarith.Verification
 import Mathlib.Tactic.Linarith.Preprocessing
+import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm
+import Mathlib.Tactic.Ring.Basic
 
 /-!
 # `linarith`: solving linear arithmetic goals
@@ -54,17 +55,29 @@ Preprocessors are allowed to branch, that is, to case split on disjunctions. `li
 overall if it succeeds in all cases. This leads to exponential blowup in the number of `linarith`
 calls, and should be used sparingly. The default preprocessor set does not include case splits.
 
-## Fourier-Motzkin elimination
+## Oracles
 
-The oracle implemented to search for certificates uses Fourier-Motzkin variable elimination.
-This technique transforms a set of inequalities in `n` variables to an equisatisfiable set in
-`n - 1` variables. Once all variables have been eliminated, we conclude that the original set was
-unsatisfiable iff the comparison `0 < 0` is in the resulting set.
+There are two oracles that can be used in `linarith` so far.
 
-While performing this elimination, we track the history of each derived comparison. This allows us
-to represent any comparison at any step as a positive combination of comparisons from the original
-set. In particular, if we derive `0 < 0`, we can find our desired list of coefficients
-by counting how many copies of each original comparison appear in the history.
+1. **Fourier-Motzkin elimination.**
+  This technique transforms a set of inequalities in `n` variables to an equisatisfiable set in
+  `n - 1` variables. Once all variables have been eliminated, we conclude that the original set was
+  unsatisfiable iff the comparison `0 < 0` is in the resulting set.
+  While performing this elimination, we track the history of each derived comparison. This allows us
+  to represent any comparison at any step as a positive combination of comparisons from the original
+  set. In particular, if we derive `0 < 0`, we can find our desired list of coefficients
+  by counting how many copies of each original comparison appear in the history.
+  This oracle was historically implemented earlier, and is sometimes faster on small states, but it
+  has [bugs](https://github.com/leanprover-community/mathlib4/issues/2717) and can not handle
+  large problems. You can use it with `linarith (oracle := .fourierMotzkin)`.
+
+2. **Simplex Algorithm (default).**
+  This oracle reduces the search for a unsatisfiability certificate to some Linear Programming
+  problem. The problem is then solved by a standard Simplex Algorithm. We use
+  [Bland's pivot rule](https://en.wikipedia.org/wiki/Bland%27s_rule) to guarantee that the algorithm
+  terminates.
+  The default version of the algorithm operates with sparse matrices as it is usually faster. You
+  can invoke the dense version by `linarith (oracle := .simplexAlgorithmDense)`.
 
 ## Implementation details
 
@@ -79,8 +92,8 @@ goals by splitting them into two weak inequalities and running twice. But it doe
 disequality hypotheses, since this would lead to a number of runs exponential in the number of
 disequalities in the context.
 
-The Fourier-Motzkin oracle is very modular. It can easily be replaced with another function of type
-`certificateOracle := List Comp → ℕ → TacticM ((Batteries.HashMap ℕ ℕ))`,
+The oracle is very modular. It can easily be replaced with another function of type
+`List Comp → ℕ → MetaM ((Std.HashMap ℕ ℕ))`,
 which takes a list of comparisons and the largest variable
 index appearing in those comparisons, and returns a map from comparison indices to coefficients.
 An alternate oracle can be specified in the `LinarithConfig` object.
@@ -93,7 +106,7 @@ proof term of type `False`.
 
 Some of the behavior of `linarith` can be inspected with the option
 `set_option trace.linarith true`.
-Because the variable elimination happens outside the tactic monad, we cannot trace intermediate
+However, both oracles mainly runs outside the tactic monad, so we cannot trace intermediate
 steps there.
 
 ## File structure
@@ -107,7 +120,8 @@ The components of `linarith` are spread between a number of files for the sake o
 * `Preprocessing.lean` contains functions used at the beginning of the tactic to transform
   hypotheses into a shape suitable for the main routine.
 * `Parsing.lean` contains functions used to compute the linear structure of an expression.
-* `Elimination.lean` contains the Fourier-Motzkin elimination routine.
+* The `Oracle` folder contains files implementing the oracles that can be used to produce a
+  certificate of unsatisfiability.
 * `Verification.lean` contains the certificate checking functions that produce a proof of `False`.
 * `Frontend.lean` contains the control methods and user-facing components of the tactic.
 
@@ -116,13 +130,57 @@ The components of `linarith` are spread between a number of files for the sake o
 linarith, nlinarith, lra, nra, Fourier-Motzkin, linear arithmetic, linear programming
 -/
 
-set_option autoImplicit true
-
-open Lean Elab Tactic Meta
+open Lean Elab Parser Tactic Meta
 open Batteries
 
 
-namespace Linarith
+namespace Mathlib.Tactic.Linarith
+
+/-! ### Config objects
+
+The config object is defined in the frontend, instead of in `Datatypes.lean`, since the oracles must
+be in context to choose a default.
+
+-/
+
+section
+
+/-- A configuration object for `linarith`. -/
+structure LinarithConfig : Type where
+  /-- Discharger to prove that a candidate linear combination of hypothesis is zero. -/
+  -- TODO There should be a def for this, rather than calling `evalTactic`?
+  discharger : TacticM Unit := do evalTactic (← `(tactic| ring1))
+  -- We can't actually store a `Type` here,
+  -- as we want `LinarithConfig : Type` rather than ` : Type 1`,
+  -- so that we can define `elabLinarithConfig : Lean.Syntax → Lean.Elab.TermElabM LinarithConfig`.
+  -- For now, we simply don't support restricting the type.
+  -- (restrict_type : Option Type := none)
+  /-- Prove goals which are not linear comparisons by first calling `exfalso`. -/
+  exfalso : Bool := true
+  /-- Transparency mode for identifying atomic expressions in comparisons. -/
+  transparency : TransparencyMode := .reducible
+  /-- Split conjunctions in hypotheses. -/
+  splitHypotheses : Bool := true
+  /-- Split `≠` in hypotheses, by branching in cases `<` and `>`. -/
+  splitNe : Bool := false
+  /-- Override the list of preprocessors. -/
+  preprocessors : List GlobalBranchingPreprocessor := defaultPreprocessors
+  /-- Specify an oracle for identifying candidate contradictions.
+  `.simplexAlgorithmSparse`, `.simplexAlgorithmSparse`, and `.fourierMotzkin` are available. -/
+  oracle : CertificateOracle := .simplexAlgorithmSparse
+
+/--
+`cfg.updateReducibility reduce_default` will change the transparency setting of `cfg` to
+`default` if `reduce_default` is true. In this case, it also sets the discharger to `ring!`,
+since this is typically needed when using stronger unification.
+-/
+def LinarithConfig.updateReducibility (cfg : LinarithConfig) (reduce_default : Bool) :
+    LinarithConfig :=
+  if reduce_default then
+    { cfg with transparency := .default, discharger := do evalTactic (← `(tactic| ring1!)) }
+  else cfg
+
+end
 
 /-! ### Control -/
 
@@ -133,22 +191,12 @@ implication, along with the type of `a` and `b`.
 
 For example, if `e` is `(a : ℕ) < b`, returns ``(`lt_of_not_ge, ℕ)``.
 -/
-def getContrLemma (e : Expr) : Option (Name × Expr) :=
-  match e.getAppFnArgs with
-  | (``LT.lt, #[t, _, _, _]) => (``lt_of_not_ge, t)
-  | (``LE.le, #[t, _, _, _]) => (``le_of_not_gt, t)
-  | (``Eq, #[t, _, _]) => (``eq_of_not_lt_of_not_gt, t)
-  | (``Ne, #[t, _, _]) => (``Not.intro, t)
-  | (``GE.ge, #[t, _, _, _]) => (``le_of_not_gt, t)
-  | (``GT.gt, #[t, _, _, _]) => (``lt_of_not_ge, t)
-  | (``Not, #[e']) => match e'.getAppFnArgs with
-    | (``LT.lt, #[t, _, _, _]) => (``Not.intro, t)
-    | (``LE.le, #[t, _, _, _]) => (``Not.intro, t)
-    | (``Eq, #[t, _, _]) => (``Not.intro, t)
-    | (``GE.ge, #[t, _, _, _]) => (``Not.intro, t)
-    | (``GT.gt, #[t, _, _, _]) => (``Not.intro, t)
-    | _ => none
-  | _ => none
+def getContrLemma (e : Expr) : MetaM (Name × Expr) := do
+  match ← e.ineqOrNotIneq? with
+  | (true, Ineq.lt, t, _) => pure (``lt_of_not_ge, t)
+  | (true, Ineq.le, t, _) => pure (``le_of_not_gt, t)
+  | (true, Ineq.eq, t, _) => pure (``eq_of_not_lt_of_not_gt, t)
+  | (false, _, t, _) => pure (``Not.intro, t)
 
 /--
 `applyContrLemma` inspects the target to see if it can be moved to a hypothesis by negation.
@@ -159,12 +207,12 @@ newly introduced local constant.
 Otherwise returns `none`.
 -/
 def applyContrLemma (g : MVarId) : MetaM (Option (Expr × Expr) × MVarId) := do
-  match getContrLemma (← withReducible g.getType') with
-  | some (nm, tp) => do
-      let [g] ← g.apply (← mkConst' nm) | failure
-      let (f, g) ← g.intro1P
-      return (some (tp, .fvar f), g)
-  | none => return (none, g)
+  try
+    let (nm, tp) ← getContrLemma (← withReducible g.getType')
+    let [g] ← g.apply (← mkConst' nm) | failure
+    let (f, g) ← g.intro1P
+    return (some (tp, .fvar f), g)
+  catch _ => return (none, g)
 
 /-- A map of keys to values, where the keys are `Expr` up to defeq and one key can be
 associated to multiple values. -/
@@ -172,18 +220,19 @@ abbrev ExprMultiMap α := Array (Expr × List α)
 
 /-- Retrieves the list of values at a key, as well as the index of the key for later modification.
 (If the key is not in the map it returns `self.size` as the index.) -/
-def ExprMultiMap.find (self : ExprMultiMap α) (k : Expr) : MetaM (Nat × List α) := do
+def ExprMultiMap.find {α : Type} (self : ExprMultiMap α) (k : Expr) : MetaM (Nat × List α) := do
   for h : i in [:self.size] do
-    let (k', vs) := self[i]'h.2
+    let (k', vs) := self[i]
     if ← isDefEq k' k then
       return (i, vs)
   return (self.size, [])
 
 /-- Insert a new value into the map at key `k`. This does a defeq check with all other keys
 in the map. -/
-def ExprMultiMap.insert (self : ExprMultiMap α) (k : Expr) (v : α) : MetaM (ExprMultiMap α) := do
+def ExprMultiMap.insert {α : Type} (self : ExprMultiMap α) (k : Expr) (v : α) :
+    MetaM (ExprMultiMap α) := do
   for h : i in [:self.size] do
-    if ← isDefEq (self[i]'h.2).1 k then
+    if ← isDefEq self[i].1 k then
       return self.modify i fun (k, vs) => (k, v::vs)
   return self.push (k, [v])
 
@@ -200,12 +249,13 @@ Given a list `ls` of lists of proofs of comparisons, `findLinarithContradiction 
 prove `False` by calling `linarith` on each list in succession. It will stop at the first proof of
 `False`, and fail if no contradiction is found with any list.
 -/
-def findLinarithContradiction (cfg : LinarithConfig) (g : MVarId) (ls : List (List Expr)) :
+def findLinarithContradiction (cfg : LinarithConfig) (g : MVarId) (ls : List (Expr × List Expr)) :
     MetaM Expr :=
   try
-    ls.firstM (fun L => proveFalseByLinarith cfg g L)
+    ls.firstM (fun ⟨α, L⟩ =>
+      withTraceNode `linarith (return m!"{exceptEmoji ·} running on type {α}") <|
+        proveFalseByLinarith cfg.transparency cfg.oracle cfg.discharger g L)
   catch e => throwError "linarith failed to find a contradiction\n{g}\n{e.toMessageData}"
-
 
 /--
 Given a list `hyps` of proofs of comparisons, `runLinarith cfg hyps prefType`
@@ -222,14 +272,21 @@ def runLinarith (cfg : LinarithConfig) (prefType : Option Expr) (g : MVarId)
     (hyps : List Expr) : MetaM Unit := do
   let singleProcess (g : MVarId) (hyps : List Expr) : MetaM Expr := g.withContext do
     linarithTraceProofs s!"after preprocessing, linarith has {hyps.length} facts:" hyps
-    let hyp_set ← partitionByType hyps
+    let mut hyp_set ← partitionByType hyps
     trace[linarith] "hypotheses appear in {hyp_set.size} different types"
+    -- If we have a preferred type, strip it from `hyp_set` and prepare a handler with a custom
+    -- trace message
+    let pref : MetaM _ ← do
       if let some t := prefType then
         let (i, vs) ← hyp_set.find t
-        proveFalseByLinarith cfg g vs <|>
-        findLinarithContradiction cfg g ((hyp_set.eraseIdx i).toList.map (·.2))
-      else findLinarithContradiction cfg g (hyp_set.toList.map (·.2))
-  let mut preprocessors := cfg.preprocessors.getD defaultPreprocessors
+        hyp_set := hyp_set.eraseIdxIfInBounds i
+        pure <|
+          withTraceNode `linarith (return m!"{exceptEmoji ·} running on preferred type {t}") <|
+            proveFalseByLinarith cfg.transparency cfg.oracle cfg.discharger g vs
+      else
+        pure failure
+    pref <|> findLinarithContradiction cfg g hyp_set.toList
+  let mut preprocessors := cfg.preprocessors
   if cfg.splitNe then
     preprocessors := Linarith.removeNe :: preprocessors
   if cfg.splitHypotheses then
@@ -268,8 +325,8 @@ partial def linarith (only_on : Bool) (hyps : List Expr) (cfg : LinarithConfig :
   if (← whnfR (← instantiateMVars (← g.getType))).isEq then
     trace[linarith] "target is an equality: splitting"
     if let some [g₁, g₂] ← try? (g.apply (← mkConst' ``eq_of_not_lt_of_not_gt)) then
-      linarith only_on hyps cfg g₁
-      linarith only_on hyps cfg g₂
+      withTraceNode `linarith (return m!"{exceptEmoji ·} proving ≥") <| linarith only_on hyps cfg g₁
+      withTraceNode `linarith (return m!"{exceptEmoji ·} proving ≤") <| linarith only_on hyps cfg g₂
       return
 
   /- If we are proving a comparison goal (and not just `False`), we consider the type of the
@@ -305,10 +362,10 @@ end Linarith
 
 /-! ### User facing functions -/
 
-open Parser Tactic Syntax
+open Syntax
 
 /-- Syntax for the arguments of `linarith`, after the optional `!`. -/
-syntax linarithArgsRest := (config)? (&" only")? (" [" term,* "]")?
+syntax linarithArgsRest := optConfig (&" only")? (" [" term,* "]")?
 
 /--
 `linarith` attempts to find a contradiction between hypotheses that are linear (in)equalities.
@@ -322,7 +379,7 @@ goals over arbitrary types that instantiate `LinearOrderedCommRing`.
 An example:
 ```lean
 example (x y z : ℚ) (h1 : 2*x < 3*y) (h2 : -4*x + 2*z < 0)
-        (h3 : 12*y - 4* z < 0)  : False := by
+        (h3 : 12*y - 4* z < 0) : False := by
   linarith
 ```
 
@@ -402,9 +459,9 @@ Allow elaboration of `LinarithConfig` arguments to tactics.
 declare_config_elab elabLinarithConfig Linarith.LinarithConfig
 
 elab_rules : tactic
-  | `(tactic| linarith $[!%$bang]? $[$cfg]? $[only%$o]? $[[$args,*]]?) => withMainContext do
+  | `(tactic| linarith $[!%$bang]? $cfg:optConfig $[only%$o]? $[[$args,*]]?) => withMainContext do
     let args ← ((args.map (TSepArray.getElems)).getD {}).mapM (elabLinarithArg `linarith)
-    let cfg := (← elabLinarithConfig (mkOptionalNode cfg)).updateReducibility bang.isSome
+    let cfg := (← elabLinarithConfig cfg).updateReducibility bang.isSome
     commitIfNoEx do liftMetaFinishingTactic <| Linarith.linarith o.isSome args.toList cfg
 
 -- TODO restore this when `add_tactic_doc` is ported
@@ -417,12 +474,11 @@ elab_rules : tactic
 open Linarith
 
 elab_rules : tactic
-  | `(tactic| nlinarith $[!%$bang]? $[$cfg]? $[only%$o]? $[[$args,*]]?) => withMainContext do
+  | `(tactic| nlinarith $[!%$bang]? $cfg:optConfig $[only%$o]? $[[$args,*]]?) => withMainContext do
     let args ← ((args.map (TSepArray.getElems)).getD {}).mapM (elabLinarithArg `nlinarith)
-    let cfg := (← elabLinarithConfig (mkOptionalNode cfg)).updateReducibility bang.isSome
+    let cfg := (← elabLinarithConfig cfg).updateReducibility bang.isSome
     let cfg := { cfg with
-      preprocessors := some (cfg.preprocessors.getD defaultPreprocessors ++
-        [(nlinarithExtras : GlobalBranchingPreprocessor)]) }
+      preprocessors := cfg.preprocessors.concat nlinarithExtras }
     commitIfNoEx do liftMetaFinishingTactic <| Linarith.linarith o.isSome args.toList cfg
 
 -- TODO restore this when `add_tactic_doc` is ported
@@ -431,3 +487,5 @@ elab_rules : tactic
 --   category   := doc_category.tactic,
 --   decl_names := [`tactic.interactive.nlinarith],
 --   tags       := ["arithmetic", "decision procedure", "finishing"] }
+
+end Mathlib.Tactic

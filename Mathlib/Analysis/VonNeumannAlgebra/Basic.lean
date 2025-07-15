@@ -1,15 +1,10 @@
 /-
-Copyright (c) 2022 Scott Morrison. All rights reserved.
+Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
-import Mathlib.Analysis.NormedSpace.Dual
-import Mathlib.Analysis.NormedSpace.Star.Basic
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Analysis.InnerProductSpace.Adjoint
-import Mathlib.Algebra.Star.Subalgebra
-
-#align_import analysis.von_neumann_algebra.basic from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
+import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
+import Mathlib.Analysis.Normed.Module.Dual
 
 /-!
 # Von Neumann algebras
@@ -43,14 +38,12 @@ One the other hand, not picking one means that the weak-* topology
 (which depends on a choice of predual) must be defined using the choice,
 and we may be unhappy with the resulting opaqueness of the definition.
 -/
-class WStarAlgebra (M : Type u) [NormedRing M] [StarRing M] [CstarRing M] [Module ℂ M]
-    [NormedAlgebra ℂ M] [StarModule ℂ M] : Prop where
+class WStarAlgebra (M : Type u) [CStarAlgebra M] : Prop where
   /-- There is a Banach space `X` whose dual is isometrically (conjugate-linearly) isomorphic
   to the `WStarAlgebra`. -/
   exists_predual :
     ∃ (X : Type u) (_ : NormedAddCommGroup X) (_ : NormedSpace ℂ X) (_ : CompleteSpace X),
       Nonempty (NormedSpace.Dual ℂ X ≃ₗᵢ⋆[ℂ] M)
-#align wstar_algebra WStarAlgebra
 
 -- TODO: Without this, `VonNeumannAlgebra` times out. Why?
 /-- The double commutant definition of a von Neumann algebra,
@@ -67,12 +60,10 @@ Thus we can't say that the bounded operators `H →L[ℂ] H` form a `VonNeumannA
 (although we will later construct the instance `WStarAlgebra (H →L[ℂ] H)`),
 and instead will use `⊤ : VonNeumannAlgebra H`.
 -/
--- Porting note: I don't think the nonempty instance linter exists yet
 structure VonNeumannAlgebra (H : Type u) [NormedAddCommGroup H] [InnerProductSpace ℂ H]
     [CompleteSpace H] extends StarSubalgebra ℂ (H →L[ℂ] H) where
   /-- The double commutant (a.k.a. centralizer) of a `VonNeumannAlgebra` is itself. -/
   centralizer_centralizer' : Set.centralizer (Set.centralizer carrier) = carrier
-#align von_neumann_algebra VonNeumannAlgebra
 
 /-- Consider a von Neumann algebra acting on a Hilbert space `H` as a *-subalgebra of `H →L[ℂ] H`.
 (That is, we forget that it is equal to its double commutant
@@ -88,7 +79,6 @@ instance instSetLike : SetLike (VonNeumannAlgebra H) (H →L[ℂ] H) where
   coe S := S.carrier
   coe_injective' S T h := by obtain ⟨⟨⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩, _⟩, _⟩ := S; cases T; congr
 
--- Porting note: `StarMemClass` should be in `Prop`?
 noncomputable instance instStarMemClass : StarMemClass (VonNeumannAlgebra H) (H →L[ℂ] H) where
   star_mem {s} := s.star_mem'
 
@@ -103,8 +93,6 @@ instance instSubringClass : SubringClass (VonNeumannAlgebra H) (H →L[ℂ] H) w
 theorem mem_carrier {S : VonNeumannAlgebra H} {x : H →L[ℂ] H} :
     x ∈ S.toStarSubalgebra ↔ x ∈ (S : Set (H →L[ℂ] H)) :=
   Iff.rfl
-#align von_neumann_algebra.mem_carrier VonNeumannAlgebra.mem_carrierₓ
--- Porting note: changed the declaration because `simpNF` indicated the LHS simplifies to this.
 
 @[simp]
 theorem coe_toStarSubalgebra (S : VonNeumannAlgebra H) :
@@ -119,37 +107,30 @@ theorem coe_mk (S : StarSubalgebra ℂ (H →L[ℂ] H)) (h) :
 @[ext]
 theorem ext {S T : VonNeumannAlgebra H} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
   SetLike.ext h
-#align von_neumann_algebra.ext VonNeumannAlgebra.ext
 
 @[simp]
 theorem centralizer_centralizer (S : VonNeumannAlgebra H) :
     Set.centralizer (Set.centralizer (S : Set (H →L[ℂ] H))) = S :=
   S.centralizer_centralizer'
-#align von_neumann_algebra.centralizer_centralizer VonNeumannAlgebra.centralizer_centralizer
 
 /-- The centralizer of a `VonNeumannAlgebra`, as a `VonNeumannAlgebra`. -/
-def commutant (S : VonNeumannAlgebra H) : VonNeumannAlgebra H where
+noncomputable def commutant (S : VonNeumannAlgebra H) : VonNeumannAlgebra H where
   toStarSubalgebra := StarSubalgebra.centralizer ℂ (S : Set (H →L[ℂ] H))
   centralizer_centralizer' := by simp
-#align von_neumann_algebra.commutant VonNeumannAlgebra.commutant
 
 @[simp]
 theorem coe_commutant (S : VonNeumannAlgebra H) :
     ↑S.commutant = Set.centralizer (S : Set (H →L[ℂ] H)) := by
   simp [commutant]
 
-#align von_neumann_algebra.coe_commutant VonNeumannAlgebra.coe_commutant
-
 @[simp]
 theorem mem_commutant_iff {S : VonNeumannAlgebra H} {z : H →L[ℂ] H} :
     z ∈ S.commutant ↔ ∀ g ∈ S, g * z = z * g := by
   rw [← SetLike.mem_coe, coe_commutant]
   rfl
-#align von_neumann_algebra.mem_commutant_iff VonNeumannAlgebra.mem_commutant_iff
 
 @[simp]
 theorem commutant_commutant (S : VonNeumannAlgebra H) : S.commutant.commutant = S :=
   SetLike.coe_injective <| by simp
-#align von_neumann_algebra.commutant_commutant VonNeumannAlgebra.commutant_commutant
 
 end VonNeumannAlgebra

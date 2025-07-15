@@ -18,9 +18,11 @@ we redefine it as `CochainComplex.mappingCone φ`. The API involves definitions
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 open CategoryTheory Limits
 
-variable {C : Type*} [Category C] [Preadditive C]
+variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
 
 namespace CochainComplex
 
@@ -51,7 +53,7 @@ open HomComplex
 
 /-- The left inclusion in the mapping cone, as a cochain of degree `-1`. -/
 noncomputable def inl : Cochain F (mappingCone φ) (-1) :=
-  Cochain.mk (fun p q hpq => homotopyCofiber.inlX φ p q  (by dsimp; omega))
+  Cochain.mk (fun p q hpq => homotopyCofiber.inlX φ p q (by dsimp; omega))
 
 /-- The right inclusion in the mapping cone. -/
 noncomputable def inr : G ⟶ mappingCone φ := homotopyCofiber.inr φ
@@ -91,21 +93,21 @@ lemma inr_f_snd_v (p : ℤ) :
 
 @[simp]
 lemma inl_fst :
-    (inl φ).comp (fst φ).1 (neg_add_self 1) = Cochain.ofHom (𝟙 F) := by
+    (inl φ).comp (fst φ).1 (neg_add_cancel 1) = Cochain.ofHom (𝟙 F) := by
   ext p
-  simp [Cochain.comp_v _ _ (neg_add_self 1) p (p-1) p rfl (by omega)]
+  simp [Cochain.comp_v _ _ (neg_add_cancel 1) p (p-1) p rfl (by omega)]
 
 @[simp]
 lemma inl_snd :
     (inl φ).comp (snd φ) (add_zero (-1)) = 0 := by
-  ext p q hpq
-  simp [Cochain.comp_v _ _ (add_zero (-1)) p q q (by omega) (by omega)]
+  ext
+  simp
 
 @[simp]
 lemma inr_fst :
     (Cochain.ofHom (inr φ)).comp (fst φ).1 (zero_add 1) = 0 := by
-  ext p q hpq
-  simp [Cochain.comp_v _ _ (zero_add 1) p p q (by omega) (by omega)]
+  ext
+  simp
 
 @[simp]
 lemma inr_snd :
@@ -121,7 +123,7 @@ it is also interesting to have `reassoc` variants of lemmas, like `inl_fst_assoc
 @[simp]
 lemma inl_fst_assoc {K : CochainComplex C ℤ} {d e : ℤ} (γ : Cochain F K d) (he : 1 + d = e) :
     (inl φ).comp ((fst φ).1.comp γ he) (by rw [← he, neg_add_cancel_left]) = γ := by
-  rw [← Cochain.comp_assoc _ _ _ (neg_add_self 1) (by omega) (by omega), inl_fst,
+  rw [← Cochain.comp_assoc _ _ _ (neg_add_cancel 1) (by omega) (by omega), inl_fst,
     Cochain.id_comp]
 
 @[simp]
@@ -174,6 +176,17 @@ lemma ext_from_iff (i j : ℤ) (hij : j + 1 = i) {A : C} (f g : (mappingCone φ)
   · rintro ⟨h₁, h₂⟩
     exact ext_from φ i j hij h₁ h₂
 
+lemma decomp_to {i : ℤ} {A : C} (f : A ⟶ (mappingCone φ).X i) (j : ℤ) (hij : i + 1 = j) :
+    ∃ (a : A ⟶ F.X j) (b : A ⟶ G.X i), f = a ≫ (inl φ).v j i (by omega) + b ≫ (inr φ).f i :=
+  ⟨f ≫ (fst φ).1.v i j hij, f ≫ (snd φ).v i i (add_zero i),
+    by apply ext_to φ i j hij <;> simp⟩
+
+lemma decomp_from {j : ℤ} {A : C} (f : (mappingCone φ).X j ⟶ A) (i : ℤ) (hij : j + 1 = i) :
+    ∃ (a : F.X i ⟶ A) (b : G.X j ⟶ A),
+      f = (fst φ).1.v j i hij ≫ a + (snd φ).v j j (add_zero j) ≫ b :=
+  ⟨(inl φ).v i j (by omega) ≫ f, (inr φ).f j ≫ f,
+    by apply ext_from φ i j hij <;> simp⟩
+
 lemma ext_cochain_to_iff (i j : ℤ) (hij : i + 1 = j)
     {K : CochainComplex C ℤ} {γ₁ γ₂ : Cochain K (mappingCone φ) i} :
     γ₁ = γ₂ ↔ γ₁.comp (fst φ).1 hij = γ₂.comp (fst φ).1 hij ∧
@@ -209,15 +222,15 @@ lemma ext_cochain_from_iff (i j : ℤ) (hij : i + 1 = j)
     exact ⟨h₁, h₂⟩
 
 lemma id :
-    (fst φ).1.comp (inl φ) (add_neg_self 1) +
+    (fst φ).1.comp (inl φ) (add_neg_cancel 1) +
       (snd φ).comp (Cochain.ofHom (inr φ)) (add_zero 0) = Cochain.ofHom (𝟙 _) := by
-  simp [ext_cochain_from_iff φ (-1) 0 (neg_add_self 1)]
+  simp [ext_cochain_from_iff φ (-1) 0 (neg_add_cancel 1)]
 
 lemma id_X (p q : ℤ) (hpq : p + 1 = q) :
     (fst φ).1.v p q hpq ≫ (inl φ).v q p (by omega) +
       (snd φ).v p p (add_zero p) ≫ (inr φ).f p = 𝟙 ((mappingCone φ).X p) := by
   simpa only [Cochain.add_v, Cochain.comp_zero_cochain_v, Cochain.ofHom_v, id_f,
-    Cochain.comp_v _ _ (add_neg_self 1) p q p hpq (by omega)]
+    Cochain.comp_v _ _ (add_neg_cancel 1) p q p hpq (by omega)]
     using Cochain.congr_v (id φ) p p (add_zero p)
 
 @[reassoc]
@@ -228,10 +241,10 @@ lemma inl_v_d (i j k : ℤ) (hij : i + (-1) = j) (hik : k + (-1) = i) :
   rw [homotopyCofiber.inlX_d φ j i k (by dsimp; omega) (by dsimp; omega)]
   abel
 
-@[reassoc (attr := simp 1100)]
+@[reassoc]
 lemma inr_f_d (n₁ n₂ : ℤ) :
     (inr φ).f n₁ ≫ (mappingCone φ).d n₁ n₂ = G.d n₁ n₂ ≫ (inr φ).f n₂ := by
-  apply Hom.comm
+  simp
 
 @[reassoc]
 lemma d_fst_v (i j k : ℤ) (hij : i + 1 = j) (hjk : j + 1 = k) :
@@ -264,7 +277,7 @@ lemma d_snd_v' (n : ℤ) :
 lemma δ_inl :
     δ (-1) 0 (inl φ) = Cochain.ofHom (φ ≫ inr φ) := by
   ext p
-  simp [δ_v (-1) 0 (neg_add_self 1) (inl φ) p p (add_zero p) _ _ rfl rfl,
+  simp [δ_v (-1) 0 (neg_add_cancel 1) (inl φ) p p (add_zero p) _ _ rfl rfl,
     inl_v_d φ p (p - 1) (p + 1) (by omega) (by omega)]
 
 @[simp]
@@ -275,13 +288,15 @@ lemma δ_snd :
 
 section
 
-variable {K : CochainComplex C ℤ} {n m : ℤ} (α : Cochain F K m)
-    (β : Cochain G K n) (h : m + 1 = n)
+variable {K : CochainComplex C ℤ} {n m : ℤ}
 
 /-- Given `φ : F ⟶ G`, this is the cochain in `Cochain (mappingCone φ) K n` that is
 constructed from two cochains `α : Cochain F K m` (with `m + 1 = n`) and `β : Cochain F K n`. -/
-noncomputable def descCochain : Cochain (mappingCone φ) K n :=
+noncomputable def descCochain (α : Cochain F K m) (β : Cochain G K n) (h : m + 1 = n) :
+    Cochain (mappingCone φ) K n :=
   (fst φ).1.comp α (by rw [← h, add_comm]) + (snd φ).comp β (zero_add n)
+
+variable (α : Cochain F K m) (β : Cochain G K n) (h : m + 1 = n)
 
 @[simp]
 lemma inl_descCochain :
@@ -335,18 +350,20 @@ noncomputable def descCocycle {K : CochainComplex C ℤ} {n m : ℤ}
 
 section
 
-variable {K : CochainComplex C ℤ} (α : Cochain F K (-1)) (β : G ⟶ K)
-  (eq : δ (-1) 0 α = Cochain.ofHom (φ ≫ β))
+variable {K : CochainComplex C ℤ}
 
 /-- Given `φ : F ⟶ G`, this is the morphism `mappingCone φ ⟶ K` that is constructed
 from a cochain `α : Cochain F K (-1)` and a morphism `β : G ⟶ K` such that
 `δ (-1) 0 α = Cochain.ofHom (φ ≫ β)`. -/
-noncomputable def desc : mappingCone φ ⟶ K :=
-  Cocycle.homOf (descCocycle φ α (Cocycle.ofHom β) (neg_add_self 1) (by simp [eq]))
+noncomputable def desc (α : Cochain F K (-1)) (β : G ⟶ K)
+    (eq : δ (-1) 0 α = Cochain.ofHom (φ ≫ β)) : mappingCone φ ⟶ K :=
+  Cocycle.homOf (descCocycle φ α (Cocycle.ofHom β) (neg_add_cancel 1) (by simp [eq]))
+
+variable (α : Cochain F K (-1)) (β : G ⟶ K) (eq : δ (-1) 0 α = Cochain.ofHom (φ ≫ β))
 
 @[simp]
 lemma ofHom_desc :
-    Cochain.ofHom (desc φ α β eq) = descCochain φ α (Cochain.ofHom β) (neg_add_self 1) := by
+    Cochain.ofHom (desc φ α β eq) = descCochain φ α (Cochain.ofHom β) (neg_add_cancel 1) := by
   simp [desc]
 
 @[reassoc (attr := simp)]
@@ -376,25 +393,27 @@ end
 /-- Constructor for homotopies between morphisms from a mapping cone. -/
 noncomputable def descHomotopy {K : CochainComplex C ℤ} (f₁ f₂ : mappingCone φ ⟶ K)
     (γ₁ : Cochain F K (-2)) (γ₂ : Cochain G K (-1))
-    (h₁ : (inl φ).comp (Cochain.ofHom f₁) (add_zero (-1))  =
+    (h₁ : (inl φ).comp (Cochain.ofHom f₁) (add_zero (-1)) =
       δ (-2) (-1) γ₁ + (Cochain.ofHom φ).comp γ₂ (zero_add (-1)) +
       (inl φ).comp (Cochain.ofHom f₂) (add_zero (-1)))
     (h₂ : Cochain.ofHom (inr φ ≫ f₁) = δ (-1) 0 γ₂ + Cochain.ofHom (inr φ ≫ f₂)) :
     Homotopy f₁ f₂ :=
   (Cochain.equivHomotopy f₁ f₂).symm ⟨descCochain φ γ₁ γ₂ (by norm_num), by
     simp only [Cochain.ofHom_comp] at h₂
-    simp [ext_cochain_from_iff _ _ _ (neg_add_self 1),
-      δ_descCochain _ _ _ _ _ (neg_add_self 1), h₁, h₂]⟩
+    simp [ext_cochain_from_iff _ _ _ (neg_add_cancel 1),
+      δ_descCochain _ _ _ _ _ (neg_add_cancel 1), h₁, h₂]⟩
 
 section
 
 variable {K : CochainComplex C ℤ} {n m : ℤ}
-    (α : Cochain K F m) (β : Cochain K G n) (h : n + 1 = m)
 
 /-- Given `φ : F ⟶ G`, this is the cochain in `Cochain (mappingCone φ) K n` that is
 constructed from two cochains `α : Cochain F K m` (with `m + 1 = n`) and `β : Cochain F K n`. -/
-noncomputable def liftCochain : Cochain K (mappingCone φ) n :=
+noncomputable def liftCochain (α : Cochain K F m) (β : Cochain K G n) (h : n + 1 = m) :
+    Cochain K (mappingCone φ) n :=
   α.comp (inl φ) (by omega) + β.comp (Cochain.ofHom (inr φ)) (add_zero n)
+
+variable (α : Cochain K F m) (β : Cochain K G n) (h : n + 1 = m)
 
 @[simp]
 lemma liftCochain_fst :
@@ -423,7 +442,7 @@ lemma δ_liftCochain (m' : ℤ) (hm' : m + 1 = m') :
       (δ n m β + α.comp (Cochain.ofHom φ) (add_zero m)).comp
         (Cochain.ofHom (inr φ)) (add_zero m) := by
   dsimp only [liftCochain]
-  simp only [δ_add, δ_comp α (inl φ) _ m' _ _ h hm' (neg_add_self 1),
+  simp only [δ_add, δ_comp α (inl φ) _ m' _ _ h hm' (neg_add_cancel 1),
     δ_comp_zero_cochain _ _ _ h, δ_inl, Cochain.ofHom_comp,
     Int.negOnePow_neg, Int.negOnePow_one, Units.neg_smul, one_smul,
     δ_ofHom, Cochain.comp_zero, zero_add, Cochain.add_comp,
@@ -494,7 +513,7 @@ noncomputable def liftHomotopy {K : CochainComplex C ℤ} (f₁ f₂ : K ⟶ map
       δ (-1) 0 β + α.comp (Cochain.ofHom φ) (zero_add 0) +
         (Cochain.ofHom f₂).comp (snd φ) (zero_add 0)) :
     Homotopy f₁ f₂ :=
-  (Cochain.equivHomotopy f₁ f₂).symm ⟨liftCochain φ α β (neg_add_self 1), by
+  (Cochain.equivHomotopy f₁ f₂).symm ⟨liftCochain φ α β (neg_add_cancel 1), by
     simp [δ_liftCochain _ _ _ _ _ (zero_add 1), ext_cochain_to_iff _ _ _ (zero_add 1), h₁, h₂]⟩
 
 section
@@ -527,8 +546,98 @@ lemma lift_desc_f {K L : CochainComplex C ℤ} (α : Cocycle K F 1) (β : Cochai
     (lift φ α β eq).f n ≫ (desc φ α' β' eq').f n =
     α.1.v n n' hnn' ≫ α'.v n' n (by omega) + β.v n n (add_zero n) ≫ β'.f n := by
   simp only [lift, desc, Cocycle.homOf_f, liftCocycle_coe, descCocycle_coe, Cocycle.ofHom_coe,
-    liftCochain_v_descCochain_v φ α.1 β α' (Cochain.ofHom β') (zero_add 1) (neg_add_self 1) 0
+    liftCochain_v_descCochain_v φ α.1 β α' (Cochain.ofHom β') (zero_add 1) (neg_add_cancel 1) 0
     (add_zero 0) n n n (add_zero n) (add_zero n) n' hnn', Cochain.ofHom_v]
+
+
+section
+
+open Preadditive Category
+
+variable (H : C ⥤ D) [H.Additive]
+  [HasHomotopyCofiber ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)]
+
+/-- If `H : C ⥤ D` is an additive functor and `φ` is a morphism of cochain complexes
+in `C`, this is the comparison isomorphism (in each degree `n`) between the image
+by `H` of `mappingCone φ` and the mapping cone of the image by `H` of `φ`.
+It is an auxiliary definition for `mapHomologicalComplexXIso` and
+`mapHomologicalComplexIso`. This definition takes an extra
+parameter `m : ℤ` such that `n + 1 = m` which may help getting better
+definitional properties. See also the equational lemma `mapHomologicalComplexXIso_eq`. -/
+@[simps]
+noncomputable def mapHomologicalComplexXIso' (n m : ℤ) (hnm : n + 1 = m) :
+    ((H.mapHomologicalComplex (ComplexShape.up ℤ)).obj (mappingCone φ)).X n ≅
+      (mappingCone ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).X n where
+  hom := H.map ((fst φ).1.v n m (by omega)) ≫
+      (inl ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).v m n (by omega) +
+      H.map ((snd φ).v n n (add_zero n)) ≫
+        (inr ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).f n
+  inv := (fst ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).1.v n m (by omega) ≫
+      H.map ((inl φ).v m n (by omega)) +
+      (snd ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).v n n (add_zero n) ≫
+        H.map ((inr φ).f n)
+  hom_inv_id := by
+    simp only [Functor.mapHomologicalComplex_obj_X, comp_add, add_comp, assoc,
+      inl_v_fst_v_assoc, inr_f_fst_v_assoc, zero_comp, comp_zero, add_zero,
+      inl_v_snd_v_assoc, inr_f_snd_v_assoc, zero_add, ← Functor.map_comp, ← Functor.map_add]
+    rw [← H.map_id]
+    congr 1
+    simp [ext_from_iff  _ _ _ hnm]
+  inv_hom_id := by
+    simp only [Functor.mapHomologicalComplex_obj_X, comp_add, add_comp, assoc,
+      ← H.map_comp_assoc, inl_v_fst_v, CategoryTheory.Functor.map_id, id_comp, inr_f_fst_v,
+      inl_v_snd_v, inr_f_snd_v]
+    simp [ext_from_iff _ _ _ hnm]
+
+/-- If `H : C ⥤ D` is an additive functor and `φ` is a morphism of cochain complexes
+in `C`, this is the comparison isomorphism (in each degree) between the image
+by `H` of `mappingCone φ` and the mapping cone of the image by `H` of `φ`. -/
+noncomputable def mapHomologicalComplexXIso (n : ℤ) :
+    ((H.mapHomologicalComplex (ComplexShape.up ℤ)).obj (mappingCone φ)).X n ≅
+      (mappingCone ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).X n :=
+  mapHomologicalComplexXIso' φ H n (n + 1) rfl
+
+lemma mapHomologicalComplexXIso_eq (n m : ℤ) (hnm : n + 1 = m) :
+    mapHomologicalComplexXIso φ H n = mapHomologicalComplexXIso' φ H n m hnm := by
+  subst hnm
+  rfl
+
+/-- If `H : C ⥤ D` is an additive functor and `φ` is a morphism of cochain complexes
+in `C`, this is the comparison isomorphism between the image by `H`
+of `mappingCone φ` and the mapping cone of the image by `H` of `φ`. -/
+noncomputable def mapHomologicalComplexIso :
+    (H.mapHomologicalComplex _).obj (mappingCone φ) ≅
+      mappingCone ((H.mapHomologicalComplex _).map φ) :=
+  HomologicalComplex.Hom.isoOfComponents (mapHomologicalComplexXIso φ H) (by
+    rintro n _ rfl
+    rw [ext_to_iff _ _ (n + 2) (by omega), assoc, assoc, d_fst_v _ _ _ _ rfl,
+      assoc, assoc, d_snd_v _ _ _ rfl]
+    simp only [mapHomologicalComplexXIso_eq φ H n (n + 1) rfl,
+      mapHomologicalComplexXIso_eq φ H (n + 1) (n + 2) (by omega),
+      mapHomologicalComplexXIso'_hom, mapHomologicalComplexXIso'_hom]
+    constructor
+    · dsimp
+      simp only [Functor.mapHomologicalComplex_obj_X, comp_neg, add_comp, assoc, inl_v_fst_v_assoc,
+        inr_f_fst_v_assoc, zero_comp, comp_zero, add_zero, inl_v_fst_v, comp_id, inr_f_fst_v,
+        ← H.map_comp, d_fst_v φ n (n + 1) (n + 2) rfl (by omega), Functor.map_neg]
+    · dsimp
+      simp only [comp_add, add_comp, assoc, inl_v_fst_v_assoc, inr_f_fst_v_assoc,
+        Functor.mapHomologicalComplex_obj_X, zero_comp, comp_zero, add_zero, inl_v_snd_v_assoc,
+        inr_f_snd_v_assoc, zero_add, inl_v_snd_v, inr_f_snd_v, comp_id, ← H.map_comp,
+        d_snd_v φ n (n + 1) rfl, Functor.map_add])
+
+lemma map_inr :
+    (H.mapHomologicalComplex (ComplexShape.up ℤ)).map (inr φ) ≫
+      (mapHomologicalComplexIso φ H).hom =
+    inr ((Functor.mapHomologicalComplex H (ComplexShape.up ℤ)).map φ) := by
+  ext n
+  dsimp [mapHomologicalComplexIso]
+  simp only [mapHomologicalComplexXIso_eq φ H n (n + 1) rfl, mappingCone.ext_to_iff _ _ _ rfl,
+    Functor.mapHomologicalComplex_obj_X, mapHomologicalComplexXIso'_hom, comp_add,
+    add_comp, assoc, inl_v_fst_v, comp_id, inr_f_fst_v, comp_zero, add_zero, inl_v_snd_v,
+    inr_f_snd_v, zero_add, ← H.map_comp, H.map_zero, H.map_id, and_self]
+
+end
 
 end mappingCone
 

@@ -3,9 +3,7 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Predicate
-
-#align_import category_theory.localization.opposite from "leanprover-community/mathlib"@"8efef279998820353694feb6ff5631ed0d309ecc"
+import Mathlib.CategoryTheory.Localization.Equivalence
 
 /-!
 
@@ -41,22 +39,51 @@ def StrictUniversalPropertyFixedTarget.op {E : Type*} [Category E]
       rw [← F₁.rightOp_leftOp_eq, ← F₂.rightOp_leftOp_eq, this]
     have eq' := congr_arg Functor.rightOp eq
     exact h.uniq _ _ eq'
-#align category_theory.localization.strict_universal_property_fixed_target.op CategoryTheory.Localization.StrictUniversalPropertyFixedTarget.op
 
 instance isLocalization_op : W.Q.op.IsLocalization W.op :=
   Functor.IsLocalization.mk' W.Q.op W.op (strictUniversalPropertyFixedTargetQ W _).op
     (strictUniversalPropertyFixedTargetQ W _).op
-#align category_theory.localization.is_localization_op CategoryTheory.Localization.isLocalization_op
 
 end Localization
 
+variable (L W)
+variable [L.IsLocalization W]
+
 namespace Functor
 
-instance IsLocalization.op [L.IsLocalization W] : L.op.IsLocalization W.op :=
+instance IsLocalization.op : L.op.IsLocalization W.op :=
   IsLocalization.of_equivalence_target W.Q.op W.op L.op (Localization.equivalenceFromModel L W).op
     (NatIso.op (Localization.qCompEquivalenceFromModelFunctorIso L W).symm)
-#align category_theory.functor.is_localization.op CategoryTheory.Functor.IsLocalization.op
+
+instance IsLocalization.unop (L : Cᵒᵖ ⥤ Dᵒᵖ) (W : MorphismProperty Cᵒᵖ)
+    [L.IsLocalization W] : L.unop.IsLocalization W.unop :=
+  have : CatCommSq (opOpEquivalence C).functor L.op L.unop
+    (opOpEquivalence D).functor := ⟨Iso.refl _⟩
+  of_equivalences L.op W.op L.unop W.unop
+    (opOpEquivalence C) (opOpEquivalence D)
+    (fun _ _ _ hf ↦ MorphismProperty.le_isoClosure _ _ hf)
+    (fun _ _ _ hf ↦ by
+      have := Localization.inverts L W _ hf
+      dsimp
+      infer_instance)
+
+@[simp]
+lemma op_iff (L : C ⥤ D) (W : MorphismProperty C) :
+    L.op.IsLocalization W.op ↔ L.IsLocalization W :=
+  ⟨fun _ ↦ inferInstanceAs (L.op.unop.IsLocalization W.op.unop),
+    fun _ ↦ inferInstance⟩
 
 end Functor
+
+namespace Localization
+
+lemma isoOfHom_unop {X Y : Cᵒᵖ} (w : X ⟶ Y) (hw : W.op w) :
+    (isoOfHom L.op W.op w hw).unop = (isoOfHom L W w.unop hw) := by ext; rfl
+
+lemma isoOfHom_op_inv {X Y : Cᵒᵖ} (w : X ⟶ Y) (hw : W.op w) :
+    (isoOfHom L.op W.op w hw).inv = (isoOfHom L W w.unop hw).inv.op :=
+  congr_arg Quiver.Hom.op (congr_arg Iso.inv (isoOfHom_unop L W w hw))
+
+end Localization
 
 end CategoryTheory

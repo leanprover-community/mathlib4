@@ -3,14 +3,14 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.GroupCat.Basic
+import Mathlib.Algebra.Category.Grp.Basic
 
 /-! The cohomology of a sheaf of groups in degree 1
 
 In this file, we shall define the cohomology in degree 1 of a sheaf
 of groups (TODO).
 
-Currently, given a presheaf of groups `G : Cᵒᵖ ⥤ GroupCat` and a family
+Currently, given a presheaf of groups `G : Cᵒᵖ ⥤ Grp` and a family
 of objects `U : I → C`, we define 1-cochains/1-cocycles/H^1 with values
 in `G` over `U`. (This definition neither requires the assumption that `G`
 is a sheaf, nor that `U` covers the terminal object.)
@@ -21,18 +21,18 @@ case, it would be a particular case of Čech cohomology (TODO).
 ## TODO
 
 * show that if `1 ⟶ G₁ ⟶ G₂ ⟶ G₃ ⟶ 1` is a short exact sequence of sheaves
-of groups, and `x₃` is a global section of `G₃` which can be locally lifted
-to a section of `G₂`, there is an associated canonical cohomology class of `G₁`
-which is trivial iff `x₃` can be lifted to a global section of `G₂`.
-(This should hold more generally if `G₂` is a sheaf of sets on which `G₁` acts
-freely, and `G₃` is the quotient sheaf.)
+  of groups, and `x₃` is a global section of `G₃` which can be locally lifted
+  to a section of `G₂`, there is an associated canonical cohomology class of `G₁`
+  which is trivial iff `x₃` can be lifted to a global section of `G₂`.
+  (This should hold more generally if `G₂` is a sheaf of sets on which `G₁` acts
+  freely, and `G₃` is the quotient sheaf.)
 * deduce a similar result for abelian sheaves
 * when the notion of quasi-coherent sheaves on schemes is defined, show that
-if `0 ⟶ Q ⟶ M ⟶ N ⟶ 0` is an exact sequence of abelian sheaves over a scheme `X`
-and `Q` is the underlying sheaf of a quasi-coherent sheaf, then `M(U) ⟶ N(U)`
-is surjective for any affine open `U`.
+  if `0 ⟶ Q ⟶ M ⟶ N ⟶ 0` is an exact sequence of abelian sheaves over a scheme `X`
+  and `Q` is the underlying sheaf of a quasi-coherent sheaf, then `M(U) ⟶ N(U)`
+  is surjective for any affine open `U`.
 * take the colimit of `OneCohomology G U` over all covering families `U` (for
-a Grothendieck topology)
+  a Grothendieck topology)
 
 # References
 
@@ -48,7 +48,7 @@ variable {C : Type u} [Category.{v} C]
 
 namespace PresheafOfGroups
 
-variable (G : Cᵒᵖ ⥤ GroupCat.{w}) {X : C} {I : Type w'} (U : I → C)
+variable (G : Cᵒᵖ ⥤ Grp.{w}) {I : Type w'} (U : I → C)
 
 /-- A zero cochain consists of a family of sections. -/
 def ZeroCochain := ∀ (i : I), G.obj (Opposite.op (U i))
@@ -68,7 +68,7 @@ lemma mul_apply (γ₁ γ₂ : ZeroCochain G U) (i : I) : (γ₁ * γ₂) i = γ
 
 end Cochain₀
 
-/-- A 1-cochain of a presheaf of groups `G : Cᵒᵖ ⥤ GroupCat` on a family `U : I → C` of objects
+/-- A 1-cochain of a presheaf of groups `G : Cᵒᵖ ⥤ Grp` on a family `U : I → C` of objects
 consists of the data of an element in `G.obj (Opposite.op T)` whenever we have elements
 `i` and `j` in `I` and maps `a : T ⟶ U i` and `b : T ⟶ U j`, and it must satisfy a compatibility
 with respect to precomposition. (When the binary product of `U i` and `U j` exists, this
@@ -94,14 +94,14 @@ lemma one_ev (i j : I) {T : C} (a : T ⟶ U i) (b : T ⟶ U j) :
 variable {G U}
 
 instance : Mul (OneCochain G U) where
-  mul γ₁ γ₂ := { ev := fun i j T a b ↦ γ₁.ev i j a b * γ₂.ev i j a b }
+  mul γ₁ γ₂ := { ev := fun i j _ a b ↦ γ₁.ev i j a b * γ₂.ev i j a b }
 
 @[simp]
 lemma mul_ev (γ₁ γ₂ : OneCochain G U) (i j : I) {T : C} (a : T ⟶ U i) (b : T ⟶ U j) :
     (γ₁ * γ₂).ev i j a b = γ₁.ev i j a b * γ₂.ev i j a b := rfl
 
 instance : Inv (OneCochain G U) where
-  inv γ := { ev := fun i j T a b ↦ (γ.ev i j a b) ⁻¹}
+  inv γ := { ev := fun i j _ a b ↦ (γ.ev i j a b) ⁻¹}
 
 @[simp]
 lemma inv_ev (γ : OneCochain G U) (i j : I) {T : C} (a : T ⟶ U i) (b : T ⟶ U j) :
@@ -111,7 +111,7 @@ instance : Group (OneCochain G U) where
   mul_assoc _ _ _ := by ext; apply mul_assoc
   one_mul _ := by ext; apply one_mul
   mul_one _ := by ext; apply mul_one
-  mul_left_inv _ := by ext; apply mul_left_inv
+  inv_mul_cancel _ := by ext; apply inv_mul_cancel
 
 end OneCochain
 
@@ -136,7 +136,7 @@ lemma ev_refl (γ : OneCocycle G U) (i : I) ⦃T : C⦄ (a : T ⟶ U i) :
 lemma ev_symm (γ : OneCocycle G U) (i j : I) ⦃T : C⦄ (a : T ⟶ U i) (b : T ⟶ U j) :
     γ.ev i j a b = (γ.ev j i b a)⁻¹ := by
   rw [← mul_left_inj (γ.ev j i b a), γ.ev_trans i j i a b a,
-    ev_refl, mul_left_inv]
+    ev_refl, inv_mul_cancel]
 
 end OneCocycle
 
@@ -156,7 +156,7 @@ lemma symm {γ₁ γ₂ : OneCochain G U} {α : ZeroCochain G U} (h : OneCohomol
     OneCohomologyRelation γ₂ γ₁ α⁻¹ := fun i j T a b ↦ by
   rw [← mul_left_inj (G.map b.op (α j)), mul_assoc, ← h i j a b,
     mul_assoc, Cochain₀.inv_apply, map_inv, inv_mul_cancel_left,
-    Cochain₀.inv_apply, map_inv, mul_left_inv, mul_one]
+    Cochain₀.inv_apply, map_inv, inv_mul_cancel, mul_one]
 
 lemma trans {γ₁ γ₂ γ₃ : OneCochain G U} {α β : ZeroCochain G U}
     (h₁₂ : OneCohomologyRelation γ₁ γ₂ α) (h₂₃ : OneCohomologyRelation γ₂ γ₃ β) :
@@ -189,7 +189,7 @@ end OneCocycle
 
 variable (G U) in
 /-- The cohomology in degree 1 of a presheaf of groups
-`G : Cᵒᵖ ⥤ GroupCat` on a family of objects `U : I → C`. -/
+`G : Cᵒᵖ ⥤ Grp` on a family of objects `U : I → C`. -/
 def H1 := Quot (OneCocycle.IsCohomologous (G := G) (U := U))
 
 /-- The cohomology class of a 1-cocycle. -/

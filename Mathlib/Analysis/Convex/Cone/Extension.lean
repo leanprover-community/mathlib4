@@ -3,12 +3,9 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Frédéric Dupuis
 -/
-import Mathlib.Analysis.Convex.Cone.Basic
 import Mathlib.Data.Real.Archimedean
+import Mathlib.Geometry.Convex.Cone.Basic
 import Mathlib.LinearAlgebra.LinearPMap
-
-
-#align_import analysis.convex.cone.basic from "leanprover-community/mathlib"@"915591b2bb3ea303648db07284a161a7f2a9e3d4"
 
 /-!
 # Extension theorems
@@ -71,7 +68,7 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
     set Sp := f '' { x : f.domain | (x : E) + y ∈ s }
     set Sn := f '' { x : f.domain | -(x : E) - y ∈ s }
     suffices (upperBounds Sn ∩ lowerBounds Sp).Nonempty by
-      simpa only [Set.Nonempty, upperBounds, lowerBounds, forall_mem_image] using this
+      simpa only [Sp, Sn, Set.Nonempty, upperBounds, lowerBounds, forall_mem_image] using this
     refine exists_between_of_forall_le (Nonempty.image f ?_) (Nonempty.image f (dense y)) ?_
     · rcases dense (-y) with ⟨x, hx⟩
       rw [← neg_neg x, NegMemClass.coe_neg, ← sub_eq_add_neg] at hx
@@ -81,36 +78,32 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
     rw [add_assoc, add_sub_cancel, ← sub_eq_add_neg, ← AddSubgroupClass.coe_sub] at this
     replace := nonneg _ this
     rwa [f.map_sub, sub_nonneg] at this
-  -- Porting note: removed an unused `have`
   refine ⟨f.supSpanSingleton y (-c) hy, ?_, ?_⟩
-  · refine lt_iff_le_not_le.2 ⟨f.left_le_sup _ _, fun H => ?_⟩
+  · refine lt_iff_le_not_ge.2 ⟨f.left_le_sup _ _, fun H => ?_⟩
     replace H := LinearPMap.domain_mono.monotone H
     rw [LinearPMap.domain_supSpanSingleton, sup_le_iff, span_le, singleton_subset_iff] at H
     exact hy H.2
   · rintro ⟨z, hz⟩ hzs
     rcases mem_sup.1 hz with ⟨x, hx, y', hy', rfl⟩
     rcases mem_span_singleton.1 hy' with ⟨r, rfl⟩
-    simp only [Subtype.coe_mk] at hzs
-    erw [LinearPMap.supSpanSingleton_apply_mk _ _ _ _ _ hx, smul_neg, ← sub_eq_add_neg, sub_nonneg]
+    simp only at hzs
+    rw [LinearPMap.supSpanSingleton_apply_mk _ _ _ _ _ hx, smul_neg, ← sub_eq_add_neg, sub_nonneg]
     rcases lt_trichotomy r 0 with (hr | hr | hr)
     · have : -(r⁻¹ • x) - y ∈ s := by
         rwa [← s.smul_mem_iff (neg_pos.2 hr), smul_sub, smul_neg, neg_smul, neg_neg, smul_smul,
-          mul_inv_cancel hr.ne, one_smul, sub_eq_add_neg, neg_smul, neg_neg]
-      -- Porting note: added type annotation and `by exact`
-      replace : f (r⁻¹ • ⟨x, hx⟩) ≤ c := le_c (r⁻¹ • ⟨x, hx⟩) (by exact this)
+          mul_inv_cancel₀ hr.ne, one_smul, sub_eq_add_neg, neg_smul, neg_neg]
+      replace := le_c (r⁻¹ • ⟨x, hx⟩) this
       rwa [← mul_le_mul_left (neg_pos.2 hr), neg_mul, neg_mul, neg_le_neg_iff, f.map_smul,
-        smul_eq_mul, ← mul_assoc, mul_inv_cancel hr.ne, one_mul] at this
+        smul_eq_mul, ← mul_assoc, mul_inv_cancel₀ hr.ne, one_mul] at this
     · subst r
       simp only [zero_smul, add_zero] at hzs ⊢
       apply nonneg
       exact hzs
     · have : r⁻¹ • x + y ∈ s := by
-        rwa [← s.smul_mem_iff hr, smul_add, smul_smul, mul_inv_cancel hr.ne', one_smul]
-      -- Porting note: added type annotation and `by exact`
-      replace : c ≤ f (r⁻¹ • ⟨x, hx⟩) := c_le (r⁻¹ • ⟨x, hx⟩) (by exact this)
-      rwa [← mul_le_mul_left hr, f.map_smul, smul_eq_mul, ← mul_assoc, mul_inv_cancel hr.ne',
+        rwa [← s.smul_mem_iff hr, smul_add, smul_smul, mul_inv_cancel₀ hr.ne', one_smul]
+      replace := c_le (r⁻¹ • ⟨x, hx⟩) this
+      rwa [← mul_le_mul_left hr, f.map_smul, smul_eq_mul, ← mul_assoc, mul_inv_cancel₀ hr.ne',
         one_mul] at this
-#align riesz_extension.step RieszExtension.step
 
 theorem exists_top (p : E →ₗ.[ℝ] ℝ) (hp_nonneg : ∀ x : p.domain, (x : E) ∈ s → 0 ≤ p x)
     (hp_dense : ∀ y, ∃ x : p.domain, (x : E) + y ∈ s) :
@@ -129,15 +122,14 @@ theorem exists_top (p : E →ₗ.[ℝ] ℝ) (hp_nonneg : ∀ x : p.domain, (x : 
     have : f ≤ LinearPMap.sSup c hcd := LinearPMap.le_sSup _ hfc
     convert ← hcs hfc ⟨x, hfx⟩ hxs using 1
     exact this.2 rfl
-  obtain ⟨q, hqs, hpq, hq⟩ := zorn_nonempty_partialOrder₀ S hSc p hp_nonneg
+  obtain ⟨q, hpq, hqs, hq⟩ := zorn_le_nonempty₀ S hSc p hp_nonneg
   refine ⟨q, hpq, ?_, hqs⟩
   contrapose! hq
   have hqd : ∀ y, ∃ x : q.domain, (x : E) + y ∈ s := fun y ↦
     let ⟨x, hx⟩ := hp_dense y
     ⟨Submodule.inclusion hpq.left x, hx⟩
   rcases step s q hqs hqd hq with ⟨r, hqr, hr⟩
-  exact ⟨r, hr, hqr.le, hqr.ne'⟩
-#align riesz_extension.exists_top RieszExtension.exists_top
+  exact ⟨r, hr, hqr.le, fun hrq ↦ hqr.ne' <| hrq.antisymm hqr.le⟩
 
 end RieszExtension
 
@@ -154,7 +146,6 @@ theorem riesz_extension (s : ConvexCone ℝ E) (f : E →ₗ.[ℝ] ℝ)
   refine ⟨g.comp (LinearMap.id.codRestrict ⊤ fun _ ↦ trivial), ?_, ?_⟩
   · exact fun x => (hfg rfl).symm
   · exact fun x hx => hgs ⟨x, _⟩ hx
-#align riesz_extension riesz_extension
 
 /-- **Hahn-Banach theorem**: if `N : E → ℝ` is a sublinear map, `f` is a linear map
 defined on a subspace of `E`, and `f x ≤ N x` for all `x` in the domain of `f`,
@@ -187,4 +178,3 @@ theorem exists_extension_of_le_sublinear (f : E →ₗ.[ℝ] ℝ) (N : E → ℝ
   · calc -g (x, 0) = g (0, N x) - g (x, N x) := by simp [← map_sub, ← map_neg]
       _ = N x - g (x, N x) := by simpa using g_eq 0 (N x)
       _ ≤ N x := by simpa using g_nonneg ⟨x, N x⟩ (le_refl (N x))
-#align exists_extension_of_le_sublinear exists_extension_of_le_sublinear

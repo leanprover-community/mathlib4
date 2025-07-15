@@ -20,7 +20,7 @@ See `traceForm_dualBasis_powerBasis_eq`.
 - `span_coeff_minpolyDiv`: The coefficients of `minpolyDiv` spans `R<x>`.
 -/
 
-open Polynomial FiniteDimensional
+open Polynomial Module
 
 variable (R K) {L S} [CommRing R] [Field K] [Field L] [CommRing S] [Algebra R S] [Algebra K L]
 variable (x : S)
@@ -37,24 +37,11 @@ lemma coeff_minpolyDiv (i) : coeff (minpolyDiv R x) i =
     algebraMap R S (coeff (minpoly R x) (i + 1)) + coeff (minpolyDiv R x) (i + 1) * x := by
   rw [← coeff_map, ← minpolyDiv_spec R x]; simp [mul_sub]
 
-variable (hx : IsIntegral R x) {R x}
-
-lemma minpolyDiv_ne_zero [Nontrivial S] : minpolyDiv R x ≠ 0 := by
-  intro e
-  have := minpolyDiv_spec R x
-  rw [e, zero_mul] at this
-  exact ((minpoly.monic hx).map (algebraMap R S)).ne_zero this.symm
+variable {R x}
 
 lemma minpolyDiv_eq_zero (hx : ¬IsIntegral R x) : minpolyDiv R x = 0 := by
   delta minpolyDiv minpoly
   rw [dif_neg hx, Polynomial.map_zero, zero_divByMonic]
-
-lemma minpolyDiv_monic : Monic (minpolyDiv R x) := by
-  nontriviality S
-  have := congr_arg leadingCoeff (minpolyDiv_spec R x)
-  rw [leadingCoeff_mul', ((minpoly.monic hx).map (algebraMap R S)).leadingCoeff] at this
-  · simpa using this
-  · simpa using minpolyDiv_ne_zero hx
 
 lemma eval_minpolyDiv_self : (minpolyDiv R x).eval x = aeval x (derivative <| minpoly R x) := by
   rw [aeval_def, ← eval_map, ← derivative_map, ← minpolyDiv_spec R x]; simp
@@ -89,23 +76,6 @@ lemma eval_minpolyDiv_of_aeval_eq_zero [IsDomain S] [DecidableEq S]
   rw [eval, eval₂_minpolyDiv_of_eval₂_eq_zero, RingHom.id_apply, RingHom.id_apply]
   simpa [aeval_def] using hy
 
-lemma natDegree_minpolyDiv_succ [Nontrivial S] :
-    natDegree (minpolyDiv R x) + 1 = natDegree (minpoly R x) := by
-  rw [← (minpoly.monic hx).natDegree_map (algebraMap R S), ← minpolyDiv_spec, natDegree_mul']
-  · simp
-  · simpa using minpolyDiv_ne_zero hx
-
-lemma natDegree_minpolyDiv :
-    natDegree (minpolyDiv R x) = natDegree (minpoly R x) - 1 := by
-  nontriviality S
-  by_cases hx : IsIntegral R x
-  · rw [← natDegree_minpolyDiv_succ hx]; rfl
-  · rw [minpolyDiv_eq_zero hx, minpoly.eq_zero hx]; rfl
-
-lemma natDegree_minpolyDiv_lt [Nontrivial S] :
-    natDegree (minpolyDiv R x) < natDegree (minpoly R x) := by
-  rw [← natDegree_minpolyDiv_succ hx]
-  exact Nat.lt_succ_self _
 
 lemma coeff_minpolyDiv_mem_adjoin (x : S) (i) :
     coeff (minpolyDiv R x) i ∈ Algebra.adjoin R {x} := by
@@ -121,9 +91,35 @@ lemma coeff_minpolyDiv_mem_adjoin (x : S) (i) :
   apply this (natDegree (minpolyDiv R x) + 1)
   rw [coeff_eq_zero_of_natDegree_lt]
   · exact zero_mem _
-  · refine (Nat.le_add_left _ i).trans_lt ?_
-    rw [← add_assoc]
-    exact Nat.lt_succ_self _
+  · omega
+
+section IsIntegral
+variable (hx : IsIntegral R x)
+include hx
+
+lemma minpolyDiv_ne_zero [Nontrivial S] : minpolyDiv R x ≠ 0 := by
+  intro e
+  have := minpolyDiv_spec R x
+  rw [e, zero_mul] at this
+  exact ((minpoly.monic hx).map (algebraMap R S)).ne_zero this.symm
+
+lemma minpolyDiv_monic : Monic (minpolyDiv R x) := by
+  nontriviality S
+  have := congr_arg leadingCoeff (minpolyDiv_spec R x)
+  rw [leadingCoeff_mul', ((minpoly.monic hx).map (algebraMap R S)).leadingCoeff] at this
+  · simpa using this
+  · simpa using minpolyDiv_ne_zero hx
+
+lemma natDegree_minpolyDiv_succ [Nontrivial S] :
+    natDegree (minpolyDiv R x) + 1 = natDegree (minpoly R x) := by
+  rw [← (minpoly.monic hx).natDegree_map (algebraMap R S), ← minpolyDiv_spec, natDegree_mul']
+  · simp
+  · simpa using minpolyDiv_ne_zero hx
+
+lemma natDegree_minpolyDiv_lt [Nontrivial S] :
+    natDegree (minpolyDiv R x) < natDegree (minpoly R x) := by
+  rw [← natDegree_minpolyDiv_succ hx]
+  exact Nat.lt_succ_self _
 
 lemma minpolyDiv_eq_of_isIntegrallyClosed [IsDomain R] [IsIntegrallyClosed R] [IsDomain S]
     [Algebra R K] [Algebra K S] [IsScalarTower R K S] [IsFractionRing R K] :
@@ -166,8 +162,8 @@ lemma span_coeff_minpolyDiv :
       Submodule.span_le]
     simp only [Finset.coe_image, Finset.coe_range, Set.image_subset_iff]
     intro i
-    apply Nat.strongInductionOn i
-    intro i hi hi'
+    induction i using Nat.strongRecOn with | ind i hi => ?_
+    intro hi'
     have : coeff (minpolyDiv R x) (natDegree (minpolyDiv R x) - i) ∈
         Submodule.span R (Set.range (coeff (minpolyDiv R x))) :=
       Submodule.subset_span (Set.mem_range_self _)
@@ -178,12 +174,22 @@ lemma span_coeff_minpolyDiv :
       exact hi j hj (lt_trans hj hi')
     · rwa [← natDegree_minpolyDiv_succ hx, Set.mem_Iio, Nat.lt_succ_iff] at hi'
 
+end IsIntegral
+
+lemma natDegree_minpolyDiv :
+    natDegree (minpolyDiv R x) = natDegree (minpoly R x) - 1 := by
+  nontriviality S
+  by_cases hx : IsIntegral R x
+  · rw [← natDegree_minpolyDiv_succ hx]; rfl
+  · rw [minpolyDiv_eq_zero hx, minpoly.eq_zero hx]; rfl
+
+
 section PowerBasis
 
 variable {K}
 
 lemma sum_smul_minpolyDiv_eq_X_pow (E) [Field E] [Algebra K E] [IsAlgClosed E]
-    [FiniteDimensional K L] [IsSeparable K L]
+    [FiniteDimensional K L] [Algebra.IsSeparable K L]
     {x : L} (hxL : Algebra.adjoin K {x} = ⊤) {r : ℕ} (hr : r < finrank K L) :
     ∑ σ : L →ₐ[K] E, ((x ^ r / aeval x (derivative <| minpoly K x)) •
       minpolyDiv K x).map σ = (X ^ r : E[X]) := by
@@ -198,15 +204,15 @@ lemma sum_smul_minpolyDiv_eq_X_pow (E) [Field E] [Algebra K E] [IsAlgClosed E]
       Finset.sum_ite_eq', Finset.mem_univ, ite_true, eval_pow, eval_X]
     rw [sub_eq_zero, div_mul_cancel₀]
     rw [ne_eq, map_eq_zero_iff σ σ.toRingHom.injective]
-    exact (IsSeparable.separable _ _).aeval_derivative_ne_zero (minpoly.aeval _ _)
+    exact (Algebra.IsSeparable.isSeparable _ _).aeval_derivative_ne_zero (minpoly.aeval _ _)
   · refine (Polynomial.natDegree_sub_le _ _).trans_lt
       (max_lt ((Polynomial.natDegree_sum_le _ _).trans_lt ?_) ?_)
-    · simp only [AlgEquiv.toAlgHom_eq_coe, Polynomial.map_smul,
-        map_div₀, map_pow, RingHom.coe_coe, AlgHom.coe_coe, Function.comp_apply,
-        Finset.mem_univ, forall_true_left, true_and, Finset.fold_max_lt, AlgHom.card]
+    · simp only [Polynomial.map_smul,
+        map_div₀, map_pow, RingHom.coe_coe, Function.comp_apply,
+        Finset.mem_univ, forall_true_left, Finset.fold_max_lt, AlgHom.card]
       refine ⟨finrank_pos, ?_⟩
       intro σ
-      exact ((Polynomial.natDegree_smul_le _ _).trans (natDegree_map_le _ _)).trans_lt
+      exact ((Polynomial.natDegree_smul_le _ _).trans natDegree_map_le).trans_lt
         ((natDegree_minpolyDiv_lt (Algebra.IsIntegral.isIntegral x)).trans_le
           (minpoly.natDegree_le _))
     · rwa [natDegree_pow, natDegree_X, mul_one, AlgHom.card]

@@ -6,8 +6,6 @@ Authors: Joël Riou
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.AlgebraicTopology.DoldKan.Notations
 
-#align_import algebraic_topology.dold_kan.homotopies from "leanprover-community/mathlib"@"b12099d3b7febf4209824444dd836ef5ad96db55"
-
 /-!
 
 # Construction of homotopies for the Dold-Kan correspondence
@@ -74,13 +72,11 @@ variable {X : SimplicialObject C}
 `c` such `c m n` if and only if `n+1=m`. -/
 abbrev c :=
   ComplexShape.down ℕ
-#align algebraic_topology.dold_kan.c AlgebraicTopology.DoldKan.c
 
 /-- Helper when we need some `c.rel i j` (i.e. `ComplexShape.down ℕ`),
 e.g. `c_mk n (n+1) rfl` -/
 theorem c_mk (i j : ℕ) (h : j + 1 = i) : c.Rel i j :=
   ComplexShape.down_mk i j h
-#align algebraic_topology.dold_kan.c_mk AlgebraicTopology.DoldKan.c_mk
 
 /-- This lemma is meant to be used with `nullHomotopicMap'_f_of_not_rel_left` -/
 theorem cs_down_0_not_rel_left (j : ℕ) : ¬c.Rel 0 j := by
@@ -88,28 +84,24 @@ theorem cs_down_0_not_rel_left (j : ℕ) : ¬c.Rel 0 j := by
   dsimp at hj
   apply Nat.not_succ_le_zero j
   rw [Nat.succ_eq_add_one, hj]
-#align algebraic_topology.dold_kan.cs_down_0_not_rel_left AlgebraicTopology.DoldKan.cs_down_0_not_rel_left
 
 /-- The sequence of maps which gives the null homotopic maps `Hσ` that shall be in
 the inductive construction of the projections `P q : K[X] ⟶ K[X]` -/
-def hσ (q : ℕ) (n : ℕ) : X _[n] ⟶ X _[n + 1] :=
+def hσ (q : ℕ) (n : ℕ) : X _⦋n⦌ ⟶ X _⦋n + 1⦌ :=
   if n < q then 0 else (-1 : ℤ) ^ (n - q) • X.σ ⟨n - q, Nat.lt_succ_of_le (Nat.sub_le _ _)⟩
-#align algebraic_topology.dold_kan.hσ AlgebraicTopology.DoldKan.hσ
 
 /-- We can turn `hσ` into a datum that can be passed to `nullHomotopicMap'`. -/
 def hσ' (q : ℕ) : ∀ n m, c.Rel m n → (K[X].X n ⟶ K[X].X m) := fun n m hnm =>
   hσ q n ≫ eqToHom (by congr)
-#align algebraic_topology.dold_kan.hσ' AlgebraicTopology.DoldKan.hσ'
 
 theorem hσ'_eq_zero {q n m : ℕ} (hnq : n < q) (hnm : c.Rel m n) :
-    (hσ' q n m hnm : X _[n] ⟶ X _[m]) = 0 := by
+    (hσ' q n m hnm : X _⦋n⦌ ⟶ X _⦋m⦌) = 0 := by
   simp only [hσ', hσ]
   split_ifs
   exact zero_comp
-#align algebraic_topology.dold_kan.hσ'_eq_zero AlgebraicTopology.DoldKan.hσ'_eq_zero
 
 theorem hσ'_eq {q n a m : ℕ} (ha : n = a + q) (hnm : c.Rel m n) :
-    (hσ' q n m hnm : X _[n] ⟶ X _[m]) =
+    (hσ' q n m hnm : X _⦋n⦌ ⟶ X _⦋m⦌) =
       ((-1 : ℤ) ^ a • X.σ ⟨a, Nat.lt_succ_iff.mpr (Nat.le.intro (Eq.symm ha))⟩) ≫
         eqToHom (by congr) := by
   simp only [hσ', hσ]
@@ -117,25 +109,19 @@ theorem hσ'_eq {q n a m : ℕ} (ha : n = a + q) (hnm : c.Rel m n) :
   · omega
   · have h' := tsub_eq_of_eq_add ha
     congr
-#align algebraic_topology.dold_kan.hσ'_eq AlgebraicTopology.DoldKan.hσ'_eq
 
 theorem hσ'_eq' {q n a : ℕ} (ha : n = a + q) :
-    (hσ' q n (n + 1) rfl : X _[n] ⟶ X _[n + 1]) =
+    (hσ' q n (n + 1) rfl : X _⦋n⦌ ⟶ X _⦋n + 1⦌) =
       (-1 : ℤ) ^ a • X.σ ⟨a, Nat.lt_succ_iff.mpr (Nat.le.intro (Eq.symm ha))⟩ := by
   rw [hσ'_eq ha rfl, eqToHom_refl, comp_id]
-#align algebraic_topology.dold_kan.hσ'_eq' AlgebraicTopology.DoldKan.hσ'_eq'
 
 /-- The null homotopic map $(hσ q) ∘ d + d ∘ (hσ q)$ -/
 def Hσ (q : ℕ) : K[X] ⟶ K[X] :=
   nullHomotopicMap' (hσ' q)
-set_option linter.uppercaseLean3 false in
-#align algebraic_topology.dold_kan.Hσ AlgebraicTopology.DoldKan.hσ
 
 /-- `Hσ` is null homotopic -/
 def homotopyHσToZero (q : ℕ) : Homotopy (Hσ q : K[X] ⟶ K[X]) 0 :=
   nullHomotopy' (hσ' q)
-set_option linter.uppercaseLean3 false in
-#align algebraic_topology.dold_kan.homotopy_Hσ_to_zero AlgebraicTopology.DoldKan.homotopyHσToZero
 
 /-- In degree `0`, the null homotopic map `Hσ` is zero. -/
 theorem Hσ_eq_zero (q : ℕ) : (Hσ q : K[X] ⟶ K[X]).f 0 = 0 := by
@@ -144,39 +130,33 @@ theorem Hσ_eq_zero (q : ℕ) : (Hσ q : K[X] ⟶ K[X]).f 0 = 0 := by
   rcases q with (_|q)
   · rw [hσ'_eq (show 0 = 0 + 0 by rfl) (c_mk 1 0 rfl)]
     simp only [pow_zero, Fin.mk_zero, one_zsmul, eqToHom_refl, Category.comp_id]
+    -- This `erw` is needed to show `0 + 1 = 1`.
     erw [ChainComplex.of_d]
     rw [AlternatingFaceMapComplex.objD, Fin.sum_univ_two, Fin.val_zero, Fin.val_one, pow_zero,
-      pow_one, one_smul, neg_smul, one_smul, comp_add, comp_neg, add_neg_eq_zero]
-    erw [δ_comp_σ_self, δ_comp_σ_succ]
+      pow_one, one_smul, neg_smul, one_smul, comp_add, comp_neg, add_neg_eq_zero,
+      ← Fin.succ_zero_eq_one, δ_comp_σ_succ, δ_comp_σ_self' X (by rw [Fin.castSucc_zero'])]
   · rw [hσ'_eq_zero (Nat.succ_pos q) (c_mk 1 0 rfl), zero_comp]
-set_option linter.uppercaseLean3 false in
-#align algebraic_topology.dold_kan.Hσ_eq_zero AlgebraicTopology.DoldKan.Hσ_eq_zero
 
 /-- The maps `hσ' q n m hnm` are natural on the simplicial object -/
 theorem hσ'_naturality (q : ℕ) (n m : ℕ) (hnm : c.Rel m n) {X Y : SimplicialObject C} (f : X ⟶ Y) :
-    f.app (op [n]) ≫ hσ' q n m hnm = hσ' q n m hnm ≫ f.app (op [m]) := by
+    f.app (op ⦋n⦌) ≫ hσ' q n m hnm = hσ' q n m hnm ≫ f.app (op ⦋m⦌) := by
   have h : n + 1 = m := hnm
   subst h
   simp only [hσ', eqToHom_refl, comp_id]
   unfold hσ
   split_ifs
   · rw [zero_comp, comp_zero]
-  · simp only [zsmul_comp, comp_zsmul]
-    erw [f.naturality]
-    rfl
-#align algebraic_topology.dold_kan.hσ'_naturality AlgebraicTopology.DoldKan.hσ'_naturality
+  · simp
 
 /-- For each q, `Hσ q` is a natural transformation. -/
 def natTransHσ (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapComplex C where
-  app X := Hσ q
+  app _ := Hσ q
   naturality _ _ f := by
     unfold Hσ
     rw [nullHomotopicMap'_comp, comp_nullHomotopicMap']
     congr
     ext n m hnm
     simp only [alternatingFaceMapComplex_map_f, hσ'_naturality]
-set_option linter.uppercaseLean3 false in
-#align algebraic_topology.dold_kan.nat_trans_Hσ AlgebraicTopology.DoldKan.natTransHσ
 
 /-- The maps `hσ' q n m hnm` are compatible with the application of additive functors. -/
 theorem map_hσ' {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
@@ -188,7 +168,6 @@ theorem map_hσ' {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Addit
   · simp only [Functor.map_zero, zero_comp]
   · simp only [eqToHom_map, Functor.map_comp, Functor.map_zsmul]
     rfl
-#align algebraic_topology.dold_kan.map_hσ' AlgebraicTopology.DoldKan.map_hσ'
 
 /-- The null homotopic maps `Hσ` are compatible with the application of additive functors. -/
 theorem map_Hσ {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
@@ -200,8 +179,6 @@ theorem map_Hσ {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additi
   rw [eq]
   let h := (Functor.congr_obj (map_alternatingFaceMapComplex G) X).symm
   congr
-set_option linter.uppercaseLean3 false in
-#align algebraic_topology.dold_kan.map_Hσ AlgebraicTopology.DoldKan.map_Hσ
 
 end DoldKan
 

@@ -4,12 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Manuel Candales
 -/
 import Mathlib.Data.Real.Basic
-import Mathlib.Data.Set.Finite
-import Mathlib.Tactic.FieldSimp
+import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
-
-#align_import imo.imo2008_q2 from "leanprover-community/mathlib"@"5f25c089cb34db4db112556f23c50d12da81b297"
+import Mathlib.Tactic.Ring
 
 /-!
 # IMO 2008 Q2
@@ -42,7 +41,6 @@ theorem subst_abc {x y z : ℝ} (h : x * y * z = 1) :
     simpa [not_or] using this
   have : z * (y * x) = 1 := by rw [← h]; ac_rfl
   field_simp [*]
-#align imo2008_q2.subst_abc Imo2008Q2.subst_abc
 
 theorem imo2008_q2a (x y z : ℝ) (h : x * y * z = 1) (hx : x ≠ 1) (hy : y ≠ 1) (hz : z ≠ 1) :
     x ^ 2 / (x - 1) ^ 2 + y ^ 2 / (y - 1) ^ 2 + z ^ 2 / (z - 1) ^ 2 ≥ 1 := by
@@ -55,12 +53,10 @@ theorem imo2008_q2a (x y z : ℝ) (h : x * y * z = 1) (hx : x ≠ 1) (hy : y ≠
   rw [ge_iff_le, ← sub_nonneg]
   convert sq_nonneg ((c * (m ^ 2 + n ^ 2 + m * n) - m * (m + n) ^ 2) / (m * n * (m + n)))
   field_simp [hc_sub_sub]; ring
-#align imo2008_q2.imo2008_q2a Imo2008Q2.imo2008_q2a
 
 def rationalSolutions :=
   {s : ℚ × ℚ × ℚ | ∃ x y z : ℚ, s = (x, y, z) ∧ x ≠ 1 ∧ y ≠ 1 ∧ z ≠ 1 ∧ x * y * z = 1 ∧
     x ^ 2 / (x - 1) ^ 2 + y ^ 2 / (y - 1) ^ 2 + z ^ 2 / (z - 1) ^ 2 = 1}
-#align imo2008_q2.rational_solutions Imo2008Q2.rationalSolutions
 
 theorem imo2008_q2b : Set.Infinite rationalSolutions := by
   let W := {s : ℚ × ℚ × ℚ | ∃ x y z : ℚ, s = (x, y, z) ∧
@@ -110,16 +106,10 @@ theorem imo2008_q2b : Set.Infinite rationalSolutions := by
             exact ⟨rfl, rfl, rfl⟩
         · have hg : -z = g (x, y, z) := rfl
           rw [hg, hz_def]; ring
-      have h₂ : q < t * (t + 1) := by
-        calc
-          q < q + 1 := by linarith
-          _ ≤ t := le_max_left (q + 1) 1
-          _ ≤ t + t ^ 2 := by linarith [sq_nonneg t]
-          _ = t * (t + 1) := by ring
+      have h₂ : q < t * (t + 1) := by linarith [sq_nonneg t, le_max_left (q + 1) 1]
       exact ⟨h₁, h₂⟩
     have hK_inf : Set.Infinite K := by intro h; apply hK_not_bdd; exact Set.Finite.bddAbove h
     exact hK_inf.of_image g
   exact hW_inf.mono hW_sub_S
-#align imo2008_q2.imo2008_q2b Imo2008Q2.imo2008_q2b
 
 end Imo2008Q2

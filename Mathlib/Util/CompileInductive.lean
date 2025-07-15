@@ -3,9 +3,11 @@ Copyright (c) 2023 Parth Shastri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parth Shastri, Gabriel Ebner, Mario Carneiro
 -/
+import Mathlib.Init
 import Lean.Elab.Command
 import Lean.Compiler.CSimpAttr
 import Lean.Util.FoldConsts
+import Lean.Data.AssocList
 
 /-!
 # Define the `compile_inductive%` command.
@@ -74,7 +76,9 @@ open Elab
 /-- Returns true if the given declaration has already been compiled, either directly or via a
 `@[csimp]` lemma. -/
 def isCompiled (env : Environment) (n : Name) : Bool :=
-  env.contains (n.str "_cstage2") || (Compiler.CSimp.ext.getState env).map.contains n
+  -- `_cstage2` is not accessible via the elab env directly, wait for the full kernel env
+  env.toKernelEnv.constants.contains (n.str "_cstage2") ||
+    (Compiler.CSimp.ext.getState env).map.contains n
 
 /--
 `compile_def% Foo.foo` adds compiled code for the definition `Foo.foo`.
@@ -229,6 +233,7 @@ end Mathlib.Util
 -- `Nat.rec` already has a `@[csimp]` lemma in Lean.
 compile_def% Nat.recOn
 compile_def% Nat.brecOn
+compile_inductive% Prod
 compile_inductive% List
 compile_inductive% PUnit
 compile_inductive% PEmpty
@@ -239,6 +244,7 @@ compile_inductive% False
 compile_inductive% Empty
 compile_inductive% Bool
 compile_inductive% Sigma
+compile_inductive% Option
 
 -- In addition to the manual implementation below, we also have to override the `Float.val` and
 -- `Float.mk` functions because these also have no implementation in core lean.

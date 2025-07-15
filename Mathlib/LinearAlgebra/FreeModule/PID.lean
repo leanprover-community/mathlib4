@@ -5,8 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 import Mathlib.LinearAlgebra.FreeModule.Basic
-
-#align_import linear_algebra.free_module.pid from "leanprover-community/mathlib"@"d87199d51218d36a0a42c66c82d147b5a7ff87b3"
+import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-! # Free modules over PID
 
@@ -26,13 +25,13 @@ it would be equal to `finrank R M` if `R` is a field and `M` is a vector space.
 In this section, `M` is a free and finitely generated `R`-module, and
 `N` is a submodule of `M`.
 
- - `Submodule.inductionOnRank`: if `P` holds for `⊥ : Submodule R M` and if
+- `Submodule.inductionOnRank`: if `P` holds for `⊥ : Submodule R M` and if
   `P N` follows from `P N'` for all `N'` that are of lower rank, then `P` holds
-   on all submodules
+  on all submodules
 
- - `Submodule.exists_basis_of_pid`: if `R` is a PID, then `N : Submodule R M` is
-   free and finitely generated. This is the first part of the structure theorem
-   for modules.
+- `Submodule.exists_basis_of_pid`: if `R` is a PID, then `N : Submodule R M` is
+  free and finitely generated. This is the first part of the structure theorem
+  for modules.
 
 - `Submodule.smithNormalForm`: if `R` is a PID, then `M` has a basis
   `bM` and `N` has a basis `bN` such that `bN i = a i • bM i`.
@@ -67,7 +66,6 @@ theorem eq_bot_of_generator_maximal_map_eq_zero (b : Basis ι R M) {N : Submodul
   exact
     (Submodule.eq_bot_iff _).mp (not_bot_lt_iff.1 <| hϕ (Finsupp.lapply i ∘ₗ ↑b.repr)) _
       ⟨x, hx, rfl⟩
-#align eq_bot_of_generator_maximal_map_eq_zero eq_bot_of_generator_maximal_map_eq_zero
 
 theorem eq_bot_of_generator_maximal_submoduleImage_eq_zero {N O : Submodule R M} (b : Basis ι R O)
     (hNO : N ≤ O) {ϕ : O →ₗ[R] R} (hϕ : ∀ ψ : O →ₗ[R] R, ¬ϕ.submoduleImage N < ψ.submoduleImage N)
@@ -79,7 +77,6 @@ theorem eq_bot_of_generator_maximal_submoduleImage_eq_zero {N O : Submodule R M}
   rw [LinearEquiv.map_zero, Finsupp.zero_apply]
   refine (Submodule.eq_bot_iff _).mp (not_bot_lt_iff.1 <| hϕ (Finsupp.lapply i ∘ₗ ↑b.repr)) _ ?_
   exact (LinearMap.mem_submoduleImage_of_le hNO).mpr ⟨x, hx, rfl⟩
-#align eq_bot_of_generator_maximal_submodule_image_eq_zero eq_bot_of_generator_maximal_submoduleImage_eq_zero
 
 end Ring
 
@@ -96,7 +93,6 @@ theorem dvd_generator_iff {I : Ideal R} [I.IsPrincipal] {x : R} (hx : x ∈ I) :
   rw [Ideal.submodule_span_eq, Ideal.span_singleton_eq_span_singleton, ← dvd_dvd_iff_associated,
     ← mem_iff_generator_dvd]
   exact ⟨fun h ↦ ⟨hx, h⟩, fun h ↦ h.2⟩
-#align dvd_generator_iff dvd_generator_iff
 
 end IsDomain
 
@@ -104,8 +100,12 @@ section PrincipalIdealDomain
 
 open Submodule.IsPrincipal Set Submodule
 
-variable {ι : Type*} {R : Type*} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
+variable {ι : Type*} {R : Type*} [CommRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M] {b : ι → M}
+
+section StrongRankCondition
+
+variable [IsDomain R] [IsPrincipalIdealRing R]
 
 open Submodule.IsPrincipal
 
@@ -136,11 +136,10 @@ theorem generator_maximal_submoduleImage_dvd {N O : Submodule R M} (hNO : N ≤ 
     refine
       le_antisymm (this.trans (le_of_eq ?_)) (Ideal.span_singleton_le_span_singleton.mpr d_dvd_left)
     rw [span_singleton_generator]
-    apply (le_trans _ this).eq_of_not_gt (hϕ ψ')
+    apply (le_trans _ this).eq_of_not_lt' (hϕ ψ')
     rw [← span_singleton_generator (ϕ.submoduleImage N)]
     exact Ideal.span_singleton_le_span_singleton.mpr d_dvd_left
   · exact subset_span (mem_insert _ _)
-#align generator_maximal_submodule_image_dvd generator_maximal_submoduleImage_dvd
 
 /-- The induction hypothesis of `Submodule.basisOfPid` and `Submodule.smithNormalForm`.
 
@@ -218,8 +217,8 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
         )
   have ϕy'_ne_zero : ϕ ⟨y', y'M⟩ ≠ 0 := by simpa only [ϕy'_eq] using one_ne_zero
   -- `M' := ker (ϕ : M → R)` is smaller than `M` and `N' := ker (ϕ : N → R)` is smaller than `N`.
-  let M' : Submodule R O := ϕ.ker.map M.subtype
-  let N' : Submodule R O := (ϕ.comp (inclusion N_le_M)).ker.map N.subtype
+  let M' : Submodule R O := (LinearMap.ker ϕ).map M.subtype
+  let N' : Submodule R O := (LinearMap.ker (ϕ.comp (inclusion N_le_M))).map N.subtype
   have M'_le_M : M' ≤ M := M.map_subtype_le (LinearMap.ker ϕ)
   have N'_le_M' : N' ≤ M' := by
     intro x hx
@@ -236,7 +235,7 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
     rw [LinearMap.mem_ker] at hx'
     have hc' : (c • ⟨y', y'M⟩ + ⟨x, xM⟩ : M) = 0 := by exact @Subtype.coe_injective O (· ∈ M) _ _ hc
     simpa only [LinearMap.map_add, LinearMap.map_zero, LinearMap.map_smul, smul_eq_mul, add_zero,
-      mul_eq_zero, ϕy'_ne_zero, hx', or_false_iff] using congr_arg ϕ hc'
+      mul_eq_zero, ϕy'_ne_zero, hx', or_false] using congr_arg ϕ hc'
   -- And `a • y'` is orthogonal to `N'`.
   have ay'_ortho_N' : ∀ (c : R), ∀ z ∈ N', c • a • y' + z = 0 → c = 0 := by
     intro c z zN' hc
@@ -253,7 +252,7 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
       refine ⟨-b, Submodule.mem_map.mpr ⟨⟨_, N.sub_mem zN (N.smul_mem b yN)⟩, ?_, ?_⟩⟩
       · refine LinearMap.mem_ker.mpr (show ϕ (⟨z, N_le_M zN⟩ - b • ⟨y, N_le_M yN⟩) = 0 from ?_)
         rw [LinearMap.map_sub, LinearMap.map_smul, hb, ϕy_eq, smul_eq_mul, mul_comm, sub_self]
-      · simp only [sub_eq_add_neg, neg_smul, coeSubtype]
+      · simp only [sub_eq_add_neg, neg_smul, coe_subtype]
   -- And extend a basis for `M'` with `y'`
   intro m' hn'm' bM'
   refine ⟨Nat.succ_le_succ hn'm', ?_, ?_⟩
@@ -272,8 +271,7 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
   · simp only [Fin.cons_zero, Fin.castLE_zero]
     exact a_smul_y'.symm
   · rw [Fin.castLE_succ]
-    simp only [Fin.cons_succ, Function.comp_apply, coe_inclusion, map_coe, coeSubtype, h i]
-#align submodule.basis_of_pid_aux Submodule.basis_of_pid_aux
+    simp only [Fin.cons_succ, Function.comp_apply, coe_inclusion, h i]
 
 /-- A submodule of a free `R`-module of finite rank is also a free `R`-module of finite rank,
 if `R` is a principal ideal domain.
@@ -297,7 +295,6 @@ theorem Submodule.nonempty_basis_of_pid {ι : Type*} [Finite ι] (b : Basis ι R
   obtain ⟨n', ⟨bN'⟩⟩ := ih N' N'_le_N _ hay ay_ortho
   obtain ⟨bN, _hbN⟩ := h' n' bN'
   exact ⟨n' + 1, ⟨bN⟩⟩
-#align submodule.nonempty_basis_of_pid Submodule.nonempty_basis_of_pid
 
 /-- A submodule of a free `R`-module of finite rank is also a free `R`-module of finite rank,
 if `R` is a principal ideal domain.
@@ -305,9 +302,8 @@ if `R` is a principal ideal domain.
 See also the stronger version `Submodule.smithNormalForm`.
 -/
 noncomputable def Submodule.basisOfPid {ι : Type*} [Finite ι] (b : Basis ι R M)
-    (N : Submodule R M) : Σn : ℕ, Basis (Fin n) R N :=
+    (N : Submodule R M) : Σ n : ℕ, Basis (Fin n) R N :=
   ⟨_, (N.nonempty_basis_of_pid b).choose_spec.some⟩
-#align submodule.basis_of_pid Submodule.basisOfPid
 
 theorem Submodule.basisOfPid_bot {ι : Type*} [Finite ι] (b : Basis ι R M) :
     Submodule.basisOfPid b ⊥ = ⟨0, Basis.empty _⟩ := by
@@ -315,7 +311,6 @@ theorem Submodule.basisOfPid_bot {ι : Type*} [Finite ι] (b : Basis ι R M) :
   let e : Fin n ≃ Fin 0 := b'.indexEquiv (Basis.empty _ : Basis (Fin 0) R (⊥ : Submodule R M))
   obtain rfl : n = 0 := by simpa using Fintype.card_eq.mpr ⟨e⟩
   exact Sigma.eq rfl (Basis.eq_of_apply_eq <| finZeroElim)
-#align submodule.basis_of_pid_bot Submodule.basisOfPid_bot
 
 /-- A submodule inside a free `R`-submodule of finite rank is also a free `R`-module of finite rank,
 if `R` is a principal ideal domain.
@@ -323,25 +318,23 @@ if `R` is a principal ideal domain.
 See also the stronger version `Submodule.smithNormalFormOfLE`.
 -/
 noncomputable def Submodule.basisOfPidOfLE {ι : Type*} [Finite ι] {N O : Submodule R M}
-    (hNO : N ≤ O) (b : Basis ι R O) : Σn : ℕ, Basis (Fin n) R N :=
+    (hNO : N ≤ O) (b : Basis ι R O) : Σ n : ℕ, Basis (Fin n) R N :=
   let ⟨n, bN'⟩ := Submodule.basisOfPid b (N.comap O.subtype)
   ⟨n, bN'.map (Submodule.comapSubtypeEquivOfLe hNO)⟩
-#align submodule.basis_of_pid_of_le Submodule.basisOfPidOfLE
 
 /-- A submodule inside the span of a linear independent family is a free `R`-module of finite rank,
 if `R` is a principal ideal domain. -/
 noncomputable def Submodule.basisOfPidOfLESpan {ι : Type*} [Finite ι] {b : ι → M}
     (hb : LinearIndependent R b) {N : Submodule R M} (le : N ≤ Submodule.span R (Set.range b)) :
-    Σn : ℕ, Basis (Fin n) R N :=
+    Σ n : ℕ, Basis (Fin n) R N :=
   Submodule.basisOfPidOfLE le (Basis.span hb)
-#align submodule.basis_of_pid_of_le_span Submodule.basisOfPidOfLESpan
 
 /-- A finite type torsion free module over a PID admits a basis. -/
 noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M}
-    (hs : span R (range s) = ⊤) [NoZeroSMulDivisors R M] : Σn : ℕ, Basis (Fin n) R M := by
+    (hs : span R (range s) = ⊤) [NoZeroSMulDivisors R M] : Σ n : ℕ, Basis (Fin n) R M := by
   classical
     -- We define `N` as the submodule spanned by a maximal linear independent subfamily of `s`
-    have := exists_maximal_independent R s
+    have := exists_maximal_linearIndepOn R s
     let I : Set ι := this.choose
     obtain
       ⟨indepI : LinearIndependent R (s ∘ (fun x => x) : I → M), hI :
@@ -377,34 +370,28 @@ noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M
         apply this
       intro i
       calc
-        (∏ j, a j) • s i = (∏ j ∈ {i}ᶜ, a j) • a i • s i := by
-          rw [Fintype.prod_eq_prod_compl_mul i, mul_smul]
-        _ ∈ N := N.smul_mem _ (ha' i)
-
+        (∏ j ∈ {i}ᶜ, a j) • a i • s i ∈ N := N.smul_mem _ (ha' i)
+        _ = (∏ j, a j) • s i := by rw [Fintype.prod_eq_prod_compl_mul i, mul_smul]
     -- Since a submodule of a free `R`-module is free, we get that `A • M` is free
     obtain ⟨n, b : Basis (Fin n) R (LinearMap.range φ)⟩ := Submodule.basisOfPidOfLE this sI_basis
     -- hence `M` is free.
     exact ⟨n, b.map ψ.symm⟩
-#align module.basis_of_finite_type_torsion_free Module.basisOfFiniteTypeTorsionFree
 
 theorem Module.free_of_finite_type_torsion_free [_root_.Finite ι] {s : ι → M}
     (hs : span R (range s) = ⊤) [NoZeroSMulDivisors R M] : Module.Free R M := by
   cases nonempty_fintype ι
-  obtain ⟨n, b⟩ : Σn, Basis (Fin n) R M := Module.basisOfFiniteTypeTorsionFree hs
+  obtain ⟨n, b⟩ : Σ n, Basis (Fin n) R M := Module.basisOfFiniteTypeTorsionFree hs
   exact Module.Free.of_basis b
-#align module.free_of_finite_type_torsion_free Module.free_of_finite_type_torsion_free
 
 /-- A finite type torsion free module over a PID admits a basis. -/
 noncomputable def Module.basisOfFiniteTypeTorsionFree' [Module.Finite R M]
-    [NoZeroSMulDivisors R M] : Σn : ℕ, Basis (Fin n) R M :=
+    [NoZeroSMulDivisors R M] : Σ n : ℕ, Basis (Fin n) R M :=
   Module.basisOfFiniteTypeTorsionFree Module.Finite.exists_fin.choose_spec.choose_spec
-#align module.basis_of_finite_type_torsion_free' Module.basisOfFiniteTypeTorsionFree'
 
 instance Module.free_of_finite_type_torsion_free' [Module.Finite R M] [NoZeroSMulDivisors R M] :
     Module.Free R M := by
-  obtain ⟨n, b⟩ : Σn, Basis (Fin n) R M := Module.basisOfFiniteTypeTorsionFree'
+  obtain ⟨n, b⟩ : Σ n, Basis (Fin n) R M := Module.basisOfFiniteTypeTorsionFree'
   exact Module.Free.of_basis b
-#align module.free_of_finite_type_torsion_free' Module.free_of_finite_type_torsion_free'
 
 instance {S : Type*} [CommRing S] [Algebra R S] {I : Ideal S} [hI₁ : Module.Finite R I]
     [hI₂ : NoZeroSMulDivisors R I] : Module.Free R I := by
@@ -417,12 +404,13 @@ theorem Module.free_iff_noZeroSMulDivisors [Module.Finite R M] :
     Module.Free R M ↔ NoZeroSMulDivisors R M :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
 
+end StrongRankCondition
+
 section SmithNormal
 
 /-- A Smith normal form basis for a submodule `N` of a module `M` consists of
 bases for `M` and `N` such that the inclusion map `N → M` can be written as a
 (rectangular) matrix with `a` along the diagonal: in Smith normal form. -/
--- Porting note(#5171): @[nolint has_nonempty_instance]
 structure Basis.SmithNormalForm (N : Submodule R M) (ι : Type*) (n : ℕ) where
   /-- The basis of M. -/
   bM : Basis ι R M
@@ -434,22 +422,27 @@ structure Basis.SmithNormalForm (N : Submodule R M) (ι : Type*) (n : ℕ) where
   a : Fin n → R
   /-- The SNF relation between the vectors of the bases. -/
   snf : ∀ i, (bN i : M) = a i • bM (f i)
-#align basis.smith_normal_form Basis.SmithNormalForm
 
 namespace Basis.SmithNormalForm
 
 variable {n : ℕ} {N : Submodule R M} (snf : Basis.SmithNormalForm N ι n) (m : N)
 
-lemma repr_eq_zero_of_nmem_range {i : ι} (hi : i ∉ Set.range snf.f) :
+lemma repr_eq_zero_of_notMem_range {i : ι} (hi : i ∉ Set.range snf.f) :
     snf.bM.repr m i = 0 := by
   obtain ⟨m, hm⟩ := m
   obtain ⟨c, rfl⟩ := snf.bN.mem_submodule_iff.mp hm
   replace hi : ∀ j, snf.f j ≠ i := by simpa using hi
-  simp [Finsupp.single_apply, hi, snf.snf, map_finsupp_sum]
+  simp [hi, snf.snf, map_finsuppSum]
 
-lemma le_ker_coord_of_nmem_range {i : ι} (hi : i ∉ Set.range snf.f) :
+@[deprecated (since := "2025-05-24")]
+alias repr_eq_zero_of_nmem_range := repr_eq_zero_of_notMem_range
+
+lemma le_ker_coord_of_notMem_range {i : ι} (hi : i ∉ Set.range snf.f) :
     N ≤ LinearMap.ker (snf.bM.coord i) :=
-  fun m hm ↦ snf.repr_eq_zero_of_nmem_range ⟨m, hm⟩ hi
+  fun m hm ↦ snf.repr_eq_zero_of_notMem_range ⟨m, hm⟩ hi
+
+@[deprecated (since := "2025-05-24")]
+alias le_ker_coord_of_nmem_range := le_ker_coord_of_notMem_range
 
 @[simp] lemma repr_apply_embedding_eq_repr_smul {i : Fin n} :
     snf.bM.repr m (snf.f i) = snf.bN.repr (snf.a i • m) i := by
@@ -457,9 +450,9 @@ lemma le_ker_coord_of_nmem_range {i : ι} (hi : i ∉ Set.range snf.f) :
   obtain ⟨c, rfl⟩ := snf.bN.mem_submodule_iff.mp hm
   replace hm : (⟨Finsupp.sum c fun i t ↦ t • (↑(snf.bN i) : M), hm⟩ : N) =
       Finsupp.sum c fun i t ↦ t • ⟨snf.bN i, (snf.bN i).2⟩ := by
-    ext; change _ = N.subtype _; simp [map_finsupp_sum]
+    ext; change _ = N.subtype _; simp [map_finsuppSum]
   classical
-  simp_rw [hm, map_smul, map_finsupp_sum, map_smul, Subtype.coe_eta, repr_self,
+  simp_rw [hm, map_smul, map_finsuppSum, map_smul, Subtype.coe_eta, repr_self,
     Finsupp.smul_single, smul_eq_mul, mul_one, Finsupp.sum_single, Finsupp.smul_apply, snf.snf,
     map_smul, repr_self, Finsupp.smul_single, smul_eq_mul, mul_one, Finsupp.sum_apply,
     Finsupp.single_apply, EmbeddingLike.apply_eq_iff_eq, Finsupp.sum_ite_eq',
@@ -492,6 +485,8 @@ lemma toMatrix_restrict_eq_toMatrix [Fintype ι] [DecidableEq ι]
 
 end Basis.SmithNormalForm
 
+variable [IsDomain R] [IsPrincipalIdealRing R]
+
 /-- If `M` is finite free over a PID `R`, then any submodule `N` is free
 and we can find a basis for `M` and `N` such that the inclusion map is a diagonal matrix
 in Smith normal form.
@@ -513,13 +508,11 @@ theorem Submodule.exists_smith_normal_form_of_le [Finite ι] (b : Basis ι R M) 
     exact ⟨0, m, Nat.zero_le _, b'M, Basis.empty _, finZeroElim, finZeroElim⟩
   obtain ⟨y, hy, a, _, M', M'_le_M, N', _, N'_le_M', y_ortho, _, h⟩ :=
     Submodule.basis_of_pid_aux M0 N b'M N_bot N_le_O
-
   obtain ⟨n', m', hn'm', bM', bN', as', has'⟩ := ih M' M'_le_M y hy y_ortho N' N'_le_M'
   obtain ⟨bN, h'⟩ := h n' bN'
   obtain ⟨hmn, bM, h''⟩ := h' m' hn'm' bM'
   obtain ⟨as, has⟩ := h'' as' has'
   exact ⟨_, _, hmn, bM, bN, as, has⟩
-#align submodule.exists_smith_normal_form_of_le Submodule.exists_smith_normal_form_of_le
 
 /-- If `M` is finite free over a PID `R`, then any submodule `N` is free
 and we can find a basis for `M` and `N` such that the inclusion map is a diagonal matrix
@@ -531,7 +524,7 @@ need to map `N` into a submodule of `O`.
 This is a strengthening of `Submodule.basisOfPidOfLe`.
 -/
 noncomputable def Submodule.smithNormalFormOfLE [Finite ι] (b : Basis ι R M) (N O : Submodule R M)
-    (N_le_O : N ≤ O) : Σo n : ℕ, Basis.SmithNormalForm (N.comap O.subtype) (Fin o) n := by
+    (N_le_O : N ≤ O) : Σ o n : ℕ, Basis.SmithNormalForm (N.comap O.subtype) (Fin o) n := by
   choose n o hno bO bN a snf using N.exists_smith_normal_form_of_le b O N_le_O
   refine
     ⟨o, n, bO, bN.map (comapSubtypeEquivOfLe N_le_O).symm, (Fin.castLEEmb hno), a,
@@ -539,7 +532,6 @@ noncomputable def Submodule.smithNormalFormOfLE [Finite ι] (b : Basis ι R M) (
   ext
   simp only [snf, Basis.map_apply, Submodule.comapSubtypeEquivOfLe_symm_apply,
     Submodule.coe_smul_of_tower, Fin.castLEEmb_apply]
-#align submodule.smith_normal_form_of_le Submodule.smithNormalFormOfLE
 
 /-- If `M` is finite free over a PID `R`, then any submodule `N` is free
 and we can find a basis for `M` and `N` such that the inclusion map is a diagonal matrix
@@ -551,7 +543,7 @@ See also `Ideal.smithNormalForm`, which moreover proves that the dimension of
 an ideal is the same as the dimension of the whole ring.
 -/
 noncomputable def Submodule.smithNormalForm [Finite ι] (b : Basis ι R M) (N : Submodule R M) :
-    Σn : ℕ, Basis.SmithNormalForm N ι n :=
+    Σ n : ℕ, Basis.SmithNormalForm N ι n :=
   let ⟨m, n, bM, bN, f, a, snf⟩ := N.smithNormalFormOfLE b ⊤ le_top
   let bM' := bM.map (LinearEquiv.ofTop _ rfl)
   let e := bM'.indexEquiv b
@@ -559,11 +551,121 @@ noncomputable def Submodule.smithNormalForm [Finite ι] (b : Basis ι R M) (N : 
     simp only [bM', snf, Basis.map_apply, LinearEquiv.ofTop_apply, Submodule.coe_smul_of_tower,
       Submodule.comapSubtypeEquivOfLe_apply_coe, Basis.reindex_apply,
       Equiv.toEmbedding_apply, Function.Embedding.trans_apply, Equiv.symm_apply_apply]⟩
-#align submodule.smith_normal_form Submodule.smithNormalForm
+
+section full_rank
+
+variable {N : Submodule R M}
+
+/--
+If `M` is finite free over a PID `R`, then for any submodule `N` of the same rank,
+we can find basis for `M` and `N` with the same indexing such that the inclusion map
+is a square diagonal matrix.
+
+See `Submodule.exists_smith_normal_form_of_rank_eq` for a version that states the
+existence of the basis.
+-/
+noncomputable def Submodule.smithNormalFormOfRankEq [Fintype ι] (b : Basis ι R M)
+    (h : Module.finrank R N = Module.finrank R M) :
+    Basis.SmithNormalForm N ι (Fintype.card ι) :=
+  let ⟨n, bM, bN, f, a, snf⟩ := N.smithNormalForm b
+  let e : Fin n ≃ Fin (Fintype.card ι) := Fintype.equivOfCardEq (by
+    simp only [Fintype.card_fin, ← Module.finrank_eq_card_basis bM, ← h,
+      Module.finrank_eq_card_basis bN])
+  ⟨bM, bN.reindex e, e.symm.toEmbedding.trans f, a ∘ e.symm, fun i ↦ by
+    simp only [snf, Basis.coe_reindex, Function.Embedding.trans_apply, Equiv.toEmbedding_apply,
+      (· ∘ ·)]⟩
+
+variable [Finite ι]
+
+/--
+If `M` is finite free over a PID `R`, then for any submodule `N` of the same rank,
+we can find basis for `M` and `N` with the same indexing such that the inclusion map
+is a square diagonal matrix.
+
+See also `Submodule.smithNormalFormOfRankEq` for a version of this theorem that returns
+a `Basis.SmithNormalForm`.
+-/
+theorem Submodule.exists_smith_normal_form_of_rank_eq (b : Basis ι R M)
+    (h : Module.finrank R N = Module.finrank R M) :
+    ∃ (b' : Basis ι R M) (a : ι → R) (ab' : Basis ι R N), ∀ i, (ab' i : M) = a i • b' i := by
+  cases nonempty_fintype ι
+  let ⟨bM, bN, f, a, snf⟩ := N.smithNormalFormOfRankEq b h
+  let e : Fin (Fintype.card ι) ≃ ι :=
+    Equiv.ofBijective f
+      ((Fintype.bijective_iff_injective_and_card f).mpr ⟨f.injective, Fintype.card_fin _⟩)
+  have fe : ∀ i, f (e.symm i) = i := e.apply_symm_apply
+  exact
+    ⟨bM, a ∘ e.symm, bN.reindex e, fun i ↦ by
+      simp only [snf, fe,
+          Basis.coe_reindex, (· ∘ ·)]⟩
+
+/--
+If `M` is finite free over a PID `R`, then for any submodule `N` of the same rank,
+we can find basis for `M` and `N` with the same indexing such that the inclusion map
+is a square diagonal matrix; this is the basis for `M`. See:
+* `Submodule.smithNormalFormBotBasis` for the basis on `N`,
+* `Submodule.smithNormalFormCoeffs` for the entries of the diagonal matrix
+* `Submodule.smithNormalFormBotBasis_def` for the proof that the inclusion map
+  forms a square diagonal matrix.
+-/
+noncomputable def Submodule.smithNormalFormTopBasis (b : Basis ι R M)
+    (h : Module.finrank R N = Module.finrank R M) : Basis ι R M :=
+  (exists_smith_normal_form_of_rank_eq b h).choose
+
+/--
+If `M` is finite free over a PID `R`, then for any submodule `N` of the same rank,
+we can find basis for `M` and `N` with the same indexing such that the inclusion map
+is a square diagonal matrix; this is the basis for `N`. See:
+* `Submodule.smithNormalFormTopBasis` for the basis on `M`,
+* `Submodule.smithNormalFormCoeffs` for the entries of the diagonal matrix
+* `Submodule.smithNormalFormBotBasis_def` for the proof that the inclusion map
+  forms a square diagonal matrix.
+-/
+noncomputable def Submodule.smithNormalFormBotBasis (b : Basis ι R M)
+    (h : Module.finrank R N = Module.finrank R M) : Basis ι R N :=
+  (exists_smith_normal_form_of_rank_eq b h).choose_spec.choose_spec.choose
+
+/--
+If `M` is finite free over a PID `R`, then for any submodule `N` of the same rank,
+we can find basis for `M` and `N` with the same indexing such that the inclusion map
+is a square diagonal matrix; these are the entries of the diagonal matrix. See:
+* `Submodule.smithNormalFormTopBasis` for the basis on `M`,
+* `Submodule.smithNormalFormBotBasis` for the basis on `N`,
+* `Submodule.smithNormalFormBotBasis_def` for the proof that the inclusion map
+  forms a square diagonal matrix.
+-/
+noncomputable def Submodule.smithNormalFormCoeffs (b : Basis ι R M)
+  (h : Module.finrank R N = Module.finrank R M) : ι → R :=
+  (exists_smith_normal_form_of_rank_eq b h).choose_spec.choose
+
+@[simp]
+theorem Submodule.smithNormalFormBotBasis_def (b : Basis ι R M)
+    (h : Module.finrank R N = Module.finrank R M) :
+    ∀ i, (smithNormalFormBotBasis b h i : M) =
+      smithNormalFormCoeffs b h i • smithNormalFormTopBasis b h i :=
+  (exists_smith_normal_form_of_rank_eq b h).choose_spec.choose_spec.choose_spec
+
+@[simp]
+theorem Submodule.smithNormalFormCoeffs_ne_zero (b : Basis ι R M)
+    (h : Module.finrank R N = Module.finrank R M) (i : ι) :
+    smithNormalFormCoeffs b h i ≠ 0 := by
+  intro hi
+  apply Basis.ne_zero (smithNormalFormBotBasis b h) i
+  refine Subtype.coe_injective ?_
+  simp [hi]
+
+end full_rank
 
 section Ideal
 
 variable {S : Type*} [CommRing S] [IsDomain S] [Algebra R S]
+
+theorem Ideal.finrank_eq_finrank [Finite ι] (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) :
+    Module.finrank R (restrictScalars R I) = Module.finrank R S := by
+  obtain ⟨_, bS, bI, _, _, _⟩ := (I.restrictScalars R).smithNormalForm b
+  cases nonempty_fintype ι
+  rw [Module.finrank_eq_card_basis bS, Module.finrank_eq_card_basis bI]
+  exact Ideal.rank_eq bS hI (bI.map ((restrictScalarsEquiv R S S I).restrictScalars R))
 
 /-- If `S` a finite-dimensional ring extension of a PID `R` which is free as an `R`-module,
 then any nonzero `S`-ideal `I` is free as an `R`-submodule of `S`, and we can
@@ -577,13 +679,7 @@ This is a strengthening of `Submodule.basisOfPid`.
 -/
 noncomputable def Ideal.smithNormalForm [Fintype ι] (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) :
     Basis.SmithNormalForm (I.restrictScalars R) ι (Fintype.card ι) :=
-  let ⟨n, bS, bI, f, a, snf⟩ := (I.restrictScalars R).smithNormalForm b
-  have eq := Ideal.rank_eq bS hI (bI.map ((restrictScalarsEquiv R S S I).restrictScalars R))
-  let e : Fin n ≃ Fin (Fintype.card ι) := Fintype.equivOfCardEq (by rw [eq, Fintype.card_fin])
-  ⟨bS, bI.reindex e, e.symm.toEmbedding.trans f, a ∘ e.symm, fun i ↦ by
-    simp only [snf, Basis.coe_reindex, Function.Embedding.trans_apply, Equiv.toEmbedding_apply,
-      (· ∘ ·)]⟩
-#align ideal.smith_normal_form Ideal.smithNormalForm
+  Submodule.smithNormalFormOfRankEq b (finrank_eq_finrank b I hI)
 
 variable [Finite ι]
 
@@ -599,55 +695,41 @@ The definitions `Ideal.ringBasis`, `Ideal.selfBasis`, `Ideal.smithCoeffs` are (n
 choices of values for this existential quantifier.
 -/
 theorem Ideal.exists_smith_normal_form (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) :
-    ∃ (b' : Basis ι R S) (a : ι → R) (ab' : Basis ι R I), ∀ i, (ab' i : S) = a i • b' i := by
-  cases nonempty_fintype ι
-  let ⟨bS, bI, f, a, snf⟩ := I.smithNormalForm b hI
-  let e : Fin (Fintype.card ι) ≃ ι :=
-    Equiv.ofBijective f
-      ((Fintype.bijective_iff_injective_and_card f).mpr ⟨f.injective, Fintype.card_fin _⟩)
-  have fe : ∀ i, f (e.symm i) = i := e.apply_symm_apply
-  exact
-    ⟨bS, a ∘ e.symm, (bI.reindex e).map ((restrictScalarsEquiv R S _ _).restrictScalars R),
-      fun i ↦ by
-        simp only [snf, fe, Basis.map_apply, LinearEquiv.restrictScalars_apply R,
-          Submodule.restrictScalarsEquiv_apply, Basis.coe_reindex, (· ∘ ·)]⟩
-#align ideal.exists_smith_normal_form Ideal.exists_smith_normal_form
+    ∃ (b' : Basis ι R S) (a : ι → R) (ab' : Basis ι R I), ∀ i, (ab' i : S) = a i • b' i :=
+  Submodule.exists_smith_normal_form_of_rank_eq b (finrank_eq_finrank b I hI)
 
 /-- If `S` a finite-dimensional ring extension of a PID `R` which is free as an `R`-module,
 then any nonzero `S`-ideal `I` is free as an `R`-submodule of `S`, and we can
 find a basis for `S` and `I` such that the inclusion map is a square diagonal
-matrix; this is the basis for `S`.
-See `Ideal.selfBasis` for the basis on `I`,
-see `Ideal.smithCoeffs` for the entries of the diagonal matrix
-and `Ideal.selfBasis_def` for the proof that the inclusion map forms a square diagonal matrix.
+matrix; this is the basis for `S`. See
+* `Ideal.selfBasis` for the basis on `I`,
+* `Ideal.smithCoeffs` for the entries of the diagonal matrix
+* `Ideal.selfBasis_def` for the proof that the inclusion map forms a square diagonal matrix.
 -/
 noncomputable def Ideal.ringBasis (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) : Basis ι R S :=
   (Ideal.exists_smith_normal_form b I hI).choose
-#align ideal.ring_basis Ideal.ringBasis
 
 /-- If `S` a finite-dimensional ring extension of a PID `R` which is free as an `R`-module,
 then any nonzero `S`-ideal `I` is free as an `R`-submodule of `S`, and we can
 find a basis for `S` and `I` such that the inclusion map is a square diagonal
-matrix; this is the basis for `I`.
-See `Ideal.ringBasis` for the basis on `S`,
-see `Ideal.smithCoeffs` for the entries of the diagonal matrix
-and `Ideal.selfBasis_def` for the proof that the inclusion map forms a square diagonal matrix.
+matrix; this is the basis for `I`. See:
+* `Ideal.ringBasis` for the basis on `S`,
+* `Ideal.smithCoeffs` for the entries of the diagonal matrix
+* `Ideal.selfBasis_def` for the proof that the inclusion map forms a square diagonal matrix.
 -/
 noncomputable def Ideal.selfBasis (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) : Basis ι R I :=
   (Ideal.exists_smith_normal_form b I hI).choose_spec.choose_spec.choose
-#align ideal.self_basis Ideal.selfBasis
 
 /-- If `S` a finite-dimensional ring extension of a PID `R` which is free as an `R`-module,
 then any nonzero `S`-ideal `I` is free as an `R`-submodule of `S`, and we can
 find a basis for `S` and `I` such that the inclusion map is a square diagonal
-matrix; these are the entries of the diagonal matrix.
-See `Ideal.ringBasis` for the basis on `S`,
-see `Ideal.selfBasis` for the basis on `I`,
-and `Ideal.selfBasis_def` for the proof that the inclusion map forms a square diagonal matrix.
+matrix; these are the entries of the diagonal matrix. See :
+* `Ideal.ringBasis` for the basis on `S`,
+* `Ideal.selfBasis` for the basis on `I`,
+* `Ideal.selfBasis_def` for the proof that the inclusion map forms a square diagonal matrix.
 -/
 noncomputable def Ideal.smithCoeffs (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) : ι → R :=
   (Ideal.exists_smith_normal_form b I hI).choose_spec.choose
-#align ideal.smith_coeffs Ideal.smithCoeffs
 
 /-- If `S` a finite-dimensional ring extension of a PID `R` which is free as an `R`-module,
 then any nonzero `S`-ideal `I` is free as an `R`-submodule of `S`, and we can
@@ -658,7 +740,6 @@ matrix.
 theorem Ideal.selfBasis_def (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) :
     ∀ i, (Ideal.selfBasis b I hI i : S) = Ideal.smithCoeffs b I hI i • Ideal.ringBasis b I hI i :=
   (Ideal.exists_smith_normal_form b I hI).choose_spec.choose_spec.choose_spec
-#align ideal.self_basis_def Ideal.selfBasis_def
 
 @[simp]
 theorem Ideal.smithCoeffs_ne_zero (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) (i) :
@@ -667,22 +748,9 @@ theorem Ideal.smithCoeffs_ne_zero (b : Basis ι R S) (I : Ideal S) (hI : I ≠ �
   apply Basis.ne_zero (Ideal.selfBasis b I hI) i
   refine Subtype.coe_injective ?_
   simp [hi]
-#align ideal.smith_coeffs_ne_zero Ideal.smithCoeffs_ne_zero
-
--- Porting note: can be inferred in Lean 4 so no longer necessary
-#noalign has_quotient.quotient.module
 
 end Ideal
 
 end SmithNormal
 
 end PrincipalIdealDomain
-
-/-- A set of linearly independent vectors in a module `M` over a semiring `S` is also linearly
-independent over a subring `R` of `K`. -/
-theorem LinearIndependent.restrict_scalars_algebras {R S M ι : Type*} [CommSemiring R] [Semiring S]
-    [AddCommMonoid M] [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
-    (hinj : Function.Injective (algebraMap R S)) {v : ι → M} (li : LinearIndependent S v) :
-    LinearIndependent R v :=
-  LinearIndependent.restrict_scalars (by rwa [Algebra.algebraMap_eq_smul_one'] at hinj) li
-#align linear_independent.restrict_scalars_algebras LinearIndependent.restrict_scalars_algebras

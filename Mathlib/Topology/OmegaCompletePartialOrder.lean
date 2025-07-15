@@ -3,11 +3,8 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Topology.Basic
-import Mathlib.Order.UpperLower.Basic
 import Mathlib.Order.OmegaCompletePartialOrder
-
-#align_import topology.omega_complete_partial_order from "leanprover-community/mathlib"@"2705404e701abc6b3127da906f40bae062a169c9"
+import Mathlib.Topology.Order.ScottTopology
 
 /-!
 # Scott Topological Spaces
@@ -17,126 +14,142 @@ of continuity is equivalent to continuity in ωCPOs.
 
 ## Reference
 
- * https://ncatlab.org/nlab/show/Scott+topology
+* https://ncatlab.org/nlab/show/Scott+topology
 
 -/
 
-
-open Set OmegaCompletePartialOrder
-
-open scoped Classical
+open Set OmegaCompletePartialOrder Topology
 
 universe u
 
--- "Scott", "ωSup"
-set_option linter.uppercaseLean3 false
+open Topology.IsScott in
+@[simp] lemma Topology.IsScott.ωScottContinuous_iff_continuous {α : Type*}
+    [OmegaCompletePartialOrder α] [TopologicalSpace α]
+    [Topology.IsScott α (Set.range fun c : Chain α => Set.range c)] {f : α → Prop} :
+    ωScottContinuous f ↔ Continuous f := by
+  rw [ωScottContinuous, scottContinuousOn_iff_continuous (fun a b hab => by
+    use Chain.pair a b hab; exact OmegaCompletePartialOrder.Chain.range_pair a b hab)]
 
+@[deprecated (since := "2025-07-02")]
+alias Topology.IsScott.ωscottContinuous_iff_continuous :=
+  Topology.IsScott.ωScottContinuous_iff_continuous
+
+-- "Scott", "ωSup"
 namespace Scott
 
 /-- `x` is an `ω`-Sup of a chain `c` if it is the least upper bound of the range of `c`. -/
 def IsωSup {α : Type u} [Preorder α] (c : Chain α) (x : α) : Prop :=
   (∀ i, c i ≤ x) ∧ ∀ y, (∀ i, c i ≤ y) → x ≤ y
-#align Scott.is_ωSup Scott.IsωSup
 
 theorem isωSup_iff_isLUB {α : Type u} [Preorder α] {c : Chain α} {x : α} :
     IsωSup c x ↔ IsLUB (range c) x := by
   simp [IsωSup, IsLUB, IsLeast, upperBounds, lowerBounds]
-#align Scott.is_ωSup_iff_is_lub Scott.isωSup_iff_isLUB
 
 variable (α : Type u) [OmegaCompletePartialOrder α]
 
 /-- The characteristic function of open sets is monotone and preserves
 the limits of chains. -/
 def IsOpen (s : Set α) : Prop :=
-  Continuous' fun x ↦ x ∈ s
-#align Scott.is_open Scott.IsOpen
+  ωScottContinuous fun x ↦ x ∈ s
 
-theorem isOpen_univ : IsOpen α univ :=
-  ⟨fun _ _ _ _ ↦ mem_univ _, @CompleteLattice.top_continuous α Prop _ _⟩
-#align Scott.is_open_univ Scott.isOpen_univ
+theorem isOpen_univ : IsOpen α univ := @CompleteLattice.ωScottContinuous.top α Prop _ _
 
 theorem IsOpen.inter (s t : Set α) : IsOpen α s → IsOpen α t → IsOpen α (s ∩ t) :=
-  CompleteLattice.inf_continuous'
-#align Scott.is_open.inter Scott.IsOpen.inter
+  CompleteLattice.ωScottContinuous.inf
 
 theorem isOpen_sUnion (s : Set (Set α)) (hs : ∀ t ∈ s, IsOpen α t) : IsOpen α (⋃₀ s) := by
   simp only [IsOpen] at hs ⊢
-  convert CompleteLattice.sSup_continuous' (setOf ⁻¹' s) hs
-  simp only [sSup_apply, setOf_bijective.surjective.exists, exists_prop, mem_preimage,
-    SetCoe.exists, iSup_Prop_eq, mem_setOf_eq, mem_sUnion]
-#align Scott.is_open_sUnion Scott.isOpen_sUnion
+  convert CompleteLattice.ωScottContinuous.sSup hs
+  aesop
 
-theorem IsOpen.isUpperSet {s : Set α} (hs : IsOpen α s) : IsUpperSet s := hs.fst
+theorem IsOpen.isUpperSet {s : Set α} (hs : IsOpen α s) : IsUpperSet s := hs.monotone
 
 end Scott
 
 /-- A Scott topological space is defined on preorders
 such that their open sets, seen as a function `α → Prop`,
-preserves the joins of ω-chains  -/
+preserves the joins of ω-chains. -/
+@[deprecated WithScott (since := "2025-07-02")]
 abbrev Scott (α : Type u) := α
-#align Scott Scott
 
-instance Scott.topologicalSpace (α : Type u) [OmegaCompletePartialOrder α] :
+set_option linter.deprecated false in
+/-- Deprecated, use `WithScott`. -/
+@[deprecated Topology.WithScott.instTopologicalSpace (since := "2025-07-02")]
+abbrev Scott.topologicalSpace (α : Type u) [OmegaCompletePartialOrder α] :
     TopologicalSpace (Scott α) where
   IsOpen := Scott.IsOpen α
   isOpen_univ := Scott.isOpen_univ α
   isOpen_inter := Scott.IsOpen.inter α
   isOpen_sUnion := Scott.isOpen_sUnion α
-#align Scott.topological_space Scott.topologicalSpace
+
+attribute [local instance] Scott.topologicalSpace
+
+set_option linter.deprecated false in
+@[deprecated isOpen_iff_continuous_mem (since := "2025-07-02")]
+lemma isOpen_iff_ωScottContinuous_mem {α} [OmegaCompletePartialOrder α] {s : Set (Scott α)} :
+    IsOpen s ↔ ωScottContinuous fun x ↦ x ∈ s := by rfl
+
+set_option linter.deprecated false in
+@[deprecated "Use `WithScott` API" (since := "2025-07-02")]
+lemma scott_eq_Scott {α} [OmegaCompletePartialOrder α] :
+    Topology.scott α (Set.range fun c : Chain α => Set.range c) = Scott.topologicalSpace α := by
+  ext U
+  letI := Topology.scott α (Set.range fun c : Chain α => Set.range c)
+  rw [isOpen_iff_ωScottContinuous_mem, @isOpen_iff_continuous_mem,
+    @Topology.IsScott.ωscottContinuous_iff_continuous _ _
+      (Topology.scott α (Set.range fun c : Chain α => Set.range c)) ({ topology_eq_scott := rfl })]
 
 section notBelow
 
-variable {α : Type*} [OmegaCompletePartialOrder α] (y : Scott α)
+variable {α : Type*} [OmegaCompletePartialOrder α]
 
+set_option linter.deprecated false in
 /-- `notBelow` is an open set in `Scott α` used
 to prove the monotonicity of continuous functions -/
-def notBelow :=
+def notBelow (y : Scott α) :=
   { x | ¬x ≤ y }
-#align not_below notBelow
 
-theorem notBelow_isOpen : IsOpen (notBelow y) := by
+set_option linter.deprecated false in
+@[deprecated isClosed_Iic (since := "2025-07-02")]
+theorem notBelow_isOpen (y : Scott α) : IsOpen (notBelow y) := by
   have h : Monotone (notBelow y) := fun x z hle ↦ mt hle.trans
+  dsimp only [IsOpen, TopologicalSpace.IsOpen, Scott.IsOpen]
+  rw [ωScottContinuous_iff_monotone_map_ωSup]
   refine ⟨h, fun c ↦ eq_of_forall_ge_iff fun z ↦ ?_⟩
   simp only [ωSup_le_iff, notBelow, mem_setOf_eq, le_Prop_eq, OrderHom.coe_mk, Chain.map_coe,
     Function.comp_apply, exists_imp, not_forall]
-#align not_below_is_open notBelow_isOpen
 
 end notBelow
 
-open Scott hiding IsOpen
-
-open OmegaCompletePartialOrder
+open Scott hiding IsOpen IsOpen.isUpperSet
 
 theorem isωSup_ωSup {α} [OmegaCompletePartialOrder α] (c : Chain α) : IsωSup c (ωSup c) := by
   constructor
   · apply le_ωSup
   · apply ωSup_le
-#align is_ωSup_ωSup isωSup_ωSup
 
+set_option linter.deprecated false in
+@[deprecated Topology.IsScott.ωscottContinuous_iff_continuous (since := "2025-07-02")]
 theorem scottContinuous_of_continuous {α β} [OmegaCompletePartialOrder α]
-    [OmegaCompletePartialOrder β] (f : Scott α → Scott β) (hf : Continuous f) :
-    OmegaCompletePartialOrder.Continuous' f := by
+    [OmegaCompletePartialOrder β] (f : Scott α → Scott β) (hf : _root_.Continuous f) :
+    OmegaCompletePartialOrder.ωScottContinuous f := by
+  rw [ωScottContinuous_iff_monotone_map_ωSup]
   have h : Monotone f := fun x y h ↦ by
     have hf : IsUpperSet {x | ¬f x ≤ f y} := ((notBelow_isOpen (f y)).preimage hf).isUpperSet
     simpa only [mem_setOf_eq, le_refl, not_true, imp_false, not_not] using hf h
   refine ⟨h, fun c ↦ eq_of_forall_ge_iff fun z ↦ ?_⟩
-  rcases (notBelow_isOpen z).preimage hf with ⟨hf, hf'⟩
+  rcases (notBelow_isOpen z).preimage hf with hf''
+  let hf' := hf''.monotone_map_ωSup.2
   specialize hf' c
-  simp only [OrderHom.coe_mk, mem_preimage, notBelow, mem_setOf_eq] at hf'
+  simp only [mem_preimage, notBelow, mem_setOf_eq] at hf'
   rw [← not_iff_not]
   simp only [ωSup_le_iff, hf', ωSup, iSup, sSup, mem_range, Chain.map_coe, Function.comp_apply,
     eq_iff_iff, not_forall, OrderHom.coe_mk]
   tauto
-#align Scott_continuous_of_continuous scottContinuous_of_continuous
 
+set_option linter.deprecated false in
+@[deprecated Topology.IsScott.ωscottContinuous_iff_continuous (since := "2025-07-02")]
 theorem continuous_of_scottContinuous {α β} [OmegaCompletePartialOrder α]
-    [OmegaCompletePartialOrder β] (f : Scott α → Scott β)
-    (hf : OmegaCompletePartialOrder.Continuous' f) : Continuous f := by
-  rw [continuous_def]
-  intro s hs
-  change Continuous' (s ∘ f)
-  cases' hs with hs hs'
-  cases' hf with hf hf'
-  apply Continuous.of_bundled
-  apply continuous_comp _ _ hf' hs'
-#align continuous_of_Scott_continuous continuous_of_scottContinuous
+    [OmegaCompletePartialOrder β] (f : Scott α → Scott β) (hf : ωScottContinuous f) :
+    Continuous f := by
+  rw [continuous_def]; exact fun s hs ↦ hs.comp hf

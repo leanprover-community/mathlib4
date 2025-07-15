@@ -3,11 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Logic.Equiv.Nat
-import Mathlib.Logic.Equiv.Fin
 import Mathlib.Data.Countable.Defs
-
-#align_import data.countable.basic from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
+import Mathlib.Data.Fin.Tuple.Basic
+import Mathlib.Data.ENat.Defs
+import Mathlib.Logic.Equiv.Nat
 
 /-!
 # Countable types
@@ -15,6 +14,7 @@ import Mathlib.Data.Countable.Defs
 In this file we provide basic instances of the `Countable` typeclass defined elsewhere.
 -/
 
+assert_not_exists Monoid
 
 universe u v w
 
@@ -33,18 +33,15 @@ variable {α : Sort u} {β : Sort v}
 
 theorem countable_iff_nonempty_embedding : Countable α ↔ Nonempty (α ↪ ℕ) :=
   ⟨fun ⟨⟨f, hf⟩⟩ => ⟨⟨f, hf⟩⟩, fun ⟨f⟩ => ⟨⟨f, f.2⟩⟩⟩
-#align countable_iff_nonempty_embedding countable_iff_nonempty_embedding
 
 theorem uncountable_iff_isEmpty_embedding : Uncountable α ↔ IsEmpty (α ↪ ℕ) := by
   rw [← not_countable_iff, countable_iff_nonempty_embedding, not_nonempty_iff]
 
 theorem nonempty_embedding_nat (α) [Countable α] : Nonempty (α ↪ ℕ) :=
   countable_iff_nonempty_embedding.1 ‹_›
-#align nonempty_embedding_nat nonempty_embedding_nat
 
 protected theorem Function.Embedding.countable [Countable β] (f : α ↪ β) : Countable α :=
   f.injective.countable
-#align function.embedding.countable Function.Embedding.countable
 
 protected lemma Function.Embedding.uncountable [Uncountable α] (f : α ↪ β) : Uncountable β :=
   f.injective.uncountable
@@ -62,7 +59,7 @@ variable {α : Type u} {β : Type v} {π : α → Type w}
 instance [Countable α] [Countable β] : Countable (α ⊕ β) := by
   rcases exists_injective_nat α with ⟨f, hf⟩
   rcases exists_injective_nat β with ⟨g, hg⟩
-  exact (Equiv.natSumNatEquivNat.injective.comp <| hf.sum_map hg).countable
+  exact (Equiv.natSumNatEquivNat.injective.comp <| hf.sumMap hg).countable
 
 instance Sum.uncountable_inl [Uncountable α] : Uncountable (α ⊕ β) :=
   inl_injective.uncountable
@@ -70,11 +67,18 @@ instance Sum.uncountable_inl [Uncountable α] : Uncountable (α ⊕ β) :=
 instance Sum.uncountable_inr [Uncountable β] : Uncountable (α ⊕ β) :=
   inr_injective.uncountable
 
-instance [Countable α] : Countable (Option α) :=
-  Countable.of_equiv _ (Equiv.optionEquivSumPUnit.{_, 0} α).symm
+instance Option.instCountable [Countable α] : Countable (Option α) :=
+  Countable.of_equiv _ (Equiv.optionEquivSumPUnit.{0, _} α).symm
+
+instance WithTop.instCountable [Countable α] : Countable (WithTop α) := Option.instCountable
+instance WithBot.instCountable [Countable α] : Countable (WithBot α) := Option.instCountable
+instance ENat.instCountable : Countable ℕ∞ := Option.instCountable
 
 instance Option.instUncountable [Uncountable α] : Uncountable (Option α) :=
   Injective.uncountable fun _ _ ↦ Option.some_inj.1
+
+instance WithTop.instUncountable [Uncountable α] : Uncountable (WithTop α) := Option.instUncountable
+instance WithBot.instUncountable [Uncountable α] : Uncountable (WithBot α) := Option.instUncountable
 
 instance [Countable α] [Countable β] : Countable (α × β) := by
   rcases exists_injective_nat α with ⟨f, hf⟩
@@ -83,11 +87,24 @@ instance [Countable α] [Countable β] : Countable (α × β) := by
 
 instance [Uncountable α] [Nonempty β] : Uncountable (α × β) := by
   inhabit β
-  exact (Prod.mk.inj_right default).uncountable
+  exact (Prod.mk_left_injective default).uncountable
 
 instance [Nonempty α] [Uncountable β] : Uncountable (α × β) := by
   inhabit α
-  exact (Prod.mk.inj_left default).uncountable
+  exact (Prod.mk_right_injective default).uncountable
+
+lemma countable_left_of_prod_of_nonempty [Nonempty β] (h : Countable (α × β)) : Countable α := by
+  contrapose h
+  rw [not_countable_iff] at *
+  infer_instance
+
+lemma countable_right_of_prod_of_nonempty [Nonempty α] (h : Countable (α × β)) : Countable β := by
+  contrapose h
+  rw [not_countable_iff] at *
+  infer_instance
+
+lemma countable_prod_swap [Countable (α × β)] : Countable (β × α) :=
+  Countable.of_equiv _ (Equiv.prodComm α β)
 
 instance [Countable α] [∀ a, Countable (π a)] : Countable (Sigma π) := by
   rcases exists_injective_nat α with ⟨f, hf⟩
@@ -102,7 +119,6 @@ instance [Nonempty α] [∀ a, Uncountable (π a)] : Uncountable (Sigma π) := b
 
 instance (priority := 500) SetCoe.countable [Countable α] (s : Set α) : Countable s :=
   Subtype.countable
-#align set_coe.countable SetCoe.countable
 
 end type
 
@@ -121,15 +137,14 @@ instance [Countable α] [Countable β] : Countable (PProd α β) :=
   Countable.of_equiv (PLift α × PLift β) (Equiv.plift.prodPProd Equiv.plift)
 
 instance [Countable α] [∀ a, Countable (π a)] : Countable (PSigma π) :=
-  Countable.of_equiv (Σa : PLift α, PLift (π a.down)) (Equiv.psigmaEquivSigmaPLift π).symm
+  Countable.of_equiv (Σ a : PLift α, PLift (π a.down)) (Equiv.psigmaEquivSigmaPLift π).symm
 
 instance [Finite α] [∀ a, Countable (π a)] : Countable (∀ a, π a) := by
   have : ∀ n, Countable (Fin n → ℕ) := by
     intro n
     induction' n with n ihn
-    · change Countable (Fin 0 → ℕ); infer_instance
-    · haveI := ihn
-      exact Countable.of_equiv (ℕ × (Fin n → ℕ)) (Equiv.piFinSucc _ _).symm
+    · infer_instance
+    · exact Countable.of_equiv (ℕ × (Fin n → ℕ)) (Fin.consEquiv fun _ ↦ ℕ)
   rcases Finite.exists_equiv_fin α with ⟨n, ⟨e⟩⟩
   have f := fun a => (nonempty_embedding_nat (π a)).some
   exact ((Embedding.piCongrRight f).trans (Equiv.piCongrLeft' _ e).toEmbedding).countable

@@ -48,7 +48,7 @@ theorem dist_birkhoffSum_birkhoffSum_le (f : α → α) (g : α → E) (n : ℕ)
       ∑ k ∈ Finset.range n, dist (g (f^[k] x)) (g (f^[k] y)) :=
   dist_sum_sum_le _ _ _
 
-variable (𝕜 : Type*) [RCLike 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
+variable (𝕜 : Type*) [RCLike 𝕜] [NormedSpace 𝕜 E]
 
 theorem dist_birkhoffAverage_birkhoffAverage (f : α → α) (g : α → E) (n : ℕ) (x y : α) :
     dist (birkhoffAverage 𝕜 f g n x) (birkhoffAverage 𝕜 f g n y) =
@@ -90,7 +90,7 @@ tends to zero.
 
 See also `tendsto_birkhoffAverage_apply_sub_birkhoffAverage`. -/
 theorem tendsto_birkhoffAverage_apply_sub_birkhoffAverage' {g : α → E}
-    (h : Bornology.IsBounded (range g)) (f : α → α) (x : α):
+    (h : Bornology.IsBounded (range g)) (f : α → α) (x : α) :
     Tendsto (fun n ↦ birkhoffAverage 𝕜 f g n (f x) - birkhoffAverage 𝕜 f g n x) atTop (𝓝 0) :=
   tendsto_birkhoffAverage_apply_sub_birkhoffAverage _ <| h.subset <| range_comp_subset_range _ _
 

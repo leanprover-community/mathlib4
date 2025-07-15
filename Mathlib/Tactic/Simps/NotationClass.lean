@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 
+import Mathlib.Init
 import Lean.Elab.Exception
 import Batteries.Lean.NameMapAttribute
-import Batteries.Lean.Expr
 import Batteries.Tactic.Lint
 
 /-!
@@ -20,12 +20,12 @@ in the file where we declare `@[simps]`. For further documentation, see `Tactic.
 -/
 
 /-- The `@[notation_class]` attribute specifies that this is a notation class,
-  and this notation should be used instead of projections by `@[simps]`.
+and this notation should be used instead of projections by `@[simps]`.
   * This is only important if the projection is written differently using notation, e.g.
     `+` uses `HAdd.hAdd`, not `Add.add` and `0` uses `OfNat.ofNat` not `Zero.zero`.
     We also add it to non-heterogenous notation classes, like `Neg`, but it doesn't do much for any
     class that extends `Neg`.
-  * `@[notation_class * <projName> Simps.findCoercionArgs]` is used to configure the
+  * `@[notation_class* <projName> Simps.findCoercionArgs]` is used to configure the
     `SetLike` and `DFunLike` coercions.
   * The first name argument is the projection name we use as the key to search for this class
     (default: name of first projection of the class).
@@ -45,49 +45,49 @@ We partly define this as a separate definition so that the unused arguments lint
 def findArgType : Type := Name → Name → Array Expr → MetaM (Array (Option Expr))
 
 /-- Find arguments for a notation class -/
-def defaultfindArgs : findArgType := λ _ className args => do
+def defaultfindArgs : findArgType := fun _ className args ↦ do
   let some classExpr := (← getEnv).find? className | throwError "no such class {className}"
-  let arity := classExpr.type.forallArity
+  let arity := classExpr.type.getNumHeadForalls
   if arity == args.size then
     return args.map some
-  else if args.size == 1 then
-    return mkArray arity args[0]!
+  else if h : args.size = 1 then
+    return .replicate arity args[0]
   else
     throwError "initialize_simps_projections cannot automatically find arguments for class \
       {className}"
 
 /-- Find arguments by duplicating the first argument. Used for `pow`. -/
-def copyFirst : findArgType := λ _ _ args => return (args.push <| args[0]?.getD default).map some
+def copyFirst : findArgType := fun _ _ args ↦ return (args.push <| args[0]?.getD default).map some
 
 /-- Find arguments by duplicating the first argument. Used for `smul`. -/
-def copySecond : findArgType := λ _ _ args => return (args.push <| args[1]?.getD default).map some
+def copySecond : findArgType := fun _ _ args ↦ return (args.push <| args[1]?.getD default).map some
 
 /-- Find arguments by prepending `ℕ` and duplicating the first argument. Used for `nsmul`. -/
-def nsmulArgs : findArgType := λ _ _ args =>
+def nsmulArgs : findArgType := fun _ _ args ↦
   return #[Expr.const `Nat [], args[0]?.getD default] ++ args |>.map some
 
 /-- Find arguments by prepending `ℤ` and duplicating the first argument. Used for `zsmul`. -/
-def zsmulArgs : findArgType := λ _ _ args =>
+def zsmulArgs : findArgType := fun _ _ args ↦
   return #[Expr.const `Int [], args[0]?.getD default] ++ args |>.map some
 
 /-- Find arguments for the `Zero` class. -/
-def findZeroArgs : findArgType := λ _ _ args =>
+def findZeroArgs : findArgType := fun _ _ args ↦
   return #[some <| args[0]?.getD default, some <| mkRawNatLit 0]
 
 /-- Find arguments for the `One` class. -/
-def findOneArgs : findArgType := λ _ _ args =>
+def findOneArgs : findArgType := fun _ _ args ↦
   return #[some <| args[0]?.getD default, some <| mkRawNatLit 1]
 
 /-- Find arguments of a coercion class (`DFunLike` or `SetLike`) -/
-def findCoercionArgs : findArgType := λ str className args => do
+def findCoercionArgs : findArgType := fun str className args ↦ do
   let some classExpr := (← getEnv).find? className | throwError "no such class {className}"
-  let arity := classExpr.type.forallArity
+  let arity := classExpr.type.getNumHeadForalls
   let eStr := mkAppN (← mkConstWithLevelParams str) args
-  let classArgs := mkArray (arity - 1) none
+  let classArgs := .replicate (arity - 1) none
   return #[some eStr] ++ classArgs
 
 /-- Data needed to generate automatic projections. This data is associated to a name of a projection
-  in a structure that must be used to trigger the search. -/
+in a structure that must be used to trigger the search. -/
 structure AutomaticProjectionData where
   /-- `className` is the name of the class we are looking for. -/
   className : Name
@@ -100,7 +100,7 @@ structure AutomaticProjectionData where
 deriving Inhabited
 
 /-- `@[notation_class]` attribute. Note: this is *not* a `NameMapAttribute` because we key on the
-  argument of the attribute, not the declaration name. -/
+argument of the attribute, not the declaration name. -/
 initialize notationClassAttr : NameMapExtension AutomaticProjectionData ← do
   let ext ← registerNameMapExtension AutomaticProjectionData
   registerBuiltinAttribute {

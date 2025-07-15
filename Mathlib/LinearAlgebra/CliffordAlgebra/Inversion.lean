@@ -20,39 +20,34 @@ variable (Q)
 
 /-- If the quadratic form of a vector is invertible, then so is that vector. -/
 def invertibleιOfInvertible (m : M) [Invertible (Q m)] : Invertible (ι Q m) where
-  invOf := ι Q (⅟ (Q m) • m)
+  invOf := ι Q (⅟(Q m) • m)
   invOf_mul_self := by
     rw [map_smul, smul_mul_assoc, ι_sq_scalar, Algebra.smul_def, ← map_mul, invOf_mul_self, map_one]
   mul_invOf_self := by
     rw [map_smul, mul_smul_comm, ι_sq_scalar, Algebra.smul_def, ← map_mul, invOf_mul_self, map_one]
-#align clifford_algebra.invertible_ι_of_invertible CliffordAlgebra.invertibleιOfInvertible
 
 /-- For a vector with invertible quadratic form, $v^{-1} = \frac{v}{Q(v)}$ -/
 theorem invOf_ι (m : M) [Invertible (Q m)] [Invertible (ι Q m)] :
-    ⅟ (ι Q m) = ι Q (⅟ (Q m) • m) := by
+    ⅟(ι Q m) = ι Q (⅟(Q m) • m) := by
   letI := invertibleιOfInvertible Q m
-  convert (rfl : ⅟ (ι Q m) = _)
-#align clifford_algebra.inv_of_ι CliffordAlgebra.invOf_ι
+  convert (rfl : ⅟(ι Q m) = _)
 
 theorem isUnit_ι_of_isUnit {m : M} (h : IsUnit (Q m)) : IsUnit (ι Q m) := by
   cases h.nonempty_invertible
   letI := invertibleιOfInvertible Q m
   exact isUnit_of_invertible (ι Q m)
-#align clifford_algebra.is_unit_ι_of_is_unit CliffordAlgebra.isUnit_ι_of_isUnit
 
 /-- $aba^{-1}$ is a vector. -/
 theorem ι_mul_ι_mul_invOf_ι (a b : M) [Invertible (ι Q a)] [Invertible (Q a)] :
-    ι Q a * ι Q b * ⅟ (ι Q a) = ι Q ((⅟ (Q a) * QuadraticForm.polar Q a b) • a - b) := by
+    ι Q a * ι Q b * ⅟(ι Q a) = ι Q ((⅟(Q a) * QuadraticMap.polar Q a b) • a - b) := by
   rw [invOf_ι, map_smul, mul_smul_comm, ι_mul_ι_mul_ι, ← map_smul, smul_sub, smul_smul, smul_smul,
     invOf_mul_self, one_smul]
-#align clifford_algebra.ι_mul_ι_mul_inv_of_ι CliffordAlgebra.ι_mul_ι_mul_invOf_ι
 
 /-- $a^{-1}ba$ is a vector. -/
 theorem invOf_ι_mul_ι_mul_ι (a b : M) [Invertible (ι Q a)] [Invertible (Q a)] :
-    ⅟ (ι Q a) * ι Q b * ι Q a = ι Q ((⅟ (Q a) * QuadraticForm.polar Q a b) • a - b) := by
+    ⅟(ι Q a) * ι Q b * ι Q a = ι Q ((⅟(Q a) * QuadraticMap.polar Q a b) • a - b) := by
   rw [invOf_ι, map_smul, smul_mul_assoc, smul_mul_assoc, ι_mul_ι_mul_ι, ← map_smul, smul_sub,
     smul_smul, smul_smul, invOf_mul_self, one_smul]
-#align clifford_algebra.inv_of_ι_mul_ι_mul_ι CliffordAlgebra.invOf_ι_mul_ι_mul_ι
 
 section
 variable [Invertible (2 : R)]

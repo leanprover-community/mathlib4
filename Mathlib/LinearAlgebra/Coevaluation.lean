@@ -5,8 +5,6 @@ Authors: Jakob von Raumer
 -/
 import Mathlib.LinearAlgebra.Contraction
 
-#align_import linear_algebra.coevaluation from "leanprover-community/mathlib"@"d6814c584384ddf2825ff038e868451a7c956f31"
-
 /-!
 # The coevaluation map on finite dimensional vector spaces
 
@@ -27,7 +25,7 @@ noncomputable section
 
 section coevaluation
 
-open TensorProduct FiniteDimensional
+open TensorProduct Module
 
 open TensorProduct
 
@@ -42,17 +40,15 @@ def coevaluation : K →ₗ[K] V ⊗[K] Module.Dual K V :=
   let bV := Basis.ofVectorSpace K V
   (Basis.singleton Unit K).constr K fun _ =>
     ∑ i : Basis.ofVectorSpaceIndex K V, bV i ⊗ₜ[K] bV.coord i
-#align coevaluation coevaluation
 
 theorem coevaluation_apply_one :
     (coevaluation K V) (1 : K) =
       let bV := Basis.ofVectorSpace K V
       ∑ i : Basis.ofVectorSpaceIndex K V, bV i ⊗ₜ[K] bV.coord i := by
-  simp only [coevaluation, id]
+  simp only [coevaluation]
   rw [(Basis.singleton Unit K).constr_apply_fintype K]
   simp only [Fintype.univ_punit, Finset.sum_const, one_smul, Basis.singleton_repr,
-    Basis.equivFun_apply, Basis.coe_ofVectorSpace, one_nsmul, Finset.card_singleton]
-#align coevaluation_apply_one coevaluation_apply_one
+    Basis.equivFun_apply, Basis.coe_ofVectorSpace, Finset.card_singleton]
 
 open TensorProduct
 
@@ -69,12 +65,11 @@ theorem contractLeft_assoc_coevaluation :
   rw [LinearMap.compr₂_apply, LinearMap.compr₂_apply, TensorProduct.mk_apply]
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearEquiv.coe_toLinearMap]
   rw [rid_tmul, one_smul, lid_symm_apply]
-  simp only [LinearEquiv.coe_toLinearMap, LinearMap.lTensor_tmul, coevaluation_apply_one]
+  simp only [LinearMap.lTensor_tmul, coevaluation_apply_one]
   rw [TensorProduct.tmul_sum, map_sum]; simp only [assoc_symm_tmul]
   rw [map_sum]; simp only [LinearMap.rTensor_tmul, contractLeft_apply]
   simp only [Basis.coe_dualBasis, Basis.coord_apply, Basis.repr_self_apply, TensorProduct.ite_tmul]
   rw [Finset.sum_ite_eq']; simp only [Finset.mem_univ, if_true]
-#align contract_left_assoc_coevaluation contractLeft_assoc_coevaluation
 
 /-- This lemma corresponds to one of the coherence laws for duals in rigid categories, see
   `CategoryTheory.Monoidal.Rigid`. -/
@@ -88,11 +83,10 @@ theorem contractLeft_assoc_coevaluation' :
   rw [LinearMap.compr₂_apply, LinearMap.compr₂_apply, TensorProduct.mk_apply]
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearEquiv.coe_toLinearMap]
   rw [lid_tmul, one_smul, rid_symm_apply]
-  simp only [LinearEquiv.coe_toLinearMap, LinearMap.rTensor_tmul, coevaluation_apply_one]
+  simp only [LinearMap.rTensor_tmul, coevaluation_apply_one]
   rw [TensorProduct.sum_tmul, map_sum]; simp only [assoc_tmul]
   rw [map_sum]; simp only [LinearMap.lTensor_tmul, contractLeft_apply]
   simp only [Basis.coord_apply, Basis.repr_self_apply, TensorProduct.tmul_ite]
   rw [Finset.sum_ite_eq]; simp only [Finset.mem_univ, if_true]
-#align contract_left_assoc_coevaluation' contractLeft_assoc_coevaluation'
 
 end coevaluation

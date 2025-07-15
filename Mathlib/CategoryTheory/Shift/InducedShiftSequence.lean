@@ -26,13 +26,13 @@ homotopy category of cochain complexes (TODO), and also on the derived category 
 
 -/
 
-open CategoryTheory Category
+open CategoryTheory Category Functor
 
 namespace CategoryTheory
 
 variable {C D A : Type*} [Category C] [Category D] [Category A]
   {L : C ⥤ D} {F : D ⥤ A} {G : C ⥤ A} (e : L ⋙ F ≅ G) (M : Type*)
-  [AddMonoid M] [HasShift C M] [HasShift D M] [L.CommShift M]
+  [AddMonoid M] [HasShift C M]
   [G.ShiftSequence M] (F' : M → D ⥤ A) (e' : ∀ m, L ⋙ F' m ≅ G.shift m)
   [((whiskeringLeft C D A).obj L).Full] [((whiskeringLeft C D A).obj L).Faithful]
 
@@ -52,6 +52,7 @@ lemma isoZero_hom_app_obj (X : C) :
   NatTrans.congr_app (((whiskeringLeft C D A).obj L).map_preimage _) X
 
 variable (L G)
+variable [HasShift D M] [L.CommShift M]
 
 /-- The `shiftIso` field of the induced shift sequence. -/
 noncomputable def shiftIso (n a a' : M) (ha' : n + a = a') :
@@ -70,6 +71,8 @@ lemma shiftIso_hom_app_obj (n a a' : M) (ha' : n + a = a') (X : C) :
 attribute [irreducible] isoZero shiftIso
 
 end induced
+
+variable [HasShift D M] [L.CommShift M]
 
 /-- Given an isomorphism of functors `e : L ⋙ F ≅ G` relating functors `L : C ⥤ D`,
 `F : D ⥤ A` and `G : C ⥤ A`, an additive monoid `M`, a family of functors `F' : M → D ⥤ A`
@@ -118,6 +121,18 @@ lemma induced_shiftIso_hom_app_obj (n a a' : M) (ha' : n + a = a') (X : C) :
       (F.shift a).map ((L.commShiftIso n).inv.app X) ≫ (e' a).hom.app (X⟦n⟧) ≫
         (G.shiftIso n a a' ha').hom.app X ≫ (e' a').inv.app X := by
   apply induced.shiftIso_hom_app_obj
+
+@[reassoc]
+lemma induced_shiftMap {n : M} {X Y : C} (f : X ⟶ Y⟦n⟧) (a a' : M) (h : n + a = a') :
+    letI := induced e M F' e'
+    F.shiftMap (L.map f ≫ (L.commShiftIso n).hom.app _) a a' h =
+      (e' a).hom.app X ≫ G.shiftMap f a a' h ≫ (e' a').inv.app Y := by
+  dsimp [shiftMap]
+  rw [Functor.map_comp, induced_shiftIso_hom_app_obj, assoc, assoc]
+  nth_rw 2 [← Functor.map_comp_assoc]
+  simp only [comp_obj, Iso.hom_inv_id_app, map_id, id_comp]
+  rw [← NatTrans.naturality_assoc]
+  rfl
 
 end ShiftSequence
 

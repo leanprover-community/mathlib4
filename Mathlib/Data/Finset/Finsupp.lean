@@ -3,12 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Finsupp
-import Mathlib.Data.Finset.Pointwise
+import Mathlib.Algebra.BigOperators.Finsupp.Basic
 import Mathlib.Data.Finsupp.Indicator
 import Mathlib.Data.Fintype.BigOperators
-
-#align_import data.finset.finsupp from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Finitely supported product of finsets
@@ -33,20 +31,20 @@ noncomputable section
 
 open Finsupp
 
-open scoped Classical
 open Pointwise
 
 variable {ι α : Type*} [Zero α] {s : Finset ι} {f : ι →₀ α}
 
 namespace Finset
 
+open scoped Classical in
 /-- Finitely supported product of finsets. -/
 protected def finsupp (s : Finset ι) (t : ι → Finset α) : Finset (ι →₀ α) :=
   (s.pi t).map ⟨indicator s, indicator_injective s⟩
-#align finset.finsupp Finset.finsupp
 
 theorem mem_finsupp_iff {t : ι → Finset α} :
     f ∈ s.finsupp t ↔ f.support ⊆ s ∧ ∀ i ∈ s, f i ∈ t i := by
+  classical
   refine mem_map.trans ⟨?_, ?_⟩
   · rintro ⟨f, hf, rfl⟩
     refine ⟨support_indicator_subset _ _, fun i hi => ?_⟩
@@ -54,8 +52,7 @@ theorem mem_finsupp_iff {t : ι → Finset α} :
     exact indicator_of_mem hi _
   · refine fun h => ⟨fun i _ => f i, mem_pi.2 h.2, ?_⟩
     ext i
-    exact ite_eq_left_iff.2 fun hi => (not_mem_support_iff.1 fun H => hi <| h.1 H).symm
-#align finset.mem_finsupp_iff Finset.mem_finsupp_iff
+    exact ite_eq_left_iff.2 fun hi => (notMem_support_iff.1 fun H => hi <| h.1 H).symm
 
 /-- When `t` is supported on `s`, `f ∈ s.finsupp t` precisely means that `f` is pointwise in `t`. -/
 @[simp]
@@ -69,16 +66,13 @@ theorem mem_finsupp_iff_of_support_subset {t : ι →₀ Finset α} (ht : t.supp
             ⟨fun hi => ht <| mem_support_iff.2 fun H => mem_support_iff.1 hi ?_, fun _ => h⟩⟩)
   · by_cases hi : i ∈ s
     · exact h.2 hi
-    · rw [not_mem_support_iff.1 (mt h.1 hi), not_mem_support_iff.1 fun H => hi <| ht H]
+    · rw [notMem_support_iff.1 (mt h.1 hi), notMem_support_iff.1 fun H => hi <| ht H]
       exact zero_mem_zero
   · rwa [H, mem_zero] at h
-#align finset.mem_finsupp_iff_of_support_subset Finset.mem_finsupp_iff_of_support_subset
 
 @[simp]
-theorem card_finsupp (s : Finset ι) (t : ι → Finset α) :
-    (s.finsupp t).card = ∏ i ∈ s, (t i).card :=
-  (card_map _).trans <| card_pi _ _
-#align finset.card_finsupp Finset.card_finsupp
+theorem card_finsupp (s : Finset ι) (t : ι → Finset α) : #(s.finsupp t) = ∏ i ∈ s, #(t i) := by
+  classical exact (card_map _).trans <| card_pi _ _
 
 end Finset
 
@@ -90,17 +84,14 @@ namespace Finsupp
 `f.pi` of all finitely supported functions whose value at `i` is in `f i` for all `i`. -/
 def pi (f : ι →₀ Finset α) : Finset (ι →₀ α) :=
   f.support.finsupp f
-#align finsupp.pi Finsupp.pi
 
 @[simp]
 theorem mem_pi {f : ι →₀ Finset α} {g : ι →₀ α} : g ∈ f.pi ↔ ∀ i, g i ∈ f i :=
   mem_finsupp_iff_of_support_subset <| Subset.refl _
-#align finsupp.mem_pi Finsupp.mem_pi
 
 @[simp]
-theorem card_pi (f : ι →₀ Finset α) : f.pi.card = f.prod fun i => (f i).card := by
+theorem card_pi (f : ι →₀ Finset α) : #f.pi = f.prod fun i ↦ #(f i) := by
   rw [pi, card_finsupp]
   exact Finset.prod_congr rfl fun i _ => by simp only [Pi.natCast_apply, Nat.cast_id]
-#align finsupp.card_pi Finsupp.card_pi
 
 end Finsupp

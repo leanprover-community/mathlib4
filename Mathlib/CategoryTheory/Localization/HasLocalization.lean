@@ -46,7 +46,7 @@ variable (W : MorphismProperty C)
 namespace MorphismProperty
 
 /-- The data of a localized category with a given universe
-for the morphisms.  -/
+for the morphisms. -/
 class HasLocalization where
   /-- the objects of the localized category. -/
   {D : Type u}

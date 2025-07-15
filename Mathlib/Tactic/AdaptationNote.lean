@@ -3,14 +3,15 @@ Copyright (c) 2024 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Lean
+import Mathlib.Init
+import Lean.Meta.Tactic.TryThis
 
 /-!
 # Adaptation notes
 
 This file defines a `#adaptation_note` command.
 Adaptation notes are comments that are used to indicate that a piece of code
-has been changed to accomodate a change in Lean core.
+has been changed to accommodate a change in Lean core.
 They typically require further action/maintenance to be taken in the future.
 -/
 
@@ -37,7 +38,7 @@ def reportAdaptationNote (f : Syntax → Meta.Tactic.TryThis.Suggestion) : MetaM
     Meta.Tactic.TryThis.addSuggestion (← getRef) (f stx') (origSpan? := ← getRef)
 
 /-- Adaptation notes are comments that are used to indicate that a piece of code
-has been changed to accomodate a change in Lean core.
+has been changed to accommodate a change in Lean core.
 They typically require further action/maintenance to be taken in the future. -/
 elab (name := adaptationNoteCmd) "#adaptation_note " (docComment)? : command => do
   Elab.Command.liftTermElabM <| reportAdaptationNote (fun s => (⟨s⟩ : TSyntax `tactic))

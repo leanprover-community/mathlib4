@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre-Alexandre Bazin
 -/
 import Mathlib.LinearAlgebra.DFinsupp
+import Mathlib.RingTheory.Ideal.BigOperators
 import Mathlib.RingTheory.Ideal.Operations
-
-#align_import ring_theory.coprime.ideal from "leanprover-community/mathlib"@"2bbc7e3884ba234309d2a43b19144105a753292e"
 
 /-!
 # An additional lemma about coprime ideals
@@ -34,10 +33,10 @@ theorem iSup_iInf_eq_top_iff_pairwise {t : Finset ι} (h : t.Nonempty) (I : ι �
   haveI : DecidableEq ι := Classical.decEq ι
   rw [eq_top_iff_one, Submodule.mem_iSup_finset_iff_exists_sum]
   refine h.cons_induction ?_ ?_ <;> clear t h
-  · simp only [Finset.sum_singleton, Finset.coe_singleton, Set.pairwise_singleton, iff_true_iff]
+  · simp only [Finset.sum_singleton, Finset.coe_singleton, Set.pairwise_singleton, iff_true]
     refine fun a => ⟨fun i => if h : i = a then ⟨1, ?_⟩ else 0, ?_⟩
     · simp [h]
-    · simp only [dif_pos, dif_ctx_congr, Submodule.coe_mk, eq_self_iff_true]
+    · simp only [dif_pos, Submodule.coe_mk]
   intro a t hat h ih
   rw [Finset.coe_cons,
     Set.pairwise_insert_of_symmetric fun i j (h : I i ⊔ I j = ⊤) ↦ (sup_comm _ _).trans h]
@@ -110,6 +109,5 @@ theorem iSup_iInf_eq_top_iff_pairwise {t : Finset ι} (h : t.Nonempty) (I : ι �
       rw [dif_neg]
       rintro rfl
       exact hat hj
-#align ideal.supr_infi_eq_top_iff_pairwise Ideal.iSup_iInf_eq_top_iff_pairwise
 
 end Ideal

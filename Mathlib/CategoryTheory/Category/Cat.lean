@@ -4,11 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
-import Mathlib.CategoryTheory.DiscreteCategory
+import Mathlib.CategoryTheory.Discrete.Basic
 import Mathlib.CategoryTheory.Types
 import Mathlib.CategoryTheory.Bicategory.Strict
-
-#align_import category_theory.category.Cat from "leanprover-community/mathlib"@"e97cf15cd1aec9bd5c193b2ffac5a6dc9118912b"
 
 /-!
 # Category of categories
@@ -28,13 +26,13 @@ universe v u
 
 namespace CategoryTheory
 
+open Bicategory Functor
+
 -- intended to be used with explicit universe parameters
 /-- Category of categories. -/
 @[nolint checkUnivs]
 def Cat :=
   Bundled Category.{v, u}
-set_option linter.uppercaseLean3 false in
-#align category_theory.Cat CategoryTheory.Cat
 
 namespace Cat
 
@@ -47,14 +45,10 @@ instance : CoeSort Cat (Type u) :=
 
 instance str (C : Cat.{v, u}) : Category.{v, u} C :=
   Bundled.str C
-set_option linter.uppercaseLean3 false in
-#align category_theory.Cat.str CategoryTheory.Cat.str
 
 /-- Construct a bundled `Cat` from the underlying type and the typeclass. -/
 def of (C : Type u) [Category.{v} C] : Cat.{v, u} :=
   Bundled.of C
-set_option linter.uppercaseLean3 false in
-#align category_theory.Cat.of CategoryTheory.Cat.of
 
 /-- Bicategory structure on `Cat` -/
 instance bicategory : Bicategory.{max v u, max v u} Cat.{v, u} where
@@ -62,56 +56,122 @@ instance bicategory : Bicategory.{max v u, max v u} Cat.{v, u} where
   id C := 𝟭 C
   comp F G := F ⋙ G
   homCategory := fun _ _ => Functor.category
-  whiskerLeft {C} {D} {E} F G H η := whiskerLeft F η
-  whiskerRight {C} {D} {E} F G η H := whiskerRight η H
-  associator {A} {B} {C} D := Functor.associator
-  leftUnitor {A} B := Functor.leftUnitor
-  rightUnitor {A} B := Functor.rightUnitor
-  pentagon := fun {A} {B} {C} {D} {E}=> Functor.pentagon
-  triangle {A} {B} {C} := Functor.triangle
-set_option linter.uppercaseLean3 false in
-#align category_theory.Cat.bicategory CategoryTheory.Cat.bicategory
+  whiskerLeft {_} {_} {_} F _ _ η := whiskerLeft F η
+  whiskerRight {_} {_} {_} _ _ η H := whiskerRight η H
+  associator {_} {_} {_} _ := Functor.associator
+  leftUnitor {_} _ := Functor.leftUnitor
+  rightUnitor {_} _ := Functor.rightUnitor
+  pentagon := fun {_} {_} {_} {_} {_}=> Functor.pentagon
+  triangle {_} {_} {_} := Functor.triangle
 
 /-- `Cat` is a strict bicategory. -/
 instance bicategory.strict : Bicategory.Strict Cat.{v, u} where
   id_comp {C} {D} F := by cases F; rfl
   comp_id {C} {D} F := by cases F; rfl
   assoc := by intros; rfl
-set_option linter.uppercaseLean3 false in
-#align category_theory.Cat.bicategory.strict CategoryTheory.Cat.bicategory.strict
 
 /-- Category structure on `Cat` -/
 instance category : LargeCategory.{max v u} Cat.{v, u} :=
   StrictBicategory.category Cat.{v, u}
-set_option linter.uppercaseLean3 false in
-#align category_theory.Cat.category CategoryTheory.Cat.category
+
+@[ext]
+theorem ext {C D : Cat} {F G : C ⟶ D} {α β : F ⟶ G} (w : α.app = β.app) : α = β :=
+  NatTrans.ext w
+
+@[simp]
+theorem id_obj {C : Cat} (X : C) : (𝟙 C : C ⥤ C).obj X = X :=
+  rfl
 
 @[simp]
 theorem id_map {C : Cat} {X Y : C} (f : X ⟶ Y) : (𝟙 C : C ⥤ C).map f = f :=
-  Functor.id_map f
-set_option linter.uppercaseLean3 false in
-#align category_theory.Cat.id_map CategoryTheory.Cat.id_map
+  rfl
 
 @[simp]
 theorem comp_obj {C D E : Cat} (F : C ⟶ D) (G : D ⟶ E) (X : C) : (F ≫ G).obj X = G.obj (F.obj X) :=
-  Functor.comp_obj F G X
-set_option linter.uppercaseLean3 false in
-#align category_theory.Cat.comp_obj CategoryTheory.Cat.comp_obj
+  rfl
 
 @[simp]
 theorem comp_map {C D E : Cat} (F : C ⟶ D) (G : D ⟶ E) {X Y : C} (f : X ⟶ Y) :
     (F ≫ G).map f = G.map (F.map f) :=
-  Functor.comp_map F G f
-set_option linter.uppercaseLean3 false in
-#align category_theory.Cat.comp_map CategoryTheory.Cat.comp_map
+  rfl
+
+@[simp]
+theorem id_app {C D : Cat} (F : C ⟶ D) (X : C) : (𝟙 F : F ⟶ F).app X = 𝟙 (F.obj X) := rfl
+
+@[simp]
+theorem comp_app {C D : Cat} {F G H : C ⟶ D} (α : F ⟶ G) (β : G ⟶ H) (X : C) :
+    (α ≫ β).app X = α.app X ≫ β.app X := rfl
+
+@[simp]
+theorem eqToHom_app {C D : Cat} (F G : C ⟶ D) (h : F = G) (X : C) :
+    (eqToHom h).app X = eqToHom (Functor.congr_obj h X) :=
+  CategoryTheory.eqToHom_app h X
+
+@[simp]
+lemma whiskerLeft_app {C D E : Cat} (F : C ⟶ D) {G H : D ⟶ E} (η : G ⟶ H) (X : C) :
+    (F ◁ η).app X = η.app (F.obj X) :=
+  rfl
+
+@[simp]
+lemma whiskerRight_app {C D E : Cat} {F G : C ⟶ D} (H : D ⟶ E) (η : F ⟶ G) (X : C) :
+    (η ▷ H).app X = H.map (η.app X) :=
+  rfl
+
+lemma leftUnitor_hom_app {B C : Cat} (F : B ⟶ C) (X : B) : (λ_ F).hom.app X = eqToHom (by simp) :=
+  rfl
+
+lemma leftUnitor_inv_app {B C : Cat} (F : B ⟶ C) (X : B) : (λ_ F).inv.app X = eqToHom (by simp) :=
+  rfl
+
+lemma rightUnitor_hom_app {B C : Cat} (F : B ⟶ C) (X : B) : (ρ_ F).hom.app X = eqToHom (by simp) :=
+  rfl
+
+lemma rightUnitor_inv_app {B C : Cat} (F : B ⟶ C) (X : B) : (ρ_ F).inv.app X = eqToHom (by simp) :=
+  rfl
+
+lemma associator_hom_app {B C D E : Cat} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ E) (X : B) :
+    (α_ F G H).hom.app X = eqToHom (by simp) :=
+  rfl
+
+lemma associator_inv_app {B C D E : Cat} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ E) (X : B) :
+    (α_ F G H).inv.app X = eqToHom (by simp) :=
+  rfl
+
+/-- The identity in the category of categories equals the identity functor. -/
+theorem id_eq_id (X : Cat) : 𝟙 X = 𝟭 X := rfl
+
+/-- Composition in the category of categories equals functor composition. -/
+theorem comp_eq_comp {X Y Z : Cat} (F : X ⟶ Y) (G : Y ⟶ Z) : F ≫ G = F ⋙ G := rfl
+
+@[simp] theorem of_α (C) [Category C] : (of C).α = C := rfl
+
+@[simp] theorem coe_of (C : Cat.{v, u}) : Cat.of C = C := rfl
+
+end Cat
+
+namespace Functor
+
+/-- Functors between categories of the same size define arrows in `Cat`. -/
+def toCatHom {C D : Type u} [Category.{v} C] [Category.{v} D] (F : C ⥤ D) :
+    Cat.of C ⟶ Cat.of D := F
+
+/-- Arrows in `Cat` define functors. -/
+def ofCatHom {C D : Type} [Category C] [Category D] (F : Cat.of C ⟶ Cat.of D) : C ⥤ D := F
+
+@[simp] theorem to_ofCatHom {C D : Type} [Category C] [Category D] (F : Cat.of C ⟶ Cat.of D) :
+    (ofCatHom F).toCatHom = F := rfl
+
+@[simp] theorem of_toCatHom {C D : Type} [Category C] [Category D] (F : C ⥤ D) :
+    ofCatHom (F.toCatHom) = F := rfl
+
+end Functor
+namespace Cat
 
 /-- Functor that gets the set of objects of a category. It is not
 called `forget`, because it is not a faithful functor. -/
 def objects : Cat.{v, u} ⥤ Type u where
   obj C := C
   map F := F.obj
-set_option linter.uppercaseLean3 false in
-#align category_theory.Cat.objects CategoryTheory.Cat.objects
 
 -- Porting note: this instance was needed for CategoryTheory.Category.Cat.Limit
 instance (X : Cat.{v, u}) : Category (objects.obj X) := (inferInstance : Category X)
@@ -126,8 +186,20 @@ def equivOfIso {C D : Cat} (γ : C ≅ D) : C ≌ D where
   inverse := γ.inv
   unitIso := eqToIso <| Eq.symm γ.hom_inv_id
   counitIso := eqToIso γ.inv_hom_id
-set_option linter.uppercaseLean3 false in
-#align category_theory.Cat.equiv_of_iso CategoryTheory.Cat.equivOfIso
+
+/-- Under certain hypotheses, an equivalence of categories actually
+defines an isomorphism in `Cat`. -/
+@[simps]
+def isoOfEquiv {C D : Cat.{v, u}} (e : C ≌ D)
+    (h₁ : ∀ (X : C), e.inverse.obj (e.functor.obj X) = X)
+    (h₂ : ∀ (Y : D), e.functor.obj (e.inverse.obj Y) = Y)
+    (h₃ : ∀ (X : C), e.unitIso.hom.app X = eqToHom (h₁ X).symm := by aesop_cat)
+    (h₄ : ∀ (Y : D), e.counitIso.hom.app Y = eqToHom (h₂ Y) := by aesop_cat) :
+    C ≅ D where
+  hom := e.functor
+  inv := e.inverse
+  hom_inv_id := (Functor.ext_of_iso e.unitIso (fun X ↦ (h₁ X).symm) h₃).symm
+  inv_hom_id := (Functor.ext_of_iso e.counitIso h₂ h₄)
 
 end
 
@@ -140,20 +212,16 @@ This ought to be modelled as a 2-functor!
 @[simps]
 def typeToCat : Type u ⥤ Cat where
   obj X := Cat.of (Discrete X)
-  map := fun {X} {Y} f => by
-    dsimp
-    exact Discrete.functor (Discrete.mk ∘ f)
+  map := fun f => Discrete.functor (Discrete.mk ∘ f)
   map_id X := by
     apply Functor.ext
     · intro X Y f
       cases f
-      simp only [id_eq, eqToHom_refl, Cat.id_map, Category.comp_id, Category.id_comp]
+      simp only [eqToHom_refl, Cat.id_map, Category.comp_id, Category.id_comp]
       apply ULift.ext
       aesop_cat
-    · aesop_cat
+    · simp
   map_comp f g := by apply Functor.ext; aesop_cat
-set_option linter.uppercaseLean3 false in
-#align category_theory.Type_to_Cat CategoryTheory.typeToCat
 
 instance : Functor.Faithful typeToCat.{u} where
   map_injective {_X} {_Y} _f _g h :=

@@ -29,10 +29,11 @@ lemma essSurj_mapComposableArrows_of_hasRightCalculusOfFractions
     (L.mapComposableArrows n).EssSurj where
   mem_essImage Y := by
     have := essSurj L W
-    induction n
-    · obtain ⟨Y, rfl⟩ := mk₀_surjective Y
+    induction n with
+    | zero =>
+      obtain ⟨Y, rfl⟩ := mk₀_surjective Y
       exact ⟨mk₀ _, ⟨isoMk₀ (L.objObjPreimageIso Y)⟩⟩
-    · next n hn =>
+    | succ n hn =>
       obtain ⟨Y, Z, f, rfl⟩ := ComposableArrows.precomp_surjective Y
       obtain ⟨Y', ⟨e⟩⟩ := hn Y
       obtain ⟨f', hf'⟩ := exists_rightFraction L W
