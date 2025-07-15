@@ -725,8 +725,39 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
               have h_chi_plus_alpha_is_root : χ.toLinear + α.1.toLinear ∈ Set.range S.root := by
                 -- This requires showing the connection between genWeightSpace L μ ≠ ⊥
                 -- and μ being a root
-                -- The key insight is that for Cartan subalgebras, this correspondence holds
-                sorry -- Technical: weight space ≠ ⊥ ⟺ root
+                -- The key insight is: if genWeightSpace L μ ≠ ⊥, then we can construct a Weight
+                -- and the root system S.root is exactly the range of Weight.toLinear
+                -- for nonzero weights
+                -- Since h_ne_bot : genWeightSpace L (χ.toLinear + α.1.toLinear) ≠ ⊥,
+                -- we can construct a weight γ with γ.toLinear = χ.toLinear + α.1.toLinear
+                let γ : Weight K H L := {
+                  toFun := χ.toLinear + α.1.toLinear,
+                  genWeightSpace_ne_bot' := h_ne_bot
+                }
+                -- γ is nonzero since χ.toLinear + α.1.toLinear ≠ 0 (from w_plus)
+                have hγ_nonzero : γ.IsNonZero := by
+                  intro h_zero
+                  apply w_plus
+                  -- Convert the weight equality to linear map equality
+                  have h_zero_eq : (γ.toLinear : H →ₗ[K] K) = 0 := by
+                    ext h
+                    simp [Weight.IsZero.eq h_zero]
+                  -- By definition: γ.toLinear = χ.toLinear + α.1.toLinear
+                  have h_def : γ.toLinear = χ.toLinear + α.1.toLinear := rfl
+                  rw [h_def] at h_zero_eq
+                  exact h_zero_eq
+                -- By definition of rootSystem H, S.root maps H.root to the dual space
+                -- and H.root consists exactly of nonzero weights
+                -- Therefore γ.toLinear ∈ Set.range S.root
+                have γ_in_root : γ ∈ H.root := by
+                  -- LieSubalgebra.root should be the set/finset of nonzero weights
+                  -- Try simp to convert IsNonZero to membership
+                  simp [LieSubalgebra.root]
+                  exact hγ_nonzero
+                -- Use γ as the witness
+                use ⟨γ, γ_in_root⟩
+                -- By definition of rootSystem, S.root just returns the weight's toLinear
+                rfl
 
               -- Step 4: Apply RootPairing.root_mem_submodule_iff_of_add_mem_invtSubmodule
               -- We need indices i, j such that S.root i = χ.toLinear and S.root j = α.1.toLinear
