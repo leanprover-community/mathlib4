@@ -332,7 +332,7 @@ def cycleIcc (i j : Fin n) : Perm (Fin n) := if hij : i ≤ j then (cycleRange (
   (sub_val_lt_sub hij))).extendDomain (natAdd_castLEEmb (Nat.sub_le n i)).toEquivRange else 1
 
 theorem cycleIcc_of_lt (h : k < i) : (cycleIcc i j) k = k := by
-  rcases Decidable.em (i ≤ j) with hij | hij
+  by_cases hij : i ≤ j
   · simpa [cycleIcc, hij] using Perm.extendDomain_apply_not_subtype _ _ (by
       rw [range_natAdd_castLEEmb, Set.mem_setOf_eq]; omega)
   · simp [cycleIcc, hij]
@@ -349,7 +349,7 @@ private lemma cycleIcc_simp_lemma (h : i ≤ k) (kin : k ∈ Set.range (natAdd_c
   simpa [symm_apply_eq] using eq_of_val_eq (by simp; omega)
 
 theorem cycleIcc_of_gt (h : j < k) : (cycleIcc i j) k = k := by
-  rcases Decidable.em (i ≤ j) with hij | hij
+  by_cases hij : i ≤ j
   · have kin : k ∈ Set.range (natAdd_castLEEmb (Nat.sub_le n i)) := by
       rw [range_natAdd_castLEEmb, Set.mem_setOf_eq]
       omega
