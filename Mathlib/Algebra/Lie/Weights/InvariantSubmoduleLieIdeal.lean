@@ -342,10 +342,10 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
                 exact h_coroot
 
           -- Handle special cases first: if they occur, we can prove the goal directly
-          by_cases h_plus_case : χ.toLinear + α.1.toLinear = 0
+          by_cases w_plus : χ.toLinear + α.1.toLinear = 0
           · -- Case: χ + α = 0 (χ = -α) - we're done here
             have h_chi_neg_alpha : χ.toLinear = -α.1.toLinear := by
-              simp only [add_eq_zero_iff_eq_neg] at h_plus_case; exact h_plus_case
+              simp only [add_eq_zero_iff_eq_neg] at w_plus; exact w_plus
 
             -- Prove the main goal directly when this special case holds
             apply LieSubmodule.mem_iSup_of_mem α
@@ -376,71 +376,57 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
                 simp only [sl2SubalgebraOfRoot_as_H_submodule] at hm_α; exact hm_α
               apply LieSubalgebra.lie_mem; exact hx_χ_in_sl2; exact hm_α_in_sl2
             exact h_bracket_in_sl2
-          · -- Case: χ + α ≠ 0, now we have h_plus_ne_zero : χ.toLinear + α.1.toLinear ≠ 0
-            have h_plus_ne_zero : χ.toLinear + α.1.toLinear ≠ 0 := h_plus_case
-
-            by_cases h_minus_case : χ.toLinear - α.1.toLinear = 0
-            · -- Case: χ - α = 0 (χ = α) - we're done here
-              have h_chi_eq_alpha : χ.toLinear = α.1.toLinear := by
-                simp only [sub_eq_zero] at h_minus_case; exact h_minus_case
+          by_cases w_minus : χ.toLinear - α.1.toLinear = 0
+          · -- Case: χ - α = 0 (χ = α) - we're done here
+            have h_chi_eq_alpha : χ.toLinear = α.1.toLinear := by
+              simp only [sub_eq_zero] at w_minus; exact w_minus
 
               -- Prove the main goal directly when this special case holds
-              apply LieSubmodule.mem_iSup_of_mem α
-              simp only [sl2SubalgebraOfRoot_as_H_submodule]
+            apply LieSubmodule.mem_iSup_of_mem α
+            simp only [sl2SubalgebraOfRoot_as_H_submodule]
 
-              have hx_χ_alpha : x_χ ∈ genWeightSpace L α.1.toLinear := by
-                rw [← h_chi_eq_alpha]; exact hx_χ
-
-              have hx_χ_in_sl2 : x_χ ∈ sl2SubalgebraOfRoot α.2.2 := by
-                have hx_χ_pos : x_χ ∈ rootSpace H α.1.toLinear := hx_χ_alpha
-                obtain ⟨h, e, f, ht, heα, hfα⟩ :=
-                  LieAlgebra.IsKilling.exists_isSl2Triple_of_weight_isNonZero α.2.2
-                rw [LieAlgebra.IsKilling.mem_sl2SubalgebraOfRoot_iff α.2.2 ht heα hfα]
-                have h_dim : Module.finrank K (rootSpace H α.1.toLinear) = 1 :=
-                  LieAlgebra.IsKilling.finrank_rootSpace_eq_one α.1 α.2.2
-                have he_ne_zero : e ≠ 0 := ht.e_ne_zero
-                have he_subtype_ne_zero : (⟨e, heα⟩ : rootSpace H α.1.toLinear) ≠ 0 := by
-                  rwa [ne_eq, LieSubmodule.mk_eq_zero]
-                obtain ⟨c, hc⟩ := (finrank_eq_one_iff_of_nonzero'
-                  ⟨e, heα⟩ he_subtype_ne_zero).mp h_dim ⟨x_χ, hx_χ_pos⟩
-                have hc_proj : x_χ = c • e := by
-                  have : x_χ = (⟨x_χ, hx_χ_pos⟩ : rootSpace H α.1.toLinear).val := rfl
-                  rw [this, ← hc]; simp
-                exact ⟨c, 0, 0, by simp [hc_proj]⟩
-
-              have h_bracket_in_sl2 : ⁅x_χ, m_α⁆ ∈ sl2SubalgebraOfRoot α.2.2 := by
-                have hm_α_in_sl2 : m_α ∈ sl2SubalgebraOfRoot α.2.2 := by
-                  simp only [sl2SubalgebraOfRoot_as_H_submodule] at hm_α; exact hm_α
-                apply LieSubalgebra.lie_mem; exact hx_χ_in_sl2; exact hm_α_in_sl2
-              exact h_bracket_in_sl2
-            · -- Case: χ - α ≠ 0, now we have h_minus_ne_zero : χ.toLinear - α.1.toLinear ≠ 0
-              have h_minus_ne_zero : χ.toLinear - α.1.toLinear ≠ 0 := h_minus_case
-
-              by_cases h_chi_case : χ.toLinear = 0
-              · -- Case: χ = 0 (x_χ is in H) - we're done here
-                have hx_χ_in_H : x_χ ∈ H.toLieSubmodule := by
-                  rw [← rootSpace_zero_eq K L H]
-                  convert hx_χ
-                  ext h; simp only [Pi.zero_apply]
-                  have h_apply : (χ.toLinear : H → K) h = 0 := by rw [h_chi_case]; rfl
-                  exact h_apply.symm
-
-                -- Prove the main goal directly when this special case holds
-                apply LieSubmodule.mem_iSup_of_mem α
-                simp only [sl2SubalgebraOfRoot_as_H_submodule]
-
-                have hm_α_base : m_α ∈ sl2SubalgebraOfRoot α.2.2 := by
-                  simp only [sl2SubalgebraOfRoot_as_H_submodule] at hm_α; exact hm_α
-                exact sl2SubalgebraOfRoot_stable_under_H α.1 α.2.2 ⟨x_χ, hx_χ_in_H⟩ m_α hm_α_base
-              · -- Case: χ ≠ 0, now we have h_chi_ne_zero : χ.toLinear ≠ 0
-                have h_chi_ne_zero : χ.toLinear ≠ 0 := h_chi_case
-
-                -- Now we're in the general case with χ + α ≠ 0, χ - α ≠ 0, and χ ≠ 0
-                by_cases h_chi_in_q : χ.toLinear ∈ q
-                · -- Case: χ ∈ q (general case with invariance)
-                  sorry
-                · -- Case: χ ∉ q (general case without invariance)
-                  sorry
+            have hx_χ_alpha : x_χ ∈ genWeightSpace L α.1.toLinear := by
+              rw [← h_chi_eq_alpha]; exact hx_χ
+            have hx_χ_in_sl2 : x_χ ∈ sl2SubalgebraOfRoot α.2.2 := by
+              have hx_χ_pos : x_χ ∈ rootSpace H α.1.toLinear := hx_χ_alpha
+              obtain ⟨h, e, f, ht, heα, hfα⟩ :=
+                LieAlgebra.IsKilling.exists_isSl2Triple_of_weight_isNonZero α.2.2
+              rw [LieAlgebra.IsKilling.mem_sl2SubalgebraOfRoot_iff α.2.2 ht heα hfα]
+              have h_dim : Module.finrank K (rootSpace H α.1.toLinear) = 1 :=
+                LieAlgebra.IsKilling.finrank_rootSpace_eq_one α.1 α.2.2
+              have he_ne_zero : e ≠ 0 := ht.e_ne_zero
+              have he_subtype_ne_zero : (⟨e, heα⟩ : rootSpace H α.1.toLinear) ≠ 0 := by
+                rwa [ne_eq, LieSubmodule.mk_eq_zero]
+              obtain ⟨c, hc⟩ := (finrank_eq_one_iff_of_nonzero'
+                ⟨e, heα⟩ he_subtype_ne_zero).mp h_dim ⟨x_χ, hx_χ_pos⟩
+              have hc_proj : x_χ = c • e := by
+                have : x_χ = (⟨x_χ, hx_χ_pos⟩ : rootSpace H α.1.toLinear).val := rfl
+                rw [this, ← hc]; simp
+              exact ⟨c, 0, 0, by simp [hc_proj]⟩
+            have h_bracket_in_sl2 : ⁅x_χ, m_α⁆ ∈ sl2SubalgebraOfRoot α.2.2 := by
+              have hm_α_in_sl2 : m_α ∈ sl2SubalgebraOfRoot α.2.2 := by
+                simp only [sl2SubalgebraOfRoot_as_H_submodule] at hm_α; exact hm_α
+              apply LieSubalgebra.lie_mem; exact hx_χ_in_sl2; exact hm_α_in_sl2
+            exact h_bracket_in_sl2
+          by_cases w_chi : χ.toLinear = 0
+          · -- Case: χ = 0 (x_χ is in H) - we're done here
+            have hx_χ_in_H : x_χ ∈ H.toLieSubmodule := by
+              rw [← rootSpace_zero_eq K L H]
+              convert hx_χ
+              ext h; simp only [Pi.zero_apply]
+              have h_apply : (χ.toLinear : H → K) h = 0 := by rw [w_chi]; rfl
+              exact h_apply.symm
+            -- Prove the main goal directly when this special case holds
+            apply LieSubmodule.mem_iSup_of_mem α
+            simp only [sl2SubalgebraOfRoot_as_H_submodule]
+            have hm_α_base : m_α ∈ sl2SubalgebraOfRoot α.2.2 := by
+              simp only [sl2SubalgebraOfRoot_as_H_submodule] at hm_α; exact hm_α
+            exact sl2SubalgebraOfRoot_stable_under_H α.1 α.2.2 ⟨x_χ, hx_χ_in_H⟩ m_α hm_α_base
+          by_cases h_chi_in_q : χ.toLinear ∈ q
+          · -- Case: χ ∈ q (general case with invariance)
+            sorry
+          · -- Case: χ ∉ q (general case without invariance)
+            sorry
 
         | zero =>
           simp only [LieSubmodule.iSup_toSubmodule, Submodule.carrier_eq_coe, lie_zero,
