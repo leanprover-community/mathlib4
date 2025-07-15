@@ -307,8 +307,6 @@ def lift : (α → M) ≃ (FreeMonoid α →* M) where
     map_one' := rfl
     map_mul' := fun _ _ ↦ by simp only [prodAux_eq, toList_mul, List.map_append, List.prod_append] }
   invFun f x := f (of x)
-  left_inv _ := rfl
-  right_inv _ := hom_eq fun _ ↦ rfl
 
 @[to_additive (attr := simp)]
 theorem lift_ofList (f : α → M) (l : List α) : lift f (ofList l) = (l.map f).prod :=

@@ -17,7 +17,7 @@ categories of sheaves. We also show that `G` preserves sheafification.
 
 namespace CategoryTheory
 
-open GrothendieckTopology CategoryTheory Limits Opposite
+open GrothendieckTopology Limits Opposite
 
 universe v₁ v₂ u₁ u₂
 

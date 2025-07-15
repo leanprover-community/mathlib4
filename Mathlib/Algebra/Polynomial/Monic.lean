@@ -187,7 +187,7 @@ theorem not_dvd_of_natDegree_lt (hp : Monic p) (h0 : q ≠ 0) (hl : natDegree q 
     ¬p ∣ q := by
   rintro ⟨r, rfl⟩
   rw [hp.natDegree_mul' <| right_ne_zero_of_mul h0] at hl
-  exact hl.not_le (Nat.le_add_right _ _)
+  exact hl.not_ge (Nat.le_add_right _ _)
 
 theorem not_dvd_of_degree_lt (hp : Monic p) (h0 : q ≠ 0) (hl : degree q < degree p) : ¬p ∣ q :=
   Monic.not_dvd_of_natDegree_lt hp h0 <| natDegree_lt_natDegree h0 hl

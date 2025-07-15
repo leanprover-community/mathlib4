@@ -156,7 +156,7 @@ theorem generateMeasurableRec_of_omega1_le (s : Set (Set α)) {i : Ordinal.{v}} 
 theorem cardinal_generateMeasurableRec_le (s : Set (Set α)) (i : Ordinal.{v}) :
     #(generateMeasurableRec s i) ≤ max #s 2 ^ ℵ₀ := by
   suffices ∀ i ≤ ω₁, #(generateMeasurableRec s i) ≤ max #s 2 ^ ℵ₀ by
-    obtain hi | hi := le_or_lt i ω₁
+    obtain hi | hi := le_or_gt i ω₁
     · exact this i hi
     · rw [generateMeasurableRec_of_omega1_le s hi.le]
       exact this _ le_rfl

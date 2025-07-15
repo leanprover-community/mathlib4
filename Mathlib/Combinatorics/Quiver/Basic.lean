@@ -65,8 +65,6 @@ def Hom.opEquiv {V} [Quiver V] {X Y : V} :
     (X ⟶ Y) ≃ (Opposite.op Y ⟶ Opposite.op X) where
   toFun := Opposite.op
   invFun := Opposite.unop
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- A type synonym for a quiver with no arrows. -/
 def Empty (V : Type u) : Type u := V

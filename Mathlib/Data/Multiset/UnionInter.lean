@@ -167,7 +167,7 @@ lemma inter_add_distrib (s t u : Multiset α) : s ∩ t + u = (s + u) ∩ (t + u
   obtain ⟨a, ha⟩ := lt_iff_cons_le.1 <| h.lt_of_le <| le_inter
     (Multiset.add_le_add_right inter_le_left) (Multiset.add_le_add_right inter_le_right)
   rw [← cons_add] at ha
-  exact (lt_cons_self (s ∩ t) a).not_le <| le_inter
+  exact (lt_cons_self (s ∩ t) a).not_ge <| le_inter
     (Multiset.le_of_add_le_add_right (ha.trans inter_le_left))
     (Multiset.le_of_add_le_add_right (ha.trans inter_le_right))
 

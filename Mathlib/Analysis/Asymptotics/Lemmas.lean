@@ -664,8 +664,8 @@ open Asymptotics
 
 theorem summable_of_isBigO {ι E} [SeminormedAddCommGroup E] [CompleteSpace E]
     {f : ι → E} {g : ι → ℝ} (hg : Summable g) (h : f =O[cofinite] g) : Summable f :=
-  let ⟨C, hC⟩ := h.isBigOWith
-  .of_norm_bounded_eventually (fun x => C * ‖g x‖) (hg.abs.mul_left _) hC.bound
+  let ⟨_, hC⟩ := h.isBigOWith
+  .of_norm_bounded_eventually (hg.abs.mul_left _) hC.bound
 
 theorem summable_of_isBigO_nat {E} [SeminormedAddCommGroup E] [CompleteSpace E]
     {f : ℕ → E} {g : ℕ → ℝ} (hg : Summable g) (h : f =O[atTop] g) : Summable f :=

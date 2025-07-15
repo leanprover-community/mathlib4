@@ -808,9 +808,10 @@ theorem cycle_induction_on [Finite β] (P : Perm β → Prop) (σ : Perm β) (ba
       let x := σ.truncCycleFactors.out
       exact (congr_arg P x.2.1).mp (this x.1 x.2.2.1 x.2.2.2)
   intro l
-  induction' l with σ l ih
-  · exact fun _ _ => base_one
-  · intro h1 h2
+  induction l with
+  | nil => exact fun _ _ => base_one
+  | cons σ l ih =>
+    intro h1 h2
     rw [List.prod_cons]
     exact
       induction_disjoint σ l.prod (disjoint_prod_right _ (List.pairwise_cons.mp h2).1)

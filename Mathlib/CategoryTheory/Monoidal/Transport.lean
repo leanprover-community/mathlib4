@@ -51,23 +51,23 @@ structure InducingFunctorData [MonoidalCategoryStruct D] (F : D ⥤ C) where
     F.map (f ▷ Y) = (μIso _ _).inv ≫ (F.map f ▷ F.obj Y) ≫ (μIso _ _).hom := by
     aesop_cat
   tensorHom_eq : ∀ {X₁ Y₁ X₂ Y₂ : D} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂),
-    F.map (f ⊗ g) = (μIso _ _).inv ≫ (F.map f ⊗ F.map g) ≫ (μIso _ _).hom := by
+    F.map (f ⊗ₘ g) = (μIso _ _).inv ≫ (F.map f ⊗ₘ F.map g) ≫ (μIso _ _).hom := by
     aesop_cat
   /-- Analogous to `CategoryTheory.LaxMonoidalFunctor.εIso` -/
   εIso : 𝟙_ _ ≅ F.obj (𝟙_ _)
   associator_eq : ∀ X Y Z : D,
     F.map (α_ X Y Z).hom =
-      (((μIso _ _).symm ≪≫ ((μIso _ _).symm ⊗ .refl _))
+      (((μIso _ _).symm ≪≫ ((μIso _ _).symm ⊗ᵢ .refl _))
         ≪≫ α_ (F.obj X) (F.obj Y) (F.obj Z)
-        ≪≫ ((.refl _ ⊗ μIso _ _) ≪≫ μIso _ _)).hom := by
+        ≪≫ ((.refl _ ⊗ᵢ μIso _ _) ≪≫ μIso _ _)).hom := by
     aesop_cat
   leftUnitor_eq : ∀ X : D,
     F.map (λ_ X).hom =
-      (((μIso _ _).symm ≪≫ (εIso.symm ⊗ .refl _)) ≪≫ λ_ (F.obj X)).hom := by
+      (((μIso _ _).symm ≪≫ (εIso.symm ⊗ᵢ .refl _)) ≪≫ λ_ (F.obj X)).hom := by
     aesop_cat
   rightUnitor_eq : ∀ X : D,
     F.map (ρ_ X).hom =
-      (((μIso _ _).symm ≪≫ (.refl _ ⊗ εIso.symm)) ≪≫ ρ_ (F.obj X)).hom := by
+      (((μIso _ _).symm ≪≫ (.refl _ ⊗ᵢ εIso.symm)) ≪≫ ρ_ (F.obj X)).hom := by
     aesop_cat
 
 /--
@@ -134,7 +134,7 @@ def transportStruct (e : C ≌ D) : MonoidalCategoryStruct.{v₂} D where
   tensorObj X Y := e.functor.obj (e.inverse.obj X ⊗ e.inverse.obj Y)
   whiskerLeft X _ _ f := e.functor.map (e.inverse.obj X ◁ e.inverse.map f)
   whiskerRight f X := e.functor.map (e.inverse.map f ▷ e.inverse.obj X)
-  tensorHom f g := e.functor.map (e.inverse.map f ⊗ e.inverse.map g)
+  tensorHom f g := e.functor.map (e.inverse.map f ⊗ₘ e.inverse.map g)
   tensorUnit := e.functor.obj (𝟙_ C)
   associator X Y Z :=
     e.functor.mapIso

@@ -744,13 +744,13 @@ theorem toReal_neg_iff_sign_neg {θ : Angle} : θ.toReal < 0 ↔ θ.sign = -1 :=
   · simp [h]
   · exact
       ⟨fun hn => False.elim (h.asymm hn), fun hn =>
-        False.elim (hn.not_le (sin_nonneg_of_nonneg_of_le_pi h.le (toReal_le_pi θ)))⟩
+        False.elim (hn.not_ge (sin_nonneg_of_nonneg_of_le_pi h.le (toReal_le_pi θ)))⟩
 
 theorem toReal_nonneg_iff_sign_nonneg {θ : Angle} : 0 ≤ θ.toReal ↔ 0 ≤ θ.sign := by
   rcases lt_trichotomy θ.toReal 0 with (h | h | h)
-  · refine ⟨fun hn => False.elim (h.not_le hn), fun hn => ?_⟩
+  · refine ⟨fun hn => False.elim (h.not_ge hn), fun hn => ?_⟩
     rw [toReal_neg_iff_sign_neg.1 h] at hn
-    exact False.elim (hn.not_lt (by decide))
+    exact False.elim (hn.not_gt (by decide))
   · simp [h, sign, ← sin_toReal]
   · refine ⟨fun _ => ?_, fun _ => h.le⟩
     rw [sign, ← sin_toReal, sign_nonneg_iff]

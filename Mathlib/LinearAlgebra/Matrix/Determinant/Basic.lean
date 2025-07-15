@@ -157,7 +157,6 @@ theorem det_mul (M N : Matrix n n R) : det (M * N) = det M * det N :=
                 rw [mul_comm, sign_mul (τ * σ⁻¹)]
                 simp only [Int.cast_mul, Units.val_mul]
               _ = ε τ := by simp only [inv_mul_cancel_right]
-
           simp_rw [Equiv.coe_mulRight, h]
           simp only [this])
     _ = det M * det N := by

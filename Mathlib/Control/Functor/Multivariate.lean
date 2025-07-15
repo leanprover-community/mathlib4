@@ -171,8 +171,6 @@ theorem LiftP_PredLast_iff {β} (P : β → Prop) (x : F (α ::: β)) :
     ext i ⟨x, _⟩
     cases i <;> rfl
 
-open Function
-
 variable (rr : β → β → Prop)
 
 private def f' :

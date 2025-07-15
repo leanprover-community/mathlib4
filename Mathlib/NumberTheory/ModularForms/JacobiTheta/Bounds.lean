@@ -84,7 +84,7 @@ def F_nat (k : ℕ) (a t : ℝ) : ℝ := ∑' n, f_nat k a t n
 lemma summable_f_nat (k : ℕ) (a : ℝ) {t : ℝ} (ht : 0 < t) : Summable (f_nat k a t) := by
   have : Summable fun n : ℕ ↦ n ^ k * exp (-π * (n + a) ^ 2 * t) := by
     refine (((summable_pow_mul_jacobiTheta₂_term_bound (|a| * t) ht k).mul_right
-      (rexp (-π * a ^ 2 * t))).comp_injective Nat.cast_injective).of_norm_bounded _ (fun n ↦ ?_)
+      (rexp (-π * a ^ 2 * t))).comp_injective Nat.cast_injective).of_norm_bounded (fun n ↦ ?_)
     simp_rw [mul_assoc, Function.comp_apply, ← Real.exp_add, norm_mul, norm_pow, Int.cast_abs,
       Int.cast_natCast, norm_eq_abs, Nat.abs_cast, abs_exp]
     gcongr

@@ -93,7 +93,7 @@ theorem exists_isometric_embedding (α : Type u) [MetricSpace α] [SeparableSpac
 
 end KuratowskiEmbedding
 
-open TopologicalSpace KuratowskiEmbedding
+open KuratowskiEmbedding
 
 /-- The Kuratowski embedding is an isometric embedding of a separable metric space in `ℓ^∞(ℕ, ℝ)`.
 -/

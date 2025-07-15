@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Kim Morrison, Johan Commelin
 -/
 import Mathlib.Data.Finset.Card
-import Mathlib.Data.Fin.Basic
+import Mathlib.Data.Fin.Embedding
 
 /-!
 # Finsets in `Fin n`

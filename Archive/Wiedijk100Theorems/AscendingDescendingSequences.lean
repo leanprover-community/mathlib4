@@ -122,7 +122,7 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
         rintro x ⟨rfl | _⟩ y ⟨rfl | _⟩ _
         · apply (irrefl _ ‹j < j›).elim
         · exfalso
-          apply not_le_of_lt (_root_.trans ‹i < j› ‹j < y›) (le_max_of_eq ‹y ∈ t› ‹t.max = i›)
+          apply not_le_of_gt (_root_.trans ‹i < j› ‹j < y›) (le_max_of_eq ‹y ∈ t› ‹t.max = i›)
         · first
           | apply lt_of_le_of_lt _ ‹f i < f j›
           | apply lt_of_lt_of_le ‹f j < f i› _
@@ -133,7 +133,7 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
       -- Finally show that this new subsequence is one longer than the old one.
       · rw [card_insert_of_notMem, ht₂]
         intro
-        apply not_le_of_lt ‹i < j› (le_max_of_eq ‹j ∈ t› ‹t.max = i›)
+        apply not_le_of_gt ‹i < j› (le_max_of_eq ‹j ∈ t› ‹t.max = i›)
   -- Finished both goals!
   -- Now that we have uniqueness of each label, it remains to do some counting to finish off.
   -- Suppose all the labels are small.
@@ -158,7 +158,7 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
     -- Need to get `a_i ≤ r`, here phrased as: there is some `a < r` with `a+1 = a_i`.
     exact ⟨⟨(ab i).1 - 1, by omega⟩, (ab i).2 - 1, by omega⟩
   -- To get our contradiction, it suffices to prove `n ≤ r * s`
-  apply not_le_of_lt hn
+  apply not_le_of_gt hn
   -- Which follows from considering the cardinalities of the subset above, since `ab` is injective.
   simpa [ran, Nat.succ_injective, card_image_of_injective, ‹Injective ab›] using card_le_card this
 

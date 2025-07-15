@@ -158,17 +158,20 @@ private lemma HasDerivAt.complex_of_real {f : ℂ → ℂ} {g : ℝ → ℝ} {g'
   rw [← (funext hfg ▸ hf.hasDerivAt.comp_ofReal.deriv :)]
   exact hg.ofReal_comp.deriv
 
-lemma differentiable_at_Gamma_nat_add_one (n : ℕ) :
+lemma differentiableAt_Gamma_nat_add_one (n : ℕ) :
     DifferentiableAt ℂ Gamma (n + 1) := by
   refine differentiableAt_Gamma _ (fun m ↦ ?_)
   simp only [Ne, ← ofReal_natCast, ← ofReal_one, ← ofReal_add, ← ofReal_neg, ofReal_inj,
     eq_neg_iff_add_eq_zero]
   positivity
 
+@[deprecated (since := "2025-06-06")] alias differentiable_at_Gamma_nat_add_one :=
+  differentiableAt_Gamma_nat_add_one
+
 lemma hasDerivAt_Gamma_nat (n : ℕ) :
     HasDerivAt Gamma (n ! * (-γ + harmonic n)) (n + 1) := by
   exact_mod_cast HasDerivAt.complex_of_real
-    (by exact_mod_cast differentiable_at_Gamma_nat_add_one n)
+    (by exact_mod_cast differentiableAt_Gamma_nat_add_one n)
     (Real.hasDerivAt_Gamma_nat n) Gamma_ofReal
 
 /-- Explicit formula for the derivative of the complex Gamma function at positive integers, in

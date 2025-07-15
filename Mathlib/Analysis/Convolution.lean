@@ -1253,26 +1253,26 @@ theorem contDiffOn_convolution_right_with_param {f : G → E} {n : ℕ∞} (L : 
     have hes : IsOpen (isoP ⁻¹' s) := isoP.continuous.isOpen_preimage _ hs
     refine contDiffOn_convolution_right_with_param_aux eL hes hek ?_ ?_ ?_
     · intro p x hp hx
-      simp only [eg, (· ∘ ·), ContinuousLinearEquiv.prod_apply, LinearIsometryEquiv.coe_coe,
+      simp only [eg, (· ∘ ·), ContinuousLinearEquiv.prodCongr_apply, LinearIsometryEquiv.coe_coe,
         ContinuousLinearEquiv.map_eq_zero_iff]
       exact hgs _ _ hp hx
     · exact (locallyIntegrable_map_homeomorph isoG.symm.toHomeomorph).2 hf
     · apply isoE'.symm.contDiff.comp_contDiffOn
-      apply hg.comp (isoP.prod isoG).contDiff.contDiffOn
+      apply hg.comp (isoP.prodCongr isoG).contDiff.contDiffOn
       rintro ⟨p, x⟩ ⟨hp, -⟩
-      simpa only [mem_preimage, ContinuousLinearEquiv.prod_apply, prodMk_mem_set_prod_eq, mem_univ,
-        and_true] using hp
-  have A : ContDiffOn 𝕜 n (isoF ∘ R ∘ (isoP.prod isoG).symm) (s ×ˢ univ) := by
+      simpa only [mem_preimage, ContinuousLinearEquiv.prodCongr_apply, prodMk_mem_set_prod_eq,
+        mem_univ, and_true] using hp
+  have A : ContDiffOn 𝕜 n (isoF ∘ R ∘ (isoP.prodCongr isoG).symm) (s ×ˢ univ) := by
     apply isoF.contDiff.comp_contDiffOn
     apply R_contdiff.comp (ContinuousLinearEquiv.contDiff _).contDiffOn
     rintro ⟨p, x⟩ ⟨hp, -⟩
-    simpa only [mem_preimage, mem_prod, mem_univ, and_true, ContinuousLinearEquiv.prod_symm,
-      ContinuousLinearEquiv.prod_apply, ContinuousLinearEquiv.apply_symm_apply] using hp
-  have : isoF ∘ R ∘ (isoP.prod isoG).symm = fun q : P × G => (f ⋆[L, μ] g q.1) q.2 := by
+    simpa only [mem_preimage, mem_prod, mem_univ, and_true, ContinuousLinearEquiv.prodCongr_symm,
+      ContinuousLinearEquiv.prodCongr_apply, ContinuousLinearEquiv.apply_symm_apply] using hp
+  have : isoF ∘ R ∘ (isoP.prodCongr isoG).symm = fun q : P × G => (f ⋆[L, μ] g q.1) q.2 := by
     apply funext
     rintro ⟨p, x⟩
-    simp only [LinearIsometryEquiv.coe_coe, (· ∘ ·), ContinuousLinearEquiv.prod_symm,
-      ContinuousLinearEquiv.prod_apply]
+    simp only [LinearIsometryEquiv.coe_coe, (· ∘ ·), ContinuousLinearEquiv.prodCongr_symm,
+      ContinuousLinearEquiv.prodCongr_apply]
     simp only [R, convolution, coe_comp', ContinuousLinearEquiv.coe_coe, (· ∘ ·)]
     rw [IsClosedEmbedding.integral_map, ← isoF.integral_comp_comm]
     · rfl
@@ -1351,9 +1351,9 @@ theorem posConvolution_eq_convolution_indicator (f : ℝ → E) (g : ℝ → E')
       integral_indicator (measurableSet_Ioo : MeasurableSet (Ioo 0 x))]
     congr 1 with t : 1
     have : t ≤ 0 ∨ t ∈ Ioo 0 x ∨ x ≤ t := by
-      rcases le_or_lt t 0 with (h | h)
+      rcases le_or_gt t 0 with (h | h)
       · exact Or.inl h
-      · rcases lt_or_le t x with (h' | h')
+      · rcases lt_or_ge t x with (h' | h')
         exacts [Or.inr (Or.inl ⟨h, h'⟩), Or.inr (Or.inr h')]
     rcases this with (ht | ht | ht)
     · rw [indicator_of_notMem (notMem_Ioo_of_le ht), indicator_of_notMem (notMem_Ioi.mpr ht),

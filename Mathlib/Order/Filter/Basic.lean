@@ -130,9 +130,9 @@ theorem exists_mem_and_iff {P : Set α → Prop} {Q : Set α → Prop} (hP : Ant
   · rintro ⟨u, huf, hPu, hQu⟩
     exact ⟨⟨u, huf, hPu⟩, u, huf, hQu⟩
 
+@[deprecated forall_swap (since := "2025-06-10")]
 theorem forall_in_swap {β : Type*} {p : Set α → β → Prop} :
-    (∀ a ∈ f, ∀ (b), p a b) ↔ ∀ (b), ∀ a ∈ f, p a b :=
-  Set.forall_in_swap
+    (∀ a ∈ f, ∀ (b), p a b) ↔ ∀ (b), ∀ a ∈ f, p a b := by tauto
 
 end Filter
 
@@ -142,6 +142,8 @@ namespace Filter
 variable {α : Type u} {β : Type v} {γ : Type w} {δ : Type*} {ι : Sort x}
 
 theorem mem_principal_self (s : Set α) : s ∈ 𝓟 s := Subset.rfl
+
+theorem eventually_mem_principal (s : Set α) : ∀ᶠ x in 𝓟 s, x ∈ s := mem_principal_self s
 
 section Lattice
 
@@ -353,7 +355,7 @@ theorem empty_notMem (f : Filter α) [NeBot f] : ∅ ∉ f := fun h => (nonempty
 @[deprecated (since := "2025-05-23")] alias empty_not_mem := empty_notMem
 
 theorem nonempty_of_neBot (f : Filter α) [NeBot f] : Nonempty α :=
-  nonempty_of_exists <| nonempty_of_mem (univ_mem : univ ∈ f)
+  Exists.nonempty <| nonempty_of_mem (univ_mem : univ ∈ f)
 
 theorem compl_notMem {f : Filter α} {s : Set α} [NeBot f] (h : s ∈ f) : sᶜ ∉ f := fun hsc =>
   (nonempty_of_mem (inter_mem h hsc)).ne_empty <| inter_compl_self s
@@ -620,6 +622,11 @@ theorem Eventually.mono {p q : α → Prop} {f : Filter α} (hp : ∀ᶠ x in f,
     (hq : ∀ x, p x → q x) : ∀ᶠ x in f, q x :=
   hp.mp (Eventually.of_forall hq)
 
+@[gcongr]
+theorem GCongr.eventually_mono {p q : α → Prop} {f : Filter α} (h : ∀ x, p x → q x) :
+    (∀ᶠ x in f, p x) → ∀ᶠ x in f, q x :=
+  (·.mono h)
+
 theorem forall_eventually_of_eventually_forall {f : Filter α} {p : α → β → Prop}
     (h : ∀ᶠ x in f, ∀ y, p x y) : ∀ y, ∀ᶠ x in f, p x y :=
   fun y => h.mono fun _ h => h y
@@ -720,6 +727,11 @@ theorem Frequently.filter_mono {p : α → Prop} {f g : Filter α} (h : ∃ᶠ x
 theorem Frequently.mono {p q : α → Prop} {f : Filter α} (h : ∃ᶠ x in f, p x)
     (hpq : ∀ x, p x → q x) : ∃ᶠ x in f, q x :=
   h.mp (Eventually.of_forall hpq)
+
+@[gcongr]
+theorem GCongr.frequently_mono {p q : α → Prop} {f : Filter α} (h : ∀ x, p x → q x) :
+    (∃ᶠ x in f, p x) → ∃ᶠ x in f, q x :=
+  (·.mono h)
 
 theorem Frequently.and_eventually {p q : α → Prop} {f : Filter α} (hp : ∃ᶠ x in f, p x)
     (hq : ∀ᶠ x in f, q x) : ∃ᶠ x in f, p x ∧ q x := by

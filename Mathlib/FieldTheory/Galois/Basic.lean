@@ -109,8 +109,6 @@ theorem card_aut_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
   let iso : F⟮α⟯ ≃ₐ[F] E :=
     { toFun := fun e => e.val
       invFun := fun e => ⟨e, by rw [hα]; exact IntermediateField.mem_top⟩
-      left_inv := fun _ => by ext; rfl
-      right_inv := fun _ => rfl
       map_mul' := fun _ _ => rfl
       map_add' := fun _ _ => rfl
       commutes' := fun _ => rfl }
@@ -123,9 +121,7 @@ theorem card_aut_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
   rw [← LinearEquiv.finrank_eq iso.toLinearEquiv]
   rw [← IntermediateField.AdjoinSimple.card_aut_eq_finrank F E H h_sep h_splits]
   apply Fintype.card_congr
-  apply Equiv.mk (fun ϕ => iso.trans (ϕ.trans iso.symm)) fun ϕ => iso.symm.trans (ϕ.trans iso)
-  · intro ϕ; ext1; simp only [trans_apply, apply_symm_apply]
-  · intro ϕ; ext1; simp only [trans_apply, symm_apply_apply]
+  exact Equiv.mk (fun ϕ => iso.trans (ϕ.trans iso.symm)) fun ϕ => iso.symm.trans (ϕ.trans iso)
 
 end IsGalois
 
@@ -244,8 +240,6 @@ lemma fixedField_antitone : Antitone (@fixedField F _ E _ _) :=
 def fixingSubgroupEquiv : fixingSubgroup K ≃* E ≃ₐ[K] E where
   toFun ϕ := { AlgEquiv.toRingEquiv (ϕ : E ≃ₐ[F] E) with commutes' := ϕ.mem }
   invFun ϕ := ⟨ϕ.restrictScalars _, ϕ.commutes⟩
-  left_inv _ := by ext; rfl
-  right_inv _ := by ext; rfl
   map_mul' _ _ := by ext; rfl
 
 theorem fixingSubgroup_fixedField [FiniteDimensional F E] : fixingSubgroup (fixedField H) = H := by
@@ -444,11 +438,7 @@ theorem of_card_aut_eq_finrank [FiniteDimensional F E]
   rw [← IntermediateField.finrank_eq_one_iff, ← mul_left_inj' (ne_of_lt p).symm,
     finrank_mul_finrank, ← h, one_mul, IntermediateField.finrank_fixedField_eq_card]
   apply Fintype.card_congr
-  exact
-    { toFun := fun g => ⟨g, Subgroup.mem_top g⟩
-      invFun := (↑)
-      left_inv := fun g => rfl
-      right_inv := fun _ => by ext; rfl }
+  exact { toFun := fun g => ⟨g, Subgroup.mem_top g⟩, invFun := (↑) }
 
 variable {F} {E}
 variable {p : F[X]}

@@ -196,7 +196,7 @@ theorem hasseDeriv_natDegree_eq_C : f.hasseDeriv f.natDegree = C f.leadingCoeff 
 
 theorem natDegree_hasseDeriv [NoZeroSMulDivisors ℕ R] (p : R[X]) (n : ℕ) :
     natDegree (hasseDeriv n p) = natDegree p - n := by
-  rcases lt_or_le p.natDegree n with hn | hn
+  rcases lt_or_ge p.natDegree n with hn | hn
   · simpa [hasseDeriv_eq_zero_of_lt_natDegree, hn] using (tsub_eq_zero_of_le hn.le).symm
   · refine map_natDegree_eq_sub ?_ ?_
     · exact fun h => hasseDeriv_eq_zero_of_lt_natDegree _ _

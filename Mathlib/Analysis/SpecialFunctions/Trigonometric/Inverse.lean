@@ -132,8 +132,8 @@ theorem arcsin_le_iff_le_sin' {x y : ℝ} (hy : y ∈ Ico (-(π / 2)) (π / 2)) 
     arcsin x ≤ y ↔ x ≤ sin y := by
   rcases le_total x (-1) with hx₁ | hx₁
   · simp [arcsin_of_le_neg_one hx₁, hy.1, hx₁.trans (neg_one_le_sin _)]
-  rcases lt_or_le 1 x with hx₂ | hx₂
-  · simp [arcsin_of_one_le hx₂.le, hy.2.not_le, (sin_le_one y).trans_lt hx₂]
+  rcases lt_or_ge 1 x with hx₂ | hx₂
+  · simp [arcsin_of_one_le hx₂.le, hy.2.not_ge, (sin_le_one y).trans_lt hx₂]
   exact arcsin_le_iff_le_sin ⟨hx₁, hx₂⟩ (mem_Icc_of_Ico hy)
 
 theorem le_arcsin_iff_sin_le {x y : ℝ} (hx : x ∈ Icc (-(π / 2)) (π / 2)) (hy : y ∈ Icc (-1 : ℝ) 1) :

@@ -28,7 +28,7 @@ namespace Sigma
 
 section SMul
 
-variable [∀ i, SMul M (α i)] [∀ i, SMul N (α i)] (a : M) (i : ι) (b : α i) (x : Σi, α i)
+variable [∀ i, SMul M (α i)] [∀ i, SMul N (α i)] (a : M) (i : ι) (b : α i) (x : Σ i, α i)
 
 @[to_additive Sigma.VAdd]
 instance : SMul M (Σi, α i) :=

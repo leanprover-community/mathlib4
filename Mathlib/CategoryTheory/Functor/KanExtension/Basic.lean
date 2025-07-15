@@ -189,6 +189,7 @@ lemma hom_ext_of_isLeftKanExtension {G : D ⥤ H} (γ₁ γ₂ : F' ⟶ G)
 
 /-- If `(F', α)` is a left Kan extension of `F` along `L`, then this
 is the induced bijection `(F' ⟶ G) ≃ (F ⟶ L ⋙ G)` for all `G`. -/
+@[simps!]
 noncomputable def homEquivOfIsLeftKanExtension (G : D ⥤ H) :
     (F' ⟶ G) ≃ (F ⟶ L ⋙ G) where
   toFun β := α ≫ whiskerLeft _ β
@@ -383,6 +384,50 @@ lemma isRightKanExtension_iff_postcomp₁ (α : L' ⋙ F' ⟶ F) :
   constructor
   · exact fun _ => ⟨⟨eq (isUniversalOfIsRightKanExtension _ _)⟩⟩
   · exact fun _ => ⟨⟨eq.symm (isUniversalOfIsRightKanExtension _ _)⟩⟩
+
+end
+
+section
+
+variable (L : C ⥤ D) (F : C ⥤ H) (G : H ⥤ D')
+
+/-- Given a left extension `E` of `F : C ⥤ H` along `L : C ⥤ D` and a functor `G : H ⥤ D'`,
+`E.postcompose₂ G` is the extension of `F ⋙ G` along `L` obtained by whiskering by `G`
+on the right. -/
+@[simps!]
+def LeftExtension.postcompose₂ : LeftExtension L F ⥤ LeftExtension L (F ⋙ G) :=
+  StructuredArrow.map₂
+    (F := (whiskeringRight _ _ _).obj G)
+    (G := (whiskeringRight _ _ _).obj G)
+    (𝟙 _) ({app _ := (Functor.associator _ _ _).hom})
+
+/-- Given a right extension `E` of `F : C ⥤ H` along `L : C ⥤ D` and a functor `G : H ⥤ D'`,
+`E.postcompose₂ G` is the extension of `F ⋙ G` along `L` obtained by whiskering by `G`
+on the right. -/
+@[simps!]
+def RightExtension.postcompose₂ : RightExtension L F ⥤ RightExtension L (F ⋙ G) :=
+  CostructuredArrow.map₂
+    (F := (whiskeringRight _ _ _).obj G)
+    (G := (whiskeringRight _ _ _).obj G)
+    ({app _ := Functor.associator _ _ _|>.inv}) (𝟙 _)
+
+variable {L F} {F' : D ⥤ H}
+/-- An isomorphism to describe the action of `LeftExtension.postcompose₂` on terms of the form
+`LeftExtension.mk _ α`. -/
+@[simps!]
+def LeftExtension.postcompose₂ObjMkIso (α : F ⟶ L ⋙ F') :
+    (LeftExtension.postcompose₂ L F G).obj (.mk F' α) ≅
+    .mk (F' ⋙ G) <| CategoryTheory.whiskerRight α G ≫ (Functor.associator _ _ _).hom :=
+  StructuredArrow.isoMk (.refl _)
+
+/-- An isomorphism to describe the action of `RightExtension.postcompose₂` on terms of the form
+`RightExtension.mk _ α`. -/
+@[simps!]
+def RightExtension.postcompose₂ObjMkIso (α : L ⋙ F' ⟶ F) :
+    (RightExtension.postcompose₂ L F G).obj (.mk F' α) ≅
+    .mk (F' ⋙ G) <| (Functor.associator _ _ _).inv ≫
+      CategoryTheory.whiskerRight α G :=
+  CostructuredArrow.isoMk (.refl _)
 
 end
 

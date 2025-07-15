@@ -185,14 +185,14 @@ theorem BlockTriangular.mul [Fintype m] [NonUnitalNonAssocSemiring R]
   intro k _
   by_cases hki : b k < b i
   · simp_rw [hM hki, zero_mul]
-  · simp_rw [hN (lt_of_lt_of_le hij (le_of_not_lt hki)), mul_zero]
+  · simp_rw [hN (lt_of_lt_of_le hij (le_of_not_gt hki)), mul_zero]
 
 end LinearOrder
 
 theorem upper_two_blockTriangular [Zero R] [Preorder α] (A : Matrix m m R) (B : Matrix m n R)
     (D : Matrix n n R) {a b : α} (hab : a < b) :
     BlockTriangular (fromBlocks A B 0 D) (Sum.elim (fun _ => a) fun _ => b) := by
-  rintro (c | c) (d | d) hcd <;> first | simp [hab.not_lt] at hcd ⊢
+  rintro (c | c) (d | d) hcd <;> first | simp [hab.not_gt] at hcd ⊢
 
 /-! ### Determinant -/
 
@@ -321,7 +321,7 @@ theorem BlockTriangular.toBlock_inverse_mul_toBlock_eq_one [LinearOrder α] [Inv
     rw [← toBlock_mul_eq_add, inv_mul_of_invertible M, toBlock_one_self]
   have h_zero : M.toBlock (fun i => ¬p i) p = 0 := by
     ext i j
-    simpa using hM (lt_of_lt_of_le j.2 (le_of_not_lt i.2))
+    simpa using hM (lt_of_lt_of_le j.2 (le_of_not_gt i.2))
   simpa [h_zero] using h_sum
 
 /-- The inverse of an upper-left subblock of a block-triangular matrix `M` is the upper-left
@@ -350,7 +350,7 @@ theorem toBlock_inverse_eq_zero [LinearOrder α] [Invertible M] (hM : BlockTrian
     exact fun i h => h.1 h.2
   have h_zero : M.toBlock q p = 0 := by
     ext i j
-    simpa using hM (lt_of_lt_of_le j.2 <| le_of_not_lt i.2)
+    simpa using hM (lt_of_lt_of_le j.2 <| le_of_not_gt i.2)
   have h_mul_eq_zero : M⁻¹.toBlock q p * M.toBlock p p = 0 := by simpa [h_zero] using h_sum
   haveI : Invertible (M.toBlock p p) := hM.invertibleToBlock k
   have : (fun i => k ≤ b i) = q := by

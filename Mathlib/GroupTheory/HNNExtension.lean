@@ -473,7 +473,6 @@ theorem unitsSMul_one_group_smul (g : A) (w : NormalWord d) :
       SetLike.coe_sort_coe, group_smul_head, mul_inv_rev, ← mul_smul, mul_assoc, inv_mul_cancel,
       mul_one, smul_cons]
     -- This used to be the end of the proof before https://github.com/leanprover/lean4/pull/2644
-    dsimp
     congr 1
     · conv_lhs => erw [IsComplement.equiv_mul_left]
       simp_rw [toSubgroup_one]

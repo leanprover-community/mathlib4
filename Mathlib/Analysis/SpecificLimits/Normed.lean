@@ -251,7 +251,7 @@ instance {R : Type*} [NormedRing R] [CompleteSpace R] : HasSummableGeomSeries R 
   constructor
   intro x hx
   have h1 : Summable fun n : ℕ ↦ ‖x‖ ^ n := summable_geometric_of_lt_one (norm_nonneg _) hx
-  exact h1.of_norm_bounded_eventually_nat _ (eventually_norm_pow_le x)
+  exact h1.of_norm_bounded_eventually_nat (eventually_norm_pow_le x)
 
 section HasSummableGeometricSeries
 
@@ -546,7 +546,7 @@ theorem dist_partial_sum_le_of_le_geometric (hf : ∀ n, ‖f n‖ ≤ C * r ^ n
 Cauchy sequence. This lemma does not assume `0 ≤ r` or `0 ≤ C`. -/
 theorem cauchySeq_finset_of_geometric_bound (hr : r < 1) (hf : ∀ n, ‖f n‖ ≤ C * r ^ n) :
     CauchySeq fun s : Finset ℕ ↦ ∑ x ∈ s, f x :=
-  cauchySeq_finset_of_norm_bounded _
+  cauchySeq_finset_of_norm_bounded
     (aux_hasSum_of_le_geometric hr (dist_partial_sum_le_of_le_geometric hf)).summable hf
 
 /-- If `‖f n‖ ≤ C * r ^ n` for all `n : ℕ` and some `r < 1`, then the partial sums of `f` are within
@@ -614,7 +614,7 @@ theorem summable_of_ratio_norm_eventually_le {α : Type*} [SeminormedAddCommGrou
   · rw [eventually_atTop] at h
     rcases h with ⟨N, hN⟩
     rw [← @summable_nat_add_iff α _ _ _ _ N]
-    refine .of_norm_bounded (fun n ↦ ‖f N‖ * r ^ n)
+    refine .of_norm_bounded (g := fun n ↦ ‖f N‖ * r ^ n)
       (Summable.mul_left _ <| summable_geometric_of_lt_one hr₀ hr₁) fun n ↦ ?_
     simp only
     conv_rhs => rw [mul_comm, ← zero_add N]
@@ -622,7 +622,7 @@ theorem summable_of_ratio_norm_eventually_le {α : Type*} [SeminormedAddCommGrou
     convert hN (i + N) (N.le_add_left i) using 3
     ac_rfl
   · push_neg at hr₀
-    refine .of_norm_bounded_eventually_nat 0 summable_zero ?_
+    refine .of_norm_bounded_eventually_nat summable_zero ?_
     filter_upwards [h] with _ hn
     by_contra! h
     exact not_lt.mpr (norm_nonneg _) (lt_of_le_of_lt hn <| mul_neg_of_neg_of_pos hr₀ h)
@@ -711,7 +711,7 @@ theorem Monotone.cauchySeq_series_mul_of_tendsto_zero_of_bounded (hfa : Monotone
   apply (NormedField.tendsto_zero_smul_of_tendsto_zero_of_bounded hf0
     ⟨b, eventually_map.mpr <| Eventually.of_forall fun n ↦ hgb <| n + 1⟩).cauchySeq.add
   refine CauchySeq.neg ?_
-  refine cauchySeq_range_of_norm_bounded _ ?_
+  refine cauchySeq_range_of_norm_bounded ?_
     (fun n ↦ ?_ : ∀ n, ‖(f (n + 1) + -f n) • (Finset.range (n + 1)).sum z‖ ≤ b * |f (n + 1) - f n|)
   · simp_rw [abs_of_nonneg (sub_nonneg_of_le (hfa (Nat.le_succ _))), ← mul_sum]
     apply Real.uniformContinuous_const_mul.comp_cauchySeq

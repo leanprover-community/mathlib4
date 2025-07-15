@@ -536,7 +536,7 @@ example [Add α] (a : α) :
 
 -- Test that local theorem is being used
 /--
-info: [Meta.Tactic.fun_prop] [✅️] Con fun x => f x y
+trace: [Meta.Tactic.fun_prop] [✅️] Con fun x => f x y
   [Meta.Tactic.fun_prop] [✅️] Con fun x => f x y
     [Meta.Tactic.fun_prop] candidate local theorems for f #[this : Con f]
     [Meta.Tactic.fun_prop] removing argument to later use this : Con f
@@ -620,3 +620,12 @@ info: Con
 -/
 #guard_msgs in
 #print_fun_prop_theorems HAdd.hAdd Con
+
+
+def fst (x : α×β) := x.1
+def snd (x : α×β) := x.2
+
+-- make sure that `fun_prop` can't see through `fst` and `snd`
+example (f : α → β → γ) (hf : Con ↿f) : Con (fun x : α×β => f (fst x) (snd x)) := by
+  fail_if_success fun_prop
+  apply silentSorry

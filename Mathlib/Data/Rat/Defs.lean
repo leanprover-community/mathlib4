@@ -16,8 +16,8 @@ import Mathlib.Data.Nat.Basic
 ## Summary
 
 We define the integral domain structure on `ℚ` and prove basic lemmas about it.
-The definition of the field structure on `ℚ` will be done in `Mathlib/Data/Rat/Basic.lean` once the
-`Field` class has been defined.
+The definition of the field structure on `ℚ` will be done in `Mathlib/Algebra/Field/Rat.lean`
+once the `Field` class has been defined.
 
 ## Main Definitions
 
@@ -177,7 +177,7 @@ lemma mk'_mul_mk' (n₁ n₂ : ℤ) (d₁ d₂ : ℕ) (hd₁ hd₂ hnd₁ hnd₂
     (h₂₁ : n₂.natAbs.Coprime d₁) :
     mk' n₁ d₁ hd₁ hnd₁ * mk' n₂ d₂ hd₂ hnd₂ = mk' (n₁ * n₂) (d₁ * d₂) (Nat.mul_ne_zero hd₁ hd₂) (by
       rw [Int.natAbs_mul]; exact (hnd₁.mul h₂₁).mul_right (h₁₂.mul hnd₂)) := by
-  rw [mul_def]; dsimp; simp [mk_eq_normalize]
+  rw [mul_def]; simp [mk_eq_normalize]
 
 lemma mul_eq_mkRat (q r : ℚ) : q * r = mkRat (q.num * r.num) (q.den * r.den) := by
   rw [mul_def, normalize_eq_mkRat]

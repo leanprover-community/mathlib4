@@ -135,6 +135,7 @@ def coneOfConeCurry {D : DiagramOfCones (curry.obj G)} (Q : ∀ j, IsLimit (D.ob
           π := { app k := c.π.app (j, k) } }
       naturality {_ j'} _ := (Q j').hom_ext (by simp) }
 
+open scoped Prod in
 /-- Given a diagram `D` of colimit cocones over the `F.obj j`, and a cocone over `uncurry.obj F`,
 we can construct a cocone over the diagram consisting of the cocone points from `D`.
 -/
@@ -153,7 +154,7 @@ def coconeOfCoconeUncurry {D : DiagramOfCocones F} (Q : ∀ j, IsColimit (D.obj 
                   conv_lhs =>
                     arg 1; equals (F.map (𝟙 _)).app _ ≫  (F.obj j).map f =>
                       simp
-                  conv_lhs => arg 1; rw [← uncurry_obj_map F ((𝟙 j,f) : (j,k) ⟶ (j,k'))]
+                  conv_lhs => arg 1; rw [← uncurry_obj_map F (𝟙 j ×ₘ f)]
                   rw [c.w] } }
       naturality := fun j j' f =>
         (Q j).hom_ext
@@ -456,10 +457,11 @@ noncomputable def coconeOfHasColimitCurryCompColim : Cocone G :=
       naturality {x y} := fun ⟨f₁, f₂⟩ ↦ by
         have := (Q.obj y.1).w f₂
         dsimp [Q] at this ⊢
-        rw [← colimit.w (F := curry.obj G ⋙ colim) (f := f₁)]
+        rw [← colimit.w (F := curry.obj G ⋙ colim) (f := f₁),
+          Category.assoc, Category.comp_id, Prod.fac' (f₁, f₂),
+          G.map_comp_assoc, ← curry_obj_map_app, ← curry_obj_obj_map]
         dsimp
-        simp [Category.assoc, Category.comp_id, Prod.fac' (f₁, f₂),
-          G.map_comp, ι_colimMap_assoc, curry_obj_map_app, reassoc_of% this] } }
+        simp [ι_colimMap_assoc, curry_obj_map_app, reassoc_of% this]} }
 
 
 /-- The cocone `coconeOfHasColimitCurryCompColim` is in fact a limit cocone.

@@ -153,7 +153,7 @@ end Chain
 
 end OmegaCompletePartialOrder
 
-open OmegaCompletePartialOrder
+open OmegaCompletePartialOrder Chain
 
 /-- An omega-complete partial order is a partial order with a supremum
 operation on increasing sequences indexed by natural numbers (which we
@@ -236,8 +236,6 @@ def subtype {α : Type*} [OmegaCompletePartialOrder α] (p : α → Prop)
 
 section Continuity
 
-open Chain
-
 variable [OmegaCompletePartialOrder β]
 variable [OmegaCompletePartialOrder γ]
 variable {f : α → β} {g : β → γ}
@@ -299,8 +297,6 @@ end Continuity
 end OmegaCompletePartialOrder
 
 namespace Part
-
-open OmegaCompletePartialOrder
 
 theorem eq_of_chain {c : Chain (Part α)} {a b : α} (ha : some a ∈ c) (hb : some b ∈ c) : a = b := by
   obtain ⟨i, ha⟩ := ha; replace ha := ha.symm
@@ -378,8 +374,6 @@ section Pi
 
 variable {β : α → Type*}
 
-open OmegaCompletePartialOrder OmegaCompletePartialOrder.Chain
-
 instance [∀ a, OmegaCompletePartialOrder (β a)] :
     OmegaCompletePartialOrder (∀ a, β a) where
   ωSup c a := ωSup (c.map (Pi.evalOrderHom a))
@@ -412,8 +406,6 @@ end Pi
 
 namespace Prod
 
-open OmegaCompletePartialOrder
-
 variable [OmegaCompletePartialOrder α]
 variable [OmegaCompletePartialOrder β]
 variable [OmegaCompletePartialOrder γ]
@@ -434,8 +426,6 @@ theorem ωSup_zip (c₀ : Chain α) (c₁ : Chain β) : ωSup (c₀.zip c₁) = 
   simp [ωSup_le_iff, forall_and]
 
 end Prod
-
-open OmegaCompletePartialOrder
 
 namespace CompleteLattice
 

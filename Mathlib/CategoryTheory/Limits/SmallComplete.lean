@@ -50,7 +50,7 @@ instance (priority := 100) : Quiver.IsThin C := fun X Y =>
         exact ⟨_, _, r_ne_s⟩
       let md := ΣZ W : C, Z ⟶ W
       let α := #md
-      apply not_le_of_lt (Cardinal.cantor α)
+      apply not_le_of_gt (Cardinal.cantor α)
       let yp : C := ∏ᶜ fun _ : md => Y
       apply _root_.trans _ _
       · exact #(X ⟶ yp)

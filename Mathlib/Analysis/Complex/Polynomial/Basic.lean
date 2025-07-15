@@ -5,6 +5,7 @@ Authors: Chris Hughes, Junyan Xu, Yury Kudryashov
 -/
 import Mathlib.Analysis.Complex.Liouville
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
+import Mathlib.Data.Complex.FiniteDimensional
 import Mathlib.FieldTheory.PolynomialGaloisGroup
 import Mathlib.Topology.Algebra.Polynomial
 
@@ -46,6 +47,11 @@ instance isAlgClosed : IsAlgClosed ℂ :=
   IsAlgClosed.of_exists_root _ fun _p _ hp => Complex.exists_root <| degree_pos_of_irreducible hp
 
 end Complex
+
+/-- An algebraic extension of ℝ is isomorphic to either ℝ or ℂ as an ℝ-algebra. -/
+theorem Real.nonempty_algEquiv_or (F : Type*) [Field F] [Algebra ℝ F] [Algebra.IsAlgebraic ℝ F] :
+    Nonempty (F ≃ₐ[ℝ] ℝ) ∨ Nonempty (F ≃ₐ[ℝ] ℂ) :=
+  IsAlgClosed.nonempty_algEquiv_or_of_finrank_eq_two F Complex.finrank_real_complex
 
 namespace Polynomial.Gal
 

@@ -441,7 +441,7 @@ lemma not_summable_residueClass_prime_div (ha : IsUnit a) :
     (div_le_iff₀ <| sub_pos.mpr hx.1).mp <|
       sub_le_iff_le_add.mp <| (hC' hx).trans (H₁ hx.1)
   have hq : 0 < (q.totient : ℝ)⁻¹ := inv_pos.mpr (mod_cast q.totient.pos_of_neZero)
-  rcases le_or_lt (C + C') 0 with h₀ | h₀
+  rcases le_or_gt (C + C') 0 with h₀ | h₀
   · have := hq.trans_le (H₁ (Set.right_mem_Ioc.mpr one_lt_two))
     rw [show (2 : ℝ) - 1 = 1 by norm_num, mul_one] at this
     exact (this.trans_le h₀).false

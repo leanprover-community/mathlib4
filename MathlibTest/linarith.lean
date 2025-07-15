@@ -712,6 +712,7 @@ example {x1 x2 x3 x4 x5 x6 x7 x8 : ℚ} :
     x7 - x5 < 0 → False := by
   intros
   linarith (config := { oracle := .fourierMotzkin })
+
 section findSquares
 
 private abbrev wrapped (z : ℤ) : ℤ := z
@@ -721,9 +722,9 @@ example (x : ℤ) : 0 ≤ x * wrapped x := by nlinarith
 private def tightlyWrapped (z : ℤ) : ℤ := z
 /--
 error: linarith failed to find a contradiction
-case a
+case h
 x : ℤ
-a✝ : 0 > x * tightlyWrapped x
+a✝ : x * tightlyWrapped x < 0
 ⊢ False
 failed
 -/
@@ -731,3 +732,7 @@ failed
 example (x : ℤ) : 0 ≤ x * tightlyWrapped x := by nlinarith
 
 end findSquares
+
+-- `Expr.mdata` should be ignored by linarith
+example (x : Int) (h : x = -2) : x = no_index(-2) := by
+  linarith [h]

@@ -131,7 +131,7 @@ lemma degree_eq_of_not_adj (h : G.IsTuranMaximal r) (hn : ¬G.Adj s t) :
     G.degree s = G.degree t := by
   rw [IsTuranMaximal] at h; contrapose! h; intro cf
   wlog hd : G.degree t < G.degree s generalizing G t s
-  · replace hd : G.degree s < G.degree t := lt_of_le_of_ne (le_of_not_lt hd) h
+  · replace hd : G.degree s < G.degree t := lt_of_le_of_ne (le_of_not_gt hd) h
     exact this (by rwa [adj_comm] at hn) hd.ne' cf hd
   classical
   use G.replaceVertex s t, inferInstance, cf.replaceVertex s t
@@ -273,7 +273,7 @@ theorem nonempty_iso_turanGraph :
   have := zp ⟨a, mem_univ a⟩ ⟨b, mem_univ b⟩
   rw [← h.not_adj_iff_part_eq] at this
   rw [← not_iff_not, not_ne_iff, this, card_parts]
-  rcases le_or_lt r (Fintype.card V) with c | c
+  rcases le_or_gt r (Fintype.card V) with c | c
   · rw [min_eq_right c]; rfl
   · have lc : ∀ x, zm ⟨x, _⟩ < Fintype.card V := fun x ↦ (zm ⟨x, mem_univ x⟩).2
     rw [min_eq_left c.le, Nat.mod_eq_of_lt (lc a), Nat.mod_eq_of_lt (lc b),

@@ -44,7 +44,7 @@ lemma Summable.tendstoUniformlyOn_tsum_nat_log_one_add {f : ℕ → α → ℂ} 
     TendstoUniformlyOn (fun n x ↦ ∑ m ∈ Finset.range n, log (1 + f m x))
     (fun x ↦ ∑' n, log (1 + f n x)) atTop K := by
   rw [← Nat.cofinite_eq_atTop] at h
-  exact (hu.hasSumUniformlyOn_log_one_add h).tendstoUniformlyOn_finset_range rfl
+  exact (hu.hasSumUniformlyOn_log_one_add h).tendstoUniformlyOn_finsetRange rfl
 
 /-- If `x ↦ ∑' i, log (f i x)` is uniformly convergent on `𝔖`, its sum has bounded-above real part
 on each set in `𝔖`, and the functions `f i x` have no zeroes, then  `∏' i, f i x` is uniformly
@@ -97,9 +97,8 @@ lemma hasProdUniformlyOn_one_add (hK : IsCompact K) (hu : Summable u)
     have hf'_bd : ∀ᶠ i in cofinite, ‖f' i‖ ≤ u i := by
       simp only [ContinuousMap.norm_le_of_nonempty]
       filter_upwards [h] with i hi using fun x ↦ hi x x.2
-    have hM : Multipliable fun i ↦ 1 + f' i := by
-      refine multipliable_one_add_of_summable (hu.of_norm_bounded_eventually _ ?_)
-      simpa using hf'_bd
+    have hM : Multipliable fun i ↦ 1 + f' i :=
+      multipliable_one_add_of_summable (hu.of_norm_bounded_eventually (by simpa using hf'_bd))
     convert ContinuousMap.tendsto_iff_tendstoUniformly.mp hM.hasProd
     · simp [f']
     · exact funext fun k ↦ ContinuousMap.tprod_apply hM k

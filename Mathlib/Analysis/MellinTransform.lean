@@ -350,7 +350,7 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [NormedSpace ℂ E] {a b : ℝ}
     simp_rw [F', bound, norm_smul, norm_mul, norm_real, mul_assoc]
     gcongr
     rw [norm_cpow_eq_rpow_re_of_pos ht]
-    rcases le_or_lt 1 t with h | h
+    rcases le_or_gt 1 t with h | h
     · refine le_add_of_le_of_nonneg (rpow_le_rpow_of_exponent_le h ?_)
         (rpow_nonneg (zero_le_one.trans h) _)
       rw [sub_re, one_re, sub_le_sub_iff_right]

@@ -35,17 +35,23 @@ open Complex
 variable {E : Type} [NormedAddCommGroup E] [NormedSpace ℂ E]
 variable {f g : E → ℂ} {z : ℂ} {x : E} {s : Set E}
 
-/-- `exp` is entire -/
+/-- The function `Complex.exp` is complex analytic. -/
 theorem analyticOnNhd_cexp : AnalyticOnNhd ℂ exp univ := by
   rw [Complex.exp_eq_exp_ℂ]
   exact fun x _ ↦ NormedSpace.exp_analytic x
 
+/-- The function `Complex.exp` is complex analytic. -/
 theorem analyticOn_cexp : AnalyticOn ℂ exp univ := analyticOnNhd_cexp.analyticOn
 
-/-- `exp` is analytic at any point -/
+/-- The function `Complex.exp` is complex analytic. -/
 @[fun_prop]
 theorem analyticAt_cexp : AnalyticAt ℂ exp z :=
   analyticOnNhd_cexp z (mem_univ _)
+
+/-- The function `Complex.exp` is complex analytic. -/
+lemma analyticWithinAt_cexp {s : Set ℂ} {x : ℂ} :
+    AnalyticWithinAt ℂ Complex.exp s x := by
+  exact analyticAt_cexp.analyticWithinAt
 
 /-- `exp ∘ f` is analytic -/
 @[fun_prop]
@@ -208,17 +214,22 @@ open Real
 
 variable {x : ℝ} {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {s : Set E}
 
-/-- `exp` is entire -/
+/-- The function `Real.exp` is real analytic. -/
 theorem analyticOnNhd_rexp : AnalyticOnNhd ℝ exp univ := by
   rw [Real.exp_eq_exp_ℝ]
   exact fun x _ ↦ NormedSpace.exp_analytic x
 
+/-- The function `Real.exp` is real analytic. -/
 theorem analyticOn_rexp : AnalyticOn ℝ exp univ := analyticOnNhd_rexp.analyticOn
 
-/-- `exp` is analytic at any point -/
+/-- The function `Real.exp` is real analytic. -/
 @[fun_prop]
 theorem analyticAt_rexp : AnalyticAt ℝ exp x :=
   analyticOnNhd_rexp x (mem_univ _)
+
+/-- The function `Real.exp` is real analytic. -/
+lemma analyticWithinAt_rexp {s : Set ℝ} : AnalyticWithinAt ℝ Real.exp s x :=
+  analyticAt_rexp.analyticWithinAt
 
 /-- `exp ∘ f` is analytic -/
 @[fun_prop]

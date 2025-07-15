@@ -265,12 +265,6 @@ def toEventualRangesSectionsEquiv : F.toEventualRanges.sections ≃ F.sections w
   toFun s := ⟨_, fun f => Subtype.coe_inj.2 <| s.prop f⟩
   invFun s :=
     ⟨fun _ => ⟨_, mem_iInter₂.2 fun _ f => ⟨_, s.prop f⟩⟩, fun f => Subtype.ext <| s.prop f⟩
-  left_inv _ := by
-    ext
-    rfl
-  right_inv _ := by
-    ext
-    rfl
 
 /-- If `F` satisfies the Mittag-Leffler condition, its restriction to eventual ranges is a
 surjective functor. -/

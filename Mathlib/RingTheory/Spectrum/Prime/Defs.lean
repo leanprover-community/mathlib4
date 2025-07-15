@@ -32,3 +32,36 @@ structure PrimeSpectrum (R : Type*) [CommSemiring R] where
   isPrime : asIdeal.IsPrime
 
 attribute [instance] PrimeSpectrum.isPrime
+
+namespace PrimeSpectrum
+
+/-!
+## The specialization order
+
+We endow `PrimeSpectrum R` with a partial order induced from the ideal lattice.
+This is exactly the specialization order.
+See the corresponding section at `Mathlib/RingTheory/Spectrum/Prime/Topology.lean`.
+-/
+
+variable {R : Type*} [CommSemiring R]
+
+instance : PartialOrder (PrimeSpectrum R) :=
+  PartialOrder.lift asIdeal (@PrimeSpectrum.ext _ _)
+
+@[simp]
+theorem asIdeal_le_asIdeal (x y : PrimeSpectrum R) : x.asIdeal ≤ y.asIdeal ↔ x ≤ y :=
+  Iff.rfl
+
+@[simp]
+theorem asIdeal_lt_asIdeal (x y : PrimeSpectrum R) : x.asIdeal < y.asIdeal ↔ x < y :=
+  Iff.rfl
+
+variable (R) in
+/-- The prime spectrum is in bijection with the set of prime ideals. -/
+@[simps]
+def equivSubtype : PrimeSpectrum R ≃o {I : Ideal R // I.IsPrime} where
+  toFun I := ⟨I.asIdeal, I.2⟩
+  invFun I := ⟨I, I.2⟩
+  map_rel_iff' := .rfl
+
+end PrimeSpectrum

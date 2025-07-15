@@ -294,7 +294,6 @@ lemma preservesLimitsOfShape_of_equiv {J' : Type w₂} [Category.{w₂'} J'] (e 
         have := (isLimitOfPreserves F (t.whiskerEquivalence e)).whiskerEquivalence e.symm
         apply ((IsLimit.postcomposeHomEquiv equ _).symm this).ofIsoLimit
         refine Cones.ext (Iso.refl _) fun j => ?_
-        dsimp
         simp [equ, ← Functor.map_comp]⟩ }
 
 @[deprecated "use preservesLimitsOfShape_of_equiv" (since := "2024-11-19")]
@@ -313,7 +312,6 @@ lemma preservesLimitsOfSizeOfUnivLE (F : C ⥤ D) [UnivLE.{w, w'}] [UnivLE.{w₂
     [PreservesLimitsOfSize.{w', w₂'} F] : PreservesLimitsOfSize.{w, w₂} F :=
   preservesLimitsOfSize_of_univLE.{w', w₂'} F
 
--- See library note [dsimp, simp].
 /-- `PreservesLimitsOfSize_shrink.{w w'} F` tries to obtain `PreservesLimitsOfSize.{w w'} F`
 from some other `PreservesLimitsOfSize F`.
 -/
@@ -401,7 +399,6 @@ lemma preservesColimitsOfShape_of_equiv {J' : Type w₂} [Category.{w₂'} J'] (
         have := (isColimitOfPreserves F (t.whiskerEquivalence e)).whiskerEquivalence e.symm
         apply ((IsColimit.precomposeInvEquiv equ _).symm this).ofIsoColimit
         refine Cocones.ext (Iso.refl _) fun j => ?_
-        dsimp
         simp [equ, ← Functor.map_comp]⟩ }
 
 @[deprecated "use preservesColimitsOfShape_of_equiv" (since := "2024-11-19")]
@@ -420,7 +417,6 @@ lemma preservesColimitsOfSizeOfUnivLE (F : C ⥤ D) [UnivLE.{w, w'}] [UnivLE.{w�
     [PreservesColimitsOfSize.{w', w₂'} F] : PreservesColimitsOfSize.{w, w₂} F :=
   preservesColimitsOfSize_of_univLE.{w', w₂'} F
 
--- See library note [dsimp, simp].
 /--
 `PreservesColimitsOfSize_shrink.{w w'} F` tries to obtain `PreservesColimitsOfSize.{w w'} F`
 from some other `PreservesColimitsOfSize F`.

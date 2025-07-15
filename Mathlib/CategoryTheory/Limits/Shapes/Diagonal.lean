@@ -361,7 +361,7 @@ theorem diagonal_pullback_fst {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
         ((Over.pullback f).map
               (Over.homMk (diagonal g) : Over.mk g ⟶ Over.mk (pullback.snd _ _ ≫ g))).left ≫
           (diagonalObjPullbackFstIso f g).inv := by
-  ext <;> dsimp <;> simp
+  ext <;> simp
 
 /-- Informally, this is a special case of `pullback_map_diagonal_isPullback` for `T = X`. -/
 lemma pullback_lift_diagonal_isPullback (g : Y ⟶ X) (f : X ⟶ S) :

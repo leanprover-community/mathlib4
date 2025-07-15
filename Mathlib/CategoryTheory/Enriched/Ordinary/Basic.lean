@@ -42,7 +42,7 @@ class EnrichedOrdinaryCategory extends EnrichedCategory V C where
   homEquiv {X Y : C} : (X ⟶ Y) ≃ (𝟙_ V ⟶ (X ⟶[V] Y))
   homEquiv_id (X : C) : homEquiv (𝟙 X) = eId V X := by aesop_cat
   homEquiv_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    homEquiv (f ≫ g) = (λ_ _).inv ≫ (homEquiv f ⊗ homEquiv g) ≫
+    homEquiv (f ≫ g) = (λ_ _).inv ≫ (homEquiv f ⊗ₘ homEquiv g) ≫
       eComp V X Y Z := by aesop_cat
 
 variable [EnrichedOrdinaryCategory V C] {C}
@@ -58,7 +58,7 @@ lemma eHomEquiv_id (X : C) : eHomEquiv V (𝟙 X) = eId V X :=
 
 @[reassoc]
 lemma eHomEquiv_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    eHomEquiv V (f ≫ g) = (λ_ _).inv ≫ (eHomEquiv V f ⊗ eHomEquiv V g) ≫ eComp V X Y Z :=
+    eHomEquiv V (f ≫ g) = (λ_ _).inv ≫ (eHomEquiv V f ⊗ₘ eHomEquiv V g) ≫ eComp V X Y Z :=
   EnrichedOrdinaryCategory.homEquiv_comp _ _
 
 /-- The morphism `(X' ⟶[V] Y) ⟶ (X ⟶[V] Y)` induced by a morphism `X ⟶ X'`. -/

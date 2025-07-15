@@ -25,7 +25,7 @@ namespace SimpleGraph
 
 theorem two_le_chromaticNumber_of_adj {α} {G : SimpleGraph α} {u v : α} (hadj : G.Adj u v) :
     2 ≤ G.chromaticNumber := by
-  refine le_of_not_lt ?_
+  refine le_of_not_gt ?_
   intro h
   have hc : G.Colorable 1 := chromaticNumber_le_iff_colorable.mp (Order.le_of_lt_add_one h)
   let c : G.Coloring (Fin 1) := hc.some

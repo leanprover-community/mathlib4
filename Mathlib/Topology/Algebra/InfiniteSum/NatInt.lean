@@ -284,11 +284,11 @@ theorem cauchySeq_finset_iff_nat_tprod_vanishing {f : ℕ → G} :
     refine ⟨if h : s.Nonempty then s.max' h + 1 else 0,
       fun t ht ↦ hs _ <| Set.disjoint_left.mpr ?_⟩
     split_ifs at ht with h
-    · exact fun m hmt hms ↦ (s.le_max' _ hms).not_lt (Nat.succ_le_iff.mp <| ht hmt)
+    · exact fun m hmt hms ↦ (s.le_max' _ hms).not_gt (Nat.succ_le_iff.mp <| ht hmt)
     · exact fun _ _ hs ↦ h ⟨_, hs⟩
   · obtain ⟨N, hN⟩ := vanish e he
     exact ⟨range N, fun t ht ↦ hN _ fun n hnt ↦
-      le_of_not_lt fun h ↦ Set.disjoint_left.mp ht hnt (mem_range.mpr h)⟩
+      le_of_not_gt fun h ↦ Set.disjoint_left.mp ht hnt (mem_range.mpr h)⟩
 
 variable [CompleteSpace G]
 
@@ -449,8 +449,7 @@ theorem HasProd.nat_mul_neg {f : ℤ → M} (hf : HasProd f m) :
         suffices x = 0 by simp only [this, eq_self_iff_true, if_true]
         omega
     _ = (∏ x ∈ u1, f x) * ∏ x ∈ u2, f x := prod_union_inter
-    _ = (∏ b ∈ v', f b) * ∏ b ∈ v', f (-b) := by
-      simp only [u1, u2, Nat.cast_inj, imp_self, implies_true, forall_const, prod_image, neg_inj]
+    _ = (∏ b ∈ v', f b) * ∏ b ∈ v', f (-b) := by simp [u1, u2]
     _ = ∏ b ∈ v', (f b * f (-b)) := prod_mul_distrib.symm⟩
 
 @[to_additive]

@@ -16,7 +16,7 @@ import Mathlib.Topology.Algebra.Monoid.Defs
 
 open TopologicalSpace Set Filter
 
-open Topology Filter
+open Topology
 
 variable {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
@@ -167,8 +167,6 @@ theorem continuous_prod [MulOneClass α] [ContinuousMul α] : Continuous (prod :
 end List
 
 namespace List.Vector
-
-open List
 
 instance (n : ℕ) : TopologicalSpace (Vector α n) := by unfold Vector; infer_instance
 

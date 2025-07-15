@@ -36,7 +36,7 @@ def recOnPrimePow {P : ℕ → Sort*} (h0 : P 0) (h1 : P 1)
       · rw [Nat.mul_div_cancel' hpt]
       · rw [Nat.dvd_div_iff_mul_dvd hpt, ← Nat.pow_succ]
         exact pow_succ_factorization_not_dvd (k + 1).succ_ne_zero hp
-      · simp [lt_mul_iff_one_lt_left Nat.succ_pos', one_lt_pow_iff htp.ne', hp.one_lt]
+      · simp [htp.ne', hp.one_lt]
 
 /-- Given `P 0`, `P 1`, and `P (p ^ n)` for positive prime powers, and a way to extend `P a` and
 `P b` to `P (a * b)` when `a, b` are positive coprime, we can define `P` for all natural numbers. -/

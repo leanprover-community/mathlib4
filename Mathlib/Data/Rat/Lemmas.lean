@@ -183,13 +183,13 @@ protected theorem inv_neg (q : ℚ) : (-q)⁻¹ = -q⁻¹ := by
 theorem num_div_eq_of_coprime {a b : ℤ} (hb0 : 0 < b) (h : Nat.Coprime a.natAbs b.natAbs) :
     (a / b : ℚ).num = a := by
   lift b to ℕ using hb0.le
-  simp only [Int.natAbs_natCast, Int.ofNat_pos] at h hb0
+  simp only [Int.natAbs_natCast, Int.natCast_pos] at h hb0
   rw [← Rat.divInt_eq_div, ← mk_eq_divInt _ _ hb0.ne' h]
 
 theorem den_div_eq_of_coprime {a b : ℤ} (hb0 : 0 < b) (h : Nat.Coprime a.natAbs b.natAbs) :
     ((a / b : ℚ).den : ℤ) = b := by
   lift b to ℕ using hb0.le
-  simp only [Int.natAbs_natCast, Int.ofNat_pos] at h hb0
+  simp only [Int.natAbs_natCast, Int.natCast_pos] at h hb0
   rw [← Rat.divInt_eq_div, ← mk_eq_divInt _ _ hb0.ne' h]
 
 theorem div_int_inj {a b c d : ℤ} (hb0 : 0 < b) (hd0 : 0 < d) (h1 : Nat.Coprime a.natAbs b.natAbs)
@@ -286,6 +286,19 @@ theorem inv_natCast_den (a : ℕ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a 
 theorem inv_ofNat_den (a : ℕ) [a.AtLeastTwo] :
     (ofNat(a) : ℚ)⁻¹.den = OfNat.ofNat a :=
   inv_natCast_den_of_pos (Nat.pos_of_neZero a)
+
+theorem den_inv_of_ne_zero {q : ℚ} (hq : q ≠ 0) : (q⁻¹).den = q.num.natAbs := by
+  have hq' : q.num ≠ 0 := by simpa using hq
+  rw [inv_def', divInt_eq_div, div_eq_mul_inv, mul_den, inv_intCast_den, if_neg hq']
+  norm_cast
+  rw [one_mul, inv_intCast_num, Int.natAbs_mul, Int.natAbs_sign_of_ne_zero hq', mul_one,
+    Int.natAbs_cast, q.reduced.symm, Nat.div_one]
+
+theorem num_inv (q : ℚ) : (q⁻¹).num = q.num.sign * q.den := by
+  rw [Rat.inv_def', Rat.divInt_eq_div, div_eq_mul_inv, Rat.mul_num, Rat.inv_intCast_num]
+  norm_cast
+  rw [one_mul, inv_intCast_den, Int.natAbs_mul, Int.natAbs_cast]
+  split <;> simp_all [Int.natAbs_sign_of_ne_zero, q.reduced.symm, mul_comm]
 
 protected theorem «forall» {p : ℚ → Prop} : (∀ r, p r) ↔ ∀ a b : ℤ, p (a / b) :=
   ⟨fun h _ _ => h _,

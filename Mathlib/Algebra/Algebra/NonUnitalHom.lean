@@ -395,8 +395,6 @@ their codomains. -/
 def prodEquiv : (A →ₙₐ[R] B) × (A →ₙₐ[R] C) ≃ (A →ₙₐ[R] B × C) where
   toFun f := f.1.prod f.2
   invFun f := ((fst _ _ _).comp f, (snd _ _ _).comp f)
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 variable (R A B)
 

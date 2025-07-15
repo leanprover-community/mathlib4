@@ -44,7 +44,7 @@ variable {α : Type u'}
 
 open FirstOrder Cardinal
 
-open Computability List Structure Cardinal Fin
+open Computability List Structure Fin
 
 namespace Term
 
@@ -96,7 +96,7 @@ protected def encoding : Encoding (L.Term α) where
   decode_encode t := by
     have h := listDecode_encode_list [t]
     rw [flatMap_singleton] at h
-    simp only [Option.join, h, head?_cons, Option.pure_def, Option.bind_eq_bind, Option.some_bind,
+    simp only [Option.join, h, head?_cons, Option.pure_def, Option.bind_eq_bind, Option.bind_some,
       id_eq]
 
 theorem listEncode_injective :
@@ -122,7 +122,8 @@ theorem card_sigma : #(Σ n, L.Term (α ⊕ (Fin n))) = max ℵ₀ #(α ⊕ (Σ 
       rw [one_le_iff_ne_zero, mk_ne_zero_iff]
       exact ⟨var (Sum.inr 0)⟩
   · rw [max_le_iff, ← infinite_iff]
-    refine ⟨Infinite.of_injective (fun i => ⟨i + 1, var (Sum.inr i)⟩) fun i j ij => ?_, ?_⟩
+    refine ⟨Infinite.of_injective
+        (fun i => ⟨i + 1, var (Sum.inr (Fin.ofNat _ i))⟩) fun i j ij => ?_, ?_⟩
     · cases ij
       rfl
     · rw [Cardinal.le_def]
@@ -141,7 +142,7 @@ instance [Encodable α] [Encodable (Σ i, L.Functions i)] : Encodable (L.Term α
   Encodable.ofLeftInjection listEncode (fun l => (listDecode l).head?.join) fun t => by
     simp only
     rw [← flatMap_singleton listEncode, listDecode_encode_list]
-    simp only [Option.join, head?_cons, Option.pure_def, Option.bind_eq_bind, Option.some_bind,
+    simp only [Option.join, head?_cons, Option.pure_def, Option.bind_eq_bind, Option.bind_some,
       id_eq]
 
 instance [h1 : Countable α] [h2 : Countable (Σ l, L.Functions l)] : Countable (L.Term α) := by

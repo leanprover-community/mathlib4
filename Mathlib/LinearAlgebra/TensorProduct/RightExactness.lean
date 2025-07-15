@@ -484,7 +484,6 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
         obtain ⟨y', hb'⟩ := hb
         use x' + y'
         simp only [map_add, ha', add_smul, hb']
-
   · rintro x ⟨y, rfl⟩
     induction y with
     | zero =>
@@ -549,7 +548,6 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
         obtain ⟨y', hb'⟩ := hb
         use x' + y'
         simp only [map_add, ha', add_smul, hb']
-
   · rintro x ⟨y, rfl⟩
     induction y with
     | zero =>

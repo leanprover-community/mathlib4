@@ -290,8 +290,7 @@ def ofIsComplProdEquiv {p q : Submodule R₁ E} (h : IsCompl p q) :
 
 end
 
-@[simp, nolint simpNF] -- Porting note: linter claims that LHS doesn't simplify, but it does
--- It seems the side condition `hf` is not applied by `simpNF`.
+@[simp]
 theorem linearProjOfIsCompl_of_proj (f : E →ₗ[R] p) (hf : ∀ x : p, f x = x) :
     p.linearProjOfIsCompl (ker f) (isCompl_of_proj hf) = f := by
   ext x
@@ -353,8 +352,6 @@ correspondence with linear maps to the submodule that restrict to the identity o
   invFun f := ⟨p.subtype ∘ₗ f.1, LinearMap.ext fun x ↦ by simp [f.2], le_antisymm
     ((range_comp_le_range _ _).trans_eq p.range_subtype)
     fun x hx ↦ ⟨x, Subtype.ext_iff.1 <| f.2 ⟨x, hx⟩⟩⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 end Submodule
 

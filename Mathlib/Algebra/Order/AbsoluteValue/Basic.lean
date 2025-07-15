@@ -3,11 +3,11 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Anne Baanen
 -/
+import Mathlib.Algebra.GroupWithZero.Regular
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Order.Hom.Basic
 import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Algebra.Regular.Basic
-import Mathlib.Tactic.Bound.Attribute
+import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Absolute values
@@ -360,7 +360,7 @@ variable [Field R] [Semifield S] [LinearOrder S] [IsStrictOrderedRing S] [Exists
 
 lemma IsNontrivial.exists_abv_gt_one (h : v.IsNontrivial) : ∃ x, 1 < v x := by
   obtain ⟨x, hx₀, hx₁⟩ := h
-  rcases hx₁.lt_or_lt with h | h
+  rcases hx₁.lt_or_gt with h | h
   · refine ⟨x⁻¹, ?_⟩
     rw [map_inv₀]
     exact (one_lt_inv₀ <| v.pos hx₀).mpr h

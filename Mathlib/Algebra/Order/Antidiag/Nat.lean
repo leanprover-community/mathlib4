@@ -33,7 +33,6 @@ This is `Nat.divisorsAntidiagonal` without a special case for `n = 0`. -/
         (⟨x.val.1, Nat.pos_of_mem_divisors <| Nat.fst_mem_divisors_of_mem_antidiagonal x.prop⟩,
         ⟨x.val.2, Nat.pos_of_mem_divisors <| Nat.snd_mem_divisors_of_mem_antidiagonal x.prop⟩),
       fun _ _ h => Subtype.ext <| Prod.ext (congr_arg (·.1.val) h) (congr_arg (·.2.val) h)⟩
-
   have mem_divisorsAntidiagonal {n : ℕ+} (x : ℕ+ × ℕ+) :
     x ∈ divisorsAntidiagonal n ↔ x.1 * x.2 = n := by
     simp_rw [divisorsAntidiagonal, Finset.mem_map, Finset.mem_attach, Function.Embedding.coeFn_mk,

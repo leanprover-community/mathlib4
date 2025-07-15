@@ -166,7 +166,7 @@ Lemmas in this section involve the coercion `R[X] → R⟦X⟧`, so they may onl
 variable {R : Type*} [CommSemiring R]
 
 open Nat hiding pow_succ pow_zero
-open Polynomial Finset Finset.Nat
+open Finset Finset.Nat
 
 theorem trunc_trunc_of_le {n m} (f : R⟦X⟧) (hnm : n ≤ m := by rfl) :
     trunc n ↑(trunc m f) = trunc n f := by

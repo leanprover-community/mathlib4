@@ -424,7 +424,6 @@ theorem comap_symm {I : Ideal R} (f : R ≃+* S) : I.comap f.symm = I.map f :=
 
 /-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `map f.symm I = comap f I`. -/
 @[simp]
-
 theorem map_symm {I : Ideal S} (f : R ≃+* S) : I.map f.symm = I.comap f :=
   map_comap_of_equiv (RingEquiv.symm f)
 
@@ -618,9 +617,8 @@ theorem le_comap_pow (n : ℕ) : K.comap f ^ n ≤ (K ^ n).comap f := by
 
 lemma disjoint_map_primeCompl_iff_comap_le {S : Type*} [Semiring S] {f : R →+* S}
     {p : Ideal R} {I : Ideal S} [p.IsPrime] :
-    Disjoint (I : Set S) (p.primeCompl.map f) ↔ I.comap f ≤ p := by
-  rw [disjoint_comm]
-  simp [Set.disjoint_iff, Set.ext_iff, Ideal.primeCompl, not_imp_not, SetLike.le_def]
+    Disjoint (I : Set S) (p.primeCompl.map f) ↔ I.comap f ≤ p :=
+  (@Set.disjoint_image_right _ _ f p.primeCompl I).trans disjoint_compl_right_iff
 
 /-- For a prime ideal `p` of `R`, `p` extended to `S` and
 restricted back to `R` is `p` if and only if `p` is the restriction of a prime in `S`. -/

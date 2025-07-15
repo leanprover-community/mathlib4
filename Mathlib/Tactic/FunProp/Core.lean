@@ -117,7 +117,7 @@ def tryTheoremCore (xs : Array Expr) (val : Expr) (type : Expr) (e : Expr)
 
 /-- Try to apply a theorem provided some of the theorem arguments. -/
 def tryTheoremWithHint? (e : Expr) (thmOrigin : Origin)
-    (hint : Array (Nat×Expr))
+    (hint : Array (Nat × Expr))
     (funProp : Expr → FunPropM (Option Result)) (newMCtxDepth : Bool := false) :
     FunPropM (Option Result) := do
   let go : FunPropM (Option Result) := do

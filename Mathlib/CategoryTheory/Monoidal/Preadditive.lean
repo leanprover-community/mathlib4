@@ -42,20 +42,20 @@ variable [MonoidalPreadditive C]
 
 namespace MonoidalPreadditive
 
--- The priority setting will not be needed when we replace `𝟙 X ⊗ f` by `X ◁ f`.
+-- The priority setting will not be needed when we replace `𝟙 X ⊗ₘ f` by `X ◁ f`.
 @[simp (low)]
-theorem tensor_zero {W X Y Z : C} (f : W ⟶ X) : f ⊗ (0 : Y ⟶ Z) = 0 := by
+theorem tensor_zero {W X Y Z : C} (f : W ⟶ X) : f ⊗ₘ (0 : Y ⟶ Z) = 0 := by
   simp [tensorHom_def]
 
--- The priority setting will not be needed when we replace `f ⊗ 𝟙 X` by `f ▷ X`.
+-- The priority setting will not be needed when we replace `f ⊗ₘ 𝟙 X` by `f ▷ X`.
 @[simp (low)]
-theorem zero_tensor {W X Y Z : C} (f : Y ⟶ Z) : (0 : W ⟶ X) ⊗ f = 0 := by
+theorem zero_tensor {W X Y Z : C} (f : Y ⟶ Z) : (0 : W ⟶ X) ⊗ₘ f = 0 := by
   simp [tensorHom_def]
 
-theorem tensor_add {W X Y Z : C} (f : W ⟶ X) (g h : Y ⟶ Z) : f ⊗ (g + h) = f ⊗ g + f ⊗ h := by
+theorem tensor_add {W X Y Z : C} (f : W ⟶ X) (g h : Y ⟶ Z) : f ⊗ₘ (g + h) = f ⊗ₘ g + f ⊗ₘ h := by
   simp [tensorHom_def]
 
-theorem add_tensor {W X Y Z : C} (f g : W ⟶ X) (h : Y ⟶ Z) : (f + g) ⊗ h = f ⊗ h + g ⊗ h := by
+theorem add_tensor {W X Y Z : C} (f g : W ⟶ X) (h : Y ⟶ Z) : (f + g) ⊗ₘ h = f ⊗ₘ h + g ⊗ₘ h := by
   simp [tensorHom_def]
 
 end MonoidalPreadditive
@@ -101,11 +101,11 @@ theorem sum_whiskerRight {Q R : C} {J : Type*} (s : Finset J) (g : J → (Q ⟶ 
   map_sum ((tensoringRight C).obj P).mapAddHom g s
 
 theorem tensor_sum {P Q R S : C} {J : Type*} (s : Finset J) (f : P ⟶ Q) (g : J → (R ⟶ S)) :
-    (f ⊗ ∑ j ∈ s, g j) = ∑ j ∈ s, f ⊗ g j := by
+    (f ⊗ₘ ∑ j ∈ s, g j) = ∑ j ∈ s, f ⊗ₘ g j := by
   simp only [tensorHom_def, whiskerLeft_sum, Preadditive.comp_sum]
 
 theorem sum_tensor {P Q R S : C} {J : Type*} (s : Finset J) (f : P ⟶ Q) (g : J → (R ⟶ S)) :
-    (∑ j ∈ s, g j) ⊗ f = ∑ j ∈ s, g j ⊗ f := by
+    (∑ j ∈ s, g j) ⊗ₘ f = ∑ j ∈ s, g j ⊗ₘ f := by
   simp only [tensorHom_def, sum_whiskerRight, Preadditive.sum_comp]
 
 -- In a closed monoidal category, this would hold because
@@ -187,7 +187,7 @@ theorem biproduct_ι_comp_leftDistributor_inv {J : Type} [Finite J] (X : C) (f :
   simp [leftDistributor_inv, Preadditive.comp_sum, ← id_tensor_comp, biproduct.ι_π_assoc, dite_comp]
 
 theorem leftDistributor_assoc {J : Type} [Finite J] (X Y : C) (f : J → C) :
-    (asIso (𝟙 X) ⊗ leftDistributor Y f) ≪≫ leftDistributor X _ =
+    (asIso (𝟙 X) ⊗ᵢ leftDistributor Y f) ≪≫ leftDistributor X _ =
       (α_ X Y (⨁ f)).symm ≪≫ leftDistributor (X ⊗ Y) f ≪≫ biproduct.mapIso fun _ => α_ X Y _ := by
   classical
   cases nonempty_fintype J
@@ -255,7 +255,7 @@ theorem biproduct_ι_comp_rightDistributor_inv {J : Type} [Finite J] (f : J → 
     dite_comp]
 
 theorem rightDistributor_assoc {J : Type} [Finite J] (f : J → C) (X Y : C) :
-    (rightDistributor f X ⊗ asIso (𝟙 Y)) ≪≫ rightDistributor _ Y =
+    (rightDistributor f X ⊗ᵢ asIso (𝟙 Y)) ≪≫ rightDistributor _ Y =
       α_ (⨁ f) X Y ≪≫ rightDistributor f (X ⊗ Y) ≪≫ biproduct.mapIso fun _ => (α_ _ X Y).symm := by
   classical
   cases nonempty_fintype J
@@ -271,9 +271,9 @@ theorem rightDistributor_assoc {J : Type} [Finite J] (f : J → C) (X Y : C) :
 
 theorem leftDistributor_rightDistributor_assoc {J : Type _} [Finite J]
     (X : C) (f : J → C) (Y : C) :
-    (leftDistributor X f ⊗ asIso (𝟙 Y)) ≪≫ rightDistributor _ Y =
+    (leftDistributor X f ⊗ᵢ asIso (𝟙 Y)) ≪≫ rightDistributor _ Y =
       α_ X (⨁ f) Y ≪≫
-        (asIso (𝟙 X) ⊗ rightDistributor _ Y) ≪≫
+        (asIso (𝟙 X) ⊗ᵢ rightDistributor _ Y) ≪≫
           leftDistributor X _ ≪≫ biproduct.mapIso fun _ => (α_ _ _ _).symm := by
   classical
   cases nonempty_fintype J

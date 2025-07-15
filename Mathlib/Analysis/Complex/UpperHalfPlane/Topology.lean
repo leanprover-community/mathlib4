@@ -147,7 +147,7 @@ lemma ofComplex_apply_eq_ite (w : ℂ) :
   · change (Function.invFunOn UpperHalfPlane.coe Set.univ w) = _
     simp only [invFunOn, dite_eq_right_iff, mem_univ, true_and]
     rintro ⟨a, rfl⟩
-    exact (a.prop.not_le (by simpa using hw)).elim
+    exact (a.prop.not_ge (by simpa using hw)).elim
 
 lemma ofComplex_apply_of_im_pos {z : ℂ} (hz : 0 < z.im) :
     ofComplex z = ⟨z, hz⟩ := by

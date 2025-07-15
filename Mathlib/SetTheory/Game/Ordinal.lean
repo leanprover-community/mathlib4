@@ -127,7 +127,7 @@ theorem toPGame_le_iff {a b : Ordinal} : a.toPGame ≤ b.toPGame ↔ a ≤ b :=
 
 @[simp]
 theorem toPGame_lt_iff {a b : Ordinal} : a.toPGame < b.toPGame ↔ a < b :=
-  ⟨by contrapose; rw [not_lt]; exact fun h => not_lt_of_le (toPGame_le h), toPGame_lt⟩
+  ⟨by contrapose; rw [not_lt]; exact fun h => not_lt_of_ge (toPGame_le h), toPGame_lt⟩
 
 @[simp]
 theorem toPGame_equiv_iff {a b : Ordinal} : (a.toPGame ≈ b.toPGame) ↔ a = b := by

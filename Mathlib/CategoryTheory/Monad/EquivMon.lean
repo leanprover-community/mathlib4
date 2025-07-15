@@ -25,7 +25,7 @@ A monad "is just" a monoid in the category of endofunctors.
 
 namespace CategoryTheory
 
-open Category
+open Category Mon_Class
 
 universe v u -- morphism levels before object levels. See note [category_theory universes].
 
@@ -35,33 +35,36 @@ namespace Monad
 
 attribute [local instance] endofunctorMonoidalCategory
 
+@[simps]
+instance (M : Monad C) : Mon_Class (M : C ⥤ C) where
+  one := M.η
+  mul := M.μ
+  mul_assoc := by ext; simp [M.assoc]
+
 /-- To every `Monad C` we associated a monoid object in `C ⥤ C`. -/
 @[simps]
 def toMon (M : Monad C) : Mon_ (C ⥤ C) where
   X := (M : C ⥤ C)
-  one := M.η
-  mul := M.μ
-  mul_assoc := by ext; simp [M.assoc]
 
 variable (C) in
 /-- Passing from `Monad C` to `Mon_ (C ⥤ C)` is functorial. -/
 @[simps]
 def monadToMon : Monad C ⥤ Mon_ (C ⥤ C) where
   obj := toMon
-  map f := { hom := f.toNatTrans }
+  map f := .mk' f.toNatTrans
 
 /-- To every monoid object in `C ⥤ C` we associate a `Monad C`. -/
-@[simps η μ]
+@[simps «η» «μ»]
 def ofMon (M : Mon_ (C ⥤ C)) : Monad C where
   toFunctor := M.X
-  η := M.one
-  μ := M.mul
+  «η» := η[M.X]
+  «μ» := μ[M.X]
   left_unit := fun X => by
-    simpa [-Mon_.mul_one] using congrArg (fun t ↦ t.app X) M.mul_one
+    simpa [-Mon_Class.mul_one] using congrArg (fun t ↦ t.app X) (mul_one M.X)
   right_unit := fun X => by
-    simpa [-Mon_.one_mul] using congrArg (fun t ↦ t.app X) M.one_mul
+    simpa [-Mon_Class.one_mul] using congrArg (fun t ↦ t.app X) (one_mul M.X)
   assoc := fun X => by
-    simpa [-Mon_.mul_assoc] using congrArg (fun t ↦ t.app X) M.mul_assoc
+    simpa [-Mon_Class.mul_assoc] using congrArg (fun t ↦ t.app X) (mul_assoc M.X)
 
 -- Porting note: `@[simps]` fails to generate `ofMon_obj`:
 @[simp] lemma ofMon_obj (M : Mon_ (C ⥤ C)) (X : C) : (ofMon M).obj X = M.X.obj X := rfl
@@ -75,9 +78,9 @@ def monToMonad : Mon_ (C ⥤ C) ⥤ Monad C where
   map {X Y} f :=
     { f.hom with
       app_η X := by
-        simpa [-Mon_.Hom.one_hom] using congrArg (fun t ↦ t.app X) f.one_hom
+        simpa [-IsMon_Hom.one_hom] using congrArg (fun t ↦ t.app X) (IsMon_Hom.one_hom f.hom)
       app_μ Z := by
-        simpa [-Mon_.Hom.mul_hom] using congrArg (fun t ↦ t.app Z) f.mul_hom }
+        simpa [-IsMon_Hom.mul_hom] using congrArg (fun t ↦ t.app Z) (IsMon_Hom.mul_hom f.hom) }
 
 /-- Oh, monads are just monoids in the category of endofunctors (equivalence of categories). -/
 @[simps]

@@ -157,6 +157,11 @@ lemma Integrable.of_finite [Finite α] [MeasurableSingletonClass α] [IsFiniteMe
 /-- This lemma is a special case of `Integrable.of_finite`. -/
 lemma Integrable.of_isEmpty [IsEmpty α] {f : α → β} : Integrable f μ := .of_finite
 
+/-- This lemma is a special case of `Integrable.of_finite`. -/
+lemma Integrable.of_subsingleton [Subsingleton α] [IsFiniteMeasure μ] {f : α → β} :
+    Integrable f μ :=
+  .of_finite
+
 theorem MemLp.integrable_enorm_rpow {f : α → ε} {p : ℝ≥0∞} (hf : MemLp f p μ) (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) : Integrable (fun x : α => ‖f x‖ₑ ^ p.toReal) μ := by
   rw [← memLp_one_iff_integrable]
@@ -383,6 +388,11 @@ theorem Integrable.add [ContinuousAdd ε']
 theorem Integrable.add'' [ContinuousAdd ε']
     {f g : α → ε'} (hf : Integrable f μ) (hg : Integrable g μ) :
     Integrable (fun x ↦ f x + g x) μ := hf.add hg
+
+@[simp]
+lemma Integrable.of_subsingleton_codomain [Subsingleton ε'] {f : α → ε'} :
+    Integrable f μ :=
+  integrable_zero _ _ _ |>.congr <| .of_forall fun _ ↦ Subsingleton.elim _ _
 
 end ENormedAddMonoid
 

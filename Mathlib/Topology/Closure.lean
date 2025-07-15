@@ -372,6 +372,10 @@ theorem Dense.nonempty [h : Nonempty X] (hs : Dense s) : s.Nonempty :=
 theorem Dense.mono (h : s₁ ⊆ s₂) (hd : Dense s₁) : Dense s₂ := fun x =>
   closure_mono h (hd x)
 
+lemma DenseRange.of_comp {α β : Type*} {f : α → X} {g : β → α}
+    (h : DenseRange (f ∘ g)) : DenseRange f :=
+  Dense.mono (range_comp_subset_range g f) h
+
 /-- Complement to a singleton is dense if and only if the singleton is not an open set. -/
 theorem dense_compl_singleton_iff_not_open :
     Dense ({x}ᶜ : Set X) ↔ ¬IsOpen ({x} : Set X) := by

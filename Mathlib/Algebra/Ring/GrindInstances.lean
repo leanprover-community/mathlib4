@@ -46,29 +46,30 @@ instance CommRing.toGrindCommRing [s : CommRing α] :
     intCast_neg := Int.cast_neg }
 
 theorem CommRing.toGrindCommRing_ofNat [CommRing α] (n : ℕ) :
-    @OfNat.ofNat α n (Lean.Grind.CommRing.ofNat n) = n.cast := by
+    @OfNat.ofNat α n (Lean.Grind.Semiring.ofNat n) = n.cast := by
   match n with
   | 0 => simp [zero_add]
   | 1 => simp [one_add_one_eq_two]
   | n + 2 => rfl
 
+attribute [local instance] Grind.Semiring.natCast Grind.Ring.intCast in
 -- Verify that we can construct a `CommRing` from a `Lean.Grind.CommRing`.
 -- This is not an instance (or even a `def`) because this direction should never be used.
 -- There is no reason to expect that using `CommRing.toGrindCommRing` and then this construction
 -- will give a result defeq to the original `CommRing α`.
 example (s : Grind.CommRing α) : CommRing α :=
   { s with
-    zero_add := Grind.CommRing.zero_add
-    right_distrib := Grind.CommRing.right_distrib
-    mul_zero := Grind.CommRing.mul_zero
-    one_mul := Grind.CommRing.one_mul
+    zero_add := Grind.Semiring.zero_add
+    right_distrib := Grind.Semiring.right_distrib
+    mul_zero := Grind.Semiring.mul_zero
+    one_mul := Grind.Semiring.one_mul
     nsmul := nsmulRec
     zsmul := zsmulRec
     natCast := Nat.cast
-    natCast_zero :=  Grind.CommRing.natCast_zero
-    natCast_succ n := Grind.CommRing.natCast_succ n
+    natCast_zero :=  Grind.Semiring.natCast_zero
+    natCast_succ n := Grind.Semiring.natCast_succ n
     intCast := Int.cast
-    intCast_ofNat := Grind.CommRing.intCast_natCast
+    intCast_ofNat := Grind.Ring.intCast_natCast
     intCast_negSucc n := by
-      rw [Int.negSucc_eq, Grind.CommRing.intCast_neg,
-        Grind.CommRing.intCast_natCast_add_one, Grind.CommRing.natCast_succ] }
+      rw [Int.negSucc_eq, Grind.Ring.intCast_neg,
+        Grind.Ring.intCast_natCast_add_one, Grind.Semiring.natCast_succ] }

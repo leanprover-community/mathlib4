@@ -69,7 +69,7 @@ this re-writes the `V`-composition to be in `C` and moves the braiding to the le
 @[reassoc]
 lemma tensorHom_eComp_op_eq {C : Type u} [EnrichedCategory V C] {x y z : Cᵒᵖ} {v w : V}
     (f : v ⟶ EnrichedCategory.Hom z y) (g : w ⟶ EnrichedCategory.Hom y x) :
-    (f ⊗ g) ≫ eComp V z y x = (β_ v w).hom ≫ (g ⊗ f) ≫ eComp V x.unop y.unop z.unop := by
+    (f ⊗ₘ g) ≫ eComp V z y x = (β_ v w).hom ≫ (g ⊗ₘ f) ≫ eComp V x.unop y.unop z.unop := by
   rw [eComp_op_eq]
   exact braiding_naturality_assoc f g _
 
@@ -103,9 +103,9 @@ def forgetEnrichmentOppositeEquivalence.inverse :
     dsimp
     rw [this, forgetEnrichment_comp, Category.assoc, unitors_inv_equal,
       ← leftUnitor_inv_braiding_assoc]
-    have : (β_ _ _).hom ≫ (homTo V g.unop ⊗ homTo V f.unop) ≫
+    have : (β_ _ _).hom ≫ (homTo V g.unop ⊗ₘ homTo V f.unop) ≫
       eComp V («to» V z.unop) («to» V y.unop) («to» V x.unop) =
-      ((homTo V f.unop) ⊗ (homTo V g.unop)) ≫ eComp V x y z := (tensorHom_eComp_op_eq V _ _).symm
+      ((homTo V f.unop) ⊗ₘ (homTo V g.unop)) ≫ eComp V x y z := (tensorHom_eComp_op_eq V _ _).symm
     rw [this, ← Category.assoc]
     congr 1
 

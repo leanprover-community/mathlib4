@@ -375,7 +375,7 @@ open MeasureTheory MeasureTheory.Measure Real in
 open scoped Classical in
 theorem convexBodySum_volume :
     volume (convexBodySum K B) = (convexBodySumFactor K) * (.ofReal B) ^ (finrank ℚ K) := by
-  obtain hB | hB := le_or_lt B 0
+  obtain hB | hB := le_or_gt B 0
   · rw [convexBodySum_volume_eq_zero_of_le_zero K hB, ofReal_eq_zero.mpr hB, zero_pow, mul_zero]
     exact finrank_pos.ne'
   · suffices volume (convexBodySum K 1) = (convexBodySumFactor K) by

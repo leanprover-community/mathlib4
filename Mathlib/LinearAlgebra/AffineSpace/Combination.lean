@@ -437,7 +437,7 @@ theorem affineCombination_eq_linear_combination (s : Finset ι) (p : ι → V) (
 
 /-- An `affineCombination` equals a point if that point is in the set
 and has weight 1 and the other points in the set have weight 0. -/
-@[simp]
+-- Cannot be @[simp] because `i` can not be inferred by `simp`.
 theorem affineCombination_of_eq_one_of_eq_zero (w : ι → k) (p : ι → P) {i : ι} (his : i ∈ s)
     (hwi : w i = 1) (hw0 : ∀ i2 ∈ s, i2 ≠ i → w i2 = 0) : s.affineCombination k p w = p i := by
   have h1 : ∑ i ∈ s, w i = 1 := hwi ▸ sum_eq_single i hw0 fun h => False.elim (h his)
@@ -1082,7 +1082,6 @@ theorem affineSpan_eq_affineSpan_lineMap_units [Nontrivial k] {s : Set P} {p : P
   have : s = Set.range ((↑) : s → P) := by simp
   conv_rhs =>
     rw [this]
-
   apply le_antisymm
     <;> intro q hq
     <;> erw [mem_affineSpan_iff_eq_weightedVSubOfPoint_vadd k V _ (⟨p, hp⟩ : s) q] at hq ⊢

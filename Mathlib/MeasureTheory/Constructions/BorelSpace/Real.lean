@@ -576,7 +576,7 @@ lemma tendsto_measure_Icc_nhdsWithin_right' (b : ℝ) :
 
 lemma tendsto_measure_Icc_nhdsWithin_right (b : ℝ) :
     Tendsto (fun δ ↦ μ (Icc (b - δ) (b + δ))) (𝓝[≥] (0 : ℝ)) (𝓝 (μ {b})) := by
-  simp only [← nhdsWithin_right_sup_nhds_singleton, nhdsWithin_singleton, tendsto_sup,
+  simp only [← nhdsGT_sup_nhdsWithin_singleton, nhdsWithin_singleton, tendsto_sup,
     tendsto_measure_Icc_nhdsWithin_right' μ b, true_and, tendsto_pure_left]
   intro s hs
   simpa using mem_of_mem_nhds hs

@@ -235,7 +235,7 @@ elab_rules : term
 
 end deprecated
 
-open Lean Meta Parser.Term PrettyPrinter.Delaborator SubExpr
+open PrettyPrinter.Delaborator SubExpr
 open scoped Batteries.ExtendedBinder
 
 /-- The possibilities we distinguish to delaborate the finset indexing a big operator:

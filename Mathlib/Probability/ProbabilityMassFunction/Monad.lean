@@ -81,7 +81,7 @@ open scoped Classical in
 @[simp]
 theorem toMeasure_pure_apply (hs : MeasurableSet s) :
     (pure a).toMeasure s = if a ∈ s then 1 else 0 :=
-  (toMeasure_apply_eq_toOuterMeasure_apply (pure a) s hs).trans (toOuterMeasure_pure_apply a s)
+  (toMeasure_apply_eq_toOuterMeasure_apply (pure a) hs).trans (toOuterMeasure_pure_apply a s)
 
 theorem toMeasure_pure : (pure a).toMeasure = Measure.dirac a :=
   Measure.ext fun s hs => by rw [toMeasure_pure_apply a s hs, Measure.dirac_apply' a hs]; rfl
@@ -170,10 +170,10 @@ theorem toOuterMeasure_bind_apply :
 @[simp]
 theorem toMeasure_bind_apply [MeasurableSpace β] (hs : MeasurableSet s) :
     (p.bind f).toMeasure s = ∑' a, p a * (f a).toMeasure s :=
-  (toMeasure_apply_eq_toOuterMeasure_apply (p.bind f) s hs).trans
+  (toMeasure_apply_eq_toOuterMeasure_apply (p.bind f) hs).trans
     ((toOuterMeasure_bind_apply p f s).trans
       (tsum_congr fun a =>
-        congr_arg (fun x => p a * x) (toMeasure_apply_eq_toOuterMeasure_apply (f a) s hs).symm))
+        congr_arg (fun x => p a * x) (toMeasure_apply_eq_toOuterMeasure_apply (f a) hs).symm))
 
 end Measure
 
@@ -304,7 +304,7 @@ theorem toOuterMeasure_bindOnSupport_apply :
 theorem toMeasure_bindOnSupport_apply [MeasurableSpace β] (hs : MeasurableSet s) :
     (p.bindOnSupport f).toMeasure s =
       ∑' a, p a * if h : p a = 0 then 0 else (f a h).toMeasure s := by
-  simp only [toMeasure_apply_eq_toOuterMeasure_apply _ _ hs, toOuterMeasure_bindOnSupport_apply]
+  simp only [toMeasure_apply_eq_toOuterMeasure_apply _ hs, toOuterMeasure_bindOnSupport_apply]
 
 end Measure
 

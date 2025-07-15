@@ -24,7 +24,7 @@ variable {α β σ φ : Type*} {n : ℕ} {x : α} {s : σ} (xs : Vector α n)
 
 /-- Append a single element to the end of a vector -/
 def snoc : Vector α n → α → Vector α (n+1) :=
-  fun xs x => append xs (x ::ᵥ Vector.nil)
+  fun xs x => xs ++ x ::ᵥ Vector.nil
 
 /-! ## Simplification lemmas -/
 
@@ -51,7 +51,7 @@ theorem reverse_snoc : reverse (xs.snoc x) = x ::ᵥ (reverse xs) := by
   cases xs
   simp only [reverse, snoc, cons, toList_mk]
   congr
-  simp [toList, Vector.append, Append.append]
+  simp [toList, append_def]
 
 theorem replicate_succ_to_snoc (val : α) :
     replicate (n+1) val = (replicate n val).snoc val := by

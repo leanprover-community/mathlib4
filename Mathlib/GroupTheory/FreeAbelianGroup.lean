@@ -551,7 +551,7 @@ instance pemptyUnique : Unique (FreeAbelianGroup PEmpty) where
     rfl)
 
 /-- The free abelian group on a type with one term is isomorphic to `ℤ`. -/
-def punitEquiv (T : Type*) [Unique T] : FreeAbelianGroup T ≃+ ℤ where
+def uniqueEquiv (T : Type*) [Unique T] : FreeAbelianGroup T ≃+ ℤ where
   toFun := FreeAbelianGroup.lift fun _ ↦ (1 : ℤ)
   invFun n := n • of Inhabited.default
   left_inv z := FreeAbelianGroup.induction_on z
@@ -564,6 +564,8 @@ def punitEquiv (T : Type*) [Unique T] : FreeAbelianGroup T ≃+ ℤ where
     rw [AddMonoidHom.map_zsmul, lift.of]
     exact zsmul_int_one n
   map_add' := AddMonoidHom.map_add _
+
+@[deprecated (since := "2025-06-16")] alias punitEquiv := uniqueEquiv
 
 /-- Isomorphic types have isomorphic free abelian groups. -/
 def equivOfEquiv {α β : Type*} (f : α ≃ β) : FreeAbelianGroup α ≃+ FreeAbelianGroup β where

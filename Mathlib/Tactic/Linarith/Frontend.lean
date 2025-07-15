@@ -130,11 +130,11 @@ The components of `linarith` are spread between a number of files for the sake o
 linarith, nlinarith, lra, nra, Fourier-Motzkin, linear arithmetic, linear programming
 -/
 
-open Lean Elab Tactic Meta
-open Batteries Mathlib
+open Lean Elab Parser Tactic Meta
+open Batteries
 
 
-namespace Linarith
+namespace Mathlib.Tactic.Linarith
 
 /-! ### Config objects
 
@@ -144,7 +144,6 @@ be in context to choose a default.
 -/
 
 section
-open Meta
 
 /-- A configuration object for `linarith`. -/
 structure LinarithConfig : Type where
@@ -363,7 +362,7 @@ end Linarith
 
 /-! ### User facing functions -/
 
-open Parser Tactic Syntax
+open Syntax
 
 /-- Syntax for the arguments of `linarith`, after the optional `!`. -/
 syntax linarithArgsRest := optConfig (&" only")? (" [" term,* "]")?
@@ -488,3 +487,5 @@ elab_rules : tactic
 --   category   := doc_category.tactic,
 --   decl_names := [`tactic.interactive.nlinarith],
 --   tags       := ["arithmetic", "decision procedure", "finishing"] }
+
+end Mathlib.Tactic

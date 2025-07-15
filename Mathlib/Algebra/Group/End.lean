@@ -84,8 +84,6 @@ def equivUnitsEnd : Perm α ≃* Units (Function.End α) where
   toFun e := ⟨e.toFun, e.symm.toFun, e.self_comp_symm, e.symm_comp_self⟩
   invFun u :=
     ⟨(u : Function.End α), (↑u⁻¹ : Function.End α), congr_fun u.inv_val, congr_fun u.val_inv⟩
-  left_inv _ := ext fun _ => rfl
-  right_inv _ := Units.ext rfl
   map_mul' _ _ := rfl
 
 /-- Lift a monoid homomorphism `f : G →* Function.End α` to a monoid homomorphism
@@ -180,6 +178,14 @@ theorem self_trans_inv (e : Perm α) : e.trans e⁻¹ = 1 :=
 @[simp]
 theorem symm_mul (e : Perm α) : e.symm * e = 1 :=
   Equiv.self_trans_symm e
+
+/-- If `α` is equivalent to `β`, then `Perm α` is isomorphic to `Perm β`. -/
+def permCongrHom (e : α ≃ β) : Equiv.Perm α ≃* Equiv.Perm β where
+  toFun x := e.symm.trans (x.trans e)
+  invFun y := e.trans (y.trans e.symm)
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
+  map_mul' _ _ := by ext; simp
 
 /-! Lemmas about `Equiv.Perm.sumCongr` re-expressed via the group structure. -/
 
@@ -741,6 +747,8 @@ instance group : Group (AddAut A) where
   one_mul _ := rfl
   mul_one _ := rfl
   inv_mul_cancel := AddEquiv.self_trans_symm
+
+attribute [to_additive AddAut.instGroup] MulAut.instGroup
 
 instance : Inhabited (AddAut A) :=
   ⟨1⟩

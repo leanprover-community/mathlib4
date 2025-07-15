@@ -123,7 +123,7 @@ lemma cauchy_davenport_minOrder_mul (hs : s.Nonempty) (ht : t.Nonempty) :
   simp only [min_le_iff, tsub_le_iff_right, Prod.forall, Set.mem_setOf_eq, and_imp,
     Nat.cast_le] at *
   -- If `#t < #s`, we're done by the induction hypothesis on `(t⁻¹, s⁻¹)`.
-  obtain hts | hst := lt_or_le #t #s
+  obtain hts | hst := lt_or_ge #t #s
   · simpa only [← mul_inv_rev, add_comm, card_inv] using
       ih _ _ ht.inv hs.inv
         (devosMulRel_iff.2 <| Or.inr <| Or.inr <| by
@@ -217,4 +217,4 @@ lemma cauchy_davenport_mul_of_linearOrder_isCancelMul [LinearOrder α] [Mul α] 
   simp only [mem_inter, and_imp, mem_mul, mem_singleton, exists_and_left, exists_eq_left,
     forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, mul_left_inj]
   exact fun a' ha' b' hb' h ↦ (le_max' _ _ ha').eq_of_not_lt fun ha ↦
-    ((mul_lt_mul_right' ha _).trans_eq' h).not_le <| mul_le_mul_left' (min'_le _ _ hb') _
+    ((mul_lt_mul_right' ha _).trans_eq' h).not_ge <| mul_le_mul_left' (min'_le _ _ hb') _

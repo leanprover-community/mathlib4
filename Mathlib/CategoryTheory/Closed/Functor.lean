@@ -88,7 +88,6 @@ theorem coev_expComparison (A B : C) :
       (exp.coev _).app (F.obj B) ≫ (exp (F.obj A)).map (inv (prodComparison F A B)) := by
   convert unit_mateEquiv _ _ (prodComparisonNatIso F A).inv B using 3
   apply IsIso.inv_eq_of_hom_inv_id -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): was `ext`
-  dsimp
   simp
 
 theorem uncurry_expComparison (A B : C) :
@@ -112,7 +111,7 @@ theorem expComparison_whiskerLeft {A A' : C} (f : A' ⟶ A) :
   congr 1
   apply congr_arg
   ext B
-  simp only [Functor.comp_obj, tensorLeft_obj, prodComparisonNatIso_inv, asIso_inv,
+  simp only [Functor.comp_obj, curriedTensor_obj_obj, prodComparisonNatIso_inv, asIso_inv,
     NatTrans.comp_app, whiskerLeft_app, curriedTensor_map_app, NatIso.isIso_inv_app,
     whiskerRight_app, IsIso.eq_inv_comp, prodComparisonNatTrans_app]
   rw [← prodComparison_inv_natural_whiskerRight F f]
@@ -138,22 +137,23 @@ theorem frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
   apply congr_arg
   ext B
   unfold mateEquiv
-  simp only [Functor.comp_obj, tensorLeft_obj, Functor.id_obj, Equiv.coe_fn_mk, whiskerLeft_comp,
-    whiskerLeft_twice, whiskerRight_comp, assoc, NatTrans.comp_app, whiskerLeft_app,
-    curriedTensor_obj_obj, whiskerRight_app, prodComparisonNatTrans_app, curriedTensor_map_app,
-    Functor.comp_map, tensorLeft_map, prodComparisonNatIso_inv, asIso_inv, NatIso.isIso_inv_app]
+  simp only [Functor.comp_obj, curriedTensor_obj_obj, Functor.id_obj, Equiv.coe_fn_mk,
+    whiskerLeft_comp, whiskerLeft_twice, whiskerRight_comp, assoc, NatTrans.comp_app,
+    whiskerLeft_app, curriedTensor_obj_obj, whiskerRight_app, prodComparisonNatTrans_app,
+    curriedTensor_map_app, Functor.comp_map, curriedTensor_obj_map, prodComparisonNatIso_inv,
+    asIso_inv, NatIso.isIso_inv_app]
   rw [← F.map_comp, ← F.map_comp]
   simp only [Functor.map_comp]
   apply IsIso.eq_inv_of_inv_hom_id
   simp only [assoc, Functor.associator_inv_app, Functor.associator_hom_app, Functor.comp_obj,
-    curriedTensor_obj_obj, tensorLeft_obj, Functor.map_id, id_comp]
+    curriedTensor_obj_obj, curriedTensor_obj_obj, Functor.map_id, id_comp]
   rw [prodComparison_natural_whiskerLeft, prodComparison_natural_whiskerRight_assoc]
   slice_lhs 2 3 => rw [← prodComparison_comp]
   simp only [assoc]
   unfold prodComparison
   have ηlemma : (h.unit.app (F.obj A ⊗ F.obj B) ≫
     lift ((L ⋙ F).map (fst _ _)) ((L ⋙ F).map (snd _ _))) =
-      (h.unit.app (F.obj A)) ⊗ (h.unit.app (F.obj B)) := by
+      (h.unit.app (F.obj A)) ⊗ₘ (h.unit.app (F.obj B)) := by
     ext <;> simp
   slice_lhs 1 2 => rw [ηlemma]
   simp only [Functor.id_obj, Functor.comp_obj, assoc, ← whisker_exchange, ← tensorHom_def']

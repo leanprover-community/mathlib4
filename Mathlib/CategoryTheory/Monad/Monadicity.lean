@@ -103,9 +103,7 @@ def comparisonLeftAdjointHomEquiv (A : adj.toMonad.Algebra) (B : D)
       { toFun := fun g =>
           { f := _
             h := g.prop }
-        invFun := fun f => ⟨f.f, f.h⟩
-        left_inv := fun g => by ext; rfl
-        right_inv := fun f => by ext; rfl }
+        invFun := fun f => ⟨f.f, f.h⟩ }
 
 /-- Construct the adjunction to the comparison functor.
 -/
@@ -220,7 +218,7 @@ theorem comparisonAdjunction_counit_app
 
 end MonadicityInternal
 
-open CategoryTheory Adjunction Monad MonadicityInternal
+open MonadicityInternal
 
 variable {C : Type u₁} {D : Type u₂}
 variable [Category.{v₁} C] [Category.{v₁} D]

@@ -124,12 +124,10 @@ instance (h : ShiftMkCore C A) : (Discrete.functor h.F).Monoidal :=
       μIso_hom_natural_left := by
         rintro ⟨X⟩ ⟨Y⟩ ⟨⟨⟨rfl⟩⟩⟩ ⟨X'⟩
         ext
-        dsimp
         simp
       μIso_hom_natural_right := by
         rintro ⟨X⟩ ⟨Y⟩ ⟨X'⟩ ⟨⟨⟨rfl⟩⟩⟩
         ext
-        dsimp
         simp
       associativity := by
         rintro ⟨m₁⟩ ⟨m₂⟩ ⟨m₃⟩
@@ -739,7 +737,6 @@ def hasShift :
           shiftFunctorAdd_zero_add_hom_app, eqToHom_map]
         congr 1
         erw [(i n).hom.naturality]
-        dsimp
         simp)
       add_zero_hom_app := fun n X => hF.map_injective (by
         have := dcongr_arg (fun a => (i a).hom.app X) (add_zero n)

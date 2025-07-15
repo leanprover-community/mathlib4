@@ -44,7 +44,7 @@ theorem preimage_ball (x : ℕ) (r : ℝ) : (↑) ⁻¹' ball (x : ℝ) r = ball
 theorem preimage_closedBall (x : ℕ) (r : ℝ) : (↑) ⁻¹' closedBall (x : ℝ) r = closedBall x r := rfl
 
 theorem closedBall_eq_Icc (x : ℕ) (r : ℝ) : closedBall x r = Icc ⌈↑x - r⌉₊ ⌊↑x + r⌋₊ := by
-  rcases le_or_lt 0 r with (hr | hr)
+  rcases le_or_gt 0 r with (hr | hr)
   · rw [← preimage_closedBall, Real.closedBall_eq_Icc, preimage_Icc]
     positivity
   · rw [closedBall_eq_empty.2 hr, Icc_eq_empty_of_lt]

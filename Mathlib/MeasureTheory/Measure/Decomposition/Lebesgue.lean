@@ -976,7 +976,7 @@ nonrec instance (priority := 100) haveLebesgueDecomposition_of_sigmaFinite
     _ = .sum fun n ↦ .restrict μ (s n) := by
       simp_rw [ξ, f, withDensity_indicator (hsm _), singularPart_add_rnDeriv]
     _ = μ := sum_restrict_disjointed_spanningSets ..
-  exact ⟨⟨(.sum ξ, ∑' n, f n), by measurability, hξ, hadd.symm⟩⟩
+  exact ⟨⟨(.sum ξ, ∑' n, f n), by fun_prop, hξ, hadd.symm⟩⟩
 
 section rnDeriv
 

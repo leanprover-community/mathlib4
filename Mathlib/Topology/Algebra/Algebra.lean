@@ -441,8 +441,6 @@ theorem coe_prodMap' {D : Type*} [Semiring D] [TopologicalSpace D] [Algebra R D]
 def prodEquiv : (A →A[R] B) × (A →A[R] C) ≃ (A →A[R] B × C) where
   toFun f     := f.1.prod f.2
   invFun f    := ⟨(fst _ _ _).comp f, (snd _ _ _).comp f⟩
-  left_inv f  := by ext <;> rfl
-  right_inv f := by ext <;> rfl
 
 end prod
 

@@ -707,7 +707,7 @@ instance addRightMono : AddRightMono PGame :=
   ⟨fun _ _ _ => add_le_add_right'⟩
 
 instance addLeftMono : AddLeftMono PGame :=
-  ⟨fun x _ _ h => (add_comm_le.trans (add_le_add_right h x)).trans add_comm_le⟩
+  ⟨fun x _ _ h => (add_comm_le.trans (by gcongr)).trans add_comm_le⟩
 
 theorem add_lf_add_right {y z : PGame} (h : y ⧏ z) (x) : y + x ⧏ z + x :=
   suffices z + x ≤ y + x → z ≤ y by
@@ -718,7 +718,7 @@ theorem add_lf_add_right {y z : PGame} (h : y ⧏ z) (x) : y + x ⧏ z + x :=
     z ≤ z + 0 := (PGame.add_zero _).symm.le
     _ ≤ z + (x + -x) := add_le_add_left (zero_le_add_neg_cancel x) _
     _ ≤ z + x + -x := (PGame.add_assoc _ _ _).symm.le
-    _ ≤ y + x + -x := add_le_add_right w _
+    _ ≤ y + x + -x := by gcongr
     _ ≤ y + (x + -x) := (PGame.add_assoc _ _ _).le
     _ ≤ y + 0 := add_le_add_left (add_neg_cancel_le_zero x) _
     _ ≤ y := (PGame.add_zero _).le
@@ -762,7 +762,7 @@ theorem le_iff_sub_nonneg {x y : PGame} : x ≤ y ↔ 0 ≤ y - x :=
   ⟨fun h => (zero_le_add_neg_cancel x).trans (add_le_add_right h _), fun h =>
     calc
       x ≤ 0 + x := (PGame.zero_add x).symm.le
-      _ ≤ y - x + x := add_le_add_right h _
+      _ ≤ y - x + x := by gcongr
       _ ≤ y + (-x + x) := (PGame.add_assoc _ _ _).le
       _ ≤ y + 0 := add_le_add_left (neg_add_cancel_le_zero x) _
       _ ≤ y := (PGame.add_zero y).le
@@ -784,7 +784,7 @@ theorem lt_iff_sub_pos {x y : PGame} : x < y ↔ 0 < y - x :=
       x ≤ 0 + x := (PGame.zero_add x).symm.le
       _ < y - x + x := add_lt_add_right h _
       _ ≤ y + (-x + x) := (PGame.add_assoc _ _ _).le
-      _ ≤ y + 0 := add_le_add_left (neg_add_cancel_le_zero x) _
+      _ ≤ y + 0 := by gcongr; exact neg_add_cancel_le_zero x
       _ ≤ y := (PGame.add_zero y).le
       ⟩
 

@@ -286,7 +286,7 @@ theorem mem_sublistsLen {n} {l l' : List α} :
 
 theorem sublistsLen_of_length_lt {n} {l : List α} (h : l.length < n) : sublistsLen n l = [] :=
   eq_nil_iff_forall_not_mem.mpr fun _ =>
-    mem_sublistsLen.not.mpr fun ⟨hs, hl⟩ => (h.trans_eq hl.symm).not_le (Sublist.length_le hs)
+    mem_sublistsLen.not.mpr fun ⟨hs, hl⟩ => (h.trans_eq hl.symm).not_ge (Sublist.length_le hs)
 
 @[simp]
 theorem sublistsLen_length : ∀ l : List α, sublistsLen l.length l = [l]

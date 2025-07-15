@@ -258,6 +258,10 @@ theorem index_map_eq (hf1 : Surjective f) (hf2 : f.ker ≤ H) : (H.map f).index 
 lemma index_map_of_bijective (hf : Bijective f) (H : Subgroup G) : (H.map f).index = H.index :=
   index_map_eq _ hf.2 (by rw [f.ker_eq_bot_iff.2 hf.1]; exact bot_le)
 
+@[to_additive (attr := simp)]
+theorem index_map_equiv (e : G ≃* G') : (map (e : G →* G') H).index = H.index :=
+  index_map_of_bijective e.bijective H
+
 @[to_additive]
 theorem index_map_of_injective {f : G →* G'} (hf : Function.Injective f) :
     (H.map f).index = H.index * f.range.index := by
@@ -420,6 +424,10 @@ noncomputable def fintypeOfIndexNeZero (hH : H.index ≠ 0) : Fintype (G ⧸ H) 
 lemma index_eq_zero_iff_infinite : H.index = 0 ↔ Infinite (G ⧸ H) := by
   simp [index_eq_card, Nat.card_eq_zero]
 
+@[to_additive]
+lemma index_ne_zero_iff_finite : H.index ≠ 0 ↔ Finite (G ⧸ H) := by
+  simp [index_eq_zero_iff_infinite]
+
 @[to_additive one_lt_index_of_ne_top]
 theorem one_lt_index_of_ne_top [Finite (G ⧸ H)] (hH : H ≠ ⊤) : 1 < H.index :=
   Nat.one_lt_iff_ne_zero_and_ne_one.mpr ⟨index_ne_zero_of_finite, mt index_eq_one.mp hH⟩
@@ -452,7 +460,7 @@ lemma exists_pow_mem_of_index_ne_zero (h : H.index ≠ 0) (a : G) :
   suffices ∃ n₁ n₂, n₁ ≠ n₂ ∧ n₁ ≤ H.index ∧ n₂ ≤ H.index ∧
       ((a ^ n₂ : G) : G ⧸ H) = ((a ^ n₁ : G) : G ⧸ H) by
     rcases this with ⟨n₁, n₂, hne, hle₁, hle₂, he⟩
-    rcases hne.lt_or_lt with hlt | hlt
+    rcases hne.lt_or_gt with hlt | hlt
     · exact ⟨n₁, n₂, hlt, hle₂, he⟩
     · exact ⟨n₂, n₁, hlt, hle₁, he.symm⟩
   by_contra hc
@@ -563,6 +571,10 @@ instance IsFiniteRelIndex.to_finiteIndex_subgroupOf [H.IsFiniteRelIndex K] :
     (H.subgroupOf K).FiniteIndex where
   index_ne_zero := relindex_ne_zero
 
+@[to_additive]
+theorem finiteIndex_iff : H.FiniteIndex ↔ H.index ≠ 0 :=
+  ⟨fun h ↦ h.index_ne_zero, fun h ↦ ⟨h⟩⟩
+
 /-- A finite index subgroup has finite quotient. -/
 @[to_additive "A finite index subgroup has finite quotient"]
 noncomputable def fintypeQuotientOfFiniteIndex [FiniteIndex H] : Fintype (G ⧸ H) :=
@@ -619,7 +631,7 @@ lemma index_strictAnti (h : H < K) [H.FiniteIndex] : K.index < H.index := by
   have h0 : K.index ≠ 0 := (finiteIndex_of_le h.le).index_ne_zero
   apply lt_of_le_of_ne (index_antitone h.le)
   rw [← relindex_mul_index h.le, Ne, eq_comm, mul_eq_right₀ h0, relindex_eq_one]
-  exact h.not_le
+  exact h.not_ge
 
 variable (H K)
 

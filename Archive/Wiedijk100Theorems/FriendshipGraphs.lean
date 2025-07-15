@@ -227,10 +227,11 @@ theorem adjMatrix_pow_mod_p_of_regular {p : ℕ} (dmod : (d : ZMod p) = 1)
   match k with
   | 0 | 1 => exfalso; linarith
   | k + 2 =>
-    induction' k with k hind
-    · exact adjMatrix_sq_mod_p_of_regular hG dmod hd
-    rw [pow_succ', hind (Nat.le_add_left 2 k)]
-    exact adjMatrix_mul_const_one_mod_p_of_regular dmod hd
+    induction k with
+    | zero => exact adjMatrix_sq_mod_p_of_regular hG dmod hd
+    | succ k hind =>
+      rw [pow_succ', hind (Nat.le_add_left 2 k)]
+      exact adjMatrix_mul_const_one_mod_p_of_regular dmod hd
 
 variable [Nonempty V]
 
@@ -334,7 +335,7 @@ include hG in
 theorem friendship_theorem [Nonempty V] : ExistsPolitician G := by
   by_contra npG
   rcases hG.isRegularOf_not_existsPolitician npG with ⟨d, dreg⟩
-  rcases lt_or_le d 3 with dle2 | dge3
+  rcases lt_or_ge d 3 with dle2 | dge3
   · exact npG (hG.existsPolitician_of_degree_le_two dreg (Nat.lt_succ_iff.mp dle2))
   · exact hG.false_of_three_le_degree dreg dge3
 

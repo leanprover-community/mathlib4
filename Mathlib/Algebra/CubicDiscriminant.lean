@@ -19,7 +19,7 @@ This file defines cubic polynomials over a semiring and their discriminants over
 ## Main statements
 
 * `Cubic.disc_ne_zero_iff_roots_nodup`: the cubic discriminant is not equal to zero if and only if
-    the cubic has no duplicate roots.
+  the cubic has no duplicate roots.
 
 ## References
 
@@ -243,7 +243,7 @@ def equiv : Cubic R ≃ { p : R[X] // p.degree ≤ 3 } where
   left_inv P := by ext <;> simp only [Subtype.coe_mk, coeffs]
   right_inv f := by
     ext n
-    obtain hn | hn := le_or_lt n 3
+    obtain hn | hn := le_or_gt n 3
     · interval_cases n <;> simp only [Nat.succ_eq_add_one] <;> ring_nf <;> try simp only [coeffs]
     · rw [coeff_eq_zero hn, (degree_le_iff_coeff_zero (f : R[X]) 3).mp f.2]
       simpa using hn

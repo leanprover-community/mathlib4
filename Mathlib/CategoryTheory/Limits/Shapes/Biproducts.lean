@@ -439,25 +439,18 @@ theorem biproduct.ι_π_self (f : J → C) [HasBiproduct f] (j : J) :
 theorem biproduct.ι_π_ne (f : J → C) [HasBiproduct f] {j j' : J} (h : j ≠ j') :
     biproduct.ι f j ≫ biproduct.π f j' = 0 := by simp [h]
 
--- The `simpNF` linter incorrectly identifies these as simp lemmas that could never apply.
--- It seems the side condition `w` is not applied by `simpNF`.
--- https://github.com/leanprover-community/mathlib4/issues/5049
--- They are used by `simp` in `biproduct.whiskerEquiv` below.
-@[reassoc (attr := simp, nolint simpNF)]
+@[reassoc (attr := simp)]
 theorem biproduct.eqToHom_comp_ι (f : J → C) [HasBiproduct f] {j j' : J} (w : j = j') :
     eqToHom (by simp [w]) ≫ biproduct.ι f j' = biproduct.ι f j := by
   cases w
   simp
 
--- The `simpNF` linter incorrectly identifies these as simp lemmas that could never apply.
--- It seems the side condition `w` is not applied by `simpNF`.
--- https://github.com/leanprover-community/mathlib4/issues/5049
--- They are used by `simp` in `biproduct.whiskerEquiv` below.
-@[reassoc (attr := simp, nolint simpNF)]
+-- TODO?: simp can prove this using `eqToHom_naturality`
+-- but `eqToHom_naturality` applies less easily than this lemma
+@[reassoc]
 theorem biproduct.π_comp_eqToHom (f : J → C) [HasBiproduct f] {j j' : J} (w : j = j') :
     biproduct.π f j ≫ eqToHom (by simp [w]) = biproduct.π f j' := by
-  cases w
-  simp
+  simp [*]
 
 /-- Given a collection of maps into the summands, we obtain a map into the biproduct. -/
 abbrev biproduct.lift {f : J → C} [HasBiproduct f] {P : C} (p : ∀ b, P ⟶ f b) : P ⟶ ⨁ f :=

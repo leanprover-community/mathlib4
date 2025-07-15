@@ -400,8 +400,7 @@ def center (G : SimpleGraph α) : Set α :=
 lemma center_nonempty [Nonempty α] : G.center.Nonempty :=
   exists_eccent_eq_radius
 
-lemma mem_center_iff (u : α) : u ∈ G.center ↔ G.eccent u = G.radius :=
-  Set.mem_def
+lemma mem_center_iff (u : α) : u ∈ G.center ↔ G.eccent u = G.radius := .rfl
 
 lemma center_eq_univ_iff_radius_eq_ediam [Nonempty α] :
     G.center = Set.univ ↔ G.radius = G.ediam := by

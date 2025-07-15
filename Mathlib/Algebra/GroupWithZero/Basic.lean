@@ -262,14 +262,14 @@ theorem GroupWithZero.mul_left_injective (h : x ≠ 0) :
     Function.Injective fun y => y * x := fun y y' w => by
   simpa only [mul_assoc, mul_inv_cancel₀ h, mul_one] using congr_arg (fun y => y * x⁻¹) w
 
-@[simp]
+@[simp high] -- should take priority over `IsUnit.mul_inv_cancel_right`
 theorem inv_mul_cancel_right₀ (h : b ≠ 0) (a : G₀) : a * b⁻¹ * b = a :=
   calc
     a * b⁻¹ * b = a * (b⁻¹ * b) := mul_assoc _ _ _
     _ = a := by simp [h]
 
 
-@[simp]
+@[simp high] -- should take priority over `IsUnit.mul_inv_cancel_left`
 theorem inv_mul_cancel_left₀ (h : a ≠ 0) (b : G₀) : a⁻¹ * (a * b) = b :=
   calc
     a⁻¹ * (a * b) = a⁻¹ * a * b := (mul_assoc _ _ _).symm
@@ -420,9 +420,9 @@ lemma zpow_sub_one₀ (ha : a ≠ 0) (n : ℤ) : a ^ (n - 1) = a ^ n * a⁻¹ :=
 
 lemma zpow_add₀ (ha : a ≠ 0) (m n : ℤ) : a ^ (m + n) = a ^ m * a ^ n := by
   induction n with
-  | hz => simp
-  | hp n ihn => simp only [← Int.add_assoc, zpow_add_one₀ ha, ihn, mul_assoc]
-  | hn n ihn => rw [zpow_sub_one₀ ha, ← mul_assoc, ← ihn, ← zpow_sub_one₀ ha, Int.add_sub_assoc]
+  | zero => simp
+  | succ n ihn => simp only [← Int.add_assoc, zpow_add_one₀ ha, ihn, mul_assoc]
+  | pred n ihn => rw [zpow_sub_one₀ ha, ← mul_assoc, ← ihn, ← zpow_sub_one₀ ha, Int.add_sub_assoc]
 
 lemma zpow_add' {m n : ℤ} (h : a ≠ 0 ∨ m + n ≠ 0 ∨ m = 0 ∧ n = 0) :
     a ^ (m + n) = a ^ m * a ^ n := by

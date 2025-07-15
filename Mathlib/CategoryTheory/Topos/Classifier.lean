@@ -57,11 +57,11 @@ Let `C` refer to a category with a terminal object.
 
 universe u v u₀ v₀
 
-open CategoryTheory Category Limits Functor
+namespace CategoryTheory
+
+open Category Limits Functor
 
 variable (C : Type u) [Category.{v} C] [HasTerminal C]
-
-namespace CategoryTheory
 
 /-- A morphism `truth : ⊤_ C ⟶ Ω` from the terminal object of a category `C`
 is a subobject classifier if, for every monomorphism `m : U ⟶ X` in `C`,
@@ -196,7 +196,7 @@ section Representability
 
 namespace Classifier
 
-open Subobject HasClassifier
+open Subobject
 
 /-! #### From classifiers to representations -/
 

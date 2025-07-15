@@ -117,6 +117,14 @@ theorem UniformContinuous.div_const [UniformSpace β] {f : β → α} (hf : Unif
 theorem uniformContinuous_div_const (a : α) : UniformContinuous fun b : α => b / a :=
   uniformContinuous_id.div_const _
 
+@[to_additive]
+theorem Filter.Tendsto.uniformity_mul {ι : Type*} {f g : ι → α × α} {l : Filter ι}
+    (hf : Tendsto f l (𝓤 α)) (hg : Tendsto g l (𝓤 α)) :
+    Tendsto (f * g) l (𝓤 α) :=
+  have : Tendsto (fun (p : (α × α) × (α × α)) ↦ p.1 * p.2) (𝓤 α ×ˢ 𝓤 α) (𝓤 α) := by
+    simpa [UniformContinuous, uniformity_prod_eq_prod] using uniformContinuous_mul (α := α)
+  this.comp (hf.prodMk hg)
+
 @[to_additive UniformContinuous.const_nsmul]
 theorem UniformContinuous.pow_const [UniformSpace β] {f : β → α} (hf : UniformContinuous f) :
     ∀ n : ℕ, UniformContinuous fun x => f x ^ n
@@ -408,14 +416,14 @@ variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 
 Warning: in general the right and left uniformities do not coincide and so one does not obtain a
 `IsUniformGroup` structure. Two important special cases where they _do_ coincide are for
-commutative groups (see `comm_topologicalGroup_is_uniform`) and for compact groups (see
+commutative groups (see `isUniformGroup_of_commGroup`) and for compact groups (see
 `topologicalGroup_is_uniform_of_compactSpace`). -/
 @[to_additive "The right uniformity on a topological additive group (as opposed to the left
 uniformity).
 
 Warning: in general the right and left uniformities do not coincide and so one does not obtain a
 `IsUniformAddGroup` structure. Two important special cases where they _do_ coincide are for
-commutative additive groups (see `comm_topologicalAddGroup_is_uniform`) and for compact
+commutative additive groups (see `isUniformAddGroup_of_addCommGroup`) and for compact
 additive groups (see `topologicalAddGroup_is_uniform_of_compactSpace`)."]
 def IsTopologicalGroup.toUniformSpace : UniformSpace G where
   uniformity := comap (fun p : G × G => p.2 / p.1) (𝓝 1)

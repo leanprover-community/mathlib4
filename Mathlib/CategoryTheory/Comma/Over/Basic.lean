@@ -123,6 +123,10 @@ lemma inv_left_hom_left {f g : Over X} (e : f ≅ g) :
     e.inv.left ≫ e.hom.left = 𝟙 g.left := by
   simp [← Over.comp_left]
 
+lemma forall_iff (P : Over X → Prop) :
+    (∀ Y, P Y) ↔ (∀ (Y) (f : Y ⟶ X), P (.mk f)) := by
+  aesop
+
 section
 
 variable (X)
@@ -534,6 +538,10 @@ lemma hom_right_inv_right {f g : Under X} (e : f ≅ g) :
 lemma inv_right_hom_right {f g : Under X} (e : f ≅ g) :
     e.inv.right ≫ e.hom.right = 𝟙 g.right := by
   simp [← Under.comp_right]
+
+lemma forall_iff (P : Under X → Prop) :
+    (∀ Y, P Y) ↔ (∀ (Y) (f : X ⟶ Y), P (.mk f)) := by
+  aesop
 
 section
 

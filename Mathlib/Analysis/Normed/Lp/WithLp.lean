@@ -106,6 +106,14 @@ theorem equiv_symm_zero [AddCommGroup V] : (WithLp.equiv p V).symm 0 = 0 :=
   rfl
 
 @[simp]
+theorem equiv_symm_eq_zero_iff [AddCommGroup V] {x : V} :
+    (WithLp.equiv p V).symm x = 0 ↔ x = 0 := Iff.rfl
+
+@[simp]
+theorem equiv_eq_zero_iff [AddCommGroup V] {x : WithLp p V} :
+    WithLp.equiv p V x = 0 ↔ x = 0 := Iff.rfl
+
+@[simp]
 theorem equiv_add [AddCommGroup V] (x y : WithLp p V) :
     WithLp.equiv p V (x + y) = WithLp.equiv p V x + WithLp.equiv p V y :=
   rfl

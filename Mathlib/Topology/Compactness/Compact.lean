@@ -720,6 +720,16 @@ theorem compactSpace_of_finite_subfamily_closed
     CompactSpace X where
   isCompact_univ := isCompact_of_finite_subfamily_closed fun t => by simpa using h t
 
+/--
+Given a family of closed sets `t i` in a compact space, if they satisfy the Finite Intersection
+Property, then the intersection of all `t i` is nonempty.
+-/
+lemma CompactSpace.iInter_nonempty {ι : Type v} [CompactSpace X] {t : ι → Set X}
+    (htc : ∀ i, IsClosed (t i))
+    (hst : ∀ s : Finset ι, (⋂ i ∈ s, t i).Nonempty) :
+    (⋂ i, t i).Nonempty := by
+  simpa using IsCompact.inter_iInter_nonempty isCompact_univ t htc (by simpa using hst)
+
 omit [TopologicalSpace X] in
 /--
 The `CompactSpace` version of **Alexander's subbasis theorem**. If `X` is a topological space with a
@@ -983,6 +993,26 @@ instance {X : ι → Type*} [Finite ι] [∀ i, TopologicalSpace (X i)] [∀ i, 
   refine ⟨?_⟩
   rw [Sigma.univ]
   exact isCompact_iUnion fun i => isCompact_range continuous_sigmaMk
+
+lemma Set.isCompact_sigma {X : ι → Type*} [∀ i, TopologicalSpace (X i)] {s : Set ι}
+    {t : ∀ i, Set (X i)} (hs : s.Finite) (ht : ∀ i ∈ s, IsCompact (t i)) :
+    IsCompact (s.sigma t) := by
+  rw [Set.sigma_eq_biUnion]
+  exact hs.isCompact_biUnion fun i hi ↦ (ht i hi).image continuous_sigmaMk
+
+lemma IsCompact.sigma_exists_finite_sigma_eq {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
+    (u : Set (Σ i, X i)) (hu : IsCompact u) :
+    ∃ (s : Set ι) (t : ∀ i, Set (X i)), s.Finite ∧ (∀ i, IsCompact (t i)) ∧ s.sigma t = u := by
+  obtain ⟨s, hs⟩ := hu.elim_finite_subcover (fun i : ι ↦ Sigma.mk i '' (Sigma.mk i ⁻¹' Set.univ))
+    (fun i ↦ isOpenMap_sigmaMk _ <| isOpen_univ.preimage continuous_sigmaMk)
+    fun x hx ↦ (by aesop)
+  use s, fun i ↦ Sigma.mk i ⁻¹' u, s.finite_toSet, fun i ↦ ?_, ?_
+  · exact Topology.IsClosedEmbedding.sigmaMk.isCompact_preimage hu
+  · ext x
+    simp only [Set.mem_sigma_iff, Finset.mem_coe, Set.mem_preimage, and_iff_right_iff_imp]
+    intro hx
+    obtain ⟨i, hi⟩ := Set.mem_iUnion.mp (hs hx)
+    aesop
 
 /-- The coproduct of the cocompact filters on two topological spaces is the cocompact filter on
 their product. -/

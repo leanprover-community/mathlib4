@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Chris Hughes, Floris van Doorn, Yaël Dillies
 -/
 import Mathlib.Data.Nat.Basic
-import Mathlib.Tactic.GCongr.CoreAttrs
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Monotonicity.Attr
 
@@ -88,7 +87,7 @@ theorem factorial_mul_pow_le_factorial : ∀ {m n : ℕ}, m ! * (m + 1) ^ n ≤ 
     exact Nat.mul_le_mul factorial_mul_pow_le_factorial (succ_le_succ (le_add_right _ _))
 
 theorem factorial_lt (hn : 0 < n) : n ! < m ! ↔ n < m := by
-  refine ⟨fun h => not_le.mp fun hmn => Nat.not_le_of_lt h (factorial_le hmn), fun h => ?_⟩
+  refine ⟨fun h => not_le.mp fun hmn => Nat.not_le_of_gt h (factorial_le hmn), fun h => ?_⟩
   have : ∀ {n}, 0 < n → n ! < (n + 1)! := by
     intro k hk
     rw [factorial_succ, succ_mul, Nat.lt_add_left_iff_pos]
@@ -152,7 +151,7 @@ theorem add_factorial_lt_factorial_add {i n : ℕ} (hi : 2 ≤ i) (hn : 1 ≤ n)
 
 theorem add_factorial_succ_le_factorial_add_succ (i : ℕ) (n : ℕ) :
     i + (n + 1)! ≤ (i + (n + 1))! := by
-  cases (le_or_lt (2 : ℕ) i)
+  cases (le_or_gt (2 : ℕ) i)
   · rw [← Nat.add_assoc]
     apply Nat.le_of_lt
     apply add_factorial_succ_lt_factorial_add_succ

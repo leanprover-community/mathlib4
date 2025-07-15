@@ -227,7 +227,7 @@ theorem pullback_map [HasPullbacks C]
           ((Over.pullback _).map (Over.homMk _ e₂.symm : Over.mk g ⟶ Over.mk g')).left) ≫
         (pullbackSymmetry _ _).hom ≫
           ((Over.pullback g').map (Over.homMk _ e₁.symm : Over.mk f ⟶ Over.mk f')).left := by
-    ext <;> dsimp <;> simp
+    ext <;> simp
   rw [this]
   apply P.comp_mem <;> rw [P.cancel_left_of_respectsIso]
   exacts [baseChange_map _ (Over.homMk _ e₂.symm : Over.mk g ⟶ Over.mk g') h₂,
@@ -350,6 +350,12 @@ instance IsStableUnderCobaseChange.inf {P Q : MorphismProperty C} [IsStableUnder
     [IsStableUnderCobaseChange Q] :
     IsStableUnderCobaseChange (P ⊓ Q) where
   of_isPushout hp hg := ⟨of_isPushout hp hg.left, of_isPushout hp hg.right⟩
+
+instance : (⊤ : MorphismProperty C).IsStableUnderBaseChange where
+  of_isPullback _ _ := trivial
+
+instance : (⊤ : MorphismProperty C).IsStableUnderCobaseChange where
+  of_isPushout _ _ := trivial
 
 end
 

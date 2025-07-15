@@ -182,7 +182,7 @@ theorem infinite_even_deficient : {n : ℕ | Even n ∧ n.Deficient}.Infinite :=
   intro n
   use 2 ^ (n + 1)
   constructor
-  · exact ⟨⟨2 ^ n, by ring⟩, prime_two.deficient_pow⟩
+  · exact ⟨⟨2 ^ n, by rw [pow_succ, mul_two]⟩, prime_two.deficient_pow⟩
   · calc
       n ≤ 2 ^ n := Nat.le_of_lt n.lt_two_pow_self
       _ < 2 ^ (n + 1) := (Nat.pow_lt_pow_iff_right (Nat.one_lt_two)).mpr (lt_add_one n)

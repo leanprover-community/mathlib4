@@ -129,9 +129,9 @@ variable [HasEnrichedHom V F₁ F₂] [HasEnrichedHom V F₂ F₃] [HasEnrichedH
 
 /-- The composition for the `V`-enrichment of the category `J ⥤ C`. -/
 noncomputable def enrichedComp : enrichedHom V F₁ F₂ ⊗ enrichedHom V F₂ F₃ ⟶ enrichedHom V F₁ F₃ :=
-  end_.lift (fun j ↦ (end_.π _ j ⊗ end_.π _ j) ≫ eComp V _ _ _) (fun i j f ↦ by
+  end_.lift (fun j ↦ (end_.π _ j ⊗ₘ end_.π _ j) ≫ eComp V _ _ _) (fun i j f ↦ by
     dsimp
-    trans (end_.π (diagram V F₁ F₂) i ⊗ end_.π (diagram V F₂ F₃) j) ≫
+    trans (end_.π (diagram V F₁ F₂) i ⊗ₘ end_.π (diagram V F₂ F₃) j) ≫
       (ρ_ _).inv ▷ _ ≫ (_ ◁ (eHomEquiv V (F₂.map f))) ▷ _ ≫ eComp V _ (F₂.obj i) _ ▷ _ ≫
         eComp V _ (F₂.obj j) _
     · have := end_.condition (diagram V F₂ F₃) f
@@ -161,14 +161,14 @@ noncomputable def enrichedComp : enrichedHom V F₁ F₂ ⊗ enrichedHom V F₂ 
 @[reassoc (attr := simp)]
 lemma enrichedComp_π (j : J) :
     enrichedComp V F₁ F₂ F₃ ≫ end_.π _ j =
-      (end_.π (diagram V F₁ F₂) j ⊗ end_.π (diagram V F₂ F₃) j) ≫ eComp V _ _ _ := by
+      (end_.π (diagram V F₁ F₂) j ⊗ₘ end_.π (diagram V F₂ F₃) j) ≫ eComp V _ _ _ := by
   simp [enrichedComp]
 
 variable {F₁ F₂ F₃}
 
 @[reassoc]
 lemma homEquiv_comp (f : F₁ ⟶ F₂) (g : F₂ ⟶ F₃) :
-    (homEquiv V) (f ≫ g) = (λ_ (𝟙_ V)).inv ≫ ((homEquiv V) f ⊗ (homEquiv V) g) ≫
+    (homEquiv V) (f ≫ g) = (λ_ (𝟙_ V)).inv ≫ ((homEquiv V) f ⊗ₘ (homEquiv V) g) ≫
     enrichedComp V F₁ F₂ F₃ := by
   ext j
   simp only [homEquiv_apply_π, NatTrans.comp_app, eHomEquiv_comp, assoc,
@@ -441,7 +441,7 @@ lemma functorHomEquiv_comp [HasFunctorEnrichedHom V F₁ F₂] [HasEnrichedHom V
     [HasFunctorEnrichedHom V F₁ F₃] [HasEnrichedHom V F₁ F₃]
     (f : F₁ ⟶ F₂) (g : F₂ ⟶ F₃) :
     (functorHomEquiv V) (f ≫ g) = (λ_ (𝟙_ (J ⥤ V))).inv ≫
-      ((functorHomEquiv V) f ⊗ (functorHomEquiv V) g) ≫ functorEnrichedComp V F₁ F₂ F₃ := by
+      ((functorHomEquiv V) f ⊗ₘ (functorHomEquiv V) g) ≫ functorEnrichedComp V F₁ F₂ F₃ := by
   ext j
   dsimp
   ext k

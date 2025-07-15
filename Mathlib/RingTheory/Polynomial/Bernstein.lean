@@ -88,7 +88,7 @@ theorem eval_at_1 (n ν : ℕ) : (bernsteinPolynomial R n ν).eval 1 = if ν = n
   rw [bernsteinPolynomial]
   split_ifs with h
   · subst h; simp
-  · obtain hνn | hnν := Ne.lt_or_lt h
+  · obtain hνn | hnν := Ne.lt_or_gt h
     · simp [zero_pow <| Nat.sub_ne_zero_of_lt hνn]
     · simp [Nat.choose_eq_zero_of_lt hnν]
 

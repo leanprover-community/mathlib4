@@ -321,7 +321,7 @@ theorem dvdNotUnit_iff_normalizedFactors_lt_normalizedFactors {x y : α} (hx : x
     exact
       dvdNotUnit_of_dvd_of_not_dvd
         ((dvd_iff_normalizedFactors_le_normalizedFactors hx hy).mpr h.le)
-        (mt (dvd_iff_normalizedFactors_le_normalizedFactors hy hx).mp h.not_le)
+        (mt (dvd_iff_normalizedFactors_le_normalizedFactors hy hx).mp h.not_ge)
 
 theorem normalizedFactors_multiset_prod (s : Multiset α) (hs : 0 ∉ s) :
     normalizedFactors (s.prod) = (s.map normalizedFactors).sum := by

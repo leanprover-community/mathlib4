@@ -44,8 +44,6 @@ namespace Finset
 
 section Map
 
-open Function
-
 /-- When `f` is an embedding of `α` in `β` and `s` is a finset in `α`, then `s.map f` is the image
 finset in `β`. The embedding condition guarantees that there are no duplicates in the image. -/
 def map (f : α ↪ β) (s : Finset α) : Finset β :=
@@ -561,7 +559,6 @@ theorem filterMap_mono (h : s ⊆ t) :
   rw [← val_le_iff] at h ⊢
   exact Multiset.filterMap_le_filterMap f h
 
-@[simp]
 theorem _root_.List.toFinset_filterMap [DecidableEq α] [DecidableEq β]
     (f_inj : ∀ (a a' : α) (b : β), f a = some b → f a' = some b → a = a') (s : List α) :
     (s.filterMap f).toFinset = s.toFinset.filterMap f f_inj := by
@@ -705,7 +702,6 @@ theorem finsetCongr_toEmbedding (e : α ≃ β) :
 
 /-- Given a predicate `p : α → Prop`, produces an equivalence between
   `Finset {a : α // p a}` and `{s : Finset α // ∀ a ∈ s, p a}`. -/
-
 @[simps]
 protected def finsetSubtypeComm (p : α → Prop) :
     Finset {a : α // p a} ≃ {s : Finset α // ∀ a ∈ s, p a} where

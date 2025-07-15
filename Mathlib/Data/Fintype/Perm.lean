@@ -27,7 +27,7 @@ universe u v
 
 variable {α β γ : Type*}
 
-open Finset Function List Equiv Equiv.Perm
+open Finset List Equiv Equiv.Perm
 
 variable [DecidableEq α] [DecidableEq β]
 

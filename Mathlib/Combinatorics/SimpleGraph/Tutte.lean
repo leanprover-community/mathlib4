@@ -187,21 +187,22 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
   have hM1sub := Subgraph.spanningCoe_le M1
   have hM2sub := Subgraph.spanningCoe_le M2
   -- We consider the cycle that contains the vertex `c`
-  have induce_le : (induce (cycles.connectedComponentMk c).supp cycles).spanningCoe ≤
+  have induce_le : ((cycles.connectedComponentMk c).toSimpleGraph).spanningCoe ≤
       (G ⊔ edge a c) ⊔ edge x b := by
     refine le_trans (spanningCoe_induce_le cycles (cycles.connectedComponentMk c).supp) ?_
     simp only [← hsupG, cycles]
     exact le_trans (by apply symmDiff_le_sup) (sup_le_sup hM1sub hM2sub)
   -- If that cycle does not contain the vertex `x`, we use it as an alternating cycle
   by_cases hxc : x ∉ (cycles.connectedComponentMk c).supp
-  · use (cycles.induce (cycles.connectedComponentMk c).supp).spanningCoe
+  · use (cycles.connectedComponentMk c).toSimpleGraph.spanningCoe
     refine ⟨hcalt.mono (spanningCoe_induce_le cycles (cycles.connectedComponentMk c).supp), ?_⟩
-    simp only [ConnectedComponent.adj_spanningCoe_induce_supp, hxc, hcac, false_and,
+    simp only [ConnectedComponent.adj_spanningCoe_toSimpleGraph, hxc, hcac, false_and,
       not_false_eq_true, ConnectedComponent.mem_supp_iff, ConnectedComponent.eq, and_true,
       true_and, hcac.reachable]
-    refine ⟨hcycles.induce_supp (cycles.connectedComponentMk c),
+    refine ⟨hcycles.toSimpleGraph (cycles.connectedComponentMk c),
       Disjoint.left_le_of_le_sup_right induce_le ?_⟩
     rw [disjoint_edge]
+    rw [ConnectedComponent.adj_spanningCoe_toSimpleGraph]
     aesop
   push_neg at hxc
   have hacc := ((cycles.connectedComponentMk c).mem_supp_congr_adj hcac.symm).mp rfl
@@ -289,12 +290,13 @@ lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
     push_neg at h'
     obtain ⟨K, hK⟩ := h'
     obtain ⟨x, y, hxy⟩ := (not_isClique_iff _).mp hK
-    obtain ⟨p , hp⟩ := Reachable.exists_path_of_dist (K.connected_induce_supp x y)
+    obtain ⟨p , hp⟩ := Reachable.exists_path_of_dist (K.connected_toSimpleGraph x y)
     obtain ⟨x, a, b, hxa, hxb, hnadjxb, hnxb⟩ := Walk.exists_adj_adj_not_adj_ne hp.2
       (p.reachable.one_lt_dist_of_ne_of_not_adj hxy.1 hxy.2)
-    simp only [deleteUniversalVerts, universalVerts, ne_eq, Subgraph.induce_verts,
-      Subgraph.verts_top, comap_adj, Function.Embedding.coe_subtype, Subgraph.coe_adj,
-      Subgraph.induce_adj, Subtype.coe_prop, Subgraph.top_adj, true_and] at hxa hxb hnadjxb
+    simp only [ConnectedComponent.toSimpleGraph, deleteUniversalVerts, universalVerts, ne_eq,
+      Subgraph.induce_verts, Subgraph.verts_top, comap_adj, Function.Embedding.coe_subtype,
+      Subgraph.coe_adj, Subgraph.induce_adj, Subtype.coe_prop, Subgraph.top_adj, true_and
+      ] at hxa hxb hnadjxb
     obtain ⟨c, hc⟩ : ∃ (c : V), (a : V) ≠ c ∧ ¬ Gmax.Adj c a := by
       simpa [universalVerts] using a.1.2.2
     have hbnec : b.val.val ≠ c := by rintro rfl; exact hc.2 hxb.symm

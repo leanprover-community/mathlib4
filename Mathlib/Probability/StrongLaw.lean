@@ -145,7 +145,7 @@ theorem moment_truncation_eq_intervalIntegral_of_nonneg (hf : AEStronglyMeasurab
   have M' : MeasurableSet (Set.Ioc A 0) := measurableSet_Ioc
   rw [truncation_eq_of_nonneg h'f]
   change ∫ x, (fun z => indicator (Set.Ioc 0 A) id z ^ n) (f x) ∂μ = _
-  rcases le_or_lt 0 A with (hA | hA)
+  rcases le_or_gt 0 A with (hA | hA)
   · rw [← integral_map (f := fun z => _ ^ n) hf.aemeasurable, intervalIntegral.integral_of_le hA,
       ← integral_indicator M]
     · simp only [indicator, zero_pow hn, id, ite_pow]

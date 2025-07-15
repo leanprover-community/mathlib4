@@ -312,10 +312,10 @@ theorem add_lt_add_iff_left {a b : ℝ} (c : ℝ) : c + a < c + b ↔ a < b := b
 instance partialOrder : PartialOrder ℝ where
   le := (· ≤ ·)
   lt := (· < ·)
-  lt_iff_le_not_le a b := by
+  lt_iff_le_not_ge a b := by
     induction a using Real.ind_mk
     induction b using Real.ind_mk
-    simpa using lt_iff_le_not_le
+    simpa using lt_iff_le_not_ge
   le_refl a := by
     induction a using Real.ind_mk
     rw [mk_le]
@@ -514,11 +514,11 @@ unsafe instance : Repr ℝ where
 theorem le_mk_of_forall_le {f : CauSeq ℚ abs} : (∃ i, ∀ j ≥ i, x ≤ f j) → x ≤ mk f := by
   intro h
   induction x using Real.ind_mk
-  apply le_of_not_lt
+  apply le_of_not_gt
   rw [mk_lt]
   rintro ⟨K, K0, hK⟩
   obtain ⟨i, H⟩ := exists_forall_ge_and h (exists_forall_ge_and hK (f.cauchy₃ <| half_pos K0))
-  apply not_lt_of_le (H _ le_rfl).1
+  apply not_lt_of_ge (H _ le_rfl).1
   rw [← mk_const, mk_lt]
   refine ⟨_, half_pos K0, i, fun j ij => ?_⟩
   have := add_le_add (H _ ij).2.1 (le_of_lt (abs_lt.1 <| (H _ le_rfl).2.2 _ ij).1)

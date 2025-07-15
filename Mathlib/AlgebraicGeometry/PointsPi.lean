@@ -129,7 +129,6 @@ lemma pointsPi_surjective [CompactSpace X] [∀ i, IsLocalRing (R i)] :
   let e : (Π i, R i) ≃+* Π j₀, R' j₀ :=
   { toFun f _ i := f i
     invFun f i := f _ ⟨i, rfl⟩
-    left_inv _ := rfl
     right_inv _ := funext₂ fun j₀ i ↦ by rcases i with ⟨i, rfl⟩; rfl
     map_mul' _ _ := rfl
     map_add' _ _ := rfl }

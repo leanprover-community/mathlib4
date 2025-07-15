@@ -193,11 +193,9 @@ theorem index_union_le (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).N
   rcases index_elim K₁.2 hV with ⟨s, h1s, h2s⟩
   rcases index_elim K₂.2 hV with ⟨t, h1t, h2t⟩
   rw [← h2s, ← h2t]
-  refine le_trans ?_ (Finset.card_union_le _ _)
-  apply Nat.sInf_le; refine ⟨_, ?_, rfl⟩; rw [mem_setOf_eq]
-  apply union_subset <;> refine Subset.trans (by assumption) ?_ <;>
-    apply biUnion_subset_biUnion_left <;> intro g hg <;> simp only [mem_def] at hg <;>
-    simp only [mem_def, Multiset.mem_union, Finset.union_val, hg, or_true, true_or]
+  refine le_trans (Nat.sInf_le ⟨_, ?_, rfl⟩) (Finset.card_union_le _ _)
+  rw [mem_setOf_eq, Finset.set_biUnion_union]
+  gcongr
 
 @[to_additive addIndex_union_eq]
 theorem index_union_eq (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).Nonempty)

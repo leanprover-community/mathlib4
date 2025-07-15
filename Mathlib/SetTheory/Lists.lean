@@ -102,6 +102,11 @@ theorem of_toList : ∀ l : Lists' α true, ofList (toList l) = l :=
     | nil => simp
     | cons' b a _ IH => simpa [cons] using IH rfl
 
+/-- Recursion/induction principle for `Lists'.ofList`. -/
+@[elab_as_elim]
+def recOfList {motive : Lists' α true → Sort*} (ofList : ∀ l, motive (ofList l)) : ∀ l, motive l :=
+  fun l ↦ cast (by simp) <| ofList (l.toList)
+
 end Lists'
 
 mutual
@@ -175,10 +180,11 @@ theorem mem_of_subset' {a} : ∀ {l₁ l₂ : Lists' α true} (_ : l₁ ⊆ l₂
 
 theorem subset_def {l₁ l₂ : Lists' α true} : l₁ ⊆ l₂ ↔ ∀ a ∈ l₁.toList, a ∈ l₂ :=
   ⟨fun H _ => mem_of_subset' H, fun H => by
-    rw [← of_toList l₁]
-    revert H; induction' toList l₁ with h t t_ih <;> intro H
-    · exact Subset.nil
-    · simp only [ofList, List.find?, List.mem_cons, forall_eq_or_imp] at *
+    induction l₁ using recOfList with | _ l₁
+    induction l₁ with
+    | nil => exact Subset.nil
+    | cons h t t_ih =>
+      simp only [to_ofList, ofList, toList_cons, List.mem_cons, forall_eq_or_imp] at *
       exact cons_subset.2 ⟨H.1, t_ih H.2⟩⟩
 
 end Lists'

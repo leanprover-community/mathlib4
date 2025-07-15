@@ -123,9 +123,9 @@ lemma binEntropy_nonpos_of_one_le (hp : 1 ≤ p) : binEntropy p ≤ 0 := by
 lemma binEntropy_eq_zero : binEntropy p = 0 ↔ p = 0 ∨ p = 1 := by
   refine ⟨fun h ↦ ?_, by rintro (rfl | rfl) <;> simp⟩
   contrapose! h
-  obtain hp₀ | hp₀ := h.1.lt_or_lt
+  obtain hp₀ | hp₀ := h.1.lt_or_gt
   · exact (binEntropy_neg_of_neg hp₀).ne
-  obtain hp₁ | hp₁ := h.2.lt_or_lt.symm
+  obtain hp₁ | hp₁ := h.2.lt_or_gt.symm
   · exact (binEntropy_neg_of_one_lt hp₁).ne
   · exact (binEntropy_pos hp₀ hp₁).ne'
 
@@ -139,7 +139,7 @@ lemma binEntropy_lt_log_two : binEntropy p < log 2 ↔ p ≠ 2⁻¹ := by
       rw [sub_lt_comm]; norm_num at *; linarith +splitNe
     rw [← binEntropy_one_sub]
     exact this hp.ne hp
-  obtain hp₀ | hp₀ := le_or_lt p 0
+  obtain hp₀ | hp₀ := le_or_gt p 0
   · exact (binEntropy_nonpos_of_nonpos hp₀).trans_lt <| log_pos <| by norm_num
   have hp₁ : 0 < 1 - p := sub_pos.2 <| hp.trans <| by norm_num
   calc
@@ -172,10 +172,10 @@ lemma differentiableAt_binEntropy_iff_ne_zero_one :
     DifferentiableAt ℝ binEntropy p ↔ p ≠ 0 ∧ p ≠ 1 := by
   refine ⟨fun h ↦ ⟨?_, ?_⟩, fun h ↦ differentiableAt_binEntropy h.1 h.2⟩
     <;> rintro rfl <;> unfold binEntropy at h
-  · rw [DifferentiableAt.add_iff_left] at h
+  · rw [DifferentiableAt.fun_add_iff_left] at h
     · simp [log_inv, mul_neg, ← neg_mul, ← negMulLog_def, differentiableAt_negMulLog_iff] at h
     · fun_prop (disch := simp)
-  · rw [DifferentiableAt.add_iff_right, differentiableAt_iff_comp_const_sub (b := 1)] at h
+  · rw [DifferentiableAt.fun_add_iff_right, differentiableAt_iff_comp_const_sub (b := 1)] at h
     · simp [log_inv, mul_neg, ← neg_mul, ← negMulLog_def, differentiableAt_negMulLog_iff] at h
     · fun_prop (disch := simp)
 

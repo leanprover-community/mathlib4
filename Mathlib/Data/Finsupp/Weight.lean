@@ -207,6 +207,9 @@ variable {R : Type*} [AddCommMonoid R]
 /-- The degree of a finsupp function. -/
 def degree (d : σ →₀ R) : R := ∑ i ∈ d.support, d i
 
+theorem degree_eq_sum [Fintype σ] (f : σ →₀ R) : f.degree = ∑ i, f i := by
+  rw [degree, Finset.sum_subset] <;> simp
+
 @[simp]
 theorem degree_add (a b : σ →₀ R) : (a + b).degree = a.degree + b.degree :=
   sum_add_index' (h := fun _ ↦ id) (congrFun rfl) fun _ _ ↦ congrFun rfl

@@ -612,6 +612,22 @@ variable {R K} in
 theorem isNonarchimedean_adicAbv (v : HeightOneSpectrum R) {b : NNReal} (hb : 1 < b) :
     IsNonarchimedean (α := K) (v.adicAbv hb) := isNonarchimedean_adicAbvDef v hb
 
+variable {R K} in
+theorem adicAbv_coe_le_one {b : NNReal} (hb : 1 < b) (r : R) :
+    v.adicAbv hb (algebraMap R K r) ≤ 1 := by
+  simpa [adicAbv, adicAbvDef, toNNReal_le_one_iff hb] using valuation_le_one v r
+
+variable {R K} in
+theorem adicAbv_coe_lt_one_iff {b : NNReal} (hb : 1 < b) (r : R) :
+    v.adicAbv hb (algebraMap R K r) < 1 ↔ r ∈ v.asIdeal := by
+  simpa [adicAbv, adicAbvDef, toNNReal_lt_one_iff hb] using valuation_lt_one_iff_mem v r
+
+variable {R K} in
+theorem adicAbv_coe_eq_one_iff {b : NNReal} (hb : 1 < b) (r : R) :
+    v.adicAbv hb (algebraMap R K r) = 1 ↔ r ∉ v.asIdeal := by
+  rw [← not_iff_not, not_not, ← v.adicAbv_coe_lt_one_iff (K := K), ne_iff_lt_iff_le]
+  exact adicAbv_coe_le_one v hb r
+
 end AbsoluteValue
 
 end IsDedekindDomain.HeightOneSpectrum
