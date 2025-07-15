@@ -5,6 +5,7 @@ Authors: Bhavik Mehta
 -/
 import Mathlib.Order.Zorn
 import Mathlib.Order.SuccPred.LinearLocallyFinite
+import Mathlib.Tactic.Spread
 
 /-!
 # Extend a partial order to a linear order
@@ -124,8 +125,19 @@ instance {α : Type*} (r s : α → α → Prop) [IsPreorder α r] [IsLinearOrde
     fun hca ↦ trans_of _ (h.2 (trans_of _ h'.1 hca)) (h'.2 (trans_of _ hca h.1))⟩
   antisymm _ _ h h' := antisymm_of _ (h.2 h'.1) (h'.2 h.1)
 
+-- TODO remove
+class IsTotalPreorder (α : Sort u) (r : α → α → Prop) : Prop extends IsTrans α r, IsTotal α r
+
+-- TODO remove
+/-- Every total pre-order is a pre-order. -/
+instance (priority := 100) isTotalPreorder_isPreorder (α : Sort u) (r : α → α → Prop)
+    [s : IsTotalPreorder α r] : IsPreorder α r where
+  trans := s.trans
+  refl a := Or.elim (@IsTotal.total _ r _ a a) id id
+
 instance {α : Type*} (r s : α → α → Prop) [IsTotalPreorder α r] [IsLinearOrder α s] :
     IsLinearOrder α (RefineBy r s) where
+  __ := instIsPartialOrderRefineByOfIsPreorderOfIsLinearOrder r s
   total a b := by
     simp_rw [RefineBy]
     have hr := total_of r a b
@@ -171,7 +183,7 @@ noncomputable instance [Preorder α] [IsTotal α (· ≤ ·)] :
   le_trans := (exists_eq_extend_linearOrder (α := α) (· ≤ ·)).choose_spec.1.trans
   le_antisymm := (exists_eq_extend_linearOrder (α := α) (· ≤ ·)).choose_spec.1.antisymm
   le_total := (exists_eq_extend_linearOrder (α := α) (· ≤ ·)).choose_spec.1.total
-  decidableLE := Classical.decRel _
+  toDecidableLE := Classical.decRel _
 
 /-- The order homomorphism from `LinearOrderRefinement α` to `α` -/
 def linearOrderRefinement_orderHom (α : Type*) [Preorder α] [IsTotal α (· ≤ ·)] :
@@ -194,12 +206,14 @@ theorem exists_nat_equiv_monotone (α : Type*) [Infinite α] [Preorder α] [Loca
   have _ := LocallyFiniteOrderBot.ofIic _ (fun a ↦ (hfin a).toFinset) (by simp)
   have _ := LocallyFiniteOrderBot.orderBot (LinearOrderRefinement α)
   have _ : NoMaxOrder (LinearOrderRefinement α) := {
-    exists_gt := fun a ↦ by simpa using (hfin a).exists_not_mem }
+    exists_gt := fun a ↦ by simpa using (hfin a).exists_notMem }
+  have : PredOrder (LinearOrderRefinement α) := sorry
+  have : SuccOrder (LinearOrderRefinement α) := sorry
   set e := (orderIsoNatOfLinearSuccPredArch (ι := LinearOrderRefinement α)).symm
   exact ⟨e.toEquiv, fun _ _ h ↦ (linearOrderRefinement_orderHom α).monotone (e.monotone h)⟩
 
 /-- If `α` is infinite, `β` is a locally finite preorder, and `r : α → β` has finite fibers,
-    then we can find a bijection `e : ℕ ≃ α` so that `i ≤ j → r (e i) ≤ r (e j)`.-/
+    then we can find a bijection `e : ℕ ≃ α` so that `i ≤ j → r (e i) ≤ r (e j)`. -/
 theorem exists_nat_equiv_monotone_comp {α β : Type*} [Infinite α] [Preorder β]
     [LocallyFiniteOrderBot β] [IsTotal β (· ≤ ·)] (r : α → β) (hr : ∀ b, (r ⁻¹' {b}).Finite) :
     ∃ (e : ℕ ≃ α), Monotone (r ∘ e) := by
