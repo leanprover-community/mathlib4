@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
 import Mathlib.CategoryTheory.Monoidal.DayConvolution
+import Mathlib.CategoryTheory.Monoidal.DayConvolution.Braided
 
 /-!
 # Day functors
@@ -121,6 +122,9 @@ instance : LawfulDayConvolutionMonoidalCategoryStruct C V (C ⊛⥤ V) :=
     (equiv C V).fullyFaithfulFunctor
     (fun _ _ => ⟨_, ⟨equiv C V|>.counitIso.app _⟩⟩)
     (⟨_, ⟨equiv C V|>.counitIso.app _⟩⟩)
+
+open LawfulDayConvolutionMonoidalCategoryStruct in
+instance : ι C V (C ⊛⥤ V)|>.Full := inferInstanceAs (equiv C V).functor.Full
 
 /-- The functor underlying `𝟙_ C ⊛⥤ V` is a DayConvolutionUnit.
 We’re not making this a global instance given that `DayConvolution` and
@@ -412,6 +416,19 @@ instance isLeftKanExtensionExtensionUnitRight (F G : C ⊛⥤ V) (K : D ⥤ V) :
     ExternalProduct.extensionUnitRight _ (DayConvolution.unit F.functor G.functor) K
 
 end
+
+section Braided
+
+variable [BraidedCategory C] [BraidedCategory V]
+
+instance : LawfulDayConvolutionBraidedCategoryStruct C V (C ⊛⥤ V) :=
+  .mkOfLawfulDayConvolutionMonoidalCategoryStruct C V
+
+end Braided
+
+section Symmetric
+
+end Symmetric
 
 end DayFunctor
 
