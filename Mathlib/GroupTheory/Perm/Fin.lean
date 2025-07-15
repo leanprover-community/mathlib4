@@ -389,7 +389,7 @@ theorem cycleIcc_of_ge_of_lt (hik : i ≤ k) (hkj : k < j) [NeZero n] : (cycleIc
 theorem cycleIcc_of_last (hij : i ≤ j) [NeZero n] : (cycleIcc i j) j = i := by
   simp [cycleIcc_of_le_of_le hij (ge_of_eq rfl)]
 
-theorem cycleIcc_of_eq [NeZero n] : cycleIcc i i = 1 := by
+theorem cycleIcc_eq [NeZero n] : cycleIcc i i = 1 := by
   ext k
   rcases lt_trichotomy k i with ch | ch | ch
   · simp [cycleIcc_of_lt ch]
@@ -397,10 +397,14 @@ theorem cycleIcc_of_eq [NeZero n] : cycleIcc i i = 1 := by
   · simp [cycleIcc_of_gt ch]
 
 @[simp]
-theorem cycleIcc_of_ge (hij : j ≤ i) [NeZero n] : cycleIcc i j = 1 := by
+theorem cycleIcc_gt (hij : j < i) : cycleIcc i j = 1 := by
+  simp [cycleIcc, hij]
+
+@[simp]
+theorem cycleIcc_ge (hij : j ≤ i) [NeZero n] : cycleIcc i j = 1 := by
   rcases Fin.lt_or_eq_of_le hij with hij | hij
-  · simp [cycleIcc, hij]
-  · rw [hij, ← cycleIcc_of_eq]
+  · exact cycleIcc_gt hij
+  · rw [hij, ← cycleIcc_eq]
 
 theorem sign_cycleIcc_of_le (hij : i ≤ j) : Perm.sign (cycleIcc i j) = (-1) ^ (j - i : ℕ) := by
   simp [cycleIcc, hij, sub_val_of_le hij]
@@ -419,11 +423,11 @@ theorem isCycle_cycleIcc (hij : i < j) : (cycleIcc i j).IsCycle := by
 
 theorem cycleType_cycleIcc_of_lt (hij : i < j) :
     Perm.cycleType (cycleIcc i j) = {(j - i + 1: ℕ)} := by
-  simpa [cycleIcc, le_of_lt hij, cycleType_cycleRange (castLT_sub_nezero hij)] using
-    sub_val_of_le (le_of_lt hij)
+  simpa [cycleIcc, le_of_lt hij, cycleType_cycleRange (castLT_sub_nezero hij)] using sub_val_of_le
+    (le_of_lt hij)
 
 theorem cycleType_cycleIcc_of_ge (hij : j ≤ i) [NeZero n] : Perm.cycleType (cycleIcc i j) = ∅ := by
-  simpa using cycleIcc_of_ge hij
+  simpa using cycleIcc_ge hij
 
 theorem cycleIcc_zero_eq_cycleRange (i : Fin n) [NeZero n] : cycleIcc 0 i = cycleRange i := by
   ext x
