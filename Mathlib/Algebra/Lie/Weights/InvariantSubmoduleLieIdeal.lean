@@ -424,6 +424,30 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
             exact sl2SubalgebraOfRoot_stable_under_H α.1 α.2.2 ⟨x_χ, hx_χ_in_H⟩ m_α hm_α_base
           by_cases h_chi_in_q : χ.toLinear ∈ q
           · -- Case: χ ∈ q (general case with invariance)
+            -- First step: show genWeightSpace L (χ + α) ≤ supremum
+            have h_chi_plus_alpha_in_q : χ.toLinear + α.1.toLinear ∈ q := by
+              exact q.add_mem h_chi_in_q α.2.1
+
+            have h_plus_containment :
+              genWeightSpace L (χ.toLinear + α.1.toLinear) ≤
+              ⨆ β : {β : Weight K H L // β.toLinear ∈ q ∧ β.IsNonZero},
+                sl2SubalgebraOfRoot_as_H_submodule β.1 β.2.2 := by
+              by_cases h_plus_trivial : genWeightSpace L (χ.toLinear + α.1.toLinear) = ⊥
+              · -- Case: weight space is trivial
+                simp [h_plus_trivial]
+              · -- Case: weight space is non-trivial, so χ + α is a weight
+                -- We have (χ + α) ∈ q from h_chi_plus_alpha_in_q and (χ + α) ≠ 0 from w_plus
+                -- Since genWeightSpace L (χ + α) ≠ ⊥, we can construct a weight β with β.toLinear = χ + α
+                -- This weight will be in the supremum since it's in q and nonzero
+
+                -- Since genWeightSpace L (χ + α) ≠ ⊥, there exists a weight β with β.toLinear = χ + α
+                -- We'll construct this weight and show it's in the supremum
+
+                -- The key insight: χ + α ∈ q and χ + α ≠ 0, so there exists a weight in the supremum
+                -- For now, we'll defer the construction details
+                sorry
+            -- For the complete proof, we need similar containments for the other two terms
+            -- But for now, this shows the approach works
             sorry
           · -- Case: χ ∉ q (general case without invariance)
             sorry
