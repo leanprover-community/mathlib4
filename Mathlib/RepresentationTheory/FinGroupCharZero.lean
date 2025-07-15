@@ -67,14 +67,14 @@ If `G` is finite and its order is nonzero in the field `k`, then every object of
 `FDRep k G` is injective.
 -/
 instance (V : FDRep k G) : Injective V := (forget₂ (FDRep k G)
-  (Rep k G)).injective_of_map_injective _ inferInstance
+  (Rep k G)).injective_of_map_injective inferInstance
 
 /--
 If `G` is finite and its order is nonzero in the field `k`, then every object of
 `FDRep k G` is projective.
 -/
 instance (V : FDRep k G) : Projective V := (forget₂ (FDRep k G)
-  (Rep k G)).projective_of_map_projective _ inferInstance
+  (Rep k G)).projective_of_map_projective inferInstance
 
 variable [IsAlgClosed k]
 
