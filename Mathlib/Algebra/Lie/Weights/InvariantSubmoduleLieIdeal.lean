@@ -672,9 +672,28 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
                   rfl
 
                 exact h_χ_contains.trans χ_term_in_supr
-            -- For the complete proof, we need similar containments for the other two terms
-            -- But for now, this shows the approach works
-            sorry
+            -- Now we can complete the proof using all three containment results
+            -- From h_bracket_decomp: ⁅x_χ, m_α⁆ ∈ genWeightSpace L (χ + α) ⊔
+            -- genWeightSpace L (χ - α) ⊔ genWeightSpace L χ
+            -- We have containments for each component, so we can conclude the result
+
+            -- First, establish that the supremum of the three weight spaces is contained in the
+            -- target supremum
+            have h_total_containment :
+              genWeightSpace L (χ.toLinear + α.1.toLinear) ⊔
+              genWeightSpace L (χ.toLinear - α.1.toLinear) ⊔
+              genWeightSpace L χ.toLinear ≤
+              ⨆ β : {β : Weight K H L // β.toLinear ∈ q ∧ β.IsNonZero},
+                sl2SubalgebraOfRoot_as_H_submodule β.1 β.2.2 := by
+              -- Use the fact that the supremum of submodules is the least upper bound
+              apply sup_le
+              · apply sup_le
+                · exact h_plus_containment
+                · exact h_minus_containment
+              · exact h_chi_containment
+
+            -- Now apply this to the bracket decomposition
+            exact h_total_containment h_bracket_decomp
           · -- Case: χ ∉ q (general case without invariance)
             sorry
 
