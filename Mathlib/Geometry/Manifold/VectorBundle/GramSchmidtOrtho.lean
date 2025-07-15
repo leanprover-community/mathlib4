@@ -240,8 +240,6 @@ lemma gramSchmidtNormed_apply_of_orthonormal (hs : Orthonormal ℝ (s · x)) {i 
     gramSchmidtNormed s i x = s i x := by
   simp [gramSchmidtNormed_apply_of_orthogonal hs.2, hs.1 i]
 
--- TODO: comment on the different design compared to `InnerProductSpace.gramSchmidtOrthonormalBasis`
-
 /-- When the sections `s` form a basis at `x`, so do the sections `gramSchmidtNormed s`.
 
 Note that `gramSchmidtOrthonormalBasis` proves a strictly stronger statement. -/
@@ -258,7 +256,15 @@ theorem coe_gramSchmidtNormedBasis (hs : LinearIndependent ℝ (s · x))
   Basis.coe_mk _ _
 
 /-- If the sections `s` form a basis at `x`, the resulting sections form an orthonormal basis
-at `x` -/
+at `x`.
+
+We intentionally choose a different design from `InnerProductSpace.gramSchmidtOrthonormalBasis`,
+as this is more convenient to work with in the application to local frames:
+in this case, we know the sections form a basis, so linear independence and generating conditions
+are easy to apply. Having to prove something about the cardinality of the indexing set would
+be more tedious.
+As we always obtain a basis, we need not consider the case of some resulting vector being zero.
+-/
 noncomputable def gramSchmidtOrthonormalBasis [Fintype ι]
     (hs : LinearIndependent ℝ (s · x)) (hs' : ⊤ ≤ Submodule.span ℝ (Set.range (s · x))) :
     OrthonormalBasis ι ℝ (E x) := by
