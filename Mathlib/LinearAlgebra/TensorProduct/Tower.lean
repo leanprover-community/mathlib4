@@ -409,7 +409,7 @@ theorem assoc_symm_tmul (m : M) (p : P) (q : Q) :
   rfl
 
 /-- The heterobasic version of `assoc` coincides with the regular version. -/
-theorem assoc_eq : assoc R R R M P Q = TensorProduct.assoc R M P Q := rfl
+theorem assoc_eq : assoc R R R M P Q = TensorProduct.assoc R M P Q := by ext; rfl
 
 theorem rTensor_tensor [Module R P'] [IsScalarTower R A P'] (g : P →ₗ[A] P') :
     g.rTensor (M ⊗[R] N) =
@@ -473,7 +473,9 @@ theorem leftComm_symm_tmul (m : M) (p : P) (q : Q) :
   rfl
 
 /-- The heterobasic version of `leftComm` coincides with the regular version. -/
-theorem leftComm_eq : leftComm R R M P Q = TensorProduct.leftComm R M P Q := rfl
+theorem leftComm_eq : leftComm R R M P Q = TensorProduct.leftComm R M P Q := by
+  rw [← LinearEquiv.toLinearMap_inj]
+  ext; rfl
 
 end leftComm
 
