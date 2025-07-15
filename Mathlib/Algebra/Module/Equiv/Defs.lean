@@ -551,6 +551,14 @@ protected theorem image_symm_eq_preimage (s : Set M₂) : e.symm '' s = e ⁻¹'
 
 end
 
+/-- `Equiv.cast (congrArg _ h)` as a linear equiv. -/
+@[simps!]
+protected def cast {ι : Type*} {M : ι → Type*}
+    [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)] {i j : ι} (h : i = j) :
+    M i ≃ₗ[R] M j where
+  toAddEquiv := AddEquiv.cast h
+  map_smul' _ _ := by cases h; rfl
+
 /-- Interpret a `RingEquiv` `f` as an `f`-semilinear equiv. -/
 @[simps]
 def _root_.RingEquiv.toSemilinearEquiv (f : R ≃+* S) :

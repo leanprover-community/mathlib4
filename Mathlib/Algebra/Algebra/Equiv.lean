@@ -379,6 +379,14 @@ theorem symm_trans_apply (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] A�
 
 end trans
 
+/-- `Equiv.cast (congrArg _ h)` as a algebra equiv. -/
+@[simps]
+protected def cast
+    {ι : Type*} {A : ι → Type*} [∀ i, Semiring (A i)] [∀ i, Algebra R (A i)] {i j : ι} (h : i = j) :
+    A i ≃ₗ[R] A j where
+  __ := RingEquiv.cast (congrArg _ h)
+  commutes' _ := by cases h; rfl
+
 /-- If `A₁` is equivalent to `A₁'` and `A₂` is equivalent to `A₂'`, then the type of maps
 `A₁ →ₐ[R] A₂` is equivalent to the type of maps `A₁' →ₐ[R] A₂'`. -/
 @[simps apply]
