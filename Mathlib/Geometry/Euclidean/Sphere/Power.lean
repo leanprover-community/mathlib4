@@ -144,8 +144,8 @@ theorem Sphere.power_eq_zero_iff_mem_sphere {s : Sphere P} {p : P} (hr : 0 ≤ s
     rw [hp]
 
 /-- The power of a point is positive if and only if the point lies outside the sphere. -/
-theorem Sphere.power_pos_iff_dist_center_gt_radius {s : Sphere P} {p : P} (hr : 0 ≤ s.radius) :
-  s.power p > 0 ↔ dist p s.center > s.radius := by
+theorem Sphere.power_pos_iff_radius_lt_dist_center {s : Sphere P} {p : P} (hr : 0 ≤ s.radius) :
+    0 < s.power p ↔ s.radius < dist p s.center := by
   simp only [Sphere.power, gt_iff_lt, sub_pos]
   constructor
   · intro hp
