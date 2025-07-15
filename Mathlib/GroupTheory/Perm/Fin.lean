@@ -142,7 +142,7 @@ theorem cycleRange_of_gt {n : ℕ} {i j : Fin n} (h : i < j) : cycleRange i j = 
 
 theorem cycleRange_of_le {n : ℕ} [NeZero n] {i j : Fin n} (h : j ≤ i) :
     cycleRange i j = if j = i then 0 else j + 1 := by
-  have jin : j ∈ Set.range ⇑(castLEEmb (n := i + 1) (by omega)) := by
+  have jin : j ∈ Set.range (castLEEmb (n := i + 1) (by omega)) := by
     rw [coe_castLEEmb, range_castLE, Set.mem_setOf_eq]
     omega
   have : (castLEEmb (by omega)).toEquivRange (castLT j (by omega)) = ⟨j, jin⟩ := by
@@ -448,6 +448,14 @@ theorem cycleIcc.trans [NeZero n] (hij : i ≤ j) (hjk : j ≤ k) :
     split_ifs with h
     · exact val_eq_of_eq (cycleIcc_of_last hij)
     · simp [cycleIcc_of_gt (lt_of_le_of_lt ch2 (lt_add_one_of_succ_lt (by omega)))]
+
+theorem cycleIcc.trans_left_one [NeZero n] (hij : j ≤ i) :
+    (cycleIcc i j) ∘ (cycleIcc j k) = cycleIcc j k := by
+  simp [hij]
+
+theorem cycleIcc.trans_right_one [NeZero n] (hjk : k ≤ j) :
+    (cycleIcc i j) ∘ (cycleIcc j k) = cycleIcc i j := by
+  simp [hjk]
 
 end Fin
 
