@@ -192,6 +192,29 @@ theorem extension_property {P} [AddCommGroup P] [Module R P] (f : N →ₗ[R] M)
   have ⟨m, compl⟩ := exists_isCompl (LinearMap.range f)
   ⟨g ∘ₗ LinearMap.linearProjOfIsCompl _ f hf compl, by ext; simp⟩
 
+theorem lifting_property (f : M →ₗ[R] N) (hf : Function.Surjective f) :
+    ∃ h : N →ₗ[R] M, f ∘ₗ h = LinearMap.id := by
+  have ⟨m, compl⟩ := exists_isCompl (LinearMap.ker f)
+  use Submodule.subtype _ ∘ₗ ((f.quotKerEquivOfSurjective hf).symm ≪≫ₗ
+    Submodule.quotientEquivOfIsCompl _ m compl).toLinearMap
+  ext x
+  dsimp
+  obtain ⟨z, hz⟩ := hf x
+  have eqz: z = ((Submodule.prodEquivOfIsCompl _ _ compl).symm z).1 +
+      ((Submodule.prodEquivOfIsCompl _ _ compl).symm z).2 := by
+    refine (Submodule.prodEquivOfIsCompl _ _ compl).symm.injective ?_
+    simp
+  have eq : (((LinearMap.ker f).quotientEquivOfIsCompl m compl)
+      ((f.quotKerEquivOfSurjective hf).symm x)) =
+      ((Submodule.prodEquivOfIsCompl _ _ compl).symm z).2 := by
+    refine ((LinearMap.ker f).quotientEquivOfIsCompl m compl).symm.injective ?_
+    refine (f.quotKerEquivOfSurjective hf).injective ?_
+    conv_lhs => rw [← hz, eqz]
+    simp [LinearMap.quotKerEquivOfSurjective]
+  rw [eq]
+  conv_rhs => rw [← hz, eqz]
+  simp
+
 theorem eq_bot_or_exists_simple_le (N : Submodule R M) : N = ⊥ ∨ ∃ m ≤ N, IsSimpleModule R m := by
   simpa only [isSimpleModule_iff_isAtom, and_comm] using eq_bot_or_exists_atom_le _
 

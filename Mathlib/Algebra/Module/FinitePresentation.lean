@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+import Mathlib.RingTheory.Finiteness.Finsupp
 import Mathlib.RingTheory.Finiteness.Projective
 import Mathlib.RingTheory.Localization.BaseChange
 import Mathlib.RingTheory.Noetherian.Basic

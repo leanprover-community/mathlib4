@@ -97,7 +97,9 @@ import Mathlib.Algebra.Category.CommAlgCat.Basic
 import Mathlib.Algebra.Category.CommAlgCat.FiniteType
 import Mathlib.Algebra.Category.CommAlgCat.Monoidal
 import Mathlib.Algebra.Category.ContinuousCohomology.Basic
+import Mathlib.Algebra.Category.FGModuleCat.Abelian
 import Mathlib.Algebra.Category.FGModuleCat.Basic
+import Mathlib.Algebra.Category.FGModuleCat.Colimits
 import Mathlib.Algebra.Category.FGModuleCat.EssentiallySmall
 import Mathlib.Algebra.Category.FGModuleCat.Limits
 import Mathlib.Algebra.Category.Grp.AB
@@ -4004,6 +4006,7 @@ import Mathlib.LinearAlgebra.Dimension.Subsingleton
 import Mathlib.LinearAlgebra.Dimension.Torsion.Basic
 import Mathlib.LinearAlgebra.Dimension.Torsion.Finite
 import Mathlib.LinearAlgebra.DirectSum.Basis
+import Mathlib.LinearAlgebra.DirectSum.Finite
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
 import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 import Mathlib.LinearAlgebra.Dual.Basis
@@ -5109,6 +5112,7 @@ import Mathlib.RepresentationTheory.Character
 import Mathlib.RepresentationTheory.Coinduced
 import Mathlib.RepresentationTheory.Coinvariants
 import Mathlib.RepresentationTheory.FDRep
+import Mathlib.RepresentationTheory.FinGroupCharZero
 import Mathlib.RepresentationTheory.FiniteIndex
 import Mathlib.RepresentationTheory.GroupCohomology.Basic
 import Mathlib.RepresentationTheory.GroupCohomology.Functoriality
@@ -5236,6 +5240,7 @@ import Mathlib.RingTheory.Finiteness.Basic
 import Mathlib.RingTheory.Finiteness.Bilinear
 import Mathlib.RingTheory.Finiteness.Cardinality
 import Mathlib.RingTheory.Finiteness.Defs
+import Mathlib.RingTheory.Finiteness.ExactSequence
 import Mathlib.RingTheory.Finiteness.Finsupp
 import Mathlib.RingTheory.Finiteness.Ideal
 import Mathlib.RingTheory.Finiteness.Lattice
@@ -5561,6 +5566,7 @@ import Mathlib.RingTheory.RootsOfUnity.Lemmas
 import Mathlib.RingTheory.RootsOfUnity.Minpoly
 import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 import Mathlib.RingTheory.SimpleModule.Basic
+import Mathlib.RingTheory.SimpleModule.InjectiveProjective
 import Mathlib.RingTheory.SimpleModule.IsAlgClosed
 import Mathlib.RingTheory.SimpleModule.Isotypic
 import Mathlib.RingTheory.SimpleModule.Rank
