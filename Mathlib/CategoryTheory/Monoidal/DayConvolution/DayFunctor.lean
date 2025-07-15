@@ -419,14 +419,41 @@ end
 
 section Braided
 
-variable [BraidedCategory C] [BraidedCategory V]
+variable (C V) [BraidedCategory C] [BraidedCategory V]
 
 instance : LawfulDayConvolutionBraidedCategoryStruct C V (C ⊛⥤ V) :=
   .mkOfLawfulDayConvolutionMonoidalCategoryStruct C V
 
+instance braided : BraidedCategory (C ⊛⥤ V) :=
+  LawfulDayConvolutionBraidedCategoryStruct.braided C V _
+
+variable {C V}
+
+@[reassoc (attr := simp)]
+lemma unit_app_braiding_hom_app (F G : C ⊛⥤ V) (x y : C) :
+    (η F G).app (x, y) ≫ (β_ F G).hom.natTrans.app (x ⊗ y) =
+    (β_ (F.functor.obj x) (G.functor.obj y)).hom ≫
+      (η G F).app (y, x) ≫ (G ⊗ F).functor.map (β_ y x).hom :=
+  LawfulDayConvolutionBraidedCategoryStruct.unit_app_braiding_hom_app C V F G x y
+
+@[reassoc (attr := simp)]
+lemma unit_app_braiding_inv_app (F G : C ⊛⥤ V) (x y : C) :
+    (η G F).app (x, y) ≫ (β_ F G).inv.natTrans.app (x ⊗ y) =
+    (β_ (F.functor.obj y) (G.functor.obj x)).inv ≫
+      (η F G).app (y, x) ≫ (F ⊗ G).functor.map (β_ x y).inv :=
+  LawfulDayConvolutionBraidedCategoryStruct.unit_app_braiding_inv_app C V F G x y
+
 end Braided
 
 section Symmetric
+
+variable (C V) [SymmetricCategory C] [SymmetricCategory V]
+
+instance symmetric : SymmetricCategory (C ⊛⥤ V) :=
+  LawfulDayConvolutionBraidedCategoryStruct.symmetric C V _
+
+-- No bad duplicated instances.
+example : (symmetric C V).toBraidedCategory = braided C V := rfl
 
 end Symmetric
 
