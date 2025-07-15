@@ -34,8 +34,6 @@ In this file we have:
 * `freeCommRingEquivMvPolynomialInt : FreeCommRing α ≃+* MvPolynomial α ℤ` :
     `FreeCommRing α` is isomorphic to a polynomial ring.
 
-
-
 ## Implementation notes
 
 `FreeCommRing α` is implemented not using `MvPolynomial` but
@@ -47,6 +45,7 @@ of monomials in this free commutative ring.
 free commutative ring, free ring
 -/
 
+assert_not_exists Cardinal
 
 noncomputable section
 

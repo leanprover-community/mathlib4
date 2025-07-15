@@ -23,7 +23,6 @@ the derived series of a group.
 * `IsSolvable G` : the group `G` is solvable
 -/
 
-
 open Subgroup
 
 variable {G G' : Type*} [Group G] [Group G'] {f : G →* G'}
