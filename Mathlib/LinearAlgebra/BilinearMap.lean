@@ -268,16 +268,17 @@ end Semiring
 
 section CommSemiring
 
-variable {R R₁ R₂ : Type*} [CommSemiring R] [Semiring R₁] [Semiring R₂]
+variable {R R₁ R₂ R₃ R₄ : Type*} [CommSemiring R] [CommSemiring R₁] [CommSemiring R₂]
+  [CommSemiring R₃] [CommSemiring R₄]
 variable {A : Type*} [Semiring A] {B : Type*} [Semiring B]
 variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*}
 variable {Mₗ : Type*} {Nₗ : Type*} {Pₗ : Type*} {Qₗ Qₗ' : Type*}
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
 variable [AddCommMonoid Mₗ] [AddCommMonoid Nₗ] [AddCommMonoid Pₗ]
 variable [AddCommMonoid Qₗ] [AddCommMonoid Qₗ']
-variable [Module R M]
+variable [Module R M] [Module R₂ N] [Module R₃ P] [Module R₄ Q]
 variable [Module R Mₗ] [Module R Nₗ] [Module R Pₗ] [Module R Qₗ] [Module R Qₗ']
-variable [Module R₁ Mₗ] [Module R₂ N] [Module R₁ Pₗ] [Module R₁ Qₗ]
+variable [Module R₁ Mₗ] [Module R₁ Pₗ] [Module R₁ Qₗ]
 variable [Module R₂ Pₗ] [Module R₂ Qₗ']
 variable {σ₁₂ : R →+* R₂} {σ₁₃ : R →+* R₃} {σ₁₄ : R →+* R₄}
 variable {σ₂₃ : R₂ →+* R₃} {σ₂₄ : R₂ →+* R₄}
@@ -344,7 +345,7 @@ variable (M N P)
 /-- Composing linear maps as a bilinear map from `(M →ₗ[R] N) × (N →ₗ[R] P)` to `M →ₗ[R] P` -/
 def llcompₛₗ : (N →ₛₗ[σ₂₃] P) →ₗ[R₃] (M →ₛₗ[σ₁₂] N) →ₛₗ[σ₂₃] M →ₛₗ[σ₁₃] P :=
   flip
-    { toFun := lcompₛₗ P σ₂₃
+    { toFun := lcompₛₗ _ P σ₂₃
       map_add' := fun _f _f' => ext₂ fun g _x => g.map_add _ _
       map_smul' := fun (_c : R₂) _f => ext₂ fun g _x => g.map_smulₛₗ _ _ }
 
@@ -416,7 +417,7 @@ theorem surjective_compr₂_of_exists_rightInverse [RingHomInvPair σ₃₄ σ�
 
 /-- A version of `Function.Surjective.comp` for composition of a bilinear map with a linear map. -/
 theorem surjective_compr₂_of_equiv [RingHomInvPair σ₃₄ σ₄₃] [RingHomInvPair σ₄₃ σ₃₄]
-    (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P ≃ₛₗ[σ₃₄] Q)  (hf : Surjective f) :
+    (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P ≃ₛₗ[σ₃₄] Q) (hf : Surjective f) :
     Surjective (f.compr₂ g.toLinearMap) :=
   surjective_compr₂_of_exists_rightInverse f g.toLinearMap hf ⟨g.symm, by simp⟩
 
