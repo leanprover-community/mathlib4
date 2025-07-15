@@ -450,7 +450,7 @@ private lemma tendsto_div_two_punctured_nhds (a : ℂ) :
 /-- The residue of `completedHurwitzZetaEven a s` at `s = 1` is equal to `1`. -/
 lemma completedHurwitzZetaEven_residue_one (a : UnitAddCircle) :
     Tendsto (fun s ↦ (s - 1) * completedHurwitzZetaEven a s) (𝓝[≠] 1) (𝓝 1) := by
-  have h1 : Tendsto (fun s : ℂ ↦ (s - ↑(1  / 2 : ℝ)) * _) (𝓝[≠] ↑(1  / 2 : ℝ))
+  have h1 : Tendsto (fun s : ℂ ↦ (s - ↑(1 / 2 : ℝ)) * _) (𝓝[≠] ↑(1 / 2 : ℝ))
     (𝓝 ((1 : ℂ) * (1 : ℂ))) := (hurwitzEvenFEPair a).Λ_residue_k
   simp only [push_cast, one_mul] at h1
   refine (h1.comp <| tendsto_div_two_punctured_nhds 1).congr (fun s ↦ ?_)

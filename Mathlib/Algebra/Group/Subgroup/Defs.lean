@@ -83,7 +83,7 @@ class AddSubgroupClass (S : Type*) (G : outParam Type*) [SubNegMonoid G] [SetLik
 
 attribute [to_additive] InvMemClass SubgroupClass
 
-attribute [aesop safe apply (rule_sets := [SetLike])] inv_mem neg_mem
+attribute [aesop 90% (rule_sets := [SetLike])] inv_mem neg_mem
 
 @[to_additive (attr := simp)]
 theorem inv_mem_iff {S G} [InvolutiveInv G] {_ : SetLike S G} [InvMemClass S G] {H : S}
@@ -93,12 +93,12 @@ theorem inv_mem_iff {S G} [InvolutiveInv G] {_ : SetLike S G} [InvMemClass S G] 
 variable {M S : Type*} [DivInvMonoid M] [SetLike S M] [hSM : SubgroupClass S M] {H K : S}
 
 /-- A subgroup is closed under division. -/
-@[to_additive (attr := aesop safe apply (rule_sets := [SetLike]))
+@[to_additive (attr := aesop 90% (rule_sets := [SetLike]))
   "An additive subgroup is closed under subtraction."]
 theorem div_mem {x y : M} (hx : x ∈ H) (hy : y ∈ H) : x / y ∈ H := by
   rw [div_eq_mul_inv]; exact mul_mem hx (inv_mem hy)
 
-@[to_additive (attr := aesop safe apply (rule_sets := [SetLike]))]
+@[to_additive (attr := aesop 90% (rule_sets := [SetLike]))]
 theorem zpow_mem {x : M} (hx : x ∈ K) : ∀ n : ℤ, x ^ n ∈ K
   | (n : ℕ) => by
     rw [zpow_natCast]
@@ -227,7 +227,7 @@ theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = (x : G) ^ n :=
 /-- The inclusion homomorphism from a subgroup `H` contained in `K` to `K`. -/
 @[to_additive "The inclusion homomorphism from an additive subgroup `H` contained in `K` to `K`."]
 def inclusion {H K : S} (h : H ≤ K) : H →* K :=
-  MonoidHom.mk' (fun x => ⟨x, h x.prop⟩) fun _ _=> rfl
+  MonoidHom.mk' (fun x => ⟨x, h x.prop⟩) fun _ _ => rfl
 
 @[to_additive (attr := simp)]
 theorem inclusion_self (x : H) : inclusion le_rfl x = x := by
@@ -554,7 +554,7 @@ lemma subtype_injective (s : Subgroup G) :
   Subtype.coe_injective
 
 @[to_additive (attr := simp)]
-theorem coe_subtype : ⇑ H.subtype = ((↑) : H → G) :=
+theorem coe_subtype : ⇑H.subtype = ((↑) : H → G) :=
   rfl
 
 @[deprecated (since := "2025-02-18")]

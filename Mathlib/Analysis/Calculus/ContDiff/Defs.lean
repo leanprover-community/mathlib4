@@ -995,12 +995,19 @@ theorem ContDiffAt.differentiableAt (h : ContDiffAt 𝕜 n f x) (hn : 1 ≤ n) :
     DifferentiableAt 𝕜 f x := by
   simpa [hn, differentiableWithinAt_univ] using h.differentiableWithinAt
 
+theorem ContDiffAt.differentiableAt_iteratedFDeriv
+    {f : E → F} {n : WithTop ℕ∞} {m : ℕ} {x : E} (h : ContDiffAt 𝕜 n f x) (hmn : ↑m < n) :
+    DifferentiableAt 𝕜 (iteratedFDeriv 𝕜 m f) x := by
+  rw [← differentiableWithinAt_univ]
+  convert (h.differentiableWithinAt_iteratedFDerivWithin hmn (by simp [uniqueDiffOn_univ]))
+  exact iteratedFDerivWithin_univ.symm
+
 @[fun_prop]
 theorem ContDiffAt.differentiableAt_one (h : ContDiffAt 𝕜 1 f x) :
     DifferentiableAt 𝕜 f x := by
   simpa [(le_refl 1), differentiableWithinAt_univ] using h.differentiableWithinAt
 
-nonrec lemma ContDiffAt.contDiffOn (h : ContDiffAt 𝕜 n f x) (hm : m ≤ n) (h' : m = ∞ → n = ω):
+nonrec lemma ContDiffAt.contDiffOn (h : ContDiffAt 𝕜 n f x) (hm : m ≤ n) (h' : m = ∞ → n = ω) :
     ∃ u ∈ 𝓝 x, ContDiffOn 𝕜 m f u := by
   simpa [nhdsWithin_univ] using h.contDiffOn hm h'
 

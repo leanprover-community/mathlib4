@@ -288,7 +288,7 @@ theorem lift_card_closure_le_card_term : Cardinal.lift.{max u w} #(closure L s) 
 
 theorem lift_card_closure_le :
     Cardinal.lift.{u, w} #(closure L s) ≤
-      max ℵ₀ (Cardinal.lift.{u, w} #s + Cardinal.lift.{w, u} #(Σi, L.Functions i)) := by
+      max ℵ₀ (Cardinal.lift.{u, w} #s + Cardinal.lift.{w, u} #(Σ i, L.Functions i)) := by
   rw [← lift_umax]
   refine lift_card_closure_le_card_term.trans (Term.card_le.trans ?_)
   rw [mk_sum, lift_umax.{w, u}]

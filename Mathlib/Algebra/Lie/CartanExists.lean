@@ -248,7 +248,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
       LieSubmodule.Quotient.mk'_apply, LieSubmodule.Quotient.mk_eq_zero', E, Q] at this ⊢
     -- Hence we win.
     obtain ⟨n, hn⟩ := this
-    use n+1
+    use n + 1
     rwa [pow_succ]
   -- Now we find a subset `s` of `K` of size `≥ r`
   -- such that `constantCoeff ψ` takes non-zero values on all of `s`.

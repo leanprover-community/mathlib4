@@ -86,6 +86,12 @@ variable {f}
 theorem iterate_fixed {x} (h : f x = x) (n : ℕ) : f^[n] x = x :=
   Nat.recOn n rfl fun n ihn ↦ by rw [iterate_succ_apply, h, ihn]
 
+/-- If a function `g` is invariant under composition with a function `f` (i.e., `g ∘ f = g`), then
+`g` is invariant under composition with any iterate of `f`. -/
+theorem iterate_invariant {g : α → β} (h : g ∘ f = g) (n : ℕ) : g ∘ f^[n] = g := match n with
+  | 0 => rfl
+  | m + 1 => by rwa [show  g ∘ f^[m + 1] = (g ∘ f^[m]) ∘ f  by rfl, iterate_invariant h m]
+
 theorem Injective.iterate (Hinj : Injective f) (n : ℕ) : Injective f^[n] :=
   Nat.recOn n injective_id fun _ ihn ↦ ihn.comp Hinj
 
