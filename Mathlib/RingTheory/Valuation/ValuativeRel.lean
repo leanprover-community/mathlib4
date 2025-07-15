@@ -3,6 +3,7 @@ Copyright (c) 2025 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Liu, Adam Topaz
 -/
+import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
 import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.Data.NNReal.Defs
 import Mathlib.Topology.Defs.Filter
@@ -110,6 +111,9 @@ protected alias rel.refl := rel_refl
 
 protected alias rel.rfl := rel_rfl
 
+instance (priority := low) : Nontrivial R where
+  exists_pair_ne := ⟨0, 1, fun h ↦ (h ▸ ValuativeRel.not_rel_one_zero) rel_rfl⟩
+
 @[simp]
 theorem zero_rel (x : R) : 0 ≤ᵥ x := by
   simpa using rel_mul_right x ((rel_total 0 1).resolve_right not_rel_one_zero)
@@ -157,6 +161,100 @@ lemma right_cancel_posSubmonoid (x y : R) (u : posSubmonoid R) :
 lemma left_cancel_posSubmonoid (x y : R) (u : posSubmonoid R) :
     u * x ≤ᵥ u * y ↔ x ≤ᵥ y := by
   simp only [← right_cancel_posSubmonoid x y u, mul_comm]
+
+variable (R) in
+def equiv : Con R where
+  r x y := x ≤ᵥ y ∧ y ≤ᵥ x
+  iseqv := {
+    refl _ := ⟨rel_refl _, rel_refl _⟩
+    symm h := ⟨h.2, h.1⟩
+    trans hxy hyz := ⟨rel_trans hxy.1 hyz.1, rel_trans hyz.2 hxy.2⟩
+  }
+  mul' ha hb := ⟨rel_mul ha.1 hb.1, rel_mul ha.2 hb.2⟩
+
+lemma mem_posSubmonoid_iff_equiv (x : R) : x ∈ posSubmonoid R ↔ ¬ equiv R x 0 :=
+  ⟨fun h h' ↦ h h'.1, fun h h' ↦ h ⟨h', zero_rel _⟩⟩
+
+-- TODO: Should be a general instance
+instance : CommMonoidWithZero (equiv R).Quotient where
+  zero := Con.toQuotient 0
+  zero_mul a := Con.induction_on a fun x ↦ congrArg _ (zero_mul x)
+  mul_zero a := Con.induction_on a fun x ↦ congrArg _ (mul_zero x)
+  __ := Con.commMonoid _
+
+-- TODO: Should be a general lemma
+lemma _root_.Con.coe_zero : ((0 : R) : (equiv R).Quotient) = 0 :=
+  rfl
+
+-- TODO: Should be a general instance
+instance : LinearOrder (equiv R).Quotient where
+  le := Quotient.lift₂ (· ≤ᵥ ·) fun a₁ b₁ a₂ b₂ ha hb ↦ iff_iff_eq.mp
+    ⟨fun H ↦ rel_trans ha.2 (rel_trans H hb.1), fun H ↦ rel_trans ha.1 (rel_trans H hb.2)⟩
+  le_refl := Quotient.ind fun x ↦ rel_refl x
+  le_trans := Quotient.ind fun x ↦ Quotient.ind₂ fun y z ↦ rel_trans
+  le_antisymm := Quotient.ind₂ fun x y hx hy ↦ Quotient.eq.mpr ⟨hx, hy⟩
+  le_total := Quotient.ind₂ rel_total
+  toDecidableLE := open Classical in inferInstance
+
+instance : LinearOrderedCommMonoidWithZero (equiv R).Quotient where
+  mul_le_mul_left := Quotient.ind₂ fun _ _ hxy ↦ Quotient.ind fun _ ↦ rel_mul_left _ hxy
+  bot := 0
+  bot_le := Quotient.ind zero_rel
+  zero_le_one := zero_rel _
+
+private lemma coe_ne_zero_iff {x : R} :
+    (x : (equiv R).Quotient) ≠ 0 ↔ x ∈ posSubmonoid R := by
+  simp [← Con.coe_zero, Con.eq, ← mem_posSubmonoid_iff_equiv]
+
+instance : Nontrivial (equiv R).Quotient where
+  exists_pair_ne := ⟨1, 0, by simpa [← Con.coe_one, coe_ne_zero_iff] using (posSubmonoid R).one_mem⟩
+
+instance : NoZeroDivisors (equiv R).Quotient where
+  eq_zero_or_eq_zero_of_mul_eq_zero {a b} := Con.induction_on₂ a b fun x y ↦ by
+    contrapose
+    simpa [← Con.coe_mul, coe_ne_zero_iff] using (posSubmonoid R).mul_mem
+
+open scoped nonZeroDivisors
+
+-- Proof a bit ugly...
+@[elab_as_elim]
+private lemma nonZeroDivisors_induction {motive : (equiv R).Quotient⁰ → Prop}
+    (mk : ∀ x : posSubmonoid R, motive ⟨↑x,
+      mem_nonZeroDivisors_of_ne_zero <| coe_ne_zero_iff.mpr x.2⟩)
+    (t : (equiv R).Quotient⁰) :
+    motive t := by
+  rcases Quotient.exists_rep t.1 with ⟨x, hx⟩
+  have : x ∈ posSubmonoid R := by
+    convert t.2
+    rw [← coe_ne_zero_iff, ← mem_nonZeroDivisors_iff_ne_zero, ← hx]
+    rfl
+  convert mk ⟨x, this⟩
+  exact hx.symm
+
+variable (R) in
+/-- The "canonical" value group-with-zero of a ring with a valuative relation. -/
+def ValueGroupWithZero' :=
+  Localization ((equiv R).Quotient)⁰
+
+/-- Construct an element of the value group-with-zero from an element `r : R` and
+  `y : posSubmonoid R`. This should be thought of as `v r / v y`. -/
+protected
+def ValueGroupWithZero'.mk (x : R) (y : posSubmonoid R) : ValueGroupWithZero' R :=
+  Localization.mk ↑x ⟨↑y, mem_nonZeroDivisors_of_ne_zero <| coe_ne_zero_iff.mpr y.2⟩
+
+protected
+theorem ValueGroupWithZero.ind {motive : ValueGroupWithZero' R → Prop}
+    (mk : ∀ x y, motive (.mk x y))
+    (t : ValueGroupWithZero' R) : motive t :=
+  Localization.induction_on t
+    fun ⟨x, y⟩ ↦ Quotient.inductionOn x
+      fun a ↦ nonZeroDivisors_induction (fun b ↦ mk a b) y
+
+instance : CommMonoidWithZero (ValueGroupWithZero' R) :=
+  Localization.instCommMonoidWithZero
+
+instance : Inv (ValueGroupWithZero' R) :=
+  OreLocalization.inv'
 
 variable (R) in
 /-- The setoid used to construct `ValueGroupWithZero R`. -/
