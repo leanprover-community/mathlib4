@@ -49,6 +49,16 @@ instance : MonoidWithZero R[S⁻¹] where
     induction' x using OreLocalization.ind with r s
     rw [OreLocalization.zero_def, mul_div_one, mul_zero, zero_oreDiv', zero_oreDiv']
 
+theorem subsingleton_iff :
+    Subsingleton R[S⁻¹] ↔ 0 ∈ S := by
+  rw [← subsingleton_iff_zero_eq_one, OreLocalization.one_def,
+    OreLocalization.zero_def, oreDiv_eq_iff]
+  simp
+
+theorem nontrivial_iff :
+    Nontrivial R[S⁻¹] ↔ 0 ∉ S := by
+  rw [← not_subsingleton_iff_nontrivial, subsingleton_iff]
+
 end MonoidWithZero
 
 section CommMonoidWithZero
