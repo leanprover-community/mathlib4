@@ -224,7 +224,7 @@ theorem projective_of_map_projective_fully_faithful_and_preserves_epi [F.Full] [
     [F.PreservesEpimorphisms] (P : C) (hP : Projective (F.obj P)) : Projective P where
   factors g f _ := by
     obtain ⟨h, fac⟩ := hP.factors (F.map g) (F.map f)
-    exact ⟨F.preimage h,F.map_injective (by simp [fac])⟩
+    exact ⟨F.preimage h, F.map_injective (by simp [fac])⟩
 
 end Functor
 
