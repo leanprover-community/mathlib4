@@ -99,6 +99,7 @@ namespace ValuativeRel
 
 variable {R : Type*} [CommRing R] [ValuativeRel R]
 
+/-- The strict version of the valuative relation. -/
 notation:50 (name := valuativeRelLt) x:50 " <ᵥ " y:51 => x ≤ᵥ y ∧ ¬ y ≤ᵥ x
 
 lemma rel_lt_iff (x y : R) : x <ᵥ y ↔ x ≤ᵥ y ∧ ¬ y ≤ᵥ x := Iff.rfl
