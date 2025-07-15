@@ -897,7 +897,7 @@ theorem Multiset.measurable_fun_prod (s : Multiset (α → M)) (hs : ∀ f ∈ s
   simpa only [← Pi.multiset_prod_apply] using s.measurable_prod hs
 
 @[to_additive (attr := measurability, fun_prop)]
-theorem Multiset.aeMeasurable_fun_prod (s : Multiset (α → M)) (hs : ∀ f ∈ s, AEMeasurable f μ) :
+theorem Multiset.aemeasurable_fun_prod (s : Multiset (α → M)) (hs : ∀ f ∈ s, AEMeasurable f μ) :
     AEMeasurable (fun x => (s.map fun f : α → M => f x).prod) μ := by
   simpa only [← Pi.multiset_prod_apply] using s.aemeasurable_prod hs
 
@@ -939,7 +939,7 @@ alias Finset.aemeasurable_sum' := Finset.aemeasurable_sum
 alias Finset.aemeasurable_prod' := Finset.aemeasurable_prod
 
 @[to_additive (attr := measurability, fun_prop)]
-theorem Finset.aeMeasurable_fun_prod (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurable (f i) μ) :
+theorem Finset.aemeasurable_fun_prod (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurable (f i) μ) :
     AEMeasurable (fun a => ∏ i ∈ s, f i a) μ := by
   simpa only [← Finset.prod_apply] using s.aemeasurable_prod hf
 
