@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Algebra.Spectrum.Basic
 import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Algebra.Star.StarProjection
 
 /-!
 # Unitary elements of a star monoid
@@ -233,7 +234,7 @@ variable [Ring R] [StarRing R]
 
 instance : Neg (unitary R) where
   neg U :=
-    ⟨-U, by simp [mem_iff, star_neg, neg_mul_neg]⟩
+    ⟨-U, by simp [mem_iff, star_neg]⟩
 
 @[norm_cast]
 theorem coe_neg (U : unitary R) : ↑(-U) = (-U : R) :=
@@ -265,3 +266,10 @@ lemma spectrum.unitary_conjugate' {a : A} {u : unitary A} :
 end UnitaryConjugate
 
 end unitary
+
+theorem IsStarProjection.two_mul_sub_one_mem_unitary {R : Type*} [Ring R] [StarRing R] {p : R}
+    (hp : IsStarProjection p) : 2 * p - 1 ∈ unitary R := by
+  simp only [two_mul, unitary.mem_iff, star_sub, star_add,
+    hp.isSelfAdjoint.star_eq, star_one, mul_sub, mul_add,
+    sub_mul, add_mul, hp.isIdempotentElem.eq, one_mul, add_sub_cancel_right,
+    mul_one, sub_sub_cancel, and_self]

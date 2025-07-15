@@ -96,3 +96,9 @@ lemma noZeroSMulDivisors_int_iff_isAddTorsionFree [AddCommGroup G] :
 
 alias ⟨IsAddTorsionFree.of_noZeroSMulDivisors_nat, _⟩ := noZeroSMulDivisors_nat_iff_isAddTorsionFree
 alias ⟨IsAddTorsionFree.of_noZeroSMulDivisors_int, _⟩ := noZeroSMulDivisors_int_iff_isAddTorsionFree
+
+instance [AddCommGroup M] [NoZeroSMulDivisors ℕ M] : Lean.Grind.NoNatZeroDivisors M := .mk'
+  (eq_zero_of_mul_eq_zero := by
+    intro k a hk h
+    rw [← smul_eq_zero_iff_right hk]
+    exact h)

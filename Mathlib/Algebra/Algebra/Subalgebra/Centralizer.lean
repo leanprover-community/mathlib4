@@ -159,7 +159,7 @@ lemma centralizer_coe_range_includeLeft_eq_center_tensorProduct [Module.Free R B
   rw [← centralizer_univ, ← Algebra.coe_top (R := R) (A := A),
     ← centralizer_coe_map_includeLeft_eq_center_tensorProduct R A B ⊤]
   ext
-  simp [includeLeft, includeLeftRingHom, Set.range_comp]
+  simp [includeLeft, includeLeftRingHom]
 
 /--
 Let `R` be a commutative ring and `A, B` be `R`-algebras where `A` is free as `R`-module.
@@ -172,7 +172,7 @@ lemma centralizer_range_includeRight_eq_center_tensorProduct [Module.Free R A] :
   rw [← centralizer_univ, ← Algebra.coe_top (R := R) (A := B),
     ← centralizer_coe_map_includeRight_eq_center_tensorProduct R A B ⊤]
   ext
-  simp [includeRight, includeLeftRingHom, Set.range_comp]
+  simp [includeRight]
 
 lemma centralizer_tensorProduct_eq_center_tensorProduct_left [Module.Free R B] :
     Subalgebra.centralizer R

@@ -63,8 +63,7 @@ private def withLams (lambdas : List FVarId) (key : Key) : StateT LazyEntry Meta
     modify ({ · with computedKeys := tail.foldl (init := [key]) (fun _ => .lam :: ·) })
     return .lam
 
-open private Lean.Meta.DiscrTree.pushArgs in Lean.Meta.DiscrTree.mkPathAux in
-open private toNatLit? in Lean.Meta.DiscrTree.pushArgs in
+open private toNatLit? from Lean.Meta.DiscrTree in
 
 @[inline]
 private def encodingStepAux (e : Expr) (lambdas : List FVarId) (root : Bool) : LazyM Key := do
@@ -216,8 +215,10 @@ where
         if ← isIgnoredArg arg d bi then
           loop b (i+1) j (.star :: entries)
         else
-          -- Recall that `isDefEq` switches the transparency on implicit arguments.
-          let info ← (if bi.isExplicit then id else withInferTypeConfig) do mkExprInfo arg bvars
+          -- Recall that on implicit arguments `isDefEq` switches to `default` transparency.
+          -- We don't want such strong reducibility, but `instances` transparency can be useful.
+          let info ← (if bi.isExplicit then id else withReducibleAndInstances) do
+            mkExprInfo arg bvars
           loop b (i+1) j (.expr info :: entries)
       let rec reduce := do
         match ← whnfD (fnType.instantiateRevRange j i args) with

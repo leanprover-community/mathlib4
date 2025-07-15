@@ -37,8 +37,8 @@ theorem cast_inv_nat (n : ℕ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
 @[simp]
 theorem cast_inv_int (n : ℤ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
   rcases n with n | n
-  · simp [ofInt_eq_cast, cast_inv_nat]
-  · simp only [ofInt_eq_cast, Int.cast_negSucc, ← Nat.cast_succ, cast_neg, inv_neg, cast_inv_nat]
+  · simp [cast_inv_nat]
+  · simp only [Int.cast_negSucc, cast_neg, inv_neg, cast_inv_nat]
 
 @[simp, norm_cast]
 theorem cast_nnratCast {K} [DivisionRing K] (q : ℚ≥0) :

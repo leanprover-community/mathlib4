@@ -158,7 +158,7 @@ lemma variance_tilted_mul (ht : t ∈ interior (integrableExpSet X μ)) :
   swap; · exact (memLp_tilted_mul ht 1).aestronglyMeasurable.aemeasurable
   rw [integral_tilted_mul_self ht, iteratedDeriv_two_cgf_eq_integral ht, integral_tilted_mul_eq_mgf,
     ← integral_div]
-  simp only [Pi.pow_apply, Pi.sub_apply, smul_eq_mul]
+  simp only [smul_eq_mul]
   congr with ω
   ring
 

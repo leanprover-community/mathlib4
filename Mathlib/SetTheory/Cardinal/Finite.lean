@@ -17,8 +17,6 @@ import Mathlib.SetTheory.Cardinal.ENat
   If `α` is infinite, `Nat.card α = 0`.
 * `ENat.card α` is the cardinality of `α` as an  extended natural number.
   If `α` is infinite, `ENat.card α = ⊤`.
-* `PartENat.card α` is the cardinality of `α` as an extended natural number
-  (using the legacy definition `PartENat := Part ℕ`). If `α` is infinite, `PartENat.card α = ⊤`.
 -/
 
 assert_not_exists Field
@@ -88,12 +86,12 @@ theorem card_congr (f : α ≃ β) : Nat.card α = Nat.card β :=
 
 lemma card_le_card_of_injective {α : Type u} {β : Type v} [Finite β] (f : α → β)
     (hf : Injective f) : Nat.card α ≤ Nat.card β := by
-  simpa using toNat_le_toNat (lift_mk_le_lift_mk_of_injective hf) (by simp [lt_aleph0_of_finite])
+  simpa using toNat_le_toNat (lift_mk_le_lift_mk_of_injective hf) (by simp)
 
 lemma card_le_card_of_surjective {α : Type u} {β : Type v} [Finite α] (f : α → β)
     (hf : Surjective f) : Nat.card β ≤ Nat.card α := by
   have : lift.{u} #β ≤ lift.{v} #α := mk_le_of_surjective (ULift.map_surjective.2 hf)
-  simpa using toNat_le_toNat this (by simp [lt_aleph0_of_finite])
+  simpa using toNat_le_toNat this (by simp)
 
 theorem card_eq_of_bijective (f : α → β) (hf : Function.Bijective f) : Nat.card α = Nat.card β :=
   card_congr (Equiv.ofBijective f hf)
@@ -168,13 +166,13 @@ lemma card_preimage_of_injOn {f : α → β} {s : Set β} (hf : (f ⁻¹' s).Inj
 lemma card_preimage_of_injective {f : α → β} {s : Set β} (hf : Injective f) (hsf : s ⊆ range f) :
     Nat.card (f ⁻¹' s) = Nat.card s := card_preimage_of_injOn hf.injOn hsf
 
-@[simp] lemma card_univ : Nat.card (univ : Set α) = Nat.card α :=
+lemma card_univ : Nat.card (univ : Set α) = Nat.card α :=
   card_congr (Equiv.Set.univ α)
 
 lemma card_range_of_injective {f : α → β} (hf : Injective f) :
     Nat.card (range f) = Nat.card α := by
   rw [← Nat.card_preimage_of_injective hf le_rfl]
-  simp
+  simp [Nat.card_univ]
 
 end Set
 
@@ -262,7 +260,7 @@ theorem natCard_pos (hs : s.Finite) : 0 < Nat.card s ↔ s.Nonempty := by
 
 protected alias ⟨_, Nonempty.natCard_pos⟩ := natCard_pos
 
-@[simp] lemma natCard_graphOn (s : Set α) (f : α → β) : Nat.card (s.graphOn f) = Nat.card s := by
+lemma natCard_graphOn (s : Set α) (f : α → β) : Nat.card (s.graphOn f) = Nat.card s := by
   rw [← Nat.card_image_of_injOn fst_injOn_graph, image_fst_graphOn]
 
 end Set

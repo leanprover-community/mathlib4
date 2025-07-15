@@ -85,7 +85,7 @@ instance : SupSet (I.Filtration M) :=
   ⟨fun S =>
     { N := sSup (Ideal.Filtration.N '' S)
       mono := fun i => by
-        apply sSup_le_sSup_of_forall_exists_le _
+        apply sSup_le_sSup_of_isCofinalFor _
         rintro _ ⟨⟨_, F, hF, rfl⟩, rfl⟩
         exact ⟨_, ⟨⟨_, F, hF, rfl⟩, rfl⟩, F.mono i⟩
       smul_le := fun i => by
@@ -105,7 +105,7 @@ instance : InfSet (I.Filtration M) :=
   ⟨fun S =>
     { N := sInf (Ideal.Filtration.N '' S)
       mono := fun i => by
-        apply sInf_le_sInf_of_forall_exists_le _
+        apply sInf_le_sInf_of_isCoinitialFor _
         rintro _ ⟨⟨_, F, hF, rfl⟩, rfl⟩
         exact ⟨_, ⟨⟨_, F, hF, rfl⟩, rfl⟩, F.mono i⟩
       smul_le := fun i => by
@@ -281,7 +281,7 @@ theorem submodule_span_single :
 theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
     F.submodule = Submodule.span _ (⋃ i ≤ n₀, single R i '' (F.N i : Set M)) ↔
       ∀ n ≥ n₀, I • F.N n = F.N (n + 1) := by
-  rw [← submodule_span_single, ← LE.le.le_iff_eq, Submodule.span_le, Set.iUnion_subset_iff]
+  rw [← submodule_span_single, ← LE.le.ge_iff_eq', Submodule.span_le, Set.iUnion_subset_iff]
   swap; · exact Submodule.span_mono (Set.iUnion₂_subset_iUnion _ _)
   constructor
   · intro H n hn

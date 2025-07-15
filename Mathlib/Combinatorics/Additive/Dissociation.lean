@@ -53,7 +53,7 @@ def MulDissociated (s : Set α) : Prop := {t : Finset α | ↑t ⊆ s}.InjOn (�
 
 @[to_additive (attr := simp)]
 lemma mulDissociated_singleton : MulDissociated ({a} : Set α) ↔ a ≠ 1 := by
-  simp [MulDissociated, setOf_or, (Finset.singleton_ne_empty _).symm, -subset_singleton_iff,
+  simp [MulDissociated, setOf_or, -subset_singleton_iff,
     Finset.coe_subset_singleton]
 
 @[to_additive (attr := simp)]
@@ -135,7 +135,7 @@ lemma exists_subset_mulSpan_card_le_of_forall_mulDissociated
   obtain ⟨s', hs'⟩ :=
    (s.powerset.filter fun s' : Finset α ↦ MulDissociated (s' : Set α)).exists_maximal
       ⟨∅, mem_filter.2 ⟨empty_mem_powerset _, by simp⟩⟩
-  simp only [mem_filter, mem_powerset, lt_eq_subset, and_imp] at hs'
+  simp only [mem_filter, mem_powerset] at hs'
   refine ⟨s', hs'.1.1, hs _ hs'.1.1 hs'.1.2, fun a ha ↦ ?_⟩
   by_cases ha' : a ∈ s'
   · exact subset_mulSpan ha'

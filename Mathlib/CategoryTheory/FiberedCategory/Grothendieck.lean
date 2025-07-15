@@ -82,7 +82,7 @@ def ι : F.obj ⟨op S⟩ ⥤ ∫ F where
     ext
     · simp
     · simp [← (F.mapId ⟨op S⟩).inv.naturality_assoc ψ, F.whiskerRight_mapId_inv_app,
-        Strict.leftUnitor_eqToIso, Strict.rightUnitor_eqToIso]
+        Strict.leftUnitor_eqToIso]
 
 /-- The natural isomorphism encoding `comp_const`. -/
 @[simps!]

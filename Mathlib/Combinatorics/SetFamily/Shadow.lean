@@ -281,7 +281,7 @@ theorem mem_upShadow_iff_exists_mem_card_add :
     rintro ⟨t, ht, hst, hcard⟩
     rwa [← eq_of_subset_of_card_le hst hcard.ge]
   | succ k ih =>
-    simp only [exists_prop, Function.comp_apply, Function.iterate_succ]
+    simp only [Function.comp_apply, Function.iterate_succ]
     refine ih.trans ?_
     clear ih
     constructor
@@ -299,13 +299,13 @@ theorem mem_upShadow_iff_exists_mem_card_add :
 
 @[simp] lemma shadow_compls : ∂ 𝒜ᶜˢ = (∂⁺ 𝒜)ᶜˢ := by
   ext s
-  simp only [mem_image, exists_prop, mem_shadow_iff, mem_upShadow_iff, mem_compls]
+  simp only [mem_shadow_iff, mem_upShadow_iff, mem_compls]
   refine (compl_involutive.toPerm _).exists_congr_left.trans ?_
   simp [← compl_involutive.eq_iff]
 
 @[simp] lemma upShadow_compls : ∂⁺ 𝒜ᶜˢ = (∂ 𝒜)ᶜˢ := by
   ext s
-  simp only [mem_image, exists_prop, mem_shadow_iff, mem_upShadow_iff, mem_compls]
+  simp only [mem_shadow_iff, mem_upShadow_iff, mem_compls]
   refine (compl_involutive.toPerm _).exists_congr_left.trans ?_
   simp [← compl_involutive.eq_iff]
 

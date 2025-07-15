@@ -138,7 +138,7 @@ lemma isIrreducible_iff_invtRootSubmodule
     have := IsIrreducible.eq_top_of_invtSubmodule_reflection q hq
     tauto
   · let q' : P.invtRootSubmodule := ⟨q, P.mem_invtRootSubmodule_iff.mpr hq⟩
-    replace hq' : ⊥ < q' := by simpa [q', bot_lt_iff_ne_bot]
+    replace hq' : ⊥ < q' := by simpa [q', bot_lt_iff_ne_bot, -IsSimpleOrder.bot_lt_iff_eq_top]
     suffices q' = ⊤ by simpa [q'] using this
     exact IsSimpleOrder.eq_top_of_lt hq'
 

@@ -307,10 +307,7 @@ def piSplitLE : piLT X i × X i ≃ ∀ j : Iic i, X j where
   toFun f j := if h : j = i then h.symm ▸ f.2 else f.1 ⟨j, j.2.lt_of_ne h⟩
   invFun f := (fun j ↦ f ⟨j, j.2.le⟩, f ⟨i, le_rfl⟩)
   left_inv f := by ext j; exacts [dif_neg j.2.ne, dif_pos rfl]
-  right_inv f := by
-    ext j; dsimp only; split_ifs with h
-    · cases (Subtype.ext h : j = ⟨i, le_rfl⟩); rfl
-    · rfl
+  right_inv f := by grind
 
 @[simp] theorem piSplitLE_eq {f : piLT X i × X i} :
     piSplitLE f ⟨i, le_rfl⟩ = f.2 := by simp [piSplitLE]

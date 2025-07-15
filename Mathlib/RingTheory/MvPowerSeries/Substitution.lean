@@ -199,7 +199,7 @@ theorem subst_self : subst (MvPowerSeries.X : σ → MvPowerSeries σ R) = id :=
   rw [← coe_substAlgHom HasSubst.X]
   letI : UniformSpace R := ⊥
   ext1 f
-  simp only [← coe_substAlgHom HasSubst.X, substAlgHom_eq_aeval]
+  simp only [substAlgHom_eq_aeval]
   have := aeval_unique (ε := AlgHom.id R (MvPowerSeries σ R)) continuous_id
   rw [DFunLike.ext_iff] at this
   exact this f
@@ -218,7 +218,7 @@ theorem subst_mul (ha : HasSubst a) (f g : MvPowerSeries σ R) :
   simp only [← substAlgHom_apply ha, map_mul]
 
 theorem subst_pow (ha : HasSubst a) (f : MvPowerSeries σ R) (n : ℕ) :
-    subst a (f ^ n) = (subst a f ) ^ n := by
+    subst a (f ^ n) = (subst a f) ^ n := by
   simp only [← substAlgHom_apply ha, map_pow]
 
 theorem subst_smul (ha : HasSubst a) (r : A) (f : MvPowerSeries σ R) :
@@ -483,7 +483,7 @@ noncomputable def rescaleMonoidHom :
     (σ → R) →* MvPowerSeries σ R →+* MvPowerSeries σ R where
   toFun := rescale
   map_one' := rescale_one
-  map_mul' a b := by ext; simp  [mul_comm, rescale_rescale]
+  map_mul' a b := by ext; simp [mul_comm, rescale_rescale]
 
 end CommSemiring
 
@@ -498,7 +498,7 @@ theorem rescale_eq_subst (a : σ → R) (f : MvPowerSeries σ R) :
     finsum_eq_sum _ (coeff_subst_finite (HasSubst.smul_X a) f n)]
   simp only [Pi.smul_apply', smul_eq_mul]
   rw [Finset.sum_eq_single n _ _]
-  · simp [mul_comm, ← monomial_eq, coeff_monomial]
+  · simp [mul_comm, ← monomial_eq]
   · intro b hb hbn
     rw [← monomial_eq, coeff_monomial, if_neg (Ne.symm hbn), mul_zero]
   · intro hn
@@ -520,7 +520,7 @@ theorem rescaleAlgHom_mul (a b : σ → R) :
   simp [rescaleAlgHom_apply, rescale_rescale]
 
 theorem rescaleAlgHom_one :
-    rescaleAlgHom 1 = AlgHom.id R (MvPowerSeries σ R):= by
+    rescaleAlgHom 1 = AlgHom.id R (MvPowerSeries σ R) := by
   ext1 f
   simp [rescaleAlgHom, subst_self]
 

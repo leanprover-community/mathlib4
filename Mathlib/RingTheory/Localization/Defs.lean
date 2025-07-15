@@ -489,7 +489,7 @@ noncomputable def lift {g : R →+* P} (hg : ∀ y : M, IsUnit (g y)) : S →+* 
         mul_add, mul_comm, eq_comm, lift_spec_mul_add, add_comm, mul_comm, mul_assoc, mul_comm,
         mul_assoc, lift_spec_mul_add]
       simp_rw [← mul_assoc]
-      show g _ * g _ * g _ + g _ * g _ * g _ = g _ * g _ * g _
+      change g _ * g _ * g _ + g _ * g _ * g _ = g _ * g _ * g _
       simp_rw [← map_mul g, ← map_add g]
       apply eq_of_eq (S := S) hg
       simp only [sec_spec', toLocalizationMap_sec, map_add, map_mul]
@@ -799,7 +799,7 @@ section
 
 instance instUniqueLocalization [Subsingleton R] : Unique (Localization M) where
   uniq a := by
-    with_unfolding_all show a = mk 1 1
+    with_unfolding_all change a = mk 1 1
     exact Localization.induction_on a fun _ => by
       congr <;> apply Subsingleton.elim
 

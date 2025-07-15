@@ -304,7 +304,7 @@ lemma posPart_negPart_unique {a b c : A} (habc : a = b - c) (hbc : b * c = 0)
     _ = a⁺ := by
       refine cfcₙ_congr fun x hx ↦ ?_
       lift x to σₙ ℝ a using hx
-      simp [zero, Subtype.val_injective.extend_apply, f]
+      simp [zero, f]
 
 end CFC
 

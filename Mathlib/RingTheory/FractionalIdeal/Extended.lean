@@ -102,7 +102,7 @@ theorem extended_mul : (I * J).extended L hf = (I.extended L hf) * (J.extended L
       (fun a y _ hy ↦ ?_) hx
     · rcases Set.mem_mul.mp hy with ⟨i, hi, j, hj, rfl⟩
       exact subset_span <| Set.mem_mul.mpr
-        ⟨map_f i, ⟨i, hi, by simp [hi]⟩, map_f j, ⟨j, hj, by simp [hj]⟩, by simp⟩
+        ⟨map_f i, ⟨i, hi, by simp⟩, map_f j, ⟨j, hj, by simp⟩, by simp⟩
     · exact map_add map_f y z ▸ Submodule.add_mem _ hy hz
     · rw [Algebra.smul_def, map_mul, map_eq, ← Algebra.smul_def]
       exact smul_mem _ (f a) hy

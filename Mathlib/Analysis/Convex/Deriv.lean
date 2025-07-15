@@ -791,7 +791,7 @@ section right
 /-- If `f : ℝ → ℝ` is strictly convex on `S` and differentiable at `y ∈ S`, then the slope of any
 secant line with right endpoint at `y` is strictly less than the left derivative at `y`. -/
 lemma slope_lt_of_hasDerivWithinAt_Iio (hfc : StrictConvexOn ℝ S f)
-    (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) (hf' : HasDerivWithinAt f f' (Iio y) y)  :
+    (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) (hf' : HasDerivWithinAt f f' (Iio y) y) :
     slope f x y < f' := by
   obtain ⟨u, hxu, huy⟩ := exists_between hxy
   have hu : u ∈ S := hfc.1.ordConnected.out hx hy ⟨hxu.le, huy.le⟩
@@ -800,7 +800,7 @@ lemma slope_lt_of_hasDerivWithinAt_Iio (hfc : StrictConvexOn ℝ S f)
   exact this.trans_le <| hfc.convexOn.slope_le_of_hasDerivWithinAt_Iio hu hy huy hf'
 
 lemma slope_lt_leftDeriv (hfc : StrictConvexOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y)
-    (hfd : DifferentiableWithinAt ℝ f (Iio y) y)  :
+    (hfd : DifferentiableWithinAt ℝ f (Iio y) y) :
     slope f x y < derivWithin f (Iio y) y :=
   hfc.slope_lt_of_hasDerivWithinAt_Iio hx hy hxy hfd.hasDerivWithinAt
 
@@ -964,8 +964,7 @@ lemma antitoneOn_derivWithin (hfc : ConcaveOn ℝ S f) (hfd : DifferentiableOn �
 antitone (monotone decreasing) on `S`. -/
 theorem antitoneOn_deriv (hfc : ConcaveOn ℝ S f) (hfd : ∀ x ∈ S, DifferentiableAt ℝ f x) :
     AntitoneOn (deriv f) S := by
-  simpa only [Pi.neg_def, deriv.neg, neg_neg] using
-    (hfc.neg.monotoneOn_deriv (fun x hx ↦ (hfd x hx).neg)).neg
+  simpa using (hfc.neg.monotoneOn_deriv (fun x hx ↦ (hfd x hx).neg)).neg
 
 end ConcaveOn
 
@@ -1067,8 +1066,7 @@ lemma strictAntiOn_derivWithin (hfc : StrictConcaveOn ℝ S f) (hfd : Differenti
 
 theorem strictAntiOn_deriv (hfc : StrictConcaveOn ℝ S f) (hfd : ∀ x ∈ S, DifferentiableAt ℝ f x) :
     StrictAntiOn (deriv f) S := by
-  simpa only [Pi.neg_def, deriv.neg, neg_neg] using
-    (hfc.neg.strictMonoOn_deriv (fun x hx ↦ (hfd x hx).neg)).neg
+  simpa using (hfc.neg.strictMonoOn_deriv (fun x hx ↦ (hfd x hx).neg)).neg
 
 end StrictConcaveOn
 

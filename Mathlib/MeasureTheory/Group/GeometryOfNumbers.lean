@@ -135,6 +135,6 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure [NormedAddC
     refine (mul_lt_mul_right h_mes (ne_of_lt h_cpt.measure_lt_top)).mpr ?_
     rw [ofReal_pow (NNReal.coe_nonneg _)]
     refine one_lt_pow₀ ?_ (ne_of_gt finrank_pos)
-    simp [u, K, S, Z, (exists_seq_strictAnti_tendsto (0 : ℝ≥0)).choose_spec.2.1 n]
+    simp [u, (exists_seq_strictAnti_tendsto (0 : ℝ≥0)).choose_spec.2.1 n]
 
 end MeasureTheory

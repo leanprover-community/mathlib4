@@ -60,16 +60,16 @@ open TrivSqZeroExt
 
 @[simp]
 theorem fst_eps [Zero R] [One R] : fst ε = (0 : R) :=
-  fst_inr _ _
+  rfl
 
 @[simp]
 theorem snd_eps [Zero R] [One R] : snd ε = (1 : R) :=
-  snd_inr _ _
+  rfl
 
 /-- A version of `TrivSqZeroExt.snd_mul` with `*` instead of `•`. -/
 @[simp]
 theorem snd_mul [Semiring R] (x y : R[ε]) : snd (x * y) = fst x * snd y + snd x * fst y :=
-  TrivSqZeroExt.snd_mul _ _
+  rfl
 
 @[simp]
 theorem eps_mul_eps [Semiring R] : (ε * ε : R[ε]) = 0 :=
@@ -102,7 +102,7 @@ nonrec theorem algHom_ext' ⦃f g : A[ε] →ₐ[R] B⦄
       f = g :=
   algHom_ext' hinl (by
     ext a
-    show f (inr a) = g (inr a)
+    change f (inr a) = g (inr a)
     simpa only [inr_eq_smul_eps] using DFunLike.congr_fun hinr a)
 
 /-- For two `R`-algebra morphisms out of `R[ε]` to agree, it suffices for them to agree on `ε`. -/

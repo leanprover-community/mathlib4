@@ -90,7 +90,7 @@ theorem Hom.ext {X Y : PresheafedSpace C} (α β : Hom X Y) (w : α.base = β.ba
   rfl
 
 -- TODO including `injections` would make tidy work earlier.
-theorem hext {X Y : PresheafedSpace C} (α β : Hom X Y) (w : α.base = β.base) (h : HEq α.c β.c) :
+theorem hext {X Y : PresheafedSpace C} (α β : Hom X Y) (w : α.base = β.base) (h : α.c ≍ β.c) :
     α = β := by
   cases α
   cases β
@@ -305,7 +305,7 @@ instance ofRestrict_mono {U : TopCat} (X : PresheafedSpace C) (f : U ⟶ X.1)
     have h : _ ≫ _ = _ ≫ _ ≫ _ :=
       congr_arg (fun f => (X.restrict hf).presheaf.map (eqToHom hV).op ≫ f) this
     simp only [g₁.c.naturality, g₂.c.naturality_assoc] at h
-    simp only [eqToHom_op, eqToHom_unop, eqToHom_map, eqToHom_trans,
+    simp only [eqToHom_op, eqToHom_map, eqToHom_trans,
       ← IsIso.comp_inv_eq, inv_eqToHom, Category.assoc] at h
     simpa using h
 

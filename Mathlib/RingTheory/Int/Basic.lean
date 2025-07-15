@@ -34,7 +34,6 @@ namespace Int
 theorem gcd_eq_one_iff_coprime {a b : ℤ} : Int.gcd a b = 1 ↔ IsCoprime a b :=
   isCoprime_iff_gcd_eq_one.symm
 
-
 theorem isCoprime_iff_nat_coprime {a b : ℤ} : IsCoprime a b ↔ Nat.Coprime a.natAbs b.natAbs := by
   rw [isCoprime_iff_gcd_eq_one, Nat.coprime_iff_gcd_eq_one, gcd_eq_natAbs]
 

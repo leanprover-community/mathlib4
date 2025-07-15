@@ -529,5 +529,5 @@ theorem exists_continuous_nonneg_pos [RegularSpace X] [LocallyCompactSpace X] (x
     with ⟨f, fk, -, f_comp, hf⟩
   refine ⟨f, f_comp, fun x ↦ (hf x).1, ?_⟩
   have := fk (mem_of_mem_nhds k_mem)
-  simp only [ContinuousMap.coe_mk, Pi.one_apply] at this
+  simp only [Pi.one_apply] at this
   simp [this]

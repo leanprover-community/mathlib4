@@ -61,6 +61,6 @@ theorem funext {σ : Type*} {p q : MvPolynomial σ R} (h : ∀ x : σ → R, eva
 
 theorem funext_iff {σ : Type*} {p q : MvPolynomial σ R} :
     p = q ↔ ∀ x : σ → R, eval x p = eval x q :=
-  ⟨by rintro rfl; simp only [forall_const, eq_self_iff_true], funext⟩
+  ⟨by rintro rfl; simp only [forall_const], funext⟩
 
 end MvPolynomial

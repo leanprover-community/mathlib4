@@ -221,7 +221,7 @@ instance instAlgebra : Algebra R (Matrix n n α) where
 theorem algebraMap_matrix_apply {r : R} {i j : n} :
     algebraMap R (Matrix n n α) r i j = if i = j then algebraMap R α r else 0 := by
   dsimp [algebraMap, Algebra.algebraMap, Matrix.scalar]
-  split_ifs with h <;> simp [h, Matrix.one_apply_ne]
+  split_ifs with h <;> simp [h]
 
 theorem algebraMap_eq_diagonal (r : R) :
     algebraMap R (Matrix n n α) r = diagonal (algebraMap R (n → α) r) := rfl
@@ -485,7 +485,7 @@ theorem mapMatrix_trans (f : α ≃ₗ[R] β) (g : β ≃ₗ[R] γ) :
     (f.mapMatrix : _ ≃ₗ[R] Matrix m n β).toLinearMap = f.toLinearMap.mapMatrix := by
   rfl
 
-@[simp] lemma entryLinearMap_comp_mapMatrix (f : α ≃ₗ[R] β) (i : m) (j : n) :
+lemma entryLinearMap_comp_mapMatrix (f : α ≃ₗ[R] β) (i : m) (j : n) :
     entryLinearMap R _ i j ∘ₗ f.mapMatrix.toLinearMap =
       f.toLinearMap ∘ₗ entryLinearMap R _ i j := by
   simp only [mapMatrix_toLinearMap, LinearMap.entryLinearMap_comp_mapMatrix]

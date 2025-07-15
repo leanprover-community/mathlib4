@@ -122,8 +122,8 @@ lemma ae_count_iff {p : α → Prop} : (∀ᵐ x ∂count, p x) ↔ ∀ x, p x :
 @[simp]
 theorem count_singleton' {a : α} (ha : MeasurableSet ({a} : Set α)) : count ({a} : Set α) = 1 := by
   rw [count_apply_finite' (Set.finite_singleton a) ha, Set.Finite.toFinset]
-  simp [@toFinset_card _ _ (Set.finite_singleton a).fintype,
-    @Fintype.card_unique _ _ (Set.finite_singleton a).fintype]
+  simp [
+    ]
 
 theorem count_singleton [MeasurableSingletonClass α] (a : α) : count ({a} : Set α) = 1 :=
   count_singleton' (measurableSet_singleton a)

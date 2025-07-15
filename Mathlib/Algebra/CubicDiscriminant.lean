@@ -240,11 +240,11 @@ section Degree
 def equiv : Cubic R ≃ { p : R[X] // p.degree ≤ 3 } where
   toFun P := ⟨P.toPoly, degree_cubic_le⟩
   invFun f := ⟨coeff f 3, coeff f 2, coeff f 1, coeff f 0⟩
-  left_inv P := by ext <;> simp only [Subtype.coe_mk, coeffs]
+  left_inv P := by ext <;> simp only [coeffs]
   right_inv f := by
     ext n
     obtain hn | hn := le_or_gt n 3
-    · interval_cases n <;> simp only [Nat.succ_eq_add_one] <;> ring_nf <;> try simp only [coeffs]
+    · interval_cases n <;> simp only <;> ring_nf <;> try simp only [coeffs]
     · rw [coeff_eq_zero hn, (degree_le_iff_coeff_zero (f : R[X]) 3).mp f.2]
       simpa using hn
 

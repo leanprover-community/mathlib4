@@ -58,7 +58,7 @@ variable [CharZero α] {m n : ℤ}
 @[simp] lemma cast_eq_zero : (n : α) = 0 ↔ n = 0 where
   mp h := by
     cases n
-    · erw [Int.cast_natCast] at h
+    · rw [ofNat_eq_coe, Int.cast_natCast] at h
       exact congr_arg _ (Nat.cast_eq_zero.1 h)
     · rw [cast_negSucc, neg_eq_zero, Nat.cast_eq_zero] at h
       contradiction
@@ -194,6 +194,17 @@ theorem eq_intCastAddHom (f : ℤ →+ A) (h1 : f 1 = 1) : f = Int.castAddHom A 
   ext_int <| by simp [h1]
 
 end AddMonoidHom
+
+namespace AddEquiv
+variable {A : Type*}
+
+/-- Two additive monoid isomorphisms `f`, `g` from `ℤ` to an additive monoid are equal
+if `f 1 = g 1`. -/
+@[ext high]
+theorem ext_int [AddMonoid A] {f g : ℤ ≃+ A} (h1 : f 1 = g 1) : f = g :=
+  toAddMonoidHom_injective <| AddMonoidHom.ext_int h1
+
+end AddEquiv
 
 theorem eq_intCast' [AddGroupWithOne α] [FunLike F ℤ α] [AddMonoidHomClass F ℤ α]
     (f : F) (h₁ : f 1 = 1) :

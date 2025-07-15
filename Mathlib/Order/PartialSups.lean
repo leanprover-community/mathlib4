@@ -36,11 +36,11 @@ One might dispute whether this sequence should start at `f 0` or `⊥`. We choos
 
 open Finset
 
-variable {α ι : Type*}
+variable {α β ι : Type*}
 
 section SemilatticeSup
 
-variable [SemilatticeSup α]
+variable [SemilatticeSup α] [SemilatticeSup β]
 
 section Preorder
 
@@ -60,7 +60,7 @@ lemma partialSups_iff_forall {f : ι → α} (p : α → Prop)
     p (partialSups f i) ↔ ∀ j ≤ i, p (f j) := by
   classical
   rw [partialSups_apply, comp_sup'_eq_sup'_comp (γ := Propᵒᵈ) _ p, sup'_eq_sup]
-  · show (Iic i).inf (p ∘ f) ↔ _
+  · change (Iic i).inf (p ∘ f) ↔ _
     simp [Finset.inf_eq_iInf]
   · intro x y
     rw [hp]
@@ -124,6 +124,10 @@ protected lemma Pi.partialSups_apply {τ : Type*} {π : τ → Type*} [∀ t, Se
     (f : ι → (t : τ) → π t) (i : ι) (t : τ) :
     partialSups f i t = partialSups (f · t) i := by
   simp only [partialSups_apply, Finset.sup'_apply]
+
+lemma comp_partialSups {F : Type*} [FunLike F α β] [SupHomClass F α β] (f : ι → α) (g : F) :
+    partialSups (g ∘ f) = g ∘ partialSups f := by
+  funext _; simp [partialSups]
 
 end Preorder
 

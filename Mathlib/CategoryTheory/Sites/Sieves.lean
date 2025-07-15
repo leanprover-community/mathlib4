@@ -173,7 +173,7 @@ theorem ofArrows_bind {ι : Type*} (Z : ι → C) (g : ∀ i : ι, Z i ⟶ X)
     (j : ∀ ⦃Y⦄ (f : Y ⟶ X), ofArrows Z g f → Type*) (W : ∀ ⦃Y⦄ (f : Y ⟶ X) (H), j f H → C)
     (k : ∀ ⦃Y⦄ (f : Y ⟶ X) (H i), W f H i ⟶ Y) :
     ((ofArrows Z g).bind fun _ f H => ofArrows (W f H) (k f H)) =
-      ofArrows (fun i : Σi, j _ (ofArrows.mk i) => W (g i.1) _ i.2) fun ij =>
+      ofArrows (fun i : Σ i, j _ (ofArrows.mk i) => W (g i.1) _ i.2) fun ij =>
         k (g ij.1) _ ij.2 ≫ g ij.1 := by
   funext Y
   ext f
@@ -188,6 +188,13 @@ theorem ofArrows_surj {ι : Type*} {Y : ι → C} (f : ∀ i, Y i ⟶ X) {Z : C}
     g = eqToHom h.symm ≫ f i := by
   obtain ⟨i⟩ := hg
   exact ⟨i, rfl, by simp only [eqToHom_refl, id_comp]⟩
+
+/-- A convenient constructor for a refinement of a presieve of the form `Presieve.ofArrows`.
+This contains a sieve obtained by `Sieve.bind` and `Sieve.ofArrows`, see
+`Presieve.bind_ofArrows_le_bindOfArrows`, but has better definitional properties. -/
+inductive bindOfArrows {ι : Type*} {X : C} (Y : ι → C)
+    (f : ∀ i, Y i ⟶ X) (R : ∀ i, Presieve (Y i)) : Presieve X
+  | mk (i : ι) {Z : C} (g : Z ⟶ Y i) (hg : R i g) : bindOfArrows Y f R (g ≫ f i)
 
 /-- Given a presieve on `F(X)`, we can define a presieve on `X` by taking the preimage via `F`. -/
 def functorPullback (R : Presieve (F.obj X)) : Presieve X := fun _ f => R (F.map f)
@@ -879,5 +886,15 @@ instance functorInclusion_top_isIso : IsIso (⊤ : Sieve X).functorInclusion :=
   ⟨⟨{ app := fun _ a => ⟨a, ⟨⟩⟩ }, rfl, rfl⟩⟩
 
 end Sieve
+
+lemma Presieve.bind_ofArrows_le_bindOfArrows {ι : Type*} {X : C} (Z : ι → C)
+    (f : ∀ i, Z i ⟶ X) (R : ∀ i, Presieve (Z i)) :
+    Sieve.bind (Sieve.ofArrows Z f)
+      (fun _ _ hg ↦ Sieve.pullback
+        (Sieve.ofArrows.h hg) (.generate <| R (Sieve.ofArrows.i hg))) ≤
+    Sieve.generate (Presieve.bindOfArrows Z f R) := by
+  rintro T g ⟨W, v, v', hv', ⟨S, u, u', h, hu⟩, rfl⟩
+  rw [← Sieve.ofArrows.fac hv', ← reassoc_of% hu]
+  exact ⟨S, u, u' ≫ f _, ⟨_, _, h⟩, rfl⟩
 
 end CategoryTheory

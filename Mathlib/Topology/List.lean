@@ -39,7 +39,7 @@ theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
       induction hu generalizing s with
       | nil =>
         exists []
-        simp only [List.forall₂_nil_left_iff, exists_eq_left]
+        simp only [List.forall₂_nil_left_iff]
         exact ⟨trivial, hus⟩
       | cons ht _ ih =>
         rcases mem_nhds_iff.1 ht with ⟨u, hut, hu⟩

@@ -211,9 +211,9 @@ def wideSpan (B : C) (objs : J → C) (arrows : ∀ j : J, B ⟶ objs j) : WideP
     · exact arrows j
   map_comp := fun f g => by
     cases f
-    · simp only [Eq.ndrec, hom_id, eq_rec_constant, Category.id_comp]; congr
+    · simp only [hom_id, Category.id_comp]; congr
     · cases g
-      simp only [Eq.ndrec, hom_id, eq_rec_constant, Category.comp_id]; congr
+      simp only [hom_id, Category.comp_id]; congr
 
 /-- Every diagram is naturally isomorphic (actually, equal) to a `wideSpan` -/
 def diagramIsoWideSpan (F : WidePushoutShape J ⥤ C) :

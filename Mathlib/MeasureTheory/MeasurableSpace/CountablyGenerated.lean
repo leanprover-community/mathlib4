@@ -383,7 +383,7 @@ lemma generateFrom_iUnion_memPartition (t : ℕ → Set α) :
     obtain ⟨n, hun⟩ := hu
     induction n generalizing u with
     | zero =>
-      simp only [memPartition_zero, mem_insert_iff, mem_singleton_iff] at hun
+      simp only [memPartition_zero, mem_singleton_iff] at hun
       rw [hun]
       exact MeasurableSet.univ
     | succ n ih =>
@@ -392,7 +392,7 @@ lemma generateFrom_iUnion_memPartition (t : ℕ → Set α) :
       rcases huv with rfl | rfl
       · exact (ih v hv).inter (measurableSet_generateFrom ⟨n, rfl⟩)
       · exact (ih v hv).diff (measurableSet_generateFrom ⟨n, rfl⟩)
-  · simp only [iUnion_singleton_eq_range, mem_range] at hu
+  · simp only [mem_range] at hu
     obtain ⟨n, rfl⟩ := hu
     exact generateFrom_mono (subset_iUnion _ _) _ (measurableSet_generateFrom_memPartition t n)
 

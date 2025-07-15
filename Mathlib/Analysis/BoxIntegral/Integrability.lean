@@ -68,9 +68,9 @@ theorem hasIntegralIndicatorConst (l : IntegrationParams) (hl : l.bRiemann = fal
   /- Then the union of boxes `J ∈ π` such that `π.tag ∈ s` includes `F` and is included by `U`,
     hence its measure is `ε`-close to the measure of `s`. -/
   dsimp [integralSum]
-  simp only [mem_closedBall, dist_eq_norm, ← indicator_const_smul_apply,
-    sum_indicator_eq_sum_filter, ← sum_smul, ← sub_smul, norm_smul, Real.norm_eq_abs, ←
-    Prepartition.filter_boxes, ← Prepartition.measure_iUnion_toReal]
+  simp only [dist_eq_norm, ← indicator_const_smul_apply, sum_indicator_eq_sum_filter, ← sum_smul,
+    ← sub_smul, norm_smul, Real.norm_eq_abs, ← Prepartition.filter_boxes,
+    ← Prepartition.measure_iUnion_toReal]
   gcongr
   set t := (π.filter (π.tag · ∈ s)).iUnion
   change abs (μ.real t - μ.real (s ∩ I)) ≤ ε
@@ -138,7 +138,7 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
   refine (norm_sum_le_of_le _ this).trans ?_; clear this
   rw [← sum_mul, ← Prepartition.measure_iUnion_toReal]
   let m := μ (π.filter fun J => N (π.tag J) = n).iUnion
-  show m.toReal * ↑n ≤ ↑(δ n)
+  change m.toReal * ↑n ≤ ↑(δ n)
   have : m < δ n / n := by
     simp only [Measure.restrict_apply (hUo _).measurableSet] at hμU
     refine (measure_mono ?_).trans_lt (hμU _)

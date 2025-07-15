@@ -138,7 +138,7 @@ theorem dominatedFinMeasAdditive_weightedSMul {_ : MeasurableSpace α} (μ : Mea
 
 theorem weightedSMul_nonneg [PartialOrder F] [OrderedSMul ℝ F]
     (s : Set α) (x : F) (hx : 0 ≤ x) : 0 ≤ weightedSMul μ s x := by
-  simp only [weightedSMul, Algebra.id.smul_eq_mul, coe_smul', _root_.id, coe_id', Pi.smul_apply]
+  simp only [weightedSMul, coe_smul', _root_.id, coe_id', Pi.smul_apply]
   exact smul_nonneg toReal_nonneg hx
 
 end WeightedSMul
@@ -479,7 +479,7 @@ theorem negPart_toSimpleFunc (f : α →₁ₛ[μ] ℝ) :
   filter_upwards [posPart_toSimpleFunc (-f), neg_toSimpleFunc f]
   intro a h₁ h₂
   rw [h₁]
-  show max _ _ = max _ _
+  change max _ _ = max _ _
   rw [h₂]
   simp
 
@@ -495,7 +495,7 @@ theorem integral_eq_norm_posPart_sub (f : α →₁ₛ[μ] ℝ) : integral f = �
     rw [SimpleFunc.map_apply, h]
     conv_lhs => rw [← SimpleFunc.negPart_map_norm, SimpleFunc.map_apply]
   rw [integral, norm_eq_integral, norm_eq_integral, ← SimpleFunc.integral_sub]
-  · show (toSimpleFunc f).integral μ =
+  · change (toSimpleFunc f).integral μ =
       ((toSimpleFunc (posPart f)).map norm - (toSimpleFunc (negPart f)).map norm).integral μ
     apply MeasureTheory.SimpleFunc.integral_congr (SimpleFunc.integrable f)
     filter_upwards [ae_eq₁, ae_eq₂] with _ h₁ h₂
@@ -577,7 +577,7 @@ theorem integral_sub (f g : α →₁[μ] E) : integral (f - g) = integral f - i
 @[integral_simps]
 theorem integral_smul (c : 𝕜) (f : α →₁[μ] E) : integral (c • f) = c • integral f := by
   simp only [integral]
-  show (integralCLM' 𝕜) (c • f) = c • (integralCLM' 𝕜) f
+  change (integralCLM' 𝕜) (c • f) = c • (integralCLM' 𝕜) f
   exact map_smul (integralCLM' 𝕜) c f
 
 theorem norm_Integral_le_one : ‖integralCLM (α := α) (E := E) (μ := μ)‖ ≤ 1 :=

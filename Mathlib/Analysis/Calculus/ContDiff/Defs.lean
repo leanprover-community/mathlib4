@@ -205,8 +205,8 @@ theorem contDiffWithinAt_infty :
 theorem ContDiffWithinAt.continuousWithinAt (h : ContDiffWithinAt 𝕜 n f s x) :
     ContinuousWithinAt f s x := by
   have := h.of_le (zero_le _)
-  simp only [ContDiffWithinAt, nonpos_iff_eq_zero, Nat.cast_eq_zero,
-    mem_pure, forall_eq, CharP.cast_eq_zero] at this
+  simp only [ContDiffWithinAt, nonpos_iff_eq_zero, Nat.cast_eq_zero, forall_eq, CharP.cast_eq_zero]
+    at this
   rcases this with ⟨u, hu, p, H⟩
   rw [mem_nhdsWithin_insert] at hu
   exact (H.continuousOn.continuousWithinAt hu.1).mono_of_mem_nhdsWithin hu.2
@@ -242,7 +242,7 @@ theorem ContDiffWithinAt.congr_of_eventuallyEq_of_mem (h : ContDiffWithinAt 𝕜
     (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : x ∈ s) : ContDiffWithinAt 𝕜 n f₁ s x :=
   h.congr_of_eventuallyEq h₁ <| h₁.self_of_nhdsWithin hx
 
-theorem Filter.EventuallyEq.congr_contDiffWithinAt_of_mem (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : x ∈ s):
+theorem Filter.EventuallyEq.congr_contDiffWithinAt_of_mem (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : x ∈ s) :
     ContDiffWithinAt 𝕜 n f₁ s x ↔ ContDiffWithinAt 𝕜 n f s x :=
   ⟨fun H ↦ H.congr_of_eventuallyEq_of_mem h₁.symm hx, fun H ↦ H.congr_of_eventuallyEq_of_mem h₁ hx⟩
 
@@ -995,12 +995,19 @@ theorem ContDiffAt.differentiableAt (h : ContDiffAt 𝕜 n f x) (hn : 1 ≤ n) :
     DifferentiableAt 𝕜 f x := by
   simpa [hn, differentiableWithinAt_univ] using h.differentiableWithinAt
 
+theorem ContDiffAt.differentiableAt_iteratedFDeriv
+    {f : E → F} {n : WithTop ℕ∞} {m : ℕ} {x : E} (h : ContDiffAt 𝕜 n f x) (hmn : ↑m < n) :
+    DifferentiableAt 𝕜 (iteratedFDeriv 𝕜 m f) x := by
+  rw [← differentiableWithinAt_univ]
+  convert (h.differentiableWithinAt_iteratedFDerivWithin hmn (by simp [uniqueDiffOn_univ]))
+  exact iteratedFDerivWithin_univ.symm
+
 @[fun_prop]
 theorem ContDiffAt.differentiableAt_one (h : ContDiffAt 𝕜 1 f x) :
     DifferentiableAt 𝕜 f x := by
   simpa [(le_refl 1), differentiableWithinAt_univ] using h.differentiableWithinAt
 
-nonrec lemma ContDiffAt.contDiffOn (h : ContDiffAt 𝕜 n f x) (hm : m ≤ n) (h' : m = ∞ → n = ω):
+nonrec lemma ContDiffAt.contDiffOn (h : ContDiffAt 𝕜 n f x) (hm : m ≤ n) (h' : m = ∞ → n = ω) :
     ∃ u ∈ 𝓝 x, ContDiffOn 𝕜 m f u := by
   simpa [nhdsWithin_univ] using h.contDiffOn hm h'
 
@@ -1009,7 +1016,7 @@ theorem contDiffAt_succ_iff_hasFDerivAt {n : ℕ} :
     ContDiffAt 𝕜 (n + 1) f x ↔ ∃ f' : E → E →L[𝕜] F,
       (∃ u ∈ 𝓝 x, ∀ x ∈ u, HasFDerivAt f (f' x) x) ∧ ContDiffAt 𝕜 n f' x := by
   rw [← contDiffWithinAt_univ, contDiffWithinAt_succ_iff_hasFDerivWithinAt (by simp)]
-  simp only [nhdsWithin_univ, exists_prop, mem_univ, insert_eq_of_mem]
+  simp only [nhdsWithin_univ, mem_univ, insert_eq_of_mem]
   constructor
   · rintro ⟨u, H, -, f', h_fderiv, h_cont_diff⟩
     rcases mem_nhds_iff.mp H with ⟨t, htu, ht, hxt⟩
@@ -1109,7 +1116,7 @@ theorem ContDiff.contDiffOn (h : ContDiff 𝕜 n f) : ContDiffOn 𝕜 n f s :=
 
 @[simp]
 theorem contDiff_zero : ContDiff 𝕜 0 f ↔ Continuous f := by
-  rw [← contDiffOn_univ, continuous_iff_continuousOn_univ]
+  rw [← contDiffOn_univ, ← continuousOn_univ]
   exact contDiffOn_zero
 
 theorem contDiffAt_zero : ContDiffAt 𝕜 0 f x ↔ ∃ u ∈ 𝓝 x, ContinuousOn f u := by
@@ -1203,7 +1210,7 @@ theorem contDiff_iff_continuous_differentiable {n : ℕ∞} :
     ContDiff 𝕜 n f ↔
       (∀ m : ℕ, m ≤ n → Continuous fun x => iteratedFDeriv 𝕜 m f x) ∧
         ∀ m : ℕ, m < n → Differentiable 𝕜 fun x => iteratedFDeriv 𝕜 m f x := by
-  simp [contDiffOn_univ.symm, continuous_iff_continuousOn_univ, differentiableOn_univ.symm,
+  simp [contDiffOn_univ.symm, continuousOn_univ, differentiableOn_univ.symm,
     iteratedFDerivWithin_univ, contDiffOn_iff_continuousOn_differentiableOn uniqueDiffOn_univ]
 
 theorem contDiff_nat_iff_continuous_differentiable {n : ℕ} :

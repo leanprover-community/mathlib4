@@ -36,7 +36,7 @@ variable {p q : R[X]} (x : A)
 theorem adjoin_X : Algebra.adjoin R ({X} : Set R[X]) = ⊤ := by
   refine top_unique fun p _hp => ?_
   set S := Algebra.adjoin R ({X} : Set R[X])
-  rw [← sum_monomial_eq p]; simp only [← smul_X_eq_monomial, Sum]
+  rw [← sum_monomial_eq p]; simp only [← smul_X_eq_monomial]
   exact S.sum_mem fun n _hn => S.smul_mem (S.pow_mem (Algebra.subset_adjoin rfl) _) _
 
 variable (R)

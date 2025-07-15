@@ -111,7 +111,7 @@ theorem structuralIsoOfExpr_comp {f g h : C}
 theorem StructuralOfExpr_monoidalComp {f g h i : C} [MonoidalCoherence g h]
     (η : f ⟶ g) (η' : f ≅ g) (ih_η : η'.hom = η) (θ : h ⟶ i) (θ' : h ≅ i) (ih_θ : θ'.hom = θ) :
     (η' ≪⊗≫ θ').hom = η ⊗≫ θ := by
-  simp [ih_η, ih_θ, monoidalIsoComp, monoidalComp, MonoidalCoherence.iso]
+  simp [ih_η, ih_θ, monoidalIsoComp, monoidalComp]
 
 variable [MonoidalCategory C]
 

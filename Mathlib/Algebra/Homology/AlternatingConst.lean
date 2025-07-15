@@ -88,7 +88,7 @@ def AlgebraicTopology.alternatingFaceMapComplexConst :
   NatIso.ofComponents (fun X ↦ HomologicalComplex.Hom.isoOfComponents (fun _ ↦ Iso.refl _) <| by
     rintro _ i rfl
     simp [SimplicialObject.δ, ← Finset.sum_smul, Fin.sum_neg_one_pow, Nat.even_add_one,
-      ← Nat.not_even_iff_odd]) (by intros; ext; simp)
+      -Nat.not_even_iff_odd]) (by intros; ext; simp)
 
 namespace ChainComplex
 

@@ -18,6 +18,8 @@ the product side.
 
 namespace CategoryTheory
 
+open Functor
+
 universe v u
 
 variable (A : Type*) [Category A] (A' : Type*) [Category A']

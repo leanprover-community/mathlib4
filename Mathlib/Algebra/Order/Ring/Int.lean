@@ -7,7 +7,7 @@ import Mathlib.Algebra.Order.Group.Int
 import Mathlib.Algebra.Order.Group.Unbundled.Int
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Int.Parity
-import Mathlib.Data.Set.Basic
+import Mathlib.Order.BooleanAlgebra.Set
 
 /-!
 # The integers form a linear ordered ring

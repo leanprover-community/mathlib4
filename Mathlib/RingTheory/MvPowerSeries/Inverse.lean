@@ -105,7 +105,7 @@ theorem mul_invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) (h : constantCoeff σ 
     letI := Classical.decEq (σ →₀ ℕ)
     if H : n = 0 then by
       rw [H]
-      simp [coeff_mul, support_single_ne_zero, h]
+      simp [h]
     else by
       classical
       have : ((0 : σ →₀ ℕ), n) ∈ antidiagonal n := by rw [mem_antidiagonal, zero_add]

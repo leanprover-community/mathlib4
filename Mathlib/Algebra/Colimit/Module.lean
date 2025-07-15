@@ -192,7 +192,7 @@ lemma map_comp (g₁ : (i : ι) → G i →ₗ[R] G' i) (g₂ : (i : ι) → G' 
       DirectLimit G f →ₗ[R] DirectLimit G'' f'') :=
   DFunLike.ext _ _ <| by
     rintro ⟨x⟩; refine x.induction_on (by simp) (fun _ _ ↦ ?_) (by simp +contextual)
-    show map g₂ hg₂ (map g₁ hg₁ <| of _ _ _ _ _ _) = map _ _ (of _ _ _ _ _ _)
+    change map g₂ hg₂ (map g₁ hg₁ <| of _ _ _ _ _ _) = map _ _ (of _ _ _ _ _ _)
     simp_rw [map_apply_of]; rfl
 
 open LinearEquiv LinearMap in
@@ -394,7 +394,7 @@ lemma map_comp (g₁ : (i : ι) → G i →+ G' i) (g₂ : (i : ι) → G' i →
       DirectLimit G f →+ DirectLimit G'' f'') :=
   DFunLike.ext _ _ <| by
     rintro ⟨x⟩; refine x.induction_on (by simp) (fun _ _ ↦ ?_) (by simp +contextual)
-    show map g₂ hg₂ (map g₁ hg₁ <| of _ _ _ _) = map _ _ (of _ _ _ _)
+    change map g₂ hg₂ (map g₁ hg₁ <| of _ _ _ _) = map _ _ (of _ _ _ _)
     simp_rw [map_apply_of]; rfl
 
 /--
@@ -410,7 +410,7 @@ def congr (e : (i : ι) → G i ≃+ G' i)
       have eq1 := DFunLike.congr_fun (he i j h) ((e i).symm x)
       simp only [AddMonoidHom.coe_comp, AddEquiv.coe_toAddMonoidHom, Function.comp_apply,
         AddMonoidHom.coe_coe, AddEquiv.apply_symm_apply] at eq1 ⊢
-      simp [← eq1, of_f])
+      simp [← eq1])
     (by simp [map_comp]) (by simp [map_comp])
 
 lemma congr_apply_of (e : (i : ι) → G i ≃+ G' i)

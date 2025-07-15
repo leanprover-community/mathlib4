@@ -162,7 +162,7 @@ variable [HasImages C] [HasBinaryCoproducts C]
 which is functorial in both arguments,
 and which on `Subobject A` will induce a `SemilatticeSup`. -/
 def sup {A : C} : MonoOver A ⥤ MonoOver A ⥤ MonoOver A :=
-  curryObj ((forget A).prod (forget A) ⋙ uncurry.obj Over.coprod ⋙ image)
+  Functor.curryObj ((forget A).prod (forget A) ⋙ Functor.uncurry.obj Over.coprod ⋙ image)
 
 /-- A morphism version of `le_sup_left`. -/
 def leSupLeft {A : C} (f g : MonoOver A) : f ⟶ (sup.obj f).obj g := by
@@ -575,8 +575,8 @@ theorem sInf_le {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : sInf s ≤ 
           Set.mem_image_of_mem (equivShrink (Subobject A)) hf⟩) ≫
       eqToHom (congr_arg (fun X : Subobject A => (X : C)) (Equiv.symm_apply_apply _ _))
   · dsimp [sInf]
-    simp only [Category.comp_id, Category.assoc, ← underlyingIso_hom_comp_eq_mk,
-      Subobject.arrow_congr, congrArg_mpr_hom_left, Iso.cancel_iso_hom_left]
+    simp only [Category.assoc, ← underlyingIso_hom_comp_eq_mk,
+      Iso.cancel_iso_hom_left]
     convert limit.w (wideCospan s) (WidePullbackShape.Hom.term _)
     simp
 

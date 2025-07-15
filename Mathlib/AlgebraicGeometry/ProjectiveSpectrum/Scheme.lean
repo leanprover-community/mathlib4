@@ -356,7 +356,7 @@ theorem carrier.add_mem (q : Spec.T A⁰_ f) {a b : A} (ha : a ∈ carrier f_deg
     rw [← add_smul, Nat.add_sub_of_le h1]; rfl
   · rw [(_ : m * i = _)]
     apply GradedMonoid.toGradedMul.mul_mem (i := (j-m) • i) (j := (m + m - j) • i) <;> mem_tac_aux
-    rw [← add_smul]; congr; zify [le_of_not_gt h2, le_of_not_ge h1]; abel
+    rw [← add_smul]; congr; omega
   convert_to ∑ i ∈ range (m + m + 1), g i ∈ q.1; swap
   · refine q.1.sum_mem fun j _ => nsmul_mem ?_ _; split_ifs
     exacts [q.1.zero_mem, q.1.mul_mem_left _ (hb i), q.1.mul_mem_right _ (ha i)]
@@ -369,8 +369,8 @@ theorem carrier.add_mem (q : Spec.T A⁰_ f) {a b : A} (ha : a ∈ carrier f_deg
   rw [HomogeneousLocalization.val_smul]
   split_ifs with h2 h1
   · exact ((Finset.mem_range.1 hj).not_ge h2).elim
-  all_goals simp only [HomogeneousLocalization.val_mul, HomogeneousLocalization.val_zero,
-    HomogeneousLocalization.val_mk, Subtype.coe_mk, Localization.mk_mul, ← smul_mk]; congr 2
+  all_goals simp only [HomogeneousLocalization.val_mul,
+    HomogeneousLocalization.val_mk, Localization.mk_mul, ← smul_mk]; congr 2
   · dsimp; rw [mul_assoc, ← pow_add, add_comm (m - j), Nat.add_sub_assoc h1]
   · simp_rw [pow_add]; rfl
   · dsimp; rw [← mul_assoc, ← pow_add, Nat.add_sub_of_le (le_of_not_ge h1)]
@@ -614,7 +614,7 @@ lemma awayToSection_apply (f : A) (x p) :
       IsLocalization.map (M := Submonoid.powers f) (T := p.1.1.toIdeal.primeCompl) _
         (RingHom.id _) (Submonoid.powers_le.mpr p.2) x.val := by
   obtain ⟨x, rfl⟩ := HomogeneousLocalization.mk_surjective x
-  show (HomogeneousLocalization.mapId 𝒜 _ _).val = _
+  change (HomogeneousLocalization.mapId 𝒜 _ _).val = _
   dsimp [HomogeneousLocalization.mapId, HomogeneousLocalization.map]
   rw [Localization.mk_eq_mk', Localization.mk_eq_mk', IsLocalization.map_mk']
   rfl
@@ -654,7 +654,7 @@ open HomogeneousLocalization IsLocalRing
 lemma toSpec_base_apply_eq_comap {f} (x : Proj| pbo f) :
     (toSpec 𝒜 f).base x = PrimeSpectrum.comap (mapId 𝒜 (Submonoid.powers_le.mpr x.2))
       (closedPoint (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal)) := by
-  show PrimeSpectrum.comap (awayToΓ 𝒜 f ≫ (Proj| pbo f).presheaf.Γgerm x).hom
+  change PrimeSpectrum.comap (awayToΓ 𝒜 f ≫ (Proj| pbo f).presheaf.Γgerm x).hom
         (IsLocalRing.closedPoint ((Proj| pbo f).presheaf.stalk x)) = _
   rw [awayToΓ_ΓToStalk, CommRingCat.hom_comp, PrimeSpectrum.comap_comp]
   exact congr(PrimeSpectrum.comap _ $(@IsLocalRing.comap_closedPoint
@@ -809,7 +809,7 @@ lemma stalkMap_toSpec (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
 lemma isIso_toSpec (f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
     IsIso (toSpec 𝒜 f) := by
   haveI : IsIso (toSpec 𝒜 f).base := toSpec_base_isIso 𝒜 f_deg hm
-  haveI (x) : IsIso ((toSpec 𝒜 f).stalkMap x) := by
+  haveI _ (x) : IsIso ((toSpec 𝒜 f).stalkMap x) := by
     rw [stalkMap_toSpec 𝒜 f x f_deg hm]; infer_instance
   haveI : LocallyRingedSpace.IsOpenImmersion (toSpec 𝒜 f) :=
     LocallyRingedSpace.IsOpenImmersion.of_stalk_iso (toSpec 𝒜 f)

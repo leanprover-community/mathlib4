@@ -310,7 +310,7 @@ theorem sbtw_iff_mem_image_Ioo_and_ne [NoZeroSMulDivisors R V] {x y z : P} :
   refine ⟨⟨t, Set.mem_Icc_of_Ioo ht, rfl⟩, ?_⟩
   rw [lineMap_apply, ← @vsub_ne_zero V, ← @vsub_ne_zero V _ _ _ _ z, vadd_vsub_assoc, vsub_self,
     vadd_vsub_assoc, ← neg_vsub_eq_vsub_rev z x, ← @neg_one_smul R, ← add_smul, ← sub_eq_add_neg]
-  simp [smul_ne_zero, sub_eq_zero, ht.1.ne.symm, ht.2.ne, hxz.symm]
+  simp [sub_eq_zero, ht.1.ne.symm, ht.2.ne, hxz.symm]
 
 variable (R)
 

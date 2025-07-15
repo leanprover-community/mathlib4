@@ -215,7 +215,7 @@ private theorem smul'_char (r₁ : R) (r₂ : X) (s₁ s₂ : S) (u : S) (v : R)
   symm; rw [oreDiv_eq_iff]
   use s₄ * s₃
   use s₄ * r₃
-  simp only [Submonoid.coe_mul, Submonoid.smul_def, smul_eq_mul]
+  simp only [Submonoid.coe_mul, Submonoid.smul_def]
   constructor
   · rw [smul_smul, mul_assoc (c := v₀), ← hs₄]
     simp only [smul_smul, mul_assoc]
@@ -251,7 +251,7 @@ protected def smul : R[S⁻¹] → X[S⁻¹] → X[S⁻¹] :=
   liftExpand smul'' fun r₁ r₂ s hs => by
     ext x
     cases x with | _ x s₂
-    show OreLocalization.smul' r₁ s x s₂ = OreLocalization.smul' (r₂ * r₁) ⟨_, hs⟩ x s₂
+    change OreLocalization.smul' r₁ s x s₂ = OreLocalization.smul' (r₂ * r₁) ⟨_, hs⟩ x s₂
     rcases oreCondition r₁ s₂ with ⟨r₁', s₁', h₁⟩
     rw [smul'_char _ _ _ _ _ _ h₁]
     rcases oreCondition (r₂ * r₁) s₂ with ⟨r₂', s₂', h₂⟩
@@ -308,7 +308,7 @@ Ore witnesses and conditions bundled in a sigma type. -/
 @[to_additive "Another characterization lemma for the vector addition on the
   Ore localizaion delivering Ore witnesses and conditions bundled in a sigma type."]
 def oreDivSMulChar' (r₁ : R) (r₂ : X) (s₁ s₂ : S) :
-    Σ'r' : R, Σ's' : S, s' * r₁ = r' * s₂ ∧ (r₁ /ₒ s₁) • (r₂ /ₒ s₂) = r' • r₂ /ₒ (s' * s₁) :=
+    Σ' r' : R, Σ' s' : S, s' * r₁ = r' * s₂ ∧ (r₁ /ₒ s₁) • (r₂ /ₒ s₂) = r' • r₂ /ₒ (s' * s₁) :=
   ⟨oreNum r₁ s₂, oreDenom r₁ s₂, ore_eq r₁ s₂, oreDiv_smul_oreDiv⟩
 
 /-- Another characterization lemma for the multiplication on the Ore localizaion delivering
@@ -316,7 +316,7 @@ Ore witnesses and conditions bundled in a sigma type. -/
 @[to_additive "Another characterization lemma for the addition on the Ore localizaion delivering
   Ore witnesses and conditions bundled in a sigma type."]
 def oreDivMulChar' (r₁ r₂ : R) (s₁ s₂ : S) :
-    Σ'r' : R, Σ's' : S, s' * r₁ = r' * s₂ ∧ r₁ /ₒ s₁ * (r₂ /ₒ s₂) = r' * r₂ /ₒ (s' * s₁) :=
+    Σ' r' : R, Σ' s' : S, s' * r₁ = r' * s₂ ∧ r₁ /ₒ s₁ * (r₂ /ₒ s₂) = r' * r₂ /ₒ (s' * s₁) :=
   ⟨oreNum r₁ s₂, oreDenom r₁ s₂, ore_eq r₁ s₂, oreDiv_mul_oreDiv⟩
 
 /-- `1` in the localization, defined as `1 /ₒ 1`. -/
@@ -559,7 +559,7 @@ instance : IsScalarTower R R' X[S⁻¹] where
   smul_assoc r m x := by
     rw [← smul_one_oreDiv_one_smul, ← smul_one_oreDiv_one_smul, ← smul_one_oreDiv_one_smul,
       ← mul_smul, mul_div_one]
-    simp only [smul_eq_mul, mul_one, smul_mul_assoc, smul_assoc, one_mul]
+    simp only [smul_mul_assoc, smul_assoc, one_mul]
 
 @[to_additive]
 instance [SMulCommClass R R' M] : SMulCommClass R R' X[S⁻¹] where

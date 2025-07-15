@@ -95,7 +95,7 @@ theorem single_mem_jacobson_matricesOver (I : Ideal R) :
   · by_cases iq : i = q
     · simp [iq, N, zMx, single, mul_apply, sum_apply, ite_and, sub_mul]
     · convert I.mul_mem_left (-M i p * x) zMx
-      simp [iq, N, zMx, single, mul_apply, sum_apply, ite_and, sub_mul]
+      simp [iq, N, single, mul_apply, sum_apply, ite_and, sub_mul]
       simp [sub_add, mul_add, mul_sub, mul_assoc]
   · simp [N, qj, sum_apply, mul_apply]
 
@@ -361,7 +361,7 @@ theorem jacobson_matricesOver (I : TwoSidedIdeal R) :
     (I.matricesOver n).jacobson = I.jacobson.matricesOver n := by
   apply le_antisymm
   · apply jacobson_matricesOver_le
-  · show asIdeal (I.matricesOver n).jacobson ≥ asIdeal (I.jacobson.matricesOver n)
+  · change asIdeal (I.matricesOver n).jacobson ≥ asIdeal (I.jacobson.matricesOver n)
     simp [asIdeal_jacobson, asIdeal_matricesOver, Ideal.matricesOver_jacobson_le]
 
 theorem matricesOver_jacobson_bot :

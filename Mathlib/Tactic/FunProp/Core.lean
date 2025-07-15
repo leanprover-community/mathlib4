@@ -287,7 +287,7 @@ def letCase (funPropDecl : FunPropDecl) (e : Expr) (f : Expr)
     -- let binding can be pulled out of the lambda function
     if ¬(yValue.hasLooseBVar 0) then
       let body := yBody.swapBVars 0 1
-      let e' := .letE yName yType yValue (nonDep := false)
+      let e' := mkLet yName yType yValue
         (e.setArg (funPropDecl.funArgId) (.lam xName xType body xBi))
       return ← funProp e'
 
@@ -638,7 +638,7 @@ mutual
         letTelescope e fun xs b => do
           let .some r ← funProp b
             | return none
-          cacheResult e {proof := ← mkLambdaFVars xs r.proof }
+          cacheResult e {proof := ← mkLambdaFVars (generalizeNondepLet := false) xs r.proof }
       | .forallE .. =>
         forallTelescope e fun xs b => do
           let .some r ← funProp b
@@ -663,9 +663,7 @@ mutual
 
     -- if function starts with let bindings move them the top of `e` and try again
     if f.isLet then
-      return ← letTelescope f fun xs b => do
-        let e' := e.setArg funPropDecl.funArgId b
-        funProp (← mkLambdaFVars xs e')
+      return ← funProp (← mapLetTelescope f fun _ b => pure <| e.setArg funPropDecl.funArgId b)
 
     match ← getFunctionData? f (← unfoldNamePred) with
     | .letE f =>

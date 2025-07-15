@@ -427,7 +427,7 @@ protected def ofFinset [DecidableEq α] (E : Set α) (Indep : Finset α → Prop
     (indep_aug := by
       intro I J hI hIfin hJ hJfin hIJ
       rw [ncard_eq_toFinset_card _ hIfin, ncard_eq_toFinset_card _ hJfin] at hIJ
-      have aug := indep_aug (hI _ (by simp [Subset.rfl])) (hJ _ (by simp [Subset.rfl])) hIJ
+      have aug := indep_aug (hI _ (by simp)) (hJ _ (by simp)) hIJ
       simp only [Finite.mem_toFinset] at aug
       obtain ⟨e, heJ, heI, hi⟩ := aug
       exact ⟨e, heJ, heI, fun K hK ↦ indep_subset hi <| Finset.coe_subset.1 (by simpa)⟩ )

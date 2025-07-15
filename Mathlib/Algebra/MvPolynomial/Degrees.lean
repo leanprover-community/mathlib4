@@ -139,7 +139,7 @@ theorem degrees_pow_le {p : MvPolynomial σ R} {n : ℕ} : (p ^ n).degrees ≤ n
 theorem mem_degrees {p : MvPolynomial σ R} {i : σ} :
     i ∈ p.degrees ↔ ∃ d, p.coeff d ≠ 0 ∧ i ∈ d.support := by
   classical
-  simp only [degrees_def, Multiset.mem_sup, ← mem_support_iff, Finsupp.mem_toMultiset, exists_prop]
+  simp only [degrees_def, Multiset.mem_sup, ← mem_support_iff, Finsupp.mem_toMultiset]
 
 theorem le_degrees_add_left (h : Disjoint p.degrees q.degrees) : p.degrees ≤ (p + q).degrees := by
   classical
@@ -184,7 +184,7 @@ theorem degrees_rename (f : σ → τ) (φ : MvPolynomial σ R) :
   contrapose! hi
   rw [Finset.sum_eq_zero]
   intro j hj
-  simp only [exists_prop, mem_degrees] at hi
+  simp only [mem_degrees] at hi
   specialize hi j ⟨x, hx, hj⟩
   rw [Finsupp.single_apply, if_neg hi]
 
@@ -243,8 +243,8 @@ theorem degreeOf_X [DecidableEq σ] (i j : σ) [Nontrivial R] :
     degreeOf i (X j : MvPolynomial σ R) = if i = j then 1 else 0 := by
   classical
   by_cases c : i = j
-  · simp only [c, if_true, eq_self_iff_true, degreeOf_def, degrees_X, Multiset.count_singleton]
-  simp [c, if_false, degreeOf_def, degrees_X]
+  · simp only [c, if_true, degreeOf_def, degrees_X, Multiset.count_singleton]
+  simp [c, degreeOf_def, degrees_X]
 
 theorem degreeOf_add_le (n : σ) (f g : MvPolynomial σ R) :
     degreeOf n (f + g) ≤ max (degreeOf n f) (degreeOf n g) := by
@@ -291,7 +291,7 @@ theorem degreeOf_mul_X_of_ne {i j : σ} (f : MvPolynomial σ R) (h : i ≠ j) :
   congr
   ext
   simp only [Finsupp.single, add_eq_left, addRightEmbedding_apply, coe_mk,
-    Pi.add_apply, comp_apply, ite_eq_right_iff, Finsupp.coe_add, Pi.single_eq_of_ne h]
+    Pi.add_apply, comp_apply, Finsupp.coe_add, Pi.single_eq_of_ne h]
 
 @[deprecated (since := "2024-12-01")] alias degreeOf_mul_X_ne := degreeOf_mul_X_of_ne
 

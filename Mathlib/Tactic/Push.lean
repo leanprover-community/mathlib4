@@ -47,7 +47,7 @@ end LinearOrder
 theorem not_nonempty_eq (s : Set β) : (¬ s.Nonempty) = (s = ∅) := by
   have A : ∀ (x : β), x ∉ (∅ : Set β) := fun x ↦ id
   simp only [Set.Nonempty, not_exists, eq_iff_iff]
-  exact ⟨fun h ↦ Set.ext (fun x ↦ by simp only [h x, false_iff, A]), fun h ↦ by rwa [h]⟩
+  exact ⟨fun h ↦ Set.ext (fun x ↦ by simp only [h x, A]), fun h ↦ by rwa [h]⟩
 
 theorem ne_empty_eq_nonempty (s : Set β) : (s ≠ ∅) = s.Nonempty := by
   rw [ne_eq, ← not_nonempty_eq s, not_not]

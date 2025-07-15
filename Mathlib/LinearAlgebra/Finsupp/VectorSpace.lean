@@ -94,7 +94,7 @@ theorem basis_repr {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) (g : ι →
 
 @[simp]
 theorem coe_basis {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) :
-    ⇑(Finsupp.basis b) = fun ix : Σi, φ i => single ix.1 (b ix.1 ix.2) :=
+    ⇑(Finsupp.basis b) = fun ix : Σ i, φ i => single ix.1 (b ix.1 ix.2) :=
   funext fun ⟨i, x⟩ =>
     Basis.apply_eq_iff.mpr <| by
       ext ⟨j, y⟩

@@ -174,7 +174,7 @@ private theorem aux0 {a b c : A} : ⁅L (a + b + c), L ((a + b + c) * (a + b + c
   iterate 10 rw [map_add]
   rw [mul_comm b a, mul_comm c a, mul_comm c b]
   iterate 3 rw [two_smul]
-  simp only [lie_add, add_lie, commute_lmul_lmul_sq, zero_add, add_zero]
+  simp only [lie_add, add_lie]
   abel
 
 private theorem aux1 {a b c : A} :

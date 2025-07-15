@@ -160,12 +160,12 @@ Note that if the type ascription is left out and `p` can be interpreted as an ex
 then the extended binder interpretation will be used.  For example, `{ n + 1 | n < 3 }` will
 be interpreted as `{ x : Nat | ∃ n < 3, n + 1 = x }` rather than using pattern matching.
 -/
-macro (name := macroPattSetBuilder) (priority := low-1)
+macro (name := macroPattSetBuilder) (priority := low - 1)
   "{" pat:term " : " t:term " | " p:term "}" : term =>
   `({ x : $t | match x with | $pat => $p })
 
 @[inherit_doc macroPattSetBuilder]
-macro (priority := low-1) "{" pat:term " | " p:term "}" : term =>
+macro (priority := low - 1) "{" pat:term " | " p:term "}" : term =>
   `({ x | match x with | $pat => $p })
 
 /-- Pretty printing for set-builder notation with pattern matching. -/

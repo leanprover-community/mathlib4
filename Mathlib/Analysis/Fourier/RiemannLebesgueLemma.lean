@@ -83,7 +83,7 @@ theorem fourierIntegral_half_period_translate {w : V} (hw : w ≠ 0) :
   have := integral_add_right_eq_self (μ := volume) (fun (x : V) ↦ -(𝐞 (-⟪x, w⟫) • f x))
     ((fun w ↦ (1 / (2 * ‖w‖ ^ (2 : ℕ))) • w) w)
   rw [this]
-  simp only [neg_smul, integral_neg]
+  simp only [integral_neg]
 
 /-- Rewrite the Fourier integral in a form that allows us to use uniform continuity. -/
 theorem fourierIntegral_eq_half_sub_half_period_translate {w : V} (hw : w ≠ 0)

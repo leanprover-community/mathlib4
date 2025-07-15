@@ -303,7 +303,7 @@ theorem prod_inv [Zero M] [CommGroup G] {f : α →₀ M} {h : α → M → G} :
 @[simp]
 theorem sum_sub [Zero M] [SubtractionCommMonoid G] {f : α →₀ M} {h₁ h₂ : α → M → G} :
     (f.sum fun a b => h₁ a b - h₂ a b) = f.sum h₁ - f.sum h₂ :=
-  Finset.sum_sub_distrib
+  Finset.sum_sub_distrib ..
 
 /-- Taking the product under `h` is an additive-to-multiplicative homomorphism of finsupps,
 if `h` is an additive-to-multiplicative homomorphism on the support.
@@ -509,7 +509,7 @@ theorem prod_dvd_prod_of_subset_of_dvd [Zero M] [CommMonoid N] {f1 f2 : α →�
     {g1 g2 : α → M → N} (h1 : f1.support ⊆ f2.support)
     (h2 : ∀ a : α, a ∈ f1.support → g1 a (f1 a) ∣ g2 a (f2 a)) : f1.prod g1 ∣ f2.prod g2 := by
   classical
-    simp only [Finsupp.prod, Finsupp.prod_mul]
+    simp only [Finsupp.prod]
     rw [← sdiff_union_of_subset h1, prod_union sdiff_disjoint]
     apply dvd_mul_of_dvd_right
     apply prod_dvd_prod_of_dvd

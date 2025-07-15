@@ -191,7 +191,7 @@ def adj : free.{u} R ⊣ forget (AlgCat.{u} R) :=
         { toFun := fun f ↦ (FreeAlgebra.lift _).symm f.hom
           invFun := fun f ↦ ofHom <| (FreeAlgebra.lift _) f
           left_inv := fun f ↦ by aesop
-          right_inv := fun f ↦ by simp [forget_obj, forget_map] } }
+          right_inv := fun f ↦ by simp [forget_obj] } }
 
 instance : (forget (AlgCat.{u} R)).IsRightAdjoint := (adj R).isRightAdjoint
 

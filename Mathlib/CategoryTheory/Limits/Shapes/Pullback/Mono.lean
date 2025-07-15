@@ -268,11 +268,11 @@ def isColimitOfFactors (f : X ⟶ Y) (g : X ⟶ Z) (h : X ⟶ W) [Epi h] (x : W 
       ⟨hs.fac _ WalkingSpan.left, hs.fac _ WalkingSpan.right, fun hr hr' => by
         apply PushoutCocone.IsColimit.hom_ext hs
         · simp only [PushoutCocone.mk_inl, PushoutCocone.mk_inr] at hr hr' ⊢
-          simp only [hr, hr']
+          simp only [hr]
           symm
           exact hs.fac _ WalkingSpan.left
         · simp only [PushoutCocone.mk_inl, PushoutCocone.mk_inr] at hr hr' ⊢
-          simp only [hr, hr']
+          simp only [hr']
           symm
           exact hs.fac _ WalkingSpan.right⟩⟩
 

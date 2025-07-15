@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Sophie Morel
 -/
 import Mathlib.Algebra.Category.Grp.Preadditive
-import Mathlib.Algebra.Equiv.TransferInstance
+import Mathlib.Algebra.Group.Shrink
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 import Mathlib.Data.DFinsupp.BigOperators
 import Mathlib.Data.DFinsupp.Small
@@ -128,12 +128,7 @@ def quotUliftToQuot [DecidableEq J] : Quot (F ⋙ uliftFunctor.{u'}) →+ Quot F
   rw [AddSubgroup.closure_le]
   intro _ hx
   obtain ⟨j, j', u, a, rfl⟩ := hx
-  rw [SetLike.mem_coe, AddMonoidHom.mem_ker, map_sub, DFinsupp.sumAddHom_single,
-    DFinsupp.sumAddHom_single]
-  change Quot.ι F j' (F.map u (AddEquiv.ulift a)) - _ = _
-  rw [Quot.map_ι]
-  dsimp
-  rw [sub_self]
+  simp
 
 lemma quotUliftToQuot_ι [DecidableEq J] (j : J) (x : (F ⋙ uliftFunctor.{u'}).obj j) :
     quotUliftToQuot F (Quot.ι _ j x) = Quot.ι F j x.down := by
@@ -170,8 +165,8 @@ lemma Quot.desc_quotQuotUliftAddEquiv [DecidableEq J] (c : Cocone F) :
     AddEquiv.ulift.symm.toAddMonoidHom.comp (Quot.desc F c) := by
   refine Quot.addMonoidHom_ext _ (fun j a ↦ ?_)
   dsimp
-  simp only [quotToQuotUlift_ι, Functor.comp_obj, uliftFunctor_obj, ι_desc,
-    Functor.const_obj_obj, AddMonoidHom.coe_comp, AddMonoidHom.coe_coe, Function.comp_apply, ι_desc]
+  simp only [quotToQuotUlift_ι, Functor.comp_obj, uliftFunctor_obj, ι_desc, Functor.const_obj_obj,
+    ι_desc]
   erw [Quot.ι_desc]
   rfl
 
@@ -288,12 +283,7 @@ noncomputable def cokernelIsoQuotient {G H : AddCommGrp.{u}} (f : G ⟶ H) :
     cokernel f ≅ AddCommGrp.of (H ⧸ AddMonoidHom.range f.hom) where
   hom := cokernel.desc f (ofHom (mk' _)) <| by
         ext x
-        dsimp only [hom_comp, hom_ofHom]
-        apply Quotient.sound
-        apply leftRel_apply.mpr
-        fconstructor
-        · exact -x
-        · simp only [add_zero, AddMonoidHom.map_neg]
+        simp
   inv := ofHom <|
     QuotientAddGroup.lift _ (cokernel.π f).hom <| by
       rintro _ ⟨x, rfl⟩

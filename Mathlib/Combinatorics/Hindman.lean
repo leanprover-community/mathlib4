@@ -5,7 +5,7 @@ Authors: David Wärn
 -/
 import Mathlib.Data.Stream.Init
 import Mathlib.Topology.Algebra.Semigroup
-import Mathlib.Topology.StoneCech
+import Mathlib.Topology.Compactification.StoneCech
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
@@ -237,14 +237,14 @@ theorem FP.mul_two {M} [Semigroup M] (a : Stream' M) (i j : ℕ) (ij : i < j) :
 theorem FP.finset_prod {M} [CommMonoid M] (a : Stream' M) (s : Finset ℕ) (hs : s.Nonempty) :
     (s.prod fun i => a.get i) ∈ FP a := by
   refine FP_drop_subset_FP _ (s.min' hs) ?_
-  induction s using Finset.strongInduction with | H s ih => _
+  induction s using Finset.eraseInduction with | H s ih => _
   rw [← Finset.mul_prod_erase _ _ (s.min'_mem hs), ← Stream'.head_drop]
   rcases (s.erase (s.min' hs)).eq_empty_or_nonempty with h | h
   · rw [h, Finset.prod_empty, mul_one]
     exact FP.head _
   · apply FP.cons
     rw [Stream'.tail_eq_drop, Stream'.drop_drop, add_comm]
-    refine Set.mem_of_subset_of_mem ?_ (ih _ (Finset.erase_ssubset <| s.min'_mem hs) h)
+    refine Set.mem_of_subset_of_mem ?_ (ih _ (s.min'_mem hs) h)
     have : s.min' hs + 1 ≤ (s.erase (s.min' hs)).min' h :=
       Nat.succ_le_of_lt (Finset.min'_lt_of_mem_erase_min' _ _ <| Finset.min'_mem _ _)
     obtain ⟨d, hd⟩ := Nat.exists_eq_add_of_le this

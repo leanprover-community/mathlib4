@@ -220,7 +220,7 @@ def gelfandTransform : A →ₐ[𝕜] C(characterSpace 𝕜 A, 𝕜) where
       continuous_toFun := (eval_continuous a).comp continuous_induced_dom }
   map_one' := by ext a; simp only [coe_mk, coe_one, Pi.one_apply, map_one a]
   map_mul' a b := by ext; simp only [map_mul, coe_mk, coe_mul, Pi.mul_apply]
-  map_zero' := by ext; simp only [map_zero, coe_mk, coe_mul, coe_zero, Pi.zero_apply]
+  map_zero' := by ext; simp only [map_zero, coe_mk, coe_zero, Pi.zero_apply]
   map_add' a b := by ext; simp only [map_add, coe_mk, coe_add, Pi.add_apply]
   commutes' k := by ext; simp [AlgHomClass.commutes]
 

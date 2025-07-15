@@ -119,7 +119,7 @@ lemma qExpansion_coeff (m : ℕ) :
 lemma hasSum_qExpansion_of_abs_lt [NeZero n] [ModularFormClass F Γ(n) k]
     {q : ℂ} (hq : ‖q‖ < 1) :
     HasSum (fun m : ℕ ↦ (qExpansion n f).coeff ℂ m • q ^ m) (cuspFunction n f q) := by
-  simp only [qExpansion_coeff, ← eq_cuspFunction n f]
+  simp only [qExpansion_coeff]
   have hdiff : DifferentiableOn ℂ (cuspFunction n f) (Metric.ball 0 1) := by
     refine fun z hz ↦ (differentiableAt_cuspFunction n f ?_).differentiableWithinAt
     simpa using hz

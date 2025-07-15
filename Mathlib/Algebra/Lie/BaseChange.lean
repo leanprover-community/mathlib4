@@ -23,8 +23,6 @@ scalars.
 lie ring, lie algebra, extension of scalars, restriction of scalars, base change
 -/
 
-suppress_compilation
-
 open scoped TensorProduct
 
 variable (R A L M : Type*)
@@ -58,9 +56,9 @@ theorem bracket_tmul (s t : A) (x : L) (y : M) : ⁅s ⊗ₜ[R] x, t ⊗ₜ[R] y
 private theorem bracket_lie_self (x : A ⊗[R] L) : ⁅x, x⁆ = 0 := by
   simp only [bracket_def]
   refine x.induction_on ?_ ?_ ?_
-  · simp only [LinearMap.map_zero, eq_self_iff_true, LinearMap.zero_apply]
+  · simp only [LinearMap.map_zero]
   · intro a l
-    simp only [bracket'_tmul, TensorProduct.tmul_zero, eq_self_iff_true, lie_self]
+    simp only [bracket'_tmul, TensorProduct.tmul_zero, lie_self]
   · intro z₁ z₂ h₁ h₂
     suffices bracket' R A L L z₁ z₂ + bracket' R A L L z₂ z₁ = 0 by
       rw [LinearMap.map_add, LinearMap.map_add, LinearMap.add_apply, LinearMap.add_apply, h₁, h₂,
@@ -194,14 +192,12 @@ lemma mem_baseChange_iff {m : A ⊗[R] M} :
 
 @[simp]
 lemma baseChange_bot : (⊥ : LieSubmodule R L M).baseChange A = ⊥ := by
-  simp only [baseChange, bot_toSubmodule, Submodule.baseChange_bot,
-    Submodule.bot_toAddSubmonoid]
+  simp only [baseChange, bot_toSubmodule, Submodule.baseChange_bot]
   rfl
 
 @[simp]
 lemma baseChange_top : (⊤ : LieSubmodule R L M).baseChange A = ⊤ := by
-  simp only [baseChange, top_toSubmodule, Submodule.baseChange_top,
-    Submodule.bot_toAddSubmonoid]
+  simp only [baseChange, top_toSubmodule, Submodule.baseChange_top]
   rfl
 
 lemma lie_baseChange {I : LieIdeal R L} {N : LieSubmodule R L M} :

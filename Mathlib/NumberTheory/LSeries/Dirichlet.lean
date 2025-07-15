@@ -366,7 +366,7 @@ lemma LSeriesSummable_twist_vonMangoldt {N : ℕ} (χ : DirichletCharacter ℂ N
 /-- The L-series of the twist of the von Mangoldt function `Λ` by a Dirichlet character `χ` at `s`
 equals the negative logarithmic derivative of the L-series of `χ` when `re s > 1`. -/
 lemma LSeries_twist_vonMangoldt_eq {N : ℕ} (χ : DirichletCharacter ℂ N) {s : ℂ} (hs : 1 < s.re) :
-    L (↗χ * ↗Λ) s = - deriv (L ↗χ) s / L ↗χ s := by
+    L (↗χ * ↗Λ) s = -deriv (L ↗χ) s / L ↗χ s := by
   rcases eq_or_ne N 0 with rfl | hN
   · simp [modZero_eq_delta, delta_mul_eq_smul_delta, LSeries_delta]
   -- now `N ≠ 0`

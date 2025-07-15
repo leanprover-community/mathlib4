@@ -106,10 +106,10 @@ theorem moveRight_card {b : Board} {m : ℤ × ℤ} (h : m ∈ right b) :
   exact tsub_add_cancel_of_le (card_of_mem_right h)
 
 theorem moveLeft_smaller {b : Board} {m : ℤ × ℤ} (h : m ∈ left b) :
-    Finset.card (moveLeft b m) / 2 < Finset.card b / 2 := by simp [← moveLeft_card h, lt_add_one]
+    Finset.card (moveLeft b m) / 2 < Finset.card b / 2 := by simp [← moveLeft_card h]
 
 theorem moveRight_smaller {b : Board} {m : ℤ × ℤ} (h : m ∈ right b) :
-    Finset.card (moveRight b m) / 2 < Finset.card b / 2 := by simp [← moveRight_card h, lt_add_one]
+    Finset.card (moveRight b m) / 2 < Finset.card b / 2 := by simp [← moveRight_card h]
 
 /-- The instance describing allowed moves on a Domineering board. -/
 instance state : State Board where

@@ -350,7 +350,7 @@ instance : HasFunctorialFactorization (monomorphisms C) (monomorphisms C).rlp :=
 /-- A (functorial) factorization of any morphisms in a Grothendieck abelian category
 as a monomorphism followed by a morphism which has the right lifting property
 with respect to all monomorphisms. -/
-noncomputable abbrev monoMapFactorizationDataRlp {X Y : C} (f : X ⟶ Y):
+noncomputable abbrev monoMapFactorizationDataRlp {X Y : C} (f : X ⟶ Y) :
     MapFactorizationData (monomorphisms C) (monomorphisms C).rlp f :=
   (functorialFactorizationData _ _).factorizationData f
 

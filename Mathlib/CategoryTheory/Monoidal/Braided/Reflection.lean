@@ -160,7 +160,7 @@ theorem isIso_tfae : List.TFAE
       types_id_apply]
     have : f = R.map (R.preimage f) := by simp
     rw [this]
-    simp [← map_comp, ← map_comp_assoc, -map_preimage]
+    simp [← map_comp, -map_preimage]
   tfae_have 2 ↔ 3 := by
     conv => lhs; intro c d; rw [isIso_iff_isIso_yoneda_map]
     conv => rhs; intro d d'; rw [isIso_iff_isIso_coyoneda_map]

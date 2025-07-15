@@ -33,7 +33,7 @@ private def triangleIndices (A : Finset (G × G)) : Finset (G × G × G) :=
 
 @[simp]
 private lemma mk_mem_triangleIndices : (a, b, c) ∈ triangleIndices A ↔ (a, b) ∈ A ∧ c = a + b := by
-  simp only [triangleIndices, Prod.ext_iff, mem_map, Embedding.coeFn_mk, exists_prop, Prod.exists,
+  simp only [triangleIndices, Prod.ext_iff, mem_map, Embedding.coeFn_mk, Prod.exists,
     eq_comm]
   refine ⟨?_, fun h ↦ ⟨_, _, h.1, rfl, rfl, h.2⟩⟩
   rintro ⟨_, _, h₁, rfl, rfl, h₂⟩
@@ -44,9 +44,9 @@ private lemma mk_mem_triangleIndices : (a, b, c) ∈ triangleIndices A ↔ (a, b
 private instance triangleIndices.instExplicitDisjoint : ExplicitDisjoint (triangleIndices A) := by
   constructor
   all_goals
-    simp only [mk_mem_triangleIndices, Prod.mk_inj, exists_prop, forall_exists_index, and_imp]
+    simp only [mk_mem_triangleIndices, and_imp]
     rintro a b _ a' - rfl - h'
-    simp [Fin.val_eq_val, *] at * <;> assumption
+    simp [*] at * <;> assumption
 
 private lemma noAccidental (hs : IsCornerFree (A : Set (G × G))) :
     NoAccidental (triangleIndices A) where
@@ -83,7 +83,7 @@ theorem corners_theorem (ε : ℝ) (hε : 0 < ε) (hG : cornersTheoremBound ε �
   rw [cornersTheoremBound, Nat.add_one_le_iff] at hG
   have hε₁ : ε ≤ 1 := by
     have := hAε.trans (Nat.cast_le.2 A.card_le_univ)
-    simp only [sq, Nat.cast_mul, Fintype.card_prod, Fintype.card_fin] at this
+    simp only [sq, Nat.cast_mul, Fintype.card_prod] at this
     rwa [mul_le_iff_le_one_left] at this
     positivity
   have := noAccidental hA

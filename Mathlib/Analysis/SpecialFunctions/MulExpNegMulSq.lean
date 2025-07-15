@@ -73,7 +73,7 @@ theorem _root_.Continuous.mulExpNegMulSq {α : Type*} [TopologicalSpace α] {f :
 
 theorem differentiableAt_mulExpNegMulSq (y : ℝ) :
     DifferentiableAt ℝ (mulExpNegMulSq ε) y :=
-  DifferentiableAt.mul differentiableAt_id' (by fun_prop)
+  DifferentiableAt.mul differentiableAt_fun_id (by fun_prop)
 
 @[fun_prop] theorem differentiable_mulExpNegMulSq : Differentiable ℝ (mulExpNegMulSq ε) :=
   fun _ => differentiableAt_mulExpNegMulSq _

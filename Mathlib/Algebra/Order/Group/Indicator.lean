@@ -175,7 +175,7 @@ lemma mulIndicator_iInter_apply (h1 : (⊥ : M) = 1) (s : ι → Set α) (f : α
     refine le_antisymm ?_ (by simp only [mulIndicator_of_mem (hx _), ciInf_const, le_refl])
     exact le_iInf (fun j ↦ by simp only [mulIndicator_of_mem (hx j), le_refl])
   · rw [mulIndicator_of_notMem hx]
-    simp only [mem_iInter, not_exists, not_forall] at hx
+    simp only [mem_iInter, not_forall] at hx
     rcases hx with ⟨j, hj⟩
     refine le_antisymm (by simp only [← h1, le_iInf_iff, bot_le, forall_const]) ?_
     simpa [mulIndicator_of_notMem hj] using (iInf_le (fun i ↦ (s i).mulIndicator f) j) x

@@ -409,9 +409,9 @@ noncomputable def BinaryFan.isLimitCompLeftIso {X Y X' : C} (c : BinaryFan X Y) 
   · exact fun s => h.lift (BinaryFan.mk (s.fst ≫ inv f) s.snd)
   · intro s -- Porting note: simp timed out here
     simp only [Category.comp_id,BinaryFan.π_app_left,IsIso.inv_hom_id,
-      BinaryFan.mk_fst,IsLimit.fac_assoc,eq_self_iff_true,Category.assoc]
+      BinaryFan.mk_fst,IsLimit.fac_assoc,Category.assoc]
   · intro s -- Porting note: simp timed out here
-    simp only [BinaryFan.π_app_right,BinaryFan.mk_snd,eq_self_iff_true,IsLimit.fac]
+    simp only [BinaryFan.π_app_right,BinaryFan.mk_snd,IsLimit.fac]
   · intro s m e₁ e₂
      -- Porting note: simpa timed out here also
     apply BinaryFan.IsLimit.hom_ext h
@@ -462,11 +462,11 @@ noncomputable def BinaryCofan.isColimitCompLeftIso {X Y X' : C} (c : BinaryCofan
   · exact fun s => h.desc (BinaryCofan.mk (inv f ≫ s.inl) s.inr)
   · intro s
     -- Porting note: simp timed out here too
-    simp only [IsColimit.fac,BinaryCofan.ι_app_left,eq_self_iff_true,
+    simp only [IsColimit.fac,BinaryCofan.ι_app_left,
       Category.assoc,BinaryCofan.mk_inl,IsIso.hom_inv_id_assoc]
   · intro s
     -- Porting note: simp timed out here too
-    simp only [IsColimit.fac,BinaryCofan.ι_app_right,eq_self_iff_true,BinaryCofan.mk_inr]
+    simp only [IsColimit.fac,BinaryCofan.ι_app_right,BinaryCofan.mk_inr]
   · intro s m e₁ e₂
     apply BinaryCofan.IsColimit.hom_ext h
     · rw [← cancel_epi f]
@@ -1179,11 +1179,11 @@ def coprodComparisonNatTrans [HasBinaryCoproducts C] [HasBinaryCoproducts D] (F 
 
 @[reassoc]
 theorem map_inl_inv_coprodComparison [IsIso (coprodComparison F A B)] :
-    F.map coprod.inl ≫ inv (coprodComparison F A B) = coprod.inl := by simp [IsIso.inv_comp_eq]
+    F.map coprod.inl ≫ inv (coprodComparison F A B) = coprod.inl := by simp
 
 @[reassoc]
 theorem map_inr_inv_coprodComparison [IsIso (coprodComparison F A B)] :
-    F.map coprod.inr ≫ inv (coprodComparison F A B) = coprod.inr := by simp [IsIso.inv_comp_eq]
+    F.map coprod.inr ≫ inv (coprodComparison F A B) = coprod.inr := by simp
 
 /-- If the coproduct comparison morphism is an iso, its inverse is natural. -/
 @[reassoc]

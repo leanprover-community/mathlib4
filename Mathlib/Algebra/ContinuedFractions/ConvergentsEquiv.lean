@@ -194,7 +194,7 @@ theorem squashGCF_eq_self_of_terminated (terminatedAt_n : TerminatedAt g n) :
   cases n with
   | zero =>
     change g.s.get? 0 = none at terminatedAt_n
-    simp only [convs', squashGCF, convs'Aux, terminatedAt_n]
+    simp only [squashGCF, terminatedAt_n]
   | succ =>
     cases g
     simp only [squashGCF, mk.injEq, true_and]
@@ -203,7 +203,7 @@ theorem squashGCF_eq_self_of_terminated (terminatedAt_n : TerminatedAt g n) :
 /-- The values before the squashed position stay the same. -/
 theorem squashGCF_nth_of_lt {m : ℕ} (m_lt_n : m < n) :
     (squashGCF g (n + 1)).s.get? m = g.s.get? m := by
-  simp only [squashGCF, squashSeq_nth_of_lt m_lt_n, Nat.add_eq, add_zero]
+  simp only [squashGCF, squashSeq_nth_of_lt m_lt_n]
 
 /-- `convs'` returns the same value for a gcf and the corresponding squashed gcf at the
 squashed position. -/

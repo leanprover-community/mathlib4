@@ -18,7 +18,7 @@ variable {α β : Type*}
 @[simp]
 theorem reduceOption_cons_of_some (x : α) (l : List (Option α)) :
     reduceOption (some x :: l) = x :: l.reduceOption := by
-  simp only [reduceOption, filterMap, id, eq_self_iff_true, and_self_iff]
+  simp only [reduceOption, filterMap, id]
 
 @[simp]
 theorem reduceOption_cons_of_none (l : List (Option α)) :

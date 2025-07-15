@@ -63,7 +63,7 @@ lemma isJacobsonRing_iff_jacobsonSpace :
   apply vanishingIdeal_anti_mono
   rw [← H.1 (isClosed_zeroLocus I), (isClosed_zeroLocus _).closure_subset_iff]
   rintro x ⟨hx : I ≤ x.asIdeal, hx'⟩
-  show jacobson I ≤ x.asIdeal
+  change jacobson I ≤ x.asIdeal
   exact sInf_le ⟨hx, (isClosed_singleton_iff_isMaximal _).mp hx'⟩
 
 /--

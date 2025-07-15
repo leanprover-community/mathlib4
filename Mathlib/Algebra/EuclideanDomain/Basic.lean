@@ -175,7 +175,7 @@ theorem xgcdAux_fst (x y : R) : ∀ s t s' t', (xgcdAux x s t y s' t').1 = gcd x
       intros
       rw [xgcd_zero_left, gcd_zero_left])
     fun x y h IH s t s' t' => by
-    simp only [xgcdAux_rec h, if_neg h, IH]
+    simp only [xgcdAux_rec h, IH]
     rw [← gcd_val]
 
 theorem xgcdAux_val (x y : R) : xgcdAux x 1 0 y 0 1 = (gcd x y, xgcd x y) := by
@@ -384,7 +384,7 @@ theorem div_eq_iff_eq_mul_of_dvd (x y z : R) (h1 : y ≠ 0) (h2 : y ∣ x) :
     x / y = z ↔ x = y * z := by
   obtain ⟨a, ha⟩ := h2
   rw [ha, mul_div_cancel_left₀ _ h1]
-  simp only [mul_eq_mul_left_iff, mul_eq_zero, h1, or_self, or_false]
+  simp only [mul_eq_mul_left_iff, h1, or_false]
 
 theorem eq_div_iff_mul_eq_of_dvd (x y z : R) (h1 : z ≠ 0) (h2 : z ∣ y) :
     x = y / z ↔ z * x = y := by

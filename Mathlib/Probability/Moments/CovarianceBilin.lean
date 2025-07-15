@@ -97,7 +97,7 @@ lemma norm_toLpₗ_le [OpensMeasurableSpace E] (L : Dual 𝕜 E) :
     rw [eLpNorm_eq_lintegral_rpow_enorm (by simp [hp]) hp_top, ENNReal.toReal_rpow]
     simp
   rw [Dual.toLpₗ_apply h_Lp, Lp.norm_toLp, eLpNorm_eq_lintegral_rpow_enorm (by simp [hp]) hp_top]
-  simp only [ENNReal.toReal_ofNat, ENNReal.rpow_ofNat, one_div]
+  simp only [one_div]
   refine ENNReal.toReal_le_of_le_ofReal (by positivity) ?_
   suffices ∫⁻ x, ‖L x‖ₑ ^ p.toReal ∂μ ≤ ‖L‖ₑ ^ p.toReal * ∫⁻ x, ‖x‖ₑ ^ p.toReal ∂μ by
     rw [← ENNReal.ofReal_rpow_of_nonneg (by positivity) (by positivity)]

@@ -35,7 +35,7 @@ mk_iff_of_inductive_prop Eq       test.eq_iff
 example (α : Sort u) (a b : α) : a = b ↔ b = a := test.eq_iff a b
 
 mk_iff_of_inductive_prop HEq      test.heq_iff
-example {α : Sort u} (a : α) {β : Sort u} (b : β) : HEq a b ↔ β = α ∧ HEq b a := test.heq_iff a b
+example {α : Sort u} (a : α) {β : Sort u} (b : β) : a ≍ b ↔ β = α ∧ b ≍ a := test.heq_iff a b
 
 mk_iff_of_inductive_prop List.Perm test.perm_iff
 open scoped List in

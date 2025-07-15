@@ -143,7 +143,7 @@ theorem rotation_pi_div_two : o.rotation (π / 2 : ℝ) = J := by
 theorem rotation_rotation (θ₁ θ₂ : Real.Angle) (x : V) :
     o.rotation θ₁ (o.rotation θ₂ x) = o.rotation (θ₁ + θ₂) x := by
   simp only [o.rotation_apply, Real.Angle.cos_add, Real.Angle.sin_add, LinearIsometryEquiv.map_add,
-    LinearIsometryEquiv.trans_apply, map_smul, rightAngleRotation_rightAngleRotation]
+    map_smul, rightAngleRotation_rightAngleRotation]
   module
 
 /-- Rotating twice is equivalent to rotating by the sum of the angles. -/

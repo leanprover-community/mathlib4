@@ -53,8 +53,7 @@ variable (F : D ⥤ SheafOfModules.{v} R)
 
 instance (X : Cᵒᵖ) : Small.{v} (((F ⋙ forget _) ⋙ PresheafOfModules.evaluation _ X) ⋙
     CategoryTheory.forget _).sections := by
-  change Small.{v} ((F ⋙ evaluation R X) ⋙ CategoryTheory.forget _).sections
-  infer_instance
+  solve_by_elim
 
 noncomputable instance createsLimit : CreatesLimit F (forget _) :=
   createsLimitOfFullyFaithfulOfIso' (limit.isLimit (F ⋙ forget _))

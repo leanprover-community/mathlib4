@@ -44,8 +44,6 @@ probably should still implement the less general ones as abbreviations to the mo
 fewer type arguments.
 -/
 
-suppress_compilation
-
 namespace TensorProduct
 
 namespace AlgebraTensorModule
@@ -617,7 +615,7 @@ theorem baseChange_add : (f + g).baseChange A = f.baseChange A + g.baseChange A 
 @[simp]
 theorem baseChange_zero : baseChange A (0 : M →ₗ[R] N) = 0 := by
   ext
-  simp [baseChange_eq_ltensor]
+  simp
 
 @[simp]
 theorem baseChange_smul : (r • f).baseChange A = r • f.baseChange A := by
@@ -676,12 +674,12 @@ variable (f g : M →ₗ[R] N)
 @[simp]
 theorem baseChange_sub : (f - g).baseChange A = f.baseChange A - g.baseChange A := by
   ext
-  simp [baseChange_eq_ltensor, tmul_sub]
+  simp [tmul_sub]
 
 @[simp]
 theorem baseChange_neg : (-f).baseChange A = -f.baseChange A := by
   ext
-  simp [baseChange_eq_ltensor, tmul_neg]
+  simp [tmul_neg]
 
 end Ring
 

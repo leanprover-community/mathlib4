@@ -135,6 +135,6 @@ lemma exists_mem_doublyStochastic_eq_smul_iff {M : Matrix n n R} {s : R} (hs : 0
     rw [sum_eq_zero_iff_of_nonneg (by simp [h₁ i])] at h₂
     exact h₂ _ (by simp)
   rintro ⟨hM₁, hM₂, hM₃⟩
-  exact ⟨s⁻¹ • M, by simp [mem_doublyStochastic_iff_sum, ← mul_sum, hs.ne', inv_mul_cancel₀, *]⟩
+  exact ⟨s⁻¹ • M, by simp [mem_doublyStochastic_iff_sum, ← mul_sum, hs.ne', *]⟩
 
 end LinearOrderedSemifield

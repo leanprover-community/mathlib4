@@ -120,7 +120,7 @@ instance : Inhabited (LeftInvariantDerivation I G) :=
 instance : Add (LeftInvariantDerivation I G) where
   add X Y :=
     ⟨X + Y, fun g => by
-      simp only [map_add, Derivation.coe_add, left_invariant', Pi.add_apply]⟩
+      simp only [map_add, left_invariant']⟩
 
 instance : Neg (LeftInvariantDerivation I G) where
   neg X := ⟨-X, fun g => by simp [left_invariant']⟩
@@ -253,7 +253,7 @@ instance : LieRing (LeftInvariantDerivation I G) where
   lie_self X := by ext1; simp only [commutator_apply, sub_self]; rfl
   leibniz_lie X Y Z := by
     ext1
-    simp only [commutator_apply, coe_add, coe_sub, map_sub, Pi.add_apply]
+    simp only [commutator_apply, coe_add, map_sub, Pi.add_apply]
     ring
 
 instance : LieAlgebra 𝕜 (LeftInvariantDerivation I G) where

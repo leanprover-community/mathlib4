@@ -234,13 +234,13 @@ protected def liftOn₂ {β} {c : Con M} (q r : c.Quotient) (f : M → M → β)
 @[to_additive "A version of `Quotient.hrecOn₂'` for quotients by `AddCon`."]
 protected def hrecOn₂ {cM : Con M} {cN : Con N} {φ : cM.Quotient → cN.Quotient → Sort*}
     (a : cM.Quotient) (b : cN.Quotient) (f : ∀ (x : M) (y : N), φ x y)
-    (h : ∀ x y x' y', cM x x' → cN y y' → HEq (f x y) (f x' y')) : φ a b :=
+    (h : ∀ x y x' y', cM x x' → cN y y' → f x y ≍ f x' y') : φ a b :=
   Quotient.hrecOn₂' a b f h
 
 @[to_additive (attr := simp)]
 theorem hrec_on₂_coe {cM : Con M} {cN : Con N} {φ : cM.Quotient → cN.Quotient → Sort*} (a : M)
     (b : N) (f : ∀ (x : M) (y : N), φ x y)
-    (h : ∀ x y x' y', cM x x' → cN y y' → HEq (f x y) (f x' y')) :
+    (h : ∀ x y x' y', cM x x' → cN y y' → f x y ≍ f x' y') :
     Con.hrecOn₂ (↑a) (↑b) f h = f a b :=
   rfl
 
@@ -457,7 +457,7 @@ theorem sSup_def {S : Set (Con M)} :
     sSup S = conGen (sSup ((⇑) '' S)) := by
   rw [sSup_eq_conGen, sSup_image]
   congr with (x y)
-  simp only [sSup_image, iSup_apply, iSup_Prop_eq, exists_prop, rel_eq_coe]
+  simp only [iSup_apply, iSup_Prop_eq, exists_prop]
 
 variable (M)
 

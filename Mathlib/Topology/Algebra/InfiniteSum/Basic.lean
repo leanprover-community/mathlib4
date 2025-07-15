@@ -595,7 +595,7 @@ protected theorem Multipliable.tprod_eq_mul_tprod_ite' [DecidableEq β] {f : β 
       congr
       exact tprod_eq_mulSingle b fun b' hb' ↦ if_neg hb'
     _ = f b * ∏' x, ite (x = b) 1 (f x) := by
-      simp only [update, eq_self_iff_true, if_true, eq_rec_constant, dite_eq_ite]
+      simp only [update, if_true, eq_rec_constant, dite_eq_ite]
 
 @[deprecated (since := "2025-04-12")] alias tsum_eq_add_tsum_ite' :=
   Summable.tsum_eq_add_tsum_ite'

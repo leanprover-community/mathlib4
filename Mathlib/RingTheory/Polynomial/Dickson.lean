@@ -118,7 +118,7 @@ There is exactly one other Lambda structure on `ℤ[X]` in terms of binomial pol
 theorem dickson_one_one_eval_add_inv (x y : R) (h : x * y = 1) :
     ∀ n, (dickson 1 (1 : R) n).eval (x + y) = x ^ n + y ^ n
   | 0 => by
-    simp only [eval_one, eval_add, pow_zero, dickson_zero]; norm_num
+    simp only [pow_zero, dickson_zero]; norm_num
   | 1 => by simp only [eval_X, dickson_one, pow_one]
   | n + 2 => by
     simp only [eval_sub, eval_mul, dickson_one_one_eval_add_inv x y h _, eval_X, dickson_add_two,
@@ -129,15 +129,15 @@ theorem dickson_one_one_eval_add_inv (x y : R) (h : x * y = 1) :
 variable (R)
 
 -- Porting note: Added 2 new theorems for convenience
-private theorem two_mul_C_half_eq_one [Invertible (2 : R)] : 2 * C (⅟ 2 : R) = 1 := by
+private theorem two_mul_C_half_eq_one [Invertible (2 : R)] : 2 * C (⅟2 : R) = 1 := by
   rw [two_mul, ← C_add, invOf_two_add_invOf_two, C_1]
 
-private theorem C_half_mul_two_eq_one [Invertible (2 : R)] : C (⅟ 2 : R) * 2 = 1 := by
+private theorem C_half_mul_two_eq_one [Invertible (2 : R)] : C (⅟2 : R) * 2 = 1 := by
   rw [mul_comm, two_mul_C_half_eq_one]
 
 theorem dickson_one_one_eq_chebyshev_C : ∀ n, dickson 1 (1 : R) n = Chebyshev.C R n
   | 0 => by
-    simp only [Chebyshev.C_zero, mul_one, one_comp, dickson_zero]
+    simp only [dickson_zero]
     norm_num
   | 1 => by
     rw [dickson_one, Nat.cast_one, Chebyshev.C_one]
@@ -148,16 +148,16 @@ theorem dickson_one_one_eq_chebyshev_C : ∀ n, dickson 1 (1 : R) n = Chebyshev.
     ring
 
 theorem dickson_one_one_eq_chebyshev_T [Invertible (2 : R)] (n : ℕ) :
-    dickson 1 (1 : R) n = 2 * (Chebyshev.T R n).comp (C (⅟ 2) * X) :=
+    dickson 1 (1 : R) n = 2 * (Chebyshev.T R n).comp (C (⅟2) * X) :=
   (dickson_one_one_eq_chebyshev_C R n).trans (Chebyshev.C_eq_two_mul_T_comp_half_mul_X R n)
 
 theorem chebyshev_T_eq_dickson_one_one [Invertible (2 : R)] (n : ℕ) :
-    Chebyshev.T R n = C (⅟ 2) * (dickson 1 1 n).comp (2 * X) :=
+    Chebyshev.T R n = C (⅟2) * (dickson 1 1 n).comp (2 * X) :=
   dickson_one_one_eq_chebyshev_C R n ▸ Chebyshev.T_eq_half_mul_C_comp_two_mul_X R n
 
 theorem dickson_two_one_eq_chebyshev_S : ∀ n, dickson 2 (1 : R) n = Chebyshev.S R n
   | 0 => by
-    simp only [Chebyshev.S_zero, mul_one, one_comp, dickson_zero]
+    simp only [dickson_zero]
     norm_num
   | 1 => by
     rw [dickson_one, Nat.cast_one, Chebyshev.S_one]
@@ -168,7 +168,7 @@ theorem dickson_two_one_eq_chebyshev_S : ∀ n, dickson 2 (1 : R) n = Chebyshev.
     ring
 
 theorem dickson_two_one_eq_chebyshev_U [Invertible (2 : R)] (n : ℕ) :
-    dickson 2 (1 : R) n = (Chebyshev.U R n).comp (C (⅟ 2) * X) :=
+    dickson 2 (1 : R) n = (Chebyshev.U R n).comp (C (⅟2) * X) :=
   (dickson_two_one_eq_chebyshev_S R n).trans (Chebyshev.S_eq_U_comp_half_mul_X R n)
 
 theorem chebyshev_U_eq_dickson_two_one (n : ℕ) :
@@ -248,7 +248,7 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
           mem_roots hφ, IsRoot, eval_add, eval_sub, eval_pow, eval_mul, eval_X, eval_C, eval_one,
           Multiset.mem_singleton]
         by_cases hy : y = 0
-        · simp only [hy, eq_self_iff_true, or_true]
+        · simp only [hy, or_true]
         apply or_congr _ Iff.rfl
         rw [← mul_left_inj' hy, eq_comm, ← sub_eq_zero, add_mul, inv_mul_cancel₀ hy]
         apply eq_iff_eq_cancel_right.mpr
@@ -258,7 +258,7 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
     intro x
     simp only [exists_prop, Set.mem_iUnion, Ne, Set.mem_setOf_eq]
     by_cases hx : x = 0
-    · simp only [hx, and_true, eq_self_iff_true, inv_zero, or_true]
+    · simp only [hx, and_true, inv_zero, or_true]
       exact ⟨_, 1, rfl, one_ne_zero⟩
     · simp only [hx, or_false, exists_eq_right]
       exact ⟨_, rfl, hx⟩

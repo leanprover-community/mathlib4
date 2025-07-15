@@ -24,7 +24,7 @@ instance [Finite V] : IsEmpty G.end where
     cases nonempty_fintype V
     obtain ⟨v, h⟩ := (s <| Opposite.op Finset.univ).nonempty
     exact Set.disjoint_iff.mp (s _).disjoint_right
-        ⟨by simp only [Opposite.unop_op, Finset.coe_univ, Set.mem_univ], h⟩
+        ⟨by simp only [Finset.coe_univ, Set.mem_univ], h⟩
 
 /-- The `componentCompl`s chosen by an end are all infinite. -/
 lemma end_componentCompl_infinite (e : G.end) (K : (Finset V)ᵒᵖ) :

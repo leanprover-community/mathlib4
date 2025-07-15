@@ -72,13 +72,13 @@ theorem inclusion_exclusion_sum_biUnion (s : Finset ι) (S : ι → Finset α) (
       simp [sub_eq_neg_add, ← sum_neg_distrib, filter_eq', pow_succ]
     _ = ∑ t ∈ s.powerset, (-1) ^ #t •
           if ht : t.Nonempty then ∑ a ∈ t.inf' ht S, f a else ∑ a ∈ s.biUnion S, f a := by
-      rw [← sum_attach (filter ..)]; simp [sum_dite, filter_eq', sum_attach]
+      rw [← sum_attach (filter ..)]; simp [sum_dite]
     _ = ∑ a ∈ s.biUnion S, (∏ i ∈ s, (1 - Set.indicator (S i) 1 a : ℤ)) • f a := by
-      simp only [Int.reduceNeg, mem_coe, prod_sub, sum_comm (s := s.biUnion S), sum_smul, mul_assoc]
+      simp only [Int.reduceNeg, prod_sub, sum_comm (s := s.biUnion S), sum_smul, mul_assoc]
       congr! with t
       split_ifs with ht
       · obtain ⟨i, hi⟩ := ht
-        simp only [prod_const_one, mul_one, prod_indicator_apply]
+        simp only [prod_const_one, prod_indicator_apply]
         simp only [smul_sum, Set.indicator, Set.mem_iInter, mem_coe, Pi.one_apply, mul_ite, mul_one,
           mul_zero, ite_smul, zero_smul, sum_ite, not_forall, sum_const_zero, add_zero]
         congr

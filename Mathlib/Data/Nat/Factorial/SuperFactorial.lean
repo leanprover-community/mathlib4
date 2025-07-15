@@ -72,7 +72,7 @@ variable {R : Type*} [CommRing R]
 theorem det_vandermonde_id_eq_superFactorial (n : ℕ) :
     (Matrix.vandermonde (fun (i : Fin (n + 1)) ↦ (i : R))).det = Nat.superFactorial n := by
   induction' n with n hn
-  · simp [Matrix.det_vandermonde]
+  · simp
   · rw [Nat.superFactorial, Matrix.det_vandermonde, Fin.prod_univ_succAbove _ 0]
     push_cast
     congr

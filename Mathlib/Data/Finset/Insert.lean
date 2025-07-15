@@ -219,9 +219,18 @@ instance (i : α) : Unique ({i} : Finset α) where
 @[simp]
 lemma default_singleton (i : α) : ((default : ({i} : Finset α)) : α) = i := rfl
 
-instance Nontrivial.instDecidablePred [DecidableEq α] :
-    DecidablePred (Finset.Nontrivial (α := α)) :=
-  inferInstanceAs (DecidablePred fun s ↦ ∃ a ∈ s, ∃ b ∈ s, a ≠ b)
+instance Nontrivial.instDecidablePred : DecidablePred (Finset.Nontrivial (α := α)) := fun s =>
+  /-
+  We don't use `Finset.one_lt_card_iff_nontrivial`
+  because `Finset.card` is defined in a different file.
+  -/
+  Quotient.recOnSubsingleton (motive := fun (s : Multiset α) =>
+      (h : s.Nodup) → Decidable (Finset.Nontrivial ⟨s, h⟩))
+    s.val (fun l h => match l with
+      | [] => isFalse (by simp)
+      | [_] => isFalse (by simp [Finset.toSet])
+      | a :: b :: _ => isTrue ⟨a, by simp, b, by simp,
+        List.ne_of_not_mem_cons (List.nodup_cons.mp h).left⟩) s.nodup
 
 end Singleton
 
@@ -559,8 +568,8 @@ def subtypeInsertEquivOption {t : Finset α} {x : α} (h : x ∉ t) :
   invFun y := (y.elim ⟨x, mem_insert_self _ _⟩) fun z => ⟨z, mem_insert_of_mem z.2⟩
   left_inv y := by
     by_cases h : ↑y = x
-    · simp only [Subtype.ext_iff, h, Option.elim, dif_pos, Subtype.coe_mk]
-    · simp only [h, Option.elim, dif_neg, not_false_iff, Subtype.coe_eta, Subtype.coe_mk]
+    · simp only [Subtype.ext_iff, h, Option.elim, dif_pos]
+    · simp only [h, Option.elim, dif_neg, not_false_iff, Subtype.coe_eta]
   right_inv := by
     rintro (_ | y)
     · simp only [Option.elim, dif_pos]
@@ -644,7 +653,7 @@ theorem toFinset_nil : toFinset (@nil α) = ∅ :=
 
 @[simp]
 theorem toFinset_cons : toFinset (a :: l) = insert a (toFinset l) :=
-  Finset.eq_of_veq <| by by_cases h : a ∈ l <;> simp [Finset.insert_val', Multiset.dedup_cons, h]
+  Finset.eq_of_veq <| by by_cases h : a ∈ l <;> simp [h]
 
 theorem toFinset_replicate_of_ne_zero {n : ℕ} (hn : n ≠ 0) :
     (List.replicate n a).toFinset = {a} := by

@@ -154,7 +154,7 @@ variable (𝕜 E F)
 
 /-- The operator norm of the second projection `E × F → F` is exactly 1 if `F` is nontrivial. -/
 @[simp] lemma norm_snd [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [NormedAddCommGroup F] [NormedSpace 𝕜 F] [Nontrivial F]  :
+    [NormedAddCommGroup F] [NormedSpace 𝕜 F] [Nontrivial F] :
     ‖snd 𝕜 E F‖ = 1 := by
   refine le_antisymm (norm_snd_le ..) ?_
   let ⟨f, hf⟩ := exists_ne (0 : F)

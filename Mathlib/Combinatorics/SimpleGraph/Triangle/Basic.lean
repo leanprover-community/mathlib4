@@ -89,25 +89,25 @@ lemma edgeDisjointTriangles_iff_mem_sym2_subsingleton :
   have (a b) (hab : a ≠ b) : {s ∈ (G.cliqueSet 3 : Set (Finset α)) | s(a, b) ∈ (s : Finset α).sym2}
     = {s | G.Adj a b ∧ ∃ c, G.Adj a c ∧ G.Adj b c ∧ s = {a, b, c}} := by
     ext s
-    simp only [mem_sym2_iff, Sym2.mem_iff, forall_eq_or_imp, forall_eq, Set.sep_and,
-      Set.mem_inter_iff, Set.mem_sep_iff, mem_cliqueSet_iff, Set.mem_setOf_eq,
-      and_and_and_comm (b := _ ∈ _), and_self, is3Clique_iff]
+    simp only [mem_sym2_iff, Sym2.mem_iff, forall_eq_or_imp, forall_eq,
+      mem_cliqueSet_iff, Set.mem_setOf_eq,
+      is3Clique_iff]
     constructor
     · rintro ⟨⟨c, d, e, hcd, hce, hde, rfl⟩, hab⟩
       simp only [mem_insert, mem_singleton] at hab
       obtain ⟨rfl | rfl | rfl, rfl | rfl | rfl⟩ := hab
       any_goals
-        simp only [*, adj_comm, true_and, Ne, eq_self_iff_true, not_true] at *
+        simp only [*, adj_comm, true_and, Ne, not_true] at *
       any_goals
         first
         | exact ⟨c, by aesop⟩
         | exact ⟨d, by aesop⟩
         | exact ⟨e, by aesop⟩
-        | simp only [*, adj_comm, true_and, Ne, eq_self_iff_true, not_true] at *
+        | simp only [*, true_and] at *
           exact ⟨c, by aesop⟩
-        | simp only [*, adj_comm, true_and, Ne, eq_self_iff_true, not_true] at *
+        | simp only [*, true_and] at *
           exact ⟨d, by aesop⟩
-        | simp only [*, adj_comm, true_and, Ne, eq_self_iff_true, not_true] at *
+        | simp only [*, true_and] at *
           exact ⟨e, by aesop⟩
     · rintro ⟨hab, c, hac, hbc, rfl⟩
       refine ⟨⟨a, b, c, ?_⟩, ?_⟩ <;> simp [*]
@@ -124,7 +124,7 @@ lemma edgeDisjointTriangles_iff_mem_sym2_subsingleton :
       Set.Nontrivial, Set.mem_inter_iff, mem_coe]
     rintro hG _ a b c hab hac hbc rfl _ d e f hde hdf hef rfl g hg₁ hg₂ h hh₁ hh₂ hgh
     refine hG (Sym2.mk_isDiag_iff.not.2 hgh) ⟨⟨a, b, c, ?_⟩, by simpa using And.intro hg₁ hh₁⟩
-      ⟨⟨d, e, f, ?_⟩, by simpa using And.intro hg₂ hh₂⟩ <;> simp [is3Clique_triple_iff, *]
+      ⟨⟨d, e, f, ?_⟩, by simpa using And.intro hg₂ hh₂⟩ <;> simp [*]
 
 alias ⟨EdgeDisjointTriangles.mem_sym2_subsingleton, _⟩ :=
   edgeDisjointTriangles_iff_mem_sym2_subsingleton
@@ -167,9 +167,9 @@ lemma LocallyLinear.card_edgeFinset (hG : G.LocallyLinear) :
     _ ≤ #{s(a, b), s(a, c), s(b, c)} := card_le_card ?_
     _ ≤ 3 := (card_insert_le _ _).trans (succ_le_succ <| (card_insert_le _ _).trans_eq <| by
       rw [card_singleton])
-  simp only [subset_iff, Sym2.forall, mem_sym2_iff, le_eq_subset, mem_bipartiteBelow, mem_insert,
+  simp only [subset_iff, Sym2.forall, mem_sym2_iff, mem_bipartiteBelow, mem_insert,
     mem_edgeFinset, mem_singleton, and_imp, mem_edgeSet, Sym2.mem_iff, forall_eq_or_imp,
-    forall_eq, Quotient.eq, Sym2.rel_iff]
+    forall_eq]
   rintro d e hde (rfl | rfl | rfl) (rfl | rfl | rfl) <;> simp [*] at *
 
 end LocallyLinear

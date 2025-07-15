@@ -84,7 +84,7 @@ macro "map_fun_tac" : tactic => `(tactic| (
     -- Porting note: the lemmas on the next line do not have the `simp` tag in mathlib4
     add_coeff, sub_coeff, mul_coeff, neg_coeff, nsmul_coeff, zsmul_coeff, pow_coeff,
     peval, map_aeval, algebraMap_int_eq, coe_eval₂Hom] <;>
-  try { cases n <;> simp <;> done } <;>  -- Porting note: this line solves `one`
+  try { cases n <;> simp <;> done } <;> -- Porting note: this line solves `one`
   apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl <;>
   ext ⟨i, k⟩ <;>
     fin_cases i <;> rfl))
@@ -119,7 +119,7 @@ theorem natCast (n : ℕ) : mapFun f (n : 𝕎 R) = n :=
 
 theorem intCast (n : ℤ) : mapFun f (n : 𝕎 R) = n :=
   show mapFun f n.castDef = (n : WittVector p S) by
-    cases n <;> simp [*, Int.castDef, add, one, neg, zero, natCast] <;> rfl
+    cases n <;> simp [*, Int.castDef, neg, natCast] <;> rfl
 
 end mapFun
 
@@ -138,12 +138,12 @@ section Tactic
 open Lean Elab Tactic
 
 /-- An auxiliary tactic for proving that `ghostFun` respects the ring operations. -/
-elab "ghost_fun_tac" φ:term "," fn:term : tactic => do
+elab "ghost_fun_tac " φ:term ", " fn:term : tactic => do
   evalTactic (← `(tactic| (
   ext n
   have := congr_fun (congr_arg (@peval R _ _) (wittStructureInt_prop p $φ n)) $fn
   simp only [wittZero, OfNat.ofNat, Zero.zero, wittOne, One.one,
-    HAdd.hAdd, Add.add, HSub.hSub, Sub.sub, Neg.neg, HMul.hMul, Mul.mul,HPow.hPow, Pow.pow,
+    HAdd.hAdd, Add.add, HSub.hSub, Sub.sub, Neg.neg, HMul.hMul, Mul.mul, HPow.hPow, Pow.pow,
     wittNSMul, wittZSMul, HSMul.hSMul, SMul.smul]
   simpa +unfoldPartialApp [WittVector.ghostFun, aeval_rename, aeval_bind₁,
     comp, uncurry, peval, eval] using this

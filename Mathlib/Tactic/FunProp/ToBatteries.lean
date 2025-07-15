@@ -32,19 +32,6 @@ def isOrderedSubsetOf {α} [Inhabited α] [DecidableEq α] (a b : Array α) : Bo
   else
     return false
 
-private def letTelescopeImpl {α} (e : Expr) (k : Array Expr → Expr → MetaM α) :
-    MetaM α :=
-  lambdaLetTelescope e fun xs b ↦ do
-    if let .some i ← xs.findIdxM? (fun x ↦ do pure !(← x.fvarId!.isLetVar)) then
-      k xs[0:i] (← mkLambdaFVars xs[i:] b)
-    else
-      k xs b
-
-/-- Telescope consuming only let bindings -/
-def letTelescope {α n} [MonadControlT MetaM n] [Monad n] (e : Expr)
-    (k : Array Expr → Expr → n α) : n α :=
-  map2MetaM (fun k => letTelescopeImpl e k) k
-
 /--
 Swaps bvars indices `i` and `j`
 
@@ -134,7 +121,7 @@ private def betaThroughLetAux (f : Expr) (args : List Expr) : Expr :=
   match f, args with
   | f, [] => f
   | .lam _ _ b _, a :: as => (betaThroughLetAux (b.instantiate1 a) as)
-  | .letE n t v b _, args => .letE n t v (betaThroughLetAux b args) false
+  | .letE n t v b nondep, args => .letE n t v (betaThroughLetAux b args) nondep
   | .mdata _ b, args => betaThroughLetAux b args
   | f, args => mkAppN f args.toArray
 

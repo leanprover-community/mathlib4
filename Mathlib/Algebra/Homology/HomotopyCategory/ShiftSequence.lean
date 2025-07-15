@@ -80,9 +80,9 @@ variable (C) in
 noncomputable def shiftIso (n a a' : ℤ) (ha' : n + a = a') :
     (CategoryTheory.shiftFunctor _ n) ⋙ homologyFunctor C (ComplexShape.up ℤ) a ≅
       homologyFunctor C (ComplexShape.up ℤ) a' :=
-  isoWhiskerLeft _ (homologyFunctorIso C (ComplexShape.up ℤ) a) ≪≫
+  Functor.isoWhiskerLeft _ (homologyFunctorIso C (ComplexShape.up ℤ) a) ≪≫
     (Functor.associator _ _ _).symm ≪≫
-    isoWhiskerRight (shiftShortComplexFunctorIso C n a a' ha')
+    Functor.isoWhiskerRight (shiftShortComplexFunctorIso C n a a' ha')
       (ShortComplex.homologyFunctor C) ≪≫
     (homologyFunctorIso C (ComplexShape.up ℤ) a').symm
 

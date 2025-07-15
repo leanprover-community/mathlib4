@@ -120,6 +120,38 @@ theorem associativity_inv (X Y Z : C) :
   rw [Iso.eq_inv_comp, ← associativity_assoc, ← F.map_comp, Iso.hom_inv_id,
     F.map_id, comp_id]
 
+@[reassoc]
+lemma ε_tensorHom_comp_μ {X : C} {Y : D} (f : Y ⟶ F.obj X) :
+    (ε F ⊗ₘ f) ≫ μ F (𝟙_ C) X = 𝟙_ D ◁ f ≫ (λ_ (F.obj X)).hom ≫ F.map (λ_ X).inv := by
+  rw [left_unitality]; simp [tensorHom_def']
+
+@[reassoc]
+lemma tensorHom_ε_comp_μ {X : C} {Y : D} (f : Y ⟶ F.obj X) :
+    (f ⊗ₘ ε F) ≫ μ F X (𝟙_ C) = f ▷ 𝟙_ D ≫ (ρ_ (F.obj X)).hom ≫ F.map (ρ_ X).inv := by
+  rw [right_unitality]; simp [tensorHom_def]
+
+@[reassoc]
+lemma tensorUnit_whiskerLeft_comp_leftUnitor_hom {X : C} {Y : D} (f : Y ⟶ F.obj X) :
+    𝟙_ D ◁ f ≫ (λ_ (F.obj X)).hom = (ε F ⊗ₘ f) ≫ μ F (𝟙_ C) X ≫ F.map (λ_ X).hom := by
+  rw [left_unitality]; simp [tensorHom_def']
+
+@[reassoc]
+lemma whiskerRight_tensorUnit_comp_rightUnitor_hom {X : C} {Y : D} (f : Y ⟶ F.obj X) :
+    f ▷ 𝟙_ D ≫ (ρ_ (F.obj X)).hom = (f ⊗ₘ ε F) ≫ μ F X (𝟙_ C) ≫ F.map (ρ_ X).hom := by
+  rw [right_unitality]; simp [tensorHom_def]
+
+@[reassoc]
+lemma μ_whiskerRight_comp_μ (X Y Z : C) :
+    μ F X Y ▷ F.obj Z ≫ μ F (X ⊗ Y) Z = (α_ (F.obj X) (F.obj Y) (F.obj Z)).hom ≫
+      F.obj X ◁ μ F Y Z ≫ μ F X (Y ⊗ Z) ≫ F.map (α_ X Y Z).inv := by
+  rw [← associativity_assoc, ← F.map_comp, Iso.hom_inv_id, map_id, Category.comp_id]
+
+@[reassoc]
+lemma whiskerLeft_μ_comp_μ (X Y Z : C) :
+    F.obj X ◁ μ F Y Z ≫ μ F X (Y ⊗ Z) = (α_ (F.obj X) (F.obj Y) (F.obj Z)).inv ≫
+      μ F X Y ▷ F.obj Z ≫ μ F (X ⊗ Y) Z ≫ F.map (α_ X Y Z).hom := by
+  rw [associativity, Iso.inv_hom_id_assoc]
+
 end
 
 section
@@ -266,6 +298,28 @@ theorem associativity_inv (X Y Z : C) :
       F.map (α_ X Y Z).inv ≫ δ F (X ⊗ Y) Z ≫ δ F X Y ▷ F.obj Z := by
   rw [← Category.assoc, Iso.comp_inv_eq, Category.assoc, Category.assoc, associativity,
     ← Category.assoc, ← F.map_comp, Iso.inv_hom_id, F.map_id, id_comp]
+
+@[reassoc]
+lemma δ_comp_η_tensorHom {X : C} {Y : D} (f : F.obj X ⟶ Y) :
+    δ F (𝟙_ C) X ≫ (η F ⊗ₘ f) = F.map (λ_ X).hom ≫ (λ_ (F.obj X)).inv ≫ 𝟙_ D ◁ f := by
+  rw [left_unitality]; simp [tensorHom_def]
+
+@[reassoc]
+lemma δ_comp_tensorHom_η {X : C} {Y : D} (f : F.obj X ⟶ Y) :
+    δ F X (𝟙_ C) ≫ (f ⊗ₘ η F) = F.map (ρ_ X).hom ≫ (ρ_ (F.obj X)).inv ≫ f ▷ 𝟙_ D := by
+  rw [right_unitality]; simp [tensorHom_def']
+
+@[reassoc]
+lemma δ_comp_δ_whiskerRight (X Y Z : C) :
+    δ F (X ⊗ Y) Z ≫ δ F X Y ▷ F.obj Z = F.map (α_ X Y Z).hom ≫
+      δ F X (Y ⊗ Z) ≫ F.obj X ◁ δ F Y Z ≫ (α_ (F.obj X) (F.obj Y) (F.obj Z)).inv := by
+  rw [← associativity_assoc, Iso.hom_inv_id, Category.comp_id]
+
+@[reassoc]
+lemma δ_comp_whiskerLeft_δ (X Y Z : C) :
+    δ F X (Y ⊗ Z) ≫ F.obj X ◁ δ F Y Z = F.map (α_ X Y Z).inv ≫
+      δ F (X ⊗ Y) Z ≫ δ F X Y ▷ F.obj Z ≫ (α_ (F.obj X) (F.obj Y) (F.obj Z)).hom := by
+  rw [associativity, ← F.map_comp_assoc, Iso.inv_hom_id, Functor.map_id, Category.id_comp]
 
 end
 
@@ -426,6 +480,17 @@ theorem map_rightUnitor (X : C) :
 @[reassoc]
 theorem map_rightUnitor_inv (X : C) :
     F.map (ρ_ X).inv = (ρ_ (F.obj X)).inv ≫ F.obj X ◁ ε F  ≫ μ F X (𝟙_ C):= by simp
+
+@[simp] lemma inv_η : CategoryTheory.inv (η F) = ε F := by
+  rw [← εIso_hom, ← Iso.comp_inv_eq_id, εIso_inv, IsIso.inv_hom_id]
+
+@[simp] lemma inv_ε : CategoryTheory.inv (ε F) = η F := by simp [← inv_η]
+
+@[simp] lemma inv_μ (X Y : C) : CategoryTheory.inv (μ F X Y) = δ F X Y := by
+  rw [← Monoidal.μIso_inv, ← CategoryTheory.IsIso.inv_eq_inv]
+  simp only [IsIso.inv_inv, IsIso.Iso.inv_inv, μIso_hom]
+
+@[simp] lemma inv_δ (X Y : C) : CategoryTheory.inv (δ F X Y) = μ F X Y := by simp [← inv_μ]
 
 /-- The tensorator as a natural isomorphism. -/
 @[simps!]

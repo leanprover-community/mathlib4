@@ -91,7 +91,7 @@ section Algebra
 def mFourierSubalgebra (d : Type*) [Fintype d] : StarSubalgebra ℂ C(UnitAddTorus d, ℂ) where
   toSubalgebra := Algebra.adjoin ℂ (range mFourier)
   star_mem' := by
-    show Algebra.adjoin ℂ (range mFourier) ≤ star (Algebra.adjoin ℂ (range mFourier))
+    change Algebra.adjoin ℂ (range mFourier) ≤ star (Algebra.adjoin ℂ (range mFourier))
     refine adjoin_le ?_
     rintro _ ⟨n, rfl⟩
     refine subset_adjoin ⟨-n, ?_⟩

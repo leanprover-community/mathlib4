@@ -215,7 +215,7 @@ lemma mrange_mapRangeAddMonoidHom (f : ∀ i, β₁ i →+ β₂ i) :
       (AddSubmonoid.pi Set.univ (fun i ↦ AddMonoidHom.mrange (f i))).comap coeFnAddMonoidHom := by
   classical
   ext x
-  simp only [AddSubmonoid.mem_comap, mapRange.addMonoidHom_apply, coeFnAddMonoidHom_apply]
+  simp only [AddSubmonoid.mem_comap, coeFnAddMonoidHom_apply]
   refine ⟨fun ⟨y, hy⟩ i hi ↦ ?_, fun h ↦ ?_⟩
   · simp [← hy]
   · choose g hg using fun i => h i (Set.mem_univ _)

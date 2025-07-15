@@ -101,7 +101,7 @@ lemma image_snd_preimageImageRestrict [∀ i, TopologicalSpace (α i)] :
         ((fun (x : Sᶜ.restrict ⁻¹' (Sᶜ.restrict '' s)) ↦ (x : Π j, α j)) ⁻¹' s))
       = S.restrict '' s := by
   ext x
-  simp only [ne_eq, Homeomorph.preimageImageRestrict, Homeomorph.homeomorph_mk_coe, Equiv.coe_fn_mk,
+  simp only [Homeomorph.preimageImageRestrict, Homeomorph.homeomorph_mk_coe, Equiv.coe_fn_mk,
     mem_image, mem_preimage, Subtype.exists, exists_and_left, Prod.exists, Prod.mk.injEq,
     exists_and_right, exists_eq_right, Subtype.mk.injEq, exists_prop]
   constructor

@@ -81,8 +81,8 @@ variable (p)
 /-- Embedding of a submodule `p` to the ambient space `M`. -/
 protected def subtype : p →ₗ[R] M where
   toFun := Subtype.val
-  map_add' := by simp [coe_smul]
-  map_smul' := by simp [coe_smul]
+  map_add' := by simp
+  map_smul' := by simp
 
 variable {p} in
 @[simp]

@@ -27,7 +27,7 @@ Finally we prove that reflective functors are `MonadicRightAdjoint` and coreflec
 
 namespace CategoryTheory
 
-open Category
+open Category Functor
 
 universe v₁ v₂ u₁ u₂
 
@@ -357,8 +357,8 @@ instance comparison_essSurj [Coreflective R] :
   refine Comonad.Coalgebra.isoMk ?_ ?_
   · exact (asIso ((coreflectorAdjunction R).counit.app X.A))
   rw [← cancel_mono ((coreflectorAdjunction R).counit.app X.A)]
-  simp only [Adjunction.counit_naturality, Functor.comp_obj, Functor.id_obj,
-    Adjunction.left_triangle_components_assoc, assoc]
+  simp only [Functor.comp_obj, Functor.id_obj,
+    assoc]
   simpa using (coreflectorAdjunction R).counit.app X.A ≫= X.counit.symm
 
 lemma comparison_full [R.Full] {L : C ⥤ D} (adj : R ⊣ L) :

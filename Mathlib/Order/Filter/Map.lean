@@ -160,7 +160,7 @@ theorem pure_le_principal {s : Set α} (a : α) : pure a ≤ 𝓟 s ↔ a ∈ s 
 
 @[simp]
 theorem pure_bind (a : α) (m : α → Filter β) : bind (pure a) m = m a := by
-  simp only [Bind.bind, bind, map_pure, join_pure]
+  simp only [bind, map_pure, join_pure]
 
 theorem map_bind {α β} (m : β → γ) (f : Filter α) (g : α → Filter β) :
     map m (bind f g) = bind f (map m ∘ g) :=
@@ -454,7 +454,7 @@ theorem comap_iSup {ι} {f : ι → Filter β} {m : α → β} : comap m (iSup f
   (gc_comap_kernMap m).l_iSup
 
 theorem comap_sSup {s : Set (Filter β)} {m : α → β} : comap m (sSup s) = ⨆ f ∈ s, comap m f := by
-  simp only [sSup_eq_iSup, comap_iSup, eq_self_iff_true]
+  simp only [sSup_eq_iSup, comap_iSup]
 
 theorem comap_sup : comap m (g₁ ⊔ g₂) = comap m g₁ ⊔ comap m g₂ := by
   rw [sup_eq_iSup, comap_iSup, iSup_bool_eq, Bool.cond_true, Bool.cond_false]
@@ -684,7 +684,7 @@ theorem sInter_comap_sets (f : α → β) (F : Filter β) : ⋂₀ (comap f F).s
   ext x
   suffices (∀ (A : Set α) (B : Set β), B ∈ F → f ⁻¹' B ⊆ A → x ∈ A) ↔
       ∀ B : Set β, B ∈ F → f x ∈ B by
-    simp only [mem_sInter, mem_iInter, Filter.mem_sets, mem_comap, this, and_imp, exists_prop,
+    simp only [mem_sInter, mem_iInter, Filter.mem_sets, mem_comap, this, and_imp,
       mem_preimage, exists_imp]
   constructor
   · intro h U U_in
@@ -838,7 +838,7 @@ theorem mem_seq_def {f : Filter (α → β)} {g : Filter α} {s : Set β} :
 
 theorem mem_seq_iff {f : Filter (α → β)} {g : Filter α} {s : Set β} :
     s ∈ f.seq g ↔ ∃ u ∈ f, ∃ t ∈ g, Set.seq u t ⊆ s := by
-  simp only [mem_seq_def, seq_subset, exists_prop]
+  simp only [mem_seq_def, seq_subset]
 
 theorem mem_map_seq_iff {f : Filter α} {g : Filter β} {m : α → β → γ} {s : Set γ} :
     s ∈ (f.map m).seq g ↔ ∃ t u, t ∈ g ∧ u ∈ f ∧ ∀ x ∈ u, ∀ y ∈ t, m x y ∈ s :=
@@ -972,7 +972,7 @@ theorem sup_bind {f g : Filter α} {h : α → Filter β} : bind (f ⊔ g) h = b
 
 theorem principal_bind {s : Set α} {f : α → Filter β} : bind (𝓟 s) f = ⨆ x ∈ s, f x :=
   show join (map f (𝓟 s)) = ⨆ x ∈ s, f x by
-    simp only [sSup_image, join_principal_eq_sSup, map_principal, eq_self_iff_true]
+    simp only [sSup_image, join_principal_eq_sSup, map_principal]
 
 end Bind
 

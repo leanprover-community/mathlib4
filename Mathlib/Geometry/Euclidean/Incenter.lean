@@ -5,7 +5,7 @@ Authors: Joseph Myers
 -/
 import Mathlib.Geometry.Euclidean.Altitude
 import Mathlib.Geometry.Euclidean.SignedDist
-import Mathlib.Geometry.Euclidean.Sphere.Basic
+import Mathlib.Geometry.Euclidean.Sphere.Tangent
 import Mathlib.Tactic.Positivity.Finset
 
 /-!
@@ -138,7 +138,7 @@ lemma sum_inv_height_sq_smul_vsub_eq_zero :
     rw [Submodule.span_singleton_le_iff_mem, direction_affineSpan]
     simp only [Finset.mem_erase, Finset.mem_univ, and_true] at hj
     refine vsub_mem_vectorSpan _ ?_ ?_ <;>
-      simp only [range_faceOpposite_points, Set.mem_image, Set.mem_setOf_eq]
+      simp only [range_faceOpposite_points, Set.mem_image]
     · exact ⟨i, hj.1.symm, rfl⟩
     · exact ⟨0, hj.2.symm, rfl⟩
   · rw [inner_smul_right, inner_smul_right, inner_vsub_vsub_altitudeFoot_eq_height_sq _ hi,
@@ -262,8 +262,7 @@ def inradius : ℝ :=
 
 @[simp] lemma exsphere_univ : s.exsphere Finset.univ = s.insphere := by
   rw [exsphere, ← Finset.compl_empty, excenterWeightsUnnorm_compl, excenterWeights_compl]
-  simp only [Finset.mem_univ, Pi.neg_apply, Finset.sum_neg_distrib, inv_neg, abs_neg]
-  rfl
+  simp [Pi.neg_apply, Finset.sum_neg_distrib, insphere, exsphere]
 
 @[simp] lemma excenter_univ : s.excenter Finset.univ = s.incenter := by
   rw [excenter, exsphere_univ, insphere_center]
@@ -321,7 +320,15 @@ lemma ExcenterExists.signedInfDist_excenter_eq_mul_sum_inv {signs : Finset (Fin 
     signedInfDist_affineCombination _ _ h.sum_excenterWeights_eq_one, excenterWeights,
     Pi.smul_apply, ← dist_eq_norm_vsub, excenterWeightsUnnorm]
   rw [← altitudeFoot, ← height]
-  simp [mul_assoc, (s.height_pos i).ne']
+  simp [(s.height_pos i).ne']
+
+/-- A touchpoint is where an exsphere of a simplex is tangent to one of the faces. -/
+def touchpoint (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) : P :=
+  (s.faceOpposite i).orthogonalProjectionSpan (s.excenter signs)
+
+lemma touchpoint_mem_affineSpan (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) :
+    s.touchpoint signs i ∈ affineSpan ℝ (Set.range (s.faceOpposite i).points) :=
+  orthogonalProjection_mem _
 
 variable {s} in
 /-- The signed distance between the excenter and its projection in the plane of each face is the
@@ -343,14 +350,13 @@ lemma signedInfDist_incenter (i : Fin (n + 1)) : s.signedInfDist i s.incenter = 
   simp (discharger := positivity)
 
 variable {s} in
-/-- The distance between the excenter and its projection in the plane of each face is the exradius.
-
-In other words, the exsphere is tangent to the faces. -/
+/-- The distance between the excenter and its projection in the plane of each face is the
+exradius. -/
 lemma ExcenterExists.dist_excenter {signs : Finset (Fin (n + 1))} (h : s.ExcenterExists signs)
     (i : Fin (n + 1)) :
-    dist (s.excenter signs) ((s.faceOpposite i).orthogonalProjectionSpan (s.excenter signs)) =
-      s.exradius signs := by
-  rw [← abs_signedInfDist_eq_dist_of_mem_affineSpan_range i h.excenter_mem_affineSpan_range,
+    dist (s.excenter signs) (s.touchpoint signs i) = s.exradius signs := by
+  rw [touchpoint,
+    ← abs_signedInfDist_eq_dist_of_mem_affineSpan_range i h.excenter_mem_affineSpan_range,
     h.signedInfDist_excenter, abs_mul, abs_mul, abs_of_nonneg (s.exradius_nonneg signs)]
   simp only [abs_ite, abs_neg, abs_one, ite_self, one_mul]
   rcases lt_trichotomy 0 (∑ i, s.excenterWeightsUnnorm signs i) with h' | h' | h'
@@ -358,12 +364,46 @@ lemma ExcenterExists.dist_excenter {signs : Finset (Fin (n + 1))} (h : s.Excente
   · simp [h h'.symm]
   · simp [h']
 
-/-- The distance between the incenter and its projection in the plane of each face is the inradius.
-
-In other words, the incenter is tangent to the faces. -/
+/-- The distance between the incenter and its projection in the plane of each face is the
+inradius. -/
 lemma dist_incenter (i : Fin (n + 1)) :
-    dist s.incenter ((s.faceOpposite i).orthogonalProjectionSpan s.incenter) = s.inradius :=
+    dist s.incenter (s.touchpoint ∅ i) = s.inradius :=
   s.excenterExists_empty.dist_excenter _
+
+variable {s} in
+lemma ExcenterExists.isTangentAt_touchpoint {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) (i : Fin (n + 1)) :
+    (s.exsphere signs).IsTangentAt (s.touchpoint signs i)
+      (affineSpan ℝ (Set.range (s.faceOpposite i).points)) := by
+  rw [touchpoint, orthogonalProjectionSpan, excenter,
+    ← EuclideanGeometry.Sphere.dist_orthogonalProjection_eq_radius_iff_isTangentAt,
+    ← orthogonalProjectionSpan, ← excenter, ← exradius, ← touchpoint, h.dist_excenter]
+
+lemma isTangentAt_insphere_touchpoint (i : Fin (n + 1)) :
+    s.insphere.IsTangentAt (s.touchpoint ∅ i)
+      (affineSpan ℝ (Set.range (s.faceOpposite i).points)) :=
+  s.excenterExists_empty.isTangentAt_touchpoint i
+
+variable {s} in
+lemma eq_touchpoint_of_isTangentAt_exsphere {signs : Finset (Fin (n + 1))} {i : Fin (n + 1)} {p : P}
+    (ht : (s.exsphere signs).IsTangentAt p (affineSpan ℝ (Set.range (s.faceOpposite i).points))) :
+    p = s.touchpoint signs i := by
+  rw [ht.eq_orthogonalProjection, touchpoint, orthogonalProjectionSpan, excenter]
+
+variable {s} in
+lemma ExcenterExists.isTangentAt_exsphere_iff_eq_touchpoint {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) {i : Fin (n + 1)} {p : P} :
+    (s.exsphere signs).IsTangentAt p (affineSpan ℝ (Set.range (s.faceOpposite i).points)) ↔
+      p = s.touchpoint signs i := by
+  refine ⟨eq_touchpoint_of_isTangentAt_exsphere, ?_⟩
+  rintro rfl
+  exact h.isTangentAt_touchpoint i
+
+variable {s} in
+lemma isTangentAt_insphere_iff_eq_touchpoint {i : Fin (n + 1)} {p : P} :
+    s.insphere.IsTangentAt p (affineSpan ℝ (Set.range (s.faceOpposite i).points)) ↔
+      p = s.touchpoint ∅ i :=
+  s.excenterExists_empty.isTangentAt_exsphere_iff_eq_touchpoint
 
 lemma exists_forall_signedInfDist_eq_iff_excenterExists_and_eq_excenter {p : P}
     (hp : p ∈ affineSpan ℝ (Set.range s.points)) {signs : Finset (Fin (n + 1))} :
@@ -387,7 +427,7 @@ lemma exists_forall_signedInfDist_eq_iff_excenterExists_and_eq_excenter {p : P}
       simp_rw [h'', ← Finset.mul_sum] at h1
       ext j
       rw [h'', eq_inv_of_mul_eq_one_left h1]
-      rfl
+      simp [excenterWeights]
     subst hw
     exact ⟨s.sum_excenterWeights_eq_one_iff.1 h1, rfl⟩
   · rintro ⟨h, rfl⟩
@@ -414,7 +454,7 @@ lemma exists_forall_dist_eq_iff_exists_excenterExists_and_eq_excenter {p : P}
     refine ⟨{i ∈ (Finset.univ : Finset (Fin (n + 1))) | s.signedInfDist i p = -r}, ?_⟩
     apply (s.exists_forall_signedInfDist_eq_iff_excenterExists_and_eq_excenter hp).1
     refine ⟨r, ?_⟩
-    simp only [Set.mem_setOf_eq, ite_mul, neg_mul, one_mul]
+    simp only [ite_mul, neg_mul, one_mul]
     intro i
     split_ifs with hi
     · simpa using hi

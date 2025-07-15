@@ -129,7 +129,7 @@ lemma simplicialInsert_length (a : ℕ) (L : List ℕ) :
   | nil => rfl
   | cons head tail h_rec =>
     dsimp only [simplicialInsert, List.length_cons]
-    split_ifs with h <;> simp only [List.length_cons, add_left_inj, h_rec (a + 1)]
+    split_ifs with h <;> simp only [List.length_cons, h_rec (a + 1)]
 
 /-- `simplicialInsert` preserves admissibility -/
 theorem simplicialInsert_isAdmissible (L : List ℕ) (hL : IsAdmissible (m + 1) L) (j : ℕ)

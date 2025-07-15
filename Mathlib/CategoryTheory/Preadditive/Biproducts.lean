@@ -140,7 +140,7 @@ def isBilimitOfIsLimit {f : J → C} (t : Bicone f) (ht : IsLimit t.toCone) : t.
     ht.hom_ext fun j => by
       classical
       cases j
-      simp [sum_comp, t.ι_π, dite_comp, comp_dite]
+      simp [sum_comp, t.ι_π, comp_dite]
 
 /-- We can turn any limit cone over a pair into a bilimit bicone. -/
 def biconeIsBilimitOfLimitConeOfIsLimit {f : J → C} {t : Cone (Discrete.functor f)}
@@ -231,7 +231,7 @@ theorem biproduct.map_eq [HasFiniteBiproducts C] {f g : J → C} {h : ∀ j, f j
     biproduct.map h = ∑ j : J, biproduct.π f j ≫ h j ≫ biproduct.ι g j := by
   classical
   ext
-  simp [biproduct.ι_π, biproduct.ι_π_assoc, comp_sum, sum_comp, comp_dite, dite_comp]
+  simp [biproduct.ι_π, biproduct.ι_π_assoc, sum_comp, comp_dite, dite_comp]
 
 @[reassoc]
 theorem biproduct.lift_matrix {K : Type} [Finite K] [HasFiniteBiproducts C] {f : J → C} {g : K → C}
@@ -288,9 +288,9 @@ def biproduct.reindex {β γ : Type} [Finite β] (ε : β ≃ γ)
     cases nonempty_fintype β
     ext g g'
     by_cases h : g' = g <;>
-      simp [Preadditive.sum_comp, Preadditive.comp_sum, biproduct.lift_desc,
-        biproduct.ι_π, biproduct.ι_π_assoc, comp_dite, Equiv.apply_eq_iff_eq_symm_apply,
-        Finset.sum_dite_eq' Finset.univ (ε.symm g') _, h]
+      simp [Preadditive.sum_comp, biproduct.lift_desc,
+        biproduct.ι_π, comp_dite, Equiv.apply_eq_iff_eq_symm_apply,
+        h]
 
 /-- In a preadditive category, we can construct a binary biproduct for `X Y : C` from
 any binary bicone `b` satisfying `total : b.fst ≫ b.inl + b.snd ≫ b.inr = 𝟙 b.X`.
@@ -431,13 +431,13 @@ variable {X Y : C} [HasBinaryBiproduct X Y]
 -/
 @[simp]
 theorem biprod.total : biprod.fst ≫ biprod.inl + biprod.snd ≫ biprod.inr = 𝟙 (X ⊞ Y) := by
-  ext <;> simp [add_comp]
+  ext <;> simp
 
 theorem biprod.lift_eq {T : C} {f : T ⟶ X} {g : T ⟶ Y} :
     biprod.lift f g = f ≫ biprod.inl + g ≫ biprod.inr := by ext <;> simp [add_comp]
 
 theorem biprod.desc_eq {T : C} {f : X ⟶ T} {g : Y ⟶ T} :
-    biprod.desc f g = biprod.fst ≫ f + biprod.snd ≫ g := by ext <;> simp [add_comp]
+    biprod.desc f g = biprod.fst ≫ f + biprod.snd ≫ g := by ext <;> simp
 
 @[reassoc (attr := simp)]
 theorem biprod.lift_desc {T U : C} {f : T ⟶ X} {g : T ⟶ Y} {h : X ⟶ U} {i : Y ⟶ U} :
@@ -689,7 +689,7 @@ theorem Biprod.ofComponents_eq (f : X₁ ⊞ X₂ ⟶ Y₁ ⊞ Y₂) :
       f := by
   ext <;>
     simp only [Category.comp_id, biprod.inr_fst, biprod.inr_snd, biprod.inl_snd, add_zero, zero_add,
-      Biprod.inl_ofComponents, Biprod.inr_ofComponents, eq_self_iff_true, Category.assoc,
+      Biprod.inl_ofComponents, Biprod.inr_ofComponents, Category.assoc,
       comp_zero, biprod.inl_fst, Preadditive.add_comp]
 
 @[simp]
@@ -701,7 +701,7 @@ theorem Biprod.ofComponents_comp {X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C} (f₁₁ : 
         (f₂₁ ≫ g₁₂ + f₂₂ ≫ g₂₂) := by
   dsimp [Biprod.ofComponents]
   ext <;>
-    simp only [add_comp, comp_add, add_comp_assoc, add_zero, zero_add, biprod.inl_fst,
+    simp only [add_comp, comp_add, add_zero, zero_add, biprod.inl_fst,
       biprod.inl_snd, biprod.inr_fst, biprod.inr_snd, biprod.inl_fst_assoc, biprod.inl_snd_assoc,
       biprod.inr_fst_assoc, biprod.inr_snd_assoc, comp_zero, zero_comp, Category.assoc]
 
@@ -837,7 +837,7 @@ then there is some `t` in the target so that the `s, t` matrix entry of `f` is n
 -/
 def Biproduct.columnNonzeroOfIso {σ τ : Type} [Fintype τ] {S : σ → C} [HasBiproduct S] {T : τ → C}
     [HasBiproduct T] (s : σ) (nz : 𝟙 (S s) ≠ 0) (f : ⨁ S ⟶ ⨁ T) [IsIso f] :
-    Trunc (Σ't : τ, biproduct.ι S s ≫ f ≫ biproduct.π T t ≠ 0) := by
+    Trunc (Σ' t : τ, biproduct.ι S s ≫ f ≫ biproduct.π T t ≠ 0) := by
   classical
     apply truncSigmaOfExists
     have t := Biproduct.column_nonzero_of_iso'.{v} s f

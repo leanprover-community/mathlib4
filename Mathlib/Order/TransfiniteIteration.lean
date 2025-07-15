@@ -50,7 +50,7 @@ lemma transfiniteIterate_bot [OrderBot J] (i₀ : I) :
   dsimp [transfiniteIterate]
   simp only [isMin_iff_eq_bot, SuccOrder.limitRecOn_isMin, id_eq]
 
-lemma transfiniteIterate_succ (i₀ : I) (j : J) (hj : ¬ IsMax j):
+lemma transfiniteIterate_succ (i₀ : I) (j : J) (hj : ¬ IsMax j) :
     transfiniteIterate φ (Order.succ j) i₀ =
       φ (transfiniteIterate φ j i₀) := by
   dsimp [transfiniteIterate]

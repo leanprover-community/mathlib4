@@ -646,7 +646,7 @@ theorem isLUB_sSup' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (Wit
     (hs : s.Nonempty) : IsLUB s (sSup s) := by
   classical
   constructor
-  · show ite _ _ _ ∈ _
+  · change ite _ _ _ ∈ _
     split_ifs with h₁ h₂
     · intro _ _
       exact le_top
@@ -656,7 +656,7 @@ theorem isLUB_sSup' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (Wit
       exact le_csSup h₂ ha
     · intro _ _
       exact le_top
-  · show ite _ _ _ ∈ _
+  · change ite _ _ _ ∈ _
     split_ifs with h₁ h₂
     · rintro (⟨⟩ | a) ha
       · exact le_rfl
@@ -688,7 +688,7 @@ theorem isGLB_sInf' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (Wit
     (hs : BddBelow s) : IsGLB s (sInf s) := by
   classical
   constructor
-  · show ite _ _ _ ∈ _
+  · change ite _ _ _ ∈ _
     simp only [hs, not_true_eq_false, or_false]
     split_ifs with h
     · intro a ha
@@ -705,7 +705,7 @@ theorem isGLB_sInf' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (Wit
       use b
       intro c hc
       exact coe_le_coe.1 (hb hc)
-  · show ite _ _ _ ∈ _
+  · change ite _ _ _ ∈ _
     simp only [hs, not_true_eq_false, or_false]
     split_ifs with h
     · intro _ _
@@ -809,6 +809,35 @@ lemma MonotoneOn.csSup_eq_of_subset_of_forall_exists_le
     (hst : s ⊆ t) (h : ∀ y ∈ t, ∃ x ∈ s, y ≤ x) :
     sSup (f '' s) = sSup (f '' t) :=
   MonotoneOn.csInf_eq_of_subset_of_forall_exists_le (α := αᵒᵈ) (β := βᵒᵈ) ht hf.dual hst h
+
+theorem MonotoneOn.sInf_image_Icc [Preorder α] [ConditionallyCompleteLattice β]
+    {f : α → β} {a b : α} (hab : a ≤ b)
+    (h' : MonotoneOn f (Icc a b)) : sInf (f '' Icc a b) = f a := by
+  refine IsGLB.csInf_eq ?_ ((nonempty_Icc.mpr hab).image f)
+  refine isGLB_iff_le_iff.mpr (fun b' ↦ ⟨?_, ?_⟩)
+  · intro hb'
+    rintro _ ⟨x, hx, rfl⟩
+    exact hb'.trans <| h' (left_mem_Icc.mpr hab) hx hx.1
+  · exact fun hb' ↦ hb' ⟨a, by simp [hab]⟩
+
+theorem MonotoneOn.sSup_image_Icc [Preorder α] [ConditionallyCompleteLattice β]
+    {f : α → β} {a b : α} (hab : a ≤ b)
+    (h' : MonotoneOn f (Icc a b)) : sSup (f '' Icc a b) = f b := by
+  have : Icc a b = Icc (α := αᵒᵈ) (toDual b) (toDual a) := by rw [Icc_toDual]; rfl
+  rw [this] at h' ⊢
+  exact h'.dual_right.dual_left.sInf_image_Icc (β := βᵒᵈ) (α := αᵒᵈ) hab
+
+theorem AntitoneOn.sInf_image_Icc [Preorder α] [ConditionallyCompleteLattice β]
+    {f : α → β} {a b : α} (hab : a ≤ b)
+    (h' : AntitoneOn f (Icc a b)) : sInf (f '' Icc a b) = f b := by
+  have : Icc a b = Icc (α := αᵒᵈ) (toDual b) (toDual a) := by rw [Icc_toDual]; rfl
+  rw [this] at h' ⊢
+  exact h'.dual_left.sInf_image_Icc (α := αᵒᵈ) hab
+
+theorem AntitoneOn.sSup_image_Icc [Preorder α] [ConditionallyCompleteLattice β]
+    {f : α → β} {a b : α} (hab : a ≤ b)
+    (h' : AntitoneOn f (Icc a b)) : sSup (f '' Icc a b) = f a :=
+  h'.dual_right.sInf_image_Icc hab
 
 /-!
 ### Supremum/infimum of `Set.image2`
@@ -915,7 +944,7 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
     le_sSup := fun _ a haS => (WithTop.isLUB_sSup' ⟨a, haS⟩).1 haS
     sSup_le := fun S a ha => by
       rcases S.eq_empty_or_nonempty with h | h
-      · show ite _ _ _ ≤ a
+      · change ite _ _ _ ≤ a
         simp [h]
       · exact (WithTop.isLUB_sSup' h).2 ha
     sInf_le := fun S a haS =>

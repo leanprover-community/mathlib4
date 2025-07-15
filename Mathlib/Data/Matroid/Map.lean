@@ -144,7 +144,7 @@ def comap (N : Matroid β) (f : α → β) : Matroid α :=
       rintro X - I ⟨hI, hIinj⟩ hIX
       obtain ⟨J, hJ⟩ := (N ↾ range f).existsMaximalSubsetProperty_indep (f '' X) (by simp)
         (f '' I) (by simpa) (image_subset _ hIX)
-      simp only [restrict_indep_iff, image_subset_iff, maximal_subset_iff, mem_setOf_eq, and_imp,
+      simp only [restrict_indep_iff, image_subset_iff, maximal_subset_iff, and_imp,
         and_assoc] at hJ ⊢
       obtain ⟨hIJ, hJ, hJf, hJX, hJmax⟩ := hJ
       obtain ⟨J₀, hIJ₀, hJ₀X, hbj⟩ := hIinj.bijOn_image.exists_extend_of_subset hIX
@@ -190,13 +190,12 @@ lemma comap_indep_iff_of_injOn (hf : InjOn f (f ⁻¹' N.E)) :
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨hI, hinj⟩ := comap_indep_iff.1 h.indep
     refine ⟨hI.isBasis_of_forall_insert (image_subset f h.subset) fun e he ↦ ?_, hinj, h.subset⟩
-    simp only [mem_diff, mem_image, not_exists, not_and, and_imp, forall_exists_index,
-      forall_apply_eq_imp_iff₂] at he
+    simp only [mem_diff, mem_image, not_exists, not_and] at he
     obtain ⟨⟨e, heX, rfl⟩, he⟩ := he
     have heI : e ∉ I := fun heI ↦ (he e heI rfl)
     replace h := h.insert_dep ⟨heX, heI⟩
     simp only [comap_dep_iff, image_insert_eq, or_iff_not_imp_right, injOn_insert heI,
-      hinj, mem_image, not_exists, not_and, true_and, not_forall, Classical.not_imp, not_not] at h
+      hinj, mem_image, not_exists, not_and, true_and, not_forall, not_not] at h
     exact h (fun _ ↦ he)
   refine Indep.isBasis_of_forall_insert ?_ h.2.2 fun e ⟨heX, heI⟩ ↦ ?_
   · simp [comap_indep_iff, h.1.indep, h.2]
@@ -214,7 +213,7 @@ lemma comap_indep_iff_of_injOn (hf : InjOn f (f ⁻¹' N.E)) :
 @[simp] lemma comap_isBasis'_iff {I X : Set α} :
     (N.comap f).IsBasis' I X ↔ N.IsBasis' (f '' I) (f '' X) ∧ I.InjOn f ∧ I ⊆ X := by
   simp only [isBasis'_iff_isBasis_inter_ground, comap_ground_eq, comap_isBasis_iff,
-    image_inter_preimage, subset_inter_iff, ← and_assoc, and_congr_left_iff, and_iff_left_iff_imp,
+    image_inter_preimage, subset_inter_iff, ← and_assoc, and_iff_left_iff_imp,
     and_imp]
   exact fun h _ _ ↦ (image_subset_iff.1 h.indep.subset_ground)
 
@@ -307,7 +306,7 @@ def mapSetEmbedding (M : Matroid α) (f : M.E ↪ β) : Matroid β := Matroid.of
     rw [← image_image, InjOn.invFunOn_image f.injective.injOn (subset_univ _),
       preimage_image_eq _ f.injective, and_iff_left_iff_imp]
     rintro - x hx y hy
-    simp only [EmbeddingLike.apply_eq_iff_eq, Subtype.val_inj]
+    simp only [Subtype.val_inj]
     exact (invFunOn_injOn_image f univ) (image_subset f (subset_univ I) hx)
       (image_subset f (subset_univ I) hy) )
 
@@ -658,7 +657,7 @@ lemma restrictSubtype_isBasis_iff {Y : Set α} {I X : Set Y} :
 
 lemma restrictSubtype_isBase_iff {B : Set X} : (M.restrictSubtype X).IsBase B ↔ M.IsBasis' B X := by
   rw [restrictSubtype, comap_isBase_iff]
-  simp [Subtype.val_injective.injOn, Subset.rfl, isBasis_restrict_iff',
+  simp [Subtype.val_injective.injOn, isBasis_restrict_iff',
     isBasis'_iff_isBasis_inter_ground]
 
 @[simp] lemma restrictSubtype_ground_isBase_iff {B : Set M.E} :
@@ -678,7 +677,7 @@ lemma eq_of_restrictSubtype_eq {N : Matroid α} (hM : M.E = E) (hN : N.E = E)
 @[simp] lemma restrictSubtype_dual : (M.restrictSubtype M.E)✶ = M✶.restrictSubtype M.E := by
   rw [restrictSubtype, ← comapOn_preimage_eq, comapOn_dual_eq_of_bijOn, restrict_ground_eq_self,
     ← dual_ground, comapOn_preimage_eq, restrictSubtype, restrict_ground_eq_self]
-  exact ⟨by simp [MapsTo], Subtype.val_injective.injOn, by simp [SurjOn, Subset.rfl]⟩
+  exact ⟨by simp [MapsTo], Subtype.val_injective.injOn, by simp [SurjOn]⟩
 
 lemma restrictSubtype_dual' (hM : M.E = E) : (M.restrictSubtype E)✶ = M✶.restrictSubtype E := by
   rw [← hM, restrictSubtype_dual]
@@ -686,7 +685,7 @@ lemma restrictSubtype_dual' (hM : M.E = E) : (M.restrictSubtype E)✶ = M✶.res
 /-- `M.restrictSubtype X` is isomorphic to `M ↾ X`. -/
 @[simp] lemma map_val_restrictSubtype_eq (M : Matroid α) (X : Set α) :
     (M.restrictSubtype X).map (↑) Subtype.val_injective.injOn = M ↾ X := by
-  simp [restrictSubtype, map_comap, Subset.rfl]
+  simp [restrictSubtype, map_comap]
 
 /-- `M.restrictSubtype M.E` is isomorphic to `M`. -/
 lemma map_val_restrictSubtype_ground_eq (M : Matroid α) :

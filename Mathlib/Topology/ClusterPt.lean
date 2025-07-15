@@ -77,7 +77,7 @@ theorem clusterPt_principal_iff :
 
 theorem clusterPt_principal_iff_frequently :
     ClusterPt x (𝓟 s) ↔ ∃ᶠ y in 𝓝 x, y ∈ s := by
-  simp only [clusterPt_principal_iff, frequently_iff, Set.Nonempty, exists_prop, mem_inter_iff]
+  simp only [clusterPt_principal_iff, frequently_iff, Set.Nonempty, mem_inter_iff]
 
 theorem ClusterPt.of_le_nhds {f : Filter X} (H : f ≤ 𝓝 x) [NeBot f] : ClusterPt x f := by
   rwa [ClusterPt, inf_eq_right.mpr H]
@@ -175,8 +175,8 @@ alias acc_principal_iff_cluster := accPt_principal_iff_clusterPt
 /-- `x` is an accumulation point of a set `C` iff every neighborhood
 of `x` contains a point of `C` other than `x`. -/
 theorem accPt_iff_nhds {x : X} {C : Set X} : AccPt x (𝓟 C) ↔ ∀ U ∈ 𝓝 x, ∃ y ∈ U ∩ C, y ≠ x := by
-  simp [accPt_principal_iff_clusterPt, clusterPt_principal_iff, Set.Nonempty, exists_prop,
-    and_assoc, @and_comm (¬_ = x)]
+  simp [accPt_principal_iff_clusterPt, clusterPt_principal_iff, Set.Nonempty,
+    and_assoc]
 
 /-- `x` is an accumulation point of a set `C` iff
 there are points near `x` in `C` and different from `x`. -/
@@ -278,12 +278,12 @@ theorem mem_closure_iff_comap_neBot :
 theorem mem_closure_iff_nhds_basis' {p : ι → Prop} {s : ι → Set X} (h : (𝓝 x).HasBasis p s) :
     x ∈ closure t ↔ ∀ i, p i → (s i ∩ t).Nonempty :=
   mem_closure_iff_clusterPt.trans <|
-    (h.clusterPt_iff (hasBasis_principal _)).trans <| by simp only [exists_prop, forall_const]
+    (h.clusterPt_iff (hasBasis_principal _)).trans <| by simp only [forall_const]
 
 theorem mem_closure_iff_nhds_basis {p : ι → Prop} {s : ι → Set X} (h : (𝓝 x).HasBasis p s) :
     x ∈ closure t ↔ ∀ i, p i → ∃ y ∈ t, y ∈ s i :=
   (mem_closure_iff_nhds_basis' h).trans <| by
-    simp only [Set.Nonempty, mem_inter_iff, exists_prop, and_comm]
+    simp only [Set.Nonempty, mem_inter_iff, and_comm]
 
 theorem clusterPt_iff_lift'_closure {F : Filter X} :
     ClusterPt x F ↔ pure x ≤ (F.lift' closure) := by

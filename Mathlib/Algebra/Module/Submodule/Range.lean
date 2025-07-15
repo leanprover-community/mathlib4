@@ -231,7 +231,7 @@ theorem ker_le_iff [RingHomSurjective τ₁₂] {p : Submodule R M} :
   · rintro ⟨y, h₁, h₂⟩
     rw [SetLike.le_def]
     intro z hz
-    simp only [mem_ker, SetLike.mem_coe] at hz
+    simp only [mem_ker] at hz
     rw [← SetLike.mem_coe, range_coe, Set.mem_range] at h₁
     obtain ⟨x, hx⟩ := h₁
     have hx' : x ∈ p := h₂ hx

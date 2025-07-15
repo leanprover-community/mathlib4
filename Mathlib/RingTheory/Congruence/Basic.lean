@@ -259,7 +259,7 @@ theorem sSup_def {S : Set (RingCon R)} :
     sSup S = ringConGen (sSup (@Set.image (RingCon R) (R → R → Prop) (⇑) S)) := by
   rw [sSup_eq_ringConGen, sSup_image]
   congr with (x y)
-  simp only [sSup_image, iSup_apply, iSup_Prop_eq, exists_prop, rel_eq_coe]
+  simp only [iSup_apply, iSup_Prop_eq, exists_prop]
 
 variable (R)
 

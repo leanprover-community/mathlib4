@@ -121,7 +121,7 @@ def isometryEquivOfCompLinearEquiv (Q : QuadraticMap R M N) (f : M₁ ≃ₗ[R] 
     map_app' := by
       intro
       simp only [comp_apply, LinearEquiv.coe_coe, LinearEquiv.toFun_eq_coe,
-        LinearEquiv.apply_symm_apply, f.apply_symm_apply] }
+        f.apply_symm_apply] }
 
 variable [Finite ι]
 

@@ -136,7 +136,7 @@ theorem nonempty_Ico_sdiff {x dx y dy : α} (h : dy < dx) (hx : 0 < dx) :
   · use x
     simp [*, not_le.2 h']
   · use max x (x + dy)
-    simp [*, le_refl]
+    simp [*]
 
 end LinearOrderedAddCommGroup
 
