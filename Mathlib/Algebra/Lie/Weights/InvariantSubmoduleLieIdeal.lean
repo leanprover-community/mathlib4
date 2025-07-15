@@ -882,8 +882,9 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
               have h_sum_in_range : S.root i + S.root j ∈ Set.range S.root := by
                 rw [hi, hj]
                 have h_eq : χ.toLinear + (-α.1).toLinear = χ.toLinear - α.1.toLinear := by
-                  -- This follows from (-α.1).toLinear = -(α.1.toLinear)
-                  sorry
+                  -- This should follow from basic algebraic properties
+                  simp only [sub_eq_add_neg]
+                  congr 1
                 rw [h_eq]
                 exact h_chi_minus_alpha_is_root
 
