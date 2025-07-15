@@ -265,14 +265,13 @@ lemma gramSchmidtNormed_apply_of_orthonormal {x} (hs : Orthonormal ℝ (s · x))
 
 /-- When the sections `s` form a basis at `x`, so do the sections `gramSchmidtNormed s`.
 
-Prefer using `gramSchmidtOrthonormalBasis` over this declaration. -/
+Note that `gramSchmidtOrthonormalBasis` proves a strictly stronger statement. -/
 noncomputable def gramSchmidtNormedBasis {x} (hs : LinearIndependent ℝ (s · x))
     (hs' : ⊤ ≤ Submodule.span ℝ (Set.range (s · x))) :
     Basis ι ℝ (E x) :=
   Basis.mk (v := fun i ↦ gramSchmidtNormed s i x) (gramSchmidtNormed_linearIndependent hs)
     (by rw [span_gramSchmidtNormed_range s x, span_gramSchmidt s x]; exact hs')
 
-/-- Prefer using `gramSchmidtOrthonormalBasis` over this declaration. -/
 @[simp]
 theorem coe_gramSchmidtNormedBasis {x} (hs : LinearIndependent ℝ (s · x))
     (hs' : ⊤ ≤ Submodule.span ℝ (Set.range (s · x))) :
