@@ -22,7 +22,7 @@ We introduce a predicate for sums of squares in a ring.
   `a * a + s` is a sum of squares.
 - `AddMonoid.sumSq R` and `Subsemiring.sumSq R`: respectively
   the submonoid or subsemiring of sums of squares in an additive monoid or semiring `R`
-
+  with multiplication.
 -/
 
 variable {R : Type*}
@@ -118,11 +118,15 @@ theorem IsSumSq.sum_isSquare [AddCommMonoid R] [Mul R] {ι : Type*} (I : Finset 
 In an additive commutative monoid with multiplication,
 `∑ i ∈ I, a i * a i` is a sum of squares.
 -/
-@[simp]
+@[simp↓]
 theorem IsSumSq.sum_mul_self [AddCommMonoid R] [Mul R] {ι : Type*} (I : Finset ι) (a : ι → R) :
     IsSumSq (∑ i ∈ I, a i * a i) := by aesop
 
 @[deprecated (since := "2024-12-27")] alias isSumSq_sum_mul_self := IsSumSq.sum_mul_self
+
+@[simp↓]
+theorem IsSumSq.sum_sq [CommSemiring R] {ι : Type*} (I : Finset ι) (a : ι → R) :
+    IsSumSq (∑ i ∈ I, (a i) ^ 2) := by aesop
 
 namespace NonUnitalSubsemiring
 variable {T : Type*} [NonUnitalCommSemiring T]
@@ -199,8 +203,7 @@ In a linearly ordered semiring with the property `a ≤ b → ∃ c, a + c = b` 
 sums of squares are non-negative.
 -/
 theorem IsSumSq.nonneg {R : Type*} [Semiring R] [LinearOrder R] [IsStrictOrderedRing R]
-    [ExistsAddOfLE R] {s : R}
-    (hs : IsSumSq s) : 0 ≤ s := by
+    [ExistsAddOfLE R] {s : R} (hs : IsSumSq s) : 0 ≤ s := by
   induction hs using IsSumSq.rec' with
   | zero          => simp
   | sq_add hx _ h => exact add_nonneg (IsSquare.nonneg hx) h
