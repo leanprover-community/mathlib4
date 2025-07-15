@@ -871,8 +871,8 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
               obtain ⟨j, hj⟩ : ∃ j, S.root j = (-α.1).toLinear := by
                 -- (-α.1) is nonzero since α.1 is nonzero (from α.2.2)
                 have hα_neg_nonzero : (-α.1).IsNonZero := by
-                  -- This follows from α.2.2 : α.1.IsNonZero and negation properties
-                  sorry
+                  -- This follows from α.2.2 : α.1.IsNonZero and Weight.IsNonZero.neg
+                  exact Weight.IsNonZero.neg α.2.2
                 have hα_neg_in_root : (-α.1) ∈ H.root := by
                   -- (-α.1) ∈ H.root follows from (-α.1).IsNonZero
                   -- This should work but there might be a definitional issue
