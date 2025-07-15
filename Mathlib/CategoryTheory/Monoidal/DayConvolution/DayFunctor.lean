@@ -122,6 +122,9 @@ instance : LawfulDayConvolutionMonoidalCategoryStruct C V (C ⊛⥤ V) :=
     (fun _ _ => ⟨_, ⟨equiv C V|>.counitIso.app _⟩⟩)
     (⟨_, ⟨equiv C V|>.counitIso.app _⟩⟩)
 
+open LawfulDayConvolutionMonoidalCategoryStruct in
+instance : ι C V (C ⊛⥤ V)|>.Full := inferInstanceAs (equiv C V).functor.Full
+
 /-- The functor underlying `𝟙_ C ⊛⥤ V` is a DayConvolutionUnit.
 We’re not making this a global instance given that `DayConvolution` and
 `DayConvolutionUnit` are data-carrying classes that we might prefer to
