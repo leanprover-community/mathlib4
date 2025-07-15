@@ -50,7 +50,7 @@ def ofLinearEquiv (f : M ≃ₗ[R] M) : GeneralLinearGroup R M where
   val_inv := LinearMap.ext fun _ ↦ f.apply_symm_apply _
   inv_val := LinearMap.ext fun _ ↦ f.symm_apply_apply _
 
-@[simp] lemma ofLinearEquiv_toFun (f : M ≃ₗ[R] M) :
+@[simp] lemma coe_ofLinearEquiv (f : M ≃ₗ[R] M) :
     ofLinearEquiv f = (f : M → M) := rfl
 
 variable (R M) in
