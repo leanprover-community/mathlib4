@@ -239,7 +239,7 @@ theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux (X : Scheme
   rw [← tsub_add_cancel_of_le hm]
   simp only [TopCat.Presheaf.restrictOpenCommRingCat_apply,
     pow_add, map_pow, map_mul, mul_assoc, ← Functor.map_comp, ← op_comp, homOfLE_comp,
-    Subtype.coe_mk, ← CommRingCat.comp_apply] at e ⊢
+    ← CommRingCat.comp_apply] at e ⊢
   rw [e]
 
 theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U : X.Opens)
@@ -332,7 +332,7 @@ theorem isLocalization_basicOpen_of_qcqs {X : Scheme} {U : X.Opens} (hU : IsComp
     IsLocalization.Away f (Γ(X, X.basicOpen f)) := by
   constructor
   · rintro ⟨_, n, rfl⟩
-    simp only [map_pow, Subtype.coe_mk, RingHom.algebraMap_toAlgebra]
+    simp only [map_pow, RingHom.algebraMap_toAlgebra]
     exact IsUnit.pow _ (RingedSpace.isUnit_res_basicOpen _ f)
   · intro z
     obtain ⟨n, y, e⟩ := exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated X U hU hU' f z

@@ -48,7 +48,7 @@ noncomputable def coeffIntegerNormalization (p : S[X]) (i : ℕ) : R :=
 
 theorem coeffIntegerNormalization_of_coeff_zero (p : S[X]) (i : ℕ) (h : coeff p i = 0) :
     coeffIntegerNormalization M p i = 0 := by
-  simp only [coeffIntegerNormalization, h, mem_support_iff, eq_self_iff_true, not_true, Ne,
+  simp only [coeffIntegerNormalization, h, mem_support_iff, not_true, Ne,
     dif_neg, not_false_iff]
 
 @[deprecated (since := "2025-05-23")]

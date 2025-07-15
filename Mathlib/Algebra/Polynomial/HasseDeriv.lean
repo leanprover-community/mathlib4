@@ -64,7 +64,7 @@ theorem hasseDeriv_apply :
 theorem hasseDeriv_coeff (n : ℕ) :
     (hasseDeriv k f).coeff n = (n + k).choose k * f.coeff (n + k) := by
   rw [hasseDeriv_apply, coeff_sum, sum_def, Finset.sum_eq_single (n + k), coeff_monomial]
-  · simp only [if_true, add_tsub_cancel_right, eq_self_iff_true]
+  · simp only [if_true, add_tsub_cancel_right]
   · intro i _hi hink
     rw [coeff_monomial]
     by_cases hik : i < k

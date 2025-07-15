@@ -842,7 +842,7 @@ theorem singletonSubgraph_le_iff (v : V) (H : G.Subgraph) :
 theorem map_singletonSubgraph (f : G →g G') {v : V} :
     Subgraph.map f (G.singletonSubgraph v) = G'.singletonSubgraph (f v) := by
   ext <;> simp only [Relation.Map, Subgraph.map_adj, singletonSubgraph_adj, Pi.bot_apply,
-    exists_and_left, and_iff_left_iff_imp, IsEmpty.forall_iff, Subgraph.map_verts,
+    exists_and_left, and_iff_left_iff_imp, Subgraph.map_verts,
     singletonSubgraph_verts, Set.image_singleton]
   exact False.elim
 
@@ -1010,7 +1010,7 @@ lemma coeSubgraph_le {H : G.Subgraph} (H' : H.coe.Subgraph) :
 lemma coeSubgraph_restrict_eq {H : G.Subgraph} (H' : G.Subgraph) :
     Subgraph.coeSubgraph (H.restrict H') = H ⊓ H' := by
   ext
-  · simp [and_comm]
+  · simp
   · simp_rw [coeSubgraph_adj, restrict_adj]
     simp only [exists_and_left, exists_prop, inf_adj, and_congr_right_iff]
     intro h
@@ -1079,7 +1079,7 @@ theorem coe_deleteEdges_eq (s : Set (Sym2 V)) :
   simp
 
 theorem deleteEdges_le : G'.deleteEdges s ≤ G' := by
-  constructor <;> simp +contextual [subset_rfl]
+  constructor <;> simp +contextual
 
 theorem deleteEdges_le_of_le {s s' : Set (Sym2 V)} (h : s ⊆ s') :
     G'.deleteEdges s' ≤ G'.deleteEdges s := by
@@ -1090,7 +1090,7 @@ theorem deleteEdges_le_of_le {s s' : Set (Sym2 V)} (h : s ⊆ s') :
 @[simp]
 theorem deleteEdges_inter_edgeSet_left_eq :
     G'.deleteEdges (G'.edgeSet ∩ s) = G'.deleteEdges s := by
-  ext <;> simp +contextual [imp_false]
+  ext <;> simp +contextual
 
 @[simp]
 theorem deleteEdges_inter_edgeSet_right_eq :
@@ -1243,12 +1243,12 @@ theorem deleteVerts_anti {s s' : Set V} (h : s ⊆ s') : G'.deleteVerts s' ≤ G
 
 @[simp]
 theorem deleteVerts_inter_verts_left_eq : G'.deleteVerts (G'.verts ∩ s) = G'.deleteVerts s := by
-  ext <;> simp +contextual [imp_false]
+  ext <;> simp +contextual
 
 @[simp]
 theorem deleteVerts_inter_verts_set_right_eq :
     G'.deleteVerts (s ∩ G'.verts) = G'.deleteVerts s := by
-  ext <;> simp +contextual [imp_false]
+  ext <;> simp +contextual
 
 instance instDecidableRel_deleteVerts_adj (u : Set V) [r : DecidableRel G.Adj] :
     DecidableRel ((⊤ : G.Subgraph).deleteVerts u).coe.Adj :=

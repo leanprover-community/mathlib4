@@ -47,13 +47,13 @@ theorem logDeriv_const (a : 𝕜') : logDeriv (fun _ : 𝕜 ↦ a) = 0 := by
 theorem logDeriv_mul {f g : 𝕜 → 𝕜'} (x : 𝕜) (hf : f x ≠ 0) (hg : g x ≠ 0)
     (hdf : DifferentiableAt 𝕜 f x) (hdg : DifferentiableAt 𝕜 g x) :
       logDeriv (fun z => f z * g z) x = logDeriv f x + logDeriv g x := by
-  simp only [logDeriv_apply, deriv_mul hdf hdg]
+  simp only [logDeriv_apply]
   field_simp [mul_comm]
 
 theorem logDeriv_div {f g : 𝕜 → 𝕜'} (x : 𝕜) (hf : f x ≠ 0) (hg : g x ≠ 0)
     (hdf : DifferentiableAt 𝕜 f x) (hdg : DifferentiableAt 𝕜 g x) :
     logDeriv (fun z => f z / g z) x = logDeriv f x - logDeriv g x := by
-  simp only [logDeriv_apply, deriv_div hdf hdg]
+  simp only [logDeriv_apply]
   field_simp [mul_comm]
   ring
 

@@ -75,7 +75,7 @@ def derivationOfSectionOfKerSqZero (f : P →ₐ[R] S) (hf' : (RingHom.ker f) ^ 
   map_add' x y := by simp only [map_add, AddMemClass.mk_add_mk, Subtype.mk.injEq]; ring
   map_smul' x y := by
     ext
-    simp only [Algebra.smul_def, map_mul, ← IsScalarTower.algebraMap_apply, AlgHom.commutes,
+    simp only [Algebra.smul_def, map_mul, AlgHom.commutes,
       RingHom.id_apply, Submodule.coe_smul_of_tower]
     ring
   map_one_eq_zero' := by simp only [LinearMap.coe_mk, AddHom.coe_mk, map_one, sub_self,
@@ -368,13 +368,13 @@ def retractionKerCotangentToTensorEquivSection :
     ext x
     simp only [AlgebraTensorModule.curry_apply, Derivation.coe_comp, LinearMap.coe_comp,
       LinearMap.coe_restrictScalars, Derivation.coeFn_coe, Function.comp_apply, curry_apply,
-      LinearEquiv.coe_coe, LinearMap.coe_mk, AddHom.coe_coe, LinearMap.toAddMonoidHom_coe,
+      LinearEquiv.coe_coe, LinearMap.coe_mk, AddHom.coe_coe,
       LinearEquiv.apply_symm_apply, LinearEquiv.symm_apply_apply]
   · intro f
     ext x
     simp only [AlgebraTensorModule.curry_apply, Derivation.coe_comp, LinearMap.coe_comp,
       LinearMap.coe_restrictScalars, Derivation.coeFn_coe, Function.comp_apply, curry_apply,
-      LinearMap.coe_mk, AddHom.coe_coe, LinearMap.toAddMonoidHom_coe, LinearEquiv.coe_coe,
+      LinearMap.coe_mk, AddHom.coe_coe, LinearEquiv.coe_coe,
       LinearEquiv.symm_apply_apply, LinearEquiv.apply_symm_apply]
 
 variable [Algebra.FormallySmooth R P]

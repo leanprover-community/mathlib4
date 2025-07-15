@@ -166,7 +166,7 @@ theorem Matrix.toLinearMapRight'_mul_apply [Fintype l] [DecidableEq l] (M : Matr
 theorem Matrix.toLinearMapRight'_one :
     Matrix.toLinearMapRight' (1 : Matrix m m R) = LinearMap.id := by
   ext
-  simp [Module.End.one_apply]
+  simp
 
 /-- If `M` and `M'` are each other's inverse matrices, they provide an equivalence between `n → A`
 and `m → A` corresponding to `M.vecMul` and `M'.vecMul`. -/
@@ -284,13 +284,12 @@ def LinearMap.toMatrix' : ((n → R) →ₗ[R] m → R) ≃ₗ[R] Matrix m n R w
   invFun := Matrix.mulVecLin
   right_inv M := by
     ext i j
-    simp only [Matrix.mulVec_single_one, col_apply, Matrix.mulVecLin_apply, of_apply,
-      transpose_apply]
+    simp only [Matrix.mulVec_single_one, col_apply, Matrix.mulVecLin_apply, of_apply]
   left_inv f := by
     apply (Pi.basisFun R n).ext
     intro j; ext i
     simp only [Pi.basisFun_apply, Matrix.mulVec_single_one, col_apply,
-      Matrix.mulVecLin_apply, of_apply, transpose_apply]
+      Matrix.mulVecLin_apply, of_apply]
   map_add' f g := by
     ext i j
     simp only [Pi.add_apply, LinearMap.add_apply, of_apply, Matrix.add_apply]
@@ -854,7 +853,7 @@ variable {A M n : Type*} [Fintype n] [DecidableEq n]
 lemma _root_.LinearMap.restrictScalars_toMatrix (f : M →ₗ[A] M) :
     (f.restrictScalars R).toMatrix (bA.smulTower' bM) (bA.smulTower' bM) =
       ((f.toMatrix bM bM).map (leftMulMatrix bA)).comp _ _ _ _ _ := by
-  ext; simp [toMatrix, Basis.repr, Algebra.leftMulMatrix_apply,
+  ext; simp [toMatrix, Algebra.leftMulMatrix_apply,
     Basis.smulTower'_repr, Basis.smulTower'_apply, mul_comm]
 
 end Lmul
@@ -877,7 +876,7 @@ theorem smulTower_leftMulMatrix_algebraMap (x : S) :
     leftMulMatrix (b.smulTower c) (algebraMap _ _ x) = blockDiagonal fun _ ↦ leftMulMatrix b x := by
   ext ⟨i, k⟩ ⟨j, k'⟩
   rw [smulTower_leftMulMatrix, AlgHom.commutes, blockDiagonal_apply, algebraMap_matrix_apply]
-  split_ifs with h <;> simp only at h <;> simp [h]
+  split_ifs with h <;> simp only at h <;> simp
 
 theorem smulTower_leftMulMatrix_algebraMap_eq (x : S) (i j k) :
     leftMulMatrix (b.smulTower c) (algebraMap _ _ x) (i, k) (j, k) = leftMulMatrix b x i j := by

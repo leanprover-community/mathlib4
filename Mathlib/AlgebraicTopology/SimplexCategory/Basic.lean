@@ -196,12 +196,12 @@ lemma diag_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) :
   ext i
   match i with
   | 0 =>
-    simp only [len_mk, Nat.reduceAdd, mkHom, Fin.natCast_eq_last, comp_toOrderHom,
+    simp only [len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom,
       Hom.toOrderHom_mk, OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply]
     rw [Nat.add_comm]
     rfl
   | 1 =>
-    simp only [len_mk, Nat.reduceAdd, mkHom, Fin.natCast_eq_last, comp_toOrderHom,
+    simp only [len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom,
       Hom.toOrderHom_mk, OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply]
     rw [Nat.add_comm]
     simp only [Fin.isValue, Fin.ofNat_eq_cast, Fin.natCast_eq_last]
@@ -298,7 +298,7 @@ theorem δ_comp_σ_self {n} {i : Fin (n + 1)} :
   ext ⟨j, hj⟩
   simp? at hj says simp only [len_mk] at hj
   dsimp [σ, δ, Fin.predAbove, Fin.succAbove]
-  simp only [Fin.lt_iff_val_lt_val, Fin.dite_val, Fin.ite_val, Fin.coe_pred, Fin.coe_castLT]
+  simp only [Fin.lt_iff_val_lt_val, Fin.dite_val, Fin.ite_val, Fin.coe_pred]
   split_ifs
   any_goals simp
   all_goals omega
@@ -663,13 +663,13 @@ instance {n : ℕ} {i : Fin (n + 2)} : Mono (δ i) := by
 instance {n : ℕ} {i : Fin (n + 1)} : Epi (σ i) := by
   rw [epi_iff_surjective]
   intro b
-  simp only [σ, mkHom, Hom.toOrderHom_mk, OrderHom.coe_mk]
+  simp only [σ, mkHom, Hom.toOrderHom_mk]
   by_cases h : b ≤ i
   · use b.castSucc
     -- This was not needed before https://github.com/leanprover/lean4/pull/2644
     dsimp
     rw [Fin.predAbove_of_le_castSucc i b.castSucc (by simpa only [Fin.coe_eq_castSucc] using h)]
-    simp only [len_mk, Fin.coe_eq_castSucc, Fin.castPred_castSucc]
+    simp only [len_mk, Fin.castPred_castSucc]
   · use b.succ
     -- This was not needed before https://github.com/leanprover/lean4/pull/2644
     dsimp

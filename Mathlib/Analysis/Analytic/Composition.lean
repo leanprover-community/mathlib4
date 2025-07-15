@@ -148,7 +148,7 @@ theorem applyComposition_update (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
     suffices C : Function.update v (r j') z ∘ r = Function.update (v ∘ r) j' z by
       convert C; exact (c.embedding_comp_inv j).symm
     exact Function.update_comp_eq_of_injective _ (c.embedding _).injective _ _
-  · simp only [h, Function.update_eq_self, Function.update_of_ne, Ne, not_false_iff]
+  · simp only [h, Function.update_of_ne, Ne, not_false_iff]
     let r : Fin (c.blocksFun k) → Fin n := c.embedding k
     change p (c.blocksFun k) (Function.update v j z ∘ r) = p (c.blocksFun k) (v ∘ r)
     suffices B : Function.update v j z ∘ r = v ∘ r by rw [B]
@@ -551,7 +551,7 @@ theorem compChangeOfVariables_length (m M N : ℕ) {i : Σ n, Fin n → ℕ}
     Composition.length (compChangeOfVariables m M N i hi).2 = i.1 := by
   rcases i with ⟨k, blocks_fun⟩
   dsimp [compChangeOfVariables]
-  simp only [Composition.length, map_ofFn, length_ofFn]
+  simp only [Composition.length, length_ofFn]
 
 theorem compChangeOfVariables_blocksFun (m M N : ℕ) {i : Σ n, Fin n → ℕ}
     (hi : i ∈ compPartialSumSource m M N) (j : Fin i.1) :
@@ -560,7 +560,7 @@ theorem compChangeOfVariables_blocksFun (m M N : ℕ) {i : Σ n, Fin n → ℕ}
       i.2 j := by
   rcases i with ⟨n, f⟩
   dsimp [Composition.blocksFun, Composition.blocks, compChangeOfVariables]
-  simp only [map_ofFn, List.getElem_ofFn, Function.comp_apply]
+  simp only [List.getElem_ofFn]
 
 /-- Target set in the change of variables to compute the composition of partial sums of formal
 power series, here given a a set. -/
@@ -577,7 +577,7 @@ theorem compPartialSumTargetSet_image_compPartialSumSource (m M N : ℕ)
     exact fun a => c.one_le_blocks' _
   · dsimp [compChangeOfVariables]
     rw [Composition.sigma_eq_iff_blocks_eq]
-    simp only [Composition.blocksFun, Composition.blocks, Subtype.coe_eta]
+    simp only [Composition.blocksFun]
     conv_rhs => rw [← List.ofFn_get c.blocks]
 
 /-- Target set in the change of variables to compute the composition of partial sums of formal
@@ -609,8 +609,8 @@ theorem compChangeOfVariables_sum {α : Type*} [AddCommMonoid α] (m M N : ℕ)
   -- 1 - show that the image belongs to `compPartialSumTarget m N N`
   · rintro ⟨k, blocks_fun⟩ H
     rw [mem_compPartialSumSource_iff] at H
-    simp only [mem_compPartialSumTarget_iff, Composition.length, Composition.blocks, H.left,
-      map_ofFn, length_ofFn, true_and, compChangeOfVariables]
+    simp only [mem_compPartialSumTarget_iff, Composition.length, H.left,
+      length_ofFn, true_and, compChangeOfVariables]
     intro j
     simp only [Composition.blocksFun, (H.right _).right, List.get_ofFn]
   -- 2 - show that the map is injective
@@ -632,8 +632,7 @@ theorem compChangeOfVariables_sum {α : Type*} [AddCommMonoid α] (m M N : ℕ)
     apply compPartialSumTargetSet_image_compPartialSumSource m M N i
     simpa [compPartialSumTarget] using hi
   -- 4 - show that the composition gives the `compAlongComposition` application
-  · rintro ⟨k, blocks_fun⟩ H
-    rw [h]
+  · assumption
 
 /-- The auxiliary set corresponding to the composition of partial sums asymptotically contains
 all possible compositions. -/
@@ -1096,7 +1095,7 @@ theorem sizeUpTo_sizeUpTo_add (a : Composition n) (b : Composition a.length) {i 
     have D : sizeUpTo b i + j < length a := lt_of_lt_of_le C (b.sizeUpTo_le _)
     have : sizeUpTo b i + Nat.succ j = (sizeUpTo b i + j).succ := rfl
     rw [this, sizeUpTo_succ _ D, IHj A, sizeUpTo_succ _ B]
-    simp only [sigmaCompositionAux, add_assoc, add_left_inj, Fin.val_mk]
+    simp only [sigmaCompositionAux, add_assoc]
     rw [getElem_of_eq (getElem_splitWrtComposition _ _ _ _), getElem_drop, getElem_take]
 
 /-- Natural equivalence between `(Σ (a : Composition n), Composition a.length)` and

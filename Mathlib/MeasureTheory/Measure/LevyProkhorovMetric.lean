@@ -57,7 +57,7 @@ lemma meas_le_of_le_of_forall_le_meas_thickening_add {ε₁ ε₂ : ℝ≥0∞} 
     (h_le : ε₁ ≤ ε₂) {B : Set Ω} (hε₁ : μ B ≤ ν (thickening ε₁.toReal B) + ε₁) :
     μ B ≤ ν (thickening ε₂.toReal B) + ε₂ := by
   by_cases ε_top : ε₂ = ∞
-  · simp only [ne_eq, FiniteMeasure.ennreal_coeFn_eq_coeFn_toMeasure, ε_top, toReal_top,
+  · simp only [ε_top, toReal_top,
                 add_top, le_top]
   apply hε₁.trans (add_le_add ?_ h_le)
   exact measure_mono (μ := ν) (thickening_mono (toReal_mono ε_top h_le) B)
@@ -94,7 +94,7 @@ lemma levyProkhorovEDist_le_of_forall (μ ν : Measure Ω) (δ : ℝ≥0∞)
         μ B ≤ ν (thickening ε.toReal B) + ε ∧ ν B ≤ μ (thickening ε.toReal B) + ε) :
     levyProkhorovEDist μ ν ≤ δ := by
   by_cases δ_top : δ = ∞
-  · simp only [δ_top, add_top, le_top]
+  · simp only [δ_top, le_top]
   apply levyProkhorovEDist_le_of_forall_add_pos_le
   intro x B x_pos x_lt_top B_mble
   simpa only [← add_assoc] using h (δ + x) B (ENNReal.lt_add_right δ_top x_pos.ne.symm)
@@ -622,7 +622,7 @@ lemma LevyProkhorov.continuous_equiv_symm_probabilityMeasure :
     · exact Or.inr ⟨i, by simpa only [mem_Iio, not_lt] using i_small, hi⟩
   have subset_thickB : ⋃ i ∈ JB, thickening (ε / 3) (Es i) ⊆ thickening δ B := by
     intro ω ω_in_U
-    simp only [mem_setOf_eq, mem_iUnion, exists_prop] at ω_in_U
+    simp only [mem_iUnion, exists_prop] at ω_in_U
     obtain ⟨k, ⟨B_intersects, _⟩, ω_in_thEk⟩ := ω_in_U
     rw [mem_thickening_iff] at ω_in_thEk ⊢
     obtain ⟨w, w_in_Ek, w_near⟩ := ω_in_thEk

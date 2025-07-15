@@ -60,7 +60,7 @@ lemma affineAnd_isLocal (hPi : RingHom.RespectsIso Q) (hQl : RingHom.Localizatio
     (hQs : RingHom.OfLocalizationSpan Q) : (affineAnd Q).IsLocal where
   respectsIso := affineAnd_respectsIso hPi
   to_basicOpen {X Y _} f r := fun ⟨hX, hf⟩ ↦ by
-    simp only [Opens.map_top] at hf
+    simp only at hf
     constructor
     · simp only [Scheme.preimage_basicOpen, Opens.map_top]
       exact (isAffineOpen_top X).basicOpen _

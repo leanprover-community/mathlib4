@@ -329,7 +329,7 @@ def transport {F : C ⥤ C} (T : Monad C) (i : (T : C ⥤ C) ≅ F) : Monad C wh
     slice_lhs 1 2 => rw [← T.η.naturality (i.inv.app X), ]
     simp
   right_unit X := by
-    simp only [id_obj, NatTrans.comp_app, Functor.map_comp, comp_obj, NatTrans.hcomp_app,
+    simp only [NatTrans.comp_app, Functor.map_comp, comp_obj, NatTrans.hcomp_app,
       Category.assoc, NatTrans.naturality_assoc]
     slice_lhs 2 4 =>
       simp only [← T.map_comp]
@@ -356,7 +356,7 @@ def transport {F : C ⥤ C} (T : Comonad C) (i : (T : C ⥤ C) ≅ F) : Comonad 
   ε := i.inv ≫ T.ε
   δ := i.inv ≫ T.δ ≫ (i.hom ◫ i.hom)
   right_counit X := by
-    simp only [id_obj, comp_obj, NatTrans.comp_app, NatTrans.hcomp_app, Functor.map_comp, assoc]
+    simp only [comp_obj, NatTrans.comp_app, NatTrans.hcomp_app, Functor.map_comp, assoc]
     slice_lhs 4 5 => rw [← F.map_comp]
     simp only [hom_inv_id_app, Functor.map_id, id_comp, ← i.hom.naturality]
     slice_lhs 2 3 => rw [T.right_counit]

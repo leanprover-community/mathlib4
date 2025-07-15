@@ -79,7 +79,7 @@ def fixedPointsEquiv' :
     ⟨⟨card (fixedPoints p.1.2), (card_subtype_le _).trans_lt (Nat.lt_succ_self _)⟩, ⟨p.1.2, rfl⟩,
       ⟨p.1.1, p.2⟩⟩
   left_inv := fun ⟨⟨k, hk⟩, ⟨σ, hσ⟩, ⟨x, hx⟩⟩ => by
-    simp only [mem_fiber, Fin.val_mk] at hσ
+    simp only [mem_fiber] at hσ
     subst k; rfl
   right_inv := fun ⟨⟨x, σ⟩, h⟩ => rfl
 

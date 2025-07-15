@@ -68,8 +68,8 @@ theorem Basis.eq_bot_of_rank_eq_zero [NoZeroDivisors R] (b : Basis ι R M) (N : 
   rw [Fintype.linearIndependent_iff]
   rintro g sum_eq i
   obtain ⟨_, hi⟩ := i
-  simp only [Function.const_apply, Fin.default_eq_zero, Submodule.coe_mk, Finset.univ_unique,
-    Function.comp_const, Finset.sum_singleton] at sum_eq
+  simp only [Fin.default_eq_zero, Finset.univ_unique,
+    Finset.sum_singleton] at sum_eq
   convert (b.smul_eq_zero.mp sum_eq).resolve_right x_ne
 
 end Module
@@ -191,7 +191,7 @@ theorem Basis.restrictScalars_repr_apply (m : span R (Set.range b)) (i : ι) :
   refine Basis.ext (b.restrictScalars R) fun _ => ?_
   simp only [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply, map_one,
     Basis.repr_self, Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single,
-    Algebra.linearMap_apply, LinearMap.domRestrict_apply, LinearEquiv.coe_coe,
+    Algebra.linearMap_apply, LinearMap.domRestrict_apply,
     Basis.restrictScalars_apply, LinearMap.coe_restrictScalars]
 
 /-- Let `b` be an `S`-basis of `M`. Then `m : M` lies in the `R`-module spanned by `b` iff all the

@@ -49,7 +49,7 @@ lemma mulSupport (d : 𝕜 → ℤ) :
   constructor <;> intro h
   · simp_all only [mem_mulSupport, ne_eq, mem_support]
     by_contra hCon
-    simp_all [hCon, zpow_zero]
+    simp_all [zpow_zero]
   · simp_all only [mem_mulSupport, ne_eq, ne_iff]
     use u
     simp_all [zero_zpow_eq_one₀]
@@ -223,7 +223,7 @@ theorem MeromorphicOn.extract_zeros_poles {f : 𝕜 → E} (h₁f : MeromorphicO
         (toMeromorphicNFOn_eq_self_on_nhdsNE (hφ.inv.smul h₁f) hu).symm,
       meromorphicOrderAt_smul (hφ u hu).inv (h₁f u hu), meromorphicOrderAt_inv,
       meromorphicOrderAt_eq _ h₃f]
-    simp only [Pi.neg_apply, h₁f, hu, divisor_apply, WithTop.LinearOrderedAddCommGroup.coe_neg]
+    simp only [h₁f, hu, divisor_apply]
     lift meromorphicOrderAt f u to ℤ using (h₂f ⟨u, hu⟩) with n hn
     rw [WithTop.untop₀_coe, ← WithTop.LinearOrderedAddCommGroup.coe_neg, ← WithTop.coe_add]
     simp
@@ -249,7 +249,7 @@ theorem MeromorphicOn.extract_zeros_poles_log {f g : 𝕜 → E} {D : Function.l
   have t₁ : (fun u ↦ (D u * log ‖· - u‖)).support = D.support := by
     ext u
     rw [← not_iff_not]
-    simp only [Function.mem_mulSupport, ne_eq, not_not, Function.mem_support, Decidable.not_not]
+    simp only [ne_eq, not_not, Function.mem_support]
     constructor <;> intro hx
     · obtain ⟨y, hy⟩ := NormedField.exists_one_lt_norm 𝕜
       have := congrFun hx (y + u)

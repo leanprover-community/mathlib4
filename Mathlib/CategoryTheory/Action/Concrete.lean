@@ -30,12 +30,12 @@ variable {G : Type u} [Group G] {A : Action (Type u) G}
 @[simp]
 theorem ρ_inv_self_apply (g : G) (x : A.V) :
     A.ρ g⁻¹ (A.ρ g x) = x :=
-  show (A.ρ g⁻¹ * A.ρ g) x = x by simp [← map_mul, Function.End.one_def]
+  show (A.ρ g⁻¹ * A.ρ g) x = x by simp [← map_mul]
 
 @[simp]
 theorem ρ_self_inv_apply (g : G) (x : A.V) :
     A.ρ g (A.ρ g⁻¹ x) = x :=
-  show (A.ρ g * A.ρ g⁻¹) x = x by simp [← map_mul, Function.End.one_def]
+  show (A.ρ g * A.ρ g⁻¹) x = x by simp [← map_mul]
 
 end
 

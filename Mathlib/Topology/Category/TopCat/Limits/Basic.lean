@@ -228,7 +228,7 @@ theorem coinduced_of_isColimit :
     IsColimit.comp_coconePointUniqueUpToIso_hom hc' hc j
   apply (homeoOfIso e).coinduced_eq.symm.trans
   dsimp [coconeOfCoconeForget_pt, c', topologicalSpaceCoconePtOfCoconeForget]
-  simp only [coinduced_iSup, c']
+  simp only [coinduced_iSup]
   conv_rhs => simp only [← he]
   rfl
 

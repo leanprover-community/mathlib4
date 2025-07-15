@@ -127,8 +127,8 @@ lemma eventually_b_le_r : ∀ᶠ (n : ℕ) in atTop, ∀ i, (b i : ℝ) * n - (n
   have h₁ : 0 ≤ b i := le_of_lt <| R.b_pos _
   rw [sub_le_iff_le_add, add_comm, ← sub_le_iff_le_add]
   calc (b i : ℝ) * n - r i n = ‖b i * n‖ - ‖(r i n : ℝ)‖ := by
-                            simp only [norm_mul, RCLike.norm_natCast, sub_left_inj,
-                                       Nat.cast_eq_zero, Real.norm_of_nonneg h₁]
+                            simp only [norm_mul, RCLike.norm_natCast,
+                                       Real.norm_of_nonneg h₁]
                          _ ≤ ‖(b i * n : ℝ) - r i n‖ := norm_sub_norm_le _ _
                          _ = ‖(r i n : ℝ) - b i * n‖ := norm_sub_rev _ _
                          _ ≤ n / log n ^ 2 := hn i
@@ -562,7 +562,7 @@ variable {g} {a} {b}
 
 lemma asympBound_def' {α} [Fintype α] (a b : α → ℝ) {n : ℕ} :
     asympBound g a b n = n ^ p a b * (1 + (∑ u ∈ range n, g u / u ^ (p a b + 1))) := by
-  simp [asympBound_def, sumTransform, mul_add, mul_one, Finset.sum_Ico_eq_sum_range]
+  simp [asympBound_def, sumTransform, mul_add, mul_one]
 
 section
 include R

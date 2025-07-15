@@ -352,7 +352,7 @@ theorem iteratedFDerivWithin_sum_apply {ι : Type*} {f : ι → E → F} {u : Fi
     iteratedFDerivWithin 𝕜 i (∑ j ∈ u, f j ·) s x =
       ∑ j ∈ u, iteratedFDerivWithin 𝕜 i (f j) s x := by
   induction u using Finset.cons_induction with
-  | empty => ext; simp [hs, hx]
+  | empty => ext; simp
   | cons a u ha IH =>
     simp only [Finset.mem_cons, forall_eq_or_imp] at h
     simp only [Finset.sum_cons]

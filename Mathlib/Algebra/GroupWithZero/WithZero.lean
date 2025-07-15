@@ -228,7 +228,7 @@ instance instDivInvMonoid [DivInvMonoid α] : DivInvMonoid (WithZero α) where
 instance instDivInvOneMonoid [DivInvOneMonoid α] : DivInvOneMonoid (WithZero α) where
 
 instance instInvolutiveInv [InvolutiveInv α] : InvolutiveInv (WithZero α) where
-  inv_inv a := (Option.map_map _ _ _).trans <| by simp [Function.comp]
+  inv_inv a := (Option.map_map _ _ _).trans <| by simp
 
 instance instDivisionMonoid [DivisionMonoid α] : DivisionMonoid (WithZero α) where
   mul_inv_rev

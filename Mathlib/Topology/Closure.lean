@@ -452,7 +452,7 @@ theorem frontier_inter_subset (s t : Set X) :
     frontier (s ∩ t) ⊆ frontier s ∩ closure t ∪ closure s ∩ frontier t := by
   simp only [frontier_eq_closure_inter_closure, compl_inter, closure_union]
   refine (inter_subset_inter_left _ (closure_inter_subset_inter_closure s t)).trans_eq ?_
-  simp only [inter_union_distrib_left, union_inter_distrib_right, inter_assoc,
+  simp only [inter_union_distrib_left, inter_assoc,
     inter_comm (closure t)]
 
 theorem frontier_union_subset (s t : Set X) :

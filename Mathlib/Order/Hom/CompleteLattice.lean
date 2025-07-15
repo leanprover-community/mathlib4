@@ -144,7 +144,7 @@ instance (priority := 100) sInfHomClass.toInfTopHomClass [CompleteLattice α]
   { ‹sInfHomClass F α β› with
     map_inf := fun f a b => by
       rw [← sInf_pair, map_sInf, Set.image_pair]
-      simp only [Set.image_pair, sInf_insert, sInf_singleton]
+      simp only [sInf_insert, sInf_singleton]
     map_top := fun f => by
       rw [← sInf_empty, map_sInf, Set.image_empty, sInf_empty] }
 

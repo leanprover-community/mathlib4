@@ -255,7 +255,7 @@ instance instMeasurableMul₂ : MeasurableMul₂ ℝ≥0∞ := by
 instance instMeasurableSub₂ : MeasurableSub₂ ℝ≥0∞ :=
   ⟨by
     apply measurable_of_measurable_nnreal_nnreal <;>
-      simp [← WithTop.coe_sub, tsub_eq_zero_of_le];
+      simp [tsub_eq_zero_of_le];
         exact continuous_sub.measurable.coe_nnreal_ennreal⟩
 
 instance instMeasurableInv : MeasurableInv ℝ≥0∞ :=
@@ -544,7 +544,7 @@ theorem exists_spanning_measurableSet_le {f : α → ℝ≥0} (hf : Measurable f
   let norm_sets := fun n : ℕ => { x | f x ≤ n }
   have norm_sets_spanning : ⋃ n, norm_sets n = Set.univ := by
     ext1 x
-    simp only [Set.mem_iUnion, Set.mem_setOf_eq, Set.mem_univ, iff_true]
+    simp only [Set.mem_iUnion, Set.mem_univ, iff_true]
     exact exists_nat_ge (f x)
   let sets n := sigma_finite_sets n ∩ norm_sets n
   have h_meas : ∀ n, MeasurableSet (sets n) := by

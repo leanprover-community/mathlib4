@@ -366,7 +366,7 @@ theorem natDegree_C_mul_X_pow_le (a : R) (n : ℕ) : natDegree (C a * X ^ n) ≤
 
 theorem degree_erase_le (p : R[X]) (n : ℕ) : degree (p.erase n) ≤ degree p := by
   rcases p with ⟨p⟩
-  simp only [erase_def, degree, coeff, support]
+  simp only [erase_def, degree, support]
   apply sup_mono
   rw [Finsupp.support_erase]
   apply Finset.erase_subset

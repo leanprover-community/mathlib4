@@ -816,7 +816,7 @@ theorem basicOpen_union_eq_self_iff (s : Set Γ(X, U)) :
       simp only [Set.iUnion_subset_iff, SetCoe.forall, Opens.coe_iSup]
       intro x _
       exact X.basicOpen_le x
-    · simp only [Opens.iSup_def, Subtype.coe_mk, Set.preimage_iUnion]
+    · simp only [Opens.iSup_def, Set.preimage_iUnion]
       congr! 1
       · refine congr_arg (Set.iUnion ·) ?_
         ext1 x

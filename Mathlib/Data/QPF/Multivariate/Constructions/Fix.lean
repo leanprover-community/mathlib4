@@ -88,7 +88,7 @@ theorem recF_eq_of_wEquiv (α : TypeVec n) {β : Type u} (u : F (α.append1 β) 
   intro h
   -- Porting note: induction on h doesn't work.
   refine @WEquiv.recOn _ _ _ _ (fun a a' _ ↦ recF u a = recF u a') _ _ h ?_ ?_ ?_
-  · intros a f' f₀ f₁ _h ih; simp only [recF_eq, Function.comp]
+  · intros a f' f₀ f₁ _h ih; simp only [recF_eq]
     congr; funext; congr; funext; apply ih
   · intros a₀ f'₀ f₀ a₁ f'₁ f₁ h; simp only [recF_eq', abs_map, MvPFunctor.wDest'_wMk, h]
   · intros x y z _e₁ _e₂ ih₁ ih₂; exact Eq.trans ih₁ ih₂
@@ -309,7 +309,7 @@ def Fix.drec {β : Fix F α → Type u}
     rw [Fix.rec_eq]
     dsimp
     simp? [appendFun_id_id] at ih says
-      simp only [appendFun_id_id, MvFunctor.id_map, y] at ih
+      simp only [appendFun_id_id, MvFunctor.id_map] at ih
     congr
     conv =>
       rhs

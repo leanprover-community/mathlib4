@@ -790,7 +790,7 @@ theorem _root_.map_finset_sup' [SemilatticeSup β] [FunLike F α β] [SupHomClas
 theorem sup'_image [DecidableEq β] {s : Finset γ} {f : γ → β} (hs : (s.image f).Nonempty)
     (g : β → α) :
     (s.image f).sup' hs g = s.sup' hs.of_image (g ∘ f) := by
-  rw [← WithBot.coe_eq_coe]; simp only [coe_sup', sup_image, WithBot.coe_sup]; rfl
+  rw [← WithBot.coe_eq_coe]; simp only [coe_sup', sup_image]; rfl
 
 /-- A version of `Finset.sup'_image` with LHS and RHS reversed.
 Also, this lemma assumes that `s` is nonempty instead of assuming that its image is nonempty. -/

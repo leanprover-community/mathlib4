@@ -130,7 +130,7 @@ theorem tendstoLocallyUniformly_iff_tendstoUniformly_of_compactSpace [CompactSpa
   rw [← eventually_all] at hU
   refine hU.mono fun i hi x => ?_
   specialize ht (mem_univ x)
-  simp only [exists_prop, mem_iUnion, SetCoe.exists, exists_and_right, Subtype.coe_mk] at ht
+  simp only [exists_prop, mem_iUnion, SetCoe.exists, exists_and_right] at ht
   obtain ⟨y, ⟨hy₁, hy₂⟩, hy₃⟩ := ht
   exact hi ⟨⟨y, hy₁⟩, hy₂⟩ x hy₃
 

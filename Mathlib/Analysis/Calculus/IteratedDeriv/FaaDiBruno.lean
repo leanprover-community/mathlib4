@@ -94,9 +94,8 @@ theorem iteratedDerivWithin_vcomp_three
     ← (OrderedFinpartition.extendEquiv 2).sum_comp, Fintype.sum_sigma,
     Fintype.sum_option, Nat.reduceAdd, OrderedFinpartition.extendEquiv_apply,
     OrderedFinpartition.extend_none, OrderedFinpartition.extend_some,
-    OrderedFinpartition.extendMiddle_length, OrderedFinpartition.default_eq,
-    OrderedFinpartition.atomic_length, OrderedFinpartition.extendLeft_length,
-    Fintype.sum_unique, Fin.sum_univ_zero, Fin.sum_univ_two]
+    OrderedFinpartition.extendMiddle_length, OrderedFinpartition.default_eq, Fintype.sum_unique,
+    OrderedFinpartition.atomic_length, OrderedFinpartition.extendLeft_length, Fin.sum_univ_two]
   simp? [add_assoc, two_smul, iteratedFDerivWithin_one_apply (ht _ <| hst hx)] says
     simp only [OrderedFinpartition.extendLeft_partSize, OrderedFinpartition.extendLeft_length,
       OrderedFinpartition.atomic_length, Nat.reduceAdd, OrderedFinpartition.atomic_partSize,

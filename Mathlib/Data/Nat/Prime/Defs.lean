@@ -222,7 +222,7 @@ theorem minFac_one : minFac 1 = 1 := by
 
 @[simp]
 theorem minFac_two : minFac 2 = 2 := by
-  simp [minFac, minFacAux]
+  simp [minFac]
 
 theorem minFac_eq (n : ℕ) : minFac n = if 2 ∣ n then 2 else minFacAux n 3 := rfl
 
@@ -263,11 +263,11 @@ theorem minFacAux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
 
 theorem minFac_has_prop {n : ℕ} (n1 : n ≠ 1) : minFacProp n (minFac n) := by
   by_cases n0 : n = 0
-  · simp [n0, minFacProp, GE.ge]
+  · simp [n0, minFacProp]
   have n2 : 2 ≤ n := by
     revert n0 n1
     rcases n with (_ | _ | _) <;> simp [succ_le_succ]
-  simp only [minFac_eq, Nat.isUnit_iff]
+  simp only [minFac_eq]
   by_cases d2 : 2 ∣ n <;> simp only [d2, ↓reduceIte]
   · exact ⟨le_rfl, d2, fun k k2 _ => k2⟩
   · refine
@@ -280,6 +280,12 @@ theorem minFac_dvd (n : ℕ) : minFac n ∣ n :=
 theorem minFac_prime {n : ℕ} (n1 : n ≠ 1) : Prime (minFac n) :=
   let ⟨f2, fd, a⟩ := minFac_has_prop n1
   prime_def_lt'.2 ⟨f2, fun m m2 l d => not_le_of_gt l (a m m2 (d.trans fd))⟩
+
+@[simp]
+theorem minFac_prime_iff {n : ℕ} : Prime (minFac n) ↔ n ≠ 1 := by
+  refine ⟨?_, minFac_prime⟩
+  rintro h rfl
+  exact prime_one_false h
 
 theorem minFac_le_of_dvd {n : ℕ} : ∀ {m : ℕ}, 2 ≤ m → m ∣ n → minFac n ≤ m := by
   by_cases n1 : n = 1

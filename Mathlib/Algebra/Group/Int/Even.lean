@@ -49,9 +49,9 @@ instance : DecidablePred (IsSquare : ℤ → Prop) :=
 @[parity_simps] lemma even_add : Even (m + n) ↔ (Even m ↔ Even n) := by
   rcases emod_two_eq_zero_or_one m with h₁ | h₁ <;>
   rcases emod_two_eq_zero_or_one n with h₂ | h₂ <;>
-  simp [even_iff, h₁, h₂, Int.add_emod, one_add_one_eq_two, emod_self]
+  simp [even_iff, h₁, h₂, Int.add_emod, emod_self]
 
-lemma two_not_dvd_two_mul_add_one (n : ℤ) : ¬2 ∣ 2 * n + 1 := by simp [add_emod]
+lemma two_not_dvd_two_mul_add_one (n : ℤ) : ¬2 ∣ 2 * n + 1 := by simp
 
 @[parity_simps]
 lemma even_sub : Even (m - n) ↔ (Even m ↔ Even n) := by simp [sub_eq_add_neg, parity_simps]
@@ -81,7 +81,7 @@ lemma ediv_two_mul_two_of_even : Even n → n / 2 * 2 = n :=
 
 -- Here are examples of how `parity_simps` can be used with `Int`.
 example (m n : ℤ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by
-  simp +decide [*, (by decide : ¬2 = 0), parity_simps]
+  simp +decide [*, parity_simps]
 
 example : ¬Even (25394535 : ℤ) := by decide
 

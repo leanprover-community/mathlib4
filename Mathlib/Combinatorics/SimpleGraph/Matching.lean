@@ -407,8 +407,8 @@ lemma Walk.IsCycle.adj_toSubgraph_iff_of_isCycles [LocallyFinite G] {u} {p : G.W
   rw [← Cardinal.eq, ← Set.cast_ncard (Set.toFinite _),
       ← Set.cast_ncard (finite_neighborSet_toSubgraph p), hcyc
         (Set.Nonempty.mono (p.toSubgraph.neighborSet_subset v) <|
-          Set.nonempty_of_ncard_ne_zero <| by simp [Set.Nonempty.mono,
-          hp.ncard_neighborSet_toSubgraph_eq_two (by aesop), Set.nonempty_of_ncard_ne_zero]),
+          Set.nonempty_of_ncard_ne_zero <| by simp [
+          hp.ncard_neighborSet_toSubgraph_eq_two (by aesop)]),
       hp.ncard_neighborSet_toSubgraph_eq_two (by aesop)]
 
 open scoped symmDiff
@@ -423,7 +423,7 @@ lemma Subgraph.IsPerfectMatching.symmDiff_isCycles
     Set.eq_empty_iff_forall_notMem, SimpleGraph.mem_neighborSet, SimpleGraph.sup_adj, sdiff_adj,
     spanningCoe_adj, not_or, not_and, not_not]
   by_cases hww' : w = w'
-  · simp_all [← imp_iff_not_or, hww']
+  · simp_all [← imp_iff_not_or]
   · right
     use w, w'
     aesop
@@ -581,7 +581,7 @@ lemma Subgraph.IsPerfectMatching.symmDiff_of_isAlternating (hM : M.IsPerfectMatc
     (⊤ : Subgraph (M.spanningCoe ∆ G')).IsPerfectMatching := by
   rw [Subgraph.isPerfectMatching_iff]
   intro v
-  simp only [toSubgraph_adj, symmDiff_def, SimpleGraph.sup_adj, sdiff_adj, Subgraph.spanningCoe_adj]
+  simp only [symmDiff_def]
   obtain ⟨w, hw⟩ := hM.1 (hM.2 v)
   by_cases h : G'.Adj v w
   · obtain ⟨w', hw'⟩ := hG'cyc.other_adj_of_adj h

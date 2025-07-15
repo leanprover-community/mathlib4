@@ -223,7 +223,7 @@ instance [Decidable a] [Decidable b] : Decidable (Xor' a b) := inferInstanceAs (
 
 @[simp] theorem xor_false : Xor' False = id := by ext; simp [Xor']
 
-theorem xor_comm (a b : Prop) : Xor' a b = Xor' b a := by simp [Xor', and_comm, or_comm]
+theorem xor_comm (a b : Prop) : Xor' a b = Xor' b a := by simp [Xor', or_comm]
 
 instance : Std.Commutative Xor' := ⟨xor_comm⟩
 

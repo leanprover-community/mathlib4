@@ -593,7 +593,7 @@ lemma p_opcyclesMap' : h₁.p ≫ opcyclesMap' φ h₁ h₂ = φ.τ₂ ≫ h₂.
 
 @[reassoc (attr := simp)]
 lemma opcyclesMap'_g' : opcyclesMap' φ h₁ h₂ ≫ h₂.g' = h₁.g' ≫ φ.τ₃ := by
-  simp only [← cancel_epi h₁.p, assoc, φ.comm₂₃, p_opcyclesMap'_assoc,
+  simp only [← cancel_epi h₁.p, φ.comm₂₃, p_opcyclesMap'_assoc,
     RightHomologyData.p_g'_assoc, RightHomologyData.p_g']
 
 @[reassoc (attr := simp)]

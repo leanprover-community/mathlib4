@@ -263,7 +263,7 @@ theorem AnalyticSet.iInter [hι : Nonempty ι] [Countable ι] [T2Space α] {s : 
       choose x hx using A
       have xt : x ∈ t := by
         refine mem_iInter.2 fun n => ?_
-        simp [γ, t, F, hx]
+        simp [γ, hx]
       refine ⟨⟨x, xt⟩, ?_⟩
       exact hx i₀
   rw [← F_range]

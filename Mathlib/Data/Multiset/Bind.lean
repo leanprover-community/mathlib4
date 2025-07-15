@@ -279,7 +279,7 @@ theorem add_product (s t : Multiset α) (u : Multiset β) : (s + t) ×ˢ u = s �
 theorem product_add (s : Multiset α) : ∀ t u : Multiset β, s ×ˢ (t + u) = s ×ˢ t + s ×ˢ u :=
   Multiset.induction_on s (fun _ _ => rfl) fun a s IH t u => by
     rw [cons_product, IH]
-    simp [add_comm, add_left_comm, add_assoc]
+    simp [add_left_comm, add_assoc]
 
 @[simp]
 theorem card_product : card (s ×ˢ t) = card s * card t := by simp [SProd.sprod, product]
@@ -343,7 +343,7 @@ theorem card_sigma : card (s.sigma t) = sum (map (fun a => card (t a)) s) := by
 variable {s t}
 
 @[simp] lemma mem_sigma : ∀ {p : Σa, σ a}, p ∈ @Multiset.sigma α σ s t ↔ p.1 ∈ s ∧ p.2 ∈ t p.1
-  | ⟨a, b⟩ => by simp [Multiset.sigma, and_assoc, and_left_comm]
+  | ⟨a, b⟩ => by simp [Multiset.sigma, and_left_comm]
 
 protected theorem Nodup.sigma {σ : α → Type*} {t : ∀ a, Multiset (σ a)} :
     Nodup s → (∀ a, Nodup (t a)) → Nodup (s.sigma t) :=

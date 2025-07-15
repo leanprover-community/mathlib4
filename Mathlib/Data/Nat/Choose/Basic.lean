@@ -142,7 +142,7 @@ theorem choose_mul_factorial_mul_factorial : ∀ {n k}, k ≤ n → choose n k *
       rw [choose_succ_succ, Nat.add_mul, Nat.add_mul, succ_sub_succ, h, h₁, h₂, Nat.add_mul,
         Nat.mul_sub_right_distrib, factorial_succ, ← Nat.add_sub_assoc h₃, Nat.add_assoc,
         ← Nat.add_mul, Nat.add_sub_cancel_left, Nat.add_comm]
-    · rw [hk₁]; simp [hk₁, Nat.mul_comm, choose, Nat.sub_self]
+    · rw [hk₁]; simp [Nat.mul_comm, choose, Nat.sub_self]
 
 theorem choose_mul {n k s : ℕ} (hkn : k ≤ n) (hsk : s ≤ k) :
     n.choose k * k.choose s = n.choose s * (n - s).choose (k - s) :=
@@ -233,8 +233,8 @@ theorem ascFactorial_eq_factorial_mul_choose' (n k : ℕ) :
   cases n
   · cases k
     · rw [ascFactorial_zero, choose_zero_right, factorial_zero, Nat.mul_one]
-    · simp only [zero_ascFactorial, zero_eq, Nat.zero_add, succ_sub_succ_eq_sub,
-        Nat.le_zero_eq, Nat.sub_zero, choose_succ_self, Nat.mul_zero]
+    · simp only [zero_ascFactorial, Nat.zero_add, succ_sub_succ_eq_sub,
+        Nat.sub_zero, choose_succ_self, Nat.mul_zero]
   rw [ascFactorial_eq_factorial_mul_choose]
   simp only [succ_add_sub_one]
 

@@ -304,7 +304,7 @@ theorem contMDiff_toPartitionOfUnity {E : Type uE} [NormedAddCommGroup E] [Norme
     [TopologicalSpace M] [ChartedSpace H M] {s : Set M} (f : BumpCovering ι M s)
     (hf : ∀ i, ContMDiff I 𝓘(ℝ) ∞ (f i)) (i : ι) : ContMDiff I 𝓘(ℝ) ∞ (f.toPartitionOfUnity i) :=
   (hf i).mul <| (contMDiff_finprod_cond fun j _ => contMDiff_const.sub (hf j)) <| by
-    simp only [Pi.sub_def, mulSupport_one_sub]
+    simp only [mulSupport_one_sub]
     exact f.locallyFinite
 
 @[deprecated (since := "2024-11-21")]

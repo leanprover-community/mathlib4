@@ -191,16 +191,7 @@ namespace CompHaus
 noncomputable
 def presentation (X : CompHaus) : Stonean where
   toTop := (projectivePresentation X).p.1
-  prop := by
-    refine CompactT2.Projective.extremallyDisconnected
-      (@fun Y Z _ _ _ _ _ _ f g hfcont hgcont hgsurj => ?_)
-    let g₁ : (CompHaus.of Y) ⟶ (CompHaus.of Z) := CompHausLike.ofHom _ ⟨g, hgcont⟩
-    let f₁ : (projectivePresentation X).p ⟶ (CompHaus.of Z) := CompHausLike.ofHom _ ⟨f, hfcont⟩
-    have hg₁ : Epi g₁ := (epi_iff_surjective _).2 hgsurj
-    refine ⟨Projective.factorThru f₁ g₁, (Projective.factorThru f₁ g₁).hom.2, funext (fun _ => ?_)⟩
-    change (Projective.factorThru f₁ g₁ ≫ g₁) _ = f _
-    rw [Projective.factorThru_comp]
-    rfl
+  prop := instExtremallyDisconnectedCarrierToTopTrueOfProjective X.projectivePresentation.p
 
 /-- The morphism from `presentation X` to `X`. -/
 noncomputable

@@ -1105,7 +1105,7 @@ theorem finite_setOf_matroid {E : Set α} (hE : E.Finite) : {M : Matroid α | M.
   rw [← Set.finite_image_iff hf.injOn]
   refine (hE.finite_subsets.prod hE.finite_subsets.finite_subsets).subset ?_
   rintro _ ⟨M, hE : M.E ⊆ E, rfl⟩
-  simp only [Set.mem_prod, Set.mem_setOf_eq, Set.setOf_subset_setOf]
+  simp only [Set.mem_prod, Set.mem_setOf_eq]
   exact ⟨hE, fun B hB ↦ hB.subset_ground.trans hE⟩
 
 /-- For finite `E`, finitely many matroids have ground set `E`. -/

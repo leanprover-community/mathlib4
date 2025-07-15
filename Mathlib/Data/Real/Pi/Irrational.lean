@@ -163,7 +163,7 @@ explicit description of `sinPoly`.
 -/
 private lemma sinPoly_natDegree_le : ∀ n : ℕ, (sinPoly n).natDegree ≤ n
   | 0 => by simp [sinPoly]
-  | 1 => by simp only [natDegree_C, mul_one, zero_le', sinPoly]
+  | 1 => by simp only [natDegree_C, zero_le', sinPoly]
   | n + 2 => by
       rw [sinPoly]
       refine natDegree_add_le_of_degree_le ((natDegree_smul_le _ _).trans ?_) ?_

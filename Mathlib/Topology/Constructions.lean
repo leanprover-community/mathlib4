@@ -991,6 +991,12 @@ instance Pi.discreteTopology : DiscreteTopology (∀ i, π i) :=
     rw [← univ_pi_singleton]
     exact isOpen_set_pi finite_univ fun i _ => (isOpen_discrete {x i})
 
+lemma Function.Surjective.isEmbedding_comp {n m : Type*} (f : m → n) (hf : Function.Surjective f) :
+    IsEmbedding ((· ∘ f) : (n → X) → (m → X)) := by
+  refine ⟨isInducing_iff_nhds.mpr fun x ↦ ?_, hf.injective_comp_right⟩
+  simp only [nhds_pi, Filter.pi, Filter.comap_iInf, ← hf.iInf_congr, Filter.comap_comap,
+    Function.comp_def]
+
 end Pi
 
 section Sigma
@@ -1122,7 +1128,7 @@ lemma Topology.isInducing_sigmaMap {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ
 
 lemma Topology.isEmbedding_sigmaMap {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i)}
     (h : Injective f₁) : IsEmbedding (Sigma.map f₁ f₂) ↔ ∀ i, IsEmbedding (f₂ i) := by
-  simp only [isEmbedding_iff, Injective.sigma_map, isInducing_sigmaMap h, forall_and,
+  simp only [isEmbedding_iff, isInducing_sigmaMap h, forall_and,
     h.sigma_map_iff]
 
 @[deprecated (since := "2024-10-26")]

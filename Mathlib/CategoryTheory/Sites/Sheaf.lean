@@ -467,7 +467,7 @@ instance sheafHomHasNSMul : SMul ℕ (P ⟶ Q) where
         naturality := fun U V i => by
           induction n with
           | zero => simp only [zero_smul, comp_zero, zero_comp]
-          | succ n ih => simp only [Nat.succ_eq_add_one, add_smul, ih, one_nsmul, comp_add,
+          | succ n ih => simp only [add_smul, ih, one_nsmul, comp_add,
               NatTrans.naturality, add_comp] }
 
 instance : Zero (P ⟶ Q) where zero := Sheaf.Hom.mk 0

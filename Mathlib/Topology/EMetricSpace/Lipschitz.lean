@@ -95,12 +95,12 @@ theorem lipschitzOnWith_iff_restrict : LipschitzOnWith K f s ↔ LipschitzWith K
 
 lemma lipschitzOnWith_restrict {t : Set s} :
     LipschitzOnWith K (s.restrict f) t ↔ LipschitzOnWith K f (s ∩ Subtype.val '' t) := by
-  simp [LipschitzOnWith, LipschitzWith]
+  simp [LipschitzOnWith]
 
 lemma locallyLipschitzOn_iff_restrict :
     LocallyLipschitzOn s f ↔ LocallyLipschitz (s.restrict f) := by
-  simp only [LocallyLipschitzOn, LocallyLipschitz, SetCoe.forall', restrict_apply,
-    Subtype.edist_mk_mk, ← lipschitzOnWith_iff_restrict, lipschitzOnWith_restrict,
+  simp only [LocallyLipschitzOn, LocallyLipschitz, SetCoe.forall',
+    lipschitzOnWith_restrict,
     nhds_subtype_eq_comap_nhdsWithin, mem_comap]
   congr! with x K
   constructor

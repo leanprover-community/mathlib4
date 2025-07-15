@@ -443,7 +443,7 @@ theorem coe_C (r : F) : ((RatFunc.C r : RatFunc F) : F⸨X⸩) = HahnSeries.C r 
   rw [coe_num_denom, num_C, denom_C, Polynomial.coe_C, -- Porting note: removed `coe_C`
     Polynomial.coe_one,
     PowerSeries.coe_one, div_one]
-  simp only [algebraMap_eq_C, ofPowerSeries_C, C_apply]  -- Porting note: added
+  simp only [ofPowerSeries_C, C_apply]  -- Porting note: added
 
 -- TODO: generalize over other modules
 @[simp, norm_cast]
@@ -702,7 +702,7 @@ theorem val_le_one_iff_eq_coe (f : K⸨X⸩) : Valued.v f ≤ (1 : ℤₘ₀) �
   all_goals
     apply HahnSeries.embDomain_notin_range
     simp only [Nat.coe_castAddMonoidHom, RelEmbedding.coe_mk, Function.Embedding.coeFn_mk,
-      Set.mem_range, not_exists, Int.negSucc_lt_zero, reduceCtorEq]
+      Set.mem_range, not_exists, reduceCtorEq]
     intro
   · simp only [not_false_eq_true]
   · omega
@@ -837,7 +837,7 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ
   /- To show that the intersection we have in sight is in `ℱ`, we use that it contains a double
   intersection (an infinite and a finite one): by general properties of filters, we are reduced
   to show that both terms are in `ℱ`, which is easy in light of their definition. -/
-  · simp only [Set.mem_Iio, Set.mem_Ico, inter_mem_iff]
+  · simp only [Set.mem_Iio, inter_mem_iff]
     constructor
     · have := (exists_lb_coeff_ne hℱ).choose_spec
       rw [Filter.eventually_iff] at this
@@ -939,7 +939,7 @@ theorem coe_range_dense : DenseRange ((↑) : RatFunc K → K⸨X⸩) := by
   rw [denseRange_iff_closure_range]
   ext f
   simp only [UniformSpace.mem_closure_iff_symm_ball, Set.mem_univ, iff_true, Set.Nonempty,
-    Set.mem_inter_iff, Set.mem_range, Set.mem_setOf_eq, exists_exists_eq_and]
+    Set.mem_inter_iff, Set.mem_range, exists_exists_eq_and]
   intro V hV h_symm
   rw [uniformity_eq_comap_neg_add_nhds_zero_swapped] at hV
   obtain ⟨T, hT₀, hT₁⟩ := hV
@@ -959,7 +959,7 @@ open RatFunc AbstractCompletion IsDedekindDomain.HeightOneSpectrum
 theorem inducing_coe : IsUniformInducing ((↑) : RatFunc K → K⸨X⸩) := by
   rw [isUniformInducing_iff, Filter.comap]
   ext S
-  simp only [exists_prop, Filter.mem_mk, Set.mem_setOf_eq, uniformity_eq_comap_nhds_zero,
+  simp only [Filter.mem_mk, Set.mem_setOf_eq, uniformity_eq_comap_nhds_zero,
     Filter.mem_comap]
   constructor
   · rintro ⟨T, ⟨⟨R, ⟨hR, pre_R⟩⟩, pre_T⟩⟩
@@ -1153,8 +1153,7 @@ lemma powerSeriesEquivSubring_coe_apply (f : K⟦X⟧) :
 completion of `RatFunc K`. -/
 theorem mem_integers_of_powerSeries (F : K⟦X⟧) :
     (LaurentSeriesRingEquiv K) F ∈ (idealX K).adicCompletionIntegers (RatFunc K) := by
-  simp only [Subring.mem_map, exists_prop, ValuationSubring.mem_toSubring,
-    mem_adicCompletionIntegers, LaurentSeriesRingEquiv_def,
+  simp only [mem_adicCompletionIntegers, LaurentSeriesRingEquiv_def,
     valuation_compare, val_le_one_iff_eq_coe]
   exact ⟨F, rfl⟩
 
@@ -1178,8 +1177,7 @@ theorem powerSeries_ext_subring :
   · simp only [ValuationSubring.mem_toSubring, ← hF, ← coe_F]
     apply mem_integers_of_powerSeries
   · obtain ⟨F, hF⟩ := exists_powerSeries_of_memIntegers K H
-    simp only [Equiv.toFun_as_coe, UniformEquiv.coe_toEquiv, exists_exists_eq_and,
-      UniformEquiv.coe_symm_toEquiv, Subring.mem_map, Equiv.invFun_as_coe]
+    simp only [Subring.mem_map]
     exact ⟨F, ⟨F, trivial, rfl⟩, hF⟩
 
 /-- The ring isomorphism between `K⟦X⟧` and the unit ball inside the `X`-adic completion of

@@ -48,7 +48,7 @@ def cantorSet : Set ℝ := ⋂ n, preCantorSet n
 lemma quarters_mem_preCantorSet (n : ℕ) : 1/4 ∈ preCantorSet n ∧ 3/4 ∈ preCantorSet n := by
   induction n with
   | zero =>
-    simp only [preCantorSet_zero, inv_nonneg]
+    simp only [preCantorSet_zero]
     refine ⟨⟨ ?_, ?_⟩, ?_, ?_⟩ <;> norm_num
   | succ n ih =>
     apply And.intro

@@ -227,7 +227,7 @@ theorem ofDigits_digits (b n : ℕ) : ofDigits b (digits b n) = n := by
       cases n
       · rw [digits_zero]
         rfl
-      · simp only [Nat.succ_eq_add_one, digits_add_two_add_one]
+      · simp only [digits_add_two_add_one]
         dsimp [ofDigits]
         rw [h _ (Nat.div_lt_self' _ b)]
         rw [Nat.mod_add_div]
@@ -263,7 +263,7 @@ theorem digits_eq_cons_digits_div {b n : ℕ} (h : 1 < b) (w : n ≠ 0) :
   · norm_num at h
   rcases n with (_ | n)
   · norm_num at w
-  · simp only [digits_add_two_add_one, ne_eq]
+  · simp only [digits_add_two_add_one]
 
 theorem digits_getLast {b : ℕ} (m : ℕ) (h : 1 < b) (p q) :
     (digits b m).getLast p = (digits b (m / b)).getLast q := by
@@ -315,8 +315,8 @@ theorem ofDigits_add_ofDigits_eq_ofDigits_zipWith_of_length_eq {b : ℕ} {l1 l2 
     induction l2 generalizing tl₁ with
     | nil => simp_all
     | cons hd₂ tl₂ ih₂ =>
-      simp_all only [List.length_cons, succ_eq_add_one, ofDigits_cons, add_left_inj,
-        eq_comm, List.zipWith_cons_cons, add_eq]
+      simp_all only [List.length_cons, ofDigits_cons, add_left_inj,
+        eq_comm, List.zipWith_cons_cons]
       rw [← ih₁ h.symm, mul_add]
       ac_rfl
 
@@ -439,7 +439,7 @@ lemma self_div_pow_eq_ofDigits_drop {p : ℕ} (i n : ℕ) (h : 2 ≤ p) :
 lemma toDigitsCore_lens_eq_aux (b f : Nat) :
     ∀ (n : Nat) (l1 l2 : List Char), l1.length = l2.length →
     (Nat.toDigitsCore b f n l1).length = (Nat.toDigitsCore b f n l2).length := by
-  induction f with (simp only [Nat.toDigitsCore, List.length]; intro n l1 l2 hlen)
+  induction f with (simp only [Nat.toDigitsCore]; intro n l1 l2 hlen)
   | zero => assumption
   | succ f ih =>
     if hx : n / b = 0 then
@@ -458,7 +458,7 @@ lemma toDigitsCore_lens_eq (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List Cha
       simp only [hnb, if_true, List.length]
     else
       generalize hx : Nat.digitChar (n % b) = x
-      simp only [hx, hnb, if_false] at ih
+      simp only at ih
       simp only [hnb, if_false]
       specialize ih (n / b) c (x :: tl)
       rw [← ih]

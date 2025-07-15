@@ -500,7 +500,7 @@ theorem tendsto_nhds {f : Filter β} {u : β → α} {a : α} :
 theorem tendsto_atTop [Nonempty β] [SemilatticeSup β] {u : β → α} {a : α} :
     Tendsto u atTop (𝓝 a) ↔ ∀ ε > 0, ∃ N, ∀ n ≥ N, edist (u n) a < ε :=
   (atTop_basis.tendsto_iff nhds_basis_eball).trans <| by
-    simp only [exists_prop, true_and, mem_Ici, mem_ball]
+    simp only [true_and, mem_Ici, mem_ball]
 
 section Compact
 

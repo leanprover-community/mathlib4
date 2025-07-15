@@ -173,7 +173,7 @@ def coconeAt (Y : D) : Cocone (CostructuredArrow.proj L Y ⋙ F) where
       naturality := fun g₁ g₂ φ => by
         dsimp
         rw [← CostructuredArrow.w φ]
-        simp only [assoc, NatTrans.naturality_assoc, Functor.comp_map,
+        simp only [NatTrans.naturality_assoc, Functor.comp_map,
           Functor.map_comp, comp_id] }
 
 variable (L F) in
@@ -451,7 +451,7 @@ lemma IsPointwiseRightKanExtension.hom_ext
   have eq₁ := congr_app (CostructuredArrow.w f₁) X.right
   have eq₂ := congr_app (CostructuredArrow.w f₂) X.right
   dsimp at eq₁ eq₂ ⊢
-  simp only [assoc, ← NatTrans.naturality_assoc, eq₁, eq₂]
+  simp only [← NatTrans.naturality_assoc, eq₁, eq₂]
 
 /-- A pointwise right Kan extension is universal, i.e. it is a right Kan extension. -/
 def IsPointwiseRightKanExtension.isUniversal : E.IsUniversal :=

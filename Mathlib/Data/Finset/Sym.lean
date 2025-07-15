@@ -136,7 +136,7 @@ theorem sym2_eq_image : s.sym2 = (s ×ˢ s).image Sym2.mk := by
   constructor
   · intro h
     use (x, y)
-    simp only [mem_product, h, and_self, true_and]
+    simp only [mem_product, h, and_self]
   · rintro ⟨⟨a, b⟩, h⟩
     simp only [mem_product, Sym2.eq_iff] at h
     obtain ⟨h, (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)⟩ := h

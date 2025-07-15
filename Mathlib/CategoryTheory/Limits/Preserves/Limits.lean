@@ -165,7 +165,7 @@ def preservesColimitNatIso : colim ⋙ G ≅ (whiskeringRight J C D).obj G ⋙ c
       apply colimit.hom_ext; intro j
       dsimp
       rw [ι_colimMap_assoc]
-      simp only [ι_preservesColimitIso_inv, whiskerRight_app, Category.assoc,
+      simp only [ι_preservesColimitIso_inv, whiskerRight_app,
         ι_preservesColimitIso_inv_assoc, ← G.map_comp]
       rw [ι_colimMap])
 

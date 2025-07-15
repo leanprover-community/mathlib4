@@ -81,7 +81,7 @@ lemma intCast_eq_zero_iff (a : ℤ) : (a : R) = 0 ↔ (p : ℤ) ∣ a := by
   · rw [← neg_eq_zero, ← Int.cast_neg, ← Int.dvd_neg]
     lift -a to ℕ using Int.neg_nonneg.mpr (le_of_lt h) with b
     rw [Int.cast_natCast, CharP.cast_eq_zero_iff R p, Int.natCast_dvd_natCast]
-  · simp only [Int.cast_zero, eq_self_iff_true, Int.dvd_zero]
+  · simp only [Int.cast_zero, Int.dvd_zero]
   · lift a to ℕ using le_of_lt h with b
     rw [Int.cast_natCast, CharP.cast_eq_zero_iff R p, Int.natCast_dvd_natCast]
 
@@ -181,7 +181,7 @@ variable [NonAssocRing R]
 lemma cast_eq_mod (p : ℕ) [CharP R p] (k : ℕ) : (k : R) = (k % p : ℕ) :=
   calc
     (k : R) = ↑(k % p + p * (k / p)) := by rw [Nat.mod_add_div]
-    _ = ↑(k % p) := by simp [cast_eq_zero]
+    _ = ↑(k % p) := by simp
 
 lemma ringChar_zero_iff_CharZero : ringChar R = 0 ↔ CharZero R := by
   rw [ringChar.eq_iff, charP_zero_iff_charZero]

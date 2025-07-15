@@ -163,10 +163,10 @@ include hyp
 
 lemma toNerve₂.mk_naturality_δ1i (i : Fin 3) : toNerve₂.mk.naturalityProperty F (δ₂ i) := by
   ext x
-  simp only [types_comp_apply, mk.app_two, ComposableArrows.mk₂]
+  simp only [types_comp_apply]
   rw [toNerve₂.mk.app_one]
   unfold nerveFunctor₂ truncation SimplicialObject.truncation
-  simp only [comp_obj, nerveFunctor_obj, Cat.of_α, whiskeringLeft_obj_obj, id_eq, op_obj,
+  simp only [comp_obj, nerveFunctor_obj, Cat.of_α, whiskeringLeft_obj_obj, op_obj,
     nerve_obj, oneTruncation₂_obj, ReflQuiv.of_val, Nat.reduceAdd, mk.app_two,
     Functor.comp_map, op_map, Quiver.Hom.unop_op]
   unfold δ₂ inclusion
@@ -429,36 +429,35 @@ instance nerveFunctor₂.full : nerveFunctor₂.{u, u}.Full where
       have lem2 := congr_arg_heq (·.map' 0 1) (congr_fun (F.naturality δ2₂.op) hk)
       have eq0 : (nerveFunctor₂.obj X).map δ0₂.op hk = .mk₁ k := by
         apply ComposableArrows.ext₁ rfl rfl
-        simp [nerveFunctor₂, SSet.truncation, forget₂, HasForget₂.forget₂]
+        simp [nerveFunctor₂, SSet.truncation]
       have eq2 : (nerveFunctor₂.obj X).map δ2₂.op hk = .mk₁ h := by
         apply ComposableArrows.ext₁ (by rfl) (by rfl)
-        simp [nerveFunctor₂, SSet.truncation, forget₂, HasForget₂.forget₂]; rfl
+        simp [nerveFunctor₂, SSet.truncation]; rfl
       have eq1 : (nerveFunctor₂.obj X).map δ1₂.op hk = .mk₁ (h ≫ k) := by
         apply ComposableArrows.ext₁ (by rfl) (by rfl)
-        simp [nerveFunctor₂, SSet.truncation, forget₂, HasForget₂.forget₂]; rfl
+        simp [nerveFunctor₂, SSet.truncation]; rfl
       dsimp at lem0 lem1 lem2
       rw [eq0] at lem0
       rw [eq1] at lem1
       rw [eq2] at lem2
       replace lem0 : HEq (uF'.map k) (Fhk.map' 1 2) := by
         refine HEq.trans (b := Fk.map' 0 1) ?_ lem0
-        simp [uF', nerveFunctor₂, SSet.truncation, forget₂, HasForget₂.forget₂,
+        simp [uF', nerveFunctor₂, SSet.truncation,
           ReflQuiv.comp_eq_comp, OneTruncation₂.nerveHomEquiv, Fk, uF]
       replace lem2 : HEq (uF'.map h) (Fhk.map' 0 1) := by
         refine HEq.trans (b := Fh.map' 0 1) ?_ lem2
-        simp [uF', nerveFunctor₂, SSet.truncation, forget₂, HasForget₂.forget₂,
-          ReflQuiv.comp_eq_comp, OneTruncation₂.nerveHomEquiv, Fk, uF, ComposableArrows.hom, Fh]
+        simp [uF', nerveFunctor₂, SSet.truncation,
+          ReflQuiv.comp_eq_comp, OneTruncation₂.nerveHomEquiv, uF, ComposableArrows.hom, Fh]
       replace lem1 : HEq (uF'.map (h ≫ k)) (Fhk.map' 0 2) := by
         refine HEq.trans (b := Fhk'.map' 0 1) ?_ lem1
-        simp only [Nat.reduceAdd, id_eq, Int.reduceNeg, Int.cast_ofNat_Int, Int.reduceSub,
-          Int.reduceAdd, Nat.cast_ofNat, Fin.zero_eta, Fin.isValue, Fin.mk_one,
-          ComposableArrows.map', homOfLE_leOfHom, Fk, uF, Fh, uF']
-        simp [uF', nerveFunctor₂, SSet.truncation, forget₂, HasForget₂.forget₂,
-          ReflQuiv.comp_eq_comp, OneTruncation₂.nerveHomEquiv, Fk, uF, ComposableArrows.hom, Fhk']
+        simp only [Nat.reduceAdd,
+          Fin.zero_eta, Fin.isValue, Fin.mk_one,
+          ComposableArrows.map', homOfLE_leOfHom, uF, uF']
+        simp [nerveFunctor₂, SSet.truncation,
+          ReflQuiv.comp_eq_comp, OneTruncation₂.nerveHomEquiv, ComposableArrows.hom, Fhk']
       rw [Fhk.map'_comp 0 1 2] at lem1
       refine eq_of_heq (lem1.trans (heq_comp ?_ ?_ ?_ lem2.symm lem0.symm)) <;>
-        simp [uF', nerveFunctor₂, SSet.truncation, forget₂, HasForget₂.forget₂,
-          ReflQuiv.comp_eq_comp, OneTruncation₂.nerveHomEquiv, Fk, uF, Fhk] <;>
+        simp [uF', nerveFunctor₂, SSet.truncation, ReflQuiv.comp_eq_comp, uF, Fhk] <;>
         [let ι := ι0₂; let ι := ι1₂; let ι := ι2₂] <;>
       · replace := congr_arg (·.obj 0) (congr_fun (F.naturality ι.op) hk)
         dsimp [oneTruncation₂, ComposableArrows.left, SimplicialObject.truncation,

@@ -117,7 +117,7 @@ lemma genWeightSpaceChain_neg :
     genWeightSpaceChain M (-χ₁) χ₂ (-q) (-p) = genWeightSpaceChain M χ₁ χ₂ p q := by
   let e : ℤ ≃ ℤ := neg_involutive.toPerm
   simp_rw [genWeightSpaceChain, ← e.biSup_comp (Ioo p q)]
-  simp [e, -mem_Ioo, neg_mem_Ioo_iff]
+  simp [e, -mem_Ioo]
 
 lemma genWeightSpace_le_genWeightSpaceChain {k : ℤ} (hk : k ∈ Ioo p q) :
     genWeightSpace M (k • χ₁ + χ₂) ≤ genWeightSpaceChain M χ₁ χ₂ p q :=

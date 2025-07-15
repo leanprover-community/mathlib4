@@ -587,8 +587,7 @@ def liftRingHom :
   right_inv F := by
     apply RingHom.coe_addMonoidHom_injective
     refine DirectSum.addHom_ext' (fun xi ↦ AddMonoidHom.ext (fun xv ↦ ?_))
-    simp only [RingHom.coe_addMonoidHom_mk, DirectSum.toAddMonoid_of, AddMonoidHom.mk_coe,
-      AddMonoidHom.comp_apply, toSemiring_coe_addMonoidHom]
+    simp only [DirectSum.toAddMonoid_of, AddMonoidHom.comp_apply, toSemiring_coe_addMonoidHom]
 
 end ToSemiring
 

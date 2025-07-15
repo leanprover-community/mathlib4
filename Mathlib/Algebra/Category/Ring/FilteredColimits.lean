@@ -87,7 +87,7 @@ instance colimitSemiring : Semiring.{max v u} <| R.{v, u} F :=
       erw [colimit_add_mk_eq _ ⟨j₂, _⟩ ⟨j₃, _⟩ k g h, colimit_mul_mk_eq _ ⟨j₁, _⟩ ⟨k, _⟩ k f (𝟙 k),
         colimit_mul_mk_eq _ ⟨j₁, _⟩ ⟨j₂, _⟩ k f g, colimit_mul_mk_eq _ ⟨j₁, _⟩ ⟨j₃, _⟩ k f h,
         colimit_add_mk_eq _ ⟨k, _⟩ ⟨k, _⟩ k (𝟙 k) (𝟙 k)]
-      simp only [CategoryTheory.Functor.map_id, id_apply]
+      simp only [CategoryTheory.Functor.map_id]
       erw [left_distrib (F.map f x) (F.map g y) (F.map h z)]
       rfl
     right_distrib := fun x y z => by
@@ -100,7 +100,7 @@ instance colimitSemiring : Semiring.{max v u} <| R.{v, u} F :=
       erw [colimit_add_mk_eq _ ⟨j₁, _⟩ ⟨j₂, _⟩ k f g, colimit_mul_mk_eq _ ⟨k, _⟩ ⟨j₃, _⟩ k (𝟙 k) h,
         colimit_mul_mk_eq _ ⟨j₁, _⟩ ⟨j₃, _⟩ k f h, colimit_mul_mk_eq _ ⟨j₂, _⟩ ⟨j₃, _⟩ k g h,
         colimit_add_mk_eq _ ⟨k, _⟩ ⟨k, _⟩ k (𝟙 k) (𝟙 k)]
-      simp only [CategoryTheory.Functor.map_id, id_apply]
+      simp only [CategoryTheory.Functor.map_id]
       erw [right_distrib (F.map f x) (F.map g y) (F.map h z)]
       rfl }
 

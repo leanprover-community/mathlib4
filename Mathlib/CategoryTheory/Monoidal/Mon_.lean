@@ -226,7 +226,7 @@ instance uniqueHomFromTrivial (A : Mon_ C) : Unique (trivial C ⟶ A) where
   default :=
     { hom := η[A.X]
       is_mon_hom :=
-        { mul_hom := by simp [one_mul, unitors_equal] } }
+        { mul_hom := by simp [unitors_equal] } }
   uniq f := by
     ext
     rw [← Category.id_comp f.hom]
@@ -592,7 +592,7 @@ theorem mul_associator {M N P : C} [Mon_Class M] [Mon_Class N] [Mon_Class P] :
       ((α_ M N P).hom ⊗ₘ (α_ M N P).hom) ≫
         tensorμ M (N ⊗ P) M (N ⊗ P) ≫
           (μ ⊗ₘ tensorμ N P N P ≫ (μ ⊗ₘ μ)) := by
-  simp only [tensor_obj, prodMonoidal_tensorObj, Category.assoc]
+  simp only [Category.assoc]
   slice_lhs 2 3 => rw [← Category.id_comp μ[P], tensor_comp]
   slice_lhs 3 4 => rw [associator_naturality]
   slice_rhs 3 4 => rw [← Category.id_comp μ, tensor_comp]
@@ -607,7 +607,7 @@ theorem mul_leftUnitor {M : C} [Mon_Class M] :
   simp only [tensorHom_id, id_tensorHom]
   slice_lhs 3 4 => rw [leftUnitor_naturality]
   slice_lhs 1 3 => rw [← leftUnitor_monoidal]
-  simp only [Category.assoc, Category.id_comp]
+  simp only [Category.id_comp]
 
 theorem mul_rightUnitor {M : C} [Mon_Class M] :
     (tensorμ M (𝟙_ C) M (𝟙_ C) ≫ (μ ⊗ₘ (λ_ (𝟙_ C)).hom)) ≫ (ρ_ M).hom =
@@ -616,7 +616,7 @@ theorem mul_rightUnitor {M : C} [Mon_Class M] :
   simp only [tensorHom_id, id_tensorHom]
   slice_lhs 3 4 => rw [rightUnitor_naturality]
   slice_lhs 1 3 => rw [← rightUnitor_monoidal]
-  simp only [Category.assoc, Category.id_comp]
+  simp only [Category.id_comp]
 
 namespace tensorObj
 
@@ -788,7 +788,7 @@ theorem mul_braiding (X Y : C) [Mon_Class X] [Mon_Class Y] :
     μ ≫ (β_ X Y).hom = ((β_ X Y).hom ⊗ₘ (β_ X Y).hom) ≫ μ := by
   dsimp [tensorObj.mul_def]
   simp only [tensorμ, Category.assoc, BraidedCategory.braiding_naturality,
-    BraidedCategory.braiding_tensor_right, BraidedCategory.braiding_tensor_left,
+    BraidedCategory.braiding_tensor_right_hom, BraidedCategory.braiding_tensor_left_hom,
     comp_whiskerRight, whisker_assoc, MonoidalCategory.whiskerLeft_comp, pentagon_assoc,
     pentagon_inv_hom_hom_hom_inv_assoc, Iso.inv_hom_id_assoc, whiskerLeft_hom_inv_assoc]
   slice_lhs 3 4 =>
@@ -818,7 +818,7 @@ instance : SymmetricCategory (Mon_ C) where
   braiding X Y := mkIso' (β_ X.X Y.X)
   symmetry X Y := by
     ext
-    simp [← SymmetricCategory.braiding_swap_eq_inv_braiding]
+    simp
 
 end Mon_
 

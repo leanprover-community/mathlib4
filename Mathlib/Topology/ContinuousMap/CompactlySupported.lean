@@ -692,7 +692,7 @@ lemma exists_add_nnrealPart_add_eq (f g : C_c(α, ℝ)) : ∃ (h : C_c(α, ℝ�
     rw [← Real.coe_toNNReal', ← Real.coe_toNNReal', ← Real.coe_toNNReal', ← NNReal.coe_add,
       ← NNReal.coe_add]
     have hhx' : ((f + g).nnrealPart + h) x = (f.nnrealPart + g.nnrealPart) x := by congr
-    simp only [coe_add, Pi.add_apply, nnrealPart_apply, Real.coe_toNNReal'] at hhx'
+    simp only [coe_add, Pi.add_apply, nnrealPart_apply] at hhx'
     exact congrArg toReal hhx'
   rcases le_total 0 (f x) with hfx | hfx
   · rcases le_total 0 (g x) with hgx | hgx

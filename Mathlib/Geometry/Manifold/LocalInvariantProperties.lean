@@ -574,7 +574,7 @@ theorem isLocalStructomorphWithinAt_localInvariantProp [ClosedUnderRestriction G
         · exact closedUnderRestriction' heG isOpen_interior
         · have : s ∩ u ∩ e.source = s ∩ (e.source ∩ u) := by mfld_set_tac
           simpa only [this, interior_interior, hu.interior_eq, mfld_simps] using hef
-        · simp only [*, interior_interior, hu.interior_eq, mfld_simps]
+        · simp only [*, hu.interior_eq, mfld_simps]
     right_invariance' := by
       intro s x f e' he'G he'x h hx
       have hxs : x ∈ s := by simpa only [e'.left_inv he'x, mfld_simps] using hx

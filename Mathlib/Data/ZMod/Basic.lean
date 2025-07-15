@@ -36,6 +36,8 @@ open Function ZMod
 
 namespace ZMod
 
+instance : IsDomain (ZMod 0) := inferInstanceAs (IsDomain ℤ)
+
 /-- For non-zero `n : ℕ`, the ring `Fin n` is equivalent to `ZMod n`. -/
 def finEquiv : ∀ (n : ℕ) [NeZero n], Fin n ≃+* ZMod n
   | 0, h => (h.ne _ rfl).elim
@@ -104,7 +106,7 @@ instance charP (n : ℕ) : CharP (ZMod n) n where
   cast_eq_zero_iff := by
     intro k
     rcases n with - | n
-    · simp [zero_dvd_iff, Int.natCast_eq_zero]
+    · simp [zero_dvd_iff]
     · exact Fin.natCast_eq_zero
 
 -- Verify that `grind` can see that `ZMod n` has characteristic `n`.
@@ -140,6 +142,12 @@ theorem natCast_self (n : ℕ) : (n : ZMod n) = 0 :=
 @[simp]
 theorem natCast_self' (n : ℕ) : (n + 1 : ZMod (n + 1)) = 0 := by
   rw [← Nat.cast_add_one, natCast_self (n + 1)]
+
+lemma natCast_pow_eq_zero_of_le (p : ℕ) {m n : ℕ} (h : n ≤ m) :
+    (p ^ m : ZMod (p ^ n)) = 0 := by
+  obtain ⟨q, rfl⟩ := Nat.exists_eq_add_of_le h
+  rw [pow_add, ← Nat.cast_pow]
+  simp
 
 section UniversalProperty
 
@@ -258,7 +266,7 @@ theorem cast_add_eq_ite {n : ℕ} (a b : ZMod n) :
   · simp; rfl
   change Fin (n + 1) at a b
   change ((((a + b) : Fin (n + 1)) : ℕ) : ℤ) = if ((n + 1 : ℕ) : ℤ) ≤ (a : ℕ) + b then _ else _
-  simp only [Fin.val_add_eq_ite, Int.natCast_succ, Int.ofNat_le]
+  simp only [Fin.val_add_eq_ite, Int.natCast_succ]
   norm_cast
   split_ifs with h
   · rw [Nat.cast_sub h]
@@ -339,6 +347,9 @@ theorem cast_natCast (h : m ∣ n) (k : ℕ) : (cast (k : ZMod n) : R) = k :=
 @[simp, norm_cast]
 theorem cast_intCast (h : m ∣ n) (k : ℤ) : (cast (k : ZMod n) : R) = k :=
   map_intCast (castHom h R) k
+
+theorem castHom_surjective (h : m ∣ n) : Function.Surjective (castHom h (ZMod m)) :=
+  fun a ↦ by obtain ⟨a, rfl⟩ := intCast_surjective a; exact ⟨a, map_intCast ..⟩
 
 end CharDvd
 
@@ -517,7 +528,7 @@ lemma intCast_cast_neg (x : ZMod n) : (cast (-x) : ℤ) = -cast x % n := by
 theorem val_neg_one (n : ℕ) : (-1 : ZMod n.succ).val = n := by
   dsimp [val, Fin.coe_neg]
   cases n
-  · simp [Nat.mod_one]
+  · simp
   · dsimp [ZMod, ZMod.cast]
     rw [Fin.coe_neg_one]
 
@@ -727,7 +738,7 @@ theorem natCast_mod (a : ℕ) (n : ℕ) : ((a % n : ℕ) : ZMod n) = a := by
 
 theorem eq_iff_modEq_nat (n : ℕ) {a b : ℕ} : (a : ZMod n) = b ↔ a ≡ b [MOD n] := by
   cases n
-  · simp [Nat.ModEq, Int.natCast_inj, Nat.mod_zero]
+  · simp [Nat.ModEq, Nat.mod_zero]
   · rw [Fin.ext_iff, Nat.ModEq, ← val_natCast, ← val_natCast]
     exact Iff.rfl
 
@@ -811,6 +822,10 @@ theorem inv_mul_of_unit {n : ℕ} (a : ZMod n) (h : IsUnit a) : a⁻¹ * a = 1 :
 -- then we could use the general lemma `inv_eq_of_mul_eq_one`
 protected theorem inv_eq_of_mul_eq_one (n : ℕ) (a b : ZMod n) (h : a * b = 1) : a⁻¹ = b :=
   left_inv_eq_right_inv (inv_mul_of_unit a ⟨⟨a, b, h, mul_comm a b ▸ h⟩, rfl⟩) h
+
+@[simp]
+theorem inv_neg_one (n : ℕ) : (-1 : ZMod n)⁻¹ = -1 :=
+  ZMod.inv_eq_of_mul_eq_one n (-1) (-1) (by simp)
 
 lemma inv_mul_eq_one_of_isUnit {n : ℕ} {a : ZMod n} (ha : IsUnit a) (b : ZMod n) :
     a⁻¹ * b = 1 ↔ a = b := by
@@ -908,7 +923,7 @@ theorem neg_one_ne_one {n : ℕ} [Fact (2 < n)] : (-1 : ZMod n) ≠ 1 :=
 
 @[simp]
 theorem neg_eq_self_mod_two (a : ZMod 2) : -a = a := by
-  fin_cases a <;> apply Fin.ext <;> simp [Fin.coe_neg, Int.natMod]; rfl
+  fin_cases a <;> apply Fin.ext <;> simp; rfl
 
 @[simp]
 theorem natAbs_mod_two (a : ℤ) : (a.natAbs : ZMod 2) = a := by

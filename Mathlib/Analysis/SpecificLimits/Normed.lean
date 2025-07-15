@@ -233,7 +233,7 @@ lemma tendsto_pow_atTop_nhds_zero_iff_norm_lt_one {R : Type*} [SeminormedRing R]
   filter_upwards [eventually_ge_atTop 1] with n hn
   induction n, hn using Nat.le_induction with
   | base => simp
-  | succ n hn IH => simp [norm_pow, pow_succ, IH]
+  | succ n hn IH => simp [pow_succ, IH]
 
 /-! ### Geometric series -/
 
@@ -391,7 +391,7 @@ theorem summable_norm_mul_geometric_of_norm_lt_one {k : ℕ} {r : R}
   _ =O[atTop] fun n ↦ u n * ‖r‖ ^ n := by
       apply (IsBigOWith.of_bound (c := ‖(1 : R)‖) ?_).isBigO
       filter_upwards [eventually_norm_pow_le r] with n hn
-      simp only [norm_norm, norm_mul, Real.norm_eq_abs, abs_cast, norm_pow, abs_norm]
+      simp only [norm_mul, Real.norm_eq_abs, abs_cast, norm_pow, abs_norm]
       apply (norm_mul_le _ _).trans
       have : ‖(u n : R)‖ * ‖r ^ n‖ ≤ (u n * ‖(1 : R)‖) * ‖r‖ ^ n := by
         gcongr; exact norm_cast_le (u n)
@@ -584,7 +584,7 @@ theorem NormedAddCommGroup.cauchy_series_of_le_geometric'' {C : ℝ} {u : ℕ �
     (mul_nonneg_iff_of_pos_right <| pow_pos hr₀ N).mp ((norm_nonneg _).trans <| h N <| le_refl N)
   have : ∀ n ≥ N, u n = v n := by
     intro n hn
-    simp [v, hn, if_neg (not_lt.mpr hn)]
+    simp [v, if_neg (not_lt.mpr hn)]
   apply cauchySeq_sum_of_eventually_eq this
     (NormedAddCommGroup.cauchy_series_of_le_geometric' hr₁ _)
   · exact C

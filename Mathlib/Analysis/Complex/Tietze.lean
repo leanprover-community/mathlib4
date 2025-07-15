@@ -63,7 +63,7 @@ instance Set.instTietzeExtensionUnitClosedBall {𝕜 : Type v} [RCLike 𝕜] {E 
       · simp only [g, piecewise_eq_of_notMem (hi := hx), RCLike.real_smul_eq_coe_smul (K := 𝕜)]
         by_cases hx' : x = 0 <;> simp [hx']
     · ext x
-      simp [piecewise_eq_of_mem (hi := x.property)]
+      simp
   refine continuous_piecewise (fun x hx ↦ ?_) continuousOn_id ?_
   · replace hx : ‖x‖ = 1 := by simpa [frontier_closedBall (0 : E) one_ne_zero] using hx
     simp [g, hx]

@@ -79,7 +79,7 @@ theorem HasAffineProperty.diagonal_of_openCover (P) {Q} [HasAffineProperty P Q]
   · simp
   · ext1 <;> simp
   · simp only [Category.assoc, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
-      Functor.const_obj_obj, cospan_one, cospan_left, cospan_right, Category.comp_id]
+      Category.comp_id]
     convert h𝒰' i j k
     ext1 <;> simp [Scheme.Cover.pullbackHom]
 

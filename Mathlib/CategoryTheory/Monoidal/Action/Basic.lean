@@ -215,7 +215,7 @@ theorem unit_actionHomRight {x y : D} (f : x ⟶ y) :
 @[reassoc, simp]
 theorem tensor_actionHomRight (x y : C) {z z' : D} (f : z ⟶ z') :
     (x ⊗ y) ⊴ₗ f = (αₗ x y z).hom ≫ x ⊴ₗ y ⊴ₗ f ≫ (αₗ x y z').inv := by
-  simp only [← id_actionHom, ← actionHom_id]
+  simp only [← id_actionHom]
   rw [← Category.assoc, ← actionAssocIso_hom_naturality]
   simp
 
@@ -524,7 +524,7 @@ theorem unit_actionHomRight {x y : D} (f : x ⟶ y) :
 @[reassoc, simp]
 theorem actionHomLeft_tensor {z z' : D} (f : z ⟶ z') (x y : C) :
     (f ⊵ᵣ (x ⊗ y)) = (αᵣ z x y).hom ≫ (f ⊵ᵣ x) ⊵ᵣ y ≫ (αᵣ z' x y).inv := by
-  simp only [← id_actionHom, ← actionHom_id]
+  simp only [← actionHom_id]
   rw [← Category.assoc, ← actionAssocIso_hom_naturality]
   simp
 

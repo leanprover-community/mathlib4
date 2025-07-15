@@ -39,7 +39,7 @@ def permsOfList : List α → List (Perm α)
 theorem length_permsOfList : ∀ l : List α, length (permsOfList l) = l.length !
   | [] => rfl
   | a :: l => by
-    simp [Nat.factorial_succ, permsOfList, length_permsOfList, comp_def, succ_mul, add_comm]
+    simp [Nat.factorial_succ, permsOfList, length_permsOfList, succ_mul, add_comm]
 
 theorem mem_permsOfList_of_mem {l : List α} {f : Perm α} (h : ∀ x, f x ≠ x → x ∈ l) :
     f ∈ permsOfList l := by

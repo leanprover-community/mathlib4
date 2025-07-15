@@ -516,7 +516,7 @@ theorem isTranscendenceBasis_of_trdeg_le {ι : Type w} {x : ι → A} (hx : Alge
 theorem isTranscendenceBasis_of_lift_trdeg_le_of_finite [Finite ι] (hx : AlgebraicIndependent R x)
     (le : lift.{u} (trdeg R A) ≤ lift.{w} #ι) : IsTranscendenceBasis R x :=
   isTranscendenceBasis_of_lift_trdeg_le hx
-    (lift_lt.mp <| le.trans_lt <| by simp [mk_lt_aleph0_iff]) le
+    (lift_lt.mp <| le.trans_lt <| by simp) le
 
 theorem isTranscendenceBasis_of_trdeg_le_of_finite {ι : Type w} [Finite ι] {x : ι → A}
     (hx : AlgebraicIndependent R x) (le : trdeg R A ≤ #ι) : IsTranscendenceBasis R x :=

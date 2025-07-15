@@ -489,7 +489,7 @@ theorem induction_on_max_value [DecidableEq ι] (f : ι → α) {p : Finset ι �
   · simp only [image_eq_empty] at hne
     simp only [hne, h0]
   · have H : (s.image f).max' hne ∈ s.image f := max'_mem (s.image f) hne
-    simp only [mem_image, exists_prop] at H
+    simp only [mem_image] at H
     rcases H with ⟨a, has, hfa⟩
     rw [← insert_erase has]
     refine step _ _ (notMem_erase a s) (fun x hx => ?_) (ihs _ <| erase_ssubset has)

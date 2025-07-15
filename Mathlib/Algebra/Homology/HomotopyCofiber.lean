@@ -286,8 +286,7 @@ noncomputable def desc :
     · simp only [comp_add, d_sndX_assoc _ _ _ hjk, add_comp, assoc, H,
         d_fstX_assoc _ _ _ _ hjk, neg_comp, dNext, AddMonoidHom.mk'_apply]
       abel
-    · simp only [d_sndX_assoc _ _ _ hjk, add_comp, assoc, add_left_inj, H,
-        dNext_eq_zero _ _ hj, zero_add]
+    · simp only [d_sndX_assoc _ _ _ hjk, add_comp, assoc, H, dNext_eq_zero _ _ hj, zero_add]
 
 lemma desc_f (j k : ι) (hjk : c.Rel j k) :
     (desc φ α hα).f j = fstX φ j _ hjk ≫ hα.hom _ j + sndX φ j ≫ α.f j := by

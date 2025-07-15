@@ -180,7 +180,7 @@ variable {ι : Type*} [UniformSpace X]
 
 lemma coverEntropy_union {T : X → X} {F G : Set X} :
     coverEntropy T (F ∪ G) = max (coverEntropy T F) (coverEntropy T G) := by
-  simp only [coverEntropy, ← iSup_sup_eq, ← iSup_subtype']
+  simp only [coverEntropy, ← iSup_sup_eq]
   exact biSup_congr fun _ _ ↦ coverEntropyEntourage_union
 
 lemma coverEntropyInf_iUnion_le (T : X → X) (F : ι → Set X) :

@@ -68,9 +68,9 @@ theorem ofFn_mul {m n} (f : Fin (m * n) → α) :
         (Nat.add_lt_add_left j.prop _).trans_eq (by rw [Nat.add_mul, Nat.one_mul])
       _ ≤ _ := Nat.mul_le_mul_right _ i.prop⟩) := by
   induction' m with m IH
-  · simp [ofFn_zero, Nat.zero_mul, ofFn_zero, flatten]
+  · simp [ofFn_zero, Nat.zero_mul, ofFn_zero]
   · simp_rw [ofFn_succ', succ_mul]
-    simp [flatten_concat, ofFn_add, IH]
+    simp [ofFn_add, IH]
     rfl
 
 /-- This breaks a list of `m*n` items into `n` groups each containing `m` elements. -/
@@ -126,7 +126,7 @@ theorem ofFn_fin_repeat {m} (a : Fin m → α) (n : ℕ) :
 theorem pairwise_ofFn {R : α → α → Prop} {n} {f : Fin n → α} :
     (ofFn f).Pairwise R ↔ ∀ ⦃i j⦄, i < j → R (f i) (f j) := by
   simp only [pairwise_iff_getElem, length_ofFn, List.getElem_ofFn,
-    (Fin.rightInverse_cast length_ofFn).surjective.forall, Fin.forall_iff, Fin.cast_mk,
+    Fin.forall_iff,
     Fin.mk_lt_mk, forall_comm (α := (_ : Prop)) (β := ℕ)]
 
 lemma getLast_ofFn_succ {n : ℕ} (f : Fin n.succ → α) :

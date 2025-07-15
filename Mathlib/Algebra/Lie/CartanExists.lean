@@ -210,7 +210,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
       refine ⟨⟨x, self_mem_engel K x⟩, ?_, ?_⟩
       · exact Subtype.coe_ne_coe.mp hx₀
       · dsimp only [z] at hz₀
-        simp only [coe_bracket_of_module, hz₀, LieHom.map_zero, LinearMap.zero_apply]
+        simp only [hz₀, LieHom.map_zero, LinearMap.zero_apply]
     -- If `z ≠ 0`, then `⁅α • u + x, z⁆` vanishes per axiom of Lie algebras
     refine ⟨⟨z, hUle z.2⟩, ?_, ?_⟩
     · simpa only [coe_bracket_of_module, ne_eq, Submodule.mk_eq_zero, Subtype.ext_iff] using hz₀
@@ -244,9 +244,8 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     -- From this we deduce that there exists an `n` such that `⁅x, _⁆ ^ n` vanishes on `⁅x, z⁆`.
     -- On the other hand, our goal is to show `z = 0` in `Q`,
     -- which is equivalent to showing that `⁅x, _⁆ ^ n` vanishes on `z`, for some `n`.
-    simp only [coe_bracket_of_module, LieSubmodule.mem_mk_iff', LieSubalgebra.mem_toSubmodule,
-      mem_engel_iff, LieSubmodule.Quotient.mk'_apply, LieSubmodule.Quotient.mk_eq_zero', E, Q]
-      at this ⊢
+    simp only [LieSubmodule.mem_mk_iff', LieSubalgebra.mem_toSubmodule, mem_engel_iff,
+      LieSubmodule.Quotient.mk'_apply, LieSubmodule.Quotient.mk_eq_zero', E, Q] at this ⊢
     -- Hence we win.
     obtain ⟨n, hn⟩ := this
     use n+1
