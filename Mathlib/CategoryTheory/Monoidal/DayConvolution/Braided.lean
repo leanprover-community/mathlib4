@@ -352,11 +352,11 @@ def symmetric [SymmetricCategory V] [SymmetricCategory C]
     SymmetricCategory D where
   __ := braided C V D
   symmetry x y := by
-      change (braiding C V x y).hom ≫ (braiding C V y x).hom = _
-      apply (ι C V D).map_injective
-      simp only [Functor.map_comp, ι_map_braiding_hom, DayConvolution.symmetry,
-        Functor.map_id]
-      rfl
+    change (braiding C V x y).hom ≫ (braiding C V y x).hom = _
+    apply (ι C V D).map_injective
+    simp only [Functor.map_comp, ι_map_braiding_hom, DayConvolution.symmetry,
+      Functor.map_id]
+    rfl
 
 end
 
