@@ -32,6 +32,20 @@ variable {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M] -- [IsManifold I 0 M]
 
+section
+variable {E' : Type*} [NormedAddCommGroup E']
+  [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+
+axiom map_of_one_jet {x : M} (u : TangentSpace I x) {x' : M'} (u' : TangentSpace I' x') : M → M'
+
+lemma map_of_one_jet_spec {x : M} (u : TangentSpace I x) {x' : M'} (u' : TangentSpace I' x') :
+    map_of_one_jet u u' x = x' ∧
+    MDiffAt (map_of_one_jet u u') x ∧
+    mfderiv I I' (map_of_one_jet u u') x u = u' := by
+  sorry
+end
+
 variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
@@ -845,25 +859,58 @@ variable [FiniteDimensional ℝ E] [FiniteDimensional ℝ F]
 
 local notation "TM" => TangentSpace I
 
--- instance (f : F) : CoeOut (TangentSpace 𝓘(ℝ, F) f) F :=
---   ⟨fun x ↦ x⟩
+instance (f : F) : CoeOut (TangentSpace 𝓘(ℝ, F) f) F :=
+  ⟨fun x ↦ x⟩
+
+variable {cov : (Π x : M, TangentSpace I x) → (M → F) → (M → F)} {s : Set M}
 
 noncomputable
-def projection {cov : (Π x : M, TangentSpace I x) → (M → F) → (M → F)} {s : Set M}
-    (hcov : IsCovariantDerivativeOn F cov s) (x : M) (f : F) :
-    (TM x) × F →L[ℝ] F :=
+def projection (hcov : IsCovariantDerivativeOn F cov s) (x : M) (f : F) : (TM x) × F →L[ℝ] F :=
   .snd ℝ (TM x) F + (evalL ℝ F F f ∘L hcov.one_form x ∘L .fst ℝ (TM x) F)
 
 @[simp]
-lemma projection_apply {cov : (Π x : M, TangentSpace I x) → (M → F) → (M → F)} {s : Set M}
-    (hcov : IsCovariantDerivativeOn F cov s) (x : M) (f : F) (v : TM x) (w : F) :
+lemma projection_apply (hcov : IsCovariantDerivativeOn F cov s) (x : M) (f : F) (v : TM x) (w : F) :
   hcov.projection x f (v, w) = w + hcov.one_form x v f := rfl
 
-lemma cov_eq_proj {cov : (Π x : M, TangentSpace I x) → (M → F) → (M → F)} {s : Set M}
-    (hcov : IsCovariantDerivativeOn F cov s) (X : Π x : M, TM x) (σ : M → F)
+lemma cov_eq_proj (hcov : IsCovariantDerivativeOn F cov s) (X : Π x : M, TM x) (σ : M → F)
     {x : M} (hσ : MDiffAt (T% σ) x) (hx : x ∈ s := by trivial) :
     cov X σ x = hcov.projection x (σ x) (X x, mfderiv I 𝓘(ℝ, F) σ x (X x)) := by
   simpa using hcov.eq_one_form hσ
+
+noncomputable def horiz (hcov : IsCovariantDerivativeOn F cov s) (x : M) (f : F) :
+    Submodule ℝ (TM x × F) :=
+  LinearMap.ker (hcov.projection x f)
+
+lemma horiz_vert_direct_sum (hcov : IsCovariantDerivativeOn F cov s) (x : M) (f : F) :
+    IsCompl (hcov.horiz x f) (.prod ⊥ ⊤) := by
+  refine IsCompl.of_eq ?_ ?_
+  · refine (Submodule.eq_bot_iff _).mpr ?_
+    rintro ⟨u, w⟩ ⟨huw, hu, hw⟩
+    simp_all [horiz]
+  · apply Submodule.sup_eq_top_iff _ _ |>.2
+    intro u
+    use u - (0, hcov.projection x f u), ?_, (0, hcov.projection x f u), ?_, ?_
+    all_goals simp [horiz]
+
+lemma mem_horiz_iff_exists (hcov : IsCovariantDerivativeOn F cov s) {x : M} {f : F}
+    {u : TM x} {v : F} (hx : x ∈ s := by trivial) : (u, v) ∈ hcov.horiz x f ↔
+    ∃ σ : M → F, MDiffAt (T% σ) x ∧
+                 σ x = f ∧
+                 mfderiv I 𝓘(ℝ, F) σ x u = v ∧
+                 cov (extend I E u) σ x = 0 := by
+  constructor
+  · intro huv
+    simp [horiz] at huv
+    let w : TangentSpace 𝓘(ℝ, F) f := v -- - hcov.projection x f (u, v)
+    rcases map_of_one_jet_spec u w with ⟨h, h', h''⟩
+    use map_of_one_jet u w, ?_, h, h''
+    · rw [hcov.eq_one_form]
+      · simp [w, h'', h, huv]
+      · rwa [mdifferentiableAt_section]
+    · rwa [mdifferentiableAt_section]
+  · rintro ⟨σ, σ_diff, rfl, rfl, covσ⟩
+    simp [horiz, ← covσ]
+    rw [hcov.eq_one_form σ_diff, extend_apply_self]
 
 end projection_trivial_bundle
 
