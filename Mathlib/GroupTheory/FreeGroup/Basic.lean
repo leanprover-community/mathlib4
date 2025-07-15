@@ -569,6 +569,20 @@ protected lemma induction_on {C : FreeGroup α → Prop} (z : FreeGroup α) (C1 
   Quot.inductionOn z fun L ↦ L.recOn C1 fun ⟨x, b⟩ _tl ih ↦
     b.recOn (mul _ _ (inv_of _ <| of x) ih) (mul _ _ (of x) ih)
 
+/-- Two homomorphisms out of a free group are equal if they are equal on generators.
+
+See note [partially-applied ext lemmas]. -/
+@[to_additive (attr := ext) "Two homomorphisms out of a free additive group are equal if they are
+  equal on generators. See note [partially-applied ext lemmas]."]
+lemma ext_hom {M : Type*} [Monoid M] (f g : FreeGroup α →* M) (h : ∀ a, f (of a) = g (of a)) :
+    f = g := by
+  ext x
+  have this (x) : f (of x)⁻¹ = g (of x)⁻¹ := by
+    trans f (of x)⁻¹ * f (of x) * g (of x)⁻¹
+    · simp_rw [mul_assoc, h, ← _root_.map_mul, mul_inv_cancel, _root_.map_one, mul_one]
+    · simp_rw [← _root_.map_mul, inv_mul_cancel, _root_.map_one, one_mul]
+  induction x <;> simp [*]
+
 @[to_additive]
 theorem Red.exact : mk L₁ = mk L₂ ↔ Join Red L₁ L₂ :=
   calc
@@ -606,17 +620,7 @@ def lift : (α → β) ≃ (FreeGroup α →* β) where
       rintro ⟨L₁⟩ ⟨L₂⟩; simp [Lift.aux]
   invFun g := g ∘ of
   left_inv f := List.prod_singleton
-  right_inv g :=
-    MonoidHom.ext <| by
-      rintro ⟨L⟩
-      exact List.recOn L
-        (g.map_one.symm)
-        (by
-        rintro ⟨x, _ | _⟩ t (ih : _ = g (mk t))
-        · change _ = g ((of x)⁻¹ * mk t)
-          simpa [Lift.aux] using ih
-        · change _ = g (of x * mk t)
-          simpa [Lift.aux] using ih)
+  right_inv g := by ext; simp [of, Lift.aux]
 
 variable {f}
 
@@ -632,20 +636,6 @@ theorem lift.of {x} : lift f (of x) = f x :=
 theorem lift.unique (g : FreeGroup α →* β) (hg : ∀ x, g (FreeGroup.of x) = f x) {x} :
     g x = FreeGroup.lift f x :=
   DFunLike.congr_fun (lift.symm_apply_eq.mp (funext hg : g ∘ FreeGroup.of = f)) x
-
-/-- Two homomorphisms out of a free group are equal if they are equal on generators.
-
-See note [partially-applied ext lemmas]. -/
-@[to_additive (attr := ext) "Two homomorphisms out of a free additive group are equal if they are
-  equal on generators. See note [partially-applied ext lemmas]."]
-theorem ext_hom {M : Type*} [Monoid M] (f g : FreeGroup α →* M) (h : ∀ a, f (of a) = g (of a)) :
-    f = g := by
-  ext x
-  have this (x) : f (of x)⁻¹ = g (of x)⁻¹ := by
-    trans f (of x)⁻¹ * f (of x) * g (of x)⁻¹
-    · simp_rw [mul_assoc, h, ← _root_.map_mul, mul_inv_cancel, _root_.map_one, mul_one]
-    · simp_rw [← _root_.map_mul, inv_mul_cancel, _root_.map_one, one_mul]
-  induction x <;> simp [*]
 
 @[to_additive]
 theorem lift_of_eq_id (α) : lift of = MonoidHom.id (FreeGroup α) :=
