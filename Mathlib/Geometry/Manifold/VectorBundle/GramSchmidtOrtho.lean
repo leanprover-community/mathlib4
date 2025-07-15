@@ -12,11 +12,11 @@ import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
 In this file, we provide a version of the Gram-Schmidt orthonormalization procedure
 for sections of Riemannian vector bundles: this produces a system of sections which are orthogonal
 with respect to the bundle metric. If the initial sections were linearly independent (resp.
-formed a basis) at the point, so do the normalised sections.
+formed a basis) at the point, so do the normalized sections.
 
 # TODO
 If the bundle metric is `C^k`, then the procedure preserves regularity of sections:
-if all sections are `C^k`, so are their normalised versions.
+if all sections are `C^k`, so are their normalized versions.
 
 This will be used in `OrthonormalFrame.lean` to convert a local frame to a local orthonormal frame.
 
