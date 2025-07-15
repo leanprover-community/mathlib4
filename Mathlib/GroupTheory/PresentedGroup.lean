@@ -85,7 +85,7 @@ theorem induction_on {rels : Set (FreeGroup α)} {C : PresentedGroup rels → Pr
 
 theorem generated_by (rels : Set (FreeGroup α)) (H : Subgroup (PresentedGroup rels))
     (h : ∀ j : α, PresentedGroup.of j ∈ H) (x : PresentedGroup rels) : x ∈ H := by
-  induction' x with z
+  obtain ⟨z⟩ := x
   induction z
   · exact one_mem H
   · exact h _

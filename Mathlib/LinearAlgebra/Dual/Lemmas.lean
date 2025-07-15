@@ -257,7 +257,7 @@ instance _root_.Prod.instModuleIsReflexive [IsReflexive R N] :
         (dualProdDualEquivDual R (Dual R M) (Dual R N)).symm
     have : Dual.eval R (M × N) = e.symm.comp ((Dual.eval R M).prodMap (Dual.eval R N)) := by
       ext m f <;> simp [e]
-    simp only [this, LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.dualMap_symm,
+    simp only [this,
       coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
     exact (bijective_dual_eval R M).prodMap (bijective_dual_eval R N)
 
@@ -295,17 +295,20 @@ theorem dualCoannihilator_top [Projective R M] :
     (⊤ : Submodule R (Module.Dual R M)).dualCoannihilator = ⊥ := by
   rw [dualCoannihilator, dualAnnihilator_top, comap_bot, Module.eval_ker]
 
-theorem exists_dual_map_eq_bot_of_nmem {x : M} (hx : x ∉ p) (hp' : Free R (M ⧸ p)) :
+theorem exists_dual_map_eq_bot_of_notMem {x : M} (hx : x ∉ p) (hp' : Free R (M ⧸ p)) :
     ∃ f : Dual R M, f x ≠ 0 ∧ p.map f = ⊥ := by
   suffices ∃ f : Dual R (M ⧸ p), f (p.mkQ x) ≠ 0 by
     obtain ⟨f, hf⟩ := this; exact ⟨f.comp p.mkQ, hf, by simp [Submodule.map_comp]⟩
   rwa [← Submodule.Quotient.mk_eq_zero, ← Submodule.mkQ_apply,
     ← forall_dual_apply_eq_zero_iff (K := R), not_forall] at hx
 
+@[deprecated (since := "2025-05-24")]
+alias exists_dual_map_eq_bot_of_nmem := exists_dual_map_eq_bot_of_notMem
+
 theorem exists_dual_map_eq_bot_of_lt_top (hp : p < ⊤) (hp' : Free R (M ⧸ p)) :
     ∃ f : Dual R M, f ≠ 0 ∧ p.map f = ⊥ := by
   obtain ⟨x, hx⟩ : ∃ x : M, x ∉ p := by rw [lt_top_iff_ne_top] at hp; contrapose! hp; ext; simp [hp]
-  obtain ⟨f, hf, hf'⟩ := p.exists_dual_map_eq_bot_of_nmem hx hp'
+  obtain ⟨f, hf, hf'⟩ := p.exists_dual_map_eq_bot_of_notMem hx hp'
   exact ⟨f, by aesop, hf'⟩
 
 /-- Consider a reflexive module and a set `s` of linear forms. If for any `z ≠ 0` there exists
@@ -330,7 +333,7 @@ theorem _root_.FiniteDimensional.mem_span_of_iInf_ker_le_ker [FiniteDimensional 
     {L : ι → E →ₗ[𝕜] 𝕜} {K : E →ₗ[𝕜] 𝕜}
     (h : ⨅ i, LinearMap.ker (L i) ≤ ker K) : K ∈ span 𝕜 (range L) := by
   by_contra hK
-  rcases exists_dual_map_eq_bot_of_nmem hK inferInstance with ⟨φ, φne, hφ⟩
+  rcases exists_dual_map_eq_bot_of_notMem hK inferInstance with ⟨φ, φne, hφ⟩
   let φs := (Module.evalEquiv 𝕜 E).symm φ
   have : K φs = 0 := by
     refine h <| (Submodule.mem_iInf _).2 fun i ↦ (mem_bot 𝕜).1 ?_
@@ -1076,7 +1079,7 @@ theorem dualDistrib_dualDistribInvOfBasis_left_inverse (b : Basis ι R M) (c : B
   rintro ⟨i', j'⟩
   simp only [dualDistrib, Basis.coe_dualBasis, coe_comp, Function.comp_apply,
     dualDistribInvOfBasis_apply, Basis.coord_apply, Basis.tensorProduct_repr_tmul_apply,
-    Basis.repr_self, ne_eq, _root_.map_sum, map_smul, homTensorHomMap_apply, compRight_apply,
+    Basis.repr_self, _root_.map_sum, map_smul, homTensorHomMap_apply, compRight_apply,
     Basis.tensorProduct_apply, coeFn_sum, Finset.sum_apply, smul_apply, LinearEquiv.coe_coe,
     map_tmul, lid_tmul, smul_eq_mul, id_coe, id_eq]
   rw [Finset.sum_eq_single i, Finset.sum_eq_single j]
@@ -1089,7 +1092,7 @@ theorem dualDistrib_dualDistribInvOfBasis_right_inverse (b : Basis ι R M) (c : 
   rintro ⟨i, j⟩
   simp only [Basis.tensorProduct_apply, Basis.coe_dualBasis, coe_comp, Function.comp_apply,
     dualDistribInvOfBasis_apply, dualDistrib_apply, Basis.coord_apply, Basis.repr_self,
-    ne_eq, id_coe, id_eq]
+    id_coe, id_eq]
   rw [Finset.sum_eq_single i, Finset.sum_eq_single j]
   · simp
   all_goals { intros; simp [*] at * }

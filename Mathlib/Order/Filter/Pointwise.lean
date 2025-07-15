@@ -5,6 +5,7 @@ Authors: Zhouhang Zhou, Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Ring.Defs
@@ -436,8 +437,6 @@ instance covariant_swap_div : CovariantClass (Filter α) (Filter α) (swap (· /
 
 end Div
 
-open Pointwise
-
 /-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `Filter`. See
 Note [pointwise nat action]. -/
 protected def instNSMul [Zero α] [Add α] : SMul ℕ (Filter α) :=
@@ -554,14 +553,14 @@ theorem bot_pow {n : ℕ} (hn : n ≠ 0) : (⊥ : Filter α) ^ n = ⊥ := by
 @[to_additive]
 theorem mul_top_of_one_le (hf : 1 ≤ f) : f * ⊤ = ⊤ := by
   refine top_le_iff.1 fun s => ?_
-  simp only [mem_mul, mem_top, exists_and_left, exists_eq_left]
+  simp only [mem_mul, mem_top, exists_eq_left]
   rintro ⟨t, ht, hs⟩
   rwa [mul_univ_of_one_mem (mem_one.1 <| hf ht), univ_subset_iff] at hs
 
 @[to_additive]
 theorem top_mul_of_one_le (hf : 1 ≤ f) : ⊤ * f = ⊤ := by
   refine top_le_iff.1 fun s => ?_
-  simp only [mem_mul, mem_top, exists_and_left, exists_eq_left]
+  simp only [mem_mul, mem_top, exists_eq_left]
   rintro ⟨t, ht, hs⟩
   rwa [univ_mul_of_one_mem (mem_one.1 <| hf ht), univ_subset_iff] at hs
 
@@ -585,8 +584,6 @@ end Monoid
 @[to_additive "`Filter α` is an `AddCommMonoid` under pointwise operations if `α` is."]
 protected def commMonoid [CommMonoid α] : CommMonoid (Filter α) :=
   { Filter.mulOneClass, Filter.commSemigroup with }
-
-open Pointwise
 
 section DivisionMonoid
 
@@ -732,8 +729,6 @@ protected theorem Tendsto.div_div (hf : Tendsto m f₁ f₂) (hg : Tendsto m g�
   (Filter.map_div m).trans_le <| Filter.div_le_div hf hg
 
 end Group
-
-open Pointwise
 
 section GroupWithZero
 
@@ -985,8 +980,6 @@ instance covariant_smul_filter : CovariantClass α (Filter β) (· • ·) (· �
 
 end SMul
 
-open Pointwise
-
 @[to_additive]
 instance smulCommClass_filter [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
     SMulCommClass α β (Filter γ) :=
@@ -1097,5 +1090,26 @@ theorem zero_smul_filter (hg : g.NeBot) : (0 : α) • g = 0 :=
       exact zero_mem_zero
 
 end SMulWithZero
+
+section Cancel
+
+@[to_additive]
+theorem _root_.IsUnit.smul_tendsto_smul_iff [Monoid γ] [MulAction γ β] {m : α → β} {c : γ}
+    {f : Filter α} {g : Filter β} (hc : IsUnit c) :
+    Tendsto (c • m) f (c • g) ↔ Tendsto m f g := by
+  rcases hc.exists_left_inv with ⟨d, hd⟩
+  refine ⟨fun H ↦ ?_, fun H ↦ tendsto_map.comp H⟩
+  simpa [Function.comp_def, smul_smul, hd] using (tendsto_map (f := (d • ·))).comp H
+
+@[to_additive (attr := simp)]
+theorem smul_tendsto_smul_iff [Group γ] [MulAction γ β] {m : α → β} {c : γ} {f : Filter α}
+    {g : Filter β} : Tendsto (c • m) f (c • g) ↔ Tendsto m f g :=
+  Group.isUnit _ |>.smul_tendsto_smul_iff
+
+theorem smul_tendsto_smul_iff₀ [GroupWithZero γ] [MulAction γ β] {m : α → β} {c : γ} {f : Filter α}
+    {g : Filter β} (hc : c ≠ 0) : Tendsto (c • m) f (c • g) ↔ Tendsto m f g :=
+  hc.isUnit.smul_tendsto_smul_iff
+
+end Cancel
 
 end Filter

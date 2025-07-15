@@ -97,9 +97,11 @@ lemma coe_injective [Zero Y] :
 Simplifier lemma: Functions with locally finite support within `U` evaluate to zero outside of `U`.
 -/
 @[simp]
-lemma apply_eq_zero_of_not_mem [Zero Y] {z : X} (D : locallyFinsuppWithin U Y)
+lemma apply_eq_zero_of_notMem [Zero Y] {z : X} (D : locallyFinsuppWithin U Y)
     (hz : z ∉ U) :
-    D z = 0 := nmem_support.mp fun a ↦ hz (D.supportWithinDomain a)
+    D z = 0 := notMem_support.mp fun a ↦ hz (D.supportWithinDomain a)
+
+@[deprecated (since := "2025-05-23")] alias apply_eq_zero_of_not_mem := apply_eq_zero_of_notMem
 
 /--
 On a T1 space, the support of a function with locally finite support within `U` is discrete within
@@ -179,14 +181,14 @@ protected def addSubgroup [AddCommGroup Y] : AddSubgroup (X → Y) where
     constructor
     · intro x hx
       contrapose! hx
-      simp [nmem_support.1 fun a ↦ hx (hf.1 a), nmem_support.1 fun a ↦ hx (hg.1 a)]
+      simp [notMem_support.1 fun a ↦ hx (hf.1 a), notMem_support.1 fun a ↦ hx (hg.1 a)]
     · intro z hz
       obtain ⟨t₁, ht₁⟩ := hf.2 z hz
       obtain ⟨t₂, ht₂⟩ := hg.2 z hz
       use t₁ ∩ t₂, inter_mem ht₁.1 ht₂.1
       apply Set.Finite.subset (s := (t₁ ∩ f.support) ∪ (t₂ ∩ g.support)) (ht₁.2.union ht₂.2)
       intro a ha
-      simp_all only [support_subset_iff, ne_eq, mem_setOf_eq, union_self, subset_inter_iff,
+      simp_all only [support_subset_iff, ne_eq, mem_setOf_eq,
         mem_inter_iff, mem_support, Pi.add_apply, mem_union, true_and]
       by_contra hCon
       push_neg at hCon
@@ -194,7 +196,7 @@ protected def addSubgroup [AddCommGroup Y] : AddSubgroup (X → Y) where
   neg_mem' {f} hf := by
     simp_all
 
-protected lemma memAddSubgroup  [AddCommGroup Y] (D : locallyFinsuppWithin U Y) :
+protected lemma memAddSubgroup [AddCommGroup Y] (D : locallyFinsuppWithin U Y) :
     (D : X → Y) ∈ locallyFinsuppWithin.addSubgroup U :=
   ⟨D.supportWithinDomain, D.supportLocallyFiniteWithinDomain⟩
 
@@ -208,7 +210,7 @@ def mk_of_mem [AddCommGroup Y] (f : X → Y) (hf : f ∈ locallyFinsuppWithin.ad
 instance [AddCommGroup Y] : Zero (locallyFinsuppWithin U Y) where
   zero := mk_of_mem 0 <| zero_mem _
 
-instance [AddCommGroup Y]: Add (locallyFinsuppWithin U Y) where
+instance [AddCommGroup Y] : Add (locallyFinsuppWithin U Y) where
   add D₁ D₂ := mk_of_mem (D₁ + D₂) <| add_mem D₁.memAddSubgroup D₂.memAddSubgroup
 
 instance [AddCommGroup Y] : Neg (locallyFinsuppWithin U Y) where
@@ -259,8 +261,8 @@ instance [SemilatticeSup Y] [Zero Y] : Max (locallyFinsuppWithin U Y) where
       intro x
       contrapose
       intro hx
-      simp [nmem_support.1 fun a ↦ hx (D₁.supportWithinDomain a),
-        nmem_support.1 fun a ↦ hx (D₂.supportWithinDomain a)]
+      simp [notMem_support.1 fun a ↦ hx (D₁.supportWithinDomain a),
+        notMem_support.1 fun a ↦ hx (D₂.supportWithinDomain a)]
     supportLocallyFiniteWithinDomain' := by
       intro z hz
       obtain ⟨t₁, ht₁⟩ := D₁.supportLocallyFiniteWithinDomain z hz
@@ -284,8 +286,8 @@ instance [SemilatticeInf Y] [Zero Y] : Min (locallyFinsuppWithin U Y) where
       intro x
       contrapose
       intro hx
-      simp [nmem_support.1 fun a ↦ hx (D₁.supportWithinDomain a),
-        nmem_support.1 fun a ↦ hx (D₂.supportWithinDomain a)]
+      simp [notMem_support.1 fun a ↦ hx (D₁.supportWithinDomain a),
+        notMem_support.1 fun a ↦ hx (D₂.supportWithinDomain a)]
     supportLocallyFiniteWithinDomain' := by
       intro z hz
       obtain ⟨t₁, ht₁⟩ := D₁.supportLocallyFiniteWithinDomain z hz
@@ -322,7 +324,7 @@ instance [Lattice Y] [Zero Y] : Lattice (locallyFinsuppWithin U Y) where
 /--
 Functions with locally finite support within `U` form an ordered commutative group.
 -/
-instance [AddCommGroup Y] [LinearOrder Y] [IsOrderedAddMonoid Y]:
+instance [AddCommGroup Y] [LinearOrder Y] [IsOrderedAddMonoid Y] :
     IsOrderedAddMonoid (locallyFinsuppWithin U Y) where
   add_le_add_left := fun _ _ _ _ ↦ by simpa [le_def]
 
@@ -358,12 +360,12 @@ lemma restrict_apply [Zero Y] {V : Set X} (D : locallyFinsuppWithin U Y) (h : V 
 lemma restrict_eqOn [Zero Y] {V : Set X} (D : locallyFinsuppWithin U Y) (h : V ⊆ U) :
     Set.EqOn (D.restrict h) D V := by
   intro _ _
-  simp_all [restrict_apply, dite_eq_ite, ite_eq_left_iff]
+  simp_all [restrict_apply]
 
 lemma restrict_eqOn_compl [Zero Y] {V : Set X} (D : locallyFinsuppWithin U Y) (h : V ⊆ U) :
     Set.EqOn (D.restrict h) 0 Vᶜ := by
   intro _ hx
-  simp_all [restrict_apply, dite_eq_ite, ite_eq_left_iff, hx]
+  simp_all
 
 /-- Restriction as a group morphism -/
 noncomputable def restrictMonoidHom [AddCommGroup Y] {V : Set X} (h : V ⊆ U) :

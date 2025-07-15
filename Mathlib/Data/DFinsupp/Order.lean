@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Module.Defs
+import Mathlib.Algebra.Order.Sub.Basic
 import Mathlib.Data.DFinsupp.Module
 
 /-!
@@ -198,7 +199,7 @@ variable [∀ (i) (x : α i), Decidable (x ≠ 0)] {f g : Π₀ i, α i} {s : Fi
 
 theorem le_iff' (hf : f.support ⊆ s) : f ≤ g ↔ ∀ i ∈ s, f i ≤ g i :=
   ⟨fun h s _ ↦ h s, fun h s ↦
-    if H : s ∈ f.support then h s (hf H) else (not_mem_support_iff.1 H).symm ▸ zero_le (g s)⟩
+    if H : s ∈ f.support then h s (hf H) else (notMem_support_iff.1 H).symm ▸ zero_le (g s)⟩
 
 theorem le_iff : f ≤ g ↔ ∀ i ∈ f.support, f i ≤ g i :=
   le_iff' <| Subset.refl _

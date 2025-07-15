@@ -162,8 +162,11 @@ theorem LinearIndepOn.ne_zero [Nontrivial R] {i : ι} (hv : LinearIndepOn R v s)
     v i ≠ 0 :=
   LinearIndependent.ne_zero ⟨i, hi⟩ hv
 
-theorem LinearIndepOn.zero_not_mem_image [Nontrivial R] (hs : LinearIndepOn R v s) : 0 ∉ v '' s :=
+theorem LinearIndepOn.zero_notMem_image [Nontrivial R] (hs : LinearIndepOn R v s) : 0 ∉ v '' s :=
   fun ⟨_, hi, h0⟩ ↦ hs.ne_zero hi h0
+
+@[deprecated (since := "2025-05-23")]
+alias LinearIndepOn.zero_not_mem_image := LinearIndepOn.zero_notMem_image
 
 theorem linearIndependent_empty_type [IsEmpty ι] : LinearIndependent R v :=
   injective_of_subsingleton _
@@ -243,9 +246,9 @@ theorem linearIndependent_iff'ₛ :
         classical
         refine _root_.by_contradiction fun hni ↦ hni <| hv (f.support ∪ g.support) f g ?_ _ ?_
         · rwa [← sum_subset subset_union_left, ← sum_subset subset_union_right] <;>
-            rintro i - hi <;> rw [Finsupp.not_mem_support_iff.mp hi, zero_smul]
+            rintro i - hi <;> rw [Finsupp.notMem_support_iff.mp hi, zero_smul]
         · contrapose! hni
-          simp_rw [not_mem_union, Finsupp.not_mem_support_iff] at hni
+          simp_rw [notMem_union, Finsupp.notMem_support_iff] at hni
           rw [hni.1, hni.2]⟩
 
 theorem linearIndependent_iff''ₛ :
@@ -414,7 +417,7 @@ section Indexed
 theorem linearIndepOn_iffₛ : LinearIndepOn R v s ↔
       ∀ f ∈ Finsupp.supported R R s, ∀ g ∈ Finsupp.supported R R s,
         Finsupp.linearCombination R v f = Finsupp.linearCombination R v g → f = g := by
-  simp only [LinearIndepOn, linearIndependent_iffₛ, (· ∘ ·), Finsupp.mem_supported,
+  simp only [LinearIndepOn, linearIndependent_iffₛ, Finsupp.mem_supported,
     Finsupp.linearCombination_apply, Set.subset_def, Finset.mem_coe]
   refine ⟨fun h l₁ h₁ l₂ h₂ eq ↦ (Finsupp.subtypeDomain_eq_iff h₁ h₂).1 <| h _ _ <|
     (Finsupp.sum_subtypeDomain_index h₁).trans eq ▸ (Finsupp.sum_subtypeDomain_index h₂).symm,
@@ -432,7 +435,7 @@ theorem linearIndepOn_iffₛ : LinearIndepOn R v s ↔
 theorem linearDepOn_iff'ₛ : ¬LinearIndepOn R v s ↔
       ∃ f g : ι →₀ R, f ∈ Finsupp.supported R R s ∧ g ∈ Finsupp.supported R R s ∧
         Finsupp.linearCombination R v f = Finsupp.linearCombination R v g ∧ f ≠ g := by
-  simp [linearIndepOn_iffₛ, and_left_comm]
+  simp [linearIndepOn_iffₛ]
 
 @[deprecated (since := "2025-02-15")] alias linearDependent_comp_subtype'ₛ := linearDepOn_iff'ₛ
 
@@ -470,11 +473,11 @@ section repr
 
 /-- Canonical isomorphism between linear combinations and the span of linearly independent vectors.
 -/
-@[simps (config := { rhsMd := default }) symm_apply]
+@[simps (rhsMd := default) symm_apply]
 def LinearIndependent.linearCombinationEquiv (hv : LinearIndependent R v) :
     (ι →₀ R) ≃ₗ[R] span R (range v) := by
   refine LinearEquiv.ofBijective (LinearMap.codRestrict (span R (range v))
-                                 (Finsupp.linearCombination R v) ?_) ⟨hv.codRestrict _, ?_⟩
+    (Finsupp.linearCombination R v) ?_) ⟨hv.codRestrict _, ?_⟩
   · simp_rw [← Finsupp.range_linearCombination]; exact fun c ↦ ⟨c, rfl⟩
   rw [← LinearMap.range_eq_top, LinearMap.range_eq_map, LinearMap.map_codRestrict,
     ← LinearMap.range_le_iff_comap, range_subtype, Submodule.map_top,
@@ -549,7 +552,7 @@ theorem LinearIndependent.eq_zero_of_smul_mem_span (hv : LinearIndependent R v) 
   rcases ha with ⟨l, hl, e⟩
   rw [linearIndependent_iffₛ.1 hv l (Finsupp.single i a) (by simp [e])] at hl
   by_contra hn
-  exact (not_mem_of_mem_diff (hl <| by simp [hn])) (mem_singleton _)
+  exact (notMem_of_mem_diff (hl <| by simp [hn])) (mem_singleton _)
 
 @[deprecated (since := "2025-05-13")]
 alias LinearIndependent.not_smul_mem_span := LinearIndependent.eq_zero_of_smul_mem_span
@@ -561,16 +564,24 @@ nonrec lemma LinearIndepOn.eq_zero_of_smul_mem_span (hv : LinearIndepOn R v s) (
 
 variable [Nontrivial R]
 
-lemma LinearIndependent.not_mem_span (hv : LinearIndependent R v) (i : ι) :
+lemma LinearIndependent.notMem_span (hv : LinearIndependent R v) (i : ι) :
     v i ∉ span R (v '' {i}ᶜ) := fun hi ↦
   one_ne_zero <| hv.eq_zero_of_smul_mem_span i 1 <| by simpa [Set.compl_eq_univ_diff] using hi
 
-lemma LinearIndepOn.not_mem_span (hv : LinearIndepOn R v s) (hi : i ∈ s) :
+@[deprecated (since := "2025-05-23")]
+alias LinearIndependent.not_mem_span := LinearIndependent.notMem_span
+
+lemma LinearIndepOn.notMem_span (hv : LinearIndepOn R v s) (hi : i ∈ s) :
     v i ∉ span R (v '' (s \ {i})) := fun hi' ↦
   one_ne_zero <| hv.eq_zero_of_smul_mem_span hi 1 <| by  simpa [Set.compl_eq_univ_diff] using hi'
 
-lemma LinearIndepOn.not_mem_span_of_insert (hv : LinearIndepOn R v (insert i s)) (hi : i ∉ s) :
-    v i ∉ span R (v '' s) := by simpa [hi] using hv.not_mem_span <| mem_insert ..
+@[deprecated (since := "2025-05-23")] alias LinearIndepOn.not_mem_span := LinearIndepOn.notMem_span
+
+lemma LinearIndepOn.notMem_span_of_insert (hv : LinearIndepOn R v (insert i s)) (hi : i ∉ s) :
+    v i ∉ span R (v '' s) := by simpa [hi] using hv.notMem_span <| mem_insert ..
+
+@[deprecated (since := "2025-05-23")]
+alias LinearIndepOn.not_mem_span_of_insert := LinearIndepOn.notMem_span_of_insert
 
 end repr
 
@@ -716,7 +727,7 @@ theorem linearIndepOn_iff : LinearIndepOn R v s ↔
 `Finsupp.linearCombination` of the vectors that is zero. -/
 theorem linearDepOn_iff' : ¬LinearIndepOn R v s ↔
       ∃ f : ι →₀ R, f ∈ Finsupp.supported R R s ∧ Finsupp.linearCombination R v f = 0 ∧ f ≠ 0 := by
-  simp [linearIndepOn_iff, and_left_comm]
+  simp [linearIndepOn_iff]
 
 @[deprecated (since := "2025-02-15")] alias linearDependent_comp_subtype' := linearDepOn_iff'
 
@@ -727,7 +738,7 @@ theorem linearDepOn_iff : ¬LinearIndepOn R v s ↔
 
 @[deprecated (since := "2025-02-15")] alias linearDependent_comp_subtype := linearDepOn_iff
 
-theorem linearIndepOn_iff_disjoint: LinearIndepOn R v s ↔
+theorem linearIndepOn_iff_disjoint : LinearIndepOn R v s ↔
       Disjoint (Finsupp.supported R R s) (LinearMap.ker <| Finsupp.linearCombination R v) := by
   rw [linearIndepOn_iff, LinearMap.disjoint_ker]
 
@@ -753,7 +764,7 @@ lemma linearIndepOn_iff' : LinearIndepOn R v s ↔ ∀ (t : Finset ι) (g : ι �
   refine ⟨fun h t g hts h0 i hit ↦ ?_, fun h t g h0 i hit ↦ ?_⟩
   · refine h (t.preimage _ Subtype.val_injective.injOn) (fun i ↦ g i) ?_ ⟨i, hts hit⟩ (by simpa)
     rwa [t.sum_preimage ((↑) : s → ι) Subtype.val_injective.injOn (fun i ↦ g i • v i)]
-    simp only [Subtype.range_coe_subtype, setOf_mem_eq, smul_eq_zero]
+    simp only [Subtype.range_coe_subtype, setOf_mem_eq]
     exact fun x hxt hxs ↦ (hxs (hts hxt)) |>.elim
   replace h : ∀ i (hi : i ∈ s), ⟨i, hi⟩ ∈ t → ∀ (h : i ∈ s), g ⟨i, h⟩ = 0 := by
     simpa [h0] using h (t.image (↑)) (fun i ↦ if hi : i ∈ s then g ⟨i, hi⟩ else 0)
@@ -814,7 +825,7 @@ variable {v : ι → V} {s t : Set ι} {x y : V}
 
 open Submodule
 
-theorem linearIndependent_iff_not_mem_span :
+theorem linearIndependent_iff_notMem_span :
     LinearIndependent K v ↔ ∀ i, v i ∉ span K (v '' (univ \ {i})) := by
   apply linearIndependent_iff_eq_zero_of_smul_mem_span.trans
   constructor
@@ -824,10 +835,16 @@ theorem linearIndependent_iff_not_mem_span :
     by_contra ha'
     exact False.elim (h _ ((smul_mem_iff _ ha').1 ha))
 
-lemma linearIndepOn_iff_not_mem_span :
+@[deprecated (since := "2025-05-23")]
+alias linearIndependent_iff_not_mem_span := linearIndependent_iff_notMem_span
+
+lemma linearIndepOn_iff_notMem_span :
     LinearIndepOn K v s ↔ ∀ i ∈ s, v i ∉ span K (v '' (s \ {i})) := by
-  rw [LinearIndepOn, linearIndependent_iff_not_mem_span, ← Function.comp_def]
+  rw [LinearIndepOn, linearIndependent_iff_notMem_span, ← Function.comp_def]
   simp_rw [Set.image_comp]
   simp [Set.image_diff Subtype.val_injective]
+
+@[deprecated (since := "2025-05-23")]
+alias linearIndepOn_iff_not_mem_span := linearIndepOn_iff_notMem_span
 
 end Module

@@ -128,7 +128,7 @@ theorem iSup_maxGenEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f 
     have h_disjoint : Disjoint ER ES := generalized_eigenvec_disjoint_range_ker f μ₀
     -- Since the dimensions of `ER` and `ES` add up to the dimension of `V`, it follows that the
     -- span of all generalized eigenvectors is all of `V`.
-    show ⨆ (μ : K), f.maxGenEigenspace μ = ⊤
+    change ⨆ (μ : K), f.maxGenEigenspace μ = ⊤
     rw [← top_le_iff, ← Submodule.eq_top_of_disjoint ER ES h_dim_add.ge h_disjoint]
     apply sup_le hER hES
 
@@ -149,7 +149,7 @@ theorem inf_iSup_genEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈
     exact (mem_iSup_iff_exists_finsupp _ _).mpr ⟨m, fun μ ↦ mem_inf.mp ⟨this μ, hm₂ μ⟩, rfl⟩
   intro μ
   by_cases hμ : μ ∈ m.support; swap
-  · simp only [Finsupp.not_mem_support_iff.mp hμ, p.zero_mem]
+  · simp only [Finsupp.notMem_support_iff.mp hμ, p.zero_mem]
   have hm₂_aux := hm₂
   simp_rw [Module.End.mem_genEigenspace] at hm₂_aux
   choose l hlk hl using hm₂_aux

@@ -207,7 +207,7 @@ noncomputable instance Γ_preservesLimits : PreservesLimits Γ.{u}.rightOp := in
 noncomputable instance forgetToScheme_preservesLimits : PreservesLimits forgetToScheme := by
   apply (config := { allowSynthFailures := true })
     @preservesLimits_of_natIso _ _ _ _ _ _
-      (isoWhiskerRight equivCommRingCat.unitIso forgetToScheme).symm
+      (Functor.isoWhiskerRight equivCommRingCat.unitIso forgetToScheme).symm
   change PreservesLimits (equivCommRingCat.functor ⋙ Scheme.Spec)
   infer_instance
 
@@ -758,7 +758,7 @@ include hU in
 lemma mem_ideal_iff {s : Γ(X, U)} {I : Ideal Γ(X, U)} :
     s ∈ I ↔ ∀ (x : X) (h : x ∈ U), X.presheaf.germ U x h s ∈ I.map (X.presheaf.germ U x h).hom := by
   refine ⟨fun hs x hxU ↦ Ideal.mem_map_of_mem _ hs, fun H ↦ ?_⟩
-  letI (x) : Algebra Γ(X, U) (X.presheaf.stalk (hU.fromSpec.base x)) :=
+  letI (x : _) : Algebra Γ(X, U) (X.presheaf.stalk (hU.fromSpec.base x)) :=
     TopCat.Presheaf.algebra_section_stalk X.presheaf _
   have (P : Ideal Γ(X, U)) [hP : P.IsPrime] : IsLocalization.AtPrime _ P :=
       hU.isLocalization_stalk' ⟨P, hP⟩ (hU.isoSpec.inv.base _).2
@@ -816,7 +816,7 @@ theorem basicOpen_union_eq_self_iff (s : Set Γ(X, U)) :
       simp only [Set.iUnion_subset_iff, SetCoe.forall, Opens.coe_iSup]
       intro x _
       exact X.basicOpen_le x
-    · simp only [Opens.iSup_def, Subtype.coe_mk, Set.preimage_iUnion]
+    · simp only [Opens.iSup_def, Set.preimage_iUnion]
       congr! 1
       · refine congr_arg (Set.iUnion ·) ?_
         ext1 x
@@ -862,7 +862,7 @@ def SpecMapRestrictBasicOpenIso {R S : CommRingCat} (f : R ⟶ S) (r : R) :
     conv =>
       congr
       · enter [2, 1]; tactic =>
-        show _ =
+        change _ =
           (f ≫ (Scheme.ΓSpecIso S).inv ≫ (Spec S).presheaf.map (homOfLE le_top).op)
         ext
         simp only [Localization.awayMap, IsLocalization.Away.map, AlgEquiv.toRingEquiv_eq_coe,
@@ -870,7 +870,7 @@ def SpecMapRestrictBasicOpenIso {R S : CommRingCat} (f : R ⟶ S) (r : R) :
           CommRingCat.hom_ofHom, RingHom.comp_apply, IsLocalization.map_eq, RingHom.coe_coe,
           AlgEquiv.commutes, IsAffineOpen.algebraMap_Spec_obj]
       · enter [2, 2, 1]; tactic =>
-        show _ = (Scheme.ΓSpecIso R).inv ≫ (Spec R).presheaf.map (homOfLE le_top).op
+        change _ = (Scheme.ΓSpecIso R).inv ≫ (Spec R).presheaf.map (homOfLE le_top).op
         ext
         simp only [AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toCommRingCatIso_hom,
           AlgEquiv.toRingEquiv_toRingHom, CommRingCat.hom_comp, CommRingCat.hom_ofHom,
@@ -1014,7 +1014,7 @@ lemma Opens.toSpecΓ_preimage_zeroLocus {X : Scheme.{u}} (U : X.Opens)
   rw [toSpecΓ, Scheme.comp_base, TopCat.coe_comp, Set.preimage_comp, Spec.map_base, hom_ofHom]
   erw [PrimeSpectrum.preimage_comap_zeroLocus]
   rw [Scheme.toSpecΓ_preimage_zeroLocus]
-  show _ = U.ι.base ⁻¹' (X.zeroLocus s)
+  change _ = U.ι.base ⁻¹' (X.zeroLocus s)
   rw [Scheme.preimage_zeroLocus, U.ι_app_self, ← zeroLocus_map_of_eq _ U.ι_preimage_self,
     ← Set.image_comp, ← RingHom.coe_comp, ← CommRingCat.hom_comp]
   congr!
@@ -1027,7 +1027,7 @@ lemma IsAffineOpen.fromSpec_preimage_zeroLocus {X : Scheme.{u}} {U : X.Opens}
     (hU : IsAffineOpen U) (s : Set Γ(X, U)) :
     hU.fromSpec.base ⁻¹' X.zeroLocus s = PrimeSpectrum.zeroLocus s := by
   ext x
-  suffices (∀ f ∈ s, ¬¬ f ∈ x.asIdeal) ↔ s ⊆ x.asIdeal by
+  suffices (∀ f ∈ s, ¬f ∉ x.asIdeal) ↔ s ⊆ x.asIdeal by
     simpa [← hU.fromSpec_image_basicOpen, -not_not] using this
   simp_rw [not_not]
   rfl
@@ -1138,7 +1138,7 @@ lemma specTargetImageFactorization_app_injective :
     Function.Injective <| (specTargetImageFactorization f).appTop := by
   let φ : A ⟶ Γ(X, ⊤) := (((ΓSpec.adjunction).homEquiv X (op A)).symm f).unop
   let φ' : specTargetImage f ⟶ Scheme.Γ.obj (op X) := CommRingCat.ofHom (RingHom.kerLift φ.hom)
-  show Function.Injective <| ((ΓSpec.adjunction.homEquiv X _) φ'.op).appTop
+  change Function.Injective <| ((ΓSpec.adjunction.homEquiv X _) φ'.op).appTop
   rw [ΓSpec_adjunction_homEquiv_eq]
   apply (RingHom.kerLift_injective φ.hom).comp
   exact ((ConcreteCategory.isIso_iff_bijective (Scheme.ΓSpecIso _).hom).mp inferInstance).injective

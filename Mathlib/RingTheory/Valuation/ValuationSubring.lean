@@ -5,9 +5,9 @@ Authors: Adam Topaz, Junyan Xu, Jack McKoen
 -/
 import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.RingTheory.Localization.AsSubring
+import Mathlib.Algebra.Algebra.Subalgebra.Tower
 import Mathlib.Algebra.Ring.Subring.Pointwise
 import Mathlib.Algebra.Ring.Action.Field
-import Mathlib.RingTheory.Spectrum.Prime.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
@@ -331,7 +331,7 @@ theorem idealOfLE_le_of_le (R S : ValuationSubring K) (hR : A ≤ R) (hS : A ≤
     (by
       by_contra c; push_neg at c; replace c := monotone_mapOfLE R S h c
       rw [(mapOfLE _ _ _).map_one, mapOfLE_valuation_apply] at c
-      apply not_le_of_lt ((valuation_lt_one_iff S _).1 hx) c)
+      apply not_le_of_gt ((valuation_lt_one_iff S _).1 hx) c)
 
 /-- The equivalence between coarsenings of a valuation ring and its prime ideals. -/
 @[simps apply]
@@ -402,6 +402,9 @@ theorem isEquiv_valuation_valuationSubring : v.IsEquiv v.valuationSubring.valuat
   rw [ValuationSubring.valuation_le_one_iff]
   rfl
 
+lemma valuationSubring.integers : v.Integers v.valuationSubring :=
+  Valuation.integer.integers _
+
 end Valuation
 
 namespace ValuationSubring
@@ -432,8 +435,6 @@ def unitGroupMulEquiv : A.unitGroup ≃* Aˣ where
       -- Porting note: was `Units.inv_mul x`
       inv_val := Subtype.ext (by simp) }
   invFun x := ⟨Units.map A.subtype.toMonoidHom x, A.valuation_unit x⟩
-  left_inv a := by ext; rfl
-  right_inv a := by ext; rfl
   map_mul' a b := by ext; rfl
 
 @[simp]
@@ -554,12 +555,10 @@ def principalUnitGroup : Subgroup Kˣ where
   carrier := {x | A.valuation (x - 1) < 1}
   mul_mem' := by
     intro a b ha hb
-    -- Porting note: added
-    rw [Set.mem_setOf] at ha hb
+    rw [Set.mem_setOf] at ha hb ⊢
     refine lt_of_le_of_lt ?_ (max_lt hb ha)
-    -- Porting note: `sub_add_sub_cancel` needed some help
     rw [← one_mul (A.valuation (b - 1)), ← A.valuation.map_one_add_of_lt ha, add_sub_cancel,
-      ← Valuation.map_mul, mul_sub_one, ← sub_add_sub_cancel (↑(a * b) : K) _ 1]
+      ← Valuation.map_mul, mul_sub_one, ← sub_add_sub_cancel]
     exact A.valuation.map_add _ _
   one_mem' := by simp
   inv_mem' := by
@@ -690,8 +689,8 @@ the action is by a group. Notably this provides an instances when `G` is `K ≃+
 
 These instances are in the `Pointwise` locale.
 
-The lemmas in this section are copied from the file `Mathlib.Algebra.Ring.Subring.Pointwise`; try
-to keep these in sync.
+The lemmas in this section are copied from the file `Mathlib/Algebra/Ring/Subring/Pointwise.lean`;
+try to keep these in sync.
 -/
 
 

@@ -147,7 +147,7 @@ theorem prod_eq_one_iff_of_one_le' :
     (∀ i ∈ s, 1 ≤ f i) → ((∏ i ∈ s, f i) = 1 ↔ ∀ i ∈ s, f i = 1) := by
   classical
     refine Finset.induction_on s
-      (fun _ ↦ ⟨fun _ _ h ↦ False.elim (Finset.not_mem_empty _ h), fun _ ↦ rfl⟩) ?_
+      (fun _ ↦ ⟨fun _ _ h ↦ False.elim (Finset.notMem_empty _ h), fun _ ↦ rfl⟩) ?_
     intro a s ha ih H
     have : ∀ i ∈ s, 1 ≤ f i := fun _ ↦ H _ ∘ mem_insert_of_mem
     rw [prod_insert ha, mul_eq_one_iff_of_one_le (H _ <| mem_insert_self _ _) (one_le_prod' this),
@@ -385,7 +385,7 @@ theorem prod_le_prod_of_ne_one' (h : ∀ x ∈ s, f x ≠ 1 → x ∈ t) :
     _ ≤ ∏ x ∈ t, f x :=
       mul_le_of_le_one_of_le
         (prod_le_one' <| by simp only [mem_filter, and_imp]; exact fun _ _ ↦ le_of_eq)
-        (prod_le_prod_of_subset' <| by simpa only [subset_iff, mem_filter, and_imp] )
+        (prod_le_prod_of_subset' <| by simpa only [subset_iff, mem_filter, and_imp])
 
 end CanonicallyOrderedMul
 
@@ -455,7 +455,7 @@ theorem prod_eq_prod_iff_of_le {f g : ι → M} (h : ∀ i ∈ s, f i ≤ g i) :
     ((∏ i ∈ s, f i) = ∏ i ∈ s, g i) ↔ ∀ i ∈ s, f i = g i := by
   classical
     revert h
-    refine Finset.induction_on s (fun _ ↦ ⟨fun _ _ h ↦ False.elim (Finset.not_mem_empty _ h),
+    refine Finset.induction_on s (fun _ ↦ ⟨fun _ _ h ↦ False.elim (Finset.notMem_empty _ h),
       fun _ ↦ rfl⟩) fun a s ha ih H ↦ ?_
     specialize ih fun i ↦ H i ∘ Finset.mem_insert_of_mem
     rw [Finset.prod_insert ha, Finset.prod_insert ha, Finset.forall_mem_insert, ← ih]
@@ -564,8 +564,8 @@ namespace Multiset
 theorem finset_sum_eq_sup_iff_disjoint [DecidableEq α] {i : Finset β} {f : β → Multiset α} :
     i.sum f = i.sup f ↔ ∀ x ∈ i, ∀ y ∈ i, x ≠ y → Disjoint (f x) (f y) := by
   induction' i using Finset.cons_induction_on with z i hz hr
-  · simp only [Finset.not_mem_empty, IsEmpty.forall_iff, imp_true_iff, Finset.sum_empty,
-      Finset.sup_empty, bot_eq_zero, eq_self_iff_true]
+  · simp only [Finset.notMem_empty, IsEmpty.forall_iff, imp_true_iff, Finset.sum_empty,
+      Finset.sup_empty, bot_eq_zero]
   · simp_rw [Finset.sum_cons hz, Finset.sup_cons, Finset.mem_cons, Multiset.sup_eq_union,
       forall_eq_or_imp, Ne, not_true_eq_false, IsEmpty.forall_iff, true_and,
       imp_and, forall_and, ← hr, @eq_comm _ z]

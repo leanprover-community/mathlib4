@@ -14,7 +14,7 @@ Files in this folder define the field `RatFunc K` of rational functions over a f
 is the field of fractions of `K[X]` and provide the main results concerning it. This file contains
 the basic definition.
 
-For connections with Laurent Series, see `Mathlib.RingTheory.LaurentSeries`.
+For connections with Laurent Series, see `Mathlib/RingTheory/LaurentSeries.lean`.
 
 ## Main definitions
 We provide a set of recursion and induction principles:
@@ -178,9 +178,9 @@ theorem liftOn_mk {P : Sort v} (p q : K[X]) (f : K[X] → K[X] → P) (f0 : ∀ 
     (RatFunc.mk p q).liftOn f @H = f p q := by
   by_cases hq : q = 0
   · subst hq
-    simp only [mk_zero, f0, ← Localization.mk_zero 1, Localization.liftOn_mk,
+    simp only [mk_zero, f0, ← Localization.mk_zero 1,
       liftOn_ofFractionRing_mk, Submonoid.coe_one]
-  · simp only [mk_eq_localization_mk _ hq, Localization.liftOn_mk, liftOn_ofFractionRing_mk]
+  · simp only [mk_eq_localization_mk _ hq, liftOn_ofFractionRing_mk]
 
 /-- Non-dependent recursion principle for `RatFunc K`: if `f p q : P` for all `p q`,
 such that `f (a * p) (a * q) = f p q`, then we can find a value of `P`

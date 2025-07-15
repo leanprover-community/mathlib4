@@ -78,7 +78,7 @@ lemma coroot_apply_self : coroot B hx x = 2 :=
 lemma isOrthogonal_reflection (hSB : LinearMap.IsSymm B) :
     B.IsOrthogonal (Module.reflection (coroot_apply_self B hx)) := by
   intro y z
-  simp only [LinearEquiv.coe_coe, reflection_apply, LinearMap.map_sub, map_smul, sub_apply,
+  simp only [reflection_apply, LinearMap.map_sub, map_smul, sub_apply,
     smul_apply, smul_eq_mul]
   refine hx.1.1 ?_
   simp only [mul_sub, ← mul_assoc, apply_self_mul_coroot_apply]
@@ -148,7 +148,7 @@ def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMa
       id_eq, eq_mp_eq_cast, RingHom.id_apply, eq_mpr_eq_cast, cast_eq, LinearMap.sub_apply,
       Embedding.coeFn_mk, PerfectPairing.flip_apply_apply]
     exact coroot_apply_self B x.2
-  reflection_perm x :=
+  reflectionPerm x :=
     { toFun := fun y => ⟨(Module.reflection (coroot_apply_self B x.2) y),
         reflective_reflection B hSB x.2 y.2⟩
       invFun := fun y => ⟨(Module.reflection (coroot_apply_self B x.2) y),
@@ -159,15 +159,15 @@ def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMa
       right_inv := by
         intro y
         simp [involutive_reflection (coroot_apply_self B x.2) y] }
-  reflection_perm_root x y := by
+  reflectionPerm_root x y := by
     simp [Module.reflection_apply]
-  reflection_perm_coroot x y := by
+  reflectionPerm_coroot x y := by
     simp only [coe_setOf, mem_setOf_eq, Embedding.coeFn_mk, Embedding.coe_subtype,
       PerfectPairing.flip_apply_apply, IsReflexive.toPerfectPairingDual_apply, Equiv.coe_fn_mk]
     ext z
     simp only [LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul]
     refine y.2.1.1 ?_
-    simp only [mem_setOf_eq, PerfectPairing.flip_apply_apply, mul_sub,
+    simp only [mem_setOf_eq, mul_sub,
       apply_self_mul_coroot_apply B y.2, ← mul_assoc]
     rw [← isOrthogonal_reflection B x.2 hSB y y, apply_self_mul_coroot_apply, ← hSB z, ← hSB z,
       RingHom.id_apply, RingHom.id_apply, Module.reflection_apply, map_sub,

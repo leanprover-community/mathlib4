@@ -139,7 +139,7 @@ lemma Indep.insert_isCircuit_of_forall (hI : M.Indep I) (heI : e ∉ I) (he : e 
   rintro f (rfl | hfI)
   · simpa [heI]
   rw [← insert_diff_singleton_comm (by rintro rfl; contradiction),
-    (hI.diff _).insert_indep_iff_of_not_mem (by simp [heI])]
+    (hI.diff _).insert_indep_iff_of_notMem (by simp [heI])]
   exact ⟨mem_ground_of_mem_closure he, h f hfI⟩
 
 lemma Indep.insert_isCircuit_of_forall_of_nontrivial (hI : M.Indep I) (hInt : I.Nontrivial)
@@ -171,7 +171,7 @@ lemma IsCircuit.isBasis_iff_insert_eq (hC : M.IsCircuit C) :
   refine ⟨fun ⟨e, he, hI⟩ ↦ ⟨e, ⟨he, fun heI ↦ (hI.subset heI).2 rfl⟩, ?_⟩,
     fun ⟨e, he, hC⟩ ↦ ⟨e, he.1, ?_⟩⟩
   · rw [hI, insert_diff_singleton, insert_eq_of_mem he]
-  rw [hC, insert_diff_self_of_not_mem he.2]
+  rw [hC, insert_diff_self_of_notMem he.2]
 
 /-! ### Restriction -/
 
@@ -225,11 +225,14 @@ lemma fundCircuit_eq_of_mem (heX : e ∈ X) : M.fundCircuit e X = {e} := by
     simpa [subset_antisymm_iff, fundCircuit]
   exact fun b hbX h ↦ h _ (singleton_subset_iff.2 heX) Subset.rfl
 
-lemma fundCircuit_eq_of_not_mem_ground (heX : e ∉ M.E) : M.fundCircuit e X = {e} := by
+lemma fundCircuit_eq_of_notMem_ground (heX : e ∉ M.E) : M.fundCircuit e X = {e} := by
   suffices h : ∀ a ∈ X, (∀ t ⊆ X, M.closure {e} ⊆ M.closure t → a ∈ t) → a = e by
     simpa [subset_antisymm_iff, fundCircuit]
   simp_rw [← M.closure_inter_ground {e}, singleton_inter_eq_empty.2 heX]
   exact fun a haX h ↦ by simpa using h ∅ (empty_subset X) rfl.subset
+
+@[deprecated (since := "2025-05-23")]
+alias fundCircuit_eq_of_not_mem_ground := fundCircuit_eq_of_notMem_ground
 
 lemma Indep.fundCircuit_isCircuit (hI : M.Indep I) (hecl : e ∈ M.closure I) (heI : e ∉ I) :
     M.IsCircuit (M.fundCircuit e I) := by
@@ -278,7 +281,7 @@ lemma fundCircuit_restrict {R : Set α} (hIR : I ⊆ R) (heR : e ∈ R) (hR : R 
   refine subset_antisymm (insert_subset_insert (inter_subset_inter_right _ ?_))
     (insert_subset_insert (inter_subset_inter_right _ ?_))
   · refine subset_sInter fun J ⟨hJI, heJ⟩ ↦ sInter_subset_of_mem ⟨hJI, ?_⟩
-    simp only [restrict_closure_eq', union_subset_iff, subset_union_right, and_true]
+    simp only [restrict_closure_eq']
     refine (inter_subset_inter_left _ ?_).trans subset_union_left
     rwa [inter_eq_self_of_subset_left (hJI.trans hIR)]
   refine subset_sInter fun J ⟨hJI, heJ⟩ ↦ sInter_subset_of_mem
@@ -346,7 +349,7 @@ lemma exists_isCircuit_of_mem_closure (he : e ∈ M.closure X) (heX : e ∉ X) :
     ∃ C ⊆ insert e X, M.IsCircuit C ∧ e ∈ C :=
   let ⟨I, hI⟩ := M.exists_isBasis' X
   ⟨_, (fundCircuit_subset_insert ..).trans (insert_subset_insert hI.subset),
-    hI.indep.fundCircuit_isCircuit (by rwa [hI.closure_eq_closure]) (not_mem_subset
+    hI.indep.fundCircuit_isCircuit (by rwa [hI.closure_eq_closure]) (notMem_subset
     hI.subset heX), M.mem_fundCircuit e I⟩
 
 lemma mem_closure_iff_exists_isCircuit (he : e ∉ X) :
@@ -450,7 +453,7 @@ lemma IsCircuit.strong_multi_elimination_set (hC₀ : M.IsCircuit C₀) (X : Set
     (z : α) (hCS : ∀ C ∈ S, M.IsCircuit C) (hXC₀ : X ⊆ C₀) (hX : ∀ x ∈ X, ∃ C ∈ S, C ∩ X = {x})
     (hzC₀ : z ∈ C₀) (hz : ∀ C ∈ S, z ∉ C) : ∃ C' ⊆ (C₀ ∪ ⋃₀ S) \ X, M.IsCircuit C' ∧ z ∈ C' := by
   choose! C hC using hX
-  simp only [and_imp, forall_and, and_assoc] at hC
+  simp only [forall_and] at hC
   have hwin := hC₀.strong_multi_elimination (fun x : X ↦ x) (fun x ↦ C x) z ?_ ?_ ?_ ?_ hzC₀ ?_
   · obtain ⟨C', hC'ss, hC', hz⟩ := hwin
     refine ⟨C', hC'ss.trans (diff_subset_diff (union_subset_union_right _ ?_) (by simp)), hC', hz⟩
@@ -588,7 +591,7 @@ lemma IsBase.compl_closure_diff_singleton_isCocircuit (hB : M.IsBase B) (he : e 
     diff_diff_cancel_left (M.closure_subset_ground _),
     closure_spanning_iff (diff_subset.trans hB.subset_ground)]
   have hB' := (isBase_iff_minimal_spanning.1 hB)
-  refine ⟨fun hsp ↦ hB'.not_mem_of_prop_diff_singleton hsp he, fun X hX hXss ↦ hXss.antisymm' ?_⟩
+  refine ⟨fun hsp ↦ hB'.notMem_of_prop_diff_singleton hsp he, fun X hX hXss ↦ hXss.antisymm' ?_⟩
   rw [diff_subset_comm]
   refine fun f hf ↦ by_contra fun fcl ↦ hX ?_
   rw [subset_diff] at hXss
@@ -597,7 +600,7 @@ lemma IsBase.compl_closure_diff_singleton_isCocircuit (hB : M.IsBase B) (he : e 
       (M.subset_closure _ (diff_subset.trans hB.subset_ground)).trans ?_
     rw [subset_diff, and_iff_left hXss.2.symm]
     apply closure_subset_ground
-  exact hB.exchange_base_of_not_mem_closure he fcl
+  exact hB.exchange_base_of_notMem_closure he fcl
 
 /-- A version of `Matroid.isCocircuit_iff_minimal_compl_nonspanning` with a support assumption
 in the minimality. -/
@@ -676,16 +679,22 @@ lemma fundCocircuit_inter_eq (M : Matroid α) {B : Set α} (he : e ∈ B) :
   simp +contextual
 
 /-- The fundamental cocircuit of `X` and `e` has the junk value `{e}` if `e ∉ M.E` -/
-lemma fundCocircuit_eq_of_not_mem_ground (X : Set α) (he : e ∉ M.E) :
+lemma fundCocircuit_eq_of_notMem_ground (X : Set α) (he : e ∉ M.E) :
     M.fundCocircuit e X = {e} := by
-  rwa [fundCocircuit, fundCircuit_eq_of_not_mem_ground]
+  rwa [fundCocircuit, fundCircuit_eq_of_notMem_ground]
+
+@[deprecated (since := "2025-05-23")]
+alias fundCocircuit_eq_of_not_mem_ground := fundCocircuit_eq_of_notMem_ground
 
 /-- The fundamental cocircuit of `X` and `e` has the junk value `{e}` if `e ∉ X` -/
-lemma fundCocircuit_eq_of_not_mem (M : Matroid α) (heX : e ∉ X) : M.fundCocircuit e X = {e} := by
+lemma fundCocircuit_eq_of_notMem (M : Matroid α) (heX : e ∉ X) : M.fundCocircuit e X = {e} := by
   by_cases he : e ∈ M.E
   · rw [fundCocircuit, fundCircuit_eq_of_mem]
     exact ⟨he, heX⟩
-  rw [fundCocircuit_eq_of_not_mem_ground _ he]
+  rw [fundCocircuit_eq_of_notMem_ground _ he]
+
+@[deprecated (since := "2025-05-23")]
+alias fundCocircuit_eq_of_not_mem := fundCocircuit_eq_of_notMem
 
 /-- For every element `e` of an independent set `I`,
 there is a cocircuit whose intersection with `I` is `{e}`. -/
@@ -717,7 +726,7 @@ lemma IsBase.mem_fundCocircuit_iff_mem_fundCircuit {e f : α} (hB : M.IsBase B) 
   · simp [mem_fundCircuit]
   have hB' : M✶.IsBase (M✶.E \ B) := hB.compl_isBase_dual
   obtain hfE | hfE := em' <| f ∈ M.E
-  · rw [fundCocircuit, fundCircuit_eq_of_not_mem_ground (by simpa)] at he
+  · rw [fundCocircuit, fundCircuit_eq_of_notMem_ground (by simpa)] at he
     contradiction
   obtain hfB | hfB := em' <| f ∈ B
   · rw [fundCocircuit, fundCircuit_eq_of_mem (by simp [hfE, hfB])] at he

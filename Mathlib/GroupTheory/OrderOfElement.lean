@@ -343,7 +343,7 @@ theorem orderOf_submonoid {H : Submonoid G} (y : H) : orderOf (y : G) = orderOf 
 
 @[to_additive]
 theorem orderOf_units {y : Gˣ} : orderOf (y : G) = orderOf y :=
-  orderOf_injective (Units.coeHom G) Units.ext y
+  orderOf_injective (Units.coeHom G) Units.val_injective y
 
 /-- If the order of `x` is finite, then `x` is a unit with inverse `x ^ (orderOf x - 1)`. -/
 @[to_additive (attr := simps) "If the additive order of `x` is finite, then `x` is an additive
@@ -409,7 +409,7 @@ theorem orderOf_mul_dvd_lcm (h : Commute x y) :
   exact Function.Commute.minimalPeriod_of_comp_dvd_lcm h.function_commute_mul_left
 
 @[to_additive]
-theorem orderOf_dvd_lcm_mul (h : Commute x y):
+theorem orderOf_dvd_lcm_mul (h : Commute x y) :
     orderOf y ∣ Nat.lcm (orderOf x) (orderOf (x * y)) := by
   by_cases h0 : orderOf x = 0
   · rw [h0, lcm_zero_left]
@@ -422,7 +422,7 @@ theorem orderOf_dvd_lcm_mul (h : Commute x y):
       (lcm_dvd_iff.2 ⟨(orderOf_pow_dvd _).trans (dvd_lcm_left _ _), dvd_lcm_right _ _⟩)
 
 @[to_additive addOrderOf_add_dvd_mul_addOrderOf]
-theorem orderOf_mul_dvd_mul_orderOf (h : Commute x y):
+theorem orderOf_mul_dvd_mul_orderOf (h : Commute x y) :
     orderOf (x * y) ∣ orderOf x * orderOf y :=
   dvd_trans h.orderOf_mul_dvd_lcm (lcm_dvd_mul _ _)
 
@@ -509,7 +509,7 @@ include hx
 @[to_additive]
 theorem IsOfFinOrder.pow_eq_pow_iff_modEq : x ^ n = x ^ m ↔ n ≡ m [MOD orderOf x] := by
   wlog hmn : m ≤ n generalizing m n
-  · rw [eq_comm, ModEq.comm, this (le_of_not_le hmn)]
+  · rw [eq_comm, ModEq.comm, this (le_of_not_ge hmn)]
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hmn
   rw [pow_add, (hx.isUnit.pow _).mul_eq_left, pow_eq_one_iff_modEq]
   exact ⟨fun h ↦ Nat.ModEq.add_left _ h, fun h ↦ Nat.ModEq.add_left_cancel' _ h⟩
@@ -526,7 +526,7 @@ variable [LeftCancelMonoid G] {x y : G} {a : G} {m n : ℕ}
 @[to_additive]
 theorem pow_eq_pow_iff_modEq : x ^ n = x ^ m ↔ n ≡ m [MOD orderOf x] := by
   wlog hmn : m ≤ n generalizing m n
-  · rw [eq_comm, ModEq.comm, this (le_of_not_le hmn)]
+  · rw [eq_comm, ModEq.comm, this (le_of_not_ge hmn)]
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hmn
   rw [← mul_one (x ^ m), pow_add, mul_left_cancel_iff, pow_eq_one_iff_modEq]
   exact ⟨fun h => Nat.ModEq.add_left _ h, fun h => Nat.ModEq.add_left_cancel' _ h⟩
@@ -840,6 +840,18 @@ theorem injective_zpow_iff_not_isOfFinOrder : (Injective fun n : ℤ => x ^ n) �
     exact Nat.cast_ne_zero.2 hn.ne' (h <| by simpa using hx)
   rwa [zpow_eq_zpow_iff_modEq, orderOf_eq_zero_iff.2 h, Nat.cast_zero, Int.modEq_zero_iff] at hnm
 
+@[to_additive]
+lemma Subgroup.zpowers_eq_zpowers_iff {x y : G} (hx : ¬IsOfFinOrder x) :
+    zpowers x = zpowers y ↔ x = y ∨ x⁻¹ = y := by
+  refine ⟨fun h ↦ ?_, by rintro (rfl|rfl) <;> simp⟩
+  have hx_mem : x ∈ zpowers y := by simp [← h]
+  have hy_mem : y ∈ zpowers x := by simp [h]
+  obtain ⟨k, rfl⟩ := mem_zpowers_iff.mp hy_mem
+  obtain ⟨l, hl⟩ := mem_zpowers_iff.mp hx_mem
+  rw [← zpow_mul] at hl
+  nth_rewrite 2 [← zpow_one x] at hl
+  have h1 := (injective_zpow_iff_not_isOfFinOrder.mpr hx) hl
+  rcases (Int.mul_eq_one_iff_eq_one_or_neg_one).mp h1 with (h | h) <;> simp [h.1]
 section Finite
 variable [Finite G]
 
@@ -914,12 +926,10 @@ theorem orderOf_dvd_card : orderOf x ∣ Fintype.card G := by
           congr_arg (@Fintype.card _) <| Subsingleton.elim _ _
         _ = @Fintype.card _ ft_cosets * @Fintype.card _ ft_s :=
           @Fintype.card_prod _ _ ft_cosets ft_s
-
     have eq₂ : orderOf x = @Fintype.card _ ft_s :=
       calc
         orderOf x = _ := Fintype.card_zpowers.symm
         _ = _ := congr_arg (@Fintype.card _) <| Subsingleton.elim _ _
-
     exact Dvd.intro (@Fintype.card (G ⧸ Subgroup.zpowers x) ft_cosets) (by rw [eq₁, eq₂, mul_comm])
 
 @[to_additive]
@@ -1098,13 +1108,13 @@ variable [Ring G] [LinearOrder G] [IsStrictOrderedRing G] {a x : G}
 
 protected lemma IsOfFinOrder.eq_neg_one (ha₀ : a ≤ 0) (ha : IsOfFinOrder a) : a = -1 :=
   (sq_eq_one_iff.1 <| ha.pow.eq_one <| sq_nonneg a).resolve_left <| by
-    rintro rfl; exact one_pos.not_le ha₀
+    rintro rfl; exact one_pos.not_ge ha₀
 
 theorem orderOf_abs_ne_one (h : |x| ≠ 1) : orderOf x = 0 := by
   rw [orderOf_eq_zero_iff']
   intro n hn hx
   replace hx : |x| ^ n = 1 := by simpa only [abs_one, abs_pow] using congr_arg abs hx
-  rcases h.lt_or_lt with h | h
+  rcases h.lt_or_gt with h | h
   · exact ((pow_lt_one₀ (abs_nonneg x) h hn.ne').ne hx).elim
   · exact ((one_lt_pow₀ h hn.ne').ne' hx).elim
 
@@ -1204,6 +1214,6 @@ section single
 lemma orderOf_piMulSingle {ι : Type*} [DecidableEq ι] {M : ι → Type*} [(i : ι) → Monoid (M i)]
     (i : ι) (g : M i) :
     orderOf (Pi.mulSingle i g) = orderOf g :=
-  orderOf_injective (MonoidHom.mulSingle M i) (Pi.mulSingle_injective M i) g
+  orderOf_injective (MonoidHom.mulSingle M i) (Pi.mulSingle_injective i) g
 
 end single

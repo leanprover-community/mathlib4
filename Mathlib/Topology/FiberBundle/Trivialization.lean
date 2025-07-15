@@ -161,7 +161,7 @@ theorem symm_apply_mk_proj {x : Z} (ex : x ∈ e.source) :
 theorem preimage_symm_proj_baseSet :
     e.toPartialEquiv.symm ⁻¹' (proj ⁻¹' e.baseSet) ∩ e.target = e.target := by
   refine inter_eq_right.mpr fun x hx => ?_
-  simp only [mem_preimage, PartialEquiv.invFun_as_coe, e.proj_symm_apply hx]
+  simp only [mem_preimage, e.proj_symm_apply hx]
   exact e.mem_target.mp hx
 
 @[simp, mfld_simps]
@@ -201,9 +201,9 @@ variable (e' : Pretrivialization F (π F E)) {b : B} {y : E b}
 theorem coe_mem_source : ↑y ∈ e'.source ↔ b ∈ e'.baseSet :=
   e'.mem_source
 
-@[simp, mfld_simps]
-theorem coe_coe_fst (hb : b ∈ e'.baseSet) : (e' y).1 = b :=
-  e'.coe_fst (e'.mem_source.2 hb)
+@[mfld_simps]
+theorem coe_coe_fst (hb : b ∈ e'.baseSet) : (e' y).1 = b := by
+  simp [hb]
 
 theorem mk_mem_target {x : B} {y : F} : (x, y) ∈ e'.target ↔ x ∈ e'.baseSet :=
   e'.mem_target
@@ -228,13 +228,17 @@ theorem symm_apply (e : Pretrivialization F (π F E)) {b : B} (hb : b ∈ e.base
     e.symm b y = cast (congr_arg E (e.symm_coe_proj hb)) (e.toPartialEquiv.symm (b, y)).2 :=
   dif_pos hb
 
-theorem symm_apply_of_not_mem (e : Pretrivialization F (π F E)) {b : B} (hb : b ∉ e.baseSet)
+theorem symm_apply_of_notMem (e : Pretrivialization F (π F E)) {b : B} (hb : b ∉ e.baseSet)
     (y : F) : e.symm b y = 0 :=
   dif_neg hb
 
-theorem coe_symm_of_not_mem (e : Pretrivialization F (π F E)) {b : B} (hb : b ∉ e.baseSet) :
+@[deprecated (since := "2025-05-23")] alias symm_apply_of_not_mem := symm_apply_of_notMem
+
+theorem coe_symm_of_notMem (e : Pretrivialization F (π F E)) {b : B} (hb : b ∉ e.baseSet) :
     (e.symm b : F → E b) = 0 :=
   funext fun _ => dif_neg hb
+
+@[deprecated (since := "2025-05-23")] alias coe_symm_of_not_mem := coe_symm_of_notMem
 
 theorem mk_symm (e : Pretrivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (y : F) :
     TotalSpace.mk b (e.symm b y) = e.toPartialEquiv.symm (b, y) := by
@@ -374,6 +378,15 @@ instance : CoeFun (Trivialization F proj) fun _ => Z → B × F := ⟨toFun'⟩
 
 instance : Coe (Trivialization F proj) (Pretrivialization F proj) :=
   ⟨toPretrivialization⟩
+
+/-- See Note [custom simps projection] -/
+def Simps.apply (proj : Z → B) (e : Trivialization F proj) : Z → B × F := e
+
+/-- See Note [custom simps projection] -/
+noncomputable def Simps.symm_apply (proj : Z → B) (e : Trivialization F proj) : B × F → Z :=
+  e.toPartialHomeomorph.symm
+
+initialize_simps_projections Trivialization (toFun → apply, invFun → symm_apply)
 
 theorem toPretrivialization_injective :
     Function.Injective fun e : Trivialization F proj => e.toPretrivialization := fun e e' h => by
@@ -550,6 +563,9 @@ theorem preimageSingletonHomeomorph_symm_apply {b : B} (hb : b ∈ e.baseSet) (p
 theorem continuousAt_proj (ex : x ∈ e.source) : ContinuousAt proj x :=
   (e.map_proj_nhds ex).le
 
+theorem continuousOn_proj : ContinuousOn proj e.source :=
+  continuousOn_of_forall_continuousAt fun _ ↦ e.continuousAt_proj
+
 /-- Pre-composition of a `Trivialization` and a `Homeomorph`. -/
 protected def compHomeomorph {Z' : Type*} [TopologicalSpace Z'] (h : Z' ≃ₜ Z) :
     Trivialization F (proj ∘ h) where
@@ -630,9 +646,11 @@ theorem symm_apply (e : Trivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet
     e.symm b y = cast (congr_arg E (e.symm_coe_proj hb)) (e.toPartialHomeomorph.symm (b, y)).2 :=
   dif_pos hb
 
-theorem symm_apply_of_not_mem (e : Trivialization F (π F E)) {b : B} (hb : b ∉ e.baseSet) (y : F) :
+theorem symm_apply_of_notMem (e : Trivialization F (π F E)) {b : B} (hb : b ∉ e.baseSet) (y : F) :
     e.symm b y = 0 :=
   dif_neg hb
+
+@[deprecated (since := "2025-05-23")] alias symm_apply_of_not_mem := symm_apply_of_notMem
 
 theorem mk_symm (e : Trivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (y : F) :
     TotalSpace.mk b (e.symm b y) = e.toPartialHomeomorph.symm (b, y) :=
@@ -735,7 +753,7 @@ theorem coordChangeHomeomorph_coe (e₁ e₂ : Trivialization F proj) {b : B} (h
   rfl
 
 theorem isImage_preimage_prod (e : Trivialization F proj) (s : Set B) :
-    e.toPartialHomeomorph.IsImage (proj ⁻¹' s) (s ×ˢ univ) := fun x hx => by simp [e.coe_fst', hx]
+    e.toPartialHomeomorph.IsImage (proj ⁻¹' s) (s ×ˢ univ) := fun x hx => by simp [hx]
 
 /-- Restrict a `Trivialization` to an open set in the base. -/
 protected def restrOpen (e : Trivialization F proj) (s : Set B) (hs : IsOpen s) :
@@ -873,10 +891,10 @@ noncomputable def disjointUnion (e e' : Trivialization F proj) (H : Disjoint e.b
   target_eq := (congr_arg₂ (· ∪ ·) e.target_eq e'.target_eq).trans union_prod.symm
   proj_toFun := by
     rintro p (hp | hp')
-    · show (e.source.piecewise e e' p).1 = proj p
+    · change (e.source.piecewise e e' p).1 = proj p
       rw [piecewise_eq_of_mem, e.coe_fst] <;> exact hp
-    · show (e.source.piecewise e e' p).1 = proj p
-      rw [piecewise_eq_of_not_mem, e'.coe_fst hp']
+    · change (e.source.piecewise e e' p).1 = proj p
+      rw [piecewise_eq_of_notMem, e'.coe_fst hp']
       simp only [source_eq] at hp' ⊢
       exact fun h => H.le_bot ⟨h, hp'⟩
 

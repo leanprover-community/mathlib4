@@ -74,7 +74,7 @@ instance : Inhabited (AddContent C) :=
     empty' := by simp
     sUnion' := by simp }⟩
 
-instance : DFunLike (AddContent C) (Set α) (fun _ ↦ ℝ≥0∞) where
+instance : FunLike (AddContent C) (Set α) ℝ≥0∞ where
   coe m s := m.toFun s
   coe_injective' m m' _ := by
     cases m
@@ -165,7 +165,7 @@ theorem eq_add_disjointOfDiff_of_subset (hC : IsSetSemiring C)
   conv_lhs => rw [← hC.sUnion_insert_disjointOfDiff ht hs hst]
   rw [← coe_insert, addContent_sUnion]
   · rw [sum_insert]
-    exact hC.nmem_disjointOfDiff ht hs
+    exact hC.notMem_disjointOfDiff ht hs
   · rw [coe_insert]
     exact Set.insert_subset hs (hC.subset_disjointOfDiff ht hs)
   · rw [coe_insert]
@@ -355,7 +355,7 @@ def IsSetRing.addContent_of_union (m : Set α → ℝ≥0∞) (hC : IsSetRing C)
     | insert s I hsI h =>
       rw [Finset.coe_insert] at *
       rw [Set.insert_subset_iff] at h_ss
-      rw [Set.pairwiseDisjoint_insert_of_not_mem] at h_dis
+      rw [Set.pairwiseDisjoint_insert_of_notMem] at h_dis
       swap; · exact hsI
       have h_sUnion_mem : ⋃₀ ↑I ∈ C := by
         rw [Set.sUnion_eq_biUnion]

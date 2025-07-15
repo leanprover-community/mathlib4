@@ -6,6 +6,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Field.IsField
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+import Mathlib.Data.Finite.Prod
 import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
 import Mathlib.RingTheory.Localization.Defs
 import Mathlib.RingTheory.OreLocalization.Ring
@@ -113,6 +114,13 @@ namespace IsLocalization
 section IsLocalization
 
 variable [IsLocalization M S]
+
+include M in
+variable (R M) in
+protected lemma finite [Finite R] : Finite S := by
+  have : Function.Surjective (Function.uncurry (mk' (M := M) S)) := fun x ↦ by
+    simpa using IsLocalization.mk'_surjective M x
+  exact .of_surjective _ this
 
 variable (M S) in
 include M in

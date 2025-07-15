@@ -126,11 +126,11 @@ variable [AddCommGroup R]
 
 @[simp]
 theorem trace_sub (A B : Matrix n n R) : trace (A - B) = trace A - trace B :=
-  Finset.sum_sub_distrib
+  Finset.sum_sub_distrib ..
 
 @[simp]
 theorem trace_neg (A : Matrix n n R) : trace (-A) = -trace A :=
-  Finset.sum_neg_distrib
+  Finset.sum_neg_distrib ..
 
 end AddCommGroup
 
@@ -239,16 +239,14 @@ variable [Fintype n] [AddCommMonoid α] (i j : n) (c : α)
 
 @[simp]
 theorem trace_single_eq_of_ne (h : i ≠ j) : trace (single i j c) = 0 := by
-  -- Porting note: added `-diag_apply`
-  simp [trace, -diag_apply, h]
+  simp [trace, h]
 
 @[deprecated (since := "2025-05-05")]
 alias StdBasisMatrix.trace_zero := trace_single_eq_of_ne
 
 @[simp]
 theorem trace_single_eq_same : trace (single i i c) = c := by
-  -- Porting note: added `-diag_apply`
-  simp [trace, -diag_apply]
+  simp [trace]
 
 @[deprecated (since := "2025-05-05")]
 alias StdBasisMatrix.trace_eq := trace_single_eq_same

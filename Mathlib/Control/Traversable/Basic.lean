@@ -32,11 +32,11 @@ For more on how to use traversable, consider the Haskell tutorial:
 <https://en.wikibooks.org/wiki/Haskell/Traversable>
 
 ## Main definitions
-  * `Traversable` type class - exposes the `traverse` function
-  * `sequence` - based on `traverse`,
-    turns a collection of effects into an effect returning a collection
-  * `LawfulTraversable` - laws for a traversable functor
-  * `ApplicativeTransformation` - the notion of a natural transformation for applicative functors
+* `Traversable` type class - exposes the `traverse` function
+* `sequence` - based on `traverse`,
+  turns a collection of effects into an effect returning a collection
+* `LawfulTraversable` - laws for a traversable functor
+* `ApplicativeTransformation` - the notion of a natural transformation for applicative functors
 
 ## Tags
 
@@ -221,7 +221,7 @@ satisfy a naturality condition with respect to applicative
 transformations. -/
 class LawfulTraversable (t : Type u → Type u) [Traversable t] : Prop extends LawfulFunctor t where
   /-- `traverse` plays well with `pure` of the identity monad -/
-  id_traverse : ∀ {α} (x : t α), traverse (pure : α → Id α) x = x
+  id_traverse : ∀ {α} (x : t α), traverse (pure : α → Id α) x = pure x
   /-- `traverse` plays well with composition of applicative functors. -/
   comp_traverse :
     ∀ {F G} [Applicative F] [Applicative G] [LawfulApplicative F] [LawfulApplicative G] {α β γ}
@@ -229,7 +229,7 @@ class LawfulTraversable (t : Type u → Type u) [Traversable t] : Prop extends L
       traverse (Functor.Comp.mk ∘ map f ∘ g) x = Comp.mk (map (traverse f) (traverse g x))
   /-- An axiom for `traverse` involving `pure : β → Id β`. -/
   traverse_eq_map_id : ∀ {α β} (f : α → β) (x : t α),
-    traverse ((pure : β → Id β) ∘ f) x = id.mk (f <$> x)
+    traverse ((pure : β → Id β) ∘ f) x = pure (f <$> x)
   /-- The naturality axiom explaining how lawful traversable functors should play with
   lawful applicative functors. -/
   naturality :

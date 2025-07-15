@@ -137,7 +137,7 @@ theorem exp_eq_ofScalarsSum : exp 𝕂 = ofScalarsSum (E := 𝔸) fun n ↦ (n !
   rw [exp_eq_tsum, ofScalarsSum_eq_tsum]
 
 theorem expSeries_apply_zero (n : ℕ) :
-    (expSeries 𝕂 𝔸 n fun _ => (0 : 𝔸)) = Pi.single (f := fun _ => 𝔸) 0 1 n := by
+    expSeries 𝕂 𝔸 n (fun _ => (0 : 𝔸)) = Pi.single (M := fun _ => 𝔸) 0 1 n := by
   rw [expSeries_apply_eq]
   rcases n with - | n
   · rw [pow_zero, Nat.factorial_zero, Nat.cast_one, inv_one, one_smul, Pi.single_eq_same]
@@ -307,8 +307,8 @@ theorem isUnit_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
 
 theorem invOf_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
     (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) [Invertible (exp 𝕂 x)] :
-    ⅟ (exp 𝕂 x) = exp 𝕂 (-x) := by
-  letI := invertibleExpOfMemBall hx; convert (rfl : ⅟ (exp 𝕂 x) = _)
+    ⅟(exp 𝕂 x) = exp 𝕂 (-x) := by
+  letI := invertibleExpOfMemBall hx; convert (rfl : ⅟(exp 𝕂 x) = _)
 
 /-- Any continuous ring homomorphism commutes with `NormedSpace.exp`. -/
 theorem map_exp_of_mem_ball {F} [FunLike F 𝔸 𝔹] [RingHomClass F 𝔸 𝔹] (f : F) (hf : Continuous f)
@@ -430,7 +430,7 @@ theorem exp_hasFPowerSeriesAt_zero : HasFPowerSeriesAt (exp 𝕂) (expSeries �
 
 @[continuity, fun_prop]
 theorem exp_continuous : Continuous (exp 𝕂 : 𝔸 → 𝔸) := by
-  rw [continuous_iff_continuousOn_univ, ← Metric.eball_top_eq_univ (0 : 𝔸), ←
+  rw [← continuousOn_univ, ← Metric.eball_top_eq_univ (0 : 𝔸), ←
     expSeries_radius_eq_top 𝕂 𝔸]
   exact continuousOn_exp
 
@@ -460,7 +460,7 @@ noncomputable def invertibleExp (x : 𝔸) : Invertible (exp 𝕂 x) :=
 theorem isUnit_exp (x : 𝔸) : IsUnit (exp 𝕂 x) :=
   isUnit_exp_of_mem_ball <| (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
 
-theorem invOf_exp (x : 𝔸) [Invertible (exp 𝕂 x)] : ⅟ (exp 𝕂 x) = exp 𝕂 (-x) :=
+theorem invOf_exp (x : 𝔸) [Invertible (exp 𝕂 x)] : ⅟(exp 𝕂 x) = exp 𝕂 (-x) :=
   invOf_exp_of_mem_ball <| (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
 
 theorem _root_.Ring.inverse_exp (x : 𝔸) : Ring.inverse (exp 𝕂 x) = exp 𝕂 (-x) :=
@@ -485,7 +485,7 @@ theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → 𝔸)
   classical
     induction' s using Finset.induction_on with a s ha ih
     · simp
-    rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ ha, Finset.sum_insert ha, exp_add_of_commute,
+    rw [Finset.noncommProd_insert_of_notMem _ _ _ _ ha, Finset.sum_insert ha, exp_add_of_commute,
       ih (h.mono <| Finset.subset_insert _ _)]
     refine Commute.sum_right _ _ _ fun i hi => ?_
     exact h.of_refl (Finset.mem_insert_self _ _) (Finset.mem_insert_of_mem hi)

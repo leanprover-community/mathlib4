@@ -273,7 +273,7 @@ def congr (e : (i : ι) → G i ≃+* G' i)
       have eq1 := DFunLike.congr_fun (he i j h) ((e i).symm x)
       simp only [RingEquiv.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
         RingEquiv.apply_symm_apply] at eq1 ⊢
-      simp [← eq1, of_f])
+      simp [← eq1])
     (by simp [map_comp]) (by simp [map_comp])
 
 lemma congr_apply_of (e : (i : ι) → G i ≃+* G' i)

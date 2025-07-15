@@ -194,7 +194,7 @@ private theorem mem_support_cycleOf_iff_aux [DecidableRel f.SameCycle] [Decidabl
     split_ifs with hy
     · simp only [hx, hy, Ne, not_false_iff, and_self_iff, mem_support]
       rcases hy with ⟨k, rfl⟩
-      rw [← not_mem_support]
+      rw [← notMem_support]
       simpa using hx
     · simpa [hx] using hy
 
@@ -249,7 +249,7 @@ instance instDecidableRelSameCycle [DecidableEq α] [Fintype α] (f : Perm α) :
         refine ⟨i, lt_of_lt_of_le hixy (card_le_univ _), hi⟩
       case neg =>
         haveI : Nonempty α := ⟨x⟩
-        rw [not_mem_support] at hx
+        rw [notMem_support] at hx
         exact ⟨0, Fintype.card_pos, hxy.eq_of_left hx⟩
 
 @[simp]
@@ -317,8 +317,7 @@ theorem SameCycle.exists_pow_eq [DecidableEq α] [Fintype α] (f : Perm α) (h :
   · obtain ⟨k, hk, hk'⟩ := h.exists_pow_eq_of_mem_support hx
     rcases k with - | k
     · refine ⟨#(f.cycleOf x).support, ?_, self_le_add_right _ _, ?_⟩
-      · refine zero_lt_one.trans (one_lt_card_support_of_ne_one ?_)
-        simpa using hx
+      · assumption
       · simp only [pow_zero, coe_one, id_eq] at hk'
         subst hk'
         rw [← (isCycle_cycleOf _ <| mem_support.1 hx).orderOf, ← cycleOf_pow_apply_self,
@@ -326,7 +325,7 @@ theorem SameCycle.exists_pow_eq [DecidableEq α] [Fintype α] (f : Perm α) (h :
     · exact ⟨k + 1, by simp, Nat.le_succ_of_le hk.le, hk'⟩
   · refine ⟨1, zero_lt_one, by simp, ?_⟩
     obtain ⟨k, rfl⟩ := h
-    rw [not_mem_support] at hx
+    rw [notMem_support] at hx
     rw [pow_apply_eq_self_of_apply_eq_self hx, zpow_apply_eq_self_of_apply_eq_self hx]
 
 theorem zpow_eq_zpow_on_iff [DecidableEq α] [Fintype α]
@@ -339,7 +338,7 @@ theorem zpow_eq_zpow_on_iff [DecidableEq α] [Fintype α]
   rw [← cycleOf_zpow_apply_self g x, cycle_zpow_mem_support_iff]
   · rw [← Int.dvd_iff_emod_eq_zero]
   · exact isCycle_cycleOf g hx
-  · simp only [mem_support, cycleOf_apply_self]; exact hx
+  · simp only [cycleOf_apply_self]; exact hx
 
 end CycleOf
 
@@ -373,7 +372,7 @@ where
     if hx : g x = x then go l g (by
         intro y hy; exact List.mem_of_ne_of_mem (fun h => hy (by rwa [h])) (hg hy)) hfg
     else
-      let ⟨m, hm₁, hm₂, hm₃⟩ :=
+      let ⟨m, hm⟩ :=
         go l ((cycleOf f x)⁻¹ * g) (by
             rw [hfg hx]
             intro y hy
@@ -397,6 +396,7 @@ where
               · simp [cycleOf_apply_of_not_sameCycle, hz]
             · exact cycleOf_apply_of_not_sameCycle hy.left)
       ⟨cycleOf f x :: m, by
+        obtain ⟨hm₁, hm₂, hm₃⟩ := hm
         rw [hfg hx] at hm₁ ⊢
         constructor
         · rw [List.prod_cons, hm₁]
@@ -486,11 +486,11 @@ variable [DecidableEq α] [Fintype α] (f : Perm α)
 def cycleFactorsFinset : Finset (Perm α) :=
   (truncCycleFactors f).lift
     (fun l : { l : List (Perm α) // l.prod = f ∧ (∀ g ∈ l, IsCycle g) ∧ l.Pairwise Disjoint } =>
-      l.val.toFinset)
+      ⟨↑l.val, nodup_of_pairwise_disjoint (fun h1 => not_isCycle_one <| l.2.2.1 _ h1) l.2.2.2⟩)
     fun ⟨_, hl⟩ ⟨_, hl'⟩ =>
-    List.toFinset_eq_of_perm _ _
-      (list_cycles_perm_list_cycles (hl'.left.symm ▸ hl.left) hl.right.left hl'.right.left
-        hl.right.right hl'.right.right)
+    Finset.eq_of_veq <| Multiset.coe_eq_coe.mpr <|
+      list_cycles_perm_list_cycles (hl'.left.symm ▸ hl.left) hl.right.left hl'.right.left
+        hl.right.right hl'.right.right
 
 open scoped List in
 theorem cycleFactorsFinset_eq_list_toFinset {σ : Perm α} {l : List (Perm α)} (hn : l.Nodup) :
@@ -498,7 +498,7 @@ theorem cycleFactorsFinset_eq_list_toFinset {σ : Perm α} {l : List (Perm α)} 
       (∀ f : Perm α, f ∈ l → f.IsCycle) ∧ l.Pairwise Disjoint ∧ l.prod = σ := by
   obtain ⟨⟨l', hp', hc', hd'⟩, hl⟩ := Trunc.exists_rep σ.truncCycleFactors
   have ht : cycleFactorsFinset σ = l'.toFinset := by
-    rw [cycleFactorsFinset, ← hl, Trunc.lift_mk]
+    rw [cycleFactorsFinset, ← hl, Trunc.lift_mk, Multiset.toFinset_eq, List.toFinset_coe]
   rw [ht]
   constructor
   · intro h
@@ -561,7 +561,7 @@ theorem cycleOf_mem_cycleFactorsFinset_iff {f : Perm α} {x : α} :
   constructor
   · rintro ⟨hc, _⟩
     contrapose! hc
-    rw [not_mem_support, ← cycleOf_eq_one_iff] at hc
+    rw [notMem_support, ← cycleOf_eq_one_iff] at hc
     simp [hc]
   · intro hx
     refine ⟨isCycle_cycleOf _ (mem_support.mp hx), ?_⟩
@@ -711,7 +711,7 @@ theorem cycle_is_cycleOf {f c : Equiv.Perm α} {a : α} (ha : a ∈ c.support)
   · simp only [hfc2.eq, inv_mul_cancel_right]
   -- `a` is in the support of `c`, hence it is not in the support of `g c⁻¹`
   exact
-    Equiv.Perm.not_mem_support.mp
+    Equiv.Perm.notMem_support.mp
       (Finset.disjoint_left.mp (Equiv.Perm.Disjoint.disjoint_support hfc) ha)
 
 theorem isCycleOn_support_of_mem_cycleFactorsFinset {g c : Equiv.Perm α}
@@ -807,9 +807,10 @@ theorem cycle_induction_on [Finite β] (P : Perm β → Prop) (σ : Perm β) (ba
       let x := σ.truncCycleFactors.out
       exact (congr_arg P x.2.1).mp (this x.1 x.2.2.1 x.2.2.2)
   intro l
-  induction' l with σ l ih
-  · exact fun _ _ => base_one
-  · intro h1 h2
+  induction l with
+  | nil => exact fun _ _ => base_one
+  | cons σ l ih =>
+    intro h1 h2
     rw [List.prod_cons]
     exact
       induction_disjoint σ l.prod (disjoint_prod_right _ (List.pairwise_cons.mp h2).1)
@@ -832,7 +833,7 @@ theorem cycleFactorsFinset_mul_inv_mem_eq_sdiff [DecidableEq α] [Fintype α] {f
     -- if only `wlog` could work here...
     rintro (hf | hf)
     · rw [hd.commute.eq, union_comm, union_sdiff_distrib, sdiff_singleton_eq_erase,
-        erase_eq_of_not_mem, mul_assoc, Disjoint.cycleFactorsFinset_mul_eq_union, hσ hf]
+        erase_eq_of_notMem, mul_assoc, Disjoint.cycleFactorsFinset_mul_eq_union, hσ hf]
       · rw [mem_cycleFactorsFinset_iff] at hf
         intro x
         rcases hd.symm x with hx | hx
@@ -845,8 +846,8 @@ theorem cycleFactorsFinset_mul_inv_mem_eq_sdiff [DecidableEq α] [Fintype α] {f
             rw [← hf.right _ (mem_support.mpr hfx)] at hx
             contradiction
       · exact fun H =>
-        not_mem_empty _ (hd.disjoint_cycleFactorsFinset.le_bot (mem_inter_of_mem hf H))
-    · rw [union_sdiff_distrib, sdiff_singleton_eq_erase, erase_eq_of_not_mem, mul_assoc,
+        notMem_empty _ (hd.disjoint_cycleFactorsFinset.le_bot (mem_inter_of_mem hf H))
+    · rw [union_sdiff_distrib, sdiff_singleton_eq_erase, erase_eq_of_notMem, mul_assoc,
         Disjoint.cycleFactorsFinset_mul_eq_union, hτ hf]
       · rw [mem_cycleFactorsFinset_iff] at hf
         intro x
@@ -860,7 +861,7 @@ theorem cycleFactorsFinset_mul_inv_mem_eq_sdiff [DecidableEq α] [Fintype α] {f
             rw [← hf.right _ (mem_support.mpr hfx)] at hx
             contradiction
       · exact fun H =>
-        not_mem_empty _ (hd.disjoint_cycleFactorsFinset.le_bot (mem_inter_of_mem H hf))
+        notMem_empty _ (hd.disjoint_cycleFactorsFinset.le_bot (mem_inter_of_mem H hf))
 
 theorem IsCycle.forall_commute_iff [DecidableEq α] [Fintype α] (g z : Perm α) :
     (∀ c ∈ g.cycleFactorsFinset, Commute z c) ↔

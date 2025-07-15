@@ -617,10 +617,9 @@ noncomputable def mapHomologicalComplexIso :
       mapHomologicalComplexXIso'_hom, mapHomologicalComplexXIso'_hom]
     constructor
     · dsimp
-      simp only [Functor.mapHomologicalComplex_obj_X, Functor.mapHomologicalComplex_obj_d,
-        comp_neg, add_comp, assoc, inl_v_fst_v_assoc, inr_f_fst_v_assoc, zero_comp,
-        comp_zero, add_zero, comp_add, inl_v_fst_v, comp_id, inr_f_fst_v, ← H.map_comp,
-        d_fst_v φ n (n + 1) (n + 2) rfl (by omega), Functor.map_neg]
+      simp only [Functor.mapHomologicalComplex_obj_X, comp_neg, add_comp, assoc, inl_v_fst_v_assoc,
+        inr_f_fst_v_assoc, zero_comp, comp_zero, add_zero, inl_v_fst_v, comp_id, inr_f_fst_v,
+        ← H.map_comp, d_fst_v φ n (n + 1) (n + 2) rfl (by omega), Functor.map_neg]
     · dsimp
       simp only [comp_add, add_comp, assoc, inl_v_fst_v_assoc, inr_f_fst_v_assoc,
         Functor.mapHomologicalComplex_obj_X, zero_comp, comp_zero, add_zero, inl_v_snd_v_assoc,

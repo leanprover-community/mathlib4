@@ -202,7 +202,7 @@ theorem vanishingIdeal_anti_mono_iff {s t : Set (PrimeSpectrum R)} (ht : IsClose
 theorem vanishingIdeal_strict_anti_mono_iff {s t : Set (PrimeSpectrum R)} (hs : IsClosed s)
     (ht : IsClosed t) : s ⊂ t ↔ vanishingIdeal t < vanishingIdeal s := by
   rw [Set.ssubset_def, vanishingIdeal_anti_mono_iff hs, vanishingIdeal_anti_mono_iff ht,
-    lt_iff_le_not_le]
+    lt_iff_le_not_ge]
 
 /-- The antitone order embedding of closed subsets of `Spec R` into ideals of `R`. -/
 def closedsEmbedding (R : Type*) [CommSemiring R] :
@@ -994,8 +994,8 @@ lemma basicOpen_injOn_isIdempotentElem :
   have : x ∉ Ideal.span {y} := fun mem ↦ ne' <| by
     obtain ⟨r, rfl⟩ := Ideal.mem_span_singleton'.mp mem
     rw [mul_assoc, hy]
-  have ⟨p, prime, le, nmem⟩ := Ideal.exists_le_prime_nmem_of_isIdempotentElem _ x hx this
-  exact ne_of_mem_of_not_mem' (a := ⟨p, prime⟩) nmem
+  have ⟨p, prime, le, notMem⟩ := Ideal.exists_le_prime_notMem_of_isIdempotentElem _ x hx this
+  exact ne_of_mem_of_not_mem' (a := ⟨p, prime⟩) notMem
     (not_not.mpr <| p.span_singleton_le_iff_mem.mp le) eq
 
 lemma exists_mul_eq_zero_add_eq_one_basicOpen_eq_of_isClopen {s : Set (PrimeSpectrum R)}
@@ -1155,7 +1155,7 @@ lemma isIntegral_of_isClosedMap_comap_mapRingHom (h : IsClosedMap (comap (mapRin
     rw [← zeroLocus_span, ← closure_eq_iff_isClosed, closure_image_comap_zeroLocus] at H
     rw [← Ideal.eq_top_iff_one, sup_comm, ← zeroLocus_empty_iff_eq_top, zeroLocus_sup, H]
     suffices ∀ (a : PrimeSpectrum S[X]), p ∈ a.asIdeal → X ∉ a.asIdeal by
-      simpa [Set.eq_empty_iff_forall_not_mem]
+      simpa [Set.eq_empty_iff_forall_notMem]
     intro q hpq hXq
     have : 1 ∈ q.asIdeal := by simpa [p] using (sub_mem (q.asIdeal.mul_mem_left (C r) hXq) hpq)
     exact q.2.ne_top (q.asIdeal.eq_top_iff_one.mpr this)
@@ -1283,7 +1283,7 @@ theorem closedPoint_mem_iff (U : TopologicalSpace.Opens <| PrimeSpectrum R) :
   · rw [eq_top_iff]
     exact fun h x _ => (specializes_closedPoint x).mem_open U.2 h
   · rintro rfl
-    trivial
+    exact TopologicalSpace.Opens.mem_top _
 
 lemma closed_point_mem_iff {U : TopologicalSpace.Opens (PrimeSpectrum R)} :
     closedPoint R ∈ U ↔ U = ⊤ :=

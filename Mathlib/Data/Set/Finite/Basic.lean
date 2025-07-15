@@ -332,7 +332,7 @@ instance fintypeLENat (n : ℕ) : Fintype { i | i ≤ n } := by
   simpa [Nat.lt_succ_iff] using Set.fintypeLTNat (n + 1)
 
 /-- This is not an instance so that it does not conflict with the one
-in `Mathlib/Order/LocallyFinite.lean`. -/
+in `Mathlib/Order/Interval/Finset/Defs.lean`. -/
 def Nat.fintypeIio (n : ℕ) : Fintype (Iio n) :=
   Set.fintypeLTNat n
 
@@ -763,7 +763,7 @@ theorem card_image_of_injective (s : Set α) [Fintype s] {f : α → β} [Fintyp
 
 @[simp]
 theorem card_singleton (a : α) : Fintype.card ({a} : Set α) = 1 :=
-  Fintype.card_ofSubsingleton _
+  rfl
 
 theorem card_lt_card {s t : Set α} [Fintype s] [Fintype t] (h : s ⊂ t) :
     Fintype.card s < Fintype.card t :=
@@ -776,7 +776,7 @@ theorem card_le_card {s t : Set α} [Fintype s] [Fintype t] (hsub : s ⊆ t) :
 
 theorem eq_of_subset_of_card_le {s t : Set α} [Fintype s] [Fintype t] (hsub : s ⊆ t)
     (hcard : Fintype.card t ≤ Fintype.card s) : s = t :=
-  (eq_or_ssubset_of_subset hsub).elim id fun h => absurd hcard <| not_le_of_lt <| card_lt_card h
+  (eq_or_ssubset_of_subset hsub).elim id fun h => absurd hcard <| not_le_of_gt <| card_lt_card h
 
 theorem card_range_of_injective [Fintype α] {f : α → β} (hf : Injective f) [Fintype (range f)] :
     Fintype.card (range f) = Fintype.card α :=
@@ -802,19 +802,30 @@ theorem infinite_univ_iff : (@univ α).Infinite ↔ Infinite α := by
 theorem infinite_univ [h : Infinite α] : (@univ α).Infinite :=
   infinite_univ_iff.2 h
 
-lemma Infinite.exists_not_mem_finite (hs : s.Infinite) (ht : t.Finite) : ∃ a, a ∈ s ∧ a ∉ t := by
+lemma Infinite.exists_notMem_finite (hs : s.Infinite) (ht : t.Finite) : ∃ a, a ∈ s ∧ a ∉ t := by
   by_contra! h; exact hs <| ht.subset h
 
-lemma Infinite.exists_not_mem_finset (hs : s.Infinite) (t : Finset α) : ∃ a ∈ s, a ∉ t :=
-  hs.exists_not_mem_finite t.finite_toSet
+@[deprecated (since := "2025-05-23")]
+alias Infinite.exists_not_mem_finite := Infinite.exists_notMem_finite
+
+lemma Infinite.exists_notMem_finset (hs : s.Infinite) (t : Finset α) : ∃ a ∈ s, a ∉ t :=
+  hs.exists_notMem_finite t.finite_toSet
+
+@[deprecated (since := "2025-05-23")]
+alias Infinite.exists_not_mem_finset := Infinite.exists_notMem_finset
 
 section Infinite
 variable [Infinite α]
 
-lemma Finite.exists_not_mem (hs : s.Finite) : ∃ a, a ∉ s := by
+lemma Finite.exists_notMem (hs : s.Finite) : ∃ a, a ∉ s := by
   by_contra! h; exact infinite_univ (hs.subset fun a _ ↦ h _)
 
-lemma _root_.Finset.exists_not_mem (s : Finset α) : ∃ a, a ∉ s := s.finite_toSet.exists_not_mem
+@[deprecated (since := "2025-05-23")] alias Finite.exists_not_mem := Finite.exists_notMem
+
+lemma _root_.Finset.exists_notMem (s : Finset α) : ∃ a, a ∉ s := s.finite_toSet.exists_notMem
+
+@[deprecated (since := "2025-05-23")]
+alias _root_.Finset.exists_not_mem := _root_.Finset.exists_notMem
 
 end Infinite
 
@@ -893,8 +904,8 @@ lemma exists_card_eq [Infinite α] : ∀ n : ℕ, ∃ s : Finset α, s.card = n
   | n + 1 => by
     classical
     obtain ⟨s, rfl⟩ := exists_card_eq n
-    obtain ⟨a, ha⟩ := s.exists_not_mem
-    exact ⟨insert a s, card_insert_of_not_mem ha⟩
+    obtain ⟨a, ha⟩ := s.exists_notMem
+    exact ⟨insert a s, card_insert_of_notMem ha⟩
 
 end Finset
 

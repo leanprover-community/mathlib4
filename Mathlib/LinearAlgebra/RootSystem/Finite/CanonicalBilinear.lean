@@ -137,8 +137,8 @@ lemma rootForm_symmetric :
 lemma rootForm_reflection_reflection_apply (i : ι) (x y : M) :
     P.RootForm (P.reflection i x) (P.reflection i y) = P.RootForm x y := by
   simp only [rootForm_apply_apply, coroot'_reflection]
-  exact Fintype.sum_equiv (P.reflection_perm i)
-    (fun j ↦ (P.coroot' (P.reflection_perm i j) x) * (P.coroot' (P.reflection_perm i j) y))
+  exact Fintype.sum_equiv (P.reflectionPerm i)
+    (fun j ↦ (P.coroot' (P.reflectionPerm i j) x) * (P.coroot' (P.reflectionPerm i j) y))
     (fun j ↦ P.coroot' j x * P.coroot' j y) (congrFun rfl)
 
 lemma rootForm_self_sum_of_squares (x : M) :
@@ -243,16 +243,16 @@ lemma rootFormIn_self_smul_coroot (i : ι) :
     P.RootFormIn S (P.rootSpanMem S i) (P.rootSpanMem S i) • P.coroot i =
       2 • P.PolarizationIn S (P.rootSpanMem S i) := by
   have hP : P.PolarizationIn S (P.rootSpanMem S i) =
-      ∑ j : ι, P.pairingIn S i (P.reflection_perm i j) • P.coroot (P.reflection_perm i j) := by
+      ∑ j : ι, P.pairingIn S i (P.reflectionPerm i j) • P.coroot (P.reflectionPerm i j) := by
     simp_rw [PolarizationIn_apply, coroot'In_rootSpanMem_eq_pairingIn]
-    exact (Fintype.sum_equiv (P.reflection_perm i)
-          (fun j ↦ P.pairingIn S i (P.reflection_perm i j) • P.coroot (P.reflection_perm i j))
+    exact (Fintype.sum_equiv (P.reflectionPerm i)
+          (fun j ↦ P.pairingIn S i (P.reflectionPerm i j) • P.coroot (P.reflectionPerm i j))
           (fun j ↦ P.pairingIn S i j • P.coroot j) (congrFun rfl)).symm
   rw [two_nsmul]
   nth_rw 2 [hP]
   rw [PolarizationIn_apply]
-  simp only [coroot'In_rootSpanMem_eq_pairingIn, pairingIn_reflection_perm,
-    pairingIn_reflection_perm_self_left, ← reflection_perm_coroot, neg_smul, Finset.sum_neg_distrib,
+  simp only [coroot'In_rootSpanMem_eq_pairingIn, pairingIn_reflectionPerm,
+    pairingIn_reflectionPerm_self_left, ← reflectionPerm_coroot, neg_smul,
     smul_sub, sub_neg_eq_add]
   rw [Finset.sum_add_distrib, ← add_assoc, ← sub_eq_iff_eq_add, RootFormIn]
   simp only [LinearMap.coeFn_sum, LinearMap.coe_smulRight, Finset.sum_apply,
@@ -363,7 +363,7 @@ theorem exists_ge_zero_eq_rootForm (x : M) (hx : x ∈ span S (range P.root)) :
     this ▸ IsSumSq.sum_mul_self Finset.univ s
   apply FaithfulSMul.algebraMap_injective S R
   simp only [posRootForm, RootPositiveForm.algebraMap_posForm, map_sum, map_mul]
-  simp [← Algebra.linearMap_apply, hs, rootForm_apply_apply]
+  simp [hs, rootForm_apply_apply]
 
 lemma posRootForm_posForm_apply_apply (x y : P.rootSpan S) : (P.posRootForm S).posForm x y =
     ∑ i, P.coroot'In S i x * P.coroot'In S i y := by
@@ -387,7 +387,7 @@ lemma zero_lt_pairingIn_iff' :
 
 lemma pairingIn_lt_zero_iff :
     P.pairingIn S i j < 0 ↔ P.pairingIn S j i < 0 := by
-  simpa using P.zero_lt_pairingIn_iff' S (i := i) (j := P.reflection_perm j j)
+  simpa using P.zero_lt_pairingIn_iff' S (i := i) (j := P.reflectionPerm j j)
 
 lemma pairingIn_le_zero_iff [NeZero (2 : R)] [NoZeroSMulDivisors R M] :
     P.pairingIn S i j ≤ 0 ↔ P.pairingIn S j i ≤ 0 := by

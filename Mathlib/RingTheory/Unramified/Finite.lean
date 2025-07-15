@@ -173,7 +173,7 @@ lemma finite_of_free [Module.Free R S] : Module.Finite R S := by
   let a : I → I →₀ R := fun i ↦ b.repr (b i * x)
   -- Consider `F` such that `fⱼx = ∑ Fᵢⱼbⱼ`.
   let F : I →₀ I →₀ R := Finsupp.onFinset f.support (fun j ↦ b.repr (x * f j))
-    (fun j ↦ not_imp_comm.mp fun hj ↦ by simp [Finsupp.not_mem_support_iff.mp hj])
+    (fun j ↦ not_imp_comm.mp fun hj ↦ by simp [Finsupp.notMem_support_iff.mp hj])
   have hG : ∀ j ∉ (Finset.biUnion f.support fun i ↦ (a i).support),
       b.repr (f.sum (fun i y ↦ a i j • y)) = 0 := by
     intros j hj
@@ -263,10 +263,10 @@ lemma comp_sec :
     Function.comp_apply, LinearMap.flip_apply, TensorProduct.AlgebraTensorModule.mapBilinear_apply,
     TensorProduct.AlgebraTensorModule.lift_apply, LinearMap.id_coe, id_eq]
   trans (TensorProduct.lmul' R (elem R S)) • x
-  · induction' elem R S using TensorProduct.induction_on with r s y z hy hz
-    · simp
-    · simp [mul_smul, smul_comm r s]
-    · simp [hy, hz, add_smul]
+  · induction elem R S using TensorProduct.induction_on with
+    | zero => simp
+    | tmul r s => simp [mul_smul, smul_comm r s]
+    | add y z hy hz => simp [hy, hz, add_smul]
   · rw [lmul_elem, one_smul]
 
 /-- If `S` is an unramified `R`-algebra, then `R`-flat implies `S`-flat. Iversen I.2.7 -/

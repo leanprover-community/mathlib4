@@ -297,7 +297,7 @@ theorem join_map_map {f : α → β} (hf : Measurable f) (μ : Measure (Measure 
   simp_rw [map_apply hf hs]
 
 theorem join_map_join (μ : Measure (Measure (Measure α))) : join (map join μ) = join (join μ) := by
-  show bind μ join = join (join μ)
+  change bind μ join = join (join μ)
   rw [join_eq_bind, join_eq_bind, bind_bind aemeasurable_id aemeasurable_id]
   apply congr_arg (bind μ)
   funext ν
