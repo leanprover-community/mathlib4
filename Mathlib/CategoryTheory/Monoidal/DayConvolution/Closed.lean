@@ -464,23 +464,8 @@ end ofHasEnds
 section MonoidalClosed
 variable
     (D : Type u₃) [Category.{v₃} D]
-    [MonoidalCategoryStruct D]
+    [MonoidalCategory D]
     [LawfulDayConvolutionMonoidalCategoryStruct C V D]
-    [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
-      (CostructuredArrow (tensor C) d) (tensorLeft v)]
-    [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
-      (CostructuredArrow (tensor C) d) (tensorRight v)]
-    [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
-      (CostructuredArrow (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorLeft v)]
-    [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
-      (CostructuredArrow (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)]
-    [∀ (v : V) (d : C × C),
-      Limits.PreservesColimitsOfShape
-        (CostructuredArrow ((𝟭 C).prod <| Functor.fromPUnit.{0} <| 𝟙_ C) d)
-        (tensorRight v)]
-    [∀ (v : V) (d : C × C),
-      Limits.PreservesColimitsOfShape
-        (CostructuredArrow ((tensor C).prod (𝟭 C)) d) (tensorRight v)]
 
 attribute [local instance] convolution in
 /-- If we have a `LawfulDayConvolutionMonoidalCategoryStruct C V D` and
@@ -490,10 +475,8 @@ of a `LawfulDayConvolutionClosedMonoidalCategoryStruct` defines a
 @[simps! -isSimp]
 def monoidalClosed
     [LawfulDayConvolutionClosedMonoidalCategoryStruct C V D] :
-    letI := monoidalOfLawfulDayConvolutionMonoidalCategoryStruct C V D
-    MonoidalClosed D :=
-  letI := monoidalOfLawfulDayConvolutionMonoidalCategoryStruct C V D
-  { closed d :=
+    MonoidalClosed D where
+  closed d :=
     { rightAdj := LawfulDayConvolutionClosedMonoidalCategoryStruct.ihom C V d
       adj :=
         { unit :=
@@ -540,7 +523,7 @@ def monoidalClosed
             exact ihomDayConvolutionInternalHom
                 C V d d'|>.right_triangle_components
               (ι C V D|>.obj d')
-              (ihomDayConvolutionInternalHom C V d (d ⊗ _)) } } }
+              (ihomDayConvolutionInternalHom C V d (d ⊗ _)) } }
 
 end MonoidalClosed
 
