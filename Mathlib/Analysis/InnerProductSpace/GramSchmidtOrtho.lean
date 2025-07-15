@@ -240,7 +240,7 @@ theorem gramSchmidtNormed_unit_length_coe {f : ι → E} {n : ι}
   simp only [gramSchmidt_ne_zero_coe n h₀, gramSchmidtNormed, norm_smul_inv_norm, Ne,
     not_false_iff]
 
-theorem gramSchmidtNormed_unit_length {f : ι → E} (n : ι) (h₀ : LinearIndependent 𝕜 f) :
+theorem gramSchmidtNormed_unit_length {f : ι → E} {n : ι} (h₀ : LinearIndependent 𝕜 f) :
     ‖gramSchmidtNormed 𝕜 f n‖ = 1 :=
   gramSchmidtNormed_unit_length_coe (LinearIndependent.comp h₀ _ Subtype.coe_injective)
 

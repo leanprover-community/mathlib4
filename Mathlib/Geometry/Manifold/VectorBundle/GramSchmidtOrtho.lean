@@ -209,12 +209,11 @@ lemma gramSchmidtNormed_coe {n : ι} :
 theorem gramSchmidtNormed_unit_length_coe {n : ι}
     (h₀ : LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic n → ι))) :
     ‖gramSchmidtNormed s n x‖ = 1 :=
-  InnerProductSpace.gramSchmidtNormed_unit_length_coe n h₀
+  InnerProductSpace.gramSchmidtNormed_unit_length_coe h₀
 
--- XXX: should n be explicit or implicit? (same question in InnerProductSpace)
-theorem gramSchmidtNormed_unit_length (n : ι) (h₀ : LinearIndependent ℝ (s · x)) :
+theorem gramSchmidtNormed_unit_length {n : ι} (h₀ : LinearIndependent ℝ (s · x)) :
     ‖gramSchmidtNormed s n x‖ = 1 :=
-  InnerProductSpace.gramSchmidtNormed_unit_length n h₀
+  InnerProductSpace.gramSchmidtNormed_unit_length h₀
 
 theorem gramSchmidtNormed_unit_length' {n : ι} (hn : gramSchmidtNormed s n x ≠ 0) :
     ‖gramSchmidtNormed s n x‖ = 1 :=
