@@ -449,7 +449,32 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
                 }
 
                 -- β satisfies the index set conditions
-                have hβ_in_index_set : β.toLinear ∈ q ∧ β.IsNonZero := by sorry
+                have hβ_in_index_set : β.toLinear ∈ q ∧ β.IsNonZero := by
+                  constructor
+                  · -- β.toLinear ∈ q
+                    exact h_chi_plus_alpha_in_q
+                  · -- β.IsNonZero
+                    -- β.IsNonZero means ¬ (β : H → K) = 0
+                    -- Since β.toFun = χ.toLinear + α.1.toLinear, we have β =
+                    -- χ.toLinear + α.1.toLinear
+                    intro h_eq
+                    -- h_eq : β = 0
+                    -- We need to show contradiction with w_plus : ¬(χ.toLinear + α.1.toLinear = 0)
+                    apply w_plus
+                    -- Need to show: χ.toLinear + α.1.toLinear = 0
+                    -- Since β.IsZero and β.toFun = χ.toLinear + α.1.toLinear, we have the result
+                    -- β.IsZero means (β : H → K) = 0
+                    have h_beta_zero : (β : H → K) = 0 := h_eq
+                    -- And β.toFun = ⇑(χ.toLinear) + ⇑(α.1.toLinear) by definition
+                    have h_beta_def : (β : H → K) = ⇑(χ.toLinear) + ⇑(α.1.toLinear) := rfl
+                    -- From h_beta_zero and h_beta_def, we get ⇑(χ.toLinear) + ⇑(α.1.toLinear) = 0
+                    have h_coe_zero : ⇑(χ.toLinear) + ⇑(α.1.toLinear) = 0 := by
+                      rw [← h_beta_def]
+                      exact h_beta_zero
+                    -- Convert to function equality
+                    ext h
+                    have := congr_fun h_coe_zero h
+                    simpa using this
 
                 -- Explicitly state that β is in the index set
                 have β_mem_index_set : β ∈ {γ : Weight K H L | γ.toLinear ∈ q ∧ γ.IsNonZero} :=
