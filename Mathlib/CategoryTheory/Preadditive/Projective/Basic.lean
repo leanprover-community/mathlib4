@@ -221,7 +221,7 @@ namespace Functor
 variable {D : Type*} [Category D] (F : C ⥤ D)
 
 theorem projective_of_map_projective [F.Full] [F.Faithful]
-    [F.PreservesEpimorphisms] (P : C) (hP : Projective (F.obj P)) : Projective P where
+    [F.PreservesEpimorphisms] {P : C} (hP : Projective (F.obj P)) : Projective P where
   factors g f _ := by
     obtain ⟨h, fac⟩ := hP.factors (F.map g) (F.map f)
     exact ⟨F.preimage h, F.map_injective (by simp [fac])⟩
