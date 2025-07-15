@@ -103,14 +103,22 @@ def uniqueUpToIso (h : DayConvolution F G) (h' : DayConvolution F G) :
     h.convolution ≅ h'.convolution :=
   Functor.leftKanExtensionUnique h.convolution h.unit h'.convolution h'.unit
 
-@[reassoc (attr := simp)]
 lemma unit_uniqueUpToIso_hom (h : DayConvolution F G) (h' : DayConvolution F G) :
     h.unit ≫ Functor.whiskerLeft (tensor C) (h.uniqueUpToIso h').hom = h'.unit := by
   simp [uniqueUpToIso]
 
-@[reassoc (attr := simp)]
 lemma unit_uniqueUpToIso_inv (h : DayConvolution F G) (h' : DayConvolution F G) :
     h'.unit ≫ Functor.whiskerLeft (tensor C) (h.uniqueUpToIso h').inv = h.unit := by
+  simp [uniqueUpToIso]
+
+@[reassoc (attr := simp)]
+lemma unit_uniqueUpToIso_hom_app (h : DayConvolution F G) (h' : DayConvolution F G) (x y : C) :
+    h.unit.app (x, y) ≫ (h.uniqueUpToIso h').hom.app (x ⊗ y) = h'.unit.app (x, y) := by
+  simp [uniqueUpToIso]
+
+@[reassoc (attr := simp)]
+lemma unit_uniqueUpToIso_inv_app (h : DayConvolution F G) (h' : DayConvolution F G) (x y : C) :
+    h'.unit.app (x, y) ≫ (h.uniqueUpToIso h').inv.app (x ⊗ y) = h.unit.app (x, y) := by
   simp [uniqueUpToIso]
 
 variable (F G) [DayConvolution F G]
@@ -423,6 +431,9 @@ open ExternalProduct Functor
 the canonical morphism `𝟙_ V ⟶ U.obj (𝟙_ C)` when `U` is a unit for Day convolution. -/
 abbrev φ : Functor.fromPUnit.{0} (𝟙_ V) ⟶ Functor.fromPUnit.{0} (𝟙_ C) ⋙ U where
   app _ := can
+
+instance : U.IsLeftKanExtension (φ U) :=
+  DayConvolutionUnit.isPointwiseLeftKanExtensionCan.isLeftKanExtension
 
 /-- Since a convolution unit is a pointwise left Kan extension, maps out of it at
 any object are uniquely characterized. -/
@@ -876,7 +887,7 @@ class LawfulDayConvolutionMonoidalCategoryStruct
   associator_hom_unit_unit (V) (d d' d'': D) (x y z : C) :
     (convolutionExtensionUnit d d').app (x, y) ▷ (ι.obj d'').obj z ≫
       (convolutionExtensionUnit (d ⊗ d') d'').app (x ⊗ y, z) ≫
-      (ι.mapIso (α_ d d' d'')).hom.app ((x ⊗ y) ⊗ z) =
+      (ι.map (α_ d d' d'').hom).app ((x ⊗ y) ⊗ z) =
     (α_ _ _ _).hom ≫
       ((ι.obj d).obj x ◁ (convolutionExtensionUnit d' d'').app (y, z)) ≫
       (convolutionExtensionUnit d (d' ⊗ d'')).app (x, y ⊗ z) ≫
@@ -885,12 +896,12 @@ class LawfulDayConvolutionMonoidalCategoryStruct
     unitUnit ▷ (ι.obj d).obj y ≫
       (convolutionExtensionUnit (𝟙_ D) d).app
         (𝟙_ C, y) ≫
-      (ι.mapIso (λ_ d)).hom.app (𝟙_ C ⊗ y) =
+      (ι.map (λ_ d).hom).app (𝟙_ C ⊗ y) =
     (λ_ ((ι.obj d).obj y)).hom ≫ (ι.obj d).map (λ_ y).inv
   rightUnitor_hom_unit_app (V) (d : D) (y : C) :
     (ι.obj d).obj y ◁ unitUnit ≫
       (convolutionExtensionUnit d (𝟙_ D)).app (y, 𝟙_ C) ≫
-      (ι.mapIso (ρ_ d)).hom.app (y ⊗ 𝟙_ C) =
+      (ι.map (ρ_ d).hom).app (y ⊗ 𝟙_ C) =
     (ρ_ _).hom ≫ (ι.obj d).map (ρ_ y).inv
 
 namespace LawfulDayConvolutionMonoidalCategoryStruct

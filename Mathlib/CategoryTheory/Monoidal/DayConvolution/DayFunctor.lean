@@ -16,8 +16,6 @@ the `MonoidalCategory` instance on `C ⥤ V` is the "pointwise" one,
 where the tensor product of `F` and `G` is the functor `x ↦ F.obj x ⊗ G.obj x`.
 
 ## TODOs
-- Given a `LawfulDayConvolutionMonoidalCategoryStruct C V D`, show that
-ι induce a monoidal functor `D ⥤ (C ⊛⥤ V)`.
 - Specialize to the case `V := Type _`, and prove a universal property stating
 that for every monoidal category `W` with suitable colimits,
 colimit-preserving monoidal functors `(Cᵒᵖ ⊛⥤ Type u) ⥤ W` are equivalent to
@@ -425,59 +423,179 @@ end
 
 section
 
-variable (D : Type u₃) [Category.{v₃} D] [MonoidalCategory D]
+variable (C V) {D : Type u₃} [Category.{v₃} D] [MonoidalCategory D]
     [LawfulDayConvolutionMonoidalCategoryStruct C V D]
 
 open LawfulDayConvolutionMonoidalCategoryStruct
 
+/-- Auxiliary definiton for inducedCoreMonoidal. -/
+def inducedCoreMonoidalμIso (d d' : D) :
+    (equiv C V).inverse.obj ((ι C V D).obj d) ⊗
+      (equiv C V).inverse.obj ((ι C V D).obj d') ≅
+    (equiv C V).inverse.obj ((ι C V D).obj (d ⊗ d')) :=
+  DayFunctor.isoMk <|
+  convolution C V (C ⊛⥤ V) (equiv C V |>.inverse.obj <| (ι C V D).obj d)
+    (equiv C V|>.inverse.obj <| (ι C V D).obj d')|>.uniqueUpToIso <|
+      convolution C V D d d'
+
+@[reassoc (attr := simp)]
+lemma η_app_inducedCoreMonoidalμIso_hom_app (d d' : D) (x y : C) :
+    (η ((equiv C V).inverse.obj ((ι C V D).obj d))
+      ((equiv C V).inverse.obj ((ι C V D).obj d'))).app (x, y) ≫
+      (inducedCoreMonoidalμIso C V d d').hom.natTrans.app (x ⊗ y) =
+    (convolutionExtensionUnit C V d d').app (x, y) :=
+  DayConvolution.unit_uniqueUpToIso_hom_app _ _ _ _
+
+variable (D)
+
+/-- Auxiliary definiton for inducedCoreMonoidal. -/
+def inducedCoreMonoidalεIso :
+    𝟙_ (C ⊛⥤ V) ≅ (equiv C V).inverse.obj ((ι C V D).obj (𝟙_ D)) :=
+  DayFunctor.isoMk <| Functor.leftKanExtensionUnique
+    (𝟙_ (C ⊛⥤ V)).functor ((convolutionUnit C V (C ⊛⥤ V)).φ _)
+    ((equiv C V).inverse.obj ((ι C V D).obj (𝟙_ D))).functor
+      ((convolutionUnit C V D).φ _)
+
+/-- Auxiliary definiton for inducedCoreMonoidal. -/
+@[reassoc (attr := simp)]
+lemma ν_inducedCoreMonoidalεIso_hom_app_tensorUnit :
+    ν C V ≫ (inducedCoreMonoidalεIso C V D).hom.natTrans.app (𝟙_ C) =
+    unitUnit C V D := by
+  have := Functor.descOfIsLeftKanExtension_fac_app
+    (𝟙_ (C ⊛⥤ V)).functor ((convolutionUnit C V (C ⊛⥤ V)).φ _)
+    ((equiv C V).inverse.obj ((ι C V D).obj (𝟙_ D))).functor
+    ((convolutionUnit C V D).φ _) (Discrete.mk .unit)
+  dsimp [DayConvolutionUnit.can, convolutionUnit] at this
+  dsimp [inducedCoreMonoidalεIso, Functor.leftKanExtensionUnique, ν]
+  simp [this]
+
 attribute [local instance] convolution in
+/-- Auxiliary definiton for showing that the composition
+`((ι C V D) ⋙ (equiv C V).inverse)` is monoidal. -/
 def inducedCoreMonoidal : ((ι C V D) ⋙ (equiv C V).inverse).CoreMonoidal where
-    μIso d d' := DayFunctor.isoMk <|
-      convolution C V (C ⊛⥤ V) (equiv C V |>.inverse.obj <| (ι C V D).obj d)
-        (equiv C V|>.inverse.obj <| (ι C V D).obj d')|>.uniqueUpToIso <|
-          convolution C V D d d'
+    μIso d d' := inducedCoreMonoidalμIso C V d d'
     μIso_hom_natural_left {d d'} f d'' := by
       ext1
+      apply Functor.hom_ext_of_isLeftKanExtension
+          ((equiv C V).inverse.obj ((ι C V D).obj d) ⊗
+            (equiv C V).inverse.obj ((ι C V D).obj d'')).functor
+          (η _ _)
+      ext ⟨x, y⟩
+      simp [convolutionExtensionUnit_comp_ι_map_whiskerRight_app]
+    μIso_hom_natural_right {d d'} d'' f := by
+      ext1
+      apply Functor.hom_ext_of_isLeftKanExtension
+          ((equiv C V).inverse.obj ((ι C V D).obj d'') ⊗
+            (equiv C V).inverse.obj ((ι C V D).obj d)).functor
+          (η _ _)
+      ext ⟨x, y⟩
+      simp [convolutionExtensionUnit_comp_ι_map_whiskerLeft_app]
+    associativity d d' d'' := by
+      ext1
+      apply Functor.hom_ext_of_isLeftKanExtension
+          (((equiv C V).inverse.obj ((ι C V D).obj d) ⊗
+            (equiv C V).inverse.obj ((ι C V D).obj d')) ⊗
+            (equiv C V).inverse.obj ((ι C V D).obj d'')).functor
+          (η _ _)
+      apply Functor.hom_ext_of_isLeftKanExtension
+        (((equiv C V).inverse.obj ((ι C V D).obj d) ⊗
+          (equiv C V).inverse.obj ((ι C V D).obj d')).functor ⊠
+          ((equiv C V).inverse.obj ((ι C V D).obj d'')).functor)
+        (ExternalProduct.extensionUnitLeft _ (η _ _) _)
+      ext ⟨⟨x, y⟩, z⟩
       dsimp
-    εIso := sorry
-    -- δ d d' := DayFunctor.Hom.mk <|
-    --   DayConvolution.corepresentableBy
-    --     (ι C V D|>.obj d) (ι C V D|>.obj d')|>.homEquiv.symm (η _ _)
-    -- δ_natural_left {d d'} f d'' := by
-    --   ext1
-    --   apply DayConvolution.corepresentableBy
-    --     (ι C V D|>.obj d) (ι C V D|>.obj d'')|>.homEquiv.injective _
-    --   dsimp
-    --   ext ⟨x, y⟩
-    --   simp only [externalProductBifunctor_obj_obj, Functor.comp_obj, tensor_obj,
-    --     ← tensorHom_id, DayConvolution.corepresentableBy_homEquiv_apply_app,
-    --     NatTrans.comp_app, DayConvolution.desc_fac_app_assoc,
-    --     η_app_comp_tensorHom_natTrans_app_tensor,
-    --     equiv_inverse_obj_functor, equiv_inverse_map_natTrans, id_natTrans,
-    --     NatTrans.id_app, ι_map_tensorHom_hom_eq_tensorHom, Functor.map_id,
-    --     DayConvolution.unit_app_map_app_assoc,
-    --     DayConvolution.desc_fac_app]
-    --   rfl
-    -- δ_natural_right {d d'} d'' f := by
-    --   ext1
-    --   apply DayConvolution.corepresentableBy
-    --     (ι C V D|>.obj d'') (ι C V D|>.obj d)|>.homEquiv.injective _
-    --   dsimp
-    --   ext ⟨x, y⟩
-    --   simp only [externalProductBifunctor_obj_obj, Functor.comp_obj, tensor_obj,
-    --     ← id_tensorHom, DayConvolution.corepresentableBy_homEquiv_apply_app,
-    --     NatTrans.comp_app, DayConvolution.desc_fac_app_assoc,
-    --     η_app_comp_tensorHom_natTrans_app_tensor,
-    --     equiv_inverse_obj_functor, equiv_inverse_map_natTrans, id_natTrans,
-    --     NatTrans.id_app, ι_map_tensorHom_hom_eq_tensorHom, Functor.map_id,
-    --     DayConvolution.unit_app_map_app_assoc,
-    --     DayConvolution.desc_fac_app]
-    --   rfl
-    -- ε := sorry
-    -- μ d d' := DayFunctor.Hom.mk <|
-    --   Functor.descOfIsLeftKanExtension _ (η _ _) _
-    --     (convolutionExtensionUnit C V _ _)
-    -- η := sorry
+      simp only [whiskerLeft_id, Category.comp_id,
+        η_app_comp_whiskerRight_natTrans_app_tensor_assoc,
+        equiv_inverse_obj_functor, externalProductBifunctor_obj_obj,
+        η_app_inducedCoreMonoidalμIso_hom_app_assoc]
+      simp only [← comp_whiskerRight_assoc,
+        η_app_inducedCoreMonoidalμIso_hom_app,
+        associator_hom_unit_unit, Functor.comp_obj, tensor_obj]
+      haveI := η_η_associator_hom
+        ((equiv C V).inverse.obj ((ι C V D).obj d))
+        ((equiv C V).inverse.obj ((ι C V D).obj d'))
+        ((equiv C V).inverse.obj ((ι C V D).obj d''))
+        x y z
+      dsimp at this
+      rw [reassoc_of% this]
+      simp [← whiskerLeft_comp_assoc]
+    εIso := inducedCoreMonoidalεIso C V D
+    left_unitality d := by
+      ext1
+      apply Functor.hom_ext_of_isLeftKanExtension
+        (𝟙_ (C ⊛⥤ V) ⊗ ((equiv C V).inverse.obj ((ι C V D).obj d))).functor
+        (unitLeft ((equiv C V).inverse.obj ((ι C V D).obj d)))
+      ext x
+      dsimp
+      simp only [Category.assoc,
+        η_app_comp_whiskerRight_natTrans_app_tensor_assoc,
+        equiv_inverse_obj_functor, externalProductBifunctor_obj_obj,
+        η_app_inducedCoreMonoidalμIso_hom_app_assoc]
+      rw [← comp_whiskerRight_assoc,
+        ν_inducedCoreMonoidalεIso_hom_app_tensorUnit]
+      simpa [leftUnitor_hom_unit_app] using
+        ν_η_leftUnitor ((equiv C V).inverse.obj ((ι C V D).obj d)) x
+    right_unitality d := by
+      ext1
+      apply Functor.hom_ext_of_isLeftKanExtension
+        (((equiv C V).inverse.obj ((ι C V D).obj d)) ⊗ 𝟙_ (C ⊛⥤ V)).functor
+        (unitRight ((equiv C V).inverse.obj ((ι C V D).obj d)))
+      ext x
+      dsimp
+      simp
+      rw [← whiskerLeft_comp_assoc,
+        ν_inducedCoreMonoidalεIso_hom_app_tensorUnit]
+      simpa [rightUnitor_hom_unit_app] using
+        ν_η_rightUnitor ((equiv C V).inverse.obj ((ι C V D).obj d)) x
+
+instance : ((ι C V D) ⋙ (equiv C V).inverse).Monoidal :=
+  inducedCoreMonoidal C V D|>.toMonoidal
+
+variable {D}
+open Functor
+
+@[reassoc (attr := simp)]
+lemma η_ι_equivInverse_μ (d d' : D) (x y : C) :
+    (η ((equiv C V).inverse.obj ((ι C V D).obj d))
+      ((equiv C V).inverse.obj ((ι C V D).obj d'))).app (x, y) ≫
+    (LaxMonoidal.μ ((ι C V D) ⋙ (equiv C V).inverse) d d').natTrans.app
+      (x ⊗ y) =
+    (convolutionExtensionUnit C V d d').app (x, y) :=
+  η_app_inducedCoreMonoidalμIso_hom_app C V d d' x y
+
+@[reassoc (attr := simp)]
+lemma convolutionExtensionUnit_ι_equivInverse_δ (d d' : D) (x y : C) :
+  (convolutionExtensionUnit C V d d').app (x, y) ≫
+    (OplaxMonoidal.δ ((ι C V D) ⋙ (equiv C V).inverse) d d').natTrans.app
+      (x ⊗ y) =
+  (η ((equiv C V).inverse.obj ((ι C V D).obj d))
+      ((equiv C V).inverse.obj ((ι C V D).obj d'))).app (x, y) := by
+  have := η_ι_equivInverse_μ C V d d' x y =≫
+    ((OplaxMonoidal.δ ((ι C V D) ⋙ (equiv C V).inverse) d d').natTrans.app
+      (x ⊗ y))
+  rw [Category.assoc, ← NatTrans.comp_app, ← DayFunctor.comp_natTrans,
+    Functor.Monoidal.μ_δ] at this
+  simpa using this.symm
+
+variable (D)
+
+@[reassoc (attr := simp)]
+lemma ν_ι_equivInverse_ε :
+    ν C V ≫ (LaxMonoidal.ε ((ι C V D) ⋙ (equiv C V).inverse)).natTrans.app
+      (𝟙_ C) =
+    unitUnit C V D :=
+  ν_inducedCoreMonoidalεIso_hom_app_tensorUnit C V D
+
+@[reassoc (attr := simp)]
+lemma ν_ι_equivInverse_η :
+    unitUnit C V D ≫
+      (OplaxMonoidal.η ((ι C V D) ⋙ (equiv C V).inverse)).natTrans.app (𝟙_ C) =
+    ν C V := by
+  have := ν_ι_equivInverse_ε C V D =≫
+    (OplaxMonoidal.η ((ι C V D) ⋙ (equiv C V).inverse)).natTrans.app (𝟙_ C)
+  rw [Category.assoc, ← NatTrans.comp_app, ← DayFunctor.comp_natTrans,
+    Functor.Monoidal.ε_η] at this
+  simpa using this.symm
 
 end
 
