@@ -35,7 +35,7 @@ structure EnrichedIso (X Y : C) where
   hom_inv : (λ_ _).inv ≫ (hom ⊗ₘ inv) ≫ eComp V X Y X = eId V X := by aesop_cat
   inv_hom : (λ_ _).inv ≫ (inv ⊗ₘ hom) ≫ eComp V Y X Y = eId V Y := by aesop_cat
 
-@[inherit_doc EnrichedCategory.Hom]
+@[inherit_doc EnrichedIso]
 notation X " ≅[" V "] " Y:10 => EnrichedIso V X Y
 
 namespace EnrichedIso
