@@ -128,33 +128,27 @@ def symm {X Y : C} (I : EnrichedIso V X Y) : EnrichedIso V Y X where
 
 open EnrichedCategory
 
+lemma trans_hom_inv {X Y Z : C} (I : EnrichedIso V X Y) (J : EnrichedIso V Y Z) :
+    (λ_ (𝟙_ V)).inv ≫ ((λ_ (𝟙_ V)).inv ≫ (I.hom ⊗ₘ J.hom) ≫ eComp V X Y Z ⊗ₘ (λ_ (𝟙_ V)).inv ≫
+      (J.inv ⊗ₘ I.inv) ≫ eComp V Z Y X) ≫ eComp V X Z X = eId V X := by
+  rw [tensor_comp, tensor_comp, tensorHom_def (eComp V X Y Z), Category.assoc, Category.assoc,
+    Category.assoc, ← e_assoc, associator_inv_naturality_left_assoc,
+    ← comp_whiskerRight_assoc, ← e_assoc', associator_inv_naturality_assoc,
+    tensorHom_def' (g := I.inv), Category.assoc, ← comp_whiskerRight_assoc,
+    associator_naturality_assoc, tensorHom_def (f := I.hom), Category.assoc,
+    ← whiskerLeft_comp_assoc, (Iso.inv_comp_eq _).mp J.hom_inv, ← I.hom_inv,
+    tensorHom_def' I.hom]
+  simp only [whiskerLeft_comp, Category.comp_id, Category.assoc, Iso.inv_hom_id_assoc,
+    whiskerRight_tensor, whiskerRight_id, triangle_assoc, e_comp_id]
+  monoidal
+
 /-- The composition of to isomorphisms in a `V`-enriched category. -/
 @[trans, simps]
 def trans {X Y Z : C} (I : EnrichedIso V X Y) (J : EnrichedIso V Y Z) : EnrichedIso V X Z where
   hom := (λ_ _).inv ≫ (I.hom ⊗ₘ J.hom) ≫ eComp V X Y Z
   inv := (λ_ _).inv ≫ (J.inv ⊗ₘ I.inv) ≫ eComp V Z Y X
-  hom_inv := by
-    rw [tensor_comp, tensor_comp, tensorHom_def (eComp V X Y Z), Category.assoc, Category.assoc,
-      Category.assoc, ← e_assoc, associator_inv_naturality_left_assoc,
-      ← comp_whiskerRight_assoc, ← e_assoc', associator_inv_naturality_assoc,
-      tensorHom_def' (g := I.inv), Category.assoc, ← comp_whiskerRight_assoc,
-      associator_naturality_assoc, tensorHom_def (f := I.hom), Category.assoc,
-      ← whiskerLeft_comp_assoc, (Iso.inv_comp_eq _).mp J.hom_inv, ← I.hom_inv,
-      tensorHom_def' I.hom]
-    simp only [whiskerLeft_comp, Category.comp_id, Category.assoc, Iso.inv_hom_id_assoc,
-      whiskerRight_tensor, whiskerRight_id, triangle_assoc, e_comp_id]
-    monoidal
-  inv_hom := by
-    rw [tensor_comp, tensor_comp, tensorHom_def (eComp V Z Y X), Category.assoc, Category.assoc,
-      Category.assoc, ← e_assoc, associator_inv_naturality_left_assoc,
-      ← comp_whiskerRight_assoc, ← e_assoc', associator_inv_naturality_assoc,
-      tensorHom_def' (g := J.hom), Category.assoc, ← comp_whiskerRight_assoc,
-      associator_naturality_assoc, tensorHom_def (f := J.inv), Category.assoc,
-      ← whiskerLeft_comp_assoc, (Iso.inv_comp_eq _).mp I.inv_hom, ← J.inv_hom,
-      tensorHom_def' J.inv]
-    simp only [whiskerLeft_comp, Category.comp_id, Category.assoc, Iso.inv_hom_id_assoc,
-      whiskerRight_tensor, whiskerRight_id, triangle_assoc, e_comp_id]
-    monoidal
+  hom_inv := trans_hom_inv I J
+  inv_hom := trans_hom_inv J.symm I.symm
 
 end EnrichedIso
 
