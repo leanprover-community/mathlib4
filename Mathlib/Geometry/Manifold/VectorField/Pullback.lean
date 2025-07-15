@@ -125,6 +125,11 @@ lemma mpullbackWithin_add :
   ext x
   simp [mpullbackWithin_apply]
 
+@[simp]
+lemma mpullbackWithin_zero : mpullbackWithin I I' f 0 s = 0 := by
+  ext x
+  simp [mpullbackWithin_apply]
+
 lemma mpullbackWithin_neg_apply :
     mpullbackWithin I I' f (-V) s x = - mpullbackWithin I I' f V s x := by
   simp [mpullbackWithin_apply]
@@ -171,6 +176,9 @@ lemma mpullback_neg :
 @[simp] lemma mpullbackWithin_univ : mpullbackWithin I I' f V univ = mpullback I I' f V := by
   ext x
   simp [mpullback_apply, mpullbackWithin_apply]
+
+@[simp]
+lemma mpullback_zero : mpullback I I' f 0 = 0 := by simp [← mpullbackWithin_univ]
 
 lemma mpullbackWithin_eq_pullbackWithin {f : E → E'} {V : E' → E'} {s : Set E} :
     mpullbackWithin 𝓘(𝕜, E) 𝓘(𝕜, E') f V s = pullbackWithin 𝕜 f V s := by

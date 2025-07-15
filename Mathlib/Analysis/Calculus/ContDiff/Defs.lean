@@ -1007,7 +1007,7 @@ theorem ContDiffAt.differentiableAt_one (h : ContDiffAt 𝕜 1 f x) :
     DifferentiableAt 𝕜 f x := by
   simpa [(le_refl 1), differentiableWithinAt_univ] using h.differentiableWithinAt
 
-nonrec lemma ContDiffAt.contDiffOn (h : ContDiffAt 𝕜 n f x) (hm : m ≤ n) (h' : m = ∞ → n = ω):
+nonrec lemma ContDiffAt.contDiffOn (h : ContDiffAt 𝕜 n f x) (hm : m ≤ n) (h' : m = ∞ → n = ω) :
     ∃ u ∈ 𝓝 x, ContDiffOn 𝕜 m f u := by
   simpa [nhdsWithin_univ] using h.contDiffOn hm h'
 

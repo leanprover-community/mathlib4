@@ -503,13 +503,7 @@ section mul_add
 theorem ofMul_image_powers_eq_multiples_ofMul [Monoid M] {x : M} :
     Additive.ofMul '' (Submonoid.powers x : Set M) = AddSubmonoid.multiples (Additive.ofMul x) := by
   ext
-  constructor
-  · rintro ⟨y, ⟨n, hy1⟩, hy2⟩
-    use n
-    simpa [← ofMul_pow, hy1]
-  · rintro ⟨n, hn⟩
-    refine ⟨x ^ n, ⟨n, rfl⟩, ?_⟩
-    rwa [ofMul_pow]
+  exact Set.mem_image_iff_of_inverse (congrFun rfl) (congrFun rfl)
 
 theorem ofAdd_image_multiples_eq_powers_ofAdd [AddMonoid A] {x : A} :
     Multiplicative.ofAdd '' (AddSubmonoid.multiples x : Set A) =
