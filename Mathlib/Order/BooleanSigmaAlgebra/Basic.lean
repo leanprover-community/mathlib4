@@ -320,13 +320,21 @@ theorem σiInf_mono
     (h : ∀ i, g i ≤ f i) : iInf g ≤ iInf f :=
   σiSup_mono (α := αᵒᵈ) h
 
-theorem σiSup₂_mono {f g : ∀ i, κ i → α} (h : ∀ i j, f i j ≤ g i j) :
+theorem σiSup₂_mono {f g : ∀ i, κ i → α} (hf₁ : ∀ i, (Set.range (f i)).Countable)
+    (hf₂ : {iSup (f i) | i}.Countable) (hg₁ : ∀ i, (Set.range (g i)).Countable)
+    (hg₂ : {iSup (g i) | i}.Countable) (h : ∀ i j, f i j ≤ g i j) :
     ⨆ (i) (j), f i j ≤ ⨆ (i) (j), g i j :=
+  haveI : Countable ↑(Set.range fun i ↦ ⨆ j, f i j) := hf₂
+  haveI : Countable ↑(Set.range fun i ↦ ⨆ j, g i j) := hg₂
+  haveI : ∀ i, Countable ↑(Set.range fun j ↦ f i j) := hf₁
+  haveI : ∀ i, Countable ↑(Set.range fun j ↦ g i j) := hg₁
   σiSup_mono fun i => σiSup_mono <| h i
 
-theorem σiInf₂_mono {f g : ∀ i, κ i → α} (h : ∀ i j, f i j ≤ g i j) :
-    ⨅ (i) (j), f i j ≤ ⨅ (i) (j), g i j :=
-  σiSup₂_mono (α := αᵒᵈ) h
+theorem σiInf₂_mono {f g : ∀ i, κ i → α} (hf₁ : ∀ i, (Set.range (f i)).Countable)
+    (hf₂ : {iInf (f i) | i}.Countable) (hg₁ : ∀ i, (Set.range (g i)).Countable)
+    (hg₂ : {iInf (g i) | i}.Countable) (h : ∀ i j, g i j ≤ f i j) :
+    ⨅ (i) (j), g i j ≤ ⨅ (i) (j), f i j :=
+  σiSup₂_mono (α := αᵒᵈ) hf₁ hf₂ hg₁ hg₂ h
 
 theorem σiSup_mono' {g : ι' → α} [Countable (Set.range g)] (h : ∀ i, ∃ i', f i ≤ g i') :
     iSup f ≤ iSup g :=
@@ -337,34 +345,50 @@ theorem σiInf_mono' {g : ι' → α} [Countable (Set.range g)] (h : ∀ i', ∃
   σiSup_mono' (α := αᵒᵈ) h
 
 theorem σiSup₂_mono' {f : ∀ i, κ i → α} {g : ∀ i', κ' i' → α}
+    (hf₁ : ∀ i, (Set.range (f i)).Countable) (hf₂ : {iSup (f i) | i}.Countable)
+    (hg₁ : ∀ i, (Set.range (g i)).Countable) (hg₂ : {iSup (g i) | i}.Countable)
     (h : ∀ i j, ∃ i' j', f i j ≤ g i' j') : ⨆ (i) (j), f i j ≤ ⨆ (i) (j), g i j :=
-  σiSup₂_le fun i j =>
+  σiSup₂_le hf₁ hf₂ fun i j =>
     let ⟨i', j', h⟩ := h i j
-    le_σiSup₂_of_le i' j' h
+    le_σiSup₂_of_le hg₁ hg₂ i' j' h
 
 theorem σiInf₂_mono' {f : ∀ i, κ i → α} {g : ∀ i', κ' i' → α}
-    (h : ∀ i j, ∃ i' j', f i' j' ≤ g i j) : ⨅ (i) (j), f i j ≤ ⨅ (i) (j), g i j :=
-  σiSup₂_mono' (α := αᵒᵈ) h
+    (hf₁ : ∀ i, (Set.range (f i)).Countable) (hf₂ : {iInf (f i) | i}.Countable)
+    (hg₁ : ∀ i, (Set.range (g i)).Countable) (hg₂ : {iInf (g i) | i}.Countable)
+    (h : ∀ i j, ∃ i' j', g i' j' ≤ f i j) : ⨅ (i) (j), g i j ≤ ⨅ (i) (j), f i j :=
+  σiSup₂_mono' (α := αᵒᵈ) hf₁ hf₂ hg₁ hg₂ h
 
 theorem σiSup_const_mono (h : ι → ι') : ⨆ _ : ι, a ≤ ⨆ _ : ι', a :=
-  σiSup_le <| le_σiSup _ ∘ h
+  haveI : Countable ↑(Set.range fun _ : ι  => a) :=
+    (Set.countable_singleton Set.range_const).to_subtype
+  haveI : Countable ↑(Set.range fun _ : ι'  => a) :=
+    (Set.countable_singleton Set.range_const).to_subtype
+  σiSup_le le_σiSup
 
 theorem σiInf_const_mono (h : ι' → ι) : ⨅ _ : ι, a ≤ ⨅ _ : ι', a :=
   σiSup_const_mono (α := αᵒᵈ) h
 
-theorem σiSup_σiInf_le_σiInf_σiSup (f : ι → ι' → α) : ⨆ i, ⨅ j, f i j ≤ ⨅ j, ⨆ i, f i j :=
-  σiSup_le fun i => σiInf_mono fun j => le_σiSup (fun i => f i j) i
+theorem σiSup_σiInf_le_σiInf_σiSup {f : ι → ι' → α} (hf₁ : ∀ i, (Set.range (f i)).Countable)
+    (hf₂ : {iInf (f i) | i}.Countable)  (hf₃ : ∀ j, (Set.range (fun i => f i j)).Countable)
+    (hf₄ : {iSup (fun i => f i j) | j}.Countable) : ⨆ i, ⨅ j, f i j ≤ ⨅ j, ⨆ i, f i j :=
+  haveI : ∀ i, Countable ↑(Set.range fun j ↦ f i j) := hf₁
+  haveI : Countable ↑(Set.range fun i ↦ ⨅ j, f i j) := hf₂
+  haveI : ∀ j, Countable ↑(Set.range fun i ↦ f i j) := hf₃
+  haveI : Countable ↑(Set.range fun j ↦ ⨆ i, f i j) := hf₄
+  σiSup_le fun i => σiInf_mono fun j => le_σiSup (f := fun i => f i j) i
 
 theorem bσiSup_mono {p q : ι → Prop} (hpq : ∀ i, p i → q i) :
     ⨆ (i) (_ : p i), f i ≤ ⨆ (i) (_ : q i), f i :=
+  haveI : Countable ↑(Set.range fun i ↦ ⨆ (_ : p i), f i) := sorry
+  haveI : Countable ↑(Set.range fun i ↦ ⨆ (_ : q i), f i) := sorry
   σiSup_mono fun i => σiSup_const_mono (hpq i)
 
 theorem bσiInf_mono {p q : ι → Prop} (hpq : ∀ i, p i → q i) :
     ⨅ (i) (_ : q i), f i ≤ ⨅ (i) (_ : p i), f i :=
-  σiInf_mono fun i => σiInf_const_mono (hpq i)
+  bσiSup_mono (α := αᵒᵈ) hpq
 
 theorem σiSup_lt_iff : iSup f < a ↔ ∃ b, b < a ∧ ∀ i, f i ≤ b :=
-  ⟨fun h => ⟨iSup f, h, le_σiSup f⟩, fun ⟨_, h, hb⟩ => (σiSup_le hb).trans_lt h⟩
+  ⟨fun h => ⟨iSup f, h, le_σiSup⟩, fun ⟨_, h, hb⟩ => (σiSup_le hb).trans_lt h⟩
 
 theorem lt_σiInf_iff : a < iInf f ↔ ∃ b, a < b ∧ ∀ i, b ≤ f i :=
   σiSup_lt_iff (α := αᵒᵈ)
