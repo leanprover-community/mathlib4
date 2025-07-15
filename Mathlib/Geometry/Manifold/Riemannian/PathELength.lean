@@ -93,6 +93,7 @@ lemma pathELength_congr_Ioo (h : EqOn γ γ' (Ioo a b)) :
 lemma pathELength_congr (h : EqOn γ γ' (Icc a b)) : pathELength I γ a b = pathELength I γ' a b :=
   pathELength_congr_Ioo (fun _ hx ↦ h ⟨hx.1.le, hx.2.le⟩)
 
+@[gcongr]
 lemma pathELength_mono (h : a' ≤ a) (h' : b ≤ b') :
     pathELength I γ a b ≤ pathELength I γ a' b' := by
   simpa [pathELength_eq_lintegral_mfderiv_Icc] using lintegral_mono_set (Icc_subset_Icc h h')
