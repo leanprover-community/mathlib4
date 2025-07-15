@@ -10,9 +10,9 @@ import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
 # Gram-Schmidt orthonormalisation on sections of Riemannian vector bundles
 
 In this file, we provide a version of the Gram-Schmidt orthonormalisation procedure
-for sections of Riemannian vector bundles: this produces a system of sections which orthogonal
-with respect to the bundle metric. If the initial sections were linearly independent resp.
-formed a basis at the point, so do the normalised sections.
+for sections of Riemannian vector bundles: this produces a system of sections which are orthogonal
+with respect to the bundle metric. If the initial sections were linearly independent (resp.
+formed a basis) at the point, so do the normalised sections.
 
 # TODO
 If the bundle metric is `C^k`, then the procedure preserves regularity of sections:
@@ -20,7 +20,6 @@ if all sections are `C^k`, so are their normalised versions.
 
 This will be used in `OrthonormalFrame.lean` to convert a local frame to a local orthonormal frame.
 
-## Implementation note
 
 
 ## Tags
@@ -52,10 +51,9 @@ open Finset
 
 namespace VectorBundle
 
-open Submodule
 
 /-- The Gram-Schmidt process takes a set of sections as input
-and outputs a set of sections which are point-wise orthogonal with the same span.
+and outputs a set of sections which are point-wise orthogonal and have the same span.
 Basically, we apply the Gram-Schmidt algorithm point-wise. -/
 noncomputable def gramSchmidt [WellFoundedLT ι]
     (s : ι → (x : B) → E x) (n : ι) : (x : B) → E x := fun x ↦
@@ -84,7 +82,7 @@ theorem gramSchmidt_def'' (n : ι) (x) :
     s n x = gramSchmidt s n x + ∑ i ∈ Iio n,
       (⟪gramSchmidt s i x, s n x⟫ / (‖gramSchmidt s i x‖) ^ 2) • gramSchmidt s i x := by
   convert gramSchmidt_def' s n x
-  rw [orthogonalProjection_singleton, RCLike.ofReal_pow]
+  rw [Submodule.orthogonalProjection_singleton, RCLike.ofReal_pow]
   rfl
 
 variable (s) in
@@ -122,7 +120,7 @@ theorem gramSchmidt_inv_triangular {i j : ι} (hij : i < j) (x) :
     ⟪gramSchmidt s j x, s i x⟫ = 0 :=
   InnerProductSpace.gramSchmidt_inv_triangular _ _ hij
 
-open Submodule Set Order
+open Set
 
 variable (s) in
 theorem mem_span_gramSchmidt {i j : ι} (hij : i ≤ j) (x) :
@@ -131,7 +129,7 @@ theorem mem_span_gramSchmidt {i j : ι} (hij : i ≤ j) (x) :
 
 variable (s) in
 theorem gramSchmidt_mem_span (x) :
-    ∀ {j i}, i ≤ j → gramSchmidt s i x ∈ span ℝ ((s · x) '' Set.Iic j) :=
+    ∀ {i j}, i ≤ j → gramSchmidt s i x ∈ span ℝ ((s · x) '' Set.Iic j) :=
   InnerProductSpace.gramSchmidt_mem_span _ _
 
 variable (s) in
@@ -152,7 +150,7 @@ theorem span_gramSchmidt (x : B) :
 
 /-- If the section values `s i x` are orthogonal, `gramSchmidt` yields the same values at `x`. -/
 theorem gramSchmidt_of_orthogonal {x} (hs : Pairwise fun i j ↦ ⟪s i x, s j x⟫ = 0) :
-    ∀ i₀, gramSchmidt s i₀ x = s i₀ x:= by
+    ∀ i₀, gramSchmidt s i₀ x = s i₀ x := by
   intro i
   rw [gramSchmidt_def]
   trans s i x - 0
@@ -205,7 +203,7 @@ theorem coe_gramSchmidtBasis {x} (hs : LinearIndependent ℝ (s · x))
 
 /-- The normalized `gramSchmidt`, i.e. each resulting section has unit length (or vanishes)
 at each point -/
-noncomputable def gramSchmidtNormed [WellFoundedLT ι]
+noncomputable def gramSchmidtNormed
     (s : ι → (x : B) → E x) (n : ι) : (x : B) → E x := fun x ↦
   InnerProductSpace.gramSchmidtNormed ℝ (s · x) n
 
@@ -241,7 +239,6 @@ theorem gramSchmidtNormed_orthonormal' (x) :
     Orthonormal ℝ fun i : { i | gramSchmidtNormed s i x ≠ 0 } => gramSchmidtNormed s i x :=
   InnerProductSpace.gramSchmidtNormed_orthonormal' _
 
-open Submodule Set Order
 
 variable (s) in
 theorem span_gramSchmidtNormed (t : Set ι) (x) :
@@ -251,7 +248,7 @@ theorem span_gramSchmidtNormed (t : Set ι) (x) :
 variable (s) in
 theorem span_gramSchmidtNormed_range (x) :
     span ℝ (range (gramSchmidtNormed s · x)) = span ℝ (range (gramSchmidt s · x)) := by
-  simpa only [image_univ.symm] using span_gramSchmidtNormed s Set.univ x
+  simpa only [image_univ.symm] using span_gramSchmidtNormed ..
 
 /-- `gramSchmidtNormed` applied to linearly independent sections at a point `x` produces
 sections which are linearly independent at `x`. -/
@@ -260,7 +257,7 @@ theorem gramSchmidtNormed_linearIndependent (h₀ : LinearIndependent ℝ (s · 
   simp [gramSchmidtNormed, InnerProductSpace.gramSchmidtNormed_linearIndependent h₀]
 
 lemma gramSchmidtNormed_apply_of_orthogonal (hs : Pairwise fun i j ↦ ⟪s i x, s j x⟫ = 0) {i : ι} :
-    gramSchmidtNormed s i x = (‖s i x‖⁻¹ : ℝ) • s i x := by
+    gramSchmidtNormed s i x = ‖s i x‖⁻¹ • s i x := by
   simp_rw [gramSchmidtNormed_coe, gramSchmidt_of_orthogonal hs i]
 
 /-- If the section values `s i x` are orthonormal, applying `gramSchmidtNormed` yields the same
