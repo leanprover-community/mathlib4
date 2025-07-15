@@ -477,7 +477,36 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
                 exact h_bracket_in_sl2
 
               · -- Case: χ.toLinear - α.1.toLinear ≠ 0 and χ.toLinear + α.1.toLinear ≠ 0
-                sorry
+                by_cases h_chi_zero : χ.toLinear = 0
+                · -- Case: χ.toLinear = 0, so x_χ is in H
+                  -- When χ = 0, we have x_χ ∈ genWeightSpace L 0 = H (the Cartan subalgebra)
+                  -- Since our ideal is a H-submodule, ⁅x_χ, m_α⁆ will be in the base of the ideal
+                  have hx_χ_in_H : x_χ ∈ H.toLieSubmodule := by
+                    -- x_χ ∈ genWeightSpace L χ where χ.toLinear = 0
+                    -- genWeightSpace L 0 = H.toLieSubmodule by rootSpace_zero_eq
+                    rw [← rootSpace_zero_eq K L H]
+                    -- Convert hx_χ using the fact that χ = 0
+                    convert hx_χ
+                    ext h
+                    simp only [Pi.zero_apply]
+                    -- When χ.toLinear = 0, we have χ h = 0
+                    have h_apply : (χ.toLinear : H → K) h = 0 := by
+                      rw [h_chi_zero]
+                      rfl
+                    -- χ and χ.toLinear are the same as functions, so reverse the equality
+                    exact h_apply.symm
+
+                  -- Apply supremum membership for α
+                  apply LieSubmodule.mem_iSup_of_mem α
+                  simp only [sl2SubalgebraOfRoot_as_H_submodule]
+
+                  -- Since sl2SubalgebraOfRoot_as_H_submodule is an H-submodule by construction,
+                  -- and x_χ ∈ H, we have ⁅x_χ, m_α⁆ ∈ sl2SubalgebraOfRoot α.2.2
+                  have hm_α_base : m_α ∈ sl2SubalgebraOfRoot α.2.2 := by
+                    simp only [sl2SubalgebraOfRoot_as_H_submodule] at hm_α
+                    exact hm_α
+                  exact sl2SubalgebraOfRoot_stable_under_H α.1 α.2.2 ⟨x_χ, hx_χ_in_H⟩ m_α hm_α_base
+                · sorry
           · -- Case: χ.toLinear ∉ q
             sorry -- Handle this case later
 
