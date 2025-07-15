@@ -71,9 +71,8 @@ theorem decomposition_Q (n q : ℕ) :
         simp only [(HigherFacesVanish.of_P q n).comp_Hσ_eq hnaq', q'.rev_eq hnaq', neg_neg]
         rfl
       · ext ⟨i, hi⟩
-        simp only [q', Nat.lt_succ_iff_lt_or_eq, Finset.mem_univ, Finset.mem_filter,
-          Finset.mem_erase, ne_eq, Fin.mk.injEq, true_and]
-        aesop
+        simp_rw [Finset.mem_erase, Finset.mem_filter_univ, q', ne_eq, Fin.mk.injEq]
+        omega
 
 variable (X)
 
