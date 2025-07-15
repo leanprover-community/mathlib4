@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Finset.Prod
+import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Order.Hom.WithTopBot
 import Mathlib.Order.Interval.Set.UnorderedInterval
 
