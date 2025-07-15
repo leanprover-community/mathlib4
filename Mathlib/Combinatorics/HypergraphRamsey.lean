@@ -70,19 +70,21 @@ open Set Function
 variable {α κ : Type*} [Finite κ] {f g : ℕ ↪o ℕ} {i j k n : ℕ}
 
 theorem orderEmbedding_fin_finite {α : Type*} [Preorder α] [LocallyFiniteOrderBot α] (k : ℕ)
-    (a : α) : Set.Finite {s : Fin (k+1) ↪o α | s ⊤ ≤ a} := by
-  refine Set.Finite.of_finite_image (f := fun s ↦ range s) ?_ fun _ _ _ _ ↦ Fin.orderEmbedding_eq
+    (a : α) : Set.Finite {s : Fin (k + 1) ↪o α | s ⊤ ≤ a} := by
+  refine Set.Finite.of_finite_image (f := fun s ↦ range s) ?_ fun _ _ _ _ ↦ by
+    rw [OrderEmbedding.range_inj]
+    exact id
   refine (finite_Iic a).finite_subsets.subset ?_
   rintro _ ⟨s, (hs : s ⊤ ≤ a), rfl⟩ _ ⟨i, rfl⟩
   exact (s.monotone le_top).trans hs
 
-theorem exists_enum_set_card (k : ℕ) : ∃ (e : ℕ ≃ (Fin (k+1) ↪o ℕ)), Monotone (e · ⊤) :=
-  exists_nat_equiv_monotone_comp (α := Fin (k+1) ↪o ℕ) (fun s ↦ s ⊤)
+theorem exists_enum_set_card (k : ℕ) : ∃ (e : ℕ ≃ (Fin (k + 1) ↪o ℕ)), Monotone (e · ⊤) :=
+  exists_nat_equiv_monotone_comp (α := Fin (k + 1) ↪o ℕ) (fun s ↦ s ⊤)
    fun m ↦ (orderEmbedding_fin_finite k m).subset fun _ (hs : _ = _) ↦ hs.le
 
 namespace Ramsey
 
-/-- A function `f` is `Stable` with respect to `s` if it is the identity on `s`.-/
+/-- A function `f` is `Stable` with respect to `s` if it is the identity on `s`. -/
 def Stable (s : Fin k ↪o ℕ) (f : ℕ ↪o ℕ) : Prop := ∀ i, f (s i) = s i
 
 theorem Stable.trans_eq {s : Fin k ↪o ℕ} (h : Stable s f) : s.trans f = s :=
@@ -91,15 +93,16 @@ theorem Stable.trans_eq {s : Fin k ↪o ℕ} (h : Stable s f) : s.trans f = s :=
 theorem Stable.apply_of_le {s : Fin k ↪o ℕ} (h : Stable s f) (i : Fin k) (hn : n ≤ s i) : f n = n :=
   Nat.orderEmbedding_apply_eq_self_of_le f (h _).le hn
 
-theorem Stable.mono {s t : Fin (k+1) ↪o ℕ} (h : Stable s f) (hts : t ⊤ ≤ s ⊤) : Stable t f :=
+theorem Stable.mono {s t : Fin (k + 1) ↪o ℕ} (h : Stable s f) (hts : t ⊤ ≤ s ⊤) : Stable t f :=
   fun _ ↦ h.apply_of_le _ ((t.monotone le_top).trans hts)
 
-/-- Given a colouring `c` of all `(k+1)`-sets in `ℕ`, a `k`-set `s` is right-monochromatic if
-  all sets obtained by adding an element above the maximum of `s` have the same colour.  -/
-def RightMonochromatic (c : (Fin (k+1) ↪o ℕ) → κ) (s : Fin k ↪o ℕ) : Prop :=
+/-- Given a colouring `c` of all `(k + 1)`-sets in `ℕ`, a `k`-set `s` is right-monochromatic if
+  all sets obtained by adding an element above the maximum of `s` have the same colour. -/
+def RightMonochromatic (c : (Fin (k + 1) ↪o ℕ) → κ) (s : Fin k ↪o ℕ) : Prop :=
   ∃ c₀, ∀ (x : ℕ) (hx : ∀ i, s i < x), c (appendRight s x hx) = c₀
 
-theorem rightMonochromatic_iff_forall {k : ℕ} {c : (Fin (k+1) ↪o ℕ) → κ} {s : Fin k ↪o ℕ} :
+omit [Finite κ] in
+theorem rightMonochromatic_iff_forall {k : ℕ} {c : (Fin (k + 1) ↪o ℕ) → κ} {s : Fin k ↪o ℕ} :
     RightMonochromatic c s ↔ ∀ ⦃x y⦄ (hx : ∀ i, s i < x) (hy : ∀ i, s i < y),
       c (appendRight s x hx) = c (appendRight s y hy) := by
   refine ⟨fun ⟨c₀, hc₀⟩ x y hxy hx ↦ by rw [hc₀, hc₀], fun h ↦ ?_⟩
@@ -108,29 +111,33 @@ theorem rightMonochromatic_iff_forall {k : ℕ} {c : (Fin (k+1) ↪o ℕ) → κ
   exact ⟨c <| appendRight s (s ⊤ + 1) (fun i ↦ Nat.lt_add_one_iff.2 (s.monotone le_top) ),
     fun x hx ↦ by rw [eq_comm,h]⟩
 
-theorem rightMonochromatic_iff_forall' {k : ℕ} {c : (Fin (k+1) ↪o ℕ) → κ} {s : Fin k ↪o ℕ} :
+omit [Finite κ] in
+theorem rightMonochromatic_iff_forall' {k : ℕ} {c : (Fin (k + 1) ↪o ℕ) → κ} {s : Fin k ↪o ℕ} :
     RightMonochromatic c s ↔ ∀ ⦃x y⦄ (hxy : x < y) (hx : ∀ i, s i < x),
       c (appendRight s x hx) = c (appendRight s y (fun i ↦ (hx i).trans hxy)) := by
   rw [rightMonochromatic_iff_forall]
   refine ⟨fun h x y hxy hx ↦ h hx fun i ↦ (hx i).trans hxy, fun h x y hx hy ↦ ?_⟩
-  obtain (hlt | hle) := lt_or_le x y
+  obtain (hlt | hle) := lt_or_ge x y
   · rw [h hlt]
-  obtain (rfl | hlt) := hle.eq_or_lt; rfl
+  obtain (rfl | hlt) := hle.eq_or_lt
+  · rfl
   rw [h hlt]
 
-theorem RightMonochromatic.trans_right {c : (Fin (k+1) ↪o ℕ) → κ} {s : Fin k ↪o ℕ}
+omit [Finite κ] in
+theorem RightMonochromatic.trans_right {c : (Fin (k + 1) ↪o ℕ) → κ} {s : Fin k ↪o ℕ}
     (h : RightMonochromatic c s) (hf : Stable s f) : RightMonochromatic c (s.trans f) :=
   let ⟨c₀, h⟩ := h
   ⟨c₀, fun _ _ ↦ by simp [hf.trans_eq, h]⟩
 
-theorem RightMonochromatic.trans_left {c : (Fin (k+1) ↪o ℕ) → κ} {s : Fin k ↪o ℕ}
+omit [Finite κ] in
+theorem RightMonochromatic.trans_left {c : (Fin (k + 1) ↪o ℕ) → κ} {s : Fin k ↪o ℕ}
     (h : RightMonochromatic c (s.trans g)) : RightMonochromatic (fun x ↦ c (x.trans g)) s :=
   let ⟨c₀, h⟩ := h
   ⟨c₀, fun x hx ↦ by simp [← h (g x) fun i ↦ g.strictMono (hx i)]⟩
 
-/-- Given a `k`-set `s` in `ℕ` and a colouring of the `(k+1)`-sets, we can find a subsequence
-  on which `s` is right-monochromatic.  -/
-theorem exists_rightMonochromatic_trans (c : (Fin (k+1) ↪o ℕ) → κ) (s : Fin k ↪o ℕ) :
+/-- Given a `k`-set `s` in `ℕ` and a colouring of the `(k + 1)`-sets, we can find a subsequence
+  on which `s` is right-monochromatic. -/
+theorem exists_rightMonochromatic_trans (c : (Fin (k + 1) ↪o ℕ) → κ) (s : Fin k ↪o ℕ) :
     ∃ (g : ℕ ↪o ℕ), Stable s g ∧ RightMonochromatic (fun x ↦ c (x.trans g)) s := by
   classical
   have hinf : Infinite {x // ∀ i, s i < x} := by
@@ -162,44 +169,48 @@ theorem exists_rightMonochromatic_trans (c : (Fin (k+1) ↪o ℕ) → κ) (s : F
   refine ⟨g, hls, ⟨c₀, fun x hx ↦ ?_⟩⟩
   simp only [appendRight_trans]
   have h_mem := mem_range_self (f := f) x
-  simp only [@Nat.orderEmbeddingOfSet_range _ hc₀.to_subtype _, mem_image, mem_preimage,
+  simp only [f, @Nat.orderEmbeddingOfSet_range _ hc₀.to_subtype _, mem_image, mem_preimage,
     mem_singleton_iff, Subtype.exists, exists_and_right, exists_eq_right] at h_mem
   obtain ⟨hx', h'⟩ := h_mem
-  simp [← h', hg_def, hg'_def, hx, hls.trans_eq]
+  rw [← h']
+  simp [hg_def, hg'_def, hx]
+  congr
+  rw [hls.trans_eq]
 
 /-- Choose a subsequence that cleans up a particular `k`-set `s`. -/
-noncomputable def refineAt (c : (Fin (k+1) ↪o ℕ) → κ) (s : Fin k ↪o ℕ) : ℕ ↪o ℕ :=
+noncomputable def refineAt (c : (Fin (k + 1) ↪o ℕ) → κ) (s : Fin k ↪o ℕ) : ℕ ↪o ℕ :=
   Classical.choose <| exists_rightMonochromatic_trans c s
 
-theorem refineAt_stable (c : (Fin (k+1) ↪o ℕ) → κ) (s : Fin k ↪o ℕ) :
+theorem refineAt_stable (c : (Fin (k + 1) ↪o ℕ) → κ) (s : Fin k ↪o ℕ) :
     Stable s (refineAt c s) :=
   (Classical.choose_spec <| exists_rightMonochromatic_trans c s).1
 
-theorem refineAt_rightMonochromatic (c : (Fin (k+1) ↪o ℕ) → κ) (s : Fin k ↪o ℕ) :
+theorem refineAt_rightMonochromatic (c : (Fin (k + 1) ↪o ℕ) → κ) (s : Fin k ↪o ℕ) :
     RightMonochromatic (fun x ↦ c (x.trans (refineAt c s))) s :=
   (Classical.choose_spec <| exists_rightMonochromatic_trans c s).2
 
 /-- The sequence of increasingly sparse subsequences whose limit will give the proof of
   Ramsey's theorem. Each subsequence is obtained from the previous one by cleaning up
-  a set in the sequence `ss`.  -/
-noncomputable def refs (c : (Fin (k+1) ↪o ℕ) → κ) (ss : ℕ → (Fin k ↪o ℕ)) (n : ℕ) : ℕ ↪o ℕ :=
+  a set in the sequence `ss`. -/
+noncomputable def refs (c : (Fin (k + 1) ↪o ℕ) → κ) (ss : ℕ → (Fin k ↪o ℕ)) (n : ℕ) : ℕ ↪o ℕ :=
   match n with
   | 0    => refineAt c (ss 0)
   | n+1  => let g := refs c ss n
         (refineAt (fun x ↦ c (x.trans g)) (ss (n+1))).trans g
 
-@[simp] theorem refs_succ (c : (Fin (k+1) ↪o ℕ) → κ) (ss : ℕ → (Fin k ↪o ℕ)) (n : ℕ) :
+@[simp] theorem refs_succ (c : (Fin (k + 1) ↪o ℕ) → κ) (ss : ℕ → (Fin k ↪o ℕ)) (n : ℕ) :
     refs c ss (n+1) =
       (refineAt (fun x ↦ c (x.trans (refs c ss n))) (ss (n+1))).trans (refs c ss n) := rfl
 
-theorem refs_stable (c : (Fin (k+2) ↪o ℕ) → κ) (ss : ℕ → (Fin (k+1) ↪o ℕ))
+theorem refs_stable (c : (Fin (k + 2) ↪o ℕ) → κ) (ss : ℕ → (Fin (k + 1) ↪o ℕ))
     (hss : Monotone (ss · ⊤)) {i j x : ℕ} (hij : i ≤ j) (hxi : x ≤ ss i ⊤) :
     refs c ss i x = refs c ss j x := by
-  induction' j, hij using Nat.le_induction with n hin ih; rfl
+  induction' j, hij using Nat.le_induction with n hin ih
+  · rfl
   rw [ih, refs_succ, RelEmbedding.coe_trans, comp_apply, EmbeddingLike.apply_eq_iff_eq,
     (refineAt_stable _ _).apply_of_le _ (hxi.trans (hss (hin.trans (Nat.le_add_right _ 1))))]
 
-theorem refs_monochromatic (c : (Fin (k+2) ↪o ℕ) → κ) {ss : ℕ → (Fin (k+1) ↪o ℕ)}
+theorem refs_monochromatic (c : (Fin (k + 2) ↪o ℕ) → κ) {ss : ℕ → (Fin (k + 1) ↪o ℕ)}
     (hss : Monotone (ss · ⊤)) (hij : i ≤ j) :
     RightMonochromatic (fun x ↦ c (RelEmbedding.trans x (refs c ss j))) (ss i) := by
   induction' j, hij using Nat.le_induction with n hin ih
@@ -207,15 +218,16 @@ theorem refs_monochromatic (c : (Fin (k+2) ↪o ℕ) → κ) {ss : ℕ → (Fin 
     · exact refineAt_rightMonochromatic c (ss 0)
     simp [refs]
     exact refineAt_rightMonochromatic (fun x ↦ c (RelEmbedding.trans x (refs c ss i))) _
-  simp only [refs, Nat.add_eq, add_zero]
+  simp only [refs]
   set c' := (fun x ↦ c (RelEmbedding.trans x (refs c ss n )))
   have h := (refineAt_stable c' (ss (n+1))).mono (hss <| hin.trans (Nat.le_add_right _ _))
   exact (ih.trans_right h).trans_left
 
-theorem exists_ub_fn (ss : ℕ ↪ (Fin (k+1) ↪o ℕ)) : ∃ b : ℕ →o ℕ, ∀ ⦃n j⦄, b n ≤ j → n < ss j ⊤ := by
-  have aux : ∀ m, {s : Fin (k+1) ↪o ℕ | s ⊤ ≤ m}.Finite := by
+theorem exists_ub_fn (ss : ℕ ↪ (Fin (k + 1) ↪o ℕ)) :
+    ∃ b : ℕ →o ℕ, ∀ ⦃n j⦄, b n ≤ j → n < ss j ⊤ := by
+  have aux : ∀ m, {s : Fin (k + 1) ↪o ℕ | s ⊤ ≤ m}.Finite := by
     refine fun m ↦ Set.Finite.of_finite_image (f := fun x ↦ range x) ?_
-      fun _ _ _ _ ↦ Fin.orderEmbedding_eq
+      fun _ _ _ _ ↦ by rw [OrderEmbedding.range_inj]; exact id
     refine (finite_Iic m).finite_subsets.subset ?_
     rintro _ ⟨s, (hs : s ⊤ ≤ m), rfl⟩ _ ⟨i, rfl⟩
     exact (s.monotone le_top).trans hs
@@ -224,17 +236,17 @@ theorem exists_ub_fn (ss : ℕ ↪ (Fin (k+1) ↪o ℕ)) : ∃ b : ℕ →o ℕ,
 
   refine ⟨⟨fun i ↦ (Finset.range (i+1)).sup t' +1 , fun m n h ↦ ?_⟩, ?_⟩
   · exact add_le_add_right (Finset.sup_mono (Finset.range_mono (add_le_add_right h _))) _
-  simp only [OrderHom.coe_mk, Finset.sup_le_iff, Finset.mem_range, Nat.add_one_le_iff]
+  simp only [OrderHom.coe_mk, Nat.add_one_le_iff]
   refine fun n j h ↦ ?_
   by_contra! h'
-  exact (ht' _ _ h').not_lt <| (Finset.le_sup (show n ∈ Finset.range (n+1) by simp)).trans_lt h
+  exact (ht' _ _ h').not_gt <| (Finset.le_sup (show n ∈ Finset.range (n+1) by simp)).trans_lt h
 
 /-- Choose a function `t` so that for all `i ≥ t n`, the set `ss i` has maximum above `n`. -/
-noncomputable def ub_fn (ss : ℕ ↪ (Fin (k+1) ↪o ℕ)) : ℕ →o ℕ :=
+noncomputable def ub_fn (ss : ℕ ↪ (Fin (k + 1) ↪o ℕ)) : ℕ →o ℕ :=
     Classical.choose <| exists_ub_fn ss
 
 /-- The subsequence to which the `refs c ss` converge pointwise. -/
-noncomputable def lim (c : (Fin (k+2) ↪o ℕ) → κ) {ss : ℕ ↪ (Fin (k+1) ↪o ℕ)}
+noncomputable def lim (c : (Fin (k + 2) ↪o ℕ) → κ) {ss : ℕ ↪ (Fin (k + 1) ↪o ℕ)}
     (hss : Monotone (ss · ⊤)) : ℕ ↪o ℕ :=
   OrderEmbedding.ofStrictMono (fun n ↦ refs c ss (ub_fn ss n) n)
   (fun i j hij ↦ by
@@ -242,11 +254,11 @@ noncomputable def lim (c : (Fin (k+2) ↪o ℕ) → κ) {ss : ℕ ↪ (Fin (k+1)
       ((Classical.choose_spec <| exists_ub_fn ss) rfl.le).le]
     apply OrderEmbedding.strictMono _ hij )
 
-theorem refs_eq_lim (c : (Fin (k+2) ↪o ℕ) → κ) {ss : ℕ ↪ (Fin (k+1) ↪o ℕ)}
+theorem refs_eq_lim (c : (Fin (k + 2) ↪o ℕ) → κ) {ss : ℕ ↪ (Fin (k + 1) ↪o ℕ)}
     (hss : Monotone (ss · ⊤)) (hi : ub_fn ss n ≤ i) : refs c ss i n = lim c hss n :=
   Eq.symm <| refs_stable c ss hss hi (((Classical.choose_spec <| exists_ub_fn ss) rfl.le).le)
 
-theorem lim_rightMonochromatic (c : (Fin (k+2) ↪o ℕ) → κ) (ss : ℕ ↪ (Fin (k+1) ↪o ℕ))
+theorem lim_rightMonochromatic (c : (Fin (k + 2) ↪o ℕ) → κ) (ss : ℕ ↪ (Fin (k + 1) ↪o ℕ))
     (hss : Monotone (ss · ⊤)) (n : ℕ) :
     RightMonochromatic (fun x ↦ c (RelEmbedding.trans x (lim c hss))) (ss n) := by
   rw [rightMonochromatic_iff_forall']
@@ -293,7 +305,7 @@ theorem exists_monochromatic_subsequence_tuple (c : (Fin k ↪o ℕ) → κ) :
     · refine ⟨refineAt c default, fun s ↦ ?_⟩
       rw [Subsingleton.elim s default]
       exact refineAt_rightMonochromatic c default
-    have aux : ∃ (e : ℕ ≃ ((Fin (k+1)) ↪o ℕ)), Monotone (e · ⊤) := exists_enum_set_card k
+    have aux : ∃ (e : ℕ ≃ ((Fin (k + 1)) ↪o ℕ)), Monotone (e · ⊤) := exists_enum_set_card k
     obtain ⟨e, he⟩ := aux
     exact ⟨lim c he, fun s ↦ by simpa using lim_rightMonochromatic c e he (e.symm s)⟩
 
@@ -344,7 +356,7 @@ theorem exists_strong_monochromatic_subsequence_finset {κ : Fin k → Sort*} [�
   simp_rw [Finset.image_image] at hg'
   exact hg'
 
-/-- A specialization of `Ramsey.strong_finset` where the colour type doesn't depend on size.-/
+/-- A specialization of `Ramsey.strong_finset` where the colour type doesn't depend on size. -/
 theorem exists_strong_monochromatic_subsequence_finset'
     (cs : (s : Finset ℕ) → (hs : s.card < k) → κ) : ∃ (c₀s : Fin k → κ) (g : ℕ ↪o ℕ),
     ∀ (s : Finset ℕ) (hs : s.card < k), cs (s.map g.toEmbedding) (by simpa) = c₀s ⟨s.card, hs⟩ := by
@@ -355,7 +367,7 @@ theorem exists_strong_monochromatic_subsequence_finset'
 
 /-- A version of Ramsey's theorem with no ordered types.
   Given a colouring of the `k`-sets in an infinite type `α` with finitely many colours,
-  there is an infinite `s : Set α` whose `k`-subsets all have the same colour.-/
+  there is an infinite `s : Set α` whose `k`-subsets all have the same colour. -/
 theorem exists_monochromatic_infinite_subset {α : Type*} [Infinite α]
     (c : (s : Finset α) → s.card = k → κ) : ∃ (a : Set α) (c₀ : κ), a.Infinite ∧ ∀ (s : Finset α)
     (hs : s.card = k), (s : Set α) ⊆ a → c s hs = c₀ := by
@@ -364,11 +376,23 @@ theorem exists_monochromatic_infinite_subset {α : Type*} [Infinite α]
   obtain ⟨c₀, g, h⟩ := exists_monochromatic_subsequence_finset (fun s hs ↦ c (s.map e) (by simpa))
   refine ⟨range (g.toEmbedding.trans e), c₀, ?_, fun s hs hsr ↦ ?_⟩
   · exact infinite_range_of_injective <| Function.Embedding.injective _
-  rw [← image_univ, Finset.subset_image_iff] at hsr
-  obtain ⟨s', -, rfl⟩ := hsr
-  rw [← h s' (by simpa [← Finset.map_eq_image] using hs)]
-  simp only [Finset.map_eq_image, RelEmbedding.coe_toEmbedding, Finset.image_image]
-  rfl
+  rw [← image_univ, subset_image_iff] at hsr
+  obtain ⟨s', -, hs'⟩ := hsr
+  have hs'₁ : s'.Finite := by
+    apply Set.Finite.of_finite_image (f := g.toEmbedding.trans e)
+    · rw [hs']
+      exact s.finite_toSet
+    · refine Injective.injOn ?_
+      apply Embedding.injective
+  have hs'₂ : Finset.map e (Finset.map g.toEmbedding hs'₁.toFinset) = s := by
+    apply Finset.coe_injective
+    rw [← hs']
+    simp [image_image]
+  have hs'₃ := congr(Finset.card $hs'₂)
+  have := h hs'₁.toFinset (by rw [← hs, ← hs'₃]; simp)
+  rw [← this]
+  congr
+  exact hs'₂.symm
 
 end statements
 
