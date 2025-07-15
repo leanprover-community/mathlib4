@@ -816,6 +816,101 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
               -- But this contradicts h_chi_in_q : χ.toLinear ∉ q
               rw [hi] at h_i_in_q
               exact h_chi_in_q h_i_in_q
+
+            have h_minus_bot : genWeightSpace L (χ.toLinear - α.1.toLinear) = ⊥ := by
+              by_contra h_ne_bot
+              -- If the weight space is non-trivial, then χ - α corresponds to a root
+              -- We'll use RootPairing.root_mem_submodule_iff_of_add_mem_invtSubmodule
+              -- to derive a contradiction
+
+              -- Step 1: Establish that we're working with the root system from IsKilling
+              let S := LieAlgebra.IsKilling.rootSystem H
+
+              -- Step 2: q defines an invariant root submodule
+              have q_invt : q ∈ S.invtRootSubmodule := by
+                rw [RootPairing.mem_invtRootSubmodule_iff]
+                exact hq
+
+              -- Step 3: Show that χ - α is a root (since its weight space is non-trivial)
+              have h_chi_minus_alpha_is_root : χ.toLinear - α.1.toLinear ∈ Set.range S.root := by
+                let γ : Weight K H L := {
+                  toFun := χ.toLinear - α.1.toLinear,
+                  genWeightSpace_ne_bot' := h_ne_bot
+                }
+                have hγ_nonzero : γ.IsNonZero := by
+                  intro h_zero
+                  apply w_minus
+                  have h_zero_eq : (γ.toLinear : H →ₗ[K] K) = 0 := by
+                    ext h
+                    simp [Weight.IsZero.eq h_zero]
+                  have h_def : γ.toLinear = χ.toLinear - α.1.toLinear := rfl
+                  rw [h_def] at h_zero_eq
+                  exact h_zero_eq
+                have γ_in_root : γ ∈ H.root := by
+                  simp [LieSubalgebra.root]
+                  exact hγ_nonzero
+                use ⟨γ, γ_in_root⟩
+                rfl
+
+              -- Step 4: Apply RootPairing.root_mem_submodule_iff_of_add_mem_invtSubmodule
+              -- We need indices i, j such that S.root i = χ.toLinear and S.root j = (-α.1).toLinear
+              -- and S.root i + S.root j ∈ range S.root
+              obtain ⟨i, hi⟩ : ∃ i, S.root i = χ.toLinear := by
+                have hχ_nonzero : χ.IsNonZero := by
+                  intro h_zero
+                  apply w_chi
+                  have h_zero_eq : (χ.toLinear : H →ₗ[K] K) = 0 := by
+                    ext h
+                    simp [Weight.IsZero.eq h_zero]
+                  exact h_zero_eq
+                have hχ_in_root : χ ∈ H.root := by
+                  simp [LieSubalgebra.root]
+                  exact hχ_nonzero
+                use ⟨χ, hχ_in_root⟩
+                rfl
+              obtain ⟨j, hj⟩ : ∃ j, S.root j = (-α.1).toLinear := by
+                -- (-α.1) is nonzero since α.1 is nonzero (from α.2.2)
+                have hα_neg_nonzero : (-α.1).IsNonZero := by
+                  -- This follows from α.2.2 : α.1.IsNonZero and negation properties
+                  sorry
+                have hα_neg_in_root : (-α.1) ∈ H.root := by
+                  -- (-α.1) ∈ H.root follows from (-α.1).IsNonZero
+                  -- This should work but there might be a definitional issue
+                  sorry
+                use ⟨(-α.1), hα_neg_in_root⟩
+                rfl
+
+              have h_sum_in_range : S.root i + S.root j ∈ Set.range S.root := by
+                rw [hi, hj]
+                have h_eq : χ.toLinear + (-α.1).toLinear = χ.toLinear - α.1.toLinear := by
+                  -- This follows from (-α.1).toLinear = -(α.1.toLinear)
+                  sorry
+                rw [h_eq]
+                exact h_chi_minus_alpha_is_root
+
+              -- Apply the root system lemma
+              let q_as_invt : S.invtRootSubmodule := ⟨q, q_invt⟩
+              have h_equiv : S.root i ∈ (q_as_invt : Submodule K (Dual K H)) ↔
+                            S.root j ∈ (q_as_invt : Submodule K (Dual K H)) :=
+                RootPairing.root_mem_submodule_iff_of_add_mem_invtSubmodule q_as_invt h_sum_in_range
+
+              -- We know S.root j = (-α.1).toLinear
+              -- Since α.1.toLinear ∈ q and q is closed under scalar multiplication by -1
+              have h_j_in_q : S.root j ∈ (q_as_invt : Submodule K (Dual K H)) := by
+                rw [hj]
+                have h_neg_smul : (-α.1).toLinear = (-1 : K) • α.1.toLinear := by
+                  -- This follows from negation of weights
+                  sorry
+                rw [h_neg_smul]
+                exact q.smul_mem (-1) α.2.1
+
+              -- Therefore S.root i = χ.toLinear ∈ q
+              have h_i_in_q : S.root i ∈ (q_as_invt : Submodule K (Dual K H)) := h_equiv.mpr h_j_in_q
+
+              -- But this contradicts h_chi_in_q : χ.toLinear ∉ q
+              rw [hi] at h_i_in_q
+              exact h_chi_in_q h_i_in_q
+
             sorry -- Requires detailed sl2 representation analysis for χ ∉ q case
 
         | zero =>
