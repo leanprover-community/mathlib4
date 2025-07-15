@@ -63,7 +63,7 @@ theorem map_birkhoffSum {F N : Type*} [AddCommMonoid N] [FunLike F M N] [AddMono
 
 /-- If a function `φ` is invariant under a function `f` (i.e., `φ ∘ f = φ`), then the Birkhoff sum
 of `φ` over `f` for `n` iterations is equal to `n • φ`. -/
-theorem birkhoffSum_of_invariant {f : α → α} {φ : α → M} (h : φ ∘ f = φ) (n : ℕ) :
+theorem birkhoffSum_of_comp_eq {f : α → α} {φ : α → M} (h : φ ∘ f = φ) (n : ℕ) :
     birkhoffSum f φ n = n • φ := by
   funext x
   suffices ∀ k, φ (f^[k] x) = φ x by simp [birkhoffSum, this]
