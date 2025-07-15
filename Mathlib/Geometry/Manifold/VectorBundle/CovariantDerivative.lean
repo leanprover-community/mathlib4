@@ -381,12 +381,12 @@ lemma add_one_form [∀ (x : M), IsTopologicalAddGroup (V x)]
     IsCovariantDerivativeOn F (fun X σ x ↦ f X σ x + A x (X x) (σ x)) s where
   addX X X' σ x hx := by
     simp [hf.addX]
-    module
+    abel
   smulX X σ g x hx := by
     simp [hf.smulX]
   addσ X σ σ' x hσ hσ' hx := by
     simp [hf.addσ X hσ hσ']
-    module
+    abel
   smul_const_σ X {σ a} x hx := by
     simp [hf.smul_const_σ]
   leibniz X σ g x hσ hg hx := by
@@ -555,7 +555,7 @@ variable (I M F) in
 @[simps]
 noncomputable def trivial : CovariantDerivative I F (Trivial M F) where
   toFun X s x := mfderiv I 𝓘(𝕜, F) s x (X x)
-  isCovariantDerivativeOn :=
+  isCovariantDerivativeOn := -- TODO use previous work
   { addX X X' σ x _ := by simp
     smulX X σ c' x _ := by simp
     addσ X σ σ' x hσ hσ' hx := by
@@ -788,14 +788,14 @@ lemma difference_apply [∀ x, FiniteDimensional ℝ (V x)] [∀ x, T2Space (V x
 
 -- The classification of real connections over a trivial bundle
 section classification
+
+variable [FiniteDimensional ℝ E] [FiniteDimensional ℝ F] [T2Space M] [IsManifold I ∞ M]
+
 /-- Classification of covariant derivatives over a trivial vector bundle: every connection
 is of the form `D + A`, where `D` is the trivial covariant derivative, and `A` a zeroth-order term
 -/
-lemma exists_endomorph [FiniteDimensional ℝ E] [FiniteDimensional ℝ F]
-    [T2Space M] [IsManifold I ∞ M]
-    (cov : (Π x : M, TangentSpace I x) → (M → F) → (M → F))
-    {s : Set M}
-    (hcov : IsCovariantDerivativeOn F cov s) :
+lemma exists_one_form {cov : (Π x : M, TangentSpace I x) → (M → F) → (M → F)}
+    {s : Set M} (hcov : IsCovariantDerivativeOn F cov s) :
     ∃ (A : (x : M) → TangentSpace I x →L[ℝ] F →L[ℝ] F),
     ∀ X : (x : M) → TangentSpace I x, ∀ σ : M → F, ∀ x ∈ s,
     MDiffAt (T% σ) x →
@@ -807,17 +807,58 @@ lemma exists_endomorph [FiniteDimensional ℝ E] [FiniteDimensional ℝ F]
   · module
   · assumption
 
-lemma _root_.CovariantDerivative.exists_endomorph [FiniteDimensional ℝ E] [FiniteDimensional ℝ F]
-    [T2Space M] [IsManifold I ∞ M]
+noncomputable def one_form {cov : (Π x : M, TangentSpace I x) → (M → F) → (M → F)}
+    {s : Set M} (hcov : IsCovariantDerivativeOn F cov s) :
+    Π x : M, TangentSpace I x →L[ℝ] F →L[ℝ] F :=
+  hcov.exists_one_form.choose
+
+lemma eq_one_form {cov : (Π x : M, TangentSpace I x) → (M → F) → (M → F)}
+    {s : Set M} (hcov : IsCovariantDerivativeOn F cov s)
+    {X : (x : M) → TangentSpace I x} {σ : M → F}
+    {x : M} (hσ : MDiffAt (T% σ) x) (hx : x ∈ s := by trivial) :
+    letI d : F := mfderiv I 𝓘(ℝ, F) σ x (X x)
+    cov X σ x = d + hcov.one_form x (X x) (σ x) :=
+  hcov.exists_one_form.choose_spec X σ x hx hσ
+
+lemma _root_.CovariantDerivative.exists_one_form
     (cov : CovariantDerivative I F (Bundle.Trivial M F)) :
     ∃ (A : (x : M) → TangentSpace I x →L[ℝ] F →L[ℝ] F),
     ∀ X : (x : M) → TangentSpace I x, ∀ σ : M → F, ∀ x,
     MDiffAt (T% σ) x →
     letI d : F := mfderiv I 𝓘(ℝ, F) σ x (X x)
     cov X σ x = d + A x (X x) (σ x) := by
-  simpa using cov.isCovariantDerivativeOn.exists_endomorph
+  simpa using cov.isCovariantDerivativeOn.exists_one_form
 
 end classification
+
+section projection_trivial_bundle
+
+variable [FiniteDimensional ℝ E] [FiniteDimensional ℝ F]
+    [T2Space M] [IsManifold I ∞ M]
+
+local notation "TM" => TangentSpace I
+
+-- instance (f : F) : CoeOut (TangentSpace 𝓘(ℝ, F) f) F :=
+--   ⟨fun x ↦ x⟩
+
+noncomputable
+def projection {cov : (Π x : M, TangentSpace I x) → (M → F) → (M → F)} {s : Set M}
+    (hcov : IsCovariantDerivativeOn F cov s) (x : M) (f : F) :
+    (TM x) × F →L[ℝ] F :=
+  .snd ℝ (TM x) F + (evalL ℝ F F f ∘L hcov.one_form x ∘L .fst ℝ (TM x) F)
+
+@[simp]
+lemma projection_apply {cov : (Π x : M, TangentSpace I x) → (M → F) → (M → F)} {s : Set M}
+    (hcov : IsCovariantDerivativeOn F cov s) (x : M) (f : F) (v : TM x) (w : F) :
+  hcov.projection x f (v, w) = w + hcov.one_form x v f := rfl
+
+lemma cov_eq_proj {cov : (Π x : M, TangentSpace I x) → (M → F) → (M → F)} {s : Set M}
+    (hcov : IsCovariantDerivativeOn F cov s) (X : Π x : M, TM x) (σ : M → F)
+    {x : M} (hσ : MDiffAt (T% σ) x) (hx : x ∈ s := by trivial) :
+    cov X σ x = hcov.projection x (σ x) (X x, mfderiv I 𝓘(ℝ, F) σ x (X x)) := by
+  simpa using hcov.eq_one_form hσ
+
+end projection_trivial_bundle
 
 end IsCovariantDerivativeOn
 
