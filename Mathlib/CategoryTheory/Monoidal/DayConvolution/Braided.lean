@@ -197,28 +197,171 @@ lemma symmetry [DayConvolution F G] [DayConvolution G F] :
 
 end
 
+end DayConvolution
+
 section
 
 open LawfulDayConvolutionMonoidalCategoryStruct
 
+/-- The data of a `LawfulDayConvolutionBraidedMonoidalCategoryStruct` adds
+the data of a braiding isomorphism to a
+`LawfulDayConvolutionMonoidalCategoryStruct C V D`, provided `C` and `V` are
+braided. This braiding is required to behave well with respect to the
+universal maps that exhibits (the realization as a functor `C ⥤ V` of)
+`d ⊗ d'` as a Day convolution, in a way that makes it equal to
+`DayConvolution.braiding (ι C V D|>.obj d) (ι C V D|>.obj d')`. -/
 class LawfulDayConvolutionBraidedMonoidalCategoryStruct
     (C : Type u₁) [Category.{v₁} C] (V : Type u₂) [Category.{v₂} V]
     [MonoidalCategory C] [BraidedCategory C]
     [MonoidalCategory V] [BraidedCategory V]
     (D : Type u₃) [Category.{v₃} D] [MonoidalCategoryStruct D]
     [LawfulDayConvolutionMonoidalCategoryStruct C V D] where
+  /-- The braiding isomorphism. -/
   braiding (C) (V) (d d' : D) : d ⊗ d' ≅ d' ⊗ d
-  unit_app_braiding_hom_app (d d' : D) (x y : C) :
+  unit_app_braiding_hom_app (C) (V) (d d' : D) (x y : C) :
     (convolutionExtensionUnit C V d d').app (x, y) ≫
-      ((ι C V D).map (braiding d d').hom).app (x ⊗ y) =
+      (ι C V D|>.map (braiding d d').hom).app (x ⊗ y) =
     (β_ _ _).hom ≫ (convolutionExtensionUnit C V d' d).app (_, _) ≫
       ((ι C V D).obj (d' ⊗ d)).map (β_ _ _).hom
-  unit_app_braiding_inv_app (d d' : D) (x y : C) :
-    (convolutionExtensionUnit C V d d').app (x, y) ≫
-      ((ι C V D).map (braiding d d').hom).app (x ⊗ y) =
-    (β_ _ _).hom ≫ (convolutionExtensionUnit C V d' d).app (_, _) ≫
-      ((ι C V D).obj (d' ⊗ d)).map (β_ _ _).hom
+
+namespace LawfulDayConvolutionBraidedMonoidalCategoryStruct
+
+attribute [reassoc (attr := simp)] unit_app_braiding_hom_app
+
+section
+
+variable (C : Type u₁) [Category.{v₁} C] (V : Type u₂) [Category.{v₂} V]
+    [MonoidalCategory C] [BraidedCategory C]
+    [MonoidalCategory V] [BraidedCategory V]
+    {D : Type u₃} [Category.{v₃} D] [MonoidalCategoryStruct D]
+    [LawfulDayConvolutionMonoidalCategoryStruct C V D]
+
+@[reassoc (attr := simp)]
+lemma unit_app_braiding_inv_app
+    [LawfulDayConvolutionBraidedMonoidalCategoryStruct C V D]
+    (d d' : D) (x y : C) :
+    (convolutionExtensionUnit C V d' d).app (x, y) ≫
+      ((ι C V D).map (braiding C V d d').inv).app (x ⊗ y) =
+    (β_ _ _).inv ≫ (convolutionExtensionUnit C V d d').app (_, _) ≫
+      ((ι C V D).obj (d ⊗ d')).map (β_ _ _).inv := by
+  rw [← cancel_mono (ι C V D|>.map (braiding C V d d').hom|>.app (x ⊗ y))]
+  simp
+
+attribute [local instance] convolution in
+lemma ι_map_braiding_hom
+    [LawfulDayConvolutionBraidedMonoidalCategoryStruct C V D]
+    (d d' : D) :
+    (ι C V D).map (braiding C V d d').hom =
+    (DayConvolution.braiding (ι C V D|>.obj d) (ι C V D|>.obj d')).hom := by
+  apply DayConvolution.corepresentableBy
+    (ι C V D|>.obj d) (ι C V D|>.obj d')|>.homEquiv.injective
+  dsimp
+  ext ⟨x, y⟩
+  dsimp
+  simp only [DayConvolution.unit_app_braiding_hom_app,
+    Functor.comp_obj, tensor_obj]
+  slice_lhs 1 2 => dsimp [DayConvolution.unit]
+  simp only [unit_app_braiding_hom_app, Functor.comp_obj, tensor_obj,
+    Iso.cancel_iso_hom_left]
+  rfl
+
+attribute [local instance] convolution in
+lemma ι_map_braiding_inv
+    [LawfulDayConvolutionBraidedMonoidalCategoryStruct C V D]
+    (d d' : D) :
+    (ι C V D).map (braiding C V d d').inv =
+    (DayConvolution.braiding (ι C V D|>.obj d) (ι C V D|>.obj d')).inv := by
+  apply IsIso.inv_eq_inv.mp
+  simp only [← Functor.map_inv, IsIso.Iso.inv_inv]
+  exact ι_map_braiding_hom C V d d'
+
+attribute [local instance] convolution in
+/-- A data-creating definition that takes an existing
+`LawfulDayConvolutionMonoidalCategoryStruct` and puts the
+"canonical" braiding induced from `DayConvolution.braiding`. -/
+noncomputable def mkOfLawfulDayConvolutionMonoidalCategoryStruct
+    [(ι C V D).Full] :
+    LawfulDayConvolutionBraidedMonoidalCategoryStruct C V D where
+  braiding d d' := (ι C V D).preimageIso <|
+    DayConvolution.braiding (ι C V D|>.obj d) (ι C V D|>.obj d')
+  unit_app_braiding_hom_app d d' x y := by
+    simpa [-DayConvolution.unit_app_braiding_hom_app] using
+      DayConvolution.unit_app_braiding_hom_app
+        (ι C V D|>.obj d) (ι C V D|>.obj d') x y
 
 end
 
-end CategoryTheory.MonoidalCategory.DayConvolution
+section
+
+variable (C : Type u₁) [Category.{v₁} C] (V : Type u₂) [Category.{v₂} V]
+    [MonoidalCategory C] [MonoidalCategory V]
+    (D : Type u₃) [Category.{v₃} D] [MonoidalCategory D]
+    [LawfulDayConvolutionMonoidalCategoryStruct C V D]
+
+attribute [local instance] convolution convolution₂ convolution₂' in
+/-- Promote the monoidal structure induced by a
+`LawfulDayConvolutionMonoidalCategoryStruct` to a braided monoidal category
+structure. -/
+def braided [BraidedCategory C] [BraidedCategory V]
+    [LawfulDayConvolutionBraidedMonoidalCategoryStruct C V D]
+    [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
+      (CostructuredArrow (tensor C) d) (tensorLeft v)]
+    [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
+      (CostructuredArrow (tensor C) d) (tensorRight v)] :
+    BraidedCategory D :=
+  { braiding d d' := braiding C V d d'
+    braiding_naturality_left f d := by
+      apply (ι C V D).map_injective
+      dsimp
+      simp [Functor.map_comp, ← id_tensorHom, ← tensorHom_id,
+        ι_map_tensorHom_hom_eq_tensorHom, Functor.map_id,
+        ι_map_braiding_hom]
+    braiding_naturality_right _ _ _ f := by
+      apply (ι C V D).map_injective
+      dsimp
+      simp [Functor.map_comp, ← id_tensorHom, ← tensorHom_id,
+        ι_map_tensorHom_hom_eq_tensorHom, Functor.map_id,
+        ι_map_braiding_hom]
+    hexagon_reverse d d' d'' := by
+      apply (ι C V D).map_injective
+      dsimp
+      simp only [Functor.map_comp, ← id_tensorHom, ← tensorHom_id,
+        ι_map_tensorHom_hom_eq_tensorHom,
+        ι_map_associator_inv_eq_associator_inv, Functor.map_id,
+        ι_map_braiding_hom]
+      exact DayConvolution.hexagon_reverse
+        (ι C V D|>.obj d) (ι C V D|>.obj d') (ι C V D|>.obj d'')
+    hexagon_forward d d' d'' := by
+      apply (ι C V D).map_injective
+      dsimp
+      simp only [Functor.map_comp, ← id_tensorHom, ← tensorHom_id,
+        ι_map_tensorHom_hom_eq_tensorHom,
+        ι_map_associator_hom_eq_associator_hom, Functor.map_id,
+        ι_map_braiding_hom]
+      exact DayConvolution.hexagon_forward
+        (ι C V D|>.obj d) (ι C V D|>.obj d') (ι C V D|>.obj d'') }
+
+/-- promote `braided` to a symmetric monoidal category structure
+when `C` and `V` are symmetric monoidal. -/
+def symmetric [SymmetricCategory V] [SymmetricCategory C]
+    [LawfulDayConvolutionBraidedMonoidalCategoryStruct C V D]
+    [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
+      (CostructuredArrow (tensor C) d) (tensorLeft v)]
+    [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
+      (CostructuredArrow (tensor C) d) (tensorRight v)] :
+    SymmetricCategory D where
+  __ := braided C V D
+  symmetry x y := by
+      change (braiding C V x y).hom ≫ (braiding C V y x).hom = _
+      apply (ι C V D).map_injective
+      simp only [Functor.map_comp, ι_map_braiding_hom, DayConvolution.symmetry,
+        Functor.map_id]
+      rfl
+
+end
+
+end LawfulDayConvolutionBraidedMonoidalCategoryStruct
+
+end
+
+end CategoryTheory.MonoidalCategory

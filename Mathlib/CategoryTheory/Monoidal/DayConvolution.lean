@@ -817,6 +817,17 @@ lemma ι_map_associator_hom_eq_associator_hom (d d' d'')
     DayConvolution.associator_hom_unit_unit]
   exact associator_hom_unit_unit V _ _ _ _ _ _
 
+lemma ι_map_associator_inv_eq_associator_inv (d d' d'')
+    [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
+      (CostructuredArrow (tensor C) d) (tensorLeft v)]
+    [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
+      (CostructuredArrow (tensor C) d) (tensorRight v)] :
+    (ι C V D).map (α_ d d' d'').inv =
+    (DayConvolution.associator
+      (ι C V D|>.obj d) (ι C V D|>.obj d') (ι C V D|>.obj d'')).inv := by
+  apply IsIso.inv_eq_inv.mp
+  simp [← Functor.map_inv, ι_map_associator_hom_eq_associator_hom]
+
 /-- In a `LawfulDayConvolutionMonoidalCategoryStruct`, `ι.obj (𝟙_ D)`
 is a day convolution unit`. -/
 def convolutionUnit : DayConvolutionUnit (ι C V D|>.obj <| 𝟙_ D) where
