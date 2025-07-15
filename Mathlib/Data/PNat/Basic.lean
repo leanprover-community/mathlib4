@@ -158,7 +158,7 @@ def caseStrongInductionOn {p : ℕ+ → Sort*} (a : ℕ+) (hz : p 1)
   apply strongInductionOn a
   rintro ⟨k, kprop⟩ hk
   rcases k with - | k
-  · exact (lt_irrefl 0 kprop).elim
+  · order
   rcases k with - | k
   · exact hz
   exact hi ⟨k.succ, Nat.succ_pos _⟩ fun m hm => hk _ (Nat.lt_succ_iff.2 hm)
@@ -169,7 +169,7 @@ not only to `Prop`. -/
 def recOn (n : ℕ+) {p : ℕ+ → Sort*} (one : p 1) (succ : ∀ n, p n → p (n + 1)) : p n := by
   rcases n with ⟨n, h⟩
   induction n with
-  | zero => exact absurd h (by decide)
+  | zero => order
   | succ n IH =>
     rcases n with - | n
     · exact one

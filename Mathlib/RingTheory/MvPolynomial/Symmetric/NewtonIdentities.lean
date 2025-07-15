@@ -175,7 +175,7 @@ private theorem sum_filter_pairs_eq_sum_filter_antidiagonal_powersetCard_sum (k 
 private theorem disjoint_filter_pairs_lt_filter_pairs_eq (k : ℕ) :
     Disjoint {t ∈ pairs σ k | #t.1 < k} {t ∈ pairs σ k | #t.1 = k} := by
   rw [disjoint_filter]
-  exact fun _ _ h1 h2 ↦ lt_irrefl _ (h2.symm.subst h1)
+  order
 
 private theorem disjUnion_filter_pairs_eq_pairs (k : ℕ) :
     disjUnion {t ∈ pairs σ k | #t.1 < k} {t ∈ pairs σ k | #t.1 = k}

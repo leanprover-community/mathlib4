@@ -33,8 +33,7 @@ theorem Ideal.IsNilpotent.induction_on (hI : IsNilpotent I)
     rw [← Ideal.zero_eq_bot, zero_pow two_ne_zero]
   rcases n with - | n
   · rw [pow_zero, Ideal.one_eq_top] at hI
-    haveI := subsingleton_of_bot_eq_top hI.symm
-    exact (hI' (Subsingleton.elim _ _)).elim
+    order
   rcases n with - | n
   · rw [pow_one] at hI
     exact (hI' hI).elim

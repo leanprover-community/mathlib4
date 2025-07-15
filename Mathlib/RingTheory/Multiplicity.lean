@@ -435,7 +435,7 @@ theorem emultiplicity_le_emultiplicity_iff {c d : β} :
       next h_2 =>
         simp_all only [cast_le, le_find_iff, lt_find_iff, Decidable.not_not, le_refl,
           not_true_eq_false, not_false_eq_true, implies_true]
-      next h_2 => simp_all only [not_exists, Decidable.not_not, le_top]
+      order
     next h_1 =>
       simp_all only [not_exists, Decidable.not_not, not_true_eq_false, top_le_iff,
         dite_eq_right_iff, ENat.coe_ne_top, imp_false, not_false_eq_true, implies_true]

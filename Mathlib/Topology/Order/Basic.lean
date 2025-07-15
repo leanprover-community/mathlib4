@@ -697,7 +697,7 @@ instance instIsCountablyGenerated_atTop [OrderTopology α] [SecondCountableTopol
         hb.exists_subset_of_mem_open hy isOpen_Ioi
       have I : a ⟨s, sb⟩ ≤ x := hx (mem_range_self _)
       have J : x < a ⟨s, sb⟩ := hs (ha ⟨s, sb⟩)
-      exact lt_irrefl _ (I.trans_lt J)
+      order
     rw [this]
     exact ⟨_, (countable_range _).image _, rfl⟩
 

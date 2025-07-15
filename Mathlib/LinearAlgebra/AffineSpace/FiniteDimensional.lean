@@ -194,8 +194,7 @@ theorem affineIndependent_iff_le_finrank_vectorSpan [Fintype ι] (p : ι → P) 
     AffineIndependent k p ↔ n ≤ finrank k (vectorSpan k (Set.range p)) := by
   rw [affineIndependent_iff_finrank_vectorSpan_eq k p hc]
   constructor
-  · rintro rfl
-    rfl
+  · order
   · exact fun hle => le_antisymm (finrank_vectorSpan_range_le k p hc) hle
 
 /-- `n + 2` points are affinely independent if and only if their

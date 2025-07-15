@@ -221,8 +221,7 @@ theorem lfpApprox_le_of_mem_fixedPoints {a : α}
       rw [← h_j, ← h_a]
       exact f.monotone' (IH j h_j_lt)
     | inr h_y =>
-      rw [h_y]
-      exact h_le_init
+      order
 
 /-- The approximation sequence converges at the successor of the domain's cardinality
 to the least fixed point if starting from `⊥` -/

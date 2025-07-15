@@ -166,7 +166,7 @@ lemma linearIndependent :
   obtain ⟨n, hn⟩ : ∃ n, (s.sup fun i ↦ (g i • S i).degree) = n := exists_eq'
   refine degree_ne_bot.mp ?_ eqzero |>.elim
   have hsum := degree_sum_eq_of_disjoint _ s hpairwise
-  exact hsum.trans hn |>.trans_ne <| (ne_of_ne_of_eq (hsupzero ·.symm) hn).symm
+  order
 
 variable (hCoeff : ∀ i, IsUnit (S i).leadingCoeff)
 

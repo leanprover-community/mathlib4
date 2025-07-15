@@ -593,8 +593,7 @@ lemma pairwise_disjoint_supp_connectedComponent (G : SimpleGraph V) :
   simp_rw [Set.disjoint_left]
   intro _ _ h a hsx hsy
   rw [ConnectedComponent.mem_supp_iff] at hsx hsy
-  rw [hsx] at hsy
-  exact h hsy
+  order
 
 -- TODO: Extract as lemma about general equivalence relation
 lemma iUnion_connectedComponentSupp (G : SimpleGraph V) :

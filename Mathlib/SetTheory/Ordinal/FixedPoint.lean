@@ -442,8 +442,7 @@ theorem nfp_mul_eq_opow_omega0 {a b : Ordinal} (hb : 0 < b) (hba : b ≤ a ^ ω)
     nfp (a * ·) b = a ^ ω := by
   rcases eq_zero_or_pos a with ha | ha
   · rw [ha, zero_opow omega0_ne_zero] at hba ⊢
-    simp_rw [Ordinal.le_zero.1 hba, zero_mul]
-    exact nfp_zero_left 0
+    order
   apply le_antisymm
   · apply nfp_le_fp (isNormal_mul_right ha).monotone hba
     rw [← opow_one_add, one_add_omega0]
@@ -472,7 +471,7 @@ theorem mul_eq_right_iff_opow_omega0_dvd {a b : Ordinal} : a * b = b ↔ a ^ ω 
     rcases eq_zero_or_opow_omega0_le_of_mul_eq_right hab with hab | hab
     · exact hab
     refine (not_lt_of_ge hab (mod_lt b (opow_ne_zero ω ?_))).elim
-    rwa [← Ordinal.pos_iff_ne_zero]
+    order
   obtain ⟨c, hc⟩ := h
   rw [hc, ← mul_assoc, ← opow_one_add, one_add_omega0]
 

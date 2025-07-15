@@ -210,9 +210,7 @@ theorem ramificationIdx_eq_factors_count [DecidableEq (Ideal S)]
 theorem ramificationIdx_ne_zero (hp0 : map f p ≠ ⊥) (hP : P.IsPrime) (le : map f p ≤ P) :
     ramificationIdx f p P ≠ 0 := by
   classical
-  have hP0 : P ≠ ⊥ := by
-    rintro rfl
-    exact hp0 (le_bot_iff.mp le)
+  have hP0 : P ≠ ⊥ := by order
   have hPirr := (Ideal.prime_of_isPrime hP0 hP).irreducible
   rw [IsDedekindDomain.ramificationIdx_eq_normalizedFactors_count hp0 hP hP0]
   obtain ⟨P', hP', P'_eq⟩ :=

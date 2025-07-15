@@ -276,7 +276,7 @@ theorem exists_sup_ge [SemilatticeSup β] [OrderBot β] [WellFoundedGT β] (f : 
   refine ⟨t, fun a ↦ ?_⟩
   classical
   have := ht (f a ⊔ t.sup f) ⟨insert a t, by simp⟩
-  rwa [GT.gt, right_lt_sup, not_not] at this
+  order
 
 theorem exists_sup_eq_iSup [CompleteLattice β] [WellFoundedGT β] (f : α → β) :
     ∃ t : Finset α, t.sup f = ⨆ a, f a :=
@@ -741,8 +741,7 @@ lemma sup'_eq_of_forall {a : α} (h : ∀ b ∈ s, f b = a) : s.sup' H f = a :=
 theorem sup'_const (a : α) : s.sup' H (fun _ => a) = a := by
   apply le_antisymm
   · apply sup'_le
-    intros
-    exact le_rfl
+    order
   · apply le_sup' (fun _ => a) H.choose_spec
 
 theorem sup'_union [DecidableEq β] {s₁ s₂ : Finset β} (h₁ : s₁.Nonempty) (h₂ : s₂.Nonempty)

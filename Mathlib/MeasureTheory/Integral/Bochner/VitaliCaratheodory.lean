@@ -281,7 +281,7 @@ theorem exists_lt_lowerSemicontinuous_integral_gt_nnreal [SigmaFinite μ] (f : �
   refine ⟨g, f_lt_g, gcont, g_lt_top, ?_, ?_⟩
   · refine ⟨gcont.measurable.ennreal_toReal.aemeasurable.aestronglyMeasurable, ?_⟩
     simp only [hasFiniteIntegral_iff_norm, Real.norm_eq_abs, abs_of_nonneg ENNReal.toReal_nonneg]
-    convert gint_ne.lt_top using 1
+    order
   · rw [integral_eq_lintegral_of_nonneg_ae, integral_eq_lintegral_of_nonneg_ae]
     · calc
         ENNReal.toReal (∫⁻ a : α, ENNReal.ofReal (g a).toReal ∂μ) =

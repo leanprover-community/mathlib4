@@ -188,7 +188,7 @@ theorem lintegral_eq_lintegral_of_isPiSystem
     · refine ne_of_lt ?_
       calc ∫⁻ x in t, g x ∂μ
       _ ≤ ∫⁻ x, g x ∂μ := setLIntegral_le_lintegral t _
-      _ < ∞ := by rw [← h_univ]; exact hf_int.lt_top
+      _ < ∞ := by order
     · refine ne_of_lt ?_
       calc ∫⁻ x in t, f x ∂μ
       _ ≤ ∫⁻ x, f x ∂μ := setLIntegral_le_lintegral t _

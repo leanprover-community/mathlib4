@@ -260,9 +260,7 @@ lemma predAbove_right_monotone (p : Fin n) : Monotone p.predAbove := fun a b H =
   split_ifs with ha hb hb
   all_goals simp only [le_iff_val_le_val, coe_pred]
   · exact pred_le_pred H
-  · calc
-      _ ≤ _ := Nat.pred_le _
-      _ ≤ _ := H
+  · order
   · exact le_pred_of_lt ((not_lt.mp ha).trans_lt hb)
   · exact H
 

@@ -352,7 +352,7 @@ theorem MeromorphicOn.extract_zeros_poles_log {f g : 𝕜 → E} {D : Function.l
       · assumption
       · simp only [h, norm_zero] at hy
         linarith
-      · simp only [h, lt_self_iff_false] at hy
+      · order
       · simp only [h, lt_neg_self_iff] at hy
         linarith
     · simp_all [Pi.zero_def]

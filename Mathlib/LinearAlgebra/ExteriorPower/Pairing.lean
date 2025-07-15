@@ -121,7 +121,7 @@ lemma pairingDual_apply_apply_eq_one_zero (a b : Fin n ↪o ι) (h : a ≠ b) :
     simp only [Equiv.symm_apply_apply]
     by_contra! h
     obtain rfl : i = j := σ.injective (le_antisymm hij (hσ h.le))
-    simp only [lt_self_iff_false] at h
+    order
   obtain rfl : σ = 1 := by
     ext i : 1
     exact DFunLike.congr_fun (Subsingleton.elim (σ.toOrderIso hσ hσ') (OrderIso.refl _)) i

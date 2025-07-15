@@ -487,8 +487,7 @@ theorem Monic.mul_left_ne_zero (hp : Monic p) {q : R[X]} (hq : q ≠ 0) : q * p 
   rw [Ne, ← degree_eq_bot, hp.degree_mul, WithBot.add_eq_bot, not_or, degree_eq_bot]
   refine ⟨hq, ?_⟩
   rw [← hp.degree_le_zero_iff_eq_one, not_le] at h
-  refine (lt_trans ?_ h).ne'
-  simp
+  order
 
 theorem Monic.mul_right_ne_zero (hp : Monic p) {q : R[X]} (hq : q ≠ 0) : p * q ≠ 0 := by
   by_cases h : p = 1
@@ -497,8 +496,7 @@ theorem Monic.mul_right_ne_zero (hp : Monic p) {q : R[X]} (hq : q ≠ 0) : p * q
     degree_eq_bot]
   refine ⟨hq, ?_⟩
   rw [← hp.degree_le_zero_iff_eq_one, not_le] at h
-  refine (lt_trans ?_ h).ne'
-  simp
+  order
 
 theorem Monic.mul_natDegree_lt_iff (h : Monic p) {q : R[X]} :
     (p * q).natDegree < p.natDegree ↔ p ≠ 1 ∧ q = 0 := by

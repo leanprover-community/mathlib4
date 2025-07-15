@@ -95,5 +95,5 @@ lemma support_of_supportDim_eq_zero [IsLocalRing R]
         Subtype.mk_lt_mk, exists_prop]
       use p
       simpa [hp] using ⟨_, IsLocalRing.closedPoint_mem_support R N, this⟩
-    exact (ne_of_lt this) dim.symm
+    order
   · simpa using IsLocalRing.closedPoint_mem_support R N

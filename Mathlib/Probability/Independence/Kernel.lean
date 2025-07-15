@@ -938,8 +938,7 @@ lemma iIndepFun.comp {β γ : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)
   refine fun t s hs ↦ ?_
   have := h t (sets := fun i ↦ g i ⁻¹' (s i)) (fun i a ↦ hg i (hs i a))
   filter_upwards [this] with a ha
-  simp_rw [Set.preimage_comp]
-  exact ha
+  order
 
 lemma iIndepFun.comp₀ {β γ : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
     {mγ : ∀ i, MeasurableSpace (γ i)} {f : ∀ i, Ω → β i}

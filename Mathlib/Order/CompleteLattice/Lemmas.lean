@@ -207,13 +207,13 @@ instance instCompleteLinearOrder : CompleteLinearOrder PUnit where
   __ := instLinearOrder
   sSup := fun _ => unit
   sInf := fun _ => unit
-  le_sSup := by intros; trivial
-  sSup_le := by intros; trivial
-  sInf_le := by intros; trivial
-  le_sInf := by intros; trivial
+  le_sSup := by order
+  sSup_le := by order
+  sInf_le := by order
+  le_sInf := by order
   le_himp_iff := by intros; trivial
-  himp_bot := by intros; trivial
+  himp_bot := by order
   sdiff_le_iff := by intros; trivial
-  top_sdiff := by intros; trivial
+  top_sdiff := by order
 
 end PUnit

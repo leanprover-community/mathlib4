@@ -55,8 +55,7 @@ lemma disjoint_memPartition (f : ℕ → Set α) (n : ℕ) {u v : Set α}
   | zero =>
     intro u v hu hv huv
     simp only [memPartition_zero, mem_singleton_iff] at hu hv
-    rw [hu, hv] at huv
-    exact absurd rfl huv
+    order
   | succ n ih =>
     intro u v hu hv huv
     rw [memPartition_succ] at hu hv

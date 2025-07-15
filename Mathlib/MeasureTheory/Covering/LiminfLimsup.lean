@@ -107,7 +107,7 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le_aux (p : ℕ → Prop) {s
     replace hη' : 1 ≤ η := by
       simpa only [ENNReal.one_le_coe_iff] using
         le_of_tendsto (hd' w (fun j => r₁ (f j)) hr <| Eventually.of_forall hw') hη'
-    exact (lt_self_iff_false _).mp (lt_of_lt_of_le hη hη')
+    order
   refine ⟨1 - C⁻¹, tsub_lt_self zero_lt_one (inv_pos.mpr hC), ?_⟩
   replace hC : C ≠ 0 := ne_of_gt hC
   let b : ℕ → Set α := fun j => closedBall (w j) (M * r₁ (f j))
@@ -161,7 +161,7 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le (p : ℕ → Prop) {s : �
   replace hMr : ∀ᶠ i in atTop, M * R₁ i ≤ R₂ i := by
     refine hMr.mono fun i hi ↦ ?_
     rw [mul_max_of_nonneg _ _ hM.le, mul_zero]
-    exact max_le_max (le_refl 0) hi
+    order
   simp_rw [← cthickening_max_zero (r₁ _), ← cthickening_max_zero (r₂ _)]
   rcases le_or_gt 1 M with hM' | hM'
   · apply HasSubset.Subset.eventuallyLE

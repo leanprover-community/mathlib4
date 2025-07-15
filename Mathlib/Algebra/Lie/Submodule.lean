@@ -116,7 +116,7 @@ theorem coe_toSet_mk (S : Set M) (h₁ h₂ h₃ h₄) :
   rfl
 
 theorem toSubmodule_mk (p : Submodule R M) (h) :
-    (({ p with lie_mem := h } : LieSubmodule R L M) : Submodule R M) = p := by cases p; rfl
+    (({ p with lie_mem := h } : LieSubmodule R L M) : Submodule R M) = p := by order
 
 @[deprecated (since := "2024-12-30")] alias coe_toSubmodule_mk := toSubmodule_mk
 

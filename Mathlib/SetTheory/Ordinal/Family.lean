@@ -668,8 +668,7 @@ theorem lsub_eq_zero_iff {ι : Type u} (f : ι → Ordinal.{max u v}) :
     lsub.{_, v} f = 0 ↔ IsEmpty ι := by
   refine ⟨fun h => ⟨fun i => ?_⟩, fun h => @lsub_empty _ h _⟩
   have := @lsub_pos.{_, v} _ ⟨i⟩ f
-  rw [h] at this
-  exact this.false
+  order
 
 set_option linter.deprecated false in
 @[simp]

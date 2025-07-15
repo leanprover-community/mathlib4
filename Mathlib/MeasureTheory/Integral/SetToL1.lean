@@ -812,8 +812,7 @@ theorem setToFun_nonneg {T : Set α → G' →L[ℝ] G''} {C : ℝ} (hT : Domina
     have h0 := Lp.coeFn_zero G' 1 μ
     have h := Integrable.coeFn_toL1 hfi
     filter_upwards [h0, h, hf] with _ h0a ha hfa
-    rw [h0a, ha]
-    exact hfa
+    order
   · simp_rw [setToFun_undef _ hfi, le_rfl]
 
 theorem setToFun_mono [IsOrderedAddMonoid G']

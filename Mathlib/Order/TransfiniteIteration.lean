@@ -115,7 +115,7 @@ lemma top_mem_range_transfiniteIterate
       · simp at hj
   by_contra!
   suffices transfiniteIterate φ j₁ i₀ < transfiniteIterate φ j₂ i₀ by
-    simp only [eq, lt_self_iff_false] at this
+    order
   have hj₁ : ¬ IsMax j₁ := by
     simp only [not_isMax_iff]
     exact ⟨_, hj⟩

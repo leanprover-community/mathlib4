@@ -166,7 +166,7 @@ theorem lift_relrank_comap_comap_eq_lift_relrank_inf (f : L →+* E) :
   conv_lhs => rw [← lift_relrank_map_map _ _ f, map_comap_eq, map_comap_eq]
   congr 1
   apply relrank_eq_of_inf_eq
-  rw [inf_assoc, inf_left_comm _ B, inf_of_le_left (le_refl _)]
+  order
 
 theorem relrank_comap_comap_eq_relrank_inf
     {L : Type v} [Field L] (f : L →+* E) :

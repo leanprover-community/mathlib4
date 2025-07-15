@@ -102,7 +102,7 @@ noncomputable def dividedPowersBot : DividedPowers (⊥ : Ideal A) where
     simp [mem_bot.mp ha]
   dpow_mem {n a} hn _ := by
     simp only [mem_bot, ite_eq_right_iff, and_imp]
-    exact fun _ a ↦ False.elim (hn a)
+    order
   dpow_add ha hb := by
     rw [mem_bot.mp ha, mem_bot.mp hb, add_zero]
     simp only [true_and, mul_ite, mul_one, mul_zero]
@@ -114,8 +114,7 @@ noncomputable def dividedPowersBot : DividedPowers (⊥ : Ideal A) where
       simp only [mem_antidiagonal] at hi
       split_ifs with h2 h1
       · rw [h1, h2, add_zero] at hi
-        exfalso
-        exact h hi.symm
+        order
       · rfl
       · rfl
   dpow_mul {n} _ _ hx := by

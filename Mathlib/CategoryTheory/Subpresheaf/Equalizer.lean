@@ -59,8 +59,7 @@ lemma equalizer_eq_iff :
   simp only [Category.id_comp, range_ι] at this
   rw [← this]
   constructor
-  · intro h
-    rw [h]
+  · order
   · intro h
     exact le_antisymm (equalizer_le f g) h
 

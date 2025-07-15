@@ -214,8 +214,7 @@ theorem not_differentiableWithinAt_of_deriv_tendsto_atTop_Ioi (f : ℝ → ℝ) 
       replace hx₂ : derivWithin f (Ioi a) x = slope f a b := by
         have : Ioi a ∈ 𝓝 x := by simp [← mem_interior_iff_mem_nhds, hx₁.1]
         rwa [derivWithin_of_mem_nhds this]
-      rw [hx₂, max_lt_iff] at hb
-      linarith
+      order
     simp [Filter.eventually_false_iff_eq_bot, ← notMem_closure_iff_nhdsWithin_eq_bot] at hcontra
 
 /-- A real function whose derivative tends to minus infinity from the right at a point is not

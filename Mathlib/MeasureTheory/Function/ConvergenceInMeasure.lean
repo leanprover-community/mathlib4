@@ -236,7 +236,7 @@ theorem TendstoInMeasure.exists_seq_tendsto_ae (hfg : TendstoInMeasure μ f atTo
         (inv_le_one_of_one_le₀ one_le_two)
         ((le_tsub_add.trans (add_le_add_right (le_max_right _ _) 1)).trans
           (add_le_add_right hn_ge 1))
-    exact le_trans hNx.le h_inv_n_le_k
+    order
   rw [ae_iff]
   refine ⟨ExistsSeqTendstoAe.seqTendstoAeSeq_strictMono hfg, measure_mono_null (fun x => ?_) hμs⟩
   rw [Set.mem_setOf_eq, ← @Classical.not_not (x ∈ s), not_imp_not]

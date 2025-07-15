@@ -189,8 +189,8 @@ theorem signBijAux_injOn {n : ℕ} {f : Perm (Fin n)} :
   have : ¬b₁ < b₂ := hb.le.not_gt
   split_ifs at h <;>
   simp_all only [not_lt, Sigma.mk.inj_iff, (Equiv.injective f).eq_iff, heq_eq_eq]
-  · exact absurd this (not_le.mpr ha)
-  · exact absurd this (not_le.mpr ha)
+  · order
+  · order
 
 theorem signBijAux_surj {n : ℕ} {f : Perm (Fin n)} :
     ∀ a ∈ finPairsLT n, ∃ b ∈ finPairsLT n, signBijAux f b = a :=

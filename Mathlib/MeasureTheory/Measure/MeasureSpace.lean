@@ -1091,7 +1091,7 @@ lemma inf_apply {s : Set α} (hs : MeasurableSet s) :
     · rw [Set.disjoint_iff]
       rintro k ⟨hk₁, hk₂⟩
       rw [mem_setOf_eq] at hk₁ hk₂
-      exact False.elim <| hk₂.not_ge hk₁
+      order
 
 @[simp]
 theorem _root_.MeasureTheory.OuterMeasure.toMeasure_top :

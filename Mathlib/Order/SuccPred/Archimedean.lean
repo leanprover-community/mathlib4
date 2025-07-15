@@ -123,7 +123,7 @@ lemma lt_or_le_of_codirected [SuccOrder α] [IsSuccArchimedean α] {r v₁ v₂ 
   rw [Classical.or_iff_not_imp_right]
   intro nh
   rcases le_total_of_codirected h₁ h₂ with h | h
-  · apply lt_of_le_of_ne h (ne_of_not_le nh).symm
+  · order
   · contradiction
 
 /--
@@ -145,7 +145,7 @@ lemma lt_or_le_of_directed [PredOrder α] [IsPredArchimedean α] {r v₁ v₂ : 
   rw [Classical.or_iff_not_imp_right]
   intro nh
   rcases le_total_of_directed h₁ h₂ with h | h
-  · apply lt_of_le_of_ne h (ne_of_not_le nh).symm
+  · order
   · contradiction
 
 /--

@@ -97,7 +97,7 @@ theorem basis_le_iff {J K : TwoSidedIdeal R} {d e : σ →₀ ℕ} (hK : K ≠ �
       intro x _
       have (d') (hd'_le : d' ≤ d) : coeff R d' (monomial R e x) ∈ J := by
         rw [coeff_monomial]
-        split_ifs with hd' <;> [exact (h' (hd' ▸ hd'_le)).elim; exact J.zero_mem]
+        split_ifs with hd' <;> [order; exact J.zero_mem]
       simpa using h (monomial R e x) this _ le_rfl
   · rintro ⟨hJK, hed⟩
     exact basis_le hJK hed

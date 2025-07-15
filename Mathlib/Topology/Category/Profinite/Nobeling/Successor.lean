@@ -196,8 +196,7 @@ theorem CC_comp_zero : ∀ y, (Linear_CC' C hsC ho) ((πs C o) y) = 0 := by
   dsimp [CC'₀, CC'₁, ProjRestrict, Proj]
   apply if_ctx_congr Iff.rfl _ (fun _ ↦ rfl)
   simp only [SwapTrue, ite_eq_right_iff]
-  intro h₁ h₂
-  exact (h₁.ne h₂).elim
+  order
 
 include hsC in
 theorem C0_projOrd {x : I → Bool} (hx : x ∈ C0 C ho) : Proj (ord I · < o) x = x := by

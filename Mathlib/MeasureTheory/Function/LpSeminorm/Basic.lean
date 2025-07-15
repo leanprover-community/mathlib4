@@ -1264,7 +1264,7 @@ theorem eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul {f : α → F} {
   calc
     essSup (‖f ·‖ₑ) μ ≤ essSup (fun x => (↑(c * ‖g x‖₊) : ℝ≥0∞)) μ :=
       essSup_mono_ae <| h.mono fun _ hx => ENNReal.coe_le_coe.mpr hx
-    _ = essSup (c * ‖g ·‖ₑ) μ := by simp_rw [ENNReal.coe_mul, enorm]
+    _ = essSup (c * ‖g ·‖ₑ) μ := by order
     _ = c • essSup (‖g ·‖ₑ) μ := ENNReal.essSup_const_mul
 
 -- TODO: eventually, deprecate and remove the nnnorm version

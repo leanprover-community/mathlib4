@@ -66,9 +66,7 @@ theorem high_scores [LinearOrder β] [NoMaxOrder β] {u : ℕ → β} (hu : Tend
     rcases (le_total l N : l ≤ N ∨ N ≤ l) with H | H
     · exact hku l H
     · exact hn_min l hl H
-  calc
-    u l ≤ u k := hlk
-    _ < u n := hnk
+  order
 
 -- see Note [nolint_ge]
 /-- If `u` is a sequence which is unbounded below,

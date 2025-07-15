@@ -572,9 +572,7 @@ theorem measurableSet_inter_le [TopologicalSpace ι] [SecondCountableTopology ι
         · exact h
         · exact hτi.trans h
     simp only [hτi, false_or, and_false, false_and, iff_false, not_and, not_le, and_imp]
-    refine fun _ hτ_le_π => lt_of_lt_of_le ?_ hτ_le_π
-    rw [← not_le]
-    exact hτi
+    order
   rw [this]
   refine ((hs i).inter ((hτ.min hπ) i)).inter ?_
   apply @measurableSet_le _ _ _ _ _ (Filtration.seq f i) _ _ _ _ _ ?_ ?_
@@ -645,7 +643,7 @@ theorem measurableSet_eq_stopping_time [AddGroup ι] [TopologicalSpace ι] [Meas
     · rw [← h.1]; exact h.2
     · obtain ⟨h', hσ_le⟩ := h
       obtain ⟨h_eq, hτ_le⟩ := h'
-      rwa [min_eq_left hτ_le, min_eq_left hσ_le] at h_eq
+      order
   rw [this]
   refine
     MeasurableSet.inter (MeasurableSet.inter ?_ (hτ.measurableSet_le j)) (hπ.measurableSet_le j)
@@ -668,7 +666,7 @@ theorem measurableSet_eq_stopping_time_of_countable [Countable ι] [TopologicalS
     · rw [← h.1]; exact h.2
     · obtain ⟨h', hπ_le⟩ := h
       obtain ⟨h_eq, hτ_le⟩ := h'
-      rwa [min_eq_left hτ_le, min_eq_left hπ_le] at h_eq
+      order
   rw [this]
   refine
     MeasurableSet.inter (MeasurableSet.inter ?_ (hτ.measurableSet_le j)) (hπ.measurableSet_le j)

@@ -698,7 +698,7 @@ theorem Continuous.strictMono_of_inj {f : α → δ}
       by_cases hab : a < b
       · exact H hab
       · push_neg at hab
-        have : b < a := by exact Ne.lt_of_le (id (Ne.symm hb)) hab
+        have : b < a := by order
         exact H this
     · push_neg at h
       haveI : Subsingleton α := ⟨fun c d => Trans.trans (h c).symm (h d)⟩

@@ -501,7 +501,7 @@ lemma ProbabilityMeasure.toMeasure_add_pos_gt_mem_nhds (P : ProbabilityMeasure �
   have aux : P.toMeasure G - ε < liminf (fun Q ↦ Q.toMeasure G) (𝓝 P) := by
     apply lt_of_lt_of_le (ENNReal.sub_lt_self (by finiteness) _ _)
         <| ProbabilityMeasure.le_liminf_measure_open_of_tendsto tendsto_id G_open
-    · exact (lt_of_lt_of_le ε_pos easy).ne.symm
+    · order
     · exact ε_pos.ne.symm
   filter_upwards [gt_mem_sets_of_limsInf_gt (α := ℝ≥0∞) isBounded_ge_of_bot
       (show P.toMeasure G - ε < limsInf ((𝓝 P).map (fun Q ↦ Q.toMeasure G)) from aux)] with Q hQ

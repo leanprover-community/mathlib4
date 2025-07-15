@@ -234,7 +234,7 @@ noncomputable def birkhoffFinset : α ↪o Finset {a : α // SupIrred a} := by
 
 @[simp] lemma birkhoffSet_apply [OrderBot α] (a : α) :
     birkhoffSet a = OrderIso.lowerSetSupIrred a := by
-  simp [birkhoffSet]; have : Subsingleton (OrderBot α) := inferInstance; convert rfl
+  simp [birkhoffSet]; order
 
 variable [DecidableEq α]
 

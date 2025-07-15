@@ -836,8 +836,8 @@ lemma measure_isMulLeftInvariant_eq_smul_of_ne_top [LocallyCompactSpace G]
     nnreal_smul_coe_apply]
   apply B
   · exact (measurableSet_toMeasurable _ _).inter (measurableSet_toMeasurable _ _)
-  · exact mu_t.le.trans_lt hs.lt_top
-  · exact mu'_t.le.trans_lt h's.lt_top
+  · order
+  · order
 
 /-- **Uniqueness of left-invariant measures**:
 Given two left-invariant measures which are finite
@@ -1012,7 +1012,7 @@ lemma addHaarScalarFactor_domSMul (g : Gᵈᵐᵃ) :
   refine (addHaarScalarFactor_eq_integral_div _ _ (by fun_prop) ?_ ?_).symm
   · exact f_comp.comp_isClosedEmbedding (Homeomorph.smul _).isClosedEmbedding
   · rw [← integral_domSMul]
-    exact (f_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero f_comp f_nonneg f_zero).ne'
+    order
 
 variable (μ) in
 lemma addHaarScalarFactor_smul_congr (g : Gᵈᵐᵃ) :

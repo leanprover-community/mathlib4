@@ -215,8 +215,7 @@ lemma coverEntropy_biUnion_finset {T : X → X} {F : ι → Set X} {s : Finset �
   have := map_finset_sup (coverEntropy_supBotHom T) s F
   rw [s.sup_set_eq_biUnion, s.sup_eq_iSup, coverEntropy_supBotHom, SupBotHom.coe_mk,
     SupHom.coe_mk] at this
-  rw [this]
-  congr
+  order
 
 end Union
 

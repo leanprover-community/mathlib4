@@ -39,7 +39,7 @@ omit [IsOrderedRing α] in
 lemma box_succ_eq_sdiff (n : ℕ) :
     box (n + 1) = Icc (-n.succ : α) n.succ \ Icc (-n) n := by
   rw [box, Icc_neg_mono.disjointed_add_one]
-  simp only [Nat.cast_add_one, Nat.succ_eq_add_one]
+  order
 
 lemma disjoint_box_succ_prod (n : ℕ) : Disjoint (box (n + 1)) (Icc (-n : α) n) := by
   rw [box_succ_eq_sdiff]; exact disjoint_sdiff_self_left

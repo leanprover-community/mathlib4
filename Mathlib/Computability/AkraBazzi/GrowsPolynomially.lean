@@ -147,7 +147,7 @@ lemma eventually_zero_of_frequently_zero (hf : GrowsPolynomially f) (hf' : ∃�
       rw [neg_nonneg]
       refine logb_nonpos (by norm_num) (by positivity) ?_
       rw [div_le_one x₀_pos]
-      exact le_of_max_le_left hx₀_ge
+      order
     exact_mod_cast Nat.floor_le this
 
 lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
@@ -208,7 +208,7 @@ lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
                 _ ≤ _ := by exact_mod_cast hz.1
         have fz_eq_c₂fz : f z = c₂ * f z := hn₀ z n₀_le_z z ⟨by linarith, le_rfl⟩
         have z_to_half_z' : f (1/2 * z) = c₂ * f z := hn₀ z n₀_le_z (1/2 * z) ⟨le_rfl, by linarith⟩
-        have z_to_half_z : f (1/2 * z) = f z := by rwa [← fz_eq_c₂fz] at z_to_half_z'
+        have z_to_half_z : f (1/2 * z) = f z := by order
         have half_z_to_base : f (1/2 * z) = f (max n₀ 2) := by
           refine hyp_ind (1/2 * z) ⟨?lb, ?ub⟩
           case lb =>
@@ -222,7 +222,7 @@ lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
             rw [h₁, mul_assoc]
             gcongr
             exact_mod_cast hz.2
-        rw [← z_to_half_z, half_z_to_base]
+        order
     obtain ⟨c, hc⟩ := hmain
     cases le_or_gt 0 c with
     | inl hpos =>
@@ -230,7 +230,7 @@ lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
     | inr hneg =>
       right
       filter_upwards [hc] with x hc
-      exact le_of_lt <| by simpa only [hc]
+      order
 
 lemma eventually_atTop_zero_or_pos_or_neg (hf : GrowsPolynomially f) :
     (∀ᶠ x in atTop, f x = 0) ∨ (∀ᶠ x in atTop, 0 < f x) ∨ (∀ᶠ x in atTop, f x < 0) := by
@@ -365,8 +365,8 @@ protected lemma GrowsPolynomially.add {f g : ℝ → ℝ} (hf : GrowsPolynomiall
   have hg := hg b hb
   obtain ⟨c₁, hc₁_mem, c₂, hc₂_mem, hf⟩ := hf
   obtain ⟨c₃, hc₃_mem, c₄, _, hg⟩ := hg
-  refine ⟨min c₁ c₃, by change 0 < min c₁ c₃; positivity, ?_⟩
-  refine ⟨max c₂ c₄, by change 0 < max c₂ c₄; positivity, ?_⟩
+  refine ⟨min c₁ c₃, by order, ?_⟩
+  refine ⟨max c₂ c₄, by order, ?_⟩
   filter_upwards [hf, hg,
                   (tendsto_id.const_mul_atTop hb.1).eventually_forall_ge_atTop hf',
                   (tendsto_id.const_mul_atTop hb.1).eventually_forall_ge_atTop hg',
@@ -553,10 +553,8 @@ protected lemma GrowsPolynomially.inv {f : ℝ → ℝ} (hf : GrowsPolynomially 
       exact (hx u hu).1
 
 protected lemma GrowsPolynomially.div {f g : ℝ → ℝ} (hf : GrowsPolynomially f)
-    (hg : GrowsPolynomially g) : GrowsPolynomially fun x => f x / g x := by
-  have : (fun x => f x / g x) = fun x => f x * (g x)⁻¹ := by ext; rw [div_eq_mul_inv]
-  rw [this]
-  exact GrowsPolynomially.mul hf (GrowsPolynomially.inv hg)
+    (hg : GrowsPolynomially g) : GrowsPolynomially fun x => f x / g x :=
+  GrowsPolynomially.mul hf (GrowsPolynomially.inv hg)
 
 protected lemma GrowsPolynomially.rpow (p : ℝ) (hf : GrowsPolynomially f)
     (hf_nonneg : ∀ᶠ x in atTop, 0 ≤ f x) : GrowsPolynomially fun x => (f x) ^ p := by

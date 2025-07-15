@@ -171,7 +171,7 @@ theorem mono_lie_right (h : N ≤ N') : ⁅I, N⁆ ≤ ⁅I, N'⁆ :=
 theorem lie_sup : ⁅I, N ⊔ N'⁆ = ⁅I, N⁆ ⊔ ⁅I, N'⁆ := by
   have h : ⁅I, N⁆ ⊔ ⁅I, N'⁆ ≤ ⁅I, N ⊔ N'⁆ := by
     rw [sup_le_iff]; constructor <;>
-    apply mono_lie_right <;> [exact le_sup_left; exact le_sup_right]
+    apply mono_lie_right <;> order
   suffices ⁅I, N ⊔ N'⁆ ≤ ⁅I, N⁆ ⊔ ⁅I, N'⁆ by exact le_antisymm this h
   rw [lieIdeal_oper_eq_span, lieSpan_le]
   rintro m ⟨x, ⟨n, hn⟩, h⟩
@@ -186,7 +186,7 @@ theorem lie_sup : ⁅I, N ⊔ N'⁆ = ⁅I, N⁆ ⊔ ⁅I, N'⁆ := by
 theorem sup_lie : ⁅I ⊔ J, N⁆ = ⁅I, N⁆ ⊔ ⁅J, N⁆ := by
   have h : ⁅I, N⁆ ⊔ ⁅J, N⁆ ≤ ⁅I ⊔ J, N⁆ := by
     rw [sup_le_iff]; constructor <;>
-    apply mono_lie_left <;> [exact le_sup_left; exact le_sup_right]
+    apply mono_lie_left <;> order
   suffices ⁅I ⊔ J, N⁆ ≤ ⁅I, N⁆ ⊔ ⁅J, N⁆ by exact le_antisymm this h
   rw [lieIdeal_oper_eq_span, lieSpan_le]
   rintro m ⟨⟨x, hx⟩, n, h⟩
@@ -199,11 +199,11 @@ theorem sup_lie : ⁅I ⊔ J, N⁆ = ⁅I, N⁆ ⊔ ⁅J, N⁆ := by
 
 theorem lie_inf : ⁅I, N ⊓ N'⁆ ≤ ⁅I, N⁆ ⊓ ⁅I, N'⁆ := by
   rw [le_inf_iff]; constructor <;>
-  apply mono_lie_right <;> [exact inf_le_left; exact inf_le_right]
+  apply mono_lie_right <;> order
 
 theorem inf_lie : ⁅I ⊓ J, N⁆ ≤ ⁅I, N⁆ ⊓ ⁅J, N⁆ := by
   rw [le_inf_iff]; constructor <;>
-  apply mono_lie_left <;> [exact inf_le_left; exact inf_le_right]
+  apply mono_lie_left <;> order
 
 theorem map_bracket_eq [LieModule R L M] : map f ⁅I, N⁆ = ⁅I, map f N⁆ := by
   rw [← toSubmodule_inj, toSubmodule_map, lieIdeal_oper_eq_linear_span,

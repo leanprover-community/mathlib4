@@ -486,8 +486,7 @@ theorem coeff_root_pow (h : IsAdjoinRootMonic S f) {n} (hn : n < natDegree f) :
           Finsupp.single_apply_left Fin.val_injective]
       _ = Pi.single (M := fun _ => R) n 1 i := by rw [Fin.val_mk, Fin.val_mk]
   · rw [Pi.single_eq_of_ne]
-    rintro rfl
-    simp [hi] at hn
+    order
 
 theorem coeff_one [Nontrivial S] (h : IsAdjoinRootMonic S f) : h.coeff 1 = Pi.single 0 1 := by
   rw [← h.coeff_root_pow h.deg_pos, pow_zero]

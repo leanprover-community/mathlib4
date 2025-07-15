@@ -182,8 +182,7 @@ theorem mk_coe (S : Set L) (h₁ h₂ h₃ h₄) :
 
 theorem toSubmodule_mk (p : Submodule R L) (h) :
     (({ p with lie_mem' := h } : LieSubalgebra R L) : Submodule R L) = p := by
-  cases p
-  rfl
+  order
 
 @[deprecated (since := "2024-12-30")] alias coe_to_submodule_mk := toSubmodule_mk
 

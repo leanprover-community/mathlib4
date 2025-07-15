@@ -168,9 +168,7 @@ theorem lift_index_left {f : PadicSeq p} (hf : ¬f ≈ 0) (v1 v3 : ℕ) :
     padicNorm p (f (stationaryPoint hf)) =
     padicNorm p (f (max v1 (max (stationaryPoint hf) v3))) := by
   apply stationaryPoint_spec hf
-  · apply le_trans
-    · apply le_max_left _ v3
-    · apply le_max_right
+  · order
   · exact le_rfl
 
 /-- An auxiliary lemma for manipulating sequence indices. -/
@@ -178,9 +176,7 @@ theorem lift_index_right {f : PadicSeq p} (hf : ¬f ≈ 0) (v1 v2 : ℕ) :
     padicNorm p (f (stationaryPoint hf)) =
     padicNorm p (f (max v1 (max v2 (stationaryPoint hf)))) := by
   apply stationaryPoint_spec hf
-  · apply le_trans
-    · apply le_max_right v2
-    · apply le_max_right
+  · order
   · exact le_rfl
 
 end Embedding
@@ -352,18 +348,14 @@ theorem norm_nonarchimedean (f g : PadicSeq p) : (f + g).norm ≤ max f.norm g.n
         change LimZero (f - 0) at hf
         change LimZero (f + g - g); · simpa only [sub_zero, add_sub_cancel_right] using hf
       have hcfg : (f + g).norm = g.norm := norm_equiv hfg'
-      have hcl : f.norm = 0 := (norm_zero_iff f).2 hf
-      have : max f.norm g.norm = g.norm := by rw [hcl]; exact max_eq_right (norm_nonneg _)
-      rw [this, hcfg]
+      order
     else
       if hg : g ≈ 0 then by
         have hfg' : f + g ≈ f := by
           change LimZero (g - 0) at hg
           change LimZero (f + g - f); · simpa only [add_sub_cancel_left, sub_zero] using hg
         have hcfg : (f + g).norm = f.norm := norm_equiv hfg'
-        have hcl : g.norm = 0 := (norm_zero_iff g).2 hg
-        have : max f.norm g.norm = f.norm := by rw [hcl]; exact max_eq_left (norm_nonneg _)
-        rw [this, hcfg]
+        order
       else norm_nonarchimedean_aux hfg hf hg
 
 theorem norm_eq {f g : PadicSeq p} (h : ∀ k, padicNorm p (f k) = padicNorm p (g k)) :

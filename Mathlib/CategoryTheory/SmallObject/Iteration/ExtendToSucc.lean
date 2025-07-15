@@ -95,7 +95,7 @@ lemma map_id (i : J) (hi : i ≤ Order.succ j) :
   by_cases h₁ : i ≤ j
   · rw [dif_pos h₁, CategoryTheory.Functor.map_id, id_comp, Iso.hom_inv_id]
   · obtain rfl : i = Order.succ j := le_antisymm hi (Order.succ_le_of_lt (not_le.1 h₁))
-    rw [dif_neg (by simpa only [Order.succ_le_iff_isMax] using hj),
+    rw [dif_neg (by order),
       dif_neg h₁]
 
 lemma map_comp (i₁ i₂ i₃ : J) (h₁₂ : i₁ ≤ i₂) (h₂₃ : i₂ ≤ i₃) (h : i₃ ≤ Order.succ j) :

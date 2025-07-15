@@ -240,7 +240,7 @@ theorem get?_of_eq_some_of_get?_intFractPair_stream_fr_ne_zero {ifp_n : IntFract
   have : IntFractPair.stream v (n + 1) = some (IntFractPair.of ifp_n.fr⁻¹) := by
     cases ifp_n
     simp only [IntFractPair.stream, stream_nth_eq, Option.bind_some, ite_eq_right_iff]
-    intro; contradiction
+    order
   get?_of_eq_some_of_succ_get?_intFractPair_stream this
 
 open Int IntFractPair

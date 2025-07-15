@@ -324,7 +324,7 @@ lemma rTensor_reflects_exact [fl : FaithfullyFlat R M]
   suffices triv_coh : Subsingleton H by
     rw [Submodule.subsingleton_quotient_iff_eq_top, Submodule.range_inclusion,
       Submodule.comap_subtype_eq_top] at triv_coh
-    exact le_antisymm triv_coh complex
+    order
   -- Since `M` is faithfully flat, we need only to show that `H ⊗ M` is trivial.
   suffices Subsingleton (H ⊗[R] M) from rTensor_reflects_triviality R M H
   let e : H ⊗[R] M ≃ₗ[R] _ := TensorProduct.quotientTensorEquiv _ _

@@ -482,8 +482,7 @@ instance instTopologicalSpace : TopologicalSpace 𝓢(E, F) :=
 theorem _root_.schwartz_withSeminorms : WithSeminorms (schwartzSeminormFamily 𝕜 E F) := by
   have A : WithSeminorms (schwartzSeminormFamily ℝ E F) := ⟨rfl⟩
   rw [SeminormFamily.withSeminorms_iff_nhds_eq_iInf] at A ⊢
-  rw [A]
-  rfl
+  order
 
 variable {𝕜 E F}
 

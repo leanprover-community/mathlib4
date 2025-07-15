@@ -134,12 +134,10 @@ theorem intValuation.map_add_le_max' (x y : R) :
   classical
   by_cases hx : x = 0
   · rw [hx, zero_add]
-    conv_rhs => rw [intValuationDef, if_pos (Eq.refl _)]
-    rw [max_eq_right (WithZero.zero_le (v.intValuationDef y))]
+    order
   · by_cases hy : y = 0
     · rw [hy, add_zero]
-      conv_rhs => rw [max_comm, intValuationDef, if_pos (Eq.refl _)]
-      rw [max_eq_right (WithZero.zero_le (v.intValuationDef x))]
+      order
     · by_cases hxy : x + y = 0
       · rw [intValuationDef, if_pos hxy]; exact zero_le'
       · rw [v.intValuationDef_if_neg hxy, v.intValuationDef_if_neg hx, v.intValuationDef_if_neg hy,

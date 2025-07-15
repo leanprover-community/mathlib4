@@ -497,7 +497,7 @@ lemma toDigitsCore_length (b f n e : Nat) (h_e_pos : 0 < e) (hlt : n < b ^ e) :
   | succ f ih =>
     simp only [toDigitsCore]
     cases e with
-    | zero => exact False.elim (Nat.lt_irrefl 0 h_e_pos)
+    | zero => order
     | succ e =>
       cases e with
       | zero =>

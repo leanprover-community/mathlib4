@@ -59,8 +59,7 @@ lemma integrable_exp_mul_of_le_of_le {a b : ℝ}
       refine measurable_exp.comp_aemeasurable (AEMeasurable.const_mul ?_ _)
       by_cases ha_zero : a = 0
       · refine aemeasurable_of_aemeasurable_exp_mul ?_ hb.1.aemeasurable
-        rw [ha_zero] at hab
-        exact Ne.symm hab
+        order
       · exact aemeasurable_of_aemeasurable_exp_mul ha_zero ha.1.aemeasurable
   · simp only [norm_eq_abs, abs_exp, Pi.add_apply]
     conv_rhs => rw [abs_of_nonneg (by positivity)]
@@ -261,7 +260,7 @@ lemma integrable_rpow_abs_mul_exp_add_of_integrable_exp_mul {x : ℝ}
     Integrable (fun a ↦ |X a| ^ p * exp (v * X a + x * |X a|)) μ := by
   have ht : t ≠ 0 := by
     suffices |t| ≠ 0 by simpa
-    exact (h_nonneg.trans_lt hx).ne'
+    order
   have hX : AEMeasurable X μ := aemeasurable_of_integrable_exp_mul ?_ h_int_pos h_int_neg
   swap; · rw [← sub_ne_zero]; simp [ht]
   rw [← integrable_norm_iff]

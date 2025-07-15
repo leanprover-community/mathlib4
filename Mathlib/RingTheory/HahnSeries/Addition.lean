@@ -235,7 +235,7 @@ theorem leadingCoeff_add_eq_left {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
   have ho : (x + y).orderTop = x.orderTop := orderTop_add_eq_left hxy
   by_cases h : x + y = 0
   · rw [h, orderTop_zero] at ho
-    rw [h, orderTop_eq_top_iff.mp ho.symm]
+    order
   · rw [orderTop_of_ne h, orderTop_of_ne hx, WithTop.coe_eq_coe] at ho
     rw [leadingCoeff_of_ne h, leadingCoeff_of_ne hx, ho, coeff_add,
       coeff_eq_zero_of_lt_orderTop (lt_of_eq_of_lt (orderTop_of_ne hx).symm hxy), add_zero]

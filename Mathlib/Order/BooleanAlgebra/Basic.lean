@@ -129,7 +129,7 @@ instance (priority := 100) GeneralizedBooleanAlgebra.toGeneralizedCoheytingAlgeb
           (calc
             y ⊓ y \ x = y \ x := inf_of_le_right sdiff_le'
             _ = x ⊓ y \ x ⊔ z ⊓ y \ x := by
-              rw [inf_eq_right.2 h, inf_sdiff_self_right, bot_sup_eq]
+              order
             _ = (x ⊔ z) ⊓ y \ x := by rw [← inf_sup_right]))
         (calc
           y ⊔ y \ x = y := sup_of_le_left sdiff_le'
@@ -144,7 +144,7 @@ instance (priority := 100) GeneralizedBooleanAlgebra.toGeneralizedCoheytingAlgeb
         (calc
           y \ x ⊔ x = y ⊔ x := sdiff_sup_self'
           _ ≤ x ⊔ z ⊔ x := sup_le_sup_right h x
-          _ ≤ z ⊔ x := by rw [sup_assoc, sup_comm, sup_assoc, sup_idem])⟩
+          _ ≤ z ⊔ x := by order)⟩
 
 theorem disjoint_sdiff_self_left : Disjoint (y \ x) x :=
   disjoint_iff_inf_le.mpr inf_sdiff_self_left.le
@@ -198,8 +198,7 @@ theorem le_iff_eq_sup_sdiff (hz : z ≤ y) (hx : x ≤ y) : x ≤ z ↔ y = z �
   ⟨fun H => by
     apply le_antisymm
     · conv_lhs => rw [← sup_inf_sdiff y x]
-      apply sup_le_sup_right
-      rwa [inf_eq_right.2 hx]
+      order
     · apply le_trans
       · apply sup_le_sup_right hz
       · rw [sup_sdiff_left],
@@ -219,7 +218,7 @@ theorem sdiff_sup : y \ (x ⊔ z) = y \ x ⊓ y \ z :=
       _ = (y ⊓ z ⊔ (y ⊓ x ⊔ y \ x)) ⊓ (y ⊓ x ⊔ (y ⊓ z ⊔ y \ z)) := by ac_rfl
       _ = (y ⊓ z ⊔ y) ⊓ (y ⊓ x ⊔ y) := by rw [sup_inf_sdiff, sup_inf_sdiff]
       _ = (y ⊔ y ⊓ z) ⊓ (y ⊔ y ⊓ x) := by ac_rfl
-      _ = y := by rw [sup_inf_self, sup_inf_self, inf_idem])
+      _ = y := by order)
     (calc
       y ⊓ (x ⊔ z) ⊓ (y \ x ⊓ y \ z) = (y ⊓ x ⊔ y ⊓ z) ⊓ (y \ x ⊓ y \ z) := by rw [inf_sup_left]
       _ = y ⊓ x ⊓ (y \ x ⊓ y \ z) ⊔ y ⊓ z ⊓ (y \ x ⊓ y \ z) := by rw [inf_sup_right]
@@ -282,7 +281,7 @@ theorem sdiff_sdiff_right : x \ (y \ z) = x \ y ⊔ x ⊓ y ⊓ z := by
           rw [inf_sdiff_sup_right, @inf_sup_left _ _ x z y]
       _ = x ⊓ (y \ z ⊔ (x ⊓ z ⊔ (x ⊓ y ⊔ x \ y))) := by ac_rfl
       _ = x ⊓ (y \ z ⊔ (x ⊔ x ⊓ z)) := by rw [sup_inf_sdiff, sup_comm (x ⊓ z)]
-      _ = x := by rw [sup_inf_self, sup_comm, inf_sup_self]
+      _ = x := by order
   · calc
       x ⊓ y \ z ⊓ (z ⊓ x ⊔ x \ y) = x ⊓ y \ z ⊓ (z ⊓ x) ⊔ x ⊓ y \ z ⊓ x \ y := by rw [inf_sup_left]
       _ = x ⊓ (y \ z ⊓ z ⊓ x) ⊔ x ⊓ y \ z ⊓ x \ y := by ac_rfl

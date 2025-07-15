@@ -1018,7 +1018,7 @@ theorem tsum_le_of_sum_range_le {f : ℕ → ℝ≥0∞} {c : ℝ≥0∞}
 theorem hasSum_lt {f g : α → ℝ≥0∞} {sf sg : ℝ≥0∞} {i : α} (h : ∀ a : α, f a ≤ g a) (hi : f i < g i)
     (hsf : sf ≠ ∞) (hf : HasSum f sf) (hg : HasSum g sg) : sf < sg := by
   by_cases hsg : sg = ∞
-  · exact hsg.symm ▸ lt_of_le_of_ne le_top hsf
+  · order
   · have hg' : ∀ x, g x ≠ ∞ := ENNReal.ne_top_of_tsum_ne_top (hg.tsum_eq.symm ▸ hsg)
     lift f to α → ℝ≥0 using fun x =>
       ne_of_lt (lt_of_le_of_lt (h x) <| lt_of_le_of_ne le_top (hg' x))
@@ -1298,7 +1298,7 @@ lemma truncateToReal_eq_toReal {t x : ℝ≥0∞} (t_ne_top : t ≠ ∞) (x_le :
     truncateToReal t x = x.toReal := by
   have x_lt_top : x < ∞ := lt_of_le_of_lt x_le t_ne_top.lt_top
   have obs : min t x ≠ ∞ := by
-    simp_all only [ne_eq, min_eq_top, false_and, not_false_eq_true]
+    order
   exact (ENNReal.toReal_eq_toReal obs x_lt_top.ne).mpr (min_eq_right x_le)
 
 lemma truncateToReal_le {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) {x : ℝ≥0∞} :
@@ -1314,7 +1314,7 @@ lemma monotone_truncateToReal {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) : Monotone
   intro x y x_le_y
   simp only [truncateToReal]
   gcongr
-  exact ne_top_of_le_ne_top t_ne_top (min_le_left _ _)
+  order
 
 /-- The truncated cast `ENNReal.truncateToReal t : ℝ≥0∞ → ℝ` is continuous when `t ≠ ∞`. -/
 @[fun_prop]

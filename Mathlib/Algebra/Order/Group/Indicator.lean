@@ -177,7 +177,7 @@ lemma mulIndicator_iInter_apply (h1 : (⊥ : M) = 1) (s : ι → Set α) (f : α
   · rw [mulIndicator_of_notMem hx]
     simp only [mem_iInter, not_forall] at hx
     rcases hx with ⟨j, hj⟩
-    refine le_antisymm (by simp only [← h1, le_iInf_iff, bot_le, forall_const]) ?_
+    refine le_antisymm (by order) ?_
     simpa [mulIndicator_of_notMem hj] using (iInf_le (fun i ↦ (s i).mulIndicator f) j) x
 
 @[to_additive]

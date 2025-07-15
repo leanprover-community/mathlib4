@@ -108,7 +108,7 @@ private lemma fermatLastTheoremThree_of_dvd_a_of_gcd_eq_one_of_case2 {a b c : �
   simp only [mem_insert, mem_singleton] at hx
   have h3b : 3 ∣ b := by
     refine three_dvd_b_of_dvd_a_of_gcd_eq_one_of_case2 ha ?_ h3a HF H
-    simp only [← Hgcd, gcd_insert, gcd_singleton, id_eq, ← Int.abs_eq_normalize]
+    order
   rcases hx with hx | hx | hx
   · exact hx ▸ h3a
   · exact hx ▸ h3b
@@ -321,14 +321,10 @@ lemma lambda_sq_dvd_or_dvd_or_dvd :
   rw [← emultiplicity_lt_iff_not_dvd] at h1 h2 h3
   have h1' : FiniteMultiplicity (hζ.toInteger - 1) (S'.a + S'.b) :=
     finiteMultiplicity_iff_emultiplicity_ne_top.2 (fun ht ↦ by simp [ht] at h1)
-  have h2' : FiniteMultiplicity (hζ.toInteger - 1) (S'.a + η * S'.b) := by
-    refine finiteMultiplicity_iff_emultiplicity_ne_top.2 (fun ht ↦ ?_)
-    rw [coe_eta] at ht
-    simp [ht] at h2
-  have h3' : FiniteMultiplicity (hζ.toInteger - 1) (S'.a + η ^ 2 * S'.b) := by
-    refine finiteMultiplicity_iff_emultiplicity_ne_top.2 (fun ht ↦ ?_)
-    rw [coe_eta] at ht
-    simp [ht] at h3
+  have h2' : FiniteMultiplicity (hζ.toInteger - 1) (S'.a + η * S'.b) :=
+    finiteMultiplicity_iff_emultiplicity_ne_top.2 (by order)
+  have h3' : FiniteMultiplicity (hζ.toInteger - 1) (S'.a + η ^ 2 * S'.b) :=
+    finiteMultiplicity_iff_emultiplicity_ne_top.2 (by order)
   rw [h1'.emultiplicity_eq_multiplicity, Nat.cast_lt] at h1
   rw [h2'.emultiplicity_eq_multiplicity, Nat.cast_lt] at h2
   rw [h3'.emultiplicity_eq_multiplicity, Nat.cast_lt] at h3

@@ -281,8 +281,7 @@ theorem add_rpow_le_rpow_add {p : ℝ} (a b : ℝ≥0∞) (hp1 : 1 ≤ p) : a ^ 
   have hp_pos : 0 < p := by positivity
   by_cases h_top : a + b = ⊤
   · rw [← @ENNReal.rpow_eq_top_iff_of_pos (a + b) p hp_pos] at h_top
-    rw [h_top]
-    exact le_top
+    order
   obtain ⟨ha_top, hb_top⟩ := add_ne_top.mp h_top
   lift a to ℝ≥0 using ha_top
   lift b to ℝ≥0 using hb_top

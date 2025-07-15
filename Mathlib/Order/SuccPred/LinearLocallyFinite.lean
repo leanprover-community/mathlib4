@@ -320,7 +320,7 @@ theorem toZ_mono {i j : ι} (h_le : i ≤ j) : toZ i0 i ≤ toZ i0 j := by
         exact Nat.one_le_iff_ne_zero.mpr hm0
       rwa [Function.iterate_succ', Function.comp_apply, iterate_succ_toZ i hi] at h_succ_le
     · exact le_of_not_ge h
-  · exact absurd h_le (not_le.mpr (hj.trans_le hi))
+  · order
   · exact (toZ_neg hi).le.trans (toZ_nonneg hj)
   · let m := Nat.find (exists_pred_iterate_of_le (α := ι) h_le)
     have hm : pred^[m] j = i := Nat.find_spec (exists_pred_iterate_of_le (α := ι) h_le)

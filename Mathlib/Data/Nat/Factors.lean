@@ -72,7 +72,7 @@ theorem prod_primeFactorsList : ∀ {n}, n ≠ 0 → List.prod (primeFactorsList
     show (primeFactorsList (k + 2)).prod = (k + 2) by
       have h₁ : (k + 2) / m ≠ 0 := fun h => by
         have : (k + 2) = 0 * m := (Nat.div_eq_iff_eq_mul_left (minFac_pos _) (minFac_dvd _)).1 h
-        rw [zero_mul] at this; exact (show k + 2 ≠ 0 by simp) this
+        rw [zero_mul] at this; order
       rw [primeFactorsList, List.prod_cons, prod_primeFactorsList h₁,
         Nat.mul_div_cancel' (minFac_dvd _)]
 

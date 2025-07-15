@@ -895,7 +895,7 @@ noncomputable instance : NormalizedGCDMonoid (Ideal A) :=
     gcd_dvd_right := fun _ _ => by simpa only [dvd_iff_le] using le_sup_right
     dvd_gcd := by
       simp only [dvd_iff_le]
-      exact fun h1 h2 => @sup_le (Ideal A) _ _ _ _ h1 h2
+      order
     lcm := (· ⊓ ·)
     lcm_zero_left := fun _ => by simp only [zero_eq_bot, bot_inf_eq]
     lcm_zero_right := fun _ => by simp only [zero_eq_bot, inf_bot_eq]
@@ -1563,7 +1563,7 @@ theorem count_span_normalizedFactors_eq {r X : R} (hr : r ≠ 0) (hX : Prime X) 
   rw [emultiplicity_eq_count_normalizedFactors (Prime.irreducible hX) hr,
     emultiplicity_eq_count_normalizedFactors (Prime.irreducible ?_), normalize_apply,
     normUnit_eq_one, Units.val_one, one_eq_top, mul_top, Nat.cast_inj] at this
-  · simp only [normalize_apply, this]
+  · order
   · simp only [Submodule.zero_eq_bot, ne_eq, span_singleton_eq_bot, hr, not_false_eq_true]
   · simpa only [prime_span_singleton_iff]
 

@@ -205,8 +205,7 @@ theorem basicOpen_res_eq {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) [IsIso i] (f : X.
   · have := X.basicOpen_res (inv i) (X.presheaf.map i f)
     rw [← CommRingCat.comp_apply, ← X.presheaf.map_comp, IsIso.hom_inv_id, X.presheaf.map_id,
         CommRingCat.id_apply] at this
-    rw [this]
-    exact inf_le_right
+    order
 
 @[simp]
 theorem basicOpen_mul {U : Opens X} (f g : X.presheaf.obj (op U)) :

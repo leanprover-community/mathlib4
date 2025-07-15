@@ -1035,7 +1035,7 @@ theorem PseudoMetricSpace.replaceBornology_eq {α} [m : PseudoMetricSpace α] [B
 example {α} [B : Bornology α] (m : PseudoMetricSpace α)
     (H : ∀ s, @IsBounded _ B s ↔ @IsBounded _ PseudoMetricSpace.toBornology s) :
     (PseudoMetricSpace.replaceBornology m H).toUniformSpace = m.toUniformSpace := by
-  with_reducible_and_instances rfl
+  order
 
 section Real
 

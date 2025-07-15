@@ -203,12 +203,7 @@ theorem add_eq_max_of_ne {q r : ℚ} (hne : padicNorm p q ≠ padicNorm p r) :
       padicNorm p q = padicNorm p (q + r + (-r)) := by ring_nf
       _ ≤ max (padicNorm p (q + r)) (padicNorm p (-r)) := padicNorm.nonarchimedean
       _ = max (padicNorm p (q + r)) (padicNorm p r) := by simp
-  have hnge : padicNorm p r ≤ padicNorm p (q + r) := by
-    apply le_of_not_gt
-    intro hgt
-    rw [max_eq_right_of_lt hgt] at this
-    exact not_lt_of_ge this hlt
-  have : padicNorm p q ≤ padicNorm p (q + r) := by rwa [max_eq_left hnge] at this
+  have : padicNorm p q ≤ padicNorm p (q + r) := by order
   apply _root_.le_antisymm
   · apply padicNorm.nonarchimedean
   · rwa [max_eq_left_of_lt hlt]

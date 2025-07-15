@@ -549,7 +549,7 @@ instance WithBot.instArchimedean (M) [AddCommMonoid M] [PartialOrder M] [Archime
   constructor
   intro x y hxy
   cases y with
-  | bot => exact absurd hxy bot_le.not_gt
+  | bot => order
   | coe y =>
     cases x with
     | bot => refine ⟨0, bot_le⟩

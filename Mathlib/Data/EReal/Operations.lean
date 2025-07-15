@@ -68,7 +68,7 @@ theorem top_add_coe (x : ℝ) : (⊤ : EReal) + x = ⊤ :=
 @[simp]
 theorem top_add_of_ne_bot {x : EReal} (h : x ≠ ⊥) : ⊤ + x = ⊤ := by
   induction x
-  · exfalso; exact h (Eq.refl ⊥)
+  · order
   · exact top_add_coe _
   · exact top_add_top
 

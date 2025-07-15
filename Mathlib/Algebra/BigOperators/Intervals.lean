@@ -201,7 +201,7 @@ lemma prod_range_diag_flip (n : ℕ) (f : ℕ → ℕ → M) :
     simp +contextual only [mem_sigma, mem_range, lt_tsub_iff_left,
       Nat.lt_succ_iff, le_add_iff_nonneg_right, Nat.zero_le, and_true, and_imp, implies_true,
       Sigma.forall, add_tsub_cancel_of_le, add_tsub_cancel_left]
-  exact fun a b han hba ↦ lt_of_le_of_lt hba han
+  order
 
 end Generic
 

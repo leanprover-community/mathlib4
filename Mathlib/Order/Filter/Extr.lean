@@ -528,8 +528,7 @@ theorem Filter.EventuallyLE.isMaxFilter {α β : Type*} [Preorder β] {f g : α 
     {l : Filter α} (hle : g ≤ᶠ[l] f) (hfga : f a = g a) (h : IsMaxFilter f l a) :
     IsMaxFilter g l a := by
   refine hle.mp (h.mono fun x hf hgf => ?_)
-  rw [← hfga]
-  exact le_trans hgf hf
+  order
 
 theorem IsMaxFilter.congr {α β : Type*} [Preorder β] {f g : α → β} {a : α} {l : Filter α}
     (h : IsMaxFilter f l a) (heq : f =ᶠ[l] g) (hfga : f a = g a) : IsMaxFilter g l a :=

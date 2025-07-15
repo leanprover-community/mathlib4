@@ -894,7 +894,7 @@ theorem orthogonal_eq_bot_iff [K.HasOrthogonalProjection] : Kᗮ = ⊥ ↔ K = �
   refine ⟨?_, fun h => by rw [h, Submodule.top_orthogonal_eq_bot]⟩
   intro h
   have : K ⊔ Kᗮ = ⊤ := Submodule.sup_orthogonal_of_completeSpace
-  rwa [h, sup_comm, bot_sup_eq] at this
+  order
 
 /-- The orthogonal projection onto `K` of an element of `Kᗮ` is zero. -/
 theorem orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero [K.HasOrthogonalProjection]

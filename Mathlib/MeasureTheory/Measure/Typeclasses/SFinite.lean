@@ -554,7 +554,7 @@ theorem sigmaFinite_bot_iff (μ : @Measure α ⊥) : SigmaFinite μ ↔ IsFinite
     by_contra! h_not_univ
     have h_empty : ∀ i, s i = ∅ := by simpa [h_not_univ] using hs_meas
     simp only [h_empty, iUnion_empty] at hs_univ
-    exact h_univ_empty hs_univ.symm
+    order
   rw [← hsi]
   exact measure_spanningSets_lt_top μ i
 

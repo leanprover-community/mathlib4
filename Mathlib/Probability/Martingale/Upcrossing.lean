@@ -596,7 +596,7 @@ theorem mul_upcrossingsBefore_le (hf : a ≤ f N ω) (hab : a < b) :
             exact le_trans (stoppedValue_lowerCrossingTime heq) hf
         · rw [sub_eq_zero_of_upcrossingsBefore_lt hab]
           rw [Finset.mem_range, not_lt] at hi
-          exact lt_of_le_of_ne hi (Ne.symm hi')
+          order
   refine le_trans ?_ h₂
   rw [Finset.sum_const, Finset.card_range, nsmul_eq_mul, mul_comm]
 

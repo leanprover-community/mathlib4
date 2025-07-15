@@ -148,8 +148,7 @@ theorem compExactValue_correctness_of_stream_eq_some :
       suffices
         compExactValue ppconts pconts ifp_n.fr = compExactValue pconts conts ifp_succ_n.fr by
         have : v = compExactValue ppconts pconts ifp_n.fr := IH nth_stream_eq
-        conv_lhs => rw [this]
-        assumption
+        order
       -- get the correspondence between ifp_n and ifp_succ_n
       obtain ⟨ifp_n', nth_stream_eq', ifp_n_fract_ne_zero, ⟨refl⟩⟩ :
         ∃ ifp_n, IntFractPair.stream v n = some ifp_n ∧

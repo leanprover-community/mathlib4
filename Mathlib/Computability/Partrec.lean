@@ -215,8 +215,7 @@ theorem ppred : Partrec fun n => ppred n :=
     · refine eq_some_iff.2 ?_
       simp only [mem_rfind, decide_true, mem_some_iff,
         false_eq_decide_iff, true_and]
-      intro m h
-      simp [ne_of_gt h]
+      order
 
 end Partrec
 

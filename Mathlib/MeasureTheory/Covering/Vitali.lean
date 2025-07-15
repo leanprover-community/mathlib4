@@ -292,7 +292,7 @@ theorem exists_disjoint_covering_ae
         by_contra h
         rw [nonempty_iff_ne_empty, Classical.not_not] at h
         rw [h, image_empty, Real.sSup_empty] at R0_def
-        exact lt_irrefl _ (R0pos.trans_le (le_of_eq R0_def))
+        order
       obtain ⟨a, hav, R0a⟩ : ∃ a ∈ v, R0 / 2 < r a := by
         obtain ⟨r', r'mem, hr'⟩ : ∃ r' ∈ r '' v, R0 / 2 < r' :=
           exists_lt_of_lt_csSup (vnonempty.image _) (half_lt_self R0pos)

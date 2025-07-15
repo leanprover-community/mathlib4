@@ -36,7 +36,7 @@ variable [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] {a b c : G}
     |a * b|ₘ = |a|ₘ * |b|ₘ ↔ 1 ≤ a ∧ 1 ≤ b ∨ a ≤ 1 ∧ b ≤ 1 := by
   obtain ha | ha := le_or_gt 1 a <;> obtain hb | hb := le_or_gt 1 b
   · simp [ha, hb, mabs_of_one_le, one_le_mul ha hb]
-  · exact (lt_irrefl (1 : G) <| ha.trans_lt <| hab.trans_lt hb).elim
+  · order
   swap
   · simp [ha.le, hb.le, mabs_of_le_one, mul_le_one', mul_comm]
   have : (|a * b|ₘ = a⁻¹ * b ↔ b ≤ 1) ↔

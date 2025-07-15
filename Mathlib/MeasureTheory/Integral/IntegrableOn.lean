@@ -721,16 +721,14 @@ theorem integrableOn_Icc_iff_integrableOn_Ioc' (ha : μ {a} ≠ ∞) :
   by_cases hab : a ≤ b
   · rw [← Ioc_union_left hab, integrableOn_union, eq_true integrableOn_singleton, and_true]
   · rw [Icc_eq_empty hab, Ioc_eq_empty]
-    contrapose! hab
-    exact hab.le
+    order
 
 theorem integrableOn_Icc_iff_integrableOn_Ico' (hb : μ {b} ≠ ∞) :
     IntegrableOn f (Icc a b) μ ↔ IntegrableOn f (Ico a b) μ := by
   by_cases hab : a ≤ b
   · rw [← Ico_union_right hab, integrableOn_union, eq_true integrableOn_singleton, and_true]
   · rw [Icc_eq_empty hab, Ico_eq_empty]
-    contrapose! hab
-    exact hab.le
+    order
 
 theorem integrableOn_Ico_iff_integrableOn_Ioo' (ha : μ {a} ≠ ∞) :
     IntegrableOn f (Ico a b) μ ↔ IntegrableOn f (Ioo a b) μ := by

@@ -1135,13 +1135,13 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
         refine closure_minimal (support_subset_iff'.2 fun z hz => ?_) hk.isClosed
         apply g'_zero x.1 z (h₀ε _) hz
         rw [mem_ball_iff_norm]
-        exact ((le_max_left _ _).trans_lt hx).trans_le δε
+        order
       · simp only [add_ball, thickening_singleton, zero_vadd, subset_rfl]
     apply convolution_integrand_bound_right_of_le_of_subset _ _ _ this
     · intro y
       exact hε _ _ (((le_max_left _ _).trans_lt hx).trans_le δε)
     · rw [mem_ball_iff_norm]
-      exact (le_max_right _ _).trans_lt hx
+      order
   have I5 : Integrable bound μ := by
     rw [integrable_indicator_iff U_open.measurableSet]
     exact (hU.norm.const_mul _).mul_const _

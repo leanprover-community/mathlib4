@@ -319,7 +319,7 @@ lemma densityProcess_mono_kernel_left {κ' : Kernel α (γ × β)} (hκκ' : κ 
     meas_countablePartitionSet_le_of_fst_le hκ'ν n a x s
   gcongr
   · simp only [ne_eq, ENNReal.div_eq_top, h0, and_false, false_or, not_and, not_not]
-    exact fun h_top ↦ eq_top_mono h_le h_top
+    order
   · apply hκκ'
 
 lemma densityProcess_antitone_kernel_right {ν' : Kernel α γ}
@@ -332,7 +332,7 @@ lemma densityProcess_antitone_kernel_right {ν' : Kernel α γ}
   · simp [le_antisymm (h_le.trans h0.le) zero_le', h0]
   gcongr
   · simp only [ne_eq, ENNReal.div_eq_top, h0, and_false, false_or, not_and, not_not]
-    exact fun h_top ↦ eq_top_mono h_le h_top
+    order
   · apply hνν'
 
 @[simp]
