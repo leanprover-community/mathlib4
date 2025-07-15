@@ -171,10 +171,7 @@ theorem mapAlgHom_coe_ringHom (f : A →ₐ[R] B) :
 @[simp]
 theorem mapAlgHom_comp (C : Type*) [Semiring C] [Algebra R C] (f : B →ₐ[R] C) (g : A →ₐ[R] B) :
     (mapAlgHom f).comp (mapAlgHom g) = mapAlgHom (f.comp g) := by
-  apply AlgHom.ext
-  intro x
-  simp [map_map]
-  congr
+  ext <;> simp
 
 theorem mapAlgHom_eq_eval₂AlgHom'_CAlgHom (f : A →ₐ[R] B) : mapAlgHom f = eval₂AlgHom'
     (CAlgHom.comp f) X (fun a => (commute_X (C (f a))).symm) := by
@@ -206,10 +203,8 @@ theorem mapAlgEquiv_toAlgHom (f : A ≃ₐ[R] B) :
 @[simp]
 theorem mapAlgEquiv_comp (C : Type*) [Semiring C] [Algebra R C] (f : A ≃ₐ[R] B) (g : B ≃ₐ[R] C) :
     (mapAlgEquiv f).trans (mapAlgEquiv g) = mapAlgEquiv (f.trans g) := by
-  apply AlgEquiv.ext
-  intro x
-  simp [AlgEquiv.trans_apply, map_map]
-  congr
+  ext
+  simp
 
 end Map
 

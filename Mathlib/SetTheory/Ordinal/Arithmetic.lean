@@ -590,6 +590,9 @@ theorem sub_lt_of_le {a b c : Ordinal} (h : b ≤ a) : a - b < c ↔ a < b + c :
 instance existsAddOfLE : ExistsAddOfLE Ordinal :=
   ⟨fun h => ⟨_, (Ordinal.add_sub_cancel_of_le h).symm⟩⟩
 
+instance canonicallyOrderedAdd : CanonicallyOrderedAdd Ordinal where
+  le_self_add := le_add_right
+
 @[simp]
 theorem sub_zero (a : Ordinal) : a - 0 = a := by simpa only [zero_add] using add_sub_cancel 0 a
 

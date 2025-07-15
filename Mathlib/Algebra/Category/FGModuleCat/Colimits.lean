@@ -44,7 +44,7 @@ instance (F : J ⥤ FGModuleCat k) :
     (colimitQuotientCoproduct (F ⋙ forget₂ (FGModuleCat k) (ModuleCat.{v} k))).hom
     ((ModuleCat.epi_iff_surjective _).1 inferInstance)
 
-/-- The forgetful functor from `FGModuleCat k` to `ModuleCat k` creates all finite limits. -/
+/-- The forgetful functor from `FGModuleCat k` to `ModuleCat k` creates all finite colimits. -/
 def forget₂CreatesColimit (F : J ⥤ FGModuleCat k) :
     CreatesColimit F (forget₂ (FGModuleCat k) (ModuleCat.{v} k)) :=
   createsColimitOfFullyFaithfulOfIso
