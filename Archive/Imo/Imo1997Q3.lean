@@ -106,7 +106,7 @@ lemma sign_eq_of_contra
       _ ≤ |x (p i.succ)| + |-x (p i.castSucc)| := abs_add_le ..
       _ ≤ ((n + 1 : ℕ) + 1) / 2 + ((n + 1 : ℕ) + 1) / 2 := by
         rw [abs_neg]; exact add_le_add (hx₂ _) (hx₂ _)
-      _ = _ := by rw [add_halves]
+      _ = _ := add_halves _
 
 lemma S_one_add_S_revPerm
     {x : Fin n → ℝ} (hx₁ : |∑ i, x i| = 1) : |S x 1 + S x revPerm| = n + 1 := by
