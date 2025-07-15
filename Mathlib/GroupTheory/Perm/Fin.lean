@@ -316,13 +316,20 @@ local instance {n : ℕ} {i : Fin n} : NeZero (n - i) := NeZero.of_pos (by omega
 
 variable {n : ℕ} {i j k : Fin n}
 
-/-- `cycleIcc i j` is the cycle `(i i+1 .... j)` leaving `(0 ... i-1)` and `(j+1 ... n-1)`
-unchanged when `i ≤ j` and returning the dummy value `id` when `i > j`.
+/-- `cycleIcc i j` is the cycle `(i i+1 ... j)` leaving `(0 ... i-1)` and `(j+1 ... n-1)`
+unchanged when `i < j` and returning the dummy value `id` when `i > j`.
 In other words, it rotates elements in `[i, j]` one step to the right.
 -/
+/- `cycleIcc` is defined in two steps:
+1. The first part is `cycleRange ((j - i).castLT (sub_val_lt_sub hij))`, which is an element of
+`Perm (Fin (n - i))`. It rotates the sequence `(0 1 ... j-i)` while leaving `(j-i+1 ... n-i)`
+unchanged.
+2. Since `natAdd_castLEEmb (Nat.sub_le n i) : Fin (n - i) ↪ Fin n` maps each `x` to `x + i`, we can
+embed the first part into `Fin n` using `extendDomain` to obtain an element of `Perm (Fin n)`.
+This yields the cycle `(i i+1 ... j)` while leaving `(0 ... i-1)` and `(j+1 ... n-1)` unchanged.
+-/
 def cycleIcc (i j : Fin n) : Perm (Fin n) := if hij : i ≤ j then (cycleRange ((j - i).castLT
-  (sub_val_lt_sub hij))).extendDomain (natAdd_castLEEmb (Nat.sub_le n i)).toEquivRange
-  else 1
+  (sub_val_lt_sub hij))).extendDomain (natAdd_castLEEmb (Nat.sub_le n i)).toEquivRange else 1
 
 theorem cycleIcc_of_lt (h : k < i) : (cycleIcc i j) k = k := by
   rcases Decidable.em (i ≤ j) with hij | hij
@@ -355,6 +362,7 @@ theorem cycleIcc_of_gt (h : j < k) : (cycleIcc i j) k = k := by
     simpa [cycleIcc_aux hij kin, natAdd_castLEEmb, this] using eq_of_val_eq (by simp; omega)
   · simp [cycleIcc, hij]
 
+@[simp]
 theorem cycleIcc_of_le_of_le (hik : i ≤ k) (hkj : k ≤ j) [NeZero n] :
     (cycleIcc i j) k = if k = j then i else k + 1 := by
   have hij : i ≤ j := le_trans hik hkj
@@ -378,7 +386,6 @@ theorem cycleIcc_of_le_of_le (hik : i ≤ k) (hkj : k ≤ j) [NeZero n] :
 theorem cycleIcc_of_ge_of_lt (hik : i ≤ k) (hkj : k < j) [NeZero n] : (cycleIcc i j) k = k + 1 := by
   simp [cycleIcc_of_le_of_le hik (le_of_lt hkj), Fin.ne_of_lt hkj]
 
-@[simp]
 theorem cycleIcc_of_last (hij : i ≤ j) [NeZero n] : (cycleIcc i j) j = i := by
   simp [cycleIcc_of_le_of_le hij (ge_of_eq rfl)]
 
@@ -389,6 +396,9 @@ theorem cycleIcc_of_trivial (hkij : k < i ∨ j < k) : (cycleIcc i j) k = k := b
 
 theorem sign_cycleIcc_of_le (hij : i ≤ j) : Perm.sign (cycleIcc i j) = (-1) ^ (j - i : ℕ) := by
   simp [cycleIcc, hij, sub_val_of_le hij]
+
+theorem sign_cycleIcc_of_ge (hij : j < i) : Perm.sign (cycleIcc i j) = 1 := by
+  simp [cycleIcc, Fin.not_le.mpr hij]
 
 theorem isCycle_cycleIcc (hij : i < j) : (cycleIcc i j).IsCycle := by
   simpa [cycleIcc, le_of_lt hij] using Equiv.Perm.IsCycle.extendDomain
