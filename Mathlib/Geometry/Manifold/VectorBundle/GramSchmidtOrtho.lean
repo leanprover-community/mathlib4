@@ -58,32 +58,27 @@ variable {s : ι → (x : B) → E x}
 
 omit [TopologicalSpace B]
 
-variable (s) in
 /-- This lemma uses `∑ i in` instead of `∑ i :`. -/
-theorem gramSchmidt_def (n : ι) (x) :
+theorem gramSchmidt_def (s : ι → (x : B) → E x) (n : ι) (x) :
     gramSchmidt s n x =
       s n x - ∑ i ∈ Iio n, (ℝ ∙ gramSchmidt s i x).orthogonalProjection (s n x) := by
   simp only [gramSchmidt, InnerProductSpace.gramSchmidt_def]
 
-variable (s) in
-theorem gramSchmidt_def' (n : ι) (x) :
+theorem gramSchmidt_def' (s : ι → (x : B) → E x) (n : ι) (x) :
     s n x = gramSchmidt s n x +
       ∑ i ∈ Iio n, (ℝ ∙ gramSchmidt s i x).orthogonalProjection (s n x) := by
   rw [gramSchmidt_def, sub_add_cancel]
 
-variable (s) in
-theorem gramSchmidt_def'' (n : ι) (x) :
+theorem gramSchmidt_def'' (s : ι → (x : B) → E x) (n : ι) (x) :
     s n x = gramSchmidt s n x + ∑ i ∈ Iio n,
       (⟪gramSchmidt s i x, s n x⟫ / (‖gramSchmidt s i x‖) ^ 2) • gramSchmidt s i x := by
   convert gramSchmidt_def' s n x
   simp [Submodule.orthogonalProjection_singleton, RCLike.ofReal_pow]
 
-variable (s) in
 @[simp]
-lemma gramSchmidt_apply (n : ι) (x) :
+lemma gramSchmidt_apply (s : ι → (x : B) → E x) (n : ι) (x) :
     gramSchmidt s n x = InnerProductSpace.gramSchmidt ℝ (s · x) n := rfl
 
-variable (s) in
 @[simp]
 theorem gramSchmidt_bot {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [OrderBot ι]
     [WellFoundedLT ι] (s : ι → (x : B) → E x) : gramSchmidt s ⊥ = s ⊥ := by
@@ -91,53 +86,46 @@ theorem gramSchmidt_bot {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [O
   apply InnerProductSpace.gramSchmidt_bot
 
 @[simp]
-theorem gramSchmidt_zero (n : ι) : gramSchmidt (0 : ι → (x : B) → E x) n = 0 := by
+theorem gramSchmidt_zero (n : ι) :
+    gramSchmidt (0 : ι → (x : B) → E x) n = 0 := by
   ext x
   simpa using InnerProductSpace.gramSchmidt_zero ..
 
-variable (s) in
 /-- **Gram-Schmidt Orthogonalisation**: `gramSchmidt` produces a point-wise orthogonal system
 of sections. -/
-theorem gramSchmidt_orthogonal {a b : ι} (h₀ : a ≠ b) (x) :
+theorem gramSchmidt_orthogonal (s : ι → (x : B) → E x) {a b : ι} (h₀ : a ≠ b) (x) :
     ⟪gramSchmidt s a x, gramSchmidt s b x⟫ = 0 :=
   InnerProductSpace.gramSchmidt_orthogonal _ _ h₀
 
-variable (s) in
 /-- This is another version of `gramSchmidt_orthogonal` using `Pairwise` instead. -/
-theorem gramSchmidt_pairwise_orthogonal (x) :
+theorem gramSchmidt_pairwise_orthogonal (s : ι → (x : B) → E x) (x) :
     Pairwise fun a b ↦ ⟪gramSchmidt s a x, gramSchmidt s b x⟫ = 0 :=
   fun _ _ h ↦ gramSchmidt_orthogonal s h _
 
-variable (s) in
-theorem gramSchmidt_inv_triangular {i j : ι} (hij : i < j) (x) :
+theorem gramSchmidt_inv_triangular (s : ι → (x : B) → E x) {i j : ι} (hij : i < j) (x) :
     ⟪gramSchmidt s j x, s i x⟫ = 0 :=
   InnerProductSpace.gramSchmidt_inv_triangular _ _ hij
 
 open Set
 
-variable (s) in
-theorem mem_span_gramSchmidt {i j : ι} (hij : i ≤ j) (x) :
+theorem mem_span_gramSchmidt (s : ι → (x : B) → E x) {i j : ι} (hij : i ≤ j) (x) :
     s i x ∈ span ℝ ((gramSchmidt s · x) '' Set.Iic j) :=
   InnerProductSpace.mem_span_gramSchmidt _ _ hij
 
-variable (s) in
-theorem gramSchmidt_mem_span (x) :
+theorem gramSchmidt_mem_span (s : ι → (x : B) → E x) (x) :
     ∀ {j i}, i ≤ j → gramSchmidt s i x ∈ span ℝ ((s · x) '' Set.Iic j) :=
   InnerProductSpace.gramSchmidt_mem_span _ _
 
-variable (s) in
-theorem span_gramSchmidt_Iic (c : ι) (x) :
+theorem span_gramSchmidt_Iic (s : ι → (x : B) → E x) (c : ι) (x) :
     span ℝ ((gramSchmidt s · x) '' Set.Iic c) = span ℝ ((s · x) '' Set.Iic c) :=
   InnerProductSpace.span_gramSchmidt_Iic ..
 
-variable (s) in
-theorem span_gramSchmidt_Iio (c : ι) (x) :
+theorem span_gramSchmidt_Iio (s : ι → (x : B) → E x) (c : ι) (x) :
     span ℝ ((gramSchmidt s · x) '' Set.Iio c) = span ℝ ((s · x) '' Set.Iio c) :=
   InnerProductSpace.span_gramSchmidt_Iio _ _ _
 
-variable (s) in
 /-- `gramSchmidt` preserves the point-wise span of sections. -/
-theorem span_gramSchmidt (x) :
+theorem span_gramSchmidt (s : ι → (x : B) → E x) (x) :
     span ℝ (range (gramSchmidt s · x)) = span ℝ (range (s · x)) :=
   InnerProductSpace.span_gramSchmidt ℝ (s · x)
 
@@ -167,10 +155,9 @@ theorem gramSchmidt_ne_zero_coe (n : ι)
     (h₀ : LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic n → ι))) : gramSchmidt s n x ≠ 0 :=
   InnerProductSpace.gramSchmidt_ne_zero_coe _ h₀
 
-variable (s) in
 /-- If the input sections of `gramSchmidt` are point-wise linearly independent,
 the resulting sections are non-zero. -/
-theorem gramSchmidt_ne_zero (n : ι) (h₀ : LinearIndependent ℝ (s · x)) :
+theorem gramSchmidt_ne_zero (s : ι → (x : B) → E x) (n : ι) (h₀ : LinearIndependent ℝ (s · x)) :
     gramSchmidt s n x ≠ 0 :=
   InnerProductSpace.gramSchmidt_ne_zero _ h₀
 
@@ -225,21 +212,18 @@ theorem gramSchmidtNormed_orthonormal (h₀ : LinearIndependent ℝ (s · x)) :
     Orthonormal ℝ (gramSchmidtNormed s · x) :=
   InnerProductSpace.gramSchmidtNormed_orthonormal h₀
 
-variable (s) in
 /-- **Gram-Schmidt Orthonormalization**: `gramSchmidtNormed` produces a point-wise orthornormal
 system of sections after removing the sections which become zero in the process. -/
-theorem gramSchmidtNormed_orthonormal' (x) :
+theorem gramSchmidtNormed_orthonormal' (s : ι → (x : B) → E x) (x) :
     Orthonormal ℝ fun i : { i | gramSchmidtNormed s i x ≠ 0 } => gramSchmidtNormed s i x :=
   InnerProductSpace.gramSchmidtNormed_orthonormal' _
 
 
-variable (s) in
-theorem span_gramSchmidtNormed (t : Set ι) :
+theorem span_gramSchmidtNormed (s : ι → (x : B) → E x) (t : Set ι) :
     span ℝ ((gramSchmidtNormed s · x) '' t) = span ℝ ((gramSchmidt s · x) '' t) :=
   InnerProductSpace.span_gramSchmidtNormed (s · x) t
 
-variable (s) in
-theorem span_gramSchmidtNormed_range :
+theorem span_gramSchmidtNormed_range (s : ι → (x : B) → E x) :
     span ℝ (range (gramSchmidtNormed s · x)) = span ℝ (range (gramSchmidt s · x)) := by
   simpa only [image_univ.symm] using span_gramSchmidtNormed ..
 
