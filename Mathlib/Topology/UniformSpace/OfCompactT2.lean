@@ -38,9 +38,10 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
   uniformity := 𝓝ˢ (diagonal γ)
   symm := continuous_swap.tendsto_nhdsSet fun _ => Eq.symm
   comp := by
-    /-  This is the difficult part of the proof. We need to prove that, for each neighborhood `W`
+      /-
+        This is the difficult part of the proof. We need to prove that, for each neighborhood `W`
         of the diagonal `Δ`, there exists a smaller neighborhood `V` such that `V ○ V ⊆ W`.
-        -/
+      -/
     set 𝓝Δ := 𝓝ˢ (diagonal γ)
     -- The filter of neighborhoods of Δ
     set F := 𝓝Δ.lift' fun s : Set (γ × γ) => s ○ s

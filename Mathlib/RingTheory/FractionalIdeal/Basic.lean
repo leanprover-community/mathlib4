@@ -466,6 +466,12 @@ theorem mem_add (I J : FractionalIdeal S P) (x : P) :
   rw [← mem_coe, coe_add, Submodule.add_eq_sup]; exact Submodule.mem_sup
 
 @[simp, norm_cast]
+lemma coeIdeal_inf [FaithfulSMul R P] (I J : Ideal R) :
+    (↑(I ⊓ J) : FractionalIdeal S P) = ↑I ⊓ ↑J := by
+  apply coeToSubmodule_injective
+  exact Submodule.map_inf (Algebra.linearMap R P) (FaithfulSMul.algebraMap_injective R P)
+
+@[simp, norm_cast]
 theorem coeIdeal_sup (I J : Ideal R) : ↑(I ⊔ J) = (I + J : FractionalIdeal S P) :=
   coeToSubmodule_injective <| coeSubmodule_sup _ _ _
 

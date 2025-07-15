@@ -72,7 +72,7 @@ theorem HasProd.update (hf : HasProd f a₁) (b : β) [DecidableEq β] (a : α) 
   convert (hasProd_ite_eq b (a / f b)).mul hf with b'
   by_cases h : b' = b
   · rw [h, update_self]
-    simp [eq_self_iff_true, if_true, sub_add_cancel]
+    simp
   · simp only [h, update_of_ne, if_false, Ne, one_mul, not_false_iff]
 
 @[to_additive]
@@ -222,7 +222,7 @@ theorem cauchySeq_finset_iff_prod_vanishing :
     (CauchySeq fun s : Finset β ↦ ∏ b ∈ s, f b) ↔
       ∀ e ∈ 𝓝 (1 : α), ∃ s : Finset β, ∀ t, Disjoint t s → (∏ b ∈ t, f b) ∈ e := by
   classical
-  simp only [CauchySeq, cauchy_map_iff, and_iff_right atTop_neBot, prod_atTop_atTop_eq,
+  simp only [CauchySeq, cauchy_map_iff, prod_atTop_atTop_eq,
     uniformity_eq_comap_nhds_one α, tendsto_comap_iff, Function.comp_def, atTop_neBot, true_and]
   rw [tendsto_atTop']
   constructor

@@ -53,9 +53,8 @@ import Mathlib.Tactic.ExistsI
 import Mathlib.Tactic.ExtractGoal
 import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.Find
--- `gcongr` currently imports `Algebra.Order.Field.Power` and thence `Algebra.CharZero.Lemmas`
--- Hopefully this can be rearranged.
--- import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.GRewrite
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.GuardGoalNums
 import Mathlib.Tactic.GuardHypNums
@@ -132,6 +131,7 @@ import hierarchy.
 
 section Hint
 
+register_hint grind
 register_hint trivial
 register_hint tauto
 register_hint split

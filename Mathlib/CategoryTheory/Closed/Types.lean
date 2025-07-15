@@ -58,7 +58,7 @@ def cartesianClosedFunctorToTypes {C : Type u₁} [Category.{v₁} C] :
     CartesianClosed (C ⥤ Type (max u₁ v₁ u₂)) :=
   let e : (ULiftHom.{max u₁ v₁ u₂} (ULift.{max u₁ v₁ u₂} C)) ⥤ Type (max u₁ v₁ u₂) ≌
       C ⥤ Type (max u₁ v₁ u₂) :=
-      Functor.asEquivalence ((whiskeringLeft _ _ _).obj
+      Functor.asEquivalence ((Functor.whiskeringLeft _ _ _).obj
         (ULift.equivalence.trans ULiftHom.equiv).functor)
   cartesianClosedOfEquiv e
 
@@ -72,7 +72,7 @@ instance {C : Type u₁} [Category.{v₁} C] : CartesianClosed (C ⥤ Type (max 
 instance {C : Type u₁} [Category.{v₁} C] [EssentiallySmall.{v₁} C] :
     CartesianClosed (C ⥤ Type v₁) :=
   let e : (SmallModel C) ⥤ Type v₁ ≌ C ⥤ Type v₁ :=
-    Functor.asEquivalence ((whiskeringLeft _ _ _).obj (equivSmallModel _).functor)
+    Functor.asEquivalence ((Functor.whiskeringLeft _ _ _).obj (equivSmallModel _).functor)
   cartesianClosedOfEquiv e
 
 end CartesianClosed

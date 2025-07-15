@@ -240,7 +240,7 @@ instance LinearOrderedSemiring.toLocallyConvexSpace {R : Type*} [TopologicalSpac
       refine nhds_top_basis.to_hasBasis' ?_ ?_
       · intros
         refine ⟨Set.Ioi _, ?_, subset_refl _⟩
-        simp_all [Ioi_mem_nhds, convex_Ioi]
+        simp_all
       · simp +contextual
     refine (nhds_basis_Ioo' hl hu).to_hasBasis' ?_ ?_
     · simp only [id_eq, and_imp, Prod.forall]

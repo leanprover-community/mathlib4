@@ -7,7 +7,7 @@ import Mathlib.Analysis.Normed.Group.Uniform
 import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 import Mathlib.Topology.MetricSpace.Ultra.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Group
-import Mathlib.Topology.Algebra.Order.LiminfLimsup
+import Mathlib.Topology.Order.LiminfLimsup
 
 /-!
 # Ultrametric norms
