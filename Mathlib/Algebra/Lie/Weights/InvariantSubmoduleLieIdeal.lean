@@ -874,9 +874,8 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
                   -- This follows from α.2.2 : α.1.IsNonZero and Weight.IsNonZero.neg
                   exact Weight.IsNonZero.neg α.2.2
                 have hα_neg_in_root : (-α.1) ∈ H.root := by
-                  -- (-α.1) ∈ H.root follows from (-α.1).IsNonZero
-                  -- This should work but there might be a definitional issue
-                  sorry
+                  simp [LieSubalgebra.root]
+                  exact α.2.2
                 use ⟨(-α.1), hα_neg_in_root⟩
                 rfl
 
