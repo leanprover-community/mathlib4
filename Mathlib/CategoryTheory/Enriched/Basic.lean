@@ -324,8 +324,8 @@ def ForgetEnrichment.isoOf {X Y : C} (I : EnrichedIso W X Y) :
     ForgetEnrichment.of W X ≅ ForgetEnrichment.of W Y where
   hom := homOf W I.hom
   inv := homOf W I.inv
-  hom_inv_id := by simp [← homOf_comp, congr_arg (homOf W) I.hom_inv]
-  inv_hom_id := by simp [← homOf_comp, congr_arg (homOf W) I.inv_hom]
+  hom_inv_id := by simp [← homOf_comp, I.hom_inv]
+  inv_hom_id := by simp [← homOf_comp, I.inv_hom]
 
 @[simp]
 lemma ForgetEnrichment.isoOf_refl (X : C) :
@@ -348,10 +348,8 @@ def ForgetEnrichment.isoTo {X Y : ForgetEnrichment W C} (I : X ≅ Y) :
     EnrichedIso W (ForgetEnrichment.to W X) (ForgetEnrichment.to W Y) where
   hom := homTo W I.hom
   inv := homTo W I.inv
-  hom_inv := by
-    rw [← Category.assoc, ← homTo_comp, congr_arg (homTo W) I.hom_inv_id, homTo_id]
-  inv_hom := by
-    rw [← Category.assoc, ← homTo_comp, congr_arg (homTo W) I.inv_hom_id, homTo_id]
+  hom_inv := by rw [← Category.assoc, ← homTo_comp, I.hom_inv_id, homTo_id]
+  inv_hom := by rw [← Category.assoc, ← homTo_comp, I.inv_hom_id, homTo_id]
 
 @[simp]
 lemma ForgetEnrichment.isoTo_rfl {X : ForgetEnrichment W C} :
@@ -372,7 +370,7 @@ lemma ForgetEnrichment.isoTo_trans {X Y Z : ForgetEnrichment W C} (I : X ≅ Y) 
 def ForgetEnrichment.equivIsoEnrichedIso (X Y : ForgetEnrichment W C) :
     (X ≅ Y) ≃ EnrichedIso W (ForgetEnrichment.to W X) (ForgetEnrichment.to W Y) where
   toFun := ForgetEnrichment.isoTo W
-  invFun := ForgetEnrichment.isoOf W (X := ForgetEnrichment.to W X) (Y := ForgetEnrichment.to W Y)
+  invFun := ForgetEnrichment.isoOf W
 
 end
 
