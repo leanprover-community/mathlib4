@@ -85,6 +85,13 @@ def equiv : (C ⊛⥤ V) ≌ (C ⥤ V) where
   unitIso := .refl _
   counitIso := .refl _
 
+/-- Construct an isomorphism in `C ⊛⥤ V` out of an isomorphism of the underlying
+functors. -/
+@[simps!]
+def isoMk {F G : C ⊛⥤ V} (α : F.functor ≅ G.functor) : F ≅ G where
+  hom := Hom.mk α.hom
+  inv := Hom.mk α.inv
+
 variable
     [hasDayConvolution : ∀ (F G : C ⥤ V),
       (tensor C).HasPointwiseLeftKanExtension (F ⊠ G)]
@@ -413,6 +420,64 @@ instance isLeftKanExtensionExtensionUnitRight (F G : C ⊛⥤ V) (K : D ⥤ V) :
       ExternalProduct.extensionUnitRight _ (η F G) K :=
   inferInstanceAs <| (K ⊠ (F.functor ⊛ G.functor)).IsLeftKanExtension <|
     ExternalProduct.extensionUnitRight _ (DayConvolution.unit F.functor G.functor) K
+
+end
+
+section
+
+variable (D : Type u₃) [Category.{v₃} D] [MonoidalCategory D]
+    [LawfulDayConvolutionMonoidalCategoryStruct C V D]
+
+open LawfulDayConvolutionMonoidalCategoryStruct
+
+attribute [local instance] convolution in
+def inducedCoreMonoidal : ((ι C V D) ⋙ (equiv C V).inverse).CoreMonoidal where
+    μIso d d' := DayFunctor.isoMk <|
+      convolution C V (C ⊛⥤ V) (equiv C V |>.inverse.obj <| (ι C V D).obj d)
+        (equiv C V|>.inverse.obj <| (ι C V D).obj d')|>.uniqueUpToIso <|
+          convolution C V D d d'
+    μIso_hom_natural_left {d d'} f d'' := by
+      ext1
+      dsimp
+    εIso := sorry
+    -- δ d d' := DayFunctor.Hom.mk <|
+    --   DayConvolution.corepresentableBy
+    --     (ι C V D|>.obj d) (ι C V D|>.obj d')|>.homEquiv.symm (η _ _)
+    -- δ_natural_left {d d'} f d'' := by
+    --   ext1
+    --   apply DayConvolution.corepresentableBy
+    --     (ι C V D|>.obj d) (ι C V D|>.obj d'')|>.homEquiv.injective _
+    --   dsimp
+    --   ext ⟨x, y⟩
+    --   simp only [externalProductBifunctor_obj_obj, Functor.comp_obj, tensor_obj,
+    --     ← tensorHom_id, DayConvolution.corepresentableBy_homEquiv_apply_app,
+    --     NatTrans.comp_app, DayConvolution.desc_fac_app_assoc,
+    --     η_app_comp_tensorHom_natTrans_app_tensor,
+    --     equiv_inverse_obj_functor, equiv_inverse_map_natTrans, id_natTrans,
+    --     NatTrans.id_app, ι_map_tensorHom_hom_eq_tensorHom, Functor.map_id,
+    --     DayConvolution.unit_app_map_app_assoc,
+    --     DayConvolution.desc_fac_app]
+    --   rfl
+    -- δ_natural_right {d d'} d'' f := by
+    --   ext1
+    --   apply DayConvolution.corepresentableBy
+    --     (ι C V D|>.obj d'') (ι C V D|>.obj d)|>.homEquiv.injective _
+    --   dsimp
+    --   ext ⟨x, y⟩
+    --   simp only [externalProductBifunctor_obj_obj, Functor.comp_obj, tensor_obj,
+    --     ← id_tensorHom, DayConvolution.corepresentableBy_homEquiv_apply_app,
+    --     NatTrans.comp_app, DayConvolution.desc_fac_app_assoc,
+    --     η_app_comp_tensorHom_natTrans_app_tensor,
+    --     equiv_inverse_obj_functor, equiv_inverse_map_natTrans, id_natTrans,
+    --     NatTrans.id_app, ι_map_tensorHom_hom_eq_tensorHom, Functor.map_id,
+    --     DayConvolution.unit_app_map_app_assoc,
+    --     DayConvolution.desc_fac_app]
+    --   rfl
+    -- ε := sorry
+    -- μ d d' := DayFunctor.Hom.mk <|
+    --   Functor.descOfIsLeftKanExtension _ (η _ _) _
+    --     (convolutionExtensionUnit C V _ _)
+    -- η := sorry
 
 end
 

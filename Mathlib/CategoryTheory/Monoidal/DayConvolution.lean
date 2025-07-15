@@ -85,6 +85,17 @@ instance leftKanExtension [DayConvolution F G] :
     (F ⊛ G).IsLeftKanExtension (unit F G) :=
   isPointwiseLeftKanExtensionUnit F G|>.isLeftKanExtension
 
+-- Because `(F ⊛ G).descOfIsLeftKanExtension_fac_app` has bad
+-- simp confluence because of its argument in a product, we
+-- provide a "dsimped" form with better behaviour w.r.t automation.
+@[reassoc (attr := simp)]
+lemma desc_fac_app [DayConvolution F G]
+    (H : C ⥤ V) (β : (F ⊠ G) ⟶ (tensor C) ⋙ H) (x y : C) :
+    (unit F G).app (x, y) ≫
+      ((F ⊛ G).descOfIsLeftKanExtension (unit F G) H β).app (x ⊗ y) =
+    β.app (x, y) :=
+  (F ⊛ G).descOfIsLeftKanExtension_fac_app _ _ _ _
+
 variable {F G}
 
 /-- Two day convolution structures on the same functors gives an isomorphic functor. -/
@@ -147,9 +158,7 @@ variable (f : F ⟶ F') (g : G ⟶ G') (x y : C)
 lemma unit_app_map_app :
   (unit F G).app (x, y) ≫ (map f g).app (x ⊗ y : C) =
     (f.app x ⊗ₘ g.app y) ≫ (unit F' G').app (x, y) := by
-  simpa [tensorHom_def] using
-    (Functor.descOfIsLeftKanExtension_fac_app (F ⊛ G) (unit F G) (F' ⊛ G') <|
-      (externalProductBifunctor C C V).map (f ×ₘ g) ≫ unit F' G') (x, y)
+  simp [tensorHom_def, map]
 
 end map
 
@@ -901,6 +910,11 @@ def convolution (d d' : D) :
   unit := convolutionExtensionUnit C V d d'
   isPointwiseLeftKanExtensionUnit :=
     isPointwiseLeftKanExtensionConvolutionExtensionUnit d d'
+
+instance isLeftKanExtension (d d' : D) :
+    ι C V D|>.obj (d ⊗ d')|>.IsLeftKanExtension <|
+      convolutionExtensionUnit C V d d' :=
+  isPointwiseLeftKanExtensionConvolutionExtensionUnit d d'|>.isLeftKanExtension
 
 attribute [local instance] convolution
 
