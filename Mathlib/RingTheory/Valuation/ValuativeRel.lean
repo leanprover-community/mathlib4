@@ -158,6 +158,14 @@ lemma left_cancel_posSubmonoid (x y : R) (u : posSubmonoid R) :
     u * x ≤ᵥ u * y ↔ x ≤ᵥ y := by
   simp only [← right_cancel_posSubmonoid x y u, mul_comm]
 
+@[simp]
+lemma val_posSubmonoid_ne_zero (x : posSubmonoid R) :
+    (x : R) ≠ 0 := by
+  have := x.prop
+  rw [posSubmonoid_def] at this
+  contrapose! this
+  simp [this]
+
 variable (R) in
 /-- The setoid used to construct `ValueGroupWithZero R`. -/
 def valueSetoid : Setoid (R × posSubmonoid R) where
@@ -493,6 +501,16 @@ lemma ValueGroupWithZero.lift_valuation {α : Sort*} (f : R → posSubmonoid R �
     ValueGroupWithZero.lift f hf (valuation R x) = f x 1 :=
   rfl
 
+lemma valuation_eq_zero_iff {x : R} :
+    valuation R x = 0 ↔ x ≤ᵥ 0 :=
+  ValueGroupWithZero.mk_eq_zero _ _
+
+@[simp]
+lemma valuation_posSubmonoid_ne_zero (x : posSubmonoid R) :
+    valuation R (x : R) ≠ 0 := by
+  rw [ne_eq, valuation_eq_zero_iff]
+  exact x.prop
+
 /-- Construct a valuative relation on a ring using a valuation. -/
 def ofValuation
     {S Γ : Type*} [CommRing S]
@@ -527,6 +545,12 @@ lemma isEquiv {Γ₁ Γ₂ : Type*}
     v₁.IsEquiv v₂ := by
   intro x y
   simp_rw [← Valuation.Compatible.rel_iff_le]
+
+@[simp]
+lemma valuation_posSubmonoid_ne_zero_of_compatible {Γ : Type*} [LinearOrderedCommMonoidWithZero Γ]
+    (v : Valuation R Γ) [v.Compatible] (x : posSubmonoid R) :
+    v (x : R) ≠ 0 := by
+  simp [(isEquiv v (valuation R)).ne_zero]
 
 variable (R) in
 /-- An alias for endowing a ring with a preorder defined as the valuative relation. -/
@@ -583,7 +607,7 @@ instance : (supp R).IsPrime := by
   infer_instance
 
 open NNReal in variable (R) in
-/-- An auxiliary structure used to define `IsRankOne`. -/
+/-- An auxiliary structure used to define `IsRankLeOne`. -/
 structure RankLeOneStruct where
   /-- The embedding of the value group-with-zero into the nonnegative reals. -/
   emb : ValueGroupWithZero R →*₀ ℝ≥0
@@ -714,3 +738,67 @@ lemma mapValueGroupWithZero_valuation (a : A) :
   apply ValueGroupWithZero.sound <;> simp
 
 end ValuativeExtension
+
+namespace ValuativeRel.ValueGroupWithZero
+
+variable {R Γ : Type*} [CommRing R] [ValuativeRel R] [LinearOrderedCommGroupWithZero Γ]
+  (v : Valuation R Γ)
+
+noncomputable
+def unquot [h : v.Compatible] : ValuativeRel.ValueGroupWithZero R →*₀ Γ :=
+  ⟨⟨ValuativeRel.ValueGroupWithZero.lift (fun r s ↦ v r / v (s : R)) <| by
+    intro x y r s
+    simp only [h.rel_iff_le, map_mul, ← and_imp, ← le_antisymm_iff]
+    rw [div_eq_div_iff] <;> simp,
+    by simp [lift_zero]⟩,
+    by simp, by
+      intros
+      simp only
+      apply ValuativeRel.ValueGroupWithZero.lift_mul
+      field_simp⟩
+
+@[simp]
+lemma unquot_valuation_apply (γ : ValuativeRel.ValueGroupWithZero R) :
+    unquot (valuation R) γ = γ := by
+  obtain ⟨r, s, rfl⟩ := valuation_surjective γ
+  simp [unquot]
+
+lemma strictMono_unquot [h : v.Compatible] : StrictMono (unquot v) := by
+  intro a b h
+  obtain ⟨a, r, rfl⟩ := valuation_surjective a
+  obtain ⟨b, s, rfl⟩ := valuation_surjective b
+  simp only [map_div₀]
+  rw [div_lt_div_iff₀] at h ⊢
+  any_goals simp [zero_lt_iff]
+  rw [← map_mul, ← map_mul, (isEquiv (valuation R) v).lt_iff_lt] at h
+  simpa [unquot] using h
+
+end ValuativeRel.ValueGroupWithZero
+
+variable {R : Type} [CommRing R] [ValuativeRel R]
+
+lemma ValuativeRel.IsRankLeOne.of_compatible_nnreal (v : Valuation R NNReal) [v.Compatible] :
+    ValuativeRel.IsRankLeOne R where
+  nonempty := ⟨⟨ValuativeRel.ValueGroupWithZero.unquot v,
+    ValuativeRel.ValueGroupWithZero.strictMono_unquot v⟩⟩
+
+open WithZero
+lemma ValuativeRel.IsRankLeOne.of_compatible_withZeroMulInt (v : Valuation R ℤᵐ⁰) [v.Compatible] :
+    ValuativeRel.IsRankLeOne R := by
+  let e : ℤᵐ⁰ →*₀ NNReal := {
+    toFun := recZeroCoe 0 (fun x ↦ 2 ^ (log (x : ℤᵐ⁰)))  -- the base doesn't matter
+    map_zero' := by simp
+    map_one' := by simp
+    map_mul' := by
+      simp only [«forall», mul_zero, recZeroCoe_zero, recZeroCoe_coe, Multiplicative.forall,
+        true_and, zero_mul, implies_true]
+      intro x y
+      have : exp (x + y) = unzero (x := (exp (x + y))) exp_ne_zero := rfl
+      rw [← exp, ← exp, ← exp_add, this, recZeroCoe_coe, unzero_coe, ← exp, ← NNReal.coe_inj]
+      push_cast
+      simp [zpow_add₀]
+  }
+  have he : StrictMono e := by
+    simp [StrictMono, «forall», e, zpow_pos, -inv_zpow', zpow_lt_zpow_iff_right₀]
+  exact ⟨⟨MonoidWithZeroHom.comp e (ValuativeRel.ValueGroupWithZero.unquot v),
+    he.comp (ValuativeRel.ValueGroupWithZero.strictMono_unquot v)⟩⟩
