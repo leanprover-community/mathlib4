@@ -325,7 +325,8 @@ def cycleIcc (i j : Fin n) : Perm (Fin n) := if hij : i ≤ j then (cycleRange (
   else Equiv.refl (Fin n)
 
 theorem cycleIcc_of_lt (hij : i ≤ j) (h : k < i) : (cycleIcc i j) k = k := by
-  simpa [cycleIcc, hij] using Perm.extendDomain_apply_not_subtype _ _ (by simp; omega)
+  simpa [cycleIcc, hij] using Perm.extendDomain_apply_not_subtype _ _ (by
+    simp only [range_natAdd_castLEEmb, tsub_le_iff_right, Set.mem_setOf_eq, not_le]; omega)
 
 private lemma cycleIcc_aux (hij : i ≤ j) (kin : k ∈ Set.range ⇑(natAdd_castLEEmb (Nat.sub_le n i)))
     : (cycleIcc i j) k = (natAdd_castLEEmb (Nat.sub_le n i)) (((j - i).castLT
@@ -338,7 +339,7 @@ private lemma cycleIcc_simp_lemma (h : i ≤ k) (kin : k ∈ Set.range ⇑(natAd
     (Nat.sub_le n i))) : (((addNatEmb (n - (n - i.1))).trans
     (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩) = subNat i.1 (k.cast (by omega))
     (by simp [h]) := by
-  simpa [symm_apply_eq] using eq_of_val_eq (by simp; omega)
+  simpa [symm_apply_eq] using eq_of_val_eq (by simp only [coe_cast, coe_addNat, coe_subNat]; omega)
 
 theorem cycleIcc_of_gt (hij : i ≤ j) (h : j < k) : (cycleIcc i j) k = k := by
   have kin : k ∈ Set.range ⇑(natAdd_castLEEmb (Nat.sub_le n i)) := by
@@ -348,8 +349,10 @@ theorem cycleIcc_of_gt (hij : i ≤ j) (h : j < k) : (cycleIcc i j) k = k := by
       (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩))
       = subNat i.1 (k.cast (by omega)) (by simp [le_of_lt (lt_of_le_of_lt hij h)]) := by
     rw [cycleIcc_simp_lemma (le_of_lt (lt_of_le_of_lt hij h)), cycleRange_of_gt]
-    exact lt_def.mpr (by simp [sub_val_of_le hij]; omega)
-  simpa only [cycleIcc_aux hij kin, natAdd_castLEEmb, this] using eq_of_val_eq (by simp; omega)
+    exact lt_def.mpr (by simp only [coe_castLT, sub_val_of_le hij, coe_subNat, coe_cast]; omega)
+  simpa only [cycleIcc_aux hij kin, natAdd_castLEEmb, this] using eq_of_val_eq (by
+    simp only [Function.Embedding.trans_apply, addNatEmb_apply, coe_toEmbedding, finCongr_apply,
+      coe_cast, coe_addNat, coe_subNat]; omega)
 
 theorem cycleIcc_of (h1 : i ≤ k) (h2 : k ≤ j) [NeZero n] :
     (cycleIcc i j) k = if k = j then i else k + 1 := by
