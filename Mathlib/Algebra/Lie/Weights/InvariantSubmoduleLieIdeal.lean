@@ -763,7 +763,23 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
               -- We need indices i, j such that S.root i = χ.toLinear and S.root j = α.1.toLinear
               -- and S.root i + S.root j ∈ range S.root
               obtain ⟨i, hi⟩ : ∃ i, S.root i = χ.toLinear := by
-                sorry -- Technical: χ corresponds to a root index
+                -- χ is a nonzero weight (from w_chi : χ.toLinear ≠ 0)
+                -- So χ.IsNonZero, which means χ ∈ H.root
+                have hχ_nonzero : χ.IsNonZero := by
+                  intro h_zero
+                  apply w_chi
+                  have h_zero_eq : (χ.toLinear : H →ₗ[K] K) = 0 := by
+                    ext h
+                    simp [Weight.IsZero.eq h_zero]
+                  exact h_zero_eq
+                -- Therefore χ ∈ H.root
+                have hχ_in_root : χ ∈ H.root := by
+                  simp [LieSubalgebra.root]
+                  exact hχ_nonzero
+                -- Use χ as the witness
+                use ⟨χ, hχ_in_root⟩
+                -- By definition of rootSystem, S.root just returns the weight's toLinear
+                rfl
               obtain ⟨j, hj⟩ : ∃ j, S.root j = α.1.toLinear := by
                 -- α.1 is a root by definition (α ∈ index set means α.1.toLinear is a root)
                 sorry -- Technical: extract root index from α
