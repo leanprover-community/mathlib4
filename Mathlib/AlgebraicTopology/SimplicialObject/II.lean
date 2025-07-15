@@ -216,16 +216,14 @@ lemma map'_predAbove {n : ℕ} (i : Fin (n + 1)) (x : Fin (n + 2)) :
   · rw [map'_last, Fin.succAbove_of_lt_succ, Fin.succ_last]
     apply Fin.castSucc_lt_last
 
-/-- The action of the functor `SimplexCategory.II` on morphisms. -/
-@[simps]
-def map (f : Fin (n + 1) →o Fin (m + 1)) : Fin (m + 2) →o Fin (n + 2) where
-  toFun := map' f
-  monotone' x y hxy :=
-    Finset.min'_subset _ (fun z hz ↦ by
-      obtain ⟨z, rfl⟩ | rfl := z.eq_castSucc_or_eq_last
-      · simp only [castSucc_mem_finset_iff] at hz ⊢
-        exact hxy.trans hz
-      · simp)
+lemma monotone_map' (f : Fin (n + 1) →o Fin (m + 1)) :
+    Monotone (map' f) := by
+  intro x y hxy
+  exact Finset.min'_subset _ (fun z hz ↦ by
+    obtain ⟨z, rfl⟩ | rfl := z.eq_castSucc_or_eq_last
+    · simp only [castSucc_mem_finset_iff] at hz ⊢
+      exact hxy.trans hz
+    · simp)
 
 end II
 
@@ -236,7 +234,9 @@ type `⦋n⦌ →o ⦋1⦌`). -/
 @[simps obj]
 def II : CosimplicialObject SimplexCategoryᵒᵖ where
   obj n := op ⦋n.len + 1⦌
-  map f := op (Hom.mk (II.map f.toOrderHom))
+  map f := op (Hom.mk
+    { toFun := II.map' f.toOrderHom
+      monotone' := II.monotone_map' _ })
   map_id n := Quiver.Hom.unop_inj (by
     ext x : 3
     exact II.map'_id x)
