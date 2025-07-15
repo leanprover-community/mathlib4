@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Liu, Adam Topaz
 -/
 import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
+import Mathlib.RingTheory.OreLocalization.NonZeroDivisors
 import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.Data.NNReal.Defs
 import Mathlib.Topology.Defs.Filter
@@ -243,7 +244,7 @@ def ValueGroupWithZero'.mk (x : R) (y : posSubmonoid R) : ValueGroupWithZero' R 
   Localization.mk ↑x ⟨↑y, mem_nonZeroDivisors_of_ne_zero <| coe_ne_zero_iff.mpr y.2⟩
 
 protected
-theorem ValueGroupWithZero.ind {motive : ValueGroupWithZero' R → Prop}
+theorem ValueGroupWithZero'.ind {motive : ValueGroupWithZero' R → Prop}
     (mk : ∀ x y, motive (.mk x y))
     (t : ValueGroupWithZero' R) : motive t :=
   Localization.induction_on t
@@ -255,6 +256,9 @@ instance : CommMonoidWithZero (ValueGroupWithZero' R) :=
 
 instance : Inv (ValueGroupWithZero' R) :=
   OreLocalization.inv'
+
+instance : CommGroupWithZero (ValueGroupWithZero' R) where
+
 
 variable (R) in
 /-- The setoid used to construct `ValueGroupWithZero R`. -/
