@@ -200,16 +200,6 @@ section Algebra
 
 variable {R : Type u} [CommSemiring R] {S : Type v} [Semiring S] [Algebra R S]
 
-/-- The map `R[X] → S[X]` as an algebra homomorphism. -/
-def mapAlg (R : Type u) [CommSemiring R] (S : Type v) [Semiring S] [Algebra R S] :
-    R[X] →ₐ[R] S[X] :=
-  @aeval _ S[X] _ _ _ (X : S[X])
-
-/-- `mapAlg` is the morphism induced by `R → S`. -/
-theorem mapAlg_eq_map (p : R[X]) : mapAlg R S p = map (algebraMap R S) p := by
-  simp only [mapAlg, aeval_def, eval₂_eq_sum, map, algebraMap_apply, RingHom.coe_comp]
-  ext; congr
-
 /-- A polynomial `p` lifts if and only if it is in the image of `mapAlg`. -/
 theorem mem_lifts_iff_mem_alg (R : Type u) [CommSemiring R] {S : Type v} [Semiring S] [Algebra R S]
     (p : S[X]) : p ∈ lifts (algebraMap R S) ↔ p ∈ AlgHom.range (@mapAlg R _ S _ _) := by
@@ -226,22 +216,5 @@ theorem monic_of_monic_mapAlg [FaithfulSMul R S] {p : Polynomial R} (hp : (mapAl
   monic_of_injective (FaithfulSMul.algebraMap_injective R S) hp
 
 end Algebra
-
-section IsScalarTower
-
-variable {A : Type*} (B C : Type*) [CommSemiring A] [CommSemiring B] [Semiring C]
-  [Algebra A B] [Algebra A C] [Algebra B C] [IsScalarTower A B C]
-
-theorem mapAlg_comp (p : A[X]) : (mapAlg A C) p = (mapAlg B C) (mapAlg A B p) := by
-  simp [mapAlg_eq_map, map_map, IsScalarTower.algebraMap_eq A B C]
-
-theorem coeff_zero_of_isScalarTower (p : A[X]) :
-    (algebraMap B C) ((algebraMap A B) (p.coeff 0)) = (mapAlg A C p).coeff 0 := by
-  have h : algebraMap A C = (algebraMap B C).comp (algebraMap A B) := by
-    ext a
-    simp [Algebra.algebraMap_eq_smul_one, RingHom.coe_comp, Function.comp_apply]
-  rw [mapAlg_eq_map, coeff_map, h, RingHom.comp_apply]
-
-end IsScalarTower
 
 end Polynomial
