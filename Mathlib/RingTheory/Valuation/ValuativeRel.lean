@@ -99,6 +99,10 @@ namespace ValuativeRel
 
 variable {R : Type*} [CommRing R] [ValuativeRel R]
 
+notation:50 (name := valuativeRelLt) x:50 " <ᵥ " y:51 => x ≤ᵥ y ∧ ¬ y ≤ᵥ x
+
+lemma rel_lt_iff (x y : R) : x <ᵥ y ↔ x ≤ᵥ y ∧ ¬ y ≤ᵥ x := Iff.rfl
+
 @[simp]
 lemma rel_refl (x : R) : x ≤ᵥ x := by
   cases rel_total x x <;> assumption
@@ -148,6 +152,14 @@ def posSubmonoid : Submonoid R where
 
 @[simp]
 lemma posSubmonoid_def (x : R) : x ∈ posSubmonoid R ↔ ¬ x ≤ᵥ 0 := Iff.refl _
+
+@[simp]
+lemma val_posSubmonoid_ne_zero (x : posSubmonoid R) :
+    (x : R) ≠ 0 := by
+  have := x.prop
+  rw [posSubmonoid_def] at this
+  contrapose! this
+  simp [this]
 
 @[simp]
 lemma right_cancel_posSubmonoid (x y : R) (u : posSubmonoid R) :
@@ -411,8 +423,7 @@ instance : LinearOrder (ValueGroupWithZero R) where
 
 @[simp]
 theorem ValueGroupWithZero.mk_lt_mk (x y : R) (t s : posSubmonoid R) :
-    ValueGroupWithZero.mk x t < ValueGroupWithZero.mk y s ↔
-      x * s ≤ᵥ y * t ∧ ¬ y * t ≤ᵥ x * s :=
+    ValueGroupWithZero.mk x t < ValueGroupWithZero.mk y s ↔ x * s <ᵥ y * t :=
   Iff.rfl
 
 instance : Bot (ValueGroupWithZero R) where
@@ -486,6 +497,16 @@ def valuation : Valuation R (ValueGroupWithZero R) where
 instance : (valuation R).Compatible where
   rel_iff_le _ _ := by simp [valuation]
 
+lemma valuation_eq_zero_iff {x : R} :
+    valuation R x = 0 ↔ x ≤ᵥ 0 :=
+  ValueGroupWithZero.mk_eq_zero _ _
+
+@[simp]
+lemma valuation_posSubmonoid_ne_zero (x : posSubmonoid R) :
+    valuation R (x : R) ≠ 0 := by
+  rw [ne_eq, valuation_eq_zero_iff]
+  exact x.prop
+
 @[simp]
 lemma ValueGroupWithZero.lift_valuation {α : Sort*} (f : R → posSubmonoid R → α)
     (hf : ∀ (x y : R) (t s : posSubmonoid R), x * t ≤ᵥ y * s → y * s ≤ᵥ x * t → f x s = f y t)
@@ -527,6 +548,12 @@ lemma isEquiv {Γ₁ Γ₂ : Type*}
     v₁.IsEquiv v₂ := by
   intro x y
   simp_rw [← Valuation.Compatible.rel_iff_le]
+
+
+lemma _root_.Valuation.Compatible.rel_lt_iff_lt {Γ₀ : Type*}
+    [LinearOrderedCommMonoidWithZero Γ₀] {v : Valuation R Γ₀} [v.Compatible] {x y : R} :
+    x <ᵥ y ↔ v x < v y := by
+  simp [lt_iff_le_not_ge, ← Valuation.Compatible.rel_iff_le]
 
 variable (R) in
 /-- An alias for endowing a ring with a preorder defined as the valuative relation. -/
