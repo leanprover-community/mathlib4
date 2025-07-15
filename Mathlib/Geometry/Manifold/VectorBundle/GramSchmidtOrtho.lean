@@ -7,9 +7,9 @@ import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
 import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
 
 /-!
-# Gram-Schmidt orthonormalisation on sections of Riemannian vector bundles
+# Gram-Schmidt orthonormalization on sections of Riemannian vector bundles
 
-In this file, we provide a version of the Gram-Schmidt orthonormalisation procedure
+In this file, we provide a version of the Gram-Schmidt orthonormalization procedure
 for sections of Riemannian vector bundles: this produces a system of sections which are orthogonal
 with respect to the bundle metric. If the initial sections were linearly independent (resp.
 formed a basis) at the point, so do the normalised sections.
@@ -30,34 +30,30 @@ vector bundle, bundle metric, orthonormal frame, Gram-Schmidt
 open Manifold Bundle ContinuousLinearMap ENat Bornology
 open scoped ContDiff Topology
 
--- Let `V` be a smooth vector bundle with a `C^n` Riemannian structure over a `C^k` manifold `B`.
+-- Let `E` be a smooth vector bundle with a `C^n` Riemannian structure over a `C^k` manifold `B`.
 variable
   {EB : Type*} [NormedAddCommGroup EB] [NormedSpace ℝ EB]
-  {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners ℝ EB HB} {n : WithTop ℕ∞}
+  {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners ℝ EB HB} {k n : WithTop ℕ∞}
   {B : Type*} [TopologicalSpace B] [ChartedSpace HB B]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
   {E : B → Type*} [TopologicalSpace (TotalSpace F E)] [∀ x, NormedAddCommGroup (E x)]
   [∀ x, InnerProductSpace ℝ (E x)] [FiberBundle F E] [VectorBundle ℝ F E]
-  [IsManifold IB n B] [ContMDiffVectorBundle n F E IB]
+  [IsManifold IB k B] [ContMDiffVectorBundle n F E IB]
   [IsContMDiffRiemannianBundle IB n F E]
 
 variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrderBot ι] [WellFoundedLT ι]
 
-attribute [local instance] IsWellOrder.toHasWellFounded
-
 local notation "⟪" x ", " y "⟫" => inner ℝ x y
 
-open Finset
+open Finset Submodule
 
 namespace VectorBundle
-
 
 /-- The Gram-Schmidt process takes a set of sections as input
 and outputs a set of sections which are point-wise orthogonal and have the same span.
 Basically, we apply the Gram-Schmidt algorithm point-wise. -/
-noncomputable def gramSchmidt [WellFoundedLT ι]
-    (s : ι → (x : B) → E x) (n : ι) : (x : B) → E x := fun x ↦
-  InnerProductSpace.gramSchmidt ℝ (s · x) n
+noncomputable def gramSchmidt (s : ι → (x : B) → E x) (n : ι) : (x : B) → E x :=
+  fun x ↦ InnerProductSpace.gramSchmidt ℝ (s · x) n
 
 -- Let `s i` be a collection of sections in `E`, indexed by `ι`.
 variable {s : ι → (x : B) → E x}
@@ -82,8 +78,7 @@ theorem gramSchmidt_def'' (n : ι) (x) :
     s n x = gramSchmidt s n x + ∑ i ∈ Iio n,
       (⟪gramSchmidt s i x, s n x⟫ / (‖gramSchmidt s i x‖) ^ 2) • gramSchmidt s i x := by
   convert gramSchmidt_def' s n x
-  rw [Submodule.orthogonalProjection_singleton, RCLike.ofReal_pow]
-  rfl
+  simp [Submodule.orthogonalProjection_singleton, RCLike.ofReal_pow]
 
 variable (s) in
 @[simp]
@@ -129,7 +124,7 @@ theorem mem_span_gramSchmidt {i j : ι} (hij : i ≤ j) (x) :
 
 variable (s) in
 theorem gramSchmidt_mem_span (x) :
-    ∀ {i j}, i ≤ j → gramSchmidt s i x ∈ span ℝ ((s · x) '' Set.Iic j) :=
+    ∀ {j i}, i ≤ j → gramSchmidt s i x ∈ span ℝ ((s · x) '' Set.Iic j) :=
   InnerProductSpace.gramSchmidt_mem_span _ _
 
 variable (s) in
@@ -145,7 +140,7 @@ theorem span_gramSchmidt_Iio (c : ι) (x) :
 variable (s) in
 /-- `gramSchmidt` preserves the point-wise span of sections. -/
 theorem span_gramSchmidt (x : B) :
-    span ℝ (range (gramSchmidt s · x)) = Submodule.span ℝ (range (s · x)) :=
+    span ℝ (range (gramSchmidt s · x)) = span ℝ (range (s · x)) :=
   InnerProductSpace.span_gramSchmidt ℝ (s · x)
 
 /-- If the section values `s i x` are orthogonal, `gramSchmidt` yields the same values at `x`. -/
@@ -213,7 +208,7 @@ lemma gramSchmidtNormed_coe {n : ι} {x} :
 
 variable {x}
 
-theorem gramSchmidtNormed_unit_length_coe (n : ι)
+theorem gramSchmidtNormed_unit_length_coe {n : ι}
     (h₀ : LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic n → ι))) :
     ‖gramSchmidtNormed s n x‖ = 1 :=
   InnerProductSpace.gramSchmidtNormed_unit_length_coe n h₀
