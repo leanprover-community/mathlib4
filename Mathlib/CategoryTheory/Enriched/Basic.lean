@@ -94,64 +94,6 @@ theorem e_assoc' (W X Y Z : C) :
       eComp V W X Y ▷ _ ≫ eComp V W Y Z := by
   rw [← e_assoc V W X Y Z, Iso.hom_inv_id_assoc]
 
-/-- Isomorphisms in a `V`-enriched category `C`consist of a morphism
-`𝟙_ V ⟶ X ⟶[V] Y`, an inverse `𝟙_ V ⟶ Y ⟶[V] X`, and proofs that these compose to the identity
-morphism. -/
-@[ext]
-structure EnrichedIso (X Y : C) where
-  /-- The forward direction of an isomorphism. -/
-  hom : 𝟙_ V ⟶ X ⟶[V] Y
-  /-- The backward direction of an isomorphism. -/
-  inv : 𝟙_ V ⟶ Y ⟶[V] X
-  hom_inv : (λ_ _).inv ≫ (hom ⊗ₘ inv) ≫ eComp V X Y X = eId V X := by aesop_cat
-  inv_hom : (λ_ _).inv ≫ (inv ⊗ₘ hom) ≫ eComp V Y X Y = eId V Y := by aesop_cat
-
-namespace EnrichedIso
-
-variable {V}
-
-/-- The identity isomorphism in a `V`-enriched category. -/
-@[refl, simps]
-def refl (X : C) : EnrichedIso V X X where
-  hom := eId V X
-  inv := eId V X
-  hom_inv := by simp [tensorHom_def']
-  inv_hom := by simp [tensorHom_def']
-
-/-- The inverse isomorphism of an isomorphism in a `V`-enriched category. -/
-@[symm, simps]
-def symm {X Y : C} (I : EnrichedIso V X Y) : EnrichedIso V Y X where
-  hom := I.inv
-  inv := I.hom
-  hom_inv := I.inv_hom
-  inv_hom := I.hom_inv
-
-open EnrichedCategory
-
-lemma trans_hom_inv {X Y Z : C} (I : EnrichedIso V X Y) (J : EnrichedIso V Y Z) :
-    (λ_ (𝟙_ V)).inv ≫ ((λ_ (𝟙_ V)).inv ≫ (I.hom ⊗ₘ J.hom) ≫ eComp V X Y Z ⊗ₘ (λ_ (𝟙_ V)).inv ≫
-      (J.inv ⊗ₘ I.inv) ≫ eComp V Z Y X) ≫ eComp V X Z X = eId V X := by
-  rw [tensor_comp, tensor_comp, tensorHom_def (eComp V X Y Z), Category.assoc, Category.assoc,
-    Category.assoc, ← e_assoc, associator_inv_naturality_left_assoc,
-    ← comp_whiskerRight_assoc, ← e_assoc', associator_inv_naturality_assoc,
-    tensorHom_def' (g := I.inv), Category.assoc, ← comp_whiskerRight_assoc,
-    associator_naturality_assoc, tensorHom_def (f := I.hom), Category.assoc,
-    ← whiskerLeft_comp_assoc, (Iso.inv_comp_eq _).mp J.hom_inv, ← I.hom_inv,
-    tensorHom_def' I.hom]
-  simp only [whiskerLeft_comp, Category.comp_id, Category.assoc, Iso.inv_hom_id_assoc,
-    whiskerRight_tensor, whiskerRight_id, triangle_assoc, e_comp_id]
-  monoidal
-
-/-- The composition of to isomorphisms in a `V`-enriched category. -/
-@[trans, simps]
-def trans {X Y Z : C} (I : EnrichedIso V X Y) (J : EnrichedIso V Y Z) : EnrichedIso V X Z where
-  hom := (λ_ _).inv ≫ (I.hom ⊗ₘ J.hom) ≫ eComp V X Y Z
-  inv := (λ_ _).inv ≫ (J.inv ⊗ₘ I.inv) ≫ eComp V Z Y X
-  hom_inv := trans_hom_inv I J
-  inv_hom := trans_hom_inv J.symm I.symm
-
-end EnrichedIso
-
 section
 
 variable {V} {W : Type v'} [Category.{w'} W] [MonoidalCategory W]
@@ -317,60 +259,6 @@ theorem ForgetEnrichment.homTo_comp {X Y Z : ForgetEnrichment W C} (f : X ⟶ Y)
 theorem ForgetEnrichment.homOf_comp {X Y Z : C} (f : 𝟙_ W ⟶ (X ⟶[W] Y)) (g : 𝟙_ W ⟶ (Y ⟶[W] Z)) :
     homOf W (((λ_ _).inv ≫ (f ⊗ₘ g)) ≫ eComp W ..) = homOf W f ≫ homOf W g :=
   rfl
-
-/-- The isomorphism in `ForgetEnrichment W C` induced by a `W`-enriched iso in `C`. -/
-@[simps]
-def ForgetEnrichment.isoOf {X Y : C} (I : EnrichedIso W X Y) :
-    ForgetEnrichment.of W X ≅ ForgetEnrichment.of W Y where
-  hom := homOf W I.hom
-  inv := homOf W I.inv
-  hom_inv_id := by simp [← homOf_comp, I.hom_inv]
-  inv_hom_id := by simp [← homOf_comp, I.inv_hom]
-
-@[simp]
-lemma ForgetEnrichment.isoOf_refl (X : C) :
-    isoOf W (EnrichedIso.refl X) = Iso.refl (of W X) := by
-  ext; simp
-
-@[simp]
-lemma ForgetEnrichment.isoOf_symm {X Y : C} (I : EnrichedIso W X Y) :
-    isoOf W (EnrichedIso.symm I) = Iso.symm (isoOf W I) := by
-  rfl
-
-@[simp]
-lemma ForgetEnrichment.isoOf_trans {X Y Z : C} (I : EnrichedIso W X Y) (J : EnrichedIso W Y Z) :
-    isoOf W (I.trans J) = (isoOf W I).trans (isoOf W J) := by
-  ext; simp [← Category.assoc, homOf_comp]
-
-/-- The `W`-enriched isomorphism in `C` associated to an iso `X ≅ Y` in `ForgetEnrichment W C`. -/
-@[simps]
-def ForgetEnrichment.isoTo {X Y : ForgetEnrichment W C} (I : X ≅ Y) :
-    EnrichedIso W (ForgetEnrichment.to W X) (ForgetEnrichment.to W Y) where
-  hom := homTo W I.hom
-  inv := homTo W I.inv
-  hom_inv := by rw [← Category.assoc, ← homTo_comp, I.hom_inv_id, homTo_id]
-  inv_hom := by rw [← Category.assoc, ← homTo_comp, I.inv_hom_id, homTo_id]
-
-@[simp]
-lemma ForgetEnrichment.isoTo_rfl {X : ForgetEnrichment W C} :
-    isoTo W (.refl X) = EnrichedIso.refl (ForgetEnrichment.to W X) := by
-  ext <;> simp
-
-@[simp]
-lemma ForgetEnrichment.isoTo_symm {X Y : ForgetEnrichment W C} (I : X ≅ Y) :
-    isoTo W I.symm = EnrichedIso.symm (isoTo W I) := by
-  ext <;> simp
-
-@[simp]
-lemma ForgetEnrichment.isoTo_trans {X Y Z : ForgetEnrichment W C} (I : X ≅ Y) (J : Y ≅ Z) :
-    isoTo W (I.trans J) = EnrichedIso.trans (isoTo W I) (isoTo W J) := by
-  ext <;> simp
-
-/-- The type equivalence between isos in `ForgetEnrichment W C` and `W`-enriched isos in `C`. -/
-def ForgetEnrichment.equivIsoEnrichedIso (X Y : ForgetEnrichment W C) :
-    (X ≅ Y) ≃ EnrichedIso W (ForgetEnrichment.to W X) (ForgetEnrichment.to W Y) where
-  toFun := ForgetEnrichment.isoTo W
-  invFun := ForgetEnrichment.isoOf W
 
 end
 

@@ -164,59 +164,6 @@ lemma eHom_whisker_exchange {X X' Y Y' : C} (f : X ⟶ X') (g : Y ⟶ Y') :
     MonoidalCategory.whiskerRight_id_assoc, assoc, Iso.inv_hom_id_assoc,
     whisker_exchange_assoc, MonoidalCategory.whiskerRight_id_assoc, Iso.inv_hom_id_assoc]
 
-/-- Obtain an `V`-enriched isomorphism from an isomorphism in a `V`-enriched ordinary category. -/
-@[simps]
-def EnrichedIso.ofIso {X Y : C} (I : X ≅ Y) : EnrichedIso V X Y where
-  hom := eHomEquiv V I.hom
-  inv := eHomEquiv V I.inv
-  hom_inv := by simp [← eHomEquiv_comp]
-  inv_hom := by simp [← eHomEquiv_comp]
-
-@[simp]
-lemma EnrichedIso.ofIso_refl {X : C} : EnrichedIso.ofIso V (Iso.refl X) = .refl X := by
-  ext <;> simp [← eHomEquiv_id]
-
-@[simp]
-lemma EnrichedIso.ofIso_symm {X Y : C} (I : X ≅ Y) :
-    (EnrichedIso.ofIso V I).symm = .ofIso _ I.symm := by
-  ext <;> simp
-
-@[simp]
-lemma EnrichedIso.ofIso_trans {X Y Z : C} (I : X ≅ Y) (J : Y ≅ Z) :
-    (EnrichedIso.ofIso V I).trans (.ofIso V J) = .ofIso _ (I.trans J) := by
-  ext <;> simp [← eHomEquiv_comp]
-
-/-- Obtain an iso in a `V`-enriched ordinary category from a `V`-enriched isomorphism. -/
-@[simps]
-def EnrichedIso.iso {X Y : C} (I : EnrichedIso V X Y) : X ≅ Y where
-  hom := (eHomEquiv V).symm I.hom
-  inv := (eHomEquiv V).symm I.inv
-  hom_inv_id := by rw [← eHomEquiv_symm_comp V I.hom I.inv, I.hom_inv, eHomEquiv_symm_id]
-  inv_hom_id := by rw [← eHomEquiv_symm_comp V I.inv I.hom, I.inv_hom, eHomEquiv_symm_id]
-
-/-- The type of `V`-enriched isomorphisms is equivalent to the type of isomorphisms in a
-`V`-enriched ordinary category. -/
-@[simps]
-def EnrichedIso.equivIso (X Y : C) : EnrichedIso V X Y ≃ (X ≅ Y) where
-  toFun := iso V
-  invFun := ofIso V
-  left_inv I := by ext <;> simp
-  right_inv I := by ext; simp
-
-@[simp]
-lemma EnrichedIso.iso_refl {X : C} : EnrichedIso.iso V (.refl X) = .refl X := by
-  ext; simp
-
-@[simp]
-lemma EnrichedIso.iso_symm {X Y : C} (I : EnrichedIso V X Y) :
-    EnrichedIso.iso V I.symm = (EnrichedIso.iso V I).symm := by
-  ext; simp
-
-@[simp]
-lemma EnrichedIso.iso_trans {X Y Z : C} (I : EnrichedIso V X Y) (J : EnrichedIso V Y Z) :
-    EnrichedIso.iso V (I.trans J) = (EnrichedIso.iso V I).trans (EnrichedIso.iso V J) := by
-  ext; simp [eHomEquiv_symm_comp]
-
 attribute [local simp] eHom_whisker_exchange
 
 variable (C) in
