@@ -125,8 +125,6 @@ theorem spanIntNorm_localization (I : Ideal S) (M : Submonoid R) (hM : M ≤ R�
       RingHom.comp_id, ← IsScalarTower.algebraMap_eq, ← IsScalarTower.algebraMap_eq]
   let _ := IsFractionRing.isFractionRing_of_isDomain_of_isLocalization
     (Algebra.algebraMapSubmonoid S M) Sₘ L
-  have : IsIntegralClosure Sₘ Rₘ L :=
-    IsIntegralClosure.of_isIntegrallyClosed _ _ _
   rw [map_spanIntNorm]
   refine span_eq_span (Set.image_subset_iff.mpr ?_) (Set.image_subset_iff.mpr ?_)
   · intro a' ha'
@@ -146,7 +144,6 @@ theorem spanIntNorm_localization (I : Ideal S) (M : Submonoid R) (hM : M ≤ R�
       Algebra.norm_algebraMap] at has
     apply IsFractionRing.injective Rₘ K
     simp only [map_mul, map_pow]
-    have : FiniteDimensional K L := .of_isLocalization R S R⁰
     rwa [Algebra.algebraMap_intNorm (L := L), ← IsScalarTower.algebraMap_apply,
       ← IsScalarTower.algebraMap_apply, Algebra.algebraMap_intNorm (L := L)]
   · intro a ha
