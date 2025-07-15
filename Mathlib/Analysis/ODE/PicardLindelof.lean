@@ -652,12 +652,9 @@ existence of a local flow. -/
 theorem exists_forall_mem_closedBall_eq_forall_mem_Icc_hasDerivWithinAt
     (hf : IsPicardLindelof f t₀ x₀ a r L K) :
     ∃ α : E → ℝ → E, ∀ x ∈ closedBall x₀ r, α x t₀ = x ∧
-      ∀ t ∈ Icc tmin tmax, HasDerivWithinAt (α x) (f t (α x t)) (Icc tmin tmax) t := by
-  have (x) (hx : x ∈ closedBall x₀ r) := exists_eq_forall_mem_Icc_hasDerivWithinAt hf hx
-  choose α hα using this
-  set α' := fun (x : E) ↦ if hx : x ∈ closedBall x₀ r then α x hx else 0 with hα'
-  refine ⟨α', fun x hx ↦ ?_⟩
-  grind
+      ∀ t ∈ Icc tmin tmax, HasDerivWithinAt (α x) (f t (α x t)) (Icc tmin tmax) t :=
+  have ⟨α, hα⟩ := exists_forall_mem_closedBall_eq_hasDerivWithinAt_lipschitzOnWith hf
+  ⟨α, hα.1⟩
 
 end IsPicardLindelof
 
