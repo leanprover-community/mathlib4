@@ -6,6 +6,7 @@ Authors: Joël Riou, Kenny Lau
 import Mathlib.CategoryTheory.Limits.Opposites
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.Products
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
@@ -309,6 +310,10 @@ include pb hpb in
 theorem hasPullback_of_pullbackCone : HasPullback f g :=
   ⟨⟨⟨_, isLimitPullbackCone f g pb hpb⟩⟩⟩
 
+include hpb in
+lemma isPullback : IsPullback (pullbackCone f g pb).fst (pullbackCone f g pb).snd f g :=
+  ⟨⟨pullbackCone_condition f g pb⟩, ⟨isLimitPullbackCone f g pb hpb⟩⟩
+
 omit pb
 variable [HasPullbacks C]
 
@@ -317,29 +322,6 @@ instance : HasPullback f g :=
 
 instance : HasPullbacks (FormalCoproduct.{w} C) :=
   hasPullbacks_of_hasLimit_cospan _
-
-include pb
-
-/-- The arbitrary choice of pullback is isomorphic to the explicitly constructed pullback
-`pullbackCone f g pb`. -/
-noncomputable def pullbackIsoPullbackConePt : pullback f g ≅ (pullbackCone f g pb).pt :=
-  limit.isoLimitCone ⟨_, isLimitPullbackCone f g pb hpb⟩
-
-@[reassoc (attr := simp)] lemma pullbackIsoPullbackConePt_hom_fst :
-    (pullbackIsoPullbackConePt f g pb hpb).hom ≫ (pullbackCone f g pb).fst = pullback.fst f g :=
-  limit.isoLimitCone_hom_π _ _
-
-@[reassoc (attr := simp)] lemma ppullbackIsoPullbackConePt_inv_fst :
-    (pullbackIsoPullbackConePt f g pb hpb).inv ≫ pullback.fst f g = (pullbackCone f g pb).fst :=
-  limit.isoLimitCone_inv_π _ _
-
-@[reassoc (attr := simp)] lemma pullbackIsoPullbackConePt_hom_snd :
-    (pullbackIsoPullbackConePt f g pb hpb).hom ≫ (pullbackCone f g pb).snd = pullback.snd f g :=
-  limit.isoLimitCone_hom_π _ _
-
-@[reassoc (attr := simp)] lemma pullbackIsoPullbackConePt_inv_snd :
-    (pullbackIsoPullbackConePt f g pb hpb).inv ≫ pullback.snd f g = (pullbackCone f g pb).snd :=
-  limit.isoLimitCone_inv_π _ _
 
 end Pullback
 
