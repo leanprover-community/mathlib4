@@ -6,9 +6,8 @@ Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
 
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.Module.End
-import Mathlib.RingTheory.OreLocalization.Basic
+import Mathlib.RingTheory.OreLocalization.NonZeroDivisors
 
 /-!
 
@@ -70,9 +69,11 @@ variable {R : Type*} [Semiring R] {S : Submonoid R} [OreSet S]
 
 attribute [local instance] OreLocalization.oreEqv
 
+@[deprecated zero_mul (since := "2025-07-15")]
 protected theorem zero_mul (x : R[S⁻¹]) : 0 * x = 0 :=
   OreLocalization.zero_smul x
 
+@[deprecated mul_zero (since := "2025-07-15")]
 protected theorem mul_zero (x : R[S⁻¹]) : x * 0 = 0 :=
   OreLocalization.smul_zero x
 
@@ -204,75 +205,13 @@ theorem numeratorHom_inj (hS : S ≤ nonZeroDivisorsRight R) :
   rw [← h₂, ← sub_eq_zero, ← mul_sub] at h₁
   exact (sub_eq_zero.mp (hS u.2 _ h₁)).symm
 
-theorem subsingleton_iff :
-    Subsingleton R[S⁻¹] ↔ 0 ∈ S := by
-  rw [← subsingleton_iff_zero_eq_one, OreLocalization.one_def,
-    OreLocalization.zero_def, oreDiv_eq_iff]
-  simp
-
-theorem nontrivial_iff :
-    Nontrivial R[S⁻¹] ↔ 0 ∉ S := by
-  rw [← not_subsingleton_iff_nontrivial, subsingleton_iff]
-
-theorem nontrivial_of_nonZeroDivisors [Nontrivial R] (hS : S ≤ R⁰) :
-    Nontrivial R[S⁻¹] :=
-  nontrivial_iff.mpr (fun e ↦ one_ne_zero <| hS e 1 (mul_zero _))
-
 end Ring
 
 noncomputable section DivisionRing
 
 open nonZeroDivisors
 
-variable {R : Type*} [Ring R] [Nontrivial R] [OreSet R⁰]
-
-instance nontrivial : Nontrivial R[R⁰⁻¹] :=
-  nontrivial_of_nonZeroDivisors (refl R⁰)
-
-variable [NoZeroDivisors R]
-
-open Classical in
-/-- The inversion of Ore fractions for a ring without zero divisors, satisfying `0⁻¹ = 0` and
-`(r /ₒ r')⁻¹ = r' /ₒ r` for `r ≠ 0`. -/
-@[irreducible]
-protected def inv : R[R⁰⁻¹] → R[R⁰⁻¹] :=
-  liftExpand
-    (fun r s =>
-      if hr : r = (0 : R) then (0 : R[R⁰⁻¹])
-      else s /ₒ ⟨r, fun _ => eq_zero_of_ne_zero_of_mul_right_eq_zero hr⟩)
-    (by
-      intro r t s hst
-      by_cases hr : r = 0
-      · simp [hr]
-      · by_cases ht : t = 0
-        · exfalso
-          apply nonZeroDivisors.coe_ne_zero ⟨_, hst⟩
-          simp [ht]
-        · simp only [hr, ht, dif_neg, not_false_iff, or_self_iff, mul_eq_zero, smul_eq_mul]
-          apply OreLocalization.expand)
-
-instance inv' : Inv R[R⁰⁻¹] :=
-  ⟨OreLocalization.inv⟩
-
-open Classical in
-protected theorem inv_def {r : R} {s : R⁰} :
-    (r /ₒ s)⁻¹ =
-      if hr : r = (0 : R) then (0 : R[R⁰⁻¹])
-      else s /ₒ ⟨r, fun _ => eq_zero_of_ne_zero_of_mul_right_eq_zero hr⟩ := by
-  with_unfolding_all rfl
-
-protected theorem mul_inv_cancel (x : R[R⁰⁻¹]) (h : x ≠ 0) : x * x⁻¹ = 1 := by
-  induction' x with r s
-  rw [OreLocalization.inv_def, OreLocalization.one_def]
-  have hr : r ≠ 0 := by
-    rintro rfl
-    simp at h
-  simp only [hr]
-  with_unfolding_all apply OreLocalization.mul_inv ⟨r, _⟩
-
-protected theorem inv_zero : (0 : R[R⁰⁻¹])⁻¹ = 0 := by
-  rw [OreLocalization.zero_def, OreLocalization.inv_def]
-  simp
+variable {R : Type*} [Ring R] [Nontrivial R] [NoZeroDivisors R] [OreSet R⁰]
 
 instance : DivisionRing R[R⁰⁻¹] where
   mul_inv_cancel := OreLocalization.mul_inv_cancel
