@@ -343,7 +343,7 @@ private lemma cycleIcc_simp_lemma (h : i ≤ k) (kin : k ∈ Set.range ⇑(natAd
 
 theorem cycleIcc_of_gt (hij : i ≤ j) (h : j < k) : (cycleIcc i j) k = k := by
   have kin : k ∈ Set.range ⇑(natAdd_castLEEmb (Nat.sub_le n i)) := by
-    simp only [range_natAdd_castLEEmb, tsub_le_iff_right, Set.mem_setOf_eq]
+    rw [range_natAdd_castLEEmb, Set.mem_setOf_eq]
     omega
   have : (((j - i).castLT (sub_val_lt_sub hij)).cycleRange (((addNatEmb
       (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩))
