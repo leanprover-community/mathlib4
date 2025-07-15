@@ -135,7 +135,7 @@ theorem isConj_of {σ τ : alternatingGroup α} (hc : IsConj (σ : Perm α) (τ 
     obtain ⟨a, ha, b, hb, ab⟩ := Finset.one_lt_card.1 h2
     refine isConj_iff.2 ⟨⟨π * swap a b, ?_⟩, Subtype.val_injective ?_⟩
     · rw [mem_alternatingGroup, MonoidHom.map_mul, h, sign_swap ab, Int.units_mul_self]
-    · simp only [← hπ, coe_mk, Subgroup.coe_mul, Subtype.val]
+    · simp only [← hπ, Subgroup.coe_mul]
       have hd : Disjoint (swap a b) σ := by
         rw [disjoint_iff_disjoint_support, support_swap ab, Finset.disjoint_insert_left,
           Finset.disjoint_singleton_left]
@@ -276,7 +276,7 @@ theorem normalClosure_swap_mul_swap_five :
   have h5 : g1 * g2 * g1⁻¹ * g2⁻¹ =
       ⟨finRotate 5, finRotate_bit1_mem_alternatingGroup (n := 2)⟩ := by
     rw [Subtype.ext_iff]
-    simp only [Fin.val_mk, Subgroup.coe_mul, Subgroup.coe_inv, Fin.val_mk]
+    simp only [Subgroup.coe_mul, Subgroup.coe_inv]
     decide
   rw [eq_top_iff, ← normalClosure_finRotate_five]
   refine normalClosure_le_normal ?_
@@ -391,7 +391,7 @@ theorem alternatingGroup_le_of_index_le_two
     alternatingGroup α ≤ G := by
   rcases G.index.eq_zero_or_pos with h | h
   · exact (index_ne_zero_of_finite h).elim
-  rcases (Nat.succ_le_iff.mpr h).eq_or_gt with h | h
+  rcases (Nat.succ_le_iff.mpr h).eq_or_lt' with h | h
   · exact index_eq_one.mp h ▸ le_top
   rw [eq_alternatingGroup_of_index_eq_two (hG.antisymm h)]
 
