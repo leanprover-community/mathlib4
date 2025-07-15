@@ -271,7 +271,7 @@ noncomputable def restrictPreimage' (e : Pretrivialization F proj) (s : Set B)
   target := (Prod.map Subtype.val id) ⁻¹' e.target
   map_source' z hz := by
     simpa only [Prod.map_apply, ← e.proj_toFun _ hz] using e.map_source' hz
-  map_target' x hx := by dsimp only; rw [dif_pos (by exact hx)]; exact e.map_target' hx
+  map_target' x hx := by rw [dif_pos (by exact hx)]; exact e.map_target' hx
   left_inv' z hz := by
     dsimp only; rw [dif_pos] <;> all_goals simp_rw [← e.proj_toFun _ hz]
     exacts [Subtype.ext (e.left_inv' hz), e.map_source' hz]
