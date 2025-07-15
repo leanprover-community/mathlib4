@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+import Mathlib.GroupTheory.Abelianization
 import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
 import Mathlib.RepresentationTheory.Invariants
 
@@ -26,6 +27,8 @@ The file also contains an identification between the definitions in
 `cyclesₙ` in this file for `n = 1, 2`, as well as an isomorphism `groupHomology.cycles A 0 ≅ A.V`.
 Moreover, we provide API for the natural maps `cyclesₙ A → Hn A` for `n = 1, 2`.
 
+We show that when the representation on `A` is trivial, `H₁(G, A) ≃+ Gᵃᵇ ⊗[ℤ] A`.
+
 ## Main definitions
 
 * `groupHomology.H0Iso A`: isomorphism between `H₀(G, A)` and the coinvariants `A_G` of the
@@ -34,6 +37,8 @@ Moreover, we provide API for the natural maps `cyclesₙ A → Hn A` for `n = 1,
   to `H₁(G, A)`.
 * `groupHomology.H2π A`: epimorphism from the 2-cycles
   (i.e. `Z₂(G, A) := Ker(d₁ : (G² →₀ A) → (G →₀ A)`) to `H₂(G, A)`.
+* `groupHomology.H1AddEquivOfIsTrivial`: an isomorphism `H₁(G, A) ≃+ Gᵃᵇ ⊗[ℤ] A` when the
+  representation on `A` is trivial.
 
 -/
 
@@ -339,9 +344,17 @@ theorem cycles₁_eq_top_of_isTrivial [A.IsTrivial] : cycles₁ A = ⊤ := by
 variable (A) in
 /-- The natural inclusion `Z₁(G, A) ⟶ C₁(G, A)` is an isomorphism when the representation
 on `A` is trivial. -/
-abbrev cycles₁IsoOfIsTrivial [A.IsTrivial] :
+def cycles₁IsoOfIsTrivial [A.IsTrivial] :
     ModuleCat.of k (cycles₁ A) ≅ ModuleCat.of k (G →₀ A) :=
   (LinearEquiv.ofTop _ (cycles₁_eq_top_of_isTrivial A)).toModuleIso
+
+@[simp]
+lemma cycles₁IsoOfIsTrivial_hom_apply [A.IsTrivial] (x : cycles₁ A) :
+    (cycles₁IsoOfIsTrivial A).hom x = x.1 := rfl
+
+@[simp]
+lemma cycles₁IsoOfIsTrivial_inv_apply [A.IsTrivial] (x : G →₀ A) :
+    ((cycles₁IsoOfIsTrivial A).inv x).1 = x := rfl
 
 theorem mem_cycles₂_iff (x : G × G →₀ A) :
     x ∈ cycles₂ A ↔ x.sum (fun g a => single g.2 (A.ρ g.1⁻¹ a) + single g.1 a) =
@@ -901,6 +914,91 @@ lemma π_comp_H1Iso_hom :
       (shortComplexH1 A).moduleCatLeftHomologyData.π := by
   simp [H1Iso, isoCycles₁, π, HomologicalComplex.homologyπ, leftHomologyπ]
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma π_comp_H1Iso_inv :
+    (shortComplexH1 A).moduleCatLeftHomologyData.π ≫ (H1Iso A).inv = H1π A :=
+  (CommSq.vert_inv ⟨π_comp_H1Iso_hom A⟩).w
+
+section IsTrivial
+
+variable [A.IsTrivial]
+
+open TensorProduct
+
+/-- If a `G`-representation on `A` is trivial, this is the natural map `Gᵃᵇ → A → H₁(G, A)`
+sending `⟦g⟧, a` to `⟦single g a⟧`. -/
+def mkH1OfIsTrivial : Additive (Abelianization G) →ₗ[ℤ] A →ₗ[ℤ] H1 A :=
+  AddMonoidHom.toIntLinearMap <| AddMonoidHom.toMultiplicative'.symm <| Abelianization.lift {
+    toFun g := Multiplicative.ofAdd (AddMonoidHom.toIntLinearMap (AddMonoidHomClass.toAddMonoidHom
+      ((H1π A).hom ∘ₗ (cycles₁IsoOfIsTrivial A).inv.hom ∘ₗ lsingle g)))
+    map_one' := Multiplicative.toAdd.injective <|
+      LinearMap.ext fun _ => (H1π_eq_zero_iff _).2 <| single_one_mem_boundaries₁ _
+    map_mul' g h := Multiplicative.toAdd.injective <| LinearMap.ext fun a => by
+      simpa [← map_add] using ((H1π_eq_iff _ _).2 ⟨single (g, h) a, by
+        simp [cycles₁IsoOfIsTrivial, sub_add_eq_add_sub, add_comm (single h a),
+          d₂₁_single (A := A)]⟩).symm }
+
+variable {A} in
+@[simp]
+lemma mkH1OfIsTrivial_apply (g : G) (a : A) :
+    mkH1OfIsTrivial A (Additive.ofMul (Abelianization.of g)) a =
+      H1π A ((cycles₁IsoOfIsTrivial A).inv (single g a)) := rfl
+
+/-- If a `G`-representation on `A` is trivial, this is the natural map `H₁(G, A) → Gᵃᵇ ⊗[ℤ] A`
+sending `⟦single g a⟧` to `⟦g⟧ ⊗ₜ a`. -/
+def H1ToTensorOfIsTrivial : H1 A →ₗ[ℤ] (Additive <| Abelianization G) ⊗[ℤ] A :=
+  ((QuotientAddGroup.lift _ ((Finsupp.liftAddHom fun g => AddMonoidHomClass.toAddMonoidHom
+    (TensorProduct.mk ℤ _ _ (Additive.ofMul (Abelianization.of g)))).comp
+      (cycles₁ A).toAddSubgroup.subtype) fun ⟨y, hy⟩ ⟨z, hz⟩ => AddMonoidHom.mem_ker.2 <| by
+      simp [← hz, d₂₁, sum_sum_index, sum_add_index, tmul_add, sum_sub_index, tmul_sub,
+        shortComplexH1]).comp <| AddMonoidHomClass.toAddMonoidHom (H1Iso A).hom.hom).toIntLinearMap
+
+variable {A} in
+@[simp]
+lemma H1ToTensorOfIsTrivial_H1π_single (g : G) (a : A) :
+    H1ToTensorOfIsTrivial A (H1π A <| (cycles₁IsoOfIsTrivial A).inv (single g a)) =
+      Additive.ofMul (Abelianization.of g) ⊗ₜ[ℤ] a := by
+  simp only [H1ToTensorOfIsTrivial, H1π,  AddMonoidHom.coe_toIntLinearMap, AddMonoidHom.coe_comp]
+  change QuotientAddGroup.lift _ _ _ ((H1Iso A).hom _) = _
+  simp [π_comp_H1Iso_hom_apply, Submodule.Quotient.mk, QuotientAddGroup.lift, AddCon.lift,
+    AddCon.liftOn, AddSubgroup.subtype, cycles₁IsoOfIsTrivial]
+
+/-- If a `G`-representation on `A` is trivial, this is the group isomorphism between
+`H₁(G, A) ≃+ Gᵃᵇ ⊗[ℤ] A` defined by `⟦single g a⟧ ↦ ⟦g⟧ ⊗ a`. -/
+@[simps! -isSimp]
+def H1AddEquivOfIsTrivial :
+    H1 A ≃+ (Additive <| Abelianization G) ⊗[ℤ] A :=
+  LinearEquiv.toAddEquiv <| LinearEquiv.ofLinear
+    (H1ToTensorOfIsTrivial A) (lift <| mkH1OfIsTrivial A)
+    (ext <| LinearMap.toAddMonoidHom_injective <| by
+      ext g a
+      simp [TensorProduct.mk_apply, TensorProduct.lift.tmul, mkH1OfIsTrivial_apply,
+        H1ToTensorOfIsTrivial_H1π_single g a])
+    (LinearMap.toAddMonoidHom_injective <|
+      (H1Iso A).symm.toLinearEquiv.toAddEquiv.comp_left_injective <|
+      QuotientAddGroup.addMonoidHom_ext _ <|
+      (cycles₁IsoOfIsTrivial A).symm.toLinearEquiv.toAddEquiv.comp_left_injective <| by
+        ext
+        simp only [H1ToTensorOfIsTrivial, Iso.toLinearEquiv, AddMonoidHom.coe_comp,
+          LinearMap.toAddMonoidHom_coe, LinearMap.coe_comp, AddMonoidHom.coe_toIntLinearMap]
+        change TensorProduct.lift _ (QuotientAddGroup.lift _ _ _ ((H1Iso A).hom _)) = _
+        simpa [AddSubgroup.subtype, cycles₁IsoOfIsTrivial_inv_apply (A := A),
+          -π_comp_H1Iso_inv_apply] using (π_comp_H1Iso_inv_apply A _).symm)
+
+@[simp]
+lemma H1AddEquivOfIsTrivial_single (g : G) (a : A) :
+    H1AddEquivOfIsTrivial A (H1π A <| (cycles₁IsoOfIsTrivial A).inv (single g a)) =
+      Additive.ofMul (Abelianization.of g) ⊗ₜ[ℤ] a := by
+  rw [H1AddEquivOfIsTrivial_apply, H1ToTensorOfIsTrivial_H1π_single g a]
+
+@[simp]
+lemma H1AddEquivOfIsTrivial_symm_tmul (g : G) (a : A) :
+    (H1AddEquivOfIsTrivial A).symm (Additive.ofMul (Abelianization.of g) ⊗ₜ[ℤ] a) =
+      H1π A ((cycles₁IsoOfIsTrivial A).inv <| single g a) := by
+  rfl
+
+end IsTrivial
+
 end H1
 
 section H2
@@ -949,6 +1047,11 @@ lemma π_comp_H2Iso_hom :
     π A 2 ≫ (H2Iso A).hom = (isoCycles₂ A).hom ≫
       (shortComplexH2 A).moduleCatLeftHomologyData.π := by
   simp [H2Iso, isoCycles₂, π, HomologicalComplex.homologyπ, leftHomologyπ]
+
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma π_comp_H2Iso_inv :
+    (shortComplexH2 A).moduleCatLeftHomologyData.π ≫ (H2Iso A).inv = H2π A :=
+  (CommSq.vert_inv ⟨π_comp_H2Iso_hom A⟩).w
 
 end H2
 
