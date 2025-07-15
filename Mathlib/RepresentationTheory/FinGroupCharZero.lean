@@ -13,13 +13,10 @@ import Mathlib.RingTheory.SimpleModule.InjectiveProjective
 # Applications of Maschke's theorem
 
 This proves some properties of representations that follow from Maschke's
-theorem. In particular, we assume that the group is finite, and we also assume
-that the base ring is a field of characteristic zero (or at least a field where
-the order of the group is invertible).
+theorem.
 
-In particular, we prove that, if `G` is a finite group whose order is invertible
-in a field `k`, then every object of `Rep k G` (resp. `FDRep k G`) is injective and
-projective.
+We prove that, if `G` is a finite group whose order is invertible in a field `k`,
+then every object of `Rep k G` (resp. `FDRep k G`) is injective and projective.
 
 We also give two simpleness criteria for an object `V` of `FDRep k G`, when `k` is
 an algebraically closed field in which the order of `G` is invertible:
