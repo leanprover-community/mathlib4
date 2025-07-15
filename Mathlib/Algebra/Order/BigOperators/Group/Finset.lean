@@ -153,10 +153,23 @@ theorem prod_eq_one_iff_of_one_le' :
     rw [prod_insert ha, mul_eq_one_iff_of_one_le (H _ <| mem_insert_self _ _) (one_le_prod' this),
       forall_mem_insert, ih this]
 
+@[to_additive sum_pos_iff_of_nonneg]
+lemma one_lt_prod_iff_of_one_le (hf : ∀ x ∈ s, 1 ≤ f x) :
+    1 < ∏ x ∈ s, f x ↔ ∃ x ∈ s, 1 < f x := by
+  have hsum : 1 ≤ ∏ x ∈ s, f x := one_le_prod' hf
+  rw [hsum.lt_iff_ne', Ne, prod_eq_one_iff_of_one_le' hf, not_forall]
+  replace hf : ∀ x ∈ s, 1 < f x ↔ f x ≠ 1 := fun x hx => hf x hx |>.lt_iff_ne'
+  simp +contextual [← exists_prop, - exists_const_iff, hf]
+
 @[to_additive sum_eq_zero_iff_of_nonpos]
 theorem prod_eq_one_iff_of_le_one' :
     (∀ i ∈ s, f i ≤ 1) → ((∏ i ∈ s, f i) = 1 ↔ ∀ i ∈ s, f i = 1) :=
   prod_eq_one_iff_of_one_le' (N := Nᵒᵈ)
+
+@[to_additive]
+lemma prod_lt_one_iff_of_le_one (hf : ∀ x ∈ s, f x ≤ 1) :
+    ∏ x ∈ s, f x < 1 ↔ ∃ x ∈ s, f x < 1 :=
+  one_lt_prod_iff_of_one_le (N := Nᵒᵈ) hf
 
 @[to_additive single_le_sum]
 theorem single_le_prod' (hf : ∀ i ∈ s, 1 ≤ f i) {a} (h : a ∈ s) : f a ≤ ∏ x ∈ s, f x :=
@@ -386,6 +399,12 @@ theorem prod_le_prod_of_ne_one' (h : ∀ x ∈ s, f x ≠ 1 → x ∈ t) :
       mul_le_of_le_one_of_le
         (prod_le_one' <| by simp only [mem_filter, and_imp]; exact fun _ _ ↦ le_of_eq)
         (prod_le_prod_of_subset' <| by simpa only [subset_iff, mem_filter, and_imp])
+
+omit [IsOrderedMonoid M] in
+@[to_additive sum_pos_iff]
+lemma one_lt_prod_iff : 1 < ∏ x ∈ s, f x ↔ ∃ x ∈ s, 1 < f x :=
+  have := CanonicallyOrderedMul.toIsOrderedMonoid (α := M)
+  Finset.one_lt_prod_iff_of_one_le <| fun _ _ => one_le _
 
 end CanonicallyOrderedMul
 
