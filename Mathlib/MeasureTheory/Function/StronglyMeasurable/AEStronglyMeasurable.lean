@@ -383,7 +383,7 @@ alias _root_.List.aestronglyMeasurable_sum' := List.aestronglyMeasurable_sum
 alias _root_.List.aestronglyMeasurable_prod' := List.aestronglyMeasurable_prod
 
 @[to_additive (attr := fun_prop, measurability)]
-theorem _root_.List.aestronglyMeasurable_prod
+theorem _root_.List.aestronglyMeasurable_fun_prod
     (l : List (α → M)) (hl : ∀ f ∈ l, AEStronglyMeasurable f μ) :
     AEStronglyMeasurable (fun x => (l.map fun f : α → M => f x).prod) μ := by
   simpa only [← Pi.list_prod_apply] using l.aestronglyMeasurable_prod hl
