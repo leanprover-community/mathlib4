@@ -372,8 +372,6 @@ def unpackCache (hashMap : ModuleHashMap) (force : Bool) : CacheM Unit := do
   let hashMap ← hashMap.filterExists true
   let size := hashMap.size
   if size > 0 then
-    let now ← IO.monoMsNow
-    IO.println s!"Decompressing {size} file(s)"
     let args := (if force then #["-f"] else #[]) ++ #["-x", "--delete-corrupted", "-j", "-"]
     let child ← IO.Process.spawn { cmd := ← getLeanTar, args, stdin := .piped }
     let (stdin, child) ← child.takeStdin
@@ -404,8 +402,6 @@ def unpackCache (hashMap : ModuleHashMap) (force : Bool) : CacheM Unit := do
     stdin.putStr <| Lean.Json.compress <| .arr config
     let exitCode ← child.wait
     if exitCode != 0 then throw <| IO.userError s!"leantar failed with error code {exitCode}"
-    IO.println s!"Unpacked in {(← IO.monoMsNow) - now} ms"
-    IO.println "Completed successfully!"
   else IO.println "No cache files to decompress"
 
 instance : Ord FilePath where
