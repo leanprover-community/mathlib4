@@ -98,7 +98,7 @@ instance Multiplicative.instDecidablePredIsSquare [DecidablePred (Even : α → 
 
 end Add
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, grind)]
 lemma IsSquare.one [MulOneClass α] : IsSquare (1 : α) := ⟨1, (mul_one _).symm⟩
 
 @[deprecated (since := "2024-12-27")] alias isSquare_one := IsSquare.one

@@ -48,7 +48,7 @@ theorem isEmbedding_sigmaMk_comp [Nonempty X] :
       ⟨_, (isOpen_sigma_fst_preimage {i}).preimage (continuous_eval_const x), fun _ ↦ Iff.rfl⟩⟩
   injective := by
     rintro ⟨i, g⟩ ⟨i', g'⟩ h
-    obtain ⟨rfl, hg⟩ : i = i' ∧ HEq (⇑g) (⇑g') :=
+    obtain ⟨rfl, hg⟩ : i = i' ∧ ⇑g ≍ ⇑g' :=
       Function.eq_of_sigmaMk_comp <| congr_arg DFunLike.coe h
     simpa using hg
 

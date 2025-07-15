@@ -450,8 +450,8 @@ def coeff (h : IsAdjoinRootMonic S f) : S →ₗ[R] ℕ → R :=
 
 theorem coeff_apply_lt (h : IsAdjoinRootMonic S f) (z : S) (i : ℕ) (hi : i < natDegree f) :
     h.coeff z i = h.basis.repr z ⟨i, hi⟩ := by
-  simp only [coeff, LinearMap.comp_apply, Finsupp.lcoeFun_apply, Finsupp.lmapDomain_apply,
-    LinearEquiv.coe_coe, liftPolyₗ_apply, LinearMap.coe_mk, h.basis_repr]
+  simp only [coeff,
+    liftPolyₗ_apply, LinearMap.coe_mk, h.basis_repr]
   rfl
 
 theorem coeff_apply_coe (h : IsAdjoinRootMonic S f) (z : S) (i : Fin (natDegree f)) :
@@ -459,8 +459,8 @@ theorem coeff_apply_coe (h : IsAdjoinRootMonic S f) (z : S) (i : Fin (natDegree 
 
 theorem coeff_apply_le (h : IsAdjoinRootMonic S f) (z : S) (i : ℕ) (hi : natDegree f ≤ i) :
     h.coeff z i = 0 := by
-  simp only [coeff, LinearMap.comp_apply, Finsupp.lcoeFun_apply, Finsupp.lmapDomain_apply,
-    LinearEquiv.coe_coe, liftPolyₗ_apply, LinearMap.coe_mk, h.basis_repr]
+  simp only [coeff,
+    liftPolyₗ_apply, LinearMap.coe_mk]
   nontriviality R
   exact
     Polynomial.coeff_eq_zero_of_degree_lt

@@ -98,7 +98,7 @@ example (A B : ℕ) (H : B * A = 2) : A * B = 2 := by ring_nf at H ⊢; exact H
 example (f : ℕ → ℕ) :
   2 + f (2 * f 3 * f 3) + f 3 = 1 + f (f 3 ^ 2 + f 3 * f 3) + 1 + f (2 + 1) := by ring_nf
 
-example (n : ℕ) (m : ℤ) : 2^(n+1) * m = 2 * 2^n * m := by ring
+example (n : ℕ) (m : ℤ) : 2^(n + 1) * m = 2 * 2^n * m := by ring
 example (a b : ℤ) (n : ℕ) : (a + b)^(n + 2) = (a^2 + b^2 + a * b + b * a) * (a + b)^n := by ring
 example (x y : ℕ) : x + id y = y + id x := by ring!
 

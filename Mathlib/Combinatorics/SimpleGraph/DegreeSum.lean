@@ -52,7 +52,7 @@ variable [Fintype V] [DecidableRel G.Adj]
 theorem dart_fst_fiber [DecidableEq V] (v : V) :
     ({d : G.Dart | d.fst = v} : Finset _) = univ.image (G.dartOfNeighborSet v) := by
   ext d
-  simp only [mem_image, true_and, mem_filter, SetCoe.exists, mem_univ, exists_prop_of_true]
+  simp only [mem_image, true_and, mem_filter, SetCoe.exists, mem_univ]
   constructor
   · rintro rfl
     exact ⟨_, d.adj, by ext <;> rfl⟩
@@ -126,7 +126,7 @@ theorem even_card_odd_degree_vertices [Fintype V] [DecidableRel G.Adj] :
     simp only [ZMod.natCast_self, zero_mul, Nat.cast_mul] at h
     rw [Nat.cast_sum, ← sum_filter_ne_zero] at h
     rw [sum_congr (g := fun _v ↦ (1 : ZMod 2)) rfl] at h
-    · simp only [filter_congr, mul_one, nsmul_eq_mul, sum_const, Ne] at h
+    · simp only [mul_one, nsmul_eq_mul, sum_const, Ne] at h
       rw [← ZMod.eq_zero_iff_even]
       convert h
       exact ZMod.ne_zero_iff_odd.symm
@@ -148,7 +148,7 @@ theorem odd_card_odd_degree_vertices_ne [Fintype V] [DecidableEq V] [DecidableRe
   have hc : (fun w : V => w ≠ v ∧ Odd (G.degree w)) = fun w : V => Odd (G.degree w) ∧ w ≠ v := by
     ext w
     rw [and_comm]
-  simp only [hc, filter_congr]
+  simp only [hc]
   rw [← filter_filter, filter_ne', card_erase_of_mem]
   · refine ⟨k - 1, tsub_eq_of_eq_add <| hg.trans ?_⟩
     rw [add_assoc, one_add_one_eq_two, ← Nat.mul_succ, ← two_mul]
