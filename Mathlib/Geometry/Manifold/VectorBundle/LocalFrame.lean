@@ -273,6 +273,30 @@ end
 
 set_option linter.style.commandStart true
 
+section pullback
+
+variable {E' : Type*} [NormedAddCommGroup E']
+  [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M'] -- [IsManifold I 0 M]
+  -- [ContMDiffVectorBundle n F V I]
+
+-- Note: there is some mathematical content to the sorry. The `have` statement is
+-- about maps to the total space of the original bundle and we want to look at
+-- the same map seen as a map into the total space of the pullback bundle.
+lemma pullback (hs : IsLocalFrameOn I F n s u) (f : ContMDiffMap I' I M' M n) :
+    letI (x : M') : AddCommGroup ((f *ᵖ V) x) := inferInstanceAs (AddCommGroup <| V (f x))
+    letI (x : M') : Module 𝕜 ((f *ᵖ V) x) := inferInstanceAs (Module 𝕜 <| V (f x))
+    IsLocalFrameOn I' F n (V := f *ᵖ V) (fun i x' ↦ s i (f x')) (f ⁻¹' u) :=
+  letI (x : M') : AddCommGroup ((f *ᵖ V) x) := inferInstanceAs (AddCommGroup <| V (f x))
+  letI (x : M') : Module 𝕜 ((f *ᵖ V) x) := inferInstanceAs (Module 𝕜 <| V (f x))
+  { linearIndependent hx := hs.linearIndependent hx,
+    generating hx := hs.generating hx,
+    contMDiffOn (i : ι) := by
+      have := (hs.contMDiffOn i).comp (s := f ⁻¹' u) f.contMDiff.contMDiffOn subset_rfl
+      sorry
+      }
+end pullback
+
 end IsLocalFrameOn
 
 end IsLocalFrame
