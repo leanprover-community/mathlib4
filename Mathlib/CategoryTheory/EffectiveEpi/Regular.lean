@@ -9,12 +9,14 @@ import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 import Mathlib.CategoryTheory.Sites.Sieves
 import Mathlib.Combinatorics.Quiver.ReflQuiver
 
-/- This code is a Lean 4 port of a Unimath implementation of regular categories
+/- This code is based on a Unimath implementation of regular categories
  by Niels van der Weide. Original source:
 https://github.com/UniMath/UniMath/blob/master/UniMath/CategoryTheory/RegularAndExact/RegularCategory.v#L319 -/
 
 set_option linter.unusedSimpArgs false
 set_option linter.style.multiGoal false
+set_option linter.style.missingEnd false
+set_option linter.style.commandStart false
 
 universe u v
 
@@ -51,8 +53,9 @@ structure RegularEpiFactorisation {X Y : C} (f : X ⟶ Y)
 
 variable [HasPullbacks C] {A B C' : C} (f : A ⟶ B) (g : B ⟶ C')
 
-def Kgg := pullback g g
 def Khh := pullback (f ≫ g) (f ≫ g)
+
+def Kgg := pullback g g
 
 /-
 Borceux - Lemma 2.1.2 :
@@ -72,7 +75,27 @@ def kernel_pair_map : Khh f g ⟶ Kgg g := by
     simp only [assoc]
     exact pullback.condition
 
+def Kgg_new := pullback g g
+
+def Khh_new (h : A ⟶ C') := pullback h h
+
+def kernel_pair_map'' (h : A ⟶ C')
+  (p : f ≫ g = h) : Khh_new h ⟶ Kgg_new g := by
+  let PullbackPr1Khh := (pullback.fst h h ≫ f)
+  let PullbackPr2Khh := (pullback.snd h h ≫ f)
+  have w : PullbackPr1Khh ≫ g = PullbackPr2Khh ≫ g := by {
+    unfold PullbackPr1Khh  PullbackPr2Khh
+    simp only [assoc]
+    rw [p]
+    exact pullback.condition}
+  apply CategoryTheory.IsPullback.lift ?_
+  · exact w
+  · exact pullback.fst g g
+  · exact pullback.snd g g
+  · exact IsPullback.of_hasPullback g g
+
 def Kl := pullback f (pullback.fst g g)
+
 def Kr := pullback f (pullback.snd g g)
 
 def PullbackPr2Kl := pullback.snd f (pullback.fst g g)
@@ -290,6 +313,28 @@ def is_pullback_sqr : IsPullback (map_to_pullback_left f g)
     exact map_to_pullback_sqr f g
  }
 
+instance regularEpiOfIsoComp {X Y Z: C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] [hg : RegularEpi g] :
+    RegularEpi (f ≫ g) where
+  W := _
+  left := hg.left ≫ inv f
+  right := hg.right ≫ inv f
+  w := by simp [hg.w]
+  isColimit := by
+    fapply Cofork.IsColimit.mk
+    · exact fun s ↦ Cofork.IsColimit.desc hg.isColimit (inv f ≫ s.π) (by simpa using s.condition)
+    · intro s
+      simp only [parallelPair_obj_one, Cofork.ofπ_pt, const_obj_obj, Cofork.π_ofπ, assoc]
+      erw [← IsIso.eq_inv_comp, Cofork.IsColimit.π_desc' hg.isColimit]
+    · intro s m hm
+      simp [← IsIso.eq_inv_comp] at hm
+      have := hg.isColimit.uniq (Cofork.ofπ (inv f ≫ s.π) (by simpa using s.condition)) m
+        (by rintro (_ | _) <;> simp [hm])
+      simp [this]
+      congr!
+
+
+    -- convert IsColimit.extendIsoEquiv (inv f) |>.symm ?_
+
 def isEpi_kernel_pair_map [Regular C] :
   Epi (kernel_pair_map f g) := by {
     have PullbackSqrCommutesKr : pullback.fst f (pullback.snd g g) ≫ f
@@ -314,20 +359,32 @@ def isEpi_kernel_pair_map [Regular C] :
       apply RegularEpi.epi }
     haveI : Epi q := by {
       have : RegularEpi q := by {
+        have h₁ := IsPullback.of_hasPullback g g
+        have h₂ := IsPullback.of_hasPullback f (pullback.snd g g)
+        have hR := h₂.paste_vert h₁.flip
+        have h := IsPullback.of_hasPullback (f ≫ g) (f ≫ g)
+        have hq : q ≫ pullback.fst f (pullback.snd g g) =
+          pullback.snd (f ≫ g) (f ≫ g) := by
+          simp [q, map_to_pullback_right, kernel_pair_map]
+        rw [← hq] at h
+        have hL := by
+          refine IsPullback.paste_vert_iff hR.flip ?_ |>.mp h
+          simp [q, map_to_pullback_right, kernel_pair_map]
+        have : (IsPullback.isoPullback hL).hom ≫ pullback.snd _ _ = q := by simp
+        rw [← this]
         unfold q
+        unfold Kr at q
         unfold map_to_pullback_right
-        simp only [id_eq]
         have := is_regular_epi_left f g
         unfold PullbackPr2Kl at this
-        unfold kernel_pair_map
-        simp only
-        sorry
-      }
+        simp only [kernel_pair_map]
+        convert regularEpiOfIsoComp hL.isoPullback.hom _
+        fapply Regular.pullback_stability
+        assumption }
       apply RegularEpi.epi
     }
-    apply epi_comp
+    apply epi_comp }
 
-  }
 variable [Regular C]
 
 def K := pullback f f
@@ -375,67 +432,51 @@ omit IsPullbacketc in
 def regular_epi_mono_factorization_is_regular_is_monic_mor :
   K f ⟶ K' f := by {
     unfold K'
-    --rw [regular_epi_mono_factorization_comm f]
     let kernel_pair_map := kernel_pair_map f g
     unfold Khh Kgg at kernel_pair_map
     have hP : IsPullback (pullback.fst (m f) (m f))
      (pullback.snd (m f) (m f)) (m f) (m f) :=
      IsPullback.of_hasPullback (m f) (m f)
     apply CategoryTheory.IsPullback.lift hP
-      -- (pullback.fst (e f ≫ m f) (e f ≫ m f))
-      -- ((pullback.snd (e f ≫ m f) (e f ≫ m f)))
     · rfl_cat
     · exact (pullback.fst f f) ≫ (e f)
     }
 
 def φ : K f ⟶ K' f := regular_epi_mono_factorization_is_regular_is_monic_mor f g
 
-/--
-Given morphisms `f : X ⟶ Y` and `g : Y ⟶ Z`, there is a canonical map
-from the kernel pair of `f ` to the kernel pair of `g`.
--/
-def kernel_pair_map' {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
-  [HasPullbacks C] :
-  pullback f f ⟶ pullback g g :=
-  IsPullback.lift (IsPullback.of_hasPullback g g)
-    (pullback.fst f f ≫ f)
-    (pullback.snd f f ≫ f)
-    (by simp only [assoc, pullback.condition])
-
-def isEpi_kernel_pair_map' {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
-  [HasPullbacks C] : Epi (kernel_pair_map' f g) := sorry
-
 omit k₁ k₂ IsPullbacketc in
 lemma is_epi_monic_mor : Epi (φ f g) := by {
   unfold φ
   unfold regular_epi_mono_factorization_is_regular_is_monic_mor
   simp only [id_eq]
-  sorry
-  -- simp only [id_eq]
+  --simp only [id_eq]
   --sorry
-  --apply isEpi_kernel_pair_map
+  have : Epi (IsPullback.lift
+    (IsPullback.of_hasPullback (m f) (m f))
+    (pullback.fst f f ≫ e f)
+    (pullback.fst f f ≫ e f)
+    (by simp only [assoc])) := sorry
+  have H {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
+    RegularEpi f → RegularEpi (pullback.snd f g) :=
+    Regular.pullback_stability f g
+  sorry
   -- unfold kernel_pair_map at this
   -- simp only at this
   -- unfold e
   -- unfold regular_epi_mono_factorization_epi
-
 }
-
 
 omit w k₁ k₂ IsPullbacketc [CartesianMonoidalCategory C] [RegularEpi f] in
 lemma monic_mor_pr1 :
   φ f g ≫ pullback.fst (m f) (m f) = pullback.fst f f ≫
     coequalizer.π (pullback.fst f f) (pullback.snd f f) := by
-  unfold φ
   apply CategoryTheory.IsPullback.lift_fst
 
 omit w k₁ k₂ IsPullbacketc in
 def monic_mor_pr2 :
-  φ f g ≫ pullback.snd (m f) (m f) = pullback.snd f f ≫
+  φ f g ≫ pullback.snd (m f) (m f) = pullback.fst f f ≫
     coequalizer.π (pullback.fst f f) (pullback.snd f f) := by
-  unfold φ
-  sorry
-  --apply CategoryTheory.IsPullback.lift_snd
+  apply CategoryTheory.IsPullback.lift_snd
 
 omit w k₁ k₂ IsPullbacketc in
 def monic_mor_eq :
@@ -450,7 +491,6 @@ def monic_mor_eq :
   apply Hepi_prop
   rw [monic_mor_pr1 f g]
   rw [monic_mor_pr2 f g]
-  sorry
   }
 
 include g in
@@ -469,7 +509,7 @@ lemma regular_epi_mono_factorization_is_regular_is_monic :
   have := monic_mor_eq f g
   simp_all only [IsPullback.lift_fst]}
 
-def regularEpiFactorization [Regular C] (f : A ⟶ B) [RegularEpi f]:
+def regularEpiFactorization [Regular C] (f : A ⟶ B) [RegularEpi f] :
   RegularEpiFactorisation f where
     mid := im f
     ι := e f
@@ -477,46 +517,3 @@ def regularEpiFactorization [Regular C] (f : A ⟶ B) [RegularEpi f]:
     ι_π := (regular_epi_mono_factorization_comm f).symm
     regular_epi := regular_epi_mono_factorization_is_regular_epi f
     mono := regular_epi_mono_factorization_is_regular_is_monic f g
-
--- def regularEpiFactorization' {A A' : C} [Regular C] (f : A ⟶ A') :
---   RegularEpiFactorisation f where
---     mid := by {
---       let K := pullback f f
---       let d0 : K ⟶ A := pullback.fst f f
---       let d1 : K ⟶ A := pullback.snd f f
---       haveI kernelPair : IsKernelPair f d0 d1 :=
---         IsPullback.of_hasPullback f f
---       haveI := Regular.equiv_rel_coeq f d0 d1 kernelPair
---       exact coequalizer d0 d1}
---     ι := by {
---       let K := pullback f f
---       let d0 : K ⟶ A := pullback.fst f f
---       let d1 : K ⟶ A := pullback.snd f f
---       haveI kernelPair : IsKernelPair f d0 d1 :=
---         IsPullback.of_hasPullback f f
---       haveI := Regular.equiv_rel_coeq f d0 d1 kernelPair
---       -- let g be the coequalizer of d0 and d1.
---       let g : A ⟶ coequalizer d0 d1 := coequalizer.π d0 d1
---       exact g
---     }
---     π := by {
---       let K := pullback f f
---       let d0 : K ⟶ A := pullback.fst f f
---       let d1 : K ⟶ A := pullback.snd f f
---       haveI kernelPair : IsKernelPair f d0 d1 :=
---         IsPullback.of_hasPullback f f
---       haveI := Regular.equiv_rel_coeq f d0 d1 kernelPair
---       apply CategoryTheory.Limits.coequalizer.desc f
---       exact pullback.condition}
---     ι_π := by {
---       simp only [colimit.ι_desc, Cofork.ofπ_pt, Cofork.ofπ_ι_app] }
---     regular_epi := by {
---       let K := pullback f f
---       let d0 : K ⟶ A := pullback.fst f f
---       let d1 : K ⟶ A := pullback.snd f f
---       haveI kernelPair : IsKernelPair f d0 d1 := IsPullback.of_hasPullback f f
---       haveI := Regular.equiv_rel_coeq f d0 d1 kernelPair
---       let g : A ⟶ coequalizer d0 d1 := coequalizer.π d0 d1
---       simp only
---       constructor
---       exact coequalizerIsCoequalizer (pullback.fst f f) (pullback.snd f f)}
