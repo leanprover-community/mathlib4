@@ -602,6 +602,76 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
                   rw [h_eq]
 
                 exact h_β_contains.trans β_term_in_supr
+
+            -- Third step: show genWeightSpace L χ ≤ supremum
+            have h_chi_containment :
+              genWeightSpace L χ.toLinear ≤
+              ⨆ β : {β : Weight K H L // β.toLinear ∈ q ∧ β.IsNonZero},
+                sl2SubalgebraOfRoot_as_H_submodule β.1 β.2.2 := by
+              by_cases h_chi_trivial : genWeightSpace L χ.toLinear = ⊥
+              · -- Case: weight space is trivial
+                rw [h_chi_trivial]
+                simp
+              · -- Case: weight space is non-trivial, so χ is a weight
+                -- We have χ.toLinear ∈ q from h_chi_in_q and χ.toLinear ≠ 0 from w_chi
+                -- Since genWeightSpace L χ.toLinear ≠ ⊥, χ is already a weight
+                -- This weight will be in the supremum since it's in q and nonzero
+
+                -- χ is already a weight, so we don't need to construct a new one
+                -- We just need to show it satisfies the index set conditions
+                have hχ_in_index_set : χ.toLinear ∈ q ∧ χ.IsNonZero := by
+                  constructor
+                  · -- χ.toLinear ∈ q
+                    exact h_chi_in_q
+                  · -- χ.IsNonZero
+                    -- χ.IsNonZero means ¬ (χ : H → K) = 0
+                    -- This follows directly from w_chi : ¬χ.toLinear = 0
+                    intro h_eq
+                    -- h_eq : χ.IsZero, which means (χ : H → K) = 0
+                    apply w_chi
+                    -- Need to show: χ.toLinear = 0
+                    -- h_eq : χ.IsZero, which by definition means (χ : H → K) = 0
+                    -- χ.toLinear should be the same as (χ : H → K), but let's be explicit
+                    have h_coe_zero : (χ : H → K) = 0 := Weight.IsZero.eq h_eq
+                    -- Now we need to show χ.toLinear = 0 from (χ : H → K) = 0
+                    -- χ.toLinear should be the same as (χ : H → K)
+                    convert h_coe_zero
+                    -- A linear map is zero iff its underlying function is zero
+                    simp only [LinearMap.ext_iff, LinearMap.zero_apply]
+                    constructor
+                    · intro h
+                      ext x
+                      exact h x
+                    · intro h x
+                      have := congr_fun h x
+                      simp at this
+                      exact this
+
+                -- Create the indexed element for the supremum
+                let χ_indexed : {γ : Weight K H L // γ.toLinear ∈ q ∧ γ.IsNonZero} :=
+                  ⟨χ, hχ_in_index_set⟩
+
+                -- The corresponding term for χ is contained in the supremum
+                have χ_term_in_supr :
+                    sl2SubalgebraOfRoot_as_H_submodule χ χ_indexed.property.right ≤
+                    ⨆ (γ : {γ : Weight K H L // γ.toLinear ∈ q ∧ γ.IsNonZero}),
+                    sl2SubalgebraOfRoot_as_H_submodule γ γ.property.right := by
+                  -- This is just le_iSup applied to χ_indexed
+                  have h := le_iSup (fun γ : {γ : Weight K H L // γ.toLinear ∈ q ∧ γ.IsNonZero} =>
+                    sl2SubalgebraOfRoot_as_H_submodule γ.1 γ.2.2) χ_indexed
+                  exact h
+
+                have h_χ_contains : genWeightSpace L χ.toLinear ≤
+                    sl2SubalgebraOfRoot_as_H_submodule χ χ_indexed.property.right := by
+                  -- Use sl2SubalgebraOfRoot_as_H_submodule_eq_sup
+                  rw [sl2SubalgebraOfRoot_as_H_submodule_eq_sup]
+                  -- genWeightSpace L χ.toLinear is the first component of the supremum
+                  apply le_sup_of_le_left
+                  apply le_sup_of_le_left
+                  -- Since χ.toLinear = χ.toLinear, we have equality
+                  rfl
+
+                exact h_χ_contains.trans χ_term_in_supr
             -- For the complete proof, we need similar containments for the other two terms
             -- But for now, this shows the approach works
             sorry
