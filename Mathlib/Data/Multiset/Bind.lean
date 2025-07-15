@@ -141,7 +141,7 @@ theorem bind_congr {f g : α → Multiset β} {m : Multiset α} :
     (∀ a ∈ m, f a = g a) → bind m f = bind m g := by simp +contextual [bind]
 
 theorem bind_hcongr {β' : Type v} {m : Multiset α} {f : α → Multiset β} {f' : α → Multiset β'}
-    (h : β = β') (hf : ∀ a ∈ m, HEq (f a) (f' a)) : HEq (bind m f) (bind m f') := by
+    (h : β = β') (hf : ∀ a ∈ m, f a ≍ f' a) : bind m f ≍ bind m f' := by
   subst h
   simp only [heq_eq_eq] at hf
   simp [bind_congr hf]
@@ -303,7 +303,7 @@ variable {σ : α → Type*} (a : α) (s : Multiset α) (t : ∀ a, Multiset (σ
 
 /-- `Multiset.sigma s t` is the dependent version of `Multiset.product`. It is the sum of
   `(a, b)` as `a` ranges over `s` and `b` ranges over `t a`. -/
-protected def sigma (s : Multiset α) (t : ∀ a, Multiset (σ a)) : Multiset (Σa, σ a) :=
+protected def sigma (s : Multiset α) (t : ∀ a, Multiset (σ a)) : Multiset (Σ a, σ a) :=
   s.bind fun a => (t a).map <| Sigma.mk a
 
 @[simp]
@@ -342,7 +342,7 @@ theorem card_sigma : card (s.sigma t) = sum (map (fun a => card (t a)) s) := by
 
 variable {s t}
 
-@[simp] lemma mem_sigma : ∀ {p : Σa, σ a}, p ∈ @Multiset.sigma α σ s t ↔ p.1 ∈ s ∧ p.2 ∈ t p.1
+@[simp] lemma mem_sigma : ∀ {p : Σ a, σ a}, p ∈ @Multiset.sigma α σ s t ↔ p.1 ∈ s ∧ p.2 ∈ t p.1
   | ⟨a, b⟩ => by simp [Multiset.sigma, and_left_comm]
 
 protected theorem Nodup.sigma {σ : α → Type*} {t : ∀ a, Multiset (σ a)} :

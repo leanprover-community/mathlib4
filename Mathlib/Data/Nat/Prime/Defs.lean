@@ -137,6 +137,17 @@ theorem prime_def_le_sqrt {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, 2 ≤ m →
           refine this km (Nat.lt_of_mul_lt_mul_right (a := m) ?_) e
           rwa [one_mul, ← e]⟩
 
+theorem prime_iff_not_exists_mul_eq {p : ℕ} :
+    p.Prime ↔ 2 ≤ p ∧ ¬ ∃ m n, m < p ∧ n < p ∧ m * n = p := by
+  push_neg
+  simp_rw [prime_def_lt, dvd_def, exists_imp]
+  refine and_congr_right fun hp ↦ forall_congr' fun m ↦ (forall_congr' fun h ↦ ?_).trans forall_comm
+  simp_rw [Ne, forall_comm (β := _ = _), eq_comm, imp_false, not_lt]
+  refine forall₂_congr fun n hp ↦ ⟨by aesop, fun hpn ↦ ?_⟩
+  have := mul_ne_zero_iff.mp (hp ▸ show p ≠ 0 by omega)
+  exact (Nat.mul_eq_right (by omega)).mp
+    (hp.symm.trans (hpn.antisymm (hp ▸ Nat.le_mul_of_pos_left _ (by omega))))
+
 theorem prime_of_coprime (n : ℕ) (h1 : 1 < n) (h : ∀ m < n, m ≠ 0 → n.Coprime m) : Prime n := by
   refine prime_def_lt.mpr ⟨h1, fun m mlt mdvd => ?_⟩
   have hm : m ≠ 0 := by
@@ -332,7 +343,7 @@ def decidablePrime' (p : ℕ) : Decidable (Prime p) :=
 
 @[csimp] theorem decidablePrime_csimp :
     @decidablePrime = @decidablePrime' := by
-  funext; apply Subsingleton.elim
+  subsingleton
 
 theorem not_prime_iff_minFac_lt {n : ℕ} (n2 : 2 ≤ n) : ¬Prime n ↔ minFac n < n :=
   (not_congr <| prime_def_minFac.trans <| and_iff_right n2).trans <|

@@ -96,7 +96,7 @@ noncomputable instance : MulAction (L ≃ₐ[K] L) (primesOver p B) where
     rw [map_mul]
     exact (Q.1.map_map ((galRestrict A K L B) τ).toRingHom ((galRestrict A K L B) σ).toRingHom).symm
 
-theorem coe_smul_primesOver_eq_map_galRestrict (σ : L ≃ₐ[K] L) (P : primesOver p B):
+theorem coe_smul_primesOver_eq_map_galRestrict (σ : L ≃ₐ[K] L) (P : primesOver p B) :
     (σ • P).1 = map (galRestrict A K L B σ) P :=
   rfl
 
@@ -185,7 +185,7 @@ include hpb in
 theorem ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn [IsGalois K L] :
     (primesOver p B).ncard * (ramificationIdxIn p B * inertiaDegIn p B) = Module.finrank K L := by
   have : FaithfulSMul A B := FaithfulSMul.of_field_isFractionRing A B K L
-  rw [← smul_eq_mul, ← coe_primesOverFinset hpb B, Set.ncard_coe_Finset, ← Finset.sum_const]
+  rw [← smul_eq_mul, ← coe_primesOverFinset hpb B, Set.ncard_coe_finset, ← Finset.sum_const]
   rw [← sum_ramification_inertia B p K L hpb]
   apply Finset.sum_congr rfl
   intro P hp
