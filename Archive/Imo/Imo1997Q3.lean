@@ -79,10 +79,10 @@ lemma lt_abs_add_of_sign_eq {a b c : ℝ} (ha : c / 2 < |a|) (hb : c / 2 < |b|) 
 
 /-- For fixed nonempty `x`, assuming the opposite of what is to be proven,
 the signs of `S x p` are all the same. -/
-lemma sign_eq_of_contra {x : Fin (n + 1) → ℝ}
-    (p : Perm (Fin (n + 1))) (hx₂ : ∀ i, |x i| ≤ ((n + 1 : ℕ) + 1) / 2)
+lemma sign_eq_of_contra
+    {x : Fin (n + 1) → ℝ} (hx₂ : ∀ i, |x i| ≤ ((n + 1 : ℕ) + 1) / 2)
     (h : ∀ (p : Perm (Fin (n + 1))), ((n + 1 : ℕ) + 1) / 2 < |S x p|) :
-    (S x 1).sign = (S x p).sign := by
+    ∀ p, (S x 1).sign = (S x p).sign := fun p ↦ by
   induction p using Submonoid.induction_of_closure_eq_top_right
     (Perm.mclosure_swap_castSucc_succ n) with
   | one => rfl
@@ -108,8 +108,8 @@ lemma sign_eq_of_contra {x : Fin (n + 1) → ℝ}
         rw [abs_neg]; exact add_le_add (hx₂ _) (hx₂ _)
       _ = _ := by rw [add_halves]
 
-lemma S_one_add_S_revPerm {x : Fin n → ℝ} (hx₁ : |∑ i, x i| = 1) :
-    |S x 1 + S x revPerm| = n + 1 := by
+lemma S_one_add_S_revPerm
+    {x : Fin n → ℝ} (hx₁ : |∑ i, x i| = 1) : |S x 1 + S x revPerm| = n + 1 := by
   nth_rw 2 [S]; rw [← revPerm.sum_comp _ _ (by simp)]
   simp_rw [revPerm_apply, val_rev, rev_rev, S, Perm.one_apply, ← sum_add_distrib, ← add_mul]
   have cg : ∑ i : Fin n, (i + 1 + ((n - (i + 1) : ℕ) + 1)) * x i = ∑ i, (n + 1) * x i := by
@@ -123,6 +123,6 @@ theorem result {x : Fin n → ℝ} (hx₁ : |∑ i, x i| = 1) (hx₂ : ∀ i, |x
   | n + 1 =>
     by_contra! h
     exact (lt_abs_add_of_sign_eq (h _) (h _) (by norm_cast; omega)
-      (sign_eq_of_contra revPerm hx₂ h)).ne' (S_one_add_S_revPerm hx₁)
+      (sign_eq_of_contra hx₂ h _)).ne' (S_one_add_S_revPerm hx₁)
 
 end Imo1997Q3
