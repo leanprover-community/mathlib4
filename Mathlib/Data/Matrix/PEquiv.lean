@@ -60,8 +60,8 @@ theorem toMatrix_mul_apply [Fintype m] [DecidableEq m] [NonAssocSemiring α] (f 
     (M : Matrix m n α) : (f.toMatrix * M :) i j = Option.casesOn (f i) 0 fun fi => M fi j := by
   dsimp [toMatrix, Matrix.mul_apply]
   rcases h : f i with - | fi
-  · simp [h]
-  · rw [Finset.sum_eq_single fi] <;> simp +contextual [h, eq_comm]
+  · simp
+  · rw [Finset.sum_eq_single fi] <;> simp +contextual [eq_comm]
 
 @[deprecated (since := "2025-01-27")] alias mul_matrix_apply := toMatrix_mul_apply
 

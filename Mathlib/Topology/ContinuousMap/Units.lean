@@ -43,8 +43,6 @@ def unitsLift : C(X, Mˣ) ≃ C(X, M)ˣ where
       continuous_toFun := continuous_induced_rng.2 <|
         (f : C(X, M)).continuous.prodMk <|
         MulOpposite.continuous_op.comp (↑f⁻¹ : C(X, M)).continuous }
-  left_inv f := by ext; rfl
-  right_inv f := by ext; rfl
 
 @[to_additive (attr := simp)]
 lemma unitsLift_apply_inv_apply (f : C(X, Mˣ)) (x : X) :
@@ -102,7 +100,7 @@ theorem spectrum_eq_preimage_range (f : C(X, R)) :
     spectrum 𝕜 f = algebraMap _ _ ⁻¹' Set.range f := by
   ext x
   simp only [spectrum.mem_iff, isUnit_iff_forall_ne_zero, not_forall, sub_apply,
-    algebraMap_apply, mul_one, Classical.not_not, Set.mem_range,
+    Classical.not_not, Set.mem_range,
     sub_eq_zero, @eq_comm _ (x • 1 : R) _, Set.mem_preimage, Algebra.algebraMap_eq_smul_one,
     smul_apply, one_apply]
 

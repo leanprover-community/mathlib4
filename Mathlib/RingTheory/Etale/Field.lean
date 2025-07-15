@@ -133,18 +133,18 @@ lemma of_isSeparable [Algebra.IsSeparable K L] : FormallyEtale K L := by
     have hy : y ∈ K⟮α⟯ := e ▸ IntermediateField.subset_adjoin K {x, y} (by simp)
     exact ⟨α, hx, hy⟩
   refine ⟨⟨⟨⟨⟨fun x ↦ g x (IntermediateField.AdjoinSimple.gen K x), ?_⟩, ?_⟩, ?_, ?_⟩, ?_⟩, ?_⟩
-  · show g 1 1 = 1; rw [map_one]
+  · change g 1 1 = 1; rw [map_one]
   · intros x y
     obtain ⟨α, hx, hy⟩ := H x y
     simp only [← hg₃ _ _ hx, ← hg₃ _ _ hy, ← map_mul, ← hg₃ _ _ (mul_mem hx hy)]
     rfl
-  · show g 0 0 = 0; rw [map_zero]
+  · change g 0 0 = 0; rw [map_zero]
   · intros x y
     obtain ⟨α, hx, hy⟩ := H x y
     simp only [← hg₃ _ _ hx, ← hg₃ _ _ hy, ← map_add, ← hg₃ _ _ (add_mem hx hy)]
     rfl
   · intro r
-    show g _ (algebraMap K _ r) = _
+    change g _ (algebraMap K _ r) = _
     rw [AlgHom.commutes]
   · ext x
     simpa using AlgHom.congr_fun (hg₁ x) (IntermediateField.AdjoinSimple.gen K x)

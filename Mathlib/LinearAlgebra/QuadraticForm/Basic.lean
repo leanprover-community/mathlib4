@@ -126,7 +126,7 @@ theorem polar_add_left_iff {f : M → N} {x x' y : M} :
 theorem polar_comp {F : Type*} [AddCommGroup S] [FunLike F N S] [AddMonoidHomClass F N S]
     (f : M → N) (g : F) (x y : M) :
     polar (g ∘ f) x y = g (polar f x y) := by
-  simp only [polar, Pi.smul_apply, Function.comp_apply, map_sub]
+  simp only [polar, Function.comp_apply, map_sub]
 
 /-- `QuadraticMap.polar` as a function from `Sym2`. -/
 def polarSym2 (f : M → N) : Sym2 M → N :=
@@ -840,7 +840,7 @@ variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 instance : SMulCommClass R (Submonoid.center R) M where
   smul_comm r r' m := by
-    simp_rw [Submonoid.smul_def, smul_smul, (Set.mem_center_iff.1 r'.prop).1]
+    simp_rw [Submonoid.smul_def, smul_smul, ((Set.mem_center_iff.1 r'.prop).1 _).eq]
 
 /-- If `2` is invertible in `R`, then it is also invertible in `End R M`. -/
 instance [Invertible (2 : R)] : Invertible (2 : Module.End R M) where
@@ -859,7 +859,7 @@ instance [Invertible (2 : R)] : Invertible (2 : Module.End R M) where
 of `M` is the same as multiplying by the inverse of `2` in `R`. -/
 @[simp]
 lemma half_moduleEnd_apply_eq_half_smul [Invertible (2 : R)] (x : M) :
-    ⅟ (2 : Module.End R M) x = ⅟ (2 : R) • x :=
+    ⅟(2 : Module.End R M) x = ⅟(2 : R) • x :=
   rfl
 
 end
@@ -881,7 +881,7 @@ Over a commutative ring, use `QuadraticMap.associated`, which gives an `R`-linea
 general ring with no nontrivial distinguished commutative subring, use `QuadraticMap.associated'`,
 which gives an additive homomorphism (or more precisely a `ℤ`-linear map.) -/
 def associatedHom : QuadraticMap R M N →ₗ[S] (BilinMap R M N) where
-  toFun Q := ⅟ (2 : Module.End R N) • polarBilin Q
+  toFun Q := ⅟(2 : Module.End R N) • polarBilin Q
   map_add' _ _ := LinearMap.ext₂ fun _ _ ↦ by simp [polar_add]
   map_smul' _ _ := LinearMap.ext₂ fun _ _ ↦ by simp [polar_smul]
 
@@ -889,7 +889,7 @@ variable (Q : QuadraticMap R M N)
 
 @[simp]
 theorem associated_apply (x y : M) :
-    associatedHom S Q x y = ⅟ (2 : Module.End R N) • (Q (x + y) - Q x - Q y) :=
+    associatedHom S Q x y = ⅟(2 : Module.End R N) • (Q (x + y) - Q x - Q y) :=
   rfl
 
 /-- Twice the associated bilinear map of `Q` is the same as the polar of `Q`. -/
@@ -921,7 +921,7 @@ theorem associated_comp {N' : Type*} [AddCommGroup N'] [Module R N'] (f : N' →
   simp only [associated_apply, comp_apply, map_add, LinearMap.compl₁₂_apply]
 
 theorem associated_toQuadraticMap (B : BilinMap R M N) (x y : M) :
-    associatedHom S B.toQuadraticMap x y = ⅟ (2 : Module.End R N) • (B x y + B y x) := by
+    associatedHom S B.toQuadraticMap x y = ⅟(2 : Module.End R N) • (B x y + B y x) := by
   simp only [associated_apply, BilinMap.toQuadraticMap_apply, map_add, LinearMap.add_apply,
     Module.End.smul_def, map_sub]
   abel_nf
@@ -1002,11 +1002,11 @@ open LinearMap in
 @[simp]
 theorem associated_linMulLin [Invertible (2 : R)] (f g : M →ₗ[R] R) :
     associated (R := R) (N := R) (linMulLin f g) =
-      ⅟ (2 : R) • ((mul R R).compl₁₂ f g + (mul R R).compl₁₂ g f) := by
+      ⅟(2 : R) • ((mul R R).compl₁₂ f g + (mul R R).compl₁₂ g f) := by
   ext
   simp only [associated_apply, linMulLin_apply, map_add, smul_add, LinearMap.add_apply,
     LinearMap.smul_apply, compl₁₂_apply, mul_apply', smul_eq_mul, invOf_smul_eq_iff]
-  simp only [smul_add, Module.End.smul_def, Module.End.ofNat_apply, nsmul_eq_mul, Nat.cast_ofNat,
+  simp only [Module.End.smul_def, Module.End.ofNat_apply, nsmul_eq_mul, Nat.cast_ofNat,
     mul_invOf_cancel_left']
   ring_nf
 

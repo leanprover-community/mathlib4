@@ -206,7 +206,7 @@ theorem replicateCol_empty (v : Fin 0 → α) : replicateCol ι v = vecEmpty :=
 theorem replicateCol_cons (x : α) (u : Fin m → α) :
     replicateCol ι (vecCons x u) = of (vecCons (fun _ => x) (replicateCol ι u)) := by
   ext i j
-  refine Fin.cases ?_ ?_ i <;> simp [vecHead, vecTail]
+  refine Fin.cases ?_ ?_ i <;> simp
 
 @[deprecated (since := "2025-03-20")] alias col_cons := replicateCol_cons
 
@@ -463,7 +463,7 @@ theorem mul_fin_two [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂
                       b₂₁, b₂₂] = !![a₁₁ * b₁₁ + a₁₂ * b₂₁, a₁₁ * b₁₂ + a₁₂ * b₂₂;
                                      a₂₁ * b₁₁ + a₂₂ * b₂₁, a₂₁ * b₁₂ + a₂₂ * b₂₂] := by
   ext i j
-  fin_cases i <;> fin_cases j <;> simp [Matrix.mul_apply, dotProduct, Fin.sum_univ_succ]
+  fin_cases i <;> fin_cases j <;> simp [Matrix.mul_apply, Fin.sum_univ_succ]
 
 theorem mul_fin_three [AddCommMonoid α] [Mul α]
     (a₁₁ a₁₂ a₁₃ a₂₁ a₂₂ a₂₃ a₃₁ a₃₂ a₃₃ b₁₁ b₁₂ b₁₃ b₂₁ b₂₂ b₂₃ b₃₁ b₃₂ b₃₃ : α) :
@@ -477,7 +477,7 @@ theorem mul_fin_three [AddCommMonoid α] [Mul α]
        a₃₁*b₁₁ + a₃₂*b₂₁ + a₃₃*b₃₁, a₃₁*b₁₂ + a₃₂*b₂₂ + a₃₃*b₃₂, a₃₁*b₁₃ + a₃₂*b₂₃ + a₃₃*b₃₃] := by
   ext i j
   fin_cases i <;> fin_cases j
-    <;> simp [Matrix.mul_apply, dotProduct, Fin.sum_univ_succ, ← add_assoc]
+    <;> simp [Matrix.mul_apply, Fin.sum_univ_succ, ← add_assoc]
 
 theorem vec2_eq {a₀ a₁ b₀ b₁ : α} (h₀ : a₀ = b₀) (h₁ : a₁ = b₁) : ![a₀, a₁] = ![b₀, b₁] := by
   subst_vars
@@ -524,3 +524,10 @@ theorem vec3_dotProduct (v w : Fin 3 → α) : v ⬝ᵥ w = v 0 * w 0 + v 1 * w 
 end Vec2AndVec3
 
 end Matrix
+
+@[simp]
+lemma injective_pair_iff_ne {α : Type*} {x y : α} :
+    Function.Injective ![x, y] ↔ x ≠ y := by
+  refine ⟨fun h ↦ ?_, fun h a b h' ↦ ?_⟩
+  · simpa using h.ne Fin.zero_ne_one
+  · fin_cases a <;> fin_cases b <;> aesop

@@ -328,7 +328,7 @@ lemma decreasingInduction_trans {motive : (m : ℕ) → m ≤ k → Sort*} (hmn 
   | step hnk ih =>
       rw [decreasingInduction_succ _ _ (Nat.le_trans hmn hnk), ih, decreasingInduction_succ]
 
-lemma decreasingInduction_succ_left  {motive : (m : ℕ) → m ≤ n → Sort*} (of_succ self)
+lemma decreasingInduction_succ_left {motive : (m : ℕ) → m ≤ n → Sort*} (of_succ self)
     (smn : m + 1 ≤ n) (mn : m ≤ n) :
     decreasingInduction (motive := motive) of_succ self mn =
       of_succ m smn (decreasingInduction of_succ self smn) := by

@@ -151,18 +151,18 @@ section Forget
 
 noncomputable instance {J : Type*} [Category J] [HasLimitsOfShape J V] :
     PreservesLimitsOfShape J (Action.forget V G) := by
-  show PreservesLimitsOfShape J ((Action.functorCategoryEquivalence V G).functor ⋙
+  change PreservesLimitsOfShape J ((Action.functorCategoryEquivalence V G).functor ⋙
     (evaluation (SingleObj G) V).obj (SingleObj.star G))
   infer_instance
 
 noncomputable instance {J : Type*} [Category J] [HasColimitsOfShape J V] :
     PreservesColimitsOfShape J (Action.forget V G) := by
-  show PreservesColimitsOfShape J ((Action.functorCategoryEquivalence V G).functor ⋙
+  change PreservesColimitsOfShape J ((Action.functorCategoryEquivalence V G).functor ⋙
     (evaluation (SingleObj G) V).obj (SingleObj.star G))
   infer_instance
 
 noncomputable instance [HasFiniteLimits V] : PreservesFiniteLimits (Action.forget V G) := by
-  show PreservesFiniteLimits ((Action.functorCategoryEquivalence V G).functor ⋙
+  change PreservesFiniteLimits ((Action.functorCategoryEquivalence V G).functor ⋙
     (evaluation (SingleObj G) V).obj (SingleObj.star G))
   have : PreservesFiniteLimits ((evaluation (SingleObj G) V).obj (SingleObj.star G)) := by
     constructor
@@ -171,7 +171,7 @@ noncomputable instance [HasFiniteLimits V] : PreservesFiniteLimits (Action.forge
   apply comp_preservesFiniteLimits
 
 noncomputable instance [HasFiniteColimits V] : PreservesFiniteColimits (Action.forget V G) := by
-  show PreservesFiniteColimits ((Action.functorCategoryEquivalence V G).functor ⋙
+  change PreservesFiniteColimits ((Action.functorCategoryEquivalence V G).functor ⋙
     (evaluation (SingleObj G) V).obj (SingleObj.star G))
   have : PreservesFiniteColimits ((evaluation (SingleObj G) V).obj (SingleObj.star G)) := by
     constructor

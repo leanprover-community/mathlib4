@@ -274,6 +274,13 @@ theorem ContinuousLinearEquiv.iteratedFDerivWithin_comp_left (g : F ≃L[𝕜] G
       ContinuousLinearMap.compContinuousMultilinearMap_coe, EmbeddingLike.apply_eq_iff_eq]
     rw [iteratedFDerivWithin_succ_apply_left]
 
+/-- Iterated derivatives commute with left composition by continuous linear equivalences. -/
+theorem ContinuousLinearEquiv.iteratedFDeriv_comp_left {f : E → F} {x : E} (g : F ≃L[𝕜] G) {i : ℕ} :
+    iteratedFDeriv 𝕜 i (g ∘ f) x =
+      g.toContinuousLinearMap.compContinuousMultilinearMap (iteratedFDeriv 𝕜 i f x) := by
+  simp only [← iteratedFDerivWithin_univ]
+  apply g.iteratedFDerivWithin_comp_left f uniqueDiffOn_univ trivial
+
 /-- Composition with a linear isometry on the left preserves the norm of the iterated
 derivative within a set. -/
 theorem LinearIsometry.norm_iteratedFDerivWithin_comp_left {f : E → F} (g : F →ₗᵢ[𝕜] G)
@@ -564,6 +571,51 @@ theorem ContDiff.prodMk {f : E → F} {g : E → G} (hf : ContDiff 𝕜 n f) (hg
 alias ContDiff.prod := ContDiff.prodMk
 
 end prod
+
+/-! ### Being `C^k` on a union of open sets can be tested on each set -/
+section contDiffOn_union
+
+/-- If a function is `C^k` on two open sets, it is also `C^n` on their union. -/
+lemma ContDiffOn.union_of_isOpen (hf : ContDiffOn 𝕜 n f s) (hf' : ContDiffOn 𝕜 n f t)
+    (hs : IsOpen s) (ht : IsOpen t) :
+    ContDiffOn 𝕜 n f (s ∪ t) := by
+  rintro x (hx | hx)
+  · exact (hf x hx).contDiffAt (hs.mem_nhds hx) |>.contDiffWithinAt
+  · exact (hf' x hx).contDiffAt (ht.mem_nhds hx) |>.contDiffWithinAt
+
+/-- A function is `C^k` on two open sets iff it is `C^k` on their union. -/
+lemma contDiffOn_union_iff_of_isOpen (hs : IsOpen s) (ht : IsOpen t) :
+    ContDiffOn 𝕜 n f (s ∪ t) ↔ ContDiffOn 𝕜 n f s ∧ ContDiffOn 𝕜 n f t :=
+  ⟨fun h ↦ ⟨h.mono subset_union_left, h.mono subset_union_right⟩,
+   fun ⟨hfs, hft⟩ ↦ ContDiffOn.union_of_isOpen hfs hft hs ht⟩
+
+lemma contDiff_of_contDiffOn_union_of_isOpen (hf : ContDiffOn 𝕜 n f s)
+    (hf' : ContDiffOn 𝕜 n f t) (hst : s ∪ t = univ) (hs : IsOpen s) (ht : IsOpen t) :
+    ContDiff 𝕜 n f := by
+  rw [← contDiffOn_univ, ← hst]
+  exact hf.union_of_isOpen hf' hs ht
+
+/-- If a function is `C^k` on open sets `s i`, it is `C^k` on their union -/
+lemma ContDiffOn.iUnion_of_isOpen {ι : Type*} {s : ι → Set E}
+    (hf : ∀ i : ι, ContDiffOn 𝕜 n f (s i)) (hs : ∀ i, IsOpen (s i)) :
+    ContDiffOn 𝕜 n f (⋃ i, s i) := by
+  rintro x ⟨si, ⟨i, rfl⟩, hxsi⟩
+  exact (hf i).contDiffAt ((hs i).mem_nhds hxsi) |>.contDiffWithinAt
+
+/-- A function is `C^k` on a union of open sets `s i` iff it is `C^k` on each `s i`. -/
+lemma contDiffOn_iUnion_iff_of_isOpen {ι : Type*} {s : ι → Set E}
+    (hs : ∀ i, IsOpen (s i)) :
+    ContDiffOn 𝕜 n f (⋃ i, s i) ↔ ∀ i : ι, ContDiffOn 𝕜 n f (s i) :=
+  ⟨fun h i ↦ h.mono <| subset_iUnion_of_subset i fun _ a ↦ a,
+   fun h ↦ ContDiffOn.iUnion_of_isOpen h hs⟩
+
+lemma contDiff_of_contDiffOn_iUnion_of_isOpen {ι : Type*} {s : ι → Set E}
+    (hf : ∀ i : ι, ContDiffOn 𝕜 n f (s i)) (hs : ∀ i, IsOpen (s i)) (hs' : ⋃ i, s i = univ) :
+    ContDiff 𝕜 n f := by
+  rw [← contDiffOn_univ, ← hs']
+  exact ContDiffOn.iUnion_of_isOpen hf hs
+
+end contDiffOn_union
 
 section comp
 
@@ -1249,7 +1301,7 @@ theorem ContDiffAt.fderiv_right (hf : ContDiffAt 𝕜 n f x₀) (hmn : m + 1 ≤
 
 theorem ContDiffAt.fderiv_right_succ (hf : ContDiffAt 𝕜 (n + 1) f x₀) :
     ContDiffAt 𝕜 n (fderiv 𝕜 f) x₀ :=
-  ContDiffAt.fderiv (ContDiffAt.comp (x₀, x₀) hf contDiffAt_snd) contDiffAt_id (le_refl (n+1))
+  ContDiffAt.fderiv (ContDiffAt.comp (x₀, x₀) hf contDiffAt_snd) contDiffAt_id (le_refl (n + 1))
 
 theorem ContDiffAt.iteratedFDeriv_right {i : ℕ} (hf : ContDiffAt 𝕜 n f x₀)
     (hmn : m + i ≤ n) : ContDiffAt 𝕜 m (iteratedFDeriv 𝕜 i f) x₀ := by
@@ -1266,7 +1318,7 @@ protected theorem ContDiff.fderiv {f : E → F → G} {g : E → F}
 protected theorem ContDiff.fderiv_succ {f : E → F → G} {g : E → F}
     (hf : ContDiff 𝕜 (n + 1) <| Function.uncurry f) (hg : ContDiff 𝕜 n g) :
     ContDiff 𝕜 n fun x => fderiv 𝕜 (f x) (g x) :=
-  contDiff_iff_contDiffAt.mpr fun _ => hf.contDiffAt.fderiv hg.contDiffAt (le_refl (n+1))
+  contDiff_iff_contDiffAt.mpr fun _ => hf.contDiffAt.fderiv hg.contDiffAt (le_refl (n + 1))
 
 /-- `fderiv 𝕜 f` is smooth. -/
 theorem ContDiff.fderiv_right (hf : ContDiff 𝕜 n f) (hmn : m + 1 ≤ n) :
@@ -1463,3 +1515,5 @@ theorem ContDiff.iterate_deriv' (n : ℕ) :
   | k + 1, _, hf => ContDiff.iterate_deriv' _ k (contDiff_succ_iff_deriv.mp hf).2.2
 
 end deriv
+
+set_option linter.style.longFile 1700

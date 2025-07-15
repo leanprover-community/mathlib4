@@ -586,24 +586,26 @@ theorem Set.PairwiseDisjoint.countable_of_Ioo [OrderTopology α] [SecondCountabl
   this.of_diff countable_setOf_covBy_right
 
 /-- For a function taking values in a second countable space, the set of points `x` for
-which the image under `f` of `(x, ∞)` is separated above from `f x` is countable. -/
-theorem countable_image_lt_image_Ioi [OrderTopology α] [LinearOrder β] (f : β → α)
-    [SecondCountableTopology α] : Set.Countable {x | ∃ z, f x < z ∧ ∀ y, x < y → z ≤ f y} := by
+which the image under `f` of `(x, ∞)` is separated above from `f x` is countable. We give
+here a version relative to a set `t`. -/
+theorem countable_image_lt_image_Ioi_within
+    [OrderTopology α] [LinearOrder β] [SecondCountableTopology α] (t : Set β) (f : β → α) :
+    Set.Countable {x ∈ t | ∃ z, f x < z ∧ ∀ y ∈ t, x < y → z ≤ f y} := by
   /- If the values of `f` are separated above on the right of `x`, there is an interval `(f x, z x)`
     which is not reached by `f`. This gives a family of disjoint open intervals in `α`. Such a
     family can only be countable as `α` is second-countable. -/
   nontriviality β
   have : Nonempty α := Nonempty.map f (by infer_instance)
-  let s := {x | ∃ z, f x < z ∧ ∀ y, x < y → z ≤ f y}
-  have : ∀ x, x ∈ s → ∃ z, f x < z ∧ ∀ y, x < y → z ≤ f y := fun x hx ↦ hx
+  let s := {x ∈ t | ∃ z, f x < z ∧ ∀ y ∈ t, x < y → z ≤ f y}
+  have : ∀ x, x ∈ s → ∃ z, f x < z ∧ ∀ y ∈ t, x < y → z ≤ f y := fun x hx ↦ hx.2
   -- choose `z x` such that `f` does not take the values in `(f x, z x)`.
   choose! z hz using this
   have I : InjOn f s := by
     apply StrictMonoOn.injOn
-    intro x hx y _ hxy
+    intro x hx y hy hxy
     calc
       f x < z x := (hz x hx).1
-      _ ≤ f y := (hz x hx).2 y hxy
+      _ ≤ f y := (hz x hx).2 y hy.1 hxy
   -- show that `f s` is countable by arguing that a disjoint family of disjoint open intervals
   -- (the intervals `(f x, z x)`) is at most countable.
   have fs_count : (f '' s).Countable := by
@@ -615,11 +617,25 @@ theorem countable_image_lt_image_Ioi [OrderTopology α] [LinearOrder β] (f : β
       apply disjoint_iff_forall_ne.2
       rintro a ha b hb rfl
       simp only [I.leftInvOn_invFunOn us, I.leftInvOn_invFunOn vs] at ha hb
-      exact lt_irrefl _ ((ha.2.trans_le ((hz u us).2 v hlt)).trans hb.1)
+      exact lt_irrefl _ ((ha.2.trans_le ((hz u us).2 v vs.1 hlt)).trans hb.1)
     apply Set.PairwiseDisjoint.countable_of_Ioo A
     rintro _ ⟨y, ys, rfl⟩
     simpa only [I.leftInvOn_invFunOn ys] using (hz y ys).1
   exact MapsTo.countable_of_injOn (mapsTo_image f s) I fs_count
+
+/-- For a function taking values in a second countable space, the set of points `x` for
+which the image under `f` of `(x, ∞)` is separated above from `f x` is countable. -/
+theorem countable_image_lt_image_Ioi [OrderTopology α] [LinearOrder β] (f : β → α)
+    [SecondCountableTopology α] : Set.Countable {x | ∃ z, f x < z ∧ ∀ y, x < y → z ≤ f y} := by
+  simpa using countable_image_lt_image_Ioi_within univ f
+
+/-- For a function taking values in a second countable space, the set of points `x` for
+which the image under `f` of `(x, ∞)` is separated below from `f x` is countable. We give
+here a version relative to a set `t`. -/
+theorem countable_image_gt_image_Ioi_within
+    [OrderTopology α] [LinearOrder β] [SecondCountableTopology α] (t : Set β) (f : β → α) :
+    Set.Countable {x ∈ t | ∃ z, z < f x ∧ ∀ y ∈ t, x < y → f y ≤ z} :=
+  countable_image_lt_image_Ioi_within (α := αᵒᵈ) t f
 
 /-- For a function taking values in a second countable space, the set of points `x` for
 which the image under `f` of `(x, ∞)` is separated below from `f x` is countable. -/
@@ -628,10 +644,26 @@ theorem countable_image_gt_image_Ioi [OrderTopology α] [LinearOrder β] (f : β
   countable_image_lt_image_Ioi (α := αᵒᵈ) f
 
 /-- For a function taking values in a second countable space, the set of points `x` for
+which the image under `f` of `(-∞, x)` is separated above from `f x` is countable. We give
+here a version relative to a set `t`. -/
+theorem countable_image_lt_image_Iio_within
+    [OrderTopology α] [LinearOrder β] [SecondCountableTopology α] (t : Set β) (f : β → α) :
+    Set.Countable {x ∈ t | ∃ z, f x < z ∧ ∀ y ∈ t, y < x → z ≤ f y} :=
+  countable_image_lt_image_Ioi_within (β := βᵒᵈ) t f
+
+/-- For a function taking values in a second countable space, the set of points `x` for
 which the image under `f` of `(-∞, x)` is separated above from `f x` is countable. -/
 theorem countable_image_lt_image_Iio [OrderTopology α] [LinearOrder β] (f : β → α)
     [SecondCountableTopology α] : Set.Countable {x | ∃ z, f x < z ∧ ∀ y, y < x → z ≤ f y} :=
   countable_image_lt_image_Ioi (β := βᵒᵈ) f
+
+/-- For a function taking values in a second countable space, the set of points `x` for
+which the image under `f` of `(-∞, x)` is separated below from `f x` is countable. We give
+here a version relative to a set `t`. -/
+theorem countable_image_gt_image_Iio_within
+    [OrderTopology α] [LinearOrder β] [SecondCountableTopology α] (t : Set β) (f : β → α) :
+    Set.Countable {x ∈ t | ∃ z, z < f x ∧ ∀ y ∈ t, y < x → f y ≤ z} :=
+  countable_image_lt_image_Ioi_within (α := αᵒᵈ) (β := βᵒᵈ) t f
 
 /-- For a function taking values in a second countable space, the set of points `x` for
 which the image under `f` of `(-∞, x)` is separated below from `f x` is countable. -/
@@ -676,15 +708,15 @@ instance instIsCountablyGenerated_atBot [OrderTopology α] [SecondCountableTopol
 section Pi
 
 /-!
-### Intervals in `Π i, π i` belong to `𝓝 x`
+### Intervals in `Π i, X i` belong to `𝓝 x`
 
 For each lemma `pi_Ixx_mem_nhds` we add a non-dependent version `pi_Ixx_mem_nhds'` because
 sometimes Lean fails to unify different instances while trying to apply the dependent version to,
 e.g., `ι → ℝ`.
 -/
 
-variable [OrderTopology α] {ι : Type*} {π : ι → Type*} [Finite ι] [∀ i, LinearOrder (π i)]
-  [∀ i, TopologicalSpace (π i)] [∀ i, OrderTopology (π i)] {a b x : ∀ i, π i} {a' b' x' : ι → α}
+variable [OrderTopology α] {ι : Type*} {X : ι → Type*} [Finite ι] [∀ i, LinearOrder (X i)]
+  [∀ i, TopologicalSpace (X i)] [∀ i, OrderTopology (X i)] {a b x : ∀ i, X i} {a' b' x' : ι → α}
 
 theorem pi_Iic_mem_nhds (ha : ∀ i, x i < a i) : Iic a ∈ 𝓝 x :=
   pi_univ_Iic a ▸ set_pi_mem_nhds (Set.toFinite _) fun _ _ => Iic_mem_nhds (ha _)
@@ -713,7 +745,7 @@ theorem pi_Iio_mem_nhds' (ha : ∀ i, x' i < a' i) : Iio a' ∈ 𝓝 x' :=
   pi_Iio_mem_nhds ha
 
 theorem pi_Ioi_mem_nhds (ha : ∀ i, a i < x i) : Ioi a ∈ 𝓝 x :=
-  pi_Iio_mem_nhds (π := fun i => (π i)ᵒᵈ) ha
+  pi_Iio_mem_nhds (X := fun i => (X i)ᵒᵈ) ha
 
 theorem pi_Ioi_mem_nhds' (ha : ∀ i, a' i < x' i) : Ioi a' ∈ 𝓝 x' :=
   pi_Ioi_mem_nhds ha
