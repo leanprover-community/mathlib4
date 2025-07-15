@@ -1,9 +1,9 @@
-import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
+import Mathlib.Geometry.Manifold.IsManifold.Basic
 
 open Lean Meta Elab Command PrettyPrinter Delaborator Parser.Command
 open Parser.Term SubExpr TSyntax.Compat
 
-open private shouldGroupWithNext in delabConstWithSignature.delabParams
+open private shouldGroupWithNext from Lean.PrettyPrinter.Delaborator.Builtins
 
 namespace Std.Command.Show
 
@@ -22,13 +22,15 @@ partial def delabParamsImpl (idStx? : Option Ident) (groups : TSyntaxArray ``bra
         match i with
         | .implicit       => `(bracketedBinderF|{$curIds* : $(← delabTy)})
         | .strictImplicit => `(bracketedBinderF|⦃$curIds* : $(← delabTy)⦄)
-        | .instImplicit   => `(bracketedBinderF|[$curIds.back : $(← delabTy)])
+        | .instImplicit   => `(bracketedBinderF|[$curIds.back! : $(← delabTy)])
         | _ =>
           if d.isOptParam then
-            `(bracketedBinderF|($curIds* : $(← withAppFn <| withAppArg delabTy) := $(← withAppArg delabTy)))
+            `(bracketedBinderF|
+                ($curIds* : $(← withAppFn <| withAppArg delabTy) := $(← withAppArg delabTy)))
           else if let some (.const tacticDecl _) := d.getAutoParamTactic? then
             let tacticSyntax ← ofExcept <| evalSyntaxConstant (← getEnv) (← getOptions) tacticDecl
-            `(bracketedBinderF|($curIds* : $(← withAppFn <| withAppArg delabTy) := by $tacticSyntax))
+            `(bracketedBinderF|
+                ($curIds* : $(← withAppFn <| withAppArg delabTy) := by $tacticSyntax))
           else
             `(bracketedBinderF|($curIds* : $(← delabTy)))
       withBindingBody n <| delabParamsImpl idStx? (groups.push group) #[]
@@ -54,12 +56,7 @@ where
     let idStx ← c.mapM (descend · 0 <| withOptions (pp.fullNames.set · true) delabConst)
     descend type 1 <| delabParamsImpl idStx #[] #[]
 
-/-- Turn a `MetaM FormatWithInfos` into a `MessageData`. -/
-def ofFormatWithInfos (t : MetaM FormatWithInfos) : MessageData :=
-.ofPPFormat { pp := fun
-  | some ctx => ctx.runMetaM t
-  | none     => pure "" }
-
+open MessageData
 /- Returns a pretty-printed version of the type of `e`,
 but only printing the arguments satisfying `p`.
 If `showName` is false, then the name and the conclusion are not printed.
@@ -71,7 +68,7 @@ def printFilteredDecl (e : Expr) (p : Expr → MetaM Bool) (showName := true) :
     if args.isEmpty && !showName then
       return none
     let filteredType ← mkForallFVars args t
-    return  m!"{ofFormatWithInfos <| delabWithType (if showName then e else none) filteredType}"
+    return  m!"{ofFormatWithInfosM <| delabWithType (if showName then e else none) filteredType}"
 
 /-- `print sep m?` prints `m?` if it is not `none`, with separator `sep`. -/
 def print : MessageData → Option MessageData → MessageData
@@ -94,7 +91,7 @@ so that the most important information is more easily seen at a glance. -/
 elab "#show " stx:ident : command =>
   withoutModifyingEnv <| runTermElabM fun _ => Term.withDeclName `_show do
     try
-      for c in (← resolveGlobalConstWithInfos stx) do
+      for c in (← resolveGlobalConst stx) do -- was: resolveGlobalConstWithInfos
         addCompletionInfo <| .id stx c (danglingDot := false) {} none
         let decl ← getConstInfo c
         let e := .const c (decl.levelParams.map mkLevelParam)
@@ -111,7 +108,6 @@ elab "#show " stx:ident : command =>
 -- todo: don't show instance names. I think it worked in a previous commit.
 
 #show smoothManifoldWithCorners_of_contDiffOn
-#show extChartAt_source_mem_nhdsWithin
 #show ContDiff.of_le
 #show Lean.Elab.Term.synthesizeSyntheticMVarsNoPostponing
 -- #show 1 + 1
