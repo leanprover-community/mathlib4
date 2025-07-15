@@ -703,22 +703,28 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
             have h_plus_bot : genWeightSpace L (χ.toLinear + α.1.toLinear) = ⊥ := by
               by_contra h_ne_bot
               -- If the weight space is non-trivial, then χ + α corresponds to a root
-              -- We'll use RootPairing.root_mem_submodule_iff_of_add_mem_invtSubmodule to derive a contradiction
+              -- We'll use RootPairing.root_mem_submodule_iff_
+              -- of_add_mem_invtSubmodule to derive a contradiction
 
               -- Step 1: Establish that we're working with the root system from IsKilling
               let S := LieAlgebra.IsKilling.rootSystem H
 
               -- Step 2: q defines an invariant root submodule
-              -- From the assumption hq: ∀ (i : { x // x ∈ LieSubalgebra.root }), q ∈ End.invtSubmodule ((rootSystem H).reflection i)
+              -- From the assumption hq: ∀ (i : { x // x ∈ LieSubalgebra.root }),
+              -- q ∈ End.invtSubmodule ((rootSystem H).reflection i)
               -- we know q is invariant under all root reflections in the root system
               have q_invt : q ∈ S.invtRootSubmodule := by
-                -- This should follow from hq and the definition of invtRootSubmodule
-                sorry -- Technical: convert hq to membership in invtRootSubmodule
+                -- Use the iff theorem to convert to the condition we have
+                rw [RootPairing.mem_invtRootSubmodule_iff]
+                -- Now we need to show ∀ i, q ∈ End.invtSubmodule (S.reflection i)
+                -- This is exactly what hq provides since S = rootSystem H
+                exact hq
 
               -- Step 3: Show that χ + α is a root (since its weight space is non-trivial)
               -- In our context, non-trivial weight spaces correspond to elements in H.root
               have h_chi_plus_alpha_is_root : χ.toLinear + α.1.toLinear ∈ Set.range S.root := by
-                -- This requires showing the connection between genWeightSpace L μ ≠ ⊥ and μ being a root
+                -- This requires showing the connection between genWeightSpace L μ ≠ ⊥
+                -- and μ being a root
                 -- The key insight is that for Cartan subalgebras, this correspondence holds
                 sorry -- Technical: weight space ≠ ⊥ ⟺ root
 
