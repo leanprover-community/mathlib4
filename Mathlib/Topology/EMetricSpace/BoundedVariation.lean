@@ -320,13 +320,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
             simp only [this, A, Finset.sum_singleton]
         · apply Finset.sum_congr rfl fun i hi => ?_
           rw [Finset.mem_Ico] at hi
-          dsimp only [w]
-          have A : ¬1 + i + 1 < N := by omega
-          have B : ¬1 + i + 1 = N := by omega
-          have C : ¬1 + i < N := by omega
-          have D : ¬1 + i = N := by omega
-          rw [if_neg A, if_neg B, if_neg C, if_neg D]
-          congr 3 <;> · rw [add_comm, Nat.sub_one]; apply Nat.pred_succ
+          grind
       _ = (∑ i ∈ Finset.Ico 0 (N - 1), edist (f (w (i + 1))) (f (w i))) +
               edist (f (w (N + 1))) (f (w (N - 1))) +
             ∑ i ∈ Finset.Ico (N + 1) (n + 1), edist (f (w (i + 1))) (f (w i)) := by
@@ -417,9 +411,7 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
       · gcongr
         rintro i hi
         simp only [Finset.mem_union, Finset.mem_range, Finset.mem_Ico] at hi ⊢
-        rcases hi with hi | hi
-        · exact lt_of_lt_of_le hi (n.le_succ.trans (n.succ.le_add_right m))
-        · exact hi.2
+        omega
       · refine Finset.disjoint_left.2 fun i hi h'i => ?_
         simp only [Finset.mem_Ico, Finset.mem_range] at hi h'i
         exact hi.not_gt (Nat.lt_of_succ_le h'i.left)

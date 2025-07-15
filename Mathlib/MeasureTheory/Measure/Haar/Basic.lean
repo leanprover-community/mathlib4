@@ -175,7 +175,7 @@ theorem index_pos (K : PositiveCompacts G) {V : Set G} (hV : (interior V).Nonemp
   rw [index, Nat.sInf_def, Nat.find_pos, mem_image]
   · rintro ⟨t, h1t, h2t⟩; rw [Finset.card_eq_zero] at h2t; subst h2t
     obtain ⟨g, hg⟩ := K.interior_nonempty
-    show g ∈ (∅ : Set G)
+    change g ∈ (∅ : Set G)
     convert h1t (interior_subset hg); symm
     simp only [Finset.notMem_empty, iUnion_of_empty, iUnion_empty]
   · exact index_defined K.isCompact hV
@@ -363,7 +363,7 @@ theorem chaar_nonneg (K₀ : PositiveCompacts G) (K : Compacts G) : 0 ≤ chaar 
 theorem chaar_empty (K₀ : PositiveCompacts G) : chaar K₀ ⊥ = 0 := by
   let eval : (Compacts G → ℝ) → ℝ := fun f => f ⊥
   have : Continuous eval := continuous_apply ⊥
-  show chaar K₀ ∈ eval ⁻¹' {(0 : ℝ)}
+  change chaar K₀ ∈ eval ⁻¹' {(0 : ℝ)}
   apply mem_of_subset_of_mem _ (chaar_mem_clPrehaar K₀ ⊤)
   unfold clPrehaar; rw [IsClosed.closure_subset_iff]
   · rintro _ ⟨U, _, rfl⟩; apply prehaar_empty
@@ -373,7 +373,7 @@ theorem chaar_empty (K₀ : PositiveCompacts G) : chaar K₀ ⊥ = 0 := by
 theorem chaar_self (K₀ : PositiveCompacts G) : chaar K₀ K₀.toCompacts = 1 := by
   let eval : (Compacts G → ℝ) → ℝ := fun f => f K₀.toCompacts
   have : Continuous eval := continuous_apply _
-  show chaar K₀ ∈ eval ⁻¹' {(1 : ℝ)}
+  change chaar K₀ ∈ eval ⁻¹' {(1 : ℝ)}
   apply mem_of_subset_of_mem _ (chaar_mem_clPrehaar K₀ ⊤)
   unfold clPrehaar; rw [IsClosed.closure_subset_iff]
   · rintro _ ⟨U, ⟨_, h2U, h3U⟩, rfl⟩; apply prehaar_self
@@ -385,7 +385,7 @@ theorem chaar_mono {K₀ : PositiveCompacts G} {K₁ K₂ : Compacts G} (h : (K�
     chaar K₀ K₁ ≤ chaar K₀ K₂ := by
   let eval : (Compacts G → ℝ) → ℝ := fun f => f K₂ - f K₁
   have : Continuous eval := (continuous_apply K₂).sub (continuous_apply K₁)
-  rw [← sub_nonneg]; show chaar K₀ ∈ eval ⁻¹' Ici (0 : ℝ)
+  rw [← sub_nonneg]; change chaar K₀ ∈ eval ⁻¹' Ici (0 : ℝ)
   apply mem_of_subset_of_mem _ (chaar_mem_clPrehaar K₀ ⊤)
   unfold clPrehaar; rw [IsClosed.closure_subset_iff]
   · rintro _ ⟨U, ⟨_, h2U, h3U⟩, rfl⟩; simp only [eval, mem_preimage, mem_Ici, sub_nonneg]
@@ -398,7 +398,7 @@ theorem chaar_sup_le {K₀ : PositiveCompacts G} (K₁ K₂ : Compacts G) :
   let eval : (Compacts G → ℝ) → ℝ := fun f => f K₁ + f K₂ - f (K₁ ⊔ K₂)
   have : Continuous eval := by
     exact ((continuous_apply K₁).add (continuous_apply K₂)).sub (continuous_apply (K₁ ⊔ K₂))
-  rw [← sub_nonneg]; show chaar K₀ ∈ eval ⁻¹' Ici (0 : ℝ)
+  rw [← sub_nonneg]; change chaar K₀ ∈ eval ⁻¹' Ici (0 : ℝ)
   apply mem_of_subset_of_mem _ (chaar_mem_clPrehaar K₀ ⊤)
   unfold clPrehaar; rw [IsClosed.closure_subset_iff]
   · rintro _ ⟨U, ⟨_, h2U, h3U⟩, rfl⟩; simp only [eval, mem_preimage, mem_Ici, sub_nonneg]
@@ -420,7 +420,7 @@ theorem chaar_sup_eq {K₀ : PositiveCompacts G}
   let eval : (Compacts G → ℝ) → ℝ := fun f => f K₁ + f K₂ - f (K₁ ⊔ K₂)
   have : Continuous eval :=
     ((continuous_apply K₁).add (continuous_apply K₂)).sub (continuous_apply (K₁ ⊔ K₂))
-  rw [eq_comm, ← sub_eq_zero]; show chaar K₀ ∈ eval ⁻¹' {(0 : ℝ)}
+  rw [eq_comm, ← sub_eq_zero]; change chaar K₀ ∈ eval ⁻¹' {(0 : ℝ)}
   let V := V₁ ∩ V₂
   apply
     mem_of_subset_of_mem _
@@ -444,7 +444,7 @@ theorem is_left_invariant_chaar {K₀ : PositiveCompacts G} (g : G) (K : Compact
     chaar K₀ (K.map _ <| continuous_mul_left g) = chaar K₀ K := by
   let eval : (Compacts G → ℝ) → ℝ := fun f => f (K.map _ <| continuous_mul_left g) - f K
   have : Continuous eval := (continuous_apply (K.map _ _)).sub (continuous_apply K)
-  rw [← sub_eq_zero]; show chaar K₀ ∈ eval ⁻¹' {(0 : ℝ)}
+  rw [← sub_eq_zero]; change chaar K₀ ∈ eval ⁻¹' {(0 : ℝ)}
   apply mem_of_subset_of_mem _ (chaar_mem_clPrehaar K₀ ⊤)
   unfold clPrehaar; rw [IsClosed.closure_subset_iff]
   · rintro _ ⟨U, ⟨_, h2U, h3U⟩, rfl⟩

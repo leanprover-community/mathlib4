@@ -62,10 +62,7 @@ variable {F : Type*} [Field F] [Fintype F] [DecidableEq F]
 /-- Some basic API lemmas -/
 theorem quadraticCharFun_eq_zero_iff {a : F} : quadraticCharFun F a = 0 ↔ a = 0 := by
   simp only [quadraticCharFun]
-  by_cases ha : a = 0
-  · simp only [ha, if_true]
-  · simp only [ha, if_false]
-    split_ifs <;> simp only [one_ne_zero]
+  grind
 
 @[simp]
 theorem quadraticCharFun_zero : quadraticCharFun F 0 = 0 := by

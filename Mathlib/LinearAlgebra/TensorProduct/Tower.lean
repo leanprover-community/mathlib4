@@ -44,8 +44,6 @@ probably should still implement the less general ones as abbreviations to the mo
 fewer type arguments.
 -/
 
-suppress_compilation
-
 namespace TensorProduct
 
 namespace AlgebraTensorModule

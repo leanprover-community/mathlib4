@@ -611,11 +611,11 @@ theorem continuousOn_convolution_right_with_param_comp {s : Set P} {v : P → G}
 support and is continuous. -/
 theorem _root_.HasCompactSupport.continuous_convolution_right (hcg : HasCompactSupport g)
     (hf : LocallyIntegrable f μ) (hg : Continuous g) : Continuous (f ⋆[L, μ] g) := by
-  rw [continuous_iff_continuousOn_univ]
+  rw [← continuousOn_univ]
   let g' : G → G → E' := fun _ q => g q
   have : ContinuousOn (↿g') (univ ×ˢ univ) := (hg.comp continuous_snd).continuousOn
   exact continuousOn_convolution_right_with_param_comp L
-    (continuous_iff_continuousOn_univ.1 continuous_id) hcg
+    (continuousOn_univ.2 continuous_id) hcg
     (fun p x _ hx => image_eq_zero_of_notMem_tsupport hx) hf this
 
 /-- The convolution is continuous if one function is integrable and the other is bounded and

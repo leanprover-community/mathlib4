@@ -128,8 +128,8 @@ noncomputable def opShiftFunctorEquivalence (n : ℤ) : Cᵒᵖ ≌ Cᵒᵖ wher
   functor := shiftFunctor Cᵒᵖ n
   inverse := (shiftFunctor C n).op
   unitIso := NatIso.op (shiftFunctorCompIsoId C (-n) n n.add_left_neg) ≪≫
-    isoWhiskerRight (shiftFunctorOpIso C n (-n) n.add_right_neg).symm (shiftFunctor C n).op
-  counitIso := isoWhiskerLeft _ (shiftFunctorOpIso C n (-n) n.add_right_neg) ≪≫
+    Functor.isoWhiskerRight (shiftFunctorOpIso C n (-n) n.add_right_neg).symm (shiftFunctor C n).op
+  counitIso := Functor.isoWhiskerLeft _ (shiftFunctorOpIso C n (-n) n.add_right_neg) ≪≫
     NatIso.op (shiftFunctorCompIsoId C n (-n) n.add_right_neg).symm
   functor_unitIso_comp X := Quiver.Hom.unop_inj (by
     dsimp [shiftFunctorOpIso]

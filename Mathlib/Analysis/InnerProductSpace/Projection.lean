@@ -40,6 +40,7 @@ The orthogonal projection construction is adapted from
 The Coq code is available at the following address: <http://www.lri.fr/~sboldo/elfic/index.html>
 -/
 
+set_option linter.style.longFile 1700
 
 noncomputable section
 
@@ -131,7 +132,7 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
             simp only [one_smul]
             have eq₁ : wp - wq = a - b := (sub_sub_sub_cancel_left _ _ _).symm
             have eq₂ : u + u - (wq + wp) = a + b := by
-              show u + u - (wq + wp) = u - wq + (u - wp)
+              change u + u - (wq + wp) = u - wq + (u - wp)
               abel
             rw [eq₁, eq₂]
           _ = 2 * (‖a‖ * ‖a‖ + ‖b‖ * ‖b‖) := parallelogram_law_with_norm ℝ _ _
@@ -205,7 +206,7 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
           _ = ‖u - v‖ ^ 2 - 2 * θ * ⟪u - v, w - v⟫_ℝ + θ * θ * ‖w - v‖ ^ 2 := by
             rw [@norm_sub_sq ℝ, inner_smul_right, norm_smul]
             simp only [sq]
-            show
+            change
               ‖u - v‖ * ‖u - v‖ - 2 * (θ * ⟪u - v, w - v⟫_ℝ) +
                 absR θ * ‖w - v‖ * (absR θ * ‖w - v‖) =
               ‖u - v‖ * ‖u - v‖ - 2 * θ * ⟪u - v, w - v⟫_ℝ + θ * θ * (‖w - v‖ * ‖w - v‖)
@@ -256,7 +257,7 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
         _ = ‖u - w‖ * ‖u - w‖ := by
           have : u - v - (w - v) = u - w := by abel
           rw [this, sq]
-    · show ⨅ w : K, ‖u - w‖ ≤ (fun w : K => ‖u - w‖) ⟨v, hv⟩
+    · change ⨅ w : K, ‖u - w‖ ≤ (fun w : K => ‖u - w‖) ⟨v, hv⟩
       apply ciInf_le
       use 0
       rintro y ⟨z, rfl⟩
@@ -475,6 +476,20 @@ theorem orthogonalProjectionFn_eq (v : E) :
     K.orthogonalProjectionFn v = (K.orthogonalProjection v : E) :=
   rfl
 
+/-- The orthogonal projection onto a subspace as a map from the full space to itself,
+as opposed to `Submodule.orthogonalProjection`, which maps into the subtype. This
+version is important as it satisfies `IsStarProjection`. -/
+def starProjection (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
+    E →L[𝕜] E := U.subtypeL ∘L U.orthogonalProjection
+
+lemma starProjection_apply (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] (v : E) :
+    U.starProjection v = U.orthogonalProjection v := rfl
+
+@[simp]
+lemma starProjection_apply_mem (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] (x : E) :
+    U.starProjection x ∈ U := by
+  simp only [starProjection_apply, SetLike.coe_mem]
+
 /-- The characterization of the orthogonal projection. -/
 @[simp]
 theorem orthogonalProjection_inner_eq_zero (v : E) :
@@ -517,6 +532,16 @@ theorem orthogonalProjection_orthogonal (u : E) :
       ⟨u - K.orthogonalProjection u, sub_orthogonalProjection_mem_orthogonal _⟩ :=
   Subtype.eq <| orthogonalProjection_orthogonal_val _
 
+lemma starProjection_orthogonal (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
+    Uᗮ.starProjection = ContinuousLinearMap.id 𝕜 E - U.starProjection := by
+  ext
+  simp only [starProjection, ContinuousLinearMap.comp_apply,
+    orthogonalProjection_orthogonal]
+  rfl
+
+lemma starProjection_orthogonal' (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
+    Uᗮ.starProjection = 1 - U.starProjection := starProjection_orthogonal U
+
 /-- The orthogonal projection of `y` on `U` minimizes the distance `‖y - x‖` for `x ∈ U`. -/
 theorem orthogonalProjection_minimal {U : Submodule 𝕜 E} [U.HasOrthogonalProjection] (y : E) :
     ‖y - U.orthogonalProjection y‖ = ⨅ x : U, ‖y - x‖ := by
@@ -541,6 +566,25 @@ theorem orthogonalProjection_eq_self_iff {v : E} : (K.orthogonalProjection v : E
     simp
   · simp
 
+variable (K) in
+@[simp]
+lemma isIdempotentElem_starProjection : IsIdempotentElem K.starProjection :=
+  ContinuousLinearMap.ext fun x ↦ orthogonalProjection_eq_self_iff.mpr <| by simp
+
+@[simp]
+lemma range_starProjection (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
+    LinearMap.range U.starProjection = U := by
+  ext x
+  exact ⟨fun ⟨y, hy⟩ ↦ hy ▸ coe_mem (U.orthogonalProjection y),
+    fun h ↦ ⟨x, orthogonalProjection_eq_self_iff.mpr h⟩⟩
+
+lemma starProjection_top : (⊤ : Submodule 𝕜 E).starProjection = ContinuousLinearMap.id 𝕜 E := by
+  ext
+  exact orthogonalProjection_eq_self_iff.mpr trivial
+
+lemma starProjection_top' : (⊤ : Submodule 𝕜 E).starProjection = 1 :=
+  starProjection_top
+
 @[simp]
 theorem orthogonalProjection_eq_zero_iff {v : E} : K.orthogonalProjection v = 0 ↔ v ∈ Kᗮ := by
   refine ⟨fun h ↦ ?_, fun h ↦ Subtype.eq <| eq_orthogonalProjection_of_mem_orthogonal
@@ -551,6 +595,13 @@ theorem orthogonalProjection_eq_zero_iff {v : E} : K.orthogonalProjection v = 0 
 @[simp]
 theorem ker_orthogonalProjection : LinearMap.ker K.orthogonalProjection = Kᗮ := by
   ext; exact orthogonalProjection_eq_zero_iff
+
+open ContinuousLinearMap in
+@[simp]
+lemma ker_starProjection (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
+    LinearMap.ker U.starProjection = Uᗮ := by
+  rw [(isIdempotentElem_starProjection U).ker_eq_range, ← starProjection_orthogonal',
+    range_starProjection]
 
 theorem _root_.LinearIsometry.map_orthogonalProjection {E E' : Type*} [NormedAddCommGroup E]
     [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 E'] (f : E →ₗᵢ[𝕜] E')
@@ -580,6 +631,10 @@ theorem orthogonalProjection_map_apply {E E' : Type*} [NormedAddCommGroup E]
 /-- The orthogonal projection onto the trivial submodule is the zero map. -/
 @[simp]
 theorem orthogonalProjection_bot : (⊥ : Submodule 𝕜 E).orthogonalProjection = 0 := by ext
+
+@[simp]
+lemma starProjection_bot : (⊥ : Submodule 𝕜 E).starProjection = 0 := by
+  rw [starProjection, orthogonalProjection_bot, ContinuousLinearMap.comp_zero]
 
 variable (K)
 
@@ -950,6 +1005,12 @@ theorem topologicalClosure_eq_top_iff [CompleteSpace E] :
 
 end Submodule
 
+open ContinuousLinearMap in
+theorem ContinuousLinearMap.IsIdempotentElem.hasOrthogonalProjection_range [CompleteSpace E]
+    {p : E →L[𝕜] E} (hp : IsIdempotentElem p) : (LinearMap.range p).HasOrthogonalProjection :=
+  have := hp.isClosed_range.completeSpace_coe
+  .ofCompleteSpace _
+
 namespace Dense
 
 /- TODO: Move to another file? -/
@@ -1106,7 +1167,7 @@ lemma re_inner_orthogonalProjection_eq_normSq [K.HasOrthogonalProjection] (v : E
     re ⟪↑(K.orthogonalProjection v), v⟫ = ‖K.orthogonalProjection v‖^2 := by
   rw [re_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two,
     div_eq_iff (NeZero.ne' 2).symm, pow_two, add_sub_assoc, ← eq_sub_iff_add_eq', coe_norm,
-    ← mul_sub_one, show (2 : ℝ) - 1 = 1 by ring, mul_one, sub_eq_iff_eq_add', norm_sub_rev]
+    ← mul_sub_one, show (2 : ℝ) - 1 = 1 by norm_num, mul_one, sub_eq_iff_eq_add', norm_sub_rev]
   exact orthogonalProjectionFn_norm_sq K v
 
 lemma re_inner_orthogonalProjection_nonneg [K.HasOrthogonalProjection] (v : E) :
@@ -1287,7 +1348,7 @@ orthogonal complement. -/
 theorem OrthogonalFamily.isInternal_iff [DecidableEq ι] [FiniteDimensional 𝕜 E]
     {V : ι → Submodule 𝕜 E} (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) :
     DirectSum.IsInternal V ↔ (iSup V)ᗮ = ⊥ :=
-  haveI h := FiniteDimensional.proper_rclike 𝕜 (↥(iSup V))
+  haveI := FiniteDimensional.proper_rclike 𝕜 (↥(iSup V))
   hV.isInternal_iff_of_isComplete (completeSpace_coe_iff_isComplete.mp inferInstance)
 
 open DirectSum

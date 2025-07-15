@@ -50,9 +50,13 @@ theorem prod_mono (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) : s₁ ×ˢ t₁ ⊆
 theorem prod_mono_left (hs : s₁ ⊆ s₂) : s₁ ×ˢ t ⊆ s₂ ×ˢ t :=
   prod_mono hs Subset.rfl
 
+alias prod_subset_prod_left := prod_mono_left
+
 @[gcongr]
 theorem prod_mono_right (ht : t₁ ⊆ t₂) : s ×ˢ t₁ ⊆ s ×ˢ t₂ :=
   prod_mono Subset.rfl ht
+
+alias prod_subset_prod_right := prod_mono_right
 
 @[simp]
 theorem prod_self_subset_prod_self : s₁ ×ˢ s₁ ⊆ s₂ ×ˢ s₂ ↔ s₁ ⊆ s₂ :=
@@ -346,6 +350,17 @@ theorem prod_subset_prod_iff : s ×ˢ t ⊆ s₁ ×ˢ t₁ ↔ s ⊆ s₁ ∧ t 
   · intro H
     simp only [st.1.ne_empty, st.2.ne_empty, or_false] at H
     exact prod_mono H.1 H.2
+
+theorem prod_subset_prod_iff' (h : (s ×ˢ t).Nonempty) : s ×ˢ t ⊆ s₁ ×ˢ t₁ ↔ s ⊆ s₁ ∧ t ⊆ t₁ := by
+  rw [prod_subset_prod_iff, or_iff_left]
+  rw [← Set.prod_eq_empty_iff]
+  exact h.ne_empty
+
+theorem prod_subset_prod_iff_left (h : t.Nonempty) : s ×ˢ t ⊆ s₁ ×ˢ t ↔ s ⊆ s₁ := by
+  simp +contextual [prod_subset_prod_iff, or_iff_left h.ne_empty]
+
+theorem prod_subset_prod_iff_right (h : s.Nonempty) : s ×ˢ t ⊆ s ×ˢ t₁ ↔ t ⊆ t₁ := by
+  simp +contextual [prod_subset_prod_iff, or_comm (a := s = ∅), or_iff_left h.ne_empty]
 
 theorem prod_eq_prod_iff_of_nonempty (h : (s ×ˢ t).Nonempty) :
     s ×ˢ t = s₁ ×ˢ t₁ ↔ s = s₁ ∧ t = t₁ := by
@@ -931,10 +946,7 @@ theorem sumPiEquivProdPi_symm_preimage_univ_pi (π : ι ⊕ ι' → Type*) (t : 
     (sumPiEquivProdPi π).symm ⁻¹' univ.pi t =
     univ.pi (fun i => t (.inl i)) ×ˢ univ.pi fun i => t (.inr i) := by
   ext
-  simp_rw [mem_preimage, mem_prod, mem_univ_pi, sumPiEquivProdPi_symm_apply]
-  constructor
-  · intro h; constructor <;> intro i <;> apply h
-  · rintro ⟨h₁, h₂⟩ (i|i) <;> simp <;> apply_assumption
+  simp
 
 end Equiv
 

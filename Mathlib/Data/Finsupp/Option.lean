@@ -98,7 +98,7 @@ theorem prod_option_index [AddZeroClass M] [CommMonoid N] (f : Option α →₀ 
       · simp only [h_add, Pi.add_apply, Finsupp.coe_add]
         rw [mul_mul_mul_comm]
       all_goals simp [h_zero, h_add]
-    | single a m => cases a <;> simp [h_zero, h_add]
+    | single a m => cases a <;> simp [h_zero]
 
 theorem sum_option_index_smul [Semiring R] [AddCommMonoid M] [Module R M] (f : Option α →₀ R)
     (b : Option α → M) :

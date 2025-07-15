@@ -139,10 +139,10 @@ theorem tendsto_normSq_coprime_pair :
     ext i
     dsimp only [Pi.smul_apply, LinearMap.pi_apply, smul_eq_mul]
     fin_cases i
-    · show (z : ℂ).im⁻¹ * (f c).im = c 0
+    · change (z : ℂ).im⁻¹ * (f c).im = c 0
       rw [f_def, add_im, im_ofReal_mul, ofReal_im, add_zero, mul_left_comm, inv_mul_cancel₀ hz,
         mul_one]
-    · show (z : ℂ).im⁻¹ * ((z : ℂ) * conj (f c)).im = c 1
+    · change (z : ℂ).im⁻¹ * ((z : ℂ) * conj (f c)).im = c 1
       rw [f_def, RingHom.map_add, RingHom.map_mul, mul_add, mul_left_comm, mul_conj, conj_ofReal,
         conj_ofReal, ← ofReal_mul, add_im, ofReal_im, zero_add, inv_mul_eq_iff_eq_mul₀ hz]
       simp only [ofReal_im, ofReal_re, mul_im, zero_add, mul_zero]
@@ -429,7 +429,7 @@ theorem exists_smul_mem_fd (z : ℍ) : ∃ g : SL(2, ℤ), g • z ∈ 𝒟 := b
     refine ⟨S * g, ?_⟩
     rw [mul_smul]
     exact im_lt_im_S_smul hg₀'
-  · show |(g • z).re| ≤ 1 / 2
+  · change |(g • z).re| ≤ 1 / 2
     -- if not, then either `T` or `T'` decrease |Re|.
     rw [abs_le]
     constructor

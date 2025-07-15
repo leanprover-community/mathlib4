@@ -65,7 +65,7 @@ instance : LE (PseudoMetric X R) := ⟨fun d d' ↦ ⇑d ≤ d'⟩
 
 @[simp, norm_cast]
 protected lemma coe_le_coe {d d' : PseudoMetric X R} :
-    (d : X → X → R) ≤ d' ↔ d ≤ d'  :=
+    (d : X → X → R) ≤ d' ↔ d ≤ d' :=
   Iff.rfl
 
 end Basic

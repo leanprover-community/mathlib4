@@ -118,7 +118,7 @@ def const (n : ℕ) (k : Fin (n + 1)) (m : SimplexCategoryᵒᵖ) : Δ[n].obj m 
   objMk (OrderHom.const _ k )
 
 @[simp]
-lemma const_down_toOrderHom (n : ℕ) (k : Fin (n+1)) (m : SimplexCategoryᵒᵖ) :
+lemma const_down_toOrderHom (n : ℕ) (k : Fin (n + 1)) (m : SimplexCategoryᵒᵖ) :
     (const n k m).down.toOrderHom = OrderHom.const _ k :=
   rfl
 
@@ -136,7 +136,7 @@ def edge (n : ℕ) (a b : Fin (n + 1)) (hab : a ≤ b) : Δ[n] _⦋1⦌ := by
   simp only [unop_op, len_mk, Fin.forall_fin_one]
   apply Fin.mk_le_mk.mpr hab
 
-lemma coe_edge_down_toOrderHom (n : ℕ) (a b : Fin (n+1)) (hab : a ≤ b) :
+lemma coe_edge_down_toOrderHom (n : ℕ) (a b : Fin (n + 1)) (hab : a ≤ b) :
     ↑(edge n a b hab).down.toOrderHom = ![a, b] :=
   rfl
 
@@ -148,7 +148,7 @@ def triangle {n : ℕ} (a b c : Fin (n + 1)) (hab : a ≤ b) (hbc : b ≤ c) : �
   dsimp
   simp only [*, true_and]
 
-lemma coe_triangle_down_toOrderHom {n : ℕ} (a b c : Fin (n+1)) (hab : a ≤ b) (hbc : b ≤ c) :
+lemma coe_triangle_down_toOrderHom {n : ℕ} (a b c : Fin (n + 1)) (hab : a ≤ b) (hbc : b ≤ c) :
     ↑(triangle a b c hab hbc).down.toOrderHom = ![a, b, c] :=
   rfl
 

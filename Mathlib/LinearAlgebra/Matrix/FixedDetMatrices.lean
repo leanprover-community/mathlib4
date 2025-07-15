@@ -36,7 +36,7 @@ lemma ext' {m : R} {A B : FixedDetMatrix n R m} (h : A.1 = B.1) : A = B := by
   congr
 
 @[ext]
-lemma ext {m : R} {A B : FixedDetMatrix n R m} (h : ∀ i j , A.1 i j = B.1 i j) : A = B := by
+lemma ext {m : R} {A B : FixedDetMatrix n R m} (h : ∀ i j, A.1 i j = B.1 i j) : A = B := by
   apply ext'
   ext i j
   apply h
@@ -218,7 +218,7 @@ private lemma prop_red_T (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B → 
   refine ⟨?_, hT _⟩
   intro ih
   rw [show B = T⁻¹ • T • B by simp, ← T_S_rel_smul]
-  solve_by_elim (config := {maxDepth := 10})
+  solve_by_elim (maxDepth := 10)
 
 private lemma prop_red_T_pow (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B → C (T • B)) :
      ∀ B (n : ℤ), C (T^n • B) ↔ C B := by

@@ -55,9 +55,6 @@ theorem contMDiffOn_continuousLinearMapCoordChange
   have h₂ := contMDiffOn_coordChangeL (IB := IB) e₂ e₂' (n := n)
   refine (h₁.mono ?_).cle_arrowCongr (h₂.mono ?_) <;> mfld_set_tac
 
-@[deprecated (since := "2024-11-21")]
-alias smoothOn_continuousLinearMapCoordChange := contMDiffOn_continuousLinearMapCoordChange
-
 variable [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E₂ x)]
 
 theorem hom_chart (y₀ y : LE₁E₂) :
@@ -72,17 +69,14 @@ theorem contMDiffWithinAt_hom_bundle (f : M → LE₁E₂) {s : Set M} {x₀ : M
       ContMDiffWithinAt IM IB n (fun x ↦ (f x).1) s x₀ ∧
         ContMDiffWithinAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂) n
           (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) s x₀ :=
-  contMDiffWithinAt_totalSpace ..
+  contMDiffWithinAt_totalSpace
 
 theorem contMDiffAt_hom_bundle (f : M → LE₁E₂) {x₀ : M} :
     ContMDiffAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) n f x₀ ↔
       ContMDiffAt IM IB n (fun x ↦ (f x).1) x₀ ∧
         ContMDiffAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂) n
           (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
-  contMDiffAt_totalSpace ..
-
-@[deprecated (since := "2024-11-21")] alias smoothAt_hom_bundle := contMDiffAt_hom_bundle
-
+  contMDiffAt_totalSpace
 
 variable [ContMDiffVectorBundle n F₁ E₁ IB] [ContMDiffVectorBundle n F₂ E₂ IB]
 

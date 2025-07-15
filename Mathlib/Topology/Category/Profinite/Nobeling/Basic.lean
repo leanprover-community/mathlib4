@@ -626,7 +626,7 @@ theorem isGood_mono {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
     (hl : l.isGood (π C (ord I · < o₁))) : l.isGood (π C (ord I · < o₂)) := by
   intro hl'
   apply hl
-  rwa [eval_πs_image' C h (prop_of_isGood  C _ hl), ← eval_πs' C h (prop_of_isGood  C _ hl),
+  rwa [eval_πs_image' C h (prop_of_isGood C _ hl), ← eval_πs' C h (prop_of_isGood C _ hl),
     Submodule.apply_mem_span_image_iff_mem_span (injective_πs' C h)] at hl'
 
 end Products

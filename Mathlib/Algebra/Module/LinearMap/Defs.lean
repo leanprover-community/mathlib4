@@ -701,6 +701,11 @@ theorem AddMonoidHom.toNatLinearMap_injective [AddCommMonoid M] [AddCommMonoid M
   ext x
   exact LinearMap.congr_fun h x
 
+@[simp]
+theorem AddMonoidHom.coe_toNatLinearMap [AddCommMonoid M] [AddCommMonoid M₂] (f : M →+ M₂) :
+    ⇑f.toNatLinearMap = f :=
+  rfl
+
 /-- Reinterpret an additive homomorphism as a `ℤ`-linear map. -/
 def AddMonoidHom.toIntLinearMap [AddCommGroup M] [AddCommGroup M₂] (f : M →+ M₂) : M →ₗ[ℤ] M₂ where
   toFun := f
@@ -968,7 +973,7 @@ theorem restrictScalars_smul (c : R₁) (f : M →ₗ[S] N) :
 @[simp]
 lemma restrictScalars_comp [AddCommMonoid P] [Module S P] [Module R P]
     [CompatibleSMul N P R S] [CompatibleSMul M P R S] (f : N →ₗ[S] P) (g : M →ₗ[S] N) :
-    (f ∘ₗ g).restrictScalars R = f.restrictScalars R ∘ₗ g.restrictScalars R := by
+    (f ∘ₗ g).restrictScalars R = f.restrictScalars R ∘ₗ g.restrictScalars R :=
   rfl
 
 @[simp]

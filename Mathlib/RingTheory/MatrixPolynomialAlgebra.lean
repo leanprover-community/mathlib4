@@ -102,7 +102,7 @@ theorem matPolyEquiv_coeff_apply (m : Matrix n n R[X]) (k : ℕ) (i j : n) :
     dsimp [single]
     split_ifs <;> rename_i h
     · constructor
-    · simp [single, h]
+    · simp
 
 @[simp]
 theorem matPolyEquiv_symm_apply_coeff (p : (Matrix n n R)[X]) (i j : n) (k : ℕ) :

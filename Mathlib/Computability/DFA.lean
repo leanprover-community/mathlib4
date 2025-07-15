@@ -132,8 +132,7 @@ theorem evalFrom_split [Fintype σ] {x : List α} {s t : σ} (hlen : Fintype.car
                     x.drop m, ?_, ?_, ?_, by rfl, ?_⟩
   · rw [List.take_append_drop, List.take_append_drop]
   · simp only [List.length_drop, List.length_take]
-    rw [min_eq_left (hm.trans hlen), min_eq_left hle, add_tsub_cancel_of_le hle]
-    exact hm
+    omega
   · intro h
     have hlen' := congr_arg List.length h
     simp only [List.length_drop, List.length, List.length_take] at hlen'
