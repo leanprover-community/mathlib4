@@ -291,7 +291,7 @@ variable
 
 variable {n : WithTop ℕ∞}
 
--- TODO: fix pretty-printing of my new elaborators!
+-- TODO: fix pretty-printing of the new differential geometry elaborators!
 set_option linter.style.commandStart false
 
 variable [IsContMDiffRiemannianBundle IB n F E]
