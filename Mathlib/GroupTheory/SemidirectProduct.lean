@@ -178,12 +178,10 @@ theorem range_inl_eq_ker_rightHom : (inl : N →* N ⋊[φ] G).range = rightHom.
 def equivProd : N ⋊[φ] G ≃ N × G where
   toFun x := ⟨x.1, x.2⟩
   invFun x := ⟨x.1, x.2⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- The group isomorphism between a semidirect product with respect to the trivial map
   and the product. -/
-@[simps (config := { rhsMd := .default })]
+@[simps (rhsMd := .default)]
 def mulEquivProd : N ⋊[1] G ≃* N × G :=
   { equivProd with map_mul' _ _ := rfl }
 

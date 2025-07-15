@@ -352,8 +352,7 @@ theorem upcrossingStrat_le_one : upcrossingStrat a b f N n ω ≤ 1 := by
         lowerCrossingTime a b f N _ _ ≤ lowerCrossingTime _ _ _ _ _ _)]
     refine le_trans upperCrossingTime_le_lowerCrossingTime
       (lowerCrossingTime_mono (Nat.succ_le_of_lt hij'))
-  · rw [gt_iff_lt] at hij'
-    rw [min_eq_right (upperCrossingTime_mono (Nat.succ_le_succ hij'.le) :
+  · rw [min_eq_right (upperCrossingTime_mono (Nat.succ_le_succ hij'.le) :
       upperCrossingTime a b f N _ ω ≤ upperCrossingTime a b f N _ ω),
       max_eq_left (lowerCrossingTime_mono hij'.le :
         lowerCrossingTime a b f N _ _ ≤ lowerCrossingTime _ _ _ _ _ _)]
@@ -451,7 +450,7 @@ theorem crossing_eq_crossing_of_lowerCrossingTime_lt {M : ℕ} (hNM : N ≤ M)
     lt_of_le_of_lt upperCrossingTime_le_lowerCrossingTime h
   induction n with
   | zero =>
-    simp only [upperCrossingTime_zero, bot_eq_zero', eq_self_iff_true,
+    simp only [upperCrossingTime_zero, bot_eq_zero',
       lowerCrossingTime_zero, true_and, eq_comm]
     refine hitting_eq_hitting_of_exists hNM ?_
     rw [lowerCrossingTime, hitting_lt_iff] at h
@@ -504,7 +503,7 @@ theorem upcrossingsBefore_mono (hab : a < b) : Monotone fun N ω => upcrossingsB
     rw [Set.mem_setOf_eq, upperCrossingTime_eq_upperCrossingTime_of_lt hNM hn]
     exact lt_of_lt_of_le hn hNM
   · rw [Set.not_nonempty_iff_eq_empty] at hemp
-    simp [hemp, csSup_empty, bot_eq_zero', zero_le']
+    simp [hemp, csSup_empty]
 
 theorem upcrossingsBefore_lt_of_exists_upcrossing (hab : a < b) {N₁ N₂ : ℕ} (hN₁ : N ≤ N₁)
     (hN₁' : f N₁ ω < a) (hN₂ : N₁ ≤ N₂) (hN₂' : b < f N₂ ω) :

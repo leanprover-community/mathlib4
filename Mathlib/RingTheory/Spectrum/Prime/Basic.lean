@@ -79,14 +79,6 @@ lemma nontrivial (p : PrimeSpectrum R) : Nontrivial R :=
 
 variable (R S)
 
-/-- The prime spectrum is in bijection with the set of prime ideals. -/
-@[simps]
-def equivSubtype : PrimeSpectrum R ≃ {I : Ideal R // I.IsPrime} where
-  toFun I := ⟨I.asIdeal, I.2⟩
-  invFun I := ⟨I, I.2⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
-
 theorem range_asIdeal : Set.range PrimeSpectrum.asIdeal = {J : Ideal R | J.IsPrime} :=
   Set.ext fun J ↦
     ⟨fun hJ ↦ let ⟨j, hj⟩ := Set.mem_range.mp hJ; Set.mem_setOf.mpr <| hj ▸ j.isPrime,
@@ -394,25 +386,6 @@ lemma zeroLocus_smul_of_isUnit {r : R} (hr : IsUnit r) (s : Set R) :
 
 section Order
 
-/-!
-## The specialization order
-
-We endow `PrimeSpectrum R` with a partial order induced from the ideal lattice.
-This is exactly the specialization order.
-See the corresponding section at `Mathlib/RingTheory/Spectrum/Prime/Topology.lean`.
--/
-
-instance : PartialOrder (PrimeSpectrum R) :=
-  PartialOrder.lift asIdeal (@PrimeSpectrum.ext _ _)
-
-@[simp]
-theorem asIdeal_le_asIdeal (x y : PrimeSpectrum R) : x.asIdeal ≤ y.asIdeal ↔ x ≤ y :=
-  Iff.rfl
-
-@[simp]
-theorem asIdeal_lt_asIdeal (x y : PrimeSpectrum R) : x.asIdeal < y.asIdeal ↔ x < y :=
-  Iff.rfl
-
 instance [IsDomain R] : OrderBot (PrimeSpectrum R) where
   bot := ⟨⊥, Ideal.bot_prime⟩
   bot_le I := @bot_le _ _ _ I.asIdeal
@@ -439,7 +412,7 @@ lemma zeroLocus_eq_singleton (m : Ideal R) [m.IsMaximal] :
 
 lemma isMin_iff {x : PrimeSpectrum R} :
     IsMin x ↔ x.asIdeal ∈ minimalPrimes R := by
-  show IsMin _ ↔ Minimal (fun q : Ideal R ↦ q.IsPrime ∧ ⊥ ≤ q) _
+  change IsMin _ ↔ Minimal (fun q : Ideal R ↦ q.IsPrime ∧ ⊥ ≤ q) _
   simp only [IsMin, Minimal, x.2, bot_le, and_self, and_true, true_and]
   exact ⟨fun H y hy e ↦ @H ⟨y, hy⟩ e, fun H y e ↦ H y.2 e⟩
 

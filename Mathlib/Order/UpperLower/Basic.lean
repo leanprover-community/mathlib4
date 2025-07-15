@@ -291,7 +291,7 @@ variable [NoMaxOrder α]
 theorem IsUpperSet.not_bddAbove (hs : IsUpperSet s) : s.Nonempty → ¬BddAbove s := by
   rintro ⟨a, ha⟩ ⟨b, hb⟩
   obtain ⟨c, hc⟩ := exists_gt b
-  exact hc.not_le (hb <| hs ((hb ha).trans hc.le) ha)
+  exact hc.not_ge (hb <| hs ((hb ha).trans hc.le) ha)
 
 theorem not_bddAbove_Ici : ¬BddAbove (Ici a) :=
   (isUpperSet_Ici _).not_bddAbove nonempty_Ici
@@ -308,7 +308,7 @@ variable [NoMinOrder α]
 theorem IsLowerSet.not_bddBelow (hs : IsLowerSet s) : s.Nonempty → ¬BddBelow s := by
   rintro ⟨a, ha⟩ ⟨b, hb⟩
   obtain ⟨c, hc⟩ := exists_lt b
-  exact hc.not_le (hb <| hs (hc.le.trans <| hb ha) ha)
+  exact hc.not_ge (hb <| hs (hc.le.trans <| hb ha) ha)
 
 theorem not_bddBelow_Iic : ¬BddBelow (Iic a) :=
   (isLowerSet_Iic _).not_bddBelow nonempty_Iic

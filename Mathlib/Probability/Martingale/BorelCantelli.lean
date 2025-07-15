@@ -119,7 +119,7 @@ theorem norm_stoppedValue_leastGE_le (hr : 0 ≤ r) (hf0 : f 0 = 0)
   · obtain ⟨k, hk⟩ := Nat.exists_eq_succ_of_ne_zero heq
     rw [hk, add_comm, ← sub_le_iff_le_add]
     have := notMem_of_lt_hitting (hk.symm ▸ k.lt_succ_self : k < leastGE f r i ω) (zero_le _)
-    simp only [Set.mem_union, Set.mem_Iic, Set.mem_Ici, not_or, not_le] at this
+    simp only [Set.mem_Ici, not_le] at this
     exact (sub_lt_sub_left this _).le.trans ((le_abs_self _).trans (hbddω _))
 
 theorem Submartingale.stoppedValue_leastGE_eLpNorm_le [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
@@ -158,7 +158,7 @@ theorem Submartingale.exists_tendsto_of_abs_bddAbove_aux [IsFiniteMeasure μ]
     intro n
     rw [leastGE]; unfold hitting; rw [stoppedValue]
     rw [if_neg]
-    simp only [Set.mem_Icc, Set.mem_union, Set.mem_Ici]
+    simp only [Set.mem_Icc, Set.mem_Ici]
     push_neg
     exact fun j _ => hib j
   simp only [← heq, hω i]

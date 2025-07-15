@@ -3,6 +3,7 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Squarefree.Basic
 import Mathlib.Data.Nat.Factorization.PrimePow
 import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
@@ -151,7 +152,7 @@ theorem minSqFacAux_has_prop {n : ℕ} (k) (n0 : 0 < n) (i) (e : k = 2 * i + 3)
   · refine squarefree_iff_prime_squarefree.2 fun p pp d => ?_
     have := ih p pp (dvd_trans ⟨_, rfl⟩ d)
     have := Nat.mul_le_mul this this
-    exact not_le_of_lt h (le_trans this (le_of_dvd n0 d))
+    exact not_le_of_gt h (le_trans this (le_of_dvd n0 d))
   have k2 : 2 ≤ k := by omega
   have k0 : 0 < k := lt_of_lt_of_le (by decide) k2
   have IH : ∀ n', n' ∣ n → ¬k ∣ n' → MinSqFacProp n' (n'.minSqFacAux (k + 2)) := by
@@ -247,12 +248,12 @@ theorem divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) :
         x.val.prod := by
   rw [(Finset.nodup _).ext ((Finset.nodup _).map_on _)]
   · intro a
-    simp only [Multiset.mem_filter, id, Multiset.mem_map, Finset.filter_val, ← Finset.mem_def,
+    simp only [Multiset.mem_filter, Multiset.mem_map, Finset.filter_val, ← Finset.mem_def,
       mem_divisors]
     constructor
     · rintro ⟨⟨an, h0⟩, hsq⟩
       use (UniqueFactorizationMonoid.normalizedFactors a).toFinset
-      simp only [id, Finset.mem_powerset]
+      simp only [Finset.mem_powerset]
       rcases an with ⟨b, rfl⟩
       rw [mul_ne_zero_iff] at h0
       rw [UniqueFactorizationMonoid.squarefree_iff_nodup_normalizedFactors h0.1] at hsq
@@ -488,7 +489,7 @@ theorem squarefreeHelper_4 (n k k' : ℕ) (e : bit1 k * bit1 k = k') (hd : bit1 
     (ih p pp (dvd_trans hp md)).trans
       (le_trans (Nat.le_of_dvd (lt_of_lt_of_le (by decide) m2) hp) hm)
   rw [Nat.le_sqrt] at this
-  exact not_le_of_lt hd this
+  exact not_le_of_gt hd this
 
 theorem not_squarefree_mul (a aa b n : ℕ) (ha : a * a = aa) (hb : aa * b = n) (h₁ : 1 < a) :
     ¬Squarefree n := by

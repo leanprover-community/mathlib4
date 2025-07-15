@@ -21,11 +21,13 @@ open Fin
 
 namespace Fin
 
+open Fin.CommRing
+
 variable {n : ℕ} {k : Fin n}
 
 theorem even_succAbove_add_predAbove (i : Fin (n + 1)) (j : Fin n) :
     Even (i.succAbove j + j.predAbove i : ℕ) ↔ Odd (i + j : ℕ) := by
-  rcases lt_or_le j.castSucc i with hji | hij
+  rcases lt_or_ge j.castSucc i with hji | hij
   · have : 1 ≤ (i : ℕ) := (Nat.zero_le j).trans_lt hji
     simp [succAbove_of_castSucc_lt _ _ hji, predAbove_of_castSucc_lt _ _ hji, this, iff_comm,
       parity_simps]
@@ -53,7 +55,6 @@ lemma even_of_odd (hn : Odd n) (k : Fin n) : Even k := by
   · exact even_of_val hk
   · simpa using (hk.add_odd hn).natCast (α := Fin n)
 
-
 lemma odd_of_odd [NeZero n] (hn : Odd n) (k : Fin n) : Odd k := by
   rcases k.val.even_or_odd with hk | hk
   · simpa using (Even.add_odd hk hn).natCast (R := Fin n)
@@ -70,7 +71,7 @@ lemma odd_iff_of_even [NeZero n] (hn : Even n) : Odd k ↔ Odd k.val := by
   rcases hn with ⟨n, rfl⟩
   refine ⟨?_, odd_of_val⟩
   rintro ⟨l, rfl⟩
-  rw [val_add, val_mul, val_one', show Fin.val 2 = 2 % _ from rfl]
+  rw [val_add, val_mul, coe_ofNat_eq_mod, coe_ofNat_eq_mod]
   simp only [Nat.mod_mul_mod, Nat.add_mod_mod, Nat.mod_add_mod, Nat.odd_iff]
   rw [Nat.mod_mod_of_dvd _ ⟨n, (two_mul n).symm⟩, ← Nat.odd_iff, Nat.odd_add_one,
     Nat.not_odd_iff_even]

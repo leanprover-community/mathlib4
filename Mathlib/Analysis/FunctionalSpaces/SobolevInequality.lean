@@ -186,7 +186,7 @@ theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0
               · rw [lmarginal_singleton]
               refine prod_congr rfl fun j hj => ?_
               have hi' : i ∉ ({j} : Finset ι) := by
-                simp only [Finset.mem_singleton, Finset.mem_insert, Finset.mem_compl] at hj ⊢
+                simp only [Finset.mem_singleton] at hj ⊢
                 exact fun h ↦ hi (h ▸ hj)
               rw [lmarginal_insert _ hf hi']
     _ = (∫⋯∫⁻_{i}, f ∂μ) x ^ (p + (1 - k * p)) *  ∏ j ∈ s, (∫⋯∫⁻_{i, j}, f ∂μ) x ^ p := by
@@ -206,7 +206,7 @@ theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0
                   rw [Finset.union_comm]
                   rfl
                 · rw [Finset.disjoint_singleton]
-                  simp only [Finset.mem_insert, Finset.mem_compl] at hj
+                  simp only at hj
                   exact fun h ↦ hi (h ▸ hj)
 
 /-- Auxiliary result for the grid-lines lemma.  Given a nonnegative function on a finitary product
@@ -504,10 +504,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
   have h0p : p ≠ 0 := zero_lt_one.trans hp |>.ne'
   have h1p : (p : ℝ) ≠ 1 := hq.lt.ne'
   have h3p : (p : ℝ) - 1 ≠ 0 := sub_ne_zero_of_ne h1p
-  have h0p' : p' ≠ 0 := by
-    suffices 0 < (p' : ℝ) from (show 0 < p' from this) |>.ne'
-    rw [← inv_pos, hp', sub_pos]
-    exact inv_strictAnti₀ hq.pos h2p
+  have h0p' : p' ≠ 0 := by assumption
   have h2q : 1 / n' - 1 / q = 1 / p' := by
     simp_rw -zeta [one_div, hp']
     rw [← hq.one_sub_inv, ← hn.coe.one_sub_inv, sub_sub_sub_cancel_left]
@@ -543,8 +540,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
   have :=
   calc (∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / (n' : ℝ)) = eLpNorm v n' μ := by
         rw [← h2γ, eLpNorm_nnreal_eq_lintegral hn.symm.pos.ne']
-        simp (discharger := positivity) [v, Real.enorm_rpow_of_nonneg, ENNReal.rpow_mul,
-          ← ENNReal.coe_rpow_of_nonneg]
+        simp (discharger := positivity) [v, Real.enorm_rpow_of_nonneg, ENNReal.rpow_mul]
     _ ≤ C * eLpNorm (fderiv ℝ v) 1 μ := eLpNorm_le_eLpNorm_fderiv_one μ hv h2v hn
     _ = C * ∫⁻ x, ‖fderiv ℝ v x‖ₑ ∂μ := by rw [eLpNorm_one_eq_lintegral_enorm]
     _ ≤ C * γ * ∫⁻ x, ‖u x‖ₑ ^ ((γ : ℝ) - 1) * ‖fderiv ℝ u x‖ₑ ∂μ := by

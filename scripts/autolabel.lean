@@ -293,9 +293,11 @@ unsafe def main (args : List String): IO UInt32 := do
     -- return 3
 
   -- get the modified files
+  println "Computing 'git diff --name-only origin/master...HEAD'"
   let gitDiff ← IO.Process.run {
     cmd := "git",
     args := #["diff", "--name-only", "origin/master...HEAD"] }
+  println s!"---\n{gitDiff}\n---"
   let modifiedFiles : Array FilePath := (gitDiff.splitOn "\n").toArray.map (⟨·⟩)
 
   -- find labels covering the modified files

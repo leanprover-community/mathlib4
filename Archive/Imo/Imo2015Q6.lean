@@ -127,7 +127,7 @@ include ha hbN
 lemma b_pos : 0 < b := by
   by_contra! h; rw [nonpos_iff_eq_zero] at h; subst h
   replace hbN : ∀ t, #(pool a t) = 0 := fun t ↦ by
-    obtain h | h := le_or_lt t N
+    obtain h | h := le_or_gt t N
     · have : #(pool a t) ≤ #(pool a N) := monotone_card_pool ha h
       rwa [hbN _ le_rfl, nonpos_iff_eq_zero] at this
     · exact hbN _ h.le

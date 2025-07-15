@@ -138,7 +138,7 @@ theorem addLECancellable_coe (x : ℝ) : AddLECancellable (x : EReal)
 
 -- TODO: add `MulLECancellable.strictMono*` etc
 theorem add_lt_add_right_coe {x y : EReal} (h : x < y) (z : ℝ) : x + z < y + z :=
-  not_le.1 <| mt (addLECancellable_coe z).add_le_add_iff_right.1 h.not_le
+  not_le.1 <| mt (addLECancellable_coe z).add_le_add_iff_right.1 h.not_ge
 
 theorem add_lt_add_left_coe {x y : EReal} (h : x < y) (z : ℝ) : (z : EReal) + x < z + y := by
   simpa [add_comm] using add_lt_add_right_coe h z
@@ -334,7 +334,7 @@ def recENNReal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
 @[simp]
 theorem recENNReal_coe_ennreal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
     (neg_coe : ∀ x : ℝ≥0∞, 0 < x → motive (-x)) (x : ℝ≥0∞) : recENNReal coe neg_coe x = coe x := by
-  suffices ∀ y : EReal, x = y → HEq (recENNReal coe neg_coe y : motive y) (coe x) from
+  suffices ∀ y : EReal, x = y → (recENNReal coe neg_coe y : motive y) ≍ coe x from
     heq_iff_eq.mp (this x rfl)
   intro y hy
   have H₁ : 0 ≤ y := hy ▸ coe_ennreal_nonneg x
@@ -566,13 +566,13 @@ lemma coe_mul_top_of_pos {x : ℝ} (h : 0 < x) : (x : EReal) * ⊤ = ⊤ :=
   if_pos h
 
 lemma coe_mul_top_of_neg {x : ℝ} (h : x < 0) : (x : EReal) * ⊤ = ⊥ :=
-  (if_neg h.not_lt).trans (if_neg h.ne)
+  (if_neg h.not_gt).trans (if_neg h.ne)
 
 lemma top_mul_coe_of_pos {x : ℝ} (h : 0 < x) : (⊤ : EReal) * x = ⊤ :=
   if_pos h
 
 lemma top_mul_coe_of_neg {x : ℝ} (h : x < 0) : (⊤ : EReal) * x = ⊥ :=
-  (if_neg h.not_lt).trans (if_neg h.ne)
+  (if_neg h.not_gt).trans (if_neg h.ne)
 
 lemma mul_top_of_pos : ∀ {x : EReal}, 0 < x → x * ⊤ = ⊤
   | ⊥, h => absurd h not_lt_bot
@@ -602,13 +602,13 @@ lemma coe_mul_bot_of_pos {x : ℝ} (h : 0 < x) : (x : EReal) * ⊥ = ⊥ :=
   if_pos h
 
 lemma coe_mul_bot_of_neg {x : ℝ} (h : x < 0) : (x : EReal) * ⊥ = ⊤ :=
-  (if_neg h.not_lt).trans (if_neg h.ne)
+  (if_neg h.not_gt).trans (if_neg h.ne)
 
 lemma bot_mul_coe_of_pos {x : ℝ} (h : 0 < x) : (⊥ : EReal) * x = ⊥ :=
   if_pos h
 
 lemma bot_mul_coe_of_neg {x : ℝ} (h : x < 0) : (⊥ : EReal) * x = ⊤ :=
-  (if_neg h.not_lt).trans (if_neg h.ne)
+  (if_neg h.not_gt).trans (if_neg h.ne)
 
 lemma mul_bot_of_pos : ∀ {x : EReal}, 0 < x → x * ⊥ = ⊥
   | ⊥, h => absurd h not_lt_bot
@@ -824,7 +824,7 @@ lemma left_distrib_of_nonneg {a b c : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) :
 lemma left_distrib_of_nonneg_of_ne_top {x : EReal} (hx_nonneg : 0 ≤ x)
     (hx_ne_top : x ≠ ⊤) (y z : EReal) :
     x * (y + z) = x * y + x * z := by
-  cases hx_nonneg.eq_or_gt with
+  cases hx_nonneg.eq_or_lt' with
   | inl hx0 => simp [hx0]
   | inr hx0 =>
   lift x to ℝ using ⟨hx_ne_top, hx0.ne_bot⟩

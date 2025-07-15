@@ -111,16 +111,16 @@ open Lean Meta Elab.Tactic in
 `rfl_cat` is a macro for `intros; rfl` which is attempted in `aesop_cat` before
 doing the more expensive `aesop` tactic.
 
-This gives a speedup because `simp` (called by `aesop`) is too slow.
-There is a fix for this slowness in https://github.com/leanprover/lean4/pull/7428.
-So, when that is resolved, the performance impact of `rfl_cat` should be measured again.
+This gives a speedup because `simp` (called by `aesop`) can be very slow.
+https://github.com/leanprover-community/mathlib4/pull/25475 contains measurements from June 2025.
 
 Implementation notes:
 * `refine id ?_`:
   In some cases it is important that the type of the proof matches the expected type exactly.
   e.g. if the goal is `2 = 1 + 1`, the `rfl` tactic will give a proof of type `2 = 2`.
   Starting a proof with `refine id ?_` is a trick to make sure that the proof has exactly
-  the expected type, in this case `2 = 1 + 1`. See also https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/changing.20a.20proof.20can.20break.20a.20later.20proof
+  the expected type, in this case `2 = 1 + 1`. See also
+  https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/changing.20a.20proof.20can.20break.20a.20later.20proof
 * `apply_rfl`:
   `rfl` is a macro that attempts both `eq_refl` and `apply_rfl`. Since `apply_rfl`
   subsumes `eq_refl`, we can use `apply_rfl` instead. This fails twice as fast as `rfl`.

@@ -73,11 +73,11 @@ theorem nnnorm_eq [NumberField K] (x : K) :
 
 theorem norm_le_iff [NumberField K] (x : K) (r : ℝ) :
     ‖canonicalEmbedding K x‖ ≤ r ↔ ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r := by
-  obtain hr | hr := lt_or_le r 0
+  obtain hr | hr := lt_or_ge r 0
   · obtain ⟨φ⟩ := (inferInstance : Nonempty (K →+* ℂ))
     refine iff_of_false ?_ ?_
-    · exact (hr.trans_le (norm_nonneg _)).not_le
-    · exact fun h => hr.not_le (le_trans (norm_nonneg _) (h φ))
+    · exact (hr.trans_le (norm_nonneg _)).not_ge
+    · exact fun h => hr.not_ge (le_trans (norm_nonneg _) (h φ))
   · lift r to NNReal using hr
     simp_rw [← coe_nnnorm, nnnorm_eq, NNReal.coe_le_coe, Finset.sup_le_iff, Finset.mem_univ,
       forall_true_left]
@@ -90,7 +90,7 @@ def integerLattice : Subring ((K →+* ℂ) → ℂ) :=
 
 theorem integerLattice.inter_ball_finite [NumberField K] (r : ℝ) :
     ((integerLattice K : Set ((K →+* ℂ) → ℂ)) ∩ Metric.closedBall 0 r).Finite := by
-  obtain hr | _ := lt_or_le r 0
+  obtain hr | _ := lt_or_ge r 0
   · simp [Metric.closedBall_eq_empty.2 hr]
   · have heq : ∀ x, canonicalEmbedding K x ∈ Metric.closedBall 0 r ↔
         ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r := by
@@ -327,7 +327,7 @@ theorem normAtPlace_nonneg (w : InfinitePlace K) (x : mixedSpace K) :
   split_ifs <;> exact norm_nonneg _
 
 theorem normAtPlace_neg (w : InfinitePlace K) (x : mixedSpace K) :
-    normAtPlace w (- x) = normAtPlace w x := by
+    normAtPlace w (-x) = normAtPlace w x := by
   rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
   split_ifs <;> simp
 
@@ -518,8 +518,8 @@ variable (K)
 open scoped Classical in
 theorem fundamentalDomain_stdBasis :
     fundamentalDomain (stdBasis K) =
-        (Set.univ.pi fun _ => Set.Ico 0 1) ×ˢ
-        (Set.univ.pi fun _ => Complex.measurableEquivPi⁻¹' (Set.univ.pi fun _ => Set.Ico 0 1)) := by
+      (Set.univ.pi fun _ => Set.Ico 0 1) ×ˢ
+      (Set.univ.pi fun _ => Complex.measurableEquivPi ⁻¹' (Set.univ.pi fun _ => Set.Ico 0 1)) := by
   ext
   simp [stdBasis, mem_fundamentalDomain, Complex.measurableEquivPi]
 
@@ -580,7 +580,7 @@ element `x` of `(K →+* ℂ) → ℂ` fixed by the map `x_φ ↦ conj x_(conjug
 see `stdBasis_repr_eq_matrixToStdBasis_mul`. -/
 def matrixToStdBasis : Matrix (index K) (index K) ℂ :=
   fromBlocks (diagonal fun _ => 1) 0 0 <| reindex (Equiv.prodComm _ _) (Equiv.prodComm _ _)
-    (blockDiagonal (fun _ => (2 : ℂ)⁻¹ • !![1, 1; - I, I]))
+    (blockDiagonal (fun _ => (2 : ℂ)⁻¹ • !![1, 1; -I, I]))
 
 open scoped Classical in
 theorem det_matrixToStdBasis :
@@ -618,16 +618,16 @@ theorem stdBasis_repr_eq_matrixToStdBasis_mul (x : (K →+* ℂ) → ℂ)
   | inr c =>
     rcases c with ⟨w, j⟩
     fin_cases j
-    · simp only [Fin.zero_eta, Fin.isValue, id_eq, stdBasis_apply_isComplex_fst, re_eq_add_conj,
+    · simp only [Fin.zero_eta, Fin.isValue, stdBasis_apply_isComplex_fst, re_eq_add_conj,
         mul_neg, fromBlocks_apply₂₁, zero_apply, zero_mul, sum_const_zero, fromBlocks_apply₂₂,
         submatrix_apply, Prod.swap_prod_mk, blockDiagonal_apply, of_apply, cons_val', cons_val_zero,
-        empty_val', cons_val_fin_one, ite_mul, cons_val_one, head_cons, sum_add_distrib, sum_ite_eq,
+        empty_val', cons_val_fin_one, ite_mul, cons_val_one, sum_add_distrib, sum_ite_eq,
         mem_univ, ↓reduceIte, ← hx (embedding w), zero_add]
       field_simp
-    · simp only [Fin.mk_one, Fin.isValue, id_eq, stdBasis_apply_isComplex_snd, im_eq_sub_conj,
+    · simp only [Fin.mk_one, Fin.isValue, stdBasis_apply_isComplex_snd, im_eq_sub_conj,
         mul_neg, fromBlocks_apply₂₁, zero_apply, zero_mul, sum_const_zero, fromBlocks_apply₂₂,
         submatrix_apply, Prod.swap_prod_mk, blockDiagonal_apply, of_apply, cons_val', cons_val_zero,
-        empty_val', cons_val_fin_one, cons_val_one, head_fin_const, ite_mul, neg_mul, head_cons,
+        empty_val', cons_val_fin_one, cons_val_one, ite_mul, neg_mul,
         sum_add_distrib, sum_ite_eq, mem_univ, ↓reduceIte, ← hx (embedding w), zero_add]
       ring_nf; field_simp
 
@@ -905,21 +905,21 @@ open Classical in
 swaps sign at places in `s` and leaves the rest unchanged. -/
 def negAt :
     mixedSpace K ≃L[ℝ] mixedSpace K :=
-  (piCongrRight fun w ↦ if w ∈ s then neg ℝ else ContinuousLinearEquiv.refl ℝ ℝ).prod
+  (piCongrRight fun w ↦ if w ∈ s then neg ℝ else ContinuousLinearEquiv.refl ℝ ℝ).prodCongr
     (ContinuousLinearEquiv.refl ℝ _)
 
 variable {s}
 
 @[simp]
 theorem negAt_apply_isReal_and_mem (x : mixedSpace K) {w : {w // IsReal w}} (hw : w ∈ s) :
-    (negAt s x).1 w = - x.1 w := by
-  simp_rw [negAt, ContinuousLinearEquiv.prod_apply, piCongrRight_apply, if_pos hw,
+    (negAt s x).1 w = -x.1 w := by
+  simp_rw [negAt, prodCongr_apply, piCongrRight_apply, if_pos hw,
     ContinuousLinearEquiv.neg_apply]
 
 @[simp]
 theorem negAt_apply_isReal_and_notMem (x : mixedSpace K) {w : {w // IsReal w}} (hw : w ∉ s) :
     (negAt s x).1 w = x.1 w := by
-  simp_rw [negAt, ContinuousLinearEquiv.prod_apply, piCongrRight_apply, if_neg hw,
+  simp_rw [negAt, prodCongr_apply, piCongrRight_apply, if_neg hw,
     ContinuousLinearEquiv.refl_apply]
 
 @[deprecated (since := "2025-05-23")]
@@ -978,10 +978,12 @@ theorem negAt_symm :
     (negAt s).symm = negAt s := by
   ext x w
   · by_cases hw : w ∈ s
-    · simp_rw [negAt_apply_isReal_and_mem _ hw, negAt, prod_symm,
-        ContinuousLinearEquiv.prod_apply, piCongrRight_symm_apply, if_pos hw, symm_neg, neg_apply]
-    · simp_rw [negAt_apply_isReal_and_notMem _ hw, negAt, prod_symm,
-        ContinuousLinearEquiv.prod_apply, piCongrRight_symm_apply, if_neg hw, refl_symm, refl_apply]
+    · simp_rw [negAt_apply_isReal_and_mem _ hw, negAt, prodCongr_symm,
+        prodCongr_apply, piCongrRight_symm_apply, if_pos hw, symm_neg,
+        neg_apply]
+    · simp_rw [negAt_apply_isReal_and_notMem _ hw, negAt, prodCongr_symm,
+        prodCongr_apply, piCongrRight_symm_apply, if_neg hw, refl_symm,
+        refl_apply]
   · rfl
 
 /-- For `x : mixedSpace K`, the set `signSet x` is the set of real places `w` s.t. `x w ≤ 0`. -/

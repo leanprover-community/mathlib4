@@ -42,7 +42,7 @@ noncomputable section
 
 namespace CategoryTheory
 
-open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
+open CategoryTheory CategoryTheory.Category CategoryTheory.Limits CategoryTheory.Functor
 
 variable {C : Type u₁} [Category.{v₁} C] {X Y Z : C}
 variable {D : Type u₂} [Category.{v₂} D]
@@ -107,7 +107,9 @@ instance : (forget X).Faithful :=
 instance mono (f : MonoOver X) : Mono f.arrow :=
   f.property
 
-/-- The category of monomorphisms over X is a thin category,
+instance {X : C} {f : MonoOver X} : Mono ((MonoOver.forget X).obj f).hom := f.mono
+
+/-- The category of monomorphisms over X is a thin category,s
 which makes defining its skeleton easy. -/
 instance isThin {X : C} : Quiver.IsThin (MonoOver X) := fun f g =>
   ⟨by
