@@ -240,7 +240,6 @@ lemma partialRightAdjointHomEquiv_map {X Y : F.PartialRightAdjointSource}
 
 lemma partialRightAdjointHomEquiv_map_comp {X : C} {Y Y' : F.PartialRightAdjointSource}
     (f : X ⟶ F.partialRightAdjointObj Y) (g : Y ⟶ Y') :
-    -- _ ⟶ F.partialRightAdjointObj _
     F.partialRightAdjointHomEquiv (f ≫ F.partialRightAdjointMap g) =
       F.partialRightAdjointHomEquiv f ≫ g := by
   rw [partialRightAdjointHomEquiv_comp, partialRightAdjointHomEquiv_map,
@@ -272,7 +271,6 @@ lemma isLeftAdjoint_of_rightAdjointObjIsDefined_eq_top
   replace h : ∀ X, IsRepresentable (F.op ⋙ yoneda.obj X) := fun X ↦ by
     simp only [← rightAdjointObjIsDefined_iff, h, Pi.top_apply, Prop.top_eq_true]
   exact (Adjunction.adjunctionOfEquivRight
-    -- FX ⟶ Y ≃ X ⟶ GY
     (fun X Y ↦ (F.op ⋙ yoneda.obj Y).representableBy.homEquiv.symm)
     (fun X Y Y' g f ↦ (RepresentableBy.comp_homEquiv_symm ..).symm)).isLeftAdjoint
 
