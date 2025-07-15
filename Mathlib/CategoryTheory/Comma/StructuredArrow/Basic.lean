@@ -327,8 +327,8 @@ def map₂CompMap₂Iso {C' : Type u₆} [Category.{v₆} C'] {D' : Type u₅} [
     (β' : R'' ⋙ G' ⟶ F' ⋙ R) :
     map₂ α' β' ⋙ map₂ α β ≅
     map₂ (α ≫ G.map α')
-      ((Functor.associator _ _ _).inv ≫ whiskerRight β' _ ≫ (Functor.associator _ _ _).hom ≫
-        whiskerLeft _ β ≫ (Functor.associator _ _ _).inv) :=
+      ((Functor.associator _ _ _).inv ≫ Functor.whiskerRight β' _ ≫ (Functor.associator _ _ _).hom ≫
+        Functor.whiskerLeft _ β ≫ (Functor.associator _ _ _).inv) :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _))
 
 end
@@ -634,7 +634,7 @@ instance isEquivalence_pre (F : B ⥤ C) (G : C ⥤ D) (S : D) [F.IsEquivalence]
 def post (F : B ⥤ C) (G : C ⥤ D) (S : C) :
     CostructuredArrow F S ⥤ CostructuredArrow (F ⋙ G) (G.obj S) where
   obj X := CostructuredArrow.mk (G.map X.hom)
-  map f := CostructuredArrow.homMk f.left (by simp [Functor.comp_map, ← G.map_comp, ← f.w])
+  map f := CostructuredArrow.homMk f.left (by simp [Functor.comp_map, ← G.map_comp])
 
 instance (F : B ⥤ C) (G : C ⥤ D) (S : C) : (post F G S).Faithful where
   map_injective {_ _} _ _ h := by simpa [ext_iff] using h

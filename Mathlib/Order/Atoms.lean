@@ -110,7 +110,7 @@ end PartialOrder
 theorem atom_le_iSup [Order.Frame α] {a : α} (ha : IsAtom a) {f : ι → α} :
     a ≤ iSup f ↔ ∃ i, a ≤ f i := by
   refine ⟨?_, fun ⟨i, hi⟩ => le_trans hi (le_iSup _ _)⟩
-  show (a ≤ ⨆ i, f i) → _
+  change (a ≤ ⨆ i, f i) → _
   refine fun h => of_not_not fun ha' => ?_
   push_neg at ha'
   have ha'' : Disjoint a (⨆ i, f i) :=
@@ -264,6 +264,16 @@ theorem IsCoatom.sup_eq_top_of_ne [SemilatticeSup α] [OrderTop α] {a b : α} (
 theorem IsCoatom.codisjoint_of_ne [SemilatticeSup α] [OrderTop α] {a b : α} (ha : IsCoatom a)
     (hb : IsCoatom b) (hab : a ≠ b) : Codisjoint a b :=
   codisjoint_iff.mpr (ha.sup_eq_top_of_ne hb hab)
+
+theorem IsAtom.inf_eq_bot_iff [SemilatticeInf α] [OrderBot α] {a b : α} (ha : IsAtom a) :
+    a ⊓ b = ⊥ ↔ ¬ a ≤ b := by
+  by_cases hb : b = ⊥
+  · simpa [hb] using ha.1
+  · exact ⟨fun h ↦ inf_lt_left.mp (h ▸ bot_lt ha), fun h ↦ ha.2 _ (inf_lt_left.mpr h)⟩
+
+theorem IsCoatom.sup_eq_top_iff [SemilatticeSup α] [OrderTop α] {a b : α} (ha : IsCoatom a) :
+    a ⊔ b = ⊤ ↔ ¬ b ≤ a :=
+  ha.dual.inf_eq_bot_iff
 
 end Pairwise
 
@@ -621,7 +631,7 @@ instance {α} [CompleteAtomicBooleanAlgebra α] : IsAtomistic α :=
     inhabit α
     refine ⟨{ a | IsAtom a ∧ a ≤ b }, ?_, fun a ha => ha.1⟩
     refine le_antisymm ?_ (sSup_le fun c hc => hc.2)
-    have : (⨅ c : α, ⨆ x, b ⊓ cond x c (cᶜ)) = b := by simp [iSup_bool_eq, iInf_const]
+    have : (⨅ c : α, ⨆ x, b ⊓ cond x c (cᶜ)) = b := by simp [iSup_bool_eq]
     rw [← this]; clear this
     simp_rw [iInf_iSup_eq, iSup_le_iff]; intro g
     if h : (⨅ a, b ⊓ cond (g a) a (aᶜ)) = ⊥ then simp [h] else
@@ -658,7 +668,7 @@ theorem isSimpleOrder_iff_isSimpleOrder_orderDual [LE α] [BoundedOrder α] :
 theorem IsSimpleOrder.bot_ne_top [LE α] [BoundedOrder α] [IsSimpleOrder α] : (⊥ : α) ≠ (⊤ : α) := by
   obtain ⟨a, b, h⟩ := exists_pair_ne α
   rcases eq_bot_or_eq_top a with (rfl | rfl) <;> rcases eq_bot_or_eq_top b with (rfl | rfl) <;>
-    first |simpa|simpa using h.symm
+    first | simpa | simpa using h.symm
 
 section IsSimpleOrder
 
@@ -775,10 +785,10 @@ def orderIsoBool : α ≃o Bool :=
   { equivBool with
     map_rel_iff' := @fun a b => by
       rcases eq_bot_or_eq_top a with (rfl | rfl)
-      · simp [bot_ne_top]
+      · simp
       · rcases eq_bot_or_eq_top b with (rfl | rfl)
-        · simp [bot_ne_top.symm, bot_ne_top, Bool.false_lt_true]
-        · simp [bot_ne_top] }
+        · simp [bot_ne_top.symm, Bool.false_lt_true]
+        · simp }
 
 /-- A simple `BoundedOrder` is also a `BooleanAlgebra`. -/
 protected def booleanAlgebra {α} [DecidableEq α] [Lattice α] [BoundedOrder α] [IsSimpleOrder α] :
@@ -787,7 +797,7 @@ protected def booleanAlgebra {α} [DecidableEq α] [Lattice α] [BoundedOrder α
     compl := fun x => if x = ⊥ then ⊤ else ⊥
     sdiff := fun x y => if x = ⊤ ∧ y = ⊥ then ⊤ else ⊥
     sdiff_eq := fun x y => by
-      rcases eq_bot_or_eq_top x with (rfl | rfl) <;> simp [bot_ne_top, SDiff.sdiff, compl]
+      rcases eq_bot_or_eq_top x with (rfl | rfl) <;> simp
     inf_compl_le_bot := fun x => by
       rcases eq_bot_or_eq_top x with (rfl | rfl)
       · simp
@@ -846,6 +856,12 @@ instance (priority := 100) : IsAtomistic α where
 
 instance (priority := 100) : IsCoatomistic α :=
   isAtomistic_dual_iff_isCoatomistic.1 (by infer_instance)
+
+@[simp] lemma bot_lt_iff_eq_top {a : α} : ⊥ < a ↔ a = ⊤ :=
+  ⟨eq_top_of_lt, fun h ↦ h ▸ bot_lt_top⟩
+
+@[simp] lemma lt_top_iff_eq_bot {a : α} : a < ⊤ ↔ a = ⊥ :=
+  ⟨eq_bot_of_lt, fun h ↦ h ▸ bot_lt_top⟩
 
 end IsSimpleOrder
 

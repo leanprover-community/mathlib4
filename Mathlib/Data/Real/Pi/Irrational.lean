@@ -103,7 +103,7 @@ private lemma recursion' (n : ℕ) :
   rw [integral_mul_deriv_eq_deriv_mul (fun x _ => hu₂ x) (fun x _ => hv₂ x)
     (hu₂d.intervalIntegrable _ _) (hv₂d.intervalIntegrable _ _),
     mul_sub, t, neg_mul, neg_mul, neg_mul, sub_neg_eq_add]
-  have (x) : u₂' x = (2 * n + 1) * f x ^ n - 2 * n * f x ^ (n - 1) := by
+  have (x : _) : u₂' x = (2 * n + 1) * f x ^ n - 2 * n * f x ^ (n - 1) := by
     cases n with
     | zero => simp [u₂']
     | succ n => ring!
@@ -163,7 +163,7 @@ explicit description of `sinPoly`.
 -/
 private lemma sinPoly_natDegree_le : ∀ n : ℕ, (sinPoly n).natDegree ≤ n
   | 0 => by simp [sinPoly]
-  | 1 => by simp only [natDegree_C, mul_one, zero_le', sinPoly]
+  | 1 => by simp only [natDegree_C, zero_le', sinPoly]
   | n + 2 => by
       rw [sinPoly]
       refine natDegree_add_le_of_degree_le ((natDegree_smul_le _ _).trans ?_) ?_

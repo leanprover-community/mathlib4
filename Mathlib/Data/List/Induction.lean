@@ -27,7 +27,7 @@ termination_by l.length
 decreasing_by
   simp_wf
   rw [← length_reverse (as := l), h, length_cons]
-  simp [Nat.lt_succ]
+  simp
 
 @[simp]
 theorem reverseRecOn_nil {motive : List α → Sort*} (nil : motive [])

@@ -716,7 +716,7 @@ abbrev invertibleFstOfInvertible (x : tsze R M) [Invertible x] : Invertible x.fs
 
 theorem fst_invOf (x : tsze R M) [Invertible x] [Invertible x.fst] : (⅟x).fst = ⅟(x.fst) := by
   letI := invertibleFstOfInvertible x
-  convert (rfl : _ = ⅟ x.fst)
+  convert (rfl : _ = ⅟x.fst)
 
 theorem mul_left_eq_one (r : R) (x : tsze R M) (h : r * x.fst = 1) :
     (inl r + inr (-((r •> x.snd) <• r))) * x = 1 := by
@@ -746,7 +746,7 @@ abbrev invertibleOfInvertibleFst (x : tsze R M) [Invertible x.fst] : Invertible 
 theorem snd_invOf (x : tsze R M) [Invertible x] [Invertible x.fst] :
     (⅟x).snd = -(⅟x.fst •> x.snd <• ⅟x.fst) := by
   letI := invertibleOfInvertibleFst x
-  convert congr_arg (TrivSqZeroExt.snd (R := R) (M := M)) (_ : _ = ⅟ x)
+  convert congr_arg (TrivSqZeroExt.snd (R := R) (M := M)) (_ : _ = ⅟x)
   convert rfl
 
 /-- Together `TrivSqZeroExt.detInvertibleOfInvertible` and `TrivSqZeroExt.invertibleOfDetInvertible`
@@ -816,7 +816,7 @@ protected theorem mul_inv_rev (a b : tsze R M) :
   ext
   · rw [fst_inv, fst_mul, fst_mul, mul_inv_rev, fst_inv, fst_inv]
   · simp only [snd_inv, snd_mul, fst_mul, fst_inv]
-    simp only [neg_smul, smul_neg, smul_add]
+    simp only [smul_neg, smul_add]
     simp_rw [mul_inv_rev, smul_comm (_ : R), op_smul_op_smul, smul_smul, add_comm, neg_add]
     obtain ha0 | ha := eq_or_ne (fst a) 0
     · simp [ha0]
@@ -947,8 +947,7 @@ def lift (f : R →ₐ[S] A) (g : M →ₗ[S] A)
     (TrivSqZeroExt.ind fun r₁ m₁ =>
       TrivSqZeroExt.ind fun r₂ m₂ => by
         dsimp
-        simp only [add_zero, zero_add, add_mul, mul_add, smul_mul_smul_comm, hg, smul_zero,
-          op_smul_eq_smul]
+        simp only [add_zero, zero_add, add_mul, mul_add, hg]
         rw [← map_mul, LinearMap.map_add, add_comm (g _), add_assoc, hfg, hgf])
 
 theorem lift_def (f : R →ₐ[S] A) (g : M →ₗ[S] A)

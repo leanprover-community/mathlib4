@@ -495,7 +495,7 @@ theorem mapDomain_support_of_injOn [DecidableEq β] {f : α → β} (s : α →�
     (hf : Set.InjOn f s.support) : (mapDomain f s).support = Finset.image f s.support :=
   Finset.Subset.antisymm mapDomain_support <| by
     intro x hx
-    simp only [mem_image, exists_prop, mem_support_iff, Ne] at hx
+    simp only [mem_image, mem_support_iff, Ne] at hx
     rcases hx with ⟨hx_w, hx_h_left, rfl⟩
     simp only [mem_support_iff, Ne]
     rw [mapDomain_apply' (↑s.support : Set _) _ _ hf]
@@ -559,7 +559,7 @@ theorem mapDomain.addMonoidHom_comp_mapRange [AddCommMonoid N] (f : α → β) (
       (mapRange.addMonoidHom g).comp (mapDomain.addMonoidHom f) := by
   ext
   simp only [AddMonoidHom.coe_comp, Finsupp.mapRange_single, Finsupp.mapDomain.addMonoidHom_apply,
-    Finsupp.singleAddHom_apply, eq_self_iff_true, Function.comp_apply, Finsupp.mapDomain_single,
+    Finsupp.singleAddHom_apply, Function.comp_apply, Finsupp.mapDomain_single,
     Finsupp.mapRange.addMonoidHom_apply]
 
 /-- When `g` preserves addition, `mapRange` and `mapDomain` commute. -/
@@ -614,7 +614,7 @@ def comapDomain [Zero M] (f : α → β) (l : β →₀ M) (hf : Set.InjOn f (f 
   toFun a := l (f a)
   mem_support_toFun := by
     intro a
-    simp only [Finset.mem_def.symm, Finset.mem_preimage]
+    simp only [Finset.mem_preimage]
     exact l.mem_support_toFun (f a)
 
 @[simp]
@@ -625,7 +625,7 @@ theorem comapDomain_apply [Zero M] (f : α → β) (l : β →₀ M) (hf : Set.I
 theorem sum_comapDomain [Zero M] [AddCommMonoid N] (f : α → β) (l : β →₀ M) (g : β → M → N)
     (hf : Set.BijOn f (f ⁻¹' ↑l.support) ↑l.support) :
     (comapDomain f l hf.injOn).sum (g ∘ f) = l.sum g := by
-  simp only [sum, comapDomain_apply, (· ∘ ·), comapDomain]
+  simp only [sum, (· ∘ ·), comapDomain]
   exact Finset.sum_preimage_of_bij f _ hf fun x => g x (l x)
 
 theorem eq_zero_of_comapDomain_eq_zero [Zero M] (f : α → β) (l : β →₀ M)
@@ -1271,13 +1271,23 @@ end
 between the subtype of finitely supported functions with support contained in `s` and
 the type of finitely supported functions from `s`. -/
 -- TODO: add [DecidablePred (· ∈ s)] as an assumption
-@[simps] def restrictSupportEquiv (s : Set α) (M : Type*) [AddCommMonoid M] :
+@[simps apply] def restrictSupportEquiv (s : Set α) (M : Type*) [AddCommMonoid M] :
     { f : α →₀ M // ↑f.support ⊆ s } ≃ (s →₀ M) where
   toFun f := subtypeDomain (· ∈ s) f.1
   invFun f := letI := Classical.decPred (· ∈ s); ⟨f.extendDomain, support_extendDomain_subset _⟩
   left_inv f :=
     letI := Classical.decPred (· ∈ s); Subtype.ext <| extendDomain_subtypeDomain f.1 f.prop
   right_inv _ := letI := Classical.decPred (· ∈ s); subtypeDomain_extendDomain _
+
+@[simp] lemma restrictSupportEquiv_symm_apply_coe (s : Set α) (M : Type*) [AddCommMonoid M]
+    [DecidablePred (· ∈ s)] (f : s →₀ M) :
+    (restrictSupportEquiv s M).symm f = f.extendDomain := by
+  rw [restrictSupportEquiv, Equiv.coe_fn_symm_mk, Subtype.coe_mk]; congr
+
+@[simp] lemma restrictSupportEquiv_symm_single (s : Set α) (M : Type*) [AddCommMonoid M]
+    (a : s) (x : M) :
+    (restrictSupportEquiv s M).symm (single a x) = single (a : α) x := by
+  classical simp
 
 /-- Given `AddCommMonoid M` and `e : α ≃ β`, `domCongr e` is the corresponding `Equiv` between
 `α →₀ M` and `β →₀ M`.
@@ -1345,7 +1355,7 @@ def splitSupport (l : (Σ i, αs i) →₀ M) : Finset ι :=
 theorem mem_splitSupport_iff_nonzero (i : ι) : i ∈ splitSupport l ↔ split l i ≠ 0 := by
   classical rw [splitSupport, mem_image, Ne, ← support_eq_empty, ← Ne,
     ← Finset.nonempty_iff_ne_empty, split, comapDomain, Finset.Nonempty]
-  simp only [exists_prop, Finset.mem_preimage, exists_and_right, exists_eq_right, mem_support_iff,
+  simp only [Finset.mem_preimage, exists_and_right, exists_eq_right, mem_support_iff,
     Sigma.exists, Ne]
 
 /-- Given `l`, a finitely supported function from the sigma type `Σ i, αs i` to `β` and

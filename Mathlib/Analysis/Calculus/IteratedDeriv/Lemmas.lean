@@ -79,7 +79,7 @@ theorem iteratedDerivWithin_neg :
   induction n generalizing x with
   | zero => simp
   | succ n IH =>
-    simp only [iteratedDerivWithin_succ, derivWithin_neg]
+    simp only [iteratedDerivWithin_succ]
     rw [← derivWithin.neg]
     congr with y
     exact IH

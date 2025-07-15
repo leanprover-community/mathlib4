@@ -28,25 +28,39 @@ def extractRepoFromUrl (url : String) : Option String := do
   let pos ← url.revFindAux (fun c => c == '/'  || c == ':') pos
   return url.extract (url.next pos) url.endPos
 
+/-- Spot check if a URL is valid for a git remote -/
+def isRemoteURL (url : String) : Bool :=
+  "https://".isPrefixOf url || "http://".isPrefixOf url || "git@github.com:".isPrefixOf url
+
 /--
 Helper function to get repository from a remote name
 -/
 def getRepoFromRemote (mathlibDepPath : FilePath) (remoteName : String) (errorContext : String) : IO String := do
+  -- If the remote is already a valid URL, attempt to extract the repo from it. This happens with `gh pr checkout`
+  if isRemoteURL remoteName then
+    repoFromURL remoteName
+  else
+  -- If not, we use `git remote get-url` to find the URL of the remote. This assumes the remote has a
+  -- standard name like `origin` or `upstream` or it errors out.
   let out ← IO.Process.output
     {cmd := "git", args := #["remote", "get-url", remoteName], cwd := mathlibDepPath}
+  -- If `git remote get-url` fails then bail out with an error to help debug
+  let output := out.stdout.trim
   unless out.exitCode == 0 do
     throw <| IO.userError s!"\
       Failed to run Git to determine Mathlib's repository from {remoteName} remote (exit code: {out.exitCode}).\n\
       {errorContext}\n\
-      Stdout:\n{out.stdout.trim}\nStderr:\n{out.stderr.trim}\n"
-
-  if let some repo := extractRepoFromUrl out.stdout.trim then
-    return repo
-  else
-    throw <| IO.userError s!"\
-      Failed to determine Mathlib's repository from {remoteName} remote URL.\n\
-      {errorContext}\n\
-      Detected URL: {out.stdout.trim}"
+      Stdout:\n{output}\nStderr:\n{out.stderr.trim}\n"
+  -- Finally attempt to extract the repository from the remote URL returned by `git remote get-url`
+  repoFromURL output
+where repoFromURL (url : String) : IO String := do
+    if let some repo := extractRepoFromUrl url then
+      return repo
+    else
+      throw <| IO.userError s!"\
+        Failed to extract repository from remote URL: {url}.\n\
+        {errorContext}\n\
+        Please ensure the remote URL is valid and points to a GitHub repository."
 
 /--
 Finds the remote name that points to `leanprover-community/mathlib4` repository.
@@ -93,8 +107,19 @@ def findMathlibRemote (mathlibDepPath : FilePath) : IO String := do
     return remoteName
 
 /--
+Extracts PR number from a git ref like "refs/remotes/upstream/pr/1234"
+-/
+def extractPRNumber (ref : String) : Option Nat := do
+  let parts := ref.split (· == '/')
+  if parts.length >= 2 && parts[parts.length - 2]! == "pr" then
+    let prStr := parts[parts.length - 1]!
+    prStr.toNat?
+  else
+    none
+
+/--
 Attempts to determine the GitHub repository of a version of Mathlib from its Git remote.
-If the current branch is tracking a PR (upstream/pr/NNNN), it will determine the source fork
+If the current commit coincides with a PR ref, it will determine the source fork
 of that PR rather than just using the origin remote.
 -/
 def getRemoteRepo (mathlibDepPath : FilePath) : IO RepoInfo := do
@@ -107,7 +132,8 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO RepoInfo := do
     {cmd := "git", args := #["rev-parse", "--abbrev-ref", "HEAD"], cwd := mathlibDepPath}
 
   if currentBranch.exitCode == 0 then
-    let branchName := currentBranch.stdout.trim
+    let branchName := currentBranch.stdout.trim.stripPrefix "heads/"
+    IO.println s!"Current branch: {branchName}"
     -- Check if we're on a branch that should use nightly-testing remote
     let shouldUseNightlyTesting := branchName == "nightly-testing" ||
                                   branchName.startsWith "lean-pr-testing-" ||
@@ -124,28 +150,64 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO RepoInfo := do
       return {repo := repo, useFirst := true}
 
     -- Only search for PR refs if we're not on a regular branch like master, bump/*, or nightly-testing*
-    let isSpecialBranch := branchName == "master" || branchName.startsWith "bump/" ||
-                          branchName.startsWith "nightly-testing"
+    -- let isSpecialBranch := branchName == "master" || branchName.startsWith "bump/" ||
+    --                       branchName.startsWith "nightly-testing"
 
-    -- Check if the current branch is tracking a PR
-    if !isSpecialBranch then
-      let prInfo ← IO.Process.output
-        {cmd := "gh", args := #["pr", "view", "--json", "headRefName,headRepositoryOwner,number"], cwd := mathlibDepPath}
-      unless prInfo.exitCode != 0 do
-        if let .ok json := Lean.Json.parse prInfo.stdout.trim then
-          if let .ok owner := json.getObjValAs? Lean.Json "headRepositoryOwner" then
-            if let .ok login := owner.getObjValAs? String "login" then
-              if let .ok repoName := json.getObjValAs? String "headRefName" then
-                if let .ok prNumber := json.getObjValAs? Nat "number" then
-                  let repo := s!"{login}/mathlib4"
-                  IO.println s!"Using cache from PR #{prNumber} source: {login}/{repoName}"
-                  let useFirst := if owner == "leanprover-community" then false else true
-                  return {repo := repo, useFirst := useFirst}
+    -- TODO: this code is currently broken in two ways: 1. you need to write `%(refname)` in quotes and
+    -- 2. it is looking in the wrong place when in detached HEAD state.
+    -- We comment it out for now, but we should fix it later.
+    -- Check if the current commit coincides with any PR ref
+    -- if !isSpecialBranch then
+    --   let mathlibRemoteName ← findMathlibRemote mathlibDepPath
+    --   let currentCommit ← IO.Process.output
+    --     {cmd := "git", args := #["rev-parse", "HEAD"], cwd := mathlibDepPath}
+    --
+    --   if currentCommit.exitCode == 0 then
+    --     let commit := currentCommit.stdout.trim
+    --     -- Get all PR refs that contain this commit
+    --     let prRefPattern := s!"refs/remotes/{mathlibRemoteName}/pr/*"
+    --     let refsInfo ← IO.Process.output
+    --       {cmd := "git", args := #["for-each-ref", "--contains", commit, prRefPattern, "--format=%(refname)"], cwd := mathlibDepPath}
+    --     -- The code below is for debugging purposes currently
+    --     IO.println s!"`git for-each-ref --contains {commit} {prRefPattern} --format=%(refname)` returned:
+    --     {refsInfo.stdout.trim} with exit code {refsInfo.exitCode} and stderr: {refsInfo.stderr.trim}."
+    --     let refsInfo' ← IO.Process.output
+    --       {cmd := "git", args := #["for-each-ref", "--contains", commit, prRefPattern, "--format=\"%(refname)\""], cwd := mathlibDepPath}
+    --     IO.println s!"`git for-each-ref --contains {commit} {prRefPattern} --format=\"%(refname)\"` returned:
+    --     {refsInfo'.stdout.trim} with exit code {refsInfo'.exitCode} and stderr: {refsInfo'.stderr.trim}."
+    --
+    --     if refsInfo.exitCode == 0 && !refsInfo.stdout.trim.isEmpty then
+    --       let prRefs := refsInfo.stdout.trim.split (· == '\n')
+    --       -- Extract PR numbers from refs like "refs/remotes/upstream/pr/1234"
+    --       for prRef in prRefs do
+    --         if let some prNumber := extractPRNumber prRef then
+    --           -- Get PR details using gh
+    --           let prInfo ← IO.Process.output
+    --             {cmd := "gh", args := #["pr", "view", toString prNumber, "--json", "headRefName,headRepositoryOwner,number"], cwd := mathlibDepPath}
+    --           if prInfo.exitCode == 0 then
+    --             if let .ok json := Lean.Json.parse prInfo.stdout.trim then
+    --               if let .ok owner := json.getObjValAs? Lean.Json "headRepositoryOwner" then
+    --                 if let .ok login := owner.getObjValAs? String "login" then
+    --                   if let .ok repoName := json.getObjValAs? String "headRefName" then
+    --                     if let .ok prNum := json.getObjValAs? Nat "number" then
+    --                       let repo := s!"{login}/mathlib4"
+    --                       IO.println s!"Using cache from PR #{prNum} source: {login}/{repoName} (commit {commit.take 8} found in PR ref)"
+    --                       let useFirst := if login != "leanprover-community" then true else false
+    --                       return {repo := repo, useFirst := useFirst}
 
-  -- Fall back to the original logic using origin remote
-  let repo ← getRepoFromRemote mathlibDepPath "origin"
-    "Ensure Git is installed and Mathlib's `origin` remote points to its GitHub repository."
-  IO.println s!"Using cache from origin: {repo}"
+  -- Fall back to using the remote that the current branch is tracking
+  let trackingRemote ← IO.Process.output
+    {cmd := "git", args := #["config", "--get", s!"branch.{currentBranch.stdout.trim}.remote"], cwd := mathlibDepPath}
+
+  let remoteName := if trackingRemote.exitCode == 0 then
+    trackingRemote.stdout.trim
+  else
+    -- If no tracking remote is configured, fall back to origin
+    "origin"
+
+  let repo ← getRepoFromRemote mathlibDepPath remoteName
+    s!"Ensure Git is installed and the '{remoteName}' remote points to its GitHub repository."
+  IO.println s!"Using cache from {remoteName}: {repo}"
   return {repo := repo, useFirst := false}
 
 -- FRO cache is flaky so disable until we work out the kinks: https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/The.20cache.20doesn't.20work/near/411058849
@@ -227,7 +289,9 @@ def downloadFiles
     IO.println s!"Attempting to download {size} file(s) from {repo} cache"
     let failed ← if parallel then
       IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent repo hashMap)
-      let args := #["--request", "GET", "--parallel", "--fail", "--silent",
+      let args := #["--request", "GET", "--parallel",
+          -- commented as this creates a big slowdown on curl 8.13.0: "--fail",
+          "--silent",
           "--retry", "5", -- there seem to be some intermittent failures
           "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
       let (_, success, failed, done) ←
@@ -395,9 +459,12 @@ def putFiles
       #["-H", "x-ms-blob-type: BlockBlob"]
     else
       #["-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"]
-    _ ← IO.runCurl (stderrAsErr := false) (args ++ #[
+    let out ← IO.runCurl (stderrAsErr := false) (args ++ #[
       "--retry", "5", -- there seem to be some intermittent failures
       "-X", "PUT", "--parallel", "-K", IO.CURLCFG.toString])
+    if out.trim != "" then
+      IO.println s!"Output from curl:"
+      IO.println out
     IO.FS.removeFile IO.CURLCFG
   else IO.println "No files to upload"
 

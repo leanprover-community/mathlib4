@@ -127,7 +127,7 @@ theorem continuousOn_taylorWithinEval {f : ℝ → E} {x : ℝ} {n : ℕ} {s : S
   rw [contDiffOn_nat_iff_continuousOn_differentiableOn_deriv hs] at hf
   simp only [Finset.mem_range] at hi
   refine hf.1 i ?_
-  simp only [WithTop.coe_le_coe, Nat.cast_le, Nat.lt_succ_iff.mp hi]
+  simp only [Nat.lt_succ_iff.mp hi]
 
 /-- Helper lemma for calculating the derivative of the monomial that appears in Taylor
 expansions. -/

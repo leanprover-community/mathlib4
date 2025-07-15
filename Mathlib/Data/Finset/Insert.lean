@@ -568,8 +568,8 @@ def subtypeInsertEquivOption {t : Finset α} {x : α} (h : x ∉ t) :
   invFun y := (y.elim ⟨x, mem_insert_self _ _⟩) fun z => ⟨z, mem_insert_of_mem z.2⟩
   left_inv y := by
     by_cases h : ↑y = x
-    · simp only [Subtype.ext_iff, h, Option.elim, dif_pos, Subtype.coe_mk]
-    · simp only [h, Option.elim, dif_neg, not_false_iff, Subtype.coe_eta, Subtype.coe_mk]
+    · simp only [Subtype.ext_iff, h, Option.elim, dif_pos]
+    · simp only [h, Option.elim, dif_neg, not_false_iff, Subtype.coe_eta]
   right_inv := by
     rintro (_ | y)
     · simp only [Option.elim, dif_pos]
@@ -653,7 +653,7 @@ theorem toFinset_nil : toFinset (@nil α) = ∅ :=
 
 @[simp]
 theorem toFinset_cons : toFinset (a :: l) = insert a (toFinset l) :=
-  Finset.eq_of_veq <| by by_cases h : a ∈ l <;> simp [Finset.insert_val', Multiset.dedup_cons, h]
+  Finset.eq_of_veq <| by by_cases h : a ∈ l <;> simp [h]
 
 theorem toFinset_replicate_of_ne_zero {n : ℕ} (hn : n ≠ 0) :
     (List.replicate n a).toFinset = {a} := by

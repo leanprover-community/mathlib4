@@ -591,7 +591,7 @@ end Iso
 def induceUnivIso (G : SimpleGraph V) : G.induce Set.univ ≃g G where
   toEquiv := Equiv.Set.univ V
   map_rel_iff' := by simp only [Equiv.Set.univ, Equiv.coe_fn_mk, comap_adj, Embedding.coe_subtype,
-                                Subtype.forall, Set.mem_univ, forall_true_left, implies_true]
+                                implies_true]
 
 section Finite
 

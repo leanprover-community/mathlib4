@@ -323,7 +323,7 @@ theorem aeval_unique {ε : MvPowerSeries σ R →ₐ[R] S} (hε : Continuous ε)
   trans ε.comp (coeToMvPowerSeries.algHom R) p
   · simp
   conv_lhs => rw [← p.aeval_X_left_apply, MvPolynomial.comp_aeval_apply, MvPolynomial.aeval_def]
-  simp [MvPolynomial.comp_aeval_apply, MvPolynomial.aeval_def]
+  simp
 
 theorem hasSum_aeval (ha : HasEval a) (f : MvPowerSeries σ R) :
     HasSum (fun (d : σ →₀ ℕ) ↦ (coeff R d f) • (d.prod fun s e => (a s) ^ e))
@@ -347,7 +347,7 @@ theorem comp_aeval (ha : HasEval a)
   rw [← RingHom.coe_coe,
     comp_eval₂ (continuous_algebraMap R S) ha (show Continuous (ε : S →+* T) from hε), coe_aeval]
   congr!
-  simp only [AlgHom.toRingHom_eq_coe, AlgHom.comp_algebraMap_of_tower, RingHom.coe_coe]
+  simp only [AlgHom.comp_algebraMap_of_tower]
 
 end Evaluation
 

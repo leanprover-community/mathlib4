@@ -129,7 +129,7 @@ theorem fst_map (x : P α) (f : α → β) : (P.map f x).1 = x.1 := by cases x; 
 @[simp]
 theorem iget_map [DecidableEq P.A] [Inhabited α] [Inhabited β] (x : P α)
     (f : α → β) (i : P.Idx) (h : i.1 = x.1) : (P.map f x).iget i = f (x.iget i) := by
-  simp only [Obj.iget, fst_map, *, dif_pos, eq_self_iff_true]
+  simp only [Obj.iget, fst_map, *, dif_pos]
   cases x
   rfl
 
@@ -180,7 +180,7 @@ theorem liftp_iff {α : Type u} (p : α → Prop) (x : P α) :
 
 theorem liftp_iff' {α : Type u} (p : α → Prop) (a : P.A) (f : P.B a → α) :
     @Liftp.{u} P.Obj _ α p ⟨a, f⟩ ↔ ∀ i, p (f i) := by
-  simp only [liftp_iff, Sigma.mk.inj_iff]; constructor <;> intro h
+  simp only [liftp_iff]; constructor <;> intro h
   · rcases h with ⟨a', f', heq, h'⟩
     cases heq
     assumption
