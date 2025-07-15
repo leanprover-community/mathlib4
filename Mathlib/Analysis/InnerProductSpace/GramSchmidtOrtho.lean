@@ -161,7 +161,7 @@ theorem span_gramSchmidt (f : ι → E) : span 𝕜 (range (gramSchmidt 𝕜 f))
       range_subset_iff.2 fun _ =>
         span_mono (image_subset_range _ _) <| mem_span_gramSchmidt _ _ le_rfl
 
-/-- If given an orthogonal set of vectors, `gramSchmidt` fixes its input. -/
+/-- The `gramSchmidt` operator acts as the identity on set of mutually orthogonal vectors. -/
 theorem gramSchmidt_of_orthogonal {f : ι → E} (hf : Pairwise fun i j => ⟪f i, f j⟫ = 0) :
     gramSchmidt 𝕜 f = f := by
   ext i
@@ -302,10 +302,8 @@ theorem span_gramSchmidtNormed_range (f : ι → E) :
 vectors. -/
 theorem gramSchmidtNormed_linearIndependent {f : ι → E} (h₀ : LinearIndependent 𝕜 f) :
     LinearIndependent 𝕜 (gramSchmidtNormed 𝕜 f) := by
-  unfold gramSchmidtNormed
   have (i : ι) : IsUnit (‖gramSchmidt 𝕜 f i‖⁻¹ : 𝕜) :=
     isUnit_iff_ne_zero.mpr (by simp [gramSchmidt_ne_zero i h₀])
-  let w : ι → 𝕜ˣ := fun i ↦ (this i).unit
   apply (gramSchmidt_linearIndependent h₀).units_smul (w := fun i ↦ (this i).unit)
 
 section OrthonormalBasis
