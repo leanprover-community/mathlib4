@@ -262,9 +262,12 @@ theorem map_subtype_span_singleton {p : Submodule R M} (x : p) :
     map p.subtype (R ∙ x) = R ∙ (x : M) := by simp [← span_image]
 
 /-- `f` is an explicit argument so we can `apply` this theorem and obtain `h` as a new goal. -/
-theorem not_mem_span_of_apply_not_mem_span_image [RingHomSurjective σ₁₂] (f : F) {x : M}
+theorem notMem_span_of_apply_notMem_span_image [RingHomSurjective σ₁₂] (f : F) {x : M}
     {s : Set M} (h : f x ∉ Submodule.span R₂ (f '' s)) : x ∉ Submodule.span R s :=
   h.imp (apply_mem_span_image_of_mem_span f)
+
+@[deprecated (since := "2025-05-23")]
+alias not_mem_span_of_apply_not_mem_span_image := notMem_span_of_apply_notMem_span_image
 
 theorem iSup_toAddSubmonoid {ι : Sort*} (p : ι → Submodule R M) :
     (⨆ i, p i).toAddSubmonoid = ⨆ i, (p i).toAddSubmonoid := by
@@ -580,16 +583,22 @@ theorem disjoint_span_singleton : Disjoint s (K ∙ x) ↔ x ∈ s → x = 0 := 
 theorem disjoint_span_singleton' (x0 : x ≠ 0) : Disjoint s (K ∙ x) ↔ x ∉ s :=
   disjoint_span_singleton.trans ⟨fun h₁ h₂ => x0 (h₁ h₂), fun h₁ h₂ => (h₁ h₂).elim⟩
 
-lemma disjoint_span_singleton_of_not_mem (hx : x ∉ s) : Disjoint s (K ∙ x) := by
+lemma disjoint_span_singleton_of_notMem (hx : x ∉ s) : Disjoint s (K ∙ x) := by
   rw [disjoint_span_singleton]
   intro h
   contradiction
 
-lemma isCompl_span_singleton_of_isCoatom_of_not_mem (hs : IsCoatom s) (hx : x ∉ s) :
+@[deprecated (since := "2025-05-23")]
+alias disjoint_span_singleton_of_not_mem := disjoint_span_singleton_of_notMem
+
+lemma isCompl_span_singleton_of_isCoatom_of_notMem (hs : IsCoatom s) (hx : x ∉ s) :
     IsCompl s (K ∙ x) := by
-  refine ⟨disjoint_span_singleton_of_not_mem hx, ?_⟩
+  refine ⟨disjoint_span_singleton_of_notMem hx, ?_⟩
   rw [← covBy_top_iff] at hs
   simpa only [codisjoint_iff, sup_comm, not_lt_top_iff] using hs.2 (covBy_span_singleton_sup hx).1
+
+@[deprecated (since := "2025-05-23")]
+alias isCompl_span_singleton_of_isCoatom_of_not_mem := isCompl_span_singleton_of_isCoatom_of_notMem
 
 end DivisionRing
 

@@ -17,7 +17,7 @@ definitionally equal to ours.
 
 * `Class`: Defined as `Set ZFSet`.
 * `Class.iota`: Definite description operator.
-* `ZFSet.isOrdinal_not_mem_univ`: The Burali-Forti paradox. Ordinals form a proper class.
+* `ZFSet.isOrdinal_notMem_univ`: The Burali-Forti paradox. Ordinals form a proper class.
 -/
 
 
@@ -73,7 +73,9 @@ theorem mem_def (A B : Class.{u}) : A ∈ B ↔ ∃ x : ZFSet, ↑x = A ∧ B x 
   Iff.rfl
 
 @[simp]
-theorem not_mem_empty (x : Class.{u}) : x ∉ (∅ : Class.{u}) := fun ⟨_, _, h⟩ => h
+theorem notMem_empty (x : Class.{u}) : x ∉ (∅ : Class.{u}) := fun ⟨_, _, h⟩ => h
+
+@[deprecated (since := "2025-05-23")] alias not_mem_empty := notMem_empty
 
 @[simp]
 theorem not_empty_hom (x : ZFSet.{u}) : ¬(∅ : Class.{u}) x :=
@@ -118,8 +120,10 @@ theorem mem_irrefl (x : Class) : x ∉ x :=
 /-- **There is no universal set.**
 This is stated as `univ ∉ univ`, meaning that `univ` (the class of all sets) is proper (does not
 belong to the class of all sets). -/
-theorem univ_not_mem_univ : univ ∉ univ :=
+theorem univ_notMem_univ : univ ∉ univ :=
   mem_irrefl _
+
+@[deprecated (since := "2025-05-23")] alias univ_not_mem_univ := univ_notMem_univ
 
 /-- Convert a conglomerate (a collection of classes) into a class -/
 def congToClass (x : Set Class.{u}) : Class.{u} :=
@@ -129,7 +133,7 @@ def congToClass (x : Set Class.{u}) : Class.{u} :=
 theorem congToClass_empty : congToClass ∅ = ∅ := by
   ext z
   simp only [congToClass, not_empty_hom, iff_false]
-  exact Set.not_mem_empty z
+  exact Set.notMem_empty z
 
 /-- Convert a class into a conglomerate (a collection of classes) -/
 def classToCong (x : Class.{u}) : Set Class.{u} :=
@@ -186,7 +190,7 @@ theorem coe_sep (p : Class.{u}) (x : ZFSet.{u}) :
 
 @[simp, norm_cast]
 theorem coe_empty : ↑(∅ : ZFSet.{u}) = (∅ : Class.{u}) :=
-  ext fun y => iff_false _ ▸ ZFSet.not_mem_empty y
+  ext fun y => iff_false _ ▸ ZFSet.notMem_empty y
 
 @[simp, norm_cast]
 theorem coe_insert (x y : ZFSet.{u}) : ↑(insert x y) = @insert ZFSet.{u} Class.{u} _ x y :=
@@ -359,12 +363,14 @@ noncomputable def toSet_equiv : ZFSet.{u} ≃ {s : Set ZFSet.{u} // Small.{u, u+
   right_inv s := Subtype.coe_injective <| toSet_equiv_aux s.2
 
 /-- The **Burali-Forti paradox**: ordinals form a proper class. -/
-theorem isOrdinal_not_mem_univ : IsOrdinal ∉ Class.univ.{u} := by
+theorem isOrdinal_notMem_univ : IsOrdinal ∉ Class.univ.{u} := by
   rintro ⟨x, hx, -⟩
   suffices IsOrdinal x by
     apply Class.mem_irrefl x
     rwa [Class.coe_mem, hx]
   refine ⟨fun y hy z hz ↦ ?_, fun hyz hzw hwx ↦ ?_⟩ <;> rw [← Class.coe_apply, hx] at *
   exacts [hy.mem hz, hwx.mem_trans hyz hzw]
+
+@[deprecated (since := "2025-05-23")] alias isOrdinal_not_mem_univ := isOrdinal_notMem_univ
 
 end ZFSet

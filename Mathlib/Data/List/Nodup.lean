@@ -42,11 +42,13 @@ theorem nodup_singleton (a : α) : Nodup [a] :=
 theorem Nodup.of_cons (h : Nodup (a :: l)) : Nodup l :=
   (nodup_cons.1 h).2
 
-theorem Nodup.not_mem (h : (a :: l).Nodup) : a ∉ l :=
+theorem Nodup.notMem (h : (a :: l).Nodup) : a ∉ l :=
   (nodup_cons.1 h).1
 
+@[deprecated (since := "2025-05-23")] alias Nodup.not_mem := Nodup.notMem
+
 theorem not_nodup_cons_of_mem : a ∈ l → ¬Nodup (a :: l) :=
-  imp_not_comm.1 Nodup.not_mem
+  imp_not_comm.1 Nodup.notMem
 
 
 theorem not_nodup_pair (a : α) : ¬Nodup [a, a] :=

@@ -807,7 +807,7 @@ theorem IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self [NoZeroSMulDivisors 
     replace hij : B (v j) (v i) = 0 := hO hij
     rw [hij, RingHom.id_apply, smul_zero]
   · intro hi
-    replace hi : vi i = 0 := Finsupp.not_mem_support_iff.mp hi
+    replace hi : vi i = 0 := Finsupp.notMem_support_iff.mp hi
     rw [hi, RingHom.id_apply, zero_smul]
 
 /-- Given an orthogonal basis with respect to a bilinear map, the bilinear map is right-separating

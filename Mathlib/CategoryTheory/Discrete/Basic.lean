@@ -302,16 +302,24 @@ class IsDiscrete (C : Type*) [Category C] : Prop where
 
 attribute [instance] IsDiscrete.subsingleton
 
-lemma obj_ext_of_isDiscrete {C : Type*} [Category C] [IsDiscrete C]
-    {X Y : C} (f : X ⟶ Y) : X = Y := IsDiscrete.eq_of_hom f
-
 instance Discrete.isDiscrete (C : Type*) : IsDiscrete (Discrete C) where
   eq_of_hom := by rintro ⟨_⟩ ⟨_⟩ ⟨⟨rfl⟩⟩; rfl
 
-instance (C : Type*) [Category C] [IsDiscrete C] : IsDiscrete Cᵒᵖ where
+section
+
+variable {C : Type*} [Category C] [IsDiscrete C]
+
+lemma obj_ext_of_isDiscrete {X Y : C} (f : X ⟶ Y) : X = Y := IsDiscrete.eq_of_hom f
+
+instance isIso_of_isDiscrete {X Y : C} (f : X ⟶ Y) : IsIso f :=
+  ⟨eqToHom (IsDiscrete.eq_of_hom f).symm, by aesop_cat⟩
+
+instance : IsDiscrete Cᵒᵖ where
   eq_of_hom := by
     rintro ⟨_⟩ ⟨_⟩ ⟨f⟩
     obtain rfl := obj_ext_of_isDiscrete f
     rfl
+
+end
 
 end CategoryTheory

@@ -32,10 +32,11 @@ These actions are available in the `Pointwise` locale.
 
 For an `R`-module `M`, the action of a subset of `R` acting on a submodule of `M` introduced in
 section `set_acting_on_submodules` does not have a counterpart in the files
-`Mathlib.Algebra.Group.Submonoid.Pointwise` and `Mathlib.Algebra.GroupWithZero.Submonoid.Pointwise`.
+`Mathlib/Algebra/Group/Submonoid/Pointwise.lean` and
+`Mathlib/Algebra/GroupWithZero/Submonoid/Pointwise.lean`.
 
 Other than section `set_acting_on_submodules`, most of the lemmas in this file are direct copies of
-lemmas from the file `Mathlib.Algebra.Group.Submonoid.Pointwise`.
+lemmas from the file `Mathlib/Algebra/Group/Submonoid/Pointwise.lean`.
 -/
 
 assert_not_exists Ideal
@@ -473,7 +474,7 @@ lemma mem_singleton_set_smul [SMulCommClass R S M] (r : S) (x : M) :
     | smul₀ => aesop
     | @smul₁ t n mem h =>
       rcases h with ⟨n, hn, rfl⟩
-      exact ⟨t • n, by aesop,  smul_comm _ _ _⟩
+      exact ⟨t • n, by aesop, smul_comm _ _ _⟩
     | add mem₁ mem₂ h₁ h₂ =>
       rcases h₁ with ⟨m₁, h₁, rfl⟩
       rcases h₂ with ⟨m₂, h₂, rfl⟩

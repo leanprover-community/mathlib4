@@ -691,15 +691,9 @@ theorem embDomain_succ_smul_powers :
   apply SummableFamily.ext
   rintro (_ | n)
   · simp [hx]
-  · simp only [coe_sub, coe_ofFinsupp, Pi.sub_apply, powers_of_orderTop_pos hx, ne_eq,
-    right_eq_add, AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false, not_false_eq_true,
-    Finsupp.single_eq_of_ne, sub_zero]
-    simp only [embDomain_apply, Embedding.coeFn_mk, Nat.range_succ, Set.mem_setOf_eq,
-      lt_add_iff_pos_left, add_pos_iff, Nat.lt_one_iff, pos_of_gt, or_true, ↓reduceDIte,
-      Nat.succ_eq_add_one, add_left_inj, Classical.choose_eq, smul_apply, powers_of_orderTop_pos hx,
-      smul_eq_mul]
-    rw [add_comm, pow_add, pow_one]
-    exact rfl
+  · -- FIXME: smul_eq_mul introduces type confusion between HahnModule and HahnSeries.
+    simp [embDomain_apply, of_symm_smul_of_eq_mul, powers_of_orderTop_pos hx, pow_succ',
+      -smul_eq_mul, -Algebra.id.smul_eq_mul]
 
 include hx in
 theorem one_sub_self_mul_hsum_powers : (1 - x) * (powers x).hsum = 1 := by

@@ -3,9 +3,6 @@ Copyright (c) 2023 Ali Ramsey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ali Ramsey, Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.Prod
 import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 import Mathlib.LinearAlgebra.TensorProduct.Associator
 
@@ -160,6 +157,22 @@ theorem sum_map_tmul_tmul_eq {B : Type*} [AddCommMonoid B] [Module R B]
     (TensorProduct.map (g : A →ₗ[R] B) (h : A →ₗ[R] B)) at this
   simp_all only [map_sum, TensorProduct.map_tmul, LinearMap.coe_coe]
 
+variable (R A) in
+/-- A coalgebra `A` is cocommutative if its comultiplication `δ : A → A ⊗ A` commutes with the
+swapping `β : A ⊗ A ≃ A ⊗ A` of the factors in the tensor product. -/
+class IsCocomm where
+  protected comm_comp_comul : (TensorProduct.comm R A A).comp comul = comul
+
+variable [IsCocomm R A]
+
+variable (R A) in
+@[simp] lemma comm_comp_comul : (TensorProduct.comm R A A).comp comul = comul :=
+  IsCocomm.comm_comp_comul
+
+variable (R) in
+@[simp] lemma comm_comul (a : A) : TensorProduct.comm R A A (comul a) = comul a :=
+  congr($(comm_comp_comul R A) a)
+
 end Coalgebra
 
 open Coalgebra
@@ -180,6 +193,8 @@ theorem comul_apply (r : R) : comul r = 1 ⊗ₜ[R] r := rfl
 
 @[simp]
 theorem counit_apply (r : R) : counit r = r := rfl
+
+instance : IsCocomm R R where comm_comp_comul := by ext; simp
 
 end CommSemiring
 
@@ -258,6 +273,9 @@ instance instCoalgebra : Coalgebra R (A × B) where
         ← map_comp_rTensor, ← map_comp_lTensor, comp_assoc, ← coassoc, ← comp_assoc,
         TensorProduct.map_map_comp_assoc_eq, comp_apply, LinearEquiv.coe_coe]
 
+instance [IsCocomm R A] [IsCocomm R B] : IsCocomm R (A × B) where
+  comm_comp_comul := by ext <;> simp [← TensorProduct.map_comm]
+
 end Prod
 
 namespace DFinsupp
@@ -291,7 +309,7 @@ theorem comul_comp_lapply (i : ι) :
   ext j : 1
   conv_rhs => rw [comp_assoc, comul_comp_lsingle, ← comp_assoc, ← TensorProduct.map_comp]
   obtain rfl | hij := eq_or_ne i j
-  · rw [comp_assoc, lapply_comp_lsingle_same, comp_id,  TensorProduct.map_id, id_comp]
+  · rw [comp_assoc, lapply_comp_lsingle_same, comp_id, TensorProduct.map_id, id_comp]
   · rw [comp_assoc, lapply_comp_lsingle_of_ne _ _ hij, comp_zero, TensorProduct.map_zero_left,
       zero_comp]
 
@@ -319,6 +337,14 @@ instance instCoalgebra : Coalgebra R (Π₀ i, A i) where
       comp_assoc, ← comp_assoc comul, rTensor_comp_map, comul_comp_lsingle, ← map_comp_rTensor,
       ← map_comp_lTensor, comp_assoc, ← coassoc, ← comp_assoc comul, ← comp_assoc,
         TensorProduct.map_map_comp_assoc_eq]
+
+instance instIsCocomm [∀ i, IsCocomm R (A i)] : IsCocomm R (Π₀ i, A i) where
+  comm_comp_comul := by
+    ext i : 1
+    -- TODO: Add `reassoc` for `LinearMap`. Then we wouldn't need to reassociate back and forth.
+    simp only [comp_assoc, comul_comp_lsingle]
+    simp only [← comp_assoc, ← TensorProduct.map_comp_comm_eq]
+    simp [LinearMap.comp_assoc]
 
 end DFinsupp
 
@@ -352,7 +378,7 @@ theorem comul_comp_lapply (i : ι) :
   ext j : 1
   conv_rhs => rw [comp_assoc, comul_comp_lsingle, ← comp_assoc, ← TensorProduct.map_comp]
   obtain rfl | hij := eq_or_ne i j
-  · rw [comp_assoc, lapply_comp_lsingle_same, comp_id,  TensorProduct.map_id, id_comp]
+  · rw [comp_assoc, lapply_comp_lsingle_same, comp_id, TensorProduct.map_id, id_comp]
   · rw [comp_assoc, lapply_comp_lsingle_of_ne _ _ hij, comp_zero, TensorProduct.map_zero_left,
       zero_comp]
 
@@ -379,37 +405,12 @@ instance instCoalgebra : Coalgebra R (ι →₀ A) where
       ← map_comp_lTensor, comp_assoc, ← coassoc, ← comp_assoc comul, ← comp_assoc,
         TensorProduct.map_map_comp_assoc_eq]
 
+instance instIsCocomm [IsCocomm R A] : IsCocomm R (ι →₀ A) where
+  comm_comp_comul := by
+    ext i : 1
+    -- TODO: Add `reassoc` for `LinearMap`. Then we wouldn't need to reassociate back and forth.
+    simp only [comp_assoc, comul_comp_lsingle]
+    simp only [← comp_assoc, ← TensorProduct.map_comp_comm_eq]
+    simp [LinearMap.comp_assoc]
+
 end Finsupp
-
-namespace TensorProduct
-open Coalgebra
-
-variable {R A B : Type*} [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B]
-  [Module R A] [Module R B] [CoalgebraStruct R A] [CoalgebraStruct R B]
-
-/-- See `Mathlib.RingTheory.Coalgebra.TensorProduct` for the `Coalgebra` instance. -/
-instance instCoalgebraStruct : CoalgebraStruct R (A ⊗[R] B) where
-  comul := TensorProduct.tensorTensorTensorComm R A A B B ∘ₗ TensorProduct.map comul comul
-  counit := LinearMap.mul' R R ∘ₗ TensorProduct.map counit counit
-
-lemma comul_def :
-    Coalgebra.comul (R := R) (A := A ⊗[R] B) =
-    tensorTensorTensorComm R A A B B ∘ₗ map comul comul :=
-  rfl
-
-@[deprecated (since := "2025-04-09")] alias instCoalgebraStruct_comul := comul_def
-
-@[simp] lemma comul_tmul (a : A) (b : B) :
-    comul (R := R) (a ⊗ₜ[R] b) =
-      tensorTensorTensorComm _ _ _ _ _ (comul (R := R) a ⊗ₜ[R] comul (R := R) b) := rfl
-
-lemma counit_def :
-    Coalgebra.counit (R := R) (A := A ⊗[R] B) = LinearMap.mul' R R ∘ₗ map counit counit :=
-  rfl
-
-@[deprecated (since := "2025-04-09")] alias instCoalgebraStruct_counit := counit_def
-
-@[simp] lemma counit_tmul (a : A) (b : B) :
-    counit (R := R) (a ⊗ₜ[R] b) = counit a * counit b := rfl
-
-end TensorProduct

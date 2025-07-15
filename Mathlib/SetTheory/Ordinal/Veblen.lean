@@ -339,7 +339,7 @@ theorem veblen_le_veblen_iff :
 theorem veblen_eq_veblen_iff :
     veblen o₁ a = veblen o₂ b ↔
       o₁ = o₂ ∧ a = b ∨ o₁ < o₂ ∧ a = veblen o₂ b ∨ o₂ < o₁ ∧ veblen o₁ a = b :=
- veblenWith_eq_veblenWith_iff (isNormal_opow one_lt_omega0)
+  veblenWith_eq_veblenWith_iff (isNormal_opow one_lt_omega0)
 
 end veblen
 

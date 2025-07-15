@@ -111,8 +111,8 @@ theorem ofFunction_eq_iInf_mem {P : Set α → Prop} (m_top : ∀ s, ¬ P s → 
     · exact iInf_le_of_le ht (iInf_le_of_le ht_subset le_rfl)
     · simp only [ht, not_false_eq_true, iInf_neg, top_le_iff]
       push_neg at ht
-      obtain ⟨i, hti_not_mem⟩ := ht
-      have hfi_top : m (t i) = ∞ := m_top _ hti_not_mem
+      obtain ⟨i, hti_notMem⟩ := ht
+      have hfi_top : m (t i) = ∞ := m_top _ hti_notMem
       exact ENNReal.tsum_eq_top_of_eq_top ⟨i, hfi_top⟩
 
 variable {m m_empty}

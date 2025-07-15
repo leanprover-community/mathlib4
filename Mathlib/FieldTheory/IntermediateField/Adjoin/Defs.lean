@@ -14,7 +14,7 @@ For example, `Algebra.adjoin K {x}` might not include `x⁻¹`.
 
 ## Notation
 
- - `F⟮α⟯`: adjoin a single element `α` to `F` (in scope `IntermediateField`).
+- `F⟮α⟯`: adjoin a single element `α` to `F` (in scope `IntermediateField`).
 -/
 
 open Module Polynomial

@@ -17,26 +17,26 @@ corollary of the fact that no node can have degree greater than three) and moreo
 stronger assumptions on the coefficients than here.
 
 ## Main results:
- * `RootPairing.EmbeddedG2`: a data-bearing typeclass which distinguishes a pair of roots whose
-   pairing is `-3` (equivalently, with a distinguished choice of base). This is a sufficient
-   condition for the span of this pair of roots to be a `𝔤₂` root system.
- * `RootPairing.IsG2`: a prop-valued typeclass characterising the `𝔤₂` root system.
- * `RootPairing.IsNotG2`: a prop-valued typeclass stating that a crystallographic, reduced,
-   irreducible root system is not `𝔤₂`.
- * `RootPairing.EmbeddedG2.shortRoot`: the distinguished short root, which we often donate `α`
- * `RootPairing.EmbeddedG2.longRoot`: the distinguished long root, which we often donate `β`
- * `RootPairing.EmbeddedG2.shortAddLong`: the short root `α + β`
- * `RootPairing.EmbeddedG2.twoShortAddLong`: the short root `2α + β`
- * `RootPairing.EmbeddedG2.threeShortAddLong`: the long root `3α + β`
- * `RootPairing.EmbeddedG2.threeShortAddTwoLong`: the long root `3α + 2β`
- * `RootPairing.EmbeddedG2.span_eq_top`: a crystallographic reduced irreducible root pairing
-   containing two roots with pairing `-3` is spanned by this pair (thus two-dimensional).
- * `RootPairing.EmbeddedG2.card_index_eq_twelve`: the `𝔤₂`root pairing has twelve roots.
+* `RootPairing.EmbeddedG2`: a data-bearing typeclass which distinguishes a pair of roots whose
+  pairing is `-3` (equivalently, with a distinguished choice of base). This is a sufficient
+  condition for the span of this pair of roots to be a `𝔤₂` root system.
+* `RootPairing.IsG2`: a prop-valued typeclass characterising the `𝔤₂` root system.
+* `RootPairing.IsNotG2`: a prop-valued typeclass stating that a crystallographic, reduced,
+  irreducible root system is not `𝔤₂`.
+* `RootPairing.EmbeddedG2.shortRoot`: the distinguished short root, which we often donate `α`
+* `RootPairing.EmbeddedG2.longRoot`: the distinguished long root, which we often donate `β`
+* `RootPairing.EmbeddedG2.shortAddLong`: the short root `α + β`
+* `RootPairing.EmbeddedG2.twoShortAddLong`: the short root `2α + β`
+* `RootPairing.EmbeddedG2.threeShortAddLong`: the long root `3α + β`
+* `RootPairing.EmbeddedG2.threeShortAddTwoLong`: the long root `3α + 2β`
+* `RootPairing.EmbeddedG2.span_eq_top`: a crystallographic reduced irreducible root pairing
+  containing two roots with pairing `-3` is spanned by this pair (thus two-dimensional).
+* `RootPairing.EmbeddedG2.card_index_eq_twelve`: the `𝔤₂`root pairing has twelve roots.
 
 ## TODO
 Once sufficient API for `RootPairing.Base` has been developed:
- * Add `def EmbeddedG2.toBase [P.EmbeddedG2] : P.Base` with `support := {long P, short P}`
- * Given `P` satisfying `[P.IsG2]`, distinct elements of a base must pair to `-3` (in one order).
+* Add `def EmbeddedG2.toBase [P.EmbeddedG2] : P.Base` with `support := {long P, short P}`
+* Given `P` satisfying `[P.IsG2]`, distinct elements of a base must pair to `-3` (in one order).
 
 -/
 
@@ -87,7 +87,7 @@ lemma not_isG2_iff_isNotG2 :
     ¬ P.IsG2 ↔ P.IsNotG2 := by
   simp only [isG2_iff, isNotG2_iff, not_exists, Set.mem_insert_iff, mem_singleton_iff]
   refine ⟨fun h i j ↦ ?_, fun h i j ↦ ?_⟩
-  · have hij := h (P.reflection_perm i i) j
+  · have hij := h (P.reflectionPerm i i) j
     have := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed i j
     aesop
   · specialize h i j
@@ -119,7 +119,7 @@ namespace EmbeddedG2
 /-- A pair of roots which pair to `+3` are also sufficient to distinguish an embedded `𝔤₂`. -/
 @[simps] def ofPairingInThree [CharZero R] [P.IsCrystallographic] [P.IsReduced] (long short : ι)
     (h : P.pairingIn ℤ long short = 3) : P.EmbeddedG2 where
-  long := P.reflection_perm long long
+  long := P.reflectionPerm long long
   short := short
   pairingIn_long_short := by simp [h]
 
@@ -136,16 +136,16 @@ lemma pairing_long_short : P.pairing (long P) (short P) = - 3 := by
   simp
 
 /-- The index of the root `α + β` where `α` is the short root and `β` is the long root. -/
-def shortAddLong : ι := P.reflection_perm (long P) (short P)
+def shortAddLong : ι := P.reflectionPerm (long P) (short P)
 
 /-- The index of the root `2α + β` where `α` is the short root and `β` is the long root. -/
-def twoShortAddLong : ι := P.reflection_perm (short P) <| P.reflection_perm (long P) (short P)
+def twoShortAddLong : ι := P.reflectionPerm (short P) <| P.reflectionPerm (long P) (short P)
 
 /-- The index of the root `3α + β` where `α` is the short root and `β` is the long root. -/
-def threeShortAddLong : ι := P.reflection_perm (short P) (long P)
+def threeShortAddLong : ι := P.reflectionPerm (short P) (long P)
 
 /-- The index of the root `3α + 2β` where `α` is the short root and `β` is the long root. -/
-def threeShortAddTwoLong : ι := P.reflection_perm (long P) <| P.reflection_perm (short P) (long P)
+def threeShortAddTwoLong : ι := P.reflectionPerm (long P) <| P.reflectionPerm (short P) (long P)
 
 /-- The short root `α`. -/
 abbrev shortRoot := P.root (short P)

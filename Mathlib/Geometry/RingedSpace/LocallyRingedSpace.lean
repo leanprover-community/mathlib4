@@ -70,7 +70,7 @@ def 𝒪 : Sheaf CommRingCat X.toTopCat :=
   X.sheaf
 
 /-- A morphism of locally ringed spaces is a morphism of ringed spaces
- such that the morphisms induced on stalks are local ring homomorphisms. -/
+such that the morphisms induced on stalks are local ring homomorphisms. -/
 @[ext]
 structure Hom (X Y : LocallyRingedSpace.{u}) : Type _
     extends X.toPresheafedSpace.Hom Y.toPresheafedSpace where

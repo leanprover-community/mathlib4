@@ -293,7 +293,6 @@ theorem exists_lt_lowerSemicontinuous_integral_gt_nnreal [SigmaFinite μ] (f : �
           rw [ENNReal.toReal_add int_f_ne_top ENNReal.coe_ne_top, ENNReal.coe_toReal]
         _ < ENNReal.toReal (∫⁻ a : α, f a ∂μ) + ε := add_lt_add_left hδε _
         _ = (∫⁻ a : α, ENNReal.ofReal ↑(f a) ∂μ).toReal + ε := by simp
-
     · apply Filter.Eventually.of_forall fun x => _; simp
     · exact fmeas.coe_nnreal_real.aestronglyMeasurable
     · apply Filter.Eventually.of_forall fun x => _; simp

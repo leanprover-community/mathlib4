@@ -191,13 +191,14 @@ theorem valuativeCriterion_existence_aux
     {O : Type*} [CommRing O] [IsDomain O] [ValuationRing O]
     {K : Type*} [Field K] [Algebra O K] [IsFractionRing O K]
     (φ₀ : (𝒜 0) →+* O)
-    (ι : Type*) [Fintype ι] (x : ι → A) (h2 : Algebra.adjoin (𝒜 0) (Set.range x) = ⊤)
+    (ι : Type*) [Finite ι] (x : ι → A) (h2 : Algebra.adjoin (𝒜 0) (Set.range x) = ⊤)
     (j : ι) (φ : Away 𝒜 (x j) →+* K)
     (hcomm : (algebraMap O K).comp φ₀ = φ.comp (fromZeroRingHom 𝒜 _))
     (d : ι → ℕ) (hdi : ∀ i, 0 < d i) (hxdi : ∀ i, x i ∈ 𝒜 (d i)) :
     ∃ (j₀ : ι) (φ' : Away 𝒜 (x j * x j₀) →+* K), φ'.comp (awayMap 𝒜 (hxdi j₀) rfl) = φ ∧
       (φ'.comp (awayMap 𝒜 (hxdi j) (mul_comm (x j) (x j₀)))).range ≤ (algebraMap O K).range := by
   classical
+  cases nonempty_fintype ι
   let ψ (i : ι) : ValueGroup O K :=
     valuation O K ((φ (Away.isLocalizationElem (hxdi j) (hxdi i))) ^ ∏ k ∈ Finset.univ.erase i, d k)
   have : Nonempty ι := ⟨j⟩

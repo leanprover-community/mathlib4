@@ -23,7 +23,7 @@ convergence from them.
 ## Tags
 
 Uniform limit, uniform convergence, tends uniformly to
- -/
+-/
 
 
 noncomputable section

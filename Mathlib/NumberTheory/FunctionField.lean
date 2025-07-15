@@ -14,14 +14,15 @@ import Mathlib.Topology.Algebra.Valued.ValuedField
 This file defines a function field and the ring of integers corresponding to it.
 
 ## Main definitions
- - `FunctionField Fq F` states that `F` is a function field over the (finite) field `Fq`,
-   i.e. it is a finite extension of the field of rational functions in one variable over `Fq`.
- - `FunctionField.ringOfIntegers` defines the ring of integers corresponding to a function field
-    as the integral closure of `Fq[X]` in the function field.
- - `FunctionField.inftyValuation` : The place at infinity on `Fq(t)` is the nonarchimedean
-    valuation on `Fq(t)` with uniformizer `1/t`.
- - `FunctionField.FqtInfty` : The completion `Fq((t⁻¹))` of `Fq(t)` with respect to the
-    valuation at infinity.
+
+- `FunctionField Fq F` states that `F` is a function field over the (finite) field `Fq`,
+  i.e. it is a finite extension of the field of rational functions in one variable over `Fq`.
+- `FunctionField.ringOfIntegers` defines the ring of integers corresponding to a function field
+  as the integral closure of `Fq[X]` in the function field.
+- `FunctionField.inftyValuation` : The place at infinity on `Fq(t)` is the nonarchimedean
+  valuation on `Fq(t)` with uniformizer `1/t`.
+- `FunctionField.FqtInfty` : The completion `Fq((t⁻¹))` of `Fq(t)` with respect to the
+  valuation at infinity.
 
 ## Implementation notes
 The definitions that involve a field of fractions choose a canonical field of fractions,
@@ -199,11 +200,9 @@ def inftyValuation : Valuation (RatFunc Fq) ℤₘ₀ where
 theorem inftyValuation_apply {x : RatFunc Fq} : inftyValuation Fq x = inftyValuationDef Fq x :=
   rfl
 
-@[simp]
 theorem inftyValuation.C {k : Fq} (hk : k ≠ 0) :
     inftyValuationDef Fq (RatFunc.C k) = Multiplicative.ofAdd (0 : ℤ) := by
-  have hCk : RatFunc.C k ≠ 0 := (map_ne_zero _).mpr hk
-  rw [inftyValuationDef, if_neg hCk, RatFunc.intDegree_C]
+  simp [hk]
 
 @[simp]
 theorem inftyValuation.X : inftyValuationDef Fq RatFunc.X = Multiplicative.ofAdd (1 : ℤ) := by

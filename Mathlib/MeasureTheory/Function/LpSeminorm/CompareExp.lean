@@ -6,7 +6,6 @@ Authors: Rémy Degenne, Eric Wieser
 import Mathlib.Data.ENNReal.Holder
 import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
 import Mathlib.MeasureTheory.Integral.MeanInequalities
-import Mathlib.Tactic.Finiteness
 
 /-!
 # Compare Lp seminorms for different values of `p`
@@ -71,9 +70,7 @@ theorem eLpNorm_le_eLpNorm_mul_rpow_measure_univ {p q : ℝ≥0∞} (hpq : p ≤
   · simp only [hq_top, _root_.div_zero, one_div, ENNReal.toReal_top, sub_zero, eLpNorm_exponent_top,
       GroupWithZero.inv_zero]
     by_cases hp_top : p = ∞
-    · simp only [hp_top, ENNReal.rpow_zero, mul_one, ENNReal.toReal_top, sub_zero,
-        GroupWithZero.inv_zero, eLpNorm_exponent_top]
-      exact le_rfl
+    · simp [hp_top]
     rw [eLpNorm_eq_eLpNorm' hp0 hp_top]
     have hp_pos : 0 < p.toReal := ENNReal.toReal_pos hp0_lt.ne' hp_top
     refine (eLpNorm'_le_eLpNormEssSup_mul_rpow_measure_univ hp_pos).trans (le_of_eq ?_)

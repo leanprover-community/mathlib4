@@ -51,9 +51,8 @@ def ofNat (α) [Denumerable α] (n : ℕ) : α :=
 theorem decode_eq_ofNat (α) [Denumerable α] (n : ℕ) : decode (α := α) n = some (ofNat α n) :=
   Option.eq_some_of_isSome _
 
-@[simp]
-theorem ofNat_of_decode {n b} (h : decode (α := α) n = some b) : ofNat (α := α) n = b :=
-  Option.some.inj <| (decode_eq_ofNat _ _).symm.trans h
+theorem ofNat_of_decode {n b} (h : decode (α := α) n = some b) : ofNat (α := α) n = b := by
+  simpa using h
 
 @[simp]
 theorem encode_ofNat (n) : encode (ofNat α n) = n := by
@@ -267,7 +266,7 @@ open Finset
 
 private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
   | 0 => by
-    rw [toFunAux_eq, card_eq_zero, eq_empty_iff_forall_not_mem]
+    rw [toFunAux_eq, card_eq_zero, eq_empty_iff_forall_notMem]
     rintro n hn
     rw [mem_filter, ofNat, mem_range] at hn
     exact bot_le.not_lt (show (⟨n, hn.2⟩ : s) < ⊥ from hn.1)
@@ -287,7 +286,7 @@ private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
     simp only [toFunAux_eq, ofNat, range_succ] at ih ⊢
     conv =>
       rhs
-      rw [← ih, ← card_insert_of_not_mem h₁, ← h₂]
+      rw [← ih, ← card_insert_of_notMem h₁, ← h₂]
 
 /-- Any infinite set of naturals is denumerable. -/
 def denumerable (s : Set ℕ) [DecidablePred (· ∈ s)] [Infinite s] : Denumerable s :=

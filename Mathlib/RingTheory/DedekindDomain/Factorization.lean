@@ -556,12 +556,12 @@ theorem finite_factors' {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R}
       {v : HeightOneSpectrum R | v.asIdeal ∣ Ideal.span {a}} := by
     intro v hv
     have hv_irred : Irreducible v.asIdeal := v.irreducible
-    by_contra h_nmem
-    rw [mem_union, mem_setOf_eq, mem_setOf_eq] at h_nmem
-    push_neg at h_nmem
+    by_contra h_notMem
+    rw [mem_union, mem_setOf_eq, mem_setOf_eq] at h_notMem
+    push_neg at h_notMem
     rw [← Associates.count_ne_zero_iff_dvd ha_ne_zero hv_irred, not_not,
-      ← Associates.count_ne_zero_iff_dvd hJ_ne_zero hv_irred, not_not] at h_nmem
-    rw [mem_setOf_eq, h_nmem.1, h_nmem.2, sub_self] at hv
+      ← Associates.count_ne_zero_iff_dvd hJ_ne_zero hv_irred, not_not] at h_notMem
+    rw [mem_setOf_eq, h_notMem.1, h_notMem.2, sub_self] at hv
     exact hv (Eq.refl 0)
   exact Finite.subset (Finite.union (Ideal.finite_factors (ideal_factor_ne_zero hI haJ))
     (Ideal.finite_factors (constant_factor_ne_zero hI haJ))) h_subset

@@ -224,7 +224,7 @@ noncomputable def isUniversal' : (derivation' φ').Universal :=
       ext1 X
       exact CommRingCat.KaehlerDifferential.ext (Derivation.congr_d h))
 
-instance : HasDifferentials (F := 𝟭 D) φ' := ⟨_, _,  ⟨isUniversal' φ'⟩⟩
+instance : HasDifferentials (F := 𝟭 D) φ' := ⟨_, _, ⟨isUniversal' φ'⟩⟩
 
 end DifferentialsConstruction
 

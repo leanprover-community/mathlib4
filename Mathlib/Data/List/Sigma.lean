@@ -61,8 +61,10 @@ theorem exists_of_mem_keys {a} {l : List (Sigma β)} (h : a ∈ l.keys) :
 theorem mem_keys {a} {l : List (Sigma β)} : a ∈ l.keys ↔ ∃ b : β a, Sigma.mk a b ∈ l :=
   ⟨exists_of_mem_keys, fun ⟨_, h⟩ => mem_keys_of_mem h⟩
 
-theorem not_mem_keys {a} {l : List (Sigma β)} : a ∉ l.keys ↔ ∀ b : β a, Sigma.mk a b ∉ l :=
+theorem notMem_keys {a} {l : List (Sigma β)} : a ∉ l.keys ↔ ∀ b : β a, Sigma.mk a b ∉ l :=
   (not_congr mem_keys).trans not_exists
+
+@[deprecated (since := "2025-05-23")] alias not_mem_keys := notMem_keys
 
 theorem ne_key {a} {l : List (Sigma β)} : a ∉ l.keys ↔ ∀ s : Sigma β, s ∈ l → a ≠ s.1 :=
   Iff.intro (fun h₁ s h₂ e => absurd (mem_keys_of_mem h₂) (by rwa [e] at h₁)) fun f h₁ =>
@@ -94,9 +96,12 @@ theorem nodupKeys_nil : @NodupKeys α β [] :=
 theorem nodupKeys_cons {s : Sigma β} {l : List (Sigma β)} :
     NodupKeys (s :: l) ↔ s.1 ∉ l.keys ∧ NodupKeys l := by simp [keys, NodupKeys]
 
-theorem not_mem_keys_of_nodupKeys_cons {s : Sigma β} {l : List (Sigma β)} (h : NodupKeys (s :: l)) :
+theorem notMem_keys_of_nodupKeys_cons {s : Sigma β} {l : List (Sigma β)} (h : NodupKeys (s :: l)) :
     s.1 ∉ l.keys :=
   (nodupKeys_cons.1 h).1
+
+@[deprecated (since := "2025-05-23")]
+alias not_mem_keys_of_nodupKeys_cons := notMem_keys_of_nodupKeys_cons
 
 theorem nodupKeys_of_nodupKeys_cons {s : Sigma β} {l : List (Sigma β)} (h : NodupKeys (s :: l)) :
     NodupKeys l :=
@@ -387,10 +392,12 @@ theorem kerase_cons_ne {a} {s : Sigma β} {l : List (Sigma β)} (h : a ≠ s.1) 
     kerase a (s :: l) = s :: kerase a l := by simp [kerase, h]
 
 @[simp]
-theorem kerase_of_not_mem_keys {a} {l : List (Sigma β)} (h : a ∉ l.keys) : kerase a l = l := by
+theorem kerase_of_notMem_keys {a} {l : List (Sigma β)} (h : a ∉ l.keys) : kerase a l = l := by
   induction l with
   | nil => rfl
   | cons _ _ ih => simp [not_or] at h; simp [h.1, ih h.2]
+
+@[deprecated (since := "2025-05-23")] alias kerase_of_not_mem_keys := kerase_of_notMem_keys
 
 theorem kerase_sublist (a : α) (l : List (Sigma β)) : kerase a l <+ l :=
   eraseP_sublist
@@ -455,7 +462,7 @@ theorem Perm.kerase {a : α} {l₁ l₂ : List (Sigma β)} (nd : l₁.NodupKeys)
   intros; simp_all
 
 @[simp]
-theorem not_mem_keys_kerase (a) {l : List (Sigma β)} (nd : l.NodupKeys) :
+theorem notMem_keys_kerase (a) {l : List (Sigma β)} (nd : l.NodupKeys) :
     a ∉ (kerase a l).keys := by
   induction l with
   | nil => simp
@@ -466,10 +473,12 @@ theorem not_mem_keys_kerase (a) {l : List (Sigma β)} (nd : l.NodupKeys) :
       simp [nd.1]
     · simp [h, ih nd.2]
 
+@[deprecated (since := "2025-05-23")] alias not_mem_keys_kerase := notMem_keys_kerase
+
 @[simp]
 theorem dlookup_kerase (a) {l : List (Sigma β)} (nd : l.NodupKeys) :
     dlookup a (kerase a l) = none :=
-  dlookup_eq_none.mpr (not_mem_keys_kerase a nd)
+  dlookup_eq_none.mpr (notMem_keys_kerase a nd)
 
 @[simp]
 theorem dlookup_kerase_ne {a a'} {l : List (Sigma β)} (h : a ≠ a') :
@@ -492,8 +501,7 @@ theorem kerase_append_left {a} :
   | [], _, h => by cases h
   | s :: l₁, l₂, h₁ => by
     if h₂ : a = s.1 then simp [h₂]
-    else simp at h₁; rcases h₁ with h₁ | h₁ <;>
-      [exact absurd h₁ h₂; simp [h₂, kerase_append_left h₁]]
+    else simp_all [kerase_append_left]
 
 theorem kerase_append_right {a} :
     ∀ {l₁ l₂ : List (Sigma β)}, a ∉ l₁.keys → kerase a (l₁ ++ l₂) = l₁ ++ kerase a l₂
@@ -542,7 +550,7 @@ theorem mem_keys_kinsert {a a'} {b' : β a'} {l : List (Sigma β)} :
 
 theorem kinsert_nodupKeys (a) (b : β a) {l : List (Sigma β)} (nd : l.NodupKeys) :
     (kinsert a b l).NodupKeys :=
-  nodupKeys_cons.mpr ⟨not_mem_keys_kerase a nd, nd.kerase a⟩
+  nodupKeys_cons.mpr ⟨notMem_keys_kerase a nd, nd.kerase a⟩
 
 theorem Perm.kinsert {a} {b : β a} {l₁ l₂ : List (Sigma β)} (nd₁ : l₁.NodupKeys) (p : l₁ ~ l₂) :
     kinsert a b l₁ ~ kinsert a b l₂ :=

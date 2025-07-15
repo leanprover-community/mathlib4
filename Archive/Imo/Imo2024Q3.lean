@@ -194,7 +194,7 @@ lemma injOn_setOf_apply_add_one_eq_of_M_le {n : ℕ} (h : M a N ≤ n) :
   rw [← hi', ← hj', hij]
 
 lemma empty_consecutive_apply_ge_M : {i | M a N ≤ a i ∧ M a N ≤ a (i + 1)} = ∅ := by
-  rw [Set.eq_empty_iff_forall_not_mem]
+  rw [Set.eq_empty_iff_forall_notMem]
   intro i
   induction i using Nat.strong_induction_on with | h i ih =>
   -- Let i be the first index where both `a i` and `a (i + 1)` are at least M.
@@ -383,7 +383,7 @@ lemma exists_card_le_of_big {j : ℕ} (h : Big a j) :
   rw [← hc.finite_setOf_apply_eq_iff_not_small (hc.pos_of_big h)] at hns
   use hns
   by_contra! hlt
-  exact not_mem_of_csSup_lt h hc.bddAbove_setOf_k_lt_card fun _ ↦ hlt
+  exact notMem_of_csSup_lt h hc.bddAbove_setOf_k_lt_card fun _ ↦ hlt
 
 variable (a N)
 
@@ -407,7 +407,7 @@ lemma not_medium_of_N'aux_lt {j : ℕ} (h : N'aux a N < j) : ¬Medium a (a j) :=
     refine (Set.finite_Ioc _ _).biUnion ?_
     rintro i ⟨hk, -⟩
     rwa [hc.finite_setOf_apply_eq_iff_not_small (by omega), Small, not_le]
-  exact fun hm ↦ not_mem_of_csSup_lt (le_sup_left.trans_lt h)
+  exact fun hm ↦ notMem_of_csSup_lt (le_sup_left.trans_lt h)
     (hf.subset fun i hi ↦ (by simpa [s] using hi)).bddAbove hm
 
 lemma small_or_big_of_N'aux_lt {j : ℕ} (h : N'aux a N < j) : Small a (a j) ∨ Big a (a j) := by
@@ -425,7 +425,7 @@ omit hc
 lemma nth_sup_k_N_add_one_le_N'aux_of_small {j : ℕ} (h : Small a j) :
     Nat.nth (a · = j) (k a ⊔ (N + 1)) ≤ N'aux a N := by
   by_contra! hn
-  exact not_mem_of_csSup_lt (le_sup_right.trans_lt hn) ((Set.finite_Iic _).image _).bddAbove
+  exact notMem_of_csSup_lt (le_sup_right.trans_lt hn) ((Set.finite_Iic _).image _).bddAbove
     ⟨j, h, rfl⟩
 
 include hc

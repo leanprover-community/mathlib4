@@ -381,7 +381,7 @@ theorem continuousWithinAt_primitive (hb₀ : μ {b₀} = 0)
           simp [hx]
         apply continuousWithinAt_const.congr_of_eventuallyEq this
         simp [hx₀]
-  · apply continuousWithinAt_of_not_mem_closure
+  · apply continuousWithinAt_of_notMem_closure
     rwa [closure_Icc]
 
 theorem continuousAt_parametric_primitive_of_dominated [FirstCountableTopology X]
@@ -443,7 +443,7 @@ theorem continuousAt_parametric_primitive_of_dominated [FirstCountableTopology X
         calc
           ‖F x s - F x₀ s‖ ≤ ‖F x s‖ + ‖F x₀ s‖ := norm_sub_le _ _
           _ ≤ 2 * bound s := by linarith only [hs₁, hs₂]
-      exact intervalIntegral.norm_integral_le_of_norm_le H
+      exact intervalIntegral.norm_integral_le_abs_of_norm_le H
         ((bound_integrable.mono_set' <| hsub hb₀ ht).const_mul 2)
     apply squeeze_zero_norm' this
     have : Tendsto (fun t ↦ ∫ s in b₀..t, 2 * bound s ∂μ) (𝓝 b₀) (𝓝 0) := by

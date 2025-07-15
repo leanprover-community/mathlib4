@@ -348,7 +348,7 @@ theorem y_eq_one_of_mem_closedBall {D : ℝ} {x : E} (Dpos : 0 < D)
   simp only [lsmul_apply, Algebra.id.smul_eq_mul, integral_mul_const, w_integral E Dpos, Bx,
     one_mul]
 
-theorem y_eq_zero_of_not_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (hx : x ∉ ball (0 : E) (1 + D)) :
+theorem y_eq_zero_of_notMem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (hx : x ∉ ball (0 : E) (1 + D)) :
     y D x = 0 := by
   change (w D ⋆[lsmul ℝ ℝ, μ] φ) x = 0
   have B : ∀ y, y ∈ ball x D → φ y = 0 := by
@@ -364,6 +364,8 @@ theorem y_eq_zero_of_not_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (hx : x ∉ b
   have B' : ∀ y, y ∈ ball x D → φ y = φ x := by rw [Bx]; exact B
   rw [convolution_eq_right' _ (le_of_eq (w_support E Dpos)) B']
   simp only [lsmul_apply, Algebra.id.smul_eq_mul, Bx, mul_zero, integral_const]
+
+@[deprecated (since := "2025-05-23")] alias y_eq_zero_of_not_mem_ball := y_eq_zero_of_notMem_ball
 
 theorem y_nonneg (D : ℝ) (x : E) : 0 ≤ y D x :=
   integral_nonneg (w_mul_φ_nonneg D x)
@@ -454,7 +456,7 @@ theorem y_support {D : ℝ} (Dpos : 0 < D) (D_lt_one : D < 1) :
     support (y D : E → ℝ) = ball (0 : E) (1 + D) :=
   support_eq_iff.2
     ⟨fun _ hx => (y_pos_of_mem_ball Dpos D_lt_one hx).ne', fun _ hx =>
-      y_eq_zero_of_not_mem_ball Dpos hx⟩
+      y_eq_zero_of_notMem_ball Dpos hx⟩
 
 variable {E}
 

@@ -10,8 +10,8 @@ import Mathlib.Tactic.Positivity.Basic
 /-!
 # Some exiled lemmas about casting
 
-These lemmas have been removed from `Mathlib.Data.Rat.Cast.Defs`
-to avoiding needing to import `Mathlib.Algebra.Field.Basic` there.
+These lemmas have been removed from `Mathlib/Data/Rat/Cast/Defs.lean`
+to avoiding needing to import `Mathlib/Algebra/Field/Basic.lean` there.
 
 In fact, these lemmas don't appear to be used anywhere in Mathlib,
 so perhaps this file can simply be deleted.

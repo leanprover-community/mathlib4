@@ -364,6 +364,14 @@ inductive limitsOfShape : MorphismProperty C
     (_ : IsLimit c₁) (h₂ : IsLimit c₂) (f : X₁ ⟶ X₂) (_ : W.functorCategory J f) :
       limitsOfShape (h₂.lift (Cone.mk _ (c₁.π ≫ f)))
 
+variable {W J} in
+lemma limitsOfShape.mk' (X₁ X₂ : J ⥤ C) (c₁ : Cone X₁) (c₂ : Cone X₂)
+    (h₁ : IsLimit c₁) (h₂ : IsLimit c₂) (f : X₁ ⟶ X₂) (hf : W.functorCategory J f)
+    (φ : c₁.pt ⟶ c₂.pt) (hφ : ∀ j, φ ≫ c₂.π.app j = c₁.π.app j ≫ f.app j) :
+    W.limitsOfShape J φ := by
+  obtain rfl : φ = h₂.lift (Cone.mk _ (c₁.π ≫ f)) := h₂.hom_ext (fun j ↦ by simp [hφ])
+  exact ⟨_, _, _, _, h₁, _, _, hf⟩
+
 lemma limitsOfShape_monotone {W₁ W₂ : MorphismProperty C} (h : W₁ ≤ W₂)
     (J : Type*) [Category J] :
     W₁.limitsOfShape J ≤ W₂.limitsOfShape J := by
@@ -388,7 +396,7 @@ instance : (W.limitsOfShape J).RespectsIso :=
     rw [← hg]
     exact ⟨_, _, _, _, h₁', _, _, hf⟩)
 
-variable {J} in
+variable {W J} in
 lemma limitsOfShape_limMap {X Y : J ⥤ C}
     (f : X ⟶ Y) [HasLimit X] [HasLimit Y] (hf : W.functorCategory _ f) :
     W.limitsOfShape J (limMap f) :=
@@ -396,30 +404,37 @@ lemma limitsOfShape_limMap {X Y : J ⥤ C}
 
 /-- The property that a morphism property `W` is stable under limits
 indexed by a category `J`. -/
-def IsStableUnderLimitsOfShape : Prop :=
-  ∀ (X₁ X₂ : J ⥤ C) (c₁ : Cone X₁) (c₂ : Cone X₂)
-    (_ : IsLimit c₁) (h₂ : IsLimit c₂) (f : X₁ ⟶ X₂) (_ : W.functorCategory J f),
-      W (h₂.lift (Cone.mk _ (c₁.π ≫ f)))
+class IsStableUnderLimitsOfShape : Prop where
+  condition (X₁ X₂ : J ⥤ C) (c₁ : Cone X₁) (c₂ : Cone X₂)
+    (_ : IsLimit c₁) (h₂ : IsLimit c₂) (f : X₁ ⟶ X₂) (_ : W.functorCategory J f)
+    (φ : c₁.pt ⟶ c₂.pt) (hφ : ∀ j, φ ≫ c₂.π.app j = c₁.π.app j ≫ f.app j) : W φ
 
 lemma isStableUnderLimitsOfShape_iff_limitsOfShape_le :
     W.IsStableUnderLimitsOfShape J ↔ W.limitsOfShape J ≤ W := by
   constructor
   · rintro h _ _ _ ⟨_, _, _, _, h₁, h₂, f, hf⟩
-    exact h _ _ _ _ h₁ h₂ f hf
-  · intro h _ _ _ _ h₁ h₂ f hf
-    exact h _ ⟨_, _, _, _, h₁, _, _, hf⟩
+    exact h.condition _ _ _ _ h₁ h₂ f hf _ (by simp)
+  · rintro h
+    constructor
+    intro X₁ X₂ c₁ c₂ h₁ h₂ f hf φ hφ
+    exact h _ (limitsOfShape.mk' X₁ X₂ c₁ c₂ h₁ h₂ f hf φ hφ)
 
 variable {W J}
 
-lemma IsStableUnderLimitsOfShape.limitsOfShape_le
-    (hW : W.IsStableUnderLimitsOfShape J) : W.limitsOfShape J ≤ W :=
-  (W.isStableUnderLimitsOfShape_iff_limitsOfShape_le J).1 hW
+lemma limitsOfShape_le [W.IsStableUnderLimitsOfShape J] :
+    W.limitsOfShape J ≤ W := by
+  rwa [← isStableUnderLimitsOfShape_iff_limitsOfShape_le]
 
-lemma IsStableUnderLimitsOfShape.limMap
-    (hW : W.IsStableUnderLimitsOfShape J) {X Y : J ⥤ C}
+protected lemma limMap [W.IsStableUnderLimitsOfShape J] {X Y : J ⥤ C}
     (f : X ⟶ Y) [HasLimit X] [HasLimit Y] (hf : W.functorCategory _ f) :
     W (limMap f) :=
-  hW.limitsOfShape_le _ (limitsOfShape_limMap _ _ hf)
+  limitsOfShape_le _ (limitsOfShape_limMap _ hf)
+
+@[deprecated (since := "2025-05-11")] alias IsStableUnderLimitsOfShape.limitsOfShape_le :=
+  limitsOfShape_le
+
+@[deprecated (since := "2025-05-11")] alias IsStableUnderLimitsOfShape.limMap :=
+  MorphismProperty.limMap
 
 end LimitsOfShape
 
@@ -433,6 +448,14 @@ inductive colimitsOfShape : MorphismProperty C
   | mk (X₁ X₂ : J ⥤ C) (c₁ : Cocone X₁) (c₂ : Cocone X₂)
     (h₁ : IsColimit c₁) (h₂ : IsColimit c₂) (f : X₁ ⟶ X₂) (_ : W.functorCategory J f) :
       colimitsOfShape (h₁.desc (Cocone.mk _ (f ≫ c₂.ι)))
+
+variable {W J} in
+lemma colimitsOfShape.mk' (X₁ X₂ : J ⥤ C) (c₁ : Cocone X₁) (c₂ : Cocone X₂)
+    (h₁ : IsColimit c₁) (h₂ : IsColimit c₂) (f : X₁ ⟶ X₂) (hf : W.functorCategory J f)
+    (φ : c₁.pt ⟶ c₂.pt) (hφ : ∀ j, c₁.ι.app j ≫ φ = f.app j ≫ c₂.ι.app j) :
+    W.colimitsOfShape J φ := by
+  obtain rfl : φ = h₁.desc (Cocone.mk _ (f ≫ c₂.ι)) := h₁.hom_ext (fun j ↦ by simp [hφ])
+  exact ⟨_, _, _, _, _, h₂, _, hf⟩
 
 lemma colimitsOfShape_monotone {W₁ W₂ : MorphismProperty C} (h : W₁ ≤ W₂)
     (J : Type*) [Category J] :
@@ -478,7 +501,7 @@ instance : (W.colimitsOfShape J).RespectsIso :=
     rw [← hg]
     exact ⟨_, _, _, _, _, h₂', _, hf⟩)
 
-variable {J} in
+variable {W J} in
 lemma colimitsOfShape_colimMap {X Y : J ⥤ C}
     (f : X ⟶ Y) [HasColimit X] [HasColimit Y] (hf : W.functorCategory _ f) :
     W.colimitsOfShape J (colimMap f) :=
@@ -486,38 +509,46 @@ lemma colimitsOfShape_colimMap {X Y : J ⥤ C}
 
 /-- The property that a morphism property `W` is stable under colimits
 indexed by a category `J`. -/
-def IsStableUnderColimitsOfShape : Prop :=
-  ∀ (X₁ X₂ : J ⥤ C) (c₁ : Cocone X₁) (c₂ : Cocone X₂)
-    (h₁ : IsColimit c₁) (_ : IsColimit c₂) (f : X₁ ⟶ X₂) (_ : W.functorCategory J f),
-      W (h₁.desc (Cocone.mk _ (f ≫ c₂.ι)))
+class IsStableUnderColimitsOfShape : Prop where
+  condition (X₁ X₂ : J ⥤ C) (c₁ : Cocone X₁) (c₂ : Cocone X₂)
+    (h₁ : IsColimit c₁) (h₁ : IsColimit c₂) (f : X₁ ⟶ X₂) (_ : W.functorCategory J f)
+    (φ : c₁.pt ⟶ c₂.pt) (hφ : ∀ j, c₁.ι.app j ≫ φ = f.app j ≫ c₂.ι.app j) : W φ
 
 lemma isStableUnderColimitsOfShape_iff_colimitsOfShape_le :
     W.IsStableUnderColimitsOfShape J ↔ W.colimitsOfShape J ≤ W := by
   constructor
   · rintro h _ _ _ ⟨_, _, _, _, h₁, h₂, f, hf⟩
-    exact h _ _ _ _ h₁ h₂ f hf
-  · intro h _ _ _ _ h₁ h₂ f hf
-    exact h _ ⟨_, _, _, _, _, h₂, _, hf⟩
+    exact h.condition _ _ _ _ h₁ h₂ f hf _ (by simp)
+  · rintro h
+    constructor
+    intro X₁ X₂ c₁ c₂ h₁ h₂ f hf φ hφ
+    exact h _ (colimitsOfShape.mk' X₁ X₂ c₁ c₂ h₁ h₂ f hf φ hφ)
 
 variable {W J}
 
-lemma IsStableUnderColimitsOfShape.colimitsOfShape_le
-    (hW : W.IsStableUnderColimitsOfShape J) : W.colimitsOfShape J ≤ W :=
-  (W.isStableUnderColimitsOfShape_iff_colimitsOfShape_le J).1 hW
+lemma colimitsOfShape_le [W.IsStableUnderColimitsOfShape J] :
+    W.colimitsOfShape J ≤ W := by
+  rwa [← isStableUnderColimitsOfShape_iff_colimitsOfShape_le]
 
-lemma IsStableUnderColimitsOfShape.colimMap
-    (hW : W.IsStableUnderColimitsOfShape J) {X Y : J ⥤ C}
+protected lemma colimMap [W.IsStableUnderColimitsOfShape J] {X Y : J ⥤ C}
     (f : X ⟶ Y) [HasColimit X] [HasColimit Y] (hf : W.functorCategory _ f) :
     W (colimMap f) :=
-  hW.colimitsOfShape_le _ (colimitsOfShape_colimMap _ _ hf)
+  colimitsOfShape_le _ (colimitsOfShape_colimMap _ hf)
+
+@[deprecated (since := "2025-05-11")] alias IsStableUnderColimitsOfShape.colimMap :=
+  MorphismProperty.colimMap
+
+@[deprecated (since := "2025-05-11")] alias IsStableUnderColimitsOfShape.colimitsOfShape_le :=
+  colimitsOfShape_le
 
 variable (C J) in
 lemma IsStableUnderColimitsOfShape.isomorphisms :
-    (isomorphisms C).IsStableUnderColimitsOfShape J := by
-  intro F₁ F₂ c₁ c₂ h₁ h₂ f (_ : ∀ j, IsIso (f.app j))
-  have := NatIso.isIso_of_isIso_app f
-  exact ⟨h₂.desc (Cocone.mk _ (inv f ≫ c₁.ι)),
-    h₁.hom_ext (by simp), h₂.hom_ext (by simp)⟩
+    (isomorphisms C).IsStableUnderColimitsOfShape J where
+  condition F₁ F₂ c₁ c₂ h₁ h₂ f (_ : ∀ j, IsIso (f.app j)) φ hφ := by
+    have := NatIso.isIso_of_isIso_app f
+    exact ⟨h₂.desc (Cocone.mk _ (inv f ≫ c₁.ι)),
+      h₁.hom_ext (fun j ↦ by simp [reassoc_of% (hφ j)]),
+      h₂.hom_ext (by simp [hφ])⟩
 
 end ColimitsOfShape
 
@@ -586,79 +617,79 @@ abbrev IsStableUnderCoproductsOfShape (J : Type*) := W.IsStableUnderColimitsOfSh
 lemma IsStableUnderProductsOfShape.mk (J : Type*) [W.RespectsIso]
     (hW : ∀ (X₁ X₂ : J → C) [HasProduct X₁] [HasProduct X₂]
       (f : ∀ j, X₁ j ⟶ X₂ j) (_ : ∀ (j : J), W (f j)),
-      W (Limits.Pi.map f)) : W.IsStableUnderProductsOfShape J := by
-  intro X₁ X₂ c₁ c₂ hc₁ hc₂ f hf
-  let φ := fun j => f.app (Discrete.mk j)
-  have : HasLimit X₁ := ⟨c₁, hc₁⟩
-  have : HasLimit X₂ := ⟨c₂, hc₂⟩
-  have : HasProduct fun j ↦ X₁.obj (Discrete.mk j) :=
-    hasLimit_of_iso (Discrete.natIso (fun j ↦ Iso.refl (X₁.obj j)))
-  have : HasProduct fun j ↦ X₂.obj (Discrete.mk j) :=
-    hasLimit_of_iso (Discrete.natIso (fun j ↦ Iso.refl (X₂.obj j)))
-  have hf' := hW _ _ φ (fun j => hf (Discrete.mk j))
-  refine (W.arrow_mk_iso_iff ?_).2 hf'
-  refine Arrow.isoMk
-    (IsLimit.conePointUniqueUpToIso hc₁ (limit.isLimit X₁) ≪≫ (Pi.isoLimit X₁).symm)
-    (IsLimit.conePointUniqueUpToIso hc₂ (limit.isLimit X₂) ≪≫ (Pi.isoLimit _).symm) ?_
-  apply limit.hom_ext
-  rintro ⟨j⟩
-  simp [φ]
+      W (Limits.Pi.map f)) : W.IsStableUnderProductsOfShape J where
+  condition X₁ X₂ c₁ c₂ hc₁ hc₂ f hf α hα := by
+    let φ := fun j => f.app (Discrete.mk j)
+    have : HasLimit X₁ := ⟨c₁, hc₁⟩
+    have : HasLimit X₂ := ⟨c₂, hc₂⟩
+    have : HasProduct fun j ↦ X₁.obj (Discrete.mk j) :=
+      hasLimit_of_iso (Discrete.natIso (fun j ↦ Iso.refl (X₁.obj j)))
+    have : HasProduct fun j ↦ X₂.obj (Discrete.mk j) :=
+      hasLimit_of_iso (Discrete.natIso (fun j ↦ Iso.refl (X₂.obj j)))
+    have hf' := hW _ _ φ (fun j => hf (Discrete.mk j))
+    refine (W.arrow_mk_iso_iff ?_).2 hf'
+    refine Arrow.isoMk
+      (IsLimit.conePointUniqueUpToIso hc₁ (limit.isLimit X₁) ≪≫ (Pi.isoLimit X₁).symm)
+      (IsLimit.conePointUniqueUpToIso hc₂ (limit.isLimit X₂) ≪≫ (Pi.isoLimit _).symm) ?_
+    apply limit.hom_ext
+    rintro ⟨j⟩
+    simp [φ, hα]
 
 lemma IsStableUnderCoproductsOfShape.mk (J : Type*) [W.RespectsIso]
     (hW : ∀ (X₁ X₂ : J → C) [HasCoproduct X₁] [HasCoproduct X₂]
       (f : ∀ j, X₁ j ⟶ X₂ j) (_ : ∀ (j : J), W (f j)),
-      W (Limits.Sigma.map f)) : W.IsStableUnderCoproductsOfShape J := by
-  intro X₁ X₂ c₁ c₂ hc₁ hc₂ f hf
-  let φ := fun j => f.app (Discrete.mk j)
-  have : HasColimit X₁ := ⟨c₁, hc₁⟩
-  have : HasColimit X₂ := ⟨c₂, hc₂⟩
-  have : HasCoproduct fun j ↦ X₁.obj (Discrete.mk j) :=
-    hasColimit_of_iso (Discrete.natIso (fun j ↦ Iso.refl (X₁.obj j)))
-  have : HasCoproduct fun j ↦ X₂.obj (Discrete.mk j) :=
-    hasColimit_of_iso (Discrete.natIso (fun j ↦ Iso.refl (X₂.obj j)))
-  have hf' := hW _ _ φ (fun j => hf (Discrete.mk j))
-  refine (W.arrow_mk_iso_iff ?_).1 hf'
-  refine Arrow.isoMk
-    ((Sigma.isoColimit _) ≪≫ IsColimit.coconePointUniqueUpToIso (colimit.isColimit X₁) hc₁)
-    ((Sigma.isoColimit _) ≪≫ IsColimit.coconePointUniqueUpToIso (colimit.isColimit X₂) hc₂) ?_
-  apply colimit.hom_ext
-  rintro ⟨j⟩
-  simp [φ]
+      W (Limits.Sigma.map f)) : W.IsStableUnderCoproductsOfShape J where
+  condition X₁ X₂ c₁ c₂ hc₁ hc₂ f hf α hα := by
+    let φ := fun j => f.app (Discrete.mk j)
+    have : HasColimit X₁ := ⟨c₁, hc₁⟩
+    have : HasColimit X₂ := ⟨c₂, hc₂⟩
+    have : HasCoproduct fun j ↦ X₁.obj (Discrete.mk j) :=
+      hasColimit_of_iso (Discrete.natIso (fun j ↦ Iso.refl (X₁.obj j)))
+    have : HasCoproduct fun j ↦ X₂.obj (Discrete.mk j) :=
+      hasColimit_of_iso (Discrete.natIso (fun j ↦ Iso.refl (X₂.obj j)))
+    have hf' := hW _ _ φ (fun j => hf (Discrete.mk j))
+    refine (W.arrow_mk_iso_iff ?_).1 hf'
+    refine Arrow.isoMk
+      ((Sigma.isoColimit _) ≪≫ IsColimit.coconePointUniqueUpToIso (colimit.isColimit X₁) hc₁)
+      ((Sigma.isoColimit _) ≪≫ IsColimit.coconePointUniqueUpToIso (colimit.isColimit X₂) hc₂) ?_
+    apply colimit.hom_ext
+    rintro ⟨j⟩
+    simp [φ, hα]
 
 /-- The condition that a property of morphisms is stable by finite products. -/
 class IsStableUnderFiniteProducts : Prop where
   isStableUnderProductsOfShape (J : Type) [Finite J] : W.IsStableUnderProductsOfShape J
 
+attribute [instance] IsStableUnderFiniteProducts.isStableUnderProductsOfShape
+
 /-- The condition that a property of morphisms is stable by finite coproducts. -/
 class IsStableUnderFiniteCoproducts : Prop where
   isStableUnderCoproductsOfShape (J : Type) [Finite J] : W.IsStableUnderCoproductsOfShape J
 
-lemma isStableUnderProductsOfShape_of_isStableUnderFiniteProducts
-    (J : Type) [Finite J] [W.IsStableUnderFiniteProducts] :
-    W.IsStableUnderProductsOfShape J :=
-  IsStableUnderFiniteProducts.isStableUnderProductsOfShape J
+attribute [instance] IsStableUnderFiniteCoproducts.isStableUnderCoproductsOfShape
 
-lemma isStableUnderCoproductsOfShape_of_isStableUnderFiniteCoproducts
-    (J : Type) [Finite J] [W.IsStableUnderFiniteCoproducts] :
-    W.IsStableUnderCoproductsOfShape J :=
-  IsStableUnderFiniteCoproducts.isStableUnderCoproductsOfShape J
+@[deprecated "This is now an instance." (since := "2025-05-11")]
+alias isStableUnderProductsOfShape_of_isStableUnderFiniteProducts :=
+  IsStableUnderFiniteProducts.isStableUnderProductsOfShape
+
+@[deprecated "This is now an instance." (since := "2025-05-11")]
+alias isStableUnderCoproductsOfShape_of_isStableUnderFiniteCoproducts :=
+  IsStableUnderFiniteCoproducts.isStableUnderCoproductsOfShape
 
 /-- The condition that a property of morphisms is stable by coproducts. -/
 @[pp_with_univ]
 class IsStableUnderCoproducts : Prop where
-  isStableUnderCoproductsOfShape (J : Type w) : W.IsStableUnderCoproductsOfShape J
+  isStableUnderCoproductsOfShape (J : Type w) : W.IsStableUnderCoproductsOfShape J := by
+    infer_instance
 
-lemma isStableUnderCoproductsOfShape_of_isStableUnderCoproducts
-    [IsStableUnderCoproducts.{w} W] (J : Type w) :
-    W.IsStableUnderCoproductsOfShape J :=
-  IsStableUnderCoproducts.isStableUnderCoproductsOfShape _
+attribute [instance] IsStableUnderCoproducts.isStableUnderCoproductsOfShape
 
 lemma coproducts_le [IsStableUnderCoproducts.{w} W] :
     coproducts.{w} W ≤ W := by
   intro X Y f hf
   rw [coproducts_iff] at hf
   obtain ⟨J, hf⟩ := hf
-  exact (isStableUnderCoproductsOfShape_of_isStableUnderCoproducts W J).colimitsOfShape_le _ hf
+  exact colimitsOfShape_le _ hf
 
 @[simp]
 lemma coproducts_eq_self [IsStableUnderCoproducts.{w} W] :

@@ -147,7 +147,7 @@ theorem toOuterMeasure_caratheodory : p.toOuterMeasure.caratheodory = ⊤ := by
 @[simp]
 theorem toOuterMeasure_apply_finset (s : Finset α) : p.toOuterMeasure s = ∑ x ∈ s, p x := by
   refine (toOuterMeasure_apply p s).trans ((tsum_eq_sum (s := s) ?_).trans ?_)
-  · exact fun x hx => Set.indicator_of_not_mem (Finset.mem_coe.not.2 hx) _
+  · exact fun x hx => Set.indicator_of_notMem (Finset.mem_coe.not.2 hx) _
   · exact Finset.sum_congr rfl fun x hx => Set.indicator_of_mem (Finset.mem_coe.2 hx) _
 
 theorem toOuterMeasure_apply_singleton (a : α) : p.toOuterMeasure {a} = p a := by
@@ -178,7 +178,7 @@ theorem toOuterMeasure_apply_eq_one_iff : p.toOuterMeasure s = 1 ↔ p.support �
       _root_.trans (tsum_congr
         fun a => (Set.indicator_apply s p a).trans
           (ite_eq_left_iff.2 <| symm ∘ this a)) p.tsum_coe
-    exact fun a ha => (p.apply_eq_zero_iff a).2 <| Set.not_mem_subset h ha
+    exact fun a ha => (p.apply_eq_zero_iff a).2 <| Set.notMem_subset h ha
 
 @[simp]
 theorem toOuterMeasure_apply_inter_support :

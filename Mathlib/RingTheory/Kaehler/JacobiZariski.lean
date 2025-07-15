@@ -3,8 +3,8 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Kaehler.CotangentComplex
-import Mathlib.RingTheory.Generators
+import Mathlib.RingTheory.Extension.Cotangent.Basic
+import Mathlib.RingTheory.Extension.Generators
 import Mathlib.Algebra.Module.SnakeLemma
 
 /-!
@@ -33,9 +33,10 @@ namespace Algebra
 
 universe u₁ u₂ u₃ u₄ w' w u v uT
 
-variable {R : Type u} {S : Type v} [CommRing R] [CommRing S] [Algebra R S] {P : Generators.{w} R S}
+variable {R : Type u} {S : Type v} {ι' : Type w'} {ι : Type w}
+    [CommRing R] [CommRing S] [Algebra R S]
 variable {T : Type uT} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
-variable (Q : Generators.{w} S T) (P : Generators.{w'} R S)
+variable (Q : Generators S T ι') (P : Generators R S ι)
 
 attribute [local instance] SMulCommClass.of_commMonoid
 
@@ -73,7 +74,7 @@ lemma Cotangent.exact :
       refine MvPolynomial.algHom_ext fun i ↦ ?_
       show (Q.ofComp P).toAlgHom ((Q.toComp P).toAlgHom (X i)) = _
       simp
-    · simp [-self_vars, aeval_val_eq_zero hx]
+    · simp [aeval_val_eq_zero hx]
   · intro x hx
     obtain ⟨⟨x : (Q.comp P).Ring, hx'⟩, rfl⟩ := Extension.Cotangent.mk_surjective x
     replace hx : (Q.ofComp P).toAlgHom x ∈ Q.ker ^ 2 := by
@@ -87,7 +88,7 @@ lemma Cotangent.exact :
     have hz : z.1 ∈ P.ker.map (Q.toComp P).toAlgHom.toRingHom := e
     have : Extension.Cotangent.mk (P := (Q.comp P).toExtension) ⟨x, hx'⟩ =
       Extension.Cotangent.mk z := by
-      ext; simpa only [comp_vars, val_mk, Ideal.toCotangent_eq, sub_sub_cancel, pow_two, z]
+      ext; simpa only [val_mk, Ideal.toCotangent_eq, sub_sub_cancel, pow_two, z]
     rw [this, ← Submodule.restrictScalars_mem (Q.comp P).Ring, ← Submodule.mem_comap,
       ← Submodule.span_singleton_le_iff_mem, ← Submodule.map_le_map_iff_of_injective
       (f := Submodule.subtype _) Subtype.val_injective, Submodule.map_subtype_span_singleton,
@@ -108,7 +109,7 @@ lemma Cotangent.exact :
 /-- Given `R[X] → S` and `S[Y] → T`, the cotangent space of `R[X][Y] → T` is isomorphic
 to the direct product of the cotangent space of `S[Y] → T` and `R[X] → S` (base changed to `T`). -/
 noncomputable
-def CotangentSpace.compEquiv (Q : Generators.{w} S T) (P : Generators.{w'} R S) :
+def CotangentSpace.compEquiv (Q : Generators S T ι') (P : Generators R S ι) :
     (Q.comp P).toExtension.CotangentSpace ≃ₗ[T]
       Q.toExtension.CotangentSpace × (T ⊗[S] P.toExtension.CotangentSpace) :=
   (Q.comp P).cotangentSpaceBasis.repr.trans
@@ -134,7 +135,7 @@ lemma CotangentSpace.compEquiv_symm_inr :
     Function.comp_apply, LinearEquiv.trans_apply, Basis.repr_symm_apply, pderiv_X, toComp_val,
     Basis.repr_linearCombination, LinearMap.liftBaseChange_tmul, one_smul, repr_CotangentSpaceMap]
   obtain (j | j) := j <;>
-    simp only [comp_vars, Basis.prod_repr_inr, Basis.baseChange_repr_tmul,
+    simp only [Basis.prod_repr_inr, Basis.baseChange_repr_tmul,
       Basis.repr_self, Basis.prod_repr_inl, map_zero, Finsupp.coe_zero,
       Pi.zero_apply, ne_eq, not_false_eq_true, Pi.single_eq_of_ne, Pi.single_apply,
       Finsupp.single_apply, ite_smul, one_smul, zero_smul, Sum.inr.injEq,
@@ -156,7 +157,7 @@ lemma CotangentSpace.fst_compEquiv :
   simp only [compEquiv, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, ofComp_val,
     LinearEquiv.trans_apply, Basis.repr_self, LinearMap.fst_apply, repr_CotangentSpaceMap]
   obtain (i | i) := i <;>
-    simp only [comp_vars, Basis.repr_symm_apply, Finsupp.linearCombination_single, Basis.prod_apply,
+    simp only [Basis.repr_symm_apply, Finsupp.linearCombination_single, Basis.prod_apply,
       LinearMap.coe_inl, LinearMap.coe_inr, Sum.elim_inl, Function.comp_apply, one_smul,
       Basis.repr_self, Finsupp.single_apply, pderiv_X, Pi.single_apply,
       Sum.elim_inr, Function.comp_apply, Basis.baseChange_apply, one_smul,
@@ -216,30 +217,34 @@ lemma δAux_X (i) :
 
 lemma δAux_mul (x y) :
     δAux R Q (x * y) = x • (δAux R Q y) + y • (δAux R Q x) := by
-  induction' x using MvPolynomial.induction_on' with n r x₁ x₂ hx₁ hx₂
-  · induction' y using MvPolynomial.induction_on' with m s y₁ y₂ hy₁ hy₂
-    · simp only [monomial_mul, δAux_monomial, Derivation.leibniz, tmul_add, tmul_smul,
+  induction x using MvPolynomial.induction_on' with
+  | monomial n r =>
+    induction y using MvPolynomial.induction_on' with
+    | monomial m s =>
+      simp only [monomial_mul, δAux_monomial, Derivation.leibniz, tmul_add, tmul_smul,
         smul_tmul', smul_eq_mul, Algebra.smul_def, algebraMap_apply, aeval_monomial, mul_assoc]
       rw [mul_comm (m.prod _) (n.prod _)]
       simp only [pow_zero, implies_true, pow_add, Finsupp.prod_add_index']
-    · simp only [map_add, smul_add, hy₁, hy₂, mul_add, add_smul]; abel
-  · simp only [add_mul, map_add, hx₁, hx₂, add_smul, smul_add]; abel
+    | add y₁ y₂ hy₁ hy₂ => simp only [map_add, smul_add, hy₁, hy₂, mul_add, add_smul]; abel
+  | add x₁ x₂ hx₁ hx₂ => simp only [add_mul, map_add, hx₁, hx₂, add_smul, smul_add]; abel
 
 lemma δAux_C (r) :
     δAux R Q (C r) = 1 ⊗ₜ D R S r := by
   rw [← monomial_zero', δAux_monomial, Finsupp.prod_zero_index]
 
-lemma δAux_toAlgHom {Q : Generators.{u₁} S T}
-    {Q' : Generators.{u₃} S T} (f : Hom Q Q') (x) :
+lemma δAux_toAlgHom {ι₁ : Type u₁} {ι₃ : Type u₃} {Q : Generators S T ι₁}
+    {Q' : Generators S T ι₃} (f : Hom Q Q') (x) :
     δAux R Q' (f.toAlgHom x) = δAux R Q x + Finsupp.linearCombination _ (δAux R Q' ∘ f.val)
       (Q.cotangentSpaceBasis.repr ((1 : T) ⊗ₜ[Q.Ring] D S Q.Ring x :)) := by
   letI : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
   have : IsScalarTower Q.Ring Q.Ring T := IsScalarTower.left _
-  induction' x using MvPolynomial.induction_on with s x₁ x₂ hx₁ hx₂ p n IH
-  · simp [MvPolynomial.algebraMap_eq, δAux_C]
-  · simp only [map_add, hx₁, hx₂, tmul_add]
+  induction x using MvPolynomial.induction_on with
+  | C s => simp [MvPolynomial.algebraMap_eq, δAux_C]
+  | add x₁ x₂ hx₁ hx₂ =>
+    simp only [map_add, hx₁, hx₂, tmul_add]
     rw [add_add_add_comm]
-  · simp only [map_mul, Hom.toAlgHom_X, δAux_mul, algebraMap_apply, Hom.algebraMap_toAlgHom,
+  | mul_X p n IH =>
+    simp only [map_mul, Hom.toAlgHom_X, δAux_mul, algebraMap_apply, Hom.algebraMap_toAlgHom,
       ← @IsScalarTower.algebraMap_smul Q'.Ring T, id.map_eq_id, δAux_X, RingHomCompTriple.comp_eq,
       RingHom.id_apply, coe_eval₂Hom, IH, Hom.aeval_val, smul_add, map_aeval, tmul_add, tmul_smul,
       ← @IsScalarTower.algebraMap_smul Q.Ring T, smul_zero, aeval_X, zero_add, Derivation.leibniz,
@@ -255,22 +260,25 @@ lemma δAux_ofComp (x : (Q.comp P).Ring) :
         (1 ⊗ₜ[(Q.comp P).Ring] (D R (Q.comp P).Ring) x : _)).2 := by
   letI : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
   have : IsScalarTower (Q.comp P).Ring (Q.comp P).Ring T := IsScalarTower.left _
-  induction' x using MvPolynomial.induction_on with s x₁ x₂ hx₁ hx₂ p n IH
-  · simp only [algHom_C, δAux_C, sub_self, derivation_C, Derivation.map_algebraMap,
+  induction x using MvPolynomial.induction_on with
+  | C s =>
+    simp only [algHom_C, δAux_C, sub_self, derivation_C, Derivation.map_algebraMap,
       tmul_zero, map_zero, add_zero, MvPolynomial.algebraMap_apply, Prod.snd_zero]
-  · simp only [map_add, hx₁, hx₂, tmul_add, Prod.snd_add]
-  · simp only [map_mul, Hom.toAlgHom_X, ofComp_val, δAux_mul,
+  | add x₁ x₂ hx₁ hx₂ =>
+    simp only [map_add, hx₁, hx₂, tmul_add, Prod.snd_add]
+  | mul_X p n IH =>
+    simp only [map_mul, Hom.toAlgHom_X, ofComp_val, δAux_mul,
       ← @IsScalarTower.algebraMap_smul Q.Ring T, algebraMap_apply, Hom.algebraMap_toAlgHom,
       id.map_eq_id, map_aeval, RingHomCompTriple.comp_eq, comp_val, RingHom.id_apply, coe_eval₂Hom,
       IH, Derivation.leibniz, tmul_add, tmul_smul, ← cotangentSpaceBasis_apply,
       ← @IsScalarTower.algebraMap_smul (Q.comp P).Ring T, aeval_X, LinearEquiv.map_add,
       LinearMapClass.map_smul, Prod.snd_add, Prod.smul_snd, LinearMap.map_add]
     obtain (n | n) := n
-    · simp only [comp_vars, Sum.elim_inl, δAux_X, smul_zero, aeval_X,
+    · simp only [Sum.elim_inl, δAux_X, smul_zero, aeval_X,
         CotangentSpace.compEquiv, LinearEquiv.trans_apply, Basis.repr_symm_apply, zero_add,
         Basis.repr_self, Finsupp.linearCombination_single, Basis.prod_apply, LinearMap.coe_inl,
         LinearMap.coe_inr, Function.comp_apply, one_smul, map_zero]
-    · simp only [comp_vars, Sum.elim_inr, Function.comp_apply, algHom_C, δAux_C,
+    · simp only [Sum.elim_inr, Function.comp_apply, algHom_C, δAux_C,
         CotangentSpace.compEquiv, LinearEquiv.trans_apply, Basis.repr_symm_apply,
         algebraMap_smul, Basis.repr_self, Finsupp.linearCombination_single, Basis.prod_apply,
         LinearMap.coe_inr, Basis.baseChange_apply, one_smul, LinearMap.baseChange_tmul,
@@ -335,7 +343,7 @@ lemma exact_δ_map :
     intro i
     simp only [Basis.baseChange_apply, LinearMap.coe_comp, Function.comp_apply,
       LinearMap.baseChange_tmul, toKaehler_cotangentSpaceBasis, mapBaseChange_tmul, map_D,
-      one_smul, comp_vars, LinearMap.liftBaseChange_tmul]
+      one_smul, LinearMap.liftBaseChange_tmul]
     rw [cotangentSpaceBasis_apply]
     conv_rhs => enter [2]; tactic => exact Extension.CotangentSpace.map_tmul ..
     simp only [map_one, mapBaseChange_tmul, map_D, one_smul]
@@ -373,8 +381,8 @@ lemma δ_eq_δAux (x : Q.ker) (hx) :
       (CotangentSpace.compEquiv Q P).toLinearMap) ((Q.comp P).toExtension.cotangentComplex y)
     rw [CotangentSpace.fst_compEquiv, Extension.CotangentSpace.map_cotangentComplex, hy, hx]
 
-lemma δ_eq_δ (Q : Generators.{u₁} S T) (P : Generators.{u₂} R S)
-    (P' : Generators.{u₃} R S) :
+lemma δ_eq_δ {ι₁ : Type u₁} {ι₂ : Type u₂} {ι₃ : Type u₃} (Q : Generators S T ι₁)
+    (P : Generators R S ι₂) (P' : Generators R S ι₃) :
     δ Q P = δ Q P' := by
   ext ⟨x, hx⟩
   obtain ⟨x, rfl⟩ := Extension.Cotangent.mk_surjective x
@@ -390,8 +398,8 @@ lemma exact_map_δ :
   · exact Subtype.val_injective
 
 lemma δ_map
-    (Q : Generators.{u₁} S T) (P : Generators.{u₂} R S)
-    (Q' : Generators.{u₃} S T) (P' : Generators.{u₄} R S) (f : Hom Q' Q) (x) :
+    {ι₁ : Type u₁} {ι₂ : Type u₂} {ι₃ : Type u₃} {ι₄ : Type u₄} (Q : Generators S T ι₁)
+    (P : Generators R S ι₂) (Q' : Generators S T ι₄) (P' : Generators R S ι₃) (f : Hom Q' Q) (x) :
     δ Q P (Extension.H1Cotangent.map f.toExtensionHom x) = δ Q' P' x := by
   letI : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
   obtain ⟨x, hx⟩ := x
@@ -404,15 +412,16 @@ lemma δ_map
   rw [hx, map_zero, map_zero, add_zero]
 
 lemma δ_comp_equiv
-    (Q : Generators.{u₁} S T) (P : Generators.{u₂} R S)
-    (Q' : Generators.{u₃} S T) (P' : Generators.{u₄} R S) :
+    {ι₁ : Type u₁} {ι₂ : Type u₂} {ι₃ : Type u₃} {ι₄ : Type u₄} (Q : Generators S T ι₁)
+    (P : Generators R S ι₂) (Q' : Generators S T ι₄) (P' : Generators R S ι₃) :
     δ Q P ∘ₗ (H1Cotangent.equiv _ _).toLinearMap = δ Q' P' := by
   ext x
   exact δ_map Q P Q' P' _ _
 
 /-- A variant of `exact_map_δ` that takes in an arbitrary map between generators. -/
 lemma exact_map_δ'
-    (Q : Generators.{u₁} S T) (P : Generators.{u₂} R S) (P' : Generators.{u₃} R T) (f : Hom P' Q) :
+    {ι₁ : Type u₁} {ι₂ : Type u₂} {ι₃ : Type u₃} (Q : Generators S T ι₁)
+    (P : Generators R S ι₂) (P' : Generators R T ι₃) (f : Hom P' Q) :
     Function.Exact (Extension.H1Cotangent.map f.toExtensionHom) (δ Q P) := by
   refine (H1Cotangent.equiv (Q.comp P) P').surjective.comp_exact_iff_exact.mp ?_
   show Function.Exact ((Extension.H1Cotangent.map f.toExtensionHom).restrictScalars T ∘ₗ

@@ -13,7 +13,7 @@ Provides a recursor for FinEnum types like `Fintype.truncRecEmptyOption`, but ca
 non-truncated data.
 
 ## TODO
-* recreate rest of `Mathlib.Data.Fintype.Option`
+* recreate rest of `Mathlib/Data/Fintype/Option.lean`
 -/
 
 namespace FinEnum

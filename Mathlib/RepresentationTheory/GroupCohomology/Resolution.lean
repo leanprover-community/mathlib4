@@ -39,12 +39,12 @@ standard projective resolution of `k` as a trivial `k`-linear `G`-representation
 
 ## Main definitions
 
- * `groupCohomology.resolution.actionDiagonalSucc`
- * `groupCohomology.resolution.diagonalSucc`
- * `groupCohomology.resolution.ofMulActionBasis`
- * `classifyingSpaceUniversalCover`
- * `groupCohomology.resolution.forget₂ToModuleCatHomotopyEquiv`
- * `groupCohomology.projectiveResolution`
+* `groupCohomology.resolution.actionDiagonalSucc`
+* `groupCohomology.resolution.diagonalSucc`
+* `groupCohomology.resolution.ofMulActionBasis`
+* `classifyingSpaceUniversalCover`
+* `groupCohomology.resolution.forget₂ToModuleCatHomotopyEquiv`
+* `groupCohomology.projectiveResolution`
 
 ## Implementation notes
 

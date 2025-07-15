@@ -39,7 +39,7 @@ than just a functor known to be a right adjoint. In docstrings, we write `(η, �
 and counit of the adjunction `adj₁ : F ⊣ U` and `(ι, δ)` for the unit and counit of the adjunction
 `adj₂ : F' ⊣ R ⋙ U`.
 
-This file has been adapted to `Mathlib.CategoryTheory.Adjunction.Lifting.Right`.
+This file has been adapted to `Mathlib/CategoryTheory/Adjunction/Lifting/Right.lean`.
 Please try to keep them in sync.
 
 ## TODO

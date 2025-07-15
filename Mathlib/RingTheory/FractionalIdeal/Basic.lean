@@ -13,12 +13,12 @@ This file defines fractional ideals of an integral domain and proves basic facts
 
 ## Main definitions
 Let `S` be a submonoid of an integral domain `R` and `P` the localization of `R` at `S`.
- * `IsFractional` defines which `R`-submodules of `P` are fractional ideals
- * `FractionalIdeal S P` is the type of fractional ideals in `P`
- * a coercion `coeIdeal : Ideal R → FractionalIdeal S P`
- * `CommSemiring (FractionalIdeal S P)` instance:
-   the typical ideal operations generalized to fractional ideals
- * `Lattice (FractionalIdeal S P)` instance
+* `IsFractional` defines which `R`-submodules of `P` are fractional ideals
+* `FractionalIdeal S P` is the type of fractional ideals in `P`
+* a coercion `coeIdeal : Ideal R → FractionalIdeal S P`
+* `CommSemiring (FractionalIdeal S P)` instance:
+  the typical ideal operations generalized to fractional ideals
+* `Lattice (FractionalIdeal S P)` instance
 
 ## Main statements
 

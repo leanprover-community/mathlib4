@@ -20,16 +20,16 @@ positive semi-definite on weight space and positive-definite on the span of root
 
 ## Main definitions / results:
 
- * `RootPairing.InvariantForm`: an invariant bilinear form on a root pairing.
- * `RootPairing.RootPositiveForm`: Given a root pairing this is a structure which contains a
-   bilinear form together with axioms for reflection-invariance, symmetry, and strict positivity on
-   all roots.
- * `RootPairing.zero_lt_pairingIn_iff`: sign relations between `RootPairing.pairingIn` and a
-   root-positive form.
- * `RootPairing.pairing_eq_zero_iff`: symmetric vanishing condition for `RootPairing.pairing`
- * `RootPairing.coxeterWeight_nonneg`: All pairs of roots have non-negative Coxeter weight.
- * `RootPairing.coxeterWeight_zero_iff_isOrthogonal` : A Coxeter weight vanishes iff the roots are
-   orthogonal.
+* `RootPairing.InvariantForm`: an invariant bilinear form on a root pairing.
+* `RootPairing.RootPositiveForm`: Given a root pairing this is a structure which contains a
+  bilinear form together with axioms for reflection-invariance, symmetry, and strict positivity on
+  all roots.
+* `RootPairing.zero_lt_pairingIn_iff`: sign relations between `RootPairing.pairingIn` and a
+  root-positive form.
+* `RootPairing.pairing_eq_zero_iff`: symmetric vanishing condition for `RootPairing.pairing`
+* `RootPairing.coxeterWeight_nonneg`: All pairs of roots have non-negative Coxeter weight.
+* `RootPairing.coxeterWeight_zero_iff_isOrthogonal` : A Coxeter weight vanishes iff the roots are
+  orthogonal.
 
 -/
 
@@ -182,9 +182,12 @@ lemma rootLength_pos (i : ι) : 0 < B.rootLength i := by
   simpa using B.zero_lt_posForm_apply_root i
 
 @[simp]
-lemma rootLength_reflection_perm_self (i : ι) :
-    B.rootLength (P.reflection_perm i i) = B.rootLength i := by
-  simp [rootLength, rootSpanMem_reflection_perm_self]
+lemma rootLength_reflectionPerm_self (i : ι) :
+    B.rootLength (P.reflectionPerm i i) = B.rootLength i := by
+  simp [rootLength, rootSpanMem_reflectionPerm_self]
+
+@[deprecated (since := "2025-05-28")]
+alias rootLength_reflection_perm_self := rootLength_reflectionPerm_self
 
 @[simp] lemma algebraMap_rootLength (i : ι) :
     algebraMap S R (B.rootLength i) = B.form (P.root i) (P.root i) := by

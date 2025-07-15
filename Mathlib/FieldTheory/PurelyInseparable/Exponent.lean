@@ -28,7 +28,7 @@ it gives cleaner API. To use the results in a context with `[ExpChar K p]`, cons
   for purely inseparable field extension `L / K` with exponent; for `n ≥ exponent K L`, it acts like
   `x ↦ x ^ p ^ n` but the codomain is the base field `K`.
 - `IsPurelyInseparable.iterateFrobeniusₛₗ`: version of `iterateFrobenius` as a semilinear map over
-   a subfield `F` of `K`, wrt the iterated Frobenius homomorphism on `F`.
+  a subfield `F` of `K`, wrt the iterated Frobenius homomorphism on `F`.
 
 ## Tags
 

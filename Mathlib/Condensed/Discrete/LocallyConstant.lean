@@ -36,7 +36,7 @@ naturality proofs in this file (both lemmas are in the `CompHausLike.LocallyCons
 
 * `presheaf_ext`: given `S`, `Y` and `f : LocallyConstant S Y(*)` like above, another presheaf
   `X`, and two elements `x y : X(S)`, to prove that `x = y` it suffices to prove that for every
-  inclusion map `ιᵢ : Sᵢ ⟶ S`,  `X(ιᵢ)(x) = X(ιᵢ)(y)`.
+  inclusion map `ιᵢ : Sᵢ ⟶ S`, `X(ιᵢ)(x) = X(ιᵢ)(y)`.
   Here it is important that we set everything up in such a way that the `Sᵢ` are literally subtypes
   of `S`.
 
@@ -258,7 +258,7 @@ noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] : haveI := CompHaus
     apply Sheaf.hom_ext
     simp only [functor, id_eq, eq_mpr_eq_cast, Functor.comp_obj, Functor.flip_obj_obj,
       sheafToPresheaf_obj, Functor.id_obj, Functor.comp_map, Functor.flip_obj_map,
-      sheafToPresheaf_map, Sheaf.instCategorySheaf_comp_val, Functor.id_map]
+      sheafToPresheaf_map, Sheaf.comp_val, Functor.id_map]
     ext S (f : LocallyConstant _ _)
     simp only [FunctorToTypes.comp, counitApp_app]
     apply presheaf_ext (f.map (g.val.app (op (CompHausLike.of P PUnit.{u + 1}))))
@@ -333,7 +333,7 @@ noncomputable def adjunction [HasExplicitFiniteCoproducts.{u} P] :
       sheafToPresheaf_obj, functor_obj_val, functorToPresheaves_obj_obj, coe_of, whiskerRight_app,
       Functor.associator_hom_app, whiskerLeft_app, Category.id_comp, NatTrans.id_app']
     apply Sheaf.hom_ext
-    rw [Sheaf.instCategorySheaf_comp_val, Sheaf.instCategorySheaf_id_val]
+    rw [Sheaf.comp_val, Sheaf.id_val]
     exact adjunction_left_triangle P hs X
   right_triangle_components := by
     intro X

@@ -17,15 +17,15 @@ symmetric operators on a finite-dimensional inner product space.
 # Main Result
 
 * `LinearMap.IsSymmetric.directSum_isInternal_of_commute` establishes that in finite dimensions
-   if `{A B : E →ₗ[𝕜] E}`, then `IsSymmetric A`, `IsSymmetric B` and `Commute A B` imply that
-   `E` decomposes as an internal direct sum of the pairwise orthogonal spaces
-   `eigenspace B μ ⊓ eigenspace A ν`
+  if `{A B : E →ₗ[𝕜] E}`, then `IsSymmetric A`, `IsSymmetric B` and `Commute A B` imply that
+  `E` decomposes as an internal direct sum of the pairwise orthogonal spaces
+  `eigenspace B μ ⊓ eigenspace A ν`
 * `LinearMap.IsSymmetric.iSup_iInf_eigenspace_eq_top_of_commute` establishes that in finite
-   dimensions, the indexed supremum of the joint eigenspaces of a commuting tuple of symmetric
-   linear operators equals `⊤`
+  dimensions, the indexed supremum of the joint eigenspaces of a commuting tuple of symmetric
+  linear operators equals `⊤`
 * `LinearMap.IsSymmetric.directSum_isInternal_of_pairwise_commute` establishes the
-   analogous result to `LinearMap.IsSymmetric.directSum_isInternal_of_commute` for commuting
-   tuples of symmetric operators.
+  analogous result to `LinearMap.IsSymmetric.directSum_isInternal_of_commute` for commuting
+  tuples of symmetric operators.
 
 ## TODO
 

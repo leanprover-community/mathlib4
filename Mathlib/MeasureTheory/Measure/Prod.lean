@@ -295,7 +295,7 @@ instance prod.instIsFiniteMeasure {α β : Type*} {mα : MeasurableSpace α} {m�
     IsFiniteMeasure (μ.prod ν) := by
   constructor
   rw [← univ_prod_univ, prod_prod]
-  exact mul_lt_top (measure_lt_top _ _) (measure_lt_top _ _)
+  finiteness
 
 instance {α β : Type*} [MeasureSpace α] [MeasureSpace β] [IsFiniteMeasure (volume : Measure α)]
     [IsFiniteMeasure (volume : Measure β)] : IsFiniteMeasure (volume : Measure (α × β)) :=
@@ -401,6 +401,7 @@ theorem ae_prod_mem_iff_ae_ae_mem {s : Set (α × β)} (hs : MeasurableSet s) :
   measure_prod_null hs.compl
 
 omit [SFinite ν] in
+@[fun_prop]
 theorem quasiMeasurePreserving_fst : QuasiMeasurePreserving Prod.fst (μ.prod ν) μ := by
   refine ⟨measurable_fst, AbsolutelyContinuous.mk fun s hs h2s => ?_⟩
   rw [map_apply measurable_fst hs, ← prod_univ, ← nonpos_iff_eq_zero]
@@ -408,6 +409,7 @@ theorem quasiMeasurePreserving_fst : QuasiMeasurePreserving Prod.fst (μ.prod ν
   rw [h2s, zero_mul]
 
 omit [SFinite ν] in
+@[fun_prop]
 theorem quasiMeasurePreserving_snd : QuasiMeasurePreserving Prod.snd (μ.prod ν) ν := by
   refine ⟨measurable_snd, AbsolutelyContinuous.mk fun s hs h2s => ?_⟩
   rw [map_apply measurable_snd hs, ← univ_prod, ← nonpos_iff_eq_zero]
@@ -705,6 +707,13 @@ theorem map_prod_map {δ} [MeasurableSpace δ] {f : α → β} {g : γ → δ} (
   rw [map_apply (hf.prodMap hg) (hs.prod ht), map_apply hf hs, map_apply hg ht]
   exact prod_prod (f ⁻¹' s) (g ⁻¹' t)
 
+-- `prod_smul_right` needs an instance to get `SFinite (c • ν)` from `SFinite ν`,
+-- hence it is placed in the `WithDensity` file, where the instance is defined.
+lemma prod_smul_left {μ : Measure α} (c : ℝ≥0∞) : (c • μ).prod ν = c • (μ.prod ν) := by
+  ext s hs
+  rw [Measure.prod_apply hs, Measure.smul_apply, Measure.prod_apply hs]
+  simp
+
 end Measure
 
 open Measure
@@ -776,6 +785,25 @@ theorem prod_of_left {α β γ} [MeasurableSpace α] [MeasurableSpace β] [Measu
       ((measurable_swap.measurePreserving (ν.prod μ)).symm
           MeasurableEquiv.prodComm).quasiMeasurePreserving
 
+@[fun_prop]
+protected theorem fst {f : α → β × γ} (hf : QuasiMeasurePreserving f μ (ν.prod τ)) :
+    QuasiMeasurePreserving (fun x ↦ (f x).1) μ ν :=
+  (quasiMeasurePreserving_fst (μ := ν) (ν := τ)).comp hf
+
+@[fun_prop]
+protected theorem snd {f : α → β × γ} (hf : QuasiMeasurePreserving f μ (ν.prod τ)) :
+    QuasiMeasurePreserving (fun x ↦ (f x).2) μ τ :=
+  (quasiMeasurePreserving_snd (μ := ν) (ν := τ)).comp hf
+
+@[fun_prop]
+protected theorem prodMap {ω : Type*} {mω : MeasurableSpace ω} {υ : Measure ω}
+    [SFinite μ] [SFinite τ] [SFinite υ] {f : α → β} {g : γ → ω}
+    (hf : QuasiMeasurePreserving f μ ν) (hg : QuasiMeasurePreserving g τ υ) :
+    QuasiMeasurePreserving (Prod.map f g) (μ.prod τ) (ν.prod υ) := by
+  refine ⟨by fun_prop, ?_⟩
+  rw[← map_prod_map _ _ (by fun_prop) (by fun_prop)]
+  exact hf.absolutelyContinuous.prod hg.absolutelyContinuous
+
 end QuasiMeasurePreserving
 
 end MeasureTheory
@@ -793,8 +821,7 @@ theorem MeasureTheory.NullMeasurable.comp_fst {f : α → γ} (hf : NullMeasurab
     NullMeasurable (fun z : α × β => f z.1) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_fst
 
--- TODO: make this theorem usable with `fun_prop`
-theorem AEMeasurable.fst {f : α → γ} (hf : AEMeasurable f μ) :
+theorem AEMeasurable.comp_fst {f : α → γ} (hf : AEMeasurable f μ) :
     AEMeasurable (fun z : α × β => f z.1) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_fst
 
@@ -802,8 +829,7 @@ theorem MeasureTheory.NullMeasurable.comp_snd {f : β → γ} (hf : NullMeasurab
     NullMeasurable (fun z : α × β => f z.2) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_snd
 
--- TODO: make this theorem usable with `fun_prop`
-theorem AEMeasurable.snd {f : β → γ} (hf : AEMeasurable f ν) :
+theorem AEMeasurable.comp_snd {f : β → γ} (hf : AEMeasurable f ν) :
     AEMeasurable (fun z : α × β => f z.2) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_snd
 
@@ -919,7 +945,8 @@ theorem lintegral_lintegral_swap [SFinite μ] ⦃f : α → β → ℝ≥0∞⦄
 
 theorem lintegral_prod_mul {f : α → ℝ≥0∞} {g : β → ℝ≥0∞} (hf : AEMeasurable f μ)
     (hg : AEMeasurable g ν) : ∫⁻ z, f z.1 * g z.2 ∂μ.prod ν = (∫⁻ x, f x ∂μ) * ∫⁻ y, g y ∂ν := by
-  simp [lintegral_prod _ (hf.fst.mul hg.snd), lintegral_lintegral_mul hf hg]
+  rw [lintegral_prod _ (by fun_prop)]
+  simp [lintegral_lintegral_mul hf hg]
 
 /-! ### Marginals of a measure defined on a product -/
 

@@ -30,21 +30,21 @@ $\mathrm{H}^n(G, A) \cong \mathrm{Ext}^n(k, A),$ where $\mathrm{Ext}$ is taken i
 `Rep k G`.
 
 To talk about cohomology in low degree, please see the file
-`Mathlib.RepresentationTheory.GroupCohomology.LowDegree`, which gives simpler expressions for
+`Mathlib/RepresentationTheory/GroupCohomology/LowDegree.lean`, which gives simpler expressions for
 `H⁰`, `H¹`, `H²` than the definition `groupCohomology` in this file.
 
 ## Main definitions
 
 * `groupCohomology.linearYonedaObjResolution A`: a complex whose objects are the representation
-morphisms $\mathrm{Hom}(k[G^{n + 1}], A)$ and whose cohomology is the group cohomology
-$\mathrm{H}^n(G, A)$.
+  morphisms $\mathrm{Hom}(k[G^{n + 1}], A)$ and whose cohomology is the group cohomology
+  $\mathrm{H}^n(G, A)$.
 * `groupCohomology.inhomogeneousCochains A`: a complex whose objects are
-$\mathrm{Fun}(G^n, A)$ and whose cohomology is the group cohomology $\mathrm{H}^n(G, A).$
+  $\mathrm{Fun}(G^n, A)$ and whose cohomology is the group cohomology $\mathrm{H}^n(G, A).$
 * `groupCohomology.inhomogeneousCochainsIso A`: an isomorphism between the above two complexes.
 * `groupCohomology A n`: this is $\mathrm{H}^n(G, A),$ defined as the $n$th cohomology of the
-second complex, `inhomogeneousCochains A`.
+  second complex, `inhomogeneousCochains A`.
 * `groupCohomologyIsoExt A n`: an isomorphism $\mathrm{H}^n(G, A) \cong \mathrm{Ext}^n(k, A)$
-(where $\mathrm{Ext}$ is taken in the category `Rep k G`) induced by `inhomogeneousCochainsIso A`.
+  (where $\mathrm{Ext}$ is taken in the category `Rep k G`) induced by `inhomogeneousCochainsIso A`.
 
 ## Implementation notes
 
@@ -57,14 +57,14 @@ possible scalar action diamonds.
 ## TODO
 
 * API for cohomology in low degree: $\mathrm{H}^0, \mathrm{H}^1$ and $\mathrm{H}^2.$ For example,
-the inflation-restriction exact sequence.
+  the inflation-restriction exact sequence.
 * The long exact sequence in cohomology attached to a short exact sequence of representations.
 * Upgrading `groupCohomologyIsoExt` to an isomorphism of derived functors.
 * Profinite cohomology.
 
 Longer term:
 * The Hochschild-Serre spectral sequence (this is perhaps a good toy example for the theory of
-spectral sequences in general).
+  spectral sequences in general).
 -/
 
 
@@ -197,7 +197,6 @@ noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
       map_zero, Pi.zero_apply, LinearMap.zero_apply]
     rfl
 
-@[simp]
 theorem inhomogeneousCochains.d_def (n : ℕ) :
     (inhomogeneousCochains A).d n (n + 1) = ModuleCat.ofHom (inhomogeneousCochains.d n A) :=
   CochainComplex.of_d _ _ _ _

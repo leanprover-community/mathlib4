@@ -3,17 +3,17 @@ Copyright (c) 2025 Paul Lezeau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Lezeau
 -/
-import Mathlib.CategoryTheory.ChosenFiniteProducts
+import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 import Mathlib.CategoryTheory.Monoidal.Mod_
 
 /-!
 # Additional results about module objects in cartesian monoidal categories
 -/
 
-open CategoryTheory MonoidalCategory ChosenFiniteProducts
+open CategoryTheory MonoidalCategory CartesianMonoidalCategory
 
 universe v u
-variable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C]
+variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
 
 attribute [local simp] leftUnitor_hom
 

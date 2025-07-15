@@ -549,13 +549,13 @@ theorem isPreconnected_of_forall_constant {s : Set α}
   unfold IsPreconnected
   by_contra!
   rcases this with ⟨u, v, u_op, v_op, hsuv, ⟨x, x_in_s, x_in_u⟩, ⟨y, y_in_s, y_in_v⟩, H⟩
-  have hy : y ∉ u := fun y_in_u => eq_empty_iff_forall_not_mem.mp H y ⟨y_in_s, ⟨y_in_u, y_in_v⟩⟩
+  have hy : y ∉ u := fun y_in_u => eq_empty_iff_forall_notMem.mp H y ⟨y_in_s, ⟨y_in_u, y_in_v⟩⟩
   have : ContinuousOn u.boolIndicator s := by
     apply (continuousOn_boolIndicator_iff_isClopen _ _).mpr ⟨_, _⟩
     · rw [preimage_subtype_coe_eq_compl hsuv H]
       exact (v_op.preimage continuous_subtype_val).isClosed_compl
     · exact u_op.preimage continuous_subtype_val
-  simpa [(u.mem_iff_boolIndicator _).mp x_in_u, (u.not_mem_iff_boolIndicator _).mp hy] using
+  simpa [(u.mem_iff_boolIndicator _).mp x_in_u, (u.notMem_iff_boolIndicator _).mp hy] using
     hs _ this x x_in_s y y_in_s
 
 /-- A `PreconnectedSpace` version of `isPreconnected_of_forall_constant` -/

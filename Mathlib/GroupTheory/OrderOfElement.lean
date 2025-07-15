@@ -114,6 +114,13 @@ lemma isOfFinOrder_pow {n : ℕ} : IsOfFinOrder (a ^ n) ↔ IsOfFinOrder a ∨ n
   · simp
   · exact ⟨fun h ↦ .inl <| h.of_pow hn, fun h ↦ (h.resolve_right hn).pow⟩
 
+@[to_additive]
+lemma not_isOfFinOrder_of_isMulTorsionFree [IsMulTorsionFree G] (ha : a ≠ 1) :
+    ¬ IsOfFinOrder a := by
+  rw [isOfFinOrder_iff_pow_eq_one]
+  rintro ⟨n, hn, han⟩
+  exact ha <| pow_left_injective hn.ne' <| by simpa using han
+
 /-- Elements of finite order are of finite order in submonoids. -/
 @[to_additive "Elements of finite order are of finite order in submonoids."]
 theorem Submonoid.isOfFinOrder_coe {H : Submonoid G} {x : H} :
@@ -650,8 +657,8 @@ theorem smul_eq_self_of_mem_zpowers {α : Type*} [MulAction G α] (hx : x ∈ Su
     MulAction.toPermHom_apply]
   exact Function.IsFixedPt.perm_zpow (by exact hs) k -- Porting note: help elab'n with `by exact`
 
-theorem vadd_eq_self_of_mem_zmultiples {α G : Type*} [AddGroup G] [AddAction G α] {x y : G}
-    (hx : x ∈ AddSubgroup.zmultiples y) {a : α} (hs : y +ᵥ a = a) : x +ᵥ a = a :=
+theorem vadd_eq_self_of_mem_zmultiples {G : Type*} [AddGroup G] {x y : G} {α : Type*}
+    [AddAction G α] (hx : x ∈ AddSubgroup.zmultiples y) {a : α} (hs : y +ᵥ a = a) : x +ᵥ a = a :=
   @smul_eq_self_of_mem_zpowers (Multiplicative G) _ _ _ α _ hx a hs
 
 attribute [to_additive existing] smul_eq_self_of_mem_zpowers
@@ -708,6 +715,29 @@ theorem IsOfFinOrder.mul (hx : IsOfFinOrder x) (hy : IsOfFinOrder y) : IsOfFinOr
   (Commute.all x y).isOfFinOrder_mul hx hy
 
 end CommMonoid
+
+section CommGroup
+variable [CommGroup G]
+
+@[to_additive]
+lemma isMulTorsionFree_iff_not_isOfFinOrder :
+    IsMulTorsionFree G ↔ ∀ ⦃a : G⦄, a ≠ 1 → ¬ IsOfFinOrder a where
+  mp _ _ := not_isOfFinOrder_of_isMulTorsionFree
+  mpr hG := by
+    refine ⟨fun n hn a b hab ↦ ?_⟩
+    rw [← div_eq_one] at hab ⊢
+    simp only [← div_pow, isOfFinOrder_iff_pow_eq_one] at hab hG
+    exact of_not_not fun hab' ↦ hG hab' ⟨n, hn.bot_lt, hab⟩
+
+@[to_additive]
+alias ⟨_, IsMulTorsionFree.of_not_isOfFinOrder⟩ := isMulTorsionFree_iff_not_isOfFinOrder
+
+@[to_additive]
+lemma not_isMulTorsionFree_iff_isOfFinOrder :
+    ¬ IsMulTorsionFree G ↔ ∃ a ≠ (1 : G), IsOfFinOrder a := by
+  simp [isMulTorsionFree_iff_not_isOfFinOrder]
+
+end CommGroup
 
 section FiniteMonoid
 
@@ -1174,6 +1204,6 @@ section single
 lemma orderOf_piMulSingle {ι : Type*} [DecidableEq ι] {M : ι → Type*} [(i : ι) → Monoid (M i)]
     (i : ι) (g : M i) :
     orderOf (Pi.mulSingle i g) = orderOf g :=
-  orderOf_injective (MonoidHom.mulSingle M i) (Pi.mulSingle_injective M i) g
+  orderOf_injective (MonoidHom.mulSingle M i) (Pi.mulSingle_injective i) g
 
 end single

@@ -236,7 +236,7 @@ theorem first_vote_neg (p q : ℕ) (h : 0 < p + q) :
   all_goals simp_all [ENNReal.div_eq_top]
 
 theorem ballot_same (p : ℕ) : uniformOn (countedSequence (p + 1) (p + 1)) staysPositive = 0 := by
-  rw [uniformOn_eq_zero_iff (countedSequence_finite _ _), eq_empty_iff_forall_not_mem]
+  rw [uniformOn_eq_zero_iff (countedSequence_finite _ _), eq_empty_iff_forall_notMem]
   rintro x ⟨hx, t⟩
   apply ne_of_gt (t x _ x.suffix_refl)
   · simpa using sum_of_mem_countedSequence hx

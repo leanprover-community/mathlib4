@@ -12,9 +12,9 @@ import Mathlib.SetTheory.ZFC.PSet
 # A model of ZFC
 
 In this file, we model Zermelo-Fraenkel set theory (+ choice) using Lean's underlying type theory,
-building on the pre-sets defined in `Mathlib.SetTheory.ZFC.PSet`.
+building on the pre-sets defined in `Mathlib/SetTheory/ZFC/PSet.lean`.
 
-The theory of classes is developed in `Mathlib.SetTheory.ZFC.Class`.
+The theory of classes is developed in `Mathlib/SetTheory/ZFC/Class.lean`.
 
 ## Main definitions
 
@@ -273,8 +273,10 @@ instance : Inhabited ZFSet :=
   ⟨∅⟩
 
 @[simp]
-theorem not_mem_empty (x) : x ∉ (∅ : ZFSet.{u}) :=
-  Quotient.inductionOn x PSet.not_mem_empty
+theorem notMem_empty (x) : x ∉ (∅ : ZFSet.{u}) :=
+  Quotient.inductionOn x PSet.notMem_empty
+
+@[deprecated (since := "2025-05-23")] alias not_mem_empty := notMem_empty
 
 @[simp]
 theorem toSet_empty : toSet ∅ = ∅ := by simp [toSet]
@@ -417,7 +419,7 @@ theorem mem_sep {p : ZFSet.{u} → Prop} {x y : ZFSet.{u}} :
 
 @[simp]
 theorem sep_empty (p : ZFSet → Prop) : (∅ : ZFSet).sep p = ∅ :=
-  (eq_empty _).mpr fun _ h ↦ not_mem_empty _ (mem_sep.mp h).1
+  (eq_empty _).mpr fun _ h ↦ notMem_empty _ (mem_sep.mp h).1
 
 @[simp]
 theorem toSet_sep (a : ZFSet) (p : ZFSet → Prop) :
@@ -500,14 +502,16 @@ theorem sInter_empty : ⋂₀ (∅ : ZFSet) = ∅ := by simp [sInter]
 
 theorem mem_of_mem_sInter {x y z : ZFSet} (hy : y ∈ ⋂₀ x) (hz : z ∈ x) : y ∈ z := by
   rcases eq_empty_or_nonempty x with (rfl | hx)
-  · exact (not_mem_empty z hz).elim
+  · exact (notMem_empty z hz).elim
   · exact (mem_sInter hx).1 hy z hz
 
 theorem mem_sUnion_of_mem {x y z : ZFSet} (hy : y ∈ z) (hz : z ∈ x) : y ∈ ⋃₀ x :=
   mem_sUnion.2 ⟨z, hz, hy⟩
 
-theorem not_mem_sInter_of_not_mem {x y z : ZFSet} (hy : ¬y ∈ z) (hz : z ∈ x) : ¬y ∈ ⋂₀ x :=
+theorem notMem_sInter_of_notMem {x y z : ZFSet} (hy : y ∉ z) (hz : z ∈ x) : y ∉ ⋂₀ x :=
   fun hx => hy <| mem_of_mem_sInter hx hz
+
+@[deprecated (since := "2025-05-23")] alias not_mem_sInter_of_not_mem := notMem_sInter_of_notMem
 
 @[simp]
 theorem sUnion_singleton {x : ZFSet.{u}} : ⋃₀ ({x} : ZFSet) = x :=
@@ -613,8 +617,10 @@ theorem mem_irrefl (x : ZFSet) : x ∉ x :=
 theorem not_subset_of_mem {x y : ZFSet} (h : x ∈ y) : ¬ y ⊆ x :=
   fun h' ↦ mem_irrefl _ (h' h)
 
-theorem not_mem_of_subset {x y : ZFSet} (h : x ⊆ y) : y ∉ x :=
+theorem notMem_of_subset {x y : ZFSet} (h : x ⊆ y) : y ∉ x :=
   imp_not_comm.2 not_subset_of_mem h
+
+@[deprecated (since := "2025-05-23")] alias not_mem_of_subset := notMem_of_subset
 
 theorem regularity (x : ZFSet.{u}) (h : x ≠ ∅) : ∃ y ∈ x, x ∩ y = ∅ :=
   by_contradiction fun ne =>

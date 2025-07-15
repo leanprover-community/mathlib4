@@ -21,7 +21,7 @@ one consequence being that the number of Dyck words with length `2 * n` is `cata
 ## Main definitions
 
 * `DyckWord`: a list of `U`s and `D`s with as many `U`s as `D`s and with every prefix having
-at least as many `U`s as `D`s.
+  at least as many `U`s as `D`s.
 * `DyckWord.semilength`: semilength (half the length) of a Dyck word.
 * `DyckWord.firstReturn`: for a nonempty word, the index of the `D` matching the initial `U`.
 
@@ -255,20 +255,12 @@ def firstReturn : ℕ :=
 
 include h in
 lemma firstReturn_pos : 0 < p.firstReturn := by
-  by_contra! f
-  rw [Nat.le_zero, firstReturn, findIdx_eq] at f
-  #adaptation_note
-  /--
-  If we don't swap, then the second goal is dropped after completing the first goal.
-  What's going on?
-  -/
-  swap
+  rw [← not_le, Nat.le_zero, firstReturn, findIdx_eq, getElem_range]
+  · simp only [not_lt_zero', IsEmpty.forall_iff]
+    rw [← p.cons_tail_dropLast_concat h]
+    simp
   · rw [length_range, length_pos_iff]
     exact toList_ne_nil.mpr h
-  · rw [getElem_range] at f
-    simp at f
-    rw [← p.cons_tail_dropLast_concat h] at f
-    simp at f
 
 include h in
 lemma firstReturn_lt_length : p.firstReturn < p.toList.length := by
@@ -492,7 +484,7 @@ open Tree
 `f(0) = nil`. For a nonzero word find the `D` that matches the initial `U`,
 which has index `p.firstReturn`, then let `x` be everything strictly between said `U` and `D`,
 and `y` be everything strictly after said `D`. `p = x.nest + y` with `x, y` (possibly empty)
-Dyck words. `f(p) = f(x) △ f(y)`, where △ (defined in `Mathlib.Data.Tree`) joins two subtrees
+Dyck words. `f(p) = f(x) △ f(y)`, where △ (defined in `Mathlib/Data/Tree.lean`) joins two subtrees
 to a new root node. -/
 private def equivTreeToFun (p : DyckWord) : Tree Unit :=
   if h : p = 0 then nil else

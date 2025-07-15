@@ -178,13 +178,11 @@ theorem ciSup_subsingleton [Subsingleton ι] (i : ι) (s : ι → α) : ⨆ i, s
 theorem ciInf_subsingleton [Subsingleton ι] (i : ι) (s : ι → α) : ⨅ i, s i = s i :=
   @ciInf_unique α ι _ ⟨⟨i⟩, fun j => Subsingleton.elim j i⟩ _
 
-@[simp]
-theorem ciSup_pos {p : Prop} {f : p → α} (hp : p) : ⨆ h : p, f h = f hp :=
-  ciSup_subsingleton hp f
+theorem ciSup_pos {p : Prop} {f : p → α} (hp : p) : ⨆ h : p, f h = f hp := by
+  simp [hp]
 
-@[simp]
-theorem ciInf_pos {p : Prop} {f : p → α} (hp : p) : ⨅ h : p, f h = f hp :=
-  ciSup_pos (α := αᵒᵈ) hp
+theorem ciInf_pos {p : Prop} {f : p → α} (hp : p) : ⨅ h : p, f h = f hp := by
+  simp [hp]
 
 lemma ciSup_neg {p : Prop} {f : p → α} (hp : ¬ p) :
     ⨆ (h : p), f h = sSup (∅ : Set α) := by

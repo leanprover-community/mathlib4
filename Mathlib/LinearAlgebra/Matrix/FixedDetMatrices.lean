@@ -147,7 +147,7 @@ lemma reps_entries_le_m' {A : Δ m} (h : A ∈ reps m) (i j : Fin 2) :
 
 @[simp]
 lemma reps_zero_empty : reps 0 = ∅ := by
-  rw [reps, Set.eq_empty_iff_forall_not_mem]
+  rw [reps, Set.eq_empty_iff_forall_notMem]
   rintro A ⟨h₁, h₂, -, h₄⟩
   suffices |A.1 0 1| < 0 by linarith [abs_nonneg (A.1 0 1)]
   have := A_c_eq_zero h₁

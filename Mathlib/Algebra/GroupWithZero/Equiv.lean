@@ -8,6 +8,8 @@ import Mathlib.Algebra.GroupWithZero.Hom
 
 /-! # Isomorphisms of monoids with zero -/
 
+assert_not_exists Ring
+
 namespace MulEquivClass
 variable {F α β : Type*} [EquivLike F α β]
 

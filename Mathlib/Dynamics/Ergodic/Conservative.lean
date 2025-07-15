@@ -20,7 +20,7 @@ from it:
   `MeasureTheory.Conservative.exists_gt_measure_inter_ne_zero`: if `μ s ≠ 0`, then for infinitely
   many `n`, the measure of `s ∩ f^[n] ⁻¹' s` is positive.
 
-* `MeasureTheory.Conservative.measure_mem_forall_ge_image_not_mem_eq_zero`,
+* `MeasureTheory.Conservative.measure_mem_forall_ge_image_notMem_eq_zero`,
   `MeasureTheory.Conservative.ae_mem_imp_frequently_image_mem`: a.e. every point of `s` visits `s`
   infinitely many times (Poincaré recurrence theorem).
 
@@ -136,7 +136,7 @@ theorem exists_gt_measure_inter_ne_zero (hf : Conservative f μ) (hs : NullMeasu
 
 /-- Poincaré recurrence theorem: given a conservative map `f` and a measurable set `s`, the set
 of points `x ∈ s` such that `x` does not return to `s` after `≥ n` iterations has measure zero. -/
-theorem measure_mem_forall_ge_image_not_mem_eq_zero (hf : Conservative f μ)
+theorem measure_mem_forall_ge_image_notMem_eq_zero (hf : Conservative f μ)
     (hs : NullMeasurableSet s μ) (n : ℕ) :
     μ ({ x ∈ s | ∀ m ≥ n, f^[m] x ∉ s }) = 0 := by
   by_contra H
@@ -148,13 +148,16 @@ theorem measure_mem_forall_ge_image_not_mem_eq_zero (hf : Conservative f μ)
   rcases nonempty_of_measure_ne_zero hm with ⟨x, ⟨_, hxn⟩, hxm, -⟩
   exact hxn m hmn.lt.le hxm
 
+@[deprecated (since := "2025-05-23")]
+alias measure_mem_forall_ge_image_not_mem_eq_zero := measure_mem_forall_ge_image_notMem_eq_zero
+
 /-- Poincaré recurrence theorem: given a conservative map `f` and a measurable set `s`,
 almost every point `x ∈ s` returns back to `s` infinitely many times. -/
 theorem ae_mem_imp_frequently_image_mem (hf : Conservative f μ) (hs : NullMeasurableSet s μ) :
     ∀ᵐ x ∂μ, x ∈ s → ∃ᶠ n in atTop, f^[n] x ∈ s := by
   simp only [frequently_atTop, @forall_swap (_ ∈ s), ae_all_iff]
   intro n
-  filter_upwards [measure_zero_iff_ae_nmem.1 (hf.measure_mem_forall_ge_image_not_mem_eq_zero hs n)]
+  filter_upwards [measure_zero_iff_ae_notMem.1 (hf.measure_mem_forall_ge_image_notMem_eq_zero hs n)]
   simp
 
 theorem inter_frequently_image_mem_ae_eq (hf : Conservative f μ) (hs : NullMeasurableSet s μ) :

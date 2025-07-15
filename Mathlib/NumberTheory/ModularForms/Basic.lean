@@ -30,12 +30,17 @@ section ModularForm
 
 open ModularForm
 
-/-- The weight `k` slash action of `GL(2, ℝ)⁺` preserves holomorphic functions. -/
+/-- The weight `k` slash action of `GL(2, ℝ)⁺` preserves holomorphic functions.
+
+TO DO: Actually this holds for `GL(2, ℝ)` (without the positivity assumption), but this is
+somewhat more annoying to prove: we have to argue that the composite of two anti-holomorphic
+functions is holomorphic. -/
 lemma MDifferentiable.slash {f : ℍ → ℂ} (hf : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) f)
-    (k : ℤ) (g : GL(2, ℝ)⁺) :
+    (k : ℤ) {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) :
     MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (f ∣[k] g) := by
   refine .mul (.mul ?_ mdifferentiable_const) (UpperHalfPlane.mdifferentiable_denom_zpow g _)
-  exact hf.comp (UpperHalfPlane.mdifferentiable_smul g)
+  simp only [σ, hg, ↓reduceIte]
+  exact hf.comp (UpperHalfPlane.mdifferentiable_smul hg)
 
 variable (F : Type*) (Γ : Subgroup SL(2, ℤ)) (k : ℤ)
 
@@ -170,11 +175,12 @@ section
 
 variable {α : Type*} [SMul α ℂ] [IsScalarTower α ℂ ℂ]
 
-instance instSMul : SMul α (ModularForm Γ k) :=
-  ⟨fun c f =>
-    { toSlashInvariantForm := c • f.1
-      holo' := by simpa using f.holo'.const_smul (c • (1 : ℂ))
-      bdd_at_infty' := fun A => by simpa using (f.bdd_at_infty' A).const_smul_left (c • (1 : ℂ)) }⟩
+instance instSMul : SMul α (ModularForm Γ k) where
+  smul c f :=
+  { toSlashInvariantForm := c • f.1
+    holo' := by simpa using f.holo'.const_smul (c • (1 : ℂ))
+    bdd_at_infty' := fun A => by simpa [SL_smul_slash]
+      using (f.bdd_at_infty' A).const_smul_left (c • (1 : ℂ)) }
 
 @[simp]
 theorem coe_smul (f : ModularForm Γ k) (n : α) : ⇑(n • f) = n • ⇑f :=
@@ -445,12 +451,12 @@ variable {k : ℤ} {Γ : Subgroup SL(2, ℤ)} {F : Type*} [FunLike F ℍ ℂ] (f
 
 /-- Translating a `ModularForm` by `SL(2, ℤ)`, to obtain a new `ModularForm`.
 
-(TODO : Define this more generally for `GL(2, ℚ)⁺`.) -/
+(TODO : Define this more generally for `GL(2, ℚ)`.) -/
 noncomputable def ModularForm.translate [ModularFormClass F Γ k] :
     ModularForm (Γ.map <| MulAut.conj g⁻¹) k where
   __ := SlashInvariantForm.translate f g
   bdd_at_infty' h := by simpa [SlashAction.slash_mul] using ModularFormClass.bdd_at_infty f (g * h)
-  holo' := (ModularFormClass.holo f).slash k g
+  holo' := (ModularFormClass.holo f).slash k (by simp)
 
 @[simp]
 lemma ModularForm.coe_translate [ModularFormClass F Γ k] : translate f g = ⇑f ∣[k] g := rfl

@@ -31,62 +31,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  style_lint:
-    if: github.repository == 'leanprover-community/mathlib4'
-    name: Lint style
-    runs-on: bors
-    steps:
-      - name: cleanup
-        run: |
-          find . -name . -o -prune -exec rm -rf -- {} +
-
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
-      # Run the case checker action
-      - name: Check Case Sensitivity
-        uses: credfeto/action-case-checker@cb652aeab29ed363bbdb7d9ee1bfcc010c46cac5 # v1.3.0
-
-      - name: Look for ignored files
-        uses: credfeto/action-no-ignored-files@4fccae50720d89bef0cd9dc99a85a19b765d2e70 # v1.2.0
-
-      - name: "Check for Lean files with the executable bit set"
-        shell: bash
-        run: |
-          executable_files="$(find . -name '*.lean' -type f \( -perm -u=x -o -perm -g=x -o -perm -o=x \))"
-          if [[ -n "$executable_files" ]]
-          then
-            echo "ERROR: The following Lean files have the executable bit set."
-            echo "$executable_files"
-            exit 1
-          fi
-
-      - name: install Python
-        if: ${{ 'bors' == 'ubuntu-latest' }}
-        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
-        with:
-          python-version: 3.8
-
-      - name: Configure Lean
-        uses: leanprover/lean-action@f807b338d95de7813c5c50d018f1c23c9b93b4ec # 2025-04-24
-        with:
-          auto-config: false
-          use-github-cache: false
-          use-mathlib-cache: false
-
-      - name: "run style linters"
-        run: |
-          lake exe lint-style
-
-      - name: Install bibtool
-        if: ${{ 'bors' == 'ubuntu-latest' }}
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y bibtool
-
-      - name: lint references.bib
-        run: |
-          ./scripts/lint-bib.sh
-
   build:
     if: github.repository == 'leanprover-community/mathlib4'
     name: Build
@@ -348,6 +292,15 @@ jobs:
           lake build
           lake -q exe lean4checker Lean4Checker
 
+  style_lint:
+    name: Lint style
+    runs-on: ubuntu-latest
+    steps:
+      - uses: leanprover-community/lint-style-action@f2e7272aad56233a642b08fe974cf09dd664b0c8 # 2025-05-22
+        with:
+          mode: check
+          lint-bib-file: true
+
   final:
     name: Post-CI job
     if: github.repository == 'leanprover-community/mathlib4'
@@ -365,7 +318,7 @@ jobs:
 
       - if: contains(steps.PR.outputs.pr_labels, 'bench-after-CI')
         name: If `bench-after-CI` is present, add a `!bench` comment.
-        uses: GrantBirki/comment@f524ee31407667c05061bad41e1758b40298bd82 # v2.1.0
+        uses: GrantBirki/comment@608e41b19bc973020ec0e189ebfdae935d7fe0cc # v2.1.1
         with:
           token: ${{ secrets.AUTO_MERGE_TOKEN }}
           issue-number: ${{ steps.PR.outputs.number }}
@@ -383,7 +336,7 @@ jobs:
 
       - if: contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI')
         name: If `auto-merge-after-CI` is present, add a `bors merge` comment.
-        uses: GrantBirki/comment@f524ee31407667c05061bad41e1758b40298bd82 # v2.1.0
+        uses: GrantBirki/comment@608e41b19bc973020ec0e189ebfdae935d7fe0cc # v2.1.1
         with:
           token: ${{ secrets.AUTO_MERGE_TOKEN }}
           issue-number: ${{ steps.PR.outputs.number }}

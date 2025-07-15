@@ -8,7 +8,7 @@ import Mathlib.Topology.Path
 /-!
 # Path connectedness
 
-Continuing from `Mathlib.Topology.Path`, this file defines path components and path-connected
+Continuing from `Mathlib/Topology/Path.lean`, this file defines path components and path-connected
 spaces.
 
 ## Main definitions
@@ -45,7 +45,7 @@ path-connected, and that every path-connected set/space is also connected.
 
 noncomputable section
 
-open Topology Filter unitInterval Set Function
+open Topology Filter unitInterval Set Function Pointwise
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {x y z : X} {ι : Type*}
 
@@ -71,6 +71,11 @@ theorem Joined.symm {x y : X} (h : Joined x y) : Joined y x :=
 @[trans]
 theorem Joined.trans {x y z : X} (hxy : Joined x y) (hyz : Joined y z) : Joined x z :=
   ⟨hxy.somePath.trans hyz.somePath⟩
+
+@[to_additive]
+theorem Joined.mul {M : Type*} [Mul M] [TopologicalSpace M] [ContinuousMul M]
+    {a b c d : M} (hs : Joined a b) (ht : Joined c d) : Joined (a * c) (b * d) :=
+  ⟨hs.somePath.mul ht.somePath⟩
 
 variable (X)
 
@@ -190,6 +195,12 @@ theorem Topology.IsInducing.joinedIn_image {f : X → Y} (hf : IsInducing f) (hx
 
 @[deprecated (since := "2024-10-28")] alias Inducing.joinedIn_image := IsInducing.joinedIn_image
 
+@[to_additive]
+theorem JoinedIn.mul {M : Type*} [Mul M] [TopologicalSpace M] [ContinuousMul M]
+    {s t : Set M} {a b c d : M} (hs : JoinedIn s a b) (ht : JoinedIn t c d) :
+    JoinedIn (s * t) (a * c) (b * d) :=
+  ⟨hs.somePath.mul ht.somePath, fun t ↦ Set.mul_mem_mul (hs.somePath_mem t) (ht.somePath_mem t)⟩
+
 /-! ### Path component -/
 
 /-- The path component of `x` is the set of points that can be joined to `x`. -/
@@ -261,12 +272,12 @@ theorem pathComponentIn_mono {G : Set X} (h : F ⊆ G) :
 
 /-- A set `F` is path connected if it contains a point that can be joined to all other in `F`. -/
 def IsPathConnected (F : Set X) : Prop :=
-  ∃ x ∈ F, ∀ {y}, y ∈ F → JoinedIn F x y
+  ∃ x ∈ F, ∀ ⦃y⦄, y ∈ F → JoinedIn F x y
 
 theorem isPathConnected_iff_eq : IsPathConnected F ↔ ∃ x ∈ F, pathComponentIn x F = F := by
   constructor <;> rintro ⟨x, x_in, h⟩ <;> use x, x_in
   · ext y
-    exact ⟨fun hy => hy.mem.2, h⟩
+    exact ⟨fun hy => hy.mem.2, @h _⟩
   · intro y y_in
     rwa [← h] at y_in
 
@@ -279,7 +290,7 @@ theorem isPathConnected_iff :
     IsPathConnected F ↔ F.Nonempty ∧ ∀ᵉ (x ∈ F) (y ∈ F), JoinedIn F x y :=
   ⟨fun h =>
     ⟨let ⟨b, b_in, _hb⟩ := h; ⟨b, b_in⟩, h.joinedIn⟩,
-    fun ⟨⟨b, b_in⟩, h⟩ => ⟨b, b_in, fun x_in => h _ b_in _ x_in⟩⟩
+    fun ⟨⟨b, b_in⟩, h⟩ => ⟨b, b_in, h _ b_in⟩⟩
 
 /-- If `f` is continuous on `F` and `F` is path-connected, so is `f(F)`. -/
 theorem IsPathConnected.image' (hF : IsPathConnected F)
@@ -294,6 +305,13 @@ theorem IsPathConnected.image' (hF : IsPathConnected F)
 theorem IsPathConnected.image (hF : IsPathConnected F) {f : X → Y} (hf : Continuous f) :
     IsPathConnected (f '' F) :=
   hF.image' hf.continuousOn
+
+@[to_additive]
+theorem IsPathConnected.mul {M : Type*} [Mul M] [TopologicalSpace M] [ContinuousMul M]
+    {s t : Set M} (hs : IsPathConnected s) (ht : IsPathConnected t) :
+    IsPathConnected (s * t) :=
+  let ⟨a, ha_mem, ha⟩ := hs; let ⟨b, hb_mem, hb⟩ := ht
+  ⟨a * b, mul_mem_mul ha_mem hb_mem, Set.forall_mem_image2.2 fun _x hx _y hy ↦ (ha hx).mul (hb hy)⟩
 
 /-- If `f : X → Y` is an inducing map, `f(F)` is path-connected iff `F` is. -/
 nonrec theorem Topology.IsInducing.isPathConnected_iff {f : X → Y} (hf : IsInducing f) :
@@ -334,7 +352,7 @@ theorem isPathConnected_singleton (x : X) : IsPathConnected ({x} : Set X) := by
   exact JoinedIn.refl rfl
 
 theorem isPathConnected_pathComponentIn (h : x ∈ F) : IsPathConnected (pathComponentIn x F) :=
-  ⟨x, mem_pathComponentIn_self h, fun ⟨γ, hγ⟩ ↦ by
+  ⟨x, mem_pathComponentIn_self h, fun _ ⟨γ, hγ⟩ ↦ by
     refine ⟨γ, fun t ↦
       ⟨(γ.truncateOfLE t.2.1).cast (γ.extend_zero.symm) (γ.extend_extends' t).symm, fun t' ↦ ?_⟩⟩
     dsimp [Path.truncateOfLE, Path.truncate]

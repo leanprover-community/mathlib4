@@ -3,11 +3,11 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.AlgebraicGeometry.Gluing
 import Mathlib.CategoryTheory.Limits.Opposites
-import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
-import Mathlib.CategoryTheory.ChosenFiniteProducts.Over
+import Mathlib.CategoryTheory.Monoidal.Cartesian.Over
 
 /-!
 # Fibred products of schemes
@@ -88,7 +88,7 @@ abbrev fV (i j : 𝒰.J) : v 𝒰 f g i j ⟶ pullback (𝒰.map i ≫ f) g :=
   pullback.fst _ _
 
 /-- The map `((Xᵢ ×[Z] Y) ×[X] Xⱼ) ×[Xᵢ ×[Z] Y] ((Xᵢ ×[Z] Y) ×[X] Xₖ)` ⟶
- `((Xⱼ ×[Z] Y) ×[X] Xₖ) ×[Xⱼ ×[Z] Y] ((Xⱼ ×[Z] Y) ×[X] Xᵢ)` needed for gluing -/
+`((Xⱼ ×[Z] Y) ×[X] Xₖ) ×[Xⱼ ×[Z] Y] ((Xⱼ ×[Z] Y) ×[X] Xᵢ)` needed for gluing -/
 def t' (i j k : 𝒰.J) :
     pullback (fV 𝒰 f g i j) (fV 𝒰 f g i k) ⟶ pullback (fV 𝒰 f g j k) (fV 𝒰 f g j i) := by
   refine (pullbackRightPullbackFstIso ..).hom ≫ ?_
@@ -696,12 +696,12 @@ lemma diagonal_Spec_map :
 
 end Spec
 
-section ChosenFiniteProducts
+section CartesianMonoidalCategory
 variable {S : Scheme}
 
-instance : ChosenFiniteProducts (Over S) := Over.chosenFiniteProducts _
-instance : BraidedCategory (Over S) := .ofChosenFiniteProducts
+instance : CartesianMonoidalCategory (Over S) := Over.cartesianMonoidalCategory _
+instance : BraidedCategory (Over S) := .ofCartesianMonoidalCategory
 
-end ChosenFiniteProducts
+end CartesianMonoidalCategory
 
 end AlgebraicGeometry

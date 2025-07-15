@@ -19,7 +19,7 @@ orthogonal projection on the subspace of almost everywhere `m`-measurable functi
 ## Main definitions
 
 * `condExpL2`: Conditional expectation of a function in L2 with respect to a sigma-algebra: it is
-the orthogonal projection on the subspace `lpMeas`.
+  the orthogonal projection on the subspace `lpMeas`.
 
 ## Implementation notes
 
@@ -215,7 +215,7 @@ theorem condExpL2_ae_eq_zero_of_ae_eq_zero (hs : MeasurableSet[m] s) (hμs : μ 
     dsimp only
     rw [hx]
     simp
-  · exact (Lp.stronglyMeasurable _).enorm
+  · exact (Lp.stronglyMeasurable _).enorm (ε := ℝ)
 
 @[deprecated (since := "2025-01-21")]
 alias condexpL2_ae_eq_zero_of_ae_eq_zero := condExpL2_ae_eq_zero_of_ae_eq_zero
@@ -370,7 +370,7 @@ theorem setLIntegral_nnnorm_condExpL2_indicator_le (hm : m ≤ m0) (hs : Measura
     _ = (∫⁻ a in t, ‖(condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) a‖₊ ∂μ) * ‖x‖₊ := by
       simp_rw [nnnorm_smul, ENNReal.coe_mul]
       rw [lintegral_mul_const]
-      exact (Lp.stronglyMeasurable _).enorm
+      exact (Lp.stronglyMeasurable _).enorm (ε := ℝ)
     _ ≤ μ (s ∩ t) * ‖x‖₊ :=
       mul_le_mul_right' (lintegral_nnnorm_condExpL2_indicator_le_real hs hμs ht hμt) _
 
@@ -469,7 +469,7 @@ theorem setLIntegral_nnnorm_condExpIndSMul_le (hm : m ≤ m0) (hs : MeasurableSe
     _ = (∫⁻ a in t, ‖(condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) a‖₊ ∂μ) * ‖x‖₊ := by
       simp_rw [nnnorm_smul, ENNReal.coe_mul]
       rw [lintegral_mul_const]
-      exact (Lp.stronglyMeasurable _).enorm
+      exact (Lp.stronglyMeasurable _).enorm (ε := ℝ)
     _ ≤ μ (s ∩ t) * ‖x‖₊ :=
       mul_le_mul_right' (lintegral_nnnorm_condExpL2_indicator_le_real hs hμs ht hμt) _
 
@@ -542,17 +542,15 @@ theorem condExpL2_indicator_nonneg (hm : m ≤ m0) (hs : MeasurableSet s) (hμs 
   refine @ae_le_of_ae_le_trim _ _ _ _ _ _ hm (0 : α → ℝ) _ ?_
   refine ae_nonneg_of_forall_setIntegral_nonneg_of_sigmaFinite ?_ ?_
   · rintro t - -
-    refine @Integrable.integrableOn _ _ m _ _ _ _ ?_
-    refine Integrable.trim hm ?_ ?_
-    · rw [integrable_congr h.ae_eq_mk.symm]
-      exact integrable_condExpL2_indicator hm hs hμs _
-    · exact h.stronglyMeasurable_mk
+    refine @Integrable.integrableOn _ _ m _ _ _ _ _ ?_
+    refine Integrable.trim hm ?_ h.stronglyMeasurable_mk
+    rw [integrable_congr h.ae_eq_mk.symm]
+    exact integrable_condExpL2_indicator hm hs hμs _
   · intro t ht hμt
     rw [← setIntegral_trim hm h.stronglyMeasurable_mk ht]
     have h_ae :
-      ∀ᵐ x ∂μ, x ∈ t → h.mk _ x = (condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) x := by
-      filter_upwards [h.ae_eq_mk] with x hx
-      exact fun _ => hx.symm
+        ∀ᵐ x ∂μ, x ∈ t → h.mk _ x = (condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) x := by
+      filter_upwards [h.ae_eq_mk] with x hx using fun _ => hx.symm
     rw [setIntegral_congr_ae (hm t ht) h_ae,
       setIntegral_condExpL2_indicator ht hs ((le_trim hm).trans_lt hμt).ne hμs]
     exact ENNReal.toReal_nonneg

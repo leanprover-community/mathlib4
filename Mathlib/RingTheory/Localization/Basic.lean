@@ -32,8 +32,8 @@ variable [Algebra R S] [Algebra P Q] (M : Submonoid R) (T : Submonoid P)
 
 ## Main definitions
 
- * `IsLocalization.algEquiv`: if `Q` is another localization of `R` at `M`, then `S` and `Q`
-   are isomorphic as `R`-algebras
+* `IsLocalization.algEquiv`: if `Q` is another localization of `R` at `M`, then `S` and `Q`
+  are isomorphic as `R`-algebras
 
 ## Implementation notes
 
@@ -239,7 +239,7 @@ section smul
 
 variable {R : Type*} [CommSemiring R] {S : Submonoid R}
 variable {R' : Type*} [CommSemiring R'] [Algebra R R'] [IsLocalization S R']
-variable {M': Type*} [AddCommMonoid M'] [Module R' M'] [Module R M'] [IsScalarTower R R' M']
+variable {M' : Type*} [AddCommMonoid M'] [Module R' M'] [Module R M'] [IsScalarTower R R' M']
 
 /-- If `x` in a `R' = S⁻¹ R`-module `M'`, then for a submodule `N'` of `M'`,
 `s • x ∈ N'` if and only if `x ∈ N'` for some `s` in S. -/

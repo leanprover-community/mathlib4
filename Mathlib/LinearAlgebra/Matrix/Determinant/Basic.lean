@@ -19,15 +19,15 @@ This file defines the determinant of a matrix, `Matrix.det`, and its essential p
 
 ## Main definitions
 
- - `Matrix.det`: the determinant of a square matrix, as a sum over permutations
- - `Matrix.detRowAlternating`: the determinant, as an `AlternatingMap` in the rows of the matrix
+- `Matrix.det`: the determinant of a square matrix, as a sum over permutations
+- `Matrix.detRowAlternating`: the determinant, as an `AlternatingMap` in the rows of the matrix
 
 ## Main results
 
- - `det_mul`: the determinant of `A * B` is the product of determinants
- - `det_zero_of_row_eq`: the determinant is zero if there is a repeated row
- - `det_block_diagonal`: the determinant of a block diagonal matrix is a product
-   of the blocks' determinants
+- `det_mul`: the determinant of `A * B` is the product of determinants
+- `det_zero_of_row_eq`: the determinant is zero if there is a repeated row
+- `det_block_diagonal`: the determinant of a block diagonal matrix is a product
+  of the blocks' determinants
 
 ## Implementation notes
 
@@ -428,7 +428,7 @@ theorem det_updateRow_sum_aux (M : Matrix n n R) {j : n} (s : Finset n) (hj : j 
 multiplied by the coefficient of that row. -/
 theorem det_updateRow_sum (A : Matrix n n R) (j : n) (c : n → R) :
     (A.updateRow j (∑ k, (c k) • A k)).det = (c j) • A.det := by
-  convert det_updateRow_sum_aux A (Finset.univ.erase j) (Finset.univ.not_mem_erase j) c (c j)
+  convert det_updateRow_sum_aux A (Finset.univ.erase j) (Finset.univ.notMem_erase j) c (c j)
   rw [← Finset.univ.add_sum_erase _ (Finset.mem_univ j)]
 
 /-- If we replace a column of a matrix by a linear combination of its columns, then the determinant
@@ -488,18 +488,28 @@ theorem det_updateCol_add_smul_self (A : Matrix n n R) {i j : n} (hij : i ≠ j)
 @[deprecated (since := "2024-12-11")]
 alias det_updateColumn_add_smul_self := det_updateCol_add_smul_self
 
-theorem linearIndependent_rows_of_det_ne_zero [IsDomain R] {A : Matrix m m R} (hA : A.det ≠ 0) :
-    LinearIndependent R A.row := by
-  rw [row_def]
-  contrapose! hA
+theorem det_eq_zero_of_not_linearIndependent_rows [IsDomain R] {A : Matrix m m R}
+    (hA : ¬ LinearIndependent R (fun i ↦ A i)) :
+    det A = 0 := by
   obtain ⟨c, hc0, i, hci⟩ := Fintype.not_linearIndependent_iff.1 hA
   have h0 := A.det_updateRow_sum i c
   rwa [det_eq_zero_of_row_eq_zero (i := i) (fun j ↦ by simp [hc0]), smul_eq_mul, eq_comm,
     mul_eq_zero_iff_left hci] at h0
 
+theorem linearIndependent_rows_of_det_ne_zero [IsDomain R] {A : Matrix m m R} (hA : A.det ≠ 0) :
+    LinearIndependent R (fun i ↦ A i) := by
+  contrapose! hA
+  exact det_eq_zero_of_not_linearIndependent_rows hA
+
 theorem linearIndependent_cols_of_det_ne_zero [IsDomain R] {A : Matrix m m R} (hA : A.det ≠ 0) :
     LinearIndependent R A.col :=
-  Matrix.linearIndependent_rows_of_det_ne_zero (by simpa)
+  Matrix.linearIndependent_rows_of_det_ne_zero (by simpa [Matrix.col])
+
+theorem det_eq_zero_of_not_linearIndependent_cols [IsDomain R] {A : Matrix m m R}
+    (hA : ¬ LinearIndependent R (fun i ↦ Aᵀ i)) :
+    det A = 0 := by
+  contrapose! hA
+  exact linearIndependent_cols_of_det_ne_zero hA
 
 theorem det_eq_of_forall_row_eq_smul_add_const_aux {A B : Matrix n n R} {s : Finset n} :
     ∀ (c : n → R) (_ : ∀ i, i ∉ s → c i = 0) (k : n) (_ : k ∉ s)
@@ -541,7 +551,7 @@ theorem det_eq_of_forall_row_eq_smul_add_const {A B : Matrix n n R} (c : n → R
       not_imp_comm.mp fun hi =>
         Finset.mem_erase.mpr
           ⟨mt (fun h : i = k => show c i = 0 from h.symm ▸ hk) hi, Finset.mem_univ i⟩)
-    k (Finset.not_mem_erase k Finset.univ) A_eq
+    k (Finset.notMem_erase k Finset.univ) A_eq
 
 theorem det_eq_of_forall_row_eq_smul_add_pred_aux {n : ℕ} (k : Fin (n + 1)) :
     ∀ (c : Fin n → R) (_hc : ∀ i : Fin n, k < i.succ → c i = 0)

@@ -646,7 +646,7 @@ protected theorem traverse_def (f : α → F β) (x : α) :
     ∀ xs : Vector α n, (x ::ᵥ xs).traverse f = cons <$> f x <*> xs.traverse f := by
   rintro ⟨xs, rfl⟩; rfl
 
-protected theorem id_traverse : ∀ x : Vector α n, x.traverse (pure : _ → Id _) = x := by
+protected theorem id_traverse : ∀ x : Vector α n, x.traverse (pure : _ → Id _) = pure x := by
   rintro ⟨x, rfl⟩; dsimp [Vector.traverse, cast]
   induction' x with x xs IH; · rfl
   simp! [IH]; rfl
@@ -671,7 +671,7 @@ protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : Vector 
     simp [functor_norm, Function.comp_def]
 
 protected theorem traverse_eq_map_id {α β} (f : α → β) :
-    ∀ x : Vector α n, x.traverse ((pure : _ → Id _) ∘ f) = (pure : _ → Id _) (map f x) := by
+    ∀ x : Vector α n, x.traverse ((pure : _ → Id _) ∘ f) = pure (map f x) := by
   rintro ⟨x, rfl⟩; simp!; induction x <;> simp! [*, functor_norm] <;> rfl
 
 variable [LawfulApplicative F] (η : ApplicativeTransformation F G)

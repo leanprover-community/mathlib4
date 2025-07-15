@@ -128,12 +128,12 @@ lemma Injective.dite (p : α → Prop) [DecidablePred p]
     (hf : Injective f) (hf' : Injective f')
     (im_disj : ∀ {x x' : α} {hx : p x} {hx' : ¬ p x'}, f ⟨x, hx⟩ ≠ f' ⟨x', hx'⟩) :
     Function.Injective (fun x ↦ if h : p x then f ⟨x, h⟩ else f' ⟨x, h⟩) := fun x₁ x₂ h => by
- dsimp only at h
- by_cases h₁ : p x₁ <;> by_cases h₂ : p x₂
- · rw [dif_pos h₁, dif_pos h₂] at h; injection (hf h)
- · rw [dif_pos h₁, dif_neg h₂] at h; exact (im_disj h).elim
- · rw [dif_neg h₁, dif_pos h₂] at h; exact (im_disj h.symm).elim
- · rw [dif_neg h₁, dif_neg h₂] at h; injection (hf' h)
+  dsimp only at h
+  by_cases h₁ : p x₁ <;> by_cases h₂ : p x₂
+  · rw [dif_pos h₁, dif_pos h₂] at h; injection (hf h)
+  · rw [dif_pos h₁, dif_neg h₂] at h; exact (im_disj h).elim
+  · rw [dif_neg h₁, dif_pos h₂] at h; exact (im_disj h.symm).elim
+  · rw [dif_neg h₁, dif_neg h₂] at h; injection (hf' h)
 
 theorem Surjective.of_comp {g : γ → α} (S : Surjective (f ∘ g)) : Surjective f := fun y ↦
   let ⟨x, h⟩ := S y

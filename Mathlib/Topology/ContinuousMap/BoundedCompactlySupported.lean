@@ -39,7 +39,7 @@ lemma exist_norm_eq [c : Nonempty α] {f : α →ᵇ γ} (h : f ∈ C_cb(α, γ)
     refine ⟨x, le_antisymm (norm_coe_le_norm f x) (norm_le (norm_nonneg _) |>.mpr fun y ↦ ?_)⟩
     by_cases hy : y ∈ tsupport f
     · exact hmax hy
-    · simp [image_eq_zero_of_nmem_tsupport hy]
+    · simp [image_eq_zero_of_notMem_tsupport hy]
   · suffices f = 0 by simp [this]
     rwa [not_nonempty_iff_eq_empty, tsupport_eq_empty_iff, ← coe_zero, ← DFunLike.ext'_iff] at hs
 
@@ -86,7 +86,7 @@ def ofCompactSupport (g : α → γ) (hg₁ : Continuous g) (hg₂ : HasCompactS
       refine ⟨2 * ‖g z‖, dist_le_two_norm' fun x ↦ ?_⟩
       by_cases hx : x ∈ tsupport g
       · exact isMaxOn_iff.mp hmax x hx
-      · simp [image_eq_zero_of_nmem_tsupport hx]
+      · simp [image_eq_zero_of_notMem_tsupport hx]
 
 lemma ofCompactSupport_mem (g : α → γ) (hg₁ : Continuous g) (hg₂ : HasCompactSupport g) :
     ofCompactSupport g hg₁ hg₂ ∈ C_cb(α, γ) := mem_compactlySupported.mpr hg₂

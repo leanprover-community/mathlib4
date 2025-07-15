@@ -76,12 +76,15 @@ theorem incMatrix_apply_mul_incMatrix_apply : G.incMatrix R a e * G.incMatrix R 
 
 theorem incMatrix_apply_mul_incMatrix_apply_of_not_adj (hab : a ≠ b) (h : ¬G.Adj a b) :
     G.incMatrix R a e * G.incMatrix R b e = 0 := by
-  rw [incMatrix_apply_mul_incMatrix_apply, Set.indicator_of_not_mem]
+  rw [incMatrix_apply_mul_incMatrix_apply, Set.indicator_of_notMem]
   rw [G.incidenceSet_inter_incidenceSet_of_not_adj h hab]
-  exact Set.not_mem_empty e
+  exact Set.notMem_empty e
 
-theorem incMatrix_of_not_mem_incidenceSet (h : e ∉ G.incidenceSet a) : G.incMatrix R a e = 0 := by
-  rw [incMatrix_apply, Set.indicator_of_not_mem h]
+theorem incMatrix_of_notMem_incidenceSet (h : e ∉ G.incidenceSet a) : G.incMatrix R a e = 0 := by
+  rw [incMatrix_apply, Set.indicator_of_notMem h]
+
+@[deprecated (since := "2025-05-23")]
+alias incMatrix_of_not_mem_incidenceSet := incMatrix_of_notMem_incidenceSet
 
 theorem incMatrix_of_mem_incidenceSet (h : e ∈ G.incidenceSet a) : G.incMatrix R a e = 1 := by
   rw [incMatrix_apply, Set.indicator_of_mem h, Pi.one_apply]
@@ -124,9 +127,12 @@ theorem sum_incMatrix_apply_of_mem_edgeSet [Fintype α] :
     ext e
     simp only [mem_filter, mem_univ, true_and, mem_insert, mem_singleton]
 
-theorem sum_incMatrix_apply_of_not_mem_edgeSet [Fintype α] (h : e ∉ G.edgeSet) :
+theorem sum_incMatrix_apply_of_notMem_edgeSet [Fintype α] (h : e ∉ G.edgeSet) :
     ∑ a, G.incMatrix R a e = 0 :=
-  sum_eq_zero fun _ _ => G.incMatrix_of_not_mem_incidenceSet fun he => h he.1
+  sum_eq_zero fun _ _ => G.incMatrix_of_notMem_incidenceSet fun he => h he.1
+
+@[deprecated (since := "2025-05-23")]
+alias sum_incMatrix_apply_of_not_mem_edgeSet := sum_incMatrix_apply_of_notMem_edgeSet
 
 theorem incMatrix_transpose_mul_diag [Fintype α] [Decidable (e ∈ G.edgeSet)] :
     ((G.incMatrix R)ᵀ * G.incMatrix R) e e = if e ∈ G.edgeSet then 2 else 0 := by

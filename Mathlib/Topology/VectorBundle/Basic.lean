@@ -19,10 +19,10 @@ To have a vector bundle structure on `Bundle.TotalSpace F E`, one should additio
 following properties:
 
 * The bundle trivializations in the trivialization atlas should be continuous linear equivs in the
-fibers;
+  fibers;
 * For any two trivializations `e`, `e'` in the atlas the transition function considered as a map
-from `B` into `F →L[R] F` is continuous on `e.baseSet ∩ e'.baseSet` with respect to the operator
-norm topology on `F →L[R] F`.
+  from `B` into `F →L[R] F` is continuous on `e.baseSet ∩ e'.baseSet` with respect to the operator
+  norm topology on `F →L[R] F`.
 
 If these conditions are satisfied, we register the typeclass `VectorBundle R F E`.
 
@@ -46,7 +46,7 @@ We define constructions on vector bundles like pullbacks and direct sums in othe
 ## Implementation notes
 
 The implementation choices in the vector bundle definition are discussed in the "Implementation
-notes" section of `Mathlib.Topology.FiberBundle.Basic`.
+notes" section of `Mathlib/Topology/FiberBundle/Basic.lean`.
 
 ## Tags
 Vector bundle
@@ -87,7 +87,7 @@ protected def symmₗ (e : Pretrivialization F (π F E)) [e.IsLinear R] (b : B) 
   by_cases hb : b ∈ e.baseSet
   · exact (((e.linear R hb).mk' _).inverse (e.symm b) (e.symm_apply_apply_mk hb) fun v ↦
       congr_arg Prod.snd <| e.apply_mk_symm hb v).isLinear
-  · rw [e.coe_symm_of_not_mem hb]
+  · rw [e.coe_symm_of_notMem hb]
     exact (0 : F →ₗ[R] E b).isLinear
 
 /-- A pretrivialization for a vector bundle defines linear equivalences between the
@@ -128,9 +128,11 @@ theorem linearMapAt_def_of_mem (e : Pretrivialization F (π F E)) [e.IsLinear R]
     (hb : b ∈ e.baseSet) : e.linearMapAt R b = e.linearEquivAt R b hb :=
   dif_pos hb
 
-theorem linearMapAt_def_of_not_mem (e : Pretrivialization F (π F E)) [e.IsLinear R] {b : B}
+theorem linearMapAt_def_of_notMem (e : Pretrivialization F (π F E)) [e.IsLinear R] {b : B}
     (hb : b ∉ e.baseSet) : e.linearMapAt R b = 0 :=
   dif_neg hb
+
+@[deprecated (since := "2025-05-23")] alias linearMapAt_def_of_not_mem := linearMapAt_def_of_notMem
 
 theorem linearMapAt_eq_zero (e : Pretrivialization F (π F E)) [e.IsLinear R] {b : B}
     (hb : b ∉ e.baseSet) : e.linearMapAt R b = 0 :=
@@ -221,9 +223,11 @@ theorem linearMapAt_def_of_mem (e : Trivialization F (π F E)) [e.IsLinear R] {b
     (hb : b ∈ e.baseSet) : e.linearMapAt R b = e.linearEquivAt R b hb :=
   dif_pos hb
 
-theorem linearMapAt_def_of_not_mem (e : Trivialization F (π F E)) [e.IsLinear R] {b : B}
+theorem linearMapAt_def_of_notMem (e : Trivialization F (π F E)) [e.IsLinear R] {b : B}
     (hb : b ∉ e.baseSet) : e.linearMapAt R b = 0 :=
   dif_neg hb
+
+@[deprecated (since := "2025-05-23")] alias linearMapAt_def_of_not_mem := linearMapAt_def_of_notMem
 
 theorem symmₗ_linearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] {b : B} (hb : b ∈ e.baseSet)
     (y : E b) : e.symmₗ R b (e.linearMapAt R b y) = y :=
@@ -386,7 +390,7 @@ def symmL (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) : F →L[R] E b
       · rw [(FiberBundle.totalSpaceMk_isInducing F E b).continuous_iff]
         exact e.continuousOn_symm.comp_continuous (.prodMk_right _) fun x ↦
           mk_mem_prod hb (mem_univ x)
-      · refine continuous_zero.congr fun x => (e.symm_apply_of_not_mem hb x).symm }
+      · refine continuous_zero.congr fun x => (e.symm_apply_of_notMem hb x).symm }
 
 variable {R}
 

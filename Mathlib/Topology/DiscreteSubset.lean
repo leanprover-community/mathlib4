@@ -27,8 +27,8 @@ see `IsClosed.tendsto_coe_cofinite_iff`.
 
 ### Main statements
 
- * `tendsto_cofinite_cocompact_iff`:
- * `IsClosed.tendsto_coe_cofinite_iff`:
+* `tendsto_cofinite_cocompact_iff`:
+* `IsClosed.tendsto_coe_cofinite_iff`:
 
 ## Co-discrete open sets
 
@@ -113,6 +113,11 @@ lemma mem_codiscreteWithin_accPt {S T : Set X} :
     S ∈ codiscreteWithin T ↔ ∀ x ∈ T, ¬AccPt x (𝓟 (T \ S)) := by
   simp only [mem_codiscreteWithin, disjoint_iff, AccPt, not_neBot]
 
+/-- Any set is codiscrete within itself. -/
+@[simp]
+theorem Filter.self_mem_codiscreteWithin (U : Set X) :
+    U ∈ Filter.codiscreteWithin U := by simp [mem_codiscreteWithin]
+
 /-- If a set is codiscrete within `U`, then it is codiscrete within any subset of `U`. -/
 lemma Filter.codiscreteWithin.mono {U₁ U : Set X} (hU : U₁ ⊆ U) :
    codiscreteWithin U₁ ≤ codiscreteWithin U := by
@@ -159,7 +164,7 @@ theorem isClosed_sdiff_of_codiscreteWithin {s U : Set X} (hs : s ∈ codiscreteW
     tauto_set
 
 /-- In a T1Space, punctured neighborhoods are stable under removing finite sets of points. -/
-theorem nhdNE_of_nhdNE_sdiff_finite {X : Type*} [TopologicalSpace X] [T1Space X] {x : X}
+theorem nhdsNE_of_nhdsNE_sdiff_finite {X : Type*} [TopologicalSpace X] [T1Space X] {x : X}
     {U s : Set X} (hU : U ∈ 𝓝[≠] x) (hs : Finite s) :
     U \ s ∈ 𝓝[≠] x := by
   rw [mem_nhdsWithin] at hU ⊢
@@ -169,6 +174,9 @@ theorem nhdNE_of_nhdNE_sdiff_finite {X : Type*} [TopologicalSpace X] [T1Space X]
   · rw [← isClosed_compl_iff, compl_diff]
     exact s.toFinite.diff.isClosed.union (isClosed_compl_iff.2 ht)
   · tauto_set
+
+@[deprecated (since := "2025-05-22")]
+alias nhdNE_of_nhdNE_sdiff_finite := nhdsNE_of_nhdsNE_sdiff_finite
 
 /-- In a T1Space, a set `s` is codiscreteWithin `U` iff it has locally finite complement within `U`.
 More precisely: `s` is codiscreteWithin `U` iff every point `z ∈ U` has a punctured neighborhood
@@ -183,11 +191,11 @@ theorem codiscreteWithin_iff_locallyFiniteComplementWithin [T1Space X] {s U : Se
     by_cases hz : z ∈ U \ s
     · rw [inter_comm, inter_insert_of_mem hz, inter_comm, h₂t]
       simp
-    · rw [inter_comm, inter_insert_of_not_mem hz, inter_comm, h₂t]
+    · rw [inter_comm, inter_insert_of_notMem hz, inter_comm, h₂t]
       simp
   · intro h z h₁z
     obtain ⟨t, h₁t, h₂t⟩ := h z h₁z
-    use t \ (t ∩ (U \ s)), nhdNE_of_nhdNE_sdiff_finite (mem_nhdsWithin_of_mem_nhds h₁t) h₂t
+    use t \ (t ∩ (U \ s)), nhdsNE_of_nhdsNE_sdiff_finite (mem_nhdsWithin_of_mem_nhds h₁t) h₂t
     simp
 
 /-- In any topological space, the open sets with discrete complement form a filter,

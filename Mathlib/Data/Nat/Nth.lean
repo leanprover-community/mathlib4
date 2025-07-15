@@ -218,7 +218,7 @@ theorem nth_eq_sInf (p : ℕ → Prop) (n : ℕ) : nth p n = sInf {x | p x ∧ �
   · push_neg at hn
     rcases hn with ⟨hf, hn⟩
     rw [nth_of_card_le _ hn]
-    refine ((congr_arg sInf <| Set.eq_empty_of_forall_not_mem fun k hk => ?_).trans sInf_empty).symm
+    refine ((congr_arg sInf <| Set.eq_empty_of_forall_notMem fun k hk => ?_).trans sInf_empty).symm
     rcases exists_lt_card_nth_eq hk.1 with ⟨k, hlt, rfl⟩
     exact (hk.2 _ ((hlt hf).trans_le hn)).false
 
@@ -363,7 +363,7 @@ theorem count_nth {n : ℕ} (hn : ∀ hf : (setOf p).Finite, n < #hf.toFinset) :
     count p (nth p n) = n := by
   induction' n with k ihk
   · exact count_nth_zero _
-  · rw [count_eq_card_filter_range, filter_range_nth_eq_insert hn, card_insert_of_not_mem, ←
+  · rw [count_eq_card_filter_range, filter_range_nth_eq_insert hn, card_insert_of_notMem, ←
       count_eq_card_filter_range, ihk fun hf => lt_of_succ_lt (hn hf)]
     simp
 

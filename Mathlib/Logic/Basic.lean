@@ -350,8 +350,14 @@ end Propositional
 
 /-! ### Membership -/
 
-alias Membership.mem.ne_of_not_mem := ne_of_mem_of_not_mem
-alias Membership.mem.ne_of_not_mem' := ne_of_mem_of_not_mem'
+alias Membership.mem.ne_of_notMem := ne_of_mem_of_not_mem
+alias Membership.mem.ne_of_notMem' := ne_of_mem_of_not_mem'
+
+@[deprecated (since := "2025-05-23")]
+alias Membership.mem.ne_of_not_mem := Membership.mem.ne_of_notMem
+
+@[deprecated (since := "2025-05-23")]
+alias Membership.mem.ne_of_not_mem' := Membership.mem.ne_of_notMem'
 
 section Membership
 

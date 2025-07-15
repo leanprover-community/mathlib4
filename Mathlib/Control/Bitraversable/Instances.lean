@@ -92,7 +92,7 @@ instance (priority := 10) Bitraversable.isLawfulTraversable [LawfulBitraversable
     LawfulTraversable (t α) := by
   constructor <;> intros <;>
     simp [traverse, comp_tsnd, functor_norm]
-  · simp [tsnd_eq_snd_id, (· <$> ·), id.mk]
+  · simp [tsnd_eq_snd_id, (· <$> ·)]
   · simp [tsnd, binaturality, Function.comp_def, functor_norm]
 
 end

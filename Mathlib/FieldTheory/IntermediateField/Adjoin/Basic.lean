@@ -25,6 +25,24 @@ open Module Polynomial
 
 namespace IntermediateField
 
+section
+
+lemma restrictScalars_le_iff (K : Type*) {L E : Type*} [Field K] [Field L]
+    [Field E] [Algebra K L] [Algebra K E] [Algebra L E] [IsScalarTower K L E]
+    {E₁ E₂ : IntermediateField L E} : E₁.restrictScalars K ≤ E₂.restrictScalars K ↔ E₁ ≤ E₂ := .rfl
+
+lemma FG.of_restrictScalars {K L E : Type*} [Field K] [Field L] [Field E]
+    [Algebra K L] [Algebra K E] [Algebra L E] [IsScalarTower K L E]
+    {E' : IntermediateField L E} (H : (E'.restrictScalars K).FG) : E'.FG := by
+  obtain ⟨s, hs⟩ := H
+  refine ⟨s, le_antisymm ?_ ?_⟩
+  · rw [adjoin_le_iff]
+    exact (subset_adjoin K _).trans_eq congr(($hs : Set E))
+  · rw [← restrictScalars_le_iff K, ← hs, adjoin_le_iff]
+    exact subset_adjoin L _
+
+end
+
 section AdjoinDef
 
 variable (F : Type*) [Field F] {E : Type*} [Field E] [Algebra F E] {S : Set E}
@@ -281,6 +299,14 @@ protected theorem finrank_bot : finrank F (⊥ : IntermediateField F E) = 1 := b
 @[simp] theorem finrank_top' : finrank F (⊤ : IntermediateField F E) = finrank F E :=
   finrank_top F E
 
+lemma finrank_eq_one_iff_eq_top {K : IntermediateField F E} :
+    Module.finrank K E = 1 ↔ K = ⊤ := by
+  refine ⟨?_, (· ▸ IntermediateField.finrank_top)⟩
+  rw [← Subalgebra.bot_eq_top_iff_finrank_eq_one, ← top_le_iff, ← top_le_iff]
+  intro H x _
+  obtain ⟨x, rfl⟩ := @H x IntermediateField.mem_top
+  exact x.2
+
 theorem rank_adjoin_eq_one_iff : Module.rank F (adjoin F S) = 1 ↔ S ⊆ (⊥ : IntermediateField F E) :=
   Iff.trans rank_eq_one_iff adjoin_eq_bot_iff
 
@@ -472,19 +498,20 @@ variable {F} in
 theorem exists_lt_finrank_of_infinite_dimensional
     [Algebra.IsAlgebraic F E] (hnfd : ¬ FiniteDimensional F E) (n : ℕ) :
     ∃ L : IntermediateField F E, FiniteDimensional F L ∧ n < finrank F L := by
-  induction' n with n ih
-  · exact ⟨⊥, Subalgebra.finite_bot, finrank_pos⟩
-  obtain ⟨L, fin, hn⟩ := ih
-  obtain ⟨x, hx⟩ : ∃ x : E, x ∉ L := by
-    contrapose! hnfd
-    rw [show L = ⊤ from eq_top_iff.2 fun x _ ↦ hnfd x] at fin
-    exact topEquiv.toLinearEquiv.finiteDimensional
-  let L' := L ⊔ F⟮x⟯
-  haveI := adjoin.finiteDimensional (Algebra.IsIntegral.isIntegral (R := F) x)
-  refine ⟨L', inferInstance, by_contra fun h ↦ ?_⟩
-  have h1 : L = L' := eq_of_le_of_finrank_le le_sup_left ((not_lt.1 h).trans hn)
-  have h2 : F⟮x⟯ ≤ L' := le_sup_right
-  exact hx <| (h1.symm ▸ h2) <| mem_adjoin_simple_self F x
+  induction n with
+  | zero => exact ⟨⊥, Subalgebra.finite_bot, finrank_pos⟩
+  | succ n ih =>
+    obtain ⟨L, fin, hn⟩ := ih
+    obtain ⟨x, hx⟩ : ∃ x : E, x ∉ L := by
+      contrapose! hnfd
+      rw [show L = ⊤ from eq_top_iff.2 fun x _ ↦ hnfd x] at fin
+      exact topEquiv.toLinearEquiv.finiteDimensional
+    let L' := L ⊔ F⟮x⟯
+    haveI := adjoin.finiteDimensional (Algebra.IsIntegral.isIntegral (R := F) x)
+    refine ⟨L', inferInstance, by_contra fun h ↦ ?_⟩
+    have h1 : L = L' := eq_of_le_of_finrank_le le_sup_left ((not_lt.1 h).trans hn)
+    have h2 : F⟮x⟯ ≤ L' := le_sup_right
+    exact hx <| (h1.symm ▸ h2) <| mem_adjoin_simple_self F x
 
 theorem _root_.minpoly.natDegree_le (x : L) [FiniteDimensional K L] :
     (minpoly K x).natDegree ≤ finrank K L :=

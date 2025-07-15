@@ -127,7 +127,7 @@ def Term.lt (t₁ t₂ : L.Term (α ⊕ (Fin n))) : L.BoundedFormula α n :=
 variable (L)
 
 /-- The language homomorphism sending the unique symbol `≤` of `Language.order` to `≤` in an ordered
- language. -/
+language. -/
 @[simps] def orderLHom : Language.order →ᴸ L where
   onRelation | _, .le => leSymb
 

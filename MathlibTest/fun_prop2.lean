@@ -1,5 +1,6 @@
 import Mathlib.Tactic.FunProp.Differentiable
-import Mathlib.Tactic.FunProp.ContDiff
+import Mathlib.Analysis.Calculus.ContDiff.Basic
+import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 import Mathlib.MeasureTheory.MeasurableSpace.Basic
 
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis

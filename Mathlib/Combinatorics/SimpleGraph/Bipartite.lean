@@ -37,7 +37,7 @@ This file proves results about bipartite simple graphs, including several double
 ## Implementation notes
 
 For the formulation of double-counting arguments where a bipartite graph is considered as a
-relation `r : α → β → Prop`, see `Mathlib.Combinatorics.Enumerative.DoubleCounting`.
+relation `r : α → β → Prop`, see `Mathlib/Combinatorics/Enumerative/DoubleCounting.lean`.
 
 ## TODO
 
@@ -219,7 +219,7 @@ lemma isBipartiteWith_sum_degrees_eq_twice_card_edges [DecidableEq V] (h : G.IsB
   rw [← coe_union, ← Set.toFinset_subset] at hsub
   rw [← Finset.sum_subset hsub, ← sum_degrees_support_eq_twice_card_edges]
   intro v _ hv
-  rwa [Set.mem_toFinset, ← degree_eq_zero_iff_not_mem_support] at hv
+  rwa [Set.mem_toFinset, ← degree_eq_zero_iff_notMem_support] at hv
 
 /-- The degree-sum formula for bipartite graphs, summing over the "left" part.
 

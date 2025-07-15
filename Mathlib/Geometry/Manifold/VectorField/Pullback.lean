@@ -19,7 +19,8 @@ We define the pullback of a vector field under a map, as
 (together with the same notion within a set). Note that the pullback uses the junk-value pattern:
 if the derivative of the map is not invertible, then pullback is given the junk value zero.
 
-See `Mathlib.Geometry.Manifold.VectorField.LieBracket` for the Lie bracket of two vector fields.
+See `Mathlib/Geometry/Manifold/VectorField/LieBracket.lean` for the Lie bracket of two vector
+fields.
 
 These definitions are given in the `VectorField` namespace because pullbacks, Lie brackets,
 and so on, are notions that make sense in a variety of contexts.

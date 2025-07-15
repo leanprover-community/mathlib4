@@ -18,8 +18,8 @@ import Mathlib.Data.Set.List
 
 ## TODO
 
-Many lemmas about `Multiset.map` are proven in `Mathlib.Data.Multiset.Filter`: should we switch the
-import direction?
+Many lemmas about `Multiset.map` are proven in `Mathlib/Data/Multiset/Filter.lean`:
+should we switch the import direction?
 
 -/
 

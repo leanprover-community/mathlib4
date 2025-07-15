@@ -54,7 +54,7 @@ theorem ordConnectedComponent_eq_empty : ordConnectedComponent s x = ∅ ↔ x �
 
 @[simp]
 theorem ordConnectedComponent_empty : ordConnectedComponent ∅ x = ∅ :=
-  ordConnectedComponent_eq_empty.2 (not_mem_empty x)
+  ordConnectedComponent_eq_empty.2 (notMem_empty x)
 
 @[simp]
 theorem ordConnectedComponent_univ : ordConnectedComponent univ x = univ := by

@@ -268,7 +268,7 @@ lemma coverMincard_eq_zero_iff (T : X → X) (F : Set X) (U : Set (X × X)) (n :
   have := coverMincard_finite_iff T F U n
   rw [h, eq_true ENat.top_pos, true_iff] at this
   simp only [IsDynCoverOf, Finset.mem_coe, Nat.cast_eq_zero, Finset.card_eq_zero, exists_eq_right,
-    Finset.not_mem_empty, iUnion_of_empty, iUnion_empty] at this
+    Finset.notMem_empty, iUnion_of_empty, iUnion_empty] at this
   exact this
 
 lemma one_le_coverMincard_iff (T : X → X) (F : Set X) (U : Set (X × X)) (n : ℕ) :
@@ -343,7 +343,7 @@ lemma nonempty_inter_of_coverMincard {T : X → X} {F : Set X} {U : Set (X × X)
     simp only [s.mem_coe, mem_iUnion, exists_prop] at h
     simp only [s.coe_erase, mem_diff, s.mem_coe, mem_singleton_iff, mem_iUnion, exists_prop]
     obtain ⟨z, z_s, hz⟩ := h
-    refine ⟨z, ⟨z_s, fun z_x ↦ not_mem_empty y ?_⟩, hz⟩
+    refine ⟨z, ⟨z_s, fun z_x ↦ notMem_empty y ?_⟩, hz⟩
     rw [← ball_empt]
     rw [z_x] at hz
     exact mem_inter y_F hz

@@ -79,7 +79,7 @@ theorem dart_edge_fiber_card [DecidableEq V] (e : Sym2 V) (h : e ∈ G.edgeSet) 
   obtain ⟨v, w⟩ := e
   let d : G.Dart := ⟨(v, w), h⟩
   convert congr_arg card d.edge_fiber
-  rw [card_insert_of_not_mem, card_singleton]
+  rw [card_insert_of_notMem, card_singleton]
   rw [mem_singleton]
   exact d.symm_ne.symm
 
@@ -113,7 +113,7 @@ theorem sum_degrees_support_eq_twice_card_edges :
     ← sum_add_sum_compl G.support.toFinset, left_eq_add]
   apply Finset.sum_eq_zero
   intro v hv
-  rw [degree_eq_zero_iff_not_mem_support]
+  rw [degree_eq_zero_iff_notMem_support]
   rwa [mem_compl, Set.mem_toFinset] at hv
 
 end DegreeSum

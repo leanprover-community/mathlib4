@@ -22,8 +22,8 @@ We proceed in two parts.
 **Part 1**: We consider the sequence $a_n$ of fractions $\frac{n!}{\sqrt{2n}(\frac{n}{e})^n}$
 and prove that this sequence converges to a real, positive number $a$. For this the two main
 ingredients are
- - taking the logarithm of the sequence and
- - using the series expansion of $\log(1 + x)$.
+- taking the logarithm of the sequence and
+- using the series expansion of $\log(1 + x)$.
 
 **Part 2**: We use the fact that the series defined in part 1 converges against a real number $a$
 and prove that $a = \sqrt{\pi}$. Here the main ingredient is the convergence of Wallis' product
@@ -38,8 +38,8 @@ open Finset Filter Nat Real
 namespace Stirling
 
 /-!
- ### Part 1
- https://proofwiki.org/wiki/Stirling%27s_Formula#Part_1
+### Part 1
+https://proofwiki.org/wiki/Stirling%27s_Formula#Part_1
 -/
 
 
@@ -179,8 +179,8 @@ theorem stirlingSeq_has_pos_limit_a : ∃ a : ℝ, 0 < a ∧ Tendsto stirlingSeq
   exact tendsto_atTop_ciInf stirlingSeq'_antitone ⟨x, hx'⟩
 
 /-!
- ### Part 2
- https://proofwiki.org/wiki/Stirling%27s_Formula#Part_2
+### Part 2
+https://proofwiki.org/wiki/Stirling%27s_Formula#Part_2
 -/
 
 

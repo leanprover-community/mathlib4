@@ -7,9 +7,11 @@ import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.Group.Torsion
 import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Algebra.Notation.Prod
 import Mathlib.Logic.Equiv.Prod
+import Mathlib.Tactic.TermCongr
 
 /-!
 # Monoid, group etc structures on `M × N`
@@ -80,6 +82,11 @@ instance instMonoid [Monoid M] [Monoid N] : Monoid (M × N) :=
     npow_succ := fun _ _ => Prod.ext (Monoid.npow_succ _ _) (Monoid.npow_succ _ _),
     one_mul := by simp,
     mul_one := by simp }
+
+instance instIsMulTorsionFree [Monoid M] [Monoid N] [IsMulTorsionFree M] [IsMulTorsionFree N] :
+    IsMulTorsionFree (M × N) where
+  pow_left_injective n hn a b hab := by
+    ext <;> apply pow_left_injective hn; exacts [congr(($hab).1), congr(($hab).2)]
 
 @[to_additive Prod.subNegMonoid]
 instance [DivInvMonoid G] [DivInvMonoid H] : DivInvMonoid (G × H) where

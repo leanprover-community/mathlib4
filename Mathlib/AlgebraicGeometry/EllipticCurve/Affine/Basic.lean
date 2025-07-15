@@ -21,12 +21,12 @@ formulae for group operations in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine
 
 ## Main definitions
 
- * `WeierstrassCurve.Affine.Equation`: the Weierstrass equation in affine coordinates.
- * `WeierstrassCurve.Affine.Nonsingular`: the nonsingular condition in affine coordinates.
+* `WeierstrassCurve.Affine.Equation`: the Weierstrass equation in affine coordinates.
+* `WeierstrassCurve.Affine.Nonsingular`: the nonsingular condition in affine coordinates.
 
 ## Main statements
 
- * `WeierstrassCurve.Affine.equation_iff_nonsingular`: an elliptic curve in affine coordinates is
+* `WeierstrassCurve.Affine.equation_iff_nonsingular`: an elliptic curve in affine coordinates is
     nonsingular at every point.
 
 ## Implementation notes

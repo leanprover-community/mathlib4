@@ -193,6 +193,11 @@ theorem card_le_of_surjective' [RankCondition R] {α β : Type*} [Fintype α] [F
     card_le_of_surjective R ((P.toLinearMap.comp f).comp Q.toLinearMap)
       ((P.surjective.comp i).comp Q.surjective)
 
+theorem Module.Finite.exists_nat_not_surjective [RankCondition R] (M) [AddCommMonoid M] [Module R M]
+    [Module.Finite R M] : ∃ n : ℕ, ∀ f : M →ₗ[R] (Fin n → R), ¬Surjective f :=
+  have ⟨n, f, hf⟩ := Module.Finite.exists_fin' R M
+  ⟨n + 1, fun g hg ↦ by simpa using le_of_fin_surjective R (g ∘ₗ f) (hg.comp hf)⟩
+
 /-- By the universal property for free modules, any surjective map `(Fin n → R) →ₗ[R] (Fin m → R)`
 has an injective splitting `(Fin m → R) →ₗ[R] (Fin n → R)`
 from which the strong rank condition gives the necessary inequality for the rank condition.
@@ -310,7 +315,7 @@ nontrivial commutative ring satisfies the strong rank condition, and
 satisfies the rank condition.
 
 We prove this instance separately to avoid dependency on
-`Mathlib.LinearAlgebra.Charpoly.Basic` or `Mathlib.LinearAlgebra.Matrix.ToLin`. -/
+`Mathlib/LinearAlgebra/Charpoly/Basic.lean` or `Mathlib/LinearAlgebra/Matrix/ToLin.lean`. -/
 instance (priority := 100) invariantBasisNumber_of_nontrivial_of_commRing {R : Type u} [CommRing R]
     [Nontrivial R] : InvariantBasisNumber R :=
   ⟨fun e =>

@@ -12,9 +12,9 @@ import Mathlib.Order.Interval.Finset.Nat
 /-!
 # Counting elements in an interval with given residue
 
-The theorems in this file generalise `Nat.card_multiples` in `Mathlib.Data.Nat.Factorization.Basic`
-to all integer intervals and any fixed residue (not just zero, which reduces to the multiples).
-Theorems are given for `Ico` and `Ioc` intervals.
+The theorems in this file generalise `Nat.card_multiples` in
+`Mathlib/Data/Nat/Factorization/Basic.lean` to all integer intervals and any fixed residue (not just
+zero, which reduces to the multiples). Theorems are given for `Ico` and `Ioc` intervals.
 -/
 
 
@@ -127,7 +127,8 @@ theorem count_modEq_card_eq_ceil (v : ℕ) :
     max_eq_left (sub_nonneg.mpr <| by gcongr <;> positivity)]
   conv_lhs =>
     rw [← div_add_mod v r, cast_add, cast_mul, add_comm]
-    tactic => simp_rw [← sub_sub, sub_div (_ - _), mul_div_cancel_left₀ _ hr'.ne', ceil_sub_natCast]
+    tactic => simp_rw [← sub_sub, sub_div (_ - _), mul_div_cancel_left₀ _ hr'.ne',
+      Int.ceil_sub_natCast]
     rw [sub_sub_sub_cancel_right, cast_zero, zero_sub]
   rw [sub_eq_self, ceil_eq_zero_iff, Set.mem_Ioc, div_le_iff₀ hr', lt_div_iff₀ hr', neg_one_mul,
     zero_mul, neg_lt_neg_iff, cast_lt]

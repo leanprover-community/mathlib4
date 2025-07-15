@@ -323,7 +323,7 @@ theorem integral_sub_inv_smul_sub_smul (f : ℂ → E) (c w : ℂ) (R : ℝ) :
     (∮ z in C(c, R), (z - w)⁻¹ • (z - w) • f z) = ∮ z in C(c, R), f z := by
   rcases eq_or_ne R 0 with (rfl | hR); · simp only [integral_radius_zero]
   have : (circleMap c R ⁻¹' {w}).Countable := (countable_singleton _).preimage_circleMap c hR
-  refine intervalIntegral.integral_congr_ae ((this.ae_not_mem _).mono fun θ hθ _' => ?_)
+  refine intervalIntegral.integral_congr_ae ((this.ae_notMem _).mono fun θ hθ _' => ?_)
   change circleMap c R θ ≠ w at hθ
   simp only [inv_smul_smul₀ (sub_ne_zero.2 <| hθ)]
 

@@ -177,7 +177,7 @@ theorem liftR_iff {α : TypeVec n} (r : ∀ ⦃i⦄, α i → α i → Prop) (x 
     rfl
   rw [yeq]; rfl
 
-open Set MvFunctor
+open Set
 
 theorem supp_eq {α : TypeVec n} (a : P.A) (f : P.B a ⟹ α) (i) :
     @supp.{u} _ P.Obj _ α (⟨a, f⟩ : P α) i = f i '' univ := by

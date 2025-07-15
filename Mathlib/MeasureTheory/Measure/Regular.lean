@@ -60,11 +60,11 @@ satisfying a predicate `q` with respect to sets satisfying a predicate `p` if fo
 
 There are two main nontrivial results in the development below:
 * `InnerRegularWRT.measurableSet_of_isOpen` shows that, for an outer regular measure, inner
-regularity for open sets with respect to compact sets or closed sets implies inner regularity for
-all measurable sets of finite measure (with respect to compact sets or closed sets respectively).
+  regularity for open sets with respect to compact sets or closed sets implies inner regularity for
+  all measurable sets of finite measure (with respect to compact sets or closed sets respectively).
 * `InnerRegularWRT.weaklyRegular_of_finite` shows that a finite measure which is inner regular for
-open sets with respect to closed sets (for instance a finite measure on a metric space) is weakly
-regular.
+  open sets with respect to closed sets (for instance a finite measure on a metric space) is weakly
+  regular.
 
 All other results are deduced from these ones.
 

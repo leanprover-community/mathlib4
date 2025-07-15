@@ -98,7 +98,7 @@ theorem count_apply_lt_top [MeasurableSingletonClass α] : count s < ∞ ↔ s.F
 
 @[simp]
 theorem count_eq_zero_iff : count s = 0 ↔ s = ∅ where
-  mp h := eq_empty_of_forall_not_mem fun x hx ↦ by
+  mp h := eq_empty_of_forall_notMem fun x hx ↦ by
     simpa [hx] using ((ENNReal.le_tsum x).trans <| le_sum_apply _ _).trans_eq h
   mpr := by rintro rfl; exact measure_empty
 

@@ -11,16 +11,17 @@ import Mathlib.MeasureTheory.Integral.SetToL1
 The Bochner integral extends the definition of the Lebesgue integral to functions that map from a
 measure space into a Banach space (complete normed vector space). It is constructed here
 for L1 functions by extending the integral on simple functions. See the file
-`Mathlib.MeasureTheory.Integral.Bochner.Basic` for the integral of functions and corresponding API.
+`Mathlib/MeasureTheory/Integral/Bochner/Basic.lean` for the integral of functions
+and corresponding API.
 
 ## Main definitions
 
 The Bochner integral is defined through the extension process described in the file
-`Mathlib.MeasureTheory.Integral.SetToL1`, which follows these steps:
+`Mathlib/MeasureTheory/Integral/SetToL1.lean`, which follows these steps:
 
 1. Define the integral of the indicator of a set. This is `weightedSMul μ s x = μ.real s * x`.
   `weightedSMul μ` is shown to be linear in the value `x` and `DominatedFinMeasAdditive`
-  (defined in the file `Mathlib.MeasureTheory.Integral.SetToL1`) with respect to the set `s`.
+  (defined in the file `Mathlib/MeasureTheory/Integral/SetToL1.lean`) with respect to the set `s`.
 
 2. Define the integral on simple functions of the type `SimpleFunc α E` (notation : `α →ₛ E`)
   where `E` is a real normed space. (See `SimpleFunc.integral` for details.)
@@ -236,7 +237,7 @@ theorem integral_piecewise_zero {m : MeasurableSpace α} (f : α →ₛ F) (μ :
     rcases hy with ⟨⟨rfl, -⟩ | ⟨x, -, rfl⟩, h₀⟩
     exacts [(h₀ rfl).elim, ⟨Set.mem_range_self _, h₀⟩]
   · dsimp
-    rw [Set.piecewise_eq_indicator, indicator_preimage_of_not_mem,
+    rw [Set.piecewise_eq_indicator, indicator_preimage_of_notMem,
       measureReal_restrict_apply (f.measurableSet_preimage _)]
     exact fun h₀ => (mem_filter.1 hy).2 (Eq.symm h₀)
 
@@ -263,7 +264,7 @@ theorem integral_eq_lintegral' {f : α →ₛ E} {g : E → ℝ≥0∞} (hf : In
     · apply mul_ne_top (ht a) (hf'.meas_preimage_singleton_ne_zero a0).ne
   · simp [hg0]
 
-variable [NormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace ℝ E] [SMulCommClass ℝ 𝕜 E]
+variable [NormedSpace ℝ E]
 
 theorem integral_congr {f g : α →ₛ E} (hf : Integrable f μ) (h : f =ᵐ[μ] g) :
     f.integral μ = g.integral μ :=
@@ -289,7 +290,8 @@ theorem integral_sub {f g : α →ₛ E} (hf : Integrable f μ) (hg : Integrable
     integral μ (f - g) = integral μ f - integral μ g :=
   setToSimpleFunc_sub _ weightedSMul_union hf hg
 
-theorem integral_smul (c : 𝕜) {f : α →ₛ E} (hf : Integrable f μ) :
+theorem integral_smul [DistribSMul 𝕜 E] [SMulCommClass ℝ 𝕜 E]
+    (c : 𝕜) {f : α →ₛ E} (hf : Integrable f μ) :
     integral μ (c • f) = c • integral μ f :=
   setToSimpleFunc_smul _ weightedSMul_union weightedSMul_smul c hf
 
@@ -407,10 +409,9 @@ section SimpleFuncIntegral
 Define the Bochner integral on `α →₁ₛ[μ] E` by extension from the simple functions `α →₁ₛ[μ] E`,
 and prove basic properties of this integral. -/
 
+variable [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] [NormedSpace ℝ E] [SMulCommClass ℝ 𝕜 E]
 
-variable [NormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace ℝ E] [SMulCommClass ℝ 𝕜 E]
-
-attribute [local instance] simpleFunc.normedSpace
+attribute [local instance] simpleFunc.isBoundedSMul simpleFunc.module simpleFunc.normedSpace
 
 /-- The Bochner integral over simple functions in L1 space. -/
 def integral (f : α →₁ₛ[μ] E) : E :=
@@ -513,12 +514,12 @@ open SimpleFunc
 
 local notation "Integral" => @integralCLM α E _ _ _ _ _ μ _
 
-variable [NormedSpace ℝ E] [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E]
+variable [NormedSpace ℝ E] [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] [SMulCommClass ℝ 𝕜 E]
   [CompleteSpace E]
 
 section IntegrationInL1
 
-attribute [local instance] simpleFunc.normedSpace
+attribute [local instance] simpleFunc.isBoundedSMul simpleFunc.module
 
 open ContinuousLinearMap
 

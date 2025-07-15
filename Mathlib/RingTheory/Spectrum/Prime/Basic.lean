@@ -11,7 +11,7 @@ import Mathlib.RingTheory.Spectrum.Prime.Defs
 /-!
 # Prime spectrum of a commutative (semi)ring
 
-For the Zariski topology, see `Mathlib.RingTheory.Spectrum.Prime.Topology`.
+For the Zariski topology, see `Mathlib/RingTheory/Spectrum/Prime/Topology.lean`.
 
 (It is also naturally endowed with a sheaf of rings,
 which is constructed in `AlgebraicGeometry.StructureSheaf`.)
@@ -39,7 +39,7 @@ and Chris Hughes (on an earlier repository).
 * [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
 -/
 
--- A dividing line between this file and `Mathlib.RingTheory.Spectrum.Prime.Topology` is
+-- A dividing line between this file and `Mathlib/RingTheory/Spectrum/Prime/Topology.lean` is
 -- that we should not depend on the Zariski topology here
 assert_not_exists TopologicalSpace
 
@@ -95,7 +95,7 @@ noncomputable def primeSpectrumProd :
     Equiv.ofBijective (primeSpectrumProdOfSum R S) (by
         constructor
         · rintro (⟨I, hI⟩ | ⟨J, hJ⟩) (⟨I', hI'⟩ | ⟨J', hJ'⟩) h <;>
-          simp only [mk.injEq, Ideal.prod.ext_iff, primeSpectrumProdOfSum] at h
+          simp only [mk.injEq, Ideal.prod_inj, primeSpectrumProdOfSum] at h
           · simp only [h]
           · exact False.elim (hI.ne_top h.left)
           · exact False.elim (hJ.ne_top h.right)
@@ -260,7 +260,7 @@ theorem vanishingIdeal_empty : vanishingIdeal (∅ : Set (PrimeSpectrum R)) = �
   simpa using (gc R).u_top
 
 theorem zeroLocus_empty_of_one_mem {s : Set R} (h : (1 : R) ∈ s) : zeroLocus s = ∅ := by
-  rw [Set.eq_empty_iff_forall_not_mem]
+  rw [Set.eq_empty_iff_forall_notMem]
   intro x hx
   rw [mem_zeroLocus] at hx
   have x_prime : x.asIdeal.IsPrime := by infer_instance
@@ -362,9 +362,12 @@ theorem sup_vanishingIdeal_le (t t' : Set (PrimeSpectrum R)) :
   rw [mem_vanishingIdeal] at hf hg
   apply Submodule.add_mem <;> solve_by_elim
 
-theorem mem_compl_zeroLocus_iff_not_mem {f : R} {I : PrimeSpectrum R} :
+theorem mem_compl_zeroLocus_iff_notMem {f : R} {I : PrimeSpectrum R} :
     I ∈ (zeroLocus {f} : Set (PrimeSpectrum R))ᶜ ↔ f ∉ I.asIdeal := by
   rw [Set.mem_compl_iff, mem_zeroLocus, Set.singleton_subset_iff]; rfl
+
+@[deprecated (since := "2025-05-23")]
+alias mem_compl_zeroLocus_iff_not_mem := mem_compl_zeroLocus_iff_notMem
 
 @[simp]
 lemma zeroLocus_insert_zero (s : Set R) : zeroLocus (insert 0 s) = zeroLocus s := by
@@ -385,7 +388,7 @@ section Order
 
 We endow `PrimeSpectrum R` with a partial order induced from the ideal lattice.
 This is exactly the specialization order.
-See the corresponding section at `Mathlib.RingTheory.Spectrum.Prime.Topology`.
+See the corresponding section at `Mathlib/RingTheory/Spectrum/Prime/Topology.lean`.
 -/
 
 instance : PartialOrder (PrimeSpectrum R) :=

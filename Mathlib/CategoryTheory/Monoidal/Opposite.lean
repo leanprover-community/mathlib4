@@ -3,6 +3,7 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+import Mathlib.CategoryTheory.Monoidal.Functor
 import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
 
 /-!
@@ -144,7 +145,7 @@ end IsIso
 
 variable [MonoidalCategory.{v₁} C]
 
-open Opposite MonoidalCategory
+open Opposite MonoidalCategory Functor LaxMonoidal OplaxMonoidal
 
 instance monoidalCategoryOp : MonoidalCategory Cᵒᵖ where
   tensorObj X Y := op (unop X ⊗ unop Y)
@@ -362,5 +363,41 @@ def MonoidalOpposite.tensorRightMopIso (X : C) :
 def MonoidalOpposite.tensorRightUnmopIso (X : Cᴹᵒᵖ) :
     tensorRight (unmop X) ≅ mopFunctor C ⋙ tensorLeft X ⋙ unmopFunctor C :=
   Iso.refl _
+
+instance monoidalOpOp : (opOp C).Monoidal where
+  ε' := 𝟙 _
+  η' := 𝟙 _
+  μ' X Y := 𝟙 _
+  δ' X Y := 𝟙 _
+  ε_η := Category.comp_id _
+  η_ε := Category.comp_id _
+  μ_δ X Y := Category.comp_id _
+  δ_μ X Y := Category.comp_id _
+
+instance monoidalUnopUnop : (unopUnop C).Monoidal where
+  ε' := 𝟙 _
+  η' := 𝟙 _
+  μ' X Y := 𝟙 _
+  δ' X Y := 𝟙 _
+  ε_η := Category.comp_id _
+  η_ε := Category.comp_id _
+  μ_δ X Y := Category.comp_id _
+  δ_μ X Y := Category.comp_id _
+
+instance : (opOpEquivalence C).functor.Monoidal := monoidalUnopUnop
+instance : (opOpEquivalence C).inverse.Monoidal := monoidalOpOp
+
+@[simp] lemma opOp_ε : ε (opOp C) = 𝟙 (𝟙_ Cᵒᵖᵒᵖ) := rfl
+@[simp] lemma opOp_η : η (opOp C) = 𝟙 _ := rfl
+@[simp] lemma unopUnop_ε : ε (unopUnop C) = 𝟙 _ := rfl
+@[simp] lemma unopUnop_η : η (unopUnop C) = 𝟙 _ := rfl
+@[simp] lemma opOp_μ (X Y) : μ (opOp C) X Y = 𝟙 _ := rfl
+@[simp] lemma opOp_δ (X Y) : δ (opOp C) X Y = 𝟙 _ := rfl
+@[simp] lemma unopUnop_μ (X Y) : μ (unopUnop C) X Y = 𝟙 _ := rfl
+@[simp] lemma unopUnop_δ (X Y) : δ (unopUnop C) X Y = 𝟙 _ := rfl
+
+instance : (opOpEquivalence C).IsMonoidal where
+  leftAdjoint_ε := by simp [Adjunction.homEquiv, opOpEquivalence]
+  leftAdjoint_μ := by simp [Adjunction.homEquiv, opOpEquivalence]
 
 end CategoryTheory

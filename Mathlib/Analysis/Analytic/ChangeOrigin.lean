@@ -187,7 +187,8 @@ theorem changeOriginSeries_summable_aux₃ {r : ℝ≥0} (hr : ↑r < p.radius) 
   refine NNReal.summable_of_le
     (fun n => ?_) (NNReal.summable_sigma.1 <| p.changeOriginSeries_summable_aux₂ hr k).2
   simp only [NNReal.tsum_mul_right]
-  exact mul_le_mul' (p.nnnorm_changeOriginSeries_le_tsum _ _) le_rfl
+  gcongr
+  apply p.nnnorm_changeOriginSeries_le_tsum
 
 theorem le_changeOriginSeries_radius (k : ℕ) : p.radius ≤ (p.changeOriginSeries k).radius :=
   ENNReal.le_of_forall_nnreal_lt fun _r hr =>
@@ -209,11 +210,11 @@ theorem changeOrigin_radius : p.radius - ‖x‖₊ ≤ (p.changeOrigin x).radiu
   rw [lt_tsub_iff_right, add_comm] at hr
   have hr' : (‖x‖₊ : ℝ≥0∞) < p.radius := (le_add_right le_rfl).trans_lt hr
   apply le_radius_of_summable_nnnorm
-  have : ∀ k : ℕ,
+  have (k : ℕ) :
       ‖p.changeOrigin x k‖₊ * r ^ k ≤
         (∑' s : Σl : ℕ, { s : Finset (Fin (k + l)) // s.card = l }, ‖p (k + s.1)‖₊ * ‖x‖₊ ^ s.1) *
-          r ^ k :=
-    fun k => mul_le_mul_right' (p.nnnorm_changeOrigin_le k hr') (r ^ k)
+          r ^ k := by
+    gcongr; exact p.nnnorm_changeOrigin_le k hr'
   refine NNReal.summable_of_le this ?_
   simpa only [← NNReal.tsum_mul_right] using
     (NNReal.summable_sigma.1 (p.changeOriginSeries_summable_aux₁ hr)).2

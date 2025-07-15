@@ -77,7 +77,7 @@ theorem _root_.Cardinal.natCast_eq_toPartENat_iff {n : ℕ} {c : Cardinal} :
 @[simp]
 theorem _root_.Cardinal.toPartENat_eq_natCast_iff {c : Cardinal} {n : ℕ} :
     Cardinal.toPartENat c = n ↔ c = n := by
-rw [eq_comm, Cardinal.natCast_eq_toPartENat_iff, eq_comm]
+  rw [eq_comm, Cardinal.natCast_eq_toPartENat_iff, eq_comm]
 
 @[simp]
 theorem _root_.Cardinal.natCast_lt_toPartENat_iff {n : ℕ} {c : Cardinal} :

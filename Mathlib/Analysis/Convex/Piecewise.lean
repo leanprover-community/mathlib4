@@ -46,44 +46,44 @@ theorem convexOn_univ_piecewise_Iic_of_antitoneOn_Iic_monotoneOn_Ici
       Set.piecewise_eq_of_mem (Set.Iic e) f g hc]
     exact hf.2 hx hy ha hb hab
   · rw [Set.piecewise_eq_of_mem (Set.Iic e) f g hx,
-      Set.piecewise_eq_of_not_mem (Set.Iic e) f g (Set.not_mem_Iic.mpr hy)]
+      Set.piecewise_eq_of_notMem (Set.Iic e) f g (Set.notMem_Iic.mpr hy)]
     by_cases hc : a • x + b • y ≤ e <;> push_neg at hc
     · rw [Set.piecewise_eq_of_mem (Set.Iic e) f g hc]
-      have hc' : a • x + b • e ≤ a • x + b • y :=
-        add_le_add_left (smul_le_smul_of_nonneg_left hy.le hb) (a • x)
+      have hc' : a • x + b • e ≤ a • x + b • y := by gcongr
       trans a • f x + b • f e
       · exact (h_anti (hc'.trans hc) hc hc').trans (hf.2 hx Set.right_mem_Iic ha hb hab)
-      · rw [add_le_add_iff_left, h_eq]
-        exact smul_le_smul_of_nonneg_left (h_mono Set.left_mem_Ici hy.le hy.le) hb
-    · rw [Set.piecewise_eq_of_not_mem (Set.Iic e) f g (Set.not_mem_Iic.mpr hc)]
-      have hc' : a • x + b • y ≤ a • e + b • y :=
-        add_le_add_right (smul_le_smul_of_nonneg_left hx ha) (b • y)
+      · rw [h_eq]
+        gcongr
+        exact h_mono Set.left_mem_Ici hy.le hy.le
+    · rw [Set.piecewise_eq_of_notMem (Set.Iic e) f g (Set.notMem_Iic.mpr hc)]
+      have hc' : a • x + b • y ≤ a • e + b • y := by gcongr
       trans a • g e + b • g y
       · exact (h_mono hc.le (hc.le.trans hc') hc').trans (hg.2 Set.left_mem_Ici hy.le ha hb hab)
-      · rw [add_le_add_iff_right, ← h_eq]
-        exact smul_le_smul_of_nonneg_left (h_anti hx Set.right_mem_Iic hx) ha
-  · rw [Set.piecewise_eq_of_not_mem (Set.Iic e) f g (Set.not_mem_Iic.mpr hx),
+      · rw [← h_eq]
+        gcongr
+        exact h_anti hx Set.right_mem_Iic hx
+  · rw [Set.piecewise_eq_of_notMem (Set.Iic e) f g (Set.notMem_Iic.mpr hx),
       Set.piecewise_eq_of_mem (Set.Iic e) f g hy]
     by_cases hc : a • x + b • y ≤ e <;> push_neg at hc
     · rw [Set.piecewise_eq_of_mem (Set.Iic e) f g hc]
-      have hc' : a • e + b • y ≤ a • x + b • y :=
-        add_le_add_right (smul_le_smul_of_nonneg_left hx.le ha) (b • y)
+      have hc' : a • e + b • y ≤ a • x + b • y := by gcongr
       trans a • f e + b • f y
       · exact (h_anti (hc'.trans hc) hc hc').trans (hf.2 Set.right_mem_Iic hy ha hb hab)
-      · rw [add_le_add_iff_right, h_eq]
-        exact smul_le_smul_of_nonneg_left (h_mono Set.left_mem_Ici hx.le hx.le) ha
-    · rw [Set.piecewise_eq_of_not_mem (Set.Iic e) f g (Set.not_mem_Iic.mpr hc)]
-      have hc' : a • x + b • y ≤ a • x + b • e :=
-        add_le_add_left (smul_le_smul_of_nonneg_left hy hb) (a • x)
+      · rw [h_eq]
+        gcongr
+        exact h_mono Set.left_mem_Ici hx.le hx.le
+    · rw [Set.piecewise_eq_of_notMem (Set.Iic e) f g (Set.notMem_Iic.mpr hc)]
+      have hc' : a • x + b • y ≤ a • x + b • e := by gcongr
       trans a • g x + b • g e
       · exact (h_mono hc.le (hc.le.trans hc') hc').trans (hg.2 hx.le Set.left_mem_Ici ha hb hab)
-      · rw [add_le_add_iff_left, ← h_eq]
-        exact smul_le_smul_of_nonneg_left (h_anti hy Set.right_mem_Iic hy) hb
+      · rw [← h_eq]
+        gcongr
+        exact h_anti hy Set.right_mem_Iic hy
   · have hc : e < a • x + b • y :=
         (lt_min hx hy).trans_le (Convex.min_le_combo x y ha hb hab)
-    rw [(Set.Iic e).piecewise_eq_of_not_mem f g (Set.not_mem_Iic.mpr hx),
-      (Set.Iic e).piecewise_eq_of_not_mem f g (Set.not_mem_Iic.mpr hy),
-      (Set.Iic e).piecewise_eq_of_not_mem f g (Set.not_mem_Iic.mpr hc)]
+    rw [(Set.Iic e).piecewise_eq_of_notMem f g (Set.notMem_Iic.mpr hx),
+      (Set.Iic e).piecewise_eq_of_notMem f g (Set.notMem_Iic.mpr hy),
+      (Set.Iic e).piecewise_eq_of_notMem f g (Set.notMem_Iic.mpr hc)]
     exact hg.2 hx.le hy.le ha hb hab
 
 /-- The piecewise function `(Set.Ici e).piecewise f g` of a function `f` increasing and convex on

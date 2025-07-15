@@ -13,7 +13,7 @@ In this file we define the induced map on prime spectra induced by a ring homomo
 ## Main definitions
 
 * `RingHom.specComap`: The induced map on prime spectra by a ring homomorphism. The bundled
-continuous version is `PrimeSpectrum.comap` in `Mathlib.RingTheory.Spectrum.Prime.Topology`.
+  continuous version is `PrimeSpectrum.comap` in `Mathlib/RingTheory/Spectrum/Prime/Topology.lean`.
 
 -/
 
@@ -111,7 +111,7 @@ variable [Infinite ι] [∀ i, Nontrivial (R i)]
 range of `sigmaToPi`, i.e. is not of the form `πᵢ⁻¹(𝔭)` for some prime `𝔭 ⊂ R i`, where
 `πᵢ : (Π i, R i) →+* R i` is the projection. For a complete description of all prime ideals,
 see https://math.stackexchange.com/a/1563190. -/
-theorem exists_maximal_nmem_range_sigmaToPi_of_infinite :
+theorem exists_maximal_notMem_range_sigmaToPi_of_infinite :
     ∃ (I : Ideal (Π i, R i)) (_ : I.IsMaximal), ⟨I, inferInstance⟩ ∉ Set.range (sigmaToPi R) := by
   classical
   let J : Ideal (Π i, R i) := -- `J := Π₀ i, R i` is an ideal in `Π i, R i`
@@ -121,12 +121,12 @@ theorem exists_maximal_nmem_range_sigmaToPi_of_infinite :
       refine ⟨.mk x.support fun i ↦ r i * x i, funext fun i ↦ show dite _ _ _ = _ from ?_⟩
       simp_rw [DFinsupp.coeFnAddMonoidHom]
       refine dite_eq_left_iff.mpr fun h ↦ ?_
-      rw [DFinsupp.not_mem_support_iff.mp h, mul_zero] }
+      rw [DFinsupp.notMem_support_iff.mp h, mul_zero] }
   have ⟨I, max, le⟩ := J.exists_le_maximal <| (Ideal.ne_top_iff_one _).mpr <| by
     -- take a maximal ideal I containing J
     rintro ⟨x, hx⟩
-    have ⟨i, hi⟩ := x.support.exists_not_mem
-    simpa [DFinsupp.coeFnAddMonoidHom, DFinsupp.not_mem_support_iff.mp hi] using congr_fun hx i
+    have ⟨i, hi⟩ := x.support.exists_notMem
+    simpa [DFinsupp.coeFnAddMonoidHom, DFinsupp.notMem_support_iff.mp hi] using congr_fun hx i
   refine ⟨I, max, fun ⟨⟨i, p⟩, eq⟩ ↦ ?_⟩
   -- then I is not in the range of `sigmaToPi`
   have : ⇑(DFinsupp.single i 1) ∉ (sigmaToPi R ⟨i, p⟩).asIdeal := by
@@ -134,9 +134,13 @@ theorem exists_maximal_nmem_range_sigmaToPi_of_infinite :
   rw [eq] at this
   exact this (le ⟨.single i 1, rfl⟩)
 
+@[deprecated (since := "2025-05-24")]
+alias exists_maximal_nmem_range_sigmaToPi_of_infinite :=
+  exists_maximal_notMem_range_sigmaToPi_of_infinite
+
 theorem sigmaToPi_not_surjective_of_infinite : ¬ (sigmaToPi R).Surjective := fun surj ↦
-  have ⟨_, _, nmem⟩ := exists_maximal_nmem_range_sigmaToPi_of_infinite R
-  (Set.range_eq_univ.mpr surj ▸ nmem) ⟨⟩
+  have ⟨_, _, notMem⟩ := exists_maximal_notMem_range_sigmaToPi_of_infinite R
+  (Set.range_eq_univ.mpr surj ▸ notMem) ⟨⟩
 
 lemma exists_comap_evalRingHom_eq
     {ι : Type*} {R : ι → Type*} [∀ i, CommRing (R i)] [Finite ι]

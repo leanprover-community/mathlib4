@@ -23,7 +23,7 @@ These actions are available in the `Pointwise` locale.
 ## Implementation notes
 
 The pointwise section of this file is almost identical to
-the file `Mathlib.Algebra.Group.Submonoid.Pointwise`.
+the file `Mathlib/Algebra/Group/Submonoid/Pointwise.lean`.
 Where possible, try to keep them in sync.
 -/
 

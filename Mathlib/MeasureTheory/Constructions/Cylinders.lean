@@ -71,11 +71,11 @@ theorem isPiSystem_squareCylinders {C : ∀ i, Set (Set (α i))} (hC : ∀ i, Is
   have h1 : ∀ i ∈ (s₁ : Set ι), t₁ i = t₁' i :=
     fun i hi ↦ (Finset.piecewise_eq_of_mem _ _ _ hi).symm
   have h1' : ∀ i ∉ (s₁ : Set ι), t₁' i = univ :=
-    fun i hi ↦ Finset.piecewise_eq_of_not_mem _ _ _ hi
+    fun i hi ↦ Finset.piecewise_eq_of_notMem _ _ _ hi
   have h2 : ∀ i ∈ (s₂ : Set ι), t₂ i = t₂' i :=
     fun i hi ↦ (Finset.piecewise_eq_of_mem _ _ _ hi).symm
   have h2' : ∀ i ∉ (s₂ : Set ι), t₂' i = univ :=
-    fun i hi ↦ Finset.piecewise_eq_of_not_mem _ _ _ hi
+    fun i hi ↦ Finset.piecewise_eq_of_notMem _ _ _ hi
   rw [Set.pi_congr rfl h1, Set.pi_congr rfl h2, ← union_pi_inter h1' h2']
   refine ⟨s₁ ∪ s₂, fun i ↦ t₁' i ∩ t₂' i, ?_, ?_⟩
   · rw [mem_univ_pi]
@@ -181,7 +181,7 @@ theorem cylinder_eq_empty_iff [h_nonempty : Nonempty (∀ i, α i)] (s : Finset 
     rw [mem_cylinder]
     simpa only [Finset.restrict_def, Finset.coe_mem, dif_pos, f']
   rw [h] at hf'
-  exact not_mem_empty _ hf'
+  exact notMem_empty _ hf'
 
 theorem inter_cylinder (s₁ s₂ : Finset ι) (S₁ : Set (∀ i : s₁, α i)) (S₂ : Set (∀ i : s₂, α i))
     [DecidableEq ι] :

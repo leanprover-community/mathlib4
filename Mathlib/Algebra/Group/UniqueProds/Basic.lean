@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Group.Equiv.Opposite
+import Mathlib.Algebra.Group.Finsupp
+import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Algebra.Group.TypeTags.Basic
 import Mathlib.Algebra.Group.ULift
 import Mathlib.Data.DFinsupp.Defs
-import Mathlib.Data.Finsupp.Defs
 
 /-!
 # Unique products and related notions

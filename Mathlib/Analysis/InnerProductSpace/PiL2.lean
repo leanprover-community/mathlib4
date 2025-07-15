@@ -67,7 +67,7 @@ variable {F' : Type*} [NormedAddCommGroup F'] [InnerProductSpace ℝ F']
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 /-
- If `ι` is a finite type and each space `f i`, `i : ι`, is an inner product space,
+If `ι` is a finite type and each space `f i`, `i : ι`, is an inner product space,
 then `Π i, f i` is an inner product space as well. Since `Π i, f i` is endowed with the sup norm,
 we use instead `PiLp 2 f` for the product space, which is endowed with the `L^2` norm.
 -/
@@ -185,11 +185,11 @@ theorem finrank_euclideanSpace_fin {n : ℕ} :
     Module.finrank 𝕜 (EuclideanSpace 𝕜 (Fin n)) = n := by simp
 
 theorem EuclideanSpace.inner_eq_star_dotProduct (x y : EuclideanSpace 𝕜 ι) :
-    ⟪x, y⟫ = dotProduct (WithLp.equiv _ _ y) (star <| WithLp.equiv _ _ x) :=
+    ⟪x, y⟫ = WithLp.equiv _ _ y ⬝ᵥ star (WithLp.equiv _ _ x) :=
   rfl
 
 theorem EuclideanSpace.inner_piLp_equiv_symm (x y : ι → 𝕜) :
-    ⟪(WithLp.equiv 2 _).symm x, (WithLp.equiv 2 _).symm y⟫ = dotProduct y (star x) :=
+    ⟪(WithLp.equiv 2 _).symm x, (WithLp.equiv 2 _).symm y⟫ = y ⬝ᵥ star x :=
   rfl
 
 /-- A finite, mutually orthogonal family of subspaces of `E`, which span `E`, induce an isometry
@@ -746,8 +746,7 @@ theorem OrthonormalBasis.toMatrix_orthonormalBasis_conjTranspose_mul_self [Finty
   · simp only [Matrix.mul_apply, Matrix.conjTranspose_apply, star_def, PiLp.inner_apply,
       inner_apply']
     congr
-  · rw [orthonormal_iff_ite.mp b.orthonormal i j]
-    rfl
+  · rw [orthonormal_iff_ite.mp b.orthonormal i j, Matrix.one_apply]
 
 /-- A version of `OrthonormalBasis.toMatrix_orthonormalBasis_mem_unitary` that works for bases with
 different index types. -/
@@ -960,7 +959,6 @@ noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[
         _ = finrank 𝕜 V - finrank 𝕜 S := by
           simp only [LS, LinearMap.finrank_range_of_inj L.injective]
         _ = finrank 𝕜 Sᗮ := by simp only [← S.finrank_add_finrank_orthogonal, add_tsub_cancel_left]
-
     exact
       (stdOrthonormalBasis 𝕜 Sᗮ).repr.trans
         ((stdOrthonormalBasis 𝕜 LSᗮ).reindex <| finCongr dim_LS_perp).repr.symm
@@ -1031,12 +1029,12 @@ def toEuclideanLin : Matrix m n 𝕜 ≃ₗ[𝕜] EuclideanSpace 𝕜 n →ₗ[�
 @[simp]
 theorem toEuclideanLin_piLp_equiv_symm (A : Matrix m n 𝕜) (x : n → 𝕜) :
     Matrix.toEuclideanLin A ((WithLp.equiv _ _).symm x) =
-      (WithLp.equiv _ _).symm (Matrix.toLin' A x) :=
+      (WithLp.equiv _ _).symm (A *ᵥ x) :=
   rfl
 
 @[simp]
 theorem piLp_equiv_toEuclideanLin (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜 n) :
-    WithLp.equiv _ _ (Matrix.toEuclideanLin A x) = Matrix.toLin' A (WithLp.equiv _ _ x) :=
+    WithLp.equiv _ _ (Matrix.toEuclideanLin A x) = A *ᵥ (WithLp.equiv _ _ x) :=
   rfl
 
 theorem toEuclideanLin_apply (M : Matrix m n 𝕜) (v : EuclideanSpace 𝕜 n) :

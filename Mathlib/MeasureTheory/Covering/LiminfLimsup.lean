@@ -13,13 +13,13 @@ carrying a uniformly locally doubling measure.
 
 ## Main results:
 
- * `blimsup_cthickening_mul_ae_eq`: the limsup of the closed thickening of a sequence of subsets
-   of a metric space is unchanged almost everywhere for a uniformly locally doubling measure if the
-   sequence of distances is multiplied by a positive scale factor. This is a generalisation of a
-   result of Cassels, appearing as Lemma 9 on page 217 of
-   [J.W.S. Cassels, *Some metrical theorems in Diophantine approximation. I*](cassels1950).
- * `blimsup_thickening_mul_ae_eq`: a variant of `blimsup_cthickening_mul_ae_eq` for thickenings
-   rather than closed thickenings.
+* `blimsup_cthickening_mul_ae_eq`: the limsup of the closed thickening of a sequence of subsets
+  of a metric space is unchanged almost everywhere for a uniformly locally doubling measure if the
+  sequence of distances is multiplied by a positive scale factor. This is a generalisation of a
+  result of Cassels, appearing as Lemma 9 on page 217 of
+  [J.W.S. Cassels, *Some metrical theorems in Diophantine approximation. I*](cassels1950).
+* `blimsup_thickening_mul_ae_eq`: a variant of `blimsup_cthickening_mul_ae_eq` for thickenings
+  rather than closed thickenings.
 
 -/
 
@@ -134,9 +134,7 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le_aux (p : ℕ → Prop) {s
   rcases eq_or_ne (μ (B j)) ∞ with (hB | hB); · simp [hB]
   apply ENNReal.div_le_of_le_mul
   rw [ENNReal.coe_sub, ENNReal.coe_one, ENNReal.sub_mul fun _ _ => hB, one_mul]
-  replace hB : ↑C⁻¹ * μ (B j) ≠ ∞ := by
-    refine ENNReal.mul_ne_top ?_ hB
-    rwa [ENNReal.coe_inv hC, Ne, ENNReal.inv_eq_top, ENNReal.coe_eq_zero]
+  replace hB : ↑C⁻¹ * μ (B j) ≠ ∞ := by finiteness
   obtain ⟨hj₁ : Disjoint (b j) (W ∩ B j), hj₂ : μ (B j) ≤ C * μ (b j)⟩ := hj₀
   replace hj₂ : ↑C⁻¹ * μ (B j) ≤ μ (b j) := by
     rw [ENNReal.coe_inv hC, ← ENNReal.div_eq_inv_mul]

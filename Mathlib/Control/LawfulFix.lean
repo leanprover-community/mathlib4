@@ -17,7 +17,7 @@ omega complete partial orders (ωCPO). Proofs of the lawfulness of all `Fix` ins
 
 ## Main definition
 
- * class `LawfulFix`
+* class `LawfulFix`
 -/
 
 universe u v
@@ -37,7 +37,7 @@ class LawfulFix (α : Type*) [OmegaCompletePartialOrder α] extends Fix α where
 
 namespace Part
 
-open Part Nat Nat.Upto
+open Nat Nat.Upto
 
 namespace Fix
 
@@ -49,11 +49,11 @@ theorem approx_mono' {i : ℕ} : Fix.approx f i ≤ Fix.approx f (succ i) := by
   | succ _ i_ih => intro; apply f.monotone; apply i_ih
 
 theorem approx_mono ⦃i j : ℕ⦄ (hij : i ≤ j) : approx f i ≤ approx f j := by
-  induction' j with j ih
-  · cases hij
-    exact le_rfl
-  cases hij; · exact le_rfl
-  exact le_trans (ih ‹_›) (approx_mono' f)
+  induction j with
+  | zero => cases hij; exact le_rfl
+  | succ j ih =>
+    cases hij; · exact le_rfl
+    exact le_trans (ih ‹_›) (approx_mono' f)
 
 theorem mem_iff (a : α) (b : β a) : b ∈ Part.fix f a ↔ ∃ i, b ∈ approx f i a := by
   classical
@@ -74,7 +74,7 @@ theorem mem_iff (a : α) (b : β a) : b ∈ Part.fix f a ↔ ∃ i, b ∈ approx
     · rcases le_total i j with H | H <;> [skip; symm] <;> apply_assumption <;> assumption
     replace hh := approx_mono f case _ _ hh
     apply Part.mem_unique h₁ hh
-  · simp only [fix_def' (⇑f) h₀, not_exists, false_iff, not_mem_none]
+  · simp only [fix_def' (⇑f) h₀, not_exists, false_iff, notMem_none]
     simp only [dom_iff_mem, not_exists] at h₀
     intro; apply h₀
 
@@ -116,13 +116,7 @@ open Fix
 variable {α : Type*}
 variable (f : ((a : _) → Part <| β a) →o (a : _) → Part <| β a)
 
-open OmegaCompletePartialOrder
-
 open Part hiding ωSup
-
-open Nat
-
-open Nat.Upto OmegaCompletePartialOrder
 
 theorem fix_eq_ωSup : Part.fix f = ωSup (approxChain f) := by
   apply le_antisymm

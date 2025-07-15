@@ -121,8 +121,8 @@ lemma bit_zero : bit false 0 = 0 :=
   rfl
 
 /-- `shiftLeft' b m n` performs a left shift of `m` `n` times
- and adds the bit `b` as the least significant bit each time.
- Returns the corresponding natural number -/
+and adds the bit `b` as the least significant bit each time.
+Returns the corresponding natural number -/
 def shiftLeft' (b : Bool) (m : ℕ) : ℕ → ℕ
   | 0 => m
   | n + 1 => bit b (shiftLeft' b m n)

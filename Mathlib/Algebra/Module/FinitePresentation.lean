@@ -50,7 +50,7 @@ In particular,
 
 
 For finitely presented algebras, see `Algebra.FinitePresentation`
-in file `Mathlib.RingTheory.FinitePresentation`.
+in file `Mathlib/RingTheory/FinitePresentation.lean`.
 -/
 
 open Finsupp
@@ -573,5 +573,53 @@ instance Module.FinitePresentation.isLocalizedModule_mapExtendScalars
 instance [Module.FinitePresentation R M] :
     IsLocalizedModule S (LocalizedModule.map S (M := M) (N := N)) :=
   Module.FinitePresentation.isLocalizedModule_mapExtendScalars _ _ _ _
+
+/--
+Let `M` be a finitely presented `R`-module, `N` a `R`-module, `S : Submonoid R`.
+The linear equivalence between the `M →ₗ[R] N` localized at `S` and
+`LocalizedModule S M →ₗ[R] LocalizedModule S N`
+-/
+noncomputable def Module.FinitePresentation.linearEquivMap [Module.FinitePresentation R M] :=
+  IsLocalizedModule.linearEquiv S (LocalizedModule.mkLinearMap S (M →ₗ[R] N))
+  (IsLocalizedModule.map S (LocalizedModule.mkLinearMap S M) (LocalizedModule.mkLinearMap S N))
+
+lemma Module.FinitePresentation.linearEquivMap_apply [Module.FinitePresentation R M]
+    (f : M →ₗ[R] N) : Module.FinitePresentation.linearEquivMap S
+    ((LocalizedModule.mkLinearMap S (M →ₗ[R] N)) f) = (IsLocalizedModule.map S
+    (LocalizedModule.mkLinearMap S M) (LocalizedModule.mkLinearMap S N)) f :=
+  IsLocalizedModule.linearEquiv_apply S _ _ f
+
+@[simp]
+lemma Module.FinitePresentation.linearEquivMap_symm_apply [Module.FinitePresentation R M]
+    (f : M →ₗ[R] N) : (Module.FinitePresentation.linearEquivMap S).symm ((IsLocalizedModule.map S
+    (LocalizedModule.mkLinearMap S M) (LocalizedModule.mkLinearMap S N)) f) =
+    (LocalizedModule.mkLinearMap S (M →ₗ[R] N)) f :=
+  IsLocalizedModule.linearEquiv_symm_apply S _ _ f
+
+/--
+Let `M` be a finitely presented `R`-module, `N` a `R`-module, `S : Submonoid R`.
+The linear equivalence between the `M →ₗ[R] N` localized at `S` and
+`LocalizedModule S M →ₗ[Localization S] LocalizedModule S N`
+-/
+noncomputable def Module.FinitePresentation.linearEquivMapExtendScalars
+    [Module.FinitePresentation R M] :=
+  IsLocalizedModule.linearEquiv S (LocalizedModule.mkLinearMap S (M →ₗ[R] N))
+  (IsLocalizedModule.mapExtendScalars S (LocalizedModule.mkLinearMap S M)
+    (LocalizedModule.mkLinearMap S N) (Localization S))
+
+lemma Module.FinitePresentation.linearEquivMapExtendScalars_apply [Module.FinitePresentation R M]
+    (f : M →ₗ[R] N) : Module.FinitePresentation.linearEquivMapExtendScalars S
+    ((LocalizedModule.mkLinearMap S (M →ₗ[R] N)) f) = (IsLocalizedModule.mapExtendScalars S
+    (LocalizedModule.mkLinearMap S M) (LocalizedModule.mkLinearMap S N) (Localization S)) f :=
+  IsLocalizedModule.linearEquiv_apply S _ _ f
+
+@[simp]
+lemma Module.FinitePresentation.linearEquivMapExtendScalars_symm_apply
+    [Module.FinitePresentation R M] (f : M →ₗ[R] N) :
+    (Module.FinitePresentation.linearEquivMapExtendScalars S).symm
+    ((IsLocalizedModule.mapExtendScalars S (LocalizedModule.mkLinearMap S M)
+    (LocalizedModule.mkLinearMap S N) (Localization S)) f) =
+    (LocalizedModule.mkLinearMap S (M →ₗ[R] N)) f :=
+  IsLocalizedModule.linearEquiv_symm_apply S _ _ f
 
 end CommRing

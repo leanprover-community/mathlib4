@@ -132,7 +132,7 @@ which
   (with the exception of tactics that leave the sole goal unchanged);
 * are not excluded through `exclusions` or `ignoreBranch`;
 
- together with the number of goals before the tactic,
+together with the number of goals before the tactic,
 the number of goals after the tactic, and the number of unaffected goals.
 -/
 partial

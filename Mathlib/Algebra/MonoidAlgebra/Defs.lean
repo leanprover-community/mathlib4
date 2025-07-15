@@ -103,10 +103,10 @@ theorem single_zero (a : G) : (single a 0 : MonoidAlgebra k G) = 0 := Finsupp.si
 theorem single_add (a : G) (b₁ b₂ : k) : single a (b₁ + b₂) = single a b₁ + single a b₂ :=
   Finsupp.single_add a b₁ b₂
 
-@[simp]
 theorem sum_single_index {N} [AddCommMonoid N] {a : G} {b : k} {h : G → k → N}
     (h_zero : h a 0 = 0) :
-    (single a b).sum h = h a b := Finsupp.sum_single_index h_zero
+    (single a b).sum h = h a b := by
+  simp [h_zero]
 
 @[simp]
 theorem sum_single (f : MonoidAlgebra k G) : f.sum single = f :=
@@ -816,10 +816,18 @@ endowed with the convolution product.
 def AddMonoidAlgebra :=
   G →₀ k
 
-@[inherit_doc]
-scoped[AddMonoidAlgebra] notation:9000 R:max "[" A "]" => AddMonoidAlgebra R A
-
 namespace AddMonoidAlgebra
+
+@[inherit_doc AddMonoidAlgebra]
+scoped syntax:max (priority := high) term noWs "[" term "]" : term
+
+macro_rules | `($k[$g]) => `(AddMonoidAlgebra $k $g)
+
+/-- Unexpander for `AddMonoidAlgebra`. -/
+@[scoped app_unexpander AddMonoidAlgebra]
+def unexpander : Lean.PrettyPrinter.Unexpander
+  | `($_ $k $g) => `($k[$g])
+  | _ => throw ()
 
 instance inhabited : Inhabited k[G] :=
   inferInstanceAs (Inhabited (G →₀ k))
@@ -852,10 +860,10 @@ theorem single_zero (a : G) : (single a 0 : k[G]) = 0 := Finsupp.single_zero a
 theorem single_add (a : G) (b₁ b₂ : k) : single a (b₁ + b₂) = single a b₁ + single a b₂ :=
   Finsupp.single_add a b₁ b₂
 
-@[simp]
 theorem sum_single_index {N} [AddCommMonoid N] {a : G} {b : k} {h : G → k → N}
     (h_zero : h a 0 = 0) :
-    (single a b).sum h = h a b := Finsupp.sum_single_index h_zero
+    (single a b).sum h = h a b := by
+  simp [h_zero]
 
 @[simp]
 theorem sum_single (f : k[G]) : f.sum single = f :=

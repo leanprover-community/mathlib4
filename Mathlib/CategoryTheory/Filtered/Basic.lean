@@ -584,7 +584,7 @@ theorem eq_condition {j j' : C} (f f' : j ⟶ j') : eqHom f f' ≫ f = eqHom f f
   (IsCofilteredOrEmpty.cone_maps f f').choose_spec.choose_spec
 
 /-- For every cospan `j ⟶ i ⟵ j'`,
- there exists a cone `j ⟵ k ⟶ j'` such that the square commutes. -/
+there exists a cone `j ⟵ k ⟶ j'` such that the square commutes. -/
 theorem cospan {i j j' : C} (f : j ⟶ i) (f' : j' ⟶ i) :
     ∃ (k : C) (g : k ⟶ j) (g' : k ⟶ j'), g ≫ f = g' ≫ f' :=
   let ⟨K, G, G', _⟩ := IsCofilteredOrEmpty.cone_objs j j'

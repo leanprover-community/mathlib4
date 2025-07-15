@@ -129,7 +129,7 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
   refine Nat.mem_properDivisors.mpr ⟨⟨_, (finrank_mul_finrank Z Zx D).symm⟩, ?_⟩
   rw [← Nat.pow_lt_pow_iff_right hq, ← card_D, ← card_Zx]
   obtain ⟨b, -, hb⟩ := SetLike.exists_of_lt hZx.lt_top
-  refine card_lt_of_injective_of_not_mem _ Subtype.val_injective (?_ : b ∉ _)
+  refine card_lt_of_injective_of_notMem _ Subtype.val_injective (?_ : b ∉ _)
   rintro ⟨b, rfl⟩
   exact hb b.2
 

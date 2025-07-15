@@ -89,10 +89,13 @@ theorem vars_X [Nontrivial R] : (X n : MvPolynomial σ R).vars = {n} := by
 theorem mem_vars (i : σ) : i ∈ p.vars ↔ ∃ d ∈ p.support, i ∈ d.support := by
   classical simp only [vars_def, Multiset.mem_toFinset, mem_degrees, mem_support_iff, exists_prop]
 
-theorem mem_support_not_mem_vars_zero {f : MvPolynomial σ R} {x : σ →₀ ℕ} (H : x ∈ f.support)
+theorem mem_support_notMem_vars_zero {f : MvPolynomial σ R} {x : σ →₀ ℕ} (H : x ∈ f.support)
     {v : σ} (h : v ∉ vars f) : x v = 0 := by
   contrapose! h
   exact (mem_vars v).mpr ⟨x, H, Finsupp.mem_support_iff.mpr h⟩
+
+@[deprecated (since := "2025-05-23")]
+alias mem_support_not_mem_vars_zero := mem_support_notMem_vars_zero
 
 theorem vars_add_subset [DecidableEq σ] (p q : MvPolynomial σ R) :
     (p + q).vars ⊆ p.vars ∪ q.vars := by
@@ -241,7 +244,7 @@ theorem eval₂Hom_eq_constantCoeff_of_vars (f : R →+* S) {g : σ → S} {p : 
     contradiction
   repeat'
     obtain ⟨i, hi⟩ : Finset.Nonempty (Finsupp.support d) := by
-      rw [constantCoeff_eq, coeff, ← Finsupp.not_mem_support_iff] at h0
+      rw [constantCoeff_eq, coeff, ← Finsupp.notMem_support_iff] at h0
       rw [Finset.nonempty_iff_ne_empty, Ne, Finsupp.support_eq_empty]
       rintro rfl
       contradiction

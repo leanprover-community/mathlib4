@@ -206,6 +206,10 @@ alias ⟨_, _root_.GCongr.Fin.succAbove_lt_succAbove⟩ := succAbove_lt_succAbov
 theorem natAdd_inj (m) {i j : Fin n} : natAdd m i = natAdd m j ↔ i = j :=
   (strictMono_natAdd _).injective.eq_iff
 
+theorem natAdd_injective (m n : ℕ) :
+    Function.Injective (Fin.natAdd n : Fin m → _) :=
+  (strictMono_natAdd _).injective
+
 @[simp]
 theorem natAdd_le_natAdd_iff (m) {i j : Fin n} : natAdd m i ≤ natAdd m j ↔ i ≤ j :=
   (strictMono_natAdd _).le_iff_le
@@ -386,7 +390,7 @@ map. In this lemma we state that for each `i : Fin n` we have `(e i : ℕ) = (i 
 @[simp] lemma coe_orderIso_apply (e : Fin n ≃o Fin m) (i : Fin n) : (e i : ℕ) = i := by
   rcases i with ⟨i, hi⟩
   dsimp only
-  induction' i using Nat.strong_induction_on with i h
+  induction i using Nat.strong_induction_on with | _ i h
   refine le_antisymm (forall_lt_iff_le.1 fun j hj => ?_) (forall_lt_iff_le.1 fun j hj => ?_)
   · have := e.symm.lt_symm_apply.1 (mk_lt_of_lt_val hj)
     specialize h _ this (e.symm _).is_lt

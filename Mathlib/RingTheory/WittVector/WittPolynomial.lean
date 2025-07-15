@@ -99,8 +99,6 @@ scoped[Witt] notation "W" => wittPolynomial p _
 
 open Witt
 
-open MvPolynomial
-
 /-! The first observation is that the Witt polynomial doesn't really depend on the coefficient ring.
 If we map the coefficients through a ring homomorphism, we obtain the corresponding Witt polynomial
 over the target ring. -/

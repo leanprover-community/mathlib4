@@ -13,9 +13,9 @@ import Mathlib.RingTheory.Polynomial.Content
 
 ## Main definitions
 We define the degree of a rational function, with values in `ℤ`:
- - `intDegree` is the degree of a rational function, defined as the difference between the
-   `natDegree` of its numerator and the `natDegree` of its denominator. In particular,
-   `intDegree 0 = 0`.
+- `intDegree` is the degree of a rational function, defined as the difference between the
+  `natDegree` of its numerator and the `natDegree` of its denominator. In particular,
+  `intDegree 0 = 0`.
 -/
 
 

@@ -68,9 +68,14 @@ variable (b : Basis ι R M) (h : Function.Bijective (algebraMap R A))
 
 /-- If `R` and `A` have a bijective `algebraMap R A` and act identically on `M`,
 then a basis for `M` as `R`-module is also a basis for `M` as `R'`-module. -/
-@[simps! repr_apply_support_val repr_apply_toFun]
+@[simps! repr_apply_toFun]
 noncomputable def Basis.algebraMapCoeffs : Basis ι A M :=
   b.mapCoeffs (RingEquiv.ofBijective _ h) fun c x => by simp
+
+@[simp]
+theorem Basis.algebraMapCoeffs_repr (m : M) :
+    (b.algebraMapCoeffs A h).repr m = (b.repr m).mapRange (algebraMap R A) (map_zero _) := by
+  rfl
 
 theorem Basis.algebraMapCoeffs_apply (i : ι) : b.algebraMapCoeffs A h i = b i :=
   b.mapCoeffs_apply _ _ _
@@ -92,6 +97,7 @@ variable [Module R S] [Module S A] [Module R A] [IsScalarTower R S A]
 theorem linearIndependent_smul {ι : Type*} {b : ι → S} {ι' : Type*} {c : ι' → A}
     (hb : LinearIndependent R b) (hc : LinearIndependent S c) :
     LinearIndependent R fun p : ι × ι' ↦ b p.1 • c p.2 := by
+  classical
   rw [← linearIndependent_equiv' (.prodComm ..) (g := fun p : ι' × ι ↦ b p.2 • c p.1) rfl,
     LinearIndependent, linearCombination_smul]
   simpa using Function.Injective.comp hc
@@ -107,7 +113,7 @@ theorem Basis.isScalarTower_of_nonempty {ι} [Nonempty ι] (b : Basis ι S A) : 
 theorem Basis.isScalarTower_finsupp {ι} (b : Basis ι S A) : IsScalarTower R S (ι →₀ S) :=
   b.repr.symm.isScalarTower_of_injective R b.repr.symm.injective
 
-variable {R} {ι ι' : Type*} (b : Basis ι R S) (c : Basis ι' S A)
+variable {R} {ι ι' : Type*} [DecidableEq ι'] (b : Basis ι R S) (c : Basis ι' S A)
 
 /-- `Basis.smulTower (b : Basis ι R S) (c : Basis ι S A)` is the `R`-basis on `A`
 where the `(i, j)`th basis vector is `b i • c j`. -/

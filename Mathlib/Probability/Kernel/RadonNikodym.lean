@@ -194,9 +194,12 @@ lemma mem_mutuallySingularSetSlice (κ η : Kernel α γ) (a : α) (x : γ) :
     x ∈ mutuallySingularSetSlice κ η a ↔ 1 ≤ rnDerivAux κ (κ + η) a x := by
   rw [mutuallySingularSetSlice, mem_setOf]
 
-lemma not_mem_mutuallySingularSetSlice (κ η : Kernel α γ) (a : α) (x : γ) :
+lemma notMem_mutuallySingularSetSlice (κ η : Kernel α γ) (a : α) (x : γ) :
     x ∉ mutuallySingularSetSlice κ η a ↔ rnDerivAux κ (κ + η) a x < 1 := by
   simp [mutuallySingularSetSlice]
+
+@[deprecated (since := "2025-05-23")]
+alias not_mem_mutuallySingularSetSlice := notMem_mutuallySingularSetSlice
 
 lemma measurableSet_mutuallySingularSet (κ η : Kernel α γ) :
     MeasurableSet (mutuallySingularSet κ η) :=
@@ -349,7 +352,7 @@ lemma withDensity_rnDeriv_of_subset_compl_mutuallySingularSetSlice
   · exact measurable_rnDeriv _ _
   simp_rw [rnDeriv]
   have hs' : ∀ x ∈ s, rnDerivAux κ (κ + η) a x < 1 := by
-    simp_rw [← not_mem_mutuallySingularSetSlice]
+    simp_rw [← notMem_mutuallySingularSetSlice]
     exact fun x hx hx_mem ↦ hs hx hx_mem
   calc
     ∫⁻ x in s, ↑(Real.toNNReal (1 - rnDerivAux κ (κ + η) a x)) *

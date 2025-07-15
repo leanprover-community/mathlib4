@@ -21,10 +21,10 @@ for defining Dirichlet convolution.
 
 ## Main Definitions
 Let `n : ℕ`. All of the following definitions are in the `Nat` namespace:
- * `divisors n` is the `Finset` of natural numbers that divide `n`.
- * `properDivisors n` is the `Finset` of natural numbers that divide `n`, other than `n`.
- * `divisorsAntidiagonal n` is the `Finset` of pairs `(x,y)` such that `x * y = n`.
- * `Perfect n` is true when `n` is positive and the sum of `properDivisors n` is `n`.
+* `divisors n` is the `Finset` of natural numbers that divide `n`.
+* `properDivisors n` is the `Finset` of natural numbers that divide `n`, other than `n`.
+* `divisorsAntidiagonal n` is the `Finset` of pairs `(x,y)` such that `x * y = n`.
+* `Perfect n` is true when `n` is positive and the sum of `properDivisors n` is `n`.
 
 ## Conventions
 
@@ -83,7 +83,10 @@ theorem filter_dvd_eq_properDivisors (h : n ≠ 0) : {d ∈ range n | d ∣ n} =
   simp only [properDivisors, mem_filter, mem_range, mem_Ico, and_congr_left_iff, iff_and_self]
   exact fun ha _ => succ_le_iff.mpr (pos_of_dvd_of_pos ha h.bot_lt)
 
-theorem properDivisors.not_self_mem : ¬n ∈ properDivisors n := by simp [properDivisors]
+theorem self_notMem_properDivisors : n ∉ properDivisors n := by simp [properDivisors]
+
+@[deprecated (since := "2025-05-23")]
+alias properDivisors.not_self_mem := self_notMem_properDivisors
 
 @[simp]
 theorem mem_properDivisors {m : ℕ} : n ∈ properDivisors m ↔ n ∣ m ∧ n < m := by
@@ -96,7 +99,7 @@ theorem insert_self_properDivisors (h : n ≠ 0) : insert n (properDivisors n) =
     Finset.filter_insert, if_pos (dvd_refl n)]
 
 theorem cons_self_properDivisors (h : n ≠ 0) :
-    cons n (properDivisors n) properDivisors.not_self_mem = divisors n := by
+    cons n (properDivisors n) self_notMem_properDivisors = divisors n := by
   rw [cons_eq_insert, insert_self_properDivisors h]
 
 @[simp]
@@ -403,7 +406,7 @@ theorem Prime.divisors {p : ℕ} (pp : p.Prime) : divisors p = {1, p} := by
   rw [mem_divisors, dvd_prime pp, and_iff_left pp.ne_zero, Finset.mem_insert, Finset.mem_singleton]
 
 theorem Prime.properDivisors {p : ℕ} (pp : p.Prime) : properDivisors p = {1} := by
-  rw [← erase_insert properDivisors.not_self_mem, insert_self_properDivisors pp.ne_zero,
+  rw [← erase_insert self_notMem_properDivisors, insert_self_properDivisors pp.ne_zero,
     pp.divisors, pair_comm, erase_insert fun con => pp.ne_one (mem_singleton.1 con)]
 
 theorem divisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) :

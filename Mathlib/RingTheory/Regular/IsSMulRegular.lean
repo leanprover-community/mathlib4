@@ -16,7 +16,7 @@ For modules over a ring the proposition `IsSMulRegular r M` is equivalent to
 This specific result is `isSMulRegular_iff_smul_eq_zero_imp_eq_zero`.
 Lots of results starting from this, especially ones about quotients (which
 don't make sense without some algebraic assumptions), are in this file.
-We don't pollute the `Mathlib.Algebra.Regular.SMul` file with these because
+We don't pollute the `Mathlib/Algebra/Regular/SMul.lean` file with these because
 it's supposed to import a minimal amount of the algebraic hierarchy.
 
 ## Tags

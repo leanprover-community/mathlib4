@@ -27,7 +27,7 @@ instead of `e.toFun x` and `e.invFun x`.
 * `PartialHomeomorph.trans`: the composition of two partial homeomorphisms
 * `PartialHomeomorph.refl`: the identity partial homeomorphism
 * `PartialHomeomorph.const`: a partial homeomorphism which is a constant map,
-whose source and target are necessarily singleton sets
+  whose source and target are necessarily singleton sets
 * `PartialHomeomorph.ofSet`: the identity on a set `s`
 * `PartialHomeomorph.restr s`: restrict a partial homeomorphism `e` to `e.source ∩ interior s`
 * `PartialHomeomorph.EqOnSource`: equivalence relation describing the "right" notion of equality

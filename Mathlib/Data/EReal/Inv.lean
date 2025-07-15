@@ -160,7 +160,7 @@ instance : MulPosReflectLT EReal := MulPosMono.toMulPosReflectLT
 lemma mul_le_mul_of_nonpos_right {a b c : EReal} (h : b ≤ a) (hc : c ≤ 0) : a * c ≤ b * c := by
   rw [mul_comm a c, mul_comm b c, ← neg_le_neg_iff, ← neg_mul c b, ← neg_mul c a]
   rw [← neg_zero, EReal.le_neg] at hc
-  exact mul_le_mul_of_nonneg_left h hc
+  gcongr
 
 @[simp, norm_cast]
 theorem coe_pow (x : ℝ) (n : ℕ) : (↑(x ^ n) : EReal) = (x : EReal) ^ n :=
@@ -394,6 +394,7 @@ lemma div_eq_iff (hbot : b ≠ ⊥) (htop : b ≠ ⊤) (hzero : b ≠ 0) : c / b
 lemma monotone_div_right_of_nonneg (h : 0 ≤ b) : Monotone fun a ↦ a / b :=
   fun _ _ h' ↦ mul_le_mul_of_nonneg_right h' (inv_nonneg_of_nonneg h)
 
+@[gcongr]
 lemma div_le_div_right_of_nonneg (h : 0 ≤ c) (h' : a ≤ b) : a / c ≤ b / c :=
   monotone_div_right_of_nonneg h h'
 
@@ -405,6 +406,7 @@ lemma strictMono_div_right_of_pos (h : 0 < b) (h' : b ≠ ⊤) : StrictMono fun 
   rw [← @EReal.mul_div_cancel a b (ne_bot_of_gt h) h' (ne_of_gt h), hyp,
     @EReal.mul_div_cancel a' b (ne_bot_of_gt h) h' (ne_of_gt h)]
 
+@[gcongr]
 lemma div_lt_div_right_of_pos (h₁ : 0 < c) (h₂ : c ≠ ⊤) (h₃ : a < b) : a / c < b / c :=
   strictMono_div_right_of_pos h₁ h₂ h₃
 
@@ -455,7 +457,7 @@ lemma div_nonneg (h : 0 ≤ a) (h' : 0 ≤ b) : 0 ≤ a / b :=
   mul_nonneg h (inv_nonneg_of_nonneg h')
 
 lemma div_pos (ha : 0 < a) (hb : 0 < b) (hb' : b ≠ ⊤) : 0 < a / b :=
-  mul_pos ha (inv_pos_of_pos_ne_top hb hb')
+  EReal.mul_pos ha (inv_pos_of_pos_ne_top hb hb')
 
 lemma div_nonpos_of_nonpos_of_nonneg (h : a ≤ 0) (h' : 0 ≤ b) : a / b ≤ 0 :=
   mul_nonpos_of_nonpos_of_nonneg h (inv_nonneg_of_nonneg h')
@@ -537,3 +539,34 @@ lemma add_div_of_nonneg_right (h : 0 ≤ c) :
   apply right_distrib_of_nonneg_of_ne_top (inv_nonneg_of_nonneg h) (inv_lt_top c).ne
 
 end EReal
+
+namespace Mathlib.Meta.Positivity
+
+open Lean Meta Qq Function
+
+/-- Extension for the `positivity` tactic: inverse of an `EReal`. -/
+@[positivity (_⁻¹ : EReal)]
+def evalERealInv : PositivityExt where eval {u α} zα pα e := do
+  match u, α, e with
+  | 0, ~q(EReal), ~q($a⁻¹) =>
+    assertInstancesCommute
+    match (← core zα pα a).toNonneg with
+    | some pa => pure (.nonnegative q(EReal.inv_nonneg_of_nonneg <| $pa))
+    | none => pure .none
+  | _, _, _ => throwError "not an inverse of an `EReal`"
+
+/-- Extension for the `positivity` tactic: ratio of two `EReal`s. -/
+@[positivity (_ / _ : EReal)]
+def evalERealDiv : PositivityExt where eval {u α} zα pα e := do
+  match u, α, e with
+  | 0, ~q(EReal), ~q($a / $b) =>
+    assertInstancesCommute
+    match (← core zα pα a).toNonneg with
+    | some pa =>
+      match (← core zα pα b).toNonneg with
+      | some pb => pure (.nonnegative q(EReal.div_nonneg $pa $pb))
+      | none => pure .none
+    | _ => pure .none
+  | _, _, _ => throwError "not a ratio of 2 `EReal`s"
+
+end Mathlib.Meta.Positivity

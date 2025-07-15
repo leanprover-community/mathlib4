@@ -187,7 +187,7 @@ def traverse [DecidableEq β] (f : α → F β) (s : Finset α) : F (Finset β) 
   Multiset.toFinset <$> Multiset.traverse f s.1
 
 @[simp]
-theorem id_traverse [DecidableEq α] (s : Finset α) : traverse (pure : α → Id α) s = s := by
+theorem id_traverse [DecidableEq α] (s : Finset α) : traverse (pure : α → Id α) s = pure s := by
   rw [traverse, Multiset.id_traverse]
   exact s.val_toFinset
 

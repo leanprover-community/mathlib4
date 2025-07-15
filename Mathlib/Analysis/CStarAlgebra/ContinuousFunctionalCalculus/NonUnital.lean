@@ -14,10 +14,10 @@ import Mathlib.Topology.UniformSpace.CompactConvergence
 This file defines a generic API for the *continuous functional calculus* in *non-unital* algebras
 which is suitable in a wide range of settings. The design is intended to match as closely as
 possible that for unital algebras in
-`Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital`.  Changes to either file should
-be mirrored in its counterpart whenever possible. The underlying reasons for the design decisions in
-the unital case apply equally in the non-unital case. See the module documentation in that file for
-more information.
+`Mathlib/Analysis/CStarAlgebra/ContinuousFunctionalCalculus/Unital.lean`.  Changes to either file
+should be mirrored in its counterpart whenever possible. The underlying reasons for the design
+decisions in the unital case apply equally in the non-unital case. See the module documentation in
+that file for more information.
 
 A continuous functional calculus for an element `a : A` in a non-unital topological `R`-algebra is
 a continuous extension of the polynomial functional calculus (i.e., `Polynomial.aeval`) for

@@ -72,7 +72,7 @@ def AddEquiv.toMultiplicative' [MulOneClass G] [AddZeroClass H] :
   left_inv x := by ext; rfl
   right_inv x := by ext; rfl
 
-/-- Reinterpret `G ≃* Multiplicative H` as `Additive G ≃+ H` as. -/
+/-- Reinterpret `G ≃* Multiplicative H` as `Additive G ≃+ H`. -/
 abbrev MulEquiv.toAdditive' [MulOneClass G] [AddZeroClass H] :
     G ≃* Multiplicative H ≃ (Additive G ≃+ H) :=
   AddEquiv.toMultiplicative'.symm
@@ -100,6 +100,18 @@ def AddEquiv.toMultiplicative'' [AddZeroClass G] [MulOneClass H] :
 abbrev MulEquiv.toAdditive'' [AddZeroClass G] [MulOneClass H] :
     Multiplicative G ≃* H ≃ (G ≃+ Additive H) :=
   AddEquiv.toMultiplicative''.symm
+
+/-- The multiplicative version of an additivized monoid is mul-equivalent to itself. -/
+@[simps! apply symm_apply]
+def MulEquiv.toMultiplicative_toAdditive [MulOneClass G] :
+    Multiplicative (Additive G) ≃* G :=
+  AddEquiv.toMultiplicative'' <| MulEquiv.toAdditive (.refl _)
+
+/-- The additive version of an multiplicativized additive monoid is add-equivalent to itself. -/
+@[simps! apply symm_apply]
+def AddEquiv.toAdditive_toMultiplicative [AddZeroClass G] :
+    Additive (Multiplicative G) ≃+ G :=
+  MulEquiv.toAdditive' <| AddEquiv.toMultiplicative (.refl _)
 
 /-- Multiplicative equivalence between multiplicative endomorphisms of a `MulOneClass` `M`
 and additive endomorphisms of `Additive M`. -/

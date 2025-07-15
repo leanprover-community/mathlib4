@@ -224,13 +224,28 @@ end prod
 
 /-- `Equiv.piCongrLeft` as a homeomorphism: this is the natural homeomorphism
 `Π i, Y (e i) ≃ₜ Π j, Y j` obtained from a bijection `ι ≃ ι'`. -/
-@[simps! apply toEquiv]
+@[simps +simpRhs toEquiv, simps! -isSimp apply]
 def piCongrLeft {ι ι' : Type*} {Y : ι' → Type*} [∀ j, TopologicalSpace (Y j)]
     (e : ι ≃ ι') : (∀ i, Y (e i)) ≃ₜ ∀ j, Y j where
   continuous_toFun := continuous_pi <| e.forall_congr_right.mp fun i ↦ by
     simpa only [Equiv.toFun_as_coe, Equiv.piCongrLeft_apply_apply] using continuous_apply i
   continuous_invFun := Pi.continuous_precomp' e
   toEquiv := Equiv.piCongrLeft _ e
+
+@[simp]
+lemma piCongrLeft_refl {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] :
+    piCongrLeft (.refl ι) = .refl (∀ i, X i) :=
+  rfl
+
+@[simp]
+lemma piCongrLeft_symm_apply {ι ι' : Type*} {Y : ι' → Type*} [∀ j, TopologicalSpace (Y j)]
+    (e : ι ≃ ι') : ⇑(piCongrLeft (Y := Y) e).symm = (· <| e ·) :=
+  rfl
+
+@[simp]
+lemma piCongrLeft_apply_apply {ι ι' : Type*} {Y : ι' → Type*} [∀ j, TopologicalSpace (Y j)]
+    (e : ι ≃ ι') (x : ∀ i, Y (e i)) (i : ι) : piCongrLeft e x (e i) = x i :=
+  Equiv.piCongrLeft_apply_apply ..
 
 /-- `Equiv.piCongrRight` as a homeomorphism: this is the natural homeomorphism
 `Π i, Y₁ i ≃ₜ Π j, Y₂ i` obtained from homeomorphisms `Y₁ i ≃ₜ Y₂ i` for each `i`. -/
@@ -274,20 +289,16 @@ def sumArrowHomeomorphProdArrow {ι ι' : Type*} : (ι ⊕ ι' → X) ≃ₜ (ι
     | .inl i => by apply (continuous_apply _).comp' continuous_fst
     | .inr i => by apply (continuous_apply _).comp' continuous_snd
 
-private theorem _root_.Fin.appendEquiv_eq_Homeomorph (m n : ℕ) : Fin.appendEquiv m n =
+private theorem _root_.Fin.appendEquiv_eq_homeomorph (m n : ℕ) : Fin.appendEquiv m n =
     ((sumArrowHomeomorphProdArrow).symm.trans
     (piCongrLeft (Y := fun _ ↦ X) finSumFinEquiv)).toEquiv := by
-  ext ⟨x1, x2⟩ l
-  simp only [sumArrowHomeomorphProdArrow, Equiv.sumArrowEquivProdArrow,
-    finSumFinEquiv, Fin.addCases, Fin.appendEquiv, Fin.append, Equiv.coe_fn_mk]
-  by_cases h : l < m
-  · simp [h]
-  · simp [h]
+  apply Equiv.symm_bijective.injective
+  ext x i <;> simp
 
 theorem _root_.Fin.continuous_append (m n : ℕ) :
     Continuous fun (p : (Fin m → X) × (Fin n → X)) ↦ Fin.append p.1 p.2 := by
   suffices Continuous (Fin.appendEquiv m n) by exact this
-  rw [Fin.appendEquiv_eq_Homeomorph]
+  rw [Fin.appendEquiv_eq_homeomorph]
   exact Homeomorph.continuous_toFun _
 
 /-- The natural homeomorphism between `(Fin m → X) × (Fin n → X)` and `Fin (m + n) → X`.
@@ -297,7 +308,7 @@ def _root_.Fin.appendHomeomorph (m n : ℕ) : (Fin m → X) × (Fin n → X) ≃
   toEquiv := Fin.appendEquiv m n
   continuous_toFun := Fin.continuous_append m n
   continuous_invFun := by
-    rw [Fin.appendEquiv_eq_Homeomorph]
+    rw [Fin.appendEquiv_eq_homeomorph]
     exact Homeomorph.continuous_invFun _
 
 @[simp]

@@ -250,6 +250,12 @@ theorem Chain'.cons' {x} : ∀ {l : List α}, Chain' R l → (∀ y ∈ l.head?,
   | [], _, _ => chain'_singleton x
   | _ :: _, hl, H => hl.cons <| H _ rfl
 
+lemma Chain'.cons_of_ne_nil {x : α} {l : List α} (l_ne_nil : l ≠ [])
+    (hl : Chain' R l) (h : R x (l.head l_ne_nil)) : Chain' R (x :: l) := by
+  refine hl.cons' fun y hy ↦ ?_
+  convert h
+  simpa [l.head?_eq_head l_ne_nil] using hy.symm
+
 theorem chain'_cons' {x l} : Chain' R (x :: l) ↔ (∀ y ∈ head? l, R x y) ∧ Chain' R l :=
   ⟨fun h => ⟨h.rel_head?, h.tail⟩, fun ⟨h₁, h₂⟩ => h₂.cons' h₁⟩
 
