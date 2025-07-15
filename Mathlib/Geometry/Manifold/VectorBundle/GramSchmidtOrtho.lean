@@ -20,8 +20,6 @@ if all sections are `C^k`, so are their normalised versions.
 
 This will be used in `OrthonormalFrame.lean` to convert a local frame to a local orthonormal frame.
 
-
-
 ## Tags
 vector bundle, bundle metric, orthonormal frame, Gram-Schmidt
 
@@ -139,12 +137,14 @@ theorem span_gramSchmidt_Iio (c : ι) (x) :
 
 variable (s) in
 /-- `gramSchmidt` preserves the point-wise span of sections. -/
-theorem span_gramSchmidt (x : B) :
+theorem span_gramSchmidt (x) :
     span ℝ (range (gramSchmidt s · x)) = span ℝ (range (s · x)) :=
   InnerProductSpace.span_gramSchmidt ℝ (s · x)
 
+variable {x : B}
+
 /-- If the section values `s i x` are orthogonal, `gramSchmidt` yields the same values at `x`. -/
-theorem gramSchmidt_of_orthogonal {x} (hs : Pairwise fun i j ↦ ⟪s i x, s j x⟫ = 0) :
+theorem gramSchmidt_of_orthogonal (hs : Pairwise fun i j ↦ ⟪s i x, s j x⟫ = 0) :
     ∀ i₀, gramSchmidt s i₀ x = s i₀ x := by
   intro i
   rw [gramSchmidt_def]
@@ -163,14 +163,14 @@ theorem gramSchmidt_of_orthogonal {x} (hs : Pairwise fun i j ↦ ⟪s i x, s j x
     exact (lt_of_le_of_lt hk (Finset.mem_Iio.mp hj)).ne
   · simp
 
-theorem gramSchmidt_ne_zero_coe (n : ι) (x)
+theorem gramSchmidt_ne_zero_coe (n : ι)
     (h₀ : LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic n → ι))) : gramSchmidt s n x ≠ 0 :=
   InnerProductSpace.gramSchmidt_ne_zero_coe _ h₀
 
 variable (s) in
 /-- If the input sections of `gramSchmidt` are point-wise linearly independent,
 the resulting sections are non-zero. -/
-theorem gramSchmidt_ne_zero (n : ι) {x} (h₀ : LinearIndependent ℝ (s · x)) :
+theorem gramSchmidt_ne_zero (n : ι) (h₀ : LinearIndependent ℝ (s · x)) :
     gramSchmidt s n x ≠ 0 :=
   InnerProductSpace.gramSchmidt_ne_zero _ h₀
 
@@ -180,18 +180,18 @@ theorem gramSchmidt_ne_zero (n : ι) {x} (h₀ : LinearIndependent ℝ (s · x))
 
 /-- `gramSchmidt` produces point-wise linearly independent sections when given linearly
 independent sections. -/
-theorem gramSchmidt_linearIndependent {x} (h₀ : LinearIndependent ℝ (s · x)) :
+theorem gramSchmidt_linearIndependent (h₀ : LinearIndependent ℝ (s · x)) :
     LinearIndependent ℝ (gramSchmidt s · x) :=
   InnerProductSpace.gramSchmidt_linearIndependent h₀
 
 /-- When the sections `s` form a basis at `x`, so do the sections `gramSchmidt s`. -/
-noncomputable def gramSchmidtBasis {x} (hs : LinearIndependent ℝ (s · x))
+noncomputable def gramSchmidtBasis (hs : LinearIndependent ℝ (s · x))
     (hs' : ⊤ ≤ Submodule.span ℝ (Set.range (s · x))) :
     Basis ι ℝ (E x) :=
   Basis.mk (gramSchmidt_linearIndependent hs)
     ((span_gramSchmidt s x).trans (eq_top_iff'.mpr fun _ ↦ hs' trivial)).ge
 
-theorem coe_gramSchmidtBasis {x} (hs : LinearIndependent ℝ (s · x))
+theorem coe_gramSchmidtBasis (hs : LinearIndependent ℝ (s · x))
     (hs' : ⊤ ≤ Submodule.span ℝ (Set.range (s · x))) :
     (gramSchmidtBasis hs hs') = (gramSchmidt s · x) :=
   Basis.coe_mk _ _
@@ -202,17 +202,16 @@ noncomputable def gramSchmidtNormed
     (s : ι → (x : B) → E x) (n : ι) : (x : B) → E x := fun x ↦
   InnerProductSpace.gramSchmidtNormed ℝ (s · x) n
 
-lemma gramSchmidtNormed_coe {n : ι} {x} :
+lemma gramSchmidtNormed_coe {n : ι} :
     gramSchmidtNormed s n x = ‖gramSchmidt s n x‖⁻¹ • gramSchmidt s n x := by
   simp [gramSchmidtNormed, InnerProductSpace.gramSchmidtNormed]
-
-variable {x}
 
 theorem gramSchmidtNormed_unit_length_coe {n : ι}
     (h₀ : LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic n → ι))) :
     ‖gramSchmidtNormed s n x‖ = 1 :=
   InnerProductSpace.gramSchmidtNormed_unit_length_coe n h₀
 
+-- XXX: should n be explicit or implicit? (same question in InnerProductSpace)
 theorem gramSchmidtNormed_unit_length (n : ι) (h₀ : LinearIndependent ℝ (s · x)) :
     ‖gramSchmidtNormed s n x‖ = 1 :=
   InnerProductSpace.gramSchmidtNormed_unit_length n h₀
@@ -236,12 +235,12 @@ theorem gramSchmidtNormed_orthonormal' (x) :
 
 
 variable (s) in
-theorem span_gramSchmidtNormed (t : Set ι) (x) :
+theorem span_gramSchmidtNormed (t : Set ι) :
     span ℝ ((gramSchmidtNormed s · x) '' t) = span ℝ ((gramSchmidt s · x) '' t) :=
   InnerProductSpace.span_gramSchmidtNormed (s · x) t
 
 variable (s) in
-theorem span_gramSchmidtNormed_range (x) :
+theorem span_gramSchmidtNormed_range :
     span ℝ (range (gramSchmidtNormed s · x)) = span ℝ (range (gramSchmidt s · x)) := by
   simpa only [image_univ.symm] using span_gramSchmidtNormed ..
 
@@ -251,13 +250,13 @@ theorem gramSchmidtNormed_linearIndependent (h₀ : LinearIndependent ℝ (s · 
     LinearIndependent ℝ (gramSchmidtNormed s · x) := by
   simp [gramSchmidtNormed, InnerProductSpace.gramSchmidtNormed_linearIndependent h₀]
 
-lemma gramSchmidtNormed_apply_of_orthogonal (hs : Pairwise fun i j ↦ ⟪s i x, s j x⟫ = 0) {i : ι} :
+lemma gramSchmidtNormed_apply_of_orthogonal (hs : Pairwise (⟪s · x, s · x⟫ = 0)) {i : ι} :
     gramSchmidtNormed s i x = ‖s i x‖⁻¹ • s i x := by
   simp_rw [gramSchmidtNormed_coe, gramSchmidt_of_orthogonal hs i]
 
 /-- If the section values `s i x` are orthonormal, applying `gramSchmidtNormed` yields the same
 values at `x`. -/
-lemma gramSchmidtNormed_apply_of_orthonormal {x} (hs : Orthonormal ℝ (s · x)) (i : ι) :
+lemma gramSchmidtNormed_apply_of_orthonormal (hs : Orthonormal ℝ (s · x)) {i : ι} :
     gramSchmidtNormed s i x = s i x := by
   simp [gramSchmidtNormed_apply_of_orthogonal hs.2, hs.1 i]
 
@@ -266,33 +265,33 @@ lemma gramSchmidtNormed_apply_of_orthonormal {x} (hs : Orthonormal ℝ (s · x))
 /-- When the sections `s` form a basis at `x`, so do the sections `gramSchmidtNormed s`.
 
 Note that `gramSchmidtOrthonormalBasis` proves a strictly stronger statement. -/
-noncomputable def gramSchmidtNormedBasis {x} (hs : LinearIndependent ℝ (s · x))
+noncomputable def gramSchmidtNormedBasis (hs : LinearIndependent ℝ (s · x))
     (hs' : ⊤ ≤ Submodule.span ℝ (Set.range (s · x))) :
     Basis ι ℝ (E x) :=
   Basis.mk (v := fun i ↦ gramSchmidtNormed s i x) (gramSchmidtNormed_linearIndependent hs)
-    (by rw [span_gramSchmidtNormed_range s x, span_gramSchmidt s x]; exact hs')
+    (by rw [span_gramSchmidtNormed_range s, span_gramSchmidt s x]; exact hs')
 
 @[simp]
-theorem coe_gramSchmidtNormedBasis {x} (hs : LinearIndependent ℝ (s · x))
+theorem coe_gramSchmidtNormedBasis (hs : LinearIndependent ℝ (s · x))
     (hs' : ⊤ ≤ Submodule.span ℝ (Set.range (s · x))) :
     (gramSchmidtNormedBasis hs hs' : ι → E x) = (gramSchmidtNormed s · x) :=
   Basis.coe_mk _ _
 
 /-- If the sections `s` form a basis at `x`, the resulting sections form an orthonormal basis
 at `x` -/
-noncomputable def gramSchmidtOrthonormalBasis {x} [Fintype ι]
+noncomputable def gramSchmidtOrthonormalBasis [Fintype ι]
     (hs : LinearIndependent ℝ (s · x)) (hs' : ⊤ ≤ Submodule.span ℝ (Set.range (s · x))) :
     OrthonormalBasis ι ℝ (E x) := by
   apply (gramSchmidtNormedBasis hs hs').toOrthonormalBasis
   simp [gramSchmidtNormed_orthonormal hs]
 
 @[simp]
-theorem gramSchmidtOrthonormalBasis_coe [Fintype ι] {x} (hs : LinearIndependent ℝ (s · x))
+theorem gramSchmidtOrthonormalBasis_coe [Fintype ι] (hs : LinearIndependent ℝ (s · x))
     (hs' : ⊤ ≤ Submodule.span ℝ (Set.range (s · x))) :
     gramSchmidtOrthonormalBasis hs hs' = (gramSchmidtNormed s · x) := by
   simp [gramSchmidtOrthonormalBasis]
 
-theorem gramSchmidtOrthonormalBasis_apply_of_orthonormal [Fintype ι] {x}
+theorem gramSchmidtOrthonormalBasis_apply_of_orthonormal [Fintype ι]
     (hs : Orthonormal ℝ (s · x)) (hs' : ⊤ ≤ Submodule.span ℝ (Set.range (s · x))) :
     (gramSchmidtOrthonormalBasis hs.linearIndependent hs') = (s · x) := by
   simp [gramSchmidtNormed_apply_of_orthonormal hs]
