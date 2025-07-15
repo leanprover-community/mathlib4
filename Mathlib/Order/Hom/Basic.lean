@@ -1197,4 +1197,15 @@ lemma denselyOrdered_iff_of_orderIsoClass {X Y F : Type*} [Preorder X] [Preorder
     obtain ⟨c, hc⟩ := exists_between ((map_lt_map_iff f).mpr h)
     exact ⟨EquivLike.inv f c, by simpa using hc⟩
 
+lemma denselyOrdered_iff_of_strictAnti {X Y F : Type*} [LinearOrder X] [Preorder Y]
+    [EquivLike F X Y] (f : F) (hf : StrictAnti f) :
+    DenselyOrdered X ↔ DenselyOrdered Y := by
+  rw [← denselyOrdered_orderDual]
+  let e : Xᵒᵈ ≃o Y := ⟨OrderDual.ofDual.trans (f : X ≃ Y), ?_⟩
+  · exact denselyOrdered_iff_of_orderIsoClass e
+  · simp only [Equiv.trans_apply, EquivLike.coe_coe, OrderDual.forall, OrderDual.ofDual_toDual,
+    OrderDual.toDual_le_toDual]
+    intro a b
+    rw [hf.le_iff_le]
+
 end DenselyOrdered

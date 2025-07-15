@@ -7,6 +7,7 @@ import Mathlib.Algebra.Order.Group.Units
 import Mathlib.Data.Int.Interval
 import Mathlib.GroupTheory.Archimedean
 import Mathlib.GroupTheory.OrderOfElement
+import Mathlib.Order.DenselyOrderedLocallyFinite
 
 /-!
 # Archimedean groups are either discrete or densely ordered
@@ -556,12 +557,27 @@ lemma WithZero.mulArchimedean_iff {α} [CommGroup α] [PartialOrder α] :
   · exact OrderMonoidIso.unitsWithZero.mulArchimedean
   · infer_instance
 
+section LocallyFiniteOrder
+
+variable {X : Type*} [Preorder X] [LocallyFiniteOrder X]
+
+instance : LocallyFiniteOrder (Multiplicative X) :=
+  OrderIso.locallyFiniteOrder (⟨Multiplicative.toAdd, by simp⟩ : Multiplicative X ≃o X)
+instance : LocallyFiniteOrder (Additive X) :=
+  OrderIso.locallyFiniteOrder (⟨Additive.toMul, by simp⟩ : Additive X ≃o X)
+
+noncomputable
+instance [Monoid X] : LocallyFiniteOrder (Units X) :=
+  OrderEmbedding.locallyFiniteOrder (⟨⟨Units.val, Units.val_injective⟩, by simp⟩ : Units X ↪o X)
+
+instance [Group X] : LocallyFiniteOrder (WithZero X)ˣ :=
+  OrderIso.locallyFiniteOrder (OrderMonoidIso.unitsWithZero (α := X) : (WithZero X)ˣ ≃o X)
+
+end LocallyFiniteOrder
+
 section DenselyOrdered
 
 variable {X : Type*} [LT X]
-
-instance [Subsingleton X] : DenselyOrdered X :=
-  ⟨fun a b hab ↦ ⟨a, hab.trans_eq (by subsingleton), hab⟩⟩
 
 lemma denselyOrdered_additive_iff : DenselyOrdered (Additive X) ↔ DenselyOrdered X := Iff.rfl
 lemma denselyOrdered_multiplicative_iff : DenselyOrdered (Multiplicative X) ↔ DenselyOrdered X :=
@@ -590,71 +606,11 @@ lemma Int.not_denselyOrdered : ¬ DenselyOrdered ℤ :=
   (LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered ℤ).mp ⟨.refl _⟩
 
 lemma not_denselyOrdered_withZeroInt : ¬ DenselyOrdered ℤᵐ⁰ :=
-  mt (by simp [denselyOrdered_withZero_iff, denselyOrdered_multiplicative_iff])
-    Int.not_denselyOrdered
+  (LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered _).mp ⟨.refl _⟩
 
-lemma Int.denselyOrdered_set_iff_subsingleton {s : Set ℤ} :
-    DenselyOrdered s ↔ s.Subsingleton := by
-  refine ⟨fun H ↦ ?_, fun h ↦ h.denselyOrdered⟩
-  rw [← Set.not_nontrivial_iff]
-  rintro ⟨a, ha, b, hb, h⟩
-  wlog hab : a < b generalizing a b
-  · push_neg at hab
-    exact this _ hb _ ha h.symm (lt_of_le_of_ne hab h.symm)
-  choose f hf hf' using H.dense ⟨a, ha⟩
-  let g : {x : s // a < x} → {x : s // a < x} := fun x ↦ ⟨f x x.prop, hf _ _⟩
-  have hg x : g x < x := hf' _ _
-  have hg' k x : g^[k + 1] x < x - (k : ℤ) := by
-    induction k with
-    | zero => simp [hg]
-    | succ k h =>
-      rw [Nat.cast_add_one, Function.iterate_succ', Function.comp_apply]
-      specialize hg (g^[k + 1] x)
-      simp only [← Subtype.coe_lt_coe] at hg
-      linarith
-  let c := g^[(b - a).toNat + 1] ⟨⟨b, hb⟩, hab⟩
-  have hc : a < c := c.prop
-  have hc' : c < a := by simpa [c, hab.le] using hg' (b - a).toNat ⟨⟨b, hb⟩, hab⟩
-  linarith
-
-lemma denselyOrdered_multiplicativeInt_set_iff_subsingleton {s : Set (Multiplicative ℤ)} :
+lemma denselyOrdered_withZero_set_iff_subsingleton {X : Type*} [LinearOrder X]
+    [LocallyFiniteOrder X] {s : Set (WithZero X)} :
     DenselyOrdered s ↔ s.Subsingleton :=
-  Int.denselyOrdered_set_iff_subsingleton
-
-open WithZero in
-lemma denselyOrdered_withZeroInt_set_iff_subsingleton {s : Set ℤᵐ⁰} :
-    DenselyOrdered s ↔ s.Subsingleton := by
-  refine ⟨fun H ↦ ?_, fun h ↦ h.denselyOrdered⟩
-  rcases (Units.val ⁻¹' s).subsingleton_or_nontrivial with hs | hs
-  · simp only [Set.Subsingleton, «forall», implies_true, zero_ne_coe, imp_false, true_and,
-    coe_ne_zero, coe_inj]
-    have : ∀ (x : Multiplicative ℤ), (x : ℤᵐ⁰) ∈ s → 0 ∈ s → False := by
-      intro x hx h0
-      have : (⟨0, h0⟩ : s) < ⟨x, hx⟩ := by simp
-      obtain ⟨⟨y, hys⟩, hy0, hxy⟩ := exists_between this
-      refine hxy.ne ?_
-      simpa [← Units.val_inj] using @hs (Units.mk0 y (by simpa using hy0.ne')) (by simp [hys])
-        (Units.mk0 x (by simp)) (by simp [hx])
-    refine ⟨fun h0 x hx ↦ this x hx h0, fun x hx ↦ ⟨this x hx, fun y hy ↦ ?_⟩⟩
-    simpa [← Units.val_inj] using @hs (Units.mk0 x (by simp)) (by simp_all)
-      (Units.mk0 y (by simp)) (by simp_all)
-  · have : (unitsWithZeroEquiv.symm ⁻¹' (Units.val ⁻¹' s)).Nontrivial := by
-      exact Nontrivial.preimage hs (MulEquiv.surjective _)
-    absurd H
-    rw [← Set.not_subsingleton_iff, ← denselyOrdered_multiplicativeInt_set_iff_subsingleton] at this
-    contrapose! this
-    constructor
-    simp only [Subtype.exists, mem_preimage, unitsWithZeroEquiv_symm_apply, Units.val_mk0,
-      Multiplicative.exists, Subtype.forall, Subtype.mk_lt_mk, exists_and_right,
-      Multiplicative.forall, Multiplicative.ofAdd_lt, exists_prop]
-    intro x hx y hy hxy
-    rw [← exp] at hx hy
-    have : (⟨_, hx⟩ : s) < ⟨_, hy⟩ := exp_lt_exp.mpr hxy
-    obtain ⟨z, hz⟩ := exists_between this
-    simp only [← Subtype.coe_lt_coe] at hz
-    have hz0 : z.val ≠ 0 := (hz.left.trans_le' (zero_le _)).ne'
-    refine ⟨log z, ⟨?_, lt_log_of_exp_lt hz.left⟩, (log_lt_iff_lt_exp hz0).mpr hz.right⟩
-    rw [← exp, exp_log hz0]
-    simp
+  denselyOrdered_withBot_set_iff_subsingleton
 
 end DenselyOrdered
