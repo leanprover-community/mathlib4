@@ -502,7 +502,7 @@ theorem toAddSubgroup_closure (S : Set G) :
 
 theorem _root_.AddSubgroup.toSubgroup_closure {A : Type*} [AddGroup A] (S : Set A) :
     (AddSubgroup.closure S).toSubgroup = Subgroup.closure (Multiplicative.toAdd ⁻¹' S) :=
-  Subgroup.toAddSubgroup.injective (Subgroup.toAddSubgroup_closure _ ).symm
+  Subgroup.toAddSubgroup.injective (Subgroup.toAddSubgroup_closure _).symm
 
 theorem toAddSubgroup'_closure {A : Type*} [AddGroup A] (S : Set (Multiplicative A)) :
     (closure S).toAddSubgroup' = AddSubgroup.closure (Multiplicative.ofAdd ⁻¹' S) :=
@@ -537,8 +537,7 @@ theorem coe_iSup_of_directed {ι} [Nonempty ι] {S : ι → Subgroup G} (hS : Di
 theorem mem_sSup_of_directedOn {K : Set (Subgroup G)} (Kne : K.Nonempty) (hK : DirectedOn (· ≤ ·) K)
     {x : G} : x ∈ sSup K ↔ ∃ s ∈ K, x ∈ s := by
   haveI : Nonempty K := Kne.to_subtype
-  simp only [sSup_eq_iSup', mem_iSup_of_directed hK.directed_val, SetCoe.exists, Subtype.coe_mk,
-    exists_prop]
+  simp only [sSup_eq_iSup', mem_iSup_of_directed hK.directed_val, SetCoe.exists, exists_prop]
 
 variable {C : Type*} [CommGroup C] {s t : Subgroup C} {x : C}
 
@@ -559,7 +558,7 @@ theorem mem_sup : x ∈ s ⊔ t ↔ ∃ y ∈ s, ∃ z ∈ t, y * z = x :=
 
 @[to_additive]
 theorem mem_sup' : x ∈ s ⊔ t ↔ ∃ (y : s) (z : t), (y : C) * z = x :=
-  mem_sup.trans <| by simp only [SetLike.exists, coe_mk, exists_prop]
+  mem_sup.trans <| by simp only [SetLike.exists, exists_prop]
 
 @[to_additive]
 theorem mem_closure_pair {x y z : C} :
@@ -569,7 +568,7 @@ theorem mem_closure_pair {x y z : C} :
 
 @[to_additive]
 theorem disjoint_def {H₁ H₂ : Subgroup G} : Disjoint H₁ H₂ ↔ ∀ {x : G}, x ∈ H₁ → x ∈ H₂ → x = 1 :=
-  disjoint_iff_inf_le.trans <| by simp only [Disjoint, SetLike.le_def, mem_inf, mem_bot, and_imp]
+  disjoint_iff_inf_le.trans <| by simp only [SetLike.le_def, mem_inf, mem_bot, and_imp]
 
 @[to_additive]
 theorem disjoint_def' {H₁ H₂ : Subgroup G} :

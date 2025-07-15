@@ -230,7 +230,7 @@ lemma HasCompactSupport.exists_simpleFunc_approx_of_prod [PseudoMetricSpace α]
       contrapose! H
       rw [← Function.mem_support] at H
       exact fs (subset_tsupport _ H)
-    simp [SimpleFunc.piecewise_apply, H, ite_false, this, hε]
+    simp [SimpleFunc.piecewise_apply, H, this, hε]
 
 /-- A continuous function with compact support on a product space is measurable for the product
 sigma-algebra. The subtlety is that we do not assume that the spaces are separable, so the

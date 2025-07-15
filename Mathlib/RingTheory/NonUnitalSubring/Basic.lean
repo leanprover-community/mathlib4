@@ -593,11 +593,11 @@ theorem prod_mono_left (t : NonUnitalSubring S) : Monotone fun s : NonUnitalSubr
 
 theorem prod_top (s : NonUnitalSubring R) :
     s.prod (⊤ : NonUnitalSubring S) = s.comap (NonUnitalRingHom.fst R S) :=
-  ext fun x => by simp [mem_prod, MonoidHom.coe_fst]
+  ext fun x => by simp [mem_prod]
 
 theorem top_prod (s : NonUnitalSubring S) :
     (⊤ : NonUnitalSubring R).prod s = s.comap (NonUnitalRingHom.snd R S) :=
-  ext fun x => by simp [mem_prod, MonoidHom.coe_snd]
+  ext fun x => by simp [mem_prod]
 
 @[simp]
 theorem top_prod_top : (⊤ : NonUnitalSubring R).prod (⊤ : NonUnitalSubring S) = ⊤ :=
@@ -628,7 +628,7 @@ theorem coe_iSup_of_directed {ι} [Nonempty ι] {S : ι → NonUnitalSubring R}
 theorem mem_sSup_of_directedOn {S : Set (NonUnitalSubring R)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) {x : R} : x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
   haveI : Nonempty S := Sne.to_subtype
-  simp only [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, SetCoe.exists, Subtype.coe_mk,
+  simp only [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, SetCoe.exists,
     exists_prop]
 
 theorem coe_sSup_of_directedOn {S : Set (NonUnitalSubring R)} (Sne : S.Nonempty)

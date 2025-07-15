@@ -32,6 +32,7 @@ jobs:
           auto-config: false
           use-github-cache: false
           use-mathlib-cache: false
+          lake-package-directory: "nightly-testing" # We will run `lake update` here later.
 
       - name: Configure Git User
         run: |

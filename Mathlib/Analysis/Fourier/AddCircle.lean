@@ -184,7 +184,7 @@ theorem fourier_add_half_inv_index {n : ℤ} (hn : n ≠ 0) (hT : 0 < T) (x : Ad
 def fourierSubalgebra : StarSubalgebra ℂ C(AddCircle T, ℂ) where
   toSubalgebra := Algebra.adjoin ℂ (range fourier)
   star_mem' := by
-    show Algebra.adjoin ℂ (range (fourier (T := T))) ≤
+    change Algebra.adjoin ℂ (range (fourier (T := T))) ≤
       star (Algebra.adjoin ℂ (range (fourier (T := T))))
     refine adjoin_le ?_
     rintro - ⟨n, rfl⟩

@@ -154,7 +154,7 @@ protected def copy (S : NonUnitalSubalgebra R A) (s : Set A) (hs : s = ↑S) :
     NonUnitalSubalgebra R A :=
   { S.toNonUnitalSubsemiring.copy s hs with
     smul_mem' := fun r a (ha : a ∈ s) => by
-      show r • a ∈ s
+      change r • a ∈ s
       rw [hs] at ha ⊢
       exact S.smul_mem' r ha }
 
@@ -678,7 +678,7 @@ lemma adjoin_eq_span (s : Set A) : (adjoin R s).toSubmodule = span R (Subsemigro
       case Hsmul_r => exact fun r x y _ _ hxy ↦ by simpa [mul_smul_comm] using smul_mem _ _ hxy
     | smul r x _ hpx => exact smul_mem _ _ hpx
   · apply span_le.2 _
-    show Subsemigroup.closure s ≤ (adjoin R s).toSubsemigroup
+    change Subsemigroup.closure s ≤ (adjoin R s).toSubsemigroup
     exact Subsemigroup.closure_le.2 (subset_adjoin R)
 
 variable (R A)
@@ -1066,10 +1066,8 @@ variable [IsScalarTower R A A] [SMulCommClass R A A]
 
 theorem _root_.Set.smul_mem_center (r : R) {a : A} (ha : a ∈ Set.center A) :
     r • a ∈ Set.center A where
-  comm b := by rw [mul_smul_comm, smul_mul_assoc, ha.comm]
+  comm b := by rw [commute_iff_eq, mul_smul_comm, smul_mul_assoc, ha.comm]
   left_assoc b c := by rw [smul_mul_assoc, smul_mul_assoc, smul_mul_assoc, ha.left_assoc]
-  mid_assoc b c := by
-    rw [mul_smul_comm, smul_mul_assoc, smul_mul_assoc, mul_smul_comm, ha.mid_assoc]
   right_assoc b c := by
     rw [mul_smul_comm, mul_smul_comm, mul_smul_comm, ha.right_assoc]
 

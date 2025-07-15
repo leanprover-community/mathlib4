@@ -468,7 +468,7 @@ theorem continuousOn_primitive (h_int : IntegrableOn f (Icc a b) μ) :
     rw [continuousOn_congr this]
     intro x₀ _
     refine continuousWithinAt_primitive (measure_singleton x₀) ?_
-    simp only [intervalIntegrable_iff_integrableOn_Ioc_of_le, min_eq_left, max_eq_right, h,
+    simp only [intervalIntegrable_iff_integrableOn_Ioc_of_le, max_eq_right, h,
       min_self]
     exact h_int.mono Ioc_subset_Icc_self le_rfl
   · rw [Icc_eq_empty h]

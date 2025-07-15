@@ -32,13 +32,14 @@ Hence our $d_n$ squares to zero, and we get
 $\mathrm{H}_n(G, A) \cong \mathrm{Tor}_n(A, k),$ where $\mathrm{Tor}$ is defined by deriving the
 second argument of the functor $(A, B) \mapsto (A \otimes_k B)_G.$
 
+To talk about homology in low degree, the file
+`Mathlib/RepresentationTheory/Homological/GroupHomology/LowDegree.lean` provides API specialized to
+`H₀`, `H₁`, `H₂`.
+
 ## Main definitions
 
 * `Rep.Tor k G n`: the left-derived functors given by deriving the second argument of
   $(A, B) \mapsto (A \otimes_k B)_G$.
-* `Rep.coinvariantsTensorBarResolution A`: a complex whose objects are
-  $(A \otimes_k \left(\bigoplus_{G^n} k[G]\right))_G$ and whose homology is the group
-  homology $\mathrm{H}_n(G, A)$.
 * `groupHomology.inhomogeneousChains A`: a complex whose objects are
   $\bigoplus_{G^n} A$ and whose homology is the group homology $\mathrm{H}_n(G, A).$
 * `groupHomology.inhomogeneousChainsIso A`: an isomorphism between the above two complexes.
@@ -78,11 +79,21 @@ universe u
 
 open CategoryTheory CategoryTheory.Limits
 
-namespace Rep
-
 variable (k G : Type u) [CommRing k] [Group G]
 
 open MonoidalCategory Representation Finsupp
+
+section Tor
+
+variable {k G} in
+/-- Given `A : Rep k G` and a chain complex `P` in `Rep k G`, this is the chain complex whose
+`n`th object is `(A ⊗ Pₙ)_G`. -/
+abbrev HomologicalComplex.coinvariantsTensorObj {α : Type*} [AddRightCancelSemigroup α] [One α]
+    (A : Rep k G) (P : ChainComplex (Rep k G) α) :
+    ChainComplex (ModuleCat k) α :=
+  (((Rep.coinvariantsTensor k G).obj A).mapHomologicalComplex _).obj P
+
+namespace Rep
 
 /-- The left-derived functors given by deriving the second argument of `A, B ↦ (A ⊗[k] B)_G`. -/
 @[simps]
@@ -92,6 +103,11 @@ def Tor (n : ℕ) : Rep k G ⥤ Rep k G ⥤ ModuleCat k where
 
 variable {k G} (A : Rep k G)
 
+/-- `Tor` can be computed using a projective resolution. -/
+abbrev torIso (A : Rep k G) {B : Rep k G} (P : ProjectiveResolution B) (n : ℕ) :
+    ((Rep.Tor k G n).obj A).obj B ≅ (P.complex.coinvariantsTensorObj A).homology n :=
+  P.isoLeftDerivedObj _ n
+
 /-- The higher `Tor` groups for `X` and `Y` are zero if `Y` is projective. -/
 lemma isZero_Tor_succ_of_projective (X Y : Rep k G) [Projective Y] (n : ℕ) :
     IsZero (((Tor k G (n + 1)).obj X).obj Y) :=
@@ -99,10 +115,12 @@ lemma isZero_Tor_succ_of_projective (X Y : Rep k G) [Projective Y] (n : ℕ) :
 
 /-- Given a `k`-linear `G`-representation `A`, this is the chain complex `(A ⊗[k] P)_G`, where
 `P` is the bar resolution of `k` as a trivial representation. -/
+@[deprecated "Use `(barComplex k G).coinvariantsTensorObj A` instead." (since := "2025-06-17")]
 abbrev coinvariantsTensorBarResolution [DecidableEq G] :=
   (((coinvariantsTensor k G).obj A).mapHomologicalComplex _).obj (barComplex k G)
 
 end Rep
+end Tor
 
 namespace groupHomology
 
@@ -130,7 +148,7 @@ open ModuleCat.MonoidalCategory
 
 theorem d_eq [DecidableEq G] :
     d A n = (coinvariantsTensorFreeLEquiv A (Fin (n + 1) → G)).toModuleIso.inv ≫
-      (coinvariantsTensorBarResolution A).d (n + 1) n ≫
+      ((barComplex k G).coinvariantsTensorObj A).d (n + 1) n ≫
       (coinvariantsTensorFreeLEquiv A (Fin n → G)).toModuleIso.hom := by
   ext : 3
   simp [d_single (k := k), ModuleCat.MonoidalCategory.tensorObj,
@@ -150,7 +168,7 @@ noncomputable abbrev inhomogeneousChains :
     (fun n => inhomogeneousChains.d A n) fun n => by
     simp only [inhomogeneousChains.d_eq]
     slice_lhs 3 4 => { rw [Iso.hom_inv_id] }
-    slice_lhs 2 4 => { rw [Category.id_comp, (coinvariantsTensorBarResolution A).d_comp_d] }
+    slice_lhs 2 4 => { rw [Category.id_comp, ((barComplex k G).coinvariantsTensorObj A).d_comp_d] }
     simp
 
 open inhomogeneousChains
@@ -172,7 +190,7 @@ theorem inhomogeneousChains.d_comp_d :
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous chains is isomorphic
 to `(A ⊗[k] P)_G`, where `P` is the bar resolution of `k` as a trivial `G`-representation. -/
 def inhomogeneousChainsIso :
-    inhomogeneousChains A ≅ coinvariantsTensorBarResolution A := by
+    inhomogeneousChains A ≅ (barComplex k G).coinvariantsTensorObj A := by
   refine HomologicalComplex.Hom.isoOfComponents ?_ ?_
   · intro i
     apply (coinvariantsTensorFreeLEquiv A (Fin i → G)).toModuleIso.symm
@@ -224,7 +242,15 @@ theorem groupHomology_induction_on {n : ℕ}
 def groupHomologyIsoTor (n : ℕ) :
     groupHomology A n ≅ ((Tor k G n).obj A).obj (Rep.trivial k G k) :=
   isoOfQuasiIsoAt (HomotopyEquiv.ofIso (inhomogeneousChainsIso A)).hom n ≪≫
-    ((barResolution k G).isoLeftDerivedObj ((coinvariantsTensor k G).obj A) n).symm
+    (torIso A (barResolution k G) n).symm
+
+/-- The `n`th group homology of a `k`-linear `G`-representation `A` is isomorphic to
+`Hₙ((A ⊗ P)_G)`, where `P` is any projective resolution of `k` as a trivial `k`-linear
+`G`-representation. -/
+def groupHomologyIso [Group G] [DecidableEq G] (A : Rep k G) (n : ℕ)
+    (P : ProjectiveResolution (Rep.trivial k G k)) :
+    groupHomology A n ≅ (P.complex.coinvariantsTensorObj A).homology n :=
+  groupHomologyIsoTor A n ≪≫ torIso A P n
 
 lemma isZero_groupHomology_succ_of_subsingleton [Subsingleton G] (n : ℕ) :
     Limits.IsZero (groupHomology A (n + 1)) :=

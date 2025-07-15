@@ -171,7 +171,7 @@ theorem imo2006_q5' {P : Polynomial ℤ} (hP : 1 < P.natDegree) :
     replace ht := isRoot_of_mem_roots (Multiset.mem_toFinset.1 ht)
     rw [IsRoot.def, eval_sub, eval_comp, eval_X, sub_eq_zero] at ht
     simp only [mem_roots hPab', sub_eq_iff_eq_add, Multiset.mem_toFinset, IsRoot.def,
-      eval_sub, eval_add, eval_X, eval_C, eval_intCast, Int.cast_id, zero_add]
+      eval_sub, eval_add, eval_X, eval_intCast, Int.cast_id, zero_add]
     -- An auxiliary lemma proved earlier implies we only need to show |t - a| = |u - b| and
     -- |t - b| = |u - a|. We prove this by establishing that each side of either equation divides
     -- the other.

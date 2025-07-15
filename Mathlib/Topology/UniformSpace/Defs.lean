@@ -779,7 +779,7 @@ theorem uniformContinuous_of_const [UniformSpace β] {c : α → β} (h : ∀ a 
     UniformContinuous c :=
   have : (fun x : α × α => (c x.fst, c x.snd)) ⁻¹' idRel = univ :=
     eq_univ_iff_forall.2 fun ⟨a, b⟩ => h a b
-  le_trans (map_le_iff_le_comap.2 <| by simp [comap_principal, this, univ_mem]) refl_le_uniformity
+  le_trans (map_le_iff_le_comap.2 <| by simp [comap_principal, this]) refl_le_uniformity
 
 theorem uniformContinuous_id : UniformContinuous (@id α) := tendsto_id
 

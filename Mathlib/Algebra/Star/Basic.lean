@@ -487,16 +487,16 @@ theorem Ring.inverse_star [Semiring R] [StarRing R] (a : R) :
 
 protected instance Invertible.star {R : Type*} [MulOneClass R] [StarMul R] (r : R) [Invertible r] :
     Invertible (star r) where
-  invOf := Star.star (⅟ r)
+  invOf := Star.star (⅟r)
   invOf_mul_self := by rw [← star_mul, mul_invOf_self, star_one]
   mul_invOf_self := by rw [← star_mul, invOf_mul_self, star_one]
 
 theorem star_invOf {R : Type*} [Monoid R] [StarMul R] (r : R) [Invertible r]
-    [Invertible (star r)] : star (⅟ r) = ⅟ (star r) := by
-  have : star (⅟ r) = star (⅟ r) * ((star r) * ⅟ (star r)) := by
+    [Invertible (star r)] : star (⅟r) = ⅟(star r) := by
+  have : star (⅟r) = star (⅟r) * ((star r) * ⅟(star r)) := by
     simp only [mul_invOf_self, mul_one]
   rw [this, ← mul_assoc]
-  have : (star (⅟ r)) * (star r) = star 1 := by rw [← star_mul, mul_invOf_self]
+  have : (star (⅟r)) * (star r) = star 1 := by rw [← star_mul, mul_invOf_self]
   rw [this, star_one, one_mul]
 
 
