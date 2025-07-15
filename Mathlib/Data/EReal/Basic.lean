@@ -708,7 +708,7 @@ lemma coe_toENNReal {x : EReal} (hx : 0 ≤ x) : (x.toENNReal : EReal) = x := by
   · rw [if_pos h_top, h_top]
     rfl
   rw [if_neg h_top]
-  simp only [coe_ennreal_ofReal, ge_iff_le, hx, toReal_nonneg, max_eq_left]
+  simp only [coe_ennreal_ofReal, hx, toReal_nonneg, max_eq_left]
   exact coe_toReal h_top fun _ ↦ by simp_all only [le_bot_iff, zero_ne_bot]
 
 lemma coe_toENNReal_eq_max {x : EReal} : x.toENNReal = max 0 x := by

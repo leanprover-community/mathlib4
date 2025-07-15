@@ -481,7 +481,7 @@ def ofRepresentableBy {X : C} (h : F.cones.RepresentableBy X) : IsLimit (limitCo
     have h := cone_fac h s
     cases s
     injection h with h₁ h₂
-    simp only [heq_iff_eq] at h₂
+    simp only at h₂
     conv_rhs => rw [← h₂]
     rfl
   uniq s m w := by
@@ -952,7 +952,7 @@ def ofCorepresentableBy {X : C} (h : F.cocones.CorepresentableBy X) :
     have h := cocone_fac h s
     cases s
     injection h with h₁ h₂
-    simp only [heq_iff_eq] at h₂
+    simp only at h₂
     conv_rhs => rw [← h₂]
     rfl
   uniq s m w := by
