@@ -5,7 +5,7 @@ Authors: Antoine Chambert-Loir
 -/
 
 import Mathlib.Algebra.Group.Action.End
-import Mathlib.GroupTheory.Abelianization
+import Mathlib.GroupTheory.Abelianization.Defs
 import Mathlib.GroupTheory.GroupAction.Primitive
 import Mathlib.GroupTheory.Subgroup.Simple
 
