@@ -131,11 +131,15 @@ theorem derivWithin_pow_field (h : UniqueDiffWithinAt 𝕜 s x) (n : ℕ) :
     derivWithin (fun x => x ^ n) s x = (n : 𝕜) * x ^ (n - 1) := by
   rw [derivWithin_pow (differentiableWithinAt_id' (s := s)) h n, derivWithin_id' _ _ h, mul_one]
 
-theorem derivWithin_pow_field' (hc : DifferentiableWithinAt 𝕜 c s x) (n : ℕ) :
+theorem derivWithin_fun_pow_field' (hc : DifferentiableWithinAt 𝕜 c s x) (n : ℕ) :
     derivWithin (fun x => c x ^ n) s x = (n : 𝕜) * c x ^ (n - 1) * derivWithin c s x := by
   by_cases hsx : UniqueDiffWithinAt 𝕜 s x
   · exact derivWithin_pow hc hsx n
   · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
+
+theorem derivWithin_pow_field' (hc : DifferentiableWithinAt 𝕜 c s x) (n : ℕ) :
+    derivWithin (c ^ n) s x = (n : 𝕜) * c x ^ (n - 1) * derivWithin c s x :=
+  derivWithin_fun_pow_field' hc n
 
 theorem hasStrictDerivAt_pow (n : ℕ) (x : 𝕜) :
     HasStrictDerivAt (fun x : 𝕜 ↦ x ^ n) (n * x ^ (n - 1)) x := by
