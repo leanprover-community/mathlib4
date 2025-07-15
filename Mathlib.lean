@@ -3767,7 +3767,8 @@ import Mathlib.Geometry.RingedSpace.PresheafedSpace.Gluing
 import Mathlib.Geometry.RingedSpace.PresheafedSpace.HasColimits
 import Mathlib.Geometry.RingedSpace.SheafedSpace
 import Mathlib.Geometry.RingedSpace.Stalks
-import Mathlib.GroupTheory.Abelianization
+import Mathlib.GroupTheory.Abelianization.Defs
+import Mathlib.GroupTheory.Abelianization.Finite
 import Mathlib.GroupTheory.Archimedean
 import Mathlib.GroupTheory.ArchimedeanDensely
 import Mathlib.GroupTheory.ClassEquation
