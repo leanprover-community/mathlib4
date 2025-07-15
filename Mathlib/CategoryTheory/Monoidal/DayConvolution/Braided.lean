@@ -203,14 +203,14 @@ section
 
 open LawfulDayConvolutionMonoidalCategoryStruct
 
-/-- The data of a `LawfulDayConvolutionBraidedMonoidalCategoryStruct` adds
+/-- The data of a `LawfulDayConvolutionBraidedCategoryStruct` adds
 the data of a braiding isomorphism to a
 `LawfulDayConvolutionMonoidalCategoryStruct C V D`, provided `C` and `V` are
 braided. This braiding is required to behave well with respect to the
 universal maps that exhibits (the realization as a functor `C ⥤ V` of)
 `d ⊗ d'` as a Day convolution, in a way that makes it equal to
 `DayConvolution.braiding (ι C V D|>.obj d) (ι C V D|>.obj d')`. -/
-class LawfulDayConvolutionBraidedMonoidalCategoryStruct
+class LawfulDayConvolutionBraidedCategoryStruct
     (C : Type u₁) [Category.{v₁} C] (V : Type u₂) [Category.{v₂} V]
     [MonoidalCategory C] [BraidedCategory C]
     [MonoidalCategory V] [BraidedCategory V]
@@ -224,7 +224,7 @@ class LawfulDayConvolutionBraidedMonoidalCategoryStruct
     (β_ _ _).hom ≫ (convolutionExtensionUnit C V d' d).app (_, _) ≫
       ((ι C V D).obj (d' ⊗ d)).map (β_ _ _).hom
 
-namespace LawfulDayConvolutionBraidedMonoidalCategoryStruct
+namespace LawfulDayConvolutionBraidedCategoryStruct
 
 attribute [reassoc (attr := simp)] unit_app_braiding_hom_app
 
@@ -238,7 +238,7 @@ variable (C : Type u₁) [Category.{v₁} C] (V : Type u₂) [Category.{v₂} V]
 
 @[reassoc (attr := simp)]
 lemma unit_app_braiding_inv_app
-    [LawfulDayConvolutionBraidedMonoidalCategoryStruct C V D]
+    [LawfulDayConvolutionBraidedCategoryStruct C V D]
     (d d' : D) (x y : C) :
     (convolutionExtensionUnit C V d' d).app (x, y) ≫
       ((ι C V D).map (braiding C V d d').inv).app (x ⊗ y) =
@@ -249,7 +249,7 @@ lemma unit_app_braiding_inv_app
 
 attribute [local instance] convolution in
 lemma ι_map_braiding_hom
-    [LawfulDayConvolutionBraidedMonoidalCategoryStruct C V D]
+    [LawfulDayConvolutionBraidedCategoryStruct C V D]
     (d d' : D) :
     (ι C V D).map (braiding C V d d').hom =
     (DayConvolution.braiding (ι C V D|>.obj d) (ι C V D|>.obj d')).hom := by
@@ -267,7 +267,7 @@ lemma ι_map_braiding_hom
 
 attribute [local instance] convolution in
 lemma ι_map_braiding_inv
-    [LawfulDayConvolutionBraidedMonoidalCategoryStruct C V D]
+    [LawfulDayConvolutionBraidedCategoryStruct C V D]
     (d d' : D) :
     (ι C V D).map (braiding C V d d').inv =
     (DayConvolution.braiding (ι C V D|>.obj d) (ι C V D|>.obj d')).inv := by
@@ -281,7 +281,7 @@ attribute [local instance] convolution in
 "canonical" braiding induced from `DayConvolution.braiding`. -/
 noncomputable def mkOfLawfulDayConvolutionMonoidalCategoryStruct
     [(ι C V D).Full] :
-    LawfulDayConvolutionBraidedMonoidalCategoryStruct C V D where
+    LawfulDayConvolutionBraidedCategoryStruct C V D where
   braiding d d' := (ι C V D).preimageIso <|
     DayConvolution.braiding (ι C V D|>.obj d) (ι C V D|>.obj d')
   unit_app_braiding_hom_app d d' x y := by
@@ -303,7 +303,7 @@ attribute [local instance] convolution convolution₂ convolution₂' in
 `LawfulDayConvolutionMonoidalCategoryStruct` to a braided monoidal category
 structure. -/
 def braided [BraidedCategory C] [BraidedCategory V]
-    [LawfulDayConvolutionBraidedMonoidalCategoryStruct C V D]
+    [LawfulDayConvolutionBraidedCategoryStruct C V D]
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
       (CostructuredArrow (tensor C) d) (tensorLeft v)]
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
@@ -344,7 +344,7 @@ def braided [BraidedCategory C] [BraidedCategory V]
 /-- promote `braided` to a symmetric monoidal category structure
 when `C` and `V` are symmetric monoidal. -/
 def symmetric [SymmetricCategory V] [SymmetricCategory C]
-    [LawfulDayConvolutionBraidedMonoidalCategoryStruct C V D]
+    [LawfulDayConvolutionBraidedCategoryStruct C V D]
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
       (CostructuredArrow (tensor C) d) (tensorLeft v)]
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
@@ -360,7 +360,7 @@ def symmetric [SymmetricCategory V] [SymmetricCategory C]
 
 end
 
-end LawfulDayConvolutionBraidedMonoidalCategoryStruct
+end LawfulDayConvolutionBraidedCategoryStruct
 
 end
 
