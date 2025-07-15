@@ -6,6 +6,7 @@ Authors: Christopher Hoskin
 
 import Mathlib.Order.Lattice
 import Mathlib.Tactic.TFAE
+import Mathlib.Data.Setoid.Basic
 
 /-!
 # Distributive, Standard and Neutral elements
@@ -29,14 +30,6 @@ def IsStandard [Lattice α] (a : α) : Prop :=
 def IsNeutral [Lattice α] (a : α) : Prop :=
   ∀ (x y : α), (a ⊓ x) ⊔ (a ⊓ y) ⊔ (x ⊓ y) = (a ⊔ x) ⊓ (a ⊔ y) ⊓ (x ⊔ y)
 
-/-- Kernel of a function -/
-def ker (f : α → β) : α → α → Prop := fun a b => f a = f b
-
-lemma equiv_ker (f : α → β) : Equivalence (ker f) where
-  refl _ := rfl
-  symm h := h.symm
-  trans h1 h2 := h1.trans h2
-
 variable [Lattice α] [Lattice β]
 
 /-- The set of neutral elements of a lattice -/
@@ -50,17 +43,13 @@ structure IsLatticeHom (f : α → β) : Prop where
   /-- f preserves sup -/
   map_sup (a b : α) : f (a ⊔ b) = f a ⊔ f b
 
-lemma kercong (f : α → β) (h : IsLatticeHom f) :  IsLatticeCon (ker f) := {
-      equiv_ker f with
+lemma kercong (f : α → β) (h : IsLatticeHom f) :  IsLatticeCon (Setoid.ker f) := {
+      (Setoid.ker f).iseqv with
       inf := fun h1 h2 => by
-        unfold ker
-        rw [h.map_inf, h.map_inf, h1, h2]
+        simp_all [Setoid.ker, Function.onFun, h.map_inf]
       sup := fun h1 h2 => by
-        unfold ker
-        rw [h.map_sup, h.map_sup, h1, h2]
+        simp_all [Setoid.ker, Function.onFun, h.map_sup]
   }
-
-
 
 lemma theorem2_i_ii (a : α) : IsDistrib a → IsLatticeHom (fun x => a ⊔ x) := fun h => {
   map_inf := h
@@ -68,16 +57,14 @@ lemma theorem2_i_ii (a : α) : IsDistrib a → IsLatticeHom (fun x => a ⊔ x) :
 }
 
 lemma theorem2_ii_iii (a : α) (h : IsLatticeHom (fun x => a ⊔ x)) :
-    IsLatticeCon (ker (fun x => a ⊔ x)) := kercong _ h
+    IsLatticeCon (Setoid.ker (fun x => a ⊔ x)) := kercong _ h
 
-lemma theorem2_iii_i (a : α) (h : IsLatticeCon (ker (fun x => a ⊔ x))) : IsDistrib a := by
+lemma theorem2_iii_i (a : α) (h : IsLatticeCon (Setoid.ker (fun x => a ⊔ x))) : IsDistrib a := by
   intro x y
   have e1 : a ⊔ x ⊓ y = a ⊔ ((a ⊔ x) ⊓ (a ⊔ y)) := by
     apply h.inf
-    · unfold ker
-      simp
-    · unfold ker
-      simp
+    · simp [Setoid.ker, Function.onFun]
+    · simp [Setoid.ker, Function.onFun]
   rw [e1]
   simp
 
@@ -85,7 +72,7 @@ open List in
 theorem theorem2 (a : α) : TFAE [
     IsDistrib a,
     IsLatticeHom (fun x => a ⊔ x),
-    IsLatticeCon (ker (fun x => a ⊔ x))] := by
+    IsLatticeCon (Setoid.ker (fun x => a ⊔ x))] := by
   tfae_have 1 → 2
   | h => by (expose_names; exact theorem2_i_ii a h_1)
   tfae_have 2 → 3
