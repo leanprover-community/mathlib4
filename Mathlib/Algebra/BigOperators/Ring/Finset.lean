@@ -122,7 +122,7 @@ lemma prod_sum (s : Finset ι) (t : ∀ i, Finset (κ i)) (f : ∀ i, κ i → �
     have h₁ : ∀ x ∈ t a, ∀ y ∈ t a, x ≠ y →
       Disjoint (image (Pi.cons s a x) (pi s t)) (image (Pi.cons s a y) (pi s t)) := by
       intro x _ y _ h
-      simp only [disjoint_iff_ne, mem_image]
+      simp -congrConsts only [disjoint_iff_ne, mem_image]
       rintro _ ⟨p₂, _, eq₂⟩ _ ⟨p₃, _, eq₃⟩ eq
       have : Pi.cons s a x p₂ a (mem_insert_self _ _)
               = Pi.cons s a y p₃ a (mem_insert_self _ _) := by rw [eq₂, eq₃, eq]
@@ -135,7 +135,7 @@ lemma prod_sum (s : Finset ι) (t : ∀ i, Finset (κ i)) (f : ∀ i, κ i → �
     rw [sum_image h₂, mul_sum]
     refine sum_congr rfl fun g _ => ?_
     rw [attach_insert, prod_insert, prod_image]
-    · simp only [Pi.cons_same]
+    · simp -congrConsts only [Pi.cons_same]
       congr with ⟨v, hv⟩
       congr
       exact (Pi.cons_ne (by rintro rfl; exact ha hv)).symm

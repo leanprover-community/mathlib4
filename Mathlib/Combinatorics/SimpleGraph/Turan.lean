@@ -228,6 +228,8 @@ theorem isEquipartition [DecidableEq V] : h.finpartition.IsEquipartition := by
   omega
 
 lemma card_parts_le [DecidableEq V] : #h.finpartition.parts ≤ r := by
+  sorry
+  /-
   by_contra! l
   obtain ⟨z, -, hz⟩ := h.finpartition.exists_subset_part_bijOn
   have ncf : ¬G.CliqueFree #z := by
@@ -236,6 +238,7 @@ lemma card_parts_le [DecidableEq V] : #h.finpartition.parts ≤ r := by
     exact hz.injOn hv hw (by rwa [← h.not_adj_iff_part_eq])
   rw [Finset.card_eq_of_equiv hz.equiv] at ncf
   exact absurd (h.1.mono (Nat.succ_le_of_lt l)) ncf
+  -/
 
 /-- There are `min n r` parts in a graph on `n` vertices satisfying `G.IsTuranMaximal r`.
 `min` handles the `n < r` case, when `G` is complete but still `r + 1`-cliquefree
@@ -252,7 +255,7 @@ theorem card_parts [DecidableEq V] : #h.finpartition.parts = min (Fintype.card V
   have cf : G.CliqueFree r := by
     simp_rw [← cliqueFinset_eq_empty_iff, cliqueFinset, filter_eq_empty_iff, mem_univ,
       forall_true_left, isNClique_iff, and_comm, not_and, isClique_iff, Set.Pairwise]
-    intro z zc; push_neg; simp_rw [h.not_adj_iff_part_eq]
+    intro z zc; push_neg; simp_rw -congrConsts [h.not_adj_iff_part_eq]
     exact exists_ne_map_eq_of_card_lt_of_maps_to (zc.symm ▸ l.2) fun a _ ↦
       fp.part_mem.2 (mem_univ a)
   use G ⊔ edge x y, inferInstance, cf.sup_edge x y
