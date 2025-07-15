@@ -39,9 +39,9 @@ theorem iInter_halfSpaces_eq_of_separableSpace {𝕜 E : Type*} {s : Set E}
     [SeparableSpace E] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
     (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) (hs₃ : s.Nonempty) :
     ∃ (L : ℕ → E →L[𝕜] 𝕜) (c : ℕ → ℝ),
-    ⋂ (i : ℕ), {x | re ((L i) x) - c i ≥ 0} = s
-    ∧ (sᶜ.Nonempty → ∀ i, ∃ x, (re ∘ L i) x ≠ 0) := by
-  cases (eq_empty_or_nonempty sᶜ) with
+    ⋂ (i : ℕ), {x | re ((L i) x) - c i ≥ 0} = s ∧
+    (sᶜ.Nonempty → ∀ i, ∃ x, re (L i x) ≠ 0) := by
+  cases eq_empty_or_nonempty sᶜ with
   | inl hsc =>
     exists (fun i ↦ 0)
     exists (fun i ↦ 0)
@@ -49,8 +49,8 @@ theorem iInter_halfSpaces_eq_of_separableSpace {𝕜 E : Type*} {s : Set E}
     constructor
     · exact (compl_empty_iff.mp hsc).symm
     · rw [nonempty_iff_ne_empty]
-      intro ha ; have := ha hsc
-      exact False.elim this
+      intro ha
+      exact absurd hsc ha
   | inr hsc =>
     have nonemptys := Nonempty.to_subtype hsc
     have issepsc : IsSeparable sᶜ := IsSeparable.of_separableSpace sᶜ
@@ -90,7 +90,7 @@ theorem iInter_halfSpaces_eq_of_separableSpace {𝕜 E : Type*} {s : Set E}
         have hfix : infDist ↑(f i) s ≥  ((infDist x s) / 2) := by
           apply le_of_not_gt
           intro hp
-          rcases ((infDist_lt_iff hs₃).mp hp) with ⟨y, hy1, hy2⟩
+          rcases (infDist_lt_iff hs₃).mp hp with ⟨y, hy1, hy2⟩
           have hxy : dist x y < infDist x s :=
             calc
               dist x y ≤ dist x ↑(f i) + dist ↑(f i) y := dist_triangle x ↑(f i) y
@@ -106,7 +106,7 @@ theorem iInter_halfSpaces_eq_of_separableSpace {𝕜 E : Type*} {s : Set E}
       · intro hx i
         exact ((hLc i).2 x hx)
     · intro ha j
-      cases (le_or_gt (c j) 0) with
+      cases le_or_gt (c j) 0 with
       | inl hl =>
         use f j; apply ne_of_lt; apply lt_of_lt_of_le
         · have : (⇑re ∘ ⇑(L j)) ↑(f j) < c j := by
@@ -151,7 +151,7 @@ theorem iInter_halfSpaces_eq_of_separableSpace_prod {𝕜 E F : Type*} {s : Set 
     simp only [coe_comp', Function.comp_apply, inl_apply, inr_apply, ge_iff_le, sub_nonneg,
       mem_setOf_eq]
     rw [lem3]
-  · intro hsc i; rcases (eq2 hsc i) with ⟨z, hz⟩
+  · intro hsc i; rcases eq2 hsc i with ⟨z, hz⟩
     use z.1; use z.2; simp only [coe_comp', Function.comp_apply, inl_apply, inr_apply, lem3]
     exact hz
 
@@ -196,14 +196,14 @@ theorem ConvexOn.iSup_affine_eq_of_separableSpace {𝕜 E : Type*}
     have lem : (0, ↑ (φ 0)) ∈ C := by
       simp only [mem_setOf_eq, ofReal_re, le_refl, C]
     exact nonempty_of_mem lem
-  rcases (iInter_halfSpaces_eq_of_separableSpace_prod (𝕜 := 𝕜) hC₁ hC₂ hC₃)
+  rcases iInter_halfSpaces_eq_of_separableSpace_prod (𝕜 := 𝕜) hC₁ hC₂ hC₃
     with ⟨L, T, c, hLTc1, hLTc2⟩
   have lem1 : ∀ i, ∀ y, (T i) y = ((T i) 1) * y := by
     intro i y
     have lem11 : (T i) y = (T i) (y • 1) := by simp only [smul_eq_mul, mul_one]
     rw [lem11, mul_comm, map_smul, smul_eq_mul]
-  have lem2 :  ∀ (x : E) (y : 𝕜), re y ≥ φ x →
-  ∀ i, c i ≤ re ((L i) x) + re ((T i) 1) * (re y) - im ((T i) 1) * im (y) := by
+  have lem2 : ∀ (x : E) (y : 𝕜), re y ≥ φ x →
+    ∀ i, c i ≤ re ((L i) x) + re ((T i) 1) * (re y) - im ((T i) 1) * im (y) := by
     intro x y
     intro hy i
     have hy2 : (x, y) ∈ C := by simp only [mem_setOf_eq, C]; exact hy
@@ -211,7 +211,7 @@ theorem ConvexOn.iSup_affine_eq_of_separableSpace {𝕜 E : Type*}
     simp only [← hLTc1, ge_iff_le, sub_nonneg, mem_iInter, mem_setOf_eq, C] at hy2
     exact (hy2 i)
   have lem3 : ∀ i, 0 = im ((T i) 1) := by
-    cases (@I_eq_zero_or_im_I_eq_one 𝕜 (by infer_instance)) with
+    cases @I_eq_zero_or_im_I_eq_one 𝕜 (by infer_instance) with
     | inl hI0 =>
       intro i ; rw [← I_im', hI0] ; simp only [map_zero, zero_mul]
     | inr hI1 =>
@@ -353,7 +353,7 @@ theorem ConvexOn.iSup_affine_eq_of_separableSpace {𝕜 E : Type*}
                 rw [← inv_neg, ← div_eq_mul_inv, div_neg, div_self]
                 exact (ne_of_gt (lem4 i))
             _ = φ y := by rw [neg_add_cancel, zero_add, one_mul]
-    use φ y; intro z hz; rcases (mem_range.mp hz) with ⟨i, hfi⟩
+    use φ y; intro z hz; rcases mem_range.mp hz with ⟨i, hfi⟩
     rw [← hfi] ; exact this i
   intro x; simp only; constructor
   · exact hf x
@@ -435,11 +435,11 @@ theorem ConvexOn.iSup_affine_eq_of_separableSpace {𝕜 E : Type*}
 
 /-- Conditional expectation commutes with bounded linear functional -/
 theorem condExpL1_comp_continuousLinearMap {α E F : Type*}
-  [NormedAddCommGroup E] [CompleteSpace E] [NormedSpace ℝ E]
-  [NormedAddCommGroup F] [CompleteSpace F] [NormedSpace ℝ F]
-  {m mα : MeasurableSpace α} (hm : m ≤ mα) {μ : Measure α} [SigmaFinite (μ.trim hm)]
-  {f : α → E} (hf_int : Integrable f μ) (T : E →L[ℝ] F) :
-  ∀ᵐ x ∂μ, (T ∘ μ[f | m]) x = μ[T ∘ f | m] x := by
+    [NormedAddCommGroup E] [CompleteSpace E] [NormedSpace ℝ E]
+    [NormedAddCommGroup F] [CompleteSpace F] [NormedSpace ℝ F]
+    {m mα : MeasurableSpace α} (hm : m ≤ mα) {μ : Measure α} [SigmaFinite (μ.trim hm)]
+    {f : α → E} (hf_int : Integrable f μ) (T : E →L[ℝ] F) :
+    T ∘ μ[f | m] =ᵐ[μ] μ[T ∘ f | m] := by
   apply ae_eq_condExp_of_forall_setIntegral_eq
   · exact integrable_comp T hf_int
   · intro s ms hs
@@ -462,16 +462,15 @@ theorem condExpL1_comp_affine {α 𝕜 E : Type*}
     [RCLike 𝕜] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
     {m mα : MeasurableSpace α} (hm : m ≤ mα) {μ : Measure α} [IsFiniteMeasure μ]
     {f : α → E} (hf_int : Integrable f μ) (T : E →L[𝕜] 𝕜) (a : ℝ) :
-    ∀ᵐ x ∂μ, re (T (μ[f | m] x)) + a = μ[fun y ↦ re (T (f y)) + a | m] x := by
+    (fun x ↦ re (T (μ[f | m] x)) + a) =ᵐ[μ] μ[fun y ↦ re (T (f y)) + a | m] := by
   let g := @reCLM 𝕜 (by infer_instance)
   let h := restrictScalars ℝ T
   have reTf_int : Integrable ((re ∘ T) ∘ f) μ := integrable_comp (comp g h) hf_int
-  have hp : ∀ᵐ x ∂μ, (re ∘ T) (μ[f | m] x) + a =
-    (μ[(re ∘ T) ∘ f | m] + μ[(fun y ↦ a) | m]) x := by
-    simp only [Pi.add_apply]
+  have hp : (fun x ↦ re (T (μ[f | m] x)) + a) =ᵐ[μ]
+      (μ[(re ∘ T) ∘ f | m] + μ[(fun y ↦ a) | m]) := by
     filter_upwards [condExpL1_comp_continuousLinearMap hm hf_int (comp g h)] with b hb
     simpa [condExp_const hm a] using hb
-  exact ae_eq_trans hp (ae_eq_symm ((condExp_add reTf_int (integrable_const a)) m))
+  exact hp.trans (condExp_add reTf_int (integrable_const a) m).symm
 
 /-- Conditional Jensen for separable spaces -/
 lemma conditional_jensen_of_separableSpace {α X : Type*}
@@ -515,45 +514,39 @@ theorem conditional_jensen {α X : Type*}
     {m mα : MeasurableSpace α} (hm : m ≤ mα) {μ : Measure α} [IsFiniteMeasure μ]
     {φ : X → ℝ} (hφ_cvx : ConvexOn ℝ Set.univ φ) (hφ_cont : LowerSemicontinuous φ)
     {f : α → X} (hf_int : Integrable f μ) (hφ_int : Integrable (φ ∘ f) μ) :
-    ∀ᵐ a ∂μ, φ (μ[f | m] a) ≤ μ[φ ∘ f | m] a := by
-  have sep := AEStronglyMeasurable.isSeparable_ae_range (Integrable.aestronglyMeasurable hf_int)
+    φ ∘ μ[f | m] ≤ᵐ[μ] μ[φ ∘ f | m] := by
+  classical
+  borelize X
+  have sep := hf_int.aestronglyMeasurable.isSeparable_ae_range
   rcases sep with ⟨t, ht, htt⟩
   let Y := (Submodule.span ℝ t).topologicalClosure
-  have : CompleteSpace Y := by
-    apply IsClosed.completeSpace_coe
-    apply Submodule.isClosed_topologicalClosure
-  have issepY : IsSeparable Y.carrier := (IsSeparable.closure (IsSeparable.span ht))
-  have : SeparableSpace Y :=
-    IsSeparable.separableSpace issepY
-  have : SecondCountableTopology Y :=
-    IsSeparable.secondCountableTopology issepY
+  have : CompleteSpace Y := (Submodule.isClosed_topologicalClosure _).completeSpace_coe
+  have issepY : IsSeparable Y.carrier := ht.span.closure
+  have : SeparableSpace Y := issepY.separableSpace
+  have : SecondCountableTopology Y := issepY.secondCountableTopology
   let φY := φ ∘ Y.subtypeL
-  have hφY_cvx : ConvexOn ℝ Set.univ φY := by
-    apply ConvexOn.comp_linearMap hφ_cvx Y.subtype
-  have hφ_cont : LowerSemicontinuous φY := by
-    apply LowerSemicontinuous.comp_continuous hφ_cont
-    exact Y.subtypeL.cont
-  have tsubY : ∀ x ∈ t, x ∈ Y.carrier := by
-    simp only [← Set.subset_def]
-    apply subset_trans Submodule.subset_span subset_closure
-  have aeinY : ∀ᵐ (x : α) ∂μ, f x ∈ Y.carrier := by
-    filter_upwards [htt] with a ha; exact tsubY (f a) ha
-  classical
+  have hφY_cvx : ConvexOn ℝ Set.univ φY :=
+    hφ_cvx.comp_linearMap Y.subtype
+  have hφ_cont : LowerSemicontinuous φY :=
+    hφ_cont.comp_continuous Y.subtypeL.cont
+  have tsubY : t ⊆ Y :=
+    subset_trans Submodule.subset_span subset_closure
+  have aeinY : ∀ᵐ (x : α) ∂μ, f x ∈ Y := by
+    filter_upwards [htt] with a ha; exact tsubY ha
   let fY : α → Y := fun a =>
-    if h : f a ∈ Y.carrier
+    if h : f a ∈ Y
     then ⟨f a, h⟩
-    else ⟨0, Y.zero_mem⟩
+    else 0
   let fX : α → X := Y.subtypeL ∘ fY
-  have lem1 : f =ᶠ[ae μ] fX := by
+  have lem1 : f =ᵐ[μ] fX := by
     filter_upwards [aeinY] with a ha
     simp only [fX, Function.comp_apply, fY, ha, reduceDIte, Submodule.subtypeL_apply]
   have hfX_int : Integrable fX μ := Integrable.congr hf_int lem1
-  borelize X
   have hfY_int : Integrable fY μ := by
     constructor
-    · have hs : MeasurableSet Y.carrier :=
+    · have hs : MeasurableSet (Y : Set X) :=
         (Submodule.isClosed_topologicalClosure _).measurableSet
-      have h_nonempty : Y.carrier.Nonempty := by use 0; exact Y.zero_mem
+      have h_nonempty : (Y : Set X).Nonempty := Set.Nonempty.of_subtype
       obtain ⟨g, hg1, hg2 : ∀ x, g x ∈ Y, hg3⟩ :=
         hf_int.1.exists_stronglyMeasurable_range_subset hs h_nonempty aeinY
       use codRestrict g Y hg2
@@ -565,24 +558,20 @@ theorem conditional_jensen {α X : Type*}
     · apply hfX_int.2.mono
       simp only [fX, Function.comp_apply, Submodule.coe_norm,
         Submodule.subtypeL_apply, le_refl, Filter.eventually_true]
-  have lem2 : φ ∘ f =ᶠ[ae μ] φY ∘ fY := by
+  have lem3 : μ[f | m] =ᵐ[μ] Y.subtypeL ∘ μ[fY | m] :=
+    calc
+      μ[f | m] =ᵐ[μ] μ[fX | m] := condExp_congr_ae lem1
+      _ =ᵐ[μ] Y.subtypeL ∘ μ[fY | m] :=
+        (condExpL1_comp_continuousLinearMap hm hfY_int Y.subtypeL).symm
+  have lem2 : φ ∘ f =ᵐ[μ] φY ∘ fY := by
     filter_upwards [lem1] with a ha
     simp only [φY, Function.comp_apply, ha, fX]
-  have hφYfY_int : Integrable (φY ∘ fY) μ := Integrable.congr hφ_int lem2
-  have lem3 : ∀ᵐ a ∂μ, μ[f | m] a = μ[fX | m] a := condExp_congr_ae lem1
-  have lem4 : ∀ᵐ a ∂μ, μ[f | m] a = Y.subtypeL (μ[fY | m] a) := by
-    apply ae_eq_trans
-    · exact lem3
-    · simp only [fX]
-      exact ae_eq_symm (condExpL1_comp_continuousLinearMap hm hfY_int Y.subtypeL)
-  have lem5 : ∀ᵐ a ∂μ, φ (μ[f | m] a) = φY (μ[fY | m] a) := by
-    filter_upwards [lem4] with a ha
-    simp only [φY, Function.comp_apply, ha]
-  have lem6 : ∀ᵐ a ∂μ, φ (μ[fY | m] a) ≤ μ[φY ∘ fY | m] a :=
-    conditional_jensen_of_separableSpace hm hφY_cvx hφ_cont hfY_int hφYfY_int
-  have lem7 : μ[φY ∘ fY | m] =ᶠ[ae μ] μ[φ ∘ f | m] := condExp_congr_ae lem2.symm
-  filter_upwards [lem5, lem6, lem7] with a ha1 ha2 ha3
+  have hφYfY_int : Integrable (φY ∘ fY) μ := hφ_int.congr lem2
   calc
-    φ (μ[f|m] a) = φY (μ[fY | m] a) := ha1
-    _ ≤ μ[φY ∘ fY | m] a := ha2
-    _ = μ[φ ∘ f | m] a := ha3
+    φ ∘ μ[f | m] =ᵐ[μ] φY ∘ μ[fY | m] := by
+      filter_upwards [lem3] with a ha
+      simp only [φY, Function.comp_apply, ha]
+    _ ≤ᵐ[μ] μ[φY ∘ fY | m] :=
+      conditional_jensen_of_separableSpace hm hφY_cvx hφ_cont hfY_int hφYfY_int
+    _ =ᵐ[μ] μ[φ ∘ f | m] :=
+      condExp_congr_ae lem2.symm
