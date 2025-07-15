@@ -20,8 +20,6 @@ import Mathlib.RingTheory.TensorProduct.Finite
 
 -/
 
-suppress_compilation
-
 universe u v w uR uA uM₁ uM₂ uN₁ uN₂
 
 variable {R : Type uR} {A : Type uA} {M₁ : Type uM₁} {M₂ : Type uM₂} {N₁ : Type uN₁} {N₂ : Type uN₂}
@@ -51,8 +49,8 @@ Note this is heterobasic; the bilinear map on the left can take values in a modu
 def tensorDistrib :
     (BilinMap A M₁ N₁ ⊗[R] BilinMap R M₂ N₂) →ₗ[A] BilinMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂) :=
   (TensorProduct.lift.equiv (M₁ ⊗[R] M₂) (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂) (.id A)).symm.toLinearMap ∘ₗ
- ((LinearMap.llcomp A _ _ _).flip
-   (TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R A M₁ M₂ M₁ M₂).toLinearMap)
+  ((LinearMap.llcomp A _ _ _).flip
+   (TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R R A A M₁ M₂ M₁ M₂).toLinearMap)
   ∘ₗ TensorProduct.AlgebraTensorModule.homTensorHomMap R _ _ _ _ _ _
   ∘ₗ (TensorProduct.AlgebraTensorModule.congr
     (TensorProduct.lift.equiv M₁ M₁ N₁ (.id A))
@@ -108,7 +106,6 @@ def tensorDistrib : BilinForm A M₁ ⊗[R] BilinForm R M₂ →ₗ[A] BilinForm
   (AlgebraTensorModule.rid R A A).congrRight₂.toLinearMap ∘ₗ (BilinMap.tensorDistrib R A)
 
 variable (R A) in
-
 -- TODO: make the RHS `MulOpposite.op (B₂ m₂ m₂') • B₁ m₁ m₁'` so that this has a nicer defeq for
 -- `R = A` of `B₁ m₁ m₁' * B₂ m₂ m₂'`, as it did before the generalization in https://github.com/leanprover-community/mathlib4/pull/6306.
 @[simp]
@@ -119,7 +116,7 @@ theorem tensorDistrib_tmul (B₁ : BilinForm A M₁) (B₂ : BilinForm R M₂) (
   rfl
 
 /-- The tensor product of two bilinear forms, a shorthand for dot notation. -/
-protected abbrev tmul (B₁ : BilinForm A M₁) (B₂ : BilinMap  R M₂ R) : BilinMap A (M₁ ⊗[R] M₂) A :=
+protected abbrev tmul (B₁ : BilinForm A M₁) (B₂ : BilinMap R M₂ R) : BilinMap A (M₁ ⊗[R] M₂) A :=
   tensorDistrib R A (B₁ ⊗ₜ[R] B₂)
 
 attribute [local ext] TensorProduct.ext in

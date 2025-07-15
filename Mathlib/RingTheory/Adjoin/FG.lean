@@ -17,7 +17,7 @@ This file develops the basic theory of finitely-generated subalgebras.
 ## Definitions
 
 * `FG (S : Subalgebra R A)` : A predicate saying that the subalgebra is finitely-generated
-as an A-algebra
+  as an A-algebra
 
 ## Tags
 

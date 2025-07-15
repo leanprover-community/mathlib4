@@ -100,11 +100,11 @@ variable [Monoid α] (s : Set α)
 
 @[to_additive zero_leftAddCoset]
 theorem one_leftCoset : (1 : α) • s = s :=
-  Set.ext <| by simp [← image_smul]
+  Set.ext <| by simp
 
 @[to_additive rightAddCoset_zero]
 theorem rightCoset_one : op (1 : α) • s = s :=
-  Set.ext <| by simp [← image_smul]
+  Set.ext <| by simp
 
 end CosetMonoid
 
@@ -324,15 +324,6 @@ lemma orbit_eq_out_smul (x : α ⧸ s) : MulAction.orbitRel.Quotient.orbit x = x
   induction x using QuotientGroup.induction_on
   simp only [orbit_mk_eq_smul, ← eq_class_eq_leftCoset, Quotient.out_eq']
 
-@[to_additive]
-alias orbit_eq_out'_smul := orbit_eq_out_smul
-
--- `alias` doesn't add the deprecation suggestion to the `to_additive` version
--- see https://github.com/leanprover-community/mathlib4/issues/19424
-attribute [deprecated orbit_eq_out_smul (since := "2024-10-19")] orbit_eq_out'_smul
-attribute [deprecated QuotientAddGroup.orbit_eq_out_vadd (since := "2024-10-19")]
-QuotientAddGroup.orbit_eq_out'_vadd
-
 end QuotientGroup
 
 namespace Subgroup
@@ -358,11 +349,11 @@ def rightCosetEquivSubgroup (g : α) : (op g • s : Set α) ≃ s :=
   "A (non-canonical) bijection between an add_group `α` and the product `(α/s) × s`"]
 noncomputable def groupEquivQuotientProdSubgroup : α ≃ (α ⧸ s) × s :=
   calc
-    α ≃ ΣL : α ⧸ s, { x : α // (x : α ⧸ s) = L } := (Equiv.sigmaFiberEquiv QuotientGroup.mk).symm
-    _ ≃ ΣL : α ⧸ s, (Quotient.out L • s : Set α) :=
+    α ≃ Σ L : α ⧸ s, { x : α // (x : α ⧸ s) = L } := (Equiv.sigmaFiberEquiv QuotientGroup.mk).symm
+    _ ≃ Σ L : α ⧸ s, (Quotient.out L • s : Set α) :=
       Equiv.sigmaCongrRight fun L => by
         rw [← eq_class_eq_leftCoset]
-        show
+        change
           (_root_.Subtype fun x : α => Quotient.mk'' x = L) ≃
             _root_.Subtype fun x : α => Quotient.mk'' x = Quotient.mk'' _
         simp
@@ -431,8 +422,7 @@ alias AddSubgroup.quotientEquivSumOfLE_apply := AddSubgroup.quotientEquivProdOfL
 alias AddSubgroup.quotientEquivSumOfLE_symm_apply := AddSubgroup.quotientEquivProdOfLE_symm_apply
 
 /-- If `s ≤ t`, then there is an embedding `s ⧸ H.subgroupOf s ↪ t ⧸ H.subgroupOf t`. -/
-@[to_additive "If `s ≤ t`, then there is an embedding
- `s ⧸ H.addSubgroupOf s ↪ t ⧸ H.addSubgroupOf t`."]
+@[to_additive "If `s ≤ t`, there is an embedding `s ⧸ H.addSubgroupOf s ↪ t ⧸ H.addSubgroupOf t`."]
 def quotientSubgroupOfEmbeddingOfLE (H : Subgroup α) (h : s ≤ t) :
     s ⧸ H.subgroupOf s ↪ t ⧸ H.subgroupOf t where
   toFun :=
@@ -476,7 +466,7 @@ theorem quotientMapOfLE_apply_mk (h : s ≤ t) (g : α) :
 
 /-- The natural embedding `H ⧸ (⨅ i, f i).subgroupOf H ↪ Π i, H ⧸ (f i).subgroupOf H`. -/
 @[to_additive (attr := simps) "The natural embedding
- `H ⧸ (⨅ i, f i).addSubgroupOf H) ↪ Π i, H ⧸ (f i).addSubgroupOf H`."]
+`H ⧸ (⨅ i, f i).addSubgroupOf H) ↪ Π i, H ⧸ (f i).addSubgroupOf H`."]
 def quotientiInfSubgroupOfEmbedding {ι : Type*} (f : ι → Subgroup α) (H : Subgroup α) :
     H ⧸ (⨅ i, f i).subgroupOf H ↪ ∀ i, H ⧸ (f i).subgroupOf H where
   toFun q i := quotientSubgroupOfMapOfLE H (iInf_le f i) q
@@ -566,8 +556,8 @@ variable [Group α]
 (typically non-canonical) bijection between the preimage of `t` in `α` and the product `s × t`. -/
 @[to_additive preimageMkEquivAddSubgroupProdSet
 "If `s` is a subgroup of the additive group `α`, and `t` is a subset of `α ⧸ s`, then
- there is a (typically non-canonical) bijection between the preimage of `t` in `α` and the product
- `s × t`."]
+there is a (typically non-canonical) bijection between the preimage of `t` in `α` and the product
+`s × t`."]
 noncomputable def preimageMkEquivSubgroupProdSet (s : Subgroup α) (t : Set (α ⧸ s)) :
     QuotientGroup.mk ⁻¹' t ≃ s × t where
   toFun a :=

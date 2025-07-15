@@ -24,12 +24,12 @@ We define the trace / Killing form in this file and prove some basic properties.
 
 ## Main definitions
 
- * `LieModule.traceForm`: a finite, free representation of a Lie algebra `L` induces a bilinear form
-   on `L` called the trace Form.
- * `LieModule.traceForm_eq_zero_of_isNilpotent`: the trace form induced by a nilpotent
-   representation of a Lie algebra vanishes.
- * `killingForm`: the adjoint representation of a (finite, free) Lie algebra `L` induces a bilinear
-   form on `L` via the trace form construction.
+* `LieModule.traceForm`: a finite, free representation of a Lie algebra `L` induces a bilinear form
+  on `L` called the trace Form.
+* `LieModule.traceForm_eq_zero_of_isNilpotent`: the trace form induced by a nilpotent
+  representation of a Lie algebra vanishes.
+* `killingForm`: the adjoint representation of a (finite, free) Lie algebra `L` induces a bilinear
+  form on `L` via the trace form construction.
 -/
 
 variable (R K L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
@@ -70,11 +70,11 @@ lemma traceForm_apply_lie_apply (x y z : L) :
     _ = trace R _ (φ x * (φ y * φ z)) - trace R _ (φ y * (φ x * φ z)) := ?_
     _ = trace R _ (φ x * (φ y * φ z)) - trace R _ (φ x * (φ z * φ y)) := ?_
     _ = traceForm R L M x ⁅y, z⁆ := ?_
-  · simp only [LieHom.map_lie, Ring.lie_def, ← LinearMap.mul_eq_comp]
-  · simp only [sub_mul, mul_sub, map_sub, mul_assoc]
+  · simp only [LieHom.map_lie, Ring.lie_def, ← Module.End.mul_eq_comp]
+  · simp only [sub_mul, map_sub, mul_assoc]
   · simp only [LinearMap.trace_mul_cycle' R (φ x) (φ z) (φ y)]
   · simp only [traceForm_apply_apply, LieHom.map_lie, Ring.lie_def, mul_sub, map_sub,
-      ← LinearMap.mul_eq_comp]
+      ← Module.End.mul_eq_comp]
 
 /-- Given a representation `M` of a Lie algebra `L`, the action of any `x : L` is skew-adjoint wrt
 the trace form. -/
@@ -161,7 +161,7 @@ lemma traceForm_apply_eq_zero_of_mem_lcs_of_mem_center {x y : L}
 invariant (in the sense that the action of `L` is skew-adjoint wrt `B`) then components of the
 Fitting decomposition of `M` are orthogonal wrt `B`. -/
 lemma eq_zero_of_mem_genWeightSpace_mem_posFitting [LieRing.IsNilpotent L]
-    {B : LinearMap.BilinForm R M} (hB : ∀ (x : L) (m n : M), B ⁅x, m⁆ n = - B m ⁅x, n⁆)
+    {B : LinearMap.BilinForm R M} (hB : ∀ (x : L) (m n : M), B ⁅x, m⁆ n = -B m ⁅x, n⁆)
     {m₀ m₁ : M} (hm₀ : m₀ ∈ genWeightSpace M (0 : L → R)) (hm₁ : m₁ ∈ posFittingComp R L M) :
     B m₀ m₁ = 0 := by
   replace hB : ∀ x (k : ℕ) m n, B m ((φ x ^ k) n) = (- 1 : R) ^ k • B ((φ x ^ k) m) n := by
@@ -172,8 +172,8 @@ lemma eq_zero_of_mem_genWeightSpace_mem_posFitting [LieRing.IsNilpotent L]
     intro m n
     replace hB : ∀ m, B m (φ x n) = (- 1 : R) • B (φ x m) n := by simp [hB]
     have : (-1 : R) ^ k • (-1 : R) = (-1 : R) ^ (k + 1) := by rw [pow_succ (-1 : R), smul_eq_mul]
-    conv_lhs => rw [pow_succ, LinearMap.mul_eq_comp, LinearMap.comp_apply, ih, hB,
-      ← (φ x).comp_apply, ← LinearMap.mul_eq_comp, ← pow_succ', ← smul_assoc, this]
+    conv_lhs => rw [pow_succ, Module.End.mul_eq_comp, LinearMap.comp_apply, ih, hB,
+      ← (φ x).comp_apply, ← Module.End.mul_eq_comp, ← pow_succ', ← smul_assoc, this]
   suffices ∀ (x : L) m, m ∈ posFittingCompOf R M x → B m₀ m = 0 by
     refine LieSubmodule.iSup_induction (motive := fun m ↦ (B m₀) m = 0) _ hm₁ this (map_zero _) ?_
     aesop

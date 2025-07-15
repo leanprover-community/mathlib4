@@ -31,6 +31,7 @@ variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 section genericPoint
 
 /-- `x` is a generic point of `S` if `S` is the closure of `x`. -/
+@[stacks 004X "(1)"]
 def IsGenericPoint (x : α) (S : Set α) : Prop :=
   closure ({x} : Set α) = S
 
@@ -100,7 +101,7 @@ end genericPoint
 section Sober
 
 /-- A space is sober if every irreducible closed subset has a generic point. -/
-@[mk_iff]
+@[mk_iff, stacks 004X "(3)"]
 class QuasiSober (α : Type*) [TopologicalSpace α] : Prop where
   sober : ∀ {S : Set α}, IsIrreducible S → IsClosed S → ∃ x, IsGenericPoint x S
 
@@ -166,7 +167,7 @@ noncomputable def irreducibleSetEquivPoints [QuasiSober α] [T0Space α] :
   map_rel_iff' := by
     rintro ⟨s, hs, hs'⟩ ⟨t, ht, ht'⟩
     refine specializes_iff_closure_subset.trans ?_
-    simp [hs'.closure_eq, ht'.closure_eq]
+    simp
     rfl
 
 lemma Topology.IsClosedEmbedding.quasiSober {f : α → β} (hf : IsClosedEmbedding f) [QuasiSober β] :
@@ -178,9 +179,6 @@ lemma Topology.IsClosedEmbedding.quasiSober {f : α → β} (hf : IsClosedEmbedd
     use y
     apply image_injective.mpr hf.injective
     rw [← hx.def, ← hf.closure_image_eq, image_singleton]
-
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.quasiSober := Topology.IsClosedEmbedding.quasiSober
 
 theorem Topology.IsOpenEmbedding.quasiSober {f : α → β} (hf : IsOpenEmbedding f) [QuasiSober β] :
     QuasiSober α where
@@ -204,9 +202,6 @@ theorem Topology.IsOpenEmbedding.quasiSober {f : α → β} (hf : IsOpenEmbeddin
     simp only [image_preimage_eq_inter_range, mem_inter_iff, and_congr_left_iff]
     exact fun hy => ⟨fun h => hT.closure_eq ▸ closure_mono inter_subset_left h,
       fun h => subset_closure ⟨h, hy⟩⟩
-
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.quasiSober := Topology.IsOpenEmbedding.quasiSober
 
 lemma TopologicalSpace.IsOpenCover.quasiSober_iff_forall {ι : Type*} {U : ι → Opens α}
     (hU : TopologicalSpace.IsOpenCover U) : QuasiSober α ↔ ∀ i, QuasiSober (U i) := by

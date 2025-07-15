@@ -193,7 +193,7 @@ theorem integral_boundary_rect_of_hasFDerivAt_real_off_countable (f : ℂ → E)
     fun p hp => (Hd (e p) hp).comp p e.hasFDerivAt
   simp_rw [← intervalIntegral.integral_smul, intervalIntegral.integral_symm w.im z.im, ←
     intervalIntegral.integral_neg, ← hF']
-  refine (integral2_divergence_prod_of_hasFDerivWithinAt_off_countable (fun p => -(I • F p)) F
+  refine (integral2_divergence_prod_of_hasFDerivAt_off_countable (fun p => -(I • F p)) F
     (fun p => -(I • F' p)) F' z.re w.im w.re z.im t (hs.preimage e.injective)
     (htc.const_smul _).neg htc (fun p hp => ((htd p hp).const_smul I).neg) htd ?_).symm
   rw [← (volume_preserving_equiv_real_prod.symm _).integrableOn_comp_preimage
@@ -252,7 +252,7 @@ theorem integral_boundary_rect_eq_zero_of_differentiable_on_off_countable (f : �
   refine (integral_boundary_rect_of_hasFDerivAt_real_off_countable f
     (fun z => (fderiv ℂ f z).restrictScalars ℝ) z w s hs Hc
     (fun x hx => (Hd x hx).hasFDerivAt.restrictScalars ℝ) ?_).trans ?_ <;>
-      simp [← ContinuousLinearMap.map_smul]
+      simp
 
 /-- **Cauchy-Goursat theorem for a rectangle**: the integral of a complex differentiable function
 over the boundary of a rectangle equals zero. More precisely, if `f` is continuous on a closed
@@ -476,7 +476,7 @@ theorem two_pi_I_inv_smul_circleIntegral_sub_inv_smul_of_differentiable_on_off_c
     have : (Ioo l u).Countable :=
       (hs.preimage ((add_right_injective w).comp ofReal_injective)).mono hsub
     rw [← Cardinal.le_aleph0_iff_set_countable, Cardinal.mk_Ioo_real (hlu₀.1.trans hlu₀.2)] at this
-    exact this.not_lt Cardinal.aleph0_lt_continuum
+    exact this.not_gt Cardinal.aleph0_lt_continuum
   exact ⟨g x, (hlu_sub hx.1).1, (hlu_sub hx.1).2, hx.2⟩
 
 /-- **Cauchy integral formula**: if `f : ℂ → E` is continuous on a closed disc of radius `R` and is

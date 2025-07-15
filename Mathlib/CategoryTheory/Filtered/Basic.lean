@@ -584,7 +584,7 @@ theorem eq_condition {j j' : C} (f f' : j ⟶ j') : eqHom f f' ≫ f = eqHom f f
   (IsCofilteredOrEmpty.cone_maps f f').choose_spec.choose_spec
 
 /-- For every cospan `j ⟶ i ⟵ j'`,
- there exists a cone `j ⟵ k ⟶ j'` such that the square commutes. -/
+there exists a cone `j ⟵ k ⟶ j'` such that the square commutes. -/
 theorem cospan {i j j' : C} (f : j ⟶ i) (f' : j' ⟶ i) :
     ∃ (k : C) (g : k ⟶ j) (g' : k ⟶ j'), g ≫ f = g' ≫ f' :=
   let ⟨K, G, G', _⟩ := IsCofilteredOrEmpty.cone_objs j j'
@@ -592,7 +592,7 @@ theorem cospan {i j j' : C} (f : j ⟶ i) (f' : j' ⟶ i) :
   ⟨k, e ≫ G, e ≫ G', by simpa only [Category.assoc] using he⟩
 
 theorem _root_.CategoryTheory.Functor.ranges_directed (F : C ⥤ Type*) (j : C) :
-    Directed (· ⊇ ·) fun f : Σ'i, i ⟶ j => Set.range (F.map f.2) := fun ⟨i, ij⟩ ⟨k, kj⟩ => by
+    Directed (· ⊇ ·) fun f : Σ' i, i ⟶ j => Set.range (F.map f.2) := fun ⟨i, ij⟩ ⟨k, kj⟩ => by
   let ⟨l, li, lk, e⟩ := cospan ij kj
   refine ⟨⟨l, lk ≫ kj⟩, e ▸ ?_, ?_⟩ <;> simp_rw [F.map_comp] <;> apply Set.range_comp_subset_range
 

@@ -12,7 +12,7 @@ import Mathlib.Util.Superscript
 We construct a skeletal model of the simplex category, with objects `ℕ` and the
 morphisms `n ⟶ m` being the monotone maps from `Fin (n + 1)` to `Fin (m + 1)`.
 
-In `Mathlib.AlgebraicTopology.SimplexCategory.Basic`, we show that this category
+In `Mathlib/AlgebraicTopology/SimplexCategory/Basic.lean`, we show that this category
 is equivalent to `NonemptyFinLinOrd`.
 
 ## Remarks
@@ -149,10 +149,10 @@ theorem Hom.ext {a b : SimplexCategory} (f g : a ⟶ b) :
 
 /-- The truncated simplex category. -/
 def Truncated (n : ℕ) :=
-  FullSubcategory fun a : SimplexCategory => a.len ≤ n
+  ObjectProperty.FullSubcategory fun a : SimplexCategory => a.len ≤ n
 
 instance (n : ℕ) : SmallCategory.{0} (Truncated n) :=
-  FullSubcategory.category _
+  ObjectProperty.FullSubcategory.category _
 
 namespace Truncated
 
@@ -163,14 +163,15 @@ instance {n} : Inhabited (Truncated n) :=
 simplex category.
 -/
 def inclusion (n : ℕ) : SimplexCategory.Truncated n ⥤ SimplexCategory :=
-  fullSubcategoryInclusion _
+  ObjectProperty.ι _
 
-instance (n : ℕ) : (inclusion n : Truncated n ⥤ _).Full := FullSubcategory.full _
-instance (n : ℕ) : (inclusion n : Truncated n ⥤ _).Faithful := FullSubcategory.faithful _
+instance (n : ℕ) : (inclusion n : Truncated n ⥤ _).Full := ObjectProperty.full_ι _
+instance (n : ℕ) : (inclusion n : Truncated n ⥤ _).Faithful := ObjectProperty.faithful_ι _
 
 /-- A proof that the full subcategory inclusion is fully faithful -/
 noncomputable def inclusion.fullyFaithful (n : ℕ) :
-    (inclusion n : Truncated n ⥤ _).op.FullyFaithful := Functor.FullyFaithful.ofFullyFaithful _
+    (inclusion n : Truncated n ⥤ _).op.FullyFaithful :=
+  Functor.FullyFaithful.ofFullyFaithful _
 
 @[ext]
 theorem Hom.ext {n} {a b : Truncated n} (f g : a ⟶ b) :

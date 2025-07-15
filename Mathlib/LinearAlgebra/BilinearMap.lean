@@ -205,19 +205,80 @@ theorem restrictScalars₁₂_inj {B B' : M →ₗ[R] N →ₗ[S] Pₗ} :
 
 end restrictScalars
 
+/-- Given a linear map from `M` to linear maps from `N` to `P`, i.e., a bilinear map `M → N → P`,
+change the order of variables and get a linear map from `N` to linear maps from `M` to `P`. -/
+def lflip {R₀ : Type*} [Semiring R₀] [Module R₀ P] [SMulCommClass S₂ R₀ P] [SMulCommClass R₂ R₀ P] :
+    (M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) →ₗ[R₀] N →ₛₗ[σ₁₂] M →ₛₗ[ρ₁₂] P where
+  toFun := flip
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+@[simp]
+theorem lflip_apply {R₀ : Type*} [Semiring R₀] [Module R₀ P] [SMulCommClass S₂ R₀ P]
+    [SMulCommClass R₂ R₀ P] (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (m : M) (n : N) :
+    lflip (R₀ := R₀) f n m = f m n := rfl
+
+end Semiring
+
+section Semiring
+
+variable {R R₂ R₃ R₄ R₅ : Type*}
+variable {M N P Q : Type*}
+variable [Semiring R] [Semiring R₂] [Semiring R₃] [Semiring R₄] [Semiring R₅]
+variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃} {σ₄₂ : R₄ →+* R₂} {σ₄₃ : R₄ →+* R₃}
+variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
+variable [Module R M] [Module R₂ N] [Module R₃ P] [Module R₄ Q] [Module R₅ P]
+variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₄₂ σ₂₃ σ₄₃]
+variable [SMulCommClass R₃ R₅ P] {σ₁₅ : R →+* R₅}
+
+variable (R₅ P σ₂₃)
+
+/-- Composing a semilinear map `M → N` and a semilinear map `N → P` to form a semilinear map
+`M → P` is itself a linear map. -/
+def lcompₛₗ (f : M →ₛₗ[σ₁₂] N) : (N →ₛₗ[σ₂₃] P) →ₗ[R₅] M →ₛₗ[σ₁₃] P :=
+  letI := SMulCommClass.symm
+  flip <| LinearMap.comp (flip id) f
+
+variable {P σ₂₃ R₅}
+
+@[simp]
+theorem lcompₛₗ_apply (f : M →ₛₗ[σ₁₂] N) (g : N →ₛₗ[σ₂₃] P) (x : M) :
+    lcompₛₗ R₅ P σ₂₃ f g x = g (f x) := rfl
+
+/-- Composing a linear map `Q → N` and a bilinear map `M → N → P` to
+form a bilinear map `M → Q → P`. -/
+def compl₂ (h : M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) (g : Q →ₛₗ[σ₄₂] N) : M →ₛₗ[σ₁₅] Q →ₛₗ[σ₄₃] P where
+  toFun a := (lcompₛₗ R₅ P σ₂₃ g) (h a)
+  map_add' _ _ := by
+    simp [map_add]
+  map_smul' _ _ := by
+    simp only [LinearMap.map_smulₛₗ, lcompₛₗ]
+    rfl
+
+@[simp]
+theorem compl₂_apply (h : M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) (g : Q →ₛₗ[σ₄₂] N) (m : M) (q : Q) :
+  h.compl₂ g m q = h m (g q) := rfl
+
+@[simp]
+theorem compl₂_id (h : M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) : h.compl₂ LinearMap.id = h := by
+  ext
+  rw [compl₂_apply, id_coe, _root_.id]
+
 end Semiring
 
 section CommSemiring
 
-variable {R : Type*} [CommSemiring R] {R₂ : Type*} [CommSemiring R₂]
-variable {R₃ : Type*} [CommSemiring R₃] {R₄ : Type*} [CommSemiring R₄]
+variable {R R₁ R₂ : Type*} [CommSemiring R] [Semiring R₁] [Semiring R₂]
+variable {A : Type*} [Semiring A] {B : Type*} [Semiring B]
 variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*}
 variable {Mₗ : Type*} {Nₗ : Type*} {Pₗ : Type*} {Qₗ Qₗ' : Type*}
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
 variable [AddCommMonoid Mₗ] [AddCommMonoid Nₗ] [AddCommMonoid Pₗ]
 variable [AddCommMonoid Qₗ] [AddCommMonoid Qₗ']
-variable [Module R M] [Module R₂ N] [Module R₃ P] [Module R₄ Q]
+variable [Module R M]
 variable [Module R Mₗ] [Module R Nₗ] [Module R Pₗ] [Module R Qₗ] [Module R Qₗ']
+variable [Module R₁ Mₗ] [Module R₂ N] [Module R₁ Pₗ] [Module R₁ Qₗ]
+variable [Module R₂ Pₗ] [Module R₂ Qₗ']
 variable {σ₁₂ : R →+* R₂} {σ₁₃ : R →+* R₃} {σ₁₄ : R →+* R₄}
 variable {σ₂₃ : R₂ →+* R₃} {σ₂₄ : R₂ →+* R₄}
 variable {σ₃₄ : R₃ →+* R₄}
@@ -242,44 +303,20 @@ theorem mk₂_apply (f : M → Nₗ → Pₗ) {H1 H2 H3 H4} (m : M) (n : Nₗ) :
 
 variable {R}
 
-/-- Given a linear map from `M` to linear maps from `N` to `P`, i.e., a bilinear map `M → N → P`,
-change the order of variables and get a linear map from `N` to linear maps from `M` to `P`. -/
-def lflip : (M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) →ₗ[R₃] N →ₛₗ[σ₂₃] M →ₛₗ[σ₁₃] P where
-  toFun := flip
-  map_add' _ _ := rfl
-  map_smul' _ _ := rfl
 
-variable (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P)
-
-@[simp]
-theorem lflip_apply (m : M) (n : N) : lflip f n m = f m n := rfl
-
-variable (R Pₗ)
+variable (A Pₗ)
+variable [Module A Pₗ] [SMulCommClass R A Pₗ]
 
 /-- Composing a given linear map `M → N` with a linear map `N → P` as a linear map from
 `Nₗ →ₗ[R] Pₗ` to `M →ₗ[R] Pₗ`. -/
-def lcomp (f : M →ₗ[R] Nₗ) : (Nₗ →ₗ[R] Pₗ) →ₗ[R] M →ₗ[R] Pₗ :=
-  flip <| LinearMap.comp (flip id) f
+def lcomp (f : M →ₗ[R] Nₗ) : (Nₗ →ₗ[R] Pₗ) →ₗ[A] M →ₗ[R] Pₗ := lcompₛₗ _ _ _ f
 
-variable {R Pₗ}
-
-@[simp]
-theorem lcomp_apply (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) (x : M) : lcomp _ _ f g x = g (f x) := rfl
-
-theorem lcomp_apply' (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) : lcomp R Pₗ f g = g ∘ₗ f := rfl
-
-variable (P σ₂₃)
-
-/-- Composing a semilinear map `M → N` and a semilinear map `N → P` to form a semilinear map
-`M → P` is itself a linear map. -/
-def lcompₛₗ (f : M →ₛₗ[σ₁₂] N) : (N →ₛₗ[σ₂₃] P) →ₗ[R₃] M →ₛₗ[σ₁₃] P :=
-  flip <| LinearMap.comp (flip id) f
-
-variable {P σ₂₃}
+variable {A Pₗ}
 
 @[simp]
-theorem lcompₛₗ_apply (f : M →ₛₗ[σ₁₂] N) (g : N →ₛₗ[σ₂₃] P) (x : M) :
-    lcompₛₗ P σ₂₃ f g x = g (f x) := rfl
+theorem lcomp_apply (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) (x : M) : lcomp A _ f g x = g (f x) := rfl
+
+theorem lcomp_apply' (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) : lcomp A Pₗ f g = g ∘ₗ f := rfl
 
 variable (R M Nₗ Pₗ)
 
@@ -323,43 +360,26 @@ theorem llcompₛₗ_apply' (f : N →ₛₗ[σ₂₃] P) (g : M →ₛₗ[σ₁
 
 end
 
-/-- Composing a linear map `Q → N` and a bilinear map `M → N → P` to
-form a bilinear map `M → Q → P`. -/
-def compl₂ {R₅ : Type*} [CommSemiring R₅] [Module R₅ P] [SMulCommClass R₃ R₅ P] {σ₁₅ : R →+* R₅}
-    (h : M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) (g : Q →ₛₗ[σ₄₂] N) : M →ₛₗ[σ₁₅] Q →ₛₗ[σ₄₃] P where
-  toFun a := (lcompₛₗ P σ₂₃ g) (h a)
-  map_add' _ _ := by
-    simp [map_add]
-  map_smul' _ _ := by
-    simp only [LinearMap.map_smulₛₗ, lcompₛₗ]
-    rfl
-
-@[simp]
-theorem compl₂_apply (g : Q →ₛₗ[σ₄₂] N) (m : M) (q : Q) : f.compl₂ g m q = f m (g q) := rfl
-
-@[simp]
-theorem compl₂_id : f.compl₂ LinearMap.id = f := by
-  ext
-  rw [compl₂_apply, id_coe, _root_.id]
-
 /-- Composing linear maps `Q → M` and `Q' → N` with a bilinear map `M → N → P` to
 form a bilinear map `Q → Q' → P`. -/
-def compl₁₂ {R₁ : Type*} [CommSemiring R₁] [Module R₂ N] [Module R₂ Pₗ] [Module R₁ Pₗ]
-    [Module R₁ Mₗ] [SMulCommClass R₂ R₁ Pₗ] [Module R₁ Qₗ] [Module R₂ Qₗ']
+def compl₁₂ [SMulCommClass R₂ R₁ Pₗ]
     (f : Mₗ →ₗ[R₁] N →ₗ[R₂] Pₗ) (g : Qₗ →ₗ[R₁] Mₗ) (g' : Qₗ' →ₗ[R₂] N) :
     Qₗ →ₗ[R₁] Qₗ' →ₗ[R₂] Pₗ :=
   (f.comp g).compl₂ g'
 
 @[simp]
-theorem compl₁₂_apply (f : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Qₗ →ₗ[R] Mₗ) (g' : Qₗ' →ₗ[R] Nₗ) (x : Qₗ)
+theorem compl₁₂_apply [SMulCommClass R₂ R₁ Pₗ]
+    (f : Mₗ →ₗ[R₁] N →ₗ[R₂] Pₗ) (g : Qₗ →ₗ[R₁] Mₗ) (g' : Qₗ' →ₗ[R₂] N) (x : Qₗ)
     (y : Qₗ') : f.compl₁₂ g g' x y = f (g x) (g' y) := rfl
 
 @[simp]
-theorem compl₁₂_id_id (f : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ) : f.compl₁₂ LinearMap.id LinearMap.id = f := by
+theorem compl₁₂_id_id [SMulCommClass R₂ R₁ Pₗ] (f : Mₗ →ₗ[R₁] N →ₗ[R₂] Pₗ) :
+    f.compl₁₂ LinearMap.id LinearMap.id = f := by
   ext
   simp_rw [compl₁₂_apply, id_coe, _root_.id]
 
-theorem compl₁₂_inj {f₁ f₂ : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ} {g : Qₗ →ₗ[R] Mₗ} {g' : Qₗ' →ₗ[R] Nₗ}
+theorem compl₁₂_inj [SMulCommClass R₂ R₁ Pₗ]
+    {f₁ f₂ : Mₗ →ₗ[R₁] N →ₗ[R₂] Pₗ} {g : Qₗ →ₗ[R₁] Mₗ} {g' : Qₗ' →ₗ[R₂] N}
     (hₗ : Function.Surjective g) (hᵣ : Function.Surjective g') :
     f₁.compl₁₂ g g' = f₂.compl₁₂ g g' ↔ f₁ = f₂ := by
   constructor <;> intro h
@@ -373,6 +393,7 @@ theorem compl₁₂_inj {f₁ f₂ : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ} {g : Q�
   · -- B₁ = B₂ → B₁.comp l r = B₂.comp l r
     subst h; rfl
 
+omit [Module R M] in
 /-- Composing a linear map `P → Q` and a bilinear map `M → N → P` to
 form a bilinear map `M → N → Q`. -/
 def compr₂ (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P →ₛₗ[σ₃₄] Q) : M →ₛₗ[σ₁₄] N →ₛₗ[σ₂₄] Q :=
@@ -411,7 +432,7 @@ variable (R M)
 /-- Scalar multiplication as a bilinear map `R → M → M`. -/
 def lsmul : R →ₗ[R] M →ₗ[R] M :=
   mk₂ R (· • ·) add_smul (fun _ _ _ => mul_smul _ _ _) smul_add fun r s m => by
-    simp only [smul_smul, smul_eq_mul, mul_comm]
+    simp only [smul_smul, mul_comm]
 
 variable {R}
 
@@ -457,6 +478,43 @@ open Function
 
 section restrictScalarsRange
 
+variable {R S M P M' P' : Type*}
+  [Semiring R] [Semiring S] [SMul S R]
+  [AddCommMonoid M] [Module R M] [AddCommMonoid P] [Module R P]
+  [Module S M] [Module S P]
+  [IsScalarTower S R M] [IsScalarTower S R P]
+  [AddCommMonoid M'] [Module S M'] [AddCommMonoid P'] [Module S P']
+
+variable (i : M' →ₗ[S] M) (k : P' →ₗ[S] P) (hk : Injective k)
+  (f : M →ₗ[R] P) (hf : ∀ m, f (i m) ∈ LinearMap.range k)
+
+/-- Restrict the scalars and range of a linear map. -/
+noncomputable def restrictScalarsRange :
+    M' →ₗ[S] P' :=
+  ((f.restrictScalars S).comp i).codLift k hk hf
+
+@[simp]
+lemma restrictScalarsRange_apply (m : M') :
+    k (restrictScalarsRange i k hk f hf m) = f (i m) := by
+  have : k (restrictScalarsRange i k hk f hf m) =
+      (k ∘ₗ ((f.restrictScalars S).comp i).codLift k hk hf) m :=
+    rfl
+  rw [this, comp_codLift, comp_apply, restrictScalars_apply]
+
+@[simp]
+lemma eq_restrictScalarsRange_iff (m : M') (p : P') :
+    p = restrictScalarsRange i k hk f hf m ↔ k p = f (i m) := by
+  rw [← restrictScalarsRange_apply i k hk f hf m, hk.eq_iff]
+
+@[simp]
+lemma restrictScalarsRange_apply_eq_zero_iff (m : M') :
+    restrictScalarsRange i k hk f hf m = 0 ↔ f (i m) = 0 := by
+  rw [← hk.eq_iff, restrictScalarsRange_apply, map_zero]
+
+end restrictScalarsRange
+
+section restrictScalarsRange₂
+
 variable {R S M N P M' N' P' : Type*}
   [CommSemiring R] [CommSemiring S] [SMul S R]
   [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] [AddCommMonoid P] [Module R P]
@@ -469,25 +527,25 @@ variable (i : M' →ₗ[S] M) (j : N' →ₗ[S] N) (k : P' →ₗ[S] P) (hk : In
   (B : M →ₗ[R] N →ₗ[R] P) (hB : ∀ m n, B (i m) (j n) ∈ LinearMap.range k)
 
 /-- Restrict the scalars, domains, and range of a bilinear map. -/
-noncomputable def restrictScalarsRange :
+noncomputable def restrictScalarsRange₂ :
     M' →ₗ[S] N' →ₗ[S] P' :=
   (((LinearMap.restrictScalarsₗ S R _ _ _).comp
     (B.restrictScalars S)).compl₁₂ i j).codRestrict₂ k hk hB
 
-@[simp] lemma restrictScalarsRange_apply (m : M') (n : N') :
-    k (restrictScalarsRange i j k hk B hB m n) = B (i m) (j n) := by
-  simp [restrictScalarsRange]
+@[simp] lemma restrictScalarsRange₂_apply (m : M') (n : N') :
+    k (restrictScalarsRange₂ i j k hk B hB m n) = B (i m) (j n) := by
+  simp [restrictScalarsRange₂]
 
 @[simp]
-lemma eq_restrictScalarsRange_iff (m : M') (n : N') (p : P') :
-    p = restrictScalarsRange i j k hk B hB m n ↔ k p = B (i m) (j n) := by
-  rw [← restrictScalarsRange_apply i j k hk B hB m n, hk.eq_iff]
+lemma eq_restrictScalarsRange₂_iff (m : M') (n : N') (p : P') :
+    p = restrictScalarsRange₂ i j k hk B hB m n ↔ k p = B (i m) (j n) := by
+  rw [← restrictScalarsRange₂_apply i j k hk B hB m n, hk.eq_iff]
 
 @[simp]
-lemma restrictScalarsRange_apply_eq_zero_iff (m : M') (n : N') :
-    restrictScalarsRange i j k hk B hB m n = 0 ↔ B (i m) (j n) = 0 := by
-  rw [← hk.eq_iff, restrictScalarsRange_apply, map_zero]
+lemma restrictScalarsRange₂_apply_eq_zero_iff (m : M') (n : N') :
+    restrictScalarsRange₂ i j k hk B hB m n = 0 ↔ B (i m) (j n) = 0 := by
+  rw [← hk.eq_iff, restrictScalarsRange₂_apply, map_zero]
 
-end restrictScalarsRange
+end restrictScalarsRange₂
 
 end LinearMap

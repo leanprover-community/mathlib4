@@ -34,7 +34,7 @@ attribute [coe] Subtype.val
 initialize_simps_projections Subtype (val → coe)
 
 /-- A version of `x.property` or `x.2` where `p` is syntactically applied to the coercion of `x`
-  instead of `x.1`. A similar result is `Subtype.mem` in `Mathlib.Data.Set.Basic`. -/
+  instead of `x.1`. A similar result is `Subtype.mem` in `Mathlib/Data/Set/Basic.lean`. -/
 theorem prop (x : Subtype p) : p x :=
   x.2
 
@@ -49,13 +49,13 @@ protected theorem exists' {q : ∀ x, p x → Prop} : (∃ x h, q x h) ↔ ∃ x
   (@Subtype.exists _ _ fun x ↦ q x.1 x.2).symm
 
 theorem heq_iff_coe_eq (h : ∀ x, p x ↔ q x) {a1 : { x // p x }} {a2 : { x // q x }} :
-    HEq a1 a2 ↔ (a1 : α) = (a2 : α) :=
+    a1 ≍ a2 ↔ (a1 : α) = (a2 : α) :=
   Eq.rec
-    (motive := fun (pp : (α → Prop)) _ ↦ ∀ a2' : {x // pp x}, HEq a1 a2' ↔ (a1 : α) = (a2' : α))
+    (motive := fun (pp : (α → Prop)) _ ↦ ∀ a2' : {x // pp x}, a1 ≍ a2' ↔ (a1 : α) = (a2' : α))
     (fun _ ↦ heq_iff_eq.trans Subtype.ext_iff) (funext <| fun x ↦ propext (h x)) a2
 
 lemma heq_iff_coe_heq {α β : Sort _} {p : α → Prop} {q : β → Prop} {a : {x // p x}}
-    {b : {y // q y}} (h : α = β) (h' : HEq p q) : HEq a b ↔ HEq (a : α) (b : β) := by
+    {b : {y // q y}} (h : α = β) (h' : p ≍ q) : a ≍ b ↔ (a : α) ≍ (b : β) := by
   subst h
   subst h'
   rw [heq_iff_eq, heq_iff_eq, Subtype.ext_iff]
@@ -178,6 +178,18 @@ theorem map_injective {p : α → Prop} {q : β → Prop} {f : α → β} (h : �
 theorem map_involutive {p : α → Prop} {f : α → α} (h : ∀ a, p a → p (f a))
     (hf : Involutive f) : Involutive (map f h) :=
   fun x ↦ Subtype.ext (hf x)
+
+theorem map_eq {p : α → Prop} {q : β → Prop} {f g : α → β}
+    (h₁ : ∀ a : α, p a → q (f a)) (h₂ : ∀ a : α, p a → q (g a))
+    {x y : Subtype p} :
+    map f h₁ x = map g h₂ y ↔ f x = g y :=
+  Subtype.ext_iff
+
+theorem map_ne {p : α → Prop} {q : β → Prop} {f g : α → β}
+    (h₁ : ∀ a : α, p a → q (f a)) (h₂ : ∀ a : α, p a → q (g a))
+    {x y : Subtype p} :
+    map f h₁ x ≠ map g h₂ y ↔ f x ≠ g y :=
+  map_eq h₁ h₂ |>.not
 
 instance [HasEquiv α] (p : α → Prop) : HasEquiv (Subtype p) :=
   ⟨fun s t ↦ (s : α) ≈ (t : α)⟩

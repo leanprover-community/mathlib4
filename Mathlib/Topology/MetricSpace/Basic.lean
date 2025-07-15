@@ -58,9 +58,6 @@ theorem isClosedEmbedding_of_pairwise_le_dist {α : Type*} [TopologicalSpace α]
     IsClosedEmbedding f :=
   isClosedEmbedding_of_spaced_out (dist_mem_uniformity hε) <| by simpa using hf
 
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_of_pairwise_le_dist := isClosedEmbedding_of_pairwise_le_dist
-
 /-- If `f : β → α` sends any two distinct points to points at distance at least `ε > 0`, then
 `f` is a uniform embedding with respect to the discrete uniformity on `β`. -/
 theorem isUniformEmbedding_bot_of_pairwise_le_dist {β : Type*} {ε : ℝ} (hε : 0 < ε) {f : β → α}
@@ -146,10 +143,10 @@ section Pi
 
 open Finset
 
-variable {π : β → Type*} [Fintype β] [∀ b, MetricSpace (π b)]
+variable {X : β → Type*} [Fintype β] [∀ b, MetricSpace (X b)]
 
 /-- A finite product of metric spaces is a metric space, with the sup distance. -/
-instance metricSpacePi : MetricSpace (∀ b, π b) := .ofT0PseudoMetricSpace _
+instance metricSpacePi : MetricSpace (∀ b, X b) := .ofT0PseudoMetricSpace _
 
 end Pi
 

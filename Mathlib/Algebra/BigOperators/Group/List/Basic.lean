@@ -55,9 +55,6 @@ theorem prod_flatten {l : List (List M)} : l.flatten.prod = (l.map List.prod).pr
   | nil => simp
   | cons head tail ih => simp only [*, List.flatten, map, prod_append, prod_cons]
 
-@[deprecated (since := "2024-10-15")] alias prod_join := prod_flatten
-@[deprecated (since := "2024-10-15")] alias sum_join := sum_flatten
-
 open scoped Relator in
 @[to_additive]
 theorem rel_prod {R : M → N → Prop} (h : R 1 1) (hf : (R ⇒ R ⇒ R) (· * ·) (· * ·)) :
@@ -89,7 +86,7 @@ theorem prod_hom₂ (l : List ι) (f : M → N → P) (hf : ∀ a b c d, f (a * 
     ← l.foldr_hom₂ f _ _ (fun x y => f (f₁ x) (f₂ x) * y) _ _ (by simp [hf]), hf']
 
 @[to_additive (attr := simp)]
-theorem prod_map_mul {α : Type*} [CommMonoid α] {l : List ι} {f g : ι → α} :
+theorem prod_map_mul {M : Type*} [CommMonoid M] {l : List ι} {f g : ι → M} :
     (l.map fun i => f i * g i).prod = (l.map f).prod * (l.map g).prod :=
   l.prod_hom₂ (· * ·) mul_mul_mul_comm (mul_one _) _ _
 
@@ -134,7 +131,7 @@ theorem prod_set :
   | x :: xs, 0, a => by simp [set]
   | x :: xs, i + 1, a => by
     simp [set, prod_set xs i a, mul_assoc, Nat.add_lt_add_iff_right]
-  | [], _, _ => by simp [set, (Nat.zero_le _).not_lt, Nat.zero_le]
+  | [], _, _ => by simp [set, (Nat.zero_le _).not_gt]
 
 /-- We'd like to state this as `L.headI * L.tail.prod = L.prod`, but because `L.headI` relies on an
 inhabited instance to return a garbage value on the empty list, this is not possible.
@@ -252,8 +249,8 @@ lemma prod_mul_prod_eq_prod_zipWith_mul_prod_drop :
     ∀ l l' : List M,
       l.prod * l'.prod =
         (zipWith (· * ·) l l').prod * (l.drop l'.length).prod * (l'.drop l.length).prod
-  | [], ys => by simp [Nat.zero_le]
-  | xs, [] => by simp [Nat.zero_le]
+  | [], ys => by simp
+  | xs, [] => by simp
   | x :: xs, y :: ys => by
     simp only [drop, length, zipWith_cons_cons, prod_cons]
     conv =>
@@ -274,7 +271,7 @@ lemma prod_map_ite (p : α → Prop) [DecidablePred p] (f g : α → M) (l : Lis
   induction l with
   | nil => simp
   | cons x xs ih =>
-    simp only [map_cons, filter_cons, prod_cons, nodup_cons, ne_eq, mem_cons, count_cons] at ih ⊢
+    simp only [map_cons, filter_cons, prod_cons] at ih ⊢
     rw [ih]
     clear ih
     by_cases hx : p x
@@ -360,8 +357,8 @@ theorem prod_set' (L : List G) (n : ℕ) (a : G) :
   split_ifs with hn
   · rw [mul_comm _ a, mul_assoc a, prod_drop_succ L n hn, mul_comm _ (drop n L).prod, ←
       mul_assoc (take n L).prod, prod_take_mul_prod_drop, mul_comm a, mul_assoc]
-  · simp only [take_of_length_le (le_of_not_lt hn), prod_nil, mul_one,
-      drop_eq_nil_of_le ((le_of_not_lt hn).trans n.le_succ)]
+  · simp only [take_of_length_le (le_of_not_gt hn), prod_nil, mul_one,
+      drop_eq_nil_of_le ((le_of_not_gt hn).trans n.le_succ)]
 
 @[to_additive]
 lemma prod_map_ite_eq {A : Type*} [DecidableEq A] (l : List A) (f g : A → G) (a : A) :
@@ -370,13 +367,13 @@ lemma prod_map_ite_eq {A : Type*} [DecidableEq A] (l : List A) (f g : A → G) (
   induction l with
   | nil => simp
   | cons x xs ih =>
-    simp only [map_cons, prod_cons, nodup_cons, ne_eq, mem_cons, count_cons] at ih ⊢
+    simp only [map_cons, prod_cons, count_cons] at ih ⊢
     rw [ih]
     clear ih
     by_cases hx : x = a
-    · simp only [hx, ite_true, div_pow, pow_add, pow_one, div_eq_mul_inv, mul_assoc, mul_comm,
-        mul_left_comm, mul_inv_cancel_left, beq_self_eq_true]
-    · simp only [hx, ite_false, ne_comm.mp hx, add_zero, mul_assoc, mul_comm (g x) _, beq_iff_eq]
+    · simp only [hx, ite_true, pow_add, pow_one, div_eq_mul_inv, mul_assoc, mul_comm, mul_left_comm,
+      mul_inv_cancel_left, beq_self_eq_true]
+    · simp only [hx, ite_false, add_zero, mul_assoc, mul_comm (g x) _, beq_iff_eq]
 
 end CommGroup
 
@@ -405,39 +402,39 @@ section Alternating
 
 section
 
-variable [One α] [Mul α] [Inv α]
+variable [One G] [Mul G] [Inv G]
 
 @[to_additive (attr := simp)]
-theorem alternatingProd_nil : alternatingProd ([] : List α) = 1 :=
+theorem alternatingProd_nil : alternatingProd ([] : List G) = 1 :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem alternatingProd_singleton (a : α) : alternatingProd [a] = a :=
+theorem alternatingProd_singleton (a : G) : alternatingProd [a] = a :=
   rfl
 
 @[to_additive]
-theorem alternatingProd_cons_cons' (a b : α) (l : List α) :
+theorem alternatingProd_cons_cons' (a b : G) (l : List G) :
     alternatingProd (a :: b :: l) = a * b⁻¹ * alternatingProd l :=
   rfl
 
 end
 
 @[to_additive]
-theorem alternatingProd_cons_cons [DivInvMonoid α] (a b : α) (l : List α) :
+theorem alternatingProd_cons_cons [DivInvMonoid G] (a b : G) (l : List G) :
     alternatingProd (a :: b :: l) = a / b * alternatingProd l := by
   rw [div_eq_mul_inv, alternatingProd_cons_cons']
 
-variable [CommGroup α]
+variable [CommGroup G]
 
 @[to_additive]
 theorem alternatingProd_cons' :
-    ∀ (a : α) (l : List α), alternatingProd (a :: l) = a * (alternatingProd l)⁻¹
+    ∀ (a : G) (l : List G), alternatingProd (a :: l) = a * (alternatingProd l)⁻¹
   | a, [] => by rw [alternatingProd_nil, inv_one, mul_one, alternatingProd_singleton]
   | a, b :: l => by
     rw [alternatingProd_cons_cons', alternatingProd_cons' b l, mul_inv, inv_inv, mul_assoc]
 
 @[to_additive (attr := simp)]
-theorem alternatingProd_cons (a : α) (l : List α) :
+theorem alternatingProd_cons (a : G) (l : List G) :
     alternatingProd (a :: l) = a / alternatingProd l := by
   rw [div_eq_mul_inv, alternatingProd_cons']
 
@@ -445,13 +442,13 @@ end Alternating
 
 lemma sum_nat_mod (l : List ℕ) (n : ℕ) : l.sum % n = (l.map (· % n)).sum % n := by
   induction l with
-  | nil => simp only [Nat.zero_mod, map_nil]
+  | nil => simp only [map_nil]
   | cons a l ih =>
     simpa only [map_cons, sum_cons, Nat.mod_add_mod, Nat.add_mod_mod] using congr((a + $ih) % n)
 
 lemma prod_nat_mod (l : List ℕ) (n : ℕ) : l.prod % n = (l.map (· % n)).prod % n := by
   induction l with
-  | nil => simp only [Nat.zero_mod, map_nil]
+  | nil => simp only [map_nil]
   | cons a l ih =>
     simpa only [prod_cons, map_cons, Nat.mod_mul_mod, Nat.mul_mod_mod] using congr((a * $ih) % n)
 
@@ -484,21 +481,13 @@ end MonoidHom
 
 namespace List
 
-@[deprecated (since := "2024-10-16")] alias length_bind := length_flatMap
-
-@[deprecated (since := "2024-10-16")] alias countP_bind := countP_flatMap
-
-@[deprecated (since := "2024-10-16")] alias count_bind := count_flatMap
-
 /-- In a flatten, taking the first elements up to an index which is the sum of the lengths of the
 first `i` sublists, is the same as taking the flatten of the first `i` sublists. -/
 lemma take_sum_flatten (L : List (List α)) (i : ℕ) :
     L.flatten.take ((L.map length).take i).sum = (L.take i).flatten := by
   induction L generalizing i
   · simp
-  · cases i <;> simp [take_append, *]
-
-@[deprecated (since := "2024-10-15")] alias take_sum_join := take_sum_flatten
+  · cases i <;> simp [take_length_add_append, *]
 
 /-- In a flatten, dropping all the elements up to an index which is the sum of the lengths of the
 first `i` sublists, is the same as taking the join after dropping the first `i` sublists. -/
@@ -506,9 +495,10 @@ lemma drop_sum_flatten (L : List (List α)) (i : ℕ) :
     L.flatten.drop ((L.map length).take i).sum = (L.drop i).flatten := by
   induction L generalizing i
   · simp
-  · cases i <;> simp [take_append, *]
+  · cases i <;> simp [*]
 
-@[deprecated (since := "2024-10-15")] alias drop_sum_join := drop_sum_flatten
+@[deprecated (since := "2024-10-25")] alias take_sum_join' := take_sum_flatten
+@[deprecated (since := "2024-10-25")] alias drop_sum_join' := drop_sum_flatten
 
 end List
 

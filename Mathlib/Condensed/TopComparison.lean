@@ -130,7 +130,7 @@ end
 Associate to a `(u+1)`-small topological space the corresponding condensed set, given by
 `yonedaPresheaf`.
 -/
-noncomputable abbrev TopCat.toCondensedSet (X : TopCat.{u+1}) : CondensedSet.{u} :=
+noncomputable abbrev TopCat.toCondensedSet (X : TopCat.{u + 1}) : CondensedSet.{u} :=
   toSheafCompHausLike.{u+1} _ X (fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
 
 /--

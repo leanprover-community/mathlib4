@@ -149,12 +149,12 @@ theorem Measure.MeasureDense.indicatorConstLp_subset_closure (h𝒜 : μ.Measure
       ⟨t, ht, hμt, rfl⟩, ?_⟩
     rw [dist_indicatorConstLp_eq_norm, norm_indicatorConstLp p_pos.ne.symm p_ne_top.elim]
     calc
-      ‖c‖ * (μ (s ∆ t)).toReal ^ (1 / p.toReal)
+      ‖c‖ * μ.real (s ∆ t) ^ (1 / p.toReal)
         < ‖c‖ * (ENNReal.ofReal ((ε / ‖c‖) ^ p.toReal)).toReal ^ (1 / p.toReal) := by
           rw [_root_.mul_lt_mul_left (norm_pos_iff.2 hc)]
           refine Real.rpow_lt_rpow (by simp) ?_
             (one_div_pos.2 <| toReal_pos p_pos.ne.symm p_ne_top.elim)
-          rwa [toReal_lt_toReal (measure_symmDiff_ne_top hμs hμt) ofReal_ne_top]
+          rwa [measureReal_def, toReal_lt_toReal (measure_symmDiff_ne_top hμs hμt) ofReal_ne_top]
       _ = ε := by
         rw [toReal_ofReal (rpow_nonneg (div_nonneg hε.le (norm_nonneg _)) _),
           one_div, Real.rpow_rpow_inv (div_nonneg hε.le (norm_nonneg _))
@@ -180,7 +180,7 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_finite [IsFiniteMeasur
     -- We want to show that any measurable set can be approximated by sets in `𝒜`. To do so, it is
     -- enough to show that such sets constitute a `σ`-algebra containing `𝒜`. This is contained in
     -- the theorem `generateFrom_induction`.
-    have : MeasurableSet s ∧ ∀ (ε : ℝ), 0 < ε → ∃ t ∈ 𝒜, (μ (s ∆ t)).toReal < ε := by
+    have : MeasurableSet s ∧ ∀ (ε : ℝ), 0 < ε → ∃ t ∈ 𝒜, μ.real (s ∆ t) < ε := by
       rw [hgen] at ms
       induction s, ms using generateFrom_induction with
       -- If `t ∈ 𝒜`, then `μ (t ∆ t) = 0` which is less than any `ε > 0`.
@@ -211,7 +211,7 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_finite [IsFiniteMeasur
         --   `< ε/2 + (N+1)*ε/(2*(N+1)) = ε/2`.
         refine ⟨⋃ n ∈ Finset.range (N + 1), g n, h𝒜.biUnion_mem _ (fun i _ ↦ g_mem i), ?_⟩
         calc
-          (μ ((⋃ n, f n) ∆ (⋃ n ∈ (Finset.range (N + 1)), g n))).toReal
+          μ.real ((⋃ n, f n) ∆ (⋃ n ∈ (Finset.range (N + 1)), g n))
             ≤ (μ ((⋃ n, f n) \ ((⋃ n ∈ (Finset.range (N + 1)), f n)) ∪
               ((⋃ n ∈ (Finset.range (N + 1)), f n) ∆
               (⋃ n ∈ (Finset.range (N + 1)), g ↑n)))).toReal :=
@@ -241,10 +241,10 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_finite [IsFiniteMeasur
                 · calc
                     (μ ((⋃ n ∈ (Finset.range (N + 1)), f n) ∆
                     (⋃ n ∈ (Finset.range (N + 1)), g ↑n))).toReal
-                      ≤ (μ (⋃ n ∈ (Finset.range (N + 1)), f n ∆ g n)).toReal :=
+                      ≤ μ.real (⋃ n ∈ (Finset.range (N + 1)), f n ∆ g n) :=
                           toReal_mono (measure_ne_top _ _) (measure_mono biSup_symmDiff_biSup_le)
-                    _ ≤ ∑ n ∈ Finset.range (N + 1), (μ (f n ∆ g n)).toReal := by
-                          rw [← toReal_sum (fun _ _ ↦ measure_ne_top _ _)]
+                    _ ≤ ∑ n ∈ Finset.range (N + 1), μ.real (f n ∆ g n) := by
+                          simp_rw [measureReal_def, ← toReal_sum (fun _ _ ↦ measure_ne_top _ _)]
                           exact toReal_mono (ne_of_lt <| sum_lt_top.2 fun _ _ ↦ measure_lt_top μ _)
                             (measure_biUnion_finset_le _ _)
                     _ < ∑ n ∈ Finset.range (N + 1), (ε / (2 * (N + 1))) :=
@@ -462,10 +462,10 @@ instance Lp.SecondCountableTopology [IsSeparable μ] [TopologicalSpace.Separable
       apply ne_of_lt at hμs
       rw [SeminormedAddCommGroup.mem_closure_iff]
       intro ε ε_pos
-      have μs_pow_nonneg : 0 ≤ (μ s).toReal ^ (1 / p.toReal) :=
+      have μs_pow_nonneg : 0 ≤ μ.real s ^ (1 / p.toReal) :=
         Real.rpow_nonneg ENNReal.toReal_nonneg _
       -- To do so, we first pick `b ∈ u` such that `‖a - b‖ < ε / (3 * (1 + (μ s)^(1/p)))`.
-      have approx_a_pos : 0 < ε / (3 * (1 + (μ s).toReal ^ (1 / p.toReal))) :=
+      have approx_a_pos : 0 < ε / (3 * (1 + μ.real s ^ (1 / p.toReal))) :=
         div_pos ε_pos (by linarith [μs_pow_nonneg])
       have ⟨b, b_mem, hb⟩ := SeminormedAddCommGroup.mem_closure_iff.1 (dense_u a) _ approx_a_pos
       -- Then we pick `t ∈ 𝒜₀` such that `‖b • 𝟙ₛ - b • 𝟙ₜ‖ < ε / 3`.
@@ -487,8 +487,8 @@ instance Lp.SecondCountableTopology [IsSeparable μ] [TopologicalSpace.Separable
       refine lt_of_le_of_lt (b := ε / 3 + ε / 3) (norm_add_le_of_le ?_ hst.le) (by linarith [ε_pos])
       rw [indicatorConstLp_sub, norm_indicatorConstLp p_ne_zero p_ne_top.elim]
       calc
-        ‖a - b‖ * (μ s).toReal ^ (1 / p.toReal)
-          ≤ (ε / (3 * (1 + (μ s).toReal ^ (1 / p.toReal)))) * (μ s).toReal ^ (1 / p.toReal) :=
+        ‖a - b‖ * μ.real s ^ (1 / p.toReal)
+          ≤ (ε / (3 * (1 + μ.real s ^ (1 / p.toReal)))) * μ.real s ^ (1 / p.toReal) :=
               mul_le_mul_of_nonneg_right (le_of_lt hb) μs_pow_nonneg
         _ ≤ ε / 3 := by
             rw [← mul_one (ε / 3), div_mul_eq_div_mul_one_div, mul_assoc, one_div_mul_eq_div]

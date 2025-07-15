@@ -31,7 +31,7 @@ open Matrix MulOpposite
 abbrev AlgHom.mulLeftRightMatrix_inv :
     Module.End R (Matrix n n R) →ₗ[R] Matrix n n R ⊗[R] (Matrix n n R)ᵐᵒᵖ where
   toFun f := ∑ ⟨⟨i, j⟩, k, l⟩ : (n × n) × n × n,
-    f (stdBasisMatrix j k 1) i l • (stdBasisMatrix i j 1) ⊗ₜ[R] op (stdBasisMatrix k l 1)
+    f (single j k 1) i l • (single i j 1) ⊗ₜ[R] op (single k l 1)
   map_add' f1 f2 := by simp [add_smul, Finset.sum_add_distrib]
   map_smul' r f := by simp [MulAction.mul_smul, Finset.smul_sum]
 
@@ -41,8 +41,8 @@ lemma AlgHom.mulLeftRightMatrix.inv_comp :
   Basis.ext (Basis.tensorProduct (Matrix.stdBasis _ _ _)
     ((Matrix.stdBasis _ _ _).map (opLinearEquiv ..)))
   fun ⟨⟨i0, j0⟩, k0, l0⟩ ↦ by
-    simp [stdBasis_eq_stdBasisMatrix, ite_and, Fintype.sum_prod_type,
-      mulLeftRight_apply, stdBasisMatrix, Matrix.mul_apply]
+    simp [stdBasis_eq_single, ite_and, Fintype.sum_prod_type,
+      mulLeftRight_apply, single, Matrix.mul_apply]
 
 lemma AlgHom.mulLeftRightMatrix.comp_inv :
     (AlgHom.mulLeftRight R (Matrix n n R)).toLinearMap.comp
@@ -51,11 +51,10 @@ lemma AlgHom.mulLeftRightMatrix.comp_inv :
   apply Basis.ext (Matrix.stdBasis _ _ _)
   intro ⟨i, j⟩
   simp only [LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply, map_sum,
-    map_smul, stdBasis_eq_stdBasisMatrix, LinearMap.coeFn_sum, Finset.sum_apply,
+    map_smul, stdBasis_eq_single, LinearMap.coeFn_sum, Finset.sum_apply,
     LinearMap.smul_apply, LinearMap.id_coe, id_eq]
   ext k l
-  simp [sum_apply, Matrix.mul_apply, Finset.sum_mul, Finset.mul_sum, stdBasisMatrix,
-    Fintype.sum_prod_type, ite_and]
+  simp [sum_apply, Matrix.mul_apply, single, Fintype.sum_prod_type, ite_and]
 
 namespace IsAzumaya
 

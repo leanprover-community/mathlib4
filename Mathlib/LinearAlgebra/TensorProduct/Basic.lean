@@ -38,8 +38,6 @@ map `TensorProduct.mk` is the given bilinear map `f`.  Uniqueness is shown in th
 bilinear, tensor, tensor product
 -/
 
-suppress_compilation
-
 section Semiring
 
 variable {R : Type*} [CommSemiring R]
@@ -266,8 +264,8 @@ the tensor product (over `R`) carries an action of `R'`.
 
 This instance defines this `R'` action in the case that it is the left module which has the `R'`
 action. Two natural ways in which this situation arises are:
- * Extension of scalars
- * A tensor product of a group representation with a module not carrying an action
+* Extension of scalars
+* A tensor product of a group representation with a module not carrying an action
 
 Note that in the special case that `R = R'`, since `R` is commutative, we just get the usual scalar
 action on a tensor product of two modules. This special case is important enough that, for
@@ -356,6 +354,12 @@ theorem tmul_smul [DistribMulAction R' N] [CompatibleSMul R R' M N] (r : R') (x 
 theorem smul_tmul_smul (r s : R) (m : M) (n : N) : (r • m) ⊗ₜ[R] (s • n) = (r * s) • m ⊗ₜ[R] n := by
   simp_rw [smul_tmul, tmul_smul, mul_smul]
 
+theorem tmul_eq_smul_one_tmul {S : Type*} [Semiring S] [Module R S] [SMulCommClass R S S]
+    (s : S) (m : M) : s ⊗ₜ[R] m = s • (1 ⊗ₜ[R] m) := by
+  nth_rw 1 [← mul_one s, ← smul_eq_mul, smul_tmul']
+
+@[deprecated (since := "2025-07-08")] alias tsmul_eq_smul_one_tuml := tmul_eq_smul_one_tmul
+
 instance leftModule : Module R'' (M ⊗[R] N) :=
   { add_smul := TensorProduct.add_smul
     zero_smul := TensorProduct.zero_smul }
@@ -442,14 +446,14 @@ theorem sum_tmul {α : Type*} (s : Finset α) (m : α → M) (n : N) :
   classical
     induction s using Finset.induction with
     | empty => simp
-    | insert has ih => simp [Finset.sum_insert has, add_tmul, ih]
+    | insert _ _ has ih => simp [Finset.sum_insert has, add_tmul, ih]
 
 theorem tmul_sum (m : M) {α : Type*} (s : Finset α) (n : α → N) :
     (m ⊗ₜ[R] ∑ a ∈ s, n a) = ∑ a ∈ s, m ⊗ₜ[R] n a := by
   classical
     induction s using Finset.induction with
     | empty => simp
-    | insert has ih => simp [Finset.sum_insert has, tmul_add, ih]
+    | insert _ _ has ih => simp [Finset.sum_insert has, tmul_add, ih]
 
 end
 
@@ -622,7 +626,10 @@ theorem ext_threefold {g h : (M ⊗[R] N) ⊗[R] P →ₛₗ[σ₁₂] P₂}
   ext x y z
   exact H x y z
 
-@[deprecated (since := "2024-10-18")] alias ext₃ := ext_threefold
+theorem ext_threefold' {g h : M ⊗[R] (N ⊗[R] P) →ₗ[R] Q}
+    (H : ∀ x y z, g (x ⊗ₜ (y ⊗ₜ z)) = h (x ⊗ₜ (y ⊗ₜ z))) : g = h := by
+  ext x y z
+  exact H x y z
 
 -- We'll need this one for checking the pentagon identity!
 theorem ext_fourfold {g h : ((M ⊗[R] N) ⊗[R] P) ⊗[R] Q →ₛₗ[σ₁₂] P₂}
@@ -819,7 +826,7 @@ theorem map_smul_left (r : R₂) (f : M →ₛₗ[σ₁₂] M₂) (g : N →ₛ�
 theorem map_smul_right (r : R₂) (f : M →ₛₗ[σ₁₂] M₂) (g : N →ₛₗ[σ₁₂] N₂) :
     map f (r • g) = r • map f g := by
   ext
-  simp only [smul_tmul, compr₂_apply, mk_apply, map_tmul, smul_apply, tmul_smul]
+  simp only [compr₂_apply, mk_apply, map_tmul, smul_apply, tmul_smul]
 
 variable (M N P M₂ N₂ σ₁₂)
 
@@ -1000,6 +1007,13 @@ theorem lTensor_bij_iff_rTensor_bij :
     Function.Bijective (lTensor M f) ↔ Function.Bijective (rTensor M f) := by
   simp [← comm_comp_rTensor_comp_comm_eq]
 
+variable {M} in
+theorem smul_lTensor {S : Type*} [CommSemiring S] [SMul R S] [Module S M] [IsScalarTower R S M]
+    [SMulCommClass R S M] (s : S) (m : M ⊗[R] N) : s • (f.lTensor M) m = (f.lTensor M) (s • m) :=
+  have h : s • (f.lTensor M) = f.lTensor M ∘ₗ (LinearMap.lsmul S (M ⊗[R] N) s).restrictScalars R :=
+    TensorProduct.ext rfl
+  congrFun (congrArg DFunLike.coe h) m
+
 open TensorProduct
 
 attribute [local ext high] TensorProduct.ext
@@ -1127,34 +1141,34 @@ theorem rTensor_comp_lTensor (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
 @[simp]
 theorem map_comp_rTensor (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (f' : P' →ₗ[R] M) :
     (map f g).comp (f'.rTensor _) = map (f.comp f') g := by
-  simp only [lTensor, rTensor, ← map_comp, id_comp, comp_id]
+  simp only [rTensor, ← map_comp, comp_id]
 
 @[simp]
 theorem map_comp_lTensor (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (g' : P' →ₗ[R] N) :
     (map f g).comp (g'.lTensor _) = map f (g.comp g') := by
-  simp only [lTensor, rTensor, ← map_comp, id_comp, comp_id]
+  simp only [lTensor, ← map_comp, comp_id]
 
 @[simp]
 theorem rTensor_comp_map (f' : P →ₗ[R] P') (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     (f'.rTensor _).comp (map f g) = map (f'.comp f) g := by
-  simp only [lTensor, rTensor, ← map_comp, id_comp, comp_id]
+  simp only [rTensor, ← map_comp, id_comp]
 
 @[simp]
 theorem lTensor_comp_map (g' : Q →ₗ[R] P') (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     (g'.lTensor _).comp (map f g) = map f (g'.comp g) := by
-  simp only [lTensor, rTensor, ← map_comp, id_comp, comp_id]
+  simp only [lTensor, ← map_comp, id_comp]
 
 variable {M}
 
 @[simp]
 theorem rTensor_pow (f : M →ₗ[R] M) (n : ℕ) : f.rTensor N ^ n = (f ^ n).rTensor N := by
   have h := TensorProduct.map_pow f (id : N →ₗ[R] N) n
-  rwa [id_pow] at h
+  rwa [Module.End.id_pow] at h
 
 @[simp]
 theorem lTensor_pow (f : N →ₗ[R] N) (n : ℕ) : f.lTensor M ^ n = (f ^ n).lTensor M := by
   have h := TensorProduct.map_pow (id : M →ₗ[R] M) f n
-  rwa [id_pow] at h
+  rwa [Module.End.id_pow] at h
 
 end LinearMap
 
@@ -1309,8 +1323,8 @@ instance addCommGroup : AddCommGroup (M ⊗[R] N) :=
     sub_eq_add_neg := fun _ _ => rfl
     neg_add_cancel := fun x => TensorProduct.neg_add_cancel x
     zsmul := fun n v => n • v
-    zsmul_zero' := by simp [TensorProduct.zero_smul]
-    zsmul_succ' := by simp [add_comm, TensorProduct.one_smul, TensorProduct.add_smul]
+    zsmul_zero' := by simp
+    zsmul_succ' := by simp [add_comm, TensorProduct.add_smul]
     zsmul_neg' := fun n x => by
       change (-n.succ : ℤ) • x = -(((n : ℤ) + 1) • x)
       rw [← zero_add (_ • x), ← TensorProduct.neg_add_cancel ((n.succ : ℤ) • x), add_assoc,

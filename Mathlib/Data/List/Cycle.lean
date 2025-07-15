@@ -101,11 +101,11 @@ element of `l`. This works from head to tail, (including a check for last elemen
 so it will match on first hit, ignoring later duplicates.
 
 For example:
- * `next [1, 2, 3] 2 _ = 3`
- * `next [1, 2, 3] 3 _ = 1`
- * `next [1, 2, 3, 2, 4] 2 _ = 3`
- * `next [1, 2, 3, 2] 2 _ = 3`
- * `next [1, 1, 2, 3, 2] 1 _ = 1`
+* `next [1, 2, 3] 2 _ = 3`
+* `next [1, 2, 3] 3 _ = 1`
+* `next [1, 2, 3, 2, 4] 2 _ = 3`
+* `next [1, 2, 3, 2] 2 _ = 3`
+* `next [1, 1, 2, 3, 2] 1 _ = 1`
 -/
 def next (l : List α) (x : α) (h : x ∈ l) : α :=
   nextOr l x (l.get ⟨0, length_pos_of_mem h⟩)
@@ -114,11 +114,11 @@ def next (l : List α) (x : α) (h : x ∈ l) : α :=
 element of `l`. This works from head to tail, (including a check for last element)
 so it will match on first hit, ignoring later duplicates.
 
- * `prev [1, 2, 3] 2 _ = 1`
- * `prev [1, 2, 3] 1 _ = 3`
- * `prev [1, 2, 3, 2, 4] 2 _ = 1`
- * `prev [1, 2, 3, 4, 2] 2 _ = 1`
- * `prev [1, 1, 2] 1 _ = 2`
+* `prev [1, 2, 3] 2 _ = 1`
+* `prev [1, 2, 3] 1 _ = 3`
+* `prev [1, 2, 3, 2, 4] 2 _ = 1`
+* `prev [1, 2, 3, 4, 2] 2 _ = 1`
+* `prev [1, 1, 2] 1 _ = 2`
 -/
 def prev : ∀ l : List α, ∀ x ∈ l, α
   | [], _, h => by simp at h
@@ -148,8 +148,7 @@ theorem next_ne_head_ne_getLast (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : 
     (hx : x ≠ getLast (y :: l) (cons_ne_nil _ _)) :
     next (y :: l) x h = next l x (by simpa [hy] using h) := by
   rw [next, next, nextOr_cons_of_ne _ _ _ _ hy, nextOr_eq_nextOr_of_mem_of_ne]
-  · rwa [getLast_cons] at hx
-    exact ne_nil_of_mem (by assumption)
+  · assumption
   · rwa [getLast_cons] at hx
 
 theorem next_cons_concat (y : α) (hy : x ≠ y) (hx : x ∉ l)
@@ -175,14 +174,14 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
   rcases l with - | ⟨hd, tl⟩
   · simp at hk
   · rw [nodup_iff_injective_get] at hl
-    rw [length, Nat.succ_inj']
+    rw [length, Nat.succ_inj]
     refine Fin.val_eq_of_eq <| @hl ⟨k, Nat.lt_of_succ_lt <| by simpa using hk⟩
       ⟨tl.length, by simp⟩ ?_
     rw [← Option.some_inj] at hk'
     rw [← getElem?_eq_getElem, dropLast_eq_take, getElem?_take_of_lt, getElem?_cons_succ,
       getElem?_eq_getElem, Option.some_inj] at hk'
     · rw [get_eq_getElem, hk']
-      simp only [getLast_eq_getElem, length_cons, Nat.succ_eq_add_one, Nat.succ_sub_succ_eq_sub,
+      simp only [getLast_eq_getElem, length_cons, Nat.succ_sub_succ_eq_sub,
         Nat.sub_zero, get_eq_getElem, getElem_cons_succ]
     simpa using hk
 
@@ -204,7 +203,7 @@ theorem prev_cons_cons_eq (z : α) (h : x ∈ x :: z :: l) :
 theorem prev_cons_cons_of_ne' (y z : α) (h : x ∈ y :: z :: l) (hy : x ≠ y) (hz : x = z) :
     prev (y :: z :: l) x h = y := by
   cases l
-  · simp [prev, hy, hz]
+  · simp [prev, hz]
   · rw [prev, dif_neg hy, if_pos hz]
 
 theorem prev_cons_cons_of_ne (y : α) (h : x ∈ y :: x :: l) (hy : x ≠ y) :
@@ -254,7 +253,7 @@ theorem next_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
     rcases hi'.eq_or_lt with (hi' | hi')
     · subst hi'
       rw [next_getLast_cons]
-      · simp [hi', get]
+      · simp
       · rw [getElem_cons_succ]; exact get_mem _ _
       · exact hx'
       · simp [getLast_eq_getElem]
@@ -342,7 +341,7 @@ theorem prev_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
   · have : (n + 1 + length tl) % (length tl + 1) = n := by
       rw [length_cons] at hn
       rw [add_assoc, add_comm 1, Nat.add_mod_right, Nat.mod_eq_of_lt hn]
-    simp only [length_cons, Nat.succ_sub_succ_eq_sub, Nat.sub_zero, Nat.succ_eq_add_one, this]
+    simp only [length_cons, Nat.succ_sub_succ_eq_sub, Nat.sub_zero, this]
 
 theorem next_prev (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
     next l (prev l x hx) (prev_mem _ _ _) = x := by
@@ -469,8 +468,10 @@ theorem mem_coe_iff {a : α} {l : List α} : a ∈ (↑l : Cycle α) ↔ a ∈ l
   Iff.rfl
 
 @[simp]
-theorem not_mem_nil : ∀ a, a ∉ @nil α :=
-  fun _ => List.not_mem_nil
+theorem notMem_nil (a : α) : a ∉ nil :=
+  List.not_mem_nil
+
+@[deprecated (since := "2025-05-23")] alias not_mem_nil := notMem_nil
 
 instance [DecidableEq α] : DecidableEq (Cycle α) := fun s₁ s₂ =>
   Quotient.recOnSubsingleton₂' s₁ s₂ fun _ _ => decidable_of_iff' _ Quotient.eq''
@@ -545,7 +546,7 @@ theorem nontrivial_coe_nodup_iff {l : List α} (hl : l.Nodup) :
   rcases l with (_ | ⟨hd, _ | ⟨hd', tl⟩⟩)
   · simp
   · simp
-  · simp only [mem_cons, exists_prop, mem_coe_iff, List.length, Ne, Nat.succ_le_succ_iff,
+  · simp only [mem_cons, mem_coe_iff, List.length, Ne, Nat.succ_le_succ_iff,
       Nat.zero_le, iff_true]
     refine ⟨hd, hd', ?_, by simp⟩
     simp only [not_or, mem_cons, nodup_cons] at hl
@@ -875,7 +876,7 @@ theorem chain_of_pairwise : (∀ a ∈ s, ∀ b ∈ s, r a b) → Chain r s := b
 theorem chain_iff_pairwise [IsTrans α r] : Chain r s ↔ ∀ a ∈ s, ∀ b ∈ s, r a b :=
   ⟨by
     induction' s with a l _
-    · exact fun _ b hb => (not_mem_nil _ hb).elim
+    · exact fun _ b hb => (notMem_nil _ hb).elim
     intro hs b hb c hc
     rw [Cycle.chain_coe_cons, List.chain_iff_pairwise] at hs
     simp only [pairwise_append, pairwise_cons, mem_append, mem_singleton, List.not_mem_nil,
