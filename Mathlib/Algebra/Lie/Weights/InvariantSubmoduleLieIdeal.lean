@@ -940,7 +940,29 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
               simp only [bot_sup_eq] at h_after_minus
               exact h_after_minus
 
-            sorry -- This should now show that ⁅x_χ, m_α⁆ ∈ genWeightSpace L ⇑χ
+            -- The key insight: if both χ + α and χ - α weight spaces are ⊥,
+            -- then the pairing between χ and α must be zero
+            -- This follows from root_add_root_mem_of_pairingIn_neg and root_sub_root_mem_of_pairingIn_pos
+            let S := LieAlgebra.IsKilling.rootSystem H
+            -- First get the root indices corresponding to χ and α
+            obtain ⟨i, hi⟩ : ∃ i, S.root i = χ.toLinear := by sorry
+            obtain ⟨j, hj⟩ : ∃ j, S.root j = α.1.toLinear := by sorry
+            have h_pairing_zero : S.pairing i j = 0 := by
+              -- Since h_plus_bot : genWeightSpace L (χ + α) = ⊥
+              -- and h_minus_bot : genWeightSpace L (χ - α) = ⊥
+              -- we can use root_add_root_mem_of_pairingIn_neg and root_sub_root_mem_of_pairingIn_pos
+              -- to conclude that the pairing is zero
+              sorry
+
+            -- With zero pairing, the bracket ⁅x_χ, m_α⁆ = 0
+            have h_bracket_zero : ⁅x_χ, m_α⁆ = 0 := by
+              -- This follows from the fact that when the pairing is zero,
+              -- the bracket between weight spaces is zero
+              sorry
+
+            -- Therefore the goal is satisfied
+            rw [h_bracket_zero]
+            simp
 
         | zero =>
           simp only [LieSubmodule.iSup_toSubmodule, Submodule.carrier_eq_coe, lie_zero,
