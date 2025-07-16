@@ -679,10 +679,39 @@ class ValuativeTopology (R : Type*) [CommRing R] [ValuativeRel R] [TopologicalSp
 
 namespace ValuativeRel
 
-variable
-  {R Γ : Type*} [CommRing R] [ValuativeRel R] [TopologicalSpace R]
-  [LinearOrderedCommGroupWithZero Γ]
-  (v : Valuation R Γ) [v.Compatible]
+variable {R Γ : Type*} [CommRing R] [ValuativeRel R] [LinearOrderedCommGroupWithZero Γ]
+  (v : Valuation R Γ)
+
+/-- Any valuation compatible with the valuative relation can be factored through
+the value group. -/
+noncomputable
+def ValueGroupWithZero.embed [h : v.Compatible] : ValueGroupWithZero R →*₀ Γ :=
+  ⟨⟨ValuativeRel.ValueGroupWithZero.lift (fun r s ↦ v r / v (s : R)) <| by
+    intro x y r s
+    simp only [h.rel_iff_le, map_mul, ← and_imp, ← le_antisymm_iff]
+    rw [div_eq_div_iff] <;> simp,
+    by simp [ValueGroupWithZero.lift_zero]⟩,
+    by simp, by
+      intros
+      simp only
+      apply ValuativeRel.ValueGroupWithZero.lift_mul
+      field_simp⟩
+
+@[simp]
+lemma ValueGroupWithZero.embed_valuation_apply (γ : ValueGroupWithZero R) :
+    embed (valuation R) γ = γ := by
+  obtain ⟨r, s, rfl⟩ := valuation_surjective γ
+  simp [embed]
+
+lemma ValueGroupWithZero.embed_strictMono [h : v.Compatible] : StrictMono (embed v) := by
+  intro a b h
+  obtain ⟨a, r, rfl⟩ := valuation_surjective a
+  obtain ⟨b, s, rfl⟩ := valuation_surjective b
+  simp only [map_div₀]
+  rw [div_lt_div_iff₀] at h ⊢
+  any_goals simp [zero_lt_iff]
+  rw [← map_mul, ← map_mul, (isEquiv (valuation R) v).lt_iff_lt] at h
+  simpa [embed] using h
 
 end ValuativeRel
 
@@ -739,40 +768,6 @@ lemma mapValueGroupWithZero_valuation (a : A) :
 end ValuativeExtension
 
 namespace ValuativeRel.ValueGroupWithZero
-
-variable {R Γ : Type*} [CommRing R] [ValuativeRel R] [LinearOrderedCommGroupWithZero Γ]
-  (v : Valuation R Γ)
-
-/-- Any valuation compatible with the valuative relation can be factored through
-the value group. -/
-noncomputable
-def embed [h : v.Compatible] : ValuativeRel.ValueGroupWithZero R →*₀ Γ :=
-  ⟨⟨ValuativeRel.ValueGroupWithZero.lift (fun r s ↦ v r / v (s : R)) <| by
-    intro x y r s
-    simp only [h.rel_iff_le, map_mul, ← and_imp, ← le_antisymm_iff]
-    rw [div_eq_div_iff] <;> simp,
-    by simp [lift_zero]⟩,
-    by simp, by
-      intros
-      simp only
-      apply ValuativeRel.ValueGroupWithZero.lift_mul
-      field_simp⟩
-
-@[simp]
-lemma unquot_valuation_apply (γ : ValuativeRel.ValueGroupWithZero R) :
-    embed (valuation R) γ = γ := by
-  obtain ⟨r, s, rfl⟩ := valuation_surjective γ
-  simp [embed]
-
-lemma embed_strictMono [h : v.Compatible] : StrictMono (embed v) := by
-  intro a b h
-  obtain ⟨a, r, rfl⟩ := valuation_surjective a
-  obtain ⟨b, s, rfl⟩ := valuation_surjective b
-  simp only [map_div₀]
-  rw [div_lt_div_iff₀] at h ⊢
-  any_goals simp [zero_lt_iff]
-  rw [← map_mul, ← map_mul, (isEquiv (valuation R) v).lt_iff_lt] at h
-  simpa [embed] using h
 
 end ValuativeRel.ValueGroupWithZero
 
