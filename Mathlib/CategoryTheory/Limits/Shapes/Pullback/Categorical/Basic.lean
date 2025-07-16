@@ -602,7 +602,7 @@ def precompose₂ {U V : X ⥤ Y} (α : U ⟶ V) :
 lemma precompose₂_id (U : X ⥤ Y) : precompose₂ F G (𝟙 U) = 𝟙 _ := by aesop_cat
 
 @[simp]
-lemma precompose₂_comp {U V W: X ⥤ Y} (α : U ⟶ V) (β : V ⟶ W) :
+lemma precompose₂_comp {U V W : X ⥤ Y} (α : U ⟶ V) (β : V ⟶ W) :
     precompose₂ F G (α ≫ β) = precompose₂ F G α ≫ precompose₂ F G β := by
   aesop_cat
 
