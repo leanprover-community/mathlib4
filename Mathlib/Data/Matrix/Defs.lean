@@ -569,29 +569,13 @@ end Matrix
 
 namespace Set
 
-/-- Given a set `S`, `S.matrix` is the set of matrices `M`
-all of whose entries `M i j` belong to `S`. -/
-def matrix (S : Set α) : Set (Matrix m n α) := {M | ∀ i j, M i j ∈ S}
+variable {ι₁ ι₂ : Type*} {X : Type*}
 
-theorem mem_matrix {S : Set α} {M : Matrix m n α} :
-    M ∈ S.matrix ↔ ∀ i j, M i j ∈ S := .rfl
+/-- Given a set `S`, `S.matrix` is the set of matrices `m`
+all of whose entries `m i j` belong to `S`. -/
+def matrix (S : Set X) : Set (Matrix ι₁ ι₂ X) := {m | ∀ i j, m i j ∈ S}
+
+@[simp] theorem mem_matrix (S : Set X) {m : Matrix ι₁ ι₂ X} :
+  m ∈ S.matrix ↔ ∀ i j, m i j ∈ S := .rfl
 
 end Set
-
-namespace Matrix
-
-variable {S : Set α}
-
-@[simp]
-theorem transpose_mem_matrix_iff {M : Matrix m n α} :
-    Mᵀ ∈ S.matrix ↔ M ∈ S.matrix := forall_comm
-
-theorem submatrix_mem_matrix {M : Matrix m n α} {r : l → m} {c : o → n} (hM : M ∈ S.matrix) :
-    M.submatrix r c ∈ S.matrix := by simp_all [Set.mem_matrix]
-
-theorem submatrix_mem_matrix_iff {M : Matrix m n α} {r : l → m} {c : o → n}
-    (hr : Function.Surjective r) (hc : Function.Surjective c) :
-    M.submatrix r c ∈ S.matrix ↔ M ∈ S.matrix :=
-  ⟨(hr.forall.mpr fun _ => hc.forall.mpr fun _ => · _ _), submatrix_mem_matrix⟩
-
-end Matrix
