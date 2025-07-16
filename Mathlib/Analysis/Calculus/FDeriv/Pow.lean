@@ -7,14 +7,15 @@ import Mathlib.Analysis.Calculus.FDeriv.Mul
 import Mathlib.Analysis.Calculus.FDeriv.Comp
 
 /-!
-# Derivative of `(f x) ^ n`, `n : ℕ`
+# Derivative of `f x ^ n`, `n : ℕ`
 
-In this file we prove that `(x ^ n)' = n * x ^ (n - 1)`, where `n` is a natural number.
-Additionally, we prove the case for non-commutative rings,
+In this file we prove that the Frechet derivative of `fun x => f x ^ n`,
+where `n` is a natural number, is `n • f x ^ (n - 1)) • f'`.
+Additionally, we prove the case for non-commutative rings (with primed names like `fderiv_pow'`),
 where the result is instead `∑ i ∈ Finset.range n, f x ^ (n.pred - i) •> f' <• f x ^ i`.
 
 For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
-`Analysis/Calculus/Deriv/Basic`.
+`Mathlib/Analysis/Calculus/Deriv/Basic.lean`.
 
 ## Keywords
 
