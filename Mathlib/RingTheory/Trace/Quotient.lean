@@ -43,7 +43,7 @@ lemma Algebra.trace_quotient_mk [IsLocalRing R] (x : S) :
   congr 1
   ext i j
   simp only [leftMulMatrix_apply, coe_lmul_eq_mul, LinearMap.toMatrix_apply,
-    basisQuotient_apply, LinearMap.mul_apply', RingHom.toAddMonoidHom_eq_coe,
+    basisQuotient_apply, LinearMap.mul_apply',
     AddMonoidHom.mapMatrix_apply, AddMonoidHom.coe_coe, Matrix.map_apply, ← map_mul,
     basisQuotient_repr]
 
@@ -212,7 +212,7 @@ lemma Algebra.trace_quotient_eq_of_isDedekindDomain (x) [IsDedekindDomain R] [Is
     obtain ⟨_, ⟨a, ha, rfl⟩, H⟩ := hx
     simp only [(injective_iff_map_eq_zero' _).mp (FaithfulSMul.algebraMap_injective R S)] at H
     refine ⟨a, ha, H⟩
-  haveI : Module.Finite Rₚ Sₚ := Module.Finite_of_isLocalization R S _ _ p.primeCompl
+  haveI : Module.Finite Rₚ Sₚ := .of_isLocalization R S p.primeCompl
   haveI : IsIntegrallyClosed Sₚ := isIntegrallyClosed_of_isLocalization _ _ e
   have : IsPrincipalIdealRing Rₚ := by
     by_cases hp : p = ⊥

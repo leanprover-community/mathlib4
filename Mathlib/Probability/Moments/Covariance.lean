@@ -17,7 +17,7 @@ We define the covariance of two real-valued random variables.
 
 ## Main statements
 
-* `covariance_same`: `cov[X, X; μ] = Var[X; μ]`
+* `covariance_self`: `cov[X, X; μ] = Var[X; μ]`
 
 ## Notation
 
@@ -44,11 +44,13 @@ scoped notation "cov[" X ", " Y "; " μ "]" => ProbabilityTheory.covariance X Y 
 according to the volume measure. -/
 scoped notation "cov[" X ", " Y "]" => cov[X, Y; MeasureTheory.MeasureSpace.volume]
 
-lemma covariance_same {X : Ω → ℝ} (hX : AEMeasurable X μ) :
+lemma covariance_self {X : Ω → ℝ} (hX : AEMeasurable X μ) :
     cov[X, X; μ] = Var[X; μ] := by
   rw [covariance, variance_eq_integral hX]
   congr with x
   ring
+
+@[deprecated (since := "2025-06-25")] alias covariance_same := covariance_self
 
 @[simp] lemma covariance_zero_left : cov[0, Y; μ] = 0 := by simp [covariance]
 

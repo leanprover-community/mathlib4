@@ -271,10 +271,10 @@ def quotientPathsEquiv : Quotient (pathsHomRel C) ≌ C where
         apply Quot.sound
         apply Quotient.CompClosure.of
         simp [Category.comp_id, Category.id_comp, pathsHomRel])
-  counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (fun f => by simp [Quot.liftOn_mk])
+  counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (fun f => by simp)
   functor_unitIso_comp X := by
     cases X
-    simp only [pathsHomRel, pathComposition_obj, pathComposition_map, Functor.id_obj,
+    simp only [Functor.id_obj,
                quotientPathsTo_obj, Functor.comp_obj, toQuotientPaths_obj_as,
                NatIso.ofComponents_hom_app, Iso.refl_hom, quotientPathsTo_map, Category.comp_id]
     rfl

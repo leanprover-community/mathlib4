@@ -58,6 +58,6 @@ theorem det_permutation [CommRing R] : det (σ.permMatrix R) = Perm.sign σ := b
 theorem trace_permutation [AddCommMonoidWithOne R] :
     trace (σ.permMatrix R) = (Function.fixedPoints σ).ncard := by
   delta trace
-  simp [toPEquiv_apply, ← Set.ncard_coe_Finset, Function.fixedPoints, Function.IsFixedPt]
+  simp [toPEquiv_apply, ← Set.ncard_coe_finset, Function.fixedPoints, Function.IsFixedPt]
 
 end Matrix

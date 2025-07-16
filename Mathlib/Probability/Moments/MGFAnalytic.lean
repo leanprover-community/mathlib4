@@ -135,7 +135,7 @@ lemma continuousOn_mgf : ContinuousOn (mgf X μ) (interior (integrableExpSet X �
 
 lemma continuous_mgf (h : ∀ t, Integrable (fun ω ↦ exp (t * X ω)) μ) :
     Continuous (mgf X μ) := by
-  rw [continuous_iff_continuousOn_univ]
+  rw [← continuousOn_univ]
   convert continuousOn_mgf
   symm
   rw [interior_eq_univ]
@@ -212,7 +212,7 @@ lemma iteratedDeriv_two_cgf (h : v ∈ interior (integrableExpSet X μ)) :
   calc deriv (fun u ↦ (∫ ω, X ω * exp (u * X ω) ∂μ) / mgf X μ u) v
   _ = (deriv (fun u ↦ ∫ ω, X ω * exp (u * X ω) ∂μ) v * mgf X μ v -
       (∫ ω, X ω * exp (v * X ω) ∂μ) * deriv (mgf X μ) v) / mgf X μ v ^ 2 := by
-    rw [deriv_div]
+    rw [deriv_fun_div]
     · rw [h_d_mgf.symm.differentiableAt_iff, ← iteratedDeriv_one]
       exact differentiableAt_iteratedDeriv_mgf h 1
     · exact differentiableAt_mgf h

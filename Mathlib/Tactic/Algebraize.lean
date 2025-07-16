@@ -178,7 +178,7 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
     | some p =>
       let cinfo ← try getConstInfo p catch _ => return
       let p' ← mkConstWithFreshMVarLevels p
-      let (pargs,_,_) ← forallMetaTelescope (← inferType p')
+      let (pargs, _, _) ← forallMetaTelescope (← inferType p')
       let tp' := mkAppN p' pargs
 
       let getValType : MetaM (Option (Expr × Expr)) := do
