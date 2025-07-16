@@ -153,52 +153,24 @@ theorem theorem3 (a : α) : TFAE [
   | h => by
     let r x' y' := ∃ a₁ ≤ a,(x' ⊓ y') ⊔ a₁ = x' ⊔ y'
     constructor
-    · have e1 (x : α) : r x (a ⊔ x) := by
-        use a
-        simp
-        rw [sup_comm]
+    · have e1 (x : α) : r x (a ⊔ x) := ⟨a, by simp [sup_comm]⟩
       intro x y
-      have e2 : r (x ⊓ y) ((a ⊔ x) ⊓ (a ⊔ y)) := by
-        apply h.inf (e1 x) (e1 y)
-      have e3 : r (x ⊓ y) (x ⊓ y) := by
-        apply h.inf (h.refl x) (h.refl y)
-      unfold r at e3
-      obtain ⟨a₁, ha1, ha2⟩ := e2
-      simp at ha2
-      have e4 : x ⊓ y ⊔ (a ⊔ x) ⊓ (a ⊔ y) = (a ⊔ x) ⊓ (a ⊔ y) := by
-        simp
-        constructor
-        · rw [sup_comm]
-          exact le_trans (b := x) inf_le_left le_sup_left
-        · exact le_trans inf_le_right le_sup_right
+      obtain ⟨a₁, ha1, ha2⟩ := h.inf (e1 x) (e1 y)
+      have e4 : x ⊓ y ⊔ (a ⊔ x) ⊓ (a ⊔ y) = (a ⊔ x) ⊓ (a ⊔ y) := sup_eq_right.mpr
+          (le_inf_iff.mpr ⟨le_trans inf_le_left le_sup_right, le_trans inf_le_right le_sup_right⟩)
       rw [e4] at ha2
-      have e5 : ((a ⊔ x) ⊓ (a ⊔ y)) ⊔ a₁ = (a ⊔ x) ⊓ (a ⊔ y) := by
-        simp
-        constructor
-        · exact le_sup_of_le_left ha1
-        · exact le_sup_of_le_left ha1
-      have testn : x ⊓ y ⊓ ((a ⊔ x) ⊓ (a ⊔ y)) = x ⊓ y := by
-        exact sup_eq_iff_inf_eq.mp e4
-      rw [testn] at ha2
+      have e5 : ((a ⊔ x) ⊓ (a ⊔ y)) ⊔ a₁ = (a ⊔ x) ⊓ (a ⊔ y) :=
+        sup_eq_left.mpr (le_inf_iff.mpr ⟨le_sup_of_le_left ha1, le_sup_of_le_left ha1⟩)
+      rw [sup_eq_iff_inf_eq.mp e4] at ha2
       rw [le_antisymm_iff]
       constructor
-      · simp
-        constructor
-        · apply le_trans (b := x) inf_le_left le_sup_right
-        · apply le_trans (b := y) inf_le_right le_sup_right
+      · simp only [le_inf_iff, sup_le_iff, le_sup_left, true_and]
+        exact ⟨le_trans inf_le_left le_sup_right, le_trans inf_le_right le_sup_right⟩
       · rw [← ha2]
         rw [sup_comm]
         exact sup_le_sup_right ha1 (x ⊓ y)
     · have step1 {x y : α} (h₁ : a ⊓ x = a ⊓ y) (h₂ : a ⊔ x = a ⊔ y) : x ⊓ y = x := by
-
-        have e1 : ∃ a₁ ≤ a,((a ⊔ y) ⊓ y) ⊔ a₁ = (a ⊔ y) ⊔ y := by
-          use a
-          simp
-          rw [sup_comm]
-        have e1' : r (a ⊔ y) y := by
-          exact e1
-        have e2 : r (x ⊓ y) (x ⊓ (a ⊔ y)) := by
-          apply h.inf (h.refl x) (h.symm e1')
+        have e2 : r (x ⊓ y) (x ⊓ (a ⊔ y)) := h.inf (h.refl x) (h.symm ⟨a, by simp [sup_comm]⟩)
         rw [← h₂] at e2
         simp only [le_sup_right, inf_of_le_left] at e2
         obtain ⟨a₁, ha1, ha2⟩ := e2
@@ -207,17 +179,12 @@ theorem theorem3 (a : α) : TFAE [
           apply le_inf ha1
           rw [← ha2]
           apply le_sup_right
-        --rw [h₁] at e3
-        have e4 : a₁ ≤ x ⊓ y := by
-          apply le_inf (le_inf_iff.mp e3).2
-          rw [h₁] at e3
-          exact (le_inf_iff.mp e3).2
-        have e5 : x ⊓ y = x := by
-          conv_rhs => rw [← ha2]
-          symm
-          rw [sup_eq_left]
-          exact e4
-        exact e5
+        conv_rhs => rw [← ha2]
+        symm
+        rw [sup_eq_left]
+        apply le_inf (le_inf_iff.mp e3).2
+        rw [h₁] at e3
+        exact (le_inf_iff.mp e3).2
       intro x y ⟨h₁, h₂⟩
       rw [← step1 h₁ h₂]
       rw [inf_comm]
