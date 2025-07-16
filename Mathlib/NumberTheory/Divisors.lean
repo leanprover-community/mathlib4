@@ -516,7 +516,11 @@ theorem properDivisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) :
   simp only [mem_properDivisors, mem_map, mem_range, Function.Embedding.coeFn_mk]
   have := mem_properDivisors_prime_pow pp k (x := a)
   rw [mem_properDivisors] at this
-  grind
+  -- grind  -- TODO: broke
+  rw [this]
+  refine ⟨?_, ?_⟩
+  · intro h; rcases h with ⟨j, hj, hap⟩; use j; tauto
+  · tauto
 
 @[to_additive (attr := simp)]
 theorem prod_properDivisors_prime_pow {α : Type*} [CommMonoid α] {k p : ℕ} {f : ℕ → α}
