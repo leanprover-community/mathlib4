@@ -82,8 +82,14 @@ noncomputable def partialLeftAdjointHomEquiv {X : F.PartialLeftAdjointSource} {Y
 lemma partialLeftAdjointHomEquiv_comp {X : F.PartialLeftAdjointSource} {Y Y' : D}
     (f : F.partialLeftAdjointObj X ⟶ Y) (g : Y ⟶ Y') :
     F.partialLeftAdjointHomEquiv (f ≫ g) =
-      F.partialLeftAdjointHomEquiv f ≫ F.map g := by
-  apply CorepresentableBy.homEquiv_comp
+      F.partialLeftAdjointHomEquiv f ≫ F.map g :=
+  CorepresentableBy.homEquiv_comp ..
+
+lemma partialLeftAdjointHomEquiv_symm_comp {X : F.PartialLeftAdjointSource} {Y Y' : D}
+    (f : X.obj ⟶ F.obj Y) (g : Y ⟶ Y') :
+    F.partialLeftAdjointHomEquiv.symm f ≫ g
+      = F.partialLeftAdjointHomEquiv.symm (f ≫ F.map g) :=
+  CorepresentableBy.homEquiv_symm_comp ..
 
 /-- Given `F : D ⥤ C`, this is `F.partialLeftAdjoint` on morphisms. -/
 noncomputable def partialLeftAdjointMap {X Y : F.PartialLeftAdjointSource}
@@ -225,6 +231,12 @@ lemma partialRightAdjointHomEquiv_comp {X X' : C} {Y : F.PartialRightAdjointSour
     F.partialRightAdjointHomEquiv (g ≫ f) =
       F.map g ≫ F.partialRightAdjointHomEquiv f :=
   RepresentableBy.homEquiv_comp ..
+
+lemma comp_partialRightAdjointHomEquiv_symm {X X' : C} {Y : F.PartialRightAdjointSource}
+    (x : F.obj X' ⟶ Y.obj) (f : X ⟶ X') :
+    f ≫ F.partialRightAdjointHomEquiv.symm x
+      = F.partialRightAdjointHomEquiv.symm (F.map f ≫ x) :=
+  RepresentableBy.comp_homEquiv_symm ..
 
 /-- Given `F : C ⥤ D`, this is `F.partialRightAdjoint` on morphisms. -/
 noncomputable def partialRightAdjointMap {X Y : F.PartialRightAdjointSource}
