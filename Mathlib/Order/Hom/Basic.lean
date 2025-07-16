@@ -1184,6 +1184,18 @@ instance (priority := 90) OrderIsoClass.toOrderIsoClassOrderDual [LE α] [LE β]
 
 section DenselyOrdered
 
+-- could live in a more upstream file, but hard to find a good place
+lemma StrictMono.denselyOrdered_range {X Y : Type*} [LinearOrder X] [DenselyOrdered X] [Preorder Y]
+    {f : X → Y} (hf : StrictMono f) :
+    DenselyOrdered (Set.range f) := by
+  constructor
+  simp only [Subtype.exists, Set.mem_range, Subtype.forall, Subtype.mk_lt_mk, exists_and_right,
+    forall_exists_index, exists_prop, forall_apply_eq_imp_iff, hf.lt_iff_lt]
+  intro a b hab
+  obtain ⟨c, hc⟩ := exists_between hab
+  use f c
+  simp_all [hf.lt_iff_lt]
+
 lemma denselyOrdered_iff_of_orderIsoClass {X Y F : Type*} [Preorder X] [Preorder Y]
     [EquivLike F X Y] [OrderIsoClass F X Y] (f : F) :
     DenselyOrdered X ↔ DenselyOrdered Y := by
