@@ -913,7 +913,32 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
               rw [hi] at h_i_in_q
               exact h_chi_in_q h_i_in_q
 
-            sorry -- Requires detailed sl2 representation analysis for χ ∉ q case
+            -- Now we have h_plus_bot and h_minus_bot showing both weight spaces are ⊥
+            -- Let's try to apply them to h_bracket_decomp
+
+            -- First, let's try to rewrite with h_plus_bot (this should work)
+            have h_after_plus : ⁅x_χ, m_α⁆ ∈
+              ⊥ ⊔ genWeightSpace L (⇑(Weight.toLinear K (↥H) L χ) - ⇑(Weight.toLinear K (↥H) L ↑α)) ⊔
+              genWeightSpace L ⇑χ := by
+              rw [← h_plus_bot]
+              exact h_bracket_decomp
+
+            -- Now let's create a version of h_minus_bot that matches the exact coercion pattern
+            have h_minus_bot_converted : genWeightSpace L (⇑(Weight.toLinear K (↥H) L χ) - ⇑(Weight.toLinear K (↥H) L ↑α)) = ⊥ := by
+              -- Use the fact that ⇑(a - b) = ⇑a - ⇑b for linear maps
+              convert h_minus_bot using 1
+
+            -- Now this rewrite should work
+            have h_after_minus : ⁅x_χ, m_α⁆ ∈ ⊥ ⊔ ⊥ ⊔ genWeightSpace L ⇑χ := by
+              convert h_after_plus using 1
+              rw [h_minus_bot_converted]
+
+            -- If we get here, we can simplify: ⊥ ⊔ ⊥ ⊔ genWeightSpace L ⇑χ = genWeightSpace L ⇑χ
+            have h_simplified : ⁅x_χ, m_α⁆ ∈ genWeightSpace L ⇑χ := by
+              simp only [bot_sup_eq] at h_after_minus
+              exact h_after_minus
+
+            sorry -- This should now show that ⁅x_χ, m_α⁆ ∈ genWeightSpace L ⇑χ
 
         | zero =>
           simp only [LieSubmodule.iSup_toSubmodule, Submodule.carrier_eq_coe, lie_zero,
