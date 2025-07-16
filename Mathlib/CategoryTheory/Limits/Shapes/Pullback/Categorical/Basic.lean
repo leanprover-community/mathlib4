@@ -58,8 +58,6 @@ universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory.Limits
 
-attribute [local simp] CatCommSq.iso_hom_naturality  CatCommSq.iso_inv_naturality
-
 section
 
 variable {A : Type u₁} {B : Type u₂} {C : Type u₃}
