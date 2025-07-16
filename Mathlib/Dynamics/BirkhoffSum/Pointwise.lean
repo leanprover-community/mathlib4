@@ -389,20 +389,13 @@ Time average coincides with conditional expectation for typical points. -/
 theorem ae_tendsTo_birkhoffAverage_condExp {Φ : α → ℝ} (hf : MeasurePreserving f μ μ)
     (hΦ : Integrable Φ μ) :
     ∀ᵐ x ∂μ, Tendsto (birkhoffAverage ℝ f Φ · x) atTop (𝓝 (μ[Φ|invariants f] x)) := by
-  -- Take `φ` as a measurable approximation to the ae measurable `Φ`.
   let φ := hΦ.left.mk
-  have hφ' : Measurable φ := hΦ.left.measurable_mk
   have hΦ' : Φ =ᵐ[μ] φ := hΦ.left.ae_eq_mk
   have hφ : Integrable φ μ := (integrable_congr hΦ.left.ae_eq_mk).mp hΦ
-  -- Obtain a full measure set such that the three relevant results hold.
-  obtain ⟨s, hs, hs'⟩ : ∃ s ∈ ae μ, Set.EqOn (μ[Φ|invariants f]) (μ[φ|invariants f]) s :=
-    eventuallyEq_iff_exists_mem.mp <| condExp_congr_ae hΦ'
-  obtain ⟨t, ht, ht'⟩ :=
-    eventually_iff_exists_mem.mp <| ae_tendsTo_birkhoffAverage_condExp_aux μ hf hφ hφ'
-  have := ae_all_iff.mpr <| birkhoffAverage_ae_eq_of_ae_eq ℝ hf.quasiMeasurePreserving hΦ'
-  obtain ⟨u, hu, hu'⟩ := eventually_iff_exists_mem.mp this
-  -- Apply the three results on the chosen set.
-  refine eventually_iff_exists_mem.mpr ⟨s ∩ t ∩ u, inter_mem (inter_mem hs ht) hu, fun y hy ↦ ?_⟩
-  simp [hs' hy.1.1, ht' y hy.1.2, hu' y hy.2]
+  have h1 := condExp_congr_ae (m := invariants f) hΦ'
+  have h2 := ae_tendsTo_birkhoffAverage_condExp_aux μ hf hφ hΦ.left.measurable_mk
+  have h3 := ae_all_iff.mpr <| birkhoffAverage_ae_eq_of_ae_eq ℝ hf.quasiMeasurePreserving hΦ'
+  filter_upwards [h1, h2, h3] with _ h1' h2' h3'
+  simp [h1', h2', h3']
 
 end PointwiseErgodicTheorem
