@@ -297,15 +297,12 @@ set_option pp.fieldNotation false in
 #check x.2
 end prod
 
-set_option pp.mdata true in
-/-- info: no_index @& ℕ : Type -/
-#guard_msgs in
-#check no_index @& Nat
+section
+set_option pp.mdata true
 
-open Qq in
-/-- info: .(ℕ) : Type -/
+/-- info: no_index @& .(ℕ) : Type -/
 #guard_msgs in
-#check .(ℕ)
+#check no_index @& .(Nat)
 
 -- The elaborator removes this during elaboration.
 /-- info: ℕ : Type -/
@@ -316,3 +313,5 @@ open Qq in
 /-- info: no_implicit_lambda% ℕ : Type -/
 #guard_msgs in
 #check by_elab return Lean.Elab.Term.mkNoImplicitLambdaAnnotation q(Nat)
+
+end

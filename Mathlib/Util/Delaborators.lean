@@ -195,22 +195,16 @@ def delabBorrowed : Delab := whenPPOption Lean.getPPMData do
   let inner ← SubExpr.withMDataExpr delab
   `(@& $inner)
 
-/-! Internal metadata that should never appear in user-facing expressions; and so it should always
-be printed if it somehow gets there anyway. -/
-section internal
-
 /-- Delaborator for `no_implicit_lambda%`. -/
 @[delab mdata]
-def delabNoImplicitLambda : Delab := do
+def delabNoImplicitLambda : Delab := whenPPOption Lean.getPPMData do
   guard <| Elab.Term.hasNoImplicitLambdaAnnotation (← SubExpr.getExpr)
   let inner ← SubExpr.withMDataExpr delab
   `(no_implicit_lambda% $inner)
 
 /-- Delaborator for `.(_)`. -/
 @[delab mdata]
-def delabInaccessible : Delab := do
+def delabInaccessible : Delab := whenPPOption Lean.getPPMData do
   guard <| inaccessible? (← SubExpr.getExpr) |>.isSome
   let inner ← SubExpr.withMDataExpr delab
   `(.($inner))
-
-end internal
