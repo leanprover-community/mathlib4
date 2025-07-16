@@ -302,17 +302,17 @@ set_option pp.mdata true in
 #guard_msgs in
 #check no_index @& Nat
 
--- The elaborator removes these during elaboration.
+open Qq in
 /-- info: .(ℕ) : Type -/
 #guard_msgs in
-#check no_implicit_lambda% .(Nat)
+#check .(ℕ)
+
+-- The elaborator removes this during elaboration.
+/-- info: ℕ : Type -/
+#guard_msgs in
+#check no_implicit_lambda% Nat
 
 open Qq in
-/-- info: no_implicit_lambda% ℕ -/
+/-- info: no_implicit_lambda% ℕ : Type -/
 #guard_msgs in
-run_meta Lean.logInfo <| Lean.Elab.Term.mkNoImplicitLambdaAnnotation q(Nat)
-
-open Qq in
-/-- info: .(ℕ) -/
-#guard_msgs in
-run_meta Lean.logInfo <| Lean.mkInaccessible q(Nat)
+#check by_elab return Lean.Elab.Term.mkNoImplicitLambdaAnnotation q(Nat)
