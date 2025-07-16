@@ -708,7 +708,7 @@ def snocCases {P : (∀ i : Fin n.succ, α i) → Sort*}
   _root_.cast (by rw [Fin.snoc_init_self]) <| h (Fin.init x) (x <| Fin.last _)
 
 @[simp] lemma snocCases_snoc
-    {P : (∀ i : Fin (n+1), α i) → Sort*} (h : ∀ x x₀, P (Fin.snoc x x₀))
+    {P : (∀ i : Fin (n + 1), α i) → Sort*} (h : ∀ x x₀, P (Fin.snoc x x₀))
     (x : ∀ i : Fin n, (Fin.init α) i) (x₀ : α (Fin.last _)) :
     snocCases h (Fin.snoc x x₀) = h x x₀ := by
   rw [snocCases, cast_eq_iff_heq, Fin.init_snoc, Fin.snoc_last]

@@ -128,7 +128,7 @@ theorem ClassGroup.mk_eq_mk_of_coe_ideal {I J : (FractionalIdeal R⁰ <| Fractio
     have : IsUnit (mk' (FractionRing R) x ⟨y, mem_nonZeroDivisors_of_ne_zero hy⟩) := by
       simpa only [isUnit_iff_ne_zero, ne_eq, mk'_eq_zero_iff_eq_zero] using hx
     refine ⟨this.unit, ?_⟩
-    rw [mul_comm, ← Units.eq_iff, Units.val_mul, coe_toPrincipalIdeal]
+    rw [mul_comm, ← Units.val_inj, Units.val_mul, coe_toPrincipalIdeal]
     convert
       (mk'_mul_coeIdeal_eq_coeIdeal (FractionRing R) <| mem_nonZeroDivisors_of_ne_zero hy).2 h
 
@@ -159,7 +159,7 @@ theorem ClassGroup.induction {P : ClassGroup R → Prop}
   QuotientGroup.induction_on x fun I => by
     have : I = (Units.mapEquiv (canonicalEquiv R⁰ K (FractionRing R)).toMulEquiv)
       (Units.mapEquiv (canonicalEquiv R⁰ (FractionRing R) K).toMulEquiv I) := by
-      simp [← Units.eq_iff]
+      simp [← Units.val_inj]
     rw [congr_arg (QuotientGroup.mk (s := (toPrincipalIdeal R (FractionRing R)).range)) this]
     exact h _
 
@@ -199,7 +199,7 @@ theorem ClassGroup.equiv_mk (K' : Type*) [Field K'] [Algebra R K'] [IsFractionRi
   rw [ClassGroup.equiv, ClassGroup.mk_def]
   simp only [ClassGroup, QuotientGroup.congr_mk']
   congr
-  rw [← Units.eq_iff, Units.coe_mapEquiv, Units.coe_mapEquiv, Units.coe_map]
+  rw [← Units.val_inj, Units.coe_mapEquiv, Units.coe_mapEquiv, Units.coe_map]
   exact FractionalIdeal.canonicalEquiv_canonicalEquiv _ _ _ _ _
 
 @[simp]
@@ -251,7 +251,7 @@ theorem ClassGroup.equiv_mk0 [IsDedekindDomain R] (I : (Ideal R)⁰) :
       QuotientGroup.mk' (toPrincipalIdeal R K).range (FractionalIdeal.mk0 K I) := by
   rw [ClassGroup.mk0, MonoidHom.comp_apply, ClassGroup.equiv_mk]
   congr 1
-  simp [← Units.eq_iff]
+  simp [← Units.val_inj]
 
 theorem ClassGroup.mk0_eq_mk0_iff_exists_fraction_ring [IsDedekindDomain R] {I J : (Ideal R)⁰} :
     ClassGroup.mk0 I =

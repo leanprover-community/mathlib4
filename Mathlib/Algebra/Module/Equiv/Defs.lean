@@ -176,7 +176,7 @@ theorem toLinearMap_eq_coe {e : M ≃ₛₗ[σ] M₂} : e.toLinearMap = Semiline
 theorem coe_mk {f invFun left_inv right_inv} :
     ((⟨f, invFun, left_inv, right_inv⟩ : M ≃ₛₗ[σ] M₂) : M → M₂) = f := rfl
 
-theorem coe_injective : @Injective (M ≃ₛₗ[σ] M₂) (M → M₂) CoeFun.coe :=
+theorem coe_injective : @Injective (M ≃ₛₗ[σ] M₂) (M → M₂) DFunLike.coe :=
   DFunLike.coe_injective
 
 @[simp]
@@ -358,7 +358,7 @@ theorem comp_symm : e.toLinearMap ∘ₛₗ e.symm.toLinearMap = LinearMap.id :=
   LinearMap.ext e.apply_symm_apply
 
 @[simp]
-theorem symm_comp : e.symm.toLinearMap ∘ₛₗ e.toLinearMap= LinearMap.id :=
+theorem symm_comp : e.symm.toLinearMap ∘ₛₗ e.toLinearMap = LinearMap.id :=
   LinearMap.ext e.symm_apply_apply
 
 @[simp]
