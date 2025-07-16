@@ -656,22 +656,21 @@ end AddSubgroup
 
 namespace Subring
 
-variable {A : Type*} [Ring A]
+variable {R : Type*} [Ring R]
 variable {ι : Type*} [Fintype ι] [DecidableEq ι]
 
 /-- A version of `Set.matrix` for `Subring`s.
-Given an `Subring` `S`, `S.matrix` is the `Subring` of square matrices `m`
+Given a `Subring` `S`, `S.matrix` is the `Subring` of square matrices `m`
 all of whose entries `m i j` belong to `S`. -/
-def matrix (S : Subring A) :
-    Subring (Matrix ι ι A) where
+def matrix (S : Subring R) :
+    Subring (Matrix ι ι R) where
       __ := S.toAddSubgroup.matrix
       mul_mem' ha hb i j := Subring.sum_mem _ (fun k _ => Subring.mul_mem _ (ha i k) (hb k j))
       one_mem' i j := by
         rw[Matrix.one_apply]
-        if h : i = j then
-          rw[if_pos h]; apply Subring.one_mem
-        else
-          rw[if_neg h]; apply Subring.zero_mem
+        by_cases h : i = j
+        · rw[if_pos h]; apply Subring.one_mem
+        rw[if_neg h]; apply Subring.zero_mem
 
 end Subring
 
