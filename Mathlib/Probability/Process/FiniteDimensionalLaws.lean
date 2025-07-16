@@ -25,6 +25,8 @@ finite dimensional distributions.
   `IdentDistrib`.
 * `map_restrict_eq_of_forall_ae_eq`: if two processes are modifications of each other, then
   their finite dimensional distributions are equal.
+* `map_eq_of_forall_ae_eq`: if two processes are modifications of each other, then they have the
+  same law.
 
 -/
 
@@ -36,12 +38,12 @@ variable {T Ω : Type*} {𝓧 : T → Type*} {mΩ : MeasurableSpace Ω} {mα : �
   {X Y : (t : T) → Ω → 𝓧 t} {P : Measure Ω}
 
 /-- The finite dimensional distributions of a stochastic process are a projective measure family. -/
-lemma isProjectiveMeasureFamily_map_restrict (hX : AEMeasurable (fun ω ↦ (X · ω)) P) :
+lemma isProjectiveMeasureFamily_map_restrict (hX : ∀ t, AEMeasurable (X t) P) :
     IsProjectiveMeasureFamily (fun I ↦ P.map (fun ω ↦ I.restrict (X · ω))) := by
   intro I J hJI
   rw [AEMeasurable.map_map_of_aemeasurable (Finset.measurable_restrict₂ _).aemeasurable]
   · rfl
-  · exact (Finset.measurable_restrict _).comp_aemeasurable hX
+  · exact aemeasurable_pi_lambda _ fun _ ↦ hX _
 
 /-- The projective limit of the finite dimensional distributions of a stochastic process is the law
 of the process. -/
@@ -91,5 +93,13 @@ lemma map_restrict_eq_of_forall_ae_eq (h : ∀ t, X t =ᵐ[P] Y t) (I : Finset T
     exact fun i ↦ h i
   refine Measure.map_congr ?_
   filter_upwards [h'] with ω h using funext h
+
+/-- If two processes are modifications of each other, then they have the same distribution. -/
+lemma map_eq_of_forall_ae_eq [IsFiniteMeasure P]
+    (hX : AEMeasurable (fun ω ↦ (X · ω)) P) (hY : AEMeasurable (fun ω ↦ (Y · ω)) P)
+    (h : ∀ t, X t =ᵐ[P] Y t) :
+    P.map (fun ω ↦ (X · ω)) = P.map (fun ω ↦ (Y · ω)) := by
+  rw [map_eq_iff_forall_finset_map_restrict_eq hX hY]
+  exact fun I ↦ map_restrict_eq_of_forall_ae_eq h I
 
 end ProbabilityTheory
