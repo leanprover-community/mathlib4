@@ -78,11 +78,6 @@ def toAlgHom {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) : A →�
 instance coeTC {F : Type*} [FunLike F A B] [AlgHomClass F R A B] : CoeTC F (A →ₐ[R] B) :=
   ⟨AlgHomClass.toAlgHom⟩
 
-@[simp]
-lemma toRingHom_toAlgHom {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
-    [Algebra R B] {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
-    RingHomClass.toRingHom (AlgHomClass.toAlgHom f) = RingHomClass.toRingHom f := rfl
-
 end AlgHomClass
 
 namespace AlgHom
@@ -366,6 +361,15 @@ lemma cancel_left {g₁ g₂ : A →ₐ[R] B} {f : B →ₐ[R] C} (hf : Function
 
 end Semiring
 end AlgHom
+
+namespace AlgHomClass
+
+@[simp]
+lemma toRingHom_toAlgHom {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
+    [Algebra R B] {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
+    RingHomClass.toRingHom (AlgHomClass.toAlgHom f) = RingHomClass.toRingHom f := rfl
+
+end AlgHomClass
 
 namespace RingHom
 
