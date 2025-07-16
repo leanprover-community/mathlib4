@@ -54,17 +54,22 @@ structure Cover (P : MorphismProperty Scheme.{u}) (X : Scheme.{u}) where
   obj (j : J) : Scheme
   /-- the components map to `X` -/
   map (j : J) : obj j ⟶ X
-  /-- given a point of `x : X`, `f x` is the index of the component which contains `x` -/
-  f (x : X) : J
   /-- the components cover `X` -/
-  covers (x : X) : x ∈ Set.range (map (f x)).base
+  exists_eq (x : X) : ∃ (j : J) (y : obj j), (map j).base y = x
   /-- the component maps satisfy `P` -/
   map_prop (j : J) : P (map j) := by infer_instance
 
 variable {P : MorphismProperty Scheme.{u}}
 
-variable {X Y Z : Scheme.{u}} (𝒰 : X.Cover P) (f : X ⟶ Z) (g : Y ⟶ Z)
-variable [∀ x, HasPullback (𝒰.map x ≫ f) g]
+variable {X Y Z : Scheme.{u}} (𝒰 : X.Cover P)
+
+/-- Given a cover `𝒰` of `X` and a point `x : X`, `𝒰.f x` is an arbitrarily chosen index of the
+cover whose component contains `x`. -/
+def Cover.f (x : X) : 𝒰.J :=
+  (𝒰.exists_eq x).choose
+
+lemma Cover.covers (x : X) : x ∈ Set.range (𝒰.map (𝒰.f x)).base :=
+  (𝒰.exists_eq x).choose_spec
 
 theorem Cover.iUnion_range {X : Scheme.{u}} (𝒰 : X.Cover P) :
     ⋃ i, Set.range (𝒰.map i).base = Set.univ := by
@@ -73,23 +78,19 @@ theorem Cover.iUnion_range {X : Scheme.{u}} (𝒰 : X.Cover P) :
   rw [Set.mem_iUnion]
   exact ⟨𝒰.f x, 𝒰.covers x⟩
 
-lemma Cover.exists_eq (𝒰 : X.Cover P) (x : X) : ∃ i y, (𝒰.map i).base y = x :=
-  ⟨_, 𝒰.covers x⟩
-
 instance Cover.nonempty_of_nonempty [Nonempty X] (𝒰 : X.Cover P) : Nonempty 𝒰.J :=
   Nonempty.map 𝒰.f ‹_›
 
-/-- Given a family of schemes with morphisms to `X` satisfying `P` that jointly
-cover `X`, `Cover.mkOfCovers` is an associated `P`-cover of `X`. -/
+/-- Given an explicit choice function `f` to choose a component given a point on the scheme,
+`Cover.mkOfF` is an associated `P`-cover of `X`. -/
 @[simps]
-def Cover.mkOfCovers (J : Type*) (obj : J → Scheme.{u}) (map : (j : J) → obj j ⟶ X)
-    (covers : ∀ x, ∃ j y, (map j).base y = x)
+def Cover.mkOfF (J : Type*) (obj : J → Scheme.{u}) (map : (j : J) → obj j ⟶ X)
+    (f : X → J) (covers : ∀ x, x ∈ Set.range (map (f x)).base)
     (map_prop : ∀ j, P (map j) := by infer_instance) : X.Cover P where
   J := J
   obj := obj
   map := map
-  f x := (covers x).choose
-  covers x := (covers x).choose_spec
+  exists_eq x := ⟨f x, covers x⟩
   map_prop := map_prop
 
 /-- Turn a `P`-cover into a `Q`-cover by showing that the components satisfy `Q`. -/
@@ -98,8 +99,7 @@ def Cover.changeProp (Q : MorphismProperty Scheme.{u}) (𝒰 : X.Cover P) (h : �
   J := 𝒰.J
   obj := 𝒰.obj
   map := 𝒰.map
-  f := 𝒰.f
-  covers := 𝒰.covers
+  exists_eq := 𝒰.exists_eq
   map_prop := h
 
 /-- Given a `P`-cover `{ Uᵢ }` of `X`, and for each `Uᵢ` a `P`-cover, we may combine these
@@ -109,15 +109,10 @@ def Cover.bind [P.IsStableUnderComposition] (f : ∀ x : 𝒰.J, (𝒰.obj x).Co
   J := Σ i : 𝒰.J, (f i).J
   obj x := (f x.1).obj x.2
   map x := (f x.1).map x.2 ≫ 𝒰.map x.1
-  f x := ⟨_, (f _).f (𝒰.covers x).choose⟩
-  covers x := by
-    let y := (𝒰.covers x).choose
-    have hy : (𝒰.map (𝒰.f x)).base y = x := (𝒰.covers x).choose_spec
-    rcases (f (𝒰.f x)).covers y with ⟨z, hz⟩
-    change x ∈ Set.range ((f (𝒰.f x)).map ((f (𝒰.f x)).f y) ≫ 𝒰.map (𝒰.f x)).base
-    use z
-    simp only [comp_coeBase, TopCat.hom_comp, ContinuousMap.comp_apply]
-    rw [hz, hy]
+  exists_eq x := by
+    obtain ⟨j, y, rfl⟩ := 𝒰.exists_eq x
+    obtain ⟨j', y', rfl⟩ := (f j).exists_eq y
+    exact ⟨⟨j, j'⟩, y', rfl⟩
   map_prop _ := P.comp_mem _ _ ((f _).map_prop _) (𝒰.map_prop _)
 
 /-- An isomorphism `X ⟶ Y` is a `P`-cover of `Y`. -/
@@ -127,12 +122,8 @@ def coverOfIsIso [P.ContainsIdentities] [P.RespectsIso] {X Y : Scheme.{u}} (f : 
   J := PUnit.{v + 1}
   obj _ := X
   map _ := f
-  f _ := PUnit.unit
-  covers x := by
-    rw [Set.range_eq_univ.mpr]
-    all_goals try trivial
-    rw [← TopCat.epi_iff_surjective]
-    infer_instance
+  exists_eq y := ⟨PUnit.unit, (inv f).base y, by
+    rw [← comp_base_apply, IsIso.inv_hom_id, id.base, ConcreteCategory.id_apply]⟩
   map_prop _ := P.of_isIso _
 
 /-- We construct a cover from another, by providing the needed fields and showing that the
@@ -143,11 +134,12 @@ def Cover.copy [P.RespectsIso] {X : Scheme.{u}} (𝒰 : X.Cover P)
     (map : ∀ i, obj i ⟶ X) (e₁ : J ≃ 𝒰.J) (e₂ : ∀ i, obj i ≅ 𝒰.obj (e₁ i))
     (h : ∀ i, map i = (e₂ i).hom ≫ 𝒰.map (e₁ i)) : X.Cover P :=
   { J, obj, map
-    f := fun x ↦ e₁.symm (𝒰.f x)
-    covers := fun x ↦ by
-      rw [h, Scheme.comp_base, TopCat.coe_comp, Set.range_comp, Set.range_eq_univ.mpr,
-        Set.image_univ, e₁.rightInverse_symm]
-      · exact 𝒰.covers x
+    exists_eq x := by
+      obtain ⟨j, y, rfl⟩ := 𝒰.exists_eq x
+      refine ⟨e₁.symm j, ?_⟩
+      rw [← Set.mem_range, h, Scheme.comp_base, TopCat.coe_comp, Set.range_comp,
+        Set.range_eq_univ.mpr, Set.image_univ, e₁.rightInverse_symm]
+      · exact Set.mem_range_self _
       · rw [← TopCat.epi_iff_surjective]; infer_instance
     map_prop := fun j ↦ by
       rw [h, P.cancel_left_of_respectsIso]
@@ -169,8 +161,7 @@ def Cover.add {X Y : Scheme.{u}} (𝒰 : X.Cover P) (f : Y ⟶ X) (hf : P f := b
   J := Option 𝒰.J
   obj i := Option.rec Y 𝒰.obj i
   map i := Option.rec f 𝒰.map i
-  f x := some (𝒰.f x)
-  covers := 𝒰.covers
+  exists_eq x := let ⟨j, hj⟩ := 𝒰.exists_eq x; ⟨some j, hj⟩
   map_prop j := by
     obtain ⟨_ | _⟩ := j
     · exact hf
@@ -223,11 +214,10 @@ def Cover.pullbackCover [P.IsStableUnderBaseChange] [IsJointlySurjectivePreservi
   J := 𝒰.J
   obj x := pullback f (𝒰.map x)
   map _ := pullback.fst _ _
-  f x := 𝒰.f (f.base x)
-  covers x := by
-    obtain ⟨y, hy⟩ := 𝒰.covers (f.base x)
-    exact IsJointlySurjectivePreserving.exists_preimage_fst_triplet_of_prop
-      (𝒰.map_prop _) x y hy.symm
+  exists_eq x :=
+    let ⟨j, y, hy⟩ := 𝒰.exists_eq (f.base x)
+    ⟨j, IsJointlySurjectivePreserving.exists_preimage_fst_triplet_of_prop
+      (𝒰.map_prop _) x y hy.symm⟩
   map_prop j := P.pullback_fst _ _ (𝒰.map_prop j)
 
 /-- The family of morphisms from the pullback cover to the original cover. -/
@@ -253,11 +243,10 @@ def Cover.pullbackCover' [P.IsStableUnderBaseChange] [IsJointlySurjectivePreserv
   J := 𝒰.J
   obj x := pullback (𝒰.map x) f
   map _ := pullback.snd _ _
-  f x := 𝒰.f (f.base x)
-  covers x := by
-    obtain ⟨y, hy⟩ := 𝒰.covers (f.base x)
-    exact IsJointlySurjectivePreserving.exists_preimage_snd_triplet_of_prop
-      (𝒰.map_prop _) y x hy
+  exists_eq x :=
+    let ⟨j, y, hy⟩ := 𝒰.exists_eq (f.base x)
+    ⟨j, IsJointlySurjectivePreserving.exists_preimage_snd_triplet_of_prop
+      (𝒰.map_prop _) y x hy⟩
   map_prop j := P.pullback_snd _ _ (𝒰.map_prop j)
 
 /-- Given covers `{ Uᵢ }` and `{ Uⱼ }`, we may form the cover `{ Uᵢ ×[X] Uⱼ }`. -/
@@ -269,15 +258,12 @@ def Cover.inter [P.IsStableUnderBaseChange] [P.IsStableUnderComposition]
   J := 𝒰₁.J × 𝒰₂.J
   obj ij := pullback (𝒰₁.map ij.1) (𝒰₂.map ij.2)
   map ij := pullback.fst _ _ ≫ 𝒰₁.map ij.1
-  f x := ⟨𝒰₁.f x, 𝒰₂.f x⟩
-  covers x := by
-    simp only [comp_coeBase, TopCat.coe_comp, Set.mem_range, Function.comp_apply]
-    obtain ⟨y₁, hy₁⟩ := 𝒰₁.covers x
-    obtain ⟨y₂, hy₂⟩ := 𝒰₂.covers x
-    obtain ⟨z, hz⟩ := IsJointlySurjectivePreserving.exists_preimage_fst_triplet_of_prop
+  exists_eq x :=
+    let ⟨j₁, y₁, hy₁⟩ := 𝒰₁.exists_eq x
+    let ⟨j₂, y₂, hy₂⟩ := 𝒰₂.exists_eq x
+    let ⟨z, hz⟩ := IsJointlySurjectivePreserving.exists_preimage_fst_triplet_of_prop
       (𝒰₂.map_prop _) y₁ y₂ (by rw [hy₁, hy₂])
-    use z
-    rw [hz, hy₁]
+    ⟨(j₁, j₂), z, by simp [hz, hy₁]⟩
   map_prop ij := P.comp_mem _ _ (P.pullback_fst _ _ (𝒰₂.map_prop ij.2)) (𝒰₁.map_prop ij.1)
 
 /--
@@ -307,8 +293,7 @@ def AffineCover.cover {X : Scheme.{u}} (𝒰 : X.AffineCover P) : X.Cover P wher
   obj j := Spec (𝒰.obj j)
   J := 𝒰.J
   map := 𝒰.map
-  f := 𝒰.f
-  covers := 𝒰.covers
+  exists_eq x := ⟨𝒰.f x, 𝒰.covers x⟩
   map_prop := 𝒰.map_prop
 
 /-- Replace the index type of a cover by an equivalent one. -/
@@ -317,11 +302,10 @@ def Cover.reindex (𝒰 : Cover.{v} P X) {ι : Type*} (e : ι ≃ 𝒰.J) : Cove
   J := ι
   obj := 𝒰.obj ∘ e
   map i := 𝒰.map (e i)
-  f := e.symm ∘ 𝒰.f
-  covers x := by
-    convert 𝒰.covers _
-    dsimp only [Function.comp_apply]
-    rw [Equiv.apply_symm_apply]
+  exists_eq x := by
+    obtain ⟨j, y, rfl⟩ := 𝒰.exists_eq x
+    obtain ⟨j', rfl⟩ := e.surjective j
+    exact ⟨j', y, rfl⟩
   map_prop i := 𝒰.map_prop _
 
 /-- Any `v`-cover `𝒰` induces a `u`-cover indexed by the points of `X`. -/
@@ -330,8 +314,7 @@ def Cover.ulift (𝒰 : Cover.{v} P X) : Cover.{u} P X where
   J := X
   obj x := 𝒰.obj (𝒰.f x)
   map x := 𝒰.map (𝒰.f x)
-  f := id
-  covers := 𝒰.covers
+  exists_eq x := ⟨x, 𝒰.covers x⟩
   map_prop _ := 𝒰.map_prop _
 
 section category

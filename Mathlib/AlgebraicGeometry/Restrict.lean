@@ -168,13 +168,10 @@ def Scheme.openCoverOfISupEqTop {s : Type*} (X : Scheme.{u}) (U : s → X.Opens)
   J := s
   obj i := U i
   map i := (U i).ι
-  f x :=
+  exists_eq x :=
     haveI : x ∈ ⨆ i, U i := hU.symm ▸ show x ∈ (⊤ : X.Opens) by trivial
-    (Opens.mem_iSup.mp this).choose
-  covers x := by
-    erw [Subtype.range_coe]
-    have : x ∈ ⨆ i, U i := hU.symm ▸ show x ∈ (⊤ : X.Opens) by trivial
-    exact (Opens.mem_iSup.mp this).choose_spec
+    let ⟨i, hi⟩ := Opens.mem_iSup.mp this
+    ⟨i, ⟨x, hi⟩, rfl⟩
 
 /-- The open sets of an open subscheme corresponds to the open sets containing in the subset. -/
 @[simps!]
@@ -275,8 +272,9 @@ def Scheme.Opens.iSupOpenCover {J : Type*} {X : Scheme} (U : J → X.Opens) :
   J := J
   obj i := U i
   map j := X.homOfLE (le_iSup _ _)
-  f x := (TopologicalSpace.Opens.mem_iSup.mp x.2).choose
-  covers x := ⟨⟨x.1, (TopologicalSpace.Opens.mem_iSup.mp x.2).choose_spec⟩, Subtype.ext (by simp)⟩
+  exists_eq x :=
+    let ⟨i, hi⟩ := TopologicalSpace.Opens.mem_iSup.mp x.2
+    ⟨i, ⟨x.1, hi⟩, Subtype.ext (by simp)⟩
 
 variable (X) in
 /-- The functor taking open subsets of `X` to open subschemes of `X`. -/

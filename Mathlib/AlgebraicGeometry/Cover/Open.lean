@@ -45,12 +45,11 @@ def affineCover (X : Scheme.{u}) : OpenCover X where
   obj x := Spec (X.local_affine x).choose_spec.choose
   map x :=
     ⟨(X.local_affine x).choose_spec.choose_spec.some.inv ≫ X.toLocallyRingedSpace.ofRestrict _⟩
-  f x := x
-  covers := by
-    intro x
+  exists_eq x := by
+    refine ⟨x, ?_⟩
     simp only [LocallyRingedSpace.comp_toShHom, SheafedSpace.comp_base, TopCat.hom_comp,
       ContinuousMap.coe_comp]
-    rw [Set.range_comp, Set.range_eq_univ.mpr, Set.image_univ]
+    rw [← Set.mem_range, Set.range_comp, Set.range_eq_univ.mpr, Set.image_univ]
     · erw [Subtype.range_coe_subtype]
       exact (X.local_affine x).choose.2
     rw [← TopCat.epi_iff_surjective]
@@ -88,8 +87,7 @@ def OpenCover.finiteSubcover {X : Scheme.{u}} (𝒰 : OpenCover X) [H : CompactS
     { J := t
       obj := fun x => 𝒰.obj (𝒰.f x.1)
       map := fun x => 𝒰.map (𝒰.f x.1)
-      f := fun x => (h x).choose
-      covers := fun x => (h x).choose_spec }
+      exists_eq := h }
 
 instance [H : CompactSpace X] : Fintype 𝒰.finiteSubcover.J := by
   delta OpenCover.finiteSubcover; infer_instance
@@ -121,7 +119,7 @@ instance {X : Scheme.{u}} (𝒰 : X.AffineOpenCover) (j : 𝒰.J) : IsOpenImmers
   𝒰.map_prop j
 
 /-- The open cover associated to an affine open cover. -/
-@[simps! J obj map f]
+@[simps! J obj map]
 def openCover {X : Scheme.{u}} (𝒰 : X.AffineOpenCover) : X.OpenCover :=
   AffineCover.cover 𝒰
 
@@ -255,9 +253,9 @@ def affineBasisCoverOfAffine (R : CommRingCat.{u}) : OpenCover (Spec R) where
   J := R
   obj r := Spec (CommRingCat.of <| Localization.Away r)
   map r := Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away r)))
-  f _ := 1
-  covers r := by
-    rw [Set.range_eq_univ.mpr ((TopCat.epi_iff_surjective _).mp _)]
+  exists_eq r := by
+    refine ⟨1, ?_⟩
+    rw [← Set.mem_range, Set.range_eq_univ.mpr ((TopCat.epi_iff_surjective _).mp _)]
     · exact trivial
     · infer_instance
   map_prop x := AlgebraicGeometry.Scheme.basic_open_isOpenImmersion x
