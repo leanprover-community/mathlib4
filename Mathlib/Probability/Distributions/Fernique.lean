@@ -187,14 +187,11 @@ namespace Fernique
 Chosen such that for a rotation invariant measure, an application of lemma
 `measure_le_mul_measure_gt_le_of_map_rotation_eq_self` gives
 `μ {x | ‖x‖ ≤ a} * μ {x | normThreshold a (n + 1) < ‖x‖} ≤ μ {x | normThreshold a n < ‖x‖} ^ 2`. -/
-noncomputable def normThreshold (a : ℝ) : ℕ → ℝ
-| 0 => a
-| n + 1 => √2 * normThreshold a n + a
+noncomputable def normThreshold (a : ℝ) : ℕ → ℝ := arithGeom √2 a a
 
 lemma normThreshold_zero : normThreshold a 0 = a := rfl
 
-lemma normThreshold_add_one (n : ℕ) :
-    normThreshold a (n + 1) = √2 * normThreshold a n + a := rfl
+lemma normThreshold_add_one (n : ℕ) : normThreshold a (n + 1) = √2 * normThreshold a n + a := rfl
 
 lemma measure_le_mul_measure_gt_normThreshold_le_of_map_rotation_eq_self [SFinite μ]
     (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ) (a : ℝ) (n : ℕ) :
@@ -203,25 +200,20 @@ lemma measure_le_mul_measure_gt_normThreshold_le_of_map_rotation_eq_self [SFinit
   convert measure_le_mul_measure_gt_le_of_map_rotation_eq_self h_rot _ _
   simp [normThreshold_add_one]
 
-lemma lt_normThreshold_zero (ha_pos : 0 < a) :
-    a / (1 - √2) < normThreshold a 0 := by
+lemma lt_normThreshold_zero (ha_pos : 0 < a) : a / (1 - √2) < normThreshold a 0 := by
   simp only [normThreshold_zero]
   calc a / (1 - √2)
   _ ≤ 0 := div_nonpos_of_nonneg_of_nonpos ha_pos.le (by simp)
   _ < a := ha_pos
 
 lemma normThreshold_strictMono (ha_pos : 0 < a) : StrictMono (normThreshold a) :=
-  arithmeticGeometric_strictMono normThreshold_add_one Real.one_lt_sqrt_two
-    (lt_normThreshold_zero ha_pos)
+  arithGeom_strictMono Real.one_lt_sqrt_two (lt_normThreshold_zero ha_pos)
 
-lemma tendsto_normThreshold_atTop (ha_pos : 0 < a) :
-    Tendsto (normThreshold a) atTop atTop :=
-  tendsto_arithmeticGeometric_atTop_of_one_lt normThreshold_add_one Real.one_lt_sqrt_two
-    (lt_normThreshold_zero ha_pos)
+lemma tendsto_normThreshold_atTop (ha_pos : 0 < a) : Tendsto (normThreshold a) atTop atTop :=
+  tendsto_arithGeom_atTop_of_one_lt Real.one_lt_sqrt_two (lt_normThreshold_zero ha_pos)
 
 lemma normThreshold_eq (n : ℕ) : normThreshold a n = a * (1 + √2) * (√2 ^ (n + 1) - 1) := by
-  rw [arithmeticGeometric_eq_mul_div_of_apply_zero_eq normThreshold_add_one rfl (by simp),
-    div_eq_mul_inv, inv_sqrt_two_sub_one]
+  rw [normThreshold, arithGeom_same_eq_mul_div (by simp), div_eq_mul_inv, inv_sqrt_two_sub_one]
   ring
 
 lemma sq_normThreshold_add_one_le (n : ℕ) :
