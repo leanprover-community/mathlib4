@@ -123,13 +123,13 @@ abbrev pushout.inr {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] : Z 
 /-- A pair of morphisms `h : W ⟶ X` and `k : W ⟶ Y` satisfying `h ≫ f = k ≫ g` induces a morphism
     `pullback.lift : W ⟶ pullback f g`. -/
 abbrev pullback.lift {W X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] (h : W ⟶ X)
-    (k : W ⟶ Y) (w : h ≫ f = k ≫ g) : W ⟶ pullback f g :=
+    (k : W ⟶ Y) (w : h ≫ f = k ≫ g := by aesop_cat) : W ⟶ pullback f g :=
   limit.lift _ (PullbackCone.mk h k w)
 
 /-- A pair of morphisms `h : Y ⟶ W` and `k : Z ⟶ W` satisfying `f ≫ h = g ≫ k` induces a morphism
     `pushout.desc : pushout f g ⟶ W`. -/
 abbrev pushout.desc {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] (h : Y ⟶ W) (k : Z ⟶ W)
-    (w : f ≫ h = g ≫ k) : pushout f g ⟶ W :=
+    (w : f ≫ h = g ≫ k := by aesop_cat) : pushout f g ⟶ W :=
   colimit.desc _ (PushoutCocone.mk h k w)
 
 /-- The cone associated to a pullback is a limit cone. -/

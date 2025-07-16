@@ -92,7 +92,8 @@ instance instInv : Inv αˣ :=
 attribute [instance] AddUnits.instNeg
 
 /-- See Note [custom simps projection] -/
-@[to_additive "See Note [custom simps projection]"]
+@[to_additive
+"See Note [custom simps projection]"]
 def Simps.val_inv (u : αˣ) : α := ↑(u⁻¹)
 
 initialize_simps_projections Units (as_prefix val, val_inv → null, inv → val_inv, as_prefix val_inv)
@@ -104,15 +105,20 @@ initialize_simps_projections AddUnits
 theorem val_mk (a : α) (b h₁ h₂) : ↑(Units.mk a b h₁ h₂) = a :=
   rfl
 
-@[to_additive (attr := ext)]
-theorem ext : Function.Injective (val : αˣ → α)
+@[to_additive]
+theorem val_injective : Function.Injective (val : αˣ → α)
   | ⟨v, i₁, vi₁, iv₁⟩, ⟨v', i₂, vi₂, iv₂⟩, e => by
     simp only at e; subst v'; congr
     simpa only [iv₂, vi₁, one_mul, mul_one] using mul_assoc i₂ v i₁
 
+@[to_additive (attr := ext)]
+theorem ext {u v : αˣ} (huv : u.val = v.val) : u = v := val_injective huv
+
 @[to_additive (attr := norm_cast)]
-theorem eq_iff {a b : αˣ} : (a : α) = b ↔ a = b :=
-  ext.eq_iff
+theorem val_inj {a b : αˣ} : (a : α) = b ↔ a = b :=
+  val_injective.eq_iff
+
+@[to_additive (attr := deprecated val_inj (since := "2025-06-21"))] alias eq_iff := val_inj
 
 /-- Units have decidable equality if the base `Monoid` has decidable equality. -/
 @[to_additive "Additive units have decidable equality
@@ -173,7 +179,7 @@ theorem val_one : ((1 : αˣ) : α) = 1 :=
   rfl
 
 @[to_additive (attr := simp, norm_cast)]
-theorem val_eq_one {a : αˣ} : (a : α) = 1 ↔ a = 1 := by rw [← Units.val_one, eq_iff]
+theorem val_eq_one {a : αˣ} : (a : α) = 1 ↔ a = 1 := by rw [← Units.val_one, val_inj]
 
 @[to_additive (attr := simp)]
 theorem inv_mk (x y : α) (h₁ h₂) : (mk x y h₁ h₂)⁻¹ = mk y x h₂ h₁ :=
@@ -490,7 +496,7 @@ theorem unit_spec (h : IsUnit a) : ↑h.unit = a :=
 
 @[to_additive (attr := simp)]
 theorem unit_one (h : IsUnit (1 : M)) : h.unit = 1 :=
-  Units.eq_iff.1 rfl
+  Units.ext rfl
 
 @[to_additive]
 theorem unit_mul (ha : IsUnit a) (hb : IsUnit b) : (ha.mul hb).unit = ha.unit * hb.unit :=
