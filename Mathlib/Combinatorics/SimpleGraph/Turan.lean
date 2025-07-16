@@ -252,7 +252,7 @@ theorem card_parts [DecidableEq V] : #h.finpartition.parts = min (Fintype.card V
   have cf : G.CliqueFree r := by
     simp_rw [← cliqueFinset_eq_empty_iff, cliqueFinset, filter_eq_empty_iff, mem_univ,
       forall_true_left, isNClique_iff, and_comm, not_and, isClique_iff, Set.Pairwise]
-    intro z zc; push_neg; simp_rw -congrConsts [h.not_adj_iff_part_eq]
+    intro z zc; push_neg; simp_rw [h.not_adj_iff_part_eq]
     exact exists_ne_map_eq_of_card_lt_of_maps_to (zc.symm ▸ l.2) fun a _ ↦
       fp.part_mem.2 (mem_univ a)
   use G ⊔ edge x y, inferInstance, cf.sup_edge x y
