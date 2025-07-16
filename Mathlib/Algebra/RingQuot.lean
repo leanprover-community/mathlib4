@@ -459,7 +459,9 @@ theorem lift_unique (f : R →+* T) {r : R → R → Prop} (w : ∀ ⦃x y⦄, r
 
 theorem eq_lift_comp_mkRingHom {r : R → R → Prop} (f : RingQuot r →+* T) :
     f = lift ⟨f.comp (mkRingHom r), fun _ _ h ↦ congr_arg f (mkRingHom_rel h)⟩ := by
-  aesop
+  conv_lhs => rw [← lift.apply_symm_apply f]
+  rw [lift_def]
+  rfl
 
 section CommRing
 
@@ -606,7 +608,9 @@ theorem liftAlgHom_unique (f : A →ₐ[S] B) {s : A → A → Prop} (w : ∀ �
 
 theorem eq_liftAlgHom_comp_mkAlgHom {s : A → A → Prop} (f : RingQuot s →ₐ[S] B) :
     f = liftAlgHom S ⟨f.comp (mkAlgHom S s), fun _ _ h ↦ congr_arg f (mkAlgHom_rel S h)⟩ := by
-  aesop
+  conv_lhs => rw [← (liftAlgHom S).apply_symm_apply f]
+  rw [liftAlgHom]
+  rfl
 
 end Algebra
 
