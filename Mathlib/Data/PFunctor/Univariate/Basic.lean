@@ -292,7 +292,7 @@ end Comp
 
 section ULift
 
-/-- Lifting a polynomial functor `P` to a larger universe. -/
+/-- Lift a polynomial functor `P` to a pair of larger universes. -/
 protected def ulift (P : PFunctor.{uA, uB}) : PFunctor.{max uA vA, max uB vB} :=
   ⟨ULift P.A, fun a => ULift (P.B (ULift.down a))⟩
 
