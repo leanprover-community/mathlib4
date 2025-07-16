@@ -60,20 +60,18 @@ end Rep
 
 namespace FDRep
 
-variable [NeZero (Fintype.card G : k)]
-
 /--
 If `G` is finite and its order is nonzero in the field `k`, then every object of
 `FDRep k G` is injective.
 -/
-instance (V : FDRep k G) : Injective V := (forget₂ (FDRep k G)
+instance [NeZero (Fintype.card G : k)] (V : FDRep k G) : Injective V := (forget₂ (FDRep k G)
   (Rep k G)).injective_of_map_injective inferInstance
 
 /--
 If `G` is finite and its order is nonzero in the field `k`, then every object of
 `FDRep k G` is projective.
 -/
-instance (V : FDRep k G) : Projective V := (forget₂ (FDRep k G)
+instance [NeZero (Fintype.card G : k)] (V : FDRep k G) : Projective V := (forget₂ (FDRep k G)
   (Rep k G)).projective_of_map_projective inferInstance
 
 variable [IsAlgClosed k]
@@ -83,7 +81,7 @@ If `G` is finite and its order is nonzero in an algebraically closed field `k`,
 then an object of `FDRep k G` is simple if and only if its space of endomorphisms is
 a `k`-vector space of dimension `1`.
 -/
-lemma simple_iff_end_is_rank_one (V : FDRep k G) :
+lemma simple_iff_end_is_rank_one [NeZero (Fintype.card G : k)] (V : FDRep k G) :
     Simple V ↔ Module.finrank k (V ⟶ V) = 1 where
   mp h := by
     rw [finrank_hom_simple_simple_eq_one_iff]
@@ -114,6 +112,10 @@ lemma simple_iff_end_is_rank_one (V : FDRep k G) :
         exact epi_comp _ _
       exact isIso_of_mono_of_epi f
 
+/--
+If `G` is finite and `k` an algebraically closed field of characteristic `0`,
+then an object of `FDRep k G` is simple if and only if its character has norm `1`.
+-/
 lemma simple_iff_char_is_norm_one [CharZero k] (V : FDRep k G) :
     Simple V ↔ ∑ g : G, V.character g * V.character g⁻¹ = Fintype.card G where
   mp h := by
