@@ -111,16 +111,16 @@ theorem HasDerivAt.pow (h : HasDerivAt f f' x) (n : ℕ) :
     HasDerivAt (f ^ n) (n * f x ^ (n - 1) * f') x := h.fun_pow n
 
 @[simp]
-theorem derivWithin_fun_pow
-    (h : DifferentiableWithinAt 𝕜 f s x) (hu : UniqueDiffWithinAt 𝕜 s x) (n : ℕ) :
-    derivWithin (fun x => f x ^ n) s x = n * f x ^ (n - 1) * derivWithin f s x :=
-  (h.hasDerivWithinAt.pow n).derivWithin hu
+theorem derivWithin_fun_pow (h : DifferentiableWithinAt 𝕜 f s x) (n : ℕ) :
+    derivWithin (fun x => f x ^ n) s x = n * f x ^ (n - 1) * derivWithin f s x := by
+  by_cases hsx : UniqueDiffWithinAt 𝕜 s x
+  · exact (h.hasDerivWithinAt.pow n).derivWithin hsx
+  · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
 @[simp]
-theorem derivWithin_pow
-    (h : DifferentiableWithinAt 𝕜 f s x) (hu : UniqueDiffWithinAt 𝕜 s x) (n : ℕ) :
+theorem derivWithin_pow (h : DifferentiableWithinAt 𝕜 f s x) (n : ℕ) :
     derivWithin (f ^ n) s x = n * f x ^ (n - 1) * derivWithin f s x :=
-  derivWithin_fun_pow h hu n
+  derivWithin_fun_pow h n
 
 @[simp]
 theorem deriv_fun_pow (h : DifferentiableAt 𝕜 f x) (n : ℕ) :
@@ -141,17 +141,7 @@ theorem deriv_pow_field (n : ℕ) : deriv (fun x => x ^ n) x = (n : 𝕜) * x ^ 
 
 theorem derivWithin_pow_field (h : UniqueDiffWithinAt 𝕜 s x) (n : ℕ) :
     derivWithin (fun x => x ^ n) s x = (n : 𝕜) * x ^ (n - 1) := by
-  rw [derivWithin_fun_pow (differentiableWithinAt_id' (s := s)) h n, derivWithin_id' _ _ h, mul_one]
-
-theorem derivWithin_fun_pow_field' (hc : DifferentiableWithinAt 𝕜 c s x) (n : ℕ) :
-    derivWithin (fun x => c x ^ n) s x = (n : 𝕜) * c x ^ (n - 1) * derivWithin c s x := by
-  by_cases hsx : UniqueDiffWithinAt 𝕜 s x
-  · exact derivWithin_pow hc hsx n
-  · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
-
-theorem derivWithin_pow_field' (hc : DifferentiableWithinAt 𝕜 c s x) (n : ℕ) :
-    derivWithin (c ^ n) s x = (n : 𝕜) * c x ^ (n - 1) * derivWithin c s x :=
-  derivWithin_fun_pow_field' hc n
+  rw [derivWithin_fun_pow (differentiableWithinAt_id' (s := s)) n, derivWithin_id' _ _ h, mul_one]
 
 theorem hasStrictDerivAt_pow (n : ℕ) (x : 𝕜) :
     HasStrictDerivAt (fun x : 𝕜 ↦ x ^ n) (n * x ^ (n - 1)) x := by
