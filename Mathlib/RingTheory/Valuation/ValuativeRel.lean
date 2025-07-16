@@ -777,15 +777,16 @@ lemma unquot_strictMono [h : v.Compatible] : StrictMono (unquot v) := by
 
 end ValuativeRel.ValueGroupWithZero
 
+namespace ValuativeRel
+
 variable {R : Type} [CommRing R] [ValuativeRel R]
 
-lemma ValuativeRel.IsRankLeOne.of_compatible_nnreal (v : Valuation R NNReal) [v.Compatible] :
-    ValuativeRel.IsRankLeOne R where
-  nonempty := ⟨⟨ValuativeRel.ValueGroupWithZero.unquot v,
-    ValuativeRel.ValueGroupWithZero.unquot_strictMono v⟩⟩
+lemma IsRankLeOne.of_compatible_nnreal (v : Valuation R NNReal) [v.Compatible] :
+    IsRankLeOne R where
+  nonempty := ⟨⟨ValueGroupWithZero.unquot v, ValueGroupWithZero.unquot_strictMono v⟩⟩
 
 open WithZero
-lemma ValuativeRel.IsRankLeOne.of_compatible_withZeroMulInt (v : Valuation R ℤᵐ⁰) [v.Compatible] :
+lemma IsRankLeOne.of_compatible_withZeroMulInt (v : Valuation R ℤᵐ⁰) [v.Compatible] :
     ValuativeRel.IsRankLeOne R := by
   let e : ℤᵐ⁰ →*₀ NNReal := {
     toFun := recZeroCoe 0 (fun x ↦ 2 ^ (log (x : ℤᵐ⁰)))  -- the base doesn't matter
@@ -802,5 +803,13 @@ lemma ValuativeRel.IsRankLeOne.of_compatible_withZeroMulInt (v : Valuation R ℤ
   }
   have he : StrictMono e := by
     simp [StrictMono, «forall», e, zpow_pos, -inv_zpow', zpow_lt_zpow_iff_right₀]
-  exact ⟨⟨MonoidWithZeroHom.comp e (ValuativeRel.ValueGroupWithZero.unquot v),
-    he.comp (ValuativeRel.ValueGroupWithZero.unquot_strictMono v)⟩⟩
+  exact ⟨⟨MonoidWithZeroHom.comp e (ValueGroupWithZero.unquot v),
+    he.comp (ValueGroupWithZero.unquot_strictMono v)⟩⟩
+
+instance [IsRankLeOne R] : MulArchimedean (ValueGroupWithZero R) := by
+  obtain ⟨⟨f, hf⟩⟩ := IsRankLeOne.nonempty (R := R)
+  exact .comap f.toMonoidHom hf
+
+proof_wanted IsRankLeOne.ofMulArchimedean [MulArchimedean (ValueGroupWithZero R)] : IsRankLeOne R
+
+end ValuativeRel
