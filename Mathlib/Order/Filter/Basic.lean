@@ -1007,7 +1007,7 @@ theorem EventuallyEq.fun_div [Div β] {f f' g g' : α → β} {l : Filter α} (h
     (h' : f' =ᶠ[l] g') : (fun x => f x / f' x) =ᶠ[l] fun x => g x / g' x :=
   h.div h'
 
-attribute [to_additive] EventuallyEq.const_smul
+attribute [to_additive] EventuallyEq.const_smul EventuallyEq.fun_const_smul
 
 @[to_additive]
 theorem EventuallyEq.smul {𝕜} [SMul 𝕜 β] {l : Filter α} {f f' : α → 𝕜} {g g' : α → β}
