@@ -167,14 +167,14 @@ end
 def idStr : String → String := id
 
 /--
-error: Application type mismatch: In the application
-  idStr Nat.zero
-the argument
+error: Application type mismatch: The argument
   Nat.zero
 has type
   ℕ
 but is expected to have type
   String
+in the application
+  idStr Nat.zero
 ---
 warning: Was not able to generate a pretty printer for this notation. If you do not expect it to be pretty printable, then you can use `notation3 (prettyPrint := false)`. If the notation expansion refers to section variables, be sure to do `local notation3`. Otherwise, you might be able to adjust the notation expansion to make it matchable; pretty printing relies on deriving an expression matcher from the expansion. (Use `set_option trace.notation3 true` to get some debug information.)
 -/
