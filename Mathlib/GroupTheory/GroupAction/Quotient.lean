@@ -487,4 +487,3 @@ theorem quotientCenterEmbedding_apply {S : Set G} (hS : closure S = ⊤) (g : G)
   rfl
 
 end Subgroup
-#min_imports
