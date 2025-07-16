@@ -38,9 +38,9 @@ structure EnrichedIso (X Y : C) where
 @[inherit_doc EnrichedIso]
 notation X " ≅[" V "] " Y:10 => EnrichedIso V X Y
 
-namespace EnrichedIso
-
 variable {V}
+
+namespace EnrichedIso
 
 /-- The identity isomorphism in a `V`-enriched category. -/
 @[refl, simps]
@@ -94,19 +94,20 @@ def ForgetEnrichment.isoOf {X Y : C} (I : X ≅[V] Y) :
   inv_hom_id := by simp [← homOf_comp, I.inv_hom]
 
 @[simp]
-lemma ForgetEnrichment.isoOf_refl (X : C) : isoOf V (.refl X) = Iso.refl (of V X) := by
+lemma ForgetEnrichment.isoOf_refl (X : C) : isoOf (.refl X) = Iso.refl (of V X) := by
   ext; simp
 
 @[simp]
 lemma ForgetEnrichment.isoOf_symm {X Y : C} (I : X ≅[V] Y) :
-    isoOf V (.symm I) = (isoOf V I).symm := by
+    isoOf (.symm I) = (isoOf I).symm := by
   rfl
 
 @[simp]
 lemma ForgetEnrichment.isoOf_trans {X Y Z : C} (I : X ≅[V] Y) (J : Y ≅[V] Z) :
-    isoOf V (I.trans J) = (isoOf V I).trans (isoOf V J) := by
+    isoOf (I.trans J) = (isoOf I).trans (isoOf J) := by
   ext; simp [← Category.assoc, homOf_comp]
 
+variable (V) in
 /-- The `V`-enriched isomorphism in `C` associated to an iso `X ≅ Y` in `ForgetEnrichment V C`. -/
 @[simps]
 def ForgetEnrichment.isoTo {X Y : ForgetEnrichment V C} (I : X ≅ Y) :
@@ -135,6 +136,6 @@ lemma ForgetEnrichment.isoTo_trans {X Y Z : ForgetEnrichment V C} (I : X ≅ Y) 
 def ForgetEnrichment.equivIsoEnrichedIso (X Y : ForgetEnrichment V C) :
     (X ≅ Y) ≃ (ForgetEnrichment.to V X) ≅[V] (ForgetEnrichment.to V Y) where
   toFun := ForgetEnrichment.isoTo V
-  invFun := ForgetEnrichment.isoOf V
+  invFun := ForgetEnrichment.isoOf
 
 end CategoryTheory
