@@ -174,6 +174,21 @@ def image {α β : Type*} (e : α ≃ β) (s : Set α) :
   left_inv x := by simp
   right_inv y := by simp
 
+section order
+
+variable {α β : Type*} [Preorder α] [Preorder β] {e : α ≃ β} (s : Set α)
+
+lemma image_monotone (hs : Monotone e) : Monotone (e.image s) :=
+  hs.comp (Subtype.mono_coe _)
+lemma image_antitone (hs : Antitone e) : Antitone (e.image s) :=
+  hs.comp_monotone (Subtype.mono_coe _)
+lemma image_strictMono (hs : StrictMono e) : StrictMono (e.image s) :=
+  hs.comp (Subtype.strictMono_coe _)
+lemma image_strictAnti (hs : StrictAnti e) : StrictAnti (e.image s) :=
+  hs.comp_strictMono (Subtype.strictMono_coe _)
+
+end order
+
 namespace Set
 
 /-- `univ α` is equivalent to `α`. -/
