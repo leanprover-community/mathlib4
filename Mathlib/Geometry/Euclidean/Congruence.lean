@@ -74,20 +74,8 @@ other is then implied by the given equalities.
 theorem angle_side_angle (h : ¬Collinear ℝ {a, b, c}) (ha₁ : ∠ a b c = ∠ a' b' c')
     (hd : dist b c = dist b' c') (ha₂ : ∠ b c a = ∠ b' c' a') : ![a, b, c] ≅ ![a', b', c'] := by
   have h' : ¬Collinear ℝ {a', b', c'} := by
-    intro hcol
-    rcases (collinear_iff_eq_or_eq_or_sin_eq_zero.1 hcol) with rfl | rfl | _
-    · obtain rfl | hac := eq_or_ne a' c'
-      · simp at hd
-        exact (ne₂₃_of_not_collinear h) hd
-      · rw [angle_self_of_ne hac] at ha₂
-        have hsin : Real.sin (∠ b c a) = 0 := by rw [ha₂, Real.sin_zero]
-        have hcol : Collinear ℝ {b, c, a} := by
-          simp only [collinear_iff_eq_or_eq_or_sin_eq_zero, hsin, or_true]
-        refine h (by rwa [Set.insert_comm, Set.pair_comm])
-    · simp at hd
-      exact (ne₂₃_of_not_collinear h) hd
-    · apply sin_pos_of_not_collinear at h
-      simp_all [← ha₁]
+    grind only [collinear_iff_eq_or_eq_or_angle_eq_zero_or_angle_eq_pi, angle_self_right,
+      angle_self_left, dist_eq_zero, Set.insert_comm, Set.pair_comm]
   have ha₃ := angle_add_angle_add_angle_eq_pi b (ne₁₃_of_not_collinear h)
   have ha₃' := angle_add_angle_add_angle_eq_pi b' (ne₁₃_of_not_collinear h')
   simp only [← ha₃', ha₁, ha₂, angle_comm b' c' a', add_right_cancel_iff] at ha₃
@@ -107,22 +95,8 @@ theorem angle_angle_side (h : ¬Collinear ℝ {a, b, c}) (ha₁ : ∠ a b c = �
     (ha₂ : ∠ b c a = ∠ b' c' a') (hd : dist c a = dist c' a') : ![a, b, c] ≅ ![a', b', c'] := by
   have ha₃ := angle_add_angle_add_angle_eq_pi b (ne₁₃_of_not_collinear h)
   have h' : ¬Collinear ℝ {a', b', c'} := by
-    intro hcol
-    rcases (collinear_iff_eq_or_eq_or_sin_eq_zero.1 hcol) with rfl | rfl | _
-    · obtain rfl | hac := eq_or_ne a' c'
-      · simp at hd; refine (ne₁₃_of_not_collinear h) (by rw [hd])
-      · rw [angle_self_of_ne hac] at ha₂
-        have hsin: Real.sin (∠ b c a) = 0 := by rw [ha₂, Real.sin_zero]
-        have hcol: Collinear ℝ {b, c, a} := by
-          simp only [collinear_iff_eq_or_eq_or_sin_eq_zero, hsin, or_true]
-        refine h (by rwa [Set.insert_comm, Set.pair_comm])
-    · simp_all
-      have : ¬Collinear ℝ {c, a, b} := by rwa [Set.insert_comm, Set.pair_comm]
-      apply sin_pos_of_not_collinear at this
-      have h1 : Real.sin (∠ c a b) = 0 := by rw [←Real.sin_zero]; congr; linarith
-      simp [h1] at this
-    · apply sin_pos_of_not_collinear at h
-      simp_all [← ha₁]
+    grind only [collinear_iff_eq_or_eq_or_angle_eq_zero_or_angle_eq_pi, angle_self_right,
+      angle_self_left, dist_eq_zero, Set.insert_comm, Set.pair_comm]
   have ha₃' := angle_add_angle_add_angle_eq_pi b' (ne₁₃_of_not_collinear h')
   simp only [← ha₃', ha₁, ha₂, angle_comm b' c' a', add_right_cancel_iff] at ha₃
   have h_bca : ¬Collinear ℝ {b, c, a} := by rwa [Set.insert_comm, Set.pair_comm] at h
