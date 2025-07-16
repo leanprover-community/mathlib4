@@ -240,8 +240,9 @@ theorem map_relNorm (I : Ideal S) {T : Type*} [Semiring T] (f : R →+* T) :
 theorem relNorm_mono {I J : Ideal S} (h : I ≤ J) : relNorm R I ≤ relNorm R J :=
   spanNorm_mono R h
 
-theorem relNorm_algebraMap (I : Ideal R) : relNorm R (I.map (algebraMap R S)) =
-    I ^ (Module.finrank (FractionRing R) (FractionRing S)) := by
+theorem relNorm_algebraMap (I : Ideal R) :
+    relNorm R (I.map (algebraMap R S)) =
+      I ^ Module.finrank (FractionRing R) (FractionRing S) := by
   rw [← spanNorm_eq]
   refine eq_of_localization_maximal (fun P hPd ↦ ?_)
   let P' := Algebra.algebraMapSubmonoid S P.primeCompl
