@@ -225,7 +225,7 @@ theorem HasProdLocallyUniformlyOn.tprod_eqOn [T2Space α]
   fun _ hx ↦ (h.hasProd hx).tprod_eq
 
 @[to_additive]
-lemma MultipliableLocallyUniformlyOn_congr [DecidableEq ι] [T2Space α]
+lemma MultipliableLocallyUniformlyOn_congr [T2Space α]
     {f f' : ι → β → α} (h : ∀ i, s.EqOn (f i) (f' i))
     (h2 : MultipliableLocallyUniformlyOn f s) : MultipliableLocallyUniformlyOn f' s := by
   apply HasProdLocallyUniformlyOn.multipliableLocallyUniformlyOn

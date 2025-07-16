@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.Analysis.Calculus.Deriv.Inv
+import Mathlib.Analysis.Calculus.Deriv.Shift
 
 /-!
 # Derivatives of `x ^ m`, `m : ℤ`
@@ -132,6 +133,33 @@ theorem iter_deriv_inv (k : ℕ) (x : 𝕜) :
 theorem iter_deriv_inv' (k : ℕ) :
     deriv^[k] Inv.inv = fun x : 𝕜 => (-1) ^ k * k ! * x ^ (-1 - k : ℤ) :=
   funext (iter_deriv_inv k)
+
+open Function in
+theorem iter_deriv_inv_linear (k : ℕ) (c d : 𝕜) :
+    deriv^[k] (fun x ↦ (d * x + c)⁻¹) =
+    (fun x : 𝕜 ↦ (-1) ^ k * k ! * d ^ k * (d * x + c)^ (-1 - k : ℤ)) := by
+  induction' k with k ihk
+  · simp
+  · rw [Nat.factorial_succ, show  k + 1 = 1 + k by ring, iterate_add_apply, ihk]
+    ext z
+    simp only [Int.reduceNeg, iterate_one, deriv_const_mul_field',
+      Nat.cast_add, Nat.cast_one]
+    by_cases hd : d = 0
+    · simp [hd]
+    · have := deriv_comp_add_const (fun x ↦ (d * x) ^ (-1 - k : ℤ)) (c / d) z
+      have h0 : (fun x ↦ (d * (x + c / d)) ^ (-1 - (k : ℤ))) =
+        (fun x ↦ (d * x + c) ^ (-1 - (k : ℤ))) := by
+        ext y
+        field_simp
+        ring_nf
+      rw [h0, deriv_comp_mul_left d (fun x ↦ (x) ^ (-1 - k : ℤ)) (z + c / d)] at this
+      field_simp [this]
+      ring_nf
+
+theorem iter_deriv_inv_linear_sub (k : ℕ) (c d : 𝕜) :
+    deriv^[k] (fun x ↦ (d * x - c)⁻¹) =
+    (fun x : 𝕜 ↦ (-1) ^ k * k ! * d ^ k * (d * x - c)^ (-1 - k : ℤ)) := by
+  simpa [sub_eq_add_neg] using iter_deriv_inv_linear k (-c) d
 
 variable {f : E → 𝕜} {t : Set E} {a : E}
 
