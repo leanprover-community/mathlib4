@@ -743,27 +743,23 @@ def mapPosSubmonoid : posSubmonoid A →* posSubmonoid B where
   map_one' := by simp
   map_mul' := by simp
 
+variable (A) in
+lemma compatible_comap_of_extension {Γ : Type*}
+    [LinearOrderedCommMonoidWithZero Γ] (w : Valuation B Γ) [w.Compatible] :
+    (w.comap (algebraMap A B)).Compatible := by
+  constructor
+  simp [← rel_iff_rel (A := A) (B := B), Valuation.Compatible.rel_iff_le (v := w)]
+
 variable (A B) in
 /-- The map on value groups-with-zero associated to the structure morphism of an algebra. -/
-def mapValueGroupWithZero : ValueGroupWithZero A →*₀ ValueGroupWithZero B where
-  toFun := ValueGroupWithZero.lift
-    (fun a u => ValueGroupWithZero.mk (algebraMap _ _ a) (mapPosSubmonoid _ _ u)) <| by
-      intro x y s t h1 h2
-      apply ValueGroupWithZero.sound <;>
-        simpa only [mapPosSubmonoid_apply_coe, ← (algebraMap A B).map_mul, rel_iff_rel]
-  map_zero' := by
-    apply ValueGroupWithZero.sound <;> simp
-  map_one' := by
-    apply ValueGroupWithZero.sound <;> simp
-  map_mul' x y := by
-    apply x.ind; apply y.ind
-    intro x s y t
-    simp
+def mapValueGroupWithZero : ValueGroupWithZero A →*₀ ValueGroupWithZero B :=
+  have := compatible_comap_of_extension A (valuation B)
+  ValueGroupWithZero.embed ((valuation B).comap (algebraMap A B))
 
 @[simp]
 lemma mapValueGroupWithZero_valuation (a : A) :
     mapValueGroupWithZero A B (valuation _ a) = valuation _ (algebraMap _ _ a) := by
-  apply ValueGroupWithZero.sound <;> simp
+  simp [mapValueGroupWithZero, ValueGroupWithZero.embed]
 
 end ValuativeExtension
 
