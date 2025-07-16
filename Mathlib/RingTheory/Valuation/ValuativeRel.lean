@@ -3,6 +3,7 @@ Copyright (c) 2025 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Liu, Adam Topaz
 -/
+import Mathlib.GroupTheory.Congruence.GroupWithZero
 import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
 import Mathlib.RingTheory.OreLocalization.NonZeroDivisors
 import Mathlib.RingTheory.Valuation.Basic
@@ -177,17 +178,6 @@ lemma mem_posSubmonoid_iff_equiv (x : R) : x ∈ posSubmonoid R ↔ ¬ equiv R x
   ⟨fun h h' ↦ h h'.1, fun h h' ↦ h ⟨h', zero_rel _⟩⟩
 
 -- TODO: Should be a general instance
-instance : CommMonoidWithZero (equiv R).Quotient where
-  zero := Con.toQuotient 0
-  zero_mul a := Con.induction_on a fun x ↦ congrArg _ (zero_mul x)
-  mul_zero a := Con.induction_on a fun x ↦ congrArg _ (mul_zero x)
-  __ := Con.commMonoid _
-
--- TODO: Should be a general lemma
-lemma _root_.Con.coe_zero : ((0 : R) : (equiv R).Quotient) = 0 :=
-  rfl
-
--- TODO: Should be a general instance
 instance : LinearOrder (equiv R).Quotient where
   le := Quotient.lift₂ (· ≤ᵥ ·) fun a₁ b₁ a₂ b₂ ha hb ↦ iff_iff_eq.mp
     ⟨fun H ↦ rel_trans ha.2 (rel_trans H hb.1), fun H ↦ rel_trans ha.1 (rel_trans H hb.2)⟩
@@ -203,17 +193,18 @@ instance : LinearOrderedCommMonoidWithZero (equiv R).Quotient where
   bot_le := Quotient.ind zero_rel
   zero_le_one := zero_rel _
 
-private lemma coe_ne_zero_iff {x : R} :
-    (x : (equiv R).Quotient) ≠ 0 ↔ x ∈ posSubmonoid R := by
+lemma mem_posSubmonoid_iff_ne_zero {x : R} :
+    x ∈ posSubmonoid R ↔ (x : (equiv R).Quotient) ≠ 0 := by
   simp [← Con.coe_zero, Con.eq, ← mem_posSubmonoid_iff_equiv]
 
 instance : Nontrivial (equiv R).Quotient where
-  exists_pair_ne := ⟨1, 0, by simpa [← Con.coe_one, coe_ne_zero_iff] using (posSubmonoid R).one_mem⟩
+  exists_pair_ne := ⟨1, 0, by simpa [← Con.coe_one, ← mem_posSubmonoid_iff_ne_zero]
+    using (posSubmonoid R).one_mem⟩
 
 instance : NoZeroDivisors (equiv R).Quotient where
   eq_zero_or_eq_zero_of_mul_eq_zero {a b} := Con.induction_on₂ a b fun x y ↦ by
     contrapose
-    simpa [← Con.coe_mul, coe_ne_zero_iff] using (posSubmonoid R).mul_mem
+    simpa [← Con.coe_mul, ← mem_posSubmonoid_iff_ne_zero] using (posSubmonoid R).mul_mem
 
 open scoped nonZeroDivisors
 
@@ -221,13 +212,13 @@ open scoped nonZeroDivisors
 @[elab_as_elim]
 private lemma nonZeroDivisors_induction {motive : (equiv R).Quotient⁰ → Prop}
     (mk : ∀ x : posSubmonoid R, motive ⟨↑x,
-      mem_nonZeroDivisors_of_ne_zero <| coe_ne_zero_iff.mpr x.2⟩)
+      mem_nonZeroDivisors_of_ne_zero <| mem_posSubmonoid_iff_ne_zero.mp x.2⟩)
     (t : (equiv R).Quotient⁰) :
     motive t := by
   rcases Quotient.exists_rep t.1 with ⟨x, hx⟩
   have : x ∈ posSubmonoid R := by
     convert t.2
-    rw [← coe_ne_zero_iff, ← mem_nonZeroDivisors_iff_ne_zero, ← hx]
+    rw [mem_posSubmonoid_iff_ne_zero, ← mem_nonZeroDivisors_iff_ne_zero, ← hx]
     rfl
   convert mk ⟨x, this⟩
   exact hx.symm
@@ -241,7 +232,7 @@ def ValueGroupWithZero' :=
   `y : posSubmonoid R`. This should be thought of as `v r / v y`. -/
 protected
 def ValueGroupWithZero'.mk (x : R) (y : posSubmonoid R) : ValueGroupWithZero' R :=
-  Localization.mk ↑x ⟨↑y, mem_nonZeroDivisors_of_ne_zero <| coe_ne_zero_iff.mpr y.2⟩
+  Localization.mk ↑x ⟨↑y, mem_nonZeroDivisors_of_ne_zero <| mem_posSubmonoid_iff_ne_zero.mp y.2⟩
 
 protected
 theorem ValueGroupWithZero'.ind {motive : ValueGroupWithZero' R → Prop}
@@ -256,6 +247,17 @@ instance : CommMonoidWithZero (ValueGroupWithZero' R) :=
 
 instance : CommGroupWithZero (ValueGroupWithZero' R) :=
   OreLocalization.instCommGroupWithZeroNonZeroDivisors
+
+instance : LE (ValueGroupWithZero' R) where
+  le x y := Localization.liftOn₂ (x := x) (y := y) (fun x s y t ↦ x * t ≤ y * s) <| by
+    intro x₁ x₂ s₁ s₂ y₁ y₂ t₁ t₂ hxs hyt
+    simp [Localization.r_iff_exists] at hxs hyt
+    simp
+    sorry
+  -- le := OreLocalization.lift₂Expand (fun x s y t ↦ x * t ≤ y * s) <| by
+  --   intro x₁ x₂ s hs y₁ y₂ t ht
+  --   simp
+  --   sorry
 
 variable (R) in
 /-- The setoid used to construct `ValueGroupWithZero R`. -/
