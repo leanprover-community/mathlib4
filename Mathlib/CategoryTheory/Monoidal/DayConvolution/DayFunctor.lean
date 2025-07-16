@@ -565,11 +565,11 @@ lemma η_ι_equivInverse_μ (d d' : D) (x y : C) :
 
 @[reassoc (attr := simp)]
 lemma convolutionExtensionUnit_ι_equivInverse_δ (d d' : D) (x y : C) :
-  (convolutionExtensionUnit C V d d').app (x, y) ≫
-    (OplaxMonoidal.δ ((ι C V D) ⋙ (equiv C V).inverse) d d').natTrans.app
-      (x ⊗ y) =
-  (η ((equiv C V).inverse.obj ((ι C V D).obj d))
-      ((equiv C V).inverse.obj ((ι C V D).obj d'))).app (x, y) := by
+    (convolutionExtensionUnit C V d d').app (x, y) ≫
+      (OplaxMonoidal.δ ((ι C V D) ⋙ (equiv C V).inverse) d d').natTrans.app
+        (x ⊗ y) =
+    (η ((equiv C V).inverse.obj ((ι C V D).obj d))
+        ((equiv C V).inverse.obj ((ι C V D).obj d'))).app (x, y) := by
   have := η_ι_equivInverse_μ C V d d' x y =≫
     ((OplaxMonoidal.δ ((ι C V D) ⋙ (equiv C V).inverse) d d').natTrans.app
       (x ⊗ y))
