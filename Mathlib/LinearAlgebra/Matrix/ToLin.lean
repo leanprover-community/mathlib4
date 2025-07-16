@@ -335,6 +335,11 @@ theorem Matrix.toLin'_apply (M : Matrix m n R) (v : n → R) : Matrix.toLin' M v
   rfl
 
 @[simp]
+theorem LinearMap.toMatrix'_mulVec (f : (n → R) →ₗ[R] m → R) (v : n → R) :
+    LinearMap.toMatrix' f *ᵥ v = f v := by
+  rw [← toLin'_apply, toLin'_toMatrix']
+
+@[simp]
 theorem Matrix.toLin'_one : Matrix.toLin' (1 : Matrix n n R) = LinearMap.id :=
   Matrix.mulVecLin_one
 
@@ -634,8 +639,8 @@ variable {M₃ : Type*} [AddCommMonoid M₃] [Module R M₃] (v₃ : Basis l R M
 theorem LinearMap.toMatrix_comp [Finite l] [DecidableEq m] (f : M₂ →ₗ[R] M₃) (g : M₁ →ₗ[R] M₂) :
     LinearMap.toMatrix v₁ v₃ (f.comp g) =
     LinearMap.toMatrix v₂ v₃ f * LinearMap.toMatrix v₁ v₂ g := by
-  simp_rw [LinearMap.toMatrix, LinearEquiv.trans_apply, LinearEquiv.arrowCongr_comp _ v₂.equivFun,
-    LinearMap.toMatrix'_comp]
+  simp_rw [LinearMap.toMatrix, LinearEquiv.trans_apply]
+  rw [LinearEquiv.arrowCongr_comp _ v₂.equivFun, LinearMap.toMatrix'_comp]
 
 theorem LinearMap.toMatrix_mul (f g : M₁ →ₗ[R] M₁) :
     LinearMap.toMatrix v₁ v₁ (f * g) = LinearMap.toMatrix v₁ v₁ f * LinearMap.toMatrix v₁ v₁ g := by
@@ -788,7 +793,7 @@ lemma LinearMap.toMatrix_prodMap [DecidableEq m] [DecidableEq (n ⊕ m)]
     (φ₁ : Module.End R M₁) (φ₂ : Module.End R M₂) :
     toMatrix (v₁.prod v₂) (v₁.prod v₂) (φ₁.prodMap φ₂) =
       Matrix.fromBlocks (toMatrix v₁ v₁ φ₁) 0 0 (toMatrix v₂ v₂ φ₂) := by
-  ext (i|i) (j|j) <;> simp [toMatrix]
+  ext (i | i) (j | j) <;> simp [toMatrix]
 
 end ToMatrix
 

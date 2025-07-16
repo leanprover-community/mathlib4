@@ -74,7 +74,7 @@ instance : Inhabited (AddContent C) :=
     empty' := by simp
     sUnion' := by simp }⟩
 
-instance : DFunLike (AddContent C) (Set α) (fun _ ↦ ℝ≥0∞) where
+instance : FunLike (AddContent C) (Set α) ℝ≥0∞ where
   coe m s := m.toFun s
   coe_injective' m m' _ := by
     cases m

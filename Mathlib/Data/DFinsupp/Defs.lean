@@ -476,7 +476,7 @@ theorem single_injective {i} : Function.Injective (single i : β i → Π₀ i, 
 
 /-- Like `Finsupp.single_eq_single_iff`, but with a `HEq` due to dependent types -/
 theorem single_eq_single_iff (i j : ι) (xi : β i) (xj : β j) :
-    DFinsupp.single i xi = DFinsupp.single j xj ↔ i = j ∧ HEq xi xj ∨ xi = 0 ∧ xj = 0 := by
+    DFinsupp.single i xi = DFinsupp.single j xj ↔ i = j ∧ xi ≍ xj ∨ xi = 0 ∧ xj = 0 := by
   constructor
   · intro h
     by_cases hij : i = j
