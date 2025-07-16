@@ -204,7 +204,7 @@ variable {φ : Quotient sa → Quotient sb → Sort*}
 notation3:arg "⟦" a "⟧" => Quotient.mk _ a
 
 instance instNonemptyQuotient (s : Setoid α) [h : Nonempty α] : Nonempty (Quotient s) :=
-  h.recOn fun x ↦ ⟨⟦x⟧⟩
+  h.map (⟦·⟧)
 
 instance instInhabitedQuotient (s : Setoid α) [Inhabited α] : Inhabited (Quotient s) :=
   ⟨⟦default⟧⟩
