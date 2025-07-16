@@ -244,6 +244,16 @@ abbrev e :
     sndFunctor F G X ⋙ (whiskeringRight X C B).obj G :=
   NatIso.ofComponents (fun S ↦ S.iso)
 
+/-- There is a canonical inhabitant of
+`CatCommSqOver F G (CategoricalPullback F G)` corresponding to the
+canonical square `catCommSq` -/
+@[simps]
+instance : Inhabited (CatCommSqOver F G <| F ⊡ G) where
+  default := ofSquare (π₁ F G) (π₂ F G) F G
+
+-- this is a non-diamond
+example : (default : CatCommSqOver F G <| F ⊡ G).asSquare = catCommSq F G := rfl
+
 end CatCommSqOver
 
 section functorEquiv
