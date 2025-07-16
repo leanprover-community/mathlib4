@@ -95,7 +95,8 @@ instance : LawfulDayConvolutionMonoidalCategoryStruct Cᵒᵖ (Type v₁) C wher
 
 /-- An abbreviation for the "monoidal" version of Yoneda, taking
 values in Day functors rather than presheaves. -/
-abbrev dayYoneda : C ⥤ (Cᵒᵖ ⊛⥤ Type v₁) := yoneda ⋙ (equiv Cᵒᵖ _).inverse
+@[simps!]
+def dayYoneda : C ⥤ (Cᵒᵖ ⊛⥤ Type v₁) := yoneda ⋙ (equiv Cᵒᵖ _).inverse
 
 end
 
