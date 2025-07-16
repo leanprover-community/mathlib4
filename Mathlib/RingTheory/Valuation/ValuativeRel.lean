@@ -746,7 +746,7 @@ variable {R Γ : Type*} [CommRing R] [ValuativeRel R] [LinearOrderedCommGroupWit
 /-- Any valuation compatible with the valuative relation can be factored through
 the value group. -/
 noncomputable
-def unquot [h : v.Compatible] : ValuativeRel.ValueGroupWithZero R →*₀ Γ :=
+def embed [h : v.Compatible] : ValuativeRel.ValueGroupWithZero R →*₀ Γ :=
   ⟨⟨ValuativeRel.ValueGroupWithZero.lift (fun r s ↦ v r / v (s : R)) <| by
     intro x y r s
     simp only [h.rel_iff_le, map_mul, ← and_imp, ← le_antisymm_iff]
@@ -760,11 +760,11 @@ def unquot [h : v.Compatible] : ValuativeRel.ValueGroupWithZero R →*₀ Γ :=
 
 @[simp]
 lemma unquot_valuation_apply (γ : ValuativeRel.ValueGroupWithZero R) :
-    unquot (valuation R) γ = γ := by
+    embed (valuation R) γ = γ := by
   obtain ⟨r, s, rfl⟩ := valuation_surjective γ
-  simp [unquot]
+  simp [embed]
 
-lemma unquot_strictMono [h : v.Compatible] : StrictMono (unquot v) := by
+lemma embed_strictMono [h : v.Compatible] : StrictMono (embed v) := by
   intro a b h
   obtain ⟨a, r, rfl⟩ := valuation_surjective a
   obtain ⟨b, s, rfl⟩ := valuation_surjective b
@@ -772,7 +772,7 @@ lemma unquot_strictMono [h : v.Compatible] : StrictMono (unquot v) := by
   rw [div_lt_div_iff₀] at h ⊢
   any_goals simp [zero_lt_iff]
   rw [← map_mul, ← map_mul, (isEquiv (valuation R) v).lt_iff_lt] at h
-  simpa [unquot] using h
+  simpa [embed] using h
 
 end ValuativeRel.ValueGroupWithZero
 
@@ -780,8 +780,8 @@ variable {R : Type} [CommRing R] [ValuativeRel R]
 
 lemma ValuativeRel.IsRankLeOne.of_compatible_nnreal (v : Valuation R NNReal) [v.Compatible] :
     ValuativeRel.IsRankLeOne R where
-  nonempty := ⟨⟨ValuativeRel.ValueGroupWithZero.unquot v,
-    ValuativeRel.ValueGroupWithZero.unquot_strictMono v⟩⟩
+  nonempty := ⟨⟨ValuativeRel.ValueGroupWithZero.embed v,
+    ValuativeRel.ValueGroupWithZero.embed_strictMono v⟩⟩
 
 open WithZero
 lemma ValuativeRel.IsRankLeOne.of_compatible_withZeroMulInt (v : Valuation R ℤᵐ⁰) [v.Compatible] :
@@ -801,5 +801,5 @@ lemma ValuativeRel.IsRankLeOne.of_compatible_withZeroMulInt (v : Valuation R ℤ
   }
   have he : StrictMono e := by
     simp [StrictMono, «forall», e, zpow_pos, -inv_zpow', zpow_lt_zpow_iff_right₀]
-  exact ⟨⟨MonoidWithZeroHom.comp e (ValuativeRel.ValueGroupWithZero.unquot v),
-    he.comp (ValuativeRel.ValueGroupWithZero.unquot_strictMono v)⟩⟩
+  exact ⟨⟨MonoidWithZeroHom.comp e (ValuativeRel.ValueGroupWithZero.embed v),
+    he.comp (ValuativeRel.ValueGroupWithZero.embed_strictMono v)⟩⟩
