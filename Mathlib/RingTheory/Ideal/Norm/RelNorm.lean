@@ -240,6 +240,8 @@ theorem map_relNorm (I : Ideal S) {T : Type*} [Semiring T] (f : R →+* T) :
 theorem relNorm_mono {I J : Ideal S} (h : I ≤ J) : relNorm R I ≤ relNorm R J :=
   spanNorm_mono R h
 
+variable {R} (S)
+
 theorem relNorm_algebraMap (I : Ideal R) :
     relNorm R (I.map (algebraMap R S)) =
       I ^ Module.finrank (FractionRing R) (FractionRing S) := by
@@ -257,6 +259,13 @@ theorem relNorm_algebraMap (I : Ideal R) :
   apply IsFractionRing.injective Rₚ K
   rw [Algebra.algebraMap_intNorm (L := FractionRing S), ← IsScalarTower.algebraMap_apply,
     IsScalarTower.algebraMap_apply Rₚ K, Algebra.norm_algebraMap, map_pow]
+
+variable (R)
+
+theorem relNorm_algebraMap' {R'} [CommRing R'] (I : Ideal R') [Algebra R' R]
+    [Algebra R' S] [IsScalarTower R' R S] : relNorm R (I.map (algebraMap R' S)) =
+      I.map (algebraMap R' R) ^ Module.finrank (FractionRing R) (FractionRing S) := by
+  rw [← relNorm_algebraMap, Ideal.map_map, IsScalarTower.algebraMap_eq R' R S]
 
 end Ideal
 
