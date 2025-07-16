@@ -108,7 +108,7 @@ theorem sub_eq_eval₁ [SMul R M] [AddGroup M] (a₁ : R × M) {a₂ : R × M} {
 theorem sub_eq_eval₂ [Ring R] [AddCommGroup M] [Module R M] (r₁ r₂ : R) (x : M) {l₁ l₂ l : NF R M}
     (h : l₁.eval - l₂.eval = l.eval) :
     ((r₁, x) ::ᵣ l₁).eval - ((r₂, x) ::ᵣ l₂).eval = ((r₁ - r₂, x) ::ᵣ l).eval := by
-  simp only [← h, eval_cons, sub_smul, sub_eq_add_neg, neg_add, add_smul, neg_smul, add_assoc]
+  simp only [← h, eval_cons, sub_eq_add_neg, neg_add, add_smul, neg_smul, add_assoc]
   congr! 1
   simp only [← add_assoc]
   congr! 1
@@ -461,11 +461,11 @@ partial def parse (iM : Q(AddCommMonoid $M)) (x : Q($M)) :
     pure ⟨u, R, iR, iRM, l.onScalar q(HMul.hMul $s), (q(NF.smul_eq_eval $pf₀ $pf_l $pf_r):)⟩
   /- parse a `(0:M)` -/
   | ~q(0) =>
-    pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommGroup.toNatModule), [], q(NF.zero_eq_eval $M)⟩
+    pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommMonoid.toNatModule), [], q(NF.zero_eq_eval $M)⟩
   /- anything else should be treated as an atom -/
   | _ =>
     let (k, ⟨x', _⟩) ← AtomM.addAtomQ x
-    pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommGroup.toNatModule), [((q(1), x'), k)],
+    pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommMonoid.toNatModule), [((q(1), x'), k)],
       q(NF.atom_eq_eval $x')⟩
 
 /-- Given expressions `R` and `M` representing types such that `M`'s is a module over `R`'s, and

@@ -280,7 +280,7 @@ end CharP
 /-
 Preliminary definitions and results for the Frobenius map.
 Necessary here for simple results about sums of `p`-powers that are used in files forbidding
-to import algebra-related definitions (see `Mathlib.Algebra.CharP.Two.lean`).
+to import algebra-related definitions (see `Mathlib/Algebra/CharP/Two.lean`).
 -/
 section Frobenius
 

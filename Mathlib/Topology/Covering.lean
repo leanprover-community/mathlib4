@@ -320,7 +320,7 @@ theorem mk' (F : X → Type*) [∀ x, TopologicalSpace (F x)] [∀ x, DiscreteTo
     (t : ∀ x, x ∈ Set.range f → {t : Trivialization (F x) f // x ∈ t.baseSet})
     (h : IsClosed (Set.range f)) : IsCoveringMap f :=
   isCoveringMap_iff_isCoveringMapOn_univ.mpr <| .mk' f _ _ (fun x h ↦ t x h) fun _x hx ↦
-    ⟨_, h.isOpen_compl.mem_nhds hx, Set.eq_empty_of_forall_not_mem fun x h ↦ h ⟨x, rfl⟩⟩
+    ⟨_, h.isOpen_compl.mem_nhds hx, Set.eq_empty_of_forall_notMem fun x h ↦ h ⟨x, rfl⟩⟩
 
 theorem mk (F : X → Type*) [∀ x, TopologicalSpace (F x)] [∀ x, DiscreteTopology (F x)]
     (e : ∀ x, Trivialization (F x) f) (h : ∀ x, x ∈ (e x).baseSet) : IsCoveringMap f :=
@@ -331,7 +331,7 @@ variable (hf : IsCoveringMap f)
 include hf
 
 protected theorem continuous : Continuous f :=
-  continuous_iff_continuousOn_univ.mpr hf.isCoveringMapOn.continuousOn
+  continuousOn_univ.mp hf.isCoveringMapOn.continuousOn
 
 protected theorem isLocalHomeomorph : IsLocalHomeomorph f :=
   isLocalHomeomorph_iff_isLocalHomeomorphOn_univ.mpr hf.isCoveringMapOn.isLocalHomeomorphOn

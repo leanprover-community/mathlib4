@@ -118,9 +118,9 @@ lemma rootSpace_neg_nsmul_add_chainTop_of_lt (hα : α.IsNonZero) {n : ℕ} (hn 
     have := apply_coroot_eq_cast' (-α) W
     simp only [coroot_neg, map_neg, hW, nsmul_eq_mul, Pi.natCast_def, coe_chainTop, zsmul_eq_mul,
       Int.cast_natCast, Pi.add_apply, Pi.neg_apply, Pi.mul_apply, root_apply_coroot hα, mul_two,
-      neg_add_rev, apply_coroot_eq_cast' α β, Int.cast_sub, Int.cast_mul, Int.cast_ofNat,
-      mul_comm (2 : K), add_sub_cancel, neg_neg, add_sub, Nat.cast_inj,
-      eq_sub_iff_add_eq, ← Nat.cast_add, ← sub_eq_neg_add, sub_eq_iff_eq_add] at this
+      apply_coroot_eq_cast' α β, Int.cast_sub, Int.cast_mul, Int.cast_ofNat, mul_comm (2 : K),
+      add_sub_cancel, add_sub, Nat.cast_inj, eq_sub_iff_add_eq, ← Nat.cast_add, ← sub_eq_neg_add,
+      sub_eq_iff_eq_add] at this
     omega
   have H₂ : ((1 + n + chainTopCoeff (-α) W) • α + chainTop (-α) W : H → K) =
       (chainTopCoeff α β + 1) • α + β := by
@@ -299,7 +299,7 @@ lemma rootSpace_one_div_two_smul (hα : α.IsNonZero) : rootSpace H ((2⁻¹ : K
   by_contra h
   let W : Weight K H L := ⟨_, h⟩
   have hW : 2 • (W : H → K) = α := by
-    show 2 • (2⁻¹ : K) • (α : H → K) = α
+    change 2 • (2⁻¹ : K) • (α : H → K) = α
     rw [← Nat.cast_smul_eq_nsmul K, smul_smul]; simp
   apply α.genWeightSpace_ne_bot
   have := rootSpace_two_smul W (fun (e : (W : H → K) = 0) ↦ hα <| by
@@ -326,7 +326,7 @@ lemma eq_neg_one_or_eq_zero_or_eq_one_of_eq_smul
     set k' : ℤ := n - chainTopCoeff α β
     subst H
     have : k' ∈ ({-1, 0, 1} : Finset ℤ) := by
-      show k' ∈ Finset.Icc (-1 : ℤ) (1 : ℤ)
+      change k' ∈ Finset.Icc (-1 : ℤ) (1 : ℤ)
       exact this
     simpa only [Int.reduceNeg, Finset.mem_insert, Finset.mem_singleton, ← @Int.cast_inj K,
       Int.cast_zero, Int.cast_neg, Int.cast_one] using this
@@ -416,7 +416,7 @@ instance : (rootSystem H).IsReduced where
   eq_or_eq_neg := by
     intro ⟨α, hα⟩ ⟨β, hβ⟩ e
     rw [LinearIndependent.pair_iff' ((rootSystem H).ne_zero _), not_forall] at e
-    simp only [Nat.succ_eq_add_one, Nat.reduceAdd, rootSystem_root_apply, ne_eq, not_not] at e
+    simp only [rootSystem_root_apply, ne_eq, not_not] at e
     obtain ⟨u, hu⟩ := e
     obtain (h | h) := eq_neg_or_eq_of_eq_smul α β (by simpa using hβ) u
       (by ext x; exact DFunLike.congr_fun hu.symm x)
@@ -456,12 +456,10 @@ lemma eq_top_of_invtSubmodule_ne_bot
     by_contra h
     have i_non_zero : i.1.IsNonZero := by
       obtain ⟨val, hval⟩ := i
-      simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hval
-      exact hval
+      rwa [Finset.mem_filter_univ] at hval
     have j_non_zero : j.1.IsNonZero := by
       obtain ⟨val, hval⟩ := j
-      simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hval
-      exact hval
+      rwa [Finset.mem_filter_univ] at hval
     let r := Weight.mk (R := K) (L := H) (M := L) (i.1.1 + j.1.1) h
     have r₁ : r ≠ 0 := by
       intro a
@@ -497,7 +495,7 @@ lemma eq_top_of_invtSubmodule_ne_bot
   let g := ⋃ i ∈ Φ, (rootSpace H i : Set L)
   let I := LieSubalgebra.lieSpan K L g
   have s₅ : I ≠ ⊤ := by
-    obtain ⟨j, hj⟩ := (Set.ne_univ_iff_exists_not_mem Φ).mp hc
+    obtain ⟨j, hj⟩ := (Set.ne_univ_iff_exists_notMem Φ).mp hc
     obtain ⟨z, hz₁, hz₂⟩ := exists_ne_zero (R := K) (L := H) (M := L) j
     by_contra! hI
     have center_element : z ∈ center K L := by

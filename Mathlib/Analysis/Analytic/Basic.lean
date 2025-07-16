@@ -51,7 +51,8 @@ Additionally, let `f` be a function from `E` to `F`.
 * `AnalyticOnNhd 𝕜 f s`: the function `f` is analytic at every point of `s`.
 
 We also define versions of `HasFPowerSeriesOnBall`, `AnalyticAt`, and `AnalyticOnNhd` restricted to
-a set, similar to `ContinuousWithinAt`. See `Mathlib.Analysis.Analytic.Within` for basic properties.
+a set, similar to `ContinuousWithinAt`.
+See `Mathlib/Analysis/Analytic/Within.lean` for basic properties.
 
 * `AnalyticWithinAt 𝕜 f s x` means a power series at `x` converges to `f` on `𝓝[s ∪ {x}] x`.
 * `AnalyticOn 𝕜 f s t` means `∀ x ∈ t, AnalyticWithinAt 𝕜 f s x`.
@@ -247,12 +248,12 @@ theorem le_radius_of_summable_norm (p : FormalMultilinearSeries 𝕜 E F)
 
 theorem not_summable_norm_of_radius_lt_nnnorm (p : FormalMultilinearSeries 𝕜 E F) {x : E}
     (h : p.radius < ‖x‖₊) : ¬Summable fun n => ‖p n‖ * ‖x‖ ^ n :=
-  fun hs => not_le_of_lt h (p.le_radius_of_summable_norm hs)
+  fun hs => not_le_of_gt h (p.le_radius_of_summable_norm hs)
 
 theorem summable_norm_mul_pow (p : FormalMultilinearSeries 𝕜 E F) {r : ℝ≥0} (h : ↑r < p.radius) :
     Summable fun n : ℕ => ‖p n‖ * (r : ℝ) ^ n := by
   obtain ⟨a, ha : a ∈ Ioo (0 : ℝ) 1, C, - : 0 < C, hp⟩ := p.norm_mul_pow_le_mul_pow_of_lt_radius h
-  exact .of_nonneg_of_le (fun n => mul_nonneg (norm_nonneg _) (pow_nonneg r.coe_nonneg _))
+  exact .of_nonneg_of_le (fun _ ↦ by positivity)
     hp ((summable_geometric_of_lt_one ha.1.le ha.2).mul_left _)
 
 theorem summable_norm_apply (p : FormalMultilinearSeries 𝕜 E F) {x : E}
@@ -283,9 +284,10 @@ theorem radius_eq_top_iff_summable_norm (p : FormalMultilinearSeries 𝕜 E F) :
     obtain ⟨a, ha : a ∈ Ioo (0 : ℝ) 1, C, - : 0 < C, hp⟩ := p.norm_mul_pow_le_mul_pow_of_lt_radius
       (show (r : ℝ≥0∞) < p.radius from h.symm ▸ ENNReal.coe_lt_top)
     refine .of_norm_bounded
-      (fun n ↦ (C : ℝ) * a ^ n) ((summable_geometric_of_lt_one ha.1.le ha.2).mul_left _) fun n ↦ ?_
+      (g := fun n ↦ (C : ℝ) * a ^ n) ((summable_geometric_of_lt_one ha.1.le ha.2).mul_left _)
+      fun n ↦ ?_
     specialize hp n
-    rwa [Real.norm_of_nonneg (mul_nonneg (norm_nonneg _) (pow_nonneg r.coe_nonneg n))]
+    rwa [Real.norm_of_nonneg (by positivity)]
   · exact p.radius_eq_top_of_summable_norm
 
 /-- If the radius of `p` is positive, then `‖pₙ‖` grows at most geometrically. -/
@@ -318,7 +320,8 @@ theorem min_radius_le_radius_add (p q : FormalMultilinearSeries 𝕜 E F) :
   have := ((p.isLittleO_one_of_lt_radius hr.1).add (q.isLittleO_one_of_lt_radius hr.2)).isBigO
   refine (p + q).le_radius_of_isBigO ((isBigO_of_le _ fun n => ?_).trans this)
   rw [← add_mul, norm_mul, norm_mul, norm_norm]
-  exact mul_le_mul_of_nonneg_right ((norm_add_le _ _).trans (le_abs_self _)) (norm_nonneg _)
+  gcongr
+  exact (norm_add_le _ _).trans (le_abs_self _)
 
 @[simp]
 theorem radius_neg (p : FormalMultilinearSeries 𝕜 E F) : (-p).radius = p.radius := by
@@ -335,7 +338,7 @@ theorem radius_le_smul {p : FormalMultilinearSeries 𝕜 E F} {c : 𝕜} : p.rad
 
 theorem radius_smul_eq (p : FormalMultilinearSeries 𝕜 E F) {c : 𝕜} (hc : c ≠ 0) :
     (c • p).radius = p.radius := by
-  apply eq_of_le_of_le _ radius_le_smul
+  apply eq_of_le_of_ge _ radius_le_smul
   exact radius_le_smul.trans_eq (congr_arg _ <| inv_smul_smul₀ hc p)
 
 @[simp]
@@ -343,7 +346,7 @@ theorem radius_shift (p : FormalMultilinearSeries 𝕜 E F) : p.shift.radius = p
   simp only [radius, shift, Nat.succ_eq_add_one, ContinuousMultilinearMap.curryRight_norm]
   congr
   ext r
-  apply eq_of_le_of_le
+  apply eq_of_le_of_ge
   · apply iSup_mono'
     intro C
     use ‖p 0‖ ⊔ (C * r)
@@ -355,7 +358,7 @@ theorem radius_shift (p : FormalMultilinearSeries 𝕜 E F) : p.shift.radius = p
     · simp
     right
     rw [pow_succ, ← mul_assoc]
-    apply mul_le_mul_of_nonneg_right (h m) zero_le_coe
+    gcongr; apply h
   · apply iSup_mono'
     intro C
     use ‖p 1‖ ⊔ C / r
@@ -934,7 +937,7 @@ theorem HasFPowerSeriesWithinOnBall.tendsto_partialSum_prod {y : E}
     (atTop ×ˢ 𝓝 y) (𝓝 0) by simpa using A.add this
   apply Metric.tendsto_nhds.2 (fun ε εpos ↦ ?_)
   obtain ⟨r', yr', r'r⟩ : ∃ (r' : ℝ≥0), ‖y‖₊ < r' ∧ r' < r := by
-    simp [edist_zero_eq_enorm] at hy
+    simp at hy
     simpa using ENNReal.lt_iff_exists_nnreal_btwn.1 hy
   have yr'_2 : ‖y‖ < r' := by simpa [← coe_nnnorm] using yr'
   have S : Summable fun n ↦ ‖p n‖ * ↑r' ^ n := p.summable_norm_mul_pow (r'r.trans_le hf.r_le)
@@ -1301,7 +1304,7 @@ theorem HasFPowerSeriesWithinOnBall.tendstoLocallyUniformlyOn'
   · ext z
     simp
   · intro z
-    simp [edist_zero_eq_enorm, edist_eq_enorm_sub]
+    simp [edist_eq_enorm_sub]
 
 /-- If a function admits a power series expansion at `x`, then it is the locally uniform limit of
 the partial sums of this power series on the disk of convergence, i.e., `f y`
@@ -1386,7 +1389,7 @@ protected lemma AnalyticOn.continuousOn {f : E → F} {s : Set E} (h : AnalyticO
 
 /-- Analytic everywhere implies continuous -/
 theorem AnalyticOnNhd.continuous {f : E → F} (fa : AnalyticOnNhd 𝕜 f univ) : Continuous f := by
-  rw [continuous_iff_continuousOn_univ]; exact fa.continuousOn
+  rw [← continuousOn_univ]; exact fa.continuousOn
 
 /-- In a complete space, the sum of a converging power series `p` admits `p` as a power series.
 This is not totally obvious as we need to check the convergence of the series. -/

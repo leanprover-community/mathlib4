@@ -35,9 +35,9 @@ abbrev HasSubst (a : MvPowerSeries τ S) : Prop :=
   IsNilpotent (MvPowerSeries.constantCoeff τ S a)
 
 theorem hasSubst_iff {a : MvPowerSeries τ S} :
-  HasSubst a ↔ MvPowerSeries.HasSubst (Function.const Unit a) :=
+    HasSubst a ↔ MvPowerSeries.HasSubst (Function.const Unit a) :=
   ⟨fun ha ↦ MvPowerSeries.hasSubst_of_constantCoeff_nilpotent (Function.const Unit ha),
-   fun ha  ↦ (ha.const_coeff ())⟩
+   fun ha ↦ (ha.const_coeff ())⟩
 
 theorem HasSubst.const {a : MvPowerSeries τ S} (ha : HasSubst a) :
     MvPowerSeries.HasSubst (fun () ↦ a) :=
@@ -46,8 +46,8 @@ theorem HasSubst.const {a : MvPowerSeries τ S} (ha : HasSubst a) :
 theorem hasSubst_iff_hasEval_of_discreteTopology
     [TopologicalSpace S] [DiscreteTopology S] {a : MvPowerSeries τ S} :
     HasSubst a ↔ PowerSeries.HasEval a := by
-  rw [hasSubst_iff, MvPowerSeries.hasSubst_iff_hasEval_of_discreteTopology, hasEval_iff]
-  rfl
+  rw [hasSubst_iff, MvPowerSeries.hasSubst_iff_hasEval_of_discreteTopology, hasEval_iff,
+    Function.const_def]
 
 theorem HasSubst.hasEval [TopologicalSpace S] {a : MvPowerSeries τ S} (ha : HasSubst a) :
     HasEval a := by
@@ -174,7 +174,7 @@ theorem subst_add (ha : HasSubst a) (f g : PowerSeries R) :
   rw [← coe_substAlgHom ha, map_add]
 
 theorem subst_pow (ha : HasSubst a) (f : PowerSeries R) (n : ℕ) :
-    subst a (f ^ n) = (subst a f ) ^ n := by
+    subst a (f ^ n) = (subst a f) ^ n := by
   rw [← coe_substAlgHom ha, map_pow]
 
 theorem subst_mul (ha : HasSubst a) (f g : PowerSeries R) :
@@ -198,7 +198,7 @@ theorem coeff_subst_finite (ha : HasSubst a) (f : PowerSeries R) (e : τ →₀ 
 
 theorem coeff_subst_finite' (hb : HasSubst b) (f : PowerSeries R) (e : ℕ) :
     Set.Finite (fun (d : ℕ) ↦ (coeff R d f) • (PowerSeries.coeff S e (b ^ d))).support :=
-  coeff_subst_finite hb f  _
+  coeff_subst_finite hb f _
 
 theorem coeff_subst (ha : HasSubst a) (f : PowerSeries R) (e : τ →₀ ℕ) :
     MvPowerSeries.coeff S e (subst a f) =
@@ -272,7 +272,7 @@ theorem substAlgHom_comp_substAlgHom
 
 theorem substAlgHom_comp_substAlgHom_apply
   (ha : HasSubst a) (hb : HasSubst b) (f : PowerSeries R) :
-    (substAlgHom hb) (substAlgHom  ha f) = substAlgHom (ha.comp hb) f :=
+    (substAlgHom hb) (substAlgHom ha f) = substAlgHom (ha.comp hb) f :=
   DFunLike.congr_fun (substAlgHom_comp_substAlgHom ha hb) f
 
 theorem subst_comp_subst (ha : HasSubst a) (hb : HasSubst b) :

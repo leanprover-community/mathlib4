@@ -329,7 +329,7 @@ theorem hasStrictFDerivAt_rpow_of_pos (p : ℝ × ℝ) (hp : 0 < p.1) :
   have : (fun x : ℝ × ℝ => x.1 ^ x.2) =ᶠ[𝓝 p] fun x => exp (log x.1 * x.2) :=
     (continuousAt_fst.eventually (lt_mem_nhds hp)).mono fun p hp => rpow_def_of_pos hp _
   refine HasStrictFDerivAt.congr_of_eventuallyEq ?_ this.symm
-  convert ((hasStrictFDerivAt_fst.log hp.ne').mul hasStrictFDerivAt_snd).exp using 1
+  convert ((hasStrictFDerivAt_fst.log hp.ne').fun_mul hasStrictFDerivAt_snd).exp using 1
   rw [rpow_sub_one hp.ne', ← rpow_def_of_pos hp, smul_add, smul_smul, mul_div_left_comm,
     div_eq_mul_inv, smul_smul, smul_smul, mul_assoc, add_comm]
 
@@ -342,7 +342,7 @@ theorem hasStrictFDerivAt_rpow_of_neg (p : ℝ × ℝ) (hp : p.1 < 0) :
   have : (fun x : ℝ × ℝ => x.1 ^ x.2) =ᶠ[𝓝 p] fun x => exp (log x.1 * x.2) * cos (x.2 * π) :=
     (continuousAt_fst.eventually (gt_mem_nhds hp)).mono fun p hp => rpow_def_of_neg hp _
   refine HasStrictFDerivAt.congr_of_eventuallyEq ?_ this.symm
-  convert ((hasStrictFDerivAt_fst.log hp.ne).mul hasStrictFDerivAt_snd).exp.mul
+  convert ((hasStrictFDerivAt_fst.log hp.ne).fun_mul hasStrictFDerivAt_snd).exp.fun_mul
     (hasStrictFDerivAt_snd.mul_const π).cos using 1
   simp_rw [rpow_sub_one hp.ne, smul_add, ← add_assoc, smul_smul, ← add_smul, ← mul_assoc,
     mul_comm (cos _), ← rpow_def_of_neg hp]
@@ -351,7 +351,7 @@ theorem hasStrictFDerivAt_rpow_of_neg (p : ℝ × ℝ) (hp : p.1 < 0) :
 /-- The function `fun (x, y) => x ^ y` is infinitely smooth at `(x, y)` unless `x = 0`. -/
 theorem contDiffAt_rpow_of_ne (p : ℝ × ℝ) (hp : p.1 ≠ 0) {n : WithTop ℕ∞} :
     ContDiffAt ℝ n (fun p : ℝ × ℝ => p.1 ^ p.2) p := by
-  rcases hp.lt_or_lt with hneg | hpos
+  rcases hp.lt_or_gt with hneg | hpos
   exacts
     [(((contDiffAt_fst.log hneg.ne).mul contDiffAt_snd).exp.mul
           (contDiffAt_snd.mul contDiffAt_const).cos).congr_of_eventuallyEq
@@ -368,11 +368,11 @@ theorem _root_.HasStrictDerivAt.rpow {f g : ℝ → ℝ} {f' g' : ℝ} (hf : Has
       (f' * g x * f x ^ (g x - 1) + g' * f x ^ g x * Real.log (f x)) x := by
   convert (hasStrictFDerivAt_rpow_of_pos ((fun x => (f x, g x)) x) h).comp_hasStrictDerivAt x
     (hf.prodMk hg) using 1
-  simp [mul_assoc, mul_comm, mul_left_comm]
+  simp [mul_assoc, mul_comm]
 
 theorem hasStrictDerivAt_rpow_const_of_ne {x : ℝ} (hx : x ≠ 0) (p : ℝ) :
     HasStrictDerivAt (fun x => x ^ p) (p * x ^ (p - 1)) x := by
-  rcases hx.lt_or_lt with hx | hx
+  rcases hx.lt_or_gt with hx | hx
   · have := (hasStrictFDerivAt_rpow_of_neg (x, p) hx).comp_hasStrictDerivAt x
       ((hasStrictDerivAt_id x).prodMk (hasStrictDerivAt_const x p))
     convert this using 1; simp
@@ -677,25 +677,3 @@ lemma isBigO_deriv_rpow_const_atTop (p : ℝ) :
 end deriv
 
 end Differentiability
-
-section Limits
-
-open Real Filter
-
-/-- The function `(1 + t/x) ^ x` tends to `exp t` at `+∞`. -/
-theorem tendsto_one_plus_div_rpow_exp (t : ℝ) :
-    Tendsto (fun x : ℝ => (1 + t / x) ^ x) atTop (𝓝 (exp t)) := by
-  apply ((Real.continuous_exp.tendsto _).comp (tendsto_mul_log_one_plus_div_atTop t)).congr' _
-  have h₁ : (1 : ℝ) / 2 < 1 := by norm_num
-  have h₂ : Tendsto (fun x : ℝ => 1 + t / x) atTop (𝓝 1) := by
-    simpa using (tendsto_inv_atTop_zero.const_mul t).const_add 1
-  refine (h₂.eventually_const_le h₁).mono fun x hx => ?_
-  have hx' : 0 < 1 + t / x := by linarith
-  simp [mul_comm x, exp_mul, exp_log hx']
-
-/-- The function `(1 + t/x) ^ x` tends to `exp t` at `+∞` for naturals `x`. -/
-theorem tendsto_one_plus_div_pow_exp (t : ℝ) :
-    Tendsto (fun x : ℕ => (1 + t / (x : ℝ)) ^ x) atTop (𝓝 (Real.exp t)) :=
-  ((tendsto_one_plus_div_rpow_exp t).comp tendsto_natCast_atTop_atTop).congr (by simp)
-
-end Limits

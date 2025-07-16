@@ -6,7 +6,6 @@ Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 import Mathlib.Algebra.BigOperators.Field
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.InnerProductSpace.Defs
-import Mathlib.GroupTheory.MonoidLocalization.Basic
 
 /-!
 # Properties of inner product spaces
@@ -58,6 +57,9 @@ theorem real_inner_comm (x y : F) : ⟪y, x⟫_ℝ = ⟪x, y⟫_ℝ :=
 theorem inner_eq_zero_symm {x y : E} : ⟪x, y⟫ = 0 ↔ ⟪y, x⟫ = 0 := by
   rw [← inner_conj_symm]
   exact star_eq_zero
+
+instance {ι : Sort*} (v : ι → E) : IsSymm ι fun i j => ⟪v i, v j⟫ = 0 where
+  symm _ _ := inner_eq_zero_symm.1
 
 @[simp]
 theorem inner_self_im (x : E) : im ⟪x, x⟫ = 0 := by rw [← @ofReal_inj 𝕜, im_eq_conj_sub]; simp
@@ -154,12 +156,12 @@ protected theorem Finsupp.inner_sum {ι : Type*} (l : ι →₀ 𝕜) (v : ι �
 protected theorem DFinsupp.sum_inner {ι : Type*} [DecidableEq ι] {α : ι → Type*}
     [∀ i, AddZeroClass (α i)] [∀ (i) (x : α i), Decidable (x ≠ 0)] (f : ∀ i, α i → E)
     (l : Π₀ i, α i) (x : E) : ⟪l.sum f, x⟫ = l.sum fun i a => ⟪f i a, x⟫ := by
-  simp +contextual only [DFinsupp.sum, sum_inner, smul_eq_mul]
+  simp +contextual only [DFinsupp.sum, sum_inner]
 
 protected theorem DFinsupp.inner_sum {ι : Type*} [DecidableEq ι] {α : ι → Type*}
     [∀ i, AddZeroClass (α i)] [∀ (i) (x : α i), Decidable (x ≠ 0)] (f : ∀ i, α i → E)
     (l : Π₀ i, α i) (x : E) : ⟪x, l.sum f⟫ = l.sum fun i a => ⟪x, f i a⟫ := by
-  simp +contextual only [DFinsupp.sum, inner_sum, smul_eq_mul]
+  simp +contextual only [DFinsupp.sum, inner_sum]
 
 @[simp]
 theorem inner_zero_left (x : E) : ⟪0, x⟫ = 0 := by
@@ -254,7 +256,7 @@ theorem parallelogram_law {x y : E} : ⟪x + y, x + y⟫ + ⟪x - y, x - y⟫ = 
 
 /-- **Cauchy–Schwarz inequality**. -/
 theorem inner_mul_inner_self_le (x y : E) : ‖⟪x, y⟫‖ * ‖⟪y, x⟫‖ ≤ re ⟪x, x⟫ * re ⟪y, y⟫ :=
-  letI cd : PreInnerProductSpace.Core 𝕜 E := PreInnerProductSpace.toCore
+  letI : PreInnerProductSpace.Core 𝕜 E := PreInnerProductSpace.toCore
   InnerProductSpace.Core.inner_mul_inner_self_le x y
 
 /-- Cauchy–Schwarz inequality for real inner products. -/
@@ -307,7 +309,7 @@ variable {𝕜}
 
 @[simp]
 theorem re_inner_self_nonpos {x : E} : re ⟪x, x⟫ ≤ 0 ↔ x = 0 := by
-  rw [← norm_sq_eq_re_inner, (sq_nonneg _).le_iff_eq, sq_eq_zero_iff, norm_eq_zero]
+  rw [← norm_sq_eq_re_inner, (sq_nonneg _).ge_iff_eq', sq_eq_zero_iff, norm_eq_zero]
 
 @[simp]
 lemma re_inner_self_pos {x : E} : 0 < re ⟪x, x⟫ ↔ x ≠ 0 := by
@@ -534,7 +536,7 @@ theorem norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero (x y : E) (h : ⟪x,
     ‖x + y‖ * ‖x + y‖ = ‖x‖ * ‖x‖ + ‖y‖ * ‖y‖ := by
   rw [@norm_add_mul_self 𝕜, add_right_cancel_iff, add_eq_left, mul_eq_zero]
   apply Or.inr
-  simp only [h, zero_re']
+  simp only [h, zero_re]
 
 /-- Pythagorean theorem, vector inner product form. -/
 theorem norm_add_sq_eq_norm_sq_add_norm_sq_real {x y : F} (h : ⟪x, y⟫_ℝ = 0) :
@@ -568,17 +570,12 @@ theorem real_inner_add_sub_eq_zero_iff (x y : F) : ⟪x + y, x - y⟫_ℝ = 0 �
   conv_rhs => rw [← mul_self_inj_of_nonneg (norm_nonneg _) (norm_nonneg _)]
   simp only [← @inner_self_eq_norm_mul_norm ℝ, inner_add_left, inner_sub_right, real_inner_comm y x,
     sub_eq_zero, re_to_real]
-  constructor
-  · intro h
-    rw [add_comm] at h
-    linarith
-  · intro h
-    linarith
+  grind
 
 /-- Given two orthogonal vectors, their sum and difference have equal norms. -/
 theorem norm_sub_eq_norm_add {v w : E} (h : ⟪v, w⟫ = 0) : ‖w - v‖ = ‖w + v‖ := by
   rw [← mul_self_inj_of_nonneg (norm_nonneg _) (norm_nonneg _)]
-  simp only [h, ← @inner_self_eq_norm_mul_norm 𝕜, sub_neg_eq_add, sub_zero, map_sub, zero_re',
+  simp only [h, ← @inner_self_eq_norm_mul_norm 𝕜, sub_neg_eq_add, sub_zero, map_sub, zero_re,
     zero_sub, add_zero, map_add, inner_add_right, inner_sub_left, inner_sub_right, inner_re_symm,
     zero_add]
 
@@ -692,7 +689,7 @@ theorem norm_inner_eq_norm_tfae (x y : E) :
   tfae_have 2 → 3 := fun h => h.imp_right fun h' => ⟨_, h'⟩
   tfae_have 3 → 1 := by
     rintro (rfl | ⟨r, rfl⟩) <;>
-    simp [inner_smul_right, norm_smul, inner_self_eq_norm_sq_to_K, inner_self_eq_norm_mul_norm,
+    simp [inner_smul_right, norm_smul, inner_self_eq_norm_sq_to_K,
       sq, mul_left_comm]
   tfae_have 3 ↔ 4 := by simp only [Submodule.mem_span_singleton, eq_comm]
   tfae_finish
@@ -811,6 +808,12 @@ theorem eq_of_norm_le_re_inner_eq_norm_sq {x y : E} (hle : ‖x‖ ≤ ‖y‖) 
   have H₂ : re ⟪y, x⟫ = ‖y‖ ^ 2 := by rwa [← inner_conj_symm, conj_re]
   simpa [inner_sub_left, inner_sub_right, ← norm_sq_eq_re_inner, h, H₂] using H₁
 
+/-- Equality is achieved in the triangle inequality iff the two vectors are collinear. -/
+theorem norm_add_eq_iff_real {x y : F} : ‖x + y‖ = ‖x‖ + ‖y‖ ↔ ‖y‖ • x = ‖x‖ • y := by
+  rw [← pow_left_inj₀ (norm_nonneg _) (Left.add_nonneg (norm_nonneg _) (norm_nonneg _)) two_ne_zero,
+    norm_add_sq (𝕜 := ℝ), add_pow_two, add_left_inj, add_right_inj, re_to_real, mul_assoc,
+    mul_right_inj' two_ne_zero, ← inner_eq_norm_mul_iff_real]
+
 end Norm
 
 section RCLike
@@ -820,7 +823,7 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 /-- A field `𝕜` satisfying `RCLike` is itself a `𝕜`-inner product space. -/
 instance RCLike.innerProductSpace : InnerProductSpace 𝕜 𝕜 where
   inner x y := y * conj x
-  norm_sq_eq_re_inner x := by simp only [inner, mul_conj, ← ofReal_pow, ofReal_re]
+  norm_sq_eq_re_inner x := by simp only [mul_conj, ← ofReal_pow, ofReal_re]
   conj_inner_symm x y := by simp only [mul_comm, map_mul, starRingEnd_self_apply]
   add_left x y z := by simp only [mul_add, map_add]
   smul_left x y z := by simp only [mul_comm (conj z), mul_assoc, smul_eq_mul, map_mul]

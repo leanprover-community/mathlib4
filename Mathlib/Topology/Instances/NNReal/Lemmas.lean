@@ -50,6 +50,7 @@ lemma isOpen_Ico_zero {x : NNReal} : IsOpen (Set.Ico 0 x) :=
 
 open Filter Finset
 
+@[fun_prop]
 theorem _root_.continuous_real_toNNReal : Continuous Real.toNNReal :=
   (continuous_id.max continuous_const).subtype_mk _
 

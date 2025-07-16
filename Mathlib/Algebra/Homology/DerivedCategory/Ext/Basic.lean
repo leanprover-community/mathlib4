@@ -63,7 +63,7 @@ lemma hasExt_iff [HasDerivedCategory.{w'} C] :
     exact (small_congr ((shiftFunctorZero _ ℤ).app
       ((singleFunctor C 0).obj X)).homFromEquiv).1 (h X Y 0 n)
   · intro h X Y a b
-    obtain hab | hab := le_or_lt a b
+    obtain hab | hab := le_or_gt a b
     · refine (small_congr ?_).1 (h X Y (b - a) (by simpa))
       exact (Functor.FullyFaithful.ofFullyFaithful
         (shiftFunctor _ a)).homEquiv.trans
@@ -416,10 +416,7 @@ noncomputable def extFunctor (n : ℕ) : Cᵒᵖ ⥤ C ⥤ AddCommGrp.{w} where
         all_goals omega }
   map_comp {X₁ X₂ X₃} f f' := by
     ext Y α
-    dsimp
-    rw [← Ext.mk₀_comp_mk₀]
-    apply Ext.comp_assoc
-    all_goals omega
+    simp
 
 section biproduct
 
@@ -445,7 +442,7 @@ lemma Ext.mk₀_sum {X Y : C} {ι : Type*} [Fintype ι] (f : ι → (X ⟶ Y)) :
 
 /-- `Ext` commutes with biproducts in its first variable. -/
 noncomputable def Ext.biproductAddEquiv {J : Type*} [Fintype J] {X : J → C} {c : Bicone X}
-    (hc : c.IsBilimit) (Y : C) (n : ℕ): Ext c.pt Y n ≃+ Π i, Ext (X i) Y n where
+    (hc : c.IsBilimit) (Y : C) (n : ℕ) : Ext c.pt Y n ≃+ Π i, Ext (X i) Y n where
   toFun e i := (Ext.mk₀ (c.ι i)).comp e (zero_add n)
   invFun e := ∑ (i : J), (Ext.mk₀ (c.π i)).comp (e i) (zero_add n)
   left_inv x := by
@@ -458,8 +455,7 @@ noncomputable def Ext.biproductAddEquiv {J : Type*} [Fintype J] {X : J → C} {c
     intro _ _ hij
     rw [c.ι_π, dif_neg hij.symm, mk₀_zero, zero_comp]
   map_add' _ _ := by
-    simp only [comp_add]
-    rfl
+    simp only [comp_add, Pi.add_def]
 
 /-- `Ext` commutes with biproducts in its second variable. -/
 noncomputable def Ext.addEquivBiproduct (X : C) {J : Type*} [Fintype J] {Y : J → C} {c : Bicone Y}
@@ -476,8 +472,7 @@ noncomputable def Ext.addEquivBiproduct (X : C) {J : Type*} [Fintype J] {Y : J �
     intro _ _ hij
     rw [c.ι_π, dif_neg hij, mk₀_zero, comp_zero]
   map_add' _ _ := by
-    simp only [add_comp]
-    rfl
+    simp only [add_comp, Pi.add_def]
 
 end biproduct
 

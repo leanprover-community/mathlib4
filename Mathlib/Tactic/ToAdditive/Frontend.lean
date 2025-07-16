@@ -42,8 +42,8 @@ syntax (name := to_additive_ignore_args) "to_additive_ignore_args" (ppSpace num)
 if needed.
 
 This attribute tells which argument is the type where this declaration uses the multiplicative
-structure. If there are multiple argument, we typically tag the first one.
-If this argument contains a fixed type, this declaration will note be additivized.
+structure. If there are multiple arguments, we typically tag the first one.
+If this argument contains a fixed type, this declaration will not be additivized.
 See the Heuristics section of `to_additive.attr` for more details.
 
 If a declaration is not tagged, it is presumed that the first argument is relevant.
@@ -58,11 +58,6 @@ anyway.
 
 Warning: interactions between this and the `(reorder := ...)` argument are not well-tested. -/
 syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg " num : attr
-
-/-- An attribute that stores all the declarations that needs their arguments reordered when
-applying `@[to_additive]`. It is applied automatically by the `(reorder := ...)` syntax of
-`to_additive`, and should not usually be added manually. -/
-syntax (name := to_additive_reorder) "to_additive_reorder " (num+),+ : attr
 
 /-- An attribute that stores all the declarations that deal with numeric literals on variable types.
 
@@ -365,11 +360,6 @@ partial def _root_.String.splitCase (s : String) (i₀ : Pos := 0) (r : List Str
 initialize registerTraceClass `to_additive
 initialize registerTraceClass `to_additive_detail
 
-/-- Linter to check that the `reorder` attribute is not given manually -/
-register_option linter.toAdditiveReorder : Bool := {
-  defValue := true
-  descr := "Linter to check that the reorder attribute is not given manually." }
-
 /-- Linter, mostly used by `@[to_additive]`, that checks that the source declaration doesn't have
 certain attributes -/
 register_option linter.existingAttributeWarning : Bool := {
@@ -403,23 +393,10 @@ initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
           | _ => throwUnsupportedSyntax
         return ids.toList }
 
-@[inherit_doc to_additive_reorder]
-initialize reorderAttr : NameMapExtension (List <| List Nat) ←
-  registerNameMapAttribute {
-    name := `to_additive_reorder
-    descr := "\
-      Auxiliary attribute for `to_additive` that stores arguments that need to be reordered. \
-      This should not appear in any file. \
-      We keep it as an attribute for now so that mathport can still use it, and it can generate a \
-      warning."
-    add := fun
-    | _, stx@`(attr| to_additive_reorder $[$[$reorders:num]*],*) => do
-      Linter.logLintIf linter.toAdditiveReorder stx m!"\
-        Using this attribute is deprecated. Use `@[to_additive (reorder := <num>)]` instead.\n\n\
-        That will also generate the additive version with the arguments swapped, \
-        so you are probably able to remove the manually written additive declaration."
-      pure <| reorders.toList.map (·.toList.map (·.raw.isNatLit?.get! - 1))
-    | _, _ => throwUnsupportedSyntax }
+/-- An extension that stores all the declarations that need their arguments reordered when
+applying `@[to_additive]`. It is applied using the `to_additive (reorder := ...)` syntax. -/
+initialize reorderAttr : NameMapExtension (List (List Nat)) ←
+  registerNameMapExtension _
 
 @[inherit_doc to_additive_relevant_arg]
 initialize relevantArgAttr : NameMapExtension Nat ←
@@ -691,7 +668,6 @@ def reorderForall (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr :=
       else
         throwError "the permutation\n{reorder}\nprovided by the reorder config option is too \
           large, the type{indentExpr src}\nhas only {xs.size} arguments"
-        return src
   else
     return src
 
@@ -704,7 +680,6 @@ def reorderLambda (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr :=
       else
         throwError "the permutation\n{reorder}\nprovided by the reorder config option is too \
           large, the type{indentExpr src}\nhas only {xs.size} arguments"
-        return src
   else
     return src
 
@@ -737,7 +712,8 @@ def updateDecl (tgt : Name) (srcDecl : ConstantInfo) (reorder : List (List Nat) 
 /-- Abstracts the nested proofs in the value of `decl` if it is a def. -/
 def declAbstractNestedProofs (decl : ConstantInfo) : MetaM ConstantInfo := do
   if decl matches .defnInfo _ then
-    return decl.updateValue <| ← Meta.abstractNestedProofs decl.name decl.value!
+    return decl.updateValue <| ← withDeclNameForAuxNaming decl.name do
+      Meta.abstractNestedProofs decl.value!
   else
     return decl
 
@@ -856,6 +832,8 @@ partial def transformDeclAux
   addDeclarationRangesFromSyntax tgt (← getRef) cfg.ref
   if isProtected (← getEnv) src then
     setEnv <| addProtected (← getEnv) tgt
+  if defeqAttr.hasTag (← getEnv) src then
+    defeqAttr.setTag tgt
   if let some matcherInfo ← getMatcherInfo? src then
     /-
     Use `Match.addMatcherInfo tgt matcherInfo`

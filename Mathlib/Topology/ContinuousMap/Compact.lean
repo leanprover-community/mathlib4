@@ -127,6 +127,18 @@ theorem dist_lt_iff (C0 : (0 : ℝ) < C) : dist f g < C ↔ ∀ x : α, dist (f 
   rw [← dist_mkOfCompact, dist_lt_iff_of_compact C0]
   simp only [mkOfCompact_apply]
 
+theorem dist_eq_iSup : dist f g = ⨆ x, dist (f x) (g x) := by
+  simp [← isometryEquivBoundedOfCompact α β |>.dist_eq f g,
+    BoundedContinuousFunction.dist_eq_iSup]
+
+theorem nndist_eq_iSup : nndist f g = ⨆ x, nndist (f x) (g x) := by
+  simp [← isometryEquivBoundedOfCompact α β |>.nndist_eq f g,
+    BoundedContinuousFunction.nndist_eq_iSup]
+
+theorem edist_eq_iSup : edist f g = ⨆ (x : α), edist (f x) (g x) := by
+  simp [← isometryEquivBoundedOfCompact α β |>.edist_eq f g,
+    BoundedContinuousFunction.edist_eq_iSup]
+
 instance {R} [Zero R] [Zero β] [PseudoMetricSpace R] [SMul R β] [IsBoundedSMul R β] :
     IsBoundedSMul R C(α, β) where
   dist_smul_pair' r f g := by
@@ -209,6 +221,9 @@ theorem nnnorm_eq_iSup_nnnorm : ‖f‖₊ = ⨆ x : α, ‖f x‖₊ :=
 
 theorem norm_eq_iSup_norm : ‖f‖ = ⨆ x : α, ‖f x‖ :=
   (mkOfCompact f).norm_eq_iSup_norm
+
+theorem enorm_eq_iSup_enorm : ‖f‖ₑ = ⨆ x, ‖f x‖ₑ :=
+  (mkOfCompact f).enorm_eq_iSup_enorm
 
 -- A version with better keys
 instance {X : Type*} [TopologicalSpace X] (K : TopologicalSpace.Compacts X) :

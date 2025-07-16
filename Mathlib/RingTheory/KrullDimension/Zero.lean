@@ -64,7 +64,7 @@ lemma Ring.krullDimLE_zero_and_isLocalRing_tfae :
       (nilradical R).IsMaximal ] := by
   tfae_have 1 → 3 := by
     intro ⟨h₁, h₂⟩ x
-    show x ∈ nilradical R ↔ x ∈ IsLocalRing.maximalIdeal R
+    change x ∈ nilradical R ↔ x ∈ IsLocalRing.maximalIdeal R
     rw [nilradical, Ideal.radical_eq_sInf]
     simp [← Ideal.isMaximal_iff_isPrime, IsLocalRing.isMaximal_iff]
   tfae_have 3 → 4 := by
@@ -83,11 +83,13 @@ lemma Ring.krullDimLE_zero_and_isLocalRing_tfae :
   tfae_finish
 
 @[simp]
-lemma le_isUnit_iff_zero_not_mem [IsLocalRing R]
+lemma le_isUnit_iff_zero_notMem [IsLocalRing R]
     {M : Submonoid R} : M ≤ IsUnit.submonoid R ↔ 0 ∉ M := by
   have := ((Ring.krullDimLE_zero_and_isLocalRing_tfae R).out 0 2 rfl rfl).mp ⟨‹_›, ‹_›⟩
   exact ⟨fun h₁ h₂ ↦ not_isUnit_zero (h₁ h₂),
     fun H x hx ↦ (this x).not_left.mp fun ⟨n, hn⟩ ↦ H (hn ▸ pow_mem hx n)⟩
+
+@[deprecated (since := "2025-05-23")] alias le_isUnit_iff_zero_not_mem := le_isUnit_iff_zero_notMem
 
 variable (R) in
 theorem Ring.KrullDimLE.existsUnique_isPrime [IsLocalRing R] :

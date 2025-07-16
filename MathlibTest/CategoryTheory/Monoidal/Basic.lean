@@ -18,7 +18,7 @@ example (f : Z ⟶ W) : (X ⊗ Y) ◁ f = (α_ _ _ _).hom ≫ X ◁ Y ◁ f ≫ 
 example : f ≫ g = f ≫ g := by
   monoidal
 
-example : (f ⊗ g) ▷ X = (α_ _ _ _).hom ≫ (f ⊗ g ▷ X) ≫ (α_ _ _ _).inv := by
+example : (f ⊗ₘ g) ▷ X = (α_ _ _ _).hom ≫ (f ⊗ₘ g ▷ X) ≫ (α_ _ _ _).inv := by
   monoidal
 
 example {V₁ V₂ V₃ : C} (R : ∀ V₁ V₂ : C, V₁ ⊗ V₂ ⟶ V₂ ⊗ V₁) :

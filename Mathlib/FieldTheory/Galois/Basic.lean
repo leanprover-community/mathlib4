@@ -109,8 +109,6 @@ theorem card_aut_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
   let iso : F⟮α⟯ ≃ₐ[F] E :=
     { toFun := fun e => e.val
       invFun := fun e => ⟨e, by rw [hα]; exact IntermediateField.mem_top⟩
-      left_inv := fun _ => by ext; rfl
-      right_inv := fun _ => rfl
       map_mul' := fun _ _ => rfl
       map_add' := fun _ _ => rfl
       commutes' := fun _ => rfl }
@@ -123,9 +121,7 @@ theorem card_aut_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
   rw [← LinearEquiv.finrank_eq iso.toLinearEquiv]
   rw [← IntermediateField.AdjoinSimple.card_aut_eq_finrank F E H h_sep h_splits]
   apply Fintype.card_congr
-  apply Equiv.mk (fun ϕ => iso.trans (ϕ.trans iso.symm)) fun ϕ => iso.symm.trans (ϕ.trans iso)
-  · intro ϕ; ext1; simp only [trans_apply, apply_symm_apply]
-  · intro ϕ; ext1; simp only [trans_apply, symm_apply_apply]
+  exact Equiv.mk (fun ϕ => iso.trans (ϕ.trans iso.symm)) fun ϕ => iso.symm.trans (ϕ.trans iso)
 
 end IsGalois
 
@@ -192,7 +188,7 @@ def fixedField : IntermediateField F E :=
 
 @[simp] lemma mem_fixedField_iff (x) :
     x ∈ fixedField H ↔ ∀ f ∈ H, f x = x := by
-  show x ∈ MulAction.fixedPoints H E ↔ _
+  change x ∈ MulAction.fixedPoints H E ↔ _
   simp only [MulAction.mem_fixedPoints, Subtype.forall, Subgroup.mk_smul, AlgEquiv.smul_def]
 
 @[simp] lemma fixedField_bot : fixedField (⊥ : Subgroup (E ≃ₐ[F] E)) = ⊤ := by
@@ -244,8 +240,6 @@ lemma fixedField_antitone : Antitone (@fixedField F _ E _ _) :=
 def fixingSubgroupEquiv : fixingSubgroup K ≃* E ≃ₐ[K] E where
   toFun ϕ := { AlgEquiv.toRingEquiv (ϕ : E ≃ₐ[F] E) with commutes' := ϕ.mem }
   invFun ϕ := ⟨ϕ.restrictScalars _, ϕ.commutes⟩
-  left_inv _ := by ext; rfl
-  right_inv _ := by ext; rfl
   map_mul' _ _ := by ext; rfl
 
 theorem fixingSubgroup_fixedField [FiniteDimensional F E] : fixingSubgroup (fixedField H) = H := by
@@ -259,6 +253,13 @@ theorem fixingSubgroup_fixedField [FiniteDimensional F E] : fixingSubgroup (fixe
   refine (FixedPoints.toAlgHomEquiv H E).trans ?_
   refine (algEquivEquivAlgHom (fixedField H) E).toEquiv.symm.trans ?_
   exact (fixingSubgroupEquiv (fixedField H)).toEquiv.symm
+
+/--
+A subgroup is isomorphic to the Galois group of its fixed field.
+-/
+def subgroupEquivAlgEquiv [FiniteDimensional F E] (H : Subgroup (E ≃ₐ[F] E)) :
+    H ≃* E ≃ₐ[IntermediateField.fixedField H] E :=
+ (MulEquiv.subgroupCongr (fixingSubgroup_fixedField H).symm).trans (fixingSubgroupEquiv _)
 
 instance fixedField.smul : SMul K (fixedField (fixingSubgroup K)) where
   smul x y := ⟨x * y, fun ϕ => by
@@ -394,7 +395,7 @@ theorem map_fixingSubgroup (σ : L ≃ₐ[K] L) :
     (E.map σ).fixingSubgroup = (MulAut.conj σ) • E.fixingSubgroup := by
   ext τ
   simp only [coe_map, AlgHom.coe_coe, Set.mem_image, SetLike.mem_coe, AlgEquiv.smul_def,
-    forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, Subtype.forall,
+    forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
     Subgroup.mem_pointwise_smul_iff_inv_smul_mem, ← symm_apply_eq,
     IntermediateField.fixingSubgroup, mem_fixingSubgroup_iff]
   rfl
@@ -444,11 +445,7 @@ theorem of_card_aut_eq_finrank [FiniteDimensional F E]
   rw [← IntermediateField.finrank_eq_one_iff, ← mul_left_inj' (ne_of_lt p).symm,
     finrank_mul_finrank, ← h, one_mul, IntermediateField.finrank_fixedField_eq_card]
   apply Fintype.card_congr
-  exact
-    { toFun := fun g => ⟨g, Subgroup.mem_top g⟩
-      invFun := (↑)
-      left_inv := fun g => rfl
-      right_inv := fun _ => by ext; rfl }
+  exact { toFun := fun g => ⟨g, Subgroup.mem_top g⟩, invFun := (↑) }
 
 variable {F} {E}
 variable {p : F[X]}
@@ -463,7 +460,7 @@ theorem of_separable_splitting_field_aux [hFE : FiniteDimensional F E] [sp : p.I
   have h : IsIntegral K x := (isIntegral_of_noetherian (IsNoetherian.iff_fg.2 hFE) x).tower_top
   have h1 : p ≠ 0 := fun hp => by
     rw [hp, Polynomial.aroots_zero] at hx
-    exact Multiset.not_mem_zero x hx
+    exact Multiset.notMem_zero x hx
   have h2 : minpoly K x ∣ p.map (algebraMap F K) := by
     apply minpoly.dvd
     rw [Polynomial.aeval_def, Polynomial.eval₂_map, ← Polynomial.eval_map, ←

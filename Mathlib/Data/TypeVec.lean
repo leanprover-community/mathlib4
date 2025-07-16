@@ -248,7 +248,7 @@ theorem appendFun_id_id {α : TypeVec n} {β : Type*} :
 instance subsingleton0 : Subsingleton (TypeVec 0) :=
   ⟨fun _ _ => funext Fin2.elim0⟩
 
--- See `Mathlib.Tactic.Attr.Register` for `register_simp_attr typevec`
+-- See `Mathlib/Tactic/Attr/Register.lean` for `register_simp_attr typevec`
 
 /-- cases distinction for 0-length type vector -/
 protected def casesNil {β : TypeVec 0 → Sort*} (f : β Fin2.elim0) : ∀ v, β v :=
@@ -594,7 +594,7 @@ theorem dropFun_toSubtype {α} (p : α ⟹ «repeat» (n + 1) Prop) :
 theorem lastFun_toSubtype {α} (p : α ⟹ «repeat» (n + 1) Prop) :
     lastFun (toSubtype p) = _root_.id := by
   ext i : 2
-  induction i; simp [dropFun, *]; rfl
+  induction i; simp [*]; rfl
 
 @[simp]
 theorem dropFun_of_subtype {α} (p : α ⟹ «repeat» (n + 1) Prop) :
@@ -612,8 +612,6 @@ theorem dropFun_RelLast' {α : TypeVec n} {β} (R : β → β → Prop) :
   rfl
 
 attribute [simp] drop_append1'
-
-open MvFunctor
 
 @[simp]
 theorem dropFun_prod {α α' β β' : TypeVec (n + 1)} (f : α ⟹ β) (f' : α' ⟹ β') :
@@ -642,12 +640,7 @@ theorem dropFun_id {α : TypeVec (n + 1)} : dropFun (@TypeVec.id _ α) = id :=
   rfl
 
 @[simp]
-theorem prod_map_id {α β : TypeVec n} : (@TypeVec.id _ α ⊗' @TypeVec.id _ β) = id := by
-  ext i x : 2
-  induction i <;> simp only [TypeVec.prod.map, *, dropFun_id]
-  cases x
-  · rfl
-  · rfl
+theorem prod_map_id {α β : TypeVec n} : (@TypeVec.id _ α ⊗' @TypeVec.id _ β) = id := prod_id
 
 @[simp]
 theorem subtypeVal_diagSub {α : TypeVec n} : subtypeVal (repeatEq α) ⊚ diagSub = prod.diag := by
@@ -684,12 +677,12 @@ theorem toSubtype'_of_subtype' {α : TypeVec n} (r : α ⊗ α ⟹ «repeat» n 
   ext i x
   induction i
   <;> dsimp only [id, toSubtype', comp, ofSubtype'] at *
-  <;> simp [Subtype.eta, *]
+  <;> simp [*]
 
 theorem subtypeVal_toSubtype' {α : TypeVec n} (r : α ⊗ α ⟹ «repeat» n Prop) :
     subtypeVal r ⊚ toSubtype' r = fun i x => prod.mk i x.1.fst x.1.snd := by
   ext i x
-  induction i <;> simp only [id, toSubtype', comp, subtypeVal, prod.mk] at *
+  induction i <;> simp only [toSubtype', comp, subtypeVal, prod.mk] at *
   simp [*]
 
 end TypeVec

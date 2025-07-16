@@ -222,7 +222,7 @@ example (n : ℤ) (hn : 0 < n) : True := by
 
 -- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Bug.20in.20.60lift.60.20tactic.3F/near/508521400
 /--
-info: case intro
+trace: case intro
 x : WithTop ℕ
 P : WithTop ℕ → Prop
 u : ℕ

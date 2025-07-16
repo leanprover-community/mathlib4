@@ -48,7 +48,7 @@ variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
 -- This at first seems not very useful. However we need this when considering
 -- modules over some diagram in the category of rings,
 -- e.g. when defining presheaves over a presheaf of rings.
--- See `Mathlib.Algebra.Category.ModuleCat.Presheaf`.
+-- See `Mathlib/Algebra/Category/ModuleCat/Presheaf.lean`.
 class RingHomId {R : Type*} [Semiring R] (σ : R →+* R) : Prop where
   eq_id : σ = RingHom.id R
 

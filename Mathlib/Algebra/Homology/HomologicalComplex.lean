@@ -613,7 +613,6 @@ def of (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ 
   { X := X
     d := fun i j => if h : i = j + 1 then eqToHom (by rw [h]) ≫ d j else 0
     shape := fun i j w => by
-      dsimp
       rw [dif_neg (Ne.symm w)]
     d_comp_d' := fun i j k hij hjk => by
       dsimp at hij hjk
@@ -831,7 +830,6 @@ def of (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (n +
   { X := X
     d := fun i j => if h : i + 1 = j then d _ ≫ eqToHom (by rw [h]) else 0
     shape := fun i j w => by
-      dsimp
       rw [dif_neg]
       exact w
     d_comp_d' := fun i j k => by
@@ -934,7 +932,7 @@ then a function which takes a differential,
 and returns the next object, its differential, and the fact it composes appropriately to zero.
 -/
 def mk' (X₀ X₁ : V) (d : X₀ ⟶ X₁)
-    -- (succ' : ∀ : ΣX₀ X₁ : V, X₀ ⟶ X₁, Σ' (X₂ : V) (d : t.2.1 ⟶ X₂), t.2.2 ≫ d = 0) :
+    -- (succ' : ∀ : Σ X₀ X₁ : V, X₀ ⟶ X₁, Σ' (X₂ : V) (d : t.2.1 ⟶ X₂), t.2.2 ≫ d = 0) :
     (succ' : ∀ {X₀ X₁ : V} (f : X₀ ⟶ X₁), Σ' (X₂ : V) (d : X₁ ⟶ X₂), f ≫ d = 0) :
     CochainComplex V ℕ :=
   mk _ _ _ _ _ (succ' d).2.2 (fun S => succ' S.g)

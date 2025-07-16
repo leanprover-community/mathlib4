@@ -34,16 +34,16 @@ variable [Fintype G] [Invertible (Fintype.card G : k)]
 /-- The average of all elements of the group `G`, considered as an element of `MonoidAlgebra k G`.
 -/
 noncomputable def average : MonoidAlgebra k G :=
-  ⅟ (Fintype.card G : k) • ∑ g : G, of k G g
+  ⅟(Fintype.card G : k) • ∑ g : G, of k G g
 
 /-- `average k G` is invariant under left multiplication by elements of `G`.
 -/
 @[simp]
 theorem mul_average_left (g : G) : ↑(Finsupp.single g 1) * average k G = average k G := by
   simp only [mul_one, Finset.mul_sum, Algebra.mul_smul_comm, average, MonoidAlgebra.of_apply,
-    Finset.sum_congr, MonoidAlgebra.single_mul_single]
+    MonoidAlgebra.single_mul_single]
   set f : G → MonoidAlgebra k G := fun x => Finsupp.single x 1
-  show ⅟ (Fintype.card G : k) • ∑ x : G, f (g * x) = ⅟ (Fintype.card G : k) • ∑ x : G, f x
+  change ⅟(Fintype.card G : k) • ∑ x : G, f (g * x) = ⅟(Fintype.card G : k) • ∑ x : G, f x
   rw [Function.Bijective.sum_comp (Group.mulLeft_bijective g) _]
 
 /-- `average k G` is invariant under right multiplication by elements of `G`.
@@ -51,9 +51,9 @@ theorem mul_average_left (g : G) : ↑(Finsupp.single g 1) * average k G = avera
 @[simp]
 theorem mul_average_right (g : G) : average k G * ↑(Finsupp.single g 1) = average k G := by
   simp only [mul_one, Finset.sum_mul, Algebra.smul_mul_assoc, average, MonoidAlgebra.of_apply,
-    Finset.sum_congr, MonoidAlgebra.single_mul_single]
+    MonoidAlgebra.single_mul_single]
   set f : G → MonoidAlgebra k G := fun x => Finsupp.single x 1
-  show ⅟ (Fintype.card G : k) • ∑ x : G, f (x * g) = ⅟ (Fintype.card G : k) • ∑ x : G, f x
+  change ⅟(Fintype.card G : k) • ∑ x : G, f (x * g) = ⅟(Fintype.card G : k) • ∑ x : G, f x
   rw [Function.Bijective.sum_comp (Group.mulRight_bijective g) _]
 
 end GroupAlgebra
@@ -168,8 +168,6 @@ def invariantsEquivRepHom (X Y : Rep k G) : (linHom X.ρ Y.ρ).invariants ≃ₗ
   map_smul' _ _ := rfl
   invFun f := ⟨f.hom.hom, fun g =>
     (mem_invariants_iff_comm _ g).2 (ModuleCat.hom_ext_iff.mp (f.comm g))⟩
-  left_inv _ := by ext; rfl
-  right_inv _ := by ext; rfl
 
 end Rep
 
@@ -209,7 +207,7 @@ abbrev quotientToInvariants : Rep k (G ⧸ S) := Rep.of (A.ρ.quotientToInvarian
 variable (k G)
 
 /-- The functor sending a representation to its submodule of invariants. -/
-@[simps]
+@[simps! obj_carrier map_hom]
 noncomputable def invariantsFunctor : Rep k G ⥤ ModuleCat k where
   obj A := ModuleCat.of k A.ρ.invariants
   map {A B} f := ModuleCat.ofHom <| (f.hom.hom ∘ₗ A.ρ.invariants.subtype).codRestrict
@@ -218,7 +216,31 @@ noncomputable def invariantsFunctor : Rep k G ⥤ ModuleCat k where
       simp_all [hc g]
 
 instance : (invariantsFunctor k G).PreservesZeroMorphisms where
-
 instance : (invariantsFunctor k G).Additive where
+instance : (invariantsFunctor k G).Linear k where
+
+/-- The adjunction between the functor equipping a module with the trivial representation, and
+the functor sending a representation to its submodule of invariants. -/
+@[simps]
+noncomputable def invariantsAdjunction : trivialFunctor k G ⊣ invariantsFunctor k G where
+  unit := { app _ := ModuleCat.ofHom <| LinearMap.id.codRestrict _ <| by simp [trivialFunctor] }
+  counit := { app X := {
+    hom := ModuleCat.ofHom <| Submodule.subtype _
+    comm g := by ext x; exact (x.2 g).symm }}
+
+@[simp]
+lemma invariantsAdjunction_homEquiv_apply_hom
+    {X : ModuleCat k} {Y : Rep k G} (f : (trivialFunctor k G).obj X ⟶ Y) :
+    ((invariantsAdjunction k G).homEquiv _ _ f).hom =
+      f.hom.hom.codRestrict _ (by intros _ _; exact (hom_comm_apply f _ _).symm) := rfl
+
+@[simp]
+lemma invariantsAdjunction_homEquiv_symm_apply_hom
+    {X : ModuleCat k} {Y : Rep k G} (f : X ⟶ (invariantsFunctor k G).obj Y) :
+    (((invariantsAdjunction k G).homEquiv _ _).symm f).hom.hom =
+      Submodule.subtype _ ∘ₗ f.hom := rfl
+
+noncomputable instance : (invariantsFunctor k G).IsRightAdjoint :=
+  (invariantsAdjunction k G).isRightAdjoint
 
 end Rep
