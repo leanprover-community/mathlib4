@@ -370,6 +370,8 @@ instance (priority := 1100) id : Algebra R R where
   toSMul := Mul.toSMul _
   __ := ({RingHom.id R with toFun x := x}).toAlgebra
 
+@[simp] lemma linearMap_self : Algebra.linearMap R R = .id := rfl
+
 variable {R A}
 
 namespace id
