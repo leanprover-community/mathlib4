@@ -84,7 +84,7 @@ theorem iInter_halfSpaces_eq_of_separableSpace {𝕜 E : Type*} {s : Set E}
           rcases this with ⟨b, hb⟩
           simp only [mem_inter_iff, mem_ball, mem_range] at hb
           rcases hb.2 with ⟨i, hi⟩; use i
-          rw (config := {occs := .pos [1]}) [← hi] at hb ; exact hb.1
+          rw (config := {occs := .pos [1]}) [← hi] at hb; exact hb.1
         rcases hfi with ⟨i, hi⟩
         rw [dist_comm] at hi
         have hfix : infDist ↑(f i) s ≥  ((infDist x s) / 2) := by
@@ -213,7 +213,7 @@ theorem ConvexOn.iSup_affine_eq_of_separableSpace {𝕜 E : Type*}
   have lem3 : ∀ i, 0 = im ((T i) 1) := by
     cases @I_eq_zero_or_im_I_eq_one 𝕜 (by infer_instance) with
     | inl hI0 =>
-      intro i ; rw [← I_im', hI0] ; simp only [map_zero, zero_mul]
+      intro i ; rw [← I_im', hI0]; simp only [map_zero, zero_mul]
     | inr hI1 =>
       intro i
       by_contra ht
@@ -238,7 +238,7 @@ theorem ConvexOn.iSup_affine_eq_of_separableSpace {𝕜 E : Type*}
               im ((T i) 1) / im ((T i) 1) * (c i - re ((T i) 1) * (φ 0) - 1) :=
                 by rw [mul_comm_div]
             _ = re ((T i) 1) * (φ 0) + 1 * (c i - re ((T i) 1) * (φ 0) - 1) :=
-                by rw [div_self] ; rw [ne_comm, ne_eq]; exact ht
+                by rw [div_self]; rw [ne_comm, ne_eq]; exact ht
             _ = c i - 1 := by linarith
       have lem32 : c i > c i - 1 := by simp only [sub_lt_self_iff, zero_lt_one]
       exact not_lt_of_ge lem31 lem32
@@ -354,7 +354,7 @@ theorem ConvexOn.iSup_affine_eq_of_separableSpace {𝕜 E : Type*}
                 exact (ne_of_gt (lem4 i))
             _ = φ y := by rw [neg_add_cancel, zero_add, one_mul]
     use φ y; intro z hz; rcases mem_range.mp hz with ⟨i, hfi⟩
-    rw [← hfi] ; exact this i
+    rw [← hfi]; exact this i
   intro x; simp only; constructor
   · exact hf x
   · have lem6 : ∀ (x : E), ∀ (s : 𝕜), iSup (f x) ≤ re s ↔ φ x ≤ re s := by
@@ -364,7 +364,7 @@ theorem ConvexOn.iSup_affine_eq_of_separableSpace {𝕜 E : Type*}
         have : (x,s) ∈ C := by
           rw [← hLTc1]
           simp only [ge_iff_le, sub_nonneg, mem_iInter, mem_setOf_eq]
-          have hi : ∀i, (f x) i ≤ re s := by apply (ciSup_le_iff (hf x)).mp ; use hxs
+          have hi : ∀i, (f x) i ≤ re s := by apply (ciSup_le_iff (hf x)).mp; use hxs
           intro i
           calc
             c i = c i / re ((T i) 1) * re ((T i) 1) :=
