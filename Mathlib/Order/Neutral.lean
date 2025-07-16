@@ -153,42 +153,39 @@ theorem theorem3 (a : α) : TFAE [
   | h => by
     constructor
     · sorry
-    · intro x y ⟨h₁, h₂⟩
-      let r x' y' := ∃ a₁ ≤ a,(x' ⊓ y') ⊔ a₁ = x' ⊔ y'
-      have e1 : ∃ a₁ ≤ a,((a ⊔ y) ⊓ y) ⊔ a₁ = (a ⊔ y) ⊔ y := by
-        use a
-        simp
-        rw [sup_comm]
-      have e1' : r (a ⊔ y) y := by
-        exact e1
-      have e2 : r (x ⊓ y) (x ⊓ (a ⊔ y)) := by
-        apply h.inf (h.refl x) (h.symm e1')
-      rw [← h₂] at e2
-      simp only [le_sup_right, inf_of_le_left] at e2
-      obtain ⟨a₁, ha1, ha2⟩ := e2
-      simp at ha2
-      have e3 : a₁ ≤ a ⊓ x := by
-        apply le_inf ha1
-        rw [← ha2]
-        apply le_sup_right
-      --rw [h₁] at e3
-      have e4 : a₁ ≤ x ⊓ y := by
-        apply le_inf (le_inf_iff.mp e3).2
-        rw [h₁] at e3
-        exact (le_inf_iff.mp e3).2
-      have e5 : x ⊓ y = x := by
-        conv_rhs => rw [← ha2]
-        symm
-        rw [sup_eq_left]
-        exact e4
-      rw [← e5]
-      
-
-
-
-      --have e2 : ∃ a₁ ≤ a, (x ⊓ y) ⊔ a₁ = x ⊓ (a ⊔ x) := by
-      --  apply h.inf (h.refl x) e1
-      sorry
+    · have step1 {x y : α} (h₁ : a ⊓ x = a ⊓ y) (h₂ : a ⊔ x = a ⊔ y) : x ⊓ y = x := by
+        let r x' y' := ∃ a₁ ≤ a,(x' ⊓ y') ⊔ a₁ = x' ⊔ y'
+        have e1 : ∃ a₁ ≤ a,((a ⊔ y) ⊓ y) ⊔ a₁ = (a ⊔ y) ⊔ y := by
+          use a
+          simp
+          rw [sup_comm]
+        have e1' : r (a ⊔ y) y := by
+          exact e1
+        have e2 : r (x ⊓ y) (x ⊓ (a ⊔ y)) := by
+          apply h.inf (h.refl x) (h.symm e1')
+        rw [← h₂] at e2
+        simp only [le_sup_right, inf_of_le_left] at e2
+        obtain ⟨a₁, ha1, ha2⟩ := e2
+        simp at ha2
+        have e3 : a₁ ≤ a ⊓ x := by
+          apply le_inf ha1
+          rw [← ha2]
+          apply le_sup_right
+        --rw [h₁] at e3
+        have e4 : a₁ ≤ x ⊓ y := by
+          apply le_inf (le_inf_iff.mp e3).2
+          rw [h₁] at e3
+          exact (le_inf_iff.mp e3).2
+        have e5 : x ⊓ y = x := by
+          conv_rhs => rw [← ha2]
+          symm
+          rw [sup_eq_left]
+          exact e4
+        exact e5
+      intro x y ⟨h₁, h₂⟩
+      rw [← step1 h₁ h₂]
+      rw [inf_comm]
+      rw [step1 h₁.symm h₂.symm]
   tfae_have 3 → 1
   | ⟨h1,h2⟩ => by exact theorem3_iii_i a h1 h2
   tfae_finish
