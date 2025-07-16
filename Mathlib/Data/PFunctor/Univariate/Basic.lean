@@ -223,10 +223,9 @@ def coprod (P : PFunctor.{uA₁, uB}) (Q : PFunctor.{uA₂, uB}) :
 instance : HAdd PFunctor.{uA₁, uB} PFunctor.{uA₂, uB} PFunctor.{max uA₁ uA₂, uB} where
   hAdd := coprod
 
-/-- The generalized coproduct (sigma type) of an indexed family of polynomial functors.
-Requires the output universe level to be the same. -/
-def sigma {I : Type v} (F : I → PFunctor.{uA, uB}) : PFunctor.{max uA v, max uB v} :=
-  ⟨Σ i, (F i).A, fun ⟨i, a⟩ => ULift ((F i).B a)⟩
+/-- The generalized coproduct (sigma type) of an indexed family of polynomial functors. -/
+def sigma {I : Type v} (F : I → PFunctor.{uA, uB}) : PFunctor.{max uA v, uB} :=
+  ⟨Σ i, (F i).A, fun ⟨i, a⟩ => (F i).B a⟩
 
 end Coprod
 
