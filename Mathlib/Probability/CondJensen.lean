@@ -527,7 +527,7 @@ theorem conditional_jensen {α X : Type*}
   let φY := φ ∘ Y.subtypeL
   have hφY_cvx : ConvexOn ℝ Set.univ φY :=
     hφ_cvx.comp_linearMap Y.subtype
-  have hφ_cont : LowerSemicontinuous φY :=
+  have hφY_cont : LowerSemicontinuous φY :=
     hφ_cont.comp_continuous Y.subtypeL.cont
   have tsubY : t ⊆ Y :=
     subset_trans Submodule.subset_span subset_closure
@@ -572,6 +572,6 @@ theorem conditional_jensen {α X : Type*}
       filter_upwards [lem3] with a ha
       simp only [φY, Function.comp_apply, ha]
     _ ≤ᵐ[μ] μ[φY ∘ fY | m] :=
-      conditional_jensen_of_separableSpace hm hφY_cvx hφ_cont hfY_int hφYfY_int
+      conditional_jensen_of_separableSpace hm hφY_cvx hφY_cont hfY_int hφYfY_int
     _ =ᵐ[μ] μ[φ ∘ f | m] :=
       condExp_congr_ae lem2.symm
