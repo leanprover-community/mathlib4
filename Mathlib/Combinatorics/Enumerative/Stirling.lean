@@ -88,15 +88,16 @@ theorem stirlingFirst_eq_zero_of_lt : ∀ {n k : ℕ}, n < k → stirlingFirst n
   | n + 1, k + 1, hk => by
     have hnk : n < k := Nat.lt_of_succ_lt_succ hk
     have hnk1 : n < k + 1 := Nat.lt_of_succ_lt hk
-    simp [stirlingFirst_succ_succ, stirlingFirst_eq_zero_of_lt hnk,
-      stirlingFirst_eq_zero_of_lt hnk1]
+    rw [stirlingFirst_succ_succ, stirlingFirst_eq_zero_of_lt hnk,
+      stirlingFirst_eq_zero_of_lt hnk1, mul_zero]
 
 theorem stirlingFirst_self (n : ℕ) : stirlingFirst n n = 1 := by
-  induction n <;> simp [*, stirlingFirst, stirlingFirst_eq_zero_of_lt (Nat.lt_succ_self _)]
+  induction n <;> simp only [*, stirlingFirst, stirlingFirst_eq_zero_of_lt (Nat.lt_succ_self _),
+    mul_zero]
 
 theorem stirlingFirst_succ_self_left (n : ℕ) : stirlingFirst (n + 1) n = (n + 1).choose 2 := by
   induction' n with n ih
-  · simp
+  · simp only [zero_add, stirlingFirst_succ_zero, choose_succ_self]
   · rw [stirlingFirst_succ_succ, ih, stirlingFirst_self, mul_one, Nat.choose_succ_succ (n + 1),
       Nat.choose_one_right]
 
@@ -153,11 +154,12 @@ theorem stirlingSecond_eq_zero_of_lt : ∀ {n k : ℕ}, n < k → stirlingSecond
   | n + 1, k + 1, hk => by
     have hnk : n < k := Nat.lt_of_succ_lt_succ hk
     have hnk1 : n < k + 1 := Nat.lt_of_succ_lt hk
-    simp [stirlingSecond_succ_succ, stirlingSecond_eq_zero_of_lt hnk,
-      stirlingSecond_eq_zero_of_lt hnk1]
+    simp only [stirlingSecond_succ_succ, stirlingSecond_eq_zero_of_lt hnk,
+      stirlingSecond_eq_zero_of_lt hnk1, mul_zero]
 
 theorem stirlingSecond_self (n : ℕ) : stirlingSecond n n = 1 := by
-  induction n <;> simp [*, stirlingSecond, stirlingSecond_eq_zero_of_lt (lt_succ_self _)]
+  induction n <;> simp only [*, stirlingSecond, stirlingSecond_eq_zero_of_lt (lt_succ_self _),
+    mul_zero]
 
 theorem stirlingSecond_one_right (n : ℕ) : stirlingSecond (n + 1) 1 = 1 := by
   induction' n with n ih
@@ -167,7 +169,7 @@ theorem stirlingSecond_one_right (n : ℕ) : stirlingSecond (n + 1) 1 = 1 := by
 theorem stirlingSecond_succ_self_left (n : ℕ) :
     stirlingSecond (n + 1) n = (n + 1).choose 2 := by
   induction' n with n ih
-  · simp
+  · simp only [zero_add, stirlingSecond_succ_zero, choose_succ_self]
   · rw [stirlingSecond_succ_succ, ih, stirlingSecond_self, mul_one,
       Nat.choose_succ_succ (n + 1), Nat.choose_one_right]
 
