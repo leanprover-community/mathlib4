@@ -331,7 +331,7 @@ theorem ContMDiff.contMDiff_tangentMap (hf : ContMDiff I I' n f) (hmn : m + 1 �
 theorem ContMDiff.continuous_tangentMap (hf : ContMDiff I I' n f) (hmn : 1 ≤ n) :
     Continuous (tangentMap I I' f) := by
   rw [← contMDiffOn_univ] at hf
-  rw [continuous_iff_continuousOn_univ]
+  rw [← continuousOn_univ]
   convert hf.continuousOn_tangentMapWithin hmn uniqueMDiffOn_univ
   rw [tangentMapWithin_univ]
 
