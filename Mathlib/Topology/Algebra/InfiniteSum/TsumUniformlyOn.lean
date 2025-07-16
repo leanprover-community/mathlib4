@@ -9,13 +9,14 @@ import Mathlib.Analysis.NormedSpace.FunctionSeries
 import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 
 /-!
-# Continuity of series of functions
+# Differentiability of sum of functions
 
 We prove some HasSumUniformlyOn versions of theorems from
 `Mathlib.Analysis.NormedSpace.FunctionSeries`.
 
 Alongside this we prove `derivWithin_tsum` which states that the derivative of a series of functions
-is the sum of the derivatives, under suitable conditions.
+is the sum of the derivatives, under suitable conditions we also prove an `iteratedDerivWithin`
+version.
 
 -/
 
