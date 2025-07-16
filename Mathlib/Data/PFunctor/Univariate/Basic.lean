@@ -211,11 +211,14 @@ section Sum
 
 /-- The sum (coproduct) of two polynomial functors `P` and `Q`, written as `P + Q`.
 
-Requires the `B` universe levels to be the same. -/
+Defined as the sum of the head types and the sum case analysis for the child types.
+
+Note: requires the `B` universe levels to be the same. -/
 def sum (P : PFunctor.{uA₁, uB}) (Q : PFunctor.{uA₂, uB}) :
     PFunctor.{max uA₁ uA₂, uB} :=
   ⟨P.A ⊕ Q.A, Sum.elim P.B Q.B⟩
 
+/-- Addition of polynomial functors, defined as the sum construction. -/
 instance : HAdd PFunctor.{uA₁, uB} PFunctor.{uA₂, uB} PFunctor.{max uA₁ uA₂, uB} where
   hAdd := sum
 
@@ -227,11 +230,14 @@ end Sum
 
 section Prod
 
-/-- The product of two polynomial functors `P` and `Q`, written as `P * Q`. -/
+/-- The product of two polynomial functors `P` and `Q`, written as `P * Q`.
+
+Defined as the product of the head types and the sum of the child types. -/
 def prod (P : PFunctor.{uA₁, uB₁}) (Q : PFunctor.{uA₂, uB₂}) :
     PFunctor.{max uA₁ uA₂, max uB₁ uB₂} :=
   ⟨P.A × Q.A, fun ab => P.B ab.1 ⊕ Q.B ab.2⟩
 
+/-- Multiplication of polynomial functors, defined as the product construction. -/
 instance : HMul PFunctor.{uA₁, uB₁} PFunctor.{uA₂, uB₂} PFunctor.{max uA₁ uA₂, max uB₁ uB₂} where
   hMul := prod
 
@@ -243,7 +249,9 @@ end Prod
 
 section Tensor
 
-/-- The tensor or parallel product of two polynomial functors `P` and `Q`. -/
+/-- The tensor (also called parallel or Dirichlet) product of two polynomial functors `P` and `Q`.
+
+Defined as the product of the head types and the product of the child types. -/
 def tensor (P : PFunctor.{uA₁, uB₁}) (Q : PFunctor.{uA₂, uB₂}) :
     PFunctor.{max uA₁ uA₂, max uB₁ uB₂} :=
   ⟨P.A × Q.A, fun ab => P.B ab.1 × Q.B ab.2⟩
