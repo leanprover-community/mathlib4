@@ -207,8 +207,8 @@ theorem exists_nat_equiv_monotone (α : Type*) [Infinite α] [Preorder α] [Loca
   have _ := LocallyFiniteOrderBot.orderBot (LinearOrderRefinement α)
   have _ : NoMaxOrder (LinearOrderRefinement α) := {
     exists_gt := fun a ↦ by simpa using (hfin a).exists_notMem }
-  have : PredOrder (LinearOrderRefinement α) := sorry
-  have : SuccOrder (LinearOrderRefinement α) := sorry
+  have : PredOrder (LinearOrderRefinement α) := LinearLocallyFiniteOrder.predOrder _
+  have : SuccOrder (LinearOrderRefinement α) := LinearLocallyFiniteOrder.succOrder _
   set e := (orderIsoNatOfLinearSuccPredArch (ι := LinearOrderRefinement α)).symm
   exact ⟨e.toEquiv, fun _ _ h ↦ (linearOrderRefinement_orderHom α).monotone (e.monotone h)⟩
 
