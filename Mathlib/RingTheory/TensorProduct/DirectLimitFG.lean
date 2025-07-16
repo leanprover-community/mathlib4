@@ -38,13 +38,9 @@ by applying `lTensor`.
 modules `M ⊗[R] Q`, for all finitely generated
 submodules `Q`, with respect to the maps deduced from the inclusions
 
-`Submodule.FG.lTensor.directLimit` : a tensor product `M ⊗[R] N` is the direct limit
+* `Submodule.FG.lTensor.directLimit` : a tensor product `M ⊗[R] N` is the direct limit
 of the modules `M ⊗[R] Q`, where `Q` ranges over all finitely generated submodules of `N`,
 as a linear equivalence.
-## TODO
-
-* Fix namespaces, add docstrings
-
 -/
 
 open Submodule LinearMap
@@ -157,7 +153,7 @@ theorem DirectedSystem.lTensor {ι : Type*} [Preorder ι] {F : ι → Type*}
     simp [D.map_map]
 
 /-- When `Q` ranges over finitely generated submodules of `N`,
-  the modules of the form `M ⊗[R] Q` form a directed system. -/
+  the modules of the form `M ⊗[R] Q` form a directed system. -/
 theorem Submodule.FG.lTensor.directedSystem :
     DirectedSystem (ι := {Q : Submodule R N // Q.FG}) (fun Q ↦ M ⊗[R] Q.val)
       (fun _ _ hPQ ↦ lTensor M (Submodule.inclusion hPQ)) :=
@@ -272,8 +268,7 @@ theorem TensorProduct.Algebra.eq_of_fg_of_subtype_eq
   let j' : P' →ₗ[R] P₁ := (Subalgebra.toSubmodule A).subtype.restrict
       (fun p hp ↦ by
         simp only [coe_subtype, Submodule.map_sup, P₁]
-        apply Submodule.mem_sup_right
-        use p; simp only [SetLike.mem_coe]; exact ⟨hp, rfl⟩)
+        exact Submodule.mem_sup_right ⟨p, hp, rfl⟩)
   -- we map u and u' to P₁ ⊗[R] N, getting u₁ and u'₁
   set u₁ := rTensor N j u with hu₁
   set u'₁ := rTensor N j' u' with hu'₁
@@ -333,11 +328,11 @@ theorem Submodule.exists_fg_of_baseChange_eq_zero
   have := TensorProduct.Algebra.eq_of_fg_of_subtype_eq hA (t := f.baseChange _ u) (t' := 0)
   simp only [map_zero, exists_and_left] at this
   have hu' : (A.val.toLinearMap.rTensor N) (f.baseChange (↥A) u) = 0 := by
-    rw [← ht, ← hu, rTensor_comp_baseChange_comm_apply]
+    rw [← ht, ← hu, rTensor_baseChange]
   obtain ⟨B, hB, hAB, hu'⟩ := this hu'
   use B, hB, rTensor M (Subalgebra.inclusion hAB).toLinearMap u
   constructor
-  · rw [← rTensor_comp_baseChange_comm_apply, hu']
+  · rw [← rTensor_baseChange, hu']
   · rw [← comp_apply, ← rTensor_comp, ← hu]
     congr
 
