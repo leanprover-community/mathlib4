@@ -1366,27 +1366,48 @@ lemma isLatticeCon_iff [Lattice α] (r : α → α → Prop) : IsLatticeCon r �
           conv_rhs => rw [sup_comm]
           exact compatible_left_sup h₁) (compatible_left_sup h₀) }
 
+/-- Try as a bundled structure -/
 structure LatticeCon (α) [Lattice α] extends Setoid α where
   inf : ∀ {w x y z}, r w x → r y z → r (w ⊓ y) (x ⊓ z)
   sup : ∀ {w x y z}, r w x → r y z → r (w ⊔ y) (x ⊔ z)
+
+lemma test1 [Lattice α] (c : LatticeCon α) {x y : α} : c.r x y ↔ c.r (x ⊓ y) (x ⊔ y) := by
+  constructor
+  · intro h
+    exact c.trans (b := y) (by
+      conv_rhs => rw [← inf_idem y]
+      exact c.inf h (c.refl y)) (by
+        conv_lhs => rw [← sup_idem y]
+        exact c.sup (c.symm h) (c.refl y))
+  · intro h
+    apply c.trans (b := x ⊓ y) (by
+        conv_lhs => rw [← inf_sup_self (a := x) (b := y)]
+        conv_rhs => rw [← inf_idem x, inf_assoc]
+        exact c.inf (c.refl x) (c.symm h)) (by
+        conv_rhs => rw [← inf_sup_self (a := y) (b := x), inf_comm, sup_comm]
+        conv_lhs => rw [← inf_idem y, ← inf_assoc]
+        exact c.inf h (c.refl y))
+
+
+/-
 
 lemma test1 [Lattice α] (c : LatticeCon α) : (IsRefl _ c.r) ∧
     (∀ ⦃x y : α⦄, c.r x y ↔ c.r (x ⊓ y) (x ⊔ y)) ∧
     (∀ ⦃x y z : α⦄, x ≤ y → y ≤ z → c.r x y → c.r y z → c.r x z) ∧
     (∀ ⦃x y t : α⦄, x ≤ y → c.r x y → c.r (x ⊓ t) (y ⊓ t) ∧ c.r (x ⊔ t) (y ⊔ t)) := sorry
 
-
+-/
 
 lemma closed_interval [Lattice α] {r : α → α → Prop}
     (h₂ : ∀ ⦃x y : α⦄, r x y ↔ r (x ⊓ y) (x ⊔ y))
     (h₄ : ∀ ⦃x y t : α⦄, x ≤ y → r x y → r (x ⊓ t) (y ⊓ t) ∧ r (x ⊔ t) (y ⊔ t))
     (a b c d : α) (hb : a ≤ b ∧ b ≤ d) (hc : a ≤ c ∧ c ≤ d) (had : r a d) : r b c := by
-      rw [h₂]
-      conv_lhs => rw [← inf_eq_left.mpr inf_le_sup]
-      conv_rhs => rw [← inf_eq_right.mpr (sup_le hb.2 hc.2)]
-      apply (h₄ (inf_le_of_left_le hb.2) _).1
-      rw [← sup_eq_right.mpr (le_inf hb.1 hc.1), ← sup_eq_left.mpr (inf_le_of_left_le hb.2)]
-      exact (h₄ (le_trans hb.1 hb.2) had).2
+  rw [h₂]
+  conv_lhs => rw [← inf_eq_left.mpr inf_le_sup]
+  conv_rhs => rw [← inf_eq_right.mpr (sup_le hb.2 hc.2)]
+  apply (h₄ (inf_le_of_left_le hb.2) _).1
+  rw [← sup_eq_right.mpr (le_inf hb.1 hc.1), ← sup_eq_left.mpr (inf_le_of_left_le hb.2)]
+  exact (h₄ (le_trans hb.1 hb.2) had).2
 
 lemma transitive [Lattice α] {r : α → α → Prop}
     (h₂ : ∀ ⦃x y : α⦄, r x y ↔ r (x ⊓ y) (x ⊔ y))
@@ -1406,25 +1427,13 @@ lemma transitive [Lattice α] {r : α → α → Prop}
       conv_lhs => rw [← sup_eq_right.mpr (le_trans inf_le_right le_sup_left)]
       exact (h₄ inf_le_sup (h₂.mp hxy)).2))
 
-def LatticeCon.mk3₁ [Lattice α] (r : α → α → Prop) (h₁ : IsRefl α r)
-    (h₂ : ∀ ⦃x y : α⦄, r x y ↔ r (x ⊓ y) (x ⊔ y))
-    (h₃ : ∀ ⦃x y z : α⦄, x ≤ y → y ≤ z → r x y → r y z → r x z)
-    (h₄ : ∀ ⦃x y t : α⦄, x ≤ y → r x y → r (x ⊓ t) (y ⊓ t) ∧ r (x ⊔ t) (y ⊔ t)) : Equivalence r :=
-  Equivalence.mk h₁.refl (fun h => by rw [h₂, inf_comm, sup_comm, ← h₂]; exact h)
-  (fun hxy hxz => transitive h₂ h₃ h₄ hxy hxz)
-
-def LatticeCon.mk3₂ [Lattice α] (r : α → α → Prop) (h₁ : IsRefl α r)
-    (h₂ : ∀ ⦃x y : α⦄, r x y ↔ r (x ⊓ y) (x ⊔ y))
-    (h₃ : ∀ ⦃x y z : α⦄, x ≤ y → y ≤ z → r x y → r y z → r x z)
-    (h₄ : ∀ ⦃x y t : α⦄, x ≤ y → r x y → r (x ⊓ t) (y ⊓ t) ∧ r (x ⊔ t) (y ⊔ t)) : Setoid α :=
-  Setoid.mk r (LatticeCon.mk3₁ r h₁ h₂ h₃ h₄)
-
-
 def LatticeCon.mk3 [Lattice α] (r : α → α → Prop) (h₁ : IsRefl α r)
     (h₂ : ∀ ⦃x y : α⦄, r x y ↔ r (x ⊓ y) (x ⊔ y))
     (h₃ : ∀ ⦃x y z : α⦄, x ≤ y → y ≤ z → r x y → r y z → r x z)
     (h₄ : ∀ ⦃x y t : α⦄, x ≤ y → r x y → r (x ⊓ t) (y ⊓ t) ∧ r (x ⊔ t) (y ⊔ t)) : LatticeCon α :=
-  LatticeCon.mk (LatticeCon.mk3₂ r h₁ h₂ h₃ h₄) (fun h1 h2 => by
+  LatticeCon.mk (Setoid.mk r (Equivalence.mk h₁.refl
+  (fun h => by rw [h₂, inf_comm, sup_comm, ← h₂]; exact h)
+  (fun hxy hxz => transitive h₂ h₃ h₄ hxy hxz))) (fun h1 h2 => by
     have compatible_left_inf {x y t : α} (hh : r x y) : r (x ⊓ t) (y ⊓ t) :=
       closed_interval h₂ h₄ ((x ⊓ y) ⊓ t) _ _ ((x ⊔ y) ⊓ t)
             ⟨inf_le_inf_right _ inf_le_left, inf_le_inf_right _ le_sup_left⟩
