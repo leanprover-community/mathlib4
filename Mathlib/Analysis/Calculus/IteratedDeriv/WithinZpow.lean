@@ -24,6 +24,7 @@ theorem iteratedDerivWithin_zpow (m : ℤ) (k : ℕ) (hs : IsOpen s) :
     s.EqOn (iteratedDerivWithin k (fun y ↦ y ^ m) s)
     (fun y ↦ (∏ i ∈ Finset.range k, ((m : 𝕜) - i)) * y ^ (m - k)) := by
   apply Set.EqOn.trans (iteratedDerivWithin_of_isOpen_eq_iterate hs)
+  intro t ht
   simp
 
 theorem iteratedDerivWithin_one_div (k : ℕ) (hs : IsOpen s) :
