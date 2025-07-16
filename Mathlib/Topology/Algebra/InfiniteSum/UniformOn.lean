@@ -225,6 +225,13 @@ theorem HasProdLocallyUniformlyOn.tprod_eqOn [T2Space α]
   fun _ hx ↦ (h.hasProd hx).tprod_eq
 
 @[to_additive]
+lemma MultipliableLocallyUniformlyOn_congr [DecidableEq ι] [T2Space α]
+    (f f' : ι → β → α) (h : ∀ i, s.EqOn (f i) (f' i))
+    (h2 : MultipliableLocallyUniformlyOn f s) : MultipliableLocallyUniformlyOn f' s := by
+  apply HasProdLocallyUniformlyOn.multipliableLocallyUniformlyOn
+  exact (h2.hasProdLocallyUniformlyOn).congr fun v ↦ eqOn_fun_finsetProd s h v
+
+@[to_additive]
 lemma HasProdLocallyUniformlyOn.tendstoLocallyUniformlyOn_finsetRange
     {f : ℕ → β → α} (h : HasProdLocallyUniformlyOn f g s) :
     TendstoLocallyUniformlyOn (fun N b ↦ ∏ i ∈ Finset.range N, f i b) g atTop s := by
