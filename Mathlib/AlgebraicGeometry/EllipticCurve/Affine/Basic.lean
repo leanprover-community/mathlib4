@@ -89,7 +89,7 @@ inner variable represents `X` and the outer variable represents `Y`. For clarity
 notations `Y` and `R[X][Y]` are provided in the `Polynomial.Bivariate` scope to represent the outer
 variable and the bivariate polynomial ring `R[X][X]` respectively. -/
 noncomputable def polynomial : R[X][Y] :=
-  Y ^ 2 + C (C W.a₁ * X + C W.a₃) * Y - C (X ^ 3 + C W.a₂ * X ^ 2 + C W.a₄ * X + C W.a₆)
+  X ^ 2 + C (C W.a₁ * Y + C W.a₃) * X - C (Y ^ 3 + C W.a₂ * Y ^ 2 + C W.a₄ * Y + C W.a₆)
 
 lemma polynomial_eq : W.polynomial = Cubic.toPoly
     ⟨0, 1, Cubic.toPoly ⟨0, 0, W.a₁, W.a₃⟩, Cubic.toPoly ⟨-1, -W.a₂, -W.a₄, -W.a₆⟩⟩ := by
