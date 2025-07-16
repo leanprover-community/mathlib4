@@ -126,7 +126,7 @@ theorem IsSumSq.sum_mul_self [AddCommMonoid R] [Mul R] {ι : Type*} (I : Finset 
 
 @[simp↓]
 theorem IsSumSq.sum_sq [CommSemiring R] {ι : Type*} (I : Finset ι) (a : ι → R) :
-    IsSumSq (∑ i ∈ I, (a i) ^ 2) := by aesop
+    IsSumSq (∑ i ∈ I, a i ^ 2) := by aesop
 
 namespace NonUnitalSubsemiring
 variable {T : Type*} [NonUnitalCommSemiring T]
