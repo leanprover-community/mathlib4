@@ -55,18 +55,18 @@ theorem HasDerivAt.pow' (h : HasDerivAt f f' x) (n : ℕ) :
       (∑ i ∈ Finset.range n, f x ^ (n.pred - i) * f' * f x ^ i) x := h.fun_pow' n
 
 @[simp low]
-theorem derivWithin_fun_pow'
-    (h : DifferentiableWithinAt 𝕜 f s x) (hu : UniqueDiffWithinAt 𝕜 s x) (n : ℕ) :
+theorem derivWithin_fun_pow' (h : DifferentiableWithinAt 𝕜 f s x) (n : ℕ) :
     derivWithin (fun x => f x ^ n) s x =
-      ∑ i ∈ Finset.range n, f x ^ (n.pred - i) * derivWithin f s x * f x ^ i :=
-  (h.hasDerivWithinAt.pow' n).derivWithin hu
+      ∑ i ∈ Finset.range n, f x ^ (n.pred - i) * derivWithin f s x * f x ^ i := by
+  by_cases hsx : UniqueDiffWithinAt 𝕜 s x
+  · exact (h.hasDerivWithinAt.pow' n).derivWithin hsx
+  · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
 @[simp low]
-theorem derivWithin_pow'
-    (h : DifferentiableWithinAt 𝕜 f s x) (hu : UniqueDiffWithinAt 𝕜 s x) (n : ℕ) :
+theorem derivWithin_pow' (h : DifferentiableWithinAt 𝕜 f s x) (n : ℕ) :
     derivWithin (f ^ n) s x =
       ∑ i ∈ Finset.range n, f x ^ (n.pred - i) * derivWithin f s x * f x ^ i :=
-  derivWithin_fun_pow' h hu n
+  derivWithin_fun_pow' h n
 
 @[simp low]
 theorem deriv_fun_pow' (h : DifferentiableAt 𝕜 f x) (n : ℕ) :
@@ -136,13 +136,6 @@ end NormedCommRing
 section NontriviallyNormedField
 variable [NontriviallyNormedField 𝕜] {x : 𝕜} {s : Set 𝕜} {c : 𝕜 → 𝕜}
 
-theorem deriv_pow_field (n : ℕ) : deriv (fun x => x ^ n) x = (n : 𝕜) * x ^ (n - 1) := by
-  simp
-
-theorem derivWithin_pow_field (h : UniqueDiffWithinAt 𝕜 s x) (n : ℕ) :
-    derivWithin (fun x => x ^ n) s x = (n : 𝕜) * x ^ (n - 1) := by
-  rw [derivWithin_fun_pow (differentiableWithinAt_id' (s := s)) n, derivWithin_id' _ _ h, mul_one]
-
 theorem hasStrictDerivAt_pow (n : ℕ) (x : 𝕜) :
     HasStrictDerivAt (fun x : 𝕜 ↦ x ^ n) (n * x ^ (n - 1)) x := by
   simpa using (hasStrictDerivAt_id x).pow n
@@ -154,5 +147,12 @@ theorem hasDerivWithinAt_pow (n : ℕ) (x : 𝕜) :
 theorem hasDerivAt_pow (n : ℕ) (x : 𝕜) :
     HasDerivAt (fun x : 𝕜 => x ^ n) ((n : 𝕜) * x ^ (n - 1)) x := by
   simpa using (hasStrictDerivAt_pow n x).hasDerivAt
+
+theorem derivWithin_pow_field (h : UniqueDiffWithinAt 𝕜 s x) (n : ℕ) :
+    derivWithin (fun x => x ^ n) s x = (n : 𝕜) * x ^ (n - 1) := by
+  rw [derivWithin_fun_pow (differentiableWithinAt_id' (s := s)) n, derivWithin_id' _ _ h, mul_one]
+
+theorem deriv_pow_field (n : ℕ) : deriv (fun x => x ^ n) x = (n : 𝕜) * x ^ (n - 1) := by
+  simp
 
 end NontriviallyNormedField
