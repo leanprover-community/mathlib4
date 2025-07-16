@@ -38,8 +38,7 @@ https://stacks.math.columbia.edu/tag/007L
 
 -/
 
--- assert_not_exists OrderedCommMonoid
--- TODO restore
+assert_not_exists OrderedCommMonoid
 
 
 noncomputable section
