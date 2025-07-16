@@ -196,8 +196,7 @@ lemma rank_mul_eq_right_of_isUnit_det [Fintype m] [DecidableEq m]
   let b : Basis m R (m → R) := Pi.basisFun R m
   replace hA : IsUnit (LinearMap.toMatrix b b A.mulVecLin).det := by
     convert hA; rw [← LinearEquiv.eq_symm_apply]; rfl
-  have hAB : mulVecLin (A * B) = (LinearEquiv.ofIsUnitDet hA).comp (mulVecLin B) := by
-    ext; simp -congrConsts
+  have hAB : mulVecLin (A * B) = (LinearEquiv.ofIsUnitDet hA).comp (mulVecLin B) := by ext; simp
   rw [rank, rank, hAB, LinearMap.range_comp, LinearEquiv.finrank_map_eq]
 
 /-- Taking a subset of the rows and permuting the columns reduces the rank. -/

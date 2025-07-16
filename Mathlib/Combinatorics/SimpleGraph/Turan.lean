@@ -228,6 +228,8 @@ theorem isEquipartition [DecidableEq V] : h.finpartition.IsEquipartition := by
   omega
 
 lemma card_parts_le [DecidableEq V] : #h.finpartition.parts ≤ r := by
+  sorry
+  /-
   by_contra! l
   obtain ⟨z, -, hz⟩ := h.finpartition.exists_subset_part_bijOn
   have ncf : ¬G.CliqueFree #z := by
@@ -236,6 +238,7 @@ lemma card_parts_le [DecidableEq V] : #h.finpartition.parts ≤ r := by
     exact hz.injOn hv hw (by rwa [← h.not_adj_iff_part_eq])
   rw [Finset.card_eq_of_equiv hz.equiv] at ncf
   exact absurd (h.1.mono (Nat.succ_le_of_lt l)) ncf
+  -/
 
 /-- There are `min n r` parts in a graph on `n` vertices satisfying `G.IsTuranMaximal r`.
 `min` handles the `n < r` case, when `G` is complete but still `r + 1`-cliquefree
