@@ -151,10 +151,46 @@ theorem theorem3 (a : α) : TFAE [
   | h => by (expose_names; exact theorem3_i_ii a h_1)
   tfae_have 2 → 3
   | h => by
+    let r x' y' := ∃ a₁ ≤ a,(x' ⊓ y') ⊔ a₁ = x' ⊔ y'
     constructor
-    · sorry
+    · have e1 (x : α) : r x (a ⊔ x) := by
+        use a
+        simp
+        rw [sup_comm]
+      intro x y
+      have e2 : r (x ⊓ y) ((a ⊔ x) ⊓ (a ⊔ y)) := by
+        apply h.inf (e1 x) (e1 y)
+      have e3 : r (x ⊓ y) (x ⊓ y) := by
+        apply h.inf (h.refl x) (h.refl y)
+      unfold r at e3
+      obtain ⟨a₁, ha1, ha2⟩ := e2
+      simp at ha2
+      have e4 : x ⊓ y ⊔ (a ⊔ x) ⊓ (a ⊔ y) = (a ⊔ x) ⊓ (a ⊔ y) := by
+        simp
+        constructor
+        · rw [sup_comm]
+          exact le_trans (b := x) inf_le_left le_sup_left
+        · exact le_trans inf_le_right le_sup_right
+      rw [e4] at ha2
+      have e5 : ((a ⊔ x) ⊓ (a ⊔ y)) ⊔ a₁ = (a ⊔ x) ⊓ (a ⊔ y) := by
+        simp
+        constructor
+        · exact le_sup_of_le_left ha1
+        · exact le_sup_of_le_left ha1
+      have testn : x ⊓ y ⊓ ((a ⊔ x) ⊓ (a ⊔ y)) = x ⊓ y := by
+        exact sup_eq_iff_inf_eq.mp e4
+      rw [testn] at ha2
+      rw [le_antisymm_iff]
+      constructor
+      · simp
+        constructor
+        · apply le_trans (b := x) inf_le_left le_sup_right
+        · apply le_trans (b := y) inf_le_right le_sup_right
+      · rw [← ha2]
+        rw [sup_comm]
+        exact sup_le_sup_right ha1 (x ⊓ y)
     · have step1 {x y : α} (h₁ : a ⊓ x = a ⊓ y) (h₂ : a ⊔ x = a ⊔ y) : x ⊓ y = x := by
-        let r x' y' := ∃ a₁ ≤ a,(x' ⊓ y') ⊔ a₁ = x' ⊔ y'
+
         have e1 : ∃ a₁ ≤ a,((a ⊔ y) ⊓ y) ⊔ a₁ = (a ⊔ y) ⊔ y := by
           use a
           simp
