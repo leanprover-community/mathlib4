@@ -178,7 +178,7 @@ theorem isEquivalent_iff_exists_eq_mul :
   constructor <;> rintro ⟨φ, hφ, h⟩ <;> [refine ⟨φ + 1, ?_, ?_⟩; refine ⟨φ - 1, ?_, ?_⟩]
   · conv in 𝓝 _ => rw [← zero_add (1 : β)]
     exact hφ.add tendsto_const_nhds
-  · convert h.add (EventuallyEq.refl l v) <;> simp [add_mul]
+  · convert h.fun_add (EventuallyEq.refl l v) <;> simp [add_mul]
   · conv in 𝓝 _ => rw [← sub_self (1 : β)]
     exact hφ.sub tendsto_const_nhds
   · convert h.fun_sub (EventuallyEq.refl l v); simp [sub_mul]
@@ -274,7 +274,7 @@ theorem IsEquivalent.finsetProd {s : Finset ι} {f g : ι → α → β} (h : �
     (∏ i ∈ s, f i ·) ~[l] (∏ i ∈ s, g i ·) :=
   multisetProd h
 
-protected theorem IsEquivalent.inv (huv : u ~[l] v) : (fun x ↦ (u x)⁻¹) ~[l] fun x ↦ (v x)⁻¹ := by
+protected theorem IsEquivalent.inv (huv : u ~[l] v) : u⁻¹ ~[l] v⁻¹ := by
   rw [isEquivalent_iff_exists_eq_mul] at *
   rcases huv with ⟨φ, hφ, h⟩
   rw [← inv_one]
@@ -283,7 +283,7 @@ protected theorem IsEquivalent.inv (huv : u ~[l] v) : (fun x ↦ (u x)⁻¹) ~[l
   simp [mul_comm]
 
 protected theorem IsEquivalent.div (htu : t ~[l] u) (hvw : v ~[l] w) :
-    (fun x ↦ t x / v x) ~[l] fun x ↦ u x / w x := by
+    t / v ~[l] u / w := by
   simpa only [div_eq_mul_inv] using htu.mul hvw.inv
 
 protected theorem IsEquivalent.pow (h : t ~[l] u) (n : ℕ) : t ^ n ~[l] u ^ n := by
