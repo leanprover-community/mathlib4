@@ -12,7 +12,7 @@ This file defines polynomial functors and the W-type construction as a polynomia
 (For the M-type construction, see `Mathlib/Data/PFunctor/Univariate/M.lean`.)
 -/
 
-universe u v uA uB uA₁ uB₁ uA₂ uB₂ v₁ v₂ v₃ vA vB
+universe u v uA uB uA₁ uB₁ uA₂ uB₂ uA₃ uB₃ v₁ v₂ v₃ vA vB
 
 /-- A polynomial functor `P` is given by a type `A` and a family `B` of types over `A`. `P` maps
 any type `α` to a new type `P α`, which is defined as the sigma type `Σ x, P.B x → α`.
@@ -176,7 +176,7 @@ section Monomial
 def monomial (A : Type uA) (B : Type uB) : PFunctor.{uA, uB} :=
   ⟨A, fun _ => B⟩
 
-@[inherit_doc] scoped[PFunctor] infixr:80 " y^" => monomial
+@[inherit_doc] scoped[PFunctor] infixr:80 " y^ " => monomial
 
 /-- The constant polynomial functor `P(y) = A` -/
 def C (A : Type uA) : PFunctor.{uA, uB} :=
@@ -284,6 +284,41 @@ protected def ulift (P : PFunctor.{uA, uB}) : PFunctor.{max uA vA, max uB vB} :=
   ⟨ULift P.A, fun a => ULift (P.B (ULift.down a))⟩
 
 end ULift
+
+/-- An equivalence between two polynomial functors `P` and `Q` is given by an equivalence of the
+`A` types and an equivalence between the `B` types for each `a : A`. -/
+@[ext]
+structure Equiv (P : PFunctor.{uA₁, uB₁}) (Q : PFunctor.{uA₂, uB₂}) where
+  equivA : P.A ≃ Q.A
+  equivB : ∀ a, P.B a ≃ Q.B (equivA a)
+
+namespace Equiv
+
+/-- The identity equivalence between a polynomial functor `P` and itself. -/
+def refl (P : PFunctor.{uA, uB}) : Equiv P P where
+  equivA := _root_.Equiv.refl P.A
+  equivB := fun a => _root_.Equiv.refl (P.B a)
+
+/-- The inverse of an equivalence between polynomial functors. -/
+def symm (P : PFunctor.{uA₁, uB₁}) (Q : PFunctor.{uA₂, uB₂}) (E : Equiv P Q) : Equiv Q P where
+  equivA := E.equivA.symm
+  equivB := fun a =>
+    (Equiv.cast (congrArg Q.B ((Equiv.symm_apply_eq E.equivA).mp rfl))).trans
+      (E.equivB (E.equivA.symm a)).symm
+
+/-- The composition of two equivalences between polynomial functors. -/
+def trans (P : PFunctor.{uA₁, uB₁}) (Q : PFunctor.{uA₂, uB₂}) (R : PFunctor.{uA₃, uB₃})
+    (E : Equiv P Q) (F : Equiv Q R) : Equiv P R where
+  equivA := E.equivA.trans F.equivA
+  equivB := fun a => (E.equivB a).trans (F.equivB (E.equivA a))
+
+/-- Equivalence between two polynomial functors `P` and `Q` that are equal. -/
+def cast {P Q : PFunctor.{uA, uB}} (hA : P.A = Q.A) (hB : ∀ a, P.B a = Q.B (cast hA a)) :
+    Equiv P Q where
+  equivA := _root_.Equiv.cast hA
+  equivB := fun a => _root_.Equiv.cast (hB a)
+
+end Equiv
 
 end PFunctor
 
