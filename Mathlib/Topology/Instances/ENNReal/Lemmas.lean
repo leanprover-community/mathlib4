@@ -1427,53 +1427,35 @@ lemma ofNNReal_liminf {u : ι → ℝ≥0} (hf : f.IsCoboundedUnder (· ≥ ·) 
   rw [coe_le_coe, le_liminf_iff, le_liminf_iff]
   simp [forall_ennreal]
 
-theorem liminf_add_of_right_tendsto_zero (u : Filter ι)
-  (f : ι → ℝ≥0∞) {g : ι → ℝ≥0∞} (hg : u.Tendsto g (𝓝 0)) :
-    u.liminf (f + g) = u.liminf f := by
-  have h_eps {ε} (hε : ε > 0) : ∃ v ∈ u, ∀ n ∈ v, g n < ε := by
-    simpa [eventually_iff_exists_mem] using hg.eventually (gt_mem_nhds hε)
-  apply le_antisymm
-  · refine le_of_forall_gt_imp_ge_of_dense fun x hx ↦ ?_
-    rw [liminf_eq] at hx ⊢
-    apply sSup_le
-    intro y a
-    simp only [eventually_iff_exists_mem, mem_setOf_eq] at *
-    obtain ⟨w, hw₁, hw₂⟩ := a
-    contrapose! hx
-    apply le_sSup
-    simp only [mem_setOf_eq]
-    obtain ⟨N, hN₁, hN₂⟩ := h_eps (tsub_pos_of_lt hx)
-    refine ⟨_, u.inter_sets hw₁ hN₁, fun v hv ↦ ?_⟩
-    specialize hN₂ v (mem_of_mem_inter_right hv)
-    specialize hw₂ v (mem_of_mem_inter_left hv)
-    rw [← ENNReal.add_le_add_iff_right hN₂.ne_top]
-    trans y
-    · exact add_le_of_le_tsub_left_of_le hx.le hN₂.le
-    · assumption
-  · refine liminf_le_liminf (Eventually.of_forall ?_)
-    simp
+theorem liminf_add_of_right_tendsto_zero {u : Filter ι} {g : ι → ℝ≥0∞} (hg : u.Tendsto g (𝓝 0))
+    (f : ι → ℝ≥0∞) : u.liminf (f + g) = u.liminf f := by
+  refine le_antisymm ?_ <| liminf_le_liminf <| .of_forall <| by simp
+  refine liminf_le_of_le (by isBoundedDefault) fun b hb ↦ ?_
+  rw [Filter.le_liminf_iff']
+  rintro a hab
+  filter_upwards [hb, ENNReal.tendsto_nhds_zero.1 hg _ <| lt_min (tsub_pos_of_lt hab) one_pos]
+    with i hfg hg
+  exact ENNReal.le_of_add_le_add_right (hg.trans_lt <| by bound).ne <|
+    (add_le_of_le_tsub_left_of_le hab.le <| hg.trans <| min_le_left ..).trans hfg
 
-theorem limsup_add_of_right_tendsto_zero (u : Filter ι)
-  (f : ι → ℝ≥0∞) {g : ι → ℝ≥0∞} (hg : u.Tendsto g (𝓝 0)) :
-    u.limsup (f + g) = u.limsup f := by
-  have h_eps {ε} (hε : ε > 0) : ∃ v ∈ u, ∀ n ∈ v, g n < ε := by
-    simpa [eventually_iff_exists_mem] using hg.eventually (gt_mem_nhds hε)
-  apply le_antisymm
-  · refine le_of_forall_gt_imp_ge_of_dense fun y hx ↦ ?_
-    rw [limsup_eq] at hx ⊢
-    apply sInf_le
-    rw [sInf_lt_iff] at hx
-    simp only [eventually_iff_exists_mem, mem_setOf_eq, Pi.add_apply] at hx ⊢
-    obtain ⟨x, ⟨w, hw₁, hw₂⟩, hx⟩ := hx
-    obtain ⟨N, hN₁, hN₂⟩ := h_eps (tsub_pos_of_lt hx)
-    refine ⟨_, u.inter_sets hw₁ hN₁, fun v hv ↦ ?_⟩
-    specialize hN₂ v (mem_of_mem_inter_right hv)
-    specialize hw₂ v (mem_of_mem_inter_left hv)
-    trans x + g v
-    · gcongr
-    · exact add_le_of_le_tsub_left_of_le hx.le hN₂.le
-  · refine limsup_le_limsup (Eventually.of_forall ?_)
-    simp
+theorem liminf_add_of_left_tendsto_zero {u : Filter ι} {f : ι → ℝ≥0∞} (hf : u.Tendsto f (𝓝 0))
+    (g : ι → ℝ≥0∞) : u.liminf (f + g) = u.liminf g := by
+  rw [add_comm, liminf_add_of_right_tendsto_zero hf]
+
+theorem limsup_add_of_right_tendsto_zero {u : Filter ι} {g : ι → ℝ≥0∞} (hg : u.Tendsto g (𝓝 0))
+    (f : ι → ℝ≥0∞) : u.limsup (f + g) = u.limsup f := by
+  refine le_antisymm ?_ <| limsup_le_limsup <| .of_forall <| by simp
+  refine le_limsup_of_le (by isBoundedDefault) fun b hb ↦ ?_
+  rw [Filter.limsup_le_iff']
+  rintro a hba
+  filter_upwards [hb, ENNReal.tendsto_nhds_zero.1 hg _ <| tsub_pos_of_lt hba] with i hf hg
+  calc  f i + g i
+    _ ≤ b + g i := by gcongr
+    _ ≤ a := add_le_of_le_tsub_left_of_le hba.le hg
+
+theorem limsup_add_of_left_tendsto_zero {u : Filter ι} {f : ι → ℝ≥0∞} (hf : u.Tendsto f (𝓝 0))
+    (g : ι → ℝ≥0∞) : u.limsup (f + g) = u.limsup g := by
+  rw [add_comm, limsup_add_of_right_tendsto_zero hf]
 
 end LimsupLiminf
 
