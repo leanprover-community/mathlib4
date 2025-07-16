@@ -195,16 +195,26 @@ def delabBorrowed : Delab := whenPPOption Lean.getPPMData do
   let inner ← SubExpr.withMDataExpr delab
   `(@& $inner)
 
-/-- Delaborator for `no_implicit_lambda%`. -/
-@[delab mdata]
-def delabNoImplicitLambda : Delab := whenPPOption Lean.getPPMData do
-  guard <| Elab.Term.hasNoImplicitLambdaAnnotation (← SubExpr.getExpr)
-  let inner ← SubExpr.withMDataExpr delab
-  `(no_implicit_lambda% $inner)
-
 /-- Delaborator for `.(_)`. -/
 @[delab mdata]
 def delabInaccessible : Delab := whenPPOption Lean.getPPMData do
   guard <| inaccessible? (← SubExpr.getExpr) |>.isSome
   let inner ← SubExpr.withMDataExpr delab
   `(.($inner))
+
+/-- This notation exposes what the builtin `no_implicit_lambda%` is doing under the hood.
+
+Do not use it directly. -/
+@[term_parser] def Lean.Parser.Term.noImplicitLambdaType := leading_parser
+  "no_implicit_lambda_type% " >> termParser maxPrec
+
+@[term_elab noImplicitLambdaType, inherit_doc Lean.Parser.Term.noImplicitLambdaType]
+def Lean.Elab.Term.elabNoImplicitLambdaType : TermElab := fun stx expectedType? =>
+  mkNoImplicitLambdaAnnotation <$> elabTerm stx[1] expectedType?
+
+/-- Delaborator for `no_implicit_lambda_type%`. -/
+@[delab mdata]
+def delabNoImplicitLambdaType : Delab := whenPPOption Lean.getPPMData do
+  guard <| Elab.Term.hasNoImplicitLambdaAnnotation (← SubExpr.getExpr)
+  let inner ← SubExpr.withMDataExpr delab
+  `(no_implicit_lambda_type% $inner)
