@@ -932,6 +932,12 @@ theorem eventually_bind {f : Filter α} {m : α → Filter β} {p : β → Prop}
   Iff.rfl
 
 @[simp]
+theorem frequently_bind {f : Filter α} {m : α → Filter β} {p : β → Prop} :
+    (∃ᶠ y in bind f m, p y) ↔ ∃ᶠ x in f, ∃ᶠ y in m x, p y := by
+  rw [← not_iff_not]
+  simp only [not_frequently, eventually_bind]
+
+@[simp]
 theorem eventuallyEq_bind {f : Filter α} {m : α → Filter β} {g₁ g₂ : β → γ} :
     g₁ =ᶠ[bind f m] g₂ ↔ ∀ᶠ x in f, g₁ =ᶠ[m x] g₂ :=
   Iff.rfl
