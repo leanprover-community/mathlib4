@@ -139,6 +139,16 @@ end NormedCommRing
 section NontriviallyNormedField
 variable [NontriviallyNormedField 𝕜] {x : 𝕜} {s : Set 𝕜} {c : 𝕜 → 𝕜}
 
+@[deprecated deriv_fun_pow (since := "2025-07-16")]
+theorem deriv_fun_pow'' {c : 𝕜 → 𝕜} (n : ℕ) (hc : DifferentiableAt 𝕜 c x) :
+    deriv (fun x => c x ^ n) x = (n : 𝕜) * c x ^ (n - 1) * deriv c x :=
+  deriv_fun_pow hc n
+
+@[deprecated deriv_pow (since := "2025-07-16")]
+theorem deriv_pow'' {c : 𝕜 → 𝕜} (n : ℕ) (hc : DifferentiableAt 𝕜 c x) :
+    deriv (c ^ n) x = (n : 𝕜) * c x ^ (n - 1) * deriv c x :=
+  deriv_pow hc n
+
 theorem hasStrictDerivAt_pow (n : ℕ) (x : 𝕜) :
     HasStrictDerivAt (fun x : 𝕜 ↦ x ^ n) (n * x ^ (n - 1)) x := by
   simpa using (hasStrictDerivAt_id x).pow n
