@@ -663,7 +663,7 @@ lemma baseChange_pow (f : Module.End R M) (n : ℕ) :
   map_pow (Module.End.baseChangeHom _ _ _) f n
 
 variable {R A M N} in
-theorem rTensor_comp_baseChange_comm_apply (φ : A →ₐ[R] B) (t : A ⊗[R] M) (f : M →ₗ[R] N) :
+theorem rTensor_baseChange (φ : A →ₐ[R] B) (t : A ⊗[R] M) (f : M →ₗ[R] N) :
     (φ.toLinearMap.rTensor N) (f.baseChange A t)  =
       (f.baseChange B) (φ.toLinearMap.rTensor M t) := by
   simp [LinearMap.baseChange_eq_ltensor, ← LinearMap.comp_apply]
