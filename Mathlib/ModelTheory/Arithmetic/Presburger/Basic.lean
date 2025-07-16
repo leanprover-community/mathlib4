@@ -67,9 +67,6 @@ instance : SMul ℕ (presburger.Term α) where
 
 @[simp] theorem succ_nsmul {n : ℕ} : (n + 1) • t = n • t + t := rfl
 
-/-- `presburger.succ t` is `t + 1`, the successor of `t`. -/
-def succ (t : presburger.Term α) := t + 1
-
 /-- Summation over a finite set of terms in Presburger arithmetic.
 
   It is defined via choice, so the result only makes sense when the structure satisfies
@@ -101,8 +98,6 @@ instance : presburger.Structure M where
 @[simp] theorem realize_zero : Term.realize v (0 : presburger.Term α) = 0 := rfl
 
 @[simp] theorem realize_one : Term.realize v (1 : presburger.Term α) = 1 := rfl
-
-@[simp] theorem realize_succ : Term.realize v (succ t) = Term.realize v t + 1 := rfl
 
 @[simp] theorem realize_add :
     Term.realize v (t₁ + t₂) = Term.realize v t₁ + Term.realize v t₂ := rfl
