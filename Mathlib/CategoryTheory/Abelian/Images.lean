@@ -32,10 +32,12 @@ open CategoryTheory.Limits
 
 namespace CategoryTheory.Abelian
 
-variable {C : Type u} [Category.{v} C] [HasZeroMorphisms C] [HasKernels C] [HasCokernels C]
+variable {C : Type u} [Category.{v} C] [HasZeroMorphisms C]
 variable {P Q : C} (f : P ⟶ Q)
 
 section Image
+
+variable [HasCokernel f] [HasKernel (cokernel.π f)]
 
 /-- The kernel of the cokernel of `f` is called the (abelian) image of `f`. -/
 protected abbrev image : C :=
@@ -60,6 +62,8 @@ end Image
 
 section Coimage
 
+variable [HasKernel f] [HasCokernel (kernel.ι f)]
+
 /-- The cokernel of the kernel of `f` is called the (abelian) coimage of `f`. -/
 protected abbrev coimage : C :=
   cokernel (kernel.ι f)
@@ -80,6 +84,10 @@ instance epi_factorThruCoimage [Epi f] : Epi (Abelian.factorThruCoimage f) :=
   epi_of_epi_fac <| coimage.fac f
 
 end Coimage
+
+section Comparison
+
+variable [HasCokernel f] [HasKernel f] [HasKernel (cokernel.π f)] [HasCokernel (kernel.ι f)]
 
 /-- The canonical map from the abelian coimage to the abelian image.
 In any abelian category this is an isomorphism.
@@ -103,6 +111,10 @@ theorem coimageImageComparison_eq_coimageImageComparison' :
 @[reassoc (attr := simp)]
 theorem coimage_image_factorisation : coimage.π f ≫ coimageImageComparison f ≫ image.ι f = f := by
   simp [coimageImageComparison]
+
+end Comparison
+
+variable [HasKernels C] [HasCokernels C]
 
 /-- The coimage-image comparison morphism is functorial. -/
 @[simps! obj map]

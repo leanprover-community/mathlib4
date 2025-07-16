@@ -71,7 +71,7 @@ theorem mul (hf : f.IsWeaklyEisensteinAt 𝓟) (hf' : f'.IsWeaklyEisensteinAt �
   intro n hn
   rw [coeff_mul]
   refine sum_mem _ fun x hx ↦ ?_
-  rcases lt_or_le x.1 f.natDegree with hx1 | hx1
+  rcases lt_or_ge x.1 f.natDegree with hx1 | hx1
   · exact mul_mem_right _ _ (hf hx1)
   replace hx1 : x.2 < f'.natDegree := by
     by_contra!

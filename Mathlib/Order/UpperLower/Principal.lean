@@ -79,6 +79,12 @@ nonrec theorem Ioi_top [OrderTop α] : Ioi (⊤ : α) = ⊤ :=
 @[simp] lemma Ici_lt_top : Ici a < ⊤ := lt_top_iff_ne_top.2 Ici_ne_top
 @[simp] lemma le_Ici : s ≤ Ici a ↔ a ∈ s := ⟨fun h ↦ h le_rfl, fun ha ↦ s.upper.Ici_subset ha⟩
 
+variable (α) in
+theorem Ici_strictMono : StrictMono (Ici (α := α)) := fun _ _ h ↦ (Set.Ici_ssubset_Ici).mpr h
+
+variable (α) in
+theorem Ioi_strictMono : StrictMono (Ioi (α := α)) := fun _ _ h ↦ Set.Ioi_ssubset_Ioi h
+
 end Preorder
 
 section PartialOrder
@@ -172,6 +178,12 @@ nonrec theorem Iio_bot [OrderBot α] : Iio (⊥ : α) = ⊥ :=
 @[simp] lemma Iic_ne_bot : Iic a ≠ ⊥ := SetLike.coe_ne_coe.1 nonempty_Iic.ne_empty
 @[simp] lemma bot_lt_Iic : ⊥ < Iic a := bot_lt_iff_ne_bot.2 Iic_ne_bot
 @[simp] lemma Iic_le : Iic a ≤ s ↔ a ∈ s := ⟨fun h ↦ h le_rfl, fun ha ↦ s.lower.Iic_subset ha⟩
+
+variable (α) in
+theorem Iic_strictMono : StrictMono (Iic (α := α)) := fun _ _ h ↦ (Set.Iic_ssubset_Iic).mpr h
+
+variable (α) in
+theorem Iio_strictMono : StrictMono (Iio (α := α)) := fun _ _ h ↦ Set.Iio_ssubset_Iio h
 
 end Preorder
 

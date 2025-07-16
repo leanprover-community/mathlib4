@@ -3,6 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
+import Mathlib.Algebra.GroupWithZero.Regular
 import Mathlib.Algebra.Polynomial.Coeff
 import Mathlib.Algebra.Polynomial.Degree.Definitions
 
@@ -89,7 +90,7 @@ theorem ext_iff_natDegree_le {p q : R[X]} {n : ℕ} (hp : p.natDegree ≤ n) (hq
     p = q ↔ ∀ i ≤ n, p.coeff i = q.coeff i := by
   refine Iff.trans Polynomial.ext_iff ?_
   refine forall_congr' fun i => ⟨fun h _ => h, fun h => ?_⟩
-  refine (le_or_lt i n).elim h fun k => ?_
+  refine (le_or_gt i n).elim h fun k => ?_
   exact
     (coeff_eq_zero_of_natDegree_lt (hp.trans_lt k)).trans
       (coeff_eq_zero_of_natDegree_lt (hq.trans_lt k)).symm
@@ -137,14 +138,14 @@ theorem ne_zero_of_degree_ge_degree (hpq : p.degree ≤ q.degree) (hp : p ≠ 0)
       q.degree > ⊥)
 
 theorem ne_zero_of_natDegree_gt {n : ℕ} (h : n < natDegree p) : p ≠ 0 := fun H => by
-  simp [H, Nat.not_lt_zero] at h
+  simp [H] at h
 
 theorem degree_lt_degree (h : natDegree p < natDegree q) : degree p < degree q := by
   by_cases hp : p = 0
   · simp only [hp, degree_zero]
     rw [bot_lt_iff_ne_bot]
     intro hq
-    simp [hp, degree_eq_bot.mp hq, lt_irrefl] at h
+    simp [hp, degree_eq_bot.mp hq] at h
   · rwa [degree_eq_natDegree hp, degree_eq_natDegree <| ne_zero_of_natDegree_gt h, Nat.cast_lt]
 
 theorem natDegree_lt_natDegree_iff (hp : p ≠ 0) : natDegree p < natDegree q ↔ degree p < degree q :=
@@ -286,11 +287,7 @@ theorem coeff_mul_degree_add_degree (p q : R[X]) :
             zero_mul]
         · rw [not_lt_iff_eq_or_lt] at H
           rcases H with H | H
-          · subst H
-            rw [add_left_cancel_iff] at h₁
-            dsimp at h₁
-            subst h₁
-            exact (h₂ rfl).elim
+          · simp_all
           · suffices natDegree q < j by
               rw [coeff_eq_zero_of_degree_lt
                   (lt_of_le_of_lt degree_le_natDegree (WithBot.coe_lt_coe.2 this)),
@@ -441,9 +438,9 @@ theorem coeff_mul_add_eq_of_natDegree_le {df dg : ℕ} {f g : R[X]}
   rw [coeff_mul, Finset.sum_eq_single_of_mem (df, dg)]
   · rw [mem_antidiagonal]
   rintro ⟨df', dg'⟩ hmem hne
-  obtain h | hdf' := lt_or_le df df'
+  obtain h | hdf' := lt_or_ge df df'
   · rw [coeff_eq_zero_of_natDegree_lt (hdf.trans_lt h), zero_mul]
-  obtain h | hdg' := lt_or_le dg dg'
+  obtain h | hdg' := lt_or_ge dg dg'
   · rw [coeff_eq_zero_of_natDegree_lt (hdg.trans_lt h), mul_zero]
   obtain ⟨rfl, rfl⟩ :=
     (add_eq_add_iff_eq_and_eq hdf' hdg').mp (mem_antidiagonal.1 hmem)

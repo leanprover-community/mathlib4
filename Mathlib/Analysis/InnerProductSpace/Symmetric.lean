@@ -6,6 +6,7 @@ Authors: Moritz Doll, Frédéric Dupuis, Heather Macbeth
 import Mathlib.Analysis.InnerProductSpace.Subspace
 import Mathlib.Analysis.Normed.Operator.Banach
 import Mathlib.LinearAlgebra.SesquilinearForm
+import Mathlib.Analysis.InnerProductSpace.Orthogonal
 
 /-!
 # Symmetric linear maps in an inner product space
@@ -233,6 +234,20 @@ theorem IsSymmetric.inner_map_self_eq_zero {T : E →ₗ[𝕜] E} (hT : T.IsSymm
   rw [← @inner_self_eq_zero 𝕜, hT.inner_map_polarization]
   simp_rw [h _]
   ring
+
+theorem ker_le_ker_of_range {S T : E →ₗ[𝕜] E} (hS : S.IsSymmetric) (hT : T.IsSymmetric)
+    (h : range S ≤ range T) : ker T ≤ ker S := by
+  intro v hv
+  rw [mem_ker] at hv ⊢
+  obtain ⟨y, hy⟩ : ∃ y, T y = S (S v) := by simpa using @h (S (S v))
+  rw [← inner_self_eq_zero (𝕜 := 𝕜), ← hS, ← hy, hT, hv, inner_zero_right]
+
+theorem IsSymmetric.orthogonal_range {T : E →ₗ[𝕜] E} (hT : LinearMap.IsSymmetric T) :
+    (LinearMap.range T)ᗮ = LinearMap.ker T := by
+  ext x
+  constructor
+  · simpa [Submodule.mem_orthogonal, hT _ x] using ext_inner_left 𝕜 (x := T x) (y := 0)
+  · simp_all [Submodule.mem_orthogonal, hT _ x]
 
 end LinearMap
 

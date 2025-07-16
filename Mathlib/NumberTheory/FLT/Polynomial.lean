@@ -8,6 +8,7 @@ import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.NumberTheory.FLT.Basic
 import Mathlib.NumberTheory.FLT.MasonStothers
 import Mathlib.RingTheory.Polynomial.Content
+import Mathlib.Tactic.GCongr
 
 /-!
 # Fermat's Last Theorem for polynomials over a field

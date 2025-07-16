@@ -190,7 +190,7 @@ theorem exists_measurable_le_forall_setLIntegral_eq [SFinite μ] (f : α → ℝ
   -- Let `φ` be the pointwise supremum of the functions $g_{n}$.
   -- Clearly, `φ` is a measurable function and `φ ≤ f`.
   set φ : α → ℝ≥0∞ := fun x ↦ ⨆ n, g n x
-  have hφm : Measurable φ := by measurability
+  have hφm : Measurable φ := by fun_prop
   have hφle : φ ≤ f := fun x ↦ iSup_le (hgf · x)
   refine ⟨φ, hφm, hφle, fun s ↦ ?_⟩
   -- Now we show the inequality between set integrals.

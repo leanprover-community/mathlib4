@@ -130,7 +130,7 @@ lemma map_mul_toRightFDRepComp (η : Aut (forget k G)) (f g : G → k) :
     let α : (G → k) →ₗ[k] (G → k) := (η.hom.hom.app rightFDRep).hom
     α (f * g) = (α f) * (α g) := by
   have nat := η.hom.hom.naturality mulRepHom
-  have tensor (X Y) : η.hom.hom.app (X ⊗ Y) = (η.hom.hom.app X ⊗ η.hom.hom.app Y) :=
+  have tensor (X Y) : η.hom.hom.app (X ⊗ Y) = (η.hom.hom.app X ⊗ₘ η.hom.hom.app Y) :=
     η.hom.isMonoidal.tensor X Y
   rw [tensor] at nat
   apply_fun (Hom.hom · (f ⊗ₜ[k] g)) at nat

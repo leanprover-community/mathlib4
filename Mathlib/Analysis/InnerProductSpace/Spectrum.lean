@@ -292,7 +292,7 @@ end LinearMap
 
 section Nonneg
 
-@[simp]
+-- Cannot be @[simp] because the LHS is not in simp normal form
 theorem inner_product_apply_eigenvector {μ : 𝕜} {v : E} {T : E →ₗ[𝕜] E}
     (h : T v = μ • v) : ⟪v, T v⟫ = μ * (‖v‖ : 𝕜) ^ 2 := by
   simp only [h, inner_smul_right, inner_self_eq_norm_sq_to_K]

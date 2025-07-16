@@ -114,19 +114,12 @@ lemma sbtw_iff_triplewise_and_ne_pair [IsOrderedRing R] {l : List P} :
           · refine ⟨(hpne.1 head2 ?_).symm, hpne.2.1 a ha⟩
             simp
           · rw [wbtw_cons] at ht
-            refine ih' ?_ hp.2 ht.2
-            rw [pairwise_cons]
-            refine ⟨fun a ha ↦ hpne.1 a ?_, hpne.2.2⟩
-            simp [ha]
+            grind
       · rw [pairwise_cons] at hpne
         exact (ih.1 ⟨ht, hpne.2⟩).1
-      · intro x hx
-        simp only [cons.injEq] at hx
-        rcases hx with ⟨hxh, hxt⟩
-        subst hxh hxt
-        simp at hpne
+      · grind
     · have ht' : tail.Wbtw R := ht.imp _root_.Sbtw.wbtw
-      simp only [ht', hp, true_and, ht] at ih
+      simp only [ht', true_and, ht] at ih
       rw [pairwise_cons, ih]
       refine ⟨fun a ha' ↦ ?_, fun a ↦ ?_⟩
       · rintro rfl
@@ -268,11 +261,7 @@ lemma exists_map_eq_of_sorted_nonempty_iff_sbtw {l : List P} (hl : l ≠ []) :
           fun h ↦ ?_⟩
   · rw [← hl'l]
     rcases hla with hla | hla
-    · rw [length_eq_one_iff] at hla
-      rcases hla with ⟨a, rfl⟩
-      apply_fun length at hl'l
-      rw [length_map, length_singleton] at hl'l
-      simp [hl'l]
+    · grind
     · exact (hl's.imp LT.lt.ne).map _ fun _ _ ↦ (lineMap_injective _ hla).ne
   · rw [List.Sbtw, ← exists_map_eq_of_sorted_nonempty_iff_wbtw hl] at h
     rcases h with ⟨⟨l', hl's, hl'l⟩, hp⟩
@@ -287,7 +276,7 @@ lemma exists_map_eq_of_sorted_nonempty_iff_sbtw {l : List P} (hl : l ≠ []) :
         cases tail with
         | nil => simp
         | cons head2 tail =>
-          simp only [reduceCtorEq, not_false_eq_true, getLast_cons, false_or]
+          simp only [reduceCtorEq, false_or]
           rw [pairwise_cons] at hp
           refine hp.1 ((head :: head2 :: tail).getLast hl) ?_
           simp

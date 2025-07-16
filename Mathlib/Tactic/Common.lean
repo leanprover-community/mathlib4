@@ -14,6 +14,7 @@ import ImportGraph.Imports
 
 -- Import common Batteries tactics and commands
 import Batteries.Tactic.Basic
+import Batteries.Tactic.Case
 import Batteries.Tactic.HelpCmd
 
 -- Import syntax for leansearch
@@ -52,9 +53,8 @@ import Mathlib.Tactic.ExistsI
 import Mathlib.Tactic.ExtractGoal
 import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.Find
--- `gcongr` currently imports `Algebra.Order.Field.Power` and thence `Algebra.CharZero.Lemmas`
--- Hopefully this can be rearranged.
--- import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.GRewrite
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.GuardGoalNums
 import Mathlib.Tactic.GuardHypNums
@@ -107,6 +107,7 @@ import Mathlib.Tactic.Variable
 import Mathlib.Tactic.Widget.Calc
 import Mathlib.Tactic.Widget.CongrM
 import Mathlib.Tactic.Widget.Conv
+import Mathlib.Tactic.Widget.LibraryRewrite
 import Mathlib.Tactic.WLOG
 import Mathlib.Util.AssertExists
 import Mathlib.Util.CountHeartbeats
@@ -131,6 +132,7 @@ import hierarchy.
 
 section Hint
 
+register_hint grind
 register_hint trivial
 register_hint tauto
 register_hint split

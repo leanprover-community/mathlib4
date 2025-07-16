@@ -85,7 +85,7 @@ theorem map_dirac {f : α → β} (hf : Measurable f) (a : α) : (dirac a).map f
 @[simp]
 lemma map_const (μ : Measure α) (c : β) : μ.map (fun _ ↦ c) = (μ Set.univ) • dirac c := by
   ext s hs
-  simp only [aemeasurable_const, measurable_const, Measure.coe_smul, Pi.smul_apply,
+  simp only [Measure.coe_smul, Pi.smul_apply,
     dirac_apply' _ hs, smul_eq_mul]
   classical
   rw [Measure.map_apply measurable_const hs, Set.preimage_const]
@@ -148,7 +148,7 @@ end Measure
 open Measure
 
 theorem mem_ae_dirac_iff {a : α} (hs : MeasurableSet s) : s ∈ ae (dirac a) ↔ a ∈ s := by
-  by_cases a ∈ s <;> simp [mem_ae_iff, dirac_apply', hs.compl, indicator_apply, *]
+  by_cases a ∈ s <;> simp [mem_ae_iff, dirac_apply', hs.compl, *]
 
 theorem ae_dirac_iff {a : α} {p : α → Prop} (hp : MeasurableSet { x | p x }) :
     (∀ᵐ x ∂dirac a, p x) ↔ p a :=
@@ -178,6 +178,14 @@ instance Measure.dirac.isProbabilityMeasure {x : α} : IsProbabilityMeasure (dir
 
 instance Measure.dirac.instIsFiniteMeasure {a : α} : IsFiniteMeasure (dirac a) := inferInstance
 instance Measure.dirac.instSigmaFinite {a : α} : SigmaFinite (dirac a) := inferInstance
+
+theorem dirac_eq_one_iff_mem (hs : MeasurableSet s) : dirac a s = 1 ↔ a ∈ s := by
+  rw [← prob_compl_eq_zero_iff hs, ← mem_ae_iff]
+  apply mem_ae_dirac_iff hs
+
+theorem dirac_eq_zero_iff_not_mem (hs : MeasurableSet s) : dirac a s = 0 ↔ a ∉ s := by
+  rw [← compl_compl s, ← mem_ae_iff, notMem_compl_iff]
+  apply mem_ae_dirac_iff (MeasurableSet.compl_iff.mpr hs)
 
 theorem restrict_dirac' (hs : MeasurableSet s) [Decidable (a ∈ s)] :
     (Measure.dirac a).restrict s = if a ∈ s then Measure.dirac a else 0 := by
@@ -217,7 +225,7 @@ lemma dirac_eq_dirac_iff_forall_mem_iff_mem {x y : α} :
     by_cases x_in_A : x ∈ A
     · simp only [Measure.dirac_apply' _ A_mble, x_in_A, indicator_of_mem, Pi.one_apply,
                  (h A A_mble).mp x_in_A]
-    · have y_notin_A : y ∉ A := by simp_all only [false_iff, not_false_eq_true]
+    · have y_notin_A : y ∉ A := by simp_all only [not_false_eq_true]
       simp only [Measure.dirac_apply' _ A_mble, x_in_A, y_notin_A,
                  not_false_eq_true, indicator_of_notMem]
 
