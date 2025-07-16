@@ -129,7 +129,7 @@ theorem deriv_pow_field (n : ℕ) : deriv (fun x => x ^ n) x = (n : 𝕜) * x ^ 
 
 theorem derivWithin_pow_field (h : UniqueDiffWithinAt 𝕜 s x) (n : ℕ) :
     derivWithin (fun x => x ^ n) s x = (n : 𝕜) * x ^ (n - 1) := by
-  rw [derivWithin_pow (differentiableWithinAt_id' (s := s)) h n, derivWithin_id' _ _ h, mul_one]
+  rw [derivWithin_fun_pow (differentiableWithinAt_id' (s := s)) h n, derivWithin_id' _ _ h, mul_one]
 
 theorem derivWithin_fun_pow_field' (hc : DifferentiableWithinAt 𝕜 c s x) (n : ℕ) :
     derivWithin (fun x => c x ^ n) s x = (n : 𝕜) * c x ^ (n - 1) * derivWithin c s x := by
