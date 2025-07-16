@@ -1296,7 +1296,7 @@ structure IsLatticeCon [Lattice α] (r : α → α → Prop) : Prop extends Equi
   inf : ∀ {w x y z}, r w x → r y z → r (w ⊓ y) (x ⊓ z)
   sup : ∀ {w x y z}, r w x → r y z → r (w ⊔ y) (x ⊔ z)
 
-lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) : IsLatticeCon r ↔
+lemma isLatticeCon_iff [Lattice α] (r : α → α → Prop) : IsLatticeCon r ↔
     (IsRefl _ r) ∧
     (∀ ⦃x y : α⦄, r x y ↔ r (x ⊓ y) (x ⊔ y)) ∧
     (∀ ⦃x y z : α⦄, x ≤ y → y ≤ z → r x y → r y z → r x z) ∧
