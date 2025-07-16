@@ -212,26 +212,27 @@ def purePower (B : Type uB) : PFunctor.{uA, uB} :=
 
 end Monomial
 
-section Coprod
+section Sum
 
-/-- The coproduct (sum) of two polynomial functors `P` and `Q`, can be written as `P + Q`.
-Requires the output universe level to be the same. -/
-def coprod (P : PFunctor.{uA₁, uB}) (Q : PFunctor.{uA₂, uB}) :
+/-- The sum (coproduct) of two polynomial functors `P` and `Q`, written as `P + Q`.
+
+Requires the `B` universe levels to be the same. -/
+def sum (P : PFunctor.{uA₁, uB}) (Q : PFunctor.{uA₂, uB}) :
     PFunctor.{max uA₁ uA₂, uB} :=
   ⟨P.A ⊕ Q.A, Sum.elim P.B Q.B⟩
 
 instance : HAdd PFunctor.{uA₁, uB} PFunctor.{uA₂, uB} PFunctor.{max uA₁ uA₂, uB} where
-  hAdd := coprod
+  hAdd := sum
 
-/-- The generalized coproduct (sigma type) of an indexed family of polynomial functors. -/
+/-- The generalized sumuct (sigma type) of an indexed family of polynomial functors. -/
 def sigma {I : Type v} (F : I → PFunctor.{uA, uB}) : PFunctor.{max uA v, uB} :=
   ⟨Σ i, (F i).A, fun ⟨i, a⟩ => (F i).B a⟩
 
-end Coprod
+end Sum
 
 section Prod
 
-/-- The product of two polynomial functors `P` and `Q`. Can be written as `P * Q`. -/
+/-- The product of two polynomial functors `P` and `Q`, written as `P * Q`. -/
 def prod (P : PFunctor.{uA₁, uB₁}) (Q : PFunctor.{uA₂, uB₂}) :
     PFunctor.{max uA₁ uA₂, max uB₁ uB₂} :=
   ⟨P.A × Q.A, fun ab => P.B ab.1 ⊕ Q.B ab.2⟩
@@ -289,7 +290,9 @@ end ULift
 equivalence of the `A` types and an equivalence between the `B` types for each `a : A`. -/
 @[ext]
 structure Equiv (P : PFunctor.{uA₁, uB₁}) (Q : PFunctor.{uA₂, uB₂}) where
+  /-- An equivalence between the `A` types -/
   equivA : P.A ≃ Q.A
+  /-- An equivalence between the `B` types for each `a : A` -/
   equivB : ∀ a, P.B a ≃ Q.B (equivA a)
 
 @[inherit_doc]
