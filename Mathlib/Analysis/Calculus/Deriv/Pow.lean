@@ -112,7 +112,7 @@ theorem derivWithin_pow
 
 @[simp]
 theorem deriv_fun_pow (h : DifferentiableAt 𝕜 f x) (n : ℕ) :
-    deriv (fun x => f x ^ n) x = n * f x ^ (n - 1) * deriv f x  :=
+    deriv (fun x => f x ^ n) x = n * f x ^ (n - 1) * deriv f x :=
   (h.hasDerivAt.pow n).deriv
 
 @[simp]
