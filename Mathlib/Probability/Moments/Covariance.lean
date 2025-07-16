@@ -198,29 +198,26 @@ lemma covariance_sum_left' (hX : ∀ i ∈ s, MemLp (X i) 2 μ) (hY : MemLp Y 2 
     cov[∑ i ∈ s, X i, Y; μ] = ∑ i ∈ s, cov[X i, Y; μ] := by
   classical
   revert hX
-  apply Finset.induction (motive := fun s ↦
-    (∀ i ∈ s, MemLp (X i) 2 μ) → cov[∑ i ∈ s, X i, Y; μ] = ∑ i ∈ s, cov[X i, Y; μ])
-  · simp
-  intro i s hi h_ind hX
-  simp_rw [Finset.sum_insert hi]
-  rw [covariance_add_left, h_ind]
+  refine Finset.induction
+    (motive := fun s ↦
+      (∀ i ∈ s, MemLp (X i) 2 μ) → cov[∑ i ∈ s, X i, Y; μ] = ∑ i ∈ s, cov[X i, Y; μ])
+    (by simp) (fun i s hi h_ind hX ↦ ?_) s
+  rw [Finset.sum_insert hi, Finset.sum_insert hi, covariance_add_left, h_ind]
   · exact fun j hj ↦ hX j (by simp [hj])
   · exact hX i (by simp)
   · exact memLp_finset_sum' s (fun j hj ↦ hX j (by simp [hj]))
   · exact hY
 
-lemma covariance_sum_left [Fintype ι] (hX : ∀ i, MemLp (X i) 2 μ)
-    (hY : MemLp Y 2 μ) : cov[∑ i, X i, Y; μ] = ∑ i, cov[X i, Y; μ] :=
+lemma covariance_sum_left [Fintype ι] (hX : ∀ i, MemLp (X i) 2 μ) (hY : MemLp Y 2 μ) :
+    cov[∑ i, X i, Y; μ] = ∑ i, cov[X i, Y; μ] :=
   covariance_sum_left' (fun _ _ ↦ hX _) hY
 
-lemma covariance_fun_sum_left' (hX : ∀ i ∈ s, MemLp (X i) 2 μ)
-    (hY : MemLp Y 2 μ) :
+lemma covariance_fun_sum_left' (hX : ∀ i ∈ s, MemLp (X i) 2 μ) (hY : MemLp Y 2 μ) :
     cov[fun ω ↦ ∑ i ∈ s, X i ω, Y; μ] = ∑ i ∈ s, cov[fun ω ↦ X i ω, Y; μ] := by
   convert covariance_sum_left' hX hY
   simp
 
-lemma covariance_fun_sum_left [Fintype ι] (hX : ∀ i, MemLp (X i) 2 μ)
-    (hY : MemLp Y 2 μ) :
+lemma covariance_fun_sum_left [Fintype ι] (hX : ∀ i, MemLp (X i) 2 μ) (hY : MemLp Y 2 μ) :
     cov[fun ω ↦ ∑ i, X i ω, Y; μ] = ∑ i, cov[fun ω ↦ X i ω, Y; μ] := by
   convert covariance_sum_left hX hY
   simp
@@ -248,7 +245,7 @@ lemma covariance_sum_sum' {ι' : Type*} {Y : ι' → Ω → ℝ} {t : Finset ι'
     cov[∑ i ∈ s, X i, ∑ j ∈ t, Y j; μ] = ∑ i ∈ s, ∑ j ∈ t, cov[X i, Y j; μ] := by
   rw [covariance_sum_left' hX]
   · exact Finset.sum_congr rfl fun i hi ↦ by rw [covariance_sum_right' hY (hX i hi)]
-  exact memLp_finset_sum' t hY
+  · exact memLp_finset_sum' t hY
 
 lemma covariance_sum_sum [Fintype ι] {ι' : Type*} [Fintype ι'] {Y : ι' → Ω → ℝ}
     (hX : ∀ i, MemLp (X i) 2 μ) (hY : ∀ i, MemLp (Y i) 2 μ) :
@@ -294,14 +291,14 @@ end Sum
 
 section Map
 
-lemma covariance_map_equiv {Ω Ω' : Type*} {mΩ : MeasurableSpace Ω} {mΩ' : MeasurableSpace Ω'}
-    {μ : Measure Ω'} (X Y : Ω → ℝ) (Z : Ω' ≃ᵐ Ω) :
+variable {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'}
+
+lemma covariance_map_equiv (X Y : Ω → ℝ) (Z : Ω' ≃ᵐ Ω) :
     cov[X, Y; μ.map Z] = cov[X ∘ Z, Y ∘ Z; μ] := by
   simp_rw [covariance, integral_map_equiv]
   rfl
 
-lemma covariance_map {Ω Ω' : Type*} {mΩ : MeasurableSpace Ω} {mΩ' : MeasurableSpace Ω'}
-    {μ : Measure Ω'} {X Y : Ω → ℝ} {Z : Ω' → Ω} (hX : AEStronglyMeasurable X (μ.map Z))
+lemma covariance_map {Z : Ω' → Ω} (hX : AEStronglyMeasurable X (μ.map Z))
     (hY : AEStronglyMeasurable Y (μ.map Z)) (hZ : AEMeasurable Z μ) :
     cov[X, Y; μ.map Z] = cov[X ∘ Z, Y ∘ Z; μ] := by
   simp_rw [covariance]
@@ -310,8 +307,7 @@ lemma covariance_map {Ω Ω' : Type*} {mΩ : MeasurableSpace Ω} {mΩ' : Measura
   any_goals assumption
   exact (hX.sub aestronglyMeasurable_const).mul (hY.sub aestronglyMeasurable_const)
 
-lemma covariance_map_fun {Ω Ω' : Type*} {mΩ : MeasurableSpace Ω} {mΩ' : MeasurableSpace Ω'}
-    {μ : Measure Ω'} {X Y : Ω → ℝ} {Z : Ω' → Ω} (hX : AEStronglyMeasurable X (μ.map Z))
+lemma covariance_map_fun {Z : Ω' → Ω} (hX : AEStronglyMeasurable X (μ.map Z))
     (hY : AEStronglyMeasurable Y (μ.map Z)) (hZ : AEMeasurable Z μ) :
     cov[X, Y; μ.map Z] = cov[fun ω ↦ X (Z ω), fun ω ↦ Y (Z ω); μ] :=
   covariance_map hX hY hZ
