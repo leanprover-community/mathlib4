@@ -734,4 +734,3 @@ lemma baseChange_span (s : Set M) :
   rw [baseChange_eq_span, map_span, span_span_of_tower]
 
 end Submodule
-
