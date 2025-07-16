@@ -144,6 +144,17 @@ def _root_.Lean.SourceInfo.getLeadTrail : SourceInfo → String × String
   | .original lead _ trail _ => (lead.toString, trail.toString)
   | _ => default
 
+def compareLeaf (tot : Array Nat) (leadTrail : String × String) (orig s : String) : Array Nat := Id.run do
+    let (l, t) := leadTrail
+    let mut newTot := tot
+    if !l.isEmpty then
+      newTot := newTot.push s.length
+    if !s.startsWith orig then newTot := newTot.push s.length
+    let rest := s.drop orig.length
+    if t.trim.isEmpty then if t == " " || t == "\n" then return newTot
+    if (t.dropWhile (· == ' ')).take 2 == "--" || (t.dropWhile (· == ' ')).take 1 == "\n" then return newTot
+    return newTot.push rest.length
+
 /--
 Splays the input syntax into a string.
 
@@ -156,6 +167,34 @@ def _root_.Lean.Syntax.regString : Syntax → String
   | .ident i raw _ _ => let (l, t) := i.getLeadTrail; l ++ raw.toString ++ t
   | .atom i s => let (l, t) := i.getLeadTrail; l ++ s ++ t
   | .missing => ""
+
+partial
+def _root_.Lean.SourceInfo.removeSpaces : SourceInfo → SourceInfo
+  | .original _ p _ q => .original "".toSubstring p "".toSubstring q
+  | .synthetic p q c => .synthetic p q c
+  | .none => .none
+
+
+partial
+def _root_.Lean.Syntax.uniformizeSpaces : Syntax → Syntax
+  | .node i k args => .node i.removeSpaces k (args.map (·.uniformizeSpaces))
+  | .ident i raw v p => .ident i.removeSpaces raw v p
+  | .atom i s => .atom i.removeSpaces s
+  | .missing => .missing
+
+def pretty (stx : Syntax) : CommandElabM String := do
+  let fmt : Option Format := ←
+      try
+        liftCoreM <| PrettyPrinter.ppCategory `command stx
+      catch _ =>
+        Linter.logLintIf linter.style.commandStart.verbose (stx.getHead?.getD stx)
+          m!"The `commandStart` linter had some parsing issues: \
+            feel free to silence it and report this error!"
+        return none
+  let some fmt := fmt | throwError "No parsing."
+  let st := fmt.pretty
+  let parts := st.split (·.isWhitespace) |>.filter (!·.isEmpty)
+  return " ".intercalate parts
 
 /--
 Scan the two input strings `L` and `M`, assuming `M` is the pretty-printed version of `L`.
@@ -176,10 +215,10 @@ of a single character, then number of characters added to `rebuilt` is the same 
 characters removed from `L`.
 -/
 partial
-def parallelScanAux (as : Array FormatError) (rebuilt L M : String)
+def parallelScanAux (as : Array FormatError) (rebuilt : String) (L M : Substring)
     (addSpace removeSpace removeLine : String) :
     String × Array FormatError :=
-  if M.trim.isEmpty then (rebuilt ++ L, as) else
+  if M.trim.isEmpty then (rebuilt ++ L.toString, as) else
   -- We try as hard as possible to scan the strings one character at a time.
   -- However, single line comments introduced with `--` pretty-print differently than `/--`.
   -- So, we first look ahead for `/--`: the linter will later ignore doc-strings, so it does not
@@ -191,21 +230,21 @@ def parallelScanAux (as : Array FormatError) (rebuilt L M : String)
   -- original syntax, and for the same amount of characters in the pretty-printed one, since the
   -- pretty-printer *erases* the line break at the end of a single line comment.
   --dbg_trace (L.take 3, M.take 3)
-  if L.take 3 == "/--" && M.take 3 == "/--" then
+  if (L.take 3).toString == "/--" && (M.take 3).toString == "/--" then
     parallelScanAux as (rebuilt ++ "/--") (L.drop 3) (M.drop 3) addSpace removeSpace removeLine else
-  if L.take 2 == "--" then
+  if (L.take 2).toString == "--" then
     let newL := L.dropWhile (· != '\n')
-    let diff := L.length - newL.length
+    let diff := L.toString.length - newL.toString.length
     -- Assumption: if `L` contains an embedded inline comment, so does `M`
     -- (modulo additional whitespace).
     -- This holds because we call this function with `M` being a pretty-printed version of `L`.
     -- If the pretty-printer changes in the future, this code may need to be adjusted.
     let newM := M.dropWhile (· != '-') |>.drop diff
-    parallelScanAux as (rebuilt ++ L.takeWhile (· != '\n') ++ newL.takeWhile (·.isWhitespace)) newL.trimLeft newM.trimLeft addSpace removeSpace removeLine else
-  if L.take 2 == "-/" then
+    parallelScanAux as (rebuilt ++ (L.takeWhile (· != '\n')).toString ++ (newL.takeWhile (·.isWhitespace)).toString) newL.trimLeft newM.trimLeft addSpace removeSpace removeLine else
+  if (L.take 2).toString == "-/" then
     let newL := L.drop 2 |>.trimLeft
     let newM := M.drop 2 |>.trimLeft
-    parallelScanAux as (rebuilt ++ "-/" ++ (L.drop 2).takeWhile (·.isWhitespace)) newL newM addSpace removeSpace removeLine else
+    parallelScanAux as (rebuilt ++ "-/" ++ ((L.drop 2).takeWhile (·.isWhitespace)).toString) newL newM addSpace removeSpace removeLine else
   let ls := L.drop 1
   let ms := M.drop 1
   match L.get 0, M.get 0 with
@@ -213,28 +252,56 @@ def parallelScanAux (as : Array FormatError) (rebuilt L M : String)
     if m.isWhitespace then
       parallelScanAux as (rebuilt.push ' ') ls ms.trimLeft addSpace removeSpace removeLine
     else
-      parallelScanAux (pushFormatError as (mkFormatError L M "extra space")) (rebuilt ++ removeSpace) ls M addSpace removeSpace removeLine
+      parallelScanAux (pushFormatError as (mkFormatError L.toString M.toString "extra space")) (rebuilt ++ removeSpace) ls M addSpace removeSpace removeLine
   | '\n', m =>
     if m.isWhitespace then
-      parallelScanAux as (rebuilt ++ L.takeWhile (·.isWhitespace)) ls.trimLeft ms.trimLeft addSpace removeSpace removeLine
+      parallelScanAux as (rebuilt ++ (L.takeWhile (·.isWhitespace)).toString) ls.trimLeft ms.trimLeft addSpace removeSpace removeLine
     else
-      parallelScanAux (pushFormatError as (mkFormatError L M "remove line break")) (rebuilt ++ removeLine ++ ls.takeWhile (·.isWhitespace)) ls.trimLeft M addSpace removeSpace removeLine
+      parallelScanAux (pushFormatError as (mkFormatError L.toString M.toString "remove line break")) (rebuilt ++ removeLine ++ (ls.takeWhile (·.isWhitespace)).toString) ls.trimLeft M addSpace removeSpace removeLine
   | l, m => -- `l` is not whitespace
     if l == m then
       parallelScanAux as (rebuilt.push l) ls ms addSpace removeSpace removeLine
     else
       if m.isWhitespace then
-        parallelScanAux (pushFormatError as (mkFormatError L M "missing space")) ((rebuilt ++ addSpace).push ' ') L ms.trimLeft addSpace removeSpace removeLine
+        parallelScanAux (pushFormatError as (mkFormatError L.toString M.toString "missing space")) ((rebuilt ++ addSpace).push ' ') L ms.trimLeft addSpace removeSpace removeLine
     else
       -- If this code is reached, then `L` and `M` differ by something other than whitespace.
       -- This should not happen in practice.
-      (rebuilt, pushFormatError as (mkFormatError ls ms "Oh no! (Unreachable?)"))
+      (rebuilt, pushFormatError as (mkFormatError ls.toString ms.toString "Oh no! (Unreachable?)"))
 
 @[inherit_doc parallelScanAux]
 def parallelScan (src fmt : String) : Array FormatError :=
-  let (_expected, formatErrors) := parallelScanAux ∅ "" src fmt "🐩" "🦤" "😹"
-  --dbg_trace "src:\n{src}\nfmt:\n{fmt}\nexpected:\n{expected}\n---"
+  let (_expected, formatErrors) := parallelScanAux ∅ "" src.toSubstring fmt.toSubstring "🐩" "🦤" "😹"
+  --dbg_trace "src:\n{src}\n---\nfmt:\n{fmt}\n---\nexpected:\n{expected}\n---"
   formatErrors
+
+partial
+def _root_.Lean.Syntax.compareToString : Array FormatError → Syntax → String → Array FormatError
+  | tot, .node _ `choice args, s => (args.take 1).foldl (init := tot) (· ++ ·.compareToString tot s)
+  | tot, .node _ _ args, s => args.foldl (init := tot) (· ++ ·.compareToString tot s)
+  | tot, .ident i raw _ _, s =>
+    let (l, t) := i.getLeadTrail
+    let (_r, f) := parallelScanAux tot "" (l ++ raw.toString ++ t).toSubstring s.toSubstring "🐩" "🦤" "😹"
+    --dbg_trace "'{r}'"
+    f
+  | tot, .atom i s', s => --compareLeaf tot i.getLeadTrail s' s
+    let (l, t) := i.getLeadTrail
+    let (_r, f) := parallelScanAux tot "" (l ++ s' ++ t).toSubstring s.toSubstring "🐩" "🦤" "😹"
+    --dbg__trace "'{r}'"
+    f
+  | tot, .missing, _s => tot
+
+
+open Lean Elab Command in
+elab "#comp " cmd:command : command => do
+  elabCommand cmd
+  let cmdString := cmd.raw.regString
+  let pp ← pretty cmd
+  dbg_trace "---\n{cmdString}\n---\n{pp}\n---"
+  let comps := cmd.raw.compareToString #[] pp
+  dbg_trace comps
+--  dbg_trace "From start: {comps.map (cmdString.length - ·) |>.reverse}"
+  --logInfo m!"{cmd}"
 
 namespace Style.CommandStart
 
@@ -383,6 +450,15 @@ def mkWindow (orig : String) (start ctx : Nat) : String :=
   let tail := middle.drop ctx |>.takeWhile (!·.isWhitespace)
   s!"{headCtx}{middle.take ctx}{tail}"
 
+/--
+Analogous to `Lean.PrettyPrinter.ppCategory`, but does not run the parenthesizer,
+so that the output should only differ from the source syntax in whitespace.
+-/
+def ppCategory' (cat : Name) (stx : Syntax) : CoreM Format := do
+  let opts ← getOptions
+  let stx := (sanitizeSyntax stx).run' { options := opts }
+  stx >>= PrettyPrinter.formatCategory cat
+
 @[inherit_doc Mathlib.Linter.linter.style.commandStart]
 def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless Linter.getLinterValue linter.style.commandStart (← getLinterOptions) do
@@ -390,7 +466,7 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if (← get).messages.hasErrors then
     return
   if stx.getSubstring?.map toString != some stx.regString then
-    dbg_trace stx.regString
+    --dbg_trace stx.regString
   if stx.find? (·.isOfKind ``runCmd) |>.isSome then
     return
   let comps := (← getMainModule).components
@@ -416,7 +492,7 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
 
   let fmt : Option Format := ←
       try
-        liftCoreM <| PrettyPrinter.ppCategory `command stx
+        liftCoreM <| ppCategory' `command stx --PrettyPrinter.ppCategory `command stx
       catch _ =>
         Linter.logLintIf linter.style.commandStart.verbose (stx.getHead?.getD stx)
           m!"The `commandStart` linter had some parsing issues: \
@@ -429,6 +505,9 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let st := " ".intercalate parts
     let origSubstring := stx.getSubstring?.getD default
     let orig := origSubstring.toString
+    --let parts := orig.split (·.isWhitespace) |>.filter (!·.isEmpty)
+    --if ! ("".intercalate parts).startsWith (st.replace " " "" |>.replace "«" "" |>.replace "»" "") then
+    --  logWarning m!"A\n{st.replace " " "" |>.replace "«" "" |>.replace "»" ""}\n---\n{"".intercalate parts}"
 
     let scan := parallelScan orig st
 
