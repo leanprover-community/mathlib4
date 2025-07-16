@@ -7,15 +7,15 @@ import Mathlib.Analysis.Calculus.FDeriv.Mul
 import Mathlib.Analysis.Calculus.FDeriv.Comp
 
 /-!
-# Derivative of `f x ^ n`, `n : ℕ`
+# Fréchet Derivative of `f x ^ n`, `n : ℕ`
 
-In this file we prove that the Frechet derivative of `fun x => f x ^ n`,
+In this file we prove that the Fréchet derivative of `fun x => f x ^ n`,
 where `n` is a natural number, is `n • f x ^ (n - 1)) • f'`.
 Additionally, we prove the case for non-commutative rings (with primed names like `fderiv_pow'`),
 where the result is instead `∑ i ∈ Finset.range n, f x ^ (n.pred - i) •> f' <• f x ^ i`.
 
-For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
-`Mathlib/Analysis/Calculus/Deriv/Basic.lean`.
+For detailed documentation of the Fréchet derivative,
+see the module docstring of `Mathlib/Analysis/Calculus/FDeriv/Basic.lean`.
 
 ## Keywords
 
@@ -71,7 +71,6 @@ theorem HasFDerivWithinAt.fun_pow' (h : HasFDerivWithinAt f f' s x) (n : ℕ) :
     have := h.mul' (h.fun_pow' (n + 1))
     simp_rw [pow_succ' _ (n + 1)]
     exact this.congr_fderiv <| aux _ _ _ _
-
 
 theorem HasFDerivWithinAt.pow' (h : HasFDerivWithinAt f f' s x) (n : ℕ) :
     HasFDerivWithinAt (f ^ n)
