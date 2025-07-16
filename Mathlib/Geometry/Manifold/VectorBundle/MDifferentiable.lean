@@ -152,8 +152,7 @@ variable {e e'}
 theorem mdifferentiableAt_coordChangeL {x : B}
     (h : x ∈ e.baseSet) (h' : x ∈ e'.baseSet) :
     MDifferentiableAt IB 𝓘(𝕜, F →L[𝕜] F) (fun b : B => (e.coordChangeL 𝕜 e' b : F →L[𝕜] F)) x :=
-  (mdifferentiableOn_coordChangeL e e').mdifferentiableAt <|
-    (e.open_baseSet.inter e'.open_baseSet).mem_nhds ⟨h, h'⟩
+  (contMDiffAt_coordChangeL h h').mdifferentiableAt le_rfl
 
 variable {s : Set M} {f : M → B} {g : M → F} {x : M}
 
@@ -189,7 +188,7 @@ protected theorem MDifferentiableWithinAt.coordChange
     exact (Trivialization.coordChangeL_apply' e e' hy (g y)).symm
   · exact (Trivialization.coordChangeL_apply' e e' ⟨he, he'⟩ (g x)).symm
 
-protected nonrec theorem MDifferentiableAt.coordChange
+protected theorem MDifferentiableAt.coordChange
     (hf : MDifferentiableAt IM IB f x) (hg : MDifferentiableAt IM 𝓘(𝕜, F) g x)
     (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
     MDifferentiableAt IM 𝓘(𝕜, F) (fun y ↦ e.coordChange e' (f y) (g y)) x :=
