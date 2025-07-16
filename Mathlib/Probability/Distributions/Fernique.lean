@@ -491,7 +491,7 @@ open Fernique
 /-- For `μ` a probability measure whose product with itself is invariant by rotation and for `a, c`
 with `2⁻¹ < c ≤ μ {x | ‖x‖ ≤ a}`, the integral `∫⁻ x, exp (logRatio c * a⁻¹ ^ 2 * ‖x‖ ^ 2) ∂μ`
 is bounded by a quantity that does not depend on `a`. -/
-theorem lintegral_exp_mul_sq_norm_le_of_map_rotation_eq_self[IsProbabilityMeasure μ]
+theorem lintegral_exp_mul_sq_norm_le_of_map_rotation_eq_self [IsProbabilityMeasure μ]
     (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ)
     {c : ℝ≥0∞} (hc : c ≤ μ {x | ‖x‖ ≤ a}) (hc_gt : 2⁻¹ < c) :
     ∫⁻ x, .ofReal (rexp (logRatio c * a⁻¹ ^ 2 * ‖x‖ ^ 2)) ∂μ
