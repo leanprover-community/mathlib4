@@ -153,7 +153,10 @@ theorem liftRight_inv_mul {f : M →* N} {g : M → Nˣ} (h : ∀ x, ↑(g x) = 
 end Units
 
 namespace MonoidHom
-variable {G M : Type*} [Group G] [Monoid M]
+variable {G M : Type*} [Group G]
+
+section Monoid
+variable [Monoid M]
 
 /-- If `f` is a homomorphism from a group `G` to a monoid `M`,
 then its image lies in the units of `M`,
@@ -170,8 +173,18 @@ def toHomUnits (f : G →* M) : G →* Mˣ :=
 @[to_additive (attr := simp)]
 theorem coe_toHomUnits (f : G →* M) (g : G) : (f.toHomUnits g : M) = f g := rfl
 
+end Monoid
+
+variable [CommMonoid M]
+
 @[simp] lemma toHomUnits_mul (f g : G →* M) : (f * g).toHomUnits = f.toHomUnits * g.toHomUnits := by
   ext; rfl
+
+/-- `MonoidHom.toHomUnits` as a `MulEquiv`. -/
+def toHomUnitsMulEquiv : (G →* M) ≃* (G →* Mˣ) where
+  toFun := toHomUnits
+  invFun f := (Units.coeHom _).comp f
+  map_mul' := by simp
 
 end MonoidHom
 
