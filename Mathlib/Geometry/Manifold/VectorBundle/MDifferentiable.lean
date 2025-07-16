@@ -160,7 +160,7 @@ protected theorem MDifferentiableWithinAt.coordChangeL (hf : MDifferentiableWith
       (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) s x :=
   (mdifferentiableAt_coordChangeL he he').comp_mdifferentiableWithinAt _ hf
 
-protected nonrec theorem MDifferentiableAt.coordChangeL
+protected theorem MDifferentiableAt.coordChangeL
     (hf : MDifferentiableAt IM IB f x) (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
     MDifferentiableAt IM 𝓘(𝕜, F →L[𝕜] F) (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) x :=
   MDifferentiableWithinAt.coordChangeL hf he he'
