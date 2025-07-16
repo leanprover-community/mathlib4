@@ -19,6 +19,7 @@ with `Matrix m n α`. For the typical approach of counting rows and columns,
 * `Matrix.transpose`: transpose of a matrix, turning rows into columns and vice versa
 * `Matrix.submatrix`: take a submatrix by reindexing rows and columns
 * `Matrix.module`: matrices are a module over the ring of entries
+* `Set.matrix`: set of matrices with entries in a given set
 
 ## Notation
 
@@ -565,3 +566,16 @@ lemma col_transpose (A : Matrix m n α) : Aᵀ.col = A.row := rfl
 end RowCol
 
 end Matrix
+
+namespace Set
+
+variable {ι₁ ι₂ : Type*} {X : Type*}
+
+/-- Given a set `S`, `S.matrix` is the set of matrices `m`
+all of whose entries `m i j` belong to `S`. -/
+def matrix (S : Set X) : Set (Matrix ι₁ ι₂ X) := {m | ∀ i j, m i j ∈ S}
+
+@[simp] theorem mem_matrix (S : Set X) {m : Matrix ι₁ ι₂ X} :
+  m ∈ S.matrix ↔ ∀ i j, m i j ∈ S := .rfl
+
+end Set

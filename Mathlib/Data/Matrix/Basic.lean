@@ -623,6 +623,58 @@ we can get rid of the `ᵒᵖ` in the left-hand side, see `Matrix.transposeAlgEq
 
 end AlgEquiv
 
+namespace AddSubmonoid
+
+variable {A : Type*} [AddMonoid A]
+variable {ι₁ ι₂ : Type*}
+
+/-- A version of `Set.matrix` for `AddSubmonoid`s.
+Given an `AddSubmonoid` `S`, `S.matrix` is the `AddSubmonoid` of matrices `m`
+all of whose entries `m i j` belong to `S`. -/
+def matrix (S : AddSubmonoid A) :
+    AddSubmonoid (Matrix ι₁ ι₂ A) where
+      carrier := Set.matrix S
+      add_mem' hm hn i j := add_mem (hm i j) (hn i j)
+      zero_mem' _ _ := zero_mem _
+
+end AddSubmonoid
+
+namespace AddSubgroup
+
+variable {A : Type*} [AddGroup A]
+variable {ι₁ ι₂ : Type*}
+
+/-- A version of `Set.matrix` for `AddSubgroup`s.
+Given an `AddSubgroup` `S`, `S.matrix` is the `AddSubgroup` of matrices `m`
+all of whose entries `m i j` belong to `S`. -/
+def matrix (S : AddSubgroup A) :
+    AddSubgroup (Matrix ι₁ ι₂ A) where
+      __ := S.toAddSubmonoid.matrix
+      neg_mem' hm i j := AddSubgroup.neg_mem _ (hm i j)
+
+end AddSubgroup
+
+namespace Subring
+
+variable {A : Type*} [Ring A]
+variable {ι : Type*} [Fintype ι] [DecidableEq ι]
+
+/-- A version of `Set.matrix` for `Subring`s.
+Given an `Subring` `S`, `S.matrix` is the `Subring` of square matrices `m`
+all of whose entries `m i j` belong to `S`. -/
+def matrix (S : Subring A) :
+    Subring (Matrix ι ι A) where
+      __ := S.toAddSubgroup.matrix
+      mul_mem' ha hb i j := Subring.sum_mem _ (fun k _ => Subring.mul_mem _ (ha i k) (hb k j))
+      one_mem' i j := by
+        rw[Matrix.one_apply]
+        if h : i = j then
+          rw[if_pos h]; apply Subring.one_mem
+        else
+          rw[if_neg h]; apply Subring.zero_mem
+
+end Subring
+
 open Matrix
 
 namespace Matrix
