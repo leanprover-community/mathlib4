@@ -24,6 +24,14 @@ class CanLift (α β : Sort*) (coe : outParam <| β → α) (cond : outParam <| 
   /-- An element of `α` that satisfies `cond` belongs to the range of `coe`. -/
   prf : ∀ x : α, cond x → ∃ y : β, coe y = x
 
+/-- The recursor provided by `CanLift`. -/
+@[elab_as_elim]
+theorem CanLift.cases
+    {α : Sort*} {β : Sort*} {coe : β → α} {cond : α → Prop} [inst : CanLift α β coe cond]
+    {motive : ∀ x : α, cond x → Prop} (coe : ∀ y h, motive (coe y) h) (a h) : motive a h := by
+  obtain ⟨y, rfl⟩ := CanLift.prf (β := β) a h
+  exact coe _ _
+
 instance : CanLift Int Nat (fun n : Nat ↦ n) (0 ≤ ·) :=
   ⟨fun n hn ↦ ⟨n.natAbs, Int.natAbs_of_nonneg hn⟩⟩
 
@@ -107,41 +115,52 @@ def Lift.getInst (old_tp new_tp : Expr) : MetaM (Expr × Expr × Expr) := do
   let inst ← synthInstance inst_type -- TODO: catch error
   return (← instantiateMVars p, ← instantiateMVars coe, ← instantiateMVars inst)
 
+
 /-- Main function for the `lift` tactic. -/
 def Lift.main (e t : TSyntax `term) (hUsing : Option (TSyntax `term))
-    (newVarName newEqName : Option (TSyntax `ident)) (keepUsing : Bool) : TacticM Unit :=
+    (newVarNameStx newEqNameStx : Option (TSyntax `ident)) (keepUsing : Bool) : TacticM Unit :=
     withMainContext do
   -- Are we using a new variable for the lifted var?
-  let isNewVar := !newVarName.isNone
+  let isNewVar := !newVarNameStx.isNone
   -- Name of the new hypothesis containing the equality of the lifted variable with the old one
   -- rfl if none is given
-  let newEqName := (newEqName.map Syntax.getId).getD `rfl
+  let (newEqNameStx, newEqName) := match newEqNameStx with
+    | none => (Syntax.missing, `rfl)
+    | some stx => (stx, stx.getId)
   -- Was a new hypothesis given?
   let isNewEq := newEqName != `rfl
   let e ← elabTerm e none
   let goal ← getMainGoal
   if !(← inferType (← instantiateMVars (← goal.getType))).isProp then throwError
     "lift tactic failed. Tactic is only applicable when the target is a proposition."
-  if newVarName == none ∧ !e.isFVar then throwError
+  if newVarNameStx == none ∧ !e.isFVar then throwError
     "lift tactic failed. When lifting an expression, a new variable name must be given"
   let (p, coe, inst) ← Lift.getInst (← inferType e) (← Term.elabType t)
   let prf ← match hUsing with
     | some h => elabTermEnsuringType h (p.betaRev #[e])
     | none => mkFreshExprMVar (some (p.betaRev #[e]))
-  let newVarName ← match newVarName with
-                 | some v => pure v.getId
-                 | none   => e.fvarId!.getUserName
+  let (newVarNameStx, newVarName) ← match newVarNameStx with
+                 | some v => pure (v.raw,  v.getId)
+                 | none   => pure (Syntax.missing, ← e.fvarId!.getUserName)
   let prfEx ← mkAppOptM ``CanLift.prf #[none, none, coe, p, inst, e, prf]
   let prfEx ← instantiateMVars prfEx
   let prfSyn ← prfEx.toSyntax
   -- if we have a new variable, but no hypothesis name was provided, we temporarily use a dummy
   -- hypothesis name
-  let newEqName ← if isNewVar && !isNewEq then withMainContext <| getUnusedUserName `tmpVar
-               else pure newEqName
+  let (newEqNameStx, newEqName) ←
+    if isNewVar && !isNewEq then
+      pure (.missing, ← withMainContext <| getUnusedUserName `tmpVar)
+    else
+      pure (newEqNameStx, newEqName)
   let newEqIdent := mkIdent newEqName
   -- Run rcases on the proof of the lift condition
   replaceMainGoal (← Lean.Elab.Tactic.RCases.rcases #[(none, prfSyn)]
-    (.tuple Syntax.missing <| [newVarName, newEqName].map (.one Syntax.missing)) goal)
+    (.tuple Syntax.missing <| [.one newVarNameStx newVarName, .one newEqNameStx newEqName]) goal)
+  let newVarFVar ← withMainContext <| getFVarFromUserName newVarName
+  -- Clear the "using" hypothesis if it's a variable in the context
+  if prf.isFVar && !keepUsing then
+    withMainContext do
+      replaceMainGoal [← (← getMainGoal).clear prf.fvarId!]
   -- if we use a new variable, then substitute it everywhere
   if isNewVar then
     for decl in ← getLCtx do
@@ -149,31 +168,75 @@ def Lift.main (e t : TSyntax `term) (hUsing : Option (TSyntax `term))
         let declIdent := mkIdent decl.userName
         evalTactic (← `(tactic| simp -failIfUnchanged only [← $newEqIdent] at $declIdent:ident))
     evalTactic (← `(tactic| simp -failIfUnchanged only [← $newEqIdent]))
+  else
+    Elab.pushInfoLeaf <|
+      .ofFVarAliasInfo { id := newVarFVar.fvarId!, baseId := e.fvarId!, userName := newVarName }
   -- Clear the temporary hypothesis used for the new variable name if applicable
   if isNewVar && !isNewEq then
     evalTactic (← `(tactic| clear $newEqIdent))
-  -- Clear the "using" hypothesis if it's a variable in the context
-  if prf.isFVar && !keepUsing then
-    let some hUsingStx := hUsing | throwError "lift tactic failed: unreachable code was reached"
-    evalTactic (← `(tactic| clear $hUsingStx))
-    evalTactic (← `(tactic| try clear $hUsingStx))
   if hUsing.isNone then withMainContext <| setGoals (prf.mvarId! :: (← getGoals))
 
-elab_rules : tactic
-  | `(tactic| lift $e to $t $[using $h]?) => withMainContext <| Lift.main e t h none none false
+-- elab_rules : tactic
+--   | `(tactic| lift $e to $t $[using $h]?) => withMainContext <| Lift.main e t h none none false
 
-elab_rules : tactic | `(tactic| lift $e to $t $[using $h]?
-    with $newVarName) => withMainContext <| Lift.main e t h newVarName none false
+-- elab_rules : tactic | `(tactic| lift $e to $t $[using $h]?
+--     with $newVarName) => withMainContext <| Lift.main e t h newVarName none false
 
-elab_rules : tactic | `(tactic| lift $e to $t $[using $h]?
-    with $newVarName $newEqName) => withMainContext <| Lift.main e t h newVarName newEqName false
+-- elab_rules : tactic | `(tactic| lift $e to $t $[using $h]?
+--     with $newVarName $newEqName) => withMainContext <| Lift.main e t h newVarName newEqName false
 
-elab_rules : tactic | `(tactic| lift $e to $t $[using $h]?
-    with $newVarName $newEqName $newPrfName) => withMainContext do
-  if h.isNone then Lift.main e t h newVarName newEqName false
-  else
-    let some h := h | unreachable!
-    if h.raw == newPrfName then Lift.main e t h newVarName newEqName true
-    else Lift.main e t h newVarName newEqName false
+macro_rules
+| `(tactic| lift $e to $t $[using $h]? $[with $newVarName $[$newEqName]? $[$newPrfName]?]?) => do
+  let h ← match h with
+    | none => `(?lift)
+    | some h => pure h
+  let varName ← match newVarName with
+    | none => if let `($e:ident) := e then pure e else
+      Macro.throwUnsupported
+    | some n => pure n
+  let genTac : TSyntax `tactic ← match newEqName with
+    | some (some eq) => `(tactic| (generalize $eq : $e = $varName at *; replace $eq := Eq.symm $eq))
+    | _ => `(tactic| generalize $e = $varName at *)
+  let prfName ← match newPrfName with
+    | some (some n) => `(Term.funBinder| $n)
+    | _ => `(_)
+  `(tactic|
+    $genTac;
+     refine CanLift.cases (α := Int) (β := $t) (fun $varName $prfName => ?_) $e ?_
+    )
+
+#check fun _ => 1
+
+  -- withMainContext do
+  --   let ee ← Term.elabTerm e none
+  --   let et ← Term.elabType t
+  --   let (p, coe, inst) ← Lift.getInst (← inferType ee) et
+  --   let prf ← match h with
+  --   | some h => elabTermEnsuringType h (p.betaRev #[ee])
+  --   | none => mkFreshExprMVar (some (p.betaRev #[ee]))
+  --   let prfEx ← mkAppOptM ``CanLift.prf #[none, none, coe, p, inst, ee, prf]
+  --   withLocal
+
+  -- match h with
+  -- | none => Lift.main e t h newVarName newEqName false
+  -- | some h =>
+  --   unless h.raw == newPrfName do
+  --     throwErrorAt newPrfName "Renaming the `using` hypothesis is not supported"
+  --   Lift.main e t h newVarName newEqName true
+
+example (z : Int) (hz : 0 ≤ z + 3) : 0 ≤ (z + 3)^2 := by
+  generalize hn : z + 3 = n at *
+  refine CanLift.cases (α := Int) (β := Nat) ?_ z ?_
+  sorry
+
+
+example (z : Int) (hz : 0 ≤ z + 3) : 0 ≤ ((⟨z + 3, hz⟩ : {z : Int // 0 ≤ z}).val)^2 := by
+  generalize hn : z + 3 = n at *
+  induction n, hz using CanLift.cases (α := Int) (β := Nat) with | coe n hz => ?_
+
+theorem foo (z : Int) (hz : 0 ≤ z + 3) : 0 ≤ ((⟨z + 3, hz⟩ : {z : Int // 0 ≤ z}).val)^2 := by
+  lift z + 3 to Nat with y hy
+  sorry
+#print foo
 
 end Mathlib.Tactic

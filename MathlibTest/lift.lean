@@ -11,6 +11,36 @@ import Mathlib.Data.PNat.Defs
 
 /-! Some tests of the `lift` tactic. -/
 
+/-- The recursor provided by `CanLift`. -/
+@[elab_as_elim]
+theorem CanLift.cases
+    {α : Sort*} {β : Sort*} {coe : β → α} {cond : α → Prop} [inst : CanLift α β coe cond]
+    {motive : ∀ x : α, cond x → Prop} (coe : ∀ y h, motive (coe y) h) (a h) : motive a h := by
+  obtain ⟨y, rfl⟩ := CanLift.prf (β := β) a h
+  exact coe _ _
+
+
+open Lean Elab Parser Term
+macro_rules
+| `(tactic| lift $e to $t $[using $h]? $[with $newVarName $[$newEqName]? $[$newPrfName]?]?) => do
+  let h ← match h with
+    | none => `(?lift)
+    | some h => pure h
+  let varName ← match newVarName with
+    | none => if let `($e:ident) := e then pure e else
+      Macro.throwUnsupported
+    | some n => pure n
+  let genTac : TSyntax `tactic ← match newEqName with
+    | some (some eq) => `(tactic| (generalize $eq : $e = $varName at *; replace $eq := Eq.symm $eq))
+    | _ => `(tactic| generalize $e = $varName at *)
+  let prfName ← match newPrfName with
+    | some (some n) => `(Term.funBinder| $n)
+    | _ => `(_)
+  `(tactic|
+    $genTac;
+     refine CanLift.cases (α := Int) (β := $t) (fun $varName $prfName => ?_) $e ?_
+    )
+
 example (n : ℤ) (hn : 0 ≤ n) : 0 ≤ n + 1 := by
   lift n to ℕ
   guard_target =ₛ 0 ≤ n
