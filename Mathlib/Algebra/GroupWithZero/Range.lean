@@ -52,7 +52,7 @@ open Set Subgroup Submonoid
 lemma mrange_nontrivial {G H : Type*} [MulZeroOneClass G] [MulZeroOneClass H] [Nontrivial H]
     (f : G →*₀ H) :
     Nontrivial (MonoidHom.mrange f) :=
-  ⟨⟨1, 1, by simp⟩, ⟨0, 0, by simp⟩, by simp⟩
+  ⟨1, ⟨0, 0, by simp⟩, by simp [Subtype.ext_iff]⟩
 
 lemma range_nontrivial {G H : Type*} [MulZeroOneClass G] [MulZeroOneClass H] [Nontrivial H]
     (f : G →*₀ H) :
