@@ -12,7 +12,7 @@ import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
 
 A stochastic process `X : T → Ω → E` on an index space `T` and a measurable space `Ω`
 with measure `P` is said to satisfy the Kolmogorov condition with exponents `p, q` and constant `M`
-if for all `s, t : T`, the pair `(X s, X t)` is measurable for the borel sigma-algebra on `E × E`
+if for all `s, t : T`, the pair `(X s, X t)` is measurable for the Borel sigma-algebra on `E × E`
 and the following condition holds:
 `∫⁻ ω, edist (X s ω) (X t ω) ^ p ∂P ≤ M * edist s t ^ q`.
 
@@ -47,7 +47,7 @@ variable {T Ω E : Type*} [PseudoEMetricSpace T] {mΩ : MeasurableSpace Ω} [Pse
 
 /-- A stochastic process `X : T → Ω → E` on an index space `T` and a measurable space `Ω`
 with measure `P` is said to satisfy the Kolmogorov condition with exponents `p, q` and constant `M`
-if for all `s, t : T`, the pair `(X s, X t)` is measurable for the borel sigma-algebra on `E × E`
+if for all `s, t : T`, the pair `(X s, X t)` is measurable for the Borel sigma-algebra on `E × E`
 and the following condition holds: `∫⁻ ω, edist (X s ω) (X t ω) ^ p ∂P ≤ M * edist s t ^ q`. -/
 structure IsKolmogorovProcess (X : T → Ω → E) (P : Measure Ω) (p q : ℝ) (M : ℝ≥0) : Prop where
   measurablePair : ∀ s t : T, Measurable[_, borel (E × E)] fun ω ↦ (X s ω, X t ω)
