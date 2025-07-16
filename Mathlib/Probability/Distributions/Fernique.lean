@@ -17,16 +17,40 @@ Let `μ` be a finite measure on a second-countable normed space `E` such that th
 Then there exists a constant `C > 0` such that the function `x ↦ exp (C * ‖x‖ ^ 2)` is integrable
 with respect to `μ`.
 
-TODO: sketch of proof
+## Sketch of the proof
 
-1) `measure_le_mul_measure_gt_le_of_map_rotation_eq_self`
-If a measure `μ` is such that `μ.prod μ` is invariant by rotation of angle `-π/4` then
+The main case of the proof is for `μ` a probability measure such that there exists a positive
+`a : ℝ` such that `2⁻¹ < μ {x | ‖x‖ ≤ a} < 1`. If `a` does not exist then the measure is a Dirac
+at `0`, and the result is trivial.
+We then choose such an `a`.
+
+In order to show the existence of `C` such that `x ↦ exp (C * ‖x‖ ^ 2)` is integrable, we prove as
+intermediate result that for `a, c` with `2⁻¹ < c ≤ μ {x | ‖x‖ ≤ a}`,
+the integral `∫⁻ x, exp (logRatio c * a⁻¹ ^ 2 * ‖x‖ ^ 2) ∂μ` is bounded by a finite quantity that
+does not depend on `a` (`logRatio c` is a multiple of `log (c / (1 - c))`).
+We can then take `C = logRatio c * a⁻¹ ^ 2`.
+
+We now turn to the proof of the intermediate result.
+
+First in `measure_le_mul_measure_gt_le_of_map_rotation_eq_self` we prove that if a measure `μ` is
+such that `μ.prod μ` is invariant by rotation of angle `-π/4` then
 `μ {x | ‖x‖ ≤ a} * μ {x | b < ‖x‖} ≤ μ {x | (b - a) / √2 < ‖x‖} ^ 2`.
 The rotation invariance is used only through that inequality.
 
-2) cut the space into Annuli...
+We define a sequence of thresholds `t n` inductively by `t 0 = a` and `t (n + 1) = √2 * t n + a`.
+They are chosen such that the invariance by rotation gives
+`μ {x | ‖x‖ ≤ a} * μ {x | t (n + 1) < ‖x‖} ≤ μ {x | t n < ‖x‖} ^ 2`.
+Thanks to that inequality we can show that `μ {x | t n < ‖x‖}` decreases fast with `n`:
+for `mₐ = μ {x | ‖x‖ ≤ a}`, `μ {x | t n < ‖x‖} ≤ mₐ * exp (- log (mₐ / (1 - mₐ)) * 2 ^ n)`.
 
-3)...
+We cut the space into annuli `{x | t n < ‖x‖ ≤ t n + 1}` and bound the integral separately on
+each annulus. On that set the function `exp (logRatio c * a⁻¹ ^ 2 * ‖x‖ ^ 2)` is bounded by
+`exp (logRatio c * a⁻¹ ^ 2 * t (n + 1) ^ 2)`, which is in turn less than
+`exp (2⁻¹ * log (c / (1 - c)) * 2 ^ n)` (from the definiton of the threshold `t` and `logRatio c`).
+The measure of the annulus is bounded by `μ {x | t n < ‖x‖}`, for which we derived an upper bound
+above. The function gets exponentially large, but `μ {x | t n < ‖x‖}` decreases even faster, so the
+integral is bounded by a quantity of the form `exp (- u * 2 ^ n)` for `u>0`.
+Summing over all annuli (over `n`) gives a finite value for the integral.
 
 ## Main statements
 
@@ -39,7 +63,13 @@ The rotation invariance is used only through that inequality.
 
 ## References
 
+* [Xavier Fernique, *Intégrabilité des vecteurs gaussiens*][fernique1970integrabilite]
 * [Martin Hairer, *An introduction to stochastic PDEs*][hairer2009introduction]
+
+## TODO
+
+From the intermediate result `lintegral_exp_mul_sq_norm_le`, we can deduce bounds on all the moments
+of the measure `μ` as function of powers of the first moment.
 
 -/
 
@@ -48,7 +78,6 @@ open scoped ENNReal NNReal Real Topology
 
 section Aux
 
-open Filter in
 lemma StrictMono.exists_between_of_tendsto_atTop {β : Type*} [LinearOrder β] {t : ℕ → β}
     (ht_mono : StrictMono t) (ht_tendsto : Tendsto t atTop atTop) (x : β) :
     x ≤ t 0 ∨ ∃ n, t n < x ∧ x ≤ t (n + 1) := by
