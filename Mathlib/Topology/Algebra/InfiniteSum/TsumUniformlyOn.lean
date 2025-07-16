@@ -94,5 +94,5 @@ theorem iteratedDerivWithin_tsum [DecidableEq ι] (f : ι → E → F) (m : ℕ)
       by_cases hm2 : m = 0
       · simp [hm2, hsum r hr]
       · exact ((h m (by omega) (by omega)).summable hr).congr (fun _ ↦ by simp)
-    · exact SummableLocallyUniformlyOn_congr _ _
-        (fun i ⦃t⦄ ht ↦ iteratedDerivWithin_succ) (h (m + 1) (by omega) (by omega))
+    · exact SummableLocallyUniformlyOn_congr
+        (fun _ _ ht ↦ iteratedDerivWithin_succ) (h (m + 1) (by omega) (by omega))
