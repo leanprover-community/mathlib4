@@ -79,21 +79,14 @@ open scoped ENNReal NNReal Real Topology
 section Aux
 
 lemma StrictMono.exists_between_of_tendsto_atTop {β : Type*} [LinearOrder β] {t : ℕ → β}
-    (ht_mono : StrictMono t) (ht_tendsto : Tendsto t atTop atTop) (x : β) :
-    x ≤ t 0 ∨ ∃ n, t n < x ∧ x ≤ t (n + 1) := by
-  by_cases hx0 : x ≤ t 0
-  · simp [hx0]
-  simp only [hx0, false_or]
+    (ht_mono : StrictMono t) (ht_tendsto : Tendsto t atTop atTop) {x : β} (hx : t 0 < x) :
+    ∃ n, t n < x ∧ x ≤ t (n + 1) := by
   have h : ∃ n, x ≤ t n := by
     simp only [tendsto_atTop_atTop_iff_of_monotone ht_mono.monotone] at ht_tendsto
     exact ht_tendsto x
-  classical
   have h' m := Nat.find_min h (m := m)
-  simp only [not_le] at h' hx0
-  refine ⟨Nat.find h - 1, h' _ (by simp [hx0]), ?_⟩
-  convert Nat.find_spec h
-  rw [Nat.sub_add_cancel]
-  simp [hx0]
+  simp only [not_le] at h' hx
+  exact ⟨Nat.find h - 1, h' _ (by simp [hx]), by simp [Nat.find_spec h, hx]⟩
 
 lemma ENNReal.tsum_ofReal_exp_lt_top {c : ℝ} (hc : c < 0) {f : ℕ → ℝ} (hf : ∀ i, i ≤ f i) :
     ∑' i, .ofReal (rexp (c * f i)) < ∞ := by
@@ -455,8 +448,10 @@ lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]
     simp only [Set.mem_univ, Set.mem_union, Metric.mem_closedBall, dist_zero_right, Set.mem_iUnion,
       Set.mem_diff, not_le, true_iff]
     simp_rw [and_comm (b := t _ < ‖x‖)]
-    exact (normThreshold_strictMono ha_pos).exists_between_of_tendsto_atTop
-      (tendsto_normThreshold_atTop ha_pos) _
+    rcases le_or_gt (‖x‖) a with ha' | ha'
+    · exact Or.inl ha'
+    · exact Or.inr <| (normThreshold_strictMono ha_pos).exists_between_of_tendsto_atTop
+        (tendsto_normThreshold_atTop ha_pos) ha'
   rw [← setLIntegral_univ, h_iUnion]
   have : ∫⁻ x in closedBall 0 (t 0) ∪ ⋃ n, closedBall 0 (t (n + 1)) \ closedBall 0 (t n),
         .ofReal (rexp (C * ‖x‖ ^ 2)) ∂μ
