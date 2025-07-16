@@ -124,7 +124,7 @@ def gluedScheme : Scheme := by
     D.toLocallyRingedSpaceGlueData.toGlueData.glued
   intro x
   obtain ⟨i, y, rfl⟩ := D.toLocallyRingedSpaceGlueData.ι_jointly_surjective x
-  refine ⟨_, ((D.U i).affineCover.map y).toLRSHom ≫
+  refine ⟨_, ((D.U i).affineCover.map ((D.U i).affineCover.f y)).toLRSHom ≫
     D.toLocallyRingedSpaceGlueData.toGlueData.ι i, ?_⟩
   constructor
   · simp only [LocallyRingedSpace.comp_toShHom, SheafedSpace.comp_base, TopCat.hom_comp,
@@ -251,8 +251,7 @@ def openCover (D : Scheme.GlueData) : OpenCover D.glued where
   J := D.J
   obj := D.U
   map := D.ι
-  f x := (D.ι_jointly_surjective x).choose
-  covers x := ⟨_, (D.ι_jointly_surjective x).choose_spec.choose_spec⟩
+  exists_eq := D.ι_jointly_surjective
 
 end GlueData
 
@@ -451,7 +450,8 @@ end Cover
 lemma hom_ext_of_forall {X Y : Scheme} (f g : X ⟶ Y)
     (H : ∀ x : X, ∃ U : X.Opens, x ∈ U ∧ U.ι ≫ f = U.ι ≫ g) : f = g := by
   choose U hxU hU using H
-  let 𝒰 : X.OpenCover := { J := X, obj i := (U i), map i := (U i).ι, f x := x, covers := by simpa }
+  let 𝒰 : X.OpenCover :=
+    { J := X, obj i := (U i), map i := (U i).ι, exists_eq x := ⟨x, ⟨x, hxU x⟩, rfl⟩ }
   exact 𝒰.hom_ext _ _ hU
 
 /-!
