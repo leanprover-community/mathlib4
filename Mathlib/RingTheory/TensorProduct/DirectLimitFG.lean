@@ -10,6 +10,11 @@ import Mathlib.RingTheory.Adjoin.FG
 
 /-! # Tensor products and finitely generated submodules
 
+Various results about how tensor products of arbitrary modules are direct limits of
+tensor products of finitely-generated modules.
+
+## Main definitions
+
 * `Submodule.FG.directedSystem`, the directed system of finitely generated submodules of a module.
 
 * `Submodule.FG.directLimit` proves that a module is the direct limit
@@ -36,9 +41,6 @@ submodules `Q`, with respect to the maps deduced from the inclusions
 `Submodule.FG.lTensor.directLimit` : a tensor product `M ⊗[R] N` is the direct limit
 of the modules `M ⊗[R] Q`, where `Q` ranges over all finitely generated submodules of `N`,
 as a linear equivalence.
-
-
-
 ## TODO
 
 * Fix namespaces, add docstrings
@@ -85,7 +87,7 @@ variable (R : Type u) (M N : Type*)
   [AddCommMonoid M] [Module R M]
   [AddCommMonoid N] [Module R N]
 
-/-- Given a directed system of `R`-modules, tensor it on the right gives a directed system -/
+/-- Given a directed system of `R`-modules, tensoring it on the right gives a directed system -/
 theorem DirectedSystem.rTensor {ι : Type*} [Preorder ι] {F : ι → Type*}
     [∀ i, AddCommMonoid (F i)] [∀ i, Module R (F i)] {f : ⦃i j : ι⦄ → i ≤ j → F i →ₗ[R] F j}
     (D : DirectedSystem F (fun _ _ h ↦ f h)) :
@@ -102,7 +104,7 @@ theorem DirectedSystem.rTensor {ι : Type*} [Preorder ι] {F : ι → Type*}
     simp [D.map_map]
 
 /-- When `P` ranges over finitely generated submodules of `M`,
-  the modules of the form `P ⊗[R] N` form a directed system. -/
+  the modules of the form `P ⊗[R] N` form a directed system. -/
 theorem Submodule.FG.rTensor.directedSystem :
     DirectedSystem (ι := {P : Submodule R M // P.FG}) (fun P ↦ P.val ⊗[R] N)
     (fun ⦃_ _⦄ h ↦ rTensor N (Submodule.inclusion h)) :=
@@ -112,7 +114,7 @@ theorem Submodule.FG.rTensor.directedSystem :
 where `P` ranges over all finitely generated submodules of `M`, as a linear equivalence. -/
 noncomputable def Submodule.FG.rTensor.directLimit [DecidableEq {P : Submodule R M // P.FG}] :
     Module.DirectLimit (R := R) (ι := {P : Submodule R M // P.FG}) (fun P ↦ P.val ⊗[R] N)
-      (fun ⦃P Q⦄ (h : P ≤ Q)  ↦ (Submodule.inclusion h).rTensor N) ≃ₗ[R] M ⊗[R] N :=
+      (fun ⦃P Q⦄ (h : P ≤ Q) ↦ (Submodule.inclusion h).rTensor N) ≃ₗ[R] M ⊗[R] N :=
   (TensorProduct.directLimitLeft _ N).symm.trans ((Submodule.FG.directLimit R M).rTensor N)
 
 theorem Submodule.FG.rTensor.directLimit_apply [DecidableEq {P : Submodule R M // P.FG}]
@@ -138,7 +140,7 @@ theorem Submodule.FG.rTensor.directLimit_apply' [DecidableEq {P : Submodule R M 
       = (rTensor N (Submodule.subtype P)) u := by
   apply Submodule.FG.rTensor.directLimit_apply
 
-/-- Given a directed system of `R`-modules, tensor it on the left gives a directed system -/
+/-- Given a directed system of `R`-modules, tensoring it on the left gives a directed system -/
 theorem DirectedSystem.lTensor {ι : Type*} [Preorder ι] {F : ι → Type*}
     [∀ i, AddCommMonoid (F i)] [∀ i, Module R (F i)] {f : ⦃i j : ι⦄ → i ≤ j → F i →ₗ[R] F j}
     (D : DirectedSystem F (fun _ _ h ↦ f h)) :
@@ -243,8 +245,7 @@ variable {R S M N : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
 
 theorem TensorProduct.Algebra.exists_of_fg [DecidableEq {P : Submodule R S // P.FG}] :
     ∃ (A : Subalgebra R S), Subalgebra.FG A ∧ u ∈ range (rTensor N A.val.toLinearMap) := by
-  obtain ⟨P, hP, hu⟩ := TensorProduct.exists_of_fg u
-  obtain ⟨s, hs⟩ := hP
+  obtain ⟨P, ⟨s, hs⟩, hu⟩ := TensorProduct.exists_of_fg u
   use Algebra.adjoin R s, Subalgebra.fg_adjoin_finset _
   have : P ≤ (Algebra.adjoin R (s : Set S)).toSubmodule := by
     simp only [← hs, span_le, Subalgebra.coe_toSubmodule]
@@ -259,16 +260,15 @@ theorem TensorProduct.Algebra.eq_of_fg_of_subtype_eq
       ∧ rTensor N (Subalgebra.inclusion hAB).toLinearMap t
         = LinearMap.rTensor N (Subalgebra.inclusion hAB).toLinearMap t' := by
   classical
-  let ⟨P, hP, ⟨u, hu⟩⟩ := TensorProduct.exists_of_fg t
-  let ⟨P', hP', ⟨u', hu'⟩⟩ := TensorProduct.exists_of_fg t'
+  let ⟨P, hP, u, hu⟩ := TensorProduct.exists_of_fg t
+  let ⟨P', hP', u', hu'⟩ := TensorProduct.exists_of_fg t'
   let P₁ := Submodule.map A.toSubmodule.subtype (P ⊔ P')
   have hP₁ : Submodule.FG P₁ := Submodule.FG.map _ (Submodule.FG.sup hP hP')
   -- the embeddings from P and P' to P₁
   let j : P →ₗ[R] P₁ := (Subalgebra.toSubmodule A).subtype.restrict
       (fun p hp ↦ by
         simp only [coe_subtype, Submodule.map_sup, P₁]
-        apply Submodule.mem_sup_left
-        use p; simp only [SetLike.mem_coe]; exact ⟨hp, rfl⟩)
+        exact Submodule.mem_sup_left ⟨p, hp, rfl⟩)
   let j' : P' →ₗ[R] P₁ := (Subalgebra.toSubmodule A).subtype.restrict
       (fun p hp ↦ by
         simp only [coe_subtype, Submodule.map_sup, P₁]
@@ -281,8 +281,8 @@ theorem TensorProduct.Algebra.eq_of_fg_of_subtype_eq
   have : rTensor N P₁.subtype u₁ = rTensor N P₁.subtype u'₁ := by
     rw [hu₁, hu'₁]
     simp only [← comp_apply, ← rTensor_comp]
-    have hj₁ : P₁.subtype ∘ₗ j = A.val.toLinearMap ∘ₗ P.subtype := by ext; rfl
-    have hj'₁ : P₁.subtype ∘ₗ j' = A.val.toLinearMap ∘ₗ P'.subtype := by ext; rfl
+    have hj₁ : P₁.subtype ∘ₗ j = A.val.toLinearMap ∘ₗ P.subtype := rfl
+    have hj'₁ : P₁.subtype ∘ₗ j' = A.val.toLinearMap ∘ₗ P'.subtype := rfl
     rw [hj₁, hj'₁]
     simp only [rTensor_comp, comp_apply]
     rw [hu, hu', h]
