@@ -5099,6 +5099,7 @@ import Mathlib.Probability.ProbabilityMassFunction.Monad
 import Mathlib.Probability.Process.Adapted
 import Mathlib.Probability.Process.Filtration
 import Mathlib.Probability.Process.HittingTime
+import Mathlib.Probability.Process.Kolmogorov
 import Mathlib.Probability.Process.PartitionFiltration
 import Mathlib.Probability.Process.Stopping
 import Mathlib.Probability.ProductMeasure
