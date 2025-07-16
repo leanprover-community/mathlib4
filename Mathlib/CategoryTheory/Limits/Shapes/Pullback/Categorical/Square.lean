@@ -92,12 +92,10 @@ instance :
 instance : (inverse T L R B).IsEquivalence :=
   inferInstanceAs (equivalence T L R B).inverse.IsEquivalence
 
-
 /-- An isomorphism of `catCommSqOver` which bundles the natural ismorphisms
 `(equivalence T L R B).inverse ⋙ T ≅ π₁ R B`,
 `(equivalence T L R B).inverse ⋙ L ≅ π₂ R B` as well as the coherence conditions
 they satisfy. -/
-
 @[simps!]
 def precomposeEquivalenceInverseIsoDefault :
     (CatCommSqOver.precompose R B (equivalence T L R B).inverse).obj
