@@ -343,11 +343,11 @@ lemma taylor_mean_remainder_lagrange_iteratedDeriv {f : ℝ → ℝ} {x x₀ : �
     ∃ x' ∈ Ioo x₀ x, f x - taylorWithinEval f n (Icc x₀ x) x₀ x =
       iteratedDeriv (n + 1) f x' * (x - x₀) ^ (n + 1) / (n + 1)! := by
   have hu : UniqueDiffOn ℝ (Icc x₀ x) := uniqueDiffOn_Icc hx
-  have hd : DifferentiableOn ℝ (iteratedDerivWithin n f (Icc x₀ x)) (Ioo x₀ x) := by
-    convert (hf.differentiableOn_iteratedDerivWithin _ hu).mono Ioo_subset_Icc_self
+  have hd : DifferentiableOn ℝ (iteratedDerivWithin n f (Icc x₀ x)) (Icc x₀ x) := by
+    refine hf.differentiableOn_iteratedDerivWithin ?_ hu
     norm_cast
     norm_num
-  obtain ⟨x', h1, h2⟩ := taylor_mean_remainder_lagrange hx hf.of_succ hd
+  obtain ⟨x', h1, h2⟩ := taylor_mean_remainder_lagrange hx hf.of_succ (hd.mono Ioo_subset_Icc_self)
   use x', h1
   rw [h2, iteratedDeriv_eq_iteratedFDeriv, iteratedDerivWithin_eq_iteratedFDerivWithin,
     iteratedFDerivWithin_eq_iteratedFDeriv hu _ ⟨le_of_lt h1.1, le_of_lt h1.2⟩]

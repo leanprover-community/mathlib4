@@ -756,7 +756,7 @@ lemma hasSubgaussianMGF_of_mem_Icc [IsProbabilityMeasure μ] {a b : ℝ} (hm : A
   mgf_le t := by
     obtain ht | ht | ht := lt_trichotomy 0 t
     · exact ProbabilityTheory.mgf_le_of_mem_Icc hm hb hc ht
-    · simp [← ht, mgf_zero]
+    · simp [← ht]
     calc
     _ = mgf (-X) μ (-t) := by simp [mgf]
     _ ≤ exp ((‖-a - -b‖₊ / 2) ^ 2 * (-t) ^ 2 / 2) := by
