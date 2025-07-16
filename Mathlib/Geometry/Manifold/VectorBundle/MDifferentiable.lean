@@ -142,10 +142,8 @@ theorem mdifferentiableOn_coordChangeL :
 
 theorem mdifferentiableOn_symm_coordChangeL :
     MDifferentiableOn IB 𝓘(𝕜, F →L[𝕜] F) (fun b : B => ((e.coordChangeL 𝕜 e' b).symm : F →L[𝕜] F))
-      (e.baseSet ∩ e'.baseSet) := by
-  rw [inter_comm]
-  refine (mdifferentiableOn_coordChangeL e' e).congr fun b hb ↦ ?_
-  rw [e.symm_coordChangeL e' hb]
+      (e.baseSet ∩ e'.baseSet) :=
+  (contMDiffOn_symm_coordChangeL e e').mdifferentiableOn le_rfl
 
 variable {e e'}
 
