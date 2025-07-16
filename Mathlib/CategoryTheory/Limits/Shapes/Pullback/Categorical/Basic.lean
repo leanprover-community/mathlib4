@@ -225,6 +225,7 @@ lemma w_app {S S' : CatCommSqOver F G X} (φ : S ⟶ S') (x : X) :
   NatTrans.congr_app φ.w x
 
 variable {X} in
+/-- Interpret a `CatCommSq` as a `CatCommSqOver`. -/
 @[simps]
 def ofSquare (T : A ⥤ B) (L : A ⥤ C) (R : B ⥤ X) (B_ : C ⥤ X)
     [CatCommSq T L R B_] : CatCommSqOver R B_ A where
