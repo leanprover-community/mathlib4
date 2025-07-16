@@ -17,7 +17,7 @@ This file defines the first-order language of Presburger arithmetic as (0,1,+).
 
 ## TODO
 
-- Generalize `presburger.finsum` (maybe also `NatCast` and `SMul`) for classes like
+- Generalize `presburger.sum` (maybe also `NatCast` and `SMul`) for classes like
   `FirstOrder.Language.IsOrdered`.
 - Define the theory of Presburger arithmetic and prove its properties (quantifier elimination,
   completeness, etc).
@@ -56,9 +56,9 @@ instance : Add (presburger.Term α) where
 instance : NatCast (presburger.Term α) where
   natCast := Nat.unaryCast
 
-@[simp] theorem natCast_zero : NatCast.natCast 0 = (0 : presburger.Term α) := rfl
+@[simp, norm_cast] theorem natCast_zero : (0 : ℕ) = (0 : presburger.Term α) := rfl
 
-@[simp] theorem natCast_succ {n : ℕ} : NatCast.natCast (n + 1) = (n : presburger.Term α) + 1 := rfl
+@[simp, norm_cast] theorem natCast_succ (n : ℕ) : (n + 1 : ℕ) = (n : presburger.Term α) + 1 := rfl
 
 instance : SMul ℕ (presburger.Term α) where
   smul := nsmulRec
@@ -73,9 +73,9 @@ def succ (t : presburger.Term α) := t + 1
 /-- Summation over a finite set of terms in Presburger arithmetic.
 
   It is defined via choice, so the result only makes sense when the structure satisfies
-  commutativity (see `realize_finsum`). -/
-noncomputable def finsum {β : Type*} [Fintype β] (f : β → presburger.Term α) : presburger.Term α :=
-  ((Finset.univ : Finset β).toList.map f).foldr (· + ·) 0
+  commutativity (see `realize_sum`). -/
+noncomputable def sum {β : Type*} (s : Finset β) (f : β → presburger.Term α) : presburger.Term α :=
+  (s.toList.map f).sum
 
 variable {M : Type*} {v : α → M}
 
@@ -90,13 +90,13 @@ instance : presburger.Structure M where
   | .add, v => v 0 + v 1
 
 @[simp] theorem funMap_zero {v} :
-    @Structure.funMap presburger M _ _ presburgerFunc.zero v = 0 := rfl
+    Structure.funMap (L := presburger) (M := M) presburgerFunc.zero v = 0 := rfl
 
 @[simp] theorem funMap_one {v} :
-    @Structure.funMap presburger M _ _ presburgerFunc.one v = 1 := rfl
+    Structure.funMap (L := presburger) (M := M) presburgerFunc.one v = 1 := rfl
 
 @[simp] theorem funMap_add {v} :
-    @Structure.funMap presburger M _ _ presburgerFunc.add v = v 0 + v 1 := rfl
+    Structure.funMap (L := presburger) (M := M) presburgerFunc.add v = v 0 + v 1 := rfl
 
 @[simp] theorem realize_zero : Term.realize v (0 : presburger.Term α) = 0 := rfl
 
@@ -117,18 +117,13 @@ end
     Term.realize v (n • t) = n • Term.realize v t := by
   induction n with simp [*, add_nsmul]
 
-@[simp] theorem realize_finsum [AddCommMonoidWithOne M]
-    {β : Type*} [Fintype β] {f : β → presburger.Term α} :
-    Term.realize v (finsum f) = ∑ i, Term.realize v (f i) := by
+@[simp] theorem realize_sum [AddCommMonoidWithOne M]
+    {β : Type*} {s : Finset β} {f : β → presburger.Term α} :
+    Term.realize v (sum s f) = ∑ i ∈ s, Term.realize v (f i) := by
   classical
-  simp only [finsum, Finset.sum_eq_fold]
-  conv => rhs; rw [←Finset.toList_toFinset Finset.univ]
-  have hnodup := Finset.nodup_toList (Finset.univ : Finset β)
-  generalize (Finset.univ : Finset β).toList = l at *
-  induction l with
-  | nil => rfl
-  | cons =>
-    rw [List.nodup_cons, ←List.mem_toFinset] at hnodup
-    simp [*, Finset.fold_insert (β := M) (op := (· + ·)) hnodup.1]
+  simp only [sum]
+  conv => rhs; rw [← s.toList_toFinset, List.sum_toFinset _ s.nodup_toList]
+  generalize s.toList = l
+  induction l with simp [*]
 
 end FirstOrder.Language.presburger
