@@ -55,7 +55,7 @@ open Finsupp hiding single mapDomain
 
 universe u₁ u₂ u₃ u₄
 
-variable (k : Type u₁) (G : Type u₂) (H : Type*) {R : Type*}
+variable (k : Type u₁) (G : Type u₂) (H : Type*) {R S M : Type*}
 
 /-! ### Multiplicative monoids -/
 
@@ -120,6 +120,11 @@ theorem single_apply {a a' : G} {b : k} [Decidable (a = a')] :
 theorem single_eq_zero {a : G} {b : k} : single a b = 0 ↔ b = 0 := Finsupp.single_eq_zero
 
 theorem single_ne_zero {a : G} {b : k} : single a b ≠ 0 ↔ b ≠ 0 := Finsupp.single_ne_zero
+
+@[elab_as_elim]
+lemma induction_linear {p : MonoidAlgebra k G → Prop} (f : MonoidAlgebra k G) (zero : p 0)
+    (add : ∀ f g : MonoidAlgebra k G, p f → p g → p (f + g)) (single : ∀ a b, p (single a b)) :
+    p f := Finsupp.induction_linear f zero add single
 
 /-- A non-commutative version of `MonoidAlgebra.lift`: given an additive homomorphism `f : k →+ R`
 and a homomorphism `g : G → R`, returns the additive homomorphism from
@@ -266,6 +271,13 @@ def liftNCRingHom (f : k →+* R) (g : G →* R) (h_comm : ∀ x y, Commute (f x
     map_one' := liftNC_one _ _
     map_mul' := fun _a _b => liftNC_mul _ _ _ _ fun {_ _} _ => h_comm _ _ }
 
+@[simp]
+lemma liftNCRingHom_single (f : k →+* R) (g : G →* R) (h_comm) (a : G) (b : k) :
+    liftNCRingHom f g h_comm (single a b) = f b * g a :=
+  liftNC_single _ _ _ _
+
+@[simp, norm_cast] lemma coe_add (f g : MonoidAlgebra R G) : ⇑(f + g) = f + g := rfl
+
 end Semiring
 
 instance nonUnitalCommSemiring [CommSemiring k] [CommSemigroup G] :
@@ -310,8 +322,16 @@ theorem intCast_def [Ring k] [MulOneClass G] (z : ℤ) :
     (z : MonoidAlgebra k G) = single (1 : G) (z : k) :=
   rfl
 
-instance ring [Ring k] [Monoid G] : Ring (MonoidAlgebra k G) :=
+section Ring
+variable [Ring R]
+
+instance ring [Monoid G] : Ring (MonoidAlgebra R G) :=
   { MonoidAlgebra.nonAssocRing, MonoidAlgebra.semiring with }
+
+@[simp] lemma single_neg (a : M) (b : R) : single a (-b) = -single a b := Finsupp.single_neg ..
+@[simp] lemma neg_apply (m : M) (x : MonoidAlgebra R M) : (-x) m = -x m := rfl
+
+end Ring
 
 instance nonUnitalCommRing [CommRing k] [CommSemigroup G] :
     NonUnitalCommRing (MonoidAlgebra k G) :=
@@ -361,6 +381,10 @@ def comapDistribMulActionSelf [Group G] [Semiring k] : DistribMulAction G (Monoi
   Finsupp.comapDistribMulAction
 
 end DerivedInstances
+
+@[simp]
+lemma smul_apply [Zero R] [Semiring S] [SMulZeroClass R S] (r : R) (m : M) (x : MonoidAlgebra S M) :
+    (r • x) m = r • x m := rfl
 
 @[simp]
 theorem smul_single [Semiring k] [SMulZeroClass R k] (a : G) (c : R) (b : k) :
@@ -1034,6 +1058,13 @@ def liftNCRingHom (f : k →+* R) (g : Multiplicative G →* R) (h_comm : ∀ x 
     map_one' := liftNC_one _ _
     map_mul' := fun _a _b => liftNC_mul _ _ _ _ fun {_ _} _ => h_comm _ _ }
 
+@[simp]
+lemma liftNCRingHom_single (f : k →+* R) (g : Multiplicative G →* R) (h_comm) (a : G) (b : k) :
+    liftNCRingHom f g h_comm (single a b) = f b * g a :=
+  liftNC_single _ _ _ _
+
+@[simp, norm_cast] lemma coe_add (f g : AddMonoidAlgebra R G) : ⇑(f + g) = f + g := rfl
+
 end Semiring
 
 instance nonUnitalCommSemiring [CommSemiring k] [AddCommSemigroup G] :
@@ -1075,8 +1106,16 @@ theorem intCast_def [Ring k] [AddZeroClass G] (z : ℤ) :
     (z : k[G]) = single (0 : G) (z : k) :=
   rfl
 
-instance ring [Ring k] [AddMonoid G] : Ring k[G] :=
+section Ring
+variable [Ring R]
+
+instance ring [AddMonoid G] : Ring R[G] :=
   { AddMonoidAlgebra.nonAssocRing, AddMonoidAlgebra.semiring with }
+
+@[simp] lemma single_neg (a : M) (b : R) : single a (-b) = -single a b := Finsupp.single_neg ..
+@[simp] lemma neg_apply (m : M) (x : MonoidAlgebra R M) : (-x) m = -x m := rfl
+
+end Ring
 
 instance nonUnitalCommRing [CommRing k] [AddCommSemigroup G] :
     NonUnitalCommRing k[G] :=
@@ -1118,6 +1157,10 @@ because we've never discussed actions of additive groups. -/
 
 
 end DerivedInstances
+
+@[simp]
+lemma smul_apply [Zero R] [Semiring S] [SMulZeroClass R S] (r : R) (m : M) (x : MonoidAlgebra S M) :
+    (r • x) m = r • x m := rfl
 
 @[simp]
 theorem smul_single [Semiring k] [SMulZeroClass R k] (a : G) (c : R) (b : k) :
