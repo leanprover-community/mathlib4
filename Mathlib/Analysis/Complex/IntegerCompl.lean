@@ -51,4 +51,10 @@ lemma integerComplement_pow_two_ne_pow_two {x : ℂ} (hx : x ∈ ℂ_ℤ) (n : �
   simp only [sq_eq_sq_iff_eq_or_eq_neg] at *
   aesop
 
+lemma upperHalfPlane_inter_integerComplement :
+    {z : ℂ | 0 < z.im} ∩ Complex.integerComplement = {z : ℂ | 0 < z.im} := by
+  ext z
+  simp only [Set.mem_inter_iff, Set.mem_setOf_eq, and_iff_left_iff_imp]
+  exact fun hz => UpperHalfPlane.coe_mem_integerComplement ⟨z, hz⟩
+
 end Complex

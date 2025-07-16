@@ -39,7 +39,7 @@ theorem HasSumUniformlyOn_of_cofinite_eventually {ι : Type*} {f : ι → β →
     tendstoUniformlyOn_tsum_of_cofinite_eventually hu hfu]
 
 lemma SummableLocallyUniformlyOn_of_locally_bounded [TopologicalSpace β] [LocallyCompactSpace β]
-    (f : α → β → F) {s : Set β} (hs : IsOpen s)
+    {f : α → β → F} {s : Set β} (hs : IsOpen s)
     (hu : ∀ K ⊆ s, IsCompact K → ∃ u : α → ℝ, Summable u ∧ ∀ n (k : K), ‖f n k‖ ≤ u n) :
     SummableLocallyUniformlyOn f s := by
   apply HasSumLocallyUniformlyOn.summableLocallyUniformlyOn (g := (fun x ↦ ∑' i, f i x))
