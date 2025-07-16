@@ -35,7 +35,7 @@ explicitly (see `MonoidWithZeroHom.mem_valueGroup_iff_of_comm`).
 all coincide: see `valueMonoid_eq_valueGroup` for an equality as submonoids and
 `valueMonoid_eq_valueGroup'` for an equality as subsets.
 * When `B` is a *commutative* group with zero, `MonoidWithZeroHom.valueGroup` can be
-explicitly described as the elements that are ratios of terms in `range f` , see
+explicitly described as the elements that are ratios of terms in `range f`, see
 `MonoidWithZeroHom.mem_valueGroup_iff_of_comm`.
 
 ## Implementation details
@@ -48,6 +48,16 @@ unfolding.
 namespace MonoidWithZeroHom
 
 open Set Subgroup Submonoid
+
+lemma mrange_nontrivial {G H : Type*} [MulZeroOneClass G] [MulZeroOneClass H] [Nontrivial H]
+    (f : G →*₀ H) :
+    Nontrivial (MonoidHom.mrange f) :=
+  ⟨1, ⟨0, 0, by simp⟩, by simp [Subtype.ext_iff]⟩
+
+lemma range_nontrivial {G H : Type*} [MulZeroOneClass G] [MulZeroOneClass H] [Nontrivial H]
+    (f : G →*₀ H) :
+    (Set.range f).Nontrivial :=
+  Set.nontrivial_coe_sort.mp f.mrange_nontrivial
 
 variable {A B F : Type*} [FunLike F A B] (f : F)
 
