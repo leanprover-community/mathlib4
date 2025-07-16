@@ -369,7 +369,7 @@ theorem σiInf_const_mono (h : ι' → ι) : ⨅ _ : ι, a ≤ ⨅ _ : ι', a :=
   σiSup_const_mono (α := αᵒᵈ) h
 
 theorem σiSup_σiInf_le_σiInf_σiSup {f : ι → ι' → α} (hf₁ : ∀ i, (Set.range (f i)).Countable)
-    (hf₂ : {iInf (f i) | i}.Countable)  (hf₃ : ∀ j, (Set.range (fun i => f i j)).Countable)
+    (hf₂ : {iInf (f i) | i}.Countable) (hf₃ : ∀ j, (Set.range (fun i => f i j)).Countable)
     (hf₄ : {iSup (fun i => f i j) | j}.Countable) : ⨆ i, ⨅ j, f i j ≤ ⨅ j, ⨆ i, f i j :=
   haveI : ∀ i, Countable ↑(Set.range fun j ↦ f i j) := hf₁
   haveI : Countable ↑(Set.range fun i ↦ ⨅ j, f i j) := hf₂
