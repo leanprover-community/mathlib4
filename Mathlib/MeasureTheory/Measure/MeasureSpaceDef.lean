@@ -431,6 +431,23 @@ lemma support_eq_compl_Union_open_null :
       rcases (mem_nhds_iff.mp hU_nhds) with ⟨V, hV_sub, hV_open, hVₓ⟩
       exact measure_pos_of_superset hV_sub <| fun a ↦ hx V hV_open a hVₓ
 
+lemma support_mem_ae_of_isLindelof (h : IsLindelof μ.supportᶜ) : μ.support ∈ ae μ := by
+  rw [← compl_compl μ.support]
+  apply h.compl_mem_sets_of_nhdsWithin
+  intro x hx
+  simp only [mem_compl_iff, mem_support_iff, not_frequently, not_lt, nonpos_iff_eq_zero] at hx
+  obtain ⟨u, hu⟩ := Eventually.exists_mem_of_smallSets hx
+  use u ∩ μ.supportᶜ
+  constructor
+  · simpa [inter_comm] using inter_mem_nhdsWithin _ hu.1
+  · simpa [compl_inter, compl_compl] using
+      mem_of_superset (compl_mem_ae_iff.mpr hu.2) subset_union_left
+
+lemma IsLindelof.compl_mem_sets_of_nhdsWithin {s : Set X} (hs : IsLindelof s)
+    {f : Filter X} [CountableInterFilter f] (hf : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, tᶜ ∈ f) : sᶜ ∈ f := by
+  sorry
+
+
 lemma exists_mem_support_of_open_pos [HereditarilyLindelofSpace X] {U : Set X}
     (_ : IsOpen U) (hμ : 0 < μ U) : (U ∩ μ.support).Nonempty := by
   by_contra hn
