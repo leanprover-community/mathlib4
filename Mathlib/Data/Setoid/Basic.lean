@@ -196,6 +196,11 @@ theorem eq_top_iff {s : Setoid α} : s = (⊤ : Setoid α) ↔ ∀ x y : α, s x
   rw [_root_.eq_top_iff, Setoid.le_def, Setoid.top_def]
   simp only [Pi.top_apply, Prop.top_eq_true, forall_true_left]
 
+instance {s : Setoid α} [hs : Fact (s ≠ ⊤)] : Nontrivial (Quotient s) := by
+  refine not_subsingleton_iff_nontrivial.mp fun H ↦ hs.out ?_
+  simp_rw [eq_top_iff, ← Quotient.eq]
+  exact fun _ _ ↦ H.allEq _ _
+
 lemma sInf_equiv {S : Set (Setoid α)} {x y : α} :
     letI := sInf S
     x ≈ y ↔ ∀ s ∈ S, s x y := Iff.rfl

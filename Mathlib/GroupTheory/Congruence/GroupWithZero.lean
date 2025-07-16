@@ -94,12 +94,7 @@ instance instZPow₀ : Pow c.Quotient ℤ :=
 
 instance groupWithZero [hc : Fact (c ≠ ⊤)] :
     GroupWithZero c.Quotient := fast_instance%
-  have : (0 : c.Quotient) ≠ 1 := fun H ↦ hc.out <| by
-    ext x y
-    rw [← coe_zero, ← coe_one, Con.eq] at H
-    replace H : ∀ z, c 0 z := zero_of_isUnit H isUnit_one
-    exact iff_true_intro <| c.trans (c.symm <| H x) (H y)
-  Function.Surjective.groupWithZero this _ Quotient.mk''_surjective rfl rfl
+  Function.Surjective.groupWithZero zero_ne_one _ Quotient.mk''_surjective rfl rfl
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
 
 instance commGroupWithZero {M : Type*} [CommGroupWithZero M] (c : Con M) [Fact (c ≠ ⊤)] :
