@@ -97,6 +97,6 @@ lemma denselyOrdered_withBot_set_iff_subsingleton {s : Set (WithBot X)} :
 lemma denselyOrdered_withTop_set_iff_subsingleton {s : Set (WithTop X)} :
     DenselyOrdered s ↔ s.Subsingleton := by
   have he : StrictAnti (WithTop.toDual.image s) :=
-    WithTop.toDual.strictAnti_image _ (fun ⦃a b⦄ a ↦ a)
+    WithTop.toDual.image_strictAnti _ (fun ⦃a b⦄ a ↦ a)
   rw [denselyOrdered_iff_of_strictAnti _ he, denselyOrdered_withBot_set_iff_subsingleton,
     WithTop.toDual.injective.subsingleton_image_iff]
