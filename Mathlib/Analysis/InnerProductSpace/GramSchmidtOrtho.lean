@@ -31,7 +31,6 @@ and outputs a set of orthogonal vectors which have the same span.
   an indexed set of vectors of the right size
 -/
 
-
 open Finset Submodule Module
 
 variable (𝕜 : Type*) {E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
@@ -67,9 +66,12 @@ theorem gramSchmidt_def'' (f : ι → E) (n : ι) :
   rw [← starProjection_apply, starProjection_singleton, RCLike.ofReal_pow]
 
 @[simp]
-theorem gramSchmidt_zero {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [OrderBot ι]
+theorem gramSchmidt_bot {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [OrderBot ι]
     [WellFoundedLT ι] (f : ι → E) : gramSchmidt 𝕜 f ⊥ = f ⊥ := by
   rw [gramSchmidt_def, Iio_eq_Ico, Finset.Ico_self, Finset.sum_empty, sub_zero]
+
+@[simp]
+theorem gramSchmidt_zero (n : ι) : gramSchmidt 𝕜 (0 : ι → E) n = 0 := by simp [gramSchmidt_def]
 
 /-- **Gram-Schmidt Orthogonalisation**:
 `gramSchmidt` produces an orthogonal system of vectors. -/
@@ -118,7 +120,7 @@ theorem gramSchmidt_inv_triangular (v : ι → E) {i j : ι} (hij : i < j) :
   have : ⟪b j, b k⟫ = 0 := gramSchmidt_orthogonal 𝕜 v (hki.trans hij).ne'
   simp [this]
 
-open Submodule Set Order
+open Set
 
 theorem mem_span_gramSchmidt (f : ι → E) {i j : ι} (hij : i ≤ j) :
     f i ∈ span 𝕜 (gramSchmidt 𝕜 f '' Set.Iic j) := by
@@ -159,6 +161,7 @@ theorem span_gramSchmidt (f : ι → E) : span 𝕜 (range (gramSchmidt 𝕜 f))
       range_subset_iff.2 fun _ =>
         span_mono (image_subset_range _ _) <| mem_span_gramSchmidt _ _ le_rfl
 
+/-- The `gramSchmidt` operator acts as the identity on set of mutually orthogonal vectors. -/
 theorem gramSchmidt_of_orthogonal {f : ι → E} (hf : Pairwise fun i j => ⟪f i, f j⟫ = 0) :
     gramSchmidt 𝕜 f = f := by
   ext i
@@ -233,14 +236,14 @@ variable (𝕜) in
 noncomputable def gramSchmidtNormed (f : ι → E) (n : ι) : E :=
   (‖gramSchmidt 𝕜 f n‖ : 𝕜)⁻¹ • gramSchmidt 𝕜 f n
 
-theorem gramSchmidtNormed_unit_length_coe {f : ι → E} (n : ι)
+theorem gramSchmidtNormed_unit_length_coe {f : ι → E} {n : ι}
     (h₀ : LinearIndependent 𝕜 (f ∘ ((↑) : Set.Iic n → ι))) : ‖gramSchmidtNormed 𝕜 f n‖ = 1 := by
   simp only [gramSchmidt_ne_zero_coe n h₀, gramSchmidtNormed, norm_smul_inv_norm, Ne,
     not_false_iff]
 
-theorem gramSchmidtNormed_unit_length {f : ι → E} (n : ι) (h₀ : LinearIndependent 𝕜 f) :
+theorem gramSchmidtNormed_unit_length {f : ι → E} {n : ι} (h₀ : LinearIndependent 𝕜 f) :
     ‖gramSchmidtNormed 𝕜 f n‖ = 1 :=
-  gramSchmidtNormed_unit_length_coe _ (LinearIndependent.comp h₀ _ Subtype.coe_injective)
+  gramSchmidtNormed_unit_length_coe (LinearIndependent.comp h₀ _ Subtype.coe_injective)
 
 theorem gramSchmidtNormed_unit_length' {f : ι → E} {n : ι} (hn : gramSchmidtNormed 𝕜 f n ≠ 0) :
     ‖gramSchmidtNormed 𝕜 f n‖ = 1 := by
@@ -277,8 +280,6 @@ theorem gramSchmidtNormed_orthonormal' (f : ι → E) :
 @[deprecated (since := "2025-07-10")]
 alias gramSchmidt_orthonormal' := gramSchmidtNormed_orthonormal'
 
-open Submodule Set Order
-
 theorem span_gramSchmidtNormed (f : ι → E) (s : Set ι) :
     span 𝕜 (gramSchmidtNormed 𝕜 f '' s) = span 𝕜 (gramSchmidt 𝕜 f '' s) := by
   refine span_eq_span
@@ -294,6 +295,14 @@ theorem span_gramSchmidtNormed (f : ι → E) (s : Set ι) :
 theorem span_gramSchmidtNormed_range (f : ι → E) :
     span 𝕜 (range (gramSchmidtNormed 𝕜 f)) = span 𝕜 (range (gramSchmidt 𝕜 f)) := by
   simpa only [image_univ.symm] using span_gramSchmidtNormed f univ
+
+/-- `gramSchmidtNormed` produces linearly independent vectors when given linearly independent
+vectors. -/
+theorem gramSchmidtNormed_linearIndependent {f : ι → E} (h₀ : LinearIndependent 𝕜 f) :
+    LinearIndependent 𝕜 (gramSchmidtNormed 𝕜 f) := by
+  have (i : ι) : IsUnit (‖gramSchmidt 𝕜 f i‖⁻¹ : 𝕜) :=
+    isUnit_iff_ne_zero.mpr (by simp [gramSchmidt_ne_zero i h₀])
+  apply (gramSchmidt_linearIndependent h₀).units_smul (w := fun i ↦ (this i).unit)
 
 section OrthonormalBasis
 
