@@ -107,7 +107,7 @@ theorem derivWithin_fun_pow
 @[simp]
 theorem derivWithin_pow
     (h : DifferentiableWithinAt 𝕜 f s x) (hu : UniqueDiffWithinAt 𝕜 s x) (n : ℕ) :
-    derivWithin (fun x => f x ^ n) s x = n * f x ^ (n - 1) * derivWithin f s x :=
+    derivWithin (f ^ n) s x = n * f x ^ (n - 1) * derivWithin f s x :=
   derivWithin_fun_pow h hu n
 
 @[simp]
