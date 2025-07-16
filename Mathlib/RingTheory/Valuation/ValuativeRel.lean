@@ -505,7 +505,6 @@ lemma valuation_eq_zero_iff {x : R} :
     valuation R x = 0 ↔ x ≤ᵥ 0 :=
   ValueGroupWithZero.mk_eq_zero _ _
 
-@[simp]
 lemma valuation_posSubmonoid_ne_zero (x : posSubmonoid R) :
     valuation R (x : R) ≠ 0 := by
   rw [ne_eq, valuation_eq_zero_iff]
@@ -550,7 +549,7 @@ lemma isEquiv {Γ₁ Γ₂ : Type*}
 lemma valuation_posSubmonoid_ne_zero_of_compatible {Γ : Type*} [LinearOrderedCommMonoidWithZero Γ]
     (v : Valuation R Γ) [v.Compatible] (x : posSubmonoid R) :
     v (x : R) ≠ 0 := by
-  simp [(isEquiv v (valuation R)).ne_zero]
+  simp [(isEquiv v (valuation R)).ne_zero, valuation_posSubmonoid_ne_zero]
 
 variable (R) in
 /-- An alias for endowing a ring with a preorder defined as the valuative relation. -/
