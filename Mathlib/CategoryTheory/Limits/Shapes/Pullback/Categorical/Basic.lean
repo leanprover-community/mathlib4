@@ -222,6 +222,14 @@ lemma w_app {S S' : CatCommSqOver F G X} (φ : S ⟶ S') (x : X) :
     S.iso.hom.app x ≫ G.map (φ.snd.app x) :=
   NatTrans.congr_app φ.w x
 
+variable {X} in
+@[simps]
+def ofSquare (T : A ⥤ B) (L : A ⥤ C) (R : B ⥤ X) (B_ : C ⥤ X)
+    [CatCommSq T L R B_] : CatCommSqOver R B_ A where
+  fst := T
+  snd := L
+  iso := CatCommSq.iso T L R B_
+
 variable (F G)
 
 /-- The "first projection" of a CatCommSqOver as a functor. -/
