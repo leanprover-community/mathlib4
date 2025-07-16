@@ -143,38 +143,26 @@ namespace PFunctor
 section Basic
 
 /-- The zero polynomial functor, defined as `A = PEmpty` and `B _ = PEmpty` -/
-def zero : PFunctor.{uA, uB} := ⟨PEmpty, fun _ => PEmpty⟩
+instance : Zero PFunctor.{uA, uB} where
+  zero := ⟨PEmpty, fun _ => PEmpty⟩
 
 /-- The unit polynomial functor, defined as `A = PUnit` and `B _ = PEmpty` -/
-def one : PFunctor.{uA, uB} := ⟨PUnit, fun _ => PEmpty⟩
-
-instance : Zero PFunctor.{uA, uB} where
-  zero := zero
-
 instance : One PFunctor.{uA, uB} where
-  one := one
+  one := ⟨PUnit, fun _ => PEmpty⟩
 
 /-- The variable `y` polynomial functor, defined as `A = PUnit` and `B _ = PUnit`. -/
 def y : PFunctor.{uA, uB} :=
   ⟨PUnit, fun _ => PUnit⟩
 
-instance : IsEmpty zero.A := inferInstanceAs (IsEmpty PEmpty)
-
 instance : IsEmpty (A 0) := inferInstanceAs (IsEmpty PEmpty)
-
-instance : Unique one.A := inferInstanceAs (Unique PUnit)
 
 instance : Unique (A 1) := inferInstanceAs (Unique PUnit)
 
-instance : Unique y.A := inferInstanceAs (Unique PUnit)
+instance : IsEmpty (B 1 PUnit.unit) := inferInstanceAs (IsEmpty PEmpty)
 
-@[simp] lemma zero_A : zero.A = PEmpty := rfl
+instance : Unique (A y) := inferInstanceAs (Unique PUnit)
 
-@[simp] lemma zero_B (a : zero.A) : zero.B a = PEmpty := PEmpty.elim a
-
-@[simp] lemma one_A : one.A = PUnit := rfl
-
-@[simp] lemma one_B (a : one.A) : one.B a = PEmpty := rfl
+instance : Unique (B y PUnit.unit) := inferInstanceAs (Unique PUnit)
 
 @[simp] lemma y_A : y.A = PUnit := rfl
 
