@@ -7,6 +7,15 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Categorical.Basic
 
 /-! # Categorical pullback squares
 
+In this file, given a `CatCommSq T L R B`, we provide the basic definition
+of a typeclass `CatPullbackSquare` that bundles the data of a (chosen, adjoint)
+inverse to the canonical functor from the top left corner to `R ⊡ B`, the
+categorical pullback of `R` and `B`.
+
+We show that for such squares, we have a universal property characterizing
+functors with values in the top left corner of the square, much like it is
+the case for `CategoricalPullback`.
+
 -/
 
 
