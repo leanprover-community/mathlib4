@@ -74,7 +74,8 @@ instance (F : C₁ ⥤ C₂) (G : C₃ ⥤ C₂) :
   counitIso := .refl _
 
 /-- The canonical equivalence `C₁ ≌ R ⊡ B` bundled by the fields of
-`CatPullbackSquare T L R B`. -/
+`CatPullbackSquare T L R B`. It is advised to avoid working with it,
+instead, one should prefer working with `functorEquiv`. -/
 @[simps functor]
 def equivalence : C₁ ≌ R ⊡ B where
   functor :=
@@ -106,49 +107,38 @@ def precomposeEquivalenceInverseIsoDefault :
 
 variable (X : Type u₅) [Category.{v₅} X]
 
-@[simps!]
+/-- The canonical equivalence between functors to the top left corner of the
+square and `CatCommSqOver R B X`.
+
+Note that the component at `S` of the counit of this equivalence
+bundles an equivalence between
+
+(Impl. details) This is *not* tagged `@[simps!]` intentionally! This equivalence
+should be treated as a primitive when working with categorical pullback squares.
+Only its forward direction admits some level of characterization. The idea being
+that once this equivalence is obtained, any reference to `R ⊡ B` should be
+avoided. -/
 def functorEquiv : (X ⥤ C₁) ≌ CatCommSqOver R B X :=
   (equivalence T L R B).congrRight.trans <|
     CategoricalPullback.functorEquiv R B X
 
-variable {X}
+@[simp]
+lemma functoEquiv_obj_fst (F : X ⥤ C₁) :
+    ((functorEquiv T L R B X).functor.obj F).fst = F ⋙ T :=
+  rfl
 
-open CatCommSqOver in
-/-- The "coherence condition" with respect to the categorical commutative
-squares that the inverse of `functorEquiv` satisfies: roughly speaking, it
-asserts compatibilities of the equivalences `functorEquiv` for
-the `CatPullbackSquare` at hand and the canonical one. -/
-@[reassoc (attr := simp)]
-lemma functorEquiv_inverse_coherence (S : CatCommSqOver R B X) (x : X) :
-    R.map ((equivalence T L R B).counitIso.hom.app
-        (((toFunctorToCategoricalPullback R B X).obj S).obj x)).fst ≫
-      S.iso.hom.app x =
-    (CatCommSq.iso T L R B).hom.app
-      ((equivalence T L R B).inverse.obj
-          (toFunctorToCategoricalPullback R B X|>.obj S|>.obj x)) ≫
-      B.map ((equivalence T L R B).counitIso.hom.app
-        (((toFunctorToCategoricalPullback R B X).obj S).obj x)).snd := by
-  simpa using congr_arg
-    (fun t ↦ t.app
-      (CategoricalPullback.functorEquiv R B X|>.inverse.obj S|>.obj x))
-    (precomposeEquivalenceInverseIsoDefault T L R B|>.hom.w)
+@[simp]
+lemma functoEquiv_obj_snd (F : X ⥤ C₁) :
+    ((functorEquiv T L R B X).functor.obj F).snd = F ⋙ L :=
+  rfl
 
-/-- An isomorphism of `CatCommSqOver` which bundles the natural ismorphisms
-`(functorEquiv T L R B X).inverse.obj S ⋙ T ≅ S.fst`,
-`(functorEquiv T L R B X).inverse.obj S ⋙ L ≅ S.snd` as well as the coherence
-conditions they satisfy. -/
-@[simps!]
-def precomposeEquivalenceInverseIso (S : CatCommSqOver R B X) :
-    (CatCommSqOver.precompose R B (functorEquiv T L R B X|>.inverse.obj S)).obj
-      (.ofSquare T L R B) ≅
-    S :=
-  mkIso
-    (Functor.associator _ _ _ ≪≫
-      (Functor.isoWhiskerLeft _ (CatCommSqOver.fstFunctor _ _ _|>.mapIso <|
-        precomposeEquivalenceInverseIsoDefault T L R B)))
-    (Functor.associator _ _ _ ≪≫
-      (Functor.isoWhiskerLeft _ (CatCommSqOver.sndFunctor _ _ _|>.mapIso <|
-        precomposeEquivalenceInverseIsoDefault T L R B)))
+@[simp]
+lemma functoEquiv_obj_iso (F : X ⥤ C₁) :
+    ((functorEquiv T L R B X).functor.obj F).iso =
+    Functor.associator _ _ _ ≪≫
+      Functor.isoWhiskerLeft _ (CatCommSq.iso T L R B) ≪≫
+      (Functor.associator _ _ _).symm :=
+  rfl
 
 end CatPullbackSquare
 
