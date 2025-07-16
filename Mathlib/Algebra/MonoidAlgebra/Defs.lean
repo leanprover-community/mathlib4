@@ -96,6 +96,7 @@ variable [Semiring k] [NonUnitalNonAssocSemiring R]
 -- TODO: This definition is very leaky, and we later have frequent problems conflating the two
 -- versions of `single`. Perhaps someone wants to try making this a `def` rather than an `abbrev`?
 -- In Mathlib 3 this was locally reducible.
+/-- `MonoidAlgebra.single a r` for `a : M`, `r : R` is the element `ar : R[M]`. -/
 abbrev single (a : G) (b : k) : MonoidAlgebra k G := Finsupp.single a b
 
 theorem single_zero (a : G) : (single a 0 : MonoidAlgebra k G) = 0 := Finsupp.single_zero a
@@ -328,7 +329,7 @@ variable [Ring R]
 instance ring [Monoid G] : Ring (MonoidAlgebra R G) :=
   { MonoidAlgebra.nonAssocRing, MonoidAlgebra.semiring with }
 
-@[simp] lemma single_neg (a : M) (b : R) : single a (-b) = -single a b := Finsupp.single_neg ..
+lemma single_neg (a : M) (b : R) : single a (-b) = -single a b := Finsupp.single_neg ..
 @[simp] lemma neg_apply (m : M) (x : MonoidAlgebra R M) : (-x) m = -x m := rfl
 
 end Ring
@@ -383,7 +384,7 @@ def comapDistribMulActionSelf [Group G] [Semiring k] : DistribMulAction G (Monoi
 end DerivedInstances
 
 @[simp]
-lemma smul_apply [Zero R] [Semiring S] [SMulZeroClass R S] (r : R) (m : M) (x : MonoidAlgebra S M) :
+lemma smul_apply [Semiring S] [SMulZeroClass R S] (r : R) (m : M) (x : MonoidAlgebra S M) :
     (r • x) m = r • x m := rfl
 
 @[simp]
@@ -875,6 +876,7 @@ section
 
 variable [Semiring k] [NonUnitalNonAssocSemiring R]
 
+/-- `MonoidAlgebra.single a r` for `a : M`, `r : R` is the element `ar : R[M]`. -/
 abbrev single (a : G) (b : k) : k[G] := Finsupp.single a b
 
 theorem single_zero (a : G) : (single a 0 : k[G]) = 0 := Finsupp.single_zero a
@@ -1112,7 +1114,7 @@ variable [Ring R]
 instance ring [AddMonoid G] : Ring R[G] :=
   { AddMonoidAlgebra.nonAssocRing, AddMonoidAlgebra.semiring with }
 
-@[simp] lemma single_neg (a : M) (b : R) : single a (-b) = -single a b := Finsupp.single_neg ..
+lemma single_neg (a : M) (b : R) : single a (-b) = -single a b := Finsupp.single_neg ..
 @[simp] lemma neg_apply (m : M) (x : MonoidAlgebra R M) : (-x) m = -x m := rfl
 
 end Ring
@@ -1159,7 +1161,7 @@ because we've never discussed actions of additive groups. -/
 end DerivedInstances
 
 @[simp]
-lemma smul_apply [Zero R] [Semiring S] [SMulZeroClass R S] (r : R) (m : M) (x : MonoidAlgebra S M) :
+lemma smul_apply [Semiring S] [SMulZeroClass R S] (r : R) (m : M) (x : MonoidAlgebra S M) :
     (r • x) m = r • x m := rfl
 
 @[simp]
