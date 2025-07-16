@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Monoidal.Internal.FunctorCategory
-import Mathlib.CategoryTheory.Monoidal.Limits
+import Mathlib.CategoryTheory.Monoidal.Limits.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
