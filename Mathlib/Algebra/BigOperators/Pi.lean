@@ -209,14 +209,14 @@ lemma Pi.mulSingle_induction [CommMonoid M] (p : (ι → M) → Prop) (f : ι �
 section EqOn
 
 @[to_additive]
-theorem eqOn_finsetProd {ι α β : Type*} [CommMonoid α] [DecidableEq ι]
+theorem eqOn_finsetProd {ι α β : Type*} [CommMonoid α]
     {s : Set β} {f f' : ι → β → α} (h : ∀ (i : ι), Set.EqOn (f i) (f' i) s) (v : Finset ι) :
     Set.EqOn (∏ i ∈ v, f i) (∏ i ∈ v, f' i) s := by
   intro t ht
   simp [funext fun i ↦ h i ht]
 
 @[to_additive]
-theorem eqOn_fun_finsetProd {ι α β : Type*} [CommMonoid α] [DecidableEq ι]
+theorem eqOn_fun_finsetProd {ι α β : Type*} [CommMonoid α]
     {s : Set β} {f f' : ι → β → α} (h : ∀ (i : ι), Set.EqOn (f i) (f' i) s) (v : Finset ι) :
     Set.EqOn (fun b ↦ ∏ i ∈ v, f i b) (fun b ↦ ∏ i ∈ v, f' i b) s := by
   convert eqOn_finsetProd h v <;> simp
