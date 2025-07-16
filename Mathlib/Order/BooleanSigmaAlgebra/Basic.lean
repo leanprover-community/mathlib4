@@ -379,8 +379,15 @@ theorem σiSup_σiInf_le_σiInf_σiSup {f : ι → ι' → α} (hf₁ : ∀ i, (
 
 theorem bσiSup_mono {p q : ι → Prop} (hpq : ∀ i, p i → q i) :
     ⨆ (i) (_ : p i), f i ≤ ⨆ (i) (_ : q i), f i :=
-  haveI : Countable ↑(Set.range fun i ↦ ⨆ (_ : p i), f i) := sorry
-  haveI : Countable ↑(Set.range fun i ↦ ⨆ (_ : q i), f i) := sorry
+  have h (r : ι → Prop) : {⨆ (_ : r i), f i | i : ι} ⊆ (Set.range f).insert ⊥ := by
+    rw [Set.setOf_subset]
+    intro x ⟨i, hi⟩
+    rw [←hi]
+    exact Set.mem_of_subset_of_mem
+      (Set.insert_subset_insert (Set.singleton_subset_iff.mpr (Set.mem_range_self i)))
+      σiSup_const_mem
+  haveI : Countable ↑(Set.range fun i ↦ ⨆ (_ : p i), f i) := (Set.Countable.insert ⊥ ‹_›).mono (h p)
+  haveI : Countable ↑(Set.range fun i ↦ ⨆ (_ : q i), f i) := (Set.Countable.insert ⊥ ‹_›).mono (h q)
   σiSup_mono fun i => σiSup_const_mono (hpq i)
 
 theorem bσiInf_mono {p q : ι → Prop} (hpq : ∀ i, p i → q i) :
