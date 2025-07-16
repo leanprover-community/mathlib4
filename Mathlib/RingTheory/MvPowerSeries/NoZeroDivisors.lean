@@ -48,17 +48,16 @@ section Semiring
 
 variable [Semiring R]
 
-/-- A multivariate power series is not a zero divisor
-  when its constant coefficient is not a zero divisor -/
-theorem mem_nonZeroDivisors_of_constantCoeff {φ : MvPowerSeries σ R}
-    (hφ : constantCoeff σ R φ ∈ R⁰) :
-    φ ∈ (MvPowerSeries σ R)⁰ := by
+theorem mem_nonZeroDivisorsRight_of_constantCoeff {φ : MvPowerSeries σ R}
+    (hφ : constantCoeff σ R φ ∈ nonZeroDivisorsRight R) :
+    φ ∈ nonZeroDivisorsRight (MvPowerSeries σ R) := by
   classical
   intro x hx
   ext d
   apply WellFoundedLT.induction d
   intro e he
-  rw [map_zero, ← mul_right_mem_nonZeroDivisors_eq_zero_iff hφ, ← map_zero (f := coeff R e), ← hx]
+  rw [map_zero, ← mul_right_mem_nonZeroDivisorsRight_eq_zero_iff hφ,
+    ← map_zero (f := coeff R e), ← hx]
   convert (coeff_mul e x φ).symm
   rw [Finset.sum_eq_single (e, 0), coeff_zero_eq_constantCoeff]
   · rintro ⟨u, _⟩ huv _
@@ -70,6 +69,36 @@ theorem mem_nonZeroDivisors_of_constantCoeff {φ : MvPowerSeries σ R}
   · simp only [mem_antidiagonal, add_zero, not_true_eq_false, coeff_zero_eq_constantCoeff,
       false_implies]
 
+-- TODO: derive from `mem_nonZeroDivisorsRight_of_constantCoeff` using `MulOpposite`
+theorem mem_nonZeroDivisorsLeft_of_constantCoeff {φ : MvPowerSeries σ R}
+    (hφ : constantCoeff σ R φ ∈ nonZeroDivisorsLeft R) :
+    φ ∈ nonZeroDivisorsLeft (MvPowerSeries σ R) := by
+  classical
+  intro x hx
+  ext d
+  apply WellFoundedLT.induction d
+  intro e he
+  rw [map_zero, ← mul_left_mem_nonZeroDivisorsLeft_eq_zero_iff hφ,
+    ← map_zero (f := coeff R e), ← hx]
+  convert (coeff_mul e φ x).symm
+  rw [Finset.sum_eq_single (0, e), coeff_zero_eq_constantCoeff]
+  · rintro ⟨_, u⟩ huv _
+    suffices u < e by simp only [he u this, mul_zero, map_zero]
+    apply lt_of_le_of_ne
+    · simp only [← mem_antidiagonal.mp huv, le_add_iff_nonneg_left, zero_le]
+    · rintro rfl
+      simp_all
+  · simp only [mem_antidiagonal, add_zero, not_true_eq_false, coeff_zero_eq_constantCoeff,
+      false_implies]
+
+/-- A multivariate power series is not a zero divisor
+  when its constant coefficient is not a zero divisor -/
+theorem mem_nonZeroDivisors_of_constantCoeff {φ : MvPowerSeries σ R}
+    (hφ : constantCoeff σ R φ ∈ R⁰) :
+    φ ∈ (MvPowerSeries σ R)⁰ :=
+  ⟨mem_nonZeroDivisorsLeft_of_constantCoeff hφ.1, mem_nonZeroDivisorsRight_of_constantCoeff hφ.2⟩
+
+-- TODO: left and right versions
 lemma monomial_mem_nonzeroDivisors {n : σ →₀ ℕ} {r} :
     monomial R n r ∈ (MvPowerSeries σ R)⁰ ↔ r ∈ R⁰ := by
   simp only [mem_nonZeroDivisors_iff]
