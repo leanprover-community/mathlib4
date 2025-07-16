@@ -89,7 +89,7 @@ lemma memLp_dual_prod (L : Dual ℝ (E × F)) {p : ℝ≥0∞} (hp : p ≠ ∞) 
   suffices MemLp (fun v ↦ L.comp (.inl ℝ E F) v.1 + L.comp (.inr ℝ E F) v.2) p (μ.prod ν) by
     simp_rw [L.comp_inl_add_comp_inr] at this
     exact this
-  exact MemLp.add (memLp_comp_inl_prod L hp) (memLp_comp_inr_prod L hp)
+  exact (memLp_comp_inl_prod L hp).add (memLp_comp_inr_prod L hp)
 
 omit [BorelSpace F] in
 lemma integrable_comp_inl_prod (L : Dual ℝ (E × F)) :
