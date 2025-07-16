@@ -95,14 +95,12 @@ theorem not_wellFounded_of_decreasing_seq (f : ((· > ·) : ℕ → ℕ → Prop
 
 end RelEmbedding
 
-instance OrderEmbedding.infinite {α β : Type*} [Preorder α] [Nonempty α] [Nonempty (α ↪o ℕ)]
-    [Nonempty β] [Preorder β] [NoMaxOrder β] : Infinite (α ↪o β) :=
-  let f1 := Classical.arbitrary (α ↪o ℕ)
-  let f2 := Classical.arbitrary (ℕ ↪o β)
+instance OrderEmbedding.infinite {α : Type*} [Nonempty α] [Preorder α] [NoMaxOrder α] :
+    Infinite (ℕ ↪o α) :=
+  let f := Classical.arbitrary (ℕ ↪o α)
   let addRight (i : ℕ) := OrderEmbedding.ofStrictMono (fun n => n + i) (by simp [StrictMono])
-  Infinite.of_injective (fun i ↦ f1.trans <| (addRight i).trans f2) fun x y h ↦ by
-    simpa [addRight] using
-      congrFun (congr_arg (fun f : (α ↪o β) ↦ (f : α → β)) h) (Classical.arbitrary α)
+  Infinite.of_injective (fun i ↦ (addRight i).trans f) fun x y h ↦ by
+    simpa [addRight] using congrFun (congr_arg (fun f : (ℕ  ↪o α) ↦ (f : ℕ  → α)) h)
 
 theorem not_strictAnti_of_wellFoundedLT [Preorder α] [WellFoundedLT α] (f : ℕ → α) :
     ¬ StrictAnti f := fun hf ↦

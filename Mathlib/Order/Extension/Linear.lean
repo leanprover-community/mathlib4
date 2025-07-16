@@ -125,17 +125,7 @@ instance {α : Type*} (r s : α → α → Prop) [IsPreorder α r] [IsLinearOrde
     fun hca ↦ trans_of _ (h.2 (trans_of _ h'.1 hca)) (h'.2 (trans_of _ hca h.1))⟩
   antisymm _ _ h h' := antisymm_of _ (h.2 h'.1) (h'.2 h.1)
 
--- TODO remove
-class IsTotalPreorder (α : Sort u) (r : α → α → Prop) : Prop extends IsTrans α r, IsTotal α r
-
--- TODO remove
-/-- Every total pre-order is a pre-order. -/
-instance (priority := 100) isTotalPreorder_isPreorder (α : Sort u) (r : α → α → Prop)
-    [s : IsTotalPreorder α r] : IsPreorder α r where
-  trans := s.trans
-  refl a := Or.elim (@IsTotal.total _ r _ a a) id id
-
-instance {α : Type*} (r s : α → α → Prop) [IsTotalPreorder α r] [IsLinearOrder α s] :
+instance {α : Type*} (r s : α → α → Prop) [IsPreorder α r] [IsTotal α r] [IsLinearOrder α s] :
     IsLinearOrder α (RefineBy r s) where
   __ := instIsPartialOrderRefineByOfIsPreorderOfIsLinearOrder r s
   total a b := by
@@ -151,7 +141,7 @@ theorem exists_eq_extend_partialOrder (r : α → α → Prop) [IsPreorder α r]
   exact ⟨RefineBy r s, inferInstance, fun _ _ h ↦ h.1⟩
 
 /-- Using choice, every total preorder is an extension of some linear order. -/
-theorem exists_eq_extend_linearOrder (r : α → α → Prop) [IsTotalPreorder α r] :
+theorem exists_eq_extend_linearOrder (r : α → α → Prop) [IsPreorder α r] [IsTotal α r] :
     ∃ (s : α → α → Prop), IsLinearOrder α s ∧ s ≤ r := by
   obtain ⟨s, hs, -⟩ := extend_partialOrder (@Eq α)
   exact ⟨RefineBy r s, inferInstance, fun _ _ h ↦ h.1⟩
@@ -172,9 +162,6 @@ def partialOrderRefinement_orderHom (α : Type*) [Preorder α] : PartialOrderRef
 
 /-- A type synonym for some linear order on `α` refining a given total preorder on `α`. -/
 def LinearOrderRefinement (α : Type*) := α
-
-instance [Preorder α] [IsTotal α (· ≤ ·)] : IsTotalPreorder α (· ≤ ·) where
-  total := total_of _
 
 noncomputable instance [Preorder α] [IsTotal α (· ≤ ·)] :
     LinearOrder (LinearOrderRefinement α) where
