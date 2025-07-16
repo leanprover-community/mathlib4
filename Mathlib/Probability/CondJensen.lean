@@ -213,7 +213,7 @@ theorem ConvexOn.iSup_affine_eq_of_separableSpace {𝕜 E : Type*}
   have lem3 : ∀ i, 0 = im ((T i) 1) := by
     cases @I_eq_zero_or_im_I_eq_one 𝕜 (by infer_instance) with
     | inl hI0 =>
-      intro i ; rw [← I_im', hI0]; simp only [map_zero, zero_mul]
+      intro i; rw [← I_im', hI0]; simp only [map_zero, zero_mul]
     | inr hI1 =>
       intro i
       by_contra ht
