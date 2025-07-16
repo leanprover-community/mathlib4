@@ -360,10 +360,10 @@ theorem σiInf₂_mono' {f : ∀ i, κ i → α} {g : ∀ i', κ' i' → α}
 
 theorem σiSup_const_mono (h : ι → ι') : ⨆ _ : ι, a ≤ ⨆ _ : ι', a :=
   haveI : Countable ↑(Set.range fun _ : ι  => a) :=
-    (Set.countable_singleton Set.range_const).to_subtype
+    (Set.countable_singleton a).mono Set.range_const_subset
   haveI : Countable ↑(Set.range fun _ : ι'  => a) :=
-    (Set.countable_singleton Set.range_const).to_subtype
-  σiSup_le le_σiSup
+    (Set.countable_singleton a).mono Set.range_const_subset
+  σiSup_le <| le_σiSup ∘ h
 
 theorem σiInf_const_mono (h : ι' → ι) : ⨅ _ : ι, a ≤ ⨅ _ : ι', a :=
   σiSup_const_mono (α := αᵒᵈ) h
