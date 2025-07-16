@@ -137,7 +137,7 @@ theorem iter_deriv_inv' (k : ℕ) :
 open Function in
 theorem iter_deriv_inv_linear (k : ℕ) (c d : 𝕜) :
     deriv^[k] (fun x ↦ (c * x + d)⁻¹) =
-    (fun x : 𝕜 ↦ (-1) ^ k * k ! * c ^ k * (c * x + d)^ (-1 - k : ℤ)) := by
+    (fun x : 𝕜 ↦ (-1) ^ k * k ! * c ^ k * (c * x + d) ^ (-1 - k : ℤ)) := by
   induction' k with k ihk
   · simp
   · rw [Nat.factorial_succ, show  k + 1 = 1 + k by ring, iterate_add_apply, ihk]
@@ -148,7 +148,7 @@ theorem iter_deriv_inv_linear (k : ℕ) (c d : 𝕜) :
     · simp [hd]
     · have := deriv_comp_add_const (fun x ↦ (c * x) ^ (-1 - k : ℤ)) (d / c) z
       have h0 : (fun x ↦ (c * (x + d / c)) ^ (-1 - (k : ℤ))) =
-        (fun x ↦ (c * x + d) ^ (-1 - (k : ℤ))) := by
+(fun x ↦ (c * x + d) ^ (-1 - (k : ℤ))) := by
         ext y
         field_simp
         ring_nf
@@ -158,7 +158,7 @@ theorem iter_deriv_inv_linear (k : ℕ) (c d : 𝕜) :
 
 theorem iter_deriv_inv_linear_sub (k : ℕ) (c d : 𝕜) :
     deriv^[k] (fun x ↦ (c * x - d)⁻¹) =
-    (fun x : 𝕜 ↦ (-1) ^ k * k ! * c ^ k * (c * x - d)^ (-1 - k : ℤ)) := by
+    (fun x : 𝕜 ↦ (-1) ^ k * k ! * c ^ k * (c * x - d) ^ (-1 - k : ℤ)) := by
   simpa [sub_eq_add_neg] using iter_deriv_inv_linear k c (-d)
 
 variable {f : E → 𝕜} {t : Set E} {a : E}
