@@ -12,14 +12,17 @@ import Mathlib.RingTheory.LocalRing.Basic
 An arithmetic-geometric sequence is a sequence defined by the recurrence relation
 `u (n + 1) = a * u n + b`.
 
+## Main definitions
+
+* `arithGeom a b u₀`: arithmetic-geometric sequence with starting value `u₀` and recurrence relation
+  `u (n + 1) = a * u n + b`.
+
 ## Main statements
 
-For a sequence `u` that satisfies the recurrence relation, we have:
-
-* `arithGeom_eq`: for `a ≠ 1`, `u n = a ^ n * (u 0 - (b / (1 - a))) + b / (1 - a)`
-* `tendsto_arithGeom_atTop`: if `1 < a` and `b / (1 - a) < u 0`, then `u n` tends to
+* `arithGeom_eq`: for `a ≠ 1`, `arithGeom a b u₀ n = a ^ n * (u₀ - (b / (1 - a))) + b / (1 - a)`
+* `tendsto_arithGeom_atTop`: if `1 < a` and `b / (1 - a) < u₀`, then `arithGeom a b u₀ n` tends to
   `+∞` as `n` tends to `+∞`.
-* `arithGeom_strictMono`: if `1 < a` and `b / (1 - a) < u 0`, then `u` is strictly
+* `arithGeom_strictMono`: if `1 < a` and `b / (1 - a) < u₀`, then `arithGeom a b u₀` is strictly
   monotone.
 
 -/
