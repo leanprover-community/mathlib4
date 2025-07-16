@@ -131,6 +131,25 @@ noncomputable def partialLeftAdjoint : F.PartialLeftAdjointSource ⥤ D where
 
 variable {F}
 
+noncomputable def partialLeftAdjoint_adjoint_of_leftAdjointObjIsDefined_eq_top
+    (h : F.leftAdjointObjIsDefined = ⊤) :
+    F.leftAdjointObjIsDefined.lift (𝟭 C) (by simp [h]) ⋙ F.partialLeftAdjoint ⊣ F :=
+  Adjunction.mkOfHomEquiv {
+    homEquiv c _ := F.partialLeftAdjointHomEquiv (X := ⟨c, by simp [h]⟩)
+    homEquiv_naturality_left_symm f g := by
+      suffices h :
+          F.partialLeftAdjointHomEquiv.symm (f ≫ g)
+            = F.partialLeftAdjointMap f ≫ F.partialLeftAdjointHomEquiv.symm g by
+        simpa using h
+      -- type equality hell
+      expose_names
+      change (⟨X, by simp [h]⟩ : F.PartialLeftAdjointSource) ⟶ ⟨F.obj Y, by simp [h]⟩ at g
+      suffices h : f ≫ g = f ≫ F.partialLeftAdjointHomEquiv (F.partialLeftAdjointHomEquiv.symm g) by
+        apply F.partialLeftAdjointHomEquiv.injective
+        simp [F.partialLeftAdjointHomEquiv_map_comp]
+      exact congrArg (f ≫ ·) (F.partialLeftAdjointHomEquiv.apply_symm_apply g).symm
+    homEquiv_naturality_right _ _ := F.partialLeftAdjointHomEquiv_comp ..
+  }
 lemma isRightAdjoint_of_leftAdjointObjIsDefined_eq_top
     (h : F.leftAdjointObjIsDefined = ⊤) : F.IsRightAdjoint := by
   replace h : ∀ X, IsCorepresentable (F ⋙ coyoneda.obj (op X)) := fun X ↦ by
@@ -277,6 +296,21 @@ noncomputable def partialRightAdjoint : F.PartialRightAdjointSource ⥤ C where
       partialRightAdjointHomEquiv_map]
 
 variable {F}
+
+noncomputable def adjoint_partialRightAdjoint_of_rightAdjointObjIsDefined_eq_top
+    (h : F.rightAdjointObjIsDefined = ⊤) :
+    F ⊣ F.rightAdjointObjIsDefined.lift (𝟭 D) (by simp [h]) ⋙ F.partialRightAdjoint :=
+  Adjunction.mkOfHomEquiv {
+    homEquiv _ d := (F.partialRightAdjointHomEquiv (Y := ⟨d, by simp [h]⟩)).symm
+    homEquiv_naturality_left_symm _ _ := F.partialRightAdjointHomEquiv_comp _ _
+    homEquiv_naturality_right f g := by
+      suffices h :
+          F.partialRightAdjointHomEquiv.symm (f ≫ g)
+            = F.partialRightAdjointHomEquiv.symm f ≫ F.partialRightAdjointMap g by
+        simpa using h
+      apply F.partialRightAdjointHomEquiv.injective
+      simp [F.partialRightAdjointHomEquiv_map_comp]
+  }
 
 lemma isLeftAdjoint_of_rightAdjointObjIsDefined_eq_top
     (h : F.rightAdjointObjIsDefined = ⊤) : F.IsLeftAdjoint := by
