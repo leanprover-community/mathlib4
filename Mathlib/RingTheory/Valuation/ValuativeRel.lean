@@ -803,5 +803,3 @@ lemma ValuativeRel.IsRankLeOne.of_compatible_withZeroMulInt (v : Valuation R ℤ
     simp [StrictMono, «forall», e, zpow_pos, -inv_zpow', zpow_lt_zpow_iff_right₀]
   exact ⟨⟨MonoidWithZeroHom.comp e (ValuativeRel.ValueGroupWithZero.unquot v),
     he.comp (ValuativeRel.ValueGroupWithZero.unquot_strictMono v)⟩⟩
-
-#lint
