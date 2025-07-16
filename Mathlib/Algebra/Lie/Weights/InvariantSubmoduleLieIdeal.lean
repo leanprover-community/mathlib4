@@ -942,7 +942,7 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
 
             -- The key insight: if both χ + α and χ - α weight spaces are ⊥,
             -- then the pairing between χ and α must be zero
-            -- This follows from root_add_root_mem_of_pairingIn_neg and root_sub_root_mem_of_pairingIn_pos
+            -- From root_add_root_mem_of_pairingIn_neg and root_sub_root_mem_of_pairingIn_pos
             let S := LieAlgebra.IsKilling.rootSystem H
             -- First get the root indices corresponding to χ and α
             obtain ⟨i, hi⟩ : ∃ i, S.root i = χ.toLinear := by sorry
@@ -950,7 +950,7 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
             have h_pairing_zero : S.pairing i j = 0 := by
               -- Since h_plus_bot : genWeightSpace L (χ + α) = ⊥
               -- and h_minus_bot : genWeightSpace L (χ - α) = ⊥
-              -- we can use root_add_root_mem_of_pairingIn_neg and root_sub_root_mem_of_pairingIn_pos
+              -- use root_add_root_mem_of_pairingIn_neg and root_sub_root_mem_of_pairingIn_pos
               -- to conclude that the pairing is zero
               sorry
 
