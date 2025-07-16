@@ -284,7 +284,7 @@ lemma cotTerm_iteratedDerivWith' (d k : ℕ) :
     (fun z : ℂ ↦ (-1) ^ k * k ! * ((z + (d + 1)) ^ (-1 - k : ℤ) +
     (z - (d + 1)) ^ (-1 - k : ℤ))) ℍₒ := by
   apply Set.EqOn.trans (upperHalfPlane_inter_integerComplement ▸
-    iteratedDerivWithin_congr_of_isOpen (fun (z : ℂ) ↦ cotTerm z d) k
+    iteratedDerivWithin_congr_right_of_isOpen (fun (z : ℂ) ↦ cotTerm z d) k
     complexUpperHalPlane_isOpen (Complex.isOpen_compl_range_intCast))
   intro z hz
   simpa using cotTerm_iteratedDerivWith d k (UpperHalfPlane.coe_mem_integerComplement ⟨z, hz⟩)
