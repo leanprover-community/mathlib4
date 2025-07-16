@@ -136,12 +136,12 @@ variable (e e' : Trivialization F (π F E)) [MemTrivializationAtlas e] [MemTrivi
 variable {IB}
 
 theorem mdifferentiableOn_coordChangeL :
-    MDifferentiableOn IB 𝓘(𝕜, F →L[𝕜] F) (fun b : B => (e.coordChangeL 𝕜 e' b : F →L[𝕜] F))
+    MDifferentiableOn IB 𝓘(𝕜, F →L[𝕜] F) (fun b : B ↦ (e.coordChangeL 𝕜 e' b : F →L[𝕜] F))
       (e.baseSet ∩ e'.baseSet) :=
   (contMDiffOn_coordChangeL e e').mdifferentiableOn le_rfl
 
 theorem mdifferentiableOn_symm_coordChangeL :
-    MDifferentiableOn IB 𝓘(𝕜, F →L[𝕜] F) (fun b : B => ((e.coordChangeL 𝕜 e' b).symm : F →L[𝕜] F))
+    MDifferentiableOn IB 𝓘(𝕜, F →L[𝕜] F) (fun b : B ↦ ((e.coordChangeL 𝕜 e' b).symm : F →L[𝕜] F))
       (e.baseSet ∩ e'.baseSet) :=
   (contMDiffOn_symm_coordChangeL e e').mdifferentiableOn le_rfl
 
@@ -149,7 +149,7 @@ variable {e e'}
 
 theorem mdifferentiableAt_coordChangeL {x : B}
     (h : x ∈ e.baseSet) (h' : x ∈ e'.baseSet) :
-    MDifferentiableAt IB 𝓘(𝕜, F →L[𝕜] F) (fun b : B => (e.coordChangeL 𝕜 e' b : F →L[𝕜] F)) x :=
+    MDifferentiableAt IB 𝓘(𝕜, F →L[𝕜] F) (fun b : B ↦ (e.coordChangeL 𝕜 e' b : F →L[𝕜] F)) x :=
   (contMDiffAt_coordChangeL h h').mdifferentiableAt le_rfl
 
 variable {s : Set M} {f : M → B} {g : M → F} {x : M}
