@@ -6,7 +6,6 @@ Authors: Johannes Hölzl
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Data.ENNReal.BigOperators
 import Mathlib.Tactic.Bound
-import Mathlib.Tactic.Peel
 import Mathlib.Topology.Order.LiminfLimsup
 import Mathlib.Topology.EMetricSpace.Lipschitz
 import Mathlib.Topology.Instances.NNReal.Lemmas
