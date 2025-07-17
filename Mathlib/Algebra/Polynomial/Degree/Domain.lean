@@ -99,8 +99,9 @@ end Semiring
 
 section Ring
 
-instance [Ring R] [IsDomain R] : IsDomain R[X] := NoZeroDivisors.to_isDomain _
+variable [Ring R] [Nontrivial R] [IsDomain R] {p q : R[X]}
+
+instance : IsDomain R[X] := NoZeroDivisors.to_isDomain _
 
 end Ring
-
 end Polynomial
