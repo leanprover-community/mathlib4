@@ -68,8 +68,7 @@ lemma card_le_logSizeRadius_ge (ha : 1 < a) (ht : t ∈ V) :
   by_cases h_one : logSizeRadius t V a c = 1
   · simp only [h_one, tsub_self, pow_zero, Nat.cast_one, zero_mul, nonpos_iff_eq_zero,
       Nat.one_le_cast, Finset.one_le_card]
-    refine ⟨t, ?_⟩
-    simp [ht]
+    exact ⟨t, by simpa⟩
   rw [logSizeRadius, dif_pos ha] at h_one ⊢
   have : Nat.find (exists_radius_le t V ha c) - 1 < Nat.find (exists_radius_le t V ha c) := by
     simp
