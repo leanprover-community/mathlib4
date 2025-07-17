@@ -11,7 +11,7 @@ import Mathlib.Order.CompletePartialOrder
 # Pair Reduction
 
 The goal of this file is to prove the theorem `pair_reduction` which is used to prove a
-Kolmogorov–Chentsov theorem for general metric spaces. Given pseudo metric spaces T and E,
+Kolmogorov–Chentsov theorem for general metric spaces. Given pseudometric spaces T and E,
 c > 0, and a finite subset J of T such that |J| ≤ aⁿ for some a > 1 and n ∈ {1, 2, …},
 `pair_reduction` states that there exists a set K ⊆ J² such that for any function f : T → E :
 
