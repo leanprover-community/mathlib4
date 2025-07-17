@@ -375,6 +375,15 @@ theorem coe_inf {c d : Con M} : ⇑(c ⊓ d) = ⇑c ⊓ ⇑d :=
 theorem inf_iff_and {c d : Con M} {x y} : (c ⊓ d) x y ↔ c x y ∧ d x y :=
   Iff.rfl
 
+@[to_additive]
+instance [Nonempty M] : Nonempty c.Quotient :=
+  inferInstanceAs (Nonempty <| Quotient c.toSetoid)
+
+@[to_additive]
+instance [hc : Fact (c ≠ ⊤)] : Nontrivial c.Quotient :=
+  have : Fact (c.toSetoid ≠ ⊤) := ⟨fun H ↦ hc.out <| toSetoid_inj H⟩
+  inferInstanceAs (Nontrivial <| Quotient c.toSetoid)
+
 /-- The inductively defined smallest congruence relation containing a binary relation `r` equals
     the infimum of the set of congruence relations containing `r`. -/
 @[to_additive addConGen_eq "The inductively defined smallest additive congruence relation
@@ -488,12 +497,6 @@ def comap (f : M → N) (H : ∀ x y, f (x * y) = f x * f y) (c : Con N) : Con M
 theorem comap_rel {f : M → N} (H : ∀ x y, f (x * y) = f x * f y) {c : Con N} {x y : M} :
     comap f H c x y ↔ c (f x) (f y) :=
   Iff.rfl
-
-section
-
-open Quotient
-
-end
 
 end
 

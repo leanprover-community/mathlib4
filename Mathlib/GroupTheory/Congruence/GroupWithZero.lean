@@ -22,13 +22,13 @@ instance zero [Zero M] [Mul M] (c : Con M) : Zero c.Quotient where
   zero := Quotient.mk'' (0 : M)
 
 /-- The 0 of the quotient of a monoid with zero by a congruence relation is the equivalence class
-    of the original 0. -/
+of the original 0. -/
 theorem coe_zero [Zero M] [Mul M] {c : Con M} : ((0 : M) : c.Quotient) = 0 :=
   rfl
 
-instance mulZeroClass [MulZeroClass M] (c : Con M) : MulZeroClass c.Quotient where
-  mul_zero x := Quotient.inductionOn' x fun _ => congr_arg ((↑) : M → c.Quotient) <| mul_zero _
-  zero_mul x := Quotient.inductionOn' x fun _ => congr_arg ((↑) : M → c.Quotient) <| zero_mul _
+instance mulZeroClass [MulZeroClass M] (c : Con M) :
+    MulZeroClass c.Quotient :=
+  Function.Surjective.mulZeroClass _ Quotient.mk''_surjective rfl (fun _ _ => rfl)
 
 instance mulZeroOneClass [MulZeroOneClass M] (c : Con M) :
     MulZeroOneClass c.Quotient := fast_instance%
@@ -49,7 +49,7 @@ instance commMonoidWithZero [CommMonoidWithZero M] (c : Con M) :
     (fun _ _ => rfl) (fun _ _ => rfl)
 
 /-- If zero is equivalent to some unit under a (multiplicative) congruence relation,
-    it is equivalent to any element. -/
+it is equivalent to any element. -/
 theorem zero_of_isUnit [MonoidWithZero M] {c : Con M} {x : M} (h0 : c 0 x) (hx : IsUnit x)
     (y : M) : c 0 y := by
   rcases hx with ⟨u, rfl⟩
@@ -92,12 +92,12 @@ instance hasDiv₀ : Div c.Quotient :=
 instance instZPow₀ : Pow c.Quotient ℤ :=
   ⟨fun x z => Quotient.map' (fun x => x ^ z) (fun _ _ h => c.zpow₀ z h) x⟩
 
-instance groupWithZero [Nontrivial c.Quotient] :
+instance groupWithZero [hc : Fact (c ≠ ⊤)] :
     GroupWithZero c.Quotient := fast_instance%
   Function.Surjective.groupWithZero zero_ne_one _ Quotient.mk''_surjective rfl rfl
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
 
-instance commGroupWithZero {M : Type*} [CommGroupWithZero M] (c : Con M) [Nontrivial c.Quotient] :
+instance commGroupWithZero {M : Type*} [CommGroupWithZero M] (c : Con M) [Fact (c ≠ ⊤)] :
     CommGroupWithZero c.Quotient where
 
 end Group
