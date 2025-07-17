@@ -15,7 +15,8 @@ A Riemannian manifold `M` is a real manifold such that its tangent spaces are en
 inner product, depending smoothly on the point, and such that `M` has an emetric space
 structure for which the distance is the infimum of lengths of paths.
 
-We register a Prop-valued typeclass `IsRiemannianManifold I M` recording this fact.
+We register a Prop-valued typeclass `IsRiemannianManifold I M` recording this fact, building on top
+of `[EMetricSpace M] [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]`.
 
 We show that an inner product vector space, with the associated canonical Riemannian metric,
 satisfies the predicate `IsRiemannianManifold 𝓘(ℝ, E) E`.
@@ -30,16 +31,16 @@ The following code block is the standard way to say "Let `M` be a `C^∞` Rieman
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
-  {M : Type*} [EMetricSpace M] [ChartedSpace H M] [IsManifold ∞ I M]
+  {M : Type*} [EMetricSpace M] [ChartedSpace H M] [IsManifold I ∞ M]
   [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
   [IsContMDiffRiemannianBundle I ∞ E (fun (x : M) ↦ TangentSpace I x)]
   [IsRiemannianManifold I M]
 ```
 To register a `C^n` manifold for a general `n`, one should replace `[IsManifold ∞ I M]` with
-`[IsManifold n I M] [IsManifold 1 I M]`, where the second one is needed to ensure that the
-tangent bundle is well behaved, and require whatever regularity one wants in the
+`[IsManifold I n M] [IsManifold I 1 M]`, where the second one is needed to ensure that the
+tangent bundle is well behaved. And one can require whatever regularity one wants in the
 `IsContMDiffRiemannianBundle` instance above. If continuity is enough, one may weaken it to
-`[IsContinuousRiemannianBundle I ∞ E (fun (x : M) ↦ TangentSpace I x)]`.
+`[IsContinuousRiemannianBundle E (fun (x : M) ↦ TangentSpace I x)]`.
 -/
 
 open Bundle Bornology Set MeasureTheory Manifold Filter
@@ -191,6 +192,20 @@ show that the associated topology coincides with the pre-existing topology. Ther
 endow `M` with an emetric space structure, called `EmetricSpace.ofRiemannianMetric`.
 Moreover, we show that in this case the resulting emetric space satisfies the predicate
 `IsRiemannianManifold I M`.
+
+Showing that the distance topology coincides with the pre-existing topology is not trivial. The
+two inequalities are proved respectively in `eventually_riemmanianEDist_lt` and
+`setOf_riemmanianEDist_lt_subset_nhds`.
+
+For the first one, we have to show that points which are close for the topology are at small
+distance. For this, we use the path between the two points which is the pullback of the segment
+in the extended chart, and argue that it is short because the images are close in the extended
+chart.
+
+For the second one, we have to show that any neighborhood of `x` contains all the points `y`
+with `riemannianEDist x y < c` for some `c > 0`. For this, we argue that a short path from `x`
+to `y` remains short in the extended chart, and therefore it doesn't have the time to exit
+the image of the neighborhood in the extended chart.
 -/
 
 open Manifold Metric
@@ -233,8 +248,7 @@ lemma eventually_norm_mfderiv_extChartAt_lt (x : M) :
   rwa [← TangentBundle.continuousLinearMapAt_trivializationAt h'y]
 
 lemma eventually_enorm_mfderiv_extChartAt_lt (x : M) :
-    ∃ C > (0 : ℝ≥0), ∀ᶠ y in 𝓝 x,
-    ‖mfderiv I 𝓘(ℝ, E) (extChartAt I x) y‖ₑ < C := by
+    ∃ C > (0 : ℝ≥0), ∀ᶠ y in 𝓝 x, ‖mfderiv I 𝓘(ℝ, E) (extChartAt I x) y‖ₑ < C := by
   rcases eventually_norm_mfderiv_extChartAt_lt I x with ⟨C, C_pos, hC⟩
   lift C to ℝ≥0 using C_pos.le
   simp only [gt_iff_lt, NNReal.coe_pos] at C_pos
@@ -378,13 +392,14 @@ lemma setOf_riemmanianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
   and finally `r` small enough that the ball of radius `r` in the extended chart is contained in
   the image of `v`.
 
-  We claim that points are Riemannian distance at most `r / C` of `x` are inside `u` (and therefore
+  We claim that points at Riemannian distance at most `r / C` of `x` are inside `u` (and therefore
   inside `s`). To prove this, consider a path of length at most `r / C` starting from `x`. While
   it stays inside `u`, then by the derivative control its image in the extended chart has length
   at most `r`, so it can not exit the ball of radius `r`, which means that in the manifold it is
   inside `v` (which is strictly inside `u`). This means that the path will stay inside `u` for
-  a little bit longer, by openness of `v`. Therefore, it will remain inside `u` for the whole
-  time interval `[0, 1]`. In particular, its right endpoint is inside `u`, as desired.
+  a little bit longer, by openness of `v`. Iterating this argument, it follows that the path will
+  remain inside `u` for the whole time interval `[0, 1]`. In particular, its right endpoint is
+  inside `u`, as desired.
 
   To formalize this, we introduce the set `a` of times `t ∈ [0, 1]` such that `γ t' ∈ u` for all
   `t' ∈ [0, t]`. As `u` is closed, the set `a` is closed. In particular, it contains its
@@ -397,21 +412,22 @@ lemma setOf_riemmanianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
   -- let `u` be a closed neighborhood, inside `s`, with the derivative control
   obtain ⟨u, u_mem, u_closed, us, hu, uc⟩ : ∃ u ∈ 𝓝 x, IsClosed u ∧ u ⊆ s
       ∧ u ⊆ {y | ‖mfderiv I 𝓘(ℝ, E) (extChartAt I x) y‖ₑ < C} ∧ u ⊆ (extChartAt I x).source := by
-    have W := Filter.inter_mem (Filter.inter_mem hs hC) (extChartAt_source_mem_nhds (I := I) x)
-    rcases exists_mem_nhds_isClosed_subset W with ⟨u, u_mem, u_closed, hu⟩
+    have := Filter.inter_mem (Filter.inter_mem hs hC) (extChartAt_source_mem_nhds (I := I) x)
+    rcases exists_mem_nhds_isClosed_subset this with ⟨u, u_mem, u_closed, hu⟩
     simp only [subset_inter_iff] at hu
     exact ⟨u, u_mem, u_closed, hu.1.1, hu.1.2, hu.2⟩
   have uc' : u ⊆ (chartAt H x).source := by simpa [extChartAt_source I x] using uc
   -- let `v` be a smaller open neighborhood, inside `u`.
   obtain ⟨v, v_mem, v_open, hv⟩ : ∃ v ∈ 𝓝 x, IsOpen v ∧ v ⊆ u := by
     rcases _root_.mem_nhds_iff.1 u_mem with ⟨v, vu, v_open, xv⟩
-    refine ⟨v, v_open.mem_nhds xv, v_open, vu⟩
+    exact ⟨v, v_open.mem_nhds xv, v_open, vu⟩
   -- let `r > 0` be small enough that, in the extended chart, the ball of radius `r` is contained
   -- in the image of `v`.
   obtain ⟨r, r_pos, hr⟩ : ∃ r > 0, ball (extChartAt I x x) r ⊆ (extChartAt I x).symm ⁻¹' v :=
     Metric.mem_nhds_iff.1 (extChartAt_preimage_mem_nhds v_mem)
   lift r to ℝ≥0 using r_pos.le
   simp only [gt_iff_lt, NNReal.coe_pos] at r_pos
+  -- the desired constant will be `c := r / C`
   refine ⟨r / C, by positivity, ?_⟩
   intro y hy
   -- consider a path `γ` of length `< r / C` from `x` to a point `y`. We will show that `y` belongs
@@ -543,7 +559,7 @@ additionally the predicate `IsRiemannianManifold I M`. -/
 by definition the distance is the infimum of the length of paths between the points, i.e., the
 manifold satsifies the `IsRiemannianManifold I M` predicate. -/
 instance [RegularSpace M] :
-    letI : PseudoEMetricSpace M := PseudoEmetricSpace.ofRiemannianMetric I M;
+    letI : PseudoEMetricSpace M := PseudoEmetricSpace.ofRiemannianMetric I M
     IsRiemannianManifold I M := by
   letI : PseudoEMetricSpace M := PseudoEmetricSpace.ofRiemannianMetric I M
   exact ⟨fun x y ↦ rfl⟩
@@ -552,11 +568,11 @@ variable (M) in
 /-- The emetric space structure associated to a Riemannian metric on a manifold. Designed
 so that the topology is defeq to the original one.
 
-This should only be used when constructing data in specific situtations. To develop the theory,
+This should only be used when constructing data in specific situations. To develop the theory,
 one should rather assume that there is an already existing emetric space structure, which satisfies
 additionally the predicate `IsRiemannianManifold I M`. -/
 @[reducible] def EmetricSpace.ofRiemannianMetric [T3Space M] : EMetricSpace M :=
-  letI : PseudoEMetricSpace M := PseudoEmetricSpace.ofRiemannianMetric I M;
+  letI : PseudoEMetricSpace M := PseudoEmetricSpace.ofRiemannianMetric I M
   EMetricSpace.ofT0PseudoEMetricSpace M
 
 end
