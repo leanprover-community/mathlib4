@@ -216,15 +216,12 @@ lemma card_finset_logSizeBallSeq_le (hJ : J.Nonempty) (i : ℕ) :
   induction i with
   | zero => simp [finset_logSizeBallSeq_zero]
   | succ i ih =>
-      by_cases h : (logSizeBallSeq J hJ a c i).finset.Nonempty
-      · apply Nat.le_of_lt_succ
-        apply lt_of_lt_of_le (card_finset_logSizeBallSeq_add_one_lt hJ i h)
-        omega
-      apply le_trans <| Finset.card_le_card (finset_logSizeBallSeq_add_one_subset hJ i)
-      suffices #(logSizeBallSeq J hJ a c i).finset = 0 by simp [this]
-      rw [← Finset.card_empty]
-      congr
-      exact Finset.not_nonempty_iff_eq_empty.mp h
+    by_cases h : (logSizeBallSeq J hJ a c i).finset.Nonempty
+    · have := card_finset_logSizeBallSeq_add_one_lt hJ i h
+      omega
+    apply le_trans <| Finset.card_le_card (finset_logSizeBallSeq_add_one_subset hJ i)
+    suffices #(logSizeBallSeq J hJ a c i).finset = 0 by simp [this]
+    rwa [← not_ne_iff, Finset.card_ne_zero.not]
 
 lemma card_finset_logSizeBallSeq_card_eq_zero (hJ : J.Nonempty) :
     #(logSizeBallSeq J hJ a c #J).finset = 0 := by
