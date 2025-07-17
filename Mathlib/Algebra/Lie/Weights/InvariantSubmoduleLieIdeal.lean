@@ -297,74 +297,81 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
           -- This greatly simplifies the proof
 
 
+          -- Preserve the original membership for later use
+          have hm_α_original : m_α ∈ sl2SubalgebraOfRoot_as_H_submodule α.1 α.2.2 := hm_α
+          -- Decompose m_α using the supremum structure from
+          -- sl2SubalgebraOfRoot_as_H_submodule_eq_sup
+          rw [sl2SubalgebraOfRoot_as_H_submodule_eq_sup] at hm_α
+          -- First: m_α ∈ (genWeightSpace L α.1 ⊔ genWeightSpace L (-α.1)) ⊔ H_α α.1
+          obtain ⟨m_αneg, hm_αneg, m_h, hm_h, hm_eq⟩ := Submodule.mem_sup.mp hm_α
+          -- Then: m_αneg ∈ genWeightSpace L α.1 ⊔ genWeightSpace L (-α.1)
+          obtain ⟨m_pos, hm_pos, m_neg, hm_neg, hm_αneg_eq⟩ := Submodule.mem_sup.mp hm_αneg
+
+          -- Key lemma: m_α decomposes as sum of three terms
+          have hm_α_decomp : m_α = m_pos + m_neg + m_h := by
+            rw [← hm_eq, ← hm_αneg_eq]
+
+          -- Each term has specific weight space membership
+          have hm_pos_weight : m_pos ∈ genWeightSpace L α.1.toLinear := hm_pos
+          have hm_neg_weight : m_neg ∈ genWeightSpace L (-α.1).toLinear := hm_neg
+          have hm_h_coroot : m_h ∈ H_α α.1 := hm_h
+
+          -- Key lemma: bracket decomposes as sum
+          have h_bracket_sum : ⁅x_χ, m_α⁆ = ⁅x_χ, m_pos⁆ + ⁅x_χ, m_neg⁆ + ⁅x_χ, m_h⁆ := by
+            rw [hm_α_decomp, lie_add, lie_add]
+
+          -- Each bracket term has specific containment properties
+          have h_pos_containment : ⁅x_χ, m_pos⁆ ∈ genWeightSpace L (χ.toLinear + α.1.toLinear) := by
+            exact LieAlgebra.lie_mem_genWeightSpace_of_mem_genWeightSpace hx_χ hm_pos
+
+          have h_neg_containment : ⁅x_χ, m_neg⁆ ∈ genWeightSpace L (χ.toLinear - α.1.toLinear) := by
+            have h_neg : ⁅x_χ, m_neg⁆ ∈ genWeightSpace L (χ.toLinear + (-α.1).toLinear) := by
+              exact LieAlgebra.lie_mem_genWeightSpace_of_mem_genWeightSpace hx_χ hm_neg
+            -- Convert χ + (-α) = χ - α
+            have h_eq : χ.toLinear + (-α.1).toLinear = χ.toLinear - α.1.toLinear := by
+              simp [sub_eq_add_neg]
+            rw [← h_eq]
+            exact h_neg
+
+          have h_h_containment : ⁅x_χ, m_h⁆ ∈ genWeightSpace L χ := by
+            -- H_α α consists of elements from the coroot space mapped to L
+            -- The coroot space lies in H, so these elements have weight 0 under H-action
+            -- Therefore elements from H_α have weight 0, so [x_χ, m_h] ∈
+            -- genWeightSpace L (χ + 0) = genWeightSpace L χ
+
+            -- hm_h : m_h ∈ LieSubmodule.map H.toLieSubmodule.incl (corootSpace α.1.toLinear)
+            obtain ⟨y, hy, rfl⟩ := hm_h
+            -- y ∈ corootSpace α.1.toLinear ⊆ H, so H.toLieSubmodule.incl y ∈ H.toLieSubmodule
+            -- By toLieSubmodule_le_rootSpace_zero: H.toLieSubmodule ≤ rootSpace H 0
+            have h_in_zero : H.toLieSubmodule.incl y ∈ rootSpace H 0 := by
+              apply LieAlgebra.toLieSubmodule_le_rootSpace_zero
+              exact y.property
+            -- Now use lie_mem_genWeightSpace_of_mem_genWeightSpace with weights χ and 0
+            -- Since elements from H have weight 0, [x_χ, y] ∈ genWeightSpace L (χ + 0) =
+            -- genWeightSpace L χ
+            have h_zero_weight : H.toLieSubmodule.incl y ∈ genWeightSpace L (0 : H → K) :=
+              h_in_zero
+            convert LieAlgebra.lie_mem_genWeightSpace_of_mem_genWeightSpace hx_χ h_zero_weight
+            ext h
+            simp
+
           -- The bracket ⁅x_χ, m_α⁆ lies in the sl2 subalgebra translated by weight χ
           -- This follows from weight space addition: [L_χ, sl2_α] ⊆ L_{χ+α} ⊔ L_{χ-α} ⊔ L_χ
           have h_bracket_decomp : ⁅x_χ, m_α⁆ ∈
             genWeightSpace L (χ.toLinear + α.1.toLinear) ⊔
             genWeightSpace L (χ.toLinear - α.1.toLinear) ⊔
             genWeightSpace L χ := by
-              -- Use the proven equivalence to decompose m_α
-              -- m_α ∈ sl2SubalgebraOfRoot_as_H_submodule α.1 α.2.2 =
-              --       genWeightSpace L α.1.toLinear ⊔ genWeightSpace L (-α.1).toLinear ⊔ H_α α.1
-              rw [sl2SubalgebraOfRoot_as_H_submodule_eq_sup] at hm_α
-
-              -- Decompose m_α using the supremum structure
-              -- First: m_α ∈ (genWeightSpace L α.1 ⊔ genWeightSpace L (-α.1)) ⊔ H_α α.1
-              obtain ⟨m_αneg, hm_αneg, m_h, hm_h, hm_eq⟩ := Submodule.mem_sup.mp hm_α
-              -- Then: m_αneg ∈ genWeightSpace L α.1 ⊔ genWeightSpace L (-α.1)
-              obtain ⟨m_pos, hm_pos, m_neg, hm_neg, hm_αneg_eq⟩ := Submodule.mem_sup.mp hm_αneg
-
-              -- Substitute: m_α = m_pos + m_neg + m_h
-              rw [← hm_eq, ← hm_αneg_eq, lie_add, lie_add]
-
-              -- Show each bracket component is in the target supremum
-              apply add_mem
-              · apply add_mem
-                · -- ⁅x_χ, m_pos⁆ where m_pos ∈ genWeightSpace L α.1
-                  have h_pos : ⁅x_χ, m_pos⁆ ∈ genWeightSpace L (χ.toLinear + α.1.toLinear) := by
-                    exact LieAlgebra.lie_mem_genWeightSpace_of_mem_genWeightSpace hx_χ hm_pos
-                  -- Show this is in the first component of the supremum
-                  apply Submodule.mem_sup_left
-                  apply Submodule.mem_sup_left
-                  exact h_pos
-                · -- ⁅x_χ, m_neg⁆ where m_neg ∈ genWeightSpace L (-α.1)
-                  have h_neg : ⁅x_χ, m_neg⁆ ∈ genWeightSpace L (χ.toLinear + (-α.1).toLinear) := by
-                    exact LieAlgebra.lie_mem_genWeightSpace_of_mem_genWeightSpace hx_χ hm_neg
-                  -- Convert χ + (-α) = χ - α
-                  have h_eq : χ.toLinear + (-α.1).toLinear = χ.toLinear - α.1.toLinear := by
-                    simp [sub_eq_add_neg]
-                  rw [h_eq] at h_neg
-                  -- Show this is in the second component of the supremum
-                  apply Submodule.mem_sup_left
-                  apply Submodule.mem_sup_right
-                  exact h_neg
-              · -- ⁅x_χ, m_h⁆ where m_h ∈ H_α α.1 (coroot space)
-                -- H_α consists of elements from the coroot space, which have weight 0
-                -- So [x_χ, m_h] ∈ genWeightSpace L χ
-                have h_coroot : ⁅x_χ, m_h⁆ ∈ genWeightSpace L χ := by
-                  -- H_α α consists of elements from the coroot space mapped to L
-                  -- The coroot space lies in H, so these elements have weight 0 under H-action
-                  -- Therefore elements from H_α have weight 0, so [x_χ, m_h] ∈
-                  -- genWeightSpace L (χ + 0) = genWeightSpace L χ
-
-                  -- hm_h : m_h ∈ LieSubmodule.map H.toLieSubmodule.incl (corootSpace α.1.toLinear)
-                  obtain ⟨y, hy, rfl⟩ := hm_h
-                  -- y ∈ corootSpace α.1.toLinear ⊆ H, so H.toLieSubmodule.incl y ∈ H.toLieSubmodule
-                  -- By toLieSubmodule_le_rootSpace_zero: H.toLieSubmodule ≤ rootSpace H 0
-                  have h_in_zero : H.toLieSubmodule.incl y ∈ rootSpace H 0 := by
-                    apply LieAlgebra.toLieSubmodule_le_rootSpace_zero
-                    exact y.property
-                  -- Now use lie_mem_genWeightSpace_of_mem_genWeightSpace with weights χ and 0
-                  -- Since elements from H have weight 0, [x_χ, y] ∈ genWeightSpace L (χ + 0) =
-                  -- genWeightSpace L χ
-                  have h_zero_weight : H.toLieSubmodule.incl y ∈ genWeightSpace L (0 : H → K) :=
-                    h_in_zero
-                  convert LieAlgebra.lie_mem_genWeightSpace_of_mem_genWeightSpace hx_χ h_zero_weight
-                  ext h
-                  simp
-                -- Show this is in the third component of the supremum
+            rw [h_bracket_sum]
+            apply add_mem
+            · apply add_mem
+              · apply Submodule.mem_sup_left
+                apply Submodule.mem_sup_left
+                exact h_pos_containment
+              · apply Submodule.mem_sup_left
                 apply Submodule.mem_sup_right
-                exact h_coroot
+                exact h_neg_containment
+            · apply Submodule.mem_sup_right
+              exact h_h_containment
 
           -- Handle special cases first: if they occur, we can prove the goal directly
           by_cases w_plus : χ.toLinear + α.1.toLinear = 0
@@ -398,7 +405,7 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
 
             have h_bracket_in_sl2 : ⁅x_χ, m_α⁆ ∈ sl2SubalgebraOfRoot α.2.2 := by
               have hm_α_in_sl2 : m_α ∈ sl2SubalgebraOfRoot α.2.2 := by
-                simp only [sl2SubalgebraOfRoot_as_H_submodule] at hm_α; exact hm_α
+                simp only [sl2SubalgebraOfRoot_as_H_submodule] at hm_α_original; exact hm_α_original
               apply LieSubalgebra.lie_mem; exact hx_χ_in_sl2; exact hm_α_in_sl2
             exact h_bracket_in_sl2
           by_cases w_minus : χ.toLinear - α.1.toLinear = 0
@@ -430,7 +437,7 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
               exact ⟨c, 0, 0, by simp [hc_proj]⟩
             have h_bracket_in_sl2 : ⁅x_χ, m_α⁆ ∈ sl2SubalgebraOfRoot α.2.2 := by
               have hm_α_in_sl2 : m_α ∈ sl2SubalgebraOfRoot α.2.2 := by
-                simp only [sl2SubalgebraOfRoot_as_H_submodule] at hm_α; exact hm_α
+                simp only [sl2SubalgebraOfRoot_as_H_submodule] at hm_α_original; exact hm_α_original
               apply LieSubalgebra.lie_mem; exact hx_χ_in_sl2; exact hm_α_in_sl2
             exact h_bracket_in_sl2
           by_cases w_chi : χ.toLinear = 0
@@ -445,7 +452,7 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
             apply LieSubmodule.mem_iSup_of_mem α
             simp only [sl2SubalgebraOfRoot_as_H_submodule]
             have hm_α_base : m_α ∈ sl2SubalgebraOfRoot α.2.2 := by
-              simp only [sl2SubalgebraOfRoot_as_H_submodule] at hm_α; exact hm_α
+              simp only [sl2SubalgebraOfRoot_as_H_submodule] at hm_α_original; exact hm_α_original
             exact sl2SubalgebraOfRoot_stable_under_H α.1 α.2.2 ⟨x_χ, hx_χ_in_H⟩ m_α hm_α_base
           by_cases h_chi_in_q : χ.toLinear ∈ q
           · -- Case: χ ∈ q (general case with invariance)
