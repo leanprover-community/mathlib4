@@ -412,7 +412,7 @@ def equivCon : Con R where
 lemma equivCon_apply {x y : R} : equivCon R x y ↔ x ∼ᵥ y := .rfl
 
 variable (R) in
-def ValueQuotient : Type _ := (equivCon R).Quotient
+abbrev ValueQuotient : Type _ := (equivCon R).Quotient
 
 namespace ValueQuotient
 
@@ -494,7 +494,7 @@ end Equiv
 section Valuation
 
 variable (R) in
-def ValueGroupWithZero : Type _ := ValueQuotient (Localization (posSubmonoid R))
+abbrev ValueGroupWithZero : Type _ := ValueQuotient (Localization (posSubmonoid R))
 
 instance : LinearOrderedCommGroupWithZero (ValueGroupWithZero R) :=
   ValueQuotient.instLinearOrderedCommGroupWithZero
@@ -621,29 +621,48 @@ lemma posSubmonoid_comap :
 
 variable (A B) in
 /-- The morphism of `posSubmonoid`s associated to an algebra map.
-  This is used in constructing `ValuativeExtension.mapValueGroupWithZero`. -/
+This is used in constructing `ValuativeExtension.mapValueGroupWithZero`. -/
 @[simps]
 def mapPosSubmonoid : posSubmonoid A →* posSubmonoid B where
-  toFun := fun ⟨a,ha⟩ => ⟨algebraMap _ _ a,
-    by simpa only [posSubmonoid_def, ← (algebraMap A B).map_zero, rel_iff_rel] using ha⟩
+  toFun a := ⟨algebraMap A B a, posSubmonoid_comap A B |>.ge a.2⟩
   map_one' := by simp
-  map_mul' := by simp
+  map_mul' _ _ := by ext; simp
+
+variable (A B) in
+def mapLocalization : Localization (posSubmonoid A) →+* Localization (posSubmonoid B) :=
+  IsLocalization.map (Localization (posSubmonoid B)) (algebraMap A B) (posSubmonoid_comap A B).ge
+
+lemma mapLocalization_mk {a : A} {s : posSubmonoid A} :
+    mapLocalization A B (Localization.mk a s) =
+      Localization.mk (algebraMap A B a) (mapPosSubmonoid A B s) := by
+  rw [mapLocalization, Localization.mk_eq_mk', IsLocalization.map_mk', ← Localization.mk_eq_mk']
+  rfl
+
+lemma mapLocalization_algebraMap {a : A} :
+    mapLocalization A B (algebraMap _ _ a) = algebraMap _ _ a := by
+  simp_rw [← Localization.mk_one_eq_algebraMap, mapLocalization_mk, map_one,
+    Localization.mk_one_eq_algebraMap]
+  rfl
+
+variable (A B) in
+lemma comap_equivCon_mapLocalization :
+    equivCon (Localization (posSubmonoid A)) = Con.comap (mapLocalization A B) (map_mul _)
+      (equivCon (Localization (posSubmonoid B))) := by
+  ext x y
+  refine Localization.induction_on₂ x y fun ⟨a, s⟩ ⟨b, t⟩ ↦ ?_
+  simp_rw [Con.comap_rel, equivCon_apply, mapLocalization_mk, equiv_localization le_rfl,
+    mapPosSubmonoid_apply_coe, ← map_mul, equiv_iff_equiv A B]
 
 variable (A B) in
 /-- The map on value groups-with-zero associated to the structure morphism of an algebra. -/
 def mapValueGroupWithZero : ValueGroupWithZero A →*₀ ValueGroupWithZero B :=
-  Con.mapQ₀ (IsLocalization.map (Localization (posSubmonoid B)) (algebraMap A B)
-    (posSubmonoid_comap A B).ge) <| by
-      intro x y
-      refine Localization.induction_on₂ x y fun ⟨a, s⟩ ⟨b, t⟩ ↦ ?_
-      simp_rw [Con.comap_rel, equivCon_apply, Localization.mk_eq_mk', IsLocalization.map_mk',
-        ← Localization.mk_eq_mk', equiv_localization le_rfl, ← map_mul, equiv_iff_equiv A B]
-      exact id
+  Con.mapQ₀ (mapLocalization A B) (comap_equivCon_mapLocalization A B).le
 
 @[simp]
 lemma mapValueGroupWithZero_valuation (a : A) :
     mapValueGroupWithZero A B (valuation _ a) = valuation _ (algebraMap _ _ a) := by
-  simp_rw [mapValueGroupWithZero, valuation_apply, ValueQuotient.mk, Con.mapQ₀, Con.mapQ]
+  simp_rw [mapValueGroupWithZero, valuation_apply, Con.mapQ₀_apply, ValueQuotient.mk,
+    Quotient.map_mk, mapLocalization_algebraMap]
   rfl
 
 end ValuativeExtension
