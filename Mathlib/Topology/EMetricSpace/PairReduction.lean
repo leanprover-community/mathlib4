@@ -21,7 +21,7 @@ c > 0, and a finite subset J of T such that |J| ≤ aⁿ for some a > 1 and n �
 
 The key point being that it reduces bounding a supremum over points "close" in J² (which can be a
 set of up to size |J|²) to bounding a supremum over a set of points with size linear in |J|
-(whose points are still "close")
+(whose points are still "close").
 
 -/
 
