@@ -6,7 +6,7 @@ Authors: Chris Hughes, Morenikeji Neri
 import Mathlib.Algebra.EuclideanDomain.Basic
 import Mathlib.Algebra.EuclideanDomain.Field
 import Mathlib.Algebra.GCDMonoid.Basic
-import Mathlib.RingTheory.Ideal.Prod
+import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Ideal.Nonunits
 import Mathlib.RingTheory.Noetherian.UniqueFactorizationDomain
 
@@ -350,7 +350,7 @@ section Surjective
 
 open Submodule
 
-variable {S N F : Type*} [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Semiring S]
+variable {S N F : Type*} [Ring R] [AddCommGroup M] [AddCommGroup N] [Ring S]
 variable [Module R M] [Module R N] [FunLike F R S] [RingHomClass F R S]
 
 theorem Submodule.IsPrincipal.map (f : M →ₗ[R] N) {S : Submodule R M}
@@ -378,12 +378,6 @@ theorem Ideal.IsPrincipal.of_comap (f : F) (hf : Function.Surjective f) (I : Ide
 theorem IsPrincipalIdealRing.of_surjective [IsPrincipalIdealRing R] (f : F)
     (hf : Function.Surjective f) : IsPrincipalIdealRing S :=
   ⟨fun I => Ideal.IsPrincipal.of_comap f hf I⟩
-
-theorem isPrincipalIdealRing_prod_iff :
-    IsPrincipalIdealRing (R × S) ↔ IsPrincipalIdealRing R ∧ IsPrincipalIdealRing S where
-  mp h := ⟨h.of_surjective (RingHom.fst R S) Prod.fst_surjective,
-    h.of_surjective (RingHom.snd R S) Prod.snd_surjective⟩
-  mpr := fun ⟨_, _⟩ ↦ inferInstance
 
 end Surjective
 
