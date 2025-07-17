@@ -736,7 +736,7 @@ variable [Semiring k]
 /-- The opposite of a `MonoidAlgebra R I` equivalent as a ring to
 the `MonoidAlgebra Rᵐᵒᵖ Iᵐᵒᵖ` over the opposite ring, taking elements to their opposite. -/
 @[simps! +simpRhs apply symm_apply]
-protected noncomputable def opRingEquiv [Monoid G] :
+protected noncomputable def opRingEquiv [Mul G] :
     (MonoidAlgebra k G)ᵐᵒᵖ ≃+* MonoidAlgebra kᵐᵒᵖ Gᵐᵒᵖ :=
   { opAddEquiv.symm.trans <|
       (Finsupp.mapRange.addEquiv (opAddEquiv : k ≃+ kᵐᵒᵖ)).trans <| Finsupp.domCongr opEquiv with

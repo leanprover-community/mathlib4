@@ -1023,43 +1023,18 @@ with variables indexed by `Fin n` form an integral domain.
 This fact is proven inductively,
 and then used to prove the general case without any finiteness hypotheses.
 See `MvPolynomial.noZeroDivisors` for the general case. -/
+@[deprecated "MvPolynomial.noZeroDivisors" (since := "2025-07-18")]
 theorem noZeroDivisors_fin (R : Type u) [CommSemiring R] [NoZeroDivisors R] :
-    ∀ n : ℕ, NoZeroDivisors (MvPolynomial (Fin n) R)
-  | 0 => (MvPolynomial.isEmptyAlgEquiv R _).injective.noZeroDivisors _ (map_zero _) (map_mul _)
-  | n + 1 =>
-    haveI := noZeroDivisors_fin R n
-    (MvPolynomial.finSuccEquiv R n).injective.noZeroDivisors _ (map_zero _) (map_mul _)
+    ∀ n : ℕ, NoZeroDivisors (MvPolynomial (Fin n) R) := fun _ ↦ inferInstance
 
 /-- Auxiliary definition:
 Multivariate polynomials in finitely many variables over an integral domain form an integral domain.
 This fact is proven by transport of structure from the `MvPolynomial.noZeroDivisors_fin`,
 and then used to prove the general case without finiteness hypotheses.
 See `MvPolynomial.noZeroDivisors` for the general case. -/
+@[deprecated "MvPolynomial.noZeroDivisors" (since := "2025-07-18")]
 theorem noZeroDivisors_of_finite (R : Type u) (σ : Type v) [CommSemiring R] [Finite σ]
-    [NoZeroDivisors R] : NoZeroDivisors (MvPolynomial σ R) := by
-  cases nonempty_fintype σ
-  haveI := noZeroDivisors_fin R (Fintype.card σ)
-  exact (renameEquiv R (Fintype.equivFin σ)).injective.noZeroDivisors _ (map_zero _) (map_mul _)
-
-instance {R : Type u} [CommSemiring R] [NoZeroDivisors R] {σ : Type v} :
-    NoZeroDivisors (MvPolynomial σ R) where
-  eq_zero_or_eq_zero_of_mul_eq_zero {p q} h := by
-    obtain ⟨s, p, q, rfl, rfl⟩ := exists_finset_rename₂ p q
-    let _nzd := MvPolynomial.noZeroDivisors_of_finite R s
-    have : p * q = 0 := by
-      apply rename_injective _ Subtype.val_injective
-      simpa using h
-    rw [mul_eq_zero] at this
-    apply this.imp <;> rintro rfl <;> simp
-
-/-- The multivariate polynomial ring over an integral domain is an integral domain. -/
-instance isDomain {R : Type u} {σ : Type v} [CommRing R] [IsDomain R] :
-    IsDomain (MvPolynomial σ R) := by
-  apply @NoZeroDivisors.to_isDomain (MvPolynomial σ R) _ ?_ _
-  apply AddMonoidAlgebra.nontrivial
-
--- instance {R : Type u} {σ : Type v} [CommRing R] [IsDomain R] :
---     IsDomain (MvPolynomial σ R)[X] := inferInstance
+    [NoZeroDivisors R] : NoZeroDivisors (MvPolynomial σ R) := inferInstance
 
 theorem map_mvPolynomial_eq_eval₂ {S : Type*} [CommSemiring S] [Finite σ]
     (ϕ : MvPolynomial σ R →+* S) (p : MvPolynomial σ R) :
