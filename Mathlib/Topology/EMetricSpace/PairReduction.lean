@@ -202,7 +202,7 @@ lemma finset_logSizeBallSeq_add_one_ssubset (hJ : J.Nonempty) (i : ℕ)
     · simp [finset_logSizeBallSeq_add_one]
     refine Set.not_subset.mpr ⟨(logSizeBallSeq J hJ a c i).point, ?_, ?_⟩
     · exact point_mem_finset_logSizeBallSeq hJ i h
-    exact point_notMem_finset_logSizeBallSeq_add_one hJ i
+    · exact point_notMem_finset_logSizeBallSeq_add_one hJ i
 
 lemma card_finset_logSizeBallSeq_add_one_lt (hJ : J.Nonempty) (i : ℕ)
     (h : (logSizeBallSeq J hJ a c i).finset.Nonempty) :
