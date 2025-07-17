@@ -310,6 +310,15 @@ theorem head (hab : r a b) (hbc : ReflTransGen r b c) : ReflTransGen r a c := by
   | refl => exact refl.tail hab
   | tail _ hcd hac => exact hac.tail hcd
 
+instance : Trans r r (ReflTransGen r) where
+  trans hab hbc := head hab (single hbc)
+
+instance : Trans r (ReflTransGen r) (ReflTransGen r) :=
+  ⟨head⟩
+
+instance : Trans (ReflTransGen r) r (ReflTransGen r) :=
+  ⟨tail⟩
+
 theorem symmetric (h : Symmetric r) : Symmetric (ReflTransGen r) := by
   intro x y h
   induction h with
