@@ -345,7 +345,8 @@ lemma edist_le_of_mem_pairSet (ha : 1 < a) (hJ_card : #J ≤ a ^ n) {s t : T}
     Prod.mk.injEq, exists_eq_right_right] at h'
   obtain ⟨⟨ht, hdist⟩, rfl⟩ := h'
   refine le_trans hdist (mul_le_mul_right' ?_ c)
-  gcongr; exact radius_logSizeBallSeq_le hJ ha hn hJ_card i
+  gcongr
+  exact radius_logSizeBallSeq_le hJ ha hn hJ_card i
 
 open Classical in
 lemma iSup_edist_pairSet {E : Type*} [PseudoEMetricSpace E] (ha : 1 < a) (f : T → E) :
