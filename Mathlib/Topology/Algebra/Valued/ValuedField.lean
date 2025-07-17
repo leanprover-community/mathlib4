@@ -353,6 +353,9 @@ lemma extensionValuation_apply_coe (x : K) :
     Valued.extensionValuation (x : hat K) = v x :=
   extension_extends x
 
+lemma continuous_extensionValuation : Continuous (Valued.extensionValuation : hat K → Γ₀) :=
+  continuous_extension
+
 -- Bourbaki CA VI §5 no.3 Proposition 5 (d)
 theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
     closure ((↑) '' { x : K | v x < (γ : Γ₀) }) =
@@ -401,7 +404,21 @@ lemma exists_coe_eq_v (x : hat K) : ∃ r : K, extensionValuation x = v r := by
   · have : (extensionValuation x : Γ₀) ≠ 0 := (Valuation.ne_zero_iff _).mpr h
     have : DenseRange (Completion.coe' : K → hat K) := Completion.denseRange_coe
     refine this.induction_on x ?_ ?_
-    · sorry
+    · rw [← isOpen_compl_iff]
+      have : IsClosed (Set.range (v : K → Γ₀)) := by
+        -- IsClosedMap?
+        rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
+        simp only [mem_compl_iff, mem_range, not_exists]
+        intro γ hγ
+        have hγ0 : (γ : Γ₀) ≠ 0 := by
+          rintro rfl
+          simp at hγ
+        simpa [nhds_of_ne_zero hγ0]
+      rw [← isOpen_compl_iff] at this
+      have := (continuous_extensionValuation (K := K)).isOpen_preimage _ this
+      convert this
+      ext
+      simp [eq_comm]
     · simp
 
 noncomputable instance valuedCompletion : Valued (hat K) Γ₀ where
