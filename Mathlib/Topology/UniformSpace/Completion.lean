@@ -356,6 +356,11 @@ theorem isUniformEmbedding_coe [T0Space α] : IsUniformEmbedding ((↑) : α →
 theorem coe_injective [T0Space α] : Function.Injective ((↑) : α → Completion α) :=
   IsUniformEmbedding.injective (isUniformEmbedding_coe _)
 
+variable {α} in
+@[simp]
+lemma coe_inj [T0Space α] {a b : α} : (a : Completion α) = b ↔ a = b :=
+  (coe_injective _).eq_iff
+
 variable {α}
 
 theorem isDenseInducing_coe : IsDenseInducing ((↑) : α → Completion α) :=

@@ -69,6 +69,15 @@ theorem Valuation.inversion_estimate {x y : K} {γ : Γ₀ˣ} (y_ne : y ≠ 0)
     _ = (v <| x - y) * (v y * v y)⁻¹ := by rw [Valuation.map_sub_swap]
     _ < γ := hyp1'
 
+theorem Valuation.inversion_estimate' {x y r s : K} (y_ne : y ≠ 0) (hr : r ≠ 0) (hs : s ≠ 0)
+    (h : v (x - y) < min ((v s / v r) * (v y * v y)) (v y)) : v (x⁻¹ - y⁻¹) * v r < v s := by
+  rw [← lt_div_iff₀ (zero_lt_iff.mpr (by simp [hr])), ← Units.val_mk0 (a := v s / v r)
+    (by simp [hs, hr])]
+  apply Valuation.inversion_estimate _ y_ne
+  rcases min_cases ((v s / v r) * (v y * (v y))) (v y) with H | H <;>
+  · rw [Units.val_mk0, H.left]
+    rwa [H.left] at h
+
 end InversionEstimate
 
 open Valued
@@ -80,17 +89,30 @@ instance (priority := 100) Valued.isTopologicalDivisionRing [Valued K Γ₀] :
   { (by infer_instance : IsTopologicalRing K) with
     continuousAt_inv₀ := by
       intro x x_ne s s_in
-      obtain ⟨γ, hs⟩ := Valued.mem_nhds.mp s_in; clear s_in
+      obtain ⟨⟨⟨t, u⟩, ht, hu⟩, hs⟩ := Valued.mem_nhds.mp s_in; clear s_in
       rw [mem_map, Valued.mem_nhds]
-      change ∃ γ : Γ₀ˣ, { y : K | (v (y - x) : Γ₀) < γ } ⊆ { x : K | x⁻¹ ∈ s }
+      simp only [ne_eq, map_eq_zero] at ht hu hs
       have vx_ne := (Valuation.ne_zero_iff <| v).mpr x_ne
-      let γ' := Units.mk0 _ vx_ne
-      use min (γ * (γ' * γ')) γ'
-      intro y y_in
-      apply hs
-      simp only [mem_setOf_eq] at y_in
-      rw [Units.min_val, Units.val_mul, Units.val_mul] at y_in
-      exact Valuation.inversion_estimate _ x_ne y_in }
+      simp only [ne_eq, inv_preimage, Subtype.exists, map_eq_zero, exists_prop, Prod.exists]
+      rcases min_cases ((v u / v t) * (v x * (v x))) (v x) with H | H
+      · use t, (u * x * x)
+        simp only [mul_eq_zero, hu, x_ne, or_self, not_false_eq_true, ht, and_self, map_mul,
+          true_and]
+        intro y y_in
+        apply hs
+        simp only [mem_setOf_eq] at y_in ⊢
+        apply Valuation.inversion_estimate' _ x_ne ht hu
+        rw [← lt_div_iff₀ (by simp [zero_lt_iff, ht])] at y_in
+        rw [H.left]
+        refine y_in.trans_eq ?_
+        simp [div_eq_mul_inv, mul_comm, mul_assoc, mul_left_comm]
+      · use 1, x
+        simp only [one_ne_zero, not_false_eq_true, x_ne, and_self, map_one, mul_one, true_and]
+        intro y y_in
+        apply hs
+        simp only [mem_setOf_eq] at y_in ⊢
+        apply Valuation.inversion_estimate' _ x_ne ht hu
+        rwa [H.left] }
 
 /-- A valued division ring is separated. -/
 instance (priority := 100) ValuedRing.separated [Valued K Γ₀] : T0Space K := by
@@ -99,9 +121,10 @@ instance (priority := 100) ValuedRing.separated [Valued K Γ₀] : T0Space K := 
   intro x x_ne
   refine ⟨{ k | v k < v x }, ?_, fun h => lt_irrefl _ h⟩
   rw [Valued.mem_nhds]
-  have vx_ne := (Valuation.ne_zero_iff <| v).mpr x_ne
-  let γ' := Units.mk0 _ vx_ne
-  exact ⟨γ', fun y hy => by simpa using hy⟩
+  simp only [ne_eq, sub_zero, setOf_subset_setOf, Subtype.exists, map_eq_zero, exists_prop,
+    Prod.exists]
+  use 1, x
+  simp [x_ne]
 
 section
 
@@ -109,14 +132,23 @@ open WithZeroTopology
 
 open Valued
 
-theorem Valued.continuous_valuation [Valued K Γ₀] : Continuous (v : K → Γ₀) := by
+theorem Valued.continuous_valuation [MulArchimedean Γ₀] [Valued K Γ₀] :
+    Continuous (v : K → Γ₀) := by
   rw [continuous_iff_continuousAt]
   intro x
   rcases eq_or_ne x 0 with (rfl | h)
   · rw [ContinuousAt, map_zero, WithZeroTopology.tendsto_zero]
     intro γ hγ
-    rw [Filter.Eventually, Valued.mem_nhds_zero]
-    use Units.mk0 γ hγ; rfl
+    by_cases H : ∃ x : K, x ≠ 0 ∧ v x ≤ γ
+    · rw [Filter.Eventually, Valued.mem_nhds_zero]
+      simp only [ne_eq, setOf_subset_setOf, Subtype.exists, map_eq_zero, exists_prop, Prod.exists]
+      · obtain ⟨x, hx, hx'⟩ := H
+        use 1, x
+        simpa [hx] using fun _ ↦ hx'.trans_lt'
+    · push_neg at H
+      have := discreteTopology_of_forall_lt (K := K) hγ (by simpa using H)
+      rw [Filter.Eventually]
+      simp [zero_lt_iff, hγ]
   · have v_ne : (v x : Γ₀) ≠ 0 := (Valuation.ne_zero_iff _).mpr h
     rw [ContinuousAt, WithZeroTopology.tendsto_of_ne_zero v_ne]
     apply Valued.loc_const v_ne
@@ -140,21 +172,32 @@ instance (priority := 100) completable : CompletableTopField K :=
   { ValuedRing.separated with
     nice := by
       rintro F hF h0
-      have : ∃ γ₀ : Γ₀ˣ, ∃ M ∈ F, ∀ x ∈ M, (γ₀ : Γ₀) ≤ v x := by
+      have : ∃ rs : { rs : K × K // rs.1 ≠ 0 ∧ rs.2 ≠ 0 },
+          ∃ M ∈ F, ∀ x ∈ M, v rs.val.2 ≤ v x * v rs.val.1  := by
         rcases Filter.inf_eq_bot_iff.mp h0 with ⟨U, U_in, M, M_in, H⟩
-        rcases Valued.mem_nhds_zero.mp U_in with ⟨γ₀, hU⟩
-        exists γ₀, M, M_in
+        rcases Valued.mem_nhds_zero.mp U_in with ⟨⟨⟨r, s⟩, hr, hs⟩, hU⟩
+        use ⟨⟨r, s⟩, by simpa using hr, by simpa using hs⟩, M, M_in
         intro x xM
         apply le_of_not_gt _
         intro hyp
         have : x ∈ U ∩ M := ⟨hU hyp, xM⟩
         rwa [H] at this
-      rcases this with ⟨γ₀, M₀, M₀_in, H₀⟩
+      rcases this with ⟨⟨⟨r, s⟩, hr, hs⟩, M₀, M₀_in, H₀⟩  -- γ₀
       rw [Valued.cauchy_iff] at hF ⊢
       refine ⟨hF.1.map _, ?_⟩
       replace hF := hF.2
-      intro γ
-      rcases hF (min (γ * γ₀ * γ₀) γ₀) with ⟨M₁, M₁_in, H₁⟩
+      rintro ⟨⟨t, u⟩, ht, hu⟩ -- γ
+      let rs : { rs : K × K // v rs.1 ≠ 0 ∧ v rs.2 ≠ 0 } := if
+          v (u * (s * s)) / v (t * (r * r)) ≤ v s / v r
+            then
+          ⟨⟨t * (r * r), u * (s * s)⟩, by simp [hr, hs, ht, hu]⟩ else ⟨⟨r, s⟩, by simp [hr, hs]⟩
+      have : v (rs.val.2) / v (rs.val.1) = min (v (u * (s * s)) / v (t * (r * r))) (v s / v r) := by
+        simp only [rs]
+        split_ifs with H
+        · rw [min_eq_left H]
+        · push_neg at H
+          rw [min_eq_right H.le]
+      rcases hF rs with ⟨M₁, M₁_in, H₁⟩
       clear hF
       use (fun x : K => x⁻¹) '' (M₀ ∩ M₁)
       constructor
@@ -166,28 +209,31 @@ instance (priority := 100) completable : CompletableTopField K :=
         specialize H₁ x x_in₁ y y_in₁
         replace x_in₀ := H₀ x x_in₀
         clear H₀
-        apply Valuation.inversion_estimate
+        apply Valuation.inversion_estimate'
         · have : (v x : Γ₀) ≠ 0 := by
             intro h
             rw [h] at x_in₀
-            simp at x_in₀
+            simp [hs] at x_in₀
           exact (Valuation.ne_zero_iff _).mp this
-        · refine lt_of_lt_of_le H₁ ?_
-          rw [Units.min_val]
-          apply min_le_min _ x_in₀
-          rw [mul_assoc]
-          have : ((γ₀ * γ₀ : Γ₀ˣ) : Γ₀) ≤ v x * v x :=
-            calc
-              ↑γ₀ * ↑γ₀ ≤ ↑γ₀ * v x := mul_le_mul_left' x_in₀ ↑γ₀
-              _ ≤ _ := mul_le_mul_right' x_in₀ (v x)
-          rw [Units.val_mul]
-          exact mul_le_mul_left' this γ }
+        · simpa using ht
+        · simpa using hu
+        · rw [← lt_div_iff₀ (by simpa [zero_lt_iff] using rs.prop.1)] at H₁
+          refine lt_of_lt_of_le H₁ ?_
+          clear H₁
+          simp only [this]
+          rw [← div_le_iff₀ (zero_lt_iff.mpr (by simp [hr]))] at x_in₀
+          simp only at x_in₀
+          refine min_le_min ?_ x_in₀
+          rw [← map_div₀, mul_div_mul_comm, map_mul, map_div₀, mul_div_mul_comm, map_mul, map_div₀]
+          gcongr }
 
 open WithZeroTopology
 
 /-- The extension of the valuation of a valued field to the completion of the field. -/
 noncomputable def extension : hat K → Γ₀ :=
   Completion.isDenseInducing_coe.extend (v : K → Γ₀)
+
+variable [MulArchimedean Γ₀]
 
 theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) := by
   refine Completion.isDenseInducing_coe.continuous_extend ?_
@@ -302,6 +348,11 @@ noncomputable def extensionValuation : Valuation (hat K) Γ₀ where
       rw [← le_max_iff]
       exact v.map_add x y
 
+@[simp]
+lemma extensionValuation_apply_coe (x : K) :
+    Valued.extensionValuation (x : hat K) = v x :=
+  extension_extends x
+
 -- Bourbaki CA VI §5 no.3 Proposition 5 (d)
 theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
     closure ((↑) '' { x : K | v x < (γ : Γ₀) }) =
@@ -329,15 +380,56 @@ theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
     rw [← hy₁] at hx
     exact ⟨⟨y, ⟨y, hx, rfl⟩⟩, hy₂⟩
 
+theorem closure_coe_completion_v_mul_v_lt {r s : K} (hr : r ≠ 0) (hs : s ≠ 0) :
+    closure ((↑) '' { x : K | v x * v r < v s }) =
+    { x : hat K | extensionValuation x * v r < v s } := by
+  have hr' : 0 < v r := by simp [zero_lt_iff, hr]
+  have hrs : 0 < v s / v r := by simp [zero_lt_iff, hr, hs]
+  set γ := Units.mk0 _ hrs.ne'
+  have hγ : (γ : Γ₀) = v s / v r := by simp [γ]
+  simp_rw [← lt_div_iff₀ (hc := hr'), ← hγ, closure_coe_completion_v_lt (γ := γ)]
+
+open Uniformity in
+lemma foo.{u, v} {α : Type u} {β : Type v} [UniformSpace α] [UniformSpace β] {f : α → β}
+  (self : IsUniformInducing f) : Filter.comap (Prod.map f f) (𝓤 β) = 𝓤 α :=
+  self.comap_uniformity
+
+lemma exists_coe_eq_v (x : hat K) : ∃ r : K, extensionValuation x = v r := by
+  rcases eq_or_ne x 0 with (rfl | h)
+  · use 0
+    simp
+  · have : (extensionValuation x : Γ₀) ≠ 0 := (Valuation.ne_zero_iff _).mpr h
+    have : DenseRange (Completion.coe' : K → hat K) := Completion.denseRange_coe
+    refine this.induction_on x ?_ ?_
+    · sorry
+    · simp
+
 noncomputable instance valuedCompletion : Valued (hat K) Γ₀ where
   v := extensionValuation
   is_topological_valuation s := by
-    suffices
-      HasBasis (𝓝 (0 : hat K)) (fun _ => True) fun γ : Γ₀ˣ => { x | extensionValuation x < γ } by
+    suffices HasBasis (𝓝 (0 : hat K)) (fun rs : K × K ↦ rs.1 ≠ 0 ∧ rs.2 ≠ 0) fun rs : K × K ↦
+        { x : hat K | extensionValuation x * v rs.1 < v rs.2 } by
       rw [this.mem_iff]
-      exact exists_congr fun γ => by simp
-    simp_rw [← closure_coe_completion_v_lt]
-    exact (hasBasis_nhds_zero K Γ₀).hasBasis_of_isDenseInducing Completion.isDenseInducing_coe
+      simp only [ne_eq, Prod.exists, Subtype.exists, map_eq_zero, exists_prop]
+      constructor
+      · rintro ⟨r, s, ⟨hr, hs⟩, h⟩
+        refine ⟨r, s, ⟨⟨by simp [hr], by simp [hs]⟩, h.trans' ?_⟩⟩
+        simp [mul_comm]
+      · rintro ⟨r, s, ⟨hr, hs⟩, h⟩
+        obtain ⟨r', hr'⟩ := exists_coe_eq_v r
+        obtain ⟨s', hs'⟩ := exists_coe_eq_v s
+        refine ⟨r', s', ⟨⟨?_, ?_⟩, h.trans' ?_⟩⟩
+        · rintro rfl
+          simp [hr] at hr'
+        · rintro rfl
+          simp [hs] at hs'
+        · simp [mul_comm, hr', hs']
+    refine ((hasBasis_nhds_zero K Γ₀).hasBasis_of_isDenseInducing
+      Completion.isDenseInducing_coe).to_hasBasis ?_ ?_ <;>
+    · simp only [ne_eq, map_eq_zero, Prod.exists, and_imp, Prod.forall,]
+      intro r s hr hs
+      refine ⟨r, s, ⟨⟨hr, hs⟩, ?_⟩⟩
+      rw [closure_coe_completion_v_mul_v_lt hr hs]
 
 @[simp]
 theorem valuedCompletion_apply (x : K) : Valued.v (x : hat K) = v x :=
