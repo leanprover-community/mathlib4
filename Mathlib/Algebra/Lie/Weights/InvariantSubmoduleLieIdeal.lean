@@ -905,32 +905,27 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
               rw [hi] at h_i_in_q
               exact h_chi_in_q h_i_in_q
 
-            -- Now we have h_plus_bot and h_minus_bot showing both weight spaces are ⊥
-            -- Let's try to apply them to h_bracket_decomp
+            -- Since both weight spaces are ⊥, the corresponding brackets are zero
+            have h_pos_zero : ⁅x_χ, m_pos⁆ = 0 := by
+              -- h_pos_containment: ⁅x_χ, m_pos⁆ ∈ genWeightSpace L (χ.toLinear + α.1.toLinear)
+              -- h_plus_bot: genWeightSpace L (χ.toLinear + α.1.toLinear) = ⊥
+              have h_in_bot : ⁅x_χ, m_pos⁆ ∈ (⊥ : LieSubmodule K H L) := by
+                rw [← h_plus_bot]
+                exact h_pos_containment
+              rwa [LieSubmodule.mem_bot] at h_in_bot
 
-            -- First, let's try to rewrite with h_plus_bot (this should work)
-            have h_after_plus : ⁅x_χ, m_α⁆ ∈
-                ⊥ ⊔ genWeightSpace L ((Weight.toLinear K (H) L χ) - (Weight.toLinear K (H) L α)) ⊔
-                genWeightSpace L χ := by
-              rw [← h_plus_bot]
-              exact h_bracket_decomp
+            have h_neg_zero : ⁅x_χ, m_neg⁆ = 0 := by
+              -- h_neg_containment: ⁅x_χ, m_neg⁆ ∈ genWeightSpace L (χ.toLinear - α.1.toLinear)
+              -- h_minus_bot: genWeightSpace L (χ.toLinear - α.1.toLinear) = ⊥
+              have h_in_bot : ⁅x_χ, m_neg⁆ ∈ (⊥ : LieSubmodule K H L) := by
+                rw [← h_minus_bot]
+                exact h_neg_containment
+              rwa [LieSubmodule.mem_bot] at h_in_bot
 
-            -- Now let's create a version of h_minus_bot that matches the exact coercion pattern
-            have h_minus_bot_converted : genWeightSpace L
-                ((Weight.toLinear K (H) L χ) - (Weight.toLinear K (H) L α)) = ⊥ := by
-              -- Use the fact that ⇑(a - b) = ⇑a - ⇑b for linear maps
-              convert h_minus_bot using 1
-
-            -- Now this rewrite should work
-            have h_after_minus : ⁅x_χ, m_α⁆ ∈ ⊥ ⊔ ⊥ ⊔ genWeightSpace L χ := by
-              convert h_after_plus using 1
-              simp at h_minus_bot_converted
-              simp [h_minus_bot_converted]
-
-            -- If we get here, we can simplify: ⊥ ⊔ ⊥ ⊔ genWeightSpace L ⇑χ = genWeightSpace L ⇑χ
-            have h_simplified : ⁅x_χ, m_α⁆ ∈ genWeightSpace L χ := by
-              simp only [bot_sup_eq] at h_after_minus
-              exact h_after_minus
+            -- Now simplify the bracket decomposition
+            have h_simplified : ⁅x_χ, m_α⁆ = ⁅x_χ, m_h⁆ := by
+              rw [h_bracket_sum, h_pos_zero, h_neg_zero]
+              simp
 
             -- The key insight: if both χ + α and χ - α weight spaces are ⊥,
             -- then the pairing between χ and α must be zero
