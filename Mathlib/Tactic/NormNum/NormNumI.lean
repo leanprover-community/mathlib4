@@ -20,6 +20,7 @@ open ComplexConjugate
 namespace Mathlib.Meta
 namespace NormNumI
 
+/-- Assert that a complex number is equal to `re + im * I`. -/
 structure IsComplex (z : ℂ) (re im : ℝ) : Prop where
   out : z = ⟨re, im⟩
 
@@ -103,6 +104,7 @@ theorem pow_bit_false (z : ℂ) (m : ℕ) : z ^ Nat.bit false m = z ^ m * z ^ m 
 theorem pow_bit_true (z : ℂ) (m : ℕ) : z ^ Nat.bit true m = z ^ m * z ^ m * z := by
   rw [Nat.bit, cond, pow_add, pow_mul', pow_one, sq]
 
+/-- Using fast exponentiation to handle nat powers of complexes. -/
 partial def parsePow (n' : ℕ) :
     ⦃a b : Q(ℝ)⦄ → (z : Q(ℂ)) → (n : Q(ℕ)) → Q(NormNum.IsNat $n $n') →  Q(IsComplex $z $a $b) →
     MetaM (Σ a b : Q(ℝ), Q(IsComplex ($z ^ $n) $a $b)) :=
