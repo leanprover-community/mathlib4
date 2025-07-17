@@ -48,7 +48,7 @@ lemma exists_radius_le (t : T) (V : Finset T) (ha : 1 < a) (c : ℝ≥0∞) :
 
 open Classical in
 /-- The log-size radius of t in V is the smallest natural number n greater than zero such that
- {x ∈ V | d(t,x) ≤ nc} ≤ aⁿ -/
+ {x ∈ V | d(t, x) ≤ nc} ≤ aⁿ. -/
 noncomputable
 def logSizeRadius (t : T) (V : Finset T) (a c : ℝ≥0∞) : ℕ :=
   if h : 1 < a then Nat.find (exists_radius_le t V h c) else 0
