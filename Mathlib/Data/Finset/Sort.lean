@@ -335,3 +335,60 @@ lemma nonempty_orderEmbedding_of_finite_infinite
   haveI := Fintype.ofFinite α
   obtain ⟨s, hs⟩ := Infinite.exists_subset_card_eq β (Fintype.card α)
   exact ⟨((Fintype.orderIsoFinOfCardEq α rfl).symm.toOrderEmbedding).trans (s.orderEmbOfFin hs)⟩
+
+section OrderedTuple
+
+variable {α : Type*} [LinearOrder α] {t : ℕ}
+
+/-- For a linearly ordered type α, `Fin t ↪o α` is equivalent to the type of `t`-sets. -/
+@[simps] def tupleEquivFinset : (Fin t ↪o α) ≃ {s : Finset α // s.card = t} where
+  toFun f := ⟨Finset.univ.map f.toEmbedding, by simp⟩
+  invFun s := Finset.orderEmbOfFin s.1 s.2
+  left_inv _ := Eq.symm <| Finset.orderEmbOfFin_unique' _ (by simp)
+  right_inv := by
+    rintro ⟨s, rfl⟩
+    simp only [Finset.map_eq_image, RelEmbedding.coe_toEmbedding, Subtype.mk.injEq]
+    rw [← Finset.coe_inj, ← Finset.range_orderEmbOfFin s rfl]
+    simp
+
+/-- Add a new element greater than all existing elements to the end of a tuple. -/
+def appendRight (f : Fin t ↪o α) (a : α) (ha : ∀ i, f i < a) : Fin (t + 1) ↪o α :=
+  OrderEmbedding.ofStrictMono (Fin.lastCases a f) (
+    Fin.lastCases (fun b h ↦ (h.not_ge <| Fin.le_last b).elim)
+      (fun i ↦ Fin.lastCases (by simp [ha]) fun _ hij ↦ by simpa using hij))
+
+/-- Add a new element greater than the maximum to the end of a nonempty tuple. -/
+@[reducible] def appendRight' (f : Fin (t + 1) ↪o α) (a : α) (ha : f (Fin.last t) < a) :
+    Fin (t+2) ↪o α :=
+  appendRight f a (fun i ↦ (f.monotone (Fin.le_last i)).trans_lt ha)
+
+@[simp] theorem appendRight_last (f : Fin t ↪o α) (a : α) (ha : ∀ i, f i < a) :
+    appendRight f a ha (.last t) = a := by
+  simp [appendRight]
+
+@[simp] theorem appendRight_castSucc (f : Fin t ↪o α) (a : α) (ha : ∀ i, f i < a) (i : Fin t) :
+    appendRight f a ha (.castSucc i) = f i := by
+  simp [appendRight]
+
+@[simp] theorem appendRight_trans (f : Fin t ↪o α) (a : α) (ha : ∀ i, f i < a) (g : α ↪o α) :
+    (appendRight f a ha).trans g = appendRight (f.trans g) (g a) (fun i ↦ by simp [ha]) := by
+  ext x
+  exact Fin.lastCases (i := x) (by simp) (fun i ↦ by simp)
+
+/-- Restrict a tuple to an initial subsegment. -/
+def truncate (f : Fin t ↪o α) {t' : ℕ} (ht' : t' ≤ t) : Fin t' ↪o α :=
+  (Fin.castLEOrderEmb ht').trans f
+
+/-- Remove the last element of a nonempty tuple. -/
+def eraseRight (f : Fin (t + 1) ↪o α) : Fin t ↪o α :=
+  truncate f (Nat.le_add_right t 1)
+
+@[simp] theorem eraseRight_apply_eq (f : Fin (t + 1) ↪o α) (i : Fin t) :
+    eraseRight f i = f (Fin.castSucc i) := rfl
+
+@[simp] theorem appendRight_eraseRight (f : Fin (t + 1) ↪o α) :
+    appendRight (eraseRight f) (f (Fin.last t))
+      (fun _ ↦ f.strictMono (Fin.castSucc_lt_last _)) = f :=
+  RelEmbedding.ext <| Fin.lastCases (by simp) (by simp)
+
+end OrderedTuple
