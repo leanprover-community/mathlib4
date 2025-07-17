@@ -588,6 +588,6 @@ theorem transpose_mem_matrix_iff {M : Matrix m n α} :
   simp only [Set.mem_matrix, transpose_apply]; exact forall_comm
 
 theorem submatrix_mem_matrix {M : Matrix m n α} (hM : M ∈ S.matrix) {r : l → m} {c : o → n} :
-    (M.submatrix r c) ∈ S.matrix := by simp_all [Set.mem_matrix]
+    M.submatrix r c ∈ S.matrix := by simp_all [Set.mem_matrix]
 
 end Matrix
