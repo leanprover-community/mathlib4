@@ -168,8 +168,8 @@ lemma radius_logSizeBallSeq_le (hJ : J.Nonempty) (ha : 1 < a) (hn : 1 ≤ n) (hJ
 lemma one_le_radius_logSizeBallSeq (hJ : J.Nonempty) (ha : 1 < a) (i : ℕ) :
     1 ≤ (logSizeBallSeq J hJ a c i).radius := by
   match i with
-  | 0 => simp [radius_logSizeBallSeq_zero]; apply one_le_logSizeRadius ha
-  | i + 1 => simp [radius_logSizeBallSeq_add_one]; apply one_le_logSizeRadius ha
+  | 0 => exact one_le_logSizeRadius ha
+  | i + 1 => exact one_le_logSizeRadius ha
 
 lemma point_mem_finset_logSizeBallSeq (hJ : J.Nonempty) (i : ℕ)
     (h : (logSizeBallSeq J hJ a c i).finset.Nonempty) :
