@@ -164,21 +164,42 @@ lemma left_cancel_posSubmonoid (x y : R) (u : posSubmonoid R) :
     u * x ≤ᵥ u * y ↔ x ≤ᵥ y := by
   simp only [← right_cancel_posSubmonoid x y u, mul_comm]
 
-variable (R) in
-def equiv : Con R where
-  r x y := x ≤ᵥ y ∧ y ≤ᵥ x
-  iseqv := {
-    refl _ := ⟨rel_refl _, rel_refl _⟩
-    symm h := ⟨h.2, h.1⟩
-    trans hxy hyz := ⟨rel_trans hxy.1 hyz.1, rel_trans hyz.2 hxy.2⟩
-  }
-  mul' ha hb := ⟨rel_mul ha.1 hb.1, rel_mul ha.2 hb.2⟩
+def equiv (x y : R) : Prop := x ≤ᵥ y ∧ y ≤ᵥ x
 
-lemma mem_posSubmonoid_iff_equiv (x : R) : x ∈ posSubmonoid R ↔ ¬ equiv R x 0 :=
+@[inherit_doc ValuativeRel.equiv]
+notation:50 a:50 " ∼ᵥ " b:51 => binrel% ValuativeRel.equiv a b
+
+@[simp]
+lemma equiv_refl (x : R) : x ∼ᵥ x :=
+  ⟨rel_refl _, rel_refl _⟩
+
+lemma equiv_rfl {x : R} : x ∼ᵥ x :=
+  equiv_refl x
+
+lemma equiv_trans {x y z : R} (hxy : x ∼ᵥ y) (hyz : y ∼ᵥ z) : x ∼ᵥ z :=
+  ⟨rel_trans hxy.1 hyz.1, rel_trans hyz.2 hxy.2⟩
+
+lemma equiv_symm {x y : R} (hxy : x ∼ᵥ y) : y ∼ᵥ x :=
+  ⟨hxy.2, hxy.1⟩
+
+lemma equiv_mul {x x' y y' : R} (hx : x ∼ᵥ x') (hy : y ∼ᵥ y') : x * y ∼ᵥ x' * y' :=
+  ⟨rel_mul hx.1 hy.1, rel_mul hx.2 hy.2⟩
+
+variable (R) in
+def equivCon : Con R where
+  r x y := x ∼ᵥ y
+  iseqv := {
+    refl := equiv_refl
+    symm := equiv_symm
+    trans := equiv_trans
+  }
+  mul' := equiv_mul
+
+lemma mem_posSubmonoid_iff_equiv (x : R) : x ∈ posSubmonoid R ↔ ¬ equiv x 0 :=
   ⟨fun h h' ↦ h h'.1, fun h h' ↦ h ⟨h', zero_rel _⟩⟩
 
 -- TODO: Should be a general instance
-instance : LinearOrder (equiv R).Quotient where
+instance : LinearOrder (equivCon R).Quotient where
   le := Quotient.lift₂ (· ≤ᵥ ·) fun a₁ b₁ a₂ b₂ ha hb ↦ iff_iff_eq.mp
     ⟨fun H ↦ rel_trans ha.2 (rel_trans H hb.1), fun H ↦ rel_trans ha.1 (rel_trans H hb.2)⟩
   le_refl := Quotient.ind fun x ↦ rel_refl x
@@ -187,21 +208,21 @@ instance : LinearOrder (equiv R).Quotient where
   le_total := Quotient.ind₂ rel_total
   toDecidableLE := open Classical in inferInstance
 
-instance : LinearOrderedCommMonoidWithZero (equiv R).Quotient where
+instance : LinearOrderedCommMonoidWithZero (equivCon R).Quotient where
   mul_le_mul_left := Quotient.ind₂ fun _ _ hxy ↦ Quotient.ind fun _ ↦ rel_mul_left _ hxy
   bot := 0
   bot_le := Quotient.ind zero_rel
   zero_le_one := zero_rel _
 
 lemma mem_posSubmonoid_iff_ne_zero {x : R} :
-    x ∈ posSubmonoid R ↔ (x : (equiv R).Quotient) ≠ 0 := by
-  simp [← Con.coe_zero, Con.eq, ← mem_posSubmonoid_iff_equiv]
+    x ∈ posSubmonoid R ↔ (x : (equivCon R).Quotient) ≠ 0 := by
+  simp [← Con.coe_zero, Con.eq, ← mem_posSubmonoid_iff_equiv, equivCon]
 
-instance : Nontrivial (equiv R).Quotient where
+instance : Nontrivial (equivCon R).Quotient where
   exists_pair_ne := ⟨1, 0, by simpa [← Con.coe_one, ← mem_posSubmonoid_iff_ne_zero]
     using (posSubmonoid R).one_mem⟩
 
-instance : NoZeroDivisors (equiv R).Quotient where
+instance : NoZeroDivisors (equivCon R).Quotient where
   eq_zero_or_eq_zero_of_mul_eq_zero {a b} := Con.induction_on₂ a b fun x y ↦ by
     contrapose
     simpa [← Con.coe_mul, ← mem_posSubmonoid_iff_ne_zero] using (posSubmonoid R).mul_mem
@@ -210,10 +231,10 @@ open scoped nonZeroDivisors
 
 -- Proof a bit ugly...
 @[elab_as_elim]
-private lemma nonZeroDivisors_induction {motive : (equiv R).Quotient⁰ → Prop}
+private lemma nonZeroDivisors_induction {motive : (equivCon R).Quotient⁰ → Prop}
     (mk : ∀ x : posSubmonoid R, motive ⟨↑x,
       mem_nonZeroDivisors_of_ne_zero <| mem_posSubmonoid_iff_ne_zero.mp x.2⟩)
-    (t : (equiv R).Quotient⁰) :
+    (t : (equivCon R).Quotient⁰) :
     motive t := by
   rcases Quotient.exists_rep t.1 with ⟨x, hx⟩
   have : x ∈ posSubmonoid R := by
@@ -226,7 +247,7 @@ private lemma nonZeroDivisors_induction {motive : (equiv R).Quotient⁰ → Prop
 variable (R) in
 /-- The "canonical" value group-with-zero of a ring with a valuative relation. -/
 def ValueGroupWithZero' :=
-  Localization ((equiv R).Quotient)⁰
+  Localization ((equivCon R).Quotient)⁰
 
 /-- Construct an element of the value group-with-zero from an element `r : R` and
   `y : posSubmonoid R`. This should be thought of as `v r / v y`. -/
