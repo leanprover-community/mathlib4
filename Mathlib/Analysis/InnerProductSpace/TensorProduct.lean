@@ -5,10 +5,16 @@ Authors: Monica Omar
 -/
 import Mathlib.LinearAlgebra.TensorProduct.Basic
 import Mathlib.Analysis.InnerProductSpace.LinearMap
-import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.LinearAlgebra.TensorProduct.Finiteness
-import Mathlib.LinearAlgebra.Contraction
-import Mathlib.Analysis.InnerProductSpace.l2Space
+-- import Mathlib.LinearAlgebra.TensorProduct.Tower
+-- import Mathlib.LinearAlgebra.TensorProduct.Finiteness
+-- import Mathlib.LinearAlgebra.Contraction
+-- import Mathlib.Analysis.InnerProductSpace.l2Space
+
+/-!
+
+# Inner product space structure on tensor products
+
+-/
 
 variable {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedAddCommGroup F]
   [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 F]
