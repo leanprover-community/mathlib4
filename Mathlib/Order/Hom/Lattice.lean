@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Order.Hom.Basic
+import Mathlib.Data.Setoid.Basic
 
 /-!
 # Unbounded lattice homomorphisms
@@ -118,6 +119,12 @@ instance (priority := 100) InfHomClass.toOrderHomClass [SemilatticeInf α] [Semi
 instance (priority := 100) LatticeHomClass.toInfHomClass [Lattice α] [Lattice β]
     [LatticeHomClass F α β] : InfHomClass F α β :=
   { ‹LatticeHomClass F α β› with }
+
+/-- The kernel of a lattice homomorphism as a lattice congruence -/
+def latticeHom_ker [Lattice α] [Lattice β] [LatticeHomClass F α β] (f : F) : LatticeCon α where
+  toSetoid := Setoid.ker f
+  inf _ _ := by simp_all only [Setoid.ker, onFun, map_inf]
+  sup _ _ := by simp_all only [Setoid.ker, onFun, map_sup]
 
 end Hom
 
