@@ -43,7 +43,7 @@ lemma mem_dualSubmodule {N : Submodule R M} {x} :
 
 lemma le_flip_dualSubmodule {N₁ N₂ : Submodule R M} :
     N₁ ≤ B.flip.dualSubmodule N₂ ↔ N₂ ≤ B.dualSubmodule N₁ := by
-  show (∀ (x : M), x ∈ N₁ → _) ↔ ∀ (x : M), x ∈ N₂ → _
+  change (∀ (x : M), x ∈ N₁ → _) ↔ ∀ (x : M), x ∈ N₂ → _
   simp only [mem_dualSubmodule, Submodule.mem_one, flip_apply]
   exact forall₂_swap
 
@@ -66,12 +66,12 @@ def dualSubmoduleToDual [NoZeroSMulDivisors R S] (N : Submodule R M) :
     B.dualSubmodule N →ₗ[R] Module.Dual R N :=
   { toFun := fun x ↦
     { toFun := B.dualSubmoduleParing x
-      map_add' := fun x y ↦ NoZeroSMulDivisors.algebraMap_injective R S (by simp)
-      map_smul' := fun r m ↦ NoZeroSMulDivisors.algebraMap_injective R S
+      map_add' := fun x y ↦ FaithfulSMul.algebraMap_injective R S (by simp)
+      map_smul' := fun r m ↦ FaithfulSMul.algebraMap_injective R S
         (by simp [← Algebra.smul_def]) }
-    map_add' := fun x y ↦ LinearMap.ext fun z ↦ NoZeroSMulDivisors.algebraMap_injective R S
+    map_add' := fun x y ↦ LinearMap.ext fun z ↦ FaithfulSMul.algebraMap_injective R S
       (by simp)
-    map_smul' := fun r x ↦ LinearMap.ext fun y ↦ NoZeroSMulDivisors.algebraMap_injective R S
+    map_smul' := fun r x ↦ LinearMap.ext fun y ↦ FaithfulSMul.algebraMap_injective R S
       (by simp [← Algebra.smul_def]) }
 
 lemma dualSubmoduleToDual_injective (hB : B.Nondegenerate) [NoZeroSMulDivisors R S]
@@ -95,13 +95,13 @@ lemma dualSubmodule_span_of_basis {ι} [Finite ι] [DecidableEq ι]
     apply sum_mem
     rintro i -
     obtain ⟨r, hr⟩ := Submodule.mem_one.mp <| hx (b i) (Submodule.subset_span ⟨_, rfl⟩)
-    simp only [dualBasis_repr_apply, ← hr, Algebra.linearMap_apply, algebraMap_smul]
+    simp only [dualBasis_repr_apply, ← hr, algebraMap_smul]
     apply Submodule.smul_mem
     exact Submodule.subset_span ⟨_, rfl⟩
   · rw [Submodule.span_le]
     rintro _ ⟨i, rfl⟩ y hy
-    obtain ⟨f, rfl⟩ := (mem_span_range_iff_exists_fun _).mp hy
-    simp only [map_sum, map_smul]
+    obtain ⟨f, rfl⟩ := (Submodule.mem_span_range_iff_exists_fun _).mp hy
+    simp only [map_sum]
     apply sum_mem
     rintro j -
     rw [← IsScalarTower.algebraMap_smul S (f j), map_smul]

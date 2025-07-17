@@ -185,7 +185,7 @@ instance forget₂_faithful (C : Type u) (D : Type u') [Category.{v} C] [HasForg
 
 instance InducedCategory.hasForget {C : Type u} {D : Type u'}
     [Category.{v'} D] [HasForget.{w} D] (f : C → D) :
-      HasForget (InducedCategory D f) where
+    HasForget (InducedCategory D f) where
   forget := inducedFunctor f ⋙ forget D
 
 instance InducedCategory.hasForget₂ {C : Type u} {D : Type u'} [Category.{v} D]
@@ -194,12 +194,12 @@ instance InducedCategory.hasForget₂ {C : Type u} {D : Type u'} [Category.{v} D
   forget_comp := rfl
 
 instance FullSubcategory.hasForget {C : Type u} [Category.{v} C] [HasForget.{w} C]
-    (Z : C → Prop) : HasForget (FullSubcategory Z) where
-  forget := fullSubcategoryInclusion Z ⋙ forget C
+    (P : ObjectProperty C) : HasForget P.FullSubcategory where
+  forget := P.ι ⋙ forget C
 
 instance FullSubcategory.hasForget₂ {C : Type u} [Category.{v} C] [HasForget.{w} C]
-    (Z : C → Prop) : HasForget₂ (FullSubcategory Z) C where
-  forget₂ := fullSubcategoryInclusion Z
+    (P : ObjectProperty C) : HasForget₂ P.FullSubcategory C where
+  forget₂ := P.ι
   forget_comp := rfl
 
 /-- In order to construct a “partially forgetting” functor, we do not need to verify functor laws;
@@ -209,7 +209,7 @@ def HasForget₂.mk' {C : Type u} {D : Type u'} [Category.{v} C] [HasForget.{w} 
     [Category.{v'} D] [HasForget.{w} D]
     (obj : C → D) (h_obj : ∀ X, (forget D).obj (obj X) = (forget C).obj X)
     (map : ∀ {X Y}, (X ⟶ Y) → (obj X ⟶ obj Y))
-    (h_map : ∀ {X Y} {f : X ⟶ Y}, HEq ((forget D).map (map f)) ((forget C).map f)) :
+    (h_map : ∀ {X Y} {f : X ⟶ Y}, (forget D).map (map f) ≍ (forget C).map f) :
     HasForget₂ C D where
   forget₂ := Functor.Faithful.div _ _ _ @h_obj _ @h_map
   forget_comp := by apply Functor.Faithful.div_comp
@@ -222,7 +222,7 @@ def HasForget₂.trans (C : Type u) [Category.{v} C] [HasForget.{w} C]
     [HasForget₂ C D] [HasForget₂ D E] : HasForget₂ C E where
   forget₂ := CategoryTheory.forget₂ C D ⋙ CategoryTheory.forget₂ D E
   forget_comp := by
-    show (CategoryTheory.forget₂ _ D) ⋙ (CategoryTheory.forget₂ D E ⋙ CategoryTheory.forget E) = _
+    change (CategoryTheory.forget₂ _ D) ⋙ (CategoryTheory.forget₂ D E ⋙ CategoryTheory.forget E) = _
     simp only [HasForget₂.forget_comp]
 
 /-- Every forgetful functor factors through the identity functor. This is not a global instance as
@@ -231,12 +231,6 @@ def hasForgetToType (C : Type u) [Category.{v} C] [HasForget.{w} C] :
     HasForget₂ C (Type w) where
   forget₂ := forget C
   forget_comp := Functor.comp_id _
-
-@[simp]
-lemma NatTrans.naturality_apply {C D : Type*} [Category C] [Category D] [HasForget D]
-    {F G : C ⥤ D} (φ : F ⟶ G) {X Y : C} (f : X ⟶ Y) (x : F.obj X) :
-    φ.app Y (F.map f x) = G.map f (φ.app X x) := by
-  simpa only [Functor.map_comp] using congr_fun ((forget D).congr_map (φ.naturality f)) x
 
 section ConcreteCategory
 
@@ -330,12 +324,10 @@ instance toHasForget : HasForget C where
 
 end ConcreteCategory
 
-theorem forget_obj (X : C) : (forget C).obj X = ToType X := by
-  with_reducible_and_instances rfl
+theorem forget_obj (X : C) : (forget C).obj X = ToType X := rfl
 
 @[simp]
-theorem ConcreteCategory.forget_map_eq_coe {X Y : C} (f : X ⟶ Y) : (forget C).map f = f := by
-  with_reducible_and_instances rfl
+theorem ConcreteCategory.forget_map_eq_coe {X Y : C} (f : X ⟶ Y) : (forget C).map f = f := rfl
 
 /-- Analogue of `congr_fun h x`,
 when `h : f = g` is an equality between morphisms in a concrete category.
@@ -361,6 +353,26 @@ theorem coe_toHasForget_instFunLike {C : Type*} [Category C] {FC : C → C → T
     [inst : ∀ X Y : C, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC] {X Y : C}
     (f : X ⟶ Y) :
     @DFunLike.coe (X ⟶ Y) (ToType X) (fun _ => ToType Y) HasForget.instFunLike f = f := rfl
+
+lemma ConcreteCategory.forget₂_comp_apply {C : Type u} {D : Type u'} [Category.{v} C]
+    {FC : C → C → Type*} {CC : C → Type w} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
+    [ConcreteCategory.{w} C FC] [Category.{v'} D] {FD : D → D → Type*} {CD : D → Type w}
+    [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [ConcreteCategory.{w} D FD] [HasForget₂ C D] {X Y Z : C}
+    (f : X ⟶ Y) (g : Y ⟶ Z) (x : ToType ((forget₂ C D).obj X)) :
+    ((forget₂ C D).map (f ≫ g) x) =
+      (forget₂ C D).map g ((forget₂ C D).map f x) := by
+  rw [Functor.map_comp, ConcreteCategory.comp_apply]
+
+instance hom_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] :
+    IsIso (C := Type _) ⇑(ConcreteCategory.hom f) :=
+  ((forget C).mapIso (asIso f)).isIso_hom
+
+@[simp]
+lemma NatTrans.naturality_apply {C D : Type*} [Category C] [Category D] {FD : D → D → Type*}
+    {CD : D → Type*} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [ConcreteCategory D FD]
+    {F G : C ⥤ D} (φ : F ⟶ G) {X Y : C} (f : X ⟶ Y) (x : ToType (F.obj X)) :
+    φ.app Y (F.map f x) = G.map f (φ.app X x) := by
+  simpa only [Functor.map_comp] using congr_fun ((forget D).congr_map (φ.naturality f)) x
 
 section
 
@@ -425,6 +437,30 @@ abbrev Types.instConcreteCategory : ConcreteCategory (Type u) (fun X Y => X ⟶ 
   ofHom f := f
 
 end
+
+open ConcreteCategory
+
+instance InducedCategory.concreteCategory {C : Type u} {D : Type u'} [Category.{v'} D]
+    {FD : D → D → Type*} {CD : D → Type w} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
+    [ConcreteCategory.{w} D FD] (f : C → D) :
+    ConcreteCategory (InducedCategory D f) (fun X Y => FD (f X) (f Y)) where
+  hom := hom (C := D)
+  ofHom := ofHom (C := D)
+  hom_ofHom := hom_ofHom (C := D)
+  ofHom_hom := ofHom_hom (C := D)
+  comp_apply := ConcreteCategory.comp_apply (C := D)
+  id_apply := ConcreteCategory.id_apply (C := D)
+
+instance FullSubcategory.concreteCategory {C : Type u} [Category.{v} C]
+    {FC : C → C → Type*} {CC : C → Type w} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
+    [ConcreteCategory.{w} C FC]
+    (P : ObjectProperty C) : ConcreteCategory P.FullSubcategory (fun X Y => FC X.1 Y.1) where
+  hom := hom (C := C)
+  ofHom := ofHom (C := C)
+  hom_ofHom := hom_ofHom (C := C)
+  ofHom_hom := ofHom_hom (C := C)
+  comp_apply := ConcreteCategory.comp_apply (C := C)
+  id_apply := ConcreteCategory.id_apply (C := C)
 
 end ConcreteCategory
 

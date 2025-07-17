@@ -120,27 +120,17 @@ abbrev toTopGlueData : TopCat.GlueData :=
     toGlueData := 𝖣.mapGlueData (forget C) }
 
 theorem ι_isOpenEmbedding [HasLimits C] (i : D.J) : IsOpenEmbedding (𝖣.ι i).base := by
-  rw [← show _ = (𝖣.ι i).base from 𝖣.ι_gluedIso_inv (PresheafedSpace.forget _) _]
-  -- Porting note: added this erewrite
-  erw [coe_comp]
+  rw [← show _ = (𝖣.ι i).base from 𝖣.ι_gluedIso_inv (PresheafedSpace.forget _) _, TopCat.coe_comp]
   exact (TopCat.homeoOfIso (𝖣.gluedIso (PresheafedSpace.forget _)).symm).isOpenEmbedding.comp
       (D.toTopGlueData.ι_isOpenEmbedding i)
-
-@[deprecated (since := "2024-10-18")]
-alias ι_openEmbedding := ι_isOpenEmbedding
 
 theorem pullback_base (i j k : D.J) (S : Set (D.V (i, j)).carrier) :
     (π₂ i, j, k) '' ((π₁ i, j, k) ⁻¹' S) = D.f i k ⁻¹' (D.f i j '' S) := by
   have eq₁ : _ = (π₁ i, j, k).base := PreservesPullback.iso_hom_fst (forget C) _ _
   have eq₂ : _ = (π₂ i, j, k).base := PreservesPullback.iso_hom_snd (forget C) _ _
-  rw [← eq₁, ← eq₂]
-  -- Porting note: `rw` to `erw` on `coe_comp`
-  erw [coe_comp]
-  rw [Set.image_comp]
-  -- Porting note: `rw` to `erw` on `coe_comp`
-  erw [coe_comp]
-  rw [Set.preimage_comp, Set.image_preimage_eq, TopCat.pullback_snd_image_fst_preimage]
-  · rfl
+  rw [← eq₁, ← eq₂, TopCat.coe_comp, Set.image_comp, TopCat.coe_comp, Set.preimage_comp,
+    Set.image_preimage_eq]
+  · simp only [forget_obj, forget_map, TopCat.pullback_snd_image_fst_preimage]
   rw [← TopCat.epi_iff_surjective]
   infer_instance
 
@@ -186,20 +176,22 @@ theorem snd_invApp_t_app' (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)
     have := (𝖣.t_fac k i j).symm
     rw [← IsIso.inv_comp_eq] at this
     replace this := (congr_arg ((PresheafedSpace.Hom.base ·)) this).symm
+    replace this := congr_arg (TopCat.Hom.hom ·) this
     replace this := congr_arg (ContinuousMap.toFun ·) this
     dsimp at this
-    rw [coe_comp, coe_comp] at this
     rw [this, Set.image_comp, Set.image_comp, Set.preimage_image_eq]
     swap
     · refine Function.HasLeftInverse.injective ⟨(D.t i k).base, fun x => ?_⟩
-      rw [← comp_apply, ← comp_base, D.t_inv, id_base, id_apply]
+      rw [← ConcreteCategory.comp_apply, ← comp_base, D.t_inv, id_base, ConcreteCategory.id_apply]
     refine congr_arg (_ '' ·) ?_
     refine congr_fun ?_ _
     refine Set.image_eq_preimage_of_inverse ?_ ?_
     · intro x
-      rw [← comp_apply, ← comp_base, IsIso.inv_hom_id, id_base, id_apply]
+      rw [← ConcreteCategory.comp_apply, ← comp_base, IsIso.inv_hom_id, id_base,
+        ConcreteCategory.id_apply]
     · intro x
-      rw [← comp_apply, ← comp_base, IsIso.hom_inv_id, id_base, id_apply]
+      rw [← ConcreteCategory.comp_apply, ← comp_base, IsIso.hom_inv_id, id_base,
+        ConcreteCategory.id_apply]
   · rw [← IsIso.eq_inv_comp, IsOpenImmersion.inv_invApp, Category.assoc,
       (D.t' k i j).c.naturality_assoc]
     simp_rw [← Category.assoc]
@@ -217,7 +209,7 @@ theorem snd_invApp_t_app' (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)
     subst eq
     use (inv (D.t' k i j)).base y
     change (inv (D.t' k i j) ≫ π₁ k, i, j).base y = _
-    congr 2
+    congr 3
     rw [IsIso.inv_comp_eq, 𝖣.t_fac_assoc, 𝖣.t_inv, Category.comp_id]
 
 /-- The red and the blue arrows in ![this diagram](https://i.imgur.com/q6X1GJ9.png) commute. -/
@@ -243,7 +235,7 @@ theorem ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
   rw [← show _ = (𝖣.ι i).base from 𝖣.ι_gluedIso_inv (PresheafedSpace.forget _) i, ←
     show _ = (𝖣.ι j).base from 𝖣.ι_gluedIso_inv (PresheafedSpace.forget _) j]
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): change `rw` to `erw` on `coe_comp`
-  erw [coe_comp, coe_comp, coe_comp]
+  erw [TopCat.coe_comp, TopCat.coe_comp, TopCat.coe_comp]
   rw [Set.image_comp, Set.preimage_comp]
   erw [Set.preimage_image_eq]
   · refine Eq.trans (D.toTopGlueData.preimage_image_eq_image' _ _ _) ?_
@@ -256,7 +248,7 @@ theorem ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
     change (D.t i j ≫ D.t j i).base '' _ = _
     rw [𝖣.t_inv]
     simp
-  · rw [← coe_comp, ← TopCat.mono_iff_injective]
+  · rw [← TopCat.coe_comp, ← TopCat.mono_iff_injective]
     infer_instance
 
 /-- (Implementation). The map `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_{U_j}, 𝖣.ι j ⁻¹' (𝖣.ι i '' U))` -/
@@ -308,7 +300,7 @@ theorem opensImagePreimageMap_app_assoc (i j k : D.J) (U : Opens (D.U i).carrier
 the image `ι '' U` in the glued space is the limit of this diagram. -/
 abbrev diagramOverOpen {i : D.J} (U : Opens (D.U i).carrier) :
     -- Porting note : ↓ these need to be explicit
-    (WalkingMultispan D.diagram.fstFrom D.diagram.sndFrom)ᵒᵖ ⥤ C :=
+    (WalkingMultispan (.prod D.J))ᵒᵖ ⥤ C :=
   componentwiseDiagram 𝖣.diagram.multispan ((D.ι_isOpenEmbedding i).isOpenMap.functor.obj U)
 
 /-- (Implementation)
@@ -335,9 +327,9 @@ def ιInvAppπApp {i : D.J} (U : Opens (D.U i).carrier) (j) :
     exact colimit.w 𝖣.diagram.multispan (WalkingMultispan.Hom.fst (j, k))
   · exact D.opensImagePreimageMap i j U
 
+set_option maxHeartbeats 600000 in
 -- Porting note: time out started in `erw [... congr_app (pullbackSymmetry_hom_comp_snd _ _)]` and
 -- the last congr has a very difficult `rfl : eqToHom _ ≫ eqToHom _ ≫ ... = eqToHom ... `
-set_option maxHeartbeats 600000 in
 /-- (Implementation) The natural map `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_X, 𝖣.ι i '' U)`.
 This forms the inverse of `(𝖣.ι i).c.app (op U)`. -/
 def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
@@ -347,8 +339,8 @@ def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
       π :=
         { app := fun j => D.ιInvAppπApp U (unop j)
           naturality := fun {X Y} f' => by
-            induction X using Opposite.rec' with | h X => ?_
-            induction Y using Opposite.rec' with | h Y => ?_
+            induction X with | op X => ?_
+            induction Y with | op Y => ?_
             let f : Y ⟶ X := f'.unop; have : f' = f.op := rfl; clear_value f; subst this
             rcases f with (_ | ⟨j, k⟩ | ⟨j, k⟩)
             · simp
@@ -390,8 +382,7 @@ def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
             rw [← (D.V (j, k)).presheaf.map_comp]
             erw [← (D.V (j, k)).presheaf.map_comp]
             repeat rw [← (D.V (j, k)).presheaf.map_comp]
-            -- Porting note: was just `congr`
-            exact congr_arg ((D.V (j, k)).presheaf.map ·) rfl } }
+            rfl } }
 
 /-- `ιInvApp` is the left inverse of `D.ι i` on `U`. -/
 theorem ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
@@ -399,7 +390,7 @@ theorem ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
   fconstructor
   -- Porting note: I don't know what the magic was in Lean3 proof, it just skipped the proof of `eq`
   · congr; ext1; change _ = _ ⁻¹' (_ '' _); ext1 x
-    simp only [SetLike.mem_coe, diagram_l, diagram_r, unop_op, Set.mem_preimage, Set.mem_image]
+    simp only [SetLike.mem_coe, unop_op, Set.mem_preimage, Set.mem_image]
     refine ⟨fun h => ⟨_, h, rfl⟩, ?_⟩
     rintro ⟨y, h1, h2⟩
     convert h1 using 1
@@ -408,7 +399,7 @@ theorem ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
     · exact h2.symm
     · have := D.ι_gluedIso_inv (PresheafedSpace.forget _) i
       dsimp at this
-      rw [← this, coe_comp]
+      rw [← this, TopCat.coe_comp]
       refine Function.Injective.comp ?_ (TopCat.GlueData.ι_injective D.toTopGlueData i)
       rw [← TopCat.mono_iff_injective]
       infer_instance
@@ -418,7 +409,7 @@ theorem ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
   dsimp [opensImagePreimageMap]
   rw [congr_app (D.t_id _), id_c_app, ← Functor.map_comp]
   erw [IsOpenImmersion.inv_naturality_assoc, IsOpenImmersion.app_inv_app'_assoc]
-  · simp only [eqToHom_op, eqToHom_trans, eqToHom_map (Functor.op _), ← Functor.map_comp]
+  · simp only [eqToHom_op, ← Functor.map_comp]
     rfl
   · rw [Set.range_eq_univ.mpr _]
     · simp
@@ -467,7 +458,7 @@ theorem π_ιInvApp_π (i j : D.J) (U : Opens (D.U i).carrier) :
 theorem π_ιInvApp_eq_id (i : D.J) (U : Opens (D.U i).carrier) :
     D.diagramOverOpenπ U i ≫ D.ιInvAppπEqMap U ≫ D.ιInvApp U = 𝟙 _ := by
   ext j
-  induction j using Opposite.rec' with | h j => ?_
+  induction j with | op j => ?_
   rcases j with (⟨j, k⟩ | ⟨j⟩)
   · rw [← limit.w (componentwiseDiagram 𝖣.diagram.multispan _)
         (Quiver.Hom.op (WalkingMultispan.Hom.fst (j, k))),
@@ -514,8 +505,8 @@ def vPullbackConeIsLimit (i j : D.J) : IsLimit (𝖣.vPullbackCone i j) :=
         exact this _
       rw [← Set.image_subset_iff, ← Set.image_univ, ← Set.image_comp, Set.image_univ]
       -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): change `rw` to `erw`
-      erw [← coe_comp]
-      rw [this, coe_comp, ← Set.image_univ, Set.image_comp]
+      erw [← TopCat.coe_comp]
+      rw [this, TopCat.coe_comp, ← Set.image_univ, Set.image_comp]
       exact Set.image_subset_range _ _
     · apply IsOpenImmersion.lift_fac
     · rw [← cancel_mono (𝖣.ι j), Category.assoc, ← (𝖣.vPullbackCone i j).condition]
@@ -656,7 +647,7 @@ instance (i j k : D.J) : PreservesLimit (cospan (𝖣.f i j) (𝖣.f i k)) forge
 
 theorem ι_jointly_surjective (x : 𝖣.glued) : ∃ (i : D.J) (y : D.U i), (𝖣.ι i).base y = x :=
   𝖣.ι_jointly_surjective
-    ((LocallyRingedSpace.forgetToSheafedSpace.{u} ⋙ SheafedSpace.forget CommRingCatMax.{u, u}) ⋙
+    ((LocallyRingedSpace.forgetToSheafedSpace.{u} ⋙ SheafedSpace.forget CommRingCat.{u}) ⋙
       forget TopCat.{u}) x
 
 /-- The following diagram is a pullback, i.e. `Vᵢⱼ` is the intersection of `Uᵢ` and `Uⱼ` in `X`.

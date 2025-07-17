@@ -76,12 +76,11 @@ class IsFilteredOrEmpty : Prop where
 1. for every pair of objects there exists another object "to the right",
 2. for every pair of parallel morphisms there exists a morphism to the right so the compositions
    are equal, and
-3. there exists some object.
-
-See <https://stacks.math.columbia.edu/tag/002V>. (They also define a diagram being filtered.)
--/
-class IsFiltered extends IsFilteredOrEmpty C : Prop where
+3. there exists some object. -/
+@[stacks 002V "They also define a diagram being filtered."]
+class IsFiltered : Prop extends IsFilteredOrEmpty C where
   /-- a filtered category must be non empty -/
+  -- This should be an instance but it causes significant slowdown
   [nonempty : Nonempty C]
 
 instance (priority := 100) isFilteredOrEmpty_of_semilatticeSup (α : Type u) [SemilatticeSup α] :
@@ -117,15 +116,6 @@ section AllowEmpty
 
 variable {C}
 variable [IsFilteredOrEmpty C]
-
--- Porting note: the following definitions were removed because the names are invalid,
--- direct references to `IsFilteredOrEmpty` have been added instead
---
--- theorem cocone_objs : ∀ X Y : C, ∃ (Z : _) (f : X ⟶ Z) (g : Y ⟶ Z), True :=
---  IsFilteredOrEmpty.cocone_objs
---
---theorem cocone_maps : ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), ∃ (Z : _) (h : Y ⟶ Z), f ≫ h = g ≫ h :=
---  IsFilteredOrEmpty.cocone_maps
 
 /-- `max j j'` is an arbitrary choice of object to the right of both `j` and `j'`,
 whose existence is ensured by `IsFiltered`.
@@ -252,10 +242,7 @@ theorem sup_exists :
         apply coeq_condition
       · rw [@w' _ _ mX mY f']
         simp only [Finset.mem_insert, PSigma.mk.injEq, heq_eq_eq, true_and] at mf'
-        rcases mf' with mf' | mf'
-        · exfalso
-          exact hf mf'.symm
-        · exact mf'
+        grind
     · rw [@w' _ _ mX' mY' f' _]
       apply Finset.mem_of_mem_insert_of_ne mf'
       contrapose! h
@@ -504,12 +491,11 @@ class IsCofilteredOrEmpty : Prop where
 1. for every pair of objects there exists another object "to the left",
 2. for every pair of parallel morphisms there exists a morphism to the left so the compositions
    are equal, and
-3. there exists some object.
-
-See <https://stacks.math.columbia.edu/tag/04AZ>.
--/
-class IsCofiltered extends IsCofilteredOrEmpty C : Prop where
+3. there exists some object. -/
+@[stacks 04AZ]
+class IsCofiltered : Prop extends IsCofilteredOrEmpty C where
   /-- a cofiltered category must be non empty -/
+  -- This should be an instance but it causes significant slowdown
   [nonempty : Nonempty C]
 
 instance (priority := 100) isCofilteredOrEmpty_of_semilatticeInf (α : Type u) [SemilatticeInf α] :
@@ -551,15 +537,6 @@ section AllowEmpty
 
 variable {C}
 variable [IsCofilteredOrEmpty C]
-
--- Porting note: the following definitions were removed because the names are invalid,
--- direct references to `IsCofilteredOrEmpty` have been added instead
---
---theorem cone_objs : ∀ X Y : C, ∃ (W : _) (f : W ⟶ X) (g : W ⟶ Y), True :=
---  IsCofilteredOrEmpty.cone_objs
---
---theorem cone_maps : ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), ∃ (W : _) (h : W ⟶ X), h ≫ f = h ≫ g :=
---  IsCofilteredOrEmpty.cone_maps
 
 /-- `min j j'` is an arbitrary choice of object to the left of both `j` and `j'`,
 whose existence is ensured by `IsCofiltered`.
@@ -604,7 +581,7 @@ theorem eq_condition {j j' : C} (f f' : j ⟶ j') : eqHom f f' ≫ f = eqHom f f
   (IsCofilteredOrEmpty.cone_maps f f').choose_spec.choose_spec
 
 /-- For every cospan `j ⟶ i ⟵ j'`,
- there exists a cone `j ⟵ k ⟶ j'` such that the square commutes. -/
+there exists a cone `j ⟵ k ⟶ j'` such that the square commutes. -/
 theorem cospan {i j j' : C} (f : j ⟶ i) (f' : j' ⟶ i) :
     ∃ (k : C) (g : k ⟶ j) (g' : k ⟶ j'), g ≫ f = g' ≫ f' :=
   let ⟨K, G, G', _⟩ := IsCofilteredOrEmpty.cone_objs j j'
@@ -612,7 +589,7 @@ theorem cospan {i j j' : C} (f : j ⟶ i) (f' : j' ⟶ i) :
   ⟨k, e ≫ G, e ≫ G', by simpa only [Category.assoc] using he⟩
 
 theorem _root_.CategoryTheory.Functor.ranges_directed (F : C ⥤ Type*) (j : C) :
-    Directed (· ⊇ ·) fun f : Σ'i, i ⟶ j => Set.range (F.map f.2) := fun ⟨i, ij⟩ ⟨k, kj⟩ => by
+    Directed (· ⊇ ·) fun f : Σ' i, i ⟶ j => Set.range (F.map f.2) := fun ⟨i, ij⟩ ⟨k, kj⟩ => by
   let ⟨l, li, lk, e⟩ := cospan ij kj
   refine ⟨⟨l, lk ≫ kj⟩, e ▸ ?_, ?_⟩ <;> simp_rw [F.map_comp] <;> apply Set.range_comp_subset_range
 
@@ -719,10 +696,7 @@ theorem inf_exists :
         apply eq_condition
       · rw [@w' _ _ mX mY f']
         simp only [Finset.mem_insert, PSigma.mk.injEq, heq_eq_eq, true_and] at mf'
-        rcases mf' with mf' | mf'
-        · exfalso
-          exact hf mf'.symm
-        · exact mf'
+        grind
     · rw [@w' _ _ mX' mY' f' _]
       apply Finset.mem_of_mem_insert_of_ne mf'
       contrapose! h

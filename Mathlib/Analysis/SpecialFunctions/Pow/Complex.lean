@@ -42,21 +42,21 @@ theorem cpow_eq_zero_iff (x y : ℂ) : x ^ y = 0 ↔ x = 0 ∧ y ≠ 0 := by
   simp only [cpow_def]
   split_ifs <;> simp [*, exp_ne_zero]
 
+theorem cpow_ne_zero_iff {x y : ℂ} :
+    x ^ y ≠ 0 ↔ x ≠ 0 ∨ y = 0 := by
+  rw [ne_eq, cpow_eq_zero_iff, not_and_or, ne_eq, not_not]
+
+theorem cpow_ne_zero_iff_of_exponent_ne_zero {x y : ℂ} (hy : y ≠ 0) :
+    x ^ y ≠ 0 ↔ x ≠ 0 := by simp [hy]
+
 @[simp]
 theorem zero_cpow {x : ℂ} (h : x ≠ 0) : (0 : ℂ) ^ x = 0 := by simp [cpow_def, *]
 
 theorem zero_cpow_eq_iff {x : ℂ} {a : ℂ} : (0 : ℂ) ^ x = a ↔ x ≠ 0 ∧ a = 0 ∨ x = 0 ∧ a = 1 := by
   constructor
   · intro hyp
-    simp only [cpow_def, eq_self_iff_true, if_true] at hyp
-    by_cases h : x = 0
-    · subst h
-      simp only [if_true, eq_self_iff_true] at hyp
-      right
-      exact ⟨rfl, hyp.symm⟩
-    · rw [if_neg h] at hyp
-      left
-      exact ⟨h, hyp.symm⟩
+    simp only [cpow_def, if_true] at hyp
+    grind
   · rintro (⟨h, rfl⟩ | ⟨rfl, rfl⟩)
     · exact zero_cpow h
     · exact cpow_zero _
@@ -75,7 +75,7 @@ theorem one_cpow (x : ℂ) : (1 : ℂ) ^ x = 1 := by
   split_ifs <;> simp_all [one_ne_zero]
 
 theorem cpow_add {x : ℂ} (y z : ℂ) (hx : x ≠ 0) : x ^ (y + z) = x ^ y * x ^ z := by
-  simp only [cpow_def, ite_mul, boole_mul, mul_ite, mul_boole]
+  simp only [cpow_def, ite_mul, mul_ite]
   simp_all [exp_add, mul_add]
 
 theorem cpow_mul {x y : ℂ} (z : ℂ) (h₁ : -π < (log x * y).im) (h₂ : (log x * y).im ≤ π) :
@@ -119,9 +119,6 @@ lemma cpow_mul_ofNat (x y : ℂ) (n : ℕ) [n.AtLeastTwo] :
 @[simp, norm_cast]
 theorem cpow_natCast (x : ℂ) (n : ℕ) : x ^ (n : ℂ) = x ^ n := by simpa using cpow_nat_mul x n 1
 
-@[deprecated (since := "2024-04-17")]
-alias cpow_nat_cast := cpow_natCast
-
 @[simp]
 lemma cpow_ofNat (x : ℂ) (n : ℕ) [n.AtLeastTwo] :
     x ^ (ofNat(n) : ℂ) = x ^ ofNat(n) :=
@@ -131,9 +128,6 @@ theorem cpow_two (x : ℂ) : x ^ (2 : ℂ) = x ^ (2 : ℕ) := cpow_ofNat x 2
 
 @[simp, norm_cast]
 theorem cpow_intCast (x : ℂ) (n : ℤ) : x ^ (n : ℂ) = x ^ n := by simpa using cpow_int_mul x n 1
-
-@[deprecated (since := "2024-04-17")]
-alias cpow_int_cast := cpow_intCast
 
 @[simp]
 theorem cpow_nat_inv_pow (x : ℂ) {n : ℕ} (hn : n ≠ 0) : (x ^ (n⁻¹ : ℂ)) ^ n = x := by
@@ -182,6 +176,8 @@ lemma pow_cpow_ofNat_inv {x : ℂ} {n : ℕ} [n.AtLeastTwo] (hlt : -(π / OfNat.
 lemma sq_cpow_two_inv {x : ℂ} (hx : 0 < x.re) : (x ^ (2 : ℕ)) ^ (2⁻¹ : ℂ) = x :=
   pow_cpow_ofNat_inv (neg_pi_div_two_lt_arg_iff.2 <| .inl hx)
     (arg_le_pi_div_two_iff.2 <| .inl hx.le)
+
+@[simp] lemma isSquare (x : ℂ) : IsSquare x := ⟨x ^ (2⁻¹ : ℂ), by simp [← sq]⟩
 
 theorem mul_cpow_ofReal_nonneg {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (r : ℂ) :
     ((a : ℂ) * (b : ℂ)) ^ r = (a : ℂ) ^ r * (b : ℂ) ^ r := by

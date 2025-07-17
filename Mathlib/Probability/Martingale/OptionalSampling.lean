@@ -178,9 +178,9 @@ theorem condExp_stoppedValue_stopping_time_ae_eq_restrict_le (h : Martingale f �
       Integrable ({ω : Ω | τ ω ≤ σ ω}.indicator (stoppedValue (fun n : ι => f n) τ)) μ := by
     refine (integrable_stoppedValue ι hτ h.integrable hτ_le).indicator ?_
     exact hτ.measurableSpace_le _ (hτ.measurableSet_le_stopping_time hσ)
-  have h_meas : AEStronglyMeasurable' hσ.measurableSpace
+  have h_meas : AEStronglyMeasurable[hσ.measurableSpace]
       ({ω : Ω | τ ω ≤ σ ω}.indicator (stoppedValue (fun n : ι => f n) τ)) μ := by
-    refine StronglyMeasurable.aeStronglyMeasurable' ?_
+    refine StronglyMeasurable.aestronglyMeasurable ?_
     refine StronglyMeasurable.stronglyMeasurable_of_measurableSpace_le_on
       (hτ.measurableSet_le_stopping_time hσ) ?_ ?_ ?_
     · intro t ht
@@ -191,7 +191,7 @@ theorem condExp_stoppedValue_stopping_time_ae_eq_restrict_le (h : Martingale f �
       refine Measurable.stronglyMeasurable ?_
       exact measurable_stoppedValue h.adapted.progMeasurable_of_discrete hτ
     · intro x hx
-      simp only [hx, Set.indicator_of_not_mem, not_false_iff]
+      simp only [hx, Set.indicator_of_notMem, not_false_iff]
   exact condExp_of_aestronglyMeasurable' hσ.measurableSpace_le h_meas h_int
 
 @[deprecated (since := "2025-01-21")]

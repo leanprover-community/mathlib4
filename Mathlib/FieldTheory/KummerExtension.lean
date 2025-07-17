@@ -40,6 +40,7 @@ Criteria for `X ^ n - C a` to be irreducible is given:
 
 TODO: criteria for even `n`. See [serge_lang_algebra] VI,§9.
 
+TODO: relate Kummer extensions of degree 2 with the class `Algebra.IsQuadraticExtension`.
 -/
 universe u
 
@@ -73,7 +74,7 @@ lemma X_pow_sub_C_eq_prod {R : Type*} [CommRing R] [IsDomain R]
     (X ^ n - C a) = ∏ i ∈ Finset.range n, (X - C (ζ ^ i * α)) := by
   let K := FractionRing R
   let i := algebraMap R K
-  have h := NoZeroSMulDivisors.algebraMap_injective R K
+  have h := FaithfulSMul.algebraMap_injective R K
   apply_fun Polynomial.map i using map_injective i h
   simpa only [Polynomial.map_sub, Polynomial.map_pow, map_X, map_C, map_mul, map_pow,
     Polynomial.map_prod, Polynomial.map_mul]
@@ -175,11 +176,6 @@ theorem Polynomial.separable_X_pow_sub_C_of_irreducible : (X ^ n - C a).Separabl
     AdjoinRoot.algebraMap_eq,
     X_pow_sub_C_eq_prod (hζ.map_of_injective (algebraMap K _).injective) hn
     (root_X_pow_sub_C_pow n a), separable_prod_X_sub_C_iff']
-  #adaptation_note
-  /--
-  After https://github.com/leanprover/lean4/pull/5376 we need to provide this helper instance.
-  -/
-  have : MonoidHomClass (K →+* K[n√a]) K K[n√a] := inferInstance
   exact (hζ.map_of_injective (algebraMap K K[n√a]).injective).injOn_pow_mul
     (root_X_pow_sub_C_ne_zero (lt_of_le_of_ne (show 1 ≤ n from hn) (Ne.symm hn')) _)
 
@@ -246,7 +242,7 @@ def autAdjoinRootXPowSubCEquiv [NeZero n] :
     apply (rootsOfUnityEquivOfPrimitiveRoots (algebraMap K K[n√a]).injective hζ).injective
     ext
     simp only [AdjoinRoot.algebraMap_eq, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
-      autAdjoinRootXPowSubC_root, Algebra.smul_def, ne_eq, MulEquiv.apply_symm_apply,
+      autAdjoinRootXPowSubC_root, Algebra.smul_def, MulEquiv.apply_symm_apply,
       rootsOfUnity.val_mkOfPowEq_coe, val_rootsOfUnityEquivOfPrimitiveRoots_apply_coe,
       AdjoinRootXPowSubCEquivToRootsOfUnity]
     split_ifs with h
@@ -398,9 +394,9 @@ lemma autEquivRootsOfUnity_smul [NeZero n] (σ : L ≃ₐ[K] L) :
   rw [mem_primitiveRoots hn] at hζ'
   rw [← mem_nthRoots hn, (hζ'.map_of_injective (algebraMap K L).injective).nthRoots_eq
     (rootOfSplitsXPowSubC_pow a L)] at hα
-  simp only [Finset.range_val, Multiset.mem_map, Multiset.mem_range] at hα
+  simp only [Multiset.mem_map, Multiset.mem_range] at hα
   obtain ⟨i, _, rfl⟩ := hα
-  simp only [map_mul, ← map_pow, ← Algebra.smul_def, map_smul,
+  simp only [← map_pow, ← Algebra.smul_def, map_smul,
     autEquivRootsOfUnity_apply_rootOfSplit hζ H L]
   exact smul_comm _ _ _
 

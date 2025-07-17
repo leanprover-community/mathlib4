@@ -20,7 +20,7 @@ doubling measures with results about differentiation along a Vitali family to ob
 form of Lebesgue's density theorem.
 
 ## Main results
-  * `IsUnifLocDoublingMeasure.ae_tendsto_measure_inter_div`: a version of Lebesgue's density
+* `IsUnifLocDoublingMeasure.ae_tendsto_measure_inter_div`: a version of Lebesgue's density
   theorem for sequences of balls converging on a point but whose centres are not required to be
   fixed.
 
@@ -69,7 +69,7 @@ theorem closedBall_mem_vitaliFamily_of_dist_le_mul {K : ℝ} {x y : α} {r : ℝ
     (rpos : 0 < r) : closedBall y r ∈ (vitaliFamily μ K).setsAt x := by
   let R := scalingScaleOf μ (max (4 * K + 3) 3)
   simp only [vitaliFamily, VitaliFamily.enlarge, Vitali.vitaliFamily, mem_union, mem_setOf_eq,
-    isClosed_ball, true_and, (nonempty_ball.2 rpos).mono ball_subset_interior_closedBall,
+    isClosed_closedBall, true_and, (nonempty_ball.2 rpos).mono ball_subset_interior_closedBall,
     measurableSet_closedBall]
   /- The measure is doubling on scales smaller than `R`. Therefore, we treat differently small
     and large balls. For large balls, this follows directly from the enlargement we used in the
@@ -80,7 +80,7 @@ theorem closedBall_mem_vitaliFamily_of_dist_le_mul {K : ℝ} {x y : α} {r : ℝ
   /- For small balls, there is the difficulty that `r` could be large but still the ball could be
     small, if the annulus `{y | ε ≤ dist y x ≤ R/4}` is empty. We split between the cases `r ≤ R`
     and `r > R`, and use the doubling for the former and rough estimates for the latter. -/
-  rcases le_or_lt r R with (hr | hr)
+  rcases le_or_gt r R with (hr | hr)
   · refine ⟨(K + 1) * r, ?_⟩
     constructor
     · apply closedBall_subset_closedBall'

@@ -3,9 +3,8 @@ Copyright (c) 2022 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
@@ -13,7 +12,9 @@ import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 We show that a functor is left exact in the sense that it preserves finite limits, if it
 preserves kernels. The dual result holds for right exact functors and cokernels.
+
 ## Main results
+
 * We first derive preservation of binary product in the lemma
   `preservesBinaryProductsOfPreservesKernels`,
 * then show the preservation of equalizers in `preservesEqualizerOfPreservesKernels`,
@@ -110,12 +111,12 @@ lemma preservesEqualizers_of_preservesKernels
 -/
 lemma preservesFiniteLimits_of_preservesKernels [HasFiniteProducts C] [HasEqualizers C]
     [HasZeroObject C] [HasZeroObject D] [∀ {X Y} (f : X ⟶ Y), PreservesLimit (parallelPair f 0) F] :
-    PreservesFiniteLimits F := by
-  letI := preservesEqualizers_of_preservesKernels F
-  letI := preservesTerminalObject_of_preservesZeroMorphisms F
-  letI := preservesLimitsOfShape_pempty_of_preservesTerminal F
-  letI : PreservesFiniteProducts F := ⟨preservesFiniteProducts_of_preserves_binary_and_terminal F⟩
-  exact preservesFiniteLimits_of_preservesEqualizers_and_finiteProducts F
+    PreservesFiniteLimits F :=
+  have := preservesEqualizers_of_preservesKernels F
+  have := preservesTerminalObject_of_preservesZeroMorphisms F
+  have := preservesLimitsOfShape_pempty_of_preservesTerminal F
+  have : PreservesFiniteProducts F :=.of_preserves_binary_and_terminal F
+  preservesFiniteLimits_of_preservesEqualizers_and_finiteProducts F
 
 end FiniteLimits
 
@@ -198,7 +199,8 @@ lemma preservesFiniteColimits_of_preservesCokernels [HasFiniteCoproducts C] [Has
   letI := preservesCoequalizers_of_preservesCokernels F
   letI := preservesInitialObject_of_preservesZeroMorphisms F
   letI := preservesColimitsOfShape_pempty_of_preservesInitial F
-  letI : PreservesFiniteCoproducts F := ⟨preservesFiniteCoproductsOfPreservesBinaryAndInitial F⟩
+  letI : PreservesFiniteCoproducts F :=
+    ⟨fun _ ↦ preservesFiniteCoproductsOfPreservesBinaryAndInitial F _⟩
   exact preservesFiniteColimits_of_preservesCoequalizers_and_finiteCoproducts F
 
 end FiniteColimits

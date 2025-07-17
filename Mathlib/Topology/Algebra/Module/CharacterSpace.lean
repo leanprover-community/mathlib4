@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
 import Mathlib.Topology.Algebra.Module.WeakDual
-import Mathlib.Algebra.Algebra.Spectrum
+import Mathlib.Algebra.Algebra.Spectrum.Basic
 import Mathlib.Topology.ContinuousMap.Algebra
 import Mathlib.Data.Set.Lattice
 
@@ -43,7 +43,7 @@ def characterSpace (𝕜 : Type*) (A : Type*) [CommSemiring 𝕜] [TopologicalSp
 
 variable {𝕜 : Type*} {A : Type*}
 
--- Porting note: even though the capitalization of the namespace differs, it doesn't matter
+-- Even though the capitalization of the namespace differs, it doesn't matter
 -- because there is no dot notation since `characterSpace` is only a type via `CoeSort`.
 namespace CharacterSpace
 
@@ -207,7 +207,7 @@ section GelfandTransform
 
 open ContinuousMap
 
-variable (𝕜 A) [CommRing 𝕜] [NoZeroDivisors 𝕜] [TopologicalSpace 𝕜] [TopologicalRing 𝕜]
+variable (𝕜 A) [CommRing 𝕜] [NoZeroDivisors 𝕜] [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜]
   [TopologicalSpace A] [Semiring A] [Algebra 𝕜 A]
 
 /-- The **Gelfand transform** is an algebra homomorphism (over `𝕜`) from a topological `𝕜`-algebra
@@ -220,7 +220,7 @@ def gelfandTransform : A →ₐ[𝕜] C(characterSpace 𝕜 A, 𝕜) where
       continuous_toFun := (eval_continuous a).comp continuous_induced_dom }
   map_one' := by ext a; simp only [coe_mk, coe_one, Pi.one_apply, map_one a]
   map_mul' a b := by ext; simp only [map_mul, coe_mk, coe_mul, Pi.mul_apply]
-  map_zero' := by ext; simp only [map_zero, coe_mk, coe_mul, coe_zero, Pi.zero_apply]
+  map_zero' := by ext; simp only [map_zero, coe_mk, coe_zero, Pi.zero_apply]
   map_add' a b := by ext; simp only [map_add, coe_mk, coe_add, Pi.add_apply]
   commutes' k := by ext; simp [AlgHomClass.commutes]
 

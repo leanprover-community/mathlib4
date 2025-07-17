@@ -59,13 +59,11 @@ structure Kernel (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] where
   Do not use this lemma directly. Use `Kernel.measurable` instead. -/
   measurable' : Measurable toFun
 
-@[deprecated (since := "2024-07-22")] alias kernel := Kernel
-
 /-- Notation for `Kernel` with respect to a non-standard σ-algebra in the domain. -/
-scoped notation "Kernel[" mα "]" α:arg β:arg => @Kernel α β mα _
+scoped notation "Kernel[" mα "] " α:arg β:arg => @Kernel α β mα _
 
 /-- Notation for `Kernel` with respect to a non-standard σ-algebra in the domain and codomain. -/
-scoped notation "Kernel[" mα ", " mβ "]" α:arg β:arg => @Kernel α β mα mβ
+scoped notation "Kernel[" mα ", " mβ "] " α:arg β:arg => @Kernel α β mα mβ
 
 variable {α β ι : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
@@ -75,7 +73,11 @@ instance instFunLike : FunLike (Kernel α β) α (Measure β) where
   coe := toFun
   coe_injective' f g h := by cases f; cases g; congr
 
+@[fun_prop]
 lemma measurable (κ : Kernel α β) : Measurable κ := κ.measurable'
+
+lemma aemeasurable (κ : Kernel α β) {μ : Measure α} : AEMeasurable κ μ := κ.measurable.aemeasurable
+
 @[simp, norm_cast] lemma coe_mk (f : α → Measure β) (hf) : mk f hf = f := rfl
 
 initialize_simps_projections Kernel (toFun → apply)
@@ -109,11 +111,15 @@ instance instOrderBot {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] 
   bot_le κ a := by simp only [coe_zero, Pi.zero_apply, Measure.zero_le]
 
 /-- Coercion to a function as an additive monoid homomorphism. -/
-def coeAddHom (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] :
+noncomputable def coeAddHom (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] :
     Kernel α β →+ α → Measure β where
   toFun := (⇑)
   map_zero' := coe_zero
   map_add' := coe_add
+
+@[simp]
+theorem coeAddHom_apply (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] (κ : Kernel α β) :
+    coeAddHom α β κ = ⇑κ := rfl
 
 @[simp]
 theorem coe_finset_sum (I : Finset ι) (κ : ι → Kernel α β) : ⇑(∑ i ∈ I, κ i) = ∑ i ∈ I, ⇑(κ i) :=
@@ -235,6 +241,16 @@ lemma apply_congr_of_mem_measurableAtom (κ : Kernel α β) {y' y : α} (hy' : y
   ext s hs
   exact mem_of_mem_measurableAtom hy' (κ.measurable_coe hs (measurableSet_singleton (κ y s))) rfl
 
+@[nontriviality]
+lemma eq_zero_of_isEmpty_left (κ : Kernel α β) [h : IsEmpty α] : κ = 0 := by
+  ext a
+  exact h.elim a
+
+@[nontriviality]
+lemma eq_zero_of_isEmpty_right (κ : Kernel α β) [IsEmpty β] : κ = 0 := by
+  ext a
+  simp [Measure.eq_zero_of_isEmpty (κ a)]
+
 section Sum
 
 /-- Sum of an indexed family of kernels. -/
@@ -271,7 +287,7 @@ theorem sum_add [Countable ι] (κ η : ι → Kernel α β) :
     (Kernel.sum fun n => κ n + η n) = Kernel.sum κ + Kernel.sum η := by
   ext a s hs
   simp only [coe_add, Pi.add_apply, sum_apply, Measure.sum_apply _ hs, Pi.add_apply,
-    Measure.coe_add, tsum_add ENNReal.summable ENNReal.summable]
+    Measure.coe_add, ENNReal.summable.tsum_add ENNReal.summable]
 
 end Sum
 
@@ -320,9 +336,10 @@ instance IsSFiniteKernel.add (κ η : Kernel α β) [IsSFiniteKernel κ] [IsSFin
 theorem IsSFiniteKernel.finset_sum {κs : ι → Kernel α β} (I : Finset ι)
     (h : ∀ i ∈ I, IsSFiniteKernel (κs i)) : IsSFiniteKernel (∑ i ∈ I, κs i) := by
   classical
-  induction' I using Finset.induction with i I hi_nmem_I h_ind h
-  · rw [Finset.sum_empty]; infer_instance
-  · rw [Finset.sum_insert hi_nmem_I]
+  induction I using Finset.induction with
+  | empty => rw [Finset.sum_empty]; infer_instance
+  | insert i I hi_notMem_I h_ind =>
+    rw [Finset.sum_insert hi_notMem_I]
     haveI : IsSFiniteKernel (κs i) := h i (Finset.mem_insert_self _ _)
     have : IsSFiniteKernel (∑ x ∈ I, κs x) :=
       h_ind fun i hiI => h i (Finset.mem_insert_of_mem hiI)
@@ -339,10 +356,10 @@ theorem isSFiniteKernel_sum_of_denumerable [Denumerable ι] {κs : ι → Kernel
   simp_rw [Kernel.sum_apply' _ _ hs]
   change (∑' i, ∑' m, seq (κs i) m a s) = ∑' n, (fun im : ι × ℕ => seq (κs im.fst) im.snd a s) (e n)
   rw [e.tsum_eq (fun im : ι × ℕ => seq (κs im.fst) im.snd a s),
-    tsum_prod' ENNReal.summable fun _ => ENNReal.summable]
+    ENNReal.summable.tsum_prod' fun _ => ENNReal.summable]
 
-theorem isSFiniteKernel_sum [Countable ι] {κs : ι → Kernel α β}
-    (hκs : ∀ n, IsSFiniteKernel (κs n)) : IsSFiniteKernel (Kernel.sum κs) := by
+instance isSFiniteKernel_sum [Countable ι] {κs : ι → Kernel α β}
+    [hκs : ∀ n, IsSFiniteKernel (κs n)] : IsSFiniteKernel (Kernel.sum κs) := by
   cases fintypeOrInfinite ι
   · rw [sum_fintype]
     exact IsSFiniteKernel.finset_sum Finset.univ fun i _ => hκs i

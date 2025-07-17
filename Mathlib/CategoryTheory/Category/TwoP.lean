@@ -38,10 +38,9 @@ instance : CoeSort TwoP Type* :=
   ⟨TwoP.X⟩
 
 /-- Turns a two-pointing into a two-pointed type. -/
-def of {X : Type*} (toTwoPointing : TwoPointing X) : TwoP :=
+abbrev of {X : Type*} (toTwoPointing : TwoPointing X) : TwoP :=
   ⟨X, toTwoPointing⟩
 
-@[simp]
 theorem coe_of {X : Type*} (toTwoPointing : TwoPointing X) : ↥(of toTwoPointing) = X :=
   rfl
 
@@ -62,8 +61,9 @@ theorem coe_toBipointed (X : TwoP) : ↥X.toBipointed = ↥X :=
 noncomputable instance largeCategory : LargeCategory TwoP :=
   InducedCategory.category toBipointed
 
-noncomputable instance hasForget : HasForget TwoP :=
-  InducedCategory.hasForget toBipointed
+noncomputable instance concreteCategory : ConcreteCategory TwoP
+    (fun X Y => Bipointed.HomSubtype X.toBipointed Y.toBipointed) :=
+  InducedCategory.concreteCategory toBipointed
 
 noncomputable instance hasForgetToBipointed : HasForget₂ TwoP Bipointed :=
   InducedCategory.hasForget₂ toBipointed
@@ -140,8 +140,7 @@ noncomputable def pointedToTwoPFstForgetCompBipointedToPointedFstAdjunction :
             funext x
             cases x
             · exact f.map_snd.symm
-            · rfl
-          right_inv := fun _ => Pointed.Hom.ext rfl }
+            · rfl }
       homEquiv_naturality_left_symm := fun f g => by
         apply Bipointed.Hom.ext
         funext x
@@ -159,8 +158,7 @@ noncomputable def pointedToTwoPSndForgetCompBipointedToPointedSndAdjunction :
             funext x
             cases x
             · exact f.map_fst.symm
-            · rfl
-          right_inv := fun _ => Pointed.Hom.ext rfl }
+            · rfl }
       homEquiv_naturality_left_symm := fun f g => by
         apply Bipointed.Hom.ext
         funext x

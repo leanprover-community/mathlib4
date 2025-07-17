@@ -6,6 +6,7 @@ Authors: Kim Morrison
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Algebra.Category.Grp.Limits
 import Mathlib.Algebra.Colimit.Module
+import Mathlib.Algebra.Module.Shrink
 
 /-!
 # The category of R-modules has all limits
@@ -81,7 +82,7 @@ def limitπLinearMap (j) :
   toFun := (Types.Small.limitCone (F ⋙ forget (ModuleCat R))).π.app j
   map_smul' _ _ := by
     simp only [Types.Small.limitCone_π_app,
-      ← Shrink.linearEquiv_apply (F ⋙ forget (ModuleCat R)).sections R, map_smul]
+      ← Shrink.linearEquiv_apply R (F ⋙ forget (ModuleCat R)).sections, map_smul]
     simp only [Shrink.linearEquiv_apply]
     rfl
   map_add' _ _ := by
@@ -133,8 +134,6 @@ instance hasLimit : HasLimit F := HasLimit.mk {
 /-- If `J` is `u`-small, the category of `R`-modules has limits of shape `J`. -/
 lemma hasLimitsOfShape [Small.{w} J] : HasLimitsOfShape J (ModuleCat.{w} R) where
 
--- Porting note: mathport translated this as `irreducible_def`, but as `HasLimitsOfSize`
--- is a `Prop`, declaring this as `irreducible` should presumably have no effect
 /-- The category of R-modules has all limits. -/
 lemma hasLimitsOfSize [UnivLE.{v, w}] : HasLimitsOfSize.{t, v} (ModuleCat.{w} R) where
   has_limits_of_shape _ := hasLimitsOfShape
@@ -209,8 +208,7 @@ variable (G : ι → Type v)
 variable [∀ i, AddCommGroup (G i)] [∀ i, Module R (G i)]
 variable (f : ∀ i j, i ≤ j → G i →ₗ[R] G j) [DirectedSystem G fun i j h ↦ f i j h]
 
-/-- The diagram (in the sense of `CategoryTheory`)
- of an unbundled `directLimit` of modules. -/
+/-- The diagram (in the sense of `CategoryTheory`) of an unbundled `directLimit` of modules. -/
 @[simps]
 def directLimitDiagram : ι ⥤ ModuleCat R where
   obj i := ModuleCat.of R (G i)
@@ -249,8 +247,7 @@ def directLimitIsColimit : IsColimit (directLimitCocone G f) where
       rfl
   fac s i := by
     ext
-    dsimp only [directLimitCocone, CategoryStruct.comp]
-    rw [LinearMap.comp_apply]
+    dsimp only [hom_comp, directLimitCocone, hom_ofHom, LinearMap.comp_apply]
     apply DirectLimit.lift_of
   uniq s m h := by
     have :

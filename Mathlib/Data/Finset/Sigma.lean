@@ -38,13 +38,13 @@ section Sigma
 variable {α : ι → Type*} {β : Type*} (s s₁ s₂ : Finset ι) (t t₁ t₂ : ∀ i, Finset (α i))
 
 /-- `s.sigma t` is the finset of dependent pairs `⟨i, a⟩` such that `i ∈ s` and `a ∈ t i`. -/
-protected def sigma : Finset (Σi, α i) :=
+protected def sigma : Finset (Σ i, α i) :=
   ⟨_, s.nodup.sigma fun i => (t i).nodup⟩
 
 variable {s s₁ s₂ t t₁ t₂}
 
 @[simp]
-theorem mem_sigma {a : Σi, α i} : a ∈ s.sigma t ↔ a.1 ∈ s ∧ a.2 ∈ t a.1 :=
+theorem mem_sigma {a : Σ i, α i} : a ∈ s.sigma t ↔ a.1 ∈ s ∧ a.2 ∈ t a.1 :=
   Multiset.mem_sigma
 
 @[simp, norm_cast]
@@ -82,12 +82,12 @@ theorem disjiUnion_map_sigma_mk :
       s.sigma t :=
   rfl
 
-theorem sigma_eq_biUnion [DecidableEq (Σi, α i)] (s : Finset ι) (t : ∀ i, Finset (α i)) :
+theorem sigma_eq_biUnion [DecidableEq (Σ i, α i)] (s : Finset ι) (t : ∀ i, Finset (α i)) :
     s.sigma t = s.biUnion fun i => (t i).map <| Embedding.sigmaMk i := by
   ext ⟨x, y⟩
   simp [and_left_comm]
 
-variable (s t) (f : (Σi, α i) → β)
+variable (s t) (f : (Σ i, α i) → β)
 
 theorem sup_sigma [SemilatticeSup β] [OrderBot β] :
     (s.sigma t).sup f = s.sup fun i => (t i).sup fun b => f ⟨i, b⟩ := by
@@ -156,9 +156,9 @@ theorem mem_sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (a : Si
       exact ⟨rfl, rfl, hx⟩
     · rintro ⟨⟨⟩, ⟨⟩, hx⟩
       rw [sigmaLift, dif_pos rfl, mem_map]
-      exact ⟨_, hx, by simp [Sigma.ext_iff]⟩
+      exact ⟨_, hx, by simp⟩
   · rw [sigmaLift, dif_neg h]
-    refine iff_of_false (not_mem_empty _) ?_
+    refine iff_of_false (notMem_empty _) ?_
     rintro ⟨⟨⟩, ⟨⟩, _⟩
     exact h rfl
 
@@ -169,17 +169,23 @@ theorem mk_mem_sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (i :
   rintro ⟨x, hx, _, rfl⟩
   exact hx
 
-theorem not_mem_sigmaLift_of_ne_left (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (a : Sigma α)
+theorem notMem_sigmaLift_of_ne_left (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (a : Sigma α)
     (b : Sigma β) (x : Sigma γ) (h : a.1 ≠ x.1) : x ∉ sigmaLift f a b := by
   rw [mem_sigmaLift]
   exact fun H => h H.fst
 
-theorem not_mem_sigmaLift_of_ne_right (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) {a : Sigma α}
+@[deprecated (since := "2025-05-23")]
+alias not_mem_sigmaLift_of_ne_left := notMem_sigmaLift_of_ne_left
+
+theorem notMem_sigmaLift_of_ne_right (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) {a : Sigma α}
     (b : Sigma β) {x : Sigma γ} (h : b.1 ≠ x.1) : x ∉ sigmaLift f a b := by
   rw [mem_sigmaLift]
   exact fun H => h H.snd.fst
 
-variable {f g : ∀ ⦃i⦄, α i → β i → Finset (γ i)} {a : Σi, α i} {b : Σi, β i}
+@[deprecated (since := "2025-05-23")]
+alias not_mem_sigmaLift_of_ne_right := notMem_sigmaLift_of_ne_right
+
+variable {f g : ∀ ⦃i⦄, α i → β i → Finset (γ i)} {a : Σ i, α i} {b : Σ i, β i}
 
 theorem sigmaLift_nonempty :
     (sigmaLift f a b).Nonempty ↔ ∃ h : a.1 = b.1, (f (h ▸ a.2) b.2).Nonempty := by
@@ -189,10 +195,11 @@ theorem sigmaLift_nonempty :
 theorem sigmaLift_eq_empty : sigmaLift f a b = ∅ ↔ ∀ h : a.1 = b.1, f (h ▸ a.2) b.2 = ∅ := by
   simp_rw [sigmaLift]
   split_ifs with h
-  · simp [h, forall_prop_of_true h]
-  · simp [h, forall_prop_of_false h]
+  · simp [h]
+  · simp [h]
 
-theorem sigmaLift_mono (h : ∀ ⦃i⦄ ⦃a : α i⦄ ⦃b : β i⦄, f a b ⊆ g a b) (a : Σi, α i) (b : Σi, β i) :
+theorem sigmaLift_mono
+    (h : ∀ ⦃i⦄ ⦃a : α i⦄ ⦃b : β i⦄, f a b ⊆ g a b) (a : Σ i, α i) (b : Σ i, β i) :
     sigmaLift f a b ⊆ sigmaLift g a b := by
   rintro x hx
   rw [mem_sigmaLift] at hx ⊢
@@ -204,7 +211,7 @@ variable (f a b)
 theorem card_sigmaLift :
     (sigmaLift f a b).card = dite (a.1 = b.1) (fun h => (f (h ▸ a.2) b.2).card) fun _ => 0 := by
   simp_rw [sigmaLift]
-  split_ifs with h <;> simp [h]
+  split_ifs with h <;> simp
 
 end SigmaLift
 

@@ -5,9 +5,9 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.MvPolynomial.Expand
 import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.RingTheory.MvPolynomial.Basic
-import Mathlib.LinearAlgebra.Dual
 
 /-!
 ## Polynomials over finite fields
@@ -71,13 +71,12 @@ theorem eval_indicator_apply_eq_one (a : σ → K) : eval a (indicator a) = 1 :=
 theorem degrees_indicator (c : σ → K) :
     degrees (indicator c) ≤ ∑ s : σ, (Fintype.card K - 1) • {s} := by
   rw [indicator]
-  refine le_trans (degrees_prod _ _) (Finset.sum_le_sum fun s _ => ?_)
   classical
-  refine le_trans (degrees_sub _ _) ?_
-  rw [degrees_one, ← bot_eq_zero, bot_sup_eq]
-  refine le_trans (degrees_pow _ _) (nsmul_le_nsmul_right ?_ _)
-  refine le_trans (degrees_sub _ _) ?_
-  rw [degrees_C, ← bot_eq_zero, sup_bot_eq]
+  refine degrees_prod_le.trans <| Finset.sum_le_sum fun s _ ↦ degrees_sub_le.trans ?_
+  rw [degrees_one, Multiset.zero_union]
+  refine le_trans degrees_pow_le (nsmul_le_nsmul_right ?_ _)
+  refine degrees_sub_le.trans ?_
+  rw [degrees_C, Multiset.union_zero]
   exact degrees_X' _
 
 theorem indicator_mem_restrictDegree (c : σ → K) :
@@ -101,7 +100,7 @@ variable [Field K]
 
 theorem eval_indicator_apply_eq_zero (a b : σ → K) (h : a ≠ b) : eval a (indicator b) = 0 := by
   obtain ⟨i, hi⟩ : ∃ i, a i ≠ b i := by rwa [Ne, funext_iff, not_forall] at h
-  simp only [indicator, map_prod, map_sub, map_one, map_pow, eval_X, eval_C, sub_self,
+  simp only [indicator, map_prod, map_sub, map_one, map_pow, eval_X, eval_C,
     Finset.prod_eq_zero_iff]
   refine ⟨i, Finset.mem_univ _, ?_⟩
   rw [FiniteField.pow_card_sub_one_eq_one, sub_self]
@@ -122,8 +121,6 @@ def evalₗ [CommSemiring K] : MvPolynomial σ K →ₗ[K] (σ → K) → K wher
 
 variable [Field K] [Fintype K] [Finite σ]
 
--- Porting note: `K` and `σ` were implicit in mathlib3, even if they were declared via
--- `variable (K σ)` (I don't understand why). They are now explicit, as expected.
 theorem map_restrict_dom_evalₗ : (restrictDegree σ K (Fintype.card K - 1)).map (evalₗ K σ) = ⊤ := by
   cases nonempty_fintype σ
   refine top_unique (SetLike.le_def.2 fun e _ => mem_map.2 ?_)
@@ -131,14 +128,9 @@ theorem map_restrict_dom_evalₗ : (restrictDegree σ K (Fintype.card K - 1)).ma
   refine ⟨∑ n : σ → K, e n • indicator n, ?_, ?_⟩
   · exact sum_mem fun c _ => smul_mem _ _ (indicator_mem_restrictDegree _)
   · ext n
-    simp only [_root_.map_sum, @Finset.sum_apply (σ → K) (fun _ => K) _ _ _ _ _, Pi.smul_apply,
-      map_smul]
-    simp only [evalₗ_apply]
-    trans
-    · refine Finset.sum_eq_single n (fun b _ h => ?_) ?_
-      · rw [eval_indicator_apply_eq_zero _ _ h.symm, smul_zero]
-      · exact fun h => (h <| Finset.mem_univ n).elim
-    · rw [eval_indicator_apply_eq_one, smul_eq_mul, mul_one]
+    simp only [evalₗ_apply, map_sum, smul_eval]
+    rw [Finset.sum_eq_single n] <;>
+      aesop (add simp [eval_indicator_apply_eq_zero, eval_indicator_apply_eq_one, eq_comm])
 
 end
 
@@ -155,11 +147,11 @@ universe u
 
 variable (σ : Type u) (K : Type u) [Fintype K]
 
--- Porting note: `@[derive [AddCommGroup, Module K, Inhabited]]` done by hand.
 /-- The submodule of multivariate polynomials whose degree of each variable is strictly less
 than the cardinality of K. -/
 def R [CommRing K] : Type u :=
   restrictDegree σ K (Fintype.card K - 1)
+-- The `AddCommGroup, Module K, Inhabited` instances should be constructed by a deriving handler.
 
 noncomputable instance [CommRing K] : AddCommGroup (R σ K) :=
   inferInstanceAs (AddCommGroup (restrictDegree σ K (Fintype.card K - 1)))
@@ -171,7 +163,7 @@ noncomputable instance [CommRing K] : Inhabited (R σ K) :=
   inferInstanceAs (Inhabited (restrictDegree σ K (Fintype.card K - 1)))
 
 /-- Evaluation in the `MvPolynomial.R` subtype. -/
-def evalᵢ [CommRing K] : R σ K →ₗ[K] (σ → K) → K :=
+noncomputable def evalᵢ [CommRing K] : R σ K →ₗ[K] (σ → K) → K :=
   (evalₗ K σ).comp (restrictDegree σ K (Fintype.card K - 1)).subtype
 
 -- TODO: would be nice to replace this by suitable decidability assumptions
@@ -213,12 +205,10 @@ open Classical in
 theorem finrank_R [Fintype σ] : Module.finrank K (R σ K) = Fintype.card (σ → K) :=
   Module.finrank_eq_of_rank_eq (rank_R σ K)
 
--- Porting note: was `(evalᵢ σ K).range`.
 theorem range_evalᵢ [Finite σ] : range (evalᵢ σ K) = ⊤ := by
   rw [evalᵢ, LinearMap.range_comp, range_subtype]
   exact map_restrict_dom_evalₗ K σ
 
--- Porting note: was `(evalᵢ σ K).ker`.
 theorem ker_evalₗ [Finite σ] : ker (evalᵢ σ K) = ⊥ := by
   cases nonempty_fintype σ
   refine (ker_eq_bot_iff_range_eq_top_of_finrank_eq_finrank ?_).mpr (range_evalᵢ σ K)

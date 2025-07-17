@@ -132,22 +132,23 @@ instance uniqueFromInitial [HasInitial C] (P : C) : Unique (⊥_ C ⟶ P) :=
 
 @[ext] theorem initial.hom_ext [HasInitial C] {P : C} (f g : ⊥_ C ⟶ P) : f = g := by ext ⟨⟨⟩⟩
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem terminal.comp_from [HasTerminal C] {P Q : C} (f : P ⟶ Q) :
     f ≫ terminal.from Q = terminal.from P := by
   simp [eq_iff_true_of_subsingleton]
 
-@[simp]
+-- `initial.to_comp_assoc` does not need the `simp` attribute.
+@[simp, reassoc]
 theorem initial.to_comp [HasInitial C] {P Q : C} (f : P ⟶ Q) : initial.to P ≫ f = initial.to Q := by
   simp [eq_iff_true_of_subsingleton]
 
 /-- The (unique) isomorphism between the chosen initial object and any other initial object. -/
-@[simp]
+@[simps!]
 def initialIsoIsInitial [HasInitial C] {P : C} (t : IsInitial P) : ⊥_ C ≅ P :=
   initialIsInitial.uniqueUpToIso t
 
 /-- The (unique) isomorphism between the chosen terminal object and any other terminal object. -/
-@[simp]
+@[simps!]
 def terminalIsoIsTerminal [HasTerminal C] {P : C} (t : IsTerminal P) : ⊤_ C ≅ P :=
   terminalIsTerminal.uniqueUpToIso t
 
@@ -262,7 +263,6 @@ variable {J : Type u} [Category.{v} J]
 instance hasLimit_of_domain_hasInitial [HasInitial J] {F : J ⥤ C} : HasLimit F :=
   HasLimit.mk { cone := _, isLimit := limitOfDiagramInitial (initialIsInitial) F }
 
--- See note [dsimp, simp]
 -- This is reducible to allow usage of lemmas about `cone_point_unique_up_to_iso`.
 /-- For a functor `F : J ⥤ C`, if `J` has an initial object then the image of it is isomorphic
 to the limit of `F`. -/

@@ -40,7 +40,7 @@ instance (rels : Set (FreeGroup α)) : Group (PresentedGroup rels) :=
   QuotientGroup.Quotient.group _
 
 /-- The canonical map from the free group on `α` to a presented group with generators `x : α`,
-where `x` is mapped to its equivalence class under the given set of relations `rels`-/
+where `x` is mapped to its equivalence class under the given set of relations `rels` -/
 def mk (rels : Set (FreeGroup α)) : FreeGroup α →* PresentedGroup rels :=
   ⟨⟨QuotientGroup.mk, rfl⟩, fun _ _ => rfl⟩
 
@@ -51,6 +51,22 @@ theorem mk_surjective (rels : Set (FreeGroup α)) : Function.Surjective <| mk re
 mapped to the equivalence class of the image of `x` in `FreeGroup α`. -/
 def of {rels : Set (FreeGroup α)} (x : α) : PresentedGroup rels :=
   mk rels (FreeGroup.of x)
+
+lemma mk_eq_one_iff {rels : Set (FreeGroup α)} {x : FreeGroup α} :
+    mk rels x = 1 ↔ x ∈ Subgroup.normalClosure rels :=
+  QuotientGroup.eq_one_iff _
+
+lemma one_of_mem {rels : Set (FreeGroup α)} {x : FreeGroup α} (hx : x ∈ rels) :
+    mk rels x = 1 :=
+  mk_eq_one_iff.mpr <| Subgroup.subset_normalClosure hx
+
+lemma mk_eq_mk_of_mul_inv_mem {rels : Set (FreeGroup α)} {x y : FreeGroup α}
+    (hx : x * y⁻¹ ∈ rels) : mk rels x = mk rels y :=
+  eq_of_mul_inv_eq_one <| one_of_mem hx
+
+lemma mk_eq_mk_of_inv_mul_mem {rels : Set (FreeGroup α)} {x y : FreeGroup α}
+    (hx : x⁻¹ * y ∈ rels) : mk rels x = mk rels y :=
+  eq_of_inv_mul_eq_one <| one_of_mem hx
 
 /-- The generators of a presented group generate the presented group. That is, the subgroup closure
 of the set of generators equals `⊤`. -/
@@ -69,7 +85,7 @@ theorem induction_on {rels : Set (FreeGroup α)} {C : PresentedGroup rels → Pr
 
 theorem generated_by (rels : Set (FreeGroup α)) (H : Subgroup (PresentedGroup rels))
     (h : ∀ j : α, PresentedGroup.of j ∈ H) (x : PresentedGroup rels) : x ∈ H := by
-  induction' x with z
+  obtain ⟨z⟩ := x
   induction z
   · exact one_mem H
   · exact h _

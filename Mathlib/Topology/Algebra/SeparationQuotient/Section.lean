@@ -21,7 +21,7 @@ namespace SeparationQuotient
 section VectorSpace
 
 variable (K E : Type*) [DivisionRing K] [AddCommGroup E] [Module K E]
-  [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousConstSMul K E]
+  [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousConstSMul K E]
 
 /-- There exists a continuous `K`-linear map from `SeparationQuotient E` to `E`
 such that `mk (outCLM x) = x` for all `x`.
@@ -75,21 +75,15 @@ end VectorSpace
 section VectorSpaceUniform
 
 variable (K E : Type*) [DivisionRing K] [AddCommGroup E] [Module K E]
-    [UniformSpace E] [UniformAddGroup E] [ContinuousConstSMul K E]
+    [UniformSpace E] [IsUniformAddGroup E] [ContinuousConstSMul K E]
 
 theorem outCLM_isUniformInducing : IsUniformInducing (outCLM K E) := by
   rw [← isUniformInducing_mk.isUniformInducing_comp_iff, mk_comp_outCLM]
   exact .id
 
-@[deprecated (since := "2024-10-05")]
-alias outCLM_uniformInducing := outCLM_isUniformInducing
-
 theorem outCLM_isUniformEmbedding : IsUniformEmbedding (outCLM K E) where
   injective := outCLM_injective K E
   toIsUniformInducing := outCLM_isUniformInducing K E
-
-@[deprecated (since := "2024-10-01")]
-alias outCLM_uniformEmbedding := outCLM_isUniformEmbedding
 
 theorem outCLM_uniformContinuous : UniformContinuous (outCLM K E) :=
   (outCLM_isUniformInducing K E).uniformContinuous

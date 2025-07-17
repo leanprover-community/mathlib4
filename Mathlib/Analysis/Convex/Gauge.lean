@@ -95,10 +95,10 @@ theorem gauge_zero' : gauge (0 : Set E) = 0 := by
   ext x
   rw [gauge_def']
   obtain rfl | hx := eq_or_ne x 0
-  · simp only [csInf_Ioi, mem_zero, Pi.zero_apply, eq_self_iff_true, sep_true, smul_zero]
+  · simp only [csInf_Ioi, mem_zero, Pi.zero_apply, sep_true, smul_zero]
   · simp only [mem_zero, Pi.zero_apply, inv_eq_zero, smul_eq_zero]
     convert Real.sInf_empty
-    exact eq_empty_iff_forall_not_mem.2 fun r hr => hr.2.elim (ne_of_gt hr.1) hx
+    exact eq_empty_iff_forall_notMem.2 fun r hr => hr.2.elim (ne_of_gt hr.1) hx
 
 @[simp]
 theorem gauge_empty : gauge (∅ : Set E) = 0 := by
@@ -189,6 +189,10 @@ theorem gauge_add_le (hs : Convex ℝ s) (absorbs : Absorbent ℝ s) (x y : E) :
       exact add_mem_add (smul_mem_smul_set hx) (smul_mem_smul_set hy)
     _ < gauge s (a • x) + gauge s (b • y) + ε := by linarith
 
+theorem gauge_sum_le {ι : Type*} (hs : Convex ℝ s) (absorbs : Absorbent ℝ s) (t : Finset ι)
+    (f : ι → E) : gauge s (∑ i ∈ t, f i) ≤ ∑ i ∈ t, gauge s (f i) :=
+  Finset.le_sum_of_subadditive _ gauge_zero (gauge_add_le hs absorbs) _ _
+
 theorem self_subset_gauge_le_one : s ⊆ { x | gauge s x ≤ 1 } := fun _ => gauge_le_one_of_mem
 
 theorem Convex.gauge_le (hs : Convex ℝ s) (h₀ : (0 : E) ∈ s) (absorbs : Absorbent ℝ s) (a : ℝ) :
@@ -196,15 +200,14 @@ theorem Convex.gauge_le (hs : Convex ℝ s) (h₀ : (0 : E) ∈ s) (absorbs : Ab
   by_cases ha : 0 ≤ a
   · rw [gauge_le_eq hs h₀ absorbs ha]
     exact convex_iInter fun i => convex_iInter fun _ => hs.smul _
-  · -- Porting note: `convert` needed help
-    convert convex_empty (𝕜 := ℝ) (E := E)
-    exact eq_empty_iff_forall_not_mem.2 fun x hx => ha <| (gauge_nonneg _).trans hx
+  · convert convex_empty (𝕜 := ℝ)
+    exact eq_empty_iff_forall_notMem.2 fun x hx => ha <| (gauge_nonneg _).trans hx
 
 theorem Balanced.starConvex (hs : Balanced ℝ s) : StarConvex ℝ 0 s :=
   starConvex_zero_iff.2 fun _ hx a ha₀ ha₁ =>
     hs _ (by rwa [Real.norm_of_nonneg ha₀]) (smul_mem_smul_set hx)
 
-theorem le_gauge_of_not_mem (hs₀ : StarConvex ℝ 0 s) (hs₂ : Absorbs ℝ s {x}) (hx : x ∉ a • s) :
+theorem le_gauge_of_notMem (hs₀ : StarConvex ℝ 0 s) (hs₂ : Absorbs ℝ s {x}) (hx : x ∉ a • s) :
     a ≤ gauge s x := by
   rw [starConvex_zero_iff] at hs₀
   obtain ⟨r, hr, h⟩ := hs₂.exists_pos
@@ -218,13 +221,18 @@ theorem le_gauge_of_not_mem (hs₀ : StarConvex ℝ 0 s) (hs₂ : Absorbs ℝ s 
   · dsimp only
     rw [← mul_smul, mul_inv_cancel_left₀ ha.ne']
 
-theorem one_le_gauge_of_not_mem (hs₁ : StarConvex ℝ 0 s) (hs₂ : Absorbs ℝ s {x}) (hx : x ∉ s) :
+@[deprecated (since := "2025-05-23")] alias le_gauge_of_not_mem := le_gauge_of_notMem
+
+theorem one_le_gauge_of_notMem (hs₁ : StarConvex ℝ 0 s) (hs₂ : Absorbs ℝ s {x}) (hx : x ∉ s) :
     1 ≤ gauge s x :=
-  le_gauge_of_not_mem hs₁ hs₂ <| by rwa [one_smul]
+  le_gauge_of_notMem hs₁ hs₂ <| by rwa [one_smul]
+
+@[deprecated (since := "2025-05-23")] alias one_le_gauge_of_not_mem := one_le_gauge_of_notMem
 
 section LinearOrderedField
 
-variable {α : Type*} [LinearOrderedField α] [MulActionWithZero α ℝ] [OrderedSMul α ℝ]
+variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+  [MulActionWithZero α ℝ] [OrderedSMul α ℝ]
 
 theorem gauge_smul_of_nonneg [MulActionWithZero α E] [IsScalarTower α ℝ (Set E)] {s : Set E} {a : α}
     (ha : 0 ≤ a) (x : E) : gauge s (a • x) = a • gauge s x := by
@@ -327,12 +335,12 @@ theorem gauge_eq_zero (hs : Absorbent ℝ s) (hb : Bornology.IsVonNBounded ℝ s
   refine ⟨fun h₀ ↦ by_contra fun (hne : x ≠ 0) ↦ ?_, fun h ↦ h.symm ▸ gauge_zero⟩
   have : {x}ᶜ ∈ comap (gauge s) (𝓝 0) :=
     comap_gauge_nhds_zero_le hs hb (isOpen_compl_singleton.mem_nhds hne.symm)
-  rcases ((nhds_basis_zero_abs_sub_lt _).comap _).mem_iff.1 this with ⟨r, hr₀, hr⟩
+  rcases ((nhds_basis_zero_abs_lt _).comap _).mem_iff.1 this with ⟨r, hr₀, hr⟩
   exact hr (by simpa [h₀]) rfl
 
 theorem gauge_pos (hs : Absorbent ℝ s) (hb : Bornology.IsVonNBounded ℝ s) :
     0 < gauge s x ↔ x ≠ 0 := by
-  simp only [(gauge_nonneg _).gt_iff_ne, Ne, gauge_eq_zero hs hb]
+  simp only [(gauge_nonneg _).lt_iff_ne', Ne, gauge_eq_zero hs hb]
 
 end TopologicalSpace
 
@@ -385,14 +393,17 @@ theorem mem_frontier_of_gauge_eq_one (hc : Convex ℝ s) (hs₀ : 0 ∈ s) (ha :
   ⟨mem_closure_of_gauge_le_one hc hs₀ ha h.le, fun h' ↦
     (interior_subset_gauge_lt_one s h').out.ne h⟩
 
-theorem tendsto_gauge_nhds_zero' (hs : s ∈ 𝓝 0) : Tendsto (gauge s) (𝓝 0) (𝓝[≥] 0) := by
+theorem tendsto_gauge_nhds_zero_nhdsGE (hs : s ∈ 𝓝 0) : Tendsto (gauge s) (𝓝 0) (𝓝[≥] 0) := by
   refine nhdsGE_basis_Icc.tendsto_right_iff.2 fun ε hε ↦ ?_
   rw [← set_smul_mem_nhds_zero_iff hε.ne'] at hs
   filter_upwards [hs] with x hx
   exact ⟨gauge_nonneg _, gauge_le_of_mem hε.le hx⟩
 
+@[deprecated (since := "2025-03-02")]
+alias tendsto_gauge_nhds_zero' := tendsto_gauge_nhds_zero_nhdsGE
+
 theorem tendsto_gauge_nhds_zero (hs : s ∈ 𝓝 0) : Tendsto (gauge s) (𝓝 0) (𝓝 0) :=
-  (tendsto_gauge_nhds_zero' hs).mono_right inf_le_left
+  (tendsto_gauge_nhds_zero_nhdsGE hs).mono_right inf_le_left
 
 /-- If `s` is a neighborhood of the origin, then `gauge s` is continuous at the origin.
 See also `continuousAt_gauge`. -/
@@ -411,7 +422,7 @@ section TopologicalVectorSpace
 
 open Filter
 
-variable [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousSMul ℝ E]
+variable [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul ℝ E]
 
 /-- If `s` is a convex neighborhood of the origin in a topological real vector space, then `gauge s`
 is continuous. If the ambient space is a normed space, then `gauge s` is Lipschitz continuous, see
@@ -437,7 +448,7 @@ theorem continuousAt_gauge (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) : Continuo
 /-- If `s` is a convex neighborhood of the origin in a topological real vector space, then `gauge s`
 is continuous. If the ambient space is a normed space, then `gauge s` is Lipschitz continuous, see
 `Convex.lipschitz_gauge`. -/
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_gauge (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) : Continuous (gauge s) :=
   continuous_iff_continuousAt.2 fun _ ↦ continuousAt_gauge hc hs₀
 
@@ -504,9 +515,7 @@ protected theorem Seminorm.gauge_ball (p : Seminorm ℝ E) : gauge (p.ball 0 1) 
     rw [p.mem_ball_zero] at hy
     rw [map_smul_eq_mul, Real.norm_eq_abs, abs_of_pos hr]
     exact mul_le_of_le_one_right hr.le hy.le
-  · have hpε : 0 < p x + ε :=
-      -- Porting note: was `by positivity`
-      add_pos_of_nonneg_of_pos (apply_nonneg _ _) hε
+  · have hpε : 0 < p x + ε := by positivity
     refine hr ⟨hpε, (p x + ε)⁻¹ • x, ?_, smul_inv_smul₀ hpε.ne' _⟩
     rw [p.mem_ball_zero, map_smul_eq_mul, Real.norm_eq_abs, abs_of_pos (inv_pos.2 hpε),
       inv_mul_lt_iff₀ hpε, mul_one]
@@ -539,11 +548,11 @@ theorem gauge_ball (hr : 0 ≤ r) (x : E) : gauge (ball (0 : E) r) x = ‖x‖ /
 theorem gauge_closure_zero : gauge (closure (0 : Set E)) = 0 := funext fun x ↦ by
   simp only [← singleton_zero, gauge_def', mem_closure_zero_iff_norm, norm_smul, mul_eq_zero,
     norm_eq_zero, inv_eq_zero]
-  rcases (norm_nonneg x).eq_or_gt with hx | hx
+  rcases (norm_nonneg x).eq_or_lt' with hx | hx
   · convert csInf_Ioi (a := (0 : ℝ))
     exact Set.ext fun r ↦ and_iff_left (.inr hx)
   · convert Real.sInf_empty
-    exact eq_empty_of_forall_not_mem fun r ⟨hr₀, hr⟩ ↦ hx.ne' <| hr.resolve_left hr₀.out.ne'
+    exact eq_empty_of_forall_notMem fun r ⟨hr₀, hr⟩ ↦ hx.ne' <| hr.resolve_left hr₀.out.ne'
 
 @[simp]
 theorem gauge_closedBall (hr : 0 ≤ r) (x : E) : gauge (closedBall (0 : E) r) x = ‖x‖ / r := by
@@ -561,7 +570,7 @@ theorem gauge_closedBall (hr : 0 ≤ r) (x : E) : gauge (closedBall (0 : E) r) x
       exact (absorbent_ball_zero hr').mono ball_subset_closedBall
 
 theorem mul_gauge_le_norm (hs : Metric.ball (0 : E) r ⊆ s) : r * gauge s x ≤ ‖x‖ := by
-  obtain hr | hr := le_or_lt r 0
+  obtain hr | hr := le_or_gt r 0
   · exact (mul_nonpos_of_nonpos_of_nonneg hr <| gauge_nonneg _).trans (norm_nonneg _)
   rw [mul_comm, ← le_div_iff₀ hr, ← gauge_ball hr.le]
   exact gauge_mono (absorbent_ball_zero hr) hs x

@@ -9,7 +9,7 @@ import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import Mathlib.Algebra.Homology.Square
 import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Square
-import Mathlib.CategoryTheory.Limits.Shapes.Types
+import Mathlib.CategoryTheory.Limits.Types.Shapes
 import Mathlib.CategoryTheory.Sites.Abelian
 import Mathlib.CategoryTheory.Sites.Adjunction
 import Mathlib.CategoryTheory.Sites.Sheafification
@@ -147,7 +147,7 @@ noncomputable def mk_of_isPullback (sq : Square C) [Mono sq.f₂₄] [Mono sq.f�
 variable (S : J.MayerVietorisSquare)
 
 lemma isPushoutAddCommGrpFreeSheaf [HasWeakSheafify J AddCommGrp.{v}] :
-    (S.map (yoneda ⋙ (whiskeringRight _ _ _).obj AddCommGrp.free ⋙
+    (S.map (yoneda ⋙ (Functor.whiskeringRight _ _ _).obj AddCommGrp.free ⋙
       presheafToSheaf J _)).IsPushout :=
   (S.isPushout.map (Sheaf.composeAndSheafify J AddCommGrp.free)).of_iso
     ((Square.mapFunctor.mapIso
@@ -155,7 +155,7 @@ lemma isPushoutAddCommGrpFreeSheaf [HasWeakSheafify J AddCommGrp.{v}] :
         (S.map yoneda))
 
 /-- The condition that a Mayer-Vietoris square becomes a pullback square
-when we evaluate a presheaf on it. --/
+when we evaluate a presheaf on it. -/
 def SheafCondition {A : Type u'} [Category.{v'} A] (P : Cᵒᵖ ⥤ A) : Prop :=
   (S.toSquare.op.map P).IsPullback
 
@@ -234,13 +234,13 @@ noncomputable def shortComplex :
   X₃ := (presheafToSheaf J _).obj (yoneda.obj S.X₄ ⋙ AddCommGrp.free)
   f :=
     biprod.lift
-      ((presheafToSheaf J _).map (whiskerRight (yoneda.map S.f₁₂) _))
-      (-(presheafToSheaf J _).map (whiskerRight (yoneda.map S.f₁₃) _))
+      ((presheafToSheaf J _).map (Functor.whiskerRight (yoneda.map S.f₁₂) _))
+      (-(presheafToSheaf J _).map (Functor.whiskerRight (yoneda.map S.f₁₃) _))
   g :=
     biprod.desc
-      ((presheafToSheaf J _).map (whiskerRight (yoneda.map S.f₂₄) _))
-      ((presheafToSheaf J _).map (whiskerRight (yoneda.map S.f₃₄) _))
-  zero := (S.map (yoneda ⋙ (whiskeringRight _ _ _).obj AddCommGrp.free ⋙
+      ((presheafToSheaf J _).map (Functor.whiskerRight (yoneda.map S.f₂₄) _))
+      ((presheafToSheaf J _).map (Functor.whiskerRight (yoneda.map S.f₃₄) _))
+  zero := (S.map (yoneda ⋙ (Functor.whiskeringRight _ _ _).obj AddCommGrp.free ⋙
       presheafToSheaf J _)).cokernelCofork.condition
 
 instance : Mono S.shortComplex.f := by

@@ -137,13 +137,10 @@ instance [CommSemiring S] [Algebra S R] : Algebra S (AdjoinRoot f) :=
 theorem algebraMap_eq : algebraMap R (AdjoinRoot f) = of f :=
   rfl
 
-variable (S)
-
+variable (S) in
 theorem algebraMap_eq' [CommSemiring S] [Algebra S R] :
     algebraMap S (AdjoinRoot f) = (of f).comp (algebraMap S R) :=
   rfl
-
-variable {S}
 
 theorem finiteType : Algebra.FiniteType R (AdjoinRoot f) :=
   (Algebra.FiniteType.polynomial R).of_surjective _ (Ideal.Quotient.mkₐ_surjective R _)
@@ -202,7 +199,7 @@ theorem aeval_eq (p : R[X]) : aeval (root f) p = mk f p :=
       rw [aeval_C]
       rfl)
     (fun p q ihp ihq => by rw [map_add, RingHom.map_add, ihp, ihq]) fun n x _ => by
-    rw [_root_.map_mul, aeval_C, map_pow, aeval_X, RingHom.map_mul, mk_C, RingHom.map_pow, mk_X]
+    rw [map_mul, aeval_C, map_pow, aeval_X, RingHom.map_mul, mk_C, RingHom.map_pow, mk_X]
     rfl
 
 theorem adjoinRoot_eq_top : Algebra.adjoin R ({root f} : Set (AdjoinRoot f)) = ⊤ := by
@@ -310,8 +307,8 @@ theorem algHom_subsingleton {S : Type*} [CommRing S] [Algebra R S] {r : R} :
   ⟨fun f g =>
     algHom_ext
       (@inv_unique _ _ (algebraMap R S r) _ _
-        (by rw [← f.commutes, ← _root_.map_mul, algebraMap_eq, root_isInv, map_one])
-        (by rw [← g.commutes, ← _root_.map_mul, algebraMap_eq, root_isInv, map_one]))⟩
+        (by rw [← f.commutes, ← map_mul, algebraMap_eq, root_isInv, map_one])
+        (by rw [← g.commutes, ← map_mul, algebraMap_eq, root_isInv, map_one]))⟩
 
 end AdjoinInv
 
@@ -473,6 +470,22 @@ def powerBasis' (hg : g.Monic) : PowerBasis R (AdjoinRoot g) where
       have := Finset.mem_univ i
       contradiction
 
+lemma _root_.Polynomial.Monic.free_adjoinRoot (hg : g.Monic) : Module.Free R (AdjoinRoot g) :=
+  .of_basis (powerBasis' hg).basis
+
+lemma _root_.Polynomial.Monic.finite_adjoinRoot (hg : g.Monic) : Module.Finite R (AdjoinRoot g) :=
+  .of_basis (powerBasis' hg).basis
+
+/-- An unwrapped version of `AdjoinRoot.free_of_monic` for better discoverability. -/
+lemma _root_.Polynomial.Monic.free_quotient (hg : g.Monic) :
+    Module.Free R (R[X] ⧸ Ideal.span {g}) :=
+  hg.free_adjoinRoot
+
+/-- An unwrapped version of `AdjoinRoot.finite_of_monic` for better discoverability. -/
+lemma _root_.Polynomial.Monic.finite_quotient (hg : g.Monic) :
+    Module.Finite R (R[X] ⧸ Ideal.span {g}) :=
+  hg.finite_adjoinRoot
+
 variable [Field K] {f : K[X]}
 
 theorem isIntegral_root (hf : f ≠ 0) : IsIntegral K (root f) :=
@@ -481,7 +494,7 @@ theorem isIntegral_root (hf : f ≠ 0) : IsIntegral K (root f) :=
 theorem minpoly_root (hf : f ≠ 0) : minpoly K (root f) = f * C f.leadingCoeff⁻¹ := by
   have f'_monic : Monic _ := monic_mul_leadingCoeff_inv hf
   refine (minpoly.unique K _ f'_monic ?_ ?_).symm
-  · rw [_root_.map_mul, aeval_eq, mk_self, zero_mul]
+  · rw [map_mul, aeval_eq, mk_self, zero_mul]
   intro q q_monic q_aeval
   have commutes : (lift (algebraMap K (AdjoinRoot f)) (root f) q_aeval).comp (mk q) = mk f := by
     ext
@@ -581,7 +594,7 @@ such that `pb.gen` has a minimal polynomial `g`, then `S` is isomorphic to `Adjo
 Compare `PowerBasis.equivOfRoot`, which would require
 `h₂ : aeval pb.gen (minpoly R (root g)) = 0`; that minimal polynomial is not
 guaranteed to be identical to `g`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def equiv' (h₁ : aeval (root g) (minpoly R pb.gen) = 0) (h₂ : aeval pb.gen g = 0) :
     AdjoinRoot g ≃ₐ[R] S :=
   { AdjoinRoot.liftHom g pb.gen h₂ with
@@ -659,7 +672,7 @@ theorem quotMapOfEquivQuotMapCMapSpanMk_symm_mk (x : AdjoinRoot f) :
   exact Ideal.quotEquivOfEq_mk _ _
 
 /-- The natural isomorphism `R[α]/((I[x] ⊔ (f)) / (f)) ≅ (R[x]/I[x])/((f) ⊔ I[x] / I[x])`
-  for `α` a root of `f : R[X]` and `I : Ideal R`-/
+  for `α` a root of `f : R[X]` and `I : Ideal R` -/
 def quotMapCMapSpanMkEquivQuotMapCQuotMapSpanMk :
     AdjoinRoot f ⧸ (I.map (C : R →+* R[X])).map (Ideal.Quotient.mk (span ({f} : Set R[X]))) ≃+*
       (R[X] ⧸ I.map (C : R →+* R[X])) ⧸
@@ -680,7 +693,7 @@ theorem quotMapCMapSpanMkEquivQuotMapCQuotMapSpanMk_symm_quotQuotMk (p : R[X]) :
   rfl
 
 /-- The natural isomorphism `(R/I)[x]/(f mod I) ≅ (R[x]/I*R[x])/(f mod I[x])` where
-  `f : R[X]` and `I : Ideal R`-/
+  `f : R[X]` and `I : Ideal R` -/
 def Polynomial.quotQuotEquivComm :
     (R ⧸ I)[X] ⧸ span ({f.map (Ideal.Quotient.mk I)} : Set (Polynomial (R ⧸ I))) ≃+*
       (R[X] ⧸ (I.map C)) ⧸ span ({(Ideal.Quotient.mk (I.map C)) f} : Set (R[X] ⧸ (I.map C))) :=
@@ -816,7 +829,7 @@ theorem quotientEquivQuotientMinpolyMap_symm_apply_mk (pb : PowerBasis R S) (I :
           (aeval pb.gen g) := by
   simp only [quotientEquivQuotientMinpolyMap, toRingEquiv_eq_coe, symm_trans_apply,
     quotEquivQuotMap_symm_apply_mk, ofRingEquiv_symm_apply, quotientEquiv_symm_mk,
-    toRingEquiv_symm, RingEquiv.symm_symm, AdjoinRoot.equiv'_apply, coe_ringEquiv, liftHom_mk,
+    RingEquiv.symm_symm, AdjoinRoot.equiv'_apply, coe_ringEquiv, liftHom_mk,
     symm_toRingEquiv]
 
 end PowerBasis

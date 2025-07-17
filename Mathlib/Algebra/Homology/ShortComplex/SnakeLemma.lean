@@ -290,12 +290,14 @@ lemma L₀X₂ToP_comp_φ₁ : S.L₀X₂ToP ≫ S.φ₁ = 0 := by
     pullback.lift_fst_assoc, w₀₂_τ₂, zero_comp]
 
 lemma L₀_g_δ : S.L₀.g ≫ S.δ = 0 := by
-  erw [← L₀X₂ToP_comp_pullback_snd, assoc, S.L₀'_exact.g_desc,
-    L₀X₂ToP_comp_φ₁_assoc, zero_comp]
+  rw [← L₀X₂ToP_comp_pullback_snd, assoc]
+  erw [S.L₀'_exact.g_desc]
+  rw [L₀X₂ToP_comp_φ₁_assoc, zero_comp]
 
 lemma δ_L₃_f : S.δ ≫ S.L₃.f = 0 := by
-  erw [← cancel_epi S.L₀'.g, S.L₀'_exact.g_desc_assoc, assoc, S.v₂₃.comm₁₂, S.φ₁_L₂_f_assoc,
-    φ₂, assoc, w₁₃_τ₂, comp_zero, comp_zero]
+  rw [← cancel_epi S.L₀'.g]
+  erw [S.L₀'_exact.g_desc_assoc]
+  simp [S.v₂₃.comm₁₂, φ₂]
 
 /-- The short complex `L₀.X₂ ⟶ L₀.X₃ ⟶ L₃.X₁`. -/
 @[simps]
@@ -375,6 +377,20 @@ lemma δ_eq {A : C} (x₃ : A ⟶ S.L₀.X₃) (x₂ : A ⟶ S.L₁.X₂) (x₁ 
   rw [H, ← assoc]
   congr 1
   simp only [← cancel_mono S.L₂.f, assoc, φ₁_L₂_f, lift_φ₂, h₁]
+
+theorem mono_δ (h₀ : IsZero S.L₀.X₂) : Mono S.δ :=
+  (S.L₁'.exact_iff_mono (IsZero.eq_zero_of_src h₀ S.L₁'.f)).1 S.L₁'_exact
+
+theorem epi_δ (h₃ : IsZero S.L₃.X₂) : Epi S.δ :=
+  (S.L₂'.exact_iff_epi (IsZero.eq_zero_of_tgt h₃ S.L₂'.g)).1 S.L₂'_exact
+
+theorem isIso_δ (h₀ : IsZero S.L₀.X₂) (h₃ : IsZero S.L₃.X₂) : IsIso S.δ :=
+  @Balanced.isIso_of_mono_of_epi _ _ _ _ _ S.δ (S.mono_δ h₀) (S.epi_δ h₃)
+
+/-- When `L₀₂` and `L₃₂` are trivial, `δ` defines an isomorphism `L₀₃ ≅ L₃₁`. -/
+noncomputable def δIso (h₀ : IsZero S.L₀.X₂) (h₃ : IsZero S.L₃.X₂) :
+    S.L₀.X₃ ≅ S.L₃.X₁ :=
+  @asIso _ _ _ _ S.δ (SnakeInput.isIso_δ S h₀ h₃)
 
 variable (S₁ S₂ S₃ : SnakeInput C)
 

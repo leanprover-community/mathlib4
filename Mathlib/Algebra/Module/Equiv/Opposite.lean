@@ -10,7 +10,7 @@ import Mathlib.Algebra.Module.Opposite
 # Module operations on `Mᵐᵒᵖ`
 
 This file contains definitions that build on top of the group action definitions in
-`Mathlib.Algebra.GroupWithZero.Action.Opposite`.
+`Mathlib/Algebra/GroupWithZero/Action/Opposite.lean`.
 -/
 
 section
@@ -22,12 +22,7 @@ theorem LinearMap.ext_ring_op
     {σ : Rᵐᵒᵖ →+* S} {f g : R →ₛₗ[σ] M} (h : f (1 : R) = g (1 : R)) :
     f = g :=
   ext fun x ↦ by
-    -- Porting note: replaced the oneliner `rw` proof with a partially term-mode proof
-    -- because `rw` was giving "motive is type incorrect" errors
-    rw [← one_mul x, ← op_smul_eq_mul]
-    refine (f.map_smulₛₗ (MulOpposite.op x) 1).trans ?_
-    rw [h]
-    exact (g.map_smulₛₗ (MulOpposite.op x) 1).symm
+    rw [← one_mul x, ← op_smul_eq_mul, f.map_smulₛₗ, h, g.map_smulₛₗ]
 
 end
 
@@ -58,7 +53,6 @@ theorem coe_opLinearEquiv_symm_toLinearMap :
     ((opLinearEquiv R).symm.toLinearMap : Mᵐᵒᵖ → M) = unop :=
   rfl
 
--- Porting note: LHS simplifies; added new simp lemma below @[simp]
 theorem opLinearEquiv_toAddEquiv : (opLinearEquiv R : M ≃ₗ[R] Mᵐᵒᵖ).toAddEquiv = opAddEquiv :=
   rfl
 
@@ -66,7 +60,6 @@ theorem opLinearEquiv_toAddEquiv : (opLinearEquiv R : M ≃ₗ[R] Mᵐᵒᵖ).to
 theorem coe_opLinearEquiv_addEquiv : ((opLinearEquiv R : M ≃ₗ[R] Mᵐᵒᵖ) : M ≃+ Mᵐᵒᵖ) = opAddEquiv :=
   rfl
 
--- Porting note: LHS simplifies; added new simp lemma below @[simp]
 theorem opLinearEquiv_symm_toAddEquiv :
     (opLinearEquiv R : M ≃ₗ[R] Mᵐᵒᵖ).symm.toAddEquiv = opAddEquiv.symm :=
   rfl

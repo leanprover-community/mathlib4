@@ -22,15 +22,15 @@ namespace Polynomial
 
 variable {R : Type*} [CommRing R]
 
-noncomputable def quotientSpanXSubCAlgEquivAux2 (x : R) :
+private noncomputable def quotientSpanXSubCAlgEquivAux2 (x : R) :
     (R[X] ⧸ (RingHom.ker (aeval x).toRingHom : Ideal R[X])) ≃ₐ[R] R :=
   let e := RingHom.quotientKerEquivOfRightInverse (fun x => by
     exact eval_C : Function.RightInverse (fun a : R => (C a : R[X])) (@aeval R R _ _ _ x))
   { e with commutes' := fun r => e.apply_symm_apply r }
 
-noncomputable def quotientSpanXSubCAlgEquivAux1 (x : R) :
+private noncomputable def quotientSpanXSubCAlgEquivAux1 (x : R) :
     (R[X] ⧸ Ideal.span {X - C x}) ≃ₐ[R] (R[X] ⧸ (RingHom.ker (aeval x).toRingHom : Ideal R[X])) :=
-  @Ideal.quotientEquivAlgOfEq R R[X] _ _ _ _ _ (ker_evalRingHom x).symm
+  Ideal.quotientEquivAlgOfEq R (ker_evalRingHom x).symm
 
 -- Porting note: need to split this definition into two sub-definitions to prevent time out
 /-- For a commutative ring $R$, evaluating a polynomial at an element $x \in R$ induces an
@@ -96,7 +96,7 @@ theorem eval₂_C_mk_eq_zero {I : Ideal R} :
   dsimp
   rw [eval₂_monomial (C.comp (Quotient.mk I)) X]
   refine mul_eq_zero_of_left (Polynomial.ext fun m => ?_) (X ^ n)
-  erw [coeff_C]
+  rw [RingHom.comp_apply, coeff_C]
   by_cases h : m = 0
   · simpa [h] using Quotient.eq_zero_iff_mem.2 ((mem_map_C_iff.1 ha) n)
   · simp [h]
@@ -135,7 +135,7 @@ def polynomialQuotientEquivQuotientPolynomial (I : Ideal R) :
       rw [hp, hq]
     · intro n a
       simp only [← smul_X_eq_monomial, ← C_mul' a (X ^ n), Quotient.lift_mk,
-        Submodule.Quotient.quot_mk_eq_mk, Quotient.mk_eq_mk, eval₂_X_pow, eval₂_smul,
+        Submodule.Quotient.quot_mk_eq_mk, Quotient.mk_eq_mk,
         coe_eval₂RingHom, RingHom.map_pow, eval₂_C, RingHom.coe_comp, RingHom.map_mul, eval₂_X,
         Function.comp_apply]
 
@@ -225,11 +225,11 @@ lemma quotientEquivQuotientMvPolynomial_rightInverse (I : Ideal R) :
     rw [eval₂_C, Ideal.Quotient.lift_mk, RingHom.comp_apply, Ideal.Quotient.lift_mk, eval₂Hom_C,
       RingHom.comp_apply]
   · intros p q hp hq
-    simp only [RingHom.map_add, MvPolynomial.coe_eval₂Hom, coe_eval₂Hom, MvPolynomial.eval₂_add]
+    simp only [RingHom.map_add, MvPolynomial.eval₂_add]
       at hp hq ⊢
     rw [hp, hq]
   · intros p i hp
-    simp only [coe_eval₂Hom] at hp
+    simp only at hp
     simp only [hp, coe_eval₂Hom, Ideal.Quotient.lift_mk, eval₂_mul, RingHom.map_mul, eval₂_X]
 
 lemma quotientEquivQuotientMvPolynomial_leftInverse (I : Ideal R) :
@@ -248,12 +248,11 @@ lemma quotientEquivQuotientMvPolynomial_leftInverse (I : Ideal R) :
       RingHom.comp_apply]
   · intros p q hp hq
     rw [Ideal.Quotient.lift_mk] at hp hq ⊢
-    simp only [Submodule.Quotient.quot_mk_eq_mk, eval₂_add, RingHom.map_add, coe_eval₂Hom,
-      Ideal.Quotient.lift_mk, Ideal.Quotient.mk_eq_mk] at hp hq ⊢
+    simp only [eval₂_add, RingHom.map_add, coe_eval₂Hom] at hp hq ⊢
     rw [hp, hq]
   · intros p i hp
-    simp only [Submodule.Quotient.quot_mk_eq_mk, coe_eval₂Hom, Ideal.Quotient.lift_mk,
-      Ideal.Quotient.mk_eq_mk, eval₂_mul, RingHom.map_mul, eval₂_X] at hp ⊢
+    simp only [coe_eval₂Hom, Ideal.Quotient.lift_mk,
+      eval₂_mul, RingHom.map_mul, eval₂_X] at hp ⊢
     simp only [hp]
 
 -- Porting note: this definition was split to avoid timeouts.

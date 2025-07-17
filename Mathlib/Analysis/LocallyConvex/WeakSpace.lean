@@ -3,8 +3,8 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.LinearAlgebra.Dual
 import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
+import Mathlib.LinearAlgebra.Dual.Defs
 import Mathlib.Topology.Algebra.Module.WeakDual
 
 /-! # Closures of convex sets in locally convex spaces
@@ -20,8 +20,10 @@ creating two separate topologies on the same space.
 variable {𝕜 E F : Type*}
 variable [RCLike 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
 variable [Module ℝ E] [IsScalarTower ℝ 𝕜 E] [Module ℝ F] [IsScalarTower ℝ 𝕜 F]
-variable [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousSMul 𝕜 E] [LocallyConvexSpace ℝ E]
-variable [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousSMul 𝕜 F] [LocallyConvexSpace ℝ F]
+variable [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
+  [LocallyConvexSpace ℝ E]
+variable [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F]
+  [LocallyConvexSpace ℝ F]
 
 variable (𝕜) in
 /-- If `E` is a locally convex space over `𝕜` (with `RCLike 𝕜`), and `s : Set E` is `ℝ`-convex, then
@@ -48,7 +50,7 @@ theorem Convex.toWeakSpace_closure {s : Set E} (hs : Convex ℝ s) :
     refine closure_minimal ?_ <| isClosed_le (by fun_prop) (by fun_prop)
     rintro - ⟨y, hy, rfl⟩
     simpa [f'] using (hus y <| subset_closure hy).le
-  exact (hux'.not_le <| hus' ·)
+  exact (hux'.not_ge <| hus' ·)
 
 /-- If `e : E →ₗ[𝕜] F` is a linear map between locally convex spaces, and `f ∘ e` is continuous
 for every continuous linear functional `f : F →L[𝕜] 𝕜`, then `e` commutes with the closure on

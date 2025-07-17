@@ -5,7 +5,7 @@ Authors: Chris Hughes, Patrick Stevens
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
@@ -124,12 +124,12 @@ theorem four_pow_le_two_mul_add_one_mul_central_binom (n : ℕ) :
 
 /-- **Zhu Shijie's identity** aka hockey-stick identity, version with `Icc`. -/
 theorem sum_Icc_choose (n k : ℕ) : ∑ m ∈ Icc k n, m.choose k = (n + 1).choose (k + 1) := by
-  rcases lt_or_le n k with h | h
+  rcases lt_or_ge n k with h | h
   · rw [choose_eq_zero_of_lt (by omega), Icc_eq_empty_of_lt h, sum_empty]
   · induction n, h using le_induction with
     | base => simp
     | succ n _ ih =>
-      rw [← Ico_insert_right (by omega), sum_insert (by simp), Ico_succ_right, ih,
+      rw [← Ico_insert_right (by omega), sum_insert (by simp), Ico_add_one_right_eq_Icc, ih,
         choose_succ_succ' (n + 1)]
 
 /-- **Zhu Shijie's identity** aka hockey-stick identity, version with `range`.
@@ -144,7 +144,7 @@ lemma sum_range_add_choose (n k : ℕ) :
     ∑ i ∈ Finset.range (n + 1), (i + k).choose k = (n + k + 1).choose (k + 1) := by
   rw [← sum_Icc_choose, range_eq_Ico]
   convert (sum_map _ (addRightEmbedding k) (·.choose k)).symm using 2
-  rw [map_add_right_Ico, zero_add, add_right_comm, Nat.Ico_succ_right]
+  rw [map_add_right_Ico, zero_add, add_right_comm, Ico_add_one_right_eq_Icc]
 
 end Nat
 
@@ -230,9 +230,9 @@ theorem sum_antidiagonal_choose_succ_mul (f : ℕ → ℕ → R) (n : ℕ) :
   simpa only [nsmul_eq_mul] using sum_antidiagonal_choose_succ_nsmul f n
 
 theorem sum_antidiagonal_choose_add (d n : ℕ) :
-    (∑ ij ∈ antidiagonal n, (d + ij.2).choose d) = (d + n).choose d + (d + n).choose (d + 1) := by
+    (∑ ij ∈ antidiagonal n, (d + ij.2).choose d) = (d + n + 1).choose (d + 1) := by
   induction n with
   | zero => simp
-  | succ n hn => simpa [Nat.sum_antidiagonal_succ] using hn
+  | succ n hn => rw [Nat.sum_antidiagonal_succ, hn, Nat.choose_succ_succ (d + (n + 1)), ← add_assoc]
 
 end Finset

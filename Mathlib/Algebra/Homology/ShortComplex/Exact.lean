@@ -8,7 +8,7 @@ import Mathlib.Algebra.Homology.ShortComplex.Abelian
 import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
 import Mathlib.CategoryTheory.Abelian.Opposite
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Preadditive.Injective
+import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 
 /-!
 # Exact short complexes
@@ -520,20 +520,14 @@ lemma ext_r (s s' : S.Splitting) (h : s.r = s'.r) : s = s' := by
   have eq := s.id
   rw [← s'.id, h, add_right_inj, cancel_epi S.g] at eq
   cases s
-  cases s'
-  obtain rfl := eq
-  obtain rfl := h
-  rfl
+  congr
 
 lemma ext_s (s s' : S.Splitting) (h : s.s = s'.s) : s = s' := by
   have := s.mono_f
   have eq := s.id
   rw [← s'.id, h, add_left_inj, cancel_mono S.f] at eq
   cases s
-  cases s'
-  obtain rfl := eq
-  obtain rfl := h
-  rfl
+  congr
 
 /-- The left homology data on a short complex equipped with a splitting. -/
 @[simps]
@@ -709,7 +703,7 @@ lemma isIso_f' (hS : S.Exact) (h : S.LeftHomologyData) [Mono S.f] :
   have := mono_of_mono_fac h.f'_i
   exact isIso_of_mono_of_epi h.f'
 
-lemma isIso_toCycles (hS : S.Exact) [Mono S.f] [S.HasLeftHomology]:
+lemma isIso_toCycles (hS : S.Exact) [Mono S.f] [S.HasLeftHomology] :
     IsIso S.toCycles :=
   hS.isIso_f' _
 
@@ -908,15 +902,6 @@ lemma Exact.liftFromProjective_comp
   dsimp [liftFromProjective]
   rw [← toCycles_i, Projective.factorThru_comp_assoc, liftCycles_i]
 
-
-@[deprecated (since := "2024-07-09")] alias _root_.CategoryTheory.Exact.lift :=
-  Exact.liftFromProjective
-@[deprecated (since := "2024-07-09")] alias _root_.CategoryTheory.Exact.lift_comp :=
-  Exact.liftFromProjective_comp
-@[deprecated (since := "2024-07-09")] alias _root_.CategoryTheory.Injective.Exact.desc :=
-  Exact.descToInjective
-@[deprecated (since := "2024-07-09")] alias _root_.CategoryTheory.Injective.Exact.comp_desc :=
-  Exact.comp_descToInjective
 
 end Abelian
 

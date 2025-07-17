@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.Tactic.Finiteness
 import Mathlib.Topology.Metrizable.Uniformity
 
 /-!
@@ -28,7 +29,7 @@ instance (priority := 100) BaireSpace.of_pseudoEMetricSpace_completeSpace : Bair
   refine ⟨fun f ho hd => ?_⟩
   let B : ℕ → ℝ≥0∞ := fun n => 1 / 2 ^ n
   have Bpos : ∀ n, 0 < B n := fun n ↦
-    ENNReal.div_pos one_ne_zero <| ENNReal.pow_ne_top ENNReal.coe_ne_top
+    ENNReal.div_pos one_ne_zero <| by finiteness
   /- Translate the density assumption into two functions `center` and `radius` associating
     to any n, x, δ, δpos a center and a positive radius such that
     `closedBall center radius` is included both in `f n` and in `closedBall x δ`.
@@ -95,7 +96,7 @@ instance (priority := 100) BaireSpace.of_pseudoEMetricSpace_completeSpace : Bair
   -- this point `y` will be the desired point. We will check that it belongs to all
   -- `f n` and to `ball x ε`.
   use y
-  simp only [exists_prop, Set.mem_iInter]
+  simp only [Set.mem_iInter]
   have I : ∀ n, ∀ m ≥ n, closedBall (c m) (r m) ⊆ closedBall (c n) (r n) := by
     intro n
     refine Nat.le_induction ?_ fun m _ h => ?_
@@ -103,7 +104,7 @@ instance (priority := 100) BaireSpace.of_pseudoEMetricSpace_completeSpace : Bair
     · exact Subset.trans (incl m) (Subset.trans inter_subset_left h)
   have yball : ∀ n, y ∈ closedBall (c n) (r n) := by
     intro n
-    refine isClosed_ball.mem_of_tendsto ylim ?_
+    refine isClosed_closedBall.mem_of_tendsto ylim ?_
     refine (Filter.eventually_ge_atTop n).mono fun m hm => ?_
     exact I n m hm mem_closedBall_self
   constructor
@@ -112,5 +113,5 @@ instance (priority := 100) BaireSpace.of_pseudoEMetricSpace_completeSpace : Bair
     have : closedBall (c (n + 1)) (r (n + 1)) ⊆ f n :=
       Subset.trans (incl n) inter_subset_right
     exact this (yball (n + 1))
-  show edist y x ≤ ε
+  change edist y x ≤ ε
   exact le_trans (yball 0) (min_le_left _ _)

@@ -5,8 +5,8 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.Algebra.Regular.Basic
 import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.Algebra.CharP.Defs
 
 /-!
 # Theory of univariate polynomials
@@ -69,20 +69,15 @@ def lsum {R A M : Type*} [Semiring R] [Semiring A] [AddCommMonoid M] [Module R A
   toFun p := p.sum (f · ·)
   map_add' p q := sum_add_index p q _ (fun n => (f n).map_zero) fun n _ _ => (f n).map_add _ _
   map_smul' c p := by
-    -- Porting note: added `dsimp only`; `beta_reduce` alone is not sufficient
-    dsimp only
     rw [sum_eq_of_subset (f · ·) (fun n => (f n).map_zero) (support_smul c p)]
     simp only [sum_def, Finset.smul_sum, coeff_smul, LinearMap.map_smul, RingHom.id_apply]
 
-variable (R)
-
+variable (R) in
 /-- The nth coefficient, as a linear map. -/
 def lcoeff (n : ℕ) : R[X] →ₗ[R] R where
   toFun p := coeff p n
   map_add' p q := coeff_add p q n
   map_smul' r p := coeff_smul r p n
-
-variable {R}
 
 @[simp]
 theorem lcoeff_apply (n : ℕ) (f : R[X]) : lcoeff R n f = coeff f n :=
@@ -212,14 +207,14 @@ theorem support_trinomial {k m n : ℕ} (hkm : k < m) (hmn : m < n) {x y z : R} 
 
 theorem card_support_binomial {k m : ℕ} (h : k ≠ m) {x y : R} (hx : x ≠ 0) (hy : y ≠ 0) :
     #(support (C x * X ^ k + C y * X ^ m)) = 2 := by
-  rw [support_binomial h hx hy, card_insert_of_not_mem (mt mem_singleton.mp h), card_singleton]
+  rw [support_binomial h hx hy, card_insert_of_notMem (mt mem_singleton.mp h), card_singleton]
 
 theorem card_support_trinomial {k m n : ℕ} (hkm : k < m) (hmn : m < n) {x y z : R} (hx : x ≠ 0)
     (hy : y ≠ 0) (hz : z ≠ 0) : #(support (C x * X ^ k + C y * X ^ m + C z * X ^ n)) = 3 := by
   rw [support_trinomial hkm hmn hx hy hz,
-    card_insert_of_not_mem
+    card_insert_of_notMem
       (mt mem_insert.mp (not_or_intro hkm.ne (mt mem_singleton.mp (hkm.trans hmn).ne))),
-    card_insert_of_not_mem (mt mem_singleton.mp hmn.ne), card_singleton]
+    card_insert_of_notMem (mt mem_singleton.mp hmn.ne), card_singleton]
 
 end Fewnomials
 
@@ -294,7 +289,7 @@ theorem isRegular_X_pow (n : ℕ) : IsRegular (X ^ n : R[X]) := by
 theorem coeff_X_add_C_pow (r : R) (n k : ℕ) :
     ((X + C r) ^ n).coeff k = r ^ (n - k) * (n.choose k : R) := by
   rw [(commute_X (C r : R[X])).add_pow, ← lcoeff_apply, map_sum]
-  simp only [one_pow, mul_one, lcoeff_apply, ← C_eq_natCast, ← C_pow, coeff_mul_C, Nat.cast_id]
+  simp only [lcoeff_apply, ← C_eq_natCast, ← C_pow, coeff_mul_C]
   rw [Finset.sum_eq_single k, coeff_X_pow_self, one_mul]
   · intro _ _ h
     simp [coeff_X_pow, h.symm]
@@ -342,9 +337,6 @@ section cast
 theorem natCast_coeff_zero {n : ℕ} {R : Type*} [Semiring R] : (n : R[X]).coeff 0 = n := by
   simp only [coeff_natCast_ite, ite_true]
 
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_coeff_zero := natCast_coeff_zero
-
 @[norm_cast]
 theorem natCast_inj {m n : ℕ} {R : Type*} [Semiring R] [CharZero R] :
     (↑m : R[X]) = ↑n ↔ m = n := by
@@ -355,15 +347,9 @@ theorem natCast_inj {m n : ℕ} {R : Type*} [Semiring R] [CharZero R] :
   · rintro rfl
     rfl
 
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_inj := natCast_inj
-
 @[simp]
 theorem intCast_coeff_zero {i : ℤ} {R : Type*} [Ring R] : (i : R[X]).coeff 0 = i := by
   cases i <;> simp
-
-@[deprecated (since := "2024-04-17")]
-alias int_cast_coeff_zero := intCast_coeff_zero
 
 @[norm_cast]
 theorem intCast_inj {m n : ℤ} {R : Type*} [Ring R] [CharZero R] : (↑m : R[X]) = ↑n ↔ m = n := by
@@ -374,11 +360,12 @@ theorem intCast_inj {m n : ℤ} {R : Type*} [Ring R] [CharZero R] : (↑m : R[X]
   · rintro rfl
     rfl
 
-@[deprecated (since := "2024-04-17")]
-alias int_cast_inj := intCast_inj
-
 end cast
 
 instance charZero [CharZero R] : CharZero R[X] where cast_injective _x _y := natCast_inj.mp
+
+instance charP {p : ℕ} [CharP R p] : CharP R[X] p where
+  cast_eq_zero_iff n := by
+    rw [← CharP.cast_eq_zero_iff R, ← C_inj (R := R), map_natCast, C_0]
 
 end Polynomial

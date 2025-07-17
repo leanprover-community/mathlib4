@@ -19,15 +19,13 @@ epimorphic for all `i`. Then `G.obj S` is isomorphic to a limit indexed by
 We also provide the dual result for a functor of the form `G : Profiniteᵒᵖ ⥤ C`.
 
 We apply this to define `Profinite.diagram'`, `Profinite.asLimitCone'`, and `Profinite.asLimit'`,
-analogues to their unprimed versions in `Mathlib.Topology.Category.Profinite.AsLimit`, in which the
-indexing category is `StructuredArrow S toProfinite` instead of `DiscreteQuotient S`.
+analogues to their unprimed versions in `Mathlib/Topology/Category/Profinite/AsLimit.lean`, in which
+the indexing category is `StructuredArrow S toProfinite` instead of `DiscreteQuotient S`.
 -/
 
 universe u w
 
 open CategoryTheory Limits FintypeCat Functor
-
-attribute [local instance] HasForget.instFunLike
 
 namespace Profinite
 
@@ -43,7 +41,7 @@ lemma exists_hom (hc : IsLimit c) {X : FintypeCat} (f : c.pt ⟶ toProfinite.obj
   let _ : TopologicalSpace X := ⊥
   have : DiscreteTopology (toProfinite.obj X) := ⟨rfl⟩
   let f' : LocallyConstant c.pt (toProfinite.obj X) :=
-    ⟨f, (IsLocallyConstant.iff_continuous _).mpr f.continuous⟩
+    ⟨f, (IsLocallyConstant.iff_continuous _).mpr f.hom.continuous⟩
   obtain ⟨i, g, h⟩ := exists_locallyConstant.{_, u} c hc f'
   refine ⟨i, (g : _ → _), ?_⟩
   ext x
@@ -92,10 +90,10 @@ lemma functor_initial (hc : IsLimit c) [∀ i, Epi (c.π.app i)] : Initial (func
     refine ⟨⟨i⟩, ⟨StructuredArrow.homMk g h.symm⟩⟩
   · intro ⟨_, X, (f : c.pt ⟶ _)⟩ ⟨i⟩ ⟨_, (s : F.obj i ⟶ X), (w : f = c.π.app i ≫ _)⟩
       ⟨_, (s' : F.obj i ⟶ X), (w' : f = c.π.app i ≫ _)⟩
-    simp only [functor_obj, functor_map, StructuredArrow.hom_eq_iff, StructuredArrow.mk_right,
-      StructuredArrow.comp_right, StructuredArrow.homMk_right]
+    simp only [StructuredArrow.hom_eq_iff,
+      StructuredArrow.comp_right]
     refine ⟨⟨i⟩, 𝟙 _, ?_⟩
-    simp only [CategoryTheory.Functor.map_id, Category.id_comp]
+    simp only [CategoryTheory.Functor.map_id]
     rw [w] at w'
     exact toProfinite.map_injective <| Epi.left_cancellation _ _ w'
 

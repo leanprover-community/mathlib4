@@ -102,11 +102,11 @@ protected theorem castLE {h : l ≤ n} (hφ : IsQF φ) : (φ.castLE h).IsQF :=
 end IsQF
 
 theorem not_all_isQF (φ : L.BoundedFormula α (n + 1)) : ¬φ.all.IsQF := fun con => by
-  cases' con with _ con
+  obtain - | con := con
   exact φ.not_all_isAtomic con
 
 theorem not_ex_isQF (φ : L.BoundedFormula α (n + 1)) : ¬φ.ex.IsQF := fun con => by
-  cases' con with _ con _ _ con
+  obtain - | con | con := con
   · exact φ.not_ex_isAtomic con
   · exact not_all_isQF _ con
 
@@ -145,7 +145,6 @@ theorem IsPrenex.liftAt {k m : ℕ} (h : IsPrenex φ) : (φ.liftAt k m).IsPrenex
   IsPrenex.recOn h (fun ih => ih.liftAt.isPrenex) (fun _ ih => ih.castLE.all)
     fun _ ih => ih.castLE.ex
 
--- Porting note: universes in different order
 /-- An auxiliary operation to `FirstOrder.Language.BoundedFormula.toPrenex`.
   If `φ` is quantifier-free and `ψ` is in prenex normal form, then `φ.toPrenexImpRight ψ`
   is a prenex normal form for `φ.imp ψ`. -/
@@ -171,7 +170,6 @@ theorem isPrenex_toPrenexImpRight {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ
   | all _ ih1 => exact (ih1 hφ.liftAt).all
   | ex _ ih2 => exact (ih2 hφ.liftAt).ex
 
--- Porting note: universes in different order
 /-- An auxiliary operation to `FirstOrder.Language.BoundedFormula.toPrenex`.
   If `φ` and `ψ` are in prenex normal form, then `φ.toPrenexImp ψ`
   is a prenex normal form for `φ.imp ψ`. -/
@@ -197,7 +195,6 @@ theorem isPrenex_toPrenexImp {φ ψ : L.BoundedFormula α n} (hφ : IsPrenex φ)
   | all _ ih1 => exact (ih1 hψ.liftAt).ex
   | ex _ ih2 => exact (ih2 hψ.liftAt).all
 
--- Porting note: universes in different order
 /-- For any bounded formula `φ`, `φ.toPrenex` is a semantically-equivalent formula in prenex normal
   form. -/
 def toPrenex : ∀ {n}, L.BoundedFormula α n → L.BoundedFormula α n
@@ -251,14 +248,7 @@ theorem realize_toPrenexImp {φ ψ : L.BoundedFormula α n} (hφ : IsPrenex φ) 
     rw [realize_ex]
     refine _root_.trans (exists_congr fun _ => ih hψ.liftAt) ?_
     simp only [realize_imp, realize_liftAt_one_self, snoc_comp_castSucc, realize_all]
-    refine ⟨?_, fun h' => ?_⟩
-    · rintro ⟨a, ha⟩ h
-      exact ha (h a)
-    · by_cases h : ψ.Realize v xs
-      · inhabit M
-        exact ⟨default, fun _h'' => h⟩
-      · obtain ⟨a, ha⟩ := not_forall.1 (h ∘ h')
-        exact ⟨a, fun h => (ha h).elim⟩
+    exact Iff.symm forall_imp_iff_exists_imp
   | ex _ ih =>
     intro ψ hψ
     refine _root_.trans (forall_congr' fun _ => ih hψ.liftAt) ?_

@@ -11,7 +11,7 @@ import Mathlib.Geometry.Manifold.VectorBundle.Basic
 
 In this file, we prove various properties of unique derivative sets in manifolds.
 * `image_denseRange`: suppose `f` is differentiable on `s` and its derivative at every point of `s`
-has dense range. If `s` has the unique differential property, then so does `f '' s`.
+  has dense range. If `s` has the unique differential property, then so does `f '' s`.
 * `uniqueMDiffOn_preimage`: the unique differential property is preserved by local diffeomorphisms
 * `uniqueDiffOn_target_inter`: the unique differential property is preserved by
   pullbacks of extended charts
@@ -82,7 +82,7 @@ theorem UniqueMDiffOn.uniqueMDiffOn_preimage (hs : UniqueMDiffOn I s) {e : Parti
     (he : e.MDifferentiable I I') : UniqueMDiffOn I' (e.target ∩ e.symm ⁻¹' s) := fun _x hx ↦
   e.right_inv hx.1 ▸ (hs _ hx.2).preimage_partialHomeomorph he (e.map_target hx.1)
 
-variable [IsManifold I 1 M]  in
+variable [IsManifold I 1 M] in
 /-- If a set in a manifold has the unique derivative property, then its pullback by any extended
 chart, in the vector space, also has the unique derivative property. -/
 theorem UniqueMDiffOn.uniqueMDiffOn_target_inter (hs : UniqueMDiffOn I s) (x : M) :
@@ -145,7 +145,7 @@ private lemma UniqueMDiffWithinAt.bundle_preimage_aux {p : TotalSpace F Z}
   rcases p with ⟨x, v⟩
   dsimp
   rintro ⟨z, w⟩ ⟨hz, -⟩
-  simp only [ModelWithCorners.target_eq, mem_inter_iff, mem_preimage, Function.comp_apply,
+  simp only [mem_inter_iff, mem_preimage, Function.comp_apply,
     mem_range] at hz
   simp only [FiberBundle.chartedSpace_chartAt, PartialHomeomorph.coe_trans_symm, mem_inter_iff,
     mem_preimage, Function.comp_apply, mem_range]
@@ -194,7 +194,7 @@ theorem UniqueMDiffOn.bundle_preimage (hs : UniqueMDiffOn I s) :
 @[deprecated (since := "2024-12-02")]
 alias UniqueMDiffOn.smooth_bundle_preimage := UniqueMDiffOn.bundle_preimage
 
-/- TODO: move me to `Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable` once #19636 is in. -/
+-- TODO: move me to `Mathlib/Geometry/Manifold/VectorBundle/MDifferentiable.lean`
 variable [∀ b, AddCommMonoid (Z b)] [∀ b, Module 𝕜 (Z b)] [VectorBundle 𝕜 F Z]
 
 theorem Trivialization.mdifferentiable [ContMDiffVectorBundle 1 F Z I]

@@ -3,9 +3,10 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.LinearAlgebra.Basis.Cardinality
-import Mathlib.LinearAlgebra.Dual
 import Mathlib.Data.Fin.FlagRange
+import Mathlib.LinearAlgebra.Basis.Basic
+import Mathlib.LinearAlgebra.Dual.Basis
+import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
 # Flag of submodules defined by a basis
@@ -34,7 +35,7 @@ theorem flag_zero (b : Basis (Fin n) R M) : b.flag 0 = ⊥ := by simp [flag]
 
 @[simp]
 theorem flag_last (b : Basis (Fin n) R M) : b.flag (.last n) = ⊤ := by
-  simp [flag, Fin.castSucc_lt_last]
+  simp [flag]
 
 theorem flag_le_iff (b : Basis (Fin n) R M) {k p} :
     b.flag k ≤ p ↔ ∀ i : Fin n, i.castSucc < k → b i ∈ p :=

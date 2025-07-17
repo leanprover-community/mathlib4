@@ -108,7 +108,7 @@ fixed object.
 def wideCospan (B : C) (objs : J → C) (arrows : ∀ j : J, objs j ⟶ B) : WidePullbackShape J ⥤ C where
   obj j := Option.casesOn j B objs
   map f := by
-    cases' f with _ j
+    obtain - | j := f
     · apply 𝟙 _
     · exact arrows j
 
@@ -128,7 +128,7 @@ def mkCone {F : WidePullbackShape J ⥤ C} {X : C} (f : X ⟶ F.obj none) (π : 
           | none => f
           | some j => π j
         naturality := fun j j' f => by
-          cases j <;> cases j' <;> cases f <;> dsimp <;> simp [w] } }
+          cases j <;> cases j' <;> cases f <;> simp [w] } }
 
 /-- Wide pullback diagrams of equivalent index types are equivalent. -/
 def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') :
@@ -206,14 +206,14 @@ fixed object.
 def wideSpan (B : C) (objs : J → C) (arrows : ∀ j : J, B ⟶ objs j) : WidePushoutShape J ⥤ C where
   obj j := Option.casesOn j B objs
   map f := by
-    cases' f with _ j
+    obtain - | j := f
     · apply 𝟙 _
     · exact arrows j
   map_comp := fun f g => by
     cases f
-    · simp only [Eq.ndrec, hom_id, eq_rec_constant, Category.id_comp]; congr
+    · simp only [hom_id, Category.id_comp]; congr
     · cases g
-      simp only [Eq.ndrec, hom_id, eq_rec_constant, Category.comp_id]; congr
+      simp only [hom_id, Category.comp_id]; congr
 
 /-- Every diagram is naturally isomorphic (actually, equal) to a `wideSpan` -/
 def diagramIsoWideSpan (F : WidePushoutShape J ⥤ C) :
@@ -231,7 +231,7 @@ def mkCocone {F : WidePushoutShape J ⥤ C} {X : C} (f : F.obj none ⟶ X) (ι :
           | none => f
           | some j => ι j
         naturality := fun j j' f => by
-          cases j <;> cases j' <;> cases f <;> dsimp <;> simp [w] } }
+          cases j <;> cases j' <;> cases f <;> simp [w] } }
 
 /-- Wide pushout diagrams of equivalent index types are equivalent. -/
 def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') : WidePushoutShape J ≌ WidePushoutShape J' where
@@ -296,14 +296,12 @@ noncomputable abbrev base : widePullback _ _ arrows ⟶ B :=
 theorem π_arrow (j : J) : π arrows j ≫ arrows _ = base arrows := by
   apply limit.w (WidePullbackShape.wideCospan _ _ _) (WidePullbackShape.Hom.term j)
 
-variable {arrows}
-
+variable {arrows} in
 /-- Lift a collection of morphisms to a morphism to the pullback. -/
 noncomputable abbrev lift {X : C} (f : X ⟶ B) (fs : ∀ j : J, X ⟶ objs j)
     (w : ∀ j, fs j ≫ arrows j = f) : X ⟶ widePullback _ _ arrows :=
   limit.lift (WidePullbackShape.wideCospan _ _ _) (WidePullbackShape.mkCone f fs <| w)
 
-variable (arrows)
 variable {X : C} (f : X ⟶ B) (fs : ∀ j : J, X ⟶ objs j) (w : ∀ j, fs j ≫ arrows j = f)
 
 @[reassoc]
@@ -358,14 +356,12 @@ noncomputable abbrev head : B ⟶ widePushout B objs arrows :=
 theorem arrow_ι (j : J) : arrows j ≫ ι arrows j = head arrows := by
   apply colimit.w (WidePushoutShape.wideSpan _ _ _) (WidePushoutShape.Hom.init j)
 
-variable {arrows}
-
+variable {arrows} in
 /-- Descend a collection of morphisms to a morphism from the pushout. -/
 noncomputable abbrev desc {X : C} (f : B ⟶ X) (fs : ∀ j : J, objs j ⟶ X)
     (w : ∀ j, arrows j ≫ fs j = f) : widePushout _ _ arrows ⟶ X :=
   colimit.desc (WidePushoutShape.wideSpan B objs arrows) (WidePushoutShape.mkCocone f fs <| w)
 
-variable (arrows)
 variable {X : C} (f : B ⟶ X) (fs : ∀ j : J, objs j ⟶ X) (w : ∀ j, arrows j ≫ fs j = f)
 
 @[reassoc]
@@ -409,7 +405,7 @@ end WidePushout
 variable (J)
 
 /-- The action on morphisms of the obvious functor
-  `WidePullbackShape_op : WidePullbackShape J ⥤ (WidePushoutShape J)ᵒᵖ`-/
+  `WidePullbackShape_op : WidePullbackShape J ⥤ (WidePushoutShape J)ᵒᵖ` -/
 def widePullbackShapeOpMap :
     ∀ X Y : WidePullbackShape J,
       (X ⟶ Y) → ((op X : (WidePushoutShape J)ᵒᵖ) ⟶ (op Y : (WidePushoutShape J)ᵒᵖ))
@@ -436,7 +432,7 @@ def widePushoutShapeOp : WidePushoutShape J ⥤ (WidePullbackShape J)ᵒᵖ wher
   obj X := op X
   map := fun {X} {Y} => widePushoutShapeOpMap J X Y
 
-/-- The obvious functor `(WidePullbackShape J)ᵒᵖ ⥤ WidePushoutShape J`-/
+/-- The obvious functor `(WidePullbackShape J)ᵒᵖ ⥤ WidePushoutShape J` -/
 @[simps!]
 def widePullbackShapeUnop : (WidePullbackShape J)ᵒᵖ ⥤ WidePushoutShape J :=
   (widePullbackShapeOp J).leftOp

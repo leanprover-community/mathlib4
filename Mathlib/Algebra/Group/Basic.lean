@@ -5,9 +5,8 @@ Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
 import Aesop
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Data.Nat.Defs
-import Mathlib.Data.Int.Defs
-import Mathlib.Logic.Function.Basic
+import Mathlib.Data.Int.Init
+import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.SplitIfs
 
@@ -48,40 +47,6 @@ set_option linter.existingAttributeWarning false in
 attribute [to_additive (attr := simp)] dite_smul smul_dite ite_smul smul_ite
 
 end ite
-
-section IsLeftCancelMul
-
-variable [Mul G] [IsLeftCancelMul G]
-
-@[to_additive]
-theorem mul_right_injective (a : G) : Injective (a * ·) := fun _ _ ↦ mul_left_cancel
-
-@[to_additive (attr := simp)]
-theorem mul_right_inj (a : G) {b c : G} : a * b = a * c ↔ b = c :=
-  (mul_right_injective a).eq_iff
-
-@[to_additive]
-theorem mul_ne_mul_right (a : G) {b c : G} : a * b ≠ a * c ↔ b ≠ c :=
-  (mul_right_injective a).ne_iff
-
-end IsLeftCancelMul
-
-section IsRightCancelMul
-
-variable [Mul G] [IsRightCancelMul G]
-
-@[to_additive]
-theorem mul_left_injective (a : G) : Function.Injective (· * a) := fun _ _ ↦ mul_right_cancel
-
-@[to_additive (attr := simp)]
-theorem mul_left_inj (a : G) {b c : G} : b * a = c * a ↔ b = c :=
-  (mul_left_injective a).eq_iff
-
-@[to_additive]
-theorem mul_ne_mul_left (a : G) {b c : G} : b * a ≠ c * a ↔ b ≠ c :=
-  (mul_left_injective a).ne_iff
-
-end IsRightCancelMul
 
 section Semigroup
 variable [Semigroup α]
@@ -206,6 +171,27 @@ lemma pow_eq_pow_mod (m : ℕ) (ha : a ^ n = 1) : a ^ m = a ^ (m % n) := by
       _ = a ^ n * (a * b) * b ^ n := by simp only [mul_assoc]
       _ = 1 := by simp [h, pow_mul_pow_eq_one]
 
+@[to_additive (attr := simp)]
+lemma mul_left_iterate (a : M) : ∀ n : ℕ, (a * ·)^[n] = (a ^ n * ·)
+  | 0 => by ext; simp
+  | n + 1 => by ext; simp [pow_succ, mul_left_iterate]
+
+@[to_additive (attr := simp)]
+lemma mul_right_iterate (a : M) : ∀ n : ℕ, (· * a)^[n] = (· * a ^ n)
+  | 0 => by ext; simp
+  | n + 1 => by ext; simp [pow_succ', mul_right_iterate]
+
+@[to_additive]
+lemma mul_left_iterate_apply_one (a : M) : (a * ·)^[n] 1 = a ^ n := by simp
+
+@[to_additive]
+lemma mul_right_iterate_apply_one (a : M) : (· * a)^[n] 1 = a ^ n := by simp [mul_right_iterate]
+
+@[to_additive (attr := simp)]
+lemma pow_iterate (k : ℕ) : ∀ n : ℕ, (fun x : M ↦ x ^ k)^[n] = (· ^ k ^ n)
+  | 0 => by ext; simp
+  | n + 1 => by ext; simp [pow_iterate, Nat.pow_succ', pow_mul]
+
 end Monoid
 
 section CommMonoid
@@ -223,22 +209,46 @@ end CommMonoid
 
 section LeftCancelMonoid
 
-variable [LeftCancelMonoid M] {a b : M}
+variable [Monoid M] [IsLeftCancelMul M] {a b : M}
 
 @[to_additive (attr := simp)]
-theorem mul_right_eq_self : a * b = a ↔ b = 1 := calc
+theorem mul_eq_left : a * b = a ↔ b = 1 := calc
   a * b = a ↔ a * b = a * 1 := by rw [mul_one]
   _ ↔ b = 1 := mul_left_cancel_iff
 
+@[deprecated (since := "2025-03-05")] alias mul_right_eq_self := mul_eq_left
+@[deprecated (since := "2025-03-05")] alias add_right_eq_self := add_eq_left
+
+set_option linter.existingAttributeWarning false in
+attribute [to_additive existing] mul_right_eq_self
+
 @[to_additive (attr := simp)]
-theorem self_eq_mul_right : a = a * b ↔ b = 1 :=
-  eq_comm.trans mul_right_eq_self
+theorem left_eq_mul : a = a * b ↔ b = 1 :=
+  eq_comm.trans mul_eq_left
+
+@[deprecated (since := "2025-03-05")] alias self_eq_mul_right := left_eq_mul
+@[deprecated (since := "2025-03-05")] alias self_eq_add_right := left_eq_add
+
+set_option linter.existingAttributeWarning false in
+attribute [to_additive existing] self_eq_mul_right
 
 @[to_additive]
-theorem mul_right_ne_self : a * b ≠ a ↔ b ≠ 1 := mul_right_eq_self.not
+theorem mul_ne_left : a * b ≠ a ↔ b ≠ 1 := mul_eq_left.not
+
+@[deprecated (since := "2025-03-05")] alias mul_right_ne_self := mul_ne_left
+@[deprecated (since := "2025-03-05")] alias add_right_ne_self := add_ne_left
+
+set_option linter.existingAttributeWarning false in
+attribute [to_additive existing] mul_right_ne_self
 
 @[to_additive]
-theorem self_ne_mul_right : a ≠ a * b ↔ b ≠ 1 := self_eq_mul_right.not
+theorem left_ne_mul : a ≠ a * b ↔ b ≠ 1 := left_eq_mul.not
+
+@[deprecated (since := "2025-03-05")] alias self_ne_mul_right := left_ne_mul
+@[deprecated (since := "2025-03-05")] alias self_ne_add_right := left_ne_add
+
+set_option linter.existingAttributeWarning false in
+attribute [to_additive existing] self_ne_mul_right
 
 end LeftCancelMonoid
 
@@ -247,19 +257,43 @@ section RightCancelMonoid
 variable [RightCancelMonoid M] {a b : M}
 
 @[to_additive (attr := simp)]
-theorem mul_left_eq_self : a * b = b ↔ a = 1 := calc
+theorem mul_eq_right : a * b = b ↔ a = 1 := calc
   a * b = b ↔ a * b = 1 * b := by rw [one_mul]
   _ ↔ a = 1 := mul_right_cancel_iff
 
+@[deprecated (since := "2025-03-05")] alias mul_left_eq_self := mul_eq_right
+@[deprecated (since := "2025-03-05")] alias add_left_eq_self := add_eq_right
+
+set_option linter.existingAttributeWarning false in
+attribute [to_additive existing] mul_left_eq_self
+
 @[to_additive (attr := simp)]
-theorem self_eq_mul_left : b = a * b ↔ a = 1 :=
-  eq_comm.trans mul_left_eq_self
+theorem right_eq_mul : b = a * b ↔ a = 1 :=
+  eq_comm.trans mul_eq_right
+
+@[deprecated (since := "2025-03-05")] alias self_eq_mul_left := right_eq_mul
+@[deprecated (since := "2025-03-05")] alias self_eq_add_left := right_eq_add
+
+set_option linter.existingAttributeWarning false in
+attribute [to_additive existing] self_eq_mul_left
 
 @[to_additive]
-theorem mul_left_ne_self : a * b ≠ b ↔ a ≠ 1 := mul_left_eq_self.not
+theorem mul_ne_right : a * b ≠ b ↔ a ≠ 1 := mul_eq_right.not
+
+@[deprecated (since := "2025-03-05")] alias mul_left_ne_self := mul_ne_right
+@[deprecated (since := "2025-03-05")] alias add_left_ne_self := add_ne_right
+
+set_option linter.existingAttributeWarning false in
+attribute [to_additive existing] mul_left_ne_self
 
 @[to_additive]
-theorem self_ne_mul_left : b ≠ a * b ↔ a ≠ 1 := self_eq_mul_left.not
+theorem right_ne_mul : b ≠ a * b ↔ a ≠ 1 := right_eq_mul.not
+
+@[deprecated (since := "2025-03-05")] alias self_ne_mul_left := right_ne_mul
+@[deprecated (since := "2025-03-05")] alias self_ne_add_left := right_ne_add
+
+set_option linter.existingAttributeWarning false in
+attribute [to_additive existing] self_ne_mul_left
 
 end RightCancelMonoid
 
@@ -315,24 +349,13 @@ section DivInvMonoid
 
 variable [DivInvMonoid G]
 
-@[to_additive, field_simps] -- The attributes are out of order on purpose
-theorem inv_eq_one_div (x : G) : x⁻¹ = 1 / x := by rw [div_eq_mul_inv, one_mul]
-
 @[to_additive]
 theorem mul_one_div (x y : G) : x * (1 / y) = x / y := by
   rw [div_eq_mul_inv, one_mul, div_eq_mul_inv]
 
-@[to_additive]
-theorem mul_div_assoc (a b c : G) : a * b / c = a * (b / c) := by
-  rw [div_eq_mul_inv, div_eq_mul_inv, mul_assoc _ _ _]
-
 @[to_additive, field_simps] -- The attributes are out of order on purpose
 theorem mul_div_assoc' (a b c : G) : a * (b / c) = a * b / c :=
   (mul_div_assoc _ _ _).symm
-
-@[to_additive (attr := simp)]
-theorem one_div (a : G) : 1 / a = a⁻¹ :=
-  (inv_eq_one_div a).symm
 
 @[to_additive]
 theorem mul_div (a b c : G) : a * (b / c) = a * b / c := by simp only [mul_assoc, div_eq_mul_inv]
@@ -421,15 +444,13 @@ lemma inv_pow (a : α) : ∀ n : ℕ, a⁻¹ ^ n = (a ^ n)⁻¹
 -- the attributes are intentionally out of order. `smul_zero` proves `zsmul_zero`.
 @[to_additive zsmul_zero, simp]
 lemma one_zpow : ∀ n : ℤ, (1 : α) ^ n = 1
-  | (n : ℕ)    => by rw [zpow_natCast, one_pow]
+  | (n : ℕ) => by rw [zpow_natCast, one_pow]
   | .negSucc n => by rw [zpow_negSucc, one_pow, inv_one]
 
 @[to_additive (attr := simp) neg_zsmul]
 lemma zpow_neg (a : α) : ∀ n : ℤ, a ^ (-n) = (a ^ n)⁻¹
   | (_ + 1 : ℕ) => DivInvMonoid.zpow_neg' _ _
-  | 0 => by
-    change a ^ (0 : ℤ) = (a ^ (0 : ℤ))⁻¹
-    simp
+  | 0 => by simp
   | Int.negSucc n => by
     rw [zpow_negSucc, inv_inv, ← zpow_natCast]
     rfl
@@ -440,7 +461,7 @@ lemma mul_zpow_neg_one (a b : α) : (a * b) ^ (-1 : ℤ) = b ^ (-1 : ℤ) * a ^ 
 
 @[to_additive zsmul_neg]
 lemma inv_zpow (a : α) : ∀ n : ℤ, a⁻¹ ^ n = (a ^ n)⁻¹
-  | (n : ℕ)    => by rw [zpow_natCast, zpow_natCast, inv_pow]
+  | (n : ℕ) => by rw [zpow_natCast, zpow_natCast, inv_pow]
   | .negSucc n => by rw [zpow_negSucc, zpow_negSucc, inv_pow]
 
 @[to_additive (attr := simp) zsmul_neg']
@@ -490,6 +511,9 @@ theorem eq_of_one_div_eq_one_div (h : 1 / a = 1 / b) : a = b := by
 
 @[to_additive mul_zsmul]
 lemma zpow_mul' (a : α) (m n : ℤ) : a ^ (m * n) = (a ^ n) ^ m := by rw [Int.mul_comm, zpow_mul]
+
+@[to_additive]
+theorem zpow_comm (a : α) (m n : ℤ) : (a ^ m) ^ n = (a ^ n) ^ m := by rw [← zpow_mul, zpow_mul']
 
 variable (a b c)
 
@@ -603,7 +627,7 @@ section Group
 variable [Group G] {a b c d : G} {n : ℤ}
 
 @[to_additive (attr := simp)]
-theorem div_eq_inv_self : a / b = b⁻¹ ↔ a = 1 := by rw [div_eq_mul_inv, mul_left_eq_self]
+theorem div_eq_inv_self : a / b = b⁻¹ ↔ a = 1 := by rw [div_eq_mul_inv, mul_eq_right]
 
 @[to_additive]
 theorem mul_left_surjective (a : G) : Surjective (a * ·) :=
@@ -687,7 +711,7 @@ theorem inv_mul_eq_one : a⁻¹ * b = 1 ↔ a = b := by rw [mul_eq_one_iff_eq_in
 
 @[to_additive (attr := simp)]
 theorem conj_eq_one_iff : a * b * a⁻¹ = 1 ↔ b = 1 := by
-  rw [mul_inv_eq_one, mul_right_eq_self]
+  rw [mul_inv_eq_one, mul_eq_left]
 
 @[to_additive]
 theorem div_left_injective : Function.Injective fun a ↦ a / b := by
@@ -702,22 +726,11 @@ theorem div_right_injective : Function.Injective fun a ↦ b / a := by
   exact fun a a' h ↦ inv_injective (mul_right_injective b h)
 
 @[to_additive (attr := simp)]
-theorem div_mul_cancel (a b : G) : a / b * b = a := by
-  rw [div_eq_mul_inv, inv_mul_cancel_right a b]
-
-@[to_additive (attr := simp) sub_self]
-theorem div_self' (a : G) : a / a = 1 := by rw [div_eq_mul_inv, mul_inv_cancel a]
-
-@[to_additive (attr := simp)]
-theorem mul_div_cancel_right (a b : G) : a * b / b = a := by
-  rw [div_eq_mul_inv, mul_inv_cancel_right a b]
-
-@[to_additive (attr := simp)]
 lemma div_mul_cancel_right (a b : G) : a / (b * a) = b⁻¹ := by rw [← inv_div, mul_div_cancel_right]
 
 @[to_additive (attr := simp)]
 theorem mul_div_mul_right_eq_div (a b c : G) : a * c / (b * c) = a / b := by
-  rw [div_mul_eq_div_div_swap]; simp only [mul_left_inj, eq_self_iff_true, mul_div_cancel_right]
+  rw [div_mul_eq_div_div_swap]; simp only [mul_div_cancel_right]
 
 @[to_additive eq_sub_of_add_eq]
 theorem eq_div_of_mul_eq' (h : a * c = b) : a = b / c := by simp [← h]
@@ -748,8 +761,6 @@ theorem div_mul_div_cancel (a b c : G) : a / b * (b / c) = a / c := by
 theorem div_div_div_cancel_right (a b c : G) : a / c / (b / c) = a / b := by
   rw [← inv_div c b, div_inv_eq_mul, div_mul_div_cancel]
 
-@[deprecated (since := "2024-08-24")] alias div_div_div_cancel_right' := div_div_div_cancel_right
-
 @[to_additive]
 theorem div_eq_one : a / b = 1 ↔ a = b :=
   ⟨eq_of_div_eq_one, fun h ↦ by rw [h, div_self']⟩
@@ -763,7 +774,7 @@ theorem div_ne_one : a / b ≠ 1 ↔ a ≠ b :=
   not_congr div_eq_one
 
 @[to_additive (attr := simp)]
-theorem div_eq_self : a / b = a ↔ b = 1 := by rw [div_eq_mul_inv, mul_right_eq_self, inv_eq_one]
+theorem div_eq_self : a / b = a ↔ b = 1 := by rw [div_eq_mul_inv, mul_eq_left, inv_eq_one]
 
 @[to_additive eq_sub_iff_add_eq]
 theorem eq_div_iff_mul_eq' : a = b / c ↔ a * c = b := by rw [div_eq_mul_inv, eq_mul_inv_iff_mul_eq]
@@ -806,8 +817,8 @@ theorem inv_pow_sub (a : G) {m n : ℕ} (h : n ≤ m) : a⁻¹ ^ (m - n) = (a ^ 
 
 @[to_additive add_one_zsmul]
 lemma zpow_add_one (a : G) : ∀ n : ℤ, a ^ (n + 1) = a ^ n * a
-  | (n : ℕ) => by simp only [← Int.ofNat_succ, zpow_natCast, pow_succ]
-  | .negSucc 0 => by simp [Int.negSucc_eq', Int.add_left_neg]
+  | (n : ℕ) => by simp only [← Int.natCast_succ, zpow_natCast, pow_succ]
+  | -1 => by simp [Int.add_left_neg]
   | .negSucc (n + 1) => by
     rw [zpow_negSucc, pow_succ', mul_inv_rev, inv_mul_cancel_right]
     rw [Int.negSucc_eq, Int.neg_add, Int.neg_add_cancel_right]
@@ -821,10 +832,10 @@ lemma zpow_sub_one (a : G) (n : ℤ) : a ^ (n - 1) = a ^ n * a⁻¹ :=
 
 @[to_additive add_zsmul]
 lemma zpow_add (a : G) (m n : ℤ) : a ^ (m + n) = a ^ m * a ^ n := by
-  induction n using Int.induction_on with
-  | hz => simp
-  | hp n ihn => simp only [← Int.add_assoc, zpow_add_one, ihn, mul_assoc]
-  | hn n ihn => rw [zpow_sub_one, ← mul_assoc, ← ihn, ← zpow_sub_one, Int.add_sub_assoc]
+  induction n with
+  | zero => simp
+  | succ n ihn => simp only [← Int.add_assoc, zpow_add_one, ihn, mul_assoc]
+  | pred n ihn => rw [zpow_sub_one, ← mul_assoc, ← ihn, ← zpow_sub_one, Int.add_sub_assoc]
 
 @[to_additive one_add_zsmul]
 lemma zpow_one_add (a : G) (n : ℤ) : a ^ (1 + n) = a * a ^ n := by rw [zpow_add, zpow_one]
@@ -863,6 +874,11 @@ theorem zpow_eq_zpow_emod {x : G} (m : ℤ) {n : ℤ} (h : x ^ n = 1) :
 theorem zpow_eq_zpow_emod' {x : G} (m : ℤ) {n : ℕ} (h : x ^ n = 1) :
     x ^ m = x ^ (m % (n : ℤ)) := zpow_eq_zpow_emod m (by simpa)
 
+@[to_additive (attr := simp)]
+lemma zpow_iterate (k : ℤ) : ∀ n : ℕ, (fun x : G ↦ x ^ k)^[n] = (· ^ k ^ n)
+  | 0 => by ext; simp [Int.pow_zero]
+  | n + 1 => by ext; simp [zpow_iterate, Int.pow_succ', zpow_mul]
+
 /-- To show a property of all powers of `g` it suffices to show it is closed under multiplication
 by `g` and `g⁻¹` on the left. For subgroups generated by more than one element, see
 `Subgroup.closure_induction_left`. -/
@@ -871,12 +887,12 @@ addition by `g` and `-g` on the left. For additive subgroups generated by more t
 `AddSubgroup.closure_induction_left`."]
 lemma zpow_induction_left {g : G} {P : G → Prop} (h_one : P (1 : G))
     (h_mul : ∀ a, P a → P (g * a)) (h_inv : ∀ a, P a → P (g⁻¹ * a)) (n : ℤ) : P (g ^ n) := by
-  induction n using Int.induction_on with
-  | hz => rwa [zpow_zero]
-  | hp n ih =>
+  induction n with
+  | zero => rwa [zpow_zero]
+  | succ n ih =>
     rw [Int.add_comm, zpow_add, zpow_one]
     exact h_mul _ ih
-  | hn n ih =>
+  | pred n ih =>
     rw [Int.sub_eq_add_neg, Int.add_comm, zpow_add, zpow_neg_one]
     exact h_inv _ ih
 
@@ -888,12 +904,12 @@ addition by `g` and `-g` on the right. For additive subgroups generated by more 
 see `AddSubgroup.closure_induction_right`."]
 lemma zpow_induction_right {g : G} {P : G → Prop} (h_one : P (1 : G))
     (h_mul : ∀ a, P a → P (a * g)) (h_inv : ∀ a, P a → P (a * g⁻¹)) (n : ℤ) : P (g ^ n) := by
-  induction n using Int.induction_on with
-  | hz => rwa [zpow_zero]
-  | hp n ih =>
+  induction n with
+  | zero => rwa [zpow_zero]
+  | succ n ih =>
     rw [zpow_add_one]
     exact h_mul _ ih
-  | hn n ih =>
+  | pred n ih =>
     rw [zpow_sub_one]
     exact h_inv _ ih
 
@@ -972,8 +988,6 @@ theorem div_mul_mul_cancel (a b c : G) : a / c * (b * c) = a * b := by
 theorem div_mul_div_cancel' (a b c : G) : a / b * (c / a) = c / b := by
   rw [mul_comm]; apply div_mul_div_cancel
 
-@[deprecated (since := "2024-08-24")] alias div_mul_div_cancel'' := div_mul_div_cancel'
-
 @[to_additive (attr := simp)]
 theorem mul_div_div_cancel (a b c : G) : a * b / (a / c) = b * c := by
   rw [← div_mul, mul_div_cancel_left]
@@ -986,6 +1000,14 @@ theorem div_div_div_cancel_left (a b c : G) : c / a / (c / b) = b / a := by
 theorem div_eq_div_iff_mul_eq_mul : a / b = c / d ↔ a * d = c * b := by
   rw [div_eq_iff_eq_mul, div_mul_eq_mul_div, eq_comm, div_eq_iff_eq_mul']
   simp only [mul_comm, eq_comm]
+
+@[to_additive]
+theorem mul_inv_eq_mul_inv_iff_mul_eq_mul : a * b⁻¹ = c * d⁻¹ ↔ a * d = c * b := by
+  rw [← div_eq_mul_inv, ← div_eq_mul_inv, div_eq_div_iff_mul_eq_mul]
+
+@[to_additive]
+theorem inv_mul_eq_inv_mul_iff_mul_eq_mul : b⁻¹ * a = d⁻¹ * c ↔ a * d = c * b := by
+  rw [← div_eq_inv_mul, ← div_eq_inv_mul, div_eq_div_iff_mul_eq_mul]
 
 @[to_additive]
 theorem div_eq_div_iff_div_eq_div : a / b = c / d ↔ a / c = b / d := by
@@ -1032,5 +1054,45 @@ theorem multiplicative_of_isTotal (p : α → Prop) (hswap : ∀ {a b}, p a → 
 
 end multiplicative
 
--- The name `add_sub_cancel` was reused
--- @[deprecated (since := "2024-03-20")] alias add_sub_cancel := add_sub_cancel_right
+/-- An auxiliary lemma that can be used to prove `⇑(f ^ n) = ⇑f^[n]`. -/
+@[to_additive]
+lemma hom_coe_pow {F : Type*} [Monoid F] (c : F → M → M) (h1 : c 1 = id)
+    (hmul : ∀ f g, c (f * g) = c f ∘ c g) (f : F) : ∀ n, c (f ^ n) = (c f)^[n]
+  | 0 => by
+    rw [pow_zero, h1]
+    rfl
+  | n + 1 => by rw [pow_succ, iterate_succ, hmul, hom_coe_pow c h1 hmul f n]
+
+/-!
+# Instances for `grind`.
+-/
+
+open Lean
+
+variable (α : Type*)
+
+instance AddCommMonoid.toGrindNatModule [s : AddCommMonoid α] :
+    Grind.NatModule α :=
+  { s with
+    nsmul := ⟨s.nsmul⟩
+    zero_nsmul := AddMonoid.nsmul_zero
+    one_nsmul := one_nsmul
+    add_nsmul n m a := add_nsmul a n m
+    nsmul_zero := nsmul_zero
+    nsmul_add n a b := nsmul_add a b n }
+
+instance AddCommGroup.toGrindIntModule [s : AddCommGroup α] :
+    Grind.IntModule α :=
+  { s with
+    nsmul := ⟨s.nsmul⟩
+    zsmul := ⟨s.zsmul⟩
+    zero_zsmul := SubNegMonoid.zsmul_zero'
+    one_zsmul := one_zsmul
+    add_zsmul n m a := add_zsmul a n m
+    zsmul_zero := zsmul_zero
+    zsmul_add n a b := zsmul_add a b n
+    zsmul_natCast_eq_nsmul n a := by simp }
+
+instance IsRightCancelAdd.toGrindAddRightCancel [AddSemigroup α] [IsRightCancelAdd α] :
+    Grind.AddRightCancel α where
+  add_right_cancel _ _ _ := add_right_cancel

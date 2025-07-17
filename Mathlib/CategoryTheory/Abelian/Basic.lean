@@ -144,7 +144,7 @@ theorem imageMonoFactorisation_e' {X Y : C} (f : X ⟶ Y) :
     (imageMonoFactorisation f).e = cokernel.π _ ≫ Abelian.coimageImageComparison f := by
   dsimp
   ext
-  simp only [Abelian.coimageImageComparison, imageMonoFactorisation_e, Category.assoc,
+  simp only [Abelian.coimageImageComparison, Category.assoc,
     cokernel.π_desc_assoc]
 
 /-- If the coimage-image comparison morphism for a morphism `f` is an isomorphism,
@@ -242,11 +242,9 @@ attribute [local instance] OfCoimageImageComparisonIsIso.isNormalEpiCategory
 
 /-- A preadditive category with kernels, cokernels, and finite products,
 in which the coimage-image comparison morphism is always an isomorphism,
-is an abelian category.
-
-The Stacks project uses this characterisation at the definition of an abelian category.
-See <https://stacks.math.columbia.edu/tag/0109>.
--/
+is an abelian category. -/
+@[stacks 0109
+"The Stacks project uses this characterisation at the definition of an abelian category."]
 def ofCoimageImageComparisonIsIso : Abelian C where
 
 end CategoryTheory.Abelian
@@ -260,6 +258,7 @@ variable {C : Type u} [Category.{v} C] [Abelian C]
 -- but triggers https://github.com/leanprover/lean4/issues/2055
 -- We set it as a local instance instead.
 -- instance (priority := 100)
+-- Turning it into a global instance breaks `Mathlib/Algebra/Category/ModuleCat/Sheaf/Free.lean`.
 /-- An abelian category has finite biproducts. -/
 theorem hasFiniteBiproducts : HasFiniteBiproducts C :=
   Limits.HasFiniteBiproducts.of_hasFiniteProducts

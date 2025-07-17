@@ -3,7 +3,7 @@ Copyright (c) 2024 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # Unions and intersections of bounds
@@ -12,7 +12,7 @@ Some results about upper and lower bounds over collections of sets.
 
 ## Implementation notes
 
-In a separate file as we need to import `Mathlib.Data.Set.Lattice`.
+In a separate file as we need to import `Mathlib/Data/Set/Lattice.lean`.
 
 -/
 

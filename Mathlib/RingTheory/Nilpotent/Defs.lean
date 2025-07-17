@@ -12,8 +12,8 @@ import Mathlib.Data.Nat.Lattice
 # Definition of nilpotent elements
 
 This file defines the notion of a nilpotent element and proves the immediate consequences.
-For results that require further theory, see `Mathlib.RingTheory.Nilpotent.Basic`
-and `Mathlib.RingTheory.Nilpotent.Lemmas`.
+For results that require further theory, see `Mathlib/RingTheory/Nilpotent/Basic.lean`
+and `Mathlib/RingTheory/Nilpotent/Lemmas.lean`.
 
 ## Main definitions
 
@@ -52,26 +52,26 @@ theorem not_isNilpotent_one [MonoidWithZero R] [Nontrivial R] :
 
 lemma IsNilpotent.pow_succ (n : ℕ) {S : Type*} [MonoidWithZero S] {x : S}
     (hx : IsNilpotent x) : IsNilpotent (x ^ n.succ) := by
-  obtain ⟨N,hN⟩ := hx
+  obtain ⟨N, hN⟩ := hx
   use N
   rw [← pow_mul, Nat.succ_mul, pow_add, hN, mul_zero]
 
-theorem  IsNilpotent.of_pow [MonoidWithZero R] {x : R} {m : ℕ}
+theorem IsNilpotent.of_pow [MonoidWithZero R] {x : R} {m : ℕ}
     (h : IsNilpotent (x ^ m)) : IsNilpotent x := by
   obtain ⟨n, h⟩ := h
-  use m*n
+  use m * n
   rw [← h, pow_mul x m n]
 
 lemma IsNilpotent.pow_of_pos {n} {S : Type*} [MonoidWithZero S] {x : S}
     (hx : IsNilpotent x) (hn : n ≠ 0) : IsNilpotent (x ^ n) := by
   cases n with
   | zero => contradiction
-  | succ => exact  IsNilpotent.pow_succ _ hx
+  | succ => exact IsNilpotent.pow_succ _ hx
 
 @[simp]
-lemma IsNilpotent.pow_iff_pos {n} {S : Type*} [MonoidWithZero S] {x : S}
-    (hn : n ≠ 0) : IsNilpotent (x ^ n) ↔ IsNilpotent x :=
- ⟨fun h => of_pow h, fun h => pow_of_pos h hn⟩
+lemma IsNilpotent.pow_iff_pos {n} {S : Type*} [MonoidWithZero S] {x : S} (hn : n ≠ 0) :
+    IsNilpotent (x ^ n) ↔ IsNilpotent x :=
+  ⟨of_pow, (pow_of_pos · hn)⟩
 
 theorem IsNilpotent.map [MonoidWithZero R] [MonoidWithZero S] {r : R} {F : Type*}
     [FunLike F R S] [MonoidWithZeroHomClass F R S] (hr : IsNilpotent r) (f : F) :
@@ -225,7 +225,7 @@ instance (ι) (R : ι → Type*) [∀ i, Zero (R i)] [∀ i, Pow (R i) ℕ]
 def IsRadical [Dvd R] [Pow R ℕ] (y : R) : Prop :=
   ∀ (n : ℕ) (x), y ∣ x ^ n → y ∣ x
 
-theorem isRadical_iff_pow_one_lt [MonoidWithZero R] (k : ℕ) (hk : 1 < k) :
+theorem isRadical_iff_pow_one_lt [Monoid R] (k : ℕ) (hk : 1 < k) :
     IsRadical y ↔ ∀ x, y ∣ x ^ k → y ∣ x :=
   ⟨(· k), k.pow_imp_self_of_one_lt hk _ fun _ _ h ↦ .inl (dvd_mul_of_dvd_left h _)⟩
 

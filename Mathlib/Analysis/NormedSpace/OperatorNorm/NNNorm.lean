@@ -118,7 +118,7 @@ variable [RingHomIsometric σ₁₂]
 theorem exists_mul_lt_apply_of_lt_opNNNorm (f : E →SL[σ₁₂] F) {r : ℝ≥0} (hr : r < ‖f‖₊) :
     ∃ x, r * ‖x‖₊ < ‖f x‖₊ := by
   simpa only [not_forall, not_le, Set.mem_setOf] using
-    not_mem_of_lt_csInf (nnnorm_def f ▸ hr : r < sInf { c : ℝ≥0 | ∀ x, ‖f x‖₊ ≤ c * ‖x‖₊ })
+    notMem_of_lt_csInf (nnnorm_def f ▸ hr : r < sInf { c : ℝ≥0 | ∀ x, ‖f x‖₊ ≤ c * ‖x‖₊ })
       (OrderBot.bddBelow _)
 
 theorem exists_mul_lt_of_lt_opNorm (f : E →SL[σ₁₂] F) {r : ℝ} (hr₀ : 0 ≤ r) (hr : r < ‖f‖) :
@@ -133,7 +133,7 @@ theorem exists_lt_apply_of_lt_opNNNorm {𝕜 𝕜₂ E F : Type*} [NormedAddComm
   obtain ⟨y, hy⟩ := f.exists_mul_lt_apply_of_lt_opNNNorm hr
   have hy' : ‖y‖₊ ≠ 0 :=
     nnnorm_ne_zero_iff.2 fun heq => by
-      simp [heq, nnnorm_zero, map_zero, not_lt_zero'] at hy
+      simp [heq, nnnorm_zero, map_zero] at hy
   have hfy : ‖f y‖₊ ≠ 0 := (zero_le'.trans_lt hy).ne'
   rw [← inv_inv ‖f y‖₊, NNReal.lt_inv_iff_mul_lt (inv_ne_zero hfy), mul_assoc, mul_comm ‖y‖₊, ←
     mul_assoc, ← NNReal.lt_inv_iff_mul_lt hy'] at hy

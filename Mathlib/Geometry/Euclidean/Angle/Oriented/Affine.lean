@@ -45,11 +45,8 @@ def oangle (p₁ p₂ p₃ : P) : Real.Angle :=
 /-- Oriented angles are continuous when neither end point equals the middle point. -/
 theorem continuousAt_oangle {x : P × P × P} (hx12 : x.1 ≠ x.2.1) (hx32 : x.2.2 ≠ x.2.1) :
     ContinuousAt (fun y : P × P × P => ∡ y.1 y.2.1 y.2.2) x := by
-  let f : P × P × P → V × V := fun y => (y.1 -ᵥ y.2.1, y.2.2 -ᵥ y.2.1)
-  have hf1 : (f x).1 ≠ 0 := by simp [f, hx12]
-  have hf2 : (f x).2 ≠ 0 := by simp [f, hx32]
-  exact (o.continuousAt_oangle hf1 hf2).comp ((continuous_fst.vsub continuous_snd.fst).prod_mk
-    (continuous_snd.snd.vsub continuous_snd.fst)).continuousAt
+  unfold oangle
+  fun_prop (disch := simp [*])
 
 /-- The angle ∡AAB at a point. -/
 @[simp]
@@ -264,10 +261,9 @@ theorem oangle_sub_right {p p₁ p₂ p₃ : P} (hp₁ : p₁ ≠ p) (hp₂ : p�
 
 /-- Given three points not equal to `p`, adding the angles between them at `p` in cyclic order
 results in 0. -/
-@[simp]
 theorem oangle_add_cyc3 {p p₁ p₂ p₃ : P} (hp₁ : p₁ ≠ p) (hp₂ : p₂ ≠ p) (hp₃ : p₃ ≠ p) :
-    ∡ p₁ p p₂ + ∡ p₂ p p₃ + ∡ p₃ p p₁ = 0 :=
-  o.oangle_add_cyc3 (vsub_ne_zero.2 hp₁) (vsub_ne_zero.2 hp₂) (vsub_ne_zero.2 hp₃)
+    ∡ p₁ p p₂ + ∡ p₂ p p₃ + ∡ p₃ p p₁ = 0 := by
+  simp [*]
 
 /-- Pons asinorum, oriented angle-at-point form. -/
 theorem oangle_eq_oangle_of_dist_eq {p₁ p₂ p₃ : P} (h : dist p₁ p₂ = dist p₁ p₃) :
@@ -616,9 +612,7 @@ theorem _root_.Collinear.oangle_sign_of_sameRay_vsub {p₁ p₂ p₃ p₄ : P} (
     have hco : IsConnected s :=
       haveI : ConnectedSpace line[ℝ, p₁, p₂] := AddTorsor.connectedSpace _ _
       (isConnected_univ.prod (isConnected_setOf_sameRay_and_ne_zero
-        (vsub_ne_zero.2 hp₁p₂.symm))).image _
-        (continuous_fst.subtype_val.prod_mk (continuous_const.prod_mk
-          (continuous_snd.vadd continuous_fst.subtype_val))).continuousOn
+        (vsub_ne_zero.2 hp₁p₂.symm))).image _ (by fun_prop)
     have hf : ContinuousOn (fun p : P × P × P => ∡ p.1 p.2.1 p.2.2) s := by
       refine continuousOn_of_forall_continuousAt fun p hp => continuousAt_oangle ?_ ?_
       all_goals
@@ -649,7 +643,7 @@ theorem _root_.Collinear.oangle_sign_of_sameRay_vsub {p₁ p₂ p₃ p₄ : P} (
       obtain ⟨r, -, rfl⟩ := hvr
       change q ∈ line[ℝ, p₁, p₂] at hq
       rw [oangle_ne_zero_and_ne_pi_iff_affineIndependent]
-      refine affineIndependent_of_ne_of_mem_of_not_mem_of_mem ?_ hq
+      refine affineIndependent_of_ne_of_mem_of_notMem_of_mem ?_ hq
           (fun h => hc₅₁₂ ((collinear_insert_iff_of_mem_affineSpan h).2 (collinear_pair _ _ _))) ?_
       · rwa [← @vsub_ne_zero V, vsub_vadd_eq_vsub_sub, vsub_self, zero_sub, neg_ne_zero]
       · refine vadd_mem_of_mem_direction ?_ hq
@@ -713,8 +707,8 @@ theorem _root_.AffineSubspace.SSameSide.oangle_sign_eq {s : AffineSubspace ℝ P
     (∡ p₁ p₄ p₂).sign = (∡ p₁ p₃ p₂).sign := by
   by_cases h : p₁ = p₂; · simp [h]
   let sp : Set (P × P × P) := (fun p : P => (p₁, p, p₂)) '' {p | s.SSameSide p₃ p}
-  have hc : IsConnected sp := (isConnected_setOf_sSameSide hp₃p₄.2.1 hp₃p₄.nonempty).image _
-    (continuous_const.prod_mk (Continuous.Prod.mk_left _)).continuousOn
+  have hc : IsConnected sp :=
+    (isConnected_setOf_sSameSide hp₃p₄.2.1 hp₃p₄.nonempty).image _ (by fun_prop)
   have hf : ContinuousOn (fun p : P × P × P => ∡ p.1 p.2.1 p.2.2) sp := by
     refine continuousOn_of_forall_continuousAt fun p hp => continuousAt_oangle ?_ ?_
     all_goals
@@ -730,7 +724,7 @@ theorem _root_.AffineSubspace.SSameSide.oangle_sign_eq {s : AffineSubspace ℝ P
     obtain ⟨p', hp', rfl⟩ := hp
     dsimp only
     rw [oangle_ne_zero_and_ne_pi_iff_affineIndependent]
-    exact affineIndependent_of_ne_of_mem_of_not_mem_of_mem h hp₁ hp'.2.2 hp₂
+    exact affineIndependent_of_ne_of_mem_of_notMem_of_mem h hp₁ hp'.2.2 hp₂
   have hp₃ : (p₁, p₃, p₂) ∈ sp :=
     Set.mem_image_of_mem _ (sSameSide_self_iff.2 ⟨hp₃p₄.nonempty, hp₃p₄.2.1⟩)
   have hp₄ : (p₁, p₄, p₂) ∈ sp := Set.mem_image_of_mem _ hp₃p₄
@@ -741,8 +735,8 @@ points on opposite sides of that subspace have opposite signs. -/
 theorem _root_.AffineSubspace.SOppSide.oangle_sign_eq_neg {s : AffineSubspace ℝ P} {p₁ p₂ p₃ p₄ : P}
     (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (hp₃p₄ : s.SOppSide p₃ p₄) :
     (∡ p₁ p₄ p₂).sign = -(∡ p₁ p₃ p₂).sign := by
-  have hp₁p₃ : p₁ ≠ p₃ := by rintro rfl; exact hp₃p₄.left_not_mem hp₁
-  rw [← (hp₃p₄.symm.trans (sOppSide_pointReflection hp₁ hp₃p₄.left_not_mem)).oangle_sign_eq hp₁ hp₂,
+  have hp₁p₃ : p₁ ≠ p₃ := by rintro rfl; exact hp₃p₄.left_notMem hp₁
+  rw [← (hp₃p₄.symm.trans (sOppSide_pointReflection hp₁ hp₃p₄.left_notMem)).oangle_sign_eq hp₁ hp₂,
     ← oangle_rotate_sign p₁, ← oangle_rotate_sign p₁, oangle_swap₁₃_sign,
     (sbtw_pointReflection_of_ne ℝ hp₁p₃).symm.oangle_sign_eq _]
 

@@ -6,6 +6,8 @@ Authors: Sihan Su, Yongle Hu, Yi Song
 import Mathlib.Algebra.Exact
 import Mathlib.RingTheory.LocalProperties.Submodule
 import Mathlib.RingTheory.Localization.Away.Basic
+import Mathlib.Algebra.Module.LocalizedModule.AtPrime
+import Mathlib.Algebra.Module.LocalizedModule.Away
 
 /-!
 # Local properties about linear maps
@@ -13,8 +15,8 @@ import Mathlib.RingTheory.Localization.Away.Basic
 In this file, we show that
 injectivity, surjectivity, bijectivity and exactness of linear maps are local properties.
 More precisely, we show that these can be checked at maximal ideals and on standard covers.
-
 -/
+
 open Submodule LocalizedModule Ideal LinearMap
 
 section isLocalized_maximal
@@ -29,17 +31,17 @@ variable
   [∀ (P : Ideal R) [P.IsMaximal], AddCommMonoid (Mₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], Module R (Mₚ P)]
   (f : ∀ (P : Ideal R) [P.IsMaximal], M →ₗ[R] Mₚ P)
-  [∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule P.primeCompl (f P)]
+  [∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule.AtPrime P (f P)]
   (Nₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
   [∀ (P : Ideal R) [P.IsMaximal], AddCommMonoid (Nₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], Module R (Nₚ P)]
   (g : ∀ (P : Ideal R) [P.IsMaximal], N →ₗ[R] Nₚ P)
-  [∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule P.primeCompl (g P)]
+  [∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule.AtPrime P (g P)]
   (Lₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
   [∀ (P : Ideal R) [P.IsMaximal], AddCommMonoid (Lₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], Module R (Lₚ P)]
   (h : ∀ (P : Ideal R) [P.IsMaximal], L →ₗ[R] Lₚ P)
-  [∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule P.primeCompl (h P)]
+  [∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule.AtPrime P (h P)]
   (F : M →ₗ[R] N) (G : N →ₗ[R] L)
 
 theorem injective_of_isLocalized_maximal
@@ -117,17 +119,17 @@ variable
   [∀ r : s, AddCommMonoid (Mₚ r)]
   [∀ r : s, Module R (Mₚ r)]
   (f : ∀ r : s, M →ₗ[R] Mₚ r)
-  [∀ r : s, IsLocalizedModule (.powers r.1) (f r)]
+  [∀ r : s, IsLocalizedModule.Away r.1 (f r)]
   (Nₚ : ∀ _ : s, Type*)
   [∀ r : s, AddCommMonoid (Nₚ r)]
   [∀ r : s, Module R (Nₚ r)]
   (g : ∀ r : s, N →ₗ[R] Nₚ r)
-  [∀ r : s, IsLocalizedModule (.powers r.1) (g r)]
+  [∀ r : s, IsLocalizedModule.Away r.1 (g r)]
   (Lₚ : ∀ _ : s, Type*)
   [∀ r : s, AddCommMonoid (Lₚ r)]
   [∀ r : s, Module R (Lₚ r)]
   (h : ∀ r : s, L →ₗ[R] Lₚ r)
-  [∀ r : s, IsLocalizedModule (.powers r.1) (h r)]
+  [∀ r : s, IsLocalizedModule.Away r.1 (h r)]
   (F : M →ₗ[R] N) (G : N →ₗ[R] L)
 
 theorem injective_of_isLocalized_span

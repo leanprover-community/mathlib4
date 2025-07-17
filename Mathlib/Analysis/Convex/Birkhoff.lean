@@ -5,6 +5,7 @@ Authors: Bhavik Mehta
 -/
 
 import Mathlib.Analysis.Convex.Combination
+import Mathlib.Analysis.Convex.Extreme
 import Mathlib.Combinatorics.Hall.Basic
 import Mathlib.Data.Matrix.DoublyStochastic
 import Mathlib.Tactic.Linarith
@@ -18,10 +19,11 @@ import Mathlib.Tactic.Linarith
   combination of permutation matrices.
 * `doublyStochastic_eq_convexHull_perm`: The set of doubly stochastic matrices is the convex hull
   of the permutation matrices.
+* `extremePoints_doublyStochastic`: The set of extreme points of the doubly stochastic matrices is
+  the set of permutation matrices.
 
 ## TODO
 
-* Show that the extreme points of doubly stochastic matrices are the permutation matrices.
 * Show that for `x y : n → R`, `x` is majorized by `y` if and only if there is a doubly stochastic
   matrix `M` such that `M *ᵥ y = x`.
 
@@ -36,7 +38,7 @@ variable {R n : Type*} [Fintype n] [DecidableEq n]
 
 section LinearOrderedSemifield
 
-variable [LinearOrderedSemifield R] {M : Matrix n n R}
+variable [Semifield R] [LinearOrder R] [IsStrictOrderedRing R] {M : Matrix n n R}
 
 /--
 If M is a positive scalar multiple of a doubly stochastic matrix, then there is a permutation matrix
@@ -48,10 +50,10 @@ private lemma exists_perm_eq_zero_implies_eq_zero [Nonempty n] {s : R} (hs : 0 <
   rw [exists_mem_doublyStochastic_eq_smul_iff hs.le] at hM
   let f (i : n) : Finset n := {j | M i j ≠ 0}
   have hf (A : Finset n) : #A ≤ #(A.biUnion f) := by
-    have (i) : ∑ j ∈ f i, M i j = s := by simp [f, sum_subset (filter_subset _ _), hM.2.1]
+    have (i : _) : ∑ j ∈ f i, M i j = s := by simp [f, sum_subset (filter_subset _ _), hM.2.1]
     have h₁ : ∑ i ∈ A, ∑ j ∈ f i, M i j = #A * s := by simp [this]
     have h₂ : ∑ i, ∑ j ∈ A.biUnion f, M i j = #(A.biUnion f) * s := by
-      simp [sum_comm (t := A.biUnion f), hM.2.2, mul_comm s]
+      simp [sum_comm (t := A.biUnion f), hM.2.2]
     suffices #A * s ≤ #(A.biUnion f) * s by exact_mod_cast le_of_mul_le_mul_right this hs
     rw [← h₁, ← h₂]
     trans ∑ i ∈ A, ∑ j ∈ A.biUnion f, M i j
@@ -70,7 +72,7 @@ end LinearOrderedSemifield
 
 section LinearOrderedField
 
-variable [LinearOrderedField R] {M : Matrix n n R}
+variable [Field R] [LinearOrder R] [IsStrictOrderedRing R] {M : Matrix n n R}
 
 /--
 If M is a scalar multiple of a doubly stochastic matrix, then it is a conical combination of
@@ -118,7 +120,7 @@ private lemma doublyStochastic_sum_perm_aux (M : Matrix n n R)
     rw [← hd]
     refine card_lt_card ?_
     rw [ssubset_iff_of_subset (monotone_filter_right _ _)]
-    · simp only [ne_eq, mem_filter, mem_univ, true_and, Decidable.not_not, Prod.exists]
+    · simp_rw [mem_filter_univ, not_not, Prod.exists]
       refine ⟨i, σ i, hMi'.ne', ?_⟩
       simp [N, Equiv.toPEquiv_apply]
     · rintro ⟨i', j'⟩ hN' hM'
@@ -168,5 +170,29 @@ theorem doublyStochastic_eq_convexHull_permMatrix :
   case g2 =>
     obtain ⟨w, hw1, hw2, hw3⟩ := exists_eq_sum_perm_of_mem_doublyStochastic hM
     exact mem_convexHull_of_exists_fintype w (·.permMatrix R) hw1 hw2 (by simp) hw3
+
+/--
+The set of extreme points of the doubly stochastic matrices is the set of permutation matrices.
+-/
+theorem extremePoints_doublyStochastic :
+    Set.extremePoints R (doublyStochastic R n) = {σ.permMatrix R | σ : Equiv.Perm n} := by
+  refine subset_antisymm ?_ ?_
+  · rw [doublyStochastic_eq_convexHull_permMatrix]
+    exact extremePoints_convexHull_subset
+  rintro _ ⟨σ, rfl⟩
+  refine ⟨permMatrix_mem_doublyStochastic, fun x₁ hx₁ x₂ hx₂ hσ ↦ ?_⟩
+  suffices ∀ i j : n, x₁ i j = x₂ i j by
+    obtain rfl : x₁ = x₂ := by simpa [← Matrix.ext_iff]
+    simp_all
+  intro i j
+  have h₁ : σ.permMatrix R i j ∈ openSegment R (x₁ i j) (x₂ i j) :=
+    image_openSegment _ (entryLinearMap R R i j).toAffineMap x₁ x₂ ▸ ⟨_, hσ, rfl⟩
+  by_contra! h
+  have h₂ : openSegment R (x₁ i j) (x₂ i j) ⊆ Set.Ioo 0 1 := by
+    rw [openSegment_eq_Ioo' h]
+    apply Set.Ioo_subset_Ioo <;>
+    simp_all [nonneg_of_mem_doublyStochastic, le_one_of_mem_doublyStochastic]
+  specialize h₂ h₁
+  aesop
 
 end LinearOrderedField

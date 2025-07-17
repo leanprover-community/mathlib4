@@ -3,12 +3,12 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Pi
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.CategoryTheory.FintypeCat
-import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.CategoryTheory.Preadditive.Basic
 import Mathlib.CategoryTheory.Preadditive.SingleObj
@@ -62,8 +62,10 @@ variable (C : Type u₁) [Category.{v₁} C] [Preadditive C]
 /-- An object in `Mat_ C` is a finite tuple of objects in `C`.
 -/
 structure Mat_ where
+  /-- The index type `ι` -/
   ι : Type
   [fintype : Fintype ι]
+  /-- The map from `ι` to objects in `C` -/
   X : ι → C
 
 attribute [instance] Mat_.fintype
@@ -98,10 +100,10 @@ instance : Category.{v₁} (Mat_ C) where
   comp f g := f.comp g
   id_comp f := by
     classical
-    simp (config := { unfoldPartialApp := true }) [dite_comp]
+    simp +unfoldPartialApp [dite_comp]
   comp_id f := by
     classical
-    simp (config := { unfoldPartialApp := true }) [comp_dite]
+    simp +unfoldPartialApp [comp_dite]
   assoc f g h := by
     apply DMatrix.ext
     intros
@@ -190,11 +192,11 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
               dsimp
               simp_rw [dite_comp, comp_dite]
               simp only [ite_self, dite_eq_ite, Limits.comp_zero, Limits.zero_comp,
-                eqToHom_trans, Finset.sum_congr]
+                eqToHom_trans]
               erw [Finset.sum_sigma]
               dsimp
               simp only [if_true, Finset.sum_dite_irrel, Finset.mem_univ,
-                Finset.sum_const_zero, Finset.sum_congr, Finset.sum_dite_eq']
+                Finset.sum_const_zero, Finset.sum_dite_eq']
               split_ifs with h h'
               · substs h h'
                 simp only [CategoryTheory.eqToHom_refl, CategoryTheory.Mat_.id_apply_self]
@@ -221,8 +223,8 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
               tauto
             · intro hj
               simp at hj
-            simp only [eqToHom_refl, dite_eq_ite, ite_true, Category.id_comp, ne_eq,
-              Sigma.mk.inj_iff, not_and, id_def]
+            simp only [eqToHom_refl, dite_eq_ite, ite_true, Category.id_comp,
+              Sigma.mk.inj_iff, id_def]
             by_cases h : i' = i
             · subst h
               rw [dif_pos rfl]
@@ -402,7 +404,6 @@ def lift (F : C ⥤ D) [Functor.Additive F] : Mat_ C ⥤ D where
   obj X := ⨁ fun i => F.obj (X.X i)
   map f := biproduct.matrix fun i j => F.map (f i j)
   map_id X := by
-    dsimp
     ext i j
     by_cases h : j = i
     · subst h; simp
@@ -433,7 +434,7 @@ def liftUnique (F : C ⥤ D) [Functor.Additive F] (L : Mat_ C ⥤ D) [Functor.Ad
       simp only [additiveObjIsoBiproduct_naturality_assoc]
       simp only [biproduct.matrix_map_assoc, Category.assoc]
       simp only [additiveObjIsoBiproduct_naturality']
-      simp only [biproduct.map_matrix_assoc, Category.assoc]
+      simp only [biproduct.map_matrix_assoc]
       congr 3
       ext j k
       apply biproduct.hom_ext
@@ -454,7 +455,7 @@ def equivalenceSelfOfHasFiniteBiproductsAux [HasFiniteBiproducts C] :
     embedding C ⋙ 𝟭 (Mat_ C) ≅ embedding C ⋙ lift (𝟭 C) ⋙ embedding C :=
   Functor.rightUnitor _ ≪≫
     (Functor.leftUnitor _).symm ≪≫
-      isoWhiskerRight (embeddingLiftIso _).symm _ ≪≫ Functor.associator _ _ _
+      Functor.isoWhiskerRight (embeddingLiftIso _).symm _ ≪≫ Functor.associator _ _ _
 
 /--
 A preadditive category that already has finite biproducts is equivalent to its additive envelope.
@@ -497,7 +498,7 @@ instance (R : Type u) : Inhabited (Mat R) := by
   infer_instance
 
 instance (R : Type u) : CoeSort (Mat R) (Type u) :=
-  Bundled.coeSort
+  FintypeCat.instCoeSort
 
 open Matrix
 
@@ -580,7 +581,7 @@ instance : (equivalenceSingleObjInverse R).Full where
 instance : (equivalenceSingleObjInverse R).EssSurj where
   mem_essImage X :=
     ⟨{  ι := X
-        X := fun _ => PUnit.unit }, ⟨eqToIso (by dsimp; cases X; congr)⟩⟩
+        X := fun _ => PUnit.unit }, ⟨eqToIso (by cases X; congr)⟩⟩
 
 instance : (equivalenceSingleObjInverse R).IsEquivalence where
 

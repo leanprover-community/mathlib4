@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
 import Mathlib.CategoryTheory.Functor.Const
-import Mathlib.CategoryTheory.DiscreteCategory
+import Mathlib.CategoryTheory.Discrete.Basic
 import Mathlib.CategoryTheory.Yoneda
-import Mathlib.CategoryTheory.Functor.ReflectsIso
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
 # Cones and cocones
@@ -169,8 +169,6 @@ theorem Cocone.w {F : J ⥤ C} (c : Cocone F) {j j' : J} (f : j ⟶ j') :
   rw [c.ι.naturality f]
   apply comp_id
 
-attribute [simp 1001] Cocone.w_assoc
-
 end
 
 variable {F : J ⥤ C}
@@ -179,7 +177,7 @@ namespace Cone
 
 /-- The isomorphism between a cone on `F` and an element of the functor `F.cones`. -/
 @[simps!]
-def equiv (F : J ⥤ C) : Cone F ≅ ΣX, F.cones.obj X where
+def equiv (F : J ⥤ C) : Cone F ≅ Σ X, F.cones.obj X where
   hom c := ⟨op c.pt, c.π⟩
   inv c :=
     { pt := c.1.unop
@@ -215,7 +213,7 @@ end Cone
 namespace Cocone
 
 /-- The isomorphism between a cocone on `F` and an element of the functor `F.cocones`. -/
-def equiv (F : J ⥤ C) : Cocone F ≅ ΣX, F.cocones.obj X where
+def equiv (F : J ⥤ C) : Cocone F ≅ Σ X, F.cocones.obj X where
   hom c := ⟨c.pt, c.ι⟩
   inv c :=
     { pt := c.1
@@ -278,6 +276,18 @@ theorem ConeMorphism.ext {c c' : Cone F} (f g : c ⟶ c') (w : f.hom = g.hom) : 
   cases f
   cases g
   congr
+
+@[reassoc (attr := simp)]
+lemma ConeMorphism.hom_inv_id {c d : Cone F} (f : c ≅ d) : f.hom.hom ≫ f.inv.hom = 𝟙 _ := by
+  simp [← Cone.category_comp_hom]
+
+@[reassoc (attr := simp)]
+lemma ConeMorphism.inv_hom_id {c d : Cone F} (f : c ≅ d) : f.inv.hom ≫ f.hom.hom = 𝟙 _ := by
+  simp [← Cone.category_comp_hom]
+
+instance {c d : Cone F} (f : c ≅ d) : IsIso f.hom.hom := ⟨f.inv.hom, by simp⟩
+
+instance {c d : Cone F} (f : c ≅ d) : IsIso f.inv.hom := ⟨f.hom.hom, by simp⟩
 
 namespace Cones
 
@@ -483,6 +493,18 @@ theorem CoconeMorphism.ext {c c' : Cocone F} (f g : c ⟶ c') (w : f.hom = g.hom
   cases f
   cases g
   congr
+
+@[reassoc (attr := simp)]
+lemma CoconeMorphism.hom_inv_id {c d : Cocone F} (f : c ≅ d) : f.hom.hom ≫ f.inv.hom = 𝟙 _ := by
+  simp [← Cocone.category_comp_hom]
+
+@[reassoc (attr := simp)]
+lemma CoconeMorphism.inv_hom_id {c d : Cocone F} (f : c ≅ d) : f.inv.hom ≫ f.hom.hom = 𝟙 _ := by
+  simp [← Cocone.category_comp_hom]
+
+instance {c d : Cocone F} (f : c ≅ d) : IsIso f.hom.hom := ⟨f.inv.hom, by simp⟩
+
+instance {c d : Cocone F} (f : c ≅ d) : IsIso f.inv.hom := ⟨f.hom.hom, by simp⟩
 
 namespace Cocones
 
@@ -871,10 +893,7 @@ def coconeEquivalenceOpConeOp : Cocone F ≌ (Cone F.op)ᵒᵖ where
   unitIso := NatIso.ofComponents (fun c => Cocones.ext (Iso.refl _))
   counitIso :=
     NatIso.ofComponents
-      (fun c => by
-        induction c
-        apply Iso.op
-        exact Cones.ext (Iso.refl _))
+      (fun c => (Cones.ext (Iso.refl c.unop.pt)).op)
       fun {X} {Y} f =>
       Quiver.Hom.unop_inj (ConeMorphism.ext _ _ (by simp))
   functor_unitIso_comp c := by

@@ -41,7 +41,7 @@ is a commuting square.
 -/
 structure CommSq {W X Y Z : C} (f : W ⟶ X) (g : W ⟶ Y) (h : X ⟶ Z) (i : Y ⟶ Z) : Prop where
   /-- The square commutes. -/
-  w : f ≫ h = g ≫ i
+  w : f ≫ h = g ≫ i := by aesop_cat
 
 attribute [reassoc] CommSq.w
 
@@ -225,12 +225,9 @@ class HasLift : Prop where
 
 namespace HasLift
 
-variable {sq}
-
+variable {sq} in
 theorem mk' (l : sq.LiftStruct) : HasLift sq :=
   ⟨Nonempty.intro l⟩
-
-variable (sq)
 
 theorem iff : HasLift sq ↔ Nonempty sq.LiftStruct := by
   constructor

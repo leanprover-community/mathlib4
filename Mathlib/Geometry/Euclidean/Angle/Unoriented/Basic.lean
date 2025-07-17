@@ -42,11 +42,9 @@ def angle (x y : V) : ℝ :=
   Real.arccos (⟪x, y⟫ / (‖x‖ * ‖y‖))
 
 theorem continuousAt_angle {x : V × V} (hx1 : x.1 ≠ 0) (hx2 : x.2 ≠ 0) :
-    ContinuousAt (fun y : V × V => angle y.1 y.2) x :=
-  Real.continuous_arccos.continuousAt.comp <|
-    continuous_inner.continuousAt.div
-      ((continuous_norm.comp continuous_fst).mul (continuous_norm.comp continuous_snd)).continuousAt
-      (by simp [hx1, hx2])
+    ContinuousAt (fun y : V × V => angle y.1 y.2) x := by
+  unfold angle
+  fun_prop (disch := simp [*])
 
 theorem angle_smul_smul {c : ℝ} (hc : c ≠ 0) (x y : V) : angle (c • x) (c • y) = angle x y := by
   have : c * c ≠ 0 := mul_ne_zero hc hc
@@ -87,6 +85,10 @@ theorem angle_nonneg (x y : V) : 0 ≤ angle x y :=
 /-- The angle between two vectors is at most π. -/
 theorem angle_le_pi (x y : V) : angle x y ≤ π :=
   Real.arccos_le_pi _
+
+/-- The sine of the angle between two vectors is nonnegative. -/
+theorem sin_angle_nonneg (x y : V) : 0 ≤ sin (angle x y) :=
+  sin_nonneg_of_nonneg_of_le_pi (angle_nonneg x y) (angle_le_pi x y)
 
 /-- The angle between a vector and the negation of another vector. -/
 theorem angle_neg_right (x y : V) : angle x (-y) = π - angle x y := by
@@ -171,7 +173,7 @@ theorem sin_angle_mul_norm_mul_norm (x y : V) :
   by_cases h : ‖x‖ * ‖y‖ = 0
   · rw [show ‖x‖ * ‖x‖ * (‖y‖ * ‖y‖) = ‖x‖ * ‖y‖ * (‖x‖ * ‖y‖) by ring, h, mul_zero,
       mul_zero, zero_sub]
-    cases' eq_zero_or_eq_zero_of_mul_eq_zero h with hx hy
+    rcases eq_zero_or_eq_zero_of_mul_eq_zero h with hx | hy
     · rw [norm_eq_zero] at hx
       rw [hx, inner_zero_left, zero_mul, neg_zero]
     · rw [norm_eq_zero] at hy
@@ -183,14 +185,14 @@ theorem sin_angle_mul_norm_mul_norm (x y : V) :
 /-- The angle between two vectors is zero if and only if they are
 nonzero and one is a positive multiple of the other. -/
 theorem angle_eq_zero_iff {x y : V} : angle x y = 0 ↔ x ≠ 0 ∧ ∃ r : ℝ, 0 < r ∧ y = r • x := by
-  rw [angle, ← real_inner_div_norm_mul_norm_eq_one_iff, Real.arccos_eq_zero, LE.le.le_iff_eq,
+  rw [angle, ← real_inner_div_norm_mul_norm_eq_one_iff, Real.arccos_eq_zero, LE.le.ge_iff_eq',
     eq_comm]
   exact (abs_le.mp (abs_real_inner_div_norm_mul_norm_le_one x y)).2
 
 /-- The angle between two vectors is π if and only if they are nonzero
 and one is a negative multiple of the other. -/
 theorem angle_eq_pi_iff {x y : V} : angle x y = π ↔ x ≠ 0 ∧ ∃ r : ℝ, r < 0 ∧ y = r • x := by
-  rw [angle, ← real_inner_div_norm_mul_norm_eq_neg_one_iff, Real.arccos_eq_pi, LE.le.le_iff_eq]
+  rw [angle, ← real_inner_div_norm_mul_norm_eq_neg_one_iff, Real.arccos_eq_pi, LE.le.ge_iff_eq']
   exact (abs_le.mp (abs_real_inner_div_norm_mul_norm_le_one x y)).1
 
 /-- If the angle between two vectors is π, the angles between those

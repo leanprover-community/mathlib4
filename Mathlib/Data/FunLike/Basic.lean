@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.Logic.Function.Basic
+import Mathlib.Logic.Unique
 import Mathlib.Util.CompileInductive
 import Mathlib.Tactic.Simps.NotationClass
 
@@ -126,12 +127,6 @@ does **not** have a `FunLike` instance by checking the discrimination tree once 
 the entire `extends` hierarchy.
 -/
 
--- This instance should have low priority, to ensure we follow the chain
--- `DFunLike → CoeFun`
--- Porting note: this is an elaboration detail from Lean 3, we are going to disable it
--- until it is clearer what the Lean 4 elaborator needs.
--- attribute [instance, priority 10] coe_fn_trans
-
 /-- The class `DFunLike F α β` expresses that terms of type `F` have an
 injective coercion to (dependent) functions from `α` to `β`.
 
@@ -140,7 +135,7 @@ For non-dependent functions you can also use the abbreviation `FunLike`.
 This typeclass is used in the definition of the homomorphism typeclasses,
 such as `ZeroHomClass`, `MulHomClass`, `MonoidHomClass`, ....
 -/
-@[notation_class * toFun Simps.findCoercionArgs]
+@[notation_class* toFun Simps.findCoercionArgs]
 class DFunLike (F : Sort*) (α : outParam (Sort*)) (β : outParam <| α → Sort*) where
   /-- The coercion from `F` to a function. -/
   coe : F → ∀ a : α, β a
@@ -175,7 +170,6 @@ run_cmd Lean.Elab.Command.liftTermElabM do
   Lean.Meta.registerCoercion ``DFunLike.coe
     (some { numArgs := 5, coercee := 4, type := .coeFun })
 
--- @[simp] -- Porting note: this loops in lean 4
 theorem coe_eq_coe_fn : (DFunLike.coe (F := F)) = (fun f => ↑f) := rfl
 
 theorem coe_injective : Function.Injective (fun f : F ↦ (f : ∀ a : α, β a)) :=
@@ -208,7 +202,12 @@ theorem exists_ne {f g : F} (h : f ≠ g) : ∃ x, f x ≠ g x :=
 
 /-- This is not an instance to avoid slowing down every single `Subsingleton` typeclass search. -/
 lemma subsingleton_cod [∀ a, Subsingleton (β a)] : Subsingleton F :=
-  ⟨fun _ _ ↦ coe_injective <| Subsingleton.elim _ _⟩
+  coe_injective.subsingleton
+
+include β in
+/-- This is not an instance to avoid slowing down every single `Subsingleton` typeclass search. -/
+lemma subsingleton_dom [IsEmpty α] : Subsingleton F :=
+  coe_injective.subsingleton
 
 end DFunLike
 
@@ -227,6 +226,14 @@ protected theorem congr {f g : F} {x y : α} (h₁ : f = g) (h₂ : x = y) : f x
 
 protected theorem congr_arg (f : F) {x y : α} (h₂ : x = y) : f x = f y :=
   congr_arg _ h₂
+
+theorem dite_apply {P : Prop} [Decidable P] (f : P → F) (g : ¬P → F) (x : α) :
+    (if h : P then f h else g h) x = if h : P then f h x else g h x := by
+  split_ifs <;> rfl
+
+theorem ite_apply {P : Prop} [Decidable P] (f g : F) (x : α) :
+    (if P then f else g) x = if P then f x else g x :=
+  dite_apply _ _ _
 
 end DFunLike
 

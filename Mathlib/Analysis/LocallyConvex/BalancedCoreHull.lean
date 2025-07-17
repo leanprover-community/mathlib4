@@ -55,7 +55,7 @@ variable (𝕜) [SMul 𝕜 E] {s t : Set E} {x : E}
 def balancedCore (s : Set E) :=
   ⋃₀ { t : Set E | Balanced 𝕜 t ∧ t ⊆ s }
 
-/-- Helper definition to prove `balanced_core_eq_iInter`-/
+/-- Helper definition to prove `balanced_core_eq_iInter` -/
 def balancedCoreAux (s : Set E) :=
   ⋂ (r : 𝕜) (_ : 1 ≤ ‖r‖), r • s
 
@@ -89,6 +89,9 @@ theorem balancedCore_balanced (s : Set E) : Balanced 𝕜 (balancedCore 𝕜 s) 
 theorem Balanced.subset_balancedCore_of_subset (hs : Balanced 𝕜 s) (h : s ⊆ t) :
     s ⊆ balancedCore 𝕜 t :=
   subset_sUnion_of_mem ⟨hs, h⟩
+
+lemma Balanced.balancedCore_eq (h : Balanced 𝕜 s) : balancedCore 𝕜 s = s :=
+  le_antisymm (balancedCore_subset _) (h.subset_balancedCore_of_subset (subset_refl _))
 
 theorem mem_balancedCoreAux_iff : x ∈ balancedCoreAux 𝕜 s ↔ ∀ r : 𝕜, 1 ≤ ‖r‖ → x ∈ r • s :=
   mem_iInter₂
@@ -127,19 +130,20 @@ theorem balancedCore_nonempty_iff : (balancedCore 𝕜 s).Nonempty ↔ (0 : E) �
       balancedCore_subset _,
     fun h => ⟨0, balancedCore_zero_mem h⟩⟩
 
-variable (𝕜)
+lemma Balanced.zero_mem (hs : Balanced 𝕜 s) (hs_nonempty : s.Nonempty) : (0 : E) ∈ s := by
+  rw [← hs.balancedCore_eq] at hs_nonempty
+  exact balancedCore_nonempty_iff.mp hs_nonempty
 
+variable (𝕜) in
 theorem subset_balancedHull [NormOneClass 𝕜] {s : Set E} : s ⊆ balancedHull 𝕜 s := fun _ hx =>
   mem_balancedHull_iff.2 ⟨1, norm_one.le, _, hx, one_smul _ _⟩
-
-variable {𝕜}
 
 theorem balancedHull.balanced (s : Set E) : Balanced 𝕜 (balancedHull 𝕜 s) := by
   intro a ha
   simp_rw [balancedHull, smul_set_iUnion₂, subset_def, mem_iUnion₂]
   rintro x ⟨r, hr, hx⟩
   rw [← smul_assoc] at hx
-  exact ⟨a • r, (SeminormedRing.norm_mul _ _).trans (mul_le_one₀ ha (norm_nonneg r) hr), hx⟩
+  exact ⟨a • r, (norm_mul_le _ _).trans (mul_le_one₀ ha (norm_nonneg r) hr), hx⟩
 
 open Balanced in
 theorem balancedHull_add_subset [NormOneClass 𝕜] {t : Set E} :
@@ -158,7 +162,7 @@ variable [NormedDivisionRing 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t : Set E
 @[simp]
 theorem balancedCoreAux_empty : balancedCoreAux 𝕜 (∅ : Set E) = ∅ := by
   simp_rw [balancedCoreAux, iInter₂_eq_empty_iff, smul_set_empty]
-  exact fun _ => ⟨1, norm_one.ge, not_mem_empty _⟩
+  exact fun _ => ⟨1, norm_one.ge, notMem_empty _⟩
 
 theorem balancedCoreAux_subset (s : Set E) : balancedCoreAux 𝕜 s ⊆ s := fun x hx => by
   simpa only [one_smul] using mem_balancedCoreAux_iff.1 hx 1 norm_one.ge
@@ -196,7 +200,7 @@ theorem subset_balancedCore (ht : (0 : E) ∈ t) (hst : ∀ a : 𝕜, ‖a‖ �
     s ⊆ balancedCore 𝕜 t := by
   rw [balancedCore_eq_iInter ht]
   refine subset_iInter₂ fun a ha ↦ ?_
-  rw [subset_set_smul_iff₀ (norm_pos_iff.mp <| zero_lt_one.trans_le ha)]
+  rw [subset_smul_set_iff₀ (norm_pos_iff.mp <| zero_lt_one.trans_le ha)]
   apply hst
   rw [norm_inv]
   exact inv_le_one_of_one_le₀ ha

@@ -3,8 +3,9 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Data.Finset.Image
+import Mathlib.Data.Fintype.Defs
 import Mathlib.Data.Nat.Notation
-import Mathlib.Data.Fintype.Basic
 import Mathlib.Logic.Function.Basic
 
 /-!
@@ -119,9 +120,9 @@ def castSucc {n} : Fin2 n → Fin2 (n + 1)
   | fs k => fs <| castSucc k
 
 /-- The greatest value of `Fin2 (n+1)`. -/
-def last : {n : Nat} → Fin2 (n+1)
+def last : {n : Nat} → Fin2 (n + 1)
   | 0   => fz
-  | n+1 => fs (@last n)
+  | n + 1 => fs (@last n)
 
 /-- Maps `0` to `n-1`, `1` to `n-2`, ..., `n-1` to `0`. -/
 def rev {n : Nat} : Fin2 n → Fin2 n
@@ -146,7 +147,7 @@ instance : Inhabited (Fin2 1) :=
 
 instance instFintype : ∀ n, Fintype (Fin2 n)
   | 0   => ⟨∅, Fin2.elim0⟩
-  | n+1 =>
+  | n + 1 =>
     let ⟨elems, compl⟩ := instFintype n
     { elems    := elems.map ⟨Fin2.fs, @fs.inj _⟩ |>.cons .fz (by simp)
       complete := by rintro (_|i) <;> simp [compl] }

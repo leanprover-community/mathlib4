@@ -37,14 +37,14 @@ theorem prod_isUnit : ∀ {L : List M}, (∀ m ∈ L, IsUnit m) → IsUnit L.pro
   | [], _ => by simp
   | h :: t, u => by
     simp only [List.prod_cons]
-    exact IsUnit.mul (u h (mem_cons_self h t)) (prod_isUnit fun m mt => u m (mem_cons_of_mem h mt))
+    exact IsUnit.mul (u h mem_cons_self) (prod_isUnit fun m mt => u m (mem_cons_of_mem h mt))
 
 @[to_additive]
-theorem prod_isUnit_iff {α : Type*} [CommMonoid α] {L : List α} :
+theorem prod_isUnit_iff {M : Type*} [CommMonoid M] {L : List M} :
     IsUnit L.prod ↔ ∀ m ∈ L, IsUnit m := by
   refine ⟨fun h => ?_, prod_isUnit⟩
   induction L with
-  | nil => exact fun m' h' => False.elim (not_mem_nil m' h')
+  | nil => exact fun m' h' => False.elim (not_mem_nil h')
   | cons m L ih =>
     rw [prod_cons, IsUnit.mul_iff] at h
     exact fun m' h' ↦ Or.elim (eq_or_mem_of_mem_cons h') (fun H => H.substr h.1) fun H => ih h.2 _ H
@@ -93,7 +93,7 @@ theorem sum_map_count_dedup_filter_eq_countP (p : α → Bool) (l : List α) :
     · refine _root_.trans ?_ h
       by_cases ha : a ∈ as
       · simp [dedup_cons_of_mem ha]
-      · simp only [dedup_cons_of_not_mem ha, List.filter]
+      · simp only [dedup_cons_of_notMem ha, List.filter]
         match p a with
         | true => simp only [List.map_cons, List.sum_cons, List.count_eq_zero.2 ha, zero_add]
         | false => simp only
@@ -104,7 +104,7 @@ theorem sum_map_count_dedup_filter_eq_countP (p : α → Bool) (l : List α) :
       · refine _root_.trans (List.sum_eq_zero fun n hn => ?_) (by simp [hp])
         obtain ⟨a', ha'⟩ := List.mem_map.1 hn
         split_ifs at ha' with ha
-        · simp only [ha.symm, mem_filter, mem_dedup, find?, mem_cons, true_or, hp,
+        · simp only [ha.symm, mem_filter, mem_dedup, mem_cons, true_or, hp,
             and_false, false_and, reduceCtorEq] at ha'
         · exact ha'.2.symm
 
@@ -128,14 +128,15 @@ lemma ranges_flatten : ∀ (l : List ℕ), l.ranges.flatten = range l.sum
 
 /-- The members of `l.ranges` have no duplicate -/
 theorem ranges_nodup {l s : List ℕ} (hs : s ∈ ranges l) : s.Nodup :=
-  (List.pairwise_flatten.mp <| by rw [ranges_flatten]; exact nodup_range _).1 s hs
-
-@[deprecated (since := "2024-10-15")] alias ranges_join := ranges_flatten
+  (List.pairwise_flatten.mp <| by rw [ranges_flatten]; exact nodup_range).1 s hs
 
 /-- Any entry of any member of `l.ranges` is strictly smaller than `l.sum`. -/
 lemma mem_mem_ranges_iff_lt_sum (l : List ℕ) {n : ℕ} :
     (∃ s ∈ l.ranges, n ∈ s) ↔ n < l.sum := by
   rw [← mem_range, ← ranges_flatten, mem_flatten]
+
+@[deprecated (since := "2024-11-18")]
+alias mem_mem_ranges_iff_lt_natSum := mem_mem_ranges_iff_lt_sum
 
 /-- In a flatten of sublists, taking the slice between the indices `A` and `B - 1` gives back the
 original sublist of index `i` if `A` is the sum of the lengths of sublists of index `< i`, and
@@ -144,18 +145,8 @@ lemma drop_take_succ_flatten_eq_getElem (L : List (List α)) (i : Nat) (h : i < 
     (L.flatten.take ((L.map length).take (i + 1)).sum).drop ((L.map length).take i).sum = L[i] := by
   have : (L.map length).take i = ((L.take (i + 1)).map length).take i := by
     simp [map_take, take_take, Nat.min_eq_left]
-  simp only [this, length_map, take_sum_flatten, drop_sum_flatten,
+  simp only [this, take_sum_flatten, drop_sum_flatten,
     drop_take_succ_eq_cons_getElem, h, flatten, append_nil]
-
-@[deprecated (since := "2024-06-11")]
-alias drop_take_succ_join_eq_getElem := drop_take_succ_flatten_eq_getElem
-
-@[deprecated drop_take_succ_flatten_eq_getElem (since := "2024-06-11")]
-lemma drop_take_succ_join_eq_get (L : List (List α)) (i : Fin L.length) :
-    (L.flatten.take ((L.map length).take (i + 1)).sum).drop
-      ((L.map length).take i).sum = get L i := by
-  rw [drop_take_succ_flatten_eq_getElem _ _ i.2]
-  simp
 
 end List
 
@@ -182,11 +173,11 @@ theorem Sublist.prod_dvd_prod [CommMonoid M] {l₁ l₂ : List M} (h : l₁ <+ l
 
 section Alternating
 
-variable [CommGroup α]
+variable [CommGroup G]
 
 @[to_additive]
 theorem alternatingProd_append :
-    ∀ l₁ l₂ : List α,
+    ∀ l₁ l₂ : List G,
       alternatingProd (l₁ ++ l₂) = alternatingProd l₁ * alternatingProd l₂ ^ (-1 : ℤ) ^ length l₁
   | [], l₂ => by simp
   | a :: l₁, l₂ => by
@@ -195,7 +186,7 @@ theorem alternatingProd_append :
 
 @[to_additive]
 theorem alternatingProd_reverse :
-    ∀ l : List α, alternatingProd (reverse l) = alternatingProd l ^ (-1 : ℤ) ^ (length l + 1)
+    ∀ l : List G, alternatingProd (reverse l) = alternatingProd l ^ (-1 : ℤ) ^ (length l + 1)
   | [] => by simp only [alternatingProd_nil, one_zpow, reverse_nil]
   | a :: l => by
     simp_rw [reverse_cons, alternatingProd_append, alternatingProd_reverse,

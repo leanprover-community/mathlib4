@@ -3,11 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Data.Fintype.Card
 import Mathlib.Algebra.Order.BigOperators.Group.Multiset
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.Multiset.OrderedMonoid
 import Mathlib.Tactic.Bound.Attribute
+import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+import Mathlib.Data.Multiset.Powerset
 
 /-!
 # Big operators on a finset in ordered groups
@@ -26,7 +28,7 @@ namespace Finset
 
 section OrderedCommMonoid
 
-variable [CommMonoid M] [OrderedCommMonoid N]
+variable [CommMonoid M] [CommMonoid N] [PartialOrder N] [IsOrderedMonoid N]
 
 /-- Let `{x | p x}` be a subsemigroup of a commutative monoid `M`. Let `f : M → N` be a map
 submultiplicative on `{x | p x}`, i.e., `p x → p y → f (x * y) ≤ f x * f y`. Let `g i`, `i ∈ s`, be
@@ -41,8 +43,7 @@ theorem le_prod_nonempty_of_submultiplicative_on_pred (f : M → N) (p : M → P
     (Multiset.le_prod_nonempty_of_submultiplicative_on_pred f p h_mul hp_mul _ ?_ ?_) ?_
   · simp [hs_nonempty.ne_empty]
   · exact Multiset.forall_mem_map_iff.mpr hs
-  rw [Multiset.map_map]
-  rfl
+  simp
 
 /-- Let `{x | p x}` be an additive subsemigroup of an additive commutative monoid `M`. Let
 `f : M → N` be a map subadditive on `{x | p x}`, i.e., `p x → p y → f (x + y) ≤ f x + f y`. Let
@@ -85,10 +86,8 @@ add_decl_doc le_sum_of_subadditive_on_pred
 @[to_additive le_sum_of_subadditive]
 theorem le_prod_of_submultiplicative (f : M → N) (h_one : f 1 = 1)
     (h_mul : ∀ x y, f (x * y) ≤ f x * f y) (s : Finset ι) (g : ι → M) :
-    f (∏ i ∈ s, g i) ≤ ∏ i ∈ s, f (g i) := by
-  refine le_trans (Multiset.le_prod_of_submultiplicative f h_one h_mul _) ?_
-  rw [Multiset.map_map]
-  rfl
+    f (∏ i ∈ s, g i) ≤ ∏ i ∈ s, f (g i) :=
+  le_trans (Multiset.le_prod_of_submultiplicative f h_one h_mul _) (by simp)
 
 /-- If `f : M → N` is a subadditive function, `f (x + y) ≤ f x + f y`, `f 0 = 0`, and `g i`,
 `i ∈ s`, is a finite family of elements of `M`, then `f (∑ i ∈ s, g i) ≤ ∑ i ∈ s, f (g i)`. -/
@@ -140,13 +139,12 @@ theorem prod_le_univ_prod_of_one_le' [Fintype ι] {s : Finset ι} (w : ∀ x, 1 
     ∏ x ∈ s, f x ≤ ∏ x, f x :=
   prod_le_prod_of_subset_of_one_le' (subset_univ s) fun a _ _ ↦ w a
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO -- The two next lemmas give the same lemma in additive version
 @[to_additive sum_eq_zero_iff_of_nonneg]
 theorem prod_eq_one_iff_of_one_le' :
     (∀ i ∈ s, 1 ≤ f i) → ((∏ i ∈ s, f i) = 1 ↔ ∀ i ∈ s, f i = 1) := by
   classical
     refine Finset.induction_on s
-      (fun _ ↦ ⟨fun _ _ h ↦ False.elim (Finset.not_mem_empty _ h), fun _ ↦ rfl⟩) ?_
+      (fun _ ↦ ⟨fun _ _ h ↦ False.elim (Finset.notMem_empty _ h), fun _ ↦ rfl⟩) ?_
     intro a s ha ih H
     have : ∀ i ∈ s, 1 ≤ f i := fun _ ↦ H _ ∘ mem_insert_of_mem
     rw [prod_insert ha, mul_eq_one_iff_of_one_le (H _ <| mem_insert_self _ _) (one_le_prod' this),
@@ -155,7 +153,7 @@ theorem prod_eq_one_iff_of_one_le' :
 @[to_additive sum_eq_zero_iff_of_nonpos]
 theorem prod_eq_one_iff_of_le_one' :
     (∀ i ∈ s, f i ≤ 1) → ((∏ i ∈ s, f i) = 1 ↔ ∀ i ∈ s, f i = 1) :=
-  @prod_eq_one_iff_of_one_le' _ Nᵒᵈ _ _ _
+  prod_eq_one_iff_of_one_le' (N := Nᵒᵈ)
 
 @[to_additive single_le_sum]
 theorem single_le_prod' (hf : ∀ i ∈ s, 1 ≤ f i) {a} (h : a ∈ s) : f a ≤ ∏ x ∈ s, f x :=
@@ -182,7 +180,7 @@ theorem prod_le_pow_card (s : Finset ι) (f : ι → N) (n : N) (h : ∀ x ∈ s
 
 @[to_additive card_nsmul_le_sum]
 theorem pow_card_le_prod (s : Finset ι) (f : ι → N) (n : N) (h : ∀ x ∈ s, n ≤ f x) :
-    n ^ #s ≤ s.prod f := @Finset.prod_le_pow_card _ Nᵒᵈ _ _ _ _ h
+    n ^ #s ≤ s.prod f := Finset.prod_le_pow_card (N := Nᵒᵈ) _ _ _ h
 
 theorem card_biUnion_le_card_mul [DecidableEq β] (s : Finset ι) (f : ι → Finset β) (n : ℕ)
     (h : ∀ a ∈ s, #(f a) ≤ n) : #(s.biUnion f) ≤ #s * n :=
@@ -205,28 +203,42 @@ theorem prod_fiberwise_le_prod_of_one_le_prod_fiber' {t : Finset ι'} {g : ι �
 theorem prod_le_prod_fiberwise_of_prod_fiber_le_one' {t : Finset ι'} {g : ι → ι'} {f : ι → N}
     (h : ∀ y ∉ t, ∏ x ∈ s with g x = y, f x ≤ 1) :
     ∏ x ∈ s, f x ≤ ∏ y ∈ t, ∏ x ∈ s with g x = y, f x :=
-  @prod_fiberwise_le_prod_of_one_le_prod_fiber' _ Nᵒᵈ _ _ _ _ _ _ _ h
+  prod_fiberwise_le_prod_of_one_le_prod_fiber' (N := Nᵒᵈ) h
+
+@[to_additive]
+lemma prod_image_le_of_one_le
+    {g : ι → ι'} {f : ι' → N} (hf : ∀ u ∈ s.image g, 1 ≤ f u) :
+    ∏ u ∈ s.image g, f u ≤ ∏ u ∈ s, f (g u) := by
+  rw [prod_comp f g]
+  refine prod_le_prod' fun a hag ↦ ?_
+  obtain ⟨i, hi, hig⟩ := Finset.mem_image.mp hag
+  apply le_self_pow (hf a hag)
+  rw [← Nat.pos_iff_ne_zero, card_pos]
+  exact ⟨i, mem_filter.mpr ⟨hi, hig⟩⟩
 
 end OrderedCommMonoid
 
 @[to_additive]
-lemma max_prod_le [LinearOrderedCommMonoid M] {f g : ι → M} {s : Finset ι} :
+lemma max_prod_le [CommMonoid M] [LinearOrder M] [IsOrderedMonoid M] {f g : ι → M} {s : Finset ι} :
     max (s.prod f) (s.prod g) ≤ s.prod (fun i ↦ max (f i) (g i)) :=
   Multiset.max_prod_le
 
 @[to_additive]
-lemma prod_min_le [LinearOrderedCommMonoid M] {f g : ι → M} {s : Finset ι} :
+lemma prod_min_le [CommMonoid M] [LinearOrder M] [IsOrderedMonoid M] {f g : ι → M} {s : Finset ι} :
     s.prod (fun i ↦ min (f i) (g i)) ≤ min (s.prod f) (s.prod g) :=
   Multiset.prod_min_le
 
-theorem abs_sum_le_sum_abs {G : Type*} [LinearOrderedAddCommGroup G] (f : ι → G) (s : Finset ι) :
+theorem abs_sum_le_sum_abs {G : Type*} [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G]
+    (f : ι → G) (s : Finset ι) :
     |∑ i ∈ s, f i| ≤ ∑ i ∈ s, |f i| := le_sum_of_subadditive _ abs_zero abs_add s f
 
-theorem abs_sum_of_nonneg {G : Type*} [LinearOrderedAddCommGroup G] {f : ι → G} {s : Finset ι}
+theorem abs_sum_of_nonneg {G : Type*} [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G]
+    {f : ι → G} {s : Finset ι}
     (hf : ∀ i ∈ s, 0 ≤ f i) : |∑ i ∈ s, f i| = ∑ i ∈ s, f i := by
   rw [abs_of_nonneg (Finset.sum_nonneg hf)]
 
-theorem abs_sum_of_nonneg' {G : Type*} [LinearOrderedAddCommGroup G] {f : ι → G} {s : Finset ι}
+theorem abs_sum_of_nonneg' {G : Type*} [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G]
+    {f : ι → G} {s : Finset ι}
     (hf : ∀ i, 0 ≤ f i) : |∑ i ∈ s, f i| = ∑ i ∈ s, f i := by
   rw [abs_of_nonneg (Finset.sum_nonneg' hf)]
 
@@ -339,7 +351,8 @@ end DoubleCounting
 
 section CanonicallyOrderedMul
 
-variable [OrderedCommMonoid M] [CanonicallyOrderedMul M] {f : ι → M} {s t : Finset ι}
+variable [CommMonoid M] [PartialOrder M] [IsOrderedMonoid M] [CanonicallyOrderedMul M]
+  {f : ι → M} {s t : Finset ι}
 
 /-- In a canonically-ordered monoid, a product bounds each of its terms.
 
@@ -350,10 +363,6 @@ See also `Finset.single_le_sum`."]
 lemma _root_.CanonicallyOrderedCommMonoid.single_le_prod {i : ι} (hi : i ∈ s) :
     f i ≤ ∏ j ∈ s, f j :=
   single_le_prod' (fun _ _ ↦ one_le _) hi
-
-@[to_additive (attr := simp) sum_eq_zero_iff]
-theorem prod_eq_one_iff' : ∏ x ∈ s, f x = 1 ↔ ∀ x ∈ s, f x = 1 :=
-  prod_eq_one_iff_of_one_le' fun x _ ↦ one_le (f x)
 
 @[to_additive sum_le_sum_of_subset]
 theorem prod_le_prod_of_subset' (h : s ⊆ t) : ∏ x ∈ s, f x ≤ ∏ x ∈ t, f x :=
@@ -373,13 +382,13 @@ theorem prod_le_prod_of_ne_one' (h : ∀ x ∈ s, f x ≠ 1 → x ∈ t) :
     _ ≤ ∏ x ∈ t, f x :=
       mul_le_of_le_one_of_le
         (prod_le_one' <| by simp only [mem_filter, and_imp]; exact fun _ _ ↦ le_of_eq)
-        (prod_le_prod_of_subset' <| by simpa only [subset_iff, mem_filter, and_imp] )
+        (prod_le_prod_of_subset' <| by simpa only [subset_iff, mem_filter, and_imp])
 
 end CanonicallyOrderedMul
 
 section OrderedCancelCommMonoid
 
-variable [OrderedCancelCommMonoid M] {f g : ι → M} {s t : Finset ι}
+variable [CommMonoid M] [PartialOrder M] [IsOrderedCancelMonoid M] {f g : ι → M} {s t : Finset ι}
 
 @[to_additive sum_lt_sum]
 theorem prod_lt_prod' (hle : ∀ i ∈ s, f i ≤ g i) (hlt : ∃ i ∈ s, f i < g i) :
@@ -399,7 +408,6 @@ strictly less than the corresponding summand `g i` of another nontrivial finite 
 `s.sum f < s.sum g`. -/
 add_decl_doc sum_lt_sum_of_nonempty
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO -- calc indentation
 @[to_additive sum_lt_sum_of_subset]
 theorem prod_lt_prod_of_subset' (h : s ⊆ t) {i : ι} (ht : i ∈ t) (hs : i ∉ s) (hlt : 1 < f i)
     (hle : ∀ j ∈ t, j ∉ s → 1 ≤ f j) : ∏ j ∈ s, f j < ∏ j ∈ t, f j := by
@@ -444,7 +452,7 @@ theorem prod_eq_prod_iff_of_le {f g : ι → M} (h : ∀ i ∈ s, f i ≤ g i) :
     ((∏ i ∈ s, f i) = ∏ i ∈ s, g i) ↔ ∀ i ∈ s, f i = g i := by
   classical
     revert h
-    refine Finset.induction_on s (fun _ ↦ ⟨fun _ _ h ↦ False.elim (Finset.not_mem_empty _ h),
+    refine Finset.induction_on s (fun _ ↦ ⟨fun _ _ h ↦ False.elim (Finset.notMem_empty _ h),
       fun _ ↦ rfl⟩) fun a s ha ih H ↦ ?_
     specialize ih fun i ↦ H i ∘ Finset.mem_insert_of_mem
     rw [Finset.prod_insert ha, Finset.prod_insert ha, Finset.forall_mem_insert, ← ih]
@@ -470,7 +478,7 @@ end OrderedCancelCommMonoid
 
 section LinearOrderedCancelCommMonoid
 
-variable [LinearOrderedCancelCommMonoid M] {f g : ι → M} {s t : Finset ι}
+variable [CommMonoid M] [LinearOrder M] [IsOrderedCancelMonoid M] {f g : ι → M} {s t : Finset ι}
 
 @[to_additive exists_lt_of_sum_lt]
 theorem exists_lt_of_prod_lt' (Hlt : ∏ i ∈ s, f i < ∏ i ∈ s, g i) : ∃ i ∈ s, f i < g i := by
@@ -499,7 +507,7 @@ end Finset
 
 namespace Fintype
 section OrderedCommMonoid
-variable [Fintype ι] [OrderedCommMonoid M] {f : ι → M}
+variable [Fintype ι] [CommMonoid M] [PartialOrder M] [IsOrderedMonoid M] {f : ι → M}
 
 @[to_additive (attr := mono) sum_mono]
 theorem prod_mono' : Monotone fun f : ι → M ↦ ∏ i, f i := fun _ _ hfg ↦
@@ -521,7 +529,7 @@ lemma prod_eq_one_iff_of_le_one (hf : f ≤ 1) : ∏ i, f i = 1 ↔ f = 1 :=
 end OrderedCommMonoid
 
 section OrderedCancelCommMonoid
-variable [Fintype ι] [OrderedCancelCommMonoid M] {f : ι → M}
+variable [Fintype ι] [CommMonoid M] [PartialOrder M] [IsOrderedCancelMonoid M] {f : ι → M}
 
 @[to_additive sum_strictMono]
 theorem prod_strictMono' : StrictMono fun f : ι → M ↦ ∏ x, f x :=
@@ -553,8 +561,8 @@ namespace Multiset
 theorem finset_sum_eq_sup_iff_disjoint [DecidableEq α] {i : Finset β} {f : β → Multiset α} :
     i.sum f = i.sup f ↔ ∀ x ∈ i, ∀ y ∈ i, x ≠ y → Disjoint (f x) (f y) := by
   induction' i using Finset.cons_induction_on with z i hz hr
-  · simp only [Finset.not_mem_empty, IsEmpty.forall_iff, imp_true_iff, Finset.sum_empty,
-      Finset.sup_empty, bot_eq_zero, eq_self_iff_true]
+  · simp only [Finset.notMem_empty, IsEmpty.forall_iff, imp_true_iff, Finset.sum_empty,
+      Finset.sup_empty, bot_eq_zero]
   · simp_rw [Finset.sum_cons hz, Finset.sup_cons, Finset.mem_cons, Multiset.sup_eq_union,
       forall_eq_or_imp, Ne, not_true_eq_false, IsEmpty.forall_iff, true_and,
       imp_and, forall_and, ← hr, @eq_comm _ z]

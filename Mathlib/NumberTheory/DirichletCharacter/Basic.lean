@@ -233,8 +233,6 @@ variable (χ)
 /-- A character is primitive if its level is equal to its conductor. -/
 def IsPrimitive : Prop := conductor χ = n
 
-@[deprecated (since := "2024-06-16")] alias isPrimitive := IsPrimitive
-
 lemma isPrimitive_def : IsPrimitive χ ↔ conductor χ = n := Iff.rfl
 
 lemma isPrimitive_one_level_one : IsPrimitive (1 : DirichletCharacter R 1) :=
@@ -284,8 +282,6 @@ lemma primitive_mul_isPrimitive {m : ℕ} (ψ : DirichletCharacter R m) :
     IsPrimitive (primitive_mul χ ψ) :=
   primitiveCharacter_isPrimitive _
 
-@[deprecated (since := "2024-06-16")] alias isPrimitive.primitive_mul := primitive_mul_isPrimitive
-
 /-
 ### Even and odd characters
 -/
@@ -315,11 +311,11 @@ lemma Odd.not_even [NeZero (2 : S)] (hψ : Odd ψ) : ¬Even ψ :=
   not_and'.mp ψ.not_even_and_odd hψ
 
 lemma Odd.toUnitHom_eval_neg_one (hψ : ψ.Odd) : ψ.toUnitHom (-1) = -1 := by
-  rw [← Units.eq_iff, MulChar.coe_toUnitHom]
+  rw [← Units.val_inj, MulChar.coe_toUnitHom]
   exact hψ
 
 lemma Even.toUnitHom_eval_neg_one (hψ : ψ.Even) : ψ.toUnitHom (-1) = 1 := by
-  rw [← Units.eq_iff, MulChar.coe_toUnitHom]
+  rw [← Units.val_inj, MulChar.coe_toUnitHom]
   exact hψ
 
 lemma Odd.eval_neg (x : ZMod m) (hψ : ψ.Odd) : ψ (- x) = - ψ x := by

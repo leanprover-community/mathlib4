@@ -20,8 +20,9 @@ theorem foo : True := by
 -- These cases are linted against.
 
 /--
-warning: Please remove stream-of-conciousness `obtain` syntax
-note: this linter can be disabled with `set_option linter.oldObtain false`
+warning: Please remove stream-of-consciousness `obtain` syntax
+
+Note: This linter can be disabled with `set_option linter.oldObtain false`
 -/
 #guard_msgs in
 theorem foo' : True := by
@@ -30,8 +31,9 @@ theorem foo' : True := by
   trivial
 
 /--
-warning: Please remove stream-of-conciousness `obtain` syntax
-note: this linter can be disabled with `set_option linter.oldObtain false`
+warning: Please remove stream-of-consciousness `obtain` syntax
+
+Note: This linter can be disabled with `set_option linter.oldObtain false`
 -/
 #guard_msgs in
 theorem foo'' : True := by

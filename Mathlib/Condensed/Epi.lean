@@ -21,15 +21,15 @@ universe v u w u' v'
 
 open CategoryTheory Sheaf Opposite Limits Condensed ConcreteCategory
 
-attribute [local instance] HasForget.hasCoeToSort HasForget.instFunLike
-
 namespace Condensed
 
-variable (A : Type u') [Category.{v'} A] [HasForget.{v'} A]
+variable (A : Type u') [Category.{v'} A] {FA : A → A → Type*} {CA : A → Type v'}
+variable [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory.{v'} A FA]
   [HasFunctorialSurjectiveInjectiveFactorization A]
 
 variable {X Y : Condensed.{u} A} (f : X ⟶ Y)
 
+set_option Elab.async false in  -- TODO: universe levels from type are unified in proof
 variable
   [(coherentTopology CompHaus).WEqualsLocallyBijective A]
   [HasSheafify (coherentTopology CompHaus) A]
@@ -37,13 +37,14 @@ variable
   [Balanced (Sheaf (coherentTopology CompHaus) A)]
   [PreservesFiniteProducts (CategoryTheory.forget A)] in
 lemma epi_iff_locallySurjective_on_compHaus : Epi f ↔
-    ∀ (S : CompHaus) (y : Y.val.obj ⟨S⟩),
-      (∃ (S' : CompHaus) (φ : S' ⟶ S) (_ : Function.Surjective φ) (x : X.val.obj ⟨S'⟩),
+    ∀ (S : CompHaus) (y : ToType (Y.val.obj ⟨S⟩)),
+      (∃ (S' : CompHaus) (φ : S' ⟶ S) (_ : Function.Surjective φ) (x : ToType (X.val.obj ⟨S'⟩)),
         f.val.app ⟨S'⟩ x = Y.val.map ⟨φ⟩ y) := by
   rw [← isLocallySurjective_iff_epi', coherentTopology.isLocallySurjective_iff,
     regularTopology.isLocallySurjective_iff]
   simp_rw [((CompHaus.effectiveEpi_tfae _).out 0 2 :)]
 
+set_option Elab.async false in  -- TODO: universe levels from type are unified in proof
 variable
   [PreservesFiniteProducts (CategoryTheory.forget A)]
   [∀ (X : CompHausᵒᵖ), HasLimitsOfShape (StructuredArrow X Stonean.toCompHaus.op) A]
@@ -64,12 +65,14 @@ namespace CondensedSet
 
 variable {X Y : CondensedSet.{u}} (f : X ⟶ Y)
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 lemma epi_iff_locallySurjective_on_compHaus : Epi f ↔
     ∀ (S : CompHaus) (y : Y.val.obj ⟨S⟩),
       (∃ (S' : CompHaus) (φ : S' ⟶ S) (_ : Function.Surjective φ) (x : X.val.obj ⟨S'⟩),
         f.val.app ⟨S'⟩ x = Y.val.map ⟨φ⟩ y) :=
   Condensed.epi_iff_locallySurjective_on_compHaus _ f
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 lemma epi_iff_surjective_on_stonean : Epi f ↔
     ∀ (S : Stonean), Function.Surjective (f.val.app (op S.compHaus)) :=
   Condensed.epi_iff_surjective_on_stonean _ f
@@ -78,17 +81,20 @@ end CondensedSet
 
 namespace CondensedMod
 
-variable (R : Type (u+1)) [Ring R] {X Y : CondensedMod.{u} R} (f : X ⟶ Y)
+variable (R : Type (u + 1)) [Ring R] {X Y : CondensedMod.{u} R} (f : X ⟶ Y)
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 lemma epi_iff_locallySurjective_on_compHaus : Epi f ↔
     ∀ (S : CompHaus) (y : Y.val.obj ⟨S⟩),
       (∃ (S' : CompHaus) (φ : S' ⟶ S) (_ : Function.Surjective φ) (x : X.val.obj ⟨S'⟩),
         f.val.app ⟨S'⟩ x = Y.val.map ⟨φ⟩ y) :=
   Condensed.epi_iff_locallySurjective_on_compHaus _ f
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 lemma epi_iff_surjective_on_stonean : Epi f ↔
     ∀ (S : Stonean), Function.Surjective (f.val.app (op S.compHaus)) :=
-  have : HasLimitsOfSize.{u, u+1} (ModuleCat R) := hasLimitsOfSizeShrink.{u, u+1, u+1, u+1} _
+  have : HasLimitsOfSize.{u, u + 1} (ModuleCat R) :=
+    hasLimitsOfSizeShrink.{u, u + 1, u + 1, u + 1} _
   Condensed.epi_iff_surjective_on_stonean _ f
 
 end CondensedMod

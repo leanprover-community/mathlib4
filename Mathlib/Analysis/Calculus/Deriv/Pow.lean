@@ -34,7 +34,7 @@ theorem hasStrictDerivAt_pow :
   | 1, x => by simpa using hasStrictDerivAt_id x
   | n + 1 + 1, x => by
     simpa [pow_succ, add_mul, mul_assoc] using
-      (hasStrictDerivAt_pow (n + 1) x).mul (hasStrictDerivAt_id x)
+      (hasStrictDerivAt_pow (n + 1) x).fun_mul (hasStrictDerivAt_id x)
 
 theorem hasDerivAt_pow (n : ℕ) (x : 𝕜) :
     HasDerivAt (fun x : 𝕜 => x ^ n) ((n : 𝕜) * x ^ (n - 1)) x :=
@@ -67,22 +67,39 @@ theorem derivWithin_pow (hxs : UniqueDiffWithinAt 𝕜 s x) :
     derivWithin (fun x : 𝕜 => x ^ n) s x = (n : 𝕜) * x ^ (n - 1) :=
   (hasDerivWithinAt_pow n x s).derivWithin hxs
 
-theorem HasDerivWithinAt.pow (hc : HasDerivWithinAt c c' s x) :
+theorem HasDerivWithinAt.fun_pow (hc : HasDerivWithinAt c c' s x) :
     HasDerivWithinAt (fun y => c y ^ n) ((n : 𝕜) * c x ^ (n - 1) * c') s x :=
   (hasDerivAt_pow n (c x)).comp_hasDerivWithinAt x hc
 
-theorem HasDerivAt.pow (hc : HasDerivAt c c' x) :
+theorem HasDerivWithinAt.pow (hc : HasDerivWithinAt c c' s x) :
+    HasDerivWithinAt (c ^ n) ((n : 𝕜) * c x ^ (n - 1) * c') s x :=
+  (hasDerivAt_pow n (c x)).comp_hasDerivWithinAt x hc
+
+theorem HasDerivAt.fun_pow (hc : HasDerivAt c c' x) :
     HasDerivAt (fun y => c y ^ n) ((n : 𝕜) * c x ^ (n - 1) * c') x := by
   rw [← hasDerivWithinAt_univ] at *
   exact hc.pow n
 
-theorem derivWithin_pow' (hc : DifferentiableWithinAt 𝕜 c s x) :
+theorem HasDerivAt.pow (hc : HasDerivAt c c' x) :
+    HasDerivAt (c ^ n) ((n : 𝕜) * c x ^ (n - 1) * c') x :=
+  hc.fun_pow _
+
+theorem derivWithin_fun_pow' (hc : DifferentiableWithinAt 𝕜 c s x) :
     derivWithin (fun x => c x ^ n) s x = (n : 𝕜) * c x ^ (n - 1) * derivWithin c s x := by
-  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
-  · exact (hc.hasDerivWithinAt.pow n).derivWithin hxs
-  · simp [derivWithin_zero_of_isolated hxs]
+  by_cases hsx : UniqueDiffWithinAt 𝕜 s x
+  · exact (hc.hasDerivWithinAt.pow n).derivWithin hsx
+  · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
+
+theorem derivWithin_pow' (hc : DifferentiableWithinAt 𝕜 c s x) :
+    derivWithin (c ^ n) s x = (n : 𝕜) * c x ^ (n - 1) * derivWithin c s x :=
+  derivWithin_fun_pow' _ hc
+
+@[simp]
+theorem deriv_fun_pow'' (hc : DifferentiableAt 𝕜 c x) :
+    deriv (fun x => c x ^ n) x = (n : 𝕜) * c x ^ (n - 1) * deriv c x :=
+  (hc.hasDerivAt.pow n).deriv
 
 @[simp]
 theorem deriv_pow'' (hc : DifferentiableAt 𝕜 c x) :
-    deriv (fun x => c x ^ n) x = (n : 𝕜) * c x ^ (n - 1) * deriv c x :=
+    deriv (c ^ n) x = (n : 𝕜) * c x ^ (n - 1) * deriv c x :=
   (hc.hasDerivAt.pow n).deriv

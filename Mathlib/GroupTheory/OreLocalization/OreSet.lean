@@ -17,6 +17,8 @@ This defines left Ore sets on arbitrary monoids.
 
 -/
 
+assert_not_exists RelIso
+
 namespace AddOreLocalization
 
 /-- A submonoid `S` of an additive monoid `R` is (left) Ore if common summands on the right can be
@@ -86,7 +88,7 @@ both witnesses and the condition for a given fraction. -/
 @[to_additive AddOreLocalization.addOreCondition
   "The Ore condition bundled in a sigma type. This is useful in situations where we want to obtain
 both witnesses and the condition for a given difference."]
-def oreCondition (r : R) (s : S) : Σ'r' : R, Σ's' : S, s' * r = r' * s :=
+def oreCondition (r : R) (s : S) : Σ' r' : R, Σ' s' : S, s' * r = r' * s :=
   ⟨oreNum r s, oreDenom r s, ore_eq r s⟩
 
 /-- The trivial submonoid is an Ore set. -/
