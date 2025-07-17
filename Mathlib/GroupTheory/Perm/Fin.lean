@@ -370,10 +370,10 @@ theorem cycleIcc_of_le_of_le (hik : i ≤ k) (hkj : k ≤ j) [NeZero n] :
   refine eq_of_val_eq ?_
   split_ifs with h3
   · have h : subNat i.1 (j.cast (by omega)) (by simp [hij]) = (j - i).castLT (sub_val_lt_sub hij) :=
-      eq_of_val_eq (by simp [subNat, coe_castLT, sub_val_of_le hij])
+      eq_of_val_eq (by simp [sub_val_of_le hij])
     simpa [h3, cycleRange_of_eq h] using by omega
   · have h : subNat i.1 (k.cast (by omega)) (by simp [hik]) < (j - i).castLT (sub_val_lt_sub hij) :=
-      by simp only [subNat, coe_cast, lt_iff_val_lt_val, coe_castLT, sub_val_of_le hij]; omega
+      by simpa [lt_iff_val_lt_val, sub_val_of_le hij] using by omega
     rw [cycleRange_of_lt h, subNat]
     simp only [coe_cast, add_def, val_one', Nat.add_mod_mod, addNat_mk, cast_mk]
     rw [Nat.mod_eq_of_lt (by omega), Nat.mod_eq_of_lt (by omega)]
