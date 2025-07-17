@@ -451,7 +451,7 @@ section Norm
 
 variable {α : Type*} {𝕜 : Type*} {R : Type*} [TopologicalSpace α] [CompactSpace α] [Zero α]
 
-noncomputable instance [MetricSpace R] [Zero R]: MetricSpace C(α, R)₀ :=
+noncomputable instance [MetricSpace R] [Zero R] : MetricSpace C(α, R)₀ :=
   ContinuousMapZero.isUniformEmbedding_toContinuousMap.comapMetricSpace _
 
 lemma isometry_toContinuousMap [MetricSpace R] [Zero R] :

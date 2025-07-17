@@ -68,7 +68,7 @@ and takes nonnegative real values.
 
 /-- The complex-valued arithmetic function that is the convolution of the constant
 function `1` with `χ`. -/
-noncomputable def zetaMul (χ : DirichletCharacter ℂ N) : ArithmeticFunction ℂ :=
+def zetaMul (χ : DirichletCharacter ℂ N) : ArithmeticFunction ℂ :=
   .zeta * toArithmeticFunction (χ ·)
 
 /-- The arithmetic function `zetaMul χ` is multiplicative. -/
@@ -323,7 +323,7 @@ lemma LFunctionTrivChar_isBigO_near_one_horizontal :
 
 omit [NeZero N] in
 private lemma one_add_I_mul_ne_one_or {y : ℝ} (hy : y ≠ 0 ∨ χ ≠ 1) :
-    1 + I * y ≠ 1 ∨ χ ≠ 1:= by
+    1 + I * y ≠ 1 ∨ χ ≠ 1 := by
   simpa only [ne_eq, add_eq_left, _root_.mul_eq_zero, I_ne_zero, ofReal_eq_zero, false_or]
     using hy
 
