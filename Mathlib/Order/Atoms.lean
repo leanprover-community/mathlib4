@@ -265,6 +265,16 @@ theorem IsCoatom.codisjoint_of_ne [SemilatticeSup α] [OrderTop α] {a b : α} (
     (hb : IsCoatom b) (hab : a ≠ b) : Codisjoint a b :=
   codisjoint_iff.mpr (ha.sup_eq_top_of_ne hb hab)
 
+theorem IsAtom.inf_eq_bot_iff [SemilatticeInf α] [OrderBot α] {a b : α} (ha : IsAtom a) :
+    a ⊓ b = ⊥ ↔ ¬ a ≤ b := by
+  by_cases hb : b = ⊥
+  · simpa [hb] using ha.1
+  · exact ⟨fun h ↦ inf_lt_left.mp (h ▸ bot_lt ha), fun h ↦ ha.2 _ (inf_lt_left.mpr h)⟩
+
+theorem IsCoatom.sup_eq_top_iff [SemilatticeSup α] [OrderTop α] {a b : α} (ha : IsCoatom a) :
+    a ⊔ b = ⊤ ↔ ¬ b ≤ a :=
+  ha.dual.inf_eq_bot_iff
+
 end Pairwise
 
 end Atoms
@@ -658,7 +668,7 @@ theorem isSimpleOrder_iff_isSimpleOrder_orderDual [LE α] [BoundedOrder α] :
 theorem IsSimpleOrder.bot_ne_top [LE α] [BoundedOrder α] [IsSimpleOrder α] : (⊥ : α) ≠ (⊤ : α) := by
   obtain ⟨a, b, h⟩ := exists_pair_ne α
   rcases eq_bot_or_eq_top a with (rfl | rfl) <;> rcases eq_bot_or_eq_top b with (rfl | rfl) <;>
-    first |simpa|simpa using h.symm
+    first | simpa | simpa using h.symm
 
 section IsSimpleOrder
 

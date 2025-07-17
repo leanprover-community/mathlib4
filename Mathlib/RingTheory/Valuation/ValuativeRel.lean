@@ -75,7 +75,8 @@ class ValuativeRel (R : Type*) [CommRing R] where
   rel_mul_cancel {x y z} : ¬ rel z 0 → rel (x * z) (y * z) → rel x y
   not_rel_one_zero : ¬ rel 1 0
 
-@[inherit_doc] infix:50  " ≤ᵥ " => ValuativeRel.rel
+@[inherit_doc ValuativeRel.rel]
+notation:50 (name := valuativeRel) a:50 " ≤ᵥ " b:51 => binrel% ValuativeRel.rel a b
 
 namespace Valuation
 
@@ -120,7 +121,14 @@ lemma rel_mul_left {x y : R} (z) : x ≤ᵥ y → (z * x) ≤ᵥ (z * y) := by
 instance : Trans (rel (R := R)) (rel (R := R)) (rel (R := R)) where
   trans h1 h2 := rel_trans h1 h2
 
-lemma rel_mul {x x' y y' : R} (h1 : x ≤ᵥ y) (h2 : x' ≤ᵥ y') : x * x' ≤ᵥ y * y' := by
+protected alias rel.trans := rel_trans
+
+lemma rel_trans' {x y z : R} (h1 : y ≤ᵥ z) (h2 : x ≤ᵥ y) : x ≤ᵥ z :=
+  h2.trans h1
+
+protected alias rel.trans' := rel_trans'
+
+lemma rel_mul {x x' y y' : R} (h1 : x ≤ᵥ y) (h2 : x' ≤ᵥ y') : (x * x') ≤ᵥ y * y' := by
   calc x * x' ≤ᵥ x * y' := rel_mul_left _ h2
     _ ≤ᵥ y * y' := rel_mul_right _ h1
 
@@ -153,7 +161,7 @@ lemma left_cancel_posSubmonoid (x y : R) (u : posSubmonoid R) :
 variable (R) in
 /-- The setoid used to construct `ValueGroupWithZero R`. -/
 def valueSetoid : Setoid (R × posSubmonoid R) where
-  r := fun (x,s) (y,t) => x * t ≤ᵥ y * s ∧ y * s ≤ᵥ x * t
+  r := fun (x, s) (y, t) => x * t ≤ᵥ y * s ∧ y * s ≤ᵥ x * t
   iseqv := {
     refl ru := ⟨rel_refl _, rel_refl _⟩
     symm h := ⟨h.2, h.1⟩
@@ -259,6 +267,10 @@ theorem ValueGroupWithZero.mk_one_one : ValueGroupWithZero.mk (1 : R) 1 = 1 :=
   ValueGroupWithZero.sound (by simp) (by simp)
 
 @[simp]
+theorem ValueGroupWithZero.mk_eq_one (x : R) (y : posSubmonoid R) :
+    ValueGroupWithZero.mk x y = 1 ↔ x ≤ᵥ y ∧ y ≤ᵥ x := by
+  simp [← mk_one_one, mk_eq_mk]
+
 theorem ValueGroupWithZero.lift_zero {α : Sort*} (f : R → posSubmonoid R → α)
     (hf : ∀ (x y : R) (t s : posSubmonoid R), x * t ≤ᵥ y * s → y * s ≤ᵥ x * t → f x s = f y t) :
     ValueGroupWithZero.lift f hf 0 = f 0 1 :=
@@ -591,6 +603,34 @@ variable (R) in
   which is different from 0 and 1. -/
 class IsNontrivial where
   condition : ∃ γ : ValueGroupWithZero R, γ ≠ 0 ∧ γ ≠ 1
+
+lemma isNontrivial_iff_nontrivial_units :
+    IsNontrivial R ↔ Nontrivial (ValueGroupWithZero R)ˣ := by
+  constructor
+  · rintro ⟨γ, hγ, hγ'⟩
+    refine ⟨Units.mk0 _ hγ, 1, ?_⟩
+    simp [← Units.val_eq_one, hγ']
+  · rintro ⟨r, s, h⟩
+    rcases eq_or_ne r 1 with rfl | hr
+    · exact ⟨s.val, by simp, by simpa using h.symm⟩
+    · exact ⟨r.val, by simp, by simpa using hr⟩
+
+lemma isNontrivial_iff_isNontrivial :
+    IsNontrivial R ↔ (valuation R).IsNontrivial := by
+  constructor
+  · rintro ⟨r, hr, hr'⟩
+    induction r using ValueGroupWithZero.ind with | mk r s
+    by_cases hs : valuation R s = 1
+    · refine ⟨r, ?_, ?_⟩
+      · simpa [valuation] using hr
+      · simp only [ne_eq, ValueGroupWithZero.mk_eq_one, not_and, valuation, Valuation.coe_mk,
+          MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, OneMemClass.coe_one] at hr' hs ⊢
+        contrapose! hr'
+        exact hr'.imp hs.right.trans' hs.left.trans
+    · refine ⟨s, ?_, hs⟩
+      simp [valuation, ← posSubmonoid_def]
+  · rintro ⟨r, hr, hr'⟩
+    exact ⟨valuation R r, hr, hr'⟩
 
 variable (R) in
 /-- A ring with a valuative relation is discrete if its value group-with-zero

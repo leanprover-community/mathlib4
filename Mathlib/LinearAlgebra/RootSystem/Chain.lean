@@ -350,6 +350,12 @@ lemma chainTopCoeff_of_sub {k : ι} (hk : P.root k = P.root j - P.root i) :
   replace hk : P.root k = P.root j + P.root (-i) := by simpa [sub_eq_add_neg] using hk
   simpa using chainBotCoeff_of_add (by simpa) hk
 
+lemma chainTopCoeff_of_add {k : ι} (hk : P.root k = P.root j + P.root i) :
+    P.chainTopCoeff i j = P.chainTopCoeff i k + 1 := by
+  replace h : LinearIndependent R ![P.root i, P.root k] := by rw [hk, add_comm]; simpa
+  replace hk : P.root j = P.root k - P.root i := by rw [hk]; abel
+  exact chainTopCoeff_of_sub h hk
+
 omit h
 @[deprecated (since := "2025-05-28")]
 alias chainBotCoeff_reflection_perm_right := chainBotCoeff_reflectionPerm_right
