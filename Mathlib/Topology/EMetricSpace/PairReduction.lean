@@ -245,7 +245,7 @@ def pairSetSeq (J : Finset T) (a c : ℝ≥0∞) (n : ℕ) : Finset (T × T) :=
   else ∅
 
 open Classical in
-/-- Given the pair set sequence Kᵢ we define the pair set K by K = ⋃ i, Kᵢ -/
+/-- Given the pair set sequence Kᵢ we define the pair set K by K = ⋃ i, Kᵢ. -/
 noncomputable
 def pairSet (J : Finset T) (a c : ℝ≥0∞) : Finset (T × T) :=
   Finset.biUnion (Finset.range #J) (pairSetSeq J a c)
