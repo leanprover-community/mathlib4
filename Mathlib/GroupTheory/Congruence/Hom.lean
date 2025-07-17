@@ -306,6 +306,12 @@ def mapQ {F : Type*} [FunLike F M N] [MonoidHomClass F M N] {c : Con M} {d : Con
   __ := (c.lift (d.mk'.comp (f : M →* N))) (fun _ _ hxy ↦ d.eq.2 (hf hxy))
 
 @[to_additive]
+def mapQ_apply {F : Type*} [FunLike F M N] [MonoidHomClass F M N] {c : Con M} {d : Con N} (f : F)
+    (hf : c ≤ d.comap f (map_mul f)) (x : c.Quotient) :
+    mapQ f hf x = Quotient.map f hf x :=
+  rfl
+
+@[to_additive]
 theorem mapQ_coe {F : Type*} [FunLike F M N] [MonoidHomClass F M N] {c : Con M} {d : Con N} (f : F)
     (hf : c ≤ d.comap f (map_mul f)) (x : M) :
     Con.mapQ f hf x = f x :=
