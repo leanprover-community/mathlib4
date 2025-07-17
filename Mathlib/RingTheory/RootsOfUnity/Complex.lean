@@ -280,7 +280,7 @@ Quintic roots of unity
 -/
 
 lemma quintic_factorize_cyclotomic_polynomial [NeZero (4 : K)] {s t₁ t₂ : K} (hs : s * s = 5)
-    (ht₁ : t₁ * t₁ = - 2 * (5 + s)) (ht₂ : t₂ * t₂ = -2 * (5 -s)) (z : K) :
+    (ht₁ : t₁ * t₁ = -2 * (5 + s)) (ht₂ : t₂ * t₂ = -2 * (5 - s)) (z : K) :
     z ^ 4 + z ^ 3 + z ^ 2 + z + 1 = (z - ( (s - 1) / 4 + t₁ / 4))
                                   * (z - ( (s - 1) / 4 - t₁ / 4))
                                   * (z - (-(s + 1) / 4 + t₂ / 4))
@@ -302,7 +302,7 @@ lemma quintic_factorize_cyclotomic_polynomial [NeZero (4 : K)] {s t₁ t₂ : K}
   ring_nf
 
 lemma quintic_cyclotomic_polynomial_roots_of_sq [NeZero (4 : K)] {s t₁ t₂ : K} (hs : s * s = 5)
-    (ht₁ : t₁ * t₁ = - 2 * (5 + s)) (ht₂ : t₂ * t₂ = -2 * (5 -s)) :
+    (ht₁ : t₁ * t₁ = -2 * (5 + s)) (ht₂ : t₂ * t₂ = -2 * (5 - s)) :
     {z : K | z ^ 4 + z ^ 3 + z ^ 2 + z + 1 = 0} =
       {(s - 1) / 4 + t₁ / 4,
        (s - 1) / 4 - t₁ / 4,
@@ -313,7 +313,7 @@ lemma quintic_cyclotomic_polynomial_roots_of_sq [NeZero (4 : K)] {s t₁ t₂ : 
     sub_eq_zero, or_assoc, Set.mem_setOf_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
 
 lemma quintic_roots_of_unity_of_sq [NeZero (4 : K)] {s t₁ t₂ : K} (hs : s * s = 5)
-    (ht₁ : t₁ * t₁ = - 2 * (5 + s)) (ht₂ : t₂ * t₂ = -2 * (5 -s)) :
+    (ht₁ : t₁ * t₁ = -2 * (5 + s)) (ht₂ : t₂ * t₂ = -2 * (5 - s)) :
   {z : K | z^5 = 1} = {1,
       (s - 1) / 4 + t₁ / 4,
        (s - 1) / 4 - t₁ / 4,
