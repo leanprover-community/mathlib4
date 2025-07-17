@@ -337,8 +337,13 @@ lemma rev_anti : Antitone (@rev n) := rev_strictAnti.antitone
 @[simps! apply]
 def valOrderEmb (n) : Fin n ↪o ℕ := ⟨valEmbedding, Iff.rfl⟩
 
-instance : Inhabited (Fin n ↪o ℕ) where
+namespace OrderEmbedding
+
+@[simps]
+instance instInhabited : Inhabited (Fin n ↪o ℕ) where
   default := Fin.valOrderEmb n
+
+end OrderEmbedding
 
 /-- The ordering on `Fin n` is a well order. -/
 instance Lt.isWellOrder (n) : IsWellOrder (Fin n) (· < ·) := (valOrderEmb n).isWellOrder
