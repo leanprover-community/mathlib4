@@ -833,7 +833,7 @@ noncomputable def leftMulMatrix : S →ₐ[R] Matrix m m R where
   commutes' r := by
     ext
     rw [lmul_algebraMap, toMatrix_lsmul, algebraMap_eq_diagonal, Pi.algebraMap_def,
-      Algebra.id.map_eq_self]
+      Algebra.algebraMap_self_apply]
 
 theorem leftMulMatrix_apply (x : S) : leftMulMatrix b x = LinearMap.toMatrix b b (lmul R S x) :=
   rfl
