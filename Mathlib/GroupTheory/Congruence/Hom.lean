@@ -301,8 +301,9 @@ theorem kerLift_injective (f : M →* P) : Injective (kerLift f) := fun x y =>
 
 @[to_additive]
 def mapQ {F : Type*} [FunLike F M N] [MonoidHomClass F M N] {c : Con M} {d : Con N} (f : F)
-    (hf : c ≤ d.comap f (map_mul f)) : c.Quotient →* d.Quotient :=
-  (c.lift (d.mk'.comp (f : M →* N))) (fun _ _ hxy ↦ d.eq.2 (hf hxy))
+    (hf : c ≤ d.comap f (map_mul f)) : c.Quotient →* d.Quotient where
+  toFun := Quotient.map f hf
+  __ := (c.lift (d.mk'.comp (f : M →* N))) (fun _ _ hxy ↦ d.eq.2 (hf hxy))
 
 @[to_additive]
 theorem mapQ_coe {F : Type*} [FunLike F M N] [MonoidHomClass F M N] {c : Con M} {d : Con N} (f : F)
