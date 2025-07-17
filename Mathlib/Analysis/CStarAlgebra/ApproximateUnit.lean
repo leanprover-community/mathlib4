@@ -252,7 +252,7 @@ private lemma tendsto_mul_right_approximateUnit (m : A) :
   generalize (x : A⁺¹) = x, (m : A⁺¹) = m at *
   set g : ℝ≥0 → ℝ≥0 := fun y ↦ 1 - (1 + y)⁻¹
   have hg : Continuous g := by
-    rw [continuous_iff_continuousOn_univ]
+    rw [← continuousOn_univ]
     fun_prop (disch := intro _ _; positivity)
   have hg' : ContinuousOn (fun y ↦ (1 + ε⁻¹ ^ 2 • y)⁻¹) (spectrum ℝ≥0 m) :=
     ContinuousOn.inv₀ (by fun_prop) fun _ _ ↦ by positivity

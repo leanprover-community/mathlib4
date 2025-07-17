@@ -18,7 +18,7 @@ We define continuous cohomology as the homology of homogeneous cochains.
 
 ## Implementation details
 
-We define homogenous cochains as `g`-invariant continuous function in `C(G, C(G,...,C(G, M)))`
+We define homogeneous cochains as `g`-invariant continuous function in `C(G, C(G,...,C(G, M)))`
 instead of the usual `C(Gⁿ, M)` to allow more general topological groups other than locally compact
 ones. For this to work, we also work in `Action (TopModuleCat R) G`, where the `G` action on `M`
 is only continuous on `M`, and not necessarily continuous in both variables, because the `G` action

@@ -458,8 +458,8 @@ alias coe_extChartAt_transDiffeomorph_symm := coe_extChartAt_transContinuousLine
 theorem extChartAt_transContinuousLinearEquiv_target (x : M) :
     (extChartAt (I.transContinuousLinearEquiv e) x).target
       = e.symm ⁻¹' (extChartAt I x).target := by
-  simp only [range_comp, preimage_preimage, ContinuousLinearEquiv.image_eq_preimage, mfld_simps]
-  rfl
+  simp only [range_comp, preimage_preimage, ContinuousLinearEquiv.image_eq_preimage, mfld_simps,
+    ← comp_def]
 
 @[deprecated (since := "2025-06-12")]
 alias extChartAt_transDiffeomorph_target := extChartAt_transContinuousLinearEquiv_target
