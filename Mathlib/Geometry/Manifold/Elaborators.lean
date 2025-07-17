@@ -67,7 +67,6 @@ the following.
 
 open scoped Bundle Manifold ContDiff
 
-section
 open Lean Meta Elab Tactic
 open Mathlib.Tactic
 
@@ -361,8 +360,6 @@ elab:max "CMDiff" nt:term:arg f:term:arg : term => do
     return ← mkAppM ``ContMDiff #[srcI, tgtI, ne, e]
   | _ => throwError m!"Term {e} is not a function."
 
-end Manifold
-
 /-- `mfderiv[u] f x` elaborates to `mfderivWithin I J f x`,
 trying to determine `I` and `J` from the local context. -/
 elab:max "mfderiv[" s:term:arg "]" t:term:arg : term => do
@@ -390,4 +387,4 @@ elab:max "mfderiv%" t:term:arg : term => do
     return ← mkAppM `mfderiv #[srcI, tgtI, e]
   | _ => throwError m!"Term {e} is not a function."
 
-end
+end Manifold
