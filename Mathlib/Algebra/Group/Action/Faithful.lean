@@ -66,7 +66,17 @@ instance (R : Type*) [MulOneClass R] : FaithfulSMul R R := ⟨fun {r₁ r₂} h 
 lemma faithfulSMul_iff_injective_smul_one (R A : Type*)
     [MulOneClass A] [SMul R A] [IsScalarTower R A A] :
     FaithfulSMul R A ↔ Injective (fun r : R ↦ r • (1 : A)) := by
-  refine ⟨fun ⟨h⟩ {r₁ r₂} hr ↦ h fun a ↦ ?_, fun h ↦ ⟨fun {r₁ r₂} hr ↦ h ?_⟩⟩
-  · simp only at hr
-    rw [← one_mul a, ← smul_mul_assoc, ← smul_mul_assoc, hr]
-  · simpa using hr 1
+  refine ⟨fun ⟨h⟩ {r₁ r₂} hr ↦ h fun a ↦ ?_, fun h ↦ ⟨fun hr ↦ h (hr 1)⟩⟩
+  simp only at hr
+  rw [← one_mul a, ← smul_mul_assoc, ← smul_mul_assoc, hr]
+
+lemma FaithfulSMul.injective_smul_one (R A : Type*)
+    [MulOneClass A] [SMul R A] [IsScalarTower R A A] [FaithfulSMul R A] :
+    Injective (fun r : R ↦ r • (1 : A)) := by
+  refine fun {_ _} h ↦ eq_of_smul_eq_smul fun (a : A) ↦ ?_
+  simp only at h
+  rw [← one_mul a, ← smul_mul_assoc, ← smul_mul_assoc, h]
+
+lemma FaithfulSMul.of_injective_smul_one (R A : Type*) [One A] [SMul R A]
+    (h : Injective (fun r : R ↦ r • (1 : A))) : FaithfulSMul R A where
+  eq_of_smul_eq_smul hr := h (hr 1)

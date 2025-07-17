@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.LinearAlgebra.RootSystem.Chain
-import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
+import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
 import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
 
 /-!
@@ -233,8 +233,58 @@ lemma sub_notMem_range_coroot [CharZero R] [Finite ι]
 
 @[deprecated (since := "2025-05-24")] alias sub_nmem_range_coroot := sub_notMem_range_coroot
 
-lemma pairingIn_le_zero_of_ne [CharZero R] [IsDomain R] [P.IsCrystallographic] [Finite ι]
-    {i j} (hij : i ≠ j) (hi : i ∈ b.support) (hj : j ∈ b.support) :
+lemma linearIndepOn_rootSpanMem (S : Type*) [CommRing S] [Algebra S R] [Module S M]
+    [IsScalarTower S R M] [FaithfulSMul S R] :
+    LinearIndepOn S (P.rootSpanMem S) b.support :=
+  LinearIndepOn.restrict_scalars_span b.support.toSet b.linearIndepOn_root
+
+section BaseCombination
+
+variable (S : Type*) [CommRing S] [Module S M]
+
+/-- Produce an integer linear combination of base vectors, from a finsupp on the base. -/
+def rootCombination (f : b.support →₀ S) :=
+    Finsupp.linearCombination S (P.rootSpanMem S)
+      (f.embDomain (Embedding.subtype fun x ↦ x ∈ b.support))
+
+lemma rootCombination_apply (f : b.support →₀ S) :
+    b.rootCombination S f = f.sum fun i m ↦ m • P.rootSpanMem S i :=
+  Finsupp.sum_embDomain
+
+lemma rootCombination_add (f₁ f₂ : b.support →₀ S) :
+    b.rootCombination S (f₁ + f₂) = b.rootCombination S f₁ + b.rootCombination S f₂ := by
+  simp [rootCombination]
+
+lemma rootCombination_single (i : b.support) (s : S) :
+    b.rootCombination S (Finsupp.single i s) = s • P.rootSpanMem S i := by
+  simp [rootCombination]
+
+lemma rootCombination_ne_zero [Algebra S R] [IsScalarTower S R M] [FaithfulSMul S R]
+    {f : b.support →₀ S} (hf : f ≠ 0) :
+    b.rootCombination S f ≠ 0 := by
+  contrapose! hf
+  simp only [rootCombination_apply, SetLike.mk_smul_mk] at hf
+  apply b.linearIndepOn_rootSpanMem S
+  simpa using hf
+
+end BaseCombination
+
+variable (b : P.Base) (i j k : ι) (hij : i ≠ j) (hi : i ∈ b.support) (hj : j ∈ b.support)
+
+lemma posForm_self_of_add [Fintype ι] [FaithfulSMul ℤ R] [IsCrystallographic P]
+    (f₁ f₂ f : b.support →₀ ℤ) (h : f₁ + f₂ = f) :
+    (P.posRootForm ℤ).posForm (b.rootCombination ℤ f) (b.rootCombination ℤ f) =
+    (P.posRootForm ℤ).posForm (b.rootCombination ℤ f₁) (b.rootCombination ℤ f₁) +
+    (P.posRootForm ℤ).posForm (b.rootCombination ℤ f₂) (b.rootCombination ℤ f₂) +
+    2 • (P.posRootForm ℤ).posForm (b.rootCombination ℤ f₁) (b.rootCombination ℤ f₂) := by
+  simp only [← h, rootCombination_add, map_add, LinearMap.add_apply]
+  rw [← (P.posRootForm ℤ).isSymm_posForm (b.rootCombination ℤ f₂) (b.rootCombination ℤ f₁),
+    RingHom.id_apply]
+  abel
+
+include hij hi hj in
+variable {i j} in
+lemma pairingIn_le_zero_of_ne [Finite ι] [CharZero R] [IsDomain R] [IsCrystallographic P] :
     P.pairingIn ℤ i j ≤ 0 := by
   by_contra! h
   exact b.sub_notMem_range_root hi hj <| P.root_sub_root_mem_of_pairingIn_pos h hij
@@ -265,14 +315,15 @@ lemma pos_of_sum_smul_sub_mem_range_root
   have aux : f i ≠ 0 := fun hi₀ ↦ by simp [hi₀, P.ne_zero] at h₁
   replace hfi : (f i).AtLeastTwo := ⟨by omega⟩
   exact P.nsmul_notMem_range_root h₁
-variable {b}
-variable [CharZero R] [IsDomain R] [P.IsCrystallographic] [Finite ι] {i j : b.support}
 
-@[simp] lemma chainBotCoeff_eq_zero :
+variable {b}
+variable [CharZero R] [IsDomain R] [Finite ι] [IsCrystallographic P]
+
+@[simp] lemma chainBotCoeff_eq_zero (i j : b.support) :
     P.chainBotCoeff i j = 0 :=
   chainBotCoeff_eq_zero_iff.mpr <| Or.inr <| b.sub_notMem_range_root j.property i.property
 
-lemma chainTopCoeff_eq_of_ne (hij : i ≠ j) :
+lemma chainTopCoeff_eq_of_ne (i j : b.support) (hij : i ≠ j) :
     P.chainTopCoeff i j = -P.pairingIn ℤ j i := by
   rw [← chainTopCoeff_sub_chainBotCoeff (b.linearIndependent_pair_of_ne hij)]
   simp
