@@ -22,7 +22,9 @@ They allow writing
 - `CMDiff n f` for `ContMDiff I J n f`
 - `CMDiffAt n f x` for `ContMDiffAt I J n f x`
 - `CMDiff[u] n f` for `ContMDiffOn I J n f u`
-- `CMDiffAt[u] n f` for `ContMDiffWithinAt I J n f u x`.
+- `CMDiffAt[u] n f` for `ContMDiffWithinAt I J n f u x`,
+- `mfderiv[u] f x` for `mfderivWithin I J f s x`,
+- `mfderiv% f x` for `mfderiv I J f x`.
 
 In each of these cases, the models with corners are inferred from the domain and codomain of `f`.
 The search for models with corners uses the local context and is (almost) only syntactic, hence
@@ -383,6 +385,33 @@ elab:max "ContMDiff%" nt:term:arg f:term:arg : term => do
     let srcI ← find_model src
     let tgtI ← find_model tgt (src, srcI)
     return ← mkAppM ``ContMDiff #[srcI, tgtI, ne, e]
+  | _ => throwError m!"Term {e} is not a function."
+
+/-- `mfderiv[u] f x` elaborates to `mfderivWithin I J f x`,
+trying to determine `I` and `J` from the local context. -/
+elab:max "mfderiv[" s:term:arg "]" t:term:arg : term => do
+  let es ← Term.elabTerm s none
+  let e ← Term.elabTerm t none
+  let etype ← inferType e >>= instantiateMVars
+  let _estype ← inferType es >>= instantiateMVars
+  match etype with
+  | .forallE _ src tgt _ =>
+    let srcI ← find_model src
+    let tgtI ← find_model tgt (src, srcI)
+    -- TODO: check `estype` and src are compatible
+    return ← mkAppM ``mfderivWithin #[srcI, tgtI, e, es]
+  | _ => throwError m!"Term {e} is not a function."
+
+/-- `mfderiv f x` elaborates to `mfderiv I J f x`,
+trying to determine `I` and `J` from the local context. -/
+elab:max "mfderiv%" t:term:arg : term => do
+  let e ← Term.elabTerm t none
+  let etype ← inferType e >>= instantiateMVars
+  match etype with
+  | .forallE _ src tgt _ =>
+    let srcI ← find_model src
+    let tgtI ← find_model tgt (src, srcI)
+    return ← mkAppM `mfderiv #[srcI, tgtI, e]
   | _ => throwError m!"Term {e} is not a function."
 
 end
