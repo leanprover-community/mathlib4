@@ -72,7 +72,7 @@ as special cases of a notion of sub-Gaussianity with respect to a kernel and a m
 
 * `measure_sum_ge_le_of_iIndepFun`: Hoeffding's inequality for sums of independent sub-Gaussian
   random variables.
-* `hasSubgaussianMGF_of_mem_Icc`: Hoeffding's lemma for bounded random variables.
+* `hasSubgaussianMGF_of_centered_mem_Icc`: Hoeffding's lemma for centered bounded random variables.
 * `measure_sum_ge_le_of_HasCondSubgaussianMGF`: the Azuma-Hoeffding inequality for sub-Gaussian
   random variables.
 
@@ -729,8 +729,8 @@ end HasSubgaussianMGF
 
 section HoeffdingLemma
 
-protected lemma mgf_le_of_mem_Icc [IsProbabilityMeasure μ] {a b t : ℝ} (hm : AEMeasurable X μ)
-    (hb : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) (hc : μ[X] = 0) (ht : 0 < t) :
+protected lemma mgf_le_of_centered_mem_Icc [IsProbabilityMeasure μ] {a b t : ℝ}
+    (hm : AEMeasurable X μ) (hc : μ[X] = 0) (hb : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) (ht : 0 < t) :
     mgf X μ t ≤ exp ((‖b - a‖₊ / 2) ^ 2 * t ^ 2 / 2) := by
   have hi (u : ℝ) : Integrable (fun ω ↦ exp (u * X ω)) μ := integrable_exp_mul_of_mem_Icc hm hb
   have hs : Set.Icc 0 t ⊆ interior (integrableExpSet X μ) := by simp [hi, integrableExpSet]
@@ -747,24 +747,34 @@ protected lemma mgf_le_of_mem_Icc [IsProbabilityMeasure μ] {a b t : ℝ} (hm : 
   _ = (‖b - a‖₊ / 2) ^ 2 := by field_simp
 
 /-- **Hoeffding's lemma**: with respect to a probability measure `μ`, if `X` is a random variable
-that is almost surely in `Set.Icc a b` for some `a ≤ b` and has expectation zero, then `X` has a
+that has expectation zero and is almost surely in `Set.Icc a b` for some `a ≤ b`, then `X` has a
 sub-Gaussian moment generating function with parameter `((b - a) / 2) ^ 2`. -/
-lemma hasSubgaussianMGF_of_mem_Icc [IsProbabilityMeasure μ] {a b : ℝ} (hm : AEMeasurable X μ)
-    (hb : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) (hc : μ[X] = 0) :
+lemma hasSubgaussianMGF_of_centered_mem_Icc [IsProbabilityMeasure μ] {a b : ℝ}
+    (hm : AEMeasurable X μ) (hc : μ[X] = 0) (hb : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
     HasSubgaussianMGF X ((‖b - a‖₊ / 2) ^ 2) μ where
   integrable_exp_mul t := integrable_exp_mul_of_mem_Icc hm hb
   mgf_le t := by
     obtain ht | ht | ht := lt_trichotomy 0 t
-    · exact ProbabilityTheory.mgf_le_of_mem_Icc hm hb hc ht
+    · exact ProbabilityTheory.mgf_le_of_centered_mem_Icc hm hc hb ht
     · simp [← ht]
     calc
     _ = mgf (-X) μ (-t) := by simp [mgf]
     _ ≤ exp ((‖-a - -b‖₊ / 2) ^ 2 * (-t) ^ 2 / 2) := by
-      apply ProbabilityTheory.mgf_le_of_mem_Icc (hm.neg)
-      · filter_upwards [hb] with ω ⟨hl, hr⟩ using ⟨neg_le_neg_iff.2 hr, neg_le_neg_iff.2 hl⟩
+      apply ProbabilityTheory.mgf_le_of_centered_mem_Icc (hm.neg)
       · rw [integral_neg, hc, neg_zero]
+      · filter_upwards [hb] with ω ⟨hl, hr⟩ using ⟨neg_le_neg_iff.2 hr, neg_le_neg_iff.2 hl⟩
       · rwa [Left.neg_pos_iff]
     _ = exp (((‖b - a‖₊ / 2) ^ 2) * t ^ 2 / 2) := by ring_nf
+
+/-- A corollary of Hoeffding's lemma for bounded random variables. -/
+lemma hasSubgaussianMGF_of_mem_Icc [IsProbabilityMeasure μ] {a b : ℝ} (hm : AEMeasurable X μ)
+    (hb : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
+    HasSubgaussianMGF (fun ω ↦ X ω - μ[X]) ((‖b - a‖₊ / 2) ^ 2) μ := by
+  have : HasSubgaussianMGF (fun ω ↦ X ω - μ[X]) ((‖b - μ[X] - (a - μ[X])‖₊ / 2) ^ 2) μ := by
+    apply hasSubgaussianMGF_of_centered_mem_Icc (AEMeasurable.sub_const hm _)
+    · simp [integral_sub (Integrable.of_mem_Icc a b hm hb) (integrable_const _)]
+    · filter_upwards [hb] with ω hab using by simpa using hab
+  simpa using this
 
 end HoeffdingLemma
 
