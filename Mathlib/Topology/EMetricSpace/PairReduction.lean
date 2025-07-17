@@ -339,7 +339,7 @@ lemma edist_le_of_mem_pairSet (ha : 1 < a) (hJ_card : #J ≤ a ^ n) {s t : T}
     convert edist_self _
     simp [Nat.lt_one_iff.mp (Nat.lt_of_not_ge hn)] at hJ_card
     have ⟨hs, ht⟩ := Finset.mem_product.mp (pairSet_subset h)
-    apply Finset.card_le_one_iff.mp hJ_card ht hs
+    exact Finset.card_le_one_iff.mp hJ_card ht hs
   simp only [pairSetSeq, hJ, ↓reduceDIte, logSizeBallStruct.ball, Finset.product_eq_sprod,
     Finset.singleton_product, Finset.mem_map, Finset.mem_filter, Function.Embedding.coeFn_mk,
     Prod.mk.injEq, exists_eq_right_right] at h'
