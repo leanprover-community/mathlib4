@@ -1427,7 +1427,7 @@ lemma transitive [Lattice α] {r : α → α → Prop}
       conv_lhs => rw [← sup_eq_right.mpr (le_trans inf_le_right le_sup_left)]
       exact (h₄ inf_le_sup (h₂.mp hxy)).2))
 
-/-- Alternative conditions for a lattice congurance. -/
+/-- Alternative conditions for a lattice congruence. -/
 def LatticeCon.mk3 [Lattice α] (r : α → α → Prop) (h₁ : IsRefl α r)
     (h₂ : ∀ ⦃x y : α⦄, r x y ↔ r (x ⊓ y) (x ⊔ y))
     (h₃ : ∀ ⦃x y z : α⦄, x ≤ y → y ≤ z → r x y → r y z → r x z)
