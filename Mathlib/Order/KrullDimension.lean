@@ -1017,8 +1017,7 @@ lemma krullDim_int : krullDim ℤ = ⊤ := krullDim_of_noMaxOrder ..
 @[simp]
 lemma krullDim_enat : krullDim ℕ∞ = ⊤ := by
   change (krullDim (WithTop ℕ) = ⊤)
-  simp only [krullDim_WithTop, krullDim_nat]
-  rfl
+  simp [← WithBot.coe_top, ← WithBot.coe_one, ← WithBot.coe_add]
 
 @[simp]
 lemma height_enat (n : ℕ∞) : height n = n := by
