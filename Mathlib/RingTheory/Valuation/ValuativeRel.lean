@@ -75,8 +75,9 @@ class ValuativeRel (R : Type*) [CommRing R] where
   rel_mul_cancel {x y z} : ¬ rel z 0 → rel (x * z) (y * z) → rel x y
   not_rel_one_zero : ¬ rel 1 0
 
-@[inherit_doc ValuativeRel.rel]
-notation:50 (name := valuativeRel) a:50 " ≤ᵥ " b:51 => binrel% ValuativeRel.rel a b
+@[inherit_doc] infix:50 " ≤ᵥ " => ValuativeRel.rel
+
+macro_rules | `($a ≤ᵥ $b) => `(binrel% ValuativeRel.rel $a $b)
 
 /-- Unexpander for the `a ≤ᵥ b` notation. -/
 @[app_unexpander ValuativeRel.rel]
