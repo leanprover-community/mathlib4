@@ -11,6 +11,7 @@ import Mathlib.Geometry.Manifold.BumpFunction
 import Mathlib.Geometry.Manifold.VectorBundle.Misc
 import Mathlib.Geometry.Manifold.VectorBundle.Tensoriality
 import Mathlib.Geometry.Manifold.VectorField.LieBracket
+import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 import Mathlib.Geometry.Manifold.Elaborators
 
 /-!
@@ -54,53 +55,50 @@ def map_of_one_jet {x : M} (u : TangentSpace I x) {x' : M'} (u' : TangentSpace I
   (map_of_loc_one_jet (φ x) (mfderiv I 𝓘(𝕜, E) φ x u) (ψ x') (mfderiv I' 𝓘(𝕜, E') ψ x' u')) ∘
   φ
 
-/-
+-- TODO: version assuming `x` and `x'` are in the interior, or maybe `x` is enough.
 
-/-- Conjugating a function to write it in the preferred charts around `x`.
-The manifold derivative of `f` will just be the derivative of this conjugated function. -/
-@[simp, mfld_simps]
-def writtenInExtChartAt (x : M) (f : M → M') : E → E' :=
-  extChartAt I' (f x) ∘ f ∘ (extChartAt I x).symm
+/-- For any `(x, u) ∈ TM` and `(x', u') ∈ TM'`, `map_of_one_jet u u'` sends `x` to `x'` and
+its derivative sends `u` to `u'`. We need to assume the target manifold `M'` has no boundary
+since we cannot hope the result is `x` and `x'` are boundary points and `u` is inward
+while `u'` is outward.
 -/
-lemma map_of_one_jet_spec {x : M} (u : TangentSpace I x) {x' : M'} (u' : TangentSpace I' x') :
+lemma map_of_one_jet_spec [IsManifold I 1 M] [IsManifold I' 1 M']
+      [BoundarylessManifold I' M'] {x : M} (u : TangentSpace I x) {x' : M'}
+      (u' : TangentSpace I' x') :
     map_of_one_jet u u' x = x' ∧
     MDiffAt (map_of_one_jet u u') x ∧
     mfderiv I I' (map_of_one_jet u u') x u = u' := by
   let ψ := extChartAt I' x'
   let φ := extChartAt I x
+  let g := map_of_loc_one_jet (φ x) (mfderiv I 𝓘(𝕜, E) φ x u) (ψ x') (mfderiv I' 𝓘(𝕜, E') ψ x' u')
+  let Ψ : M' → E' := ψ -- FIXME: this is working around a limitation of MDiffAt elaborator
+  have hψ : MDiffAt Ψ x' := mdifferentiableAt_extChartAt (ChartedSpace.mem_chart_source x')
+  let Φ : M → E := φ -- FIXME: this is working around a limitation of MDiffAt elaborator
+  have hφ : MDiffAt Φ x := mdifferentiableAt_extChartAt (ChartedSpace.mem_chart_source x)
   rcases  map_of_loc_one_jet_spec (𝕜 := 𝕜)
-    (φ x) (mfderiv I 𝓘(𝕜, E) φ x u) (ψ x') (mfderiv I' 𝓘(𝕜, E') ψ x' u') with ⟨h, h', h''⟩
-  refine ⟨?_, ?_, ?_⟩
-  · simp [map_of_one_jet]
-    erw [h]
-    simp [ψ]
-  · rw [mdifferentiableAt_iff]
-    constructor
-    · unfold map_of_one_jet
-      refold_let φ ψ
-      apply ContinuousAt.comp
-      · rw [Function.comp_apply, h]
-        apply continuousAt_extChartAt_symm
-      · apply ContinuousAt.comp
-        · apply h'.continuousAt
-        · apply continuousAt_extChartAt
-    · apply h'.differentiableWithinAt.congr_of_eventuallyEq
-      · have : (extChartAt I x).target ∈ 𝓝[range I] (φ x) := by
-          apply extChartAt_target_mem_nhdsWithin
-        filter_upwards [this] with e he
-        unfold map_of_one_jet writtenInExtChartAt
-        refold_let φ ψ
-        have : (ψ.symm ∘ map_of_loc_one_jet (φ x) ((mfderiv I 𝓘(𝕜, E) (φ) x) u) (ψ x')
-                ((mfderiv I' 𝓘(𝕜, E') (ψ) x') u') ∘ φ) x = x' := by
-          rw [Function.comp_apply, Function.comp_apply, h, extChartAt_to_inv x']
-        rw [this]
-        refold_let φ ψ
-        simp only [Function.comp_apply, ]
-        rw [PartialEquiv.right_inv _ he, PartialEquiv.right_inv]
-        sorry
-      · rw [h]
-        sorry
-  · sorry
+    (φ x) (mfderiv I 𝓘(𝕜, E) φ x u) (ψ x') (mfderiv I' 𝓘(𝕜, E') ψ x' u') with
+    ⟨h : g (φ x) = ψ x', h', h''⟩
+  have hg : MDiffAt g (φ x) := mdifferentiableAt_iff_differentiableAt.mpr h'
+  have hgφ : MDiffAt (g ∘ φ) x := h'.comp_mdifferentiableAt hφ
+  let Ψi : E' → M' := ψ.symm -- FIXME: this is working around a limitation of MDiffAt elaborator
+  have hψi : MDiffAt Ψi (g (φ x)) := by
+    rw [h]
+    have := mdifferentiableWithinAt_extChartAt_symm (I := I') (mem_extChartAt_target x')
+    exact this.mdifferentiableAt (range_mem_nhds_isInteriorPoint <|
+      BoundarylessManifold.isInteriorPoint' x')
+  unfold map_of_one_jet
+  refold_let g φ ψ at *
+  refine ⟨by simp [h, ψ], hψi.comp x hgφ, ?_⟩
+  rw [mfderiv_comp x hψi hgφ, mfderiv_comp x hg hφ, mfderiv_eq_fderiv]
+  change (mfderiv 𝓘(𝕜, E') I' Ψi (g (φ x))) (fderiv 𝕜 g (φ x) <| mfderiv I 𝓘(𝕜, E) φ x u) = u'
+  rw [h] at hψi
+  rw [h'', h, ← mfderiv_comp_apply x' hψi hψ]
+  have : Ψi ∘ ψ =ᶠ[𝓝 x'] id := by
+    have : ∀ᶠ z in 𝓝 x', z ∈ ψ.source := extChartAt_source_mem_nhds x'
+    filter_upwards [this] with z hz
+    exact ψ.left_inv hz
+  simp [this.mfderiv_eq]
+  rfl
 end
 
 variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
