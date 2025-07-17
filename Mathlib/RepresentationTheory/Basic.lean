@@ -424,6 +424,12 @@ variable {k G A}
 @[simp] theorem ofDistribMulAction_apply_apply (g : G) (a : A) :
     ofDistribMulAction k G A g a = g • a := rfl
 
+@[simp]
+theorem norm_ofDistribMulAction_eq {G : Type*} [Group G] [Fintype G]
+    [DistribMulAction G A] [SMulCommClass G k A] (x : A) :
+    (ofDistribMulAction k G A).norm x = ∑ g : G, g • x := by
+  simp [norm]
+
 end DistribMulAction
 section MulDistribMulAction
 variable (M G : Type*) [Monoid M] [CommGroup G] [MulDistribMulAction M G]
@@ -436,6 +442,13 @@ def ofMulDistribMulAction : Representation ℤ M (Additive G) :=
 
 @[simp] theorem ofMulDistribMulAction_apply_apply (g : M) (a : Additive G) :
     ofMulDistribMulAction M G g a = Additive.ofMul (g • a.toMul) := rfl
+
+@[simp]
+theorem norm_ofMulDistribMulAction_eq {G M : Type} [Group G] [Fintype G]
+    [CommGroup M] [MulDistribMulAction G M] (x : Additive M) :
+    Additive.toMul ((ofMulDistribMulAction G M).norm x) =
+      ∏ g : G, g • Additive.toMul x := by
+  simp [norm]
 
 end MulDistribMulAction
 section Group

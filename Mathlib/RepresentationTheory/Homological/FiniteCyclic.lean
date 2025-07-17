@@ -3,8 +3,10 @@ import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.RepresentationTheory.Coinvariants
 import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
+import Mathlib.RepresentationTheory.Homological.GroupCohomology.Hilbert90
 import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
 import Mathlib.RepresentationTheory.Homological.Resolution
+import Mathlib.RingTheory.Norm.Basic
 import Mathlib.Tactic.Attr.Register
 
 universe v u
@@ -22,8 +24,10 @@ def resEquivalence : Action V G ≌ Action V H where
   unitIso := NatIso.ofComponents (fun X => Action.mkIso (Iso.refl _) <| by simp) <| by aesop
   counitIso := NatIso.ofComponents (fun X => Action.mkIso (Iso.refl _) <| by simp) <| by aesop
 
-instance [Preadditive V] : (resEquivalence V f).functor.Additive := by dsimp; infer_instance
-instance [Preadditive V] : (resEquivalence V f).inverse.Additive := by dsimp; infer_instance
+instance : (res V (f : G →* H)).IsEquivalence := (resEquivalence V f).isEquivalence_inverse
+
+--instance [Preadditive V] : (resEquivalence V f).functor.Additive := by dsimp; infer_instance
+--instance [Preadditive V] : (resEquivalence V f).inverse.Additive := by dsimp; infer_instance
 
 end Action
 
@@ -41,16 +45,15 @@ lemma _root_.Fin.mem_zmultiples_one (n : ℕ) (x : Fin (n + 1)) :
 
 noncomputable def mulEquiv
     (g : G) (hg : ∀ x, x ∈ Subgroup.zpowers g) {n : ℕ} (hn : orderOf g = n + 1) :
-    G ≃* ULift.{u} (Multiplicative (Fin (n + 1))) :=
-  (mulEquivOfOrderOfEq hg (g' := ofAdd 1) (fun x => x.rec fun y => y.induction ⟨0, by simp⟩
-  fun i ⟨j, hj⟩ => ⟨j + 1, by simp_all [zpow_add, ← ofAdd_add]⟩) (by
-    simp_all [orderOf_eq_card_of_forall_mem_zpowers,
-      addOrderOf_eq_card_of_forall_mem_zmultiples])).trans MulEquiv.ulift.symm
+    ULift.{u} (Multiplicative (Fin (n + 1))) ≃* G :=
+  MulEquiv.ulift.trans (mulEquivOfOrderOfEq (g := ofAdd 1)
+  (fun x => x.rec fun y => y.induction ⟨0, by simp⟩
+  fun i ⟨j, hj⟩ => ⟨j + 1, by simp_all [zpow_add, ← ofAdd_add]⟩) hg (by
+    simp_all [orderOf_eq_card_of_forall_mem_zpowers, addOrderOf_eq_card_of_forall_mem_zmultiples]))
 
 lemma mulEquiv_apply
     (g : G) (hg : ∀ x, x ∈ Subgroup.zpowers g) {n : ℕ} (hn : orderOf g = n + 1) :
-    mulEquiv g hg hn g = ⟨ofAdd 1⟩ := by
-  ext
+    mulEquiv g hg hn ⟨ofAdd 1⟩ = g := by
   simp [mulEquiv, MulEquiv.ulift]
 
 @[simps]
@@ -333,13 +336,13 @@ noncomputable def resolution.π (g : G) :
       simp [AlternatingComplex.complex, leftRegularHomEquiv, sub_eq_add_neg]⟩
 
 @[simps!]
-noncomputable def resEquivalenceChainComplexLeftRegularIso
-    {G G' : Type u} [CommGroup G] [Fintype G]
+noncomputable def resChainComplexLeftRegularIso {G G' : Type u} [CommGroup G] [Fintype G]
     [CommGroup G'] [Fintype G'] (e : G ≃* G') (g : G) (g' : G') (he : e g = g') :
-    ((Action.resEquivalence (ModuleCat k) e).functor.mapHomologicalComplex _).obj
-      (chainComplex (leftRegular k G) g) ≅ chainComplex (leftRegular k G') g' :=
+    ((Action.res (ModuleCat k) (e : G →* G')).mapHomologicalComplex _).obj
+      (chainComplex (leftRegular k G') g') ≅ chainComplex (leftRegular k G) g :=
   HomologicalComplex.Hom.isoOfComponents (fun n => Action.mkIso
-    (mapDomain.linearEquiv _ _ e).toModuleIso fun g => ModuleCat.hom_ext <| lhom_ext' fun _ => by
+    (mapDomain.linearEquiv _ _ e.symm).toModuleIso fun g =>
+    ModuleCat.hom_ext <| lhom_ext' fun _ => by
       ext : 1
       simp [ModuleCat.endRingEquiv, AlternatingComplex.complex, mapDomain.linearEquiv]) <|
     fun i j hij => Action.hom_ext _ _ <| ModuleCat.hom_ext <| Finsupp.lhom_ext' fun x => by
@@ -348,25 +351,27 @@ noncomputable def resEquivalenceChainComplexLeftRegularIso
       by_cases hj : Odd j
       · simpa [if_pos (Nat.even_add_one.2 <| Nat.not_even_iff_odd.2 hj), Representation.norm,
           AlternatingComplex.complex, mapDomain.linearEquiv, Representation.norm] using
-          Finset.sum_bijective e.symm e.symm.bijective (by aesop) (by aesop)
+          Finset.sum_bijective e e.bijective (by aesop) (by aesop)
       · simp [AlternatingComplex.complex, if_neg (Nat.not_even_iff_odd.2 <| Nat.odd_add_one.2 hj),
-          sub_eq_add_neg, mapDomain.linearEquiv, he]
+          sub_eq_add_neg, mapDomain.linearEquiv, ← he]
 
 open Limits
 
-lemma quasiIso_resEquivalence_map_π {G G' : Type u} [CommGroup G] [Fintype G]
+lemma quasiIso_res_map_π {G G' : Type u} [CommGroup G] [Fintype G]
     [CommGroup G'] [Fintype G'] (e : G ≃* G') (g : G) (g' : G') (he : e g = g')
-    [_root_.QuasiIso (finiteCyclicGroup.resolution.π k g')] :
-    _root_.QuasiIso (((Action.resEquivalence (ModuleCat k) e).functor.mapHomologicalComplex _).map
-      (finiteCyclicGroup.resolution.π k g)) :=
-  (_root_.quasiIso_iff_of_arrow_mk_iso _ (finiteCyclicGroup.resolution.π k g') <| Arrow.isoMk
-    (resEquivalenceChainComplexLeftRegularIso k e g g' he)
-    ((HomologicalComplex.singleMapHomologicalComplex
+    [_root_.QuasiIso (resolution.π k g)] :
+    _root_.QuasiIso (((Action.res (ModuleCat k) (e : G →* G')).mapHomologicalComplex _).map
+      (resolution.π k g')) := by
+  let E : Arrow.mk (((Action.res (ModuleCat k) (e : G →* G')).mapHomologicalComplex _).map
+      (resolution.π k g')) ≅ Arrow.mk (resolution.π k g) :=
+    Arrow.isoMk (resChainComplexLeftRegularIso _ _ _ _ he)
+      ((HomologicalComplex.singleMapHomologicalComplex
         (Action.res (ModuleCat k) _) (ComplexShape.down ℕ) 0).app (trivial k _ _)) <| by
       apply HomologicalComplex.to_single_hom_ext
-      simpa [resEquivalenceChainComplexLeftRegularIso, AlternatingComplex.complex,
+      simpa [resChainComplexLeftRegularIso, AlternatingComplex.complex,
         HomologicalComplex.singleObjXIsoOfEq, mapDomain.linearEquiv]
-      using Action.hom_ext _ _ <| ModuleCat.hom_ext <| lhom_ext' fun g => by ext; simp).2 ‹_›
+        using Action.hom_ext _ _ <| ModuleCat.hom_ext <| lhom_ext' fun g => by ext; simp
+  exact (_root_.quasiIso_iff_of_arrow_mk_iso _ (finiteCyclicGroup.resolution.π k g) E).2 ‹_›
 
 open ShortComplex Representation
 
@@ -416,30 +421,32 @@ instance resolution.zModQuasiIso :
 
 instance {G : Type u} [CommGroup G] [Fintype G] (g : G) (hg : ∀ x, x ∈ Subgroup.zpowers g)
     (hn : orderOf g = n + 1) :
-    _root_.QuasiIso (((Action.resEquivalence (ModuleCat k) <|
-      mulEquiv g hg hn).functor.mapHomologicalComplex _).map (resolution.π k g)) :=
-  quasiIso_resEquivalence_map_π k (mulEquiv g hg hn) g ⟨ofAdd 1⟩ (mulEquiv_apply ..)
+    _root_.QuasiIso (((Action.res (ModuleCat k) (mulEquiv g hg hn :
+        ULift.{u} (Multiplicative (Fin (n + 1))) →* G)).mapHomologicalComplex _).map
+        (resolution.π k g)) :=
+  quasiIso_res_map_π k (mulEquiv g hg hn) ⟨ofAdd 1⟩ g (mulEquiv_apply ..)
 
 lemma resolution.quasiIso
     {G : Type u} [CommGroup G] [Fintype G] (g : G) (hg : ∀ x, x ∈ Subgroup.zpowers g)
     (hn : orderOf g = n + 1) : _root_.QuasiIso (resolution.π k g) :=
   (HomologicalComplex.quasiIso_map_iff_of_preservesHomology (finiteCyclicGroup.resolution.π k g)
-    (Action.resEquivalence (ModuleCat k) (mulEquiv g hg hn)).functor).1 inferInstance
+    (Action.res (ModuleCat k) ((mulEquiv g hg hn) :
+      (ULift.{u} (Multiplicative (Fin (n + 1))) →* G)))).1 inferInstance
 
 @[simps]
 noncomputable def resolution
-    {G : Type u} [CommGroup G] [Fintype G] (g : G) (hg : ∀ x, x ∈ Subgroup.zpowers g)
-    (hn : orderOf g = n + 1) :
+    {G : Type u} [CommGroup G] [Fintype G] (g : G) (hg : ∀ x, x ∈ Subgroup.zpowers g) :
     ProjectiveResolution (trivial k G k) where
   complex := chainComplex (leftRegular k G) g
   projective _ := inferInstanceAs <| Projective (leftRegular k G)
   π := resolution.π k g
-  quasiIso := resolution.quasiIso n k g hg hn
+  quasiIso := resolution.quasiIso (orderOf g).pred k g hg <|
+    (Nat.succ_pred (Nat.ne_zero_iff_zero_lt.2 <| orderOf_pos g)).symm
 
 @[simps!]
 noncomputable def homResolutionIso {G : Type u} [CommGroup G] [Fintype G] (g : G)
-    (hg : ∀ x, x ∈ Subgroup.zpowers g) (hn : orderOf g = n + 1) (A : Rep k G) :
-    (resolution n k g hg hn).complex.linearYonedaObj k A ≅ moduleCatCochainComplex A g :=
+    (hg : ∀ x, x ∈ Subgroup.zpowers g) (A : Rep k G) :
+    (resolution k g hg).complex.linearYonedaObj k A ≅ moduleCatCochainComplex A g :=
   HomologicalComplex.Hom.isoOfComponents (fun _ => (leftRegularHomEquiv A).toModuleIso) <| by
     rintro i j ⟨rfl⟩
     ext (x : leftRegular _ _ ⟶ _)
@@ -449,35 +456,135 @@ noncomputable def homResolutionIso {G : Type u} [CommGroup G] [Fintype G] (g : G
     · simp [AlternatingComplex.complex, hi, Nat.even_add_one.2 hi, Representation.norm,
         ← hom_comm_apply x]
 
+/-
+#check (((linearYoneda k (ModuleCat k)).obj _).rightOp.mapHomologicalComplex _).mapIso
+@[simps!]
+noncomputable def inhomogeneousCochainsIso
+    {G : Type u} [CommGroup G] [Fintype G] [DecidableEq G] (g : G)
+    (hg : ∀ x, x ∈ Subgroup.zpowers g) (A : Rep k G) :
+    groupCohomology.inhomogeneousCochains A ≅ moduleCatCochainComplex A g :=
+  groupCohomology.inhomogeneousCochainsIso A ≪≫
+  (((linearYoneda k (ModuleCat k)).obj _).rightOp.mapHomologicalComplex _).mapIso _ ≪≫ homResolutionIso k g hg A
+-/
 open ShortComplex Limits
+
+variable {k}
+
+noncomputable abbrev normHomCompSub : ShortComplex (ModuleCat k) :=
+  mk _ _ (norm_hom_comp_sub A g)
+
+noncomputable abbrev subCompNormHom : ShortComplex (ModuleCat k) :=
+  mk _ _ (sub_comp_norm_hom A g)
 
 noncomputable def groupCohomologyIso₀
     {G : Type u} [CommGroup G] [Fintype G] [DecidableEq G] (g : G)
-    (hg : ∀ x, x ∈ Subgroup.zpowers g) (hn : orderOf g = n + 1) (A : Rep k G) :
+    (hg : ∀ x, x ∈ Subgroup.zpowers g) (A : Rep k G) :
     groupCohomology A 0 ≅ (mk _ (applyAsHom A g - 𝟙 A).hom (zero_comp (X := A.V))).cycles :=
-  groupCohomologyIso A 0 (resolution n k g hg hn) ≪≫
-  (HomologicalComplex.homologyMapIso (homResolutionIso n k g hg hn A) 0) ≪≫
+  groupCohomologyIso A 0 (resolution k g hg) ≪≫
+  (HomologicalComplex.homologyMapIso (homResolutionIso k g hg A) 0) ≪≫
   (CochainComplex.isoHomologyπ₀ _).symm ≪≫
   cyclesMapIso (HomologicalComplex.isoSc' _ 0 0 1 (by simp) (by simp))
 
 noncomputable def groupCohomologyEvenIso
     {G : Type u} [CommGroup G] [Fintype G] [DecidableEq G] (g : G)
-    (hg : ∀ x, x ∈ Subgroup.zpowers g) (hn : orderOf g = n + 1) (A : Rep k G)
-    (i : ℕ) (hi : Even (i + 1)) :
-    groupCohomology A (i + 1) ≅ (mk _ _ (norm_hom_comp_sub A g)).homology :=
-  groupCohomologyIso A (i + 1) (resolution n k g hg hn) ≪≫
-  (HomologicalComplex.homologyMapIso (homResolutionIso n k g hg hn A) (i + 1)) ≪≫
+    (hg : ∀ x, x ∈ Subgroup.zpowers g) (A : Rep k G) (i : ℕ) (hi : Even (i + 1)) :
+    groupCohomology A (i + 1) ≅ (normHomCompSub g A).homology :=
+  groupCohomologyIso A (i + 1) (resolution k g hg) ≪≫
+  (HomologicalComplex.homologyMapIso (homResolutionIso k g hg A) (i + 1)) ≪≫
   AlternatingComplex.complex.homologyEvenIso A.V (sub_comp_norm_hom A g) (norm_hom_comp_sub A g)
     (fun _ _ => AlternatingComplex.up_odd_add) (by simp) (by simp) hi
 
+open groupCohomology
+
+noncomputable abbrev πEven
+    {G : Type u} [CommGroup G] [Fintype G] [DecidableEq G] (g : G)
+    (hg : ∀ x, x ∈ Subgroup.zpowers g) (A : Rep k G) (i : ℕ) (hi : Even (i + 1)) :
+    ModuleCat.of k (LinearMap.ker (applyAsHom A g - 𝟙 A).hom.hom) ⟶
+      groupCohomology A (i + 1) :=
+    (moduleCatCyclesIso <| normHomCompSub g A).inv ≫
+      ShortComplex.homologyπ _ ≫ (groupCohomologyEvenIso g hg A i hi).inv
+
+lemma πEven_eq_zero_iff
+    {G : Type u} [CommGroup G] [Fintype G] [DecidableEq G] (g : G)
+    (hg : ∀ x, x ∈ Subgroup.zpowers g) (A : Rep k G) (i : ℕ) (hi : Even (i + 1))
+    (x : LinearMap.ker (applyAsHom A g - 𝟙 A).hom.hom) :
+    πEven g hg A i hi x = 0 ↔ x.1 ∈ LinearMap.range A.norm.hom.hom := by
+  simp [πEven, map_eq_zero_iff _ ((ModuleCat.mono_iff_injective _).1 inferInstance),
+    moduleCatToCycles, -LinearMap.mem_range, LinearMap.range_codRestrict]
+
+lemma πEven_eq_iff {G : Type u} [CommGroup G] [Fintype G] [DecidableEq G] (g : G)
+    (hg : ∀ x, x ∈ Subgroup.zpowers g) (A : Rep k G) (i : ℕ) (hi : Even (i + 1))
+    (x y : LinearMap.ker (applyAsHom A g - 𝟙 A).hom.hom) :
+    πEven g hg A i hi x = πEven g hg A i hi y ↔ x.1 - y.1 ∈ LinearMap.range A.norm.hom.hom := by
+  rw [← sub_eq_zero, ← map_sub, πEven_eq_zero_iff]; rfl
+
 noncomputable def groupCohomologyOddIso
     {G : Type u} [CommGroup G] [Fintype G] [DecidableEq G] (g : G)
-    (hg : ∀ x, x ∈ Subgroup.zpowers g) (hn : orderOf g = n + 1) (A : Rep k G)
-    (i : ℕ) (hi : Odd (i + 1)) :
+    (hg : ∀ x, x ∈ Subgroup.zpowers g) (A : Rep k G) (i : ℕ) (hi : Odd (i + 1)) :
     groupCohomology A (i + 1) ≅ (mk _ _ (sub_comp_norm_hom A g)).homology :=
-  groupCohomologyIso A (i + 1) (resolution n k g hg hn) ≪≫
-  (HomologicalComplex.homologyMapIso (homResolutionIso n k g hg hn A) (i + 1)) ≪≫
+  groupCohomologyIso A (i + 1) (resolution k g hg) ≪≫
+  (HomologicalComplex.homologyMapIso (homResolutionIso k g hg A) (i + 1)) ≪≫
   AlternatingComplex.complex.homologyOddIso A.V (sub_comp_norm_hom A g) (norm_hom_comp_sub A g)
     (fun _ _ => AlternatingComplex.up_odd_add) (by simp) (by simp) hi
 
-end Rep.finiteCyclicGroup
+noncomputable abbrev πOdd
+    {G : Type u} [CommGroup G] [Fintype G] [DecidableEq G] (g : G)
+    (hg : ∀ x, x ∈ Subgroup.zpowers g) (A : Rep k G) (i : ℕ) (hi : Odd (i + 1)) :
+    ModuleCat.of k (LinearMap.ker A.norm.hom.hom) ⟶
+      groupCohomology A (i + 1) :=
+    (moduleCatCyclesIso <| subCompNormHom g A).inv ≫
+      ShortComplex.homologyπ _ ≫ (groupCohomologyOddIso g hg A i hi).inv
+
+lemma πOdd_eq_zero_iff
+    {G : Type u} [CommGroup G] [Fintype G] [DecidableEq G] (g : G)
+    (hg : ∀ x, x ∈ Subgroup.zpowers g) (A : Rep k G) (i : ℕ) (hi : Odd (i + 1))
+    (x : LinearMap.ker A.norm.hom.hom) :
+    πOdd g hg A i hi x = 0 ↔ x.1 ∈ LinearMap.range (applyAsHom A g - 𝟙 A).hom.hom := by
+  simp [πOdd, map_eq_zero_iff _ ((ModuleCat.mono_iff_injective _).1 inferInstance),
+    moduleCatToCycles, -LinearMap.mem_range, LinearMap.range_codRestrict]
+
+lemma πOdd_eq_iff {G : Type u} [CommGroup G] [Fintype G] [DecidableEq G] (g : G)
+    (hg : ∀ x, x ∈ Subgroup.zpowers g) (A : Rep k G) (i : ℕ) (hi : Odd (i + 1))
+    (x y : LinearMap.ker A.norm.hom.hom) :
+    πOdd g hg A i hi x = πOdd g hg A i hi y ↔
+      x.1 - y.1 ∈ LinearMap.range (applyAsHom A g - 𝟙 A).hom.hom := by
+  rw [← sub_eq_zero, ← map_sub, πOdd_eq_zero_iff]; rfl
+
+end finiteCyclicGroup
+
+variable {K L : Type} [Field K] [Field L] [Algebra K L] [FiniteDimensional K L] [IsGalois K L]
+
+-- could move to `RepresentationTheory.Rep` but would have to add imports
+/-- Given `L/K` finite and Galois, and `x : Lˣ`, this essentially says
+`(∏ σ) • x = N_{L/K}(x)`, where the product is over `σ ∈ Gal(L/K)`. -/
+theorem norm_ofAlgebraAutOnUnits_eq (x : Lˣ) :
+    (Additive.toMul (α := Lˣ) ((Rep.ofAlgebraAutOnUnits K L).norm.hom
+      (Additive.ofMul (α := Lˣ) x))).1 = algebraMap K L (Algebra.norm K (x : L)) := by
+  simp [Algebra.norm_eq_prod_automorphisms, ofMulDistribMulAction]
+
+variable [IsCyclic (L ≃ₐ[K] L)] [DecidableEq (L ≃ₐ[K] L)]
+
+attribute [local instance] IsCyclic.commGroup
+
+theorem hilbert90_again (g : L ≃ₐ[K] L) (hg : ∀ x, x ∈ Subgroup.zpowers g) (x : L) (hx : Algebra.norm K x = 1) :
+    ∃ y : Lˣ, g y / y = x := by
+  let xu : Lˣ := (Ne.isUnit (fun h0 => zero_ne_one (Algebra.norm_zero.symm.trans
+     (h0 ▸ hx))) : IsUnit x).unit
+  have hx' : algebraMap K L (Algebra.norm K (xu : L)) = _ := congrArg (algebraMap K L) hx
+  rw [← norm_ofAlgebraAutOnUnits_eq xu, map_one] at hx'
+  have := finiteCyclicGroup.πOdd_eq_zero_iff g hg (ofAlgebraAutOnUnits K L) 0 (by simp) --⟨xu, hx'⟩
+  let f := oneCocyclesOfGenerator (A := Rep.ofAlgebraAutOnUnits K L) (Additive.ofMul xu) g hg
+    (Additive.toMul.injective (Units.ext hx'))
+  obtain ⟨ε, hε⟩ := groupCohomology.hilbert90 _ (isMulOneCocycle_of_oneCocycles f)
+  use ε
+  specialize hε g
+  simpa only [AlgEquiv.smul_units_def, Rep.ofAlgebraAutOnUnits, Function.comp_apply,
+    oneCocyclesOfGenerator_self, Units.ext_iff, Units.val_div_eq_div_val, Units.coe_map,
+    MonoidHom.coe_coe] using hε
+  sorry
+
+
+  --[CommGroup G] [Fintype G] [DecidableEq G] (g : G)
+  --  (hg : ∀ x, x ∈ Subgroup.zpowers g) (hn : orderOf g = n + 1)
+
+end Rep
