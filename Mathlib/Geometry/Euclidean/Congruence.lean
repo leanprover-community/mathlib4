@@ -110,10 +110,7 @@ theorem angle_eq_of_congruent (h : v₁ ≅ v₂) (i j k : ι) :
     ∠ (v₁ i) (v₁ j) (v₁ k) = ∠ (v₂ i) (v₂ j) (v₂ k) := by
   unfold EuclideanGeometry.angle
   unfold InnerProductGeometry.angle
-  have key := abs_le.1 (abs_real_inner_div_norm_mul_norm_le_one (v₁ i -ᵥ v₁ j) (v₁ k -ᵥ v₁ j))
-  have key' := abs_le.1 (abs_real_inner_div_norm_mul_norm_le_one (v₂ i -ᵥ v₂ j) (v₂ k -ᵥ v₂ j))
-  rw [Real.arccos_inj key.1 key.2 key'.1 key'.2]
-  simp only [real_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two,
-    ← dist_eq_norm_vsub, h.dist_eq, vsub_sub_vsub_cancel_right]
+  simp_rw [real_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two,
+    ← dist_eq_norm_vsub, h.dist_eq]
 
 end EuclideanGeometry
