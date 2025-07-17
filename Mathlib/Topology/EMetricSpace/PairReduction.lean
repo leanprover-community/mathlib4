@@ -156,15 +156,15 @@ lemma radius_logSizeBallSeq_le (hJ : J.Nonempty) (ha : 1 < a) (hn : 1 ≤ n) (hJ
     (i : ℕ) : (logSizeBallSeq J hJ a c i).radius ≤ n := by
   match i with
   | 0 =>
-      simp only [radius_logSizeBallSeq_zero, logSizeRadius, ha, ↓reduceDIte]
-      exact Nat.find_min' _ ⟨hn, le_trans (by gcongr; apply Finset.filter_subset) hJ_card⟩
+    simp only [radius_logSizeBallSeq_zero, logSizeRadius, ha, ↓reduceDIte]
+    exact Nat.find_min' _ ⟨hn, le_trans (by gcongr; apply Finset.filter_subset) hJ_card⟩
   | i + 1 =>
-      simp only [radius_logSizeBallSeq_add_one, logSizeRadius, ha, ↓reduceDIte]
-      refine Nat.find_min' _ ⟨hn, le_trans ?_ hJ_card⟩
-      gcongr
-      apply subset_trans (Finset.filter_subset _ _)
-      apply subset_trans <| (antitone_logSizeBallSeq_add_one_subset hJ) (zero_le (i + 1))
-      simp [finset_logSizeBallSeq_zero]
+    simp only [radius_logSizeBallSeq_add_one, logSizeRadius, ha, ↓reduceDIte]
+    refine Nat.find_min' _ ⟨hn, le_trans ?_ hJ_card⟩
+    gcongr
+    apply subset_trans (Finset.filter_subset _ _)
+    apply subset_trans <| (antitone_logSizeBallSeq_add_one_subset hJ) (zero_le (i + 1))
+    simp [finset_logSizeBallSeq_zero]
 
 lemma one_le_radius_logSizeBallSeq (hJ : J.Nonempty) (ha : 1 < a) (i : ℕ) :
     1 ≤ (logSizeBallSeq J hJ a c i).radius := by
