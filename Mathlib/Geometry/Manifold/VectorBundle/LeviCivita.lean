@@ -129,7 +129,7 @@ variable (cov : CovariantDerivative I E (TangentSpace I : M → Type _))
 def IsCompatible : Prop :=
   ∀ X Y Z : Π x : M, TangentSpace I x, -- XXX: missing differentiability hypotheses!
   ∀ x : M,
-  mfderiv I 𝓘(ℝ) ⟪Y, Z⟫ x (X x) = ⟪cov X Y, Z⟫ x + ⟪Y, cov X Z⟫ x
+  mfderiv% ⟪Y, Z⟫ x (X x) = ⟪cov X Y, Z⟫ x + ⟪Y, cov X Z⟫ x
 
 -- TODO: make g part of the notation!
 /-- A covariant derivative on `TM` is called the **Levi-Civita connection** for a Riemannian metric
@@ -138,7 +138,7 @@ def IsLeviCivitaConnection : Prop := cov.IsCompatible ∧ cov.IsTorsionFree
 
 -- This is mild defeq abuse, right?
 variable (X Y Z) in
-noncomputable abbrev rhs_aux : M → ℝ := fun x ↦ (mfderiv I 𝓘(ℝ) ⟪Y, Z⟫ x (X x))
+noncomputable abbrev rhs_aux : M → ℝ := fun x ↦ (mfderiv% ⟪Y, Z⟫ x (X x))
 
 section rhs_aux
 
@@ -180,7 +180,7 @@ lemma rhs_aux_smulX (f : M → ℝ) : rhs_aux I (f • X) Y Z = f • rhs_aux I 
 
 variable (X) in
 lemma rhs_aux_smulY {f : M → ℝ} (hf : MDiff f) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
-    letI A (x) : ℝ := (mfderiv I 𝓘(ℝ, ℝ) f x) (X x)
+    letI A (x) : ℝ := (mfderiv% f x) (X x)
     rhs_aux I X (f • Y) Z = f • rhs_aux I X Y Z + A • ⟪Y, Z⟫ := by
   ext x
   rw [rhs_aux, product_smul_left, mfderiv_smul (foo hY hZ x) (hf x)]
@@ -188,7 +188,7 @@ lemma rhs_aux_smulY {f : M → ℝ} (hf : MDiff f) (hY : MDiff (T% Y)) (hZ : MDi
 
 variable (X) in
 lemma rhs_aux_smulZ {f : M → ℝ} (hf : MDiff f) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
-    letI A (x) : ℝ := (mfderiv I 𝓘(ℝ, ℝ) f x) (X x)
+    letI A (x) : ℝ := (mfderiv% f x) (X x)
     rhs_aux I X Y (f • Z) = f • rhs_aux I X Y Z + A • ⟪Y, Z⟫ := by
   rw [rhs_aux_swap, rhs_aux_smulY, rhs_aux_swap, product_swap]
   exacts [hf, hZ, hY]
@@ -299,12 +299,12 @@ lemma leviCivita_rhs_smulZ [CompleteSpace E] {f : M → ℝ} (hf : MDiff f) (hZ 
   ext x
   simp only [Pi.mul_apply, Pi.add_apply]
   have h1 : VectorField.mlieBracket I X (f • Z) =
-      f • VectorField.mlieBracket I X Z + (fun x ↦ mfderiv I 𝓘(ℝ, ℝ) f x (X x)) • Z := by
+      f • VectorField.mlieBracket I X Z + (fun x ↦ mfderiv% f x (X x)) • Z := by
     ext x
     rw [VectorField.mlieBracket_smul_right (hf x) (hZ x), add_comm]
     simp
   have h2 : VectorField.mlieBracket I (f • Z) Y =
-      -(fun x ↦ mfderiv I 𝓘(ℝ, ℝ) f x (Y x)) • Z + f • VectorField.mlieBracket I Z Y := by
+      -(fun x ↦ mfderiv% f x (Y x)) • Z + f • VectorField.mlieBracket I Z Y := by
     ext x
     rw [VectorField.mlieBracket_smul_left (hf x) (hZ x)]
     simp
@@ -312,7 +312,7 @@ lemma leviCivita_rhs_smulZ [CompleteSpace E] {f : M → ℝ} (hf : MDiff f) (hZ 
   set A := rhs_aux I X Y Z x
   set B := rhs_aux I Y Z X x
   set C := rhs_aux I Z X Y x
-  set D := (fun x ↦ (mfderiv I 𝓘(ℝ, ℝ) f x) (X x)) • Z
+  set D := (fun x ↦ (mfderiv% f x) (X x)) • Z
 
   rw [product_add_right, product_add_right]
   -- These are all science fiction, and not fully true!
