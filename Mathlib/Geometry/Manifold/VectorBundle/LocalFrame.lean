@@ -414,14 +414,14 @@ lemma localFrame_repr_apply_of_notMem_baseSet (hx : x ∉ e.baseSet) (s : Π x :
   simpa [localFrame_repr] using
     (localFrame_isLocalFrameOn_baseSet I 1 e b).repr_apply_of_notMem hx s i
 
--- XXX: do I want this lemma, or just the IsLocalFrameOn version?
+omit [IsManifold I 0 M] in
 variable (e b) in
 @[simp]
 lemma localFrame_repr_apply_of_mem_baseSet (hx : x ∈ e.baseSet) (s : Π x : M, V x) (i : ι) :
     b.localFrame_repr I e i s x = (b.localFrame_toBasis_at e hx).repr (s x) i := by
-  simp [localFrame_repr, hx, localFrame_toBasis_at, IsLocalFrameOn.toBasisAt]
-  congr
-  sorry
+  have ilf := b.localFrame_isLocalFrameOn_baseSet I 1 e
+  rw [show localFrame_toBasis_at e b hx = ilf.toBasisAt hx by ext j; simp [localFrame, hx]]
+  exact ilf.repr_apply_of_mem hx s i
 
 -- TODO: better name?
 omit [IsManifold I 0 M] in
@@ -457,6 +457,7 @@ lemma localFrame_repr_apply_zero_at
 
 variable {n}
 
+omit [IsManifold I 0 M] in
 /-- Suppose `e` is a compatible trivialisation around `x ∈ M`, and `s` a bundle section.
 Then the coefficient of `s` w.r.t. the local frame induced by `b` and `e`
 equals the cofficient of "`s x` read in the trivialisation `e`" for `b i`. -/
@@ -648,7 +649,8 @@ lemma mdifferentiableOn_iff_localFrame_repr [Fintype ι] [FiniteDimensional 𝕜
   refine ⟨fun h i ↦ mdifferentiableOn_localFrame_repr b ht ht' h i, fun hi ↦ ?_⟩
   apply ((b.localFrame_isLocalFrameOn_baseSet I 1 e).mono ht').mdifferentiableOn_of_repr (t := s)
   convert hi
-  sorry -- should be easy/already done above
+  sorry -- should be easy/already done above.
+  -- This doesn’t seem to be used except in the next lemma that is not used anywhere.
 
 omit [IsManifold I 0 M] in
 /-- A section `s` of `V` is differentiable on a trivialisation domain `e.baseSet` iff each of its
@@ -706,6 +708,7 @@ lemma localExtensionOn_apply_self (hx : x ∈ e.baseSet) (v : V x) :
   simp [localExtensionOn, hx]
   nth_rw 2 [← (b.localFrame_toBasis_at e hx).sum_repr v]
 
+omit [IsManifold I 0 M] in
 /-- A local extension has constant frame coefficients within its defining trivialisation. -/
 lemma localExtensionOn_localFrame_repr (b : Basis ι 𝕜 F) [ContMDiffVectorBundle 1 F V I]
     {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
