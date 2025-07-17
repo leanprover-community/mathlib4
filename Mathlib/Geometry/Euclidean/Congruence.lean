@@ -111,6 +111,6 @@ theorem angle_eq_of_congruent (h : v₁ ≅ v₂) (i j k : ι) :
   unfold EuclideanGeometry.angle
   unfold InnerProductGeometry.angle
   simp_rw [real_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two,
-    ← dist_eq_norm_vsub, h.dist_eq]
+    vsub_sub_vsub_cancel_right, ← dist_eq_norm_vsub, h.dist_eq]
 
 end EuclideanGeometry
