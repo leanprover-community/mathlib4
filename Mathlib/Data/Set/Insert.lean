@@ -415,7 +415,7 @@ theorem Nonempty.subset_pair_iff_eq (hs : s.Nonempty) :
 /-! ### Powerset -/
 
 /-- The powerset of a singleton contains only `∅` and the singleton itself. -/
-theorem powerset_singleton (x : α) : 𝒫({x} : Set α) = {∅, {x}} := by
+theorem powerset_singleton (x : α) : 𝒫 ({x} : Set α) = {∅, {x}} := by
   ext y
   rw [mem_powerset_iff, subset_singleton_iff_eq, mem_insert_iff, mem_singleton_iff]
 

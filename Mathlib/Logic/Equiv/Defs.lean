@@ -65,7 +65,7 @@ structure Equiv (α : Sort*) (β : Sort _) where
   protected toFun : α → β
   protected invFun : β → α
   protected left_inv : LeftInverse invFun toFun := by intro; first | rfl | ext <;> rfl
-  protected right_inv : RightInverse invFun toFun := by intro; first |  rfl | ext <;> rfl
+  protected right_inv : RightInverse invFun toFun := by intro; first | rfl | ext <;> rfl
 
 @[inherit_doc]
 infixl:25 " ≃ " => Equiv

@@ -764,7 +764,7 @@ def isColimitCocone : IsColimit (cocone f g) :=
       | Sum.inr x₂ => s.inr x₂) (by
     rintro _ _ ⟨t⟩
     exact congr_fun s.condition t)) (fun _ => rfl) (fun _ => rfl) (fun s m h₁ h₂ => by
-      ext ⟨x₁|x₂⟩
+      ext ⟨x₁ | x₂⟩
       · exact congr_fun h₁ x₁
       · exact congr_fun h₂ x₂)
 
@@ -773,10 +773,10 @@ lemma inl_rel'_inl_iff (x₁ y₁ : X₁) :
     Rel' f g (Sum.inl x₁) (Sum.inl y₁) ↔ x₁ = y₁ ∨
       ∃ (x₀ y₀ : S) (_ : g x₀ = g y₀), x₁ = f x₀ ∧ y₁ = f y₀ := by
   constructor
-  · rintro (_|⟨_, _, h⟩)
+  · rintro (_ | ⟨_, _, h⟩)
     · exact Or.inl rfl
     · exact Or.inr ⟨_, _, h, rfl, rfl⟩
-  · rintro (rfl | ⟨_,_ , h, rfl, rfl⟩)
+  · rintro (rfl | ⟨_, _, h, rfl, rfl⟩)
     · apply Rel'.refl
     · exact Rel'.inl_inl _ _ h
 
@@ -803,7 +803,7 @@ variable {f g}
 
 lemma Rel'.symm {x y : X₁ ⊕ X₂} (h : Rel' f g x y) :
     Rel' f g y x := by
-  obtain _|⟨_, _, h⟩|_|_ := h
+  obtain _ | ⟨_, _, h⟩ | _ | _ := h
   · apply Rel'.refl
   · exact Rel'.inl_inl _ _ h.symm
   · exact Rel'.inr_inl _

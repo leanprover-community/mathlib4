@@ -137,7 +137,7 @@ theorem chain_iff_get {R} : ∀ {a : α} {l : List α}, Chain R a l ↔
     constructor
     · apply h 0
     intro i w
-    exact h (i+1) (by simp only [length_cons]; omega)
+    exact h (i + 1) (by simp only [length_cons]; omega)
 
 theorem chain_replicate_of_rel (n : ℕ) {a : α} (h : r a a) : Chain r a (replicate n a) :=
   match n with

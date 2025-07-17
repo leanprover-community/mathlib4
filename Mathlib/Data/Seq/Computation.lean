@@ -215,8 +215,7 @@ theorem corec_eq (f : β → α ⊕ β) (b : β) : destruct (corec f b) = rmap (
     dsimp [Corec.f, Stream'.corec', Stream'.corec, Stream'.map, Stream'.get, Stream'.iterate]
     match (f b) with
     | Sum.inl x => rfl
-    | Sum.inr x => rfl
-    ]
+    | Sum.inr x => rfl]
   induction' h : f b with a b'; · rfl
   dsimp [Corec.f, destruct]
   apply congr_arg; apply Subtype.eq
@@ -259,7 +258,7 @@ theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s
       · constructor <;> dsimp at h
         · rw [h]
         · rw [h] at r
-          rw [tail_pure, tail_pure,h]
+          rw [tail_pure, tail_pure, h]
           assumption
       · rw [destruct_pure, destruct_think] at h
         exact False.elim h
@@ -646,7 +645,7 @@ theorem bind_assoc (s : Computation α) (f : α → Computation β) (g : β → 
       · simp only [BisimO, ret_bind]; generalize f s = fs
         apply recOn fs <;> intro t <;> simp
         · rcases destruct (g t) with b | cb <;> simp
-      · simpa  [BisimO] using Or.inr ⟨s, rfl, rfl⟩
+      · simpa [BisimO] using Or.inr ⟨s, rfl, rfl⟩
   · exact Or.inr ⟨s, rfl, rfl⟩
 
 theorem results_bind {s : Computation α} {f : α → Computation β} {a b m n} (h1 : Results s a m)
