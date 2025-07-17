@@ -106,10 +106,7 @@ theorem A_fibre_over_contestant (c : C) :
     (Finset.univ.filter fun p : JudgePair J => p.Agree r c ∧ p.Distinct) =
       ((A r).filter fun a : AgreedTriple C J => a.contestant = c).image Prod.snd := by
   ext p
-  simp only [A, Finset.mem_univ, Finset.mem_filter, Finset.mem_image]
-  constructor
-  · rintro ⟨_, h₂⟩; refine ⟨(c, p), ?_⟩; tauto
-  · intro h; aesop
+  simp [A]
 
 open scoped Classical in
 theorem A_fibre_over_contestant_card (c : C) :

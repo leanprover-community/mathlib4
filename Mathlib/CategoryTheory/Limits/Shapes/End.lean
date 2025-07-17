@@ -76,6 +76,16 @@ namespace Wedge
 
 variable {F}
 
+/-- A variant of `CategoryTheory.Limits.Cones.ext` specialized to produce
+isomorphisms of wedges. -/
+@[simps!]
+def ext {W₁ W₂ : Wedge F} (e : W₁.pt ≅ W₂.pt)
+    (he : ∀ j : J, W₁.ι j = e.hom ≫ W₂.ι j := by aesop_cat) : W₁ ≅ W₂ :=
+  Cones.ext e (fun j =>
+    match j with
+    | .left _ => he _
+    | .right f => by simpa using (he f.left) =≫ _)
+
 section Constructor
 
 variable (pt : C) (π : ∀ (j : J), pt ⟶ (F.obj (op j)).obj j)
@@ -129,6 +139,16 @@ abbrev Cowedge := Multicofork (multispanIndexCoend F)
 namespace Cowedge
 
 variable {F}
+
+/-- A variant of `CategoryTheory.Limits.Cocones.ext` specialized to produce
+isomorphisms of cowedges. -/
+@[simps!]
+def ext {W₁ W₂ : Cowedge F} (e : W₁.pt ≅ W₂.pt)
+    (he : ∀ j : J, W₁.π j ≫ e.hom  = W₂.π j := by aesop_cat) : W₁ ≅ W₂ :=
+  Cocones.ext e (fun j =>
+    match j with
+    | .right _ => he _
+    | .left f => by simpa using _ ≫= (he f.left))
 
 section Constructor
 

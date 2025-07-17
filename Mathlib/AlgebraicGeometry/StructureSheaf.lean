@@ -173,10 +173,7 @@ def sectionsSubring (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     fconstructor
     · intro H; cases y.isPrime.mem_or_mem H <;> contradiction
     · simp only [Opens.apply_mk, Pi.add_apply, RingHom.map_mul, add_mul, RingHom.map_add] at wa wb ⊢
-      rw [← wa, ← wb]
-      simp only [mul_assoc]
-      congr 2
-      rw [mul_comm]
+      grind
   neg_mem' := by
     intro a ha x
     rcases ha x with ⟨V, m, i, r, s, w⟩
