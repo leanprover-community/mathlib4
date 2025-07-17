@@ -104,9 +104,10 @@ theorem range_d₁₀_eq_coinvariantsKer :
     use single x.1⁻¹ x.2
     simp [d₁₀]
   · rintro x ⟨y, hy⟩
-    induction' y using Finsupp.induction with _ _ _ _ _ h generalizing x
-    · simp [← hy]
-    · simpa [← hy, add_sub_add_comm, sum_add_index, d₁₀_single (G := G)]
+    induction y using Finsupp.induction generalizing x with
+    | zero => simp [← hy]
+    | single_add _ _ _ _ _ h =>
+      simpa [← hy, add_sub_add_comm, sum_add_index, d₁₀_single (G := G)]
         using Submodule.add_mem _ (Coinvariants.mem_ker_of_eq _ _ _ rfl) (h rfl)
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
