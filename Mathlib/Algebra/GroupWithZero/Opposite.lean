@@ -5,7 +5,6 @@ Authors: Kenny Lau
 -/
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.GroupWithZero.NeZero
-import Mathlib.Util.TransImports
 import Mathlib.Algebra.GroupWithZero.InjSurj
 
 /-!
