@@ -106,8 +106,7 @@ variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
 
 @[simp]
 theorem Bundle.Trivial.mdifferentiableAt_iff (σ : (x : E) → Trivial E E' x) (e : E) :
-    MDiffAt (T% σ) e ↔
-    DifferentiableAt 𝕜 σ e := by
+    MDiffAt (T% σ) e ↔ DifferentiableAt 𝕜 σ e := by
   simp [mdifferentiableAt_totalSpace, mdifferentiableAt_iff_differentiableAt]
 
 attribute [simp] mdifferentiableAt_iff_differentiableAt
@@ -139,10 +138,9 @@ omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)] [(x : M) → 
 variable {I F V x} in
 /-- If two sections `σ` and `σ'` are equal on a neighbourhood `s` of `x`,
 one is differentiable at `x` iff the other is. -/
-lemma mfderiv_dependent_congr_iff {σ σ' : Π x : M, V x} {s : Set M} (hs : s ∈ nhds x)
+lemma mdifferentiable_dependent_congr_iff {σ σ' : Π x : M, V x} {s : Set M} (hs : s ∈ nhds x)
     (hσ : ∀ x ∈ s, σ x = σ' x) :
-    MDiffAt (T% σ) x  ↔
-    MDiffAt (T% σ') x :=
+    MDiffAt (T% σ) x  ↔ MDiffAt (T% σ') x :=
   ⟨fun h ↦ mdifferentiableAt_dependent_congr hs h hσ,
    fun h ↦ mdifferentiableAt_dependent_congr hs h (fun x hx ↦ (hσ x hx).symm)⟩
 
