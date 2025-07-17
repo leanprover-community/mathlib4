@@ -237,7 +237,7 @@ lemma disjoint_smallBall_logSizeBallSeq (hJ : J.Nonempty) {i j : ℕ} (hij : i �
 
 open Classical in
 /-- Given a log-size ball sequence (Vᵢ, tᵢ, rᵢ), we define the pair set sequence by
-  Kᵢ = {tᵢ} × {x ∈ Vᵢ | dist(tᵢ,x) ≤ rᵢc} -/
+Kᵢ = {tᵢ} × {x ∈ Vᵢ | dist(tᵢ, x) ≤ rᵢc}. -/
 noncomputable
 def pairSetSeq (J : Finset T) (a c : ℝ≥0∞) (n : ℕ) : Finset (T × T) :=
   if hJ : J.Nonempty then
