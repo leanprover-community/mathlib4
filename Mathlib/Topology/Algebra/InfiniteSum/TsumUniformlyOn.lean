@@ -38,16 +38,25 @@ theorem HasSumUniformlyOn_of_cofinite_eventually {ι : Type*} {f : ι → β →
   simp [hasSumUniformlyOn_iff_tendstoUniformlyOn,
     tendstoUniformlyOn_tsum_of_cofinite_eventually hu hfu]
 
-lemma SummableLocallyUniformlyOn_of_locally_bounded [TopologicalSpace β] [LocallyCompactSpace β]
-    (f : α → β → F) {s : Set β} (hs : IsOpen s)
-    (hu : ∀ K ⊆ s, IsCompact K → ∃ u : α → ℝ, Summable u ∧ ∀ n (k : K), ‖f n k‖ ≤ u n) :
-    SummableLocallyUniformlyOn f s := by
-  apply HasSumLocallyUniformlyOn.summableLocallyUniformlyOn (g := (fun x ↦ ∑' i, f i x))
+lemma SummableLocallyUniformlyOn_of_locally_bounded_eventually [TopologicalSpace β]
+    [LocallyCompactSpace β] {f : α → β → F} {s : Set β} (hs : IsOpen s)
+    (hu : ∀ K ⊆ s, IsCompact K → ∃ u : α → ℝ, Summable u ∧
+    ∀ᶠ n in cofinite, ∀ k ∈ K, ‖f n k‖ ≤ u n) : SummableLocallyUniformlyOn f s := by
+  apply HasSumLocallyUniformlyOn.summableLocallyUniformlyOn (g := fun x ↦ ∑' n, f n x)
   rw [hasSumLocallyUniformlyOn_iff_tendstoLocallyUniformlyOn,
     tendstoLocallyUniformlyOn_iff_forall_isCompact hs]
   intro K hK hKc
   obtain ⟨u, hu1, hu2⟩ := hu K hK hKc
-  apply tendstoUniformlyOn_tsum hu1 fun n x hx ↦ hu2 n ⟨x, hx⟩
+  apply tendstoUniformlyOn_tsum_of_cofinite_eventually hu1 hu2
+
+lemma SummableLocallyUniformlyOn_of_locally_bounded [TopologicalSpace β] [LocallyCompactSpace β]
+    {f : α → β → F} {s : Set β} (hs : IsOpen s)
+    (hu : ∀ K ⊆ s, IsCompact K → ∃ u : α → ℝ, Summable u ∧ ∀ n, ∀ k ∈ K, ‖f n k‖ ≤ u n) :
+    SummableLocallyUniformlyOn f s := by
+  apply SummableLocallyUniformlyOn_of_locally_bounded_eventually hs
+  intro K hK hKc
+  obtain ⟨u, hu1, hu2⟩ := hu K hK hKc
+  refine ⟨u, hu1, by filter_upwards using hu2⟩
 
 end UniformlyOn
 
