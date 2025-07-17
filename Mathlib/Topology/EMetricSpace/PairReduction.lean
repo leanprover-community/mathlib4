@@ -16,8 +16,8 @@ c > 0, and a finite subset J of T such that |J| ≤ aⁿ for some a > 1 and n �
 `pair_reduction` states that there exists a set K ⊆ J² such that for any function f : T → E :
 
 1. |K| ≤ a|J|
-2. ∀ s t ∈ K, d(s,t) ≤ cn
-3. sup_{s,t ∈ J : d(s,t) ≤ c} d(f(s), f(t)) ≤ 2 sup_{(s,t) ∈ K} d(f(s),f(t))
+2. ∀ s t ∈ K, d(s, t) ≤ cn
+3. sup_{s, t ∈ J : d(s, t) ≤ c} d(f(s), f(t)) ≤ 2 sup_{(s, t) ∈ K} d(f(s), f(t))
 
 The key point being that it reduces bounding a supremum over points "close" in J² (which can be a
 set of up to size |J|²) to bounding a supremum over a set of points with size linear in |J|
