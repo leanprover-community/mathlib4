@@ -510,6 +510,8 @@ instance : (valuation R).Compatible where
 
 lemma valuation_eq_preValuation {x : R} : valuation R x = preValuation _ (algebraMap R _ x) := rfl
 
+lemma valuation_apply {x : R} : valuation R x = ValueQuotient.mk (algebraMap R _ x) := rfl
+
 lemma preValuation_localization_mk {x : R} {y : posSubmonoid R} :
     preValuation _ (Localization.mk x y) = valuation R x / valuation R y := by
   have : valuation R y ≠ 0 := by
@@ -629,23 +631,19 @@ def mapPosSubmonoid : posSubmonoid A →* posSubmonoid B where
 
 variable (A B) in
 /-- The map on value groups-with-zero associated to the structure morphism of an algebra. -/
-def mapValueGroupWithZero : ValueGroupWithZero A →*₀ ValueGroupWithZero B where
-  toFun := Quotient.map
-    (IsLocalization.map (Localization (posSubmonoid B)) (algebraMap A B)
-      (posSubmonoid_comap A B).ge) <| by
-    intro x y
-    change _ ∼ᵥ _ → _ ∼ᵥ _
-    refine Localization.induction_on₂ x y fun ⟨a, s⟩ ⟨b, t⟩ ↦ ?_
-    simp_rw [Localization.mk_eq_mk', IsLocalization.map_mk', ← Localization.mk_eq_mk',
-      equiv_localization le_rfl, ← map_mul, equiv_iff_equiv A B]
-    exact id
-  map_zero' := congr(Quotient.mk'' $(map_zero _))
-  map_one' := congr(Quotient.mk'' $(map_one _))
-  map_mul' := sorry
+def mapValueGroupWithZero : ValueGroupWithZero A →*₀ ValueGroupWithZero B :=
+  Con.mapQ₀ (IsLocalization.map (Localization (posSubmonoid B)) (algebraMap A B)
+    (posSubmonoid_comap A B).ge) <| by
+      intro x y
+      refine Localization.induction_on₂ x y fun ⟨a, s⟩ ⟨b, t⟩ ↦ ?_
+      simp_rw [Con.comap_rel, equivCon_apply, Localization.mk_eq_mk', IsLocalization.map_mk',
+        ← Localization.mk_eq_mk', equiv_localization le_rfl, ← map_mul, equiv_iff_equiv A B]
+      exact id
 
 @[simp]
 lemma mapValueGroupWithZero_valuation (a : A) :
-    mapValueGroupWithZero A B (valuation _ a) = valuation _ (algebraMap _ _ a) :=
-  congr(Quotient.mk'' $(IsLocalization.map_eq _ _))
+    mapValueGroupWithZero A B (valuation _ a) = valuation _ (algebraMap _ _ a) := by
+  simp_rw [mapValueGroupWithZero, valuation_apply, ValueQuotient.mk, Con.mapQ₀, Con.mapQ]
+  rfl
 
 end ValuativeExtension
