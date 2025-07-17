@@ -443,11 +443,6 @@ lemma support_mem_ae_of_isLindelof (h : IsLindelof μ.supportᶜ) : μ.support �
   · simpa [compl_inter, compl_compl] using
       mem_of_superset (compl_mem_ae_iff.mpr hu.2) subset_union_left
 
-lemma IsLindelof.compl_mem_sets_of_nhdsWithin {s : Set X} (hs : IsLindelof s)
-    {f : Filter X} [CountableInterFilter f] (hf : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, tᶜ ∈ f) : sᶜ ∈ f := by
-  sorry
-
-
 lemma exists_mem_support_of_open_pos [HereditarilyLindelofSpace X] {U : Set X}
     (_ : IsOpen U) (hμ : 0 < μ U) : (U ∩ μ.support).Nonempty := by
   by_contra hn
@@ -464,19 +459,6 @@ lemma exists_mem_support_of_open_pos [HereditarilyLindelofSpace X] {U : Set X}
       _ ≤ ∑' i : T, μ (i.val) := measure_biUnion_le μ hTcount (·.1)
       _ = 0                   := by refine ENNReal.tsum_eq_zero.mpr fun i =>
                                     (i.val.property.2 : μ (i.val) = 0)
-
-
-/- This theorem says that if U has positive measure then there has to be a point in U, all of
-    neighborhoods have positive measure. It's probably better to prove that union result
-    below first and then use that theorem to prove this one under second countable
-    hypothesis, etc. -/
-lemma exists_mem_support_of_open_pos' [SecondCountableTopology X] {U : Set X}
-    (hU : IsOpen U) (hμ : 0 < μ U) : (U ∩ μ.support).Nonempty := by sorry
-
---lemma support_subset_closure_of_pos {U : Set X} (hU : IsOpen U) (hμ : μ U > 0) :
---  support μ ⊆ closure U := by sorry
-
-
 
 end Measure
 
