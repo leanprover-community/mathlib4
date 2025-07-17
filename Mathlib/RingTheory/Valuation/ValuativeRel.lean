@@ -685,17 +685,16 @@ variable {R Γ : Type*} [CommRing R] [ValuativeRel R] [LinearOrderedCommGroupWit
 /-- Any valuation compatible with the valuative relation can be factored through
 the value group. -/
 noncomputable
-def ValueGroupWithZero.embed [h : v.Compatible] : ValueGroupWithZero R →*₀ Γ :=
-  ⟨⟨ValuativeRel.ValueGroupWithZero.lift (fun r s ↦ v r / v (s : R)) <| by
+def ValueGroupWithZero.embed [h : v.Compatible] : ValueGroupWithZero R →*₀ Γ where
+  toFun := ValuativeRel.ValueGroupWithZero.lift (fun r s ↦ v r / v (s : R)) <| by
     intro x y r s
     simp only [h.rel_iff_le, map_mul, ← and_imp, ← le_antisymm_iff]
-    rw [div_eq_div_iff] <;> simp,
-    by simp [ValueGroupWithZero.lift_zero]⟩,
-    by simp, by
-      intros
-      simp only
-      apply ValuativeRel.ValueGroupWithZero.lift_mul
-      field_simp⟩
+    rw [div_eq_div_iff] <;> simp
+  map_zero' := by simp [ValueGroupWithZero.lift_zero]
+  map_one' := by simp
+  map_mul' _ _ := by
+    apply ValuativeRel.ValueGroupWithZero.lift_mul
+    field_simp
 
 @[simp]
 lemma ValueGroupWithZero.embed_valuation_apply (γ : ValueGroupWithZero R) :
