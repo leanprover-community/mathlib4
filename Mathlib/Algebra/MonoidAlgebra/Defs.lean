@@ -757,10 +757,10 @@ protected noncomputable def opRingEquiv [Mul G] :
       rw [MulOpposite.unop_mul (α := MonoidAlgebra k G), unop_op, unop_op, single_mul_single]
       simp }
 
-theorem opRingEquiv_single [Monoid G] (r : k) (x : G) :
+theorem opRingEquiv_single [Mul G] (r : k) (x : G) :
     MonoidAlgebra.opRingEquiv (op (single x r)) = single (op x) (op r) := by simp
 
-theorem opRingEquiv_symm_single [Monoid G] (r : kᵐᵒᵖ) (x : Gᵐᵒᵖ) :
+theorem opRingEquiv_symm_single [Mul G] (r : kᵐᵒᵖ) (x : Gᵐᵒᵖ) :
     MonoidAlgebra.opRingEquiv.symm (single x r) = op (single x.unop r.unop) := by simp
 
 end Opposite
@@ -1384,7 +1384,7 @@ variable [Semiring k]
 /-- The opposite of an `R[I]` is ring equivalent to
 the `AddMonoidAlgebra Rᵐᵒᵖ I` over the opposite ring, taking elements to their opposite. -/
 @[simps! +simpRhs apply symm_apply]
-protected noncomputable def opRingEquiv [AddCommMonoid G] :
+protected noncomputable def opRingEquiv [AddCommMagma G] :
     k[G]ᵐᵒᵖ ≃+* kᵐᵒᵖ[G] :=
   { opAddEquiv.symm.trans (mapRange.addEquiv (opAddEquiv : k ≃+ kᵐᵒᵖ)) with
     map_mul' := by
@@ -1406,10 +1406,10 @@ protected noncomputable def opRingEquiv [AddCommMonoid G] :
 -- @[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10618): simp can prove this.
 -- More specifically, the LHS simplifies to `Finsupp.single`, which implies there's some
 -- defeq abuse going on.
-theorem opRingEquiv_single [AddCommMonoid G] (r : k) (x : G) :
+theorem opRingEquiv_single [AddCommMagma G] (r : k) (x : G) :
     AddMonoidAlgebra.opRingEquiv (op (single x r)) = single x (op r) := by simp
 
-theorem opRingEquiv_symm_single [AddCommMonoid G] (r : kᵐᵒᵖ) (x : Gᵐᵒᵖ) :
+theorem opRingEquiv_symm_single [AddCommMagma G] (r : kᵐᵒᵖ) (x : Gᵐᵒᵖ) :
     AddMonoidAlgebra.opRingEquiv.symm (single x r) = op (single x r.unop) := by simp
 
 end Opposite
