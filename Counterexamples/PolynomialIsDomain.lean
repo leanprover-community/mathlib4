@@ -15,8 +15,8 @@ import Mathlib.Algebra.Polynomial.Degree.Operations
 addition. Under these operations it is a commutative semiring that is a domain.
 However, in the polynomial semiring `NatMaxAdd[X]`, we have the identity
 `(X + 1) * (X ^ 2 + 1) = (X + 1) * (X ^ 2 + X + 1)`, so `NatMaxAdd[X]` is not a domain.
-This shows `Polynomial.instIsDomain` cannot be generalized from `Ring` to `Semiring`.
-
+This shows `Polynomial.instIsDomain` cannot be generalized from to semirings whose
+addition is not cancellative.
 -/
 
 /-- A type synonym for ℕ equipped with maximum as addition. -/
