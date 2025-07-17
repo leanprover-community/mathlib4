@@ -37,13 +37,70 @@ variable {E' : Type*} [NormedAddCommGroup E']
   [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
 
-axiom map_of_one_jet {x : M} (u : TangentSpace I x) {x' : M'} (u' : TangentSpace I' x') : M → M'
 
+def map_of_loc_one_jet (e u : E) (e' u' : E') : E → E' := sorry
+
+lemma map_of_loc_one_jet_spec (e u : E) (e' u' : E') :
+    map_of_loc_one_jet e u e' u' e = e' ∧
+    DifferentiableAt 𝕜 (map_of_loc_one_jet e u e' u') e ∧
+    fderiv 𝕜 (map_of_loc_one_jet e u e' u') e u = u' := by
+  sorry
+
+def map_of_one_jet {x : M} (u : TangentSpace I x) {x' : M'} (u' : TangentSpace I' x') :
+    M → M' :=
+  letI ψ := extChartAt I' x'
+  letI φ := extChartAt I x
+  ψ.symm ∘
+  (map_of_loc_one_jet (φ x) (mfderiv I 𝓘(𝕜, E) φ x u) (ψ x') (mfderiv I' 𝓘(𝕜, E') ψ x' u')) ∘
+  φ
+
+/-
+
+/-- Conjugating a function to write it in the preferred charts around `x`.
+The manifold derivative of `f` will just be the derivative of this conjugated function. -/
+@[simp, mfld_simps]
+def writtenInExtChartAt (x : M) (f : M → M') : E → E' :=
+  extChartAt I' (f x) ∘ f ∘ (extChartAt I x).symm
+-/
 lemma map_of_one_jet_spec {x : M} (u : TangentSpace I x) {x' : M'} (u' : TangentSpace I' x') :
     map_of_one_jet u u' x = x' ∧
     MDiffAt (map_of_one_jet u u') x ∧
     mfderiv I I' (map_of_one_jet u u') x u = u' := by
-  sorry
+  let ψ := extChartAt I' x'
+  let φ := extChartAt I x
+  rcases  map_of_loc_one_jet_spec (𝕜 := 𝕜)
+    (φ x) (mfderiv I 𝓘(𝕜, E) φ x u) (ψ x') (mfderiv I' 𝓘(𝕜, E') ψ x' u') with ⟨h, h', h''⟩
+  refine ⟨?_, ?_, ?_⟩
+  · simp [map_of_one_jet]
+    erw [h]
+    simp [ψ]
+  · rw [mdifferentiableAt_iff]
+    constructor
+    · unfold map_of_one_jet
+      refold_let φ ψ
+      apply ContinuousAt.comp
+      · rw [Function.comp_apply, h]
+        apply continuousAt_extChartAt_symm
+      · apply ContinuousAt.comp
+        · apply h'.continuousAt
+        · apply continuousAt_extChartAt
+    · apply h'.differentiableWithinAt.congr_of_eventuallyEq
+      · have : (extChartAt I x).target ∈ 𝓝[range I] (φ x) := by
+          apply extChartAt_target_mem_nhdsWithin
+        filter_upwards [this] with e he
+        unfold map_of_one_jet writtenInExtChartAt
+        refold_let φ ψ
+        have : (ψ.symm ∘ map_of_loc_one_jet (φ x) ((mfderiv I 𝓘(𝕜, E) (φ) x) u) (ψ x')
+                ((mfderiv I' 𝓘(𝕜, E') (ψ) x') u') ∘ φ) x = x' := by
+          rw [Function.comp_apply, Function.comp_apply, h, extChartAt_to_inv x']
+        rw [this]
+        refold_let φ ψ
+        simp only [Function.comp_apply, ]
+        rw [PartialEquiv.right_inv _ he, PartialEquiv.right_inv]
+        sorry
+      · rw [h]
+        sorry
+  · sorry
 end
 
 variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
@@ -901,7 +958,7 @@ lemma mem_horiz_iff_exists (hcov : IsCovariantDerivativeOn F cov s) {x : M} {f :
   constructor
   · intro huv
     simp [horiz] at huv
-    let w : TangentSpace 𝓘(ℝ, F) f := v -- - hcov.projection x f (u, v)
+    let w : TangentSpace 𝓘(ℝ, F) f := v
     rcases map_of_one_jet_spec u w with ⟨h, h', h''⟩
     use map_of_one_jet u w, ?_, h, h''
     · rw [hcov.eq_one_form]
