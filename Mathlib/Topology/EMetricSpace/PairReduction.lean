@@ -74,8 +74,7 @@ lemma card_le_logSizeRadius_ge (ha : 1 < a) (ht : t ∈ V) :
     simp
   have h := Nat.find_min (exists_radius_le t V ha c) this
   simp only [ENNReal.natCast_sub, Nat.cast_one, not_and, not_le] at h
-  refine (h ?_).le
-  omega
+  exact (h (by omega)).le
 
 /-- A structure for carrying the data of `logSizeBallSeq` -/
 structure logSizeBallStruct (T : Type*) where
