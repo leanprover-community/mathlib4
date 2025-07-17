@@ -332,7 +332,7 @@ lemma card_pairSet_le (ha : 1 < a) (hJ_card : #J ≤ a ^ n) :
 
 lemma edist_le_of_mem_pairSet (ha : 1 < a) (hJ_card : #J ≤ a ^ n) {s t : T}
     (h : (s, t) ∈ pairSet J a c) : edist s t ≤ n * c := by
-  obtain ⟨i, hiJ, h'⟩ :  ∃ i < #J, (s, t) ∈ pairSetSeq J a c i := by simp [pairSet] at h; exact h
+  obtain ⟨i, hiJ, h'⟩ : ∃ i < #J, (s, t) ∈ pairSetSeq J a c i := by simp [pairSet] at h; exact h
   have hJ : J.Nonempty := Finset.card_pos.mp (Nat.zero_lt_of_lt hiJ)
   wlog hn : 1 ≤ n
   · convert zero_le (n * c)
