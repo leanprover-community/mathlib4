@@ -179,7 +179,7 @@ section
 variable (C) {J : Type w₂} (g : J → I)
 
 /-- A function `J → I` induces a functor `Σ j, C (g j) ⥤ Σ i, C i`. -/
-def map : (Σj : J, C (g j)) ⥤ Σ i : I, C i :=
+def map : (Σ j : J, C (g j)) ⥤ Σ i : I, C i :=
   desc fun j => incl (g j)
 
 @[simp]

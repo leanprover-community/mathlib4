@@ -10,7 +10,29 @@ import Mathlib.Geometry.Manifold.Instances.Icc
 import Mathlib.MeasureTheory.Constructions.UnitInterval
 import Mathlib.MeasureTheory.Function.JacobianOneDim
 
-/-! # Lengths of paths in manifolds -/
+/-! # Lengths of paths in manifolds
+
+Consider a manifold in which the tangent spaces have an enormed structure. Then one defines
+`pathELength γ a b` as the length of the path `γ : ℝ → M` between `a` and `b`, i.e., the integral
+of the norm of its derivative on `Icc a b`.
+
+We give several ways to write this quantity (as an integral over `Icc`, or `Ioo`, or the subtype
+`Icc`, using either `mfderiv` or `mfderivWithin`).
+
+We show that this notion is invariant under reparameterization by a monotone map, in
+`pathELength_comp_of_monotoneOn`.
+
+We define `riemannianEDist x y` as the infimum of the length of `C^1` paths between `x`
+and `y`. We prove, in `exists_lt_locally_constant_of_riemannianEDist_lt`, that it is also the
+infimum on such path that are moreover locally constant near their endpoints. Such paths can be
+glued while retaining the `C^1` property. We deduce that `riemannianEDist` satisfies the triangle
+inequality, in `riemannianEDist_triangle`.
+
+Note that `riemannianEDist x y` could also be named `finslerEDist x y` as we do not require that
+the metric comes from an inner product space. However, as all the current applications in mathlib
+are to Riemannian spaces we stick with the simpler name. This could be changed when Finsler
+manifolds are studied in mathlib.
+-/
 
 open Set MeasureTheory
 open scoped Manifold ENNReal ContDiff Topology
@@ -24,41 +46,43 @@ variable
 
 namespace Manifold
 
-variable [∀ (x : M), ENorm (TangentSpace I x)] {x y x' y' : ℝ} {γ γ' : ℝ → M}
+variable [∀ (x : M), ENorm (TangentSpace I x)] {a b c a' b' : ℝ} {γ γ' : ℝ → M}
 
 variable (I) in
-/-- The length on `Icc x y` of a path into a manifold, where the path is defined on the whole real
+/-- The length on `Icc a b` of a path into a manifold, where the path is defined on the whole real
 line.
 
 We use the whole real line to avoid subtype hell in API, but this is equivalent to
-considering functions on the manifold with boundary `Icc x y`, see
+considering functions on the manifold with boundary `Icc a b`, see
 `lintegral_norm_mfderiv_Icc_eq_pathELength_projIcc`.
 
 We use `mfderiv` instead of `mfderivWithin` in the definition as these coincide (apart from the two
 endpoints which have zero measure) and `mfderiv` is easier to manipulate. However, we give
 a lemma `pathELength_eq_integral_mfderivWithin_Icc` to rewrite with the `mfderivWithin` form. -/
-irreducible_def pathELength (γ : ℝ → M) (x y : ℝ) : ℝ≥0∞ :=
-  ∫⁻ t in Icc x y, ‖mfderiv 𝓘(ℝ) I γ t 1‖ₑ
+irreducible_def pathELength (γ : ℝ → M) (a b : ℝ) : ℝ≥0∞ :=
+  ∫⁻ t in Icc a b, ‖mfderiv 𝓘(ℝ) I γ t 1‖ₑ
 
 lemma pathELength_eq_lintegral_mfderiv_Icc :
-    pathELength I γ x y = ∫⁻ t in Icc x y, ‖mfderiv 𝓘(ℝ) I γ t 1‖ₑ := by simp [pathELength]
+    pathELength I γ a b = ∫⁻ t in Icc a b, ‖mfderiv 𝓘(ℝ) I γ t 1‖ₑ := by simp [pathELength]
 
 lemma pathELength_eq_lintegral_mfderiv_Ioo :
-    pathELength I γ x y = ∫⁻ t in Ioo x y, ‖mfderiv 𝓘(ℝ) I γ t 1‖ₑ := by
+    pathELength I γ a b = ∫⁻ t in Ioo a b, ‖mfderiv 𝓘(ℝ) I γ t 1‖ₑ := by
   rw [pathELength_eq_lintegral_mfderiv_Icc, restrict_Ioo_eq_restrict_Icc]
 
 lemma pathELength_eq_lintegral_mfderivWithin_Icc :
-    pathELength I γ x y = ∫⁻ t in Icc x y, ‖mfderivWithin 𝓘(ℝ) I γ (Icc x y) t 1‖ₑ := by
+    pathELength I γ a b = ∫⁻ t in Icc a b, ‖mfderivWithin 𝓘(ℝ) I γ (Icc a b) t 1‖ₑ := by
+  -- we use that the endpoints have measure 0 to rewrite on `Ioo a b`, where `mfderiv` and
+  -- `mfderivWithin` coincide.
   rw [pathELength_eq_lintegral_mfderiv_Icc, ← restrict_Ioo_eq_restrict_Icc]
   apply setLIntegral_congr_fun measurableSet_Ioo (fun t ht ↦ ?_)
   rw [mfderivWithin_of_mem_nhds]
   exact Icc_mem_nhds ht.1 ht.2
 
-@[simp] lemma pathELength_self : pathELength I γ x x = 0 := by
+@[simp] lemma pathELength_self : pathELength I γ a a = 0 := by
   simp [pathELength]
 
-lemma pathELength_congr_Ioo (h : EqOn γ γ' (Ioo x y)) :
-    pathELength I γ x y = pathELength I γ' x y := by
+lemma pathELength_congr_Ioo (h : EqOn γ γ' (Ioo a b)) :
+    pathELength I γ a b = pathELength I γ' a b := by
   simp only [pathELength_eq_lintegral_mfderiv_Ioo]
   apply setLIntegral_congr_fun measurableSet_Ioo (fun t ht ↦ ?_)
   have A : γ t = γ' t := h ht
@@ -66,56 +90,60 @@ lemma pathELength_congr_Ioo (h : EqOn γ γ' (Ioo x y)) :
   apply Filter.EventuallyEq.mfderiv_eq
   filter_upwards [Ioo_mem_nhds ht.1 ht.2] with a ha using h ha
 
-lemma pathELength_congr (h : EqOn γ γ' (Icc x y)) : pathELength I γ x y = pathELength I γ' x y :=
+lemma pathELength_congr (h : EqOn γ γ' (Icc a b)) : pathELength I γ a b = pathELength I γ' a b :=
   pathELength_congr_Ioo (fun _ hx ↦ h ⟨hx.1.le, hx.2.le⟩)
 
-lemma pathELength_mono (h : x' ≤ x) (h' : y ≤ y') :
-    pathELength I γ x y ≤ pathELength I γ x' y' := by
-  simp only [pathELength_eq_lintegral_mfderiv_Icc]
-  exact lintegral_mono_set (Icc_subset_Icc h h')
+@[gcongr]
+lemma pathELength_mono (h : a' ≤ a) (h' : b ≤ b') :
+    pathELength I γ a b ≤ pathELength I γ a' b' := by
+  simpa [pathELength_eq_lintegral_mfderiv_Icc] using lintegral_mono_set (Icc_subset_Icc h h')
 
-lemma pathELength_eq_add {γ : ℝ → M} {x y z : ℝ} (h : x ≤ y) (h' : y ≤ z) :
-    pathELength I γ x z = pathELength I γ x y + pathELength I γ y z := by
-  have : Icc x z = Icc x y ∪ Ioc y z := (Icc_union_Ioc_eq_Icc h h').symm
+lemma pathELength_add (h : a ≤ b) (h' : b ≤ c) :
+    pathELength I γ a b + pathELength I γ b c = pathELength I γ a c := by
+  symm
+  have : Icc a c = Icc a b ∪ Ioc b c := (Icc_union_Ioc_eq_Icc h h').symm
   rw [pathELength, this, lintegral_union measurableSet_Ioc]; swap
   · exact disjoint_iff_forall_ne.mpr (fun a ha b hb ↦ (ha.2.trans_lt hb.1).ne)
   simp [restrict_Ioc_eq_restrict_Icc, pathELength]
 
 attribute [local instance] Measure.Subtype.measureSpace
 
-lemma lintegral_norm_mfderiv_Icc_eq_pathELength_projIcc {x y : ℝ}
-    [h : Fact (x < y)] {γ : Icc x y → M} :
-    ∫⁻ t, ‖mfderiv (𝓡∂ 1) I γ t 1‖ₑ = pathELength I (γ ∘ (projIcc x y h.out.le)) x y := by
+/-- Given a path `γ` defined on the manifold with boundary `[a, b]`, its length (as the integral of
+the norm of its manifold derivative) coincides with `pathELength` of the lift of `γ` to the real
+line, between `a` and `b`. -/
+lemma lintegral_norm_mfderiv_Icc_eq_pathELength_projIcc {a b : ℝ}
+    [h : Fact (a < b)] {γ : Icc a b → M} :
+    ∫⁻ t, ‖mfderiv (𝓡∂ 1) I γ t 1‖ₑ = pathELength I (γ ∘ (projIcc a b h.out.le)) a b := by
   rw [pathELength_eq_lintegral_mfderivWithin_Icc]
   simp_rw [← mfderivWithin_comp_projIcc_one]
-  have : MeasurePreserving (Subtype.val : Icc x y → ℝ) volume
-    (volume.restrict (Icc x y)) := measurePreserving_subtype_coe measurableSet_Icc
-  rw [← MeasureTheory.MeasurePreserving.lintegral_comp_emb this
+  have : MeasurePreserving (Subtype.val : Icc a b → ℝ) volume
+    (volume.restrict (Icc a b)) := measurePreserving_subtype_coe measurableSet_Icc
+  rw [← MeasurePreserving.lintegral_comp_emb this
     (MeasurableEmbedding.subtype_coe measurableSet_Icc)]
   congr
   ext t
-  have : t = projIcc x y h.out.le (t : ℝ) := by simp
+  have : t = projIcc a b h.out.le (t : ℝ) := by simp
   congr
 
 open MeasureTheory
 
 variable [∀ (x : M), ENormSMulClass ℝ (TangentSpace I x)]
 
-lemma pathELength_comp_of_monotoneOn {γ : ℝ → M} {f : ℝ → ℝ} {x y : ℝ} (h : x ≤ y)
-    (hf : MonotoneOn f (Icc x y))
-    (h'f : DifferentiableOn ℝ f (Icc x y)) (hγ : MDifferentiableOn 𝓘(ℝ) I γ (Icc (f x) (f y))) :
-    pathELength I (γ ∘ f) x y = pathELength I γ (f x) (f y) := by
+/-- The length of a path in a manifold is invariant under a monotone reparametrization. -/
+lemma pathELength_comp_of_monotoneOn {f : ℝ → ℝ} (h : a ≤ b) (hf : MonotoneOn f (Icc a b))
+    (h'f : DifferentiableOn ℝ f (Icc a b)) (hγ : MDifferentiableOn 𝓘(ℝ) I γ (Icc (f a) (f b))) :
+    pathELength I (γ ∘ f) a b = pathELength I γ (f a) (f b) := by
   rcases h.eq_or_lt with rfl | h
   · simp
-  have f_im : f '' (Icc x y) = Icc (f x) (f y) := h'f.continuousOn.image_Icc_of_monotoneOn h.le hf
+  have f_im : f '' (Icc a b) = Icc (f a) (f b) := h'f.continuousOn.image_Icc_of_monotoneOn h.le hf
   simp only [pathELength_eq_lintegral_mfderivWithin_Icc, ← f_im]
-  have B (t) (ht : t ∈ Icc x y) : HasDerivWithinAt f (derivWithin f (Icc x y) t) (Icc x y) t :=
+  have B (t) (ht : t ∈ Icc a b) : HasDerivWithinAt f (derivWithin f (Icc a b) t) (Icc a b) t :=
     (h'f t ht).hasDerivWithinAt
   rw [lintegral_image_eq_lintegral_deriv_mul_of_monotoneOn measurableSet_Icc B hf]
   apply setLIntegral_congr_fun measurableSet_Icc (fun t ht ↦ ?_)
-  have : (mfderivWithin 𝓘(ℝ, ℝ) I (γ ∘ f) (Icc x y) t)
-      = (mfderivWithin 𝓘(ℝ, ℝ) I γ (Icc (f x) (f y)) (f t))
-          ∘L mfderivWithin 𝓘(ℝ) 𝓘(ℝ) f (Icc x y) t := by
+  have : (mfderivWithin 𝓘(ℝ, ℝ) I (γ ∘ f) (Icc a b) t)
+      = (mfderivWithin 𝓘(ℝ, ℝ) I γ (Icc (f a) (f b)) (f t))
+          ∘L mfderivWithin 𝓘(ℝ) 𝓘(ℝ) f (Icc a b) t := by
     rw [← f_im] at hγ ⊢
     apply mfderivWithin_comp
     · apply hγ _ (mem_image_of_mem _ ht)
@@ -126,29 +154,29 @@ lemma pathELength_comp_of_monotoneOn {γ : ℝ → M} {f : ℝ → ℝ} {x y : �
       exact uniqueDiffOn_Icc h _ ht
   rw [this]
   simp only [Function.comp_apply, ContinuousLinearMap.coe_comp']
-  have : mfderivWithin 𝓘(ℝ) 𝓘(ℝ) f (Icc x y) t 1
-      = derivWithin f (Icc x y) t • (1 : TangentSpace 𝓘(ℝ) (f t)) := by
+  have : mfderivWithin 𝓘(ℝ) 𝓘(ℝ) f (Icc a b) t 1
+      = derivWithin f (Icc a b) t • (1 : TangentSpace 𝓘(ℝ) (f t)) := by
     simp only [mfderivWithin_eq_fderivWithin, ← fderivWithin_derivWithin, smul_eq_mul, mul_one]
     rfl
   rw [this]
-  have : 0 ≤ derivWithin f (Icc x y) t := hf.derivWithin_nonneg
+  have : 0 ≤ derivWithin f (Icc a b) t := hf.derivWithin_nonneg
   simp only [map_smul, enorm_smul, ← Real.enorm_of_nonneg this, f_im]
 
-lemma pathELength_comp_of_antitoneOn {γ : ℝ → M} {f : ℝ → ℝ} {x y : ℝ} (h : x ≤ y)
-    (hf : AntitoneOn f (Icc x y))
-    (h'f : DifferentiableOn ℝ f (Icc x y)) (hγ : MDifferentiableOn 𝓘(ℝ) I γ (Icc (f y) (f x))) :
-    pathELength I (γ ∘ f) x y = pathELength I γ (f y) (f x) := by
+/-- The length of a path in a manifold is invariant under an antitone reparametrization. -/
+lemma pathELength_comp_of_antitoneOn {f : ℝ → ℝ} (h : a ≤ b) (hf : AntitoneOn f (Icc a b))
+    (h'f : DifferentiableOn ℝ f (Icc a b)) (hγ : MDifferentiableOn 𝓘(ℝ) I γ (Icc (f b) (f a))) :
+    pathELength I (γ ∘ f) a b = pathELength I γ (f b) (f a) := by
   rcases h.eq_or_lt with rfl | h
   · simp
-  have f_im : f '' (Icc x y) = Icc (f y) (f x) := h'f.continuousOn.image_Icc_of_antitoneOn h.le hf
+  have f_im : f '' (Icc a b) = Icc (f b) (f a) := h'f.continuousOn.image_Icc_of_antitoneOn h.le hf
   simp only [pathELength_eq_lintegral_mfderivWithin_Icc, ← f_im]
-  have B (t) (ht : t ∈ Icc x y) : HasDerivWithinAt f (derivWithin f (Icc x y) t) (Icc x y) t :=
+  have B (t) (ht : t ∈ Icc a b) : HasDerivWithinAt f (derivWithin f (Icc a b) t) (Icc a b) t :=
     (h'f t ht).hasDerivWithinAt
   rw [lintegral_image_eq_lintegral_deriv_mul_of_antitoneOn measurableSet_Icc B hf]
   apply setLIntegral_congr_fun measurableSet_Icc (fun t ht ↦ ?_)
-  have : (mfderivWithin 𝓘(ℝ, ℝ) I (γ ∘ f) (Icc x y) t)
-      = (mfderivWithin 𝓘(ℝ, ℝ) I γ (Icc (f y) (f x)) (f t))
-          ∘L mfderivWithin 𝓘(ℝ) 𝓘(ℝ) f (Icc x y) t := by
+  have : (mfderivWithin 𝓘(ℝ, ℝ) I (γ ∘ f) (Icc a b) t)
+      = (mfderivWithin 𝓘(ℝ, ℝ) I γ (Icc (f b) (f a)) (f t))
+          ∘L mfderivWithin 𝓘(ℝ) 𝓘(ℝ) f (Icc a b) t := by
     rw [← f_im] at hγ ⊢
     apply mfderivWithin_comp
     · apply hγ _ (mem_image_of_mem _ ht)
@@ -159,22 +187,21 @@ lemma pathELength_comp_of_antitoneOn {γ : ℝ → M} {f : ℝ → ℝ} {x y : �
       exact uniqueDiffOn_Icc h _ ht
   rw [this]
   simp only [Function.comp_apply, ContinuousLinearMap.coe_comp']
-  have : mfderivWithin 𝓘(ℝ) 𝓘(ℝ) f (Icc x y) t 1
-      = derivWithin f (Icc x y) t • (1 : TangentSpace 𝓘(ℝ) (f t)) := by
+  have : mfderivWithin 𝓘(ℝ) 𝓘(ℝ) f (Icc a b) t 1
+      = derivWithin f (Icc a b) t • (1 : TangentSpace 𝓘(ℝ) (f t)) := by
     simp only [mfderivWithin_eq_fderivWithin, ← fderivWithin_derivWithin, smul_eq_mul, mul_one]
     rfl
   rw [this]
-  have : 0 ≤ -derivWithin f (Icc x y) t := by simp [hf.derivWithin_nonpos]
+  have : 0 ≤ -derivWithin f (Icc a b) t := by simp [hf.derivWithin_nonpos]
   simp only [map_smul, enorm_smul, f_im, ← Real.enorm_of_nonneg this, enorm_neg]
 
 section
 
--- variable [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)] {x y : M} {r : ℝ≥0∞} {a b : ℝ}
 variable {x y z : M} {r : ℝ≥0∞} {a b : ℝ}
 
 variable (I) in
 /-- The Riemannian extended distance between two points, in a manifold where the tangent spaces
-have an inner product, defined as the infimum of the lengths of `C^1` paths between the points. -/
+have an extended norm, defined as the infimum of the lengths of `C^1` paths between the points. -/
 noncomputable irreducible_def riemannianEDist (x y : M) : ℝ≥0∞ :=
   ⨅ (γ : Path x y) (_ : ContMDiff (𝓡∂ 1) I 1 γ), ∫⁻ x, ‖mfderiv (𝓡∂ 1) I γ x 1‖ₑ
 
@@ -196,23 +223,20 @@ lemma riemannianEDist_le_pathELength {γ : ℝ → M} (hγ : ContMDiffOn 𝓘(�
     rw [← contMDiffOn_comp_projIcc_iff]
     apply hη.congr (fun t ht ↦ ?_)
     simp only [Function.comp_apply, f, projIcc_of_mem, ht]
-  let g : C(unitInterval, M) := ⟨f, hf.continuous⟩
-  let g' : Path x y := by
-    refine ⟨g, ?_, ?_⟩ <;>
-    simp [g, f, η, ContinuousAffineMap.coe_lineMap_eq, ha, hb]
-  have A : riemannianEDist I x y ≤ ∫⁻ x, ‖mfderiv (𝓡∂ 1) I g' x 1‖ₑ := by
+  let g : Path x y := by
+    refine ⟨⟨f, hf.continuous⟩, ?_, ?_⟩ <;>
+    simp [f, η, ContinuousAffineMap.coe_lineMap_eq, ha, hb]
+  have A : riemannianEDist I x y ≤ ∫⁻ x, ‖mfderiv (𝓡∂ 1) I g x 1‖ₑ := by
     rw [riemannianEDist]; exact biInf_le _ hf
   apply A.trans_eq
   rw [lintegral_norm_mfderiv_Icc_eq_pathELength_projIcc]
-  have E : pathELength I (g' ∘ projIcc 0 1 zero_le_one) 0 1 = pathELength I (γ ∘ η) 0 1 := by
+  have E : pathELength I (g ∘ projIcc 0 1 zero_le_one) 0 1 = pathELength I (γ ∘ η) 0 1 := by
     apply pathELength_congr (fun t ht ↦ ?_)
     simp only [Function.comp_apply, ht, projIcc_of_mem]
     rfl
-  have ha : a = η 0 := by simp [η, ContinuousAffineMap.coe_lineMap_eq]
-  have hb : b = η 1 := by simp [η, ContinuousAffineMap.coe_lineMap_eq]
-  rw [E, ha, hb]
-  apply pathELength_comp_of_monotoneOn zero_le_one _ η.differentiableOn
-  · simpa [← ha, ← hb] using hγ.mdifferentiableOn le_rfl
+  rw [E, pathELength_comp_of_monotoneOn zero_le_one _ η.differentiableOn]
+  · simp [η, ContinuousAffineMap.coe_lineMap_eq]
+  · simpa [η, ContinuousAffineMap.coe_lineMap_eq] using hγ.mdifferentiableOn le_rfl
   · apply (AffineMap.lineMap_mono hab).monotoneOn
 
 omit [∀ (x : M), ENormSMulClass ℝ (TangentSpace I x)] in
@@ -237,10 +261,13 @@ lemma exists_lt_locally_constant_of_riemannianEDist_lt
     (hr : riemannianEDist I x y < r) (hab : a < b) :
     ∃ γ : ℝ → M, γ a = x ∧ γ b = y ∧ ContMDiff 𝓘(ℝ) I 1 γ ∧
     pathELength I γ a b < r ∧ γ =ᶠ[𝓝 a] (fun _ ↦ x) ∧ γ =ᶠ[𝓝 b] (fun _ ↦ y) := by
-  /- We start from a path from `x` to `y` defined on `[0, 1]` with short length. Then, we
+  /- We start from a path from `x` to `y` defined on `[0, 1]` with length `< r`. Then, we
   reparameterize it using a smooth monotone map `η` from `[a, b]` to `[0, 1]` which is moreover
   locally constant around `a` and `b`.
-  Such a map is easy to build with `Real.smoothTransition`. -/
+  Such a map is easy to build with `Real.smoothTransition`.
+
+  Note that this is a very standard construction in differential topology.
+  TODO: refactor once we have more differential topology in Mathlib and this gets duplicated. -/
   rcases exists_lt_of_riemannianEDist_lt hr with ⟨γ, hγx, hγy, γ_smooth, hγ⟩
   rcases exists_between hab with ⟨a', haa', ha'b⟩
   rcases exists_between ha'b with ⟨b', ha'b', hb'b⟩
@@ -318,24 +345,12 @@ lemma riemannianEDist_triangle :
   have : riemannianEDist I x z ≤ pathELength I γ 0 2 := by
     apply riemannianEDist_le_pathELength
     · apply ContMDiff.contMDiffOn
-      intro t
-      rcases lt_trichotomy t 1 with ht | rfl | ht
-      · apply (hγ₁_smooth t).congr_of_eventuallyEq
-        filter_upwards [Iio_mem_nhds ht] with t' (ht' : t' < 1)
-        simp [γ, ht'.le]
-      · have : ContMDiffAt 𝓘(ℝ) I 1 (fun (_ : ℝ) ↦ y) 1 := contMDiffAt_const
-        apply this.congr_of_eventuallyEq_of_mem _ (mem_univ _)
-        simp only [nhdsWithin_univ, γ]
-        filter_upwards [hγ₁_const, hγ₂_const] with t ht h't
-        by_cases ht_mem : t ∈ Iic 1 <;> simp [ht_mem, ht, h't]
-      · apply (hγ₂_smooth t).congr_of_eventuallyEq
-        filter_upwards [Ioi_mem_nhds ht] with t' (ht' : 1 < t')
-        simp [γ, ht']
+      exact ContMDiff.piecewise_Iic hγ₁_smooth hγ₂_smooth (hγ₁_const.trans hγ₂_const.symm)
     · simp [γ, hγ₁0]
     · simp [γ, hγ₂2]
     · exact zero_le_two
   apply this.trans_lt (lt_trans ?_ huv)
-  rw [pathELength_eq_add zero_le_one one_le_two]
+  rw [← pathELength_add zero_le_one one_le_two]
   gcongr
   · convert hγ₁ using 1
     apply pathELength_congr

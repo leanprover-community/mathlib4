@@ -17,7 +17,7 @@ shape `CostructuredArrow L d`, then the functor `H' ⊠ K` is a pointwise left k
 of `H ⊠ K` along `L.prod (𝟭 E)`.
 
 We also prove a similar criterion to establish that `K ⊠ H'` is a pointwise left Kan
-extendsion of `K ⊠ H` along `(𝟭 E).prod L`.
+extension of `K ⊠ H` along `(𝟭 E).prod L`.
 -/
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 

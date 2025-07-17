@@ -54,7 +54,7 @@ noncomputable def natIsoSc' (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k)
 
 variable {C c}
 
-variable (K L M : HomologicalComplex C c) (φ : K ⟶ L) (ψ : L ⟶ M) (i j k : ι)
+variable (K L M : HomologicalComplex C c) (φ : K ⟶ L) (iso : K ≅ L) (ψ : L ⟶ M) (i j k : ι)
 
 /-- The short complex `K.X i ⟶ K.X j ⟶ K.X k` for arbitrary indices `i`, `j` and `k`. -/
 abbrev sc' := (shortComplexFunctor' C c i j k).obj K
@@ -69,6 +69,12 @@ noncomputable abbrev isoSc' (hi : c.prev j = i) (hk : c.next j = k) :
 /-- A homological complex `K` has homology in degree `i` if the associated
 short complex `K.sc i` has. -/
 abbrev HasHomology := (K.sc i).HasHomology
+
+variable {K L} in
+include iso in
+lemma hasHomology_of_iso [K.HasHomology i] : L.HasHomology i :=
+  ShortComplex.hasHomology_of_iso
+    ((shortComplexFunctor _ _ i).mapIso iso : K.sc i ≅ L.sc i)
 
 section
 
@@ -394,6 +400,33 @@ lemma homologyι_naturality :
 lemma homology_π_ι :
     K.homologyπ i ≫ K.homologyι i = K.iCycles i ≫ K.pOpcycles i :=
   (K.sc i).homology_π_ι
+
+/-- The isomorphism `K.homology i ≅ L.homology i` induced by an isomorphism
+in `HomologicalComplex`. -/
+@[simps]
+noncomputable def homologyMapIso : K.homology i ≅ L.homology i where
+  hom := homologyMap iso.hom i
+  inv := homologyMap iso.inv i
+  hom_inv_id := by simp [← homologyMap_comp]
+  inv_hom_id := by simp [← homologyMap_comp]
+
+/-- The isomorphism `K.cycles i ≅ L.cycles i` induced by an isomorphism
+in `HomologicalComplex`. -/
+@[simps]
+noncomputable def cyclesMapIso : K.cycles i ≅ L.cycles i where
+  hom := cyclesMap iso.hom i
+  inv := cyclesMap iso.inv i
+  hom_inv_id := by simp [← cyclesMap_comp]
+  inv_hom_id := by simp [← cyclesMap_comp]
+
+/-- The isomorphism `K.opcycles i ≅ L.opcycles i` induced by an isomorphism
+in `HomologicalComplex`. -/
+@[simps]
+noncomputable def opcyclesMapIso : K.opcycles i ≅ L.opcycles i where
+  hom := opcyclesMap iso.hom i
+  inv := opcyclesMap iso.inv i
+  hom_inv_id := by simp [← opcyclesMap_comp]
+  inv_hom_id := by simp [← opcyclesMap_comp]
 
 variable {i}
 
