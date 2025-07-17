@@ -1288,6 +1288,9 @@ instance Bool.instDistribLattice : DistribLattice Bool := inferInstance
 ### Lattice Congruences
 -/
 
+/-
+
+
 /--
 An equivalence relation is a congruence relation for the latice structure if it is compatible with
 the `inf` and `sup` operations.
@@ -1366,12 +1369,20 @@ lemma isLatticeCon_iff [Lattice α] (r : α → α → Prop) : IsLatticeCon r �
           conv_rhs => rw [sup_comm]
           exact compatible_left_sup h₁) (compatible_left_sup h₀) }
 
-/-- Try as a bundled structure -/
+-/
+
+/-- An equivalence relation is a congruence relation for the latice structure if it is compatible
+with the `inf` and `sup` operations. -/
 structure LatticeCon (α) [Lattice α] extends Setoid α where
   inf : ∀ {w x y z}, r w x → r y z → r (w ⊓ y) (x ⊓ z)
   sup : ∀ {w x y z}, r w x → r y z → r (w ⊔ y) (x ⊔ z)
 
-lemma test1 [Lattice α] (c : LatticeCon α) {x y : α} : c.r x y ↔ c.r (x ⊓ y) (x ⊔ y) := by
+-- h₁
+example [Lattice α] (c : LatticeCon α) : (IsRefl _ c.r) := ⟨c.refl⟩
+
+-- h₂
+lemma h2_of_latticeCon [Lattice α] (c : LatticeCon α) {x y : α} :
+    c.r x y ↔ c.r (x ⊓ y) (x ⊔ y) := by
   constructor
   · intro h
     exact c.trans (b := y) (by
@@ -1380,7 +1391,7 @@ lemma test1 [Lattice α] (c : LatticeCon α) {x y : α} : c.r x y ↔ c.r (x ⊓
         conv_lhs => rw [← sup_idem y]
         exact c.sup (c.symm h) (c.refl y))
   · intro h
-    apply c.trans (b := x ⊓ y) (by
+    exact c.trans (b := x ⊓ y) (by
         conv_lhs => rw [← inf_sup_self (a := x) (b := y)]
         conv_rhs => rw [← inf_idem x, inf_assoc]
         exact c.inf (c.refl x) (c.symm h)) (by
@@ -1388,15 +1399,14 @@ lemma test1 [Lattice α] (c : LatticeCon α) {x y : α} : c.r x y ↔ c.r (x ⊓
         conv_lhs => rw [← inf_idem y, ← inf_assoc]
         exact c.inf h (c.refl y))
 
+-- h₃
+example [Lattice α] (c : LatticeCon α) {x y z : α} (hxy : c.r x y) (hyz : c.r y z) :
+    c.r x z := c.trans hxy hyz
 
-/-
-
-lemma test1 [Lattice α] (c : LatticeCon α) : (IsRefl _ c.r) ∧
-    (∀ ⦃x y : α⦄, c.r x y ↔ c.r (x ⊓ y) (x ⊔ y)) ∧
-    (∀ ⦃x y z : α⦄, x ≤ y → y ≤ z → c.r x y → c.r y z → c.r x z) ∧
-    (∀ ⦃x y t : α⦄, x ≤ y → c.r x y → c.r (x ⊓ t) (y ⊓ t) ∧ c.r (x ⊔ t) (y ⊔ t)) := sorry
-
--/
+-- h₄
+example [Lattice α] (c : LatticeCon α) {x y t : α} (hxy : c.r x y) :
+    c.r (x ⊓ t) (y ⊓ t) ∧ c.r (x ⊔ t) (y ⊔ t) :=
+  ⟨c.inf hxy (c.refl t), c.sup hxy (c.refl t)⟩
 
 lemma closed_interval [Lattice α] {r : α → α → Prop}
     (h₂ : ∀ ⦃x y : α⦄, r x y ↔ r (x ⊓ y) (x ⊔ y))
