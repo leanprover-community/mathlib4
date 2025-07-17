@@ -191,12 +191,32 @@ lemma mfderiv_const_smul (s : M → F) {x : M} (a : 𝕜) (v : TangentSpace I x)
     simp
     rfl
 
-lemma mfderiv_smul {f : M → F} {s : M → 𝕜} {x : M} (hf : MDiffAt f x)
+lemma mfderiv_smul [IsManifold I 1 M] {f : M → F} {s : M → 𝕜} {x : M} (hf : MDiffAt f x)
     (hs : MDiffAt s x) (v : TangentSpace I x) :
     letI dsxv : 𝕜 := mfderiv I 𝓘(𝕜, 𝕜) s x v
     letI dfxv : F := mfderiv I 𝓘(𝕜, F) f x v
     mfderiv I 𝓘(𝕜, F) (s • f) x v = (s x) • dfxv + dsxv • f x := by
-  sorry
+  set φ := chartAt H x
+  -- TODO: the next two have should be special cases of the same lemma
+  have hs' : DifferentiableWithinAt 𝕜 (s ∘ φ.symm ∘ I.symm) (range I) (I (φ x)) := by
+    have hφ := mdifferentiableWithinAt_extChartAt_symm (mem_extChartAt_target x) (I := I)
+    have : (extChartAt I x).symm (extChartAt I x x) = x := extChartAt_to_inv x
+    rw [← this] at hs
+    have := hs.comp_mdifferentiableWithinAt (extChartAt I x x) hφ
+    exact mdifferentiableWithinAt_iff_differentiableWithinAt.mp this
+  have hf' : DifferentiableWithinAt 𝕜 (f ∘ φ.symm ∘ I.symm) (range I) (I (φ x)) := by
+    have hφ := mdifferentiableWithinAt_extChartAt_symm (mem_extChartAt_target x) (I := I)
+    have : (extChartAt I x).symm (extChartAt I x x) = x := extChartAt_to_inv x
+    rw [← this] at hf
+    have := hf.comp_mdifferentiableWithinAt (extChartAt I x x) hφ
+    exact mdifferentiableWithinAt_iff_differentiableWithinAt.mp this
+  have hsf : MDiffAt (s • f) x := hs.smul hf
+  simp [mfderiv, hsf, hs, hf]
+  have uniq : UniqueDiffWithinAt 𝕜 (range I) (I (φ x)) :=
+    ModelWithCorners.uniqueDiffWithinAt_image I
+  erw [fderivWithin_smul uniq hs' hf']
+  simp [PartialHomeomorph.left_inv φ (ChartedSpace.mem_chart_source x)]
+  rfl
 
 end general_lemmas
 
@@ -554,7 +574,7 @@ section trivial_bundle
 
 variable (I M F) in
 @[simps]
-noncomputable def trivial :
+noncomputable def trivial [IsManifold I 1 M] :
     IsCovariantDerivativeOn F (V := Trivial M F)
       (fun X s x ↦ mfderiv I 𝓘(𝕜, F) s x (X x)) univ where
   addX X X' σ x _ := by simp
@@ -572,7 +592,7 @@ noncomputable def trivial :
     rw [mdifferentiableAt_section] at hσ
     exact mfderiv_smul hσ hf (X x)
 
-lemma of_endomorphism (A : (x : M) → TangentSpace I x →L[𝕜] F →L[𝕜] F) :
+lemma of_endomorphism [IsManifold I 1 M] (A : (x : M) → TangentSpace I x →L[𝕜] F →L[𝕜] F) :
     IsCovariantDerivativeOn F
       (fun (X : Π x : M, TangentSpace I x) (s : M → F) x ↦
         letI d : F := mfderiv I 𝓘(𝕜, F) s x (X x)
@@ -705,7 +725,7 @@ section trivial_bundle
 
 variable (I M F) in
 @[simps]
-noncomputable def trivial : CovariantDerivative I F (Trivial M F) where
+noncomputable def trivial [IsManifold I 1 M] : CovariantDerivative I F (Trivial M F) where
   toFun X s x := mfderiv I 𝓘(𝕜, F) s x (X x)
   isCovariantDerivativeOn := -- TODO use previous work
   { addX X X' σ x _ := by simp
