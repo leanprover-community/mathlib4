@@ -223,7 +223,7 @@ lemma card_finset_logSizeBallSeq_le (hJ : J.Nonempty) (i : ℕ) :
 
 lemma card_finset_logSizeBallSeq_card_eq_zero (hJ : J.Nonempty) :
     #(logSizeBallSeq J hJ a c #J).finset = 0 := by
-  rw [← Nat.le_zero,← tsub_self #J]
+  rw [← Nat.le_zero, ← tsub_self #J]
   exact card_finset_logSizeBallSeq_le hJ #J
 
 lemma disjoint_smallBall_logSizeBallSeq (hJ : J.Nonempty) {i j : ℕ} (hij : i ≠ j) :
