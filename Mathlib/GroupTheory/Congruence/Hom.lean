@@ -299,6 +299,17 @@ by `f`'s kernel."]
 theorem kerLift_injective (f : M →* P) : Injective (kerLift f) := fun x y =>
   Quotient.inductionOn₂' x y fun _ _ => (ker f).eq.2
 
+@[to_additive]
+def mapQ {F : Type*} [FunLike F M N] [MonoidHomClass F M N] {c : Con M} {d : Con N} (f : F)
+    (hf : c ≤ d.comap f (map_mul f)) : c.Quotient →* d.Quotient :=
+  (c.lift (d.mk'.comp (f : M →* N))) (fun _ _ hxy ↦ d.eq.2 (hf hxy))
+
+@[to_additive]
+theorem mapQ_coe {F : Type*} [FunLike F M N] [MonoidHomClass F M N] {c : Con M} {d : Con N} (f : F)
+    (hf : c ≤ d.comap f (map_mul f)) (x : M) :
+    Con.mapQ f hf x = f x :=
+  rfl
+
 /-- Given congruence relations `c, d` on a monoid such that `d` contains `c`, `d`'s quotient
     map induces a homomorphism from the quotient by `c` to the quotient by `d`. -/
 @[to_additive "Given additive congruence relations `c, d` on an `AddMonoid` such that `d`
