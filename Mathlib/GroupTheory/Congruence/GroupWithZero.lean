@@ -5,8 +5,10 @@ Authors: Anatole Dedecker
 -/
 
 import Mathlib.Algebra.GroupWithZero.InjSurj
+import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.GroupTheory.Congruence.Defs
+import Mathlib.GroupTheory.Congruence.Hom
+import Mathlib.Tactic.TermCongr
 
 /-!
 # Quotients of monoids and groups with zeros by a congruence relation
@@ -101,5 +103,21 @@ instance commGroupWithZero {M : Type*} [CommGroupWithZero M] (c : Con M) [Fact (
     CommGroupWithZero c.Quotient where
 
 end Group
+
+section MapQ
+
+variable {M N : Type*} [MonoidWithZero M] [MonoidWithZero N]
+
+def mapQ₀ {F : Type*} [FunLike F M N] [MonoidWithZeroHomClass F M N] {c : Con M} {d : Con N} (f : F)
+    (hf : c ≤ d.comap f (map_mul f)) : c.Quotient →*₀ d.Quotient where
+  toMonoidHom := mapQ f hf
+  map_zero' := congr(Con.toQuotient $(map_zero f))
+
+theorem mapQ₀_coe {F : Type*} [FunLike F M N] [MonoidWithZeroHomClass F M N] {c : Con M} {d : Con N}
+    (f : F) (hf : c ≤ d.comap f (map_mul f)) (x : M) :
+    Con.mapQ₀ f hf x = f x :=
+  rfl
+
+end MapQ
 
 end Con
