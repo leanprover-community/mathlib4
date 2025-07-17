@@ -529,7 +529,9 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
 lemma isCovariantDerivativeOn_existence_candidate [FiniteDimensional ℝ E]
     (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e] :
     IsCovariantDerivativeOn E (lcCandidate I M) e.baseSet := by
-  sorry -- need some IsCovariantDerivativeOn_congr + lemma bar
+  apply IsCovariantDerivativeOn.congr (isCovariantDerivativeOn_lcCandidate_aux I e)
+  intro X σ x hx
+  exact (bar I X σ e hx).symm
 
 end
 

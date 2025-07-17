@@ -315,6 +315,18 @@ lemma iUnion {ι : Type*}
 
 end changing_set
 
+/- Congruence properties -/
+section
+
+lemma congr {f g : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)} {s : Set M}
+    (hf : IsCovariantDerivativeOn F f s)
+    -- Is this too strong? Will see!
+    (hfg : ∀ {X : Π x : M, TangentSpace I x},
+      ∀ {σ : Π x : M, V x}, ∀ {x}, x ∈ s → f X σ x = g X σ x) :
+    IsCovariantDerivativeOn F g s := sorry
+
+end
+
 section computational_properties
 
 lemma smul_const_X
@@ -389,6 +401,14 @@ lemma _root_.ContMDiffCovariantDerivativeOn.convexCombination
     · exact (contMDiffOn_const.sub hf).smul_section <| Hcov'.contMDiff hX hσ
 
 /-- A finite convex combination of covariant derivatives is a covariant derivative. -/
+def convexCombination'_aux {ι : Type*} {s : Finset ι} (hs : Finset.Nonempty s)
+    {u : Set M} {cov : ι → (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)}
+    (h : ∀ i, IsCovariantDerivativeOn F (cov i) u) {f : ι → M → 𝕜} (hf : ∑ i ∈ s, f i = 1)
+    (hf' : ∀ i ∈ s, ∀ x ∈ u, f i x ≠ 0) :
+    IsCovariantDerivativeOn F (fun X σ x ↦ ∑ i ∈ s, (f i x) • (cov i) X σ x) u := by
+  sorry
+
+/-- A finite convex combination of covariant derivatives is a covariant derivative. -/
 def convexCombination' {ι : Type*} {s : Finset ι} (hs : Finset.Nonempty s)
     {u : Set M} {cov : ι → (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)}
     (h : ∀ i, IsCovariantDerivativeOn F (cov i) u) {f : ι → M → 𝕜} (hf : ∑ i ∈ s, f i = 1) :
@@ -433,7 +453,8 @@ def convexCombination' {ι : Type*} {s : Finset ι} (hs : Finset.Nonempty s)
     have : IsCovariantDerivativeOn F (fun X σ x ↦
         f i₀ x • cov i₀ X σ x + (1 - f i₀ x) • ∑ i ∈ s, g i x • cov i X σ x) u :=
       (h i₀).convexCombination (h' hg) _
-    -- apply a suitable congruence lemma: TODO write!
+    apply this.congr
+    intro X σ x hx
     sorry
 
 /-- A convex combination of finitely many `C^k` connections on `u` is a `C^k` connection on `u`. -/
