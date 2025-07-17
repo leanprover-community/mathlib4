@@ -137,6 +137,17 @@ theorem prime_def_le_sqrt {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, 2 ≤ m →
           refine this km (Nat.lt_of_mul_lt_mul_right (a := m) ?_) e
           rwa [one_mul, ← e]⟩
 
+theorem prime_iff_not_exists_mul_eq {p : ℕ} :
+    p.Prime ↔ 2 ≤ p ∧ ¬ ∃ m n, m < p ∧ n < p ∧ m * n = p := by
+  push_neg
+  simp_rw [prime_def_lt, dvd_def, exists_imp]
+  refine and_congr_right fun hp ↦ forall_congr' fun m ↦ (forall_congr' fun h ↦ ?_).trans forall_comm
+  simp_rw [Ne, forall_comm (β := _ = _), eq_comm, imp_false, not_lt]
+  refine forall₂_congr fun n hp ↦ ⟨by aesop, fun hpn ↦ ?_⟩
+  have := mul_ne_zero_iff.mp (hp ▸ show p ≠ 0 by omega)
+  exact (Nat.mul_eq_right (by omega)).mp
+    (hp.symm.trans (hpn.antisymm (hp ▸ Nat.le_mul_of_pos_left _ (by omega))))
+
 theorem prime_of_coprime (n : ℕ) (h1 : 1 < n) (h : ∀ m < n, m ≠ 0 → n.Coprime m) : Prime n := by
   refine prime_def_lt.mpr ⟨h1, fun m mlt mdvd => ?_⟩
   have hm : m ≠ 0 := by
@@ -285,7 +296,7 @@ theorem minFac_prime {n : ℕ} (n1 : n ≠ 1) : Prime (minFac n) :=
 theorem minFac_prime_iff {n : ℕ} : Prime (minFac n) ↔ n ≠ 1 := by
   refine ⟨?_, minFac_prime⟩
   rintro h rfl
-  exact prime_one_false h
+  simp only [minFac_one, not_prime_one] at h
 
 theorem minFac_le_of_dvd {n : ℕ} : ∀ {m : ℕ}, 2 ≤ m → m ∣ n → minFac n ≤ m := by
   by_cases n1 : n = 1
