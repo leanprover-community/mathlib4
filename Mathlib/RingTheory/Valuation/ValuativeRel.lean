@@ -743,7 +743,7 @@ def mapPosSubmonoid : posSubmonoid A →* posSubmonoid B where
   map_mul' := by simp
 
 variable (A) in
-lemma compatible_comap_of_extension {Γ : Type*}
+instance compatible_comap_of_extension {Γ : Type*}
     [LinearOrderedCommMonoidWithZero Γ] (w : Valuation B Γ) [w.Compatible] :
     (w.comap (algebraMap A B)).Compatible := by
   constructor
