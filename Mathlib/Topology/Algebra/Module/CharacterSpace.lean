@@ -198,8 +198,7 @@ variable [Ring A] [TopologicalSpace A] [Algebra 𝕜 A]
 
 /-- The `RingHom.ker` of `φ : characterSpace 𝕜 A` is maximal. -/
 instance ker_isMaximal (φ : characterSpace 𝕜 A) : (RingHom.ker φ).IsMaximal :=
-  RingHom.ker_isMaximal_of_surjective φ fun z =>
-    ⟨algebraMap 𝕜 A z, by simp only [AlgHomClass.commutes, Algebra.algebraMap_self, RingHom.id_apply]⟩
+  RingHom.ker_isMaximal_of_surjective φ fun z ↦ ⟨algebraMap 𝕜 A z, by simp [AlgHomClass.commutes]⟩
 
 end Kernel
 

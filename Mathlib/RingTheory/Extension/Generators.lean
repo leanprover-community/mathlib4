@@ -637,7 +637,7 @@ lemma map_ofComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
   · rintro ⟨x, hx, rfl⟩
     simp only [ker_eq_ker_aeval_val,
       RingHom.mem_ker] at hx ⊢
-    rw [← hx, Hom.algebraMap_toAlgHom, id.map_eq_self]
+    rw [← hx, Hom.algebraMap_toAlgHom, algebraMap_self_apply]
   · intro hx
     exact ⟨_, (kerCompPreimage Q P ⟨x, hx⟩).2, ofComp_kerCompPreimage Q P ⟨x, hx⟩⟩
 
@@ -651,7 +651,8 @@ lemma ker_comp_eq_sup (Q : Generators S T ι') (P : Generators R S ι) :
   simp only [le_sup_left, sup_of_le_left, sup_le_iff, le_refl, and_true]
   intro x hx
   simp only [RingHom.mem_ker] at hx
-  rw [Generators.ker_eq_ker_aeval_val, RingHom.mem_ker, ← id.map_eq_self (MvPolynomial.aeval _ x)]
+  rw [Generators.ker_eq_ker_aeval_val, RingHom.mem_ker,
+    ← algebraMap_self_apply (MvPolynomial.aeval _ x)]
   rw [← Generators.Hom.algebraMap_toAlgHom (Q.ofComp P), hx, map_zero]
 
 end Hom
