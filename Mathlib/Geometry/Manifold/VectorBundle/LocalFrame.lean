@@ -726,6 +726,12 @@ lemma localExtensionOn_add (v v' : V x) :
   · simp [hx, localExtensionOn, add_smul, Finset.sum_add_distrib]
 
 variable (b e) in
+lemma localExtensionOn_zero :
+    localExtensionOn b e x 0 = 0 := by
+  ext x'
+  by_cases hx: x ∈ e.baseSet <;> simp [hx, localExtensionOn]
+
+variable (b e) in
 lemma localExtensionOn_smul (a : 𝕜) (v : V x) :
     localExtensionOn b e x (a • v) = a • localExtensionOn b e x v := by
   ext x'

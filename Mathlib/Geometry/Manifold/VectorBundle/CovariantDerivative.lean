@@ -29,6 +29,30 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 section general_lemmas -- those lemmas should move
 
+section linear_algebra
+variable (𝕜 : Type*) [Field 𝕜]
+         {E : Type*} [AddCommGroup E] [Module 𝕜 E]
+         {E' : Type*} [AddCommGroup E'] [Module 𝕜 E']
+
+lemma exists_map_of (u : E) (u' : E') :
+    ∃ φ : E →ₗ[𝕜] E', (u = 0 → u' = 0) → φ u = u' := by
+  by_cases h : u = 0
+  · simp [h]
+    tauto
+  · have indep : LinearIndepOn 𝕜 id {u} := LinearIndepOn.id_singleton 𝕜 h
+    let s := indep.extend (subset_univ _)
+    have hus : u ∈ s := singleton_subset_iff.mp <| indep.subset_extend (subset_univ _)
+    use (Basis.extend indep).constr (M' := E') (S := 𝕜) fun _ ↦ u'
+    simpa [h, Basis.extend_apply_self] using (Basis.extend indep).constr_basis _ _ ⟨u, hus⟩
+
+open Classical in
+noncomputable def map_of (u : E) (u' : E') : E →ₗ[𝕜] E' := (exists_map_of 𝕜 u u').choose
+
+variable {𝕜}
+lemma map_of_spec (u : E) (u' : E') (h : u = 0 → u' = 0) : map_of 𝕜 u u' u = u' :=
+  (exists_map_of 𝕜 u u').choose_spec h
+end linear_algebra
+
 variable {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M] -- [IsManifold I 0 M]
@@ -41,7 +65,7 @@ variable {E' : Type*} [NormedAddCommGroup E']
 
 def map_of_loc_one_jet (e u : E) (e' u' : E') : E → E' := sorry
 
-lemma map_of_loc_one_jet_spec (e u : E) (e' u' : E') :
+lemma map_of_loc_one_jet_spec (e u : E) (e' u' : E') (hu : u = 0 → u' = 0) :
     map_of_loc_one_jet e u e' u' e = e' ∧
     DifferentiableAt 𝕜 (map_of_loc_one_jet e u e' u') e ∧
     fderiv 𝕜 (map_of_loc_one_jet e u e' u') e u = u' := by
@@ -64,7 +88,7 @@ while `u'` is outward.
 -/
 lemma map_of_one_jet_spec [IsManifold I 1 M] [IsManifold I' 1 M']
       [BoundarylessManifold I' M'] {x : M} (u : TangentSpace I x) {x' : M'}
-      (u' : TangentSpace I' x') :
+      (u' : TangentSpace I' x') (hu : u = 0 → u' = 0) :
     map_of_one_jet u u' x = x' ∧
     MDiffAt (map_of_one_jet u u') x ∧
     mfderiv I I' (map_of_one_jet u u') x u = u' := by
@@ -75,8 +99,10 @@ lemma map_of_one_jet_spec [IsManifold I 1 M] [IsManifold I' 1 M']
   have hψ : MDiffAt Ψ x' := mdifferentiableAt_extChartAt (ChartedSpace.mem_chart_source x')
   let Φ : M → E := φ -- FIXME: this is working around a limitation of MDiffAt elaborator
   have hφ : MDiffAt Φ x := mdifferentiableAt_extChartAt (ChartedSpace.mem_chart_source x)
+  replace hu : mfderiv I 𝓘(𝕜, E) φ x u = 0 → mfderiv I' 𝓘(𝕜, E') ψ x' u' = 0 := by
+    sorry
   rcases  map_of_loc_one_jet_spec (𝕜 := 𝕜)
-    (φ x) (mfderiv I 𝓘(𝕜, E) φ x u) (ψ x') (mfderiv I' 𝓘(𝕜, E') ψ x' u') with
+    (φ x) (mfderiv I 𝓘(𝕜, E) φ x u) (ψ x') (mfderiv I' 𝓘(𝕜, E') ψ x' u') hu with
     ⟨h : g (φ x) = ψ x', h', h''⟩
   have hg : MDiffAt g (φ x) := mdifferentiableAt_iff_differentiableAt.mpr h'
   have hgφ : MDiffAt (g ∘ φ) x := h'.comp_mdifferentiableAt hφ
@@ -192,6 +218,10 @@ lemma extend_add [FiniteDimensional ℝ F] [T2Space M] {x : M} (v v' : V x) :
 @[simp]
 lemma extend_smul [FiniteDimensional ℝ F] [T2Space M] {a : ℝ} {x : M} (v : V x) :
   extend I F (a • v) = a • extend I F v := by simp [extend, localExtensionOn_smul]; module
+
+@[simp]
+lemma extend_zero [FiniteDimensional ℝ F] [T2Space M] (x : M) :
+  extend I F (0 : V x) = 0 := by simp [extend, localExtensionOn_zero]; module
 
 @[simp] lemma extend_apply_self [FiniteDimensional ℝ F] [T2Space M] {x : M} (v : V x) :
     extend I F v x = v := by
@@ -974,7 +1004,13 @@ lemma mem_horiz_iff_exists (hcov : IsCovariantDerivativeOn F cov s) {x : M} {f :
   · intro huv
     simp [horiz] at huv
     let w : TangentSpace 𝓘(ℝ, F) f := v
-    rcases map_of_one_jet_spec u w with ⟨h, h', h''⟩
+    by_cases hu : u = 0
+    · subst hu
+      replace huv : v = 0 := by simpa using huv
+      subst huv
+      use fun x ↦ f
+      simpa [hcov.zeroX, mdifferentiableAt_section] using mdifferentiableAt_const
+    rcases map_of_one_jet_spec u w (by tauto) with ⟨h, h', h''⟩
     use map_of_one_jet u w, ?_, h, h''
     · rw [hcov.eq_one_form]
       · simp [w, h'', h, huv]
