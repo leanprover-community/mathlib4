@@ -107,10 +107,10 @@ partial def parsePow (n' : ℕ) :
     ⦃a b : Q(ℝ)⦄ → (z : Q(ℂ)) → (n : Q(ℕ)) → Q(NormNum.IsNat $n $n') →  Q(IsComplex $z $a $b) →
     MetaM (Σ a b : Q(ℝ), Q(IsComplex ($z ^ $n) $a $b)) :=
   n'.binaryRec'
-    (fun {a b} z n hn hz => do
+    (fun {_ _} z n _ _ => do
       have : $n =Q 0 := ⟨⟩
       return ⟨q(1), q(0), q(pow_zero $z ▸ .one)⟩)
-    (fun bit (m : ℕ) h rec {a b} z n hn hz => do
+    (fun bit (m : ℕ) _ rec {_ _} z n _ hz => do
       match bit with
       | true =>
         have : $n =Q Nat.bit true $m := ⟨⟩
