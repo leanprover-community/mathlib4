@@ -129,7 +129,7 @@ noncomputable def ofSurjectiveAlgebraMap (h : Function.Surjective (algebraMap R 
 
 /-- The canonical generators for `R` as an `R`-algebra. -/
 noncomputable def id : Generators R R PEmpty.{w + 1} := ofSurjectiveAlgebraMap <| by
-  rw [id.map_eq_id]
+  rw [algebraMap_self]
   exact RingHomSurjective.is_surjective
 
 /-- Construct `Generators` from an assignment `I → S` such that `R[X] → S` is surjective. -/
