@@ -111,7 +111,7 @@ lemma yoneda_toGlued_yonedaGluedToSheaf (i : ι) :
   apply GlueData.sheafValGluedMk_val
 
 @[simp]
-lemma yonedaGluedToSheaf_app_toGlued {i : ι}  :
+lemma yonedaGluedToSheaf_app_toGlued {i : ι} :
     (yonedaGluedToSheaf hf).val.app _ (toGlued hf i) = yonedaEquiv (f i) := by
   rw [← yoneda_toGlued_yonedaGluedToSheaf hf i, yonedaEquiv_comp,
     yonedaEquiv_yoneda_map]

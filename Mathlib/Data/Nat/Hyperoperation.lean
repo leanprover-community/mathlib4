@@ -63,7 +63,7 @@ theorem hyperoperation_two (m k : ℕ) : hyperoperation 2 m k = m * k := by
 
 @[simp, grind =]
 theorem hyperoperation_three (m k : ℕ) : hyperoperation 3 m k = m ^ k := by
-  induction k with grind [Nat.pow_succ]
+  induction k with grind
 
 @[grind =]
 theorem hyperoperation_ge_two_eq_self (n m : ℕ) : hyperoperation (n + 2) m 1 = m := by
@@ -80,7 +80,8 @@ theorem hyperoperation_ge_three_one (n k : ℕ) : hyperoperation (n + 3) 1 k = 1
   | succ n ih =>
     cases k
     · grind
-    · rw [hyperoperation_recursion, ih]
+    · #adaptation_note /-- This will work by `grind` after nightly-2025-07-02. -/
+      rw [hyperoperation_recursion, ih]
 
 @[grind =]
 theorem hyperoperation_ge_four_zero (n k : ℕ) :

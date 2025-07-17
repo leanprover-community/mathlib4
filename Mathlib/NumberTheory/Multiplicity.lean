@@ -289,14 +289,7 @@ theorem Int.two_pow_two_pow_add_two_pow_two_pow {x y : ℤ} (hx : ¬2 ∣ x) (hx
   · rw [pow_one, ← even_iff_two_dvd]
     exact hx_odd.pow.add_odd hy_odd.pow
   rcases i with - | i
-  · intro hxy'
-    have : 2 * 2 ∣ 2 * x := by
-      have := dvd_add hxy hxy'
-      norm_num at *
-      rw [two_mul]
-      exact this
-    have : 2 ∣ x := (mul_dvd_mul_iff_left (by norm_num)).mp this
-    contradiction
+  · grind
   suffices ∀ x : ℤ, Odd x → x ^ 2 ^ (i + 1) % 4 = 1 by
     rw [show (2 ^ (1 + 1) : ℤ) = 4 by norm_num, Int.dvd_iff_emod_eq_zero, Int.add_emod,
       this _ hx_odd, this _ hy_odd]

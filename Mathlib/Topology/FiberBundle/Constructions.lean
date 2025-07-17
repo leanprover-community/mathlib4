@@ -215,7 +215,7 @@ noncomputable def prod : Trivialization (F₁ × F₂) (π (F₁ × F₂) (E₁ 
   target_eq := rfl
   proj_toFun _ _ := rfl
 
-@[deprecated (since := "2025-0619")] alias baseSet_prod := prod_baseSet
+@[deprecated (since := "2025-06-19")] alias baseSet_prod := prod_baseSet
 
 theorem prod_symm_apply (x : B) (w₁ : F₁) (w₂ : F₂) :
     (prod e₁ e₂).toPartialEquiv.symm (x, w₁, w₂) = ⟨x, e₁.symm x w₁, e₂.symm x w₂⟩ := rfl
