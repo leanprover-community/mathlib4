@@ -810,6 +810,35 @@ lemma MonotoneOn.csSup_eq_of_subset_of_forall_exists_le
     sSup (f '' s) = sSup (f '' t) :=
   MonotoneOn.csInf_eq_of_subset_of_forall_exists_le (α := αᵒᵈ) (β := βᵒᵈ) ht hf.dual hst h
 
+theorem MonotoneOn.sInf_image_Icc [Preorder α] [ConditionallyCompleteLattice β]
+    {f : α → β} {a b : α} (hab : a ≤ b)
+    (h' : MonotoneOn f (Icc a b)) : sInf (f '' Icc a b) = f a := by
+  refine IsGLB.csInf_eq ?_ ((nonempty_Icc.mpr hab).image f)
+  refine isGLB_iff_le_iff.mpr (fun b' ↦ ⟨?_, ?_⟩)
+  · intro hb'
+    rintro _ ⟨x, hx, rfl⟩
+    exact hb'.trans <| h' (left_mem_Icc.mpr hab) hx hx.1
+  · exact fun hb' ↦ hb' ⟨a, by simp [hab]⟩
+
+theorem MonotoneOn.sSup_image_Icc [Preorder α] [ConditionallyCompleteLattice β]
+    {f : α → β} {a b : α} (hab : a ≤ b)
+    (h' : MonotoneOn f (Icc a b)) : sSup (f '' Icc a b) = f b := by
+  have : Icc a b = Icc (α := αᵒᵈ) (toDual b) (toDual a) := by rw [Icc_toDual]; rfl
+  rw [this] at h' ⊢
+  exact h'.dual_right.dual_left.sInf_image_Icc (β := βᵒᵈ) (α := αᵒᵈ) hab
+
+theorem AntitoneOn.sInf_image_Icc [Preorder α] [ConditionallyCompleteLattice β]
+    {f : α → β} {a b : α} (hab : a ≤ b)
+    (h' : AntitoneOn f (Icc a b)) : sInf (f '' Icc a b) = f b := by
+  have : Icc a b = Icc (α := αᵒᵈ) (toDual b) (toDual a) := by rw [Icc_toDual]; rfl
+  rw [this] at h' ⊢
+  exact h'.dual_left.sInf_image_Icc (α := αᵒᵈ) hab
+
+theorem AntitoneOn.sSup_image_Icc [Preorder α] [ConditionallyCompleteLattice β]
+    {f : α → β} {a b : α} (hab : a ≤ b)
+    (h' : AntitoneOn f (Icc a b)) : sSup (f '' Icc a b) = f a :=
+  h'.dual_right.sInf_image_Icc hab
+
 /-!
 ### Supremum/infimum of `Set.image2`
 

@@ -83,7 +83,7 @@ def induced [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithful]
   tensorHom_def {X₁ Y₁ X₂ Y₂} f g := F.map_injective <| by
     rw [fData.tensorHom_eq, Functor.map_comp, fData.whiskerRight_eq, fData.whiskerLeft_eq]
     simp only [tensorHom_def, assoc, Iso.hom_inv_id_assoc]
-  tensor_id X₁ X₂ := F.map_injective <| by cases fData; aesop_cat
+  id_tensorHom_id X₁ X₂ := F.map_injective <| by cases fData; aesop_cat
   tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂} f₁ f₂ g₁ g₂ := F.map_injective <| by cases fData; aesop_cat
   whiskerLeft_id X Y := F.map_injective <| by simp [fData.whiskerLeft_eq]
   id_whiskerRight X Y := F.map_injective <| by simp [fData.whiskerRight_eq]
@@ -91,11 +91,11 @@ def induced [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithful]
   pentagon W X Y Z := F.map_injective <| by
     simp only [Functor.map_comp, fData.whiskerRight_eq, fData.associator_eq, Iso.trans_assoc,
       Iso.trans_hom, Iso.symm_hom, tensorIso_hom, Iso.refl_hom, tensorHom_id, id_tensorHom,
-      comp_whiskerRight, whisker_assoc, assoc, fData.whiskerLeft_eq,
-      MonoidalCategory.whiskerLeft_comp, Iso.hom_inv_id_assoc, whiskerLeft_hom_inv_assoc,
-      hom_inv_whiskerRight_assoc, Iso.inv_hom_id_assoc, Iso.cancel_iso_inv_left]
+      comp_whiskerRight, whisker_assoc, assoc, fData.whiskerLeft_eq, whiskerLeft_comp,
+      Iso.hom_inv_id_assoc, whiskerLeft_hom_inv_assoc, hom_inv_whiskerRight_assoc,
+      Iso.inv_hom_id_assoc, Iso.cancel_iso_inv_left]
     slice_lhs 5 6 =>
-      rw [← MonoidalCategory.whiskerLeft_comp, hom_inv_whiskerRight]
+      rw [← whiskerLeft_comp, hom_inv_whiskerRight]
     rw [whisker_exchange_assoc]
     simp
   leftUnitor_naturality {X Y : D} f := F.map_injective <| by
