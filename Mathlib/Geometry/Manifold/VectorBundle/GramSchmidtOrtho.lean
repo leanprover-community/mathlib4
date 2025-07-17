@@ -70,7 +70,7 @@ theorem gramSchmidt_def'' (s : ι → (x : B) → E x) (n : ι) (x) :
     s n x = gramSchmidt s n x + ∑ i ∈ Iio n,
       (⟪gramSchmidt s i x, s n x⟫ / (‖gramSchmidt s i x‖) ^ 2) • gramSchmidt s i x := by
   convert gramSchmidt_def' s n x
-  simp [Submodule.orthogonalProjection_singleton, RCLike.ofReal_pow]
+  simp [starProjection_singleton, RCLike.ofReal_pow]
 
 @[simp]
 lemma gramSchmidt_apply (s : ι → (x : B) → E x) (n : ι) (x) :
@@ -170,13 +170,13 @@ theorem gramSchmidt_linearIndependent (h₀ : LinearIndependent ℝ (s · x)) :
 
 /-- When the sections `s` form a basis at `x`, so do the sections `gramSchmidt s`. -/
 noncomputable def gramSchmidtBasis (hs : LinearIndependent ℝ (s · x))
-    (hs' : ⊤ ≤ Submodule.span ℝ (Set.range (s · x))) :
+    (hs' : ⊤ ≤ span ℝ (Set.range (s · x))) :
     Basis ι ℝ (E x) :=
   Basis.mk (gramSchmidt_linearIndependent hs)
     ((span_gramSchmidt s x).trans (eq_top_iff'.mpr fun _ ↦ hs' trivial)).ge
 
 theorem coe_gramSchmidtBasis (hs : LinearIndependent ℝ (s · x))
-    (hs' : ⊤ ≤ Submodule.span ℝ (Set.range (s · x))) :
+    (hs' : ⊤ ≤ span ℝ (Set.range (s · x))) :
     (gramSchmidtBasis hs hs') = (gramSchmidt s · x) :=
   Basis.coe_mk _ _
 
@@ -244,14 +244,14 @@ lemma gramSchmidtNormed_apply_of_orthonormal (hs : Orthonormal ℝ (s · x)) {i 
 
 Note that `gramSchmidtOrthonormalBasis` proves a strictly stronger statement. -/
 noncomputable def gramSchmidtNormedBasis (hs : LinearIndependent ℝ (s · x))
-    (hs' : ⊤ ≤ Submodule.span ℝ (Set.range (s · x))) :
+    (hs' : ⊤ ≤ span ℝ (Set.range (s · x))) :
     Basis ι ℝ (E x) :=
   Basis.mk (v := fun i ↦ gramSchmidtNormed s i x) (gramSchmidtNormed_linearIndependent hs)
     (by rw [span_gramSchmidtNormed_range s, span_gramSchmidt s x]; exact hs')
 
 @[simp]
 theorem coe_gramSchmidtNormedBasis (hs : LinearIndependent ℝ (s · x))
-    (hs' : ⊤ ≤ Submodule.span ℝ (Set.range (s · x))) :
+    (hs' : ⊤ ≤ span ℝ (Set.range (s · x))) :
     (gramSchmidtNormedBasis hs hs' : ι → E x) = (gramSchmidtNormed s · x) :=
   Basis.coe_mk _ _
 
@@ -266,19 +266,19 @@ be more tedious.
 As we always obtain a basis, we need not consider the case of some resulting vector being zero.
 -/
 noncomputable def gramSchmidtOrthonormalBasis [Fintype ι]
-    (hs : LinearIndependent ℝ (s · x)) (hs' : ⊤ ≤ Submodule.span ℝ (Set.range (s · x))) :
+    (hs : LinearIndependent ℝ (s · x)) (hs' : ⊤ ≤ span ℝ (Set.range (s · x))) :
     OrthonormalBasis ι ℝ (E x) := by
   apply (gramSchmidtNormedBasis hs hs').toOrthonormalBasis
   simp [gramSchmidtNormed_orthonormal hs]
 
 @[simp]
 theorem gramSchmidtOrthonormalBasis_coe [Fintype ι] (hs : LinearIndependent ℝ (s · x))
-    (hs' : ⊤ ≤ Submodule.span ℝ (Set.range (s · x))) :
+    (hs' : ⊤ ≤ span ℝ (Set.range (s · x))) :
     gramSchmidtOrthonormalBasis hs hs' = (gramSchmidtNormed s · x) := by
   simp [gramSchmidtOrthonormalBasis]
 
 theorem gramSchmidtOrthonormalBasis_apply_of_orthonormal [Fintype ι]
-    (hs : Orthonormal ℝ (s · x)) (hs' : ⊤ ≤ Submodule.span ℝ (Set.range (s · x))) :
+    (hs : Orthonormal ℝ (s · x)) (hs' : ⊤ ≤ span ℝ (Set.range (s · x))) :
     (gramSchmidtOrthonormalBasis hs.linearIndependent hs') = (s · x) := by
   simp [gramSchmidtNormed_apply_of_orthonormal hs]
 
