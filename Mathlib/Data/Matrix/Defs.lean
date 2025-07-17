@@ -573,7 +573,7 @@ namespace Set
 all of whose entries `M i j` belong to `S`. -/
 def matrix (S : Set α) : Set (Matrix m n α) := {M | ∀ i j, M i j ∈ S}
 
-@[simp] theorem mem_matrix (S : Set α) {M : Matrix m n α} :
+@[simp] theorem mem_matrix {S : Set α} {M : Matrix m n α} :
     M ∈ S.matrix ↔ ∀ i j, M i j ∈ S := .rfl
 
 end Set
