@@ -644,8 +644,7 @@ variable {A : Type*} [AddGroup A]
 /-- A version of `Set.matrix` for `AddSubgroup`s.
 Given an `AddSubgroup` `S`, `S.matrix` is the `AddSubgroup` of matrices `m`
 all of whose entries `m i j` belong to `S`. -/
-def matrix (S : AddSubgroup A) :
-    AddSubgroup (Matrix m n A) where
+def matrix (S : AddSubgroup A) : AddSubgroup (Matrix m n A) where
   __ := S.toAddSubmonoid.matrix
   neg_mem' hm i j := AddSubgroup.neg_mem _ (hm i j)
 
@@ -659,8 +658,7 @@ variable [Fintype n] [DecidableEq n]
 /-- A version of `Set.matrix` for `Subsemiring`s.
 Given a `Subsemiring` `S`, `S.matrix` is the `Subsemiring` of square matrices `m`
 all of whose entries `m i j` belong to `S`. -/
-def matrix (S : Subsemiring R) :
-    Subsemiring (Matrix n n R) where
+def matrix (S : Subsemiring R) : Subsemiring (Matrix n n R) where
   __ := S.toAddSubmonoid.matrix
   mul_mem' ha hb i j := Subsemiring.sum_mem _ (fun k _ => Subsemiring.mul_mem _ (ha i k) (hb k j))
   one_mem' := (diagonal_mem_matrix (Subsemiring.zero_mem _)).mpr (fun _ => Subsemiring.one_mem _)
@@ -675,8 +673,7 @@ variable [Fintype n] [DecidableEq n]
 /-- A version of `Set.matrix` for `Subring`s.
 Given a `Subring` `S`, `S.matrix` is the `Subring` of square matrices `m`
 all of whose entries `m i j` belong to `S`. -/
-def matrix (S : Subring R) :
-    Subring (Matrix n n R) where
+def matrix (S : Subring R) : Subring (Matrix n n R) where
   __ := S.toSubsemiring.matrix
   neg_mem' hm i j := Subring.neg_mem _ (hm i j)
 
