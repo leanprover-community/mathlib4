@@ -447,13 +447,6 @@ syntax (name := nlinarith) "nlinarith" "!"? linarithArgsRest : tactic
 @[inherit_doc nlinarith] macro "nlinarith!" rest:linarithArgsRest : tactic =>
   `(tactic| nlinarith ! $rest:linarithArgsRest)
 
--- /-- Elaborate `t` in a way that is suitable for linarith. -/
--- def elabLinarithArg (tactic : Name) (t : Term) : TacticM Expr := Term.withoutErrToSorry do
---   let (e, mvars) ← elabTermWithHoles t none tactic
---   unless mvars.isEmpty do
---     throwErrorAt t "Argument passed to {tactic} has metavariables:{indentD e}"
---   return e
-
 /--
 Allow elaboration of `LinarithConfig` arguments to tactics.
 -/
