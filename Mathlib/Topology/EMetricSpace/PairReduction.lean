@@ -94,8 +94,8 @@ def logSizeBallStruct.smallBall (struct : logSizeBallStruct T) (c : ℝ≥0∞) 
     Finset T :=
   struct.finset.filter fun x ↦ edist struct.point x ≤ (struct.radius - 1) * c
 
-/-- If (V,t,r) is a `logSizeBallStruct` then `logSizeBallStruct.ball`
-  is {x ∈ V | d(t,x) ≤ rc} -/
+/-- If (V, t, r) is a `logSizeBallStruct` then `logSizeBallStruct.ball`
+  is {x ∈ V | d(t, x) ≤ rc}. -/
 noncomputable
 def logSizeBallStruct.ball (struct : logSizeBallStruct T) (c : ℝ≥0∞) :
     Finset T :=
