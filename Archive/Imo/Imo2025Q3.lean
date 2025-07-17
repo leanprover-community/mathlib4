@@ -12,8 +12,6 @@ def g : ℕ → ℕ := fun x ↦
   else if x = 2 then 4
   else 2 ^ (padicValNat 2 x + 2)
 
-#check Int.sq_mod_four_eq_one_of_odd
-
 lemma LTE {a b : ℕ} (h1b : 1 < b) (hb : ¬2 ∣ b) (ha : a ≠ 0) (Evena : Even a) :
     (padicValNat 2 a + 2) ≤ padicValNat 2 (b ^ a - 1) := by
   have dvd : 2 ∣ b - 1 := by
@@ -24,22 +22,19 @@ lemma LTE {a b : ℕ} (h1b : 1 < b) (hb : ¬2 ∣ b) (ha : a ≠ 0) (Evena : Eve
   have : padicValNat 2 (b ^ a - 1)
     = padicValNat 2 (b + 1) + padicValNat 2 (b - 1) + padicValNat 2 a - 1 := by omega
   rw [this]
-  have Oddb : Odd b := by
-    rcases dvd with ⟨m, hm⟩
-    use m
-    omega
+  have Oddb : Odd b :=
+    Nat.odd_iff.mpr (Nat.two_dvd_ne_zero.mp hb)
   have : padicValNat 2 (b + 1) + padicValNat 2 (b - 1) ≥ 3 := by
     rw [← padicValNat.mul (by omega) (by omega)]
     have : (b + 1) * (b - 1) ≠ 0 := by
       simpa using by omega
     have dvd : 2 ^ 3 ∣ (b + 1) * (b - 1) := by
       have : (b + 1) * (b - 1) = b ^ 2 - 1 := by simp [Nat.pow_two_sub_pow_two b 1]
-      simp [this]
-      exact Nat.eight_dvd_sq_sub_one_of_odd Oddb
+      simpa [this] using Nat.eight_dvd_sq_sub_one_of_odd Oddb
     exact (padicValNat_dvd_iff_le (hp := fact_prime_two) this).mp dvd
   omega
 
-lemma hale {a : ℕ} (ha : a ≥ 4) (dvd : 2 ∣ a) : padicValNat 2 a + 2 ≤ a := by
+lemma padicValNat_le {a : ℕ} (ha : a ≥ 4) (dvd : 2 ∣ a) : padicValNat 2 a + 2 ≤ a := by
   rcases dvd with ⟨k, hk⟩
   rw [hk, padicValNat.mul (by norm_num) (by omega)]
   simp
@@ -72,21 +67,16 @@ lemma exist : g ∈ bonza := fun a b ha hb ↦ by
       have : (padicValNat 2 a + 2) ≤ padicValInt 2 (b ^ a - 1) := by
         simp at ch1
         have := LTE (by omega) (Nat.two_dvd_ne_zero.mpr hb1) (by omega) (Nat.even_iff.mpr ch1)
-        have : padicValNat 2 (b ^ a - 1) = padicValInt 2 (b ^ a - 1) := by
-          rw [← padicValInt.of_nat, LucasLehmer.Int.natCast_pow_pred b a hb]
-        rwa [← this]
-      have dvd1 : (2 : ℤ) ^ (padicValNat 2 a + 2) ∣ 2 ^ padicValInt 2 (b ^ a - 1) :=
-        pow_dvd_pow 2 this
-      have dvd2 : (2 : ℤ) ^ padicValInt 2 ((b : ℤ) ^ a - 1) ∣ (b : ℤ) ^ a - 1 :=
-        padicValInt_dvd ((b : ℤ) ^ a - 1) (hp := fact_prime_two)
-      exact Int.dvd_trans dvd1 dvd2
+        rwa [← LucasLehmer.Int.natCast_pow_pred b a hb]
+      exact Int.dvd_trans (pow_dvd_pow 2 this) (padicValInt_dvd ((b : ℤ) ^ a - 1))
     · simp [hb2]
       refine dvd_sub ?_ ?_
       · have : padicValNat 2 a + 2 ≤ a := by
-          apply?
-          sorry
+          simp at ch1
+          exact padicValNat_le (by omega) (dvd_of_mod_eq_zero ch1)
         exact pow_dvd_pow 2 this
-      sorry
+      ·
+        sorry
     · refine dvd_sub ?_ ?_
       ·
         sorry
