@@ -85,7 +85,7 @@ noncomputable def freeHomEquiv : (freeObj F ⟶ G) ≃ (F ⟶ G.presheaf ⋙ for
 
 lemma free_hom_ext {ψ ψ' : freeObj F ⟶ G}
     (h : freeAdjunctionUnit R F ≫ Functor.whiskerRight ((toPresheaf _).map ψ) _ =
-      freeAdjunctionUnit R F ≫ Functor.whiskerRight ((toPresheaf _).map ψ') _ ) : ψ = ψ' :=
+      freeAdjunctionUnit R F ≫ Functor.whiskerRight ((toPresheaf _).map ψ') _) : ψ = ψ' :=
   freeHomEquiv.injective h
 
 variable (R) in

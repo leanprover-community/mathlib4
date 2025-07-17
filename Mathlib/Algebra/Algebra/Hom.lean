@@ -103,6 +103,10 @@ instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
   map_one f := f.map_one'
   commutes f := f.commutes'
 
+@[simp] lemma _root_.AlgHomClass.toLinearMap_toAlgHom {R A B F : Type*} [CommSemiring R]
+    [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] [FunLike F A B] [AlgHomClass F R A B]
+    (f : F) : (AlgHomClass.toAlgHom f : A →ₗ[R] B) = f := rfl
+
 /-- See Note [custom simps projection] -/
 def Simps.apply {R : Type u} {α : Type v} {β : Type w} [CommSemiring R]
     [Semiring α] [Semiring β] [Algebra R α] [Algebra R β] (f : α →ₐ[R] β) : α → β := f
@@ -402,6 +406,8 @@ def ofId : R →ₐ[R] A :=
   { algebraMap R A with commutes' := fun _ => rfl }
 
 variable {R}
+
+@[simp] lemma ofId_self : ofId R R = .id R R := rfl
 
 theorem ofId_apply (r) : ofId R A r = algebraMap R A r :=
   rfl

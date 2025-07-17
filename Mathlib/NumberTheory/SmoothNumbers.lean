@@ -282,12 +282,15 @@ lemma smoothNumbers_eq_factoredNumbers (n : ℕ) :
     Finset.mem_range]
 
 /-- The `n`-smooth numbers agree with the `primesBelow n`-factored numbers. -/
-lemma smmoothNumbers_eq_factoredNumbers_primesBelow (n : ℕ) :
+lemma smoothNumbers_eq_factoredNumbers_primesBelow (n : ℕ) :
     smoothNumbers n = factoredNumbers n.primesBelow := by
   rw [smoothNumbers_eq_factoredNumbers]
   refine Set.Subset.antisymm (fun m hm ↦ ?_) <| factoredNumbers_mono Finset.mem_of_mem_filter
   simp_rw [mem_factoredNumbers'] at hm ⊢
   exact fun p hp hp' ↦ mem_primesBelow.mpr ⟨Finset.mem_range.mp <| hm p hp hp', hp⟩
+
+@[deprecated (since := "2025-07-08")]
+alias smmoothNumbers_eq_factoredNumbers_primesBelow := smoothNumbers_eq_factoredNumbers_primesBelow
 
 /-- Membership in `Nat.smoothNumbers n` is decidable. -/
 instance (n : ℕ) : DecidablePred (· ∈ smoothNumbers n) :=
@@ -314,7 +317,7 @@ of primes below `n`. -/
 lemma primeFactors_subset_of_mem_smoothNumbers {m n : ℕ} (hms : m ∈ n.smoothNumbers) :
     m.primeFactors ⊆ n.primesBelow :=
   primeFactors_subset_of_mem_factoredNumbers <|
-    smmoothNumbers_eq_factoredNumbers_primesBelow n ▸ hms
+    smoothNumbers_eq_factoredNumbers_primesBelow n ▸ hms
 
 /-- `m` is an `n`-smooth number if the `Finset` of its prime factors consists of numbers `< n`. -/
 lemma mem_smoothNumbers_of_primeFactors_subset {m n : ℕ} (hm : m ≠ 0)
@@ -505,11 +508,7 @@ lemma roughNumbersUpTo_eq_biUnion (N k) :
     fun h₁ h₂ h₃ ↦ (le_of_dvd (Nat.pos_of_ne_zero h₁) h₂).trans_lt h₃
   have H₂ : m ≠ 0 → p ∣ m → ¬ m < p :=
     fun h₁ h₂ ↦ not_lt.mpr <| le_of_dvd (Nat.pos_of_ne_zero h₁) h₂
-  constructor
-  · rintro ⟨h₁, h₂, _, h₄, h₅, h₆⟩
-    exact ⟨⟨⟨H₁ h₂ h₅ h₁, h₄⟩, fun h _ ↦ h₆ h⟩, h₁, h₂, h₅⟩
-  · rintro ⟨⟨⟨_, h₂⟩, h₃⟩, h₄, h₅, h₆⟩
-    exact ⟨h₄, h₅, H₂ h₅ h₆, h₂, h₆, fun h ↦ h₃ h h₂⟩
+  grind
 
 /-- The cardinality of the set of `k`-rough numbers `≤ N` is bounded by the sum of `⌊N/p⌋`
 over the primes `k ≤ p ≤ N`. -/

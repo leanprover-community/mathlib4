@@ -604,11 +604,9 @@ variable {R}
 smallest non-unital subalgebra containing both `S` and `star S`. -/
 def starClosure (S : NonUnitalSubalgebra R A) : NonUnitalStarSubalgebra R A where
   toNonUnitalSubalgebra := S ⊔ star S
-  star_mem' := @fun a (ha : a ∈ S ⊔ star S) => show star a ∈ S ⊔ star S by
-    simp only [← mem_star_iff _ a, ← (@NonUnitalAlgebra.gi R A _ _ _ _ _).l_sup_u _ _] at *
-    convert ha using 2
-    simp only [Set.sup_eq_union, star_adjoin_comm, Set.union_star, coe_star, star_star,
-      Set.union_comm]
+  star_mem' {a} ha := by
+    simpa [← mem_star_iff _ a, ← (@NonUnitalAlgebra.gi R A _ _ _ _ _).l_sup_u _ _, star_adjoin_comm,
+      Set.union_comm] using ha
 
 @[simp]
 theorem coe_starClosure (S : NonUnitalSubalgebra R A) :
@@ -622,7 +620,7 @@ theorem mem_starClosure (S : NonUnitalSubalgebra R A) {x : A} :
 theorem starClosure_toNonUnitalSubalgebra (S : NonUnitalSubalgebra R A) :
     S.starClosure.toNonUnitalSubalgebra = S ⊔ star S := rfl
 
-@[deprecated (since := "17-06-2025")] alias
+@[deprecated (since := "2025-06-17")] alias
   starClosure_toNonunitalSubalgebra := starClosure_toNonUnitalSubalgebra
 
 theorem starClosure_le {S₁ : NonUnitalSubalgebra R A} {S₂ : NonUnitalStarSubalgebra R A}
@@ -674,18 +672,17 @@ theorem adjoin_eq_starClosure_adjoin (s : Set A) :
       (NonUnitalSubalgebra.star_adjoin_comm R s).symm ▸ NonUnitalAlgebra.adjoin_union s (star s)
 
 theorem adjoin_toNonUnitalSubalgebra (s : Set A) :
-    (adjoin R s).toNonUnitalSubalgebra = NonUnitalAlgebra.adjoin R (s ∪ star s) :=
-  rfl
+    (adjoin R s).toNonUnitalSubalgebra = NonUnitalAlgebra.adjoin R (s ∪ star s) := rfl
 
-@[simp, aesop safe 20 apply (rule_sets := [SetLike])]
+@[simp, aesop safe 20 (rule_sets := [SetLike])]
 theorem subset_adjoin (s : Set A) : s ⊆ adjoin R s :=
   Set.subset_union_left.trans <| NonUnitalAlgebra.subset_adjoin R
 
-@[simp, aesop safe 20 apply (rule_sets := [SetLike])]
+@[simp, aesop safe 20 (rule_sets := [SetLike])]
 theorem star_subset_adjoin (s : Set A) : star s ⊆ adjoin R s :=
   Set.subset_union_right.trans <| NonUnitalAlgebra.subset_adjoin R
 
-@[aesop 80% apply (rule_sets := [SetLike])]
+@[aesop 80% (rule_sets := [SetLike])]
 theorem mem_adjoin_of_mem {s : Set A} {x : A} (hx : x ∈ s) : x ∈ adjoin R s := subset_adjoin R s hx
 
 theorem self_mem_adjoin_singleton (x : A) : x ∈ adjoin R ({x} : Set A) :=
