@@ -419,16 +419,13 @@ lemma iSup_edist_pairSet {E : Type*} [PseudoEMetricSpace E] (ha : 1 < a) (f : T 
   rw [edist_comm]
   apply add_le_add (sup_bound hsP) (sup_bound htP)
 
-theorem pair_reduction (J : Finset T) (hJ_card : #J ≤ a ^ n) (ha : 1 < a)
+theorem pair_reduction (hJ_card : #J ≤ a ^ n) (ha : 1 < a)
     (E : Type*) [PseudoEMetricSpace E] :
     ∃ K : Finset (T × T), K ⊆ J.product J
       ∧ #K ≤ a * #J
       ∧ (∀ s t, (s, t) ∈ K → edist s t ≤ n * c)
       ∧ (∀ f : T → E,
         ⨆ (s : J) (t : { t : J // edist s t ≤ c}), edist (f s) (f t)
-        ≤ 2 * ⨆ p : K, edist (f p.1.1) (f p.1.2)) := by
-  refine ⟨pairSet J a c, ?_, ?_, ?_, ?_⟩
-  · exact pairSet_subset
-  · exact card_pairSet_le ha hJ_card
-  · exact fun _ _ ↦ edist_le_of_mem_pairSet ha hJ_card
-  · exact iSup_edist_pairSet ha
+        ≤ 2 * ⨆ p : K, edist (f p.1.1) (f p.1.2)) :=
+  ⟨pairSet J a c, pairSet_subset, card_pairSet_le ha hJ_card,
+    fun _ _ ↦ edist_le_of_mem_pairSet ha hJ_card, iSup_edist_pairSet ha⟩
