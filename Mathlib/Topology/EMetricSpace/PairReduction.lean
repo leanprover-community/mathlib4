@@ -258,7 +258,7 @@ lemma pairSet_subset : pairSet J a c ⊆ J.product J := by
   by_cases hJ : J.Nonempty
   · simp only [pairSetSeq, hJ, ↓reduceDIte]
     apply Finset.product_subset_product
-    · apply Finset.singleton_subset_iff.mpr (point_mem_logSizeBallSeq_zero hJ _)
+    · exact Finset.singleton_subset_iff.mpr (point_mem_logSizeBallSeq_zero hJ _)
     apply subset_trans
     · apply subset_trans (Finset.filter_subset _ _)
       exact antitone_logSizeBallSeq_add_one_subset hJ (zero_le _)
