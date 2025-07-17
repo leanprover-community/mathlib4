@@ -87,7 +87,6 @@ We endow an inner product vector space with the canonical Riemannian metric, giv
 inner product of the vector space in each of the tangent spaces, and we show that this construction
 satisfies the `IsRiemannianManifold 𝓘(ℝ, E) E` predicate, i.e., the extended distance between
 two points is the infimum of the length of paths between these points.
-
 -/
 
 variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
@@ -197,7 +196,7 @@ Moreover, we show that in this case the resulting emetric space satisfies the pr
 `IsRiemannianManifold I M`.
 
 Showing that the distance topology coincides with the pre-existing topology is not trivial. The
-two inequalities are proved respectively in `eventually_riemmanianEDist_lt` and
+two inclusions are proved respectively in `eventually_riemmanianEDist_lt` and
 `setOf_riemmanianEDist_lt_subset_nhds`.
 
 For the first one, we have to show that points which are close for the topology are at small
