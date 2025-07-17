@@ -118,6 +118,13 @@ theorem encard_union_eq (h : Disjoint s t) : (s ∪ t).encard = s.encard + t.enc
   classical
   simp [encard, ENat.card_congr (Equiv.Set.union h)]
 
+theorem encard_ne_add_one (a : α) :
+    ({x | x ≠ a}).encard + 1 = ENat.card α := by
+  have : Disjoint {x | x ≠ a} {a} := disjoint_singleton_right.mpr <| by simp
+  replace this := (Set.encard_union_eq this).symm
+  have aux : {x | x ≠ a} ∪ {a} = univ := by ext x; simp [eq_or_ne x a]
+  rwa [encard_singleton, aux, encard_univ] at this
+
 theorem encard_insert_of_notMem {a : α} (has : a ∉ s) : (insert a s).encard = s.encard + 1 := by
   rw [← union_singleton, encard_union_eq (by simpa), encard_singleton]
 
@@ -414,6 +421,10 @@ theorem _root_.Function.Injective.encard_image (hf : f.Injective) (s : Set α) :
 theorem _root_.Function.Embedding.encard_le (e : s ↪ t) : s.encard ≤ t.encard := by
   rw [← encard_univ_coe, ← e.injective.encard_image, ← Subtype.coe_injective.encard_image]
   exact encard_mono (by simp)
+
+theorem _root_.Function.Injective.encard_range (hf : f.Injective) :
+    ENat.card α ≤ (range f).encard := by
+  rw [← image_univ, hf.encard_image, encard_univ]
 
 theorem encard_image_le (f : α → β) (s : Set α) : (f '' s).encard ≤ s.encard := by
   obtain (h | h) := isEmpty_or_nonempty α

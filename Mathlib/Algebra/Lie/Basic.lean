@@ -300,9 +300,11 @@ theorem sum_lie (s : Finset ι) (f : ι → L) (a : L) : ⁅∑ i ∈ s, f i, a�
   let _i := LieRing.toNonUnitalNonAssocRing L
   s.sum_mul f a
 
-theorem lie_sum (s : Finset ι) (f : ι → L) (a : L) : ⁅a, ∑ i ∈ s, f i⁆ = ∑ i ∈ s, ⁅a, f i⁆ :=
-  let _i := LieRing.toNonUnitalNonAssocRing L
-  s.mul_sum f a
+theorem lie_sum (s : Finset ι) (f : ι → M) (a : L) : ⁅a, ∑ i ∈ s, f i⁆ = ∑ i ∈ s, ⁅a, f i⁆ := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert b s h₁ h₂ => simpa [Finset.sum_insert h₁]
 
 theorem sum_lie_sum {κ : Type*} (s : Finset ι) (t : Finset κ) (f : ι → L) (g : κ → L) :
     ⁅(∑ i ∈ s, f i), ∑ j ∈ t, g j⁆ = ∑ i ∈ s, ∑ j ∈ t, ⁅f i, g j⁆ :=
