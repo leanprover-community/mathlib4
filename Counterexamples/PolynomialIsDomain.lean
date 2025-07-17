@@ -64,7 +64,7 @@ theorem natCast_eq_one (n : ℕ) : ∀ [NeZero n], (n : NatMaxAdd) = 1 := by
 
 open Polynomial
 
-theorem not_isDomain_polynomial_natMaxAdd : ¬ IsDomain NatMaxAdd[X] :=
+theorem not_isDomain_polynomial : ¬ IsDomain NatMaxAdd[X] :=
   have hX1 : (X + 1 : NatMaxAdd[X]) ≠ 0 := X_add_C_ne_zero _
   have ne : (X ^ 2 + 1 : NatMaxAdd[X]) ≠ (X ^ 2 + X + 1) := fun h ↦ by
     have : coeff (1 : NatMaxAdd[X]) 1 = 0 := by rw [← C_1, coeff_C, if_neg one_ne_zero]
@@ -75,3 +75,7 @@ theorem not_isDomain_polynomial_natMaxAdd : ¬ IsDomain NatMaxAdd[X] :=
       ← C_eq_natCast, natCast_eq_one, C_1, mul_one, mul_one]
 
 end NatMaxAdd
+
+theorem not_isDomain_commSemiring_imp_isDomain_polynomial :
+    ¬ (∀ (R : Type) [CommSemiring R] [IsDomain R], IsDomain (Polynomial R)) :=
+  fun h ↦ NatMaxAdd.not_isDomain_polynomial (h _)
