@@ -943,13 +943,13 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
               sorry
 
             -- With zero pairing, the bracket ⁅x_χ, m_α⁆ = 0
-            have h_bracket_zero : ⁅x_χ, m_α⁆ = 0 := by
+            have h_bracket_zero : ⁅x_χ, m_h⁆ = 0 := by
               -- This follows from the fact that when the pairing is zero,
               -- the bracket between weight spaces is zero
               sorry
 
             -- Therefore the goal is satisfied
-            rw [h_bracket_zero]
+            rw [h_simplified, h_bracket_zero]
             simp
 
         | zero =>
