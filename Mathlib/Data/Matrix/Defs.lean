@@ -582,6 +582,7 @@ namespace Matrix
 
 variable {S : Set α}
 
+@[simp]
 theorem transpose_mem_matrix_iff {M : Matrix m n α} :
     Mᵀ ∈ S.matrix ↔ M ∈ S.matrix := by
   simp only [Set.mem_matrix, transpose_apply]; exact forall_comm
