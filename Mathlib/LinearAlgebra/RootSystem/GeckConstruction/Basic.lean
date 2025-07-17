@@ -3,8 +3,12 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Algebra.Lie.CartanSubalgebra
 import Mathlib.Algebra.Lie.OfAssociative
+import Mathlib.Algebra.Lie.Matrix
+import Mathlib.Algebra.Lie.Semisimple.Lemmas
 import Mathlib.Algebra.Lie.Sl2
+import Mathlib.Algebra.Lie.Weights.Linear
 import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
 import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Lemmas
 
@@ -51,16 +55,19 @@ a base: https://mathoverflow.net/questions/495434/
 * Instance stating `LieModule.IsIrreducible R (lieAlgebra b) (b.support ⊕ ι → R)`
   (Lemma 4.2 from [Geck](Geck2017)). This will immediately yield that the Geck construction is
   semisimple via `LieAlgebra.hasTrivialRadical_of_isIrreducible_of_isFaithful`.
-* Instance stating `((cartanSubalgebra b).comap (lieAlgebra b).incl).IsCartanSubalgebra`
+* Instance stating `(cartanSubalgebra' b).IsCartanSubalgebra`
   (included in Lemma 4.6 from [Geck](Geck2017)).
 
 -/
 
 noncomputable section
 
-open Set
+open Function Set
+open scoped Matrix
 
 namespace RootPairing.GeckConstruction
+
+section IsDomain
 
 variable {ι R M N : Type*} [Finite ι] [CommRing R] [IsDomain R] [CharZero R]
   [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
@@ -107,17 +114,41 @@ def lieAlgebra [Fintype ι] [DecidableEq ι] :
     LieSubalgebra R (Matrix (b.support ⊕ ι) (b.support ⊕ ι) R) :=
   LieSubalgebra.lieSpan R _ (range e ∪ range f)
 
-/-- A distinguished subalgebra corresponding to a Cartan subalgebra of the Geck construction. -/
+/-- A distinguished subalgebra corresponding to a Cartan subalgebra of the Geck construction.
+
+See also `RootPairing.GeckConstruction.cartanSubalgebra'`. -/
 def cartanSubalgebra [Fintype ι] [DecidableEq ι] :
     LieSubalgebra R (Matrix (b.support ⊕ ι) (b.support ⊕ ι) R) :=
   LieSubalgebra.lieSpan R _ (range h)
 
+/-- A distinguished Cartan subalgebra of the Geck construction. -/
+def cartanSubalgebra' [Fintype ι] [DecidableEq ι] :
+    LieSubalgebra R (lieAlgebra b) :=
+  (cartanSubalgebra b).comap (lieAlgebra b).incl
+
 variable {b}
+
+omit [Finite ι] [IsDomain R] [CharZero R] in
+@[simp] lemma h_mem_cartanSubalgebra [Fintype ι] [DecidableEq ι] (i : b.support) :
+    h i ∈ cartanSubalgebra b :=
+  LieSubalgebra.subset_lieSpan <| mem_range_self i
+
+@[simp] lemma h_mem_cartanSubalgebra' [Fintype ι] [DecidableEq ι] (i : b.support) (hi) :
+    ⟨h i, hi⟩ ∈ cartanSubalgebra' b := by
+  simp [cartanSubalgebra']
 
 attribute [local simp] Ring.lie_def Matrix.mul_apply Matrix.one_apply Matrix.diagonal_apply
 
+lemma e_mem_lieAlgebra [Fintype ι] [DecidableEq ι] (i : b.support) :
+    e i ∈ lieAlgebra b :=
+  LieSubalgebra.subset_lieSpan <| by simp
+
+lemma f_mem_lieAlgebra [Fintype ι] [DecidableEq ι] (i : b.support) :
+    f i ∈ lieAlgebra b :=
+  LieSubalgebra.subset_lieSpan <| by simp
+
 omit [Finite ι] [IsDomain R] [CharZero R] [P.IsCrystallographic] in
-lemma ω_mul_ω [DecidableEq ι] [Fintype ι] :
+@[simp] lemma ω_mul_ω [DecidableEq ι] [Fintype ι] :
     ω b * ω b = 1 := by
   ext (k | k) (l | l) <;>
   simp [ω, -indexNeg_neg]
@@ -171,6 +202,86 @@ lemma lie_e_f_mul_ω [Fintype ι] (i j : b.support) :
 
 variable [Fintype ι] (i j : b.support)
 
+variable (b) in
+/-- The conjugation `x ↦ ωxω` as an equivalence of Lie algebras. -/
+@[simps] def ωConj [DecidableEq ι] :
+    Matrix (b.support ⊕ ι) (b.support ⊕ ι) R ≃ₗ⁅R⁆ Matrix (b.support ⊕ ι) (b.support ⊕ ι) R where
+  toFun x := ω b * x * ω b
+  map_add' x y := by noncomm_ring
+  map_smul' t x := by simp
+  map_lie' {x y} := by
+    simp only [Ring.lie_def]
+    nth_rw 1 [← mul_one x]
+    nth_rw 2 [← one_mul x]
+    simp only [← ω_mul_ω (b := b)]
+    noncomm_ring
+  invFun x := ω b * x * ω b
+  left_inv x := by
+    simp only [← mul_assoc, ω_mul_ω, one_mul]
+    simp [mul_assoc]
+  right_inv x := by
+    simp only [← mul_assoc, ω_mul_ω, one_mul]
+    simp [mul_assoc]
+
+lemma ωConj_mem_of_mem [DecidableEq ι]
+    {x : Matrix (b.support ⊕ ι) (b.support ⊕ ι) R} (hx : x ∈ lieAlgebra b) :
+    ωConj b x ∈ lieAlgebra b := by
+  induction hx using LieSubalgebra.lieSpan_induction with
+  | mem u hu =>
+    apply LieSubalgebra.subset_lieSpan
+    obtain (⟨i, rfl⟩ | ⟨i, rfl⟩) : (∃ y, e y = u) ∨ ∃ y, f y = u := by
+      simpa only [mem_union, mem_range] using hu
+    · exact Or.inr ⟨i, by simp [ω_mul_e, mul_assoc]⟩
+    · exact Or.inl ⟨i, by simp [ω_mul_f, mul_assoc]⟩
+  | zero => simp
+  | add u v _ _ hu hv => simpa [mul_add, add_mul] using add_mem hu hv
+  | smul t u _ hu => simpa using SMulMemClass.smul_mem _ hu
+  | lie u v _ _ hu hv =>
+    rw [LieEquiv.map_lie]
+    exact (lieAlgebra b).lie_mem hu hv
+
+lemma e_u_same [DecidableEq ι] (i : b.support) :
+    letI ui : b.support ⊕ ι → R := Pi.single (Sum.inl i) 1
+    letI vi : b.support ⊕ ι → R := Pi.single (Sum.inr i) 1
+    ⁅e i, ui⁆ = (2 : R) • vi := by
+  ext (j | j) <;> simp [e, Pi.single_apply]
+
+lemma e_v_ne [DecidableEq ι] {i j : ι} {k : b.support} (h : P.root j = P.root k + P.root i) :
+    letI vi : b.support ⊕ ι → R := Pi.single (Sum.inr i) 1
+    letI vj : b.support ⊕ ι → R := Pi.single (Sum.inr j) 1
+    ⁅e k, vi⁆ = (P.chainBotCoeff k i + 1 : R) • vj := by
+  letI := P.indexNeg
+  ext (l | l)
+  · replace h : i ≠ -k := by rintro rfl; exact P.ne_zero j <| by simpa using h
+    simp [e, h, -indexNeg_neg]
+  · simp [e, ← h, Pi.single_apply]
+
+lemma f_v_same [DecidableEq ι] (i : b.support) :
+    letI ui : b.support ⊕ ι → R := Pi.single (Sum.inl i) 1
+    letI vi : b.support ⊕ ι → R := Pi.single (Sum.inr i) 1
+    ⁅f i, vi⁆ = ui := by
+  ext (j | j)
+  · simp [f, Pi.single_apply]
+  · simp [f, P.ne_zero j]
+
+lemma f_v_ne [DecidableEq ι] {i j : ι} {k : b.support} (h : P.root i = P.root j + P.root k) :
+    letI vi : b.support ⊕ ι → R := Pi.single (Sum.inr i) 1
+    letI vj : b.support ⊕ ι → R := Pi.single (Sum.inr j) 1
+    ⁅f k, vi⁆ = (P.chainTopCoeff k i + 1 : R) • vj := by
+  ext (l | l)
+  · replace h : i ≠ k := by rintro rfl; exact P.ne_zero j <| by simpa using h
+    simp [f, h]
+  · simp [f, h, Pi.single_apply]
+
+lemma lie_e_lie_f_apply [DecidableEq ι] :
+    letI u (i : b.support) : b.support ⊕ ι → R := Pi.single (Sum.inl i) 1
+    ⁅e i, ⁅f i, u j⁆⁆ = |b.cartanMatrix i j| • u i := by
+  ext (k | k)
+  · rcases eq_or_ne k i with rfl | h
+    · simp [e, f, Matrix.mulVec, dotProduct]
+    · simp [e, f, Matrix.mulVec, dotProduct, h]
+  · simp [e, f, Matrix.mulVec, dotProduct, P.ne_zero]
+
 omit [Finite ι] [IsDomain R] [CharZero R] in
 lemma lie_h_h :
     ⁅h i, h j⁆ = 0 := by
@@ -182,6 +293,25 @@ lemma lie_h_h :
   · simp only [h, Ring.lie_def, Matrix.sub_apply, Matrix.mul_apply, Fintype.sum_sum_type,
       Matrix.fromBlocks_apply₂₂, Matrix.diagonal_apply, ite_mul, mul_comm (P.pairingIn ℤ k i : R)]
     aesop
+
+instance [Fintype ι] [DecidableEq ι] : IsLieAbelian (cartanSubalgebra b) := by
+  rw [cartanSubalgebra, LieSubalgebra.isLieAbelian_lieSpan_iff]
+  rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩
+  exact lie_h_h i j
+
+instance [Fintype ι] [DecidableEq ι] : IsLieAbelian (cartanSubalgebra' b) := by
+  refine ⟨fun ⟨⟨x, hx⟩, hx'⟩ ⟨⟨y, hy⟩, hy'⟩ ↦ ?_⟩
+  let x' : cartanSubalgebra b := ⟨x, hx'⟩
+  let y' : cartanSubalgebra b := ⟨y, hy'⟩
+  suffices ⁅x', y'⁆ = 0 by simpa [x', y', Subtype.ext_iff, -trivial_lie_zero] using this
+  simp
+
+instance [Fintype ι] [DecidableEq ι] :
+    LieModule.IsTriangularizable R (cartanSubalgebra' b) (b.support ⊕ ι → R) := by
+  refine ⟨fun ⟨x, hx⟩ ↦ ?_⟩
+  simp only [LieSubalgebra.toEnd_mk]
+  -- Trivial: `x` is a diagonal matrix
+  sorry
 
 /-- Lemma 3.3 (a) from [Geck](Geck2017). -/
 lemma lie_h_e :
@@ -338,6 +468,11 @@ lemma cartanSubalgebra_le_lieAlgebra [DecidableEq ι] :
   apply LieSubalgebra.lie_mem <;>
   exact LieSubalgebra.subset_lieSpan <| by simp
 
+lemma h_mem_lieAlgebra [DecidableEq ι] (i : b.support) :
+    h i ∈ lieAlgebra b := by
+  rw [← lie_e_f_same]
+  exact LieSubalgebra.lie_mem _ (e_mem_lieAlgebra i) (f_mem_lieAlgebra i)
+
 section lie_e_f_ne
 
 open scoped Matrix
@@ -487,5 +622,181 @@ lemma lie_e_f_ne [P.IsNotG2] :
     norm_cast
 
 end lie_e_f_ne
+
+section ωConjLieSubmodule
+
+variable [DecidableEq ι] (N : LieSubmodule R (lieAlgebra b) (b.support ⊕ ι → R))
+omit [P.IsReduced]
+
+/-- The equivalence `x ↦ ωxω` as an operation on Lie submodules of the Geck construction. -/
+private def ωConjLieSubmodule :
+    LieSubmodule R (lieAlgebra b) (b.support ⊕ ι → R) where
+  __ := N.toSubmodule.comap (ω b).toLin'
+  lie_mem A {x} hx := by
+    let A' : lieAlgebra b := ⟨ωConj b _, ωConj_mem_of_mem A.property⟩
+    suffices ⁅A', ω b *ᵥ x⁆ ∈ N by simpa [A', mul_assoc] using this
+    exact LieSubmodule.lie_mem _ hx
+
+@[simp] private lemma mem_ωConjLieSubmodule_iff {x : b.support ⊕ ι → R} :
+    x ∈ ωConjLieSubmodule N ↔ (ω b) *ᵥ x ∈ N :=
+  Iff.rfl
+
+@[simp] private lemma ωConjLieSubmodule_eq_top_iff : ωConjLieSubmodule N = ⊤ ↔ N = ⊤ := by
+  rw [← LieSubmodule.toSubmodule_eq_top]
+  let e : Submodule R (b.support ⊕ ι → R) ≃o Submodule R (b.support ⊕ ι → R) :=
+    Submodule.orderIsoMapComapOfBijective (ω b).toLin' (Involutive.bijective fun x ↦ by simp)
+  change e.symm N = ⊤ ↔ _
+  simp
+
+end ωConjLieSubmodule
+
+end IsDomain
+
+section Field
+
+variable {ι K M N : Type*}
+  [DecidableEq ι] [Fintype ι]
+  [Field K] [CharZero K]
+  [AddCommGroup M] [Module K M] [AddCommGroup N] [Module K N]
+  {P : RootSystem ι K M N} [P.IsCrystallographic] [P.IsReduced] [P.IsIrreducible]
+  {b : P.Base}
+
+/-- An auxiliary lemma en route to `...` (where the same conclusion is proved with the hypothesis
+`hi` weakened to just `U ≠ ⊥`). -/
+private lemma lieSubmodule_eq_top_of_v_mem
+    {U : LieSubmodule K (lieAlgebra b) (b.support ⊕ ι → K)} {i : ι}
+    (hi : Pi.single (Sum.inr i) 1 ∈ U) :
+    U = ⊤ := by
+  letI _i := P.indexNeg
+  let u (i : b.support) : b.support ⊕ ι → K := Pi.single (Sum.inl i) 1
+  let v (i : ι) : b.support ⊕ ι → K := Pi.single (Sum.inr i) 1
+  have hωu (i : b.support) : ω b *ᵥ (u i) = u i := by
+    ext (j | j) <;> simp [ω, u, Pi.single_apply, Matrix.one_apply]
+  have hωv (i : ι) : ω b *ᵥ (v i) = v (-i) := by ext (j | j) <;> simp [ω, v, Pi.single_apply]
+  change v i ∈ U at hi
+  obtain ⟨j, hj⟩ : ∃ j : b.support, u j ∈ U := by
+    revert U
+    apply b.induction_add i
+    · intro i h U hi
+      replace hi : v i ∈ ωConjLieSubmodule U := by simpa [hωv]
+      obtain ⟨j, hj⟩ := h hi
+      exact ⟨j, by simpa [hωu] using hj⟩
+    · intro j hj U hj'
+      let f' : lieAlgebra b := ⟨f ⟨j, hj⟩, f_mem_lieAlgebra _⟩
+      have : ⁅f', v j⁆ = u ⟨j, hj⟩ := f_v_same ⟨j, hj⟩
+      replace this : u ⟨j, hj⟩ ∈ U := by
+        rw [← this]
+        exact U.lie_mem (x := f') hj'
+      exact ⟨⟨j, hj⟩, this⟩
+    · intro j k l h₁ h₂ hk U hl
+      have : ⁅f ⟨k, hk⟩, v l⁆ = (P.chainTopCoeff k l + 1 : K) • v j := f_v_ne h₁
+      replace this : (P.chainTopCoeff k l + 1 : K) • v j ∈ U := by
+        rw [← this]
+        let f' : lieAlgebra b := ⟨f ⟨k, hk⟩, f_mem_lieAlgebra _⟩
+        change ⁅f', v l⁆ ∈ U
+        exact U.lie_mem hl
+      exact h₂ <| (U.smul_mem_iff (by norm_cast)).mp this
+  have aux (k : b.support) : u k ∈ U := by
+    refine b.induction_on_cartanMatrix (fun k : b.support ↦ u k ∈ U) hj (fun l l' hl₁ hl₂ ↦ ?_)
+    suffices (↑|b.cartanMatrix l' l| : K) • u l' ∈ U from (U.smul_mem_iff (by simpa)).mp this
+    rw [Int.cast_smul_eq_zsmul, ← lie_e_lie_f_apply l' l]
+    let e' : lieAlgebra b := ⟨e l', e_mem_lieAlgebra l'⟩
+    let f' : lieAlgebra b := ⟨f l', f_mem_lieAlgebra l'⟩
+    change ⁅e', ⁅f', u l⁆⁆ ∈ U
+    exact U.lie_mem <| U.lie_mem hl₁
+  clear! j i
+  suffices ∀ j, v j ∈ U by
+    simp_rw [← LieSubmodule.toSubmodule_eq_top, eq_top_iff,
+      ← (Pi.basisFun K (b.support ⊕ ι)).span_eq, Submodule.span_le, range_subset_iff,
+      Pi.basisFun_apply]
+    aesop
+  intro j
+  revert U
+  apply b.induction_add j
+  · intro j h U hU
+    suffices v j ∈ ωConjLieSubmodule U by simpa [hωv] using this
+    exact h fun k ↦ by simp [hωu, hU]
+  · intro k hk U aux
+    have : ⁅e ⟨k, hk⟩, u ⟨k, hk⟩⁆ = (2 : K) • v k := e_u_same ⟨k, hk⟩
+    let e' : lieAlgebra b := ⟨e ⟨k, hk⟩, e_mem_lieAlgebra ⟨k, hk⟩⟩
+    change ⁅e', u ⟨k, hk⟩⁆ = _ at this
+    replace aux := U.lie_mem (x := e') <| aux ⟨k, hk⟩
+    rw [this] at aux
+    exact (U.smul_mem_iff two_ne_zero).mp aux
+  · intro k l m hm hk hl U aux
+    rw [add_comm] at hm
+    let e' : lieAlgebra b := ⟨e ⟨l, hl⟩, e_mem_lieAlgebra _⟩
+    have : ⁅e', v k⁆ = (P.chainBotCoeff l k + 1 : K) • v m := e_v_ne hm
+    replace this : (P.chainBotCoeff l k + 1 : K) • v m ∈ U := by
+      rw [← this]
+      exact U.lie_mem (hk aux)
+    exact (U.smul_mem_iff (by norm_cast)).mp this
+
+set_option maxHeartbeats 500000 in -- Needed only at end where proof gross so hopefully disappears
+lemma foo (U : LieSubmodule K (cartanSubalgebra' b) (b.support ⊕ ι → K)) (hU : U ≠ ⊥) :
+    ∃ i, Pi.single (Sum.inr i) 1 ∈ U := by
+  let u (i : b.support) : b.support ⊕ ι → K := Pi.single (Sum.inl i) 1
+  let v (i : ι) : b.support ⊕ ι → K := Pi.single (Sum.inr i) 1
+  let H := cartanSubalgebra' b
+  let U₀ : LieSubmodule K H (b.support ⊕ ι → K) := LieModule.genWeightSpace (b.support ⊕ ι → K) 0
+  replace hU : ¬ U ≤ U₀ := by
+    -- Need to know `4` is not an eigenvalue of the Cartan matrix.
+    -- Will need `U₀ = span K (range u)` etc
+    sorry
+  have key (χ : H → K) (hχ : χ ≠ 0) (hχ' : LieModule.genWeightSpace U χ ≠ ⊥) :
+      ∃ i, v i ∈ (LieModule.genWeightSpace U χ).map U.incl := by
+    have : LieModule.genWeightSpace U χ = LieModule.weightSpace U χ := by
+      -- All the `h i` are diagonalisable, hence semisimple + general theory
+      sorry
+    simp_rw [this] at hχ' ⊢
+    obtain ⟨w, hw, hw₀⟩ : ∃ w ∈ LieModule.weightSpace U χ, w ≠ 0 := by
+      contrapose! hχ'; rwa [LieSubmodule.eq_bot_iff]
+    simp only [LieModule.mem_weightSpace] at hw
+    let h' (i : b.support) : H :=
+      ⟨⟨h i, h_mem_lieAlgebra i⟩, h_mem_cartanSubalgebra' i (h_mem_lieAlgebra i)⟩
+    obtain ⟨i, hi⟩ : ∃ i, χ (h' i) ≠ 0 := by
+      contrapose! hχ
+      -- `χ` is linear and the `h' i` span `H`
+      -- #check LieModule.Weight.toLinear K H U ⟨χ, this ▸ hχ'⟩
+      sorry
+    obtain ⟨j, hj⟩ : ∃ j, U.incl w = v j := by
+      specialize hw (h' i)
+      -- forced by `hi` and `hw`
+      sorry
+    exact ⟨j, by simpa [← hj, LieModule.mem_weightSpace, -Subtype.forall]⟩
+  obtain ⟨x, hx⟩ : ∃ x : U, x ∉ LieModule.genWeightSpace U (0 : H → K) := by
+    contrapose! hU
+    refine le_trans ?_ <| LieModule.map_genWeightSpace_le (f := U.incl)
+    exact fun x hx ↦ by simpa [hx] using hU ⟨x, hx⟩
+  suffices ∃ᵉ (χ : H → K) (i : ι), v i ∈ (LieModule.genWeightSpace U χ).map U.incl by
+    obtain ⟨χ, i, hi⟩ := this
+    exact ⟨i, LieSubmodule.map_incl_le hi⟩
+  suffices ∃ χ : H → K, χ ≠ 0 ∧ LieModule.genWeightSpace U χ ≠ ⊥ by
+    obtain ⟨χ, hχ₀, hχ⟩ := this
+    exact ⟨χ, key χ hχ₀ hχ⟩
+  contrapose! hx
+  -- TODO Pretty gross from here: does the broader API need some love or is this PEBKAC?
+  have aux := iSup_split (LieModule.genWeightSpace U) fun χ : H → K ↦ χ = 0
+  rw [biSup_congr hx] at aux
+  change _ = _ ⊔ (⨆ χ ∈ {χ : H → K | χ ≠ 0}, ⊥) at aux
+  rw [biSup_const ⟨1, by simp⟩, sup_bot_eq] at aux
+  change _ = ⨆ χ ∈ {χ : H → K | χ = 0}, _ at aux
+  simp_rw [setOf_eq_eq_singleton, iSup_singleton] at aux
+  rw [← aux, LieModule.iSup_genWeightSpace_eq_top K H U]
+  simp
+
+open Submodule in
+/-- Lemma 4.2 from [Geck](Geck2017). -/
+instance [Nonempty ι] :
+    LieModule.IsIrreducible K (lieAlgebra b) (b.support ⊕ ι → K) := by
+  refine LieModule.IsIrreducible.mk fun U hU ↦ ?_
+  let v (i : ι) : b.support ⊕ ι → K := Pi.single (Sum.inr i) 1
+  set H := cartanSubalgebra' b
+  suffices ∃ i, v i ∈ U by obtain ⟨i, hi⟩ := this; exact lieSubmodule_eq_top_of_v_mem hi
+  let U' : LieSubmodule K H (b.support ⊕ ι → K) := {U with lie_mem := U.lie_mem}
+  replace hU : U' ≠ ⊥ := by contrapose! hU; simpa [U', LieSubmodule.eq_bot_iff] using hU
+  exact foo U' hU
+
+end Field
 
 end RootPairing.GeckConstruction
