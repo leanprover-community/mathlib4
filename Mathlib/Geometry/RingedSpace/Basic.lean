@@ -75,7 +75,7 @@ theorem isUnit_res_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U)) (x :
   obtain ⟨V, hxV, g, rfl⟩ := X.presheaf.germ_exist x g'
   let W := U ⊓ V
   have hxW : x ∈ W := ⟨hx, hxV⟩
-  -- Porting note: `erw` can't write into `HEq`, so this is replaced with another `HEq` in the
+  -- Porting note: `erw` can't write into `heq`, so this is replaced with another `heq` in the
   -- desired form
   replace heq : (X.presheaf.germ _ x hxW) ((X.presheaf.map (U.infLELeft V).op) f *
       (X.presheaf.map (U.infLERight V).op) g) = (X.presheaf.germ _ x hxW) 1 := by

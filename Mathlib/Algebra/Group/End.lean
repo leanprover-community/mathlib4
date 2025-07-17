@@ -29,7 +29,7 @@ function composition, and multiplication in `CategoryTheory.End`, but not with
 end monoid, aut group
 -/
 
-assert_not_exists MonoidWithZero MulAction RelIso
+assert_not_exists HeytingAlgebra MonoidWithZero MulAction RelIso
 
 variable {A M G α β : Type*}
 
@@ -254,7 +254,7 @@ theorem sigmaCongrRight_one {α : Type*} {β : α → Type*} :
 This is particularly useful for its `MonoidHom.range` projection, which is the subgroup of
 permutations which do not exchange elements between fibers. -/
 @[simps]
-def sigmaCongrRightHom {α : Type*} (β : α → Type*) : (∀ a, Perm (β a)) →* Perm (Σa, β a) where
+def sigmaCongrRightHom {α : Type*} (β : α → Type*) : (∀ a, Perm (β a)) →* Perm (Σ a, β a) where
   toFun := sigmaCongrRight
   map_one' := sigmaCongrRight_one
   map_mul' _ _ := (sigmaCongrRight_mul _ _).symm

@@ -119,9 +119,16 @@ theorem factorization_eq_zero_iff (n p : ℕ) :
 theorem factorization_eq_zero_of_non_prime (n : ℕ) {p : ℕ} (hp : ¬p.Prime) :
     n.factorization p = 0 := by simp [factorization_eq_zero_iff, hp]
 
+-- TODO: Replace
+alias factorization_eq_zero_of_not_prime := factorization_eq_zero_of_non_prime
+
 @[simp]
 theorem factorization_zero_right (n : ℕ) : n.factorization 0 = 0 :=
   factorization_eq_zero_of_non_prime _ not_prime_zero
+
+@[simp]
+theorem factorization_one_right (n : ℕ) : n.factorization 1 = 0 :=
+  factorization_eq_zero_of_not_prime _ not_prime_one
 
 theorem factorization_eq_zero_of_not_dvd {n p : ℕ} (h : ¬p ∣ n) : n.factorization p = 0 := by
   simp [factorization_eq_zero_iff, h]
@@ -254,6 +261,12 @@ theorem ordProj_dvd (n p : ℕ) : ordProj[p] n ∣ n := by
   simp [List.eq_of_mem_replicate hq]
 
 @[deprecated (since := "2024-10-24")] alias ord_proj_dvd := ordProj_dvd
+
+lemma ordProj_dvd_ordProj_iff_dvd (ha : a ≠ 0) (hb : b ≠ 0) :
+    (∀ p : ℕ, ordProj[p] a ∣ ordProj[p] b) ↔ a ∣ b := by
+  rw [← factorization_le_iff_dvd ha hb, Finsupp.le_def]
+  congr! 1 with p
+  obtain _ | _ | p := p <;> simp [Nat.pow_dvd_pow_iff_le_right]
 
 /-! ### Factorization LCM definitions -/
 
