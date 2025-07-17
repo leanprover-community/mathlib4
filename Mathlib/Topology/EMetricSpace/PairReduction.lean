@@ -87,8 +87,8 @@ structure logSizeBallStruct (T : Type*) where
   underlying point in the underlying finite set) -/
   radius : ℕ
 
-/-- If (V,t,r) is a `logSizeBallStruct` then `logSizeBallStruct.smallBall`
-  is {x ∈ V | d(t,x) ≤ (r-1)c} -/
+/-- If (V, t, r) is a `logSizeBallStruct` then `logSizeBallStruct.smallBall`
+  is {x ∈ V | d(t, x) ≤ (r - 1)c}. -/
 noncomputable
 def logSizeBallStruct.smallBall (struct : logSizeBallStruct T) (c : ℝ≥0∞) :
     Finset T :=
