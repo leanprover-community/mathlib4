@@ -573,7 +573,7 @@ namespace Set
 all of whose entries `M i j` belong to `S`. -/
 def matrix (S : Set α) : Set (Matrix m n α) := {M | ∀ i j, M i j ∈ S}
 
-@[simp] theorem mem_matrix {S : Set α} {M : Matrix m n α} :
+theorem mem_matrix {S : Set α} {M : Matrix m n α} :
     M ∈ S.matrix ↔ ∀ i j, M i j ∈ S := .rfl
 
 end Set
@@ -588,6 +588,6 @@ theorem transpose_mem_matrix_iff {M : Matrix m n α} :
   simp only [Set.mem_matrix, transpose_apply]; exact forall_comm
 
 theorem submatrix_mem_matrix {M : Matrix m n α} (hM : M ∈ S.matrix) {r : l → m} {c : o → n} :
-    (M.submatrix r c) ∈ S.matrix := by simp_all
+    (M.submatrix r c) ∈ S.matrix := by simp_all [Set.mem_matrix]
 
 end Matrix
