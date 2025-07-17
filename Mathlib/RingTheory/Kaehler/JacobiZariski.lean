@@ -276,8 +276,8 @@ lemma δAux_ofComp (x : (Q.comp P).Ring) :
   | mul_X p n IH =>
     simp only [map_mul, Hom.toAlgHom_X, ofComp_val, δAux_mul,
       ← @IsScalarTower.algebraMap_smul Q.Ring T, algebraMap_apply, Hom.algebraMap_toAlgHom,
-      algebraMap_self, map_aeval, RingHomCompTriple.comp_eq, comp_val, RingHom.id_apply, coe_eval₂Hom,
-      IH, Derivation.leibniz, tmul_add, tmul_smul, ← cotangentSpaceBasis_apply,
+      algebraMap_self, map_aeval, RingHomCompTriple.comp_eq, comp_val, RingHom.id_apply,
+      IH, Derivation.leibniz, tmul_add, tmul_smul, ← cotangentSpaceBasis_apply, coe_eval₂Hom,
       ← @IsScalarTower.algebraMap_smul (Q.comp P).Ring T, aeval_X, LinearEquiv.map_add,
       LinearMapClass.map_smul, Prod.snd_add, Prod.smul_snd, LinearMap.map_add]
     obtain (n | n) := n
