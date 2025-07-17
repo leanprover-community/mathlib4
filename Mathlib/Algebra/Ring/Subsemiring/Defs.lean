@@ -25,11 +25,11 @@ class AddSubmonoidWithOneClass (S : Type*) (R : outParam Type*) [AddMonoidWithOn
 
 variable {S R : Type*} [AddMonoidWithOne R] [SetLike S R] (s : S)
 
-@[aesop safe apply (rule_sets := [SetLike])]
+@[aesop safe (rule_sets := [SetLike])]
 theorem natCast_mem [AddSubmonoidWithOneClass S R] (n : ℕ) : (n : R) ∈ s := by
   induction n <;> simp [zero_mem, add_mem, one_mem, *]
 
-@[aesop safe apply (rule_sets := [SetLike])]
+@[aesop safe (rule_sets := [SetLike])]
 lemma ofNat_mem [AddSubmonoidWithOneClass S R] (s : S) (n : ℕ) [n.AtLeastTwo] :
     ofNat(n) ∈ s := by
   rw [← Nat.cast_ofNat]; exact natCast_mem s n

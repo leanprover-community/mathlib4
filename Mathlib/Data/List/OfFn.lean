@@ -114,7 +114,7 @@ theorem forall_mem_ofFn_iff {n : ℕ} {f : Fin n → α} {P : α → Prop} :
 @[simp]
 theorem ofFn_const : ∀ (n : ℕ) (c : α), (ofFn fun _ : Fin n => c) = replicate n c
   | 0, c => by rw [ofFn_zero, replicate_zero]
-  | n+1, c => by rw [replicate, ← ofFn_const n]; simp
+  | n + 1, c => by rw [replicate, ← ofFn_const n]; simp
 
 @[simp]
 theorem ofFn_fin_repeat {m} (a : Fin m → α) (n : ℕ) :

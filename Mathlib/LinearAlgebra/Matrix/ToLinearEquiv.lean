@@ -59,7 +59,7 @@ theorem toLinearEquiv'_apply (P : Matrix n n R) (h : Invertible P) :
 
 @[simp]
 theorem toLinearEquiv'_symm_apply (P : Matrix n n R) (h : Invertible P) :
-    (↑(P.toLinearEquiv' h).symm : Module.End R (n → R)) = Matrix.toLin' (⅟ P) :=
+    (↑(P.toLinearEquiv' h).symm : Module.End R (n → R)) = Matrix.toLin' (⅟P) :=
   rfl
 
 end ToLinearEquiv'
