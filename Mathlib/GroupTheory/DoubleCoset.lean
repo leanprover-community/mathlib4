@@ -129,6 +129,15 @@ theorem mk_eq_of_doset_eq {H K : Subgroup G} {a b : G} (h : doset a H K = doset 
   rw [eq]
   exact mem_doset.mp (h.symm ▸ mem_doset_self H K b)
 
+theorem mem_quotToDoset_iff (H K : Subgroup G) (i : Quotient (H : Set G) K) (a : G) :
+    a ∈ quotToDoset H K i ↔ mk H K a = i := by
+   constructor
+   · intro hg
+     simp_rw [mk_eq_of_doset_eq (doset_eq_of_mem hg), Quotient.out_eq]
+   · intro hg
+     rw [← out_eq' _ _ i] at hg
+     exact mem_doset.mpr ((eq _ _ _ a).mp hg.symm)
+
 theorem disjoint_out {H K : Subgroup G} {a b : Quotient H K} :
     a ≠ b → Disjoint (doset a.out H K) (doset b.out (H : Set G) K) := by
   contrapose!
@@ -182,5 +191,102 @@ theorem right_bot_eq_right_quot (H : Subgroup G) :
   congr
   ext
   simp_rw [← rel_bot_eq_right_group_rel H]
+
+theorem iUnion_finset_quotToDoset (H K : Subgroup G) :
+    (∃ I : Finset (Quotient (H : Set G) K), ⋃ i ∈ I, quotToDoset H K i = .univ) ↔
+    Finite (Quotient (H : Set G) K) := by
+  constructor
+  · intro ⟨I, hI⟩
+    suffices (I : Set (Quotient (H : Set G) K)) = Set.univ by
+      rw [← Set.finite_univ_iff, ← this]
+      exact I.finite_toSet
+    rw [Set.eq_univ_iff_forall] at hI ⊢
+    rintro ⟨g⟩
+    obtain ⟨_, ⟨i, _, rfl⟩, T, ⟨hi, rfl⟩, hT : g ∈ quotToDoset H K i⟩ := hI g
+    rw [Doset.mem_quotToDoset_iff] at hT
+    simpa [← hT] using hi
+  · intro _
+    cases nonempty_fintype (Quotient (H : Set G) K)
+    use Finset.univ
+    simpa using Doset.union_quotToDoset H K
+
+theorem union_image_mk_leftRel (H K : Subgroup G) :
+    ⋃ (q : Doset.Quotient H K), Quot.mk (QuotientGroup.leftRel K) ''
+    (Doset.doset (Quotient.out q : G) H K) = Set.univ := by
+  have Cover_Dfx := Doset.union_quotToDoset H K
+  refine Eq.symm (Set.Subset.antisymm ?_ fun ⦃a⦄ a ↦ trivial)
+  intro x hx
+  simp only [Set.mem_iUnion, Set.mem_image]
+  obtain ⟨y, hy⟩ := Quot.exists_rep x
+  have ⟨i, hi⟩ : ∃ i : Doset.Quotient H K, y ∈ Doset.doset (Quotient.out i) H K  := by
+    contrapose Cover_Dfx
+    refine (Set.ne_univ_iff_exists_notMem (⋃ q, quotToDoset H K q)).mpr ?_
+    exact ⟨y, by simpa using Cover_Dfx⟩
+  exact ⟨i, y, hi, hy⟩
+
+theorem union_image_mk_rightRel (H K : Subgroup G) :
+    ⋃ (q : Doset.Quotient H K), Quot.mk (QuotientGroup.rightRel H) ''
+    (Doset.doset (Quotient.out q : G) H K) = Set.univ := by
+  have Cover_Dfx := Doset.union_quotToDoset H K
+  refine Eq.symm (Set.Subset.antisymm ?_ fun ⦃a⦄ a ↦ trivial)
+  intro x hx
+  simp only [Set.mem_iUnion, Set.mem_image]
+  obtain ⟨y, hy⟩ := Quot.exists_rep x
+  have ⟨i, hi⟩ : ∃ i : Doset.Quotient H K, y ∈ Doset.doset (Quotient.out i) H K  := by
+    contrapose Cover_Dfx
+    refine (Set.ne_univ_iff_exists_notMem (⋃ q, quotToDoset H K q)).mpr ?_
+    exact ⟨y, by simpa using Cover_Dfx⟩
+  exact ⟨i, y, hi, hy⟩
+
+theorem union_finset_leftRel_cover (H K : Subgroup G)
+    (t : Finset (Doset.Quotient H K)) (ht : Set.univ ⊆ ⋃ i ∈ t,
+    Quot.mk ⇑(QuotientGroup.leftRel K) '' Doset.doset (Quotient.out i)
+    H K) : ⋃ q ∈ t, Doset.doset (Quotient.out q) H K = Set.univ := by
+  contrapose ht
+  simp only [Set.univ_subset_iff, ← ne_eq] at ⊢ ht
+  obtain ⟨x, hx⟩ := (Set.ne_univ_iff_exists_notMem
+    (⋃ q ∈ t, Doset.doset (Quotient.out q) H K)).mp ht
+  refine (Set.ne_univ_iff_exists_notMem (⋃ i ∈ t,
+    Quot.mk ⇑(QuotientGroup.leftRel K) '' Doset.doset (Quotient.out i)
+    H K)).mpr ⟨Quot.mk (⇑(QuotientGroup.leftRel K)) x, ?_⟩
+  simp only [Set.mem_iUnion, Set.mem_image, exists_prop, not_exists, not_and]
+  intro y hy q hq
+  contrapose hx
+  simp only [Set.mem_iUnion, exists_prop, not_exists, not_and, not_forall, not_not]
+  simp only [not_not] at hx
+  refine ⟨y, hy, ?_⟩
+  rw [← Doset.doset_eq_of_mem hq]
+  apply Doset.mem_doset.mpr
+  obtain ⟨a', ha'⟩ := (Quotient.eq).mp hx
+  refine ⟨1, one_mem H, (MulOpposite.unop a'⁻¹), Subgroup.mem_op.mp (by simp), by simpa
+    using (eq_mul_inv_of_mul_eq ha')⟩
+
+theorem union_finset_rightRel_cover (H K : Subgroup G)
+    (t : Finset (Doset.Quotient H K)) (ht : Set.univ ⊆ ⋃ i ∈ t,
+    Quot.mk ⇑(QuotientGroup.rightRel H) '' Doset.doset (Quotient.out i)
+    H K) : ⋃ q ∈ t, Doset.doset (Quotient.out q) H K = Set.univ := by
+  contrapose ht
+  simp only [Set.univ_subset_iff, ← ne_eq] at ⊢ ht
+  obtain ⟨x, hx⟩ := (Set.ne_univ_iff_exists_notMem
+    (⋃ q ∈ t, Doset.doset (Quotient.out q) H K)).mp ht
+  refine (Set.ne_univ_iff_exists_notMem (⋃ i ∈ t,
+    Quot.mk ⇑(QuotientGroup.rightRel H) '' Doset.doset (Quotient.out i)
+    H K)).mpr ⟨Quot.mk (⇑(QuotientGroup.rightRel H)) x, ?_⟩
+  simp only [Set.mem_iUnion, Set.mem_image, exists_prop, not_exists, not_and]
+  intro y hy q hq
+  contrapose hx
+  simp only [Set.mem_iUnion, exists_prop, not_exists, not_and, not_forall, not_not]
+  simp only [not_not] at hx
+  refine ⟨y, hy, ?_⟩
+  rw [← Doset.doset_eq_of_mem hq]
+  apply Doset.mem_doset.mpr
+  obtain ⟨a, ha⟩ : ∃ a : H, x = a * q := by
+    obtain ⟨a, ha⟩  : ∃ a : H, a * x = q := by
+      obtain ⟨a', ha'⟩ := (Quotient.eq).mp hx
+      exact ⟨a', by simpa using ha'⟩
+    exact ⟨⟨ a⁻¹, by simp only [inv_mem_iff, SetLike.coe_mem]⟩, eq_inv_mul_of_mul_eq ha⟩
+  refine ⟨a.1, ?_⟩
+  simp only [Subtype.coe_prop, SetLike.mem_coe, true_and]
+  exact ⟨1, Subgroup.one_mem K, by simpa using ha⟩
 
 end Doset
