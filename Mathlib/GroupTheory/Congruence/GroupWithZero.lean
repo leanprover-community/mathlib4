@@ -113,6 +113,11 @@ def mapQ₀ {F : Type*} [FunLike F M N] [MonoidWithZeroHomClass F M N] {c : Con 
   toMonoidHom := mapQ f hf
   map_zero' := congr(Con.toQuotient $(map_zero f))
 
+theorem mapQ₀_apply {F : Type*} [FunLike F M N] [MonoidWithZeroHomClass F M N]
+    {c : Con M} {d : Con N} (f : F) (hf : c ≤ d.comap f (map_mul f)) (x : c.Quotient) :
+    mapQ₀ f hf x = Quotient.map f hf x :=
+  rfl
+
 theorem mapQ₀_coe {F : Type*} [FunLike F M N] [MonoidWithZeroHomClass F M N] {c : Con M} {d : Con N}
     (f : F) (hf : c ≤ d.comap f (map_mul f)) (x : M) :
     Con.mapQ₀ f hf x = f x :=
