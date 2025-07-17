@@ -3,7 +3,6 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Devon Tuma, Oliver Nash
 -/
-
 import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.GroupWithZero.Associated
 
