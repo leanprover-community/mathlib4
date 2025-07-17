@@ -205,9 +205,7 @@ such that `norm_num` successfully recognises both the real and imaginary parts o
   haveI' : $e =Q ($z = $w) := ⟨⟩
   let ⟨az, bz, pfz⟩ ← NormNumI.parse z
   let ⟨aw, bw, pfw⟩ ← NormNumI.parse w
-  let ⟨ba, ra⟩ ← withTraceNode `debug (fun x =>
-    return m!"{exceptEmoji x} norm_numI.evalComplexEq: z = {az} + {bz}i {q($az = $aw)}") do
-    deriveBool q($az = $aw)
+  let ⟨ba, ra⟩ ← deriveBool q($az = $aw)
   match ba with
   | true =>
     let ⟨bb, rb⟩ ← deriveBool q($bz = $bw)
