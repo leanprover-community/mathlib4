@@ -121,7 +121,7 @@ instance (priority := 100) LatticeHomClass.toInfHomClass [Lattice α] [Lattice �
   { ‹LatticeHomClass F α β› with }
 
 /-- The kernel of a lattice homomorphism as a lattice congruence -/
-def latticeHom_ker [Lattice α] [Lattice β] [LatticeHomClass F α β] (f : F) : LatticeCon α where
+def LatticeCon.ker [Lattice α] [Lattice β] [LatticeHomClass F α β] (f : F) : LatticeCon α where
   toSetoid := Setoid.ker f
   inf _ _ := by simp_all only [Setoid.ker, onFun, map_inf]
   sup _ _ := by simp_all only [Setoid.ker, onFun, map_sup]
