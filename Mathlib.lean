@@ -3506,6 +3506,8 @@ import Mathlib.Data.Sigma.Interval
 import Mathlib.Data.Sigma.Lex
 import Mathlib.Data.Sigma.Order
 import Mathlib.Data.Sign
+import Mathlib.Data.Sign.Basic
+import Mathlib.Data.Sign.Defs
 import Mathlib.Data.Stream.Defs
 import Mathlib.Data.Stream.Init
 import Mathlib.Data.String.Basic
