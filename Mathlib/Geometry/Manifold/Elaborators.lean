@@ -308,8 +308,9 @@ elab:max "MDiff" t:term:arg : term => do
   | _ => throwError m!"Term {e} is not a function."
 
 -- TODO: say something about the expected type of `n` being in ℕ or WithTop ℕ∞!
-/-- `CMDiffAt[s] n f` elaborates to `ContMDiffWithinAt I J n f s`,
-trying to determine `I` and `J` from the local context. -/
+/-- `CMDiffAt[s] n f x` elaborates to `ContMDiffWithinAt I J n f s x`,
+trying to determine `I` and `J` from the local context.
+The argument `x` can be omitted. -/
 elab:max "CMDiffAt[" s:term:arg "]" nt:term:arg f:term:arg : term => do
   let es ← Term.elabTerm s none
   let ef ← Term.elabTerm f none
@@ -325,8 +326,9 @@ elab:max "CMDiffAt[" s:term:arg "]" nt:term:arg f:term:arg : term => do
     return ← mkAppM ``ContMDiffWithinAt #[srcI, tgtI, ne, ef, es]
   | _ => throwError m!"Term {ef} is not a function."
 
-/-- `CMDiffAt n f` elaborates to `ContMDiffAt I J n f s`
-trying to determine `I` and `J` from the local context. -/
+/-- `CMDiffAt n f x` elaborates to `ContMDiffAt I J n f x`
+trying to determine `I` and `J` from the local context.
+The argument `x` can be omitted. -/
 elab:max "CMDiffAt" nt:term:arg t:term:arg : term => do
   let e ← Term.elabTerm t none
   let wtn ← Term.elabTerm (← `(WithTop ℕ∞)) none
@@ -358,8 +360,8 @@ elab:max "CMDiff[" s:term:arg "]" nt:term:arg f:term:arg : term => do
 
 /-- `CMDiff n f` elaborates to `ContMDiff I J n f`,
 trying to determine `I` and `J` from the local context. -/
-elab:max "CMDiff" nt:term:arg t:term:arg : term => do
-  let e ← Term.elabTerm t none
+elab:max "CMDiff" nt:term:arg f:term:arg : term => do
+  let e ← Term.elabTerm f none
   let wtn ← Term.elabTerm (← `(WithTop ℕ∞)) none
   let ne ← Term.elabTerm nt wtn
   let etype ← inferType e >>= instantiateMVars
@@ -371,8 +373,8 @@ elab:max "CMDiff" nt:term:arg t:term:arg : term => do
   | _ => throwError m!"Term {e} is not a function."
 
 -- TODO: remove in favour of CMDiff (after aligning their behaviour and adding a test for it!)
-elab:max "ContMDiff%" nt:term:arg t:term:arg : term => do
-  let e ← Term.elabTerm t none
+elab:max "ContMDiff%" nt:term:arg f:term:arg : term => do
+  let e ← Term.elabTerm f none
   let wtn ← Term.elabTerm (← `(WithTop ℕ∞)) none
   let ne ← Term.elabTermEnsuringType nt wtn
   let etype ← inferType e >>= instantiateMVars
