@@ -630,8 +630,7 @@ variable {A : Type*} [AddMonoid A]
 /-- A version of `Set.matrix` for `AddSubmonoid`s.
 Given an `AddSubmonoid` `S`, `S.matrix` is the `AddSubmonoid` of matrices `m`
 all of whose entries `m i j` belong to `S`. -/
-def matrix (S : AddSubmonoid A) :
-    AddSubmonoid (Matrix m n A) where
+def matrix (S : AddSubmonoid A) : AddSubmonoid (Matrix m n A) where
   carrier := Set.matrix S
   add_mem' hm hn i j := add_mem (hm i j) (hn i j)
   zero_mem' _ _ := zero_mem _
