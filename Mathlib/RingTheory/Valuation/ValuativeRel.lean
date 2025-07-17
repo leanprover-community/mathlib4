@@ -79,12 +79,6 @@ class ValuativeRel (R : Type*) [CommRing R] where
 
 macro_rules | `($a ≤ᵥ $b) => `(binrel% ValuativeRel.rel $a $b)
 
-/-- Unexpander for the `a ≤ᵥ b` notation. -/
-@[app_unexpander ValuativeRel.rel]
-def relUnexpander : Lean.PrettyPrinter.Unexpander
-  | `($_ $a $b) => `($a ≤ᵥ $b)
-  | _ => throw ()
-
 namespace Valuation
 
 variable {R Γ : Type*} [CommRing R] [LinearOrderedCommMonoidWithZero Γ]
