@@ -1,4 +1,6 @@
-import Mathlib
+import Mathlib.NumberTheory.Multiplicity
+import Mathlib.NumberTheory.Padics.PadicVal.Basic
+import Mathlib.NumberTheory.LucasLehmer
 
 open Nat Int
 
@@ -33,34 +35,41 @@ lemma LTE {a b : ℕ} (h1b : 1 < b) (hb : ¬2 ∣ b) (ha : a ≠ 0) (Evena : Eve
     have dvd : 2 ^ 3 ∣ (b + 1) * (b - 1) := by
       have : (b + 1) * (b - 1) = b ^ 2 - 1 := by simp [Nat.pow_two_sub_pow_two b 1]
       simp [this]
-      exact Nat.sq_mod_eight_eq_one_of_odd Oddb
+      exact Nat.eight_dvd_sq_sub_one_of_odd Oddb
     exact (padicValNat_dvd_iff_le (hp := fact_prime_two) this).mp dvd
+  omega
+
+lemma hale {a : ℕ} (ha : a ≥ 4) (dvd : 2 ∣ a) : padicValNat 2 a + 2 ≤ a := by
+  rcases dvd with ⟨k, hk⟩
+  rw [hk, padicValNat.mul (by norm_num) (by omega)]
+  simp
+  have : padicValNat 2 k < k := by
+    calc
+    _ ≤ Nat.log 2 k := padicValNat_le_nat_log k
+    _ < _ := log_lt_self 2 (by omega)
   omega
 
 lemma exist : g ∈ bonza := fun a b ha hb ↦ by
   by_cases ch1 : ¬ 2 ∣ a
   · simp [g, ch1]
   by_cases ch2 : a = 2
-  · sorry
-    -- simp [g, ch2]
-    -- split_ifs with hb1 hb2
-    -- · exact dvd_self_sub_of_emod_eq (sq_mod_four_eq_one_of_odd (by simpa using Nat.odd_iff.mpr hb1))
-    -- · simp [hb2]
-    -- · simp at hb1
-    --   refine dvd_sub ?_ ?_
-    --   · have : 2 ∣ (b : ℤ) := ofNat_dvd_natCast.mpr (dvd_of_mod_eq_zero hb1)
-    --     have : 2 ^ 2 ∣ (b : ℤ) ^ 2 := pow_dvd_pow_of_dvd this 2
-    --     simpa
-    --   · refine Dvd.dvd.pow ?_ (by norm_num)
-    --     use 2 ^ padicValNat 2 b
-    --     ring
+  · simp [g, ch2]
+    split_ifs with hb1 hb2
+    · exact dvd_self_sub_of_emod_eq (sq_mod_four_eq_one_of_odd (by simpa using Nat.odd_iff.mpr hb1))
+    · simp [hb2]
+    · simp at hb1
+      refine dvd_sub ?_ ?_
+      · have : 2 ∣ (b : ℤ) := ofNat_dvd_natCast.mpr (dvd_of_mod_eq_zero hb1)
+        have : 2 ^ 2 ∣ (b : ℤ) ^ 2 := pow_dvd_pow_of_dvd this 2
+        simpa
+      · refine Dvd.dvd.pow ?_ (by norm_num)
+        use 2 ^ padicValNat 2 b
+        ring
   · simp [g, ch1, ch2]
     split_ifs with hb1 hb2
     · by_cases lt : b = 1
-      . simp [lt]
+      · simp [lt]
       have : (padicValNat 2 a + 2) ≤ padicValInt 2 (b ^ a - 1) := by
-        have : ¬2 ∣ b := by
-          exact Nat.two_dvd_ne_zero.mpr hb1
         simp at ch1
         have := LTE (by omega) (Nat.two_dvd_ne_zero.mpr hb1) (by omega) (Nat.even_iff.mpr ch1)
         have : padicValNat 2 (b ^ a - 1) = padicValInt 2 (b ^ a - 1) := by
@@ -74,7 +83,7 @@ lemma exist : g ∈ bonza := fun a b ha hb ↦ by
     · simp [hb2]
       refine dvd_sub ?_ ?_
       · have : padicValNat 2 a + 2 ≤ a := by
-
+          apply?
           sorry
         exact pow_dvd_pow 2 this
       sorry
@@ -83,44 +92,6 @@ lemma exist : g ∈ bonza := fun a b ha hb ↦ by
         sorry
       ·
         sorry
-  -- rw [g]
-  -- split_ifs with ha1 ha2
-  -- · rw [g]
-  --   split_ifs with hb1 hb2
-  --   · simp [ha2, hb2]
-  --   · simp [ha2]
-  --     · have : (4 : ℤ) = (2 : ℤ) ^ 2 := by norm_num
-  --       rw [this]
-  --       exact pow_dvd_pow_of_dvd (Int.ofNat_dvd_right.mpr hb1) 2
-  --     ·
-  --   · have : Odd (b : ℤ) := by
-  --       rwa [Int.odd_iff, ← Int.two_dvd_ne_zero, ofNat_dvd_natCast]
-  --     rw [Nat.cast_ofNat, ha2, Nat.cast_one, one_pow]
-  --
-  -- · rw [g]
-  --   split_ifs with hb1 hb2
-  --   · simp [hb2]
-  --     refine dvd_sub ?_ ?_
-  --     · rcases ha1 with ⟨k, hk⟩
-  --       refine pow_dvd_pow 2 ?_
-  --       rw [hk, padicValNat.mul (by norm_num) (by omega)]
-  --       simp only [one_lt_ofNat, padicValNat.self]
-  --       have : padicValNat 2 k < k := by
-  --         calc
-  --         _ ≤ Nat.log 2 k := padicValNat_le_nat_log k
-  --         _ < _ := log_lt_self 2 (by omega)
-  --       omega
-
-  --     have : Fact (Nat.Prime 2) := by exact fact_prime_two
-
-  --     have : 4 ^ 2 ^ (padicValNat 2 a + 2) ≠ 0 := by simp
-  --     have tt :padicValNat 2 a + 2 ≤ padicValNat 2 (4 ^ 2 ^ (padicValNat 2 a + 2)) := by sorry
-  --     have := (padicValNat_dvd_iff_le (p := 2) (n := padicValNat 2 a + 2) this).mpr tt
-  --     -- apply?
-
-
-
-
   --     sorry
   --   · simp
   --     sorry
