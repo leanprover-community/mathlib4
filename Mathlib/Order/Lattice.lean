@@ -1294,10 +1294,6 @@ structure LatticeCon (α) [Lattice α] extends Setoid α where
   inf : ∀ {w x y z}, r w x → r y z → r (w ⊓ y) (x ⊓ z)
   sup : ∀ {w x y z}, r w x → r y z → r (w ⊔ y) (x ⊔ z)
 
--- h₁
-example [Lattice α] (c : LatticeCon α) : IsRefl _ c.r := ⟨c.refl⟩
-
--- h₂
 lemma r_iff_r_inf_sup [Lattice α] (c : LatticeCon α) {x y : α} :
     c.r x y ↔ c.r (x ⊓ y) (x ⊔ y) := by
   constructor
@@ -1315,15 +1311,6 @@ lemma r_iff_r_inf_sup [Lattice α] (c : LatticeCon α) {x y : α} :
         conv_rhs => rw [← inf_sup_self (a := y) (b := x), inf_comm, sup_comm]
         conv_lhs => rw [← inf_idem y, ← inf_assoc]
         exact c.inf h (c.refl y))
-
--- h₃
-example [Lattice α] (c : LatticeCon α) {x y z : α} (hxy : c.r x y) (hyz : c.r y z) :
-    c.r x z := c.trans hxy hyz
-
--- h₄
-example [Lattice α] (c : LatticeCon α) {x y t : α} (hxy : c.r x y) :
-    c.r (x ⊓ t) (y ⊓ t) ∧ c.r (x ⊔ t) (y ⊔ t) :=
-  ⟨c.inf hxy (c.refl t), c.sup hxy (c.refl t)⟩
 
 lemma closed_interval [Lattice α] {r : α → α → Prop}
     (h₂ : ∀ ⦃x y : α⦄, r x y ↔ r (x ⊓ y) (x ⊔ y))
