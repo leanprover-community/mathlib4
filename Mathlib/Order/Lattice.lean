@@ -1378,7 +1378,7 @@ structure LatticeCon (α) [Lattice α] extends Setoid α where
   sup : ∀ {w x y z}, r w x → r y z → r (w ⊔ y) (x ⊔ z)
 
 -- h₁
-example [Lattice α] (c : LatticeCon α) : (IsRefl _ c.r) := ⟨c.refl⟩
+example [Lattice α] (c : LatticeCon α) : IsRefl _ c.r := ⟨c.refl⟩
 
 -- h₂
 lemma h2_of_latticeCon [Lattice α] (c : LatticeCon α) {x y : α} :
