@@ -1,4 +1,5 @@
 import Mathlib.Tactic.ScopedNS
+import Mathlib.Util.ParseCommand
 
 namespace scopeNSTest
 
@@ -14,9 +15,15 @@ scoped[Test] prefix:max (name := t₂) "ᵀᵀ" => Nat.add 1
 scoped[Test] infix:max (name := t₃) "+|+" => Nat.add
 scoped[Test] infixr:max (name := t₄) "-|-" => Nat.sub
 scoped[Test] infixl:max (name := t₅) "*|*" => Nat.mul
+scoped[Test] syntax (name := t₆) "-|-" term : term
 
--- TODO: is there something to guard a parsing error?
--- #check 2ᵀ
+-- Check that the node kind is registered such that `term_elab` can find it
+@[term_elab Test.t₆]
+def elabUpDown : Lean.Elab.Term.TermElab := fun _ _ => Lean.Elab.throwUnsupportedSyntax
+
+/-- error: <input>:1:1: expected end of input -/
+#guard_msgs in
+#parse Lean.Parser.termParser.fn => "2ᵀ"
 
 /-- info: Test.t₁ : Lean.TrailingParserDescr -/
 #guard_msgs in
