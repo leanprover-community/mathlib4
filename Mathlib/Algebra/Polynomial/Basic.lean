@@ -1146,7 +1146,7 @@ instance commRing [CommRing R] : CommRing R[X] :=
   { toRing := Polynomial.ring
     mul_comm := mul_comm }
 
-section NonzeroSemiring
+section Semiring
 
 variable [Semiring R]
 
@@ -1173,7 +1173,7 @@ instance [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero R[X] where
 
 instance [IsCancelAdd R] [IsDomain R] : IsDomain R[X] where
 
-end NonzeroSemiring
+end Semiring
 
 section DivisionSemiring
 variable [DivisionSemiring R]
