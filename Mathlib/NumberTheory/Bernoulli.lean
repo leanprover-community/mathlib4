@@ -60,13 +60,12 @@ variable (A : Type*) [CommRing A] [Algebra ℚ A]
 /-- The Bernoulli numbers:
 the $n$-th Bernoulli number $B_n$ is defined recursively via
 $$B_n = 1 - \sum_{k < n} \binom{n}{k}\frac{B_k}{n+1-k}$$ -/
-def bernoulli' : ℕ → ℚ :=
-  WellFounded.fix Nat.lt_wfRel.wf fun n bernoulli' =>
-    1 - ∑ k : Fin n, n.choose k / (n - k + 1) * bernoulli' k k.2
+def bernoulli' (n : ℕ) : ℚ :=
+  1 - ∑ k : Fin n, n.choose k / (n - k + 1) * bernoulli' k
 
 theorem bernoulli'_def' (n : ℕ) :
-    bernoulli' n = 1 - ∑ k : Fin n, n.choose k / (n - k + 1) * bernoulli' k :=
-  WellFounded.fix_eq _ _ _
+    bernoulli' n = 1 - ∑ k : Fin n, n.choose k / (n - k + 1) * bernoulli' k := by
+  rw [bernoulli']
 
 theorem bernoulli'_def (n : ℕ) :
     bernoulli' n = 1 - ∑ k ∈ range n, n.choose k / (n - k + 1) * bernoulli' k := by
