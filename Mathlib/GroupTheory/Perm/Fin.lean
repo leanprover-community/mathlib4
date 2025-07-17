@@ -333,7 +333,7 @@ def cycleIcc (i j : Fin n) : Perm (Fin n) := if hij : i ≤ j then (cycleRange (
 theorem cycleIcc_of_lt (h : k < i) : (cycleIcc i j) k = k := by
   by_cases hij : i ≤ j
   · simpa [cycleIcc, hij] using Perm.extendDomain_apply_not_subtype _ _ (by
-      rw [range_natAdd_castLEEmb, Set.mem_setOf_eq]; omega)
+      simpa [range_natAdd_castLEEmb] using by omega)
   · simp [cycleIcc, hij]
 
 lemma cycleIcc_to_cycleRange (hij : i ≤ j) (kin : k ∈ Set.range (natAdd_castLEEmb (Nat.sub_le n i)))
