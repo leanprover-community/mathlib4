@@ -56,17 +56,17 @@ instance [Mul α] [Zero α] [IsRightCancelMulZero α] : IsLeftCancelMulZero α�
 
 instance [Mul α] [Zero α] [IsCancelMulZero α] : IsCancelMulZero αᵐᵒᵖ where
 
-theorem isLeftCancelMulZero_iff [Mul α] [Zero α] :
+@[simp] theorem isLeftCancelMulZero_iff [Mul α] [Zero α] :
     IsLeftCancelMulZero αᵐᵒᵖ ↔ IsRightCancelMulZero α where
   mp _ := (op_injective.comp op_injective).isRightCancelMulZero _ rfl fun _ _ ↦ rfl
   mpr _ := inferInstance
 
-theorem isRightCancelMulZero_iff [Mul α] [Zero α] :
+@[simp] theorem isRightCancelMulZero_iff [Mul α] [Zero α] :
     IsRightCancelMulZero αᵐᵒᵖ ↔ IsLeftCancelMulZero α where
   mp _ := (op_injective.comp op_injective).isLeftCancelMulZero _ rfl fun _ _ ↦ rfl
   mpr _ := inferInstance
 
-theorem isCancelMulZero_iff [Mul α] [Zero α] :
+@[simp] theorem isCancelMulZero_iff [Mul α] [Zero α] :
     IsCancelMulZero αᵐᵒᵖ ↔ IsCancelMulZero α where
   mp _ := (op_injective.comp op_injective).isCancelMulZero _ rfl fun _ _ ↦ rfl
   mpr _ := inferInstance
