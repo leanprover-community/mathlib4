@@ -14,6 +14,7 @@ import Counterexamples.MapFloor
 import Counterexamples.MonicNonRegular
 import Counterexamples.OrderedCancelAddCommMonoidWithBounds
 import Counterexamples.Phillips
+import Counterexamples.PolynomialIsDomain
 import Counterexamples.Pseudoelement
 import Counterexamples.QuadraticForm
 import Counterexamples.SeminormLatticeNotDistrib
