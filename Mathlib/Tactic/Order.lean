@@ -8,6 +8,7 @@ import Mathlib.Tactic.Order.CollectFacts
 import Mathlib.Tactic.Order.Preprocessing
 import Mathlib.Tactic.Order.Graph.Basic
 import Mathlib.Tactic.Order.Graph.Tarjan
+import Mathlib.Util.ElabWithoutMVars
 
 /-!
 # `order` tactic
@@ -278,17 +279,10 @@ syntax orderArgs := (&" only")? (" [" term,* "]")?
 /-- `order_core` is the part of the `order` tactic that works after negation. -/
 syntax (name := order_core) "order_core" orderArgs : tactic
 
-/-- Elaborates `order` arguments. A copy-paste from `elabLinarithArgs`. -/
-def elabOrderArg (tactic : Name) (t : Term) : TacticM Expr := Term.withoutErrToSorry do
-  let (e, mvars) ← elabTermWithHoles t none tactic
-  unless mvars.isEmpty do
-    throwErrorAt t "Argument passed to {tactic} has metavariables:{indentD e}"
-  return e
-
 open Syntax in
 elab_rules : tactic
   | `(tactic| order_core $[only%$o]? $[[$args,*]]?) => withMainContext do
-    let args ← ((args.map (TSepArray.getElems)).getD {}).mapM (elabOrderArg `order)
+    let args ← ((args.map (TSepArray.getElems)).getD {}).mapM (elabTermWithoutNewMVars `order)
     commitIfNoEx do liftMetaFinishingTactic <| orderCore o.isSome args
 
 /-- A finishing tactic for solving goals in arbitrary `Preorder`, `PartialOrder`,
