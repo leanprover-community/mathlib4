@@ -1411,7 +1411,8 @@ example [Lattice α] (c : LatticeCon α) {x y t : α} (hxy : c.r x y) :
 lemma closed_interval [Lattice α] {r : α → α → Prop}
     (h₂ : ∀ ⦃x y : α⦄, r x y ↔ r (x ⊓ y) (x ⊔ y))
     (h₄ : ∀ ⦃x y t : α⦄, x ≤ y → r x y → r (x ⊓ t) (y ⊓ t) ∧ r (x ⊔ t) (y ⊔ t))
-    (a b c d : α) (hb : a ≤ b ∧ b ≤ d) (hc : a ≤ c ∧ c ≤ d) (had : r a d) : r b c := by
+    (a b c d : α) (hab : a ≤ b) (hbd : b ≤ d) (hac : a ≤ c) (hcd : c ≤ d) (had : r a d) :
+    r b c := by
   rw [h₂]
   conv_lhs => rw [← inf_eq_left.mpr inf_le_sup]
   conv_rhs => rw [← inf_eq_right.mpr (sup_le hb.2 hc.2)]
