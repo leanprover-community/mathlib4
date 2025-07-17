@@ -296,7 +296,7 @@ theorem minFac_prime {n : ℕ} (n1 : n ≠ 1) : Prime (minFac n) :=
 theorem minFac_prime_iff {n : ℕ} : Prime (minFac n) ↔ n ≠ 1 := by
   refine ⟨?_, minFac_prime⟩
   rintro h rfl
-  exact prime_one_false h
+  simp only [minFac_one, not_prime_one] at h
 
 theorem minFac_le_of_dvd {n : ℕ} : ∀ {m : ℕ}, 2 ≤ m → m ∣ n → minFac n ≤ m := by
   by_cases n1 : n = 1
