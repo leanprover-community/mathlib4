@@ -252,9 +252,9 @@ private lemma span_range_relation_eq_ker_baseChange :
       induction x using MvPolynomial.induction_on with
       | C a =>
         simp only [algHom_C, TensorProduct.algebraMap_apply,
-          id.map_eq_id, RingHom.id_apply, e]
+          algebraMap_self, RingHom.id_apply, e]
         rw [← MvPolynomial.algebraMap_eq, AlgEquiv.commutes]
-        simp only [TensorProduct.algebraMap_apply, id.map_eq_id, RingHom.id_apply,
+        simp only [TensorProduct.algebraMap_apply, algebraMap_self, RingHom.id_apply,
           TensorProduct.map_tmul, AlgHom.coe_id, id_eq, map_one]
       | add p q hp hq => simp only [map_add, hp, hq]
       | mul_X p i hp => simp [hp, e]
@@ -462,6 +462,34 @@ noncomputable def reindex (P : Presentation R S ι σ)
 lemma dimension_reindex (P : Presentation R S ι σ) {ι' σ' : Type*} (e : ι' ≃ ι) (f : σ' ≃ σ) :
     (P.reindex e f).dimension = P.dimension := by
   simp [dimension, Nat.card_congr e, Nat.card_congr f]
+
+section
+
+variable {v : ι → MvPolynomial σ R}
+  (s : MvPolynomial σ R ⧸ (Ideal.span <| Set.range v) → MvPolynomial σ R :=
+    Function.surjInv Ideal.Quotient.mk_surjective)
+  (hs : ∀ x, Ideal.Quotient.mk _ (s x) = x := by apply Function.surjInv_eq)
+
+/--
+The naive presentation of a quotient `R[Xᵢ] ⧸ (vⱼ)`.
+If the definitional equality of the section matters, it can be explicitly provided.
+-/
+@[simps! toGenerators]
+noncomputable
+def naive {v : ι → MvPolynomial σ R}
+    (s : MvPolynomial σ R ⧸ (Ideal.span <| Set.range v) → MvPolynomial σ R :=
+      Function.surjInv Ideal.Quotient.mk_surjective)
+    (hs : ∀ x, Ideal.Quotient.mk _ (s x) = x := by apply Function.surjInv_eq) :
+    Presentation R (MvPolynomial σ R ⧸ (Ideal.span <| Set.range v)) σ ι where
+  __ := Generators.naive s hs
+  relation := v
+  span_range_relation_eq_ker := (Generators.ker_naive s hs).symm
+
+lemma naive_relation : (naive s hs).relation = v := rfl
+
+@[simp] lemma naive_relation_apply (i : ι) : (naive s hs).relation i = v i := rfl
+
+end
 
 end Construction
 

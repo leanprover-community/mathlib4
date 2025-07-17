@@ -173,7 +173,7 @@ theorem splits_iff_comp_splits_of_degree_eq_one {f : K[X]} {p : K[X]} (hd : (p.m
     (le_of_eq (map_id (R := L) ▸ hd)) h, fun h => ?_⟩
   let _ := invertibleOfNonzero (leadingCoeff_ne_zero.mpr
       (ne_zero_of_degree_gt (n := ⊥) (by rw [hd]; decide)))
-  have : (map i f) = ((map i f).comp (map i p)).comp ((C ⅟ (map i p).leadingCoeff *
+  have : (map i f) = ((map i f).comp (map i p)).comp ((C ⅟(map i p).leadingCoeff *
       (X - C ((map i p).coeff 0)))) := by
     rw [comp_assoc]
     nth_rw 1 [eq_X_add_C_of_degree_eq_one hd]
@@ -402,7 +402,7 @@ theorem eval_eq_prod_roots_sub_of_splits_id {p : K[X]}
     (hsplit : Splits (RingHom.id K) p) (v : K) :
     eval v p = p.leadingCoeff * (p.roots.map fun a ↦ v - a).prod := by
   convert aeval_eq_prod_aroots_sub_of_splits hsplit v
-  rw [Algebra.id.map_eq_id, map_id]
+  rw [Algebra.algebraMap_self, map_id]
 
 theorem eq_prod_roots_of_monic_of_splits_id {p : K[X]} (m : Monic p)
     (hsplit : Splits (RingHom.id K) p) : p = (p.roots.map fun a => X - C a).prod := by

@@ -381,14 +381,8 @@ theorem nonzero_mul_comm (a b : A) : σ (a * b) \ {0} = σ (b * a) \ {0} := by
   exact ⟨unit_mem_mul_comm.mp k_mem, k_neq⟩
 
 protected theorem map_inv (a : Aˣ) : (σ (a : A))⁻¹ = σ (↑a⁻¹ : A) := by
-  refine Set.eq_of_subset_of_subset (fun k hk => ?_) fun k hk => ?_
-  · rw [Set.mem_inv] at hk
-    have : k ≠ 0 := by simpa only [inv_inv] using inv_ne_zero (ne_zero_of_mem_of_unit hk)
-    lift k to 𝕜ˣ using isUnit_iff_ne_zero.mpr this
-    rw [← Units.val_inv_eq_inv_val k] at hk
-    exact inv_mem_iff.mp hk
-  · lift k to 𝕜ˣ using isUnit_iff_ne_zero.mpr (ne_zero_of_mem_of_unit hk)
-    simpa only [Units.val_inv_eq_inv_val] using inv_mem_iff.mp hk
+  ext
+  simp
 
 end ScalarField
 
@@ -426,7 +420,7 @@ local notation "↑ₐ" => algebraMap R A
 theorem apply_mem_spectrum [Nontrivial R] (φ : F) (a : A) : φ a ∈ σ a := by
   have h : ↑ₐ (φ a) - a ∈ RingHom.ker (φ : A →+* R) := by
     simp only [RingHom.mem_ker, map_sub, RingHom.coe_coe, AlgHomClass.commutes,
-      Algebra.id.map_eq_id, RingHom.id_apply, sub_self]
+      Algebra.algebraMap_self, RingHom.id_apply, sub_self]
   simp only [spectrum.mem_iff, ← mem_nonunits_iff,
     coe_subset_nonunits (RingHom.ker_ne_top (φ : A →+* R)) h]
 

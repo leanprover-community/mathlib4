@@ -161,7 +161,7 @@ variable (F G S)
 
 include hG in
 open PresheafHom.IsSheafFor in
-lemma presheafHom_isSheafFor  :
+lemma presheafHom_isSheafFor :
     Presieve.IsSheafFor (presheafHom F G) S.arrows := by
   intro x hx
   apply existsUnique_of_exists_of_unique
