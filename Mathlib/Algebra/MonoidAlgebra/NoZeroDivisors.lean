@@ -98,13 +98,13 @@ instance instIsLeftCancelMulZeroOfUniqueProds [IsCancelAdd R] [IsLeftCancelMulZe
     [UniqueProds A] : IsLeftCancelMulZero (MonoidAlgebra R A) where
   mul_left_cancel_of_ne_zero {f g₁ g₂} hf eq := by
     classical
-    set s := g₁.support ∪ g₂.support with hs
-    clear_value s; revert g₁ g₂
-    induction' s using Finset.eraseInduction with _ ih
-    rintro g₁ g₂ eq rfl
+    induction hg : g₁.support ∪ g₂.support using Finset.eraseInduction generalizing g₁ g₂ with
+    | _ _ ih =>
+    subst hg
     obtain h | h := (g₁.support ∪ g₂.support).eq_empty_or_nonempty
     · simp_rw [Finset.union_eq_empty, support_eq_empty] at h; exact h.1.trans h.2.symm
-    have ⟨af, haf, ag, hag, uniq⟩ := UniqueProds.uniqueMul_of_nonempty (support_nonempty_iff.2 hf) h
+    have ⟨af, haf, ag, hag, uniq⟩ :=
+      UniqueProds.uniqueMul_of_nonempty (support_nonempty_iff.2 hf) h
     have := mul_apply_mul_eq_mul_of_uniqueMul_of_subset subset_rfl Finset.subset_union_left uniq
     rw [eq, mul_apply_mul_eq_mul_of_uniqueMul_of_subset subset_rfl Finset.subset_union_right uniq]
       at this
