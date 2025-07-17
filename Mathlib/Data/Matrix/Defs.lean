@@ -569,13 +569,22 @@ end Matrix
 
 namespace Set
 
-variable {ι₁ ι₂ : Type*} {X : Type*}
+/-- Given a set `S`, `S.matrix` is the set of matrices `M`
+all of whose entries `M i j` belong to `S`. -/
+def matrix (S : Set α) : Set (Matrix m n α) := {M | ∀ i j, M i j ∈ S}
 
-/-- Given a set `S`, `S.matrix` is the set of matrices `m`
-all of whose entries `m i j` belong to `S`. -/
-def matrix (S : Set X) : Set (Matrix ι₁ ι₂ X) := {m | ∀ i j, m i j ∈ S}
-
-@[simp] theorem mem_matrix (S : Set X) {m : Matrix ι₁ ι₂ X} :
-  m ∈ S.matrix ↔ ∀ i j, m i j ∈ S := .rfl
+@[simp] theorem mem_matrix (S : Set α) {M : Matrix m n α} :
+    M ∈ S.matrix ↔ ∀ i j, M i j ∈ S := .rfl
 
 end Set
+
+namespace Matrix
+
+variable {S : Set α}
+
+theorem transpose_mem_matrix {M : Matrix m n α} (hM : M ∈ S.matrix) : Mᵀ ∈ S.matrix := by simp_all
+
+theorem submatrix_mem_matrix {M : Matrix m n α} (hM : M ∈ S.matrix) {r : l → m} {c : o → n} :
+    (M.submatrix r c) ∈ S.matrix := by simp_all
+
+end Matrix
