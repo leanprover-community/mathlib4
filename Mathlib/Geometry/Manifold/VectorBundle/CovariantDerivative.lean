@@ -53,31 +53,55 @@ lemma map_of_spec (u : E) (u' : E') (h : u = 0 → u' = 0) : map_of 𝕜 u u' u 
   (exists_map_of 𝕜 u u').choose_spec h
 end linear_algebra
 
-variable {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
+variable
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M] -- [IsManifold I 0 M]
 
 section
-variable {E' : Type*} [NormedAddCommGroup E']
-  [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
+variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
 
 
-def map_of_loc_one_jet (e u : E) (e' u' : E') : E → E' := sorry
+variable (𝕜) in
+noncomputable def map_of_loc_one_jet (e u : E) (e' u' : E') : E → E' :=
+  fun x ↦ e' + map_of 𝕜 u u' (x - e)
 
-lemma map_of_loc_one_jet_spec (e u : E) (e' u' : E') (hu : u = 0 → u' = 0) :
-    map_of_loc_one_jet e u e' u' e = e' ∧
-    DifferentiableAt 𝕜 (map_of_loc_one_jet e u e' u') e ∧
-    fderiv 𝕜 (map_of_loc_one_jet e u e' u') e u = u' := by
-  sorry
+lemma map_of_loc_one_jet_spec [CompleteSpace 𝕜] [FiniteDimensional 𝕜 E]
+    (e u : E) (e' u' : E') (hu : u = 0 → u' = 0) :
+    map_of_loc_one_jet 𝕜 e u e' u' e = e' ∧
+    DifferentiableAt 𝕜 (map_of_loc_one_jet 𝕜 e u e' u') e ∧
+    fderiv 𝕜 (map_of_loc_one_jet 𝕜 e u e' u') e u = u' := by
+  unfold map_of_loc_one_jet
+  let φ := (map_of 𝕜 u u').toContinuousLinearMap
+  have diff : Differentiable 𝕜 (map_of 𝕜 u u') :=
+    (map_of 𝕜 u u').toContinuousLinearMap.differentiable
+  refine ⟨by simp, ?_, ?_⟩
+  · apply (differentiableAt_const e').add
+    apply diff.differentiableAt.comp
+    fun_prop
+  · simp
+    rw [fderiv_sub_const]
+    change (fderiv 𝕜 φ e) u = _
+    rw [φ.hasFDerivAt.fderiv]
+    exact map_of_spec u u' hu
 
+noncomputable
 def map_of_one_jet {x : M} (u : TangentSpace I x) {x' : M'} (u' : TangentSpace I' x') :
     M → M' :=
   letI ψ := extChartAt I' x'
   letI φ := extChartAt I x
   ψ.symm ∘
-  (map_of_loc_one_jet (φ x) (mfderiv I 𝓘(𝕜, E) φ x u) (ψ x') (mfderiv I' 𝓘(𝕜, E') ψ x' u')) ∘
+  (map_of_loc_one_jet 𝕜 (φ x) (mfderiv I 𝓘(𝕜, E) φ x u) (ψ x') (mfderiv I' 𝓘(𝕜, E') ψ x' u')) ∘
   φ
+
+lemma ContinuousLinearMap.IsInvertible.injective {R M M₂ : Type*} [TopologicalSpace M]
+    [TopologicalSpace M₂] [Semiring R] [AddCommMonoid M] [Module R M]
+    [AddCommMonoid M₂] [Module R M₂] {f : M →L[R] M₂} (h : f.IsInvertible) :
+    Function.Injective f := by
+  rcases h with ⟨ψ, hψ⟩
+  refine Function.HasLeftInverse.injective ⟨ψ.symm, fun x ↦ ψ.symm_apply_eq.mpr (by simp [← hψ])⟩
 
 -- TODO: version assuming `x` and `x'` are in the interior, or maybe `x` is enough.
 
@@ -87,20 +111,26 @@ since we cannot hope the result is `x` and `x'` are boundary points and `u` is i
 while `u'` is outward.
 -/
 lemma map_of_one_jet_spec [IsManifold I 1 M] [IsManifold I' 1 M']
-      [BoundarylessManifold I' M'] {x : M} (u : TangentSpace I x) {x' : M'}
+      [BoundarylessManifold I' M']
+      [CompleteSpace 𝕜] [FiniteDimensional 𝕜 E]
+      {x : M} (u : TangentSpace I x) {x' : M'}
       (u' : TangentSpace I' x') (hu : u = 0 → u' = 0) :
     map_of_one_jet u u' x = x' ∧
     MDiffAt (map_of_one_jet u u') x ∧
     mfderiv I I' (map_of_one_jet u u') x u = u' := by
   let ψ := extChartAt I' x'
   let φ := extChartAt I x
-  let g := map_of_loc_one_jet (φ x) (mfderiv I 𝓘(𝕜, E) φ x u) (ψ x') (mfderiv I' 𝓘(𝕜, E') ψ x' u')
+  let g := map_of_loc_one_jet 𝕜 (φ x) (mfderiv I 𝓘(𝕜, E) φ x u) (ψ x') (mfderiv I' 𝓘(𝕜, E') ψ x' u')
   let Ψ : M' → E' := ψ -- FIXME: this is working around a limitation of MDiffAt elaborator
   have hψ : MDiffAt Ψ x' := mdifferentiableAt_extChartAt (ChartedSpace.mem_chart_source x')
   let Φ : M → E := φ -- FIXME: this is working around a limitation of MDiffAt elaborator
   have hφ : MDiffAt Φ x := mdifferentiableAt_extChartAt (ChartedSpace.mem_chart_source x)
   replace hu : mfderiv I 𝓘(𝕜, E) φ x u = 0 → mfderiv I' 𝓘(𝕜, E') ψ x' u' = 0 := by
-    sorry
+    have : Function.Injective (mfderiv I 𝓘(𝕜, E) φ x) :=
+      (isInvertible_mfderiv_extChartAt (mem_extChartAt_source x)).injective
+    rw [injective_iff_map_eq_zero] at this
+    have := map_zero (mfderiv I' 𝓘(𝕜, E') ψ x')
+    grind
   rcases  map_of_loc_one_jet_spec (𝕜 := 𝕜)
     (φ x) (mfderiv I 𝓘(𝕜, E) φ x u) (ψ x') (mfderiv I' 𝓘(𝕜, E') ψ x' u') hu with
     ⟨h : g (φ x) = ψ x', h', h''⟩
@@ -221,7 +251,7 @@ lemma extend_smul [FiniteDimensional ℝ F] [T2Space M] {a : ℝ} {x : M} (v : V
 
 @[simp]
 lemma extend_zero [FiniteDimensional ℝ F] [T2Space M] (x : M) :
-  extend I F (0 : V x) = 0 := by simp [extend, localExtensionOn_zero]; module
+  extend I F (0 : V x) = 0 := by simp [extend, localExtensionOn_zero]
 
 @[simp] lemma extend_apply_self [FiniteDimensional ℝ F] [T2Space M] {x : M} (v : V x) :
     extend I F v x = v := by
