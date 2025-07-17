@@ -309,24 +309,24 @@ private lemma Summable_cotTermUpperBound (A B : ℝ) (hB : 0 < B) {k : ℕ} (hk 
 open EisensteinSeries in
 private lemma iteratedDerivWithin_cotTerm_bounded_uniformly {k : ℕ} (hk : 1 ≤ k) (K : Set ℂ)
     (hK : K ⊆ ℍₒ) (A B : ℝ) (hB : 0 < B)
-    (HABK : inclusion hK '' univ ⊆ verticalStrip A B) (n : ℕ) (a : K) :
+    (HABK : inclusion hK '' univ ⊆ verticalStrip A B) (n : ℕ) {a : ℂ} (ha : a ∈ K) :
     ‖iteratedDerivWithin k (fun z ↦ cotTerm z n) ℍₒ a‖ ≤
     cotTermUpperBound A B hB k n := by
-  simp only [cotTerm_iteratedDerivWith' n k (hK a.2), Complex.norm_mul, norm_pow, norm_neg,
+  simp only [cotTerm_iteratedDerivWith' n k (hK ha), Complex.norm_mul, norm_pow, norm_neg,
     norm_one, one_pow, Complex.norm_natCast, one_mul, cotTermUpperBound, Int.reduceNeg, norm_zpow,
     Real.norm_eq_abs, two_mul, add_mul]
   gcongr
   apply le_trans (norm_add_le _ _)
   apply add_le_add
   · have := summand_bound_of_mem_verticalStrip (k := (k + 1)) (by norm_cast; omega) ![1, n+1] hB
-      (z := ⟨a, (hK a.2)⟩) (A := A) (by aesop)
+      (z := ⟨a, (hK ha)⟩) (A := A) (by aesop)
     simp only [coe_setOf, image_univ, Fin.isValue, Matrix.cons_val_zero, Int.cast_one,
       coe_mk_subtype, one_mul, Matrix.cons_val_one, Matrix.cons_val_fin_one, Int.cast_add,
       Int.cast_natCast, neg_add_rev, abs_norm_eq_max_natAbs, Int.reduceNeg, sub_eq_add_neg,
       norm_zpow, ge_iff_le] at *
     norm_cast at *
   · have := summand_bound_of_mem_verticalStrip (k := k + 1) (by norm_cast; omega) ![1, -(n + 1)] hB
-      (z := ⟨a, (hK a.2)⟩) (A := A) (by aesop)
+      (z := ⟨a, (hK ha)⟩) (A := A) (by aesop)
     rw [abs_norm_eq_max_natAbs_neg] at this
     simp only [coe_setOf, image_univ, neg_add_rev, Int.reduceNeg, Fin.isValue, Matrix.cons_val_zero,
       Int.cast_one, coe_mk_subtype, one_mul, Matrix.cons_val_one, Matrix.cons_val_fin_one,
