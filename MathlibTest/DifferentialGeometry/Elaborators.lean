@@ -338,3 +338,104 @@ info: MDifferentiableAt 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) fun a 
 #check MDifferentiableAt% (T% s)
 
 end differentiability
+
+section mfderiv
+
+variable {EM' : Type*} [NormedAddCommGroup EM']
+  [NormedSpace 𝕜 EM'] {H' : Type*} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 EM' H')
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+
+variable {f : M → M'} {s : Set M} {m : M}
+
+/-- info: mfderiv I I' f : (x : M) → TangentSpace I x →L[𝕜] TangentSpace I' (f x) -/
+#guard_msgs in
+#check mfderiv% f
+
+/-- info: mfderiv I I' f m : TangentSpace I m →L[𝕜] TangentSpace I' (f m) -/
+#guard_msgs in
+#check mfderiv% f m
+
+/-- info: mfderivWithin I I' f s : (x : M) → TangentSpace I x →L[𝕜] TangentSpace I' (f x) -/
+#guard_msgs in
+#check mfderiv[s] f
+
+/-- info: mfderivWithin I I' f s m : TangentSpace I m →L[𝕜] TangentSpace I' (f m) -/
+#guard_msgs in
+#check mfderiv[s] f m
+
+variable {f : E → EM'} {s : Set E} {m : E}
+
+/--
+info: mfderiv 𝓘(𝕜, E) 𝓘(𝕜, EM') f : (x : E) → TangentSpace 𝓘(𝕜, E) x →L[𝕜] TangentSpace 𝓘(𝕜, EM') (f x)
+-/
+#guard_msgs in
+#check mfderiv% f
+
+/--
+info: mfderiv 𝓘(𝕜, E) 𝓘(𝕜, EM') f m : TangentSpace 𝓘(𝕜, E) m →L[𝕜] TangentSpace 𝓘(𝕜, EM') (f m)
+-/
+#guard_msgs in
+#check mfderiv% f m
+
+/--
+info: mfderivWithin 𝓘(𝕜, E) 𝓘(𝕜, EM') f s : (x : E) → TangentSpace 𝓘(𝕜, E) x →L[𝕜] TangentSpace 𝓘(𝕜, EM') (f x)
+-/
+#guard_msgs in
+#check mfderiv[s] f
+
+/--
+info: mfderivWithin 𝓘(𝕜, E) 𝓘(𝕜, EM') f s m : TangentSpace 𝓘(𝕜, E) m →L[𝕜] TangentSpace 𝓘(𝕜, EM') (f m)
+-/
+#guard_msgs in
+#check mfderiv[s] f m
+
+section errors
+
+-- Test an error message, about mismatched types.
+variable {s' : Set M} {m' : M}
+
+/--
+error: Application type mismatch: In the application
+  mfderiv 𝓘(𝕜, E) 𝓘(𝕜, EM') f m'
+the argument
+  m'
+has type
+  M : Type u_4
+but is expected to have type
+  E : Type u_2
+---
+info: mfderiv 𝓘(𝕜, E) 𝓘(𝕜, EM') f sorry : TangentSpace 𝓘(𝕜, E) sorry →L[𝕜] TangentSpace 𝓘(𝕜, EM') (f sorry)
+-/
+#guard_msgs in
+#check mfderiv% f m'
+
+-- Error messages: argument s has mismatched type.
+/--
+error: Application type mismatch: In the application
+  mfderivWithin 𝓘(𝕜, E) 𝓘(𝕜, EM') f s'
+the argument
+  s'
+has type
+  Set.{u_4} M : Type u_4
+but is expected to have type
+  Set.{u_2} E : Type u_2
+-/
+#guard_msgs in
+#check mfderiv[s'] f
+
+/--
+error: Application type mismatch: In the application
+  mfderivWithin 𝓘(𝕜, E) 𝓘(𝕜, EM') f s'
+the argument
+  s'
+has type
+  Set.{u_4} M : Type u_4
+but is expected to have type
+  Set.{u_2} E : Type u_2
+-/
+#guard_msgs in
+#check mfderiv[s'] f m
+
+end errors
+
+end mfderiv
