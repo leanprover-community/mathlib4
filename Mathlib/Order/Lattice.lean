@@ -1415,10 +1415,10 @@ lemma closed_interval [Lattice α] {r : α → α → Prop}
     r b c := by
   rw [h₂]
   conv_lhs => rw [← inf_eq_left.mpr inf_le_sup]
-  conv_rhs => rw [← inf_eq_right.mpr (sup_le hb.2 hc.2)]
-  apply (h₄ (inf_le_of_left_le hb.2) _).1
-  rw [← sup_eq_right.mpr (le_inf hb.1 hc.1), ← sup_eq_left.mpr (inf_le_of_left_le hb.2)]
-  exact (h₄ (le_trans hb.1 hb.2) had).2
+  conv_rhs => rw [← inf_eq_right.mpr (sup_le hbd hcd)]
+  apply (h₄ (inf_le_of_left_le hbd) _).1
+  rw [← sup_eq_right.mpr (le_inf hab hac), ← sup_eq_left.mpr (inf_le_of_left_le hbd)]
+  exact (h₄ (le_trans hab hbd) had).2
 
 lemma transitive [Lattice α] {r : α → α → Prop}
     (h₂ : ∀ ⦃x y : α⦄, r x y ↔ r (x ⊓ y) (x ⊔ y))
@@ -1426,8 +1426,8 @@ lemma transitive [Lattice α] {r : α → α → Prop}
     (h₄ : ∀ ⦃x y t : α⦄, x ≤ y → r x y → r (x ⊓ t) (y ⊓ t) ∧ r (x ⊔ t) (y ⊔ t)) :
     ∀ {x y z : α}, r x y → r y z → r x z := by
   intro x y z hxy hyz
-  exact closed_interval h₂ h₄ (x ⊓ y ⊓ z) _ _ (x ⊔ y ⊔ z) ⟨by rw [inf_assoc]; exact inf_le_left,
-    by rw [sup_assoc]; exact le_sup_left⟩ (⟨inf_le_right, le_sup_right⟩)
+  exact closed_interval h₂ h₄ (x ⊓ y ⊓ z) _ _ (x ⊔ y ⊔ z) (by rw [inf_assoc]; exact inf_le_left)
+    (by rw [sup_assoc]; exact le_sup_left) inf_le_right le_sup_right
     (h₃ (by rw [inf_assoc]; exact inf_le_of_right_le inf_le_sup)
     (by rw [sup_assoc]; exact le_sup_right) (h₃
     (by rw [inf_assoc]; exact inf_le_right) inf_le_sup (by
@@ -1448,8 +1448,8 @@ def LatticeCon.mk3 [Lattice α] (r : α → α → Prop) (h₁ : IsRefl α r)
   (fun hxy hxz => transitive h₂ h₃ h₄ hxy hxz))) (fun h1 h2 => by
     have compatible_left_inf {x y t : α} (hh : r x y) : r (x ⊓ t) (y ⊓ t) :=
       closed_interval h₂ h₄ ((x ⊓ y) ⊓ t) _ _ ((x ⊔ y) ⊓ t)
-            ⟨inf_le_inf_right _ inf_le_left, inf_le_inf_right _ le_sup_left⟩
-            ⟨inf_le_inf_right _ inf_le_right, inf_le_inf_right _ le_sup_right⟩
+            (inf_le_inf_right _ inf_le_left) (inf_le_inf_right _ le_sup_left)
+            (inf_le_inf_right _ inf_le_right) (inf_le_inf_right _ le_sup_right)
             (h₄ inf_le_sup (h₂.mp hh)).1
     exact transitive h₂ h₃ h₄ (by
           conv_lhs => rw [inf_comm]
@@ -1458,8 +1458,8 @@ def LatticeCon.mk3 [Lattice α] (r : α → α → Prop) (h₁ : IsRefl α r)
       (compatible_left_inf h1)) (fun h1 h2 => by
         have compatible_left_sup {x y t : α} (hh : r x y) : r (x ⊔ t) (y ⊔ t) :=
           closed_interval h₂ h₄ ((x ⊓ y) ⊔ t) _ _ ((x ⊔ y) ⊔ t)
-            ⟨sup_le_sup_right inf_le_left _, sup_le_sup_right le_sup_left _⟩
-            ⟨sup_le_sup_right inf_le_right _, sup_le_sup_right le_sup_right _⟩
+            (sup_le_sup_right inf_le_left _) (sup_le_sup_right le_sup_left _)
+            (sup_le_sup_right inf_le_right _) (sup_le_sup_right le_sup_right _)
             (h₄ inf_le_sup (h₂.mp hh)).2
         exact transitive h₂ h₃ h₄ (by
           conv_lhs => rw [sup_comm]
