@@ -122,8 +122,6 @@ instance : HasDistribNeg SignType where
   neg_mul := by rintro ⟨_⟩ ⟨_⟩ <;> rfl
   mul_neg := by rintro ⟨_⟩ ⟨_⟩ <;> rfl
 
-@[simp] theorem neg_eq_zero : ∀ a : SignType, -a = 0 ↔ a = 0 := by decide
-
 /-- `SignType` is equivalent to `Fin 3`. -/
 def fin3Equiv : SignType ≃* Fin 3 where
   toFun a :=

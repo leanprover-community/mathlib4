@@ -10,9 +10,10 @@ import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Sign.Defs
 
 /-!
-# Sign type
+# Sign function
 
-This file proves basic theorems about `SignType`.
+This file defines the sign function for types with zero and a decidable less-than relation, and
+proves some basic theorems about it.
 -/
 
 universe u
