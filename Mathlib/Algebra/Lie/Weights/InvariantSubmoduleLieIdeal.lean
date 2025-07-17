@@ -454,6 +454,16 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
             have hm_α_base : m_α ∈ sl2SubalgebraOfRoot α.2.2 := by
               simp only [sl2SubalgebraOfRoot_as_H_submodule] at hm_α_original; exact hm_α_original
             exact sl2SubalgebraOfRoot_stable_under_H α.1 α.2.2 ⟨x_χ, hx_χ_in_H⟩ m_α hm_α_base
+
+          -- Factored-out lemma: χ is nonzero from w_chi
+          have hχ_nonzero : χ.IsNonZero := by
+            intro h_zero
+            apply w_chi
+            have h_zero_eq : (χ.toLinear : H →ₗ[K] K) = 0 := by
+              ext h
+              simp [Weight.IsZero.eq h_zero]
+            exact h_zero_eq
+
           by_cases h_chi_in_q : χ.toLinear ∈ q
           · -- Case: χ ∈ q (general case with invariance)
             -- First step: show genWeightSpace L (χ + α) ≤ supremum
@@ -791,13 +801,7 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
               -- Step 4: Apply RootPairing.root_mem_submodule_iff_of_add_mem_invtSubmodule
               -- We need indices i, j such that S.root i = χ.toLinear and S.root j = α.1.toLinear
               -- and S.root i + S.root j ∈ range S.root
-              have hχ_nonzero : χ.IsNonZero := by
-                intro h_zero
-                apply w_chi
-                have h_zero_eq : (χ.toLinear : H →ₗ[K] K) = 0 := by
-                  ext h
-                  simp [Weight.IsZero.eq h_zero]
-                exact h_zero_eq
+              -- Use the factored-out hχ_nonzero
               obtain ⟨i, hi⟩ := exists_root_index_of_weight_nonzero χ hχ_nonzero
               obtain ⟨j, hj⟩ := exists_root_index_of_in_index_set q α
 
@@ -863,13 +867,7 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
               -- Step 4: Apply RootPairing.root_mem_submodule_iff_of_add_mem_invtSubmodule
               -- We need indices i, j such that S.root i = χ.toLinear and S.root j = (-α.1).toLinear
               -- and S.root i + S.root j ∈ range S.root
-              have hχ_nonzero : χ.IsNonZero := by
-                intro h_zero
-                apply w_chi
-                have h_zero_eq : (χ.toLinear : H →ₗ[K] K) = 0 := by
-                  ext h
-                  simp [Weight.IsZero.eq h_zero]
-                exact h_zero_eq
+              -- Use the factored-out hχ_nonzero
               obtain ⟨i, hi⟩ := exists_root_index_of_weight_nonzero χ hχ_nonzero
               have hα_neg_nonzero : (-α.1).IsNonZero := Weight.IsNonZero.neg α.2.2
               obtain ⟨j, hj⟩ := exists_root_index_of_weight_nonzero (-α.1) hα_neg_nonzero
@@ -939,13 +937,7 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
             -- From root_add_root_mem_of_pairingIn_neg and root_sub_root_mem_of_pairingIn_pos
             let S := LieAlgebra.IsKilling.rootSystem H
             -- First get the root indices corresponding to χ and α
-            have hχ_nonzero : χ.IsNonZero := by
-              intro h_zero
-              apply w_chi
-              have h_zero_eq : (χ.toLinear : H →ₗ[K] K) = 0 := by
-                ext h
-                simp [Weight.IsZero.eq h_zero]
-              exact h_zero_eq
+            -- Use the factored-out hχ_nonzero
             obtain ⟨i, hi⟩ := exists_root_index_of_weight_nonzero χ hχ_nonzero
             obtain ⟨j, hj⟩ := exists_root_index_of_in_index_set q α
             have h_pairing_zero : S.pairing i j = 0 := by
