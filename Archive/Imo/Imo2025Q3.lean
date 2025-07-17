@@ -10,26 +10,7 @@ def g : ℕ → ℕ := fun x ↦
   else if x = 2 then 4
   else 2 ^ (padicValNat 2 x + 2)
 
-lemma plus1 (m : ℤ) : 2 ∣ m * (m + 1) := by
-  have : 
-  sorry
-
-lemma Nat.plus1 (m : ℕ) : 2 ∣ m * (m + 1) := by
-  rcases (Nat.even_or_odd m) with ch | ch
-  · have : Even (m * (m + 1)) := Nat.even_mul_succ_self m
-    exact even_iff_two_dvd.mp this
-  · have : Even (m + 1) := Odd.add_one ch
-    have : Even (m * (m + 1)) := Nat.even_mul_succ_self m
-    exact even_iff_two_dvd.mp this
-
-
 #check Int.sq_mod_four_eq_one_of_odd
-lemma Nat.sq_mod_eight_eq_one_of_odd {k : ℕ} (hk : Odd k) : 8 ∣ k ^ 2 - 1 := by
-  rcases hk with ⟨m, hm⟩
-  have eq : (2 * m + 1) ^ 2 = 1 + 4 * m * (m + 1) := by ring
-  have eq : (2 * m + 1) ^ 2 - 1 = 4 * m * (m + 1) := by omega
-  have : 4 * 2 ∣ 4 * (m * (m + 1)) := (Nat.mul_dvd_mul_iff_left (by norm_num)).mpr (plus1 m)
-  simpa [hm, eq, mul_assoc] using this
 
 lemma LTE {a b : ℕ} (h1b : 1 < b) (hb : ¬2 ∣ b) (ha : a ≠ 0) (Evena : Even a) :
     (padicValNat 2 a + 2) ≤ padicValNat 2 (b ^ a - 1) := by
