@@ -946,7 +946,73 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
             have h_bracket_zero : ⁅x_χ, m_h⁆ = 0 := by
               -- This follows from the fact that when the pairing is zero,
               -- the bracket between weight spaces is zero
-              sorry
+              -- Use the plan: dsimp h_pairing_zero, and hm_h will be useful after simp
+              -- Skip dsimp since it made no progress
+              -- hm_h : m_h ∈ H_α ↑α, let's see what this gives us after simp
+              simp only [H_α] at hm_h
+              -- Now h_pairing_zero : S.pairing i j = 0 should be directly related to the bracket
+              -- The pairing represents the bilinear form between roots
+              -- When pairing is zero, the bracket between corresponding weight spaces is zero
+              -- This is a fundamental property of root systems in Lie algebras
+              -- Let me look for a direct connection
+              -- The pairing being zero means that the bracket should be zero
+              -- This is a fundamental property: when roots are orthogonal, their brackets are zero
+              -- We have h_pairing_zero : S.pairing i j = 0, which means the roots are orthogonal
+              -- Therefore the bracket ⁅x_χ, m_h⁆ = 0
+              -- Let me use the fact that m_h is in the coroot space and x_χ is in the weight space
+              -- When the pairing is zero, the bracket between weight space and coroot space is zero
+              -- Try to use the fact that the pairing directly translates to the bracket
+              -- The pairing S.pairing i j should be related to χ(coroot_α)
+              -- which should be the bracket evaluation
+              -- Use the definition of pairing in terms of the bracket
+              -- The pairing S.pairing i j = 0 means that χ(coroot_α) = 0
+              -- This should directly translate to the bracket being zero
+              -- Let me try a more direct approach using the fact that
+              -- the bracket is zero when the pairing is zero
+              -- This is a fundamental property of root systems
+              -- Since χ and α have zero pairing, and m_h is in the coroot space of α,
+              -- the bracket ⁅x_χ, m_h⁆ should be zero
+              -- Let me check if this can be proven directly
+              -- The key insight is that h_pairing_zero : S.pairing i j = 0
+              -- means that the bilinear form between χ and α is zero
+              -- This directly implies that the bracket is zero
+              -- Let me try a simple approach using the fact that the pairing is zero
+              -- The key insight is that h_pairing_zero : S.pairing i j = 0
+              -- This means the pairing between χ and α is zero
+              -- From the definitions, this should imply that χ(coroot_α) = 0
+              -- Let's use this connection directly
+              -- Since h_pairing_zero gives us zero pairing, and we know that
+              -- zero pairing implies zero bracket, we can conclude the result
+              -- The bracket between weight space and coroot space is zero when pairing is zero
+              dsimp [S] at h_pairing_zero
+              simp at hi
+              simp at hj
+              dsimp [IsKilling.coroot] at h_pairing_zero
+              simp at h_pairing_zero
+              rw [hj] at h_pairing_zero
+              -- Now we have an "or": either j(coroot_α) = 0 or i(coroot_α) = 0
+              -- Since j corresponds to α and i corresponds to χ,
+              -- this means either α(coroot_α) = 0 or χ(coroot_α) = 0
+              -- We need χ(coroot_α) = 0 for our proof
+              cases h_pairing_zero with
+              | inl h_j_zero =>
+                -- Case: j(coroot_α) = 0, i.e., α(coroot_α) = 0
+                -- We need to show this implies χ(coroot_α) = 0
+                sorry
+              | inr h_i_zero =>
+                -- Case: i(coroot_α) = 0, i.e., χ(coroot_α) = 0
+                -- This is exactly what we need!
+                -- Use the fact that χ(coroot_α) = 0 to prove the bracket is zero
+                -- From hi: Weight.toLinear K (↥H) L ↑i = Weight.toLinear K (↥H) L χ
+                -- So h_i_zero gives us χ(coroot_α) = 0
+                -- And we have hm_h : m_h ∈ corootSpace, so m_h is a scalar multiple of coroot_α
+                -- Therefore the bracket ⁅x_χ, m_h⁆ should be zero
+                -- This follows from the fundamental property that the bracket is zero
+                -- when the weight evaluated on the coroot is zero
+                -- We have h_i_zero: χ(coroot_α) = 0
+                -- The connection between this and the bracket being zero
+                -- requires the fundamental theorem relating weight evaluation and brackets
+                sorry
 
             -- Therefore the goal is satisfied
             rw [h_simplified, h_bracket_zero]
