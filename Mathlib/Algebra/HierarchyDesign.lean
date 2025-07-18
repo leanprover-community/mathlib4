@@ -60,22 +60,22 @@ one should attempt to add the following constructions and results,
 when applicable:
 
 * Instances transferred elementwise to products, like `Prod.Monoid`.
-  See `Mathlib.Algebra.Group.Prod` for more examples.
+  See `Mathlib/Algebra/Group/Prod.lean` for more examples.
   ```
   instance Prod.Z [Z M] [Z N] : Z (M × N) := ...
   ```
 * Instances transferred elementwise to pi types, like `Pi.Monoid`.
-  See `Mathlib.Algebra.Group.Pi` for more examples.
+  See `Mathlib/Algebra/Group/Pi.lean` for more examples.
   ```
   instance Pi.Z [∀ i, Z <| f i] : Z (Π i : I, f i) := ...
   ```
 * Instances transferred to `MulOpposite M`, like `MulOpposite.Monoid`.
-  See `Mathlib.Algebra.Opposites` for more examples.
+  See `Mathlib/Algebra/Opposites.lean` for more examples.
   ```
   instance MulOpposite.Z [Z M] : Z (MulOpposite M) := ...
   ```
 * Instances transferred to `ULift M`, like `ULift.Monoid`.
-  See `Mathlib.Algebra.Group.ULift` for more examples.
+  See `Mathlib/Algebra/Group/ULift.lean` for more examples.
   ```
   instance ULift.Z [Z M] : Z (ULift M) := ...
   ```
@@ -83,7 +83,7 @@ when applicable:
   injective or surjective functions that agree on the data fields,
   like `Function.Injective.monoid` and `Function.Surjective.monoid`.
   We make these definitions `abbrev`, see note [reducible non-instances].
-  See `Mathlib.Algebra.Group.InjSurj` for more examples.
+  See `Mathlib/Algebra/Group/InjSurj.lean` for more examples.
   ```
   abbrev Function.Injective.Z [Z M₂] (f : M₁ → M₂) (hf : f.Injective)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) : Z M₁ := ...
@@ -92,17 +92,17 @@ when applicable:
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) : Z M₂ := ...
   ```
 * Instances transferred elementwise to `Finsupp`s, like `Finsupp.semigroup`.
-  See `Mathlib.Data.Finsupp.Pointwise` for more examples.
+  See `Mathlib/Data/Finsupp/Pointwise.lean` for more examples.
   ```
   instance FinSupp.Z [Z β] : Z (α →₀ β) := ...
   ```
 * Instances transferred elementwise to `Set`s, like `Set.monoid`.
-  See `Mathlib.Algebra.Pointwise` for more examples.
+  See `Mathlib/Algebra/Pointwise.lean` for more examples.
   ```
   instance Set.Z [Z α] : Z (Set α) := ...
   ```
 * Definitions for transferring the entire structure across an equivalence, like `Equiv.monoid`.
-  See `Mathlib.Data.Equiv.TransferInstance` for more examples. See also the `transport` tactic.
+  See `Mathlib/Data/Equiv/TransferInstance.lean` for more examples. See also the `transport` tactic.
   ```
   def Equiv.Z (e : α ≃ β) [Z β] : Z α := ...
   /-- When there is a new notion of `Z`-equiv: -/

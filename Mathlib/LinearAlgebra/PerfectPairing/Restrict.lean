@@ -13,11 +13,11 @@ import Mathlib.LinearAlgebra.Matrix.BaseChange
 We provide API for restricting perfect pairings to submodules and for restricting their scalars.
 
 ## Main definitions
- * `PerfectPairing.restrict`: restriction of a perfect pairing to submodules.
- * `PerfectPairing.restrictScalars`: restriction of scalars for a perfect pairing taking values in a
-   subring.
- * `PerfectPairing.restrictScalarsField`: simultaneously restrict both the domains and scalars
-   of a perfect pairing with coefficients in a field.
+* `PerfectPairing.restrict`: restriction of a perfect pairing to submodules.
+* `PerfectPairing.restrictScalars`: restriction of scalars for a perfect pairing taking values in a
+  subring.
+* `PerfectPairing.restrictScalarsField`: simultaneously restrict both the domains and scalars
+  of a perfect pairing with coefficients in a field.
 
 -/
 
@@ -54,8 +54,8 @@ private lemma restrict_aux : Bijective (p.toLinearMap.compl₁₂ i j) := by
   · set F : Module.Dual R N := f ∘ₗ j.linearProjOfIsCompl _ hj hij.isCompl_right with hF
     have hF (n : N') : F (j n) = f n := by simp [hF]
     set m : M := p.toDualLeft.symm F with hm
-    obtain ⟨-, ⟨m₀, rfl⟩, y, hy, hm'⟩ :=
-      Submodule.exists_add_eq_of_codisjoint hij.isCompl_left.codisjoint m
+    obtain ⟨-, y, ⟨m₀, rfl⟩, hy, hm'⟩ :=
+      Submodule.codisjoint_iff_exists_add_eq.mp hij.isCompl_left.codisjoint m
     refine ⟨m₀, LinearMap.ext fun n ↦ ?_⟩
     replace hy : (p y) (j n) = 0 := by
       simp only [Submodule.mem_map, Submodule.mem_dualAnnihilator] at hy
@@ -92,7 +92,7 @@ variable {S M' N' : Type*}
 private def restrictScalarsAux
     (hp : ∀ m n, p (i m) (j n) ∈ (algebraMap S R).range) :
     M' →ₗ[S] N' →ₗ[S] S :=
- LinearMap.restrictScalarsRange i j (Algebra.linearMap S R)
+  LinearMap.restrictScalarsRange₂ i j (Algebra.linearMap S R)
     (FaithfulSMul.algebraMap_injective S R) p.toLinearMap hp
 
 private lemma restrictScalarsAux_injective
@@ -100,7 +100,7 @@ private lemma restrictScalarsAux_injective
     (hN : span R (LinearMap.range j : Set N) = ⊤)
     (hp : ∀ m n, p (i m) (j n) ∈ (algebraMap S R).range) :
     Injective (p.restrictScalarsAux i j hp) := by
-  let f := LinearMap.restrictScalarsRange i j (Algebra.linearMap S R)
+  let f := LinearMap.restrictScalarsRange₂ i j (Algebra.linearMap S R)
       (FaithfulSMul.algebraMap_injective S R) p.toLinearMap hp
   rw [← LinearMap.ker_eq_bot]
   refine (Submodule.eq_bot_iff _).mpr fun x (hx : f x = 0) ↦ ?_
@@ -257,7 +257,7 @@ def restrictScalarsField
     (hp : ∀ m n, p (i m) (j n) ∈ (algebraMap K L).range)
     (x : M') (y : N') :
     algebraMap K L (p.restrictScalarsField i j hi hj hij hp x y) = p (i x) (j y) :=
-  LinearMap.restrictScalarsRange_apply i j (Algebra.linearMap K L)
+  LinearMap.restrictScalarsRange₂_apply i j (Algebra.linearMap K L)
     (FaithfulSMul.algebraMap_injective K L) p.toLinearMap hp x y
 
 end Field

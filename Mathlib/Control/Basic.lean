@@ -47,7 +47,7 @@ theorem pure_id'_seq (x : F α) : (pure fun x => x) <*> x = x :=
 theorem seq_map_assoc (x : F (α → β)) (f : γ → α) (y : F γ) :
     x <*> f <$> y = (· ∘ f) <$> x <*> y := by
   simp only [← pure_seq]
-  simp only [seq_assoc, Function.comp, seq_pure, ← comp_map]
+  simp only [seq_assoc, seq_pure, ← comp_map]
   simp [pure_seq]
   rfl
 
@@ -71,17 +71,17 @@ theorem seq_bind_eq (x : m α) {g : β → m γ} {f : α → β} :
 
 @[functor_norm]
 theorem fish_pure {α β} (f : α → m β) : f >=> pure = f := by
-  simp (config := { unfoldPartialApp := true }) only [(· >=> ·), functor_norm]
+  simp +unfoldPartialApp only [(· >=> ·), functor_norm]
 
 @[functor_norm]
 theorem fish_pipe {α β} (f : α → m β) : pure >=> f = f := by
-  simp (config := { unfoldPartialApp := true }) only [(· >=> ·), functor_norm]
+  simp +unfoldPartialApp only [(· >=> ·), functor_norm]
 
 -- note: in Lean 3 `>=>` is left-associative, but in Lean 4 it is right-associative.
 @[functor_norm]
 theorem fish_assoc {α β γ φ} (f : α → m β) (g : β → m γ) (h : γ → m φ) :
     (f >=> g) >=> h = f >=> g >=> h := by
-  simp (config := { unfoldPartialApp := true }) only [(· >=> ·), functor_norm]
+  simp +unfoldPartialApp only [(· >=> ·), functor_norm]
 
 variable {β' γ' : Type v}
 variable {m' : Type v → Type w} [Monad m']
@@ -112,14 +112,14 @@ variable {m : Type u → Type u} [Monad m] [LawfulMonad m]
 
 theorem joinM_map_map {α β : Type u} (f : α → β) (a : m (m α)) :
     joinM (Functor.map f <$> a) = f <$> joinM a := by
-  simp only [joinM, (· ∘ ·), id, ← bind_pure_comp, bind_assoc, map_bind, pure_bind]
+  simp only [joinM, id, ← bind_pure_comp, bind_assoc, pure_bind]
 
 theorem joinM_map_joinM {α : Type u} (a : m (m (m α))) : joinM (joinM <$> a) = joinM (joinM a) := by
-  simp only [joinM, (· ∘ ·), id, map_bind, ← bind_pure_comp, bind_assoc, pure_bind]
+  simp only [joinM, id, ← bind_pure_comp, bind_assoc, pure_bind]
 
 @[simp]
 theorem joinM_map_pure {α : Type u} (a : m α) : joinM (pure <$> a) = a := by
-  simp only [joinM, (· ∘ ·), id, map_bind, ← bind_pure_comp, bind_assoc, pure_bind, bind_pure]
+  simp only [joinM, id, ← bind_pure_comp, bind_assoc, pure_bind, bind_pure]
 
 @[simp]
 theorem joinM_pure {α : Type u} (a : m α) : joinM (pure a) = a :=
@@ -145,11 +145,11 @@ def try? {α} (x : F α) : F (Option α) :=
   some <$> x <|> pure none
 
 @[simp]
-theorem guard_true {h : Decidable True} : @guard F _ True h = pure () := by simp [guard, if_pos]
+theorem guard_true {h : Decidable True} : @guard F _ True h = pure () := by simp [guard]
 
 @[simp]
 theorem guard_false {h : Decidable False} : @guard F _ False h = failure := by
-  simp [guard, if_neg not_false]
+  simp [guard]
 
 end Alternative
 
@@ -213,5 +213,5 @@ theorem CommApplicative.commutative_map {m : Type u → Type v} [h : Applicative
       simp only [map_seq, map_map, Function.comp_def]
     _ = (fun b a => f a b) <$> b <*> a := by
       rw [@CommApplicative.commutative_prod m h]
-      simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map, (· ∘ ·)]
+      simp [map_seq, map_map]
       rfl

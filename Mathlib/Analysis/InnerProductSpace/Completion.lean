@@ -15,27 +15,26 @@ product spaces.
 
 noncomputable section
 
-open RCLike Real Filter Topology ComplexConjugate Finsupp
-open LinearMap (BilinForm)
-
 variable {𝕜 E F : Type*} [RCLike 𝕜]
+
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 section SeparationQuotient
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 theorem Inseparable.inner_eq_inner {x₁ x₂ y₁ y₂ : E}
     (hx : Inseparable x₁ x₂) (hy : Inseparable y₁ y₂) :
-    inner x₁ y₁ = (inner x₂ y₂ : 𝕜) :=
+    ⟪x₁, y₁⟫ = ⟪x₂, y₂⟫ :=
   ((hx.prod hy).map continuous_inner).eq
 
 namespace SeparationQuotient
 
 instance : Inner 𝕜 (SeparationQuotient E) where
-  inner := SeparationQuotient.lift₂ Inner.inner fun _ _ _ _ => Inseparable.inner_eq_inner
+  inner := SeparationQuotient.lift₂ (inner 𝕜) fun _ _ _ _ => Inseparable.inner_eq_inner
 
 @[simp]
 theorem inner_mk_mk (x y : E) :
-    inner (mk x) (mk y) = (inner x y : 𝕜) := rfl
+    ⟪mk x, mk y⟫ = ⟪x, y⟫ := rfl
 
 instance : InnerProductSpace 𝕜 (SeparationQuotient E) where
   norm_sq_eq_re_inner := Quotient.ind norm_sq_eq_re_inner
@@ -51,27 +50,21 @@ section UniformSpace.Completion
 
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
-
-local notation "IK" => @RCLike.I 𝕜 _
-
-local postfix:90 "†" => starRingEnd _
-
 namespace UniformSpace.Completion
 
-open UniformSpace Function
+open RCLike Function
 
 instance toInner {𝕜' E' : Type*} [TopologicalSpace 𝕜'] [UniformSpace E'] [Inner 𝕜' E'] :
     Inner 𝕜' (Completion E') where
-  inner := curry <| (isDenseInducing_coe.prodMap isDenseInducing_coe).extend (uncurry inner)
+  inner := curry <| (isDenseInducing_coe.prodMap isDenseInducing_coe).extend (uncurry (inner 𝕜'))
 
 @[simp]
-theorem inner_coe (a b : E) : inner (a : Completion E) (b : Completion E) = (inner a b : 𝕜) :=
+theorem inner_coe (a b : E) : ⟪(a : Completion E), (b : Completion E)⟫ = ⟪a, b⟫ :=
   (isDenseInducing_coe.prodMap isDenseInducing_coe).extend_eq
-    (continuous_inner : Continuous (uncurry inner : E × E → 𝕜)) (a, b)
+    (continuous_inner : Continuous (uncurry (inner 𝕜))) (a, b)
 
 protected theorem continuous_inner :
-    Continuous (uncurry inner : Completion E × Completion E → 𝕜) := by
+    Continuous (uncurry (inner 𝕜 (E := Completion E))) := by
   let inner' : E →+ E →+ 𝕜 :=
     { toFun := fun x => (innerₛₗ 𝕜 x).toAddMonoidHom
       map_zero' := by ext x; exact inner_zero_left _
@@ -86,7 +79,7 @@ protected theorem continuous_inner :
 
 @[fun_prop]
 protected theorem Continuous.inner {α : Type*} [TopologicalSpace α] {f g : α → Completion E}
-    (hf : Continuous f) (hg : Continuous g) : Continuous (fun x : α => inner (f x) (g x) : α → 𝕜) :=
+    (hf : Continuous f) (hg : Continuous g) : Continuous (fun x : α => ⟪f x, g x⟫) :=
   UniformSpace.Completion.continuous_inner.comp (hf.prodMk hg :)
 
 instance innerProductSpace : InnerProductSpace 𝕜 (Completion E) where

@@ -14,10 +14,10 @@ import Mathlib.Geometry.Manifold.Sheaf.Basic
 
 The sheaf of `𝕜`-smooth functions from a manifold `M` to a manifold `N` can be defined as a sheaf of
 types using the construction `StructureGroupoid.LocalInvariantProp.sheaf` from the file
-`Mathlib.Geometry.Manifold.Sheaf.Basic`.  In this file we write that down (a one-liner), then do the
-work of upgrading this to a sheaf of [groups]/[abelian groups]/[rings]/[commutative rings] when `N`
-carries more algebraic structure.  For example, if `N` is `𝕜` then the sheaf of smooth functions
-from `M` to `𝕜` is a sheaf of commutative rings, the *structure sheaf* of `M`.
+`Mathlib/Geometry/Manifold/Sheaf/Basic.lean`.  In this file we write that down (a one-liner), then
+do the work of upgrading this to a sheaf of [groups]/[abelian groups]/[rings]/[commutative rings]
+when `N` carries more algebraic structure.  For example, if `N` is `𝕜` then the sheaf of smooth
+functions from `M` to `𝕜` is a sheaf of commutative rings, the *structure sheaf* of `M`.
 
 ## Main definitions
 
@@ -144,9 +144,6 @@ lemma smoothSheaf.contMDiff_section {U : (Opens (TopCat.of M))ᵒᵖ}
     ContMDiff IM I ∞ f :=
   (contDiffWithinAt_localInvariantProp ∞).section_spec _ _ _ _
 
-@[deprecated (since := "2024-11-21")]
-alias smoothSheaf.smooth_section := smoothSheaf.contMDiff_section
-
 end TypeCat
 
 section LieGroup
@@ -217,7 +214,7 @@ noncomputable def smoothSheafCommGroup : TopCat.Sheaf CommGrp.{u} (TopCat.of M) 
 @[to_additive "For a manifold `M` and a smooth homomorphism `φ` between abelian additive Lie groups
 `A`, `A'`, the 'left-composition-by-`φ`' morphism of sheaves from `smoothSheafAddCommGroup IM I M A`
 to `smoothSheafAddCommGroup IM I' M A'`."]
-def smoothSheafCommGroup.compLeft (φ : A →* A') (hφ : ContMDiff I I' ∞ φ) :
+noncomputable def smoothSheafCommGroup.compLeft (φ : A →* A') (hφ : ContMDiff I I' ∞ φ) :
     smoothSheafCommGroup IM I M A ⟶ smoothSheafCommGroup IM I' M A' :=
   CategoryTheory.Sheaf.Hom.mk <|
   { app := fun _ ↦ CommGrp.ofHom <| ContMDiffMap.compLeftMonoidHom _ _ φ hφ
@@ -351,7 +348,7 @@ def smoothSheafCommRing.eval (x : M) : (smoothSheafCommRing IM I M R).presheaf.s
     smoothSheaf.evalHom _ _ _ _ := by
   apply Limits.colimit.hom_ext
   intro U
-  show (colimit.ι _ U) ≫ _ = colimit.ι ((OpenNhds.inclusion x).op ⋙ _) U ≫ _
+  change (colimit.ι _ U) ≫ _ = colimit.ι ((OpenNhds.inclusion x).op ⋙ _) U ≫ _
   rw [smoothSheafCommRing.ι_forgetStalk_inv_assoc, smoothSheaf.ι_evalHom]
   ext x
   exact CategoryTheory.congr_fun (smoothSheafCommRing.ι_evalHom ..) x

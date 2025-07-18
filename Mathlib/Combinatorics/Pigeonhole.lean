@@ -6,6 +6,7 @@ Authors: Kyle Miller, Yury Kudryashov
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Nat.ModEq
+import Mathlib.Order.Preorder.Finite
 
 /-!
 # Pigeonhole principles

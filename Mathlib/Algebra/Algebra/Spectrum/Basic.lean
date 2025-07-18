@@ -99,9 +99,11 @@ local notation "↑ₐ" => algebraMap R A
 theorem mem_iff {r : R} {a : A} : r ∈ σ a ↔ ¬IsUnit (↑ₐ r - a) :=
   Iff.rfl
 
-theorem not_mem_iff {r : R} {a : A} : r ∉ σ a ↔ IsUnit (↑ₐ r - a) := by
+theorem notMem_iff {r : R} {a : A} : r ∉ σ a ↔ IsUnit (↑ₐ r - a) := by
   apply not_iff_not.mp
-  simp [Set.not_not_mem, mem_iff]
+  simp [mem_iff]
+
+@[deprecated (since := "2025-05-23")] alias not_mem_iff := notMem_iff
 
 variable (R)
 
@@ -110,17 +112,25 @@ theorem zero_mem_iff {a : A} : (0 : R) ∈ σ a ↔ ¬IsUnit a := by
 
 alias ⟨not_isUnit_of_zero_mem, zero_mem⟩ := spectrum.zero_mem_iff
 
-theorem zero_not_mem_iff {a : A} : (0 : R) ∉ σ a ↔ IsUnit a := by
+theorem zero_notMem_iff {a : A} : (0 : R) ∉ σ a ↔ IsUnit a := by
   rw [zero_mem_iff, Classical.not_not]
 
-alias ⟨isUnit_of_zero_not_mem, zero_not_mem⟩ := spectrum.zero_not_mem_iff
+@[deprecated (since := "2025-05-23")] alias zero_not_mem_iff := zero_notMem_iff
+
+alias ⟨isUnit_of_zero_notMem, zero_notMem⟩ := spectrum.zero_not_mem_iff
+
+@[deprecated (since := "2025-05-23")] alias isUnit_of_zero_not_mem := isUnit_of_zero_notMem
+@[deprecated (since := "2025-05-23")] alias zero_not_mem := zero_notMem
 
 @[simp]
-lemma _root_.Units.zero_not_mem_spectrum (a : Aˣ) : 0 ∉ spectrum R (a : A) :=
-  spectrum.zero_not_mem R a.isUnit
+lemma _root_.Units.zero_notMem_spectrum (a : Aˣ) : 0 ∉ spectrum R (a : A) :=
+  spectrum.zero_notMem R a.isUnit
+
+@[deprecated (since := "2025-05-23")]
+alias _root_.Units.zero_not_mem_spectrum := _root_.Units.zero_notMem_spectrum
 
 lemma subset_singleton_zero_compl {a : A} (ha : IsUnit a) : spectrum R a ⊆ {0}ᶜ :=
-  Set.subset_compl_singleton_iff.mpr <| spectrum.zero_not_mem R ha
+  Set.subset_compl_singleton_iff.mpr <| spectrum.zero_notMem R ha
 
 variable {R}
 
@@ -167,8 +177,8 @@ theorem units_smul_resolvent {r : Rˣ} {s : R} {a : A} :
     simp only [Ring.inverse_non_unit _ h, Ring.inverse_non_unit _ h', smul_zero]
   · simp only [resolvent]
     have h' : IsUnit (r • algebraMap R A (r⁻¹ • s) - a) := by
-      simpa [Algebra.algebraMap_eq_smul_one, smul_assoc] using not_mem_iff.mp h
-    rw [← h'.val_subInvSMul, ← (not_mem_iff.mp h).unit_spec, Ring.inverse_unit, Ring.inverse_unit,
+      simpa [Algebra.algebraMap_eq_smul_one, smul_assoc] using notMem_iff.mp h
+    rw [← h'.val_subInvSMul, ← (notMem_iff.mp h).unit_spec, Ring.inverse_unit, Ring.inverse_unit,
       h'.val_inv_subInvSMul]
     simp only [Algebra.algebraMap_eq_smul_one, smul_assoc, smul_inv_smul]
 
@@ -196,7 +206,7 @@ theorem inv_mem_iff {r : Rˣ} {a : Aˣ} : (r : R) ∈ σ (a : A) ↔ (↑r⁻¹ 
   not_iff_not.2 <| ⟨inv_mem_resolventSet, inv_mem_resolventSet⟩
 
 theorem zero_mem_resolventSet_of_unit (a : Aˣ) : 0 ∈ resolventSet R (a : A) := by
-  simpa only [mem_resolventSet_iff, ← not_mem_iff, zero_not_mem_iff] using a.isUnit
+  simpa only [mem_resolventSet_iff, ← notMem_iff, zero_notMem_iff] using a.isUnit
 
 theorem ne_zero_of_mem_of_unit {a : Aˣ} {r : R} (hr : r ∈ σ (a : A)) : r ≠ 0 := fun hn =>
   (hn ▸ hr) (zero_mem_resolventSet_of_unit a)
@@ -208,8 +218,7 @@ theorem add_mem_add_iff {a : A} {r s : R} : r + s ∈ σ (↑ₐ s + a) ↔ r �
   rw [add_mem_iff, neg_add_cancel_left]
 
 theorem smul_mem_smul_iff {a : A} {s : R} {r : Rˣ} : r • s ∈ σ (r • a) ↔ s ∈ σ a := by
-  simp only [mem_iff, not_iff_not, Algebra.algebraMap_eq_smul_one, smul_assoc, ← smul_sub,
-    isUnit_smul_iff]
+  simp only [mem_iff, Algebra.algebraMap_eq_smul_one, smul_assoc, ← smul_sub, isUnit_smul_iff]
 
 theorem unit_smul_eq_smul (a : A) (r : Rˣ) : σ (r • a) = r • σ a := by
   ext x
@@ -372,14 +381,8 @@ theorem nonzero_mul_comm (a b : A) : σ (a * b) \ {0} = σ (b * a) \ {0} := by
   exact ⟨unit_mem_mul_comm.mp k_mem, k_neq⟩
 
 protected theorem map_inv (a : Aˣ) : (σ (a : A))⁻¹ = σ (↑a⁻¹ : A) := by
-  refine Set.eq_of_subset_of_subset (fun k hk => ?_) fun k hk => ?_
-  · rw [Set.mem_inv] at hk
-    have : k ≠ 0 := by simpa only [inv_inv] using inv_ne_zero (ne_zero_of_mem_of_unit hk)
-    lift k to 𝕜ˣ using isUnit_iff_ne_zero.mpr this
-    rw [← Units.val_inv_eq_inv_val k] at hk
-    exact inv_mem_iff.mp hk
-  · lift k to 𝕜ˣ using isUnit_iff_ne_zero.mpr (ne_zero_of_mem_of_unit hk)
-    simpa only [Units.val_inv_eq_inv_val] using inv_mem_iff.mp hk
+  ext
+  simp
 
 end ScalarField
 

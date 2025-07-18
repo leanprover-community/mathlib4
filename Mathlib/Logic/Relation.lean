@@ -340,11 +340,7 @@ theorem trans_induction_on {P : ∀ {a b : α}, ReflTransGen r a b → Prop} {a 
   | tail hab hbc ih => exact ih₃ hab (single hbc) ih (ih₂ hbc)
 
 theorem cases_head (h : ReflTransGen r a b) : a = b ∨ ∃ c, r a c ∧ ReflTransGen r c b := by
-  induction h using Relation.ReflTransGen.head_induction_on
-  · left
-    rfl
-  · right
-    exact ⟨_, by assumption, by assumption⟩
+  induction h using Relation.ReflTransGen.head_induction_on <;> grind
 
 theorem cases_head_iff : ReflTransGen r a b ↔ a = b ∨ ∃ c, r a c ∧ ReflTransGen r c b := by
   use cases_head
@@ -482,7 +478,7 @@ theorem TransGen.lift {p : β → β → Prop} {a b : α} (f : α → β) (h : �
 theorem TransGen.lift' {p : β → β → Prop} {a b : α} (f : α → β)
     (h : ∀ a b, r a b → TransGen p (f a) (f b)) (hab : TransGen r a b) :
     TransGen p (f a) (f b) := by
-simpa [transGen_idem] using hab.lift f h
+  simpa [transGen_idem] using hab.lift f h
 
 theorem TransGen.closed {p : α → α → Prop} :
     (∀ a b, r a b → TransGen p a b) → TransGen r a b → TransGen p a b :=

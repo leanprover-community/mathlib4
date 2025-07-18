@@ -178,13 +178,11 @@ theorem ciSup_subsingleton [Subsingleton ι] (i : ι) (s : ι → α) : ⨆ i, s
 theorem ciInf_subsingleton [Subsingleton ι] (i : ι) (s : ι → α) : ⨅ i, s i = s i :=
   @ciInf_unique α ι _ ⟨⟨i⟩, fun j => Subsingleton.elim j i⟩ _
 
-@[simp]
-theorem ciSup_pos {p : Prop} {f : p → α} (hp : p) : ⨆ h : p, f h = f hp :=
-  ciSup_subsingleton hp f
+theorem ciSup_pos {p : Prop} {f : p → α} (hp : p) : ⨆ h : p, f h = f hp := by
+  simp [hp]
 
-@[simp]
-theorem ciInf_pos {p : Prop} {f : p → α} (hp : p) : ⨅ h : p, f h = f hp :=
-  ciSup_pos (α := αᵒᵈ) hp
+theorem ciInf_pos {p : Prop} {f : p → α} (hp : p) : ⨅ h : p, f h = f hp := by
+  simp [hp]
 
 lemma ciSup_neg {p : Prop} {f : p → α} (hp : ¬ p) :
     ⨆ (h : p), f h = sSup (∅ : Set α) := by
@@ -211,7 +209,7 @@ theorem cbiSup_eq_of_forall {p : ι → Prop} {f : Subtype p → α} (hp : ∀ i
   congr
   apply Subset.antisymm
   · rintro - ⟨i, rfl⟩
-    simp [hp i]
+    simp
   · rintro - ⟨i, rfl⟩
     simp
 
@@ -227,13 +225,12 @@ theorem ciSup_eq_of_forall_le_of_forall_lt_exists_gt [Nonempty ι] {f : ι → �
   csSup_eq_of_forall_le_of_forall_lt_exists_gt (range_nonempty f) (forall_mem_range.mpr h₁)
     fun w hw => exists_range_iff.mpr <| h₂ w hw
 
--- Porting note: in mathlib3 `by exact` is not needed
 /-- Introduction rule to prove that `b` is the infimum of `f`: it suffices to check that `b`
 is smaller than `f i` for all `i`, and that this is not the case of any `w>b`.
 See `iInf_eq_of_forall_ge_of_forall_gt_exists_lt` for a version in complete lattices. -/
 theorem ciInf_eq_of_forall_ge_of_forall_gt_exists_lt [Nonempty ι] {f : ι → α} (h₁ : ∀ i, b ≤ f i)
-    (h₂ : ∀ w, b < w → ∃ i, f i < w) : ⨅ i : ι, f i = b := by
-  exact ciSup_eq_of_forall_le_of_forall_lt_exists_gt (α := αᵒᵈ) (f := ‹_›) ‹_› ‹_›
+    (h₂ : ∀ w, b < w → ∃ i, f i < w) : ⨅ i : ι, f i = b :=
+  ciSup_eq_of_forall_le_of_forall_lt_exists_gt (α := αᵒᵈ) h₁ h₂
 
 /-- **Nested intervals lemma**: if `f` is a monotone sequence, `g` is an antitone sequence, and
 `f n ≤ g n` for all `n`, then `⨆ n, f n` belongs to all the intervals `[f n, g n]`. -/
@@ -342,7 +339,7 @@ lemma ciSup_image {α ι ι' : Type*} [ConditionallyCompleteLattice α] [Nonempt
     intro ⟨i, h⟩
     obtain ⟨t, ht⟩ : ∃ t : f '' s, g t = g (f (Subtype.mk i h)) := by
       have : f i ∈ f '' s := Set.mem_image_of_mem _ h
-      exact ⟨⟨f i, this⟩, by simp [this]⟩
+      exact ⟨⟨f i, this⟩, by simp⟩
     rw [← ht]
     refine le_ciSup_set ?_ t.prop
     simpa [bddAbove_def] using hf

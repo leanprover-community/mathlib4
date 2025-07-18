@@ -441,6 +441,24 @@ theorem comp_id (f : M₁ →SL[σ₁₂] M₂) : f.comp (id R₁ M₁) = f :=
 theorem id_comp (f : M₁ →SL[σ₁₂] M₂) : (id R₂ M₂).comp f = f :=
   ext fun _x => rfl
 
+section
+
+variable {R E F : Type*} [Semiring R]
+  [TopologicalSpace E] [AddCommMonoid E] [Module R E]
+  [TopologicalSpace F] [AddCommMonoid F] [Module R F]
+
+/-- `g ∘ f = id` as `ContinuousLinearMap`s implies `g ∘ f = id` as functions. -/
+lemma leftInverse_of_comp {f : E →L[R] F} {g : F →L[R] E}
+    (hinv : g.comp f = ContinuousLinearMap.id R E) : Function.LeftInverse g f := by
+  simpa [← Function.rightInverse_iff_comp] using congr(⇑$hinv)
+
+/-- `f ∘ g = id` as `ContinuousLinearMap`s implies `f ∘ g = id` as functions. -/
+lemma rightInverse_of_comp {f : E →L[R] F} {g : F →L[R] E}
+    (hinv : f.comp g = ContinuousLinearMap.id R F) : Function.RightInverse g f :=
+  leftInverse_of_comp hinv
+
+end
+
 @[simp]
 theorem comp_zero (g : M₂ →SL[σ₂₃] M₃) : g.comp (0 : M₁ →SL[σ₁₂] M₂) = 0 := by
   ext
@@ -678,7 +696,7 @@ theorem smulRight_comp [ContinuousMul R₁] {x : M₂} {c : R₁} :
     (smulRight (1 : R₁ →L[R₁] R₁) x).comp (smulRight (1 : R₁ →L[R₁] R₁) c) =
       smulRight (1 : R₁ →L[R₁] R₁) (c • x) := by
   ext
-  simp [mul_smul]
+  simp
 
 section ToSpanSingleton
 
@@ -708,6 +726,10 @@ theorem toSpanSingleton_smul (R) {M₁} [CommSemiring R] [AddCommMonoid M₁] [M
     [TopologicalSpace R] [TopologicalSpace M₁] [ContinuousSMul R M₁] (c : R) (x : M₁) :
     toSpanSingleton R (c • x) = c • toSpanSingleton R x :=
   toSpanSingleton_smul' R c x
+
+theorem one_smulRight_eq_toSpanSingleton (x : M₁) :
+    (1 : R₁ →L[R₁] R₁).smulRight x = toSpanSingleton R₁ x :=
+  rfl
 
 end ToSpanSingleton
 
@@ -1115,3 +1137,35 @@ theorem ContinuousLinearMap.closedComplemented_ker_of_rightInverse {R : Type*} [
     [AddCommGroup M₂] [Module R M] [Module R M₂] [IsTopologicalAddGroup M] (f₁ : M →L[R] M₂)
     (f₂ : M₂ →L[R] M) (h : Function.RightInverse f₂ f₁) : (ker f₁).ClosedComplemented :=
   ⟨f₁.projKerOfRightInverse f₂ h, f₁.projKerOfRightInverse_apply_idem f₂ h⟩
+
+namespace ContinuousLinearMap
+variable {R M : Type*} [Ring R] [TopologicalSpace M]
+  [AddCommGroup M] [Module R M] [IsTopologicalAddGroup M]
+
+omit [IsTopologicalAddGroup M] in
+/-- Idempotent operators are equal iff their range and kernels are. -/
+lemma IsIdempotentElem.ext_iff {p q : M →L[R] M}
+    (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) :
+    p = q ↔ range p = range q ∧ ker p = ker q := by
+  simpa using LinearMap.IsIdempotentElem.ext_iff
+    congr(LinearMapClass.linearMap $hp.eq)
+    congr(LinearMapClass.linearMap $hq.eq)
+
+alias ⟨_, IsIdempotentElem.ext⟩ := IsIdempotentElem.ext_iff
+
+theorem IsIdempotentElem.range_eq_ker
+    {p : M →L[R] M} (hp : IsIdempotentElem p) :
+    LinearMap.range p = LinearMap.ker (1 - p) :=
+  LinearMap.IsIdempotentElem.range_eq_ker congr(LinearMapClass.linearMap $hp.eq)
+
+theorem IsIdempotentElem.ker_eq_range
+    {p : M →L[R] M} (hp : IsIdempotentElem p) :
+    LinearMap.ker p = LinearMap.range (1 - p) :=
+  LinearMap.IsIdempotentElem.ker_eq_range congr(LinearMapClass.linearMap $hp.eq)
+
+open ContinuousLinearMap in
+theorem IsIdempotentElem.isClosed_range [T1Space M] {p : M →L[R] M}
+    (hp : IsIdempotentElem p) : IsClosed (LinearMap.range p : Set M) :=
+  hp.range_eq_ker ▸ isClosed_ker (1 - p)
+
+end ContinuousLinearMap

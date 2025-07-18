@@ -83,7 +83,7 @@ variable (M)
 /-- The subfield of fixed points by a monoid action. -/
 def subfield : Subfield F :=
   Subfield.copy (⨅ m : M, FixedBy.subfield F m) (fixedPoints M F)
-    (by ext z; simp [fixedPoints, FixedBy.subfield, iInf, Subfield.mem_sInf]; rfl)
+    (by ext z; simp [fixedPoints, FixedBy.subfield, iInf]; rfl)
 
 instance : IsInvariantSubfield M (FixedPoints.subfield M F) where
   smul_mem g x hx g' := by rw [hx, hx]
@@ -128,7 +128,6 @@ theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
     refine hs.2 (hla ▸ Submodule.sum_mem _ fun c hcs => ?_)
     change (⟨l c, this c hcs⟩ : FixedPoints.subfield G F) • c ∈ _
     exact Submodule.smul_mem _ _ <| Submodule.subset_span <| by simpa
-
   intro i his g
   refine
     eq_of_sub_eq_zero
@@ -149,7 +148,7 @@ theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
     · skip
     · ext x
       rw [toFun_apply, ← mul_inv_cancel_left g g', mul_smul, ← smul_mul', ← toFun_apply _ x]
-  show
+  change
     (∑ x ∈ s, g • (fun y => l y • MulAction.toFun G F y) x (g⁻¹ * g')) =
       ∑ x ∈ s, (fun y => l y • MulAction.toFun G F y) x g'
   rw [← smul_sum, ← sum_apply _ _ fun y => l y • toFun G F y, ←
@@ -307,6 +306,14 @@ noncomputable instance AlgEquiv.fintype (K : Type u) (V : Type v) [Field K] [Fie
 theorem finrank_algHom (K : Type u) (V : Type v) [Field K] [Field V] [Algebra K V]
     [FiniteDimensional K V] : Fintype.card (V →ₐ[K] V) ≤ finrank V (V →ₗ[K] V) :=
   (linearIndependent_toLinearMap K V V).fintype_card_le_finrank
+
+theorem AlgHom.card_le {F K : Type*} [Field F] [Field K] [Algebra F K] [FiniteDimensional F K] :
+    Fintype.card (K →ₐ[F] K) ≤ Module.finrank F K :=
+  Module.finrank_linearMap_self F K K ▸ finrank_algHom F K
+
+theorem AlgEquiv.card_le {F K : Type*} [Field F] [Field K] [Algebra F K] [FiniteDimensional F K] :
+    Fintype.card (K ≃ₐ[F] K) ≤ Module.finrank F K :=
+  Fintype.ofEquiv_card (algEquivEquivAlgHom F K).toEquiv.symm ▸ AlgHom.card_le
 
 namespace FixedPoints
 

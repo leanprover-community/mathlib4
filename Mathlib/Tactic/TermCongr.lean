@@ -104,7 +104,7 @@ We need to decouple these to support letting the proof's elaboration be deferred
 we know whether we want an iff, eq, or heq, while also allowing it to choose
 to elaborate as an iff, eq, or heq.
 Later, the congruence generator handles any discrepancies.
-See `Mathlib.Tactic.TermCongr.CongrResult`. -/
+See `Mathlib/Tactic/TermCongr/CongrResult.lean`. -/
 @[reducible, nolint unusedArguments]
 def cHole {α : Sort u} (val : α) {p : Prop} (_pf : p) : α := val
 
@@ -288,7 +288,7 @@ def CongrResult.eq (res : CongrResult) : MetaM Expr := do
   | some pf => pf .eq
   | none => mkEqRefl res.lhs
 
-/-- Returns the proof that `HEq lhs rhs`. Fails if the `CongrResult` is inapplicable.
+/-- Returns the proof that `lhs ≍ rhs`. Fails if the `CongrResult` is inapplicable.
 If `pf? = none`, this returns the `rfl` proof. -/
 def CongrResult.heq (res : CongrResult) : MetaM Expr := do
   match res.pf? with

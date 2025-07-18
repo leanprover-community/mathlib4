@@ -89,7 +89,7 @@ protected lemma Multipliable.tprod_subtype_le {κ γ : Type*} [CommGroup γ] [Pa
   apply Multipliable.tprod_le_tprod_of_inj _
     (Subtype.coe_injective)
     (by simp only [Subtype.range_coe_subtype, Set.setOf_mem_eq, h, implies_true])
-    (by simp only [le_refl, Subtype.forall, implies_true])
+    (by simp only [le_refl, implies_true])
     (by apply hf.subtype)
   apply hf
 
@@ -142,7 +142,7 @@ protected theorem Multipliable.le_tprod (hf : Multipliable f) (i : ι) (hb : ∀
 @[deprecated (since := "2025-04-12")] alias le_tsum := Summable.le_tsum
 @[to_additive existing, deprecated (since := "2025-04-12")] alias le_tprod := Multipliable.le_tprod
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 protected theorem Multipliable.tprod_le_tprod (h : ∀ i, f i ≤ g i) (hf : Multipliable f)
     (hg : Multipliable g) : ∏' i, f i ≤ ∏' i, g i :=
   hasProd_le h hf.hasProd hg.hasProd

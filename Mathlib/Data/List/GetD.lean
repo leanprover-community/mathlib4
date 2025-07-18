@@ -66,7 +66,7 @@ theorem getElem?_getD_replicate_default_eq (r n : ℕ) : (replicate r d)[n]?.get
 
 theorem getD_replicate {y i n} (h : i < n) :
     getD (replicate n x) i y = x := by
-  rw [getD_eq_getElem,  getElem_replicate]
+  rw [getD_eq_getElem, getElem_replicate]
   rwa [length_replicate]
 
 theorem getD_append (l l' : List α) (d : α) (n : ℕ) (h : n < l.length) :

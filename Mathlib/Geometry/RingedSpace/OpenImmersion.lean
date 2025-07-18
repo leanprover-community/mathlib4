@@ -125,8 +125,8 @@ noncomputable def isoRestrict : X ≅ Y.restrict H.base_open :=
 theorem isoRestrict_hom_ofRestrict : (isoRestrict f).hom ≫ Y.ofRestrict _ = f := by
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `NatTrans.ext`
   refine PresheafedSpace.Hom.ext _ _ rfl <| NatTrans.ext <| funext fun x => ?_
-  simp only [isoRestrict_hom_c_app, NatTrans.comp_app, eqToHom_refl,
-    ofRestrict_c_app, Category.assoc, whiskerRight_id']
+  simp only [eqToHom_refl,
+    Functor.whiskerRight_id']
   erw [Category.comp_id, comp_c_app, f.c.naturality_assoc, ← X.presheaf.map_comp]
   trans f.c.app x ≫ X.presheaf.map (𝟙 _)
   · congr 1
@@ -235,7 +235,7 @@ instance ofRestrict {X : TopCat} (Y : PresheafedSpace C) {f : X ⟶ Y.carrier}
     · -- Porting note: was `apply Subsingleton.helim; rw [this]`
       -- See https://github.com/leanprover/lean4/issues/2273
       congr
-      · simp only [unop_op]
+      · simp only
         congr
       apply Subsingleton.helim
       rw [this]
@@ -261,16 +261,12 @@ theorem to_iso [h' : Epi f.base] : IsIso f := by
       congr
       exact (Set.image_preimage_eq _ ((TopCat.epi_iff_surjective _).mp h')).symm
     convert H.c_iso (Opens.map f.base |>.obj <| unop U)
-
   have : IsIso f.c := NatIso.isIso_of_isIso_app _
-
   apply (config := { allowSynthFailures := true }) isIso_of_components
-  let t : X ≃ₜ Y := (Homeomorph.ofIsEmbedding _ H.base_open.isEmbedding).trans
+  let t : X ≃ₜ Y := H.base_open.isEmbedding.toHomeomorph.trans
     { toFun := Subtype.val
       invFun := fun x =>
-        ⟨x, by rw [Set.range_eq_univ.mpr ((TopCat.epi_iff_surjective _).mp h')]; trivial⟩
-      left_inv := fun ⟨_, _⟩ => rfl
-      right_inv := fun _ => rfl }
+        ⟨x, by rw [Set.range_eq_univ.mpr ((TopCat.epi_iff_surjective _).mp h')]; trivial⟩ }
   exact (TopCat.isoOfHomeo t).isIso_hom
 
 instance stalk_iso [HasColimits C] (x : X) : IsIso (f.stalkMap x) := by
@@ -295,8 +291,8 @@ def pullbackConeOfLeftFst :
             Y.presheaf.map
               (eqToHom
                 (by
-                  simp only [IsOpenMap.functor, Subtype.mk_eq_mk, unop_op, op_inj_iff, Opens.map,
-                    Subtype.coe_mk, Functor.op_obj]
+                  simp only [IsOpenMap.functor, op_inj_iff, Opens.map,
+                    Functor.op_obj]
                   apply LE.le.antisymm
                   · rintro _ ⟨_, h₁, h₂⟩
                     use (TopCat.pullbackIsoProdSubtype _ _).inv ⟨⟨_, _⟩, h₂⟩
@@ -332,7 +328,7 @@ theorem pullback_cone_of_left_condition : pullbackConeOfLeftFst f g ≫ f = Y.of
     -- Porting note: `NatTrans.comp_app` is not picked up by `dsimp`
     -- Perhaps see : https://github.com/leanprover-community/mathlib4/issues/5026
     rw [NatTrans.comp_app]
-    dsimp only [comp_c_app, unop_op, whiskerRight_app, pullbackConeOfLeftFst]
+    dsimp only [comp_c_app, unop_op, Functor.whiskerRight_app, pullbackConeOfLeftFst]
     -- simp only [ofRestrict_c_app, NatTrans.comp_app]
     simp only [app_invApp_assoc,
       eqToHom_app, Category.assoc, NatTrans.naturality_assoc]
@@ -365,7 +361,6 @@ def pullbackConeOfLeftLift : s.pt ⟶ (pullbackConeOfLeft f g).pt where
                 let s' : PullbackCone f.base g.base := PullbackCone.mk s.fst.base s.snd.base
                   -- Porting note: in mathlib3, this is just an underscore
                   (congr_arg Hom.base s.condition)
-
                 have : _ = s.snd.base := limit.lift_π s' WalkingCospan.right
                 conv_lhs =>
                   rw [← this]

@@ -50,13 +50,13 @@ instance [Inhabited J] : Inhabited (ConnectedComponents J) :=
   ⟨Quotient.mk'' default⟩
 
 /-- Every function from connected components of a category gives a functor to discrete category -/
-def ConnectedComponents.functorToDiscrete   (X : Type*)
+def ConnectedComponents.functorToDiscrete (X : Type*)
     (f : ConnectedComponents J → X) : J ⥤ Discrete X where
   obj Y := Discrete.mk (f (Quotient.mk (Zigzag.setoid _) Y))
   map g := Discrete.eqToHom (congrArg f (Quotient.sound (Zigzag.of_hom g)))
 
 /-- Every functor to a discrete category gives a function from connected components -/
-def ConnectedComponents.liftFunctor (J) [Category J] {X : Type*} (F :J ⥤ Discrete X) :
+def ConnectedComponents.liftFunctor (J) [Category J] {X : Type*} (F : J ⥤ Discrete X) :
     (ConnectedComponents J → X) :=
   Quotient.lift (fun c => (F.obj c).as)
     (fun _ _ h => eq_of_zigzag X (zigzag_obj_of_zigzag F h))
@@ -122,21 +122,16 @@ instance (j : ConnectedComponents J) : IsConnected j.Component := by
       apply Relation.ReflTransGen.head
     · apply Relation.ReflTransGen.refl
   -- Now lift the zigzag from `j₁` to `j₂` in `J` to the same thing in `j.Component`.
-  refine ⟨l.pmap f hf, ?_, ?_⟩
-  · refine @List.chain_pmap_of_chain _ _ _ _ _ f (fun x y _ _ h => ?_) _ _ hl₁ h₁₂ _
-    exact zag_of_zag_obj (ConnectedComponents.ι _) h
-  · have := List.getLast_pmap (f := f) (xs := j₁ :: l) (by simpa [h₁₂] using hf)
-      (List.cons_ne_nil _ _)
-    simp only [List.pmap_cons] at this
-    rw [this]
-    exact ObjectProperty.FullSubcategory.ext hl₂
+  refine ⟨l.pmap f hf, ?_, by grind⟩
+  refine @List.chain_pmap_of_chain _ _ _ _ _ f (fun x y _ _ h => ?_) _ _ hl₁ h₁₂ _
+  exact zag_of_zag_obj (ConnectedComponents.ι _) h
 
 /-- The disjoint union of `J`s connected components, written explicitly as a sigma-type with the
 category structure.
 This category is equivalent to `J`.
 -/
 abbrev Decomposed (J : Type u₁) [Category.{v₁} J] :=
-  Σj : ConnectedComponents J, j.Component
+  Σ j : ConnectedComponents J, j.Component
 
 -- This name may cause clashes further down the road, and so might need to be changed.
 /--
