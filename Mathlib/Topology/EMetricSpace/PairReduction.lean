@@ -294,26 +294,22 @@ lemma card_pairSet_le (ha : 1 < a) (hJ_card : #J ≤ a ^ n) :
     #(pairSet J a c) ≤ a * #J := by
   wlog hJ : J.Nonempty
   · simp [Finset.not_nonempty_iff_eq_empty.mp hJ]
-  apply le_trans (Nat.mono_cast Finset.card_biUnion_le)
-  rw [Nat.cast_sum]
-  apply le_trans (Finset.sum_le_sum (fun i _ ↦ card_pairSetSeq_le_logSizeRadius_mul hJ i ha))
-  apply le_trans
-  · apply Finset.sum_le_sum
-    exact fun i _ ↦ mul_le_mul_left' (pow_le_pow_right₀ (le_of_lt ha) (le_tsub_add (a := 1))) _
+  unfold pairSet
+  grw [Finset.card_biUnion_le, Nat.cast_sum,
+    Finset.sum_le_sum
+      (fun i _ ↦ card_pairSetSeq_le_logSizeRadius_mul hJ i ha),
+    Finset.sum_le_sum
+      (fun _ _ ↦ mul_le_mul_left' (pow_le_pow_right₀ (le_of_lt ha) (le_tsub_add)) _)]
   conv_lhs => enter [2]; ext _; rw [pow_add, pow_one, ← mul_assoc, mul_comm]
-  rw [← Finset.mul_sum]
-  apply mul_le_mul_left'
-  apply le_trans (Finset.sum_le_sum (fun i _ ↦ logSizeRadius_le_card_smallBall hJ i ha))
-  rw [← Nat.cast_sum]
-  gcongr
-  rw [← Finset.card_biUnion (fun _ _ _ _ hij ↦ disjoint_smallBall_logSizeBallSeq hJ hij)]
-  apply Finset.card_le_card
+  grw [← Finset.mul_sum, mul_le_mul_left']
+  grw [(Finset.sum_le_sum (fun i _ ↦ logSizeRadius_le_card_smallBall hJ i ha)), ← Nat.cast_sum,
+    Nat.cast_le,
+    ← Finset.card_biUnion (fun _ _ _ _ hij ↦ disjoint_smallBall_logSizeBallSeq hJ hij),
+    Finset.card_le_card]
+  unfold logSizeBallStruct.smallBall
   rw [Finset.biUnion_subset_iff_forall_subset]
   intro i _
-  unfold logSizeBallStruct.smallBall
-  apply subset_trans (Finset.filter_subset _ _)
-  apply subset_trans <| (antitone_logSizeBallSeq_add_one_subset hJ) (zero_le i)
-  simp [finset_logSizeBallSeq_zero]
+  grw [Finset.filter_subset _ _, finset_logSizeBallSeq_subset_logSizeBallSeq_zero]
 
 lemma edist_le_of_mem_pairSet (ha : 1 < a) (hJ_card : #J ≤ a ^ n) {s t : T}
     (h : (s, t) ∈ pairSet J a c) : edist s t ≤ n * c := by
