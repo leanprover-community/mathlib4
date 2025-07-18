@@ -274,98 +274,6 @@ instance : ValuativeRel (WithPreorder R) where
 instance : ValuativePreorder (WithPreorder R) where
   rel_iff_le _ _ := Iff.rfl
 
-section Localization
-
-variable {S : Submonoid R} (hS : S ≤ (posSubmonoid R))
-
--- Note: to extend this to any `R`-algebra `B` satisfying `IsLocalization B S`, we
--- need a version of `Localization.liftOn₂` to lift the relation.
-@[reducible] noncomputable def localization : ValuativeRel (Localization S) where
-  rel x y := Localization.liftOn₂ x y (fun a s b t ↦ t * a ≤ᵥ s * b) <| by
-    simp_rw [Localization.r_iff_exists, eq_iff_iff]
-    rintro a₁ a₂ s₁ s₂ b₁ b₂ t₁ t₂ ⟨u, hu⟩ ⟨v, hv⟩
-    conv_lhs => rw [← rel_mul_cancel_iff (hS (u * v * s₂ * t₂).2)]
-    conv_rhs => rw [← rel_mul_cancel_iff (hS (u * v * s₁ * t₁).2)]
-    calc  t₁ * a₁ * (u * v * s₂ * t₂) ≤ᵥ s₁ * b₁ * (u * v * s₂ * t₂)
-      _ ↔ (u * (s₂ * a₁)) * v * t₁ * t₂ ≤ᵥ (v * (t₂ * b₁)) * u * s₁ * s₂ := by ring_nf
-      _ ↔ (u * (s₁ * a₂)) * v * t₁ * t₂ ≤ᵥ (v * (t₁ * b₂)) * u * s₁ * s₂ := by rw [hu, hv]
-      _ ↔ t₂ * a₂ * (u * v * s₁ * t₁) ≤ᵥ s₂ * b₂ * (u * v * s₁ * t₁) := by ring_nf
-  rel_total x y := Localization.induction_on₂ x y fun ⟨a, s⟩ ⟨b, t⟩ ↦ by
-    simpa only [Localization.liftOn₂_mk] using rel_total _ _
-  rel_trans {x y z} := Localization.induction_on₃ x y z fun ⟨a, s⟩ ⟨b, t⟩ ⟨c, u⟩ ↦ by
-    simp_rw [Localization.liftOn₂_mk]
-    refine fun h1 h2 ↦ rel_mul_cancel (hS t.2) ?_
-    calc  s * c * t
-      _ = s * (t * c) := by ring
-      _ ≤ᵥ s * (u * b) := rel_mul_left (s : R) h1
-      _ = u * (s * b) := by ring
-      _ ≤ᵥ u * (t * a) := rel_mul_left (u : R) h2
-      _ = u * a * t := by ring
-  rel_add {x y z} := Localization.induction_on₃ x y z fun ⟨a, s⟩ ⟨b, t⟩ ⟨c, u⟩ ↦ by
-    simp_rw [Localization.add_mk, Localization.liftOn₂_mk]
-    intro h1 h2
-    calc  u * (s * b + t * a)
-      _ = s * (u * b) + t * (u * a) := by ring
-      _ ≤ᵥ s * t * c := by
-        refine rel_add ?_ ?_
-        · convert rel_mul_left (s : R) h2 using 1; ring
-        · convert rel_mul_left (t : R) h1 using 1; ring
-  rel_mul_right {x y z} := Localization.induction_on₃ x y z fun ⟨a, s⟩ ⟨b, t⟩ ⟨c, u⟩ ↦ by
-    simp_rw [Localization.mk_mul, Localization.liftOn₂_mk]
-    intro h
-    calc  t * u * (a * c)
-      _ = (u * c) * (t * a) := by ring
-      _ ≤ᵥ (u * c) * (s * b) := rel_mul_left (u * c) h
-      _ = s * u * (b * c) := by ring
-  rel_mul_cancel {x y z} := Localization.induction_on₃ x y z fun ⟨a, s⟩ ⟨b, t⟩ ⟨c, u⟩ ↦ by
-    simp_rw [← Localization.mk_zero 1, Localization.mk_mul, Localization.liftOn₂_mk,
-      Submonoid.coe_one, one_mul, mul_zero]
-    refine fun hc h ↦ rel_mul_cancel (hS u.2) <| rel_mul_cancel hc ?_
-    calc  t * a * u * c
-      _ = (t * u) * (a * c) := by ring
-      _ ≤ᵥ (s * u) * (b * c) := h
-      _ = s * b * u * c := by ring
-  not_rel_one_zero := by
-    rw [← Localization.mk_zero 1, ← Localization.mk_one, Localization.liftOn₂_mk,
-      mul_one, mul_zero]
-    exact not_rel_one_zero
-
-lemma rel_localization {a : R} {s : S} {b : R} {t : S} :
-    letI : ValuativeRel (Localization S) := .localization hS
-    Localization.mk a s ≤ᵥ Localization.mk b t ↔ t * a ≤ᵥ s * b :=
-  Iff.rfl
-
-lemma rel_iff_localization {x y : R} :
-    letI : ValuativeRel (Localization S) := .localization hS
-    x ≤ᵥ y ↔ algebraMap R (Localization S) x ≤ᵥ algebraMap R (Localization S) y := by
-  simp [← Localization.mk_one_eq_algebraMap, rel_localization]
-
-lemma supp_localization :
-    letI : ValuativeRel (Localization S) := .localization hS
-    supp (Localization S) = Ideal.map (algebraMap R (Localization S)) (supp R) := by
-  let _ : ValuativeRel (Localization S) := .localization hS
-  refine le_antisymm ?_ ?_
-  · intro x
-    refine Localization.induction_on x fun ⟨a, s⟩ has ↦ ?_
-    simp_rw [supp_def, ← Localization.mk_zero 1, rel_localization hS, mul_zero,
-      Submonoid.coe_one, one_mul] at has
-    convert Ideal.mul_mem_right (Localization.mk 1 s) _ <|
-      (supp R).mem_map_of_mem (algebraMap R (Localization S)) has
-    simp [← Localization.mk_one_eq_algebraMap, Localization.mk_mul]
-  · refine Ideal.map_le_iff_le_comap.mpr fun x ↦ ?_
-    simpa using (rel_iff_localization (x := x) (y := 0) hS).mp
-
-instance : ValuativeRel (Localization (posSubmonoid R)) := localization le_rfl
-
-instance : Ideal.IsMaximal (supp (Localization (posSubmonoid R))) := by
-  rw [supp_localization le_rfl, Localization.AtPrime.map_eq_maximalIdeal]
-  infer_instance
-
-instance : ValuativeExtension R (Localization (posSubmonoid R)) :=
-  ⟨fun _ _ ↦ rel_iff_localization le_rfl |>.symm⟩
-
-end Localization
-
 section Equiv
 
 def equiv (x y : R) : Prop := x ≤ᵥ y ∧ y ≤ᵥ x
@@ -393,11 +301,11 @@ lemma equiv_zero {x : R} : x ∼ᵥ 0 ↔ x ≤ᵥ 0 := ⟨fun H ↦ H.1, fun H 
 
 lemma not_equiv_one_zero : ¬ ((1 : R) ∼ᵥ 0) := fun H ↦ not_rel_one_zero H.1
 
-lemma equiv_localization {S : Submonoid R} (hS : S ≤ (posSubmonoid R))
-    {a : R} {s : S} {b : R} {t : S} :
-    letI : ValuativeRel (Localization S) := .localization hS
-    Localization.mk a s ∼ᵥ Localization.mk b t ↔ t * a ∼ᵥ s * b :=
-  Iff.rfl
+lemma _root_.ValuativeExtension.equiv_iff_equiv {A B : Type*} [CommRing A] [CommRing B]
+    [Algebra A B] [ValuativeRel A] [ValuativeRel B] [ValuativeExtension A B] {a b : A} :
+    algebraMap A B a ∼ᵥ algebraMap A B b ↔ a ∼ᵥ b := by
+  rw [equiv, equiv, ValuativeExtension.rel_iff_rel, ValuativeExtension.rel_iff_rel]
+variable (A B) in
 
 variable (R) in
 def equivCon : Con R where
@@ -490,6 +398,103 @@ end ValueQuotient
 end LocalRing
 
 end Equiv
+
+section Localization
+
+variable {S : Submonoid R} (hS : S ≤ (posSubmonoid R))
+
+-- Note: to extend this to any `R`-algebra `B` satisfying `IsLocalization B S`, we
+-- need a version of `Localization.liftOn₂` to lift the relation.
+@[reducible] noncomputable def localization : ValuativeRel (Localization S) where
+  rel x y := Localization.liftOn₂ x y (fun a s b t ↦ t * a ≤ᵥ s * b) <| by
+    simp_rw [Localization.r_iff_exists, eq_iff_iff]
+    rintro a₁ a₂ s₁ s₂ b₁ b₂ t₁ t₂ ⟨u, hu⟩ ⟨v, hv⟩
+    conv_lhs => rw [← rel_mul_cancel_iff (hS (u * v * s₂ * t₂).2)]
+    conv_rhs => rw [← rel_mul_cancel_iff (hS (u * v * s₁ * t₁).2)]
+    calc  t₁ * a₁ * (u * v * s₂ * t₂) ≤ᵥ s₁ * b₁ * (u * v * s₂ * t₂)
+      _ ↔ (u * (s₂ * a₁)) * v * t₁ * t₂ ≤ᵥ (v * (t₂ * b₁)) * u * s₁ * s₂ := by ring_nf
+      _ ↔ (u * (s₁ * a₂)) * v * t₁ * t₂ ≤ᵥ (v * (t₁ * b₂)) * u * s₁ * s₂ := by rw [hu, hv]
+      _ ↔ t₂ * a₂ * (u * v * s₁ * t₁) ≤ᵥ s₂ * b₂ * (u * v * s₁ * t₁) := by ring_nf
+  rel_total x y := Localization.induction_on₂ x y fun ⟨a, s⟩ ⟨b, t⟩ ↦ by
+    simpa only [Localization.liftOn₂_mk] using rel_total _ _
+  rel_trans {x y z} := Localization.induction_on₃ x y z fun ⟨a, s⟩ ⟨b, t⟩ ⟨c, u⟩ ↦ by
+    simp_rw [Localization.liftOn₂_mk]
+    refine fun h1 h2 ↦ rel_mul_cancel (hS t.2) ?_
+    calc  s * c * t
+      _ = s * (t * c) := by ring
+      _ ≤ᵥ s * (u * b) := rel_mul_left (s : R) h1
+      _ = u * (s * b) := by ring
+      _ ≤ᵥ u * (t * a) := rel_mul_left (u : R) h2
+      _ = u * a * t := by ring
+  rel_add {x y z} := Localization.induction_on₃ x y z fun ⟨a, s⟩ ⟨b, t⟩ ⟨c, u⟩ ↦ by
+    simp_rw [Localization.add_mk, Localization.liftOn₂_mk]
+    intro h1 h2
+    calc  u * (s * b + t * a)
+      _ = s * (u * b) + t * (u * a) := by ring
+      _ ≤ᵥ s * t * c := by
+        refine rel_add ?_ ?_
+        · convert rel_mul_left (s : R) h2 using 1; ring
+        · convert rel_mul_left (t : R) h1 using 1; ring
+  rel_mul_right {x y z} := Localization.induction_on₃ x y z fun ⟨a, s⟩ ⟨b, t⟩ ⟨c, u⟩ ↦ by
+    simp_rw [Localization.mk_mul, Localization.liftOn₂_mk]
+    intro h
+    calc  t * u * (a * c)
+      _ = (u * c) * (t * a) := by ring
+      _ ≤ᵥ (u * c) * (s * b) := rel_mul_left (u * c) h
+      _ = s * u * (b * c) := by ring
+  rel_mul_cancel {x y z} := Localization.induction_on₃ x y z fun ⟨a, s⟩ ⟨b, t⟩ ⟨c, u⟩ ↦ by
+    simp_rw [← Localization.mk_zero 1, Localization.mk_mul, Localization.liftOn₂_mk,
+      Submonoid.coe_one, one_mul, mul_zero]
+    refine fun hc h ↦ rel_mul_cancel (hS u.2) <| rel_mul_cancel hc ?_
+    calc  t * a * u * c
+      _ = (t * u) * (a * c) := by ring
+      _ ≤ᵥ (s * u) * (b * c) := h
+      _ = s * b * u * c := by ring
+  not_rel_one_zero := by
+    rw [← Localization.mk_zero 1, ← Localization.mk_one, Localization.liftOn₂_mk,
+      mul_one, mul_zero]
+    exact not_rel_one_zero
+
+lemma rel_localization {a : R} {s : S} {b : R} {t : S} :
+    letI : ValuativeRel (Localization S) := .localization hS
+    Localization.mk a s ≤ᵥ Localization.mk b t ↔ t * a ≤ᵥ s * b :=
+  Iff.rfl
+
+lemma equiv_localization {a : R} {s : S} {b : R} {t : S} :
+    letI : ValuativeRel (Localization S) := .localization hS
+    Localization.mk a s ∼ᵥ Localization.mk b t ↔ t * a ∼ᵥ s * b :=
+  Iff.rfl
+
+lemma rel_iff_localization {x y : R} :
+    letI : ValuativeRel (Localization S) := .localization hS
+    x ≤ᵥ y ↔ algebraMap R (Localization S) x ≤ᵥ algebraMap R (Localization S) y := by
+  simp [← Localization.mk_one_eq_algebraMap, rel_localization]
+
+lemma supp_localization :
+    letI : ValuativeRel (Localization S) := .localization hS
+    supp (Localization S) = Ideal.map (algebraMap R (Localization S)) (supp R) := by
+  let _ : ValuativeRel (Localization S) := .localization hS
+  refine le_antisymm ?_ ?_
+  · intro x
+    refine Localization.induction_on x fun ⟨a, s⟩ has ↦ ?_
+    simp_rw [supp_def, ← Localization.mk_zero 1, rel_localization hS, mul_zero,
+      Submonoid.coe_one, one_mul] at has
+    convert Ideal.mul_mem_right (Localization.mk 1 s) _ <|
+      (supp R).mem_map_of_mem (algebraMap R (Localization S)) has
+    simp [← Localization.mk_one_eq_algebraMap, Localization.mk_mul]
+  · refine Ideal.map_le_iff_le_comap.mpr fun x ↦ ?_
+    simpa using (rel_iff_localization (x := x) (y := 0) hS).mp
+
+instance : ValuativeRel (Localization (posSubmonoid R)) := localization le_rfl
+
+instance : Ideal.IsMaximal (supp (Localization (posSubmonoid R))) := by
+  rw [supp_localization le_rfl, Localization.AtPrime.map_eq_maximalIdeal]
+  infer_instance
+
+instance : ValuativeExtension R (Localization (posSubmonoid R)) :=
+  ⟨fun _ _ ↦ rel_iff_localization le_rfl |>.symm⟩
+
+end Localization
 
 section ValueGroupWithZero
 
@@ -741,13 +746,8 @@ variable {A B : Type*} [CommRing A] [CommRing B]
   [ValuativeExtension A B]
 
 variable (A B) in
-lemma equiv_iff_equiv {a b : A} :
-    algebraMap A B a ∼ᵥ algebraMap A B b ↔ a ∼ᵥ b := by
-  rw [equiv, equiv, rel_iff_rel, rel_iff_rel]
-variable (A B) in
-
 /-- The morphism of `posSubmonoid`s associated to an algebra map.
-  This is used in constructing `ValuativeExtension.mapValueGroupWithZero`. -/
+This is used in constructing `ValuativeExtension.mapValueGroupWithZero`. -/
 @[simps]
 def mapPosSubmonoid : posSubmonoid A →* posSubmonoid B where
   toFun := fun ⟨a,ha⟩ => ⟨algebraMap _ _ a,
