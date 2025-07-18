@@ -393,14 +393,10 @@ end PartialOrder
 The proof of this will soon be simplified to `IsStarProjection.nonneg` when we
 have `StarOrderedRing (E →ₗ[𝕜] E)`. -/
 @[aesop 10% apply, grind →]
-theorem IsPositive.of_isStarProjection {T : E →ₗ[𝕜] E} (hT : IsStarProjection T) :
-    T.IsPositive := by
+theorem IsPositive.of_isStarProjection {T : E →ₗ[𝕜] E} (hT : IsStarProjection T) : T.IsPositive :=
   have := FiniteDimensional.complete 𝕜 E
-  apply (T.isPositive_toContinuousLinearMap_iff).mp
-    (ContinuousLinearMap.IsPositive.of_isStarProjection
-    ⟨?_, (isSelfAdjoint_toContinuousLinearMap_iff _).mpr hT.isSelfAdjoint⟩)
-  simp [IsIdempotentElem, ContinuousLinearMap.ext_iff, ← Module.End.mul_apply,
-    hT.isIdempotentElem.eq]
+  (T.isPositive_toContinuousLinearMap_iff).mp (ContinuousLinearMap.IsPositive.of_isStarProjection
+    (T.isStarProjection_toContinuousLinearMap_iff.mpr hT))
 
 /-- An idempotent operator is positive if and only if it is self-adjoint. -/
 @[grind →]

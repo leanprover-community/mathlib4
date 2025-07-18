@@ -563,6 +563,13 @@ theorem IsStarProjection.ext_iff {S T : E →ₗ[𝕜] E}
 
 alias ⟨_, IsStarProjection.ext⟩ := IsStarProjection.ext_iff
 
+theorem isStarProjection_toContinuousLinearMap_iff {T : E →ₗ[𝕜] E} :
+    have := FiniteDimensional.complete 𝕜 E
+    IsStarProjection (toContinuousLinearMap T) ↔ IsStarProjection T := by
+  intro
+  simp [isStarProjection_iff, isSelfAdjoint_toContinuousLinearMap_iff, IsIdempotentElem,
+    ContinuousLinearMap.ext_iff, LinearMap.ext_iff, ← Module.End.mul_apply]
+
 end LinearMap
 
 section Unitary
