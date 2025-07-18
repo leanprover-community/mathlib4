@@ -183,7 +183,7 @@ theorem nu_lt_one_of_dvd_prodPrimes {d : ℕ} (hdP : d ∣ P) (hd_ne_one : d ≠
 def multSum (d : ℕ) : ℝ := ∑ n ∈ A, if d ∣ n then a n else 0
 
 @[inherit_doc multSum]
-scoped [SelbergSieve.Notation] notation3 "𝒜" => multSum
+scoped[SelbergSieve.Notation] notation3 "𝒜" => multSum
 
 /-- The remainder term in the approximation A_d = ν (d) X + R_d. This is the degree to which `nu`
   fails to approximate the proportion of the weight that is a multiple of `d`. -/
@@ -191,7 +191,7 @@ scoped [SelbergSieve.Notation] notation3 "𝒜" => multSum
 def rem (d : ℕ) : ℝ := 𝒜 d - ν d * X
 
 @[inherit_doc rem]
-scoped [SelbergSieve.Notation] notation3 "R" => rem
+scoped[SelbergSieve.Notation] notation3 "R" => rem
 
 /-- The weight of all the elements that are not a multiple of any of our finite set of primes. -/
 def siftedSum : ℝ := ∑ d ∈ A, if Coprime P d then a d else 0
@@ -215,7 +215,7 @@ omit s in
 /-- A sequence of coefficients $\mu^{+}$ is upper Moebius if $\mu * \zeta ≤ \mu^{+} * \zeta$. These
   coefficients then yield an upper bound on the sifted sum. -/
 def IsUpperMoebius (muPlus : ℕ → ℝ) : Prop :=
-  ∀ n : ℕ, (if n=1 then 1 else 0) ≤ ∑ d ∈ n.divisors, muPlus d
+  ∀ n : ℕ, (if n = 1 then 1 else 0) ≤ ∑ d ∈ n.divisors, muPlus d
 
 theorem siftedSum_le_sum_of_upperMoebius (muPlus : ℕ → ℝ) (h : IsUpperMoebius muPlus) :
     siftedSum ≤ ∑ d ∈ divisors P, muPlus d * multSum d := by
@@ -243,13 +243,13 @@ theorem siftedSum_le_mainSum_errSum_of_upperMoebius (muPlus : ℕ → ℝ) (h : 
   siftedSum ≤ ∑ d ∈ divisors P, muPlus d * multSum d :=
     siftedSum_le_sum_of_upperMoebius _ h
   _ = X * mainSum muPlus + ∑ d ∈ divisors P, muPlus d * R d := by
-    rw [mainSum, mul_sum, ←sum_add_distrib]
+    rw [mainSum, mul_sum, ← sum_add_distrib]
     congr with d
     dsimp only [rem]; ring
   _ ≤ X * mainSum muPlus + errSum muPlus := by
     rw [errSum]
     gcongr _ + ∑ d ∈ _, ?_ with d
-    rw [←abs_mul]
+    rw [← abs_mul]
     exact le_abs_self (muPlus d * R d)
 
 end SelbergSieve

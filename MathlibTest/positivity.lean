@@ -373,7 +373,7 @@ example
 example (n : ℕ) : 0 < n.succ := by positivity
 example (n : ℕ+) : 0 < (↑n : ℕ) := by positivity
 example (n : ℕ) : 0 < n ! := by positivity
-example (n k : ℕ) : 0 < (n+1).ascFactorial k := by positivity
+example (n k : ℕ) : 0 < (n + 1).ascFactorial k := by positivity
 
 example {α : Type*} (s : Finset α) (hs : s.Nonempty) : 0 < #s := by positivity
 example {α : Type*} [Fintype α] [Nonempty α] : 0 < Fintype.card α := by positivity

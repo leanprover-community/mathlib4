@@ -146,13 +146,15 @@ protected abbrev recOnSubsingleton {motive : Sym2 α → Sort*}
     (z : Sym2 α) (f : (p : α × α) → motive (Sym2.mk p)) : motive z :=
   Quot.recOnSubsingleton z f
 
+theorem mk_surjective : Function.Surjective (@Sym2.mk α) := Quot.mk_surjective
+
 protected theorem «exists» {α : Sort _} {f : Sym2 α → Prop} :
     (∃ x : Sym2 α, f x) ↔ ∃ x y, f s(x, y) :=
-  Quot.mk_surjective.exists.trans Prod.exists
+  mk_surjective.exists.trans Prod.exists
 
 protected theorem «forall» {α : Sort _} {f : Sym2 α → Prop} :
     (∀ x : Sym2 α, f x) ↔ ∀ x y, f s(x, y) :=
-  Quot.mk_surjective.forall.trans Prod.forall
+  mk_surjective.forall.trans Prod.forall
 
 theorem eq_swap {a b : α} : s(a, b) = s(b, a) := Quot.sound (Rel.swap _ _)
 
@@ -243,6 +245,8 @@ theorem map_comp {g : β → γ} {f : α → β} : Sym2.map (g ∘ f) = Sym2.map
 
 theorem map_map {g : β → γ} {f : α → β} (x : Sym2 α) : map g (map f x) = map (g ∘ f) x := by
   induction x; aesop
+
+theorem map_mk (f : α → β) (x : α × α) : map f (Sym2.mk x) = Sym2.mk (Prod.map f f x) := rfl
 
 @[simp]
 theorem map_pair_eq (f : α → β) (x y : α) : map f s(x, y) = s(f x, f y) :=
@@ -342,6 +346,8 @@ theorem ball {p : α → Prop} {a b : α} : (∀ c ∈ s(a, b), p c) ↔ p a ∧
   · exact h.1
   · exact h.2
 
+@[simp] lemma coe_mk {x y : α} : (s(x, y) : Set α) = {x, y} := by ext z; simp
+
 /-- Given an element of the unordered pair, give the other element using `Classical.choose`.
 See also `Mem.other'` for the computable version.
 -/
@@ -432,7 +438,7 @@ lemma pmap_eq_map {P : α → Prop} (f : α → β) (z : Sym2 α) (h : ∀ a ∈
     z.pmap (fun a _ => f a) h = z.map f := by
   cases z; rfl
 
-lemma map_pmap {Q : β → Prop} (f : α → β) (g : ∀ b, Q b → γ) (z : Sym2 α) (h : ∀ b ∈ z.map f, Q b):
+lemma map_pmap {Q : β → Prop} (f : α → β) (g : ∀ b, Q b → γ) (z : Sym2 α) (h : ∀ b ∈ z.map f, Q b) :
     (z.map f).pmap g h =
     z.pmap (fun a ha => g (f a) (h (f a) (mem_map.mpr ⟨a, ha, rfl⟩))) (fun _ ha => ha) := by
   cases z; rfl
@@ -795,3 +801,49 @@ lemma mul_mk {M} [CommMagma M] (xy : M × M) :
     mul (.mk xy) = xy.1 * xy.2 := rfl
 
 end Sym2
+
+namespace Set
+
+open Sym2
+
+variable {s : Set α}
+
+/--
+For a set `s : Set α`, `s.sym2` is the set of all unordered pairs of elements from `s`.
+-/
+def sym2 (s : Set α) : Set (Sym2 α) := fromRel (r := fun x y ↦ x ∈ s ∧ y ∈ s) (fun _ _ => .symm)
+
+@[simp] lemma mk'_mem_sym2_iff {xy : α × α} : Sym2.mk xy ∈ s.sym2 ↔ xy ∈ s ×ˢ s := Iff.rfl
+lemma mk_mem_sym2_iff {x y : α} : s(x, y) ∈ s.sym2 ↔ x ∈ s ∧ y ∈ s := Iff.rfl
+
+lemma mem_sym2_iff_subset {z : Sym2 α} : z ∈ s.sym2 ↔ (z : Set α) ⊆ s := by
+  induction z using Sym2.inductionOn
+  simp [pair_subset_iff]
+
+lemma sym2_eq_mk_image : s.sym2 = Sym2.mk '' s ×ˢ s := by ext ⟨x, y⟩; aesop
+
+@[simp] lemma mk_preimage_sym2 : Sym2.mk ⁻¹' s.sym2 = s ×ˢ s := rfl
+
+@[simp] lemma sym2_empty : (∅ : Set α).sym2 = ∅ := by ext ⟨x, y⟩; simp
+@[simp] lemma sym2_univ : (Set.univ : Set α).sym2 = Set.univ := by ext ⟨x, y⟩; simp
+
+@[simp] lemma sym2_singleton (a : α) : ({a} : Set α).sym2 = {s(a, a)} := by ext ⟨x, y⟩; simp
+lemma sym2_insert (a : α) (s : Set α) :
+    (insert a s).sym2 = (fun b ↦ s(a, b)) '' insert a s ∪ s.sym2 := by
+  ext ⟨x, y⟩; aesop
+
+lemma sym2_preimage {f : α → β} {s : Set β} : (f ⁻¹' s).sym2 = Sym2.map f ⁻¹' s.sym2 := by
+  ext ⟨x, y⟩
+  simp
+
+lemma sym2_image {f : α → β} {s : Set α} : (f '' s).sym2 = Sym2.map f '' s.sym2 :=
+  preimage_injective.mpr Sym2.mk_surjective <| by
+    simp_rw [sym2_eq_mk_image, prod_image_image_eq, image_image, Sym2.map_mk, Prod.map]
+
+lemma sym2_inter (s t : Set α) : (s ∩ t).sym2 = s.sym2 ∩ t.sym2 :=
+  preimage_injective.mpr Sym2.mk_surjective <| Set.prod_inter_prod.symm
+
+lemma sym2_iInter {ι : Type*} (f : ι → Set α) : (⋂ i, f i).sym2 = ⋂ i, (f i).sym2 := by
+  ext ⟨x, y⟩; simp [forall_and]
+
+end Set
