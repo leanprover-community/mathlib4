@@ -43,8 +43,7 @@ theorem le_prod_nonempty_of_submultiplicative_on_pred (f : M → N) (p : M → P
     (Multiset.le_prod_nonempty_of_submultiplicative_on_pred f p h_mul hp_mul _ ?_ ?_) ?_
   · simp [hs_nonempty.ne_empty]
   · exact Multiset.forall_mem_map_iff.mpr hs
-  rw [Multiset.map_map]
-  rfl
+  simp
 
 /-- Let `{x | p x}` be an additive subsemigroup of an additive commutative monoid `M`. Let
 `f : M → N` be a map subadditive on `{x | p x}`, i.e., `p x → p y → f (x + y) ≤ f x + f y`. Let
@@ -87,10 +86,8 @@ add_decl_doc le_sum_of_subadditive_on_pred
 @[to_additive le_sum_of_subadditive]
 theorem le_prod_of_submultiplicative (f : M → N) (h_one : f 1 = 1)
     (h_mul : ∀ x y, f (x * y) ≤ f x * f y) (s : Finset ι) (g : ι → M) :
-    f (∏ i ∈ s, g i) ≤ ∏ i ∈ s, f (g i) := by
-  refine le_trans (Multiset.le_prod_of_submultiplicative f h_one h_mul _) ?_
-  rw [Multiset.map_map]
-  rfl
+    f (∏ i ∈ s, g i) ≤ ∏ i ∈ s, f (g i) :=
+  le_trans (Multiset.le_prod_of_submultiplicative f h_one h_mul _) (by simp)
 
 /-- If `f : M → N` is a subadditive function, `f (x + y) ≤ f x + f y`, `f 0 = 0`, and `g i`,
 `i ∈ s`, is a finite family of elements of `M`, then `f (∑ i ∈ s, g i) ≤ ∑ i ∈ s, f (g i)`. -/
@@ -153,10 +150,22 @@ theorem prod_eq_one_iff_of_one_le' :
     rw [prod_insert ha, mul_eq_one_iff_of_one_le (H _ <| mem_insert_self _ _) (one_le_prod' this),
       forall_mem_insert, ih this]
 
+@[to_additive sum_pos_iff_of_nonneg]
+lemma one_lt_prod_iff_of_one_le (hf : ∀ x ∈ s, 1 ≤ f x) :
+    1 < ∏ x ∈ s, f x ↔ ∃ x ∈ s, 1 < f x := by
+  have hsum : 1 ≤ ∏ x ∈ s, f x := one_le_prod' hf
+  rw [hsum.lt_iff_ne', Ne, prod_eq_one_iff_of_one_le' hf, not_forall]
+  simp +contextual [← exists_prop, - exists_const_iff, hf _ _ |>.lt_iff_ne']
+
 @[to_additive sum_eq_zero_iff_of_nonpos]
 theorem prod_eq_one_iff_of_le_one' :
     (∀ i ∈ s, f i ≤ 1) → ((∏ i ∈ s, f i) = 1 ↔ ∀ i ∈ s, f i = 1) :=
   prod_eq_one_iff_of_one_le' (N := Nᵒᵈ)
+
+@[to_additive]
+lemma prod_lt_one_iff_of_le_one (hf : ∀ x ∈ s, f x ≤ 1) :
+    ∏ x ∈ s, f x < 1 ↔ ∃ x ∈ s, f x < 1 :=
+  one_lt_prod_iff_of_one_le (N := Nᵒᵈ) hf
 
 @[to_additive single_le_sum]
 theorem single_le_prod' (hf : ∀ i ∈ s, 1 ≤ f i) {a} (h : a ∈ s) : f a ≤ ∏ x ∈ s, f x :=
@@ -386,6 +395,10 @@ theorem prod_le_prod_of_ne_one' (h : ∀ x ∈ s, f x ≠ 1 → x ∈ t) :
       mul_le_of_le_one_of_le
         (prod_le_one' <| by simp only [mem_filter, and_imp]; exact fun _ _ ↦ le_of_eq)
         (prod_le_prod_of_subset' <| by simpa only [subset_iff, mem_filter, and_imp])
+
+@[to_additive sum_pos_iff]
+lemma one_lt_prod_iff : 1 < ∏ x ∈ s, f x ↔ ∃ x ∈ s, 1 < f x :=
+  Finset.one_lt_prod_iff_of_one_le <| fun _ _ => one_le _
 
 end CanonicallyOrderedMul
 
