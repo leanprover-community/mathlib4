@@ -46,9 +46,13 @@ private noncomputable def signedDistLinear (v : V) : V →ₗ[ℝ] P →ᴬ[ℝ]
 private lemma signedDistLinear_apply (v w : V) :
     signedDistLinear v w = .const ℝ P ⟪-(‖v‖⁻¹ • v), w⟫ := rfl
 
-/-- The signed distance between two points `p` and `q`, in the direction of a reference vector `v`.
+/--
+The signed distance between two points `p` and `q`, in the direction of a reference vector `v`.
 It is the size of `q - p` in the direction of `v`.
-In the degenerate case `v = 0`, it returns `0`. -/
+In the degenerate case `v = 0`, it returns `0`.
+
+TODO: once we have a topology on `P →ᴬ[ℝ] ℝ`, the type should be `P →ᴬ[ℝ] P →ᴬ[ℝ] ℝ`.
+-/
 noncomputable def signedDist (v : V) : P →ᵃ[ℝ] P →ᴬ[ℝ] ℝ where
   toFun p := (innerSL ℝ (‖v‖⁻¹ • v)).toContinuousAffineMap.comp
     (ContinuousAffineMap.id ℝ P -ᵥ .const ℝ P p)
