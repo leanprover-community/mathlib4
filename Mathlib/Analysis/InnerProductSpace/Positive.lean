@@ -288,7 +288,7 @@ theorem IsPositive.isSymmetric {T : E →ₗ[𝕜] E} (hT : IsPositive T) :
     IsSymmetric T := (isSymmetric_iff_isSelfAdjoint T).mpr hT.isSelfAdjoint
 
 theorem IsPositive.adjoint_eq {T : E →ₗ[𝕜] E} (hT : IsPositive T) :
-    T.adjoint = T := hT.isSymmetric.adjoint_eq
+    T.adjoint = T := hT.isSelfAdjoint
 
 open ComplexOrder in
 theorem isPositive_iff (T : E →ₗ[𝕜] E) :
