@@ -24,8 +24,69 @@ lemma zero_pairing_implies_zero_bracket
   (h : H) (hh : h ∈ LieAlgebra.corootSpace α.toLinear)
   (h_zero : χ (LieAlgebra.IsKilling.coroot α) = 0) :
   ⁅x, (h : L)⁆ = 0 := by
-  -- The fundamental property: when χ(coroot_α) = 0, bracket is zero
-  sorry
+  have h_in_span : h ∈ K ∙ IsKilling.coroot α := by
+    rw [← IsKilling.coe_corootSpace_eq_span_singleton]
+    rw [LieSubmodule.mem_toSubmodule]
+    exact hh
+
+  obtain ⟨c, hc⟩ := Submodule.mem_span_singleton.mp h_in_span
+
+  -- Step 2: χ(h) = 0 since h = c • coroot α and χ(coroot α) = 0
+  have h_chi_h_zero : (χ.toLinear) h = 0 := by
+    have : (χ.toLinear) h = (χ.toLinear) (c • IsKilling.coroot α) := by rw [hc]
+    rw [this, LinearMap.map_smul]
+    -- Need to convert χ (IsKilling.coroot α) = 0 to (χ.toLinear) (IsKilling.coroot α) = 0
+    have h_convert : (χ.toLinear) (IsKilling.coroot α) = χ (IsKilling.coroot α) := rfl
+    rw [h_convert, h_zero, smul_zero]
+
+  -- Step 3: x is in the 0-generalized eigenspace of h
+  rw [genWeightSpace, LieSubmodule.mem_iInf] at hx
+  have hx_h := hx h
+  -- hx_h : x ∈ genWeightSpaceOf L (χ.toLinear h) h
+  rw [h_chi_h_zero] at hx_h
+  -- Now hx_h : x ∈ genWeightSpaceOf L 0 h
+
+  -- Extract from the LieSubmodule structure that x ∈ (toEnd K H L h).maxGenEigenspace 0
+  have hx_maxgen : x ∈ (toEnd K H L h).maxGenEigenspace 0 := by
+    -- genWeightSpaceOf L 0 h is defined as a LieSubmodule wrapping the maxGenEigenspace
+    change x ∈ (genWeightSpaceOf L 0 h).toSubmodule at hx_h
+    rw [genWeightSpaceOf] at hx_h
+    exact hx_h
+
+  -- Step 4: Since h ∈ H (Cartan subalgebra), ad K L h is semisimple
+  have h_semisimple : (ad K L (h : L)).IsSemisimple := by
+    exact LieAlgebra.IsKilling.isSemisimple_ad_of_mem_isCartanSubalgebra h.property
+
+  -- Step 5: For semisimple endomorphisms, maxGenEigenspace = eigenspace
+  have h_gen_eq_eigen : (ad K L (h : L)).maxGenEigenspace 0 = (ad K L (h : L)).eigenspace 0 := by
+    exact Module.End.IsFinitelySemisimple.maxGenEigenspace_eq_eigenspace
+      h_semisimple.isFinitelySemisimple 0
+
+  -- Step 6: Connect toEnd with ad and conclude
+  -- We need to show that toEnd K H L h = ad K L (h : L) on the space L
+  have hx_maxgen_ad : x ∈ (ad K L (h : L)).maxGenEigenspace 0 := by
+    -- toEnd K H L h and ad K L (h : L) are the same endomorphism
+    have h_eq : toEnd K H L h = ad K L (h : L) := by
+      ext y
+      simp only [LieModule.toEnd_apply_apply, LieAlgebra.ad_apply]
+      -- ⁅h, y⁆ = ⁅(h : L), y⁆ by coercion
+      rfl
+    rw [← h_eq]
+    exact hx_maxgen
+
+  -- Step 7: Use semisimple property to get x ∈ eigenspace 0
+  rw [h_gen_eq_eigen] at hx_maxgen_ad
+  rw [Module.End.mem_eigenspace_iff] at hx_maxgen_ad
+
+  -- Step 8: (ad K L h) x = 0 means ⁅h, x⁆ = 0, so ⁅x, h⁆ = 0
+  have h_ad_zero : (ad K L (h : L)) x = 0 := by
+    simp only [zero_smul] at hx_maxgen_ad
+    exact hx_maxgen_ad
+
+  rw [LieAlgebra.ad_apply] at h_ad_zero
+  -- h_ad_zero : ⁅(h : L), x⁆ = 0, we want ⁅x, (h : L)⁆ = 0
+  rw [← lie_skew] at h_ad_zero
+  exact neg_eq_zero.mp h_ad_zero
 
 variable {H : LieSubalgebra K L} [H.IsCartanSubalgebra] [IsTriangularizable K H L]
 
