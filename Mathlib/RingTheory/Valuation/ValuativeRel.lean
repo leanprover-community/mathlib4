@@ -637,12 +637,10 @@ variable (R) in
 def valuation : Valuation R (ValueGroupWithZero R) :=
   preValuation (Localization (posSubmonoid R)) |>.comap (algebraMap R _)
 
-instance : (valuation R).Compatible where
-  rel_iff_le _ _ := by
-    rw [rel_iff_localization le_rfl]
-    rfl
-
 lemma valuation_eq_mk {x : R} : valuation R x = ValueGroupWithZero.mk x 1 := rfl
+
+instance : (valuation R).Compatible where
+  rel_iff_le _ _ := by simp [valuation_eq_mk]
 
 @[simp]
 lemma ValueGroupWithZero.lift_valuation {α : Sort*} (f : R → posSubmonoid R → α)
