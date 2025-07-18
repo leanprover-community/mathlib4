@@ -1154,7 +1154,7 @@ theorem normSq_nonneg : 0 ≤ normSq a := by
 
 @[simp]
 theorem normSq_le_zero : normSq a ≤ 0 ↔ a = 0 :=
-  normSq_nonneg.le_iff_eq.trans normSq_eq_zero
+  normSq_nonneg.ge_iff_eq'.trans normSq_eq_zero
 
 instance instNontrivial : Nontrivial ℍ[R] where
   exists_pair_ne := ⟨0, 1, mt (congr_arg QuaternionAlgebra.re) zero_ne_one⟩

@@ -203,7 +203,7 @@ def myFin (_ : ℕ) := ℕ
 instance : One (myFin n) := ⟨(1 : ℕ)⟩
 
 @[to_additive bar]
-def myFin.foo : myFin (n+1) := 1
+def myFin.foo : myFin (n + 1) := 1
 
 /-- We can pattern-match with `1`, which creates a term with a pure nat literal.
 See https://github.com/leanprover-community/mathlib4/pull/2046 -/
@@ -331,7 +331,7 @@ example {α : Type _} [Add α] (x y z : α) : reorderAddThree z x y = x + y + z 
 
 def Ones : ℕ → Q(Nat)
   | 0     => q(1)
-  | (n+1) => q($(Ones n) + $(Ones n))
+  | (n + 1) => q($(Ones n) + $(Ones n))
 
 
 -- This test just exists to see if this finishes in finite time. It should take <100ms.
