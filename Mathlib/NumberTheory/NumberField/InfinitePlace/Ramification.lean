@@ -321,7 +321,7 @@ lemma isUnramified_iff_card_stabilizer_eq_one [IsGalois k K] :
 lemma not_isUnramified_iff_card_stabilizer_eq_two [IsGalois k K] :
     ¬ IsUnramified k w ↔ Nat.card (Stab w) = 2 := by
   rw [isUnramified_iff_card_stabilizer_eq_one]
-  obtain (e|e) := nat_card_stabilizer_eq_one_or_two k w <;> rw [e] <;> decide
+  obtain (e | e) := nat_card_stabilizer_eq_one_or_two k w <;> rw [e] <;> decide
 
 lemma isRamified_iff_card_stabilizer_eq_two [IsGalois k K] :
     IsRamified k w ↔ Nat.card (Stab w) = 2 :=
@@ -407,11 +407,11 @@ lemma card_isUnramified [NumberField k] [IsGalois k K] :
     (t := {w : InfinitePlace k | w.IsUnramifiedIn K}), ← smul_eq_mul, ← sum_const]
   · refine sum_congr rfl (fun w hw ↦ ?_)
     obtain ⟨w, rfl⟩ := comap_surjective (K := K) w
-    simp only [mem_univ, mem_filter, true_and] at hw
+    rw [mem_filter_univ] at hw
     trans #(MulAction.orbit (K ≃ₐ[k] K) w).toFinset
     · congr; ext w'
-      simp only [mem_univ, mem_filter, true_and,
-        Set.mem_toFinset, mem_orbit_iff, @eq_comm _ (comap w' _), and_iff_right_iff_imp]
+      rw [mem_filter, mem_filter_univ, Set.mem_toFinset, mem_orbit_iff, @eq_comm _ (comap w' _),
+        and_iff_right_iff_imp]
       intro e; rwa [← isUnramifiedIn_comap, ← e]
     · rw [← MulAction.card_orbit_mul_card_stabilizer_eq_card_group _ w,
         ← Nat.card_eq_fintype_card (α := Stab w), card_stabilizer, if_pos,
@@ -427,14 +427,14 @@ lemma card_isUnramified_compl [NumberField k] [IsGalois k K] :
   letI := Module.Finite.of_restrictScalars_finite ℚ k K
   rw [← IsGalois.card_aut_eq_finrank,
     Finset.card_eq_sum_card_fiberwise (f := (comap · (algebraMap k K)))
-    (t := ({w : InfinitePlace k | w.IsUnramifiedIn K}: Finset _)ᶜ), ← smul_eq_mul, ← sum_const]
+    (t := ({w : InfinitePlace k | w.IsUnramifiedIn K} : Finset _)ᶜ), ← smul_eq_mul, ← sum_const]
   · refine sum_congr rfl (fun w hw ↦ ?_)
     obtain ⟨w, rfl⟩ := comap_surjective (K := K) w
-    simp only [mem_univ, compl_filter, mem_filter, true_and] at hw
+    rw [compl_filter, mem_filter_univ] at hw
     trans Finset.card (MulAction.orbit (K ≃ₐ[k] K) w).toFinset
     · congr; ext w'
-      simp only [compl_filter, mem_filter, mem_univ, true_and,
-        @eq_comm _ (comap w' _), Set.mem_toFinset, mem_orbit_iff, and_iff_right_iff_imp]
+      rw [mem_filter, compl_filter, mem_filter_univ, @eq_comm _ (comap w' _), Set.mem_toFinset,
+        mem_orbit_iff, and_iff_right_iff_imp]
       intro e; rwa [← isUnramifiedIn_comap, ← e]
     · rw [← MulAction.card_orbit_mul_card_stabilizer_eq_card_group _ w,
         ← Nat.card_eq_fintype_card (α := Stab w), InfinitePlace.card_stabilizer, if_neg,

@@ -9,6 +9,7 @@ import Mathlib.LinearAlgebra.BilinearForm.DualLattice
 import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.Localization.Module
 import Mathlib.RingTheory.Trace.Basic
+import Mathlib.RingTheory.RingHom.Finite
 
 /-!
 # Integral closure of Dedekind domains
@@ -247,8 +248,8 @@ instance integralClosure.isDedekindDomain_fractionRing [IsDedekindDomain A] :
   integralClosure.isDedekindDomain A (FractionRing A) L
 
 attribute [local instance] FractionRing.liftAlgebra in
-instance [NoZeroSMulDivisors A C] [Module.Finite A C] [IsIntegrallyClosed C] :
-    IsLocalization (Algebra.algebraMapSubmonoid C A⁰) (FractionRing C) :=
-  IsIntegralClosure.isLocalization _ (FractionRing A) _ _
+instance [Module.Finite A C] [NoZeroSMulDivisors A C] :
+    FiniteDimensional (FractionRing A) (FractionRing C) :=
+  .of_isLocalization A C A⁰
 
 end IsIntegralClosure
