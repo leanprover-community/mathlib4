@@ -46,23 +46,23 @@ lemma exists_radius_le (t : T) (V : Finset T) (ha : 1 < a) (c : ℝ≥0∞) :
     · apply ENNReal.pow_ne_top h1
   exact ⟨r, hr1, le_trans (mod_cast Finset.card_filter_le V _) hr⟩
 
-open Classical in
 /-- The log-size radius of t in V is the smallest natural number n greater than zero such that
  {x ∈ V | d(t, x) ≤ nc} ≤ aⁿ. -/
 noncomputable
 def logSizeRadius (t : T) (V : Finset T) (a c : ℝ≥0∞) : ℕ :=
   if h : 1 < a then Nat.find (exists_radius_le t V h c) else 0
 
-lemma one_le_logSizeRadius (ha : 1 < a) : 1 ≤ logSizeRadius t V a c := by
+lemma one_le_logSizeRadius (t : T) (V : Finset T) (a c : ℝ≥0∞) (ha : 1 < a) :
+    1 ≤ logSizeRadius t V a c := by
   rw [logSizeRadius, dif_pos ha]
   exact (Nat.find_spec (exists_radius_le t V ha c)).1
 
-lemma card_le_logSizeRadius_le (ha : 1 < a) :
+lemma card_le_logSizeRadius_le_pow_logSizeRadius (t : T) (V : Finset T) (c : ℝ≥0∞) (ha : 1 < a) :
     #(V.filter fun x ↦ edist t x ≤ logSizeRadius t V a c * c) ≤ a ^ (logSizeRadius t V a c) := by
   rw [logSizeRadius, dif_pos ha]
   exact (Nat.find_spec (exists_radius_le t V ha c)).2
 
-lemma card_le_logSizeRadius_ge (ha : 1 < a) (ht : t ∈ V) :
+lemma pow_logSizeRadius_le_card_le_logSizeRadius (c : ℝ≥0∞) (ha : 1 < a) (ht : t ∈ V) :
     a ^ (logSizeRadius t V a c - 1)
       ≤ #(V.filter fun x ↦ edist t x ≤ (logSizeRadius t V a c - 1) * c) := by
   by_cases h_one : logSizeRadius t V a c = 1
@@ -101,7 +101,8 @@ def logSizeBallStruct.ball (struct : logSizeBallStruct T) (c : ℝ≥0∞) :
     Finset T :=
   struct.finset.filter fun x ↦ edist struct.point x ≤ struct.radius * c
 
-open Classical in
+variable [DecidableEq T]
+
 /-- We recursively define a log-size ball sequence (Vᵢ, tᵢ, rᵢ) by
   * V₀ = J, tₒ is chosen arbitarily in J, r₀ is the log-size radius of t₀ in V₀
   * Vᵢ₊ᵢ = Vᵢ \ {x ∈ V | d(t,x) ≤ (rᵢ - 1)c}, tᵢ₊₁ is chosen arbitarily in Vᵢ₊₁, rᵢ₊₁ is
@@ -127,12 +128,10 @@ lemma point_logSizeBallSeq_zero (hJ : J.Nonempty) :
 lemma radius_logSizeBallSeq_zero (hJ : J.Nonempty) :
     (logSizeBallSeq J hJ a c 0).radius = logSizeRadius hJ.choose J a c := rfl
 
-open Classical in
 lemma finset_logSizeBallSeq_add_one (hJ : J.Nonempty) (i : ℕ) :
     (logSizeBallSeq J hJ a c (i + 1)).finset =
       (logSizeBallSeq J hJ a c i).finset \ (logSizeBallSeq J hJ a c i).smallBall c := rfl
 
-open Classical in
 lemma point_logSizeBallSeq_add_one (hJ : J.Nonempty) (i : ℕ) :
     (logSizeBallSeq J hJ a c (i + 1)).point
       = if hV' : (logSizeBallSeq J hJ a c (i + 1)).finset.Nonempty then hV'.choose
@@ -151,6 +150,11 @@ lemma antitone_logSizeBallSeq_add_one_subset (hJ : J.Nonempty) :
     Antitone (fun i ↦ (logSizeBallSeq J hJ a c i).finset) :=
   antitone_nat_of_succ_le (finset_logSizeBallSeq_add_one_subset hJ)
 
+lemma finset_logSizeBallSeq_subset_logSizeBallSeq_zero (hJ : J.Nonempty) (i : ℕ) :
+    (logSizeBallSeq J hJ a c i).finset ⊆ J := by
+  apply subset_trans <| antitone_logSizeBallSeq_add_one_subset hJ (zero_le i)
+  simp [finset_logSizeBallSeq_zero]
+
 lemma radius_logSizeBallSeq_le (hJ : J.Nonempty) (ha : 1 < a) (hn : 1 ≤ n) (hJ_card : #J ≤ a ^ n)
     (i : ℕ) : (logSizeBallSeq J hJ a c i).radius ≤ n := by
   match i with
@@ -162,14 +166,13 @@ lemma radius_logSizeBallSeq_le (hJ : J.Nonempty) (ha : 1 < a) (hn : 1 ≤ n) (hJ
     refine Nat.find_min' _ ⟨hn, le_trans ?_ hJ_card⟩
     gcongr
     apply subset_trans (Finset.filter_subset _ _)
-    apply subset_trans <| (antitone_logSizeBallSeq_add_one_subset hJ) (zero_le (i + 1))
-    simp [finset_logSizeBallSeq_zero]
+    exact finset_logSizeBallSeq_subset_logSizeBallSeq_zero hJ (i + 1)
 
 lemma one_le_radius_logSizeBallSeq (hJ : J.Nonempty) (ha : 1 < a) (i : ℕ) :
     1 ≤ (logSizeBallSeq J hJ a c i).radius := by
   match i with
-  | 0 => exact one_le_logSizeRadius ha
-  | i + 1 => exact one_le_logSizeRadius ha
+  | 0 => exact one_le_logSizeRadius _ _ _ _ ha
+  | i + 1 => exact one_le_logSizeRadius _ _ _ _ ha
 
 lemma point_mem_finset_logSizeBallSeq (hJ : J.Nonempty) (i : ℕ)
     (h : (logSizeBallSeq J hJ a c i).finset.Nonempty) :
@@ -181,15 +184,13 @@ lemma point_mem_finset_logSizeBallSeq (hJ : J.Nonempty) (i : ℕ)
 lemma point_mem_logSizeBallSeq_zero (hJ : J.Nonempty) (i : ℕ) :
     (logSizeBallSeq J hJ a c i).point ∈ J := by
   induction i with
-  | zero =>
-      apply point_mem_finset_logSizeBallSeq hJ 0
-      rwa [finset_logSizeBallSeq_zero]
+  | zero => exact point_mem_finset_logSizeBallSeq hJ 0 hJ
   | succ i ih =>
-      by_cases h : (logSizeBallSeq J hJ a c (i + 1)).finset.Nonempty
-      · refine Finset.mem_of_subset ?_ (point_mem_finset_logSizeBallSeq hJ (i + 1) h)
-        apply subset_trans <| (antitone_logSizeBallSeq_add_one_subset hJ) (zero_le (i + 1))
-        simp [finset_logSizeBallSeq_zero]
-      simp [point_logSizeBallSeq_add_one, ih, h]
+    by_cases h : (logSizeBallSeq J hJ a c (i + 1)).finset.Nonempty
+    · refine Finset.mem_of_subset ?_ (point_mem_finset_logSizeBallSeq hJ (i + 1) h)
+      apply subset_trans <| (antitone_logSizeBallSeq_add_one_subset hJ) (zero_le (i + 1))
+      simp [finset_logSizeBallSeq_zero]
+    simp [point_logSizeBallSeq_add_one, ih, h]
 
 lemma point_notMem_finset_logSizeBallSeq_add_one (hJ : J.Nonempty) (i : ℕ) :
     (logSizeBallSeq J hJ a c i).point ∉ (logSizeBallSeq J hJ a c (i + 1)).finset := by
@@ -235,7 +236,6 @@ lemma disjoint_smallBall_logSizeBallSeq (hJ : J.Nonempty) {i j : ℕ} (hij : i �
   · exact (Finset.filter_subset _ _).trans (antitone_logSizeBallSeq_add_one_subset hJ h)
   simp [finset_logSizeBallSeq_add_one, Finset.disjoint_sdiff]
 
-open Classical in
 /-- Given a log-size ball sequence (Vᵢ, tᵢ, rᵢ), we define the pair set sequence by
 Kᵢ = {tᵢ} × {x ∈ Vᵢ | dist(tᵢ, x) ≤ rᵢc}. -/
 noncomputable
@@ -244,13 +244,13 @@ def pairSetSeq (J : Finset T) (a c : ℝ≥0∞) (n : ℕ) : Finset (T × T) :=
     Finset.product {(logSizeBallSeq J hJ a c n).point} ((logSizeBallSeq J hJ a c n).ball c)
   else ∅
 
-open Classical in
 /-- Given the pair set sequence Kᵢ we define the pair set K by K = ⋃ i, Kᵢ. -/
 noncomputable
 def pairSet (J : Finset T) (a c : ℝ≥0∞) : Finset (T × T) :=
   Finset.biUnion (Finset.range #J) (pairSetSeq J a c)
 
-open Classical in
+lemma pairSet_empty_eq_empty (a c : ℝ≥0∞) : pairSet (∅ : Finset T) a c = ∅ := rfl
+
 lemma pairSet_subset : pairSet J a c ⊆ J.product J := by
   unfold pairSet
   rw [Finset.biUnion_subset_iff_forall_subset]
@@ -259,54 +259,44 @@ lemma pairSet_subset : pairSet J a c ⊆ J.product J := by
   · simp only [pairSetSeq, hJ, ↓reduceDIte]
     apply Finset.product_subset_product
     · exact Finset.singleton_subset_iff.mpr (point_mem_logSizeBallSeq_zero hJ _)
-    apply subset_trans
-    · apply subset_trans (Finset.filter_subset _ _)
-      exact antitone_logSizeBallSeq_add_one_subset hJ (zero_le _)
-    simp [finset_logSizeBallSeq_zero]
+    apply subset_trans (Finset.filter_subset _ _)
+    exact finset_logSizeBallSeq_subset_logSizeBallSeq_zero _ _
   simp [pairSetSeq, hJ]
 
-lemma card_pairSetSeq_le_logSizeRadius (hJ : J.Nonempty) (i : ℕ) (ha : 1 < a) :
+lemma card_pairSetSeq_le_logSizeRadius_mul (hJ : J.Nonempty) (i : ℕ) (ha : 1 < a) :
     ↑(#(pairSetSeq J a c i)) ≤ (if (logSizeBallSeq J hJ a c i).finset.Nonempty then 1 else 0)
     * a ^ (logSizeBallSeq J hJ a c i).radius := by
   induction i with
   | zero =>
-      simp [pairSetSeq, hJ, finset_logSizeBallSeq_zero, logSizeBallStruct.ball,
-        radius_logSizeBallSeq_zero]
-      exact card_le_logSizeRadius_le ha
+    simpa [pairSetSeq, hJ, finset_logSizeBallSeq_zero, logSizeBallStruct.ball,
+      radius_logSizeBallSeq_zero] using card_le_logSizeRadius_le_pow_logSizeRadius _ _ _ ha
   | succ i ih =>
-      by_cases h : (logSizeBallSeq J hJ a c (i + 1)).finset.Nonempty
-      · simp [pairSetSeq, logSizeBallStruct.ball, h, hJ]
-        exact card_le_logSizeRadius_le ha
-      simp [pairSetSeq, logSizeBallStruct.ball, Finset.not_nonempty_iff_eq_empty.mp h, hJ]
+    by_cases h : (logSizeBallSeq J hJ a c (i + 1)).finset.Nonempty
+    · simpa [pairSetSeq, logSizeBallStruct.ball, h, hJ]
+        using card_le_logSizeRadius_le_pow_logSizeRadius _ _ _ ha
+    simp [pairSetSeq, logSizeBallStruct.ball, Finset.not_nonempty_iff_eq_empty.mp h, hJ]
 
-open Classical in
 lemma logSizeRadius_le_card_smallBall (hJ : J.Nonempty) (i : ℕ) (ha : 1 < a) :
     (if (logSizeBallSeq J hJ a c i).finset.Nonempty then 1 else 0) *
     a ^ ((logSizeBallSeq J hJ a c i).radius - 1) ≤ #((logSizeBallSeq J hJ a c i).smallBall c) := by
   match i with
   | 0 =>
-      simp [finset_logSizeBallSeq_zero, hJ, logSizeBallStruct.smallBall, radius_logSizeBallSeq_zero]
-      exact card_le_logSizeRadius_ge ha (Exists.choose_spec hJ)
+    simpa [finset_logSizeBallSeq_zero, hJ, logSizeBallStruct.smallBall, radius_logSizeBallSeq_zero]
+      using pow_logSizeRadius_le_card_le_logSizeRadius _ ha (Exists.choose_spec hJ)
   | i + 1 =>
-      by_cases h : (logSizeBallSeq J hJ a c (i + 1)).finset.Nonempty
-      · simp [h, logSizeBallStruct.smallBall, radius_logSizeBallSeq_add_one]
-        exact card_le_logSizeRadius_ge ha (point_mem_finset_logSizeBallSeq hJ _ h)
-      simp [Finset.not_nonempty_iff_eq_empty.mp h]
+    by_cases h : (logSizeBallSeq J hJ a c (i + 1)).finset.Nonempty
+    · simpa [h, logSizeBallStruct.smallBall, radius_logSizeBallSeq_add_one]
+        using pow_logSizeRadius_le_card_le_logSizeRadius _ ha
+          (point_mem_finset_logSizeBallSeq hJ _ h)
+    simp [Finset.not_nonempty_iff_eq_empty.mp h]
 
-open Classical in
 lemma card_pairSet_le (ha : 1 < a) (hJ_card : #J ≤ a ^ n) :
     #(pairSet J a c) ≤ a * #J := by
   wlog hJ : J.Nonempty
-  · convert zero_le (a * ↑(#J))
-    rw [← Nat.cast_zero]
-    congr
-    rw [Finset.card_eq_zero]
-    refine subset_antisymm ?_ (Finset.empty_subset _)
-    convert pairSet_subset
-    simp [Finset.not_nonempty_iff_eq_empty.mp hJ]
+  · simp [Finset.not_nonempty_iff_eq_empty.mp hJ]
   apply le_trans (Nat.mono_cast Finset.card_biUnion_le)
   rw [Nat.cast_sum]
-  apply le_trans (Finset.sum_le_sum (fun i _ ↦ card_pairSetSeq_le_logSizeRadius hJ i ha))
+  apply le_trans (Finset.sum_le_sum (fun i _ ↦ card_pairSetSeq_le_logSizeRadius_mul hJ i ha))
   apply le_trans
   · apply Finset.sum_le_sum
     exact fun i _ ↦ mul_le_mul_left' (pow_le_pow_right₀ (le_of_lt ha) (le_tsub_add (a := 1))) _
@@ -343,7 +333,6 @@ lemma edist_le_of_mem_pairSet (ha : 1 < a) (hJ_card : #J ≤ a ^ n) {s t : T}
   gcongr
   exact radius_logSizeBallSeq_le hJ ha hn hJ_card i
 
-open Classical in
 lemma iSup_edist_pairSet {E : Type*} [PseudoEMetricSpace E] (ha : 1 < a) (f : T → E) :
     ⨆ (s : J) (t : { t : J // edist s t ≤ c}), edist (f s) (f t)
         ≤ 2 * ⨆ p : pairSet J a c, edist (f p.1.1) (f p.1.2) := by
