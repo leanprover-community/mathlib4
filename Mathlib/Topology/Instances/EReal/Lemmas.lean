@@ -168,21 +168,21 @@ lemma nhdsWithin_bot : 𝓝[≠] (⊥ : EReal) = (atBot).map Real.toEReal := by
 
 omit [TopologicalSpace α] in
 @[simp]
-lemma tendsto_coe_nhds_top {f : α → ℝ} {l : Filter α} :
+lemma tendsto_coe_nhds_top_iff {f : α → ℝ} {l : Filter α} :
     Tendsto (fun x ↦ Real.toEReal (f x)) l (𝓝 ⊤) ↔ Tendsto f l atTop := by
   rw [tendsto_nhds_top_iff_real, atTop_basis_Ioi.tendsto_right_iff]; simp
 
 lemma tendsto_coe_atTop : Tendsto Real.toEReal atTop (𝓝 ⊤) :=
-  tendsto_coe_nhds_top.2 tendsto_id
+  tendsto_coe_nhds_top_iff.2 tendsto_id
 
 omit [TopologicalSpace α] in
 @[simp]
-lemma tendsto_coe_nhds_bot {f : α → ℝ} {l : Filter α} :
+lemma tendsto_coe_nhds_bot_iff {f : α → ℝ} {l : Filter α} :
     Tendsto (fun x ↦ Real.toEReal (f x)) l (𝓝 ⊥) ↔ Tendsto f l atBot := by
   rw [tendsto_nhds_bot_iff_real, atBot_basis_Iio.tendsto_right_iff]; simp
 
 lemma tendsto_coe_atBot : Tendsto Real.toEReal atBot (𝓝 ⊥) :=
-  tendsto_coe_nhds_bot.2 tendsto_id
+  tendsto_coe_nhds_bot_iff.2 tendsto_id
 
 
 lemma tendsto_toReal_atTop : Tendsto EReal.toReal (𝓝[≠] ⊤) atTop := by
