@@ -4,9 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
 import Mathlib.Geometry.Euclidean.Projection
-import Mathlib.LinearAlgebra.AffineSpace.ContinuousAffineEquiv
-import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
-import Mathlib.Topology.Algebra.AffineSubspace
 
 /-!
 # Signed distance to an affine subspace in a Euclidean space.
