@@ -117,7 +117,7 @@ theorem mem_roots_map_of_injective [Semiring S] {p : S[X]} {f : S →+* R}
 
 lemma mem_roots_iff_aeval_eq_zero {x : R} (w : p ≠ 0) : x ∈ roots p ↔ aeval x p = 0 := by
   rw [aeval_def, ← mem_roots_map_of_injective (FaithfulSMul.algebraMap_injective _ _) w,
-    Algebra.id.map_eq_id, map_id]
+    Algebra.algebraMap_self, map_id]
 
 theorem card_le_degree_of_subset_roots {p : R[X]} {Z : Finset R} (h : Z.val ⊆ p.roots) :
     #Z ≤ p.natDegree :=
