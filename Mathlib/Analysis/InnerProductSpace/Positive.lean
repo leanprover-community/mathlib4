@@ -115,6 +115,19 @@ theorem IsPositive.add {T S : E →L[𝕜] E} (hT : T.IsPositive) (hS : S.IsPosi
   rw [reApplyInnerSelf, add_apply, inner_add_left, map_add]
   exact add_nonneg (hT.re_inner_nonneg_left x) (hS.re_inner_nonneg_left x)
 
+open ComplexOrder in
+@[aesop safe apply]
+theorem IsPositive.smul_of_nonneg {T : E →L[𝕜] E} (hT : T.IsPositive) {c : 𝕜} (hc : 0 ≤ c) :
+    (c • T).IsPositive := by
+  have hc' : starRingEnd 𝕜 c = c := by
+    simp [conj_eq_iff_im, ← (le_iff_re_im.mp hc).right]
+  apply And.intro
+  · exact IsSelfAdjoint.smul hc' hT.left
+  · intro x
+    rw [reApplyInnerSelf, smul_apply, inner_smul_left, hc', mul_re, conj_eq_iff_im.mp hc', zero_mul,
+      sub_zero]
+    exact mul_nonneg ((re_nonneg_of_nonneg hc').mpr hc) (re_inner_nonneg_left hT x)
+
 @[aesop safe apply]
 theorem IsPositive.conj_adjoint {T : E →L[𝕜] E} (hT : T.IsPositive) (S : E →L[𝕜] F) :
     (S ∘L T ∘L S†).IsPositive := by
@@ -128,12 +141,11 @@ theorem IsPositive.adjoint_conj {T : E →L[𝕜] E} (hT : T.IsPositive) (S : F 
   convert hT.conj_adjoint (S†)
   rw [adjoint_adjoint]
 
-theorem IsPositive.conj_orthogonalProjection (U : Submodule 𝕜 E) {T : E →L[𝕜] E} (hT : T.IsPositive)
-    [CompleteSpace U] :
-    (U.subtypeL ∘L
-        U.orthogonalProjection ∘L T ∘L U.subtypeL ∘L U.orthogonalProjection).IsPositive := by
-  have := hT.conj_adjoint (U.subtypeL ∘L U.orthogonalProjection)
-  rwa [(orthogonalProjection_isSelfAdjoint U).adjoint_eq] at this
+theorem IsPositive.conj_starProjection (U : Submodule 𝕜 E) {T : E →L[𝕜] E} (hT : T.IsPositive)
+    [U.HasOrthogonalProjection] :
+    (U.starProjection ∘L T ∘L U.starProjection).IsPositive := by
+  have := hT.conj_adjoint (U.starProjection)
+  rwa [(isSelfAdjoint_starProjection U).adjoint_eq] at this
 
 theorem IsPositive.orthogonalProjection_comp {T : E →L[𝕜] E} (hT : T.IsPositive) (U : Submodule 𝕜 E)
     [CompleteSpace U] : (U.orthogonalProjection ∘L T ∘L U.subtypeL).IsPositive := by
@@ -203,6 +215,26 @@ lemma nonneg_iff_isPositive (f : E →L[𝕜] E) : 0 ≤ f ↔ f.IsPositive := b
 
 end PartialOrder
 
+/-- A star projection operator is positive.
+
+The proof of this will soon be simplified to `IsStarProjection.nonneg` when we
+have `StarOrderedRing (E →L[𝕜] E)`. -/
+@[aesop 10% apply, grind →]
+theorem IsPositive.of_isStarProjection {p : E →L[𝕜] E}
+    (hp : IsStarProjection p) : p.IsPositive := by
+  refine ⟨hp.isSelfAdjoint, ?_⟩
+  rw [← hp.isIdempotentElem.eq]
+  simp_rw [reApplyInnerSelf_apply, ContinuousLinearMap.mul_apply]
+  intro x
+  simp_rw [← ContinuousLinearMap.adjoint_inner_right _ _ x, isSelfAdjoint_iff'.mp hp.isSelfAdjoint]
+  exact inner_self_nonneg
+
+/-- An idempotent operator is positive if and only if it is self-adjoint. -/
+@[grind →]
+theorem IsIdempotentElem.isPositive_iff_isSelfAdjoint
+    {p : E →L[𝕜] E} (hp : IsIdempotentElem p) : p.IsPositive ↔ IsSelfAdjoint p :=
+  ⟨fun h => h.isSelfAdjoint, fun h => IsPositive.of_isStarProjection ⟨hp, h⟩⟩
+
 end ContinuousLinearMap
 
 namespace LinearMap
@@ -226,13 +258,17 @@ theorem IsPositive.re_inner_nonneg_right {T : E →ₗ[𝕜] E} (hT : IsPositive
   rw [inner_re_symm]
   exact hT.re_inner_nonneg_left x
 
-lemma isPositive_toContinuousLinearMap_iff [CompleteSpace E] (T : E →ₗ[𝕜] E) :
+lemma isPositive_toContinuousLinearMap_iff (T : E →ₗ[𝕜] E) :
+    have : CompleteSpace E := FiniteDimensional.complete 𝕜 _
     T.toContinuousLinearMap.IsPositive ↔ T.IsPositive := by
+  intro
   simp [ContinuousLinearMap.IsPositive, IsPositive, isSelfAdjoint_toContinuousLinearMap_iff T,
     ContinuousLinearMap.reApplyInnerSelf]
 
-lemma _root_.ContinuousLinearMap.isPositive_toLinearMap_iff [CompleteSpace E] (T : E →L[𝕜] E) :
+lemma _root_.ContinuousLinearMap.isPositive_toLinearMap_iff (T : E →L[𝕜] E) :
+    have := FiniteDimensional.complete 𝕜 E
     (T : E →ₗ[𝕜] E).IsPositive ↔ T.IsPositive := by
+  intro
   simp [ContinuousLinearMap.IsPositive, IsPositive, isSelfAdjoint_toLinearMap_iff T,
     ContinuousLinearMap.reApplyInnerSelf]
 
@@ -292,6 +328,18 @@ theorem IsPositive.add {T S : E →ₗ[𝕜] E} (hT : T.IsPositive) (hS : S.IsPo
   refine ⟨hT.isSelfAdjoint.add hS.isSelfAdjoint, fun x => ?_⟩
   rw [add_apply, inner_add_left, map_add]
   exact add_nonneg (hT.re_inner_nonneg_left x) (hS.re_inner_nonneg_left x)
+
+open ComplexOrder in
+@[aesop safe apply]
+theorem IsPositive.smul_of_nonneg {T : E →ₗ[𝕜] E} (hT : T.IsPositive) {c : 𝕜} (hc : 0 ≤ c) :
+    (c • T).IsPositive := by
+  have hc' : starRingEnd 𝕜 c = c := by
+    simp [conj_eq_iff_im, ← (le_iff_re_im.mp hc).right]
+  apply And.intro
+  · exact IsSelfAdjoint.smul hc' hT.left
+  · intro x
+    rw [smul_apply, inner_smul_left, hc', mul_re, conj_eq_iff_im.mp hc', zero_mul, sub_zero]
+    exact mul_nonneg ((re_nonneg_of_nonneg hc').mpr hc) (re_inner_nonneg_left hT x)
 
 @[aesop safe apply]
 theorem IsPositive.conj_adjoint {T : E →ₗ[𝕜] E} (hT : T.IsPositive) (S : E →ₗ[𝕜] F) :

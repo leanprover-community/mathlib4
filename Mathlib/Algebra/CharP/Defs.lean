@@ -57,6 +57,25 @@ lemma congr {q : ℕ} (h : p = q) : CharP R q := h ▸ ‹CharP R p›
 
 @[simp] lemma cast_eq_zero : (p : R) = 0 := (cast_eq_zero_iff R p p).2 dvd_rfl
 
+lemma cast_eq_mod (k : ℕ) : (k : R) = (k % p : ℕ) :=
+  have (a : ℕ) : ((p * a : ℕ) : R) = 0 := by
+    rw [CharP.cast_eq_zero_iff R p]
+    exact Nat.dvd_mul_right p a
+  calc
+    (k : R) = ↑(k % p + p * (k / p)) := by rw [Nat.mod_add_div]
+    _ = ↑(k % p) := by simp [this]
+
+lemma cast_eq_iff_mod_eq [IsLeftCancelAdd R] : (a:R) = (b:R) ↔ a % p = b % p := by
+  wlog hle : a ≤ b
+  · simpa only [eq_comm] using (this _ _ (lt_of_not_ge hle).le)
+  obtain ⟨c, rfl⟩ := Nat.exists_eq_add_of_le hle
+  rw [Nat.cast_add, left_eq_add, CharP.cast_eq_zero_iff R p]
+  constructor
+  · simp +contextual [Nat.add_mod, Nat.dvd_iff_mod_eq_zero]
+  intro h
+  have := Nat.sub_mod_eq_zero_of_mod_eq h.symm
+  simpa [Nat.dvd_iff_mod_eq_zero] using this
+
 -- TODO: This lemma needs to be `@[simp]` for confluence in the presence of `CharP.cast_eq_zero` and
 -- `Nat.cast_ofNat`, but with `no_index` on its entire LHS, it matches literally every expression so
 -- is too expensive. If https://github.com/leanprover/lean4/issues/2867 is fixed in a performant way, this can be made `@[simp]`.
@@ -177,11 +196,6 @@ namespace CharP
 section
 
 variable [NonAssocRing R]
-
-lemma cast_eq_mod (p : ℕ) [CharP R p] (k : ℕ) : (k : R) = (k % p : ℕ) :=
-  calc
-    (k : R) = ↑(k % p + p * (k / p)) := by rw [Nat.mod_add_div]
-    _ = ↑(k % p) := by simp
 
 lemma ringChar_zero_iff_CharZero : ringChar R = 0 ↔ CharZero R := by
   rw [ringChar.eq_iff, charP_zero_iff_charZero]

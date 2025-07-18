@@ -490,7 +490,7 @@ theorem coe_ideal_mul_inv [h : IsDedekindDomain A] (I : Ideal A) (hI0 : I ≠ �
   clear hi
   induction' i with i ih
   · rw [pow_zero]; exact one_mem_inv_coe_ideal hI0
-  · show x ^ i.succ ∈ (I⁻¹ : FractionalIdeal A⁰ K)
+  · change x ^ i.succ ∈ (I⁻¹ : FractionalIdeal A⁰ K)
     rw [pow_succ']; exact x_mul_mem _ ih
 
 /-- Nonzero fractional ideals in a Dedekind domain are units.
@@ -1068,8 +1068,8 @@ def equivMaximalSpectrum (hR : ¬IsField R) : HeightOneSpectrum R ≃ MaximalSpe
 
 /-- An ideal of `R` is not the whole ring if and only if it is contained in an element of
 `HeightOneSpectrum R` -/
-theorem ideal_ne_top_iff_exists (hR : ¬IsField R) (I : Ideal R) : I ≠ ⊤ ↔
-    ∃ P : HeightOneSpectrum R, I ≤ P.asIdeal := by
+theorem ideal_ne_top_iff_exists (hR : ¬IsField R) (I : Ideal R) :
+    I ≠ ⊤ ↔ ∃ P : HeightOneSpectrum R, I ≤ P.asIdeal := by
   rw [Ideal.ne_top_iff_exists_maximal]
   constructor
   · rintro ⟨M, hMmax, hIM⟩
@@ -1304,7 +1304,7 @@ theorem Ideal.count_associates_eq [DecidableEq (Associates (Ideal R))]
   · simp only [span_singleton_pow, heq, dvd_span_singleton, mem_span_singleton]
     rw [pow_add, pow_one, mul_dvd_mul_iff_left (pow_ne_zero n hx0)]
     exact ha
-  · simp only [Submodule.zero_eq_bot, ne_eq, span_singleton_eq_bot, not_false_eq_true]
+  · simp only [Submodule.zero_eq_bot, ne_eq, span_singleton_eq_bot]
     aesop
   · exact (span_singleton_prime hx0).mpr hx
   · simp only [ne_eq, span_singleton_eq_bot]; exact hx0

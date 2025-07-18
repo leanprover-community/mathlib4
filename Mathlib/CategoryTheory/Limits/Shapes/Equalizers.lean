@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Markus Himmel
 -/
 import Mathlib.CategoryTheory.EpiMono
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
@@ -392,6 +393,9 @@ def Fork.IsLimit.lift' {s : Fork f g} (hs : IsLimit s) {W : C} (k : W ⟶ X) (h 
     { l : W ⟶ s.pt // l ≫ Fork.ι s = k } :=
   ⟨Fork.IsLimit.lift hs k h, by simp⟩
 
+lemma Fork.IsLimit.mono {s : Fork f g} (hs : IsLimit s) : Mono s.ι where
+  right_cancellation _ _ h := hom_ext hs h
+
 -- Porting note: `Cofork.IsColimit.desc` was added in order to ease the port
 /-- If `s` is a colimit cofork over `f` and `g`, then a morphism `k : Y ⟶ W` satisfying
     `f ≫ k = g ≫ k` induces a morphism `l : s.pt ⟶ W` such that `cofork.π s ≫ l = k`. -/
@@ -409,6 +413,9 @@ lemma Cofork.IsColimit.π_desc' {s : Cofork f g} (hs : IsColimit s) {W : C} (k :
 def Cofork.IsColimit.desc' {s : Cofork f g} (hs : IsColimit s) {W : C} (k : Y ⟶ W)
     (h : f ≫ k = g ≫ k) : { l : s.pt ⟶ W // Cofork.π s ≫ l = k } :=
   ⟨Cofork.IsColimit.desc hs k h, by simp⟩
+
+lemma Cofork.IsColimit.epi {s : Cofork f g} (hs : IsColimit s) : Epi s.π where
+  left_cancellation _ _ h := hom_ext hs h
 
 theorem Fork.IsLimit.existsUnique {s : Fork f g} (hs : IsLimit s) {W : C} (k : W ⟶ X)
     (h : k ≫ f = k ≫ g) : ∃! l : W ⟶ s.pt, l ≫ Fork.ι s = k :=
@@ -1083,7 +1090,7 @@ variable {C} [IsSplitMono f]
 /-- A split mono `f` equalizes `(retraction f ≫ f)` and `(𝟙 Y)`.
 Here we build the cone, and show in `isSplitMonoEqualizes` that it is a limit cone.
 -/
--- @[simps (config := { rhsMd := semireducible })] Porting note: no semireducible
+-- @[simps (rhsMd := semireducible)] Porting note: no semireducible
 @[simps!]
 noncomputable def coneOfIsSplitMono : Fork (𝟙 Y) (retraction f ≫ f) :=
   Fork.ofι f (by simp)
@@ -1157,7 +1164,7 @@ variable {C} [IsSplitEpi f]
 /-- A split epi `f` coequalizes `(f ≫ section_ f)` and `(𝟙 X)`.
 Here we build the cocone, and show in `isSplitEpiCoequalizes` that it is a colimit cocone.
 -/
--- @[simps (config := { rhsMd := semireducible })] Porting note: no semireducible
+-- @[simps (rhsMd := semireducible)] Porting note: no semireducible
 @[simps!]
 noncomputable def coconeOfIsSplitEpi : Cofork (𝟙 X) (f ≫ section_ f) :=
   Cofork.ofπ f (by simp)
@@ -1227,6 +1234,19 @@ def splitEpiOfIdempotentOfIsColimitCofork {X : C} {f : X ⟶ X} (hf : f ≫ f = 
 noncomputable def splitEpiOfIdempotentCoequalizer {X : C} {f : X ⟶ X} (hf : f ≫ f = f)
     [HasCoequalizer (𝟙 X) f] : SplitEpi (coequalizer.π (𝟙 X) f) :=
   splitEpiOfIdempotentOfIsColimitCofork _ hf (colimit.isColimit _)
+
+variable [HasBinaryProducts C]
+
+local notation "⟨𝟙⨯ " f "⟩" => Limits.prod.lift (𝟙 _) f
+local notation "⟨" f " ⨯𝟙⟩" => prod.lift f (𝟙 _)
+
+/-- ⟨𝟙⨯ f⟩ : X ⟶ X ⨯ Y is the equalizer of the pair (prod.fst ≫ f, prod.snd) : X ⨯ Y ⟶ Y. -/
+noncomputable def graph_as_equivalizer {X Y : C} (f : X ⟶ Y) :
+    IsLimit (Fork.ofι ⟨𝟙⨯ f⟩ ((by simp) : ⟨𝟙⨯ f⟩ ≫ prod.fst ≫ f = ⟨𝟙⨯ f⟩ ≫ prod.snd)) :=
+  Fork.IsLimit.mk _
+    (fun s => s.ι ≫ prod.fst)
+    (fun s => ((by simp[prod.comp_lift, s.condition])))
+    (fun s m eq => by simp[← eq])
 
 end CategoryTheory.Limits
 

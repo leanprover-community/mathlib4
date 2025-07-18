@@ -3,8 +3,9 @@ Copyright (c) 2025 Klaus Gy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Klaus Gy
 -/
-import Mathlib.CategoryTheory.Topos.Classifier
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
 import Mathlib.CategoryTheory.Opposites
+import Mathlib.CategoryTheory.Topos.Classifier
 
 /-!
 # Elementary Topos (in Elementary Form)
@@ -31,12 +32,10 @@ and satisfies a power object condition relative to a fixed subobject classifier 
 
 See MM92, Chapter IV, Section 1. -/
 class ElementaryTopos (ℰ : Type u) [Category.{v} ℰ] [HasFiniteLimits ℰ] where
-
   /-- A fixed choice of subobject classifier in `ℰ`, supplying mainly
   `Ω`, `true : ⊤_ C ⟶ Ω`, and `χ` to build the characteristic map. -/
   hc : Classifier ℰ
   /-- Power objects, will become a functor `P : ℰᵒᵖ ⥤ ℰ` later . -/
-
   P (B : ℰ) : ℰ
   /-- The element relation. -/
   ε_ (B : ℰ) : B ⨯ (P B) ⟶ hc.Ω
@@ -69,10 +68,8 @@ def P_morph {B C : ℰ} (h : B ⟶ C) : P C ⟶ P B := unhat ((h ⨯𝟙) ≫ ε
 lemma ε_dinaturality {B C : ℰ} (h : B ⟶ C) :
   (h ⨯𝟙) ≫ ε_ C = (𝟙⨯ (P_morph h)) ≫ ε_ B := comm _
 
-/-- Functoriality of `P`: divide the dinaturality square of `h ∘ h'` into three squares,
-    one on the left described by `comm_left`, and two smaller dinaturality squares
-    for `h` and `h'` respectively stacked atop of each other on the right. -/
-lemma P_compose {B C D : ℰ} (h : B ⟶ C) (h' : C ⟶ D) :
+/-- `P` covariantly preserves composition, shown by stacking dinaturality squares. -/
+private lemma P_compose {B C D : ℰ} (h : B ⟶ C) (h' : C ⟶ D) :
     P_morph (h ≫ h') = P_morph h' ≫ P_morph h :=
   let comm_left : (h ⨯𝟙) ≫ (𝟙⨯ (P_morph h')) = (𝟙⨯ (P_morph h')) ≫ (h ⨯𝟙) := by simp
   let comm_outer : (h ⨯𝟙) ≫ (h' ⨯𝟙) ≫ ε_ D = (𝟙⨯ (P_morph h')) ≫ (𝟙⨯ (P_morph h)) ≫ ε_ B :=
@@ -83,8 +80,7 @@ lemma P_compose {B C D : ℰ} (h : B ⟶ C) (h' : C ⟶ D) :
 
 open Opposite
 
-/-- The power object functor `P : ℰᵒᵖ ⥤ ℰ` defined by the transpose correspondence.
-    This makes the diagram in MM92 (7) commute. -/
+/-- The power object functor `P : ℰᵒᵖ ⥤ ℰ` defined from `P` and `P_morph`. -/
 def P_functor : ℰᵒᵖ ⥤ ℰ := {
   obj B := P (unop B),
   map h := P_morph h.unop,
@@ -93,30 +89,65 @@ def P_functor : ℰᵒᵖ ⥤ ℰ := {
 }
 
 /--
-Given a morphism `g : A ⟶ P C` and a morphism `h : B ⟶ C`, the characteristic map
-of the composite `Ph ∘ g : A ⟶ P B` is equal to the pullback of the characteristic
-map `g^` along the morphism `h × 𝟙 : B × A ⟶ C × A`.
-
-This expresses the dinaturality of the `hat` construction, or equivalently,
-that the transpose of `Ph ∘ g` is the pullback of the transpose of `g`
-along `h × 1`, as in diagram (8) of the reference.
-
-This result reflects how subobjects pull back along morphisms in an elementary topos,
-via the classifier `Ω` and the classifying morphisms `χ`.
-
-It shows that `(Ph ∘ g)^` is equal to the classifying map
-associated to the pullback of the subobject classified by `g`.
+Given morphisms `g : A ⟶ P C` and `h : B ⟶ C`, if `g^` is the characteristic map of a subobject
+`U ↪ C ⨯ A`, then the transpose `(Ph ∘ g)^ : B ⨯ A ⟶ Ω` is the characteristic map of the pullback
+of `U` along `h ⨯ 𝟙`. Flipping the classifier squares to follow the diagram layout in the book.
 -/
-theorem pullback_of_char {A B C U : ℰ} (g : A ⟶ P C) (h : B ⟶ C) (m : U ⟶ C ⨯ A) [Mono m]
+theorem char_of_pullback {A B C U : ℰ} (g : A ⟶ P C) (h : B ⟶ C) (m : U ⟶ C ⨯ A) [Mono m]
     (isChar : hat C g = hc.χ m) :
     hat B (g ≫ P_morph h) = hc.χ (pullback.snd m (h ⨯𝟙)) :=
   let pb_right := IsPullback.flip (hc.isPullback m)
   let pb_left := IsPullback.of_hasPullback m (h ⨯𝟙)
   let pb_outer := IsPullback.paste_horiz pb_left pb_right
-  let eq₀ : (𝟙⨯ g) ≫ (h ⨯𝟙) = (h ⨯𝟙) ≫ (𝟙⨯ g) := by simp
-  let eq₁ : (h ⨯𝟙) ≫ (hat _ g) = hc.χ (pullback.snd m (h ⨯𝟙)) :=
-    hc.uniq (pullback.snd m (h ⨯𝟙)) _ (IsPullback.flip (by simpa [isChar] using pb_outer))
-  by rw [hat, prod.map_id_comp, assoc, ← ε_dinaturality, ← assoc, eq₀, assoc, ← hat, eq₁]
+  let eq₁ : (𝟙⨯ g) ≫ (h ⨯𝟙) = (h ⨯𝟙) ≫ (𝟙⨯ g) := by simp
+  let eq₂ : (h ⨯𝟙) ≫ (hat _ g) = hc.χ (pullback.snd m (h ⨯𝟙)) :=
+    hc.uniq (pullback.snd m (h ⨯𝟙)) (IsPullback.flip (by simpa [isChar] using pb_outer))
+  by rw [hat, prod.map_id_comp, assoc, ← ε_dinaturality, reassoc_of% eq₁, ← hat, eq₂]
+
+def δ_ (B : ℰ) : B ⨯ B ⟶ hc.Ω := hc.χ (diag B)
+def sing (B : ℰ) : B ⟶ P B := unhat (δ_ B)
+
+local notation "⟨𝟙⨯ " f "⟩" => prod.lift (𝟙 _) f
+local notation "⟨" f " ⨯𝟙⟩" => prod.lift f (𝟙 _)
+local notation "Δ" => Limits.diag
+
+variable {C : Type u} [Category.{v} C] [HasFiniteLimits C]
+
+private lemma pullback_of_diag {B X : C} (b : X ⟶ B) : IsPullback b ⟨b ⨯𝟙⟩ (Δ B) (𝟙⨯ b) :=
+  have : IsLimit (Fork.ofι ⟨b ⨯𝟙⟩ ((by simp) : ⟨b ⨯𝟙⟩ ≫ prod.fst = ⟨b ⨯𝟙⟩ ≫ prod.snd ≫ b)) :=
+    Fork.IsLimit.mk _
+    (fun s => s.ι ≫ prod.snd)
+    (fun s => ((by simp[prod.comp_lift, ← s.condition])))
+    (fun s m eq => by simp[← eq])
+  IsPullback.flip (Limits.isPullback_equalizer_prod' prod.fst (prod.snd ≫ b) _ _)
+
+-- private lemma pullback_of_diag {B X : C} (b : X ⟶ B) : IsPullback b ⟨b ⨯𝟙⟩ (Δ B) (𝟙⨯ b) :=
+--   let cs : CommSq  b ⟨b ⨯𝟙⟩ (Δ B) (𝟙⨯ b) := by simp
+--   let eq₁ (s : PullbackCone (Δ B) (𝟙⨯ b)) : (s.snd ≫ prod.snd) ≫ b = s.fst :=
+--     by calc
+--       (s.snd ≫ prod.snd) ≫ b = s.snd ≫ (𝟙⨯ b) ≫ prod.snd := by simp
+--       _ = (s.fst ≫ Δ B) ≫ prod.snd := by rw [← assoc, ← s.condition]
+--       _ = s.fst := by simp
+--   let eq₂ (s : PullbackCone (Δ B) (𝟙⨯ b)) : (s.snd ≫ prod.snd) ≫ prod.lift b (𝟙 X) = s.snd :=
+--     have : (s.snd ≫ prod.snd) ≫ b = s.snd ≫ prod.fst :=
+--       by calc
+--         _ = s.fst ≫ Δ B ≫ prod.fst := by simp[eq₁]
+--         _ = s.snd ≫ (𝟙⨯ b) ≫ prod.fst := by rw[← assoc, s.condition, assoc]
+--         _ = s.snd ≫ prod.fst := by simp
+--     by simp[this]
+
+--   IsPullback.of_isLimit'
+--     cs (PullbackCone.IsLimit.mk _
+--     (fun s => s.snd ≫ prod.snd) eq₁ eq₂ (fun _ _ _ eq => by simp [← eq]))
+
+
+instance {B : ℰ} : Mono (sing B) :=
+  ⟨ fun b b' w =>
+    let pb : IsPullback b ⟨b ⨯𝟙⟩ (diag B) (𝟙⨯ b) := sorry
+    have : (𝟙⨯ b) ≫ (δ_ B) = (𝟙⨯ b') ≫ (δ_ B) := sorry
+    sorry
+  ⟩
+
 
 end
 end CategoryTheory

@@ -736,7 +736,7 @@ theorem characteristic_of_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (
   haveI := unique_of_normal P h
   rw [characteristic_iff_map_eq]
   intro Φ
-  show (Φ • P).toSubgroup = P.toSubgroup
+  change (Φ • P).toSubgroup = P.toSubgroup
   congr
   simp [eq_iff_true_of_subsingleton]
 

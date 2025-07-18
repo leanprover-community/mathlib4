@@ -410,8 +410,8 @@ def quotientQuotientEquivQuotient (s : Setoid α) (h : r ≤ s) :
     (Quotient.liftOn' x fun w => @Quotient.mk'' _ (ker <| Quot.mapRight h) <| @Quotient.mk'' _ r w)
       fun _ _ H => Quotient.sound' <| show @Quot.mk _ _ _ = @Quot.mk _ _ _ from Quotient.sound H
   left_inv x :=
-    Quotient.inductionOn' x fun y => Quotient.inductionOn' y fun w => by show ⟦_⟧ = _; rfl
-  right_inv x := Quotient.inductionOn' x fun y => by show ⟦_⟧ = _; rfl
+    Quotient.inductionOn' x fun y => Quotient.inductionOn' y fun w => by change ⟦_⟧ = _; rfl
+  right_inv x := Quotient.inductionOn' x fun y => by change ⟦_⟧ = _; rfl
 
 variable {r f}
 

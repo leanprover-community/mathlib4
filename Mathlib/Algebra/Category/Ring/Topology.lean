@@ -173,7 +173,7 @@ lemma isEmbedding_pushout [IsTopologicalRing R] (φ : A ⟶ B) (ψ : A ⟶ C) :
     (mvPolynomialHomeomorph C R A).symm.isEmbedding
   convert ((H.comp hF).comp (mvPolynomialHomeomorph _ R A).isEmbedding).comp
     (isEmbedding_precomp_of_surjective (R := R) fBC hfBC)
-  have (s) : (pushout.inr φ ψ).hom (ψ.hom s) = (pushout.inl φ ψ).hom (φ.hom s) :=
+  have (s : _) : (pushout.inr φ ψ).hom (ψ.hom s) = (pushout.inl φ ψ).hom (φ.hom s) :=
     congr($(pushout.condition (f := φ)).hom s).symm
   ext f s <;> simp [fB, fC, fBC, PB, PC, PBC, F, this]
 

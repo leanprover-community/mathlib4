@@ -993,6 +993,7 @@ def ofCmpEqCmp {α β} [LinearOrder α] [LinearOrder β] (f : α → β) (g : β
 
 /-- To show that `f : α →o β` and `g : β →o α` make up an order isomorphism it is enough to show
 that `g` is the inverse of `f`. -/
+@[simps! apply]
 def ofHomInv {F G : Type*} [FunLike F α β] [OrderHomClass F α β] [FunLike G β α]
     [OrderHomClass G β α] (f : F) (g : G)
     (h₁ : (f : α →o β).comp (g : β →o α) = OrderHom.id)
@@ -1008,6 +1009,13 @@ def ofHomInv {F G : Type*} [FunLike F α β] [OrderHomClass F α β] [FunLike G 
       rwa [Equiv.coe_fn_mk, show g (f a) = (g : β →o α).comp (f : α →o β) a from rfl,
         show g (f b) = (g : β →o α).comp (f : α →o β) b from rfl, h₂] at h,
       fun h => (f : α →o β).monotone h⟩
+
+@[simp]
+theorem ofHomInv_symm_apply {F G : Type*} [FunLike F α β] [OrderHomClass F α β] [FunLike G β α]
+    [OrderHomClass G β α] (f : F) (g : G)
+    (h₁ : (f : α →o β).comp (g : β →o α) = OrderHom.id)
+    (h₂ : (g : β →o α).comp (f : α →o β) = OrderHom.id) (a : β) :
+    (ofHomInv f g h₁ h₂).symm a = g a := rfl
 
 /-- Order isomorphism between `α → β` and `β`, where `α` has a unique element. -/
 @[simps! toEquiv apply]
@@ -1175,6 +1183,14 @@ instance (priority := 90) OrderIsoClass.toOrderIsoClassOrderDual [LE α] [LE β]
   map_le_map_iff f := map_le_map_iff f
 
 section DenselyOrdered
+
+-- could live in a more upstream file, but hard to find a good place
+lemma StrictMono.denselyOrdered_range {X Y : Type*} [LinearOrder X] [DenselyOrdered X] [Preorder Y]
+    {f : X → Y} (hf : StrictMono f) :
+    DenselyOrdered (Set.range f) := by
+  constructor
+  simpa [← exists_and_left, ← exists_and_right, exists_comm, hf.lt_iff_lt]
+    using fun _ _ ↦ exists_between
 
 lemma denselyOrdered_iff_of_orderIsoClass {X Y F : Type*} [Preorder X] [Preorder Y]
     [EquivLike F X Y] [OrderIsoClass F X Y] (f : F) :

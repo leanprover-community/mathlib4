@@ -191,7 +191,7 @@ transformations in the usual way, extended to all of `GL (Fin 2) ℝ` using comp
 instance glAction : MulAction (GL (Fin 2) ℝ) ℍ where
   smul := smulAux
   one_smul z := by
-    show smulAux 1 z = z
+    change smulAux 1 z = z
     simp [smulAux, smulAux', num, denom, σ]
   mul_smul := mul_smul'
 
