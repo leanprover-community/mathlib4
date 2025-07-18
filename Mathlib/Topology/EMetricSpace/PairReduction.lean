@@ -11,16 +11,16 @@ import Mathlib.Order.CompletePartialOrder
 # Pair Reduction
 
 The goal of this file is to prove the theorem `pair_reduction` which is used to prove a
-Kolmogorov–Chentsov theorem for general metric spaces. Given pseudometric spaces T and E,
-c > 0, and a finite subset J of T such that |J| ≤ aⁿ for some a > 1 and n ∈ {1, 2, …},
-`pair_reduction` states that there exists a set K ⊆ J² such that for any function f : T → E:
+Kolmogorov–Chentsov theorem for general metric spaces. Given pseudometric spaces `T` and `E`,
+`c > 0`, and a finite subset `J` of `T` such that `|J| ≤ aⁿ` for some `a > 1` and `n ∈ {1, 2, …}`,
+`pair_reduction` states that there exists a set `K ⊆ J²` such that for any function `f : T → E`:
 
-1. |K| ≤ a|J|
-2. ∀ s t ∈ K, d(s, t) ≤ cn
-3. sup_{s, t ∈ J : d(s, t) ≤ c} d(f(s), f(t)) ≤ 2 sup_{(s, t) ∈ K} d(f(s), f(t))
+1. `|K| ≤ a|J|`
+2. `∀ s t ∈ K, d(s, t) ≤ cn`
+3. `sup_{s, t ∈ J : d(s, t) ≤ c} d(f(s), f(t)) ≤ 2 sup_{(s, t) ∈ K} d(f(s), f(t))`
 
-The key point being that it reduces bounding a supremum over points "close" in J² (which can be a
-set of size up to |J|²) to bounding a supremum over a set of points with size linear in |J|
+The key point being that it reduces bounding a supremum over points "close" in `J²` (which can be a
+set of size up to `|J|²`) to bounding a supremum over a set of points with size linear in `|J|`
 (whose points are still "close").
 
 -/
@@ -46,8 +46,8 @@ lemma exists_radius_le (t : T) (V : Finset T) (ha : 1 < a) (c : ℝ≥0∞) :
     · apply ENNReal.pow_ne_top h1
   exact ⟨r, hr1, le_trans (mod_cast Finset.card_filter_le V _) hr⟩
 
-/-- The log-size radius of t in V is the smallest natural number n greater than zero such that
- {x ∈ V | d(t, x) ≤ nc} ≤ aⁿ. -/
+/-- The log-size radius of `t` in `V` is the smallest natural number n greater than zero such that
+ `{x ∈ V | d(t, x) ≤ nc} ≤ aⁿ`. -/
 noncomputable
 def logSizeRadius (t : T) (V : Finset T) (a c : ℝ≥0∞) : ℕ :=
   if h : 1 < a then Nat.find (exists_radius_le t V h c) else 0
@@ -87,15 +87,15 @@ structure logSizeBallStruct (T : Type*) where
   underlying point in the underlying finite set) -/
   radius : ℕ
 
-/-- If (V, t, r) is a `logSizeBallStruct` then `logSizeBallStruct.smallBall`
-  is {x ∈ V | d(t, x) ≤ (r - 1)c}. -/
+/-- If `(V, t, r)` is a `logSizeBallStruct` then `logSizeBallStruct.smallBall`
+  is `{x ∈ V | d(t, x) ≤ (r - 1)c}`. -/
 noncomputable
 def logSizeBallStruct.smallBall (struct : logSizeBallStruct T) (c : ℝ≥0∞) :
     Finset T :=
   struct.finset.filter fun x ↦ edist struct.point x ≤ (struct.radius - 1) * c
 
-/-- If (V, t, r) is a `logSizeBallStruct` then `logSizeBallStruct.ball`
-  is {x ∈ V | d(t, x) ≤ rc}. -/
+/-- If `(V, t, r)` is a `logSizeBallStruct` then `logSizeBallStruct.ball`
+  is `{x ∈ V | d(t, x) ≤ rc}`. -/
 noncomputable
 def logSizeBallStruct.ball (struct : logSizeBallStruct T) (c : ℝ≥0∞) :
     Finset T :=
@@ -103,10 +103,10 @@ def logSizeBallStruct.ball (struct : logSizeBallStruct T) (c : ℝ≥0∞) :
 
 variable [DecidableEq T]
 
-/-- We recursively define a log-size ball sequence (Vᵢ, tᵢ, rᵢ) by
-  * V₀ = J, tₒ is chosen arbitarily in J, r₀ is the log-size radius of t₀ in V₀
-  * Vᵢ₊ᵢ = Vᵢ \ {x ∈ V | d(t,x) ≤ (rᵢ - 1)c}, tᵢ₊₁ is chosen arbitarily in Vᵢ₊₁, rᵢ₊₁ is
-    the log-size radius of tᵢ₊₁ in Vᵢ₊ᵢ. -/
+/-- We recursively define a log-size ball sequence `(Vᵢ, tᵢ, rᵢ)` by
+  * `V₀ = J`, `tₒ` is chosen arbitarily in `J`, `r₀` is the log-size radius of `t₀` in `V₀`
+  * `Vᵢ₊ᵢ = Vᵢ \ {x ∈ V | d(t,x) ≤ (rᵢ - 1)c}`, `tᵢ₊₁` is chosen arbitarily in `Vᵢ₊₁, rᵢ₊₁` is
+    the log-size radius of `tᵢ₊₁` in `Vᵢ₊ᵢ`. -/
 noncomputable
 def logSizeBallSeq (J : Finset T) (hJ : J.Nonempty) (a c : ℝ≥0∞) : ℕ → logSizeBallStruct T :=
   Nat.rec ({finset := J, point := hJ.choose, radius := logSizeRadius hJ.choose J a c})
@@ -235,15 +235,15 @@ lemma disjoint_smallBall_logSizeBallSeq (hJ : J.Nonempty) {i j : ℕ} (hij : i �
   · exact (Finset.filter_subset _ _).trans (antitone_logSizeBallSeq_add_one_subset hJ h)
   simp [finset_logSizeBallSeq_add_one, Finset.disjoint_sdiff]
 
-/-- Given a log-size ball sequence (Vᵢ, tᵢ, rᵢ), we define the pair set sequence by
-Kᵢ = {tᵢ} × {x ∈ Vᵢ | dist(tᵢ, x) ≤ rᵢc}. -/
+/-- Given a log-size ball sequence `(Vᵢ, tᵢ, rᵢ)`, we define the pair set sequence by
+`Kᵢ = {tᵢ} × {x ∈ Vᵢ | dist(tᵢ, x) ≤ rᵢc}`. -/
 noncomputable
 def pairSetSeq (J : Finset T) (a c : ℝ≥0∞) (n : ℕ) : Finset (T × T) :=
   if hJ : J.Nonempty then
     Finset.product {(logSizeBallSeq J hJ a c n).point} ((logSizeBallSeq J hJ a c n).ball c)
   else ∅
 
-/-- Given the pair set sequence Kᵢ we define the pair set K by K = ⋃ i, Kᵢ. -/
+/-- Given the pair set sequence Kᵢ we define the pair set `K` by `K = ⋃ i, Kᵢ`. -/
 noncomputable
 def pairSet (J : Finset T) (a c : ℝ≥0∞) : Finset (T × T) :=
   Finset.biUnion (Finset.range #J) (pairSetSeq J a c)
