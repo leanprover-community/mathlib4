@@ -99,9 +99,9 @@ instance instMonoidalCategory : MonoidalCategory (QuadraticModuleCat.{u} R) :=
       associator_eq := fun X Y Z => by
         dsimp only [forget₂_obj, forget₂_map_associator_hom]
         simp only [Iso.refl_symm, Iso.trans_hom,
-          MonoidalCategory.tensorIso_hom, Iso.refl_hom, MonoidalCategory.tensor_id]
+          MonoidalCategory.tensorIso_hom, Iso.refl_hom, MonoidalCategory.id_tensorHom_id]
         dsimp only [toModuleCat_tensor, ModuleCat.of_coe]
-        rw [Category.id_comp, Category.id_comp, Category.comp_id, MonoidalCategory.tensor_id,
+        rw [Category.id_comp, Category.id_comp, Category.comp_id, MonoidalCategory.id_tensorHom_id,
           Category.id_comp] }
 
 /-- `forget₂ (QuadraticModuleCat R) (ModuleCat R)` is a monoidal functor. -/
