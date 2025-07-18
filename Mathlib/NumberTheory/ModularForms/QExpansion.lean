@@ -84,10 +84,9 @@ theorem differentiableAt_comp_ofComplex [ModularFormClass F Γ k] {z : ℂ} (hz 
     DifferentiableAt ℂ (f ∘ ofComplex) z :=
   mdifferentiableAt_iff_differentiableAt.mp ((holo f _).comp z (mdifferentiableAt_ofComplex hz))
 
-theorem bounded_at_infty_comp_ofComplex [ModularFormClass F Γ k] :
-    BoundedAtFilter I∞ (f ∘ ofComplex) := by
-  simpa only [SlashAction.slash_one, ModularForm.toSlashInvariantForm_coe]
-    using (ModularFormClass.bdd_at_infty f 1).comp_tendsto tendsto_comap_im_ofComplex
+theorem bounded_at_infty_comp_ofComplex [ModularFormClass F Γ k] [Γ.FiniteIndex] :
+    BoundedAtFilter I∞ (f ∘ ofComplex) :=
+  (ModularFormClass.bdd_at_infty f).comp_tendsto tendsto_comap_im_ofComplex
 
 theorem differentiableAt_cuspFunction [NeZero n] [ModularFormClass F Γ(n) k]
     {q : ℂ} (hq : ‖q‖ < 1) :
@@ -171,9 +170,9 @@ open ModularFormClass
 
 namespace CuspFormClass
 
-theorem zero_at_infty_comp_ofComplex [CuspFormClass F Γ k] : ZeroAtFilter I∞ (f ∘ ofComplex) := by
-  simpa only [SlashAction.slash_one, toSlashInvariantForm_coe]
-    using (zero_at_infty f 1).comp tendsto_comap_im_ofComplex
+theorem zero_at_infty_comp_ofComplex [CuspFormClass F Γ k] [Γ.FiniteIndex] :
+    ZeroAtFilter I∞ (f ∘ ofComplex) :=
+  (zero_at_infty f).comp tendsto_comap_im_ofComplex
 
 theorem cuspFunction_apply_zero [NeZero n] [CuspFormClass F Γ(n) k] :
     cuspFunction n f 0 = 0 :=

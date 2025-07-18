@@ -244,6 +244,12 @@ lemma mapGL_coe_matrix (g : SpecialLinearGroup n R) :
     ((mapGL S g) : Matrix n n S) = g.map (algebraMap R S) :=
   rfl
 
+lemma map_mapGL {T : Type*} [CommRing T] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
+    (g : SpecialLinearGroup n R) {f : S →+* T} (hf : algebraMap S T = f) :
+    (mapGL S g).map f = mapGL T g := by
+  ext
+  simp [IsScalarTower.algebraMap_apply R S T, hf]
+
 end SpecialLinearGroup
 
 section
