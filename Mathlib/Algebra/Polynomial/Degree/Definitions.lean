@@ -456,7 +456,7 @@ theorem leadingCoeff_one : leadingCoeff (1 : R[X]) = 1 :=
 theorem monic_one : Monic (1 : R[X]) :=
   leadingCoeff_C _
 
-theorem Monic.ne_zero {R : Type*} [Semiring R] [Nontrivial R] {p : R[X]} (hp : p.Monic) :
+theorem Monic.ne_zero [Nontrivial R] {p : R[X]} (hp : p.Monic) :
     p ≠ 0 := by
   rintro rfl
   simp [Monic] at hp
@@ -464,6 +464,10 @@ theorem Monic.ne_zero {R : Type*} [Semiring R] [Nontrivial R] {p : R[X]} (hp : p
 theorem Monic.ne_zero_of_ne (h : (0 : R) ≠ 1) {p : R[X]} (hp : p.Monic) : p ≠ 0 := by
   nontriviality R
   exact hp.ne_zero
+
+lemma Monic.ne_zero_of_C [Nontrivial R] {c : R} (hc : Monic (C c)) : c ≠ 0 := by
+  rintro rfl
+  simp [Monic] at hc
 
 theorem Monic.ne_zero_of_polynomial_ne {r} (hp : Monic p) (hne : q ≠ r) : p ≠ 0 :=
   haveI := Nontrivial.of_polynomial_ne hne

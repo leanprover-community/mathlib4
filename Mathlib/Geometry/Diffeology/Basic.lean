@@ -454,7 +454,6 @@ theorem dsmooth_iff_contDiff [FiniteDimensional ℝ X] {f : X → Y} : DSmooth f
 example {X Y : Type*} [DiffeologicalSpace X] [DiffeologicalSpace Y] {n m : ℕ} {f : Eucl n → Eucl m}
     {p : Eucl m → X} {g : X → Y} (hf : ContDiff ℝ ∞ f) (hp : IsPlot p) (hg : DSmooth g) :
     IsPlot (g ∘ p ∘ f) := by
-  have : DSmooth p := hp.dsmooth -- `fun_prop` can't even prove this subgoal directly anymore - why?
   fun_prop
 
 end FiniteDimensionalNormedSpace

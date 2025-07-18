@@ -455,7 +455,7 @@ def equivalenceSelfOfHasFiniteBiproductsAux [HasFiniteBiproducts C] :
     embedding C ⋙ 𝟭 (Mat_ C) ≅ embedding C ⋙ lift (𝟭 C) ⋙ embedding C :=
   Functor.rightUnitor _ ≪≫
     (Functor.leftUnitor _).symm ≪≫
-      isoWhiskerRight (embeddingLiftIso _).symm _ ≪≫ Functor.associator _ _ _
+      Functor.isoWhiskerRight (embeddingLiftIso _).symm _ ≪≫ Functor.associator _ _ _
 
 /--
 A preadditive category that already has finite biproducts is equivalent to its additive envelope.

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade, Yaël Dillies
 -/
 import Mathlib.Analysis.Convex.Cone.Closure
+import Mathlib.Geometry.Convex.Cone.Pointed
 import Mathlib.Topology.Algebra.Module.ClosedSubmodule
 import Mathlib.Topology.Algebra.Order.Module
 import Mathlib.Topology.Order.OrderClosed
@@ -79,6 +80,7 @@ lemma pointed_toConvexCone (C : ProperCone R E) : (C : ConvexCone R E).Pointed :
 
 protected lemma nonempty (C : ProperCone R E) : (C : Set E).Nonempty := C.toSubmodule.nonempty
 protected lemma isClosed (C : ProperCone R E) : IsClosed (C : Set E) := C.isClosed'
+protected lemma convex (C : ProperCone R E) : Convex R (C : Set E) := C.toPointedCone.convex
 
 protected nonrec lemma smul_mem (C : ProperCone R E) (hx : x ∈ C) (hr : 0 ≤ r) : r • x ∈ C :=
   C.smul_mem ⟨r, hr⟩ hx
@@ -132,8 +134,7 @@ lemma mem_map {f : E →L[R] F} {C : ProperCone R E} {y : F} :
 end Module
 
 section PositiveCone
-variable {E : Type*} [AddCommGroup E] [TopologicalSpace E] [Module R E] [PartialOrder E]
-  [IsOrderedAddMonoid E] [OrderedSMul R E] [OrderClosedTopology E] {x : E}
+variable [PartialOrder E] [IsOrderedAddMonoid E] [PosSMulMono R E] [OrderClosedTopology E] {x : E}
 
 variable (R E) in
 /-- The positive cone is the proper cone formed by the set of nonnegative elements in an ordered

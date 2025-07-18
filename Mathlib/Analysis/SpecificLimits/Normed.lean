@@ -651,10 +651,7 @@ theorem not_summable_of_ratio_norm_eventually_ge {α : Type*} [SeminormedAddComm
     specialize hN₀ N hNN₀
     simp only [comp_apply, zero_add] at h''
     exact hN h''.symm
-  · intro i
-    dsimp only [comp_apply]
-    convert hN₀ (i + N) (hNN₀.trans (N.le_add_left i)) using 3
-    ac_rfl
+  · grind
 
 theorem not_summable_of_ratio_test_tendsto_gt_one {α : Type*} [SeminormedAddCommGroup α]
     {f : ℕ → α} {l : ℝ} (hl : 1 < l) (h : Tendsto (fun n ↦ ‖f (n + 1)‖ / ‖f n‖) atTop (𝓝 l)) :
@@ -870,7 +867,7 @@ lemma tendsto_zero_of_isBoundedUnder_smul_of_tendsto_cobounded [NormedAddGroup K
   refine Metric.nhds_basis_closedBall.tendsto_right_iff.mpr fun ε hε0 ↦ ?_
   filter_upwards [hc, hasBasis_cobounded_norm.tendsto_right_iff.mp hf (c / ε) trivial,
     hf.eventually_ne_cobounded 0] with x hfgc hεf hf0
-  rcases eq_or_gt_of_le ((norm_nonneg _).trans hfgc) with rfl | hc0
+  rcases eq_or_lt_of_le ((norm_nonneg _).trans hfgc) with rfl | hc0
   · simpa [(smul_eq_zero_iff_right hf0).mp (norm_le_zero_iff.mp hfgc)] using hε0.le
   calc
     _ = ‖g x‖ := by simp
@@ -893,7 +890,7 @@ lemma tendsto_smul_congr_of_tendsto_left_cobounded_of_isBoundedUnder
   dsimp
   simp_rw [dist_eq_norm, ← sub_smul, norm_smul]
   apply isBoundedUnder_le_mul_tendsto_zero
-  · show IsBoundedUnder _ _ fun _ ↦ _
+  · change IsBoundedUnder _ _ fun _ ↦ _
     simpa using hbdd
   · rw [← tendsto_zero_iff_norm_tendsto_zero]
     exact tendsto_zero_of_isBoundedUnder_smul_of_tendsto_cobounded hmul.norm.isBoundedUnder_le hf₁

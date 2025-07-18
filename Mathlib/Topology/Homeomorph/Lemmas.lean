@@ -476,7 +476,7 @@ variable (f) in
 noncomputable def homeomorph : X ≃ₜ Y where
   continuous_toFun := hf.1
   continuous_invFun := by
-    rw [continuous_iff_continuousOn_univ, ← hf.bijective.2.range_eq]
+    rw [← continuousOn_univ, ← hf.bijective.2.range_eq]
     exact hf.isOpenMap.continuousOn_range_of_leftInverse (leftInverse_surjInv hf.bijective)
   toEquiv := Equiv.ofBijective f hf.bijective
 
@@ -520,7 +520,7 @@ lemma isHomeomorph_iff_isEmbedding_surjective : IsHomeomorph f ↔ IsEmbedding f
 alias isHomeomorph_iff_embedding_surjective := isHomeomorph_iff_isEmbedding_surjective
 
 /-- A map is a homeomorphism iff it is continuous, closed and bijective. -/
-lemma isHomeomorph_iff_continuous_isClosedMap_bijective  : IsHomeomorph f ↔
+lemma isHomeomorph_iff_continuous_isClosedMap_bijective : IsHomeomorph f ↔
     Continuous f ∧ IsClosedMap f ∧ Function.Bijective f :=
   ⟨fun hf => ⟨hf.continuous, hf.isClosedMap, hf.bijective⟩, fun ⟨hf, hf', hf''⟩ =>
     ⟨hf, fun _ hu => isClosed_compl_iff.1 (image_compl_eq hf'' ▸ hf' _ hu.isClosed_compl), hf''⟩⟩
