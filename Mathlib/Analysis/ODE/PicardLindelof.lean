@@ -536,7 +536,7 @@ lemma contDiffOn_nat_picard_Icc
   · have : Icc tmin tmax = {t₀} := by -- missing lemma!
       rw [not_lt] at hlt
       rw [Icc_eq_singleton_iff]
-      exact ⟨eq_of_le_of_le ht₀.1 (le_trans ht₀.2 hlt), eq_of_le_of_le (le_trans hlt ht₀.1) ht₀.2⟩
+      exact ⟨le_antisymm ht₀.1 (le_trans ht₀.2 hlt), le_antisymm (le_trans hlt ht₀.1) ht₀.2⟩
     rw [this]
     intro t ht
     rw [eq_of_mem_singleton ht]
