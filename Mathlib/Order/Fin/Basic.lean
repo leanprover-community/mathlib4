@@ -340,7 +340,7 @@ def valOrderEmb (n) : Fin n ↪o ℕ := ⟨valEmbedding, Iff.rfl⟩
 namespace OrderEmbedding
 
 @[simps]
-instance instInhabited : Inhabited (Fin n ↪o ℕ) where
+instance : Inhabited (Fin n ↪o ℕ) where
   default := Fin.valOrderEmb n
 
 end OrderEmbedding
