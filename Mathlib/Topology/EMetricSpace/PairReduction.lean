@@ -5,6 +5,7 @@ Authors: Rémy Degenne, David Ledvinka
 -/
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLogExp
 import Mathlib.Order.CompletePartialOrder
 
 /-!
@@ -32,7 +33,7 @@ variable {T : Type*} [PseudoEMetricSpace T] {a c : ℝ≥0∞} {n : ℕ} {V : Fi
 lemma exists_radius_le (t : T) (V : Finset T) (ha : 1 < a) (c : ℝ≥0∞) :
     ∃ r : ℕ, 1 ≤ r ∧ #(V.filter fun x ↦ edist t x ≤ r * c) ≤ a ^ r := by
   have := ENNReal.tendsto_nhds_top_iff_nat.1
-    ((ENNReal.tendsto_rpow_atTop_of_one_lt_base a ha).comp tendsto_natCast_atTop_atTop) #V
+    ((ENNReal.tendsto_rpow_atTop_of_one_lt_base ha).comp tendsto_natCast_atTop_atTop) #V
   simp only [Function.comp_apply, ENNReal.rpow_natCast, Filter.eventually_atTop, ge_iff_le] at this
   obtain ⟨r, hr⟩ := this
   exact ⟨max r 1, le_max_right r 1,
@@ -342,7 +343,7 @@ lemma iSup_edist_pairSet {E : Type*} [PseudoEMetricSpace E] (ha : 1 < a) (f : T 
         suffices h_emp : (logSizeBallSeq J hJ a c (l + 1)).finset = ∅ from by simp [h_emp]
         rw [← Finset.card_eq_zero, ← Nat.le_zero, ← Nat.sub_self #J, hlJ]
         apply card_finset_logSizeBallSeq_le
-      simp only [Decidable.not_not, P] at h
+      simp only [Decidable.not_not] at h
       have hP := Nat.findGreatest_is_greatest (lt_add_one l) (Nat.add_one_le_of_lt hl)
       simp [P, h] at hP; exact hP
     have hts : edist t s ≤ c := by rw [edist_comm]; exact hst
