@@ -138,9 +138,10 @@ open Nat Function in
 theorem iter_deriv_inv_linear (k : ℕ) (c d : 𝕜) :
     deriv^[k] (fun x ↦ (c * x + d)⁻¹) =
     (fun x : 𝕜 ↦ (-1) ^ k * k ! * c ^ k * (c * x + d) ^ (-1 - k : ℤ)) := by
-  induction' k with k ihk
-  · simp
-  · rw [factorial_succ, add_comm k 1, iterate_add_apply, ihk]
+  induction k with
+  | zero => simp
+  | succ k ihk =>
+    rw [factorial_succ, add_comm k 1, iterate_add_apply, ihk]
     ext z
     simp only [Int.reduceNeg, iterate_one, deriv_const_mul_field', cast_add, cast_one]
     by_cases hd : c = 0
