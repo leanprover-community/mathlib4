@@ -1204,7 +1204,7 @@ lemma denselyOrdered_iff_of_strictAnti {X Y F : Type*} [LinearOrder X] [Preorder
   let e : Xᵒᵈ ≃o Y := ⟨OrderDual.ofDual.trans (f : X ≃ Y), ?_⟩
   · exact denselyOrdered_iff_of_orderIsoClass e
   · simp only [Equiv.trans_apply, EquivLike.coe_coe, OrderDual.forall, OrderDual.ofDual_toDual,
-    OrderDual.toDual_le_toDual]
+      OrderDual.toDual_le_toDual]
     intro a b
     rw [hf.le_iff_le]
 
