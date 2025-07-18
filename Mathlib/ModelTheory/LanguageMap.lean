@@ -31,17 +31,13 @@ For the Flypitch project:
 
 -/
 
-
 universe u v u' v' w w'
 
 namespace FirstOrder
 
-
 namespace Language
 
 open Structure Cardinal
-
-open Cardinal
 
 variable (L : Language.{u, v}) (L' : Language.{u', v'}) {M : Type w} [L.Structure M]
 

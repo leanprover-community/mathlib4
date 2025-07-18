@@ -131,7 +131,7 @@ the top. For a composition series `s`, `s.last` is the largest element of the se
 and `s.head` is the least element.
 -/
 abbrev CompositionSeries (X : Type u) [Lattice X] [JordanHolderLattice X] : Type u :=
-  RelSeries (IsMaximal (X := X))
+  RelSeries {(x, y) : X × X | IsMaximal x y}
 
 namespace CompositionSeries
 
@@ -196,6 +196,7 @@ theorem head_le_of_mem {s : CompositionSeries X} {x : X} (hx : x ∈ s) : s.head
 theorem last_eraseLast_le (s : CompositionSeries X) : s.eraseLast.last ≤ s.last := by
   simp [eraseLast, last, s.strictMono.le_iff_le, Fin.le_iff_val_le_val]
 
+open Fin.NatCast in -- TODO: should this be refactored to avoid needing the coercion?
 theorem mem_eraseLast_of_ne_of_mem {s : CompositionSeries X} {x : X}
     (hx : x ≠ s.last) (hxs : x ∈ s) : x ∈ s.eraseLast := by
   rcases hxs with ⟨i, rfl⟩
@@ -203,8 +204,9 @@ theorem mem_eraseLast_of_ne_of_mem {s : CompositionSeries X} {x : X}
     conv_rhs => rw [← Nat.succ_sub (length_pos_of_nontrivial ⟨_, ⟨i, rfl⟩, _, s.last_mem, hx⟩),
       Nat.add_one_sub_one]
     exact lt_of_le_of_ne (Nat.le_of_lt_succ i.2) (by simpa [last, s.inj, Fin.ext_iff] using hx)
+  -- TODO: This can surely be improved: there is a double coercion hidden here:
   refine ⟨Fin.castSucc (n := s.length + 1) i, ?_⟩
-  simp [Fin.ext_iff, Nat.mod_eq_of_lt hi]
+  simp [Nat.mod_eq_of_lt hi]
 
 theorem mem_eraseLast {s : CompositionSeries X} {x : X} (h : 0 < s.length) :
     x ∈ s.eraseLast ↔ x ≠ s.last ∧ x ∈ s := by
@@ -224,10 +226,11 @@ theorem lt_last_of_mem_eraseLast {s : CompositionSeries X} {x : X} (h : 0 < s.le
 
 theorem isMaximal_eraseLast_last {s : CompositionSeries X} (h : 0 < s.length) :
     IsMaximal s.eraseLast.last s.last := by
-  have : s.length - 1 + 1 = s.length := by
-    conv_rhs => rw [← Nat.add_one_sub_one s.length]; rw [Nat.succ_sub h]
   rw [last_eraseLast, last]
-  convert s.step ⟨s.length - 1, by omega⟩; ext; simp [this]
+  have := s.step ⟨s.length - 1, by omega⟩
+  simp only [Fin.castSucc_mk, Fin.succ_mk, mem_setOf_eq] at this
+  convert this using 3
+  exact (tsub_add_cancel_of_le h).symm
 
 theorem eq_snoc_eraseLast {s : CompositionSeries X} (h : 0 < s.length) :
     s = snoc (eraseLast s) s.last (isMaximal_eraseLast_last h) := by
@@ -281,7 +284,7 @@ protected theorem smash {s₁ s₂ t₁ t₂ : CompositionSeries X}
     · intro i
       simpa [e, smash_castAdd, smash_succ_castAdd] using h₁.choose_spec i
     · intro i
-      simpa [e, smash_natAdd, smash_succ_natAdd] using h₂.choose_spec i⟩
+      simpa [e, -Fin.castSucc_natAdd, smash_natAdd, smash_succ_natAdd] using h₂.choose_spec i⟩
 
 protected theorem snoc {s₁ s₂ : CompositionSeries X} {x₁ x₂ : X} {hsat₁ : IsMaximal s₁.last x₁}
     {hsat₂ : IsMaximal s₂.last x₂} (hequiv : Equivalent s₁ s₂)
@@ -295,7 +298,7 @@ protected theorem snoc {s₁ s₂ : CompositionSeries X} {x₁ x₂ : X} {hsat�
     refine Fin.lastCases ?_ ?_ i
     · simpa [e, apply_last] using hlast
     · intro i
-      simpa [e, Fin.succ_castSucc] using hequiv.choose_spec i⟩
+      simpa [e, ← Fin.castSucc_succ] using hequiv.choose_spec i⟩
 
 theorem length_eq {s₁ s₂ : CompositionSeries X} (h : Equivalent s₁ s₂) : s₁.length = s₂.length := by
   simpa using Fintype.card_congr h.choose

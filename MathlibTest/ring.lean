@@ -98,7 +98,7 @@ example (A B : ℕ) (H : B * A = 2) : A * B = 2 := by ring_nf at H ⊢; exact H
 example (f : ℕ → ℕ) :
   2 + f (2 * f 3 * f 3) + f 3 = 1 + f (f 3 ^ 2 + f 3 * f 3) + 1 + f (2 + 1) := by ring_nf
 
-example (n : ℕ) (m : ℤ) : 2^(n+1) * m = 2 * 2^n * m := by ring
+example (n : ℕ) (m : ℤ) : 2^(n + 1) * m = 2 * 2^n * m := by ring
 example (a b : ℤ) (n : ℕ) : (a + b)^(n + 2) = (a^2 + b^2 + a * b + b * a) * (a + b)^n := by ring
 example (x y : ℕ) : x + id y = y + id x := by ring!
 
@@ -108,9 +108,8 @@ example : 22 + 7 * 4 + 3 * 8 = 0 + 7 * 4 + 46 := by
   trivial -- FIXME: not needed in lean 3
 
 -- Example with ring failing to discharge, to normalizing the goal
-/--
-info: Try this: ring_nf
--/
+
+/-- info: Try this: ring_nf -/
 #guard_msgs in
 example : (22 + 7 * 4 + 3 * 8 = 0 + 7 * 4 + 47) = (74 = 75) := by
   conv => ring
@@ -122,9 +121,8 @@ example (x : ℕ) : 22 + 7 * x + 3 * 8 = 0 + 7 * x + 46 := by
   trivial
 
 -- Example with ring failing to discharge, to normalizing the goal
-/--
-info: Try this: ring_nf
--/
+
+/-- info: Try this: ring_nf -/
 #guard_msgs in
 example (x : ℕ) : (22 + 7 * x + 3 * 8 = 0 + 7 * x + 46 + 1)
                     = (7 * x + 46 = 7 * x + 47) := by
@@ -171,11 +169,11 @@ example {n : ℝ} :
 -- We can't use `guard_target =ₛ` here, as while it does detect stray `OfNat`s, it also complains
 -- about differing instance paths.
 /--
-info: n : ℝ
+trace: n : ℝ
 _hn : 0 ≤ n
 ⊢ 1 / 3 + n * (19 / 12) + n ^ 2 * (7 / 3) + n ^ 3 ≤ 1 / 3 + n * (5 / 3) + n ^ 2 * (7 / 3) + n ^ 3
 -/
-#guard_msgs (info) in
+#guard_msgs (trace) in
 example {n : ℝ} (_hn : 0 ≤ n) : (n + 1 / 2) ^ 2 * (n + 1 + 1 / 3) ≤ (n + 1 / 3) * (n + 1) ^ 2 := by
   ring_nf
   trace_state
@@ -192,12 +190,12 @@ We can't use `guard_hyp h :ₛ` here, as while it does tell apart `x` and `myId 
 about differing instance paths.
 -/
 /--
-info: x : ℤ
+trace: x : ℤ
 R : ℤ → ℤ → Prop
 h : R (myId x * 2) (myId x * 2)
 ⊢ True
 -/
-#guard_msgs (info) in
+#guard_msgs (trace) in
 example (x : ℤ) (R : ℤ → ℤ → Prop) : True := by
   have h : R (myId x + x) (x + myId x) := test_sorry
   ring_nf at h

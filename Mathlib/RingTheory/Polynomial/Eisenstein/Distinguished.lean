@@ -31,6 +31,10 @@ structure Polynomial.IsDistinguishedAt (f : R[X]) (I : Ideal R) : Prop
 
 namespace Polynomial.IsDistinguishedAt
 
+lemma mul {f f' : R[X]} {I : Ideal R} (hf : f.IsDistinguishedAt I) (hf' : f'.IsDistinguishedAt I) :
+    (f * f').IsDistinguishedAt I :=
+  ⟨hf.toIsWeaklyEisensteinAt.mul hf'.toIsWeaklyEisensteinAt, hf.monic.mul hf'.monic⟩
+
 lemma map_eq_X_pow {f : R[X]} {I : Ideal R} (distinguish : f.IsDistinguishedAt I) :
     f.map (Ideal.Quotient.mk I) = Polynomial.X ^ f.natDegree := by
   ext i

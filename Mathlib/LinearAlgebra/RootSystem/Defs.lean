@@ -142,8 +142,6 @@ variable (ι R M N) in
 @[simps] def flipEquiv : RootPairing ι R N M ≃ RootPairing ι R M N where
   toFun P := P.flip
   invFun P := P.flip
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- If we interchange the roles of `M` and `N`, we still have a root system. -/
 protected def _root_.RootSystem.flip (P : RootSystem ι R M N) : RootSystem ι R N M :=
@@ -161,8 +159,6 @@ variable (ι R M N) in
 @[simps] def _root_.RootSystem.flipEquiv : RootSystem ι R N M ≃ RootSystem ι R M N where
   toFun P := P.flip
   invFun P := P.flip
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 lemma ne_zero [NeZero (2 : R)] : (P.root i : M) ≠ 0 :=
   fun h ↦ NeZero.ne' (2 : R) <| by simpa [h] using P.root_coroot_two i
@@ -222,6 +218,11 @@ lemma coroot_root_eq_pairing : P.toLinearMap.flip (P.coroot i) (P.root j) = P.pa
 
 @[simp]
 lemma pairing_same : P.pairing i i = 2 := P.root_coroot_two i
+
+variable {P} in
+lemma pairing_eq_add_of_root_eq_add {i j k l : ι} (h : P.root k = P.root i + P.root j) :
+    P.pairing k l = P.pairing i l + P.pairing j l := by
+  simp only [← root_coroot_eq_pairing, h, map_add, LinearMap.add_apply]
 
 lemma coroot_root_two :
     P.toLinearMap.flip (P.coroot i) (P.root i) = 2 := by
@@ -394,7 +395,7 @@ lemma pairing_reflectionPerm (i j k : ι) :
   simp only [pairing, root', coroot_reflectionPerm, root_reflectionPerm]
   simp only [coreflection_apply_coroot, map_sub, map_smul, smul_eq_mul,
     reflection_apply_root]
-  simp [← toLinearMap_eq_toPerfectPairing, map_smul, LinearMap.smul_apply, map_sub, map_smul,
+  simp [← toLinearMap_eq_toPerfectPairing, LinearMap.smul_apply,
     LinearMap.sub_apply, smul_eq_mul]
   simp [mul_comm]
 
@@ -439,8 +440,7 @@ of a root / coroot. -/
     apply P.root.injective
     simp only [root_reflectionPerm, reflection_apply, PerfectPairing.flip_apply_apply,
       root_coroot_eq_pairing, pairing_same, map_sub, map_smul, coroot_reflectionPerm,
-      coreflection_apply_self, LinearMap.sub_apply, map_neg, LinearMap.smul_apply, smul_eq_mul,
-      mul_neg, sub_neg_eq_add]
+      coreflection_apply_self, map_neg]
     module
 
 lemma ne_neg [NeZero (2 : R)] [IsDomain R] :

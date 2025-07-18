@@ -183,7 +183,7 @@ lemma sum_sq_le_sum_mul_sum_of_sq_eq_mul [CommSemiring R] [LinearOrder R] [IsStr
     [ExistsAddOfLE R]
     (s : Finset ι) {r f g : ι → R} (hf : ∀ i ∈ s, 0 ≤ f i) (hg : ∀ i ∈ s, 0 ≤ g i)
     (ht : ∀ i ∈ s, r i ^ 2 = f i * g i) : (∑ i ∈ s, r i) ^ 2 ≤ (∑ i ∈ s, f i) * ∑ i ∈ s, g i := by
-  obtain h | h := (sum_nonneg hg).eq_or_gt
+  obtain h | h := (sum_nonneg hg).eq_or_lt'
   · have ht' : ∑ i ∈ s, r i = 0 := sum_eq_zero fun i hi ↦ by
       simpa [(sum_eq_zero_iff_of_nonneg hg).1 h i hi] using ht i hi
     rw [h, ht']
@@ -281,7 +281,6 @@ def evalFinsetProd : PositivityExt where eval {u α} zα pα e := do
     have body : Q($α) := Expr.betaRev f #[i]
     let rbody ← core zα pα body
     let _instαmon ← synthInstanceQ q(CommMonoidWithZero $α)
-
     -- Try to show that the product is positive
     let p_pos : Option Q(0 < $e) := ← do
       let .positive pbody := rbody | pure none -- Fail if the body is not provably positive
@@ -293,7 +292,6 @@ def evalFinsetProd : PositivityExt where eval {u α} zα pα e := do
       let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody (binderInfoForMVars := .default)
       return some q(prod_pos fun i _ ↦ $pr i)
     if let some p_pos := p_pos then return .positive p_pos
-
     -- Try to show that the product is nonnegative
     let p_nonneg : Option Q(0 ≤ $e) := ← do
       let .some pbody := rbody.toNonneg
@@ -305,7 +303,6 @@ def evalFinsetProd : PositivityExt where eval {u α} zα pα e := do
       assertInstancesCommute
       return some q(prod_nonneg fun i _ ↦ $pr i)
     if let some p_nonneg := p_nonneg then return .nonnegative p_nonneg
-
     -- Fall back to showing that the product is nonzero
     let pbody ← rbody.toNonzero
     let pr : Q(∀ i, $f i ≠ 0) ← mkLambdaFVars #[i] pbody (binderInfoForMVars := .default)

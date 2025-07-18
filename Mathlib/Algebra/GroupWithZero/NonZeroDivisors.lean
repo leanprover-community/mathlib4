@@ -208,7 +208,7 @@ theorem MulEquivClass.map_nonZeroDivisors {M₀ S F : Type*} [MonoidWithZero M�
     [EquivLike F M₀ S] [MulEquivClass F M₀ S] (h : F) :
     Submonoid.map h (nonZeroDivisors M₀) = nonZeroDivisors S := by
   let h : M₀ ≃* S := h
-  show Submonoid.map h _ = _
+  change Submonoid.map h _ = _
   ext
   simp_rw [Submonoid.map_equiv_eq_comap_symm, Submonoid.mem_comap, mem_nonZeroDivisors_iff,
     ← h.symm.forall_congr_right, h.symm.toEquiv_eq_coe, h.symm.coe_toEquiv, ← map_mul,
@@ -281,7 +281,6 @@ variable {G₀ : Type*} [GroupWithZero G₀] {x : G₀}
 noncomputable def nonZeroDivisorsEquivUnits : G₀⁰ ≃* G₀ˣ where
   toFun u := .mk0 _ <| mem_nonZeroDivisors_iff_ne_zero.1 u.2
   invFun u := ⟨u, u.isUnit.mem_nonZeroDivisors⟩
-  left_inv u := rfl
   right_inv u := by simp
   map_mul' u v := by simp
 
@@ -292,7 +291,7 @@ end GroupWithZero
 
 section nonZeroSMulDivisors
 
-open nonZeroSMulDivisors nonZeroDivisors
+open nonZeroSMulDivisors
 
 variable {M₀ M : Type*} [MonoidWithZero M₀] [Zero M] [MulAction M₀ M] {x : M₀}
 
@@ -325,8 +324,6 @@ def unitsNonZeroDivisorsEquiv : M₀⁰ˣ ≃* M₀ˣ where
   __ := Units.map M₀⁰.subtype
   invFun u := ⟨⟨u, u.isUnit.mem_nonZeroDivisors⟩, ⟨(u⁻¹ : M₀ˣ), u⁻¹.isUnit.mem_nonZeroDivisors⟩,
     by simp, by simp⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp, norm_cast] lemma nonZeroDivisors.associated_coe : Associated (a : M₀) b ↔ Associated a b :=
   unitsNonZeroDivisorsEquiv.symm.exists_congr_left.trans <| by simp [Associated]; norm_cast

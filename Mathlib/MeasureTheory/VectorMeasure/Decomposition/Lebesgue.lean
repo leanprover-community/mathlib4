@@ -343,7 +343,7 @@ theorem singularPart_smul_nnreal (s : SignedMeasure α) (μ : Measure α) (r : �
 
 nonrec theorem singularPart_smul (s : SignedMeasure α) (μ : Measure α) (r : ℝ) :
     (r • s).singularPart μ = r • s.singularPart μ := by
-  cases le_or_lt 0 r with
+  cases le_or_gt 0 r with
   | inl hr =>
     lift r to ℝ≥0 using hr
     exact singularPart_smul_nnreal s μ r

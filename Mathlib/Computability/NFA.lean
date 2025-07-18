@@ -1,20 +1,41 @@
 /-
 Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Fox Thomson
+Authors: Fox Thomson, Maja Kądziołka
 -/
 import Mathlib.Computability.DFA
 import Mathlib.Data.Fintype.Powerset
 
 /-!
 # Nondeterministic Finite Automata
-This file contains the definition of a Nondeterministic Finite Automaton (NFA), a state machine
-which determines whether a string (implemented as a list over an arbitrary alphabet) is in a regular
-set by evaluating the string over every possible path.
-We show that DFA's are equivalent to NFA's however the construction from NFA to DFA uses an
-exponential number of states.
-Note that this definition allows for Automaton with infinite states; a `Fintype` instance must be
-supplied for true NFA's.
+
+A Nondeterministic Finite Automaton (NFA) is a state machine which
+decides membership in a particular `Language`, by following every
+possible path that describes an input string.
+
+We show that DFAs and NFAs can decide the same languages, by constructing
+an equivalent DFA for every NFA, and vice versa.
+
+As constructing a DFA from an NFA uses an exponential number of states,
+we re-prove the pumping lemma instead of lifting `DFA.pumping_lemma`,
+in order to obtain the optimal bound on the minimal length of the string.
+
+Like `DFA`, this definition allows for automata with infinite states;
+a `Fintype` instance must be supplied for true NFAs.
+
+## Main definitions
+
+* `NFA α σ`: automaton over alphabet `α` and set of states `σ`
+* `NFA.evalFrom M S x`: set of possible ending states for an input word `x`
+  and set of initial states `S`
+* `NFA.accepts M`: the language accepted by the NFA `M`
+* `NFA.Path M s t x`: a specific path from `s` to `t` for an input word `x`
+* `NFA.Path.supp p`: set of states visited by the path `p`
+
+## Main theorems
+
+* `NFA.pumping_lemma`: every sufficiently long string accepted by the NFA has a substring that can
+  be repeated arbitrarily many times (and have the overall string still be accepted)
 -/
 
 open Set
@@ -55,6 +76,11 @@ variable (M) in
 theorem stepSet_empty (a : α) : M.stepSet ∅ a = ∅ := by simp [stepSet]
 
 variable (M) in
+@[simp]
+theorem stepSet_singleton (s : σ) (a : α) : M.stepSet {s} a = M.step s a := by
+  simp [stepSet]
+
+variable (M) in
 /-- `M.evalFrom S x` computes all possible paths through `M` with input `x` starting at an element
   of `S`. -/
 def evalFrom (S : Set σ) : List α → Set σ :=
@@ -72,9 +98,31 @@ theorem evalFrom_singleton (S : Set σ) (a : α) : M.evalFrom S [a] = M.stepSet 
 
 variable (M) in
 @[simp]
+theorem evalFrom_cons (S : Set σ) (a : α) (x : List α) :
+    M.evalFrom S (a :: x) = M.evalFrom (M.stepSet S a) x :=
+  rfl
+
+@[simp]
 theorem evalFrom_append_singleton (S : Set σ) (x : List α) (a : α) :
     M.evalFrom S (x ++ [a]) = M.stepSet (M.evalFrom S x) a := by
   simp only [evalFrom, List.foldl_append, List.foldl_cons, List.foldl_nil]
+
+variable (M) in
+@[simp]
+theorem evalFrom_biUnion {ι : Type*} (t : Set ι) (f : ι → Set σ) :
+    ∀ (x : List α), M.evalFrom (⋃ i ∈ t, f i) x = ⋃ i ∈ t, M.evalFrom (f i) x
+  | [] => by simp
+  | a :: x => by simp [stepSet, evalFrom_biUnion _ _ x]
+
+variable (M) in
+theorem evalFrom_eq_biUnion_singleton (S : Set σ) (x : List α) :
+    M.evalFrom S x = ⋃ s ∈ S, M.evalFrom {s} x := by
+  simp [← evalFrom_biUnion]
+
+theorem mem_evalFrom_iff_exists {s : σ} {S : Set σ} {x : List α} :
+    s ∈ M.evalFrom S x ↔ ∃ t ∈ S, s ∈ M.evalFrom {t} x := by
+  rw [evalFrom_eq_biUnion_singleton]
+  simp
 
 variable (M) in
 /-- `M.eval x` computes all possible paths though `M` with input `x` starting at an element of
@@ -103,6 +151,49 @@ def accepts : Language α := {x | ∃ S ∈ M.accept, S ∈ M.eval x}
 
 theorem mem_accepts {x : List α} : x ∈ M.accepts ↔ ∃ S ∈ M.accept, S ∈ M.evalFrom M.start x := by
   rfl
+
+variable (M) in
+/-- `M.Path` represents a concrete path through the NFA from a start state to an end state
+for a particular word.
+
+Note that due to the non-deterministic nature of the automata, there can be more than one `Path`
+for a given word.
+
+Also note that this is `Type` and not a `Prop`, so that we can speak about the properties
+of a particular `Path`, such as the set of states visited along the way (defined as `Path.supp`). -/
+inductive Path : σ → σ → List α → Type (max u v)
+  | nil (s : σ) : Path s s []
+  | cons (t s u : σ) (a : α) (x : List α) :
+      t ∈ M.step s a → Path t u x → Path s u (a :: x)
+
+/-- Set of states visited by a path. -/
+@[simp]
+def Path.supp [DecidableEq σ] {s t : σ} {x : List α} : M.Path s t x → Finset σ
+  | nil s => {s}
+  | cons _ _ _ _ _ _ p => {s} ∪ p.supp
+
+theorem mem_evalFrom_iff_nonempty_path {s t : σ} {x : List α} :
+    t ∈ M.evalFrom {s} x ↔ Nonempty (M.Path s t x) where
+  mp h := match x with
+    | [] =>
+      have h : s = t := by simp at h; tauto
+      ⟨h ▸ Path.nil s⟩
+    | a :: x =>
+      have h : ∃ s' ∈ M.step s a, t ∈ M.evalFrom {s'} x :=
+        by rw [evalFrom_cons, mem_evalFrom_iff_exists, stepSet_singleton] at h; exact h
+      let ⟨s', h₁, h₂⟩ := h
+      let ⟨p'⟩ := mem_evalFrom_iff_nonempty_path.1 h₂
+      ⟨Path.cons s' _ _ _ _ h₁ p'⟩
+  mpr p := match p with
+    | ⟨Path.nil s⟩ => by simp
+    | ⟨Path.cons s' s t a x h₁ h₂⟩ => by
+      rw [evalFrom_cons, stepSet_singleton, mem_evalFrom_iff_exists]
+      exact ⟨s', h₁, mem_evalFrom_iff_nonempty_path.2 ⟨h₂⟩⟩
+
+theorem accepts_iff_exists_path {x : List α} :
+    x ∈ M.accepts ↔ ∃ s ∈ M.start, ∃ t ∈ M.accept, Nonempty (M.Path s t x) := by
+  simp only [← mem_evalFrom_iff_nonempty_path, mem_accepts, mem_evalFrom_iff_exists (S := M.start)]
+  tauto
 
 variable (M) in
 /-- `M.toDFA` is a `DFA` constructed from an `NFA` `M` using the subset construction. The
@@ -199,7 +290,7 @@ theorem disjoint_evalFrom_reverse_iff {x : List α} {S S' : Set σ} :
 
 @[simp]
 theorem mem_accepts_reverse {x : List α} : x ∈ M.reverse.accepts ↔ x.reverse ∈ M.accepts := by
-  simp [mem_accepts, ← Set.not_disjoint_iff, not_iff_not, disjoint_evalFrom_reverse_iff]
+  simp [mem_accepts, ← Set.not_disjoint_iff, disjoint_evalFrom_reverse_iff]
 
 end NFA
 

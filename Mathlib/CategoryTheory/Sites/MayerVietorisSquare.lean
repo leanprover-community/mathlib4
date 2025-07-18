@@ -147,7 +147,7 @@ noncomputable def mk_of_isPullback (sq : Square C) [Mono sq.f₂₄] [Mono sq.f�
 variable (S : J.MayerVietorisSquare)
 
 lemma isPushoutAddCommGrpFreeSheaf [HasWeakSheafify J AddCommGrp.{v}] :
-    (S.map (yoneda ⋙ (whiskeringRight _ _ _).obj AddCommGrp.free ⋙
+    (S.map (yoneda ⋙ (Functor.whiskeringRight _ _ _).obj AddCommGrp.free ⋙
       presheafToSheaf J _)).IsPushout :=
   (S.isPushout.map (Sheaf.composeAndSheafify J AddCommGrp.free)).of_iso
     ((Square.mapFunctor.mapIso
@@ -234,13 +234,13 @@ noncomputable def shortComplex :
   X₃ := (presheafToSheaf J _).obj (yoneda.obj S.X₄ ⋙ AddCommGrp.free)
   f :=
     biprod.lift
-      ((presheafToSheaf J _).map (whiskerRight (yoneda.map S.f₁₂) _))
-      (-(presheafToSheaf J _).map (whiskerRight (yoneda.map S.f₁₃) _))
+      ((presheafToSheaf J _).map (Functor.whiskerRight (yoneda.map S.f₁₂) _))
+      (-(presheafToSheaf J _).map (Functor.whiskerRight (yoneda.map S.f₁₃) _))
   g :=
     biprod.desc
-      ((presheafToSheaf J _).map (whiskerRight (yoneda.map S.f₂₄) _))
-      ((presheafToSheaf J _).map (whiskerRight (yoneda.map S.f₃₄) _))
-  zero := (S.map (yoneda ⋙ (whiskeringRight _ _ _).obj AddCommGrp.free ⋙
+      ((presheafToSheaf J _).map (Functor.whiskerRight (yoneda.map S.f₂₄) _))
+      ((presheafToSheaf J _).map (Functor.whiskerRight (yoneda.map S.f₃₄) _))
+  zero := (S.map (yoneda ⋙ (Functor.whiskeringRight _ _ _).obj AddCommGrp.free ⋙
       presheafToSheaf J _)).cokernelCofork.condition
 
 instance : Mono S.shortComplex.f := by

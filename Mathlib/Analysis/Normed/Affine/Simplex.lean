@@ -40,7 +40,7 @@ lemma Scalene.dist_ne {s : Simplex R P n} (hs : s.Scalene) {i₁ i₂ i₃ i₄ 
     (h₁₂ : i₁ ≠ i₂) (h₃₄ : i₃ ≠ i₄) (h₁₂₃₄ : ¬(i₁ = i₃ ∧ i₂ = i₄)) (h₁₂₄₃ : ¬(i₁ = i₄ ∧ i₂ = i₃)) :
     dist (s.points i₁) (s.points i₂) ≠ dist (s.points i₃) (s.points i₄) := by
   rw [Classical.not_and_iff_not_or_not] at h₁₂₃₄ h₁₂₄₃
-  rcases h₁₂.lt_or_lt with h₁₂lt | h₂₁lt <;> rcases h₃₄.lt_or_lt with h₃₄lt | h₄₃lt
+  rcases h₁₂.lt_or_gt with h₁₂lt | h₂₁lt <;> rcases h₃₄.lt_or_gt with h₃₄lt | h₄₃lt
   · apply hs.ne (a₁ := ⟨(i₁, i₂), h₁₂lt⟩) (a₂ := ⟨(i₃, i₄), h₃₄lt⟩)
     cases h₁₂₃₄ <;> simp [*]
   · nth_rw 2 [dist_comm]

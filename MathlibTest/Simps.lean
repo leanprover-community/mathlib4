@@ -9,6 +9,9 @@ import Mathlib.Tactic.Common
 -- set_option trace.simps.verbose true
 -- set_option pp.universes true
 set_option autoImplicit true
+-- A few times, fields in this file are manually aligned. While there is some consensus this
+-- is not desired, it's not important enough to change right now.
+set_option linter.style.commandStart false
 
 open Lean Meta Elab Term Command Simps
 
@@ -43,7 +46,7 @@ initialize_simps_projections Foo2
 
 
 /--
-info: [simps.verbose] The projections for this structure have already been initialized by a previous invocation of `initialize_simps_projections` or `@[simps]`.
+trace: [simps.verbose] The projections for this structure have already been initialized by a previous invocation of `initialize_simps_projections` or `@[simps]`.
     Generated projections for Foo2:
     Projection elim: fun α x => (x.elim.1, x.elim.2)
 -/
@@ -290,7 +293,7 @@ run_cmd liftTermElabM <| do
     #[`partially_applied_term_data_fst, `partially_applied_term_data_snd]
 
 structure VeryPartiallyAppliedStr where
-  (data : ∀β, ℕ → β → MyProd ℕ β)
+  (data : ∀ β, ℕ → β → MyProd ℕ β)
 
 /- if we have a partially applied constructor, we treat it as if it were eta-expanded.
   (this is not very useful, and we could remove this behavior if convenient) -/

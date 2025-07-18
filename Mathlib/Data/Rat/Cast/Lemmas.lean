@@ -37,8 +37,8 @@ theorem cast_inv_nat (n : ℕ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
 @[simp]
 theorem cast_inv_int (n : ℤ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
   rcases n with n | n
-  · simp [ofInt_eq_cast, cast_inv_nat]
-  · simp only [ofInt_eq_cast, Int.cast_negSucc, ← Nat.cast_succ, cast_neg, inv_neg, cast_inv_nat]
+  · simp [cast_inv_nat]
+  · simp only [Int.cast_negSucc, cast_neg, inv_neg, cast_inv_nat]
 
 @[simp, norm_cast]
 theorem cast_nnratCast {K} [DivisionRing K] (q : ℚ≥0) :
@@ -46,7 +46,7 @@ theorem cast_nnratCast {K} [DivisionRing K] (q : ℚ≥0) :
   rw [Rat.cast_def, NNRat.cast_def, NNRat.cast_def]
   have hn := @num_div_eq_of_coprime q.num q.den ?hdp q.coprime_num_den
   on_goal 1 => have hd := @den_div_eq_of_coprime q.num q.den ?hdp q.coprime_num_den
-  case hdp => simpa only [Int.ofNat_pos] using q.den_pos
+  case hdp => simpa only [Int.natCast_pos] using q.den_pos
   simp only [Int.cast_natCast, Nat.cast_inj] at hn hd
   rw [hn, hd, Int.cast_natCast]
 

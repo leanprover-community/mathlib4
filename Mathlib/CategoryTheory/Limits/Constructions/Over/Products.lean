@@ -62,11 +62,11 @@ def pullbackConeEquivBinaryFan : PullbackCone f g ≌ BinaryFan (Over.mk f) (.mk
     hom := a.hom.left
     w := by rintro (_|_|_) <;> simp [← Over.comp_left_assoc, ← Over.comp_left]
   }
-  unitIso := NatIso.ofComponents (fun c ↦ c.eta) (by intros; ext; dsimp; simp)
+  unitIso := NatIso.ofComponents (fun c ↦ c.eta) (by intros; ext; simp)
   counitIso := NatIso.ofComponents (fun X ↦ BinaryFan.ext (Over.isoMk (Iso.refl _)
-    (by simpa using X.fst.w.symm)) (by ext; dsimp; simp) (by ext; dsimp; simp))
-    (by intros; ext; dsimp; simp [BinaryFan.ext])
-  functor_unitIso_comp c := by ext; dsimp; simp [BinaryFan.ext]
+    (by simpa using X.fst.w.symm)) (by ext; simp) (by ext; simp))
+    (by intros; ext; simp [BinaryFan.ext])
+  functor_unitIso_comp c := by ext; simp [BinaryFan.ext]
 
 /-- A binary fan in `Over X` is a limit if its corresponding pullback cone to `X` is a limit. -/
 -- `IsLimit.ofConeEquiv` isn't used here because the lift it defines is `𝟙 _ ≫ pullback.lift`.
@@ -121,13 +121,13 @@ def pushoutCoconeEquivBinaryCofan : PushoutCocone f g ≌ BinaryCofan (Under.mk 
   inverse.obj c := .mk c.inl.right c.inr.right (c.inl.w.symm.trans c.inr.w)
   inverse.map {c₁ c₂} a := {
     hom := a.hom.right
-    w := by rintro (_|_|_) <;> dsimp <;> simp [← Under.comp_right]
+    w := by rintro (_|_|_) <;> simp [← Under.comp_right]
   }
-  unitIso := NatIso.ofComponents (fun c ↦ c.eta) (fun f ↦ by ext; dsimp; simp)
+  unitIso := NatIso.ofComponents (fun c ↦ c.eta) (fun f ↦ by ext; simp)
   counitIso := NatIso.ofComponents (fun X ↦ BinaryCofan.ext (Under.isoMk (.refl _)
-    (by dsimp; simpa using X.inl.w.symm)) (by ext; dsimp; simp) (by ext; dsimp; simp))
-    (by intros; ext; dsimp; simp)
-  functor_unitIso_comp c := by ext; dsimp; simp
+    (by dsimp; simpa using X.inl.w.symm)) (by ext; simp) (by ext; simp))
+    (by intros; ext; simp)
+  functor_unitIso_comp c := by ext; simp
 
 /-- A binary cofan in `Under X` is a colimit if its corresponding pushout cocone from `X` is a
 colimit. -/

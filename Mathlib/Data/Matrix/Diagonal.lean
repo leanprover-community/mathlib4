@@ -150,8 +150,7 @@ protected theorem map_ofNat [AddMonoidWithOne α] [Zero β]
 
 theorem natCast_apply [AddMonoidWithOne α] {i j} {d : ℕ} :
     (d : Matrix n n α) i j = if i = j then d else 0 := by
-  rw [Nat.cast_ite, Nat.cast_zero]
-  rfl
+  rw [Nat.cast_ite, Nat.cast_zero, ← diagonal_natCast, diagonal_apply]
 
 theorem ofNat_apply [AddMonoidWithOne α] {i j} {d : ℕ} [d.AtLeastTwo] :
     (ofNat(d) : Matrix n n α) i j = if i = j then d else 0 :=
@@ -294,8 +293,6 @@ open Matrix
 namespace Matrix
 
 section Transpose
-
-open Matrix
 
 @[simp]
 theorem transpose_eq_diagonal [DecidableEq n] [Zero α] {M : Matrix n n α} {v : n → α} :

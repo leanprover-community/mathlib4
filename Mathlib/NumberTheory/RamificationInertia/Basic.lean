@@ -84,12 +84,12 @@ theorem ramificationIdx_spec {n : ℕ} (hle : map f p ≤ P ^ n) (hgt : ¬map f 
   let Q : ℕ → Prop := fun m => ∀ k : ℕ, map f p ≤ P ^ k → k ≤ m
   have : Q n := by
     intro k hk
-    refine le_of_not_lt fun hnk => ?_
+    refine le_of_not_gt fun hnk => ?_
     exact hgt (hk.trans (Ideal.pow_le_pow_right hnk))
   rw [ramificationIdx_eq_find ⟨n, this⟩]
   refine le_antisymm (Nat.find_min' _ this) (le_of_not_gt fun h : Nat.find _ < n => ?_)
   obtain this' := Nat.find_spec ⟨n, this⟩
-  exact h.not_le (this' _ hle)
+  exact h.not_ge (this' _ hle)
 
 theorem ramificationIdx_lt {n : ℕ} (hgt : ¬map f p ≤ P ^ n) : ramificationIdx f p P < n := by
   classical
@@ -97,14 +97,14 @@ theorem ramificationIdx_lt {n : ℕ} (hgt : ¬map f p ≤ P ^ n) : ramificationI
   · simp at hgt
   · rw [Nat.lt_succ_iff]
     have : ∀ k, map f p ≤ P ^ k → k ≤ n := by
-      refine fun k hk => le_of_not_lt fun hnk => ?_
+      refine fun k hk => le_of_not_gt fun hnk => ?_
       exact hgt (hk.trans (Ideal.pow_le_pow_right hnk))
     rw [ramificationIdx_eq_find ⟨n, this⟩]
     exact Nat.find_min' ⟨n, this⟩ this
 
 @[simp]
 theorem ramificationIdx_bot : ramificationIdx f ⊥ P = 0 :=
-  dif_neg <| not_exists.mpr fun n hn => n.lt_succ_self.not_le (hn _ (by simp))
+  dif_neg <| not_exists.mpr fun n hn => n.lt_succ_self.not_ge (hn _ (by simp))
 
 @[simp]
 theorem ramificationIdx_of_not_le (h : ¬map f p ≤ P) : ramificationIdx f p P = 0 :=
@@ -149,6 +149,44 @@ lemma ramificationIdx_map_eq [Algebra R S] {E : Type*} [EquivLike E S S₁] [Alg
   rw [show P.map e = _ from P.map_comap_of_equiv (e : S ≃+* S₁)]
   exact p.ramificationIdx_comap_eq (e : S ≃ₐ[R] S₁).symm P
 
+lemma ramificationIdx_ne_one_iff (hp : map f p ≤ P) :
+    ramificationIdx f p P ≠ 1 ↔ p.map f ≤ P ^ 2 := by
+  classical
+  by_cases H : ∀ n : ℕ, ∃ k, p.map f ≤ P ^ k ∧ n < k
+  · obtain ⟨k, hk, h2k⟩ := H 2
+    simp [Ideal.ramificationIdx_eq_zero H, hk.trans (Ideal.pow_le_pow_right h2k.le)]
+  push_neg at H
+  rw [Ideal.ramificationIdx_eq_find H]
+  constructor
+  · intro he
+    have : 1 ≤ Nat.find H := Nat.find_spec H 1 (by simpa)
+    have := Nat.find_min H (m := 1) (by omega)
+    push_neg at this
+    obtain ⟨k, hk, h1k⟩ := this
+    exact hk.trans (Ideal.pow_le_pow_right (Nat.succ_le.mpr h1k))
+  · intro he
+    have := Nat.find_spec H 2 he
+    omega
+
+open IsLocalRing in
+/-- The converse is true when `S` is a Dedekind domain.
+See `Ideal.ramificationIdx_eq_one_iff_of_isDedekindDomain`. -/
+lemma ramificationIdx_eq_one_of_map_localization
+    [Algebra R S] {p : Ideal R} {P : Ideal S} [P.IsPrime] [IsNoetherianRing S]
+    (hpP : map (algebraMap R S) p ≤ P) (hp : P ≠ ⊥) (hp' : P.primeCompl ≤ nonZeroDivisors S)
+    (H : p.map (algebraMap R (Localization.AtPrime P)) = maximalIdeal (Localization.AtPrime P)) :
+    ramificationIdx (algebraMap R S) p P = 1 := by
+  rw [← not_ne_iff (b := 1), Ideal.ramificationIdx_ne_one_iff hpP]
+  intro h₂
+  replace h₂ := Ideal.map_mono (f := algebraMap S (Localization.AtPrime P)) h₂
+  rw [Ideal.map_pow, Localization.AtPrime.map_eq_maximalIdeal, Ideal.map_map,
+    ← IsScalarTower.algebraMap_eq, H, pow_two] at h₂
+  have := Submodule.eq_bot_of_le_smul_of_le_jacobson_bot _ _ (IsNoetherian.noetherian _) h₂
+    (maximalIdeal_le_jacobson _)
+  rw [← Localization.AtPrime.map_eq_maximalIdeal, Ideal.map_eq_bot_iff_of_injective] at this
+  · exact hp this
+  · exact IsLocalization.injective _ hp'
+
 namespace IsDedekindDomain
 
 variable [IsDedekindDomain S]
@@ -161,7 +199,7 @@ theorem ramificationIdx_eq_normalizedFactors_count [DecidableEq (Ideal S)]
     rw [dvd_iff_normalizedFactors_le_normalizedFactors (pow_ne_zero _ hP0) hp0,
       normalizedFactors_pow, normalizedFactors_irreducible hPirr, normalize_eq,
       Multiset.nsmul_singleton, ← Multiset.le_count_iff_replicate_le]
-  exact (Nat.lt_succ_self _).not_le
+  exact (Nat.lt_succ_self _).not_ge
 
 theorem ramificationIdx_eq_factors_count [DecidableEq (Ideal S)]
     (hp0 : map f p ≠ ⊥) (hP : P.IsPrime) (hP0 : P ≠ ⊥) :
@@ -180,6 +218,25 @@ theorem ramificationIdx_ne_zero (hp0 : map f p ≠ ⊥) (hP : P.IsPrime) (le : m
   obtain ⟨P', hP', P'_eq⟩ :=
     exists_mem_normalizedFactors_of_dvd hp0 hPirr (Ideal.dvd_iff_le.mpr le)
   rwa [Multiset.count_ne_zero, associated_iff_eq.mp P'_eq]
+
+open IsLocalRing in
+lemma ramificationIdx_eq_one_iff
+    [Algebra R S] {p : Ideal R} {P : Ideal S} [P.IsPrime]
+    (hp : P ≠ ⊥) (hpP : p.map (algebraMap R S) ≤ P) :
+    ramificationIdx (algebraMap R S) p P = 1 ↔
+      p.map (algebraMap R (Localization.AtPrime P)) = maximalIdeal (Localization.AtPrime P) := by
+  refine ⟨?_, ramificationIdx_eq_one_of_map_localization hpP hp
+    (primeCompl_le_nonZeroDivisors _)⟩
+  let Sₚ := Localization.AtPrime P
+  rw [← not_ne_iff (b := 1), ramificationIdx_ne_one_iff hpP, pow_two]
+  intro H₁
+  obtain ⟨a, ha⟩ : P ∣ p.map (algebraMap R S) := Ideal.dvd_iff_le.mpr hpP
+  have ha' : ¬ a ≤ P := fun h ↦ H₁ (ha.trans_le (Ideal.mul_mono_right h))
+  rw [IsScalarTower.algebraMap_eq _ S, ← Ideal.map_map, ha, Ideal.map_mul,
+    Localization.AtPrime.map_eq_maximalIdeal]
+  convert Ideal.mul_top _
+  rw [← not_ne_iff, IsLocalization.map_algebraMap_ne_top_iff_disjoint P.primeCompl]
+  simpa [primeCompl, Set.disjoint_compl_left_iff_subset]
 
 end IsDedekindDomain
 
@@ -245,7 +302,7 @@ section absNorm
 /-- The absolute norm of an ideal `P` above a rational prime `p` is
 `|p| ^ ((span {p}).inertiaDeg P)`. -/
 lemma absNorm_eq_pow_inertiaDeg [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] {p : ℤ}
-    (P : Ideal R) [P.LiesOver (span {p})] (hp: Prime p) :
+    (P : Ideal R) [P.LiesOver (span {p})] (hp : Prime p) :
     absNorm P = p.natAbs ^ ((span {p}).inertiaDeg P) := by
   have : (span {p}).IsMaximal :=
     (isPrime_of_prime (prime_span_singleton_iff.mpr hp)).isMaximal (by simp [hp.ne_zero])
@@ -315,7 +372,7 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
   let B := A.adjugate
   have A_smul : ∀ i, ∑ j, A i j • a j = 0 := by
     intros
-    simp [A, Matrix.sub_apply, Matrix.of_apply, ne_eq, Matrix.one_apply, sub_smul,
+    simp [A, Matrix.sub_apply, Matrix.of_apply, Matrix.one_apply, sub_smul,
       Finset.sum_sub_distrib, hA', sub_self]
   -- since `span S {det A} / M = 0`.
   have d_smul : ∀ i, A.det • a i = 0 := by
@@ -552,7 +609,7 @@ noncomputable def quotientToQuotientRangePowQuotSucc
       quotientToQuotientRangePowQuotSuccAux_mk]
     refine congr_arg Submodule.Quotient.mk ?_
     ext
-    simp only [mul_assoc, map_mul, Quotient.mk_eq_mk, Submodule.coe_smul_of_tower,
+    simp only [map_mul, Quotient.mk_eq_mk, Submodule.coe_smul_of_tower,
       Algebra.smul_def, Quotient.algebraMap_quotient_pow_ramificationIdx]
     ring
 
@@ -568,7 +625,7 @@ theorem quotientToQuotientRangePowQuotSucc_injective [IsDedekindDomain S] [P.IsP
     Quotient.inductionOn' y fun y h => by
       have Pe_le_Pi1 : P ^ e ≤ P ^ (i + 1) := Ideal.pow_le_pow_right hi
       simp only [Submodule.Quotient.mk''_eq_mk, quotientToQuotientRangePowQuotSucc_mk,
-        Submodule.Quotient.eq, LinearMap.mem_range, Subtype.ext_iff, Subtype.coe_mk,
+        Submodule.Quotient.eq, LinearMap.mem_range, Subtype.ext_iff,
         Submodule.coe_sub] at h ⊢
       rcases h with ⟨⟨⟨z⟩, hz⟩, h⟩
       rw [Submodule.Quotient.quot_mk_eq_mk, Ideal.Quotient.mk_eq_mk, Ideal.mem_quotient_iff_mem_sup,
@@ -593,7 +650,7 @@ theorem quotientToQuotientRangePowQuotSucc_surjective [IsDedekindDomain S]
     obtain ⟨y, rfl⟩ := Ideal.mem_span_singleton.mp hy'
     refine ⟨Submodule.Quotient.mk y, ?_⟩
     simp only [Submodule.Quotient.quot_mk_eq_mk, quotientToQuotientRangePowQuotSucc_mk,
-      Submodule.Quotient.eq, LinearMap.mem_range, Subtype.ext_iff, Subtype.coe_mk,
+      Submodule.Quotient.eq, LinearMap.mem_range, Subtype.ext_iff,
       Submodule.coe_sub]
     refine ⟨⟨_, Ideal.mem_map_of_mem _ (Submodule.neg_mem _ hz)⟩, ?_⟩
     rw [powQuotSuccInclusion_apply_coe, Subtype.coe_mk, Ideal.Quotient.mk_eq_mk, map_add,
@@ -679,8 +736,7 @@ theorem finrank_prime_pow_ramificationIdx [IsDedekindDomain S] (hP0 : P ≠ ⊥)
   letI : Algebra (R ⧸ p) (S ⧸ P) := Quotient.algebraQuotientOfRamificationIdxNeZero p P
   have hdim := rank_prime_pow_ramificationIdx _ _ hP0 he
   by_cases hP : FiniteDimensional (R ⧸ p) (S ⧸ P)
-  · haveI := hP
-    haveI := (finiteDimensional_iff_of_rank_eq_nsmul he hdim).mpr hP
+  · haveI := (finiteDimensional_iff_of_rank_eq_nsmul he hdim).mpr hP
     apply @Nat.cast_injective Cardinal
     rw [finrank_eq_rank', Nat.cast_mul, finrank_eq_rank', hdim, nsmul_eq_mul]
   have hPe := mt (finiteDimensional_iff_of_rank_eq_nsmul he hdim).mp hP
