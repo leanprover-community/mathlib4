@@ -191,6 +191,19 @@ theorem nat_sub_dvd_pow_sub_pow (x y n : ℕ) : x - y ∣ x ^ n - y ^ n := by
   · have : x ^ n ≤ y ^ n := Nat.pow_le_pow_left h.le _
     exact (Nat.sub_eq_zero_of_le this).symm ▸ dvd_zero (x - y)
 
+lemma nat_pow_sub_dvd_pow_mul_sub_pow (x y m n : ℕ) :
+    x ^ m - y ^ m ∣ x ^ (m * n) - y ^ (m * n) := by
+  have := nat_sub_dvd_pow_sub_pow (x ^ m) (y ^ m) n
+  rwa [← Nat.pow_mul, ← Nat.pow_mul] at this
+
+lemma nat_pow_sub_dvd_pow_mul_sub_pow_of_dvd (x y m k : ℕ) (hmk : m ∣ k) :
+    x ^ m - y ^ m ∣ x ^ k - y ^ k := by
+  rcases hmk with ⟨n, hn⟩
+  simpa [hn] using nat_pow_sub_dvd_pow_mul_sub_pow x y m n
+
+lemma nat_sub_one_dvd_pow_sub_one (x n : ℕ) : x - 1 ∣ x ^ n - 1 := by
+  simpa using nat_sub_dvd_pow_sub_pow x 1 n
+
 theorem one_sub_dvd_one_sub_pow [Ring R] (x : R) (n : ℕ) :
     1 - x ∣ 1 - x ^ n := by
   conv_rhs => rw [← one_pow n]
@@ -207,9 +220,7 @@ lemma pow_one_sub_dvd_pow_mul_sub_one [Ring R] (x : R) (m n : ℕ) :
   exact sub_one_dvd_pow_sub_one (x := x ^ m) (n := n)
 
 lemma nat_pow_one_sub_dvd_pow_mul_sub_one (x m n : ℕ) : x ^ m - 1 ∣ x ^ (m * n) - 1 := by
-  nth_rw 2 [← Nat.one_pow n]
-  rw [Nat.pow_mul x m n]
-  apply nat_sub_dvd_pow_sub_pow (x ^ m) 1
+  simpa using nat_pow_sub_dvd_pow_mul_sub_pow x 1 m n
 
 theorem Odd.add_dvd_pow_add_pow [CommRing R] (x y : R) {n : ℕ} (h : Odd n) :
     x + y ∣ x ^ n + y ^ n := by

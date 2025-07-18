@@ -45,29 +45,21 @@ theorem Int.ModEq.pow_card_eq_self' {p k : ℕ} (hp : Nat.Prime p) {n : ℤ} :
       have dvd1 : (p : ℤ) ∣ n ^ (p - 1) - 1 := by
         refine modEq_iff_dvd.mp ?_
         exact ModEq.symm (pow_card_sub_one_eq_one hp this)
-      have : p ^ 1 - 1 ∣ p ^ (1 * k) - 1 := by
-        exact nat_pow_one_sub_dvd_pow_mul_sub_one p 1 k
-      simp at this
+      have : p - 1 ∣ p ^ k - 1 := nat_sub_one_dvd_pow_sub_one p k
       rcases this with ⟨m, hm⟩
       have dvd2 : n ^ (p - 1) - 1 ∣ n ^ (p ^ k - 1) - 1 := by
         rw [hm]
         exact pow_one_sub_dvd_pow_mul_sub_one n (p - 1) m
       exact Int.dvd_trans dvd1 dvd2
-    have : n ^ (p ^ k - 1) * n ≡ 1 * n [ZMOD p] := by
-      exact ModEq.mul this rfl
-    have eq : p ^ k - 1 + 1 = p ^ k := by
-      refine Nat.sub_add_cancel ?_
-      exact NeZero.one_le
+    have : n ^ (p ^ k - 1) * n ≡ 1 * n [ZMOD p] := ModEq.mul this rfl
+    have eq : p ^ k - 1 + 1 = p ^ k := Nat.sub_add_cancel NeZero.one_le
     rwa [← Int.pow_succ, eq, one_mul] at this
 
 lemma imp : ∀ f ∈ bonza, ∀ p, Nat.Prime p → f p = 1 ∨
     (∀ b : ℕ, b > 0 → (p : ℤ) ∣ (b : ℤ) - ((f b) : ℤ)) := by
   intro f hf p hp
-  have : f p ∣ p ^ p := by
-    refine hdvd f hf p ?_
-    exact Prime.pos hp
-  obtain ⟨α , ha1, ha2⟩ : ∃ α, α ≤ p ∧ f p = p ^ α := by
-    exact (Nat.dvd_prime_pow hp).mp this
+  have : f p ∣ p ^ p := hdvd f hf p (Prime.pos hp)
+  obtain ⟨α , ha1, ha2⟩ : ∃ α, α ≤ p ∧ f p = p ^ α := (Nat.dvd_prime_pow hp).mp this
   by_cases ch : α = 0
   · left
     rwa [ch, pow_zero] at ha2
