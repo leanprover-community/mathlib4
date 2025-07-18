@@ -6,7 +6,6 @@ Authors: Lavendula
 
 import Mathlib.Algebra.MvPolynomial.Division
 import Mathlib.Algebra.Polynomial.RingDivision
-import Mathlib.RingTheory.Henselian
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
 
