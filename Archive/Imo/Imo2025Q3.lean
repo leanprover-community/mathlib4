@@ -1,6 +1,7 @@
 import Mathlib.NumberTheory.Multiplicity
 import Mathlib.NumberTheory.Padics.PadicVal.Basic
 import Mathlib.NumberTheory.LucasLehmer
+import Mathlib.Data.Real.Basic
 
 open Nat Int
 
@@ -29,8 +30,7 @@ lemma LTE {a b : ℕ} (h1b : 1 < b) (hb : ¬2 ∣ b) (ha : a ≠ 0) (Evena : Eve
     have : (b + 1) * (b - 1) ≠ 0 := by
       simpa using by omega
     have dvd : 2 ^ 3 ∣ (b + 1) * (b - 1) := by
-      have : (b + 1) * (b - 1) = b ^ 2 - 1 := by simp [Nat.pow_two_sub_pow_two b 1]
-      simpa [this] using Nat.eight_dvd_sq_sub_one_of_odd Oddb
+      simpa [← Nat.pow_two_sub_pow_two b 1] using Nat.eight_dvd_sq_sub_one_of_odd Oddb
     exact (padicValNat_dvd_iff_le (hp := fact_prime_two) this).mp dvd
   omega
 
@@ -44,7 +44,7 @@ lemma padicValNat_le {a : ℕ} (ha : a ≥ 4) (dvd : 2 ∣ a) : padicValNat 2 a 
     _ < _ := log_lt_self 2 (by omega)
   omega
 
-lemma dvd_lemma (a b : ℕ) (x : ℤ) (hb : 2 ∣ b) (ha : a ≥ 4) (ha2 : 2 ∣ a) (hx : 2 ∣ x):
+lemma dvd_lemma (a b : ℕ) (x : ℤ) (hb : 2 ∣ b) (ha : a ≥ 4) (ha2 : 2 ∣ a) (hx : 2 ∣ x) :
     2 ^ (padicValNat 2 a + 2) ∣ (b : ℤ) ^ a - x ^ 2 ^ (padicValNat 2 a + 2) := by
   refine dvd_sub ?_ ?_
   · have : padicValNat 2 a + 2 ≤ a := padicValNat_le ha ha2
@@ -64,9 +64,7 @@ lemma dvd_lemma (a b : ℕ) (x : ℤ) (hb : 2 ∣ b) (ha : a ≥ 4) (ha2 : 2 ∣
       _ ≤ _ := by
         rw [propext (Nat.pow_le_pow_iff_right le.refl)]
         omega
-    have dvd2 : (2 : ℤ) ^ 2 ^ (padicValNat 2 a + 2) ∣ x ^ 2 ^ (padicValNat 2 a + 2) := by
-      exact pow_dvd_pow_of_dvd hx (2 ^ (padicValNat 2 a + 2))
-    exact Int.dvd_trans dvd1 dvd2
+    exact Int.dvd_trans dvd1 (pow_dvd_pow_of_dvd hx (2 ^ (padicValNat 2 a + 2)))
 
 lemma exist : g ∈ bonza := fun a b ha hb ↦ by
   by_cases ch1 : ¬ 2 ∣ a
@@ -93,19 +91,30 @@ lemma exist : g ∈ bonza := fun a b ha hb ↦ by
         have := LTE (by omega) (Nat.two_dvd_ne_zero.mpr hb1) (by omega) (Nat.even_iff.mpr ch1)
         rwa [← LucasLehmer.Int.natCast_pow_pred b a hb]
       exact Int.dvd_trans (pow_dvd_pow 2 this) (padicValInt_dvd ((b : ℤ) ^ a - 1))
-    · have t1 : 2 ∣ a := by tauto
-      have t2 : 2 ∣ (4 : ℤ) := by norm_num
-      refine dvd_lemma a b 4 ?_ ?_ t1 (by norm_num)
-      · simp [hb2]
-      · omega
-    · have t1 : 2 ∣ a := by tauto
-      refine dvd_lemma a b (2 ^ (padicValNat 2 b + 2)) ?_ ?_ t1 ?_
+    · exact dvd_lemma a b 4 (by simp [hb2]) (by omega) (by tauto) (by norm_num)
+    · refine dvd_lemma a b (2 ^ (padicValNat 2 b + 2)) ?_ (by omega) (by tauto) ?_
       · simp at hb1
         exact dvd_of_mod_eq_zero hb1
-      · omega
       · exact Dvd.intro_left (Int.pow 2 (padicValNat 2 b + 1)) rfl
 
--- theorem my_favorite_theorem : IsLeast {c : ℝ | ∀ f : ℕ → ℕ, (∀ a b, 0 < a → 0 < b →
---     f a ∣ b ^ a - (f b) ^ (f a)) → ∀ n, 0 < n → f n ≤ c * n} 4 := by
+theorem fforall : ∀ f : ℕ → ℕ, f ∈ bonza → ∀ n, 0 < n → f n ≤ 4 * n := by
+  intro f hf n hn
 
---   sorry
+  sorry
+
+theorem my_favorite_theorem : IsLeast {c : ℝ | ∀ f : ℕ → ℕ, f ∈ bonza →
+  ∀ n, 0 < n → f n ≤ c * n} 4 := by
+  have : ∀ c ∈ {c : ℝ | ∀ f : ℕ → ℕ,  f ∈ bonza → ∀ n, 0 < n → f n ≤ c * n}, c ≥ 4 := by
+    simp
+    intro c h
+    have := h g exist 4 (by norm_num)
+    simp [g] at this
+    have eq : padicValNat 2 4 =2 := by
+      have : 4 = 2 ^ 2 := by norm_num
+      rw [this, padicValNat.prime_pow]
+    simp [eq] at this
+    have : c ≥ 2 ^  4 / 4 := (div_le_iff₀ (by norm_num)).mpr this
+    norm_num at this
+    exact this
+
+  sorry
