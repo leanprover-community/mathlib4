@@ -965,8 +965,36 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
               -- Convert pairing to weight evaluation form
               have h_chi_coroot_zero : χ (LieAlgebra.IsKilling.coroot α.1) = 0 := by
                 -- From h_pairing_zero : S.pairing i j = 0, derive χ(coroot_α) = 0
-                -- This was the core of the original complex proof with cases
-                sorry
+                -- Use rootSystem_pairing_apply: S.pairing β α = β (coroot α)
+                have h_pairing_eq : S.pairing i j = i.1 (LieAlgebra.IsKilling.coroot j.1) := by
+                  rw [LieAlgebra.IsKilling.rootSystem_pairing_apply]
+                rw [h_pairing_zero] at h_pairing_eq
+                -- From hi : S.root i = χ.toLinear and hj : S.root j = α.1.toLinear
+                -- we have i.1 = χ and j.1 = α.1
+                have hi_val : i.1 = χ := by
+                  -- hi : S.root i = χ.toLinear, and S.root i = i.1.toLinear
+                  -- So i.1.toLinear = χ.toLinear, hence i.1 = χ
+                  have h_eq : i.1.toLinear = χ.toLinear := by
+                    rw [← hi]
+                    rfl
+                  -- Convert linear map equality to function equality
+                  apply Weight.ext
+                  intro x
+                  have := LinearMap.ext_iff.mp h_eq x
+                  exact this
+                have hj_val : j.1 = α.1 := by
+                  -- hj : S.root j = α.1.toLinear, and S.root j = j.1.toLinear
+                  -- So j.1.toLinear = α.1.toLinear, hence j.1 = α.1
+                  have h_eq : j.1.toLinear = α.1.toLinear := by
+                    rw [← hj]
+                    rfl
+                  -- Convert linear map equality to function equality
+                  apply Weight.ext
+                  intro x
+                  have := LinearMap.ext_iff.mp h_eq x
+                  exact this
+                rw [hi_val, hj_val] at h_pairing_eq
+                exact h_pairing_eq.symm
 
               -- Extract H element from mapped coroot space
               simp only [H_α] at hm_h
