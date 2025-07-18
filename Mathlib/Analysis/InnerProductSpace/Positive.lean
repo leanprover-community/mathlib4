@@ -171,8 +171,7 @@ instance instLoewnerPartialOrder : PartialOrder (E →ₗ[𝕜] E) where
     rw [← sub_eq_zero, ← h₂.isSymmetric.inner_map_self_eq_zero]
     intro x
     have hba2 := h₁.2 x
-    rw [← neg_le_neg_iff, ← map_neg, ← inner_neg_left,
-      ← LinearMap.neg_apply, neg_sub, neg_zero] at hba2
+    rw [← neg_le_neg_iff, ← map_neg, ← inner_neg_left, ← neg_apply, neg_sub, neg_zero] at hba2
     rw [← h₂.isSymmetric.coe_re_inner_apply_self, RCLike.ofReal_eq_zero]
     apply le_antisymm hba2 (h₂.2 _)
 
