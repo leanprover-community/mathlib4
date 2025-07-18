@@ -258,11 +258,7 @@ lemma range_fromSpecResidueField (x : X.carrier) :
     Set.range (X.fromSpecResidueField x).base = {x} := by
   ext s
   simp only [Set.mem_range, fromSpecResidueField_apply, Set.mem_singleton_iff, eq_comm (a := s)]
-  constructor
-  · rintro ⟨-, h⟩
-    exact h
-  · rintro rfl
-    exact ⟨closedPoint (X.residueField x), rfl⟩
+  grind
 
 lemma descResidueField_fromSpecResidueField {K : Type*} [Field K] (X : Scheme) {x}
     (f : X.presheaf.stalk x ⟶ .of K) [IsLocalHom f.hom] :

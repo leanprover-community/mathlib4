@@ -879,7 +879,7 @@ theorem Ioo_filter_lt (a b c : α) : {x ∈ Ioo a b | x < c} = Ioo a (min b c) :
 theorem Iio_filter_lt {α} [LinearOrder α] [LocallyFiniteOrderBot α] (a b : α) :
     {x ∈ Iio a | x < b} = Iio (min a b) := by
   ext
-  simp [and_assoc]
+  simp
 
 @[simp]
 theorem Ico_diff_Ico_left (a b c : α) : Ico a b \ Ico a c = Ico (max a c) b := by

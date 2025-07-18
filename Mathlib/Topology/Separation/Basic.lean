@@ -419,7 +419,7 @@ theorem t1Space_TFAE (X : Type u) [TopologicalSpace X] :
   tfae_have 5 ↔ 6 := by
     simp only [← subset_compl_singleton_iff, exists_mem_subset_iff]
   tfae_have 5 ↔ 7 := by
-    simp only [(nhds_basis_opens _).mem_iff, subset_compl_singleton_iff, exists_prop, and_assoc,
+    simp only [(nhds_basis_opens _).mem_iff, subset_compl_singleton_iff, and_assoc,
       and_left_comm]
   tfae_have 5 ↔ 8 := by
     simp only [← principal_singleton, disjoint_principal_right]
@@ -489,7 +489,7 @@ instance (priority := 100) [T1Space X] : R0Space X :=
 instance : T1Space (CofiniteTopology X) :=
   t1Space_iff_continuous_cofinite_of.mpr continuous_id
 
-theorem t1Space_of_t0Space_of_r0Space [T0Space X] [R0Space X] : T1Space X :=
+instance (priority := 80) [T0Space X] [R0Space X] : T1Space X :=
   t1Space_iff_t0Space_and_r0Space.mpr ⟨‹T0Space X›, ‹R0Space X›⟩
 
 theorem t1Space_antitone {X} : Antitone (@T1Space X) := fun a _ h _ =>
@@ -725,6 +725,18 @@ theorem continuousWithinAt_congr_set' [TopologicalSpace Y] [T1Space X]
   rw [← continuousWithinAt_insert_self (s := s), ← continuousWithinAt_insert_self (s := t)]
   exact continuousWithinAt_congr_set (eventuallyEq_insert h)
 
+theorem ContinousWithinAt.eq_const_of_mem_closure [TopologicalSpace Y] [T1Space Y]
+    {f : X → Y} {s : Set X} {x : X} {c : Y} (h : ContinuousWithinAt f s x) (hx : x ∈ closure s)
+    (ht : ∀ y ∈ s, f y = c) : f x = c := by
+  rw [← Set.mem_singleton_iff, ← closure_singleton]
+  exact h.mem_closure hx ht
+
+theorem ContinuousWithinAt.eqOn_const_closure [TopologicalSpace Y] [T1Space Y]
+    {f : X → Y} {s : Set X} {c : Y} (h : ∀ x ∈ closure s, ContinuousWithinAt f s x)
+    (ht : s.EqOn f (fun _ ↦ c)) : (closure s).EqOn f (fun _ ↦ c) := by
+  intro x hx
+  apply ContinousWithinAt.eq_const_of_mem_closure (h x hx) hx ht
+
 /-- To prove a function to a `T1Space` is continuous at some point `x`, it suffices to prove that
 `f` admits *some* limit at `x`. -/
 theorem continuousAt_of_tendsto_nhds [TopologicalSpace Y] [T1Space Y] {f : X → Y} {x : X} {y : Y}
@@ -837,7 +849,7 @@ theorem isClosedEmbedding_update {ι : Type*} {β : ι → Type*}
     (update_injective x i) fun s hs ↦ ?_
   rw [update_image]
   apply isClosed_set_pi
-  simp [forall_update_iff, hs, isClosed_singleton]
+  simp [forall_update_iff, hs]
 
 /-! ### R₁ (preregular) spaces -/
 

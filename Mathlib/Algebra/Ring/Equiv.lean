@@ -533,10 +533,10 @@ def prodCongr {R R' S S' : Type*} [NonUnitalNonAssocSemiring R] [NonUnitalNonAss
   toEquiv := Equiv.prodCongr f g
   map_mul' _ _ := by
     simp only [Equiv.toFun_as_coe, Equiv.prodCongr_apply, EquivLike.coe_coe,
-      Prod.map, Prod.fst_mul, map_mul, Prod.snd_mul, Prod.mk_mul_mk]
+      Prod.map, map_mul, Prod.mk_mul_mk]
   map_add' _ _ := by
     simp only [Equiv.toFun_as_coe, Equiv.prodCongr_apply, EquivLike.coe_coe,
-      Prod.map, Prod.fst_add, map_add, Prod.snd_add, Prod.mk_add_mk]
+      Prod.map, map_add, Prod.mk_add_mk]
 
 @[simp]
 theorem coe_prodCongr {R R' S S' : Type*} [NonUnitalNonAssocSemiring R]
@@ -885,6 +885,23 @@ theorem ofRingHom_coe_ringHom (f : R ≃+* S) (g : S →+* R) (h₁ h₂) : ofRi
 theorem ofRingHom_symm (f : R →+* S) (g : S →+* R) (h₁ h₂) :
     (ofRingHom f g h₁ h₂).symm = ofRingHom g f h₂ h₁ :=
   rfl
+
+variable (α β R) in
+/-- `Equiv.sumArrowEquivProdArrow` as a ring isomorphism. -/
+def sumArrowEquivProdArrow : (α ⊕ β → R) ≃+* (α → R) × (β → R) where
+  __ := Equiv.sumArrowEquivProdArrow α β R
+  map_mul' _ _ := rfl
+  map_add' _ _ := rfl
+
+-- Priority `low` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
+@[simp low]
+lemma sumArrowEquivProdArrow_apply (x) :
+    sumArrowEquivProdArrow α β R x = Equiv.sumArrowEquivProdArrow α β R x := rfl
+
+-- Priority `low` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
+@[simp low]
+lemma sumArrowEquivProdArrow_symm_apply (x : (α → R) × (β → R)) :
+    (sumArrowEquivProdArrow α β R).symm x = (Equiv.sumArrowEquivProdArrow α β R).symm x := rfl
 
 end RingEquiv
 
