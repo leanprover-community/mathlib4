@@ -619,6 +619,20 @@ theorem Int.ModEq.pow_card_sub_one_eq_one {p : ℕ} (hp : Nat.Prime p) {n : ℤ}
     · exact hpn.symm
   simpa [← ZMod.intCast_eq_intCast_iff] using ZMod.pow_card_sub_one_eq_one this
 
+theorem Int.ModEq.pow_card_eq_self {p : ℕ} (hp : Nat.Prime p) {n : ℤ} : n ^ p ≡ n [ZMOD p] := by
+  haveI : Fact p.Prime := ⟨hp⟩
+  by_cases ch : (p : ℤ) ∣ n
+  · calc
+    _ ≡ 0 [ZMOD p] := Dvd.dvd.modEq_zero_int (dvd_pow ch (Ne.symm (NeZero.ne' p)))
+    _ ≡ _ [ZMOD p] := Dvd.dvd.zero_modEq_int ch
+  · have : IsCoprime n p := by
+      rw [ofNat_dvd_left, ← Nat.Prime.coprime_iff_not_dvd hp] at ch
+      exact IsCoprime.symm ((fun {m n} ↦ isCoprime_iff_gcd_eq_one.mpr) ch)
+    have : n ^ (p - 1) * n ≡ 1 * n [ZMOD p] :=
+      ModEq.mul (Int.ModEq.pow_card_sub_one_eq_one hp this) rfl
+    have eq : p - 1 + 1 = p := Nat.succ_pred_prime hp
+    rwa [← Int.pow_succ, eq, one_mul] at this
+
 theorem pow_pow_modEq_one (p m a : ℕ) : (1 + p * a) ^ (p ^ m) ≡ 1 [MOD p ^ m] := by
   induction m with
   | zero => exact Nat.modEq_one
