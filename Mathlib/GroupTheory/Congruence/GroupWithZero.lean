@@ -104,25 +104,4 @@ instance commGroupWithZero {M : Type*} [CommGroupWithZero M] (c : Con M) [Fact (
 
 end Group
 
-section MapQ
-
-variable {M N : Type*} [MonoidWithZero M] [MonoidWithZero N]
-
-def mapQ₀ {F : Type*} [FunLike F M N] [MonoidWithZeroHomClass F M N] {c : Con M} {d : Con N} (f : F)
-    (hf : c ≤ d.comap f (map_mul f)) : c.Quotient →*₀ d.Quotient where
-  toMonoidHom := mapQ f hf
-  map_zero' := congr(Con.toQuotient $(map_zero f))
-
-theorem mapQ₀_apply {F : Type*} [FunLike F M N] [MonoidWithZeroHomClass F M N]
-    {c : Con M} {d : Con N} (f : F) (hf : c ≤ d.comap f (map_mul f)) (x : c.Quotient) :
-    mapQ₀ f hf x = Quotient.map f hf x :=
-  rfl
-
-theorem mapQ₀_coe {F : Type*} [FunLike F M N] [MonoidWithZeroHomClass F M N] {c : Con M} {d : Con N}
-    (f : F) (hf : c ≤ d.comap f (map_mul f)) (x : M) :
-    Con.mapQ₀ f hf x = f x :=
-  rfl
-
-end MapQ
-
 end Con
