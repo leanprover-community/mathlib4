@@ -44,7 +44,7 @@ lemma padicValNat_le {a : ℕ} (ha : a ≥ 4) (dvd : 2 ∣ a) : padicValNat 2 a 
     _ < _ := log_lt_self 2 (by omega)
   omega
 
-lemma dvd_lemma (a b x : ℕ) (hb : 2 ∣ b) (ha : a ≥ 4) (ha2 : 2 ∣ a) (hx : 2 ∣ x):
+lemma dvd_lemma (a b : ℕ) (x : ℤ) (hb : 2 ∣ b) (ha : a ≥ 4) (ha2 : 2 ∣ a) (hx : 2 ∣ x):
     2 ^ (padicValNat 2 a + 2) ∣ (b : ℤ) ^ a - x ^ 2 ^ (padicValNat 2 a + 2) := by
   refine dvd_sub ?_ ?_
   · have : padicValNat 2 a + 2 ≤ a := padicValNat_le ha ha2
@@ -64,8 +64,8 @@ lemma dvd_lemma (a b x : ℕ) (hb : 2 ∣ b) (ha : a ≥ 4) (ha2 : 2 ∣ a) (hx 
       _ ≤ _ := by
         rw [propext (Nat.pow_le_pow_iff_right le.refl)]
         omega
-    have dvd2 : (2 : ℤ) ^ 2 ^ (padicValNat 2 a + 2) ∣ (x : ℤ) ^ 2 ^ (padicValNat 2 a + 2) :=
-      pow_dvd_pow_of_dvd (ofNat_dvd_right.mpr hx) (2 ^ (padicValNat 2 a + 2))
+    have dvd2 : (2 : ℤ) ^ 2 ^ (padicValNat 2 a + 2) ∣ x ^ 2 ^ (padicValNat 2 a + 2) := by
+      exact pow_dvd_pow_of_dvd hx (2 ^ (padicValNat 2 a + 2))
     exact Int.dvd_trans dvd1 dvd2
 
 lemma exist : g ∈ bonza := fun a b ha hb ↦ by
@@ -99,62 +99,11 @@ lemma exist : g ∈ bonza := fun a b ha hb ↦ by
       · simp [hb2]
       · omega
     · have t1 : 2 ∣ a := by tauto
-      refine dvd_lemma a b (2 ^ (padicValNat 2 b + 2)) ?_ ?_ t1 (by norm_num)
-      sorry
-
-  --     sorry
-  --   · simp
-  --     sorry
-  --   · sorry
-  --     -- by_cases hb3 : b = 1
-  --     -- · simp [hb3]
-  --     -- · have hyx : b > 1 := by omega
-  --     --   have hxy : 2 ∣ b - 1 := by
-  --     --     simp at hb1
-  --     --     exact (modEq_iff_dvd' hb).mp (id (Eq.symm hb1))
-  --     --   have neq : a ≠ 0 := by omega
-  --     --   have := padicValNat.pow_two_sub_pow hyx hxy hb1 neq ((even_iff_exists_two_nsmul a).mpr ha1)
-  --     --   simp
-  --     --   have : 2 ^ (a.factorization 2 + 2) ∣ b ^ a - 1 := by
-  --     --     have : (a.factorization 2 + 2) ≤ Nat.factorization (b ^ a - 1) 2 := by
-  --     --       have : Nat.factorization (b ^ a - 1) 2 = padicValNat 2 (b ^ a - 1) := by
-  --     --         rfl
-  --     --       rw [this]
-      --       have : padicValNat 2 (b - 1) ≥ 1 := by
-      --         sorry
-
-      --       sorry
-      --     refine (Prime.pow_dvd_iff_le_factorization ?_ ?_).mpr this
-      --     exact Nat.prime_two
-      --     have : b ^ a > 1 := by
-      --       exact one_lt_pow neq hyx
-      --     exact Nat.sub_ne_zero_iff_lt.mpr this
-      --   rcases this with ⟨l, hl⟩
-      --   use l
-      --   have := one_le_pow a b hb
-      --   have : b ^ a = 1 + 2 ^ (a.factorization 2 + 2) * l := by
-      --     omega
-      --   have eq : (b : ℤ) ^ a = ((b ^ a : ℕ) : ℤ) := by
-      --     simp
-      --   simp [eq, this]
-      -- simp
-      -- refine pow_dvd_of_le_emultiplicity ?_
-      -- have Odd_b : Odd b := by
-      --   rwa [Nat.two_dvd_ne_zero, ← Nat.odd_iff] at hb1
-      -- have dvd : 2 ∣ (b : ℤ) - 1 := by
-      --   refine Int.dvd_self_sub_of_emod_eq ?_
-      --   rwa [← Int.odd_iff, odd_coe_nat]
-      -- have ndvd : ¬2 ∣ (b : ℤ) := by
-      --   simpa [← Int.odd_iff, odd_coe_nat]
-      -- have := Int.two_pow_sub_pow dvd ndvd ((even_iff_exists_two_nsmul a).mpr ha1)
-      --
-      -- simp at this
-      -- have : emultiplicity 2 ((b : ℤ) - 1) ≥ 1 := by
-      --   refine le_emultiplicity_of_pow_dvd ?_
-      --   simpa
-
-  --     -- sorry
-  -- · simp
+      refine dvd_lemma a b (2 ^ (padicValNat 2 b + 2)) ?_ ?_ t1 ?_
+      · simp at hb1
+        exact dvd_of_mod_eq_zero hb1
+      · omega
+      · exact Dvd.intro_left (Int.pow 2 (padicValNat 2 b + 1)) rfl
 
 -- theorem my_favorite_theorem : IsLeast {c : ℝ | ∀ f : ℕ → ℕ, (∀ a b, 0 < a → 0 < b →
 --     f a ∣ b ^ a - (f b) ^ (f a)) → ∀ n, 0 < n → f n ≤ c * n} 4 := by
