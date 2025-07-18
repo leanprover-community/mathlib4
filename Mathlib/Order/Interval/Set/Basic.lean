@@ -668,7 +668,7 @@ theorem Icc_eq_singleton_iff : Icc a b = {c} ↔ a = c ∧ b = c := by
 
 lemma subsingleton_Icc_of_ge (hba : b ≤ a) : Set.Subsingleton (Icc a b) :=
   fun _x ⟨hax, hxb⟩ _y ⟨hay, hyb⟩ ↦ le_antisymm
-    (le_implies_le_of_le_of_le hxb hay hba) (le_implies_le_of_le_of_le hyb hax hba)
+    (le_imp_le_of_le_of_le hxb hay hba) (le_imp_le_of_le_of_le hyb hax hba)
 
 @[simp] lemma subsingleton_Icc_iff {α : Type*} [LinearOrder α] {a b : α} :
     Set.Subsingleton (Icc a b) ↔ b ≤ a := by
