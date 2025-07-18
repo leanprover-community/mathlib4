@@ -27,8 +27,7 @@ lemma LTE {a b : ℕ} (h1b : 1 < b) (hb : ¬2 ∣ b) (ha : a ≠ 0) (Evena : Eve
     Nat.odd_iff.mpr (Nat.two_dvd_ne_zero.mp hb)
   have : padicValNat 2 (b + 1) + padicValNat 2 (b - 1) ≥ 3 := by
     rw [← padicValNat.mul (by omega) (by omega)]
-    have : (b + 1) * (b - 1) ≠ 0 := by
-      simpa using by omega
+    have : (b + 1) * (b - 1) ≠ 0 := by simpa using by omega
     have dvd : 2 ^ 3 ∣ (b + 1) * (b - 1) := by
       simpa [← Nat.pow_two_sub_pow_two b 1] using Nat.eight_dvd_sq_sub_one_of_odd Oddb
     exact (padicValNat_dvd_iff_le (hp := fact_prime_two) this).mp dvd
@@ -36,10 +35,8 @@ lemma LTE {a b : ℕ} (h1b : 1 < b) (hb : ¬2 ∣ b) (ha : a ≠ 0) (Evena : Eve
 
 lemma padicValNat_le {a : ℕ} (ha : a ≥ 4) (dvd : 2 ∣ a) : padicValNat 2 a + 2 ≤ a := by
   rcases dvd with ⟨k, hk⟩
-  rw [hk, padicValNat.mul (by norm_num) (by omega)]
-  simp
-  have : padicValNat 2 k < k := by
-    calc
+  rw [hk, padicValNat.mul (by norm_num) (by omega), padicValNat.self (by norm_num)]
+  have : padicValNat 2 k < k := by calc
     _ ≤ Nat.log 2 k := padicValNat_le_nat_log k
     _ < _ := log_lt_self 2 (by omega)
   omega
@@ -47,13 +44,8 @@ lemma padicValNat_le {a : ℕ} (ha : a ≥ 4) (dvd : 2 ∣ a) : padicValNat 2 a 
 lemma dvd_lemma (a b : ℕ) (x : ℤ) (hb : 2 ∣ b) (ha : a ≥ 4) (ha2 : 2 ∣ a) (hx : 2 ∣ x) :
     2 ^ (padicValNat 2 a + 2) ∣ (b : ℤ) ^ a - x ^ 2 ^ (padicValNat 2 a + 2) := by
   refine dvd_sub ?_ ?_
-  · have : padicValNat 2 a + 2 ≤ a := padicValNat_le ha ha2
-    have dvd1 : 2 ^ (padicValNat 2 a + 2) ∣ (2 : ℤ) ^ a := by
-      exact pow_dvd_pow 2 this
-    have dvd2 : (2 : ℤ) ^ a ∣ (b : ℤ) ^ a := by
-      refine pow_dvd_pow_of_dvd ?_ a
-      exact ofNat_dvd_right.mpr hb
-    exact Int.dvd_trans dvd1 dvd2
+  · exact Int.dvd_trans (pow_dvd_pow 2 (padicValNat_le ha ha2))
+      (pow_dvd_pow_of_dvd (ofNat_dvd_right.mpr hb) a)
   · have dvd1 : 2 ^ (padicValNat 2 a + 2) ∣ (2 : ℤ) ^ 2 ^ (padicValNat 2 a + 2) := by
       refine (padicValInt_dvd_iff (hp := fact_prime_two) (padicValNat 2 a + 2)
             (2 ^ 2 ^ (padicValNat 2 a + 2))).mpr ?_
@@ -74,9 +66,8 @@ lemma exist : g ∈ bonza := fun a b ha hb ↦ by
     split_ifs with hb1 hb2
     · exact dvd_self_sub_of_emod_eq (sq_mod_four_eq_one_of_odd (by simpa using Nat.odd_iff.mpr hb1))
     · simp [hb2]
-    · simp at hb1
-      refine dvd_sub ?_ ?_
-      · have : 2 ∣ (b : ℤ) := ofNat_dvd_natCast.mpr (dvd_of_mod_eq_zero hb1)
+    · refine dvd_sub ?_ ?_
+      · have : 2 ∣ (b : ℤ) := ofNat_dvd_natCast.mpr (dvd_of_mod_eq_zero (mod_two_ne_one.mp hb1))
         have : 2 ^ 2 ∣ (b : ℤ) ^ 2 := pow_dvd_pow_of_dvd this 2
         simpa
       · refine Dvd.dvd.pow ?_ (by norm_num)
@@ -92,10 +83,8 @@ lemma exist : g ∈ bonza := fun a b ha hb ↦ by
         rwa [← LucasLehmer.Int.natCast_pow_pred b a hb]
       exact Int.dvd_trans (pow_dvd_pow 2 this) (padicValInt_dvd ((b : ℤ) ^ a - 1))
     · exact dvd_lemma a b 4 (by simp [hb2]) (by omega) (by tauto) (by norm_num)
-    · refine dvd_lemma a b (2 ^ (padicValNat 2 b + 2)) ?_ (by omega) (by tauto) ?_
-      · simp at hb1
-        exact dvd_of_mod_eq_zero hb1
-      · exact Dvd.intro_left (Int.pow 2 (padicValNat 2 b + 1)) rfl
+    · exact dvd_lemma a b (2 ^ (padicValNat 2 b + 2)) (dvd_of_mod_eq_zero (mod_two_ne_one.mp hb1))
+        (by omega) (by tauto) (Dvd.intro_left (Int.pow 2 (padicValNat 2 b + 1)) rfl)
 
 theorem fforall : ∀ f : ℕ → ℕ, f ∈ bonza → ∀ n, 0 < n → f n ≤ 4 * n := by
   intro f hf n hn
@@ -104,16 +93,13 @@ theorem fforall : ∀ f : ℕ → ℕ, f ∈ bonza → ∀ n, 0 < n → f n ≤ 
 
 theorem my_favorite_theorem : IsLeast {c : ℝ | ∀ f : ℕ → ℕ, f ∈ bonza →
   ∀ n, 0 < n → f n ≤ c * n} 4 := by
-  have : ∀ c ∈ {c : ℝ | ∀ f : ℕ → ℕ,  f ∈ bonza → ∀ n, 0 < n → f n ≤ c * n}, c ≥ 4 := by
-    simp
-    intro c h
+  have : ∀ c ∈ {c : ℝ | ∀ f : ℕ → ℕ,  f ∈ bonza → ∀ n, 0 < n → f n ≤ c * n}, c ≥ 4 := fun c h ↦ by
     have := h g exist 4 (by norm_num)
-    simp [g] at this
     have eq : padicValNat 2 4 =2 := by
       have : 4 = 2 ^ 2 := by norm_num
       rw [this, padicValNat.prime_pow]
-    simp [eq] at this
-    have : c ≥ 2 ^  4 / 4 := (div_le_iff₀ (by norm_num)).mpr this
+    simp [g, eq] at this
+    have : c ≥ 16 / 4 := (div_le_iff₀ (by norm_num)).mpr this
     norm_num at this
     exact this
 
