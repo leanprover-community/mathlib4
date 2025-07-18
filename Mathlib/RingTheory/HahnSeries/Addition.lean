@@ -557,7 +557,7 @@ def truncateLinearMap [PartialOrder Γ] (c : Γ) : HahnSeries Γ V →ₗ[R] Hah
     ext i
     by_cases h : c ≤ i <;> simp [h]
   map_smul' s x := by
-    ext i
+    ext
     simp
 
 end Module
