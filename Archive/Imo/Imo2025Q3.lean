@@ -5,6 +5,12 @@ import Mathlib.Data.Real.Basic
 
 open Nat Int
 
+/- Let $\mathbb{N}+$ denote the set of positive integers. A function $f: \mathbb{N}+ \rightarrow
+\mathbb{N}+$ is said to be bonza if $f(a)$ divides $b^a-f(b)^{f(a)}$ for all positive integers $a$
+and $b$. Determine the smallest real constant $c$ such that $f(n) \leq c n$ for all bonza functions
+$f$ and all positive integers $n$.
+-/
+
 def bonza : Set (ℕ → ℕ) :=
   {f : ℕ → ℕ | ∀ a b : ℕ, 0 < a → 0 < b → (f a : ℤ) ∣ (b : ℤ) ^ a - (f b : ℤ) ^ (f a)}
 
