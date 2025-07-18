@@ -67,6 +67,6 @@ theorem comp_eq_of_measurable_invariants {f : α → α} {g : α → β} [Measur
     (h : Measurable[invariants f] g) : g ∘ f = g := by
   funext x
   suffices x ∈ f⁻¹' (g⁻¹' {g x}) by simpa
-  rw [(h <| measurableSet_singleton (g x)).2]; rfl
+  rw [(h <| measurableSet_singleton (g x)).2, Set.mem_preimage, Set.mem_singleton_iff]
 
 end MeasurableSpace
