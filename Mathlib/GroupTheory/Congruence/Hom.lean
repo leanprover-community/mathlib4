@@ -293,6 +293,12 @@ commutes."]
 theorem kerLift_mk (x : M) : kerLift f x = f x :=
   rfl
 
+/-- A monoid homomorphism `f` induces an injective homomorphism on the quotient by `f`'s kernel. -/
+@[to_additive "An `AddMonoid` homomorphism `f` induces an injective homomorphism on the quotient
+by `f`'s kernel."]
+theorem kerLift_injective (f : M →* P) : Injective (kerLift f) := fun x y =>
+  Quotient.inductionOn₂' x y fun _ _ => (ker f).eq.2
+
 /-- Given congruence relations `c, d` on a monoid such that `d` contains `c`, `d`'s quotient
     map induces a homomorphism from the quotient by `c` to the quotient by `d`. -/
 @[to_additive "Given additive congruence relations `c, d` on an `AddMonoid` such that `d`
