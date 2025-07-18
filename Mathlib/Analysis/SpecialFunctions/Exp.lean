@@ -430,7 +430,7 @@ lemma summable_exp_neg_nat : Summable fun n : ℕ ↦ exp (-n) := by
   simpa only [mul_neg_one] using summable_exp_nat_mul_iff.mpr neg_one_lt_zero
 
 lemma summable_exp_nat_mul_of_ge {c : ℝ} (hc : c < 0) {f : ℕ → ℝ} (hf : ∀ i, i ≤ f i) :
-    Summable fun i : ℕ ↦ rexp (c * f i) := by
+    Summable fun i : ℕ ↦ exp (c * f i) := by
   refine (Real.summable_exp_nat_mul_iff.mpr hc).of_nonneg_of_le (fun _ ↦ by positivity) fun i ↦ ?_
   refine Real.exp_monotone ?_
   conv_rhs => rw [mul_comm]
