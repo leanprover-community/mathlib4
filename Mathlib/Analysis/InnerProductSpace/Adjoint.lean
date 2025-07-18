@@ -548,27 +548,24 @@ theorem _root_.ContinuousLinearMap.isSelfAdjoint_toLinearMap_iff (T : E →L[�
     ContinuousLinearMap.toLinearMap_eq_iff_eq_toContinuousLinearMap]
   rfl
 
-open LinearMap in
-/-- Star projection operators are equal iff their range are. -/
-theorem IsStarProjection.ext_iff {S T : E →ₗ[𝕜] E}
-    (hS : IsStarProjection S) (hT : IsStarProjection T) :
-    S = T ↔ LinearMap.range S = LinearMap.range T := by
-  have := FiniteDimensional.complete 𝕜 E
-  rw [← coe_toContinuousLinearMap S, ← coe_toContinuousLinearMap T,
-    ContinuousLinearMap.coe_inj]
-  refine ContinuousLinearMap.IsStarProjection.ext_iff ?_ ?_
-  all_goals
-    simp [isStarProjection_iff, ← ContinuousLinearMap.isSelfAdjoint_toLinearMap_iff, hS.1.eq, hS.2,
-      hT.1.eq, hT.2, IsIdempotentElem, ContinuousLinearMap.ext_iff, ← Module.End.mul_apply]
-
-alias ⟨_, IsStarProjection.ext⟩ := IsStarProjection.ext_iff
-
 theorem isStarProjection_toContinuousLinearMap_iff {T : E →ₗ[𝕜] E} :
     have := FiniteDimensional.complete 𝕜 E
     IsStarProjection (toContinuousLinearMap T) ↔ IsStarProjection T := by
   intro
   simp [isStarProjection_iff, isSelfAdjoint_toContinuousLinearMap_iff, IsIdempotentElem,
     ContinuousLinearMap.ext_iff, LinearMap.ext_iff, ← Module.End.mul_apply]
+
+open LinearMap in
+/-- Star projection operators are equal iff their range are. -/
+theorem IsStarProjection.ext_iff {S T : E →ₗ[𝕜] E}
+    (hS : IsStarProjection S) (hT : IsStarProjection T) :
+    S = T ↔ LinearMap.range S = LinearMap.range T := by
+  have := FiniteDimensional.complete 𝕜 E
+  simpa using ContinuousLinearMap.IsStarProjection.ext_iff
+    (S.isStarProjection_toContinuousLinearMap_iff.mpr hS)
+    (T.isStarProjection_toContinuousLinearMap_iff.mpr hT)
+
+alias ⟨_, IsStarProjection.ext⟩ := IsStarProjection.ext_iff
 
 end LinearMap
 
