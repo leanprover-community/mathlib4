@@ -429,6 +429,13 @@ lemma summable_exp_nat_mul_iff {a : ℝ} :
 lemma summable_exp_neg_nat : Summable fun n : ℕ ↦ exp (-n) := by
   simpa only [mul_neg_one] using summable_exp_nat_mul_iff.mpr neg_one_lt_zero
 
+lemma summable_exp_nat_mul_of_ge {c : ℝ} (hc : c < 0) {f : ℕ → ℝ} (hf : ∀ i, i ≤ f i) :
+    Summable fun i : ℕ ↦ rexp (c * f i) := by
+  refine (Real.summable_exp_nat_mul_iff.mpr hc).of_nonneg_of_le (fun _ ↦ by positivity) fun i ↦ ?_
+  refine Real.exp_monotone ?_
+  conv_rhs => rw [mul_comm]
+  exact mul_le_mul_of_nonpos_left (hf i) hc.le
+
 lemma summable_pow_mul_exp_neg_nat_mul (k : ℕ) {r : ℝ} (hr : 0 < r) :
     Summable fun n : ℕ ↦ n ^ k * exp (-r * n) := by
   simp_rw [mul_comm (-r), exp_nat_mul]
@@ -436,28 +443,6 @@ lemma summable_pow_mul_exp_neg_nat_mul (k : ℕ) {r : ℝ} (hr : 0 < r) :
   rwa [norm_of_nonneg (exp_nonneg _), exp_lt_one_iff, neg_lt_zero]
 
 end Real
-
-section ENNReal
-open Real
-open scoped ENNReal
-
-lemma ENNReal.tsum_ofReal_exp_mul_lt_top {r : ℝ} (hr : r < 0) {f : ℕ → ℝ} (hf : ∀ i, i ≤ f i) :
-    ∑' i, .ofReal (exp (r * f i)) < ∞ := by
-  calc ∑' i, .ofReal (exp (r * f i))
-  _ ≤ ∑' i : ℕ, .ofReal (rexp (i * r)) := by
-    simp_rw [mul_comm _ r]
-    refine ENNReal.tsum_le_tsum fun i ↦ ENNReal.ofReal_le_ofReal ?_
-    refine Real.exp_monotone ?_
-    exact mul_le_mul_of_nonpos_left (mod_cast hf i) hr.le
-  _ < ∞ := by
-    have h_sum : Summable fun i : ℕ ↦ rexp (i * r) := Real.summable_exp_nat_mul_iff.mpr hr
-    simp [← ENNReal.ofReal_tsum_of_nonneg (fun _ ↦ by positivity) h_sum]
-
-lemma ENNReal.tsum_ofReal_exp_neg_mul_lt_top {r : ℝ} (hr : 0 < r) {f : ℕ → ℝ} (hf : ∀ i, i ≤ f i) :
-    ∑' i, .ofReal (exp (- r * f i)) < ∞ :=
-  tsum_ofReal_exp_mul_lt_top (by simp [hr]) hf
-
-end ENNReal
 
 open Real in
 /-- If `f` has sum `a`, then `exp ∘ f` has product `exp a`. -/
