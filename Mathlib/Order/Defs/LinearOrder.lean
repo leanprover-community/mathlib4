@@ -95,7 +95,7 @@ lemma lt_trichotomy (a b : α) : a < b ∨ a = b ∨ b < a :=
 lemma le_of_not_gt (h : ¬b < a) : a ≤ b :=
   match lt_trichotomy a b with
   | Or.inl hlt => le_of_lt hlt
-  | Or.inr (Or.inl heq) => heq ▸ le_refl a
+  | Or.inr (Or.inl HEq) => HEq ▸ le_refl a
   | Or.inr (Or.inr hgt) => absurd hgt h
 
 @[deprecated (since := "2025-05-11")] alias le_of_not_lt := le_of_not_gt
@@ -135,7 +135,6 @@ theorem le_imp_le_of_lt_imp_lt {α β} [Preorder α] [LinearOrder β] {a b : α}
 
 lemma min_def (a b : α) : min a b = if a ≤ b then a else b := by rw [LinearOrder.min_def a]
 lemma max_def (a b : α) : max a b = if a ≤ b then b else a := by rw [LinearOrder.max_def a]
-
 
 theorem max_def' (a b : α) : max a b = if b ≤ a then a else b := by
   rw [max_def]

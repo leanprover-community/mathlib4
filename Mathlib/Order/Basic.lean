@@ -154,7 +154,7 @@ alias LT.lt.not_gt := lt_asymm
 theorem ne_of_not_le (h : ¬a ≤ b) : a ≠ b := fun hab ↦ h (le_of_eq hab)
 
 protected lemma Eq.not_lt (hab : a = b) : ¬a < b := fun h' ↦ h'.ne hab
-protected lemma Eq.not_lt' (hab : a = b) : ¬b < a := hab.symm.not_lt
+protected lemma Eq.not_gt (hab : a = b) : ¬b < a := hab.symm.not_lt
 
 @[simp] lemma le_of_subsingleton [Subsingleton α] : a ≤ b := (Subsingleton.elim a b).le
 
@@ -395,6 +395,8 @@ lemma gt_or_lt (h : a < b) (c : α) : a < c ∨ c < b := (le_or_gt b c).imp h.tr
 
 end LT.lt
 
+@[deprecated (since := "2025-05-11")] alias lt_of_not_le := lt_of_not_ge
+@[deprecated (since := "2025-05-11")] alias lt_iff_not_le := lt_iff_not_ge
 
 theorem Ne.lt_or_gt (h : a ≠ b) : a < b ∨ b < a :=
   lt_or_gt_of_ne h
@@ -457,7 +459,7 @@ lemma ltByCases_gt (h : y < x) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ :
 set_option linter.deprecated false in
 @[deprecated lt_trichotomy (since := "2025-04-21")]
 lemma ltByCases_eq (h : x = y) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P} :
-    ltByCases x y h₁ h₂ h₃ = h₂ h := (dif_neg h.not_lt).trans (dif_neg h.not_lt')
+    ltByCases x y h₁ h₂ h₃ = h₂ h := (dif_neg h.not_lt).trans (dif_neg h.not_gt)
 
 set_option linter.deprecated false in
 @[deprecated lt_trichotomy (since := "2025-04-21")]
