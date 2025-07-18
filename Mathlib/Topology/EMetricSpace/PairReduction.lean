@@ -31,20 +31,12 @@ variable {T : Type*} [PseudoEMetricSpace T] {a c : ℝ≥0∞} {n : ℕ} {V : Fi
 
 lemma exists_radius_le (t : T) (V : Finset T) (ha : 1 < a) (c : ℝ≥0∞) :
     ∃ r : ℕ, 1 ≤ r ∧ #(V.filter fun x ↦ edist t x ≤ r * c) ≤ a ^ r := by
-  obtain ⟨r, hr1, hr⟩ : ∃ r : ℕ, 1 ≤ r ∧ #V ≤ a ^ r := by
-    use ⌈Real.logb (a.toReal) #V⌉₊ + 1, by simp
-    by_cases h1 : a = ∞
-    · simp [h1]
-    by_cases h2 : #V = 0
-    · simp [h2]
-    rw [← ENNReal.toReal_le_toReal, ← ENNReal.rpow_natCast, ← ENNReal.toReal_rpow,
-      ← Real.logb_le_iff_le_rpow]
-    · apply le_trans (Nat.le_ceil _); simp
-    · rw [← ENNReal.toReal_one]; gcongr; simp [h1]
-    · simp [← Finset.card_ne_zero, h2]
-    · apply (ENNReal.top_ne_natCast _).symm
-    · apply ENNReal.pow_ne_top h1
-  exact ⟨r, hr1, le_trans (mod_cast Finset.card_filter_le V _) hr⟩
+  have := ENNReal.tendsto_nhds_top_iff_nat.1
+    ((ENNReal.tendsto_rpow_atTop_of_one_lt_base a ha).comp tendsto_natCast_atTop_atTop) #V
+  simp only [Function.comp_apply, ENNReal.rpow_natCast, Filter.eventually_atTop, ge_iff_le] at this
+  obtain ⟨r, hr⟩ := this
+  exact ⟨max r 1, le_max_right r 1,
+    le_trans (mod_cast Finset.card_filter_le V _) (hr (max r 1) (le_max_left r 1)).le⟩
 
 /-- The log-size radius of `t` in `V` is the smallest natural number n greater than zero such that
  `{x ∈ V | d(t, x) ≤ nc} ≤ aⁿ`. -/
