@@ -449,7 +449,7 @@ instance {R S : CommRingCat} (f : R ⟶ S) [IsIso f] : IsIso (Spec.map f) :=
 @[simp]
 lemma Spec.map_inv {R S : CommRingCat} (f : R ⟶ S) [IsIso f] :
     Spec.map (inv f) = inv (Spec.map f) := by
-  show Scheme.Spec.map (inv f).op = inv (Scheme.Spec.map f.op)
+  change Scheme.Spec.map (inv f).op = inv (Scheme.Spec.map f.op)
   rw [op_inv, ← Scheme.Spec.map_inv]
 
 section
@@ -672,7 +672,7 @@ lemma zeroLocus_isClosed {U : X.Opens} (s : Set Γ(X, U)) :
   X.toRingedSpace.zeroLocus_isClosed s
 
 lemma zeroLocus_singleton {U : X.Opens} (f : Γ(X, U)) :
-    X.zeroLocus {f} = (X.basicOpen f).carrierᶜ :=
+    X.zeroLocus {f} = (↑(X.basicOpen f))ᶜ :=
   X.toRingedSpace.zeroLocus_singleton f
 
 @[simp]
@@ -704,8 +704,7 @@ lemma zeroLocus_map {U V : X.Opens} (i : U ≤ V) (s : Set Γ(X, V)) :
   ext x
   suffices (∀ f ∈ s, x ∈ U → x ∉ X.basicOpen f) ↔ x ∈ U → (∀ f ∈ s, x ∉ X.basicOpen f) by
     simpa [or_iff_not_imp_right]
-  conv_lhs => enter [i]; rw [forall_comm (β := x ∈ U)] -- why doesn't simp fire on this
-  rw [forall_comm (β := x ∈ U)]
+  grind
 
 lemma zeroLocus_map_of_eq {U V : X.Opens} (i : U = V) (s : Set Γ(X, V)) :
     X.zeroLocus ((X.presheaf.map (eqToHom i).op).hom '' s) = X.zeroLocus s := by
@@ -729,6 +728,10 @@ lemma zeroLocus_univ {U : X.Opens} :
   simp only [Scheme.mem_zeroLocus_iff, Set.mem_univ, forall_const, Set.mem_compl_iff,
     SetLike.mem_coe, ← not_exists, not_iff_not]
   exact ⟨fun ⟨f, hf⟩ ↦ X.basicOpen_le f hf, fun _ ↦ ⟨1, by rwa [X.basicOpen_of_isUnit isUnit_one]⟩⟩
+
+lemma zeroLocus_iUnion {U : X.Opens} {ι : Type*} (f : ι → Set Γ(X, U)) :
+    X.zeroLocus (⋃ i, f i) = ⋂ i, X.zeroLocus (f i) := by
+  simpa [zeroLocus, AlgebraicGeometry.RingedSpace.zeroLocus] using Set.iInter_comm _
 
 lemma zeroLocus_radical {U : X.Opens} (I : Ideal Γ(X, U)) :
     X.zeroLocus (U := U) I.radical = X.zeroLocus (U := U) I := by
@@ -785,7 +788,7 @@ lemma Scheme.iso_hom_base_inv_base {X Y : Scheme.{u}} (e : X ≅ Y) :
 @[simp]
 lemma Scheme.iso_hom_base_inv_base_apply {X Y : Scheme.{u}} (e : X ≅ Y) (x : X) :
     (e.inv.base (e.hom.base x)) = x := by
-  show (e.hom.base ≫ e.inv.base) x = 𝟙 X.toPresheafedSpace x
+  change (e.hom.base ≫ e.inv.base) x = 𝟙 X.toPresheafedSpace x
   simp
 
 @[reassoc (attr := simp)]
@@ -796,7 +799,7 @@ lemma Scheme.iso_inv_base_hom_base {X Y : Scheme.{u}} (e : X ≅ Y) :
 @[simp]
 lemma Scheme.iso_inv_base_hom_base_apply {X Y : Scheme.{u}} (e : X ≅ Y) (y : Y) :
     (e.hom.base (e.inv.base y)) = y := by
-  show (e.inv.base ≫ e.hom.base) y = 𝟙 Y.toPresheafedSpace y
+  change (e.inv.base ≫ e.hom.base) y = 𝟙 Y.toPresheafedSpace y
   simp
 
 theorem Spec_zeroLocus_eq_zeroLocus {R : CommRingCat} (s : Set R) :

@@ -61,7 +61,7 @@ theorem trunc_one (n) : trunc (n + 1) (1 : R⟦X⟧) = 1 :=
 theorem trunc_C (n) (a : R) : trunc (n + 1) (C R a) = Polynomial.C a :=
   Polynomial.ext fun m => by
     rw [coeff_trunc, coeff_C, Polynomial.coeff_C]
-    split_ifs with H <;> first |rfl|try simp_all
+    split_ifs with H <;> first | rfl | try simp_all
 
 @[simp]
 theorem trunc_add (n) (φ ψ : R⟦X⟧) : trunc n (φ + ψ) = trunc n φ + trunc n ψ :=

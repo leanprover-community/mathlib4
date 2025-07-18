@@ -32,7 +32,7 @@ assert_not_exists map_ne_zero MonoidWithZero
 universe w v₁ v₂ v u₁ u₂ u
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits.Types
-  CategoryTheory.Limits.Types.FilteredColimit
+  CategoryTheory.Limits.Types.FilteredColimit CategoryTheory.Functor
 
 namespace CategoryTheory.Limits
 

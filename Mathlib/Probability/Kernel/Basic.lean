@@ -72,7 +72,7 @@ theorem deterministic_apply' {f : α → β} (hf : Measurable f) (a : α) {s : S
 `deterministic f hf` to `deterministic g ⋯`. Instead one can do `rw [deterministic_congr h]`. -/
 theorem deterministic_congr {f g : α → β} {hf : Measurable f} (h : f = g) :
     deterministic f hf = deterministic g (h ▸ hf) := by
-  conv_lhs => enter [1]; rw [h]
+  grind
 
 instance isMarkovKernel_deterministic {f : α → β} (hf : Measurable f) :
     IsMarkovKernel (deterministic f hf) :=

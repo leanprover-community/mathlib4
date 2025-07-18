@@ -645,7 +645,7 @@ theorem Icc_subset_Ioc_pred_left_of_not_isMin (ha : ¬IsMin a) : Icc a b ⊆ Ioc
   gcongr
   apply Ici_subset_Ioi_pred_of_not_isMin ha
 
-theorem Ico_subset_Ioo_pred_left_of_not_isMin (ha : ¬IsMin a) : Ico a b ⊆ Ioo (pred a) b  := by
+theorem Ico_subset_Ioo_pred_left_of_not_isMin (ha : ¬IsMin a) : Ico a b ⊆ Ioo (pred a) b := by
   rw [← Ioi_inter_Iio, ← Ici_inter_Iio]
   gcongr
   apply Ici_subset_Ioi_pred_of_not_isMin ha

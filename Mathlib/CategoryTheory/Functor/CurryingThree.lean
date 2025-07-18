@@ -18,6 +18,8 @@ We study the equivalence of categories
 
 namespace CategoryTheory
 
+namespace Functor
+
 variable {C₁ C₂ C₁₂ C₃ C₂₃ D₁ D₂ D₃ E : Type*}
   [Category C₁] [Category C₂] [Category C₃] [Category C₁₂] [Category C₂₃]
   [Category D₁] [Category D₂] [Category D₃] [Category E]
@@ -96,5 +98,7 @@ def bifunctorComp₂₃Iso (F : C₁ ⥤ C₂₃ ⥤ E) (G₂₃ : C₂ ⥤ C₃
       uncurry.obj (uncurry.obj G₂₃ ⋙ F.flip).flip)) :=
   NatIso.ofComponents (fun _ ↦ NatIso.ofComponents (fun _ ↦
     NatIso.ofComponents (fun _ ↦ Iso.refl _)))
+
+end Functor
 
 end CategoryTheory

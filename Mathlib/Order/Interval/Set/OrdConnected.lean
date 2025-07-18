@@ -241,7 +241,7 @@ theorem OrdConnected.preimage_monotoneOn {f : β → α} {t : Set β} {s : Set �
     ∃ u, OrdConnected u ∧ t ∩ f ⁻¹' s = t ∩ u := by
   let u := {x | (∃ y ∈ t, y ≤ x ∧ f y ∈ s) ∧ (∃ z ∈ t, x ≤ z ∧ f z ∈ s)}
   refine ⟨u, ⟨?_⟩, Subset.antisymm ?_ ?_⟩
-  · rintro x ⟨⟨y, yt, yx, ys⟩, -⟩  x' ⟨-, ⟨z, zt, x'z, zs⟩⟩ a ha
+  · rintro x ⟨⟨y, yt, yx, ys⟩, -⟩ x' ⟨-, ⟨z, zt, x'z, zs⟩⟩ a ha
     exact ⟨⟨y, yt, yx.trans ha.1, ys⟩, ⟨z, zt, ha.2.trans x'z, zs⟩⟩
   · rintro x ⟨xt, xs⟩
     exact ⟨xt, ⟨x, xt, le_rfl, xs⟩, ⟨x, xt, le_rfl, xs⟩⟩

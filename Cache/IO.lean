@@ -485,7 +485,7 @@ def leanModulesFromSpec (sp : SearchPath) (argₛ : String) :
           (i.e. `Mathlib.Data` when only the folder `Mathlib/Data/` but no \
           file `Mathlib/Data.lean` exists) is not supported yet!"
       else
-        return .error "Invalid argument: non-existing module {mod}"
+        return .error s!"Invalid argument: non-existing module {mod}"
 
 /--
 Parse command line arguments.

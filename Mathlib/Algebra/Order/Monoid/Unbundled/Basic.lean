@@ -321,7 +321,7 @@ theorem trichotomy_of_mul_eq_mul
     (h : a * b = c * d) : (a = c ∧ b = d) ∨ a < c ∨ b < d := by
   obtain hac | rfl | hca := lt_trichotomy a c
   · right; left; exact hac
-  · left; simpa using mul_right_inj_of_comparable (LinearOrder.le_total d b)|>.1 h
+  · left; simpa using mul_right_inj_of_comparable (LinearOrder.le_total d b) |>.1 h
   · obtain hbd | rfl | hdb := lt_trichotomy b d
     · right; right; exact hbd
     · exact False.elim <| ne_of_lt (mul_lt_mul_right' hca b) h.symm
@@ -1048,7 +1048,7 @@ theorem eq_one_of_one_le_mul_left (ha : a ≤ 1) (hb : b ≤ 1) (hab : 1 ≤ a *
 
 @[to_additive]
 theorem eq_one_of_mul_le_one_left (ha : 1 ≤ a) (hb : 1 ≤ b) (hab : a * b ≤ 1) : a = 1 :=
-  ha.eq_of_not_gt fun h => hab.not_gt <| one_lt_mul_of_lt_of_le' h hb
+  ha.eq_of_not_lt' fun h => hab.not_gt <| one_lt_mul_of_lt_of_le' h hb
 
 end Left
 
@@ -1062,7 +1062,7 @@ theorem eq_one_of_one_le_mul_right (ha : a ≤ 1) (hb : b ≤ 1) (hab : 1 ≤ a 
 
 @[to_additive]
 theorem eq_one_of_mul_le_one_right (ha : 1 ≤ a) (hb : 1 ≤ b) (hab : a * b ≤ 1) : b = 1 :=
-  hb.eq_of_not_gt fun h => hab.not_gt <| Right.one_lt_mul_of_le_of_lt ha h
+  hb.eq_of_not_lt' fun h => hab.not_gt <| Right.one_lt_mul_of_le_of_lt ha h
 
 end Right
 

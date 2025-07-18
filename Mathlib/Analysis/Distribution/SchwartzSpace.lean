@@ -1267,7 +1267,7 @@ theorem eLpNorm_le_seminorm (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
   calc eLpNorm (⇑f) p μ
   _ = eLpNorm ((fun x : E ↦ (1 + ‖x‖) ^ (-k : ℝ)) • fun x ↦ (1 + ‖x‖) ^ k • f x) p μ := by
     refine congrArg (eLpNorm · p μ) (funext fun x ↦ ?_)
-    simp [Real.rpow_neg (h_one_add x).le, (h_one_add x).ne']
+    simp [(h_one_add x).ne']
   _ ≤ eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ * eLpNorm (fun x ↦ (1 + ‖x‖) ^ k • f x) ⊤ μ := by
     refine eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top p _ ?_
     refine Continuous.aestronglyMeasurable ?_

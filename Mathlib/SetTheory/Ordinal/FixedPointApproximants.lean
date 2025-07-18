@@ -90,7 +90,7 @@ theorem le_lfpApprox {a : Ordinal} : x ≤ lfpApprox f x a := by
   simp only [exists_prop, Set.union_singleton, Set.mem_insert_iff, Set.mem_setOf_eq, true_or]
 
 theorem lfpApprox_add_one (h : x ≤ f x) (a : Ordinal) :
-    lfpApprox f x (a+1) = f (lfpApprox f x a) := by
+    lfpApprox f x (a + 1) = f (lfpApprox f x a) := by
   apply le_antisymm
   · conv => left; rw [lfpApprox]
     apply sSup_le
@@ -262,7 +262,7 @@ theorem gfpApprox_le {a : Ordinal} : gfpApprox f x a ≤ x :=
   le_lfpApprox f.dual x
 
 theorem gfpApprox_add_one (h : f x ≤ x) (a : Ordinal) :
-    gfpApprox f x (a+1) = f (gfpApprox f x a) :=
+    gfpApprox f x (a + 1) = f (gfpApprox f x a) :=
   lfpApprox_add_one f.dual x h a
 
 theorem gfpApprox_mono_left : Monotone (gfpApprox : (α →o α) → _) := by

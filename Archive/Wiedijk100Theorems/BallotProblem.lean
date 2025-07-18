@@ -176,8 +176,8 @@ attribute [local instance] measurableSingletonClass_list_int
 private theorem list_int_measurableSet {s : Set (List ℤ)} : MeasurableSet s := trivial
 
 theorem count_countedSequence : ∀ p q : ℕ, count (countedSequence p q) = (p + q).choose p
-  | p, 0 => by simp [counted_right_zero, count_singleton]
-  | 0, q => by simp [counted_left_zero, count_singleton]
+  | p, 0 => by simp [counted_right_zero]
+  | 0, q => by simp [counted_left_zero]
   | p + 1, q + 1 => by
     rw [counted_succ_succ, measure_union (disjoint_bits _ _) list_int_measurableSet,
       count_injective_image List.cons_injective, count_countedSequence _ _,
@@ -285,7 +285,7 @@ theorem countedSequence_int_neg_counted_succ_succ (p q : ℕ) :
       (_ : List.cons 1 '' countedSequence p (q + 1) ∩ {l : List ℤ | l.headI = 1}ᶜ = ∅),
       empty_union] <;>
     · ext
-      simp only [mem_inter_iff, mem_image, mem_setOf_eq, and_iff_left_iff_imp, mem_empty_iff_false,
+      simp only [mem_inter_iff, mem_image, and_iff_left_iff_imp, mem_empty_iff_false,
         iff_false, not_and, forall_exists_index, and_imp]
       rintro y _ rfl
       norm_num

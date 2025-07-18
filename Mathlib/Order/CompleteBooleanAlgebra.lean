@@ -629,7 +629,7 @@ open scoped symmDiff in
 theorem biSup_symmDiff_biSup_le {p : ι → Prop} {f g : (i : ι) → p i → α} :
     (⨆ i, ⨆ (h : p i), f i h) ∆ (⨆ i, ⨆ (h : p i), g i h) ≤
     ⨆ i, ⨆ (h : p i), ((f i h) ∆ (g i h)) :=
-  le_trans iSup_symmDiff_iSup_le <|iSup_mono fun _ ↦ iSup_symmDiff_iSup_le
+  le_trans iSup_symmDiff_iSup_le <| iSup_mono fun _ ↦ iSup_symmDiff_iSup_le
 
 end CompleteBooleanAlgebra
 

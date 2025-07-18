@@ -189,7 +189,7 @@ lemma proj_of_le (L : FiniteGaloisIntermediateField k K)
   letI : Algebra L L' := RingHom.toAlgebra (Subsemiring.inclusion h)
   letI : IsScalarTower k L L' := IsScalarTower.of_algebraMap_eq (congrFun rfl)
   rw [← finGaloisGroupFunctor_map_proj_eq_proj g h.hom]
-  show (algebraMap L' K (algebraMap L L' (AlgEquiv.restrictNormal (proj (mk L') g) L x))) = _
+  change (algebraMap L' K (algebraMap L L' (AlgEquiv.restrictNormal (proj (mk L') g) L x))) = _
   rw [AlgEquiv.restrictNormal_commutes (proj (mk L') g) L]
   rfl
 
@@ -268,7 +268,7 @@ noncomputable def mulEquivToLimit [IsGalois k K] :
   right_inv := fun g ↦ by
     apply Subtype.val_injective
     ext L
-    show (limitToAlgEquiv g).restrictNormal _ = _
+    change (limitToAlgEquiv g).restrictNormal _ = _
     ext x
     have : ((limitToAlgEquiv g).restrictNormal L.unop) x = (limitToAlgEquiv g) x.1 := by
       exact AlgEquiv.restrictNormal_commutes (limitToAlgEquiv g) L.unop x

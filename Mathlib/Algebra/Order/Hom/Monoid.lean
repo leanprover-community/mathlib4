@@ -971,3 +971,13 @@ def OrderMonoidIso.withZero {G H : Type*}
   invFun e := ⟨MulEquiv.withZero.symm e, fun {a b} ↦ by simp⟩
   left_inv _ := by ext; simp
   right_inv _ := by ext x; cases x <;> simp
+
+/-- Any linearly ordered group with zero is isomorphic to adjoining `0` to the units of itself. -/
+@[simps!]
+def OrderMonoidIso.withZeroUnits {α : Type*} [LinearOrderedCommGroupWithZero α]
+    [DecidablePred (fun a : α ↦ a = 0)] :
+    WithZero αˣ ≃*o α where
+  toMulEquiv := WithZero.withZeroUnitsEquiv
+  map_le_map_iff' {a b} := by
+    cases a <;> cases b <;>
+    simp

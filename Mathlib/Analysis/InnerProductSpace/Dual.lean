@@ -6,6 +6,7 @@ Authors: Frédéric Dupuis
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Analysis.Normed.Module.Dual
 import Mathlib.Analysis.Normed.Group.NullSubmodule
+import Mathlib.Topology.Algebra.Module.PerfectPairing
 
 /-!
 # The Fréchet-Riesz representation theorem
@@ -196,5 +197,14 @@ theorem unique_continuousLinearMapOfBilin {v f : E} (is_lax_milgram : ∀ w, ⟪
   exact is_lax_milgram w
 
 end Normed
+
+instance [NormedAddCommGroup E] [CompleteSpace E] [InnerProductSpace ℝ E] :
+    (innerₗ E).IsContPerfPair where
+  continuous_uncurry := continuous_inner
+  bijective_left := (InnerProductSpace.toDual ℝ E).bijective
+  bijective_right := by
+    convert (InnerProductSpace.toDual ℝ E).bijective
+    ext y
+    simp
 
 end InnerProductSpace

@@ -357,7 +357,7 @@ theorem repr_apply_eq (f : M → ι → R) (hadd : ∀ x y, f (x + y) = f x + f 
       map_smul' _ _ := by simp [hsmul, Pi.smul_apply] }
   have : Finsupp.lapply i ∘ₗ ↑b.repr = f_i := by
     refine b.ext fun j => ?_
-    show b.repr (b j) i = f (b j) i
+    change b.repr (b j) i = f (b j) i
     rw [b.repr_self, f_eq]
   calc
     b.repr x i = f_i x := by

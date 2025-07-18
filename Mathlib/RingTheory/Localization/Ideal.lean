@@ -329,6 +329,12 @@ lemma of_surjective {R' S' : Type*} [CommRing R'] [CommRing S'] [Algebra R' S']
     obtain ⟨r, hr, hr'⟩ := (IsLocalization.mk'_mem_map_algebraMap_iff M _ _ _ _).mp (H' e)
     exact ⟨⟨_, r, hr, rfl⟩, by simpa [sub_eq_zero, mul_sub] using hr'⟩
 
+open Algebra in
+instance {P : Ideal R} [P.IsPrime] [IsDomain R] [IsDomain S] [FaithfulSMul R S] :
+    IsDomain (Localization (algebraMapSubmonoid S P.primeCompl)) :=
+  isDomain_localization (map_le_nonZeroDivisors_of_injective _
+    (FaithfulSMul.algebraMap_injective R S) P.primeCompl_le_nonZeroDivisors)
+
 end CommRing
 
 end IsLocalization

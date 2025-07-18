@@ -179,7 +179,7 @@ lemma rpow_inv_log_le_exp_one : x ^ (log x)⁻¹ ≤ exp 1 := by
     _ ≤ |x ^ (log x)⁻¹| := le_abs_self _
     _ ≤ |x| ^ (log x)⁻¹ := abs_rpow_le_abs_rpow ..
   rw [← log_abs]
-  obtain hx | hx := (abs_nonneg x).eq_or_gt
+  obtain hx | hx := (abs_nonneg x).eq_or_lt'
   · simp [hx]
   · rw [rpow_def_of_pos hx]
     gcongr

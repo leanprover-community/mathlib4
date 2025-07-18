@@ -25,8 +25,8 @@ formula for the Lebesgue and Bochner integrals, in `lintegral_image_eq_lintegral
 and `integral_image_eq_integral_abs_det_fderiv_smul` respectively.
 
 Specialized versions in one dimension (using the derivative instead of the determinant of the
-Fréchet derivative) can be found in the file `MeasureTheory.Function.JacobianOneDim.lean`, together
-with versions for monotone and antitone functions.
+Fréchet derivative) can be found in the file `Mathlib/MeasureTheory/Function/JacobianOneDim.lean`,
+together with versions for monotone and antitone functions.
 
 ## Main results
 

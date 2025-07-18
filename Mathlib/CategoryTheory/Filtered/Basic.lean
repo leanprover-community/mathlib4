@@ -242,10 +242,7 @@ theorem sup_exists :
         apply coeq_condition
       · rw [@w' _ _ mX mY f']
         simp only [Finset.mem_insert, PSigma.mk.injEq, heq_eq_eq, true_and] at mf'
-        rcases mf' with mf' | mf'
-        · exfalso
-          exact hf mf'.symm
-        · exact mf'
+        grind
     · rw [@w' _ _ mX' mY' f' _]
       apply Finset.mem_of_mem_insert_of_ne mf'
       contrapose! h
@@ -592,7 +589,7 @@ theorem cospan {i j j' : C} (f : j ⟶ i) (f' : j' ⟶ i) :
   ⟨k, e ≫ G, e ≫ G', by simpa only [Category.assoc] using he⟩
 
 theorem _root_.CategoryTheory.Functor.ranges_directed (F : C ⥤ Type*) (j : C) :
-    Directed (· ⊇ ·) fun f : Σ'i, i ⟶ j => Set.range (F.map f.2) := fun ⟨i, ij⟩ ⟨k, kj⟩ => by
+    Directed (· ⊇ ·) fun f : Σ' i, i ⟶ j => Set.range (F.map f.2) := fun ⟨i, ij⟩ ⟨k, kj⟩ => by
   let ⟨l, li, lk, e⟩ := cospan ij kj
   refine ⟨⟨l, lk ≫ kj⟩, e ▸ ?_, ?_⟩ <;> simp_rw [F.map_comp] <;> apply Set.range_comp_subset_range
 
@@ -699,10 +696,7 @@ theorem inf_exists :
         apply eq_condition
       · rw [@w' _ _ mX mY f']
         simp only [Finset.mem_insert, PSigma.mk.injEq, heq_eq_eq, true_and] at mf'
-        rcases mf' with mf' | mf'
-        · exfalso
-          exact hf mf'.symm
-        · exact mf'
+        grind
     · rw [@w' _ _ mX' mY' f' _]
       apply Finset.mem_of_mem_insert_of_ne mf'
       contrapose! h

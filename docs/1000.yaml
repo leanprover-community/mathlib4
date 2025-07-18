@@ -490,8 +490,8 @@ Q528987:
   title: Von Neumann bicommutant theorem
 
 Q530152:
-  title: Picard&ndash;Lindelöf theorem
-  decl: IsPicardLindelof.exists_forall_hasDerivWithinAt_Icc_eq
+  title: Picard–Lindelöf theorem
+  decl: IsPicardLindelof.exists_eq_forall_mem_Icc_hasDerivWithinAt
 
 Q535366:
   title: Montel's theorem
@@ -1617,6 +1617,9 @@ Q1530275:
 
 Q1535225:
   title: Łoś' theorem
+  decl: FirstOrder.Language.Ultraproduct.sentence_realize
+  authors: Aaron Anderson
+  date: 2022-03-09
 
 Q1542114:
   title: Bézout's theorem

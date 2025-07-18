@@ -11,7 +11,7 @@ import Mathlib.RingTheory.Polynomial.Nilpotent
 
 We prove that
 - `MvPolynomial.isNilpotent_iff`:
-  A multivariate polynomial is nilpotent iff all its coefficents are.
+  A multivariate polynomial is nilpotent iff all its coefficients are.
 - `MvPolynomial.isUnit_iff`:
   A multivariate polynomial is invertible iff its constant term is invertible
   and its other coefficients are nilpotent.

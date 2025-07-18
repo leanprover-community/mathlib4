@@ -18,19 +18,22 @@ of continuity is equivalent to continuity in ωCPOs.
 
 -/
 
-open Set OmegaCompletePartialOrder
+open Set OmegaCompletePartialOrder Topology
 
 universe u
 
 open Topology.IsScott in
-@[simp] lemma Topology.IsScott.ωscottContinuous_iff_continuous {α : Type*}
+@[simp] lemma Topology.IsScott.ωScottContinuous_iff_continuous {α : Type*}
     [OmegaCompletePartialOrder α] [TopologicalSpace α]
     [Topology.IsScott α (Set.range fun c : Chain α => Set.range c)] {f : α → Prop} :
     ωScottContinuous f ↔ Continuous f := by
-  rw [ωScottContinuous, scottContinuous_iff_continuous (fun a b hab => by
+  rw [ωScottContinuous, scottContinuousOn_iff_continuous (fun a b hab => by
     use Chain.pair a b hab; exact OmegaCompletePartialOrder.Chain.range_pair a b hab)]
 
--- "Scott", "ωSup"
+@[deprecated (since := "2025-07-02")]
+alias Topology.IsScott.ωscottContinuous_iff_continuous :=
+  Topology.IsScott.ωScottContinuous_iff_continuous
+
 namespace Scott
 
 /-- `x` is an `ω`-Sup of a chain `c` if it is the least upper bound of the range of `c`. -/
@@ -65,18 +68,28 @@ end Scott
 /-- A Scott topological space is defined on preorders
 such that their open sets, seen as a function `α → Prop`,
 preserves the joins of ω-chains. -/
+@[deprecated WithScott (since := "2025-07-02")]
 abbrev Scott (α : Type u) := α
 
-instance Scott.topologicalSpace (α : Type u) [OmegaCompletePartialOrder α] :
+set_option linter.deprecated false in
+/-- Deprecated, use `WithScott`. -/
+@[deprecated Topology.WithScott.instTopologicalSpace (since := "2025-07-02")]
+abbrev Scott.topologicalSpace (α : Type u) [OmegaCompletePartialOrder α] :
     TopologicalSpace (Scott α) where
   IsOpen := Scott.IsOpen α
   isOpen_univ := Scott.isOpen_univ α
   isOpen_inter := Scott.IsOpen.inter α
   isOpen_sUnion := Scott.isOpen_sUnion α
 
+attribute [local instance] Scott.topologicalSpace
+
+set_option linter.deprecated false in
+@[deprecated isOpen_iff_continuous_mem (since := "2025-07-02")]
 lemma isOpen_iff_ωScottContinuous_mem {α} [OmegaCompletePartialOrder α] {s : Set (Scott α)} :
     IsOpen s ↔ ωScottContinuous fun x ↦ x ∈ s := by rfl
 
+set_option linter.deprecated false in
+@[deprecated "Use `WithScott` API" (since := "2025-07-02")]
 lemma scott_eq_Scott {α} [OmegaCompletePartialOrder α] :
     Topology.scott α (Set.range fun c : Chain α => Set.range c) = Scott.topologicalSpace α := by
   ext U
@@ -87,14 +100,17 @@ lemma scott_eq_Scott {α} [OmegaCompletePartialOrder α] :
 
 section notBelow
 
-variable {α : Type*} [OmegaCompletePartialOrder α] (y : Scott α)
+variable {α : Type*} [OmegaCompletePartialOrder α]
 
+set_option linter.deprecated false in
 /-- `notBelow` is an open set in `Scott α` used
 to prove the monotonicity of continuous functions -/
-def notBelow :=
+def notBelow (y : Scott α) :=
   { x | ¬x ≤ y }
 
-theorem notBelow_isOpen : IsOpen (notBelow y) := by
+set_option linter.deprecated false in
+@[deprecated isClosed_Iic (since := "2025-07-02")]
+theorem notBelow_isOpen (y : Scott α) : IsOpen (notBelow y) := by
   have h : Monotone (notBelow y) := fun x z hle ↦ mt hle.trans
   dsimp only [IsOpen, TopologicalSpace.IsOpen, Scott.IsOpen]
   rw [ωScottContinuous_iff_monotone_map_ωSup]
@@ -111,6 +127,8 @@ theorem isωSup_ωSup {α} [OmegaCompletePartialOrder α] (c : Chain α) : IsωS
   · apply le_ωSup
   · apply ωSup_le
 
+set_option linter.deprecated false in
+@[deprecated Topology.IsScott.ωscottContinuous_iff_continuous (since := "2025-07-02")]
 theorem scottContinuous_of_continuous {α β} [OmegaCompletePartialOrder α]
     [OmegaCompletePartialOrder β] (f : Scott α → Scott β) (hf : _root_.Continuous f) :
     OmegaCompletePartialOrder.ωScottContinuous f := by
@@ -128,6 +146,8 @@ theorem scottContinuous_of_continuous {α β} [OmegaCompletePartialOrder α]
     eq_iff_iff, not_forall, OrderHom.coe_mk]
   tauto
 
+set_option linter.deprecated false in
+@[deprecated Topology.IsScott.ωscottContinuous_iff_continuous (since := "2025-07-02")]
 theorem continuous_of_scottContinuous {α β} [OmegaCompletePartialOrder α]
     [OmegaCompletePartialOrder β] (f : Scott α → Scott β) (hf : ωScottContinuous f) :
     Continuous f := by

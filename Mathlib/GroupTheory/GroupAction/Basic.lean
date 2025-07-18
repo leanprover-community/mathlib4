@@ -318,7 +318,7 @@ theorem stabilizerEquivStabilizer_symm_apply (hg : b = g +ᵥ b) (x : stabilizer
   simp [stabilizerEquivStabilizer]
 
 theorem stabilizerEquivStabilizer_trans
-    (hg : b = g +ᵥ a) (hh : c = h +ᵥ b) (hk : c = k +ᵥ a) (H : k = h + g):
+    (hg : b = g +ᵥ a) (hh : c = h +ᵥ b) (hk : c = k +ᵥ a) (H : k = h + g) :
     (stabilizerEquivStabilizer hg).trans (stabilizerEquivStabilizer hh)
       = stabilizerEquivStabilizer hk := by
   ext; simp [stabilizerEquivStabilizer_apply, H]

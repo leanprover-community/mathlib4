@@ -145,7 +145,7 @@ variable [BraidedCategory C]
 /-- The braided structure on a full subcategory inherited by the braided structure on `C`.
 -/
 instance fullBraidedSubcategory : BraidedCategory (FullSubcategory P) :=
-  braidedCategoryOfFaithful P.ι (fun X Y => P.isoMk (β_ X.1 Y.1)) (by aesop_cat)
+  .ofFaithful P.ι fun X Y ↦ P.isoMk (β_ X.1 Y.1)
 
 /-- The forgetful braided functor from a full braided subcategory into the original category
 ("forgetting" the condition).

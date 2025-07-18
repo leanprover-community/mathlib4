@@ -29,7 +29,7 @@ variable {a : α}
 
 @[simp]
 theorem sublist_insertIdx (l : List α) (n : ℕ) (a : α) : l <+ (l.insertIdx n a) := by
-  simpa only [eraseIdx_insertIdx] using eraseIdx_sublist (l.insertIdx n a) n
+  simpa only [eraseIdx_insertIdx_self] using eraseIdx_sublist (l.insertIdx n a) n
 
 @[simp]
 theorem subset_insertIdx (l : List α) (n : ℕ) (a : α) : l ⊆ l.insertIdx n a :=
@@ -40,7 +40,7 @@ is the same as setting `n`th element to `a`.
 
 We assume that `n ≠ length l`, because otherwise LHS equals `l ++ [a]` while RHS equals `l`. -/
 @[simp]
-theorem insertIdx_eraseIdx {l : List α} {n : ℕ} (hn : n ≠ length l) (a : α) :
+theorem insertIdx_eraseIdx_self {l : List α} {n : ℕ} (hn : n ≠ length l) (a : α) :
     (l.eraseIdx n).insertIdx n a = l.set n a := by
   induction n generalizing l <;> cases l <;> simp_all
 

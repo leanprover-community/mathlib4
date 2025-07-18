@@ -16,8 +16,6 @@ open Nat
 
 namespace Int
 
-export private decNonneg from Init.Data.Int.Basic
-
 theorem le.elim {a b : ℤ} (h : a ≤ b) {P : Prop} (h' : ∀ n : ℕ, a + ↑n = b → P) : P :=
   Exists.elim (le.dest h) h'
 
@@ -29,11 +27,11 @@ theorem lt.elim {a b : ℤ} (h : a < b) {P : Prop} (h' : ∀ n : ℕ, a + ↑(Na
 alias ⟨lt_of_ofNat_lt_ofNat, ofNat_lt_ofNat_of_lt⟩ := ofNat_lt
 
 instance instLinearOrder : LinearOrder ℤ where
-  le := (·≤·)
+  le := (· ≤ ·)
   le_refl := Int.le_refl
   le_trans := @Int.le_trans
   le_antisymm := @Int.le_antisymm
-  lt := (·<·)
+  lt := (· < ·)
   lt_iff_le_not_ge := @Int.lt_iff_le_not_le
   le_total := Int.le_total
   toDecidableEq := by infer_instance

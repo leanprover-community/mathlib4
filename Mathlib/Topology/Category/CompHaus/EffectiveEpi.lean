@@ -83,7 +83,7 @@ theorem effectiveEpiFamily_tfae
     refine ⟨q.1,q.2,?_⟩
     have : t = i.inv (i.hom t) := show t = (i.hom ≫ i.inv) t by simp only [i.hom_inv_id]; rfl
     rw [this]
-    show _ = (i.inv ≫ Sigma.desc π) (i.hom t)
+    change _ = (i.inv ≫ Sigma.desc π) (i.hom t)
     suffices i.inv ≫ Sigma.desc π = finiteCoproduct.desc X π by
       rw [this]; rfl
     rw [Iso.inv_comp_eq]

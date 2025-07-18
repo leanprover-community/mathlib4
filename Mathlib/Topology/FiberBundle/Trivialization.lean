@@ -482,6 +482,9 @@ theorem preimageSingletonHomeomorph_symm_apply {b : B} (hb : b ∈ e.baseSet) (p
 theorem continuousAt_proj (ex : x ∈ e.source) : ContinuousAt proj x :=
   (e.map_proj_nhds ex).le
 
+theorem continuousOn_proj : ContinuousOn proj e.source :=
+  continuousOn_of_forall_continuousAt fun _ ↦ e.continuousAt_proj
+
 /-- Composition of a `Trivialization` and a `Homeomorph`. -/
 protected def compHomeomorph {Z' : Type*} [TopologicalSpace Z'] (h : Z' ≃ₜ Z) :
     Trivialization F (proj ∘ h) where
@@ -748,9 +751,9 @@ noncomputable def disjointUnion (e e' : Trivialization F proj) (H : Disjoint e.b
   target_eq := (congr_arg₂ (· ∪ ·) e.target_eq e'.target_eq).trans union_prod.symm
   proj_toFun := by
     rintro p (hp | hp')
-    · show (e.source.piecewise e e' p).1 = proj p
+    · change (e.source.piecewise e e' p).1 = proj p
       rw [piecewise_eq_of_mem, e.coe_fst] <;> exact hp
-    · show (e.source.piecewise e e' p).1 = proj p
+    · change (e.source.piecewise e e' p).1 = proj p
       rw [piecewise_eq_of_notMem, e'.coe_fst hp']
       simp only [source_eq] at hp' ⊢
       exact fun h => H.le_bot ⟨h, hp'⟩

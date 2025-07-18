@@ -172,6 +172,15 @@ theorem compAlgEquiv_apply (M : Matrix I I (Matrix J J R)) :
 theorem compAlgEquiv_symm_apply (M : Matrix (I × J) (I × J) R) :
     (compAlgEquiv I J R K).symm M = (comp I I J J R).symm M := rfl
 
+@[simp]
+theorem isUnit_comp_iff {M : Matrix I I (Matrix J J R)} : IsUnit (comp _ _ _ _ _ M) ↔ IsUnit M :=
+  isUnit_map_iff (compAlgEquiv _ _ _ ℕ) M
+
+@[simp]
+theorem isUnit_comp_symm_iff {M : Matrix (I × J) (I × J) R} :
+    IsUnit (comp _ _ _ _ _ |>.symm M) ↔ IsUnit M :=
+  isUnit_map_iff (compAlgEquiv _ _ _ ℕ).symm M
+
 end Algebra
 
 end Matrix

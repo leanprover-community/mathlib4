@@ -936,7 +936,7 @@ lemma torsionBy.nsmul_iff {x : A} :
     x ∈ A[n] ↔ n • x = 0 :=
   Nat.cast_smul_eq_nsmul ℤ n x ▸ Submodule.mem_torsionBy_iff ..
 
-lemma torsionBy.mod_self_nsmul (s : ℕ) (x : A[n])  :
+lemma torsionBy.mod_self_nsmul (s : ℕ) (x : A[n]) :
     s • x = (s % n) • x :=
   nsmul_eq_mod_nsmul s (torsionBy.nsmul x)
 

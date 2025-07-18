@@ -82,7 +82,9 @@ def upgradeIsCompletelyMetrizable (X : Type*) [TopologicalSpace X] [IsCompletely
 
 namespace IsCompletelyMetrizableSpace
 
-instance (priority := 100) MetrizableSpace [TopologicalSpace X] [IsCompletelyMetrizableSpace X] :
+/-- Note: the priority is set to 90 to ensure that this instance is only applied after
+`EMetricSpace.metrizableSpace`. This prevents unnecessary attempts to infer completeness. -/
+instance (priority := 90) MetrizableSpace [TopologicalSpace X] [IsCompletelyMetrizableSpace X] :
     MetrizableSpace X := by
   letI := upgradeIsCompletelyMetrizable X
   infer_instance

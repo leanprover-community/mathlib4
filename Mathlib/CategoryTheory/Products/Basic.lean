@@ -27,6 +27,8 @@ and products of functors and natural transformations, written `F.prod G` and `α
 
 namespace CategoryTheory
 
+open Functor
+
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
@@ -36,7 +38,7 @@ variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 
 -- the generates simp lemmas like `id_fst` and `comp_snd`
 /-- `prod C D` gives the cartesian product of two categories. -/
-@[simps (config := { notRecursive := [] }) Hom id_fst id_snd comp_fst comp_snd, stacks 001K]
+@[simps (notRecursive := []) Hom id_fst id_snd comp_fst comp_snd, stacks 001K]
 instance prod : Category.{max v₁ v₂} (C × D) where
   Hom X Y := (X.1 ⟶ Y.1) × (X.2 ⟶ Y.2)
   id X := ⟨𝟙 X.1, 𝟙 X.2⟩
@@ -64,7 +66,7 @@ variable {C D} in
 This constructor should be preferred over `Prod.mk`, because lean infers better the
 source and target of the resulting morphism. -/
 abbrev mkHom {X₁ X₂ : C} {Y₁ Y₂ : D} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) : (X₁, Y₁) ⟶ (X₂, Y₂) :=
-  ⟨f,g⟩
+  ⟨f, g⟩
 
 @[inherit_doc Prod.mkHom]
 scoped infixr:70 " ×ₘ " => Prod.mkHom

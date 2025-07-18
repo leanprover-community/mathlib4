@@ -576,7 +576,7 @@ theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] :
   rw [continuousMultilinearCurryFin1_apply, linearDeriv_apply,
       changeOrigin, FormalMultilinearSeries.sum]
   cases isEmpty_or_nonempty ι
-  · have (l) : 1 + l ≠ Fintype.card ι := by
+  · have (l : _) : 1 + l ≠ Fintype.card ι := by
       rw [add_comm, Fintype.card_eq_zero]; exact Nat.succ_ne_zero _
     simp_rw [Fintype.sum_empty, changeOriginSeries_support _ (this _), zero_apply _, tsum_zero]; rfl
   rw [tsum_eq_single (Fintype.card ι - 1), changeOriginSeries]; swap
@@ -635,7 +635,7 @@ theorem _root_.HasFDerivAt.multilinear_comp
 /-- Technical lemma used in the proof of `hasFTaylorSeriesUpTo_iteratedFDeriv`, to compare sums
 over embedding of `Fin k` and `Fin (k + 1)`. -/
 private lemma _root_.Equiv.succ_embeddingFinSucc_fst_symm_apply {ι : Type*} [DecidableEq ι]
-    {n : ℕ} (e : Fin (n+1) ↪ ι) {k : ι}
+    {n : ℕ} (e : Fin (n + 1) ↪ ι) {k : ι}
     (h'k : k ∈ Set.range (Equiv.embeddingFinSucc n ι e).1) (hk : k ∈ Set.range e) :
     Fin.succ ((Equiv.embeddingFinSucc n ι e).1.toEquivRange.symm ⟨k, h'k⟩)
       = e.toEquivRange.symm ⟨k, hk⟩ := by

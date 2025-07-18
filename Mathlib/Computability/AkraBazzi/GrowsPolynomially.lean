@@ -216,7 +216,7 @@ lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
                         _ ≤ ((1 : ℝ)/(2 : ℝ)) * (2 : ℝ) ^ n * max n₀ 2 := by gcongr; norm_num
                         _ ≤ _ := by rw [mul_assoc]; gcongr; exact_mod_cast hz.1
           case ub =>
-            have h₁ : (2 : ℝ)^n = ((1 : ℝ)/(2 : ℝ)) * (2 : ℝ)^(n+1) := by
+            have h₁ : (2 : ℝ)^n = ((1 : ℝ)/(2 : ℝ)) * (2 : ℝ)^(n + 1) := by
               rw [one_div, pow_add, pow_one]
               ring
             rw [h₁, mul_assoc]
@@ -335,8 +335,8 @@ protected lemma GrowsPolynomially.mul {f g : ℝ → ℝ} (hf : GrowsPolynomiall
   have hg := hg.abs b hb
   obtain ⟨c₁, hc₁_mem, c₂, hc₂_mem, hf⟩ := hf
   obtain ⟨c₃, hc₃_mem, c₄, hc₄_mem, hg⟩ := hg
-  refine ⟨c₁ * c₃, by show 0 < c₁ * c₃; positivity, ?_⟩
-  refine ⟨c₂ * c₄, by show 0 < c₂ * c₄; positivity, ?_⟩
+  refine ⟨c₁ * c₃, by change 0 < c₁ * c₃; positivity, ?_⟩
+  refine ⟨c₂ * c₄, by change 0 < c₂ * c₄; positivity, ?_⟩
   filter_upwards [hf, hg] with x hf hg
   intro u hu
   refine ⟨?lb, ?ub⟩
@@ -365,8 +365,8 @@ protected lemma GrowsPolynomially.add {f g : ℝ → ℝ} (hf : GrowsPolynomiall
   have hg := hg b hb
   obtain ⟨c₁, hc₁_mem, c₂, hc₂_mem, hf⟩ := hf
   obtain ⟨c₃, hc₃_mem, c₄, _, hg⟩ := hg
-  refine ⟨min c₁ c₃, by show 0 < min c₁ c₃; positivity, ?_⟩
-  refine ⟨max c₂ c₄, by show 0 < max c₂ c₄; positivity, ?_⟩
+  refine ⟨min c₁ c₃, by change 0 < min c₁ c₃; positivity, ?_⟩
+  refine ⟨max c₂ c₄, by change 0 < max c₂ c₄; positivity, ?_⟩
   filter_upwards [hf, hg,
                   (tendsto_id.const_mul_atTop hb.1).eventually_forall_ge_atTop hf',
                   (tendsto_id.const_mul_atTop hb.1).eventually_forall_ge_atTop hg',
@@ -536,8 +536,8 @@ protected lemma GrowsPolynomially.inv {f : ℝ → ℝ} (hf : GrowsPolynomially 
     intro b hb
     have hb_pos := hb.1
     obtain ⟨c₁, hc₁_mem, c₂, hc₂_mem, hf⟩ := hf b hb
-    refine ⟨c₂⁻¹, by show 0 < c₂⁻¹; positivity, ?_⟩
-    refine ⟨c₁⁻¹, by show 0 < c₁⁻¹; positivity, ?_⟩
+    refine ⟨c₂⁻¹, by change 0 < c₂⁻¹; positivity, ?_⟩
+    refine ⟨c₁⁻¹, by change 0 < c₁⁻¹; positivity, ?_⟩
     filter_upwards [hf, hf', (tendsto_id.const_mul_atTop hb_pos).eventually_forall_ge_atTop hf']
       with x hx hx' hx''
     intro u hu

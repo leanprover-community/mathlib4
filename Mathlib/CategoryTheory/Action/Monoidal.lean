@@ -42,7 +42,7 @@ instance instMonoidalCategory : MonoidalCategory (Action V G) :=
 
 @[simp]
 theorem tensorUnit_ρ {g : G} :
-    @DFunLike.coe (G →* End (𝟙_ V)) _ _ _ (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) := by
+    @DFunLike.coe (G →* End (𝟙_ V)) _ _ _ (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) :=
   rfl
 
 @[simp]
@@ -79,8 +79,7 @@ section
 variable [BraidedCategory V]
 
 instance : BraidedCategory (Action V G) :=
-  braidedCategoryOfFaithful (Action.forget V G) (fun X Y => mkIso (β_ _ _)
-    (fun g => by simp)) (by simp)
+  .ofFaithful (Action.forget V G) fun X Y ↦ mkIso (β_ _ _) fun g ↦ by simp
 
 @[simp]
 theorem β_hom_hom {X Y : Action V G} : (β_ X Y).hom.hom = (β_ X.V Y.V).hom := rfl

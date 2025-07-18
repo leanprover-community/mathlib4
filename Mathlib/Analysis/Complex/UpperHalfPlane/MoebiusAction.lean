@@ -191,8 +191,8 @@ transformations in the usual way, extended to all of `GL (Fin 2) ℝ` using comp
 instance glAction : MulAction (GL (Fin 2) ℝ) ℍ where
   smul := smulAux
   one_smul z := by
-    show smulAux 1 z = z
-    simp [UpperHalfPlane.ext_iff, smulAux, coe_mk, smulAux', num, denom, σ]
+    change smulAux 1 z = z
+    simp [smulAux, smulAux', num, denom, σ]
   mul_smul := mul_smul'
 
 lemma coe_smul (g : GL (Fin 2) ℝ) (z : ℍ) :

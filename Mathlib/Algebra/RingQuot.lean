@@ -215,34 +215,34 @@ theorem one_quot : (⟨Quot.mk _ 1⟩ : RingQuot r) = 1 :=
   show _ = one r by rw [one_def]
 
 theorem add_quot {a b} : (⟨Quot.mk _ a⟩ + ⟨Quot.mk _ b⟩ : RingQuot r) = ⟨Quot.mk _ (a + b)⟩ := by
-  show add r _ _ = _
+  change add r _ _ = _
   rw [add_def]
   rfl
 
 theorem mul_quot {a b} : (⟨Quot.mk _ a⟩ * ⟨Quot.mk _ b⟩ : RingQuot r) = ⟨Quot.mk _ (a * b)⟩ := by
-  show mul r _ _ = _
+  change mul r _ _ = _
   rw [mul_def]
   rfl
 
 theorem pow_quot {a} {n : ℕ} : (⟨Quot.mk _ a⟩ ^ n : RingQuot r) = ⟨Quot.mk _ (a ^ n)⟩ := by
-  show npow r _ _ = _
+  change npow r _ _ = _
   rw [npow_def]
 
 theorem neg_quot {R : Type uR} [Ring R] (r : R → R → Prop) {a} :
     (-⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (-a)⟩ := by
-  show neg r _ = _
+  change neg r _ = _
   rw [neg_def]
   rfl
 
 theorem sub_quot {R : Type uR} [Ring R] (r : R → R → Prop) {a b} :
     (⟨Quot.mk _ a⟩ - ⟨Quot.mk _ b⟩ : RingQuot r) = ⟨Quot.mk _ (a - b)⟩ := by
-  show sub r _ _ = _
+  change sub r _ _ = _
   rw [sub_def]
   rfl
 
 theorem smul_quot [Algebra S R] {n : S} {a : R} :
     (n • ⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (n • a)⟩ := by
-  show smul r _ _ = _
+  change smul r _ _ = _
   rw [smul]
   rfl
 
@@ -512,16 +512,10 @@ def ringQuotEquivIdealQuotient (r : B → B → Prop) : RingQuot r ≃+* B ⧸ I
   RingEquiv.ofHomInv (ringQuotToIdealQuotient r) (idealQuotientToRingQuot r)
     (by
       ext x
-      simp_rw [ringQuotToIdealQuotient, lift_def, preLift_def, mkRingHom_def]
-      change mkRingHom r x = _
-      rw [mkRingHom_def]
-      rfl)
+      simp)
     (by
       ext x
-      simp_rw [ringQuotToIdealQuotient, lift_def, preLift_def, mkRingHom_def]
-      change Quot.lift _ _ ((mkRingHom r) x).toQuot = _
-      rw [mkRingHom_def]
-      rfl)
+      simp)
 
 end CommRing
 

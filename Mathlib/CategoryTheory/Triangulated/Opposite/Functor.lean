@@ -68,7 +68,7 @@ end Pretriangulated.Opposite
 namespace Functor
 
 @[reassoc]
-lemma op_commShiftIso_hom_app (X : Cᵒᵖ) (n m : ℤ) (h : n + m = 0):
+lemma op_commShiftIso_hom_app (X : Cᵒᵖ) (n m : ℤ) (h : n + m = 0) :
     (F.op.commShiftIso n).hom.app X =
       (F.map ((shiftFunctorOpIso C n m h).hom.app X).unop).op ≫
         ((F.commShiftIso m).inv.app X.unop).op ≫
@@ -77,7 +77,7 @@ lemma op_commShiftIso_hom_app (X : Cᵒᵖ) (n m : ℤ) (h : n + m = 0):
   rfl
 
 @[reassoc]
-lemma op_commShiftIso_inv_app (X : Cᵒᵖ) (n m : ℤ) (h : n + m = 0):
+lemma op_commShiftIso_inv_app (X : Cᵒᵖ) (n m : ℤ) (h : n + m = 0) :
     (F.op.commShiftIso n).inv.app X =
       (shiftFunctorOpIso D n m h).hom.app (op (F.obj X.unop)) ≫
         ((F.commShiftIso m).hom.app X.unop).op ≫

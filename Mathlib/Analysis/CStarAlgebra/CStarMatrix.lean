@@ -525,7 +525,7 @@ lemma toCLM_apply_single [DecidableEq m] {M : CStarMatrix m n A} {i : m} (a : A)
   simp [toCLM_apply, equiv, Equiv.refl]
 
 open WithCStarModule in
-lemma toCLM_apply_single_apply [DecidableEq m] {M : CStarMatrix m n A}{i : m} {j : n} (a : A) :
+lemma toCLM_apply_single_apply [DecidableEq m] {M : CStarMatrix m n A} {i : m} {j : n} (a : A) :
     (toCLM M) (equiv _ _ |>.symm <| Pi.single i a) j = a * M i j := by simp
 
 open WithCStarModule in

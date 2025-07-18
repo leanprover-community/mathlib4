@@ -147,7 +147,7 @@ theorem encode_some [Encodable α] (a : α) : encode (some a) = succ (encode a) 
   rfl
 
 @[simp]
-theorem decode_option_zero [Encodable α] : (decode 0 : Option (Option α))= some none :=
+theorem decode_option_zero [Encodable α] : (decode 0 : Option (Option α)) = some none :=
   rfl
 
 @[simp]
@@ -439,7 +439,7 @@ theorem down_up {a : ULower α} : down a.up = a :=
 
 @[simp]
 theorem up_down {a : α} : (down a).up = a := by
-  simp [up, down,Equiv.symm_apply_apply]
+  simp [up, down, Equiv.symm_apply_apply]
 
 @[simp]
 theorem up_eq_up {a b : ULower α} : a.up = b.up ↔ a = b :=

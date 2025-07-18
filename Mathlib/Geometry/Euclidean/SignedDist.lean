@@ -136,16 +136,7 @@ lemma abs_signedInfDist_eq_dist_of_mem_affineSpan_range {p : P}
   · simp_rw [range_faceOpposite_points]
   rw [affineSpan_insert_affineSpan]
   convert h
-  ext x
-  by_cases hx : x = s.points i
-  · simp [hx]
-  · simp only [Set.mem_insert_iff, hx, Set.mem_image,
-      false_or, Set.mem_range]
-    refine ⟨?_, ?_⟩
-    · rintro ⟨j, -, rfl⟩
-      exact ⟨j, rfl⟩
-    · rintro ⟨j, rfl⟩
-      exact ⟨j, fun hj ↦ hx (congr_arg _ hj), rfl⟩
+  exact Set.insert_image_compl_eq_range s.points i
 
 end Simplex
 

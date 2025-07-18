@@ -308,6 +308,10 @@ theorem mem_rightTransversals_iff_bijective :
 lemma IsComplement.card_left (h : IsComplement S H) : Nat.card S = H.index :=
   Nat.card_congr <| .ofBijective _ <| isComplement_subgroup_right_iff_bijective.mp h
 
+@[to_additive]
+theorem IsComplement.ncard_left (h : IsComplement S H) : S.ncard = H.index := by
+  rw [← Nat.card_coe_set_eq, h.card_left]
+
 set_option linter.deprecated false in
 @[to_additive (attr := deprecated IsComplement.card_left (since := "2024-12-18"))]
 theorem card_left_transversal (h : S ∈ leftTransversals (H : Set G)) : Nat.card S = H.index :=
@@ -317,6 +321,10 @@ theorem card_left_transversal (h : S ∈ leftTransversals (H : Set G)) : Nat.car
 lemma IsComplement.card_right (h : IsComplement H T) : Nat.card T = H.index :=
   Nat.card_congr <| (Equiv.ofBijective _ <| isComplement_subgroup_left_iff_bijective.mp h).trans <|
     QuotientGroup.quotientRightRelEquivQuotientLeftRel H
+
+@[to_additive]
+theorem IsComplement.ncard_right (h : IsComplement H T) : T.ncard = H.index := by
+  rw [← Nat.card_coe_set_eq, h.card_right]
 
 set_option linter.deprecated false in
 @[to_additive (attr := deprecated IsComplement.card_right (since := "2024-12-18"))]
@@ -703,6 +711,14 @@ theorem toRightFun_mul_inv_mem (hT : IsComplement H T) (g : G) :
 
 @[deprecated (since := "2024-12-28")]
 alias _root_.Subgroup.MemRighTransversals.toFun_mul_inv_mem := toRightFun_mul_inv_mem
+
+@[to_additive]
+theorem encard_left [H.FiniteIndex] (h : IsComplement S H) : S.encard = H.index := by
+  rw [← h.finite_left.cast_ncard_eq, h.ncard_left]
+
+@[to_additive]
+theorem encard_right [H.FiniteIndex] (h : IsComplement H T) : T.encard = H.index := by
+  rw [← h.finite_right.cast_ncard_eq, h.ncard_right]
 
 end IsComplement
 

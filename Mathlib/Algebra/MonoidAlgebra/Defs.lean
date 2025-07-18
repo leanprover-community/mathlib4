@@ -1390,7 +1390,7 @@ protected noncomputable def opRingEquiv [AddCommMonoid G] :
     map_mul' := by
       let f : k[G]ᵐᵒᵖ ≃+ kᵐᵒᵖ[G] :=
         opAddEquiv.symm.trans (mapRange.addEquiv (opAddEquiv : k ≃+ kᵐᵒᵖ))
-      show ∀ (x y : k[G]ᵐᵒᵖ), f (x * y) = f x * f y
+      change ∀ (x y : k[G]ᵐᵒᵖ), f (x * y) = f x * f y
       rw [← AddEquiv.coe_toAddMonoidHom, AddMonoidHom.map_mul_iff]
       ext i₁ r₁ i₂ r₂ : 6
       dsimp only [f, AddMonoidHom.compr₂_apply, AddMonoidHom.compl₂_apply,

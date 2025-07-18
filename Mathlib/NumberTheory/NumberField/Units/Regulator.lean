@@ -19,8 +19,8 @@ We define and prove basic results about the regulator of a number field `K`.
 * `NumberField.Units.regulator`: the regulator of the number field `K`.
 
 * `Number.Field.Units.regOfFamily_eq_det`: For any infinite place `w'`, the regulator of the
-family `u` is equal to the absolute value of the determinant of the matrix
-`(mult w * log w (u i)))_i, w` where `w` runs through the infinite places distinct from `w'`.
+  family `u` is equal to the absolute value of the determinant of the matrix
+  `(mult w * log w (u i)))_i, w` where `w` runs through the infinite places distinct from `w'`.
 
 
 ## Tags
@@ -73,7 +73,7 @@ def basisOfIsMaxRank {u : Fin (rank K) → (𝓞 K)ˣ} (hu : IsMaxRank u) :
 
 theorem basisOfIsMaxRank_apply {u : Fin (rank K) → (𝓞 K)ˣ} (hu : IsMaxRank u) (i : Fin (rank K)) :
     (basisOfIsMaxRank hu) i = logEmbedding K (Additive.ofMul (u i)) := by
-  simp [basisOfIsMaxRank, Basis.coe_reindex,  Equiv.symm_symm, Function.comp_apply,
+  simp [basisOfIsMaxRank, Basis.coe_reindex, Equiv.symm_symm, Function.comp_apply,
     coe_basisOfPiSpaceOfLinearIndependent]
 
 theorem finiteIndex_iff_sup_torsion_finiteIndex (s : Subgroup (𝓞 K)ˣ) :
@@ -102,7 +102,7 @@ theorem isMaxRank_iff_closure_finiteIndex {u : Fin (rank K) → (𝓞 K)ˣ} :
       _ (logEmbeddingEquiv K).toAddEquiv, Set.range_comp, ← map_span (logEmbeddingEquiv K),
       ← map_coe_toLinearMap, map_toAddSubgroup, span_int_eq_addSubgroup_closure,
       MonoidHom.map_closure, toAddSubgroup_closure, Set.range_comp, Set.range_comp,
-      QuotientGroup.coe_mk',  Set.preimage_equiv_eq_image_symm]
+      QuotientGroup.coe_mk', Set.preimage_equiv_eq_image_symm]
     exact Iff.rfl
   have h₂ : DiscreteTopology
       (span ℤ (Set.range fun i ↦ (logEmbedding K) (Additive.ofMul (u i)))) := by
@@ -122,7 +122,7 @@ The regulator of a family of units of `K`.
 -/
 def regOfFamily (u : Fin (rank K) → (𝓞 K)ˣ) : ℝ :=
   if hu : IsMaxRank u then
-    ZLattice.covolume (span ℤ (Set.range (basisOfIsMaxRank  hu)))
+    ZLattice.covolume (span ℤ (Set.range (basisOfIsMaxRank hu)))
   else 0
 
 theorem regOfFamily_eq_zero {u : Fin (rank K) → (𝓞 K)ˣ} (hu : ¬ IsMaxRank u) :
@@ -131,7 +131,7 @@ theorem regOfFamily_eq_zero {u : Fin (rank K) → (𝓞 K)ˣ} (hu : ¬ IsMaxRank
 
 open scoped Classical in
 theorem regOfFamily_of_isMaxRank {u : Fin (rank K) → (𝓞 K)ˣ} (hu : IsMaxRank u) :
-    regOfFamily u = ZLattice.covolume (span ℤ (Set.range (basisOfIsMaxRank  hu))) := by
+    regOfFamily u = ZLattice.covolume (span ℤ (Set.range (basisOfIsMaxRank hu))) := by
   rw [regOfFamily, dif_pos hu]
 
 theorem regOfFamily_pos {u : Fin (rank K) → (𝓞 K)ˣ} (hu : IsMaxRank u) :

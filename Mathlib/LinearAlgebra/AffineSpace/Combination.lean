@@ -945,6 +945,18 @@ theorem affineCombination_mem_affineSpan [Nontrivial k] {s : Finset ι} {w : ι 
     rw [← vsub_vadd (s.affineCombination k p w) (p i1)]
     exact AffineSubspace.vadd_mem_of_mem_direction hv (mem_affineSpan k (Set.mem_range_self _))
 
+/-- An `affineCombination` with sum of weights 1 is in the
+`affineSpan` of an indexed family, if the family is nonempty. -/
+theorem affineCombination_mem_affineSpan_of_nonempty [Nonempty ι] {s : Finset ι} {w : ι → k}
+    (h : ∑ i ∈ s, w i = 1) (p : ι → P) :
+    s.affineCombination k p w ∈ affineSpan k (Set.range p) := by
+  rcases subsingleton_or_nontrivial k with hs | hn
+  · have hnv := Module.subsingleton k V
+    rw [AddTorsor.subsingleton_iff V P] at hnv
+    rw [(affineSpan_eq_top_iff_nonempty_of_subsingleton k).2 (Set.range_nonempty p)]
+    simp
+  · exact affineCombination_mem_affineSpan h p
+
 variable (k) in
 /-- A vector is in the `vectorSpan` of an indexed family if and only
 if it is a `weightedVSub` with sum of weights 0. -/

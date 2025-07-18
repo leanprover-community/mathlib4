@@ -228,11 +228,7 @@ theorem rpow_arith_mean_le_arith_mean_rpow (w z : ι → ℝ≥0∞) (hw' : ∑ 
   refine le_of_top_imp_top_of_toNNReal_le ?_ ?_
   · -- first, prove `(∑ i ∈ s, w i * z i) ^ p = ⊤ → ∑ i ∈ s, (w i * z i ^ p) = ⊤`
     rw [rpow_eq_top_iff, sum_eq_top, sum_eq_top]
-    intro h
-    simp only [and_false, hp_not_neg, false_or] at h
-    rcases h.left with ⟨a, H, ha⟩
-    use a, H
-    rwa [← h_top_iff_rpow_top a H]
+    grind
   · -- second, suppose both `(∑ i ∈ s, w i * z i) ^ p ≠ ⊤` and `∑ i ∈ s, (w i * z i ^ p) ≠ ⊤`,
     -- and prove `((∑ i ∈ s, w i * z i) ^ p).toNNReal ≤ (∑ i ∈ s, (w i * z i ^ p)).toNNReal`,
     -- by using `NNReal.rpow_arith_mean_le_arith_mean_rpow`.

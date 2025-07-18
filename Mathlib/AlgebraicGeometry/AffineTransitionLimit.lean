@@ -43,7 +43,7 @@ lemma Scheme.nonempty_of_isLimit [IsCofilteredOrEmpty I]
   · have i := Nonempty.some ‹Nonempty I›
     have : IsCofiltered I := ⟨⟩
     let 𝒰 := (D.obj i).affineCover.finiteSubcover
-    have (i') : IsAffine (𝒰.obj i') := inferInstanceAs (IsAffine (Spec _))
+    have (i' : _) : IsAffine (𝒰.obj i') := inferInstanceAs (IsAffine (Spec _))
     obtain ⟨j, H⟩ :
         ∃ j : 𝒰.J, ∀ {i'} (f : i' ⟶ i), Nonempty ((𝒰.pullbackCover (D.map f)).obj j) := by
       simp_rw [← not_isEmpty_iff]
@@ -64,25 +64,25 @@ lemma Scheme.nonempty_of_isLimit [IsCofilteredOrEmpty I]
         (𝒰.pullbackCover (D.map (g i (by simp)))).covers (Nonempty.some inferInstance)
       exact (this _).elim x
     let F := Over.post D ⋙ Over.pullback (𝒰.map j) ⋙ Over.forget _
-    have (i') : IsAffine (F.obj i') :=
+    have (i' : _) : IsAffine (F.obj i') :=
       have : IsAffineHom (pullback.snd (D.map i'.hom) (𝒰.map j)) :=
         MorphismProperty.pullback_snd _ _ inferInstance
       isAffine_of_isAffineHom (pullback.snd (D.map i'.hom) (𝒰.map j))
-    have (i') : Nonempty (F.obj i') := H i'.hom
-    let e : F ⟶ (F ⋙ Scheme.Γ.rightOp) ⋙ Scheme.Spec := whiskerLeft F ΓSpec.adjunction.unit
-    have (i) : IsIso (e.app i) := IsAffine.affine
+    have (i' : _) : Nonempty (F.obj i') := H i'.hom
+    let e : F ⟶ (F ⋙ Scheme.Γ.rightOp) ⋙ Scheme.Spec := Functor.whiskerLeft F ΓSpec.adjunction.unit
+    have (i : _) : IsIso (e.app i) := IsAffine.affine
     have : IsIso e := NatIso.isIso_of_isIso_app e
     let c' : LimitCone F := ⟨_, (IsLimit.postcomposeInvEquiv (asIso e) _).symm
       (isLimitOfPreserves Scheme.Spec (limit.isLimit (F ⋙ Scheme.Γ.rightOp)))⟩
     have : Nonempty c'.1.pt := by
       apply (config := { allowSynthFailures := true }) PrimeSpectrum.instNonemptyOfNontrivial
-      have (i') : Nontrivial ((F ⋙ Scheme.Γ.rightOp).leftOp.obj i') := by
+      have (i' : _) : Nontrivial ((F ⋙ Scheme.Γ.rightOp).leftOp.obj i') := by
         apply (config := { allowSynthFailures := true }) Scheme.component_nontrivial
         simp
       exact CommRingCat.FilteredColimits.nontrivial
         (isColimitCoconeLeftOpOfCone _ (limit.isLimit (F ⋙ Scheme.Γ.rightOp)))
-    let α : F ⟶ Over.forget _ ⋙ D := whiskerRight
-      (whiskerLeft (Over.post D) (Over.mapPullbackAdj (𝒰.map j)).counit) (Over.forget _)
+    let α : F ⟶ Over.forget _ ⋙ D := Functor.whiskerRight
+      (Functor.whiskerLeft (Over.post D) (Over.mapPullbackAdj (𝒰.map j)).counit) (Over.forget _)
     exact this.map (((Functor.Initial.isLimitWhiskerEquiv (Over.forget i) c).symm hc).lift
         ((Cones.postcompose α).obj c'.1)).base
 
@@ -113,8 +113,8 @@ lemma exists_mem_of_isClosed_of_nonempty
     suffices IsAffineHom (D'.map f ≫ ι.app j) from .of_comp _ (ι.app j)
     simp only [subschemeMap_subschemeι, D', ι]
     infer_instance
-  haveI (i) : Nonempty (D'.obj i) := Set.nonempty_coe_sort.mpr (hZne i)
-  haveI (i) : CompactSpace (D'.obj i) := isCompact_iff_compactSpace.mp (hZcpt i)
+  haveI _ (i) : Nonempty (D'.obj i) := Set.nonempty_coe_sort.mpr (hZne i)
+  haveI _ (i) : CompactSpace (D'.obj i) := isCompact_iff_compactSpace.mp (hZcpt i)
   let c' : Cone D' :=
   { pt := (⨆ i, (vanishingIdeal ⟨Z i, hZc i⟩).comap (c.π.app i)).subscheme
     π :=
@@ -149,7 +149,7 @@ lemma exists_mem_of_isClosed_of_nonempty'
     (hZc : ∀ i hij, IsClosed (Z i hij))
     (hZne : ∀ i hij, (Z i hij).Nonempty)
     (hZcpt : ∀ i hij, IsCompact (Z i hij))
-    (hstab : ∀ (i i' : I) (hi'i : i' ⟶ i) (hij : i ⟶ j) ,
+    (hstab : ∀ (i i' : I) (hi'i : i' ⟶ i) (hij : i ⟶ j),
       Set.MapsTo (D.map hi'i).base (Z i' (hi'i ≫ hij)) (Z i hij)) :
     ∃ (s : c.pt), ∀ i hij, (c.π.app i).base s ∈ Z i hij := by
   have {i₁ i₂ : Over j} (f : i₁ ⟶ i₂) : IsAffineHom ((Over.forget j ⋙ D).map f) := by

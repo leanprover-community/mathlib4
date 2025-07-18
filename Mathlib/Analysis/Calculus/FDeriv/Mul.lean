@@ -502,44 +502,6 @@ theorem Differentiable.fun_mul (ha : Differentiable 𝕜 a) (hb : Differentiable
 theorem Differentiable.mul (ha : Differentiable 𝕜 a) (hb : Differentiable 𝕜 b) :
     Differentiable 𝕜 (a * b) := fun x => (ha x).mul (hb x)
 
-@[fun_prop]
-theorem DifferentiableWithinAt.fun_pow (ha : DifferentiableWithinAt 𝕜 a s x) :
-    ∀ n : ℕ, DifferentiableWithinAt 𝕜 (fun x => a x ^ n) s x
-  | 0 => by simp only [pow_zero, differentiableWithinAt_const]
-  | n + 1 => by simp only [pow_succ', DifferentiableWithinAt.fun_pow ha n, ha.fun_mul]
-
-@[fun_prop]
-theorem DifferentiableWithinAt.pow (ha : DifferentiableWithinAt 𝕜 a s x) :
-    ∀ n : ℕ, DifferentiableWithinAt 𝕜 (a ^ n) s x :=
-  ha.fun_pow
-
-@[simp, fun_prop]
-theorem DifferentiableAt.fun_pow (ha : DifferentiableAt 𝕜 a x) (n : ℕ) :
-    DifferentiableAt 𝕜 (fun x => a x ^ n) x :=
-  differentiableWithinAt_univ.mp <| ha.differentiableWithinAt.pow n
-
-@[simp, fun_prop]
-theorem DifferentiableAt.pow (ha : DifferentiableAt 𝕜 a x) (n : ℕ) :
-    DifferentiableAt 𝕜 (a ^ n) x :=
-  differentiableWithinAt_univ.mp <| ha.differentiableWithinAt.pow n
-
-@[fun_prop]
-theorem DifferentiableOn.fun_pow (ha : DifferentiableOn 𝕜 a s) (n : ℕ) :
-    DifferentiableOn 𝕜 (fun x => a x ^ n) s := fun x h => (ha x h).pow n
-
-@[fun_prop]
-theorem DifferentiableOn.pow (ha : DifferentiableOn 𝕜 a s) (n : ℕ) :
-    DifferentiableOn 𝕜 (a ^ n) s := fun x h => (ha x h).pow n
-
-@[simp, fun_prop]
-theorem Differentiable.fun_pow (ha : Differentiable 𝕜 a) (n : ℕ) :
-    Differentiable 𝕜 fun x => a x ^ n :=
-  fun x => (ha x).pow n
-
-@[simp, fun_prop]
-theorem Differentiable.pow (ha : Differentiable 𝕜 a) (n : ℕ) : Differentiable 𝕜 (a ^ n) :=
-  fun x => (ha x).pow n
-
 theorem fderivWithin_fun_mul' (hxs : UniqueDiffWithinAt 𝕜 s x) (ha : DifferentiableWithinAt 𝕜 a s x)
     (hb : DifferentiableWithinAt 𝕜 b s x) :
     fderivWithin 𝕜 (fun y => a y * b y) s x =

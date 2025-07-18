@@ -3,10 +3,11 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Ring.Pi
-import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.Algebra.Category.Grp.Limits
-import Mathlib.Algebra.Ring.Subring.Basic
+import Mathlib.Algebra.Category.Ring.Basic
+import Mathlib.Algebra.Ring.Pi
+import Mathlib.Algebra.Ring.Shrink
+import Mathlib.Algebra.Ring.Subring.Defs
 
 /-!
 # The category of (commutative) rings has all limits
@@ -95,15 +96,15 @@ def limitConeIsLimit : IsLimit (limitCone F) := by
   · simp only [Functor.mapCone_π_app, forget_map, map_one]
     rfl
   · intro x y
-    simp only [Functor.comp_obj, Equiv.toFun_as_coe, Functor.mapCone_pt, Functor.mapCone_π_app,
-      forget_map, map_mul]
+    simp only [Functor.comp_obj, Functor.mapCone_pt, Functor.mapCone_π_app,
+      forget_map, map_mul, EquivLike.coe_apply]
     rw [← equivShrink_mul]
     rfl
   · simp only [Functor.mapCone_π_app, forget_map, map_zero]
     rfl
   · intro x y
-    simp only [Functor.comp_obj, Equiv.toFun_as_coe, Functor.mapCone_pt, Functor.mapCone_π_app,
-      forget_map, map_add]
+    simp only [Functor.comp_obj, Functor.mapCone_pt, Functor.mapCone_π_app,
+      forget_map, map_add, EquivLike.coe_apply]
     rw [← equivShrink_add]
     rfl
 

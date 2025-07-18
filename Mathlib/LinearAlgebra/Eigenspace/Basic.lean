@@ -326,7 +326,7 @@ lemma maxUnifEigenspaceIndex_le_finrank [FiniteDimensional K V] (f : End K V) (�
   intro n hn
   apply le_antisymm
   · exact (f.genEigenspace μ).monotone <| WithTop.coeOrderHom.monotone hn
-  · show (f.genEigenspace μ) n ≤ (f.genEigenspace μ) (finrank K V)
+  · change (f.genEigenspace μ) n ≤ (f.genEigenspace μ) (finrank K V)
     rw [genEigenspace_nat, genEigenspace_nat]
     apply ker_pow_le_ker_pow_finrank
 

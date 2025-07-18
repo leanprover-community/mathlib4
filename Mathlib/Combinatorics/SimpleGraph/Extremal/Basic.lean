@@ -107,7 +107,7 @@ at most `x` edges. -/
 theorem extremalNumber_le_iff (H : SimpleGraph W) (m : ℕ) :
     extremalNumber (card V) H ≤ m ↔
       ∀ ⦃G : SimpleGraph V⦄ [DecidableRel G.Adj], H.Free G → #G.edgeFinset ≤ m := by
-  simp_rw [extremalNumber_of_fintypeCard_eq rfl, Finset.sup_le_iff, mem_filter, mem_univ, true_and]
+  simp_rw [extremalNumber_of_fintypeCard_eq rfl, Finset.sup_le_iff, mem_filter_univ]
   exact ⟨fun h _ _ h' ↦ by convert h _ h', fun h _ h' ↦ by convert h h'⟩
 
 /-- `extremalNumber (card V) H` is greater than `x` if and only if there exists a `H`-free simple
@@ -115,7 +115,7 @@ graph `G` with more than `x` edges. -/
 theorem lt_extremalNumber_iff (H : SimpleGraph W) (m : ℕ) :
     m < extremalNumber (card V) H ↔
       ∃ G : SimpleGraph V, ∃ _ : DecidableRel G.Adj, H.Free G ∧ m < #G.edgeFinset := by
-  simp_rw [extremalNumber_of_fintypeCard_eq rfl, Finset.lt_sup_iff, mem_filter, mem_univ, true_and]
+  simp_rw [extremalNumber_of_fintypeCard_eq rfl, Finset.lt_sup_iff, mem_filter_univ]
   exact ⟨fun ⟨_, h, h'⟩ ↦ ⟨_, _, h, h'⟩, fun ⟨_, _, h, h'⟩ ↦ ⟨_, h, by convert h'⟩⟩
 
 variable {R : Type*} [Semiring R] [LinearOrder R] [FloorSemiring R]
@@ -169,7 +169,7 @@ edges. -/
 theorem isExtremal_free_iff :
     G.IsExtremal H.Free ↔ H.Free G ∧ #G.edgeFinset = extremalNumber (card V) H := by
   rw [IsExtremal, and_congr_right_iff, ← extremalNumber_le_iff]
-  exact fun h ↦ ⟨eq_of_le_of_le (card_edgeFinset_le_extremalNumber h), ge_of_eq⟩
+  exact fun h ↦ ⟨eq_of_le_of_ge (card_edgeFinset_le_extremalNumber h), ge_of_eq⟩
 
 lemma card_edgeFinset_of_isExtremal_free (h : G.IsExtremal H.Free) :
     #G.edgeFinset = extremalNumber (card V) H := (isExtremal_free_iff.mp h).2

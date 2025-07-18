@@ -78,7 +78,7 @@ lemma Ideal.injective_algebraMap_quotient_residueField :
     Function.Injective (algebraMap (R ⧸ I) I.ResidueField) := by
   rw [RingHom.injective_iff_ker_eq_bot]
   refine (Ideal.ker_quotient_lift _ _).trans ?_
-  show map (Quotient.mk I) (RingHom.ker (algebraMap R I.ResidueField)) = ⊥
+  change map (Quotient.mk I) (RingHom.ker (algebraMap R I.ResidueField)) = ⊥
   rw [Ideal.ker_algebraMap_residueField, map_quotient_self]
 
 instance : IsFractionRing (R ⧸ I) I.ResidueField where

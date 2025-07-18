@@ -169,7 +169,7 @@ lemma IsClique.sdiff_of_sup_edge {v w : α} {s : Set α} (hc : (G ⊔ edge v w).
   have := hc hx.1 hy.1 hxy
   simp_all [sup_adj, edge_adj]
 
-lemma isClique_sup_edge_of_ne_sdiff {v w : α} {s : Set α} (h : v ≠ w ) (hv : G.IsClique (s \ {v}))
+lemma isClique_sup_edge_of_ne_sdiff {v w : α} {s : Set α} (h : v ≠ w) (hv : G.IsClique (s \ {v}))
     (hw : G.IsClique (s \ {w})) : (G ⊔ edge v w).IsClique s := by
   intro x hx y hy hxy
   by_cases h' : x ∈ s \ {v} ∧ y ∈ s \ {v} ∨ x ∈ s \ {w} ∧ y ∈ s \ {w}

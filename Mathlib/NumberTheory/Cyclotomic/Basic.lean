@@ -314,6 +314,35 @@ theorem _root_.Algebra.isCyclotomicExtension_adjoin_of_exists_isPrimitiveRoot
     | add x y hx hy ihx ihy => exact Subalgebra.add_mem _ ihx ihy
     | mul x y hx hy ihx ihy => exact Subalgebra.mul_mem _ ihx ihy
 
+/-- Two elements in the Galois group of a cyclotomic extension are equal if
+their actions on primitive roots are equal. -/
+theorem algEquiv_eq_of_apply_eq [IsCyclotomicExtension S A B] [IsDomain B] {f g : B ≃ₐ[A] B}
+    (H : ∀ n ∈ S, n ≠ 0 → ∃ r : B, IsPrimitiveRoot r n ∧ f r = g r) : f = g := by
+  ext x
+  have hx := ‹IsCyclotomicExtension S A B›.adjoin_roots x
+  induction hx using Algebra.adjoin_induction with
+  | mem y hy =>
+    obtain ⟨n, hn, h1, h2⟩ := hy
+    obtain ⟨r, hr1, hr2⟩ := H n hn h1
+    have := NeZero.mk h1
+    obtain ⟨m, -, rfl⟩ := hr1.eq_pow_of_pow_eq_one h2
+    simp [hr2]
+  | algebraMap y => simp
+  | add x y hx hy ihx ihy => simp [ihx, ihy]
+  | mul x y hx hy ihx ihy => simp [ihx, ihy]
+
+/-- Cyclotomic extensions are abelian. -/
+theorem isMulCommutative [IsCyclotomicExtension S A B] [IsDomain B] :
+    IsMulCommutative (B ≃ₐ[A] B) := by
+  refine ⟨⟨fun f g ↦ algEquiv_eq_of_apply_eq S A B fun n hn h1 ↦ ?_⟩⟩
+  obtain ⟨r, hr⟩ := ‹IsCyclotomicExtension S A B›.exists_isPrimitiveRoot hn h1
+  use r, hr
+  simp only [AlgEquiv.mul_apply]
+  have := NeZero.mk h1
+  obtain ⟨mf, -, hf⟩ := hr.eq_pow_of_pow_eq_one (show f r ^ n = 1 by rw [← map_pow, hr.1, map_one])
+  obtain ⟨mg, -, hg⟩ := hr.eq_pow_of_pow_eq_one (show g r ^ n = 1 by rw [← map_pow, hr.1, map_one])
+  simp [← hf, ← hg, ← pow_mul, mul_comm mf mg]
+
 end Basic
 
 section Fintype
@@ -437,6 +466,14 @@ theorem _root_.IsPrimitiveRoot.adjoin_isCyclotomicExtension {ζ : B} {n : ℕ} [
       · exact Subalgebra.add_mem _ hb₁ hb₂
       · exact Subalgebra.mul_mem _ hb₁ hb₂ }
 
+variable {L} in
+theorem _root_.IsPrimitiveRoot.intermediateField_adjoin_isCyclotomicExtension
+    [Algebra.IsIntegral K L] {n : ℕ} [NeZero n] {ζ : L} (hζ : IsPrimitiveRoot ζ n) :
+    IsCyclotomicExtension {n} K (IntermediateField.adjoin K {ζ}) := by
+  change IsCyclotomicExtension {n} K (IntermediateField.adjoin K {ζ}).toSubalgebra
+  rw [IntermediateField.adjoin_simple_toSubalgebra_of_integral (IsIntegral.isIntegral ζ)]
+  exact hζ.adjoin_isCyclotomicExtension K
+
 end
 
 section Field
@@ -534,10 +571,10 @@ theorem isGalois [IsCyclotomicExtension S K L] : IsGalois K L := by
   obtain ⟨i⟩ := nonempty_algEquiv_adjoin_of_isSepClosed S K L (AlgebraicClosure K)
   rw [i.transfer_normal, IntermediateField.normal_iff_forall_map_le]
   intro f x hx
-  change x ∈ IntermediateField.toSubalgebra _ at hx
-  rw [IntermediateField.toSubalgebra_map, Subalgebra.mem_map] at hx
+  rw [← IntermediateField.mem_toSubalgebra, IntermediateField.toSubalgebra_map,
+    Subalgebra.mem_map] at hx
   obtain ⟨y, hy, rfl⟩ := hx
-  change y ∈ IntermediateField.adjoin _ _ at hy
+  rw [IntermediateField.mem_toSubalgebra] at hy
   induction hy using IntermediateField.adjoin_induction with
   | mem x hx =>
     obtain ⟨n, hn, h1, h2⟩ := hx

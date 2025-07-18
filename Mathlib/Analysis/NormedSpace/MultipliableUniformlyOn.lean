@@ -146,7 +146,7 @@ lemma hasProdLocallyUniformlyOn_nat_one_add {f : ℕ → α → R} (hK : IsOpen 
     HasProdLocallyUniformlyOn (fun n x ↦ 1 + f n x) (fun x ↦ ∏' i, (1 + f i x)) K :=
   hasProdLocallyUniformlyOn_one_add hK hu (Nat.cofinite_eq_atTop ▸ h) hcts
 
-lemma multipliableLocallyUniformlyOn_nat_one_add  {f : ℕ → α → R} (hK : IsOpen K) {u : ℕ → ℝ}
+lemma multipliableLocallyUniformlyOn_nat_one_add {f : ℕ → α → R} (hK : IsOpen K) {u : ℕ → ℝ}
     (hu : Summable u) (h : ∀ᶠ n in atTop, ∀ x ∈ K, ‖f n x‖ ≤ u n)
     (hcts : ∀ n, ContinuousOn (f n) K) :
     MultipliableLocallyUniformlyOn (fun n x ↦ 1 + f n x) K :=

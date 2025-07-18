@@ -41,7 +41,7 @@ theorem isConj_comm {g h : α} : IsConj g h ↔ IsConj h g :=
 theorem IsConj.trans {a b c : α} : IsConj a b → IsConj b c → IsConj a c
   | ⟨c₁, hc₁⟩, ⟨c₂, hc₂⟩ => ⟨c₂ * c₁, hc₂.mul_left hc₁⟩
 
-theorem IsConj.pow {a b : α} (n : ℕ) : IsConj a b → IsConj (a^n) (b^n)
+theorem IsConj.pow {a b : α} (n : ℕ) : IsConj a b → IsConj (a ^ n) (b ^ n)
   | ⟨c, hc⟩ => ⟨c, hc.pow_right n⟩
 
 @[simp]

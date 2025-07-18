@@ -86,7 +86,7 @@ variable (𝕜 : Type*) [Fact (1 ≤ p)] [NormedRing 𝕜] [Module 𝕜 E] [IsBo
 
 /-- The bounded linear map of considering a bounded continuous function on a finite-measure space
 as an element of `Lp`. -/
-def toLp : (α →ᵇ E) →L[𝕜] Lp E p μ :=
+noncomputable def toLp : (α →ᵇ E) →L[𝕜] Lp E p μ :=
   LinearMap.mkContinuous
     (LinearMap.codRestrict (Lp.LpSubmodule 𝕜 E p μ)
       ((ContinuousMap.toAEEqFunLinearMap μ).comp (toContinuousMapLinearMap α E 𝕜)) mem_Lp)
@@ -132,7 +132,7 @@ variable (𝕜 : Type*) (p μ) [Fact (1 ≤ p)]
 space `α` as an element of `Lp`.  By definition, the norm on `C(α, E)` is the sup-norm, transferred
 from the space `α →ᵇ E` of bounded continuous functions, so this construction is just a matter of
 transferring the structure from `BoundedContinuousFunction.toLp` along the isometry. -/
-def toLp : C(α, E) →L[𝕜] Lp E p μ :=
+noncomputable def toLp : C(α, E) →L[𝕜] Lp E p μ :=
   (BoundedContinuousFunction.toLp p μ 𝕜).comp
     (linearIsometryBoundedOfCompact α E 𝕜).toLinearIsometry.toContinuousLinearMap
 

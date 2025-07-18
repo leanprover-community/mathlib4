@@ -3,6 +3,7 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Data.Nat.Factorization.LCM
 import Mathlib.Algebra.Group.TypeTags.Finite
 import Mathlib.RingTheory.RootsOfUnity.Basic
 
@@ -256,6 +257,13 @@ lemma exists_pos {k : ℕ} (hζ : ζ ^ k = 1) (hk : k ≠ 0) :
 
 lemma existsUnique : ∃! k, IsPrimitiveRoot ζ k :=
   ⟨_, .orderOf _, fun _ hl ↦ unique hl (.orderOf _)⟩
+
+theorem _root_.isPrimitiveRoot_of_mem_rootsOfUnity {u : Mˣ} {n : ℕ} [NeZero n]
+    (hu : u ∈ rootsOfUnity n M) :
+    ∃ d : ℕ, d ≠ 0 ∧ d ∣ n ∧ IsPrimitiveRoot u d :=
+  ⟨orderOf u, (IsOfFinOrder.orderOf_pos ⟨n, NeZero.pos n,
+    (isPeriodicPt_mul_iff_pow_eq_one u).mpr hu⟩).ne', orderOf_dvd_of_pow_eq_one hu,
+    IsPrimitiveRoot.orderOf u⟩
 
 section Maps
 

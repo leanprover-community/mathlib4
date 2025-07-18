@@ -435,8 +435,8 @@ variable {C : Type v} [Category.{v} C] {D : Type u₁} [Category.{v} D] (F : C �
 
 namespace Final
 
-theorem zigzag_of_eqvGen_quot_rel {F : C ⥤ D} {d : D} {f₁ f₂ : Σ X, d ⟶ F.obj X}
-    (t : Relation.EqvGen (Types.Quot.Rel.{v, v} (F ⋙ coyoneda.obj (op d))) f₁ f₂) :
+theorem zigzag_of_eqvGen_colimitTypeRel {F : C ⥤ D} {d : D} {f₁ f₂ : Σ X, d ⟶ F.obj X}
+    (t : Relation.EqvGen (Functor.ColimitTypeRel (F ⋙ coyoneda.obj (op d))) f₁ f₂) :
     Zigzag (StructuredArrow.mk f₁.2) (StructuredArrow.mk f₂.2) := by
   induction t with
   | rel x y r =>
@@ -454,6 +454,9 @@ theorem zigzag_of_eqvGen_quot_rel {F : C ⥤ D} {d : D} {f₁ f₂ : Σ X, d ⟶
     apply Relation.ReflTransGen.trans
     · exact ih₁
     · exact ih₂
+
+@[deprecated (since := "2025-06-22")] alias zigzag_of_eqvGen_quot_rel :=
+  zigzag_of_eqvGen_colimitTypeRel
 
 end Final
 
@@ -475,7 +478,7 @@ theorem final_of_colimit_comp_coyoneda_iso_pUnit
       ext
     have t := Types.colimit_eq.{v, v} e
     clear e y₁ y₂
-    exact Final.zigzag_of_eqvGen_quot_rel t⟩
+    exact Final.zigzag_of_eqvGen_colimitTypeRel t⟩
 
 /-- A variant of `final_of_colimit_comp_coyoneda_iso_pUnit` where we bind the various claims
     about `colimit (F ⋙ coyoneda.obj (Opposite.op d))` for each `d : D` into a single claim about
@@ -1108,5 +1111,22 @@ instance [F.Final] [G.Final] : (F.prod G).Final where
   out := fun ⟨d, d'⟩ => isConnected_of_equivalent (StructuredArrow.prodEquivalence d d' F G).symm
 
 end Prod
+
+namespace ObjectProperty
+
+/-- For the full subcategory induced by an object property `P` on `C`, to show initiality of
+the inclusion functor it is enough to consider arrows to objects outside of the subcategory. -/
+theorem initial_ι {C : Type u₁} [Category.{v₁} C] (P : ObjectProperty C)
+    (h : ∀ d, ¬ P d → IsConnected (CostructuredArrow P.ι d)) :
+    P.ι.Initial := .mk <| fun d => by
+  by_cases hd : P d
+  · have : Nonempty (CostructuredArrow P.ι d) := ⟨⟨d, hd⟩, ⟨⟨⟩⟩, 𝟙 _⟩
+    refine zigzag_isConnected fun ⟨c₁, ⟨⟨⟩⟩, g₁⟩ ⟨c₂, ⟨⟨⟩⟩, g₂⟩ =>
+      Zigzag.trans (j₂ := ⟨⟨d, hd⟩, ⟨⟨⟩⟩, 𝟙 _⟩) (.of_hom ?_) (.of_inv ?_)
+    · apply CostructuredArrow.homMk g₁
+    · apply CostructuredArrow.homMk g₂
+  · exact h d hd
+
+end ObjectProperty
 
 end CategoryTheory

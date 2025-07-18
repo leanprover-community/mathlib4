@@ -45,7 +45,7 @@ def cantorSet : Set ℝ := ⋂ n, preCantorSet n
 ## Simple Properties
 -/
 
-lemma quarters_mem_preCantorSet (n : ℕ) : 1/4 ∈ preCantorSet n ∧ 3/4 ∈ preCantorSet n := by
+lemma quarters_mem_preCantorSet (n : ℕ) : 1 / 4 ∈ preCantorSet n ∧ 3 / 4 ∈ preCantorSet n := by
   induction n with
   | zero =>
     simp only [preCantorSet_zero]
@@ -59,9 +59,9 @@ lemma quarters_mem_preCantorSet (n : ℕ) : 1/4 ∈ preCantorSet n ∧ 3/4 ∈ p
       -- follows by the inductive hyphothesis, since 1 / 4 ∈ preCantorSet n
       exact Or.inr ⟨1 / 4, ih.1, by norm_num⟩
 
-lemma quarter_mem_preCantorSet (n : ℕ) : 1/4 ∈ preCantorSet n := (quarters_mem_preCantorSet n).1
+lemma quarter_mem_preCantorSet (n : ℕ) : 1 / 4 ∈ preCantorSet n := (quarters_mem_preCantorSet n).1
 
-theorem quarter_mem_cantorSet : 1/4 ∈ cantorSet :=
+theorem quarter_mem_cantorSet : 1 / 4 ∈ cantorSet :=
   Set.mem_iInter.mpr quarter_mem_preCantorSet
 
 lemma zero_mem_preCantorSet (n : ℕ) : 0 ∈ preCantorSet n := by
@@ -107,10 +107,11 @@ theorem cantorSet_eq_union_halves :
   rotate_left
   · exact (mulRight_bijective₀ 3⁻¹ (by norm_num)).comp (AddGroup.addLeft_bijective 2)
   · exact mulRight_bijective₀ 3⁻¹ (by norm_num)
-  rw [← Set.iInter_union_of_antitone
-    (by exact Set.monotone_image.comp_antitone preCantorSet_antitone)
-    (by exact Set.monotone_image.comp_antitone preCantorSet_antitone)]
-  change ⋂ n, preCantorSet n = ⋂ n, preCantorSet (n + 1)
+  simp_rw [← Function.comp_def,
+    ← Set.iInter_union_of_antitone
+      (Set.monotone_image.comp_antitone preCantorSet_antitone)
+      (Set.monotone_image.comp_antitone preCantorSet_antitone),
+    Function.comp_def, ← preCantorSet_succ]
   exact (preCantorSet_antitone.iInter_nat_add _).symm
 
 /-- The preCantor sets are closed. -/

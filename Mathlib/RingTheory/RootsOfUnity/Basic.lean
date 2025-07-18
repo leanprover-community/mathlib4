@@ -74,7 +74,7 @@ lemma rootsOfUnity_zero (M : Type*) [CommMonoid M] : rootsOfUnity 0 M = ⊤ := b
 
 theorem rootsOfUnity.coe_injective {n : ℕ} :
     Function.Injective (fun x : rootsOfUnity n M ↦ x.val.val) :=
-  Units.ext.comp fun _ _ ↦ Subtype.eq
+  Units.val_injective.comp Subtype.val_injective
 
 /-- Make an element of `rootsOfUnity` from a member of the base ring, and a proof that it has
 a positive power equal to one. -/

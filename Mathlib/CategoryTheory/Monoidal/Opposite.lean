@@ -314,10 +314,39 @@ variable (C)
 /-- The (identity) equivalence between `Cᴹᵒᵖ` and `C`. -/
 @[simps!] def MonoidalOpposite.unmopEquiv : Cᴹᵒᵖ ≌ C := (mopEquiv C).symm
 
--- todo: upgrade to monoidal equivalence
 /-- The equivalence between `C` and its monoidal opposite's monoidal opposite. -/
 @[simps!] def MonoidalOpposite.mopMopEquivalence : Cᴹᵒᵖᴹᵒᵖ ≌ C :=
   .trans (MonoidalOpposite.unmopEquiv Cᴹᵒᵖ) (MonoidalOpposite.unmopEquiv C)
+
+@[simps!]
+instance MonoidalOpposite.mopMopEquivalenceFunctorMonoidal :
+    (MonoidalOpposite.mopMopEquivalence C).functor.Monoidal where
+  ε := 𝟙 _
+  δ X Y := 𝟙 _
+  μ X Y := 𝟙 _
+  η := 𝟙 _
+  ε_η := Category.comp_id _
+  η_ε := Category.comp_id _
+  μ_δ X Y := Category.comp_id _
+  δ_μ X Y := Category.comp_id _
+
+@[simps!]
+instance MonoidalOpposite.mopMopEquivalenceInverseMonoidal :
+    (MonoidalOpposite.mopMopEquivalence C).inverse.Monoidal where
+  ε := 𝟙 _
+  δ X Y := 𝟙 _
+  μ X Y := 𝟙 _
+  η := 𝟙 _
+  ε_η := Category.comp_id _
+  η_ε := Category.comp_id _
+  μ_δ X Y := Category.comp_id _
+  δ_μ X Y := Category.comp_id _
+
+instance : (mopMopEquivalence C).IsMonoidal where
+  leftAdjoint_ε := by
+    simp [ε, η, Adjunction.homEquiv, mopMopEquivalence, Equivalence.trans, unmopEquiv, ε]
+  leftAdjoint_μ X Y := by
+    simp [μ, δ, Adjunction.homEquiv, mopMopEquivalence, Equivalence.trans, unmopEquiv, μ]
 
 /-- The identification `mop X ⊗ mop Y = mop (Y ⊗ X)` as a natural isomorphism. -/
 @[simps!]

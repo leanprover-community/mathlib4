@@ -134,7 +134,7 @@ def cycleGraph.tricoloring (n : ℕ) (h : 2 ≤ n) : Coloring (cycleGraph n)
         | inl huv | inr huv =>
           rw [← add_eq_of_eq_sub' huv.symm]
           simp only [Fin.val_add_eq_of_add_lt hv', Fin.val_add_eq_of_add_lt hu', Fin.val_one]
-          rw [show ∀x y : ℕ, x % 2 = y % 2 ↔ (Even x ↔ Even y) by simp [Nat.even_iff]; omega,
+          rw [show ∀ x y : ℕ, x % 2 = y % 2 ↔ (Even x ↔ Even y) by simp [Nat.even_iff]; omega,
             Nat.even_add]
           simp only [Nat.not_even_one, iff_false, not_iff_self, iff_not_self]
           exact id

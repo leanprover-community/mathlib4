@@ -149,7 +149,7 @@ noncomputable instance [BoundedSpace β] : BoundedSpace (α →ᵤ β) where
     rw [Metric.isBounded_iff_ediam_ne_top, ← lt_top_iff_ne_top]
     refine lt_of_le_of_lt ?_ <| BoundedSpace.bounded_univ (α := β) |>.ediam_ne_top.lt_top
     simp only [EMetric.diam_le_iff, Set.mem_univ, edist_le, forall_const]
-    exact fun f g x ↦ EMetric.edist_le_diam_of_mem (by trivial) (by trivial)
+    exact fun f g x ↦ EMetric.edist_le_diam_of_mem (Set.mem_univ _) (Set.mem_univ _)
 
 noncomputable instance {β : Type*} [MetricSpace β] [BoundedSpace β] : MetricSpace (α →ᵤ β) :=
   .ofT0PseudoMetricSpace _
@@ -246,7 +246,7 @@ lemma lipschitzOnWith_iff {f : γ → α →ᵤ[𝔖] β} {K : ℝ≥0} {s : Set
   simp [lipschitzOnWith_iff_restrict, lipschitzWith_iff]
   rfl
 
-lemma edist_eval_le {f g : α →ᵤ[𝔖] β} {x : α} (hx : x ∈ ⋃₀ 𝔖):
+lemma edist_eval_le {f g : α →ᵤ[𝔖] β} {x : α} (hx : x ∈ ⋃₀ 𝔖) :
     edist (toFun 𝔖 f x) (toFun 𝔖 g x) ≤ edist f g :=
   edist_le.mp le_rfl x hx
 
@@ -263,7 +263,7 @@ lemma lipschitzWith_one_ofFun_toFun' [Finite 𝔗] (h : ⋃₀ 𝔖 ⊆ ⋃₀ �
     LipschitzWith 1 (ofFun 𝔖 ∘ toFun 𝔗 : (α →ᵤ[𝔗] β) → (α →ᵤ[𝔖] β)) :=
   lipschitzWith_iff.mpr fun _x hx ↦ lipschitzWith_eval (h hx)
 
-lemma lipschitzWith_restrict (s : Set α) (hs : s ∈ 𝔖)  :
+lemma lipschitzWith_restrict (s : Set α) (hs : s ∈ 𝔖) :
     LipschitzWith 1 (UniformFun.ofFun ∘ s.restrict ∘ toFun 𝔖 : (α →ᵤ[𝔖] β) → (s →ᵤ β)) :=
   UniformFun.lipschitzWith_iff.mpr fun x ↦ lipschitzWith_eval ⟨s, hs, x.2⟩
 
@@ -282,14 +282,14 @@ noncomputable instance [BoundedSpace β] : PseudoMetricSpace (α →ᵤ[𝔖] β
     (fun f g ↦ ⨆ x ∈ ⋃₀ 𝔖, dist (toFun 𝔖 f x) (toFun 𝔖 g x))
     (fun _ _ ↦ by
       have := BoundedSpace.bounded_univ (α := β) |>.ediam_ne_top.lt_top
-      refine (iSup₂_le fun x _ ↦ EMetric.edist_le_diam_of_mem ?_ ?_).trans_lt this |>.ne
-      all_goals trivial)
+      exact (iSup₂_le fun x _ ↦ EMetric.edist_le_diam_of_mem (Set.mem_univ _) (Set.mem_univ _))
+        |>.trans_lt this |>.ne)
     (fun _ _ ↦ by
       simp only [dist_edist, edist_def, ← ENNReal.toReal_iSup (fun _ ↦ edist_ne_top _ _)]
       rw [ENNReal.toReal_iSup]
       have := BoundedSpace.bounded_univ (α := β) |>.ediam_ne_top.lt_top
       refine fun x ↦ lt_of_le_of_lt (iSup_le fun hx ↦ ?_) this |>.ne
-      exact EMetric.edist_le_diam_of_mem (by trivial) (by trivial))
+      exact EMetric.edist_le_diam_of_mem (Set.mem_univ _) (Set.mem_univ _))
 
 noncomputable instance [BoundedSpace β] : BoundedSpace (α →ᵤ[𝔖] β) where
   bounded_univ := by

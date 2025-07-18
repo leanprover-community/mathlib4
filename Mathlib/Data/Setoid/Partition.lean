@@ -171,7 +171,7 @@ noncomputable def quotientEquivClasses (r : Setoid α) : Quotient r ≃ Setoid.c
     induction' q_b using Quotient.ind with b
     simp only [f, Quotient.lift_mk, Subtype.ext_iff] at h_eq
     apply Quotient.sound
-    show a ∈ { x | r x b }
+    change a ∈ { x | r x b }
     rw [← h_eq]
     exact Setoid.refl a
   · rw [Quot.surjective_lift]

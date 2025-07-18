@@ -90,7 +90,7 @@ def get (l : Vector α n) (i : Fin n) : α :=
 instance {n m : Nat} : HAppend (Vector α n) (Vector α m) (Vector α (n + m)) where
   hAppend | ⟨l₁, h₁⟩, ⟨l₂, h₂⟩ => ⟨l₁ ++ l₂, by simp [*]⟩
 
-lemma append_def {n m : Nat}:
+lemma append_def {n m : Nat} :
     (HAppend.hAppend : Vector α n → Vector α m → Vector α (n + m)) =
       fun | ⟨l₁, h₁⟩, ⟨l₂, h₂⟩ => ⟨l₁ ++ l₂, by simp [*]⟩ :=
   rfl

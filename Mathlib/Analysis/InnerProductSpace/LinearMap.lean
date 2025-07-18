@@ -249,7 +249,7 @@ variable (𝕜)
 theorem innerSL_apply_norm (x : E) : ‖innerSL 𝕜 x‖ = ‖x‖ := by
   refine
     le_antisymm ((innerSL 𝕜 x).opNorm_le_bound (norm_nonneg _) fun y => norm_inner_le_norm _ _) ?_
-  rcases (norm_nonneg x).eq_or_gt with (h | h)
+  rcases (norm_nonneg x).eq_or_lt' with (h | h)
   · simp [h]
   · refine (mul_le_mul_right h).mp ?_
     calc

@@ -252,7 +252,7 @@ def substFunc : L.Term α → (∀ {n : ℕ}, L.Functions n → L'.Term (Fin n))
 theorem substFunc_term (t : L.Term α) : t.substFunc Functions.term = t := by
   induction t
   · rfl
-  · simp only [substFunc, Functions.term, subst, ‹∀_, _›]
+  · simp only [substFunc, Functions.term, subst, ‹∀ _, _›]
 
 end Term
 

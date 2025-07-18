@@ -50,9 +50,13 @@ theorem prod_mono (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) : s₁ ×ˢ t₁ ⊆
 theorem prod_mono_left (hs : s₁ ⊆ s₂) : s₁ ×ˢ t ⊆ s₂ ×ˢ t :=
   prod_mono hs Subset.rfl
 
+alias prod_subset_prod_left := prod_mono_left
+
 @[gcongr]
 theorem prod_mono_right (ht : t₁ ⊆ t₂) : s ×ˢ t₁ ⊆ s ×ˢ t₂ :=
   prod_mono Subset.rfl ht
+
+alias prod_subset_prod_right := prod_mono_right
 
 @[simp]
 theorem prod_self_subset_prod_self : s₁ ×ˢ s₁ ⊆ s₂ ×ˢ s₂ ↔ s₁ ⊆ s₂ :=
@@ -347,6 +351,17 @@ theorem prod_subset_prod_iff : s ×ˢ t ⊆ s₁ ×ˢ t₁ ↔ s ⊆ s₁ ∧ t 
     simp only [st.1.ne_empty, st.2.ne_empty, or_false] at H
     exact prod_mono H.1 H.2
 
+theorem prod_subset_prod_iff' (h : (s ×ˢ t).Nonempty) : s ×ˢ t ⊆ s₁ ×ˢ t₁ ↔ s ⊆ s₁ ∧ t ⊆ t₁ := by
+  rw [prod_subset_prod_iff, or_iff_left]
+  rw [← Set.prod_eq_empty_iff]
+  exact h.ne_empty
+
+theorem prod_subset_prod_iff_left (h : t.Nonempty) : s ×ˢ t ⊆ s₁ ×ˢ t ↔ s ⊆ s₁ := by
+  simp +contextual [prod_subset_prod_iff, or_iff_left h.ne_empty]
+
+theorem prod_subset_prod_iff_right (h : s.Nonempty) : s ×ˢ t ⊆ s ×ˢ t₁ ↔ t ⊆ t₁ := by
+  simp +contextual [prod_subset_prod_iff, or_comm (a := s = ∅), or_iff_left h.ne_empty]
+
 theorem prod_eq_prod_iff_of_nonempty (h : (s ×ˢ t).Nonempty) :
     s ×ˢ t = s₁ ×ˢ t₁ ↔ s = s₁ ∧ t = t₁ := by
   constructor
@@ -600,8 +615,8 @@ theorem offDiag_union (h : Disjoint s t) :
   ext x
   simp only [mem_offDiag, mem_union, ne_eq, mem_prod]
   constructor
-  · rintro ⟨h0|h0, h1|h1, h2⟩ <;> simp [h0, h1, h2]
-  · rintro (((⟨h0, h1, h2⟩|⟨h0, h1, h2⟩)|⟨h0, h1⟩)|⟨h0, h1⟩) <;> simp [*]
+  · rintro ⟨h0 | h0, h1 | h1, h2⟩ <;> simp [h0, h1, h2]
+  · rintro (((⟨h0, h1, h2⟩ | ⟨h0, h1, h2⟩) | ⟨h0, h1⟩) | ⟨h0, h1⟩) <;> simp [*]
     · rintro h3
       rw [h3] at h0
       exact Set.disjoint_left.mp h h0 h1

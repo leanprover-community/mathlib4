@@ -27,7 +27,7 @@ import Mathlib.CategoryTheory.Sites.LocallyInjective
 
 universe v u w v' u' w'
 
-open Opposite CategoryTheory CategoryTheory.GrothendieckTopology
+open Opposite CategoryTheory CategoryTheory.GrothendieckTopology CategoryTheory.Functor
 
 namespace CategoryTheory
 

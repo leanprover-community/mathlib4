@@ -110,7 +110,7 @@ theorem le_lexOrder_iff {φ : MvPowerSeries σ R} {w : WithTop (Lex (σ →₀ �
     rwa [← hd]
 
 theorem min_lexOrder_le {φ ψ : MvPowerSeries σ R} :
-    min (lexOrder φ) (lexOrder ψ) ≤ lexOrder (φ + ψ)  := by
+    min (lexOrder φ) (lexOrder ψ) ≤ lexOrder (φ + ψ) := by
   rw [le_lexOrder_iff]
   intro d hd
   simp only [lt_min_iff] at hd

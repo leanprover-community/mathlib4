@@ -92,14 +92,14 @@ theorem continuous_if' {p : α → Prop} [∀ a, Decidable (p a)]
     (hpg : ∀ a ∈ frontier { x | p x }, Tendsto g (𝓝[{ x | ¬p x }] a) (𝓝 <| ite (p a) (f a) (g a)))
     (hf : ContinuousOn f { x | p x }) (hg : ContinuousOn g { x | ¬p x }) :
     Continuous fun a => ite (p a) (f a) (g a) := by
-  rw [continuous_iff_continuousOn_univ]
+  rw [← continuousOn_univ]
   apply ContinuousOn.if' <;> simp [*] <;> assumption
 
 theorem continuous_if {p : α → Prop} [∀ a, Decidable (p a)]
     (hp : ∀ a ∈ frontier { x | p x }, f a = g a) (hf : ContinuousOn f (closure { x | p x }))
     (hg : ContinuousOn g (closure { x | ¬p x })) :
     Continuous fun a => if p a then f a else g a := by
-  rw [continuous_iff_continuousOn_univ]
+  rw [← continuousOn_univ]
   apply ContinuousOn.if <;> simpa
 
 theorem Continuous.if {p : α → Prop} [∀ a, Decidable (p a)]

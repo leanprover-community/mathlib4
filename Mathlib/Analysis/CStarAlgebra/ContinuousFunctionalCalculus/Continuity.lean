@@ -140,7 +140,7 @@ theorem Continuous.cfc_fun [TopologicalSpace X] (f : X → R → R) (a : A)
     (h_cont : Continuous (fun x ↦ ofFun {spectrum R a} (f x)))
     (hf : ∀ x, ContinuousOn (f x) (spectrum R a) := by cfc_cont_tac) :
     Continuous fun x ↦ cfc (f x) a := by
-  rw [continuous_iff_continuousOn_univ] at h_cont ⊢
+  rw [← continuousOn_univ] at h_cont ⊢
   exact h_cont.cfc_fun (fun x _ ↦ hf x)
 
 end Generic
@@ -304,7 +304,7 @@ protected theorem Continuous.cfc [TopologicalSpace X] {s : Set 𝕜} (hs : IsCom
     {a : X → A} (ha_cont : Continuous a) (ha : ∀ x, spectrum 𝕜 (a x) ⊆ s)
     (hf : ContinuousOn f s := by cfc_cont_tac) (ha' : ∀ x, p (a x) := by cfc_tac) :
     Continuous (fun x ↦ cfc f (a x)) := by
-  rw [continuous_iff_continuousOn_univ] at ha_cont ⊢
+  rw [← continuousOn_univ] at ha_cont ⊢
   exact ha_cont.cfc hs f (fun x _ ↦ ha x) (fun x _ ↦ ha' x)
 
 end RCLike
@@ -400,7 +400,7 @@ theorem Continuous.cfc_nnreal [TopologicalSpace X] {s : Set ℝ≥0} (hs : IsCom
     {a : X → A} (ha_cont : Continuous a) (ha : ∀ x, spectrum ℝ≥0 (a x) ⊆ s)
     (hf : ContinuousOn f s := by cfc_cont_tac) (ha' : ∀ x, 0 ≤ a x := by cfc_tac) :
     Continuous (fun x ↦ cfc f (a x)) := by
-  rw [continuous_iff_continuousOn_univ] at ha_cont ⊢
+  rw [← continuousOn_univ] at ha_cont ⊢
   exact ha_cont.cfc_nnreal hs f (fun x _ ↦ ha x) (fun x _ ↦ ha' x)
 
 end NNReal
@@ -444,7 +444,7 @@ theorem tendsto_cfcₙ_fun {l : Filter X} {F : X → R → R} {f : R → R} {a :
     rw [cfcₙ_apply ..]
     apply cfcₙHom_continuous _ |>.tendsto _ |>.comp
     rw [ContinuousMapZero.isEmbedding_toContinuousMap.isInducing.tendsto_nhds_iff]
-    show Tendsto (fun x : s ↦ (⟨_, x.2.1.restrict⟩ : C(quasispectrum R a, R))) _
+    change Tendsto (fun x : s ↦ (⟨_, x.2.1.restrict⟩ : C(quasispectrum R a, R))) _
       (𝓝 ⟨_, hf.restrict⟩)
     rw [hf.tendsto_restrict_iff_tendstoUniformlyOn (fun x ↦ x.2.1)]
     intro t
@@ -498,7 +498,7 @@ theorem Continuous.cfcₙ_fun [TopologicalSpace X] (f : X → R → R) (a : A)
     (hf : ∀ x, ContinuousOn (f x) (quasispectrum R a) := by cfc_cont_tac)
     (hf0 : ∀ x, f x 0 = 0 := by cfc_zero_tac) :
     Continuous fun x ↦ cfcₙ (f x) a := by
-  rw [continuous_iff_continuousOn_univ] at h_cont ⊢
+  rw [← continuousOn_univ] at h_cont ⊢
   exact h_cont.cfcₙ_fun (fun x _ ↦ hf x) (fun x _ ↦ hf0 x)
 
 end Generic
@@ -670,7 +670,7 @@ protected theorem Continuous.cfcₙ [TopologicalSpace X] {s : Set 𝕜} (hs : Is
     (hf : ContinuousOn f s := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
     (ha' : ∀ x, p (a x) := by cfc_tac) :
     Continuous (fun x ↦ cfcₙ f (a x)) := by
-  rw [continuous_iff_continuousOn_univ] at ha_cont ⊢
+  rw [← continuousOn_univ] at ha_cont ⊢
   exact ha_cont.cfcₙ hs f (fun x _ ↦ ha x) (fun x _ ↦ ha' x)
 
 /-- `cfcₙ` is continuous in the variable `a : A` when `s : Set 𝕜` is compact and `a` varies over
@@ -786,7 +786,7 @@ theorem Continuous.cfcₙ_nnreal [TopologicalSpace X] {s : Set ℝ≥0} (hs : Is
     (hf : ContinuousOn f s := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
     (ha' : ∀ x, 0 ≤ a x := by cfc_tac) :
     Continuous (fun x ↦ cfcₙ f (a x)) := by
-  rw [continuous_iff_continuousOn_univ] at ha_cont ⊢
+  rw [← continuousOn_univ] at ha_cont ⊢
   exact ha_cont.cfcₙ_nnreal hs f (fun x _ ↦ ha x) (fun x _ ↦ ha' x)
 
 end NNReal

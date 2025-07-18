@@ -319,7 +319,7 @@ theorem adhesive_of_reflective [HasPullbacks D] [Adhesive C] [HasPullbacks C] [H
   have := Adhesive.van_kampen (IsPushout.of_hasPushout (Gr.map f) (Gr.map g))
   rw [IsPushout.isVanKampen_iff] at this ⊢
   refine (IsVanKampenColimit.precompose_isIso_iff
-    (isoWhiskerLeft _ (asIso adj.counit) ≪≫ Functor.rightUnitor _).hom).mp ?_
+    (Functor.isoWhiskerLeft _ (asIso adj.counit) ≪≫ Functor.rightUnitor _).hom).mp ?_
   refine ((this.precompose_isIso (spanCompIso _ _ _).hom).map_reflective adj).of_iso
     (IsColimit.uniqueUpToIso ?_ ?_)
   · exact isColimitOfPreserves Gl ((IsColimit.precomposeHomEquiv _ _).symm <| pushoutIsPushout _ _)

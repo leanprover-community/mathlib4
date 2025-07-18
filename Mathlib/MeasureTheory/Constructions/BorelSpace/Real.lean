@@ -277,7 +277,7 @@ theorem measurable_of_tendsto' {ι : Type*} {f : ι → α → ℝ≥0∞} {g : 
     ext1 y
     exact ((lim y).comp hx).liminf_eq
   rw [← this]
-  show Measurable fun y => liminf (fun n => (f (x n) y : ℝ≥0∞)) atTop
+  change Measurable fun y => liminf (fun n => (f (x n) y : ℝ≥0∞)) atTop
   exact .liminf fun n => hf (x n)
 
 /-- A sequential limit of measurable `ℝ≥0∞` valued functions is measurable. -/

@@ -177,7 +177,7 @@ namespace Cone
 
 /-- The isomorphism between a cone on `F` and an element of the functor `F.cones`. -/
 @[simps!]
-def equiv (F : J ⥤ C) : Cone F ≅ ΣX, F.cones.obj X where
+def equiv (F : J ⥤ C) : Cone F ≅ Σ X, F.cones.obj X where
   hom c := ⟨op c.pt, c.π⟩
   inv c :=
     { pt := c.1.unop
@@ -213,7 +213,7 @@ end Cone
 namespace Cocone
 
 /-- The isomorphism between a cocone on `F` and an element of the functor `F.cocones`. -/
-def equiv (F : J ⥤ C) : Cocone F ≅ ΣX, F.cocones.obj X where
+def equiv (F : J ⥤ C) : Cocone F ≅ Σ X, F.cocones.obj X where
   hom c := ⟨c.pt, c.ι⟩
   inv c :=
     { pt := c.1

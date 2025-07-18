@@ -88,6 +88,14 @@ protected lemma smul_def {α : Type*} (f : Perm α) (a : α) : f • a = f a := 
 /-- `Equiv.Perm.applyMulAction` is faithful. -/
 instance applyFaithfulSMul (α : Type*) : FaithfulSMul (Perm α) α := ⟨Equiv.ext⟩
 
+/-- The permutation group of `α` acts transitively on `α`. -/
+instance : MulAction.IsPretransitive (Perm α) α := by
+  rw [MulAction.isPretransitive_iff]
+  classical
+  intro x y
+  use Equiv.swap x y
+  simp
+
 end Equiv.Perm
 
 /-! #### Tautological action by `MulAut` -/

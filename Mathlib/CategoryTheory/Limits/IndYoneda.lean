@@ -142,7 +142,7 @@ of `F` evaluated at `D`. This variant is for contravariant diagrams, see
 noncomputable def colimitCoyonedaHomIsoLimit :
     (colimit (D.rightOp ⋙ coyoneda) ⟶ F) ≅ limit (D ⋙ F ⋙ uliftFunctor.{u₁}) :=
   colimitHomIsoLimitYoneda _ F ≪≫
-    HasLimit.isoOfNatIso (isoWhiskerLeft (D ⋙ Prod.sectL C F) (coyonedaLemma C))
+    HasLimit.isoOfNatIso (Functor.isoWhiskerLeft (D ⋙ Prod.sectL C F) (coyonedaLemma C))
 
 @[simp]
 lemma colimitCoyonedaHomIsoLimit_π_apply (f : colimit (D.rightOp ⋙ coyoneda) ⟶ F) (i : I) :
@@ -196,7 +196,7 @@ contravariant version. -/
 noncomputable def colimitYonedaHomIsoLimit :
       (colimit (D.unop ⋙ yoneda) ⟶ F) ≅ limit (D ⋙ F ⋙ uliftFunctor.{u₁}) :=
   colimitHomIsoLimitYoneda _ _ ≪≫
-    HasLimit.isoOfNatIso (isoWhiskerLeft (D ⋙ Prod.sectL _ _) (yonedaLemma C))
+    HasLimit.isoOfNatIso (Functor.isoWhiskerLeft (D ⋙ Prod.sectL _ _) (yonedaLemma C))
 
 @[simp]
 lemma colimitYonedaHomIsoLimit_π_apply (f : colimit (D.unop ⋙ yoneda) ⟶ F) (i : Iᵒᵖ) :
@@ -248,7 +248,7 @@ of `F` evaluated at `D`. This variant is for covariant diagrams, see
 noncomputable def colimitCoyonedaHomIsoLimit' :
     (colimit (D.op ⋙ coyoneda) ⟶ F) ≅ limit (D ⋙ F ⋙ uliftFunctor.{u₁}) :=
   colimitHomIsoLimitYoneda' _ F ≪≫
-    HasLimit.isoOfNatIso (isoWhiskerLeft (D ⋙ Prod.sectL C F) (coyonedaLemma C))
+    HasLimit.isoOfNatIso (Functor.isoWhiskerLeft (D ⋙ Prod.sectL C F) (coyonedaLemma C))
 
 @[simp]
 lemma colimitCoyonedaHomIsoLimit'_π_apply (f : colimit (D.op ⋙ coyoneda) ⟶ F) (i : I) :
@@ -299,7 +299,7 @@ covariant version. -/
 noncomputable def colimitYonedaHomIsoLimit' :
     (colimit (D.leftOp ⋙ yoneda) ⟶ F) ≅ limit (D ⋙ F ⋙ uliftFunctor.{u₁}) :=
   colimitHomIsoLimitYoneda' _ F ≪≫
-    HasLimit.isoOfNatIso (isoWhiskerLeft (D ⋙ Prod.sectL _ _) (yonedaLemma C))
+    HasLimit.isoOfNatIso (Functor.isoWhiskerLeft (D ⋙ Prod.sectL _ _) (yonedaLemma C))
 
 @[simp]
 lemma colimitYonedaHomIsoLimit'_π_apply (f : colimit (D.leftOp ⋙ yoneda) ⟶ F) (i : I) :

@@ -70,7 +70,7 @@ noncomputable instance : Module A relations.Quotient := by
   dsimp only [Quotient]; infer_instance
 
 /-- The canonical (surjective) linear map `(relations.G →₀ A) →ₗ[A] relations.Quotient`. -/
-def toQuotient : (relations.G →₀ A) →ₗ[A] relations.Quotient := Submodule.mkQ _
+noncomputable def toQuotient : (relations.G →₀ A) →ₗ[A] relations.Quotient := Submodule.mkQ _
 
 variable {relations} in
 @[ext]

@@ -246,7 +246,7 @@ since `0 ^ 0 = 1`. Hence the use of `ite`. -/
 noncomputable def interpStrip (z : ℂ) : ℂ :=
   if sSupNormIm f 0 = 0 ∨ sSupNormIm f 1 = 0
     then 0
-    else sSupNormIm f 0 ^ (1-z) * sSupNormIm f 1 ^ z
+    else sSupNormIm f 0 ^ (1 - z) * sSupNormIm f 1 ^ z
 
 /-- Rewrite for `InterpStrip` when `0 < sSupNormIm f 0` and `0 < sSupNormIm f 1`. -/
 lemma interpStrip_eq_of_pos (z : ℂ) (h0 : 0 < sSupNormIm f 0) (h1 : 0 < sSupNormIm f 1) :
@@ -410,7 +410,7 @@ lemma sSupNormIm_scale_right (f : ℂ → E) {l u : ℝ} (hul : l < u) :
 
 /-- A technical lemma relating the bounds given by the three lines lemma on a general strip
 to the bounds for its scaled version on the strip ``re ⁻¹' [0, 1]`. -/
-lemma interpStrip_scale (f : ℂ → E) {l u : ℝ} (hul: l < u) (z : ℂ)  : interpStrip (scale f l u)
+lemma interpStrip_scale (f : ℂ → E) {l u : ℝ} (hul : l < u) (z : ℂ) : interpStrip (scale f l u)
     ((z - ↑l) / (↑u - ↑l)) = interpStrip' f l u z := by
   simp only [interpStrip, interpStrip']
   simp_rw [sSupNormIm_scale_left f hul, sSupNormIm_scale_right f hul]
@@ -420,7 +420,7 @@ variable [NormedSpace ℂ E]
 lemma norm_le_interpStrip_of_mem_verticalClosedStrip_eps (ε : ℝ) (hε : ε > 0) (z : ℂ)
     (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip 0 1))
     (hd : DiffContOnCl ℂ f (verticalStrip 0 1)) (hz : z ∈ verticalClosedStrip 0 1) :
-    ‖f z‖ ≤  ‖((ε + sSupNormIm f 0) ^ (1-z) * (ε + sSupNormIm f 1) ^ z : ℂ)‖ := by
+    ‖f z‖ ≤  ‖((ε + sSupNormIm f 0) ^ (1 - z) * (ε + sSupNormIm f 1) ^ z : ℂ)‖ := by
   simp only [norm_mul, ← ofReal_add, norm_cpow_eq_rpow_re_of_pos (sSupNormIm_eps_pos f hε _) _,
     sub_re, one_re]
   rw [← mul_inv_le_iff₀', ← one_mul (((ε + sSupNormIm f 1) ^ z.re)), ← mul_inv_le_iff₀,
@@ -430,7 +430,7 @@ lemma norm_le_interpStrip_of_mem_verticalClosedStrip_eps (ε : ℝ) (hε : ε > 
     simpa [F, norm_invInterpStrip _ _ hε, norm_smul, mul_comm] using
       norm_mul_invInterpStrip_le_one_of_mem_verticalClosedStrip f ε hε z hd hB hz
   · simp only [Real.rpow_pos_of_pos (sSupNormIm_eps_pos f hε _) z.re]
-  · simp only [Real.rpow_pos_of_pos (sSupNormIm_eps_pos f hε _) (1-z.re)]
+  · simp only [Real.rpow_pos_of_pos (sSupNormIm_eps_pos f hε _) (1 - z.re)]
 
 lemma eventuallyle (z : ℂ) (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip 0 1))
     (hd : DiffContOnCl ℂ f (verticalStrip 0 1)) (hz : z ∈ verticalStrip 0 1) :
@@ -611,7 +611,7 @@ closed strip `re ⁻¹' [l, u]` and differentiable on open strip `re ⁻¹' (l, 
 `re ⁻¹' [a,b]` the inequality
 `‖f(z)‖ ≤ M(0) ^ (1 - ((z.re - l) / (u - l))) * M(1) ^ ((z.re - l) / (u - l))`
 holds. -/
-lemma norm_le_interpStrip_of_mem_verticalClosedStrip {l u : ℝ} (hul: l < u)
+lemma norm_le_interpStrip_of_mem_verticalClosedStrip {l u : ℝ} (hul : l < u)
     {f : ℂ → E} {z : ℂ}
     (hz : z ∈ verticalClosedStrip l u) (hd : DiffContOnCl ℂ f (verticalStrip l u))
     (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip l u)) :

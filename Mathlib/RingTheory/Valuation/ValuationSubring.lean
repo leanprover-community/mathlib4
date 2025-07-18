@@ -402,6 +402,9 @@ theorem isEquiv_valuation_valuationSubring : v.IsEquiv v.valuationSubring.valuat
   rw [ValuationSubring.valuation_le_one_iff]
   rfl
 
+lemma valuationSubring.integers : v.Integers v.valuationSubring :=
+  Valuation.integer.integers _
+
 end Valuation
 
 namespace ValuationSubring

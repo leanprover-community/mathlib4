@@ -410,7 +410,7 @@ theorem invEmbedding_comp (i : Fin c.length) (j : Fin (c.blocksFun i)) :
 
 /-- Equivalence between the disjoint union of the blocks (each of them seen as
 `Fin (c.blocksFun i)`) with `Fin n`. -/
-def blocksFinEquiv : (Σi : Fin c.length, Fin (c.blocksFun i)) ≃ Fin n where
+def blocksFinEquiv : (Σ i : Fin c.length, Fin (c.blocksFun i)) ≃ Fin n where
   toFun x := c.embedding x.1 x.2
   invFun j := ⟨c.index j, c.invEmbedding j⟩
   left_inv x := by
@@ -583,7 +583,7 @@ protected def cast (c : Composition m) (hmn : m = n) : Composition n where
 @[simp]
 theorem cast_rfl (c : Composition n) : c.cast rfl = c := rfl
 
-theorem cast_heq (c : Composition m) (hmn : m = n) : HEq (c.cast hmn) c := by subst m; rfl
+theorem cast_heq (c : Composition m) (hmn : m = n) : c.cast hmn ≍ c := by subst m; rfl
 
 theorem cast_eq_cast (c : Composition m) (hmn : m = n) :
     c.cast hmn = cast (hmn ▸ rfl) c := by
@@ -816,12 +816,7 @@ considering the restriction of the subset to `{1, ..., n-1}` and shifting to the
 def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)) where
   toFun c :=
     { i : Fin (n - 1) |
-        (⟨1 + (i : ℕ), by
-              apply (add_lt_add_left i.is_lt 1).trans_le
-              rw [Nat.succ_eq_add_one, add_comm]
-              exact add_le_add (Nat.sub_le n 1) (le_refl 1)⟩ :
-            Fin n.succ) ∈
-          c.boundaries }.toFinset
+        (⟨1 + (i : ℕ), by omega⟩ : Fin n.succ) ∈ c.boundaries }.toFinset
   invFun s :=
     { boundaries :=
         { i : Fin n.succ |
@@ -853,10 +848,9 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
       convert add_lt_add_right i.is_lt 1
       apply (Nat.succ_pred_eq_of_pos _).symm
       exact Nat.lt_of_lt_pred (Fin.pos i)
-    simp only [add_comm, Fin.ext_iff, Fin.val_zero, Fin.val_last, exists_prop, Set.toFinset_setOf,
-      Finset.mem_univ, Finset.mem_filter, add_eq_zero, and_false,
-      add_left_inj, false_or, true_and, reduceCtorEq]
-    simp_rw [this, false_or, ← Fin.ext_iff, exists_eq_right']
+    simp_rw [add_comm, Fin.ext_iff, Fin.val_zero, Fin.val_last, exists_prop, Set.toFinset_setOf,
+      Finset.mem_filter_univ, reduceCtorEq, this, false_or, add_left_inj, ← Fin.ext_iff,
+      exists_eq_right']
 
 instance compositionAsSetFintype (n : ℕ) : Fintype (CompositionAsSet n) :=
   Fintype.ofEquiv _ (compositionAsSetEquiv n).symm

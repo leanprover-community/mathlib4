@@ -58,6 +58,8 @@ end Quiver
 
 namespace CategoryTheory
 
+open Functor
+
 variable [Category.{v₁} C]
 
 /-- The opposite category. -/
@@ -658,7 +660,7 @@ lemma op_rightUnitor :
       (Functor.opComp _ _).symm := by
   aesop_cat
 
-lemma op_associator {E E': Type*} [Category E] [Category E'] {F : C ⥤ D} {G : D ⥤ E} {H : E ⥤ E'} :
+lemma op_associator {E E' : Type*} [Category E] [Category E'] {F : C ⥤ D} {G : D ⥤ E} {H : E ⥤ E'} :
     NatIso.op (Functor.associator F G H) =
       Functor.opComp _ _ ≪≫ isoWhiskerLeft F.op (Functor.opComp _ _) ≪≫
         (Functor.associator F.op G.op H.op).symm ≪≫
@@ -679,7 +681,7 @@ lemma unop_rightUnitor {F : Cᵒᵖ ⥤ Dᵒᵖ} :
       (Functor.unopComp _ _).symm := by
   aesop_cat
 
-lemma unop_associator {E E': Type*} [Category E] [Category E']
+lemma unop_associator {E E' : Type*} [Category E] [Category E']
     {F : Cᵒᵖ ⥤ Dᵒᵖ} {G : Dᵒᵖ ⥤ Eᵒᵖ} {H : Eᵒᵖ ⥤ E'ᵒᵖ} :
     NatIso.unop (Functor.associator F G H) =
       Functor.unopComp _ _ ≪≫ isoWhiskerLeft F.unop (Functor.unopComp _ _) ≪≫

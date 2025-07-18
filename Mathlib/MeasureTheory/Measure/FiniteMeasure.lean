@@ -296,7 +296,7 @@ lemma measurableSet_isFiniteMeasure : MeasurableSet { μ : Measure Ω | IsFinite
 theorem measurable_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
     Measurable (fun (μ : FiniteMeasure α × FiniteMeasure β)
       ↦ μ.1.toMeasure.prod μ.2.toMeasure) := by
-  have Heval {u v} (Hu : MeasurableSet u) (Hv : MeasurableSet v):
+  have Heval {u v} (Hu : MeasurableSet u) (Hv : MeasurableSet v) :
       Measurable fun a : (FiniteMeasure α × FiniteMeasure β) ↦
       a.1.toMeasure u * a.2.toMeasure v :=
     Measurable.mul
@@ -405,8 +405,8 @@ theorem testAgainstNN_lipschitz_estimate (μ : FiniteMeasure Ω) (f g : Ω →�
   intro ω
   have le' : f ω ≤ g ω + nndist f g := by
     calc f ω
-     _ ≤ g ω + nndist (f ω) (g ω)     := NNReal.le_add_nndist (f ω) (g ω)
-     _ ≤ g ω + nndist f g             := (add_le_add_iff_left (g ω)).mpr (le_dist ω)
+     _ ≤ g ω + nndist (f ω) (g ω) := NNReal.le_add_nndist (f ω) (g ω)
+     _ ≤ g ω + nndist f g := (add_le_add_iff_left (g ω)).mpr (le_dist ω)
   have le : (f ω : ℝ≥0∞) ≤ (g ω : ℝ≥0∞) + nndist f g := by
     simpa only [← ENNReal.coe_add] using (by exact_mod_cast le')
   rwa [coe_nnreal_ennreal_nndist] at le
@@ -457,7 +457,7 @@ theorem toWeakDualBCNN_continuous : Continuous (@toWeakDualBCNN Ω _ _ _) :=
 depends continuously on the measure. -/
 theorem continuous_testAgainstNN_eval (f : Ω →ᵇ ℝ≥0) :
     Continuous fun μ : FiniteMeasure Ω ↦ μ.testAgainstNN f := by
-  show Continuous ((fun φ : WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0) ↦ φ f) ∘ toWeakDualBCNN)
+  change Continuous ((fun φ : WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0) ↦ φ f) ∘ toWeakDualBCNN)
   refine Continuous.comp ?_ (toWeakDualBCNN_continuous (Ω := Ω))
   exact WeakBilin.eval_continuous _ _
 

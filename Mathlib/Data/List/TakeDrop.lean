@@ -44,7 +44,7 @@ theorem take_one_drop_eq_of_lt_length {l : List α} {n : ℕ} (h : n < l.length)
 
 @[simp] lemma take_eq_left_iff {x y : List α} {n : ℕ} :
     (x ++ y).take n = x.take n ↔ y = [] ∨ n ≤ x.length := by
-  simp [take_append_eq_append_take, Nat.sub_eq_zero_iff_le, Or.comm]
+  simp [take_append, Nat.sub_eq_zero_iff_le, Or.comm]
 
 @[simp] lemma left_eq_take_iff {x y : List α} {n : ℕ} :
     x.take n = (x ++ y).take n ↔ y = [] ∨ n ≤ x.length := by

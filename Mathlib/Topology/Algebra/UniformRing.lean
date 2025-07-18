@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
 import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Equiv.TransferInstance
+import Mathlib.Algebra.Module.Submodule.Lattice
+import Mathlib.Algebra.Ring.TransferInstance
 import Mathlib.Topology.Algebra.GroupCompletion
 import Mathlib.Topology.Algebra.Ring.Ideal
 import Mathlib.Topology.Algebra.IsUniformGroup.Basic

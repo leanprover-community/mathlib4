@@ -107,7 +107,7 @@ variable (X : T)
 noncomputable instance [P.ContainsIdentities] [P.RespectsIso] :
     CreatesLimitsOfShape (Discrete PEmpty.{1}) (Over.forget P ⊤ X) :=
   haveI : HasLimitsOfShape (Discrete PEmpty.{1}) (Comma (𝟭 T) (Functor.fromPUnit X)) := by
-    show HasLimitsOfShape _ (Over X)
+    change HasLimitsOfShape _ (Over X)
     infer_instance
   forgetCreatesLimitsOfShapeOfClosed P
     (Over.closedUnderLimitsOfShape_discrete_empty _)

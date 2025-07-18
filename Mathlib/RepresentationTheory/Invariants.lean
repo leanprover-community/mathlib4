@@ -34,7 +34,7 @@ variable [Fintype G] [Invertible (Fintype.card G : k)]
 /-- The average of all elements of the group `G`, considered as an element of `MonoidAlgebra k G`.
 -/
 noncomputable def average : MonoidAlgebra k G :=
-  ⅟ (Fintype.card G : k) • ∑ g : G, of k G g
+  ⅟(Fintype.card G : k) • ∑ g : G, of k G g
 
 /-- `average k G` is invariant under left multiplication by elements of `G`.
 -/
@@ -43,7 +43,7 @@ theorem mul_average_left (g : G) : ↑(Finsupp.single g 1) * average k G = avera
   simp only [mul_one, Finset.mul_sum, Algebra.mul_smul_comm, average, MonoidAlgebra.of_apply,
     MonoidAlgebra.single_mul_single]
   set f : G → MonoidAlgebra k G := fun x => Finsupp.single x 1
-  show ⅟ (Fintype.card G : k) • ∑ x : G, f (g * x) = ⅟ (Fintype.card G : k) • ∑ x : G, f x
+  change ⅟(Fintype.card G : k) • ∑ x : G, f (g * x) = ⅟(Fintype.card G : k) • ∑ x : G, f x
   rw [Function.Bijective.sum_comp (Group.mulLeft_bijective g) _]
 
 /-- `average k G` is invariant under right multiplication by elements of `G`.
@@ -53,7 +53,7 @@ theorem mul_average_right (g : G) : average k G * ↑(Finsupp.single g 1) = aver
   simp only [mul_one, Finset.sum_mul, Algebra.smul_mul_assoc, average, MonoidAlgebra.of_apply,
     MonoidAlgebra.single_mul_single]
   set f : G → MonoidAlgebra k G := fun x => Finsupp.single x 1
-  show ⅟ (Fintype.card G : k) • ∑ x : G, f (x * g) = ⅟ (Fintype.card G : k) • ∑ x : G, f x
+  change ⅟(Fintype.card G : k) • ∑ x : G, f (x * g) = ⅟(Fintype.card G : k) • ∑ x : G, f x
   rw [Function.Bijective.sum_comp (Group.mulRight_bijective g) _]
 
 end GroupAlgebra

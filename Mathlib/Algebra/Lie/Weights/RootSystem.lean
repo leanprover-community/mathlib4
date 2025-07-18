@@ -299,7 +299,7 @@ lemma rootSpace_one_div_two_smul (hα : α.IsNonZero) : rootSpace H ((2⁻¹ : K
   by_contra h
   let W : Weight K H L := ⟨_, h⟩
   have hW : 2 • (W : H → K) = α := by
-    show 2 • (2⁻¹ : K) • (α : H → K) = α
+    change 2 • (2⁻¹ : K) • (α : H → K) = α
     rw [← Nat.cast_smul_eq_nsmul K, smul_smul]; simp
   apply α.genWeightSpace_ne_bot
   have := rootSpace_two_smul W (fun (e : (W : H → K) = 0) ↦ hα <| by
@@ -326,7 +326,7 @@ lemma eq_neg_one_or_eq_zero_or_eq_one_of_eq_smul
     set k' : ℤ := n - chainTopCoeff α β
     subst H
     have : k' ∈ ({-1, 0, 1} : Finset ℤ) := by
-      show k' ∈ Finset.Icc (-1 : ℤ) (1 : ℤ)
+      change k' ∈ Finset.Icc (-1 : ℤ) (1 : ℤ)
       exact this
     simpa only [Int.reduceNeg, Finset.mem_insert, Finset.mem_singleton, ← @Int.cast_inj K,
       Int.cast_zero, Int.cast_neg, Int.cast_one] using this
@@ -456,12 +456,10 @@ lemma eq_top_of_invtSubmodule_ne_bot
     by_contra h
     have i_non_zero : i.1.IsNonZero := by
       obtain ⟨val, hval⟩ := i
-      simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hval
-      exact hval
+      rwa [Finset.mem_filter_univ] at hval
     have j_non_zero : j.1.IsNonZero := by
       obtain ⟨val, hval⟩ := j
-      simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hval
-      exact hval
+      rwa [Finset.mem_filter_univ] at hval
     let r := Weight.mk (R := K) (L := H) (M := L) (i.1.1 + j.1.1) h
     have r₁ : r ≠ 0 := by
       intro a

@@ -449,8 +449,7 @@ lemma copyCount_le_labelledCopyCount [Fintype W] : G.copyCount H ≤ G.labelledC
       Adj := ⊥
       adj_sub := False.elim
       edge_vert := False.elim }
-  simp only [eq_singleton_iff_unique_mem, mem_filter, mem_univ, true_and,
-    Nonempty.forall]
+  simp only [eq_singleton_iff_unique_mem, mem_filter_univ, Nonempty.forall]
   refine ⟨⟨⟨(Equiv.Set.univ _).symm, by simp⟩⟩, fun H' e ↦
     Subgraph.ext ((set_fintype_card_eq_univ_iff _).1 <| Fintype.card_congr e.toEquiv.symm) ?_⟩
   ext a b

@@ -75,7 +75,7 @@ theorem LinearMap.split_surjective_of_localization_maximal
     ∃ (g : _ →ₗ[Localization.AtPrime I] _),
       (LocalizedModule.map I.primeCompl f).comp g = LinearMap.id) :
     ∃ (g : N →ₗ[R] M), f.comp g = LinearMap.id := by
-  show LinearMap.id ∈ LinearMap.range (LinearMap.llcomp R N M N f)
+  change LinearMap.id ∈ LinearMap.range (LinearMap.llcomp R N M N f)
   refine Submodule.mem_of_localization_maximal _ (fun P _ ↦ LocalizedModule.map P.primeCompl) _ _
     fun I hI ↦ ?_
   rw [LocalizedModule.map_id]

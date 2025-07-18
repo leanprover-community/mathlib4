@@ -31,7 +31,7 @@ and provide their adjunction at
 
 universe w v u
 
-open CategoryTheory TopologicalSpace Opposite
+open CategoryTheory TopologicalSpace Opposite Functor
 
 variable (C : Type u) [Category.{v} C]
 

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
 import Mathlib.Algebra.Order.Group.Pointwise.Interval
+import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Prod
@@ -49,7 +50,10 @@ induces a corresponding linear map from `V1` to `V2`. -/
 structure AffineMap (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Type*) [Ring k]
   [AddCommGroup V1] [Module k V1] [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2]
   [AffineSpace V2 P2] where
+  /-- The underlying function between the affine spaces `P1` and `P2`. -/
   toFun : P1 → P2
+  /-- The linear map between the corresponding vector spaces `V1` and `V2`.
+  This represents how the affine map acts on differences of points. -/
   linear : V1 →ₗ[k] V2
   map_vadd' : ∀ (p : P1) (v : V1), toFun (v +ᵥ p) = linear v +ᵥ toFun p
 
@@ -429,11 +433,7 @@ theorem image_vsub_image {s t : Set P1} (f : P1 →ᵃ[k] P2) :
   ext v
   simp only [Set.mem_vsub, Set.mem_image,
     exists_exists_and_eq_and, ← f.linearMap_vsub]
-  constructor
-  · rintro ⟨x, hx, y, hy, hv⟩
-    exact ⟨x -ᵥ y, ⟨x, hx, y, hy, rfl⟩, hv⟩
-  · rintro ⟨-, ⟨x, hx, y, hy, rfl⟩, rfl⟩
-    exact ⟨x, hx, y, hy, rfl⟩
+  grind
 
 /-! ### Definition of `AffineMap.lineMap` and lemmas about it -/
 
@@ -562,6 +562,29 @@ theorem lineMap_vsub_lineMap (p₁ p₂ p₃ p₄ : P1) (c : k) :
 @[simp] lemma lineMap_lineMap_left (p₀ p₁ : P1) (c d : k) :
     lineMap (lineMap p₀ p₁ c) p₁ d = lineMap p₀ p₁ (1 - (1 - d) * (1 - c)) := by
   simp_rw [lineMap_apply_one_sub, ← lineMap_apply_one_sub p₁, lineMap_lineMap_right]
+
+lemma lineMap_mono [LinearOrder k] [Preorder V1] [AddRightMono V1] [SMulPosMono k V1]
+    {p₀ p₁ : V1} (h : p₀ ≤ p₁) :
+    Monotone (lineMap (k := k) p₀ p₁) := by
+  intro x y hxy
+  simp? [lineMap] says
+    simp only [lineMap, vsub_eq_sub, vadd_eq_add, coe_add, LinearMap.coe_toAffineMap,
+      LinearMap.coe_smulRight, LinearMap.id_coe, id_eq, coe_const, Pi.add_apply,
+      Function.const_apply, add_le_add_iff_right]
+  gcongr
+  simpa
+
+lemma lineMap_anti [LinearOrder k] [Preorder V1] [AddLeftMono V1] [SMulPosMono k V1]
+    {p₀ p₁ : V1} (h : p₁ ≤ p₀) :
+    Antitone (lineMap (k := k) p₀ p₁) := by
+  intro x y hxy
+  simp? [lineMap] says
+    simp only [lineMap, vsub_eq_sub, vadd_eq_add, coe_add, LinearMap.coe_toAffineMap,
+      LinearMap.coe_smulRight, LinearMap.id_coe, id_eq, coe_const, Pi.add_apply,
+      Function.const_apply, add_le_add_iff_right]
+  rw [← neg_le_neg_iff, ← smul_neg, ← smul_neg]
+  gcongr
+  simpa
 
 /-- Decomposition of an affine map in the special case when the point space and vector space
 are the same. -/

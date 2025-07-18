@@ -69,7 +69,13 @@ theorem map_centralizer_le_centralizer_image (s : Set G) (f : G →* G') :
   rw [← map_mul, ← map_mul, hg h hh]
 
 @[to_additive]
-instance Centralizer.characteristic [hH : H.Characteristic] :
+instance normal_centralizer [H.Normal] : (centralizer H : Subgroup G).Normal where
+  conj_mem g hg i h hh := by
+    simpa [-mul_left_inj, -mul_right_inj, mul_assoc]
+      using congr(i * $(hg _ <| ‹H.Normal›.conj_mem _ hh i⁻¹) * i⁻¹)
+
+@[to_additive]
+instance characteristic_centralizer [hH : H.Characteristic] :
     (centralizer (H : Set G)).Characteristic := by
   refine Subgroup.characteristic_iff_comap_le.mpr fun ϕ g hg h hh => ϕ.injective ?_
   rw [map_mul, map_mul]

@@ -758,13 +758,12 @@ protected theorem Measurable.iSup {ι} [Countable ι] {f : ι → δ → α} (hf
     measurableSet_bddAbove_range hf
   have : Measurable (fun (_b : δ) ↦ sSup (∅ : Set α)) := measurable_const
   apply Measurable.isLUB_of_mem hf A _ _ this
-  · rintro b ⟨c, hc⟩
+  · intro b hb
     apply isLUB_ciSup
-    refine ⟨c, ?_⟩
-    assumption
+    simpa
   · intro b hb
     apply csSup_of_not_bddAbove
-    exact hb
+    simpa
 
 -- TODO: Why does this error?
 -- /-- Compositional version of `Measurable.iSup` for use by `fun_prop`. -/
