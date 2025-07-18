@@ -229,6 +229,20 @@ instance (priority := 100) completable : CompletableTopField K :=
 
 open WithZeroTopology
 
+lemma valuation_isClosedMap : IsClosedMap (v : K → Γ₀) := by
+  refine IsClosedMap.of_nonempty ?_
+  intro U hU hU'
+  simp only [← isOpen_compl_iff, isOpen_iff_mem_nhds, mem_compl_iff, mem_nhds, ne_eq,
+    subset_compl_comm, compl_setOf, not_lt, Subtype.exists, map_eq_zero, exists_prop,
+    Prod.exists] at hU
+  simp only [isClosed_iff, mem_image, map_eq_zero, exists_eq_right, ne_eq, image_subset_iff]
+  refine (em _).imp_right fun h ↦ ?_
+  obtain ⟨r, s, ⟨hr, hs⟩, h⟩ := hU _ h
+  simp only [sub_zero] at h
+  refine ⟨v s / v r, by simp [hr, hs], h.trans ?_⟩
+  intro
+  simp [div_le_iff₀ (c := v r) (by simp [zero_lt_iff, hr])]
+
 /-- The extension of the valuation of a valued field to the completion of the field. -/
 noncomputable def extension : hat K → Γ₀ :=
   Completion.isDenseInducing_coe.extend (v : K → Γ₀)
@@ -353,8 +367,29 @@ lemma extensionValuation_apply_coe (x : K) :
     Valued.extensionValuation (x : hat K) = v x :=
   extension_extends x
 
+@[simp]
+lemma extension_eq_zero_iff {x : hat K} :
+    extension x = 0 ↔ x = 0 := by
+  suffices extensionValuation x = 0 ↔ x = 0 from this
+  simp
+
 lemma continuous_extensionValuation : Continuous (Valued.extensionValuation : hat K → Γ₀) :=
   continuous_extension
+
+lemma exists_coe_eq_v (x : hat K) : ∃ r : K, extensionValuation x = v r := by
+  rcases eq_or_ne x 0 with (rfl | h)
+  · use 0
+    rw [← Valued.extension_extends (0 : K)]
+    rfl
+  · have : DenseRange (Completion.coe' : K → hat K) := Completion.denseRange_coe
+    refine this.induction_on x ?_ ?_
+    · have : IsClosed (Set.range (v : K → Γ₀)) := valuation_isClosedMap.isClosed_range
+      rw [← isOpen_compl_iff] at this ⊢
+      have := (continuous_extensionValuation (K := K)).isOpen_preimage _ this
+      convert this
+      ext
+      simp [eq_comm]
+    · simp
 
 -- Bourbaki CA VI §5 no.3 Proposition 5 (d)
 theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
@@ -391,35 +426,6 @@ theorem closure_coe_completion_v_mul_v_lt {r s : K} (hr : r ≠ 0) (hs : s ≠ 0
   set γ := Units.mk0 _ hrs.ne'
   have hγ : (γ : Γ₀) = v s / v r := by simp [γ]
   simp_rw [← lt_div_iff₀ (hc := hr'), ← hγ, closure_coe_completion_v_lt (γ := γ)]
-
-open Uniformity in
-lemma foo.{u, v} {α : Type u} {β : Type v} [UniformSpace α] [UniformSpace β] {f : α → β}
-  (self : IsUniformInducing f) : Filter.comap (Prod.map f f) (𝓤 β) = 𝓤 α :=
-  self.comap_uniformity
-
-lemma exists_coe_eq_v (x : hat K) : ∃ r : K, extensionValuation x = v r := by
-  rcases eq_or_ne x 0 with (rfl | h)
-  · use 0
-    simp
-  · have : (extensionValuation x : Γ₀) ≠ 0 := (Valuation.ne_zero_iff _).mpr h
-    have : DenseRange (Completion.coe' : K → hat K) := Completion.denseRange_coe
-    refine this.induction_on x ?_ ?_
-    · rw [← isOpen_compl_iff]
-      have : IsClosed (Set.range (v : K → Γ₀)) := by
-        -- IsClosedMap?
-        rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
-        simp only [mem_compl_iff, mem_range, not_exists]
-        intro γ hγ
-        have hγ0 : (γ : Γ₀) ≠ 0 := by
-          rintro rfl
-          simp at hγ
-        simpa [nhds_of_ne_zero hγ0]
-      rw [← isOpen_compl_iff] at this
-      have := (continuous_extensionValuation (K := K)).isOpen_preimage _ this
-      convert this
-      ext
-      simp [eq_comm]
-    · simp
 
 noncomputable instance valuedCompletion : Valued (hat K) Γ₀ where
   v := extensionValuation
