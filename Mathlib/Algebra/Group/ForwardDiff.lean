@@ -6,6 +6,8 @@ Authors: Giulio Caflisch, David Loeffler, Yu Shao, Beibei Xiong, Weijie Jiang
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.Group.AddChar
 import Mathlib.Algebra.Module.Submodule.LinearMap
+import Mathlib.Algebra.Polynomial.Basic
+import Mathlib.Algebra.Polynomial.BigOperators
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Tactic.Abel
 
@@ -126,7 +128,7 @@ open fwdDiff_aux
     Δ_[h]^[n] (∑ k ∈ s, f k) = ∑ k ∈ s, Δ_[h]^[n] (f k) := by
   simpa only [coe_fwdDiffₗ_pow] using map_sum (fwdDiffₗ M G h ^ n) f s
 
-section newton_formulae
+section NewtonFormulae
 
 /--
 Express the `n`-th forward difference of `f` at `y` in terms of the values `f (y + k)`, for
@@ -159,7 +161,7 @@ theorem shift_eq_sum_fwdDiff_iter (f : M → G) (n : ℕ) (y : M) :
   · rw [← shiftₗ_pow_apply h f, shiftₗ]
   · simp [Module.End.pow_apply, coe_fwdDiffₗ]
 
-end newton_formulae
+end NewtonFormulae
 
 section choose
 
@@ -194,7 +196,6 @@ lemma fwdDiff_addChar_eq {M R : Type*} [AddCommMonoid M] [Ring R]
     simp only [pow_succ, Function.iterate_succ_apply', fwdDiff, IH, ← mul_sub, mul_assoc]
     rw [sub_mul, ← AddChar.map_add_eq_mul, add_comm h x, one_mul]
 
-
 /-!
 ## Forward differences of Polynomials
 
@@ -211,7 +212,8 @@ where the step size `h` is `1`. We prove several key results:
   polynomial sequence `∑_{i=0..p} P(i)`, which generalizes **Faulhaber's formula**.
 -/
 
-open fwdDiff
+
+open fwdDiff Polynomial
 variable {R : Type*} [CommRing R]
 
 /--
@@ -220,13 +222,13 @@ This is a building block for showing that the `(p+1)`-th difference of a polynom
 degree `p` is zero.
 -/
 theorem fwdDiff_iter_pow_eq_zero_of_lt {j n : ℕ} (h : j < n) :
-    ((fwdDiffₗ R R 1 ^ n) fun x ↦ x ^ j) = 0 := by
+    ((fwdDiffₗ R[X] R[X] 1 ^ n) fun X ↦ X ^ j) = 0 := by
   induction n generalizing j with
   | zero => contradiction
   | succ n ih =>
     rw [pow_succ, Module.End.mul_apply]
-    have : ((fwdDiffₗ R R 1) fun x ↦ x ^ j) =
-        ∑ i ∈ Finset.range j, j.choose i • fun x : R ↦ x ^ i := by
+    have : ((fwdDiffₗ R[X] R[X] 1) fun X ↦ X ^ j) =
+        ∑ i ∈ Finset.range j, j.choose i • fun X ↦ X ^ i := by
       ext x
       simp only [fwdDiffₗ_apply, nsmul_eq_mul, sum_apply, Pi.mul_apply, Pi.natCast_apply, fwdDiff,
         add_pow, one_pow, Finset.sum_range_succ, mul_one, choose_self, cast_one,
@@ -238,90 +240,96 @@ theorem fwdDiff_iter_pow_eq_zero_of_lt {j n : ℕ} (h : j < n) :
 
 /-- The `n`-th forward difference of `x ↦ x^n` is the constant function `n!`. -/
 theorem fwdDiff_iter_eq_factorial {n : ℕ} :
-    ((fwdDiffₗ R R 1 ^ n) fun x ↦ x ^ n) = (fun _ ↦ (n.factorial : R))  := by
+    ((fwdDiffₗ R[X] R[X] 1 ^ n) fun X ↦ X ^ n) = (fun _ ↦ (n.factorial : R[X]))  := by
   induction n with
   | zero => simp only [pow_zero, Module.End.one_apply, factorial_zero, cast_one]
   | succ n ih =>
     simp at ih
     rw [pow_succ, Module.End.mul_apply]
-    have : ((fwdDiffₗ R R 1) fun x ↦ x ^ (n + 1)) =
-        ∑ k ∈ Finset.range (n + 1), (n + 1).choose k • fun x : R ↦ x ^ k := by
-      ext x
+    have : ((fwdDiffₗ R[X] R[X] 1) fun X ↦ X ^ (n + 1)) =
+        ∑ k ∈ Finset.range (n + 1), (n + 1).choose k • fun X : R[X] ↦ X ^ k := by
+      ext X
       simp only [fwdDiffₗ_apply, nsmul_eq_mul, sum_apply, Pi.mul_apply, Pi.natCast_apply,
         fwdDiff, add_pow, one_pow, Finset.sum_range_succ, Nat.choose_self, cast_one, mul_one,
         add_sub_assoc, sub_self, add_zero]
       simp only [choose_succ_self_right, cast_add, cast_one, mul_comm]
-    rw [this, map_sum, Nat.factorial_succ, Nat.cast_mul]; ext x
-    rw [funext_iff] at ih
-    simp only [← ih x, Finset.sum_range_succ, choose_succ_self_right, cast_add, cast_one]
-    have : (fwdDiffₗ R R 1 ^ n) ((n + 1) • fun x ↦ x ^ n) =
-      ((n : R → R) + 1) * (fwdDiffₗ R R 1 ^ n) fun x ↦ x ^ n := by
+    rw [this, map_sum, Nat.factorial_succ, Nat.cast_mul]
+    simp only [Finset.sum_range_succ, choose_succ_self_right, cast_add, cast_one]
+    have : (fwdDiffₗ R[X] R[X] 1 ^ n) ((n + 1) • fun X ↦ X ^ n) =
+      (n + 1) * (fwdDiffₗ R[X] R[X] 1 ^ n) fun X ↦ X ^ n := by
       rw [map_nsmul]
       simp only [nsmul_eq_mul, cast_add, cast_one]
-    simp only [this, Pi.add_apply, sum_apply, Pi.mul_apply,
-      Pi.natCast_apply, Pi.one_apply, add_eq_right]
+    simp only [this]
+    rw [ih, Pi.mul_def]
+    simp only [Pi.add_apply, Pi.natCast_apply, Pi.one_apply, add_eq_right]
     exact Finset.sum_eq_zero fun i hi ↦ have _ := Finset.mem_range.1 hi; by
-      rw [map_nsmul, fwdDiff_iter_pow_eq_zero_of_lt
-        (by linarith), Pi.smul_apply, Pi.zero_apply, smul_zero]
-
+      rw [coe_fwdDiffₗ_pow, fwdDiff_iter_const_smul]
+      rw [← coe_fwdDiffₗ_pow, fwdDiff_iter_pow_eq_zero_of_lt (by linarith), smul_zero]
 
 /--
 The `(n+1)`-th forward difference of a polynomial of degree at most `n` is zero.
 A polynomial `P(x) = ∑_{k=0..n} aₖ xᵏ` has `Δ^[n+1] P = 0`.
 -/
-theorem fwdDiff_iter_succ_sum_eq_zero {n : ℕ} (a : ℕ → R):
-    ((fwdDiffₗ R R 1 ^ (n + 1)) fun x ↦ ∑ k ∈ Finset.range (n + 1), a k * (x ^ k)) = 0 := by
+theorem fwdDiff_iter_succ_sum_eq_zero {n : ℕ} (P : R[X]):
+    ((fwdDiffₗ R[X] R[X] 1 ^ (n + 1)) fun X ↦ ∑ k ∈ Finset.range (n + 1), P • X ^ k) = 0 := by
   induction n with
   | zero =>
     unfold fwdDiffₗ
-    simp; ext x
+    simp; ext X
     simp only [Pi.zero_apply]
   | succ n ih =>
     rw [pow_succ, Module.End.mul_apply]
-    have : ((fwdDiffₗ R R 1 ^ (n + 1)) (fun x => ∑ k ∈ range (n + 1), a k * x ^ k)) =
-      ∑ k ∈ range (n + 1), (fwdDiffₗ R R 1 ^ (n + 1))
-      ((fun x : R ↦ a k) * (fun x : R ↦  x ^ k)) := by
-      ext x; simp
-      have : (fun x => ∑ k ∈ range (n + 1), a k * x ^ k) =
-        (∑ k ∈ range (n + 1), fun x => a k * x ^ k) := by
-        ext x; simp only [Finset.sum_apply]
-      simp only [this, map_sum, sum_apply]
-      congr 1
+    have : ((fwdDiffₗ R[X] R[X] 1 ^ (n + 1)) (fun X => ∑ k ∈ range (n + 1), P • X ^ k)) =
+      ∑ k ∈ range (n + 1), (fwdDiffₗ R[X] R[X] 1 ^ (n + 1))
+      ((fun _ ↦ P) * (fun X ↦  X ^ k)) := by
+      simp
+      have : (fun X => ∑ k ∈ range (n + 1), P * X ^ k) =
+        (∑ k ∈ range (n + 1), fun X => P * X ^ k) := by
+        ext X; simp only [Finset.sum_apply]
+      simp only [this, map_sum, Pi.mul_def]
     rw [this] at ih
-    have : ((fwdDiffₗ R R 1) fun x ↦ ∑ k ∈ range (n + 1 + 1), a k * x ^ k) =
-      ∑ k ∈ range (n + 1 + 1), a k • (fun x : R ↦  (x + 1) ^ k) -
-      ∑ k ∈ range (n + 1 + 1),a k • fun x : R ↦ x ^ k := by
-      ext x; simp
+    have : ((fwdDiffₗ R[X] R[X] 1) fun X ↦ ∑ k ∈ range (n + 1 + 1), P • X ^ k) =
+      ∑ k ∈ range (n + 1 + 1), P • (fun (X : R[X]) ↦ (X + 1) ^ k) -
+        ∑ k ∈ range (n + 1 + 1), P • fun (X : R[X]) ↦ X ^ k := by
+      simp
+      rw [coe_fwdDiffₗ]
       unfold fwdDiff
-      rfl
+      ext X
+      simp only [Polynomial.coeff_sub, finset_sum_coeff, Pi.sub_apply, sum_apply, Pi.smul_apply,
+        smul_eq_mul]
     rw [this]
     simp only [map_sub, map_sum, coe_fwdDiffₗ_pow]
-    ext x
+    ext X
     rw [Finset.sum_range_succ]
     nth_rw 2 [Finset.sum_range_succ]
     simp only [fwdDiff_iter_const_smul, Pi.sub_apply, Pi.add_apply, sum_apply, Pi.smul_apply,
       smul_eq_mul]
     rw [← add_sub, ← coe_fwdDiffₗ_pow]
-    have : ((fwdDiffₗ R R 1 ^ (n + 1)) fun x => x ^ (n + 1)) (x + 1) =
-        ((fwdDiffₗ R R 1 ^ (n + 1)) fun x => (x + 1) ^ (n + 1)) x := by
-      simp only [coe_fwdDiffₗ_pow, fwdDiff_iter_eq_sum_shift, fwdDiff_iter_eq_sum_shift,
-        Int.reduceNeg, nsmul_eq_mul, mul_one, zsmul_eq_mul, Int.cast_mul, Int.cast_pow,
-        Int.cast_neg, Int.cast_one, Int.cast_natCast,
-        add_assoc (b := (1 : R)), add_comm (a := (1 : R)), ← add_assoc]
-    simp only [← this, fwdDiff_iter_eq_factorial (n := n + 1) (R := R), sub_add_cancel_right, ←
+    have : ((fwdDiffₗ R[X] R[X] 1 ^ (n + 1)) fun X => X ^ (n + 1)) (X + 1) =
+        ((fwdDiffₗ R[X] R[X] 1 ^ (n + 1)) fun X => (X + 1) ^ (n + 1)) X := by
+      rw [coe_fwdDiffₗ_pow, fwdDiff_iter_eq_sum_shift, fwdDiff_iter_eq_sum_shift]
+      congr 1; ext k
+      rw [add_assoc (b := (1 : R[X])), add_comm (a := (1 : R[X])), ← add_assoc]
+    rw [← this, fwdDiff_iter_eq_factorial, sub_add_cancel_right, ←
       sub_eq_add_neg, ← Finset.sum_sub_distrib]
+    simp
+    rw [← Finset.sum_sub_distrib]
     exact Finset.sum_eq_zero fun k hk ↦ have _ := Finset.mem_range.1 hk; by
-      rw [← mul_sub, fwdDiff_iter_pow_eq_zero_of_lt (by linarith) ]
-      simp only [Pi.zero_apply, sub_zero]
-      have : (fwdDiffₗ R R 1 ^ (n + 1)) (fun x => (x + 1) ^ k) x =
-      (fwdDiffₗ R R 1 ^ (n + 1)) (fun x => x ^ k) (x + 1) := by
+      rw [fwdDiff_iter_pow_eq_zero_of_lt (by linarith) ]
+      simp only [Pi.zero_apply]
+      have : (fwdDiffₗ R[X] R[X] 1 ^ (n + 1)) (fun X => (X + 1) ^ k) X =
+      (fwdDiffₗ R[X] R[X] 1 ^ (n + 1)) (fun X => X ^ k) (X + 1) := by
         rw [coe_fwdDiffₗ_pow, fwdDiff_iter_eq_sum_shift, fwdDiff_iter_eq_sum_shift]
         congr 1; ext k
         simp only [Int.reduceNeg, nsmul_eq_mul, mul_one,
           zsmul_eq_mul, Int.cast_mul, Int.cast_pow, Int.cast_neg, Int.cast_one, Int.cast_natCast]
-        ring
+        ring_nf
       rw [this, fwdDiff_iter_pow_eq_zero_of_lt (by linarith)]
-      simp only [Pi.zero_apply, mul_zero]
+      simp only [Pi.zero_apply, mul_zero, coeff_zero, sub_self]
+
+
+
+
 
 /--
 **Newton's series** for a polynomial function.
@@ -329,42 +337,42 @@ Any function `f` defined by a polynomial can be expressed as a sum of its forwar
 differences at `0`, weighted by binomial coefficients.
 `f(x) = ∑_{k=0..p} (p choose k) * (Δ^k f)(0)`.
 -/
-theorem sum_range_choose_mul_fwdDiff_iter_at_zero {n p : ℕ} (a : ℕ → R):
-    ∑ k ∈ Finset.range (n + 1), a k * (p ^ k) =
-    ∑ k ∈ Finset.range (p + 1), p.choose k *
-      ((fwdDiffₗ R R 1 ^ k) fun x ↦ ∑ k ∈ Finset.range (n + 1), a k * (x ^ k)) 0 := by
+theorem sum_range_choose_mul_fwdDiff_iter_at_zero {n p : ℕ} (P : R[X]):
+    ∑ k ∈ Finset.range (n + 1), P * (p ^ k) = ∑ k ∈ Finset.range (p + 1), p.choose k *
+      ((fwdDiffₗ R[X] R[X] 1 ^ k) fun x ↦ ∑ k ∈ Finset.range (n + 1), P * (x ^ k)) 0 := by
   obtain h := shift_eq_sum_fwdDiff_iter (n := p) (y := 0)
-    (f := (fun x => ∑ i ∈ Finset.range (n + 1), a i * (x ^ i))) (h := 1)
+    (f := (fun x => ∑ i ∈ Finset.range (n + 1), P * (x ^ i))) (h := 1)
   simp only [mul_one, zero_add, nsmul_eq_mul] at h
   rw [h]
   exact Finset.sum_congr rfl fun k hk ↦ by
     have _ := Finset.mem_range.1 hk
     congr 1
     simp only [coe_fwdDiffₗ_pow, fwdDiff_iter_eq_sum_shift, Int.reduceNeg, nsmul_eq_mul,
-      mul_one, zsmul_eq_mul, Int.cast_mul, Int.cast_pow, Int.cast_neg, Int.cast_one,
-      Int.cast_natCast]
+      mul_one, zsmul_eq_mul, Int.cast_mul, Int.cast_pow,
+      Int.cast_neg, Int.cast_one, Int.cast_natCast]
 
 /--
 A formula for the sum of a polynomial sequence `∑_{k=0..p} P(k)`, which
 generalizes **Faulhaber's formula**.
 -/
-theorem sum_sum_range_eq_sum_range_choose_mul_fwdDiff_iter_at_zero {p n : ℕ} (a : ℕ → R) :
-    ∑ k ∈ Finset.range (p + 1), (∑ m ∈ Finset.range (n + 1), a m * k ^ m) =
+theorem sum_sum_range_eq_sum_range_choose_mul_fwdDiff_iter_at_zero {p n : ℕ} (P : R[X]) :
+    ∑ k ∈ Finset.range (p + 1), (∑ m ∈ Finset.range (n + 1), P * k ^ m) =
     ∑ k ∈ Finset.range (p + 1), ((p + 1).choose (k + 1)) *
-      (((fwdDiffₗ R R 1 ^ k) fun y ↦ ∑ i ∈ Finset.range (n + 1), a i * y ^ i) 0) := by
+      (((fwdDiffₗ R[X] R[X] 1 ^ k) fun y ↦ ∑ i ∈ Finset.range (n + 1), P * y ^ i) 0) := by
   conv => enter [1, 2, x]; rw [sum_range_choose_mul_fwdDiff_iter_at_zero]; simp
   have sum_extend_inner_range : ∑ x ∈ Finset.range (p + 1), ∑ k ∈ Finset.range (x + 1),
-    ↑(x.choose k) * ((fwdDiffₗ R R 1 ^ k) fun x ↦ ∑ m ∈ Finset.range (n + 1), a m * ↑x ^ m) 0 =
+     (x.choose k) * ((fwdDiffₗ R[X] R[X] 1 ^ k) fun x ↦ ∑ m ∈ Finset.range (n + 1), P * x ^ m) 0 =
     ∑ x ∈ Finset.range (p + 1), ∑ k ∈ Finset.range (p + 1),
-    ↑(x.choose k) * ((fwdDiffₗ R R 1 ^ k) fun x ↦ ∑ m ∈ Finset.range (n + 1), a m * ↑x ^ m) 0 := by
+     (x.choose k) * ((fwdDiffₗ R[X] R[X] 1 ^ k) fun x ↦
+      ∑ m ∈ Finset.range (n + 1), P * x ^ m) 0 := by
     apply Finset.sum_congr rfl
     intro x hx
-    have sum_sum_eq_zero : ∑ k ∈ Finset.Ico (x + 1) (p + 1), ↑(x.choose k) *
-      ((fwdDiffₗ R R 1 ^ k) fun x ↦ ∑ m ∈ Finset.range (n + 1), a m * x ^ m) 0 = 0 := by
+    have sum_sum_eq_zero : ∑ k ∈ Finset.Ico (x + 1) (p + 1), (x.choose k) *
+      ((fwdDiffₗ R[X] R[X] 1 ^ k) fun x ↦ ∑ m ∈ Finset.range (n + 1), P * x ^ m) 0 = 0 := by
       rw [Finset.sum_Ico_eq_sum_range]
       simp
       simp at hx
-      have : ∑ k ∈ Finset.range (p - x), 0 = (0 : R) := by simp only [Finset.sum_const_zero]
+      have : ∑ k ∈ Finset.range (p - x), 0 = (0 : R[X]) := by simp only [Finset.sum_const_zero]
       rw [← this]
       apply Finset.sum_congr rfl
       intro y hy; simp only [mem_range] at hy
