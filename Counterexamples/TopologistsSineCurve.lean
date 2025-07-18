@@ -14,8 +14,8 @@ closure of the set `{ (x, sin x⁻¹) | x ∈ Ioi 0 }`.
 
 ## Main results
 
-* `TopologistsSineCurve.T_is_conn`: the set `T` is connected.
-* `TopologistsSineCurve.T_is_not_path_conn`: the set `T` is not path-connected.
+* `TopologistsSineCurve.isConnected_T`: the set `T` is connected.
+* `TopologistsSineCurve.not_isPathConnected_T`: the set `T` is not path-connected.
 
 This formalization is part of the UniDistance Switzerland bachelor thesis of Daniele Bolla. A
 similar result has also been independently formalized by Vlad Tsyrklevich
@@ -125,12 +125,12 @@ private lemma norm_ge_abs_snd {a b : ℝ} : |b| ≤ ‖(a, b)‖ := by simp
 private lemma exists_unitInterval_gt {t₀ : unitInterval} (ht₀ : t₀ < 1) {δ : ℝ} (hδ : 0 < δ) :
     ∃ t₁, t₀ < t₁ ∧ dist t₀ t₁ < δ := by
   let s₀ := (t₀ : ℝ) -- t₀ is in unitInterval
-  let s₁ := min (s₀ + δ/2) 1
-  have h_s₀_delta_pos : 0 ≤ s₀ + δ/2 := add_nonneg t₀.2.1 (by positivity)
+  let s₁ := min (s₀ + δ / 2) 1
+  have h_s₀_delta_pos : 0 ≤ s₀ + δ / 2 := add_nonneg t₀.2.1 (by positivity)
   have hs₁ : 0 ≤ s₁ := le_min h_s₀_delta_pos zero_le_one
   have hs₁': s₁ ≤ 1 := min_le_right ..
   refine ⟨⟨s₁, hs₁, hs₁'⟩, lt_min ((lt_add_iff_pos_right _).mpr (half_pos hδ)) ht₀, ?_⟩
-  have h_le : s₁ ≤ s₀ + δ/2 := min_le_left _ _
+  have h_le : s₁ ≤ s₀ + δ / 2 := min_le_left _ _
   have h_ge : s₀ ≤ s₁ := le_min (by linarith) t₀.2.2
   rw [Subtype.dist_eq, dist_comm, dist_eq, abs_of_nonneg (by linarith)]
   linarith
@@ -145,13 +145,13 @@ private lemma mem_S_of_x_pos {p : ℝ × ℝ} (hx : 0 < p.1) (hT : p ∈ T) : p.
 /-- For any `0 < a` and any `y ∈ Icc (-1) 1`, we can find `x ∈ Ioc a 0` with `sin x⁻¹ = y`. -/
 lemma exists_mem_Ioc_of_y {y : ℝ} (hy : y ∈ Icc (-1) 1) {a : ℝ} (ha : 0 < a) :
     ∃ x ∈ Ioc 0 a, sin x⁻¹ = y := by
-  obtain ⟨N, h_dist⟩ := (Metric.tendsto_nhds.mp (xSeq_tendsto y) (a/2) (by positivity)).exists
+  obtain ⟨N, h_dist⟩ := (Metric.tendsto_nhds.mp (xSeq_tendsto y) (a / 2) (by positivity)).exists
   refine ⟨xSeq y N, ⟨xSeq_pos y N, ?_⟩, sin_inv_xSeq hy _⟩
   rw [dist_eq, sub_zero, abs_of_pos (xSeq_pos _ N)] at h_dist
   linarith
 
 /-- The set `T` is not path-connected. -/
-theorem T_is_not_path_conn : ¬ IsPathConnected T := by
+theorem not_isPathConnected_T : ¬ IsPathConnected T := by
   -- **Step 1**:
   -- Assume for contradiction we have a path from `z = (0, 0)` to `w = (1, sin 1)`.
   -- Let t₀ be the last time the path is on the y-axis. By continuity of the path, we
