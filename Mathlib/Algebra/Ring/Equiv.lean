@@ -925,11 +925,6 @@ theorem isDomain_iff {A B : Type*} [Semiring A] [Semiring B] (e : A ≃* B) :
   mp _ := e.symm.isDomain
   mpr _ := e.isDomain
 
-theorem isDomain_iff {A B : Type*} [Semiring A] [Semiring B] (e : A ≃* B) :
-    IsDomain A ↔ IsDomain B where
-  mp _ := e.symm.isDomain
-  mpr _ := e.isDomain
-
 variable {A B : Type*} [MulZeroClass A] [MulZeroClass B]
 
 theorem noZeroDivisors_iff (e : A ≃* B) : NoZeroDivisors A ↔ NoZeroDivisors B where
