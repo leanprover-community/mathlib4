@@ -127,7 +127,7 @@ theorem IsPositive.smul_of_nonneg {T : E →ₗ[𝕜] E} (hT : T.IsPositive) {c 
   have hc' : starRingEnd 𝕜 c = c := by
     simp [conj_eq_iff_im, ← (le_iff_re_im.mp hc).right]
   apply And.intro
-  · exact IsSymmetric.smul hc' hT.left
+  · exact hT.left.smul hc'
   · intro x
     rw [smul_apply, inner_smul_left, hc', mul_re, conj_eq_iff_im.mp hc', zero_mul, sub_zero]
     exact mul_nonneg ((re_nonneg_of_nonneg hc').mpr hc) (re_inner_nonneg_left hT x)
