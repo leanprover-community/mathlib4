@@ -89,17 +89,22 @@ lemma StrictMono.exists_between_of_tendsto_atTop {β : Type*} [LinearOrder β] {
   simp only [not_le] at h' hx
   exact ⟨Nat.find h - 1, h' _ (by simp [hx]), by simp [Nat.find_spec h, hx]⟩
 
-lemma ENNReal.tsum_ofReal_exp_lt_top {c : ℝ} (hc : c < 0) {f : ℕ → ℝ} (hf : ∀ i, i ≤ f i) :
-    ∑' i, .ofReal (rexp (c * f i)) < ∞ := by
-  calc ∑' i, .ofReal (rexp (c * f i))
-  _ ≤ ∑' i : ℕ, .ofReal (rexp (i * c)) := by
-    simp_rw [mul_comm _ c]
-    refine ENNReal.tsum_le_tsum fun i ↦ ENNReal.ofReal_le_ofReal ?_
-    refine Real.exp_monotone ?_
-    exact mul_le_mul_of_nonpos_left (mod_cast hf i) hc.le
-  _ < ∞ := by
-    have h_sum : Summable fun i : ℕ ↦ rexp (i * c) := Real.summable_exp_nat_mul_iff.mpr hc
-    simp [← ENNReal.ofReal_tsum_of_nonneg (fun _ ↦ by positivity) h_sum]
+lemma Summable.tsum_ofReal_lt_top {ι : Type*} {f : ι → ℝ} (hf : Summable f) :
+    ∑' i, .ofReal (f i) < ∞ := by
+  unfold ENNReal.ofReal
+  rw [lt_top_iff_ne_top, ENNReal.tsum_coe_ne_top_iff_summable]
+  exact hf.toNNReal
+
+lemma Summable.tsum_ofReal_ne_top {ι : Type*} {f : ι → ℝ} (hf : Summable f) :
+    ∑' i, .ofReal (f i) ≠ ∞ := hf.tsum_ofReal_lt_top.ne
+
+lemma Real.summable_exp_nat_mul_of_ge {c : ℝ} (hc : c < 0) {f : ℕ → ℝ} (hf : ∀ i, i ≤ f i) :
+    Summable fun i : ℕ ↦ rexp (c * f i) := by
+  refine Summable.of_nonneg_of_le (fun _ ↦ by positivity) ?_ (Real.summable_exp_nat_mul_iff.mpr hc)
+  intro i
+  refine Real.exp_monotone ?_
+  conv_rhs => rw [mul_comm]
+  exact mul_le_mul_of_nonpos_left (hf i) hc.le
 
 lemma inv_sqrt_two_sub_one : (√2 - 1)⁻¹ = √2 + 1 := by
   rw [← one_div, div_eq_iff (sub_ne_zero_of_ne (by simp))]
@@ -533,7 +538,8 @@ lemma exists_integrable_exp_sq_of_map_rotation_eq_self' [IsProbabilityMeasure μ
   -- `⊢ ∫⁻ x, ENNReal.ofReal (rexp (logRatio c * a⁻¹ ^ 2 * ‖x‖ ^ 2)) ∂μ < ∞`
   refine (lintegral_exp_mul_sq_norm_le_of_map_rotation_eq_self h_rot le_rfl ha_gt).trans_lt ?_
   refine ENNReal.add_lt_top.mpr ⟨ENNReal.ofReal_lt_top, ?_⟩
-  refine ENNReal.tsum_ofReal_exp_lt_top ?_ (fun i ↦ mod_cast (Nat.lt_pow_self (by simp)).le)
+  refine Summable.tsum_ofReal_lt_top <|
+    Real.summable_exp_nat_mul_of_ge ?_ (fun i ↦ mod_cast (Nat.lt_pow_self (by simp)).le)
   refine mul_neg_of_neg_of_pos (by simp) (Real.log_pos ?_)
   change 1 < (c / (1 - c)).toReal
   simp only [ENNReal.toReal_div, one_lt_div_iff, ENNReal.toReal_pos_iff, tsub_pos_iff_lt, hc_lt,
