@@ -130,15 +130,15 @@ theorem mul_apply_add_eq_mul_of_uniqueAdd [Add A] {f g : R[A]} {a0 b0 : A}
   MonoidAlgebra.mul_apply_mul_eq_mul_of_uniqueMul (A := Multiplicative A) h
 
 instance instNoZeroDivisorsOfUniqueSums [NoZeroDivisors R] [Add A] [UniqueSums A] :
-    NoZeroDivisors R[A] := MonoidAlgebra.instNoZeroDivisorsOfUniqueProds (A := Multiplicative A)
+    NoZeroDivisors R[A] := inferInstanceAs (NoZeroDivisors (MonoidAlgebra R (Multiplicative A)))
 
 instance instIsLeftCancelMulZeroOfUniqueSums [IsCancelAdd R] [IsLeftCancelMulZero R] [Add A]
     [UniqueSums A] : IsLeftCancelMulZero R[A] :=
-  MonoidAlgebra.instIsLeftCancelMulZeroOfUniqueProds (A := Multiplicative A)
+  inferInstanceAs (IsLeftCancelMulZero (MonoidAlgebra R (Multiplicative A)))
 
 instance instIsRightCancelMulZeroOfUniqueSums [IsCancelAdd R] [IsRightCancelMulZero R] [Add A]
     [UniqueSums A] : IsRightCancelMulZero R[A] :=
-  MonoidAlgebra.instIsRightCancelMulZeroOfUniqueProds (A := Multiplicative A)
+  inferInstanceAs (IsRightCancelMulZero (MonoidAlgebra R (Multiplicative A)))
 
 instance instIsCancelMulZeroOfUniqueSums [IsCancelAdd R] [IsCancelMulZero R] [Add A]
     [UniqueSums A] : IsCancelMulZero R[A] where
