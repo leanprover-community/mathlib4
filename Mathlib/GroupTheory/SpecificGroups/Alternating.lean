@@ -111,9 +111,13 @@ theorem alternatingGroup.index_eq_two [Nontrivial α] :
 theorem alternatingGroup.index_eq_one [Subsingleton α] : (alternatingGroup α).index = 1 := by
   rw [Subgroup.index_eq_one]; apply Subsingleton.elim
 
+theorem two_mul_nat_card_alternatingGroup [Nontrivial α] :
+    2 * Nat.card (alternatingGroup α) = Nat.card (Perm α) := by
+  simp only [← alternatingGroup.index_eq_two (α := α), index_mul_card]
+
 theorem two_mul_card_alternatingGroup [Nontrivial α] :
     2 * card (alternatingGroup α) = card (Perm α) := by
-  simp only [← Nat.card_eq_fintype_card, ← alternatingGroup.index_eq_two (α := α), index_mul_card]
+  simp only [← Nat.card_eq_fintype_card, two_mul_nat_card_alternatingGroup]
 
 theorem card_alternatingGroup [Nontrivial α] :
     card (alternatingGroup α) = (card α).factorial / 2 := by
@@ -122,6 +126,10 @@ theorem card_alternatingGroup [Nontrivial α] :
   rw [Nat.div_mul_cancel (Nat.dvd_factorial zero_lt_two _)]
   change 1 < card α
   rwa [one_lt_card_iff_nontrivial]
+
+theorem nat_card_alternatingGroup [Nontrivial α] :
+    Nat.card (alternatingGroup α) = (Nat.card α).factorial / 2 := by
+  simp only [Nat.card_eq_fintype_card, card_alternatingGroup]
 
 namespace alternatingGroup
 

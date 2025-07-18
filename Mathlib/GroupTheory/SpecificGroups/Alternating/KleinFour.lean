@@ -102,8 +102,7 @@ theorem card_of_four (hα4 : Nat.card α = 4) :
   have : Nontrivial α := by
     rw [← Finite.one_lt_card_iff_nontrivial, hα4]
     norm_num
-  rw [Nat.card_eq_fintype_card, card_alternatingGroup,
-    ← Nat.card_eq_fintype_card, hα4]
+  rw [nat_card_alternatingGroup, hα4]
   decide
 
 theorem card_two_sylow_of_four (hα4 : Nat.card α = 4) (S : Sylow 2 (alternatingGroup α)) :
