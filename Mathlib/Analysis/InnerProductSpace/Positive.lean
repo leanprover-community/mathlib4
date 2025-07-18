@@ -399,7 +399,7 @@ theorem IsPositive.of_isStarProjection {T : E →ₗ[𝕜] E} (hT : IsStarProjec
   apply (T.isPositive_toContinuousLinearMap_iff).mp
     (ContinuousLinearMap.IsPositive.of_isStarProjection
     ⟨?_, (isSelfAdjoint_toContinuousLinearMap_iff _).mpr hT.isSelfAdjoint⟩)
-  simp [IsIdempotentElem, ContinuousLinearMap.ext_iff,  ← Module.End.mul_apply,
+  simp [IsIdempotentElem, ContinuousLinearMap.ext_iff, ← Module.End.mul_apply,
     hT.isIdempotentElem.eq]
 
 /-- An idempotent operator is positive if and only if it is self-adjoint. -/
