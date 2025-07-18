@@ -5,10 +5,7 @@ Authors: Monica Omar
 -/
 import Mathlib.LinearAlgebra.TensorProduct.Basic
 import Mathlib.Analysis.InnerProductSpace.LinearMap
-import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.LinearAlgebra.TensorProduct.Finiteness
-import Mathlib.LinearAlgebra.Contraction
-import Mathlib.Analysis.InnerProductSpace.l2Space
+import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-!
 
