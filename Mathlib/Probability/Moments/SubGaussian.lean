@@ -770,11 +770,10 @@ lemma hasSubgaussianMGF_of_centered_mem_Icc [IsProbabilityMeasure μ] {a b : ℝ
 lemma hasSubgaussianMGF_of_mem_Icc [IsProbabilityMeasure μ] {a b : ℝ} (hm : AEMeasurable X μ)
     (hb : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
     HasSubgaussianMGF (fun ω ↦ X ω - μ[X]) ((‖b - a‖₊ / 2) ^ 2) μ := by
-  have : HasSubgaussianMGF (fun ω ↦ X ω - μ[X]) ((‖b - μ[X] - (a - μ[X])‖₊ / 2) ^ 2) μ := by
-    apply hasSubgaussianMGF_of_centered_mem_Icc (AEMeasurable.sub_const hm _)
-    · simp [integral_sub (Integrable.of_mem_Icc a b hm hb) (integrable_const _)]
-    · filter_upwards [hb] with ω hab using by simpa using hab
-  simpa using this
+  rw [← sub_sub_sub_cancel_right b a μ[X]]
+  apply hasSubgaussianMGF_of_centered_mem_Icc (hm.sub_const _)
+  · simp [integral_sub (Integrable.of_mem_Icc a b hm hb) (integrable_const _)]
+  · filter_upwards [hb] with ω hab using by simpa using hab
 
 end HoeffdingLemma
 
