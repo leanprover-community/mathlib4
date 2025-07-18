@@ -310,9 +310,6 @@ theorem head (hab : r a b) (hbc : ReflTransGen r b c) : ReflTransGen r a c := by
   | refl => exact refl.tail hab
   | tail _ hcd hac => exact hac.tail hcd
 
-instance : Trans r r (ReflTransGen r) where
-  trans hab hbc := head hab (single hbc)
-
 instance : Trans r (ReflTransGen r) (ReflTransGen r) :=
   ⟨head⟩
 
