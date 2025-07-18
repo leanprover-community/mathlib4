@@ -114,14 +114,13 @@ lemma isAffine_of_isAffineOpen_basicOpen (s : Set Γ(X, ⊤))
   constructor
   refine HasAffineProperty.of_iSup_eq_top (P := MorphismProperty.isomorphisms Scheme)
     (fun i : s ↦ ⟨PrimeSpectrum.basicOpen i.1, ?_⟩) ?_ (fun i ↦ ⟨?_, ?_⟩)
-  · show IsAffineOpen _
+  · change IsAffineOpen _
     simp only [← basicOpen_eq_of_affine]
     exact (isAffineOpen_top (Scheme.Spec.obj (op _))).basicOpen _
   · rw [PrimeSpectrum.iSup_basicOpen_eq_top_iff, Subtype.range_coe_subtype, Set.setOf_mem_eq, hs]
   · rw [Scheme.toSpecΓ_preimage_basicOpen]
     exact hs₂ _ i.2
-  · simp only [Functor.comp_obj, Functor.rightOp_obj, Scheme.Γ_obj, Scheme.Spec_obj, id_eq,
-      eq_mpr_eq_cast, Functor.id_obj, Opens.map_top, morphismRestrict_app]
+  · simp only [Opens.map_top, morphismRestrict_app]
     refine IsIso.comp_isIso' ?_ inferInstance
     convert isIso_ΓSpec_adjunction_unit_app_basicOpen i.1 using 0
     refine congr(IsIso ((ΓSpec.adjunction.unit.app X).app $(?_)))
@@ -150,7 +149,7 @@ instance : HasAffineProperty @IsAffineHom fun X _ _ _ ↦ IsAffine X where
       · exact fun _ _ _ ↦ id
     · intro X Y _ f r H
       have : IsAffine X := H
-      show IsAffineOpen _
+      change IsAffineOpen _
       rw [Scheme.preimage_basicOpen]
       exact (isAffineOpen_top X).basicOpen _
     · intro X Y _ f S hS hS'

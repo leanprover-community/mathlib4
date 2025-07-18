@@ -370,14 +370,20 @@ instance (priority := 1100) id : Algebra R R where
   toSMul := Mul.toSMul _
   __ := ({RingHom.id R with toFun x := x}).toAlgebra
 
+@[simp] lemma linearMap_self : Algebra.linearMap R R = .id := rfl
+
 variable {R A}
+
+@[simp] lemma algebraMap_self : algebraMap R R = .id _ := rfl
+lemma algebraMap_self_apply (x : R) : algebraMap R R x = x := rfl
 
 namespace id
 
-@[simp]
+@[deprecated algebraMap_self (since := "2025-07-17")]
 theorem map_eq_id : algebraMap R R = RingHom.id _ :=
   rfl
 
+@[deprecated algebraMap_self_apply (since := "2025-07-17")]
 theorem map_eq_self (x : R) : algebraMap R R x = x :=
   rfl
 

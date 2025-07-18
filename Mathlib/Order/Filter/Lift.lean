@@ -56,7 +56,9 @@ for the corresponding `mem_iff` statement formulated without using a sigma type.
 theorem HasBasis.lift {ι} {p : ι → Prop} {s : ι → Set α} {f : Filter α} (hf : f.HasBasis p s)
     {β : ι → Type*} {pg : ∀ i, β i → Prop} {sg : ∀ i, β i → Set γ} {g : Set α → Filter γ}
     (hg : ∀ i, (g (s i)).HasBasis (pg i) (sg i)) (gm : Monotone g) :
-    (f.lift g).HasBasis (fun i : Σi, β i => p i.1 ∧ pg i.1 i.2) fun i : Σi, β i => sg i.1 i.2 := by
+    (f.lift g).HasBasis
+      (fun i : Σ i, β i => p i.1 ∧ pg i.1 i.2)
+      fun i : Σ i, β i => sg i.1 i.2 := by
   refine ⟨fun t => (hf.mem_lift_iff hg gm).trans ?_⟩
   simp [Sigma.exists, and_assoc, exists_and_left]
 
@@ -66,7 +68,7 @@ theorem mem_lift_sets (hg : Monotone g) {s : Set β} : s ∈ f.lift g ↔ ∃ t 
 
 theorem sInter_lift_sets (hg : Monotone g) :
     ⋂₀ { s | s ∈ f.lift g } = ⋂ s ∈ f, ⋂₀ { t | t ∈ g s } := by
-  simp only [sInter_eq_biInter, mem_setOf_eq, Filter.mem_sets, mem_lift_sets hg, iInter_exists,
+  simp only [sInter_eq_biInter, mem_setOf_eq, mem_lift_sets hg, iInter_exists,
     iInter_and, @iInter_comm _ (Set β)]
 
 theorem mem_lift {s : Set β} {t : Set α} (ht : t ∈ f) (hs : s ∈ g t) : s ∈ f.lift g :=
@@ -93,7 +95,7 @@ theorem tendsto_lift {m : γ → β} {l : Filter γ} :
 theorem map_lift_eq {m : β → γ} (hg : Monotone g) : map m (f.lift g) = f.lift (map m ∘ g) :=
   have : Monotone (map m ∘ g) := map_mono.comp hg
   Filter.ext fun s => by
-    simp only [mem_lift_sets hg, mem_lift_sets this, exists_prop, mem_map, Function.comp_apply]
+    simp only [mem_lift_sets hg, mem_lift_sets this, mem_map, Function.comp_apply]
 
 theorem comap_lift_eq {m : γ → β} : comap m (f.lift g) = f.lift (comap m ∘ g) := by
   simp only [Filter.lift, comap_iInf]; rfl
@@ -279,7 +281,7 @@ theorem lift_lift'_assoc {g : Set α → Set β} {h : Set β → Filter γ} (hg 
     (hh : Monotone h) : (f.lift' g).lift h = f.lift fun s => h (g s) :=
   calc
     (f.lift' g).lift h = f.lift fun s => (𝓟 (g s)).lift h := lift_assoc (monotone_principal.comp hg)
-    _ = f.lift fun s => h (g s) := by simp only [lift_principal, hh, eq_self_iff_true]
+    _ = f.lift fun s => h (g s) := by simp only [lift_principal, hh]
 
 theorem lift'_lift'_assoc {g : Set α → Set β} {h : Set β → Set γ} (hg : Monotone g)
     (hh : Monotone h) : (f.lift' g).lift' h = f.lift' fun s => h (g s) :=
@@ -326,7 +328,7 @@ theorem lift'_inf (f g : Filter α) {s : Set α → Set β} (hs : ∀ t₁ t₂,
     (f ⊓ g).lift' s = f.lift' s ⊓ g.lift' s := by
   rw [inf_eq_iInf, inf_eq_iInf, lift'_iInf hs]
   refine iInf_congr ?_
-  rintro (_|_) <;> rfl
+  rintro (_ | _) <;> rfl
 
 theorem lift'_inf_le (f g : Filter α) (s : Set α → Set β) :
     (f ⊓ g).lift' s ≤ f.lift' s ⊓ g.lift' s :=
@@ -353,7 +355,7 @@ theorem prod_same_eq : f ×ˢ f = f.lift' fun t : Set α => t ×ˢ t :=
 
 theorem tendsto_prod_self_iff {f : α × α → β} {x : Filter α} {y : Filter β} :
     Filter.Tendsto f (x ×ˢ x) y ↔ ∀ W ∈ y, ∃ U ∈ x, ∀ x x' : α, x ∈ U → x' ∈ U → f (x, x') ∈ W := by
-  simp only [tendsto_def, mem_prod_same_iff, prod_sub_preimage_iff, exists_prop]
+  simp only [tendsto_def, mem_prod_same_iff, prod_sub_preimage_iff]
 
 variable {α₁ : Type*} {α₂ : Type*} {β₁ : Type*} {β₂ : Type*}
 

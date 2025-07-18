@@ -577,7 +577,7 @@ theorem Subalgebra.topologicalClosure_comap_homeomorph (s : Subalgebra R A) {B :
     (w : (f : B → A) = f') : s.topologicalClosure.comap f = (s.comap f).topologicalClosure := by
   apply SetLike.ext'
   simp only [Subalgebra.topologicalClosure_coe]
-  simp only [Subalgebra.coe_comap, Subsemiring.coe_comap, AlgHom.coe_toRingHom]
+  simp only [Subalgebra.coe_comap]
   rw [w]
   exact f'.preimage_closure _
 
@@ -593,7 +593,7 @@ def Algebra.elemental (x : A) : Subalgebra R A :=
 
 namespace Algebra.elemental
 
-@[aesop safe apply (rule_sets := [SetLike])]
+@[aesop safe (rule_sets := [SetLike])]
 theorem self_mem (x : A) : x ∈ elemental R x :=
   le_topologicalClosure _ <| self_mem_adjoin_singleton R x
 

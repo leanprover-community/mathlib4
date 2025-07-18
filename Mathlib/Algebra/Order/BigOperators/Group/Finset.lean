@@ -43,8 +43,7 @@ theorem le_prod_nonempty_of_submultiplicative_on_pred (f : M → N) (p : M → P
     (Multiset.le_prod_nonempty_of_submultiplicative_on_pred f p h_mul hp_mul _ ?_ ?_) ?_
   · simp [hs_nonempty.ne_empty]
   · exact Multiset.forall_mem_map_iff.mpr hs
-  rw [Multiset.map_map]
-  rfl
+  simp
 
 /-- Let `{x | p x}` be an additive subsemigroup of an additive commutative monoid `M`. Let
 `f : M → N` be a map subadditive on `{x | p x}`, i.e., `p x → p y → f (x + y) ≤ f x + f y`. Let
@@ -87,10 +86,8 @@ add_decl_doc le_sum_of_subadditive_on_pred
 @[to_additive le_sum_of_subadditive]
 theorem le_prod_of_submultiplicative (f : M → N) (h_one : f 1 = 1)
     (h_mul : ∀ x y, f (x * y) ≤ f x * f y) (s : Finset ι) (g : ι → M) :
-    f (∏ i ∈ s, g i) ≤ ∏ i ∈ s, f (g i) := by
-  refine le_trans (Multiset.le_prod_of_submultiplicative f h_one h_mul _) ?_
-  rw [Multiset.map_map]
-  rfl
+    f (∏ i ∈ s, g i) ≤ ∏ i ∈ s, f (g i) :=
+  le_trans (Multiset.le_prod_of_submultiplicative f h_one h_mul _) (by simp)
 
 /-- If `f : M → N` is a subadditive function, `f (x + y) ≤ f x + f y`, `f 0 = 0`, and `g i`,
 `i ∈ s`, is a finite family of elements of `M`, then `f (∑ i ∈ s, g i) ≤ ∑ i ∈ s, f (g i)`. -/
@@ -385,7 +382,7 @@ theorem prod_le_prod_of_ne_one' (h : ∀ x ∈ s, f x ≠ 1 → x ∈ t) :
     _ ≤ ∏ x ∈ t, f x :=
       mul_le_of_le_one_of_le
         (prod_le_one' <| by simp only [mem_filter, and_imp]; exact fun _ _ ↦ le_of_eq)
-        (prod_le_prod_of_subset' <| by simpa only [subset_iff, mem_filter, and_imp] )
+        (prod_le_prod_of_subset' <| by simpa only [subset_iff, mem_filter, and_imp])
 
 end CanonicallyOrderedMul
 
@@ -565,7 +562,7 @@ theorem finset_sum_eq_sup_iff_disjoint [DecidableEq α] {i : Finset β} {f : β 
     i.sum f = i.sup f ↔ ∀ x ∈ i, ∀ y ∈ i, x ≠ y → Disjoint (f x) (f y) := by
   induction' i using Finset.cons_induction_on with z i hz hr
   · simp only [Finset.notMem_empty, IsEmpty.forall_iff, imp_true_iff, Finset.sum_empty,
-      Finset.sup_empty, bot_eq_zero, eq_self_iff_true]
+      Finset.sup_empty, bot_eq_zero]
   · simp_rw [Finset.sum_cons hz, Finset.sup_cons, Finset.mem_cons, Multiset.sup_eq_union,
       forall_eq_or_imp, Ne, not_true_eq_false, IsEmpty.forall_iff, true_and,
       imp_and, forall_and, ← hr, @eq_comm _ z]
