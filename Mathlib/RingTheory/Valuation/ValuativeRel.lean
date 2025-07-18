@@ -305,7 +305,6 @@ lemma _root_.ValuativeExtension.equiv_iff_equiv {A B : Type*} [CommRing A] [Comm
     [Algebra A B] [ValuativeRel A] [ValuativeRel B] [ValuativeExtension A B] {a b : A} :
     algebraMap A B a ∼ᵥ algebraMap A B b ↔ a ∼ᵥ b := by
   rw [equiv, equiv, ValuativeExtension.rel_iff_rel, ValuativeExtension.rel_iff_rel]
-variable (A B) in
 
 variable (R) in
 def equivCon : Con R where
