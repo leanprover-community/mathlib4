@@ -298,6 +298,23 @@ theorem iteratedDeriv_eq_iterate : iteratedDeriv n f = deriv^[n] f := by
   convert iteratedDerivWithin_eq_iterate (F := F)
   simp [derivWithin_univ]
 
+theorem iteratedDerivWithin_of_isOpen (hs : IsOpen s) :
+    Set.EqOn (iteratedDerivWithin n f s) (iteratedDeriv n f) s := by
+  unfold iteratedDerivWithin iteratedDeriv
+  intro x hx
+  simp_rw [iteratedFDerivWithin_of_isOpen n hs hx]
+
+theorem iteratedDerivWithin_congr_of_isOpen (f : 𝕜 → F) (n : ℕ) {s t : Set 𝕜} (hs : IsOpen s)
+    (ht : IsOpen t) : (s ∩ t).EqOn (iteratedDerivWithin n f s) (iteratedDerivWithin n f t) := by
+  intro r hr
+  rw [iteratedDerivWithin_of_isOpen hs hr.1, iteratedDerivWithin_of_isOpen ht  hr.2]
+
+theorem iteratedDerivWithin_of_isOpen_eq_iterate (hs : IsOpen s) :
+    EqOn (iteratedDerivWithin n f s) (deriv^[n] f) s := by
+  apply Set.EqOn.trans (iteratedDerivWithin_of_isOpen hs)
+  rw [iteratedDeriv_eq_iterate]
+  exact fun ⦃x⦄ ↦ congrFun rfl
+
 /-- The `n+1`-th iterated derivative can be obtained by taking the `n`-th derivative of the
 derivative. -/
 theorem iteratedDeriv_succ' : iteratedDeriv (n + 1) f = iteratedDeriv n (deriv f) := by
