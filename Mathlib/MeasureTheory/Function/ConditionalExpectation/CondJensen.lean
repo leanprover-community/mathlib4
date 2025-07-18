@@ -8,18 +8,19 @@ import Mathlib.Data.Int.Star
 import Mathlib.Data.Real.StarOrdered
 import Mathlib.GroupTheory.MonoidLocalization.Basic
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
-import Mathlib.Order.CompletePartialOrder
 import Mathlib.Topology.Algebra.Module.ModuleTopology
 import Mathlib.Topology.Compactness.PseudometrizableLindelof
 
 /-!
 # Conditional Jensen's Inequality
 
-This file contains the proof of the conditional Jensen's inequality.
+This file contains the conditional Jensen's inequality.
 
 ## Main Statement
 
-* `conditional_jensen`: the conditional Jensen's inequality.
+* `conditional_jensen`: the conditional Jensen's inequality: in a Banach space `X` with finite
+  measure `μ`, if `φ : X → ℝ` is a convex lower-semicontinuous function, then for any `f : α → X`
+  such that `f` and `φ ∘ f` are integrable, we have `φ (𝔼[f | m]) ≤ 𝔼[φ ∘ f | m]`.
 
 ## References
 
@@ -30,138 +31,11 @@ This file contains the proof of the conditional Jensen's inequality.
 open MeasureTheory ProbabilityTheory TopologicalSpace Set Metric ContinuousLinearMap RCLike
 open scoped ENNReal
 
-namespace RCLike
-
-/-- Lemma 1.2.9 in [Hytonen_VanNeerven_Veraar_Wies_2016]: a closed convex set is the intersection of
-  countably many half spaces in a separable space. -/
-theorem iInter_halfSpaces_eq_of_separableSpace {𝕜 E : Type*} {s : Set E}
-    [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [SeparableSpace E] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
-    (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) (hs₃ : s.Nonempty) :
-    ∃ (L : ℕ → E →L[𝕜] 𝕜) (c : ℕ → ℝ),
-    ⋂ (i : ℕ), {x | re ((L i) x) - c i ≥ 0} = s ∧
-    (sᶜ.Nonempty → ∀ i, ∃ x, re (L i x) ≠ 0) := by
-  cases eq_empty_or_nonempty sᶜ with
-  | inl hsc =>
-    exists (fun i ↦ 0)
-    exists (fun i ↦ 0)
-    simp only [zero_apply, map_zero, sub_self, le_refl, setOf_true, iInter_univ]
-    constructor
-    · exact (compl_empty_iff.mp hsc).symm
-    · rw [nonempty_iff_ne_empty]
-      intro ha
-      exact absurd hsc ha
-  | inr hsc =>
-    have nonemptys := Nonempty.to_subtype hsc
-    have issepsc : IsSeparable sᶜ := IsSeparable.of_separableSpace sᶜ
-    have sepsc : SeparableSpace ↑sᶜ := IsSeparable.separableSpace issepsc
-    let f := denseSeq ↑sᶜ
-    have φc : ∀ (i : ℕ), ∃ (φ : E →L[𝕜] 𝕜) (c : ℝ),
-      (∀ a ∈ ball ↑(f i) (infDist ↑(f i) s), re (φ a) < c) ∧ ∀ b ∈ s, c ≤ re (φ b) := by
-        intro i
-        have di : Disjoint (ball ↑(f i) (infDist ↑(f i) s)) s := disjoint_ball_infDist
-        apply geometric_hahn_banach_open (convex_ball ↑(f i)  (infDist ↑(f i) s)) isOpen_ball hs₁ di
-    choose L c hLc using φc
-    exists L
-    exists c
-    constructor
-    · ext x
-      simp only [ge_iff_le, sub_nonneg, mem_iInter, mem_setOf_eq]
-      constructor
-      · apply Function.mtr
-        simp only [not_forall, not_le]
-        intro hx
-        have pos : 0 < (infDist x s) / 2 := by
-          apply div_pos
-          exact (IsClosed.notMem_iff_infDist_pos hs₂ hs₃).mp hx
-          exact Nat.ofNat_pos
-        have hfi : ∃ (i : ℕ), dist ↑(f i) x < ((infDist x s) / 2) := by
-          simp only [← mem_compl_iff] at hx
-          have : ((ball ⟨x, hx⟩ ((infDist x s) / 2)) ∩ (range f)).Nonempty := by
-            apply Dense.inter_open_nonempty (denseRange_denseSeq ↑sᶜ)
-            exact isOpen_ball; exact nonempty_ball.mpr pos
-          simp only [nonempty_def] at this
-          rcases this with ⟨b, hb⟩
-          simp only [mem_inter_iff, mem_ball, mem_range] at hb
-          rcases hb.2 with ⟨i, hi⟩; use i
-          rw (config := {occs := .pos [1]}) [← hi] at hb; exact hb.1
-        rcases hfi with ⟨i, hi⟩
-        rw [dist_comm] at hi
-        have hfix : infDist ↑(f i) s ≥  ((infDist x s) / 2) := by
-          apply le_of_not_gt
-          intro hp
-          rcases (infDist_lt_iff hs₃).mp hp with ⟨y, hy1, hy2⟩
-          have hxy : dist x y < infDist x s :=
-            calc
-              dist x y ≤ dist x ↑(f i) + dist ↑(f i) y := dist_triangle x ↑(f i) y
-              _ < (infDist x s) / 2 + (infDist x s) / 2 := add_lt_add hi hy2
-              _ = infDist x s := by simp only [add_halves]
-          exact notMem_of_dist_lt_infDist hxy hy1
-        have hxfi : x ∈ (ball ↑(f i) (infDist ↑(f i) s)) := by
-          rw [mem_ball]
-          calc
-            dist x ↑(f i) < (infDist x s) / 2 := hi
-            _ ≤ infDist ↑(f i) s := hfix
-        exists i; apply (hLc i).1; exact hxfi
-      · intro hx i
-        exact ((hLc i).2 x hx)
-    · intro ha j
-      cases le_or_gt (c j) 0 with
-      | inl hl =>
-        use f j; apply ne_of_lt; apply lt_of_lt_of_le
-        · have : (⇑re ∘ ⇑(L j)) ↑(f j) < c j := by
-            apply (hLc j).1; apply mem_ball_self
-            have : ↑(f j) ∈ sᶜ := (f j).property
-            exact (IsClosed.notMem_iff_infDist_pos hs₂ hs₃).mp this
-          exact this
-        · exact hl
-      | inr hr =>
-        simp only [nonempty_def] at hs₃
-        rcases hs₃ with ⟨x, hxs⟩; use x
-        apply ne_of_gt; apply lt_of_lt_of_le
-        · exact hr
-        · have : c j ≤ (⇑re ∘ ⇑(L j)) x := by
-            apply (hLc j).2; exact hxs
-          exact this
-
-/-- Lemma 1.2.9 for product spaces. -/
-theorem iInter_halfSpaces_eq_of_separableSpace_prod {𝕜 E F : Type*} {s : Set (E × F)}
-    [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [SeparableSpace E] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
-    [NormedAddCommGroup F] [NormedSpace ℝ F]
-    [SeparableSpace F] [Module 𝕜 F] [ContinuousSMul 𝕜 F]
-    (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) (hs₃ : s.Nonempty) :
-    ∃ (L : ℕ → E →L[𝕜] 𝕜) (T : ℕ → F →L[𝕜] 𝕜) (c : ℕ → ℝ),
-    ⋂ (i : ℕ), {(x, y) | re ((L i) x) + re ((T i) y) - c i ≥ 0} = s
-    ∧ (sᶜ.Nonempty → ∀ i, ∃ (x : E), ∃ (y : F), (re ∘ L i) x + (re ∘ T i) y ≠ 0) := by
-  have lem1 : ∃ (LT : ℕ → (E × F) →L[𝕜] 𝕜) (c : ℕ → ℝ), ⋂ (i : ℕ), {x | re ((LT i) x) - c i ≥ 0} = s
-    ∧ (sᶜ.Nonempty → ∀ i, ∃ x, (re ∘ LT i) x ≠ 0) :=
-    iInter_halfSpaces_eq_of_separableSpace hs₁ hs₂ hs₃
-  rcases lem1 with ⟨LT, c, eq1, eq2⟩
-  exists fun i ↦ ((LT i).comp (inl 𝕜 E F))
-  exists fun i ↦ ((LT i).comp (inr 𝕜 E F))
-  exists c
-  have lem2 : ∀ (x : E), ∀ (y : F), (x, y) = (x, 0) + (0, y) := by
-    intro x y; simp only [Prod.mk_add_mk, add_zero, zero_add]
-  have lem3 : ∀ i, ∀ (x : E), ∀ (y : F), re ((LT i) (x, 0)) + re ((LT i) (0, y))
-     = re ((LT i) (x, y)) := by
-    intro i x y; simp only [lem2 x y, (LT i).map_add, re.map_add]
-  constructor
-  · rw [← eq1]; apply iInter_congr; intro i; ext ⟨x, y⟩
-    simp only [coe_comp', Function.comp_apply, inl_apply, inr_apply, ge_iff_le, sub_nonneg,
-      mem_setOf_eq]
-    rw [lem3]
-  · intro hsc i; rcases eq2 hsc i with ⟨z, hz⟩
-    use z.1; use z.2; simp only [coe_comp', Function.comp_apply, inl_apply, inr_apply, lem3]
-    exact hz
-
-end RCLike
-
 /-- Lemma 1.2.10 in [Hytonen_VanNeerven_Veraar_Wies_2016]: a convex lower-semicontinuous function
   is the supremum of a sequence of affine functions in a separable space. -/
 theorem ConvexOn.iSup_affine_eq_of_separableSpace {𝕜 E : Type*}
     [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [SeparableSpace E] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
+    [SecondCountableTopology E] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
     {φ : E → ℝ} (hφ_cvx : ConvexOn ℝ Set.univ φ) (hφ_cont : LowerSemicontinuous φ) :
     ∃ (L : ℕ → E →L[𝕜] 𝕜) (c : ℕ → ℝ),
     ∀ x, BddAbove (Set.range (fun i ↦ (re ((L i) x) + c i)))
@@ -196,7 +70,7 @@ theorem ConvexOn.iSup_affine_eq_of_separableSpace {𝕜 E : Type*}
     have lem : (0, ↑ (φ 0)) ∈ C := by
       simp only [mem_setOf_eq, ofReal_re, le_refl, C]
     exact nonempty_of_mem lem
-  rcases iInter_halfSpaces_eq_of_separableSpace_prod (𝕜 := 𝕜) hC₁ hC₂ hC₃
+  rcases iInter_nat_halfSpaces_eq_of_prod (𝕜 := 𝕜) hC₁ hC₂ (.of_separableSpace _)
     with ⟨L, T, c, hLTc1, hLTc2⟩
   have lem1 : ∀ i, ∀ y, (T i) y = ((T i) 1) * y := by
     intro i y
@@ -249,15 +123,17 @@ theorem ConvexOn.iSup_affine_eq_of_separableSpace {𝕜 E : Type*}
     | inl h1 =>
       have lem411 : ∀ x, c i ≤ re ((L i) x) := by
         intro x
-        have : re (@ofReal 𝕜 (by infer_instance) (φ x)) ≥ φ x := by simp only [ofReal_re, le_rfl]
+        have : re (@ofReal 𝕜 _ (φ x)) ≥ φ x := by simp only [ofReal_re, le_rfl]
         have := (lem2 x ↑(φ x)) this i
         simp only [h1, ← lem3 i, zero_mul, add_zero, sub_zero] at this; exact this
       have lem412: ∀ (y : 𝕜), re ((T i) y) = 0 := by
             intro y; rw [lem1 i, mul_re, h1, ← lem3 i, zero_mul, zero_mul, sub_zero]
-      have CcNonempty : Cᶜ.Nonempty := by
-          rw [nonempty_def]; use (0, @ofReal 𝕜 (by infer_instance) (φ 0 - 1))
-          simp only [mem_compl_iff, C, mem_setOf_eq, ofReal_re]; linarith
-      have P1 := hLTc2 CcNonempty i; simp only [← not_forall] at P1
+      have hC₄ : C ≠ univ := by
+        rw [ne_univ_iff_exists_notMem]
+        use (0, @ofReal 𝕜 _ (φ 0 - 1))
+        simp only [C, mem_setOf_eq, ofReal_re]
+        linarith
+      have P1 := hLTc2 hC₃ hC₄ i; simp only [← not_forall] at P1
       have P2 : ∀ (x : E) (y : 𝕜), (re ∘ L i) x + (re ∘ T i) y = 0 := by
         have P21: ∀ (x : E), re ((L i) x) = 0 := by
           have ge1 : {n | 1 ≤ n} ∈ Filter.atTop := by
@@ -363,7 +239,7 @@ theorem ConvexOn.iSup_affine_eq_of_separableSpace {𝕜 E : Type*}
       · intro hxs
         have : (x,s) ∈ C := by
           rw [← hLTc1]
-          simp only [ge_iff_le, sub_nonneg, mem_iInter, mem_setOf_eq]
+          simp only [mem_iInter, mem_setOf_eq]
           have hi : ∀i, (f x) i ≤ re s := by apply (ciSup_le_iff (hf x)).mp; use hxs
           intro i
           calc
@@ -474,7 +350,7 @@ theorem condExpL1_comp_affine {α 𝕜 E : Type*}
 
 /-- Conditional Jensen for separable spaces -/
 lemma conditional_jensen_of_separableSpace {α X : Type*}
-    [NormedAddCommGroup X] [NormedSpace ℝ X] [CompleteSpace X] [SeparableSpace X]
+    [NormedAddCommGroup X] [NormedSpace ℝ X] [CompleteSpace X] [SecondCountableTopology X]
     {m mα : MeasurableSpace α} (hm : m ≤ mα) {μ : Measure α} [IsFiniteMeasure μ]
     {φ : X → ℝ} (hφ_cvx : ConvexOn ℝ Set.univ φ) (hφ_cont : LowerSemicontinuous φ)
     {f : α → X} (hf_int : Integrable f μ) (hφ_int : Integrable (φ ∘ f) μ) :
@@ -504,10 +380,6 @@ lemma conditional_jensen_of_separableSpace {α X : Type*}
   rw [hy i]
   apply hw i
 
-lemma Measurable.codRestrict {Ω X : Type*} [MeasurableSpace Ω] [MeasurableSpace X] {f : Ω → X}
-    (hf : Measurable f) {s : Set X} (h : ∀ y, f y ∈ s) :
-    Measurable (codRestrict f s h) := hf.subtype_mk
-
 /-- Conditional Jensen's inequality. -/
 theorem conditional_jensen {α X : Type*}
     [NormedAddCommGroup X] [NormedSpace ℝ X] [CompleteSpace X]
@@ -521,9 +393,7 @@ theorem conditional_jensen {α X : Type*}
   rcases sep with ⟨t, ht, htt⟩
   let Y := (Submodule.span ℝ t).topologicalClosure
   have : CompleteSpace Y := (Submodule.isClosed_topologicalClosure _).completeSpace_coe
-  have issepY : IsSeparable Y.carrier := ht.span.closure
-  have : SeparableSpace Y := issepY.separableSpace
-  have : SecondCountableTopology Y := issepY.secondCountableTopology
+  have : SecondCountableTopology Y := ht.span.closure.secondCountableTopology
   let φY := φ ∘ Y.subtypeL
   have hφY_cvx : ConvexOn ℝ Set.univ φY :=
     hφ_cvx.comp_linearMap Y.subtype
