@@ -48,7 +48,7 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 namespace LinearMap
 
-/-- A linear map `T` of a Hilbert space is **positive** if it is symmetric and
+/-- A linear operator `T` on a Hilbert space is **positive** if it is symmetric and
   `∀ x, 0 ≤ re ⟪T x, x⟫`. -/
 def IsPositive (T : E →ₗ[𝕜] E) : Prop :=
   IsSymmetric T ∧ ∀ x, 0 ≤ re ⟪T x, x⟫
@@ -61,9 +61,8 @@ theorem IsPositive.re_inner_nonneg_left {T : E →ₗ[𝕜] E} (hT : IsPositive 
   hT.2 x
 
 theorem IsPositive.re_inner_nonneg_right {T : E →ₗ[𝕜] E} (hT : IsPositive T)
-    (x : E) : 0 ≤ re ⟪x, T x⟫ := by
-  rw [inner_re_symm]
-  exact hT.re_inner_nonneg_left x
+    (x : E) : 0 ≤ re ⟪x, T x⟫ :=
+  inner_re_symm (𝕜 := 𝕜) _ x ▸ hT.re_inner_nonneg_left x
 
 section Complex
 
@@ -71,7 +70,7 @@ variable {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace ℂ E']
 
 theorem isPositive_iff_complex (T : E' →ₗ[ℂ] E') :
     IsPositive T ↔ ∀ x, (re ⟪T x, x⟫_ℂ : ℂ) = ⟪T x, x⟫_ℂ ∧ 0 ≤ re ⟪T x, x⟫_ℂ := by
-  simp_rw [IsPositive, forall_and, LinearMap.isSymmetric_iff_inner_map_self_real,
+  simp_rw [IsPositive, forall_and, isSymmetric_iff_inner_map_self_real,
     conj_eq_iff_re, re_to_complex, Complex.coe_algebraMap]
 
 end Complex
@@ -88,13 +87,12 @@ theorem isPositive_iff (T : E →ₗ[𝕜] E) :
 
 open ComplexOrder in
 theorem IsPositive.inner_nonneg_left {T : E →ₗ[𝕜] E} (hT : IsPositive T) (x : E) : 0 ≤ ⟪T x, x⟫ :=
-  ((isPositive_iff T).mp hT).right x
+  (T.isPositive_iff.mp hT).right x
 
 open ComplexOrder in
 theorem IsPositive.inner_nonneg_right {T : E →ₗ[𝕜] E} (hT : IsPositive T) (x : E) :
-    0 ≤ ⟪x, T x⟫ := by
-  rw [← hT.isSymmetric]
-  exact hT.inner_nonneg_left x
+    0 ≤ ⟪x, T x⟫ :=
+  hT.isSymmetric _ _ ▸ hT.inner_nonneg_left x
 
 @[simp]
 theorem isPositive_zero : IsPositive (0 : E →ₗ[𝕜] E) := ⟨.zero, by simp⟩
@@ -126,38 +124,16 @@ theorem IsPositive.smul_of_nonneg {T : E →ₗ[𝕜] E} (hT : T.IsPositive) {c 
     (c • T).IsPositive := by
   have hc' : starRingEnd 𝕜 c = c := by
     simp [conj_eq_iff_im, ← (le_iff_re_im.mp hc).right]
-  apply And.intro
-  · exact hT.left.smul hc'
-  · intro x
-    rw [smul_apply, inner_smul_left, hc', mul_re, conj_eq_iff_im.mp hc', zero_mul, sub_zero]
-    exact mul_nonneg ((re_nonneg_of_nonneg hc').mpr hc) (re_inner_nonneg_left hT x)
-
-@[aesop safe apply]
-theorem IsPositive.conj_adjoint [FiniteDimensional 𝕜 E]
-    [FiniteDimensional 𝕜 F] {T : E →ₗ[𝕜] E} (hT : T.IsPositive) (S : E →ₗ[𝕜] F) :
-    (S ∘ₗ T ∘ₗ S.adjoint).IsPositive := by
-  refine And.intro ?_ ?_
-  · rw [isSymmetric_iff_isSelfAdjoint, isSelfAdjoint_iff',
-      adjoint_comp, adjoint_comp, adjoint_adjoint,
-      ← star_eq_adjoint, hT.isSelfAdjoint, comp_assoc]
-  · intro x
-    rw [comp_apply, ← adjoint_inner_right]
-    exact hT.re_inner_nonneg_left _
-
-@[aesop safe apply]
-theorem IsPositive.adjoint_conj [FiniteDimensional 𝕜 E]
-    [FiniteDimensional 𝕜 F] {T : E →ₗ[𝕜] E} (hT : T.IsPositive) (S : F →ₗ[𝕜] E) :
-    (S.adjoint ∘ₗ T ∘ₗ S).IsPositive := by
-  convert hT.conj_adjoint S.adjoint
-  rw [adjoint_adjoint]
+  refine ⟨hT.left.smul hc', fun x => ?_⟩
+  rw [smul_apply, inner_smul_left, hc', mul_re, conj_eq_iff_im.mp hc', zero_mul, sub_zero]
+  exact mul_nonneg ((re_nonneg_of_nonneg hc').mpr hc) (re_inner_nonneg_left hT x)
 
 theorem IsPositive.nonneg_eigenvalues [FiniteDimensional 𝕜 E]
     {T : E →ₗ[𝕜] E} {n : ℕ} (hT : T.IsPositive)
     (hn : Module.finrank 𝕜 E = n) (i : Fin n) : 0 ≤ hT.isSymmetric.eigenvalues hn i := by
-  have h := hT.right (hT.isSymmetric.eigenvectorBasis hn i)
-  rw [hT.isSymmetric.apply_eigenvectorBasis, inner_smul_real_left, RCLike.smul_re,
-    inner_self_eq_norm_sq, OrthonormalBasis.norm_eq_one, one_pow, mul_one] at h
-  exact h
+  simpa only [hT.isSymmetric.apply_eigenvectorBasis, inner_smul_real_left, RCLike.smul_re,
+    inner_self_eq_norm_sq, OrthonormalBasis.norm_eq_one, one_pow, mul_one]
+      using hT.right (hT.isSymmetric.eigenvectorBasis hn i)
 
 section PartialOrder
 
@@ -173,7 +149,7 @@ instance instLoewnerPartialOrder : PartialOrder (E →ₗ[𝕜] E) where
     have hba2 := h₁.2 x
     rw [← neg_le_neg_iff, ← map_neg, ← inner_neg_left, ← neg_apply, neg_sub, neg_zero] at hba2
     rw [← h₂.isSymmetric.coe_re_inner_apply_self, RCLike.ofReal_eq_zero]
-    apply le_antisymm hba2 (h₂.2 _)
+    exact le_antisymm hba2 (h₂.2 _)
 
 lemma le_def (f g : E →ₗ[𝕜] E) : f ≤ g ↔ (g - f).IsPositive := Iff.rfl
 
@@ -279,6 +255,28 @@ theorem IsPositive.adjoint_conj {T : E →L[𝕜] E} (hT : T.IsPositive) (S : F 
     (S† ∘L T ∘L S).IsPositive := by
   convert hT.conj_adjoint (S†)
   rw [adjoint_adjoint]
+
+section LinearMap
+
+omit [CompleteSpace E] [CompleteSpace F]
+
+variable [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F]
+
+@[aesop safe apply]
+theorem _root_.LinearMap.IsPositive.conj_adjoint {T : E →ₗ[𝕜] E}
+    (hT : T.IsPositive) (S : E →ₗ[𝕜] F) : (S ∘ₗ T ∘ₗ S.adjoint).IsPositive := by
+  have := FiniteDimensional.complete 𝕜 E
+  have := FiniteDimensional.complete 𝕜 F
+  simpa [← isPositive_toContinuousLinearMap_iff] using
+    ((T.isPositive_toContinuousLinearMap_iff.mpr hT).conj_adjoint S.toContinuousLinearMap)
+
+@[aesop safe apply]
+theorem _root_.LinearMap.IsPositive.adjoint_conj {T : E →ₗ[𝕜] E}
+    (hT : T.IsPositive) (S : F →ₗ[𝕜] E) : (S.adjoint ∘ₗ T ∘ₗ S).IsPositive := by
+  convert hT.conj_adjoint S.adjoint
+  rw [LinearMap.adjoint_adjoint]
+
+end LinearMap
 
 theorem IsPositive.conj_starProjection (U : Submodule 𝕜 E) {T : E →L[𝕜] E} (hT : T.IsPositive)
     [U.HasOrthogonalProjection] :
