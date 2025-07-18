@@ -1,8 +1,23 @@
+/-
+Copyright (c) 2025 Lavendula. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Lavendula
+-/
+
 import Mathlib.Algebra.MvPolynomial.Division
 import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.RingTheory.Henselian
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
+
+/-!
+# Multivariate Polynomial Ring Properties about irreducibility.
+
+This file contains theorems about the structure of multivariate polynomial rings over a field,
+focusing on irreducibility and principal ideal domain properties.
+
+The proofs utilize polynomial ring isomorphisms and properties of principal ideal rings.
+-/
 
 open MvPolynomial Ideal
 
