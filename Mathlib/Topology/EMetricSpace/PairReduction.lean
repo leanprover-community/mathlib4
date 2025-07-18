@@ -165,8 +165,7 @@ lemma radius_logSizeBallSeq_le (hJ : J.Nonempty) (ha : 1 < a) (hn : 1 ≤ n) (hJ
     simp only [radius_logSizeBallSeq_add_one, logSizeRadius, ha, ↓reduceDIte]
     refine Nat.find_min' _ ⟨hn, le_trans ?_ hJ_card⟩
     gcongr
-    apply subset_trans (Finset.filter_subset _ _)
-    exact finset_logSizeBallSeq_subset_logSizeBallSeq_zero hJ (i + 1)
+    exact (Finset.filter_subset _ _).trans (finset_logSizeBallSeq_subset_logSizeBallSeq_zero _ _)
 
 lemma one_le_radius_logSizeBallSeq (hJ : J.Nonempty) (ha : 1 < a) (i : ℕ) :
     1 ≤ (logSizeBallSeq J hJ a c i).radius := by
@@ -259,8 +258,7 @@ lemma pairSet_subset : pairSet J a c ⊆ J.product J := by
   · simp only [pairSetSeq, hJ, ↓reduceDIte]
     apply Finset.product_subset_product
     · exact Finset.singleton_subset_iff.mpr (point_mem_logSizeBallSeq_zero hJ _)
-    apply subset_trans (Finset.filter_subset _ _)
-    exact finset_logSizeBallSeq_subset_logSizeBallSeq_zero _ _
+    exact (Finset.filter_subset _ _).trans (finset_logSizeBallSeq_subset_logSizeBallSeq_zero _ _)
   simp [pairSetSeq, hJ]
 
 lemma card_pairSetSeq_le_logSizeRadius_mul (hJ : J.Nonempty) (i : ℕ) (ha : 1 < a) :
@@ -309,7 +307,7 @@ lemma card_pairSet_le (ha : 1 < a) (hJ_card : #J ≤ a ^ n) :
   unfold logSizeBallStruct.smallBall
   rw [Finset.biUnion_subset_iff_forall_subset]
   intro i _
-  grw [Finset.filter_subset _ _, finset_logSizeBallSeq_subset_logSizeBallSeq_zero]
+  exact (Finset.filter_subset _ _).trans (finset_logSizeBallSeq_subset_logSizeBallSeq_zero _ _)
 
 lemma edist_le_of_mem_pairSet (ha : 1 < a) (hJ_card : #J ≤ a ^ n) {s t : T}
     (h : (s, t) ∈ pairSet J a c) : edist s t ≤ n * c := by
