@@ -6,17 +6,15 @@ Authors: Junyan Xu
 import Mathlib.Algebra.GroupWithZero.TransferInstance
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Algebra.Ring.Equiv
-import Mathlib.Algebra.Polynomial.Degree.Operations
+import Mathlib.RingTheory.Polynomial.Opposites
 
 /-!
-# A commutative semiring that is a domain whose polynomial semiring is not a domain
+# A commutative semiring without cancellative addition that is a domain
 
 `NatMaxAdd` is the natural numbers equipped with the usual multiplication but with maximum as
-addition. Under these operations it is a commutative semiring that is a domain.
-However, in the polynomial semiring `NatMaxAdd[X]`, we have the identity
-`(X + 1) * (X ^ 2 + 1) = (X + 1) * (X ^ 2 + X + 1)`, so `NatMaxAdd[X]` is not a domain.
-This shows `Polynomial.instIsDomain` cannot be generalized from to semirings whose
-addition is not cancellative.
+addition. Under these operations it is a commutative semiring that is a domain, but
+`1 + 1 = 1 + 0 = 1` in this semiring so addition is not cancellative.
+As a consequence, the polynomial semiring `NatMaxAdd[X]` is not a domain.
 -/
 
 /-- A type synonym for ℕ equipped with maximum as addition. -/
@@ -62,17 +60,12 @@ theorem natCast_eq_one (n : ℕ) : ∀ [NeZero n], (n : NatMaxAdd) = 1 := by
   · intro; rfl
   · rw [Nat.cast_succ, ih]; intro; rfl
 
+theorem not_isCancelAdd : ¬ IsCancelAdd NatMaxAdd := fun h ↦ by cases h.1.1 1 0 1 rfl
+
 open Polynomial
 
 theorem not_isDomain_polynomial : ¬ IsDomain NatMaxAdd[X] :=
-  have hX1 : (X + 1 : NatMaxAdd[X]) ≠ 0 := X_add_C_ne_zero _
-  have ne : (X ^ 2 + 1 : NatMaxAdd[X]) ≠ (X ^ 2 + X + 1) := fun h ↦ by
-    have : coeff (1 : NatMaxAdd[X]) 1 = 0 := by rw [← C_1, coeff_C, if_neg one_ne_zero]
-    simpa [this] using congr(coeff $h 1)
-  fun h ↦ ne <| h.1.1.1 hX1 <| by
-    ring_nf
-    rw [← Nat.cast_ofNat (R := NatMaxAdd[X]) (n := 2),
-      ← C_eq_natCast, natCast_eq_one, C_1, mul_one, mul_one]
+  isDomain_iff.not.mpr fun h ↦ not_isCancelAdd h.2
 
 end NatMaxAdd
 
