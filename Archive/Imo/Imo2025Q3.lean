@@ -44,6 +44,30 @@ lemma padicValNat_le {a : ℕ} (ha : a ≥ 4) (dvd : 2 ∣ a) : padicValNat 2 a 
     _ < _ := log_lt_self 2 (by omega)
   omega
 
+lemma dvd_lemma (a b x : ℕ) (hb : 2 ∣ b) (ha : a ≥ 4) (ha2 : 2 ∣ a) (hx : 2 ∣ x):
+    2 ^ (padicValNat 2 a + 2) ∣ (b : ℤ) ^ a - x ^ 2 ^ (padicValNat 2 a + 2) := by
+  refine dvd_sub ?_ ?_
+  · have : padicValNat 2 a + 2 ≤ a := padicValNat_le ha ha2
+    have dvd1 : 2 ^ (padicValNat 2 a + 2) ∣ (2 : ℤ) ^ a := by
+      exact pow_dvd_pow 2 this
+    have dvd2 : (2 : ℤ) ^ a ∣ (b : ℤ) ^ a := by
+      refine pow_dvd_pow_of_dvd ?_ a
+      exact ofNat_dvd_right.mpr hb
+    exact Int.dvd_trans dvd1 dvd2
+  · have dvd1 : 2 ^ (padicValNat 2 a + 2) ∣ (2 : ℤ) ^ 2 ^ (padicValNat 2 a + 2) := by
+      refine (padicValInt_dvd_iff (hp := fact_prime_two) (padicValNat 2 a + 2)
+            (2 ^ 2 ^ (padicValNat 2 a + 2))).mpr ?_
+      right
+      simp [padicValInt]
+      calc
+      _ < 2 ^ (padicValNat 2 a + 1) := Nat.lt_two_pow_self
+      _ ≤ _ := by
+        rw [propext (Nat.pow_le_pow_iff_right le.refl)]
+        omega
+    have dvd2 : (2 : ℤ) ^ 2 ^ (padicValNat 2 a + 2) ∣ (x : ℤ) ^ 2 ^ (padicValNat 2 a + 2) :=
+      pow_dvd_pow_of_dvd (ofNat_dvd_right.mpr hx) (2 ^ (padicValNat 2 a + 2))
+    exact Int.dvd_trans dvd1 dvd2
+
 lemma exist : g ∈ bonza := fun a b ha hb ↦ by
   by_cases ch1 : ¬ 2 ∣ a
   · simp [g, ch1]
@@ -64,24 +88,20 @@ lemma exist : g ∈ bonza := fun a b ha hb ↦ by
     split_ifs with hb1 hb2
     · by_cases lt : b = 1
       · simp [lt]
+      simp at ch1
       have : (padicValNat 2 a + 2) ≤ padicValInt 2 (b ^ a - 1) := by
-        simp at ch1
         have := LTE (by omega) (Nat.two_dvd_ne_zero.mpr hb1) (by omega) (Nat.even_iff.mpr ch1)
         rwa [← LucasLehmer.Int.natCast_pow_pred b a hb]
       exact Int.dvd_trans (pow_dvd_pow 2 this) (padicValInt_dvd ((b : ℤ) ^ a - 1))
-    · simp [hb2]
-      refine dvd_sub ?_ ?_
-      · have : padicValNat 2 a + 2 ≤ a := by
-          simp at ch1
-          exact padicValNat_le (by omega) (dvd_of_mod_eq_zero ch1)
-        exact pow_dvd_pow 2 this
-      ·
-        sorry
-    · refine dvd_sub ?_ ?_
-      ·
-        sorry
-      ·
-        sorry
+    · have t1 : 2 ∣ a := by tauto
+      have t2 : 2 ∣ (4 : ℤ) := by norm_num
+      refine dvd_lemma a b 4 ?_ ?_ t1 (by norm_num)
+      · simp [hb2]
+      · omega
+    · have t1 : 2 ∣ a := by tauto
+      refine dvd_lemma a b (2 ^ (padicValNat 2 b + 2)) ?_ ?_ t1 (by norm_num)
+      sorry
+
   --     sorry
   --   · simp
   --     sorry
