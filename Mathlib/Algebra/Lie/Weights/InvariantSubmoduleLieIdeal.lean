@@ -19,7 +19,7 @@ variable {H : LieSubalgebra K L} [H.IsCartanSubalgebra] [IsTriangularizable K H 
 
 -- Factored-out lemma for zero pairing implies zero bracket
 lemma zero_pairing_implies_zero_bracket
-  (χ α : Weight K H L) (hχ : χ.IsNonZero) (hα : α.IsNonZero)
+  (χ α : Weight K H L)
   (x : L) (hx : x ∈ genWeightSpace L χ.toLinear)
   (h : H) (hh : h ∈ LieAlgebra.corootSpace α.toLinear)
   (h_zero : χ (LieAlgebra.IsKilling.coroot α) = 0) :
@@ -1064,8 +1064,7 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
 
               -- Apply our lemma!
               have h_bracket_elem : ⁅x_χ, (h_elem : L)⁆ = 0 :=
-                zero_pairing_implies_zero_bracket χ α.1 hχ_nonzero hα_nonzero
-                x_χ hx_χ h_elem hh_elem h_chi_coroot_zero
+                zero_pairing_implies_zero_bracket χ α.1 x_χ hx_χ h_elem hh_elem h_chi_coroot_zero
 
               -- Convert back to m_h
               rw [← hh_eq]
