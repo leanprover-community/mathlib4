@@ -146,6 +146,10 @@ theorem existsUnique_sub_zpow_mem_Ioc {a : G} (ha : 1 < a) (b c : G) :
     simpa only [Equiv.neg_apply, zpow_neg, div_inv_eq_mul] using
       existsUnique_add_zpow_mem_Ioc ha b c
 
+@[to_additive]
+theorem exists_pow_lt {a : G} (ha : a < 1) (b : G) : ∃ n : ℕ, a ^ n < b :=
+  (exists_lt_pow (one_lt_inv'.mpr ha) b⁻¹).imp <| by simp
+
 end LinearOrderedCommGroup
 
 section OrderedSemiring
