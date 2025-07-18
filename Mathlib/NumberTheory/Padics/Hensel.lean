@@ -100,7 +100,7 @@ local notation "T" => @T_gen p _ F a
 variable {p F a}
 
 private theorem T_def : T = ‖F.eval a‖ / ‖F.derivative.eval a‖ ^ 2 := by
-  simp [T_gen, ← PadicInt.norm_def]
+  simp [T_gen]
 
 private theorem T_nonneg : 0 ≤ T := norm_nonneg _
 
@@ -187,9 +187,8 @@ private def calc_eval_z' {z z' z1 : ℤ_[p]} (hz' : z' = z - z1) {n} (hz : ih n 
           F.derivative.eval z * -⟨↑(F.eval z) / ↑(F.derivative.eval z), h1⟩ := by rw [hzeq]
       _ = -(F.derivative.eval z * ⟨↑(F.eval z) / ↑(F.derivative.eval z), h1⟩) := mul_neg _ _
       _ = -⟨F.derivative.eval z * (F.eval z / (F.derivative.eval z : ℤ_[p]) : ℚ_[p]), this⟩ :=
-        (Subtype.ext <| by simp only [PadicInt.coe_neg, PadicInt.coe_mul, Subtype.coe_mk])
+        (Subtype.ext <| by simp only [PadicInt.coe_neg, PadicInt.coe_mul])
       _ = -F.eval z := by simp only [mul_div_cancel₀ _ hdzne', Subtype.coe_eta]
-
   exact ⟨q, by simpa only [sub_eq_add_neg, this, hz', add_neg_cancel, neg_sq, zero_add] using hq⟩
 
 private def calc_eval_z'_norm {z z' z1 : ℤ_[p]} {n} (hz : ih n z) {q} (heq : F.eval z' = q * z1 ^ 2)
@@ -256,8 +255,9 @@ private theorem newton_seq_succ_dist (n : ℕ) :
         ‖F.eval (newton_seq n)‖ / ‖F.derivative.eval (newton_seq n)‖ :=
       newton_seq_norm_eq hnorm _
     _ = ‖F.eval (newton_seq n)‖ / ‖F.derivative.eval a‖ := by rw [newton_seq_deriv_norm]
-    _ ≤ ‖F.derivative.eval a‖ ^ 2 * T ^ 2 ^ n / ‖F.derivative.eval a‖ :=
-      ((div_le_div_iff_of_pos_right (deriv_norm_pos hnorm)).2 (newton_seq_norm_le hnorm _))
+    _ ≤ ‖F.derivative.eval a‖ ^ 2 * T ^ 2 ^ n / ‖F.derivative.eval a‖ := by
+      gcongr
+      apply newton_seq_norm_le
     _ = ‖F.derivative.eval a‖ * T ^ 2 ^ n := div_sq_cancel _ _
 
 private theorem newton_seq_dist_aux (n : ℕ) :
@@ -400,7 +400,6 @@ private theorem soln_unique (z : ℤ_[p]) (hev : F.eval z = 0)
       _ ≤ max ‖z - a‖ ‖a - soln‖ := PadicInt.nonarchimedean _ _
       _ < ‖F.derivative.eval a‖ :=
         max_lt hnlt ((norm_sub_rev soln a ▸ (soln_dist_to_a_lt_deriv hnorm)) hnsol)
-
   let h := z - soln
   let ⟨q, hq⟩ := F.binomExpansion soln h
   have : (F.derivative.eval soln + q * h) * h = 0 :=

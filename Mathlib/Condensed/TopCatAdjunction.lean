@@ -75,7 +75,7 @@ def condensedSetToTopCat : CondensedSet.{u} ⥤ TopCat.{u + 1} where
 namespace CondensedSet
 
 /-- The counit of the adjunction `condensedSetToTopCat ⊣ topCatToCondensedSet` -/
-def topCatAdjunctionCounit (X : TopCat.{u + 1}) : X.toCondensedSet.toTopCat ⟶ X :=
+noncomputable def topCatAdjunctionCounit (X : TopCat.{u + 1}) : X.toCondensedSet.toTopCat ⟶ X :=
   TopCat.ofHom
   { toFun x := x.1 PUnit.unit
     continuous_toFun := by
@@ -93,11 +93,10 @@ def topCatAdjunctionCounit (X : TopCat.{u + 1}) : X.toCondensedSet.toTopCat ⟶ 
 /-- The counit of the adjunction `condensedSetToTopCat ⊣ topCatToCondensedSet` is always bijective,
 but not an isomorphism in general (the inverse isn't continuous unless `X` is compactly generated).
 -/
-def topCatAdjunctionCounitEquiv (X : TopCat.{u + 1}) : X.toCondensedSet.toTopCat ≃ X where
+noncomputable def topCatAdjunctionCounitEquiv (X : TopCat.{u + 1}) :
+    X.toCondensedSet.toTopCat ≃ X where
   toFun := topCatAdjunctionCounit X
   invFun x := ContinuousMap.const _ x
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 lemma topCatAdjunctionCounit_bijective (X : TopCat.{u + 1}) :
     Function.Bijective (topCatAdjunctionCounit X) :=
@@ -105,7 +104,7 @@ lemma topCatAdjunctionCounit_bijective (X : TopCat.{u + 1}) :
 
 /-- The unit of the adjunction `condensedSetToTopCat ⊣ topCatToCondensedSet` -/
 @[simps val_app val_app_apply]
-def topCatAdjunctionUnit (X : CondensedSet.{u}) : X ⟶ X.toTopCat.toCondensedSet where
+noncomputable def topCatAdjunctionUnit (X : CondensedSet.{u}) : X ⟶ X.toTopCat.toCondensedSet where
   val := {
     app := fun S x ↦ {
       toFun := fun s ↦ X.val.map ((of PUnit.{u + 1}).const s).op x
@@ -175,7 +174,8 @@ noncomputable def compactlyGeneratedAdjunction :
 The counit of the adjunction `condensedSetToCompactlyGenerated ⊣ compactlyGeneratedToCondensedSet`
 is a homeomorphism.
 -/
-def compactlyGeneratedAdjunctionCounitHomeo (X : TopCat.{u + 1}) [UCompactlyGeneratedSpace.{u} X] :
+noncomputable def compactlyGeneratedAdjunctionCounitHomeo
+    (X : TopCat.{u + 1}) [UCompactlyGeneratedSpace.{u} X] :
     X.toCondensedSet.toTopCat ≃ₜ X where
   toEquiv := topCatAdjunctionCounitEquiv X
   continuous_toFun := (topCatAdjunctionCounit X).hom.continuous

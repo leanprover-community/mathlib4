@@ -3,8 +3,8 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.LinearAlgebra.Dimension.Finite
 import Mathlib.LinearAlgebra.Dimension.Constructions
+import Mathlib.LinearAlgebra.Dimension.Subsingleton
 
 /-!
 
@@ -120,19 +120,7 @@ its span. -/
 theorem rank_submodule_le_one_iff (s : Submodule K V) [Module.Free K s] :
     Module.rank K s ≤ 1 ↔ ∃ v₀ ∈ s, s ≤ K ∙ v₀ := by
   simp_rw [rank_le_one_iff, le_span_singleton_iff]
-  constructor
-  · rintro ⟨⟨v₀, hv₀⟩, h⟩
-    use v₀, hv₀
-    intro v hv
-    obtain ⟨r, hr⟩ := h ⟨v, hv⟩
-    use r
-    rwa [Subtype.ext_iff, coe_smul] at hr
-  · rintro ⟨v₀, hv₀, h⟩
-    use ⟨v₀, hv₀⟩
-    rintro ⟨v, hv⟩
-    obtain ⟨r, hr⟩ := h v hv
-    use r
-    rwa [Subtype.ext_iff, coe_smul]
+  simp
 
 /-- A submodule has dimension `1` if and only if there is a
 single non-zero vector in the submodule such that the submodule is contained in
@@ -295,7 +283,6 @@ theorem finrank_eq_one_iff [Nontrivial E] [Module.Free F S] : finrank F S = 1 �
 theorem bot_eq_top_iff_rank_eq_one [Nontrivial E] [Module.Free F E] :
     (⊥ : Subalgebra F E) = ⊤ ↔ Module.rank F E = 1 := by
   haveI := Module.Free.of_equiv (Subalgebra.topEquiv (R := F) (A := E)).toLinearEquiv.symm
-  -- Porting note: removed `subalgebra_top_rank_eq_submodule_top_rank`
   rw [← rank_top, Subalgebra.rank_eq_one_iff, eq_comm]
 
 theorem bot_eq_top_iff_finrank_eq_one [Nontrivial E] [Module.Free F E] :

@@ -3,6 +3,8 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.LinearAlgebra.RootSystem.Chain
+import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
 
 /-!
@@ -29,18 +31,21 @@ For infinite root systems, `RootSystem.Base` is usually not the right notion: li
 is too strong.
 
 ## Main definitions / results:
- * `RootSystem.Base`: a base of a root pairing.
+* `RootSystem.Base`: a base of a root pairing.
+* `RootSystem.Base.IsPos`: the predicate that a (co)root is positive relative to a base.
+* `RootSystem.Base.IsPos.IsPos.induction_on`: an induction principle for positive roots.
 
 ## TODO
 
- * Develop a theory of base / separation / positive roots for infinite systems which specialises to
-   the concept here for finite systems.
+* Develop a theory of base / separation / positive roots for infinite systems which specialises to
+  the concept here for finite systems.
 
 -/
 
 noncomputable section
 
 open Function Set Submodule
+open FaithfulSMul (algebraMap_injective)
 
 variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
@@ -52,10 +57,10 @@ For reduced root pairings this definition is equivalent to the usual definition 
 informal literature but not for non-reduced root pairings it is more restrictive. See the module
 doc string for further remarks. -/
 structure Base (P : RootPairing ι R M N) where
-  /-- The set of roots / coroots belonging to the base. -/
-  support : Set ι
-  linInd_root : LinearIndependent R fun i : support ↦ P.root i
-  linInd_coroot : LinearIndependent R fun i : support ↦ P.coroot i
+  /-- The indices of the simple roots / coroots. -/
+  support : Finset ι
+  linearIndepOn_root : LinearIndepOn R P.root support
+  linearIndepOn_coroot : LinearIndepOn R P.coroot support
   root_mem_or_neg_mem (i : ι) : P.root i ∈ AddSubmonoid.closure (P.root '' support) ∨
                               - P.root i ∈ AddSubmonoid.closure (P.root '' support)
   coroot_mem_or_neg_mem (i : ι) : P.coroot i ∈ AddSubmonoid.closure (P.coroot '' support) ∨
@@ -71,10 +76,26 @@ variable {P : RootPairing ι R M N} (b : P.Base)
 @[simps] protected def flip :
     P.flip.Base where
   support := b.support
-  linInd_root := b.linInd_coroot
-  linInd_coroot := b.linInd_root
+  linearIndepOn_root := b.linearIndepOn_coroot
+  linearIndepOn_coroot := b.linearIndepOn_root
   root_mem_or_neg_mem := b.coroot_mem_or_neg_mem
   coroot_mem_or_neg_mem := b.root_mem_or_neg_mem
+
+include b in
+lemma root_ne_neg_of_ne [Nontrivial R] {i j : ι}
+    (hi : i ∈ b.support) (hj : j ∈ b.support) (hij : i ≠ j) :
+    P.root i ≠ - P.root j := by
+  classical
+  intro contra
+  have := linearIndepOn_iff'.mp b.linearIndepOn_root ({i, j} : Finset ι) 1
+    (by simp [Set.insert_subset_iff, hi, hj]) (by simp [Finset.sum_pair hij, contra])
+  aesop
+
+lemma linearIndependent_pair_of_ne {i j : b.support} (hij : i ≠ j) :
+    LinearIndependent R ![P.root i, P.root j] := by
+  have : ({(j : ι), (i : ι)} : Set ι) ⊆ b.support := by simp [pair_subset_iff]
+  rw [← linearIndepOn_id_range_iff (by aesop)]
+  simpa [image_pair] using LinearIndepOn.id_image <| b.linearIndepOn_root.mono this
 
 lemma root_mem_span_int (i : ι) :
     P.root i ∈ span ℤ (P.root '' b.support) := by
@@ -124,6 +145,7 @@ lemma eq_one_or_neg_one_of_mem_support_of_smul_mem_aux [Finite ι]
     have : P.coroot j ∈ span ℤ (P.coroot '' b.support) := b.coroot_mem_span_int j
     rw [image_eq_range, mem_span_range_iff_exists_fun] at this
     refine this.imp fun f hf ↦ ?_
+    simp only [Finset.coe_sort_coe] at hf
     simp_rw [mul_smul, ← Finset.smul_sum, Int.cast_smul_eq_zsmul, hf,
       coroot_eq_smul_coroot_iff.mpr hj]
   use f ⟨i, h⟩
@@ -135,7 +157,7 @@ lemma eq_one_or_neg_one_of_mem_support_of_smul_mem_aux [Finite ι]
   let g : b.support →₀ R := single ⟨i, h⟩ 1
   have hg : P.coroot i = linearCombination R (fun k : b.support ↦ P.coroot k) g := by simp [g]
   rw [hg] at hf
-  have : Injective (linearCombination R fun k : b.support ↦ P.coroot k) := b.linInd_coroot
+  have : Injective (linearCombination R fun k : b.support ↦ P.coroot k) := b.linearIndepOn_coroot
   simpa [g, linearEquivFunOnFinite, mul_comm t] using (DFunLike.congr_fun (this hf) ⟨i, h⟩).symm
 
 lemma eq_one_or_neg_one_of_mem_support_of_smul_mem [Finite ι] [CharZero R]
@@ -169,16 +191,15 @@ lemma pos_or_neg_of_sum_smul_root_mem [CharZero R] [Fintype ι] (f : ι → ℤ)
     · left; exact this f hk' hf₀
     · right; simpa using this (-f) (by convert hk'; simp) (by simpa only [support_neg'])
   intro f hf hf₀
-  have _i : Fintype b.support := Fintype.ofFinite b.support
   let f' : b.support → ℤ := fun i ↦ f i
   replace hf : ∑ j, f' j • P.root j ∈ AddSubmonoid.closure (P.root '' b.support) := by
     suffices ∑ j, f' j • P.root j = ∑ j, f j • P.root j by rwa [this]
-    rw [← Fintype.sum_subset (s := b.support.toFinset) (by aesop), ← Finset.sum_set_coe]
+    rw [← Fintype.sum_subset (s := b.support) (by aesop), ← b.support.sum_finset_coe]; rfl
   rw [← span_nat_eq_addSubmonoid_closure, mem_toAddSubmonoid,
     Fintype.mem_span_image_iff_exists_fun] at hf
   obtain ⟨c, hc⟩ := hf
   replace hc (i : b.support) : c i = f' i := Fintype.linearIndependent_iffₛ.mp
-    (b.linInd_root.restrict_scalars' ℤ) (Int.ofNat ∘ c) f' (by simpa) i
+    (b.linearIndepOn_root.restrict_scalars' ℤ) (Int.ofNat ∘ c) f' (by simpa) i
   intro i
   by_cases hi : i ∈ b.support
   · change 0 ≤ f' ⟨i, hi⟩
@@ -186,7 +207,7 @@ lemma pos_or_neg_of_sum_smul_root_mem [CharZero R] [Fintype ι] (f : ι → ℤ)
   · replace hi : i ∉ f.support := by contrapose! hi; exact hf₀ hi
     aesop
 
-lemma sub_nmem_range_root [CharZero R] [Finite ι]
+lemma sub_notMem_range_root [CharZero R] [Finite ι]
     {i j : ι} (hi : i ∈ b.support) (hj : j ∈ b.support) :
     P.root i - P.root j ∉ range P.root := by
   rcases eq_or_ne j i with rfl | hij
@@ -203,10 +224,58 @@ lemma sub_nmem_range_root [CharZero R] [Finite ι]
   · simpa [hij, f] using pos j
   · simpa [hij, f] using neg i
 
-lemma sub_nmem_range_coroot [CharZero R] [Finite ι]
+@[deprecated (since := "2025-05-24")] alias sub_nmem_range_root := sub_notMem_range_root
+
+lemma sub_notMem_range_coroot [CharZero R] [Finite ι]
     {i j : ι} (hi : i ∈ b.support) (hj : j ∈ b.support) :
     P.coroot i - P.coroot j ∉ range P.coroot :=
-  b.flip.sub_nmem_range_root hi hj
+  b.flip.sub_notMem_range_root hi hj
+
+@[deprecated (since := "2025-05-24")] alias sub_nmem_range_coroot := sub_notMem_range_coroot
+
+lemma pairingIn_le_zero_of_ne [CharZero R] [IsDomain R] [P.IsCrystallographic] [Finite ι]
+    {i j} (hij : i ≠ j) (hi : i ∈ b.support) (hj : j ∈ b.support) :
+    P.pairingIn ℤ i j ≤ 0 := by
+  by_contra! h
+  exact b.sub_notMem_range_root hi hj <| P.root_sub_root_mem_of_pairingIn_pos h hij
+
+lemma pos_of_sum_smul_sub_mem_range_root
+    [Nontrivial M] [NoZeroSMulDivisors ℤ M] [Fintype ι] [P.IsReduced]
+    {i : ι} (hi : i ∈ b.support) {f : ι → ℕ}
+    (hf₀ : f.support ⊆ b.support)
+    (h₁ : ∑ j, f j • P.root j ∈ range P.root)
+    (h₂ : ∑ j, f j • P.root j - P.root i ∈ range P.root) :
+    0 < f i := by
+  have _i : CharZero R := CharZero.of_noZeroSMulDivisors R M
+  classical
+  let g (j : ι) : ℤ := f j -  if j = i then 1 else 0
+  suffices 0 ≤ g by simpa [g] using this i
+  have hg₀ : g.support ⊆ b.support := fun j hj ↦ by
+    rcases eq_or_ne j i with rfl | hij; · assumption
+    exact hf₀ <| by simpa [hij, g] using hj
+  have hg₁ : ∑ j, g j • P.root j = ∑ j, f j • P.root j - P.root i := by simp [g, sub_smul]
+  suffices ¬ g ≤ 0 by have := b.pos_or_neg_of_sum_smul_root_mem g (by rwa [hg₁]) hg₀; tauto
+  intro contra
+  replace contra (j : ι) (hj : j ≠ i) : f j = 0 := by simpa [g, hj] using contra j
+  replace contra : ∑ j, f j • P.root j = f i • P.root i :=
+    Finset.sum_eq_single_of_mem _ (by aesop) (by aesop)
+  suffices f i = 1 by simp [this ▸ contra, P.ne_zero] at h₂
+  by_contra hfi
+  rw [contra] at h₁
+  have aux : f i ≠ 0 := fun hi₀ ↦ by simp [hi₀, P.ne_zero] at h₁
+  replace hfi : (f i).AtLeastTwo := ⟨by omega⟩
+  exact P.nsmul_notMem_range_root h₁
+variable {b}
+variable [CharZero R] [IsDomain R] [P.IsCrystallographic] [Finite ι] {i j : b.support}
+
+@[simp] lemma chainBotCoeff_eq_zero :
+    P.chainBotCoeff i j = 0 :=
+  chainBotCoeff_eq_zero_iff.mpr <| Or.inr <| b.sub_notMem_range_root j.property i.property
+
+lemma chainTopCoeff_eq_of_ne (hij : i ≠ j) :
+    P.chainTopCoeff i j = -P.pairingIn ℤ j i := by
+  rw [← chainTopCoeff_sub_chainBotCoeff (b.linearIndependent_pair_of_ne hij)]
+  simp
 
 end RootPairing
 
@@ -215,17 +284,32 @@ section RootSystem
 variable {P : RootSystem ι R M N} (b : P.Base)
 
 /-- A base of a root system yields a basis of the root space. -/
-@[simps!] def toWeightBasis :
+def toWeightBasis :
     Basis b.support R M :=
-  Basis.mk b.linInd_root <| by
+  Basis.mk b.linearIndepOn_root <| by
     change ⊤ ≤ span R (range <| P.root ∘ ((↑) : b.support → ι))
-    rw [top_le_iff, range_comp, Subtype.range_coe_subtype, setOf_mem_eq, b.span_root_support]
-    exact P.span_root_eq_top
+    simp [range_comp]
+
+@[simp] lemma toWeightBasis_apply (i : b.support) :
+    b.toWeightBasis i = P.root i := by
+  simp [toWeightBasis]
+
+@[simp] lemma toWeightBasis_repr_root (i : b.support) :
+    b.toWeightBasis.repr (P.root i) = Finsupp.single i 1 := by
+  simp [← LinearEquiv.eq_symm_apply]
 
 /-- A base of a root system yields a basis of the coroot space. -/
 def toCoweightBasis :
     Basis b.support R N :=
   Base.toWeightBasis (P := P.flip) b.flip
+
+@[simp] lemma toCoweightBasis_apply (i : b.support) :
+    b.toCoweightBasis i = P.coroot i :=
+  b.flip.toWeightBasis_apply (P := P.flip) i
+
+@[simp] lemma toCoweightBasis_repr_coroot (i : b.support) :
+    b.toCoweightBasis.repr (P.coroot i) = Finsupp.single i 1 := by
+  simp [← LinearEquiv.eq_symm_apply]
 
 include b
 variable [Fintype ι]
@@ -258,6 +342,133 @@ lemma exists_coroot_eq_sum_int (i : ι) :
   b.flip.exists_root_eq_sum_int i (P := P.flip)
 
 end RootSystem
+
+section PositiveRoots
+
+variable {P : RootPairing ι R M N} (b : P.Base) [Fintype ι]
+
+/-- The predicate that a (co)root is positive with respect to a base. -/
+def IsPos (i : ι) : Prop :=
+  ∃ f : ι → ℕ, f.support ⊆ b.support ∧ P.root i = ∑ j, f j • P.root j
+
+variable {b}
+
+lemma IsPos.add {i j k : ι}
+    (hi : b.IsPos i) (hj : j ∈ b.support) (hk : P.root k = P.root i + P.root j) :
+    b.IsPos k := by
+  classical
+  obtain ⟨f, hf, hf'⟩ := hi
+  refine ⟨f + Pi.single j 1, ?_, ?_⟩
+  · apply (Function.support_add (f := f) (g := Pi.single j 1)).trans
+    simp [insert_subset_iff, hj, hf]
+  · simp_rw [hk, Pi.add_apply, add_smul, Finset.sum_add_distrib, ← hf']
+    rw [Finset.sum_eq_single_of_mem j (Finset.mem_univ _) (fun x _ h ↦ by simp [h]),
+      Pi.single_eq_same, one_smul]
+
+lemma IsPos.sub [P.IsReduced] [Nontrivial M] [NoZeroSMulDivisors ℤ M] {i j k : ι}
+    (hi : b.IsPos i) (hj : j ∈ b.support) (hk : P.root k = P.root i - P.root j) :
+    b.IsPos k := by
+  classical
+  obtain ⟨f, hf, hf'⟩ := hi
+  let f' := f - Pi.single j 1
+  suffices f = f' + Pi.single j 1 by
+    refine ⟨f', fun l hl ↦ ?_, ?_⟩
+    · rcases eq_or_ne j l with rfl | hlj; · assumption
+      apply hf
+      simpa [f', hlj] using hl
+    · simp_rw [hk, hf', this, Pi.add_apply, add_smul, Finset.sum_add_distrib, add_sub_assoc,
+        add_eq_left]
+      rw [Finset.sum_eq_single_of_mem j (Finset.mem_univ _) (fun x _ h ↦ by simp [h]),
+        Pi.single_eq_same, one_smul, sub_self]
+  ext l
+  rcases eq_or_ne j l with rfl | hl
+  · suffices 0 < f j by simp only [Pi.add_apply, Pi.sub_apply, Pi.single_eq_same, f']; omega
+    apply b.pos_of_sum_smul_sub_mem_range_root hj hf (hf' ▸ mem_range_self i)
+    rw [← hf', ← hk]
+    exact mem_range_self k
+  · simp [hl, f']
+
+variable [P.IsCrystallographic]
+
+lemma IsPos.exists_mem_support_pos_pairingIn [CharZero R] {i : ι} (h₀ : b.IsPos i) :
+    ∃ j ∈ b.support, 0 < P.pairingIn ℤ i j := by
+  simp_rw [P.zero_lt_pairingIn_iff' (S := ℤ) (i := i)]
+  by_contra! contra
+  suffices P.pairingIn ℤ i i ≤ 0 by aesop
+  obtain ⟨f, hf, hf'⟩ := h₀
+  have : P.pairingIn ℤ i i = ∑ j, f j • P.pairingIn ℤ j i := algebraMap_injective ℤ R <| by
+    simp_rw [algebraMap_pairingIn, map_sum, ← root_coroot_eq_pairing, hf', map_sum, map_nsmul,
+      LinearMap.coeFn_sum, Finset.sum_apply, LinearMap.smul_apply, root_coroot_eq_pairing,
+      nsmul_eq_mul, algebraMap_pairingIn]
+  rw [this]
+  refine Finset.sum_nonpos fun j _ ↦ ?_
+  by_cases hj : j ∈ Function.support f
+  · exact Left.nsmul_nonpos (contra j (hf hj)) (f j)
+  · aesop
+
+variable [P.IsReduced] [Nontrivial M] [NoZeroSMulDivisors ℤ M] [IsDomain R]
+
+lemma IsPos.induction_on
+    {i : ι} (h₀ : b.IsPos i)
+    {p : ι → Prop}
+    (h₁ : ∀ i ∈ b.support, p i)
+    (h₂ : ∀ i j k, P.root k = P.root i + P.root j → p i → j ∈ b.support → p k) :
+    p i := by
+  classical
+  have _i : CharZero R := CharZero.of_noZeroSMulDivisors R M
+  obtain ⟨f, hf₀, hf⟩ := id h₀
+  generalize hN : ∑ j, f j = N
+  induction N using Nat.recOn generalizing f i with
+  | zero =>
+    exfalso
+    apply P.ne_zero i
+    replace hN : f = 0 := by ext; aesop
+    simpa [hN] using hf
+  | succ n ih =>
+    obtain ⟨j, hj, hj'⟩ := h₀.exists_mem_support_pos_pairingIn
+    rcases eq_or_ne i j with rfl | hij; · exact h₁ i hj
+    obtain ⟨k, hk⟩ := P.root_sub_root_mem_of_pairingIn_pos hj' hij
+    let f' := f - Pi.single j 1
+    have hf'₀ : Function.support f' ⊆ b.support := fun l hl ↦ by
+      rcases eq_or_ne j l with rfl | hjl; · assumption
+      exact hf₀ <| by simpa [hjl, f'] using hl
+    have hff' : f = f' + Pi.single j 1 := by
+      ext l
+      rcases ne_or_eq j l with hl | rfl; · simp [hl, f']
+      suffices 0 < f j by simp only [Pi.add_apply, Pi.sub_apply, Pi.single_eq_same, f']; omega
+      apply b.pos_of_sum_smul_sub_mem_range_root hj hf₀ (hf ▸ mem_range_self i)
+      rw [← hf, ← hk]
+      exact mem_range_self k
+    have hf' : ∑ k, f' k = n := by simpa [hff', Finset.sum_add_distrib, hj] using hN
+    have hfk : P.root k = ∑ j, f' j • P.root j := by
+      have aux : ∀ l ∈ Finset.univ, l ≠ j → Pi.single (M := fun _ ↦ M) j (P.root l) l = 0 :=
+        fun l _ hl ↦ by simp [hl]
+      simp_rw [hk, hf, hff', Pi.add_apply, add_smul, Finset.sum_add_distrib, Pi.single_apply_smul,
+        add_sub_assoc, add_eq_left, sub_eq_zero,
+        Finset.sum_eq_single_of_mem j (Finset.mem_univ j) aux, Pi.single_eq_same]
+    exact h₂ k j i (by simp [hk]) (ih (h₀.sub hj hk) f' hf'₀ hfk hf') hj
+
+/-- This lemma is included mostly for comparison with the informal literature. Usually
+`RootPairing.Base.induction_on_pos` will be more useful. -/
+lemma exists_eq_sum_and_forall_sum_mem_of_isPos {i : ι} (hi : b.IsPos i) :
+    ∃ n, ∃ f : Fin n → ι,
+      range f ⊆ b.support ∧
+      P.root i = ∑ m, P.root (f m) ∧
+      ∀ m, ∑ m' ≤ m, P.root (f m') ∈ range P.root := by
+  apply hi.induction_on (fun j hj ↦ ⟨1, ![j], by simpa⟩)
+  intro j k l h₁ ⟨n, f, h₂, h₃, h₄⟩ h₅
+  refine ⟨n + 1, Fin.snoc f k, ?_, ?_, fun m ↦ ?_⟩
+  · simpa using insert_subset h₅ h₂
+  · simp [Fin.sum_univ_castSucc, h₁, h₃]
+  · by_cases hm : m < n
+    · have : m = (⟨m, hm⟩ : Fin n).castSucc := rfl
+      rw [this, Fin.sum_Iic_castSucc]
+      simp only [Fin.snoc_castSucc, h₄]
+    · replace hm : m = n := by omega
+      replace hm : Finset.Iic m = Finset.univ := by ext; simp [hm, Fin.le_def, Fin.is_le]
+      simp [hm, Fin.sum_univ_castSucc, ← h₃, ← h₁]
+
+end PositiveRoots
 
 end Base
 

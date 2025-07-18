@@ -33,7 +33,7 @@ which states that if `f` is sufficiently smooth, then
 * `taylor_mean_remainder_lagrange`: Taylor's theorem with the Lagrange remainder
 * `taylor_mean_remainder_cauchy`: Taylor's theorem with the Cauchy remainder
 * `exists_taylor_mean_remainder_bound`: Taylor's theorem for vector valued functions with a
-polynomial bound on the remainder
+  polynomial bound on the remainder
 
 ## TODO
 
@@ -127,7 +127,7 @@ theorem continuousOn_taylorWithinEval {f : ℝ → E} {x : ℝ} {n : ℕ} {s : S
   rw [contDiffOn_nat_iff_continuousOn_differentiableOn_deriv hs] at hf
   simp only [Finset.mem_range] at hi
   refine hf.1 i ?_
-  simp only [WithTop.coe_le_coe, Nat.cast_le, Nat.lt_succ_iff.mp hi]
+  simp only [Nat.lt_succ_iff.mp hi]
 
 /-- Helper lemma for calculating the derivative of the monomial that appears in Taylor
 expansions. -/
@@ -223,7 +223,7 @@ theorem hasDerivAt_taylorWithinEval_succ {x₀ x : ℝ} {s : Set ℝ} (f : ℝ �
   have : ∀ (i : ℕ) {c : ℝ} {c' : E},
       HasDerivAt (fun x ↦ (c * (x - x₀) ^ i) • c') ((c * (i * (x - x₀) ^ (i - 1) * 1)) • c') x :=
     fun _ _ ↦ hasDerivAt_id _ |>.sub_const _ |>.pow _ |>.const_mul _ |>.smul_const _
-  apply HasDerivAt.sum (fun i _ => this i) |>.congr_deriv
+  apply HasDerivAt.fun_sum (fun i _ => this i) |>.congr_deriv
   rw [Finset.sum_range_succ', Nat.cast_zero, zero_mul, zero_mul, mul_zero, zero_smul, add_zero]
   apply Finset.sum_congr rfl
   intro i _

@@ -23,14 +23,14 @@ In the list below, and in all this file, `R` is a commutative ring (semiring
 is sometimes enough), `M` and its variations are `R`-modules, `ι`, `κ`, `n` and `m` are finite
 types used for indexing.
 
- * `Basis.det`: the determinant of a family of vectors with respect to a basis,
-   as a multilinear map
- * `LinearMap.det`: the determinant of an endomorphism `f : End R M` as a
-   multiplicative homomorphism (if `M` does not have a finite `R`-basis, the
-   result is `1` instead)
- * `LinearEquiv.det`: the determinant of an isomorphism `f : M ≃ₗ[R] M` as a
-   multiplicative homomorphism (if `M` does not have a finite `R`-basis, the
-   result is `1` instead)
+* `Basis.det`: the determinant of a family of vectors with respect to a basis,
+  as a multilinear map
+* `LinearMap.det`: the determinant of an endomorphism `f : End R M` as a
+  multiplicative homomorphism (if `M` does not have a finite `R`-basis, the
+  result is `1` instead)
+* `LinearEquiv.det`: the determinant of an isomorphism `f : M ≃ₗ[R] M` as a
+  multiplicative homomorphism (if `M` does not have a finite `R`-basis, the
+  result is `1` instead)
 
 ## Tags
 
@@ -260,6 +260,7 @@ theorem det_eq_one_of_not_module_finite (h : ¬Module.Finite R M) (f : M →ₗ[
   rw [LinearMap.det, dif_neg, MonoidHom.one_apply]
   exact fun ⟨_, ⟨b⟩⟩ ↦ h (Module.Finite.of_basis b)
 
+@[nontriviality]
 theorem det_eq_one_of_subsingleton [Subsingleton M] (f : M →ₗ[R] M) :
     LinearMap.det (f : M →ₗ[R] M) = 1 := by
   have b : Basis (Fin 0) R M := Basis.empty M
@@ -400,7 +401,7 @@ theorem det_symm (f : M ≃ₗ[R] M) : LinearEquiv.det f.symm = LinearEquiv.det 
 @[simp]
 theorem det_conj (f : M ≃ₗ[R] M) (e : M ≃ₗ[R] M') :
     LinearEquiv.det ((e.symm.trans f).trans e) = LinearEquiv.det f := by
-  rw [← Units.eq_iff, coe_det, coe_det, ← comp_coe, ← comp_coe, LinearMap.det_conj]
+  rw [← Units.val_inj, coe_det, coe_det, ← comp_coe, ← comp_coe, LinearMap.det_conj]
 
 attribute [irreducible] LinearEquiv.det
 
@@ -631,12 +632,12 @@ theorem Basis.det_smul_mk_coord_eq_det_update {v : ι → M} (hli : LinearIndepe
   apply (Basis.mk hli hsp).ext
   intro k
   rcases eq_or_ne k i with (rfl | hik) <;>
-    simp only [Algebra.id.smul_eq_mul, Basis.coe_mk, LinearMap.smul_apply, LinearMap.coe_mk,
+    simp only [Algebra.id.smul_eq_mul, Basis.coe_mk, LinearMap.smul_apply,
       MultilinearMap.toLinearMap_apply]
   · rw [Basis.mk_coord_apply_eq, mul_one, update_eq_self]
     congr
   · rw [Basis.mk_coord_apply_ne hik, mul_zero, eq_comm]
-    exact e.det.map_eq_zero_of_eq _ (by simp [hik, Function.update_apply]) hik
+    exact e.det.map_eq_zero_of_eq _ (by simp [hik]) hik
 
 /-- If a basis is multiplied columnwise by scalars `w : ι → Rˣ`, then the determinant with respect
 to this basis is multiplied by the product of the inverse of these scalars. -/

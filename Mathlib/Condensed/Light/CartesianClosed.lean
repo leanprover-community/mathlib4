@@ -20,8 +20,8 @@ open CategoryTheory
 
 variable {C : Type u} [SmallCategory C]
 
-instance : ChosenFiniteProducts (LightCondSet.{u}) :=
-  inferInstanceAs (ChosenFiniteProducts (Sheaf _ _))
+instance : CartesianMonoidalCategory (LightCondSet.{u}) :=
+  inferInstanceAs (CartesianMonoidalCategory (Sheaf _ _))
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance : CartesianClosed (LightCondSet.{u}) := inferInstanceAs (CartesianClosed (Sheaf _ _))

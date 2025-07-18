@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Algebra.Order.Group.Unbundled.Int
 import Mathlib.Algebra.Ring.Nat
 import Mathlib.Data.Int.GCD
+import Mathlib.Data.Nat.GCD.Basic
 
 /-!
 # Congruences modulo a natural number
@@ -16,7 +17,7 @@ and proves basic properties about it such as the Chinese Remainder Theorem
 
 ## Notations
 
-`a ≡ b [MOD n]` is notation for `nat.ModEq n a b`, which is defined to mean `a % n = b % n`.
+`a ≡ b [MOD n]` is notation for `Nat.ModEq n a b`, which is defined to mean `a % n = b % n`.
 
 ## Tags
 
@@ -27,7 +28,7 @@ assert_not_exists OrderedAddCommMonoid Function.support
 
 namespace Nat
 
-/-- Modular equality. `n.ModEq a b`, or `a ≡ b [MOD n]`, means that `a - b` is a multiple of `n`. -/
+/-- Modular equality. `n.ModEq a b`, or `a ≡ b [MOD n]`, means that `a % n = b % n`. -/
 def ModEq (n a b : ℕ) :=
   a % n = b % n
 
@@ -88,6 +89,9 @@ theorem mod_modEq (a n) : a % n ≡ a [MOD n] :=
   mod_mod _ _
 
 namespace ModEq
+
+theorem self_mul_add : ModEq m (m * a + b) b := by
+  simp [Nat.ModEq]
 
 lemma of_dvd (d : m ∣ n) (h : a ≡ b [MOD n]) : a ≡ b [MOD m] :=
   modEq_of_dvd <| Int.ofNat_dvd.mpr d |>.trans h.dvd
@@ -263,7 +267,7 @@ lemma cancel_right_div_gcd' (hm : 0 < m) (hcd : c ≡ d [MOD m]) (h : a * c ≡ 
 lemma cancel_left_of_coprime (hmc : gcd m c = 1) (h : c * a ≡ c * b [MOD m]) : a ≡ b [MOD m] := by
   rcases m.eq_zero_or_pos with (rfl | hm)
   · simp only [gcd_zero_left] at hmc
-    simp only [gcd_zero_left, hmc, one_mul, modEq_zero_iff] at h
+    simp only [hmc, one_mul, modEq_zero_iff] at h
     subst h
     rfl
   simpa [hmc] using h.cancel_left_div_gcd hm
@@ -377,7 +381,7 @@ theorem add_mod_add_ite (a b c : ℕ) :
     · rw [Nat.mod_eq_of_lt (lt_of_not_ge h), add_zero]
 
 theorem add_mod_of_add_mod_lt {a b c : ℕ} (hc : a % c + b % c < c) :
-    (a + b) % c = a % c + b % c := by rw [← add_mod_add_ite, if_neg (not_le_of_lt hc), add_zero]
+    (a + b) % c = a % c + b % c := by rw [← add_mod_add_ite, if_neg (not_le_of_gt hc), add_zero]
 
 theorem add_mod_add_of_le_add_mod {a b c : ℕ} (hc : c ≤ a % c + b % c) :
     (a + b) % c + c = a % c + b % c := by rw [← add_mod_add_ite, if_pos hc]
@@ -385,7 +389,7 @@ theorem add_mod_add_of_le_add_mod {a b c : ℕ} (hc : c ≤ a % c + b % c) :
 theorem add_div_eq_of_add_mod_lt {a b c : ℕ} (hc : a % c + b % c < c) :
     (a + b) / c = a / c + b / c :=
   if hc0 : c = 0 then by simp [hc0]
-  else by rw [Nat.add_div (Nat.pos_of_ne_zero hc0), if_neg (not_le_of_lt hc), add_zero]
+  else by rw [Nat.add_div (Nat.pos_of_ne_zero hc0), if_neg (not_le_of_gt hc), add_zero]
 
 protected theorem add_div_of_dvd_right {a b c : ℕ} (hca : c ∣ a) : (a + b) / c = a / c + b / c :=
   if h : c = 0 then by simp [h]
@@ -410,6 +414,11 @@ theorem le_mod_add_mod_of_dvd_add_of_not_dvd {a b c : ℕ} (h : c ∣ a + b) (ha
   by_contradiction fun hc => by
     have : (a + b) % c = a % c + b % c := add_mod_of_add_mod_lt (lt_of_not_ge hc)
     simp_all [dvd_iff_mod_eq_zero]
+
+lemma mod_sub_of_le {a b n : ℕ} (h : b ≤ a % n) : a % n - b = (a - b) % n := by
+  rcases n.eq_zero_or_pos with rfl | hn; · simp only [mod_zero]
+  nth_rw 2 [← div_add_mod a n]; rw [Nat.add_sub_assoc h, mul_add_mod]
+  exact (mod_eq_of_lt <| (sub_le ..).trans_lt (mod_lt a hn)).symm
 
 theorem odd_mul_odd {n m : ℕ} : n % 2 = 1 → m % 2 = 1 → n * m % 2 = 1 := by
   simpa [Nat.ModEq] using @ModEq.mul 2 n 1 m 1

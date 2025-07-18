@@ -161,7 +161,7 @@ theorem lt_to_nat {m n : PosNum} : (m : ℕ) < n ↔ m < n :=
   show (m : ℕ) < n ↔ cmp m n = Ordering.lt from
     match cmp m n, cmp_to_nat m n with
     | Ordering.lt, h => by simp only at h; simp [h]
-    | Ordering.eq, h => by simp only at h; simp [h, lt_irrefl]
+    | Ordering.eq, h => by simp only at h; simp [h]
     | Ordering.gt, h => by simp [not_lt_of_gt h]
 
 @[norm_cast]
@@ -280,7 +280,7 @@ theorem lt_to_nat {m n : Num} : (m : ℕ) < n ↔ m < n :=
   show (m : ℕ) < n ↔ cmp m n = Ordering.lt from
     match cmp m n, cmp_to_nat m n with
     | Ordering.lt, h => by simp only at h; simp [h]
-    | Ordering.eq, h => by simp only at h; simp [h, lt_irrefl]
+    | Ordering.eq, h => by simp only at h; simp [h]
     | Ordering.gt, h => by simp [not_lt_of_gt h]
 
 @[norm_cast]
@@ -366,15 +366,14 @@ instance commSemiring : CommSemiring Num where
   right_distrib _ _ _ := by simp only [← to_nat_inj, mul_to_nat, add_to_nat, add_mul]
 
 instance partialOrder : PartialOrder Num where
-  lt_iff_le_not_ge a b := by simp only [← lt_to_nat, ← le_to_nat, lt_iff_le_not_le]
+  lt_iff_le_not_ge a b := by simp only [← lt_to_nat, ← le_to_nat, lt_iff_le_not_ge]
   le_refl := by transfer
   le_trans a b c := by transfer_rw; apply le_trans
   le_antisymm a b := by transfer_rw; apply le_antisymm
 
 instance isOrderedCancelAddMonoid : IsOrderedCancelAddMonoid Num where
   add_le_add_left a b h c := by revert h; transfer_rw; exact fun h => add_le_add_left h c
-  le_of_add_le_add_left a b c :=
-    show a + b ≤ a + c → b ≤ c by transfer_rw; apply le_of_add_le_add_left
+  le_of_add_le_add_left a b c := by transfer_rw; apply le_of_add_le_add_left
 
 instance linearOrder : LinearOrder Num :=
   { le_total := by
@@ -481,13 +480,13 @@ theorem dvd_to_nat {m n : PosNum} : (m : ℕ) ∣ n ↔ m ∣ n :=
 theorem size_to_nat : ∀ n, (size n : ℕ) = Nat.size n
   | 1 => Nat.size_one.symm
   | bit0 n => by
-      rw [size, succ_to_nat, size_to_nat n, cast_bit0, ← two_mul]
-      erw [@Nat.size_bit false n]
+      rw [size, succ_to_nat, size_to_nat n, cast_bit0, ← two_mul, ← Nat.bit_false_apply,
+        Nat.size_bit]
       have := to_nat_pos n
       dsimp [Nat.bit]; omega
   | bit1 n => by
-      rw [size, succ_to_nat, size_to_nat n, cast_bit1, ← two_mul]
-      erw [@Nat.size_bit true n]
+      rw [size, succ_to_nat, size_to_nat n, cast_bit1, ← two_mul, ← Nat.bit_true_apply,
+        Nat.size_bit]
       dsimp [Nat.bit]; omega
 
 theorem size_eq_natSize : ∀ n, (size n : ℕ) = natSize n
@@ -545,7 +544,7 @@ instance linearOrder : LinearOrder PosNum where
   lt_iff_le_not_ge := by
     intro a b
     transfer_rw
-    apply lt_iff_le_not_le
+    apply lt_iff_le_not_ge
   le := (· ≤ ·)
   le_refl := by transfer
   le_trans := by
@@ -723,7 +722,7 @@ theorem pred_to_nat : ∀ n : Num, (pred n : ℕ) = Nat.pred n
 theorem ppred_to_nat : ∀ n : Num, (↑) <$> ppred n = Nat.ppred n
   | 0 => rfl
   | pos p => by
-    rw [ppred, Option.map_some, Nat.ppred_eq_some.2]
+    rw [ppred, Option.map_eq_map, Option.map_some, Nat.ppred_eq_some.2]
     rw [PosNum.pred'_to_nat, Nat.succ_pred_eq_of_pos (PosNum.to_nat_pos _)]
     rfl
 
@@ -819,8 +818,8 @@ theorem castNum_shiftLeft (m : Num) (n : Nat) : ↑(m <<< n) = (m : ℕ) <<< (n 
   simp only [cast_pos]
   induction' n with n IH
   · rfl
-  simp [PosNum.shiftl_succ_eq_bit0_shiftl, Nat.shiftLeft_succ, IH, pow_succ, ← mul_assoc, mul_comm,
-        -shiftl_eq_shiftLeft, -PosNum.shiftl_eq_shiftLeft, shiftl, mul_two]
+  simp [PosNum.shiftl_succ_eq_bit0_shiftl, Nat.shiftLeft_succ, IH, mul_comm,
+        -shiftl_eq_shiftLeft, -PosNum.shiftl_eq_shiftLeft, mul_two]
 
 @[simp, norm_cast]
 theorem castNum_shiftRight (m : Num) (n : Nat) : ↑(m >>> n) = (m : ℕ) >>> (n : ℕ) := by
@@ -844,7 +843,7 @@ theorem castNum_shiftRight (m : Num) (n : Nat) : ↑(m >>> n) = (m : ℕ) >>> (n
   · trans
     · apply IH
     change Nat.shiftRight m n = Nat.shiftRight (m + m) (n + 1)
-    rw [add_comm n 1,  @Nat.shiftRight_eq _ (1 + n), Nat.shiftRight_add]
+    rw [add_comm n 1, @Nat.shiftRight_eq _ (1 + n), Nat.shiftRight_add]
     apply congr_arg fun x => Nat.shiftRight x n
     simp [-add_assoc, Nat.shiftRight_succ, Nat.shiftRight_zero, ← Nat.div2_val, hdiv2]
 

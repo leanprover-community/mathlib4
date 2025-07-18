@@ -8,9 +8,7 @@ import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Data.Int.Basic
 import Mathlib.Lean.Meta.CongrTheorems
 import Mathlib.Tactic.Contrapose
-import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Spread
-import Mathlib.Util.AssertExists
 
 /-!
 # Lemmas about units in a `MonoidWithZero` or a `GroupWithZero`.
@@ -19,9 +17,7 @@ We also define `Ring.inverse`, a globally defined function on any ring
 (in fact any `MonoidWithZero`), which inverts units and sends non-units to zero.
 -/
 
--- Guard against import creep
-assert_not_exists DenselyOrdered Equiv Subtype.restrict Multiplicative
-
+assert_not_exists DenselyOrdered Equiv Subtype.restrict Multiplicative Ring
 
 variable {α M₀ G₀ : Type*}
 variable [MonoidWithZero M₀]
@@ -288,7 +284,7 @@ lemma eq_mul_of_inv_mul_eq₀ (hc : c ≠ 0) (h : b⁻¹ * a = c) : a = b * c :=
 lemma eq_mul_of_mul_inv_eq₀ (hb : b ≠ 0) (h : a * c⁻¹ = b) : a = b * c := by
   rwa [← mul_inv_eq_iff_eq_mul₀]; rintro rfl; simp [hb.symm] at h
 
-@[simp] lemma div_mul_cancel₀ (a : G₀) (h : b ≠ 0) : a / b * b = a := h.isUnit.div_mul_cancel _
+lemma div_mul_cancel₀ (a : G₀) (h : b ≠ 0) : a / b * b = a := by simp [h]
 
 lemma mul_one_div_cancel (h : a ≠ 0) : a * (1 / a) = 1 := h.isUnit.mul_one_div_cancel
 
@@ -327,10 +323,10 @@ lemma div_mul_div_cancel₀ (hb : b ≠ 0) : a / b * (b / c) = a / c := by
   rw [← mul_div_assoc, div_mul_cancel₀ _ hb]
 
 lemma div_mul_cancel_of_imp (h : b = 0 → a = 0) : a / b * b = a := by
-  obtain rfl | hb := eq_or_ne b 0 <;>  simp [*]
+  obtain rfl | hb := eq_or_ne b 0 <;> simp [*]
 
 lemma mul_div_cancel_of_imp (h : b = 0 → a = 0) : a * b / b = a := by
-  obtain rfl | hb := eq_or_ne b 0 <;>  simp [*]
+  obtain rfl | hb := eq_or_ne b 0 <;> simp [*]
 
 @[simp] lemma divp_mk0 (a : G₀) (hb : b ≠ 0) : a /ₚ Units.mk0 b hb = a / b := divp_eq_div _ _
 
@@ -426,11 +422,26 @@ lemma mul_eq_mul_of_div_eq_div (a c : G₀) (hb : b ≠ 0) (hd : d ≠ 0)
 @[field_simps] lemma div_eq_div_iff (hb : b ≠ 0) (hd : d ≠ 0) : a / b = c / d ↔ a * d = c * b :=
   hb.isUnit.div_eq_div_iff hd.isUnit
 
+@[field_simps] lemma mul_inv_eq_mul_inv_iff (hb : b ≠ 0) (hd : d ≠ 0) :
+    a * b⁻¹ = c * d⁻¹ ↔ a * d = c * b :=
+  hb.isUnit.mul_inv_eq_mul_inv_iff hd.isUnit
+
+@[field_simps] lemma inv_mul_eq_inv_mul_iff (hb : b ≠ 0) (hd : d ≠ 0) :
+    b⁻¹ * a = d⁻¹ * c ↔ a * d = c * b :=
+  hb.isUnit.inv_mul_eq_inv_mul_iff hd.isUnit
+
 /-- The `CommGroupWithZero` version of `div_eq_div_iff_div_eq_div`. -/
 lemma div_eq_div_iff_div_eq_div' (hb : b ≠ 0) (hc : c ≠ 0) : a / b = c / d ↔ a / c = b / d := by
   conv_lhs => rw [← mul_left_inj' hb, div_mul_cancel₀ _ hb]
   conv_rhs => rw [← mul_left_inj' hc, div_mul_cancel₀ _ hc]
   rw [mul_comm _ c, div_mul_eq_mul_div, mul_div_assoc]
+
+lemma div_eq_div_of_div_eq_div (hc : c ≠ 0) (hd : d ≠ 0) (h : a / b = c / d) : a / c = b / d :=
+  have hb : b ≠ 0 := by
+    intro hb
+    rw [hb, div_zero] at h
+    exact div_ne_zero hc hd h.symm
+  (div_eq_div_iff_div_eq_div' hb hc).mp h
 
 @[simp] lemma div_div_cancel₀ (ha : a ≠ 0) : a / (a / b) = b := ha.isUnit.div_div_cancel
 
@@ -463,8 +474,7 @@ noncomputable def groupWithZeroOfIsUnitOrEqZero [hM : MonoidWithZero M]
     inv_zero := dif_pos rfl,
     mul_inv_cancel := fun a h0 => by
       change (a * if h0 : a = 0 then 0 else ↑((h a).resolve_right h0).unit⁻¹) = 1
-      rw [dif_neg h0, Units.mul_inv_eq_iff_eq_mul, one_mul, IsUnit.unit_spec],
-    exists_pair_ne := Nontrivial.exists_pair_ne }
+      rw [dif_neg h0, Units.mul_inv_eq_iff_eq_mul, one_mul, IsUnit.unit_spec] }
 
 /-- Constructs a `CommGroupWithZero` structure on a `CommMonoidWithZero`
   consisting only of units and 0. -/

@@ -16,11 +16,11 @@ for commuting endomorphisms but there are important more general situations wher
 (e.g., representations of nilpotent Lie algebras).
 
 ## Main definitions / results
- * `Module.End.independent_iInf_maxGenEigenspace_of_forall_mapsTo`: the simultaneous generalised
-   eigenspaces of a compatible family of endomorphisms are independent.
- * `Module.End.iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo`: in finite dimensions, the
-   simultaneous generalised eigenspaces of a compatible family of endomorphisms span if the same
-   is true of each map individually.
+* `Module.End.independent_iInf_maxGenEigenspace_of_forall_mapsTo`: the simultaneous generalised
+  eigenspaces of a compatible family of endomorphisms are independent.
+* `Module.End.iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo`: in finite dimensions, the
+  simultaneous generalised eigenspaces of a compatible family of endomorphisms span if the same
+  is true of each map individually.
 
 -/
 
@@ -96,7 +96,7 @@ lemma independent_iInf_maxGenEigenspace_of_forall_mapsTo
       Disjoint (⨅ i, (f i).maxGenEigenspace (χ i))
         (s.sup fun (χ : ι → R) ↦ ⨅ i, (f i).maxGenEigenspace (χ i)) by
     simpa only [iSupIndep_iff_supIndep_of_injOn (injOn_iInf_maxGenEigenspace f),
-      Finset.supIndep_iff_disjoint_erase] using fun s χ _ ↦ this _ _ (s.not_mem_erase χ)
+      Finset.supIndep_iff_disjoint_erase] using fun s χ _ ↦ this _ _ (s.notMem_erase χ)
   intro χ₁ s
   induction s using Finset.induction_on with
   | empty => simp
@@ -131,8 +131,7 @@ lemma independent_iInf_maxGenEigenspace_of_forall_mapsTo
     suffices (s.sup fun χ ↦ (⨅ i, (f i).maxGenEigenspace (χ i))).map (g ^ k) ≤
         s.sup fun χ ↦ (⨅ i, (f i).maxGenEigenspace (χ i)) by
       refine this (Submodule.mem_map_of_mem ?_)
-      simp_rw [Finset.sup_eq_iSup, ← Finset.sup_eq_iSup] at hz
-      exact hz
+      assumption
     simp_rw [Finset.sup_eq_iSup, Submodule.map_iSup (ι := ι → R), Submodule.map_iSup (ι := _ ∈ s)]
     refine iSup₂_mono fun χ _ ↦ ?_
     rintro - ⟨u, hu, rfl⟩

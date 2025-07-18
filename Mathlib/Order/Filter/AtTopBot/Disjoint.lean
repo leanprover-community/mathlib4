@@ -45,7 +45,7 @@ theorem disjoint_atBot_atTop [PartialOrder α] [Nontrivial α] :
   rcases exists_pair_ne α with ⟨x, y, hne⟩
   by_cases hle : x ≤ y
   · refine disjoint_of_disjoint_of_mem ?_ (Iic_mem_atBot x) (Ici_mem_atTop y)
-    exact Iic_disjoint_Ici.2 (hle.lt_of_ne hne).not_le
+    exact Iic_disjoint_Ici.2 (hle.lt_of_ne hne).not_ge
   · refine disjoint_of_disjoint_of_mem ?_ (Iic_mem_atBot y) (Ici_mem_atTop x)
     exact Iic_disjoint_Ici.2 hle
 

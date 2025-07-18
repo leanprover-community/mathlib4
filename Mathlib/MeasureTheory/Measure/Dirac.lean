@@ -40,6 +40,25 @@ theorem le_dirac_apply {a} : s.indicator 1 a ≤ dirac a s :=
 theorem dirac_apply' (a : α) (hs : MeasurableSet s) : dirac a s = s.indicator 1 a :=
   toMeasure_apply _ _ hs
 
+theorem dirac_apply_eq_zero_or_one :
+    dirac a s = 0 ∨ dirac a s = 1 := by
+  rw [← measure_toMeasurable s, dirac_apply' a (measurableSet_toMeasurable ..), indicator]
+  simp only [Pi.one_apply, ite_eq_right_iff, one_ne_zero, imp_false, ite_eq_left_iff, zero_ne_one,
+    not_not]
+  tauto
+
+@[simp]
+theorem dirac_apply_ne_zero_iff_eq_one :
+    dirac a s ≠ 0 ↔ dirac a s = 1 where
+  mp := dirac_apply_eq_zero_or_one.resolve_left
+  mpr := ne_zero_of_eq_one
+
+@[simp]
+theorem dirac_apply_ne_one_iff_eq_zero :
+    dirac a s ≠ 1 ↔ dirac a s = 0 where
+  mp := dirac_apply_eq_zero_or_one.resolve_right
+  mpr h := h ▸ zero_ne_one
+
 @[simp]
 theorem dirac_apply_of_mem {a : α} (h : a ∈ s) : dirac a s = 1 := by
   have : ∀ t : Set α, a ∈ t → t.indicator (1 : α → ℝ≥0∞) a = 1 := fun t ht => indicator_of_mem ht 1
@@ -51,7 +70,7 @@ theorem dirac_apply_of_mem {a : α} (h : a ∈ s) : dirac a s = 1 := by
 theorem dirac_apply [MeasurableSingletonClass α] (a : α) (s : Set α) :
     dirac a s = s.indicator 1 a := by
   by_cases h : a ∈ s; · rw [dirac_apply_of_mem h, indicator_of_mem h, Pi.one_apply]
-  rw [indicator_of_not_mem h, ← nonpos_iff_eq_zero]
+  rw [indicator_of_notMem h, ← nonpos_iff_eq_zero]
   calc
     dirac a s ≤ dirac a {a}ᶜ := measure_mono (subset_compl_comm.1 <| singleton_subset_iff.2 h)
     _ = 0 := by simp [dirac_apply' _ (measurableSet_singleton _).compl]
@@ -66,13 +85,13 @@ theorem map_dirac {f : α → β} (hf : Measurable f) (a : α) : (dirac a).map f
 @[simp]
 lemma map_const (μ : Measure α) (c : β) : μ.map (fun _ ↦ c) = (μ Set.univ) • dirac c := by
   ext s hs
-  simp only [aemeasurable_const, measurable_const, Measure.coe_smul, Pi.smul_apply,
+  simp only [Measure.coe_smul, Pi.smul_apply,
     dirac_apply' _ hs, smul_eq_mul]
   classical
   rw [Measure.map_apply measurable_const hs, Set.preimage_const]
   by_cases hsc : c ∈ s
   · rw [(Set.indicator_eq_one_iff_mem _).mpr hsc, mul_one, if_pos hsc]
-  · rw [if_neg hsc, (Set.indicator_eq_zero_iff_not_mem _).mpr hsc, measure_empty, mul_zero]
+  · rw [if_neg hsc, (Set.indicator_eq_zero_iff_notMem _).mpr hsc, measure_empty, mul_zero]
 
 @[simp]
 theorem restrict_singleton (μ : Measure α) (a : α) : μ.restrict {a} = μ {a} • dirac a := by
@@ -129,7 +148,7 @@ end Measure
 open Measure
 
 theorem mem_ae_dirac_iff {a : α} (hs : MeasurableSet s) : s ∈ ae (dirac a) ↔ a ∈ s := by
-  by_cases a ∈ s <;> simp [mem_ae_iff, dirac_apply', hs.compl, indicator_apply, *]
+  by_cases a ∈ s <;> simp [mem_ae_iff, dirac_apply', hs.compl, *]
 
 theorem ae_dirac_iff {a : α} {p : α → Prop} (hp : MeasurableSet { x | p x }) :
     (∀ᵐ x ∂dirac a, p x) ↔ p a :=
@@ -160,19 +179,27 @@ instance Measure.dirac.isProbabilityMeasure {x : α} : IsProbabilityMeasure (dir
 instance Measure.dirac.instIsFiniteMeasure {a : α} : IsFiniteMeasure (dirac a) := inferInstance
 instance Measure.dirac.instSigmaFinite {a : α} : SigmaFinite (dirac a) := inferInstance
 
+theorem dirac_eq_one_iff_mem (hs : MeasurableSet s) : dirac a s = 1 ↔ a ∈ s := by
+  rw [← prob_compl_eq_zero_iff hs, ← mem_ae_iff]
+  apply mem_ae_dirac_iff hs
+
+theorem dirac_eq_zero_iff_not_mem (hs : MeasurableSet s) : dirac a s = 0 ↔ a ∉ s := by
+  rw [← compl_compl s, ← mem_ae_iff, notMem_compl_iff]
+  apply mem_ae_dirac_iff (MeasurableSet.compl_iff.mpr hs)
+
 theorem restrict_dirac' (hs : MeasurableSet s) [Decidable (a ∈ s)] :
     (Measure.dirac a).restrict s = if a ∈ s then Measure.dirac a else 0 := by
   split_ifs with has
   · apply restrict_eq_self_of_ae_mem
     rw [ae_dirac_iff] <;> assumption
-  · rw [restrict_eq_zero, dirac_apply' _ hs, indicator_of_not_mem has]
+  · rw [restrict_eq_zero, dirac_apply' _ hs, indicator_of_notMem has]
 
 theorem restrict_dirac [MeasurableSingletonClass α] [Decidable (a ∈ s)] :
     (Measure.dirac a).restrict s = if a ∈ s then Measure.dirac a else 0 := by
   split_ifs with has
   · apply restrict_eq_self_of_ae_mem
     rwa [ae_dirac_eq]
-  · rw [restrict_eq_zero, dirac_apply, indicator_of_not_mem has]
+  · rw [restrict_eq_zero, dirac_apply, indicator_of_notMem has]
 
 lemma mutuallySingular_dirac [MeasurableSingletonClass α] (x : α) (μ : Measure α) [NoAtoms μ] :
     Measure.dirac x ⟂ₘ μ :=
@@ -191,16 +218,16 @@ lemma dirac_eq_dirac_iff_forall_mem_iff_mem {x y : α} :
     by_cases x_in_A : x ∈ A
     · simpa only [x_in_A, indicator_of_mem, Pi.one_apply, true_iff, Eq.comm (a := (1 : ℝ≥0∞)),
                   indicator_eq_one_iff_mem] using obs
-    · simpa only [x_in_A, indicator_of_not_mem, Eq.comm (a := (0 : ℝ≥0∞)), indicator_apply_eq_zero,
+    · simpa only [x_in_A, indicator_of_notMem, Eq.comm (a := (0 : ℝ≥0∞)), indicator_apply_eq_zero,
                   false_iff, not_false_eq_true, Pi.one_apply, one_ne_zero, imp_false] using obs
   · intro h
     ext A A_mble
     by_cases x_in_A : x ∈ A
     · simp only [Measure.dirac_apply' _ A_mble, x_in_A, indicator_of_mem, Pi.one_apply,
                  (h A A_mble).mp x_in_A]
-    · have y_notin_A : y ∉ A := by simp_all only [false_iff, not_false_eq_true]
+    · have y_notin_A : y ∉ A := by simp_all only [not_false_eq_true]
       simp only [Measure.dirac_apply' _ A_mble, x_in_A, y_notin_A,
-                 not_false_eq_true, indicator_of_not_mem]
+                 not_false_eq_true, indicator_of_notMem]
 
 /-- Dirac delta measures at two points are different if and only if there is a measurable set
 containing one of the points but not the other. -/

@@ -15,12 +15,12 @@ of this theory is the theory of crystallographic root systems, where `S = ℤ`.
 
 ## Main definitions:
 
- * `RootPairing.IsValuedIn`: Given a commutative ring `S` and an `S`-algebra `R`, a root pairing
-   over `R` is valued in `S` if all root-coroot pairings lie in the image of `algebraMap S R`.
- * `RootPairing.IsCrystallographic`: A root pairing is said to be crystallographic if the pairing
-   between a root and coroot is always an integer.
- * `RootPairing.pairingIn`: The `S`-valued pairing between roots and coroots.
- * `RootPairing.coxeterWeightIn`: The product of `pairingIn i j` and `pairingIn j i`.
+* `RootPairing.IsValuedIn`: Given a commutative ring `S` and an `S`-algebra `R`, a root pairing
+  over `R` is valued in `S` if all root-coroot pairings lie in the image of `algebraMap S R`.
+* `RootPairing.IsCrystallographic`: A root pairing is said to be crystallographic if the pairing
+  between a root and coroot is always an integer.
+* `RootPairing.pairingIn`: The `S`-valued pairing between roots and coroots.
+* `RootPairing.coxeterWeightIn`: The product of `pairingIn i j` and `pairingIn j i`.
 
 -/
 
@@ -34,7 +34,7 @@ noncomputable section
 namespace RootPairing
 
 variable {ι R S M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N]
-[Module R N] (P : RootPairing ι R M N) (i j : ι)
+  [Module R N] (P : RootPairing ι R M N) (i j : ι)
 
 /-- If `R` is an `S`-algebra, a root pairing over `R` is said to be valued in `S` if the pairing
 between a root and coroot always belongs to `S`.
@@ -82,20 +82,35 @@ lemma pairingIn_same [FaithfulSMul S R] [P.IsValuedIn S] (i : ι) :
     P.pairingIn S i i = 2 :=
   FaithfulSMul.algebraMap_injective S R <| by simp [map_ofNat]
 
-lemma pairingIn_reflection_perm [FaithfulSMul S R] [P.IsValuedIn S] (i j k : ι) :
-    P.pairingIn S j (P.reflection_perm i k) = P.pairingIn S (P.reflection_perm i j) k := by
+variable {P S} in
+lemma pairingIn_eq_add_of_root_eq_add [FaithfulSMul S R] [P.IsValuedIn S]
+    {i j k l : ι} (h : P.root k = P.root i + P.root l) :
+    P.pairingIn S k j = P.pairingIn S i j + P.pairingIn S l j := by
+  apply FaithfulSMul.algebraMap_injective S R
+  simpa [← P.algebraMap_pairingIn S, -algebraMap_pairingIn] using pairing_eq_add_of_root_eq_add h
+
+lemma pairingIn_reflectionPerm [FaithfulSMul S R] [P.IsValuedIn S] (i j k : ι) :
+    P.pairingIn S j (P.reflectionPerm i k) = P.pairingIn S (P.reflectionPerm i j) k := by
   simp only [← (FaithfulSMul.algebraMap_injective S R).eq_iff, algebraMap_pairingIn]
-  exact pairing_reflection_perm P i j k
+  exact pairing_reflectionPerm P i j k
+
+@[deprecated (since := "2025-05-28")] alias pairingIn_reflection_perm := pairingIn_reflectionPerm
 
 @[simp]
-lemma pairingIn_reflection_perm_self_left [FaithfulSMul S R] [P.IsValuedIn S] (i j : ι) :
-    P.pairingIn S (P.reflection_perm i i) j = - P.pairingIn S i j := by
+lemma pairingIn_reflectionPerm_self_left [FaithfulSMul S R] [P.IsValuedIn S] (i j : ι) :
+    P.pairingIn S (P.reflectionPerm i i) j = - P.pairingIn S i j := by
   simp [← (FaithfulSMul.algebraMap_injective S R).eq_iff]
 
+@[deprecated (since := "2025-05-28")]
+alias pairingIn_reflection_perm_self_left := pairingIn_reflectionPerm_self_left
+
 @[simp]
-lemma pairingIn_reflection_perm_self_right [FaithfulSMul S R] [P.IsValuedIn S] (i j : ι) :
-    P.pairingIn S i (P.reflection_perm j j) = - P.pairingIn S i j := by
+lemma pairingIn_reflectionPerm_self_right [FaithfulSMul S R] [P.IsValuedIn S] (i j : ι) :
+    P.pairingIn S i (P.reflectionPerm j j) = - P.pairingIn S i j := by
   simp [← (FaithfulSMul.algebraMap_injective S R).eq_iff]
+
+@[deprecated (since := "2025-05-28")]
+alias pairingIn_reflection_perm_self_right := pairingIn_reflectionPerm_self_right
 
 lemma IsValuedIn.trans (T : Type*) [CommRing T] [Algebra T S] [Algebra T R] [IsScalarTower T S R]
     [P.IsValuedIn T] :
@@ -107,7 +122,7 @@ lemma IsValuedIn.trans (T : Type*) [CommRing T] [Algebra T S] [Algebra T R] [IsS
 lemma coroot'_apply_apply_mem_of_mem_span [Module S M] [IsScalarTower S R M] [P.IsValuedIn S]
     {x : M} (hx : x ∈ span S (range P.root)) (i : ι) :
     P.coroot' i x ∈ range (algebraMap S R) := by
-  rw [show range (algebraMap S R) = LinearMap.range (Algebra.linearMap S R) from rfl]
+  rw [show range (algebraMap S R) = LinearMap.range (Algebra.linearMap S R) by ext; simp]
   induction hx using Submodule.span_induction with
   | mem x hx =>
     obtain ⟨k, rfl⟩ := hx
@@ -142,6 +157,22 @@ abbrev rootSpanMem [Module S M] (i : ι) : P.rootSpan S :=
 /-- A coroot, seen as an element of the span of coroots. -/
 abbrev corootSpanMem [Module S N] (i : ι) : P.corootSpan S :=
   ⟨P.coroot i, Submodule.subset_span (mem_range_self i)⟩
+
+omit [Algebra S R] in
+lemma rootSpanMem_reflectionPerm_self [Module S M] (i : ι) :
+    P.rootSpanMem S (P.reflectionPerm i i) = - P.rootSpanMem S i := by
+  ext; simp
+
+@[deprecated (since := "2025-05-28")]
+alias rootSpanMem_reflection_perm_self := rootSpanMem_reflectionPerm_self
+
+omit [Algebra S R] in
+lemma corootSpanMem_reflectionPerm_self [Module S N] (i : ι) :
+    P.corootSpanMem S (P.reflectionPerm i i) = - P.corootSpanMem S i := by
+  ext; simp
+
+@[deprecated (since := "2025-05-28")]
+alias corootSpanMem_reflection_perm_self := corootSpanMem_reflectionPerm_self
 
 /-- The `S`-linear map on the span of coroots given by evaluating at a root. -/
 def root'In [Module S N] [IsScalarTower S R N] [FaithfulSMul S R] [P.IsValuedIn S] (i : ι) :
@@ -212,9 +243,8 @@ lemma rootSpan_dualAnnihilator_map_eq_iInf_ker_root' :
   suffices (P.rootSpan R).dualAnnihilator.map P.toDualRight.symm = {x | ∀ i, P.root' i x = 0} from
     SetLike.coe_injective <| by ext; simp [this]
   ext x
-  rw [rootSpan, Submodule.map_coe, Submodule.coe_dualAnnihilator_span]
-  change x ∈ P.toDualRight.toEquiv.symm '' _ ↔ _
-  rw [← Equiv.setOf_apply_symm_eq_image_setOf, Equiv.symm_symm]
+  rw [rootSpan, Submodule.map_coe, Submodule.coe_dualAnnihilator_span,
+    ← LinearEquiv.coe_symm_toEquiv, ← Equiv.setOf_apply_symm_eq_image_setOf, Equiv.symm_symm]
   simp [Set.range_subset_iff]
 
 lemma corootSpan_dualAnnihilator_map_eq_iInf_ker_coroot' :
@@ -254,6 +284,12 @@ lemma iInf_ker_coroot'_eq :
 @[simp] lemma span_coroot'_eq_top (P : RootSystem ι R M N) :
     span R (range P.coroot') = ⊤ :=
   span_root'_eq_top P.flip
+
+lemma pairingIn_eq_zero_iff {S : Type*} [CommRing S] [Algebra S R] [FaithfulSMul S R]
+    [P.IsValuedIn S] [NoZeroSMulDivisors R M] [NeZero (2 : R)] {i j : ι} :
+    P.pairingIn S i j = 0 ↔ P.pairingIn S j i = 0 := by
+  simpa only [← FaithfulSMul.algebraMap_eq_zero_iff S R, algebraMap_pairingIn] using
+    P.pairing_eq_zero_iff
 
 /-- A variant of `RootPairing.coxeterWeight` for root pairings which are valued in a smaller set of
 coefficients.

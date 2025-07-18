@@ -201,7 +201,7 @@ open scoped Classical in
 @[simp]
 theorem piecewise_compl {s : Set α} (hs : MeasurableSet sᶜ) (f g : α →ₛ β) :
     piecewise sᶜ hs f g = piecewise s hs.of_compl g f :=
-  coe_injective <| by simp [hs]
+  coe_injective <| by simp
 
 @[simp]
 theorem piecewise_univ (f g : α →ₛ β) : piecewise univ MeasurableSet.univ f g = f :=
@@ -438,7 +438,7 @@ theorem inf_apply [Min β] (f g : α →ₛ β) (a : α) : (f ⊓ g) a = f a ⊓
 
 @[to_additive (attr := simp)]
 theorem range_one [Nonempty α] [One β] : (1 : α →ₛ β).range = {1} :=
-  Finset.ext fun x => by simp [eq_comm]
+  Finset.ext fun x => by simp
 
 @[simp]
 theorem range_eq_empty_of_isEmpty {β} [hα : IsEmpty α] (f : α →ₛ β) : f.range = ∅ := by
@@ -666,7 +666,7 @@ theorem restrict_apply (f : α →ₛ β) {s : Set α} (hs : MeasurableSet s) (a
 
 theorem restrict_preimage (f : α →ₛ β) {s : Set α} (hs : MeasurableSet s) {t : Set β}
     (ht : (0 : β) ∉ t) : restrict f s ⁻¹' t = s ∩ f ⁻¹' t := by
-  simp [hs, indicator_preimage_of_not_mem _ _ ht, inter_comm]
+  simp [hs, indicator_preimage_of_notMem _ _ ht, inter_comm]
 
 theorem restrict_preimage_singleton (f : α →ₛ β) {s : Set α} (hs : MeasurableSet s) {r : β}
     (hr : r ≠ 0) : restrict f s ⁻¹' {r} = s ∩ f ⁻¹' {r} :=
@@ -762,7 +762,7 @@ def eapprox : (α → ℝ≥0∞) → ℕ → α →ₛ ℝ≥0∞ :=
   approx ennrealRatEmbed
 
 theorem eapprox_lt_top (f : α → ℝ≥0∞) (n : ℕ) (a : α) : eapprox f n a < ∞ := by
-  simp only [eapprox, approx, finset_sup_apply, Finset.mem_range, ENNReal.bot_eq_zero, restrict]
+  simp only [eapprox, approx, finset_sup_apply, restrict]
   rw [Finset.sup_lt_iff (α := ℝ≥0∞) WithTop.top_pos]
   intro b _
   split_ifs
@@ -814,10 +814,11 @@ def eapproxDiff (f : α → ℝ≥0∞) : ℕ → α →ₛ ℝ≥0
 
 theorem sum_eapproxDiff (f : α → ℝ≥0∞) (n : ℕ) (a : α) :
     (∑ k ∈ Finset.range (n + 1), (eapproxDiff f k a : ℝ≥0∞)) = eapprox f n a := by
-  induction' n with n IH
-  · simp only [Nat.zero_add, Finset.sum_singleton, Finset.range_one]
-    rfl
-  · rw [Finset.sum_range_succ, IH, eapproxDiff, coe_map, Function.comp_apply,
+  induction n with
+  | zero =>
+    simp [eapproxDiff, (eapprox_lt_top f 0 a).ne]
+  | succ n IH =>
+    rw [Finset.sum_range_succ, IH, eapproxDiff, coe_map, Function.comp_apply,
       coe_sub, Pi.sub_apply, ENNReal.coe_toNNReal,
       add_tsub_cancel_of_le (monotone_eapprox f (Nat.le_succ _) _)]
     apply (lt_of_le_of_lt _ (eapprox_lt_top f (n + 1) a)).ne
@@ -1035,7 +1036,7 @@ theorem support_eq [MeasurableSpace α] [Zero β] (f : α →ₛ β) :
     support f = ⋃ y ∈ {y ∈ f.range | y ≠ 0}, f ⁻¹' {y} :=
   Set.ext fun x => by
     simp only [mem_support, Set.mem_preimage, mem_filter, mem_range_self, true_and, exists_prop,
-      mem_iUnion, Set.mem_range, mem_singleton_iff, exists_eq_right']
+      mem_iUnion, mem_singleton_iff, exists_eq_right']
 
 variable {m : MeasurableSpace α} [Zero β] [Zero γ] {μ : Measure α} {f : α →ₛ β}
 
@@ -1170,7 +1171,7 @@ protected theorem induction {α γ} [MeasurableSpace α] [AddZeroClass γ]
       apply ih
       simp only [g, SimpleFunc.coe_piecewise, range_piecewise]
       rw [image_compl_preimage, union_diff_distrib, diff_diff_comm, h, Finset.coe_insert,
-        insert_diff_self_of_not_mem, diff_eq_empty.mpr, Set.empty_union]
+        insert_diff_self_of_notMem, diff_eq_empty.mpr, Set.empty_union]
       · rw [Set.image_subset_iff]
         convert Set.subset_univ _
         exact preimage_const_of_mem (mem_singleton _)
@@ -1212,7 +1213,7 @@ protected theorem induction' {α γ} [MeasurableSpace α] [Nonempty γ] {P : Sim
       apply ih
       simp only [g, SimpleFunc.coe_piecewise, range_piecewise]
       rw [image_compl_preimage, union_diff_distrib, diff_diff_comm, h, Finset.coe_insert,
-        insert_diff_self_of_not_mem, diff_eq_empty.mpr, Set.empty_union]
+        insert_diff_self_of_notMem, diff_eq_empty.mpr, Set.empty_union]
       · rw [Set.image_subset_iff]
         convert Set.subset_univ _
         exact preimage_const_of_mem (mem_singleton _)
@@ -1244,7 +1245,7 @@ theorem _root_.Measurable.add_simpleFunc
           Set.piecewise_eq_of_mem _ _ _ hx, _root_.add_right_inj, add_eq_left]
           using Set.disjoint_left.1 hff' hx
       · simpa only [SimpleFunc.coe_add, Pi.add_apply, Function.mem_support, ne_eq, not_not,
-          Set.piecewise_eq_of_not_mem _ _ _ hx, _root_.add_right_inj, add_eq_right] using hx
+          Set.piecewise_eq_of_notMem _ _ _ hx, _root_.add_right_inj, add_eq_right] using hx
     rw [this]
     exact Measurable.piecewise f.measurableSet_support hf hf'
 
@@ -1269,7 +1270,7 @@ theorem _root_.Measurable.simpleFunc_add
           Set.piecewise_eq_of_mem _ _ _ hx, _root_.add_left_inj, add_eq_left]
           using Set.disjoint_left.1 hff' hx
       · simpa only [SimpleFunc.coe_add, Pi.add_apply, Function.mem_support, ne_eq, not_not,
-          Set.piecewise_eq_of_not_mem _ _ _ hx, _root_.add_left_inj, add_eq_right] using hx
+          Set.piecewise_eq_of_notMem _ _ _ hx, _root_.add_left_inj, add_eq_right] using hx
     rw [this]
     exact Measurable.piecewise f.measurableSet_support hf hf'
 

@@ -22,7 +22,7 @@ for `n : ℕ`, and let `f` be a function from `E` to `F`.
 * `HasFiniteFPowerSeriesAt f p x n`: on some ball of center `x` with positive radius, holds
   `HasFiniteFPowerSeriesOnBall f p x n r`.
 * `CPolynomialAt 𝕜 f x`: there exists a power series `p` and a natural number `n` such that
-   holds `HasFPowerSeriesAt f p x n`.
+  holds `HasFPowerSeriesAt f p x n`.
 * `CPolynomialOn 𝕜 f s`: the function `f` is analytic at every point of `s`.
 
 In this file, we develop the basic properties of these notions, notably:
@@ -299,7 +299,7 @@ protected theorem CPolynomialOn.continuousOn {s : Set E} (hf : CPolynomialOn �
 
 /-- Continuously polynomial everywhere implies continuous -/
 theorem CPolynomialOn.continuous {f : E → F} (fa : CPolynomialOn 𝕜 f univ) : Continuous f := by
-  rw [continuous_iff_continuousOn_univ]; exact fa.continuousOn
+  rw [← continuousOn_univ]; exact fa.continuousOn
 
 protected theorem FormalMultilinearSeries.sum_of_finite (p : FormalMultilinearSeries 𝕜 E F)
     {n : ℕ} (hn : ∀ m, n ≤ m → p m = 0) (x : E) :
@@ -331,7 +331,7 @@ theorem HasFiniteFPowerSeriesOnBall.sum (h : HasFiniteFPowerSeriesOnBall f p x n
 protected theorem FormalMultilinearSeries.continuousOn_of_finite
     (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ} (hn : ∀ m, n ≤ m → p m = 0) :
     Continuous p.sum := by
-  rw [continuous_iff_continuousOn_univ, ← Metric.emetric_ball_top]
+  rw [← continuousOn_univ, ← Metric.emetric_ball_top]
   exact (p.hasFiniteFPowerSeriesOnBall_of_finite hn).continuousOn
 
 end FiniteFPowerSeries

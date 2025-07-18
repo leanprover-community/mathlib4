@@ -235,7 +235,7 @@ example {α} [Ring α] [Nontrivial α] : ∃ f g : AddMonoidAlgebra α F, f ≠ 
 example {α} [Zero α] :
     2 • (Finsupp.single 0 1 : α →₀ F) = (Finsupp.single 0 1 : α →₀ F)
       ∧ (Finsupp.single 0 1 : α →₀ F) ≠ 0 :=
-  ⟨Finsupp.smul_single _ _ _, by simp [Ne, Finsupp.single_eq_zero, z01.ne]⟩
+  ⟨Finsupp.smul_single _ _ _, by simp [Ne, Finsupp.single_eq_zero]⟩
 
 end F
 

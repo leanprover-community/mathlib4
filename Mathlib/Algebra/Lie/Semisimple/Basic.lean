@@ -222,10 +222,7 @@ lemma finitelyAtomistic : ∀ s : Finset (LieIdeal R L), ↑s ⊆ {I : LieIdeal 
   -- Since `x` was arbitrary, we have shown that `I` is contained in the supremum of `s'`.
   suffices ⟨y, hy⟩ ∈ LieAlgebra.center R J by
     have _inst := isSimple_of_isAtom J (hs hJs)
-    rw [center_eq_bot R J, LieSubmodule.mem_bot] at this
-    apply_fun Subtype.val at this
-    dsimp at this
-    rwa [this, zero_add]
+    simp_all
   -- To show that `y` is in the center of `J`,
   -- we show that any `j ∈ J` brackets to `0` with `z` and with `x = y + z`.
   -- By a simple computation, that implies `⁅j, y⁆ = 0`, for all `j`, as desired.
@@ -238,7 +235,7 @@ lemma finitelyAtomistic : ∀ s : Finset (LieIdeal R L), ↑s ⊆ {I : LieIdeal 
   constructor
   -- `j` brackets to `0` with `z`, since `⁅j, z⁆` is contained in `⁅J, K⁆ ≤ J ⊓ K`,
   -- and `J ⊓ K = ⊥` by the independence of the atoms.
-  · apply (sSupIndep_isAtom.disjoint_sSup (hs hJs) hs'S (Finset.not_mem_erase _ _)).le_bot
+  · apply (sSupIndep_isAtom.disjoint_sSup (hs hJs) hs'S (Finset.notMem_erase _ _)).le_bot
     apply LieSubmodule.lie_le_inf
     apply LieSubmodule.lie_mem_lie j.2
     simpa only [K, Finset.sup_id_eq_sSup] using hz

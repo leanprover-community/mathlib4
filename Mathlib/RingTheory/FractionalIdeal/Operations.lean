@@ -14,12 +14,12 @@ import Mathlib.Tactic.FieldSimp
 # More operations on fractional ideals
 
 ## Main definitions
- * `map` is the pushforward of a fractional ideal along an algebra morphism
+* `map` is the pushforward of a fractional ideal along an algebra morphism
 
 Let `K` be the localization of `R` at `R⁰ = R \ {0}` (i.e. the field of fractions).
- * `FractionalIdeal R⁰ K` is the type of fractional ideals in the field of fractions
- * `Div (FractionalIdeal R⁰ K)` instance:
-   the ideal quotient `I / J` (typically written $I : J$, but a `:` operator cannot be defined)
+* `FractionalIdeal R⁰ K` is the type of fractional ideals in the field of fractions
+* `Div (FractionalIdeal R⁰ K)` instance:
+  the ideal quotient `I / J` (typically written $I : J$, but a `:` operator cannot be defined)
 
 ## Main statement
 
@@ -235,7 +235,7 @@ theorem canonicalEquiv_canonicalEquiv (P'' : Type*) [CommRing P''] [Algebra R P'
     canonicalEquiv S P' P'' (canonicalEquiv S P P' I) = canonicalEquiv S P P'' I := by
   ext
   simp only [IsLocalization.map_map, RingHomInvPair.comp_eq₂, mem_canonicalEquiv_apply,
-    exists_prop, exists_exists_and_eq_and]
+    exists_exists_and_eq_and]
 
 theorem canonicalEquiv_trans_canonicalEquiv (P'' : Type*) [CommRing P''] [Algebra R P'']
     [IsLocalization S P''] :
@@ -272,9 +272,9 @@ variable {I J : FractionalIdeal R⁰ K} (h : K →ₐ[R] K')
 /-- Nonzero fractional ideals contain a nonzero integer. -/
 theorem exists_ne_zero_mem_isInteger [Nontrivial R] (hI : I ≠ 0) :
     ∃ x, x ≠ 0 ∧ algebraMap R K x ∈ I := by
-  obtain ⟨y : K, y_mem, y_not_mem⟩ :=
+  obtain ⟨y : K, y_mem, y_notMem⟩ :=
     SetLike.exists_of_lt (by simpa only using bot_lt_iff_ne_bot.mpr hI)
-  have y_ne_zero : y ≠ 0 := by simpa using y_not_mem
+  have y_ne_zero : y ≠ 0 := by simpa using y_notMem
   obtain ⟨z, ⟨x, hx⟩⟩ := exists_integer_multiple R⁰ y
   refine ⟨x, ?_, ?_⟩
   · rw [Ne, ← @IsFractionRing.to_map_eq_zero_iff R _ K, hx, Algebra.smul_def]
@@ -314,7 +314,7 @@ theorem coeIdeal_ne_one {I : Ideal R} : (I : FractionalIdeal R⁰ K) ≠ 1 ↔ I
   not_iff_not.mpr coeIdeal_eq_one
 
 theorem num_eq_zero_iff [Nontrivial R] {I : FractionalIdeal R⁰ K} : I.num = 0 ↔ I = 0 :=
-   ⟨fun h ↦ zero_of_num_eq_bot zero_not_mem_nonZeroDivisors h,
+   ⟨fun h ↦ zero_of_num_eq_bot zero_notMem_nonZeroDivisors h,
      fun h ↦ h ▸ num_zero_eq (IsFractionRing.injective R K)⟩
 
 end IsFractionRing
@@ -353,7 +353,7 @@ variable [IsFractionRing R₁ K] [IsDomain R₁]
 theorem _root_.IsFractional.div_of_nonzero {I J : Submodule R₁ K} :
     IsFractional R₁⁰ I → IsFractional R₁⁰ J → J ≠ 0 → IsFractional R₁⁰ (I / J)
   | ⟨aI, haI, hI⟩, ⟨aJ, haJ, hJ⟩, h => by
-    obtain ⟨y, mem_J, not_mem_zero⟩ :=
+    obtain ⟨y, mem_J, notMem_zero⟩ :=
       SetLike.exists_of_lt (show 0 < J by simpa only using bot_lt_iff_ne_bot.mpr h)
     obtain ⟨y', hy'⟩ := hJ y mem_J
     use aI * y'
@@ -366,7 +366,7 @@ theorem _root_.IsFractional.div_of_nonzero {I J : Submodule R₁ K} :
         (mul_eq_zero.mp this).resolve_left
           (mt ((injective_iff_map_eq_zero (algebraMap R₁ K)).1 (IsFractionRing.injective _ _) _)
             (mem_nonZeroDivisors_iff_ne_zero.mp haJ))
-      apply not_mem_zero
+      apply notMem_zero
       simpa
     intro b hb
     convert hI _ (hb _ (Submodule.smul_mem _ aJ mem_J)) using 1
@@ -610,7 +610,7 @@ theorem isPrincipal_iff (I : FractionalIdeal S P) :
 @[simp]
 theorem spanSingleton_zero : spanSingleton S (0 : P) = 0 := by
   ext
-  simp [Submodule.mem_span_singleton, eq_comm]
+  simp [eq_comm]
 
 theorem spanSingleton_eq_zero_iff {y : P} : spanSingleton S y = 0 ↔ y = 0 :=
   ⟨fun h =>
@@ -796,7 +796,7 @@ theorem le_spanSingleton_mul_iff {x : P} {I J : FractionalIdeal S P} :
 
 theorem spanSingleton_mul_le_iff {x : P} {I J : FractionalIdeal S P} :
     spanSingleton _ x * I ≤ J ↔ ∀ z ∈ I, x * z ∈ J := by
-  simp only [mul_le, mem_singleton_mul, mem_spanSingleton]
+  simp only [mul_le, mem_spanSingleton]
   constructor
   · intro h zI hzI
     exact h x ⟨1, one_smul _ _⟩ zI hzI

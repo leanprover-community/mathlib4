@@ -62,7 +62,7 @@ theorem continuousOn_tan_Ioo : ContinuousOn tan (Ioo (-(π / 2)) (π / 2)) := by
   simp only [and_imp, mem_Ioo, mem_setOf_eq, Ne]
   rw [cos_eq_zero_iff]
   rintro hx_gt hx_lt ⟨r, hxr_eq⟩
-  rcases le_or_lt 0 r with h | h
+  rcases le_or_gt 0 r with h | h
   · rw [lt_iff_not_ge] at hx_lt
     refine hx_lt ?_
     rw [hxr_eq, ← one_mul (π / 2), mul_div_assoc, mul_le_mul_right (half_pos pi_pos)]
@@ -74,7 +74,7 @@ theorem continuousOn_tan_Ioo : ContinuousOn tan (Ioo (-(π / 2)) (π / 2)) := by
     have hr_le : r ≤ -1 := by rwa [Int.lt_iff_add_one_le, ← le_neg_iff_add_nonpos_right] at h
     rw [← le_sub_iff_add_le, mul_comm, ← le_div_iff₀]
     · norm_num
-      rw [← Int.cast_one, ← Int.cast_neg]; norm_cast
+      assumption_mod_cast
     · exact zero_lt_two
 
 theorem surjOn_tan : SurjOn tan (Ioo (-(π / 2)) (π / 2)) univ :=
@@ -212,7 +212,7 @@ lemma arctan_ne_mul_pi_div_two {x : ℝ} : ∀ (k : ℤ), arctan x ≠ (2 * k + 
   norm_cast at lb ub; change -1 < _ at lb; omega
 
 lemma arctan_add_arctan_lt_pi_div_two {x y : ℝ} (h : x * y < 1) : arctan x + arctan y < π / 2 := by
-  rcases le_or_lt y 0 with hy | hy
+  rcases le_or_gt y 0 with hy | hy
   · rw [← add_zero (π / 2), ← arctan_zero]
     exact add_lt_add_of_lt_of_le (arctan_lt_pi_div_two _) (tanOrderIso.symm.monotone hy)
   · rw [← lt_div_iff₀ hy, ← inv_eq_one_div] at h

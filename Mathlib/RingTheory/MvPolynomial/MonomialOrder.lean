@@ -257,6 +257,10 @@ theorem coeff_degree_eq_zero_iff {f : MvPolynomial σ R} :
     f.coeff (m.degree f) = 0 ↔ f = 0 :=
   m.leadingCoeff_eq_zero_iff
 
+lemma degree_mem_support {p : MvPolynomial σ R} (hp : p ≠ 0) :
+    m.degree p ∈ p.support := by
+  rwa [MvPolynomial.mem_support_iff, coeff_degree_ne_zero_iff]
+
 theorem degree_eq_zero_iff_totalDegree_eq_zero {f : MvPolynomial σ R} :
     m.degree f = 0 ↔ f.totalDegree = 0 := by
   rw [← m.toSyn.injective.eq_iff]
@@ -298,7 +302,7 @@ theorem degree_add_le {f g : MvPolynomial σ R} :
     exact m.le_degree hf
   · right
     apply m.le_degree
-    simp only [not_mem_support_iff] at hf
+    simp only [notMem_support_iff] at hf
     simpa only [mem_support_iff, coeff_add, hf, zero_add] using hb
 
 theorem degree_add_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] m.degree f) :
@@ -330,7 +334,7 @@ theorem degree_add_of_ne {f g : MvPolynomial σ R}
     (h : m.degree f ≠ m.degree g) :
     m.toSyn (m.degree (f + g)) = m.toSyn (m.degree f) ⊔ m.toSyn (m.degree g) := by
   by_cases h' : m.degree g ≺[m] m.degree f
-  · simp [degree_add_of_lt h', left_eq_sup, le_of_lt h']
+  · simp [degree_add_of_lt h', le_of_lt h']
   · rw [not_lt, le_iff_eq_or_lt, Classical.or_iff_not_imp_left, EmbeddingLike.apply_eq_iff_eq] at h'
     rw [add_comm, degree_add_of_lt (h' h), right_eq_sup]
     simp only [le_of_lt (h' h)]

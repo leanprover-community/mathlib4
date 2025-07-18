@@ -70,7 +70,7 @@ protected theorem find_min : ∀ {m : ℕ}, m < Nat.find H → ¬p m :=
   @(Nat.findX H).2.right
 
 protected theorem find_min' {m : ℕ} (h : p m) : Nat.find H ≤ m :=
-  Nat.le_of_not_lt fun l => Nat.find_min H l h
+  Nat.le_of_not_gt fun l => Nat.find_min H l h
 
 lemma find_eq_iff (h : ∃ n : ℕ, p n) : Nat.find h = m ↔ p m ∧ ∀ n < m, ¬ p n := by
   constructor
@@ -84,7 +84,7 @@ lemma find_eq_iff (h : ∃ n : ℕ, p n) : Nat.find h = m ↔ p m ∧ ∀ n < m,
     fun ⟨_, hmn, hm⟩ ↦ Nat.lt_of_le_of_lt (Nat.find_min' h hm) hmn⟩
 
 @[simp] lemma find_le_iff (h : ∃ n : ℕ, p n) (n : ℕ) : Nat.find h ≤ n ↔ ∃ m ≤ n, p m := by
-  simp only [exists_prop, ← Nat.lt_succ_iff, find_lt_iff]
+  simp only [← Nat.lt_succ_iff, find_lt_iff]
 
 @[simp] lemma le_find_iff (h : ∃ n : ℕ, p n) (n : ℕ) : n ≤ Nat.find h ↔ ∀ m < n, ¬ p m := by
   simp only [← not_lt, find_lt_iff, not_exists, not_and]
@@ -153,7 +153,7 @@ end Find
 
 section FindGreatest
 
-/-- `Nat.findGreatest P n` is the largest `i ≤ bound` such that `P i` holds, or `0` if no such `i`
+/-- `Nat.findGreatest P n` is the largest `i ≤ n` such that `P i` holds, or `0` if no such `i`
 exists -/
 def findGreatest (P : ℕ → Prop) [DecidablePred P] : ℕ → ℕ
   | 0 => 0
@@ -179,7 +179,7 @@ lemma findGreatest_eq_iff :
   induction k generalizing m with
   | zero =>
     rw [eq_comm, Iff.comm]
-    simp only [zero_eq, Nat.le_zero, ne_eq, findGreatest_zero, and_iff_left_iff_imp]
+    simp only [Nat.le_zero, ne_eq, findGreatest_zero, and_iff_left_iff_imp]
     rintro rfl
     exact ⟨fun h ↦ (h rfl).elim, fun n hlt heq ↦ by omega⟩
   | succ k ihk =>
@@ -220,7 +220,7 @@ lemma findGreatest_le (n : ℕ) : Nat.findGreatest P n ≤ n :=
   (findGreatest_eq_iff.1 rfl).1
 
 lemma le_findGreatest (hmb : m ≤ n) (hm : P m) : m ≤ Nat.findGreatest P n :=
-  le_of_not_lt fun hlt => (findGreatest_eq_iff.1 rfl).2.2 hlt hmb hm
+  le_of_not_gt fun hlt => (findGreatest_eq_iff.1 rfl).2.2 hlt hmb hm
 
 lemma findGreatest_mono_right (P : ℕ → Prop) [DecidablePred P] {m n} (hmn : m ≤ n) :
     Nat.findGreatest P m ≤ Nat.findGreatest P n := by

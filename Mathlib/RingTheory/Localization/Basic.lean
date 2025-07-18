@@ -6,6 +6,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Field.IsField
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+import Mathlib.Data.Finite.Prod
 import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
 import Mathlib.RingTheory.Localization.Defs
 import Mathlib.RingTheory.OreLocalization.Ring
@@ -32,8 +33,8 @@ variable [Algebra R S] [Algebra P Q] (M : Submonoid R) (T : Submonoid P)
 
 ## Main definitions
 
- * `IsLocalization.algEquiv`: if `Q` is another localization of `R` at `M`, then `S` and `Q`
-   are isomorphic as `R`-algebras
+* `IsLocalization.algEquiv`: if `Q` is another localization of `R` at `M`, then `S` and `Q`
+  are isomorphic as `R`-algebras
 
 ## Implementation notes
 
@@ -113,6 +114,13 @@ namespace IsLocalization
 section IsLocalization
 
 variable [IsLocalization M S]
+
+include M in
+variable (R M) in
+protected lemma finite [Finite R] : Finite S := by
+  have : Function.Surjective (Function.uncurry (mk' (M := M) S)) := fun x ↦ by
+    simpa using IsLocalization.mk'_surjective M x
+  exact .of_surjective _ this
 
 variable (M S) in
 include M in
@@ -235,6 +243,22 @@ theorem algEquivOfAlgEquiv_symm : (algEquivOfAlgEquiv S Q h H).symm =
 
 end AlgEquivOfAlgEquiv
 
+section smul
+
+variable {R : Type*} [CommSemiring R] {S : Submonoid R}
+variable {R' : Type*} [CommSemiring R'] [Algebra R R'] [IsLocalization S R']
+variable {M' : Type*} [AddCommMonoid M'] [Module R' M'] [Module R M'] [IsScalarTower R R' M']
+
+/-- If `x` in a `R' = S⁻¹ R`-module `M'`, then for a submodule `N'` of `M'`,
+`s • x ∈ N'` if and only if `x ∈ N'` for some `s` in S. -/
+lemma smul_mem_iff {N' : Submodule R' M'} {x : M'} {s : S} :
+    s • x ∈ N' ↔ x ∈ N' := by
+  refine ⟨fun h ↦ ?_, fun h ↦ Submodule.smul_of_tower_mem N' s h⟩
+  rwa [← Submodule.smul_mem_iff_of_isUnit (r := algebraMap R R' s) N' (map_units R' s),
+    algebraMap_smul]
+
+end smul
+
 section at_units
 
 variable (R M)
@@ -347,6 +371,26 @@ lemma commutes (S₁ S₂ T : Type*) [CommSemiring S₁]
     rw [← map_mul, ← map_mul, mul_assoc, mul_comm _ c, ha, map_mul, map_mul]
     ring
 
+variable (Rₘ Sₙ Rₘ' Sₙ' : Type*) [CommRing Rₘ] [CommRing Sₙ] [CommRing Rₘ'] [CommRing Sₙ']
+  [Algebra R Rₘ] [Algebra S Sₙ] [Algebra R Rₘ'] [Algebra S Sₙ'] [Algebra R Sₙ] [Algebra Rₘ Sₙ]
+  [Algebra Rₘ' Sₙ'] [Algebra R Sₙ'] (N : Submonoid S) [IsLocalization M Rₘ] [IsLocalization N Sₙ]
+  [IsLocalization M Rₘ'] [IsLocalization N Sₙ'] [IsScalarTower R Rₘ Sₙ] [IsScalarTower R S Sₙ]
+  [IsScalarTower R Rₘ' Sₙ'] [IsScalarTower R S Sₙ']
+
+theorem algEquiv_comp_algebraMap : (algEquiv N Sₙ Sₙ' : _ →+* Sₙ').comp (algebraMap Rₘ Sₙ) =
+      (algebraMap Rₘ' Sₙ').comp (algEquiv M Rₘ Rₘ') := by
+  refine IsLocalization.ringHom_ext M (RingHom.ext fun x => ?_)
+  simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, AlgEquiv.commutes]
+  rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply,
+    ← AlgEquiv.restrictScalars_apply R, AlgEquiv.commutes]
+
+variable {Rₘ} in
+theorem algEquiv_comp_algebraMap_apply (x : Rₘ) :
+    (algEquiv N Sₙ Sₙ' : _ →+* Sₙ').comp (algebraMap Rₘ Sₙ) x =
+    (algebraMap Rₘ' Sₙ').comp (algEquiv M Rₘ Rₘ') x := by
+  rw [algEquiv_comp_algebraMap M Rₘ Sₙ Rₘ']
+
+
 end IsLocalization
 
 namespace Localization
@@ -456,6 +500,13 @@ noncomputable def localizationAlgebra : Algebra Rₘ Sₘ :=
   (map Sₘ (algebraMap R S)
         (show _ ≤ (Algebra.algebraMapSubmonoid S M).comap _ from M.le_comap_map) :
       Rₘ →+* Sₘ).toAlgebra
+
+noncomputable instance : Algebra (Localization M)
+  (Localization (Algebra.algebraMapSubmonoid S M)) := localizationAlgebra M S
+
+instance : IsScalarTower R (Localization M) (Localization (Algebra.algebraMapSubmonoid S M)) :=
+  IsScalarTower.of_algebraMap_eq (fun x ↦
+    (IsLocalization.map_eq (T := (Algebra.algebraMapSubmonoid S M)) M.le_comap_map x).symm)
 
 end
 

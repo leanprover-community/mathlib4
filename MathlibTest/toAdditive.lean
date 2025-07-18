@@ -203,7 +203,7 @@ def myFin (_ : ℕ) := ℕ
 instance : One (myFin n) := ⟨(1 : ℕ)⟩
 
 @[to_additive bar]
-def myFin.foo : myFin (n+1) := 1
+def myFin.foo : myFin (n + 1) := 1
 
 /-- We can pattern-match with `1`, which creates a term with a pure nat literal.
 See https://github.com/leanprover-community/mathlib4/pull/2046 -/
@@ -319,7 +319,7 @@ def reorderMulThree {α : Type _} [Mul α] (x y z : α) : α := x * y * z
 error: the permutation
 [[2, 3, 50]]
 provided by the reorder config option is too large, the type
-  {α : Type u_1} → [inst : Mul α] → α → α → α → α
+  {α : Type u_1} → [Mul α] → α → α → α → α
 has only 5 arguments
 -/
 #guard_msgs in
@@ -331,7 +331,7 @@ example {α : Type _} [Add α] (x y z : α) : reorderAddThree z x y = x + y + z 
 
 def Ones : ℕ → Q(Nat)
   | 0     => q(1)
-  | (n+1) => q($(Ones n) + $(Ones n))
+  | (n + 1) => q($(Ones n) + $(Ones n))
 
 
 -- This test just exists to see if this finishes in finite time. It should take <100ms.
@@ -437,7 +437,8 @@ run_cmd do
 warning: The source declaration one_eq_one was given the simp-attribute(s) simp, reduce_mod_char before calling @[to_additive].
 The preferred method is to use something like `@[to_additive (attr := simp, reduce_mod_char)]`
 to apply the attribute to both one_eq_one and the target declaration zero_eq_zero.
-note: this linter can be disabled with `set_option linter.existingAttributeWarning false`
+
+Note: This linter can be disabled with `set_option linter.existingAttributeWarning false`
 -/
 #guard_msgs in
 @[simp, reduce_mod_char, to_additive]
@@ -458,3 +459,24 @@ warning: declaration uses 'sorry'
 #guard_msgs in
 @[to_additive]
 instance foo {α : Type*} [Semigroup α] : Monoid α := sorry
+
+-- Test the error message for a wrong `to_additive existing`.
+
+/--
+error: `to_additive` validation failed:
+  expected 1 universe levels, but 'Nat.le_trans' has 0 universe levels
+-/
+#guard_msgs in
+@[to_additive existing Nat.le_trans]
+lemma one_eq_one'' {α : Type*} [One α] : (1 : α) = 1 := rfl
+
+
+/--
+error: `to_additive` validation failed: expected
+  ∀ {α : Type u} [inst : Zero α], 0 = 0
+but 'Eq.trans' has type
+  ∀ {α : Sort u} {a b c : α}, a = b → b = c → a = c
+-/
+#guard_msgs in
+@[to_additive existing Eq.trans]
+lemma one_eq_one''' {α : Type*} [One α] : (1 : α) = 1 := rfl

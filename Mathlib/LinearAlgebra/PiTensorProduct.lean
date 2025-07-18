@@ -60,8 +60,6 @@ binary tensor product in `LinearAlgebra/TensorProduct.lean`.
 multilinear, tensor, tensor product
 -/
 
-suppress_compilation
-
 open Function
 
 section Semiring
@@ -103,7 +101,6 @@ def PiTensorProduct : Type _ :=
 
 variable {R}
 
-unsuppress_compilation in
 /-- This enables the notation `⨂[R] i : ι, s i` for the pi tensor product `PiTensorProduct`,
 given an indexed family of types `s : ι → Type*`. -/
 scoped[TensorProduct] notation3:100"⨂["R"] "(...)", "r:(scoped f => PiTensorProduct R f) => r
@@ -212,7 +209,7 @@ instance hasSMul' : SMul R₁ (⨂[R] i, s i) :=
     liftAddHom (fun f : R × Π i, s i ↦ tprodCoeff R (r • f.1) f.2)
       (fun r' f i hf ↦ by simp_rw [zero_tprodCoeff' _ f i hf])
       (fun f ↦ by simp [zero_tprodCoeff]) (fun r' f i m₁ m₂ ↦ by simp [add_tprodCoeff])
-      (fun r' r'' f ↦ by simp [add_tprodCoeff', mul_add]) fun z f i r' ↦ by
+      (fun r' r'' f ↦ by simp [add_tprodCoeff']) fun z f i r' ↦ by
       simp [smul_tprodCoeff, mul_smul_comm]⟩
 
 instance : SMul R (⨂[R] i, s i) :=
@@ -281,7 +278,6 @@ def tprod : MultilinearMap R s (⨂[R] i, s i) where
   map_update_smul' {_ f} i r x := by
     rw [smul_tprodCoeff', ← smul_tprodCoeff (1 : R) _ i, update_idem, update_self]
 
-unsuppress_compilation in
 @[inherit_doc tprod]
 notation3:100 "⨂ₜ["R"] "(...)", "r:(scoped f => tprod R f) => r
 
@@ -734,7 +730,7 @@ theorem reindex_trans (e : ι ≃ ι₂) (e' : ι₂ ≃ ι₃) :
   apply LinearEquiv.toLinearMap_injective
   ext f
   simp only [LinearEquiv.trans_apply, LinearEquiv.coe_coe, reindex_tprod,
-    LinearMap.coe_compMultilinearMap, Function.comp_apply, MultilinearMap.domDomCongr_apply,
+    LinearMap.coe_compMultilinearMap, Function.comp_apply,
     reindex_comp_tprod]
   congr
 
@@ -747,9 +743,7 @@ theorem reindex_reindex (e : ι ≃ ι₂) (e' : ι₂ ≃ ι₃) (x : ⨂[R] i,
 theorem reindex_symm (e : ι ≃ ι₂) :
     (reindex R (fun _ ↦ M) e).symm = reindex R (fun _ ↦ M) e.symm := by
   ext x
-  simp only [reindex, domDomCongrLinearEquiv', LinearEquiv.coe_symm_mk, LinearEquiv.coe_mk,
-    LinearEquiv.ofLinear_symm_apply, Equiv.symm_symm_apply, LinearEquiv.ofLinear_apply,
-    Equiv.piCongrLeft'_symm]
+  simp [reindex]
 
 @[simp]
 theorem reindex_refl : reindex R s (Equiv.refl ι) = LinearEquiv.refl R _ := by
@@ -769,7 +763,7 @@ with `PiTensorProduct.map`. -/
 theorem map_comp_reindex_eq (f : Π i, s i →ₗ[R] t i) (e : ι ≃ ι₂) :
     map (fun i ↦ f (e.symm i)) ∘ₗ reindex R s e = reindex R t e ∘ₗ map f := by
   ext m
-  simp only [LinearMap.compMultilinearMap_apply, LinearMap.coe_comp, LinearEquiv.coe_coe,
+  simp only [LinearMap.compMultilinearMap_apply, LinearEquiv.coe_coe,
     LinearMap.comp_apply, reindex_tprod, map_tprod]
 
 theorem map_reindex (f : Π i, s i →ₗ[R] t i) (e : ι ≃ ι₂) (x : ⨂[R] i, s i) :
@@ -901,8 +895,7 @@ def tmulEquiv :
 @[simp]
 theorem tmulEquiv_apply (a : ι → M) (b : ι₂ → M) :
     tmulEquiv R M ((⨂ₜ[R] i, a i) ⊗ₜ[R] ⨂ₜ[R] i, b i) = ⨂ₜ[R] i, Sum.elim a b i := by
-  simp [tmulEquiv]
-  rfl
+  simp [tmulEquiv, Sum.elim]
 
 @[simp]
 theorem tmulEquiv_symm_apply (a : ι ⊕ ι₂ → M) :

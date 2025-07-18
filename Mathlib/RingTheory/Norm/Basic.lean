@@ -33,7 +33,7 @@ See also `Algebra.trace`, which is defined similarly as the trace of
 
 ## References
 
- * https://en.wikipedia.org/wiki/Field_norm
+* https://en.wikipedia.org/wiki/Field_norm
 
 -/
 
@@ -182,7 +182,7 @@ theorem norm_eq_prod_embeddings_gen [Algebra R F] (pb : PowerBasis R S)
     (fun σ => σ pb.gen) (fun x => x) ?_]
   · rw [Finset.prod_mem_multiset, Finset.prod_eq_multiset_prod, Multiset.toFinset_val,
       Multiset.dedup_eq_self.mpr, Multiset.map_id]
-    · exact nodup_roots hfx.map
+    · exact nodup_roots (.map hfx)
     · intro x; rfl
   · intro σ; simp only [PowerBasis.liftEquiv'_apply_coe]
 

@@ -26,7 +26,7 @@ There is no additive analogue of `MonoidWithZero`; if there were then `PartENat`
 be an `AddMonoidWithTop`.
 
 * `toWithTop` : the map from `PartENat` to `ℕ∞`, with theorems that it plays well
-with `+` and `≤`.
+  with `+` and `≤`.
 
 * `withTopAddEquiv : PartENat ≃+ ℕ∞`
 * `withTopOrderIso : PartENat ≃o ℕ∞`
@@ -225,7 +225,7 @@ instance partialOrder : PartialOrder PartENat where
     Part.ext' ⟨hyx₁, hxy₁⟩ fun _ _ => le_antisymm (hxy₂ _) (hyx₂ _)
 
 theorem lt_def (x y : PartENat) : x < y ↔ ∃ hx : x.Dom, ∀ hy : y.Dom, x.get hx < y.get hy := by
-  rw [lt_iff_le_not_le, le_def, le_def, not_exists]
+  rw [lt_iff_le_not_ge, le_def, le_def, not_exists]
   constructor
   · rintro ⟨⟨hyx, H⟩, h⟩
     by_cases hx : x.Dom
@@ -242,7 +242,7 @@ theorem lt_def (x y : PartENat) : x < y ↔ ∃ hx : x.Dom, ∀ hy : y.Dom, x.ge
       obtain ⟨hx', h⟩ := h
       exact (hx hx').elim
   · rintro ⟨hx, H⟩
-    exact ⟨⟨fun _ => hx, fun hy => (H hy).le⟩, fun hxy h => not_lt_of_le (h _) (H _)⟩
+    exact ⟨⟨fun _ => hx, fun hy => (H hy).le⟩, fun hxy h => not_lt_of_ge (h _) (H _)⟩
 
 noncomputable instance isOrderedAddMonoid : IsOrderedAddMonoid PartENat :=
   { add_le_add_left := fun a b ⟨h₁, h₂⟩ c =>
@@ -282,7 +282,7 @@ theorem get_le_get {x y : PartENat} {hx : x.Dom} {hy : y.Dom} : x.get hx ≤ y.g
     rw [← coe_le_coe, natCast_get, natCast_get]
 
 theorem le_coe_iff (x : PartENat) (n : ℕ) : x ≤ n ↔ ∃ h : x.Dom, x.get h ≤ n := by
-  show (∃ h : True → x.Dom, _) ↔ ∃ h : x.Dom, x.get h ≤ n
+  change (∃ h : True → x.Dom, _) ↔ ∃ h : x.Dom, x.get h ≤ n
   simp only [forall_prop_of_true, dom_natCast, get_natCast']
 
 theorem lt_coe_iff (x : PartENat) (n : ℕ) : x < n ↔ ∃ h : x.Dom, x.get h < n := by
@@ -295,7 +295,7 @@ theorem coe_le_iff (n : ℕ) (x : PartENat) : (n : PartENat) ≤ x ↔ ∀ h : x
 
 theorem coe_lt_iff (n : ℕ) (x : PartENat) : (n : PartENat) < x ↔ ∀ h : x.Dom, n < x.get h := by
   rw [← some_eq_natCast]
-  simp only [lt_def, exists_prop_of_true, dom_some, forall_true_iff]
+  simp only [lt_def, exists_prop_of_true, dom_some]
   rfl
 
 nonrec theorem eq_zero_iff {x : PartENat} : x = 0 ↔ x ≤ 0 :=
@@ -407,7 +407,7 @@ instance : CanonicallyOrderedAdd PartENat :=
           (coe_le_coe.2 le_self_add).trans_eq (Nat.cast_add _ _)
     exists_add_of_le := fun {a b} =>
       PartENat.casesOn b (fun _ => ⟨⊤, (add_top _).symm⟩) fun b =>
-        PartENat.casesOn a (fun h => ((natCast_lt_top _).not_le h).elim) fun a h =>
+        PartENat.casesOn a (fun h => ((natCast_lt_top _).not_ge h).elim) fun a h =>
           ⟨(b - a : ℕ), by
             rw [← Nat.cast_add, natCast_inj, add_comm, tsub_add_cancel_of_le (coe_le_coe.1 h)]⟩ }
 
@@ -608,7 +608,7 @@ open scoped Classical in
 @[simp]
 theorem toWithTop_add {x y : PartENat} : toWithTop (x + y) = toWithTop x + toWithTop y := by
   refine PartENat.casesOn y ?_ ?_ <;> refine PartENat.casesOn x ?_ ?_ <;>
-    simp [add_top, top_add, ← Nat.cast_add, ← ENat.coe_add]
+    simp [add_top, top_add, ← Nat.cast_add]
 
 open scoped Classical in
 /-- `Equiv` between `PartENat` and `ℕ∞` (for the order isomorphism see

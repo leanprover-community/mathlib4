@@ -193,7 +193,7 @@ instance OneHom.funLike : FunLike (OneHom M N) M N where
 instance OneHom.oneHomClass : OneHomClass (OneHom M N) M N where
   map_one := OneHom.map_one'
 
-library_note "low priority simp lemmas"
+library_note "hom simp lemma priority"
 /--
 The hom class hierarchy allows for a single lemma, such as `map_one`, to apply to a large variety
 of morphism types, so long as they have an instance of `OneHomClass`. For example, this applies to
@@ -209,13 +209,24 @@ the entirety of the `FunLike` hierarchy in order to determine this because so ma
 a significant performance hit when `map_one` fails to apply.
 
 To avoid this problem, we mark these widely applicable simp lemmas with key discimination tree keys
-with `low` priority in order to ensure that they are not tried first.
+with `mid` priority in order to ensure that they are not tried first.
+
+We do not use `low`, to allow bundled morphisms to unfold themselves with `low` priority such that
+the generic morphism lemmas are applied first. For instance, we might have
+```lean
+def fooMonoidHom : M →* N where
+  toFun := foo; map_one' := sorry; map_mul' := sorry
+
+@[simp low] lemma fooMonoidHom_apply (x : M) : fooMonoidHom x = foo x := rfl
+```
+As `map_mul` is tagged `simp mid`, this means that it still fires before `fooMonoidHom_apply`, which
+is the behavior we desire.
 -/
 
 variable [FunLike F M N]
 
-/-- See note [low priority simp lemmas] -/
-@[to_additive (attr := simp low)]
+/-- See note [hom simp lemma priority] -/
+@[to_additive (attr := simp mid)]
 theorem map_one [OneHomClass F M N] (f : F) : f 1 = 1 :=
   OneHomClass.map_one f
 
@@ -306,8 +317,8 @@ instance MulHom.mulHomClass : MulHomClass (M →ₙ* N) M N where
 
 variable [FunLike F M N]
 
-/-- See note [low priority simp lemmas] -/
-@[to_additive (attr := simp low)]
+/-- See note [hom simp lemma priority] -/
+@[to_additive (attr := simp mid)]
 theorem map_mul [MulHomClass F M N] (f : F) (x y : M) : f (x * y) = f x * f y :=
   MulHomClass.map_mul f x y
 
@@ -420,8 +431,8 @@ lemma map_comp_div' [DivInvMonoid G] [DivInvMonoid H] [MulHomClass F G H] (f : F
 
 /-- Group homomorphisms preserve inverse.
 
-See note [low priority simp lemmas] -/
-@[to_additive (attr := simp low) "Additive group homomorphisms preserve negation."]
+See note [hom simp lemma priority] -/
+@[to_additive (attr := simp mid) "Additive group homomorphisms preserve negation."]
 theorem map_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
     (f : F) (a : G) : f a⁻¹ = (f a)⁻¹ :=
   eq_inv_of_mul_eq_one_left <| map_mul_eq_one f <| inv_mul_cancel _
@@ -441,8 +452,8 @@ lemma map_comp_mul_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : 
 
 /-- Group homomorphisms preserve division.
 
-See note [low priority simp lemmas] -/
-@[to_additive (attr := simp low) "Additive group homomorphisms preserve subtraction."]
+See note [hom simp lemma priority] -/
+@[to_additive (attr := simp mid) "Additive group homomorphisms preserve subtraction."]
 theorem map_div [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) :
     ∀ a b, f (a / b) = f a / f b := map_div' _ <| map_inv f
 
@@ -450,8 +461,8 @@ theorem map_div [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) :
 lemma map_comp_div [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (g h : ι → G) :
     f ∘ (g / h) = f ∘ g / f ∘ h := by ext; simp
 
-/-- See note [low priority simp lemmas] -/
-@[to_additive (attr := simp low) (reorder := 9 10)]
+/-- See note [hom simp lemma priority] -/
+@[to_additive (attr := simp mid) (reorder := 9 10)]
 theorem map_pow [Monoid G] [Monoid H] [MonoidHomClass F G H] (f : F) (a : G) :
     ∀ n : ℕ, f (a ^ n) = f a ^ n
   | 0 => by rw [pow_zero, pow_zero, map_one]
@@ -474,8 +485,8 @@ lemma map_comp_zpow' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H] (f
 
 /-- Group homomorphisms preserve integer power.
 
-See note [low priority simp lemmas] -/
-@[to_additive (attr := simp low) (reorder := 9 10)
+See note [hom simp lemma priority] -/
+@[to_additive (attr := simp mid) (reorder := 9 10)
 "Additive group homomorphisms preserve integer scaling."]
 theorem map_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
     (f : F) (g : G) (n : ℤ) : f (g ^ n) = f g ^ n := map_zpow' f (map_inv f) g n

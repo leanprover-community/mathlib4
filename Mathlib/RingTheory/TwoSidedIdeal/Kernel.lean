@@ -33,8 +33,8 @@ def ker : TwoSidedIdeal R :=
   .mk
   { r := fun x y ↦ f x = f y
     iseqv := by constructor <;> aesop
-    mul' := by intro; simp_all [map_add]
-    add' := by intro; simp_all [map_mul] }
+    mul' := by intro; simp_all
+    add' := by intro; simp_all }
 
 @[simp]
 lemma ker_ringCon {x y : R} : (ker f).ringCon x y ↔ f x = f y := Iff.rfl

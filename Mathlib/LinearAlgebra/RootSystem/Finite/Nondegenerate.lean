@@ -24,25 +24,25 @@ Another application is to the faithfulness of the Weyl group action on roots, an
 Weyl group.
 
 ## Main results:
- * `RootPairing.IsAnisotropic`: We say a finite root pairing is anisotropic if there are no roots /
-   coroots which have length zero wrt the root / coroot forms.
- * `RootPairing.rootForm_pos_of_nonzero`: `RootForm` is strictly positive on non-zero linear
+* `RootPairing.IsAnisotropic`: We say a finite root pairing is anisotropic if there are no roots /
+  coroots which have length zero wrt the root / coroot forms.
+* `RootPairing.rootForm_pos_of_nonzero`: `RootForm` is strictly positive on non-zero linear
   combinations of roots. This gives us a convenient way to eliminate certain Dynkin diagrams from
   the classification, since it suffices to produce a nonzero linear combination of simple roots with
   non-positive norm.
- * `RootPairing.rootForm_restrict_nondegenerate_of_ordered`: The root form is non-degenerate if
-   the coefficients are ordered.
- * `RootPairing.rootForm_restrict_nondegenerate_of_isAnisotropic`: the root form is
-   non-degenerate if the coefficients are a field and the pairing is crystallographic.
+* `RootPairing.rootForm_restrict_nondegenerate_of_ordered`: The root form is non-degenerate if
+  the coefficients are ordered.
+* `RootPairing.rootForm_restrict_nondegenerate_of_isAnisotropic`: the root form is
+  non-degenerate if the coefficients are a field and the pairing is crystallographic.
 
 ## References:
- * [N. Bourbaki, *Lie groups and Lie algebras. Chapters 4--6*][bourbaki1968]
- * [M. Demazure, *SGA III, Exposé XXI, Données Radicielles*][demazure1970]
+* [N. Bourbaki, *Lie groups and Lie algebras. Chapters 4--6*][bourbaki1968]
+* [M. Demazure, *SGA III, Exposé XXI, Données Radicielles*][demazure1970]
 
 ## Todo
- * Weyl-invariance of `RootForm` and `CorootForm`
- * Faithfulness of Weyl group perm action, and finiteness of Weyl group, over ordered rings.
- * Relation to Coxeter weight.
+* Weyl-invariance of `RootForm` and `CorootForm`
+* Faithfulness of Weyl group perm action, and finiteness of Weyl group, over ordered rings.
+* Relation to Coxeter weight.
 -/
 
 noncomputable section
@@ -90,13 +90,6 @@ instance instIsAnisotropicOfIsCrystallographic [CharZero R] [P.IsCrystallographi
   symm := P.rootForm_symmetric
   ne_zero := IsAnisotropic.rootForm_root_ne_zero
   isOrthogonal_reflection := P.rootForm_reflection_reflection_apply
-
-omit [Fintype ι] in
-lemma pairingIn_zero_iff {S : Type*} [CommRing S] [Algebra S R] [FaithfulSMul S R]
-    [P.IsValuedIn S] [IsDomain R] [NeZero (2 : R)] {i j : ι} :
-    P.pairingIn S i j = 0 ↔ P.pairingIn S j i = 0 := by
-  simp only [← FaithfulSMul.algebraMap_eq_zero_iff S R, algebraMap_pairingIn,
-    P.pairing_zero_iff' (i := i) (j := j)]
 
 section DomainAlg
 
@@ -146,13 +139,10 @@ lemma exists_coroot_ne [P.IsAnisotropic]
     {x : P.rootSpan S} (hx : x ≠ 0) :
     ∃ i, P.coroot'In S i x ≠ 0 := by
   have hI := P.polarizationIn_Injective S
-  have := (map_ne_zero_iff (P.PolarizationIn S) hI).mpr hx
-  rw [PolarizationIn_apply] at this
-  by_contra h
-  rw [not_exists_not] at h
-  have bad : ∑ i : ι, (P.coroot'In S i) x • P.coroot i = 0 :=
-    Fintype.sum_eq_zero (fun a ↦ (P.coroot'In S a) x • P.coroot a) fun i ↦ by simp [h i]
-  apply this bad
+  have h := (map_ne_zero_iff (P.PolarizationIn S) hI).mpr hx
+  rw [PolarizationIn_apply] at h
+  contrapose! h
+  exact Fintype.sum_eq_zero (fun a ↦ (P.coroot'In S a) x • P.coroot a) fun i ↦ by simp [h i]
 
 end DomainAlg
 
@@ -221,6 +211,11 @@ lemma disjoint_rootSpan_ker_rootForm :
 lemma disjoint_corootSpan_ker_corootForm :
     Disjoint (P.corootSpan R) (LinearMap.ker P.CorootForm) :=
   P.flip.disjoint_rootSpan_ker_rootForm
+
+lemma _root_.RootSystem.rootForm_nondegenerate (P : RootSystem ι R M N) [P.IsAnisotropic] :
+    P.RootForm.Nondegenerate :=
+  LinearMap.BilinForm.nondegenerate_iff_ker_eq_bot.mpr <| by
+    simpa using P.disjoint_rootSpan_ker_rootForm
 
 end IsDomain
 
