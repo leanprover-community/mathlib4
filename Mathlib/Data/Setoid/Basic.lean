@@ -445,11 +445,15 @@ end Setoid
 nonrec theorem Quotient.subsingleton_iff {s : Setoid α} : Subsingleton (Quotient s) ↔ s = ⊤ := by
   simp_rw [subsingleton_iff, Quotient.forall, Quotient.eq, Setoid.eq_top_iff]
 
+@[simp]
+nonrec theorem Quotient.nontrivial_iff {s : Setoid α} : Nontrivial (Quotient s) ↔ s ≠ ⊤ := by
+  simp [← not_subsingleton_iff_nontrivial]
+
 instance : Subsingleton (Quotient (⊤ : Setoid α)) :=
   Quotient.subsingleton_iff.mpr rfl
 
-instance {s : Setoid α} [hs : Fact (s ≠ ⊤)] : Nontrivial (Quotient s) :=
-  not_subsingleton_iff_nontrivial.mp (Quotient.subsingleton_iff.not.mpr hs.out)
+instance {s : Setoid α} [hs : Fact (s ≠ ⊤)] : Nontrivial (Quotient s) := by
+  simpa using hs.out
 
 theorem Quot.subsingleton_iff (r : α → α → Prop) :
     Subsingleton (Quot r) ↔ Relation.EqvGen r = ⊤ := by
