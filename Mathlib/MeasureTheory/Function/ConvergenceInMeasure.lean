@@ -54,13 +54,17 @@ def TendstoInMeasure [EDist E] {_ : MeasurableSpace α} (μ : Measure α) (f : �
     (l : Filter ι) (g : α → E) : Prop :=
   ∀ ε, 0 < ε → Tendsto (fun i => μ { x | ε ≤ edist (f i x) (g x) }) l (𝓝 0)
 
-lemma tendstoInMeasure_of_ne_top [PseudoMetricSpace E] {f : ι → α → E} {l : Filter ι} {g : α → E}
+lemma tendstoInMeasure_of_ne_top [EDist E] {f : ι → α → E} {l : Filter ι} {g : α → E}
     (h : ∀ ε, 0 < ε → ε ≠ ∞ → Tendsto (fun i => μ { x | ε ≤ edist (f i x) (g x) }) l (𝓝 0)) :
     TendstoInMeasure μ f l g := by
   intro ε hε
   by_cases hε_top : ε = ∞
-  · simp only [hε_top, top_le_iff, edist_ne_top, Set.setOf_false, measure_empty]
-    exact tendsto_const_nhds
+  · have h1 : Tendsto (fun n ↦ μ {ω | 1 ≤ edist (f n ω) (g ω)}) l (𝓝 0) := h 1 (by simp) (by simp)
+    refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds h1 (fun _ ↦ zero_le') ?_
+    intro n
+    simp only [hε_top]
+    gcongr
+    simp
   · exact h ε hε hε_top
 
 theorem tendstoInMeasure_iff_enorm [SeminormedAddCommGroup E] {l : Filter ι} {f : ι → α → E}
@@ -142,7 +146,7 @@ end TendstoInMeasure
 
 section ExistsSeqTendstoAe
 
-variable [EMetricSpace E]
+variable [PseudoEMetricSpace E]
 variable {f : ℕ → α → E} {g : α → E}
 
 /-- Auxiliary lemma for `tendstoInMeasure_of_tendsto_ae`. -/
