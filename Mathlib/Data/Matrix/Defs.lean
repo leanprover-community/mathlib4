@@ -586,11 +586,16 @@ variable {S : Set α}
 theorem transpose_mem_matrix_iff {M : Matrix m n α} :
     Mᵀ ∈ S.matrix ↔ M ∈ S.matrix := forall_comm
 
-theorem submatrix_mem_matrix {M : Matrix m n α} (hM : M ∈ S.matrix) {r : l → m} {c : o → n} :
+theorem submatrix_mem_matrix {M : Matrix m n α} {r : l → m} {c : o → n} (hM : M ∈ S.matrix) :
     M.submatrix r c ∈ S.matrix := by simp_all [Set.mem_matrix]
 
-theorem mem_matrix_of_submatrix_mem_matrix [Nonempty l] [Nonempty o] {M : Matrix m n α} :
-    (∀ (r : l → m) (c : o → n), M.submatrix r c ∈ S.matrix) → M ∈ S.matrix :=
-  fun h _ _ => h (fun _ => _) (fun _ => _) Classical.ofNonempty Classical.ofNonempty
+theorem submatrix_mem_matrix_iff_mem_matrix {M : Matrix m n α} {r : l → m} {c : o → n}
+    (hr : Function.Surjective r) (hc : Function.Surjective c) :
+    M.submatrix r c ∈ S.matrix ↔ M ∈ S.matrix :=
+  ⟨ fun h i j =>
+      let ⟨ a , ha ⟩ := hr i
+      let ⟨ b , hb ⟩ := hc j
+      ha ▸ hb ▸ h a b,
+    fun hM => submatrix_mem_matrix hM ⟩
 
 end Matrix
