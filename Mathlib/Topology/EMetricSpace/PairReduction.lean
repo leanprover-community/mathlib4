@@ -334,7 +334,7 @@ lemma iSup_edist_pairSet {E : Type*} [PseudoEMetricSpace E] (ha : 1 < a) (f : T 
   · have h' : t ∉ (logSizeBallSeq J hJ a c (l + 1)).finset := by
       have hl : l < #J - 1 := by
         by_contra hl
-        simp only [not_lt, tsub_le_iff_right, P] at hl
+        simp only [not_lt, tsub_le_iff_right] at hl
         have hlJ : l + 1 = #J := by
           refine Nat.le_antisymm_iff.mpr ⟨?_, hl⟩
           rw [← Nat.sub_add_cancel <| Order.one_le_iff_pos.mpr (Finset.card_pos.mpr hJ)]
