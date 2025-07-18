@@ -205,7 +205,7 @@ lemma linearProjOfIsCompl_eq_self_sub_linearProjOfIsCompl (hpq : IsCompl p q) (x
     (q.linearProjOfIsCompl p hpq.symm x : E) = x - (p.linearProjOfIsCompl q hpq x : E) := by
   rw [eq_sub_iff_add_eq, linearProjOfIsCompl_add_linearProjOfIsCompl_eq_self]
 
-/-- projection to `p` along `q` of `x` equals `x` if and only if `x ∈ p` -/
+/-- The projection to `p` along `q` of `x` equals `x` if and only if `x ∈ p`. -/
 @[simp] lemma linearProjOfIsCompl_eq_self_iff (hpq : IsCompl p q) (x : E) :
     (p.linearProjOfIsCompl q hpq x : E) = x ↔ x ∈ p := by
   rw [eq_comm, ← sub_eq_zero, ← linearProjOfIsCompl_eq_self_sub_linearProjOfIsCompl,
