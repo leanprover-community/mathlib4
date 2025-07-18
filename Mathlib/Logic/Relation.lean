@@ -399,6 +399,12 @@ theorem tail' (hab : ReflTransGen r a b) (hbc : r b c) : TransGen r a c := by
 theorem head (hab : r a b) (hbc : TransGen r b c) : TransGen r a c :=
   head' hab hbc.to_reflTransGen
 
+instance : Trans (TransGen r) r (TransGen r) := 
+  ⟨tail⟩
+
+instance : Trans r (TransGen r) (TransGen r) :=
+  ⟨head⟩
+
 @[elab_as_elim]
 theorem head_induction_on {P : ∀ a : α, TransGen r a b → Prop} {a : α} (h : TransGen r a b)
     (base : ∀ {a} (h : r a b), P a (single h))
