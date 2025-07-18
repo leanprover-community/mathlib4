@@ -727,6 +727,12 @@ noncomputable def unique_of_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)]
   rw [smul_eq_of_normal] at h1 h2
   rw [← h1, ← h2]
 
+theorem normal_of_subsingleton {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)]
+    (hp : Subsingleton (Sylow p G)) (P : Sylow p G) :
+    P.Normal := by
+  rw [← Subgroup.normalizer_eq_top_iff, ← Subgroup.index_eq_one,
+    ← Sylow.card_eq_index_normalizer, Nat.card_unique]
+
 section Pointwise
 
 open Pointwise
@@ -739,6 +745,11 @@ theorem characteristic_of_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (
   change (Φ • P).toSubgroup = P.toSubgroup
   congr
   simp [eq_iff_true_of_subsingleton]
+
+theorem characteristic_of_subsingleton {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)]
+    (hp : Subsingleton (Sylow p G)) (P : Sylow p G) :
+    P.Characteristic :=
+  P.characteristic_of_normal (P.normal_of_subsingleton hp)
 
 end Pointwise
 

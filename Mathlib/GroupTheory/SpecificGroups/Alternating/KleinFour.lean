@@ -74,92 +74,37 @@ def kleinFour : Subgroup (alternatingGroup α) :=
 theorem mem_kleinFour_of_order_two_pow (hα4 : Nat.card α = 4) {g : Perm α}
     (hg0 : g ∈ alternatingGroup α) {n : ℕ} (hg : orderOf g ∣ 2 ^ n) :
     g.cycleType = { } ∨ g.cycleType = {2, 2} := by
-  rw [← lcm_cycleType] at hg
   rw [mem_alternatingGroup, sign_of_cycleType] at hg0
-  have hg4 : g.cycleType.sum ≤ 4 := by
-    rw [← hα4, sum_cycleType, Nat.card_eq_fintype_card]
-    apply Finset.card_le_univ
-  by_cases h4 : 4 ∈ g.cycleType
-  · exfalso
-    suffices g.cycleType = {4} by
-      rw [this, ← Units.eq_iff] at hg0; norm_num at hg0
-    rw [← Multiset.cons_erase h4]
-    apply symm
-    rw [Multiset.singleton_eq_cons_iff]
-    apply And.intro rfl
-    rw [← Multiset.cons_erase h4] at hg4
-    simp only [Multiset.sum_cons, add_le_iff_nonpos_right,
-      le_zero_iff, Multiset.sum_eq_zero_iff] at hg4
-    ext x; simp only [Multiset.count_zero, Multiset.count_eq_zero]
-    intro hx
-    apply not_le.mpr (Equiv.Perm.one_lt_of_mem_cycleType (Multiset.mem_of_mem_erase hx))
-    simp [hg4 x hx]
-  · -- we know 4 ∉ g.cycleType,
-    suffices g.cycleType = Multiset.replicate (Multiset.card g.cycleType) 2 by
-      rw [this] at hg0
-      simp only [pow_add, Multiset.sum_replicate,
-        Multiset.card_replicate] at hg0
-      -- prove : Multiset.card g.cycleType ≤ 2
-      have hk2 : Multiset.card g.cycleType ≤ 2 := by
-        rw [this, Multiset.sum_replicate] at hg4
-        apply Nat.le_of_mul_le_mul_left
-        · rw [Nat.mul_comm 2]
-          exact hg4
-        norm_num
-      rcases Nat.eq_or_lt_of_le hk2 with hk2 | hk1
-      · -- g.cycleType.card = 2
-        rw [hk2] at this
-        simp only [this, Multiset.replicate_succ, Multiset.empty_eq_zero,
-          Multiset.cons_ne_zero, Multiset.insert_eq_cons, false_or,
-          Multiset.replicate_zero, Multiset.cons_zero]
-      · -- we know : g.cycleType.card ≤ 1
-        rw [Nat.lt_succ_iff] at hk1
-        rcases Nat.eq_or_lt_of_le hk1 with hk1 | hk0
-        · -- g.cycleType.card = 1 : exfalso
-          exfalso
-          simp [hk1] at hg0
-        · -- g.cycleType.card = 0
-          simp only [Nat.lt_one_iff] at hk0
-          left
-          simpa [hk0] using this
-    rw [Multiset.eq_replicate_card]
-    intro i hi
-    have : i ∣ 2 ^ n := by
-      apply Nat.dvd_trans _ hg
-      exact Multiset.dvd_lcm hi
-    rw [Nat.dvd_prime_pow Nat.prime_two] at this
-    obtain ⟨k, hk, hlcm⟩ := this
-    suffices k = 1 by simp [hlcm, this]
-    apply le_antisymm
-    · rw [← not_lt]
-      intro hk1
-      suffices k = 2 by
-        simp only [this, Nat.reducePow] at hlcm
-        apply h4
-        rwa [← hlcm]
-      refine le_antisymm ?_ hk1
-      · -- k ≤ 2
-        rw [← Nat.pow_le_pow_iff_right (Nat.le_refl 2)]
-        norm_num
-        rw [← hα4, ← hlcm, Nat.card_eq_fintype_card]
-        apply le_trans (le_card_support_of_mem_cycleType hi)
-        apply Finset.card_le_univ
-    · rw [Nat.one_le_iff_ne_zero]
-      rintro ⟨rfl⟩
-      rw [hlcm, pow_zero] at hi
-      apply Nat.lt_irrefl 1
-      exact one_lt_of_mem_cycleType hi
+  have h1 : g.cycleType.sum ≤ 4 := by
+    rw [sum_cycleType, ← hα4, Nat.card_eq_fintype_card]
+    exact g.support.card_le_univ
+  have h2 : ∀ k ∈ g.cycleType, k = 2 := by
+    intro k hk
+    have hk4 := (Multiset.le_sum_of_mem hk).trans h1
+    have hk1 := one_lt_of_mem_cycleType hk
+    interval_cases k
+    · rfl
+    · rw [← lcm_cycleType, Multiset.lcm_dvd] at hg
+      exact Nat.prime_eq_prime_of_dvd_pow Nat.prime_three Nat.prime_two (hg 3 hk)
+    · contrapose! hg0
+      obtain ⟨t, ht⟩ := Multiset.exists_cons_of_mem hk
+      rw [ht, Multiset.sum_cons, add_le_iff_nonpos_right, le_zero_iff,
+        Multiset.sum_eq_zero_iff, ← Multiset.eq_replicate_card] at h1
+      have h : 0 ∉ g.cycleType := Nat.not_succ_lt_self ∘ one_lt_of_mem_cycleType
+      replace h : t = 0 := by simpa [h1 ▸ ht, Multiset.mem_replicate] using h
+      simp [ht, h, Units.ext_iff]
+  rw [← Multiset.eq_replicate_card] at h2
+  rw [h2, Multiset.sum_replicate, smul_eq_mul, ← Nat.le_div_iff_mul_le two_pos] at h1
+  interval_cases g.cycleType.card <;> simp [h2, Units.ext_iff] at hg0 ⊢
 
 theorem card_of_four (hα4 : Nat.card α = 4) :
     Nat.card (alternatingGroup α) = 12 := by
   have : Nontrivial α := by
     rw [← Finite.one_lt_card_iff_nontrivial, hα4]
     norm_num
-  apply mul_right_injective₀ (by norm_num : 2 ≠ 0)
-  dsimp
-  rw [Nat.card_eq_fintype_card, two_mul_card_alternatingGroup,
-    Fintype.card_perm, ← Nat.card_eq_fintype_card, hα4]
-  rfl
+  rw [Nat.card_eq_fintype_card, card_alternatingGroup,
+    ← Nat.card_eq_fintype_card, hα4]
+  decide
 
 theorem card_two_sylow_of_four (hα4 : Nat.card α = 4) (S : Sylow 2 (alternatingGroup α)) :
     Nat.card S = 4 := by
@@ -195,46 +140,27 @@ theorem two_sylow_carrier_of_four (hα4 : Nat.card α = 4) (S : Sylow 2 (alterna
 
 theorem two_sylow_eq_kleinFour_of_four (hα4 : Nat.card α = 4) (S : Sylow 2 (alternatingGroup α)) :
     S = kleinFour α := by
-  classical
-  apply le_antisymm
-  · intro k
-    rw [← Subgroup.mem_carrier, two_sylow_carrier_of_four  hα4 S, Set.mem_setOf_eq, or_imp]
-    constructor
-    · intro hk
-      suffices k = 1 by
-        rw [this]; exact Subgroup.one_mem _
-      rw [← Subtype.coe_inj, Subgroup.coe_one, ← cycleType_eq_zero, hk]
-    · intro hk
-      simp only [kleinFour]
-      apply Subgroup.subset_closure
-      simp only [Set.mem_setOf_eq]
-      exact hk
-  · simp only [kleinFour, Subgroup.closure_le]
-    intro g hg
-    simp only [SetLike.mem_coe, ← Subgroup.mem_carrier, two_sylow_carrier_of_four hα4 S]
-    apply Or.intro_right
-    simpa using hg
+  have h : S = {1} ∪ {g : alternatingGroup α | (g.1).cycleType = {2, 2}} :=
+    (two_sylow_carrier_of_four hα4 S).trans (by ext; simp)
+  rw [kleinFour, ← Subgroup.closure_insert_one, ← Set.singleton_union, ← h]
+  exact S.closure_eq.symm
 
-theorem card_two_sylow_eq_one (hα4 : Nat.card α = 4) :
-    Nat.card (Sylow 2 (alternatingGroup α)) = 1 := by
-  rw [Nat.card_eq_fintype_card, Fintype.card_eq_one_iff]
-  obtain ⟨S : Sylow 2 (alternatingGroup α)⟩ := Sylow.nonempty (G := alternatingGroup α)
-  use S
-  intro T
-  rw [Sylow.ext_iff]
-  simp [two_sylow_eq_kleinFour_of_four hα4]
+theorem subsingleton_two_sylow (hα4 : Nat.card α = 4) :
+    Subsingleton (Sylow 2 (alternatingGroup α)) where
+  allEq S T := by
+    rw [Sylow.ext_iff]
+    simp [two_sylow_eq_kleinFour_of_four hα4]
 
-theorem characteristic_kleinFour_of_four (hα4 : Nat.card α = 4) :
+theorem characteristic_kleinFour (hα4 : Nat.card α = 4) :
     (kleinFour α).Characteristic := by
   obtain ⟨S : Sylow 2 (alternatingGroup α)⟩ := Sylow.nonempty (G := alternatingGroup α)
   rw [← two_sylow_eq_kleinFour_of_four hα4 S]
-  refine Sylow.characteristic_of_normal S ?_
-  rw [← Subgroup.normalizer_eq_top_iff, ← Subgroup.index_eq_one,
-    ← Sylow.card_eq_index_normalizer, card_two_sylow_eq_one hα4]
+  apply Sylow.characteristic_of_subsingleton
+  exact subsingleton_two_sylow hα4
 
 theorem normal_kleinFour (hα4 : Nat.card α = 4) :
     (kleinFour α).Normal := by
-  have _ := characteristic_kleinFour_of_four hα4
+  have _ := characteristic_kleinFour hα4
   apply Subgroup.normal_of_characteristic
 
 theorem kleinFour_card (hα4 : Nat.card α = 4) :

@@ -115,6 +115,14 @@ theorem two_mul_card_alternatingGroup [Nontrivial α] :
     2 * card (alternatingGroup α) = card (Perm α) := by
   simp only [← Nat.card_eq_fintype_card, ← alternatingGroup.index_eq_two (α := α), index_mul_card]
 
+theorem card_alternatingGroup [Nontrivial α] :
+    card (alternatingGroup α) = (card α).factorial / 2 := by
+  rw [← Nat.mul_right_inj (a := 2) two_ne_zero, two_mul_card_alternatingGroup,
+    mul_comm, card_perm]
+  rw [Nat.div_mul_cancel (Nat.dvd_factorial zero_lt_two _)]
+  change 1 < card α
+  rwa [one_lt_card_iff_nontrivial]
+
 namespace alternatingGroup
 
 open Equiv.Perm
