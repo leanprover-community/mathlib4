@@ -68,7 +68,7 @@ theorem birkhoffSum_of_comp_eq {f : α → α} {φ : α → M} (h : φ ∘ f = �
   funext x
   suffices ∀ k, φ (f^[k] x) = φ x by simp [birkhoffSum, this]
   intro k
-  rw [show φ (f^[k] x) = (φ ∘ f^[k]) x by rfl, iterate_invariant h k]
+  rw [← Function.comp_apply (f := φ), iterate_invariant h k]
 
 end AddCommMonoid
 
