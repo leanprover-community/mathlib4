@@ -11,7 +11,7 @@ import Mathlib.RingTheory.Polynomial.Nilpotent
 
 We prove that
 - `MvPolynomial.isNilpotent_iff`:
-  A multivariate polynomial is nilpotent iff all its coefficents are.
+  A multivariate polynomial is nilpotent iff all its coefficients are.
 - `MvPolynomial.isUnit_iff`:
   A multivariate polynomial is invertible iff its constant term is invertible
   and its other coefficients are nilpotent.
@@ -59,10 +59,10 @@ theorem isUnit_iff : IsUnit P ↔ IsUnit (P.coeff 0) ∧ ∀ i ≠ 0, IsNilpoten
     obtain ⟨i, hi⟩ : ∃ i, n i ≠ 0 := by simpa [Finsupp.ext_iff] using hn
     let e := (optionEquivLeft _ _).symm.trans (renameEquiv R (Equiv.optionSubtypeNe i))
     have H := (Polynomial.coeff_isUnit_isNilpotent_of_isUnit (H.map e.symm)).2 (n i) hi
-    simp only [ne_eq, isNilpotent_iff_eq_zero, isNilpotent_iff] at H
+    simp only [ne_eq, isNilpotent_iff] at H
     convert ← H (n.equivMapDomain (Equiv.optionSubtypeNe i).symm).some
     refine (optionEquivLeft_coeff_coeff _ _ _ _).trans ?_
-    simp [e, optionEquivLeft_coeff_coeff, Finsupp.equivMapDomain_eq_mapDomain,
+    simp [Finsupp.equivMapDomain_eq_mapDomain,
       coeff_rename_mapDomain _ (Equiv.optionSubtypeNe i).symm.injective]
   · have : IsNilpotent (P - C (P.coeff 0)) := by
       simp +contextual [isNilpotent_iff, apply_ite, eq_comm, h₂]

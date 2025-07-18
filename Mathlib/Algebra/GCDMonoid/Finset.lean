@@ -50,7 +50,7 @@ theorem lcm_def : s.lcm f = (s.1.map f).lcm :=
 
 @[simp]
 theorem lcm_empty : (∅ : Finset β).lcm f = 1 :=
-  fold_empty
+  rfl
 
 @[simp]
 theorem lcm_dvd_iff {a : α} : s.lcm f ∣ a ↔ ∀ b ∈ s, f b ∣ a := by
@@ -123,7 +123,7 @@ theorem gcd_def : s.gcd f = (s.1.map f).gcd :=
 
 @[simp]
 theorem gcd_empty : (∅ : Finset β).gcd f = 0 :=
-  fold_empty
+  rfl
 
 theorem dvd_gcd_iff {a : α} : a ∣ s.gcd f ↔ ∀ b ∈ s, a ∣ f b := by
   apply Iff.trans Multiset.dvd_gcd
@@ -178,9 +178,9 @@ theorem gcd_eq_zero_iff : s.gcd f = 0 ↔ ∀ x : β, x ∈ s → f x = 0 := by
   constructor <;> intro h
   · intro b bs
     apply h (f b)
-    simp only [Multiset.mem_map, mem_def.1 bs]
+    simp only [Multiset.mem_map]
     use b
-    simp only [mem_def.1 bs, eq_self_iff_true, and_self]
+    simp only [mem_def.1 bs, and_self]
   · intro a as
     rw [Multiset.mem_map] at as
     rcases as with ⟨b, ⟨bs, rfl⟩⟩

@@ -27,7 +27,7 @@ lemma CommRingCat.epi_iff_tmul_eq_tmul {R S : Type u} [CommRing R] [CommRing S] 
     we need to add `(R := R) (A := S)` in the next line to deal with unification issues. -/
     have := H.1 (CommRingCat.ofHom <| Algebra.TensorProduct.includeLeftRingHom (R := R))
       (CommRingCat.ofHom <| (Algebra.TensorProduct.includeRight (R := R) (A := S)).toRingHom)
-      (by ext r; show algebraMap R S r ⊗ₜ 1 = 1 ⊗ₜ algebraMap R S r;
+      (by ext r; change algebraMap R S r ⊗ₜ 1 = 1 ⊗ₜ algebraMap R S r;
           simp only [Algebra.algebraMap_eq_smul_one, smul_tmul])
     exact RingHom.congr_fun (congrArg Hom.hom this)
   · refine fun H ↦ ⟨fun {T} f g e ↦ ?_⟩

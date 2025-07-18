@@ -449,7 +449,7 @@ theorem one_add_le_sup_seminorm_apply {m : ℕ × ℕ} {k n : ℕ} (hk : k ≤ m
     (1 + ‖x‖) ^ k * ‖iteratedFDeriv ℝ n f x‖ ≤
       2 ^ m.1 * (Finset.Iic m).sup (fun m => SchwartzMap.seminorm 𝕜 m.1 m.2) f := by
   rw [add_comm, add_pow]
-  simp only [one_pow, mul_one, Finset.sum_congr, Finset.sum_mul]
+  simp only [one_pow, mul_one, Finset.sum_mul]
   norm_cast
   rw [← Nat.sum_range_choose m.1]
   push_cast
@@ -552,7 +552,7 @@ lemma _root_.Function.HasTemperateGrowth.of_fderiv {f : E → F}
 lemma _root_.Function.HasTemperateGrowth.zero :
     Function.HasTemperateGrowth (fun _ : E ↦ (0 : F)) := by
   refine ⟨contDiff_const, fun n ↦ ⟨0, 0, fun x ↦ ?_⟩⟩
-  simp only [iteratedFDeriv_zero_fun, Pi.zero_apply, norm_zero, forall_const]
+  simp only [iteratedFDeriv_zero_fun, Pi.zero_apply, norm_zero]
   positivity
 
 lemma _root_.Function.HasTemperateGrowth.const (c : F) :
@@ -797,10 +797,10 @@ def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemp
     𝓢(D, E) →L[𝕜] 𝓢(D, G) := by
   refine mkCLM (fun f x => B (f x) (g x))
     (fun _ _ _ => by
-      simp only [map_add, add_left_inj, Pi.add_apply, eq_self_iff_true,
+      simp only [map_add, Pi.add_apply,
         ContinuousLinearMap.add_apply])
     (fun _ _ _ => by
-      simp only [smul_apply, map_smul, ContinuousLinearMap.coe_smul', Pi.smul_apply,
+      simp only [map_smul, ContinuousLinearMap.coe_smul', Pi.smul_apply,
         RingHom.id_apply])
     (fun f => (B.bilinearRestrictScalars ℝ).isBoundedBilinearMap.contDiff.comp
       (f.smooth'.prodMk hg.1)) ?_
@@ -857,7 +857,7 @@ provided that the function is temperate and growths polynomially near infinity. 
 def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
     (hg_upper : ∃ (k : ℕ) (C : ℝ), ∀ x, ‖x‖ ≤ C * (1 + ‖g x‖) ^ k) : 𝓢(E, F) →L[𝕜] 𝓢(D, F) := by
   refine mkCLM (fun f x => f (g x))
-    (fun _ _ _ => by simp only [add_left_inj, Pi.add_apply, eq_self_iff_true]) (fun _ _ _ => rfl)
+    (fun _ _ _ => by simp only [Pi.add_apply]) (fun _ _ _ => rfl)
     (fun f => f.smooth'.comp hg.1) ?_
   rintro ⟨k, n⟩
   rcases hg.norm_iteratedFDeriv_le_uniform_aux n with ⟨l, C, hC, hgrowth⟩
@@ -892,7 +892,7 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
     rw [mul_pow]
     have hN₁' := (lt_of_lt_of_le zero_lt_one hN₁).ne'
     gcongr
-    · exact le_trans (by simp [hC]) (le_self_pow₀ (by simp [hC]) hN₁')
+    · exact le_trans (by simp) (le_self_pow₀ (by simp [hC]) hN₁')
     · refine le_self_pow₀ (one_le_pow₀ ?_) hN₁'
       simp only [le_add_iff_nonneg_right, norm_nonneg]
   have := norm_iteratedFDeriv_comp_le f.smooth' hg.1 (mod_cast le_top) x hbound hgrowth'
@@ -1267,7 +1267,7 @@ theorem eLpNorm_le_seminorm (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
   calc eLpNorm (⇑f) p μ
   _ = eLpNorm ((fun x : E ↦ (1 + ‖x‖) ^ (-k : ℝ)) • fun x ↦ (1 + ‖x‖) ^ k • f x) p μ := by
     refine congrArg (eLpNorm · p μ) (funext fun x ↦ ?_)
-    simp [Real.rpow_neg (h_one_add x).le, (h_one_add x).ne']
+    simp [(h_one_add x).ne']
   _ ≤ eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ * eLpNorm (fun x ↦ (1 + ‖x‖) ^ k • f x) ⊤ μ := by
     refine eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top p _ ?_
     refine Continuous.aestronglyMeasurable ?_

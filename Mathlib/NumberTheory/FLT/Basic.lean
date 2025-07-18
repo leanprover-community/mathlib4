@@ -95,34 +95,34 @@ lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
     · refine h a.natAbs b.natAbs c.natAbs (by positivity) (by positivity) (by positivity)
         (Int.natCast_inj.1 ?_)
       push_cast
-      simp only [abs_of_neg, neg_pow a, neg_pow b, neg_pow c, ← mul_add, habc, *]
+      simp only [abs_of_neg, neg_pow a, neg_pow b, neg_pow c, ← mul_add, *]
     · exact (by positivity : 0 < c ^ n).not_gt <| habc.symm.trans_lt <| add_neg (hn.pow_neg ha) <|
         hn.pow_neg hb
     · refine h b.natAbs c.natAbs a.natAbs (by positivity) (by positivity) (by positivity)
         (Int.natCast_inj.1 ?_)
       push_cast
-      simp only [abs_of_pos, abs_of_neg, hn.neg_pow, habc, add_neg_eq_iff_eq_add,
+      simp only [abs_of_pos, abs_of_neg, hn.neg_pow, add_neg_eq_iff_eq_add,
         eq_neg_add_iff_add_eq, *]
     · refine h a.natAbs c.natAbs b.natAbs (by positivity) (by positivity) (by positivity)
         (Int.natCast_inj.1 ?_)
       push_cast
-      simp only [abs_of_pos, abs_of_neg, hn.neg_pow, habc, neg_add_eq_iff_eq_add,
-        eq_neg_add_iff_add_eq, *]
+      simp only [abs_of_pos, abs_of_neg, hn.neg_pow, neg_add_eq_iff_eq_add,
+        *]
     · refine h c.natAbs a.natAbs b.natAbs (by positivity) (by positivity) (by positivity)
         (Int.natCast_inj.1 ?_)
       push_cast
-      simp only [abs_of_pos, abs_of_neg, hn.neg_pow, habc, neg_add_eq_iff_eq_add,
+      simp only [abs_of_pos, abs_of_neg, hn.neg_pow, neg_add_eq_iff_eq_add,
         eq_add_neg_iff_add_eq, *]
     · refine h c.natAbs b.natAbs a.natAbs (by positivity) (by positivity) (by positivity)
         (Int.natCast_inj.1 ?_)
       push_cast
-      simp only [abs_of_pos, abs_of_neg, hn.neg_pow, habc, add_neg_eq_iff_eq_add,
-        eq_add_neg_iff_add_eq, *]
+      simp only [abs_of_pos, abs_of_neg, hn.neg_pow, add_neg_eq_iff_eq_add,
+        *]
     · exact (by positivity : 0 < a ^ n + b ^ n).not_gt <| habc.trans_lt <| hn.pow_neg hc
     · refine h a.natAbs b.natAbs c.natAbs (by positivity) (by positivity) (by positivity)
         (Int.natCast_inj.1 ?_)
       push_cast
-      simp only [abs_of_pos, habc, *]
+      simp only [abs_of_pos, *]
   tfae_have 2 → 3
   | h, a, b, c, ha, hb, hc, habc => by
     rw [← Rat.num_ne_zero] at ha hb hc
