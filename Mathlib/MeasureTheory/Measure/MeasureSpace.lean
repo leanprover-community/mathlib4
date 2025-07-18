@@ -728,6 +728,11 @@ theorem measure_inter_eq_of_measure_eq {s t u : Set α} (hs : MeasurableSet s) (
   have B : μ (u \ s) ≠ ∞ := (lt_of_le_of_lt (measure_mono diff_subset) ht_ne_top.lt_top).ne
   exact ENNReal.le_of_add_le_add_right B A
 
+lemma measure_inter_eq_of_measure_eq_measure_univ {s t : Set α}
+    (hs : MeasurableSet s) (h : μ t = μ .univ)
+    (ht_ne_top : μ t ≠ ∞) : μ (t ∩ s) = μ s := by
+  rw [Measure.measure_inter_eq_of_measure_eq hs h (Set.subset_univ _) ht_ne_top, Set.univ_inter]
+
 /-- The measurable superset `toMeasurable μ t` of `t` (which has the same measure as `t`)
 satisfies, for any measurable set `s`, the equality `μ (toMeasurable μ t ∩ s) = μ (u ∩ s)`.
 Here, we require that the measure of `t` is finite. The conclusion holds without this assumption
