@@ -211,7 +211,7 @@ section test_scoped
 
 scoped[MyNotation] notation3 "π" => (3 : Nat)
 
-/-- error: unknown identifier 'π' -/
+/-- error: Unknown identifier `π` -/
 #guard_msgs in #check π
 
 open scoped MyNotation
