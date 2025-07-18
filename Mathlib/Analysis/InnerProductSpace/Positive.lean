@@ -213,14 +213,12 @@ lemma _root_.LinearMap.isPositive_toContinuousLinearMap_iff
     have : CompleteSpace E := FiniteDimensional.complete 𝕜 _
     T.toContinuousLinearMap.IsPositive ↔ T.IsPositive := by
   intro
-  simp_rw [IsPositive, LinearMap.IsPositive,
-    ContinuousLinearMap.reApplyInnerSelf, ContinuousLinearMap.isSelfAdjoint_iff_isSymmetric]
+  simp_rw [IsPositive, LinearMap.IsPositive, reApplyInnerSelf, isSelfAdjoint_iff_isSymmetric]
   rfl
 
 lemma isPositive_toLinearMap_iff (T : E →L[𝕜] E) :
     (T : E →ₗ[𝕜] E).IsPositive ↔ T.IsPositive := by
-  rw [LinearMap.IsPositive, ContinuousLinearMap.coe_coe, ContinuousLinearMap.IsPositive,
-    ← ContinuousLinearMap.isSelfAdjoint_iff_isSymmetric]
+  rw [LinearMap.IsPositive, coe_coe, IsPositive, ← isSelfAdjoint_iff_isSymmetric]
   rfl
 
 alias ⟨_, IsPositive.isPositive_toLinearMap⟩ := isPositive_toLinearMap_iff
