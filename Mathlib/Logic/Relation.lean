@@ -399,7 +399,7 @@ theorem tail' (hab : ReflTransGen r a b) (hbc : r b c) : TransGen r a c := by
 theorem head (hab : r a b) (hbc : TransGen r b c) : TransGen r a c :=
   head' hab hbc.to_reflTransGen
 
-instance : Trans (TransGen r) r (TransGen r) := 
+instance : Trans (TransGen r) r (TransGen r) :=
   ⟨tail⟩
 
 instance : Trans r (TransGen r) (TransGen r) :=
