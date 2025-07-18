@@ -67,25 +67,3 @@ theorem coeFn_generalLinearEquiv (f : GeneralLinearGroup R M) :
 end GeneralLinearGroup
 
 end LinearMap
-
-namespace LinearEquiv
-
-variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] (T : M →ₗ[R] M)
-
-/-- Any invertible linear map can be written as a linear equivalence. -/
-def ofInvertible [Invertible T] : M ≃ₗ[R] M :=
-  LinearMap.GeneralLinearGroup.toLinearEquiv (unitOfInvertible T)
-
-@[simp] lemma coe_linearMap_ofInvertible [Invertible T] :
-    ↑(ofInvertible T) = T := rfl
-
-@[simp] lemma coe_linearMap_ofInvertible_symm [Invertible T] :
-    ↑((ofInvertible T).symm) = (⅟ T) := rfl
-
-lemma coe_ofInvertible_symm [Invertible T] :
-    ⇑(ofInvertible T).symm = (⅟ T : _) := rfl
-
-lemma coe_ofInvertible [Invertible T] :
-    ⇑(ofInvertible T) = T := rfl
-
-end LinearEquiv
