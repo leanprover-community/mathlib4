@@ -109,6 +109,11 @@ abbrev PartialOrder.mkOfGroupCone [GroupConeClass S G] : PartialOrder G where
   le_antisymm a b nab nba := by
     simpa [div_eq_one, eq_comm] using eq_one_of_mem_of_inv_mem nab (by simpa using nba)
 
+@[to_additive (attr := simp)]
+lemma PartialOrder.mkOfGroupCone_toLE {S G : Type*} [CommGroup G] [SetLike S G]
+    (C : S) [GroupConeClass S G] :
+    (PartialOrder.mkOfGroupCone C).toLE = { le a b := b / a ∈ C } := rfl
+
 /-- Construct a linear order by designating a maximal cone in an abelian group. -/
 @[to_additive "Construct a linear order by designating a maximal cone in an abelian group."]
 abbrev LinearOrder.mkOfGroupCone

@@ -42,6 +42,18 @@ instance RingCone.instRingConeClass (R : Type*) [Ring R] :
   one_mem {C} := C.one_mem'
   eq_zero_of_mem_of_neg_mem {C} := C.eq_zero_of_mem_of_neg_mem'
 
+@[simp]
+theorem RingCone.mem_mk {R : Type*} [Ring R] {carrier : Set R} {a} {b} {c} {d} {e} {x} :
+    x ∈ ({ carrier := carrier, mul_mem' := a, one_mem' := b, add_mem' := c, zero_mem' := d,
+           eq_zero_of_mem_of_neg_mem' := e } : RingCone R) ↔
+    x ∈ carrier := Iff.rfl
+
+@[simp]
+theorem RingCone.coe_set_mk {R : Type*} [Ring R] {carrier : Set R} {a} {b} {c} {d} {e} :
+    ({ carrier := carrier, mul_mem' := a, one_mem' := b, add_mem' := c, zero_mem' := d,
+       eq_zero_of_mem_of_neg_mem' := e } : RingCone R) =
+    carrier := rfl
+
 namespace RingCone
 
 variable {T : Type*} [Ring T] [PartialOrder T] [IsOrderedRing T] {a : T}
