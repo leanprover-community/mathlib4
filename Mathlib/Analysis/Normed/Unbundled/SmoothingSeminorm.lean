@@ -8,6 +8,7 @@ import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Topology.MetricSpace.Sequences
 import Mathlib.Topology.UnitInterval
+import Mathlib.Topology.Algebra.Order.LiminfLimsup
 
 /-!
 # smoothingSeminorm

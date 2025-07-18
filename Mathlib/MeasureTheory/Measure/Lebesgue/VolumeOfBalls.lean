@@ -47,7 +47,7 @@ theorem MeasureTheory.measure_unitBall_eq_integral_div_gamma {E : Type*} {p : �
     [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E]
     [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ] (hp : 0 < p) :
     μ (Metric.ball 0 1) =
-      .ofReal ((∫ (x : E), Real.exp (- ‖x‖ ^ p) ∂μ) / Real.Gamma (finrank ℝ E / p + 1)) := by
+      .ofReal ((∫ (x : E), Real.exp (-‖x‖ ^ p) ∂μ) / Real.Gamma (finrank ℝ E / p + 1)) := by
   obtain hE | hE := subsingleton_or_nontrivial E
   · rw [(Metric.nonempty_ball.mpr zero_lt_one).eq_zero, ← setIntegral_univ,
       Set.univ_nonempty.eq_zero, integral_singleton, finrank_zero_of_subsingleton, Nat.cast_zero,
@@ -61,7 +61,7 @@ theorem MeasureTheory.measure_unitBall_eq_integral_div_gamma {E : Type*} {p : �
       rw [integral_rpow_mul_exp_neg_rpow hp (by linarith), sub_add_cancel,
         Real.Gamma_add_one (ne_of_gt (by positivity))]
       field_simp; ring
-    rw [integral_fun_norm_addHaar μ (fun x => Real.exp (- x ^ p)), nsmul_eq_mul, smul_eq_mul,
+    rw [integral_fun_norm_addHaar μ (fun x => Real.exp (-x ^ p)), nsmul_eq_mul, smul_eq_mul,
       mul_div_assoc, mul_div_assoc, mul_comm, mul_assoc, this, mul_one, ofReal_measureReal _]
     exact ne_of_lt measure_ball_lt_top
 
@@ -74,7 +74,7 @@ include h1 h2 h3 h4 h5
 
 theorem MeasureTheory.measure_lt_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p) :
     μ {x : E | g x < 1} =
-      .ofReal ((∫ (x : E), Real.exp (- (g x) ^ p) ∂μ) / Real.Gamma (finrank ℝ E / p + 1)) := by
+      .ofReal ((∫ (x : E), Real.exp (-(g x) ^ p) ∂μ) / Real.Gamma (finrank ℝ E / p + 1)) := by
   -- We copy `E` to a new type `F` on which we will put the norm defined by `g`
   letI F : Type _ := E
   letI : NormedAddCommGroup F :=
@@ -333,7 +333,7 @@ theorem volume_ball (x : EuclideanSpace ℝ ι) (r : ℝ) :
       measurableSet_ball.nullMeasurableSet]
     simp only [Set.preimage, ball_zero_eq _ zero_le_one, one_pow, Set.mem_setOf_eq]
     convert volume_sum_rpow_lt_one ι one_le_two using 4
-    · simp [Real.rpow_two, sq_abs, EuclideanSpace.measurableEquiv]
+    · simp [sq_abs, EuclideanSpace.measurableEquiv]
     · rw [Gamma_add_one (by norm_num), Gamma_one_half_eq, ← mul_assoc, mul_div_cancel₀ _
         two_ne_zero, one_mul]
 

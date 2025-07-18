@@ -18,7 +18,7 @@ We define continuous cohomology as the homology of homogeneous cochains.
 
 ## Implementation details
 
-We define homogenous cochains as `g`-invariant continuous function in `C(G, C(G,...,C(G, M)))`
+We define homogeneous cochains as `g`-invariant continuous function in `C(G, C(G,...,C(G, M)))`
 instead of the usual `C(Gⁿ, M)` to allow more general topological groups other than locally compact
 ones. For this to work, we also work in `Action (TopModuleCat R) G`, where the `G` action on `M`
 is only continuous on `M`, and not necessarily continuous in both variables, because the `G` action
@@ -41,7 +41,7 @@ See `ContinuousCohomology.MultiInd.d`.
 - Show that short exact sequences induces long exact sequences in certain scenarios.
 -/
 
-open CategoryTheory ContinuousMap
+open CategoryTheory Functor ContinuousMap
 
 variable (R G : Type*) [CommRing R] [Group G] [TopologicalSpace R]
 
@@ -74,7 +74,7 @@ def I : Action (TopModuleCat R) G ⥤ Action (TopModuleCat R) G where
   { hom := TopModuleCat.ofHom (ContinuousLinearMap.compLeftContinuous _ _ φ.hom.hom)
     comm g := by
       ext f g'
-      show (M.ρ g ≫ φ.hom).hom (f (g⁻¹ * g')) = (φ.hom ≫ N.ρ g).hom (f (g⁻¹ * g'))
+      change (M.ρ g ≫ φ.hom).hom (f (g⁻¹ * g')) = (φ.hom ≫ N.ρ g).hom (f (g⁻¹ * g'))
       rw [φ.comm] }
   map_id _ := rfl
   map_comp _ _ := rfl
