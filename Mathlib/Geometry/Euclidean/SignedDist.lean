@@ -38,19 +38,20 @@ variable [NormedAddTorsor V P]
 section signedDist
 
 /-- Auxiliary definition for `signedDist`. It is the underlying linear map of `signedDist`. -/
-private noncomputable def signedDistLinear (v : V) : V →ₗ[ℝ] P →ᵃ[ℝ] ℝ where
-  toFun w := AffineMap.const ℝ P ⟪-(‖v‖⁻¹ • v), w⟫
+private noncomputable def signedDistLinear (v : V) : V →ₗ[ℝ] P →ᴬ[ℝ] ℝ where
+  toFun w := .const ℝ P ⟪-(‖v‖⁻¹ • v), w⟫
   map_add' x y := by ext; simp [inner_add_right]
   map_smul' r x := by ext; simp [inner_smul_right]
 
 private lemma signedDistLinear_apply (v w : V) :
-    signedDistLinear v w = AffineMap.const ℝ P ⟪-(‖v‖⁻¹ • v), w⟫ := rfl
+    signedDistLinear v w = .const ℝ P ⟪-(‖v‖⁻¹ • v), w⟫ := rfl
 
 /-- The signed distance between two points `p` and `q`, in the direction of a reference vector `v`.
-It is the size component of `q - p` in the direction of `v`.
+It is the size of `q - p` in the direction of `v`.
 In the degenerate case `v = 0`, it returns `0`. -/
-noncomputable def signedDist (v : V) : P →ᵃ[ℝ] P →ᵃ[ℝ] ℝ where
-  toFun p := (innerₗ V (‖v‖⁻¹ • v)).toAffineMap.comp (AffineMap.id ℝ P -ᵥ AffineMap.const ℝ P p)
+noncomputable def signedDist (v : V) : P →ᵃ[ℝ] P →ᴬ[ℝ] ℝ where
+  toFun p := (innerSL ℝ (‖v‖⁻¹ • v)).toContinuousAffineMap.comp
+    (ContinuousAffineMap.id ℝ P -ᵥ .const ℝ P p)
   linear := signedDistLinear v
   map_vadd' p v' := by
     ext q
@@ -62,8 +63,8 @@ variable (v w : V) (p q r : P)
 
 -- Lemmas about the definition of `signedDist`
 
-lemma signedDist_apply : signedDist v p =
-    (innerₗ V (‖v‖⁻¹ • v)).toAffineMap.comp (AffineMap.id ℝ P -ᵥ AffineMap.const ℝ P p) :=
+lemma signedDist_apply : signedDist v p = (innerSL ℝ (‖v‖⁻¹ • v)).toContinuousAffineMap.comp
+    (ContinuousAffineMap.id ℝ P -ᵥ .const ℝ P p) :=
   rfl
 
 lemma signedDist_apply_apply : signedDist v p q = ⟪‖v‖⁻¹ • v, q -ᵥ p⟫ :=
@@ -76,7 +77,7 @@ lemma signedDist_apply_linear : (signedDist v p).linear = innerₗ V (‖v‖⁻
 lemma signedDist_apply_linear_apply : (signedDist v p).linear w = ⟪‖v‖⁻¹ • v, w⟫ := by
   simp [signedDist_apply_linear, real_inner_smul_left]
 
-lemma signedDist_linear_apply : (signedDist v).linear w = AffineMap.const ℝ P ⟪-(‖v‖⁻¹ • v), w⟫ :=
+lemma signedDist_linear_apply : (signedDist v).linear w = .const ℝ P ⟪-(‖v‖⁻¹ • v), w⟫ :=
   rfl
 
 lemma signedDist_linear_apply_apply : (signedDist v).linear w p = ⟪-(‖v‖⁻¹ • v), w⟫ :=
@@ -127,12 +128,10 @@ lemma signedDist_triangle_right : signedDist v p r - signedDist v q r = signedDi
 
 -- Lemmas about offsetting the point arguments of `signedDist` (with `+ᵥ` or `-ᵥ`)
 
-lemma signedDist_vadd_left :
-    signedDist v (w +ᵥ p) q = -inner (‖v‖⁻¹ • v) w + signedDist v p q := by
+lemma signedDist_vadd_left : signedDist v (w +ᵥ p) q = -⟪‖v‖⁻¹ • v, w⟫ + signedDist v p q := by
   simp [signedDist_linear_apply_apply]
 
-lemma signedDist_vadd_right :
-    signedDist v p (w +ᵥ q) = inner (‖v‖⁻¹ • v) w + signedDist v p q := by
+lemma signedDist_vadd_right : signedDist v p (w +ᵥ q) = ⟪‖v‖⁻¹ • v, w⟫ + signedDist v p q := by
   simp [signedDist_apply_linear_apply]
 
 -- TODO: find a better name for these 2 lemmas
@@ -146,18 +145,16 @@ lemma signedDist_vadd_vadd : signedDist v (w +ᵥ p) (w +ᵥ q) = signedDist v p
   rw [signedDist_vadd_left_swap, neg_vadd_vadd]
 
 variable {v p q} in
-lemma signedDist_left_congr (h : inner v (p -ᵥ q) = (0 : ℝ)) :
-    signedDist v p = signedDist v q := by
+lemma signedDist_left_congr (h : ⟪v, p -ᵥ q⟫ = 0) : signedDist v p = signedDist v q := by
   ext r
   simpa [real_inner_smul_left, h] using signedDist_vadd_left v (p -ᵥ q) q r
 
 variable {v q r} in
-lemma signedDist_right_congr (h : inner v (q -ᵥ r) = (0 : ℝ)) :
-    signedDist v p q = signedDist v p r := by
+lemma signedDist_right_congr (h : ⟪v, q -ᵥ r⟫ = 0) : signedDist v p q = signedDist v p r := by
   simpa [real_inner_smul_left, h] using signedDist_vadd_right v (q -ᵥ r) p r
 
 variable {v p q} in
-lemma signedDist_eq_zero_of_orthogonal (h : inner v (q -ᵥ p) = (0 : ℝ)) : signedDist v p q = 0 := by
+lemma signedDist_eq_zero_of_orthogonal (h : ⟪v, q -ᵥ p⟫ = 0) : signedDist v p q = 0 := by
   simpa using signedDist_right_congr p h
 
 -- Lemmas relating `signedDist` to `dist`
@@ -221,10 +218,7 @@ This is expected to be used when `p` does not lie in `s` (in the degenerate case
 in `s`, this yields 0) and when the point at which the distance is evaluated lies in the affine
 span of `s` and `p` (any component of the distance orthogonal to that span is disregarded). -/
 noncomputable def signedInfDist : P →ᴬ[ℝ] ℝ :=
-  (innerSL ℝ (‖p -ᵥ orthogonalProjection s p‖⁻¹ •
-      (p -ᵥ orthogonalProjection s p))).toContinuousAffineMap.comp
-    ((ContinuousAffineEquiv.refl ℝ P).toContinuousAffineMap -ᵥ
-      s.subtypeA.comp (orthogonalProjection s))
+  signedDist (p -ᵥ orthogonalProjection s p) (Classical.ofNonempty : s)
 
 lemma signedInfDist_def :
     s.signedInfDist p = signedDist (p -ᵥ orthogonalProjection s p) ↑(Classical.ofNonempty : s) :=
