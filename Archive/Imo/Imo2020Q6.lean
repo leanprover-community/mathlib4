@@ -86,21 +86,17 @@ theorem exists_between_and_separated {ι : Type*} (S : Finset ι) (f : ι → �
       linear_combination ineq₁ * (b - a) + hb
     · apply Set.notMem_Ioo_of_le
       push_neg at ha
-      rw [AffineMap.lineMap_apply_ring']
-      have ineq₃ : (0:ℝ) ≤ i / n := by positivity
-      linear_combination ineq₃ * (b - a) + ha
+      grw [ha]
+      rw [AffineMap.lineMap_apply_ring', le_add_iff_nonneg_left]
+      positivity
   simp only [interval, Set.mem_Ioo, not_and_or, not_lt] at this
   -- `y ∈ S` is either above or below the interval, either way we get the bound
   rcases this with h | h
-  · trans; swap; · apply le_abs_self
-    rw [le_sub_iff_add_le, ← le_sub_iff_add_le']
-    trans; · exact h
+  · grw [← le_abs_self, h]
     rw [AffineMap.lineMap_apply_ring', AffineMap.lineMap_apply_ring']
     ring_nf; rfl
   · rw [abs_sub_comm]
-    trans; swap; · apply le_abs_self
-    rw [le_sub_iff_add_le]
-    trans; swap; · exact h
+    grw [← le_abs_self, ← h]
     rw [AffineMap.lineMap_apply_ring', AffineMap.lineMap_apply_ring']
     ring_nf; rfl
 
@@ -110,12 +106,12 @@ open Module
 open scoped RealInnerProductSpace
 
 variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
-variable [NormedAddTorsor V P] (dim : Nat) [Fact (finrank ℝ V = dim+1)]
+variable [NormedAddTorsor V P] (dim : Nat) [Fact (finrank ℝ V = dim + 1)]
 
 /-- Computes "how far along" the segment from `a` to `b` the point `p` lies. -/
 noncomputable def project (a b p : P) : ℝ := innerSL ℝ (a -ᵥ b) (a -ᵥ p) / ‖a -ᵥ b‖
 
-@[simp] theorem project_self_left  {a b : P} : project a b a = 0 := by simp [project]
+@[simp] theorem project_self_left {a b : P} : project a b a = 0 := by simp [project]
 @[simp] theorem project_self_right {a b : P} (h : a ≠ b) : project a b b = ‖a -ᵥ b‖ := by
   simp [project]
   rw [real_inner_self_eq_norm_sq, div_eq_iff, pow_two]
@@ -131,8 +127,9 @@ theorem exists_affine_between_and_separated {ι : Type*} (S : Finset ι) (f : ι
 
   obtain ⟨x, x_ioo, hx⟩ := exists_between_and_separated S (project a b <| f ·) (⌊n-1⌋₊+1) i j hij
     (by
-    rw [← Nat.cast_lt (α := ℝ)]; push_cast
-    exact lt_of_le_of_lt hS (Nat.lt_floor_add_one (n - 1)))
+      rw [← Nat.cast_lt (α := ℝ)]; push_cast
+      grw [hS]
+      exact Nat.lt_floor_add_one (n - 1))
 
   use .mk' (AffineMap.lineMap a b (x / dist a b)) (LinearMap.ker (innerₛₗ ℝ (a -ᵥ b)))
 
@@ -172,7 +169,7 @@ theorem exists_affine_between_and_separated {ι : Type*} (S : Finset ι) (f : ι
       gcongr
       · linarith only [hij]
       · push_cast; rw [← le_sub_iff_add_le]
-        refine Nat.floor_le (le_trans (by simp) hS)
+        refine Nat.floor_le (by grw [← hS]; simp)
     _ ≤ |x * ‖a -ᵥ b‖ - ⟪a -ᵥ b, a -ᵥ f p⟫| := hx
     _ = |⟪a -ᵥ b, f p -ᵥ (AffineMap.lineMap a b) (x / ‖a -ᵥ b‖)⟫| := by
       congr 1
@@ -194,7 +191,7 @@ theorem card_le_of_separated {ι : Type*} (S : Finset ι) (f : ι → ℝ) {ε a
     simpa [this] using h
   apply Finset.card_le_card_of_injOn fun x => ⌊(f x - a) / ε⌋
   · intro x hx
-    rw [mem_Icc]; constructor
+    rw [coe_Icc, Set.mem_Icc]; constructor
     · rw [Int.floor_nonneg]
       refine div_nonneg ?_ hε.le
       rw [sub_nonneg]
@@ -214,8 +211,8 @@ In a strip of width `1/2`, if the points have pairwise distance at least `1`,
 then we can bound the number of points.
 -/
 theorem card_le_of_separated_in_strip (eqv : P ≃ᵃⁱ[ℝ] EuclideanSpace ℝ (Fin 2)) (S : Finset P)
-    (h_sep : (S.filter (eqv · 0 ∈ Set.Ioo 0 (1/2)) : Set P).Pairwise fun x y => 1 ≤ dist x y)
-    {N : ℝ} (hN : 1 ≤ N) (h_bound : ∀ x ∈ S.filter (eqv · 0 ∈ Set.Ioo 0 (1/2)), |eqv x 1| ≤ N) :
+    (h_sep : (S.filter (eqv · 0 ∈ Set.Ioo 0 (1 / 2)) : Set P).Pairwise fun x y => 1 ≤ dist x y)
+    {N : ℝ} (hN : 1 ≤ N) (h_bound : ∀ x ∈ S.filter (eqv · 0 ∈ Set.Ioo 0 (1 / 2)), |eqv x 1| ≤ N) :
     #(S.filter (eqv · 0 ∈ Set.Ioo 0 (1/2))) ≤ N*6-1 := by
   suffices h : #(S.filter (eqv · 0 ∈ Set.Ioo 0 (1/2))) ≤ ⌊(N - (-N)) / (1/2) + 1⌋ by
     rw [Int.le_floor, Int.cast_natCast] at h
@@ -269,11 +266,9 @@ theorem result : ∃ c : ℝ, 0 < c ∧ ∀ {n : ℕ}, 1 < n → ∀ {S : Finset
     constructor; · use a, b, ha, hb
     intro p hp
     specialize h p hp
-    trans; swap; · exact h
-    rw [le_div_iff₀ (by positivity)]
-    trans; swap; · exact hab
+    grw [← h, ← hab]
     rw [neg_div, Real.rpow_neg (by positivity)]
-    field_simp [div_le_iff₀]
+    field_simp [div_le_iff₀, le_div_iff₀]
     rw [← Real.rpow_add (by positivity)]
     norm_num; linarith only
 
@@ -342,7 +337,7 @@ theorem result : ∃ c : ℝ, 0 < c ∧ ∀ {n : ℕ}, 1 < n → ∀ {S : Finset
     have : 1 ≤ dist a b := one_le_dist ha hb h_ne
     rw [abs_eq_neg_self.mpr (by linarith only [this, h₂]), ← sub_nonneg] at h_max
     have : dist a b * eqv x 0 * 2 < dist a b := by
-      rwa [mul_assoc, ← lt_div_iff₀', div_self, ← lt_div_iff₀] <;> positivity
+      rwa [mul_assoc, mul_lt_iff_lt_one_right, ← lt_div_iff₀] <;> positivity
     linarith only [this, h_max, sq_nonneg (eqv x 0)]
 
   have bound := by
@@ -358,17 +353,11 @@ theorem result : ∃ c : ℝ, 0 < c ∧ ∀ {n : ℕ}, 1 < n → ∀ {S : Finset
   constructor; · use a, b, ha, hb
   intro p hp
   specialize h p hp
-  trans; swap; · exact h
-  field_simp [le_div_iff₀, show 0 < dist a b by simp [h_ne]]
+  grw [← h]
+  field_simp [le_div_iff₀, h_ne]
 
   specialize h_dist a ha b hb
-  replace h_dist := Real.sqrt_le_sqrt h_dist.le
-  rw [← mul_le_mul_right (show (0:ℝ) < 6 by norm_num)] at h_dist
-  rw [← mul_le_mul_left (show (0:ℝ) < 2 by norm_num)] at h_dist
-  rw [← mul_le_mul_left (show (0:ℝ) < 2 by norm_num)] at h_dist
-  rw [← le_div_iff₀' (by positivity)]
-  trans; · exact h_dist
-  rw [le_div_iff₀' (by positivity)]
+  grw [Real.sqrt_le_sqrt h_dist.le]
   rw [Real.sqrt_eq_rpow, ← Real.rpow_mul (by positivity)]
   rw [show (-1/3:ℝ) = -(1/3) by norm_num, Real.rpow_neg (by positivity)]
   norm_num
