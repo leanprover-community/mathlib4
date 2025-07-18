@@ -205,6 +205,7 @@ the inequality goes in the wrong direction). -/
 
 /--
 error: Tactic `grewrite` failed: could not discharge x ≤ y using x ≥ y
+
 case a.h
 α : Type u_1
 inst✝² : CommRing α
@@ -251,6 +252,7 @@ example {Prime : ℕ → Prop} {a a' : ℕ} (h₁ : Prime (a + 1)) (h₂ : a = a
 
 /--
 error: Tactic `grewrite` failed: could not discharge b ≤ a using a ≤ b
+
 case h₁.h
 α : Type u_1
 inst✝² : CommRing α

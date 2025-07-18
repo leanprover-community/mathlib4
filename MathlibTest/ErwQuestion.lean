@@ -14,6 +14,7 @@ example : f 37 = 38 := by
 /--
 error: Tactic `rewrite` failed: did not find instance of the pattern in the target expression
   f a
+
 ⊢ f b = 38
 -/
 #guard_msgs in
