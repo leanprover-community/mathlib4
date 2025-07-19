@@ -5,11 +5,13 @@ Authors: Kim Morrison, Shing Tak Lam, Mario Carneiro
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Ring.List
+import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Log
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Data.Nat.Digits.Defs
+
 
 /-!
 # Digits of a natural number
@@ -137,6 +139,116 @@ theorem base_pow_length_digits_le (b m : ℕ) (hb : 1 < b) :
   rcases b with (_ | _ | b) <;> try simp_all
   exact base_pow_length_digits_le' b m
 
+/-- The sum of the digits of a number less than its base is the number itself.
+-/
+@[simp]
+theorem digits_sum_eq_self {x b : ℕ} (hxb : x < b) : (b.digits x).sum = x := by
+  by_cases x_eq : x = 0
+  · simp [x_eq]
+  simp [Nat.digits_of_lt b x x_eq hxb]
+
+/-- Multiplying by the base does not change the digit sum.
+-/
+@[simp]
+theorem digits_sum_base_mul_cancel {n b : ℕ} (pos_b : 0 < b) :
+    (b.digits (b * n)).sum = (b.digits n).sum := by
+  obtain _ | n := n
+  · simp
+  by_cases hb : b = 1
+  · simp [hb]
+  push_neg at hb
+  conv_lhs => rhs; rhs; rw [<- pow_one b]
+  rw [Nat.digits_base_pow_mul (Nat.lt_of_le_of_ne pos_b hb.symm)
+    (zero_lt_succ n)]
+  simp
+
+/-- Closed form formula for summing digit sums up to a power of the base. This
+is equivalent to applying Gauss's formula across digit columns.
+-/
+theorem sum_digit_sum_base_pow_eq {k b : ℕ} :
+    2 * ∑ n ∈ Finset.range (b^k), (b.digits n).sum = (b-1) * k * b^k := by
+  by_cases k0 : k = 0
+  · simp [mul_comm, k0]
+  by_cases hb : b = 0 ∨ b = 1
+  · rcases hb with (h | h) <;> simp [h, k0]
+  replace hb : 1 < b := by omega
+  have sum_sum_digits : 2 * ∑ x ∈ Finset.range b, (b.digits x).sum = b * (b - 1) := by
+    rw [mul_comm, <- Finset.sum_range_id_mul_two]
+    congr! with x x_in
+    simp at x_in
+    simp [digits_sum_eq_self x_in]
+  induction' k, (by omega : 1 ≤ k) using Nat.le_induction with m pos_m ih
+  · simp [sum_sum_digits, mul_comm]
+  · specialize ih (Nat.ne_zero_of_lt pos_m)
+    have digits_eq_cons := Nat.digits_eq_cons_digits_div
+      hb (by positivity)
+    have pos_n : ∀ n ∈ Finset.Ico 1 (b^m), 0 < n := by
+      intro n n_in
+      simp at n_in
+      exact n_in.left
+    have sum_pow_add_eq_sum_pair {f : ℕ → ℕ} {i j b : ℕ} :
+      ∑ x ∈ Finset.range (b^(i+j)), f x =
+      ∑ p ∈ Finset.range (b^i) ×ˢ Finset.range (b^j),
+        f (b^j * p.fst + p.snd) := by
+      have sum_range_mul_eq_sum_pair (i j) : ∑ x ∈ Finset.range (i*j), f x =
+        ∑ p ∈ Finset.range i ×ˢ Finset.range j, f (j * p.fst + p.snd) := by
+        have sum_add_eq_sum_pair : ∑ x : Fin (i * j), f x =
+          ∑ p : Fin i × Fin j, f (j * p.fst + p.snd : ℕ) := by
+          simp [add_comm, <- Equiv.sum_comp (e := finProdFinEquiv)]
+        simp [sum_add_eq_sum_pair, Finset.sum_range, Fintype.sum_prod_type,
+          Finset.sum_product]
+      convert sum_range_mul_eq_sum_pair (b^i) (b^j) using 1
+      rw [<- Nat.pow_add]
+    rw [sum_pow_add_eq_sum_pair]
+    have : ∑ p ∈ Finset.range (b ^ m) ×ˢ Finset.range b, (Nat.digits b (b * p.fst + p.snd)).sum =
+        ∑ p ∈ Finset.range (b ^ m) ×ˢ Finset.range b,
+        ((Nat.digits b (b * p.fst)).sum + (Nat.digits b p.snd).sum) := by
+      apply Finset.sum_congr rfl
+      intro p hp
+      have h : p.snd < b := by
+        rw [Finset.mem_product] at hp
+        exact Finset.mem_range.mp hp.right
+      have digit_sum_add_single_digit (n d : ℕ) (hd : d < b) :
+        (Nat.digits b (b * n + d)).sum = (Nat.digits b (b * n)).sum + (Nat.digits b d).sum := by
+        rcases d
+        · simp
+        · rw [add_comm, Nat.digits_add b hb _ _ hd (by omega)]
+          simp [add_comm, List.sum_cons, digits_sum_eq_self hd]
+          symm
+          exact digits_sum_base_mul_cancel (Nat.zero_lt_of_lt hb)
+      exact digit_sum_add_single_digit p.1 p.2 h
+    simp [this]
+    clear this
+    rw [@Finset.sum_product]
+    simp [Finset.sum_add_distrib, mul_add, <- Finset.mul_sum]
+    conv_lhs => rhs; rw [<- mul_assoc, mul_comm 2, mul_assoc, sum_sum_digits]
+    simp [digits_sum_base_mul_cancel (Nat.zero_lt_of_lt hb)]
+    rw [<- mul_assoc, mul_comm 2, mul_assoc, ih]
+    ring
+
+/-- A specialization of `sum_digit_sum_base_pow_eq` to base 10.
+-/
+theorem sum_digit_sum_ten_pow_eq {k : ℕ} :
+  (∑ n ∈ Finset.range (10^k), (Nat.digits 10 n).sum) =
+    45 * k * 10^(k-1) := by
+  by_cases pos_k : k = 0
+  · simp [pos_k]
+  replace pos_k : 0 < k := by omega
+  have := @sum_digit_sum_base_pow_eq k 10
+  have : ∑ n ∈ Finset.range (10 ^ k), (Nat.digits 10 n).sum = (10 - 1) * k * 10 ^ k / 2 := by
+    omega
+  rw [this]
+  simp [show 10^k = 10 * 10^(k-1) by
+    simp [<- Nat.pow_add_one']
+    exact (Nat.sub_eq_iff_eq_add pos_k).mp rfl
+  ]
+  norm_num [<- Nat.mul_assoc, mul_comm]
+  rw [show k * 9 * 10 * 10 ^ (k - 1) = 2 * k * 45 * 10 ^ (k - 1) by
+    linarith
+  ]
+  simp [mul_assoc]
+  omega
+
 open Finset
 
 theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits {p : ℕ}
@@ -186,6 +298,7 @@ theorem sub_one_mul_sum_log_div_pow_eq_sub_sum_digits {p : ℕ} (n : ℕ) :
   · simp [lt_one_iff.mp h]
     cases n
     all_goals simp
+
 
 /-! ### Binary -/
 
