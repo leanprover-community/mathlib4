@@ -362,6 +362,15 @@ lemma cancel_left {g₁ g₂ : A →ₐ[R] B} {f : B →ₐ[R] C} (hf : Function
 end Semiring
 end AlgHom
 
+namespace AlgHomClass
+
+@[simp]
+lemma toRingHom_toAlgHom {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
+    [Algebra R B] {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
+    RingHomClass.toRingHom (AlgHomClass.toAlgHom f) = RingHomClass.toRingHom f := rfl
+
+end AlgHomClass
+
 namespace RingHom
 
 variable {R S : Type*}
@@ -406,6 +415,8 @@ def ofId : R →ₐ[R] A :=
   { algebraMap R A with commutes' := fun _ => rfl }
 
 variable {R}
+
+@[simp] lemma ofId_self : ofId R R = .id R R := rfl
 
 theorem ofId_apply (r) : ofId R A r = algebraMap R A r :=
   rfl
