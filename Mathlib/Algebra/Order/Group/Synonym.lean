@@ -104,6 +104,10 @@ instance [InvolutiveInv α] : InvolutiveInv αᵒᵈ where
 
 @[to_additive]
 instance [DivInvMonoid α] : DivInvMonoid αᵒᵈ where
+  zpow z a := toDual (a.ofDual ^ z)
+  zpow_zero' _ := congrArg toDual (zpow_zero _)
+  zpow_succ' _ _ := congrArg toDual (DivInvMonoid.zpow_succ' _ _)
+  zpow_neg' _ _ := congrArg toDual (DivInvMonoid.zpow_neg' _ _)
   div_eq_mul_inv _ _ := congrArg toDual (div_eq_mul_inv _ _)
 
 @[to_additive]
