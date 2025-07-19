@@ -857,8 +857,8 @@ theorem _root_.LinearIsometryEquiv.piLpCongrRight_single (e : ∀ i, α i ≃ₗ
     (i : ι) (v : α i) :
     LinearIsometryEquiv.piLpCongrRight p e (toLp p <| Pi.single i v) =
       toLp p (Pi.single i (e _ v)) := by
-  ext j
-  simpa using Pi.apply_single (e ·) (fun _ => map_zero _) i v j
+  ext
+  simpa using Pi.apply_single (e ·) (fun _ => map_zero _) _ _ _
 
 end piLpCongrRight
 
