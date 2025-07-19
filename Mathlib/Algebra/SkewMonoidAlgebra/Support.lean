@@ -3,13 +3,8 @@ Copyright (c) 2025 Xavier Généreux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Généreux, María Inés de Frutos Fernández
 -/
-import Mathlib.Algebra.SkewMonoidAlgebra.Basic
-import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.Algebra.Algebra.NonUnitalHom
-import Mathlib.Data.Finsupp.Basic
-import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.Logic.Function.Basic
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.Algebra.SkewMonoidAlgebra.Basic
 
 /-!
 #  Lemmas about the support of an element of a skew monoid algebra
