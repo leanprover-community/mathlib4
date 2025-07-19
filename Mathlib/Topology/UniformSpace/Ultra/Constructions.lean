@@ -26,25 +26,26 @@ The `Prod` instance only requires `Mathlib/Topology/UniformSpace/Basic.lean`.
 
 variable {X Y : Type*}
 
-lemma IsTransitiveRel.entourageProd {s : Set (X × X)} {t : Set (Y × Y)}
-    (hs : IsTransitiveRel s) (ht : IsTransitiveRel t) :
-    IsTransitiveRel (entourageProd s t) :=
-  fun _ _ _ h h' ↦ ⟨hs h.left h'.left, ht h.right h'.right⟩
+lemma eRel.entourageProd {s : Rel X X} {t : Rel Y Y} [s.IsTrans] [t.IsTrans] :
+    (entourageProd s t).IsTrans where
+  trans _ _ _ h h' := ⟨s.trans h.left h'.left, t.trans h.right h'.right⟩
 
 lemma IsUltraUniformity.comap {u : UniformSpace Y} (h : IsUltraUniformity Y) (f : X → Y) :
     @IsUltraUniformity _ (u.comap f) := by
   letI := u.comap f
-  refine .mk_of_hasBasis (h.hasBasis.comap (Prod.map f f)) ?_ ?_
-  · exact fun _ ⟨_, hU, _⟩ ↦ hU.preimage_prodMap f
-  · exact fun _ ⟨_, _, hU⟩ ↦ hU.preimage_prodMap f
+  refine .mk_of_hasBasis (h.hasBasis.comap (Prod.map f f)) ?_ ?_ <;>
+  · dsimp
+    rintro _ ⟨_, _, _⟩
+    infer_instance
 
 lemma IsUltraUniformity.inf {u u' : UniformSpace X} (h : @IsUltraUniformity _ u)
     (h' : @IsUltraUniformity _ u') :
     @IsUltraUniformity _ (u ⊓ u') := by
   letI := u ⊓ u'
-  refine .mk_of_hasBasis (h.hasBasis.inf h'.hasBasis) ?_ ?_
-  · exact fun _ ⟨⟨_, hU, _⟩, _, hU', _⟩ ↦ hU.inter hU'
-  · exact fun _ ⟨⟨_, _, hU⟩, _, _, hU'⟩ ↦ hU.inter hU'
+  refine .mk_of_hasBasis (h.hasBasis.inf h'.hasBasis) ?_ ?_ <;>
+  · dsimp
+    rintro _ ⟨⟨_, _, _⟩, _, _, _⟩
+    infer_instance
 
 /-- The product of uniform spaces with nonarchimedean uniformities has a
 nonarchimedean uniformity. -/
@@ -57,9 +58,10 @@ lemma IsUltraUniformity.iInf {ι : Type*} {U : (i : ι) → UniformSpace X}
     (hU : ∀ i, @IsUltraUniformity X (U i)) :
     @IsUltraUniformity _ (⨅ i, U i : UniformSpace X) := by
   letI : UniformSpace X := ⨅ i, U i
-  refine .mk_of_hasBasis (iInf_uniformity ▸ Filter.HasBasis.iInf fun i ↦ (hU i).hasBasis) ?_ ?_
-  · exact fun _ ⟨_, h⟩ ↦ IsSymmetricRel.iInter fun i ↦ (h i).right.left
-  · exact fun _ ⟨_, h⟩ ↦ IsTransitiveRel.iInter fun i ↦ (h i).right.right
+  refine .mk_of_hasBasis (iInf_uniformity ▸ Filter.HasBasis.iInf fun i ↦ (hU i).hasBasis) ?_ ?_ <;>
+  · simp [forall_and]
+    rintro _ _ _ _ _
+    infer_instance
 
 /-- The indexed product of uniform spaces with nonarchimedean uniformities has a
 nonarchimedean uniformity. -/
