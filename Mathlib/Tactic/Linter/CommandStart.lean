@@ -16,6 +16,9 @@ The `commandStart` linter emits a warning if
 
 open Lean Elab Command Linter
 
+private def String.norm (s : String) : String :=
+  s.replace "\n" "⏎"
+
 namespace Mathlib.Linter
 
 /--
@@ -139,6 +142,31 @@ def pushFormatError (fs : Array FormatError) (f : FormatError) : Array FormatErr
   -- Otherwise, we are adding a further error of the same kind and we therefore merge the two.
   fs.pop.push {back with length := back.length + f.length, srcStartPos := f.srcEndPos}
 
+/--
+Compares the two substrings `s1` and `s2`, with the expectation that `s2` starts with `s1`,
+and that the characters where this is not true satisfy `f`.
+
+If the expectation is correct, then it returns `some (s2 \ s1)`, otherwise, it returns `none`.
+
+The typical application uses `f = Char.isWhitespace`.
+-/
+partial
+def consumeIgnoring (s1 s2 : Substring) (f : String → Bool) : Option Substring :=
+  -- The expected end of the process: `s1` is fully consumed, we return `s2`.
+  if s1.isEmpty then s2 else
+  -- Otherwise, we compare the first available character of each string.
+  let a1 := s1.take 1
+  let a2 := s2.take 1
+  -- If they agree, we move one step over and continue.
+  if a1 == a2 then
+    consumeIgnoring (s1.drop 1) (s2.drop 1) f
+  else
+    -- Also if every character of `a1` or `a2` satisfies `f`, then we drop that and continue.
+    if f a1.toString then consumeIgnoring (s1.drop 1) s2 f else
+    if f a2.toString then consumeIgnoring s1 (s2.drop 1) f
+    -- If all else failed, then we return `none`.
+    else none
+
 /-- Extract the `leading` and the `trailing` substring of a `SourceInfo`. -/
 def _root_.Lean.SourceInfo.getLeadTrail : SourceInfo → String × String
   | .original lead _ trail _ => (lead.toString, trail.toString)
@@ -155,10 +183,20 @@ def compareLeaf (tot : Array Nat) (leadTrail : String × String) (orig s : Strin
     if (t.dropWhile (· == ' ')).take 2 == "--" || (t.dropWhile (· == ' ')).take 1 == "\n" then return newTot
     return newTot.push rest.length
 
+/--
+Analogous to `Lean.PrettyPrinter.ppCategory`, but does not run the parenthesizer,
+so that the output should only differ from the source syntax in whitespace.
+-/
+def ppCategory' (cat : Name) (stx : Syntax) : CoreM Format := do
+  let opts ← getOptions
+  let stx := (sanitizeSyntax stx).run' { options := opts }
+  -- the next line starts with `parenthesizeCategory cat stx` in `Lean.PrettyPrinter.ppCategory`
+  stx >>= PrettyPrinter.formatCategory cat
+
 def pretty (stx : Syntax) : CommandElabM String := do
   let fmt : Option Format := ←
       try
-        liftCoreM <| PrettyPrinter.ppCategory `command stx
+        liftCoreM <| ppCategory' `command stx
       catch _ =>
         Linter.logLintIf linter.style.commandStart.verbose (stx.getHead?.getD stx)
           m!"The `commandStart` linter had some parsing issues: \
@@ -247,33 +285,6 @@ def validateSpaceAfter (orig pp : Substring) : Bool :=
       (!pp.isEmpty) && ((orig1 == "\n") || onlineComment orig || (orig1 == " " && !orig2.trim.isEmpty))
     )
 
-/-- Assume both substrings come from actual trails. -/
-def validateSpaceAfter' (orig pp : Substring) : Bool :=
-  -- An empty `pp`ed tail sould correspond to
-  -- an empty `orig`,
-  -- something starting with a line break,
-  -- something starting with some spaces and then a comment
-  let orig1 := (orig.take 1).toString
-  let orig2 := (orig.take 2).toString
-  let answer := (orig1 == "\n") ||
-    (pp.isEmpty && ((orig.takeWhile (·.isWhitespace)).isEmpty || onlineComment orig)) ||
-      (
-        (!pp.isEmpty) && (onlineComment orig || (orig1 == " " || orig2 != "  "))
-      )
-  withVerbose (!answer)
-    s!"\
-    orig1 == \"⏎\": {orig1 == "\n"}\n\
-    or\n  \
-    pp.isEmpty {pp.isEmpty}\n\
-    if {pp.isEmpty}:\n  \
-      orig.takeWhile (·.isWhitespace): {orig.takeWhile (·.isWhitespace)}\n  \
-      or\n  \
-      onlineComment orig: {onlineComment orig}\n\
-    if {!pp.isEmpty}:\n  \
-      onlineComment orig: {onlineComment orig}\n  \
-      or\n  \
-      orig1 == \" \" && orig1 == orig2: {orig1 == " " && orig1 == orig2}"
-      answer
 #eval show TermElabM _ from do
   let space : Substring := " ".toSubstring
   let spaceChar : Substring := " f".toSubstring
@@ -304,6 +315,58 @@ def validateSpaceAfter' (orig pp : Substring) : Bool :=
   guard <| !validateSpaceAfter spaceChar noSpace
   guard <| !validateSpaceAfter doublespaceChar noSpace
 
+/-- Assume both substrings come from actual trails. -/
+def validateSpaceAfter' (orig pp : Substring) : Bool :=
+  -- An empty `pp`ed tail sould correspond to
+  -- an empty `orig`,
+  -- something starting with a line break,
+  -- something starting with some spaces and then a comment
+  let orig1 := (orig.take 1).toString
+  let orig2 := (orig.take 2).toString
+  let answer := (orig1 == "\n") ||
+    (pp.isEmpty && ((orig.takeWhile (·.isWhitespace)).isEmpty || onlineComment orig)) ||
+      (
+        (!pp.isEmpty) && (onlineComment orig || (orig1 == " " && orig2 != "  "))
+      )
+  withVerbose (!answer)
+    s!"\
+    orig1 == \"⏎\": {orig1 == "\n"}\n\
+    or\n  \
+    pp.isEmpty {pp.isEmpty}\n\
+    if {pp.isEmpty}:\n  \
+      orig.takeWhile (·.isWhitespace): {orig.takeWhile (·.isWhitespace)}\n  \
+      or\n  \
+      onlineComment orig: {onlineComment orig}\n\
+    if {!pp.isEmpty}:\n  \
+      onlineComment orig: {onlineComment orig}\n  \
+      or\n  \
+      orig1 == \" \" && orig1 == orig2: {orig1 == " " && orig1 == orig2}"
+      answer
+
+#eval show TermElabM _ from do
+  let space : Substring := " ".toSubstring
+  let spaceChar : Substring := " f".toSubstring
+  let doublespaceChar : Substring := "  f".toSubstring
+  let doublespace : Substring := "  ".toSubstring
+  let noSpace : Substring := "".toSubstring
+  let linebreak : Substring := "\n".toSubstring
+  let commentInline : Substring := "  --".toSubstring
+  let commentMultiline : Substring := "  /-".toSubstring
+  -- `true`
+  guard <| validateSpaceAfter' spaceChar space
+  guard <| validateSpaceAfter' linebreak space
+  guard <| validateSpaceAfter' commentInline space
+  guard <| validateSpaceAfter' commentMultiline space
+  guard <| validateSpaceAfter' noSpace noSpace
+  guard <| validateSpaceAfter' "a".toSubstring noSpace
+  -- A space not followed by a character *is accepted*.
+  guard <| validateSpaceAfter' space space
+  guard <| !validateSpaceAfter' doublespaceChar space
+  -- `false`
+  guard <| !validateSpaceAfter' space noSpace
+  guard <| !validateSpaceAfter' spaceChar noSpace
+  guard <| !validateSpaceAfter' doublespaceChar noSpace
+
 #eval
   let origStr := "intro      --hi"
   let str := "intro hi"
@@ -312,21 +375,22 @@ def validateSpaceAfter' (orig pp : Substring) : Bool :=
   let pp : Substring := "".toSubstring
   dbg_trace "pp.isEmpty: {pp.isEmpty}, validate {validateSpaceAfter orig pp}"
   validateSpaceAfter orig pp
-
+#eval validateSpaceAfter' " ".toSubstring " ".toSubstring
 structure Exceptions where
   orig : String
   pp : String
   pos : String.Pos
   kind : SyntaxNodeKind
+  reason : String
 
 instance : ToString Exceptions where
   toString
-  | {orig := o, pp := pp, pos := p, kind := k} =>
-    s!"Exception\npos:  {p}\nkind: '{k}'\norig: '{o.replace "\n" "⏎"}'\npret: '{pp.replace "\n" "⏎"}'\n---"
+  | {orig := o, pp := pp, pos := p, kind := k, reason := r} =>
+    s!"Exception\npos:  {p}\nkind: '{k}'\norig: '{o.norm}'\npret: '{pp.norm}'\nreason: {r}\n---"
 
-def addException (e : Array Exceptions) (orig pp : String) (p : String.Pos) (k : SyntaxNodeKind) :
+def addException (e : Array Exceptions) (orig pp : String) (p : String.Pos) (k : SyntaxNodeKind) (reason : String) :
     Array Exceptions :=
-  e.push <| Exceptions.mk orig pp p k
+  e.push <| Exceptions.mk orig pp p k reason
 
 def validateAtomOrId (tot : Array Exceptions) (kind : SyntaxNodeKind) (i1 i2 : SourceInfo) (s1 s2 : String) (str : Substring) :
     Substring × Array Exceptions :=
@@ -338,16 +402,20 @@ def validateAtomOrId (tot : Array Exceptions) (kind : SyntaxNodeKind) (i1 i2 : S
   --withVerbose (trail.isEmpty != t1.isEmpty) s!"Discrepancy at {s1}, orig: '{t1}' pped: '{trail}'"
   let isValid := validateSpaceAfter' t1.toSubstring trail
   --dbg_trace "{isValid} -- {(s1, s2)}: '{t1}', '{trail}'\n"
-  let tot := if isValid then tot else
-    dbg_trace "adding with '{s1}' '{s2}"
-    addException tot t1 trail.toString stripString.startPos kind
-  withVerbose ((!str.toString.startsWith s1) || (!str.toString.startsWith s2))
-    s!"something went wrong\n--- All pretty {kind} ---\n{str.toString}\n\n--- Orig ---\n{s1}\n\n--- Pretty--- \n{s2}\n---\n{tot}"
-    (
-      withVerbose (!isValid) s!"Discrepancy at {s1}, orig: '{t1}' pped: '{trail}'"
-      stripString |>.dropWhile (·.isWhitespace), addException tot t1 trail.toString stripString.startPos kind
-    )
-
+  let tot1 := if isValid then
+    tot
+  else
+    dbg_trace "adding with '{s1}' '{s2}'"
+    addException tot t1 trail.toString stripString.startPos kind "invalid"
+  if ((!str.toString.startsWith s1) || (!str.toString.startsWith s2)) then
+    dbg_trace s!"something went wrong\n\
+      --- All pretty {kind} ---\n{str.toString}\ndoes not start with either of the following\n\
+      --- Orig ---\n'{s1.norm}'\n--- Pretty---\n'{s2.norm}'\n---\n{tot1}"
+    (stripString |>.dropWhile (·.isWhitespace), addException tot1 t1 trail.toString stripString.startPos kind s!"wrong: '{s1}' or '{s2}' is not the start of '{str.toString}'")
+  else
+    ( --withVerbose (!isValid) s!"Discrepancy at {s1}, orig: '{t1}' pped: '{trail}'"
+      stripString |>.dropWhile (·.isWhitespace), tot1)
+#eval validateSpaceAfter' " ".toSubstring " ".toSubstring
 def exclusions : NameSet := NameSet.empty
   |>.insert ``Parser.Command.docComment
 
@@ -731,15 +799,6 @@ def mkWindow (orig : String) (start ctx : Nat) : String :=
   let headCtx := head.takeRightWhile (!·.isWhitespace)
   let tail := middle.drop ctx |>.takeWhile (!·.isWhitespace)
   s!"{headCtx}{middle.take ctx}{tail}"
-
-/--
-Analogous to `Lean.PrettyPrinter.ppCategory`, but does not run the parenthesizer,
-so that the output should only differ from the source syntax in whitespace.
--/
-def ppCategory' (cat : Name) (stx : Syntax) : CoreM Format := do
-  let opts ← getOptions
-  let stx := (sanitizeSyntax stx).run' { options := opts }
-  stx >>= PrettyPrinter.formatCategory cat
 
 @[inherit_doc Mathlib.Linter.linter.style.commandStart]
 def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
