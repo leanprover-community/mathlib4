@@ -87,9 +87,9 @@ theorem id_tensorHom_id (X₁ X₂ : Dial C) : (𝟙 X₁ ⊗ₘ 𝟙 X₂ : _ �
 
 @[deprecated (since := "2025-07-14")] alias tensor_id := id_tensorHom_id
 
-theorem tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : Dial C}
+theorem tensorHom_comp_tensorHom {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : Dial C}
     (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
-    tensorHom (f₁ ≫ g₁) (f₂ ≫ g₂) = tensorHom f₁ f₂ ≫ tensorHom g₁ g₂ := by
+    (f₁ ⊗ₘ f₂) ≫ (g₁ ⊗ₘ g₂) = (f₁ ≫ g₁) ⊗ₘ (f₂ ≫ g₂) := by
   ext <;> simp; ext <;> simp <;> (rw [← Category.assoc]; congr 1; simp)
 
 theorem associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : Dial C}
@@ -118,7 +118,7 @@ theorem triangle (X Y : Dial C) :
 instance : MonoidalCategory (Dial C) :=
   .ofTensorHom
     (id_tensorHom_id := id_tensorHom_id)
-    (tensor_comp := tensor_comp)
+    (tensorHom_comp_tensorHom := tensorHom_comp_tensorHom)
     (associator_naturality := associator_naturality)
     (leftUnitor_naturality := leftUnitor_naturality)
     (rightUnitor_naturality := rightUnitor_naturality)
