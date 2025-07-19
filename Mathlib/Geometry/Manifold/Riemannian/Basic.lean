@@ -61,7 +61,7 @@ variable
 section
 
 variable [PseudoEMetricSpace M] [ChartedSpace H M]
-[RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
+  [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
 
 variable (I M) in
 /-- Consider a manifold in which the tangent spaces are already endowed with an inner product, and
@@ -131,15 +131,15 @@ noncomputable instance : RiemannianBundle (fun (x : F) ↦ TangentSpace 𝓘(ℝ
   ⟨(riemannianMetricVectorSpace F).toRiemannianMetric⟩
 
 lemma norm_tangentSpace_vectorSpace {x : F} {v : TangentSpace 𝓘(ℝ, F) x} :
-    ‖v‖ = ‖show F from v‖ := by
+    ‖v‖ = ‖letI V : F := v; V‖ := by
   rw [norm_eq_sqrt_real_inner, norm_eq_sqrt_real_inner]
 
 lemma nnnorm_tangentSpace_vectorSpace {x : F} {v : TangentSpace 𝓘(ℝ, F) x} :
-    ‖v‖₊ = ‖show F from v‖₊ := by
+    ‖v‖₊ = ‖letI V : F := v; V‖₊ := by
   simp [nnnorm, norm_tangentSpace_vectorSpace]
 
 lemma enorm_tangentSpace_vectorSpace {x : F} {v : TangentSpace 𝓘(ℝ, F) x} :
-    ‖v‖ₑ = ‖show F from v‖ₑ := by
+    ‖v‖ₑ = ‖letI V : F := v; V‖ₑ := by
   simp [enorm, nnnorm_tangentSpace_vectorSpace]
 
 open MeasureTheory Measure
@@ -214,8 +214,7 @@ open Manifold Metric
 open scoped NNReal
 
 variable [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
-[IsManifold I 1 M]
-[IsContinuousRiemannianBundle E (fun (x : M) ↦ TangentSpace I x)]
+  [IsManifold I 1 M] [IsContinuousRiemannianBundle E (fun (x : M) ↦ TangentSpace I x)]
 
 /-- Register on the tangent space to a normed vector space the same `NormedAddCommGroup` structure
 as in the vector space.
@@ -313,7 +312,7 @@ lemma eventually_riemannianEDist_le_edist_extChartAt (x : M) :
   obtain ⟨r, r_pos, hr⟩ : ∃ r > 0,
       ball (extChartAt I x x) r ∩ range I ⊆ (extChartAt I x).target ∩
         {y | ‖mfderivWithin 𝓘(ℝ, E) I (extChartAt I x).symm (range I) y‖ₑ < C} :=
-    mem_nhdsWithin_iff.1 (Filter.inter_mem (extChartAt_target_mem_nhdsWithin x) hC)
+    mem_nhdsWithin_iff.1 (inter_mem (extChartAt_target_mem_nhdsWithin x) hC)
   -- pull this set inside `M`: this is the set where we will get the estimate.
   have A : (extChartAt I x) ⁻¹' (ball (extChartAt I x x) r ∩ range I) ∈ 𝓝 x := by
     apply extChartAt_preimage_mem_nhds_of_mem_nhdsWithin (by simp)
@@ -360,9 +359,7 @@ lemma eventually_riemannianEDist_le_edist_extChartAt (x : M) :
       exact uniqueDiffOn_Icc zero_lt_one t ht
   have : mfderivWithin 𝓘(ℝ) I γ (Icc 0 1) t 1 =
       (mfderivWithin 𝓘(ℝ, E) I (extChartAt I x).symm (range I) (η t))
-      (mfderivWithin 𝓘(ℝ) 𝓘(ℝ, E) η (Icc 0 1) t 1) := by
-    rw [this]
-    rfl
+      (mfderivWithin 𝓘(ℝ) 𝓘(ℝ, E) η (Icc 0 1) t 1) := congr($this 1)
   rw [this]
   apply (ContinuousLinearMap.le_opNorm_enorm _ _).trans
   gcongr
@@ -384,6 +381,8 @@ lemma eventually_riemmanianEDist_lt (x : M) {c : ℝ≥0∞} (hc : 0 < c) :
   rwa [ENNReal.lt_div_iff_mul_lt, mul_comm] at this
   · exact Or.inl (mod_cast C_pos.ne')
   · simp
+
+#check IsClosed.Icc_subset_of_forall_exists_gt
 
 /-- Any neighborhood of `x` contains all the points which are close enough to `x` for the
 Riemannian distance, `ℝ≥0` version. -/
@@ -414,15 +413,14 @@ lemma setOf_riemmanianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
   -- let `u` be a closed neighborhood, inside `s`, with the derivative control
   obtain ⟨u, u_mem, u_closed, us, hu, uc⟩ : ∃ u ∈ 𝓝 x, IsClosed u ∧ u ⊆ s
       ∧ u ⊆ {y | ‖mfderiv I 𝓘(ℝ, E) (extChartAt I x) y‖ₑ < C} ∧ u ⊆ (extChartAt I x).source := by
-    have := Filter.inter_mem (Filter.inter_mem hs hC) (extChartAt_source_mem_nhds (I := I) x)
+    have := inter_mem (inter_mem hs hC) (extChartAt_source_mem_nhds (I := I) x)
     rcases exists_mem_nhds_isClosed_subset this with ⟨u, u_mem, u_closed, hu⟩
     simp only [subset_inter_iff] at hu
     exact ⟨u, u_mem, u_closed, hu.1.1, hu.1.2, hu.2⟩
   have uc' : u ⊆ (chartAt H x).source := by simpa [extChartAt_source I x] using uc
   -- let `v` be a smaller open neighborhood, inside `u`.
-  obtain ⟨v, v_mem, v_open, hv⟩ : ∃ v ∈ 𝓝 x, IsOpen v ∧ v ⊆ u := by
-    rcases _root_.mem_nhds_iff.1 u_mem with ⟨v, vu, v_open, xv⟩
-    exact ⟨v, v_open.mem_nhds xv, v_open, vu⟩
+  obtain ⟨v, ⟨v_mem, v_open⟩, hv⟩ : ∃ v, (v ∈ 𝓝 x ∧ IsOpen v) ∧ v ⊆ u :=
+    (nhds_basis_opens' x).mem_iff.1 u_mem
   -- let `r > 0` be small enough that, in the extended chart, the ball of radius `r` is contained
   -- in the image of `v`.
   obtain ⟨r, r_pos, hr⟩ : ∃ r > 0, ball (extChartAt I x x) r ⊆ (extChartAt I x).symm ⁻¹' v :=
@@ -436,6 +434,13 @@ lemma setOf_riemmanianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
   -- to `u`.
   rcases exists_lt_locally_constant_of_riemannianEDist_lt hy zero_lt_one
     with ⟨γ, hγx, hγy, γ_smooth, hγ, -⟩
+  suffices Icc 0 1 ⊆ γ ⁻¹' u by
+    rw [← hγy]
+    apply us (this (by simp))
+  apply IsClosed.Icc_subset_of_forall_mem_nhdsGT_of_mem
+
+#exit
+
   -- let `a` be the set of times `t` such that `γ t' ∈ u` for all `t' ∈ [0, t]`.
   let a := {t ∈ Icc 0 1 | ∀ t' ∈ Icc 0 t, γ t' ∈ u}
   have zero_mem : 0 ∈ a := by simpa only [mem_setOf_eq, Icc_self, mem_singleton_iff, forall_eq, a,
