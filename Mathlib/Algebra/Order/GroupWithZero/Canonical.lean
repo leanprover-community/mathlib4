@@ -327,6 +327,48 @@ lemma map'_mono [MulOneClass α] [MulOneClass β] {f : α →* β} (hf : Monoton
 lemma map'_strictMono [MulOneClass α] [MulOneClass β] {f : α →* β} (hf : StrictMono f) :
     StrictMono (map' f) := by simpa [StrictMono, WithZero.forall]
 
+theorem exists_ne_zero_and_lt [NoMinOrder α] (hx : x ≠ 0) :
+    ∃ y, y ≠ 0 ∧ y < x := by
+  obtain ⟨z, hlt⟩ := exists_lt (WithZero.unzero hx)
+  rw [← WithZero.coe_lt_coe, WithZero.coe_unzero hx] at hlt
+  exact ⟨z, WithZero.coe_ne_zero, hlt⟩
+
+section Multiplicative
+
+open Multiplicative
+
+theorem toAdd_unzero_lt_of_lt_ofAdd
+    {a : WithZero (Multiplicative α)} {b : α} (ha : a ≠ 0) (h : a < ofAdd b) :
+    toAdd (unzero ha) < b := by
+  rwa [← coe_unzero ha, coe_lt_coe, ← toAdd_lt, toAdd_ofAdd] at h
+
+theorem lt_ofAdd_of_toAdd_unzero_lt
+    {a : WithZero (Multiplicative α)} {b : α} (ha : a ≠ 0) (h : toAdd (unzero ha) < b) :
+    a < ofAdd b := by
+  rwa [← coe_unzero ha, coe_lt_coe, ← ofAdd_toAdd (unzero ha), ofAdd_lt]
+
+theorem lt_ofAdd_iff
+    {a : WithZero (Multiplicative α)} {b : α} (ha : a ≠ 0) :
+    a < ofAdd b ↔ toAdd (unzero ha) < b :=
+  ⟨toAdd_unzero_lt_of_lt_ofAdd ha, lt_ofAdd_of_toAdd_unzero_lt ha⟩
+
+theorem toAdd_unzero_le_of_lt_ofAdd
+    {a : WithZero (Multiplicative α)} {b : α} (ha : a ≠ 0) (h : a ≤ ofAdd b) :
+    toAdd (unzero ha) ≤ b := by
+  rwa [← coe_unzero ha, coe_le_coe, ← toAdd_le, toAdd_ofAdd] at h
+
+theorem le_ofAdd_of_toAdd_unzero_le
+    {a : WithZero (Multiplicative α)} {b : α} (ha : a ≠ 0) (h : toAdd (unzero ha) ≤ b) :
+    a ≤ ofAdd b := by
+  rwa [← coe_unzero ha, coe_le_coe, ← ofAdd_toAdd (unzero ha), ofAdd_le]
+
+theorem le_ofAdd_iff
+    {a : WithZero (Multiplicative α)} {b : α} (ha : a ≠ 0) :
+    a ≤ ofAdd b ↔ toAdd (unzero ha) ≤ b :=
+  ⟨toAdd_unzero_le_of_lt_ofAdd ha, le_ofAdd_of_toAdd_unzero_le ha⟩
+
+end Multiplicative
+
 end Preorder
 
 section PartialOrder
@@ -350,7 +392,7 @@ end PartialOrder
 instance instLattice [Lattice α] : Lattice (WithZero α) := WithBot.lattice
 
 section LinearOrder
-variable [LinearOrder α] {a b c : α}
+variable [LinearOrder α] {a b c : α} {x y : WithZero α}
 
 instance instLinearOrder : LinearOrder (WithZero α) := WithBot.linearOrder
 
@@ -359,6 +401,17 @@ protected lemma le_max_iff : (a : WithZero α) ≤ max (b : WithZero α) c ↔ a
 
 protected lemma min_le_iff : min (a : WithZero α) b ≤ c ↔ min a b ≤ c := by
   simp only [WithZero.coe_le_coe, min_le_iff]
+
+theorem exists_ne_zero_and_le_and_le (hx : x ≠ 0) (hy : y ≠ 0) :
+    ∃ z, z ≠ 0 ∧ z ≤ x ∧ z ≤ y :=
+  ⟨x ⊓ y, by simp [min_eq_iff, hx, hy], by simp, by simp⟩
+
+theorem exists_ne_zero_and_lt_and_lt [NoMinOrder α] (hx : x ≠ 0) (hy : y ≠ 0) :
+    ∃ z, z ≠ 0 ∧ z < x ∧ z < y := by
+  obtain ⟨z', hnz', hzx, hzy⟩ := exists_ne_zero_and_le_and_le hx hy
+  obtain ⟨z, hnz, hlt⟩ := exists_ne_zero_and_lt hnz'
+  use z, hnz
+  constructor <;> exact lt_of_lt_of_le hlt ‹z' ≤ _›
 
 end LinearOrder
 
