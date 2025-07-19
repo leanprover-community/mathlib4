@@ -59,7 +59,7 @@ def nonneg : Subsemiring R where
   add_mem' := add_nonneg
   zero_mem' := le_rfl
 
-@[simp] lemma mem_nonneg {x : R} : x ∈ nonneg R ↔ x ∈ Set.Ici 0 := .rfl
+@[simp] lemma mem_nonneg {x : R} : x ∈ nonneg R ↔ 0 ≤ x := .rfl
 
 end nonneg
 
