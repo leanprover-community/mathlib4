@@ -73,16 +73,16 @@ instance IsEmpty.toNoMaxOrder [LT α] [IsEmpty α] : NoMaxOrder α := ⟨isEmpty
 instance IsEmpty.toNoMinOrder [LT α] [IsEmpty α] : NoMinOrder α := ⟨isEmptyElim⟩
 
 instance OrderDual.noBotOrder [LE α] [NoTopOrder α] : NoBotOrder αᵒᵈ :=
-  ⟨fun a => exists_not_le (α := α) a⟩
+  ⟨fun a => exists_not_le (α := α) a.ofDual |>.elim (⟨toDual ·, ·⟩)⟩
 
 instance OrderDual.noTopOrder [LE α] [NoBotOrder α] : NoTopOrder αᵒᵈ :=
-  ⟨fun a => exists_not_ge (α := α) a⟩
+  ⟨fun a => exists_not_ge (α := α) a.ofDual |>.elim (⟨toDual ·, ·⟩)⟩
 
 instance OrderDual.noMinOrder [LT α] [NoMaxOrder α] : NoMinOrder αᵒᵈ :=
-  ⟨fun a => exists_gt (α := α) a⟩
+  ⟨fun a => exists_gt (α := α) a.ofDual |>.elim (⟨toDual ·, ·⟩)⟩
 
 instance OrderDual.noMaxOrder [LT α] [NoMinOrder α] : NoMaxOrder αᵒᵈ :=
-  ⟨fun a => exists_lt (α := α) a⟩
+  ⟨fun a => exists_lt (α := α) a.ofDual |>.elim (⟨toDual ·, ·⟩)⟩
 
 -- See note [lower instance priority]
 instance (priority := 100) [Preorder α] [NoMinOrder α] : NoBotOrder α :=
@@ -198,35 +198,35 @@ theorem IsBot.isMin_iff {α} [PartialOrder α] {i j : α} (h : IsBot i) : IsMin 
 
 @[simp]
 theorem isBot_toDual_iff : IsBot (toDual a) ↔ IsTop a :=
-  Iff.rfl
+  ⟨(· <| toDual ·),(· <| ofDual ·)⟩
 
 @[simp]
 theorem isTop_toDual_iff : IsTop (toDual a) ↔ IsBot a :=
-  Iff.rfl
+  ⟨(· <| toDual ·),(· <| ofDual ·)⟩
 
 @[simp]
 theorem isMin_toDual_iff : IsMin (toDual a) ↔ IsMax a :=
-  Iff.rfl
+  ⟨(@· <| toDual ·),(@· <| ofDual ·)⟩
 
 @[simp]
 theorem isMax_toDual_iff : IsMax (toDual a) ↔ IsMin a :=
-  Iff.rfl
+  ⟨(@· <| toDual ·),(@· <| ofDual ·)⟩
 
 @[simp]
 theorem isBot_ofDual_iff {a : αᵒᵈ} : IsBot (ofDual a) ↔ IsTop a :=
-  Iff.rfl
+  ⟨(· <| ofDual ·),(· <| toDual ·)⟩
 
 @[simp]
 theorem isTop_ofDual_iff {a : αᵒᵈ} : IsTop (ofDual a) ↔ IsBot a :=
-  Iff.rfl
+  ⟨(· <| ofDual ·),(· <| toDual ·)⟩
 
 @[simp]
 theorem isMin_ofDual_iff {a : αᵒᵈ} : IsMin (ofDual a) ↔ IsMax a :=
-  Iff.rfl
+  ⟨(@· <| ofDual ·),(@· <| toDual ·)⟩
 
 @[simp]
 theorem isMax_ofDual_iff {a : αᵒᵈ} : IsMax (ofDual a) ↔ IsMin a :=
-  Iff.rfl
+  ⟨(@· <| ofDual ·),(@· <| toDual ·)⟩
 
 alias ⟨_, IsTop.toDual⟩ := isBot_toDual_iff
 
@@ -338,13 +338,13 @@ protected theorem IsBot.not_isMax [Nontrivial α] (ha : IsBot a) : ¬ IsMax a :=
   exact hb <| ha'.eq_of_ge (ha.lt_of_ne hb.symm).le
 
 protected theorem IsTop.not_isMin [Nontrivial α] (ha : IsTop a) : ¬ IsMin a :=
-  ha.toDual.not_isMax
+  (ha.toDual.not_isMax ·.toDual)
 
 protected theorem IsBot.not_isTop [Nontrivial α] (ha : IsBot a) : ¬ IsTop a :=
   mt IsTop.isMax ha.not_isMax
 
 protected theorem IsTop.not_isBot [Nontrivial α] (ha : IsTop a) : ¬ IsBot a :=
-  ha.toDual.not_isTop
+  (ha.toDual.not_isTop ·.toDual)
 
 end PartialOrder
 
