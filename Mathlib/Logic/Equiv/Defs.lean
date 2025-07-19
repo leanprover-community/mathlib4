@@ -218,6 +218,15 @@ protected def inhabited [Inhabited β] (e : α ≃ β) : Inhabited α := ⟨e.sy
 /-- If `α ≃ β` and `β` is a singleton type, then so is `α`. -/
 protected def unique [Unique β] (e : α ≃ β) : Unique α := e.symm.surjective.unique
 
+lemma Subtype.exists_congr {α β : Type*} {p : α → Prop} {q : β → Prop}
+    (e : {a // p a} ≃ {b // q b}) : (∃ a, p a) ↔ ∃ b, q b := by
+  simp [← nonempty_subtype, nonempty_congr e]
+
+lemma Subtype.existsUnique_congr {α β : Type*} {p : α → Prop} {q : β → Prop}
+    (e : {a // p a} ≃ {b // q b}) : (∃! a, p a) ↔ ∃! b, q b := by
+  simp [← unique_subtype_iff_existsUnique, unique_iff_subsingleton_and_nonempty,
+        nonempty_congr e, subsingleton_congr e]
+
 /-- Equivalence between equal types. -/
 protected def cast {α β : Sort _} (h : α = β) : α ≃ β :=
   ⟨cast h, cast h.symm, fun _ => by cases h; rfl, fun _ => by cases h; rfl⟩
