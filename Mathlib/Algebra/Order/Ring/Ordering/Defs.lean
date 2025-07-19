@@ -109,9 +109,7 @@ protected def copy : RingPreordering R where
   mem_of_isSquare' := by aesop
   neg_one_notMem' := by aesop
 
-@[simp, norm_cast]
-theorem coe_copy : (P.copy S hS : Set R) = S := rfl
-
+@[simp, norm_cast] theorem coe_copy : (P.copy S hS : Set R) = S := rfl
 theorem copy_eq : P.copy S hS = S := rfl
 
 end copy
@@ -168,9 +166,7 @@ def support : Ideal R where
 
 @[simp] theorem mem_support {x} : x ∈ support P ↔ x ∈ P ∧ -x ∈ P := .rfl
 @[simp, norm_cast] theorem coe_support : support P = {x : R | x ∈ P ∧ -x ∈ P} := rfl
-
-@[simp]
-theorem support_toAddSubgroup : (support P).toAddSubgroup = supportAddSubgroup P := by ext; simp
+@[simp] theorem support_toAddSubgroup : (support P).toAddSubgroup = supportAddSubgroup P := rfl
 
 end support
 
