@@ -583,15 +583,16 @@ Now we will prove that a compactly generated modular atomistic lattice is a comp
 Most explicitly, every element is the complement of a supremum of indepedendent atoms.
 -/
 
-/-- In an atomic lattice, every element `b` has a complement of the form `sSup s`, where each
-element of `s` is an atom. See also `complementedLattice_of_sSup_atoms_eq_top`. -/
-theorem exists_sSupIndep_isCompl_sSup_atoms (h : sSup { a : α | IsAtom a } = ⊤) (b : α) :
-    ∃ s : Set α, sSupIndep s ∧
-    IsCompl b (sSup s) ∧ ∀ ⦃a⦄, a ∈ s → IsAtom a := by
+/-- In an atomic lattice, every element `b` has a complement of the form `sSup s` relative to a
+given element `c`, where each element of `s` is an atom.
+See also `complementedLattice_of_sSup_atoms_eq_top`. -/
+theorem exists_sSupIndep_disjoint_sSup_atoms (b c : α) (hbc : b ≤ c)
+    (h : sSup {a ≤ c | IsAtom a} = c) :
+    ∃ s : Set α, sSupIndep s ∧ Disjoint b (sSup s) ∧ b ⊔ sSup s = c ∧ ∀ ⦃a⦄, a ∈ s → IsAtom a := by
   -- porting note(https://github.com/leanprover-community/mathlib4/issues/5732):
   -- `obtain` chokes on the placeholder.
   have zorn := zorn_subset
-    (S := {s : Set α | sSupIndep s ∧ Disjoint b (sSup s) ∧ ∀ a ∈ s, IsAtom a})
+    (S := {s : Set α | sSupIndep s ∧ Disjoint b (sSup s) ∧ ∀ a ∈ s, IsAtom a ∧ a ≤ c})
     fun c hc1 hc2 =>
       ⟨⋃₀ c,
         ⟨iSupIndep_sUnion_of_directed hc2.directedOn fun s hs => (hc1 hs).1, ?_,
@@ -605,11 +606,12 @@ theorem exists_sSupIndep_isCompl_sSup_atoms (h : sSup { a : α | IsAtom a } = �
       exact hc2.directedOn.mono @fun s t => sSup_le_sSup
   simp_rw [maximal_subset_iff] at zorn
   obtain ⟨s, ⟨s_ind, b_inf_Sup_s, s_atoms⟩, s_max⟩ := zorn
-  refine ⟨s, s_ind, ⟨b_inf_Sup_s, ?_⟩, s_atoms⟩
-  rw [codisjoint_iff_le_sup, ← h, sSup_le_iff]
+  refine ⟨s, s_ind, b_inf_Sup_s, le_antisymm ?_ ?_, fun a ha ↦ (s_atoms a ha).1⟩
+  · aesop
+  rw [← h, sSup_le_iff]
   intro a ha
   rw [← inf_eq_left]
-  refine (ha.le_iff.mp inf_le_left).resolve_left fun con => ha.1 ?_
+  refine (ha.2.le_iff.mp inf_le_left).resolve_left fun con => ha.2.1 ?_
   rw [← con, eq_comm, inf_eq_left]
   refine (le_sSup ?_).trans le_sup_right
   rw [← disjoint_iff] at con
@@ -635,15 +637,26 @@ theorem exists_sSupIndep_isCompl_sSup_atoms (h : sSup { a : α | IsAtom a } = �
   · rw [Set.mem_union, Set.mem_singleton_iff] at hx
     obtain hx | rfl := hx
     · exact s_atoms x hx
-    · exact ha
+    · exact ha.symm
+
+/-- In an atomic lattice, every element `b` has a complement of the form `sSup s`, where each
+element of `s` is an atom. See also `complementedLattice_of_sSup_atoms_eq_top`. -/
+theorem exists_sSupIndep_isCompl_sSup_atoms (h : sSup { a : α | IsAtom a } = ⊤) (b : α) :
+    ∃ s : Set α, sSupIndep s ∧ IsCompl b (sSup s) ∧ ∀ ⦃a⦄, a ∈ s → IsAtom a := by
+  simpa [isCompl_iff, codisjoint_iff, and_assoc]
+    using exists_sSupIndep_disjoint_sSup_atoms b ⊤ le_top <| by simpa using h
 
 @[deprecated (since := "2024-11-24")]
 alias exists_setIndependent_isCompl_sSup_atoms := exists_sSupIndep_isCompl_sSup_atoms
 
-theorem exists_sSupIndep_of_sSup_atoms_eq_top (h : sSup { a : α | IsAtom a } = ⊤) :
+theorem exists_sSupIndep_of_sSup_atoms (b : α) (h : sSup {a ≤ b | IsAtom a} = b) :
+    ∃ s : Set α, sSupIndep s ∧ sSup s = b ∧ ∀ ⦃a⦄, a ∈ s → IsAtom a :=
+  let ⟨s, s_ind, _, s_atoms⟩ := exists_sSupIndep_disjoint_sSup_atoms ⊥ b bot_le h
+  ⟨s, s_ind, by simpa using s_atoms⟩
+
+theorem exists_sSupIndep_of_sSup_atoms_eq_top (h : sSup {a : α | IsAtom a} = ⊤) :
     ∃ s : Set α, sSupIndep s ∧ sSup s = ⊤ ∧ ∀ ⦃a⦄, a ∈ s → IsAtom a :=
-  let ⟨s, s_ind, s_top, s_atoms⟩ := exists_sSupIndep_isCompl_sSup_atoms h ⊥
-  ⟨s, s_ind, eq_top_of_isCompl_bot s_top.symm, s_atoms⟩
+  exists_sSupIndep_of_sSup_atoms ⊤ (by simpa)
 
 @[deprecated (since := "2024-11-24")]
 alias exists_setIndependent_of_sSup_atoms_eq_top := exists_sSupIndep_of_sSup_atoms_eq_top
@@ -652,8 +665,8 @@ alias exists_setIndependent_of_sSup_atoms_eq_top := exists_sSupIndep_of_sSup_ato
 theorem complementedLattice_of_sSup_atoms_eq_top (h : sSup { a : α | IsAtom a } = ⊤) :
     ComplementedLattice α :=
   ⟨fun b =>
-    let ⟨s, _, s_top, _⟩ := exists_sSupIndep_isCompl_sSup_atoms h b
-    ⟨sSup s, s_top⟩⟩
+    let ⟨s, _, hbs_inf, hbs_sup, _⟩ := exists_sSupIndep_isCompl_sSup_atoms b ⊤ le_top (by simpa)
+    ⟨sSup s, hbs_inf, codisjoint_iff.2 hbs_sup⟩⟩
 
 /-- See [Theorem 6.6][calugareanu]. -/
 theorem complementedLattice_of_isAtomistic [IsAtomistic α] : ComplementedLattice α :=
