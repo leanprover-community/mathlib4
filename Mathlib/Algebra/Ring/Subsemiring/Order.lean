@@ -47,7 +47,7 @@ instance toIsStrictOrderedRing [Semiring R] [PartialOrder R] [IsStrictOrderedRin
 
 section nonneg
 
-variable {R : Type*} [Semiring R] [PartialOrder R] [IsOrderedRing R]
+variable [Semiring R] [PartialOrder R] [IsOrderedRing R]
 
 variable (R) in
 /-- The set of nonnegative elements in an ordered semiring, as a subsemiring. -/
