@@ -176,7 +176,12 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
     -- If it has, `p` will either be the name of the corresponding `Algebra` property, or a
     -- lemma/constructor.
     | some p =>
-      let cinfo ← try getConstInfo p catch _ => return
+      let cinfo ← try getConstInfo p catch _ =>
+        logWarning m!"Hypothesis {decl.toExpr} has type{indentD decl.type}.\n\
+          Its head symbol {.ofConstName nm} is (effectively) tagged with `@[algebraize {p}]`, \
+          but no constant{indentD p}\nhas been found.\n\
+          Check for missing imports, missing namespaces or typos."
+        return
       let p' ← mkConstWithFreshMVarLevels p
       let (pargs, _, _) ← forallMetaTelescope (← inferType p')
       let tp' := mkAppN p' pargs

@@ -53,6 +53,20 @@ and hence needs to be created through a lemma. See e.g.
 def RingHom.TestProperty4 (n : ℕ) {A B : Type*} [CommRing A] [CommRing B] (_ : A →+* B) : Prop :=
   ∀ m, n = m
 
+/--
+warning: Hypothesis hf has type
+  RingHom.TestProperty4 n f.
+Its head symbol RingHom.TestProperty4 is (effectively) tagged with `@[algebraize RingHom.TestProperty4.toAlgebra]`, but no constant
+  RingHom.TestProperty4.toAlgebra
+has been found.
+Check for missing imports, missing namespaces or typos.
+-/
+#guard_msgs (warning) in
+example (n : ℕ) {A B : Type*} [CommRing A] [CommRing B] (f : A →+* B) (hf : f.TestProperty4 n) :
+    True := by
+  algebraize [f]
+  trivial
+
 lemma RingHom.TestProperty4.toAlgebra (n : ℕ) {A B : Type*} [CommRing A] [CommRing B] (f : A →+* B)
     (hf : f.TestProperty4 n) :
     letI : Algebra A B := f.toAlgebra
