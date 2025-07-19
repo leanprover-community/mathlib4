@@ -723,7 +723,7 @@ lemma LinearOrder.ext_lt {A B : LinearOrder α} (H : ∀ x y : α, (haveI := A; 
 /-- Type synonym to equip a type with the dual order: `≤` means `≥` and `<` means `>`. `αᵒᵈ` is
 notation for `OrderDual α`. -/
 structure OrderDual (α : Type*) where
-  toDual :: (ofDual : α)
+  toDual' :: (ofDual' : α)
 
 @[inherit_doc]
 notation:max α "ᵒᵈ" => OrderDual α
@@ -731,25 +731,25 @@ notation:max α "ᵒᵈ" => OrderDual α
 namespace OrderDual
 
 instance (α : Type*) [h : Nonempty α] : Nonempty αᵒᵈ :=
-  h.map toDual
+  h.map toDual'
 
 instance (α : Type*) [h : Subsingleton α] : Subsingleton αᵒᵈ where
   allEq := fun ⟨a⟩ ⟨b⟩ => by rw [h.allEq a b]
 
 instance (α : Type*) [LE α] : LE αᵒᵈ :=
-  ⟨fun x y ↦ y.ofDual ≤ x.ofDual⟩
+  ⟨fun x y ↦ y.ofDual' ≤ x.ofDual'⟩
 
 instance (α : Type*) [LT α] : LT αᵒᵈ :=
-  ⟨fun x y ↦ y.ofDual < x.ofDual⟩
+  ⟨fun x y ↦ y.ofDual' < x.ofDual'⟩
 
 instance instOrd (α : Type*) [Ord α] : Ord αᵒᵈ where
-  compare := fun a b ↦ compare b.ofDual a.ofDual
+  compare := fun a b ↦ compare b.ofDual' a.ofDual'
 
 instance instSup (α : Type*) [Min α] : Max αᵒᵈ :=
-  ⟨(toDual <| ·.ofDual ⊓ ·.ofDual)⟩
+  ⟨(toDual' <| ·.ofDual' ⊓ ·.ofDual')⟩
 
 instance instInf (α : Type*) [Max α] : Min αᵒᵈ :=
-  ⟨(toDual <| ·.ofDual ⊔ ·.ofDual)⟩
+  ⟨(toDual' <| ·.ofDual' ⊔ ·.ofDual')⟩
 
 instance instPreorder (α : Type*) [Preorder α] : Preorder αᵒᵈ where
   le_refl := fun _ ↦ le_refl _
@@ -758,23 +758,24 @@ instance instPreorder (α : Type*) [Preorder α] : Preorder αᵒᵈ where
 
 instance instPartialOrder (α : Type*) [PartialOrder α] : PartialOrder αᵒᵈ where
   __ := inferInstanceAs (Preorder αᵒᵈ)
-  le_antisymm := fun a b hab hba ↦ congrArg toDual (@le_antisymm α _ a.ofDual b.ofDual hba hab)
+  le_antisymm := fun a b hab hba ↦ congrArg toDual' (@le_antisymm α _ a.ofDual' b.ofDual' hba hab)
 
 instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ where
   __ := inferInstanceAs (PartialOrder αᵒᵈ)
   __ := inferInstanceAs (Ord αᵒᵈ)
   le_total := fun ⟨a⟩ ⟨b⟩ ↦ le_total b a
   min_def :=
-    fun ⟨a⟩ ⟨b⟩ ↦ show toDual (max a b) = _ by rw [max_comm, max_def, apply_ite toDual]; rfl
+    fun ⟨a⟩ ⟨b⟩ ↦ show toDual' (max a b) = _ by rw [max_comm, max_def, apply_ite toDual']; rfl
   max_def :=
-    fun ⟨a⟩ ⟨b⟩ ↦ show toDual (min a b) = _ by rw [min_comm, min_def,apply_ite toDual]; rfl
-  toDecidableLE a b := inferInstanceAs (Decidable (b.ofDual ≤ a.ofDual))
-  toDecidableLT a b := inferInstanceAs (Decidable (b.ofDual < a.ofDual))
-  toDecidableEq a b := decidable_of_iff (a.ofDual = b.ofDual) (⟨congrArg toDual,congrArg ofDual⟩)
+    fun ⟨a⟩ ⟨b⟩ ↦ show toDual' (min a b) = _ by rw [min_comm, min_def,apply_ite toDual']; rfl
+  toDecidableLE a b := inferInstanceAs (Decidable (b.ofDual' ≤ a.ofDual'))
+  toDecidableLT a b := inferInstanceAs (Decidable (b.ofDual' < a.ofDual'))
+  toDecidableEq a b := decidable_of_iff (a.ofDual' = b.ofDual')
+    (⟨congrArg toDual',congrArg ofDual'⟩)
   compare_eq_compareOfLessAndEq a b := by
     simp only [compare, LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq, eq_comm]
     convert rfl
-    exact ⟨congrArg ofDual,congrArg toDual⟩
+    exact ⟨congrArg ofDual',congrArg toDual'⟩
 
 -- #check LinearOrder
 /-- The opposite linear order to a given linear order -/
@@ -799,7 +800,7 @@ def _root_.LinearOrder.swap (α : Type*) (_ : LinearOrder α) : LinearOrder α w
   -- inferInstanceAs <| LinearOrder (OrderDual α)
 
 instance [Inhabited α] : Inhabited αᵒᵈ where
-  default := .toDual default
+  default := toDual' default
 
 -- theorem Ord.dual_dual (α : Type*) [H : Ord α] : OrderDual.instOrd αᵒᵈ = H :=
 --   rfl
@@ -1269,11 +1270,11 @@ theorem exists_between [LT α] [DenselyOrdered α] : ∀ {a₁ a₂ : α}, a₁ 
 
 instance OrderDual.denselyOrdered (α : Type*) [LT α] [h : DenselyOrdered α] :
     DenselyOrdered αᵒᵈ :=
-  ⟨fun _ _ ha ↦ (@exists_between α _ h _ _ ha).elim fun a h ↦ ⟨toDual a, h.symm⟩⟩
+  ⟨fun _ _ ha ↦ (@exists_between α _ h _ _ ha).elim fun a h ↦ ⟨toDual' a, h.symm⟩⟩
 
 @[simp]
 theorem denselyOrdered_orderDual [LT α] : DenselyOrdered αᵒᵈ ↔ DenselyOrdered α :=
-  ⟨fun h => ⟨fun _ _ ha ↦ (@exists_between αᵒᵈ _ h _ _ ha).elim fun a h ↦ ⟨a.ofDual, h.symm⟩⟩,
+  ⟨fun h => ⟨fun _ _ ha ↦ (@exists_between αᵒᵈ _ h _ _ ha).elim fun a h ↦ ⟨a.ofDual', h.symm⟩⟩,
     @OrderDual.denselyOrdered α _⟩
 
 /-- Any ordered subsingleton is densely ordered. Not an instance to avoid a heavy subsingleton

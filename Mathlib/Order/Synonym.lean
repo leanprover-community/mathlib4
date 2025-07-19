@@ -41,16 +41,21 @@ variable {α : Type*}
 
 namespace OrderDual
 
-instance [h : Nontrivial α] : Nontrivial αᵒᵈ :=
-  h
+instance [h : Nontrivial α] : Nontrivial αᵒᵈ where
+  exists_pair_ne := h.exists_pair_ne.elim
+    (fun a ⟨b,hb⟩ => ⟨toDual' a, ⟨toDual' b,hb ∘ congrArg ofDual'⟩⟩)
 
 /-- `toDual` is the identity function to the `OrderDual` of a linear order. -/
-def toDual : α ≃ αᵒᵈ :=
-  Equiv.refl _
+def toDual : α ≃ αᵒᵈ := ⟨toDual',ofDual',fun _ => rfl, fun _ => rfl⟩
 
 /-- `ofDual` is the identity function from the `OrderDual` of a linear order. -/
-def ofDual : αᵒᵈ ≃ α :=
-  Equiv.refl _
+def ofDual : αᵒᵈ ≃ α := toDual.symm
+
+@[simp]
+theorem toDual'_eq : (@toDual' α) = ⇑(@toDual α) := rfl
+
+@[simp]
+theorem ofDual'_eq : (@ofDual' α) = ⇑(@ofDual α) := rfl
 
 @[simp]
 theorem toDual_symm_eq : (@toDual α).symm = ofDual := rfl
@@ -98,18 +103,18 @@ theorem toDual_le [LE α] {a : α} {b : αᵒᵈ} : toDual a ≤ b ↔ ofDual b 
 theorem toDual_lt [LT α] {a : α} {b : αᵒᵈ} : toDual a < b ↔ ofDual b < a :=
   Iff.rfl
 
-/-- Recursor for `αᵒᵈ`. -/
-@[elab_as_elim]
-protected def rec {C : αᵒᵈ → Sort*} (h₂ : ∀ a : α, C (toDual a)) : ∀ a : αᵒᵈ, C a :=
-  h₂
+/-- Recursor for `αᵒᵈ` using `OrderDual.toDual`. -/
+@[elab_as_elim, induction_eliminator, cases_eliminator]
+protected def rec' {C : αᵒᵈ → Sort*} (h₂ : ∀ a : α, C (toDual a)) : ∀ a : αᵒᵈ, C a :=
+  fun a => h₂ (ofDual a)
 
 @[simp]
 protected theorem «forall» {p : αᵒᵈ → Prop} : (∀ a, p a) ↔ ∀ a, p (toDual a) :=
-  Iff.rfl
+  ⟨(· <| toDual ·),(· <| ofDual ·)⟩
 
 @[simp]
 protected theorem «exists» {p : αᵒᵈ → Prop} : (∃ a, p a) ↔ ∃ a, p (toDual a) :=
-  Iff.rfl
+  ⟨(·.rec (⟨ofDual ·, ·⟩)),(·.rec (⟨toDual ·, ·⟩))⟩
 
 alias ⟨_, _root_.LE.le.dual⟩ := toDual_le_toDual
 
