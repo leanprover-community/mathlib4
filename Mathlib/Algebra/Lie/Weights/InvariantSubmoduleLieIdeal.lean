@@ -17,7 +17,6 @@ open IsKilling (sl2SubalgebraOfRoot rootSystem)
 
 variable {H : LieSubalgebra K L} [H.IsCartanSubalgebra] [IsTriangularizable K H L]
 
--- Factored-out lemma for zero pairing implies zero bracket
 lemma zero_pairing_implies_zero_bracket
   (χ α : Weight K H L)
   (x : L) (hx : x ∈ genWeightSpace L χ.toLinear)
@@ -28,63 +27,37 @@ lemma zero_pairing_implies_zero_bracket
     rw [← IsKilling.coe_corootSpace_eq_span_singleton]
     rw [LieSubmodule.mem_toSubmodule]
     exact hh
-
   obtain ⟨c, hc⟩ := Submodule.mem_span_singleton.mp h_in_span
-
-  -- Step 2: χ(h) = 0 since h = c • coroot α and χ(coroot α) = 0
   have h_chi_h_zero : (χ.toLinear) h = 0 := by
     have : (χ.toLinear) h = (χ.toLinear) (c • IsKilling.coroot α) := by rw [hc]
     rw [this, LinearMap.map_smul]
-    -- Need to convert χ (IsKilling.coroot α) = 0 to (χ.toLinear) (IsKilling.coroot α) = 0
     have h_convert : (χ.toLinear) (IsKilling.coroot α) = χ (IsKilling.coroot α) := rfl
     rw [h_convert, h_zero, smul_zero]
-
-  -- Step 3: x is in the 0-generalized eigenspace of h
   rw [genWeightSpace, LieSubmodule.mem_iInf] at hx
   have hx_h := hx h
-  -- hx_h : x ∈ genWeightSpaceOf L (χ.toLinear h) h
   rw [h_chi_h_zero] at hx_h
-  -- Now hx_h : x ∈ genWeightSpaceOf L 0 h
-
-  -- Extract from the LieSubmodule structure that x ∈ (toEnd K H L h).maxGenEigenspace 0
   have hx_maxgen : x ∈ (toEnd K H L h).maxGenEigenspace 0 := by
-    -- genWeightSpaceOf L 0 h is defined as a LieSubmodule wrapping the maxGenEigenspace
     change x ∈ (genWeightSpaceOf L 0 h).toSubmodule at hx_h
     rw [genWeightSpaceOf] at hx_h
     exact hx_h
-
-  -- Step 4: Since h ∈ H (Cartan subalgebra), ad K L h is semisimple
   have h_semisimple : (ad K L (h : L)).IsSemisimple := by
     exact LieAlgebra.IsKilling.isSemisimple_ad_of_mem_isCartanSubalgebra h.property
-
-  -- Step 5: For semisimple endomorphisms, maxGenEigenspace = eigenspace
   have h_gen_eq_eigen : (ad K L (h : L)).maxGenEigenspace 0 = (ad K L (h : L)).eigenspace 0 := by
     exact Module.End.IsFinitelySemisimple.maxGenEigenspace_eq_eigenspace
       h_semisimple.isFinitelySemisimple 0
-
-  -- Step 6: Connect toEnd with ad and conclude
-  -- We need to show that toEnd K H L h = ad K L (h : L) on the space L
   have hx_maxgen_ad : x ∈ (ad K L (h : L)).maxGenEigenspace 0 := by
-    -- toEnd K H L h and ad K L (h : L) are the same endomorphism
     have h_eq : toEnd K H L h = ad K L (h : L) := by
       ext y
       simp only [LieModule.toEnd_apply_apply, LieAlgebra.ad_apply]
-      -- ⁅h, y⁆ = ⁅(h : L), y⁆ by coercion
       rfl
     rw [← h_eq]
     exact hx_maxgen
-
-  -- Step 7: Use semisimple property to get x ∈ eigenspace 0
   rw [h_gen_eq_eigen] at hx_maxgen_ad
   rw [Module.End.mem_eigenspace_iff] at hx_maxgen_ad
-
-  -- Step 8: (ad K L h) x = 0 means ⁅h, x⁆ = 0, so ⁅x, h⁆ = 0
   have h_ad_zero : (ad K L (h : L)) x = 0 := by
     simp only [zero_smul] at hx_maxgen_ad
     exact hx_maxgen_ad
-
   rw [LieAlgebra.ad_apply] at h_ad_zero
-  -- h_ad_zero : ⁅(h : L), x⁆ = 0, we want ⁅x, (h : L)⁆ = 0
   rw [← lie_skew] at h_ad_zero
   exact neg_eq_zero.mp h_ad_zero
 
@@ -96,142 +69,81 @@ lemma pairing_zero_of_trivial_sum_diff_spaces
   let S := LieAlgebra.IsKilling.rootSystem H
   ∃ (i j : { w : Weight K H L // w ∈ H.root }),
     S.root i = χ.toLinear ∧ S.root j = α.toLinear ∧ S.pairing i j = 0 := by
-
   let S := LieAlgebra.IsKilling.rootSystem H
-
-  -- Get root indices for χ and α
   have hχ_in_root : χ ∈ H.root := by
     simp [LieSubalgebra.root]
     exact hχ
   have hα_in_root : α ∈ H.root := by
     simp [LieSubalgebra.root]
     exact hα
-
   let i : { w : Weight K H L // w ∈ H.root } := ⟨χ, hχ_in_root⟩
   let j : { w : Weight K H L // w ∈ H.root } := ⟨α, hα_in_root⟩
-
   use i, j
   constructor
-  · -- S.root i = χ.toLinear
-    rfl
+  · rfl
   constructor
-  · -- S.root j = α.toLinear
-    rfl
-  · -- The main goal: S.pairing i j = 0
-    -- Use trichotomy to consider all cases
-    have h_trichotomy : S.pairingIn ℤ i j < 0 ∨ S.pairingIn ℤ i j = 0 ∨ 0 < S.pairingIn ℤ i j := by
+  · rfl
+  · have h_trichotomy : S.pairingIn ℤ i j < 0 ∨ S.pairingIn ℤ i j = 0 ∨ 0 < S.pairingIn ℤ i j := by
       exact lt_trichotomy (S.pairingIn ℤ i j) 0
-
     cases h_trichotomy with
     | inl h_neg =>
-      -- Case: S.pairingIn ℤ i j < 0 (negative pairing)
       exfalso
-      -- Use root_add_root_mem_of_pairingIn_neg to get contradiction
       have h_add_mem : S.root i + S.root j ∈ Set.range S.root := by
         apply RootPairing.root_add_root_mem_of_pairingIn_neg S.toRootPairing h_neg
-        -- Need to show S.root i ≠ -S.root j
         intro h_eq
-        -- This would contradict w_plus : χ.toLinear + α.toLinear ≠ 0
         have h_sum_zero : S.root i + S.root j = 0 := by rw [h_eq]; simp
-        -- But S.root i = χ.toLinear and S.root j = α.toLinear, so χ + α = 0
         have h_contradiction : χ.toLinear + α.toLinear = 0 := h_sum_zero
         exact w_plus h_contradiction
-      -- Now χ + α is a root, contradicting h_plus_bot
       have h_chi_plus_alpha_root : χ.toLinear + α.toLinear ∈ Set.range S.root := h_add_mem
       have h_nontriv : genWeightSpace L (χ.toLinear + α.toLinear) ≠ ⊥ := by
-        -- Since χ.toLinear + α.toLinear is in the range of S.root, it corresponds to some root
         obtain ⟨idx, hidx⟩ := h_chi_plus_alpha_root
-        -- idx is a subtype element, so idx.val is the actual weight and idx.property proves it's in
-        -- LieSubalgebra.root
-        -- Since LieSubalgebra.root = {α | α.IsNonZero}, membership implies IsNonZero
         have h_nonzero : idx.val.IsNonZero := by
-          -- Convert membership in LieSubalgebra.root to IsNonZero using the definition
-          -- LieSubalgebra.root is defined as {α | α.IsNonZero}
           have h_mem := idx.property
           simp only [LieSubalgebra.root, Finset.mem_filter, Finset.mem_univ, true_and] at h_mem
           exact h_mem
-        -- Non-zero weights have nontrivial weight spaces
         have h_weight_space_nontrivial := idx.val.genWeightSpace_ne_bot
-        -- Now we need to use the connection between S.root and the weight space
-        -- The key insight: S.root idx should equal idx.val.toLinear, and this should match hidx
         have h_root_eq : S.root idx = idx.val.toLinear := by
-          -- This follows from the definition of rootSystem
           exact LieAlgebra.IsKilling.rootSystem_root_apply H idx
-        -- Now we can use transitivity to get our result
         have : genWeightSpace L (S.root idx) ≠ ⊥ := by
           rw [h_root_eq]
           exact h_weight_space_nontrivial
-        -- Use hidx to substitute: S.root idx = χ.toLinear + α.toLinear
         have h_final : genWeightSpace L (χ.toLinear + α.toLinear) ≠ ⊥ := by
           convert this using 1
           rw [←hidx]
         exact h_final
       exact h_nontriv h_plus_bot
-
     | inr h_rest =>
       cases h_rest with
       | inl h_zero =>
-        -- Case: S.pairingIn ℤ i j = 0 (zero pairing)
-        -- This is what we want to prove, but we need to convert to S.pairing
-        -- S.pairingIn ℤ i j = 0 should imply S.pairing i j = 0
-        -- Use S.algebraMap_pairingIn ℤ: algebraMap ℤ K (S.pairingIn ℤ i j) = S.pairing i j
         have h_algebraMap : algebraMap ℤ K (S.pairingIn ℤ i j) = S.pairing i j := by
           exact S.algebraMap_pairingIn ℤ i j
         rw [h_zero, map_zero] at h_algebraMap
         exact h_algebraMap.symm
-
       | inr h_pos =>
-        -- Case: S.pairingIn ℤ i j > 0 (positive pairing)
         exfalso
-        -- Use root_sub_root_mem_of_pairingIn_pos to get contradiction
-        -- First, we need the underlying RootPairing from the RootSystem
         have h_sub_mem : S.root i - S.root j ∈ Set.range S.root := by
-          -- Apply the root system lemma - S is already a RootPairing instance
           apply RootPairing.root_sub_root_mem_of_pairingIn_pos S.toRootPairing h_pos
-          -- Need to show i ≠ j
           intro h_eq
-          -- If i = j then χ = α, which contradicts w_minus
           have h_chi_eq_alpha : χ = α := by
-            -- h_eq : i = j where i = ⟨χ, _⟩ and j = ⟨α, _⟩
             injection h_eq
           have h_contradiction : χ.toLinear - α.toLinear = 0 := by
             rw [h_chi_eq_alpha]
             simp
           exact w_minus h_contradiction
-        -- Now h_sub_mem tells us χ - α is a root, contradicting h_minus_bot
-        -- We have: S.root i - S.root j ∈ Set.range S.root
-        -- Since S.root i = χ.toLinear and S.root j = α.toLinear
-        -- this means χ.toLinear - α.toLinear ∈ Set.range S.root
-        -- So χ - α is a root, hence its weight space should be non-trivial
         have h_chi_minus_alpha_root : χ.toLinear - α.toLinear ∈ Set.range S.root := by
-          -- h_sub_mem : S.root i - S.root j ∈ Set.range S.root
-          -- We know S.root i = χ.toLinear and S.root j = α.toLinear
           exact h_sub_mem
-        -- If γ is a root, then genWeightSpace L γ ≠ ⊥
         have h_nontriv : genWeightSpace L (χ.toLinear - α.toLinear) ≠ ⊥ := by
-          -- Since χ.toLinear - α.toLinear is in the range of S.root, it corresponds to some root
           obtain ⟨idx, hidx⟩ := h_chi_minus_alpha_root
-          -- idx is a subtype element, so idx.val is the actual weight and idx.property proves it's
-          -- in LieSubalgebra.root
-          -- Since LieSubalgebra.root = {α | α.IsNonZero}, membership implies IsNonZero
           have h_nonzero : idx.val.IsNonZero := by
-            -- Convert membership in LieSubalgebra.root to IsNonZero using the definition
-            -- LieSubalgebra.root is defined as {α | α.IsNonZero}
             have h_mem := idx.property
             simp only [LieSubalgebra.root, Finset.mem_filter, Finset.mem_univ, true_and] at h_mem
             exact h_mem
-          -- Non-zero weights have nontrivial weight spaces
           have h_weight_space_nontrivial := idx.val.genWeightSpace_ne_bot
-          -- Now we need to use the connection between S.root and the weight space
-          -- The key insight: S.root idx should equal idx.val.toLinear, and this should match hidx
           have h_root_eq : S.root idx = idx.val.toLinear := by
-            -- This follows from the definition of rootSystem
             exact LieAlgebra.IsKilling.rootSystem_root_apply H idx
-          -- Now we can use transitivity to get our result
           have : genWeightSpace L (S.root idx) ≠ ⊥ := by
             rw [h_root_eq]
             exact h_weight_space_nontrivial
-          -- Use hidx to substitute: S.root idx = χ.toLinear - α.toLinear
           have h_final : genWeightSpace L (χ.toLinear - α.toLinear) ≠ ⊥ := by
             convert this using 1
             rw [←hidx]
@@ -243,45 +155,30 @@ variable {H : LieSubalgebra K L} [H.IsCartanSubalgebra] [IsTriangularizable K H 
 noncomputable abbrev H_α (α : Weight K H L) : LieSubmodule K H L :=
   LieSubmodule.map H.toLieSubmodule.incl (LieAlgebra.corootSpace α.toLinear)
 
-
-/-- The sl2SubalgebraOfRoot is stable under H-action, so it can be viewed as an H-submodule -/
 lemma sl2SubalgebraOfRoot_stable_under_H (α : Weight K H L) (hα : α.IsNonZero) :
     ∀ (h : H) (x : L), x ∈ sl2SubalgebraOfRoot hα → ⁅(h : L), x⁆ ∈ sl2SubalgebraOfRoot hα := by
   intro h x hx
-  -- Since sl2SubalgebraOfRoot is generated by weight spaces,
-  -- and H acts on weight spaces by scaling,
-  -- the bracket ⁅h, x⁆ stays in the same weight spaces
   obtain ⟨h', e, f, ht, heα, hfα⟩ := LieAlgebra.IsKilling.exists_isSl2Triple_of_weight_isNonZero hα
   rw [LieAlgebra.IsKilling.mem_sl2SubalgebraOfRoot_iff hα ht heα hfα] at hx ⊢
   obtain ⟨c₁, c₂, c₃, hx_eq⟩ := hx
-  -- x = c₁ • e + c₂ • f + c₃ • ⁅e, f⁆
   rw [hx_eq, lie_add, lie_add, lie_smul, lie_smul, lie_smul]
-  -- Use the fact that H acts by scaling on weight spaces
   have he_weight : ⁅(h : L), e⁆ = α h • e := by
     exact LieAlgebra.IsKilling.lie_eq_smul_of_mem_rootSpace heα h
   have hf_weight : ⁅(h : L), f⁆ = (-α) h • f := by
     exact LieAlgebra.IsKilling.lie_eq_smul_of_mem_rootSpace hfα h
   have hef_weight : ⁅(h : L), ⁅e, f⁆⁆ = 0 • ⁅e, f⁆ := by
-    -- ⁅e, f⁆ is the coroot, which lies in H
-    -- Since H is abelian (Cartan subalgebras are abelian), ⁅h, ⁅e, f⁆⁆ = 0
     have h_coroot : ⁅e, f⁆ = (LieAlgebra.IsKilling.coroot α : L) := by
       have : ⁅e, f⁆ = h' := ht.lie_e_f
       rw [this]
       exact IsSl2Triple.h_eq_coroot hα ht heα hfα
     rw [h_coroot]
-    -- coroot α ∈ H, and since H is abelian, ⁅h, coroot α⁆ = 0
     have : ⁅(h : L), (LieAlgebra.IsKilling.coroot α : L)⁆ = 0 := by
-      -- The coroot has weight 0 (it lies in H, the zero weight space)
-      -- By lie_eq_smul_of_mem_rootSpace: ⁅h, x⁆ = weight(x) h • x
-      -- Since coroot α ∈ H has weight 0, we get ⁅h, coroot α⁆ = 0 • coroot α = 0
       have h_coroot_in_H : (LieAlgebra.IsKilling.coroot α : L) ∈ rootSpace H (0 : H → K) := by
-        -- coroot α ∈ H and rootSpace H 0 = H.toLieSubmodule
         have h_coroot_mem_H : (LieAlgebra.IsKilling.coroot α : L) ∈ H := by
           exact (LieAlgebra.IsKilling.coroot α).property
         have h_eq : rootSpace H (0 : H → K) = H.toLieSubmodule := rootSpace_zero_eq K L H
         rw [h_eq]
         exact h_coroot_mem_H
-      -- Apply lie_eq_smul_of_mem_rootSpace with weight 0
       have h_eq : ⁅(h : L), (LieAlgebra.IsKilling.coroot α : L)⁆ =
         (0 : H → K) h • (LieAlgebra.IsKilling.coroot α : L) := by
         exact LieAlgebra.IsKilling.lie_eq_smul_of_mem_rootSpace h_coroot_in_H h
@@ -292,7 +189,6 @@ lemma sl2SubalgebraOfRoot_stable_under_H (α : Weight K H L) (hα : α.IsNonZero
   simp only [Weight.coe_neg, Pi.neg_apply, smul_zero, add_zero]
   exact ⟨c₁ * α h, c₂ * (-α h), 0, by simp [mul_smul]⟩
 
-/-- The sl2SubalgebraOfRoot can be viewed as an H-submodule -/
 noncomputable def sl2SubalgebraOfRoot_as_H_submodule (α : Weight K H L) (hα : α.IsNonZero) :
     LieSubmodule K H L where
   __ := (sl2SubalgebraOfRoot hα).toLieSubmodule
@@ -300,23 +196,18 @@ noncomputable def sl2SubalgebraOfRoot_as_H_submodule (α : Weight K H L) (hα : 
     intro h x hx
     exact sl2SubalgebraOfRoot_stable_under_H α hα h x hx
 
-/-- The sl2SubalgebraOfRoot_as_H_submodule
-    has the supremum structure needed for weight space decomposition -/
 lemma sl2SubalgebraOfRoot_as_H_submodule_eq_sup (α : Weight K H L) (hα : α.IsNonZero) :
     sl2SubalgebraOfRoot_as_H_submodule α hα =
     genWeightSpace L α.toLinear ⊔ genWeightSpace L (-α).toLinear ⊔ H_α α := by
   ext x
   constructor
-  · -- Direction: sl2SubalgebraOfRoot_as_H_submodule → supremum
-    intro hx
-    -- x ∈ sl2SubalgebraOfRoot, so x = c₁ • e + c₂ • f + c₃ • ⁅e, f⁆
+  · intro hx
     simp only [sl2SubalgebraOfRoot_as_H_submodule] at hx
     obtain ⟨h', e, f, ht, heα, hfα⟩ :=
       LieAlgebra.IsKilling.exists_isSl2Triple_of_weight_isNonZero hα
     have hx_sl2 : x ∈ sl2SubalgebraOfRoot hα := hx
     rw [LieAlgebra.IsKilling.mem_sl2SubalgebraOfRoot_iff hα ht heα hfα] at hx_sl2
     obtain ⟨c₁, c₂, c₃, hx_eq⟩ := hx_sl2
-    -- Show x is in the supremum
     rw [hx_eq]
     apply add_mem
     · apply add_mem
@@ -328,51 +219,32 @@ lemma sl2SubalgebraOfRoot_as_H_submodule_eq_sup (α : Weight K H L) (hα : α.Is
         apply Submodule.mem_sup_left
         apply Submodule.mem_sup_right
         exact hfα
-    · -- c₃ • ⁅e, f⁆ ∈ H_α α
-      apply Submodule.smul_mem
+    · apply Submodule.smul_mem
       apply Submodule.mem_sup_right
-      -- ⁅e, f⁆ = h' ∈ H_α α
       unfold H_α
-      -- Goal is already in LieSubmodule.mem_map form after unfold
       have h_coroot_eq : ⁅e, f⁆ = h' := ht.lie_e_f
       rw [h_coroot_eq]
-      -- h' is the coroot, which should be in the coroot space
       use (LieAlgebra.IsKilling.coroot α : H)
       constructor
-      · -- coroot α ∈ corootSpace α.toLinear
-        -- The coroot space is spanned by the coroot, so the coroot is in it
-        have h_eq : (corootSpace α.toLinear).toSubmodule = K ∙ LieAlgebra.IsKilling.coroot α :=
+      · have h_eq : (corootSpace α.toLinear).toSubmodule = K ∙ LieAlgebra.IsKilling.coroot α :=
           LieAlgebra.IsKilling.coe_corootSpace_eq_span_singleton α
         change LieAlgebra.IsKilling.coroot α ∈ (corootSpace α.toLinear : Set H)
         rw [LieSubmodule.mem_coe, ← LieSubmodule.mem_toSubmodule, h_eq]
         exact Submodule.mem_span_singleton_self _
-      · -- H.toLieSubmodule.incl (coroot α) = h'
-        have h_eq : h' = (LieAlgebra.IsKilling.coroot α : L) :=
+      · have h_eq : h' = (LieAlgebra.IsKilling.coroot α : L) :=
           IsSl2Triple.h_eq_coroot hα ht heα hfα
         rw [h_eq]
         rfl
-  · -- Direction: supremum → sl2SubalgebraOfRoot_as_H_submodule
-    intro hx
-    -- x ∈ genWeightSpace L α.toLinear ⊔ genWeightSpace L (-α).toLinear ⊔ H_α α
+  · intro hx
     obtain ⟨x_αneg, hx_αneg, x_h, hx_h, hx_eq⟩ := Submodule.mem_sup.mp hx
     obtain ⟨x_pos, hx_pos, x_neg, hx_neg, hx_αneg_eq⟩ := Submodule.mem_sup.mp hx_αneg
-    -- Now x = x_pos + x_neg + x_h where x_pos ∈ genWeightSpace L α, etc.
-    -- We need to show this is in sl2SubalgebraOfRoot
     rw [← hx_eq, ← hx_αneg_eq]
     simp only [sl2SubalgebraOfRoot_as_H_submodule]
-    -- Use the fact that sl2SubalgebraOfRoot contains the weight spaces by construction
-    -- The key insight: sl2SubalgebraOfRoot is generated by elements from these exact weight spaces
     obtain ⟨h', e, f, ht, heα, hfα⟩ :=
       LieAlgebra.IsKilling.exists_isSl2Triple_of_weight_isNonZero hα
 
-    -- Each component is automatically in the sl2 subalgebra
     have hx_pos_in : x_pos ∈ sl2SubalgebraOfRoot hα := by
-      -- x_pos ∈ rootSpace H α.toLinear, and this space is generated by e in the sl2 subalgebra
       rw [LieAlgebra.IsKilling.mem_sl2SubalgebraOfRoot_iff hα ht heα hfα]
-      -- Since rootSpace is 1-dimensional and generated by e, x_pos = c • e for some c
-      -- Use the spanning property of sl2 subalgebras
-      -- Since x_pos ∈ rootSpace H α and e ∈ rootSpace H α, and root spaces are 1-dimensional,
-      -- x_pos = c₁ • e for some c₁
       have h_dim : Module.finrank K (rootSpace H α.toLinear) = 1 :=
         LieAlgebra.IsKilling.finrank_rootSpace_eq_one α hα
       have he_ne_zero : e ≠ 0 := ht.e_ne_zero
@@ -383,14 +255,10 @@ lemma sl2SubalgebraOfRoot_as_H_submodule_eq_sup (α : Weight K H L) (hα : α.Is
       have hx_pos_eq : x_pos = c₁ • e := by
         have : x_pos = (⟨x_pos, hx_pos⟩ : rootSpace H α.toLinear).val := rfl
         rw [this, ← hc₁]; simp
-      -- Therefore x_pos = c₁ • e + 0 • f + 0 • ⁅e, f⁆
       exact ⟨c₁, 0, 0, by simp [hx_pos_eq]⟩
 
     have hx_neg_in : x_neg ∈ sl2SubalgebraOfRoot hα := by
-      -- Similar argument for the -α weight space
       rw [LieAlgebra.IsKilling.mem_sl2SubalgebraOfRoot_iff hα ht heα hfα]
-      -- Since x_neg ∈ rootSpace H (-α) and f ∈ rootSpace H (-α), and root spaces are 1-dimensional,
-      -- x_neg = c₂ • f for some c₂
       have h_neg_dim : Module.finrank K (rootSpace H (-α).toLinear) = 1 :=
         LieAlgebra.IsKilling.finrank_rootSpace_eq_one (-α) (by simpa using hα)
       have hf_ne_zero : f ≠ 0 := ht.f_ne_zero
@@ -401,81 +269,37 @@ lemma sl2SubalgebraOfRoot_as_H_submodule_eq_sup (α : Weight K H L) (hα : α.Is
       have hx_neg_eq : x_neg = c₂ • f := by
         have : x_neg = (⟨x_neg, hx_neg⟩ : rootSpace H (-α).toLinear).val := rfl
         rw [this, ← hc₂]; simp
-      -- Therefore x_neg = 0 • e + c₂ • f + 0 • ⁅e, f⁆
       exact ⟨0, c₂, 0, by simp [hx_neg_eq]⟩
 
     have hx_h_in : x_h ∈ sl2SubalgebraOfRoot hα := by
-      -- x_h ∈ H_α α which is the coroot space, part of the sl2 subalgebra
       rw [LieAlgebra.IsKilling.mem_sl2SubalgebraOfRoot_iff hα ht heα hfα]
-      -- Since x_h ∈ H_α α = coroot space, and coroot space is spanned by ⁅e, f⁆,
-      -- x_h = c₃ • ⁅e, f⁆ for some c₃ (since it's 1-dimensional)
       unfold H_α at hx_h
-      -- Goal is already in the LieSubmodule.mem_map form after unfold
       obtain ⟨y, hy_coroot, hy_eq⟩ := hx_h
-      -- y ∈ corootSpace α.toLinear, and this space is 1-dimensional spanned by coroot α
-      -- We'll use the fact that x_h can be expressed in terms of ⁅e, f⁆
-      -- For simplicity, since the spaces are 1-dimensional and contain the bracket ⁅e, f⁆,
-      -- any element can be written as a scalar multiple
-      -- This is a bit complex to prove rigorously, so let's use a direct approach
-      -- The key insight is that H_α is exactly the image of the coroot space in L
-      -- and the coroot space is spanned by the coroot which equals ⁅e, f⁆
       have h_eq : ⁅e, f⁆ = h' := ht.lie_e_f
       have h_coroot : h' = (LieAlgebra.IsKilling.coroot α : L) :=
         IsSl2Triple.h_eq_coroot hα ht heα hfα
-      -- Since x_h ∈ H_α α (which is the image of the coroot space in L),
-      -- and the coroot space is spanned by ⁅e, f⁆, x_h is of the form c₃ • ⁅e, f⁆
-      -- We can use the fact that H_α is exactly the subspace generated by ⁅e, f⁆
       have h_ef_in_sl2 : ⁅e, f⁆ ∈ sl2SubalgebraOfRoot hα := by
         rw [LieAlgebra.IsKilling.mem_sl2SubalgebraOfRoot_iff hα ht heα hfα]
         exact ⟨0, 0, 1, by simp⟩
-
-      -- Since x_h ∈ H_α α and H_α α is the image of the coroot space,
-      -- and the coroot space is 1-dimensional spanned by coroot α = ⁅e, f⁆,
-      -- we can express x_h as a scalar multiple of ⁅e, f⁆
-
-      -- From the context: y ∈ corootSpace α.toLinear and x_h = H.incl y
-      -- Since corootSpace is spanned by coroot α, y = c₃ • coroot α for some c₃
-      -- And since coroot α = ⁅e, f⁆, we get x_h = c₃ • ⁅e, f⁆
-
-      -- The coroot space is 1-dimensional, so express y as a scalar multiple of the coroot
       have h_coroot_span : (corootSpace α.toLinear).toSubmodule =
         K ∙ (LieAlgebra.IsKilling.coroot α) :=
         LieAlgebra.IsKilling.coe_corootSpace_eq_span_singleton α
-
-      -- Since y ∈ corootSpace and the space is spanned by the coroot, y = c₃ • coroot α
       have hy_mem_submodule : y ∈ (corootSpace α.toLinear).toSubmodule := by
         rw [LieSubmodule.mem_toSubmodule]
         exact hy_coroot
-
       rw [h_coroot_span] at hy_mem_submodule
       obtain ⟨c₃, hc₃⟩ := Submodule.mem_span_singleton.mp hy_mem_submodule
-
-      -- Express x_h in terms of ⁅e, f⁆
       have hx_h_eq : x_h = c₃ • ⁅e, f⁆ := by
-        -- We have y = c₃ • coroot α and x_h = H.incl y
-        -- Since coroot α = ⁅e, f⁆ as elements of L, we get the result
         rw [← hy_eq, ← hc₃, map_smul]
-        -- Now we need: c₃ • H.incl (coroot α) = c₃ • ⁅e, f⁆
-        -- We have H.incl (coroot α) = (coroot α : L) and coroot α = h' = ⁅e, f⁆
         congr 1
-        -- Goal: H.incl (coroot α) = ⁅e, f⁆
-        -- This should follow from the fact that the coroot as an element of L equals h'
-        -- and h' = ⁅e, f⁆, and H.incl just embeds H into L
-        -- The coroot embedding should give the same element of L
         have h_embed : (LieAlgebra.IsKilling.coroot α : L) =
           H.toLieSubmodule.incl (LieAlgebra.IsKilling.coroot α) := by
-          rfl -- The coercion and the inclusion should be definitionally equal
-        -- Chain of equalities: H.incl(coroot α) = ↑(coroot α) = h' = ⁅e, f⁆
+          rfl
         exact h_embed ▸ h_coroot ▸ h_eq.symm
-
-      -- Therefore x_h = 0 • e + 0 • f + c₃ • ⁅e, f⁆
       exact ⟨0, 0, c₃, by simp [hx_h_eq]⟩
 
-    -- Therefore their sum is in the sl2 subalgebra
     apply add_mem (add_mem hx_pos_in hx_neg_in) hx_h_in
 
-
-/-- Helper lemma: every nonzero weight has a corresponding root index in the root system -/
 lemma exists_root_index_of_weight_nonzero (χ : Weight K H L) (hχ : χ.IsNonZero) :
     ∃ i, (LieAlgebra.IsKilling.rootSystem H).root i = χ.toLinear := by
   let S := LieAlgebra.IsKilling.rootSystem H
@@ -485,7 +309,6 @@ lemma exists_root_index_of_weight_nonzero (χ : Weight K H L) (hχ : χ.IsNonZer
   use ⟨χ, hχ_in_root⟩
   rfl
 
-/-- Helper lemma: every element in the index set has a corresponding root index -/
 lemma exists_root_index_of_in_index_set (q : Submodule K (Dual K H))
     (α : {α : Weight K H L // α.toLinear ∈ q ∧ α.IsNonZero}) :
     ∃ j, (LieAlgebra.IsKilling.rootSystem H).root j = α.1.toLinear := by
@@ -496,10 +319,6 @@ lemma exists_root_index_of_in_index_set (q : Submodule K (Dual K H))
   use ⟨α.1, hα_in_root⟩
   rfl
 
-/-- Any invariant H* submodule defines a Lie ideal via its nonzero sl2 subalgebras.
-    For an invariant submodule q ⊆ H*, define I_q = ⨆ α ∈ q ∩ Φ L(α)
-    where L(α) is the sl2 subalgebra generated by the root α.
--/
 noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
     (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i)) :
     LieIdeal K L where
@@ -511,75 +330,45 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
         simp [LieModule.iSup_genWeightSpace_eq_top']
       induction hx using LieSubmodule.iSup_induction' with
       | mem χ x_χ hx_χ =>
-        -- Apply inner induction on m ∈ ⨆ α, sl2SubmoduleOfRoot α.1 α.2.2
         induction hm using LieSubmodule.iSup_induction' with
         | mem α m_α hm_α =>
-          -- Core case: x_χ ∈ genWeightSpace L χ, m_α ∈ sl2SubalgebraOfRoot_as_H_submodule α.1 α.2.2
-          -- Since we now use sl2SubalgebraOfRoot_as_H_submodule,
-          -- we have m_α ∈ sl2SubalgebraOfRoot α.2.2
-          -- This greatly simplifies the proof
-
-
-          -- Preserve the original membership for later use
           have hm_α_original : m_α ∈ sl2SubalgebraOfRoot_as_H_submodule α.1 α.2.2 := hm_α
-          -- Decompose m_α using the supremum structure from
-          -- sl2SubalgebraOfRoot_as_H_submodule_eq_sup
           rw [sl2SubalgebraOfRoot_as_H_submodule_eq_sup] at hm_α
-          -- First: m_α ∈ (genWeightSpace L α.1 ⊔ genWeightSpace L (-α.1)) ⊔ H_α α.1
           obtain ⟨m_αneg, hm_αneg, m_h, hm_h, hm_eq⟩ := Submodule.mem_sup.mp hm_α
-          -- Then: m_αneg ∈ genWeightSpace L α.1 ⊔ genWeightSpace L (-α.1)
           obtain ⟨m_pos, hm_pos, m_neg, hm_neg, hm_αneg_eq⟩ := Submodule.mem_sup.mp hm_αneg
 
-          -- Key lemma: m_α decomposes as sum of three terms
           have hm_α_decomp : m_α = m_pos + m_neg + m_h := by
             rw [← hm_eq, ← hm_αneg_eq]
 
-          -- Each term has specific weight space membership
           have hm_pos_weight : m_pos ∈ genWeightSpace L α.1.toLinear := hm_pos
           have hm_neg_weight : m_neg ∈ genWeightSpace L (-α.1).toLinear := hm_neg
           have hm_h_coroot : m_h ∈ H_α α.1 := hm_h
 
-          -- Key lemma: bracket decomposes as sum
           have h_bracket_sum : ⁅x_χ, m_α⁆ = ⁅x_χ, m_pos⁆ + ⁅x_χ, m_neg⁆ + ⁅x_χ, m_h⁆ := by
             rw [hm_α_decomp, lie_add, lie_add]
 
-          -- Each bracket term has specific containment properties
           have h_pos_containment : ⁅x_χ, m_pos⁆ ∈ genWeightSpace L (χ.toLinear + α.1.toLinear) := by
             exact LieAlgebra.lie_mem_genWeightSpace_of_mem_genWeightSpace hx_χ hm_pos
 
           have h_neg_containment : ⁅x_χ, m_neg⁆ ∈ genWeightSpace L (χ.toLinear - α.1.toLinear) := by
             have h_neg : ⁅x_χ, m_neg⁆ ∈ genWeightSpace L (χ.toLinear + (-α.1).toLinear) := by
               exact LieAlgebra.lie_mem_genWeightSpace_of_mem_genWeightSpace hx_χ hm_neg
-            -- Convert χ + (-α) = χ - α
             have h_eq : χ.toLinear + (-α.1).toLinear = χ.toLinear - α.1.toLinear := by
               simp [sub_eq_add_neg]
             rw [← h_eq]
             exact h_neg
 
           have h_h_containment : ⁅x_χ, m_h⁆ ∈ genWeightSpace L χ := by
-            -- H_α α consists of elements from the coroot space mapped to L
-            -- The coroot space lies in H, so these elements have weight 0 under H-action
-            -- Therefore elements from H_α have weight 0, so [x_χ, m_h] ∈
-            -- genWeightSpace L (χ + 0) = genWeightSpace L χ
-
-            -- hm_h : m_h ∈ LieSubmodule.map H.toLieSubmodule.incl (corootSpace α.1.toLinear)
             obtain ⟨y, hy, rfl⟩ := hm_h
-            -- y ∈ corootSpace α.1.toLinear ⊆ H, so H.toLieSubmodule.incl y ∈ H.toLieSubmodule
-            -- By toLieSubmodule_le_rootSpace_zero: H.toLieSubmodule ≤ rootSpace H 0
             have h_in_zero : H.toLieSubmodule.incl y ∈ rootSpace H 0 := by
               apply LieAlgebra.toLieSubmodule_le_rootSpace_zero
               exact y.property
-            -- Now use lie_mem_genWeightSpace_of_mem_genWeightSpace with weights χ and 0
-            -- Since elements from H have weight 0, [x_χ, y] ∈ genWeightSpace L (χ + 0) =
-            -- genWeightSpace L χ
             have h_zero_weight : H.toLieSubmodule.incl y ∈ genWeightSpace L (0 : H → K) :=
               h_in_zero
             convert LieAlgebra.lie_mem_genWeightSpace_of_mem_genWeightSpace hx_χ h_zero_weight
             ext h
             simp
 
-          -- The bracket ⁅x_χ, m_α⁆ lies in the sl2 subalgebra translated by weight χ
-          -- This follows from weight space addition: [L_χ, sl2_α] ⊆ L_{χ+α} ⊔ L_{χ-α} ⊔ L_χ
           have h_bracket_decomp : ⁅x_χ, m_α⁆ ∈
             genWeightSpace L (χ.toLinear + α.1.toLinear) ⊔
             genWeightSpace L (χ.toLinear - α.1.toLinear) ⊔
@@ -596,19 +385,13 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
             · apply Submodule.mem_sup_right
               exact h_h_containment
 
-          -- Handle special cases first: if they occur, we can prove the goal directly
           by_cases w_plus : χ.toLinear + α.1.toLinear = 0
-          · -- Case: χ + α = 0 (χ = -α) - we're done here
-            have h_chi_neg_alpha : χ.toLinear = -α.1.toLinear := by
+          · have h_chi_neg_alpha : χ.toLinear = -α.1.toLinear := by
               simp only [add_eq_zero_iff_eq_neg] at w_plus; exact w_plus
-
-            -- Prove the main goal directly when this special case holds
             apply LieSubmodule.mem_iSup_of_mem α
             simp only [sl2SubalgebraOfRoot_as_H_submodule]
-
             have hx_χ_neg_alpha : x_χ ∈ genWeightSpace L (-α.1.toLinear) := by
               rw [← h_chi_neg_alpha]; exact hx_χ
-
             have hx_χ_in_sl2 : x_χ ∈ sl2SubalgebraOfRoot α.2.2 := by
               have hx_χ_neg : x_χ ∈ rootSpace H (-α.1.toLinear) := hx_χ_neg_alpha
               obtain ⟨h, e, f, ht, heα, hfα⟩ :=
@@ -625,21 +408,16 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
                 have : x_χ = (⟨x_χ, hx_χ_neg⟩ : rootSpace H (-α.1.toLinear)).val := rfl
                 rw [this, ← hc]; simp
               exact ⟨0, c, 0, by simp [hc_proj]⟩
-
             have h_bracket_in_sl2 : ⁅x_χ, m_α⁆ ∈ sl2SubalgebraOfRoot α.2.2 := by
               have hm_α_in_sl2 : m_α ∈ sl2SubalgebraOfRoot α.2.2 := by
                 simp only [sl2SubalgebraOfRoot_as_H_submodule] at hm_α_original; exact hm_α_original
               apply LieSubalgebra.lie_mem; exact hx_χ_in_sl2; exact hm_α_in_sl2
             exact h_bracket_in_sl2
           by_cases w_minus : χ.toLinear - α.1.toLinear = 0
-          · -- Case: χ - α = 0 (χ = α) - we're done here
-            have h_chi_eq_alpha : χ.toLinear = α.1.toLinear := by
+          · have h_chi_eq_alpha : χ.toLinear = α.1.toLinear := by
               simp only [sub_eq_zero] at w_minus; exact w_minus
-
-              -- Prove the main goal directly when this special case holds
             apply LieSubmodule.mem_iSup_of_mem α
             simp only [sl2SubalgebraOfRoot_as_H_submodule]
-
             have hx_χ_alpha : x_χ ∈ genWeightSpace L α.1.toLinear := by
               rw [← h_chi_eq_alpha]; exact hx_χ
             have hx_χ_in_sl2 : x_χ ∈ sl2SubalgebraOfRoot α.2.2 := by
@@ -664,21 +442,18 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
               apply LieSubalgebra.lie_mem; exact hx_χ_in_sl2; exact hm_α_in_sl2
             exact h_bracket_in_sl2
           by_cases w_chi : χ.toLinear = 0
-          · -- Case: χ = 0 (x_χ is in H) - we're done here
-            have hx_χ_in_H : x_χ ∈ H.toLieSubmodule := by
+          · have hx_χ_in_H : x_χ ∈ H.toLieSubmodule := by
               rw [← rootSpace_zero_eq K L H]
               convert hx_χ
               ext h; simp only [Pi.zero_apply]
               have h_apply : (χ.toLinear : H → K) h = 0 := by rw [w_chi]; rfl
               exact h_apply.symm
-            -- Prove the main goal directly when this special case holds
             apply LieSubmodule.mem_iSup_of_mem α
             simp only [sl2SubalgebraOfRoot_as_H_submodule]
             have hm_α_base : m_α ∈ sl2SubalgebraOfRoot α.2.2 := by
               simp only [sl2SubalgebraOfRoot_as_H_submodule] at hm_α_original; exact hm_α_original
             exact sl2SubalgebraOfRoot_stable_under_H α.1 α.2.2 ⟨x_χ, hx_χ_in_H⟩ m_α hm_α_base
 
-          -- Factored-out lemma: χ is nonzero from w_chi
           have hχ_nonzero : χ.IsNonZero := by
             intro h_zero
             apply w_chi
@@ -688,9 +463,7 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
             exact h_zero_eq
 
           by_cases h_chi_in_q : χ.toLinear ∈ q
-          · -- Case: χ ∈ q (general case with invariance)
-            -- First step: show genWeightSpace L (χ + α) ≤ supremum
-            have h_chi_plus_alpha_in_q : χ.toLinear + α.1.toLinear ∈ q := by
+          · have h_chi_plus_alpha_in_q : χ.toLinear + α.1.toLinear ∈ q := by
               exact q.add_mem h_chi_in_q α.2.1
 
             have h_plus_containment :
@@ -698,91 +471,49 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
               ⨆ β : {β : Weight K H L // β.toLinear ∈ q ∧ β.IsNonZero},
                 sl2SubalgebraOfRoot_as_H_submodule β.1 β.2.2 := by
               by_cases h_plus_trivial : genWeightSpace L (χ.toLinear + α.1.toLinear) = ⊥
-              · -- Case: weight space is trivial
-                simp [h_plus_trivial]
-              · -- Case: weight space is non-trivial, so χ + α is a weight
-                -- We have (χ + α) ∈ q from h_chi_plus_alpha_in_q and (χ + α) ≠ 0 from w_plus
-                -- Since genWeightSpace L (χ + α) ≠ ⊥,
-                -- there exists a weight β with β.toLinear = χ + α
-                -- This weight will be in the supremum since it's in q and nonzero
-
-                -- First, construct the weight β from the non-trivial weight space
-                let β : Weight K H L := {
+              · simp [h_plus_trivial]
+              · let β : Weight K H L := {
                   toFun := χ.toLinear + α.1.toLinear,
                   genWeightSpace_ne_bot' := h_plus_trivial
                 }
-
-                -- β satisfies the index set conditions
                 have hβ_in_index_set : β.toLinear ∈ q ∧ β.IsNonZero := by
                   constructor
-                  · -- β.toLinear ∈ q
-                    exact h_chi_plus_alpha_in_q
-                  · -- β.IsNonZero
-                    -- β.IsNonZero means ¬ (β : H → K) = 0
-                    -- Since β.toFun = χ.toLinear + α.1.toLinear,
-                    -- we have β = χ.toLinear + α.1.toLinear
-                    intro h_eq
-                    -- h_eq : β = 0
-                    -- We need to show contradiction with w_plus : ¬(χ.toLinear + α.1.toLinear = 0)
+                  · exact h_chi_plus_alpha_in_q
+                  · intro h_eq
                     apply w_plus
-                    -- Need to show: χ.toLinear + α.1.toLinear = 0
-                    -- Since β.IsZero and β.toFun = χ.toLinear + α.1.toLinear, we have the result
-                    -- β.IsZero means (β : H → K) = 0
-                    have h_beta_zero : (β : H → K) = 0 := h_eq
-                    -- And β.toFun = ⇑(χ.toLinear) + ⇑(α.1.toLinear) by definition
+                    have h_zero_eq : (β.toLinear : H →ₗ[K] K) = 0 := by
+                      ext h
+                      simp [Weight.IsZero.eq h_eq]
                     have h_beta_def : (β : H → K) = ⇑(χ.toLinear) + ⇑(α.1.toLinear) := rfl
-                    -- From h_beta_zero and h_beta_def, we get ⇑(χ.toLinear) + ⇑(α.1.toLinear) = 0
                     have h_coe_zero : ⇑(χ.toLinear) + ⇑(α.1.toLinear) = 0 := by
                       rw [← h_beta_def]
-                      exact h_beta_zero
-                    -- Convert to function equality
+                      exact Weight.IsZero.eq h_eq
                     ext h
                     have := congr_fun h_coe_zero h
                     simpa using this
-
-                -- Explicitly state that β is in the index set
                 have β_mem_index_set : β ∈ {γ : Weight K H L | γ.toLinear ∈ q ∧ γ.IsNonZero} :=
                   hβ_in_index_set
-
-                -- Create the indexed element for the supremum
                 let β_indexed : {γ : Weight K H L // γ.toLinear ∈ q ∧ γ.IsNonZero} :=
                   ⟨β, hβ_in_index_set⟩
-
-                -- The corresponding term for β is contained in the supremum
                 have β_term_in_supr :
                     sl2SubalgebraOfRoot_as_H_submodule β β_indexed.property.right ≤
                     ⨆ (γ : {γ : Weight K H L // γ.toLinear ∈ q ∧ γ.IsNonZero}),
                     sl2SubalgebraOfRoot_as_H_submodule γ γ.property.right := by
-                  -- This is just le_iSup applied to β_indexed
                   have h := le_iSup (fun γ : {γ : Weight K H L // γ.toLinear ∈ q ∧ γ.IsNonZero} =>
                     sl2SubalgebraOfRoot_as_H_submodule γ.1 γ.2.2) β_indexed
-                  -- Since β_indexed.1 = β and β_indexed.2.2 = β_indexed.property.right,
-                  -- h gives us what we want
                   exact h
-
                 have h_β_contains : genWeightSpace L (χ.toLinear + α.1.toLinear) ≤
                     sl2SubalgebraOfRoot_as_H_submodule β β_indexed.property.right := by
-                  -- Use sl2SubalgebraOfRoot_as_H_submodule_eq_sup
                   rw [sl2SubalgebraOfRoot_as_H_submodule_eq_sup]
-                  -- genWeightSpace L β.toLinear is the first component of the supremum
                   apply le_sup_of_le_left
                   apply le_sup_of_le_left
-                  -- Since β.toLinear = χ.toLinear + α.1.toLinear, we have equality
                   have h_eq : β.toLinear = χ.toLinear + α.1.toLinear := rfl
                   rw [h_eq]
-
                 exact h_β_contains.trans β_term_in_supr
 
-            -- Second step: show genWeightSpace L (χ - α) ≤ supremum
             have h_chi_minus_alpha_in_q : χ.toLinear - α.1.toLinear ∈ q := by
-              -- q is a submodule, so it's closed under subtraction
-              -- χ.toLinear - α.1.toLinear = χ.toLinear + (-α.1.toLinear)
-              -- Since χ.toLinear ∈ q and (-α.1.toLinear) ∈ q, their sum is in q
               rw [sub_eq_add_neg]
               apply q.add_mem h_chi_in_q
-              -- Need to show -α.1.toLinear ∈ q
-              -- Since q is a submodule, it's closed under scalar multiplication
-              -- -α.1.toLinear = (-1) • α.1.toLinear, and α.1.toLinear ∈ q
               have h_neg_smul : -α.1.toLinear = (-1 : K) • α.1.toLinear := by simp
               rw [h_neg_smul]
               exact q.smul_mem (-1) α.2.1
@@ -792,115 +523,60 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
               ⨆ β : {β : Weight K H L // β.toLinear ∈ q ∧ β.IsNonZero},
                 sl2SubalgebraOfRoot_as_H_submodule β.1 β.2.2 := by
               by_cases h_minus_trivial : genWeightSpace L (χ.toLinear - α.1.toLinear) = ⊥
-              · -- Case: weight space is trivial
-                simp [h_minus_trivial]
-              · -- Case: weight space is non-trivial, so χ - α is a weight
-                -- We have (χ - α) ∈ q from h_chi_minus_alpha_in_q and (χ - α) ≠ 0 from w_minus
-                -- Since genWeightSpace L (χ - α) ≠ ⊥,
-                -- there exists a weight β with β.toLinear = χ - α
-                -- This weight will be in the supremum since it's in q and nonzero
-
-                -- First, construct the weight β from the non-trivial weight space
-                let β : Weight K H L := {
+              · simp [h_minus_trivial]
+              · let β : Weight K H L := {
                   toFun := χ.toLinear - α.1.toLinear,
                   genWeightSpace_ne_bot' := h_minus_trivial
                 }
-
-                -- β satisfies the index set conditions
                 have hβ_in_index_set : β.toLinear ∈ q ∧ β.IsNonZero := by
                   constructor
-                  · -- β.toLinear ∈ q
-                    exact h_chi_minus_alpha_in_q
-                  · -- β.IsNonZero
-                    -- β.IsNonZero means ¬ (β : H → K) = 0
-                    -- Since β.toFun = χ.toLinear - α.1.toLinear,
-                    -- we have β = χ.toLinear - α.1.toLinear
-                    intro h_eq
-                    -- h_eq : β = 0
-                    -- We need to show contradiction with w_minus : ¬(χ.toLinear - α.1.toLinear = 0)
+                  · exact h_chi_minus_alpha_in_q
+                  · intro h_eq
                     apply w_minus
-                    -- Need to show: χ.toLinear - α.1.toLinear = 0
-                    -- Since β.IsZero and β.toFun = χ.toLinear - α.1.toLinear, we have the result
-                    -- β.IsZero means (β : H → K) = 0
-                    have h_beta_zero : (β : H → K) = 0 := h_eq
-                    -- And β.toFun = ⇑(χ.toLinear) - ⇑(α.1.toLinear) by definition
+                    have h_zero_eq : (β.toLinear : H →ₗ[K] K) = 0 := by
+                      ext h
+                      simp [Weight.IsZero.eq h_eq]
                     have h_beta_def : (β : H → K) = ⇑(χ.toLinear) - ⇑(α.1.toLinear) := rfl
-                    -- From h_beta_zero and h_beta_def, we get ⇑(χ.toLinear) - ⇑(α.1.toLinear) = 0
                     have h_coe_zero : ⇑(χ.toLinear) - ⇑(α.1.toLinear) = 0 := by
                       rw [← h_beta_def]
-                      exact h_beta_zero
-                    -- Convert to function equality
+                      exact Weight.IsZero.eq h_eq
                     ext h
                     have := congr_fun h_coe_zero h
                     simpa using this
-
-                -- Explicitly state that β is in the index set
                 have β_mem_index_set : β ∈ {γ : Weight K H L | γ.toLinear ∈ q ∧ γ.IsNonZero} :=
                   hβ_in_index_set
-
-                -- Create the indexed element for the supremum
                 let β_indexed : {γ : Weight K H L // γ.toLinear ∈ q ∧ γ.IsNonZero} :=
                   ⟨β, hβ_in_index_set⟩
-
-                -- The corresponding term for β is contained in the supremum
                 have β_term_in_supr :
                     sl2SubalgebraOfRoot_as_H_submodule β β_indexed.property.right ≤
                     ⨆ (γ : {γ : Weight K H L // γ.toLinear ∈ q ∧ γ.IsNonZero}),
                     sl2SubalgebraOfRoot_as_H_submodule γ γ.property.right := by
-                  -- This is just le_iSup applied to β_indexed
                   have h := le_iSup (fun γ : {γ : Weight K H L // γ.toLinear ∈ q ∧ γ.IsNonZero} =>
                     sl2SubalgebraOfRoot_as_H_submodule γ.1 γ.2.2) β_indexed
-                  -- Since β_indexed.1 = β and β_indexed.2.2 = β_indexed.property.right,
-                  -- h gives us what we want
                   exact h
-
                 have h_β_contains : genWeightSpace L (χ.toLinear - α.1.toLinear) ≤
                     sl2SubalgebraOfRoot_as_H_submodule β β_indexed.property.right := by
-                  -- Use sl2SubalgebraOfRoot_as_H_submodule_eq_sup
                   rw [sl2SubalgebraOfRoot_as_H_submodule_eq_sup]
-                  -- genWeightSpace L β.toLinear is the first component of the supremum
                   apply le_sup_of_le_left
                   apply le_sup_of_le_left
-                  -- Since β.toLinear = χ.toLinear - α.1.toLinear, we have equality
                   have h_eq : β.toLinear = χ.toLinear - α.1.toLinear := rfl
                   rw [h_eq]
-
                 exact h_β_contains.trans β_term_in_supr
 
-            -- Third step: show genWeightSpace L χ ≤ supremum
             have h_chi_containment :
               genWeightSpace L χ.toLinear ≤
               ⨆ β : {β : Weight K H L // β.toLinear ∈ q ∧ β.IsNonZero},
                 sl2SubalgebraOfRoot_as_H_submodule β.1 β.2.2 := by
               by_cases h_chi_trivial : genWeightSpace L χ.toLinear = ⊥
-              · -- Case: weight space is trivial
-                rw [h_chi_trivial]
+              · rw [h_chi_trivial]
                 simp
-              · -- Case: weight space is non-trivial, so χ is a weight
-                -- We have χ.toLinear ∈ q from h_chi_in_q and χ.toLinear ≠ 0 from w_chi
-                -- Since genWeightSpace L χ.toLinear ≠ ⊥, χ is already a weight
-                -- This weight will be in the supremum since it's in q and nonzero
-
-                -- χ is already a weight, so we don't need to construct a new one
-                -- We just need to show it satisfies the index set conditions
-                have hχ_in_index_set : χ.toLinear ∈ q ∧ χ.IsNonZero := by
+              · have hχ_in_index_set : χ.toLinear ∈ q ∧ χ.IsNonZero := by
                   constructor
-                  · -- χ.toLinear ∈ q
-                    exact h_chi_in_q
-                  · -- χ.IsNonZero
-                    -- χ.IsNonZero means ¬ (χ : H → K) = 0
-                    -- This follows directly from w_chi : ¬χ.toLinear = 0
-                    intro h_eq
-                    -- h_eq : χ.IsZero, which means (χ : H → K) = 0
+                  · exact h_chi_in_q
+                  · intro h_eq
                     apply w_chi
-                    -- Need to show: χ.toLinear = 0
-                    -- h_eq : χ.IsZero, which by definition means (χ : H → K) = 0
-                    -- χ.toLinear should be the same as (χ : H → K), but let's be explicit
                     have h_coe_zero : (χ : H → K) = 0 := Weight.IsZero.eq h_eq
-                    -- Now we need to show χ.toLinear = 0 from (χ : H → K) = 0
-                    -- χ.toLinear should be the same as (χ : H → K)
                     convert h_coe_zero
-                    -- A linear map is zero iff its underlying function is zero
                     simp only [LinearMap.ext_iff, LinearMap.zero_apply]
                     constructor
                     · intro h
@@ -910,163 +586,83 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
                       have := congr_fun h x
                       simp at this
                       exact this
-
-                -- Create the indexed element for the supremum
                 let χ_indexed : {γ : Weight K H L // γ.toLinear ∈ q ∧ γ.IsNonZero} :=
                   ⟨χ, hχ_in_index_set⟩
-
-                -- The corresponding term for χ is contained in the supremum
                 have χ_term_in_supr :
                     sl2SubalgebraOfRoot_as_H_submodule χ χ_indexed.property.right ≤
                     ⨆ (γ : {γ : Weight K H L // γ.toLinear ∈ q ∧ γ.IsNonZero}),
                     sl2SubalgebraOfRoot_as_H_submodule γ γ.property.right := by
-                  -- This is just le_iSup applied to χ_indexed
                   have h := le_iSup (fun γ : {γ : Weight K H L // γ.toLinear ∈ q ∧ γ.IsNonZero} =>
                     sl2SubalgebraOfRoot_as_H_submodule γ.1 γ.2.2) χ_indexed
                   exact h
-
                 have h_χ_contains : genWeightSpace L χ.toLinear ≤
                     sl2SubalgebraOfRoot_as_H_submodule χ χ_indexed.property.right := by
-                  -- Use sl2SubalgebraOfRoot_as_H_submodule_eq_sup
                   rw [sl2SubalgebraOfRoot_as_H_submodule_eq_sup]
-                  -- genWeightSpace L χ.toLinear is the first component of the supremum
                   apply le_sup_of_le_left
                   apply le_sup_of_le_left
-                  -- Since χ.toLinear = χ.toLinear, we have equality
                   rfl
-
                 exact h_χ_contains.trans χ_term_in_supr
-            -- Now we can complete the proof using all three containment results
-            -- From h_bracket_decomp: ⁅x_χ, m_α⁆ ∈ genWeightSpace L (χ + α) ⊔
-            -- genWeightSpace L (χ - α) ⊔ genWeightSpace L χ
-            -- We have containments for each component, so we can conclude the result
 
-            -- First, establish that the supremum of the three weight spaces is contained in the
-            -- target supremum
             have h_total_containment :
               genWeightSpace L (χ.toLinear + α.1.toLinear) ⊔
               genWeightSpace L (χ.toLinear - α.1.toLinear) ⊔
               genWeightSpace L χ.toLinear ≤
               ⨆ β : {β : Weight K H L // β.toLinear ∈ q ∧ β.IsNonZero},
                 sl2SubalgebraOfRoot_as_H_submodule β.1 β.2.2 := by
-              -- Use the fact that the supremum of submodules is the least upper bound
               apply sup_le
               · apply sup_le
                 · exact h_plus_containment
                 · exact h_minus_containment
               · exact h_chi_containment
-
-            -- Now apply this to the bracket decomposition
             exact h_total_containment h_bracket_decomp
-          · -- Case: χ ∉ q (general case without invariance)
-            -- Key insight: if χ ∉ q but α ∈ q, then χ + α and χ - α cannot be roots
-            -- This follows from RootPairing.root_mem_submodule_iff_of_add_mem_invtSubmodule
-            -- First show that genWeightSpace L (χ.toLinear + α.1.toLinear) = ⊥
-            have h_plus_bot : genWeightSpace L (χ.toLinear + α.1.toLinear) = ⊥ := by
+          · have h_plus_bot : genWeightSpace L (χ.toLinear + α.1.toLinear) = ⊥ := by
               by_contra h_ne_bot
-              -- If the weight space is non-trivial, then χ + α corresponds to a root
-              -- We'll use RootPairing.root_mem_submodule_iff_
-              -- of_add_mem_invtSubmodule to derive a contradiction
-
-              -- Step 1: Establish that we're working with the root system from IsKilling
               let S := LieAlgebra.IsKilling.rootSystem H
-
-              -- Step 2: q defines an invariant root submodule
-              -- From the assumption hq: ∀ (i : { x // x ∈ LieSubalgebra.root }),
-              -- q ∈ End.invtSubmodule ((rootSystem H).reflection i)
-              -- we know q is invariant under all root reflections in the root system
               have q_invt : q ∈ S.invtRootSubmodule := by
-                -- Use the iff theorem to convert to the condition we have
                 rw [RootPairing.mem_invtRootSubmodule_iff]
-                -- Now we need to show ∀ i, q ∈ End.invtSubmodule (S.reflection i)
-                -- This is exactly what hq provides since S = rootSystem H
                 exact hq
-
-              -- Step 3: Show that χ + α is a root (since its weight space is non-trivial)
-              -- In our context, non-trivial weight spaces correspond to elements in H.root
               have h_chi_plus_alpha_is_root : χ.toLinear + α.1.toLinear ∈ Set.range S.root := by
-                -- This requires showing the connection between genWeightSpace L μ ≠ ⊥
-                -- and μ being a root
-                -- The key insight is: if genWeightSpace L μ ≠ ⊥, then we can construct a Weight
-                -- and the root system S.root is exactly the range of Weight.toLinear
-                -- for nonzero weights
-                -- Since h_ne_bot : genWeightSpace L (χ.toLinear + α.1.toLinear) ≠ ⊥,
-                -- we can construct a weight γ with γ.toLinear = χ.toLinear + α.1.toLinear
                 let γ : Weight K H L := {
                   toFun := χ.toLinear + α.1.toLinear,
                   genWeightSpace_ne_bot' := h_ne_bot
                 }
-                -- γ is nonzero since χ.toLinear + α.1.toLinear ≠ 0 (from w_plus)
                 have hγ_nonzero : γ.IsNonZero := by
                   intro h_zero
                   apply w_plus
-                  -- Convert the weight equality to linear map equality
                   have h_zero_eq : (γ.toLinear : H →ₗ[K] K) = 0 := by
                     ext h
                     simp [Weight.IsZero.eq h_zero]
-                  -- By definition: γ.toLinear = χ.toLinear + α.1.toLinear
                   have h_def : γ.toLinear = χ.toLinear + α.1.toLinear := rfl
                   rw [h_def] at h_zero_eq
                   exact h_zero_eq
-                -- By definition of rootSystem H, S.root maps H.root to the dual space
-                -- and H.root consists exactly of nonzero weights
-                -- Therefore γ.toLinear ∈ Set.range S.root
                 have γ_in_root : γ ∈ H.root := by
-                  -- LieSubalgebra.root should be the set/finset of nonzero weights
-                  -- Try simp to convert IsNonZero to membership
                   simp [LieSubalgebra.root]
                   exact hγ_nonzero
-                -- Use γ as the witness
                 use ⟨γ, γ_in_root⟩
-                -- By definition of rootSystem, S.root just returns the weight's toLinear
                 rfl
-
-              -- Step 4: Apply RootPairing.root_mem_submodule_iff_of_add_mem_invtSubmodule
-              -- We need indices i, j such that S.root i = χ.toLinear and S.root j = α.1.toLinear
-              -- and S.root i + S.root j ∈ range S.root
-              -- Use the factored-out hχ_nonzero
               obtain ⟨i, hi⟩ := exists_root_index_of_weight_nonzero χ hχ_nonzero
               obtain ⟨j, hj⟩ := exists_root_index_of_in_index_set q α
-
               have h_sum_in_range : S.root i + S.root j ∈ Set.range S.root := by
                 rw [hi, hj]
                 exact h_chi_plus_alpha_is_root
-
-              -- Apply the root system lemma
-              -- We need to package q as an element of S.invtRootSubmodule
               let q_as_invt : S.invtRootSubmodule := ⟨q, q_invt⟩
               have h_equiv : S.root i ∈ (q_as_invt : Submodule K (Dual K H)) ↔
                             S.root j ∈ (q_as_invt : Submodule K (Dual K H)) :=
                 RootPairing.root_mem_submodule_iff_of_add_mem_invtSubmodule q_as_invt h_sum_in_range
-
-              -- We know S.root j = α.1.toLinear ∈ q (since α is in our index set)
               have h_j_in_q : S.root j ∈ (q_as_invt : Submodule K (Dual K H)) := by
                 rw [hj]
                 exact α.2.1
-
-              -- Therefore S.root i = χ.toLinear ∈ q
               have h_i_in_q : S.root i ∈ (q_as_invt : Submodule K (Dual K H)) :=
                 h_equiv.mpr h_j_in_q
-
-              -- But this contradicts h_chi_in_q : χ.toLinear ∉ q
               rw [hi] at h_i_in_q
               exact h_chi_in_q h_i_in_q
 
             have h_minus_bot : genWeightSpace L (χ.toLinear - α.1.toLinear) = ⊥ := by
               by_contra h_ne_bot
-              -- If the weight space is non-trivial, then χ - α corresponds to a root
-              -- We'll use RootPairing.root_mem_submodule_iff_of_add_mem_invtSubmodule
-              -- to derive a contradiction
-
-              -- Step 1: Establish that we're working with the root system from IsKilling
               let S := LieAlgebra.IsKilling.rootSystem H
-
-              -- Step 2: q defines an invariant root submodule
               have q_invt : q ∈ S.invtRootSubmodule := by
                 rw [RootPairing.mem_invtRootSubmodule_iff]
                 exact hq
-
-              -- Step 3: Show that χ - α is a root (since its weight space is non-trivial)
               have h_chi_minus_alpha_is_root : χ.toLinear - α.1.toLinear ∈ Set.range S.root := by
                 let γ : Weight K H L := {
                   toFun := χ.toLinear - α.1.toLinear,
@@ -1086,158 +682,97 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
                   exact hγ_nonzero
                 use ⟨γ, γ_in_root⟩
                 rfl
-
-              -- Step 4: Apply RootPairing.root_mem_submodule_iff_of_add_mem_invtSubmodule
-              -- We need indices i, j such that S.root i = χ.toLinear and S.root j = (-α.1).toLinear
-              -- and S.root i + S.root j ∈ range S.root
-              -- Use the factored-out hχ_nonzero
               obtain ⟨i, hi⟩ := exists_root_index_of_weight_nonzero χ hχ_nonzero
               have hα_neg_nonzero : (-α.1).IsNonZero := Weight.IsNonZero.neg α.2.2
               obtain ⟨j, hj⟩ := exists_root_index_of_weight_nonzero (-α.1) hα_neg_nonzero
-
               have h_sum_in_range : S.root i + S.root j ∈ Set.range S.root := by
                 rw [hi, hj]
                 have h_eq : χ.toLinear + (-α.1).toLinear = χ.toLinear - α.1.toLinear := by
-                  -- This should follow from basic algebraic properties
                   simp only [sub_eq_add_neg]
                   congr 1
                 rw [h_eq]
                 exact h_chi_minus_alpha_is_root
-
-              -- Apply the root system lemma
               let q_as_invt : S.invtRootSubmodule := ⟨q, q_invt⟩
               have h_equiv : S.root i ∈ (q_as_invt : Submodule K (Dual K H)) ↔
                             S.root j ∈ (q_as_invt : Submodule K (Dual K H)) :=
                 RootPairing.root_mem_submodule_iff_of_add_mem_invtSubmodule q_as_invt h_sum_in_range
-
-              -- We know S.root j = (-α.1).toLinear
-              -- Since α.1.toLinear ∈ q and q is closed under scalar multiplication by -1
               have h_j_in_q : S.root j ∈ (q_as_invt : Submodule K (Dual K H)) := by
                 rw [hj]
                 have h_neg_smul : (-α.1).toLinear = (-1 : K) • α.1.toLinear := by
-                  -- This follows from negation of weights
                   simp only [Weight.toLinear_neg, neg_smul, one_smul]
                 rw [h_neg_smul]
                 exact q.smul_mem (-1) α.2.1
-
-              -- Therefore S.root i = χ.toLinear ∈ q
               have h_i_in_q : S.root i ∈ (q_as_invt : Submodule K (Dual K H)) :=
                 h_equiv.mpr h_j_in_q
-
-              -- But this contradicts h_chi_in_q : χ.toLinear ∉ q
               rw [hi] at h_i_in_q
               exact h_chi_in_q h_i_in_q
 
-            -- Since both weight spaces are ⊥, the corresponding brackets are zero
             have h_pos_zero : ⁅x_χ, m_pos⁆ = 0 := by
-              -- h_pos_containment: ⁅x_χ, m_pos⁆ ∈ genWeightSpace L (χ.toLinear + α.1.toLinear)
-              -- h_plus_bot: genWeightSpace L (χ.toLinear + α.1.toLinear) = ⊥
               have h_in_bot : ⁅x_χ, m_pos⁆ ∈ (⊥ : LieSubmodule K H L) := by
                 rw [← h_plus_bot]
                 exact h_pos_containment
               rwa [LieSubmodule.mem_bot] at h_in_bot
 
             have h_neg_zero : ⁅x_χ, m_neg⁆ = 0 := by
-              -- h_neg_containment: ⁅x_χ, m_neg⁆ ∈ genWeightSpace L (χ.toLinear - α.1.toLinear)
-              -- h_minus_bot: genWeightSpace L (χ.toLinear - α.1.toLinear) = ⊥
               have h_in_bot : ⁅x_χ, m_neg⁆ ∈ (⊥ : LieSubmodule K H L) := by
                 rw [← h_minus_bot]
                 exact h_neg_containment
               rwa [LieSubmodule.mem_bot] at h_in_bot
 
-            -- Now simplify the bracket decomposition
             have h_simplified : ⁅x_χ, m_α⁆ = ⁅x_χ, m_h⁆ := by
               rw [h_bracket_sum, h_pos_zero, h_neg_zero]
               simp
 
-            -- The key insight: if both χ + α and χ - α weight spaces are ⊥,
-            -- then the pairing between χ and α must be zero
-            -- From root_add_root_mem_of_pairingIn_neg and root_sub_root_mem_of_pairingIn_pos
             let S := LieAlgebra.IsKilling.rootSystem H
-            -- First get the root indices corresponding to χ and α
-            -- Use the factored-out hχ_nonzero
             obtain ⟨i, hi⟩ := exists_root_index_of_weight_nonzero χ hχ_nonzero
             obtain ⟨j, hj⟩ := exists_root_index_of_in_index_set q α
             have h_pairing_zero : S.pairing i j = 0 := by
-              -- Use our standalone lemma
               obtain ⟨i', j', hi', hj', h_zero⟩ :=
                 pairing_zero_of_trivial_sum_diff_spaces χ α.1 hχ_nonzero α.2.2 w_plus w_minus
                   h_plus_bot h_minus_bot
-
-              -- Convert the indices: we need to show i = i' and j = j'
               have h_i_eq : i = i' := by
-                -- Both give the same root
                 have h_root_eq : S.root i = S.root i' := by
                   rw [hi, hi']
-                -- Root function is injective
                 exact Function.Embedding.injective S.root h_root_eq
-
               have h_j_eq : j = j' := by
-                -- Both give the same root
                 have h_root_eq : S.root j = S.root j' := by
                   rw [hj, hj']
-                -- Root function is injective
                 exact Function.Embedding.injective S.root h_root_eq
-
               rw [h_i_eq, h_j_eq]
               exact h_zero
 
-            -- With zero pairing, the bracket ⁅x_χ, m_α⁆ = 0
             have h_bracket_zero : ⁅x_χ, m_h⁆ = 0 := by
-              -- Use our factored-out lemma: zero_pairing_implies_zero_bracket
-              -- We need to convert h_pairing_zero : S.pairing i j = 0 to χ(coroot_α) = 0
-
               have hχ_nonzero : χ.IsNonZero := hχ_nonzero
               have hα_nonzero : α.1.IsNonZero := α.2.2
-
-              -- Convert pairing to weight evaluation form
               have h_chi_coroot_zero : χ (LieAlgebra.IsKilling.coroot α.1) = 0 := by
-                -- From h_pairing_zero : S.pairing i j = 0, derive χ(coroot_α) = 0
-                -- Use rootSystem_pairing_apply: S.pairing β α = β (coroot α)
                 have h_pairing_eq : S.pairing i j = i.1 (LieAlgebra.IsKilling.coroot j.1) := by
                   rw [LieAlgebra.IsKilling.rootSystem_pairing_apply]
                 rw [h_pairing_zero] at h_pairing_eq
-                -- From hi : S.root i = χ.toLinear and hj : S.root j = α.1.toLinear
-                -- we have i.1 = χ and j.1 = α.1
                 have hi_val : i.1 = χ := by
-                  -- hi : S.root i = χ.toLinear, and S.root i = i.1.toLinear
-                  -- So i.1.toLinear = χ.toLinear, hence i.1 = χ
                   have h_eq : i.1.toLinear = χ.toLinear := by
                     rw [← hi]
                     rfl
-                  -- Convert linear map equality to function equality
                   apply Weight.ext
                   intro x
                   have := LinearMap.ext_iff.mp h_eq x
                   exact this
                 have hj_val : j.1 = α.1 := by
-                  -- hj : S.root j = α.1.toLinear, and S.root j = j.1.toLinear
-                  -- So j.1.toLinear = α.1.toLinear, hence j.1 = α.1
                   have h_eq : j.1.toLinear = α.1.toLinear := by
                     rw [← hj]
                     rfl
-                  -- Convert linear map equality to function equality
                   apply Weight.ext
                   intro x
                   have := LinearMap.ext_iff.mp h_eq x
                   exact this
                 rw [hi_val, hj_val] at h_pairing_eq
                 exact h_pairing_eq.symm
-
-              -- Extract H element from mapped coroot space
               simp only [H_α] at hm_h
-              -- hm_h : m_h ∈ LieSubmodule.map H.toLieSubmodule.incl (corootSpace α.1.toLinear)
               obtain ⟨h_elem, hh_elem, hh_eq⟩ := hm_h
-
-              -- Apply our lemma!
               have h_bracket_elem : ⁅x_χ, (h_elem : L)⁆ = 0 :=
                 zero_pairing_implies_zero_bracket χ α.1 x_χ hx_χ h_elem hh_elem h_chi_coroot_zero
-
-              -- Convert back to m_h
               rw [← hh_eq]
               exact h_bracket_elem
 
-            -- Therefore the goal is satisfied
             rw [h_simplified, h_bracket_zero]
             simp
 
@@ -1245,16 +780,13 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
           simp only [LieSubmodule.iSup_toSubmodule, Submodule.carrier_eq_coe, lie_zero,
             SetLike.mem_coe, Submodule.zero_mem]
         | add m₁ m₂ _ _ ih₁ ih₂ =>
-          -- m = m₁ + m₂ case
           rw [lie_add]
           simp only [LieSubmodule.iSup_toSubmodule, Submodule.carrier_eq_coe, SetLike.mem_coe]
             at ih₁ ih₂ ⊢
           exact add_mem ih₁ ih₂
       | zero =>
-        -- x = 0 case
         simp [zero_lie]
       | add x₁ x₂ _ _ ih₁ ih₂ =>
-        -- x = x₁ + x₂ case
         rw [add_lie]
         simp only [LieSubmodule.iSup_toSubmodule, Submodule.carrier_eq_coe, SetLike.mem_coe]
           at ih₁ ih₂ ⊢
