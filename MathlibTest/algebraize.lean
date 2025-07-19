@@ -61,12 +61,12 @@ lemma RingHom.TestProperty4.toAlgebra (n : ℕ) {A B : Type*} [CommRing A] [Comm
       { out := hf }
 
 /-- Test property for when the `RingHom` property corresponds to a `Module` property
-  using `RingHom.toModule`. (compare to property 2, which uses `RingHom.toAlgebra.toModule`) -/
+  using `RingHom.toModule`. (Compare to property 2, which uses `RingHom.toAlgebra.toModule`.) -/
 class Module.TestProperty5 (A M : Type*) [Semiring A] [AddCommMonoid M] [Module A M] : Prop where
   out : ∀ x : A, ∀ M : M, x • M = 0
 
 /-- Test property for when the `RingHom` property corresponds to a `Module` property
-  using `RingHom.toModule`. (compare to property 2, which uses `RingHom.toAlgebra.toModule`) -/
+  using `RingHom.toModule`. (Compare to property 2, which uses `RingHom.toAlgebra.toModule`.) -/
 @[algebraize Module.TestProperty5]
 def RingHom.TestProperty5 {A B : Type*} [CommRing A] [CommRing B] (f : A →+* B) : Prop :=
   @Module.TestProperty5 A B _ _ f.toModule

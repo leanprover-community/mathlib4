@@ -201,7 +201,7 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
           let tp ← inferType val -- This should be the type `Algebra.Property A B`.
           return (val, tp)
       let .some (val,tp) ← getValType | return
-      /- Find all arguments to `Algebra.Property A B`(or `Module.Property A B`) which are
+      /- Find all arguments to `Algebra.Property A B` or `Module.Property A B` which are
         of the form `RingHom.toAlgebra f`, `RingHom.toModule f`
         or `Algebra.toModule (RingHom.toAlgebra f)`. -/
       let ringHom_args ← tp.getAppArgs.filterMapM <| fun x => liftMetaM do
