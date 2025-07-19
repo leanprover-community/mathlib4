@@ -258,6 +258,12 @@ macro_rules
     let haves ← ts.mapM fun (t : Term) => withRef t `(tactic| have := $t)
     `(tactic| ($haves;*; bound%$tk))
 
+-- Elaborating `bound?` to use `aesop?`'s proof script generation
+elab_rules : tactic
+  | `(tactic| bound?) => do
+    let tac ← `(tactic| aesop? (rule_sets := [Bound, -default]) (config := Bound.boundConfig))
+    liftMetaTactic fun g ↦ do return (← Lean.Elab.runTactic g tac.raw).1
+
 /-!
 We register `bound` with the `hint` tactic.
 -/
