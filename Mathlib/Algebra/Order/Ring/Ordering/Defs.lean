@@ -144,6 +144,7 @@ def support : AddSubgroup R where
 
 end AddSubgroup
 
+/-- Typeclass to track whether the support of a preordering forms an ideal. -/
 class HasIdealSupport (P) :  Prop where
   smul_mem_support (P) (x : R) {a : R} (ha : a ∈ AddSubgroup.support P) :
     x * a ∈ AddSubgroup.support P
