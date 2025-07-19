@@ -524,4 +524,24 @@ theorem order_ofForallLtEqZero [Zero Γ] (f : Γ → R) (hf : f ≠ 0) (n : Γ)
 
 end LocallyFiniteLinearOrder
 
+section Truncate
+variable [Zero R]
+
+/-- Zeros out coefficients of a `HahnSeries` at indices equal to or greater than `c`. -/
+@[simps]
+def truncate [PartialOrder Γ] (c : Γ) (x : HahnSeries Γ R) : HahnSeries Γ R where
+  coeff i := open Classical in if c ≤ i then 0 else x.coeff i
+  isPWO_support' := Set.IsPWO.mono x.isPWO_support (by simp)
+
+theorem coeff_truncate_eq [LinearOrder Γ] {c i : Γ} (h : i < c) (x : HahnSeries Γ R) :
+    (truncate c x).coeff i = x.coeff i := by
+  simp [not_le_of_gt h]
+
+theorem coeff_truncate_eq_zero [PartialOrder Γ] {c i : Γ} (h : c ≤ i) (x : HahnSeries Γ R) :
+    (truncate c x).coeff i = 0 := by
+  simp [h]
+
+
+end Truncate
+
 end HahnSeries
