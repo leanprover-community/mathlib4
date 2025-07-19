@@ -1,8 +1,11 @@
 import Mathlib.Tactic.Linter.CommandStart
 import Aesop.Frontend.Attribute
 import Aesop.Frontend.Command
-import Mathlib.Tactic.Lemma
-import Mathlib.Data.Set.Defs
+--import Mathlib.Tactic.Lemma
+--import Mathlib.Data.Set.Defs
+--import Mathlib.Logic.Function.Defs
+--import Mathlib.adomaniLeanUtils.inspect_syntax
+--import Mathlib.Util.ParseCommand
 
 set_option linter.style.commandStart true
 
@@ -181,6 +184,53 @@ variable (h : 0::[] = [])
 /-- A doc string -/
 -- comment
 example : True := trivial
+example : 0 = 0 :=
+  calc _ = 0 + 0 := (Nat.add_zero _).symm
+       _ = 1 * 0 + 0 := Nat.add_comm ..
+       _ = 1 * 0 + 1 * 0 := Nat.add_comm ..
+       _ = 1 * (0 + 0) := Nat.mul_add .. |>.symm
+       _ = 0 := rfl
+
+open Function in
+inspect
+theorem leftInverse_of_surjective_of_rightInverse {f : α → β} {g : β → α} (surjf : Surjective f)
+    (rfg : RightInverse f g) : LeftInverse f g := fun y =>
+  Exists.elim (surjf y) fun x hx =>
+    calc
+      f (g y) = f (g (f x)) := hx ▸ rfl
+      _ = f x := Eq.symm (rfg x) ▸ rfl
+      _ = y := hx
+
+open Lean Elab Command in
+elab "us " cmd:command : command => do
+  let s := cmd.raw.uniformizeSpaces
+  let pretty ← Elab.Command.liftCoreM do Mathlib.Linter.Style.CommandStart.ppCategory' `command s
+  let pretty := " ".intercalate <| (pretty.pretty.split (·.isWhitespace)).filter (!·.isEmpty)
+  logInfo m!"cmd:\n{cmd}\n---\ns:\n{s}\n---\npretty:\n{pretty}\n---"
+  logInfo <| InspectSyntax.toMessageData s
+  elabCommand cmd
+
+open Lean in
+run_cmd
+  let stx ← `(section     X)
+  let s := stx.raw.uniformizeSpaces
+  let pretty ← Elab.Command.liftCoreM do Mathlib.Linter.pretty s
+  logInfo <| InspectSyntax.toMessageData s
+
+open Lean Parser Mathlib.GuardExceptions in
+run_cmd
+  let str := "example : True := trivial"
+  let s := captureException (← getEnv) topLevelCommandParserFn str
+  match s with
+  | .ok s =>
+    logInfo <| InspectSyntax.toMessageData s
+  | _ => logWarning "error!"
+
+
+us
+theorem «--» /- -/ : --
+    ({True} : Set Prop) = {True} /- as -/ := rfl
+
 
 -- Test that `Prop` and `Type` that are not escaped with `«...»` do not cause problems.
 def Prop.Hello := 0

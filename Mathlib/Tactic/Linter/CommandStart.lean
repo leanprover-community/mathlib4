@@ -155,6 +155,20 @@ def compareLeaf (tot : Array Nat) (leadTrail : String × String) (orig s : Strin
     if (t.dropWhile (· == ' ')).take 2 == "--" || (t.dropWhile (· == ' ')).take 1 == "\n" then return newTot
     return newTot.push rest.length
 
+def pretty (stx : Syntax) : CommandElabM String := do
+  let fmt : Option Format := ←
+      try
+        liftCoreM <| PrettyPrinter.ppCategory `command stx
+      catch _ =>
+        Linter.logLintIf linter.style.commandStart.verbose (stx.getHead?.getD stx)
+          m!"The `commandStart` linter had some parsing issues: \
+            feel free to silence it and report this error!"
+        return none
+  let some fmt := fmt | throwError "No parsing."
+  let st := fmt.pretty (width := 100000)
+  let parts := st.split (·.isWhitespace) |>.filter (!·.isEmpty)
+  return " ".intercalate parts
+
 /--
 Splays the input syntax into a string.
 
@@ -168,12 +182,11 @@ def _root_.Lean.Syntax.regString : Syntax → String
   | .atom i s => let (l, t) := i.getLeadTrail; l ++ s ++ t
   | .missing => ""
 
-partial
 def _root_.Lean.SourceInfo.removeSpaces : SourceInfo → SourceInfo
   | .original _ p _ q => .original "".toSubstring p "".toSubstring q
-  | .synthetic p q c => .synthetic p q c
-  | .none => .none
-
+  | s => s
+  --| .synthetic p q c => .synthetic p q c
+  --| .none => .none
 
 partial
 def _root_.Lean.Syntax.uniformizeSpaces : Syntax → Syntax
@@ -182,19 +195,258 @@ def _root_.Lean.Syntax.uniformizeSpaces : Syntax → Syntax
   | .atom i s => .atom i.removeSpaces s
   | .missing => .missing
 
-def pretty (stx : Syntax) : CommandElabM String := do
-  let fmt : Option Format := ←
-      try
-        liftCoreM <| PrettyPrinter.ppCategory `command stx
-      catch _ =>
-        Linter.logLintIf linter.style.commandStart.verbose (stx.getHead?.getD stx)
-          m!"The `commandStart` linter had some parsing issues: \
-            feel free to silence it and report this error!"
-        return none
-  let some fmt := fmt | throwError "No parsing."
-  let st := fmt.pretty
-  let parts := st.split (·.isWhitespace) |>.filter (!·.isEmpty)
-  return " ".intercalate parts
+def withVerbose {α} (v : Bool) (s : String) (a : α) : α :=
+  if v then
+    dbg_trace s
+    a
+  else
+    a
+
+/-- Answers whether a `Substring` starts with a space (` `), contains possibly more spaces,
+until there is either `/ -` (without the space between `/` and `-`) or `--`. -/
+def onlineComment (s : Substring) : Bool :=
+  (s.take 1).toString == " " &&
+    #[ "/-", "--"].contains ((s.dropWhile (· == ' ')).take 2).toString
+
+/--
+Assumes that `pp` is either empty or a single space, as this is satisfied by the intended
+application.
+
+Checks whether `orig` is an "acceptable version" of `pp`:
+1. if `pp` is a space, check that `orig` starts either
+   * with a line break, or
+   * with a single space and then a non-space character,
+   * with at least one space and then a `onlineComment`;
+2. if `pp` is empty, check that `orig` is empty as well or starts either
+   * with a non-whitespace character,
+   * with at least one space and then a `onlineComment`.
+
+TODO: should item 2. actually check that there is no space and that's it?
+-/
+def validateSpaceAfter (orig pp : Substring) : Bool :=
+  -- An empty `pp`ed tail sould correspond to
+  -- an empty `orig`,
+  -- something starting with a line break,
+  -- something starting with some spaces and then a comment
+  let orig1 := (orig.take 1).toString
+  let orig2 := (orig.take 2).toString
+  dbg_trace
+    "pp.isEmpty {pp.isEmpty}\n\
+    if {pp.isEmpty}:\n  \
+      orig.takeWhile (·.isWhitespace): {orig.takeWhile (·.isWhitespace)}\n  \
+      or\n  \
+      onlineComment orig: {onlineComment orig}\n\
+    if {!pp.isEmpty}:\n  \
+      (orig1 == \"⏎\"): {(orig1 == "\n")}\n  \
+      or\n  \
+      onlineComment orig: {onlineComment orig}\n  \
+      or\n  \
+      orig1 == \" \" && !orig2.trim.isEmpty: {orig1 == " " && !orig2.trim.isEmpty}"
+  (pp.isEmpty && ((orig.takeWhile (·.isWhitespace)).isEmpty || onlineComment orig)) ||
+    (
+      (!pp.isEmpty) && ((orig1 == "\n") || onlineComment orig || (orig1 == " " && !orig2.trim.isEmpty))
+    )
+
+/-- Assume both substrings come from actual trails. -/
+def validateSpaceAfter' (orig pp : Substring) : Bool :=
+  -- An empty `pp`ed tail sould correspond to
+  -- an empty `orig`,
+  -- something starting with a line break,
+  -- something starting with some spaces and then a comment
+  let orig1 := (orig.take 1).toString
+  let orig2 := (orig.take 2).toString
+  let answer := (orig1 == "\n") ||
+    (pp.isEmpty && ((orig.takeWhile (·.isWhitespace)).isEmpty || onlineComment orig)) ||
+      (
+        (!pp.isEmpty) && (onlineComment orig || (orig1 == " " || orig2 != "  "))
+      )
+  withVerbose (!answer)
+    s!"\
+    orig1 == \"⏎\": {orig1 == "\n"}\n\
+    or\n  \
+    pp.isEmpty {pp.isEmpty}\n\
+    if {pp.isEmpty}:\n  \
+      orig.takeWhile (·.isWhitespace): {orig.takeWhile (·.isWhitespace)}\n  \
+      or\n  \
+      onlineComment orig: {onlineComment orig}\n\
+    if {!pp.isEmpty}:\n  \
+      onlineComment orig: {onlineComment orig}\n  \
+      or\n  \
+      orig1 == \" \" && orig1 == orig2: {orig1 == " " && orig1 == orig2}"
+      answer
+#eval show TermElabM _ from do
+  let space : Substring := " ".toSubstring
+  let spaceChar : Substring := " f".toSubstring
+  let doublespaceChar : Substring := "  f".toSubstring
+  let doublespace : Substring := "  ".toSubstring
+  let noSpace : Substring := "".toSubstring
+  let linebreak : Substring := "\n".toSubstring
+  let commentInline : Substring := "  --".toSubstring
+  let commentMultiline : Substring := "  /-".toSubstring
+  -- `true`
+  guard <| onlineComment commentInline
+  guard <| onlineComment commentMultiline
+  guard <| validateSpaceAfter spaceChar space
+  guard <| validateSpaceAfter linebreak space
+  guard <| validateSpaceAfter commentInline space
+  guard <| validateSpaceAfter commentMultiline space
+  guard <| validateSpaceAfter noSpace noSpace
+  guard <| validateSpaceAfter "a".toSubstring noSpace
+  -- `false`
+  guard <| !onlineComment space
+  guard <| !onlineComment doublespace
+  guard <| !onlineComment noSpace
+  guard <| !onlineComment linebreak
+  -- A space not followed by a character is not accepted.
+  guard <| !validateSpaceAfter space space
+  guard <| !validateSpaceAfter doublespaceChar space
+  guard <| !validateSpaceAfter space noSpace
+  guard <| !validateSpaceAfter spaceChar noSpace
+  guard <| !validateSpaceAfter doublespaceChar noSpace
+
+#eval
+  let origStr := "intro      --hi"
+  let str := "intro hi"
+  let orig : Substring := {origStr.toSubstring with startPos := ⟨"intro".length⟩}
+  let pp : Substring := {str.toSubstring with startPos := ⟨"intro".length⟩}
+  let pp : Substring := "".toSubstring
+  dbg_trace "pp.isEmpty: {pp.isEmpty}, validate {validateSpaceAfter orig pp}"
+  validateSpaceAfter orig pp
+
+structure Exceptions where
+  orig : String
+  pp : String
+  pos : String.Pos
+  kind : SyntaxNodeKind
+
+instance : ToString Exceptions where
+  toString
+  | {orig := o, pp := pp, pos := p, kind := k} =>
+    s!"Exception\npos:  {p}\nkind: '{k}'\norig: '{o.replace "\n" "⏎"}'\npret: '{pp.replace "\n" "⏎"}'\n---"
+
+def addException (e : Array Exceptions) (orig pp : String) (p : String.Pos) (k : SyntaxNodeKind) :
+    Array Exceptions :=
+  e.push <| Exceptions.mk orig pp p k
+
+def validateAtomOrId (tot : Array Exceptions) (kind : SyntaxNodeKind) (i1 i2 : SourceInfo) (s1 s2 : String) (str : Substring) :
+    Substring × Array Exceptions :=
+  let (l1, t1) := i1.getLeadTrail
+  --let (l2, t2) := i2.getLeadTrail
+  --dbg_trace "removing '{s2}'"
+  let stripString := str.drop s2.length
+  let trail := stripString.takeWhile (·.isWhitespace)
+  --withVerbose (trail.isEmpty != t1.isEmpty) s!"Discrepancy at {s1}, orig: '{t1}' pped: '{trail}'"
+  let isValid := validateSpaceAfter' t1.toSubstring trail
+  --dbg_trace "{isValid} -- {(s1, s2)}: '{t1}', '{trail}'\n"
+  let tot := if isValid then tot else
+    dbg_trace "adding with '{s1}' '{s2}"
+    addException tot t1 trail.toString stripString.startPos kind
+  withVerbose ((!str.toString.startsWith s1) || (!str.toString.startsWith s2))
+    s!"something went wrong\n--- All pretty {kind} ---\n{str.toString}\n\n--- Orig ---\n{s1}\n\n--- Pretty--- \n{s2}\n---\n{tot}"
+    (
+      withVerbose (!isValid) s!"Discrepancy at {s1}, orig: '{t1}' pped: '{trail}'"
+      stripString |>.dropWhile (·.isWhitespace), addException tot t1 trail.toString stripString.startPos kind
+    )
+
+def exclusions : NameSet := NameSet.empty
+  |>.insert ``Parser.Command.docComment
+
+def scanWatching (verbose? : Bool) :
+    Array Exceptions → SyntaxNodeKind → Syntax → Syntax → Substring → Substring × Array Exceptions
+  | tot, k, .ident i1 s1 n1 p1, .ident i2 s2 n2 p2, str =>
+    withVerbose verbose? "idents" <|
+      validateAtomOrId tot k i1 i2 s1.toString s2.toString str
+  | tot, k, .atom i1 s1, .atom i2 s2, str =>
+    withVerbose verbose? "atoms" <|
+      validateAtomOrId tot k i1 i2 s1 s2 str
+  | tot, k, .node i1 s1 as1, ppstx@(.node i2 s2 as2), str =>
+    let s1 := if s1 == `null then k else s1
+    --if exclusions.contains s1 then
+    --  dbg_trace "skipping {s1}"
+    --  let endPos := ppstx.getTrailingTailPos?.get!
+    --  let endPos := as2.back!.getTrailingTailPos?.get!
+    --  let endPos := as2.back!.getRange?.get!.stop
+    --  let endPos := ppstx.getRange?.get!.stop
+    --  ({str with startPos := endPos}, tot)
+    --else
+    withVerbose (as1.size != as2.size) "** Error! **" <|
+    withVerbose verbose? "nodes" <| Id.run do
+      let mut pos := str.startPos
+      let mut tots := tot
+      for h : i in [:as1.size] do
+        let a1 := as1[i]
+        let a2 := as2[i]?.getD default
+        let ({startPos := sp,..}, news) := scanWatching verbose? tots s1 a1 a2 {str with startPos := pos}
+        pos := sp
+        tots := news
+      ({str with startPos := pos}, tots)
+  | tot, k, s1, s2, str =>
+    withVerbose verbose? "rest" <|
+      (str, tot)
+
+def finalScan (stx : Syntax) (verbose? : Bool) : CommandElabM (Array Exceptions) := do
+  let ustx := stx.uniformizeSpaces
+  let simplySpaced ← pretty ustx <|> return default
+  return scanWatching verbose? #[] stx.getKind stx ustx (simplySpaced).toSubstring |>.2
+
+/-
+#eval True ∧ 0 ^ 0 = 1
+
+open Lean Elab Command in
+elab "#compare " v:(&"v ")? stx:command : command => do
+  elabCommand stx <|> return
+  if (← get).messages.hasErrors then
+    return
+  let ustx := stx.raw.uniformizeSpaces
+  let simplySpaced ← pretty ustx <|> return default
+  logInfo m!"Source:\n\
+            {stx.raw.getSubstring?.get!}|||\n\
+            Regenerated:\n{simplySpaced}|||\n\
+            {scanWatching v.isSome #[] stx ustx (simplySpaced).toSubstring}"
+
+--#compare/-- -/ theorem le : True ∧  0 ^0=  1 :=
+--  sorry
+--#exit
+/-
+#compare
+example : True  ∧ 0 ^ 0 = 0 :=
+by
+  constructor -- here we split
+  · refine ?_
+    -- Now we know how to prove it
+    exact trivial
+  · apply ?_
+    exact .intro  -- We use the constructor
+-/
+
+
+/--
+info: Source:
+example : True  ∧ True := by
+  constructor -- here we split
+  · refine ?_
+    -- Now we know how to prove it
+    exact trivial
+  · apply ?_
+    exact .intro  -- We use the constructor
+
+
+|||
+Regenerated:
+example : True ∧ True := by constructor · refine ?_ exact trivial · apply ?_ exact .intro|||
+(, [])
+-/
+#guard_msgs in
+#compare
+example : True  ∧ True := by
+  constructor -- here we split
+  · refine ?_
+    -- Now we know how to prove it
+    exact trivial
+  · apply ?_
+    exact .intro  -- We use the constructor
+--/
+
 
 /--
 Scan the two input strings `L` and `M`, assuming `M` is the pretty-printed version of `L`.
@@ -291,7 +543,36 @@ def _root_.Lean.Syntax.compareToString : Array FormatError → Syntax → String
     f
   | tot, .missing, _s => tot
 
+partial
+def _root_.Lean.Syntax.compare : Syntax → Syntax → Array SyntaxNodeKind
+  | .node _ _ a1, .node _ _ a2 => a1.zipWith (fun a b => a.compare b) a2 |>.flatten
+  | .ident .., .ident .. => #[]
+  | .atom .., .atom .. => #[]
+  | .missing .., .missing .. => #[]
+  | .node _ k _, _ => #[k ++ `left]
+  | _, .node _ k _ => #[k ++ `right]
+  | .atom .., _ => #[`atomLeft]
+  | _, .atom .. => #[`atomRight]
+  | .ident .., _ => #[`identLeft]
+  | _, .ident .. => #[`identRight]
 
+open Parser in
+/-- `captureException env s input` uses the given `Environment` `env` to parse the `String` `input`
+using the `ParserFn` `s`.
+
+This is a variation of `Lean.Parser.runParserCategory`.
+-/
+def captureException (env : Environment) (s : ParserFn) (input : String) : Except String Syntax :=
+  let ictx := mkInputContext input "<input>"
+  let s := s.run ictx { env, options := {} } (getTokenTable env) (mkParserState input)
+  if !s.allErrors.isEmpty then
+    .error (s.toErrorMsg ictx)
+  else if ictx.input.atEnd s.pos then
+    .ok s.stxStack.back
+  else
+    .error ((s.mkError "end of input").toErrorMsg ictx)
+
+/-
 open Lean Elab Command in
 elab "#comp " cmd:command : command => do
   elabCommand cmd
@@ -302,6 +583,7 @@ elab "#comp " cmd:command : command => do
   dbg_trace comps
 --  dbg_trace "From start: {comps.map (cmdString.length - ·) |>.reverse}"
   --logInfo m!"{cmd}"
+-/
 
 namespace Style.CommandStart
 
@@ -465,18 +747,21 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   if (← get).messages.hasErrors then
     return
-  if stx.getSubstring?.map toString != some stx.regString then
-    --dbg_trace stx.regString
+  --if stx.getSubstring?.map toString != some stx.regString then
+  --  dbg_trace stx.regString
   if stx.find? (·.isOfKind ``runCmd) |>.isSome then
     return
   let comps := (← getMainModule).components
+  --dbg_trace "lint0"
   if comps.contains `Tactic ||
      comps.contains `Util ||
      comps.contains `Lean ||
      comps.contains `Meta
   then
+    --dbg_trace comps
     return
   -- If a command does not start on the first column, emit a warning.
+  --dbg_trace "lint1"
   if let some pos := stx.getPos? then
     let colStart := ((← getFileMap).toPosition pos).column
     if colStart ≠ 0 then
@@ -505,12 +790,35 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let st := " ".intercalate parts
     let origSubstring := stx.getSubstring?.getD default
     let orig := origSubstring.toString
+    if (! Parser.isTerminalCommand stx) && st.trim.isEmpty then logInfo m!"Empty on {stx}"
+    else
+    --dbg_trace "here"
+    let slimStx := captureException (← getEnv) Parser.topLevelCommandParserFn st <|>
+      .ok (.node default ``Parser.Command.eoi #[])
+    --dbg_trace "there"
+    if let .ok slimStx := slimStx then
+      let diffs := stx.compare slimStx
+      if !diffs.isEmpty then
+        logInfo m!"{diffs}"
+        dbg_trace stx
+        dbg_trace slimStx
+    else
+      logWarning m!"Parsing error!\n{stx.getKind}|||\n---"
+      dbg_trace stx
     --let parts := orig.split (·.isWhitespace) |>.filter (!·.isEmpty)
     --if ! ("".intercalate parts).startsWith (st.replace " " "" |>.replace "«" "" |>.replace "»" "") then
     --  logWarning m!"A\n{st.replace " " "" |>.replace "«" "" |>.replace "»" ""}\n---\n{"".intercalate parts}"
 
     let scan := parallelScan orig st
-
+    let (o, n) := (scan.size, (← finalScan stx false).size)
+    if o != n then
+      dbg_trace "(old, new): ({o}, {n})"
+      dbg_trace scan
+      for e in (← finalScan stx false) do
+        dbg_trace e
+      let ustx := stx.uniformizeSpaces
+      let simplySpaced ← pretty ustx <|> return default
+      dbg_trace simplySpaced
     let docStringEnd := stx.find? (·.isOfKind ``Parser.Command.docComment) |>.getD default
     let docStringEnd := docStringEnd.getTailPos? |>.getD default
     let forbidden := getUnlintedRanges unlintedNodes ∅ stx
