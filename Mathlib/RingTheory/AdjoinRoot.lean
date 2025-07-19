@@ -558,22 +558,18 @@ open Algebra Polynomial
 /-- The surjective algebra morphism `R[X]/(minpoly R x) → R[x]`.
 If `R` is a integrally closed domain and `x` is integral, this is an isomorphism,
 see `minpoly.equivAdjoin`. -/
-@[simps!]
 def Minpoly.toAdjoin : AdjoinRoot (minpoly R x) →ₐ[R] adjoin R ({x} : Set S) :=
   liftHom _ ⟨x, self_mem_adjoin_singleton R x⟩
     (by simp [← Subalgebra.coe_eq_zero, aeval_subalgebra_coe])
 
 variable {R x}
 
-theorem Minpoly.toAdjoin_apply' (a : AdjoinRoot (minpoly R x)) :
-    Minpoly.toAdjoin R x a =
-      liftHom (minpoly R x) (⟨x, self_mem_adjoin_singleton R x⟩ : adjoin R ({x} : Set S))
-        (by simp [← Subalgebra.coe_eq_zero, aeval_subalgebra_coe]) a :=
-  rfl
+@[simp]
+theorem Minpoly.toAdjoin_apply (a : AdjoinRoot (minpoly R x)) :
+    Minpoly.toAdjoin R x a = liftHom (minpoly R x) ⟨x, self_mem_adjoin_singleton R x⟩
+      (by simp [← Subalgebra.coe_eq_zero, aeval_subalgebra_coe]) a := rfl
 
-theorem Minpoly.toAdjoin.apply_X :
-    Minpoly.toAdjoin R x (mk (minpoly R x) X) = ⟨x, self_mem_adjoin_singleton R x⟩ := by
-  simp [toAdjoin]
+theorem Minpoly.toAdjoin.apply_X : Minpoly.toAdjoin R x (mk (minpoly R x) X) = x := by simp
 
 variable (R x)
 
