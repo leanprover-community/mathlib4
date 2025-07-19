@@ -77,15 +77,11 @@ theorem cases {f : ℕ → ℕ} (hf : f ∈ bonza) :
   · exact Or.symm (Or.inr ch)
   · right
     obtain ⟨b, bgt, hb⟩ : ∃ b, b > 0 ∧ f b ≠ b := Set.not_subset.mp ch
-    have : ∀ p, Nat.Prime p → f p = 1 ∨ (p : ℤ) ∣ (b : ℤ) - (f b : ℤ) := by
-      intro p hp
-      rcases imp hf hp with ch | ch
-      · exact Or.symm (Or.inr ch)
-      · right
-        exact ch b bgt
+    have {p : ℕ} (hp : Nat.Prime p): f p = 1 ∨ (p : ℤ) ∣ (b : ℤ) - (f b : ℤ) :=
+      Or.casesOn (imp hf hp) (fun ch ↦ Or.symm (Or.inr ch)) fun ch ↦ Or.inr (ch b bgt)
     use ((b : ℤ) - (f b : ℤ)).natAbs
     intro p pgt hp
-    rcases this p hp with ch | ch
+    rcases this hp with ch | ch
     · exact ch
     · have : (p : ℤ).natAbs ≤ ((b : ℤ) - (f b : ℤ)).natAbs := by
         refine natAbs_le_of_dvd_ne_zero ch ?_
@@ -93,6 +89,59 @@ theorem cases {f : ℕ → ℕ} (hf : f ∈ bonza) :
         simpa using id (Ne.symm hb)
       simp at this
       linarith
+
+theorem Nat.exists_prime_gt_modEq_neg_one {k : ℕ} (n : ℕ) (hk0 : NeZero k) :
+    ∃ (p : ℕ), Prime p ∧ n < p ∧ p ≡ -1 [ZMOD k] := by
+  have : IsUnit (-1 : ZMod k) := by simp
+  obtain ⟨p, hp⟩ :=  Nat.forall_exists_prime_gt_and_eq_mod this n
+  use p
+  constructor
+  · exact hp.2.1
+  constructor
+  · exact hp.1
+  · have := hp.2.2
+    rw [eq_neg_iff_add_eq_zero, ← cast_add_one p, ZMod.natCast_eq_zero_iff] at this
+    rw [← ZMod.intCast_eq_intCast_iff]
+    refine Eq.symm ?_
+    rw [ZMod.intCast_eq_intCast_iff_dvd_sub, Int.sub_neg]
+    exact ofNat_dvd_left.mpr this
+
+theorem INF {f : ℕ → ℕ} (hf : f ∈ bonza) :
+    (∀ x, x > 0 → f x = x) ∨ (∀ p > 2, Nat.Prime p → f p = 1) := by
+  by_cases ch : ∀ x, x > 0 → f x = x
+  · exact Or.symm (Or.inr ch)
+  · right
+    obtain ⟨N, hN⟩ : ∃ N, ∀ p > N, Nat.Prime p → f p = 1 := by
+      have := cases hf
+      tauto
+    have tt : ∀ a, ∀ p, a > 0 → Nat.Prime p →  p > N → (f a : ℤ) ∣ p ^ a - 1 := by
+      intro a p ha pp hp
+      have := hf.1 a p ha (by omega)
+      rwa [hN p hp pp, Nat.cast_one, one_pow] at this
+    intro q hq qp
+    have dvd : f q ∣ q ^ q := by
+      refine hdvd hf ?_
+      exact zero_lt_of_lt hq
+    obtain ⟨α , ha1, ha2⟩ : ∃ α, α ≤ q ∧ f q = q ^ α := (Nat.dvd_prime_pow qp).mp dvd
+    by_cases ch : α = 0
+    · simp [ch] at ha2
+      exact ha2
+    · have dvd1 : (q : ℤ) ∣ f q := by
+        rw [ha2, Int.natCast_pow q α]
+        exact dvd_pow_self (q : ℤ) ch
+      have ttt {p : ℕ} (pp : Nat.Prime p) (hp : p > N) : p ≡ 1 [ZMOD q] := by calc
+        _ ≡ p ^ q [ZMOD q] := Int.ModEq.symm (ModEq.pow_card_eq_self qp)
+        _ ≡ _ [ZMOD q] :=
+          have := tt q p (zero_lt_of_lt hq) pp hp
+          Int.ModEq.symm ((fun {n a b} ↦ Int.modEq_iff_dvd.mpr) (Int.dvd_trans dvd1 this))
+      obtain ⟨p, hp⟩ := Nat.exists_prime_gt_modEq_neg_one N (NeZero.of_gt hq)
+      have : 1 ≡ -1 [ZMOD q] := by calc
+        _ ≡ p [ZMOD q] := id (Int.ModEq.symm (ttt hp.1 hp.2.1))
+        _ ≡ _ [ZMOD q] := hp.2.2
+      have : (q : ℤ) ∣ 1 - (-1) := Int.ModEq.dvd (id (Int.ModEq.symm this))
+      simp at this
+      have : (q : ℤ).natAbs ≤ (2 : ℤ).natAbs := natAbs_le_of_dvd_ne_zero this (by norm_num)
+      omega
 
 def g : ℕ → ℕ := fun x ↦
   if ¬ 2 ∣ x then 1
