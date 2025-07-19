@@ -358,7 +358,7 @@ theorem card_prod (α β : Type*) : card (α × β) = card α * card β := by
   simp [ENat.card]
 
 @[simp]
-lemma card_pow {α β : Type*} : card (α → β) = (card β) ^ card α := by
+lemma card_fun {α β : Type*} : card (α → β) = (card β) ^ card α := by
   classical
   rcases isEmpty_or_nonempty α with α_emp | α_emp
   · simp [(card_eq_zero_iff_empty α).2 α_emp]
