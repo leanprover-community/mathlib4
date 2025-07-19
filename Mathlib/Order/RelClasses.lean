@@ -239,18 +239,18 @@ lemma wellFounded_lt [LT α] [WellFoundedLT α] : @WellFounded α (· < ·) := I
 lemma wellFounded_gt [LT α] [WellFoundedGT α] : @WellFounded α (· > ·) := IsWellFounded.wf
 
 -- See note [lower instance priority]
-instance (priority := 100) (α : Type*) [LT α] [h : WellFoundedLT α] : WellFoundedGT αᵒᵈ :=
-  h
+instance (priority := 100) (α : Type*) [LT α] [h : WellFoundedLT α] : WellFoundedGT αᵒᵈ where
+  wf := InvImage.wf OrderDual.ofDual' h.wf
 
 -- See note [lower instance priority]
-instance (priority := 100) (α : Type*) [LT α] [h : WellFoundedGT α] : WellFoundedLT αᵒᵈ :=
-  h
+instance (priority := 100) (α : Type*) [LT α] [h : WellFoundedGT α] : WellFoundedLT αᵒᵈ where
+  wf := InvImage.wf OrderDual.ofDual' h.wf
 
 theorem wellFoundedGT_dual_iff (α : Type*) [LT α] : WellFoundedGT αᵒᵈ ↔ WellFoundedLT α :=
-  ⟨fun h => ⟨h.wf⟩, fun h => ⟨h.wf⟩⟩
+  ⟨fun h => ⟨InvImage.wf OrderDual.toDual' h.wf⟩, fun h => ⟨InvImage.wf OrderDual.ofDual' h.wf⟩⟩
 
 theorem wellFoundedLT_dual_iff (α : Type*) [LT α] : WellFoundedLT αᵒᵈ ↔ WellFoundedGT α :=
-  ⟨fun h => ⟨h.wf⟩, fun h => ⟨h.wf⟩⟩
+  ⟨fun h => ⟨InvImage.wf OrderDual.toDual' h.wf⟩, fun h => ⟨InvImage.wf OrderDual.ofDual' h.wf⟩⟩
 
 /-- A well order is a well-founded linear order. -/
 class IsWellOrder (α : Type u) (r : α → α → Prop) : Prop
@@ -396,8 +396,9 @@ theorem Prod.wellFoundedLT' [PartialOrder α] [WellFoundedLT α] [Preorder β] [
 
 /-- See `Prod.wellFoundedGT` for a version that only requires `Preorder α`. -/
 theorem Prod.wellFoundedGT' [PartialOrder α] [WellFoundedGT α] [Preorder β] [WellFoundedGT β] :
-    WellFoundedGT (α × β) :=
-  @Prod.wellFoundedLT' αᵒᵈ βᵒᵈ _ _ _ _
+    WellFoundedGT (α × β) where
+  wf := InvImage.wf (Prod.map OrderDual.toDual' OrderDual.toDual')
+    (@Prod.wellFoundedLT' αᵒᵈ βᵒᵈ _ _ _ _).wf
 
 namespace Set
 
@@ -772,8 +773,8 @@ theorem transitive_ge [Preorder α] : Transitive (@GE.ge α _) :=
 theorem transitive_gt [Preorder α] : Transitive (@GT.gt α _) :=
   transitive_of_trans _
 
-instance OrderDual.isTotal_le [LE α] [h : IsTotal α (· ≤ ·)] : IsTotal αᵒᵈ (· ≤ ·) :=
-  @IsTotal.swap α _ h
+instance OrderDual.isTotal_le [LE α] [h : IsTotal α (· ≤ ·)] : IsTotal αᵒᵈ (· ≤ ·) where
+  total a b := IsTotal.total (self := h) b.ofDual' a.ofDual'
 
 instance : WellFoundedLT ℕ :=
   ⟨Nat.lt_wfRel.wf⟩

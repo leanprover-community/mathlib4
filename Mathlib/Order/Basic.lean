@@ -777,7 +777,6 @@ instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ wh
     convert rfl
     exact ⟨congrArg ofDual',congrArg toDual'⟩
 
--- #check LinearOrder
 /-- The opposite linear order to a given linear order -/
 def _root_.LinearOrder.swap (α : Type*) (_ : LinearOrder α) : LinearOrder α where
   le a b := b ≤ a
@@ -797,24 +796,9 @@ def _root_.LinearOrder.swap (α : Type*) (_ : LinearOrder α) : LinearOrder α w
   compare_eq_compareOfLessAndEq a b := by
     simp only [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq, eq_comm]
     convert rfl
-  -- inferInstanceAs <| LinearOrder (OrderDual α)
 
 instance [Inhabited α] : Inhabited αᵒᵈ where
   default := toDual' default
-
--- theorem Ord.dual_dual (α : Type*) [H : Ord α] : OrderDual.instOrd αᵒᵈ = H :=
---   rfl
-
--- theorem Preorder.dual_dual (α : Type*) [H : Preorder α] : OrderDual.instPreorder αᵒᵈ = H :=
---   rfl
-
--- theorem instPartialOrder.dual_dual (α : Type*) [H : PartialOrder α] :
---     OrderDual.instPartialOrder αᵒᵈ = H :=
---   rfl
-
--- theorem instLinearOrder.dual_dual (α : Type*) [H : LinearOrder α] :
---     OrderDual.instLinearOrder αᵒᵈ = H :=
---   rfl
 
 end OrderDual
 
