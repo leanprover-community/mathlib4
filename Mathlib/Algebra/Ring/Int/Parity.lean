@@ -108,6 +108,15 @@ lemma four_dvd_add_or_sub_of_odd {a b : ℤ} (ha : Odd a) (hb : Odd b) :
   obtain ⟨n, rfl⟩ := hb
   omega
 
+lemma Even_mul_add_one (m : ℤ) : Even (m * (m + 1)) := by
+  rcases (Int.even_or_odd m) with ch | ch
+  · exact even_mul_succ_self m
+  · exact even_mul_succ_self m
+
+lemma two_dvd_mul_add_one (k : ℤ) : 2 ∣ k * (k + 1) :=
+  have : Even (k * (k + 1)) := even_mul_succ_self k
+  even_iff_two_dvd.mp this
+
 lemma two_mul_ediv_two_add_one_of_odd : Odd n → 2 * (n / 2) + 1 = n := by
   rintro ⟨c, rfl⟩
   rw [mul_comm]
