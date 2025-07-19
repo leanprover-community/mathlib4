@@ -774,6 +774,7 @@ variable (M)
 
 theorem nonZeroDivisors_le_comap [IsLocalization M S] :
     nonZeroDivisors R ≤ (nonZeroDivisors S).comap (algebraMap R S) := by
+  simp_rw [← nonZeroDivisorsRight_eq_nonZeroDivisors]
   rintro a ha b (e : b * algebraMap R S a = 0)
   obtain ⟨x, s, rfl⟩ := mk'_surjective M b
   rw [← @mk'_one R _ M, ← mk'_mul, ← (algebraMap R S).map_zero, ← @mk'_one R _ M,
@@ -909,7 +910,7 @@ theorem to_map_eq_zero_iff {x : R} (hM : M ≤ nonZeroDivisors R) : algebraMap R
   constructor <;> intro h
   · obtain ⟨c, hc⟩ := (eq_iff_exists M S).mp h
     rw [mul_zero, mul_comm] at hc
-    exact hM c.2 x hc
+    exact (hM c.2).2 x hc
   · rw [h]
 
 protected theorem injective (hM : M ≤ nonZeroDivisors R) : Injective (algebraMap R S) := by
