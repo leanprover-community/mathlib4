@@ -310,12 +310,6 @@ theorem head (hab : r a b) (hbc : ReflTransGen r b c) : ReflTransGen r a c := by
   | refl => exact refl.tail hab
   | tail _ hcd hac => exact hac.tail hcd
 
-instance : Trans r (ReflTransGen r) (ReflTransGen r) :=
-  ⟨head⟩
-
-instance : Trans (ReflTransGen r) r (ReflTransGen r) :=
-  ⟨tail⟩
-
 theorem symmetric (h : Symmetric r) : Symmetric (ReflTransGen r) := by
   intro x y h
   induction h with
@@ -380,13 +374,7 @@ theorem trans_left (hab : TransGen r a b) (hbc : ReflTransGen r b c) : TransGen 
   | refl => assumption
   | tail _ hcd hac => exact hac.tail hcd
 
-instance : Trans (TransGen r) (ReflTransGen r) (TransGen r) :=
-  ⟨trans_left⟩
-
 attribute [trans] trans
-
-instance : Trans (TransGen r) (TransGen r) (TransGen r) :=
-  ⟨trans⟩
 
 theorem head' (hab : r a b) (hbc : ReflTransGen r b c) : TransGen r a c :=
   trans_left (single hab) hbc
@@ -398,12 +386,6 @@ theorem tail' (hab : ReflTransGen r a b) (hbc : r b c) : TransGen r a c := by
 
 theorem head (hab : r a b) (hbc : TransGen r b c) : TransGen r a c :=
   head' hab hbc.to_reflTransGen
-
-instance : Trans (TransGen r) r (TransGen r) :=
-  ⟨tail⟩
-
-instance : Trans r (TransGen r) (TransGen r) :=
-  ⟨head⟩
 
 @[elab_as_elim]
 theorem head_induction_on {P : ∀ a : α, TransGen r a b → Prop} {a : α} (h : TransGen r a b)
@@ -429,9 +411,6 @@ theorem trans_right (hab : ReflTransGen r a b) (hbc : TransGen r b c) : TransGen
   induction hbc with
   | single hbc => exact tail' hab hbc
   | tail _ hcd hac => exact hac.tail hcd
-
-instance : Trans (ReflTransGen r) (TransGen r) (TransGen r) :=
-  ⟨trans_right⟩
 
 theorem tail'_iff : TransGen r a c ↔ ∃ b, ReflTransGen r a b ∧ r b c := by
   refine ⟨fun h ↦ ?_, fun ⟨b, hab, hbc⟩ ↦ tail' hab hbc⟩
@@ -474,9 +453,6 @@ theorem transGen_eq_self (trans : Transitive r) : TransGen r = r :=
       | tail _ hcd hac => exact trans hac hcd, TransGen.single⟩
 
 theorem transitive_transGen : Transitive (TransGen r) := fun _ _ _ ↦ TransGen.trans
-
-instance : IsTrans α (TransGen r) :=
-  ⟨@TransGen.trans α r⟩
 
 theorem transGen_idem : TransGen (TransGen r) = TransGen r :=
   transGen_eq_self transitive_transGen
@@ -559,9 +535,6 @@ theorem transitive_reflTransGen : Transitive (ReflTransGen r) := fun _ _ _ ↦ t
 
 instance : IsRefl α (ReflTransGen r) :=
   ⟨@ReflTransGen.refl α r⟩
-
-instance : IsTrans α (ReflTransGen r) :=
-  ⟨@ReflTransGen.trans α r⟩
 
 theorem reflTransGen_idem : ReflTransGen (ReflTransGen r) = ReflTransGen r :=
   reflTransGen_eq_self reflexive_reflTransGen transitive_reflTransGen
@@ -746,3 +719,38 @@ theorem Equivalence.eqvGen_eq (h : Equivalence r) : EqvGen r = r :=
   funext fun _ ↦ funext fun _ ↦ propext <| h.eqvGen_iff
 
 end EqvGen
+
+section Trans
+
+open Relation
+
+variable {r : α → α → Prop}
+
+instance : Trans r (ReflTransGen r) (ReflTransGen r) :=
+  ⟨ReflTransGen.head⟩
+
+instance : Trans (ReflTransGen r) r (ReflTransGen r) :=
+  ⟨ReflTransGen.tail⟩
+
+instance : Trans (TransGen r) (ReflTransGen r) (TransGen r) :=
+  ⟨TransGen.trans_left⟩
+
+instance : Trans (TransGen r) (TransGen r) (TransGen r) :=
+  ⟨TransGen.trans⟩
+
+instance : Trans (TransGen r) r (TransGen r) :=
+  ⟨TransGen.tail⟩
+
+instance : Trans r (TransGen r) (TransGen r) :=
+  ⟨TransGen.head⟩
+
+instance : Trans (ReflTransGen r) (TransGen r) (TransGen r) :=
+  ⟨TransGen.trans_right⟩
+
+instance : IsTrans α (TransGen r) :=
+  ⟨@TransGen.trans α r⟩
+
+instance : IsTrans α (ReflTransGen r) :=
+  ⟨@ReflTransGen.trans α r⟩
+
+end Trans
