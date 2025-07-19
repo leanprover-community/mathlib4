@@ -10,28 +10,28 @@ import Mathlib.RingTheory.Ideal.Defs
 # Ring orderings
 
 Let `R` be a commutative ring. A preordering on `R` is a subset closed under
-addition and multiplication that contains all squares, but not `-1`. An ordering on `R` is
-a preordering containing either `x` or `-x` for each `x` in `R`.
+addition and multiplication that contains all squares, but not `-1`.
 
 The support of a preordering `P` is the set of elements `x` such that both `x` and `-x` lie in `P`.
-The support of an ordering is always an ideal. A prime ordering is an ordering whose support is
-a prime ideal.
 
-We define preorderings, orderings, preordering supports and prime orderings.
+An ordering `O` on `R` is a preordering such that
+(i) `O` contains either `x` or `-x` for each `x` in `R` and
+(ii) the support of `O` is a prime ideal.
+
+We define preorderings, supports and orderings.
 
 A ring preordering can intuitively be viewed as a set of "non-negative" ring elements.
-Indeed, a prime ordering `O` with support `p` induces a linear order on `R⧸p` making it
+Indeed, an ordering `O` with support `p` induces a linear order on `R⧸p` making it
 into an ordered ring, and vice versa.
 
 ## References
 
-- *An introduction to real algebra*, by T.Y. Lam. Rocky Mountain J. Math. 14(4): 767-814 (1984).
-[lam_1984](https://doi.org/10.1216/RMJ-1984-14-4-767)
+- [*An introduction to real algebra*, T.Y. Lam][lam_1984]
 
 -/
 
 /-!
-## Preorderings
+### Preorderings
 -/
 
 variable (R : Type*) [CommRing R]
@@ -81,21 +81,17 @@ theorem toSubsemiring_inj {P₁ P₂ : RingPreordering R} :
     P₁.toSubsemiring = P₂.toSubsemiring ↔ P₁ = P₂ := toSubsemiring_injective.eq_iff
 
 @[simp]
-theorem mem_toSubsemiring {P : RingPreordering R} {x : R} :
-  x ∈ P.toSubsemiring ↔ x ∈ P := .rfl
+theorem mem_toSubsemiring {P : RingPreordering R} {x : R} : x ∈ P.toSubsemiring ↔ x ∈ P := .rfl
 
 @[simp, norm_cast]
-theorem coe_toSubsemiring {P : RingPreordering R} :
-  (P.toSubsemiring : Set R) = P := rfl
+theorem coe_toSubsemiring {P : RingPreordering R} : (P.toSubsemiring : Set R) = P := rfl
 
 @[simp]
-theorem mem_mk {toSubsemiring : Subsemiring R}
-    (mem_of_isSquare) (neg_one_notMem) {x : R} :
+theorem mem_mk {toSubsemiring : Subsemiring R} (mem_of_isSquare) (neg_one_notMem) {x : R} :
     x ∈ mk toSubsemiring mem_of_isSquare neg_one_notMem ↔ x ∈ toSubsemiring := .rfl
 
 @[simp]
-theorem coe_set_mk {toSubsemiring : Subsemiring R}
-    (mem_of_isSquare) (neg_one_notMem) :
+theorem coe_set_mk {toSubsemiring : Subsemiring R} (mem_of_isSquare) (neg_one_notMem) :
     (mk toSubsemiring mem_of_isSquare neg_one_notMem : Set R) = toSubsemiring := rfl
 
 section copy
@@ -123,31 +119,33 @@ end copy
 variable {P : RingPreordering R}
 
 /-!
-## Support
+### Support
 -/
 
-namespace AddSubgroup
+section supportAddSubgroup
 
 variable (P) in
 /--
 The support of a ring preordering `P` in a commutative ring `R` is
 the set of elements `x` in `R` such that both `x` and `-x` lie in `P`.
 -/
-def support : AddSubgroup R where
+def supportAddSubgroup : AddSubgroup R where
   carrier := {x : R | x ∈ P ∧ -x ∈ P}
   zero_mem' := by aesop
   add_mem' := by aesop
   neg_mem' := by aesop
 
-@[simp] theorem mem_support {x} : x ∈ support P ↔ x ∈ P ∧ -x ∈ P := .rfl
-@[simp, norm_cast] theorem coe_support : support P = {x : R | x ∈ P ∧ -x ∈ P} := rfl
+@[simp] theorem mem_supportAddSubgroup {x} : x ∈ supportAddSubgroup P ↔ x ∈ P ∧ -x ∈ P := .rfl
 
-end AddSubgroup
+@[simp, norm_cast]
+theorem coe_supportAddSubgroup : supportAddSubgroup P = {x : R | x ∈ P ∧ -x ∈ P} := rfl
+
+end supportAddSubgroup
 
 /-- Typeclass to track whether the support of a preordering forms an ideal. -/
 class HasIdealSupport (P) :  Prop where
-  smul_mem_support (P) (x : R) {a : R} (ha : a ∈ AddSubgroup.support P) :
-    x * a ∈ AddSubgroup.support P
+  smul_mem_support (P) (x : R) {a : R} (ha : a ∈ supportAddSubgroup P) :
+    x * a ∈ supportAddSubgroup P
 
 export HasIdealSupport (smul_mem_support)
 
@@ -155,7 +153,7 @@ theorem hasIdealSupport
     (h : ∀ x a : R, a ∈ P → -a ∈ P → x * a ∈ P ∧ -(x * a) ∈ P) : HasIdealSupport P where
   smul_mem_support := by simp_all
 
-namespace Ideal
+section support
 
 variable [HasIdealSupport P]
 
@@ -165,33 +163,24 @@ The support of a ring preordering `P` in a commutative ring `R` is
 the set of elements `x` in `R` such that both `x` and `-x` lie in `P`.
 -/
 def support : Ideal R where
-  __ := AddSubgroup.support P
+  __ := supportAddSubgroup P
   smul_mem' := by simpa using smul_mem_support P
 
 @[simp] theorem mem_support {x} : x ∈ support P ↔ x ∈ P ∧ -x ∈ P := .rfl
 @[simp, norm_cast] theorem coe_support : support P = {x : R | x ∈ P ∧ -x ∈ P} := rfl
 
 @[simp]
-theorem support_toAddSubgroup : (support P).toAddSubgroup = AddSubgroup.support P := by ext; simp
+theorem support_toAddSubgroup : (support P).toAddSubgroup = supportAddSubgroup P := by ext; simp
 
-end Ideal
+end support
 
 /-!
-## (Prime) orderings
+### (Prime) orderings
 -/
 
-/-- An ordering `P` on a ring `R` is a preordering such that, for every `x` in `R`,
-either `x` or `-x` lies in `P`. -/
-class IsOrdering (P : RingPreordering R) : Prop where
-  protected mem_or_neg_mem (P) (x : R) : x ∈ P ∨ -x ∈ P
-
-/- protected to avoid conflict with the `AddGroupCone` version -/
-protected theorem mem_or_neg_mem (P : RingPreordering R) [IsOrdering P] : ∀ x, x ∈ P ∨ -x ∈ P :=
-  IsOrdering.mem_or_neg_mem P
-
 /-- A prime ordering `P` on a ring `R` is an ordering whose support is a prime ideal. -/
-class IsPrimeOrdering (P : RingPreordering R) extends IsOrdering P where
-  mem_or_mem {x y : R} (h : x * y ∈ AddSubgroup.support P) :
-    x ∈ AddSubgroup.support P ∨ y ∈ AddSubgroup.support P
+class IsPrimeOrdering (P : RingPreordering R) extends HasMemOrNegMem P where
+  mem_or_mem_of_mul {x y : R} (h : x * y ∈ supportAddSubgroup P) :
+    x ∈ supportAddSubgroup P ∨ y ∈ supportAddSubgroup P
 
 end RingPreordering

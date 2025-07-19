@@ -62,17 +62,17 @@ initialize_simps_projections GroupCone (carrier → coe, as_prefix coe)
 initialize_simps_projections AddGroupCone (carrier → coe, as_prefix coe)
 
 /-- Typeclass for maximal additive cones. -/
-class IsMaxCone {S G : Type*} [AddCommGroup G] [SetLike S G] (C : S) : Prop where
+class HasMemOrNegMem {S G : Type*} [AddCommGroup G] [SetLike S G] (C : S) : Prop where
   mem_or_neg_mem' (a : G) : a ∈ C ∨ -a ∈ C
 
 /-- Typeclass for maximal multiplicative cones. -/
-@[to_additive IsMaxCone]
-class IsMaxMulCone {S G : Type*} [CommGroup G] [SetLike S G] (C : S) : Prop where
+@[to_additive]
+class HasMemOrInvMem {S G : Type*} [CommGroup G] [SetLike S G] (C : S) : Prop where
   mem_or_inv_mem' (a : G) : a ∈ C ∨ a⁻¹ ∈ C
 
 @[to_additive]
-lemma mem_or_inv_mem {S G : Type*} [CommGroup G] [SetLike S G] (C : S) [IsMaxMulCone C]
-    (a : G) : a ∈ C ∨ a⁻¹ ∈ C := IsMaxMulCone.mem_or_inv_mem' a
+lemma mem_or_inv_mem {S G : Type*} [CommGroup G] [SetLike S G] (C : S) [HasMemOrInvMem C]
+    (a : G) : a ∈ C ∨ a⁻¹ ∈ C := HasMemOrInvMem.mem_or_inv_mem' a
 
 namespace GroupCone
 variable {H : Type*} [CommGroup H] [PartialOrder H] [IsOrderedMonoid H] {a : H}
@@ -93,7 +93,7 @@ lemma coe_oneLE : oneLE H = {x : H | 1 ≤ x} := rfl
 
 @[to_additive nonneg.isMaxCone]
 instance oneLE.isMaxMulCone {H : Type*} [CommGroup H] [LinearOrder H] [IsOrderedMonoid H] :
-    IsMaxMulCone (oneLE H) where
+    HasMemOrInvMem (oneLE H) where
   mem_or_inv_mem' := by simpa using le_total 1
 
 end GroupCone
@@ -112,7 +112,7 @@ abbrev PartialOrder.mkOfGroupCone [GroupConeClass S G] : PartialOrder G where
 /-- Construct a linear order by designating a maximal cone in an abelian group. -/
 @[to_additive "Construct a linear order by designating a maximal cone in an abelian group."]
 abbrev LinearOrder.mkOfGroupCone
-    [GroupConeClass S G] [IsMaxMulCone C] [DecidablePred (· ∈ C)] : LinearOrder G where
+    [GroupConeClass S G] [HasMemOrInvMem C] [DecidablePred (· ∈ C)] : LinearOrder G where
   __ := PartialOrder.mkOfGroupCone C
   le_total a b := by simpa using mem_or_inv_mem C (b / a)
   toDecidableLE _ := _
