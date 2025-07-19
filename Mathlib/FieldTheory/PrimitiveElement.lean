@@ -8,6 +8,7 @@ import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.RingTheory.IntegralDomain
 import Mathlib.RingTheory.Polynomial.UniqueFactorization
+import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
 
 /-!
 # Primitive Element Theorem
@@ -405,3 +406,20 @@ theorem primitive_element_iff_algHom_eq_of_eval (α : E)
 end Field
 
 end iff
+
+section algEquiv
+
+variable {F E : Type*} [Field F] [Field E] [Algebra F E]
+
+noncomputable def AlgEquiv.adjoinRootMinpolyPrimitiveElement {α : E}
+    (hα : IsIntegral F α) (hα₂ : F⟮α⟯ = ⊤) : AdjoinRoot (minpoly F α) ≃ₐ[F] E :=
+  (AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly F α).symm.trans <|
+  (Subalgebra.equivOfEq _ _ <| Algebra.adjoin_eq_top_of_primitive_element hα hα₂).trans
+  Subalgebra.topEquiv
+
+@[simp]
+theorem AlgEquiv.adjoinRootMinpolyPrimitiveElement_apply {α : E}
+    (hα : IsIntegral F α) (hα₂ : F⟮α⟯ = ⊤) (x) :
+    adjoinRootMinpolyPrimitiveElement hα hα₂ x = AdjoinRoot.Minpoly.toAdjoin F α x := rfl
+
+end algEquiv
