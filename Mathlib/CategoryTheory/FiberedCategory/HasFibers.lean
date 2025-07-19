@@ -16,8 +16,8 @@ In this file we introduce a typeclass `HasFibers` for a functor `p : 𝒳 ⥤ �
 - The induced functor `Fib S ⥤ Fiber p S` is an equivalence.
 
 We also provide a canonical `HasFibers` instance, which uses the standard fibers `Fiber p S`
-(see Fiber.lean). This makes it so that any result proven about `HasFibers` can be used for the
-standard fibers as well.
+(see `Mathlib/CategoryTheory/FiberedCategory/Fiber.lean`). This makes it so that any result proven
+about `HasFibers` can be used for the standard fibers as well.
 
 The reason for introducing this typeclass is that in practice, when working with (pre)fibered
 categories one often already has a collection of categories `Fib S` for every `S` that are
@@ -36,15 +36,15 @@ The following API is developed so that the fibers from a `HasFibers` instance ca
 analogously to the standard fibers.
 
 - `Fib.homMk φ` is a lift of a morphism `φ : (ι S).obj a ⟶ (ι S).obj b` in `𝒳`, which lies over
-`𝟙 S`, to a morphism in the fiber over `S`.
+  `𝟙 S`, to a morphism in the fiber over `S`.
 - `Fib.mk` gives an object in the fiber over `S` which is isomorphic to a given `a : 𝒳` that
-satisfies `p(a) = S`. The isomorphism is given by `Fib.mkIsoSelf`.
+  satisfies `p(a) = S`. The isomorphism is given by `Fib.mkIsoSelf`.
 - `HasFibers.mkPullback` is a version of `IsPreFibered.mkPullback` which ensures that the object
-lies in a given fiber. The corresponding cartesian morphism is given by `HasFibers.pullbackMap`.
+  lies in a given fiber. The corresponding cartesian morphism is given by `HasFibers.pullbackMap`.
 - `HasFibers.inducedMap` is a version of `IsCartesian.inducedMap` which gives the corresponding
-morphism in the fiber category.
+  morphism in the fiber category.
 - `fiber_factorization` is the statement that any morphism in `𝒳` can be factored as a morphism in
-some fiber followed by a pullback.
+  some fiber followed by a pullback.
 
 -/
 
@@ -55,7 +55,7 @@ open CategoryTheory Functor Category IsCartesian IsHomLift Fiber
 variable {𝒮 : Type u₁} {𝒳 : Type u₂} [Category.{v₁} 𝒮] [Category.{v₂} 𝒳]
 
 /-- HasFibers is an extrinsic notion of fibers on a functor `p : 𝒳 ⥤ 𝒮`. It is given by a
-collection of categories `Fib S` for every `S : 𝒮` (the fiber categories), each equiped with a
+collection of categories `Fib S` for every `S : 𝒮` (the fiber categories), each equipped with a
 functors `ι : Fib S ⥤ 𝒳` which map constantly to `S` on the base such that the induced functor
 `Fib S ⥤ Fiber p S` is an equivalence. -/
 @[nolint checkUnivs]
@@ -69,7 +69,7 @@ class HasFibers (p : 𝒳 ⥤ 𝒮) where
   /-- The composition with the functor `p` is *equal* to the constant functor mapping to `S`. -/
   comp_const (S : 𝒮) : ι S ⋙ p = (const (Fib S)).obj S
   /-- The induced functor from `Fib S` to the fiber of `𝒳 ⥤ 𝒮` over `S` is an equivalence. -/
-  equiv (S : 𝒮) : Functor.IsEquivalence (inducedFunctor (comp_const S))
+  equiv (S : 𝒮) : Functor.IsEquivalence (inducedFunctor (comp_const S)) := by infer_instance
 
 namespace HasFibers
 

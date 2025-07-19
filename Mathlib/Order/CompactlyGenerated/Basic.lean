@@ -134,7 +134,7 @@ theorem isCompactElement_iff_le_of_directed_sSup_le (k : α) :
       have Sne : S.Nonempty := by
         suffices ⊥ ∈ S from Set.nonempty_of_mem this
         use ∅
-        simp only [Set.empty_subset, Finset.coe_empty, Finset.sup_empty, eq_self_iff_true,
+        simp only [Set.empty_subset, Finset.coe_empty, Finset.sup_empty,
           and_self_iff]
       -- Now apply the defn of compact and finish.
       obtain ⟨j, ⟨hjS, hjk⟩⟩ := hk S Sne dir_US (le_trans hsup sup_S)
@@ -463,8 +463,8 @@ lemma iSupIndep_iff_supIndep_of_injOn {ι : Type*} {f : ι → α}
     refine hf ?_ ?_ hij <;> aesop (add norm simp [t])
   have : (Finset.erase (insert i (t.preimage _ hf)) i).image f = t := by
     ext a
-    simp only [Finset.mem_preimage, Finset.mem_erase, ne_eq, Finset.mem_insert, true_or, not_true,
-      Finset.erase_insert_eq_erase, not_and, Finset.mem_image, t]
+    simp only [Finset.mem_preimage, Finset.mem_erase, ne_eq,
+      Finset.erase_insert_eq_erase, Finset.mem_image, t]
     refine ⟨by aesop, fun ⟨ha, has⟩ ↦ ?_⟩
     obtain ⟨j, hj, rfl⟩ := hs has
     exact ⟨j, ⟨hj, ha, has⟩, rfl⟩
@@ -518,7 +518,7 @@ theorem Iic_coatomic_of_compact_element {k : α} (h : IsCompactElement k) :
   constructor
   rintro ⟨b, hbk⟩
   obtain rfl | H := eq_or_ne b k
-  · left; ext; simp only [Set.Iic.coe_top, Subtype.coe_mk]
+  · left; ext; simp only [Set.Iic.coe_top]
   right
   have ⟨a, ba, h⟩ := zorn_le_nonempty₀ (Set.Iio k) ?_ b (lt_of_le_of_ne hbk H)
   · refine ⟨⟨a, le_of_lt h.prop⟩, ⟨ne_of_lt h.prop, fun c hck => by_contradiction fun c₀ => ?_⟩, ba⟩
@@ -552,11 +552,10 @@ instance (priority := 100) isAtomic_of_complementedLattice [ComplementedLattice 
       right
       have hc' := CompleteLattice.Iic_coatomic_of_compact_element hc
       rw [← isAtomic_iff_isCoatomic] at hc'
-      haveI := hc'
       obtain con | ⟨a, ha, hac⟩ := eq_bot_or_exists_atom_le (⟨c, le_refl c⟩ : Set.Iic c)
       · exfalso
         apply hcbot
-        simp only [Subtype.ext_iff, Set.Iic.coe_bot, Subtype.coe_mk] at con
+        simp only [Subtype.ext_iff, Set.Iic.coe_bot] at con
         exact con
       rw [← Subtype.coe_le_coe, Subtype.coe_mk] at hac
       exact ⟨a, ha.of_isAtom_coe_Iic, hac.trans hcb⟩⟩

@@ -402,6 +402,9 @@ theorem isEquiv_valuation_valuationSubring : v.IsEquiv v.valuationSubring.valuat
   rw [ValuationSubring.valuation_le_one_iff]
   rfl
 
+lemma valuationSubring.integers : v.Integers v.valuationSubring :=
+  Valuation.integer.integers _
+
 end Valuation
 
 namespace ValuationSubring
@@ -432,8 +435,6 @@ def unitGroupMulEquiv : A.unitGroup ≃* Aˣ where
       -- Porting note: was `Units.inv_mul x`
       inv_val := Subtype.ext (by simp) }
   invFun x := ⟨Units.map A.subtype.toMonoidHom x, A.valuation_unit x⟩
-  left_inv a := by ext; rfl
-  right_inv a := by ext; rfl
   map_mul' a b := by ext; rfl
 
 @[simp]

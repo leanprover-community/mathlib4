@@ -61,7 +61,7 @@ class VAddMemClass (S : Type*) (R : outParam Type*) (M : Type*) [VAdd R M] [SetL
 
 attribute [to_additive] SMulMemClass
 
-attribute [aesop safe 10 apply (rule_sets := [SetLike])] SMulMemClass.smul_mem VAddMemClass.vadd_mem
+attribute [aesop 90% (rule_sets := [SetLike])] SMulMemClass.smul_mem VAddMemClass.vadd_mem
 
 /-- Not registered as an instance because `R` is an `outParam` in `SMulMemClass S R M`. -/
 lemma AddSubmonoidClass.nsmulMemClass {S M : Type*} [AddMonoid M] [SetLike S M]
@@ -243,7 +243,7 @@ theorem val_smul (r : R) (x : p) : (↑(r • x) : M) = r • (x : M) :=
 @[to_additive "Embedding of a submodule `p` to the ambient space `M`."]
 protected def subtype : p →[R] M where
   toFun := Subtype.val
-  map_smul' := by simp [val_smul]
+  map_smul' := by simp
 
 variable {p} in
 @[to_additive (attr := simp)]
@@ -406,10 +406,13 @@ theorem stabilizer_of_subMul {p : SubMulAction R M} (m : p) :
   exact stabilizer_of_subMul.submonoid m
 
 /-- SubMulAction on the complement of an invariant subset -/
+@[to_additive "SubAddAction on the complement of an invariant subset"]
 instance : HasCompl (SubMulAction R M) where
   compl s := ⟨sᶜ, by simp⟩
 
-theorem compl_def (s : SubMulAction R M) : sᶜ.carrier = (s : Set M)ᶜ := rfl
+@[to_additive]
+theorem compl_def (s : SubMulAction R M) :
+  sᶜ.carrier = (s : Set M)ᶜ := rfl
 
 end MulActionGroup
 

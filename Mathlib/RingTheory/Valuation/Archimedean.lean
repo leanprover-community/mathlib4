@@ -3,7 +3,6 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.Order.Archimedean.Submonoid
 import Mathlib.GroupTheory.ArchimedeanDensely
 import Mathlib.RingTheory.Valuation.ValuationRing
 
@@ -37,11 +36,11 @@ lemma wfDvdMonoid_iff_wellFounded_gt_on_v (hv : Integers v O) :
   refine ⟨fun _ ↦ wellFounded_dvdNotUnit.mono ?_, fun h ↦ ⟨h.mono ?_⟩⟩ <;>
   simp [Function.onFun, hv.dvdNotUnit_iff_lt]
 
-open scoped Function Multiplicative in
+open scoped Function WithZero in
 lemma wellFounded_gt_on_v_iff_discrete_mrange [Nontrivial (MonoidHom.mrange v)ˣ]
     (hv : Integers v O) :
     WellFounded ((· > ·) on (v ∘ algebraMap O F)) ↔
-      Nonempty (MonoidHom.mrange v ≃*o ℤₘ₀) := by
+      Nonempty (MonoidHom.mrange v ≃*o ℤᵐ⁰) := by
   rw [← LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete_of_ne_zero
     one_ne_zero, ← Set.wellFoundedOn_range]
   classical
@@ -60,7 +59,8 @@ lemma wellFounded_gt_on_v_iff_discrete_mrange [Nontrivial (MonoidHom.mrange v)ˣ
     simp [← Subtype.coe_le_coe, hv.map_le_one]
   · simp [Function.onFun]
 
-lemma isPrincipalIdealRing_iff_not_denselyOrdered [MulArchimedean Γ₀] (hv : Integers v O) :
+lemma isPrincipalIdealRing_iff_not_denselyOrdered [MulArchimedean (MonoidHom.mrange v)]
+    (hv : Integers v O) :
     IsPrincipalIdealRing O ↔ ¬ DenselyOrdered (Set.range v) := by
   refine ⟨fun _ ↦ not_denselyOrdered_of_isPrincipalIdealRing hv, fun H ↦ ?_⟩
   rcases subsingleton_or_nontrivial (MonoidHom.mrange v)ˣ with hs|_

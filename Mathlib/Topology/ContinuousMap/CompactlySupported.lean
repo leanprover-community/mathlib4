@@ -120,8 +120,6 @@ def ContinuousMap.liftCompactlySupported [CompactSpace α] : C(α, β) ≃ C_c(�
     { toFun := f
       hasCompactSupport' := HasCompactSupport.of_compactSpace f }
   invFun f := f
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 variable {γ : Type*} [TopologicalSpace γ] [Zero γ]
 
@@ -694,7 +692,7 @@ lemma exists_add_nnrealPart_add_eq (f g : C_c(α, ℝ)) : ∃ (h : C_c(α, ℝ�
     rw [← Real.coe_toNNReal', ← Real.coe_toNNReal', ← Real.coe_toNNReal', ← NNReal.coe_add,
       ← NNReal.coe_add]
     have hhx' : ((f + g).nnrealPart + h) x = (f.nnrealPart + g.nnrealPart) x := by congr
-    simp only [coe_add, Pi.add_apply, nnrealPart_apply, Real.coe_toNNReal'] at hhx'
+    simp only [coe_add, Pi.add_apply, nnrealPart_apply] at hhx'
     exact congrArg toReal hhx'
   rcases le_total 0 (f x) with hfx | hfx
   · rcases le_total 0 (g x) with hgx | hgx
@@ -761,7 +759,7 @@ lemma toRealLinearMap_apply_apply (f : C_c(α, ℝ≥0)) (x : α) :
 lemma nnrealPart_toReal_eq (f : C_c(α, ℝ≥0)) : nnrealPart (toReal f) = f := by ext x; simp
 
 @[simp]
-lemma nnrealPart_neg_toReal_eq (f : C_c(α, ℝ≥0)) : nnrealPart (- toReal f) = 0 := by ext x; simp
+lemma nnrealPart_neg_toReal_eq (f : C_c(α, ℝ≥0)) : nnrealPart (-toReal f) = 0 := by ext x; simp
 
 section toNNRealLinear
 
@@ -818,7 +816,7 @@ lemma toRealLinear_nonneg (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) (g : C
 
 @[simp]
 lemma eq_toRealLinear_toReal (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) (f : C_c(α, ℝ≥0)) :
-    toRealLinear Λ (toReal f) = Λ f:= by
+    toRealLinear Λ (toReal f) = Λ f := by
   simp [toRealLinear_apply]
 
 @[simp]

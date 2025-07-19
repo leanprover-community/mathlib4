@@ -96,6 +96,7 @@ variable (I I₁ I₂ : X.IdealSheafData) (J J₁ J₂ : Y.IdealSheafData) (f : 
 /-- Pushforward and pullback of ideal sheaves forms a galois connection. -/
 lemma map_gc : GaloisConnection (comap · f) (map · f) := fun _ _ ↦ le_map_iff_comap_le.symm
 
+set_option linter.style.commandStart false
 lemma map_mono          : Monotone (map · f)                          := (map_gc f).monotone_u
 lemma comap_mono        : Monotone (comap · f)                        := (map_gc f).monotone_l
 lemma le_map_comap      : J ≤ (J.comap f).map f                       := (map_gc f).le_u_l J
@@ -104,6 +105,7 @@ lemma comap_map_le      : (I.map f).comap f ≤ I                       := (map_
 @[simp] lemma comap_bot : comap ⊥ f = ⊥                               := (map_gc f).l_bot
 @[simp] lemma map_inf   : map (I₁ ⊓ I₂) f = map I₁ f ⊓ map I₂ f       := (map_gc f).u_inf
 @[simp] lemma comap_sup : comap (J₁ ⊔ J₂) f = comap J₁ f ⊔ comap J₂ f := (map_gc f).l_sup
+set_option linter.style.commandStart true
 
 end gc
 

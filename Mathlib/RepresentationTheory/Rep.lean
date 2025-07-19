@@ -197,6 +197,12 @@ theorem mono_iff_injective {A B : Rep k G} (f : A ⟶ B) : Mono f ↔ Function.I
   fun h => (forget₂ _ _).mono_of_mono_map ((ModuleCat.mono_iff_injective <|
     (forget₂ _ _).map f).2 h)⟩
 
+instance {A B : Rep k G} (f : A ⟶ B) [Mono f] : Mono f.hom :=
+  inferInstanceAs <| Mono ((forget₂ _ _).map f)
+
+instance {A B : Rep k G} (f : A ⟶ B) [Epi f] : Epi f.hom :=
+  inferInstanceAs <| Epi ((forget₂ _ _).map f)
+
 open MonoidalCategory in
 @[simp]
 theorem tensor_ρ {A B : Rep k G} : (A ⊗ B).ρ = A.ρ.tprod B.ρ := rfl
@@ -485,9 +491,8 @@ def leftRegularTensorTrivialIsoFree :
     finsuppProdLEquiv k).toModuleIso fun _ =>
       ModuleCat.hom_ext <| TensorProduct.ext <| lhom_ext fun _ _ => lhom_ext fun _ _ => by
         ext
-        simp [Action_ρ_eq_ρ, tensorObj_def, ModuleCat.endRingEquiv, whiskerRight_def,
-          ModuleCat.MonoidalCategory.whiskerRight, ModuleCat.MonoidalCategory.whiskerRight_def,
-          tensorObj_def, ModuleCat.MonoidalCategory.tensorObj]
+        simp [Action_ρ_eq_ρ, tensorObj_def, ModuleCat.endRingEquiv, tensorObj_def,
+          ModuleCat.MonoidalCategory.tensorObj]
 
 variable {α}
 
@@ -680,7 +685,6 @@ def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) 
       comm g := ModuleCat.hom_ext <| TensorProduct.ext' fun x y => by
         simpa using LinearMap.ext_iff.1 (hom_comm_apply f g y) (A.ρ g x) }
   left_inv _ := Action.Hom.ext (ModuleCat.hom_ext <| TensorProduct.ext' fun _ _ => rfl)
-  right_inv _ := by ext; rfl
 
 variable {A B C}
 
@@ -813,9 +817,9 @@ theorem to_Module_monoidAlgebra_map_aux {k G : Type*} [CommRing k] [Monoid G] (V
   · intro g
     simp only [one_smul, MonoidAlgebra.lift_single, MonoidAlgebra.of_apply]
     exact LinearMap.congr_fun (w g) x
-  · intro g h gw hw; simp only [map_add, add_left_inj, LinearMap.add_apply, hw, gw]
+  · intro g h gw hw; simp only [map_add, LinearMap.add_apply, hw, gw]
   · intro r g w
-    simp only [map_smul, w, RingHom.id_apply, LinearMap.smul_apply, LinearMap.map_smulₛₗ]
+    simp only [map_smul, w, LinearMap.smul_apply]
 
 /-- Auxiliary definition for `toModuleMonoidAlgebra`. -/
 def toModuleMonoidAlgebraMap {V W : Rep k G} (f : V ⟶ W) :
