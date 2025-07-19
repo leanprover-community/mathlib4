@@ -12,7 +12,8 @@ open Nat Int
 and $b$. Determine the smallest real constant $c$ such that $f(n) \leq c n$ for all bonza functions
 $f$ and all positive integers $n$.
 -/
-
+/-- fa
+-/
 def bonza : Set (ℕ → ℕ) :=
   {f : ℕ → ℕ | (∀ a b : ℕ, 0 < a → 0 < b → (f a : ℤ) ∣ (b : ℤ) ^ a - (f b : ℤ) ^ (f a)) ∧
     ∀ n, 0 < n → f n > 0}
@@ -104,7 +105,7 @@ theorem Nat.exists_prime_gt_modEq_neg_one {k : ℕ} (n : ℕ) (hk0 : NeZero k) :
     exact ofNat_dvd_left.mpr this
 
 theorem INF {f : ℕ → ℕ} (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 0 → f x = x) :
-    (∀ p > 2, Nat.Prime p → f p = 1) := by
+    ∀ p > 2, Nat.Prime p → f p = 1 := by
   obtain ⟨N, hN⟩ : ∃ N, ∀ p > N, Nat.Prime p → f p = 1 := by
     have := cases hf
     tauto
@@ -156,6 +157,8 @@ lemma powp {f : ℕ → ℕ} (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 0 → f x =
   use (f n).primeFactorsList.length
   exact Nat.eq_prime_pow_of_unique_prime_dvd (Nat.ne_zero_of_lt (hf.2 n hn)) this
 
+/-- asf
+-/
 def g : ℕ → ℕ := fun x ↦
   if ¬ 2 ∣ x then 1
   else if x = 2 then 4
@@ -245,7 +248,53 @@ lemma exist : g ∈ bonza := by
     · exact Nat.two_pow_pos (padicValNat 2 n + 2)
 
 theorem fforall {f : ℕ → ℕ} (hf : f ∈ bonza) {n : ℕ} (hn : 0 < n) : f n ≤ 4 * n := by
-  sorry
+  by_cases hnf : ∀ x, x > 0 → f x = x
+  · rw [hnf n hn]
+    omega
+  · rcases Nat.even_or_odd n with ch | ch
+    · have : f n ∣ 3 ^ n - 1 := by
+        have := hf.1 n 3 hn (by norm_num)
+        have eq : f 3 = 1 := INF hf hnf 3 (by norm_num) (Nat.prime_three)
+        simp [eq] at this
+        have eq : (3 : ℤ) ^ n - 1 = (3 ^ n - 1 : ℕ) := by
+          have : (3 : ℤ) ^ n = (3 ^ n : ℕ) := by simp
+          rw [this]
+          refine Eq.symm (natCast_pred_of_pos (pos_of_neZero (3 ^ n)))
+        rw [eq] at this
+        exact ofNat_dvd.mp this
+      obtain ⟨a, ha⟩ := powp hf hnf n hn
+      rw [ha] at this
+      have le : a ≤ padicValNat 2 (3 ^ n - 1) := by
+        refine (padicValNat_dvd_iff_le ?_).mp this
+        have : 3 ^ n > 1 := one_lt_pow (by omega) (by norm_num)
+        omega
+      have := padicValNat.pow_two_sub_pow (x := 3) (y := 1) (by norm_num) (by norm_num)
+        (by norm_num) (n := n) (by omega) ch
+      have eq : padicValNat 2 4 = 2 := by
+        have : 4 = 2 ^ 2 := by norm_num
+        rw [this, padicValNat.prime_pow]
+      simp [eq] at this
+      have : padicValNat 2 (3 ^ n - 1) = 2 + padicValNat 2 n := by omega
+      calc
+        _ ≤ 2 ^ padicValNat 2 (3 ^ n - 1) := by
+          rw [ha]
+          refine Nat.pow_le_pow_right (by norm_num) le
+        _ = 2 ^ (2 + padicValNat 2 n) := congrArg (HPow.hPow 2) this
+        _ = 4 * 2 ^ padicValNat 2 n := by rw [Nat.pow_add]
+        _ ≤ _ := Nat.mul_le_mul_left 4 (Nat.le_of_dvd hn pow_padicValNat_dvd)
+    · have dvd : f n ∣ n ^ n := hdvd hf hn
+      have : Odd (n ^ n) := Odd.pow ch
+      have Of : Odd (f n) := Odd.of_dvd_nat this dvd
+      obtain ⟨t, ht⟩ : ∃ t, f n = 2 ^ t := powp hf hnf n hn
+      rw [ht] at Of
+      have : t = 0 := by
+        by_contra! nh
+        have : 2 ∣ 2 ^ t := dvd_pow_self 2 nh
+        have : ¬ 2 ∣ 2 ^ t := Odd.not_two_dvd_nat Of
+        contradiction
+      simp [this] at ht
+      rw [ht]
+      omega
 
 theorem my_favorite_theorem : IsLeast {c : ℝ | ∀ f : ℕ → ℕ, f ∈ bonza →
   ∀ n, 0 < n → f n ≤ c * n} 4 := by
@@ -256,7 +305,7 @@ theorem my_favorite_theorem : IsLeast {c : ℝ | ∀ f : ℕ → ℕ, f ∈ bonz
     exact fforall hf hn
   · intro c h
     have := h g exist 4 (by norm_num)
-    have eq : padicValNat 2 4 =2 := by
+    have eq : padicValNat 2 4 = 2 := by
       have : 4 = 2 ^ 2 := by norm_num
       rw [this, padicValNat.prime_pow]
     simp [g, eq] at this
