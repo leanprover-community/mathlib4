@@ -118,7 +118,7 @@ instance coeMultisetPNatNat : Coe (Multiset ℕ+) (Multiset ℕ) :=
 theorem coePNat_nat (v : PrimeMultiset) : ((v : Multiset ℕ+) : Multiset ℕ) = (v : Multiset ℕ) := by
   change (v.map ((↑) : Nat.Primes → ℕ+)).map Subtype.val = v.map Subtype.val
   rw [Multiset.map_map]
-  congr
+  rfl
 
 /-- The product of a `PrimeMultiset`, as a `ℕ+`. -/
 def prod (v : PrimeMultiset) : ℕ+ :=
