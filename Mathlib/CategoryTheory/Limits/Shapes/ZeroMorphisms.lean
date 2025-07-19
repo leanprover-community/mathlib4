@@ -503,10 +503,10 @@ variable [HasZeroObject C]
 
 open ZeroObject
 
-/-- The zero morphism has a `MonoFactorisation` through the zero object.
+/-- The zero morphism has a `MonoFactorization` through the zero object.
 -/
 @[simps]
-def monoFactorisationZero (X Y : C) : MonoFactorisation (0 : X ⟶ Y) where
+def MonoFactorizationZero (X Y : C) : MonoFactorization (0 : X ⟶ Y) where
   I := 0
   m := 0
   e := 0
@@ -514,7 +514,7 @@ def monoFactorisationZero (X Y : C) : MonoFactorisation (0 : X ⟶ Y) where
 /-- The factorisation through the zero object is an image factorisation.
 -/
 def imageFactorisationZero (X Y : C) : ImageFactorisation (0 : X ⟶ Y) where
-  F := monoFactorisationZero X Y
+  F := MonoFactorizationZero X Y
   isImage := { lift := fun _ => 0 }
 
 instance hasImage_zero {X Y : C} : HasImage (0 : X ⟶ Y) :=
@@ -530,7 +530,7 @@ def imageZero' {X Y : C} {f : X ⟶ Y} (h : f = 0) [HasImage f] : image f ≅ 0 
 
 @[simp]
 theorem image.ι_zero {X Y : C} [HasImage (0 : X ⟶ Y)] : image.ι (0 : X ⟶ Y) = 0 := by
-  rw [← image.lift_fac (monoFactorisationZero X Y)]
+  rw [← image.lift_fac (MonoFactorizationZero X Y)]
   simp
 
 /-- If we know `f = 0`,

@@ -53,7 +53,7 @@ attribute [local simp] image.fac
 variable {f}
 
 /-- The universal property for the image factorisation -/
-noncomputable def image.lift (F' : MonoFactorisation f) : image f ⟶ F'.I :=
+noncomputable def image.lift (F' : MonoFactorization f) : image f ⟶ F'.I :=
   ofHom
   { toFun := (fun x => F'.e (Classical.indefiniteDescription _ x.2).1 : image f → F'.I)
     map_add' := fun x y => by
@@ -71,7 +71,7 @@ noncomputable def image.lift (F' : MonoFactorisation f) : image f ⟶ F'.I :=
       simp_rw [F'.fac, (Classical.indefiniteDescription (fun z => f z = _) _).2]
       rfl }
 
-theorem image.lift_fac (F' : MonoFactorisation f) : image.lift F' ≫ F'.m = image.ι f := by
+theorem image.lift_fac (F' : MonoFactorization f) : image.lift F' ≫ F'.m = image.ι f := by
   ext x
   change (F'.e ≫ F'.m) _ = _
   rw [F'.fac, (Classical.indefiniteDescription _ x.2).2]
@@ -80,14 +80,14 @@ theorem image.lift_fac (F' : MonoFactorisation f) : image.lift F' ≫ F'.m = ima
 end
 
 /-- The factorisation of any morphism in `ModuleCat R` through a mono. -/
-def monoFactorisation : MonoFactorisation f where
+def MonoFactorization : MonoFactorization f where
   I := image f
   m := image.ι f
   e := factorThruImage f
 
 /-- The factorisation of any morphism in `ModuleCat R` through a mono has the universal property of
 the image. -/
-noncomputable def isImage : IsImage (monoFactorisation f) where
+noncomputable def isImage : IsImage (MonoFactorization f) where
   lift := image.lift
   lift_fac := image.lift_fac
 

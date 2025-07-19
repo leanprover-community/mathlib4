@@ -36,7 +36,7 @@ variable [∀ {X Y Z : A} (f : X ⟶ Y) (g : X ⟶ Z), PreservesColimit (span f 
 -/
 @[simps!]
 def iso {X Y : A} (f : X ⟶ Y) : image (L.map f) ≅ L.obj (image f) :=
-  let aux1 : StrongEpiMonoFactorisation (L.map f) :=
+  let aux1 : StrongEpiMonoFactorization (L.map f) :=
     { I := L.obj (Limits.image f)
       m := L.map <| Limits.image.ι _
       m_mono := preserves_mono_of_preservesLimit _ _
