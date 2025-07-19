@@ -369,14 +369,16 @@ lemma card_fun {α β : Type*} : card (α → β) = (card β) ^ card α := by
       simp
     · simp [top_epow ((card_ne_zero_iff_nonempty α).2 α_emp)]
   · rw [card_eq_top_of_infinite (α := α)]
-    rcases lt_trichotomy (ENat.card β) 1 with b_0 | b_1 | b_2
-    · rw [lt_one_iff_eq_zero] at b_0
-      rw [b_0, zero_epow_top]
-      rw [card_eq_zero_iff_empty] at b_0 ⊢
+    rcases lt_trichotomy (card β) 1 with b_0 | b_1 | b_2
+    · rw [lt_one_iff_eq_zero, card_eq_zero_iff_empty] at b_0
+      rw [(card_eq_zero_iff_empty β).2 b_0, zero_epow_top, card_eq_zero_iff_empty]
       simp [b_0]
-    · rw [b_1, one_epow, card_eq_one_iff_unique]
-      rw [card_eq_one_iff_unique] at b_1
-      exact Pi.nonemptyUnique
+    · rw [b_1, one_epow]
+      apply le_antisymm
+      · letI := (card_le_one_iff_subsingleton β).1 b_1.le
+        exact (card_le_one_iff_subsingleton (α → β)).2 Pi.instSubsingleton
+      · letI := (card_ne_zero_iff_nonempty β).1 (b_1 ▸ zero_ne_one).symm
+        exact one_le_iff_ne_zero.2 ((card_ne_zero_iff_nonempty (α → β)).2 Pi.instNonempty)
     · rw [epow_top b_2, card_eq_top]
       rw [one_lt_card_iff_nontrivial β] at b_2
       exact Pi.infinite_of_left
