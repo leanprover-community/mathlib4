@@ -3,9 +3,8 @@ Copyright (c) 2020 Fernando Chu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fernando Chu
 -/
-import Mathlib.CategoryTheory.Category.Factorisation
-import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.MorphismProperty.MonoFactorization
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono
 
 /-!
 # Extremal epimorphisms
@@ -37,7 +36,7 @@ class ExtremalEpi (f : P ⟶ Q) : Prop where
   -- The epimorphism condition on `f`
   epi : Epi f := by infer_instance
   -- The left lifting property with respect to all monomorphism -/
-  isIso_of_monoFactor : ∀ (d : MonoFactorisation f), IsIso d.m
+  isIso_of_monoFactor : ∀ (d : MonoFactorization f), IsIso d.m
 
 instance (priority := 100) epi_of_extremalEpi (f : P ⟶ Q) [ExtremalEpi f] : Epi f :=
   ExtremalEpi.epi
@@ -58,7 +57,7 @@ theorem ExtremalEpi.of_arrow_iso {A B A' B' : C} {f : A ⟶ B} {g : A' ⟶ B'}
     (e : Arrow.mk f ≅ Arrow.mk g) [h : ExtremalEpi f] : ExtremalEpi g :=
   { epi := by rw [Arrow.iso_w' e]; infer_instance
     isIso_of_monoFactor d := by
-        let fac : MonoFactorisation f := ⟨d.I, d.m ≫ e.inv.right, e.hom.left ≫ d.e, by aesop_cat⟩
+        let fac : MonoFactorization f := ⟨d.I, d.m ≫ e.inv.right, e.hom.left ≫ d.e, by aesop_cat⟩
         have := h.isIso_of_monoFactor fac
         exact IsIso.of_isIso_comp_right d.m e.inv.right }
 

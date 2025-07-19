@@ -985,16 +985,16 @@ theorem cokernel.π_of_epi [HasCokernel f] [Epi f] : cokernel.π f = 0 :=
 
 end HasZeroObject
 
-section MonoFactorisation
+section MonoFactorization
 
 variable {f}
 
 @[simp]
-theorem MonoFactorisation.kernel_ι_comp [HasKernel f] (F : MonoFactorisation f) :
+theorem MonoFactorization.kernel_ι_comp [HasKernel f] (F : MonoFactorization f) :
     kernel.ι f ≫ F.e = 0 := by
   rw [← cancel_mono F.m, zero_comp, Category.assoc, F.fac, kernel.condition]
 
-end MonoFactorisation
+end MonoFactorization
 
 section HasImage
 

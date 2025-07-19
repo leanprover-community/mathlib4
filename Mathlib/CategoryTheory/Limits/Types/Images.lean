@@ -39,10 +39,10 @@ instance : Mono (Image.ι f) :=
 variable {f}
 
 /-- the universal property for the image factorisation -/
-noncomputable def Image.lift (F' : MonoFactorisation f) : Image f ⟶ F'.I :=
+noncomputable def Image.lift (F' : MonoFactorization f) : Image f ⟶ F'.I :=
   (fun x => F'.e (Classical.indefiniteDescription _ x.2).1 : Image f → F'.I)
 
-theorem Image.lift_fac (F' : MonoFactorisation f) : Image.lift F' ≫ F'.m = Image.ι f := by
+theorem Image.lift_fac (F' : MonoFactorization f) : Image.lift F' ≫ F'.m = Image.ι f := by
   funext x
   change (F'.e ≫ F'.m) _ = _
   rw [F'.fac, (Classical.indefiniteDescription _ x.2).2]
@@ -51,13 +51,13 @@ theorem Image.lift_fac (F' : MonoFactorisation f) : Image.lift F' ≫ F'.m = Ima
 end
 
 /-- the factorisation of any morphism in Type through a mono. -/
-def monoFactorisation : MonoFactorisation f where
+def MonoFactorization : MonoFactorization f where
   I := Image f
   m := Image.ι f
   e := Set.rangeFactorization f
 
 /-- the factorisation through a mono has the universal property of the image. -/
-noncomputable def isImage : IsImage (monoFactorisation f) where
+noncomputable def isImage : IsImage (MonoFactorization f) where
   lift := Image.lift
   lift_fac := Image.lift_fac
 
@@ -69,7 +69,7 @@ instance : HasImages (Type u) where
 
 instance : HasImageMaps (Type u) where
   has_image_map {f g} st :=
-    HasImageMap.transport st (monoFactorisation f.hom) (isImage g.hom)
+    HasImageMap.transport st (MonoFactorization f.hom) (isImage g.hom)
       (fun x => ⟨st.right x.1, ⟨st.left (Classical.choose x.2), by
         have p := st.w
         replace p := congr_fun p (Classical.choose x.2)

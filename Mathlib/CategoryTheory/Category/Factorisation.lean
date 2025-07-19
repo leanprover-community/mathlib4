@@ -16,7 +16,7 @@ We show that `Factorisation f` always has an initial and a terminal object.
 
 TODO: Show that `Factorisation f` is isomorphic to a comma category in two ways.
 
-TODO: Make `MonoFactorisation f` a special case of a `Factorisation f`.
+TODO: Make `MonoFactorization f` a special case of a `Factorisation f`.
 -/
 
 namespace CategoryTheory

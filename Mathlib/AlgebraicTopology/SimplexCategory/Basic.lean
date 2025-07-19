@@ -849,12 +849,12 @@ theorem len_lt_of_mono {Δ' Δ : SimplexCategory} (i : Δ' ⟶ Δ) [hi : Mono i]
 noncomputable instance : SplitEpiCategory SimplexCategory :=
   skeletalEquivalence.inverse.splitEpiCategoryImpOfIsEquivalence
 
-instance : HasStrongEpiMonoFactorisations SimplexCategory :=
-  Functor.hasStrongEpiMonoFactorisations_imp_of_isEquivalence
+instance : HasStrongEpiMonoFactorizations SimplexCategory :=
+  Functor.hasStrongEpiMonoFactorizations_imp_of_isEquivalence
     SimplexCategory.skeletalEquivalence.inverse
 
 instance : HasStrongEpiImages SimplexCategory :=
-  Limits.hasStrongEpiImages_of_hasStrongEpiMonoFactorisations
+  Limits.hasStrongEpiImages_of_hasStrongEpiMonoFactorizations
 
 instance (Δ Δ' : SimplexCategory) (θ : Δ ⟶ Δ') : Epi (factorThruImage θ) :=
   StrongEpi.epi
