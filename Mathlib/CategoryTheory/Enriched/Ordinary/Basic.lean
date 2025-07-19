@@ -56,10 +56,20 @@ def eHomEquiv {X Y : C} : (X ⟶ Y) ≃ (𝟙_ V ⟶ (X ⟶[V] Y)) :=
 lemma eHomEquiv_id (X : C) : eHomEquiv V (𝟙 X) = eId V X :=
   EnrichedOrdinaryCategory.homEquiv_id _
 
+@[simp]
+lemma eHomEquiv_symm_id (X : C) : (eHomEquiv V).symm (eId V X) = 𝟙 X := by
+  rw [← eHomEquiv_id, (eHomEquiv V).symm_apply_apply]
+
 @[reassoc]
 lemma eHomEquiv_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     eHomEquiv V (f ≫ g) = (λ_ _).inv ≫ (eHomEquiv V f ⊗ₘ eHomEquiv V g) ≫ eComp V X Y Z :=
   EnrichedOrdinaryCategory.homEquiv_comp _ _
+
+lemma eHomEquiv_symm_comp {X Y Z : C} (f : 𝟙_ V ⟶ (X ⟶[V] Y)) (g : 𝟙_ V ⟶ (Y ⟶[V] Z)) :
+    (eHomEquiv V).symm ((λ_ _).inv ≫ (f ⊗ₘ g) ≫ eComp V X Y Z) =
+    (eHomEquiv V).symm f ≫ (eHomEquiv V).symm g := by
+  apply (eHomEquiv V).injective
+  simp [eHomEquiv_comp]
 
 /-- The morphism `(X' ⟶[V] Y) ⟶ (X ⟶[V] Y)` induced by a morphism `X ⟶ X'`. -/
 def eHomWhiskerRight {X X' : C} (f : X ⟶ X') (Y : C) :
