@@ -231,6 +231,8 @@
   "Mathlib.Tactic.TFAE": ["Mathlib.Data.List.TFAE", "Mathlib.Tactic.Have"],
   "Mathlib.Tactic.Subsingleton": ["Mathlib.Logic.Basic", "Std.Logic"],
   "Mathlib.Tactic.Simps.Basic": ["Batteries.Data.String.Basic"],
+  "Mathlib.Tactic.SimplexCategory":
+  ["Mathlib.AlgebraicTopology.SimplexCategory.Defs"],
   "Mathlib.Tactic.Says": ["Batteries.Data.String.Basic"],
   "Mathlib.Tactic.Ring.NamePolyVars": ["Mathlib.Algebra.MvPolynomial.Basic"],
   "Mathlib.Tactic.ReduceModChar":
@@ -496,8 +498,8 @@
   ["Mathlib.Algebra.Order.BigOperators.Ring.Finset"],
   "Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital":
   ["Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital"],
-  "Mathlib.AlgebraicTopology.SimplexCategory.Defs":
-  ["Mathlib.Util.Superscript"],
+  "Mathlib.AlgebraicTopology.SimplexCategory.Basic":
+  ["Mathlib.Tactic.SimplexCategory"],
   "Mathlib.AlgebraicTopology.DoldKan.Notations":
   ["Mathlib.AlgebraicTopology.AlternatingFaceMapComplex"],
   "Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Basic":
