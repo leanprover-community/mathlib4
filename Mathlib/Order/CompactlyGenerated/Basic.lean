@@ -663,10 +663,10 @@ alias exists_setIndependent_of_sSup_atoms_eq_top := exists_sSupIndep_of_sSup_ato
 
 /-- See [Theorem 6.6][calugareanu]. -/
 theorem complementedLattice_of_sSup_atoms_eq_top (h : sSup { a : α | IsAtom a } = ⊤) :
-    ComplementedLattice α :=
-  ⟨fun b =>
-    let ⟨s, _, hbs_inf, hbs_sup, _⟩ := exists_sSupIndep_isCompl_sSup_atoms b ⊤ le_top (by simpa)
-    ⟨sSup s, hbs_inf, codisjoint_iff.2 hbs_sup⟩⟩
+    ComplementedLattice α where
+  exists_isCompl b :=
+    let ⟨s, _, hcompl, _⟩ := exists_sSupIndep_isCompl_sSup_atoms (by simpa) b
+    ⟨sSup s, hcompl⟩
 
 /-- See [Theorem 6.6][calugareanu]. -/
 theorem complementedLattice_of_isAtomistic [IsAtomistic α] : ComplementedLattice α :=
