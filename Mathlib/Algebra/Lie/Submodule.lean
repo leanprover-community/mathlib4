@@ -102,7 +102,6 @@ theorem mem_toSubmodule {x : M} : x ∈ (N : Submodule R M) ↔ x ∈ N :=
 theorem mem_coe {x : M} : x ∈ (N : Set M) ↔ x ∈ N :=
   Iff.rfl
 
-@[simp]
 protected theorem zero_mem : (0 : M) ∈ N :=
   zero_mem N
 
