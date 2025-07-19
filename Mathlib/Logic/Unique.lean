@@ -170,6 +170,11 @@ instance Pi.uniqueOfIsEmpty [IsEmpty α] (β : α → Sort v) : Unique (∀ a, �
   default := isEmptyElim
   uniq _ := funext isEmptyElim
 
+instance Pi.nonemptyUnique {β : α → Sort v} [h : ∀ a, Nonempty (Unique (β a))] :
+    Nonempty (Unique (∀ a, β a)) := by
+  simp only [unique_iff_subsingleton_and_nonempty] at h ⊢
+  exact ⟨@Pi.instSubsingleton α _ fun a ↦ (h a).1, @Pi.instNonempty α _ fun a ↦ (h a).2⟩
+
 theorem eq_const_of_subsingleton {β : Sort*} [Subsingleton α] (f : α → β) (a : α) :
     f = Function.const α (f a) :=
   funext fun x ↦ Subsingleton.elim x a ▸ rfl
