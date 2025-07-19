@@ -45,21 +45,16 @@ def digitsAux (b : ℕ) (h : 2 ≤ b) (n : ℕ) : List ℕ :=
   go n (n + 2) init
 where
   init : (if n = 0 then 0 else n + 1) < n + 2 := by
-    split_ifs with hn
-    · apply zero_lt_succ
-    · rw [Nat.add_lt_add_iff_right]
-      simp
+    split_ifs <;> simp
   decreasing (n f : ℕ) (hf : (if n + 1 = 0 then 0 else n + 2) < f + 1) :
-    (if (n + 1) / b = 0 then 0 else ((n + 1) / b) + 1) < f := by
-        rw [if_neg n.add_one_ne_zero] at hf
-        split_ifs with hn
-        · exact zero_lt_of_lt (lt_of_succ_lt_succ hf)
-        · rw [Nat.div_eq_zero_iff, or_iff_right (by omega), not_lt] at hn
-          refine Nat.lt_of_le_of_lt (Nat.succ_le_succ ?_) (Nat.succ_lt_succ_iff.1 hf)
-          apply Nat.div_le_of_le_mul
-          apply (Nat.mul_le_mul_right n h).trans'
-          rw [Nat.two_mul, Nat.add_le_add_iff_left]
-          omega
+      (if (n + 1) / b = 0 then 0 else ((n + 1) / b) + 1) < f := by
+    rw [if_neg n.add_one_ne_zero] at hf
+    split_ifs with hn
+    · exact zero_lt_of_lt (lt_of_succ_lt_succ hf)
+    · rw [Nat.div_eq_zero_iff, or_iff_right (by omega), not_lt] at hn
+      refine Nat.lt_of_le_of_lt (succ_le_succ ?_) (succ_lt_succ_iff.1 hf)
+      refine Nat.div_le_of_le_mul (Nat.le_trans ?_ (Nat.mul_le_mul_right n h))
+      omega
   /-- Auxiliary function performing recursion for `Nat.digitsAux`. -/
   go (n fuel : ℕ) (hfuel : (if n = 0 then 0 else n + 1) < fuel) : List ℕ :=
     match n, fuel, hfuel with
@@ -85,7 +80,7 @@ theorem digitsAux.go_fuel_irrel (b : ℕ) (h : 2 ≤ b) (n fuel fuel' : ℕ)
   fun_induction go b h n fuel hfuel generalizing fuel'
   · rw [go_zero]
   · cases fuel'
-    · contradiction
+    · simp at hfuel'
     · rw [go_succ]
       solve_by_elim
 
