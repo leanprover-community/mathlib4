@@ -5,8 +5,7 @@ Authors: Fernando Chu
 -/
 import Mathlib.CategoryTheory.Category.Factorisation
 import Mathlib.CategoryTheory.Iso
-import Mathlib.CategoryTheory.Limits.Shapes.Images
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+import Mathlib.CategoryTheory.MorphismProperty.MonoFactorization
 
 /-!
 # Extremal epimorphisms
@@ -123,21 +122,6 @@ lemma hasLift_of_extremalEpi {X Y A B : C} {f : X ⟶ Y} [ExtremalEpi f] {g : A 
 instance strongEpi_of_extremalEpi [HasPullbacks C] {X Y : C} (f : X ⟶ Y) [ExtremalEpi f] :
     StrongEpi f where
   llp A B g := .mk fun sq ↦ hasLift_of_extremalEpi sq
-
-instance extremalEpi_of_factorThruImage {X Y : C} (f : X ⟶ Y) [HasImage f]
-    [∀ {Z : C} (g h : image f ⟶ Z), HasLimit (parallelPair g h)] :
-    ExtremalEpi (factorThruImage f) where
-  isIso_of_monoFactor d := by
-    let fac : MonoFactorisation f := ⟨d.I, d.m ≫ image.ι f, d.e , by simp⟩
-    constructor
-    have : image.lift fac ≫ d.m = 𝟙 (image f) := by aesop_cat
-    use image.lift fac; constructor
-    · exact cancel_mono d.m (g := d.m ≫ image.lift fac) (h := 𝟙 d.I).1 (by simp [this])
-    · exact this
-
-instance (priority := 100) hasStrongEpiImages_of_hasPullbacks_of_hasEqualizers' [HasImages C]
-    [HasPullbacks C] [HasEqualizers C] : HasStrongEpiImages C where
-  strong_factorThruImage f := by infer_instance
 
 end
 
