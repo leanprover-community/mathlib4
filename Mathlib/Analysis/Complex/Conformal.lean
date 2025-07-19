@@ -10,6 +10,7 @@ import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 import Mathlib.Analysis.Complex.Isometry
 import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Mathlib.Data.Complex.FiniteDimensional
+import Mathlib.Data.Complex.Module
 
 /-!
 # Conformal maps between complex vector spaces
@@ -43,7 +44,6 @@ this file.
 
 ## TODO
 
-* The classical form of Cauchy-Riemann equations
 * On a connected open set `u`, a function which is `ConformalAt` each point is either holomorphic
   throughout or antiholomorphic throughout.
 -/
@@ -159,3 +159,127 @@ theorem conformalAt_iff_differentiableAt_or_differentiableAt_comp_conj {f : ℂ 
   simp [fderiv_comp _ h_diff conjCLE.differentiableAt, this]
 
 end Conformality
+
+/-!
+### The Cauchy-Riemann Equation for Complex-Differentiable Functions
+-/
+
+section CauchyRiemann
+
+open Complex
+
+variable
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+  {f : ℂ → E} {x : ℂ} {s : Set ℂ}
+
+/--
+Helper lemma for `differentiableAt_complex_iff_differentiableAt_real`: A real linear map `ℓ : ℂ
+→ₗ[ℝ] E` respects complex scalar multiplication if it maps `I` to `I • ℓ 1`.
+-/
+lemma real_linearMap_map_smul_complex {ℓ : ℂ →ₗ[ℝ] E} (h : ℓ I = I • ℓ 1) (a b : ℂ) :
+    ℓ (a • b) = a • ℓ b := by
+  rw [(by simp  : a = (a.re : ℂ) + (a.im : ℂ) • I), (by simp : b = (b.re : ℂ) + (b.im : ℂ) • I)]
+  have t₀ : ((a.im : ℂ) • I) • (b.re : ℂ) = (↑(a.im * b.re) : ℂ) • I := by
+    simp only [smul_eq_mul, ofReal_mul]
+    ring
+  have t₁ : ((a.im : ℂ) • I) • (b.im : ℂ) • I = (↑(- a.im * b.im) : ℂ) • (1 : ℂ) := by
+    simp only [smul_eq_mul, neg_mul, ofReal_neg, ofReal_mul, mul_one]
+    ring_nf
+    simp
+  simp only [add_smul, smul_add, ℓ.map_add, t₀, t₁]
+  repeat rw [Complex.coe_smul, ℓ.map_smul]
+  have t₂ {r : ℝ}  : ℓ (r : ℂ) = r • ℓ (1 : ℂ) := by
+    rw [← ℓ.map_smul]
+    congr
+    simp
+  simp only [t₂, h]
+  match_scalars
+  simp only [coe_algebraMap, mul_one, neg_mul, smul_eq_mul]
+  ring_nf
+  simp
+  ring
+
+/--
+Using the helper lemma `differentiableAt_complex_iff_differentiableAt_real`, construct a complex-
+linear map from a real-linear map `ℓ` that maps `I` to `I • ℓ 1`.
+-/
+def LinearMap.complexOfReal (ℓ : ℂ →ₗ[ℝ] E) (h : ℓ I = I • ℓ 1) : ℂ →ₗ[ℂ] E where
+  toFun := ℓ
+  map_add' := ℓ.map_add
+  map_smul' := real_linearMap_map_smul_complex h
+
+@[simp]
+lemma LinearMap.coe_complexOfReal (ℓ : ℂ →ₗ[ℝ] E) (h : ℓ I = I • ℓ 1) :
+    ℓ.complexOfReal h = (ℓ : ℂ → E) := by rfl
+
+/--
+Using the helper lemma `differentiableAt_complex_iff_differentiableAt_real`, construct a continueous
+complex- linear map from a continueous real-linear map `ℓ` that maps `I` to `I • ℓ 1`.
+-/
+def ContinuousLinearMap.complexOfReal (ℓ : ℂ →L[ℝ] E) (h : ℓ I = I • ℓ 1) : ℂ →L[ℂ] E where
+  toFun := ℓ
+  map_add' := ℓ.map_add
+  map_smul' := real_linearMap_map_smul_complex h
+
+@[simp]
+lemma ContinuousLinearMap.coe_complexOfReal (ℓ : ℂ →L[ℝ] E) (h : ℓ I = I • ℓ 1) :
+    ℓ.complexOfReal h = (ℓ : ℂ → E) := by rfl
+
+/--
+The **Cauchy-Riemann Equation**: A real-differentiable function `f` on `ℂ` is complex-differentiable
+within `s` if the derivative `fderivWithin ℝ f s x` maps `I` to I • (fderivWithin ℝ f s x) 1`.
+-/
+theorem differentiableWithinAt_complex_iff_differentiableWithinAt_real
+    (hs : UniqueDiffWithinAt ℝ s x) :
+    (DifferentiableWithinAt ℂ f s x) ↔ (DifferentiableWithinAt ℝ f s x) ∧
+      (fderivWithin ℝ f s x I = I • fderivWithin ℝ f s x 1) := by
+  constructor
+  · intro h
+    refine ⟨h.restrictScalars ℝ, ?_⟩
+    simp only [← h.restrictScalars_fderivWithin ℝ hs, ContinuousLinearMap.coe_restrictScalars']
+    rw [(by simp : I = I • 1), (fderivWithin ℂ f s x).map_smul]
+    simp
+  · intro ⟨h₁, h₂⟩
+    apply (differentiableWithinAt_iff_restrictScalars ℝ h₁ hs).2
+    use (fderivWithin ℝ f s x).complexOfReal h₂
+    rfl
+
+/--
+In cases where the Cauchy-Riemann Equation guarantees complex differentiability, the complex
+derivative equals `ContinuousLinearMap.toComplexOfMapI` of the real derivative.
+-/
+theorem fDerivWithin_complex_eq_toComplexOfMapI_fderivWithin_real
+    (h₁ : DifferentiableWithinAt ℝ f s x)
+    (h₂ : fderivWithin ℝ f s x I = I • fderivWithin ℝ f s x 1) (hs : UniqueDiffWithinAt ℝ s x) :
+    fderivWithin ℂ f s x = (fderivWithin ℝ f s x).complexOfReal h₂ := by
+  have := ((differentiableWithinAt_complex_iff_differentiableWithinAt_real hs).2
+      ⟨h₁, h₂⟩).restrictScalars_fderivWithin ℝ hs
+  have := coe_restrictScalars' (fderivWithin ℂ f s x) (R := ℝ)
+  apply DFunLike.ext'
+  simp_all
+
+/--
+The Cauchy-Riemann Equation: A real-differentiable function `f` on `ℂ` is complex-differentiable if
+the derivative `fderiv ℝ f x` maps `I` to I • (fderiv ℝ f x) 1`.
+-/
+theorem differentiableAt_complex_iff_differentiableAt_real :
+    DifferentiableAt ℂ f x ↔ DifferentiableAt ℝ f x ∧
+      fderiv ℝ f x I = I • fderiv ℝ f x 1 := by
+  refine ⟨fun h ↦ by simp [h.restrictScalars ℝ, h.fderiv_restrictScalars ℝ], ?_⟩
+  intro ⟨h₁, h₂⟩
+  apply (differentiableAt_iff_restrictScalars ℝ h₁).2
+  use (fderiv ℝ f x).complexOfReal h₂
+  rfl
+
+/--
+In cases where the Cauchy-Riemann Equation guarantees complex differentiability, the complex
+derivative equals `ContinuousLinearMap.toComplexOfMapI` of the real derivative.
+-/
+theorem fderiv_complex_eq_toComplexOfMapI_fderiv_real (h₁ : DifferentiableAt ℝ f x)
+    (h₂ : fderiv ℝ f x I = I • fderiv ℝ f x 1) :
+    fderiv ℂ f x = (fderiv ℝ f x).complexOfReal h₂ := by
+  have := (differentiableAt_complex_iff_differentiableAt_real.2 ⟨h₁, h₂⟩).fderiv_restrictScalars ℝ
+  apply DFunLike.ext'
+  simp_all
+
+end CauchyRiemann
