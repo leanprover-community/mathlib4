@@ -5,7 +5,6 @@ Authors: Paul Lezeau, Bhavik Mehta
 -/
 import Mathlib.NumberTheory.Divisors
 import Mathlib.Util.Qq
-import Mathlib.Data.Finset.Sort
 
 /-! # Divisor Simprocs
 
