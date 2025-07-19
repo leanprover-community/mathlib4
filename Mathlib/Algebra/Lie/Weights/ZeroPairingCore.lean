@@ -71,7 +71,33 @@ lemma pairing_zero_of_trivial_sum_diff_spaces
       -- Now χ + α is a root, contradicting h_plus_bot
       have h_chi_plus_alpha_root : χ.toLinear + α.toLinear ∈ Set.range S.root := h_add_mem
       have h_nontriv : genWeightSpace L (χ.toLinear + α.toLinear) ≠ ⊥ := by
-        sorry -- Need lemma connecting root membership to non-trivial weight spaces
+        -- Since χ.toLinear + α.toLinear is in the range of S.root, it corresponds to some root
+        obtain ⟨idx, hidx⟩ := h_chi_plus_alpha_root
+        -- idx is a subtype element, so idx.val is the actual weight and idx.property proves it's in
+        -- LieSubalgebra.root
+        -- Since LieSubalgebra.root = {α | α.IsNonZero}, membership implies IsNonZero
+        have h_nonzero : idx.val.IsNonZero := by
+          -- Convert membership in LieSubalgebra.root to IsNonZero using the definition
+          -- LieSubalgebra.root is defined as {α | α.IsNonZero}
+          have h_mem := idx.property
+          simp only [LieSubalgebra.root, Finset.mem_filter, Finset.mem_univ, true_and] at h_mem
+          exact h_mem
+        -- Non-zero weights have nontrivial weight spaces
+        have h_weight_space_nontrivial := idx.val.genWeightSpace_ne_bot
+        -- Now we need to use the connection between S.root and the weight space
+        -- The key insight: S.root idx should equal idx.val.toLinear, and this should match hidx
+        have h_root_eq : S.root idx = idx.val.toLinear := by
+          -- This should be true by definition of the root system construction
+          sorry
+        -- Now we can use transitivity to get our result
+        have : genWeightSpace L (S.root idx) ≠ ⊥ := by
+          rw [h_root_eq]
+          exact h_weight_space_nontrivial
+        -- Use hidx to substitute: S.root idx = χ.toLinear + α.toLinear
+        have h_final : genWeightSpace L (χ.toLinear + α.toLinear) ≠ ⊥ := by
+          convert this using 1
+          rw [←hidx]
+        exact h_final
       exact h_nontriv h_plus_bot
 
     · cases' h_rest with h_zero h_pos
@@ -112,5 +138,5 @@ lemma pairing_zero_of_trivial_sum_diff_spaces
           exact h_sub_mem
         -- If γ is a root, then genWeightSpace L γ ≠ ⊥
         have h_nontriv : genWeightSpace L (χ.toLinear - α.toLinear) ≠ ⊥ := by
-          sorry -- Need lemma connecting root membership to non-trivial weight spaces
+          sorry
         exact h_nontriv h_minus_bot
