@@ -968,18 +968,24 @@ theorem orthogonalProjection_comp_subtypeL_eq_zero_iff {U V : Submodule 𝕜 E}
     rw [starProjection_apply, this, Submodule.coe_zero, sub_zero],
     Submodule.IsOrtho.orthogonalProjection_comp_subtypeL⟩
 
-theorem orthogonalProjection_eq_linear_proj [K.HasOrthogonalProjection] (x : E) :
+theorem orthogonalProjection_eq_linearProjOfIsCompl [K.HasOrthogonalProjection] (x : E) :
     K.orthogonalProjection x =
       K.linearProjOfIsCompl _ Submodule.isCompl_orthogonal_of_completeSpace x := by
   have : IsCompl K Kᗮ := Submodule.isCompl_orthogonal_of_completeSpace
-  conv_lhs => rw [← Submodule.linear_proj_add_linearProjOfIsCompl_eq_self this x]
+  conv_lhs => rw [← Submodule.linearProjOfIsCompl_add_linearProjOfIsCompl_eq_self this x]
   rw [map_add, orthogonalProjection_mem_subspace_eq_self,
     orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero (Submodule.coe_mem _), add_zero]
 
-theorem orthogonalProjection_coe_linearMap_eq_linearProj [K.HasOrthogonalProjection] :
+@[deprecated (since := "2025-07-11")] alias orthogonalProjection_eq_linear_proj :=
+  orthogonalProjection_eq_linearProjOfIsCompl
+
+theorem orthogonalProjection_coe_eq_linearProjOfIsCompl [K.HasOrthogonalProjection] :
     (K.orthogonalProjection : E →ₗ[𝕜] K) =
       K.linearProjOfIsCompl _ Submodule.isCompl_orthogonal_of_completeSpace :=
-  LinearMap.ext <| orthogonalProjection_eq_linear_proj
+  LinearMap.ext <| orthogonalProjection_eq_linearProjOfIsCompl
+
+@[deprecated (since := "2025-07-11")] alias orthogonalProjection_coe_linearMap_eq_linearProj :=
+  orthogonalProjection_coe_eq_linearProjOfIsCompl
 
 /-- The reflection in `K` of an element of `Kᗮ` is its negation. -/
 theorem reflection_mem_subspace_orthogonalComplement_eq_neg [K.HasOrthogonalProjection] {v : E}
