@@ -49,6 +49,12 @@ variable [AddCommMonoid Q] [AddCommMonoid S] [AddCommMonoid T]
 variable [Module R M] [Module R N] [Module R Q] [Module R S] [Module R T]
 variable [DistribMulAction R' M]
 variable [Module R'' M]
+
+variable {R₂ M₂ N₂ P₂ : Type*} [CommSemiring R₂]
+  [AddCommMonoid M₂] [AddCommMonoid N₂] [AddCommMonoid P₂]
+  [Module R₂ M₂] [Module R₂ N₂] [Module R₂ P₂]
+  {σ₁₂ : R →+* R₂}
+
 variable (M N)
 
 namespace TensorProduct
@@ -486,31 +492,47 @@ section UniversalProperty
 
 variable {M N}
 variable (f : M →ₗ[R] N →ₗ[R] P)
+variable (f' : M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂)
 
 /-- Auxiliary function to constructing a linear map `M ⊗ N → P` given a bilinear map `M → N → P`
 with the property that its composition with the canonical bilinear map `M → N → M ⊗ N` is
 the given bilinear map `M → N → P`. -/
-def liftAux : M ⊗[R] N →+ P :=
-  liftAddHom (LinearMap.toAddMonoidHom'.comp <| f.toAddMonoidHom)
-    fun r m n => by dsimp; rw [LinearMap.map_smul₂, map_smul]
+def liftAux : M ⊗[R] N →+ P₂ :=
+  liftAddHom (LinearMap.toAddMonoidHom'.comp <| f'.toAddMonoidHom)
+    fun r m n => by dsimp; rw [LinearMap.map_smulₛₗ₂, map_smulₛₗ]
 
-theorem liftAux_tmul (m n) : liftAux f (m ⊗ₜ n) = f m n :=
+theorem liftAux_tmul (m n) : liftAux f' (m ⊗ₜ n) = f' m n :=
   rfl
 
 variable {f}
 
 @[simp]
-theorem liftAux.smul (r : R) (x) : liftAux f (r • x) = r • liftAux f x :=
+theorem liftAux.smulₛₗ (r : R) (x) : liftAux f' (r • x) = σ₁₂ r • liftAux f' x :=
   TensorProduct.induction_on x (smul_zero _).symm
-    (fun p q => by simp_rw [← tmul_smul, liftAux_tmul, (f p).map_smul])
-    fun p q ih1 ih2 => by simp_rw [smul_add, (liftAux f).map_add, ih1, ih2, smul_add]
+    (fun p q => by simp_rw [← tmul_smul, liftAux_tmul, (f' p).map_smulₛₗ])
+    fun p q ih1 ih2 => by simp_rw [smul_add, (liftAux f').map_add, ih1, ih2, smul_add]
+
+theorem liftAux.smul (r : R) (x) : liftAux f (r • x) = r • liftAux f x :=
+  liftAux.smulₛₗ _ _ _
+
+/-- semilinear version of `lift` -/
+def liftₛₗ : M ⊗[R] N →ₛₗ[σ₁₂] P₂ :=
+  { liftAux f' with map_smul' := liftAux.smulₛₗ f' }
+
+@[simp]
+theorem liftₛₗ.tmul (x y) : liftₛₗ f' (x ⊗ₜ y) = f' x y :=
+  rfl
+
+@[simp]
+theorem liftₛₗ.tmul' (x y) : (liftₛₗ f').1 (x ⊗ₜ y) = f' x y :=
+  rfl
 
 variable (f) in
 /-- Constructing a linear map `M ⊗ N → P` given a bilinear map `M → N → P` with the property that
 its composition with the canonical bilinear map `M → N → M ⊗ N` is
 the given bilinear map `M → N → P`. -/
 def lift : M ⊗[R] N →ₗ[R] P :=
-  { liftAux f with map_smul' := liftAux.smul }
+  liftₛₗ f
 
 @[simp]
 theorem lift.tmul (x y) : lift f (x ⊗ₜ y) = f x y :=
@@ -520,7 +542,7 @@ theorem lift.tmul (x y) : lift f (x ⊗ₜ y) = f x y :=
 theorem lift.tmul' (x y) : (lift f).1 (x ⊗ₜ y) = f x y :=
   rfl
 
-theorem ext' {g h : M ⊗[R] N →ₗ[R] P} (H : ∀ x y, g (x ⊗ₜ y) = h (x ⊗ₜ y)) : g = h :=
+theorem ext' {g h : M ⊗[R] N →ₛₗ[σ₁₂] P₂} (H : ∀ x y, g (x ⊗ₜ y) = h (x ⊗ₜ y)) : g = h :=
   LinearMap.ext fun z =>
     TensorProduct.induction_on z (by simp_rw [LinearMap.map_zero]) H fun x y ihx ihy => by
       rw [g.map_add, h.map_add, ihx, ihy]
@@ -701,9 +723,18 @@ end CompatibleSMul
 
 open LinearMap
 
+/-- semilinear version of `map` -/
+def mapₛₗ (f : M →ₛₗ[σ₁₂] M₂) (g : N →ₛₗ[σ₁₂] N₂) : M ⊗[R] N →ₛₗ[σ₁₂] M₂ ⊗[R₂] N₂ :=
+  liftₛₗ <| comp (compl₂ (mk _ _ _) g) f
+
+@[simp]
+theorem mapₛₗ_tmul (f : M →ₛₗ[σ₁₂] M₂) (g : N →ₛₗ[σ₁₂] N₂) (m : M) (n : N) :
+    mapₛₗ f g (m ⊗ₜ n) = f m ⊗ₜ g n :=
+  rfl
+
 /-- The tensor product of a pair of linear maps between modules. -/
 def map (f : M →ₗ[R] P) (g : N →ₗ[R] Q) : M ⊗[R] N →ₗ[R] P ⊗[R] Q :=
-  lift <| comp (compl₂ (mk _ _ _) g) f
+  mapₛₗ f g
 
 @[simp]
 theorem map_tmul (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (m : M) (n : N) : map f g (m ⊗ₜ n) = f m ⊗ₜ g n :=
