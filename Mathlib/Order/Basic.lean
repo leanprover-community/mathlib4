@@ -184,14 +184,14 @@ theorem forall_le_iff_ge : (∀ ⦃c⦄, a ≤ c → b ≤ c) ↔ b ≤ a :=
   ⟨le_of_forall_ge, fun h _ hca ↦ le_trans h hca⟩
 
 /-- monotonicity of `≤` with respect to `→` -/
-@[gcongr] theorem le_imp_le_of_le_of_le (hca : c ≤ a) (hbd : b ≤ d) : a ≤ b → c ≤ d :=
-  fun hab ↦ (hca.trans hab).trans hbd
+@[gcongr] theorem le_imp_le_of_le_of_le (h₁ : c ≤ a) (h₂ : b ≤ d) : a ≤ b → c ≤ d :=
+  fun hab ↦ (h₁.trans hab).trans h₂
 
 @[deprecated (since := "2025-07-19")] alias le_implies_le_of_le_of_le := le_imp_le_of_le_of_le
 
 /-- monotonicity of `<` with respect to `→` -/
-@[gcongr] theorem lt_imp_lt_of_le_of_le (hca : c ≤ a) (hbd : b ≤ d) : a < b → c < d :=
-  fun hab ↦ (hca.trans_lt hab).trans_le hbd
+@[gcongr] theorem lt_imp_lt_of_le_of_le (h₁ : c ≤ a) (h₂ : b ≤ d) : a < b → c < d :=
+  fun hab ↦ (h₁.trans_lt hab).trans_le h₂
 
 namespace Mathlib.Tactic.GCongr
 
