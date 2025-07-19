@@ -1,64 +1,69 @@
+/-
+Copyright (c) 2024 Ben Eltschig. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Ben Eltschig
+-/
 import Mathlib.Geometry.Diffeology.Basic
 import Mathlib.Topology.Compactness.DeltaGeneratedSpace
 
 /-!
 # Continuous diffeology
 
-Defines the continuous diffeology on topological spaces, i.e. the diffeology consisting of all
-continuous plots. On the level of categories, this forms a right-adjoint to the D-topology
-functor (which is proven in `Orbifolds.Diffeology.DiffSp`); on the level of individual types,
-this means that it forms a Galois connection with
-`@DTop X : DiffeologicalSpace X → TopologicalSpace X`. This is also used to show a few more
-properties of the D-topology.
+The continuous diffeology on a topological space is the diffeology consisting of all continuous
+plots. On the level of categories, this defines a right adjoint of the D-topology functor; on the
+level of individual types, this means that it forms a Galois connection with
+`@DTop X : DiffeologicalSpace X → TopologicalSpace X`. We introduce the continuous diffeology as
+as well as this Galois connection and use it to show a few more properties of the D-topology.
+
 See https://ncatlab.org/nlab/show/adjunction+between+topological+spaces+and+diffeological+spaces.
 -/
 
 universe u
 
-open Topology
+open scoped Topology
 
-/-- The continuous diffeology on a topological space `X`. -/
+/-- The continuous diffeology on a topological space `X`, consisting of all continuous plots. -/
 def continuousDiffeology (X : Type u) [TopologicalSpace X] : DiffeologicalSpace X :=
-  DiffeologicalSpace.mkOfPlotsOn {
+  DiffeologicalSpace.ofCorePlotsOn {
     isPlotOn := fun {_ u} _ p ↦ ContinuousOn p u
     isPlotOn_congr := fun _ _ _ h ↦ continuousOn_congr h
     isPlot := fun p ↦ Continuous p
-    isPlotOn_univ := continuous_iff_continuousOn_univ.symm
+    isPlotOn_univ := continuousOn_univ
     isPlot_const := fun _ ↦ continuous_const
     isPlotOn_reparam := fun _ _ _ h hp hf ↦ hp.comp hf.continuousOn h.subset_preimage
     locality := fun _ _ h ↦ fun x hxu ↦ by
-      let ⟨v,hv,hxv,hv'⟩ := h x hxu
+      let ⟨v, hv, hxv, hv'⟩ := h x hxu
       exact ((hv' x hxv).continuousAt (hv.mem_nhds hxv)).continuousWithinAt
     dTopology := .deltaGenerated X
     isOpen_iff_preimages_plots := isOpen_deltaGenerated_iff.trans <|
-      forall_congr' fun n ↦ ⟨fun h p hp ↦ h ⟨p,hp⟩,fun h p ↦ h p p.2⟩ }
+      forall_congr' fun n ↦ ⟨fun h p hp ↦ h ⟨p, hp⟩, fun h p ↦ h p p.2⟩ }
 
-/-- The D-topology of the continuous diffeology is the delta-generification of the
-  original topology. -/
+/-- The D-topology of the continuous diffeology is the coarsest delta-generated topology containing
+the original topology. -/
 lemma dTop_continuousDiffeology {X : Type u} [TopologicalSpace X] :
     DTop[continuousDiffeology X] = .deltaGenerated X :=
   rfl
 
 /-- For delta-generated spaces, the D-topology of the continuous diffeology is the
-  topology itself. -/
+topology itself. -/
 lemma dTop_continuousDiffeology_eq_self {X : Type u} [t : TopologicalSpace X]
     [DeltaGeneratedSpace X] : DTop[continuousDiffeology X] = t :=
   dTop_continuousDiffeology.trans eq_deltaGenerated.symm
 
 /-- Type synonym to get equipped with the continuous diffeology. -/
-def withContinuousDiffeology (X : Type u) [TopologicalSpace X] := X
+def WithContinuousDiffeology (X : Type u) [TopologicalSpace X] := X
 
-instance (X : Type u) [TopologicalSpace X] : DiffeologicalSpace (withContinuousDiffeology X) :=
+instance (X : Type u) [TopologicalSpace X] : DiffeologicalSpace (WithContinuousDiffeology X) :=
   continuousDiffeology X
 
 /-- Every continuous map is smooth with respect to the continuous diffeologies. -/
 lemma Continuous.dsmooth {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y}
-    (hf : Continuous f) : DSmooth[continuousDiffeology X,continuousDiffeology Y] f :=
+    (hf : Continuous f) : DSmooth[continuousDiffeology X, continuousDiffeology Y] f :=
   fun _ _ hp ↦ hf.comp hp
 
 /-- Every continuous map into a space carrying the continuous diffeology is smooth. -/
 lemma Continuous.dsmooth' {X Y : Type u} {dX : DiffeologicalSpace X} {tY : TopologicalSpace Y}
-    {f : X → Y} (hf : Continuous[DTop,_] f) : DSmooth[_,continuousDiffeology Y] f := by
+    {f : X → Y} (hf : Continuous[DTop, _] f) : DSmooth[_, continuousDiffeology Y] f := by
   let _ : TopologicalSpace X := DTop; exact fun n p hp ↦ hf.comp hp.continuous
 
 lemma dTop_le_iff_le_continuousDiffeology {X : Type u} {d : DiffeologicalSpace X}
@@ -68,7 +73,7 @@ lemma dTop_le_iff_le_continuousDiffeology {X : Type u} {d : DiffeologicalSpace X
       hu.preimage <| DiffeologicalSpace.le_iff'.1 h _ _ hp⟩
 
 /-- The D-topology and continuous diffeology form a Galois connection between diffeologies
-  and topologies on `X`. -/
+and topologies on `X`. -/
 theorem gc_dTop (X : Type*) : GaloisConnection (@DTop X) (@continuousDiffeology X) :=
   @dTop_le_iff_le_continuousDiffeology X
 
