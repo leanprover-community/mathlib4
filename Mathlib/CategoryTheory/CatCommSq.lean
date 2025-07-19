@@ -59,6 +59,11 @@ lemma iso_inv_naturality [h : CatCommSq T L R B] {x y : C₁} (f : x ⟶ y) :
     B.map (L.map f) ≫ (iso T L R B).inv.app y = (iso T L R B).inv.app x ≫ R.map (T.map f) :=
   (iso T L R B).inv.naturality f
 
+-- making this @[simps] causes loops in some cases.
+/-- Flip the corners of a CatCommSq. -/
+def flip (h : CatCommSq T L R B) : CatCommSq L T B R where
+  iso := h.iso.symm
+
 /-- Horizontal composition of 2-commutative squares -/
 @[simps!]
 def hComp (T₁ : C₁ ⥤ C₂) (T₂ : C₂ ⥤ C₃) (V₁ : C₁ ⥤ C₄) (V₂ : C₂ ⥤ C₅) (V₃ : C₃ ⥤ C₆)
