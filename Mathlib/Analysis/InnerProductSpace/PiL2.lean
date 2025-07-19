@@ -946,7 +946,7 @@ theorem orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ) :
     have : ‖b default‖ = 1 := b.orthonormal.1 _
     rwa [Real.norm_eq_abs, abs_eq (zero_le_one' ℝ)] at this
   rw [eq_const_of_unique b]
-  refine this.imp ?_ ?_ <;> (intro; ext; simp [*])
+  grind
 
 variable {𝕜 E}
 
@@ -1152,13 +1152,11 @@ local notation "⟪" x ", " y "⟫ₑ" => inner 𝕜 (toLp 2 x) (toLp 2 y)
 /-- The inner product of a row of `A` and a row of `B` is an entry of `B * Aᴴ`. -/
 theorem inner_matrix_row_row [Fintype n] (A B : Matrix m n 𝕜) (i j : m) :
     ⟪A i, B j⟫ₑ = (B * Aᴴ) j i := by
-  rfl
+  simp [dotProduct, mul_apply']
 
 /-- The inner product of a column of `A` and a column of `B` is an entry of `Aᴴ * B`. -/
 theorem inner_matrix_col_col [Fintype m] (A B : Matrix m n 𝕜) (i j : n) :
     ⟪Aᵀ i, Bᵀ j⟫ₑ = (Aᴴ * B) i j := by
-  simp_rw [EuclideanSpace.inner_toLp_toLp, Matrix.mul_apply',
-    Matrix.conjTranspose_apply, dotProduct_comm, Pi.star_def]
-  rfl
+  simp [dotProduct, mul_apply', mul_comm]
 
 end Matrix

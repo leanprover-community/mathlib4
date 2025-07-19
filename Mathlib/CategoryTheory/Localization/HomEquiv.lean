@@ -57,7 +57,7 @@ lemma homMap_map (f : X ⟶ Y) :
 
 variable (X) in
 @[simp]
-lemma homMap_id  :
+lemma homMap_id :
     Φ.homMap L₁ L₂ (𝟙 (L₁.obj X)) = 𝟙 (L₂.obj (Φ.functor.obj X)) := by
   simpa using Φ.homMap_map L₁ L₂ (𝟙 X)
 

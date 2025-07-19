@@ -149,7 +149,7 @@ theorem one_left (b : ℕ) : J(1 | b) = 1 :=
 /-- The Jacobi symbol is multiplicative in its first argument. -/
 theorem mul_left (a₁ a₂ : ℤ) (b : ℕ) : J(a₁ * a₂ | b) = J(a₁ | b) * J(a₂ | b) := by
   simp_rw [jacobiSym, List.pmap_eq_map_attach, legendreSym.mul _ _ _]
-  exact List.prod_map_mul (α := ℤ) (l := (primeFactorsList b).attach)
+  exact List.prod_map_mul (l := (primeFactorsList b).attach)
     (f := fun x ↦ @legendreSym x {out := prime_of_mem_primeFactorsList x.2} a₁)
     (g := fun x ↦ @legendreSym x {out := prime_of_mem_primeFactorsList x.2} a₂)
 

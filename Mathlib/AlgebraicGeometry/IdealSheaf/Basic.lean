@@ -762,7 +762,7 @@ lemma Hom.support_ker (f : X.Hom Y) [QuasiCompact f] :
 
 /-- The functor taking a morphism into `Y` to its kernel as an ideal sheaf on `Y`. -/
 @[simps]
-noncomputable def kerFunctor (Y : Scheme.{u}) : (Over Y)ᵒᵖ ⥤ IdealSheafData Y where
+def kerFunctor (Y : Scheme.{u}) : (Over Y)ᵒᵖ ⥤ IdealSheafData Y where
   obj f := f.unop.hom.ker
   map {f g} hfg := homOfLE <| by simpa only [Functor.id_obj, Functor.const_obj_obj,
     OrderDual.toDual_le_toDual, ← Over.w hfg.unop] using hfg.unop.left.le_ker_comp f.unop.hom

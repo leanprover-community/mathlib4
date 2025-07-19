@@ -91,7 +91,7 @@ section mk'
 open MorphismProperty
 
 variable {C} in
-private lemma mk'.cm3a_aux [CategoryWithFibrations C]  [CategoryWithCofibrations C]
+private lemma mk'.cm3a_aux [CategoryWithFibrations C] [CategoryWithCofibrations C]
     [CategoryWithWeakEquivalences C]
     [(weakEquivalences C).HasTwoOutOfThreeProperty]
     [IsWeakFactorizationSystem (trivialCofibrations C) (fibrations C)]
