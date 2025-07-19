@@ -35,7 +35,7 @@ noncomputable section
 
 open Finset Function
 
-variable {α M N R S : Type*}
+variable {α M N R : Type*}
 
 namespace Finsupp
 

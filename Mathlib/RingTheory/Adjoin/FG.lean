@@ -165,6 +165,13 @@ theorem induction_on_adjoin [IsNoetherian R A] (P : Subalgebra R A → Prop) (ba
   rw [Finset.coe_insert]
   simpa only [Algebra.adjoin_insert_adjoin] using ih _ x h
 
+theorem FG.sup {S S' : Subalgebra R A} (hS : Subalgebra.FG S) (hS' : Subalgebra.FG S') :
+    Subalgebra.FG (S ⊔ S') :=
+  let ⟨s, hs⟩ := Subalgebra.fg_def.1 hS
+  let ⟨s', hs'⟩ := Subalgebra.fg_def.1 hS'
+  fg_def.mpr ⟨s ∪ s', Set.Finite.union hs.1 hs'.1,
+    (by rw [Algebra.adjoin_union, hs.2, hs'.2])⟩
+
 end Subalgebra
 
 section Semiring

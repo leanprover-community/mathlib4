@@ -452,8 +452,7 @@ theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'
   rw [get_permutations'Aux, get_permutations'Aux]
   have hl : length (s.insertIdx k x) = length (s.insertIdx (k + 1) x) := by
     rw [length_insertIdx_of_le_length hk.le, length_insertIdx_of_le_length (Nat.succ_le_of_lt hk)]
-  refine ext_get hl fun n hn hn' => ?_
-  grind
+  exact ext_get hl fun n hn hn' => by grind
 
 theorem nodup_permutations (s : List α) (hs : Nodup s) : Nodup s.permutations := by
   rw [(permutations_perm_permutations' s).nodup_iff]
