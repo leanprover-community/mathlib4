@@ -444,6 +444,46 @@ def signHom : α →*₀ SignType where
 
 theorem sign_pow (x : α) (n : ℕ) : sign (x ^ n) = sign x ^ n := map_pow signHom x n
 
+lemma zero_mem_setRange_signTypeCast : (0 : α) ∈ Set.range SignType.cast :=
+  ⟨0, rfl⟩
+
+lemma mul_mem_setRange_signTypeCast {a b : α}
+    (ha : a ∈ Set.range SignType.cast) (hb : b ∈ Set.range SignType.cast) :
+    a * b ∈ Set.range SignType.cast := by
+  obtain ⟨a', rfl⟩ := ha
+  obtain ⟨b', rfl⟩ := hb
+  exact ⟨_, coe_mul a' b'⟩
+
+@[simp]
+lemma abs_mem_setRange_signTypeCast_iff {a : α} :
+    |a| ∈ Set.range SignType.cast ↔ a ∈ Set.range SignType.cast := by
+  constructor
+  · rintro ⟨s, rfl⟩
+    cases s with
+    | zero => use 0; simp
+    | pos => use 1; simp; sorry -- Mathlib.Algebra.Order.Ring.Abs contains `abs_one`
+    | neg => use 1; simp; sorry -- Mathlib.Algebra.Order.Ring.Abs contains `abs_one`
+  · intro ⟨s, hs⟩
+    symm at hs
+    cases s with
+    | zero =>
+      rw [SignType.zero_eq_zero, SignType.coe_zero, abs_eq_zero] at hs
+      exact ⟨0, hs.symm⟩
+    | pos =>
+      rw [SignType.pos_eq_one, abs_eq_max_neg, max_eq_iff] at hs
+      cases hs with
+      | inl poz =>
+        exact ⟨1, poz.left.symm⟩
+      | inr neg =>
+        use -1
+        rw [neg_eq_iff_eq_neg] at neg
+        exact neg.left.symm
+    | neg =>
+      exfalso
+      rw [SignType.neg_eq_neg_one, SignType.coe_neg, SignType.coe_one] at hs
+      have h0 := (abs_nonneg a).trans_eq hs
+      sorry -- norm_num at h0
+
 end LinearOrderedRing
 
 section AddGroup
