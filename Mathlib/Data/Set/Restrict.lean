@@ -14,6 +14,8 @@ import Mathlib.Data.Set.Image
 * `Set.codRestrict f s h` : given `h : ∀ x, f x ∈ s`, restrict the codomain of `f` to the set `s`;
 -/
 
+assert_not_exists HeytingAlgebra
+
 variable {α β γ δ : Type*} {ι : Sort*} {π : α → Type*}
 
 open Equiv Equiv.Perm Function
