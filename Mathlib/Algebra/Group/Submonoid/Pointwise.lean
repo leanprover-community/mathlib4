@@ -100,7 +100,7 @@ theorem sup_eq_closure_mul (H K : Submonoid M) : H ⊔ K = closure ((H : Set M) 
 
 @[to_additive]
 theorem coe_sup {N : Type*} [CommMonoid N] (H K : Submonoid N) :
-    ↑(H ⊔ K) = (H : Set N) * (K : Set N) := by
+    ↑(H ⊔ K) = (H * K : Set N) := by
   ext x
   simp [mem_sup, Set.mem_mul]
 
