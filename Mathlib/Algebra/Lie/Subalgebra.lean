@@ -376,6 +376,8 @@ def comap : LieSubalgebra R L :=
       suffices ⁅f x, f y⁆ ∈ K₂ by simp [this]
       exact K₂.lie_mem hx hy }
 
+@[simp] lemma mem_comap {x : L} : x ∈ K₂.comap f ↔ f x ∈ K₂ := Iff.rfl
+
 section LatticeStructure
 
 open Set
