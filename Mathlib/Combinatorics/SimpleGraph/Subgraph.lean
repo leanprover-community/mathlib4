@@ -702,6 +702,18 @@ def inclusion {x y : Subgraph G} (h : x ≤ y) : x.coe →g y.coe where
   toFun v := ⟨↑v, And.left h v.property⟩
   map_rel' hvw := h.2 hvw
 
+lemma inclusion_edge_apply_coe {x y : Subgraph G} (h : x ≤ y) (e : Sym2 x.verts) :
+    Sym2.map Subtype.val (Sym2.map (inclusion h) e) = Sym2.map Subtype.val e := by
+  cases e with | _ a b =>
+  simp
+
+lemma inclusion_edgeSet_apply_coe {x y : Subgraph G} (h : x ≤ y) (s : Set (Sym2 x.verts)) :
+    Sym2.map Subtype.val '' (Sym2.map (Subgraph.inclusion h) '' s) = Sym2.map Subtype.val '' s := by
+  rw [← Set.image_comp, Set.image_congr']
+  intro e
+  rw [Function.comp_apply]
+  exact inclusion_edge_apply_coe h e
+
 theorem inclusion.injective {x y : Subgraph G} (h : x ≤ y) : Function.Injective (inclusion h) := by
   intro v w h
   rw [inclusion, DFunLike.coe, Subtype.mk_eq_mk] at h
