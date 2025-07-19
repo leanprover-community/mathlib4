@@ -1,0 +1,59 @@
+name: Post Lean declaration diff
+
+on:
+  #pull_request:
+  workflow_run:
+    workflows: ["continuous integration"]
+    types: [completed] #requested
+
+jobs:
+  on-success:
+    name: Lean declaration diff
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: cleanup
+        run: |
+          find . -name . -o -prune -exec rm -rf -- {} +
+          # Delete all but the 5 most recent toolchains.
+          # Make sure to delete both the `~/.elan/toolchains/X` directory and the `~/.elan/update-hashes/X` file.
+          # Skip symbolic links (`-type d`), the current directory (`! -name .`), and `nightly` and `stable`.
+          if cd ~/.elan/toolchains && find . -maxdepth 1 -type d ! -name . -print0 | xargs -0 ls -1td | grep -v 'nightly$' | grep -v 'stable$' | tail -n +6 | xargs -I {} sh -c 'echo {} && rm -rf "{}" && rm "../update-hashes/{}"'; then
+              : # Do nothing on success
+          else
+              : # Do nothing on failure, but suppress errors
+          fi
+
+      - name: install elan
+        run: |
+          set -o pipefail
+          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.1.1/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
+          ./elan-init -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: If using a lean-pr-release toolchain, uninstall
+        run: |
+          if [[ $(cat lean-toolchain) =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+$ ]]; then
+            printf 'Uninstalling transient toolchain %s\n' "$(cat lean-toolchain)"
+            elan toolchain uninstall "$(cat lean-toolchain)"
+          fi
+
+      - name: build cache and get it
+        run: |
+          lake build cache
+          # get the cache here to avoid some clutter in the output of the next step
+          lake exe cache get Archive.lean Counterexamples.lean Mathlib.lean
+
+      - name: Report diff in Lean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER:    ${{ github.event.pull_request.number }}
+          PR_HASH:      ${{ github.event.pull_request.head.sha }}
+        run: |
+          git checkout master
+          git checkout -
+          ./scripts/declarations_diff_lean_shell_glue.sh "${PR_NUMBER}" "${PR_HASH}"
