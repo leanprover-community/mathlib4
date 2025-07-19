@@ -609,7 +609,7 @@ lemma HasFPowerSeriesAt.tendsto_partialSum_prod_of_comp
   congr with i
   exact i.elim0
 
-lemma HasFPowerSeriesAt.eventually_hasSum_of_comp  {f : E → F} {g : F → G}
+lemma HasFPowerSeriesAt.eventually_hasSum_of_comp {f : E → F} {g : F → G}
     {q : FormalMultilinearSeries 𝕜 F G} {p : FormalMultilinearSeries 𝕜 E F} {x : E}
     (hgf : HasFPowerSeriesAt (g ∘ f) (q.comp p) x) (hf : HasFPowerSeriesAt f p x)
     (hq : 0 < q.radius) :

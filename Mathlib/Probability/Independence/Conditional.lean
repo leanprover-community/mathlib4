@@ -258,7 +258,7 @@ end
 section CondIndep
 
 lemma condIndep_iff_condIndepSets (m' m₁ m₂ : MeasurableSpace Ω) {mΩ : MeasurableSpace Ω}
-    [StandardBorelSpace Ω] (hm' : m' ≤ mΩ) (μ : Measure Ω ) [IsFiniteMeasure μ] :
+    [StandardBorelSpace Ω] (hm' : m' ≤ mΩ) (μ : Measure Ω) [IsFiniteMeasure μ] :
     CondIndep m' m₁ m₂ hm' μ
       ↔ CondIndepSets m' hm' {s | MeasurableSet[m₁] s} {s | MeasurableSet[m₂] s} μ := by
   simp only [CondIndep, CondIndepSets, Kernel.Indep]

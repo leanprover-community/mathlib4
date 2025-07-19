@@ -369,10 +369,7 @@ theorem measure_fundamentalDomain [Fintype ι] [DecidableEq ι] [MeasurableSpace
   convert μ.addHaar_preimage_linearEquiv (b.equiv b₀ (Equiv.refl ι)) (fundamentalDomain b₀)
   · rw [Set.eq_preimage_iff_image_eq (LinearEquiv.bijective _), map_fundamentalDomain,
       Basis.map_equiv, Equiv.refl_symm, Basis.reindex_refl]
-  · rw [← LinearMap.det_toMatrix b₀, Basis.equiv_symm, Equiv.refl_symm, Basis.det_apply]
-    congr 1
-    ext
-    simp [Basis.toMatrix_apply, LinearMap.toMatrix_apply, LinearEquiv.coe_coe, Basis.equiv_apply]
+  · simp
 
 theorem measureReal_fundamentalDomain
     [Fintype ι] [DecidableEq ι] [MeasurableSpace E] (μ : Measure E)

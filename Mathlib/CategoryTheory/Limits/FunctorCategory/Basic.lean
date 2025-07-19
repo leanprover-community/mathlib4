@@ -428,7 +428,7 @@ lemma preservesColimit_of_evaluation (F : D ⥤ K ⥤ C) (G : J ⥤ D)
     change IsColimit ((F ⋙ (evaluation K C).obj X).mapCocone c)
     exact isColimitOfPreserves _ hc⟩⟩
 
-@[deprecated "No deprecation message was provided."  (since := "2024-11-19")]
+@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
 lemma preservesColimitOfEvaluation (F : D ⥤ K ⥤ C) (G : J ⥤ D)
     (H : ∀ k, PreservesColimit G (F ⋙ (evaluation K C).obj k)) : PreservesColimit G F :=
   preservesColimit_of_evaluation _ _ H

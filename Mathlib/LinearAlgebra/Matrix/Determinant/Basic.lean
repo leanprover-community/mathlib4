@@ -138,7 +138,7 @@ theorem det_mul (M N : Matrix n n R) : det (M * N) = det M * det N :=
       rw [Finset.sum_comm]
     _ = ∑ p : n → n with Bijective p, ∑ σ : Perm n, ε σ * ∏ i, M (σ i) (p i) * N (p i) i := by
       refine (sum_subset (filter_subset _ _) fun f _ hbij ↦ det_mul_aux ?_).symm
-      simpa only [true_and, mem_filter, mem_univ] using hbij
+      simpa only [mem_filter_univ] using hbij
     _ = ∑ τ : Perm n, ∑ σ : Perm n, ε σ * ∏ i, M (σ i) (τ i) * N (τ i) i :=
       sum_bij (fun p h ↦ Equiv.ofBijective p (mem_filter.1 h).2) (fun _ _ ↦ mem_univ _)
         (fun _ _ _ _ h ↦ by injection h)
@@ -648,12 +648,7 @@ theorem det_blockDiagonal {o : Type*} [Fintype o] [DecidableEq o] (M : o → Mat
         ext
         · simp only
         · simp only [hσ]
-      have mk_inv_apply_eq : ∀ k x, ((σ⁻¹ (x, k)).fst, k) = σ⁻¹ (x, k) := by
-        intro k x
-        conv_lhs => rw [← Perm.apply_inv_self σ (x, k)]
-        ext
-        · simp only [apply_inv_self]
-        · simp only [hσ']
+      have mk_inv_apply_eq : ∀ k x, ((σ⁻¹ (x, k)).fst, k) = σ⁻¹ (x, k) := by grind
       refine ⟨fun k _ => ⟨fun x => (σ (x, k)).fst, fun x => (σ⁻¹ (x, k)).fst, ?_, ?_⟩, ?_, ?_⟩
       · intro x
         simp only [mk_apply_eq, inv_apply_self]
