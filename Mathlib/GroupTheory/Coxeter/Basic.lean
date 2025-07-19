@@ -511,7 +511,7 @@ theorem prod_alternatingWord_eq_prod_alternatingWord_sub (i i' : B) (m : ℕ) (h
   push_cast
   rcases Int.even_or_odd' m' with ⟨k, rfl | rfl⟩
   · rw [if_pos (by use k; ring), if_pos (by use -k + (M i i'); ring), mul_comm 2 k, ← sub_mul]
-    repeat rw [Int.mul_ediv_cancel _ (by norm_num)]
+    repeat rw [Int.mul_ediv_cancel _ (by simp)]
     rw [zpow_sub, zpow_natCast, simple_mul_simple_pow' cs i i', ← inv_zpow]
     simp
   · have : ¬Even (2 * k + 1) := Int.not_even_iff_odd.2 ⟨k, rfl⟩
@@ -521,7 +521,7 @@ theorem prod_alternatingWord_eq_prod_alternatingWord_sub (i i' : B) (m : ℕ) (h
     rw [if_neg this]
     rw [(by ring : ↑(M i i') * 2 - (2 * k + 1) = -1 + (-k + ↑(M i i')) * 2),
       (by ring : 2 * k + 1 = 1 + k * 2)]
-    repeat rw [Int.add_mul_ediv_right _ _ (by norm_num)]
+    repeat rw [Int.add_mul_ediv_right _ _ (by simp)]
     norm_num
     rw [zpow_add, zpow_add, zpow_natCast, simple_mul_simple_pow', zpow_neg, ← inv_zpow, zpow_neg,
       ← inv_zpow]
@@ -532,7 +532,7 @@ This is known as the "braid relation" or "Artin-Tits relation". -/
 theorem wordProd_braidWord_eq (i i' : B) :
     π (braidWord M i i') = π (braidWord M i' i) := by
   have := cs.prod_alternatingWord_eq_prod_alternatingWord_sub i i' (M i i')
-    (Nat.le_mul_of_pos_right _ (by norm_num))
+    (Nat.le_mul_of_pos_right _ (by simp))
   rw [tsub_eq_of_eq_add (mul_two (M i i'))] at this
   nth_rw 2 [M.symmetric i i'] at this
   exact this
