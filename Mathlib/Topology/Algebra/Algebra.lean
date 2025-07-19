@@ -482,8 +482,7 @@ def _root_.Subalgebra.valA (p : Subalgebra R A) : p →A[R] A where
   toAlgHom := p.val
 
 @[simp, norm_cast]
-theorem _root_.Subalgebra.coe_valA (p : Subalgebra R A) :
-    (p.valA : p →ₐ[R] A) = p.subtype :=
+theorem _root_.Subalgebra.coe_valA (p : Subalgebra R A) : p.valA = p.subtype :=
   rfl
 
 @[simp]
