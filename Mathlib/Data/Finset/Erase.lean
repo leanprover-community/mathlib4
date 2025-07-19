@@ -86,6 +86,7 @@ theorem erase_eq_self : s.erase a = s ↔ a ∉ s :=
 theorem erase_ne_self : s.erase a ≠ s ↔ a ∈ s :=
   erase_eq_self.not_left
 
+@[gcongr]
 theorem erase_subset_erase (a : α) {s t : Finset α} (h : s ⊆ t) : erase s a ⊆ erase t a :=
   val_le_iff.1 <| erase_le_erase _ <| val_le_iff.2 h
 
