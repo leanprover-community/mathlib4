@@ -328,6 +328,7 @@
  ["docBlame", "Mathlib.Command.Variable.variable?.maxSteps"],
  ["docBlame", "Mathlib.Meta.NormNum.evalEq.intArm"],
  ["docBlame", "Mathlib.Meta.NormNum.evalEq.ratArm"],
+ ["docBlame", "Mathlib.Meta.NormNum.evalEq.nnratArm"],
  ["docBlame", "Mathlib.Meta.NormNum.evalMinFac.aux"],
  ["docBlame", "Mathlib.Meta.NormNum.evalMinFac.core"],
  ["docBlame", "Mathlib.Meta.NormNum.evalNatPrime.core"],
@@ -357,9 +358,12 @@
  ["docBlame", "Mathlib.Tactic.Sat.buildReify.mkPS"],
  ["docBlame", "Mathlib.Meta.NormNum.evalAdd.core.intArm"],
  ["docBlame", "Mathlib.Meta.NormNum.evalAdd.core.ratArm"],
+ ["docBlame", "Mathlib.Meta.NormNum.evalAdd.core.nnratArm"],
  ["docBlame", "Mathlib.Meta.NormNum.evalLE.core.intArm"],
  ["docBlame", "Mathlib.Meta.NormNum.evalLE.core.ratArm"],
  ["docBlame", "Mathlib.Meta.NormNum.evalLT.core.intArm"],
  ["docBlame", "Mathlib.Meta.NormNum.evalLT.core.ratArm"],
+ ["docBlame", "Mathlib.Meta.NormNum.evalLT.core.nnratArm"],
  ["docBlame", "Mathlib.Meta.NormNum.evalMul.core.intArm"],
- ["docBlame", "Mathlib.Meta.NormNum.evalMul.core.ratArm"]]
+ ["docBlame", "Mathlib.Meta.NormNum.evalMul.core.ratArm"],
+ ["docBlame", "Mathlib.Meta.NormNum.evalMul.core.nnratArm"]]
