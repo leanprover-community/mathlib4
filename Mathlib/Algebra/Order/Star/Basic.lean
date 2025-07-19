@@ -405,7 +405,16 @@ theorem one_sub_nonneg (hp : IsStarProjection p) : 0 ≤ 1 - p := hp.one_sub.non
 
 theorem le_one (hp : IsStarProjection p) : p ≤ 1 := sub_nonneg.mp hp.one_sub_nonneg
 
+/-- For a star projection `p`, we have `0 ≤ p ≤ 1`. -/
 theorem mem_Icc (hp : IsStarProjection p) : p ∈ Set.Icc (0 : R) 1 := by
   simp only [Set.mem_Icc, hp.nonneg, hp.le_one, and_self]
+
+/-- A star projection `p` is less than or equal to a star projection `q` when `p * q = p`. -/
+theorem le_of_mul_eq_left {q : R} (hp : IsStarProjection p) (hq : IsStarProjection q)
+    (hpq : p * q = p) : p ≤ q := sub_nonneg.mp (hp.sub_of_mul_eq_left hq hpq).nonneg
+
+/-- A star projection `p` is less than or equal to a star projection `q` when `q * p = p`. -/
+theorem le_of_mul_eq_right {q : R} (hp : IsStarProjection p) (hq : IsStarProjection q)
+    (hpq : q * p = p) : p ≤ q := sub_nonneg.mp (hp.sub_of_mul_eq_right hq hpq).nonneg
 
 end IsStarProjection
