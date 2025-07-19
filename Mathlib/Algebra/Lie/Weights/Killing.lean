@@ -641,6 +641,155 @@ lemma mem_sl2SubalgebraOfRoot_iff {α : Weight K H L} (hα : α.IsNonZero) {h e 
   · simp [hx, mul_smul]
   · simp [hx, mul_smul, hce₀, hcf₀]
 
+
+noncomputable abbrev H_α (α : Weight K H L) : LieSubmodule K H L :=
+  LieSubmodule.map H.toLieSubmodule.incl (LieAlgebra.corootSpace α.toLinear)
+
+lemma sl2SubalgebraOfRoot_stable_under_H (α : Weight K H L) (hα : α.IsNonZero) :
+    ∀ (h : H) (x : L), x ∈ sl2SubalgebraOfRoot hα → ⁅(h : L), x⁆ ∈ sl2SubalgebraOfRoot hα := by
+  intro h x hx
+  obtain ⟨h', e, f, ht, heα, hfα⟩ := LieAlgebra.IsKilling.exists_isSl2Triple_of_weight_isNonZero hα
+  rw [LieAlgebra.IsKilling.mem_sl2SubalgebraOfRoot_iff hα ht heα hfα] at hx ⊢
+  obtain ⟨c₁, c₂, c₃, hx_eq⟩ := hx
+  rw [hx_eq, lie_add, lie_add, lie_smul, lie_smul, lie_smul]
+  have he_weight : ⁅(h : L), e⁆ = α h • e := by
+    exact LieAlgebra.IsKilling.lie_eq_smul_of_mem_rootSpace heα h
+  have hf_weight : ⁅(h : L), f⁆ = (-α) h • f := by
+    exact LieAlgebra.IsKilling.lie_eq_smul_of_mem_rootSpace hfα h
+  have hef_weight : ⁅(h : L), ⁅e, f⁆⁆ = 0 • ⁅e, f⁆ := by
+    have h_coroot : ⁅e, f⁆ = (LieAlgebra.IsKilling.coroot α : L) := by
+      have : ⁅e, f⁆ = h' := ht.lie_e_f
+      rw [this]
+      exact IsSl2Triple.h_eq_coroot hα ht heα hfα
+    rw [h_coroot]
+    have : ⁅(h : L), (LieAlgebra.IsKilling.coroot α : L)⁆ = 0 := by
+      have h_coroot_in_H : (LieAlgebra.IsKilling.coroot α : L) ∈ rootSpace H (0 : H → K) := by
+        have h_coroot_mem_H : (LieAlgebra.IsKilling.coroot α : L) ∈ H := by
+          exact (LieAlgebra.IsKilling.coroot α).property
+        have h_eq : rootSpace H (0 : H → K) = H.toLieSubmodule := rootSpace_zero_eq K L H
+        rw [h_eq]
+        exact h_coroot_mem_H
+      have h_eq : ⁅(h : L), (LieAlgebra.IsKilling.coroot α : L)⁆ =
+        (0 : H → K) h • (LieAlgebra.IsKilling.coroot α : L) := by
+        exact LieAlgebra.IsKilling.lie_eq_smul_of_mem_rootSpace h_coroot_in_H h
+      rw [h_eq]
+      simp only [Pi.zero_apply, zero_smul]
+    rw [this, zero_smul]
+  rw [he_weight, hf_weight, hef_weight, smul_smul, smul_smul, zero_smul]
+  simp only [Weight.coe_neg, Pi.neg_apply, smul_zero, add_zero]
+  exact ⟨c₁ * α h, c₂ * (-α h), 0, by simp [mul_smul]⟩
+
+noncomputable def sl2SubalgebraOfRoot_as_H_submodule (α : Weight K H L) (hα : α.IsNonZero) :
+    LieSubmodule K H L where
+  __ := (sl2SubalgebraOfRoot hα).toLieSubmodule
+  lie_mem := by
+    intro h x hx
+    exact sl2SubalgebraOfRoot_stable_under_H α hα h x hx
+
+lemma sl2SubalgebraOfRoot_as_H_submodule_eq_sup (α : Weight K H L) (hα : α.IsNonZero) :
+    sl2SubalgebraOfRoot_as_H_submodule α hα =
+    genWeightSpace L α.toLinear ⊔ genWeightSpace L (-α).toLinear ⊔ H_α α := by
+  ext x
+  constructor
+  · intro hx
+    simp only [sl2SubalgebraOfRoot_as_H_submodule] at hx
+    obtain ⟨h', e, f, ht, heα, hfα⟩ :=
+      LieAlgebra.IsKilling.exists_isSl2Triple_of_weight_isNonZero hα
+    have hx_sl2 : x ∈ sl2SubalgebraOfRoot hα := hx
+    rw [LieAlgebra.IsKilling.mem_sl2SubalgebraOfRoot_iff hα ht heα hfα] at hx_sl2
+    obtain ⟨c₁, c₂, c₃, hx_eq⟩ := hx_sl2
+    rw [hx_eq]
+    apply add_mem
+    · apply add_mem
+      · apply Submodule.smul_mem
+        apply Submodule.mem_sup_left
+        apply Submodule.mem_sup_left
+        exact heα
+      · apply Submodule.smul_mem
+        apply Submodule.mem_sup_left
+        apply Submodule.mem_sup_right
+        exact hfα
+    · apply Submodule.smul_mem
+      apply Submodule.mem_sup_right
+      unfold H_α
+      have h_coroot_eq : ⁅e, f⁆ = h' := ht.lie_e_f
+      rw [h_coroot_eq]
+      use (LieAlgebra.IsKilling.coroot α : H)
+      constructor
+      · have h_eq : (corootSpace α.toLinear).toSubmodule = K ∙ LieAlgebra.IsKilling.coroot α :=
+          LieAlgebra.IsKilling.coe_corootSpace_eq_span_singleton α
+        change LieAlgebra.IsKilling.coroot α ∈ (corootSpace α.toLinear : Set H)
+        rw [LieSubmodule.mem_coe, ← LieSubmodule.mem_toSubmodule, h_eq]
+        exact Submodule.mem_span_singleton_self _
+      · have h_eq : h' = (LieAlgebra.IsKilling.coroot α : L) :=
+          IsSl2Triple.h_eq_coroot hα ht heα hfα
+        rw [h_eq]
+        rfl
+  · intro hx
+    obtain ⟨x_αneg, hx_αneg, x_h, hx_h, hx_eq⟩ := Submodule.mem_sup.mp hx
+    obtain ⟨x_pos, hx_pos, x_neg, hx_neg, hx_αneg_eq⟩ := Submodule.mem_sup.mp hx_αneg
+    rw [← hx_eq, ← hx_αneg_eq]
+    simp only [sl2SubalgebraOfRoot_as_H_submodule]
+    obtain ⟨h', e, f, ht, heα, hfα⟩ :=
+      LieAlgebra.IsKilling.exists_isSl2Triple_of_weight_isNonZero hα
+
+    have hx_pos_in : x_pos ∈ sl2SubalgebraOfRoot hα := by
+      rw [LieAlgebra.IsKilling.mem_sl2SubalgebraOfRoot_iff hα ht heα hfα]
+      have h_dim : Module.finrank K (rootSpace H α.toLinear) = 1 :=
+        LieAlgebra.IsKilling.finrank_rootSpace_eq_one α hα
+      have he_ne_zero : e ≠ 0 := ht.e_ne_zero
+      have he_subtype_ne_zero : (⟨e, heα⟩ : rootSpace H α.toLinear) ≠ 0 := by
+        rwa [ne_eq, LieSubmodule.mk_eq_zero]
+      obtain ⟨c₁, hc₁⟩ :=
+        (finrank_eq_one_iff_of_nonzero' ⟨e, heα⟩ he_subtype_ne_zero).mp h_dim ⟨x_pos, hx_pos⟩
+      have hx_pos_eq : x_pos = c₁ • e := by
+        have : x_pos = (⟨x_pos, hx_pos⟩ : rootSpace H α.toLinear).val := rfl
+        rw [this, ← hc₁]; simp
+      exact ⟨c₁, 0, 0, by simp [hx_pos_eq]⟩
+
+    have hx_neg_in : x_neg ∈ sl2SubalgebraOfRoot hα := by
+      rw [LieAlgebra.IsKilling.mem_sl2SubalgebraOfRoot_iff hα ht heα hfα]
+      have h_neg_dim : Module.finrank K (rootSpace H (-α).toLinear) = 1 :=
+        LieAlgebra.IsKilling.finrank_rootSpace_eq_one (-α) (by simpa using hα)
+      have hf_ne_zero : f ≠ 0 := ht.f_ne_zero
+      have hf_subtype_ne_zero : (⟨f, hfα⟩ : rootSpace H (-α).toLinear) ≠ 0 := by
+        rwa [ne_eq, LieSubmodule.mk_eq_zero]
+      obtain ⟨c₂, hc₂⟩ :=
+        (finrank_eq_one_iff_of_nonzero' ⟨f, hfα⟩ hf_subtype_ne_zero).mp h_neg_dim ⟨x_neg, hx_neg⟩
+      have hx_neg_eq : x_neg = c₂ • f := by
+        have : x_neg = (⟨x_neg, hx_neg⟩ : rootSpace H (-α).toLinear).val := rfl
+        rw [this, ← hc₂]; simp
+      exact ⟨0, c₂, 0, by simp [hx_neg_eq]⟩
+
+    have hx_h_in : x_h ∈ sl2SubalgebraOfRoot hα := by
+      rw [LieAlgebra.IsKilling.mem_sl2SubalgebraOfRoot_iff hα ht heα hfα]
+      unfold H_α at hx_h
+      obtain ⟨y, hy_coroot, hy_eq⟩ := hx_h
+      have h_eq : ⁅e, f⁆ = h' := ht.lie_e_f
+      have h_coroot : h' = (LieAlgebra.IsKilling.coroot α : L) :=
+        IsSl2Triple.h_eq_coroot hα ht heα hfα
+      have h_ef_in_sl2 : ⁅e, f⁆ ∈ sl2SubalgebraOfRoot hα := by
+        rw [LieAlgebra.IsKilling.mem_sl2SubalgebraOfRoot_iff hα ht heα hfα]
+        exact ⟨0, 0, 1, by simp⟩
+      have h_coroot_span : (corootSpace α.toLinear).toSubmodule =
+        K ∙ (LieAlgebra.IsKilling.coroot α) :=
+        LieAlgebra.IsKilling.coe_corootSpace_eq_span_singleton α
+      have hy_mem_submodule : y ∈ (corootSpace α.toLinear).toSubmodule := by
+        rw [LieSubmodule.mem_toSubmodule]
+        exact hy_coroot
+      rw [h_coroot_span] at hy_mem_submodule
+      obtain ⟨c₃, hc₃⟩ := Submodule.mem_span_singleton.mp hy_mem_submodule
+      have hx_h_eq : x_h = c₃ • ⁅e, f⁆ := by
+        rw [← hy_eq, ← hc₃, map_smul]
+        congr 1
+        have h_embed : (LieAlgebra.IsKilling.coroot α : L) =
+          H.toLieSubmodule.incl (LieAlgebra.IsKilling.coroot α) := by
+          rfl
+        exact h_embed ▸ h_coroot ▸ h_eq.symm
+      exact ⟨0, 0, c₃, by simp [hx_h_eq]⟩
+
+    apply add_mem (add_mem hx_pos_in hx_neg_in) hx_h_in
+
 /-- The collection of roots as a `Finset`. -/
 noncomputable abbrev _root_.LieSubalgebra.root : Finset (Weight K H L) := {α | α.IsNonZero}
 
