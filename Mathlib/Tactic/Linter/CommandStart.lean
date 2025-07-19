@@ -148,12 +148,12 @@ and that the characters where this is not true satisfy `f`.
 
 If the expectation is correct, then it returns `some (s2 \ s1)`, otherwise, it returns `none`.
 
-The typical application uses `f = Char.isWhitespace`.
+The typical application uses `f = invisible`.
 -/
 partial
 def consumeIgnoring (s1 s2 : Substring) (f : String → Bool) : Option Substring :=
   -- The expected end of the process: `s1` is fully consumed, we return `s2`.
-  if s1.isEmpty then s2 else
+  if s1.isEmpty || s2.isEmpty then s2 else
   -- Otherwise, we compare the first available character of each string.
   let a1 := s1.take 1
   let a2 := s2.take 1
@@ -165,7 +165,13 @@ def consumeIgnoring (s1 s2 : Substring) (f : String → Bool) : Option Substring
     if f a1.toString then consumeIgnoring (s1.drop 1) s2 f else
     if f a2.toString then consumeIgnoring s1 (s2.drop 1) f
     -- If all else failed, then we return `none`.
-    else none
+    else some s2
+
+--def invisible (c : Char) : Bool :=
+--  c.isWhitespace || #['«', '»'].contains c
+
+def invisible (s : String) : Bool :=
+  s.all fun c => c.isWhitespace || #['«', '»'].contains c
 
 /-- Extract the `leading` and the `trailing` substring of a `SourceInfo`. -/
 def _root_.Lean.SourceInfo.getLeadTrail : SourceInfo → String × String
@@ -397,21 +403,29 @@ def validateAtomOrId (tot : Array Exceptions) (kind : SyntaxNodeKind) (i1 i2 : S
   let (l1, t1) := i1.getLeadTrail
   --let (l2, t2) := i2.getLeadTrail
   --dbg_trace "removing '{s2}'"
-  let stripString := str.drop s2.length
+  let stripString := consumeIgnoring s2.toSubstring str invisible|>.getD default --str.drop s2.length
   let trail := stripString.takeWhile (·.isWhitespace)
   --withVerbose (trail.isEmpty != t1.isEmpty) s!"Discrepancy at {s1}, orig: '{t1}' pped: '{trail}'"
   let isValid := validateSpaceAfter' t1.toSubstring trail
   --dbg_trace "{isValid} -- {(s1, s2)}: '{t1}', '{trail}'\n"
   let tot1 := if isValid then
-    tot
-  else
-    dbg_trace "adding with '{s1}' '{s2}'"
-    addException tot t1 trail.toString stripString.startPos kind "invalid"
-  if ((!str.toString.startsWith s1) || (!str.toString.startsWith s2)) then
+                tot
+              else
+                dbg_trace "invalid with '{s1}' '{s2}' '{t1}' '{trail.toString}' '{stripString.startPos}' '{kind}'"
+                addException tot t1 trail.toString stripString.startPos kind "invalid"
+--consumeIgnoring s2.toSubstring str invisible
+  --if ((!str.toString.startsWith s1) || (!str.toString.startsWith s2)) then
+  if (((consumeIgnoring s1.toSubstring str invisible).isNone) ||
+      ((consumeIgnoring s2.toSubstring str invisible).isNone)) then
     dbg_trace s!"something went wrong\n\
       --- All pretty {kind} ---\n{str.toString}\ndoes not start with either of the following\n\
       --- Orig ---\n'{s1.norm}'\n--- Pretty---\n'{s2.norm}'\n---\n{tot1}"
-    (stripString |>.dropWhile (·.isWhitespace), addException tot1 t1 trail.toString stripString.startPos kind s!"wrong: '{s1}' or '{s2}' is not the start of '{str.toString}'")
+    match consumeIgnoring s2.toSubstring str invisible with
+    | some leftOver =>
+      (leftOver, addException tot1 t1 trail.toString stripString.startPos kind
+        s!"wrong:\n'{s1}' or\n'{s2}' is not the start of\n'{str.toString}'")
+    | none =>
+      (stripString |>.dropWhile (·.isWhitespace), addException tot1 t1 trail.toString stripString.startPos kind s!"wrong: '{s1}' or '{s2}' is not the start of '{str.toString}'")
   else
     ( --withVerbose (!isValid) s!"Discrepancy at {s1}, orig: '{t1}' pped: '{trail}'"
       stripString |>.dropWhile (·.isWhitespace), tot1)
@@ -451,6 +465,123 @@ def scanWatching (verbose? : Bool) :
   | tot, k, s1, s2, str =>
     withVerbose verbose? "rest" <|
       (str, tot)
+
+/-- Replaces each consecutive run of whitespace in the input `s` with a single space.
+
+Unused. -/
+def reduceWhitespace (s : String) : String :=
+  " ".intercalate <| (s.split (·.isWhitespace)).filter (!·.isEmpty)
+
+def modifyTail (si : SourceInfo) (newTrail : Substring) : SourceInfo :=
+  match si with
+  | .original lead pos _ endPos => .original lead pos newTrail endPos
+  | _ => si
+
+/--
+Compares the two substrings `s` and `t`, with the expectation that `t` starts with `s`,
+up to whitespace.
+
+It returns the substring of `t` that starts from the first position where it differs from `s`,
+after it erased potential whitespace, taking care of preserving the last whitespace, if present.
+
+The typical application is when `s` is the value of an atom/identifier leaf in `Syntax` and
+`t` is the pretty-printed version of the whole syntax tree.
+The main goal is to figure out what is the trailing whitespace substring
+(usually either empty `""` or a single space `" "`).
+-/
+partial
+def readWhile (s t : Substring) : Substring :=
+  if s.isEmpty || t.isEmpty then t else
+  let s1 := s.take 1
+  let t1 := t.take 1
+  if s1 == t1 then
+    readWhile (s.drop 1) (t.drop 1)
+  else
+    if t1.trim.isEmpty then
+      readWhile s t.trimLeft
+    else
+    if s1.trim.isEmpty then
+      readWhile s.trimLeft t
+    else
+      t
+
+#eval show Lean.Elab.Term.TermElabM _ from do
+  let s := "/- alsdkj la l    asklj  ew ljr  wer-/".toSubstring
+  let t := "/- alsdkj la l asklj ew ljr    wer-/ theorem".toSubstring
+  guard <| (readWhile s t).toString == " theorem"
+  let t := "/- alsdkj la l asklj ew ljr    wer-/theorem".toSubstring
+  guard <| (readWhile s t).toString == "theorem"
+
+#eval show Lean.Elab.Term.TermElabM _ from do
+  let s := "example".toSubstring
+  let t := "example := 0".toSubstring
+  guard <| (readWhile s t).toString == " := 0"
+  let t := ":= 0".toSubstring
+  guard <| (readWhile (" :=".toSubstring) t).toString == " 0"
+  guard <| (readWhile (" := ".toSubstring) t).toString == "0"
+
+/--
+`insertSpacesAux verbose? noSpaceStx prettyString`
+scans the syntax tree `noSpaceStx` and, whenever it finds an `atom` or `ident` node,
+it compares it with the substring `prettyString`, consuming the value of the `atom`/`ident` and
+appending the following whitespace as trailing substring in the `SourceInfo`, if such a space is
+present.
+
+This essentially converts `noSpaceStx` into a `Syntax` tree whose traversal reconstructs exactly
+`prettyString`.
+-/
+def insertSpacesAux {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions m]
+    (verbose? : Bool) :
+    Syntax → Substring → m (Syntax × Substring)
+  | .ident info rawVal val pre, str => do
+    let read := readWhile rawVal str
+    if read == str then
+      logWarning m!"No change at '{read}'"
+    let (next, strNew) :=
+      if (read.take 1).toString == " "
+      then
+        (" ".toSubstring, read.drop 1)
+      else
+        ("".toSubstring, read)
+    if verbose? then
+      dbg_trace
+        s!"* ident '{rawVal}'\nStr: '{str}'\nRed: '{read}'\nNxt: '{next}'\nNew: '{strNew}'\n"
+    pure (.ident (modifyTail info next) rawVal val pre, strNew)
+  | .atom info val, str => do
+    let read := readWhile val.toSubstring str
+    if read == str then
+      logWarning m!"No change at '{read}'"
+    let (next, strNew) :=
+      if (read.take 1).toString == " "
+      then
+        (" ".toSubstring, read.drop 1)
+      else
+        ("".toSubstring, read)
+    if verbose? then
+      dbg_trace
+        s!"* atom '{val}'\nStr: '{str}'\nRed: '{read}'\nNxt: '{next}'\nNew: '{strNew}'\n"
+    pure (.atom (modifyTail info next) val, strNew)
+  | .node i1 s1 as1, str => do
+    --let s1 := if s1 == `null then k else s1
+    let mut str' := str
+    let mut stxs := #[]
+    for a1 in as1 do
+      --let a1 := as1[i]
+      let (newStx, strNew) ← insertSpacesAux verbose? a1 str'
+      if verbose? then
+        dbg_trace s!"'{strNew}' intermediate string at {s1}"
+      str' := strNew.trimLeft
+      stxs := stxs.push newStx
+    pure (.node i1 s1 stxs, str')
+  | s1, str => do
+    pure (s1, str)
+
+open Lean in
+def insertSpaces (verbose? : Bool) (stx : Syntax) : Elab.Command.CommandElabM Syntax := do
+  let s := stx.uniformizeSpaces
+  let pretty ← Mathlib.Linter.pretty s
+  let withSpaces ← insertSpacesAux verbose? stx pretty.toSubstring
+  return withSpaces.1
 
 def finalScan (stx : Syntax) (verbose? : Bool) : CommandElabM (Array Exceptions) := do
   let ustx := stx.uniformizeSpaces
