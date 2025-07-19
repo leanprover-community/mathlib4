@@ -532,5 +532,5 @@ theorem jacobiTheta₂'_functional_equation (z τ : ℂ) :
     rw [hj.deriv]
     simp only [div_eq_mul_inv _ τ]
     rw [deriv_cexp (((differentiableAt_pow _).const_mul _).mul_const _), mul_comm,
-      deriv_mul_const_field, deriv_const_mul_field, deriv_pow]
+      deriv_mul_const_field, deriv_const_mul_field, deriv_pow_field]
     ring_nf
