@@ -741,6 +741,7 @@ import Mathlib.Algebra.MvPolynomial.Eval
 import Mathlib.Algebra.MvPolynomial.Expand
 import Mathlib.Algebra.MvPolynomial.Funext
 import Mathlib.Algebra.MvPolynomial.Invertible
+import Mathlib.Algebra.MvPolynomial.Irreducible
 import Mathlib.Algebra.MvPolynomial.Monad
 import Mathlib.Algebra.MvPolynomial.Nilpotent
 import Mathlib.Algebra.MvPolynomial.PDeriv
