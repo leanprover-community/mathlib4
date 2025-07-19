@@ -44,40 +44,43 @@ def digitsAux1 (n : ℕ) : List ℕ :=
 def digitsAux (b : ℕ) (h : 2 ≤ b) (n : ℕ) : List ℕ :=
   go n (n + 2) init
 where
-  init : (if n = 0 then 0 else log b n + 2) < n + 2 := by
+  init : (if n = 0 then 0 else n + 1) < n + 2 := by
     split_ifs with hn
     · apply zero_lt_succ
     · rw [Nat.add_lt_add_iff_right]
-      exact log_lt_self b hn
-  decreasing (n f : ℕ) (hf : (if n + 1 = 0 then 0 else log b (n + 1) + 2) < f + 1) :
-    (if (n + 1) / b = 0 then 0 else log b ((n + 1) / b) + 2) < f := by
+      simp
+  decreasing (n f : ℕ) (hf : (if n + 1 = 0 then 0 else n + 2) < f + 1) :
+    (if (n + 1) / b = 0 then 0 else ((n + 1) / b) + 1) < f := by
         rw [if_neg n.add_one_ne_zero] at hf
         split_ifs with hn
         · exact zero_lt_of_lt (lt_of_succ_lt_succ hf)
         · rw [Nat.div_eq_zero_iff, or_iff_right (by omega), not_lt] at hn
-          rw [log_div_base, ← Nat.sub_add_comm (one_le_of_lt (log_pos (lt_of_succ_le h) hn))]
-          exact lt_of_succ_lt_succ hf
+          refine Nat.lt_of_le_of_lt (Nat.succ_le_succ ?_) (Nat.succ_lt_succ_iff.1 hf)
+          apply Nat.div_le_of_le_mul
+          apply (Nat.mul_le_mul_right n h).trans'
+          rw [Nat.two_mul, Nat.add_le_add_iff_left]
+          omega
   /-- Auxiliary function performing recursion for `Nat.digitsAux`. -/
-  go (n fuel : ℕ) (hfuel : (if n = 0 then 0 else b.log n + 2) < fuel) : List ℕ :=
+  go (n fuel : ℕ) (hfuel : (if n = 0 then 0 else n + 1) < fuel) : List ℕ :=
     match n, fuel, hfuel with
     | 0, _, _ => []
     | n + 1, f + 1, hf =>
       ((n + 1) % b) :: go ((n + 1) / b) f (decreasing n f hf)
 
 theorem digitsAux.go_zero (b : ℕ) (h : 2 ≤ b) (fuel : ℕ)
-    (hfuel : (if 0 = 0 then 0 else b.log n + 2) < fuel) :
+    (hfuel : (if 0 = 0 then 0 else n + 1) < fuel) :
     digitsAux.go b h 0 fuel hfuel = [] := by
   rw [digitsAux.go]
 
 theorem digitsAux.go_succ (b : ℕ) (h : 2 ≤ b) (n fuel : ℕ)
-    (hfuel : (if n + 1 = 0 then 0 else b.log (n + 1) + 2) < fuel + 1) :
+    (hfuel : (if n + 1 = 0 then 0 else n + 2) < fuel + 1) :
     digitsAux.go b h (n + 1) (fuel + 1) hfuel = ((n + 1) % b) ::
       digitsAux.go b h ((n + 1) / b) fuel (decreasing b h n fuel hfuel) :=
   rfl
 
 theorem digitsAux.go_fuel_irrel (b : ℕ) (h : 2 ≤ b) (n fuel fuel' : ℕ)
-    (hfuel : (if n = 0 then 0 else b.log n + 2) < fuel)
-    (hfuel' : (if n = 0 then 0 else b.log n + 2) < fuel') :
+    (hfuel : (if n = 0 then 0 else n + 1) < fuel)
+    (hfuel' : (if n = 0 then 0 else n + 1) < fuel') :
     digitsAux.go b h n fuel hfuel = digitsAux.go b h n fuel' hfuel' := by
   fun_induction go b h n fuel hfuel generalizing fuel'
   · rw [go_zero]
