@@ -276,7 +276,7 @@ nonrec theorem map_apply (hf : MeasurableEmbedding f) (μ : Measure α) (s : Set
       hf.measurableSet_range.compl
   have hst : s ⊆ t := by
     rw [subset_union_compl_iff_inter_subset, ← image_preimage_eq_inter_range]
-    exact image_subset _ (subset_toMeasurable _ _)
+    exact image_mono (subset_toMeasurable _ _)
   have hft : f ⁻¹' t = toMeasurable μ (f ⁻¹' s) := by
     rw [preimage_union, preimage_compl, preimage_range, compl_univ, union_empty,
       hf.injective.preimage_image]

@@ -144,7 +144,7 @@ theorem Convex.combo_interior_self_subset_interior {s : Set E} (hs : Convex 𝕜
     (ha : 0 < a) (hb : 0 ≤ b) (hab : a + b = 1) : a • interior s + b • s ⊆ interior s :=
   calc
     a • interior s + b • s ⊆ a • interior s + b • closure s :=
-      add_subset_add Subset.rfl <| image_subset _ subset_closure
+      add_subset_add Subset.rfl <| image_mono subset_closure
     _ ⊆ interior s := hs.combo_interior_closure_subset_interior ha hb hab
 
 /-- If `s` is a convex set, then `a • closure s + b • interior s ⊆ interior s` for all `0 ≤ a`,

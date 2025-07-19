@@ -99,9 +99,9 @@ theorem rieszContentAux_image_nonempty (K : Compacts X) :
 /-- Riesz content `λ` (associated with a positive linear functional `Λ`) is
 monotone: if `K₁ ⊆ K₂` are compact subsets in `X`, then `λ(K₁) ≤ λ(K₂)`. -/
 theorem rieszContentAux_mono {K₁ K₂ : Compacts X} (h : K₁ ≤ K₂) :
-    rieszContentAux Λ K₁ ≤ rieszContentAux Λ K₂ :=
-  csInf_le_csInf (OrderBot.bddBelow _) (rieszContentAux_image_nonempty Λ K₂)
-    (image_subset Λ (setOf_subset_setOf.mpr fun _ f_hyp x x_in_K₁ => f_hyp x (h x_in_K₁)))
+    rieszContentAux Λ K₁ ≤ rieszContentAux Λ K₂ := by
+  unfold rieszContentAux
+  gcongr; exacts [OrderBot.bddBelow _, rieszContentAux_image_nonempty Λ K₂]
 
 end RieszMonotone
 

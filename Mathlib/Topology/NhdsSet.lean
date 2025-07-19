@@ -124,7 +124,7 @@ theorem nhdsSet_univ : 𝓝ˢ (univ : Set X) = ⊤ := by rw [isOpen_univ.nhdsSet
 
 @[gcongr, mono]
 theorem nhdsSet_mono (h : s ⊆ t) : 𝓝ˢ s ≤ 𝓝ˢ t :=
-  sSup_le_sSup <| image_subset _ h
+  sSup_le_sSup <| image_mono h
 
 theorem monotone_nhdsSet : Monotone (𝓝ˢ : Set X → Filter X) := fun _ _ => nhdsSet_mono
 

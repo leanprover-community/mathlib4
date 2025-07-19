@@ -88,7 +88,7 @@ theorem mapsTo_extend (hs : s ⊆ f.source) :
     MapsTo (f.extend I) s ((f.extend I).symm ⁻¹' s ∩ range I) := by
   rw [mapsTo', extend_coe, extend_coe_symm, preimage_comp, ← I.image_eq, image_comp,
     f.image_eq_target_inter_inv_preimage hs]
-  exact image_subset _ inter_subset_right
+  exact image_mono inter_subset_right
 
 theorem extend_left_inv {x : M} (hxf : x ∈ f.source) : (f.extend I).symm (f.extend I x) = x :=
   (f.extend I).left_inv <| by rwa [f.extend_source]

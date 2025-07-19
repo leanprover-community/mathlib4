@@ -341,7 +341,7 @@ def map (f : F) (S : NonUnitalStarSubalgebra R A) : NonUnitalStarSubalgebra R B 
 
 theorem map_mono {S₁ S₂ : NonUnitalStarSubalgebra R A} {f : F} :
     S₁ ≤ S₂ → (map f S₁ : NonUnitalStarSubalgebra R B) ≤ map f S₂ :=
-  Set.image_subset f
+  Set.image_mono
 
 theorem map_injective {f : F} (hf : Function.Injective f) :
     Function.Injective (map f : NonUnitalStarSubalgebra R A → NonUnitalStarSubalgebra R B) :=

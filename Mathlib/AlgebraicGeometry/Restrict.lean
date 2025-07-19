@@ -593,7 +593,7 @@ theorem morphismRestrict_app' {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V 
 @[simp]
 theorem morphismRestrict_appLE {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V W e) :
     (f ∣_ U).appLE V W e = f.appLE (U.ι ''ᵁ V) ((f ⁻¹ᵁ U).ι ''ᵁ W)
-      ((Set.image_subset _ e).trans (image_morphismRestrict_preimage f U V).le) := by
+      ((Set.image_mono e).trans (image_morphismRestrict_preimage f U V).le) := by
   rw [Scheme.Hom.appLE, morphismRestrict_app', Scheme.Opens.toScheme_presheaf_map,
     Scheme.Hom.appLE_map]
 

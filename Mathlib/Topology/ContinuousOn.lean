@@ -1346,7 +1346,7 @@ theorem IsOpenMap.continuousOn_image_of_leftInvOn {f : α → β} {s : Set α}
   refine continuousOn_iff'.2 fun t ht => ⟨f '' (t ∩ s), ?_, ?_⟩
   · rw [← image_restrict]
     exact h _ (ht.preimage continuous_subtype_val)
-  · rw [inter_eq_self_of_subset_left (image_subset f inter_subset_right), hleft.image_inter']
+  · rw [inter_eq_self_of_subset_left (image_mono inter_subset_right), hleft.image_inter']
 
 theorem IsOpenMap.continuousOn_range_of_leftInverse {f : α → β} (hf : IsOpenMap f) {finv : β → α}
     (hleft : Function.LeftInverse finv f) : ContinuousOn finv (range f) := by

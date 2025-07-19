@@ -70,7 +70,7 @@ alias image_eq_one_of_nmem_mulTSupport := image_eq_one_of_notMem_mulTSupport
 theorem range_subset_insert_image_mulTSupport (f : X → α) :
     range f ⊆ insert 1 (f '' mulTSupport f) :=
   (range_subset_insert_image_mulSupport f).trans <|
-    insert_subset_insert <| image_subset _ subset_closure
+    insert_subset_insert <| image_mono subset_closure
 
 @[to_additive]
 theorem range_eq_image_mulTSupport_or (f : X → α) :
@@ -252,7 +252,7 @@ include hf cont
 theorem mulTSupport_extend_one_subset :
     mulTSupport (g.extend f 1) ⊆ g '' mulTSupport f :=
   (hf.image cont).isClosed.closure_subset_iff.mpr <|
-    mulSupport_extend_one_subset.trans (image_subset g subset_closure)
+    mulSupport_extend_one_subset.trans (Set.image_mono g subset_closure)
 
 @[to_additive]
 theorem extend_one : HasCompactMulSupport (g.extend f 1) :=

@@ -57,7 +57,7 @@ theorem repr_support_subset_of_mem_span (s : Set ι) {m : M}
 
 theorem mem_span_image {m : M} {s : Set ι} : m ∈ span R (b '' s) ↔ ↑(b.repr m).support ⊆ s :=
   ⟨repr_support_subset_of_mem_span _ _, fun h ↦
-    span_mono (image_subset _ h) (mem_span_repr_support b _)⟩
+    span_mono (Set.image_mono h) (mem_span_repr_support b _)⟩
 
 @[simp]
 theorem self_mem_span_image [Nontrivial R] {i : ι} {s : Set ι} :

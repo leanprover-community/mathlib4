@@ -373,7 +373,7 @@ theorem InjOn.image_eq_image_iff (h : s.InjOn f) (h₁ : s₁ ⊆ s) (h₂ : s�
 
 lemma InjOn.image_subset_image_iff (h : s.InjOn f) (h₁ : s₁ ⊆ s) (h₂ : s₂ ⊆ s) :
     f '' s₁ ⊆ f '' s₂ ↔ s₁ ⊆ s₂ := by
-  refine ⟨fun h' ↦ ?_, image_subset _⟩
+  refine ⟨fun h' ↦ ?_, image_mono⟩
   rw [← h.preimage_image_inter h₁, ← h.preimage_image_inter h₂]
   exact inter_subset_inter_left _ (preimage_mono h')
 
@@ -388,7 +388,7 @@ theorem _root_.Disjoint.image {s t u : Set α} {f : α → β} (h : Disjoint s t
   rw [← hf.image_inter hs ht, h, image_empty]
 
 lemma InjOn.image_diff {t : Set α} (h : s.InjOn f) : f '' (s \ t) = f '' s \ f '' (s ∩ t) := by
-  refine subset_antisymm (subset_diff.2 ⟨image_subset f diff_subset, ?_⟩)
+  refine subset_antisymm (subset_diff.2 ⟨image_mono diff_subset, ?_⟩)
     (diff_subset_iff.2 (by rw [← image_union, inter_union_diff]))
   exact Disjoint.image disjoint_sdiff_inter h diff_subset inter_subset_left
 
@@ -471,7 +471,7 @@ theorem EqOn.surjOn_iff (h : EqOn f₁ f₂ s) : SurjOn f₁ s t ↔ SurjOn f₂
   ⟨fun H => H.congr h, fun H => H.congr h.symm⟩
 
 theorem SurjOn.mono (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) (hf : SurjOn f s₁ t₂) : SurjOn f s₂ t₁ :=
-  Subset.trans ht <| Subset.trans hf <| image_subset _ hs
+  Subset.trans ht <| Subset.trans hf <| image_mono hs
 
 theorem SurjOn.union (h₁ : SurjOn f s t₁) (h₂ : SurjOn f s t₂) : SurjOn f s (t₁ ∪ t₂) := fun _ hx =>
   hx.elim (fun hx => h₁ hx) fun hx => h₂ hx
@@ -496,7 +496,7 @@ theorem SurjOn.inter (h₁ : SurjOn f s₁ t) (h₂ : SurjOn f s₂ t) (h : InjO
 lemma surjOn_id (s : Set α) : SurjOn id s s := by simp [SurjOn]
 
 theorem SurjOn.comp (hg : SurjOn g t p) (hf : SurjOn f s t) : SurjOn (g ∘ f) s p :=
-  Subset.trans hg <| Subset.trans (image_subset g hf) <| image_comp g f s ▸ Subset.refl _
+  Subset.trans hg <| Subset.trans (image_mono hf) <| image_comp g f s ▸ Subset.refl _
 
 lemma SurjOn.of_comp (h : SurjOn (g ∘ f) s p) (hr : MapsTo f s t) : SurjOn g t p := by
   intro z hz
@@ -511,7 +511,7 @@ lemma SurjOn.iterate {f : α → α} {s : Set α} (h : SurjOn f s s) : ∀ n, Su
   | (n + 1) => (h.iterate n).comp h
 
 lemma SurjOn.comp_left (hf : SurjOn f s t) (g : β → γ) : SurjOn (g ∘ f) s (g '' t) := by
-  rw [SurjOn, image_comp g f]; exact image_subset _ hf
+  rw [SurjOn, image_comp g f]; exact image_mono hf
 
 lemma SurjOn.comp_right {s : Set β} {t : Set γ} (hf : Surjective f) (hg : SurjOn g s t) :
     SurjOn (g ∘ f) (f ⁻¹' s) t := by
@@ -1039,7 +1039,7 @@ theorem BijOn.exists_extend {t' : Set β} (h : BijOn f s t) (htt' : t ⊆ t') (h
 theorem InjOn.exists_subset_injOn_subset_range_eq {r : Set α} (hinj : InjOn f r) (hrs : r ⊆ s) :
     ∃ u : Set α, r ⊆ u ∧ u ⊆ s ∧ f '' u = f '' s ∧ InjOn f u := by
   obtain ⟨u, hru, hus, h⟩ := hinj.bijOn_image.exists_extend_of_subset hrs
-    (image_subset f hrs) Subset.rfl
+    (image_mono hrs) Subset.rfl
   exact ⟨u, hru, hus, h.image_eq, h.injOn⟩
 
 theorem preimage_invFun_of_mem [n : Nonempty α] {f : α → β} (hf : Injective f) {s : Set α}

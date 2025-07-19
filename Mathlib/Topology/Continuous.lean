@@ -206,7 +206,7 @@ theorem closure_image_closure (h : Continuous f) :
     closure (f '' closure s) = closure (f '' s) :=
   Subset.antisymm
     (closure_minimal (image_closure_subset_closure_image h) isClosed_closure)
-    (closure_mono <| image_subset _ subset_closure)
+    (closure_mono <| image_mono subset_closure)
 
 theorem closure_subset_preimage_closure_image (h : Continuous f) :
     closure s ⊆ f ⁻¹' closure (f '' s) :=

@@ -127,7 +127,7 @@ theorem isTotallyDisconnected_of_image [TopologicalSpace β] {f : α → β} (hf
     (hf' : Injective f) (h : IsTotallyDisconnected (f '' s)) : IsTotallyDisconnected s :=
   fun _t hts ht _x x_in _y y_in =>
   hf' <|
-    h _ (image_subset f hts) (ht.image f <| hf.mono hts) (mem_image_of_mem f x_in)
+    h _ (image_mono hts) (ht.image f <| hf.mono hts) (mem_image_of_mem f x_in)
       (mem_image_of_mem f y_in)
 
 lemma Topology.IsEmbedding.isTotallyDisconnected [TopologicalSpace β] {f : α → β} {s : Set α}

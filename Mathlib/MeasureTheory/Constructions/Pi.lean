@@ -89,7 +89,7 @@ theorem piPremeasure_pi' {s : ∀ i, Set (α i)} : piPremeasure m (pi univ s) = 
 
 theorem piPremeasure_pi_mono {s t : Set (∀ i, α i)} (h : s ⊆ t) :
     piPremeasure m s ≤ piPremeasure m t :=
-  Finset.prod_le_prod' fun _ _ => measure_mono (image_subset _ h)
+  Finset.prod_le_prod' fun _ _ => measure_mono (Set.image_mono h)
 
 theorem piPremeasure_pi_eval {s : Set (∀ i, α i)} :
     piPremeasure m (pi univ fun i => eval i '' s) = piPremeasure m s := by

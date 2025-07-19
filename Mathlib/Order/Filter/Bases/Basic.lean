@@ -639,7 +639,7 @@ structure HasAntitoneBasis (l : Filter α) (s : ι'' → Set α) : Prop
 
 protected theorem HasAntitoneBasis.map {l : Filter α} {s : ι'' → Set α}
     (hf : HasAntitoneBasis l s) (m : α → β) : HasAntitoneBasis (map m l) (m '' s ·) :=
-  ⟨HasBasis.map _ hf.toHasBasis, fun _ _ h => image_subset _ <| hf.2 h⟩
+  ⟨HasBasis.map _ hf.toHasBasis, fun _ _ h => image_mono <| hf.2 h⟩
 
 protected theorem HasAntitoneBasis.comap {l : Filter α} {s : ι'' → Set α}
     (hf : HasAntitoneBasis l s) (m : β → α) : HasAntitoneBasis (comap m l) (m ⁻¹' s ·) :=

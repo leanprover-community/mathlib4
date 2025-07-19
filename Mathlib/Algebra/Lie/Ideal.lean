@@ -215,7 +215,8 @@ theorem comap_map_le : I ≤ comap f (map f I) := by rw [← map_le_iff_le_comap
 @[mono]
 theorem map_mono : Monotone (map f) := fun I₁ I₂ h ↦ by
   rw [SetLike.le_def] at h
-  apply LieSubmodule.lieSpan_mono (Set.image_subset (⇑f) h)
+  gcongr
+  exact h
 
 @[mono]
 theorem comap_mono : Monotone (comap f) := fun J₁ J₂ h ↦ by

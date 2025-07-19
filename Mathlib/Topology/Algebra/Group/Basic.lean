@@ -1093,7 +1093,7 @@ open MulOpposite
 theorem compact_open_separated_mul_left {K U : Set G} (hK : IsCompact K) (hU : IsOpen U)
     (hKU : K ⊆ U) : ∃ V ∈ 𝓝 (1 : G), V * K ⊆ U := by
   rcases compact_open_separated_mul_right (hK.image continuous_op) (opHomeomorph.isOpenMap U hU)
-      (image_subset op hKU) with
+      (image_mono hKU) with
     ⟨V, hV : V ∈ 𝓝 (op (1 : G)), hV' : op '' K * V ⊆ op '' U⟩
   refine ⟨op ⁻¹' V, continuous_op.continuousAt hV, ?_⟩
   rwa [← image_preimage_eq V op_surjective, ← image_op_mul, image_subset_iff,

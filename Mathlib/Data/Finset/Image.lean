@@ -643,7 +643,7 @@ theorem subset_set_image_iff [DecidableEq β] {s : Set α} {t : Finset β} {f : 
     ext y; simp
   · rintro ⟨t, ht, rfl⟩
     rw [coe_image]
-    exact Set.image_subset f ht
+    exact Set.image_mono ht
 
 /--
 If a finset `t` is a subset of the image of another finset `s` under `f`, then it is equal to the

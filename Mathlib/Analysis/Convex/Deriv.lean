@@ -433,7 +433,7 @@ lemma hasDerivWithinAt_sInf_slope_of_mem_interior (hfc : ConvexOn ℝ S f) (hxs 
   have h : Ioo x b ⊆ {y | y ∈ S ∧ x < y} := fun z hz ↦ ⟨habs ⟨hxab.1.trans hz.1, hz.2⟩, hz.1⟩
   have h_Ioo : Tendsto (slope f x) (𝓝[>] x) (𝓝 (sInf (slope f x '' Ioo x b))) :=
     ((monotoneOn_slope_gt hfc (habs hxab)).mono h).tendsto_nhdsWithin_Ioo_right
-      (by simpa using hxab.2) ((bddBelow_slope_lt_of_mem_interior hfc hxs).mono (image_subset _ h))
+      (by simpa using hxab.2) ((bddBelow_slope_lt_of_mem_interior hfc hxs).mono (image_mono h))
   suffices sInf (slope f x '' Ioo x b) = sInf (slope f x '' {y ∈ S | x < y}) by rwa [← this]
   apply (monotoneOn_slope_gt hfc (habs hxab)).csInf_eq_of_subset_of_forall_exists_le
     (bddBelow_slope_lt_of_mem_interior hfc hxs) h ?_
@@ -451,7 +451,7 @@ lemma hasDerivWithinAt_sSup_slope_of_mem_interior (hfc : ConvexOn ℝ S f) (hxs 
   have h : Ioo a x ⊆ {y | y ∈ S ∧ y < x} := fun z hz ↦ ⟨habs ⟨hz.1, hz.2.trans hxab.2⟩, hz.2⟩
   have h_Ioo : Tendsto (slope f x) (𝓝[<] x) (𝓝 (sSup (slope f x '' Ioo a x))) :=
     ((monotoneOn_slope_lt hfc (habs hxab)).mono h).tendsto_nhdsWithin_Ioo_left
-      (by simpa using hxab.1) ((bddAbove_slope_gt_of_mem_interior hfc hxs).mono (image_subset _ h))
+      (by simpa using hxab.1) ((bddAbove_slope_gt_of_mem_interior hfc hxs).mono (image_mono h))
   suffices sSup (slope f x '' Ioo a x) = sSup (slope f x '' {y ∈ S | y < x}) by rwa [← this]
   apply (monotoneOn_slope_lt hfc (habs hxab)).csSup_eq_of_subset_of_forall_exists_le
     (bddAbove_slope_gt_of_mem_interior hfc hxs) h ?_

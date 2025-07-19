@@ -194,7 +194,7 @@ theorem comap_cobounded_le_iff [Bornology β] {f : α → β} :
       ⟨(f '' tᶜ)ᶜ, h <| IsCobounded.compl ht, compl_subset_comm.1 <| subset_preimage_image _ _⟩⟩
   obtain ⟨t, ht, hts⟩ := h hs.compl
   rw [subset_compl_comm, ← preimage_compl] at hts
-  exact (IsCobounded.compl ht).subset ((image_subset f hts).trans <| image_preimage_subset _ _)
+  exact (IsCobounded.compl ht).subset ((image_mono hts).trans <| image_preimage_subset _ _)
 
 end
 

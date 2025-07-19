@@ -351,7 +351,7 @@ def map (f : F) (S : NonUnitalSubalgebra R A) : NonUnitalSubalgebra R B :=
 
 theorem map_mono {S₁ S₂ : NonUnitalSubalgebra R A} {f : F} :
     S₁ ≤ S₂ → (map f S₁ : NonUnitalSubalgebra R B) ≤ map f S₂ :=
-  Set.image_subset f
+  Set.image_moono
 
 theorem map_injective {f : F} (hf : Function.Injective f) :
     Function.Injective (map f : NonUnitalSubalgebra R A → NonUnitalSubalgebra R B) :=

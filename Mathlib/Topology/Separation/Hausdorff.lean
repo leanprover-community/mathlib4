@@ -614,7 +614,7 @@ theorem IsCompact.inter [T2Space X] {s t : Set X} (hs : IsCompact s) (ht : IsCom
 theorem image_closure_of_isCompact [T2Space Y] {s : Set X} (hs : IsCompact (closure s)) {f : X → Y}
     (hf : ContinuousOn f (closure s)) : f '' closure s = closure (f '' s) :=
   Subset.antisymm hf.image_closure <|
-    closure_minimal (image_subset f subset_closure) (hs.image_of_continuousOn hf).isClosed
+    closure_minimal (image_mono subset_closure) (hs.image_of_continuousOn hf).isClosed
 
 /-- Two continuous maps into a Hausdorff space agree at a point iff they agree in a
 neighborhood. -/

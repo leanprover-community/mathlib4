@@ -67,7 +67,7 @@ theorem image_span_subset_span (f : F) (s : Set M) : f '' span R s ⊆ span R₂
 
 theorem map_span [RingHomSurjective σ₁₂] (f : F) (s : Set M) :
     (span R s).map f = span R₂ (f '' s) :=
-  Eq.symm <| span_eq_of_le _ (Set.image_subset f subset_span) (image_span_subset_span f s)
+  Eq.symm <| span_eq_of_le _ (Set.image_mono subset_span) (image_span_subset_span f s)
 
 alias _root_.LinearMap.map_span := Submodule.map_span
 

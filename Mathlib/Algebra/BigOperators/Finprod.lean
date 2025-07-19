@@ -346,7 +346,7 @@ theorem finprod_eq_prod_of_mulSupport_subset (f : α → M) {s : Finset α} (h :
     exact (Equiv.plift.symm.image_eq_preimage _).symm
   have : mulSupport (f ∘ PLift.down) ⊆ s.map Equiv.plift.symm.toEmbedding := by
     rw [A, Finset.coe_map]
-    exact image_subset _ h
+    exact image_mono h
   rw [finprod_eq_prod_plift_of_mulSupport_subset this]
   simp only [Finset.prod_map, Equiv.coe_toEmbedding]
   congr

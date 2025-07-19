@@ -27,7 +27,7 @@ theorem MonotoneOn.exists_monotone_extension (h : MonotoneOn f s) (hl : BddBelow
       of `f` to the left of `x` for `x ≥ a`. -/
     rcases hl with ⟨a, ha⟩
     have hu' : ∀ x, BddAbove (f '' (Iic x ∩ s)) := fun x =>
-      hu.mono (image_subset _ inter_subset_right)
+      hu.mono (image_mono inter_subset_right)
     let g : α → β := fun x => if Disjoint (Iic x) s then a else sSup (f '' (Iic x ∩ s))
     have hgs : EqOn f g s := by
       intro x hx
@@ -42,7 +42,7 @@ theorem MonotoneOn.exists_monotone_extension (h : MonotoneOn f s) (hl : BddBelow
       exact le_csSup_of_le (hu' _) (mem_image_of_mem _ hz) (ha <| mem_image_of_mem _ hz.2)
     · exact (hx <| hy.mono_left <| Iic_subset_Iic.2 hxy).elim
     · rw [not_disjoint_iff_nonempty_inter] at hx hy
-      refine csSup_le_csSup (hu' _) (hx.image _) (image_subset _ ?_)
+      refine csSup_le_csSup (hu' _) (hx.image _) (image_mono ?_)
       exact inter_subset_inter_left _ (Iic_subset_Iic.2 hxy)
 
 /-- If a function is antitone and is bounded on a set `s`, then it admits an antitone extension to

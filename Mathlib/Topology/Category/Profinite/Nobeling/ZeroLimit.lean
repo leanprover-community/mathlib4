@@ -83,7 +83,7 @@ instance : Unique { l // Products.isGood ({fun _ ↦ false} : Set (I → Bool)) 
     apply hll
     have he : {Products.nil} ⊆ {m | m < ⟨l,hl⟩} := by
       simpa only [Products.nil, Products.lt_iff_lex_lt, Set.singleton_subset_iff, Set.mem_setOf_eq]
-    apply Submodule.span_mono (Set.image_subset _ he)
+    apply Submodule.span_mono (image_mono he)
     rw [Products.span_nil_eq_top]
     exact Submodule.mem_top
 

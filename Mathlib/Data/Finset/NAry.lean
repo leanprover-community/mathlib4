@@ -439,7 +439,7 @@ theorem card_dvd_card_image₂_right (hf : ∀ a ∈ s, Injective (f a))
   induction' s using Finset.induction with a s _ ih
   · simp
   specialize ih (forall_of_forall_insert hf)
-    (hs.subset <| Set.image_subset _ <| coe_subset.2 <| subset_insert _ _)
+    (hs.subset <| Set.image_mono <| coe_subset.2 <| subset_insert _ _)
   rw [image₂_insert_left]
   by_cases h : Disjoint (image (f a) t) (image₂ f s t)
   · rw [card_union_of_disjoint h]
