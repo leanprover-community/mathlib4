@@ -50,11 +50,11 @@ instance OrderDual.instPow' [h : Pow α β] : Pow α βᵒᵈ :=
 
 @[to_additive]
 instance [Semigroup α] : Semigroup αᵒᵈ where
-  mul_assoc a b c := congrArg toDual <| mul_assoc a.ofDual b.ofDual c.ofDual
+  mul_assoc _ _ _ := congrArg toDual <| mul_assoc ..
 
 @[to_additive]
 instance [CommSemigroup α] : CommSemigroup αᵒᵈ where
-  mul_comm a b := congrArg toDual <| mul_comm a.ofDual b.ofDual
+  mul_comm _ _ := congrArg toDual <| mul_comm ..
 
 @[to_additive]
 instance [Mul α] [IsLeftCancelMul α] : IsLeftCancelMul αᵒᵈ where
@@ -77,8 +77,8 @@ instance [RightCancelSemigroup α] : RightCancelSemigroup αᵒᵈ where
 
 @[to_additive]
 instance [MulOneClass α] : MulOneClass αᵒᵈ where
-  one_mul a := congrArg toDual (one_mul a.ofDual)
-  mul_one a := congrArg toDual (mul_one a.ofDual)
+  one_mul _ := congrArg toDual (one_mul _)
+  mul_one _ := congrArg toDual (mul_one _)
 
 @[to_additive]
 instance [Monoid α] : Monoid αᵒᵈ where
@@ -100,15 +100,15 @@ instance OrderDual.instCancelCommMonoid [h : CancelCommMonoid α] : CancelCommMo
 
 @[to_additive]
 instance [InvolutiveInv α] : InvolutiveInv αᵒᵈ where
-  inv_inv a := congrArg toDual (inv_inv a.ofDual)
+  inv_inv _ := congrArg toDual (inv_inv _)
 
 @[to_additive]
 instance [DivInvMonoid α] : DivInvMonoid αᵒᵈ where
-  div_eq_mul_inv a b := congrArg toDual (div_eq_mul_inv a.ofDual b.ofDual)
+  div_eq_mul_inv _ _ := congrArg toDual (div_eq_mul_inv _ _)
 
 @[to_additive]
 instance [DivisionMonoid α] : DivisionMonoid αᵒᵈ where
-  mul_inv_rev a b := congrArg toDual (mul_inv_rev a.ofDual b.ofDual)
+  mul_inv_rev _ _ := congrArg toDual (mul_inv_rev _ _)
   inv_eq_of_mul _ _ h := congrArg toDual (DivisionMonoid.inv_eq_of_mul _ _ (congrArg ofDual h))
 
 @[to_additive]
@@ -116,7 +116,7 @@ instance [DivisionCommMonoid α] : DivisionCommMonoid αᵒᵈ where
 
 @[to_additive]
 instance OrderDual.instGroup [Group α] : Group αᵒᵈ where
-  inv_mul_cancel a := congrArg toDual (inv_mul_cancel a.ofDual)
+  inv_mul_cancel _ := congrArg toDual (inv_mul_cancel _)
 
 @[to_additive]
 instance [CommGroup α] : CommGroup αᵒᵈ where
