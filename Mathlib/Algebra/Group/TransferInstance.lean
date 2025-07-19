@@ -120,6 +120,27 @@ protected abbrev commSemigroup [CommSemigroup β] : CommSemigroup α := by
   let mul := e.mul
   apply e.injective.commSemigroup _; intros; exact e.apply_symm_apply _
 
+/-- Transfer `IsLeftCancelMul` across an `Equiv` -/
+@[to_additive "Transfer `IsLeftCancelAdd` across an `Equiv`"]
+protected abbrev isLeftCancelMul [Mul β] [IsLeftCancelMul β] :
+    letI := e.mul
+    IsLeftCancelMul α := by
+  letI := e.mul; exact e.injective.isLeftCancelMul _ fun _ _ ↦ e.apply_symm_apply _
+
+/-- Transfer `IsRightCancelMul` across an `Equiv` -/
+@[to_additive "Transfer `IsRightCancelAdd` across an `Equiv`"]
+protected abbrev isRightCancelMul [Mul β] [IsRightCancelMul β] :
+    letI := e.mul
+    IsRightCancelMul α := by
+  letI := e.mul; exact e.injective.isRightCancelMul _ fun _ _ ↦ e.apply_symm_apply _
+
+/-- Transfer `IsCancelMul` across an `Equiv` -/
+@[to_additive "Transfer `IsCancelAdd` across an `Equiv`"]
+protected abbrev isCancelMul [Mul β] [IsCancelMul β] :
+    letI := e.mul
+    IsCancelMul α := by
+  letI := e.mul; exact e.injective.isCancelMul _ fun _ _ ↦ e.apply_symm_apply _
+
 /-- Transfer `MulOneClass` across an `Equiv` -/
 @[to_additive "Transfer `AddZeroClass` across an `Equiv`"]
 protected abbrev mulOneClass [MulOneClass β] : MulOneClass α := by
