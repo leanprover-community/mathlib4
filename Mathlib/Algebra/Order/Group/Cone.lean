@@ -110,7 +110,7 @@ abbrev PartialOrder.mkOfGroupCone [GroupConeClass S G] : PartialOrder G where
     simpa [div_eq_one, eq_comm] using eq_one_of_mem_of_inv_mem nab (by simpa using nba)
 
 @[to_additive (attr := simp)]
-lemma PartialOrder.mkOfGroupCone_toLE {S G : Type*} [CommGroup G] [SetLike S G]
+lemma PartialOrder.mkOfGroupCone_le_iff {S G : Type*} [CommGroup G] [SetLike S G]
     [GroupConeClass S G] {C : S} {a b : G} :
     (mkOfGroupCone C).le a b ↔ b / a ∈ C := Iff.rfl
 
