@@ -174,12 +174,12 @@ theorem support_toAddSubgroup : (support P).toAddSubgroup = supportAddSubgroup P
 
 end support
 
-/-!
-### (Prime) orderings
+/--
+An ordering `O` on a ring `R` is a preordering such that
+(i) `O` contains either `x` or `-x` for each `x` in `R` and
+(ii) the support of `O` is a prime ideal.
 -/
-
-/-- A prime ordering `P` on a ring `R` is an ordering whose support is a prime ideal. -/
-class IsPrimeOrdering (P : RingPreordering R) extends HasMemOrNegMem P where
+class IsOrdering (P : RingPreordering R) extends HasMemOrNegMem P where
   mem_or_mem_of_mul {x y : R} (h : x * y ∈ supportAddSubgroup P) :
     x ∈ supportAddSubgroup P ∨ y ∈ supportAddSubgroup P
 
