@@ -49,11 +49,8 @@ theorem Monic.as_sum (hp : p.Monic) :
   suffices C (p.coeff p.natDegree) = 1 by rw [this, one_mul]
   exact congr_arg C hp
 
-theorem ne_zero_of_ne_zero_of_monic (hp : p ≠ 0) (hq : Monic q) : q ≠ 0 := by
-  rintro rfl
-  rw [Monic.def, leadingCoeff_zero] at hq
-  rw [← mul_one p, ← C_1, ← hq, C_0, mul_zero] at hp
-  exact hp rfl
+theorem ne_zero_of_ne_zero_of_monic (hp : p ≠ 0) (hq : Monic q) : q ≠ 0 :=
+  Monic.ne_zero_of_polynomial_ne hq hp
 
 theorem Monic.map [Semiring S] (f : R →+* S) (hp : Monic p) : Monic (p.map f) := by
   unfold Monic
@@ -149,11 +146,7 @@ theorem natDegree_eq_zero_iff_eq_one (hp : p.Monic) : p.natDegree = 0 ↔ p = 1 
   swap
   · rw [h]
     exact natDegree_one
-  have : p = C (p.coeff 0) := by
-    rw [← Polynomial.degree_le_zero_iff]
-    rwa [Polynomial.natDegree_eq_zero_iff_degree_le_zero] at h
-  rw [this]
-  rw [← h, ← Polynomial.leadingCoeff, Monic.def.1 hp, C_1]
+  exact eq_one_of_monic_natDegree_zero hp h
 
 @[simp]
 theorem degree_le_zero_iff_eq_one (hp : p.Monic) : p.degree ≤ 0 ↔ p = 1 := by
@@ -519,10 +512,7 @@ theorem Monic.isRegular {R : Type*} [Ring R] {p : R[X]} (hp : Monic p) : IsRegul
 theorem degree_smul_of_smul_regular {S : Type*} [SMulZeroClass S R] {k : S}
     (p : R[X]) (h : IsSMulRegular R k) : (k • p).degree = p.degree := by
   refine le_antisymm ?_ ?_
-  · rw [degree_le_iff_coeff_zero]
-    intro m hm
-    rw [degree_lt_iff_coeff_zero] at hm
-    simp [hm m le_rfl]
+  · exact degree_smul_le k p
   · rw [degree_le_iff_coeff_zero]
     intro m hm
     rw [degree_lt_iff_coeff_zero] at hm
@@ -556,11 +546,7 @@ theorem isUnit_leadingCoeff_mul_right_eq_zero_iff (h : IsUnit p.leadingCoeff) {q
   constructor
   · intro hp
     rw [← smul_eq_zero_iff_eq h.unit⁻¹] at hp
-    have : h.unit⁻¹ • (p * q) = h.unit⁻¹ • p * q := by
-      ext
-      simp only [Units.smul_def, coeff_smul, coeff_mul, smul_eq_mul, mul_sum]
-      refine sum_congr rfl fun x _ => ?_
-      rw [← mul_assoc]
+    have : h.unit⁻¹ • (p * q) = h.unit⁻¹ • p * q := Eq.symm (smul_mul_assoc h.unit⁻¹ p q)
     rwa [this, Monic.mul_right_eq_zero_iff] at hp
     exact monic_of_isUnit_leadingCoeff_inv_smul _
   · rintro rfl
