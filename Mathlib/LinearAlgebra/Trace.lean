@@ -159,8 +159,9 @@ theorem trace_eq_contract_apply (x : Module.Dual R M ⊗[R] M) :
 /-- When `M` is finite free, the trace of a linear map corresponds to the contraction pairing under
 the isomorphism `End(M) ≃ M* ⊗ M`. -/
 theorem trace_eq_contract' :
-    LinearMap.trace R M = contractLeft R M ∘ₗ (dualTensorHomEquiv R M M).symm.toLinearMap :=
-  trace_eq_contract_of_basis' (Module.Free.chooseBasis R M)
+    LinearMap.trace R M = contractLeft R M ∘ₗ (dualTensorHomEquiv R M M).symm.toLinearMap := by
+  rw [dualTensorHomEquiv_eq_dualTensorHomEquivOfBasis (Module.Free.chooseBasis R M)]
+  exact trace_eq_contract_of_basis' _
 
 /-- The trace of the identity endomorphism is the dimension of the free module. -/
 @[simp]
@@ -188,17 +189,7 @@ theorem trace_prodMap :
   let e := (dualTensorHomEquiv R M M).prodCongr (dualTensorHomEquiv R N N)
   have h : Function.Surjective e.toLinearMap := e.surjective
   refine (cancel_right h).1 ?_
-  ext
-  · simp only [dualTensorHomEquiv, LinearEquiv.coe_prodCongr,
-      dualTensorHomEquivOfBasis_toLinearMap, AlgebraTensorModule.curry_apply, restrictScalars_comp,
-      curry_apply, coe_comp, coe_restrictScalars, coe_inl, Function.comp_apply, prodMap_apply,
-      map_zero, prodMapLinear_apply, dualTensorHom_prodMap_zero, trace_eq_contract_apply,
-      contractLeft_apply, coe_fst, coprod_apply, id_coe, id_eq, add_zero, e]
-  · simp only [dualTensorHomEquiv, LinearEquiv.coe_prodCongr,
-      dualTensorHomEquivOfBasis_toLinearMap, AlgebraTensorModule.curry_apply, restrictScalars_comp,
-      curry_apply, coe_comp, coe_restrictScalars, coe_inr, Function.comp_apply, prodMap_apply,
-      map_zero, prodMapLinear_apply, zero_prodMap_dualTensorHom, trace_eq_contract_apply,
-      contractLeft_apply, coe_snd, coprod_apply, id_coe, id_eq, zero_add, e]
+  ext <;> simp [e]
 
 variable {R M N P}
 
