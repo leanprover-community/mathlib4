@@ -146,6 +146,8 @@ theorem eLpNorm_sum_le [ContinuousAdd ε'] {ι} {f : ι → α → ε'} {s : Fin
     (fun f => AEStronglyMeasurable f μ) eLpNorm_zero (fun _f _g hf hg => eLpNorm_add_le hf hg hp1)
     (fun _f _g hf hg => hf.add hg) _ hfs
 
+-- TODO: We can prove `eLpNorm_expect_le` once we have `Module ℚ≥0 ℝ≥0∞`
+
 theorem MemLp.add [ContinuousAdd ε] (hf : MemLp f p μ) (hg : MemLp g p μ) : MemLp (f + g) p μ :=
   ⟨AEStronglyMeasurable.add hf.1 hg.1, eLpNorm_add_lt_top hf hg⟩
 
