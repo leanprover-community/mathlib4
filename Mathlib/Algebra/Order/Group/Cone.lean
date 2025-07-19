@@ -111,7 +111,7 @@ abbrev PartialOrder.mkOfGroupCone [GroupConeClass S G] : PartialOrder G where
 
 @[to_additive (attr := simp)]
 lemma PartialOrder.mkOfGroupCone_toLE {S G : Type*} [CommGroup G] [SetLike S G]
-    [GroupConeClass S G] (C : S) (a b : G) :
+    [GroupConeClass S G] {C : S} {a b : G} :
     (mkOfGroupCone C).le a b ↔ b / a ∈ C := Iff.rfl
 
 /-- Construct a linear order by designating a maximal cone in an abelian group. -/
