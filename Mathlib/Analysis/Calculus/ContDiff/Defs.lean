@@ -1129,6 +1129,10 @@ theorem contDiffAt_one_iff :
   simp_rw [contDiffAt_succ_iff_hasFDerivAt, show ((0 : ℕ) : WithTop ℕ∞) = 0 from rfl,
     contDiffAt_zero, exists_mem_and_iff antitone_bforall antitone_continuousOn, and_comm]
 
+theorem ContDiffAt.congr (h : ContDiffAt 𝕜 n f x) (h₁ : ∀ y, f₁ y = f y) :
+    ContDiffAt 𝕜 n f₁ x :=
+  h.congr_of_eventuallyEq <| univ_mem' h₁
+
 @[fun_prop]
 theorem ContDiff.of_le (h : ContDiff 𝕜 n f) (hmn : m ≤ n) : ContDiff 𝕜 m f :=
   contDiffOn_univ.1 <| (contDiffOn_univ.2 h).of_le hmn
