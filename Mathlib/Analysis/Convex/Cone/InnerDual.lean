@@ -176,7 +176,7 @@ theorem ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_notMem (K : 
     rwa [add_sub_cancel_right, real_inner_comm, ← neg_nonneg, neg_eq_neg_one_mul,
       ← real_inner_smul_right, neg_smul, one_smul, neg_sub] at hinner
   · -- as `K` is closed and non-empty, it is pointed
-    have hinner₀ := hinner 0 (.of_nonempty_of_isClosed ne hc : K.Pointed)
+    have hinner₀ := hinner 0 (.of_nonempty_of_isClosed (C := K) ne hc)
     -- the rest of the proof is a straightforward calculation
     rw [zero_sub, inner_neg_right, Right.neg_nonpos_iff] at hinner₀
     have hbz : b - z ≠ 0 := by
