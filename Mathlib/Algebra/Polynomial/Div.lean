@@ -137,10 +137,7 @@ theorem degree_modByMonic_lt [Nontrivial R] :
         degree_modByMonic_lt (p - q * (C (leadingCoeff p) * X ^ (natDegree p - natDegree q))) hq
       unfold modByMonic at this ⊢
       unfold divModByMonicAux
-      dsimp
-      rw [dif_pos hq] at this ⊢
-      rw [if_pos h]
-      exact this
+      grind
     else
       Or.casesOn (not_and_or.1 h)
         (by
@@ -169,19 +166,13 @@ theorem natDegree_modByMonic_lt (p : R[X]) {q : R[X]} (hmq : Monic q) (hq : q �
 theorem zero_modByMonic (p : R[X]) : 0 %ₘ p = 0 := by
   classical
   unfold modByMonic divModByMonicAux
-  dsimp
-  by_cases hp : Monic p
-  · rw [dif_pos hp, if_neg (mt And.right (not_not_intro rfl))]
-  · rw [dif_neg hp]
+  grind
 
 @[simp]
 theorem zero_divByMonic (p : R[X]) : 0 /ₘ p = 0 := by
   classical
   unfold divByMonic divModByMonicAux
-  dsimp
-  by_cases hp : Monic p
-  · rw [dif_pos hp, if_neg (mt And.right (not_not_intro rfl))]
-  · rw [dif_neg hp]
+  grind
 
 @[simp]
 theorem modByMonic_zero (p : R[X]) : p %ₘ 0 = p :=
