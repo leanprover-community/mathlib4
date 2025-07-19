@@ -244,6 +244,25 @@ theorem card_zmod (n : ℕ) : Nat.card (ZMod n) = n := by
   · exact @Nat.card_eq_zero_of_infinite _ Int.infinite
   · rw [Nat.card_eq_fintype_card, ZMod.card]
 
+lemma card_compl_add_card {α : Type*} (S : Set α) [Finite α] :
+    Nat.card (Sᶜ : Set α) + Nat.card S = Nat.card α := by
+  classical
+  have : Fintype α := Fintype.ofFinite α
+  simp only [card_eq_fintype_card, ← Finset.card_compl_add_card S.toFinset, Set.toFinset_card,
+    Fintype.card_ofFinset]
+  congr
+  ext
+  simp
+
+lemma card_compl_of_card_eq_add {α : Type*} [Finite α] (S : Set α) {n : ℕ}
+    (h : Nat.card α = n + Nat.card S) :
+    Nat.card (Sᶜ : Set α) = n := by
+  rwa [← card_compl_add_card S, Nat.add_right_cancel_iff] at h
+
+lemma card_compl {α : Type*} (S : Set α) [Finite α] :
+    Nat.card (Sᶜ : Set α) = Nat.card α - Nat.card S := by
+  rw [← card_compl_add_card S, add_tsub_cancel_right]
+
 end Nat
 
 namespace Set
