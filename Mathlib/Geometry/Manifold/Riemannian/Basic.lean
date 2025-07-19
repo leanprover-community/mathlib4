@@ -61,7 +61,7 @@ variable
 section
 
 variable [PseudoEMetricSpace M] [ChartedSpace H M]
-[RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
+  [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
 
 variable (I M) in
 /-- Consider a manifold in which the tangent spaces are already endowed with an inner product, and
