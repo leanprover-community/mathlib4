@@ -112,7 +112,7 @@ open LinearMap IsReflective
 def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMap.Nondegenerate B)
     (hSB : LinearMap.IsSymm B) (h2 : IsRegular (2 : R)) :
     RootPairing {x : M | IsReflective B x} R M (Dual R M) where
-  toPerfectPairing := (IsReflexive.toPerfectPairingDual (R := R) (M := M)).flip
+  toLinearMap := LinearMap.id.flip
   root := Embedding.subtype fun x ↦ IsReflective B x
   coroot :=
     { toFun := fun x => IsReflective.coroot B x.2
@@ -143,11 +143,7 @@ def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMa
         refine h2.1 ?_
         dsimp only
         rw [h2x z, ← h2y z, hxy, h2xy] }
-  root_coroot_two x := by
-    dsimp only [coe_setOf, Embedding.coe_subtype, PerfectPairing.toLinearMap_apply, mem_setOf_eq,
-      id_eq, eq_mp_eq_cast, RingHom.id_apply, eq_mpr_eq_cast, cast_eq, LinearMap.sub_apply,
-      Embedding.coeFn_mk, PerfectPairing.flip_apply_apply]
-    exact coroot_apply_self B x.2
+  root_coroot_two x := coroot_apply_self B x.2
   reflectionPerm x :=
     { toFun := fun y => ⟨(Module.reflection (coroot_apply_self B x.2) y),
         reflective_reflection B hSB x.2 y.2⟩
@@ -162,13 +158,12 @@ def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMa
   reflectionPerm_root x y := by
     simp [Module.reflection_apply]
   reflectionPerm_coroot x y := by
-    simp only [coe_setOf, mem_setOf_eq, Embedding.coeFn_mk, Embedding.coe_subtype,
-      PerfectPairing.flip_apply_apply, IsReflexive.toPerfectPairingDual_apply, Equiv.coe_fn_mk]
+    simp only [coe_setOf, mem_setOf_eq, Embedding.coeFn_mk, Embedding.coe_subtype, Equiv.coe_fn_mk]
     ext z
     simp only [LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul]
     refine y.2.1.1 ?_
-    simp only [mem_setOf_eq, mul_sub,
-      apply_self_mul_coroot_apply B y.2, ← mul_assoc]
+    simp only [mem_setOf_eq, flip_apply, id_coe, id_eq, mul_sub, apply_self_mul_coroot_apply B y.2,
+      ← mul_assoc]
     rw [← isOrthogonal_reflection B x.2 hSB y y, apply_self_mul_coroot_apply, ← hSB z, ← hSB z,
       RingHom.id_apply, RingHom.id_apply, Module.reflection_apply, map_sub,
       mul_sub, sub_eq_sub_iff_comm, sub_left_inj]
