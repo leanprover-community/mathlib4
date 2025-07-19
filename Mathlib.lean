@@ -4009,6 +4009,7 @@ import Mathlib.LinearAlgebra.Dimension.Subsingleton
 import Mathlib.LinearAlgebra.Dimension.Torsion.Basic
 import Mathlib.LinearAlgebra.Dimension.Torsion.Finite
 import Mathlib.LinearAlgebra.DirectSum.Basis
+import Mathlib.LinearAlgebra.DirectSum.Finite
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
 import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 import Mathlib.LinearAlgebra.Dual.Basis
@@ -5245,6 +5246,7 @@ import Mathlib.RingTheory.Finiteness.Basic
 import Mathlib.RingTheory.Finiteness.Bilinear
 import Mathlib.RingTheory.Finiteness.Cardinality
 import Mathlib.RingTheory.Finiteness.Defs
+import Mathlib.RingTheory.Finiteness.ExactSequence
 import Mathlib.RingTheory.Finiteness.Finsupp
 import Mathlib.RingTheory.Finiteness.Ideal
 import Mathlib.RingTheory.Finiteness.Lattice
