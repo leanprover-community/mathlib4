@@ -218,7 +218,7 @@ theorem smul_mem_pointwise_smul (m : M) (a : α) (S : Submonoid M) : m ∈ S →
   (Set.smul_mem_smul_set : _ → _ ∈ a • (S : Set M))
 
 instance : CovariantClass α (Submonoid M) HSMul.hSMul LE.le :=
-  ⟨fun _ _ => image_subset _⟩
+  ⟨fun _ _ => image_mono⟩
 
 theorem mem_smul_pointwise_iff_exists (m : M) (a : α) (S : Submonoid M) :
     m ∈ a • S ↔ ∃ s : M, s ∈ S ∧ a • s = m :=

@@ -361,7 +361,7 @@ lemma Scheme.ofRestrict_appIso (U) :
 @[simp]
 lemma Scheme.restrict_presheaf_map (V W) (i : V ⟶ W) :
     (X.restrict h).presheaf.map i = X.presheaf.map (homOfLE (show X.ofRestrict h ''ᵁ W.unop ≤
-      X.ofRestrict h ''ᵁ V.unop from Set.image_subset _ i.unop.le)).op := rfl
+      X.ofRestrict h ''ᵁ V.unop from Set.image_mono i.unop.le)).op := rfl
 
 end Restrict
 

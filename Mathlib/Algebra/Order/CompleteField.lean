@@ -98,7 +98,7 @@ another linear ordered field. -/
 def cutMap (a : α) : Set β :=
   (Rat.cast : ℚ → β) '' {t | ↑t < a}
 
-theorem cutMap_mono (h : a₁ ≤ a₂) : cutMap β a₁ ⊆ cutMap β a₂ := image_subset _ fun _ => h.trans_lt'
+theorem cutMap_mono (h : a₁ ≤ a₂) : cutMap β a₁ ⊆ cutMap β a₂ := image_mono fun _ => h.trans_lt'
 
 variable {β}
 
