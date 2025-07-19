@@ -17,141 +17,6 @@ open IsKilling (sl2SubalgebraOfRoot rootSystem)
 
 variable {H : LieSubalgebra K L} [H.IsCartanSubalgebra] [IsTriangularizable K H L]
 
-lemma zero_pairing_implies_zero_bracket
-  (χ α : Weight K H L)
-  (x : L) (hx : x ∈ genWeightSpace L χ.toLinear)
-  (h : H) (hh : h ∈ LieAlgebra.corootSpace α.toLinear)
-  (h_zero : χ (LieAlgebra.IsKilling.coroot α) = 0) :
-  ⁅x, (h : L)⁆ = 0 := by
-  have h_in_span : h ∈ K ∙ IsKilling.coroot α := by
-    rw [← IsKilling.coe_corootSpace_eq_span_singleton]
-    rw [LieSubmodule.mem_toSubmodule]
-    exact hh
-  obtain ⟨c, hc⟩ := Submodule.mem_span_singleton.mp h_in_span
-  have h_chi_h_zero : (χ.toLinear) h = 0 := by
-    have : (χ.toLinear) h = (χ.toLinear) (c • IsKilling.coroot α) := by rw [hc]
-    rw [this, LinearMap.map_smul]
-    have h_convert : (χ.toLinear) (IsKilling.coroot α) = χ (IsKilling.coroot α) := rfl
-    rw [h_convert, h_zero, smul_zero]
-  rw [genWeightSpace, LieSubmodule.mem_iInf] at hx
-  have hx_h := hx h
-  rw [h_chi_h_zero] at hx_h
-  have hx_maxgen : x ∈ (toEnd K H L h).maxGenEigenspace 0 := by
-    change x ∈ (genWeightSpaceOf L 0 h).toSubmodule at hx_h
-    rw [genWeightSpaceOf] at hx_h
-    exact hx_h
-  have h_semisimple : (ad K L (h : L)).IsSemisimple := by
-    exact LieAlgebra.IsKilling.isSemisimple_ad_of_mem_isCartanSubalgebra h.property
-  have h_gen_eq_eigen : (ad K L (h : L)).maxGenEigenspace 0 = (ad K L (h : L)).eigenspace 0 := by
-    exact Module.End.IsFinitelySemisimple.maxGenEigenspace_eq_eigenspace
-      h_semisimple.isFinitelySemisimple 0
-  have hx_maxgen_ad : x ∈ (ad K L (h : L)).maxGenEigenspace 0 := by
-    have h_eq : toEnd K H L h = ad K L (h : L) := by
-      ext y
-      simp only [LieModule.toEnd_apply_apply, LieAlgebra.ad_apply]
-      rfl
-    rw [← h_eq]
-    exact hx_maxgen
-  rw [h_gen_eq_eigen] at hx_maxgen_ad
-  rw [Module.End.mem_eigenspace_iff] at hx_maxgen_ad
-  have h_ad_zero : (ad K L (h : L)) x = 0 := by
-    simp only [zero_smul] at hx_maxgen_ad
-    exact hx_maxgen_ad
-  rw [LieAlgebra.ad_apply] at h_ad_zero
-  rw [← lie_skew] at h_ad_zero
-  exact neg_eq_zero.mp h_ad_zero
-
-lemma pairing_zero_of_trivial_sum_diff_spaces
-  (χ α : Weight K H L) (hχ : χ.IsNonZero) (hα : α.IsNonZero)
-  (w_plus : χ.toLinear + α.toLinear ≠ 0) (w_minus : χ.toLinear - α.toLinear ≠ 0)
-  (h_plus_bot : genWeightSpace L (χ.toLinear + α.toLinear) = ⊥)
-  (h_minus_bot : genWeightSpace L (χ.toLinear - α.toLinear) = ⊥) :
-  let S := LieAlgebra.IsKilling.rootSystem H
-  ∃ (i j : { w : Weight K H L // w ∈ H.root }),
-    S.root i = χ.toLinear ∧ S.root j = α.toLinear ∧ S.pairing i j = 0 := by
-  let S := LieAlgebra.IsKilling.rootSystem H
-  have hχ_in_root : χ ∈ H.root := by
-    simp [LieSubalgebra.root]
-    exact hχ
-  have hα_in_root : α ∈ H.root := by
-    simp [LieSubalgebra.root]
-    exact hα
-  let i : { w : Weight K H L // w ∈ H.root } := ⟨χ, hχ_in_root⟩
-  let j : { w : Weight K H L // w ∈ H.root } := ⟨α, hα_in_root⟩
-  use i, j
-  constructor
-  · rfl
-  constructor
-  · rfl
-  · have h_trichotomy : S.pairingIn ℤ i j < 0 ∨ S.pairingIn ℤ i j = 0 ∨ 0 < S.pairingIn ℤ i j := by
-      exact lt_trichotomy (S.pairingIn ℤ i j) 0
-    cases h_trichotomy with
-    | inl h_neg =>
-      exfalso
-      have h_add_mem : S.root i + S.root j ∈ Set.range S.root := by
-        apply RootPairing.root_add_root_mem_of_pairingIn_neg S.toRootPairing h_neg
-        intro h_eq
-        have h_sum_zero : S.root i + S.root j = 0 := by rw [h_eq]; simp
-        have h_contradiction : χ.toLinear + α.toLinear = 0 := h_sum_zero
-        exact w_plus h_contradiction
-      have h_chi_plus_alpha_root : χ.toLinear + α.toLinear ∈ Set.range S.root := h_add_mem
-      have h_nontriv : genWeightSpace L (χ.toLinear + α.toLinear) ≠ ⊥ := by
-        obtain ⟨idx, hidx⟩ := h_chi_plus_alpha_root
-        have h_nonzero : idx.val.IsNonZero := by
-          have h_mem := idx.property
-          simp only [LieSubalgebra.root, Finset.mem_filter, Finset.mem_univ, true_and] at h_mem
-          exact h_mem
-        have h_weight_space_nontrivial := idx.val.genWeightSpace_ne_bot
-        have h_root_eq : S.root idx = idx.val.toLinear := by
-          exact LieAlgebra.IsKilling.rootSystem_root_apply H idx
-        have : genWeightSpace L (S.root idx) ≠ ⊥ := by
-          rw [h_root_eq]
-          exact h_weight_space_nontrivial
-        have h_final : genWeightSpace L (χ.toLinear + α.toLinear) ≠ ⊥ := by
-          convert this using 1
-          rw [←hidx]
-        exact h_final
-      exact h_nontriv h_plus_bot
-    | inr h_rest =>
-      cases h_rest with
-      | inl h_zero =>
-        have h_algebraMap : algebraMap ℤ K (S.pairingIn ℤ i j) = S.pairing i j := by
-          exact S.algebraMap_pairingIn ℤ i j
-        rw [h_zero, map_zero] at h_algebraMap
-        exact h_algebraMap.symm
-      | inr h_pos =>
-        exfalso
-        have h_sub_mem : S.root i - S.root j ∈ Set.range S.root := by
-          apply RootPairing.root_sub_root_mem_of_pairingIn_pos S.toRootPairing h_pos
-          intro h_eq
-          have h_chi_eq_alpha : χ = α := by
-            injection h_eq
-          have h_contradiction : χ.toLinear - α.toLinear = 0 := by
-            rw [h_chi_eq_alpha]
-            simp
-          exact w_minus h_contradiction
-        have h_chi_minus_alpha_root : χ.toLinear - α.toLinear ∈ Set.range S.root := by
-          exact h_sub_mem
-        have h_nontriv : genWeightSpace L (χ.toLinear - α.toLinear) ≠ ⊥ := by
-          obtain ⟨idx, hidx⟩ := h_chi_minus_alpha_root
-          have h_nonzero : idx.val.IsNonZero := by
-            have h_mem := idx.property
-            simp only [LieSubalgebra.root, Finset.mem_filter, Finset.mem_univ, true_and] at h_mem
-            exact h_mem
-          have h_weight_space_nontrivial := idx.val.genWeightSpace_ne_bot
-          have h_root_eq : S.root idx = idx.val.toLinear := by
-            exact LieAlgebra.IsKilling.rootSystem_root_apply H idx
-          have : genWeightSpace L (S.root idx) ≠ ⊥ := by
-            rw [h_root_eq]
-            exact h_weight_space_nontrivial
-          have h_final : genWeightSpace L (χ.toLinear - α.toLinear) ≠ ⊥ := by
-            convert this using 1
-            rw [←hidx]
-          exact h_final
-        exact h_nontriv h_minus_bot
-
-variable {H : LieSubalgebra K L} [H.IsCartanSubalgebra] [IsTriangularizable K H L]
-
 lemma exists_root_index_of_weight_nonzero (χ : Weight K H L) (hχ : χ.IsNonZero) :
     ∃ i, (LieAlgebra.IsKilling.rootSystem H).root i = χ.toLinear := by
   let S := LieAlgebra.IsKilling.rootSystem H
@@ -584,8 +449,8 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
             obtain ⟨j, hj⟩ := exists_root_index_of_in_index_set q α
             have h_pairing_zero : S.pairing i j = 0 := by
               obtain ⟨i', j', hi', hj', h_zero⟩ :=
-                pairing_zero_of_trivial_sum_diff_spaces χ α.1 hχ_nonzero α.2.2 w_plus w_minus
-                  h_plus_bot h_minus_bot
+                IsKilling.pairing_zero_of_trivial_sum_diff_spaces H χ α.1 hχ_nonzero α.2.2 w_plus
+                  w_minus h_plus_bot h_minus_bot
               have h_i_eq : i = i' := by
                 have h_root_eq : S.root i = S.root i' := by
                   rw [hi, hi']
@@ -625,7 +490,8 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
               simp only [IsKilling.H_α] at hm_h
               obtain ⟨h_elem, hh_elem, hh_eq⟩ := hm_h
               have h_bracket_elem : ⁅x_χ, (h_elem : L)⁆ = 0 :=
-                zero_pairing_implies_zero_bracket χ α.1 x_χ hx_χ h_elem hh_elem h_chi_coroot_zero
+                IsKilling.zero_pairing_implies_zero_bracket H χ α.1 x_χ hx_χ h_elem hh_elem
+                  h_chi_coroot_zero
               rw [← hh_eq]
               exact h_bracket_elem
 
