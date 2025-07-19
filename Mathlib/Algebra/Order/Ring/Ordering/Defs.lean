@@ -40,8 +40,8 @@ variable (R : Type*) [CommRing R]
 but not containing `-1`. -/
 @[ext]
 structure RingPreordering extends Subsemiring R where
-  isSquare_mem' {x : R} (hx : IsSquare x) : x ∈ carrier
-  minus_one_not_mem' : -1 ∉ carrier
+  mem_of_isSquare' {x : R} (hx : IsSquare x) : x ∈ carrier
+  neg_one_notMem' : -1 ∉ carrier
 
 namespace RingPreordering
 
@@ -59,9 +59,9 @@ instance : SubsemiringClass (RingPreordering R) R where
 
 variable {R}
 
-@[aesop unsafe 50% (rule_sets := [SetLike])]
-protected theorem isSquare_mem (P : RingPreordering R) {x : R} (hx : IsSquare x) : x ∈ P :=
-  RingPreordering.isSquare_mem' _ hx
+@[aesop unsafe 80% (rule_sets := [SetLike])]
+protected theorem mem_of_isSquare (P : RingPreordering R) {x : R} (hx : IsSquare x) : x ∈ P :=
+  RingPreordering.mem_of_isSquare' _ hx
 
 @[simp, aesop safe (rule_sets := [SetLike])]
 protected theorem mul_self_mem (P : RingPreordering R) (x : R) : x * x ∈ P := by aesop
@@ -70,33 +70,33 @@ protected theorem mul_self_mem (P : RingPreordering R) (x : R) : x * x ∈ P := 
 protected theorem pow_two_mem (P : RingPreordering R) (x : R) : x ^ 2 ∈ P := by aesop
 
 @[aesop unsafe 20% forward (rule_sets := [SetLike])]
-protected theorem minus_one_not_mem (P : RingPreordering R) : -1 ∉ P :=
-  RingPreordering.minus_one_not_mem' _
+protected theorem neg_one_notMem (P : RingPreordering R) : -1 ∉ P :=
+  RingPreordering.neg_one_notMem' _
 
 theorem toSubsemiring_injective :
     Function.Injective (toSubsemiring : RingPreordering R → _) := fun A B h => by ext; rw [h]
 
 @[simp]
-theorem toSubsemiring_eq {P₁ P₂ : RingPreordering R} :
+theorem toSubsemiring_inj {P₁ P₂ : RingPreordering R} :
     P₁.toSubsemiring = P₂.toSubsemiring ↔ P₁ = P₂ := toSubsemiring_injective.eq_iff
 
 @[simp]
 theorem mem_toSubsemiring {P : RingPreordering R} {x : R} :
   x ∈ P.toSubsemiring ↔ x ∈ P := .rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_toSubsemiring {P : RingPreordering R} :
   (P.toSubsemiring : Set R) = P := rfl
 
 @[simp]
 theorem mem_mk {toSubsemiring : Subsemiring R}
-    (isSquare_mem) (minus_one_not_mem) {x : R} :
-    x ∈ mk toSubsemiring isSquare_mem minus_one_not_mem ↔ x ∈ toSubsemiring := .rfl
+    (mem_of_isSquare) (neg_one_notMem) {x : R} :
+    x ∈ mk toSubsemiring mem_of_isSquare neg_one_notMem ↔ x ∈ toSubsemiring := .rfl
 
 @[simp]
 theorem coe_set_mk {toSubsemiring : Subsemiring R}
-    (isSquare_mem) (minus_one_not_mem) :
-    (mk toSubsemiring isSquare_mem minus_one_not_mem : Set R) = toSubsemiring := rfl
+    (mem_of_isSquare) (neg_one_notMem) :
+    (mk toSubsemiring mem_of_isSquare neg_one_notMem : Set R) = toSubsemiring := rfl
 
 section copy
 
@@ -110,10 +110,10 @@ protected def copy : RingPreordering R where
   add_mem' ha hb := by aesop
   one_mem' := by aesop
   mul_mem' ha hb := by aesop
-  isSquare_mem' := by aesop
-  minus_one_not_mem' := by aesop
+  mem_of_isSquare' := by aesop
+  neg_one_notMem' := by aesop
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_copy : (P.copy S hS : Set R) = S := rfl
 
 theorem copy_eq : P.copy S hS = S := rfl
