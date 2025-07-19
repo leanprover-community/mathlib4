@@ -445,6 +445,21 @@ end reflGen
 
 section TransGen
 
+instance : IsTrans α (TransGen r) :=
+  ⟨@TransGen.trans α r⟩
+
+instance : Trans (TransGen r) r (TransGen r) :=
+  ⟨TransGen.tail⟩
+
+instance : Trans r (TransGen r) (TransGen r) :=
+  ⟨TransGen.head⟩
+
+instance : Trans (TransGen r) (ReflTransGen r) (TransGen r) :=
+  ⟨TransGen.trans_left⟩
+
+instance : Trans (ReflTransGen r) (TransGen r) (TransGen r) :=
+  ⟨TransGen.trans_right⟩
+
 theorem transGen_eq_self (trans : Transitive r) : TransGen r = r :=
   funext fun a ↦ funext fun b ↦ propext <|
     ⟨fun h ↦ by
@@ -497,6 +512,15 @@ end TransGen
 section ReflTransGen
 
 open ReflTransGen
+
+instance : IsTrans α (ReflTransGen r) :=
+  ⟨@trans α r⟩
+
+instance : Trans r (ReflTransGen r) (ReflTransGen r) :=
+  ⟨head⟩
+
+instance : Trans (ReflTransGen r) r (ReflTransGen r) :=
+  ⟨tail⟩
 
 theorem reflTransGen_iff_eq (h : ∀ b, ¬r a b) : ReflTransGen r a b ↔ b = a := by
   rw [cases_head_iff]; simp [h, eq_comm]
@@ -719,38 +743,3 @@ theorem Equivalence.eqvGen_eq (h : Equivalence r) : EqvGen r = r :=
   funext fun _ ↦ funext fun _ ↦ propext <| h.eqvGen_iff
 
 end EqvGen
-
-section Trans
-
-open Relation
-
-variable {r : α → α → Prop}
-
-instance : Trans r (ReflTransGen r) (ReflTransGen r) :=
-  ⟨ReflTransGen.head⟩
-
-instance : Trans (ReflTransGen r) r (ReflTransGen r) :=
-  ⟨ReflTransGen.tail⟩
-
-instance : Trans (TransGen r) (ReflTransGen r) (TransGen r) :=
-  ⟨TransGen.trans_left⟩
-
-instance : Trans (TransGen r) (TransGen r) (TransGen r) :=
-  ⟨TransGen.trans⟩
-
-instance : Trans (TransGen r) r (TransGen r) :=
-  ⟨TransGen.tail⟩
-
-instance : Trans r (TransGen r) (TransGen r) :=
-  ⟨TransGen.head⟩
-
-instance : Trans (ReflTransGen r) (TransGen r) (TransGen r) :=
-  ⟨TransGen.trans_right⟩
-
-instance : IsTrans α (TransGen r) :=
-  ⟨@TransGen.trans α r⟩
-
-instance : IsTrans α (ReflTransGen r) :=
-  ⟨@ReflTransGen.trans α r⟩
-
-end Trans
