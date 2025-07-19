@@ -513,9 +513,6 @@ section ReflTransGen
 
 open ReflTransGen
 
-instance : IsTrans α (ReflTransGen r) :=
-  ⟨@trans α r⟩
-
 instance : Trans r (ReflTransGen r) (ReflTransGen r) :=
   ⟨head⟩
 
@@ -559,6 +556,9 @@ theorem transitive_reflTransGen : Transitive (ReflTransGen r) := fun _ _ _ ↦ t
 
 instance : IsRefl α (ReflTransGen r) :=
   ⟨@ReflTransGen.refl α r⟩
+
+instance : IsTrans α (ReflTransGen r) :=
+  ⟨@ReflTransGen.trans α r⟩
 
 theorem reflTransGen_idem : ReflTransGen (ReflTransGen r) = ReflTransGen r :=
   reflTransGen_eq_self reflexive_reflTransGen transitive_reflTransGen
