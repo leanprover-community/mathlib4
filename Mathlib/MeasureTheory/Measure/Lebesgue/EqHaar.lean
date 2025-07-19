@@ -630,8 +630,8 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero_aux1 (s : Set E) (x : E)
         (Eventually.of_forall fun b => zero_le _)
     filter_upwards [self_mem_nhdsWithin]
     rintro r (rpos : 0 < r)
-    rw [← affinity_unitClosedBall rpos.le, singleton_add, ← image_vadd]
-    gcongr
+    grw [t_bound]
+    rw [← vadd_eq_add, singleton_vadd, affinity_unitClosedBall rpos.le]
   have B :
     Tendsto (fun r : ℝ => μ (closedBall x r) / μ ({x} + r • u)) (𝓝[>] 0)
       (𝓝 (μ (closedBall x 1) / μ ({x} + u))) := by
