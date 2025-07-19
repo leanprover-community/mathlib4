@@ -7,7 +7,7 @@ import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.Group.AddChar
 import Mathlib.Algebra.Module.Submodule.LinearMap
 import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.Algebra.Polynomial.BigOperators
+import Mathlib.Algebra.Polynomial.Coeff
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Tactic.Abel
 
