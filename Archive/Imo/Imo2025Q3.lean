@@ -22,8 +22,7 @@ lemma hdvd (hf : f ∈ bonza) {n : ℕ} (hn : n > 0) : f n ∣ n ^ n := by
   have : (f n : ℤ) ∣ (f n : ℤ) ^ f n :=
     Dvd.dvd.pow (Int.dvd_refl (f n)) (Nat.ne_zero_of_lt (hf.2 n hn))
   have : (f n : ℤ) ∣ (n : ℤ) ^ n := (Int.dvd_iff_dvd_of_dvd_sub (hf.1 n n hn hn)).mpr this
-  rw [Eq.symm (Int.natCast_pow n n)] at this
-  exact ofNat_dvd.mp this
+  rwa [← Int.natCast_pow n n, ofNat_dvd] at this
 
 lemma imp (hf : f ∈ bonza) {p : ℕ} (hp : Nat.Prime p) :
     f p = 1 ∨ (∀ b : ℕ, b > 0 → (p : ℤ) ∣ (b : ℤ) - ((f b) : ℤ)) := by
@@ -81,7 +80,7 @@ theorem Nat.exists_prime_gt_modEq_neg_one {k : ℕ} (n : ℕ) (hk0 : NeZero k) :
     rw [ZMod.intCast_eq_intCast_iff_dvd_sub, Int.sub_neg]
     exact ofNat_dvd_left.mpr this
 
-theorem INF (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 0 → f x = x) :
+theorem bonza_apply_prime_gt_two_eq_one (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 0 → f x = x) :
     ∀ p > 2, Nat.Prime p → f p = 1 := by
   obtain ⟨N, hN⟩ : ∃ N, ∀ p > N, Nat.Prime p → f p = 1 := by
     have := cases hf
@@ -99,31 +98,30 @@ theorem INF (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 0 → f x = x) :
   · have dvd1 : (q : ℤ) ∣ f q := by
       rw [ha2, Int.natCast_pow q k]
       exact dvd_pow_self (q : ℤ) ch
-    have ttt {p : ℕ} (pp : Nat.Prime p) (hp : p > N) : p ≡ 1 [ZMOD q] := by calc
-      _ ≡ p ^ q [ZMOD q] := Int.ModEq.symm (ModEq.pow_card_eq_self qp)
-      _ ≡ _ [ZMOD q] :=
+    have ttt {p : ℕ} (pp : Nat.Prime p) (hp : p > N) : 1 ≡ p [ZMOD q] := by calc
+      _ ≡ p ^ q [ZMOD q] :=
         have := tt (zero_lt_of_lt hq) pp hp
-        Int.ModEq.symm ((fun {n a b} ↦ Int.modEq_iff_dvd.mpr) (Int.dvd_trans dvd1 this))
+        (fun {n a b} ↦ Int.modEq_iff_dvd.mpr) (Int.dvd_trans dvd1 this)
+      _ ≡ _ [ZMOD q] := ModEq.pow_card_eq_self qp
     obtain ⟨p, hp⟩ := Nat.exists_prime_gt_modEq_neg_one N (NeZero.of_gt hq)
     have : 1 ≡ -1 [ZMOD q] := by calc
-      _ ≡ p [ZMOD q] := id (Int.ModEq.symm (ttt hp.1 hp.2.1))
+      _ ≡ p [ZMOD q] := ttt hp.1 hp.2.1
       _ ≡ _ [ZMOD q] := hp.2.2
     have : (q : ℤ) ∣ 1 - (-1) := Int.ModEq.dvd (id (Int.ModEq.symm this))
-    simp at this
-    have : (q : ℤ).natAbs ≤ (2 : ℤ).natAbs := natAbs_le_of_dvd_ne_zero this (by norm_num)
+    have : (q : ℤ).natAbs ≤ (1 - (-1) : ℤ).natAbs := natAbs_le_of_dvd_ne_zero this (by norm_num)
     omega
 
 lemma powp (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 0 → f x = x) :
     ∀ n, n > 0 → ∃ a, f n = 2 ^ a := fun n hn ↦ by
   have : ∀ {p}, Nat.Prime p → p ∣ f n → p = 2 := by
-    intro p pp pdvd
+    intro p pp hp
     by_contra nh
     have dvd : (p : ℤ) ∣ p ^ n - 1 := by calc
-      _ ∣ (f n : ℤ) := ofNat_dvd.mpr pdvd
+      _ ∣ (f n : ℤ) := ofNat_dvd.mpr hp
       _ ∣ _ := by
         have := hf.1 n p hn (Prime.pos pp)
         have lm : p > 2 := Nat.lt_of_le_of_ne (Prime.two_le pp) (fun a ↦ nh (id (Eq.symm a)))
-        rwa [INF hf hnf p lm pp, Nat.cast_one, one_pow] at this
+        rwa [bonza_apply_prime_gt_two_eq_one hf hnf p lm pp, Nat.cast_one, one_pow] at this
     have : (p : ℤ) ∣ p ^ n := dvd_pow (Int.dvd_refl p) (Nat.ne_zero_of_lt hn)
     exact (Nat.Prime.not_dvd_one pp) (ofNat_dvd.mp ((Int.dvd_iff_dvd_of_dvd_sub dvd).mp this))
   use (f n).primeFactorsList.length
@@ -141,18 +139,16 @@ lemma LTE {a b : ℕ} (h1b : 1 < b) (hb : ¬2 ∣ b) (ha : a ≠ 0) (Evena : Eve
   have dvd : 2 ∣ b - 1 := by
     simp at hb
     exact dvd_iff_mod_eq_zero.mpr (sub_mod_eq_zero_of_mod_eq hb)
-  have := padicValNat.pow_two_sub_pow h1b dvd hb ha Evena
-  simp at this
-  have : padicValNat 2 (b ^ a - 1)
-    = padicValNat 2 (b + 1) + padicValNat 2 (b - 1) + padicValNat 2 a - 1 := by omega
-  rw [this]
   have Oddb : Odd b := Nat.odd_iff.mpr (Nat.two_dvd_ne_zero.mp hb)
-  have : padicValNat 2 (b + 1) + padicValNat 2 (b - 1) ≥ 3 := by
-    rw [← padicValNat.mul (by omega) (by omega)]
+  have : padicValNat 2 (b ^ a - 1) = padicValNat 2 ((b + 1) * (b - 1)) + padicValNat 2 a - 1 := by
+    have := padicValNat.pow_two_sub_pow h1b dvd hb ha Evena
+    rw [one_pow, ← padicValNat.mul (by omega) (by omega)] at this
+    omega
+  rw [this]
+  have : padicValNat 2 ((b + 1) * (b - 1)) ≥ 3 := by
     have : (b + 1) * (b - 1) ≠ 0 := by simpa using by omega
-    have dvd : 2 ^ 3 ∣ (b + 1) * (b - 1) := by
-      simpa [← Nat.pow_two_sub_pow_two b 1] using Nat.eight_dvd_sq_sub_one_of_odd Oddb
-    exact (padicValNat_dvd_iff_le (hp := fact_prime_two) this).mp dvd
+    refine (padicValNat_dvd_iff_le (hp := fact_prime_two) this).mp ?_
+    simpa [← Nat.pow_two_sub_pow_two b 1] using Nat.eight_dvd_sq_sub_one_of_odd Oddb
   omega
 
 lemma padicValNat_le {a : ℕ} (ha : a ≥ 4) (dvd : 2 ∣ a) : padicValNat 2 a + 2 ≤ a := by
@@ -225,12 +221,12 @@ theorem fforall {f : ℕ → ℕ} (hf : f ∈ bonza) {n : ℕ} (hn : 0 < n) : f 
   · rcases Nat.even_or_odd n with ch | ch
     · have : f n ∣ 3 ^ n - 1 := by
         have := hf.1 n 3 hn (by norm_num)
-        have eq : f 3 = 1 := INF hf hnf 3 (by norm_num) (Nat.prime_three)
+        have eq : f 3 = 1 := bonza_apply_prime_gt_two_eq_one hf hnf 3 (by norm_num) prime_three
         simp [eq] at this
         have eq : (3 : ℤ) ^ n - 1 = (3 ^ n - 1 : ℕ) := by
           have : (3 : ℤ) ^ n = (3 ^ n : ℕ) := by simp
-          rw [this]
-          refine Eq.symm (natCast_pred_of_pos (pos_of_neZero (3 ^ n)))
+          rw [this, natCast_pred_of_pos]
+          exact pos_of_neZero (3 ^ n)
         rw [eq] at this
         exact ofNat_dvd.mp this
       obtain ⟨a, ha⟩ := powp hf hnf n hn
@@ -253,16 +249,13 @@ theorem fforall {f : ℕ → ℕ} (hf : f ∈ bonza) {n : ℕ} (hn : 0 < n) : f 
         _ = 2 ^ (2 + padicValNat 2 n) := congrArg (HPow.hPow 2) this
         _ = 4 * 2 ^ padicValNat 2 n := by rw [Nat.pow_add]
         _ ≤ _ := Nat.mul_le_mul_left 4 (Nat.le_of_dvd hn pow_padicValNat_dvd)
-    · have dvd : f n ∣ n ^ n := hdvd hf hn
-      have : Odd (n ^ n) := Odd.pow ch
-      have Of : Odd (f n) := Odd.of_dvd_nat this dvd
-      obtain ⟨t, ht⟩ : ∃ t, f n = 2 ^ t := powp hf hnf n hn
-      rw [ht] at Of
-      have : t = 0 := by
+    · have Of : Odd (f n) := Odd.of_dvd_nat (Odd.pow ch) (hdvd hf hn)
+      obtain ⟨k, hk⟩ : ∃ k, f n = 2 ^ k := powp hf hnf n hn
+      rw [hk] at Of
+      have : k = 0 := by
         by_contra! nh
         exact (Odd.not_two_dvd_nat Of) (dvd_pow_self 2 nh)
-      simp [this] at ht
-      rw [ht]
+      simp [this] at hk
       omega
 
 theorem my_favorite_theorem : IsLeast {c : ℝ | ∀ f : ℕ → ℕ, f ∈ bonza →
