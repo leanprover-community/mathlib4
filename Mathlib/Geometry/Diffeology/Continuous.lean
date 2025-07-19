@@ -51,7 +51,7 @@ lemma dTop_continuousDiffeology_eq_self {X : Type u} [t : TopologicalSpace X]
   dTop_continuousDiffeology.trans eq_deltaGenerated.symm
 
 /-- Type synonym to get equipped with the continuous diffeology. -/
-def WithContinuousDiffeology (X : Type u) [TopologicalSpace X] := X
+def WithContinuousDiffeology (X : Type u) := X
 
 instance (X : Type u) [TopologicalSpace X] : DiffeologicalSpace (WithContinuousDiffeology X) :=
   continuousDiffeology X
