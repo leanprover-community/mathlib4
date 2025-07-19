@@ -3,9 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
-import Mathlib.Algebra.Group.Finsupp
 import Mathlib.Algebra.Group.Indicator
-import Mathlib.Data.Finset.Max
+import Mathlib.Data.Finsupp.Defs
 
 /-!
 # Finitely supported functions on exactly one point
@@ -24,6 +23,7 @@ using one point of the domain.
 This file is a `noncomputable theory` and uses classical logic throughout.
 -/
 
+assert_not_exists CompleteLattice
 
 noncomputable section
 
@@ -197,11 +197,6 @@ lemma apply_single' [Zero N] [Zero P] (e : N → P) (he : e 0 = 0) (a : α) (n :
   split_ifs
   · rfl
   · exact he
-
-lemma apply_single [Zero N] [Zero P] {F : Type*} [FunLike F N P] [ZeroHomClass F N P]
-    (e : F) (a : α) (n : N) (b : α) :
-    e ((single a n) b) = single a (e n) b :=
-  apply_single' e (map_zero e) a n b
 
 theorem support_eq_singleton {f : α →₀ M} {a : α} :
     f.support = {a} ↔ f a ≠ 0 ∧ f = single a (f a) :=
@@ -559,7 +554,7 @@ theorem update_eq_single_add_erase (f : α →₀ M) (a : α) (b : M) :
     ext j
     rcases eq_or_ne a j with (rfl | h)
     · simp
-    · simp [h, erase_ne, h.symm]
+    · simp [Function.update_of_ne h.symm, single_apply, h, erase_ne, h.symm]
 
 theorem update_eq_erase_add_single (f : α →₀ M) (a : α) (b : M) :
     f.update a b = f.erase a + single a b := by
@@ -567,7 +562,7 @@ theorem update_eq_erase_add_single (f : α →₀ M) (a : α) (b : M) :
     ext j
     rcases eq_or_ne a j with (rfl | h)
     · simp
-    · simp [h, erase_ne, h.symm]
+    · simp [Function.update_of_ne h.symm, single_apply, h, erase_ne, h.symm]
 
 theorem single_add_erase (a : α) (f : α →₀ M) : single a (f a) + f.erase a = f := by
   rw [← update_eq_single_add_erase, update_self]
