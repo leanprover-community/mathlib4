@@ -87,8 +87,8 @@ lemma pairing_zero_of_trivial_sum_diff_spaces
         -- Now we need to use the connection between S.root and the weight space
         -- The key insight: S.root idx should equal idx.val.toLinear, and this should match hidx
         have h_root_eq : S.root idx = idx.val.toLinear := by
-          -- This should be true by definition of the root system construction
-          sorry
+          -- This follows from the definition of rootSystem
+          exact LieAlgebra.IsKilling.rootSystem_root_apply H idx
         -- Now we can use transitivity to get our result
         have : genWeightSpace L (S.root idx) ≠ ⊥ := by
           rw [h_root_eq]
