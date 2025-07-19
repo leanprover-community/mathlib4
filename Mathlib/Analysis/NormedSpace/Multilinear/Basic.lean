@@ -44,8 +44,6 @@ the final result is independent of the order. While everything could be done fol
 approach, it turns out that direct proofs are easier and more efficient.
 -/
 
-suppress_compilation
-
 noncomputable section
 
 open scoped NNReal Topology Uniformity

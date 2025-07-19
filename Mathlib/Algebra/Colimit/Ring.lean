@@ -26,8 +26,6 @@ the disjoint union so as to make the operations (addition etc.) "computable".
 
 -/
 
-suppress_compilation
-
 variable {ι : Type*} [Preorder ι] (G : ι → Type*)
 
 open Submodule
