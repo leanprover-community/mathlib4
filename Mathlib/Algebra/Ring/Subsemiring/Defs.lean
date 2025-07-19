@@ -186,12 +186,12 @@ theorem mem_carrier {s : Subsemiring R} {x : R} : x ∈ s.carrier ↔ x ∈ s :=
 lemma coe_toNonUnitalSubsemiring (S : Subsemiring R) : (S.toNonUnitalSubsemiring : Set R) = S := rfl
 
 @[simp]
-theorem mem_mk {R : Type*} [Ring R] {toSubmonoid : Submonoid R}
-    (add_mem) (zero_mem) {x : R} : x ∈ mk toSubmonoid add_mem zero_mem ↔ x ∈ toSubmonoid := .rfl
+theorem mem_mk {toSubmonoid : Submonoid R} (add_mem zero_mem) {x : R} :
+    x ∈ mk toSubmonoid add_mem zero_mem ↔ x ∈ toSubmonoid := .rfl
 
 @[simp]
-theorem coe_set_mk {R : Type*} [Ring R] {toSubmonoid : Submonoid R}
-    (add_mem) (zero_mem) : (mk toSubmonoid add_mem zero_mem : Set R) = toSubmonoid := rfl
+theorem coe_set_mk {toSubmonoid : Submonoid R} (add_mem zero_mem) :
+    (mk toSubmonoid add_mem zero_mem : Set R) = toSubmonoid := rfl
 
 /-- Two subsemirings are equal if they have the same elements. -/
 @[ext]
