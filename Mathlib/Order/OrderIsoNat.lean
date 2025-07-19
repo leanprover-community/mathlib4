@@ -25,6 +25,7 @@ defines the limit value of an eventually-constant sequence.
   in the sequence.
 -/
 
+assert_not_exists OrderedCommMonoid
 
 variable {α : Type*}
 
@@ -94,6 +95,13 @@ theorem not_wellFounded_of_decreasing_seq (f : ((· > ·) : ℕ → ℕ → Prop
 
 end RelEmbedding
 
+instance OrderEmbedding.infinite {α : Type*} [Nonempty α] [Preorder α] [NoMaxOrder α] :
+    Infinite (ℕ ↪o α) :=
+  let f := Classical.arbitrary (ℕ ↪o α)
+  let addRight (i : ℕ) := OrderEmbedding.ofStrictMono (fun n => n + i) (by simp [StrictMono])
+  Infinite.of_injective (fun i ↦ (addRight i).trans f) fun x y h ↦ by
+    simpa [addRight] using congrFun (congr_arg (fun f : (ℕ  ↪o α) ↦ (f : ℕ  → α)) h)
+
 theorem not_strictAnti_of_wellFoundedLT [Preorder α] [WellFoundedLT α] (f : ℕ → α) :
     ¬ StrictAnti f := fun hf ↦
   (RelEmbedding.natGT f (fun n ↦ hf (by simp))).not_wellFounded_of_decreasing_seq wellFounded_lt
@@ -153,6 +161,20 @@ theorem exists_subseq_of_forall_mem_union {s t : Set α} (e : ℕ → α) (he : 
     cases this
     exacts [⟨Nat.orderEmbeddingOfSet (e ⁻¹' s), Or.inl fun n => (Nat.Subtype.ofNat (e ⁻¹' s) _).2⟩,
       ⟨Nat.orderEmbeddingOfSet (e ⁻¹' t), Or.inr fun n => (Nat.Subtype.ofNat (e ⁻¹' t) _).2⟩]
+
+theorem orderEmbedding_apply_add_le_add_apply (f : ℕ ↪o ℕ) (x d : ℕ) : f x + d ≤ f (x+d) := by
+  induction d with
+  | zero => rfl
+  | succ d hd =>
+    rw [← add_assoc, Nat.add_one_le_iff, ← add_assoc]
+    exact hd.trans_lt <| by simp
+
+theorem orderEmbedding_apply_eq_self_of_le (f : ℕ ↪o ℕ) {x y : ℕ} (hx : f x ≤ x) (hyx : y ≤ x) :
+    f y = y := by
+  obtain ⟨d, rfl⟩ := Nat.exists_eq_add_of_le hyx
+  refine (f.strictMono.id_le _).antisymm' ?_
+  rw [← Nat.add_le_add_iff_right]
+  exact (Nat.orderEmbedding_apply_add_le_add_apply _ _ _).trans hx
 
 end Nat
 
