@@ -531,6 +531,31 @@ theorem tfae [FiniteDimensional F E] : List.TFAE [
   tfae_have 4 → 1 := fun ⟨h, hp1, _⟩ ↦ of_separable_splitting_field hp1
   tfae_finish
 
+/--
+If `K/F` is a finite Galois extension then, for any extension `L/F`, the extension `KL/L`
+is also Galois.
+-/
+theorem sup (K L : IntermediateField F E) [IsGalois F K] [FiniteDimensional F K] (h : K ⊔ L = ⊤) :
+    IsGalois L E := by
+  obtain ⟨T, hT₁, hT₂⟩ := IsGalois.is_separable_splitting_field F K
+  let T' := Polynomial.map (algebraMap F L) T
+  have : T'.IsSplittingField L E := by
+    refine isSplittingField_iff_intermediateField.mpr ⟨?_, ?_⟩
+    · rw [Polynomial.splits_map_iff, ← IsScalarTower.algebraMap_eq]
+      exact Polynomial.splits_of_algHom hT₂.1 (IsScalarTower.toAlgHom _ _ _)
+    · suffices K = adjoin F (T'.rootSet E) by
+        rw [← restrictScalars_inj F, restrictScalars_adjoin, restrictScalars_top, adjoin_union,
+          adjoin_self, sup_comm, ← h, this]
+      apply eq_adjoin_of_eq_algebra_adjoin
+      convert (congr_arg (Subalgebra.map (IsScalarTower.toAlgHom F K E)) hT₂.2).symm
+      · ext; simp
+      · have : T'.rootSet E = T.rootSet E := by
+          ext
+          rw [Polynomial.mem_rootSet', Polynomial.mem_rootSet', Polynomial.map_map,
+            ← IsScalarTower.algebraMap_eq, Polynomial.aeval_map_algebraMap]
+        rw [← Algebra.adjoin_image, Polynomial.image_rootSet hT₂.1, this]
+  exact IsGalois.of_separable_splitting_field (p := T') <| Polynomial.Separable.map hT₁
+
 end IsGalois
 
 end GaloisEquivalentDefinitions
