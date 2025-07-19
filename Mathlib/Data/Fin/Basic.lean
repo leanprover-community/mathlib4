@@ -42,7 +42,7 @@ Further definitions and eliminators can be found in `Init.Data.Fin.Lemmas`
 
 assert_not_exists Monoid Finset
 
-open Fin Nat Function
+open Nat Function
 
 attribute [simp] Fin.succ_ne_zero Fin.castSucc_lt_last
 

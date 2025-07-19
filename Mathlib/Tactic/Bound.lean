@@ -86,10 +86,10 @@ Currently the two types of guessing rules are
 We close numerical goals with `norm_num` and `linarith`.
 -/
 
-open Lean Elab Meta Term Mathlib.Tactic Syntax
-open Lean.Elab.Tactic (liftMetaTactic liftMetaTactic' TacticM getMainGoal)
-
 namespace Mathlib.Tactic.Bound
+
+open Lean Elab Meta Term Syntax
+open Lean.Elab.Tactic (liftMetaTactic liftMetaTactic' TacticM getMainGoal)
 
 /-!
 ### `.mpr` lemmas of iff statements for use as Aesop apply rules
@@ -246,6 +246,7 @@ inequalities for more types of relations, supports all `positivity` functionalit
 faster since it is more specialized (not built atop `aesop`). -/
 syntax "bound " (" [" term,* "]")? : tactic
 
+open Lean Elab.Tactic
 -- Plain `bound` elaboration, with no hypotheses
 elab_rules : tactic
   | `(tactic| bound) => do
