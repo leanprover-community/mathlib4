@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Florent Schaffhauser, Artie Khovanov
 -/
 import Mathlib.Algebra.Ring.Subsemiring.Defs
-import Mathlib.RingTheory.Ideal.Defs
+import Mathlib.RingTheory.Ideal.Prime
 
 /-!
 # Ring orderings
@@ -178,5 +178,19 @@ An ordering `O` on a ring `R` is a preordering such that
 class IsOrdering (P : RingPreordering R) extends HasMemOrNegMem P where
   mem_or_mem {x y : R} (h : x * y ∈ supportAddSubgroup P) :
     x ∈ supportAddSubgroup P ∨ y ∈ supportAddSubgroup P
+
+instance [HasMemOrNegMem P] : HasIdealSupport P where
+  smul_mem_support x a ha := by
+    cases mem_or_neg_mem P x with
+    | inl hx => simpa using ⟨by simpa using mul_mem hx ha.1, by simpa using mul_mem hx ha.2⟩
+    | inr hx => simpa using ⟨by simpa using mul_mem hx ha.2, by simpa using mul_mem hx ha.1⟩
+
+instance [IsOrdering P] : (support P).IsPrime where
+  ne_top' h := RingPreordering.neg_one_notMem P (by aesop : 1 ∈ support P).2
+  mem_or_mem' := IsOrdering.mem_or_mem
+
+instance [HasMemOrNegMem P] [(support P).IsPrime] : IsOrdering P where
+  mem_or_neg_mem := mem_or_neg_mem P
+  mem_or_mem := Ideal.IsPrime.mem_or_mem (by assumption)
 
 end RingPreordering
