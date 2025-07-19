@@ -31,7 +31,7 @@ open Category Limits
 variable {C : Type u} [Category.{v} C]
 variable {P Q : C}
 
--- A extremal epi `f` is an epi that doesn't factor through any non-trivial monomorphism.
+/-- A extremal epi `f` is an epi that doesn't factor through any non-trivial monomorphism. -/
 class ExtremalEpi (f : P ⟶ Q) : Prop where
   -- The epimorphism condition on `f`
   epi : Epi f := by infer_instance
