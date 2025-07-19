@@ -6,7 +6,6 @@ Authors: Kim Morrison, Markus Himmel
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.Comma.Arrow
 import Mathlib.CategoryTheory.EqToHom
-import Mathlib.CategoryTheory.MorphismProperty.Factorization
 
 /-!
 # Mono Factorizations
