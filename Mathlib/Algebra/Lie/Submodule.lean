@@ -677,6 +677,7 @@ theorem lieSpan_le {N} : lieSpan R L s ≤ N ↔ s ⊆ N := by
   · exact Subset.trans subset_lieSpan
   · intro hs m hm; rw [mem_lieSpan] at hm; exact hm _ hs
 
+@[gcongr]
 theorem lieSpan_mono {t : Set M} (h : s ⊆ t) : lieSpan R L s ≤ lieSpan R L t := by
   rw [lieSpan_le]
   exact Subset.trans h subset_lieSpan

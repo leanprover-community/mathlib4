@@ -294,7 +294,7 @@ def pullbackObjObjOfImageOpen {X Y : TopCat.{v}} (f : X ⟶ Y) (ℱ : Y.Presheaf
         fapply CostructuredArrow.homMk
         · change op (unop _) ⟶ op (⟨_, H⟩ : Opens _)
           refine (homOfLE ?_).op
-          apply (image_mono s.pt.hom.unop.le).trans
+          apply (Set.image_mono s.pt.hom.unop.le).trans
           exact Set.image_preimage.l_u_le (SetLike.coe s.pt.left.unop)
         · simp [eq_iff_true_of_subsingleton] }
   exact IsColimit.coconePointUniqueUpToIso
