@@ -94,7 +94,7 @@ section
 variable {R V V' : Type*} [CommSemiring R] [AddCommMonoid V] [AddCommMonoid V']
   [Module R V] [Module R V']
 
-lemma tensor_submodule_range_mono1 {E' E'' : Submodule R V} (F' : Submodule R V')
+lemma TensorProduct.map_subtype_left_mono {E' E'' : Submodule R V} (F' : Submodule R V')
     (le1 : E' ≤ E'') :
     LinearMap.range (TensorProduct.map E'.subtype F'.subtype) ≤
       LinearMap.range (TensorProduct.map E''.subtype F'.subtype) := fun x hx => by
@@ -106,7 +106,7 @@ lemma tensor_submodule_range_mono1 {E' E'' : Submodule R V} (F' : Submodule R V'
   · rw [map_add]
     exact Submodule.add_mem _ ih₁ ih₂
 
-lemma tensor_submodule_range_mono2 (E' : Submodule R V) {F' F'' : Submodule R V'}
+lemma TensorProduct.map_subtype_right_mono (E' : Submodule R V) {F' F'' : Submodule R V'}
     (le2 : F' ≤ F'') :
     LinearMap.range (TensorProduct.map E'.subtype F'.subtype) ≤
       LinearMap.range (TensorProduct.map E'.subtype F''.subtype) := fun x hx => by
@@ -132,14 +132,14 @@ lemma toTensorFiniteDimensional {K V V' : Type*} [Field K] [AddCommGroup V]
     rcases ih₂ with ⟨E2, F2, iE2, iF2, ⟨z2, rfl⟩⟩
     have le1 : LinearMap.range (TensorProduct.map E1.subtype F1.subtype) ≤
         LinearMap.range (TensorProduct.map (E1 ⊔ E2).subtype (F1 ⊔ F2).subtype) :=
-      (tensor_submodule_range_mono1 F1 (le_sup_left : E1 ≤ E1 ⊔ E2)).trans
-        (tensor_submodule_range_mono2 _ le_sup_left)
+      (TensorProduct.map_subtype_left_mono _ le_sup_left).trans
+        (TensorProduct.map_subtype_right_mono _ le_sup_left)
     have le2 : LinearMap.range (TensorProduct.map E2.subtype F2.subtype) ≤
         LinearMap.range (TensorProduct.map (E1 ⊔ E2).subtype (F1 ⊔ F2).subtype) :=
-      (tensor_submodule_range_mono1 _ (le_sup_right : E2 ≤ E1 ⊔ E2)).trans
-        (tensor_submodule_range_mono2 _ le_sup_right)
-    exact ⟨E1 ⊔ E2, F1 ⊔ F2, Submodule.finiteDimensional_sup E1 E2,
-      Submodule.finiteDimensional_sup F1 F2, Submodule.add_mem _ (le1 ⟨z1, rfl⟩) (le2 ⟨z2, rfl⟩)⟩
+      (TensorProduct.map_subtype_left_mono _ le_sup_right).trans
+        (TensorProduct.map_subtype_right_mono _ le_sup_right)
+    exact ⟨E1 ⊔ E2, F1 ⊔ F2, Submodule.finiteDimensional_sup _ _,
+      Submodule.finiteDimensional_sup _ _, Submodule.add_mem _ (le1 ⟨z1, rfl⟩) (le2 ⟨z2, rfl⟩)⟩
 
 end move
 
