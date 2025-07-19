@@ -627,6 +627,12 @@ def toOrderHom {X Y : Type*} [Preorder X] [Preorder Y] (f : X ↪o Y) : X →o Y
 @[simp, norm_cast]
 lemma coe_ofIsEmpty [IsEmpty α] : (ofIsEmpty : α ↪o β) = (isEmptyElim : α → β) := rfl
 
+instance subsingleton {α β : Type*} [LE α] [LE β] [IsEmpty α] : Subsingleton (α ↪o β) where
+  allEq _ _ := RelEmbedding.ext isEmptyElim
+
+instance Nat.nonempty {α : Type*} [Nonempty α] [Preorder α] [NoMaxOrder α] : Nonempty (ℕ ↪o α) :=
+  ⟨OrderEmbedding.ofStrictMono _ <| Classical.choose_spec (Nat.exists_strictMono α)⟩
+
 end OrderEmbedding
 
 section Disjoint

@@ -2728,6 +2728,7 @@ import Mathlib.Combinatorics.HalesJewett
 import Mathlib.Combinatorics.Hall.Basic
 import Mathlib.Combinatorics.Hall.Finite
 import Mathlib.Combinatorics.Hindman
+import Mathlib.Combinatorics.HypergraphRamsey
 import Mathlib.Combinatorics.Nullstellensatz
 import Mathlib.Combinatorics.Optimization.ValuedCSP
 import Mathlib.Combinatorics.Pigeonhole
