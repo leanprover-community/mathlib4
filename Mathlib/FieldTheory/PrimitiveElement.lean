@@ -411,7 +411,7 @@ section algEquiv
 
 variable {F E : Type*} [Field F] [Field E] [Algebra F E]
 
-/-
+/--
 `F`-isomorphism between a field extension `E/F` and the quotient `F[X]⧸span {f}`, where `f` is
 the minimal polynomial over `F` of a primitive element in `E/F`.
 -/
