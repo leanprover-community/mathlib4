@@ -85,9 +85,7 @@ protected theorem eq_bot_iff (p : Submodule R M) : p = ⊥ ↔ ∀ x ∈ p, x = 
 
 @[ext high]
 protected theorem bot_ext (x y : (⊥ : Submodule R M)) : x = y := by
-  rcases x with ⟨x, xm⟩; rcases y with ⟨y, ym⟩; congr
-  rw [(Submodule.eq_bot_iff _).mp rfl x xm]
-  rw [(Submodule.eq_bot_iff _).mp rfl y ym]
+  subsingleton
 
 protected theorem ne_bot_iff (p : Submodule R M) : p ≠ ⊥ ↔ ∃ x ∈ p, x ≠ (0 : M) := by
   simp only [ne_eq, p.eq_bot_iff, not_forall, exists_prop]
@@ -103,7 +101,7 @@ theorem exists_mem_ne_zero_of_ne_bot {p : Submodule R M} (h : p ≠ ⊥) : ∃ b
 -- FIXME: we default PUnit to PUnit.{1} here without the explicit universe annotation
 /-- The bottom submodule is linearly equivalent to punit as an `R`-module. -/
 @[simps]
-def botEquivPUnit : (⊥ : Submodule R M) ≃ₗ[R] PUnit.{v+1} where
+def botEquivPUnit : (⊥ : Submodule R M) ≃ₗ[R] PUnit.{v + 1} where
   toFun _ := PUnit.unit
   invFun _ := 0
   map_add' _ _ := rfl
@@ -422,7 +420,6 @@ theorem AddSubgroup.toIntSubmodule_toAddSubgroup (S : AddSubgroup M) :
     S.toIntSubmodule.toAddSubgroup = S :=
   AddSubgroup.toIntSubmodule.symm_apply_apply S
 
-@[simp]
 theorem Submodule.toAddSubgroup_toIntSubmodule (S : Submodule ℤ M) :
     S.toAddSubgroup.toIntSubmodule = S :=
   AddSubgroup.toIntSubmodule.apply_symm_apply S

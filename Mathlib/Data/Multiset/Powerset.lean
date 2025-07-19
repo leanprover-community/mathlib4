@@ -97,7 +97,7 @@ theorem mem_powerset {s t : Multiset α} : s ∈ powerset t ↔ s ≤ t :=
 theorem map_single_le_powerset (s : Multiset α) : s.map singleton ≤ powerset s :=
   Quotient.inductionOn s fun l => by
     simp only [powerset_coe, quot_mk_to_coe, coe_le, map_coe]
-    show l.map (((↑) : List α → Multiset α) ∘ pure) <+~ (sublists l).map (↑)
+    change l.map (((↑) : List α → Multiset α) ∘ pure) <+~ (sublists l).map (↑)
     rw [← List.map_map]
     exact ((map_pure_sublist_sublists _).map _).subperm
 
@@ -159,7 +159,7 @@ theorem powersetCardAux_eq_map_coe {n} {l : List α} :
 theorem mem_powersetCardAux {n} {l : List α} {s} : s ∈ powersetCardAux n l ↔ s ≤ ↑l ∧ card s = n :=
   Quotient.inductionOn s <| by
     simp only [quot_mk_to_coe, powersetCardAux_eq_map_coe, List.mem_map, mem_sublistsLen,
-      coe_eq_coe, coe_le, Subperm, exists_prop, coe_card]
+      coe_eq_coe, coe_le, Subperm, coe_card]
     exact fun l₁ =>
       ⟨fun ⟨l₂, ⟨s, e⟩, p⟩ => ⟨⟨_, p, s⟩, p.symm.length_eq.trans e⟩,
        fun ⟨⟨l₂, p, s⟩, e⟩ => ⟨_, ⟨s, p.length_eq.trans e⟩, p⟩⟩
@@ -258,8 +258,8 @@ theorem powersetCard_card_add (s : Multiset α) {i : ℕ} (hi : 0 < i) :
 theorem powersetCard_map {β : Type*} (f : α → β) (n : ℕ) (s : Multiset α) :
     powersetCard n (s.map f) = (powersetCard n s).map (map f) := by
   induction' s using Multiset.induction with t s ih generalizing n
-  · cases n <;> simp [powersetCard_zero_left, powersetCard_zero_right]
-  · cases n <;> simp [ih, map_comp_cons]
+  · cases n <;> simp [powersetCard_zero_left]
+  · cases n <;> simp [ih]
 
 theorem pairwise_disjoint_powersetCard (s : Multiset α) :
     _root_.Pairwise fun i j => Disjoint (s.powersetCard i) (s.powersetCard j) :=

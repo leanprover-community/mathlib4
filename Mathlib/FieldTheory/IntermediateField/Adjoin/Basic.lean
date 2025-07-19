@@ -4,16 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Directed
-import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
-import Mathlib.FieldTheory.IntermediateField.Algebraic
+import Mathlib.Algebra.Algebra.Subalgebra.IsSimpleOrder
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
-import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.RingTheory.Adjoin.Dimension
-import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.RingTheory.TensorProduct.Finite
-import Mathlib.SetTheory.Cardinal.Subfield
 
 /-!
 # Adjoining Elements to Fields
@@ -306,6 +302,19 @@ lemma finrank_eq_one_iff_eq_top {K : IntermediateField F E} :
   intro H x _
   obtain ⟨x, rfl⟩ := @H x IntermediateField.mem_top
   exact x.2
+
+theorem bot_eq_top_iff_finrank_eq_one :
+    (⊥ : IntermediateField F E) = ⊤ ↔ Module.finrank F E = 1 := by
+  rw [← IntermediateField.finrank_bot', ← finrank_eq_one_iff_eq_top]
+
+variable (F E) in
+theorem isSimpleOrder_of_finrank_prime (hp : Nat.Prime (Module.finrank F E)) :
+    IsSimpleOrder (IntermediateField F E) := by
+  refine { toNontrivial := ?_, eq_bot_or_eq_top := ?_ }
+  · exact ⟨⊥, ⊤, fun h ↦ Nat.prime_one_false (bot_eq_top_iff_finrank_eq_one.mp h ▸ hp)⟩
+  · intro K
+    simpa [← toSubalgebra_strictMono.apply_eq_bot_iff, ← toSubalgebra_strictMono.apply_eq_top_iff]
+      using (Subalgebra.isSimpleOrder_of_finrank_prime _ _ hp).eq_bot_or_eq_top K.toSubalgebra
 
 theorem rank_adjoin_eq_one_iff : Module.rank F (adjoin F S) = 1 ↔ S ⊆ (⊥ : IntermediateField F E) :=
   Iff.trans rank_eq_one_iff adjoin_eq_bot_iff

@@ -3,9 +3,9 @@ Copyright (c) 2024 Arend Mellendijk. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arend Mellendijk
 -/
-
 import Mathlib.Algebra.Order.Antidiag.Pi
 import Mathlib.NumberTheory.ArithmeticFunction
+import Mathlib.Tactic.IntervalCases
 
 /-!
 # Sets of tuples with a fixed product
@@ -82,14 +82,10 @@ theorem finMulAntidiag_zero_right (d : ℕ) :
 
 theorem finMulAntidiag_one {d : ℕ} :
     finMulAntidiag d 1 = {fun _ => 1} := by
-  ext f
-  simp only [mem_finMulAntidiag, and_true, mem_singleton]
-  constructor
-  · intro ⟨hf, _⟩; ext i
-    rw [← Nat.dvd_one, ← hf]
-    exact dvd_prod_of_mem f (mem_univ _)
-  · rintro rfl
-    simp only [prod_const_one, implies_true, ne_eq, one_ne_zero, not_false_eq_true, and_self]
+  ext
+  simp only [mem_finMulAntidiag, prod_eq_one_iff, mem_univ, forall_const, ne_eq, one_ne_zero,
+    not_false_eq_true, and_true, mem_singleton]
+  grind
 
 theorem finMulAntidiag_zero_left {n : ℕ} (hn : n ≠ 1) :
     finMulAntidiag 0 n = ∅ := by
@@ -114,8 +110,8 @@ theorem finMulAntidiag_eq_piFinset_divisors_filter {d m n : ℕ} (hmn : m ∣ n)
     finMulAntidiag d m =
       {f ∈ Fintype.piFinset fun _ : Fin d => n.divisors | ∏ i, f i = m} := by
   ext f
-  simp only [mem_univ, not_true, IsEmpty.forall_iff, implies_true, ne_eq, true_and,
-    Fintype.mem_piFinset, mem_divisors, Nat.isUnit_iff, mem_filter]
+  simp only [ne_eq,
+    Fintype.mem_piFinset, mem_divisors, mem_filter]
   constructor
   · intro hf
     refine ⟨?_, prod_eq_of_mem_finMulAntidiag hf⟩
@@ -126,7 +122,7 @@ theorem finMulAntidiag_eq_piFinset_divisors_filter {d m n : ℕ} (hmn : m ∣ n)
 lemma image_apply_finMulAntidiag {d n : ℕ} {i : Fin d} (hd : d ≠ 1) :
     (finMulAntidiag d n).image (fun f => f i) = divisors n := by
   ext k
-  simp only [mem_image, ne_eq, mem_divisors, Nat.isUnit_iff]
+  simp only [mem_image, ne_eq, mem_divisors]
   constructor
   · rintro ⟨f, hf, rfl⟩
     exact ⟨dvd_of_mem_finMulAntidiag hf _, (mem_finMulAntidiag.mp hf).2⟩
@@ -139,14 +135,10 @@ lemma image_apply_finMulAntidiag {d n : ℕ} {i : Fin d} (hd : d ≠ 1) :
       omega
     obtain ⟨i', hi_ne⟩ := exists_ne i
     use fun j => if j = i then k else if j = i' then r else 1
-    simp only [ite_true, and_true, hn]
+    simp only [ite_true, and_true]
     rw [← Finset.mul_prod_erase (h := mem_univ i),
       ← Finset.mul_prod_erase (a := i')]
-    · rw [if_neg hi_ne, if_pos rfl, if_pos rfl, prod_eq_one]
-      · exact ⟨by ring, hn⟩
-      intro j hj
-      simp only [mem_erase, ne_eq, mem_univ, and_true] at hj
-      rw [if_neg hj.1, if_neg hj.2]
+    · simp_all
     exact mem_erase.mpr ⟨hi_ne, mem_univ _⟩
 
 lemma image_piFinTwoEquiv_finMulAntidiag {n : ℕ} :

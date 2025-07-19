@@ -23,7 +23,7 @@ universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
-open Limits
+open Limits Functor
 
 namespace Localization
 
@@ -56,11 +56,11 @@ noncomputable def compLimitFunctorIso :
 instance :
     CatCommSq (Functor.const (Discrete J)) L
       ((whiskeringRight (Discrete J) C D).obj L) (Functor.const (Discrete J)) where
-  iso' := (Functor.compConstIso _ _).symm
+  iso := (Functor.compConstIso _ _).symm
 
 noncomputable instance :
     CatCommSq lim ((whiskeringRight (Discrete J) C D).obj L) L (limitFunctor L W J) where
-  iso' := (compLimitFunctorIso L W J).symm
+  iso := (compLimitFunctorIso L W J).symm
 
 /-- The adjunction between the constant functor `D ⥤ (Discrete J ⥤ D)`
 and `limitFunctor L W J`. -/
