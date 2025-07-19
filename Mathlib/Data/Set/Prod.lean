@@ -72,9 +72,6 @@ theorem prod_subset_iff {P : Set (α × β)} : s ×ˢ t ⊆ P ↔ ∀ x ∈ s, �
 theorem forall_prod_set {p : α × β → Prop} : (∀ x ∈ s ×ˢ t, p x) ↔ ∀ x ∈ s, ∀ y ∈ t, p (x, y) :=
   prod_subset_iff
 
-theorem forall_prod_set_iff {p : α → β → Prop} :
-    (∀ z ∈ s ×ˢ t, p z.1 z.2) ↔ ∀ x y, x ∈ s → y ∈ t → p x y := by simp
-
 theorem exists_prod_set {p : α × β → Prop} : (∃ x ∈ s ×ˢ t, p x) ↔ ∃ x ∈ s, ∃ y ∈ t, p (x, y) := by
   simp [and_assoc]
 
