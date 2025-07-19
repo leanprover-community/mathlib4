@@ -3,9 +3,9 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kim Morrison, Artie Khovanov
 -/
-import Mathlib.Algebra.Order.Monoid.Submonoid
-import Mathlib.Algebra.Order.Group.Unbundled.Basic
 import Mathlib.Algebra.Group.Subgroup.Defs
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Order.Monoid.Submonoid
 
 /-!
 # Construct ordered groups from groups with a specified positive cone.
@@ -113,5 +113,3 @@ lemma IsOrderedMonoid.mkOfCone [GroupConeClass S G] :
     IsOrderedMonoid G :=
   let _ : PartialOrder G := PartialOrder.mkOfGroupCone C
   { mul_le_mul_left := fun a b nab c ↦ by simpa [· ≤ ·] using nab }
-
-#min_imports

@@ -180,7 +180,7 @@ An ordering `O` on a ring `R` is a preordering such that
 (ii) the support of `O` is a prime ideal.
 -/
 class IsOrdering (P : RingPreordering R) extends HasMemOrNegMem P where
-  mem_or_mem_of_mul {x y : R} (h : x * y ∈ supportAddSubgroup P) :
+  mem_or_mem {x y : R} (h : x * y ∈ supportAddSubgroup P) :
     x ∈ supportAddSubgroup P ∨ y ∈ supportAddSubgroup P
 
 end RingPreordering
