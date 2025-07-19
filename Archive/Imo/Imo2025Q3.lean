@@ -71,7 +71,7 @@ lemma imp {f : ℕ → ℕ} (hf : f ∈ bonza) {p : ℕ} (hp : Nat.Prime p) :
         exact ModEq.pow_card_eq_self' hp
     exact Int.ModEq.dvd (id (Int.ModEq.symm this))
 
-theorem cases {f : ℕ → ℕ} (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 0 → f x = x):
+theorem cases {f : ℕ → ℕ} (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 0 → f x = x) :
     (∃ N, ∀ p > N, Nat.Prime p → f p = 1) := by
   obtain ⟨b, bgt, hb⟩ : ∃ b, b > 0 ∧ f b ≠ b := Set.not_subset.mp hnf
   have {p : ℕ} (hp : Nat.Prime p): f p = 1 ∨ (p : ℤ) ∣ (b : ℤ) - (f b : ℤ) :=
@@ -103,7 +103,7 @@ theorem Nat.exists_prime_gt_modEq_neg_one {k : ℕ} (n : ℕ) (hk0 : NeZero k) :
     rw [ZMod.intCast_eq_intCast_iff_dvd_sub, Int.sub_neg]
     exact ofNat_dvd_left.mpr this
 
-theorem INF {f : ℕ → ℕ} (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 0 → f x = x):
+theorem INF {f : ℕ → ℕ} (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 0 → f x = x) :
     (∀ p > 2, Nat.Prime p → f p = 1) := by
   obtain ⟨N, hN⟩ : ∃ N, ∀ p > N, Nat.Prime p → f p = 1 := by
     have := cases hf
@@ -136,56 +136,25 @@ theorem INF {f : ℕ → ℕ} (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 0 → f x 
     have : (q : ℤ).natAbs ≤ (2 : ℤ).natAbs := natAbs_le_of_dvd_ne_zero this (by norm_num)
     omega
 
-lemma poww (p n : ℕ) (hp : Nat.Prime p) (h : ∀ q, Nat.Prime q → q ≠ p → ¬ q ∣ n) (hn : n > 0):
-    ∃ k, n = p ^ k := by
-  use padicValNat p n
-  have dvd : p ^ padicValNat p n ∣ n := pow_padicValNat_dvd
-  rcases dvd with ⟨m, hm⟩
-  by_cases ch : m = 1
-  · rwa [ch, mul_one] at hm
-  · have hm0 : m ≠ 0 := fun nh ↦ by
-      simp [nh] at hm
-      linarith [hn]
-    have : m > 1 := by omega
-    obtain ⟨r, pr, dvd⟩ : ∃ p, Nat.Prime p ∧ p ∣ m := by
-      exact Nat.exists_prime_and_dvd ch
-    haveI : Fact (Nat.Prime p) := { out := hp }
-    have : padicValNat p n = padicValNat p (p ^ padicValNat p n) + padicValNat p m := by
-      nth_rw 1 [hm]
-      refine padicValNat.mul ?_ ?_
-      · exact Ne.symm (NeZero.ne' (p ^ padicValNat p n))
-      · exact hm0
-    rw [padicValNat.prime_pow (padicValNat p n)] at this
-    simp [Nat.Prime.ne_one hp, hm0] at this
-    have : r ≠ p := fun nh ↦ by
-      rw [← nh] at this
-      contradiction
-    have := h r pr this
-    have : r ∣ n := by
-      rw [hm]
-      exact Nat.dvd_mul_left_of_dvd dvd (p ^ padicValNat p n)
-    contradiction
-
 lemma powp {f : ℕ → ℕ} (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 0 → f x = x) :
   ∀ n, n > 0 → ∃ a, f n = 2 ^ a := by
   intro n hn
-  have ss : ∀ p, Nat.Prime p → p ≠ 2 → ¬ p ∣ f n := by
-    intro p pp hp
-    by_contra! nh
+  have : ∀ {p}, Nat.Prime p → p ∣ f n → p = 2 := by
+    intro p pp pdvd
+    by_contra nh
     have dvd : (p : ℤ) ∣ p ^ n - 1 := by calc
-      _ ∣ (f n : ℤ) := ofNat_dvd.mpr nh
+      _ ∣ (f n : ℤ) := ofNat_dvd.mpr pdvd
       _ ∣ _ := by
         have := hf.1 n p hn (Prime.pos pp)
-        have lm : p > 2 := by
-          refine Nat.lt_of_le_of_ne ?_ (id (Ne.symm hp))
-          exact Prime.two_le pp
+        have lm : p > 2 := Nat.lt_of_le_of_ne (Prime.two_le pp) (fun a ↦ nh (id (Eq.symm a)))
         rwa [INF hf hnf p lm pp, Nat.cast_one, one_pow] at this
     have : (p : ℤ) ∣ p ^ n := dvd_pow (Int.dvd_refl p) (Nat.ne_zero_of_lt hn)
     have : (p : ℤ) ∣ 1 := (Int.dvd_iff_dvd_of_dvd_sub dvd).mp this
     have : p ∣ 1 := ofNat_dvd.mp this
     have : ¬ p ∣ 1 := Nat.Prime.not_dvd_one pp
     contradiction
-  exact poww 2 (f n) (Nat.prime_two) ss (hf.2 n hn)
+  use (f n).primeFactorsList.length
+  exact Nat.eq_prime_pow_of_unique_prime_dvd (Nat.ne_zero_of_lt (hf.2 n hn)) this
 
 def g : ℕ → ℕ := fun x ↦
   if ¬ 2 ∣ x then 1
