@@ -88,6 +88,23 @@ lemma zero_pairing_implies_zero_bracket
   rw [← lie_skew] at h_ad_zero
   exact neg_eq_zero.mp h_ad_zero
 
+/--
+Core lemma: If two roots χ and α satisfy that both L(χ + α) and L(χ - α) are trivial,
+then their pairing in the root system is zero.
+
+The w_plus and w_minus parameters ensure that χ + α ≠ 0 and χ - α ≠ 0, which are needed
+for the root system lemmas to apply.
+-/
+lemma pairing_zero_of_trivial_sum_diff_spaces
+  (χ α : Weight K H L) (hχ : χ.IsNonZero) (hα : α.IsNonZero)
+  (w_plus : χ.toLinear + α.toLinear ≠ 0) (w_minus : χ.toLinear - α.toLinear ≠ 0)
+  (h_plus_bot : genWeightSpace L (χ.toLinear + α.toLinear) = ⊥)
+  (h_minus_bot : genWeightSpace L (χ.toLinear - α.toLinear) = ⊥) :
+  let S := LieAlgebra.IsKilling.rootSystem H
+  ∃ (i j : { w : Weight K H L // w ∈ H.root }),
+    S.root i = χ.toLinear ∧ S.root j = α.toLinear ∧ S.pairing i j = 0 := by
+  sorry
+
 variable {H : LieSubalgebra K L} [H.IsCartanSubalgebra] [IsTriangularizable K H L]
 
 noncomputable abbrev H_α (α : Weight K H L) : LieSubmodule K H L :=
@@ -1009,11 +1026,28 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
             obtain ⟨i, hi⟩ := exists_root_index_of_weight_nonzero χ hχ_nonzero
             obtain ⟨j, hj⟩ := exists_root_index_of_in_index_set q α
             have h_pairing_zero : S.pairing i j = 0 := by
-              -- Since h_plus_bot : genWeightSpace L (χ + α) = ⊥
-              -- and h_minus_bot : genWeightSpace L (χ - α) = ⊥
-              -- use root_add_root_mem_of_pairingIn_neg and root_sub_root_mem_of_pairingIn_pos
-              -- to conclude that the pairing is zero
-              sorry
+              -- Use our standalone lemma
+              obtain ⟨i', j', hi', hj', h_zero⟩ :=
+                pairing_zero_of_trivial_sum_diff_spaces χ α.1 hχ_nonzero α.2.2 w_plus w_minus
+                  h_plus_bot h_minus_bot
+
+              -- Convert the indices: we need to show i = i' and j = j'
+              have h_i_eq : i = i' := by
+                -- Both give the same root
+                have h_root_eq : S.root i = S.root i' := by
+                  rw [hi, hi']
+                -- Root function is injective
+                exact Function.Embedding.injective S.root h_root_eq
+
+              have h_j_eq : j = j' := by
+                -- Both give the same root
+                have h_root_eq : S.root j = S.root j' := by
+                  rw [hj, hj']
+                -- Root function is injective
+                exact Function.Embedding.injective S.root h_root_eq
+
+              rw [h_i_eq, h_j_eq]
+              exact h_zero
 
             -- With zero pairing, the bracket ⁅x_χ, m_α⁆ = 0
             have h_bracket_zero : ⁅x_χ, m_h⁆ = 0 := by
