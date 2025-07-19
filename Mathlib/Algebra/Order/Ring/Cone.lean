@@ -43,16 +43,12 @@ instance RingCone.instRingConeClass (R : Type*) [Ring R] :
   eq_zero_of_mem_of_neg_mem {C} := C.eq_zero_of_mem_of_neg_mem'
 
 @[simp]
-theorem RingCone.mem_mk {R : Type*} [Ring R] {carrier : Set R} {a} {b} {c} {d} {e} {x} :
-    x ∈ ({ carrier := carrier, mul_mem' := a, one_mem' := b, add_mem' := c, zero_mem' := d,
-           eq_zero_of_mem_of_neg_mem' := e } : RingCone R) ↔
-    x ∈ carrier := Iff.rfl
+theorem RingCone.mem_mk {R : Type*} [Ring R] {toSubsemiring : Subsemiring R} (neg_mem) {x : R} :
+    x ∈ mk toSubsemiring neg_mem ↔ x ∈ toSubsemiring := .rfl
 
 @[simp]
-theorem RingCone.coe_set_mk {R : Type*} [Ring R] {carrier : Set R} {a} {b} {c} {d} {e} :
-    ({ carrier := carrier, mul_mem' := a, one_mem' := b, add_mem' := c, zero_mem' := d,
-       eq_zero_of_mem_of_neg_mem' := e } : RingCone R) =
-    carrier := rfl
+theorem RingCone.coe_set_mk {R : Type*} [Ring R] {toSubsemiring : Subsemiring R} (neg_mem) :
+    (mk toSubsemiring neg_mem : Set R) = toSubsemiring := rfl
 
 namespace RingCone
 
