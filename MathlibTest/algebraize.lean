@@ -60,6 +60,17 @@ lemma RingHom.TestProperty4.toAlgebra (n : ℕ) {A B : Type*} [CommRing A] [Comm
       letI : Algebra A B := f.toAlgebra
       { out := hf }
 
+/-- Test property for when the `RingHom` property corresponds to a `Module` property
+  using `RingHom.toModule`. (Compare to property 2, which uses `RingHom.toAlgebra.toModule`.) -/
+class Module.TestProperty5 (A M : Type*) [Semiring A] [AddCommMonoid M] [Module A M] : Prop where
+  out : ∀ x : A, ∀ M : M, x • M = 0
+
+/-- Test property for when the `RingHom` property corresponds to a `Module` property
+  using `RingHom.toModule`. (Compare to property 2, which uses `RingHom.toAlgebra.toModule`.) -/
+@[algebraize Module.TestProperty5]
+def RingHom.TestProperty5 {A B : Type*} [CommRing A] [CommRing B] (f : A →+* B) : Prop :=
+  @Module.TestProperty5 A B _ _ f.toModule
+
 end example_definitions
 
 set_option tactic.hygienic false
@@ -144,6 +155,14 @@ example (n m : ℕ) (A B : Type*) [CommRing A] [CommRing B] (f g : A →+* B) (h
     (hg : g.TestProperty4 m) : True := by
   algebraize [f]
   guard_hyp algebraizeInst : Algebra.TestProperty4 n A B
+  fail_if_success
+    guard_hyp algebraizeInst_1
+  trivial
+
+example (A B : Type*) [CommRing A] [CommRing B] (f g : A →+* B) (hf : f.TestProperty5)
+    (hg : g.TestProperty5) : True := by
+  algebraize [f]
+  guard_hyp algebraizeInst : @Module.TestProperty5 A B _ _ f.toModule
   fail_if_success
     guard_hyp algebraizeInst_1
   trivial
