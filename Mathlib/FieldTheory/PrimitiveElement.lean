@@ -411,6 +411,10 @@ section algEquiv
 
 variable {F E : Type*} [Field F] [Field E] [Algebra F E]
 
+/-
+`F`-isomorphism between a field extension `E/F` and the quotient `F[X]⧸span {f}`, where `f` is
+the minimal polynomial over `F` of a primitive element in `E/F`.
+-/
 noncomputable def AlgEquiv.adjoinRootMinpolyPrimitiveElement {α : E}
     (hα : IsIntegral F α) (hα₂ : F⟮α⟯ = ⊤) : AdjoinRoot (minpoly F α) ≃ₐ[F] E :=
   (AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly F α).symm.trans <|
