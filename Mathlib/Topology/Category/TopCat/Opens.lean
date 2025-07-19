@@ -284,7 +284,7 @@ end TopologicalSpace.Opens
 @[simps obj_coe]
 def IsOpenMap.functor {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) : Opens X ⥤ Opens Y where
   obj U := ⟨f '' (U : Set X), hf (U : Set X) U.2⟩
-  map h := ⟨⟨image_mono h.down.down⟩⟩
+  map h := ⟨⟨Set.image_mono h.down.down⟩⟩
 
 /-- An open map `f : X ⟶ Y` induces an adjunction between `Opens X` and `Opens Y`.
 -/

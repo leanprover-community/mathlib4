@@ -252,7 +252,7 @@ include hf cont
 theorem mulTSupport_extend_one_subset :
     mulTSupport (g.extend f 1) ⊆ g '' mulTSupport f :=
   (hf.image cont).isClosed.closure_subset_iff.mpr <|
-    mulSupport_extend_one_subset.trans (Set.image_mono g subset_closure)
+    mulSupport_extend_one_subset.trans (Set.image_mono subset_closure)
 
 @[to_additive]
 theorem extend_one : HasCompactMulSupport (g.extend f 1) :=

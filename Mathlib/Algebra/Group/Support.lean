@@ -134,7 +134,7 @@ theorem range_subset_insert_image_mulSupport (f : α → M) :
 lemma range_eq_image_or_of_mulSupport_subset {f : α → M} {k : Set α} (h : mulSupport f ⊆ k) :
     range f = f '' k ∨ range f = insert 1 (f '' k) := by
   have : range f ⊆ insert 1 (f '' k) :=
-    (range_subset_insert_image_mulSupport f).trans (insert_subset_insert (image_subset f h))
+    (range_subset_insert_image_mulSupport f).trans (insert_subset_insert (image_mono h))
   by_cases h1 : 1 ∈ range f
   · exact Or.inr (subset_antisymm this (insert_subset h1 (image_subset_range _ _)))
   refine Or.inl (subset_antisymm ?_ (image_subset_range _ _))
