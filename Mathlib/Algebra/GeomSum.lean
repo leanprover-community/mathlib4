@@ -222,6 +222,10 @@ lemma pow_one_sub_dvd_pow_mul_sub_one [Ring R] (x : R) (m n : ℕ) :
 lemma nat_pow_one_sub_dvd_pow_mul_sub_one (x m n : ℕ) : x ^ m - 1 ∣ x ^ (m * n) - 1 := by
   simpa using nat_pow_sub_dvd_pow_mul_sub_pow x 1 m n
 
+lemma nat_pow_one_sub_dvd_pow_sub_one_of_dvd (x m k : ℕ) (hmk : m ∣ k) : x ^ m - 1 ∣ x ^ k - 1 := by
+  rcases hmk with ⟨n, hn⟩
+  simpa [hn] using nat_pow_one_sub_dvd_pow_mul_sub_one x m n
+
 theorem Odd.add_dvd_pow_add_pow [CommRing R] (x y : R) {n : ℕ} (h : Odd n) :
     x + y ∣ x ^ n + y ^ n := by
   have h₁ := geom_sum₂_mul x (-y) n

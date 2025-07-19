@@ -42,9 +42,7 @@ theorem Int.ModEq.pow_card_eq_self' {p k : ℕ} (hp : Nat.Prime p) {n : ℤ} :
       exact IsCoprime.symm ((fun {m n} ↦ isCoprime_iff_gcd_eq_one.mpr) ch)
     have : n ^ (p ^ k - 1) ≡ 1 [ZMOD p] := by
       refine ModEq.symm ((fun {n a b} ↦ modEq_iff_dvd.mpr) ?_)
-      have dvd1 : (p : ℤ) ∣ n ^ (p - 1) - 1 := by
-        refine modEq_iff_dvd.mp ?_
-        exact ModEq.symm (pow_card_sub_one_eq_one hp this)
+      have dvd1 : (p : ℤ) ∣ n ^ (p - 1) - 1 := prime_dvd_pow_card_sub_one hp this
       have : p - 1 ∣ p ^ k - 1 := nat_sub_one_dvd_pow_sub_one p k
       rcases this with ⟨m, hm⟩
       have dvd2 : n ^ (p - 1) - 1 ∣ n ^ (p ^ k - 1) - 1 := by
@@ -66,10 +64,9 @@ lemma imp : ∀ f ∈ bonza, ∀ p, Nat.Prime p → f p = 1 ∨
   · right
     intro b hb
     have dvd1 : (p : ℤ) ∣ f p := by
-      rw [ha2]
-      refine natCast_dvd_natCast.mpr ?_
+      rw [ha2, natCast_dvd_natCast]
       exact dvd_pow_self p ch
-    have dvd2 := hf.1 p b (by exact Prime.pos hp) hb
+    have dvd2 := hf.1 p b (Prime.pos hp) hb
     have : (p : ℤ) ∣ (b : ℤ) ^ p - (f b) ^ f p := Int.dvd_trans dvd1 dvd2
     have : (b : ℤ) ≡ (f b : ℤ) [ZMOD p] := by
       calc
@@ -79,6 +76,29 @@ lemma imp : ∀ f ∈ bonza, ∀ p, Nat.Prime p → f p = 1 ∨
         rw [ha2]
         exact ModEq.pow_card_eq_self' hp
     exact Int.ModEq.dvd (id (Int.ModEq.symm this))
+
+theorem cases : ∀ f ∈ bonza, (∀ x, x > 0 → f x = x) ∨ (∃ N, ∀ p > N, Nat.Prime p → f p = 1) := by
+  intro f hf
+  by_cases ch : ∀ x, x > 0 → f x = x
+  · exact Or.symm (Or.inr ch)
+  · right
+    obtain ⟨b, bgt, hb⟩ : ∃ b, b > 0 ∧ f b ≠ b := Set.not_subset.mp ch
+    have : ∀ p, Nat.Prime p → f p = 1 ∨ (p : ℤ) ∣ (b : ℤ) - (f b : ℤ) := by
+      intro p hp
+      rcases imp f hf p hp with ch | ch
+      · exact Or.symm (Or.inr ch)
+      · right
+        exact ch b bgt
+    use ((b : ℤ) - (f b : ℤ)).natAbs
+    intro p pgt hp
+    rcases this p hp with ch | ch
+    · exact ch
+    · have : (p : ℤ).natAbs ≤ ((b : ℤ) - (f b : ℤ)).natAbs := by
+        refine natAbs_le_of_dvd_ne_zero ch ?_
+        refine sub_ne_zero_of_ne ?_
+        simpa using id (Ne.symm hb)
+      simp at this
+      linarith
 
 def g : ℕ → ℕ := fun x ↦
   if ¬ 2 ∣ x then 1
