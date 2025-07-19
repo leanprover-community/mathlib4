@@ -165,19 +165,19 @@ This section proves topological results about convex cones.
 namespace ConvexCone
 variable {𝕜 E : Type*} [TopologicalSpace 𝕜] [Semifield 𝕜] [LinearOrder 𝕜] [OrderTopology 𝕜]
   [DenselyOrdered 𝕜] [NoMaxOrder 𝕜] [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E]
-  [ContinuousSMul 𝕜 E] {S : ConvexCone 𝕜 E}
+  [ContinuousSMul 𝕜 E] {C : ConvexCone 𝕜 E}
 
-lemma Pointed.of_nonempty_of_isClosed (hS : (S : Set E).Nonempty) (hSclos : IsClosed (S : Set E)) :
-    S.Pointed := by
-  obtain ⟨x, hx⟩ := hS
+lemma Pointed.of_nonempty_of_isClosed (hC : (C : Set E).Nonempty) (hSclos : IsClosed (C : Set E)) :
+    C.Pointed := by
+  obtain ⟨x, hx⟩ := hC
   let f : 𝕜 → E := (· • x)
-  -- The closure of `f (0, ∞)` is a subset of `K`
-  have hfS : closure (f '' Set.Ioi 0) ⊆ S :=
-    hSclos.closure_subset_iff.2 <| by rintro _ ⟨_, h, rfl⟩; exact S.smul_mem h hx
+  -- The closure of `f (0, ∞)` is a subset of `C`
+  have hfS : closure (f '' Set.Ioi 0) ⊆ C :=
+    hSclos.closure_subset_iff.2 <| by rintro _ ⟨_, h, rfl⟩; exact C.smul_mem h hx
   -- `f` is continuous at `0` from the right
   have fc : ContinuousWithinAt f (Set.Ioi (0 : 𝕜)) 0 :=
     (continuous_id.smul continuous_const).continuousWithinAt
-  -- `0 ∈ closure f (0, ∞) ⊆ K, 0 ∈ K`
+  -- `0 ∈ closure f (0, ∞) ⊆ C, 0 ∈ C`
   simpa [f, Pointed, ← SetLike.mem_coe] using hfS <| fc.mem_closure_image <| by simp
 
 @[deprecated (since := "2025-04-18")]
