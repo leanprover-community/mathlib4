@@ -36,7 +36,7 @@ class Grp_Class (X : C) extends Mon_Class X where
 namespace Mon_Class
 
 @[inherit_doc] scoped notation "ι" => Grp_Class.inv
-@[inherit_doc] scoped notation "ι["M"]" => Grp_Class.inv (X := M)
+@[inherit_doc] scoped notation "ι["G"]" => Grp_Class.inv (X := G)
 
 end Mon_Class
 
@@ -303,19 +303,19 @@ theorem forget₂Mon_comp_forget : forget₂Mon_ C ⋙ Mon_.forget C = forget C 
 
 end
 
-section
+/-- Construct an isomorphism of group objects by giving a monoid isomorphism between the underlying
+objects. -/
+@[simps!]
+def mkIso' {G H : C} (e : G ≅ H) [Grp_Class G] [Grp_Class H] [IsMon_Hom e.hom] : mk G ≅ mk H :=
+  (fullyFaithfulForget₂Mon_ C).preimageIso (Mon_.mkIso' e)
 
-variable {M N : Grp_ C} (f : M.X ≅ N.X) (one_f : η[M.X] ≫ f.hom = η[N.X] := by aesop_cat)
-  (mul_f : μ[M.X] ≫ f.hom = (f.hom ⊗ₘ f.hom) ≫ μ[N.X] := by aesop_cat)
-
-/-- Constructor for isomorphisms in the category `Grp_ C`. -/
-def mkIso : M ≅ N :=
-  (fullyFaithfulForget₂Mon_ C).preimageIso (Mon_.mkIso f one_f mul_f)
-
-@[simp] lemma mkIso_hom_hom : (mkIso f one_f mul_f).hom.hom = f.hom := rfl
-@[simp] lemma mkIso_inv_hom : (mkIso f one_f mul_f).inv.hom = f.inv := rfl
-
-end
+/-- Construct an isomorphism of group objects by giving an isomorphism between the underlying
+objects and checking compatibility with unit and multiplication only in the forward direction. -/
+@[simps!]
+abbrev mkIso {G H : Grp_ C} (e : G.X ≅ H.X) (one_f : η[G.X] ≫ e.hom = η[H.X] := by aesop_cat)
+    (mul_f : μ[G.X] ≫ e.hom = (e.hom ⊗ₘ e.hom) ≫ μ[H.X] := by aesop_cat) : G ≅ H :=
+  have : IsMon_Hom e.hom := ⟨one_f, mul_f⟩
+  mkIso' e
 
 instance uniqueHomFromTrivial (A : Grp_ C) : Unique (trivial C ⟶ A) :=
   Mon_.uniqueHomFromTrivial A.toMon_

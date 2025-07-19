@@ -115,19 +115,21 @@ theorem forget₂Mon_comp_forget : forget₂Mon_ C ⋙ Mon_.forget C = forget C 
 
 end
 
-section
+/-- Construct an isomorphism of commutative monoid objects by giving a monoid isomorphism between
+the underlying objects. -/
+@[simps!]
+def mkIso' {M N : C} (e : M ≅ N) [Mon_Class M] [IsCommMon M] [Mon_Class N] [IsCommMon N]
+    [IsMon_Hom e.hom] : mk M ≅ mk N :=
+  (fullyFaithfulForget₂Mon_ C).preimageIso (Mon_.mkIso' e)
 
-variable {M N : CommMon_ C} (f : M.X ≅ N.X) (one_f : η[M.X] ≫ f.hom = η[N.X] := by aesop_cat)
-  (mul_f : μ[M.X] ≫ f.hom = (f.hom ⊗ₘ f.hom) ≫ μ[N.X] := by aesop_cat)
-
-/-- Constructor for isomorphisms in the category `CommMon_ C`. -/
-def mkIso : M ≅ N :=
-  (fullyFaithfulForget₂Mon_ C).preimageIso (Mon_.mkIso f one_f mul_f)
-
-@[simp] lemma mkIso_hom_hom : (mkIso f one_f mul_f).hom.hom = f.hom := rfl
-@[simp] lemma mkIso_inv_hom : (mkIso f one_f mul_f).inv.hom = f.inv := rfl
-
-end
+/-- Construct an isomorphism of commutative monoid objects by giving an isomorphism between the
+underlying objects and checking compatibility with unit and multiplication only in the forward
+direction. -/
+@[simps!]
+abbrev mkIso {M N : CommMon_ C} (e : M.X ≅ N.X) (one_f : η[M.X] ≫ e.hom = η[N.X] := by aesop_cat)
+    (mul_f : μ[M.X] ≫ e.hom = (e.hom ⊗ₘ e.hom) ≫ μ[N.X] := by aesop_cat) : M ≅ N :=
+  have : IsMon_Hom e.hom := ⟨one_f, mul_f⟩
+  mkIso' e
 
 instance uniqueHomFromTrivial (A : CommMon_ C) : Unique (trivial C ⟶ A) :=
   Mon_.uniqueHomFromTrivial A.toMon_
