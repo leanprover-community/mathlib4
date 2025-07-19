@@ -53,7 +53,6 @@ variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G)
 namespace groupHomology
 
 section Chains
-variable [DecidableEq G]
 
 /-- The 0th object in the complex of inhomogeneous chains of `A : Rep k G` is isomorphic
 to `A` as a `k`-module. -/
@@ -202,7 +201,7 @@ lemma d₃₂_single_one_thd (g h : G) (a : A) :
     d₃₂ A (single (g, h, 1) a) = single (h, 1) (A.ρ g⁻¹ a) - single (g * h, 1) a := by
   simp [d₃₂]
 
-variable (A) [DecidableEq G]
+variable (A)
 
 /-- Let `C(G, A)` denote the complex of inhomogeneous chains of `A : Rep k G`. This lemma
 says `d₁₀` gives a simpler expression for the 0th differential: that is, the following
@@ -334,7 +333,7 @@ theorem single_mem_cycles₁_of_mem_invariants (g : G) (a : A) (ha : a ∈ A.ρ.
     single g a ∈ cycles₁ A :=
   (single_mem_cycles₁_iff g a).2 (ha g)
 
-theorem d₂₁_apply_mem_cycles₁ [DecidableEq G] (x : G × G →₀ A) :
+theorem d₂₁_apply_mem_cycles₁ (x : G × G →₀ A) :
     d₂₁ A x ∈ cycles₁ A :=
   congr($(d₂₁_comp_d₁₀ A) x)
 
@@ -373,7 +372,7 @@ theorem single_mem_cycles₂_iff (g : G × G) (a : A) :
   rw [← (mapRange_injective (α := G) _ (map_zero _) (A.ρ.apply_bijective g.1⁻¹).1).eq_iff]
   simp [mem_cycles₂_iff, mapRange_add, eq_comm]
 
-theorem d₃₂_apply_mem_cycles₂ [DecidableEq G] (x : G × G × G →₀ A) :
+theorem d₃₂_apply_mem_cycles₂ (x : G × G × G →₀ A) :
     d₃₂ A x ∈ cycles₂ A :=
   congr($(d₃₂_comp_d₂₁ A) x)
 
@@ -395,8 +394,6 @@ def boundaries₂ : Submodule k (G × G →₀ A) :=
 variable {A}
 
 section
-
-variable [DecidableEq G]
 
 lemma mem_cycles₁_of_mem_boundaries₁ (f : G →₀ A) (h : f ∈ boundaries₁ A) :
     f ∈ cycles₁ A := by
@@ -435,8 +432,6 @@ theorem single_inv_ρ_self_add_single_mem_boundaries₁ (g : G) (a : A) :
 
 section
 
-variable [DecidableEq G]
-
 lemma mem_cycles₂_of_mem_boundaries₂ (x : G × G →₀ A) (h : x ∈ boundaries₂ A) :
     x ∈ cycles₂ A := by
   rcases h with ⟨x, rfl⟩
@@ -448,7 +443,7 @@ lemma boundaries₂_le_cycles₂ : boundaries₂ A ≤ cycles₂ A :=
 
 variable (A) in
 /-- The natural inclusion `B₂(G, A) →ₗ[k] Z₂(G, A)`. -/
-abbrev boundariesToCycles₂ [DecidableEq G] : boundaries₂ A →ₗ[k] cycles₂ A :=
+abbrev boundariesToCycles₂ : boundaries₂ A →ₗ[k] cycles₂ A :=
   Submodule.inclusion (boundaries₂_le_cycles₂ A)
 
 @[simp]
@@ -611,7 +606,7 @@ def coinvariantsKerOfIsBoundary₀ (x : A) (hx : IsBoundary₀ G x) :
     rcases (isBoundary₀_iff G x).1 hx with ⟨y, rfl⟩
     exact Submodule.finsuppSum_mem _ _ _ _ fun g _ => Coinvariants.mem_ker_of_eq g (y g) _ rfl⟩
 
-theorem isBoundary₀_of_mem_coinvariantsKer [DecidableEq G]
+theorem isBoundary₀_of_mem_coinvariantsKer
     (x : A) (hx : x ∈ Coinvariants.ker (Representation.ofDistribMulAction k G A)) :
     IsBoundary₀ G x :=
   Submodule.span_induction (fun _ ⟨g, hg⟩ => ⟨single g.1⁻¹ g.2, by simp_all⟩) ⟨0, by simp⟩
@@ -684,8 +679,6 @@ lemma shortComplexH0_exact : (shortComplexH0 A).Exact := by
   use x
   rfl
 
-variable [DecidableEq G]
-
 /-- The 0-cycles of the complex of inhomogeneous chains of `A` are isomorphic to `A`. -/
 def cyclesIso₀ : cycles A 0 ≅ A.V :=
   (inhomogeneousChains A).iCyclesIso _ 0 (by aesop) (by aesop) ≪≫ chainsIso₀ A
@@ -725,8 +718,6 @@ end cyclesIso₀
 
 section isoCycles₁
 
-variable [DecidableEq G]
-
 /-- The short complex `(G² →₀ A) --d₂₁--> (G →₀ A) --d₁₀--> A` is isomorphic to the 1st
 short complex associated to the complex of inhomogeneous chains of `A`. -/
 @[simps! hom inv]
@@ -763,8 +754,6 @@ end isoCycles₁
 
 section isoCycles₂
 
-variable [DecidableEq G]
-
 /-- The short complex `(G³ →₀ A) --d₃₂--> (G² →₀ A) --d₂₁--> (G →₀ A)` is isomorphic to the 2nd
 short complex associated to the complex of inhomogeneous chains of `A`. -/
 @[simps! hom inv]
@@ -800,8 +789,6 @@ lemma toCycles_comp_isoCycles₂_hom :
 end isoCycles₂
 
 section Homology
-
-variable [DecidableEq G]
 
 section H0
 
