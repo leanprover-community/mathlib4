@@ -184,7 +184,8 @@ variable [Fintype ι]
 @[simp]
 theorem finrank_euclideanSpace :
     Module.finrank 𝕜 (EuclideanSpace 𝕜 ι) = Fintype.card ι := by
-  simp [WithLp]
+  convert (WithLp.linearEquiv 2 𝕜 (ι → 𝕜)).finrank_eq
+  simp
 
 theorem finrank_euclideanSpace_fin {n : ℕ} :
     Module.finrank 𝕜 (EuclideanSpace 𝕜 (Fin n)) = n := by simp
@@ -208,11 +209,11 @@ def DirectSum.IsInternal.isometryL2OfOrthogonalFamily [DecidableEq ι] {V : ι �
     E ≃ₗᵢ[𝕜] PiLp 2 fun i => V i := by
   let e₁ := DirectSum.linearEquivFunOnFintype 𝕜 ι fun i => V i
   let e₂ := LinearEquiv.ofBijective (DirectSum.coeLinearMap V) hV
-  refine LinearEquiv.isometryOfInner (e₂.symm.trans e₁) ?_
+  refine LinearEquiv.isometryOfInner ((e₂.symm.trans e₁).trans
+    (WithLp.linearEquiv 2 𝕜 (Π i, V i)).symm) ?_
   suffices ∀ (v w : PiLp 2 fun i => V i), ⟪v, w⟫ = ⟪e₂ (e₁.symm v), e₂ (e₁.symm w)⟫ by
     intro v₀ w₀
-    convert this (e₁ (e₂.symm v₀)) (e₁ (e₂.symm w₀)) <;>
-      simp only [LinearEquiv.symm_apply_apply, LinearEquiv.apply_symm_apply]
+    convert this (toLp 2 (e₁ (e₂.symm v₀))) (toLp 2 (e₁ (e₂.symm w₀))) <;> simp
   intro v w
   trans ⟪∑ i, (V i).subtypeₗᵢ (v i), ∑ i, (V i).subtypeₗᵢ (w i)⟫
   · simp only [sum_inner, hV'.inner_right_fintype, PiLp.inner_apply]
@@ -279,7 +280,7 @@ theorem EuclideanSpace.single_apply (i : ι) (a : 𝕜) (j : ι) :
 
 @[simp]
 theorem EuclideanSpace.single_eq_zero_iff {i : ι} {a : 𝕜} :
-    EuclideanSpace.single i a = 0 ↔ a = 0 := Pi.single_eq_zero_iff
+    EuclideanSpace.single i a = 0 ↔ a = 0 := (toLp_injective 2).eq_iff.trans Pi.single_eq_zero_iff
 
 variable [Fintype ι]
 
@@ -445,22 +446,21 @@ lemma inner_eq_ite [DecidableEq ι] (b : OrthonormalBasis ι 𝕜 E) (i j : ι) 
 
 /-- The `Basis ι 𝕜 E` underlying the `OrthonormalBasis` -/
 protected def toBasis (b : OrthonormalBasis ι 𝕜 E) : Basis ι 𝕜 E :=
-  Basis.ofEquivFun b.repr.toLinearEquiv
+  Basis.ofEquivFun (b.repr.toLinearEquiv.trans (WithLp.linearEquiv 2 𝕜 (ι → 𝕜)))
 
 @[simp]
 protected theorem coe_toBasis (b : OrthonormalBasis ι 𝕜 E) : (⇑b.toBasis : ι → E) = ⇑b := rfl
 
 @[simp]
 protected theorem coe_toBasis_repr (b : OrthonormalBasis ι 𝕜 E) :
-    b.toBasis.equivFun = b.repr.toLinearEquiv :=
+    b.toBasis.equivFun = b.repr.toLinearEquiv.trans (WithLp.linearEquiv 2 𝕜 (ι → 𝕜)) :=
   Basis.equivFun_ofEquivFun _
 
 @[simp]
 protected theorem coe_toBasis_repr_apply (b : OrthonormalBasis ι 𝕜 E) (x : E) (i : ι) :
     b.toBasis.repr x i = b.repr x i := by
   rw [← Basis.equivFun_apply, OrthonormalBasis.coe_toBasis_repr]
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [LinearIsometryEquiv.coe_toLinearEquiv]
+  rfl
 
 protected theorem sum_repr (b : OrthonormalBasis ι 𝕜 E) (x : E) : ∑ i, b.repr x i • b i = x := by
   simp_rw [← b.coe_toBasis_repr_apply, ← b.coe_toBasis]
@@ -551,31 +551,37 @@ protected theorem toBasis_map {G : Type*} [NormedAddCommGroup G] [InnerProductSp
 def _root_.Basis.toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonormal 𝕜 v) :
     OrthonormalBasis ι 𝕜 E :=
   OrthonormalBasis.ofRepr <|
-    LinearEquiv.isometryOfInner v.equivFun
+    LinearEquiv.isometryOfInner (v.equivFun.trans (WithLp.linearEquiv 2 𝕜 (ι → 𝕜)).symm)
       (by
         intro x y
-        let p : EuclideanSpace 𝕜 ι := v.equivFun x
-        let q : EuclideanSpace 𝕜 ι := v.equivFun y
+        let p : EuclideanSpace 𝕜 ι := toLp 2 (v.equivFun x)
+        let q : EuclideanSpace 𝕜 ι := toLp 2 (v.equivFun y)
         have key : ⟪p, q⟫ = ⟪∑ i, p i • v i, ∑ i, q i • v i⟫ := by
           simp [inner_sum, inner_smul_right, hv.inner_left_fintype]
         convert key
         · rw [← v.equivFun.symm_apply_apply x, v.equivFun_symm_apply]
-        · rw [← v.equivFun.symm_apply_apply y, v.equivFun_symm_apply])
+          rfl
+        · rw [← v.equivFun.symm_apply_apply y, v.equivFun_symm_apply]
+          rfl)
 
 @[simp]
 theorem _root_.Basis.coe_toOrthonormalBasis_repr (v : Basis ι 𝕜 E) (hv : Orthonormal 𝕜 v) :
-    ((v.toOrthonormalBasis hv).repr : E → EuclideanSpace 𝕜 ι) = v.equivFun :=
+    ((v.toOrthonormalBasis hv).repr : E → EuclideanSpace 𝕜 ι) =
+    v.equivFun.trans (WithLp.linearEquiv 2 𝕜 (ι → 𝕜)).symm :=
   rfl
 
 @[simp]
 theorem _root_.Basis.coe_toOrthonormalBasis_repr_symm (v : Basis ι 𝕜 E) (hv : Orthonormal 𝕜 v) :
-    ((v.toOrthonormalBasis hv).repr.symm : EuclideanSpace 𝕜 ι → E) = v.equivFun.symm :=
+    ((v.toOrthonormalBasis hv).repr.symm : EuclideanSpace 𝕜 ι → E) =
+    (WithLp.linearEquiv 2 𝕜 (ι → 𝕜)).trans v.equivFun.symm :=
   rfl
 
 @[simp]
 theorem _root_.Basis.toBasis_toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonormal 𝕜 v) :
     (v.toOrthonormalBasis hv).toBasis = v := by
-  simp [Basis.toOrthonormalBasis, OrthonormalBasis.toBasis]
+  simp only [OrthonormalBasis.toBasis, Basis.toOrthonormalBasis,
+    LinearEquiv.isometryOfInner_toLinearEquiv]
+  exact Basis.ofEquivFun_equivFun v
 
 @[simp]
 theorem _root_.Basis.coe_toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonormal 𝕜 v) :
@@ -624,7 +630,7 @@ theorem _root_.Pi.orthonormalBasis_repr {η : Type*} [Fintype η] {ι : η → T
     [∀ i, Fintype (ι i)] {𝕜 : Type*} [RCLike 𝕜] {E : η → Type*} [∀ i, NormedAddCommGroup (E i)]
     [∀ i, InnerProductSpace 𝕜 (E i)] (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i)) (x : (i : η) → E i)
     (j : (i : η) × (ι i)) :
-    (Pi.orthonormalBasis B).repr x j = (B j.fst).repr (x j.fst) j.snd := rfl
+    (Pi.orthonormalBasis B).repr (toLp 2 x) j = (B j.fst).repr (x j.fst) j.snd := rfl
 
 variable {v : ι → E}
 
