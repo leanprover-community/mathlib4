@@ -26,7 +26,7 @@ theorem isLocalizedModule_iff_isLocalization :
       Algebra.algebraMapSubmonoid, ← SetLike.mem_coe, Submonoid.coe_map,
       Set.forall_mem_image, ← IsScalarTower.algebraMap_apply]
   · simp_rw [Prod.exists, Subtype.exists, Algebra.algebraMapSubmonoid]
-    simp [← IsScalarTower.algebraMap_apply, Submonoid.mk_smul, Algebra.smul_def, mul_comm]
+    simp [← IsScalarTower.algebraMap_apply, Algebra.smul_def, mul_comm]
   · congr!; simp_rw [Subtype.exists, Algebra.algebraMapSubmonoid]; simp [Algebra.smul_def]
 
 instance [IsLocalization (Algebra.algebraMapSubmonoid A S) Aₛ] :
