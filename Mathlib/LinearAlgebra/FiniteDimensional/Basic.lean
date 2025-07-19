@@ -601,4 +601,13 @@ theorem ker_pow_constant {f : End K V} {k : ℕ}
 
 end End
 
+lemma toFiniteDimensional (K : Type*) {V : Type*}
+    [DivisionRing K] [AddCommGroup V] [Module K V]
+    (e : V) : ∃ (E' : Submodule K V) (_ : FiniteDimensional K E'), e ∈ E' := by
+  classical
+  let b := Basis.ofVectorSpace K V
+  refine ⟨Submodule.span K (Finset.image b (b.repr e).support),
+    FiniteDimensional.span_finset _ _, ?_⟩
+  simp [Basis.mem_span_repr_support]
+
 end Module

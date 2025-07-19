@@ -66,26 +66,6 @@ theorem conj_inner (x y : E ⊗[𝕜] F) : starRingEnd 𝕜 (inner 𝕜 x y) = i
     (fun x y hx hy a b => by simp_all [inner])) (fun x y hx hy => by simp_all [inner])
 
 section move
-
--- move to `LinearAlgebra/TensorProduct/Basis`? or something
-theorem basis_sum_repr {𝕜 E F : Type*} [CommSemiring 𝕜]
-    [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
-    {ι₁ ι₂ : Type*} [Fintype ι₁] [Fintype ι₂] (b₁ : Basis ι₁ 𝕜 E) (b₂ : Basis ι₂ 𝕜 F)
-    (x : TensorProduct 𝕜 E F) :
-    x = ∑ i : ι₁, ∑ j : ι₂, (b₁.tensorProduct b₂).repr x (i, j) • b₁ i ⊗ₜ[𝕜] b₂ j := by
-  nth_rw 1 [← Basis.sum_repr (b₁.tensorProduct b₂) x]
-  simp [← Finset.sum_product', Basis.tensorProduct_apply']
-
--- move to `LinearAlgebra/FiniteDimensional/Basic`?
-lemma _root_.toFiniteDimensional (K : Type*) {V : Type*}
-    [DivisionRing K] [AddCommGroup V] [Module K V]
-    (e : V) : ∃ (E' : Submodule K V) (_ : FiniteDimensional K E'), e ∈ E' := by
-  classical
-  let b := Basis.ofVectorSpace K V
-  refine ⟨Submodule.span K (Finset.image b (b.repr e).support),
-    FiniteDimensional.span_finset _ _, ?_⟩
-  simp [Basis.mem_span_repr_support]
-
 section
 
 variable {R V V' : Type*} [CommSemiring R] [AddCommMonoid V] [AddCommMonoid V']
@@ -122,8 +102,8 @@ lemma toFiniteDimensional {K V V' : Type*} [Field K] [AddCommGroup V]
     z ∈ LinearMap.range (TensorProduct.map E'.subtype F'.subtype) := by
   induction' z using TensorProduct.induction_on with e f z₁ z₂ ih₁ ih₂
   · exact ⟨⊥, ⊥, finiteDimensional_bot K V, finiteDimensional_bot K V', Submodule.zero_mem _⟩
-  · rcases _root_.toFiniteDimensional K e with ⟨E', iE', he⟩
-    rcases _root_.toFiniteDimensional K f with ⟨F', iF', hf⟩
+  · rcases Module.toFiniteDimensional K e with ⟨E', iE', he⟩
+    rcases Module.toFiniteDimensional K f with ⟨F', iF', hf⟩
     exact ⟨E', F', iE', iF', ⟨⟨e, he⟩ ⊗ₜ ⟨f, hf⟩, rfl⟩⟩
   · rcases ih₁ with ⟨E1, F1, iE1, iF1, ⟨z1, rfl⟩⟩
     rcases ih₂ with ⟨E2, F2, iE2, iF2, ⟨z2, rfl⟩⟩
