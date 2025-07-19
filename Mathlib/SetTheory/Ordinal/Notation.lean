@@ -7,6 +7,8 @@ import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Data.Ordering.Lemmas
 import Mathlib.Data.PNat.Basic
 import Mathlib.SetTheory.Ordinal.Principal
+import Mathlib.SetTheory.Ordinal.Veblen
+import Mathlib.SetTheory.Ordinal.CantorNormalForm
 import Mathlib.Tactic.NormNum
 
 /-!
@@ -26,7 +28,7 @@ are defined on `ONote` and `NONote`.
 
 
 
-open Ordinal Order
+open Ordinal Order Function Set
 
 -- The generated theorem `ONote.zero.sizeOf_spec` is flagged by `simpNF`,
 -- and we don't otherwise need it.
@@ -66,9 +68,10 @@ def omega : ONote :=
 /-- The ordinal denoted by a notation -/
 noncomputable def repr : ONote → Ordinal.{0}
   | 0 => 0
-  | oadd e n a => ω ^ repr e * n + repr a
-@[simp] theorem repr_zero : repr 0 = 0 := rfl
-attribute [simp] repr.eq_1 repr.eq_2
+  | oadd e n a => ω ^ repr e * (↑n : ℕ) + repr a
+@[simp] lemma repr_zero : repr 0 = 0 := rfl
+@[simp] lemma repr_oadd (e n a) : repr (oadd e n a) = ω ^ repr e * (↑n : ℕ) + repr a := rfl
+@[simp] lemma repr_omega : repr omega = ω := by simp [repr, omega]
 
 /-- Print `ω^s*n`, omitting `s` if `e = 0` or `e = 1`, and omitting `n` if `n = 1` -/
 private def toString_aux (e : ONote) (n : ℕ) (s : String) : String :=
@@ -562,7 +565,7 @@ theorem repr_mul : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ * o₂) = rep
     · simp only [repr]
       haveI := h₁.fst
       haveI := h₂.fst
-      simp only [Mul.mul, mul, e0, ite_false, repr.eq_2, repr_add, opow_add, IH, repr, mul_add]
+      simp only [Mul.mul, mul, e0, ite_false, repr_oadd, repr_add, opow_add, IH, repr, mul_add]
       rw [← mul_assoc]
       congr 2
       have := mt repr_inj.1 e0
@@ -1181,6 +1184,10 @@ instance : Zero NONote :=
 instance : Inhabited NONote :=
   ⟨0⟩
 
+@[simp]
+lemma repr_zero : repr 0 = 0 :=
+  rfl
+
 theorem lt_wf : @WellFounded NONote (· < ·) :=
   InvImage.wf repr Ordinal.lt_wf
 
@@ -1193,6 +1200,10 @@ instance : WellFoundedRelation NONote :=
 /-- Convert a natural number to an ordinal notation -/
 def ofNat (n : ℕ) : NONote :=
   ⟨ONote.ofNat n, ⟨⟨_, nfBelow_ofNat _⟩⟩⟩
+
+@[simp]
+lemma repr_ofNat (n : ℕ) : repr (ofNat n) = ↑n :=
+  ONote.repr_ofNat n
 
 /-- Compare ordinal notations -/
 def cmp (a b : NONote) : Ordering :=
@@ -1209,26 +1220,45 @@ instance : LinearOrder NONote :=
   linearOrderOfCompares cmp cmp_compares
 
 /-- Asserts that `repr a < ω ^ repr b`. Used in `NONote.recOn`. -/
-def below (a b : NONote) : Prop :=
+def Below (a b : NONote) : Prop :=
   NFBelow a.1 (repr b)
 
+@[deprecated (since := "2025-07-16")] alias below := Below
+
+lemma Below.repr_lt_repr {a b : NONote} (hab : a.Below b) : repr a < ω ^ repr b :=
+  NFBelow.repr_lt hab
+
 /-- The `oadd` pseudo-constructor for `NONote` -/
-def oadd (e : NONote) (n : ℕ+) (a : NONote) (h : below a e) : NONote :=
+def oadd (e : NONote) (n : ℕ+) (a : NONote) (h : Below a e) : NONote :=
   ⟨_, NF.oadd e.2 n h⟩
+
+@[simp]
+lemma repr_oadd (e n a h) : repr (oadd e n a h) = ω ^ repr e * (↑n : ℕ) + repr a :=
+  rfl
 
 /-- This is a recursor-like theorem for `NONote` suggesting an inductive definition, which can't
 actually be defined this way due to conflicting dependencies. -/
-@[elab_as_elim]
-def recOn {C : NONote → Sort*} (o : NONote) (H0 : C 0)
-    (H1 : ∀ e n a h, C e → C a → C (oadd e n a h)) : C o := by
+@[elab_as_elim, induction_eliminator]
+def recOn {C : NONote → Sort*} (o : NONote) (zero : C 0)
+    (oadd : ∀ e n a h, C e → C a → C (oadd e n a h)) : C o := by
   obtain ⟨o, h⟩ := o; induction o with
-  | zero => exact H0
-  | oadd e n a IHe IHa => exact H1 ⟨e, h.fst⟩ n ⟨a, h.snd⟩ h.snd' (IHe _) (IHa _)
+  | zero => exact zero
+  | oadd e n a IHe IHa => exact oadd ⟨e, h.fst⟩ n ⟨a, h.snd⟩ h.snd' (IHe _) (IHa _)
+
+/-- This is a recursor-like theorem for `NONote` suggesting an inductive definition, which can't
+actually be defined this way due to conflicting dependencies. -/
+@[elab_as_elim, cases_eliminator]
+def casesOn {C : NONote → Sort*} (o : NONote) (zero : C 0)
+    (oadd : ∀ e n a h, C (oadd e n a h)) : C o := by
+  obtain ⟨o, h⟩ := o; induction o with
+  | zero => exact zero
+  | oadd e n a _ _ => exact oadd ⟨e, h.fst⟩ n ⟨a, h.snd⟩ h.snd'
 
 /-- Addition of ordinal notations -/
 instance : Add NONote :=
   ⟨fun x y => mk (x.1 + y.1)⟩
 
+@[simp]
 theorem repr_add (a b) : repr (a + b) = repr a + repr b :=
   ONote.repr_add a.1 b.1
 
@@ -1243,6 +1273,7 @@ theorem repr_sub (a b) : repr (a - b) = repr a - repr b :=
 instance : Mul NONote :=
   ⟨fun x y => mk (x.1 * y.1)⟩
 
+@[simp]
 theorem repr_mul (a b) : repr (a * b) = repr a * repr b :=
   ONote.repr_mul a.1 b.1
 
@@ -1250,7 +1281,150 @@ theorem repr_mul (a b) : repr (a * b) = repr a * repr b :=
 def opow (x y : NONote) :=
   mk (x.1 ^ y.1)
 
+@[simp]
 theorem repr_opow (a b) : repr (opow a b) = repr a ^ repr b :=
   ONote.repr_opow a.1 b.1
+
+/-- Notation for ω -/
+def omega : NONote :=
+  ⟨ONote.omega, by decide⟩
+
+@[simp]
+lemma repr_omega : repr omega = ω :=
+  ONote.repr_omega
+
+lemma le_def {a b} : a ≤ b ↔ repr a ≤ repr b :=
+  ONote.le_def
+
+lemma lt_def {a b} : a < b ↔ repr a < repr b :=
+  ONote.lt_def
+
+open Lean Meta Qq Mathlib.Meta Positivity in
+/-- The `positivity` extension for `Ordinal.omega0`. -/
+@[positivity Ordinal.omega0]
+def _root_.Mathlib.Meta.Positivity.evalOmega0 : PositivityExt where
+  eval {u α} _zα _pα e := do
+    let some u' := u.dec | throwError "level is not succ"
+    haveI' : u =QL u' + 1 := ⟨⟩
+    match α, e with
+    | ~q(Ordinal.{u'}), ~q(Ordinal.omega0.{u'}) =>
+      assertInstancesCommute
+      pure (.positive q(omega0_pos))
+    | _, _ => throwError "not Ordinal.omega0"
+
+open Lean Meta Qq Mathlib.Meta Positivity in
+/-- The `positivity` extension which identifies expressions of the form
+`(a : Ordinal) ^ (b : Ordinal)`, such that `positivity` successfully recognises both `a` and `b`. -/
+@[positivity (_ : Ordinal) ^ (_ : Ordinal)]
+def _root_.Mathlib.Meta.Positivity.evalOPow : PositivityExt where
+  eval {u α} zα pα e := do
+    let some u' := u.dec | throwError "level is not succ"
+    haveI' : u =QL u' + 1 := ⟨⟩
+    match α, e with
+    | ~q(Ordinal.{u'}), ~q(($a : Ordinal.{u'}) ^ ($b : Ordinal.{u'})) =>
+      assertInstancesCommute
+      if let some ⟨lit, rb⟩ ← try? (NormNum.deriveNat b q(inferInstance)) then
+        if lit.natLit! = 0 then
+          haveI' : $lit =Q 0 := ⟨⟩
+          return (.positive (q(show 0 < $a ^ $b by
+            rw [($rb).out, Nat.cast_zero, opow_zero]; exact zero_lt_one)))
+      let ra ← core zα pα a
+      match ra with
+      | .positive pa => pure (.positive (q(opow_pos $b $pa)))
+      | .nonzero pa => pure (.positive (q(opow_pos $b (pos_of_ne_zero $pa))))
+      | _ => pure (.nonnegative q(zero_le ($a ^ $b)))
+    | _, _ => throwError "not ordinal power"
+
+lemma repr_injective : Injective repr := by
+  intro a b hab
+  induction a generalizing b with
+  | zero =>
+    cases b with
+    | zero => rfl
+    | oadd eb nb b => simp only [repr_zero, repr_oadd] at hab; absurd hab; positivity
+  | oadd e n a hae he ha =>
+    cases b with
+    | zero => simp only [repr_zero, repr_oadd] at hab; absurd hab; positivity
+    | oadd e' n' b hbe' =>
+      simp only [repr_oadd] at hab
+      have hab₂ := congr_arg (log ω) hab
+      rw [log_opow_mul_add one_lt_omega0 (by positivity) hae.repr_lt_repr,
+        log_opow_mul_add one_lt_omega0 (by positivity) hbe'.repr_lt_repr,
+        log_eq_zero (nat_lt_omega0 _), log_eq_zero (nat_lt_omega0 _),
+        add_zero, add_zero] at hab₂
+      obtain rfl := he hab₂; clear he hab₂
+      have hab₂ := congr_arg (· / ω ^ e.repr) hab
+      beta_reduce at hab₂
+      rw [mul_add_div _ (by positivity), mul_add_div _ (by positivity),
+        div_eq_zero_of_lt hae.repr_lt_repr, div_eq_zero_of_lt hbe'.repr_lt_repr,
+        add_zero, add_zero] at hab₂
+      norm_cast at hab₂
+      subst hab₂
+      rw [add_right_inj] at hab
+      obtain rfl := ha hab; clear ha hab
+      rfl
+
+noncomputable def orderEmbedding : NONote ↪o Ordinal where
+  toFun := repr
+  inj' := repr_injective
+  map_rel_iff' := le_def.symm
+
+@[simp]
+lemma orderEmbedding_coe : ⇑orderEmbedding = repr :=
+  rfl
+
+lemma repr_lt_epsilon0 (o : NONote) : repr o < ε_ 0 := by
+  rw [lt_epsilon0]
+  induction o with
+  | zero => exists 1; simp
+  | oadd e n a ha he ha₂ =>
+    obtain ⟨ee, he⟩ := he; clear ha₂
+    exists ee + 1
+    rw [repr_oadd, iterate_succ_apply', ← lt_sub]
+    apply ha.repr_lt_repr.trans; clear a ha
+    rw [lt_sub, ← smul_eq_mul, ← succ_nsmul, smul_eq_mul]
+    apply omega0_opow_mul_nat_lt
+    assumption
+
+lemma range_repr : range repr = Iio (ε_ 0) := by
+  ext o
+  simp_rw [mem_range, mem_Iio]
+  constructor
+  case mp => rintro ⟨o, rfl⟩; apply repr_lt_epsilon0
+  case mpr =>
+    induction o using WellFoundedLT.induction with
+    | ind o hio =>
+      intro ho
+      replace hio := fun y hy => hio y hy (hy.trans ho)
+      obtain (rfl | honn) := eq_or_ne o 0
+      case inl => exists 0
+      rw [← not_le] at ho
+      apply mt epsilon0_le_of_omega0_opow_le at ho
+      rw [not_le] at ho
+      replace hio : ∀ p ∈ CNF ω o, ∃ p' : NONote × ℕ+, p'.map repr (↑) = p := by
+        rintro ⟨e, no⟩ hen
+        obtain ⟨ne, rfl⟩ := hio _ ((CNF_fst_le_log hen).trans_lt (lt_log_of_lt_opow honn ho))
+        obtain ⟨n, rfl⟩ := lt_omega0.mp (CNF_snd_lt one_lt_omega0 hen)
+        lift n to PNat using by simpa only [Nat.cast_pos'] using CNF_lt_snd hen
+        exists (ne, n)
+      choose C hC using hio
+      simp only [Prod.ext_iff, Prod.map_fst, Prod.map_snd, forall_and] at hC
+      obtain ⟨hC₁, hC₂⟩ := hC
+      exists ((CNF ω o).pmap C (fun _ => id)).foldr (fun p r ↦ opow omega p.1 * ofNat p.2 + r) 0
+      convert CNF_foldr ω o using 1
+      conv_lhs => tactic =>
+        symm
+        apply List.foldr_hom (g₂ := fun p r => ω ^ p.1.repr * ↑↑p.2 + r)
+        intro p r
+        simp
+      simp [List.foldr_pmap, hC₁, hC₂,
+        List.foldr_attach (f := fun (p : Ordinal × Ordinal) (r : Ordinal) => ω ^ p.1 * p.2 + r)]
+
+noncomputable def orderIso : NONote ≃o ↥(Iio (ε_ 0)) :=
+  orderEmbedding.orderIso.trans (OrderIso.setCongr _ _ range_repr)
+
+@[simp]
+lemma orderIso_apply_coe (o : NONote) : (↑(orderIso o) : Ordinal) = repr o :=
+  rfl
 
 end NONote
