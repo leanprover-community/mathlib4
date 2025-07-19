@@ -1218,6 +1218,7 @@ import Mathlib.AlgebraicGeometry.RationalMap
 import Mathlib.AlgebraicGeometry.ResidueField
 import Mathlib.AlgebraicGeometry.Restrict
 import Mathlib.AlgebraicGeometry.Scheme
+import Mathlib.AlgebraicGeometry.Sites.BigAffineZariski
 import Mathlib.AlgebraicGeometry.Sites.BigZariski
 import Mathlib.AlgebraicGeometry.Sites.Etale
 import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
