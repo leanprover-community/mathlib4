@@ -141,8 +141,7 @@ variable {x : S}
 theorem ToAdjoin.injective (hx : IsIntegral R x) : Function.Injective (Minpoly.toAdjoin R x) := by
   refine (injective_iff_map_eq_zero _).2 fun P₁ hP₁ => ?_
   obtain ⟨P, rfl⟩ := mk_surjective P₁
-  rwa [Minpoly.toAdjoin_apply, liftHom_mk, ← Subalgebra.coe_eq_zero, aeval_subalgebra_coe,
-    isIntegrallyClosed_dvd_iff hx, ← AdjoinRoot.mk_eq_zero] at hP₁
+  simp_all [← Subalgebra.coe_eq_zero, isIntegrallyClosed_dvd_iff hx]
 
 /-- The algebra isomorphism `AdjoinRoot (minpoly R x) ≃ₐ[R] adjoin R x` -/
 def equivAdjoin (hx : IsIntegral R x) : AdjoinRoot (minpoly R x) ≃ₐ[R] adjoin R ({x} : Set S) :=
@@ -150,12 +149,10 @@ def equivAdjoin (hx : IsIntegral R x) : AdjoinRoot (minpoly R x) ≃ₐ[R] adjoi
     ⟨minpoly.ToAdjoin.injective hx, Minpoly.toAdjoin.surjective R x⟩
 
 @[simp]
-theorem equivAdjoin_toAlgHom (hx : IsIntegral R x) :
-  equivAdjoin hx = Minpoly.toAdjoin R x := rfl
+theorem equivAdjoin_toAlgHom (hx : IsIntegral R x) : equivAdjoin hx = Minpoly.toAdjoin R x := rfl
 
 @[simp]
-theorem equivAdjoin_apply (hx : IsIntegral R x) (a) :
-  equivAdjoin hx a = Minpoly.toAdjoin R x a := rfl
+theorem coe_equivAdjoin (hx : IsIntegral R x) : ⇑(equivAdjoin hx) = Minpoly.toAdjoin R x := rfl
 
 /-- The `PowerBasis` of `adjoin R {x}` given by `x`. See `Algebra.adjoin.powerBasis` for a version
 over a field. -/

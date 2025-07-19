@@ -565,17 +565,17 @@ def Minpoly.toAdjoin : AdjoinRoot (minpoly R x) →ₐ[R] adjoin R ({x} : Set S)
 variable {R x}
 
 @[simp]
-theorem Minpoly.toAdjoin_apply (a : AdjoinRoot (minpoly R x)) :
-    Minpoly.toAdjoin R x a = liftHom (minpoly R x) ⟨x, self_mem_adjoin_singleton R x⟩
-      (by simp [← Subalgebra.coe_eq_zero, aeval_subalgebra_coe]) a := rfl
+theorem Minpoly.coe_toAdjoin :
+    ⇑(Minpoly.toAdjoin R x) = liftHom (minpoly R x) ⟨x, self_mem_adjoin_singleton R x⟩
+      (by simp [← Subalgebra.coe_eq_zero, aeval_subalgebra_coe]) := rfl
 
-theorem Minpoly.toAdjoin.apply_X : Minpoly.toAdjoin R x (mk (minpoly R x) X) = x := by simp
+theorem Minpoly.coe_toAdjoin_mk_X : Minpoly.toAdjoin R x (mk (minpoly R x) X) = x := by simp
 
 variable (R x)
 
 theorem Minpoly.toAdjoin.surjective : Function.Surjective (Minpoly.toAdjoin R x) := by
   rw [← AlgHom.range_eq_top, _root_.eq_top_iff, ← adjoin_adjoin_coe_preimage]
-  exact adjoin_le fun ⟨y₁, y₂⟩ h ↦ ⟨mk (minpoly R x) X, by simpa [toAdjoin] using h.symm⟩
+  exact adjoin_le fun ⟨y₁, y₂⟩ h ↦ ⟨mk (minpoly R x) X, by simpa using h.symm⟩
 
 end minpoly
 

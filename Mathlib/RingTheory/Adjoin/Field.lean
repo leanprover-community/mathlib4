@@ -44,9 +44,9 @@ theorem AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly_symm_toAlgHom {R : Type*}
     (adjoinSingletonEquivAdjoinRootMinpoly F x).symm = AdjoinRoot.Minpoly.toAdjoin F x := rfl
 
 @[simp]
-theorem AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly_symm_apply {R : Type*} [CommRing R]
-    [Algebra F R] (x : R) (a) :
-    (adjoinSingletonEquivAdjoinRootMinpoly F x).symm a = AdjoinRoot.Minpoly.toAdjoin F x a := rfl
+theorem AlgEquiv.coe_adjoinSingletonEquivAdjoinRootMinpoly_symm {R : Type*} [CommRing R]
+    [Algebra F R] (x : R) :
+    ⇑(adjoinSingletonEquivAdjoinRootMinpoly F x).symm = AdjoinRoot.Minpoly.toAdjoin F x := rfl
 
 /-- Produce an algebra homomorphism `Adjoin R {x} →ₐ[R] T` sending `x` to
 a root of `x`'s minimal polynomial in `T`. -/
