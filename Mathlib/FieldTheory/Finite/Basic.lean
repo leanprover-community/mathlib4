@@ -638,6 +638,29 @@ theorem Int.prime_dvd_pow_card_self {p : ℕ} (hp : Nat.Prime p) {n : ℤ} :
 theorem Int.ModEq.pow_card_eq_self {p : ℕ} (hp : Nat.Prime p) {n : ℤ} : n ^ p ≡ n [ZMOD p] :=
   ModEq.symm ((fun {_ _ _} ↦ modEq_iff_dvd.mpr) (prime_dvd_pow_card_self hp))
 
+theorem Int.ModEq.pow_eq_pow {p x y : ℕ} (hp : Nat.Prime p) (h : p - 1 ∣ x - y) (hxy : x ≥ y)
+    (hy : y > 0) {n : ℤ} : n ^ x ≡ n ^ y [ZMOD p] := by
+  haveI : Fact p.Prime := ⟨hp⟩
+  by_cases ch : (p : ℤ) ∣ n
+  · calc
+    _ ≡ 0 [ZMOD p] := Dvd.dvd.modEq_zero_int (Dvd.dvd.pow ch (by omega))
+    _ ≡ _ [ZMOD p] :=
+      Int.ModEq.symm ((fun {n a} ↦ Int.modEq_zero_iff_dvd.mpr) (Dvd.dvd.pow ch (by omega)))
+  · have : n ^ (x - y) ≡ 1 [ZMOD p] := by
+      refine Int.ModEq.symm ((fun {n a b} ↦ Int.modEq_iff_dvd.mpr) ?_)
+      calc
+        _ ∣ n ^ (p - 1) - 1 :=
+          have : IsCoprime n p := by
+            rw [Int.ofNat_dvd_left, ← Nat.Prime.coprime_iff_not_dvd hp] at ch
+            exact IsCoprime.symm ((fun {m n} ↦ Int.isCoprime_iff_gcd_eq_one.mpr) ch)
+          Int.prime_dvd_pow_card_sub_one hp this
+        _ ∣ _ := by
+          rcases h with ⟨m, hm⟩
+          rw [hm]
+          exact pow_one_sub_dvd_pow_mul_sub_one n (p - 1) m
+    have : n ^ (x - y) * n ^ y ≡ 1 * n ^ y [ZMOD p] := Int.ModEq.mul this rfl
+    rwa [← pow_add, one_mul, Nat.sub_add_cancel hxy] at this
+
 theorem pow_pow_modEq_one (p m a : ℕ) : (1 + p * a) ^ (p ^ m) ≡ 1 [MOD p ^ m] := by
   induction m with
   | zero => exact Nat.modEq_one

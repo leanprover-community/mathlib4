@@ -1,9 +1,6 @@
-import Mathlib.NumberTheory.Multiplicity
-import Mathlib.NumberTheory.Padics.PadicVal.Basic
-import Mathlib.NumberTheory.LucasLehmer
-import Mathlib.Data.Real.Basic
-import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.NumberTheory.LSeries.PrimesInAP
+import Mathlib.NumberTheory.LucasLehmer
+import Mathlib.NumberTheory.Multiplicity
 
 open Nat Int
 
@@ -12,42 +9,19 @@ open Nat Int
 and $b$. Determine the smallest real constant $c$ such that $f(n) \leq c n$ for all bonza functions
 $f$ and all positive integers $n$.
 -/
-/-- fa
+
+/-- Define bonza functions
 -/
 def bonza : Set (ℕ → ℕ) :=
   {f : ℕ → ℕ | (∀ a b : ℕ, 0 < a → 0 < b → (f a : ℤ) ∣ (b : ℤ) ^ a - (f b : ℤ) ^ (f a)) ∧
     ∀ n, 0 < n → f n > 0}
 
-lemma hdvd {f : ℕ → ℕ} (hf : f ∈ bonza) {n} (hn : n > 0) : f n ∣ n ^ n := by
+lemma hdvd {f : ℕ → ℕ} (hf : f ∈ bonza) {n : ℕ} (hn : n > 0) : f n ∣ n ^ n := by
   have : (f n : ℤ) ∣ (f n : ℤ) ^ f n :=
     Dvd.dvd.pow (Int.dvd_refl (f n)) (Nat.ne_zero_of_lt (hf.2 n hn))
   have : (f n : ℤ) ∣ (n : ℤ) ^ n := (Int.dvd_iff_dvd_of_dvd_sub (hf.1 n n hn hn)).mpr this
   rw [Eq.symm (Int.natCast_pow n n)] at this
   exact ofNat_dvd.mp this
-
-theorem Int.ModEq.pow_card_eq_self' {p k : ℕ} (hp : Nat.Prime p) {n : ℤ} :
-    n ^ (p ^ k) ≡ n [ZMOD p] := by
-  haveI : Fact p.Prime := ⟨hp⟩
-  by_cases ch : (p : ℤ) ∣ n
-  · calc
-    _ ≡ 0 [ZMOD p] :=
-      ModEq.symm (Dvd.dvd.zero_modEq_int (dvd_pow ch (Ne.symm (NeZero.ne' (p ^ k)))))
-    _ ≡ _ [ZMOD p] := Dvd.dvd.zero_modEq_int ch
-  · have : n ^ (p ^ k - 1) ≡ 1 [ZMOD p] := by
-      refine ModEq.symm ((fun {n a b} ↦ modEq_iff_dvd.mpr) ?_)
-      calc
-        _ ∣ n ^ (p - 1) - 1 :=
-          have : IsCoprime n p := by
-            rw [ofNat_dvd_left, ← Nat.Prime.coprime_iff_not_dvd hp] at ch
-            exact IsCoprime.symm ((fun {m n} ↦ isCoprime_iff_gcd_eq_one.mpr) ch)
-          prime_dvd_pow_card_sub_one hp this
-        _ ∣ _ := by
-          rcases nat_sub_one_dvd_pow_sub_one p k with ⟨m, hm⟩
-          rw [hm]
-          exact pow_one_sub_dvd_pow_mul_sub_one n (p - 1) m
-    have : n ^ (p ^ k - 1) * n ≡ 1 * n [ZMOD p] := ModEq.mul this rfl
-    have eq : p ^ k - 1 + 1 = p ^ k := Nat.sub_add_cancel NeZero.one_le
-    rwa [← Int.pow_succ, eq, one_mul] at this
 
 lemma imp {f : ℕ → ℕ} (hf : f ∈ bonza) {p : ℕ} (hp : Nat.Prime p) :
     f p = 1 ∨ (∀ b : ℕ, b > 0 → (p : ℤ) ∣ (b : ℤ) - ((f b) : ℤ)) := by
@@ -58,18 +32,19 @@ lemma imp {f : ℕ → ℕ} (hf : f ∈ bonza) {p : ℕ} (hp : Nat.Prime p) :
     rwa [ch, pow_zero] at ha2
   · right
     intro b hb
-    have dvd1 : (p : ℤ) ∣ f p := by
-      rw [ha2, natCast_dvd_natCast]
-      exact dvd_pow_self p ch
-    have dvd2 := hf.1 p b (Prime.pos hp) hb
-    have : (p : ℤ) ∣ (b : ℤ) ^ p - (f b) ^ f p := Int.dvd_trans dvd1 dvd2
-    have : (b : ℤ) ≡ (f b : ℤ) [ZMOD p] := by
-      calc
+    have : (p : ℤ) ∣ (b : ℤ) ^ p - (f b) ^ f p := by calc
+      _ ∣ (f p : ℤ) := by
+        rw [ha2, natCast_dvd_natCast]
+        exact dvd_pow_self p ch
+      _ ∣ _ := hf.1 p b (Prime.pos hp) hb
+    have : (b : ℤ) ≡ (f b : ℤ) [ZMOD p] := by calc
       _ ≡ (b : ℤ) ^ p [ZMOD p] := Int.ModEq.symm (ModEq.pow_card_eq_self hp)
       _ ≡ (f b) ^ f p [ZMOD p] := Int.ModEq.symm ((fun {n a b} ↦ Int.modEq_iff_dvd.mpr) this)
       _ ≡ _ [ZMOD p] := by
         rw [ha2]
-        exact ModEq.pow_card_eq_self' hp
+        nth_rw 2 [← npow_one (f b)]
+        exact Int.ModEq.pow_eq_pow hp (nat_sub_one_dvd_pow_sub_one p α)
+          (one_le_pow α p (Prime.pos hp)) (by norm_num)
     exact Int.ModEq.dvd (id (Int.ModEq.symm this))
 
 theorem cases {f : ℕ → ℕ} (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 0 → f x = x) :
