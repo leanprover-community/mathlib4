@@ -513,12 +513,6 @@ section ReflTransGen
 
 open ReflTransGen
 
-instance : Trans r (ReflTransGen r) (ReflTransGen r) :=
-  ⟨head⟩
-
-instance : Trans (ReflTransGen r) r (ReflTransGen r) :=
-  ⟨tail⟩
-
 theorem reflTransGen_iff_eq (h : ∀ b, ¬r a b) : ReflTransGen r a b ↔ b = a := by
   rw [cases_head_iff]; simp [h, eq_comm]
 
@@ -553,6 +547,12 @@ lemma reflTransGen_minimal {r' : α → α → Prop} (hr₁ : Reflexive r') (hr�
 theorem reflexive_reflTransGen : Reflexive (ReflTransGen r) := fun _ ↦ refl
 
 theorem transitive_reflTransGen : Transitive (ReflTransGen r) := fun _ _ _ ↦ trans
+
+instance : Trans r (ReflTransGen r) (ReflTransGen r) :=
+  ⟨head⟩
+
+instance : Trans (ReflTransGen r) r (ReflTransGen r) :=
+  ⟨tail⟩
 
 instance : IsRefl α (ReflTransGen r) :=
   ⟨@ReflTransGen.refl α r⟩
