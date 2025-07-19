@@ -3,6 +3,7 @@ Copyright (c) 2025 Salvatore Mercuri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Salvatore Mercuri
 -/
+import Mathlib.RingTheory.Valuation.ValuativeRel
 import Mathlib.Topology.UniformSpace.Completion
 import Mathlib.Topology.Algebra.Valued.ValuationTopology
 import Mathlib.NumberTheory.NumberField.Basic
@@ -79,12 +80,34 @@ instance {R} [Ring R] (v : Valuation R Γ₀) : Valued (WithVal v) Γ₀ := Valu
 
 end Instances
 
+section Ring
+
 variable [Ring R] (v : Valuation R Γ₀)
 
 /-- Canonical ring equivalence between `WithVal v` and `R`. -/
 def equiv : WithVal v ≃+* R := RingEquiv.refl _
 
 theorem apply_equiv (r : WithVal v) : v (WithVal.equiv v r) = v r := rfl
+
+/-- Canonical valuation on the `WithVal v` type synonym. -/
+def valuation : Valuation (WithVal v) Γ₀ where
+  __ := v.toMonoidWithZeroHom.comp (equiv v).toMonoidWithZeroHom
+  map_add_le_max' := by simp
+
+@[simp] lemma valuation_apply_equiv_apply (x : R) : valuation v (equiv v x) = v x := rfl
+
+end Ring
+
+section CommRing
+
+variable [CommRing R] (v : Valuation R Γ₀)
+
+instance : ValuativeRel (WithVal v) := .ofValuation (valuation v)
+instance : (valuation v).Compatible := .ofValuation (valuation v)
+-- defeq-piercing, the same way `apply_equiv` is
+instance : (v : Valuation (WithVal v) Γ₀).Compatible (R := WithVal v) := .ofValuation (valuation v)
+
+end CommRing
 
 end WithVal
 
