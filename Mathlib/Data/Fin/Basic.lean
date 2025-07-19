@@ -803,6 +803,10 @@ theorem castPred_eq_zero [NeZero n] {i : Fin (n + 1)} (h : i ≠ last n) :
     Fin.castPred i h = 0 ↔ i = 0 := by
   rw [← castPred_zero, castPred_inj]
 
+theorem castPred_ne_zero [NeZero n] {i : Fin (n + 1)} (h₁ : i ≠ last n) (h₂ : i ≠ 0) :
+    castPred i h₁ ≠ 0 :=
+  (castPred_eq_zero h₁).not.mpr h₂
+
 @[simp]
 theorem castPred_one [NeZero n] :
     castPred (1 : Fin (n + 2)) (Fin.ext_iff.not.2 one_lt_last.ne) = 1 := by

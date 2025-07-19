@@ -51,12 +51,10 @@ variable [AddCommMonoid N] [Module R M] [Module R N] [Module A N] [IsScalarTower
 If `M` is an `R`-module and `N` is an `A`-module, then `A`-linear maps `A ⊗[R] M →ₗ[A] N`
 correspond to `R` linear maps `M →ₗ[R] N` by composing with `M → A ⊗ M`, `x ↦ 1 ⊗ x`.
 -/
-noncomputable
 def liftBaseChangeEquiv : (M →ₗ[R] N) ≃ₗ[A] (A ⊗[R] M →ₗ[A] N) :=
   (LinearMap.ringLmapEquivSelf _ _ _).symm.trans (AlgebraTensorModule.lift.equiv _ _ _ _ _ _)
 
 /-- If `N` is an `A` module, we may lift a linear map `M →ₗ[R] N` to `A ⊗[R] M →ₗ[A] N` -/
-noncomputable
 abbrev liftBaseChange (l : M →ₗ[R] N) : A ⊗[R] M →ₗ[A] N :=
   LinearMap.liftBaseChangeEquiv A l
 
@@ -1206,7 +1204,6 @@ where $M_A$ and $N_A$ are the respective modules over $A$ obtained by extension 
 See `LinearMap.tensorProductEnd` for this map specialized to endomorphisms,
 and bundled as `A`-algebra homomorphism. -/
 @[simps!]
-noncomputable
 def tensorProduct : A ⊗[R] (M →ₗ[R] N) →ₗ[A] (A ⊗[R] M) →ₗ[A] (A ⊗[R] N) :=
   TensorProduct.AlgebraTensorModule.lift <|
   { toFun := fun a ↦ a • baseChangeHom R A M N
@@ -1216,7 +1213,6 @@ def tensorProduct : A ⊗[R] (M →ₗ[R] N) →ₗ[A] (A ⊗[R] M) →ₗ[A] (A
 /-- The natural `A`-algebra homomorphism $A ⊗ (\text{End}_R M) → \text{End}_A (A ⊗ M)$,
 where `M` is an `R`-module, and `A` an `R`-algebra. -/
 @[simps!]
-noncomputable
 def tensorProductEnd : A ⊗[R] (End R M) →ₐ[A] End A (A ⊗[R] M) :=
   Algebra.TensorProduct.algHomOfLinearMapTensorProduct
     (LinearMap.tensorProduct R A M M)
