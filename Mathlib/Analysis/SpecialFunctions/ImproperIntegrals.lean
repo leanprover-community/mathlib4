@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
 import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
-import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
@@ -158,10 +158,10 @@ theorem not_integrableOn_Ioi_rpow (s : ℝ) : ¬ IntegrableOn (fun x ↦ x ^ s) 
   rcases le_or_gt s (-1) with hs|hs
   · have : IntegrableOn (fun x ↦ x ^ s) (Ioo (0 : ℝ) 1) := h.mono Ioo_subset_Ioi_self le_rfl
     rw [integrableOn_Ioo_rpow_iff zero_lt_one] at this
-    exact hs.not_lt this
+    exact hs.not_gt this
   · have : IntegrableOn (fun x ↦ x ^ s) (Ioi (1 : ℝ)) := h.mono (Ioi_subset_Ioi zero_le_one) le_rfl
     rw [integrableOn_Ioi_rpow_iff zero_lt_one] at this
-    exact hs.not_lt this
+    exact hs.not_gt this
 
 theorem setIntegral_Ioi_zero_rpow (s : ℝ) : ∫ x in Ioi (0 : ℝ), x ^ s = 0 :=
   MeasureTheory.integral_undef (not_integrableOn_Ioi_rpow s)
@@ -207,7 +207,7 @@ theorem integrableOn_Ioi_deriv_ofReal_cpow {s : ℂ} {t : ℝ} (ht : 0 < t) (hs 
   refine h.congr_fun (fun x hx ↦ ?_) measurableSet_Ioi
   rw [Complex.deriv_ofReal_cpow_const (ht.trans hx).ne' (fun h ↦ (Complex.zero_re ▸ h ▸ hs).false)]
 
-theorem integrableOn_Ioi_deriv_norm_ofReal_cpow {s : ℂ} {t : ℝ} (ht : 0 < t) (hs : s.re ≤ 0):
+theorem integrableOn_Ioi_deriv_norm_ofReal_cpow {s : ℂ} {t : ℝ} (ht : 0 < t) (hs : s.re ≤ 0) :
     IntegrableOn (deriv fun x : ℝ ↦ ‖(x : ℂ) ^ s‖) (Set.Ioi t) := by
   rw [integrableOn_congr_fun (fun x hx ↦ by
     rw [deriv_norm_ofReal_cpow _ (ht.trans hx)]) measurableSet_Ioi]
@@ -225,11 +225,11 @@ theorem not_integrableOn_Ioi_cpow (s : ℂ) :
   · have : IntegrableOn (fun x : ℝ ↦ (x : ℂ) ^ s) (Ioo (0 : ℝ) 1) :=
       h.mono Ioo_subset_Ioi_self le_rfl
     rw [integrableOn_Ioo_cpow_iff zero_lt_one] at this
-    exact hs.not_lt this
+    exact hs.not_gt this
   · have : IntegrableOn (fun x : ℝ ↦ (x : ℂ) ^ s) (Ioi 1) :=
       h.mono (Ioi_subset_Ioi zero_le_one) le_rfl
     rw [integrableOn_Ioi_cpow_iff zero_lt_one] at this
-    exact hs.not_lt this
+    exact hs.not_gt this
 
 theorem setIntegral_Ioi_zero_cpow (s : ℂ) : ∫ x in Ioi (0 : ℝ), (x : ℂ) ^ s = 0 :=
   MeasureTheory.integral_undef (not_integrableOn_Ioi_cpow s)

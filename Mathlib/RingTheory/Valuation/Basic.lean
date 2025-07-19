@@ -49,10 +49,7 @@ sense. Note that we use 1.27(iii) of [wedhorn_adic] as the definition of equival
 
 ## Notation
 
-In the `DiscreteValuation` locale:
-
-* `ℕₘ₀` is a shorthand for `WithZero (Multiplicative ℕ)`
-* `ℤₘ₀` is a shorthand for `WithZero (Multiplicative ℤ)`
+In the `WithZero` locale, `Mᵐ⁰` is a shorthand for `WithZero (Multiplicative M)`.
 
 ## TODO
 
@@ -278,12 +275,17 @@ theorem map_sub_lt {x y : R} {g : Γ₀} (hx : v x < g) (hy : v y < g) : v (x - 
 
 variable {x y : R}
 
+@[simp]
+lemma le_one_of_subsingleton [Subsingleton R] (v : Valuation R Γ₀) {x : R} :
+    v x ≤ 1 := by
+  rw [Subsingleton.elim x 1, Valuation.map_one]
+
 theorem map_add_of_distinct_val (h : v x ≠ v y) : v (x + y) = max (v x) (v y) := by
   suffices ¬v (x + y) < max (v x) (v y) from
     or_iff_not_imp_right.1 (le_iff_eq_or_lt.1 (v.map_add x y)) this
   intro h'
   wlog vyx : v y < v x generalizing x y
-  · refine this h.symm ?_ (h.lt_or_lt.resolve_right vyx)
+  · refine this h.symm ?_ (h.lt_or_gt.resolve_right vyx)
     rwa [add_comm, max_comm]
   rw [max_eq_left_of_lt vyx] at h'
   apply lt_irrefl (v x)
@@ -398,9 +400,18 @@ not equal to `0` or `1`. -/
 class IsNontrivial : Prop where
   exists_val_nontrivial : ∃ x : R, v x ≠ 0 ∧ v x ≠ 1
 
+lemma IsNontrivial.nontrivial_codomain [hv : IsNontrivial v] :
+    Nontrivial Γ₀ := by
+  obtain ⟨x, hx0, hx1⟩ := hv.exists_val_nontrivial
+  exact ⟨v x, 1, hx1⟩
+
+section Field
+
+variable {K : Type*} [Field K] {w : Valuation K Γ₀}
+
 /-- For fields, being nontrivial is equivalent to the existence of a unit with valuation
 not equal to `1`. -/
-lemma isNontrivial_iff_exists_unit {K : Type*} [Field K] {w : Valuation K Γ₀} :
+lemma isNontrivial_iff_exists_unit :
     w.IsNontrivial ↔ ∃ x : Kˣ, w x ≠ 1 :=
   ⟨fun ⟨x, hx0, hx1⟩ ↦
     have : Nontrivial Γ₀ := ⟨w x, 0, hx0⟩
@@ -408,6 +419,26 @@ lemma isNontrivial_iff_exists_unit {K : Type*} [Field K] {w : Valuation K Γ₀}
     fun ⟨x, hx⟩ ↦
     have : Nontrivial Γ₀ := ⟨w x, 1, hx⟩
     ⟨x, w.ne_zero_iff.mpr (Units.ne_zero x), hx⟩⟩
+
+lemma IsNontrivial.exists_lt_one {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+    {v : Valuation K Γ₀} [hv : v.IsNontrivial] :
+    ∃ x : K, v x ≠ 0 ∧ v x < 1 := by
+  obtain ⟨x, hx⟩ := isNontrivial_iff_exists_unit.mp hv
+  rw [ne_iff_lt_or_gt] at hx
+  rcases hx with hx | hx
+  · use x
+    simp [hx]
+  · use x⁻¹
+    simp [- map_inv₀, ← one_lt_val_iff, hx]
+
+lemma IsNontrivial.exists_one_lt {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+    {v : Valuation K Γ₀} [hv : v.IsNontrivial] :
+    ∃ x : K, v x ≠ 0 ∧ 1 < v x := by
+  obtain ⟨x, h0, h1⟩ := hv.exists_lt_one
+  use x⁻¹
+  simp [one_lt_inv₀ (zero_lt_iff.mpr h0), h0, h1]
+
+end Field
 
 end IsNontrivial
 
@@ -448,6 +479,22 @@ theorem ne_zero (h : v₁.IsEquiv v₂) {r : R} : v₁ r ≠ 0 ↔ v₂ r ≠ 0 
   have : v₁ r ≠ v₁ 0 ↔ v₂ r ≠ v₂ 0 := not_congr h.val_eq
   rwa [v₁.map_zero, v₂.map_zero] at this
 
+lemma lt_iff_lt (h : v₁.IsEquiv v₂) {x y : R} :
+    v₁ x < v₁ y ↔ v₂ x < v₂ y := by
+  rw [← le_iff_le_iff_lt_iff_lt, h]
+
+lemma le_one_iff_le_one (h : v₁.IsEquiv v₂) {x : R} :
+    v₁ x ≤ 1 ↔ v₂ x ≤ 1 := by
+  rw [← v₁.map_one, h, map_one]
+
+lemma eq_one_iff_eq_one (h : v₁.IsEquiv v₂) {x : R} :
+    v₁ x = 1 ↔ v₂ x = 1 := by
+  rw [← v₁.map_one, h.val_eq, map_one]
+
+lemma lt_one_iff_lt_one (h : v₁.IsEquiv v₂) {x : R} :
+    v₁ x < 1 ↔ v₂ x < 1 := by
+  rw [← v₁.map_one, h.lt_iff_lt, map_one]
+
 end IsEquiv
 
 -- end of namespace
@@ -464,8 +511,6 @@ theorem isEquiv_iff_val_lt_val [LinearOrderedCommMonoidWithZero Γ₀]
   simp only [IsEquiv, le_iff_le_iff_lt_iff_lt]
   exact forall_comm
 
-alias ⟨IsEquiv.lt_iff_lt, _⟩ := isEquiv_iff_val_lt_val
-
 theorem isEquiv_of_val_le_one [LinearOrderedCommGroupWithZero Γ₀]
     [LinearOrderedCommGroupWithZero Γ'₀] {v : Valuation K Γ₀} {v' : Valuation K Γ'₀}
     (h : ∀ {x : K}, v x ≤ 1 ↔ v' x ≤ 1) : v.IsEquiv v' := by
@@ -478,16 +523,14 @@ theorem isEquiv_of_val_le_one [LinearOrderedCommGroupWithZero Γ₀]
 theorem isEquiv_iff_val_le_one [LinearOrderedCommGroupWithZero Γ₀]
     [LinearOrderedCommGroupWithZero Γ'₀] {v : Valuation K Γ₀} {v' : Valuation K Γ'₀} :
     v.IsEquiv v' ↔ ∀ {x : K}, v x ≤ 1 ↔ v' x ≤ 1 :=
-  ⟨fun h x => by simpa using h x 1, isEquiv_of_val_le_one⟩
-
-alias ⟨IsEquiv.le_one_iff_le_one, _⟩ := isEquiv_iff_val_le_one
+  ⟨IsEquiv.le_one_iff_le_one, isEquiv_of_val_le_one⟩
 
 theorem isEquiv_iff_val_eq_one [LinearOrderedCommGroupWithZero Γ₀]
     [LinearOrderedCommGroupWithZero Γ'₀] {v : Valuation K Γ₀} {v' : Valuation K Γ'₀} :
     v.IsEquiv v' ↔ ∀ {x : K}, v x = 1 ↔ v' x = 1 := by
   constructor
   · intro h x
-    simpa using @IsEquiv.val_eq _ _ _ _ _ _ v v' h x 1
+    rw [h.eq_one_iff_eq_one]
   · intro h
     apply isEquiv_of_val_le_one
     intro x
@@ -517,15 +560,12 @@ theorem isEquiv_iff_val_eq_one [LinearOrderedCommGroupWithZero Γ₀]
       · rw [← h] at hx'
         exact le_of_eq hx'
 
-alias ⟨IsEquiv.eq_one_iff_eq_one, _⟩ := isEquiv_iff_val_eq_one
-
 theorem isEquiv_iff_val_lt_one [LinearOrderedCommGroupWithZero Γ₀]
     [LinearOrderedCommGroupWithZero Γ'₀] {v : Valuation K Γ₀} {v' : Valuation K Γ'₀} :
     v.IsEquiv v' ↔ ∀ {x : K}, v x < 1 ↔ v' x < 1 := by
   constructor
   · intro h x
-    simp only [lt_iff_le_and_ne,
-      and_congr h.le_one_iff_le_one h.eq_one_iff_eq_one.not]
+    rw [h.lt_one_iff_lt_one]
   · rw [isEquiv_iff_val_eq_one]
     intro h x
     by_cases hx : x = 0
@@ -545,8 +585,6 @@ theorem isEquiv_iff_val_lt_one [LinearOrderedCommGroupWithZero Γ₀]
       | inr h_2 =>
         rw [← inv_one, ← inv_eq_iff_eq_inv, ← map_inv₀] at hh
         exact hh.not_lt (h.1 ((one_lt_val_iff v hx).1 h_2))
-
-alias ⟨IsEquiv.lt_one_iff_lt_one, _⟩ := isEquiv_iff_val_lt_one
 
 theorem isEquiv_iff_val_sub_one_lt_one [LinearOrderedCommGroupWithZero Γ₀]
     [LinearOrderedCommGroupWithZero Γ'₀] {v : Valuation K Γ₀} {v' : Valuation K Γ'₀} :
@@ -939,8 +977,6 @@ def toAddValuation : Valuation R Γ₀ ≃ AddValuation R (Additive Γ₀)ᵒᵈ
   .trans (congr
     { toFun := fun x ↦ .ofAdd <| .toDual <| .toDual <| .ofMul x
       invFun := fun x ↦ x.toAdd.ofDual.ofDual.toMul
-      left_inv := fun _x ↦ rfl
-      right_inv := fun _x ↦ rfl
       map_mul' := fun _x _y ↦ rfl
       map_le_map_iff' := .rfl }) (AddValuation.ofValuation (R := R) (Γ₀ := (Additive Γ₀)ᵒᵈ))
 
@@ -950,8 +986,6 @@ def ofAddValuation : AddValuation R (Additive Γ₀)ᵒᵈ ≃ Valuation R Γ₀
   AddValuation.toValuation.trans <| congr <|
     { toFun := fun x ↦ x.toAdd.ofDual.ofDual.toMul
       invFun := fun x ↦ .ofAdd <| .toDual <| .toDual <| .ofMul x
-      left_inv := fun _x ↦ rfl
-      right_inv := fun _x ↦ rfl
       map_mul' := fun _x _y ↦ rfl
       map_le_map_iff' := .rfl }
 

@@ -181,7 +181,6 @@ def sigmaAntidiagonalEquivProd [AddMonoid A] [HasAntidiagonal A] :
     rintro ⟨n, ⟨k, l⟩, h⟩
     rw [mem_antidiagonal] at h
     exact Sigma.subtype_ext h rfl
-  right_inv _ := rfl
 
 variable {A : Type*}
   [AddCommMonoid A] [PartialOrder A] [CanonicallyOrderedAdd A]

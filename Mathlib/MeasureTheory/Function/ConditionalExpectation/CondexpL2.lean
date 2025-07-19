@@ -125,7 +125,7 @@ theorem norm_condExpL2_coe_le (hm : m ≤ m0) (f : α →₂[μ] E) :
 theorem inner_condExpL2_left_eq_right (hm : m ≤ m0) {f g : α →₂[μ] E} :
     ⟪(condExpL2 E 𝕜 hm f : α →₂[μ] E), g⟫ = ⟪f, (condExpL2 E 𝕜 hm g : α →₂[μ] E)⟫ :=
   haveI : Fact (m ≤ m0) := ⟨hm⟩
-  Submodule.inner_orthogonalProjection_left_eq_right _ f g
+  Submodule.inner_starProjection_left_eq_right _ f g
 
 @[deprecated (since := "2025-01-21")]
 alias inner_condexpL2_left_eq_right := inner_condExpL2_left_eq_right
@@ -151,8 +151,9 @@ theorem inner_condExpL2_eq_inner_fun (hm : m ≤ m0) (f g : α →₂[μ] E)
     ⟪(condExpL2 E 𝕜 hm f : α →₂[μ] E), g⟫ = ⟪f, g⟫ := by
   symm
   rw [← sub_eq_zero, ← inner_sub_left, condExpL2]
-  simp only [mem_lpMeas_iff_aestronglyMeasurable.mpr hg,
-    Submodule.orthogonalProjection_inner_eq_zero f g]
+  simp only [← Submodule.starProjection_apply,
+    mem_lpMeas_iff_aestronglyMeasurable.mpr hg,
+    Submodule.starProjection_inner_eq_zero f g]
 
 @[deprecated (since := "2025-01-21")]
 alias inner_condexpL2_eq_inner_fun := inner_condExpL2_eq_inner_fun
@@ -365,7 +366,7 @@ theorem setLIntegral_nnnorm_condExpL2_indicator_le (hm : m ≤ m0) (hs : Measura
   calc
     ∫⁻ a in t, ‖(condExpL2 E' 𝕜 hm (indicatorConstLp 2 hs hμs x) : α → E') a‖₊ ∂μ =
         ∫⁻ a in t, ‖(condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) a • x‖₊ ∂μ :=
-      setLIntegral_congr_fun (hm t ht)
+      setLIntegral_congr_fun_ae (hm t ht)
         ((condExpL2_indicator_ae_eq_smul 𝕜 hm hs hμs x).mono fun a ha _ => by rw [ha])
     _ = (∫⁻ a in t, ‖(condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) a‖₊ ∂μ) * ‖x‖₊ := by
       simp_rw [nnnorm_smul, ENNReal.coe_mul]
@@ -464,7 +465,7 @@ theorem setLIntegral_nnnorm_condExpIndSMul_le (hm : m ≤ m0) (hs : MeasurableSe
   calc
     ∫⁻ a in t, ‖condExpIndSMul hm hs hμs x a‖₊ ∂μ =
         ∫⁻ a in t, ‖(condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) a • x‖₊ ∂μ :=
-      setLIntegral_congr_fun (hm t ht)
+      setLIntegral_congr_fun_ae (hm t ht)
         ((condExpIndSMul_ae_eq_smul hm hs hμs x).mono fun a ha _ => by rw [ha])
     _ = (∫⁻ a in t, ‖(condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) a‖₊ ∂μ) * ‖x‖₊ := by
       simp_rw [nnnorm_smul, ENNReal.coe_mul]

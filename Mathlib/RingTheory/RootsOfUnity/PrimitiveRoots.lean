@@ -3,6 +3,7 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Data.Nat.Factorization.LCM
 import Mathlib.Algebra.Group.TypeTags.Finite
 import Mathlib.RingTheory.RootsOfUnity.Basic
 
@@ -187,7 +188,7 @@ theorem pow_iff_coprime (h : IsPrimitiveRoot ζ k) (h0 : 0 < k) (i : ℕ) :
   obtain ⟨a, ha⟩ := i.gcd_dvd_left k
   obtain ⟨b, hb⟩ := i.gcd_dvd_right k
   suffices b = k by
-    rwa [this, eq_comm, Nat.mul_left_eq_self_iff h0, ← Nat.coprime_iff_gcd_eq_one] at hb
+    rwa [this, eq_comm, Nat.mul_eq_right h0.ne', ← Nat.coprime_iff_gcd_eq_one] at hb
   rw [ha] at hi
   rw [mul_comm] at hb
   apply Nat.dvd_antisymm ⟨i.gcd k, hb⟩ (hi.dvd_of_pow_eq_one b _)
@@ -256,6 +257,13 @@ lemma exists_pos {k : ℕ} (hζ : ζ ^ k = 1) (hk : k ≠ 0) :
 
 lemma existsUnique : ∃! k, IsPrimitiveRoot ζ k :=
   ⟨_, .orderOf _, fun _ hl ↦ unique hl (.orderOf _)⟩
+
+theorem _root_.isPrimitiveRoot_of_mem_rootsOfUnity {u : Mˣ} {n : ℕ} [NeZero n]
+    (hu : u ∈ rootsOfUnity n M) :
+    ∃ d : ℕ, d ≠ 0 ∧ d ∣ n ∧ IsPrimitiveRoot u d :=
+  ⟨orderOf u, (IsOfFinOrder.orderOf_pos ⟨n, NeZero.pos n,
+    (isPeriodicPt_mul_iff_pow_eq_one u).mpr hu⟩).ne', orderOf_dvd_of_pow_eq_one hu,
+    IsPrimitiveRoot.orderOf u⟩
 
 section Maps
 
@@ -330,7 +338,7 @@ theorem zpow_eq_one_iff_dvd (h : IsPrimitiveRoot ζ k) (l : ℤ) : ζ ^ l = 1 �
     rw [← h.pow_eq_one_iff_dvd, ← inv_inj, ← zpow_neg, ← hl', zpow_natCast, inv_one]
 
 theorem inv (h : IsPrimitiveRoot ζ k) : IsPrimitiveRoot ζ⁻¹ k :=
-  { pow_eq_one := by simp only [h.pow_eq_one, inv_one, eq_self_iff_true, inv_pow]
+  { pow_eq_one := by simp only [h.pow_eq_one, inv_one, inv_pow]
     dvd_of_pow_eq_one := by
       intro l hl
       apply h.dvd_of_pow_eq_one l
@@ -563,7 +571,7 @@ theorem nthRoots_eq {n : ℕ} {ζ : R} (hζ : IsPrimitiveRoot ζ n) {α a : R} (
   by_cases hα : α = 0
   · rw [hα, zero_pow hn.ne'] at e
     simp only [hα, e.symm, nthRoots_zero_right, mul_zero,
-      Finset.range_val, Multiset.map_const', Multiset.card_range]
+      Multiset.map_const', Multiset.card_range]
   classical
   symm; apply Multiset.eq_of_le_of_card_le
   · rw [← Finset.range_val,
@@ -644,14 +652,14 @@ theorem card_primitiveRoots {ζ : R} {k : ℕ} (h : IsPrimitiveRoot ζ k) :
   have : NeZero k := ⟨h0⟩
   symm
   refine Finset.card_bij (fun i _ ↦ ζ ^ i) ?_ ?_ ?_
-  · simp only [and_imp, mem_filter, mem_range, mem_univ]
+  · simp only [and_imp, mem_filter, mem_range]
     rintro i - hi
     rw [mem_primitiveRoots (Nat.pos_of_ne_zero h0)]
     exact h.pow_of_coprime i hi.symm
-  · simp only [and_imp, mem_filter, mem_range, mem_univ]
+  · simp only [and_imp, mem_filter, mem_range]
     rintro i hi - j hj - H
     exact h.pow_inj hi hj H
-  · simp only [exists_prop, mem_filter, mem_range, mem_univ]
+  · simp only [exists_prop, mem_filter, mem_range]
     intro ξ hξ
     rw [mem_primitiveRoots (Nat.pos_of_ne_zero h0), h.isPrimitiveRoot_iff] at hξ
     rcases hξ with ⟨i, hin, hi, H⟩

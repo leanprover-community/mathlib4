@@ -79,7 +79,7 @@ theorem mul_eq_self {c : Cardinal} (h : ℵ₀ ≤ c) : c * c = c := by
   · exact (mul_lt_aleph0 qo qo).trans_le ol
   · suffices (succ (typein LT.lt (g p))).card < #α from (IH _ this qo).trans_lt this
     rw [← lt_ord]
-    apply (isLimit_ord ol).succ_lt
+    apply (isSuccLimit_ord ol).succ_lt
     rw [e]
     apply typein_lt_type
 
@@ -187,7 +187,7 @@ theorem mul_eq_left_iff {a b : Cardinal} : a * b = a ↔ max ℵ₀ b ≤ a ∧ 
   · rcases le_or_gt ℵ₀ a with ha | ha
     · have : a ≠ 0 := by
         rintro rfl
-        exact ha.not_lt aleph0_pos
+        exact ha.not_gt aleph0_pos
       left
       rw [and_assoc]
       use ha
@@ -284,7 +284,7 @@ theorem eq_of_add_eq_of_aleph0_le {a b c : Cardinal} (h : a + b = c) (ha : a < c
     apply self_le_add_left
   rw [← not_lt]; intro hb
   have : a + b < c := add_lt_of_lt hc ha hb
-  simp [h, lt_irrefl] at this
+  simp [h] at this
 
 theorem add_eq_left {a b : Cardinal} (ha : ℵ₀ ≤ a) (hb : b ≤ a) : a + b = a := by
   rw [add_eq_max ha, max_eq_left hb]
@@ -682,7 +682,7 @@ theorem mk_finset_of_infinite (α : Type u) [Infinite α] : #(Finset α) = #α :
 theorem mk_bounded_set_le_of_infinite (α : Type u) [Infinite α] (c : Cardinal) :
     #{ t : Set α // #t ≤ c } ≤ #α ^ c := by
   refine le_trans ?_ (by rw [← add_one_eq (aleph0_le_mk α)])
-  induction' c using Cardinal.inductionOn with β
+  induction c using Cardinal.inductionOn with | _ β
   fapply mk_le_of_surjective
   · intro f
     use Sum.inl ⁻¹' range f
@@ -766,7 +766,7 @@ theorem mk_compl_eq_mk_compl_finite_lift {α : Type u} {β : Type v} [Finite α]
     lift t to Finset β using t.toFinite
     simp only [Finset.coe_sort_coe, mk_fintype, Fintype.card_coe, lift_natCast, Nat.cast_inj] at h2
     simp only [← Finset.coe_compl, Finset.coe_sort_coe, mk_coe_finset, Finset.card_compl,
-      lift_natCast, Nat.cast_inj, h1, h2]
+      lift_natCast, h1, h2]
 
 theorem mk_compl_eq_mk_compl_finite {α β : Type u} [Finite α] {s : Set α} {t : Set β}
     (h1 : #α = #β) (h : #s = #t) : #(sᶜ : Set α) = #(tᶜ : Set β) := by

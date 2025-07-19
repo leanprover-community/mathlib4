@@ -56,6 +56,14 @@ class MulArchimedean (M) [CommMonoid M] [PartialOrder M] : Prop where
 end MulArchimedean
 
 @[to_additive]
+lemma MulArchimedean.comap [CommMonoid G] [LinearOrder G] [CommMonoid M] [PartialOrder M]
+    [MulArchimedean M] (f : G →* M) (hf : StrictMono f) :
+    MulArchimedean G where
+  arch x _ h := by
+    refine (MulArchimedean.arch (f x) (by simpa using hf h)).imp ?_
+    simp [← map_pow, hf.le_iff_le]
+
+@[to_additive]
 instance OrderDual.instMulArchimedean [CommGroup G] [PartialOrder G] [IsOrderedMonoid G]
     [MulArchimedean G] :
     MulArchimedean Gᵒᵈ :=
@@ -137,6 +145,10 @@ theorem existsUnique_sub_zpow_mem_Ioc {a : G} (ha : 1 < a) (b c : G) :
   (Equiv.neg ℤ).bijective.existsUnique_iff.2 <| by
     simpa only [Equiv.neg_apply, zpow_neg, div_inv_eq_mul] using
       existsUnique_add_zpow_mem_Ioc ha b c
+
+@[to_additive]
+theorem exists_pow_lt {a : G} (ha : a < 1) (b : G) : ∃ n : ℕ, a ^ n < b :=
+  (exists_lt_pow (one_lt_inv'.mpr ha) b⁻¹).imp <| by simp
 
 end LinearOrderedCommGroup
 
@@ -273,7 +285,7 @@ theorem exists_mem_Ico_zpow (hx : 0 < x) (hy : 1 < y) : ∃ n : ℤ, x ∈ Ico (
     rw [← zpow_natCast]
     exact le_trans (zpow_le_zpow_right₀ hy.le hM.le) hm
   obtain ⟨n, hn₁, hn₂⟩ := Int.exists_greatest_of_bdd hb he
-  exact ⟨n, hn₁, lt_of_not_ge fun hge => (Int.lt_succ _).not_le (hn₂ _ hge)⟩
+  exact ⟨n, hn₁, lt_of_not_ge fun hge => (Int.lt_succ _).not_ge (hn₂ _ hge)⟩
 
 /-- Every positive `x` is between two successive integer powers of
 another `y` greater than one. This is the same as `exists_mem_Ico_zpow`,
@@ -408,10 +420,10 @@ theorem exists_rat_btwn {x y : K} (h : x < y) : ∃ q : ℚ, x < q ∧ (q : K) <
     rwa [← lt_sub_iff_add_lt', ← sub_mul, ← div_lt_iff₀' (sub_pos.2 h), one_div]
   · rw [Rat.den_intCast, Nat.cast_one]
     exact one_ne_zero
-  · intro H
-    rw [Rat.num_natCast, Int.cast_natCast, Nat.cast_eq_zero] at H
-    subst H
-    cases n0
+  · positivity
+
+theorem exists_rat_mem_uIoo {x y : K} (h : x ≠ y) : ∃ q : ℚ, ↑q ∈ Set.uIoo x y :=
+  exists_rat_btwn (min_lt_max.mpr h)
 
 theorem exists_pow_btwn {n : ℕ} (hn : n ≠ 0) {x y : K} (h : x < y) (hy : 0 < y) :
     ∃ q : K, 0 < q ∧ x < q ^ n ∧ q ^ n < y := by
@@ -454,12 +466,12 @@ theorem exists_rat_pow_btwn {n : ℕ} (hn : n ≠ 0) {x y : K} (h : x < y) (hy :
 theorem le_of_forall_rat_lt_imp_le (h : ∀ q : ℚ, (q : K) < x → (q : K) ≤ y) : x ≤ y :=
   le_of_not_gt fun hyx =>
     let ⟨_, hy, hx⟩ := exists_rat_btwn hyx
-    hy.not_le <| h _ hx
+    hy.not_ge <| h _ hx
 
 theorem le_of_forall_lt_rat_imp_le (h : ∀ q : ℚ, y < q → x ≤ q) : x ≤ y :=
   le_of_not_gt fun hyx =>
     let ⟨_, hy, hx⟩ := exists_rat_btwn hyx
-    hx.not_le <| h _ hy
+    hx.not_ge <| h _ hy
 
 theorem le_iff_forall_rat_lt_imp_le : x ≤ y ↔ ∀ q : ℚ, (q : K) < x → (q : K) ≤ y :=
   ⟨fun hxy _ hqx ↦ hqx.le.trans hxy, le_of_forall_rat_lt_imp_le⟩
@@ -537,7 +549,7 @@ instance WithBot.instArchimedean (M) [AddCommMonoid M] [PartialOrder M] [Archime
   constructor
   intro x y hxy
   cases y with
-  | bot => exact absurd hxy bot_le.not_lt
+  | bot => exact absurd hxy bot_le.not_gt
   | coe y =>
     cases x with
     | bot => refine ⟨0, bot_le⟩
@@ -548,7 +560,7 @@ instance WithZero.instMulArchimedean (M) [CommMonoid M] [PartialOrder M] [MulArc
   constructor
   intro x y hxy
   cases y with
-  | zero => exact absurd hxy (zero_le _).not_lt
+  | zero => exact absurd hxy (zero_le _).not_gt
   | coe y =>
     cases x with
     | zero => refine ⟨0, zero_le _⟩

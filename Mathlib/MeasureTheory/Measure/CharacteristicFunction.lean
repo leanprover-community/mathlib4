@@ -105,7 +105,7 @@ theorem ext_of_integral_char_eq (he : Continuous e) (he' : e ≠ 1)
       fun a ha => Integrable.const_mul (integrable P (char he hL a)) _
   rw [hsum P, hsum P']
   apply Finset.sum_congr rfl fun i _ => ?_
-  simp only [smul_eq_mul, MeasureTheory.integral_const_mul, mul_eq_mul_left_iff]
+  simp only [MeasureTheory.integral_const_mul, mul_eq_mul_left_iff]
   exact Or.inl (h i)
 
 end ext
@@ -196,7 +196,30 @@ lemma charFun_map_mul {μ : Measure ℝ} (r t : ℝ) :
     charFun (μ.map (r * ·)) t = charFun μ (r * t) := charFun_map_smul r t
 
 variable {E : Type*} [MeasurableSpace E] {μ ν : Measure E} {t : E}
-  [NormedAddCommGroup E] [InnerProductSpace ℝ E] [BorelSpace E] [SecondCountableTopology E]
+  [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+
+@[simp]
+lemma charFun_dirac [OpensMeasurableSpace E] {x : E} (t : E) :
+    charFun (Measure.dirac x) t = cexp (⟪x, t⟫ * I) := by
+  rw [charFun_apply, integral_dirac]
+
+lemma charFun_map_add_const [BorelSpace E] (r t : E) :
+    charFun (μ.map (· + r)) t = charFun μ t * cexp (⟪r, t⟫ * I) := by
+  rw [charFun_apply, charFun_apply, integral_map (by fun_prop) (by fun_prop),
+    ← integral_mul_const]
+  congr with a
+  rw [← Complex.exp_add]
+  congr
+  rw [inner_add_left]
+  simp only [ofReal_add]
+  ring
+
+lemma charFun_map_const_add [BorelSpace E] (r t : E) :
+    charFun (μ.map (r + ·)) t = charFun μ t * cexp (⟪r, t⟫ * I) := by
+  simp_rw [add_comm r]
+  exact charFun_map_add_const _ _
+
+variable [BorelSpace E] [SecondCountableTopology E]
 
 /-- If the characteristic functions `charFun` of two finite measures `μ` and `ν` on
 a complete second-countable inner product space coincide, then `μ = ν`. -/
@@ -270,6 +293,21 @@ lemma charFunDual_dirac [OpensMeasurableSpace E] {x : E} (L : Dual ℝ E) :
     charFunDual (Measure.dirac x) L = cexp (L x * I) := by
   rw [charFunDual_apply, integral_dirac]
 
+lemma charFunDual_map_add_const [BorelSpace E] (r : E) (L : Dual ℝ E) :
+    charFunDual (μ.map (· + r)) L = charFunDual μ L * cexp (L r * I) := by
+  rw [charFunDual_apply, charFunDual_apply, integral_map (by fun_prop) (by fun_prop),
+    ← integral_mul_const]
+  congr with a
+  rw [← Complex.exp_add]
+  congr
+  simp only [map_add, ofReal_add]
+  ring
+
+lemma charFunDual_map_const_add [BorelSpace E] (r : E) (L : Dual ℝ E) :
+    charFunDual (μ.map (r + ·)) L = charFunDual μ L * cexp (L r * I) := by
+  simp_rw [add_comm r]
+  exact charFunDual_map_add_const _ _
+
 /-- The characteristic function of a product of measures is a product of
 characteristic functions. -/
 lemma charFunDual_prod [SFinite μ] [SFinite ν] (L : Dual ℝ (E × F)) :
@@ -304,7 +342,7 @@ lemma charFunDual_conv {μ ν : Measure E} [IsFiniteMeasure μ] [IsFiniteMeasure
     charFunDual (μ ∗ ν) L = charFunDual μ L * charFunDual ν L := by
   simp_rw [charFunDual_apply]
   rw [integral_conv]
-  · simp [inner_add_left, add_mul, Complex.exp_add, integral_const_mul, integral_mul_const]
+  · simp [add_mul, Complex.exp_add, integral_const_mul, integral_mul_const]
   · exact (integrable_const (1 : ℝ)).mono (by fun_prop) (by simp)
 
 end NormedSpace

@@ -99,7 +99,7 @@ instance (priority := 100) WellQuasiOrderedLE.to_wellFoundedLT [WellQuasiOrdered
   rw [WellFoundedLT, isWellFounded_iff, RelEmbedding.wellFounded_iff_no_descending_seq]
   refine ⟨fun f ↦ ?_⟩
   obtain ⟨a, b, h, hf⟩ := wellQuasiOrdered_le f
-  exact (f.map_rel_iff.2 h).not_le hf
+  exact (f.map_rel_iff.2 h).not_ge hf
 
 theorem WellQuasiOrdered.wellFounded {α : Type*} {r : α → α → Prop} [IsPreorder α r]
     (h : WellQuasiOrdered r) : WellFounded fun a b ↦ r a b ∧ ¬ r b a := by

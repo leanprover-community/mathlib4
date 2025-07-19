@@ -117,7 +117,7 @@ instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (�
   · refine mem_of_superset (f.diff_mem_iff.2 ⟨f.diff_mem_iff.2 ⟨hay, hcs.2⟩, hpt y hy⟩) ?_
     rw [diff_subset_iff, union_comm, Ico_union_right hxy.1.le, diff_subset_iff]
     exact Icc_subset_Icc_union_Icc
-  · exact ((hsc.1 ⟨hy, hay⟩).not_lt hxy.1).elim
+  · exact ((hsc.1 ⟨hy, hay⟩).not_gt hxy.1).elim
 
 instance {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)] [∀ i, TopologicalSpace (α i)]
     [∀ i, CompactIccSpace (α i)] : CompactIccSpace (∀ i, α i) :=
@@ -474,13 +474,13 @@ theorem IsCompact.exists_isMinOn_mem_subset [ClosedIicTopology α] {f : β → �
     {z : β} (ht : IsCompact t) (hf : ContinuousOn f t) (hz : z ∈ t)
     (hfz : ∀ z' ∈ t \ s, f z < f z') : ∃ x ∈ s, IsMinOn f t x :=
   let ⟨x, hxt, hfx⟩ := ht.exists_isMinOn ⟨z, hz⟩ hf
-  ⟨x, by_contra fun hxs => (hfz x ⟨hxt, hxs⟩).not_le (hfx hz), hfx⟩
+  ⟨x, by_contra fun hxs => (hfz x ⟨hxt, hxs⟩).not_ge (hfx hz), hfx⟩
 
 theorem IsCompact.exists_isMaxOn_mem_subset [ClosedIciTopology α] {f : β → α} {s t : Set β}
     {z : β} (ht : IsCompact t) (hf : ContinuousOn f t) (hz : z ∈ t)
     (hfz : ∀ z' ∈ t \ s, f z' < f z) : ∃ x ∈ s, IsMaxOn f t x :=
   let ⟨x, hxt, hfx⟩ := ht.exists_isMaxOn ⟨z, hz⟩ hf
-  ⟨x, by_contra fun hxs => (hfz x ⟨hxt, hxs⟩).not_le (hfx hz), hfx⟩
+  ⟨x, by_contra fun hxs => (hfz x ⟨hxt, hxs⟩).not_ge (hfx hz), hfx⟩
 
 -- TODO: we could assume `t ∈ 𝓝ˢ s` (a.k.a. `s ⊆ interior t`) instead of `s ⊆ t` and `IsOpen s`.
 theorem IsCompact.exists_isLocalMin_mem_open [ClosedIicTopology α] {f : β → α} {s t : Set β}
@@ -583,5 +583,18 @@ theorem le_sSup_image_Icc (h : ContinuousOn f <| Icc a b) (hc : c ∈ Icc a b) :
   have := mem_image_of_mem f hc
   rw [h.image_Icc (hc.1.trans hc.2)] at this
   exact this.2
+
+theorem image_Icc_of_monotoneOn (hab : a ≤ b) (h : ContinuousOn f <| Icc a b)
+    (h' : MonotoneOn f <| Icc a b) : f '' Icc a b = Icc (f a) (f b) := by
+  rw [h.image_Icc hab]
+  congr!
+  · exact h'.sInf_image_Icc hab
+  · exact h'.sSup_image_Icc hab
+
+theorem image_Icc_of_antitoneOn (hab : a ≤ b) (h : ContinuousOn f <| Icc a b)
+    (h' : AntitoneOn f <| Icc a b) : f '' Icc a b = Icc (f b) (f a) := by
+  have : Icc (f b) (f a) = Icc (toDual (f a)) (toDual (f b)) := by rw [Icc_toDual]; rfl
+  rw [this]
+  exact image_Icc_of_monotoneOn (β := βᵒᵈ) hab h h'.dual_right
 
 end ContinuousOn

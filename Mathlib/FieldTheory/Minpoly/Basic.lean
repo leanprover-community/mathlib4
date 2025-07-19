@@ -164,7 +164,7 @@ theorem subsingleton [Subsingleton B] : minpoly A x = 1 := by
   rcases le_or_gt (minpoly A x).degree 0 with h | h
   · rwa [(monic ⟨1, monic_one, by simp [eq_iff_true_of_subsingleton]⟩ :
            (minpoly A x).Monic).degree_le_zero_iff_eq_one] at h
-  · exact (this.not_lt h).elim
+  · exact (this.not_gt h).elim
 
 end Ring
 
@@ -242,7 +242,7 @@ variable {x : B}
 /-- If `a` strictly divides the minimal polynomial of `x`, then `x` cannot be a root for `a`. -/
 theorem aeval_ne_zero_of_dvdNotUnit_minpoly {a : A[X]} (hx : IsIntegral A x) (hamonic : a.Monic)
     (hdvd : DvdNotUnit a (minpoly A x)) : Polynomial.aeval x a ≠ 0 := by
-  refine fun ha => (min A x hamonic ha).not_lt (degree_lt_degree ?_)
+  refine fun ha => (min A x hamonic ha).not_gt (degree_lt_degree ?_)
   obtain ⟨_, c, hu, he⟩ := hdvd
   have hcm := hamonic.of_mul_monic_left (he.subst <| monic hx)
   rw [he, hamonic.natDegree_mul hcm]

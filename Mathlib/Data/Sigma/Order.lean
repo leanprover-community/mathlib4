@@ -56,10 +56,10 @@ protected inductive LE [∀ i, LE (α i)] : ∀ _a _b : Σ i, α i, Prop
 protected inductive LT [∀ i, LT (α i)] : ∀ _a _b : Σ i, α i, Prop
   | fiber (i : ι) (a b : α i) : a < b → Sigma.LT ⟨i, a⟩ ⟨i, b⟩
 
-protected instance [∀ i, LE (α i)] : LE (Σi, α i) where
+protected instance [∀ i, LE (α i)] : LE (Σ i, α i) where
   le := Sigma.LE
 
-protected instance [∀ i, LT (α i)] : LT (Σi, α i) where
+protected instance [∀ i, LT (α i)] : LT (Σ i, α i) where
   lt := Sigma.LT
 
 @[simp]
@@ -88,7 +88,7 @@ theorem lt_def [∀ i, LT (α i)] {a b : Σ i, α i} : a < b ↔ ∃ h : a.1 = b
     rintro ⟨rfl : i = j, h⟩
     exact LT.fiber _ _ _ h
 
-protected instance preorder [∀ i, Preorder (α i)] : Preorder (Σi, α i) :=
+protected instance preorder [∀ i, Preorder (α i)] : Preorder (Σ i, α i) :=
   { le_refl := fun ⟨i, a⟩ => Sigma.LE.fiber i a a le_rfl,
     le_trans := by
       rintro _ _ _ ⟨i, a, b, hab⟩ ⟨_, _, c, hbc⟩
@@ -101,13 +101,13 @@ protected instance preorder [∀ i, Preorder (α i)] : Preorder (Σi, α i) :=
         rw [mk_le_mk_iff] at h
         exact mk_lt_mk_iff.2 (hab.lt_of_not_ge h) }
 
-instance [∀ i, PartialOrder (α i)] : PartialOrder (Σi, α i) :=
+instance [∀ i, PartialOrder (α i)] : PartialOrder (Σ i, α i) :=
   { Sigma.preorder with
     le_antisymm := by
       rintro _ _ ⟨i, a, b, hab⟩ ⟨_, _, _, hba⟩
       exact congr_arg (Sigma.mk _ ·) <| hab.antisymm hba }
 
-instance [∀ i, Preorder (α i)] [∀ i, DenselyOrdered (α i)] : DenselyOrdered (Σi, α i) where
+instance [∀ i, Preorder (α i)] [∀ i, DenselyOrdered (α i)] : DenselyOrdered (Σ i, α i) where
   dense := by
     rintro ⟨i, a⟩ ⟨_, _⟩ ⟨_, _, b, h⟩
     obtain ⟨c, ha, hb⟩ := exists_between h
@@ -144,10 +144,10 @@ instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ i, α
     lt_iff_le_not_ge := by
       refine fun a b => ⟨fun hab => ⟨hab.mono_right fun i a b => le_of_lt, ?_⟩, ?_⟩
       · rintro (⟨b, a, hji⟩ | ⟨b, a, hba⟩) <;> obtain ⟨_, _, hij⟩ | ⟨_, _, hab⟩ := hab
-        · exact hij.not_lt hji
+        · exact hij.not_gt hji
         · exact lt_irrefl _ hji
         · exact lt_irrefl _ hij
-        · exact hab.not_le hba
+        · exact hab.not_ge hba
       · rintro ⟨⟨a, b, hij⟩ | ⟨a, b, hab⟩, hba⟩
         · exact Sigma.Lex.left _ _ hij
         · exact Sigma.Lex.right _ _ (hab.lt_of_not_ge fun h => hba <| Sigma.Lex.right _ _ h) }

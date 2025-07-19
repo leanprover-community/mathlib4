@@ -84,10 +84,10 @@ theorem projIci_eq_self : projIci a x = ⟨a, le_rfl⟩ ↔ x ≤ a := by simp [
 theorem projIic_eq_self : projIic b x = ⟨b, le_rfl⟩ ↔ b ≤ x := by simp [projIic, Subtype.ext_iff]
 
 theorem projIcc_eq_left (h : a < b) : projIcc a b h.le x = ⟨a, left_mem_Icc.mpr h.le⟩ ↔ x ≤ a := by
-  simp [projIcc, Subtype.ext_iff, h.not_le]
+  simp [projIcc, Subtype.ext_iff, h.not_ge]
 
 theorem projIcc_eq_right (h : a < b) : projIcc a b h.le x = ⟨b, right_mem_Icc.2 h.le⟩ ↔ b ≤ x := by
-  simp [projIcc, Subtype.ext_iff, max_min_distrib_left, h.le, h.not_le]
+  simp [projIcc, Subtype.ext_iff, max_min_distrib_left, h.le, h.not_ge]
 
 theorem projIci_of_mem (hx : x ∈ Ici a) : projIci a x = ⟨x, hx⟩ := by simpa [projIci]
 
@@ -169,11 +169,11 @@ theorem IccExtend_apply (h : a ≤ b) (f : Icc a b → β) (x : α) :
 
 @[simp]
 theorem range_IciExtend (f : Ici a → β) : range (IciExtend f) = range f := by
-  simp only [IciExtend, range_comp f, range_projIci, range_id', image_univ]
+  simp only [IciExtend, range_comp f, range_projIci, image_univ]
 
 @[simp]
 theorem range_IicExtend (f : Iic b → β) : range (IicExtend f) = range f := by
-  simp only [IicExtend, range_comp f, range_projIic, range_id', image_univ]
+  simp only [IicExtend, range_comp f, range_projIic, image_univ]
 
 @[simp]
 theorem IccExtend_range (f : Icc a b → β) : range (IccExtend h f) = range f := by

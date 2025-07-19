@@ -101,7 +101,7 @@ theorem pow_le_of_le_log {b x y : ℕ} (hy : y ≠ 0) (h : x ≤ log b y) : b ^ 
 
 theorem le_log_of_pow_le {b x y : ℕ} (hb : 1 < b) (h : b ^ x ≤ y) : x ≤ log b y := by
   rcases ne_or_eq y 0 with (hy | rfl)
-  exacts [(pow_le_iff_le_log hb hy).1 h, (h.not_lt (Nat.pow_pos (Nat.zero_lt_one.trans hb))).elim]
+  exacts [(pow_le_iff_le_log hb hy).1 h, (h.not_gt (Nat.pow_pos (Nat.zero_lt_one.trans hb))).elim]
 
 theorem pow_log_le_self (b : ℕ) {x : ℕ} (hx : x ≠ 0) : b ^ log b x ≤ x :=
   pow_le_of_le_log hx le_rfl
@@ -134,7 +134,7 @@ theorem log_eq_iff {b m n : ℕ} (h : m ≠ 0 ∨ 1 < b ∧ n ≠ 0) :
   rcases hbn with (hb | rfl)
   · obtain rfl | rfl := le_one_iff_eq_zero_or_eq_one.1 hb
     any_goals
-      simp only [ne_eq, zero_eq, reduceSucc, lt_self_iff_false, not_lt_zero, false_and, or_false]
+      simp only [ne_eq, lt_self_iff_false, not_lt_zero, false_and, or_false]
         at h
       simp [h, eq_comm (a := 0), Nat.zero_pow (Nat.pos_iff_ne_zero.2 _)] <;> omega
   · simp [@eq_comm _ 0, hm]
@@ -245,10 +245,10 @@ decreasing_by
   decreasing_trivial
 
 theorem clog_of_left_le_one {b : ℕ} (hb : b ≤ 1) (n : ℕ) : clog b n = 0 := by
-  rw [clog, dif_neg fun h : 1 < b ∧ 1 < n => h.1.not_le hb]
+  rw [clog, dif_neg fun h : 1 < b ∧ 1 < n => h.1.not_ge hb]
 
 theorem clog_of_right_le_one {n : ℕ} (hn : n ≤ 1) (b : ℕ) : clog b n = 0 := by
-  rw [clog, dif_neg fun h : 1 < b ∧ 1 < n => h.2.not_le hn]
+  rw [clog, dif_neg fun h : 1 < b ∧ 1 < n => h.2.not_ge hn]
 
 @[simp] lemma clog_zero_left (n : ℕ) : clog 0 n = 0 := clog_of_left_le_one (Nat.zero_le _) _
 
@@ -433,7 +433,7 @@ private lemma logC_spec {b m : ℕ} (hb : 1 < b) (hm : 0 < m) :
   exact ⟨h₁.trans' (Nat.le_mul_of_pos_right _ (h₄ hm)), h₃.trans_le (Nat.mul_le_mul_left _ h₂)⟩
 
 private lemma logC_of_left_le_one {b m : ℕ} (hb : b ≤ 1) : logC b m = 0 := by
-  rw [logC, dif_neg hb.not_lt]
+  rw [logC, dif_neg hb.not_gt]
 
 private lemma logC_zero {b : ℕ} :
     logC b 0 = 0 := by

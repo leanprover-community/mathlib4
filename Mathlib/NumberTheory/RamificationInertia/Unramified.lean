@@ -23,7 +23,7 @@ We connect `Ideal.ramificationIdx` to the commutative algebra notion predicate o
 variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
 variable [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
 
-local notation3 "e("P"|"R")" =>
+local notation3 "e(" P "|" R ")" =>
   Ideal.ramificationIdx (algebraMap _ _) (Ideal.under R P) P
 
 open IsLocalRing Algebra
@@ -69,7 +69,7 @@ lemma IsUnramifiedAt.of_liesOver_of_ne_bot
 
 variable (R) in
 /--
-Up to techinical conditions, If `T/S/R` is a tower of algebras, `P` is a prime of `T` unramified
+Up to technical conditions, If `T/S/R` is a tower of algebras, `P` is a prime of `T` unramified
 in `R`, then `P ∩ S` (as a prime of `S`) is also unramified in `R`.
 -/
 lemma Algebra.IsUnramifiedAt.of_liesOver

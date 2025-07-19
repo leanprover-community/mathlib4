@@ -54,8 +54,8 @@ private lemma restrict_aux : Bijective (p.toLinearMap.compl₁₂ i j) := by
   · set F : Module.Dual R N := f ∘ₗ j.linearProjOfIsCompl _ hj hij.isCompl_right with hF
     have hF (n : N') : F (j n) = f n := by simp [hF]
     set m : M := p.toDualLeft.symm F with hm
-    obtain ⟨-, ⟨m₀, rfl⟩, y, hy, hm'⟩ :=
-      Submodule.exists_add_eq_of_codisjoint hij.isCompl_left.codisjoint m
+    obtain ⟨-, y, ⟨m₀, rfl⟩, hy, hm'⟩ :=
+      Submodule.codisjoint_iff_exists_add_eq.mp hij.isCompl_left.codisjoint m
     refine ⟨m₀, LinearMap.ext fun n ↦ ?_⟩
     replace hy : (p y) (j n) = 0 := by
       simp only [Submodule.mem_map, Submodule.mem_dualAnnihilator] at hy

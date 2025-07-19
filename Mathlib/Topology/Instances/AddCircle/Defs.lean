@@ -94,7 +94,7 @@ theorem toIcoMod_eventuallyEq_toIocMod (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) 
       (by
         rw [Ico_eq_locus_Ioc_eq_iUnion_Ioo]
         exact isOpen_iUnion fun i => isOpen_Ioo) <|
-    (not_modEq_iff_toIcoMod_eq_toIocMod hp).1 <| not_modEq_iff_ne_mod_zmultiples.2 hx
+    (not_modEq_iff_toIcoMod_eq_toIocMod hp).1 <| not_modEq_iff_ne_mod_zmultiples.2 hx.symm
 
 theorem continuousAt_toIcoMod (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) : ContinuousAt (toIcoMod hp a) x :=
   let h := toIcoMod_eventuallyEq_toIocMod hp a hx
@@ -394,7 +394,7 @@ theorem addOrderOf_period_div {n : ℕ} (h : 0 < n) : addOrderOf ((p / n : 𝕜)
   rintro ⟨k, hk⟩
   rw [mul_div, eq_div_iff h.ne', nsmul_eq_mul, mul_right_comm, ← Nat.cast_mul,
     (mul_left_injective₀ hp.out.ne').eq_iff, Nat.cast_inj, mul_comm] at hk
-  exact (Nat.le_of_dvd h0 ⟨_, hk.symm⟩).not_lt hn
+  exact (Nat.le_of_dvd h0 ⟨_, hk.symm⟩).not_gt hn
 
 variable (p) in
 theorem gcd_mul_addOrderOf_div_eq {n : ℕ} (m : ℕ) (hn : 0 < n) :

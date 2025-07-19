@@ -64,7 +64,7 @@ theorem log_of_right_le_one (b : ℕ) {r : R} (hr : r ≤ 1) : log b r = -Nat.cl
   obtain rfl | hr := hr.eq_or_lt
   · rw [log, if_pos hr, inv_one, Nat.ceil_one, Nat.floor_one, Nat.log_one_right, Nat.clog_one_right,
       Int.ofNat_zero, neg_zero]
-  · exact if_neg hr.not_le
+  · exact if_neg hr.not_ge
 
 @[simp, norm_cast]
 theorem log_natCast (b : ℕ) (n : ℕ) : log b (n : R) = Nat.log b n := by
@@ -187,10 +187,10 @@ theorem clog_of_right_le_one (b : ℕ) {r : R} (hr : r ≤ 1) : clog b r = -Nat.
   obtain rfl | hr := hr.eq_or_lt
   · rw [clog, if_pos hr, inv_one, Nat.ceil_one, Nat.floor_one, Nat.log_one_right,
       Nat.clog_one_right, Int.ofNat_zero, neg_zero]
-  · exact if_neg hr.not_le
+  · exact if_neg hr.not_ge
 
 theorem clog_of_right_le_zero (b : ℕ) {r : R} (hr : r ≤ 0) : clog b r = 0 := by
-  rw [clog, if_neg (hr.trans_lt zero_lt_one).not_le, neg_eq_zero, Int.natCast_eq_zero,
+  rw [clog, if_neg (hr.trans_lt zero_lt_one).not_ge, neg_eq_zero, Int.natCast_eq_zero,
     Nat.log_eq_zero_iff]
   rcases le_or_gt b 1 with hb | hb
   · exact Or.inr hb

@@ -44,7 +44,7 @@ lemma isOpenImmersion_SpecMap_iff_of_surjective {R S : CommRingCat}
       IsOpenImmersion.of_isLocalization (1 - e)
     have H : Set.range (Spec.map φ).base = Set.range (Spec.map f).base :=
       ((PrimeSpectrum.range_comap_of_surjective _ _
-        Ideal.Quotient.mk_surjective).trans (by simp [φ])).trans he'.symm
+        Ideal.Quotient.mk_surjective).trans (by simp)).trans he'.symm
     let i : S ≅ .of _ := (Scheme.Spec.preimageIso
       (IsOpenImmersion.isoOfRangeEq (Spec.map φ) (Spec.map f) H)).unop
     have hi : Function.Injective i.inv.hom := (ConcreteCategory.bijective_of_isIso i.inv).1

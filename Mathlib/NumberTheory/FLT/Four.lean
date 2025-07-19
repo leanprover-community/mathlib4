@@ -274,9 +274,9 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
   have hic : Int.natAbs i < Int.natAbs c := by
     apply Int.ofNat_lt.mp
     rw [← Int.eq_natAbs_of_nonneg (le_of_lt hc)]
-    apply gt_of_gt_of_ge _ (Int.natAbs_le_self_sq i)
+    apply lt_of_le_of_lt (Int.natAbs_le_self_sq i)
     rw [← hi, ht3]
-    apply gt_of_gt_of_ge _ (Int.le_self_sq m)
+    apply lt_of_le_of_lt (Int.le_self_sq m)
     exact lt_add_of_pos_right (m ^ 2) (sq_pos_of_ne_zero hn)
   have hic' : Int.natAbs c ≤ Int.natAbs i := by
     apply h.2 j k i
@@ -307,7 +307,7 @@ To prove Fermat's Last Theorem, it suffices to prove it for odd prime exponents.
 theorem FermatLastTheorem.of_odd_primes
     (hprimes : ∀ p : ℕ, Nat.Prime p → Odd p → FermatLastTheoremFor p) : FermatLastTheorem := by
   intro n h
-  obtain hdvd|⟨p, hpprime, hdvd, hpodd⟩ := Nat.four_dvd_or_exists_odd_prime_and_dvd_of_two_lt h <;>
-    apply FermatLastTheoremWith.mono hdvd
+  obtain hdvd | ⟨p, hpprime, hdvd, hpodd⟩ := Nat.four_dvd_or_exists_odd_prime_and_dvd_of_two_lt h
+    <;> apply FermatLastTheoremWith.mono hdvd
   · exact fermatLastTheoremFour
   · exact hprimes p hpprime hpodd

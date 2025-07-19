@@ -348,7 +348,7 @@ theorem partiallyWellOrderedOn_iff_finite_antichains [IsSymm α r] :
       rw [hmn]
       exact refl _
   rintro _ ⟨m, hm, rfl⟩ _ ⟨n, hn, rfl⟩ hmn
-  obtain h | h := (ne_of_apply_ne _ hmn).lt_or_lt
+  obtain h | h := (ne_of_apply_ne _ hmn).lt_or_gt
   · exact H _ _ h
   · exact mt symm (H _ _ h)
 
@@ -876,7 +876,7 @@ theorem Pi.isPWO {α : ι → Type*} [∀ i, LinearOrder (α i)] [∀ i, IsWellO
   refine Finset.cons_induction ?_ ?_
   · intro f
     exists RelEmbedding.refl (· ≤ ·)
-    simp only [IsEmpty.forall_iff, imp_true_iff, forall_const, Finset.notMem_empty]
+    simp only [IsEmpty.forall_iff, imp_true_iff, Finset.notMem_empty]
   · intro x s hx ih f
     obtain ⟨g, hg⟩ := (IsPWO.of_linearOrder univ).exists_monotone_subseq (f := (f · x)) mem_univ
     obtain ⟨g', hg'⟩ := ih (f ∘ g)
@@ -933,7 +933,7 @@ theorem WellFounded.sigma_lex_of_wellFoundedOn_fiber (hι : WellFounded (rι on 
 theorem Set.WellFoundedOn.sigma_lex_of_wellFoundedOn_fiber (hι : s.WellFoundedOn (rι on f))
     (hπ : ∀ i, (s ∩ f ⁻¹' {i}).WellFoundedOn (rπ i on g i)) :
     s.WellFoundedOn (Sigma.Lex rι rπ on fun c => ⟨f c, g (f c) c⟩) := by
-  show WellFounded (Sigma.Lex rι rπ on fun c : s => ⟨f c, g (f c) c⟩)
+  change WellFounded (Sigma.Lex rι rπ on fun c : s => ⟨f c, g (f c) c⟩)
   exact
     @WellFounded.sigma_lex_of_wellFoundedOn_fiber _ s _ _ rπ (fun c => f c) (fun i c => g _ c) hι
       fun i => ((hπ i).onFun (f := fun x => ⟨x, x.1.2, x.2⟩)).mono (fun b c h => ‹_›)

@@ -7,7 +7,6 @@ import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.Set.Monotone
-import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Tactic.Positivity.Core
 
@@ -281,6 +280,13 @@ theorem le_iff_forall_one_lt_le_mul₀ {α : Type*}
   convert h (x / b) ((one_lt_div hb).mpr hbx)
   rw [mul_div_cancel₀ _ hb.ne']
 
+theorem div_nat_le_self_of_nonnneg (ha : 0 ≤ a) (n : ℕ) : a / n ≤ a :=
+  if h : n = 0 then by simpa [h] using ha
+  else div_le_self ha (n.one_le_cast_iff_ne_zero.mpr h)
+
+theorem div_nat_lt_self_of_pos_of_two_le (ha : 0 < a) {n : ℕ} (hn : 2 ≤ n) : a / n < a :=
+  div_lt_self ha (n.one_lt_cast.mpr hn)
+
 /-! ### Results about `IsGLB` -/
 
 
@@ -492,27 +498,27 @@ theorem lt_one_div_of_neg (ha : a < 0) (hb : b < 0) : a < 1 / b ↔ b < 1 / a :=
 
 theorem one_lt_div_iff : 1 < a / b ↔ 0 < b ∧ b < a ∨ b < 0 ∧ a < b := by
   rcases lt_trichotomy b 0 with (hb | rfl | hb)
-  · simp [hb, hb.not_lt, one_lt_div_of_neg]
-  · simp [lt_irrefl, zero_le_one]
-  · simp [hb, hb.not_lt, one_lt_div]
+  · simp [hb, hb.not_gt, one_lt_div_of_neg]
+  · simp [zero_le_one]
+  · simp [hb, hb.not_gt, one_lt_div]
 
 theorem one_le_div_iff : 1 ≤ a / b ↔ 0 < b ∧ b ≤ a ∨ b < 0 ∧ a ≤ b := by
   rcases lt_trichotomy b 0 with (hb | rfl | hb)
-  · simp [hb, hb.not_lt, one_le_div_of_neg]
-  · simp [lt_irrefl, zero_lt_one.not_le, zero_lt_one]
-  · simp [hb, hb.not_lt, one_le_div]
+  · simp [hb, hb.not_gt, one_le_div_of_neg]
+  · simp [zero_lt_one.not_ge]
+  · simp [hb, hb.not_gt, one_le_div]
 
 theorem div_lt_one_iff : a / b < 1 ↔ 0 < b ∧ a < b ∨ b = 0 ∨ b < 0 ∧ b < a := by
   rcases lt_trichotomy b 0 with (hb | rfl | hb)
-  · simp [hb, hb.not_lt, hb.ne, div_lt_one_of_neg]
+  · simp [hb, hb.not_gt, hb.ne, div_lt_one_of_neg]
   · simp [zero_lt_one]
-  · simp [hb, hb.not_lt, div_lt_one, hb.ne.symm]
+  · simp [hb, hb.not_gt, div_lt_one, hb.ne.symm]
 
 theorem div_le_one_iff : a / b ≤ 1 ↔ 0 < b ∧ a ≤ b ∨ b = 0 ∨ b < 0 ∧ b ≤ a := by
   rcases lt_trichotomy b 0 with (hb | rfl | hb)
-  · simp [hb, hb.not_lt, hb.ne, div_le_one_of_neg]
+  · simp [hb, hb.not_gt, hb.ne, div_le_one_of_neg]
   · simp [zero_le_one]
-  · simp [hb, hb.not_lt, div_le_one, hb.ne.symm]
+  · simp [hb, hb.not_gt, div_le_one, hb.ne.symm]
 
 /-! ### Relating two divisions, involving `1` -/
 

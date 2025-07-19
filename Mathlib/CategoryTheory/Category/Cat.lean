@@ -26,7 +26,7 @@ universe v u
 
 namespace CategoryTheory
 
-open Bicategory
+open Bicategory Functor
 
 -- intended to be used with explicit universe parameters
 /-- Category of categories. -/
@@ -75,8 +75,8 @@ instance category : LargeCategory.{max v u} Cat.{v, u} :=
   StrictBicategory.category Cat.{v, u}
 
 @[ext]
-theorem natTrans_ext {C D : Cat} {F G : C ⟶ D} {η θ : F ⟶ G} (h : η.app = θ.app) :
-    η = θ := NatTrans.ext' h
+theorem ext {C D : Cat} {F G : C ⟶ D} {α β : F ⟶ G} (w : α.app = β.app) : α = β :=
+  NatTrans.ext w
 
 @[simp]
 theorem id_obj {C : Cat} (X : C) : (𝟙 C : C ⥤ C).obj X = X :=
@@ -103,6 +103,11 @@ theorem comp_app {C D : Cat} {F G H : C ⟶ D} (α : F ⟶ G) (β : G ⟶ H) (X 
     (α ≫ β).app X = α.app X ≫ β.app X := rfl
 
 @[simp]
+theorem eqToHom_app {C D : Cat} (F G : C ⟶ D) (h : F = G) (X : C) :
+    (eqToHom h).app X = eqToHom (Functor.congr_obj h X) :=
+  CategoryTheory.eqToHom_app h X
+
+@[simp]
 lemma whiskerLeft_app {C D E : Cat} (F : C ⟶ D) {G H : D ⟶ E} (η : G ⟶ H) (X : C) :
     (F ◁ η).app X = η.app (F.obj X) :=
   rfl
@@ -111,11 +116,6 @@ lemma whiskerLeft_app {C D E : Cat} (F : C ⟶ D) {G H : D ⟶ E} (η : G ⟶ H)
 lemma whiskerRight_app {C D E : Cat} {F G : C ⟶ D} (H : D ⟶ E) (η : F ⟶ G) (X : C) :
     (η ▷ H).app X = H.map (η.app X) :=
   rfl
-
-@[simp]
-theorem eqToHom_app {C D : Cat} (F G : C ⟶ D) (h : F = G) (X : C) :
-    (eqToHom h).app X = eqToHom (Functor.congr_obj h X) :=
-  CategoryTheory.eqToHom_app h X
 
 lemma leftUnitor_hom_app {B C : Cat} (F : B ⟶ C) (X : B) : (λ_ F).hom.app X = eqToHom (by simp) :=
   rfl
@@ -187,6 +187,20 @@ def equivOfIso {C D : Cat} (γ : C ≅ D) : C ≌ D where
   unitIso := eqToIso <| Eq.symm γ.hom_inv_id
   counitIso := eqToIso γ.inv_hom_id
 
+/-- Under certain hypotheses, an equivalence of categories actually
+defines an isomorphism in `Cat`. -/
+@[simps]
+def isoOfEquiv {C D : Cat.{v, u}} (e : C ≌ D)
+    (h₁ : ∀ (X : C), e.inverse.obj (e.functor.obj X) = X)
+    (h₂ : ∀ (Y : D), e.functor.obj (e.inverse.obj Y) = Y)
+    (h₃ : ∀ (X : C), e.unitIso.hom.app X = eqToHom (h₁ X).symm := by aesop_cat)
+    (h₄ : ∀ (Y : D), e.counitIso.hom.app Y = eqToHom (h₂ Y) := by aesop_cat) :
+    C ≅ D where
+  hom := e.functor
+  inv := e.inverse
+  hom_inv_id := (Functor.ext_of_iso e.unitIso (fun X ↦ (h₁ X).symm) h₃).symm
+  inv_hom_id := (Functor.ext_of_iso e.counitIso h₂ h₄)
+
 end
 
 end Cat
@@ -203,7 +217,7 @@ def typeToCat : Type u ⥤ Cat where
     apply Functor.ext
     · intro X Y f
       cases f
-      simp only [id_eq, eqToHom_refl, Cat.id_map, Category.comp_id, Category.id_comp]
+      simp only [eqToHom_refl, Cat.id_map, Category.comp_id, Category.id_comp]
       apply ULift.ext
       aesop_cat
     · simp

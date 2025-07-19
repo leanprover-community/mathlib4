@@ -386,7 +386,7 @@ def basis (h : IsAdjoinRootMonic S f) : Basis (Fin (natDegree f)) R S :=
         rw [Finsupp.mapDomain_notin_range]
         rw [Set.mem_range, not_exists]
         rintro i rfl
-        exact i.prop.not_le hm
+        exact i.prop.not_ge hm
       map_add' := fun x y => by
         rw [map_add, toFinsupp_add, Finsupp.comapDomain_add_of_injective Fin.val_injective]
       -- Porting note: the original simp proof with the same lemmas does not work
@@ -450,8 +450,8 @@ def coeff (h : IsAdjoinRootMonic S f) : S →ₗ[R] ℕ → R :=
 
 theorem coeff_apply_lt (h : IsAdjoinRootMonic S f) (z : S) (i : ℕ) (hi : i < natDegree f) :
     h.coeff z i = h.basis.repr z ⟨i, hi⟩ := by
-  simp only [coeff, LinearMap.comp_apply, Finsupp.lcoeFun_apply, Finsupp.lmapDomain_apply,
-    LinearEquiv.coe_coe, liftPolyₗ_apply, LinearMap.coe_mk, h.basis_repr]
+  simp only [coeff,
+    liftPolyₗ_apply, LinearMap.coe_mk, h.basis_repr]
   rfl
 
 theorem coeff_apply_coe (h : IsAdjoinRootMonic S f) (z : S) (i : Fin (natDegree f)) :
@@ -459,8 +459,8 @@ theorem coeff_apply_coe (h : IsAdjoinRootMonic S f) (z : S) (i : Fin (natDegree 
 
 theorem coeff_apply_le (h : IsAdjoinRootMonic S f) (z : S) (i : ℕ) (hi : natDegree f ≤ i) :
     h.coeff z i = 0 := by
-  simp only [coeff, LinearMap.comp_apply, Finsupp.lcoeFun_apply, Finsupp.lmapDomain_apply,
-    LinearEquiv.coe_coe, liftPolyₗ_apply, LinearMap.coe_mk, h.basis_repr]
+  simp only [coeff,
+    liftPolyₗ_apply, LinearMap.coe_mk]
   nontriviality R
   exact
     Polynomial.coeff_eq_zero_of_degree_lt

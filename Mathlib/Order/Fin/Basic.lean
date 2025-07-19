@@ -3,6 +3,7 @@ Copyright (c) 2017 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 -/
+import Mathlib.Data.Fin.Embedding
 import Mathlib.Data.Fin.Rev
 import Mathlib.Order.Hom.Basic
 
@@ -102,7 +103,7 @@ theorem val_top (n : ℕ) [NeZero n] : ((⊤ : Fin n) : ℕ) = n - 1 := rfl
 
 @[simp]
 theorem zero_eq_top {n : ℕ} [NeZero n] : (0 : Fin n) = ⊤ ↔ n = 1 := by
-  rw [← bot_eq_zero, subsingleton_iff_bot_eq_top, subsingleton_iff_le_one, LE.le.le_iff_eq]
+  rw [← bot_eq_zero, subsingleton_iff_bot_eq_top, subsingleton_iff_le_one, LE.le.ge_iff_eq']
   exact pos_of_neZero n
 
 @[simp]
@@ -276,7 +277,7 @@ lemma predAbove_left_monotone (i : Fin (n + 1)) : Monotone fun p ↦ predAbove p
   · rfl
   · exact pred_le _
   · have : b < a := castSucc_lt_castSucc_iff.mpr (hb.trans_le (le_of_not_gt ha))
-    exact absurd H this.not_le
+    exact absurd H this.not_ge
   · rfl
 
 @[gcongr]
@@ -335,6 +336,14 @@ lemma rev_anti : Antitone (@rev n) := rev_strictAnti.antitone
 /-- The inclusion map `Fin n → ℕ` is an order embedding. -/
 @[simps! apply]
 def valOrderEmb (n) : Fin n ↪o ℕ := ⟨valEmbedding, Iff.rfl⟩
+
+namespace OrderEmbedding
+
+@[simps]
+instance : Inhabited (Fin n ↪o ℕ) where
+  default := Fin.valOrderEmb n
+
+end OrderEmbedding
 
 /-- The ordering on `Fin n` is a well order. -/
 instance Lt.isWellOrder (n) : IsWellOrder (Fin n) (· < ·) := (valOrderEmb n).isWellOrder

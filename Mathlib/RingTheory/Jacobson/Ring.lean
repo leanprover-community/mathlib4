@@ -252,7 +252,7 @@ lemma Subring.mem_closure_image_of {S T : Type*} [Ring S] [Ring T] (g : S →+* 
   intro T₁ h₁
   rw [← Subring.mem_comap]
   apply hx
-  simp only [Subring.coe_comap, ← Set.image_subset_iff, SetLike.mem_coe]
+  simp only [Subring.coe_comap, ← Set.image_subset_iff]
   exact h₁
 
 -- Porting note: move to better place
@@ -612,7 +612,7 @@ private lemma aux_IH {R : Type u} {S : Type v} {T : Type w}
   have h_eq : algebraMap R (T ⧸ P) =
     w.toRingEquiv.toRingHom.comp (w'.toRingHom.comp (algebraMap R (S ⧸ Q'))) := by
     ext r
-    simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe, AlgEquiv.toRingEquiv_eq_coe,
+    simp only [AlgHom.toRingHom_eq_coe, AlgEquiv.toRingEquiv_eq_coe,
       RingEquiv.toRingHom_eq_coe, AlgHom.comp_algebraMap_of_tower, coe_comp, coe_coe,
       AlgEquiv.coe_ringEquiv, Function.comp_apply, AlgEquiv.commutes]
   rw [h_eq]

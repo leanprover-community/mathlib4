@@ -481,7 +481,7 @@ theorem selfZPow_zero : selfZPow x B 0 = 1 := by
 
 theorem selfZPow_of_neg {n : ℤ} (hn : n < 0) :
     selfZPow x B n = mk' _ (1 : R) (Submonoid.pow x n.natAbs) :=
-  dif_neg hn.not_le
+  dif_neg hn.not_ge
 
 theorem selfZPow_of_nonpos {n : ℤ} (hn : n ≤ 0) :
     selfZPow x B n = mk' _ (1 : R) (Submonoid.pow x n.natAbs) := by
@@ -561,7 +561,7 @@ theorem exists_reduced_fraction' {b : B} (hb : b ≠ 0) (hx : Irreducible x) :
     haveI :=
       @isDomain_of_le_nonZeroDivisors B _ R _ _ _ (Submonoid.powers x) _
         (powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero)
-    simp only [map_zero, ← hy, map_pow] at H
+    simp only [← hy, map_pow] at H
     apply ((injective_iff_map_eq_zero' (algebraMap R B)).mp _ a₀).mpr.mt
     · rw [← H]
       apply mul_ne_zero hb (pow_ne_zero _ _)

@@ -284,7 +284,7 @@ theorem cauchySeq_finset_iff_nat_tprod_vanishing {f : ℕ → G} :
     refine ⟨if h : s.Nonempty then s.max' h + 1 else 0,
       fun t ht ↦ hs _ <| Set.disjoint_left.mpr ?_⟩
     split_ifs at ht with h
-    · exact fun m hmt hms ↦ (s.le_max' _ hms).not_lt (Nat.succ_le_iff.mp <| ht hmt)
+    · exact fun m hmt hms ↦ (s.le_max' _ hms).not_gt (Nat.succ_le_iff.mp <| ht hmt)
     · exact fun _ _ hs ↦ h ⟨_, hs⟩
   · obtain ⟨N, hN⟩ := vanish e he
     exact ⟨range N, fun t ht ↦ hN _ fun n hnt ↦
@@ -345,7 +345,7 @@ lemma HasProd.nat_mul_neg_add_one {f : ℤ → M} (hf : HasProd f m) :
   · rw [prod_union, prod_image Nat.cast_injective.injOn, prod_image this.injOn,
       prod_mul_distrib]
     simp only [disjoint_iff_ne, mem_image, ne_eq, forall_exists_index, and_imp,
-      forall_apply_eq_imp_iff₂, not_false_eq_true, implies_true, forall_const, reduceCtorEq]
+      forall_apply_eq_imp_iff₂, not_false_eq_true, implies_true, reduceCtorEq]
 
 @[to_additive Summable.nat_add_neg_add_one]
 lemma Multipliable.nat_mul_neg_add_one {f : ℤ → M} (hf : Multipliable f) :
@@ -427,7 +427,7 @@ theorem HasProd.nat_mul_neg {f : ℤ → M} (hf : HasProd f m) :
   let u2 := v'.image fun x : ℕ ↦ -(x : ℤ)
   have A : u ⊆ u1 ∪ u2 := by
     intro x hx
-    simp only [u1, u2, mem_union, mem_image, exists_prop]
+    simp only [u1, u2, mem_union, mem_image]
     rcases le_total 0 x with (h'x | h'x)
     · refine Or.inl ⟨_, hv' <| mem_image.mpr ⟨x, hx, rfl⟩, ?_⟩
       simp only [Int.natCast_natAbs, abs_eq_self, h'x]
@@ -445,8 +445,8 @@ theorem HasProd.nat_mul_neg {f : ℤ → M} (hf : HasProd f m) :
         simp only [mem_sdiff, mem_union, mem_image, Nat.cast_eq_zero, exists_eq_right, neg_eq_zero,
           or_self, mem_inter, and_self, and_not_self, u1, u2] at hx
       · intro x hx
-        simp only [u1, u2, mem_inter, mem_image, exists_prop] at hx
-        suffices x = 0 by simp only [this, eq_self_iff_true, if_true]
+        simp only [u1, u2, mem_inter, mem_image] at hx
+        suffices x = 0 by simp only [this, if_true]
         omega
     _ = (∏ x ∈ u1, f x) * ∏ x ∈ u2, f x := prod_union_inter
     _ = (∏ b ∈ v', f b) * ∏ b ∈ v', f (-b) := by simp [u1, u2]

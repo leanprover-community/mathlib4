@@ -79,7 +79,7 @@ theorem thickening_empty (δ : ℝ) : thickening δ (∅ : Set α) = ∅ := by
   simp only [thickening, setOf_false, infEdist_empty, not_top_lt]
 
 theorem thickening_of_nonpos (hδ : δ ≤ 0) (s : Set α) : thickening δ s = ∅ :=
-  eq_empty_of_forall_notMem fun _ => ((ENNReal.ofReal_of_nonpos hδ).trans_le bot_le).not_lt
+  eq_empty_of_forall_notMem fun _ => ((ENNReal.ofReal_of_nonpos hδ).trans_le bot_le).not_gt
 
 /-- The (open) thickening `Metric.thickening δ E` of a fixed subset `E` is an increasing function of
 the thickening radius `δ`. -/
@@ -151,7 +151,7 @@ theorem thickening_singleton (δ : ℝ) (x : X) : thickening δ ({x} : Set X) = 
 
 theorem ball_subset_thickening {x : X} {E : Set X} (hx : x ∈ E) (δ : ℝ) :
     ball x δ ⊆ thickening δ E :=
-  Subset.trans (by simp [Subset.rfl]) (thickening_subset_of_subset δ <| singleton_subset_iff.mpr hx)
+  Subset.trans (by simp) (thickening_subset_of_subset δ <| singleton_subset_iff.mpr hx)
 
 /-- The (open) `δ`-thickening `Metric.thickening δ E` of a subset `E` in a metric space equals the
 union of balls of radius `δ` centered at points of `E`. -/
@@ -385,6 +385,22 @@ theorem thickening_closure : thickening δ (closure s) = thickening δ s := by
 theorem cthickening_closure : cthickening δ (closure s) = cthickening δ s := by
   simp_rw [cthickening, infEdist_closure]
 
+lemma thickening_eq_empty_iff_of_pos (hε : 0 < ε) :
+    thickening ε s = ∅ ↔ s = ∅ :=
+  ⟨fun h ↦ subset_eq_empty (self_subset_thickening hε _) h, by simp +contextual⟩
+
+lemma thickening_nonempty_iff_of_pos (hε : 0 < ε) :
+    (thickening ε s).Nonempty ↔ s.Nonempty := by
+  simp [nonempty_iff_ne_empty, thickening_eq_empty_iff_of_pos hε]
+
+@[simp] lemma thickening_eq_empty_iff : thickening ε s = ∅ ↔ ε ≤ 0 ∨ s = ∅ := by
+  obtain hε | hε := lt_or_ge 0 ε
+  · simp [thickening_eq_empty_iff_of_pos, hε]
+  · simp [hε, thickening_of_nonpos hε]
+
+@[simp] lemma thickening_nonempty_iff : (thickening ε s).Nonempty ↔ 0 < ε ∧ s.Nonempty := by
+  simp [nonempty_iff_ne_empty]
+
 open ENNReal
 
 theorem _root_.Disjoint.exists_thickenings (hst : Disjoint s t) (hs : IsCompact s)
@@ -398,7 +414,7 @@ theorem _root_.Disjoint.exists_thickenings (hst : Disjoint s t) (hs : IsCompact 
   rw [← NNReal.coe_two, ← NNReal.coe_div, ENNReal.ofReal_coe_nnreal] at hzs hzt
   obtain ⟨x, hx, hzx⟩ := hzs
   obtain ⟨y, hy, hzy⟩ := hzt
-  refine (h x hx y hy).not_le ?_
+  refine (h x hx y hy).not_ge ?_
   calc
     edist x y ≤ edist z x + edist z y := edist_triangle_left _ _ _
     _ ≤ ↑(r / 2) + ↑(r / 2) := add_le_add hzx.le hzy.le
@@ -574,7 +590,7 @@ nonrec theorem _root_.IsClosed.cthickening_eq_biUnion_closedBall {α : Type*} [P
 /-- For the equality, see `infEdist_cthickening`. -/
 theorem infEdist_le_infEdist_cthickening_add :
     infEdist x s ≤ infEdist x (cthickening δ s) + ENNReal.ofReal δ := by
-  refine le_of_forall_lt' fun r h => ?_
+  refine le_of_forall_gt fun r h => ?_
   simp_rw [← lt_tsub_iff_right, infEdist_lt_iff, mem_cthickening_iff] at h
   obtain ⟨y, hy, hxy⟩ := h
   exact infEdist_le_edist_add_infEdist.trans_lt

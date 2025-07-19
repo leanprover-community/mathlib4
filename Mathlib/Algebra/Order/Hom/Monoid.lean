@@ -926,13 +926,29 @@ end Mul
 section LinearOrderedCommMonoidWithZero
 
 variable {hα : Preorder α} {hα' : MulZeroOneClass α} {hβ : Preorder β} {hβ' : MulZeroOneClass β}
+  {hγ : Preorder γ} {hγ' : MulZeroOneClass γ}
 
 @[simp]
 theorem toMonoidWithZeroHom_eq_coe (f : α →*₀o β) : f.toMonoidWithZeroHom = f := by
   rfl
 
 @[simp]
+theorem toMonoidWithZeroHom_mk (f : α →*₀ β) (hf : Monotone f) :
+    ((OrderMonoidWithZeroHom.mk f hf) : α →*₀ β) = f := by
+  rfl
+
+@[simp]
+lemma toMonoidWithZeroHom_coe (f : β →*₀o γ) (g : α →*₀o β) :
+    (f.comp g : α →*₀ γ) = (f : β →*₀ γ).comp g :=
+  rfl
+
+@[simp]
 theorem toOrderMonoidHom_eq_coe (f : α →*₀o β) : f.toOrderMonoidHom = f :=
+  rfl
+
+@[simp]
+lemma toOrderMonoidHom_comp (f : β →*₀o γ) (g : α →*₀o β) :
+    (f.comp g : α →*o γ) = (f : β →*o γ).comp g :=
   rfl
 
 end LinearOrderedCommMonoidWithZero
@@ -951,7 +967,17 @@ def OrderMonoidIso.withZero {G H : Type*}
     [Group G] [PartialOrder G] [Group H] [PartialOrder H] :
     (G ≃*o H) ≃ (WithZero G ≃*o WithZero H) where
   toFun e := ⟨e.toMulEquiv.withZero, fun {a b} ↦ by cases a <;> cases b <;>
-    simp [WithZero.zero_le, (WithZero.zero_lt_coe _).not_le]⟩
+    simp [WithZero.zero_le, (WithZero.zero_lt_coe _).not_ge]⟩
   invFun e := ⟨MulEquiv.withZero.symm e, fun {a b} ↦ by simp⟩
   left_inv _ := by ext; simp
   right_inv _ := by ext x; cases x <;> simp
+
+/-- Any linearly ordered group with zero is isomorphic to adjoining `0` to the units of itself. -/
+@[simps!]
+def OrderMonoidIso.withZeroUnits {α : Type*} [LinearOrderedCommGroupWithZero α]
+    [DecidablePred (fun a : α ↦ a = 0)] :
+    WithZero αˣ ≃*o α where
+  toMulEquiv := WithZero.withZeroUnitsEquiv
+  map_le_map_iff' {a b} := by
+    cases a <;> cases b <;>
+    simp
