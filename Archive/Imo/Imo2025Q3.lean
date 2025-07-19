@@ -3,6 +3,7 @@ import Mathlib.NumberTheory.Padics.PadicVal.Basic
 import Mathlib.NumberTheory.LucasLehmer
 import Mathlib.Data.Real.Basic
 import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.NumberTheory.LSeries.PrimesInAP
 
 open Nat Int
 
@@ -16,16 +17,10 @@ def bonza : Set (ℕ → ℕ) :=
   {f : ℕ → ℕ | (∀ a b : ℕ, 0 < a → 0 < b → (f a : ℤ) ∣ (b : ℤ) ^ a - (f b : ℤ) ^ (f a)) ∧
     ∀ n, 0 < n → f n > 0}
 
-lemma hdvd : ∀ f ∈ bonza, ∀ n, n > 0 → f n ∣ n ^ n := by
-  intro f hf n hn
-  have dvd1 := hf.1 n n hn hn
-  have : (f n : ℤ) ∣ (f n : ℤ) ^ f n := by
-    refine Dvd.dvd.pow ?_ ?_
-    exact Int.dvd_refl ↑(f n)
-    have := hf.2 n hn
-    exact Nat.ne_zero_of_lt this
-  have : (f n : ℤ) ∣ (n : ℤ) ^ n := by
-    exact (Int.dvd_iff_dvd_of_dvd_sub dvd1).mpr this
+lemma hdvd {f : ℕ → ℕ} (hf : f ∈ bonza) {n} (hn : n > 0) : f n ∣ n ^ n := by
+  have : (f n : ℤ) ∣ (f n : ℤ) ^ f n :=
+    Dvd.dvd.pow (Int.dvd_refl (f n)) (Nat.ne_zero_of_lt (hf.2 n hn))
+  have : (f n : ℤ) ∣ (n : ℤ) ^ n := (Int.dvd_iff_dvd_of_dvd_sub (hf.1 n n hn hn)).mpr this
   rw [Eq.symm (Int.natCast_pow n n)] at this
   exact ofNat_dvd.mp this
 
@@ -53,10 +48,9 @@ theorem Int.ModEq.pow_card_eq_self' {p k : ℕ} (hp : Nat.Prime p) {n : ℤ} :
     have eq : p ^ k - 1 + 1 = p ^ k := Nat.sub_add_cancel NeZero.one_le
     rwa [← Int.pow_succ, eq, one_mul] at this
 
-lemma imp : ∀ f ∈ bonza, ∀ p, Nat.Prime p → f p = 1 ∨
-    (∀ b : ℕ, b > 0 → (p : ℤ) ∣ (b : ℤ) - ((f b) : ℤ)) := by
-  intro f hf p hp
-  have : f p ∣ p ^ p := hdvd f hf p (Prime.pos hp)
+lemma imp {f : ℕ → ℕ} (hf : f ∈ bonza) {p : ℕ} (hp : Nat.Prime p) :
+    f p = 1 ∨ (∀ b : ℕ, b > 0 → (p : ℤ) ∣ (b : ℤ) - ((f b) : ℤ)) := by
+  have : f p ∣ p ^ p := hdvd hf (Prime.pos hp)
   obtain ⟨α , ha1, ha2⟩ : ∃ α, α ≤ p ∧ f p = p ^ α := (Nat.dvd_prime_pow hp).mp this
   by_cases ch : α = 0
   · left
@@ -77,15 +71,15 @@ lemma imp : ∀ f ∈ bonza, ∀ p, Nat.Prime p → f p = 1 ∨
         exact ModEq.pow_card_eq_self' hp
     exact Int.ModEq.dvd (id (Int.ModEq.symm this))
 
-theorem cases : ∀ f ∈ bonza, (∀ x, x > 0 → f x = x) ∨ (∃ N, ∀ p > N, Nat.Prime p → f p = 1) := by
-  intro f hf
+theorem cases {f : ℕ → ℕ} (hf : f ∈ bonza) :
+    (∀ x, x > 0 → f x = x) ∨ (∃ N, ∀ p > N, Nat.Prime p → f p = 1) := by
   by_cases ch : ∀ x, x > 0 → f x = x
   · exact Or.symm (Or.inr ch)
   · right
     obtain ⟨b, bgt, hb⟩ : ∃ b, b > 0 ∧ f b ≠ b := Set.not_subset.mp ch
     have : ∀ p, Nat.Prime p → f p = 1 ∨ (p : ℤ) ∣ (b : ℤ) - (f b : ℤ) := by
       intro p hp
-      rcases imp f hf p hp with ch | ch
+      rcases imp hf hp with ch | ch
       · exact Or.symm (Or.inr ch)
       · right
         exact ch b bgt
@@ -115,8 +109,7 @@ lemma LTE {a b : ℕ} (h1b : 1 < b) (hb : ¬2 ∣ b) (ha : a ≠ 0) (Evena : Eve
   have : padicValNat 2 (b ^ a - 1)
     = padicValNat 2 (b + 1) + padicValNat 2 (b - 1) + padicValNat 2 a - 1 := by omega
   rw [this]
-  have Oddb : Odd b :=
-    Nat.odd_iff.mpr (Nat.two_dvd_ne_zero.mp hb)
+  have Oddb : Odd b := Nat.odd_iff.mpr (Nat.two_dvd_ne_zero.mp hb)
   have : padicValNat 2 (b + 1) + padicValNat 2 (b - 1) ≥ 3 := by
     rw [← padicValNat.mul (by omega) (by omega)]
     have : (b + 1) * (b - 1) ≠ 0 := by simpa using by omega
@@ -176,8 +169,8 @@ lemma exist : g ∈ bonza := by
         · simp [lt]
         simp at ch1
         have : (padicValNat 2 a + 2) ≤ padicValInt 2 (b ^ a - 1) := by
-          have := LTE (by omega) (Nat.two_dvd_ne_zero.mpr hb1) (by omega) (Nat.even_iff.mpr ch1)
-          rwa [← LucasLehmer.Int.natCast_pow_pred b a hb]
+          rw [← LucasLehmer.Int.natCast_pow_pred b a hb]
+          exact LTE (by omega) (Nat.two_dvd_ne_zero.mpr hb1) (by omega) (Nat.even_iff.mpr ch1)
         exact Int.dvd_trans (pow_dvd_pow 2 this) (padicValInt_dvd ((b : ℤ) ^ a - 1))
       · exact dvd_lemma a b 4 (by simp [hb2]) ha4 h2a (by norm_num)
       · exact dvd_lemma a b (2 ^ (padicValNat 2 b + 2)) (dvd_of_mod_eq_zero (mod_two_ne_one.mp hb1))
@@ -189,16 +182,16 @@ lemma exist : g ∈ bonza := by
     · norm_num
     · exact Nat.two_pow_pos (padicValNat 2 n + 2)
 
-theorem fforall : ∀ f : ℕ → ℕ, f ∈ bonza → ∀ n, 0 < n → f n ≤ 4 * n := by
-  intro f hf n hn
-
+theorem fforall {f : ℕ → ℕ} (hf : f ∈ bonza) {n : ℕ} (hn : 0 < n) : f n ≤ 4 * n := by
   sorry
 
 theorem my_favorite_theorem : IsLeast {c : ℝ | ∀ f : ℕ → ℕ, f ∈ bonza →
   ∀ n, 0 < n → f n ≤ c * n} 4 := by
   constructor
-  · intro f hf
-    sorry
+  · intro f hf n hn
+    have : 4 * (n : ℝ) = (4 * n : ℕ) := by simp
+    rw [this, Nat.cast_le]
+    exact fforall hf hn
   · intro c h
     have := h g exist 4 (by norm_num)
     have eq : padicValNat 2 4 =2 := by
