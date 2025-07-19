@@ -59,7 +59,7 @@ def nonneg : RingCone T where
 
 instance nonneg.hasMemOrNegMem {T : Type*} [Ring T] [LinearOrder T] [IsOrderedRing T] :
     HasMemOrNegMem (nonneg T) where
-  mem_or_neg_mem' := mem_or_neg_mem (AddGroupCone.nonneg T)
+  mem_or_neg_mem := mem_or_neg_mem (AddGroupCone.nonneg T)
 
 end RingCone
 

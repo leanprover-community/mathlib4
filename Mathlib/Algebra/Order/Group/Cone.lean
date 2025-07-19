@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Kim Morrison, Artie Khovanov
 -/
 import Mathlib.Algebra.Order.Monoid.Submonoid
 import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Group.Subgroup.Defs
 
 /-!
 # Construct ordered groups from groups with a specified positive cone.
@@ -61,19 +62,6 @@ instance GroupCone.instGroupConeClass (G : Type*) [CommGroup G] :
 initialize_simps_projections GroupCone (carrier → coe, as_prefix coe)
 initialize_simps_projections AddGroupCone (carrier → coe, as_prefix coe)
 
-/-- Typeclass for maximal additive cones. -/
-class HasMemOrNegMem {S G : Type*} [AddCommGroup G] [SetLike S G] (C : S) : Prop where
-  mem_or_neg_mem' (a : G) : a ∈ C ∨ -a ∈ C
-
-/-- Typeclass for maximal multiplicative cones. -/
-@[to_additive]
-class HasMemOrInvMem {S G : Type*} [CommGroup G] [SetLike S G] (C : S) : Prop where
-  mem_or_inv_mem' (a : G) : a ∈ C ∨ a⁻¹ ∈ C
-
-@[to_additive]
-lemma mem_or_inv_mem {S G : Type*} [CommGroup G] [SetLike S G] (C : S) [HasMemOrInvMem C]
-    (a : G) : a ∈ C ∨ a⁻¹ ∈ C := HasMemOrInvMem.mem_or_inv_mem' a
-
 namespace GroupCone
 variable {H : Type*} [CommGroup H] [PartialOrder H] [IsOrderedMonoid H] {a : H}
 
@@ -94,7 +82,7 @@ lemma coe_oneLE : oneLE H = {x : H | 1 ≤ x} := rfl
 @[to_additive nonneg.isMaxCone]
 instance oneLE.isMaxMulCone {H : Type*} [CommGroup H] [LinearOrder H] [IsOrderedMonoid H] :
     HasMemOrInvMem (oneLE H) where
-  mem_or_inv_mem' := by simpa using le_total 1
+  mem_or_inv_mem := by simpa using le_total 1
 
 end GroupCone
 
@@ -125,3 +113,5 @@ lemma IsOrderedMonoid.mkOfCone [GroupConeClass S G] :
     IsOrderedMonoid G :=
   let _ : PartialOrder G := PartialOrder.mkOfGroupCone C
   { mul_le_mul_left := fun a b nab c ↦ by simpa [· ≤ ·] using nab }
+
+#min_imports

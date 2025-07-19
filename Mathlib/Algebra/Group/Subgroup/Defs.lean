@@ -74,12 +74,16 @@ export NegMemClass (neg_mem)
 
 /-- Typeclass for substructures S such that S ∪ -S = G. -/
 class HasMemOrNegMem {S G : Type*} [AddCommGroup G] [SetLike S G] (C : S) : Prop where
-  mem_or_neg_mem' (a : G) : a ∈ C ∨ -a ∈ C
+  mem_or_neg_mem (C) (a : G) : a ∈ C ∨ -a ∈ C
+
+export HasMemOrNegMem (mem_or_neg_mem)
 
 /-- Typeclass for substructures S such that S ∪ S⁻¹ = G. -/
 @[to_additive]
 class HasMemOrInvMem {S G : Type*} [CommGroup G] [SetLike S G] (C : S) : Prop where
-  mem_or_inv_mem' (a : G) : a ∈ C ∨ a⁻¹ ∈ C
+  mem_or_inv_mem (C) (a : G) : a ∈ C ∨ a⁻¹ ∈ C
+
+export HasMemOrInvMem (mem_or_inv_mem)
 
 /-- `SubgroupClass S G` states `S` is a type of subsets `s ⊆ G` that are subgroups of `G`. -/
 class SubgroupClass (S : Type*) (G : outParam Type*) [DivInvMonoid G] [SetLike S G] : Prop
