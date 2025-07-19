@@ -862,6 +862,13 @@ instance (priority := 100) hasStrongEpiImages_of_hasStrongEpiMonoFactorisations
     strongEpi_factorThruImage_of_strongEpiMonoFactorisation <|
       Classical.choice <| HasStrongEpiMonoFactorisations.has_fac f
 
+/-- Having strong epi images induces an strong epi-mono factorisation -/
+instance (priority := 100) hasStrongEpiMonoFactorisations_of_hasStrongEpiImages
+    [HasImages C] [HasStrongEpiImages C] : HasStrongEpiMonoFactorisations C := .mk fun f ↦ {
+      __ := Image.monoFactorisation f
+      e_strong_epi := HasStrongEpiImages.strong_factorThruImage f
+    }
+
 end HasStrongEpiImages
 
 section HasStrongEpiImages
