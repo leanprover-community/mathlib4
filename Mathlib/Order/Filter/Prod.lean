@@ -345,6 +345,11 @@ theorem Tendsto.prodMap {δ : Type*} {f : α → γ} {g : β → δ} {a : Filter
 @[deprecated (since := "2025-03-10")]
 alias Tendsto.prod_map := Tendsto.prodMap
 
+theorem Tendsto.eventually_image_of_prod {ψ : α → β} {r : α → β → Prop}
+    (hψ : Tendsto ψ f g) (hr : ∀ᶠ p in f ×ˢ g, r p.1 p.2) : ∀ᶠ x in f, r x (ψ x) := by
+  suffices ∀ᶠ p in map (Prod.map id ψ) (f ×ˢ f), r p.1 p.2 from this.diag_of_prod
+  exact hr.filter_mono (prod_map_right ψ f f ▸ prod_mono_right f hψ)
+
 protected theorem map_prod (m : α × β → γ) (f : Filter α) (g : Filter β) :
     map m (f ×ˢ g) = (f.map fun a b => m (a, b)).seq g := by
   simp only [Filter.ext_iff, mem_map, mem_prod_iff, mem_map_seq_iff, exists_and_left]
