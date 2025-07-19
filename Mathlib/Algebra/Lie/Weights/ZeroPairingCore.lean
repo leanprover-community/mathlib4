@@ -55,8 +55,9 @@ lemma pairing_zero_of_trivial_sum_diff_spaces
     have h_trichotomy : S.pairingIn ℤ i j < 0 ∨ S.pairingIn ℤ i j = 0 ∨ 0 < S.pairingIn ℤ i j := by
       exact lt_trichotomy (S.pairingIn ℤ i j) 0
 
-    cases' h_trichotomy with h_neg h_rest
-    · -- Case: S.pairingIn ℤ i j < 0 (negative pairing)
+    cases h_trichotomy with
+    | inl h_neg =>
+      -- Case: S.pairingIn ℤ i j < 0 (negative pairing)
       exfalso
       -- Use root_add_root_mem_of_pairingIn_neg to get contradiction
       have h_add_mem : S.root i + S.root j ∈ Set.range S.root := by
@@ -100,8 +101,10 @@ lemma pairing_zero_of_trivial_sum_diff_spaces
         exact h_final
       exact h_nontriv h_plus_bot
 
-    · cases' h_rest with h_zero h_pos
-      · -- Case: S.pairingIn ℤ i j = 0 (zero pairing)
+    | inr h_rest =>
+      cases h_rest with
+      | inl h_zero =>
+        -- Case: S.pairingIn ℤ i j = 0 (zero pairing)
         -- This is what we want to prove, but we need to convert to S.pairing
         -- S.pairingIn ℤ i j = 0 should imply S.pairing i j = 0
         -- Use S.algebraMap_pairingIn ℤ: algebraMap ℤ K (S.pairingIn ℤ i j) = S.pairing i j
@@ -110,7 +113,8 @@ lemma pairing_zero_of_trivial_sum_diff_spaces
         rw [h_zero, map_zero] at h_algebraMap
         exact h_algebraMap.symm
 
-      · -- Case: S.pairingIn ℤ i j > 0 (positive pairing)
+      | inr h_pos =>
+        -- Case: S.pairingIn ℤ i j > 0 (positive pairing)
         exfalso
         -- Use root_sub_root_mem_of_pairingIn_pos to get contradiction
         -- First, we need the underlying RootPairing from the RootSystem
