@@ -99,6 +99,12 @@ theorem sup_eq_closure_mul (H K : Submonoid M) : H ⊔ K = closure ((H : Set M) 
     ((closure_mul_le _ _).trans <| by rw [closure_eq, closure_eq])
 
 @[to_additive]
+theorem coe_sup {N : Type*} [CommMonoid N] (H K : Submonoid N) :
+    ↑(H ⊔ K) = (H : Set N) * (K : Set N) := by
+  ext x
+  simp [mem_sup, Set.mem_mul]
+
+@[to_additive]
 theorem pow_smul_mem_closure_smul {N : Type*} [CommMonoid N] [MulAction M N] [IsScalarTower M N N]
     (r : M) (s : Set N) {x : N} (hx : x ∈ closure s) : ∃ n : ℕ, r ^ n • x ∈ closure (r • s) := by
   induction hx using closure_induction with
