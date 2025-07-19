@@ -583,9 +583,10 @@ Now we will prove that a compactly generated modular atomistic lattice is a comp
 Most explicitly, every element is the complement of a supremum of indepedendent atoms.
 -/
 
-/-- In an atomic lattice, every element `b` has a complement of the form `sSup s`, where each
-element of `s` is an atom. See also `complementedLattice_of_sSup_atoms_eq_top`. -/
-theorem exists_sSupIndep_isCompl_sSup_atoms (b c : α) (hbc : b ≤ c)
+/-- In an atomic lattice, every element `b` has a complement of the form `sSup s` relative to a
+given element `c`, where each element of `s` is an atom.
+See also `complementedLattice_of_sSup_atoms_eq_top`. -/
+theorem exists_sSupIndep_disjoint_sSup_atoms (b c : α) (hbc : b ≤ c)
     (h : sSup {a ≤ c | IsAtom a} = c) :
     ∃ s : Set α, sSupIndep s ∧ Disjoint b (sSup s) ∧ b ⊔ sSup s = c ∧ ∀ ⦃a⦄, a ∈ s → IsAtom a := by
   -- porting note(https://github.com/leanprover-community/mathlib4/issues/5732):
@@ -638,12 +639,19 @@ theorem exists_sSupIndep_isCompl_sSup_atoms (b c : α) (hbc : b ≤ c)
     · exact s_atoms x hx
     · exact ha.symm
 
+/-- In an atomic lattice, every element `b` has a complement of the form `sSup s`, where each
+element of `s` is an atom. See also `complementedLattice_of_sSup_atoms_eq_top`. -/
+theorem exists_sSupIndep_isCompl_sSup_atoms (h : sSup { a : α | IsAtom a } = ⊤) (b : α) :
+    ∃ s : Set α, sSupIndep s ∧ IsCompl b (sSup s) ∧ ∀ ⦃a⦄, a ∈ s → IsAtom a := by
+  simpa [isCompl_iff, codisjoint_iff, and_assoc]
+    using exists_sSupIndep_disjoint_sSup_atoms b ⊤ le_top <| by simpa using h
+
 @[deprecated (since := "2024-11-24")]
 alias exists_setIndependent_isCompl_sSup_atoms := exists_sSupIndep_isCompl_sSup_atoms
 
 theorem exists_sSupIndep_of_sSup_atoms (b : α) (h : sSup {a ≤ b | IsAtom a} = b) :
     ∃ s : Set α, sSupIndep s ∧ sSup s = b ∧ ∀ ⦃a⦄, a ∈ s → IsAtom a :=
-  let ⟨s, s_ind, _, s_atoms⟩ := exists_sSupIndep_isCompl_sSup_atoms ⊥ b bot_le h
+  let ⟨s, s_ind, _, s_atoms⟩ := exists_sSupIndep_disjoint_sSup_atoms ⊥ b bot_le h
   ⟨s, s_ind, by simpa using s_atoms⟩
 
 theorem exists_sSupIndep_of_sSup_atoms_eq_top (h : sSup {a : α | IsAtom a} = ⊤) :
