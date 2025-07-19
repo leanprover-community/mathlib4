@@ -179,6 +179,16 @@ noncomputable def equivalence : C ≌ ShrinkHoms C where
 instance : (functor C).IsEquivalence := (equivalence C).isEquivalence_functor
 instance : (inverse C).IsEquivalence := (equivalence C).isEquivalence_inverse
 
+instance {T : Type u} [Unique T] : Unique (ShrinkHoms.{u} T) where
+  default := ShrinkHoms.toShrinkHoms (default : T)
+  uniq _ := congr_arg ShrinkHoms.fromShrinkHoms (Unique.uniq _ _)
+
+instance {T : Type u} [Category.{v} T] [IsDiscrete T] : IsDiscrete (ShrinkHoms.{u} T) where
+  subsingleton _ _ := {
+    allEq _ _ := Shrink.ext (by apply Subsingleton.allEq)
+    }
+  eq_of_hom f := IsDiscrete.eq_of_hom  (C := T) ((equivShrink _).symm f)
+
 end ShrinkHoms
 
 namespace Shrink
