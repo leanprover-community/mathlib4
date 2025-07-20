@@ -447,7 +447,8 @@ lemma setOf_riemmanianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
     ContMDiffOn.comp (I' := I) (t := (chartAt H x).source) contMDiffOn_extChartAt
       γ_smooth.contMDiffOn (fun t' ht' ↦ uc' <| t₁_mem ht')
   have : ‖γ' t₁ - γ' 0‖ₑ < r := by
-    rcases ht₁0.eq_or_lt with rfl|h't' ; simp [r_pos]
+    rcases ht₁0.eq_or_lt with rfl|h't'
+    · simp [r_pos]
     calc
       ‖γ' t₁ - γ' 0‖ₑ
     _ ≤ ∫⁻ t' in Icc 0 t₁, ‖derivWithin γ' (Icc 0 t₁) t'‖ₑ := by
@@ -469,7 +470,7 @@ lemma setOf_riemmanianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
           exact uniqueDiffOn_Icc h't' _ ht'
       have : mfderivWithin 𝓘(ℝ) 𝓘(ℝ, E) γ' (Icc 0 t₁) t' 1 =
           (mfderiv I 𝓘(ℝ, E) (extChartAt I x) (γ t'))
-          (mfderivWithin 𝓘(ℝ) I γ (Icc 0 t₁) t' 1) := by rw [this]; rfl
+          (mfderivWithin 𝓘(ℝ) I γ (Icc 0 t₁) t' 1) := congr($this 1)
       rw [this]
       apply (ContinuousLinearMap.le_opNorm_enorm _ _).trans
       gcongr
