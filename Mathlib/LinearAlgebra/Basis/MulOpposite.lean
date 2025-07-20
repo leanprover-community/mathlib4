@@ -12,9 +12,11 @@ This file defines the basis of an opposite space and shows
 that the opposite space is finite-dimensional and free when the original space is.
 -/
 
+variable {R H : Type*}
+
 namespace Basis
 
-variable {ι R H : Type*} [Semiring R] [AddCommMonoid H] [Module R H]
+variable {ι : Type*} [Semiring R] [AddCommMonoid H] [Module R H]
 
 /-- the mulOpposite of a basis: `b.mulOpposite i ↦ MulOpposite.op (b i)` -/
 noncomputable def mulOpposite (b : Basis ι R H) : Basis ι R Hᵐᵒᵖ :=
@@ -36,12 +38,19 @@ theorem mulOpposite_repr_apply' (b : Basis ι R H) (x : H) :
 
 end Basis
 
-instance FiniteDimensional.mulOpposite {R H : Type*} [DivisionRing R] [AddCommGroup H] [Module R H]
+instance FiniteDimensional.mulOpposite [DivisionRing R] [AddCommGroup H] [Module R H]
     [FiniteDimensional R H] : FiniteDimensional R Hᵐᵒᵖ := FiniteDimensional.of_finite_basis
   (Basis.ofVectorSpace R H).mulOpposite
   (Basis.ofVectorSpaceIndex R H).toFinite
 
-instance Module.Free.mulOpposite {R H : Type*} [Semiring R] [AddCommMonoid H] [Module R H]
+instance Module.Free.mulOpposite [Semiring R] [AddCommMonoid H] [Module R H]
     [Module.Free R H] : Module.Free R Hᵐᵒᵖ :=
   let ⟨b⟩ := exists_basis (R := R) (M := H)
   of_basis b.2.mulOpposite
+
+theorem MulOpposite.finrank [Semiring R] [AddCommMonoid H] [Module R H] :
+    Module.finrank R Hᵐᵒᵖ = Module.finrank R Hᵐᵒᵖ := rfl
+
+theorem MulOpposite.rank [Semiring R] [StrongRankCondition R] [AddCommMonoid H] [Module R H]
+    [Module.Free R H] : Module.rank R Hᵐᵒᵖ = Module.rank R H :=
+  LinearEquiv.nonempty_equiv_iff_rank_eq.mp ⟨(MulOpposite.opLinearEquiv R).symm⟩
