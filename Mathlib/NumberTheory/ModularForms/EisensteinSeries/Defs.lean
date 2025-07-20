@@ -87,18 +87,17 @@ end gamma_action
 section eisSummand
 
 /-- The function on `(Fin 2 → ℤ)` whose sum defines an Eisenstein series. -/
-def eisSummand (k : ℤ) (v : Fin 2 → ℤ) (z : ℍ) : ℂ := (v 0 * z.1 + v 1) ^ (-k)
+def eisSummand (k : ℤ) (v : Fin 2 → ℤ) (z : ℍ) : ℂ := (v 0 * z + v 1) ^ (-k)
 
 /-- How the `eisSummand` function changes under the Moebius action. -/
 theorem eisSummand_SL2_apply (k : ℤ) (i : (Fin 2 → ℤ)) (A : SL(2, ℤ)) (z : ℍ) :
-    eisSummand k i (A • z) = (z.denom A) ^ k * eisSummand k (i ᵥ* A) z := by
-  simp only [eisSummand, vecMul, vec2_dotProduct]
-  push_cast
+    eisSummand k i (A • z) = (denom A z) ^ k * eisSummand k (i ᵥ* A) z := by
+  simp only [eisSummand, vecMul, vec2_dotProduct, denom, UpperHalfPlane.specialLinearGroup_apply]
   have h (a b c d u v : ℂ) (hc : c * z + d ≠ 0) : (u * ((a * z + b) / (c * z + d)) + v) ^ (-k) =
       (c * z + d) ^ k * ((u * a + v * c) * z + (u * b + v * d)) ^ (-k) := by
     field_simp [hc]
     ring_nf
-  apply h (hc := z.denom_ne_zero A)
+  simpa using h (hc := denom_ne_zero A z) ..
 
 end eisSummand
 
@@ -110,10 +109,11 @@ def _root_.eisensteinSeries (k : ℤ) (z : ℍ) : ℂ := ∑' x : gammaSet N a, 
 lemma eisensteinSeries_slash_apply (k : ℤ) (γ : SL(2, ℤ)) :
     eisensteinSeries a k ∣[k] γ = eisensteinSeries (a ᵥ* γ) k := by
   ext1 z
-  simp_rw [SL_slash, slash_def, slash, ModularGroup.det_coe, ofReal_one, one_zpow, mul_one,
-    zpow_neg, mul_inv_eq_iff_eq_mul₀ (zpow_ne_zero _ <| z.denom_ne_zero _), mul_comm,
-    eisensteinSeries, ← ModularGroup.sl_moeb, eisSummand_SL2_apply, tsum_mul_left]
-  exact congr_arg (_ * ·) <| (gammaSetEquiv a γ).tsum_eq (eisSummand k · z)
+  simp_rw [SL_slash_apply, zpow_neg,
+    mul_inv_eq_iff_eq_mul₀ (zpow_ne_zero _ <| denom_ne_zero _ z),
+    eisensteinSeries, eisSummand_SL2_apply, tsum_mul_left, mul_comm (_ ^ k)]
+  congr 1
+  exact (gammaSetEquiv a γ).tsum_eq (eisSummand k · z)
 
 /-- The SlashInvariantForm defined by an Eisenstein series of weight `k : ℤ`, level `Γ(N)`,
   and congruence condition given by `a : Fin 2 → ZMod N`. -/

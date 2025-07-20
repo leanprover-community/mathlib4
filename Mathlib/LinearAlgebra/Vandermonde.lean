@@ -41,9 +41,9 @@ coding theory, and representations of uniform matroids over finite fields.
 ## Main results
 
 * `det_vandermonde`: `det (vandermonde v)` is the product of `v j - v i`, where
-   `(i, j)` ranges over the set of pairs with `i < j`.
+  `(i, j)` ranges over the set of pairs with `i < j`.
 * `det_projVandermonde`: `det (projVandermonde v w)` is the product of `v j * w i - v i * w j`,
-    taken over all pairs with `i < j`.
+  taken over all pairs with `i < j`.
 
 ## Implementation notes
 
@@ -173,8 +173,8 @@ private theorem det_projVandermonde_of_field (v w : Fin n → K) :
       projVandermonde (v ∘ succ) (w ∘ succ) i j := by
     ext i j
     simp only [projVandermonde_apply, val_zero, rev_zero, val_last, val_succ,
-      coe_castSucc, submatrix_apply, cons_succ, Function.comp_apply, rev_succ,
-      Pi.smul_apply, smul_eq_mul, W, r, rev_castSucc]
+      coe_castSucc, submatrix_apply, Function.comp_apply, rev_succ,
+      W, r, rev_castSucc]
     field_simp
     ring
   /- The first row of `W` is `[(w 0)^n, 0, ..., 0]` - take a cofactor expansion along this row,
@@ -197,13 +197,13 @@ theorem det_projVandermonde (v w : Fin n → R) : (projVandermonde v w).det =
   let u (b : Bool) (i : Fin n) := (algebraMap (MvPolynomial (Fin n × Bool) ℤ)
     (FractionRing (MvPolynomial (Fin n × Bool) ℤ))) (MvPolynomial.X ⟨i, b⟩)
   have hdet := det_projVandermonde_of_field (u true) (u false)
-  simp only [u, RingHom.mapMatrix_apply] at hdet
+  simp only [u] at hdet
   norm_cast at hdet
   rw [projVandermonde_map, ← RingHom.map_det, IsFractionRing.coe_inj] at hdet
   apply_fun MvPolynomial.eval₂Hom (Int.castRingHom R) (fun x ↦ (if x.2 then v else w) x.1) at hdet
   rw [RingHom.map_det] at hdet
   convert hdet <;>
-  simp [← Matrix.ext_iff, projVandermonde_apply, u]
+  simp [← Matrix.ext_iff, projVandermonde_apply]
 
 /-- The formula for the determinant of a Vandermonde matrix. -/
 theorem det_vandermonde (v : Fin n → R) :
@@ -259,7 +259,7 @@ theorem eval_matrixOfPolynomials_eq_vandermonde_mul_matrixOfPolynomials (v : Fin
     (Matrix.vandermonde v) * (Matrix.of (fun (i j : Fin n) => (p j).coeff i)) := by
   ext i j
   rw [Matrix.mul_apply, eval, Matrix.of_apply, eval₂]
-  simp only [eq_intCast, Int.cast_id, Matrix.vandermonde]
+  simp only [Matrix.vandermonde]
   have : (p j).support ⊆ range n := supp_subset_range <| Nat.lt_of_le_of_lt (h_deg j) <| Fin.prop j
   rw [sum_eq_of_subset _ (fun j => zero_mul ((v i) ^ j)) this, ← Fin.sum_univ_eq_sum_range]
   congr

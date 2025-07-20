@@ -100,7 +100,7 @@ instance inducedCategory : Linear.{w, v} R (InducedCategory C F) where
 
 end InducedCategory
 
-instance fullSubcategory (Z : C → Prop) : Linear.{w, v} R (FullSubcategory Z) where
+instance fullSubcategory (Z : ObjectProperty C) : Linear.{w, v} R Z.FullSubcategory where
   homModule X Y := @Linear.homModule R _ C _ _ _ X.obj Y.obj
   smul_comp _ _ _ _ _ _ := smul_comp _ _ _ _ _ _
   comp_smul _ _ _ _ _ _ := comp_smul _ _ _ _ _ _
@@ -124,12 +124,12 @@ def rightComp (X : C) {Y Z : C} (g : Y ⟶ Z) : (X ⟶ Y) →ₗ[R] X ⟶ Z wher
 instance {X Y : C} (f : X ⟶ Y) [Epi f] (r : R) [Invertible r] : Epi (r • f) :=
   ⟨fun g g' H => by
     rw [smul_comp, smul_comp, ← comp_smul, ← comp_smul, cancel_epi] at H
-    simpa [smul_smul] using congr_arg (fun f => ⅟ r • f) H⟩
+    simpa [smul_smul] using congr_arg (fun f => ⅟r • f) H⟩
 
 instance {X Y : C} (f : X ⟶ Y) [Mono f] (r : R) [Invertible r] : Mono (r • f) :=
   ⟨fun g g' H => by
     rw [comp_smul, comp_smul, ← smul_comp, ← smul_comp, cancel_mono] at H
-    simpa [smul_smul] using congr_arg (fun f => ⅟ r • f) H⟩
+    simpa [smul_smul] using congr_arg (fun f => ⅟r • f) H⟩
 
 /-- Given isomorphic objects `X ≅ Y, W ≅ Z` in a `k`-linear category, we have a `k`-linear
 isomorphism between `Hom(X, W)` and `Hom(Y, Z).` -/

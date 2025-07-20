@@ -37,6 +37,8 @@ noncomputable section
 
 open Filter Metric Set TopologicalSpace Topology
 
+variable {ι : Sort*} {n : ℕ}
+
 namespace NNReal
 
 variable {α : Type*}
@@ -48,6 +50,7 @@ lemma isOpen_Ico_zero {x : NNReal} : IsOpen (Set.Ico 0 x) :=
 
 open Filter Finset
 
+@[fun_prop]
 theorem _root_.continuous_real_toNNReal : Continuous Real.toNNReal :=
   (continuous_id.max continuous_const).subtype_mk _
 
@@ -232,4 +235,45 @@ theorem tendsto_of_antitone {f : ℕ → ℝ≥0} (h_ant : Antitone f) :
 
 end Monotone
 
+lemma iSup_pow_of_ne_zero (hn : n ≠ 0) (f : ι → ℝ≥0) : (⨆ i, f i) ^ n = ⨆ i, f i ^ n :=
+  (NNReal.powOrderIso n hn).map_ciSup' _
+
+lemma iSup_pow [Nonempty ι] (f : ι → ℝ≥0) (n : ℕ) : (⨆ i, f i) ^ n = ⨆ i, f i ^ n := by
+  by_cases hn : n = 0
+  · simp [hn]
+  · exact iSup_pow_of_ne_zero hn _
+
 end NNReal
+
+namespace ENNReal
+
+attribute [simp] ENNReal.top_pow
+
+/-- `x ↦ x ^ n` as an order isomorphism of `ℝ≥0∞`.
+
+See also `ENNReal.orderIsoRpow`. -/
+def powOrderIso (n : ℕ) (hn : n ≠ 0) : ℝ≥0∞ ≃o ℝ≥0∞ :=
+  (NNReal.powOrderIso n hn).withTopCongr.copy (· ^ n) _
+    (by cases n; (· cases hn rfl); · ext (_ | _) <;> rfl) rfl
+
+lemma iSup_pow_of_ne_zero (hn : n ≠ 0) (f : ι → ℝ≥0∞) : (⨆ i, f i) ^ n = ⨆ i, f i ^ n :=
+  (powOrderIso n hn).map_iSup _
+
+open NNReal ENNReal in
+lemma iSup_pow [Nonempty ι] (f : ι → ℝ≥0∞) (n : ℕ) : (⨆ i, f i) ^ n = ⨆ i, f i ^ n := by
+  by_cases hn : n = 0
+  · simp [hn]
+  · exact iSup_pow_of_ne_zero hn _
+
+end ENNReal
+
+open NNReal in
+lemma Real.iSup_pow [Nonempty ι] {f : ι → ℝ} (hf : ∀ i, 0 ≤ f i) (n : ℕ) :
+    (⨆ i, f i) ^ n = ⨆ i, f i ^ n := by
+  lift f to ι → ℝ≥0 using hf; dsimp; exact mod_cast NNReal.iSup_pow f n
+
+lemma Real.iSup_pow_of_ne_zero {f : ι → ℝ} (hf : ∀ i, 0 ≤ f i) (hn : n ≠ 0) :
+    (⨆ i, f i) ^ n = ⨆ i, f i ^ n := by
+  cases isEmpty_or_nonempty ι
+  · simp [hn]
+  · exact iSup_pow hf _

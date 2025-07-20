@@ -26,7 +26,8 @@ which matches the action of `Set.mulActionSet`.
 ## Implementation notes
 
 Most of the lemmas in this file are direct copies of lemmas from
-`Mathlib.Algebra.Group.Pointwise.Set.Basic` and `Mathlib.Algebra.Group.Action.Pointwise.Set.Basic`.
+`Mathlib/Algebra/Group/Pointwise/Set/Basic.lean` and
+`Mathlib/Algebra/Group/Action/Pointwise/Set/Basic.lean`.
 While the statements of these lemmas are defeq, we repeat them here due to them not being
 syntactically equal. Before adding new lemmas here, consider if they would also apply to the action
 on `Set`s.
@@ -67,10 +68,7 @@ theorem mul_subset_closure (hs : s ⊆ u) (ht : t ⊆ u) : s * t ⊆ Submonoid.c
 
 @[to_additive]
 theorem coe_mul_self_eq (s : Submonoid M) : (s : Set M) * s = s := by
-  ext x
-  refine ⟨?_, fun h => ⟨x, h, 1, s.one_mem, mul_one x⟩⟩
-  rintro ⟨a, ha, b, hb, rfl⟩
-  exact s.mul_mem ha hb
+  simp
 
 @[to_additive]
 theorem closure_mul_le (S T : Set M) : closure (S * T) ≤ closure S ⊔ closure T :=
@@ -105,7 +103,7 @@ theorem pow_smul_mem_closure_smul {N : Type*} [CommMonoid N] [MulAction M N] [Is
     (r : M) (s : Set N) {x : N} (hx : x ∈ closure s) : ∃ n : ℕ, r ^ n • x ∈ closure (r • s) := by
   induction hx using closure_induction with
   | mem x hx => exact ⟨1, subset_closure ⟨_, hx, by rw [pow_one]⟩⟩
-  | one => exact ⟨0, by simpa using one_mem _⟩
+  | one => exact ⟨0, by simp⟩
   | mul x y _ _ hx hy =>
     obtain ⟨⟨nx, hx⟩, ⟨ny, hy⟩⟩ := And.intro hx hy
     use ny + nx

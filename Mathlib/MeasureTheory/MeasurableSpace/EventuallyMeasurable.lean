@@ -21,13 +21,13 @@ TODO: Implement the latter.
 
 ## Main definitions
 
-* `EventuallyMeasurableSpace`: A `MeasurableSpace` on a type `α` consisting of sets which are
+* `eventuallyMeasurableSpace`: A `MeasurableSpace` on a type `α` consisting of sets which are
   `Filter.EventuallyEq` to a measurable set with respect to a given `CountableInterFilter` on `α`
   and `MeasurableSpace` on `α`.
 * `EventuallyMeasurableSet`: A `Prop` for sets which are measurable with respect to some
-  `EventuallyMeasurableSpace`.
+  `eventuallyMeasurableSpace`.
 * `EventuallyMeasurable`: A `Prop` for functions which are measurable with respect to some
-  `EventuallyMeasurableSpace` on the domain.
+  `eventuallyMeasurableSpace` on the domain.
 
 -/
 
@@ -37,7 +37,7 @@ variable {α : Type*} (m : MeasurableSpace α) {s t : Set α}
 
 /-- The `MeasurableSpace` of sets which are measurable with respect to a given σ-algebra `m`
 on `α`, modulo a given σ-filter `l` on `α`. -/
-def EventuallyMeasurableSpace (l : Filter α) [CountableInterFilter l] : MeasurableSpace α where
+def eventuallyMeasurableSpace (l : Filter α) [CountableInterFilter l] : MeasurableSpace α where
   MeasurableSet' s := ∃ t, MeasurableSet t ∧ s =ᶠ[l] t
   measurableSet_empty := ⟨∅, MeasurableSet.empty, EventuallyEq.refl _ _ ⟩
   measurableSet_compl := fun _ ⟨t, ht, hts⟩ => ⟨tᶜ, ht.compl, hts.compl⟩
@@ -45,11 +45,13 @@ def EventuallyMeasurableSpace (l : Filter α) [CountableInterFilter l] : Measura
     choose t ht hts using hs
     exact ⟨⋃ i, t i, MeasurableSet.iUnion ht, EventuallyEq.countable_iUnion hts⟩
 
+@[deprecated (since := "2025-06-21")] alias EventuallyMeasurableSpace := eventuallyMeasurableSpace
+
 /-- We say a set `s` is an `EventuallyMeasurableSet` with respect to a given
 σ-algebra `m` and σ-filter `l` if it differs from a set in `m` by a set in
 the dual ideal of `l`. -/
-def EventuallyMeasurableSet (l : Filter α) [CountableInterFilter l]  (s : Set α) : Prop :=
-  @MeasurableSet _ (EventuallyMeasurableSpace m l) s
+def EventuallyMeasurableSet (l : Filter α) [CountableInterFilter l] (s : Set α) : Prop :=
+  @MeasurableSet _ (eventuallyMeasurableSpace m l) s
 
 variable {l : Filter α} [CountableInterFilter l]
 variable {m}
@@ -58,8 +60,11 @@ theorem MeasurableSet.eventuallyMeasurableSet (hs : MeasurableSet s) :
     EventuallyMeasurableSet m l s :=
   ⟨s, hs, EventuallyEq.refl _ _⟩
 
-theorem EventuallyMeasurableSpace.measurable_le : m ≤ EventuallyMeasurableSpace m l :=
+theorem le_eventuallyMeasurableSpace : m ≤ eventuallyMeasurableSpace m l :=
   fun _ hs => hs.eventuallyMeasurableSet
+
+@[deprecated (since := "2025-06-21")] alias EventuallyMeasurableSpace.measurable_le :=
+  le_eventuallyMeasurableSpace
 
 theorem eventuallyMeasurableSet_of_mem_filter (hs : s ∈ l) : EventuallyMeasurableSet m l s :=
   ⟨univ, MeasurableSet.univ, eventuallyEq_univ.mpr hs⟩
@@ -73,13 +78,12 @@ theorem EventuallyMeasurableSet.congr
 
 section instances
 
-namespace EventuallyMeasurableSpace
-
-instance measurableSingleton [MeasurableSingletonClass α] :
-    @MeasurableSingletonClass α (EventuallyMeasurableSpace m l) :=
+instance eventuallyMeasurableSingleton [MeasurableSingletonClass α] :
+    @MeasurableSingletonClass α (eventuallyMeasurableSpace m l) :=
   @MeasurableSingletonClass.mk _ (_) <| fun x => (MeasurableSet.singleton x).eventuallyMeasurableSet
 
-end EventuallyMeasurableSpace
+@[deprecated (since := "2025-06-21")] alias EventuallyMeasurableSpace.measurableSingleton :=
+  eventuallyMeasurableSingleton
 
 end instances
 
@@ -95,12 +99,12 @@ variable (m l) {β γ : Type*} [MeasurableSpace β] [MeasurableSpace γ]
 Warning: This is not always the same as being equal to some `m`-measurable function modulo `l`.
 In general it is weaker. See `Measurable.eventuallyMeasurable_of_eventuallyEq`.
 *TODO*: Add lemmas about when these are equivalent. -/
-def EventuallyMeasurable (f : α → β) : Prop := @Measurable _ _ (EventuallyMeasurableSpace m l) _ f
+def EventuallyMeasurable (f : α → β) : Prop := @Measurable _ _ (eventuallyMeasurableSpace m l) _ f
 
 variable {m l} {f g : α → β} {h : β → γ}
 
 theorem Measurable.eventuallyMeasurable (hf : Measurable f) : EventuallyMeasurable m l f :=
-  hf.le EventuallyMeasurableSpace.measurable_le
+  hf.le le_eventuallyMeasurableSpace
 
 theorem Measurable.comp_eventuallyMeasurable (hh : Measurable h) (hf : EventuallyMeasurable m l f) :
     EventuallyMeasurable m l (h ∘ f) :=

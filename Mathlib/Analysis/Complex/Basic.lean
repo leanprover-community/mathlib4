@@ -118,7 +118,7 @@ instance : CompleteSpace ℂ :=
 instance instT2Space : T2Space ℂ := TopologicalSpace.t2Space_of_metrizableSpace
 
 /-- The natural `ContinuousLinearEquiv` from `ℂ` to `ℝ × ℝ`. -/
-@[simps! (config := { simpRhs := true }) apply symm_apply_re symm_apply_im]
+@[simps! +simpRhs apply symm_apply_re symm_apply_im]
 def equivRealProdCLM : ℂ ≃L[ℝ] ℝ × ℝ :=
   equivRealProdLm.toContinuousLinearEquivOfBounds 1 (√2) equivRealProd_apply_le' fun p =>
     norm_le_sqrt_two_mul_max (equivRealProd.symm p)
@@ -262,9 +262,18 @@ theorem continuous_ofReal : Continuous ((↑) : ℝ → ℂ) :=
 theorem isUniformEmbedding_ofReal : IsUniformEmbedding ((↑) : ℝ → ℂ) :=
   ofRealLI.isometry.isUniformEmbedding
 
+lemma _root_.RCLike.isUniformEmbedding_ofReal {𝕜 : Type*} [RCLike 𝕜] :
+    IsUniformEmbedding ((↑) : ℝ → 𝕜) :=
+  RCLike.ofRealLI.isometry.isUniformEmbedding
+
 theorem _root_.Filter.tendsto_ofReal_iff {α : Type*} {l : Filter α} {f : α → ℝ} {x : ℝ} :
     Tendsto (fun x ↦ (f x : ℂ)) l (𝓝 (x : ℂ)) ↔ Tendsto f l (𝓝 x) :=
   isUniformEmbedding_ofReal.isClosedEmbedding.tendsto_nhds_iff.symm
+
+lemma _root_.Filter.tendsto_ofReal_iff' {α 𝕜 : Type*} [RCLike 𝕜]
+    {l : Filter α} {f : α → ℝ} {x : ℝ} :
+    Tendsto (fun x ↦ (f x : 𝕜)) l (𝓝 (x : 𝕜)) ↔ Tendsto f l (𝓝 x) :=
+  RCLike.isUniformEmbedding_ofReal.isClosedEmbedding.tendsto_nhds_iff.symm
 
 lemma _root_.Filter.Tendsto.ofReal {α : Type*} {l : Filter α} {f : α → ℝ} {x : ℝ}
     (hf : Tendsto f l (𝓝 x)) : Tendsto (fun x ↦ (f x : ℂ)) l (𝓝 (x : ℂ)) :=
@@ -312,6 +321,8 @@ theorem _root_.RCLike.re_eq_complex_re : ⇑(RCLike.re : ℂ →+ ℝ) = Complex
 theorem _root_.RCLike.im_eq_complex_im : ⇑(RCLike.im : ℂ →+ ℝ) = Complex.im :=
   rfl
 
+theorem _root_.RCLike.ofReal_eq_complex_ofReal : (RCLike.ofReal : ℝ → ℂ) = Complex.ofReal := rfl
+
 -- TODO: Replace `mul_conj` and `conj_mul` once `norm` has replaced `abs`
 lemma mul_conj' (z : ℂ) : z * conj z = ‖z‖ ^ 2 := RCLike.mul_conj z
 lemma conj_mul' (z : ℂ) : conj z * z = ‖z‖ ^ 2 := RCLike.conj_mul z
@@ -323,6 +334,20 @@ lemma exists_norm_eq_mul_self (z : ℂ) : ∃ c, ‖c‖ = 1 ∧ ‖z‖ = c * z
 
 lemma exists_norm_mul_eq_self (z : ℂ) : ∃ c, ‖c‖ = 1 ∧ c * ‖z‖ = z :=
   RCLike.exists_norm_mul_eq_self _
+
+lemma im_eq_zero_iff_isSelfAdjoint (x : ℂ) : Complex.im x = 0 ↔ IsSelfAdjoint x := by
+  rw [← RCLike.im_eq_complex_im]
+  exact RCLike.im_eq_zero_iff_isSelfAdjoint
+
+lemma re_eq_ofReal_of_isSelfAdjoint {x : ℂ} {y : ℝ} (hx : IsSelfAdjoint x) :
+    Complex.re x = y ↔ x = y := by
+  rw [← RCLike.re_eq_complex_re]
+  exact RCLike.re_eq_ofReal_of_isSelfAdjoint hx
+
+lemma ofReal_eq_re_of_isSelfAdjoint {x : ℂ} {y : ℝ} (hx : IsSelfAdjoint x) :
+    y = Complex.re x ↔ y = x := by
+  rw [← RCLike.re_eq_complex_re]
+  exact RCLike.ofReal_eq_re_of_isSelfAdjoint hx
 
 /-- The natural isomorphism between `𝕜` satisfying `RCLike 𝕜` and `ℂ` when
 `RCLike.im RCLike.I = 1`. -/
@@ -381,6 +406,19 @@ lemma orderClosedTopology : OrderClosedTopology ℂ where
     refine IsClosed.inter (isClosed_le ?_ ?_) (isClosed_eq ?_ ?_) <;> continuity
 
 scoped[ComplexOrder] attribute [instance] Complex.orderClosedTopology
+
+theorem norm_of_nonneg' {x : ℂ} (hx : 0 ≤ x) : ‖x‖ = x := by
+  rw [← RCLike.ofReal_eq_complex_ofReal]
+  exact RCLike.norm_of_nonneg' hx
+
+lemma re_nonneg_iff_nonneg {x : ℂ} (hx : IsSelfAdjoint x) : 0 ≤ re x ↔ 0 ≤ x := by
+  rw [← RCLike.re_eq_complex_re]
+  exact RCLike.re_nonneg_of_nonneg hx
+
+@[gcongr]
+lemma re_le_re {x y : ℂ} (h : x ≤ y) : re x ≤ re y := by
+  rw [RCLike.le_iff_re_im] at h
+  exact h.1
 
 end ComplexOrder
 
@@ -563,7 +601,9 @@ lemma neg_ofReal_mem_slitPlane {x : ℝ} : -↑x ∈ slitPlane ↔ x < 0 := by
 @[simp] lemma one_mem_slitPlane : 1 ∈ slitPlane := ofReal_mem_slitPlane.2 one_pos
 
 @[simp]
-lemma zero_not_mem_slitPlane : 0 ∉ slitPlane := mt ofReal_mem_slitPlane.1 (lt_irrefl _)
+lemma zero_notMem_slitPlane : 0 ∉ slitPlane := mt ofReal_mem_slitPlane.1 (lt_irrefl _)
+
+@[deprecated (since := "2025-05-23")] alias zero_not_mem_slitPlane := zero_notMem_slitPlane
 
 @[simp]
 lemma natCast_mem_slitPlane {n : ℕ} : ↑n ∈ slitPlane ↔ n ≠ 0 := by
@@ -580,7 +620,7 @@ protected lemma compl_Iic_zero : (Set.Iic 0)ᶜ = slitPlane := Set.ext fun _ ↦
   mem_slitPlane_iff_not_le_zero.symm
 
 lemma slitPlane_ne_zero {z : ℂ} (hz : z ∈ slitPlane) : z ≠ 0 :=
-  ne_of_mem_of_not_mem hz zero_not_mem_slitPlane
+  ne_of_mem_of_not_mem hz zero_notMem_slitPlane
 
 /-- The slit plane includes the open unit ball of radius `1` around `1`. -/
 lemma ball_one_subset_slitPlane : Metric.ball 1 1 ⊆ slitPlane := fun z hz ↦ .inl <|

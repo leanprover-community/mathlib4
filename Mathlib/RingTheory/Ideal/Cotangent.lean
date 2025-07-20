@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Module.Torsion
 import Mathlib.Algebra.Ring.Idempotent
+import Mathlib.LinearAlgebra.Dimension.Finite
 import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.RingTheory.Filtration
@@ -57,7 +58,7 @@ instance [IsNoetherian R I] : IsNoetherian R I.Cotangent :=
 @[simps! -isSimp apply]
 def toCotangent : I →ₗ[R] I.Cotangent := Submodule.mkQ _
 
-theorem map_toCotangent_ker : I.toCotangent.ker.map I.subtype = I ^ 2 := by
+theorem map_toCotangent_ker : (LinearMap.ker I.toCotangent).map I.subtype = I ^ 2 := by
   rw [Ideal.toCotangent, Submodule.ker_mkQ, pow_two, Submodule.map_smul'' I ⊤ (Submodule.subtype I),
     Algebra.id.smul_eq_mul, Submodule.map_subtype_top]
 
@@ -124,7 +125,7 @@ theorem cotangentIdeal_square (I : Ideal R) : I.cotangentIdeal ^ 2 = ⊥ := by
 
 lemma mk_mem_cotangentIdeal {I : Ideal R} {x : R} :
     Quotient.mk (I ^ 2) x ∈ I.cotangentIdeal ↔ x ∈ I := by
-  refine ⟨fun ⟨y, hy, e⟩ ↦ ?_,  fun h ↦ ⟨x, h, rfl⟩⟩
+  refine ⟨fun ⟨y, hy, e⟩ ↦ ?_, fun h ↦ ⟨x, h, rfl⟩⟩
   simpa using sub_mem hy (Ideal.pow_le_self two_ne_zero
     ((Ideal.Quotient.mk_eq_mk_iff_sub_mem _ _).mp e))
 
@@ -185,7 +186,7 @@ def _root_.AlgHom.kerSquareLift (f : A →ₐ[R] B) : A ⧸ RingHom.ker f.toRing
     exact f.map_algebraMap r
 
 theorem _root_.AlgHom.ker_kerSquareLift (f : A →ₐ[R] B) :
-    RingHom.ker f.kerSquareLift.toRingHom = f.toRingHom.ker.cotangentIdeal := by
+    RingHom.ker f.kerSquareLift.toRingHom = (RingHom.ker f.toRingHom).cotangentIdeal := by
   apply le_antisymm
   · intro x hx; obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x; exact ⟨x, hx, rfl⟩
   · rintro _ ⟨x, hx, rfl⟩; exact hx

@@ -11,7 +11,7 @@ import Mathlib.Algebra.Algebra.Subalgebra.Basic
 
 In this file we define `Algebra.adjoin` and the complete lattice structure on subalgebras.
 
-More lemmas about `adjoin` can be found in `Mathlib.RingTheory.Adjoin.Basic`.
+More lemmas about `adjoin` can be found in `Mathlib/RingTheory/Adjoin/Basic.lean`.
 -/
 
 assert_not_exists Polynomial
@@ -329,7 +329,7 @@ instance : Unique (Subalgebra R R) :=
       intro S
       refine le_antisymm ?_ bot_le
       intro _ _
-      simp only [Set.mem_range, mem_bot, id.map_eq_self, exists_apply_eq_apply, default] }
+      simp only [Set.mem_range, mem_bot, algebraMap_self_apply, exists_apply_eq_apply, default] }
 
 section Center
 
@@ -419,9 +419,12 @@ variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
 variable [Algebra R S] [Algebra R A] [Algebra S A] [Algebra R B] [IsScalarTower R S A]
 variable {s t : Set A}
 
-@[aesop safe 20 apply (rule_sets := [SetLike])]
+@[simp, aesop safe 20 (rule_sets := [SetLike])]
 theorem subset_adjoin : s ⊆ adjoin R s :=
   Algebra.gc.le_u_l s
+
+@[aesop 80% (rule_sets := [SetLike])]
+theorem mem_adjoin_of_mem {s : Set A} {x : A} (hx : x ∈ s) : x ∈ adjoin R s := subset_adjoin hx
 
 theorem adjoin_le {S : Subalgebra R A} (H : s ⊆ S) : adjoin R s ≤ S :=
   Algebra.gc.l_le H
@@ -435,6 +438,7 @@ theorem adjoin_eq_sInf : adjoin R s = sInf { p : Subalgebra R A | s ⊆ p } :=
 theorem adjoin_le_iff {S : Subalgebra R A} : adjoin R s ≤ S ↔ s ⊆ S :=
   Algebra.gc _ _
 
+@[gcongr]
 theorem adjoin_mono (H : s ⊆ t) : adjoin R s ≤ adjoin R t :=
   Algebra.gc.monotone_l H
 
@@ -497,18 +501,6 @@ theorem adjoin_induction₂ {s : Set A} {p : (x y : A) → x ∈ adjoin R s → 
     | add _ _ _ _ h₁ h₂ => exact add_left _ _ _ _ _ _ h₁ h₂
   | mul _ _ _ _ h₁ h₂ => exact mul_right _ _ _ _ _ _ h₁ h₂
   | add _ _ _ _ h₁ h₂ => exact add_right _ _ _ _ _ _ h₁ h₂
-
-/-- The difference with `Algebra.adjoin_induction` is that this acts on the subtype. -/
-@[elab_as_elim, deprecated adjoin_induction (since := "2024-10-11")]
-theorem adjoin_induction' {p : adjoin R s → Prop} (mem : ∀ (x) (h : x ∈ s), p ⟨x, subset_adjoin h⟩)
-    (algebraMap : ∀ r, p (algebraMap R _ r)) (add : ∀ x y, p x → p y → p (x + y))
-    (mul : ∀ x y, p x → p y → p (x * y)) (x : adjoin R s) : p x :=
-  Subtype.recOn x fun x hx => by
-    induction hx using adjoin_induction with
-    | mem _ h => exact mem _ h
-    | algebraMap _ => exact algebraMap _
-    | mul _ _ _ _ h₁ h₂ => exact mul _ _ h₁ h₂
-    | add _ _ _ _ h₁ h₂ => exact add _ _ h₁ h₂
 
 @[simp]
 theorem adjoin_adjoin_coe_preimage {s : Set A} : adjoin R (((↑) : adjoin R s → A) ⁻¹' s) = ⊤ := by
@@ -759,7 +751,7 @@ theorem ext_of_adjoin_eq_top {s : Set A} (h : adjoin R s = ⊤) ⦃φ₁ φ₂ :
   ext fun _x => adjoin_le_equalizer φ₁ φ₂ hs <| h.symm ▸ trivial
 
 /-- Two algebra morphisms are equal on `Algebra.span s`iff they are equal on s -/
-theorem eqOn_adjoin_iff {φ ψ : A →ₐ[R] B} {s : Set A}  :
+theorem eqOn_adjoin_iff {φ ψ : A →ₐ[R] B} {s : Set A} :
     Set.EqOn φ ψ (adjoin R s) ↔ Set.EqOn φ ψ s := by
   have (S : Set A) : S ≤ equalizer φ ψ ↔ Set.EqOn φ ψ S := Iff.rfl
   simp only [← this, Set.le_eq_subset, SetLike.coe_subset_coe, adjoin_le_iff]

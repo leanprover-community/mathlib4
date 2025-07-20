@@ -63,6 +63,18 @@ instance Pi.seminormedRing {R : ι → Type*} [Fintype ι] [∀ i, SeminormedRin
     SeminormedRing (∀ i, R i) :=
   { Pi.nonUnitalSeminormedRing, Pi.ring with }
 
+lemma RingHom.isometry {𝕜₁ 𝕜₂ : Type*} [SeminormedRing 𝕜₁] [SeminormedRing 𝕜₂]
+    (σ : 𝕜₁ →+* 𝕜₂) [RingHomIsometric σ] :
+    Isometry σ := fun x y ↦ by
+  simp only [edist_eq_enorm_sub, enorm_eq_iff_norm_eq, ← map_sub, RingHomIsometric.is_iso]
+
+/-- If `σ` and `σ'` are mutually inverse, then one is `RingHomIsometric` if the other is. Not an
+instance, as it would cause loops. -/
+lemma RingHomIsometric.inv {𝕜₁ 𝕜₂ : Type*} [SeminormedRing 𝕜₁] [SeminormedRing 𝕜₂]
+    (σ : 𝕜₁ →+* 𝕜₂) {σ' : 𝕜₂ →+* 𝕜₁} [RingHomInvPair σ σ'] [RingHomIsometric σ] :
+    RingHomIsometric σ' :=
+  ⟨fun {x} ↦ by rw [← RingHomIsometric.is_iso (σ := σ), RingHomInvPair.comp_apply_eq₂]⟩
+
 end SeminormedRing
 
 section NonUnitalNormedRing
@@ -198,7 +210,7 @@ namespace NNReal
 lemma lipschitzWith_sub : LipschitzWith 2 (fun (p : ℝ≥0 × ℝ≥0) ↦ p.1 - p.2) := by
   rw [← isometry_subtype_coe.lipschitzWith_iff]
   have : Isometry (Prod.map ((↑) : ℝ≥0 → ℝ) ((↑) : ℝ≥0 → ℝ)) :=
-    isometry_subtype_coe.prod_map isometry_subtype_coe
+    isometry_subtype_coe.prodMap isometry_subtype_coe
   convert (((LipschitzWith.prod_fst.comp this.lipschitz).sub
     (LipschitzWith.prod_snd.comp this.lipschitz)).max_const 0)
   norm_num

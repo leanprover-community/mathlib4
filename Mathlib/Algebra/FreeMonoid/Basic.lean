@@ -126,15 +126,11 @@ theorem ofList_append (xs ys : List α) : ofList (xs ++ ys) = ofList xs * ofList
 
 @[to_additive (attr := simp)]
 theorem toList_prod (xs : List (FreeMonoid α)) : toList xs.prod = (xs.map toList).flatten := by
-  induction xs <;> simp [*, List.flatten]
+  induction xs <;> simp [*]
 
 @[to_additive (attr := simp)]
 theorem ofList_flatten (xs : List (List α)) : ofList xs.flatten = (xs.map ofList).prod :=
   toList.injective <| by simp
-
-@[deprecated (since := "2024-10-15")] alias ofList_join := ofList_flatten
-@[deprecated (since := "2024-10-15")]
-alias _root_.FreeAddMonoid.ofList_join := _root_.FreeAddMonoid.ofList_flatten
 
 /-- Embeds an element of `α` into `FreeMonoid α` as a singleton list. -/
 @[to_additive "Embeds an element of `α` into `FreeAddMonoid α` as a singleton list."]
@@ -174,7 +170,7 @@ theorem length_eq_zero : length a = 0 ↔ a = 1 := List.length_eq_zero_iff
 @[to_additive (attr := simp)]
 theorem length_of (m : α) : length (of m) = 1 := rfl
 
-@[to_additive existing]
+@[to_additive FreeAddMonoid.length_eq_one]
 theorem length_eq_one : length a = 1 ↔ ∃ m, a = FreeMonoid.of m :=
   List.length_eq_one_iff
 
@@ -212,7 +208,12 @@ def mem (a : FreeMonoid α) (m : α) := m ∈ toList a
 instance : Membership α (FreeMonoid α) := ⟨mem⟩
 
 @[to_additive]
-theorem not_mem_one : ¬ m ∈ (1 : FreeMonoid α) := List.not_mem_nil
+theorem notMem_one : m ∉ (1 : FreeMonoid α) := List.not_mem_nil
+
+@[deprecated (since := "2025-05-23")]
+alias _root_.FreeAddMonoid.not_mem_zero := FreeAddMonoid.notMem_zero
+
+@[to_additive existing, deprecated (since := "2025-05-23")] alias not_mem_one := notMem_one
 
 @[to_additive (attr := simp)]
 theorem mem_of {n : α} : m ∈ of n ↔ m = n := List.mem_singleton
@@ -306,8 +307,6 @@ def lift : (α → M) ≃ (FreeMonoid α →* M) where
     map_one' := rfl
     map_mul' := fun _ _ ↦ by simp only [prodAux_eq, toList_mul, List.map_append, List.prod_append] }
   invFun f x := f (of x)
-  left_inv _ := rfl
-  right_inv _ := hom_eq fun _ ↦ rfl
 
 @[to_additive (attr := simp)]
 theorem lift_ofList (f : α → M) (l : List α) : lift f (ofList l) = (l.map f).prod :=
@@ -472,7 +471,7 @@ variable {α β : Type*}
 /-- free monoids over isomorphic types are isomorphic -/
 @[to_additive "if two types are isomorphic, the additive free monoids over those types are
 isomorphic"]
-def freeMonoidCongr (e : α ≃ β) :  FreeMonoid α ≃* FreeMonoid β where
+def freeMonoidCongr (e : α ≃ β) : FreeMonoid α ≃* FreeMonoid β where
   toFun := FreeMonoid.map ⇑e
   invFun := FreeMonoid.map ⇑e.symm
   left_inv _ := map_symm_apply_map_eq e

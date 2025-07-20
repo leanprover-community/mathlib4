@@ -98,7 +98,7 @@ General algebra:
 
   Algebras over a ring:
     associative algebra over a commutative ring: 'Algebra'
-    the category of algebras over a ring: 'AlgebraCat'
+    the category of algebras over a ring: 'AlgCat'
     free algebra of a commutative ring: 'FreeAlgebra'
     tensor product of algebras: 'Algebra.TensorProduct.instAlgebra'
     tensor algebra of a commutative ring: 'TensorAlgebra'
@@ -145,6 +145,7 @@ General algebra:
   Algebraic Number Theory:
     Finiteness of the class number: 'NumberField.RingOfIntegers.instFintypeClassGroup'
     Dirichlet unit theorem: 'NumberField.Units.exist_unique_eq_mul_prod'
+    Dirichlet class number formula: 'NumberField.tendsto_sub_one_mul_dedekindZeta_nhdsGT'
 
   Representation theory:
     representation : 'Representation'
@@ -265,7 +266,7 @@ Analysis:
 
   Normed vector spaces/Banach spaces:
     normed vector space over a normed field: 'NormedSpace'
-    topology on a normed vector space: 'NormedSpace.isBoundedSMul'
+    topology on a normed vector space: 'NormSMulClass.toIsBoundedSMul'
     equivalence of norms in finite dimension: 'LinearEquiv.toContinuousLinearEquiv'
     finite dimensional normed spaces over complete normed fields are complete: 'Submodule.complete_of_finiteDimensional'
     Heine-Borel theorem (finite dimensional normed spaces are proper): 'FiniteDimensional.proper'
@@ -283,8 +284,8 @@ Analysis:
     Cauchy-Schwarz inequality: 'inner_mul_inner_self_le'
     adjoint operator: 'LinearPMap.adjoint'
     self-adjoint operator: 'IsSelfAdjoint'
-    orthogonal projection: 'orthogonalProjection'
-    reflection: 'reflection'
+    orthogonal projection: 'Submodule.orthogonalProjection'
+    reflection: 'Submodule.reflection'
     orthogonal complement: 'Submodule.orthogonal'
     existence of Hilbert basis: 'exists_hilbertBasis'
     eigenvalues from Rayleigh quotient: 'IsSelfAdjoint.hasEigenvector_of_isLocalExtrOn'
@@ -561,6 +562,7 @@ Logic and computation:
     halting problem: 'ComputablePred.halting_problem'
     Rice theorem: 'ComputablePred.rice'
     combinatorial game: 'SetTheory.Game'
+    Turing degrees: 'TuringDegree'
   Complexity:
     polynomial-time computation: 'Turing.TM2ComputableInPolyTime'
   Formal languages:

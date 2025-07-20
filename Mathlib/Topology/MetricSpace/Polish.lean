@@ -95,9 +95,6 @@ theorem _root_.Topology.IsClosedEmbedding.polishSpace [TopologicalSpace α] [Top
     exact hf.isClosed_range.isComplete
   infer_instance
 
-@[deprecated (since := "2024-10-20")]
-alias _root_.ClosedEmbedding.polishSpace := IsClosedEmbedding.polishSpace
-
 /-- Pulling back a Polish topology under an equiv gives again a Polish topology. -/
 theorem _root_.Equiv.polishSpace_induced [t : TopologicalSpace β] [PolishSpace β] (f : α ≃ β) :
     @PolishSpace α (t.induced f) :=
@@ -241,7 +238,7 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (CompleteCopy s) :
       _ < (1 / 2) ^ 0 := hu 0 0 n le_rfl n.zero_le
   have Cpos : 0 < C := lt_of_le_of_lt (div_nonneg zero_le_one infDist_nonneg) (hC 0)
   have Hmem : ∀ {y}, y ∈ s ↔ 0 < infDist y sᶜ := fun {y} ↦ by
-    rw [← s.isOpen.isClosed_compl.not_mem_iff_infDist_pos ⟨x, xs⟩]; exact not_not.symm
+    rw [← s.isOpen.isClosed_compl.notMem_iff_infDist_pos ⟨x, xs⟩]; exact not_not.symm
   have I : ∀ n, 1 / C ≤ infDist (u n).1 sᶜ := fun n ↦ by
     have : 0 < infDist (u n).1 sᶜ := Hmem.1 (u n).2
     rw [div_le_iff₀' Cpos]

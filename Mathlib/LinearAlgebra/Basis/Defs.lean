@@ -58,7 +58,7 @@ basis, bases
 
 assert_not_exists LinearMap.pi LinearIndependent Cardinal
 -- TODO: assert_not_exists Submodule
--- (should be possible after splitting `Mathlib.LinearAlgebra.Finsupp.LinearCombination`)
+-- (should be possible after splitting `Mathlib/LinearAlgebra/Finsupp/LinearCombination.lean`)
 
 noncomputable section
 
@@ -357,7 +357,7 @@ theorem repr_apply_eq (f : M → ι → R) (hadd : ∀ x y, f (x + y) = f x + f 
       map_smul' _ _ := by simp [hsmul, Pi.smul_apply] }
   have : Finsupp.lapply i ∘ₗ ↑b.repr = f_i := by
     refine b.ext fun j => ?_
-    show b.repr (b j) i = f (b j) i
+    change b.repr (b j) i = f (b j) i
     rw [b.repr_self, f_eq]
   calc
     b.repr x i = f_i x := by
@@ -387,7 +387,7 @@ then a basis for `M` as `R`-module is also a basis for `M` as `R'`-module.
 
 See also `Basis.algebraMapCoeffs` for the case where `f` is equal to `algebraMap`.
 -/
-@[simps (config := { simpRhs := true })]
+@[simps +simpRhs]
 def mapCoeffs (h : ∀ (c) (x : M), f c • x = c • x) : Basis ι R' M := by
   letI : Module R' R := Module.compHom R (↑f.symm : R' →+* R)
   haveI : IsScalarTower R' R M :=
@@ -423,8 +423,7 @@ def reindexRange : Basis (range b) R M :=
 theorem reindexRange_self (i : ι) (h := Set.mem_range_self i) : b.reindexRange ⟨b i, h⟩ = b i := by
   by_cases htr : Nontrivial R
   · letI := htr
-    simp [htr, reindexRange, reindex_apply, Equiv.apply_ofInjective_symm b.injective,
-      Subtype.coe_mk]
+    simp [htr, reindexRange, reindex_apply]
   · letI : Subsingleton R := not_nontrivial_iff_subsingleton.mp htr
     letI := Module.subsingleton R M
     simp [reindexRange, eq_iff_true_of_subsingleton]

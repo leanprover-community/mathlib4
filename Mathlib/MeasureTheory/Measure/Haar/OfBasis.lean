@@ -16,9 +16,9 @@ measure, which gives measure `1` to the parallelepiped spanned by the basis.
 
 * `parallelepiped v` is the parallelepiped spanned by a finite family of vectors.
 * `Basis.parallelepiped` is the parallelepiped associated to a basis, seen as a compact set with
-nonempty interior.
+  nonempty interior.
 * `Basis.addHaar` is the Lebesgue measure associated to a basis, giving measure `1` to the
-corresponding parallelepiped.
+  corresponding parallelepiped.
 
 In particular, we declare a `MeasureSpace` instance on any finite-dimensional inner product space,
 by using the Lebesgue measure associated to some orthonormal basis (which is in fact independent
@@ -223,11 +223,11 @@ theorem Basis.prod_parallelepiped (v : Basis ι ℝ E) (w : Basis ι' ℝ F) :
     · use t ∘ Sum.inl
       constructor
       · exact ⟨(ht1.1 <| Sum.inl ·), (ht1.2 <| Sum.inl ·)⟩
-      simp [ht2, Prod.fst_sum, Prod.snd_sum]
+      simp [ht2, Prod.fst_sum]
     · use t ∘ Sum.inr
       constructor
       · exact ⟨(ht1.1 <| Sum.inr ·), (ht1.2 <| Sum.inr ·)⟩
-      simp [ht2, Prod.fst_sum, Prod.snd_sum]
+      simp [ht2, Prod.snd_sum]
   intro h
   rcases h with ⟨⟨t, ht1, ht2⟩, ⟨s, hs1, hs2⟩⟩
   use Sum.elim t s
@@ -332,9 +332,9 @@ protected def measurableEquiv : EuclideanSpace ℝ ι ≃ᵐ (ι → ℝ) where
   measurable_toFun := measurable_id
   measurable_invFun := measurable_id
 
-theorem coe_measurableEquiv : ⇑(EuclideanSpace.measurableEquiv ι) = WithLp.equiv 2 _ := rfl
+theorem coe_measurableEquiv : ⇑(EuclideanSpace.measurableEquiv ι) = WithLp.ofLp := rfl
 
 theorem coe_measurableEquiv_symm :
-    ⇑(EuclideanSpace.measurableEquiv ι).symm = (WithLp.equiv 2 _).symm := rfl
+    ⇑(EuclideanSpace.measurableEquiv ι).symm = WithLp.toLp _ := rfl
 
 end EuclideanSpace

@@ -29,7 +29,7 @@ def replaceRec (f? : (Expr → Expr) → Expr → Option Expr) : Expr → Expr :
   memoFix fun r e ↦
     match f? r e with
     | some x => x
-    | none   => traverseChildren (M := Id) r e
+    | none   => Id.run <| traverseChildren (pure <| r ·) e
 
 /-- A version of `Expr.replace` where the replacement function is available to the function `f?`.
 
