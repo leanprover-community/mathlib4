@@ -241,8 +241,8 @@ def _root_.Lean.SourceInfo.removeSpaces : SourceInfo → SourceInfo
 /-- For every node of the input syntax, replace the leading and trailing substrings in every
 `SourceInfo` with `"".toSubstring`. -/
 partial
-def _root_.Lean.Syntax.uniformizeSpaces : Syntax → Syntax
-  | .node i k args => .node i.removeSpaces k (args.map (·.uniformizeSpaces))
+def _root_.Lean.Syntax.eraseLeadTrailSpaces : Syntax → Syntax
+  | .node i k args => .node i.removeSpaces k (args.map (·.eraseLeadTrailSpaces))
   | .ident i raw v p => .ident i.removeSpaces raw v p
   | .atom i s => .atom i.removeSpaces s
   | .missing => .missing
@@ -563,30 +563,36 @@ def insertSpacesAux {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptio
       dbg_trace
         s!"* atom '{val}'\nStr: '{str}'\nRed: '{read}'\nNxt: '{next}'\nNew: '{strNew}'\n"
     pure (.atom (modifyTail info next) val, strNew)
-  | .node i1 s1 as1, str => do
-    --let s1 := if s1 == `null then k else s1
+  | .node info kind args, str => do
+    --let kind := if kind == `null then k else kind
     let mut str' := str
     let mut stxs := #[]
-    for a1 in as1 do
-      --let a1 := as1[i]
-      let (newStx, strNew) ← insertSpacesAux verbose? a1 str'
+    for arg in args do
+      let (newStx, strNew) ← insertSpacesAux verbose? arg str'
       if verbose? then
-        dbg_trace s!"'{strNew}' intermediate string at {s1}"
+        dbg_trace s!"'{strNew}' intermediate string at {kind}"
       str' := strNew.trimLeft
       stxs := stxs.push newStx
-    pure (.node i1 s1 stxs, str')
-  | s1, str => do
-    pure (s1, str)
+    pure (.node info kind stxs, str')
+  | stx, str => do
+    pure (stx, str)
 
 open Lean in
+/--
+`insertSpaces verbose? stx` first replaces in `stx` every `trailing` substring in every `SourceInfo`
+with either `"".toSubstring` or `" ".toSubstring`, according to what the pretty-printer would
+place there.
+
+In particular, it erases all comments embedded in `SourceInfo`s.
+-/
 def insertSpaces (verbose? : Bool) (stx : Syntax) : CommandElabM Syntax := do
-  let s := stx.uniformizeSpaces
-  let pretty ← Mathlib.Linter.pretty s
+  let stxNoSpaces := stx.eraseLeadTrailSpaces
+  let pretty ← Mathlib.Linter.pretty stxNoSpaces
   let withSpaces ← insertSpacesAux verbose? stx pretty.toSubstring
   return withSpaces.1
 
 def finalScan (stx : Syntax) (verbose? : Bool) : CommandElabM (Array Exceptions) := do
-  let ustx := stx.uniformizeSpaces
+  let ustx := stx.eraseLeadTrailSpaces
   let simplySpaced ← pretty ustx <|> return default
   return scanWatching verbose? #[] stx.getKind stx ustx (simplySpaced).toSubstring |>.2
 
@@ -598,7 +604,7 @@ elab "#compare " v:(&"v ")? stx:command : command => do
   elabCommand stx <|> return
   if (← get).messages.hasErrors then
     return
-  let ustx := stx.raw.uniformizeSpaces
+  let ustx := stx.raw.eraseLeadTrailSpaces
   let simplySpaced ← pretty ustx <|> return default
   logInfo m!"Source:\n\
             {stx.raw.getSubstring?.get!}|||\n\
@@ -1008,7 +1014,7 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
       dbg_trace scan
       for e in (← finalScan stx false) do
         dbg_trace e
-      let ustx := stx.uniformizeSpaces
+      let ustx := stx.eraseLeadTrailSpaces
       let simplySpaced ← pretty ustx <|> return default
       dbg_trace simplySpaced
     let docStringEnd := stx.find? (·.isOfKind ``Parser.Command.docComment) |>.getD default
