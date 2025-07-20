@@ -218,7 +218,7 @@ lemma csh (x : E) (c : ℝ) (h : ∀ (fi : F), fi ∈ s ∧ B.toSeminormFamily f
   sorry
 
 theorem iff (hs : s.Nonempty) : ↑f ∈ Submodule.span 𝕜 (Set.range (B.mL s)) ↔
-    ∃ γ, ∀ (x : E), ‖f x‖ ≤ γ * (s.sup B.toSeminormFamily) x := by
+    ∃ γ, ∀ (x : E), ‖f x‖ ≤ γ * ((s.sup B.toSeminormFamily) x) := by
   constructor
   · sorry
   · intro h
@@ -227,13 +227,17 @@ theorem iff (hs : s.Nonempty) : ↑f ∈ Submodule.span 𝕜 (Set.range (B.mL s)
     intro x hx
     simp at hx
     --have e1' : (s.sup B.toSeminormFamily) x = s.sup fun x ↦ 0 := sorry
-    have e1 : (s.sup B.toSeminormFamily) x ≤  0 := by
-      --rw [← Seminorm.le_def]
-      rw [Finset.sup_le_iff]
-      apply Finset.sup_le
-      rw [ Finset.sup_const hs 0]
-      aesop
-
+    have e1 : (s.sup B.toSeminormFamily) x = 0 := by
+      rw [le_antisymm_iff]
+      constructor
+      · apply Seminorm.finset_sup_apply_le (Preorder.le_refl 0)
+        intro i his
+        aesop
+      · exact apply_nonneg (s.sup B.toSeminormFamily) x
+    simp
+    rw [← norm_le_zero_iff]
+    convert (hγ x)
+    simp_all only [mul_zero]
 
 
 lemma test5 : ∃ (s₁ : Finset F), ↑f ∈ Submodule.span 𝕜 (Set.range (B.mL s₁)) := by
