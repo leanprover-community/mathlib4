@@ -198,7 +198,6 @@ lemma _root_.LinearMap.isPositive_toContinuousLinearMap_iff
     [FiniteDimensional 𝕜 E] (T : E →ₗ[𝕜] E) :
     have : CompleteSpace E := FiniteDimensional.complete 𝕜 _
     T.toContinuousLinearMap.IsPositive ↔ T.IsPositive := by
-  intro
   simp_rw [IsPositive, LinearMap.IsPositive, reApplyInnerSelf, isSelfAdjoint_iff_isSymmetric]
   rfl
 
@@ -217,7 +216,7 @@ theorem isPositive_iff (T : E →L[𝕜] E) :
 open ComplexOrder in
 theorem IsPositive.inner_nonneg_left {T : E →L[𝕜] E} (hT : IsPositive T) (x : E) :
     0 ≤ ⟪T x, x⟫ :=
-  ((isPositive_iff T).mp hT).right x
+  (T.isPositive_iff.mp hT).right x
 
 open ComplexOrder in
 theorem IsPositive.inner_nonneg_right {T : E →L[𝕜] E} (hT : IsPositive T) (x : E) :
@@ -226,9 +225,8 @@ theorem IsPositive.inner_nonneg_right {T : E →L[𝕜] E} (hT : IsPositive T) (
   exact inner_nonneg_left hT x
 
 @[simp]
-theorem isPositive_zero : IsPositive (0 : E →L[𝕜] E) := by
-  refine ⟨.zero _, fun x => ?_⟩
-  simp [reApplyInnerSelf_apply]
+theorem isPositive_zero : IsPositive (0 : E →L[𝕜] E) :=
+  (isPositive_toLinearMap_iff _).mp LinearMap.isPositive_zero
 
 @[simp]
 theorem isPositive_one : IsPositive (1 : E →L[𝕜] E) :=
@@ -344,7 +342,7 @@ instance instLoewnerPartialOrder : PartialOrder (E →L[𝕜] E) where
   le f g := (g - f).IsPositive
   le_refl _ := by simp
   le_trans _ _ _ h₁ h₂ := by simpa using h₁.add h₂
-  le_antisymm f₁ f₂ h₁ h₂ := coe_inj.mp
+  le_antisymm _ _ h₁ h₂ := coe_inj.mp
     (le_antisymm h₁.isPositive_toLinearMap h₂.isPositive_toLinearMap)
 
 lemma le_def (f g : E →L[𝕜] E) : f ≤ g ↔ (g - f).IsPositive := Iff.rfl
