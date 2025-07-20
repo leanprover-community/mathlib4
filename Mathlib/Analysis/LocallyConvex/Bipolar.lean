@@ -47,6 +47,7 @@ theorem isClosed_ker (f : WeakBilin B →L[𝕜] 𝕜) :
 
 -- Conway Theorem V1.3 p125 dual of dual - if `e` is in the topological dual of the topological dual
 -- of `E` then `e` is in `E`. Uses A 1.4 (intersection of kernels)
+-- I think A 1.4 is mem_span_of_iInf_ker_le_ker
 
 end
 
