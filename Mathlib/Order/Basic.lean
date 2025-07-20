@@ -74,8 +74,16 @@ variable [LE α] {a b c : α}
 protected lemma LE.le.ge (h : a ≤ b) : b ≥ a := h
 protected lemma GE.ge.le (h : a ≥ b) : b ≤ a := h
 
-@[to_dual LE.le.trans_eq']
+@[to_dual le_of_le_of_eq''']
+theorem le_of_le_of_eq' : b ≤ c → a = b → a ≤ c := flip le_of_eq_of_le
+@[to_dual le_of_eq_of_le''']
+theorem le_of_eq_of_le' : b = c → a ≤ b → a ≤ c := flip le_of_le_of_eq
+
+@[to_dual LE.le.trans_eq'']
 alias LE.le.trans_eq := le_of_le_of_eq
+@[to_dual LE.le.trans_eq''']
+alias LE.le.trans_eq' := le_of_le_of_eq'
+
 @[to_dual Eq.trans_ge]
 alias Eq.trans_le := le_of_eq_of_le
 

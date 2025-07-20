@@ -3,6 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster
 -/
+import Mathlib.Data.Nat.Notation
 import Mathlib.Data.String.Defs
 import Mathlib.Data.Array.Defs
 import Mathlib.Lean.Expr.ReplaceRec
@@ -29,13 +30,13 @@ namespace ToAdditive
 
 /-- An attribute that tells `@[to_additive]` that certain arguments of this definition are not
 involved when using `@[to_additive]`.
-This helps the heuristic of `@[to_additive]` by also transforming definitions if `Nat` or another
+This helps the heuristic of `@[to_additive]` by also transforming definitions if `ℕ` or another
 fixed type occurs as one of these arguments. -/
 syntax (name := to_additive_ignore_args) "to_additive_ignore_args" (ppSpace num)* : attr
 
 /-- An attribute that tells `@[to_dual]` that certain arguments of this definition are not
 involved when using `@[to_dual]`.
-This helps the heuristic of `@[to_dual]` by also transforming definitions if `Nat` or another
+This helps the heuristic of `@[to_dual]` by also transforming definitions if `ℕ` or another
 fixed type occurs as one of these arguments. -/
 syntax (name := to_dual_ignore_args) "to_dual_ignore_args" (ppSpace num)* : attr
 
@@ -54,7 +55,7 @@ declarations. It is ok to update it manually if the automatic tagging made an er
 Implementation note: we only allow exactly 1 relevant argument, even though some declarations
 (like `prod.group`) have multiple arguments with a multiplicative structure on it.
 The reason is that whether we additivize a declaration is an all-or-nothing decision, and if
-we will not be able to additivize declarations that (e.g.) talk about multiplication on `Nat × α`
+we will not be able to additivize declarations that (e.g.) talk about multiplication on `ℕ × α`
 anyway.
 
 Warning: interactions between this and the `(reorder := ...)` argument are not well-tested. -/
@@ -75,7 +76,7 @@ declarations. It is ok to update it manually if the automatic tagging made an er
 Implementation note: we only allow exactly 1 relevant argument, even though some declarations
 (like `prod.group`) have multiple arguments with a multiplicative structure on it.
 The reason is that whether we additivize a declaration is an all-or-nothing decision, and if
-we will not be able to additivize declarations that (e.g.) talk about multiplication on `Nat × α`
+we will not be able to additivize declarations that (e.g.) talk about multiplication on `ℕ × α`
 anyway.
 
 Warning: interactions between this and the `(reorder := ...)` argument are not well-tested. -/
@@ -250,8 +251,8 @@ There are some exceptions to this heuristic:
 * If an identifier has attribute `@[to_additive_ignore_args n1 n2 ...]` then all the arguments in
   positions `n1`, `n2`, ... will not be checked for unapplied identifiers (start counting from 1).
   For example, `ContMDiffMap` has attribute `@[to_additive_ignore_args 21]`, which means
-  that its 21st argument `(n : WithTop Nat)` can contain `Nat`
-  (usually in the form `Top.top Nat ...`) and still be additivized.
+  that its 21st argument `(n : WithTop ℕ)` can contain `ℕ`
+  (usually in the form `Top.top ℕ ...`) and still be additivized.
   So `@Mul.mul (C^∞⟮I, N; I', G⟯) _ f g` will be additivized.
 
 ### Troubleshooting
@@ -263,7 +264,7 @@ mismatch error.
 
 * Option 1: The most common case is that it didn't additivize a declaration that should be
   additivized. This happened because the heuristic applied, and the first argument contains a
-  fixed type, like `Nat` or `ℝ`. However, the heuristic misfires on some other declarations.
+  fixed type, like `ℕ` or `ℝ`. However, the heuristic misfires on some other declarations.
   Solutions:
   * First figure out what the fixed type is in the first argument of the declaration that didn't
     get additivized. Note that this fixed type can occur in implicit arguments. If manually finding
@@ -276,13 +277,13 @@ mismatch error.
   * If the fixed type occurs inside the `k`-th argument of a declaration `d`, and the
     `k`-th argument is not connected to the multiplicative structure on `d`, consider adding
     attribute `[to_additive_ignore_args k]` to `d`.
-    Example: `ContMDiffMap` ignores the argument `(n : WithTop Nat)`
+    Example: `ContMDiffMap` ignores the argument `(n : WithTop ℕ)`
 * Option 2: It additivized a declaration `d` that should remain multiplicative. Solution:
   * Make sure the first argument of `d` is a type with a multiplicative structure. If not, can you
     reorder the (implicit) arguments of `d` so that the first argument becomes a type with a
     multiplicative structure (and not some indexing type)?
     The reason is that `@[to_additive]` doesn't additivize declarations if their first argument
-    contains fixed types like `Nat` or `ℝ`. See section Heuristics.
+    contains fixed types like `ℕ` or `ℝ`. See section Heuristics.
     If the first argument is not the argument with a multiplicative type-class, `@[to_additive]`
     should have automatically added the attribute `@[to_additive_relevant_arg]` to the declaration.
     You can test this by running the following (where `d` is the full name of the declaration):
@@ -668,7 +669,7 @@ unsafe def additiveTestUnsafe (env : Environment) (b : BundledExtensions)
 This is used in `@[to_additive]` for deciding which subexpressions to transform: we only transform
 constants if `additiveTest` applied to their relevant argument returns `true`.
 This means we will replace expression applied to e.g. `α` or `α × β`, but not when applied to
-e.g. `Nat` or `ℝ × α`.
+e.g. `ℕ` or `ℝ × α`.
 We ignore all arguments specified by the `ignore` `NameMap`. -/
 def additiveTest (env : Environment) (b : BundledExtensions) (e : Expr) : Option Name :=
   unsafe additiveTestUnsafe env b e
@@ -695,8 +696,8 @@ def applyReplacementFun' (b : BundledExtensions)
   aux (← getEnv) e
 where /-- Implementation of `applyReplacementFun`. -/
   aux (env : Environment) : Expr → MetaM Expr :=
-  let reorderFn : Name → List (List Nat) := fun nm ↦ (b.reorderAttr.find? env nm |>.getD [])
-  let relevantArg : Name → Nat := fun nm ↦ (b.relevantArgAttr.find? env nm).getD 0
+  let reorderFn : Name → List (List ℕ) := fun nm ↦ (b.reorderAttr.find? env nm |>.getD [])
+  let relevantArg : Name → ℕ := fun nm ↦ (b.relevantArgAttr.find? env nm).getD 0
   Lean.Expr.replaceRecM fun r e ↦ do
     if !e.hasLooseBVars then
       trace[to_additive_detail] "applyReplacementFun: replacing at {e}"
@@ -767,7 +768,7 @@ where /-- Implementation of `applyReplacementFun`. -/
                 expression. However, we will still recurse into all the non-numeral arguments."
               -- In this case, we still update all arguments of `g` that are not numerals,
               -- since all other arguments can contain subexpressions like
-              -- `(fun x ↦ Nat) (1 : G)`, and we have to update the `(1 : G)` to `(0 : G)`
+              -- `(fun x ↦ ℕ) (1 : G)`, and we have to update the `(1 : G)` to `(0 : G)`
               gAllArgs := gAllArgs.mapIdx fun argNr arg ↦
                 if changedArgNrs.contains argNr then
                   changeNumeral arg
@@ -803,8 +804,8 @@ else
   return aux (← getEnv) (← getBoolOption `trace.to_additive_detail) e
 where /-- Implementation of `applyReplacementFun`. -/
   aux (env : Environment) (trace : Bool) : Expr → Expr :=
-  let reorderFn : Name → List (List Nat) := fun nm ↦ (b.reorderAttr.find? env nm |>.getD [])
-  let relevantArg : Name → Nat := fun nm ↦ (b.relevantArgAttr.find? env nm).getD 0
+  let reorderFn : Name → List (List ℕ) := fun nm ↦ (b.reorderAttr.find? env nm |>.getD [])
+  let relevantArg : Name → ℕ := fun nm ↦ (b.relevantArgAttr.find? env nm).getD 0
   Lean.Expr.replaceRec fun r e ↦ Id.run do
     if trace then
       dbg_trace s!"replacing at {e}"
@@ -865,7 +866,7 @@ where /-- Implementation of `applyReplacementFun`. -/
                   However, we will still recurse into all the non-numeral arguments."
               -- In this case, we still update all arguments of `g` that are not numerals,
               -- since all other arguments can contain subexpressions like
-              -- `(fun x ↦ Nat) (1 : G)`, and we have to update the `(1 : G)` to `(0 : G)`
+              -- `(fun x ↦ ℕ) (1 : G)`, and we have to update the `(1 : G)` to `(0 : G)`
               gAllArgs := gAllArgs.mapIdx fun argNr arg ↦
                 if changedArgNrs.contains argNr then
                   changeNumeral arg
@@ -892,13 +893,13 @@ def etaExpandN (n : Nat) (e : Expr) : MetaM Expr := do
 `reorder.find n`. -/
 def expand (b : BundledExtensions) (e : Expr) : MetaM Expr := do
   let env ← getEnv
-  let reorderFn : Name → List (List Nat) := fun nm ↦ (b.reorderAttr.find? env nm |>.getD [])
+  let reorderFn : Name → List (List ℕ) := fun nm ↦ (b.reorderAttr.find? env nm |>.getD [])
   let e₂ ← Lean.Meta.transform (input := e) (post := fun e => return .done e) fun e ↦ do
     let f := e.getAppFn
     let args := e.getAppArgs
     match f with
     | .proj n i x =>
-      let info := getStructureInfo (← getEnv) n
+      let some info := getStructureInfo? (← getEnv) n | return .continue -- e.g. if `n` is `Exists`
       let some projName := info.getProjFn? i | unreachable!
       if findTranslation? env b projName |>.isNone then
         return .continue
@@ -1283,8 +1284,8 @@ def toDualDict : String → List String
   | "untop"       => ["unbot"]
   | "unbot"       => ["untop"]
 
-  | "left"        => ["right"]
-  | "right"       => ["left"]
+  -- | "left"        => ["right"]
+  -- | "right"       => ["left"]
   | "epi"         => ["mono"]
   | "mono"        => ["epi"]
   | "terminal"    => ["initial"]

@@ -52,10 +52,10 @@ attribute [to_dual self (reorder := 3 4)] ge_iff_le
 set_option linter.existingAttributeWarning false in
 attribute [to_dual self (reorder := 3 4)] gt_iff_lt
 
-attribute [to_dual le_of_eq_of_le'] le_of_eq_of_le
-attribute [to_dual le_of_le_of_eq'] le_of_le_of_eq
-attribute [to_dual lt_of_eq_of_lt'] lt_of_eq_of_lt
-attribute [to_dual lt_of_lt_of_eq'] lt_of_lt_of_eq
+attribute [to_dual le_of_eq_of_le''] le_of_eq_of_le
+attribute [to_dual le_of_le_of_eq''] le_of_le_of_eq
+attribute [to_dual lt_of_eq_of_lt''] lt_of_eq_of_lt
+attribute [to_dual lt_of_lt_of_eq''] lt_of_lt_of_eq
 
 /-- A preorder is a reflexive, transitive relation `≤` with `a < b` defined in the obvious way. -/
 class Preorder (α : Type*) extends LE α, LT α where

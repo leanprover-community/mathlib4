@@ -220,7 +220,7 @@ lemma min_assoc (a b c : α) : min (min a b) c = min a (min b c) := by
 lemma min_left_comm (a b c : α) : min a (min b c) = min b (min a c) := by
   rw [← min_assoc, min_comm a, min_assoc]
 
-@[to_dual]
+@[to_dual (attr := simp)]
 lemma min_self (a : α) : min a a = a := by simp [min_def]
 
 @[to_dual]
