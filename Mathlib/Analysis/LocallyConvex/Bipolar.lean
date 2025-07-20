@@ -160,6 +160,7 @@ variable (g : s)
 
 def mL : s → WeakBilin B →ₗ[𝕜] 𝕜 := fun f => (WeakBilin.eval B) f.val
 
+/-
 #check mL B s
 
 #check mem_span_of_iInf_ker_le_ker (ι := s) (L := (mL B s)) (K := f.toLinearMap)
@@ -199,34 +200,71 @@ lemma sss (p q : Seminorm 𝕜 E) (x : E) (c : ℝ) (h₁ : p x ≤ c) (h₂ : q
 lemma sss2 (t : F → Seminorm 𝕜 E) (x : E) (c : ℝ) (hc : 0 ≤ c) (h : ∀ i ∈ s, (t i) x ≤ c) :
     (s.sup t) x ≤ c := Seminorm.finset_sup_apply_le hc h
 
+lemma sss3 (t : F → Seminorm 𝕜 E) (x : E) (i : s) : t i x ≤ (s.sup t) x := by
+  apply Seminorm.le_finset_sup_apply
+  exact Finset.coe_mem i
+
+
 --#check s.sup
 
 variable (x : E)
 
-#check B.toSeminormFamily g
+#check Basis
+--  x ∈ span R (v '' s) ↔ ∃ l ∈ supported R R s, linearCombination R v l = x
 
-lemma csh (x : E) (c : ℝ) (h : ∀ (fi : F), fi ∈ s ∧ B.toSeminormFamily fi x  ≤ c) :
-  (s.sup B.toSeminormFamily) x ≤ c := by
-  simp_all only [toSeminormFamily_apply]
+#check norm_sum_le
 
-  rw [Finset.sup_def]
-  rw [Multiset.sup]
+#check Finsupp.sum_le_sum
 
-  rw [Multiset.sup_le]
-  rw [toSeminormFamily_apply]
-  --apply Iff.trans Multiset.sup_le
-  sorry
+-/
 
 theorem iff (hs : s.Nonempty) : ↑f ∈ Submodule.span 𝕜 (Set.range (B.mL s)) ↔
     ∃ γ, ∀ (x : E), ‖f x‖ ≤ γ * ((s.sup B.toSeminormFamily) x) := by
   constructor
-  · sorry
+  · intro h
+    have e1 : Set.range (B.mL s) = B.mL s '' Set.univ := by
+      aesop
+    rw [e1] at h
+    rw [Finsupp.mem_span_image_iff_linearCombination] at h
+    obtain ⟨l, hl1, hl2⟩ := h
+    let γ : ℝ := (l.sum fun i d ↦ ‖d‖)
+    use γ
+    intro x
+    have e2 : ‖f x‖ = ‖(Finsupp.linearCombination 𝕜 (B.mL s)) l x‖ := by
+      rw [hl2]
+      rfl
+    rw [Finsupp.linearCombination_apply] at e2
+    simp at e2
+    have e3 : ‖f x‖ ≤ l.sum fun i d ↦ ‖d * (B.mL s i) x‖ := by
+      rw [e2]
+      apply norm_sum_le
+    have e4' (i : s) : (B.toSeminormFamily i) x ≤ ((s.sup B.toSeminormFamily) x) := by
+      apply Seminorm.le_finset_sup_apply
+      exact Finset.coe_mem i
+      --apply Seminorm.finset_sup_apply_le
+    have e4'' (i : s) : ‖(B.mL s i) x‖ = (B.toSeminormFamily i) x := rfl
+    have e4 (d : 𝕜) (i : s) : ‖d * (B.mL s i) x‖ ≤ ‖d‖ * ((s.sup B.toSeminormFamily) x) := by
+      rw [norm_mul]
+      rw [e4'']
+      apply mul_le_mul_of_nonneg_left
+      exact e4' i
+      exact norm_nonneg d
+    have e6 : (l.sum fun i d ↦ ‖d * (B.mL s i) x‖) ≤
+        (l.sum fun i d ↦ (‖d‖ * ((s.sup B.toSeminormFamily) x))) := by
+      apply Finsupp.sum_le_sum
+      intro i hi
+      exact e4 (l i) i
+    have e7 : (l.sum fun i d ↦ ‖d‖ * (s.sup B.toSeminormFamily) x) =
+        (l.sum fun i d ↦ ‖d‖) * (s.sup B.toSeminormFamily) x := by
+      exact Eq.symm (Finsupp.sum_mul ((s.sup B.toSeminormFamily) x) l)
+    apply le_trans e3
+    apply le_trans e6
+    rw [e7]
   · intro h
     obtain ⟨γ, hγ⟩ := h
     apply mem_span_of_iInf_ker_le_ker
     intro x hx
     simp at hx
-    --have e1' : (s.sup B.toSeminormFamily) x = s.sup fun x ↦ 0 := sorry
     have e1 : (s.sup B.toSeminormFamily) x = 0 := by
       rw [le_antisymm_iff]
       constructor
@@ -239,6 +277,7 @@ theorem iff (hs : s.Nonempty) : ↑f ∈ Submodule.span 𝕜 (Set.range (B.mL s)
     convert (hγ x)
     simp_all only [mul_zero]
 
+/-
 
 lemma test5 : ∃ (s₁ : Finset F), ↑f ∈ Submodule.span 𝕜 (Set.range (B.mL s₁)) := by
   obtain ⟨s₁, hs⟩ := test4 B f
@@ -325,7 +364,7 @@ lemma test5 : ∃ (s₁ : Finset F), ↑f ∈ Submodule.span 𝕜 (Set.range (B.
 
 
 
-
+-/
 
 
 
