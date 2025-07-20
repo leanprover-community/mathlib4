@@ -30,10 +30,11 @@ theorem mulOpposite_repr_eq (b : Basis ι R H) :
     b.mulOpposite.repr = (MulOpposite.opLinearEquiv R).symm.trans b.repr := rfl
 
 @[simp]
-theorem mulOpposite_repr_apply (b : Basis ι R H) (x : Hᵐᵒᵖ) :
-    b.mulOpposite.repr x = b.repr (MulOpposite.unop x) := rfl
+theorem mulOpposite_repr_unop (b : Basis ι R H) (x : Hᵐᵒᵖ) :
+    b.repr (MulOpposite.unop x) = b.mulOpposite.repr x := rfl
 
-theorem mulOpposite_repr_apply' (b : Basis ι R H) (x : H) :
+@[simp]
+theorem mulOpposite_repr_op (b : Basis ι R H) (x : H) :
     b.mulOpposite.repr (MulOpposite.op x) = b.repr x := rfl
 
 end Basis
