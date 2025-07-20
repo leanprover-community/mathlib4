@@ -5,6 +5,7 @@ Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Group.ULift
 import Mathlib.Algebra.Ring.Equiv
+import Mathlib.Data.Int.Cast.Basic
 
 /-!
 # `ULift` instances for ring
@@ -70,13 +71,13 @@ instance addMonoidWithOne [AddMonoidWithOne R] : AddMonoidWithOne (ULift R) :=
 instance addCommMonoidWithOne [AddCommMonoidWithOne R] : AddCommMonoidWithOne (ULift R) :=
   { ULift.addMonoidWithOne, ULift.addCommMonoid with }
 
-instance addGroupWithOne [AddGroupWithOne α] : AddGroupWithOne (ULift α) :=
+instance addGroupWithOne [AddGroupWithOne R] : AddGroupWithOne (ULift R) :=
   { ULift.addMonoidWithOne, ULift.addGroup with
       intCast := (⟨·⟩),
       intCast_ofNat := fun _ => congr_arg ULift.up (Int.cast_natCast _),
       intCast_negSucc := fun _ => congr_arg ULift.up (Int.cast_negSucc _) }
 
-instance addCommGroupWithOne [AddCommGroupWithOne α] : AddCommGroupWithOne (ULift α) :=
+instance addCommGroupWithOne [AddCommGroupWithOne R] : AddCommGroupWithOne (ULift R) :=
   { ULift.addGroupWithOne, ULift.addCommGroup with }
 
 instance nonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring R] :
