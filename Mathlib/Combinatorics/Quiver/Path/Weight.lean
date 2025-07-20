@@ -58,11 +58,9 @@ lemma weight_cons (w : ∀ {i j : V}, (i ⟶ j) → R) {a b c : V} (p : Path a b
   · simp [weight]
   · simp [weight, mul_assoc]
 
-@[simp]
 lemma weight_of_fn_nil (w : V → V → R) (a : V) :
     weight_of_fn w (Path.nil : Path a a) = 1 := by simp [weight_of_fn, weight]
 
-@[simp]
 lemma weight_of_fn_cons (w : V → V → R) {a b c : V} (p : Path a b) (e : b ⟶ c) :
     weight_of_fn w (p.cons e) = weight_of_fn w p * w b c := by unfold weight_of_fn; simp [weight]
 
@@ -73,7 +71,6 @@ lemma weight_comp (w : ∀ {i j : V}, (i ⟶ j) → R) {a b c : V} (p : Path a b
   | nil => simp
   | cons _ _ ih => simp [ih, mul_assoc]
 
-@[simp]
 lemma weight_of_fn_comp (w : V → V → R) {a b c : V} (p : Path a b) (q : Path b c) :
     weight_of_fn w (p.comp q) = weight_of_fn w p * weight_of_fn w q := by
   simp [weight_of_fn, weight_comp]
