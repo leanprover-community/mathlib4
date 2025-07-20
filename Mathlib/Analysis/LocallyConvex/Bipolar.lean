@@ -154,6 +154,8 @@ variable (s : Finset F)
 
 variable (g : s)
 
+#check g.prop
+
 #check g.val
 
 def mL : s → WeakBilin B →ₗ[𝕜] 𝕜 := fun f => (WeakBilin.eval B) f.val
@@ -161,6 +163,25 @@ def mL : s → WeakBilin B →ₗ[𝕜] 𝕜 := fun f => (WeakBilin.eval B) f.va
 #check mL B s
 
 #check mem_span_of_iInf_ker_le_ker (ι := s) (L := (mL B s)) (K := f.toLinearMap)
+
+#check B.flip
+
+-- e -> ‖B e g‖
+#check (B.flip g).toSeminorm
+
+lemma sn1 (x : E) : (B.flip g).toSeminorm x = ‖B x g‖ := rfl
+
+#check Seminorm.le_finset_sup_apply
+
+lemma sn2 (x : E) (f₂ : F) (h : f₂ ∈ s) :
+    (B.flip f₂).toSeminorm x ≤ (s.sup (fun fi => (B.flip fi).toSeminorm)) x := by
+  apply Seminorm.le_finset_sup_apply h
+
+
+
+#instance : SemilatticeSup (Seminorm 𝕜 E) := Seminorm.instSemilatticeSup
+
+#check s.sup (fun fi  => (B.flip fi).toSeminorm  )
 
 lemma test5 : ∃ (s₁ : Finset F), ↑f ∈ Submodule.span 𝕜 (Set.range (B.mL s)) := by
   obtain ⟨s₁, hs⟩ := test4 B f
@@ -170,8 +191,27 @@ lemma test5 : ∃ (s₁ : Finset F), ↑f ∈ Submodule.span 𝕜 (Set.range (B.
   simp at hx
   simp at hs
   obtain ⟨r, hr1, hr2⟩ := hs
-  simp_all only [mem_ker, ContinuousLinearMap.coe_coe]
-  sorry
+  have e1 : ‖f x‖ ≤ r⁻¹ • (s₁.sup (fun fi  => (B.flip fi).toSeminorm  )) := by
+    simp_all only [one_div]
+    let y := ((r+1)⁻¹ * (s₁.sup (α := NNReal)  (fun fi  => ⟨‖(WeakBilin.eval B) fi x‖, norm_nonneg _⟩))⁻¹) • x
+    have i1 (fi : s₁) : (⟨‖(WeakBilin.eval B) fi x‖, norm_nonneg _⟩ : NNReal) ≤
+        s₁.sup (α := NNReal)  (fun fi  => ⟨‖(WeakBilin.eval B) fi x‖, norm_nonneg _⟩) := by
+      --norm_cast
+      apply Finset.le_sup (f := (fun fi  => (⟨‖(WeakBilin.eval B) fi x‖, norm_nonneg _⟩): : NNReal)) fi.prop
+
+
+    have e2 : y ∈ (s₁.sup B.toSeminormFamily).ball 0 r⁻¹ := by
+      simp_all only [NNReal.coe_inv, Seminorm.mem_ball, sub_zero, y]
+
+
+
+
+
+      sorry
+
+
+    sorry
+
 
 
 
