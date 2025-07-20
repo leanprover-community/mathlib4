@@ -169,12 +169,9 @@ noncomputable instance {J : Type*} [Category J] (K : J ⥤ Action V G) [HasColim
     PreservesColimit K (Action.forget V G) := by
   change PreservesColimit K ((Action.functorCategoryEquivalence V G).functor ⋙
     (evaluation (SingleObj G) V).obj (SingleObj.star G))
-  have : PreservesColimit (K ⋙ (Action.functorCategoryEquivalence V G).functor)
-      ((evaluation (SingleObj G) V).obj (SingleObj.star G)) := by
-    have : ∀ (k : SingleObj G),
-        HasColimit ((K ⋙ (functorCategoryEquivalence V G).functor).flip.obj k) :=
-      fun _ ↦ (hasColimit_iff_of_iso (Iso.refl _ : _ ≅ K ⋙ forget V G)).mpr inferInstance
-    exact evaluation_preservesColimit (K ⋙ (Action.functorCategoryEquivalence V G).functor) _
+  have (k : SingleObj G) :
+      HasColimit ((K ⋙ (functorCategoryEquivalence V G).functor).flip.obj k) :=
+    inferInstanceAs (HasColimit (K ⋙ forget V G))
   infer_instance
 
 noncomputable instance {J : Type*} [Category J] [HasColimitsOfShape J V] :
