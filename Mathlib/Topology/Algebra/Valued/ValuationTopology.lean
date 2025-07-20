@@ -345,7 +345,7 @@ lemma discreteTopology_of_forall_lt [MulArchimedean Γ₀] {r : Γ₀} (hr : r �
 theorem isOpen_ball [MulArchimedean Γ₀] {r : Γ₀} (hr : r ≠ 0) :
     IsOpen (X := K) {x | v x < r} := by
   by_cases hr' : ∃ (x : K), v x ≠ 0 ∧ v x ≤ r
-  · exact isOpen_ball hr'
+  · exact isOpen_ball' hr'
   · push_neg at hr'
     have := discreteTopology_of_forall_lt hr hr'
     simp
@@ -353,12 +353,12 @@ theorem isOpen_ball [MulArchimedean Γ₀] {r : Γ₀} (hr : r ≠ 0) :
 /-- An open ball centred at the origin in a valued ring is clopen. -/
 theorem isClopen_ball' {r : Γ₀} (hr : ∃ (x : R), v x ≠ 0 ∧ v x ≤ r) :
     IsClopen (X := R) {x | v x < r} :=
-  ⟨isClosed_ball r, isOpen_ball hr⟩
+  ⟨isClosed_ball r, isOpen_ball' hr⟩
 
 /-- An open ball centred at the origin in a valued ring is clopen. -/
 theorem isClopen_ball [MulArchimedean Γ₀] {r : Γ₀} (hr : r ≠ 0) :
     IsClopen (X := K) {x | v x < r} :=
-  ⟨isClosed_ball r, isOpen_ball' hr⟩
+  ⟨isClosed_ball r, isOpen_ball hr⟩
 
 /-- A closed ball centred at the origin in a valued ring is open. -/
 theorem isOpen_closedball' {r : Γ₀} (hr : ∃ (x : R), v x ≠ 0 ∧ v x ≤ r) :
@@ -390,7 +390,7 @@ theorem isOpen_closedball' {r : Γ₀} (hr : ∃ (x : R), v x ≠ 0 ∧ v x ≤ 
 theorem isOpen_closedBall [MulArchimedean Γ₀] {r : Γ₀} (hr : r ≠ 0) :
     IsOpen (X := K) {x | v x ≤ r} := by
   by_cases hr' : ∃ (x : K), v x ≠ 0 ∧ v x ≤ r
-  · exact isOpen_closedball hr'
+  · exact isOpen_closedball' hr'
   · push_neg at hr'
     have := discreteTopology_of_forall_lt hr hr'
     simp
@@ -398,12 +398,12 @@ theorem isOpen_closedBall [MulArchimedean Γ₀] {r : Γ₀} (hr : r ≠ 0) :
 /-- A closed ball centred at the origin in a valued ring is clopen. -/
 theorem isClopen_closedBall' {r : Γ₀} (hr : ∃ (x : R), v x ≠ 0 ∧ v x ≤ r) :
     IsClopen (X := R) {x | v x ≤ r} :=
-  ⟨isClosed_closedBall r, isOpen_closedball hr⟩
+  ⟨isClosed_closedBall r, isOpen_closedball' hr⟩
 
 /-- A closed ball centred at the origin in a valued ring is clopen. -/
 theorem isClopen_closedBall [MulArchimedean Γ₀] {r : Γ₀} (hr : r ≠ 0) :
     IsClopen (X := K) {x | v x ≤ r} :=
-  ⟨isClosed_closedBall r, isOpen_closedBall' hr⟩
+  ⟨isClosed_closedBall r, isOpen_closedBall hr⟩
 
 /-- A sphere centred at the origin in a valued ring is clopen. -/
 theorem isClopen_sphere' {r : Γ₀} (hr : ∃ (x : R), v x ≠ 0 ∧ v x ≤ r) :
@@ -412,7 +412,7 @@ theorem isClopen_sphere' {r : Γ₀} (hr : ∃ (x : R), v x ≠ 0 ∧ v x ≤ r)
     ext x
     simp [← le_antisymm_iff]
   rw [h]
-  exact IsClopen.diff (isClopen_closedBall hr) (isClopen_ball hr)
+  exact IsClopen.diff (isClopen_closedBall' hr) (isClopen_ball' hr)
 
 /-- A sphere centred at the origin in a valued ring is clopen. -/
 theorem isClopen_sphere [MulArchimedean Γ₀] {r : Γ₀} (hr : r ≠ 0) :
@@ -421,21 +421,21 @@ theorem isClopen_sphere [MulArchimedean Γ₀] {r : Γ₀} (hr : r ≠ 0) :
     ext x
     simp [← le_antisymm_iff]
   rw [h]
-  exact IsClopen.diff (isClopen_closedBall' hr) (isClopen_ball' hr)
+  exact IsClopen.diff (isClopen_closedBall hr) (isClopen_ball hr)
 
 /-- A sphere centred at the origin in a valued ring is closed. -/
 theorem isClosed_sphere' {r : Γ₀} (hr : ∃ (x : R), v x ≠ 0 ∧ v x ≤ r) :
     IsClosed (X := R) {x | v x = r} :=
-  isClopen_sphere hr |>.isClosed
+  isClopen_sphere' hr |>.isClosed
 
 /-- A sphere centred at the origin in a valued ring is closed. -/
 theorem isClosed_sphere [MulArchimedean Γ₀] {r : Γ₀} (hr : r ≠ 0) :
     IsClosed (X := K) {x | v x = r} :=
-  isClopen_sphere' hr |>.isClosed
+  isClopen_sphere hr |>.isClosed
 
 /-- The closed unit ball in a valued ring is open. -/
 theorem isOpen_integer : IsOpen (_i.v.integer : Set R) :=
-  isOpen_closedball ⟨1, by simp⟩
+  isOpen_closedball' ⟨1, by simp⟩
 
 @[deprecated (since := "2025-04-25")]
 alias integer_isOpen := isOpen_integer
