@@ -155,12 +155,9 @@ noncomputable instance {J : Type*} [Category J] (K : J ⥤ Action V G) [HasLimit
     PreservesLimit K (Action.forget V G) := by
   change PreservesLimit K ((Action.functorCategoryEquivalence V G).functor ⋙
     (evaluation (SingleObj G) V).obj (SingleObj.star G))
-  have : PreservesLimit (K ⋙ (Action.functorCategoryEquivalence V G).functor)
-      ((evaluation (SingleObj G) V).obj (SingleObj.star G)) := by
-    have : ∀ (k : SingleObj G),
-        HasLimit ((K ⋙ (functorCategoryEquivalence V G).functor).flip.obj k) :=
-      fun _ ↦ (hasLimit_iff_of_iso (Iso.refl _ : _ ≅ K ⋙ forget V G)).mpr inferInstance
-    exact evaluation_preservesLimit (K ⋙ (Action.functorCategoryEquivalence V G).functor) _
+  have (k : SingleObj G) :
+      HasLimit ((K ⋙ (functorCategoryEquivalence V G).functor).flip.obj k) :=
+    inferInstanceAs (HasLimit (K ⋙ forget V G))
   infer_instance
 
 noncomputable instance {J : Type*} [Category J] [HasLimitsOfShape J V] :
