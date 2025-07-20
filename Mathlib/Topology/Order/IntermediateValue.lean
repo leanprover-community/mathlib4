@@ -332,7 +332,7 @@ variable [DenselyOrdered α] {a b : α}
 /-- A "continuous induction principle" for a closed interval: if a set `s` meets `[a, b]`
 on a closed subset, contains `a`, and for any `x ∈ [a, b)` such that `[a, x]` is included in `s`,
 the set `s` includes some open neighborhood of `x` within `(x, +∞)`, then `[a, b] ⊆ s`. -/
-lemma IsClosed.Icc_subset_of_forall_mem_nhdsGT_of_mem {a b : α} {s : Set α}
+lemma IsClosed.Icc_subset_of_forall_mem_nhdsGT_of_Icc_subset {a b : α} {s : Set α}
     (hs : IsClosed (s ∩ Icc a b)) (ha : a ∈ s)
     (h : ∀ t ∈ Ico a b, Icc a t ⊆ s → s ∈ 𝓝[>] t) :
     Icc a b ⊆ s := by

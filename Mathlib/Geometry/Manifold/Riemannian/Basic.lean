@@ -438,7 +438,7 @@ lemma setOf_riemmanianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
     apply us
     have : 1 ∈ A := this ⟨zero_le_one, le_rfl⟩
     simpa [A, hγy, us]
-  apply A_closed.Icc_subset_of_forall_mem_nhdsGT_of_mem zero_mem
+  apply A_closed.Icc_subset_of_forall_mem_nhdsGT_of_Icc_subset zero_mem
   rintro t₁ ⟨ht₁0, ht₁1⟩ t₁_mem
   suffices γ t₁ ∈ v from
     γ_smooth.continuous.continuousWithinAt <| mem_of_superset (v_open.mem_nhds this) hv
