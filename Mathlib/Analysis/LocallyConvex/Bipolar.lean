@@ -31,7 +31,7 @@ variable [Module 𝕜 E] [Module 𝕜 F]
 
 variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜}
 
-#check (WeakBilin.eval B : F →ₗ[𝕜] WeakBilin B →L[𝕜] 𝕜)
+-- #check (WeakBilin.eval B : F →ₗ[𝕜] WeakBilin B →L[𝕜] 𝕜)
 
 -- TODO unify this and NormedAddGroupHom.coe_ker
 theorem coe_ker (f : E →ₗ[𝕜] 𝕜) :
@@ -85,23 +85,12 @@ variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 --   Topology/Algebra/Module/WeadDual
 -- `WeakBilin.isEmbedding` - topological
 
-variable [Module ℝ E]
 
 
 
-variable [IsScalarTower ℝ 𝕜 E]
-
-#check LinearMap.hasBasis_weakBilin B
-
-#check (nhds 0).HasBasis
-#check B.toSeminormFamily.basisSets
-#check _root_.id
 
 variable (f : WeakBilin B →L[𝕜] 𝕜)
 
-#check Metric.ball 0 1
-
-#check Continuous
 
 lemma test1 : IsOpen (f ⁻¹' (Metric.ball 0 1)) :=
   IsOpen.preimage (ContinuousLinearMap.continuous f) Metric.isOpen_ball
@@ -121,7 +110,7 @@ lemma test2 : (f ⁻¹' (Metric.ball 0 1))  ∈ (nhds 0) := by
   · exact fun ⦃a⦄ a ↦ a
   · exact And.symm (test2b B f)
 
-#check (Filter.HasBasis.mem_iff (LinearMap.hasBasis_weakBilin B)).mp (test2 B f)
+--#check (Filter.HasBasis.mem_iff (LinearMap.hasBasis_weakBilin B)).mp (test2 B f)
 
 lemma test3 : ∃ V ∈ B.toSeminormFamily.basisSets, V ⊆ (f ⁻¹' (Metric.ball 0 1)) := by
   obtain ⟨V, hV1, hV2⟩ := (Filter.HasBasis.mem_iff (LinearMap.hasBasis_weakBilin B)).mp (test2 B f)
@@ -152,11 +141,9 @@ lemma test4 :
 
 variable (s : Finset F)
 
-variable (g : s)
+--variable (g : s)
 
-#check g.prop
 
-#check g.val
 
 def mL : s → WeakBilin B →ₗ[𝕜] 𝕜 := fun f => (WeakBilin.eval B) f.val
 
@@ -218,7 +205,7 @@ variable (x : E)
 
 -/
 
-theorem iff (hs : s.Nonempty) : ↑f ∈ Submodule.span 𝕜 (Set.range (B.mL s)) ↔
+theorem iff : ↑f ∈ Submodule.span 𝕜 (Set.range (B.mL s)) ↔
     ∃ γ, ∀ (x : E), ‖f x‖ ≤ γ * ((s.sup B.toSeminormFamily) x) := by
   constructor
   · intro h
@@ -333,7 +320,8 @@ lemma test5 : ∃ (s₁ : Finset F), ↑f ∈ Submodule.span 𝕜 (Set.range (B.
     have i1 (fi : s₁) : (⟨‖(WeakBilin.eval B) fi x‖, norm_nonneg _⟩ : NNReal) ≤
         s₁.sup (α := NNReal)  (fun fi  => ⟨‖(WeakBilin.eval B) fi x‖, norm_nonneg _⟩) := by
       --norm_cast
-      apply Finset.le_sup (f := (fun fi  => (⟨‖(WeakBilin.eval B) fi x‖, norm_nonneg _⟩): : NNReal)) fi.prop
+      apply Finset.le_sup
+        (f := (fun fi  => (⟨‖(WeakBilin.eval B) fi x‖, norm_nonneg _⟩): : NNReal)) fi.prop
     -/
 
     have e2 : y ∈ (s₁.sup B.toSeminormFamily).ball 0 r⁻¹ := by
@@ -392,6 +380,10 @@ def strictEquiv2 : E ≃ₗ[𝕜] (WeakBilin B.flip) →L[𝕜] 𝕜 where
   toLinearMap := B
 -/
 
+/-
+variable [Module ℝ E]
+variable [IsScalarTower ℝ 𝕜 E]
+
 open scoped ComplexOrder
 theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s] (h : B.Nondegenerate):
     B.flip.polar (B.polar s) = closedAbsConvexHull (E := WeakBilin B) 𝕜 s := by
@@ -421,5 +413,6 @@ theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s
     sorry
 
   · exact closedAbsConvexHull_min (subset_bipolar B s) (polar_AbsConvex _) (polar_isClosed B.flip _)
+-/
 
 end LinearMap
