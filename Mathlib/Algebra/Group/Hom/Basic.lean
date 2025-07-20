@@ -67,6 +67,28 @@ theorem invMonoidHom_apply (a : α) : invMonoidHom a = a⁻¹ := rfl
 
 end DivisionCommMonoid
 
+
+namespace OneHom
+
+/-- Given two one-preserving morphisms `f`, `g` to a commutative semigroup,
+`f * g` is the one-preserving morphism sending `x` to `f x * g x`. -/
+@[to_additive "Given two zero-preserving morphisms `f`, `g` to an additive commutative semigroup,
+`f + g` is the additive morphism sending `x` to `f x + g x`."]
+instance [One M] [MulOneClass N] : Mul (OneHom M N) :=
+  ⟨fun f g =>
+    { toFun := fun m => f m * g m,
+      map_one' := by simp}⟩
+
+@[to_additive (attr := simp)]
+theorem mul_apply {M N} [One M] [MulOneClass N] (f g : OneHom M N) (x : M) :
+    (f * g) x = f x * g x := rfl
+
+@[to_additive]
+theorem mul_comp [One M] [One N] [MulOneClass P] (g₁ g₂ : OneHom N P) (f : OneHom M N) :
+    (g₁ * g₂).comp f = g₁.comp f * g₂.comp f := rfl
+
+end OneHom
+
 namespace MulHom
 
 /-- Given two mul morphisms `f`, `g` to a commutative semigroup, `f * g` is the mul morphism
