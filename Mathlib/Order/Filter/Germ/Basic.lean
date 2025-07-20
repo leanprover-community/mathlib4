@@ -6,6 +6,7 @@ Authors: Yury Kudryashov, Abhimanyu Pallavi Sudhir
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 import Mathlib.Data.Int.Cast.Pi
+import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Order.Filter.Tendsto
 
