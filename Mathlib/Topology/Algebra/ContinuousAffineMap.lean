@@ -28,13 +28,13 @@ to the notation `E →L[R] F` for `ContinuousLinearMap R E F`.
 -/
 
 
-/-- A continuous map of affine spaces. -/
+/-- A continuous map of affine spaces -/
 structure ContinuousAffineMap (R : Type*) {V W : Type*} (P Q : Type*) [Ring R] [AddCommGroup V]
   [Module R V] [TopologicalSpace P] [AddTorsor V P] [AddCommGroup W] [Module R W]
   [TopologicalSpace Q] [AddTorsor W Q] extends P →ᵃ[R] Q where
   cont : Continuous toFun
 
-/-- A continuous map of affine spaces. -/
+/-- A continuous map of affine spaces -/
 notation:25 P " →ᴬ[" R "] " Q => ContinuousAffineMap R P Q
 
 namespace ContinuousAffineMap
@@ -113,32 +113,43 @@ protected theorem continuous (f : P →ᴬ[R] Q) : Continuous f := f.2
 
 variable (R P)
 
-/-- The constant map is a continuous affine map. -/
+/-- The constant map as a continuous affine map -/
 def const (q : Q) : P →ᴬ[R] Q :=
-  { AffineMap.const R P q with
-    toFun := AffineMap.const R P q
-    cont := continuous_const }
+  { AffineMap.const R P q with cont := continuous_const }
 
 @[simp]
-theorem coe_const (q : Q) : (const R P q : P → Q) = Function.const P q := rfl
+theorem coe_const (q : Q) : ⇑(const R P q) = Function.const P q := rfl
 
 noncomputable instance : Inhabited (P →ᴬ[R] Q) :=
   ⟨const R P <| Nonempty.some (by infer_instance : Nonempty Q)⟩
 
-variable {R P} {W₂ Q₂ : Type*}
+/-- The identity map as a continuous affine map -/
+def id : P →ᴬ[R] P := { AffineMap.id R P with cont := continuous_id }
+
+@[simp, norm_cast]
+theorem coe_id : ⇑(id R P) = _root_.id := rfl
+
+variable {R P} {W₂ Q₂ W₃ Q₃ : Type*}
 variable [AddCommGroup W₂] [Module R W₂] [TopologicalSpace Q₂] [AddTorsor W₂ Q₂]
 
-/-- The composition of morphisms is a morphism. -/
+/-- The composition of continuous affine maps as a continuous affine map -/
 def comp (f : Q →ᴬ[R] Q₂) (g : P →ᴬ[R] Q) : P →ᴬ[R] Q₂ :=
   { (f : Q →ᵃ[R] Q₂).comp (g : P →ᵃ[R] Q) with cont := f.cont.comp g.cont }
 
 @[simp, norm_cast]
-theorem coe_comp (f : Q →ᴬ[R] Q₂) (g : P →ᴬ[R] Q) :
-    (f.comp g : P → Q₂) = (f : Q → Q₂) ∘ (g : P → Q) := rfl
+theorem coe_comp (f : Q →ᴬ[R] Q₂) (g : P →ᴬ[R] Q) : ⇑(f.comp g) = f ∘ g := rfl
 
-theorem comp_apply (f : Q →ᴬ[R] Q₂) (g : P →ᴬ[R] Q) (x : P) : f.comp g x = f (g x) := rfl
+theorem comp_apply (f : Q →ᴬ[R] Q₂) (g : P →ᴬ[R] Q) (p : P) : f.comp g p = f (g p) := rfl
 
-/-- The continuous affine map sending `0` to `p₀` and `1` to `p₁`. -/
+@[simp]
+theorem comp_id (f : P →ᴬ[R] Q) : f.comp (id R P) = f :=
+  ext fun _ => rfl
+
+@[simp]
+theorem id_comp (f : P →ᴬ[R] Q) : (id R Q).comp f = f :=
+  ext fun _ => rfl
+
+/-- The continuous affine map sending `0` to `p₀` and `1` to `p₁` -/
 def lineMap (p₀ p₁ : P) [TopologicalSpace R] [TopologicalSpace V]
     [ContinuousSMul R V] [ContinuousVAdd V P] : R →ᴬ[R] P where
   toAffineMap := AffineMap.lineMap p₀ p₁
