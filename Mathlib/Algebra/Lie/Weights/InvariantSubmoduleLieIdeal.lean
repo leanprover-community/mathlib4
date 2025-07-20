@@ -25,8 +25,6 @@ of a Cartan subalgebra.
 * The constructed object is indeed a Lie ideal
 -/
 
-set_option maxHeartbeats 1000000
-
 variable {K L : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L]
 variable [LieAlgebra.IsKilling K L] [FiniteDimensional K L]
 
@@ -54,7 +52,12 @@ lemma exists_root_index_of_in_index_set (q : Submodule K (Dual K H))
   use ⟨α.1, hα_in_root⟩
   rfl
 
-/-- Constructs a Lie ideal from an invariant submodule of the dual space of a Cartan subalgebra. -/
+set_option maxHeartbeats 1000000 in
+-- The proof involves extensive case analysis.
+/-- Constructs a Lie ideal from an invariant submodule of the dual space of a Cartan subalgebra.
+Given a submodule `q` of the dual space `Dual K H` that is invariant under all root reflections,
+this produces a Lie ideal by taking the supremum of all `sl₂` subalgebras corresponding to
+roots whose linear forms lie in `q`. -/
 noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
     (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i)) :
     LieIdeal K L where
