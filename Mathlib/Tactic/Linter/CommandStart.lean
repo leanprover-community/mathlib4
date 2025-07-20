@@ -524,25 +524,63 @@ def readWhile (s t : Substring) : Substring :=
   guard <| (readWhile (" :=".toSubstring) t).toString == " 0"
   guard <| (readWhile (" := ".toSubstring) t).toString == "0"
 
+def _root_.Substring.toRange (s : Substring) : String.Range where
+  start := s.startPos
+  stop := s.stopPos
+
+structure mex where
+  rg : String.Range
+  error : String
+  kinds : Array SyntaxNodeKind
+
+def mex.toString {m} [Monad m] [MonadFileMap m] (ex : mex) : m String := do
+  let fm ← getFileMap
+  return s!"{ex.error} {(fm.toPosition ex.rg.start, fm.toPosition ex.rg.stop)} ({ex.kinds})"
+
+abbrev unparseable : Array SyntaxNodeKind := #[
+  ``Parser.Command.macro_rules,
+  ``runCmd,
+]
+
+def filterSortExceptions (as : Array mex) : Array mex :=
+  let filtered := as.filter fun {kinds := k,..} =>
+      !#[
+        ``Parser.Command.docComment,
+        ``Parser.Command.moduleDoc,
+        `Mathlib.Meta.setBuilder,
+      ].any k.contains
+  filtered.qsort (·.rg.start < ·.rg.start)
+
 abbrev forceSpaceAfter : Array SyntaxNodeKind := #[
   ``Parser.Tactic.rcases,
   `token.«·»,
   ``Parser.Term.let,
   ]
 
+abbrev forceNoSpaceAfter : Array SyntaxNodeKind := #[
+  --``Parser.Term.doubleQuotedName,
+  `atom.«`»,  -- useful for double-quoted names
+  `atom.syntax,  -- skips just `syntax:60 ...`
+  ]
+
 def processAtomOrIdent {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions m]
-    (k : SyntaxNodeKind) (val str : Substring) : m (Substring × Substring × Substring) := do
+    (k : Array SyntaxNodeKind) (val str : Substring) : m (Substring × Substring × Substring) := do
   let read := readWhile val str
-  if read == str && !read.isEmpty then
-    logWarning m!"No change at '{read}'"
+  if read == str && (!read.isEmpty) && (!k.contains `hygieneInfo) then
+    logWarning m!"No change at '{read}' {k}"
+  --dbg_trace k
   let (next, strNew) :=
     -- Case `read = " "`
     if (read.take 1).toString == " "
     then
-      (" ".toSubstring, read.drop 1)
+      -- Case `read = " "` but we do not want a space after
+      if !(forceNoSpaceAfter.filter ((k.drop (k.size - 2)).contains)).isEmpty then
+        ("".toSubstring, read.drop 1)
+      else
+        (" ".toSubstring, read.drop 1)
     else
     -- Case `read = ""` but we want a space after anyway
-    if forceSpaceAfter.contains k then
+    if !(forceSpaceAfter.filter ((k.drop (k.size - 2)).contains)).isEmpty then
       (" ".toSubstring, read)
     -- Case `read = ""` and we follow the pretty-printer recommendation
     else
@@ -561,7 +599,7 @@ This essentially converts `noSpaceStx` into a `Syntax` tree whose traversal reco
 -/
 def insertSpacesAux {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions m]
     (verbose? : Bool) :
-    SyntaxNodeKind → Syntax → Substring → m (Syntax × Substring)
+    Array SyntaxNodeKind → Syntax → Substring → m (Syntax × Substring)
   | k, .ident info rawVal val pre, str => do
     --let read := readWhile rawVal str
     --if read == str && !read.isEmpty then
@@ -572,7 +610,7 @@ def insertSpacesAux {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptio
     --    (" ".toSubstring, read.drop 1)
     --  else
     --    ("".toSubstring, read)
-    let (next, strNew, read) ← processAtomOrIdent k rawVal str
+    let (next, strNew, read) ← processAtomOrIdent (k.push (.str `ident rawVal.toString)) rawVal str
     if verbose? then
       dbg_trace
         s!"* ident '{rawVal}'\nStr: '{str}'\nRed: '{read}'\nNxt: '{next}'\nNew: '{strNew}'\n"
@@ -587,19 +625,19 @@ def insertSpacesAux {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptio
     --    (" ".toSubstring, read.drop 1)
     --  else
     --    ("".toSubstring, read)
-    let (next, strNew, read) ← processAtomOrIdent k val.toSubstring str
+    let (next, strNew, read) ← processAtomOrIdent (k.push (.str `atom val)) val.toSubstring str
     if verbose? then
       dbg_trace
         s!"* atom '{val}'\nStr: '{str}'\nRed: '{read}'\nNxt: '{next}'\nNew: '{strNew}'\n"
     pure (.atom (modifyTail info next) val, strNew)
-  | _, .node info kind args, str => do
+  | k, .node info kind args, str => do
     --let kind := if kind == `null then k else kind
     let mut str' := str
     let mut stxs := #[]
     for arg in args do
-      let (newStx, strNew) ← insertSpacesAux verbose? kind arg str'
+      let (newStx, strNew) ← insertSpacesAux verbose? (k.push kind) arg str'
       if verbose? then
-        dbg_trace s!"'{strNew}' intermediate string at {kind}"
+        dbg_trace s!"'{strNew}' intermediate string at {k.push kind}"
       str' := strNew.trimLeft
       stxs := stxs.push newStx
     pure (.node info kind stxs, str')
@@ -617,22 +655,9 @@ In particular, it erases all comments embedded in `SourceInfo`s.
 def insertSpaces (verbose? : Bool) (stx : Syntax) : CommandElabM (Option Syntax) := do
   let stxNoSpaces := stx.eraseLeadTrailSpaces
   if let some pretty := ← Mathlib.Linter.pretty stxNoSpaces then
-    let withSpaces ← insertSpacesAux verbose? stx.getKind stx pretty.toSubstring
+    let withSpaces ← insertSpacesAux verbose? #[stx.getKind] stx pretty.toSubstring
     return withSpaces.1
   else return none
-
-structure mex where
-  rg : String.Range
-  error : String
-  kinds : Array SyntaxNodeKind
-
-def mex.toString {m} [Monad m] [MonadFileMap m] (ex : mex) : m String := do
-  let fm ← getFileMap
-  return s!"{ex.error} {(fm.toPosition ex.rg.start, fm.toPosition ex.rg.stop)} ({ex.kinds})"
-
-def _root_.Substring.toRange (s : Substring) : String.Range where
-  start := s.startPos
-  stop := s.stopPos
 
 def allowedTrail (ks : Array SyntaxNodeKind) (orig pp : Substring) : Option mex :=
   let orig1 := (orig.take 1).toString
@@ -672,9 +697,15 @@ partial
 def _root_.Lean.Syntax.compareSpaces : Array SyntaxNodeKind → Array mex → Syntax → Syntax → Array mex
   | kinds, tot, .node _ kind a1, .node _ _ a2 =>
     a1.zipWith (fun a b => a.compareSpaces (kinds.push kind) tot b) a2 |>.flatten
-  | kinds, tot, .ident origInfo .., .ident ppInfo ..
-  | kinds, tot, .atom origInfo .., .atom ppInfo .. =>
-    if let some e := origInfo.compareSpaces (kinds.push `atomIdent) ppInfo then tot.push e else tot
+  | kinds, tot, .ident origInfo rawVal .., .ident ppInfo .. =>
+    --let val := rawVal--.toString
+    if let some e := origInfo.compareSpaces (kinds.push (.str `ident rawVal.toString)) ppInfo
+    then
+      tot.push e else tot
+  | kinds, tot, .atom origInfo val .., .atom ppInfo .. =>
+    if let some e := origInfo.compareSpaces (kinds.push (.str `atom val)) ppInfo
+    then
+      tot.push e else tot
   | _, tot, _, _ => tot
 --  | tot, .missing .., .missing .. => tot
 --  | tot, .node _ k _, _ => tot
@@ -1074,7 +1105,7 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   --if stx.getSubstring?.map toString != some stx.regString then
   --  dbg_trace stx.regString
-  if stx.find? (·.isOfKind ``runCmd) |>.isSome then
+  if stx.find? (unparseable.contains ·.getKind) |>.isSome then
     return
   let comps := (← getMainModule).components
   --dbg_trace "lint0"
@@ -1087,8 +1118,7 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   -- If a command does not start on the first column, emit a warning.
   --dbg_trace "lint1"
-  for m in (← getExceptions stx).filter fun {kinds := k,..} =>
-      !#[``Parser.Command.docComment, ``Parser.Command.moduleDoc].contains (k.pop.back?.getD .anonymous) do
+  for m in filterSortExceptions (← getExceptions stx) do
     logInfoAt (.ofRange m.rg) m!"{m.error} ({m.kinds})"
 /-
   if let some pos := stx.getPos? then
