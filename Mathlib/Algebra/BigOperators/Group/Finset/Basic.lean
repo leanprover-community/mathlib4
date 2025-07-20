@@ -72,7 +72,7 @@ theorem prod_pair [DecidableEq ι] {a b : ι} (h : a ≠ b) :
 
 @[to_additive (attr := simp)]
 theorem prod_image [DecidableEq ι] {s : Finset κ} {g : κ → ι} :
-    (∀ x ∈ s, ∀ y ∈ s, g x = g y → x = y) → ∏ x ∈ s.image g, f x = ∏ x ∈ s, f (g x) :=
+    Set.InjOn g s → ∏ x ∈ s.image g, f x = ∏ x ∈ s, f (g x) :=
   fold_image
 
 @[to_additive]
@@ -178,15 +178,21 @@ theorem prod_subset (h : s₁ ⊆ s₂) (hf : ∀ x ∈ s₂, x ∉ s₁ → f x
   prod_subset_one_on_sdiff h (by simpa) fun _ _ => rfl
 
 @[to_additive (attr := simp)]
-theorem prod_disj_sum (s : Finset ι) (t : Finset κ) (f : ι ⊕ κ → M) :
+theorem prod_disjSum (s : Finset ι) (t : Finset κ) (f : ι ⊕ κ → M) :
     ∏ x ∈ s.disjSum t, f x = (∏ x ∈ s, f (Sum.inl x)) * ∏ x ∈ t, f (Sum.inr x) := by
   rw [← map_inl_disjUnion_map_inr, prod_disjUnion, prod_map, prod_map]
   rfl
 
+@[deprecated (since := "2025-06-11")]
+alias sum_disj_sum := sum_disjSum
+
+@[to_additive existing, deprecated (since := "2025-06-11")]
+alias prod_disj_sum := prod_disjSum
+
 @[to_additive]
 lemma prod_sum_eq_prod_toLeft_mul_prod_toRight (s : Finset (ι ⊕ κ)) (f : ι ⊕ κ → M) :
     ∏ x ∈ s, f x = (∏ x ∈ s.toLeft, f (Sum.inl x)) * ∏ x ∈ s.toRight, f (Sum.inr x) := by
-  rw [← Finset.toLeft_disjSum_toRight (u := s), Finset.prod_disj_sum, Finset.toLeft_disjSum,
+  rw [← Finset.toLeft_disjSum_toRight (u := s), Finset.prod_disjSum, Finset.toLeft_disjSum,
     Finset.toRight_disjSum]
 
 @[to_additive]
@@ -206,7 +212,7 @@ variable {s : Finset ι} {t : Finset κ} {f : ι → M} {g : κ → M}
 
 @[to_additive]
 lemma prod_of_injOn (e : ι → κ) (he : Set.InjOn e s) (hest : Set.MapsTo e s t)
-    (h' : ∀ i ∈ t, i ∉ e '' s → g i = 1) (h : ∀ i ∈ s, f i = g (e i))  :
+    (h' : ∀ i ∈ t, i ∉ e '' s → g i = 1) (h : ∀ i ∈ s, f i = g (e i)) :
     ∏ i ∈ s, f i = ∏ j ∈ t, g j := by
   classical
   exact (prod_nbij e (fun a ↦ mem_image_of_mem e) he (by simp [Set.surjOn_image]) h).trans <|
@@ -485,22 +491,14 @@ theorem prod_bij_ne_one {s : Finset ι} {t : Finset κ} {f : ι → M} {g : κ �
       prod_bij (fun a ha => i a (mem_filter.mp ha).1 <| by simpa using (mem_filter.mp ha).2)
         ?_ ?_ ?_ ?_
     _ = ∏ x ∈ t, g x := prod_filter_ne_one _
-  · intros a ha
-    refine (mem_filter.mp ha).elim ?_
-    intros h₁ h₂
-    refine (mem_filter.mpr ⟨hi a h₁ _, ?_⟩)
-    specialize h a h₁ fun H ↦ by rw [H] at h₂; simp at h₂
-    rwa [← h]
-  · intros a₁ ha₁ a₂ ha₂
-    refine (mem_filter.mp ha₁).elim fun _ha₁₁ _ha₁₂ ↦ ?_
-    refine (mem_filter.mp ha₂).elim fun _ha₂₁ _ha₂₂ ↦ ?_
-    apply i_inj
+  · simp only [ne_eq, mem_filter]
+    grind
+  · solve_by_elim
   · intros b hb
     refine (mem_filter.mp hb).elim fun h₁ h₂ ↦ ?_
     obtain ⟨a, ha₁, ha₂, eq⟩ := i_surj b h₁ fun H ↦ by rw [H] at h₂; simp at h₂
     exact ⟨a, mem_filter.mpr ⟨ha₁, ha₂⟩, eq⟩
-  · refine (fun a ha => (mem_filter.mp ha).elim fun h₁ h₂ ↦ ?_)
-    exact h a h₁ fun H ↦ by rw [H] at h₂; simp at h₂
+  · solve_by_elim
 
 @[to_additive]
 theorem exists_ne_one_of_prod_ne_one (h : ∏ x ∈ s, f x ≠ 1) : ∃ a ∈ s, f a ≠ 1 := by
@@ -602,19 +600,22 @@ theorem prod_multiset_count_of_subset [DecidableEq M] (m : Multiset M) (s : Fins
   apply prod_list_count_of_subset l s
 
 /-- For any product along `{0, ..., n - 1}` of a commutative-monoid-valued function, we can verify
-that it's equal to a different function just by checking ratios of adjacent terms.
+that it's equal to a different function just by checking ratios of adjacent terms up to `n`.
 
 This is a multiplicative discrete analogue of the fundamental theorem of calculus. -/
 @[to_additive "For any sum along `{0, ..., n - 1}` of a commutative-monoid-valued function, we can
-verify that it's equal to a different function just by checking differences of adjacent terms.
+verify that it's equal to a different function just by checking differences of adjacent terms up to
+`n`.
 
 This is a discrete analogue of the fundamental theorem of calculus."]
 theorem prod_range_induction (f s : ℕ → M) (base : s 0 = 1)
-    (step : ∀ n, s (n + 1) = s n * f n) (n : ℕ) :
+    (n : ℕ) (step : ∀ k < n, s (k + 1) = s k * f k) :
     ∏ k ∈ Finset.range n, f k = s n := by
   induction n with
   | zero => rw [Finset.prod_range_zero, base]
-  | succ k hk => simp only [hk, Finset.prod_range_succ, step, mul_comm]
+  | succ k hk =>
+    rw [Finset.prod_range_succ, step _ (Nat.lt_succ_self _), hk]
+    exact fun _ hl ↦ step _ (Nat.lt_succ_of_lt hl)
 
 @[to_additive (attr := simp)]
 theorem prod_const (b : M) : ∏ _x ∈ s, b = b ^ #s :=
@@ -670,11 +671,8 @@ lemma prod_involution (g : ∀ a ∈ s, ι) (hg₁ : ∀ a ha, f a * f (g a ha) 
   suffices h₃ : ∀ a (ha : a ∈ s \ {x, g x hx}), g a (sdiff_subset ha) ∈ s \ {x, g x hx} from
     ih (s \ {x, g x hx}) (ssubset_iff.2 ⟨x, by simp [insert_subset_iff, hx]⟩) _
       (by simp [hg₁]) (fun _ _ => hg₃ _ _) h₃ (fun _ _ => hg₄ _ _)
-  simp only [mem_sdiff, mem_insert, mem_singleton, not_or, g_mem, true_and]
-  rintro a ⟨ha₁, ha₂, ha₃⟩
-  refine ⟨fun h => by simp [← h, hg₄] at ha₃, fun h => ?_⟩
-  have : g (g a ha₁) (g_mem _ _) = g (g x hx) (g_mem _ _) := by simp only [h]
-  exact ha₂ (by simpa [hg₄] using this)
+  simp only [mem_sdiff, mem_insert, mem_singleton, not_or]
+  grind
 
 /-- The difference with `Finset.prod_involution` is that the involution is a non-dependent function,
 rather than being allowed to use membership of the domain of the product. -/
@@ -919,7 +917,7 @@ lemma sum_range_tsub {f : ℕ → M} (h : Monotone f) (n : ℕ) :
   apply sum_range_induction
   case base => apply tsub_eq_of_eq_add; rw [zero_add]
   case step =>
-    intro n
+    intro n _
     have h₁ : f n ≤ f (n + 1) := h (Nat.le_succ _)
     have h₂ : f 0 ≤ f n := h (Nat.zero_le _)
     rw [tsub_add_eq_add_tsub h₂, add_tsub_cancel_of_le h₁]
@@ -1105,5 +1103,5 @@ theorem nat_abs_sum_le (s : Finset ι) (f : ι → ℤ) :
   induction s using Finset.cons_induction with
   | empty => simp only [Finset.sum_empty, Int.natAbs_zero, le_refl]
   | cons i s his IH =>
-    simp only [Finset.sum_cons, not_false_iff]
+    simp only [Finset.sum_cons]
     exact (Int.natAbs_add_le _ _).trans (Nat.add_le_add_left IH _)

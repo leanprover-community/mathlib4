@@ -140,19 +140,19 @@ theorem Ioo_eq_zero (h : ¬a < b) : Ioo a b = 0 :=
 
 @[simp]
 theorem Icc_eq_zero_of_lt (h : b < a) : Icc a b = 0 :=
-  Icc_eq_zero h.not_le
+  Icc_eq_zero h.not_ge
 
 @[simp]
 theorem Ico_eq_zero_of_le (h : b ≤ a) : Ico a b = 0 :=
-  Ico_eq_zero h.not_lt
+  Ico_eq_zero h.not_gt
 
 @[simp]
 theorem Ioc_eq_zero_of_le (h : b ≤ a) : Ioc a b = 0 :=
-  Ioc_eq_zero h.not_lt
+  Ioc_eq_zero h.not_gt
 
 @[simp]
 theorem Ioo_eq_zero_of_le (h : b ≤ a) : Ioo a b = 0 :=
-  Ioo_eq_zero h.not_lt
+  Ioo_eq_zero h.not_gt
 
 variable (a)
 
@@ -246,7 +246,7 @@ theorem Ioo_cons_left (h : a < b) : a ::ₘ Ioo a b = Ico a b := by
 theorem Ico_disjoint_Ico {a b c d : α} (h : b ≤ c) : Disjoint (Ico a b) (Ico c d) :=
   disjoint_left.mpr fun hab hbc => by
     rw [mem_Ico] at hab hbc
-    exact hab.2.not_le (h.trans hbc.1)
+    exact hab.2.not_ge (h.trans hbc.1)
 
 @[simp]
 theorem Ico_inter_Ico_of_le [DecidableEq α] {a b c d : α} (h : b ≤ c) : Ico a b ∩ Ico c d = 0 :=

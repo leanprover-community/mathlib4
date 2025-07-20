@@ -122,7 +122,7 @@ noncomputable def mkHomFromDouble : double f hi₀₁ ⟶ K where
     · subst h₀
       rw [dif_pos rfl]
       obtain rfl := c.next_eq hk hi₀₁
-      simp [dif_neg h.symm, dif_pos rfl, double_d f hi₀₁ h, comm]
+      simp [dif_neg h.symm, double_d f hi₀₁ h, comm]
     · rw [dif_neg h₀]
       by_cases h₁ : k₀ = i₁
       · subst h₁

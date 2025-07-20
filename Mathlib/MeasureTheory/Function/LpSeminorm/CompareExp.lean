@@ -67,8 +67,7 @@ theorem eLpNorm_le_eLpNorm_mul_rpow_measure_univ {p q : ℝ≥0∞} (hpq : p ≤
   have hp0_lt : 0 < p := lt_of_le_of_ne (zero_le _) hp0.symm
   have hq0_lt : 0 < q := lt_of_lt_of_le hp0_lt hpq
   by_cases hq_top : q = ∞
-  · simp only [hq_top, _root_.div_zero, one_div, ENNReal.toReal_top, sub_zero, eLpNorm_exponent_top,
-      GroupWithZero.inv_zero]
+  · simp only [hq_top, _root_.div_zero, one_div, ENNReal.toReal_top, sub_zero, eLpNorm_exponent_top]
     by_cases hp_top : p = ∞
     · simp [hp_top]
     rw [eLpNorm_eq_eLpNorm' hp0 hp_top]
@@ -99,7 +98,7 @@ theorem eLpNorm_le_eLpNorm_of_exponent_le {p q : ℝ≥0∞} (hpq : p ≤ q) [Is
 theorem eLpNorm'_lt_top_of_eLpNorm'_lt_top_of_exponent_le {p q : ℝ} [IsFiniteMeasure μ]
     (hf : AEStronglyMeasurable f μ) (hfq_lt_top : eLpNorm' f q μ < ∞) (hp_nonneg : 0 ≤ p)
     (hpq : p ≤ q) : eLpNorm' f p μ < ∞ := by
-  rcases le_or_lt p 0 with hp_nonpos | hp_pos
+  rcases le_or_gt p 0 with hp_nonpos | hp_pos
   · rw [le_antisymm hp_nonpos hp_nonneg]
     simp
   have hq_pos : 0 < q := lt_of_lt_of_le hp_pos hpq

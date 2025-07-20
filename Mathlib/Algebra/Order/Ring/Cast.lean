@@ -45,7 +45,7 @@ variable [NeZero (1 : R)] {m n : ℤ}
   | (n : ℕ) => by simp
   | -[n+1] => by
     have : -(n : R) < 1 := lt_of_le_of_lt (by simp) zero_lt_one
-    simpa [(negSucc_lt_zero n).not_le, ← sub_eq_add_neg, le_neg] using this.not_le
+    simpa [(negSucc_lt_zero n).not_ge, ← sub_eq_add_neg, le_neg] using this.not_ge
 
 @[simp, norm_cast] lemma cast_le : (m : R) ≤ n ↔ m ≤ n := by
   rw [← sub_nonneg, ← cast_sub, cast_nonneg, sub_nonneg]
@@ -85,7 +85,7 @@ lemma cast_le_neg_one_of_neg (h : a < 0) : (a : R) ≤ -1 := by
 
 variable (R) in
 lemma cast_le_neg_one_or_one_le_cast_of_ne_zero (hn : n ≠ 0) : (n : R) ≤ -1 ∨ 1 ≤ (n : R) :=
-  hn.lt_or_lt.imp cast_le_neg_one_of_neg cast_one_le_of_pos
+  hn.lt_or_gt.imp cast_le_neg_one_of_neg cast_one_le_of_pos
 
 lemma nneg_mul_add_sq_of_abs_le_one (n : ℤ) (hx : |x| ≤ 1) : (0 : R) ≤ n * x + n * n := by
   have hnx : 0 < n → 0 ≤ x + n := fun hn => by

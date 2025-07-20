@@ -27,7 +27,7 @@ namespace PrimeSpectrum
 
 theorem exist_mem_one_of_mem_maximal_ideal [IsLocalRing R] {p₁ p₀ : PrimeSpectrum R}
     (h₀ : p₀ < p₁) (h₁ : p₁ < closedPoint R) {x : R} (hx : x ∈ 𝔪) :
-      ∃ q : PrimeSpectrum R, x ∈ q.asIdeal ∧ p₀ < q ∧ q.asIdeal < 𝔪 := by
+    ∃ q : PrimeSpectrum R, x ∈ q.asIdeal ∧ p₀ < q ∧ q.asIdeal < 𝔪 := by
   by_cases hn : x ∈ p₀.1
   · exact ⟨p₁, h₀.le hn, h₀, h₁⟩
   let e := p₀.1.primeSpectrumQuotientOrderIsoZeroLocus.symm
@@ -37,7 +37,7 @@ theorem exist_mem_one_of_mem_maximal_ideal [IsLocalRing R] {p₁ p₀ : PrimeSpe
   let q : PrimeSpectrum R := ⟨q, hq.1.1⟩
   have : q.1.IsPrime := q.2
   have hxq : x ∈ q.1 := le_sup_right.trans hq.1.2 (mem_span_singleton_self x)
-  refine ⟨q, hxq, lt_of_le_not_le (le_sup_left.trans hq.1.2) fun h ↦ hn (h hxq), ?_⟩
+  refine ⟨q, hxq, lt_of_le_not_ge (le_sup_left.trans hq.1.2) fun h ↦ hn (h hxq), ?_⟩
   refine lt_of_le_of_ne (IsLocalRing.le_maximalIdeal_of_isPrime q.1) fun hqm ↦ ?_
   have h : (e ⟨q, le_sup_left.trans hq.1.2⟩).1.height ≤ 1 :=
     map_height_le_one_of_mem_minimalPrimes hq
@@ -50,8 +50,8 @@ theorem exist_mem_one_of_mem_maximal_ideal [IsLocalRing R] {p₁ p₀ : PrimeSpe
 
 theorem exist_mem_one_of_mem_two {p₁ p₀ p₂ : PrimeSpectrum R}
     (h₀ : p₀ < p₁) (h₁ : p₁ < p₂) {x : R} (hx : x ∈ p₂.asIdeal) :
-      ∃ q : (PrimeSpectrum R), x ∈ q.asIdeal ∧ p₀ < q ∧ q < p₂ := by
-  let e := p₂.1.primeSpectrumLocalizationAtPrime (Localization.AtPrime p₂.1)
+    ∃ q : (PrimeSpectrum R), x ∈ q.asIdeal ∧ p₀ < q ∧ q < p₂ := by
+  let e := IsLocalization.AtPrime.primeSpectrumOrderIso (Localization.AtPrime p₂.1) p₂.1
   have hm : closedPoint (Localization.AtPrime p₂.1) =
     e.symm ⟨p₂, le_refl p₂⟩ := (PrimeSpectrum.ext Localization.AtPrime.map_eq_maximalIdeal).symm
   obtain ⟨q, hxq, h₀, h₁⟩ :=
@@ -74,10 +74,10 @@ theorem exist_mem_one_of_mem_two {p₁ p₀ p₂ : PrimeSpectrum R}
   $\mathfrak{p}_0 = \mathfrak{q}_0$ and $\mathfrak{p}_n = \mathfrak{q}_n$. -/
 theorem exist_ltSeries_mem_one_of_mem_last (p : LTSeries (PrimeSpectrum R))
     {x : R} (hx : x ∈ p.last.asIdeal) : ∃ q : LTSeries (PrimeSpectrum R),
-      x ∈ (q 1).asIdeal ∧ p.length = q.length ∧ p.head = q.head ∧ p.last = q.last := by
+    x ∈ (q 1).asIdeal ∧ p.length = q.length ∧ p.head = q.head ∧ p.last = q.last := by
   generalize hp : p.length = n
   induction' n with n hn generalizing p
-  · use RelSeries.singleton (· < ·) p.last
+  · use RelSeries.singleton _ p.last
     simp only [RelSeries.singleton_toFun, hx, RelSeries.singleton_length, RelSeries.head,
       RelSeries.last_singleton, and_true, true_and]
     rw [show 0 = Fin.last p.length from Fin.zero_eq_mk.mpr hp, RelSeries.last]
@@ -99,14 +99,14 @@ theorem exist_ltSeries_mem_one_of_mem_last (p : LTSeries (PrimeSpectrum R))
       simp only [RelSeries.snoc_length, RelSeries.eraseLast_length, hp]
       exact Nat.succ_pred_eq_of_ne_zero h0
   refine ⟨Q.snoc p.last ?_, ?_, ?_, ?_, ?_⟩
-  · simp only [← hl, RelSeries.last_snoc, hq]
+  · simp [← hl, RelSeries.last_snoc, hq]
   · have h1 : 1 = (1 : Fin (Q.length + 1)).castSucc := by
       have h : 1 < Q.length + 1 := by
         rw [← hQ]
         exact Nat.sub_ne_zero_iff_lt.mp h0
       simp only [Fin.one_eq_mk_of_lt h, Fin.castSucc_mk, Fin.mk_one]
     simp only [h1, RelSeries.snoc_castSucc, hxQ]
-  · simp only [hQ, RelSeries.snoc_length, Nat.add_left_cancel_iff]
+  · simp only [hQ, RelSeries.snoc_length]
   · simp only [RelSeries.head_snoc, ← hh, RelSeries.head_eraseLast]
   · simp only [RelSeries.last_snoc]
 

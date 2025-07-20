@@ -230,7 +230,7 @@ noncomputable def lift' [Full F] : c ⟶ hf'.pullback g := hf'.lift _ _ hi
 
 @[reassoc (attr := simp)]
 lemma lift'_fst [Full F] [Faithful F] : hf'.lift' i h hi ≫ hf'.fst' g = i :=
-  F.map_injective (by simp [map_fst', lift'])
+  F.map_injective (by simp [lift'])
 
 @[reassoc (attr := simp)]
 lemma lift'_snd [Full F] [Faithful F] : hf'.lift' i h hi ≫ hf'.snd g = h := by

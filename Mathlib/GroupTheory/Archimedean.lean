@@ -84,7 +84,7 @@ theorem Subgroup.exists_isLeast_one_lt {H : Subgroup G} (hbot : H ≠ ⊥) {a : 
     not_le] at hxmin
   rcases hxmin x ⟨hxH, (one_le_pow_of_one_le'  h₀.le _).trans_lt hnx⟩ with ⟨y, ⟨hyH, hy₀⟩, hxy⟩
   rcases hex y hy₀ with ⟨m, hm⟩
-  rcases lt_or_le m n with hmn | hnm
+  rcases lt_or_ge m n with hmn | hnm
   · exact hmin m hmn ⟨y, hyH, hm⟩
   · refine disjoint_left.1 hd (div_mem hxH hyH) ⟨one_lt_div'.2 hxy, div_lt_iff_lt_mul'.2 ?_⟩
     calc x ≤ a^ (n + 1) := hxn
@@ -106,5 +106,5 @@ theorem Subgroup.cyclic_of_isolated_one {H : Subgroup G} {a : G} (h₀ : 1 < a)
 /-- Every subgroup of `ℤ` is cyclic. -/
 theorem Int.subgroup_cyclic (H : AddSubgroup ℤ) : ∃ a, H = AddSubgroup.closure {a} :=
   have : Ioo (0 : ℤ) 1 = ∅ := eq_empty_of_forall_notMem fun _ hm =>
-    hm.1.not_le (lt_add_one_iff.1 hm.2)
+    hm.1.not_ge (lt_add_one_iff.1 hm.2)
   AddSubgroup.cyclic_of_isolated_zero one_pos <| by simp [this]

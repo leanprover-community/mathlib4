@@ -50,10 +50,10 @@ private lemma exists_perm_eq_zero_implies_eq_zero [Nonempty n] {s : R} (hs : 0 <
   rw [exists_mem_doublyStochastic_eq_smul_iff hs.le] at hM
   let f (i : n) : Finset n := {j | M i j ≠ 0}
   have hf (A : Finset n) : #A ≤ #(A.biUnion f) := by
-    have (i) : ∑ j ∈ f i, M i j = s := by simp [f, sum_subset (filter_subset _ _), hM.2.1]
+    have (i : _) : ∑ j ∈ f i, M i j = s := by simp [f, sum_subset (filter_subset _ _), hM.2.1]
     have h₁ : ∑ i ∈ A, ∑ j ∈ f i, M i j = #A * s := by simp [this]
     have h₂ : ∑ i, ∑ j ∈ A.biUnion f, M i j = #(A.biUnion f) * s := by
-      simp [sum_comm (t := A.biUnion f), hM.2.2, mul_comm s]
+      simp [sum_comm (t := A.biUnion f), hM.2.2]
     suffices #A * s ≤ #(A.biUnion f) * s by exact_mod_cast le_of_mul_le_mul_right this hs
     rw [← h₁, ← h₂]
     trans ∑ i ∈ A, ∑ j ∈ A.biUnion f, M i j
@@ -120,7 +120,7 @@ private lemma doublyStochastic_sum_perm_aux (M : Matrix n n R)
     rw [← hd]
     refine card_lt_card ?_
     rw [ssubset_iff_of_subset (monotone_filter_right _ _)]
-    · simp only [ne_eq, mem_filter, mem_univ, true_and, Decidable.not_not, Prod.exists]
+    · simp_rw [mem_filter_univ, not_not, Prod.exists]
       refine ⟨i, σ i, hMi'.ne', ?_⟩
       simp [N, Equiv.toPEquiv_apply]
     · rintro ⟨i', j'⟩ hN' hM'

@@ -38,7 +38,7 @@ uniqueness is expressed by `uniq`.
 
 noncomputable section
 
-open CategoryTheory.Category
+open CategoryTheory.Category CategoryTheory.Functor
 
 namespace CategoryTheory
 
@@ -191,7 +191,6 @@ localization with respect to a morphism_property `W` -/
 def objEquiv : C ≃ W.Localization where
   toFun := W.Q.obj
   invFun X := X.as.obj
-  left_inv _ := rfl
   right_inv := by
     rintro ⟨⟨X⟩⟩
     rfl

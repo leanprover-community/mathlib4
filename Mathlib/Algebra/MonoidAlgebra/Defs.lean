@@ -236,11 +236,10 @@ instance nonAssocSemiring : NonAssocSemiring (MonoidAlgebra k G) :=
     natCast_zero := by simp
     natCast_succ := fun _ => by simp; rfl
     one_mul := fun f => by
-      simp only [mul_def, one_def, sum_single_index, zero_mul, single_zero, sum_zero, zero_add,
-        one_mul, sum_single]
+      simp only [mul_def, one_def, sum_single_index, zero_mul, single_zero, sum_zero, one_mul,
+        sum_single]
     mul_one := fun f => by
-      simp only [mul_def, one_def, sum_single_index, mul_zero, single_zero, sum_zero, add_zero,
-        mul_one, sum_single] }
+      simp only [mul_def, one_def, sum_single_index, mul_zero, single_zero, mul_one, sum_single] }
 
 theorem natCast_def (n : ℕ) : (n : MonoidAlgebra k G) = single (1 : G) (n : k) :=
   rfl
@@ -534,7 +533,6 @@ theorem mul_single_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
       (f * single x r) z
       _ = sum f fun a b => ite (a * x = z) (b * r) 0 :=
         (mul_apply _ _ _).trans <| Finsupp.sum_congr fun _ _ => sum_single_index (by simp)
-
       _ = f.sum fun a b => ite (a = y) (b * r) 0 := Finsupp.sum_congr fun x hx => by
         simp only [H _ hx]
       _ = if y ∈ f.support then f y * r else 0 := f.support.sum_ite_eq' _ _
@@ -738,7 +736,7 @@ variable [Semiring k]
 /-- The opposite of a `MonoidAlgebra R I` equivalent as a ring to
 the `MonoidAlgebra Rᵐᵒᵖ Iᵐᵒᵖ` over the opposite ring, taking elements to their opposite. -/
 @[simps! +simpRhs apply symm_apply]
-protected noncomputable def opRingEquiv [Monoid G] :
+protected noncomputable def opRingEquiv [Mul G] :
     (MonoidAlgebra k G)ᵐᵒᵖ ≃+* MonoidAlgebra kᵐᵒᵖ Gᵐᵒᵖ :=
   { opAddEquiv.symm.trans <|
       (Finsupp.mapRange.addEquiv (opAddEquiv : k ≃+ kᵐᵒᵖ)).trans <| Finsupp.domCongr opEquiv with
@@ -759,10 +757,10 @@ protected noncomputable def opRingEquiv [Monoid G] :
       rw [MulOpposite.unop_mul (α := MonoidAlgebra k G), unop_op, unop_op, single_mul_single]
       simp }
 
-theorem opRingEquiv_single [Monoid G] (r : k) (x : G) :
+theorem opRingEquiv_single [Mul G] (r : k) (x : G) :
     MonoidAlgebra.opRingEquiv (op (single x r)) = single (op x) (op r) := by simp
 
-theorem opRingEquiv_symm_single [Monoid G] (r : kᵐᵒᵖ) (x : Gᵐᵒᵖ) :
+theorem opRingEquiv_symm_single [Mul G] (r : kᵐᵒᵖ) (x : Gᵐᵒᵖ) :
     MonoidAlgebra.opRingEquiv.symm (single x r) = op (single x.unop r.unop) := by simp
 
 end Opposite
@@ -933,7 +931,7 @@ instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring k[G] :=
     nsmul_zero := by
       intros
       refine Finsupp.ext fun _ => ?_
-      simp [-nsmul_eq_mul, add_smul]
+      simp [-nsmul_eq_mul]
     nsmul_succ := by
       intros
       refine Finsupp.ext fun _ => ?_
@@ -1001,8 +999,8 @@ instance nonAssocSemiring : NonAssocSemiring k[G] :=
       simp only [mul_def, one_def, sum_single_index, zero_mul, single_zero, sum_zero, zero_add,
         one_mul, sum_single]
     mul_one := fun f => by
-      simp only [mul_def, one_def, sum_single_index, mul_zero, single_zero, sum_zero, add_zero,
-        mul_one, sum_single] }
+      simp only [mul_def, one_def, sum_single_index, mul_zero, single_zero, add_zero, mul_one,
+        sum_single] }
 
 theorem natCast_def (n : ℕ) : (n : k[G]) = single (0 : G) (n : k) :=
   rfl
@@ -1357,7 +1355,7 @@ def singleZeroRingHom [Semiring k] [AddMonoid G] : k →+* k[G] :=
   { singleAddHom 0 with
     toFun := single 0
     map_one' := rfl
-    map_mul' := fun x y => by simp only [Finsupp.singleAddHom, single_mul_single, zero_add] }
+    map_mul' := fun x y => by simp only [single_mul_single, zero_add] }
 
 /-- If two ring homomorphisms from `k[G]` are equal on all `single a 1`
 and `single 0 b`, then they are equal. -/
@@ -1386,13 +1384,13 @@ variable [Semiring k]
 /-- The opposite of an `R[I]` is ring equivalent to
 the `AddMonoidAlgebra Rᵐᵒᵖ I` over the opposite ring, taking elements to their opposite. -/
 @[simps! +simpRhs apply symm_apply]
-protected noncomputable def opRingEquiv [AddCommMonoid G] :
+protected noncomputable def opRingEquiv [AddCommMagma G] :
     k[G]ᵐᵒᵖ ≃+* kᵐᵒᵖ[G] :=
   { opAddEquiv.symm.trans (mapRange.addEquiv (opAddEquiv : k ≃+ kᵐᵒᵖ)) with
     map_mul' := by
       let f : k[G]ᵐᵒᵖ ≃+ kᵐᵒᵖ[G] :=
         opAddEquiv.symm.trans (mapRange.addEquiv (opAddEquiv : k ≃+ kᵐᵒᵖ))
-      show ∀ (x y : k[G]ᵐᵒᵖ), f (x * y) = f x * f y
+      change ∀ (x y : k[G]ᵐᵒᵖ), f (x * y) = f x * f y
       rw [← AddEquiv.coe_toAddMonoidHom, AddMonoidHom.map_mul_iff]
       ext i₁ r₁ i₂ r₂ : 6
       dsimp only [f, AddMonoidHom.compr₂_apply, AddMonoidHom.compl₂_apply,
@@ -1408,10 +1406,10 @@ protected noncomputable def opRingEquiv [AddCommMonoid G] :
 -- @[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10618): simp can prove this.
 -- More specifically, the LHS simplifies to `Finsupp.single`, which implies there's some
 -- defeq abuse going on.
-theorem opRingEquiv_single [AddCommMonoid G] (r : k) (x : G) :
+theorem opRingEquiv_single [AddCommMagma G] (r : k) (x : G) :
     AddMonoidAlgebra.opRingEquiv (op (single x r)) = single x (op r) := by simp
 
-theorem opRingEquiv_symm_single [AddCommMonoid G] (r : kᵐᵒᵖ) (x : Gᵐᵒᵖ) :
+theorem opRingEquiv_symm_single [AddCommMagma G] (r : kᵐᵒᵖ) (x : Gᵐᵒᵖ) :
     AddMonoidAlgebra.opRingEquiv.symm (single x r) = op (single x r.unop) := by simp
 
 end Opposite

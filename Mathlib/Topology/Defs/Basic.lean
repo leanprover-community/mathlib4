@@ -7,6 +7,9 @@ import Mathlib.Order.SetNotation
 import Mathlib.Tactic.Continuity
 import Mathlib.Tactic.FunProp
 import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Tactic.ToAdditive
+import Mathlib.Util.AssertExists
+
 /-!
 # Basic definitions about topological spaces
 

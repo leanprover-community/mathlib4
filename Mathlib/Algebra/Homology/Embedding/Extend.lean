@@ -79,8 +79,7 @@ lemma XOpIso_hom_d_op (i j : Option ι) :
       simp only [d_none_eq_zero, d_none_eq_zero', comp_zero, zero_comp, op_zero]
   | some i, some j => by
       dsimp [XOpIso]
-      simp only [d_eq _ rfl rfl, Option.some.injEq, d_eq, op_comp, assoc,
-        id_comp, comp_id]
+      simp only [d_eq _ rfl rfl, op_comp, assoc, id_comp, comp_id]
       rfl
   | some _, none => by
       simp only [d_none_eq_zero, d_none_eq_zero', comp_zero, zero_comp, op_zero]
