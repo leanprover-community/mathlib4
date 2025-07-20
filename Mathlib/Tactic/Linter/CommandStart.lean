@@ -205,7 +205,7 @@ def reduceWhitespace (s : String) : String :=
 
 /-- Converts the input syntax into a string using the pretty-printer and then collapsing
 consecuting whitespace into a single space. -/
-def pretty (stx : Syntax) : CommandElabM String := do
+def pretty (stx : Syntax) : CommandElabM (Option String) := do
   let fmt : Option Format := ←
       try
         liftCoreM <| ppCategory' `command stx
@@ -214,9 +214,11 @@ def pretty (stx : Syntax) : CommandElabM String := do
           m!"The `commandStart` linter had some parsing issues: \
             feel free to silence it and report this error!"
         return none
-  let some fmt := fmt | throwError "No parsing."
-  let st := fmt.pretty (width := 100000)
-  return reduceWhitespace st
+  if let some fmt := fmt then
+    let st := fmt.pretty (width := 100000)
+    return reduceWhitespace st
+  else
+    return none
 
 /--
 Splays the input syntax into a string.
@@ -522,6 +524,31 @@ def readWhile (s t : Substring) : Substring :=
   guard <| (readWhile (" :=".toSubstring) t).toString == " 0"
   guard <| (readWhile (" := ".toSubstring) t).toString == "0"
 
+abbrev forceSpaceAfter : Array SyntaxNodeKind := #[
+  ``Parser.Tactic.rcases,
+  `token.«·»,
+  ``Parser.Term.let,
+  ]
+
+def processAtomOrIdent {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions m]
+    (k : SyntaxNodeKind) (val str : Substring) : m (Substring × Substring × Substring) := do
+  let read := readWhile val str
+  if read == str && !read.isEmpty then
+    logWarning m!"No change at '{read}'"
+  let (next, strNew) :=
+    -- Case `read = " "`
+    if (read.take 1).toString == " "
+    then
+      (" ".toSubstring, read.drop 1)
+    else
+    -- Case `read = ""` but we want a space after anyway
+    if forceSpaceAfter.contains k then
+      (" ".toSubstring, read)
+    -- Case `read = ""` and we follow the pretty-printer recommendation
+    else
+      ("".toSubstring, read)
+  pure (next, strNew, read)
+
 /--
 `insertSpacesAux verbose? noSpaceStx prettyString`
 scans the syntax tree `noSpaceStx` and, whenever it finds an `atom` or `ident` node,
@@ -534,47 +561,49 @@ This essentially converts `noSpaceStx` into a `Syntax` tree whose traversal reco
 -/
 def insertSpacesAux {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions m]
     (verbose? : Bool) :
-    Syntax → Substring → m (Syntax × Substring)
-  | .ident info rawVal val pre, str => do
-    let read := readWhile rawVal str
-    if read == str then
-      logWarning m!"No change at '{read}'"
-    let (next, strNew) :=
-      if (read.take 1).toString == " "
-      then
-        (" ".toSubstring, read.drop 1)
-      else
-        ("".toSubstring, read)
+    SyntaxNodeKind → Syntax → Substring → m (Syntax × Substring)
+  | k, .ident info rawVal val pre, str => do
+    --let read := readWhile rawVal str
+    --if read == str && !read.isEmpty then
+    --  logWarning m!"No change at '{read}'"
+    --let (next, strNew) :=
+    --  if (read.take 1).toString == " " || forceSpaceAfter.contains k
+    --  then
+    --    (" ".toSubstring, read.drop 1)
+    --  else
+    --    ("".toSubstring, read)
+    let (next, strNew, read) ← processAtomOrIdent k rawVal str
     if verbose? then
       dbg_trace
         s!"* ident '{rawVal}'\nStr: '{str}'\nRed: '{read}'\nNxt: '{next}'\nNew: '{strNew}'\n"
     pure (.ident (modifyTail info next) rawVal val pre, strNew)
-  | .atom info val, str => do
-    let read := readWhile val.toSubstring str
-    if read == str then
-      logWarning m!"No change at '{read}'"
-    let (next, strNew) :=
-      if (read.take 1).toString == " "
-      then
-        (" ".toSubstring, read.drop 1)
-      else
-        ("".toSubstring, read)
+  | k, .atom info val, str => do
+    --let read := readWhile val.toSubstring str
+    --if read == str && !read.isEmpty then
+    --  logWarning m!"No change at '{read}'"
+    --let (next, strNew) :=
+    --  if (read.take 1).toString == " " || forceSpaceAfter.contains k
+    --  then
+    --    (" ".toSubstring, read.drop 1)
+    --  else
+    --    ("".toSubstring, read)
+    let (next, strNew, read) ← processAtomOrIdent k val.toSubstring str
     if verbose? then
       dbg_trace
         s!"* atom '{val}'\nStr: '{str}'\nRed: '{read}'\nNxt: '{next}'\nNew: '{strNew}'\n"
     pure (.atom (modifyTail info next) val, strNew)
-  | .node info kind args, str => do
+  | _, .node info kind args, str => do
     --let kind := if kind == `null then k else kind
     let mut str' := str
     let mut stxs := #[]
     for arg in args do
-      let (newStx, strNew) ← insertSpacesAux verbose? arg str'
+      let (newStx, strNew) ← insertSpacesAux verbose? kind arg str'
       if verbose? then
         dbg_trace s!"'{strNew}' intermediate string at {kind}"
       str' := strNew.trimLeft
       stxs := stxs.push newStx
     pure (.node info kind stxs, str')
-  | stx, str => do
+  | _, stx, str => do
     pure (stx, str)
 
 open Lean in
@@ -585,38 +614,40 @@ place there.
 
 In particular, it erases all comments embedded in `SourceInfo`s.
 -/
-def insertSpaces (verbose? : Bool) (stx : Syntax) : CommandElabM Syntax := do
+def insertSpaces (verbose? : Bool) (stx : Syntax) : CommandElabM (Option Syntax) := do
   let stxNoSpaces := stx.eraseLeadTrailSpaces
-  let pretty ← Mathlib.Linter.pretty stxNoSpaces
-  let withSpaces ← insertSpacesAux verbose? stx pretty.toSubstring
-  return withSpaces.1
+  if let some pretty := ← Mathlib.Linter.pretty stxNoSpaces then
+    let withSpaces ← insertSpacesAux verbose? stx.getKind stx pretty.toSubstring
+    return withSpaces.1
+  else return none
 
 structure mex where
   rg : String.Range
   error : String
+  kinds : Array SyntaxNodeKind
 
 def mex.toString {m} [Monad m] [MonadFileMap m] (ex : mex) : m String := do
   let fm ← getFileMap
-  return s!"{ex.error} {(fm.toPosition ex.rg.start, fm.toPosition ex.rg.stop)}"
+  return s!"{ex.error} {(fm.toPosition ex.rg.start, fm.toPosition ex.rg.stop)} ({ex.kinds})"
 
 def _root_.Substring.toRange (s : Substring) : String.Range where
   start := s.startPos
   stop := s.stopPos
 
-def allowedTrail (orig pp : Substring) : Option mex :=
+def allowedTrail (ks : Array SyntaxNodeKind) (orig pp : Substring) : Option mex :=
   let orig1 := (orig.take 1).toString
   if orig.toString == pp.toString then none else
   -- Case `pp = ""`
   if pp.isEmpty then
     match orig1 with
-    | " " => some ⟨orig.toRange, "remove space"⟩
-    | "\n" => some ⟨orig.toRange, "remove line break"⟩
-    | _ => some ⟨orig.toRange, "please, report this issue!"⟩ -- is this an unreachable case?
+    | " " => some ⟨orig.toRange, "remove space", ks⟩
+    | "\n" => some ⟨orig.toRange, "remove line break", ks⟩
+    | _ => some ⟨orig.toRange, "please, report this issue!", ks⟩ -- is this an unreachable case?
   -- Case `pp = " "`
   else
     if orig.isEmpty then
       let misformat : Substring := {orig with stopPos := orig.stopPos + ⟨1⟩}
-      some ⟨misformat.toRange, "add space"⟩
+      some ⟨misformat.toRange, "add space", ks⟩
     else
     -- Allow line breaks
     if (orig.take 1).toString == "\n" then
@@ -627,22 +658,24 @@ def allowedTrail (orig pp : Substring) : Option mex :=
       none
     else
     if (2 ≤ orig.toString.length) then
-      some ⟨(orig.drop 1).toRange, if (orig.take 1).toString == "\n" then "remove line break" else "remove space"⟩
+      some ⟨(orig.drop 1).toRange, if (orig.take 1).toString == "\n" then "remove line break" else "remove space", ks⟩
     else
       default
 
-def _root_.Lean.SourceInfo.compareSpaces : SourceInfo → SourceInfo → Option mex
+def _root_.Lean.SourceInfo.compareSpaces (ks : Array SyntaxNodeKind) :
+    SourceInfo → SourceInfo → Option mex
   | .original _ _ origTrail .., .original _ _ ppTrail .. =>
-    allowedTrail origTrail ppTrail
+    allowedTrail ks origTrail ppTrail
   | _, _ => none
 
 partial
-def _root_.Lean.Syntax.compareSpaces : Array mex → Syntax → Syntax → Array mex
-  | tot, .node _ _ a1, .node _ _ a2 => a1.zipWith (fun a b => a.compareSpaces tot b) a2 |>.flatten
-  | tot, .ident origInfo .., .ident ppInfo ..
-  | tot, .atom origInfo .., .atom ppInfo .. =>
-    if let some e := origInfo.compareSpaces ppInfo then tot.push e else tot
-  | tot, _, _ => tot
+def _root_.Lean.Syntax.compareSpaces : Array SyntaxNodeKind → Array mex → Syntax → Syntax → Array mex
+  | kinds, tot, .node _ kind a1, .node _ _ a2 =>
+    a1.zipWith (fun a b => a.compareSpaces (kinds.push kind) tot b) a2 |>.flatten
+  | kinds, tot, .ident origInfo .., .ident ppInfo ..
+  | kinds, tot, .atom origInfo .., .atom ppInfo .. =>
+    if let some e := origInfo.compareSpaces (kinds.push `atomIdent) ppInfo then tot.push e else tot
+  | _, tot, _, _ => tot
 --  | tot, .missing .., .missing .. => tot
 --  | tot, .node _ k _, _ => tot
 --  | tot, _, .node _ k _ => tot
@@ -669,8 +702,10 @@ def captureException (env : Environment) (s : ParserFn) (input : String) : Excep
 
 def getExceptions (stx : Syntax) : CommandElabM (Array mex) := do
   let stxNoTrail := stx.unsetTrailing
-  let stxNoSpaces ← insertSpaces false stx
-  return stxNoTrail.compareSpaces #[] stxNoSpaces
+  if let some stxNoSpaces ← insertSpaces false stx then
+    return stxNoTrail.compareSpaces #[] #[] stxNoSpaces
+  else
+    return #[]
 
 open Lean Elab Command in
 elab "#mex " cmd:(command)? : command => do
@@ -696,10 +731,13 @@ theorem X(_  :Nat) : True:=     --
   by  trivial;  done
 
 --/
+/-
 def finalScan (stx : Syntax) (verbose? : Bool) : CommandElabM (Array Exceptions) := do
   let ustx := stx.eraseLeadTrailSpaces
   let simplySpaced ← pretty ustx <|> return default
+
   return scanWatching verbose? #[] stx.getKind stx ustx (simplySpaced).toSubstring |>.2
+-/
 
 /-
 #eval True ∧ 0 ^ 0 = 1
@@ -1050,7 +1088,7 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
   -- If a command does not start on the first column, emit a warning.
   --dbg_trace "lint1"
   for m in (← getExceptions stx) do
-    logInfoAt (.ofRange m.rg) m.error
+    logInfoAt (.ofRange m.rg) m!"{m.error} ({m.kinds})"
 /-
   if let some pos := stx.getPos? then
     let colStart := ((← getFileMap).toPosition pos).column
