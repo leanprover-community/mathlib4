@@ -606,9 +606,12 @@ def allowedTrail (orig pp : Substring) : Option mex :=
   else
     if orig.isEmpty then
       let misformat : Substring := {orig with stopPos := orig.stopPos + ⟨1⟩}
-      some ⟨misformat.toRange, "add space"⟩ else
-    if !onlineComment orig && 2 ≤ orig.toString.length then some ⟨(orig.drop 1).toRange, "remove space"⟩ else
-    default
+      some ⟨misformat.toRange, "add space"⟩
+    else if (!onlineComment orig) && 2 ≤ orig.toString.length
+    then
+      some ⟨(orig.drop 1).toRange, if (orig.take 1).toString == "\n" then "remove line break" else "remove space"⟩
+    else
+      default
 
 def _root_.Lean.SourceInfo.compareSpaces : SourceInfo → SourceInfo → Option mex
   | .original _ _ origTrail .., .original _ _ ppTrail .. =>
@@ -630,21 +633,51 @@ def _root_.Lean.Syntax.compareSpaces : Array mex → Syntax → Syntax → Array
 --  | tot, .ident .., _ => tot
 --  | tot, _, .ident .. => tot
 
+open Parser in
+/-- `captureException env s input` uses the given `Environment` `env` to parse the `String` `input`
+using the `ParserFn` `s`.
+
+This is a variation of `Lean.Parser.runParserCategory`.
+-/
+def captureException (env : Environment) (s : ParserFn) (input : String) : Except String Syntax :=
+  let ictx := mkInputContext input "<input>"
+  let s := s.run ictx { env, options := {} } (getTokenTable env) (mkParserState input)
+  if !s.allErrors.isEmpty then
+    .error (s.toErrorMsg ictx)
+  else if ictx.input.atEnd s.pos then
+    .ok s.stxStack.back
+  else
+    .error ((s.mkError "end of input").toErrorMsg ictx)
+
+def getExceptions (stx : Syntax) : CommandElabM (Array mex) := do
+  let stxNoTrail := stx.unsetTrailing
+  let stxNoSpaces ← insertSpaces false stx
+  return stxNoTrail.compareSpaces #[] stxNoSpaces
+
 open Lean Elab Command in
-elab "#mex " cmd:command : command => do
+elab "#mex " cmd:(command)? : command => do
+  if let some cmd := cmd then
+  if let .error .. :=
+    captureException (← getEnv) Parser.topLevelCommandParserFn cmd.raw.getSubstring?.get!.toString
+  then
+    return
   elabCommand cmd
-  let cmdNoTrail := cmd.raw.unsetTrailing
-  let noSpacesCmd ← insertSpaces false cmd
-  let mexs := cmdNoTrail.compareSpaces #[] noSpacesCmd
+  if (← get).messages.hasErrors then
+    return
+  let mexs ← getExceptions cmd
+  if mexs.isEmpty then
+    logInfo "No whitespace issues found!"
+    return
+  logInfo m!"{mexs.size} whitespace issue{if mexs.size == 1 then "" else "s"} found!"
   let fm ← getFileMap
   for m in mexs do
     logInfoAt (.ofRange m.rg) m!"{m.error} {(fm.toPosition m.rg.start, fm.toPosition m.rg.stop)}"
 
 #mex
-example  : True:=     --
-  trivial
+theorem X(_  :Nat) : True:=     --
+  by  trivial;  done
 
-
+--/
 def finalScan (stx : Syntax) (verbose? : Bool) : CommandElabM (Array Exceptions) := do
   let ustx := stx.eraseLeadTrailSpaces
   let simplySpaced ← pretty ustx <|> return default
@@ -816,22 +849,6 @@ def _root_.Lean.Syntax.compare : Syntax → Syntax → Array SyntaxNodeKind
   | _, .atom .. => #[`atomRight]
   | .ident .., _ => #[`identLeft]
   | _, .ident .. => #[`identRight]
-
-open Parser in
-/-- `captureException env s input` uses the given `Environment` `env` to parse the `String` `input`
-using the `ParserFn` `s`.
-
-This is a variation of `Lean.Parser.runParserCategory`.
--/
-def captureException (env : Environment) (s : ParserFn) (input : String) : Except String Syntax :=
-  let ictx := mkInputContext input "<input>"
-  let s := s.run ictx { env, options := {} } (getTokenTable env) (mkParserState input)
-  if !s.allErrors.isEmpty then
-    .error (s.toErrorMsg ictx)
-  else if ictx.input.atEnd s.pos then
-    .ok s.stxStack.back
-  else
-    .error ((s.mkError "end of input").toErrorMsg ictx)
 
 /-
 open Lean Elab Command in
