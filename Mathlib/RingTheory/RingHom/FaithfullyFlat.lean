@@ -24,7 +24,7 @@ def FaithfullyFlat {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S) : Pro
 
 lemma faithfullyFlat_algebraMap_iff [Algebra R S] :
     (algebraMap R S).FaithfullyFlat ↔ Module.FaithfullyFlat R S := by
-  simp only [RingHom.FaithfullyFlat]
+  simp only [FaithfullyFlat]
   congr!
   exact Algebra.algebra_ext _ _ fun _ ↦ rfl
 
@@ -37,9 +37,7 @@ lemma flat (hf : f.FaithfullyFlat) : f.Flat := by
 lemma iff_flat_and_comap_surjective :
     f.FaithfullyFlat ↔ f.Flat ∧ Function.Surjective f.specComap := by
   algebraize [f]
-  show (algebraMap R S).FaithfullyFlat ↔ (algebraMap R S).Flat ∧
-    Function.Surjective (algebraMap R S).specComap
-  rw [RingHom.faithfullyFlat_algebraMap_iff, RingHom.flat_algebraMap_iff]
+  rw [← algebraMap_toAlgebra f, faithfullyFlat_algebraMap_iff, flat_algebraMap_iff]
   exact ⟨fun h ↦ ⟨inferInstance, PrimeSpectrum.specComap_surjective_of_faithfullyFlat⟩,
     fun ⟨h, hf⟩ ↦ .of_specComap_surjective hf⟩
 
@@ -49,17 +47,16 @@ lemma eq_and : @FaithfullyFlat =
   rw [iff_flat_and_comap_surjective]
 
 lemma stableUnderComposition : StableUnderComposition FaithfullyFlat := by
-  rw [eq_and]
-  refine Flat.stableUnderComposition.and ?_
   introv R hf hg
-  rw [PrimeSpectrum.specComap_comp]
-  exact hf.comp hg
+  algebraize [f, g, g.comp f]
+  rw [← algebraMap_toAlgebra (g.comp f), faithfullyFlat_algebraMap_iff]
+  exact .trans R S T
 
 lemma of_bijective (hf : Function.Bijective f) : f.FaithfullyFlat := by
   rw [iff_flat_and_comap_surjective]
   refine ⟨.of_bijective hf, fun p ↦ ?_⟩
   use ((RingEquiv.ofBijective f hf).symm : _ →+* _).specComap p
-  have : ((RingEquiv.ofBijective f hf).symm : _ →+* _).comp f = RingHom.id R := by
+  have : ((RingEquiv.ofBijective f hf).symm : _ →+* _).comp f = id R := by
     ext
     exact (RingEquiv.ofBijective f hf).injective (by simp)
   rw [← PrimeSpectrum.specComap_comp_apply, this, PrimeSpectrum.specComap_id]
