@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2025 Janos Wolosz. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Janos Wolosz
+-/
 import Mathlib.Algebra.Lie.Sl2
 import Mathlib.Algebra.Lie.Weights.Basic
 import Mathlib.Algebra.Lie.Weights.Cartan
@@ -6,6 +11,19 @@ import Mathlib.Algebra.Lie.Weights.RootSystem
 import Mathlib.Algebra.Module.Submodule.Invariant
 import Mathlib.Order.CompleteLattice.Basic
 import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
+
+/-!
+# Invariant submodule to Lie ideal construction
+
+This file contains the construction of Lie ideals from invariant submodules of the dual space
+of a Cartan subalgebra.
+
+## Main definitions
+* `invtSubmoduleToLieIdeal`: constructs a Lie ideal from an invariant submodule of the dual space
+
+## Main results
+* The constructed object is indeed a Lie ideal
+-/
 
 set_option maxHeartbeats 1000000
 
