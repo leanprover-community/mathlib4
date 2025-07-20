@@ -564,6 +564,12 @@ structure ExcludedSyntaxNodeKind where
   -/
   depth : Option Nat
 
+/--
+`unparseable` are the `SyntaxNodeKind`s that block the `commandStart` linter: their appearance
+anywhere in the syntax tree makes the linter ignore the whole command.
+
+This is the reason their `depth` is `none`.
+-/
 def unparseable : ExcludedSyntaxNodeKind where
   kinds := #[
     ``Parser.Command.macro_rules,
@@ -571,6 +577,11 @@ def unparseable : ExcludedSyntaxNodeKind where
   ]
   depth := none
 
+/--
+These are the `SyntaxNodeKind`s for which we want to ignore the pretty-printer.
+
+Deeper nodes are still inspected.
+-/
 def totalExclusions : ExcludedSyntaxNodeKind where
   kinds := #[
     ``Parser.Command.docComment,
@@ -579,6 +590,10 @@ def totalExclusions : ExcludedSyntaxNodeKind where
   ]
   depth := some 2
 
+/--
+These are the `SyntaxNodeKind`s for which the pretty-printer would likely not space out from the
+following nodes, but we overrule it and place a space anyway.
+-/
 def forceSpaceAfter : ExcludedSyntaxNodeKind where
   kinds := #[
     `token.«·»,  -- the focusing dot `·` in `conv` mode
@@ -588,6 +603,10 @@ def forceSpaceAfter : ExcludedSyntaxNodeKind where
   ]
   depth := some 2
 
+/--
+These are the `SyntaxNodeKind`s for which the pretty-printer would likely space out from the
+following nodes, but we overrule it and do not place a space.
+-/
 def forceNoSpaceAfter : ExcludedSyntaxNodeKind where
   kinds := #[
     --``Parser.Term.doubleQuotedName,
@@ -596,6 +615,13 @@ def forceNoSpaceAfter : ExcludedSyntaxNodeKind where
   ]
   depth := some 2
 
+/--
+Checks whether the input array `ks` of `SyntaxNodeKind`s matches the conditions implied by
+the `ExcludedSyntaxNodeKind` `exc`.
+
+The function takes into account what the `SyntaxNodeKind`s in `ks` are, as well as their
+depth, as required by `exc.depth`.
+-/
 def ExcludedSyntaxNodeKind.contains (exc : ExcludedSyntaxNodeKind) (ks : Array SyntaxNodeKind) :
     Bool :=
   let lastNodes := if let some n := exc.depth then ks.drop (ks.size - n) else ks
