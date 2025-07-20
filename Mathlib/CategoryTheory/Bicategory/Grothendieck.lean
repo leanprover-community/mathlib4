@@ -10,25 +10,29 @@ import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
 /-!
 # The Grothendieck construction
 
-Given a category `𝒮` and any pseudofunctor `F` from `𝒮ᵒᵖ` to `Cat`, we associate to it a category
+Given a category `𝒮` and any pseudofunctor `F` from `𝒮` to `Cat`, we associate to it a category
 `∫ F`, equipped with a functor `∫ F ⥤ 𝒮`.
 
 The category `∫ F` is defined as follows:
 * Objects: pairs `(S, a)` where `S` is an object of the base category and `a` is an object of the
   category `F(S)`.
 * Morphisms: morphisms `(R, b) ⟶ (S, a)` are defined as pairs `(f, h)` where `f : R ⟶ S` is a
-  morphism in `𝒮` and `h : b ⟶ F(f)(a)`
+  morphism in `𝒮` and `h : F(f)(a) ⟶ b`
 
 The projection functor `∫ F ⥤ 𝒮` is then given by projecting to the first factors, i.e.
 * On objects, it sends `(S, a)` to `S`
 * On morphisms, it sends `(f, h)` to `f`
 
+## Implementation notes
+
+For the moment we have explicitly both definitions for `Grothendieck` and `coGrothendieck`,
+the latter being Grothendieck constructions for pseudofunctors with domain `𝒮ᵒᵖ`.
+This will be removed once `Grothendieck` is fully integrated.
+
 ## Future work / TODO
 
 1. Once the bicategory of pseudofunctors has been defined, show that this construction forms a
-pseudofunctor from `Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat` to `Cat`.
-2. One could probably deduce the results in `CategoryTheory.Grothendieck` as a specialization of the
-results in this file.
+pseudofunctor from `Pseudofunctor (LocallyDiscrete 𝒮) Cat` to `Cat`.
 
 ## References
 [Vistoli2008] "Notes on Grothendieck Topologies, Fibered Categories and Descent Theory" by
@@ -46,18 +50,26 @@ variable {𝒮 : Type u₁} [Category.{v₁} 𝒮] {F : Pseudofunctor (LocallyDi
 
 /-- The type of objects in the fibered category associated to a presheaf valued in types. -/
 @[ext]
-structure Grothendieck (F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}) where
+structure Grothendieck (F : Pseudofunctor (LocallyDiscrete 𝒮) Cat.{v₂, u₂}) where
+  /-- The underlying object in the base category. -/
+  base : 𝒮
+  /-- The object in the fiber of the base object. -/
+  fiber : F.obj ⟨base⟩
+
+/-- The type of objects in the fibered category associated to a presheaf valued in types. -/
+@[ext]
+structure coGrothendieck (F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}) where
   /-- The underlying object in the base category. -/
   base : 𝒮
   /-- The object in the fiber of the base object. -/
   fiber : F.obj ⟨op base⟩
 
-namespace Grothendieck
+namespace coGrothendieck
 
 /-- Notation for the Grothendieck category associated to a pseudofunctor `F`. -/
-scoped prefix:75 "∫ " => Grothendieck
+scoped prefix:75 "∫ " => coGrothendieck
 
-/-- A morphism in the Grothendieck category `F : C ⥤ Cat` consists of
+/-- A morphism in the Grothendieck category consists of
 `base : X.base ⟶ Y.base` and `f.fiber : (F.map base).obj X.fiber ⟶ Y.fiber`.
 -/
 structure Hom (X Y : ∫ F) where
@@ -103,7 +115,7 @@ end
 
 /-- The category structure on `∫ F`. -/
 instance category : Category (∫ F) where
-  toCategoryStruct := Pseudofunctor.Grothendieck.categoryStruct
+  toCategoryStruct := Pseudofunctor.coGrothendieck.categoryStruct
   id_comp {a b} f := by
     ext
     · simp
@@ -170,7 +182,7 @@ section
 
 variable (F)
 
-/-- The natural isomorphism witnessing the pseudo-unity constraint of `Grothendieck.map`. -/
+/-- The natural isomorphism witnessing the pseudo-unity constraint of `coGrothendieck.map`. -/
 def mapIdIso : map (𝟙 F) ≅ 𝟭 (∫ F) :=
   NatIso.ofComponents (fun _ ↦ eqToIso (by aesop_cat))
 
@@ -179,7 +191,7 @@ lemma map_id_eq : map (𝟙 F) = 𝟭 (∫ F) :=
 
 end
 
-/-- The natural isomorphism witnessing the pseudo-functoriality of `Grothendieck.map`. -/
+/-- The natural isomorphism witnessing the pseudo-functoriality of `coGrothendieck.map`. -/
 def mapCompIso (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ≅ map α ⋙ map β :=
   NatIso.ofComponents (fun _ ↦ eqToIso (by aesop_cat)) (fun f ↦ by
     dsimp
@@ -191,6 +203,6 @@ lemma map_comp_eq (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) = map α ⋙ m
 
 end
 
-end Pseudofunctor.Grothendieck
+end Pseudofunctor.coGrothendieck
 
 end CategoryTheory
