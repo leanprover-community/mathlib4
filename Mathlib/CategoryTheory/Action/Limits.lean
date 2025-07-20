@@ -226,10 +226,9 @@ variable {W : Type*} [Category W] (F : V ⥤ W) (G : Type*) [Monoid G] {J : Type
 /-- `F.mapAction : Action V G ⥤ Action W G` preserves the limit of some `K : J ⥤ Action V G` if
 `K ⋙ forget V G` has a limit and `F` preserves the limit of `K ⋙ forget V G`. -/
 instance mapActionPreservesLimit_of_preserves (K : J ⥤ Action V G) [HasLimit (K ⋙ forget V G)]
-    [PreservesLimit (K ⋙ Action.forget V G) F] : PreservesLimit K (F.mapAction G) := by
-  refine Action.preservesLimit_of_preserves (F.mapAction G) K ?_
-  have : PreservesLimit K (forget V G ⋙ F) := comp_preservesLimit (forget V G) F
-  exact preservesLimit_of_natIso K (Iso.refl _ : forget V G ⋙ F ≅ F.mapAction G ⋙ forget W G)
+    [PreservesLimit (K ⋙ Action.forget V G) F] : PreservesLimit K (F.mapAction G) :=
+  Action.preservesLimit_of_preserves (F.mapAction G) K <|
+    inferInstanceAs (PreservesLimit K (forget V G ⋙ F))
 
 /-- `F.mapAction : Action V G ⥤ Action W G` preserves limits of some shape `J` if
 `V` has limits of shape `J` and `F` preserves limits of shape `J`. -/
