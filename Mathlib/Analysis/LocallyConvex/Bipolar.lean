@@ -154,53 +154,38 @@ theorem iff : f ∈ Submodule.span 𝕜 (Set.range (B.mL s)) ↔
   · intro h
     rw [← Set.image_univ, Finsupp.mem_span_image_iff_linearCombination] at h
     obtain ⟨l, hl1, hl2⟩ := h
-    let γ : ℝ := (l.sum fun i d ↦ ‖d‖)
-    use γ
+    use (l.sum fun i d ↦ ‖d‖)
     intro x
-    have e2 : ‖f x‖ = ‖(Finsupp.linearCombination 𝕜 (B.mL s)) l x‖ := by
-      rw [hl2]
-    rw [Finsupp.linearCombination_apply] at e2
-    simp at e2
-    have e3 : ‖f x‖ ≤ l.sum fun i d ↦ ‖d * (B.mL s i) x‖ := by
-      rw [e2]
-      apply norm_sum_le
-    have e4' (i : s) : (B.toSeminormFamily i) x ≤ ((s.sup B.toSeminormFamily) x) := by
-      apply Seminorm.le_finset_sup_apply
-      exact Finset.coe_mem i
-      --apply Seminorm.finset_sup_apply_le
-    have e4'' (i : s) : ‖(B.mL s i) x‖ = (B.toSeminormFamily i) x := rfl
+    rw [← hl2]
+    rw [Finsupp.linearCombination_apply]
+    simp
+    have e3 : ‖l.sum fun i d ↦ d * (B.mL s i) x‖ ≤ l.sum fun i d ↦ ‖d * (B.mL s i) x‖ :=
+      norm_sum_le _ _
+    have e4' (i : s) : (B.toSeminormFamily i) x ≤ ((s.sup B.toSeminormFamily) x) :=
+      Seminorm.le_finset_sup_apply (Finset.coe_mem i)
     have e4 (d : 𝕜) (i : s) : ‖d * (B.mL s i) x‖ ≤ ‖d‖ * ((s.sup B.toSeminormFamily) x) := by
       rw [norm_mul]
-      rw [e4'']
-      apply mul_le_mul_of_nonneg_left
-      exact e4' i
-      exact norm_nonneg d
+      exact mul_le_mul_of_nonneg_left (e4' i) (norm_nonneg d)
     have e6 : (l.sum fun i d ↦ ‖d * (B.mL s i) x‖) ≤
-        (l.sum fun i d ↦ (‖d‖ * ((s.sup B.toSeminormFamily) x))) := by
-      apply Finsupp.sum_le_sum
-      intro i hi
-      exact e4 (l i) i
-    have e7 : (l.sum fun i d ↦ ‖d‖ * (s.sup B.toSeminormFamily) x) =
-        (l.sum fun i d ↦ ‖d‖) * (s.sup B.toSeminormFamily) x := by
-      exact Eq.symm (Finsupp.sum_mul ((s.sup B.toSeminormFamily) x) l)
+        (l.sum fun i d ↦ (‖d‖ * ((s.sup B.toSeminormFamily) x))) :=
+      Finsupp.sum_le_sum (fun i _ => e4 (l i) i)
     apply le_trans e3
     apply le_trans e6
-    rw [e7]
-  · intro h
-    obtain ⟨γ, hγ⟩ := h
+    rw [(Finsupp.sum_mul ((s.sup B.toSeminormFamily) x) l)]
+  · intro ⟨γ, hγ⟩
     apply mem_span_of_iInf_ker_le_ker
     intro x hx
-    simp at hx
+    rw [mem_ker, ← norm_le_zero_iff]
+    convert (hγ x)
+    rw [Submodule.mem_iInf, Subtype.forall] at hx
     have e1 : (s.sup B.toSeminormFamily) x = 0 := by
       rw [le_antisymm_iff]
       constructor
       · apply Seminorm.finset_sup_apply_le (Preorder.le_refl 0)
         intro i his
-        aesop
+        rw [toSeminormFamily_apply, norm_le_zero_iff]
+        exact hx _ his
       · exact apply_nonneg (s.sup B.toSeminormFamily) x
-    simp
-    rw [← norm_le_zero_iff]
-    convert (hγ x)
     simp_all only [mul_zero]
 
 /-
