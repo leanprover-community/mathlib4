@@ -146,7 +146,7 @@ theorem Sphere.power_eq_zero_iff_mem_sphere {s : Sphere P} {p : P} (hr : 0 ≤ s
 /-- The power of a point is positive if and only if the point lies outside the sphere. -/
 theorem Sphere.power_pos_iff_radius_lt_dist_center {s : Sphere P} {p : P} (hr : 0 ≤ s.radius) :
     0 < s.power p ↔ s.radius < dist p s.center := by
-  simp only [Sphere.power, gt_iff_lt, sub_pos]
+  simp only [Sphere.power, sub_pos]
   constructor
   · intro hp
     by_contra h
@@ -245,7 +245,7 @@ theorem Sphere.mul_dist_eq_abs_power {s : Sphere P} {p a b : P}
     dist p a * dist p b = |s.power p| := by
   by_cases h1 : dist p s.center > s.radius
   · rw [abs_of_pos, Sphere.mul_dist_eq_power_of_dist_center_gt_radius hr hp ha hb h1]
-    exact (Sphere.power_pos_iff_dist_center_gt_radius hr).mpr h1
+    exact (Sphere.power_pos_iff_radius_lt_dist_center hr).mpr h1
   · by_cases h2 : dist p s.center < s.radius
     · have hr_pos : 0 < s.radius := by
         rcases le_iff_eq_or_lt.mp hr with h_eq | h_lt
