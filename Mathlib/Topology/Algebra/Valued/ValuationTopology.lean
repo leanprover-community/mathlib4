@@ -145,6 +145,19 @@ theorem subgroups_range_basis : RingSubgroupsBasis
         rw [mul_comm (v y)]
         simp [← lt_div_iff₀' (zero_lt_iff.mpr Hx), div_div] }
 
+lemma subgroups_basis_le_subgroups_range_basis :
+    haveI : Nonempty { rs : R × R // v rs.1 ≠ 0 ∧ v rs.2 ≠ 0 } := ⟨⟨⟨1, 1⟩, by simp⟩⟩
+    v.subgroups_basis.topology ≤ v.subgroups_range_basis.topology := by
+  haveI : Nonempty { rs : R × R // v rs.1 ≠ 0 ∧ v rs.2 ≠ 0 } := ⟨⟨⟨1, 1⟩, by simp⟩⟩
+  intro U
+  simp_rw [@isOpen_iff_mem_nhds, (RingSubgroupsBasis.hasBasis_nhds _ _).mem_iff]
+  simp only [ne_eq, ltAddSubgroup, Units.val_mk0, AddSubgroup.mem_mk, mem_setOf_eq, true_and,
+    Subtype.exists, exists_prop, Prod.exists]
+  intro H x hx
+  obtain ⟨r, s, ⟨hr, hs⟩, h⟩ := H x hx
+  refine ⟨Units.mk0 (v s / v r) ?_, h⟩
+  simp [hr, hs]
+
 end Valuation
 
 /-- A valued ring is a ring that comes equipped with a distinguished valuation. The class `Valued`
