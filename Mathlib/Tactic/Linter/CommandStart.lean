@@ -824,11 +824,17 @@ elab tk:"#mex " cmd:(command)? : command => do
   if mexs.isEmpty then
     logInfo "No whitespace issues found!"
     return
-  logInfo m!"{mexs.size} whitespace issue{if mexs.size == 1 then "" else "s"} found!"
+  let (reported, unreported) := mexs.partition (!totalExclusions.contains ·.kinds)
+  logInfo m!"{mexs.size} whitespace issue{if mexs.size == 1 then "" else "s"} found: \
+      {reported.size} reported and {unreported.size} unreported."
   let fm ← getFileMap
-  for m in mexs do
+  for m in reported do
+    logWarningAt (.ofRange m.rg)
+      m!"reported: {m.error} {(fm.toPosition m.rg.start, fm.toPosition m.rg.stop)}\n\n\
+        {m.kinds.map MessageData.ofConstName}"
+  for m in unreported do
     logInfoAt (.ofRange m.rg)
-      m!"{m.error} {(fm.toPosition m.rg.start, fm.toPosition m.rg.stop)}\n\n\
+      m!"unreported: {m.error} {(fm.toPosition m.rg.start, fm.toPosition m.rg.stop)}\n\n\
         {m.kinds.map MessageData.ofConstName}"
 
 #mex
