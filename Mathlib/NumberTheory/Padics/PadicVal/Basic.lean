@@ -108,7 +108,7 @@ theorem padicValNat_eq_maxPowDiv : @padicValNat = @maxPowDiv := by
     · intro h
       simp [h]
 
-lemma _root_.padicValNat_eq_primeFactorsList [hp : Fact p.Prime] {m : ℕ} :
+lemma _root_.padicValNat_eq_primeFactorsList_count [hp : Fact p.Prime] {m : ℕ} :
     padicValNat p m = (primeFactorsList m).count p := by
   induction m <;>
   simp [primeFactorsList_count_eq, padicValNat_def, multiplicity_eq_factorization hp.out]
