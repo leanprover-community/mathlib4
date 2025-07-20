@@ -595,20 +595,38 @@ structure mex where
   rg : String.Range
   error : String
 
+def mex.toString {m} [Monad m] [MonadFileMap m] (ex : mex) : m String := do
+  let fm ← getFileMap
+  return s!"{ex.error} {(fm.toPosition ex.rg.start, fm.toPosition ex.rg.stop)}"
+
 def _root_.Substring.toRange (s : Substring) : String.Range where
   start := s.startPos
   stop := s.stopPos
 
 def allowedTrail (orig pp : Substring) : Option mex :=
+  let orig1 := (orig.take 1).toString
   if orig.toString == pp.toString then none else
+  -- Case `pp = ""`
   if pp.isEmpty then
-    some ⟨orig.toRange, "remove space"⟩
+    match orig1 with
+    | " " => some ⟨orig.toRange, "remove space"⟩
+    | "\n" => some ⟨orig.toRange, "remove line break"⟩
+    | _ => some ⟨orig.toRange, "please, report this issue!"⟩ -- is this an unreachable case?
+  -- Case `pp = " "`
   else
     if orig.isEmpty then
       let misformat : Substring := {orig with stopPos := orig.stopPos + ⟨1⟩}
       some ⟨misformat.toRange, "add space"⟩
-    else if (!onlineComment orig) && 2 ≤ orig.toString.length
-    then
+    else
+    -- Allow line breaks
+    if (orig.take 1).toString == "\n" then
+      none
+    else
+    -- Allow comments
+    if onlineComment orig then
+      none
+    else
+    if (2 ≤ orig.toString.length) then
       some ⟨(orig.drop 1).toRange, if (orig.take 1).toString == "\n" then "remove line break" else "remove space"⟩
     else
       default
@@ -1031,6 +1049,9 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   -- If a command does not start on the first column, emit a warning.
   --dbg_trace "lint1"
+  for m in (← getExceptions stx) do
+    logInfoAt (.ofRange m.rg) m.error
+/-
   if let some pos := stx.getPos? then
     let colStart := ((← getFileMap).toPosition pos).column
     if colStart ≠ 0 then
@@ -1117,6 +1138,7 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
           should be written as\n  '{expectedWindow}'\n"
       Linter.logLintIf linter.style.commandStart.verbose (.ofRange rg)
         m!"Formatted string:\n{fmt}\nOriginal string:\n{origSubstring}"
+-/
 
 initialize addLinter commandStartLinter
 
