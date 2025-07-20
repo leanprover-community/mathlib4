@@ -199,6 +199,12 @@ def ppCategory' (cat : Name) (stx : Syntax) : CoreM Format := do
   -- the next line starts with `parenthesizeCategory cat stx` in `Lean.PrettyPrinter.ppCategory`
   stx >>= PrettyPrinter.formatCategory cat
 
+/-- Replaces each consecutive run of whitespace in the input `s` with a single space. -/
+def reduceWhitespace (s : String) : String :=
+  " ".intercalate <| (s.split (·.isWhitespace)).filter (!·.isEmpty)
+
+/-- Converts the input syntax into a string using the pretty-printer and then collapsing
+consecuting whitespace into a single space. -/
 def pretty (stx : Syntax) : CommandElabM String := do
   let fmt : Option Format := ←
       try
@@ -210,8 +216,7 @@ def pretty (stx : Syntax) : CommandElabM String := do
         return none
   let some fmt := fmt | throwError "No parsing."
   let st := fmt.pretty (width := 100000)
-  let parts := st.split (·.isWhitespace) |>.filter (!·.isEmpty)
-  return " ".intercalate parts
+  return reduceWhitespace st
 
 /--
 Splays the input syntax into a string.
@@ -226,12 +231,15 @@ def _root_.Lean.Syntax.regString : Syntax → String
   | .atom i s => let (l, t) := i.getLeadTrail; l ++ s ++ t
   | .missing => ""
 
+/-- Replaces the leading and trailing substrings in a `SourceInfo` with `"".toSubstring`. -/
 def _root_.Lean.SourceInfo.removeSpaces : SourceInfo → SourceInfo
   | .original _ p _ q => .original "".toSubstring p "".toSubstring q
   | s => s
   --| .synthetic p q c => .synthetic p q c
   --| .none => .none
 
+/-- For every node of the input syntax, replace the leading and trailing substrings in every
+`SourceInfo` with `"".toSubstring`. -/
 partial
 def _root_.Lean.Syntax.uniformizeSpaces : Syntax → Syntax
   | .node i k args => .node i.removeSpaces k (args.map (·.uniformizeSpaces))
@@ -466,12 +474,6 @@ def scanWatching (verbose? : Bool) :
     withVerbose verbose? "rest" <|
       (str, tot)
 
-/-- Replaces each consecutive run of whitespace in the input `s` with a single space.
-
-Unused. -/
-def reduceWhitespace (s : String) : String :=
-  " ".intercalate <| (s.split (·.isWhitespace)).filter (!·.isEmpty)
-
 def modifyTail (si : SourceInfo) (newTrail : Substring) : SourceInfo :=
   match si with
   | .original lead pos _ endPos => .original lead pos newTrail endPos
@@ -577,7 +579,7 @@ def insertSpacesAux {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptio
     pure (s1, str)
 
 open Lean in
-def insertSpaces (verbose? : Bool) (stx : Syntax) : Elab.Command.CommandElabM Syntax := do
+def insertSpaces (verbose? : Bool) (stx : Syntax) : CommandElabM Syntax := do
   let s := stx.uniformizeSpaces
   let pretty ← Mathlib.Linter.pretty s
   let withSpaces ← insertSpacesAux verbose? stx pretty.toSubstring
