@@ -33,6 +33,7 @@ convex and we explicitly give a neighborhood basis in terms of the family of sem
 ## References
 
 * [Bourbaki, *Topological Vector Spaces*][bourbaki1987]
+* [Rudin, *Functional Analysis*][rudin1991]
 
 ## Tags
 
