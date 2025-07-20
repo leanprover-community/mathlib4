@@ -591,6 +591,60 @@ def insertSpaces (verbose? : Bool) (stx : Syntax) : CommandElabM Syntax := do
   let withSpaces ← insertSpacesAux verbose? stx pretty.toSubstring
   return withSpaces.1
 
+structure mex where
+  rg : String.Range
+  error : String
+
+def _root_.Substring.toRange (s : Substring) : String.Range where
+  start := s.startPos
+  stop := s.stopPos
+
+def allowedTrail (orig pp : Substring) : Option mex :=
+  if orig.toString == pp.toString then none else
+  if pp.isEmpty then
+    some ⟨orig.toRange, "remove space"⟩
+  else
+    if orig.isEmpty then
+      let misformat : Substring := {orig with stopPos := orig.stopPos + ⟨1⟩}
+      some ⟨misformat.toRange, "add space"⟩ else
+    if !onlineComment orig && 2 ≤ orig.toString.length then some ⟨(orig.drop 1).toRange, "remove space"⟩ else
+    default
+
+def _root_.Lean.SourceInfo.compareSpaces : SourceInfo → SourceInfo → Option mex
+  | .original _ _ origTrail .., .original _ _ ppTrail .. =>
+    allowedTrail origTrail ppTrail
+  | _, _ => none
+
+partial
+def _root_.Lean.Syntax.compareSpaces : Array mex → Syntax → Syntax → Array mex
+  | tot, .node _ _ a1, .node _ _ a2 => a1.zipWith (fun a b => a.compareSpaces tot b) a2 |>.flatten
+  | tot, .ident origInfo .., .ident ppInfo ..
+  | tot, .atom origInfo .., .atom ppInfo .. =>
+    if let some e := origInfo.compareSpaces ppInfo then tot.push e else tot
+  | tot, _, _ => tot
+--  | tot, .missing .., .missing .. => tot
+--  | tot, .node _ k _, _ => tot
+--  | tot, _, .node _ k _ => tot
+--  | tot, .atom .., _ => tot
+--  | tot, _, .atom .. => tot
+--  | tot, .ident .., _ => tot
+--  | tot, _, .ident .. => tot
+
+open Lean Elab Command in
+elab "#mex " cmd:command : command => do
+  elabCommand cmd
+  let cmdNoTrail := cmd.raw.unsetTrailing
+  let noSpacesCmd ← insertSpaces false cmd
+  let mexs := cmdNoTrail.compareSpaces #[] noSpacesCmd
+  let fm ← getFileMap
+  for m in mexs do
+    logInfoAt (.ofRange m.rg) m!"{m.error} {(fm.toPosition m.rg.start, fm.toPosition m.rg.stop)}"
+
+#mex
+example  : True:=     --
+  trivial
+
+
 def finalScan (stx : Syntax) (verbose? : Bool) : CommandElabM (Array Exceptions) := do
   let ustx := stx.eraseLeadTrailSpaces
   let simplySpaced ← pretty ustx <|> return default
