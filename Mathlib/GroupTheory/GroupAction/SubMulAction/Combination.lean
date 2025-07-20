@@ -9,6 +9,38 @@ import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
 import Mathlib.GroupTheory.GroupAction.Embedding
 import Mathlib.GroupTheory.GroupAction.Basic
 
+/-! # Combinations
+
+Combinations in a type are finite subsets of given cardinality.
+This file provides some API for handling them, especially in the context of a group action.
+
+* `Nat.Combination α n` is the set of all `Finset α` with cardinality `n`.
+
+* `Nat.Combination.card` proves that the `Nat.Card`-cardinality
+of this set is equal to `(Nat.card α).choose n`.
+
+* `Nat.Combination.subMulAction`:
+When a group `G` acts on `α`, the `SubMulAction` of `G` on `n.Combination α`.
+
+This induces a `MulAction G (n.Combination α)` instance. Then:
+
+* `EmbeddingToCombination.map`: the equivariant map from `Fin n ↪ α` to `n.Combination α`.
+
+* `Nat.Combination.isPretransitive_of_IsMultiplyPretransitive`
+shows the pretransitivity of that action if the action of `G` on `α` is `n`-pretransitive.
+
+* `Nat.Combination.isPretransitive` shows that `Equiv.Perm α`
+acts pretransitively on `n.Combination α`, for all `n`.
+
+* `Nat.Combination.compl`: Given an equality `m + n = Fintype.card α`,
+the complement of an `n`-combination, as an `m`-combination.
+This map is an equivariant map with respect to a group action on `α`.
+
+* `Nat.toCombination_one_equivariant`:
+The obvious map from `α` to `1.Combination α`, as an equivariant map.
+
+-/
+
 variable (G : Type*) [Group G] {α : Type*} [MulAction G α]
 
 open scoped Pointwise
@@ -133,7 +165,7 @@ theorem Nat.Combination.mulAction_faithful
 variable (α G)
 
 variable (n) in
-/-- The equivariant map from arrangements to combinations -/
+/-- The equivariant map from embeddings of `Fin n` (aka arrangement) to combinations. -/
 def EmbeddingToCombination.map [DecidableEq α] :
     (Fin n ↪ α) →[G] n.Combination α where
   toFun := fun f : Fin n ↪ α =>
@@ -176,19 +208,7 @@ theorem Nat.Combination.card [Finite α] :
   ext s
   simp
 
--- Kyle Miller golfed that one
-theorem Nat.choose_eq_one_iff {n p : ℕ} : n.choose p = 1 ↔ p = 0 ∨ n = p := by
-  induction n generalizing p with
-  | zero => cases p <;> simp
-  | succ n ih =>
-    cases p with
-    | zero => simp
-    | succ p =>
-      simp only [Nat.choose_succ_succ, Nat.choose_eq_zero_iff, Nat.add_eq_one_iff, ih]
-      omega
-
-theorem Nat.Combination_nontrivial
-    (h1 : 0 < n) (h2 : n < Nat.card α) :
+theorem Nat.Combination_nontrivial (h1 : 0 < n) (h2 : n < Nat.card α) :
     Nontrivial (n.Combination α) := by
   classical
   have : 0 < Nat.card α := lt_trans h1 h2
@@ -219,7 +239,7 @@ theorem Nat.Combination.isPretransitive [DecidableEq α] :
   Nat.Combination.isPretransitive_of_IsMultiplyPretransitive _ _
     (Equiv.Perm.isMultiplyPretransitive α n)
 
-/-- The complement of a combination. -/
+/-- The complement of a combination, as an equivariant map. -/
 def Nat.Combination.compl [DecidableEq α] [Fintype α]
     {m : ℕ} (hm : m + n = Fintype.card α) :
     n.Combination α →[G] m.Combination α where
@@ -265,13 +285,13 @@ theorem Nat.Combination.compl_bijective
     use (Nat.Combination.compl G α hm') s
     simp [← MulActionHom.comp_apply, Nat.Combination.compl_compl]
 
-/-- The obvious map from a type to its 1-combinations, as an equivariant map -/
+/-- The obvious map from a type to its 1-combinations, as an equivariant map. -/
 def Nat.toCombination_one_equivariant [DecidableEq α] :
     α →[G] Nat.Combination α 1 where
   toFun := fun x => ⟨{x}, Finset.card_singleton x⟩
   map_smul' _ _ := rfl
 
-theorem Nat.bijective_toCombination_one_equivariant [DecidableEq α] :
+theorem Nat.toCombination_one_equivariant_bijective [DecidableEq α] :
     Function.Bijective (Nat.toCombination_one_equivariant G α) := by
   constructor
   · intro a b h

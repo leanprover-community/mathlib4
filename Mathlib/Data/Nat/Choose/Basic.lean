@@ -318,6 +318,16 @@ theorem choose_le_choose {a b : ℕ} (c : ℕ) (h : a ≤ b) : choose a c ≤ ch
 
 theorem choose_mono (b : ℕ) : Monotone fun a => choose a b := fun _ _ => choose_le_choose b
 
+theorem choose_eq_one_iff {n k : ℕ} : n.choose k = 1 ↔ k = 0 ∨ n = k := by
+  constructor <;> intro h
+  · rcases lt_trichotomy k n with hk | rfl | hk
+    · rw [← add_one_le_iff] at hk
+      have := choose_mono k hk
+      simp_rw [choose_succ_self_right, h] at this; omega
+    · tauto
+    · simp [choose_eq_zero_of_lt hk] at h
+  · rcases h with rfl | rfl <;> simp
+
 /-! #### Multichoose
 
 Whereas `choose n k` is the number of subsets of cardinality `k` from a type of cardinality `n`,
