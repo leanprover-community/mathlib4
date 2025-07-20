@@ -134,12 +134,12 @@ lemma finLiftOn_mk (a : ∀ i, α i) :
   rw [finChoice_eq]
   rfl
 
-/-- Lift a binary function from its finitely indexed types `∀ i, α i`, `∀ i, β i` to
+/-- Lift a binary function from its finitely indexed types `∀ i : ι₁, α i`, `∀ i : ι₂, β i` to
 a binary function on quotients. This is analogous to the combination of `Quotient.finLiftOn`
 and `Quotient.liftOn₂`. -/
-def finLiftOn₂ {ι : Type*} [Fintype ι] [DecidableEq ι]
-    {α : ι → Sort*} {S₁ : ∀ i, Setoid (α i)}
-    {β : ι → Sort*} {S₂ : ∀ i, Setoid (β i)}
+def finLiftOn₂ {ι₁ : Type*} [Fintype ι₁] [DecidableEq ι₁] {ι₂ : Type*} [Fintype ι₂] [DecidableEq ι₂]
+    {α : ι₁ → Sort*} {S₁ : ∀ i, Setoid (α i)}
+    {β : ι₂ → Sort*} {S₂ : ∀ i, Setoid (β i)}
     {φ : Sort*}
     (q₁ : ∀ i, Quotient (S₁ i)) (q₂ : ∀ i, Quotient (S₂ i))
     (f : (∀ i, α i) → (∀ i, β i) → φ)
