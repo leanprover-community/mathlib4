@@ -16,6 +16,7 @@ A regular monomorphism is a morphism that is the equalizer of some parallel pair
 We give the constructions
 * `IsSplitMono → RegularMono` and
 * `RegularMono → Mono`
+
 as well as the dual constructions for regular epimorphisms. Additionally, we give the construction
 * `RegularEpi ⟶ StrongEpi`.
 
@@ -131,7 +132,7 @@ instance (priority := 100) strongMono_of_regularMono (f : X ⟶ Y) [RegularMono 
         simp only [Category.assoc, RegularMono.w]
       obtain ⟨t, ht⟩ := RegularMono.lift' _ _ this
       refine CommSq.HasLift.mk' ⟨t, (cancel_mono f).1 ?_, ht⟩
-      simp only [Arrow.mk_hom, Arrow.homMk'_left, Category.assoc, ht, sq.w])
+      simp only [Category.assoc, ht, sq.w])
 
 /-- A regular monomorphism is an isomorphism if it is an epimorphism. -/
 theorem isIso_of_regularMono_of_epi (f : X ⟶ Y) [RegularMono f] [Epi f] : IsIso f :=
@@ -269,7 +270,7 @@ instance (priority := 100) strongEpi_of_regularEpi (f : X ⟶ Y) [RegularEpi f] 
         CommSq.HasLift.mk'
           ⟨t, ht,
             (cancel_epi f).1
-              (by simp only [← Category.assoc, ht, ← sq.w, Arrow.mk_hom, Arrow.homMk'_right])⟩)
+              (by simp only [← Category.assoc, ht, ← sq.w])⟩)
 
 /-- A regular epimorphism is an isomorphism if it is a monomorphism. -/
 theorem isIso_of_regularEpi_of_mono (f : X ⟶ Y) [RegularEpi f] [Mono f] : IsIso f :=

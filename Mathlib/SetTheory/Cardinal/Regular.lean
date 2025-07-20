@@ -56,7 +56,7 @@ theorem IsRegular.ord_pos {c : Cardinal} (H : c.IsRegular) : 0 < c.ord := by
   rw [Cardinal.lt_ord, card_zero]
   exact H.pos
 
-theorem isRegular_cof {o : Ordinal} (h : o.IsLimit) : IsRegular o.cof :=
+theorem isRegular_cof {o : Ordinal} (h : IsSuccLimit o) : IsRegular o.cof :=
   ⟨aleph0_le_cof.2 h, (cof_cof o).ge⟩
 
 /-- If `c` is a regular cardinal, then `c.ord.toType` has a least element. -/
@@ -76,7 +76,7 @@ theorem isRegular_succ {c : Cardinal.{u}} (h : ℵ₀ ≤ c) : IsRegular (succ c
         have αe := Cardinal.mk_out (succ c)
         set α := (succ c).out
         rcases ord_eq α with ⟨r, wo, re⟩
-        have := isLimit_ord (h.trans (le_succ _))
+        have := isSuccLimit_ord (h.trans (le_succ _))
         rw [← αe, re] at this ⊢
         rcases cof_eq' r this with ⟨S, H, Se⟩
         rw [← Se]
@@ -99,12 +99,6 @@ theorem isRegular_preAleph_succ {o : Ordinal} (h : ω ≤ o) : IsRegular (preAle
   rw [preAleph_succ]
   exact isRegular_succ (aleph0_le_preAleph.2 h)
 
-set_option linter.deprecated false in
-@[deprecated isRegular_preAleph_succ (since := "2024-10-22")]
-theorem isRegular_aleph'_succ {o : Ordinal} (h : ω ≤ o) : IsRegular (aleph' (succ o)) := by
-  rw [aleph'_succ]
-  exact isRegular_succ (aleph0_le_aleph'.2 h)
-
 theorem isRegular_aleph_succ (o : Ordinal) : IsRegular (ℵ_ (succ o)) := by
   rw [aleph_succ]
   exact isRegular_succ (aleph0_le_aleph o)
@@ -121,21 +115,9 @@ theorem iSup_lt_ord_lift_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegu
     (hι : Cardinal.lift.{v, u} #ι < c) : (∀ i, f i < c.ord) → iSup f < c.ord :=
   iSup_lt_ord_lift (by rwa [hc.cof_eq])
 
-set_option linter.deprecated false in
-@[deprecated iSup_lt_ord_lift_of_isRegular (since := "2024-08-27")]
-theorem sup_lt_ord_lift_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c)
-    (hι : Cardinal.lift.{v, u} #ι < c) : (∀ i, f i < c.ord) → Ordinal.sup.{u, v} f < c.ord :=
-  iSup_lt_ord_lift_of_isRegular hc hι
-
 theorem iSup_lt_ord_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c) (hι : #ι < c) :
     (∀ i, f i < c.ord) → iSup f < c.ord :=
   iSup_lt_ord (by rwa [hc.cof_eq])
-
-set_option linter.deprecated false in
-@[deprecated iSup_lt_ord_of_isRegular (since := "2024-08-27")]
-theorem sup_lt_ord_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c) (hι : #ι < c) :
-    (∀ i, f i < c.ord) → Ordinal.sup f < c.ord :=
-  iSup_lt_ord_of_isRegular hc hι
 
 theorem blsub_lt_ord_lift_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal} {c} (hc : IsRegular c)
     (ho : Cardinal.lift.{v, u} o.card < c) :
@@ -190,8 +172,7 @@ theorem card_lt_of_card_biUnion_lt {α β : Type u} {s : Set α} {t : ∀ a ∈ 
     (h : #(⋃ a ∈ s, t a ‹_›) < c) (a : α) (ha : a ∈ s) : # (t a ha) < c := by
   rw [biUnion_eq_iUnion] at h
   have := card_lt_of_card_iUnion_lt h
-  simp_all only [iUnion_coe_set,
-    Subtype.forall]
+  simp_all only [iUnion_coe_set, Subtype.forall]
 
 theorem card_biUnion_lt_iff_forall_of_isRegular {α β : Type u} {s : Set α} {t : ∀ a ∈ s, Set β}
     {c : Cardinal} (hc : c.IsRegular) (hs : #s < c) :
@@ -210,29 +191,9 @@ theorem nfpFamily_lt_ord_of_isRegular {ι} {f : ι → Ordinal → Ordinal} {c} 
     a < c.ord → nfpFamily.{u, u} f a < c.ord :=
   nfpFamily_lt_ord_lift_of_isRegular hc (by rwa [lift_id]) hc' hf
 
-set_option linter.deprecated false in
-@[deprecated nfpFamily_lt_ord_lift_of_isRegular (since := "2024-10-14")]
-theorem nfpBFamily_lt_ord_lift_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal → Ordinal} {c}
-    (hc : IsRegular c) (ho : Cardinal.lift.{v, u} o.card < c) (hc' : c ≠ ℵ₀)
-    (hf : ∀ (i hi), ∀ b < c.ord, f i hi b < c.ord) {a} :
-    a < c.ord → nfpBFamily.{u, v} o f a < c.ord :=
-  nfpFamily_lt_ord_lift_of_isRegular hc (by rwa [mk_toType]) hc' fun _ => hf _ _
-
-set_option linter.deprecated false in
-@[deprecated nfpFamily_lt_ord_of_isRegular (since := "2024-10-14")]
-theorem nfpBFamily_lt_ord_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal → Ordinal} {c}
-    (hc : IsRegular c) (ho : o.card < c) (hc' : c ≠ ℵ₀)
-    (hf : ∀ (i hi), ∀ b < c.ord, f i hi b < c.ord) {a} :
-    a < c.ord → nfpBFamily.{u, u} o f a < c.ord :=
-  nfpBFamily_lt_ord_lift_of_isRegular hc (by rwa [lift_id]) hc' hf
-
 theorem nfp_lt_ord_of_isRegular {f : Ordinal → Ordinal} {c} (hc : IsRegular c) (hc' : c ≠ ℵ₀)
     (hf : ∀ i < c.ord, f i < c.ord) {a} : a < c.ord → nfp f a < c.ord :=
-  nfp_lt_ord
-    (by
-      rw [hc.cof_eq]
-      exact lt_of_le_of_ne hc.1 hc'.symm)
-    hf
+  nfp_lt_ord (by rw [hc.cof_eq]; exact lt_of_le_of_ne hc.1 hc'.symm) hf
 
 theorem derivFamily_lt_ord_lift {ι : Type u} {f : ι → Ordinal → Ordinal} {c} (hc : IsRegular c)
     (hι : lift.{v} #ι < c) (hc' : c ≠ ℵ₀) (hf : ∀ i, ∀ b < c.ord, f i b < c.ord) {a} :
@@ -241,16 +202,16 @@ theorem derivFamily_lt_ord_lift {ι : Type u} {f : ι → Ordinal → Ordinal} {
     rw [hc.cof_eq]
     exact lt_of_le_of_ne hc.1 hc'.symm
   induction a using limitRecOn with
-  | H₁ =>
+  | zero =>
     rw [derivFamily_zero]
     exact nfpFamily_lt_ord_lift hω (by rwa [hc.cof_eq]) hf
-  | H₂ b hb =>
+  | succ b hb =>
     intro hb'
     rw [derivFamily_succ]
     exact
       nfpFamily_lt_ord_lift hω (by rwa [hc.cof_eq]) hf
-        ((isLimit_ord hc.1).succ_lt (hb ((lt_succ b).trans hb')))
-  | H₃ b hb H =>
+        ((isSuccLimit_ord hc.1).succ_lt (hb ((lt_succ b).trans hb')))
+  | limit b hb H =>
     intro hb'
     -- TODO: generalize the universes of the lemmas in this file so we don't have to rely on bsup
     have : ⨆ a : Iio b, _ = _ :=
@@ -265,21 +226,6 @@ theorem derivFamily_lt_ord {ι} {f : ι → Ordinal → Ordinal} {c} (hc : IsReg
     a < c.ord → derivFamily.{u, u} f a < c.ord :=
   derivFamily_lt_ord_lift hc (by rwa [lift_id]) hc' hf
 
-set_option linter.deprecated false in
-@[deprecated derivFamily_lt_ord_lift (since := "2024-10-14")]
-theorem derivBFamily_lt_ord_lift {o : Ordinal} {f : ∀ a < o, Ordinal → Ordinal} {c}
-    (hc : IsRegular c) (hι : Cardinal.lift.{v, u} o.card < c) (hc' : c ≠ ℵ₀)
-    (hf : ∀ (i hi), ∀ b < c.ord, f i hi b < c.ord) {a} :
-    a < c.ord → derivBFamily.{u, v} o f a < c.ord :=
-  derivFamily_lt_ord_lift hc (by rwa [mk_toType]) hc' fun _ => hf _ _
-
-set_option linter.deprecated false in
-@[deprecated derivFamily_lt_ord (since := "2024-10-14")]
-theorem derivBFamily_lt_ord {o : Ordinal} {f : ∀ a < o, Ordinal → Ordinal} {c} (hc : IsRegular c)
-    (hι : o.card < c) (hc' : c ≠ ℵ₀) (hf : ∀ (i hi), ∀ b < c.ord, f i hi b < c.ord) {a} :
-    a < c.ord → derivBFamily.{u, u} o f a < c.ord :=
-  derivBFamily_lt_ord_lift hc (by rwa [lift_id]) hc' hf
-
 theorem deriv_lt_ord {f : Ordinal.{u} → Ordinal} {c} (hc : IsRegular c) (hc' : c ≠ ℵ₀)
     (hf : ∀ i < c.ord, f i < c.ord) {a} : a < c.ord → deriv f a < c.ord :=
   derivFamily_lt_ord_lift hc
@@ -288,19 +234,43 @@ theorem deriv_lt_ord {f : Ordinal.{u} → Ordinal} {c} (hc : IsRegular c) (hc' :
 /-! ### Inaccessible cardinals -/
 
 /-- A cardinal is inaccessible if it is an uncountable regular strong limit cardinal. -/
-def IsInaccessible (c : Cardinal) :=
-  ℵ₀ < c ∧ IsRegular c ∧ IsStrongLimit c
+def IsInaccessible (c : Cardinal) : Prop :=
+  ℵ₀ < c ∧ c ≤ c.ord.cof ∧ ∀ x < c, 2 ^ x < c
 
-theorem IsInaccessible.mk {c} (h₁ : ℵ₀ < c) (h₂ : c ≤ c.ord.cof) (h₃ : ∀ x < c, (2^x) < c) :
+@[deprecated "use the default constructor for `IsInaccesible`" (since := "2025-07-01")]
+theorem IsInaccessible.mk {c} (h₁ : ℵ₀ < c) (h₂ : c ≤ c.ord.cof) (h₃ : ∀ x < c, (2 ^ x) < c) :
     IsInaccessible c :=
-  ⟨h₁, ⟨h₁.le, h₂⟩, (aleph0_pos.trans h₁).ne', @h₃⟩
+  ⟨h₁, h₂, h₃⟩
+
+theorem IsInaccessible.aleph0_lt {c : Cardinal} (h : IsInaccessible c) : ℵ₀ < c :=
+  h.1
+
+theorem IsInaccessible.nat_lt {c : Cardinal} (h : IsInaccessible c) (n : ℕ) : n < c :=
+  (nat_lt_aleph0 n).trans h.1
+
+theorem IsInaccessible.pos {c : Cardinal} (h : IsInaccessible c) : 0 < c :=
+  aleph0_pos.trans h.1
+
+theorem IsInaccessible.ne_zero {c : Cardinal} (h : IsInaccessible c) : c ≠ 0 :=
+  h.pos.ne'
+
+theorem IsInaccessible.isRegular {c : Cardinal} (h : IsInaccessible c) : IsRegular c :=
+  ⟨h.aleph0_lt.le, h.2.1⟩
+
+theorem IsInaccessible.isStrongLimit {c : Cardinal} (h : IsInaccessible c) : IsStrongLimit c :=
+  ⟨h.ne_zero, h.2.2⟩
+
+theorem isInaccesible_def {c : Cardinal} :
+    IsInaccessible c ↔ ℵ₀ < c ∧ IsRegular c ∧ IsStrongLimit c where
+  mp h := ⟨h.aleph0_lt, h.isRegular, h.isStrongLimit⟩
+  mpr := fun ⟨h₁, h₂, h₃⟩ ↦ ⟨h₁, h₂.2, h₃.two_power_lt⟩
 
 -- Lean's foundations prove the existence of ℵ₀ many inaccessible cardinals
-theorem univ_inaccessible : IsInaccessible univ.{u, v} :=
-  IsInaccessible.mk (by simpa using lift_lt_univ' ℵ₀) (by simp) fun c h => by
-    rcases lt_univ'.1 h with ⟨c, rfl⟩
-    rw [← lift_two_power]
-    apply lift_lt_univ'
+theorem IsInaccessible.univ : IsInaccessible univ.{u, v} :=
+  ⟨aleph0_lt_univ, by simp, IsStrongLimit.univ.two_power_lt⟩
+
+@[deprecated IsInaccessible.univ (since := "2025-07-01")]
+alias univ_inaccessible := IsInaccessible.univ
 
 -- TODO: prove that `IsInaccessible o.card` implies `IsInaccesible (ℵ_ o)` and
 -- `IsInaccesible (ℶ_ o)`

@@ -46,10 +46,10 @@ theorem const_inj [Nonempty α] {y₁ y₂ : β} : const α y₁ = const α y₂
 theorem onFun_apply (f : β → β → γ) (g : α → β) (a b : α) : onFun f g a b = f (g a) (g b) :=
   rfl
 
-lemma hfunext {α α' : Sort u} {β : α → Sort v} {β' : α' → Sort v} {f : ∀a, β a} {f' : ∀a, β' a}
-    (hα : α = α') (h : ∀a a', HEq a a' → HEq (f a) (f' a')) : HEq f f' := by
+lemma hfunext {α α' : Sort u} {β : α → Sort v} {β' : α' → Sort v} {f : ∀ a, β a} {f' : ∀ a, β' a}
+    (hα : α = α') (h : ∀ a a', a ≍ a' → f a ≍ f' a') : f ≍ f' := by
   subst hα
-  have : ∀a, HEq (f a) (f' a) := fun a ↦ h a a (HEq.refl a)
+  have : ∀ a, f a ≍ f' a := fun a ↦ h a a (HEq.refl a)
   have : β = β' := by funext a; exact type_eq_of_heq (this a)
   subst this
   apply heq_of_eq
@@ -108,8 +108,6 @@ theorem Injective.piMap {ι : Sort*} {α β : ι → Sort*} {f : ∀ i, α i →
     (hf : ∀ i, Injective (f i)) : Injective (Pi.map f) := fun _ _ h ↦
   funext fun i ↦ hf i <| congrFun h _
 
-@[deprecated (since := "2024-10-06")] alias injective_pi_map := Injective.piMap
-
 /-- Composition by an injective function on the left is itself injective. -/
 theorem Injective.comp_left {g : β → γ} (hg : Injective g) : Injective (g ∘ · : (α → β) → α → γ) :=
   .piMap fun _ ↦ hg
@@ -119,20 +117,23 @@ theorem injective_comp_left_iff [Nonempty α] {g : β → γ} :
   ⟨fun h b₁ b₂ eq ↦ Nonempty.elim ‹_›
     (congr_fun <| h (a₁ := fun _ ↦ b₁) (a₂ := fun _ ↦ b₂) <| funext fun _ ↦ eq), (·.comp_left)⟩
 
-theorem injective_of_subsingleton [Subsingleton α] (f : α → β) : Injective f :=
+@[nontriviality] theorem injective_of_subsingleton [Subsingleton α] (f : α → β) : Injective f :=
   fun _ _ _ ↦ Subsingleton.elim _ _
+
+@[nontriviality] theorem bijective_of_subsingleton [Subsingleton α] (f : α → α) : Bijective f :=
+  ⟨injective_of_subsingleton f, fun a ↦ ⟨a, Subsingleton.elim ..⟩⟩
 
 lemma Injective.dite (p : α → Prop) [DecidablePred p]
     {f : {a : α // p a} → β} {f' : {a : α // ¬ p a} → β}
     (hf : Injective f) (hf' : Injective f')
     (im_disj : ∀ {x x' : α} {hx : p x} {hx' : ¬ p x'}, f ⟨x, hx⟩ ≠ f' ⟨x', hx'⟩) :
     Function.Injective (fun x ↦ if h : p x then f ⟨x, h⟩ else f' ⟨x, h⟩) := fun x₁ x₂ h => by
- dsimp only at h
- by_cases h₁ : p x₁ <;> by_cases h₂ : p x₂
- · rw [dif_pos h₁, dif_pos h₂] at h; injection (hf h)
- · rw [dif_pos h₁, dif_neg h₂] at h; exact (im_disj h).elim
- · rw [dif_neg h₁, dif_pos h₂] at h; exact (im_disj h.symm).elim
- · rw [dif_neg h₁, dif_neg h₂] at h; injection (hf' h)
+  dsimp only at h
+  by_cases h₁ : p x₁ <;> by_cases h₂ : p x₂
+  · rw [dif_pos h₁, dif_pos h₂] at h; injection (hf h)
+  · rw [dif_pos h₁, dif_neg h₂] at h; exact (im_disj h).elim
+  · rw [dif_neg h₁, dif_pos h₂] at h; exact (im_disj h.symm).elim
+  · rw [dif_neg h₁, dif_neg h₂] at h; injection (hf' h)
 
 theorem Surjective.of_comp {g : γ → α} (S : Surjective (f ∘ g)) : Surjective f := fun y ↦
   let ⟨x, h⟩ := S y
@@ -335,16 +336,16 @@ theorem LeftInverse.eq_rightInverse {f : α → β} {g₁ g₂ : β → α} (h�
     g₁ = g₁ ∘ f ∘ g₂ := by rw [h₂.comp_eq_id, comp_id]
      _ = g₂ := by rw [← comp_assoc, h₁.comp_eq_id, id_comp]
 
-attribute [local instance] Classical.propDecidable
-
 /-- We can use choice to construct explicitly a partial inverse for
   a given injective function `f`. -/
 noncomputable def partialInv {α β} (f : α → β) (b : β) : Option α :=
+  open scoped Classical in
   if h : ∃ a, f a = b then some (Classical.choose h) else none
 
 theorem partialInv_of_injective {α β} {f : α → β} (I : Injective f) : IsPartialInv f (partialInv f)
   | a, b =>
   ⟨fun h =>
+    open scoped Classical in
     have hpi : partialInv f b = if h : ∃ a, f a = b then some (Classical.choose h) else none :=
       rfl
     if h' : ∃ a, f a = b
@@ -365,12 +366,11 @@ section InvFun
 
 variable {α β : Sort*} [Nonempty α] {f : α → β} {b : β}
 
-attribute [local instance] Classical.propDecidable
-
 /-- The inverse of a function (which is a left inverse if `f` is injective
   and a right inverse if `f` is surjective). -/
 -- Explicit Sort so that `α` isn't inferred to be Prop via `exists_prop_decidable`
 noncomputable def invFun {α : Sort u} {β} [Nonempty α] (f : α → β) : β → α :=
+  open scoped Classical in
   fun y ↦ if h : (∃ x, f x = y) then h.choose else Classical.arbitrary α
 
 theorem invFun_eq (h : ∃ a, f a = b) : f (invFun f b) = b := by
@@ -450,8 +450,6 @@ theorem Surjective.piMap {ι : Sort*} {α β : ι → Sort*} {f : ∀ i, α i �
     (hf : ∀ i, Surjective (f i)) : Surjective (Pi.map f) := fun g ↦
   ⟨fun i ↦ surjInv (hf i) (g i), funext fun _ ↦ rightInverse_surjInv _ _⟩
 
-@[deprecated (since := "2024-10-06")] alias surjective_pi_map := Surjective.piMap
-
 /-- Composition by a surjective function on the left is itself surjective. -/
 theorem Surjective.comp_left {g : β → γ} (hg : Surjective g) :
     Surjective (g ∘ · : (α → β) → α → γ) :=
@@ -466,8 +464,6 @@ theorem surjective_comp_left_iff [Nonempty α] {g : β → γ} :
 theorem Bijective.piMap {ι : Sort*} {α β : ι → Sort*} {f : ∀ i, α i → β i}
     (hf : ∀ i, Bijective (f i)) : Bijective (Pi.map f) :=
   ⟨.piMap fun i ↦ (hf i).1, .piMap fun i ↦ (hf i).2⟩
-
-@[deprecated (since := "2024-10-06")] alias bijective_pi_map := Bijective.piMap
 
 /-- Composition by a bijective function on the left is itself bijective. -/
 theorem Bijective.comp_left {g : β → γ} (hg : Bijective g) :
@@ -517,7 +513,7 @@ theorem update_injective (f : ∀ a, β a) (a' : α) : Injective (update f a') :
   have := congr_fun h a'
   rwa [update_self, update_self] at this
 
-lemma forall_update_iff (f : ∀a, β a) {a : α} {b : β a} (p : ∀a, β a → Prop) :
+lemma forall_update_iff (f : ∀ a, β a) {a : α} {b : β a} (p : ∀ a, β a → Prop) :
     (∀ x, p x (update f a b x)) ↔ p a b ∧ ∀ x, x ≠ a → p x (f x) := by
   rw [← and_forall_ne a, update_self]
   simp +contextual
@@ -562,11 +558,51 @@ theorem update_comp_eq_of_injective' (g : ∀ a, β a) {f : α' → α} (hf : Fu
     (i : α') (a : β (f i)) : (fun j ↦ update g (f i) a (f j)) = update (fun i ↦ g (f i)) i a :=
   eq_update_iff.2 ⟨update_self .., fun _ hj ↦ update_of_ne (hf.ne hj) _ _⟩
 
+theorem update_apply_of_injective
+    (g : ∀ a, β a) {f : α' → α} (hf : Function.Injective f)
+    (i : α') (a : β (f i)) (j : α') :
+    update g (f i) a (f j) = update (fun i ↦ g (f i)) i a j :=
+  congr_fun (update_comp_eq_of_injective' g hf i a) j
+
 /-- Non-dependent version of `Function.update_comp_eq_of_injective'` -/
 theorem update_comp_eq_of_injective {β : Sort*} (g : α' → β) {f : α → α'}
     (hf : Function.Injective f) (i : α) (a : β) :
     Function.update g (f i) a ∘ f = Function.update (g ∘ f) i a :=
   update_comp_eq_of_injective' g hf i a
+
+/-- Recursors can be pushed inside `Function.update`.
+
+The `ctor` argument should be a one-argument constructor like `Sum.inl`,
+and `recursor` should be an inductive recursor partially applied in all but that constructor,
+such as `(Sum.rec · g)`.
+
+In future, we should build some automation to generate applications like `Option.rec_update` for all
+inductive types. -/
+lemma rec_update {ι κ : Sort*} {α : κ → Sort*} [DecidableEq ι] [DecidableEq κ]
+    {ctor : ι → κ} (hctor : Function.Injective ctor)
+    (recursor : ((i : ι) → α (ctor i)) → ((i : κ) → α i))
+    (h : ∀ f i, recursor f (ctor i) = f i)
+    (h2 : ∀ f₁ f₂ k, (∀ i, ctor i ≠ k) → recursor f₁ k = recursor f₂ k)
+    (f : (i : ι) → α (ctor i)) (i : ι) (x : α (ctor i)) :
+    recursor (update f i x) = update (recursor f) (ctor i) x := by
+  ext k
+  by_cases h : ∃ i, ctor i = k
+  · obtain ⟨i', rfl⟩ := h
+    obtain rfl | hi := eq_or_ne i' i
+    · simp [h]
+    · have hk := hctor.ne hi
+      simp [h, hi, hk, Function.update_of_ne]
+  · rw [not_exists] at h
+    rw [h2 _ f _ h]
+    rw [Function.update_of_ne (Ne.symm <| h i)]
+
+@[simp]
+lemma _root_.Option.rec_update {α : Type*} {β : Option α → Sort*} [DecidableEq α]
+    (f : β none) (g : ∀ a, β (.some a)) (a : α) (x : β (.some a)) :
+    Option.rec f (update g a x) = update (Option.rec f g) (.some a) x :=
+  Function.rec_update (@Option.some.inj _) (Option.rec f) (fun _ _ => rfl) (fun
+    | _, _, .some _, h => (h _ rfl).elim
+    | _, _, .none, _ => rfl) _ _ _
 
 theorem apply_update {ι : Sort*} [DecidableEq ι] {α β : ι → Sort*} (f : ∀ i, α i → β i)
     (g : ∀ i, α i) (i : ι) (v : α i) (j : ι) :
@@ -609,11 +645,29 @@ theorem update_idem {α} [DecidableEq α] {β : α → Sort*} {a : α} (v w : β
   funext b
   by_cases h : b = a <;> simp [update, h]
 
+@[simp]
+theorem _root_.Pi.map_update {ι : Sort*} [DecidableEq ι] {α β : ι → Sort*}
+    {f : ∀ i, α i → β i}
+    (g : ∀ i, α i) (i : ι) (a : α i) :
+    Pi.map f (Function.update g i a) = Function.update (Pi.map f g) i (f i a) := by
+  ext j
+  obtain rfl | hij := eq_or_ne j i <;> simp [*]
+
+@[simp]
+theorem _root_.Pi.map_injective
+    {ι : Sort*} {α β : ι → Sort*} [∀ i, Nonempty (α i)] {f : ∀ i, α i → β i} :
+    Injective (Pi.map f) ↔ ∀ i, Injective (f i) where
+  mp h i x y hxy := by
+    classical
+    have : Inhabited (∀ i, α i) := ⟨fun _ => Classical.choice inferInstance⟩
+    replace h := @h (Function.update default i x) (Function.update default i y) ?_
+    · simpa using congrFun h i
+    rw [Pi.map_update, Pi.map_update, hxy]
+  mpr := .piMap
+
 end Update
 
 noncomputable section Extend
-
-attribute [local instance] Classical.propDecidable
 
 variable {α β γ : Sort*} {f : α → β}
 
@@ -630,6 +684,7 @@ This definition is mathematically meaningful only when `f a₁ = f a₂ → g a�
 A typical use case is extending a function from a subtype to the entire type. If you wish to extend
 `g : {b : β // p b} → γ` to a function `β → γ`, you should use `Function.extend Subtype.val g j`. -/
 def extend (f : α → β) (g : α → γ) (j : β → γ) : β → γ := fun b ↦
+  open scoped Classical in
   if h : ∃ a, f a = b then g (Classical.choose h) else j b
 
 /-- g factors through f : `f a = f b → g a = g b` -/
@@ -646,6 +701,7 @@ lemma Injective.factorsThrough (hf : Injective f) (g : α → γ) : g.FactorsThr
 
 lemma FactorsThrough.extend_apply {g : α → γ} (hf : g.FactorsThrough f) (e' : β → γ) (a : α) :
     extend f g e' (f a) = g a := by
+  classical
   simp only [extend_def, dif_pos, exists_apply_eq_apply]
   exact hf (Classical.choose_spec (exists_apply_eq_apply f a))
 
@@ -657,6 +713,7 @@ theorem Injective.extend_apply (hf : Injective f) (g : α → γ) (e' : β → �
 @[simp]
 theorem extend_apply' (g : α → γ) (e' : β → γ) (b : β) (hb : ¬∃ a, f a = b) :
     extend f g e' b = e' b := by
+  classical
   simp [Function.extend_def, hb]
 
 lemma factorsThrough_iff (g : α → γ) [Nonempty γ] : g.FactorsThrough f ↔ ∃ (e : β → γ), g = e ∘ f :=
@@ -666,7 +723,7 @@ lemma factorsThrough_iff (g : α → γ) [Nonempty γ] : g.FactorsThrough f ↔ 
 
 lemma apply_extend {δ} {g : α → γ} (F : γ → δ) (f : α → β) (e' : β → γ) (b : β) :
     F (extend f g e' b) = extend f (F ∘ g) (F ∘ e') b :=
-  apply_dite F _ _ _
+  open scoped Classical in apply_dite F _ _ _
 
 theorem extend_injective (hf : Injective f) (e' : β → γ) : Injective fun g ↦ extend f g e' := by
   intro g₁ g₂ hg
@@ -681,7 +738,7 @@ lemma FactorsThrough.extend_comp {g : α → γ} (e' : β → γ) (hf : FactorsT
 
 @[simp]
 lemma extend_const (f : α → β) (c : γ) : extend f (fun _ ↦ c) (fun _ ↦ c) = fun _ ↦ c :=
-  funext fun _ ↦ ite_id _
+  funext fun _ ↦ open scoped Classical in ite_id _
 
 @[simp]
 theorem extend_comp (hf : Injective f) (g : α → γ) (e' : β → γ) : extend f g e' ∘ f = g :=
@@ -697,6 +754,7 @@ theorem Injective.surjective_comp_right [Nonempty γ] (hf : Injective f) :
 
 theorem surjective_comp_right_iff_injective {γ : Type*} [Nontrivial γ] :
     Surjective (fun g : β → γ ↦ g ∘ f) ↔ Injective f := by
+  classical
   refine ⟨not_imp_not.mp fun not_inj surj ↦ not_subsingleton γ ⟨fun c c' ↦ ?_⟩,
     (·.surjective_comp_right)⟩
   simp only [Injective, not_forall] at not_inj
@@ -769,13 +827,13 @@ class HasUncurry (α : Type*) (β : outParam Type*) (γ : outParam Type*) where
   for bundled maps. -/
   uncurry : α → β → γ
 
-@[inherit_doc] notation:arg "↿" x:arg => HasUncurry.uncurry x
+@[inherit_doc] prefix:max "↿" => HasUncurry.uncurry
 
 instance hasUncurryBase : HasUncurry (α → β) α β :=
   ⟨id⟩
 
 instance hasUncurryInduction [HasUncurry β γ δ] : HasUncurry (α → β) (α × γ) δ :=
-  ⟨fun f p ↦ (↿(f p.1)) p.2⟩
+  ⟨fun f p ↦ ↿(f p.1) p.2⟩
 
 end Uncurry
 
@@ -869,12 +927,11 @@ end Injective2
 
 section Sometimes
 
-attribute [local instance] Classical.propDecidable
-
 /-- `sometimes f` evaluates to some value of `f`, if it exists. This function is especially
 interesting in the case where `α` is a proposition, in which case `f` is necessarily a
 constant function, so that `sometimes f = f a` for all `a`. -/
 noncomputable def sometimes {α β} [Nonempty β] (f : α → β) : β :=
+  open scoped Classical in
   if h : Nonempty α then f (Classical.choice h) else Classical.choice ‹_›
 
 theorem sometimes_eq {p : Prop} {α} [Nonempty α] (f : p → α) (a : p) : sometimes f = f a :=

@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 import Mathlib.Topology.Order.Compact
 import Mathlib.Topology.MetricSpace.ProperSpace
 import Mathlib.Topology.MetricSpace.Cauchy
+import Mathlib.Topology.MetricSpace.Defs
 import Mathlib.Topology.EMetricSpace.Diam
 
 /-!
@@ -16,14 +17,14 @@ This file contains one definition, and various results on boundedness in pseudo-
   Defined in terms of `EMetric.diam`, for better handling of the case when it should be infinite.
 
 * `isBounded_iff_subset_closedBall`: a non-empty set is bounded if and only if
-   it is included in some closed ball
+  it is included in some closed ball
 * describing the cobounded filter, relating to the cocompact filter
 * `IsCompact.isBounded`: compact sets are bounded
 * `TotallyBounded.isBounded`: totally bounded sets are bounded
 * `isCompact_iff_isClosed_bounded`, the **Heine–Borel theorem**:
-   in a proper space, a set is compact if and only if it is closed and bounded.
+  in a proper space, a set is compact if and only if it is closed and bounded.
 * `cobounded_eq_cocompact`: in a proper space, cobounded and compact sets are the same
-diameter of a subset, and its relation to boundedness
+  diameter of a subset, and its relation to boundedness
 
 ## Tags
 
@@ -38,13 +39,13 @@ open scoped ENNReal Uniformity Topology Pointwise
 universe u v w
 
 variable {α : Type u} {β : Type v} {X ι : Type*}
-variable [PseudoMetricSpace α]
 
 namespace Metric
 
 section Bounded
 
 variable {x : α} {s t : Set α} {r : ℝ}
+variable [PseudoMetricSpace α]
 
 /-- Closed balls are bounded -/
 theorem isBounded_closedBall : IsBounded (closedBall x r) :=
@@ -102,9 +103,17 @@ theorem hasBasis_cobounded_compl_closedBall (c : α) :
     (cobounded α).HasBasis (fun _ ↦ True) (fun r ↦ (closedBall c r)ᶜ) :=
   ⟨compl_surjective.forall.2 fun _ ↦ (isBounded_iff_subset_closedBall c).trans <| by simp⟩
 
+theorem hasAntitoneBasis_cobounded_compl_closedBall (c : α) :
+    (cobounded α).HasAntitoneBasis (fun r ↦ (closedBall c r)ᶜ) :=
+  ⟨Metric.hasBasis_cobounded_compl_closedBall _, fun _ _ hr _ ↦ by simpa using hr.trans_lt⟩
+
 theorem hasBasis_cobounded_compl_ball (c : α) :
     (cobounded α).HasBasis (fun _ ↦ True) (fun r ↦ (ball c r)ᶜ) :=
   ⟨compl_surjective.forall.2 fun _ ↦ (isBounded_iff_subset_ball c).trans <| by simp⟩
+
+theorem hasAntitoneBasis_cobounded_compl_ball (c : α) :
+    (cobounded α).HasAntitoneBasis (fun r ↦ (ball c r)ᶜ) :=
+  ⟨Metric.hasBasis_cobounded_compl_ball _, fun _ _ hr _ ↦ by simpa using hr.trans⟩
 
 @[simp]
 theorem comap_dist_right_atTop (c : α) : comap (dist · c) atTop = cobounded α :=
@@ -197,7 +206,7 @@ theorem _root_.CauchySeq.isBounded_range {f : ℕ → α} (hf : CauchySeq f) : I
 theorem isBounded_range_of_tendsto_cofinite {f : β → α} {a : α} (hf : Tendsto f cofinite (𝓝 a)) :
     IsBounded (range f) :=
   isBounded_range_of_tendsto_cofinite_uniformity <|
-    (hf.prod_map hf).mono_right <| nhds_prod_eq.symm.trans_le (nhds_le_uniformity a)
+    (hf.prodMap hf).mono_right <| nhds_prod_eq.symm.trans_le (nhds_le_uniformity a)
 
 /-- In a compact space, all sets are bounded -/
 theorem isBounded_of_compactSpace [CompactSpace α] : IsBounded s :=
@@ -332,6 +341,9 @@ section Diam
 
 variable {s : Set α} {x y z : α}
 
+section PseudoMetricSpace
+variable [PseudoMetricSpace α]
+
 /-- The diameter of a set in a metric space. To get controllable behavior even when the diameter
 should be infinite, we express it in terms of the `EMetric.diam` -/
 noncomputable def diam (s : Set α) : ℝ :=
@@ -342,7 +354,7 @@ theorem diam_nonneg : 0 ≤ diam s :=
   ENNReal.toReal_nonneg
 
 theorem diam_subsingleton (hs : s.Subsingleton) : diam s = 0 := by
-  simp only [diam, EMetric.diam_subsingleton hs, ENNReal.zero_toReal]
+  simp only [diam, EMetric.diam_subsingleton hs, ENNReal.toReal_zero]
 
 /-- The empty set has zero diameter -/
 @[simp]
@@ -429,7 +441,7 @@ theorem ediam_of_unbounded (h : ¬IsBounded s) : EMetric.diam s = ∞ := ediam_e
 /-- An unbounded set has zero diameter. If you would prefer to get the value ∞, use `EMetric.diam`.
 This lemma makes it possible to avoid side conditions in some situations -/
 theorem diam_eq_zero_of_unbounded (h : ¬IsBounded s) : diam s = 0 := by
-  rw [diam, ediam_of_unbounded h, ENNReal.top_toReal]
+  rw [diam, ediam_of_unbounded h, ENNReal.toReal_top]
 
 /-- If `s ⊆ t`, then the diameter of `s` is bounded by that of `t`, provided `t` is bounded. -/
 theorem diam_mono {s t : Set α} (h : s ⊆ t) (ht : IsBounded t) : diam s ≤ diam t :=
@@ -499,6 +511,16 @@ theorem nonempty_iInter_of_nonempty_biInter [CompleteSpace α] {s : ℕ → Set 
     (h' : Tendsto (fun n => diam (s n)) atTop (𝓝 0)) : (⋂ n, s n).Nonempty :=
   (hs 0).isComplete.nonempty_iInter_of_nonempty_biInter hs h's h h'
 
+end PseudoMetricSpace
+
+section MetricSpace
+
+theorem diam_pos [MetricSpace α] (hs1 : s.Nontrivial) (hs2 : IsBounded s) : 0 < diam s := by
+  rcases hs1 with ⟨x, hx, y, hy, hxy⟩
+  exact (dist_pos.mpr hxy).trans_le <| Metric.dist_le_diam_of_mem hs2 hx hy
+
+end MetricSpace
+
 end Diam
 
 end Metric
@@ -519,6 +541,8 @@ def evalDiam : PositivityExt where eval {u α} _zα _pα e := do
 end Mathlib.Meta.Positivity
 
 open Metric
+
+variable [PseudoMetricSpace α]
 
 theorem Metric.cobounded_eq_cocompact [ProperSpace α] : cobounded α = cocompact α := by
   nontriviality α; inhabit α

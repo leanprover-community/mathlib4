@@ -3,8 +3,8 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.SetTheory.Ordinal.Exponential
+import Mathlib.SetTheory.Ordinal.Family
 
 /-!
 # Cantor Normal Form
@@ -102,11 +102,6 @@ theorem CNF_fst_le_log {b o : Ordinal.{u}} {x : Ordinal × Ordinal} :
     · rfl
     · exact (H h).trans (log_mono_right _ (mod_opow_log_lt_self b ho).le)
 
-/-- Every exponent in the Cantor normal form `CNF b o` is less or equal to `o`. -/
-@[deprecated CNF_fst_le_log (since := "2024-09-21")]
-theorem CNF_fst_le {b o : Ordinal.{u}} {x : Ordinal × Ordinal} (h : x ∈ CNF b o) : x.1 ≤ o :=
-  (CNF_fst_le_log h).trans <| log_le_self _ _
-
 /-- Every coefficient in a Cantor normal form is positive. -/
 theorem CNF_lt_snd {b o : Ordinal.{u}} {x : Ordinal × Ordinal} : x ∈ CNF b o → 0 < x.2 := by
   refine CNFRec b (by simp) (fun o ho IH ↦ ?_) o
@@ -131,10 +126,10 @@ theorem CNF_sorted (b o : Ordinal) : ((CNF b o).map Prod.fst).Sorted (· > ·) :
   refine CNFRec b ?_ (fun o ho IH ↦ ?_) o
   · rw [CNF_zero]
     exact sorted_nil
-  · rcases le_or_lt b 1 with hb | hb
+  · rcases le_or_gt b 1 with hb | hb
     · rw [CNF_of_le_one hb ho]
       exact sorted_singleton _
-    · obtain hob | hbo := lt_or_le o b
+    · obtain hob | hbo := lt_or_ge o b
       · rw [CNF_of_lt ho hob]
         exact sorted_singleton _
       · rw [CNF_ne_zero ho, map_cons, sorted_cons]

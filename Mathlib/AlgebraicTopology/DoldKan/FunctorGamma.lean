@@ -95,14 +95,14 @@ def mapMono (K : ChainComplex C ℕ) {Δ' Δ : SimplexCategory} (i : Δ' ⟶ Δ)
 variable (Δ) in
 theorem mapMono_id : mapMono K (𝟙 Δ) = 𝟙 _ := by
   unfold mapMono
-  simp only [eq_self_iff_true, eqToHom_refl, dite_eq_ite, if_true]
+  simp only [eqToHom_refl, dite_eq_ite, if_true]
 
 theorem mapMono_δ₀' (i : Δ' ⟶ Δ) [Mono i] (hi : Isδ₀ i) : mapMono K i = K.d Δ.len Δ'.len := by
   unfold mapMono
   suffices Δ ≠ Δ' by
     simp only [dif_neg this, dif_pos hi]
   rintro rfl
-  simpa only [self_eq_add_right, Nat.one_ne_zero] using hi.1
+  simpa only [left_eq_add, Nat.one_ne_zero] using hi.1
 
 @[simp]
 theorem mapMono_δ₀ {n : ℕ} : mapMono K (δ (0 : Fin (n + 2))) = K.d (n + 1) n :=
@@ -134,18 +134,18 @@ theorem mapMono_comp (i' : Δ'' ⟶ Δ') (i : Δ' ⟶ Δ) [Mono i'] [Mono i] :
   -- case where i : Δ' ⟶ Δ is the identity
   by_cases h₁ : Δ = Δ'
   · subst h₁
-    simp only [SimplexCategory.eq_id_of_mono i, comp_id, id_comp, mapMono_id K, eqToHom_refl]
+    simp only [SimplexCategory.eq_id_of_mono i, comp_id, id_comp, mapMono_id K]
   -- case where i' : Δ'' ⟶ Δ' is the identity
   by_cases h₂ : Δ' = Δ''
   · subst h₂
-    simp only [SimplexCategory.eq_id_of_mono i', comp_id, id_comp, mapMono_id K, eqToHom_refl]
+    simp only [SimplexCategory.eq_id_of_mono i', comp_id, id_comp, mapMono_id K]
   -- then the RHS is always zero
   obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_lt (len_lt_of_mono i h₁)
   obtain ⟨k', hk'⟩ := Nat.exists_eq_add_of_lt (len_lt_of_mono i' h₂)
   have eq : Δ.len = Δ''.len + (k + k' + 2) := by omega
   rw [mapMono_eq_zero K (i' ≫ i) _ _]; rotate_left
   · by_contra h
-    simp only [self_eq_add_right, h, add_eq_zero, and_false, reduceCtorEq] at eq
+    simp only [left_eq_add, h, add_eq_zero, and_false, reduceCtorEq] at eq
   · by_contra h
     simp only [h.1, add_right_inj] at eq
     omega

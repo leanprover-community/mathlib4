@@ -52,7 +52,6 @@ theorem disjoint_span_sum : Disjoint (span R (range (u ∘ Sum.inl)))
   exact range_ker_disjoint hw
 
 include hv hm in
-
 /-- In the commutative diagram
 ```
              f     g
@@ -112,13 +111,13 @@ theorem span_exact {β : Type*} {u : ι ⊕ β → S.X₂} (huv : u ∘ Sum.inl 
   have hsub : m - m' ∈ LinearMap.range S.f.hom := by
     rw [hS.moduleCat_range_eq_ker]
     simp only [LinearMap.mem_ker, map_sub, sub_eq_zero]
-    rw [← hm, map_finsupp_sum]
+    rw [← hm, map_finsuppSum]
     simp only [Function.comp_apply, map_smul]
   obtain ⟨n, hnm⟩ := hsub
   have hn : n ∈ span R (range v) := hv mem_top
   rw [Finsupp.mem_span_range_iff_exists_finsupp] at hn
   obtain ⟨cn, hn⟩ := hn
-  rw [← hn, map_finsupp_sum] at hnm
+  rw [← hn, map_finsuppSum] at hnm
   rw [← sub_add_cancel m m', ← hnm,]
   simp only [map_smul]
   have hn' : (Finsupp.sum cn fun a b ↦ b • S.f (v a)) =

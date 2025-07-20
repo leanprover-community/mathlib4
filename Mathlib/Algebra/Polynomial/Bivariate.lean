@@ -9,7 +9,7 @@ import Mathlib.RingTheory.AdjoinRoot
 # Bivariate polynomials
 
 This file introduces the notation `R[X][Y]` for the polynomial ring `R[X][X]` in two variables,
-and the notation `Y` for the second variable, in the `Polynomial` scope.
+and the notation `Y` for the second variable, in the `Polynomial.Bivariate` scope.
 
 It also defines `Polynomial.evalEval` for the evaluation of a bivariate polynomial at a point
 on the affine plane, which is a ring homomorphism (`Polynomial.evalEvalRingHom`), as well as
@@ -77,7 +77,7 @@ lemma evalEval_finset_sum {ι : Type*} (s : Finset ι) (x y : R) (f : ι → R[X
   simp only [evalEval, eval_finset_sum]
 
 @[simp]
-lemma evalEval_smul [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (x y : R) (s : S)
+lemma evalEval_smul [DistribSMul S R] [IsScalarTower S R R] (x y : R) (s : S)
     (p : R[X][Y]) : (s • p).evalEval x y = s • p.evalEval x y := by
   simp only [evalEval, eval_smul]
 
@@ -208,7 +208,7 @@ variable {R : Type*} [CommRing R] {x y : R} {p : R[X][Y]} (h : p.evalEval x y = 
 /-- If the evaluation (`evalEval`) of a bivariate polynomial `p : R[X][Y]` at a point (x,y)
 is zero, then `Polynomial.evalEval x y` factors through `AdjoinRoot.evalEval`, a ring homomorphism
 from `AdjoinRoot p` to `R`. -/
-@[simps!] def evalEval : AdjoinRoot p →+* R :=
+@[simps!] noncomputable def evalEval : AdjoinRoot p →+* R :=
   lift (evalRingHom x) y <| eval₂_evalRingHom x ▸ h
 
 lemma evalEval_mk (g : R[X][Y]) : evalEval h (mk p g) = g.evalEval x y := by

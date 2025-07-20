@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
-import Mathlib.Topology.IsLocalHomeomorph
 
 /-!
 
@@ -30,7 +29,7 @@ lemma isomorphisms_eq_stalkwise :
   congr 1
   ext X Y f
   exact ⟨fun H ↦ inferInstanceAs (IsIso (TopCat.isoOfHomeo
-    (H.1.1.toHomeomorph_of_surjective H.2)).hom), fun (_ : IsIso f.base) ↦
+    (H.1.1.toHomeomorphOfSurjective H.2)).hom), fun (_ : IsIso f.base) ↦
     let e := (TopCat.homeoOfIso <| asIso f.base); ⟨e.isOpenEmbedding, e.surjective⟩⟩
 
 instance : IsLocalAtTarget (isomorphisms Scheme) :=
@@ -40,7 +39,7 @@ instance : HasAffineProperty (isomorphisms Scheme) fun X _ f _ ↦ IsAffine X �
   convert HasAffineProperty.of_isLocalAtTarget (isomorphisms Scheme) with X Y f hY
   exact ⟨fun ⟨_, _⟩ ↦ (arrow_mk_iso_iff (isomorphisms _) (arrowIsoSpecΓOfIsAffine f)).mpr
     (inferInstanceAs (IsIso (Spec.map (f.appTop)))),
-    fun (_ : IsIso f) ↦ ⟨isAffine_of_isIso f, inferInstance⟩⟩
+    fun (_ : IsIso f) ↦ ⟨.of_isIso f, inferInstance⟩⟩
 
 instance : IsLocalAtTarget (monomorphisms Scheme) :=
   diagonal_isomorphisms (C := Scheme).symm ▸ inferInstance

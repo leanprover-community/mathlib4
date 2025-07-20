@@ -3,6 +3,7 @@ Copyright (c) 2023 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.Perm.Centralizer
 import Mathlib.GroupTheory.SpecificGroups.Alternating
 
@@ -12,21 +13,21 @@ Given a finite type `α`, our goal is to compute the cardinality of conjugacy cl
 in `alternatingGroup α`.
 
 * `AlternatingGroup.card_of_cycleType_mul_eq m` and `AlternatingGroup.card_of_cycleType m`
-compute the number of even permutations of given cycle type.
+  compute the number of even permutations of given cycle type.
 
-* `Equiv.Perm.odd_of_centralizer_le_alternatingGroup` :
-if `Subgroup.centralizer {g} ≤ alternatingGroup α`, then all members of the `g.cycleType` are odd.
+* `Equiv.Perm.OnCycleFactors.odd_of_centralizer_le_alternatingGroup` :
+  if `Subgroup.centralizer {g} ≤ alternatingGroup α`, then all members of the `g.cycleType` are odd.
 
 * `Equiv.Perm.card_le_of_centralizer_le_alternating` :
-if `Subgroup.centralizer {g} ≤ alternatingGroup α`, then the cardinality of α
-is at most `g.cycleType.sum` plus one.
+  if `Subgroup.centralizer {g} ≤ alternatingGroup α`, then the cardinality of α
+  is at most `g.cycleType.sum` plus one.
 
 * `Equiv.Perm.count_le_one_of_centralizer_le_alternating` :
-if `Subgroup.centralizer {g} ≤ alternatingGroup α`, then `g.cycleType` has no repetitions.
+  if `Subgroup.centralizer {g} ≤ alternatingGroup α`, then `g.cycleType` has no repetitions.
 
 * `Equiv.Perm.centralizer_le_alternating_iff` :
-the previous three conditions are necessary and sufficient
-for having `Subgroup.centralizer {g} ≤ alternatingGroup α`.
+  the previous three conditions are necessary and sufficient
+  for having `Subgroup.centralizer {g} ≤ alternatingGroup α`.
 
 TODO :
 Deduce the formula for the cardinality of the centralizers
@@ -66,16 +67,15 @@ theorem map_subtype_of_cycleType (m : Multiset ℕ) :
       if Even (m.sum + m.card) then ({g | g.cycleType = m} : Finset (Perm α)) else ∅ := by
   split_ifs with hm
   · ext g
-    simp only [Finset.mem_map, Finset.mem_filter, Finset.mem_univ, true_and,
-      Embedding.coe_subtype, Subtype.exists, mem_alternatingGroup, exists_and_left,
-      exists_prop, exists_eq_right_right, and_iff_left_iff_imp]
+    simp_rw [Finset.mem_map, Finset.mem_filter_univ, Embedding.coe_subtype, Subtype.exists,
+      mem_alternatingGroup, exists_and_left, exists_prop, exists_eq_right_right,
+      and_iff_left_iff_imp]
     intro hg
     rw [sign_of_cycleType, hg, Even.neg_one_pow hm]
-  · rw [Finset.eq_empty_iff_forall_not_mem]
+  · rw [Finset.eq_empty_iff_forall_notMem]
     intro g hg
-    simp only [Finset.mem_map, Finset.mem_filter, Finset.mem_univ, true_and,
-      Embedding.coe_subtype, Subtype.exists, mem_alternatingGroup, exists_and_left,
-      exists_prop, exists_eq_right_right] at hg
+    simp_rw [Finset.mem_map, Finset.mem_filter_univ, Embedding.coe_subtype, Subtype.exists,
+      mem_alternatingGroup, exists_and_left, exists_prop, exists_eq_right_right] at hg
     rcases hg with ⟨hg, hs⟩
     rw [g.sign_of_cycleType, hg, neg_one_pow_eq_one_iff_even (by simp)] at hs
     contradiction
@@ -83,7 +83,7 @@ theorem map_subtype_of_cycleType (m : Multiset ℕ) :
 variable (α) in
 /-- The cardinality of even permutations of given `cycleType` -/
 theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :
-    #({ g |  g.val.cycleType = m} : Finset (alternatingGroup α)) *
+    #{g : alternatingGroup α |  g.val.cycleType = m} *
         ((Fintype.card α - m.sum)! * m.prod * (∏ n ∈ m.toFinset, (m.count n)!)) =
           if ((m.sum ≤ Fintype.card α ∧ ∀ a ∈ m, 2 ≤ a) ∧ Even (m.sum + Multiset.card m))
           then (Fintype.card α)!
@@ -96,7 +96,7 @@ theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :
 variable (α) in
 /-- The cardinality of even permutations of given `cycleType` -/
 theorem card_of_cycleType (m : Multiset ℕ) :
-    (Finset.univ.filter fun g : alternatingGroup α => (g : Equiv.Perm α).cycleType = m).card =
+    #{g : alternatingGroup α | (g : Equiv.Perm α).cycleType = m} =
       if (m.sum ≤ Fintype.card α ∧ ∀ a ∈ m, 2 ≤ a) ∧ Even (m.sum + Multiset.card m) then
         (Fintype.card α)! /
           ((Fintype.card α - m.sum)! *
@@ -105,14 +105,13 @@ theorem card_of_cycleType (m : Multiset ℕ) :
   split_ifs with hm
   · -- m is an even cycle_type
     rw [← Finset.card_map, map_subtype_of_cycleType, if_pos hm.2,
-    Equiv.Perm.card_of_cycleType α m]
-    rw [if_pos hm.1, mul_assoc]
+      Equiv.Perm.card_of_cycleType α m, if_pos hm.1, mul_assoc]
   · -- m does not correspond to a permutation, or to an odd one,
     rw [← Finset.card_map, map_subtype_of_cycleType]
     rw [apply_ite Finset.card, Finset.card_empty]
     split_ifs with hm'
     · rw [Equiv.Perm.card_of_cycleType, if_neg]
-      cases' not_and_or.mp hm with hm hm
+      obtain hm | hm := not_and_or.mp hm
       · exact hm
       · contradiction
     · rfl
@@ -120,7 +119,7 @@ theorem card_of_cycleType (m : Multiset ℕ) :
 open Fintype in
 /-- The number of cycles of given length -/
 lemma card_of_cycleType_singleton {n : ℕ} (hn : 2 ≤ n) (hα : n ≤ card α) :
-    #({g | g.val.cycleType = {n}} : Finset (alternatingGroup α)) =
+    #{g : alternatingGroup α | g.val.cycleType = {n}} =
       if Odd n then (n - 1)! * (choose (card α) n) else 0 := by
   rw [← card_map, map_subtype_of_cycleType, apply_ite Finset.card]
   simp only [Multiset.sum_singleton, Multiset.card_singleton, Finset.card_empty]
@@ -139,8 +138,8 @@ theorem card_le_of_centralizer_le_alternating (h : Subgroup.centralizer {g} ≤ 
   replace hm : 2 + g.cycleType.sum ≤ Fintype.card α := by omega
   suffices 1 < Fintype.card (Function.fixedPoints g) by
     obtain ⟨a, b, hab⟩ := Fintype.exists_pair_of_one_lt_card this
-    suffices sign (kerParam g ⟨swap a b, 1⟩) ≠ 1 by
-      exact this (h (kerParam_range_le_centralizer (Set.mem_range_self _)))
+    suffices sign (kerParam g ⟨swap a b, 1⟩) ≠ 1 from
+      this (h (kerParam_range_le_centralizer (Set.mem_range_self _)))
     simp [sign_kerParam_apply_apply, hab]
   rwa [card_fixedPoints g, Nat.lt_iff_add_one_le, Nat.le_sub_iff_add_le]
   rw [sum_cycleType]
@@ -152,8 +151,7 @@ theorem count_le_one_of_centralizer_le_alternating
   rw [← Multiset.nodup_iff_count_le_one, Equiv.Perm.cycleType_def]
   rw [Multiset.nodup_map_iff_inj_on g.cycleFactorsFinset.nodup]
   simp only [Function.comp_apply, ← Finset.mem_def]
-  by_contra hm
-  push_neg at hm
+  by_contra! hm
   obtain ⟨c, hc, d, hd, hm, hm'⟩ := hm
   let τ : Equiv.Perm g.cycleFactorsFinset := Equiv.swap ⟨c, hc⟩ ⟨d, hd⟩
   obtain ⟨a⟩ := Equiv.Perm.Basis.nonempty g
@@ -197,7 +195,7 @@ theorem count_le_one_of_centralizer_le_alternating
       Finset.sum_singleton, hm, mul_two]
   rw [that]
   simp only [cycleType_def, Multiset.mem_map]
-  exact ⟨c , hc, by simp only [Function.comp_apply]⟩
+  exact ⟨c, hc, by simp only [Function.comp_apply]⟩
 
 theorem OnCycleFactors.kerParam_range_eq_centralizer_of_count_le_one
     (h_count : ∀ i, g.cycleType.count i ≤ 1) :
@@ -244,4 +242,58 @@ theorem centralizer_le_alternating_iff :
       have := card_fixedPoints g
       exact card_support_le_one.mp <| le_trans (Finset.card_le_univ _) (by omega)
 
+namespace IsThreeCycle
+
+variable (h5 : 5 ≤ Fintype.card α) {g : alternatingGroup α} (hg : IsThreeCycle (g : Perm α))
+
+include h5 hg
+
+theorem mem_commutatorSet_alternatingGroup : g ∈ commutatorSet (alternatingGroup α) := by
+  apply mem_commutatorSet_of_isConj_sq
+  apply alternatingGroup.isThreeCycle_isConj h5 hg
+  simpa [sq] using hg.isThreeCycle_sq
+
+theorem mem_commutator_alternatingGroup : g ∈ commutator (alternatingGroup α) := by
+  rw [commutator_eq_closure]
+  apply Subgroup.subset_closure
+  exact hg.mem_commutatorSet_alternatingGroup h5
+
+end IsThreeCycle
+
 end Equiv.Perm
+
+section Perfect
+
+open Subgroup Equiv.Perm
+
+theorem alternatingGroup.commutator_perm_le :
+    commutator (Perm α) ≤ alternatingGroup α := by
+  simp only [commutator_eq_closure, closure_le, Set.subset_def, mem_commutatorSet_iff,
+    SetLike.mem_coe, mem_alternatingGroup, forall_exists_index]
+  rintro _ p q rfl
+  simp [map_commutatorElement, commutatorElement_eq_one_iff_commute, Commute.all]
+
+/-- If `n ≥ 5`, then the alternating group on `n` letters is perfect -/
+theorem commutator_alternatingGroup_eq_top (h5 : 5 ≤ Fintype.card α) :
+    commutator (alternatingGroup α) = ⊤ := by
+  suffices closure {b : alternatingGroup α | (b : Perm α).IsThreeCycle} = ⊤ by
+    rw [eq_top_iff, ← this, Subgroup.closure_le]
+    intro b hb
+    exact hb.mem_commutator_alternatingGroup h5
+  rw [← closure_three_cycles_eq_alternating]
+  exact Subgroup.closure_closure_coe_preimage
+
+/-- If `n ≥ 5`, then the alternating group on `n` letters is perfect (subgroup version) -/
+theorem commutator_alternatingGroup_eq_self (h5 : 5 ≤ Fintype.card α) :
+    ⁅alternatingGroup α, alternatingGroup α⁆ = alternatingGroup α := by
+  rw [← Subgroup.map_subtype_commutator, commutator_alternatingGroup_eq_top h5,
+    ← MonoidHom.range_eq_map, Subgroup.range_subtype]
+
+/-- The commutator subgroup of the permutation group is the alternating group -/
+theorem alternatingGroup.commutator_perm_eq (h5 : 5 ≤ Fintype.card α) :
+    commutator (Perm α) = alternatingGroup α := by
+  apply le_antisymm alternatingGroup.commutator_perm_le
+  rw [← commutator_alternatingGroup_eq_self h5]
+  exact commutator_mono le_top le_top
+
+end Perfect

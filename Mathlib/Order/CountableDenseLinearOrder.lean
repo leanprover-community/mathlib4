@@ -64,11 +64,11 @@ theorem exists_between_finsets [DenselyOrdered α] [NoMinOrder α]
         fun m ↦ ⟨m, fun x hx ↦ (nlo ⟨x, hx⟩).elim, fun y hy ↦ (nhi ⟨y, hy⟩).elim⟩
 
 lemma exists_orderEmbedding_insert [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β]
-    [nonem : Nonempty β]  (S : Finset α) (f : S ↪o β) (a : α) :
+    [nonem : Nonempty β] (S : Finset α) (f : S ↪o β) (a : α) :
     ∃ (g : (insert a S : Finset α) ↪o β),
       g ∘ (Set.inclusion ((S.subset_insert a) : ↑S ⊆ ↑(insert a S))) = f := by
-  let Slt := (S.attach.filter (fun (x : S) => x < a)).image f
-  let Sgt := (S.attach.filter (fun (x : S) => a < x)).image f
+  let Slt := {x ∈ S.attach | x.val < a}.image f
+  let Sgt := {x ∈ S.attach | a < x.val}.image f
   obtain ⟨b, hb, hb'⟩ := Order.exists_between_finsets Slt Sgt (fun x hx y hy => by
     simp only [Finset.mem_image, Finset.mem_filter, Finset.mem_attach, true_and, Subtype.exists,
       exists_and_left, Slt, Sgt] at hx hy
@@ -82,18 +82,18 @@ lemma exists_orderEmbedding_insert [DenselyOrdered β] [NoMinOrder β] [NoMaxOrd
     then if hyS : y ∈ S
       then simpa only [hxS, hyS, ↓reduceDIte, OrderEmbedding.lt_iff_lt, Subtype.mk_lt_mk]
       else
-        obtain rfl := Finset.eq_of_mem_insert_of_not_mem hy hyS
+        obtain rfl := Finset.eq_of_mem_insert_of_notMem hy hyS
         simp only [hxS, hyS, ↓reduceDIte]
         exact hb _ (Finset.mem_image_of_mem _ (Finset.mem_filter.2 ⟨Finset.mem_attach _ _, hxy⟩))
     else
-      obtain rfl := Finset.eq_of_mem_insert_of_not_mem hx hxS
+      obtain rfl := Finset.eq_of_mem_insert_of_notMem hx hxS
       if hyS : y ∈ S
       then
         simp only [hxS, hyS, ↓reduceDIte]
         exact hb' _ (Finset.mem_image_of_mem _ (Finset.mem_filter.2 ⟨Finset.mem_attach _ _, hxy⟩))
-      else simp only [Finset.eq_of_mem_insert_of_not_mem hy hyS, lt_self_iff_false] at hxy
+      else simp only [Finset.eq_of_mem_insert_of_notMem hy hyS, lt_self_iff_false] at hxy
   · ext x
-    simp only [Finset.coe_sort_coe, OrderEmbedding.coe_ofStrictMono, Finset.insert_val,
+    simp only [OrderEmbedding.coe_ofStrictMono, Finset.insert_val,
       Function.comp_apply, Finset.coe_mem, ↓reduceDIte, Subtype.coe_eta]
 
 variable (α β)
@@ -109,7 +109,7 @@ def PartialIso : Type _ :=
 
 namespace PartialIso
 
-instance : Inhabited (PartialIso α β) := ⟨⟨∅, fun _p h _q ↦ (Finset.not_mem_empty _ h).elim⟩⟩
+instance : Inhabited (PartialIso α β) := ⟨⟨∅, fun _p h _q ↦ (Finset.notMem_empty _ h).elim⟩⟩
 
 instance : Preorder (PartialIso α β) := Subtype.preorder _
 
@@ -127,8 +127,8 @@ theorem exists_across [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonem
   · obtain ⟨b, hb⟩ := h
     exact ⟨b, fun p hp ↦ f.prop _ hp _ hb⟩
   have :
-    ∀ x ∈ (f.val.filter fun p : α × β ↦ p.fst < a).image Prod.snd,
-      ∀ y ∈ (f.val.filter fun p : α × β ↦ a < p.fst).image Prod.snd, x < y := by
+    ∀ x ∈ {p ∈ f.val | p.fst < a}.image Prod.snd,
+      ∀ y ∈ {p ∈ f.val | a < p.fst}.image Prod.snd, x < y := by
     intro x hx y hy
     rw [Finset.mem_image] at hx hy
     rcases hx with ⟨p, hp1, rfl⟩
@@ -239,7 +239,8 @@ theorem embedding_from_countable_to_dense [Countable α] [DenselyOrdered β] [No
   rcases our_ideal.directed _ hf _ hg with ⟨m, _hm, fm, gm⟩
   exact (lt_iff_lt_of_cmp_eq_cmp <| m.prop (a₁, _) (fm ha₁) (a₂, _) (gm ha₂)).mp
 
-/-- Any two countable dense, nonempty linear orders without endpoints are order isomorphic. -/
+/-- Any two countable dense, nonempty linear orders without endpoints are order isomorphic. This is
+also known as **Cantor's isomorphism theorem**. -/
 theorem iso_of_countable_dense [Countable α] [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α]
     [Nonempty α] [Countable β] [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonempty β] :
     Nonempty (α ≃o β) := by

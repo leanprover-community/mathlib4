@@ -6,7 +6,7 @@ Authors: Julian Kuelshammer
 import Mathlib.Algebra.PEmptyInstances
 import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.CategoryTheory.Elementwise
-import Mathlib.CategoryTheory.Functor.ReflectsIso
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
 # Category instances for `Mul`, `Add`, `Semigroup` and `AddSemigroup`
@@ -16,9 +16,10 @@ We introduce the bundled categories:
 * `AddMagmaCat`
 * `Semigrp`
 * `AddSemigrp`
+
 along with the relevant forgetful functors between them.
 
-This closely follows `Mathlib.Algebra.Category.MonCat.Basic`.
+This closely follows `Mathlib/Algebra/Category/MonCat/Basic.lean`.
 
 ## TODO
 

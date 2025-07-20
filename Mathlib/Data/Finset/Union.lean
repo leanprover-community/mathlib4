@@ -47,11 +47,11 @@ lemma disjiUnion_val (s : Finset α) (t : α → Finset β) (h) :
 @[simp] lemma disjiUnion_empty (t : α → Finset β) : disjiUnion ∅ t (by simp) = ∅ := rfl
 
 @[simp] lemma mem_disjiUnion {b : β} {h} : b ∈ s.disjiUnion t h ↔ ∃ a ∈ s, b ∈ t a := by
-  simp only [mem_def, disjiUnion_val, Multiset.mem_bind, exists_prop]
+  simp only [mem_def, disjiUnion_val, Multiset.mem_bind]
 
 @[simp, norm_cast]
 lemma coe_disjiUnion {h} : (s.disjiUnion t h : Set β) = ⋃ x ∈ (s : Set α), t x := by
-  simp [Set.ext_iff, mem_disjiUnion, Set.mem_iUnion, mem_coe, imp_true_iff]
+  simp [Set.ext_iff, mem_disjiUnion, Set.mem_iUnion, mem_coe]
 
 @[simp] lemma disjiUnion_cons (a : α) (s : Finset α) (ha : a ∉ s) (f : α → Finset β) (H) :
     disjiUnion (cons a s ha) f H =
@@ -141,24 +141,19 @@ protected def biUnion (s : Finset α) (t : α → Finset β) : Finset β :=
 @[simp] lemma biUnion_empty : Finset.biUnion ∅ t = ∅ := rfl
 
 @[simp] lemma mem_biUnion {b : β} : b ∈ s.biUnion t ↔ ∃ a ∈ s, b ∈ t a := by
-  simp only [mem_def, biUnion_val, Multiset.mem_dedup, Multiset.mem_bind, exists_prop]
+  simp only [mem_def, biUnion_val, Multiset.mem_dedup, Multiset.mem_bind]
 
 @[simp, norm_cast]
 lemma coe_biUnion : (s.biUnion t : Set β) = ⋃ x ∈ (s : Set α), t x := by
-  simp [Set.ext_iff, mem_biUnion, Set.mem_iUnion, mem_coe, imp_true_iff]
+  simp [Set.ext_iff, mem_biUnion, Set.mem_iUnion, mem_coe]
 
 @[simp]
-lemma biUnion_insert [DecidableEq α] {a : α} : (insert a s).biUnion t = t a ∪ s.biUnion t :=
-  ext fun x ↦ by
-    simp only [mem_biUnion, exists_prop, mem_union, mem_insert, or_and_right, exists_or,
-      exists_eq_left]
+lemma biUnion_insert [DecidableEq α] {a : α} : (insert a s).biUnion t = t a ∪ s.biUnion t := by
+  aesop
 
-lemma biUnion_congr (hs : s₁ = s₂) (ht : ∀ a ∈ s₁, t₁ a = t₂ a) : s₁.biUnion t₁ = s₂.biUnion t₂ :=
-  ext fun x ↦ by
-    -- Porting note: this entire proof was `simp [or_and_right, exists_or]`
-    simp_rw [mem_biUnion]
-    apply exists_congr
-    simp +contextual only [hs, and_congr_right_iff, ht, implies_true]
+lemma biUnion_congr (hs : s₁ = s₂) (ht : ∀ a ∈ s₁, t₁ a = t₂ a) :
+    s₁.biUnion t₁ = s₂.biUnion t₂ := by
+  aesop
 
 @[simp]
 lemma disjiUnion_eq_biUnion (s : Finset α) (f : α → Finset β) (hf) :
@@ -170,7 +165,7 @@ lemma biUnion_subset {s' : Finset β} : s.biUnion t ⊆ s' ↔ ∀ x ∈ s, t x 
 
 @[simp]
 lemma singleton_biUnion {a : α} : Finset.biUnion {a} t = t a := by
-  classical rw [← insert_emptyc_eq, biUnion_insert, biUnion_empty, union_empty]
+  classical rw [← insert_empty_eq, biUnion_insert, biUnion_empty, union_empty]
 
 lemma biUnion_inter (s : Finset α) (f : α → Finset β) (t : Finset β) :
     s.biUnion f ∩ t = s.biUnion fun x ↦ f x ∩ t := by
@@ -186,13 +181,13 @@ lemma inter_biUnion (t : Finset β) (s : Finset α) (f : α → Finset β) :
 lemma biUnion_biUnion [DecidableEq γ] (s : Finset α) (f : α → Finset β) (g : β → Finset γ) :
     (s.biUnion f).biUnion g = s.biUnion fun a ↦ (f a).biUnion g := by
   ext
-  simp only [Finset.mem_biUnion, exists_prop]
+  simp only [Finset.mem_biUnion]
   simp_rw [← exists_and_right, ← exists_and_left, and_assoc]
   rw [exists_comm]
 
 lemma bind_toFinset [DecidableEq α] (s : Multiset α) (t : α → Multiset β) :
     (s.bind t).toFinset = s.toFinset.biUnion fun a ↦ (t a).toFinset :=
-  ext fun x ↦ by simp only [Multiset.mem_toFinset, mem_biUnion, Multiset.mem_bind, exists_prop]
+  ext fun x ↦ by simp only [Multiset.mem_toFinset, mem_biUnion, Multiset.mem_bind]
 
 lemma biUnion_mono (h : ∀ a ∈ s, t₁ a ⊆ t₂ a) : s.biUnion t₁ ⊆ s.biUnion t₂ := by
   have : ∀ b a, a ∈ s → b ∈ t₁ a → ∃ a : α, a ∈ s ∧ b ∈ t₂ a := fun b a ha hb ↦
@@ -201,7 +196,7 @@ lemma biUnion_mono (h : ∀ a ∈ s, t₁ a ⊆ t₂ a) : s.biUnion t₁ ⊆ s.b
 
 lemma biUnion_subset_biUnion_of_subset_left (t : α → Finset β) (h : s₁ ⊆ s₂) :
     s₁.biUnion t ⊆ s₂.biUnion t := fun x ↦ by
-  simp only [and_imp, mem_biUnion, exists_prop]; exact Exists.imp fun a ha ↦ ⟨h ha.1, ha.2⟩
+  simp only [mem_biUnion]; exact Exists.imp fun a ha ↦ ⟨h ha.1, ha.2⟩
 
 lemma subset_biUnion_of_mem (u : α → Finset β) {x : α} (xs : x ∈ s) : u x ⊆ s.biUnion u :=
   singleton_biUnion.superset.trans <|
@@ -216,12 +211,12 @@ lemma biUnion_subset_iff_forall_subset {α β : Type*} [DecidableEq β] {s : Fin
 
 @[simp]
 lemma biUnion_singleton_eq_self [DecidableEq α] : s.biUnion (singleton : α → Finset α) = s :=
-  ext fun x ↦ by simp only [mem_biUnion, mem_singleton, exists_prop, exists_eq_right']
+  ext fun x ↦ by simp only [mem_biUnion, mem_singleton, exists_eq_right']
 
 lemma filter_biUnion (s : Finset α) (f : α → Finset β) (p : β → Prop) [DecidablePred p] :
     (s.biUnion f).filter p = s.biUnion fun a ↦ (f a).filter p := by
   ext b
-  simp only [mem_biUnion, exists_prop, mem_filter]
+  simp only [mem_biUnion, mem_filter]
   constructor
   · rintro ⟨⟨a, ha, hba⟩, hb⟩
     exact ⟨a, ha, hba, hb⟩
@@ -235,7 +230,7 @@ lemma biUnion_filter_eq_of_maps_to [DecidableEq α] {s : Finset α} {t : Finset 
 lemma erase_biUnion (f : α → Finset β) (s : Finset α) (b : β) :
     (s.biUnion f).erase b = s.biUnion fun x ↦ (f x).erase b := by
   ext a
-  simp only [mem_biUnion, not_exists, not_and, mem_erase, ne_eq]
+  simp only [mem_biUnion, mem_erase, ne_eq]
   tauto
 
 @[simp]
@@ -253,7 +248,7 @@ lemma disjoint_biUnion_left (s : Finset α) (f : α → Finset β) (t : Finset �
   refine s.induction ?_ ?_
   · simp only [forall_mem_empty_iff, biUnion_empty, disjoint_empty_left]
   · intro i s his ih
-    simp only [disjoint_union_left, biUnion_insert, his, forall_mem_insert, ih]
+    simp only [disjoint_union_left, biUnion_insert, forall_mem_insert, ih]
 
 lemma disjoint_biUnion_right (s : Finset β) (t : Finset α) (f : α → Finset β) :
     Disjoint s (t.biUnion f) ↔ ∀ i ∈ t, Disjoint s (f i) := by

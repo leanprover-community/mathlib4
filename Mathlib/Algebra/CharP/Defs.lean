@@ -3,20 +3,20 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Joey van Langen, Casper Putz
 -/
-import Mathlib.Algebra.Order.Group.Int
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Nat.Find
 import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Order.Lattice
 
 /-!
 # Characteristic of semirings
 
 ## Main definitions
- * `CharP R p` expresses that the ring (additive monoid with one) `R` has characteristic `p`
- * `ringChar`: the characteristic of a ring
- * `ExpChar R p` expresses that the ring (additive monoid with one) `R` has
-    exponential characteristic `p` (which is `1` if `R` has characteristic 0, and `p` if it has
-    prime characteristic `p`)
+* `CharP R p` expresses that the ring (additive monoid with one) `R` has characteristic `p`
+* `ringChar`: the characteristic of a ring
+* `ExpChar R p` expresses that the ring (additive monoid with one) `R` has
+  exponential characteristic `p` (which is `1` if `R` has characteristic 0, and `p` if it has
+  prime characteristic `p`)
 -/
 
 assert_not_exists Field Finset OrderHom
@@ -38,19 +38,43 @@ For instance, endowing `{0, 1}` with addition given by `max` (i.e. `1` is absorb
 This example is formalized in `Counterexamples/CharPZeroNeCharZero.lean`.
 -/
 @[mk_iff]
-class _root_.CharP : Prop where
-  cast_eq_zero_iff' : ∀ x : ℕ, (x : R) = 0 ↔ p ∣ x
+class _root_.CharP (R : Type*) [AddMonoidWithOne R] (p : outParam ℕ) : Prop where
+  cast_eq_zero_iff (R p) : ∀ x : ℕ, (x : R) = 0 ↔ p ∣ x
 
 variable [CharP R p] {a b : ℕ}
 
--- Porting note: the field of the structure had implicit arguments where they were
--- explicit in Lean 3
-lemma cast_eq_zero_iff (a : ℕ) : (a : R) = 0 ↔ p ∣ a := cast_eq_zero_iff' a
+@[deprecated CharP.cast_eq_zero_iff (since := "2025-04-03")]
+lemma cast_eq_zero_iff' (R : Type*) [AddMonoidWithOne R] (p : ℕ) [CharP R p] (a : ℕ) :
+    (a : R) = 0 ↔ p ∣ a := cast_eq_zero_iff R p a
+
+lemma _root_.CharP.ofNat_eq_zero' (p : ℕ) [CharP R p]
+    (a : ℕ) [a.AtLeastTwo] (h : p ∣ a) :
+    (ofNat(a) : R) = 0 := by
+  rwa [← CharP.cast_eq_zero_iff R p] at h
 
 variable {R} in
 lemma congr {q : ℕ} (h : p = q) : CharP R q := h ▸ ‹CharP R p›
 
 @[simp] lemma cast_eq_zero : (p : R) = 0 := (cast_eq_zero_iff R p p).2 dvd_rfl
+
+lemma cast_eq_mod (k : ℕ) : (k : R) = (k % p : ℕ) :=
+  have (a : ℕ) : ((p * a : ℕ) : R) = 0 := by
+    rw [CharP.cast_eq_zero_iff R p]
+    exact Nat.dvd_mul_right p a
+  calc
+    (k : R) = ↑(k % p + p * (k / p)) := by rw [Nat.mod_add_div]
+    _ = ↑(k % p) := by simp [this]
+
+lemma cast_eq_iff_mod_eq [IsLeftCancelAdd R] : (a:R) = (b:R) ↔ a % p = b % p := by
+  wlog hle : a ≤ b
+  · simpa only [eq_comm] using (this _ _ (lt_of_not_ge hle).le)
+  obtain ⟨c, rfl⟩ := Nat.exists_eq_add_of_le hle
+  rw [Nat.cast_add, left_eq_add, CharP.cast_eq_zero_iff R p]
+  constructor
+  · simp +contextual [Nat.add_mod, Nat.dvd_iff_mod_eq_zero]
+  intro h
+  have := Nat.sub_mod_eq_zero_of_mod_eq h.symm
+  simpa [Nat.dvd_iff_mod_eq_zero] using this
 
 -- TODO: This lemma needs to be `@[simp]` for confluence in the presence of `CharP.cast_eq_zero` and
 -- `Nat.cast_ofNat`, but with `no_index` on its entire LHS, it matches literally every expression so
@@ -59,12 +83,12 @@ lemma congr {q : ℕ} (h : p = q) : CharP R q := h ▸ ‹CharP R p›
 -- @[simp]
 lemma ofNat_eq_zero [p.AtLeastTwo] : (ofNat(p) : R) = 0 := cast_eq_zero R p
 
-lemma eq {p q : ℕ} (_hp : CharP R p) (_hq : CharP R q) : p = q :=
-  Nat.dvd_antisymm ((cast_eq_zero_iff R p q).1 (cast_eq_zero _ _))
-    ((cast_eq_zero_iff R q p).1 (cast_eq_zero _ _))
+lemma eq {p q : ℕ} (hp : CharP R p) (hq : CharP R q) : p = q :=
+  Nat.dvd_antisymm ((cast_eq_zero_iff (self := hp) R p q).1 (@cast_eq_zero _ _ _ hq))
+    ((cast_eq_zero_iff (self := hq) R q p).1 (@cast_eq_zero _ _ _ hp))
 
 instance ofCharZero [CharZero R] : CharP R 0 where
-  cast_eq_zero_iff' x := by rw [zero_dvd_iff, ← Nat.cast_zero, Nat.cast_inj]
+  cast_eq_zero_iff x := by rw [zero_dvd_iff, ← Nat.cast_zero, Nat.cast_inj]
 
 end AddMonoidWithOne
 
@@ -74,9 +98,9 @@ variable [AddGroupWithOne R] (p : ℕ) [CharP R p] {a b : ℤ}
 lemma intCast_eq_zero_iff (a : ℤ) : (a : R) = 0 ↔ (p : ℤ) ∣ a := by
   rcases lt_trichotomy a 0 with (h | rfl | h)
   · rw [← neg_eq_zero, ← Int.cast_neg, ← Int.dvd_neg]
-    lift -a to ℕ using neg_nonneg.mpr (le_of_lt h) with b
+    lift -a to ℕ using Int.neg_nonneg.mpr (le_of_lt h) with b
     rw [Int.cast_natCast, CharP.cast_eq_zero_iff R p, Int.natCast_dvd_natCast]
-  · simp only [Int.cast_zero, eq_self_iff_true, Int.dvd_zero]
+  · simp only [Int.cast_zero, Int.dvd_zero]
   · lift a to ℕ using le_of_lt h with b
     rw [Int.cast_natCast, CharP.cast_eq_zero_iff R p, Int.natCast_dvd_natCast]
 
@@ -139,7 +163,7 @@ lemma spec : ∀ x : ℕ, (x : R) = 0 ↔ ringChar R ∣ x := by
 lemma eq (p : ℕ) [C : CharP R p] : ringChar R = p :=
   ((Classical.choose_spec (CharP.existsUnique R)).2 p C).symm
 
-instance charP : CharP R (ringChar R) :=
+instance (priority := low) charP : CharP R (ringChar R) :=
   ⟨spec R⟩
 
 variable {R}
@@ -161,21 +185,17 @@ lemma Nat.cast_ringChar : (ringChar R : R) = 0 := by rw [ringChar.spec]
 
 end ringChar
 
-lemma CharP.neg_one_ne_one [Ring R] (p : ℕ) [CharP R p] [Fact (2 < p)] : (-1 : R) ≠ (1 : R) := by
+lemma CharP.neg_one_ne_one [AddGroupWithOne R] (p : ℕ) [CharP R p] [Fact (2 < p)] :
+    (-1 : R) ≠ (1 : R) := by
   rw [ne_comm, ← sub_ne_zero, sub_neg_eq_add, one_add_one_eq_two, ← Nat.cast_two, Ne,
     CharP.cast_eq_zero_iff R p 2]
-  exact fun h ↦ (Fact.out : 2 < p).not_le <| Nat.le_of_dvd Nat.zero_lt_two h
+  exact fun h ↦ (Fact.out : 2 < p).not_ge <| Nat.le_of_dvd Nat.zero_lt_two h
 
 namespace CharP
 
 section
 
 variable [NonAssocRing R]
-
-lemma cast_eq_mod (p : ℕ) [CharP R p] (k : ℕ) : (k : R) = (k % p : ℕ) :=
-  calc
-    (k : R) = ↑(k % p + p * (k / p)) := by rw [Nat.mod_add_div]
-    _ = ↑(k % p) := by simp [cast_eq_zero]
 
 lemma ringChar_zero_iff_CharZero : ringChar R = 0 ↔ CharZero R := by
   rw [ringChar.eq_iff, charP_zero_iff_charZero]
@@ -335,7 +355,7 @@ lemma expChar_one_of_char_zero (q : ℕ) [hp : CharP R 0] [hq : ExpChar R q] : q
 /-- The characteristic equals the exponential characteristic iff the former is prime. -/
 lemma char_eq_expChar_iff (p q : ℕ) [hp : CharP R p] [hq : ExpChar R q] : p = q ↔ p.Prime := by
   rcases hq with q | hq_prime
-  · rw [(CharP.eq R hp inferInstance : p = 0)]
+  · rw [(CharP.eq R hp (.ofCharZero R) : p = 0)]
     decide
   · exact ⟨fun hpq => hpq.symm ▸ hq_prime, fun _ => CharP.eq R hp ‹CharP R q›⟩
 
@@ -379,7 +399,7 @@ variable [Nontrivial R]
 /-- The exponential characteristic is one if the characteristic is zero. -/
 lemma char_zero_of_expChar_one (p : ℕ) [hp : CharP R p] [hq : ExpChar R 1] : p = 0 := by
   cases hq
-  · exact CharP.eq R hp inferInstance
+  · exact CharP.eq R hp (.ofCharZero R)
   · exact False.elim (CharP.char_ne_one R 1 rfl)
 
 -- This could be an instance, but there are no `ExpChar R 1` instances in mathlib.

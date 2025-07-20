@@ -173,13 +173,15 @@ def topEquiv : (⊤ : Sublattice α) ≃o α where
 @[simp, norm_cast] lemma coe_eq_univ : L = (univ : Set α) ↔ L = ⊤ := by rw [← coe_top, coe_inj]
 @[simp, norm_cast] lemma coe_eq_empty : L = (∅ : Set α) ↔ L = ⊥ := by rw [← coe_bot, coe_inj]
 
-@[simp] lemma not_mem_bot (a : α) : a ∉ (⊥ : Sublattice α) := id
+@[simp] lemma notMem_bot (a : α) : a ∉ (⊥ : Sublattice α) := id
 @[simp] lemma mem_top (a : α) : a ∈ (⊤ : Sublattice α) := mem_univ _
 @[simp] lemma mem_inf : a ∈ L ⊓ M ↔ a ∈ L ∧ a ∈ M := Iff.rfl
 @[simp] lemma mem_sInf {S : Set (Sublattice α)} : a ∈ sInf S ↔ ∀ L ∈ S, a ∈ L := by
   rw [← SetLike.mem_coe]; simp
 @[simp] lemma mem_iInf {f : ι → Sublattice α} : a ∈ ⨅ i, f i ↔ ∀ i, a ∈ f i := by
   rw [← SetLike.mem_coe]; simp
+
+@[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
 
 /-- Sublattices of a lattice form a complete lattice. -/
 instance instCompleteLattice : CompleteLattice (Sublattice α) where

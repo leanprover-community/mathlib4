@@ -7,6 +7,7 @@ import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.Order.Interval.Finset.Basic
 import Mathlib.Combinatorics.Additive.FreimanHom
 import Mathlib.Order.Interval.Finset.Fin
+import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 
 /-!
 # Sets without arithmetic progressions of length three and Roth numbers
@@ -153,7 +154,7 @@ end CommMonoid
 
 section CancelCommMonoid
 
-variable [CancelCommMonoid α] {s : Set α} {a : α}
+variable [CommMonoid α] [IsCancelMul α] {s : Set α} {a : α}
 
 @[to_additive] lemma ThreeGPFree.eq_right (hs : ThreeGPFree s) :
     ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → ∀ ⦃c⦄, c ∈ s → a * c = b * b → b = c := by
@@ -196,7 +197,7 @@ end CancelCommMonoid
 
 section OrderedCancelCommMonoid
 
-variable [OrderedCancelCommMonoid α] {s : Set α} {a : α}
+variable [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α] {s : Set α} {a : α}
 
 @[to_additive]
 theorem threeGPFree_insert_of_lt (hs : ∀ i ∈ s, i < a) :
@@ -340,7 +341,6 @@ lemma IsMulFreimanHom.mulRothNumber_mono (hf : IsMulFreimanHom 2 A B f) (hf' : S
   rw [← hcard, ← s.card_image_of_injOn ((invFunOn_injOn_image f _).mono hfsA)]
   refine ThreeGPFree.le_mulRothNumber ?_ (mod_cast hsA)
   rw [coe_image]
-
   simpa using (hf.subset hsA hfsA.bijOn_subset.mapsTo).threeGPFree (hf'.injOn.mono hsA) hs
 
 /-- Arithmetic progressions are preserved under 2-Freiman isos. -/
@@ -439,10 +439,12 @@ theorem addRothNumber_Ico (a b : ℕ) : addRothNumber (Ico a b) = rothNumberNat 
   convert (image_add_left_Ico 0 (b - a) _).symm
   exact (add_tsub_cancel_of_le h).symm
 
+open Fin.NatCast in -- TODO: should this be refactored to avoid needing the coercion?
 lemma Fin.addRothNumber_eq_rothNumberNat (hkn : 2 * k ≤ n) :
     addRothNumber (Iio k : Finset (Fin n.succ)) = rothNumberNat k :=
   IsAddFreimanIso.addRothNumber_congr <| mod_cast isAddFreimanIso_Iio two_ne_zero hkn
 
+open Fin.CommRing in -- TODO: should this be refactored to avoid needing the coercion?
 lemma Fin.addRothNumber_le_rothNumberNat (k n : ℕ) (hkn : k ≤ n) :
     addRothNumber (Iio k : Finset (Fin n.succ)) ≤ rothNumberNat k := by
   suffices h : Set.BijOn (Nat.cast : ℕ → Fin n.succ) (range k) (Iio k : Finset (Fin n.succ)) by

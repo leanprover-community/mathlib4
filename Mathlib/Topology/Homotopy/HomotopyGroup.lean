@@ -3,10 +3,10 @@ Copyright (c) 2021 Roberto Alvarez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Roberto Alvarez
 -/
+import Mathlib.Algebra.Group.Ext
+import Mathlib.Algebra.Group.TransferInstance
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
 import Mathlib.GroupTheory.EckmannHilton
-import Mathlib.Algebra.Equiv.TransferInstance
-import Mathlib.Algebra.Group.Ext
 
 /-!
 # `n`th homotopy group
@@ -268,12 +268,19 @@ theorem homotopicTo (i : N) {p q : Ω^ N X x} :
   · rintro y ⟨i, iH⟩
     rw [homotopyTo_apply, H.eq_fst, p.2]
     all_goals apply Cube.insertAt_boundary; right; exact ⟨i, iH⟩
-  · continuity
-  iterate 2 intro; ext; erw [homotopyTo_apply, toLoop_apply]; swap
+  · fun_prop
+  iterate 2
+    intro
+    ext
+    dsimp
+    rw [homotopyTo_apply, toLoop_apply]
+    swap
   · apply H.apply_zero
   · apply H.apply_one
   intro t y yH
-  ext; erw [homotopyTo_apply]
+  ext
+  dsimp
+  rw [homotopyTo_apply]
   apply H.eq_fst; use i
   rw [funSplitAt_symm_apply, dif_pos rfl]; exact yH
 
@@ -282,7 +289,7 @@ theorem homotopicTo (i : N) {p q : Ω^ N X x} :
 @[simps!] def homotopyFrom (i : N) {p q : Ω^ N X x} (H : (toLoop i p).Homotopy (toLoop i q)) :
     C(I × I^N, X) :=
   (ContinuousMap.comp ⟨_, ContinuousMap.continuous_uncurry⟩
-          (ContinuousMap.comp ⟨Subtype.val, by continuity⟩ H.toContinuousMap).curry).uncurry.comp <|
+          (ContinuousMap.comp ⟨Subtype.val, by fun_prop⟩ H.toContinuousMap).curry).uncurry.comp <|
     (ContinuousMap.id I).prodMap (Cube.splitAt i)
 
 theorem homotopicFrom (i : N) {p q : Ω^ N X x} :
@@ -320,8 +327,8 @@ def transAt (i : N) (f g : Ω^ N X x) : Ω^ N X x :=
         ContinuousMap.comp_apply, ContinuousMap.coe_coe, funSplitAt_apply,
         ContinuousMap.uncurry_apply, ContinuousMap.coe_mk, Function.uncurry_apply_pair]
       split_ifs
-      · show f _ = _; congr 1
-      · show g _ = _; congr 1)
+      · change f _ = _; congr 1
+      · change g _ = _; congr 1)
 
 /-- Reversal of a `GenLoop` along the `i`th coordinate. -/
 def symmAt (i : N) (f : Ω^ N X x) : Ω^ N X x :=
@@ -377,7 +384,6 @@ def genLoopHomeoOfIsEmpty (N x) [IsEmpty N] : Ω^ N X x ≃ₜ X where
   toFun f := f 0
   invFun y := ⟨ContinuousMap.const _ y, fun _ ⟨i, _⟩ => isEmptyElim i⟩
   left_inv f := by ext; exact congr_arg f (Subsingleton.elim _ _)
-  right_inv _ := rfl
   continuous_invFun := ContinuousMap.const'.2.subtype_mk _
 
 /-- The homotopy "group" indexed by an empty type is in bijection with
@@ -414,7 +420,6 @@ def genLoopEquivOfUnique (N) [Unique N] : Ω^ N X x ≃ Ω X x where
       rintro y ⟨i, iH | iH⟩ <;> cases Unique.eq_default i <;> apply (congr_arg p iH).trans
       exacts [p.source, p.target]⟩
   left_inv p := by ext y; exact congr_arg p (eq_const_of_unique y).symm
-  right_inv p := by ext; rfl
 
 /- TODO (?): deducing this from `homotopyGroupEquivFundamentalGroup` would require
   combination of `CategoryTheory.Functor.mapAut` and
@@ -434,7 +439,7 @@ def homotopyGroupEquivFundamentalGroupOfUnique (N) [Unique N] :
           prop' := fun t y iH => H.prop' _ _ ⟨default, iH⟩ }⟩
   refine
     ⟨⟨⟨⟨fun tx => H (tx.fst, tx.snd default), H.continuous.comp ?_⟩, fun y => ?_, fun y => ?_⟩, ?_⟩⟩
-  · exact continuous_fst.prod_mk ((continuous_apply _).comp continuous_snd)
+  · fun_prop
   · exact (H.apply_zero _).trans (congr_arg a₁ (eq_const_of_unique y).symm)
   · exact (H.apply_one _).trans (congr_arg a₂ (eq_const_of_unique y).symm)
   · rintro t y ⟨i, iH⟩

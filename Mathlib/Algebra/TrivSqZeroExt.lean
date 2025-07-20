@@ -6,6 +6,7 @@ Authors: Kenny Lau, Eric Wieser
 import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.Algebra.GroupWithZero.Invertible
 import Mathlib.LinearAlgebra.Prod
+import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 
 /-!
 # Trivial Square-Zero Extension
@@ -304,7 +305,7 @@ theorem inl_add [Add R] [AddZeroClass M] (r₁ r₂ : R) :
   ext rfl (add_zero 0).symm
 
 @[simp]
-theorem inl_neg [Neg R] [SubNegZeroMonoid M] (r : R) : (inl (-r) : tsze R M) = -inl r :=
+theorem inl_neg [Neg R] [NegZeroClass M] (r : R) : (inl (-r) : tsze R M) = -inl r :=
   ext rfl neg_zero.symm
 
 @[simp]
@@ -332,12 +333,12 @@ theorem inr_zero [Zero R] [Zero M] : (inr 0 : tsze R M) = 0 :=
   rfl
 
 @[simp]
-theorem inr_add [AddZeroClass R] [AddZeroClass M] (m₁ m₂ : M) :
+theorem inr_add [AddZeroClass R] [Add M] (m₁ m₂ : M) :
     (inr (m₁ + m₂) : tsze R M) = inr m₁ + inr m₂ :=
   ext (add_zero 0).symm rfl
 
 @[simp]
-theorem inr_neg [SubNegZeroMonoid R] [Neg M] (m : M) : (inr (-m) : tsze R M) = -inr m :=
+theorem inr_neg [NegZeroClass R] [Neg M] (m : M) : (inr (-m) : tsze R M) = -inr m :=
   ext neg_zero.symm rfl
 
 @[simp]
@@ -346,7 +347,7 @@ theorem inr_sub [SubNegZeroMonoid R] [Sub M] (m₁ m₂ : M) :
   ext (sub_zero _).symm rfl
 
 @[simp]
-theorem inr_smul [Zero R] [Zero S] [SMulWithZero S R] [SMul S M] (r : S) (m : M) :
+theorem inr_smul [Zero R] [SMulZeroClass S R] [SMul S M] (r : S) (m : M) :
     (inr (r • m) : tsze R M) = r • inr m :=
   ext (smul_zero _).symm rfl
 
@@ -450,22 +451,22 @@ theorem inr_mul_inr [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒ�
 
 end
 
-theorem inl_mul_inr [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] (r : R) (m : M) :
-    (inl r * inr m : tsze R M) = inr (r • m) :=
+theorem inl_mul_inr [MonoidWithZero R] [AddMonoid M] [DistribMulAction R M]
+    [DistribMulAction Rᵐᵒᵖ M] (r : R) (m : M) : (inl r * inr m : tsze R M) = inr (r • m) :=
   ext (mul_zero r) <|
     show r • m + (0 : Rᵐᵒᵖ) • (0 : M) = r • m by rw [smul_zero, add_zero]
 
-theorem inr_mul_inl [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] (r : R) (m : M) :
-    (inr m * inl r : tsze R M) = inr (m <• r) :=
+theorem inr_mul_inl [MonoidWithZero R] [AddMonoid M] [DistribMulAction R M]
+    [DistribMulAction Rᵐᵒᵖ M] (r : R) (m : M) : (inr m * inl r : tsze R M) = inr (m <• r) :=
   ext (zero_mul r) <|
     show (0 : R) •> (0 : M) + m <• r = m <• r by rw [smul_zero, zero_add]
 
-theorem inl_mul_eq_smul [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
+theorem inl_mul_eq_smul [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
     (r : R) (x : tsze R M) :
     inl r * x = r •> x :=
   ext rfl (by dsimp; rw [smul_zero, add_zero])
 
-theorem mul_inl_eq_op_smul [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
+theorem mul_inl_eq_op_smul [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
     (x : tsze R M) (r : R) :
     x * inl r = x <• r :=
   ext rfl (by dsimp; rw [smul_zero, zero_add])
@@ -636,7 +637,7 @@ instance semiring [Semiring R] [AddCommMonoid M]
 
 /-- The second element of a product $\prod_{i=0}^n (r_i + m_i)$ is a sum of terms of the form
 $r_0\cdots r_{i-1}m_ir_{i+1}\cdots r_n$. -/
-theorem snd_list_prod [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
+theorem snd_list_prod [Monoid R] [AddCommMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
     [SMulCommClass R Rᵐᵒᵖ M] (l : List (tsze R M)) :
     l.prod.snd =
       (l.zipIdx.map fun x : tsze R M × ℕ =>
@@ -715,7 +716,7 @@ abbrev invertibleFstOfInvertible (x : tsze R M) [Invertible x] : Invertible x.fs
 
 theorem fst_invOf (x : tsze R M) [Invertible x] [Invertible x.fst] : (⅟x).fst = ⅟(x.fst) := by
   letI := invertibleFstOfInvertible x
-  convert (rfl : _ = ⅟ x.fst)
+  convert (rfl : _ = ⅟x.fst)
 
 theorem mul_left_eq_one (r : R) (x : tsze R M) (h : r * x.fst = 1) :
     (inl r + inr (-((r •> x.snd) <• r))) * x = 1 := by
@@ -745,7 +746,7 @@ abbrev invertibleOfInvertibleFst (x : tsze R M) [Invertible x.fst] : Invertible 
 theorem snd_invOf (x : tsze R M) [Invertible x] [Invertible x.fst] :
     (⅟x).snd = -(⅟x.fst •> x.snd <• ⅟x.fst) := by
   letI := invertibleOfInvertibleFst x
-  convert congr_arg (TrivSqZeroExt.snd (R := R) (M := M)) (_ : _ = ⅟ x)
+  convert congr_arg (TrivSqZeroExt.snd (R := R) (M := M)) (_ : _ = ⅟x)
   convert rfl
 
 /-- Together `TrivSqZeroExt.detInvertibleOfInvertible` and `TrivSqZeroExt.invertibleOfDetInvertible`
@@ -815,7 +816,7 @@ protected theorem mul_inv_rev (a b : tsze R M) :
   ext
   · rw [fst_inv, fst_mul, fst_mul, mul_inv_rev, fst_inv, fst_inv]
   · simp only [snd_inv, snd_mul, fst_mul, fst_inv]
-    simp only [neg_smul, smul_neg, smul_add]
+    simp only [smul_neg, smul_add]
     simp_rw [mul_inv_rev, smul_comm (_ : R), op_smul_op_smul, smul_smul, add_comm, neg_add]
     obtain ha0 | ha := eq_or_ne (fst a) 0
     · simp [ha0]
@@ -946,8 +947,7 @@ def lift (f : R →ₐ[S] A) (g : M →ₗ[S] A)
     (TrivSqZeroExt.ind fun r₁ m₁ =>
       TrivSqZeroExt.ind fun r₂ m₂ => by
         dsimp
-        simp only [add_zero, zero_add, add_mul, mul_add, smul_mul_smul_comm, hg, smul_zero,
-          op_smul_eq_smul]
+        simp only [add_zero, zero_add, add_mul, mul_add, hg]
         rw [← map_mul, LinearMap.map_add, add_comm (g _), add_assoc, hfg, hgf])
 
 theorem lift_def (f : R →ₐ[S] A) (g : M →ₗ[S] A)
@@ -999,6 +999,26 @@ theorem lift_inlAlgHom_inrHom :
     AlgHom.id S (tsze R M) :=
   algHom_ext' (lift_comp_inlHom _ _ _ _ _) (lift_comp_inrHom _ _ _ _ _)
 
+
+@[simp]
+theorem range_inlAlgHom_sup_adjoin_range_inr :
+    (inlAlgHom S R M).range ⊔ Algebra.adjoin S (Set.range inr) = (⊤ : Subalgebra S (tsze R M)) := by
+  refine top_unique fun x hx => ?_; clear hx
+  rw [← x.inl_fst_add_inr_snd_eq]
+  refine add_mem ?_ ?_
+  · exact le_sup_left (α := Subalgebra S _) <| Set.mem_range_self x.fst
+  · exact le_sup_right (α := Subalgebra S _) <| Algebra.subset_adjoin <| Set.mem_range_self x.snd
+
+@[simp]
+theorem range_liftAux (f : R →ₐ[S] A) (g : M →ₗ[S] A)
+    (hg : ∀ x y, g x * g y = 0)
+    (hfg : ∀ r x, g (r •> x) = f r * g x)
+    (hgf : ∀ r x, g (x <• r) = g x * f r) :
+    (lift f g hg hfg hgf).range = f.range ⊔ Algebra.adjoin S (Set.range g) := by
+  simp_rw [← Algebra.map_top, ← range_inlAlgHom_sup_adjoin_range_inr, Algebra.map_sup,
+    AlgHom.map_adjoin, ← AlgHom.range_comp, lift_comp_inlHom, ← Set.range_comp, Function.comp_def,
+    lift_apply_inr, Algebra.map_top]
+
 /-- A universal property of the trivial square-zero extension, providing a unique
 `TrivSqZeroExt R M →ₐ[R] A` for every pair of maps `f : R →ₐ[S] A` and `g : M →ₗ[S] A`,
 where the range of `g` has no non-zero products, and scaling the input to `g` on the left or right
@@ -1030,11 +1050,7 @@ def liftEquivOfComm :
     toFun := fun f => ⟨(Algebra.ofId _ _, f.val), f.prop,
       fun r x => by simp [Algebra.smul_def, Algebra.ofId_apply],
       fun r x => by simp [Algebra.smul_def, Algebra.ofId_apply, Algebra.commutes]⟩
-    invFun := fun fg => ⟨fg.val.2, fg.prop.1⟩
-    left_inv := fun f => rfl
-    right_inv := fun fg => Subtype.ext <|
-      Prod.ext (AlgHom.toLinearMap_injective <| LinearMap.ext_ring <| by simp)
-      rfl }
+    invFun := fun fg => ⟨fg.val.2, fg.prop.1⟩ }
 
 section map
 

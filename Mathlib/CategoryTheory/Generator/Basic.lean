@@ -43,7 +43,7 @@ We
   dual);
 * show that `C` is `WellPowered` if it admits small pullbacks and a detector;
 * define corresponding typeclasses `HasSeparator`, `HasCoseparator`, `HasDetector`
-and `HasCodetector` on categories and prove analogous results for these.
+  and `HasCodetector` on categories and prove analogous results for these.
 
 ## Future work
 
@@ -266,20 +266,20 @@ theorem isCodetecting_empty_of_groupoid [∀ {X Y : C} (f : X ⟶ Y), IsIso f] :
 end Empty
 
 theorem isSeparating_iff_epi (𝒢 : Set C)
-    [∀ A : C, HasCoproduct fun f : ΣG : 𝒢, (G : C) ⟶ A => (f.1 : C)] :
+    [∀ A : C, HasCoproduct fun f : Σ G : 𝒢, (G : C) ⟶ A => (f.1 : C)] :
     IsSeparating 𝒢 ↔ ∀ A : C, Epi (Sigma.desc (@Sigma.snd 𝒢 fun G => (G : C) ⟶ A)) := by
   refine ⟨fun h A => ⟨fun u v huv => h _ _ fun G hG f => ?_⟩, fun h X Y f g hh => ?_⟩
-  · simpa using Sigma.ι (fun f : ΣG : 𝒢, (G : C) ⟶ A => (f.1 : C)) ⟨⟨G, hG⟩, f⟩ ≫= huv
+  · simpa using Sigma.ι (fun f : Σ G : 𝒢, (G : C) ⟶ A => (f.1 : C)) ⟨⟨G, hG⟩, f⟩ ≫= huv
   · haveI := h X
     refine
       (cancel_epi (Sigma.desc (@Sigma.snd 𝒢 fun G => (G : C) ⟶ X))).1 (colimit.hom_ext fun j => ?_)
     simpa using hh j.as.1.1 j.as.1.2 j.as.2
 
 theorem isCoseparating_iff_mono (𝒢 : Set C)
-    [∀ A : C, HasProduct fun f : ΣG : 𝒢, A ⟶ (G : C) => (f.1 : C)] :
+    [∀ A : C, HasProduct fun f : Σ G : 𝒢, A ⟶ (G : C) => (f.1 : C)] :
     IsCoseparating 𝒢 ↔ ∀ A : C, Mono (Pi.lift (@Sigma.snd 𝒢 fun G => A ⟶ (G : C))) := by
   refine ⟨fun h A => ⟨fun u v huv => h _ _ fun G hG f => ?_⟩, fun h X Y f g hh => ?_⟩
-  · simpa using huv =≫ Pi.π (fun f : ΣG : 𝒢, A ⟶ (G : C) => (f.1 : C)) ⟨⟨G, hG⟩, f⟩
+  · simpa using huv =≫ Pi.π (fun f : Σ G : 𝒢, A ⟶ (G : C) => (f.1 : C)) ⟨⟨G, hG⟩, f⟩
   · haveI := h Y
     refine (cancel_mono (Pi.lift (@Sigma.snd 𝒢 fun G => Y ⟶ (G : C)))).1 (limit.hom_ext fun j => ?_)
     simpa using hh j.as.1.1 j.as.1.2 j.as.2
@@ -294,12 +294,12 @@ theorem hasInitial_of_isCoseparating [LocallySmall.{w} C] [WellPowered.{w} C]
     (h𝒢 : IsCoseparating 𝒢) : HasInitial C := by
   have := hasFiniteLimits_of_hasLimitsOfSize C
   haveI : HasProductsOfShape 𝒢 C := hasProductsOfShape_of_small C 𝒢
-  haveI := fun A => hasProductsOfShape_of_small.{w} C (ΣG : 𝒢, A ⟶ (G : C))
+  haveI := fun A => hasProductsOfShape_of_small.{w} C (Σ G : 𝒢, A ⟶ (G : C))
   letI := completeLatticeOfCompleteSemilatticeInf (Subobject (piObj (Subtype.val : 𝒢 → C)))
   suffices ∀ A : C, Unique (((⊥ : Subobject (piObj (Subtype.val : 𝒢 → C))) : C) ⟶ A) by
     exact hasInitial_of_unique ((⊥ : Subobject (piObj (Subtype.val : 𝒢 → C))) : C)
   refine fun A => ⟨⟨?_⟩, fun f => ?_⟩
-  · let s := Pi.lift fun f : ΣG : 𝒢, A ⟶ (G : C) => id (Pi.π (Subtype.val : 𝒢 → C)) f.1
+  · let s := Pi.lift fun f : Σ G : 𝒢, A ⟶ (G : C) => id (Pi.π (Subtype.val : 𝒢 → C)) f.1
     let t := Pi.lift (@Sigma.snd 𝒢 fun G => A ⟶ (G : C))
     haveI : Mono t := (isCoseparating_iff_mono 𝒢).1 h𝒢 A
     exact Subobject.ofLEMk _ (pullback.fst _ _ : pullback s t ⟶ _) bot_le ≫ pullback.snd _ _
@@ -355,7 +355,7 @@ end Subobject
 theorem wellPowered_of_isDetecting [HasPullbacks C] {𝒢 : Set C} [Small.{w} 𝒢]
     [LocallySmall.{w} C] (h𝒢 : IsDetecting 𝒢) : WellPowered.{w} C :=
   ⟨fun X =>
-    @small_of_injective _ _ _ (fun P : Subobject X => { f : ΣG : 𝒢, G.1 ⟶ X | P.Factors f.2 })
+    @small_of_injective _ _ _ (fun P : Subobject X => { f : Σ G : 𝒢, G.1 ⟶ X | P.Factors f.2 })
       fun P Q h => Subobject.eq_of_isDetecting h𝒢 _ _
         (by simpa [Set.ext_iff, Sigma.forall] using h)⟩
 
@@ -631,8 +631,6 @@ theorem isCodetector_iff_reflectsIsomorphisms_yoneda_obj (G : C) :
 
 theorem wellPowered_of_isDetector [HasPullbacks C] (G : C) (hG : IsDetector G) :
     WellPowered.{v₁} C :=
-  -- Porting note: added the following `haveI` to prevent universe issues
-  haveI := small_subsingleton ({G} : Set C)
   wellPowered_of_isDetecting hG
 
 theorem wellPowered_of_isSeparator [HasPullbacks C] [Balanced C] (G : C) (hG : IsSeparator G) :

@@ -26,7 +26,7 @@ open Qq
 initialize registerTraceClass `Tactic.field_simp
 
 /-- Constructs a trace message for the `discharge` function. -/
-private def dischargerTraceMessage {ε : Type*} (prop: Expr) :
+private def dischargerTraceMessage {ε : Type*} (prop : Expr) :
     Except ε (Option Expr) → SimpM MessageData
 | .error _ | .ok none => return m!"{crossEmoji} discharge {prop}"
 | .ok (some _) => return m!"{checkEmoji} discharge {prop}"
@@ -45,7 +45,7 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) :=
     let pf? ← match prop with
     | ~q(($e : $α) ≠ $b) =>
         try
-          let res ← Mathlib.Meta.NormNum.derive (α := (q(Prop) : Q(Type))) prop
+          let res ← Mathlib.Meta.NormNum.derive prop
           match res with
           | .isTrue pf => pure (some pf)
           | _ => pure none
@@ -103,7 +103,7 @@ def fieldSimpExcluded : List Name := [
   ``mul_div_div_cancel, ``mul_mul_div_cancel,
 
   ``div_eq_self,
-  ``mul_left_eq_self, ``mul_right_eq_self, ``self_eq_mul_left, ``self_eq_mul_right,
+  ``mul_eq_right, ``mul_eq_left, ``right_eq_mul, ``left_eq_mul,
   ``div_left_inj, ``div_right_inj, ``mul_left_inj, ``mul_right_inj]
 
 /--
@@ -198,18 +198,12 @@ elab_rules : tactic
     (simpTheorems := #[thms, thms0])
     (congrTheorems := ← getSimpCongrTheorems)
 
-  let mut r ← elabSimpArgs (sa.getD ⟨.missing⟩) ctx (simprocs := {}) (eraseLocal := false) .simp
-  if r.starArg then
-    r ← do
-      let ctx := r.ctx
-      let mut simpTheorems := ctx.simpTheorems
-      let hs ← getPropHyps
-      for h in hs do
-        unless simpTheorems.isErased (.fvar h) do
-          simpTheorems ← simpTheorems.addTheorem (.fvar h) (← h.getDecl).toExpr
-      let ctx := ctx.setSimpTheorems simpTheorems
-      pure { ctx, simprocs := {} }
-
+  let r ← elabSimpArgs (sa.getD ⟨.missing⟩) ctx (simprocs := {}) (eraseLocal := false) .simp
   _ ← simpLocation r.ctx {} dis loc
 
 end Mathlib.Tactic.FieldSimp
+
+/-!
+ We register `field_simp` with the `hint` tactic.
+ -/
+register_hint field_simp

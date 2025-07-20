@@ -7,7 +7,7 @@ import Mathlib.MeasureTheory.Constructions.ProjectiveFamilyContent
 import Mathlib.MeasureTheory.Function.FactorsThrough
 import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 import Mathlib.MeasureTheory.OuterMeasure.OfAddContent
-import Mathlib.Probability.Kernel.Composition.MeasureComp
+import Mathlib.Probability.Kernel.Composition.IntegralCompProd
 import Mathlib.Probability.Kernel.IonescuTulcea.PartialTraj
 import Mathlib.Probability.Kernel.SetIntegral
 
@@ -95,8 +95,8 @@ private lemma measure_cast {a b : ℕ} (h : a = b) (μ : (n : ℕ) → Measure (
   exact Measure.map_id
 
 private lemma heq_measurableSpace_Iic_pi {a b : ℕ} (h : a = b) :
-    HEq (inferInstance : MeasurableSpace (Π i : Iic a, X i))
-    (inferInstance : MeasurableSpace (Π i : Iic b, X i)) := by cases h; rfl
+    (inferInstance : MeasurableSpace (Π i : Iic a, X i)) ≍
+      (inferInstance : MeasurableSpace (Π i : Iic b, X i)) := by cases h; rfl
 
 end castLemmas
 
@@ -248,7 +248,7 @@ lemma trajContent_ne_top {a : ℕ} {x : Π i : Iic a, X i} {s : Set (Π n, X n)}
 /-- This is an auxiliary result for `trajContent_tendsto_zero`. Consider `f` a sequence of bounded
 measurable functions such that `f n` depends only on the first coordinates up to `a n`.
 Assume that when integrating `f n` against `partialTraj (k + 1) (a n)`, one gets a non-increasing
-sequence of functions wich converges to `l`.
+sequence of functions which converges to `l`.
 Assume then that there exists `ε` and `y : Π i : Iic k, X i` such that
 when integrating `f n` against `partialTraj k (a n) y`, you get something at least
 `ε` for all `n`. Then there exists `z` such that this remains true when integrating
@@ -320,7 +320,7 @@ theorem le_lmarginalPartialTraj_succ {f : ℕ → (Π n, X n) → ℝ≥0∞} {a
   -- as `Fₙ` technically depends on all the variables, but really depends only on the first `k + 1`.
   convert this using 1
   refine (hcte n).dependsOn_lmarginalPartialTraj _ (mf n) fun i hi ↦ ?_
-  simp only [update, updateFinset, mem_Iic, F]
+  simp only [update, updateFinset, mem_Iic]
   split_ifs with h1 h2 <;> try rfl
   rw [mem_coe, mem_Iic] at hi
   omega
@@ -417,7 +417,7 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
       intro x n
       convert hind k (fun i ↦ z i.1) h x n
       ext i
-      simp only [updateFinset, mem_Iic, frestrictLe_apply, dite_eq_ite, update, χ, z]
+      simp only [updateFinset, mem_Iic, frestrictLe_apply, dite_eq_ite, update, z]
       split_ifs with h1 h2 h3 h4 h5
       any_goals omega
       any_goals rfl
@@ -456,7 +456,7 @@ theorem isSigmaSubadditive_trajContent {a : ℕ} (x₀ : Π i : Iic a, X i) :
     (trajContent κ x₀) (fun _ _ ↦ trajContent_ne_top) ?_ hf hf_Union hf'
   exact fun s hs anti_s inter_s ↦ trajContent_tendsto_zero hs anti_s inter_s x₀
 
-/-- This function is the kernel given by the Ionescu-Tulcea theorem. It is shown belown that it
+/-- This function is the kernel given by the Ionescu-Tulcea theorem. It is shown below that it
 is measurable and turned into a true kernel in `Kernel.traj`. -/
 noncomputable def trajFun (a : ℕ) (x₀ : Π i : Iic a, X i) : Measure (Π n, X n) :=
   (trajContent κ x₀).measure isSetSemiring_measurableCylinders generateFrom_measurableCylinders.ge
@@ -561,7 +561,7 @@ theorem traj_comp_partialTraj {a b : ℕ} (hab : a ≤ b) :
   rw [map_comp, traj_map_frestrictLe, partialTraj_comp_partialTraj' _ hab]
 
 /-- This theorem shows that `traj κ n` is, up to an equivalence, the product of
-a determinstic kernel with another kernel. This is an intermediate result to compute integrals
+a deterministic kernel with another kernel. This is an intermediate result to compute integrals
 with respect to this kernel. -/
 theorem traj_eq_prod (a : ℕ) :
     traj κ a = (Kernel.id ×ₖ (traj κ a).map (Set.Ioi a).restrict).map (IicProdIoi a) := by

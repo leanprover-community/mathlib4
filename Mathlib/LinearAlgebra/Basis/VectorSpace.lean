@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
 import Mathlib.LinearAlgebra.FreeModule.Basic
+import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 import Mathlib.LinearAlgebra.LinearPMap
 import Mathlib.LinearAlgebra.Projection
 
@@ -153,7 +154,7 @@ theorem ofVectorSpace_apply_self (x : ofVectorSpaceIndex K V) : ofVectorSpace K 
   exact Basis.mk_apply _ _ _
 
 @[simp]
-theorem coe_ofVectorSpace : ⇑(ofVectorSpace K V) = ((↑) : _ → _ ) :=
+theorem coe_ofVectorSpace : ⇑(ofVectorSpace K V) = ((↑) : _ → _) :=
   funext fun x => ofVectorSpace_apply_self K V x
 
 theorem ofVectorSpaceIndex.linearIndependent :
@@ -219,8 +220,8 @@ theorem atom_iff_nonzero_span (W : Submodule K V) :
     exact nonzero_span_atom v hv
 
 /-- The lattice of submodules of a module over a division ring is atomistic. -/
-instance : IsAtomistic (Submodule K V) where
-  eq_sSup_atoms W := by
+instance : IsAtomistic (Submodule K V) :=
+  CompleteLattice.isAtomistic_iff.2 fun W => by
     refine ⟨_, submodule_eq_sSup_le_nonzero_spans W, ?_⟩
     rintro _ ⟨w, ⟨_, ⟨hw, rfl⟩⟩⟩
     exact nonzero_span_atom w hw
@@ -265,27 +266,42 @@ theorem LinearMap.exists_extend {p : Submodule K V} (f : p →ₗ[K] V') :
   let ⟨g, hg⟩ := p.subtype.exists_leftInverse_of_injective p.ker_subtype
   ⟨f.comp g, by rw [LinearMap.comp_assoc, hg, f.comp_id]⟩
 
+theorem LinearMap.exists_extend_of_notMem {p : Submodule K V} {v : V} (f : p →ₗ[K] V')
+    (hv : v ∉ p) (y : V') : ∃ g : V →ₗ[K] V', g.comp p.subtype = f ∧ g v = y := by
+  rcases (LinearPMap.supSpanSingleton ⟨p, f⟩ v y hv).toFun.exists_extend with ⟨g, hg⟩
+  refine ⟨g, ?_, ?_⟩
+  · ext x
+    have := LinearPMap.supSpanSingleton_apply_mk_of_mem ⟨p, f⟩ y hv x.2
+    simpa using congr($hg _).trans this
+  · have := LinearPMap.supSpanSingleton_apply_self ⟨p, f⟩ y hv
+    simpa using congr($hg _).trans this
+
+@[deprecated (since := "2025-05-23")]
+alias LinearMap.exists_extend_of_not_mem := LinearMap.exists_extend_of_notMem
+
 open Submodule LinearMap
+
+theorem Submodule.exists_le_ker_of_notMem {p : Submodule K V} {v : V} (hv : v ∉ p) :
+    ∃ f : V →ₗ[K] K, f v ≠ 0 ∧ p ≤ ker f := by
+  rcases LinearMap.exists_extend_of_notMem (0 : p →ₗ[K] K) hv 1 with ⟨f, hpf, hfv⟩
+  refine ⟨f, by simp [hfv], fun x hx ↦ ?_⟩
+  simpa using congr($hpf ⟨x, hx⟩)
+
+@[deprecated (since := "2025-05-23")]
+alias Submodule.exists_le_ker_of_not_mem := Submodule.exists_le_ker_of_notMem
 
 /-- If `p < ⊤` is a subspace of a vector space `V`, then there exists a nonzero linear map
 `f : V →ₗ[K] K` such that `p ≤ ker f`. -/
 theorem Submodule.exists_le_ker_of_lt_top (p : Submodule K V) (hp : p < ⊤) :
     ∃ (f : V →ₗ[K] K), f ≠ 0 ∧ p ≤ ker f := by
-  rcases SetLike.exists_of_lt hp with ⟨v, -, hpv⟩; clear hp
-  rcases (LinearPMap.supSpanSingleton ⟨p, 0⟩ v (1 : K) hpv).toFun.exists_extend with ⟨f, hf⟩
-  refine ⟨f, ?_, ?_⟩
-  · rintro rfl
-    rw [LinearMap.zero_comp] at hf
-    have := LinearPMap.supSpanSingleton_apply_mk ⟨p, 0⟩ v (1 : K) hpv 0 p.zero_mem 1
-    simpa using (LinearMap.congr_fun hf _).trans this
-  · refine fun x hx => mem_ker.2 ?_
-    have := LinearPMap.supSpanSingleton_apply_mk ⟨p, 0⟩ v (1 : K) hpv x hx 0
-    simpa using (LinearMap.congr_fun hf _).trans this
+  rcases SetLike.exists_of_lt hp with ⟨v, -, hpv⟩
+  rcases exists_le_ker_of_notMem hpv with ⟨f, hfv, hpf⟩
+  exact ⟨f, ne_of_apply_ne (· v) hfv, hpf⟩
 
 theorem quotient_prod_linearEquiv (p : Submodule K V) : Nonempty (((V ⧸ p) × p) ≃ₗ[K] V) :=
   let ⟨q, hq⟩ := p.exists_isCompl
   Nonempty.intro <|
-    ((quotientEquivOfIsCompl p q hq).prod (LinearEquiv.refl _ _)).trans
+    ((quotientEquivOfIsCompl p q hq).prodCongr (LinearEquiv.refl _ _)).trans
       (prodEquivOfIsCompl q p hq.symm)
 
 end DivisionRing

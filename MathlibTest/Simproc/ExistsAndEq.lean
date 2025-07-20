@@ -11,8 +11,17 @@ example (a : α) (hp : p a) (hq : q a) : ∃ b : α, (p b ∧ b = a) ∧ q b := 
 example (a : α) : ∃ b : α, b = a := by
   simp only [existsAndEq]
 
+/--
+error: simp made no progress
+-/
+#guard_msgs in
+example (f : α → α) : ∃ a : α, a = f a := by
+  simp only [existsAndEq]
+  sorry
+
 open Lean Meta Simp
 
+set_option linter.unusedSimpArgs false in
 set_option linter.unusedTactic false in
 example (a : α) (hp : p a) (hq : q a) : (∃ b : α, p b ∧ (∃ c : α, b = a ∧ q c)) := by
   -- the simproc doesn't handle nested `Exists`

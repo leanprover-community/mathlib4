@@ -6,9 +6,10 @@ Authors: Jujian Zhang
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.Algebra.Category.ModuleCat.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Limits
-import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.CategoryTheory.Adjunction.Mates
 import Mathlib.CategoryTheory.Linear.LinearFunctor
+import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 /-!
 # Change Of Rings
@@ -139,8 +140,6 @@ def semilinearMapAddEquiv {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f :
     { toFun := g
       map_add' := by simp
       map_smul' := g.hom.map_smul }
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_add' _ _ := rfl
 
 section
@@ -385,12 +384,12 @@ variable (M : Type v) [AddCommMonoid M] [Module R M]
 -- local notation "S'" => (restrictScalars f).obj ⟨S⟩
 
 /-- Given an `R`-module M, consider Hom(S, M) -- the `R`-linear maps between S (as an `R`-module by
- means of restriction of scalars) and M. `S` acts on Hom(S, M) by `s • g = x ↦ g (x • s)`
+means of restriction of scalars) and M. `S` acts on Hom(S, M) by `s • g = x ↦ g (x • s)`
 -/
 instance hasSMul : SMul S <| (restrictScalars f).obj (of _ S) →ₗ[R] M where
   smul s g :=
     { toFun := fun s' : S => g (s' * s : S)
-      map_add' := fun x y : S => by dsimp; rw [add_mul, map_add]
+      map_add' := fun x y : S => by rw [add_mul, map_add]
       map_smul' := fun r (t : S) => by
         -- Porting note: needed some erw's even after dsimp to clean things up
         dsimp
@@ -774,9 +773,8 @@ def Counit.map {Y} : (restrictScalars f ⋙ extendScalars f).obj Y ⟶ Y :=
           rw [smul_eq_mul, mul_smul] }
     map_add' := fun _ _ => by rw [map_add]
     map_smul' := fun s z => by
-      letI m1 : Module R S := Module.compHom S f
-      letI m2 : Module R Y := Module.compHom Y f
-      dsimp only
+      let m1 : Module R S := Module.compHom S f
+      let m2 : Module R Y := Module.compHom Y f
       induction z using TensorProduct.induction_on with
       | zero => rw [smul_zero, map_zero, smul_zero]
       | tmul s' y =>
@@ -838,13 +836,13 @@ def extendRestrictScalarsAdj {R : Type u₁} {S : Type u₂} [CommRing R] [CommR
 lemma extendRestrictScalarsAdj_homEquiv_apply
     {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S]
     {f : R →+* S} {M : ModuleCat.{max v u₂} R} {N : ModuleCat S}
-    (φ : (extendScalars f).obj M ⟶ N) (m : M):
+    (φ : (extendScalars f).obj M ⟶ N) (m : M) :
     (extendRestrictScalarsAdj f).homEquiv _ _ φ m = φ ((1 : S) ⊗ₜ m) :=
   rfl
 
 lemma extendRestrictScalarsAdj_unit_app_apply
     {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S]
-    (f : R →+* S) (M : ModuleCat.{max v u₂} R) (m : M):
+    (f : R →+* S) (M : ModuleCat.{max v u₂} R) (m : M) :
     (extendRestrictScalarsAdj f).unit.app M m = (1 : S) ⊗ₜ[R,f] m :=
   rfl
 
@@ -882,7 +880,7 @@ noncomputable def extendScalarsId : extendScalars (RingHom.id R) ≅ 𝟭 _ :=
   ((conjugateIsoEquiv (extendRestrictScalarsAdj (RingHom.id R)) Adjunction.id).symm
     (restrictScalarsId R)).symm
 
-lemma extendScalarsId_inv_app_apply (M : ModuleCat R) (m : M):
+lemma extendScalarsId_inv_app_apply (M : ModuleCat R) (m : M) :
     (extendScalarsId R).inv.app M m = (1 : R) ⊗ₜ m := rfl
 
 lemma homEquiv_extendScalarsId (M : ModuleCat R) :
@@ -932,9 +930,11 @@ lemma extendScalarsComp_hom_app_one_tmul (M : ModuleCat R₁) (m : M) :
 
 @[reassoc]
 lemma extendScalars_assoc :
-    (extendScalarsComp (f₂₃.comp f₁₂) f₃₄).hom ≫ whiskerRight (extendScalarsComp f₁₂ f₂₃).hom _ =
-      (extendScalarsComp f₁₂ (f₃₄.comp f₂₃)).hom ≫ whiskerLeft _ (extendScalarsComp f₂₃ f₃₄).hom ≫
-        (Functor.associator _ _ _).inv := by
+    (extendScalarsComp (f₂₃.comp f₁₂) f₃₄).hom ≫
+      Functor.whiskerRight (extendScalarsComp f₁₂ f₂₃).hom _ =
+        (extendScalarsComp f₁₂ (f₃₄.comp f₂₃)).hom ≫
+          Functor.whiskerLeft _ (extendScalarsComp f₂₃ f₃₄).hom ≫
+            (Functor.associator _ _ _).inv := by
   ext M m
   have h₁ := extendScalarsComp_hom_app_one_tmul (f₂₃.comp f₁₂) f₃₄ M m
   have h₂ := extendScalarsComp_hom_app_one_tmul f₁₂ (f₃₄.comp f₂₃) M m
@@ -949,16 +949,18 @@ lemma extendScalars_assoc :
 that is needed in the definition `CommRingCat.moduleCatExtendScalarsPseudofunctor`
 in the file `Algebra.Category.ModuleCat.Pseudofunctor` -/
 lemma extendScalars_assoc' :
-    (extendScalarsComp (f₂₃.comp f₁₂) f₃₄).hom ≫ whiskerRight (extendScalarsComp f₁₂ f₂₃).hom _ ≫
-      (Functor.associator _ _ _).hom ≫ whiskerLeft _ (extendScalarsComp f₂₃ f₃₄).inv ≫
-        (extendScalarsComp f₁₂ (f₃₄.comp f₂₃)).inv = 𝟙 _ := by
+    (extendScalarsComp (f₂₃.comp f₁₂) f₃₄).hom ≫
+      Functor.whiskerRight (extendScalarsComp f₁₂ f₂₃).hom _ ≫
+        (Functor.associator _ _ _).hom ≫
+          Functor.whiskerLeft _ (extendScalarsComp f₂₃ f₃₄).inv ≫
+            (extendScalarsComp f₁₂ (f₃₄.comp f₂₃)).inv = 𝟙 _ := by
   rw [extendScalars_assoc_assoc]
-  simp only [Iso.inv_hom_id_assoc, ← whiskerLeft_comp_assoc, Iso.hom_inv_id,
-    whiskerLeft_id', Category.id_comp]
+  simp only [Iso.inv_hom_id_assoc, ← Functor.whiskerLeft_comp_assoc, Iso.hom_inv_id,
+    Functor.whiskerLeft_id', Category.id_comp]
 
 @[reassoc]
 lemma extendScalars_id_comp :
-    (extendScalarsComp (RingHom.id R₁) f₁₂).hom ≫ whiskerRight (extendScalarsId R₁).hom _ ≫
+    (extendScalarsComp (RingHom.id R₁) f₁₂).hom ≫ Functor.whiskerRight (extendScalarsId R₁).hom _ ≫
       (Functor.leftUnitor _).hom = 𝟙 _ := by
   ext M m
   dsimp
@@ -969,7 +971,7 @@ lemma extendScalars_id_comp :
 
 @[reassoc]
 lemma extendScalars_comp_id :
-    (extendScalarsComp f₁₂ (RingHom.id R₂)).hom ≫ whiskerLeft _ (extendScalarsId R₂).hom ≫
+    (extendScalarsComp f₁₂ (RingHom.id R₂)).hom ≫ Functor.whiskerLeft _ (extendScalarsId R₂).hom ≫
       (Functor.rightUnitor _).hom = 𝟙 _ := by
   ext M m
   dsimp

@@ -6,13 +6,13 @@ Authors: Joseph Myers, Yury Kudryashov
 import Mathlib.Algebra.AddTorsor.Defs
 import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Group.End
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 
 /-!
 # Torsors of additive group actions
 
-Further results for torsors, that are not in `Mathlib.Algebra.AddTorsor.Defs` to avoid increasing
-imports there.
+Further results for torsors, that are not in `Mathlib/Algebra/AddTorsor/Defs.lean` to avoid
+increasing imports there.
 -/
 
 open scoped Pointwise

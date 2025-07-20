@@ -3,8 +3,8 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
-
 import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
+import Mathlib.Dynamics.Ergodic.MeasurePreserving
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
 import Mathlib.MeasureTheory.Measure.WithDensity
 import Mathlib.Topology.Algebra.Module.FiniteDimension
@@ -13,7 +13,7 @@ import Mathlib.Topology.Algebra.Module.FiniteDimension
 # Strongly measurable and finitely strongly measurable functions
 
 This file contains some further development of strongly measurable and finitely strongly measurable
-functions, started in `Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic`.
+functions, started in `Mathlib/MeasureTheory/Function/StronglyMeasurable/Basic.lean`.
 
 ## References
 
@@ -26,6 +26,11 @@ open MeasureTheory Filter Set ENNReal NNReal
 
 variable {α β γ : Type*} {m : MeasurableSpace α} {μ : Measure α} [TopologicalSpace β]
   [TopologicalSpace γ] {f g : α → β}
+
+@[fun_prop]
+lemma aestronglyMeasurable_dirac [MeasurableSingletonClass α] {a : α} {f : α → β} :
+    AEStronglyMeasurable f (Measure.dirac a) :=
+  ⟨fun _ ↦ f a, stronglyMeasurable_const, ae_eq_dirac f⟩
 
 theorem MeasureTheory.AEStronglyMeasurable.comp_measurePreserving
     {γ : Type*} {_ : MeasurableSpace γ} {_ : MeasurableSpace α} {f : γ → α} {μ : Measure γ}

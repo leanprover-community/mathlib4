@@ -102,7 +102,7 @@ theorem ascPochhammer_eval_cast (n k : ℕ) :
 theorem ascPochhammer_eval_zero {n : ℕ} : (ascPochhammer S n).eval 0 = if n = 0 then 1 else 0 := by
   cases n
   · simp
-  · simp [X_mul, Nat.succ_ne_zero, ascPochhammer_succ_left]
+  · simp [X_mul, ascPochhammer_succ_left]
 
 theorem ascPochhammer_zero_eval_zero : (ascPochhammer S 0).eval 0 = 1 := by simp
 
@@ -183,7 +183,7 @@ end Semiring
 
 section StrictOrderedSemiring
 
-variable {S : Type*} [StrictOrderedSemiring S]
+variable {S : Type*} [Semiring S] [PartialOrder S] [IsStrictOrderedRing S]
 
 theorem ascPochhammer_pos (n : ℕ) (s : S) (h : 0 < s) : 0 < (ascPochhammer S n).eval s := by
   induction n with
@@ -274,13 +274,13 @@ end
 theorem descPochhammer_eval_cast (n : ℕ) (k : ℤ) :
     (((descPochhammer ℤ n).eval k : ℤ) : R) = ((descPochhammer R n).eval k : R) := by
   rw [← descPochhammer_map (algebraMap ℤ R), eval_map, ← eq_intCast (algebraMap ℤ R)]
-  simp only [algebraMap_int_eq, eq_intCast, eval₂_at_intCast, Nat.cast_id, eq_natCast, Int.cast_id]
+  simp only [algebraMap_int_eq, eq_intCast, eval₂_at_intCast, Int.cast_id]
 
 theorem descPochhammer_eval_zero {n : ℕ} :
     (descPochhammer R n).eval 0 = if n = 0 then 1 else 0 := by
   cases n
   · simp
-  · simp [X_mul, Nat.succ_ne_zero, descPochhammer_succ_left]
+  · simp [X_mul, descPochhammer_succ_left]
 
 theorem descPochhammer_zero_eval_zero : (descPochhammer R 0).eval 0 = 1 := by simp
 
@@ -433,7 +433,7 @@ end Ring
 
 section StrictOrderedRing
 
-variable {S : Type*} [StrictOrderedRing S]
+variable {S : Type*} [Ring S] [PartialOrder S] [IsStrictOrderedRing S]
 
 /-- `descPochhammer S n` is positive on `(n-1, ∞)`. -/
 theorem descPochhammer_pos {n : ℕ} {s : S} (h : n - 1 < s) :

@@ -22,9 +22,9 @@ proves Noether's first and second isomorphism theorems.
 
 * `QuotientGroup.quotientKerEquivRange`: Noether's first isomorphism theorem, an explicit
   isomorphism `G/ker φ → range φ` for every group homomorphism `φ : G →* H`.
-* `QuotientGroup.quotientInfEquivProdNormalQuotient`: Noether's second isomorphism theorem, an
-  explicit isomorphism between `H/(H ∩ N)` and `(HN)/N` given a subgroup `H` and a normal subgroup
-  `N` of a group `G`.
+* `QuotientGroup.quotientInfEquivProdNormalizerQuotient`: Noether's second isomorphism
+  theorem, an explicit isomorphism between `H/(H ∩ N)` and `(HN)/N` given a subgroup `H`
+  that lies in the normalizer `N_G(N)` of a subgroup `N` of a group `G`.
 * `QuotientGroup.quotientQuotientEquivQuotient`: Noether's third isomorphism theorem,
   the canonical isomorphism between `(G / N) / (M / N)` and `G / M`, where `N ≤ M`.
 * `QuotientGroup.comapMk'OrderIso`: The correspondence theorem, a lattice
@@ -79,7 +79,7 @@ def kerLift : G ⧸ ker φ →* H :=
 
 @[to_additive (attr := simp)]
 theorem kerLift_mk (g : G) : (kerLift φ) g = φ g :=
-  lift_mk _ _ _
+  rfl
 
 @[to_additive (attr := simp)]
 theorem kerLift_mk' (g : G) : (kerLift φ) (mk g) = φ g :=
@@ -252,12 +252,19 @@ section SndIsomorphismThm
 
 open Subgroup
 
-/-- **Noether's second isomorphism theorem**: given two subgroups `H` and `N` of a group `G`, where
-`N` is normal, defines an isomorphism between `H/(H ∩ N)` and `(HN)/N`. -/
-@[to_additive "The second isomorphism theorem: given two subgroups `H` and `N` of a group `G`, where
-`N` is normal, defines an isomorphism between `H/(H ∩ N)` and `(H + N)/N`"]
-noncomputable def quotientInfEquivProdNormalQuotient (H N : Subgroup G) [N.Normal] :
-    H ⧸ N.subgroupOf H ≃* _ ⧸ N.subgroupOf (H ⊔ N) :=
+/-- **Noether's second isomorphism theorem**: given a subgroup `N` of `G` and a
+subgroup `H` of the normalizer of `N` in `G`,
+defines an isomorphism between `H/(H ∩ N)` and `(HN)/N`. -/
+@[to_additive "Noether's second isomorphism theorem: given a subgroup `N` of `G` and a
+subgroup `H` of the normalizer of `N` in `G`,
+defines an isomorphism between `H/(H ∩ N)` and `(H + N)/N`"]
+noncomputable def quotientInfEquivProdNormalizerQuotient (H N : Subgroup G)
+    (hLE : H ≤ N.normalizer) :
+    letI := Subgroup.normal_subgroupOf_of_le_normalizer hLE
+    letI := Subgroup.normal_subgroupOf_sup_of_le_normalizer hLE
+    H ⧸ N.subgroupOf H ≃* (H ⊔ N : Subgroup G) ⧸ N.subgroupOf (H ⊔ N) :=
+  letI := Subgroup.normal_subgroupOf_of_le_normalizer hLE
+  letI := Subgroup.normal_subgroupOf_sup_of_le_normalizer hLE
   let
     φ :-- φ is the natural homomorphism H →* (HN)/N.
       H →*
@@ -267,7 +274,7 @@ noncomputable def quotientInfEquivProdNormalQuotient (H N : Subgroup G) [N.Norma
     x.inductionOn' <| by
       rintro ⟨y, hy : y ∈ (H ⊔ N)⟩
       rw [← SetLike.mem_coe] at hy
-      rw [mul_normal H N] at hy
+      rw [coe_mul_of_left_le_normalizer_right H N hLE] at hy
       rcases hy with ⟨h, hh, n, hn, rfl⟩
       use ⟨h, hh⟩
       let _ : Setoid ↑(H ⊔ N) :=
@@ -280,6 +287,14 @@ noncomputable def quotientInfEquivProdNormalQuotient (H N : Subgroup G) [N.Norma
       rwa [← mul_assoc, inv_mul_cancel, one_mul]
   (quotientMulEquivOfEq (by simp [φ, ← comap_ker])).trans
     (quotientKerEquivOfSurjective φ φ_surjective)
+
+/-- **Noether's second isomorphism theorem**: given two subgroups `H` and `N` of a group `G`,
+where `N` is normal, defines an isomorphism between `H/(H ∩ N)` and `(HN)/N`. -/
+@[to_additive "Noether's second isomorphism theorem: given two subgroups `H` and `N` of a group `G`,
+where `N` is normal, defines an isomorphism between `H/(H ∩ N)` and `(H + N)/N`"]
+noncomputable def quotientInfEquivProdNormalQuotient (H N : Subgroup G) [hN : N.Normal] :
+    H ⧸ N.subgroupOf H ≃* (H ⊔ N : Subgroup G) ⧸ N.subgroupOf (H ⊔ N) :=
+  quotientInfEquivProdNormalizerQuotient H N le_normalizer_of_normal
 
 end SndIsomorphismThm
 

@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
+import Mathlib.Data.Set.Lattice.Image
 import Mathlib.Topology.Basic
 /-!
 # Induced and coinduced topologies
@@ -92,8 +93,10 @@ if either of the following equivalent conditions hold:
 - for any topological space `Y`, a function `f : X → Y` is continuous
   provided that it is continuous on each `s ∈ S`.
 -/
-structure RestrictGenTopology (S : Set (Set X)) : Prop where
+structure IsCoherentWith (S : Set (Set X)) : Prop where
   isOpen_of_forall_induced (u : Set X) : (∀ s ∈ S, IsOpen ((↑) ⁻¹' u : Set s)) → IsOpen u
+
+@[deprecated (since := "2025-04-08")] alias RestrictGenTopology := Topology.IsCoherentWith
 
 /-- A function `f : X → Y` between topological spaces is inducing if the topology on `X` is induced
 by the topology on `Y` through `f`, meaning that a set `s : Set X` is open iff it is the preimage
@@ -121,17 +124,11 @@ structure IsOpenEmbedding (f : X → Y) : Prop extends IsEmbedding f where
   /-- The range of an open embedding is an open set. -/
   isOpen_range : IsOpen <| range f
 
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding := IsOpenEmbedding
-
 /-- A closed embedding is an embedding with closed image. -/
 @[mk_iff]
 structure IsClosedEmbedding (f : X → Y) : Prop extends IsEmbedding f where
   /-- The range of a closed embedding is a closed set. -/
   isClosed_range : IsClosed <| range f
-
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding := IsClosedEmbedding
 
 /-- A function between topological spaces is a quotient map if it is surjective,
   and for all `s : Set Y`, `s` is open iff its preimage is an open set. -/

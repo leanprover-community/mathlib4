@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Topology.Baire.Lemmas
-import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Topology.Algebra.Group.Pointwise
 
 /-! # Open mapping theorem for morphisms of topological groups
 
@@ -75,7 +75,7 @@ theorem smul_singleton_mem_nhds_of_sigmaCompact
     rw [smul_assoc, interior_smul] at I
     exact smul_set_nonempty.1 I
   obtain ⟨g', hg', rfl⟩ : ∃ g' ∈ V, g' • x = y := by simpa using interior_subset hy
-  have J : (g' ⁻¹ • V) • {x} ∈ 𝓝 x := by
+  have J : (g'⁻¹ • V) • {x} ∈ 𝓝 x := by
     apply mem_interior_iff_mem_nhds.1
     rwa [smul_assoc, interior_smul, mem_inv_smul_set_iff]
   have : (g'⁻¹ • V) • {x} ⊆ U • ({x} : Set X) := by

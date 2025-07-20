@@ -91,7 +91,7 @@ For `HasAffineProperty P Q` and `f : X ⟶ Y`, we provide these API lemmas:
 -/
 
 
-universe u
+universe u v
 
 open TopologicalSpace CategoryTheory CategoryTheory.Limits Opposite
 
@@ -158,7 +158,7 @@ lemma of_iSup_eq_top {ι} (U : ι → Y.Opens) (hU : iSup U = ⊤)
     (Y.openCoverOfISupEqTop (s := Set.range U) Subtype.val (by ext; simp [← hU]))).mpr fun i ↦ ?_
   obtain ⟨_, i, rfl⟩ := i
   refine (P.arrow_mk_iso_iff (morphismRestrictOpensRange f _)).mp ?_
-  show P (f ∣_ (U i).ι.opensRange)
+  change P (f ∣_ (U i).ι.opensRange)
   rw [Scheme.Opens.opensRange_ι]
   exact H i
 
@@ -182,7 +182,7 @@ lemma of_range_subset_iSup [P.RespectsRight @IsOpenImmersion] {ι : Type*} (U : 
   rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := P) (U := fun i : ι ↦ (⨆ i, U i).ι ⁻¹ᵁ U i)]
   · intro i
     have heq : g ⁻¹ᵁ (⨆ i, U i).ι ⁻¹ᵁ U i = f ⁻¹ᵁ U i := by
-      show (g ≫ (⨆ i, U i).ι) ⁻¹ᵁ U i = _
+      change (g ≫ (⨆ i, U i).ι) ⁻¹ᵁ U i = _
       simp [g]
     let e : Arrow.mk (g ∣_ (⨆ i, U i).ι ⁻¹ᵁ U i) ≅ Arrow.mk (f ∣_ U i) :=
         Arrow.isoMk (X.isoOfEq heq) (Scheme.Opens.isoOfLE (le_iSup U i)) <| by
@@ -193,6 +193,9 @@ lemma of_range_subset_iSup [P.RespectsRight @IsOpenImmersion] {ι : Type*} (U : 
   dsimp
   rw [Scheme.Hom.image_iSup, Scheme.Hom.image_top_eq_opensRange, Scheme.Opens.opensRange_ι]
   simp [Scheme.Hom.image_preimage_eq_opensRange_inter, le_iSup U]
+
+instance top : IsLocalAtTarget (⊤ : MorphismProperty Scheme.{u}) where
+  iff_of_openCover' := by simp
 
 end IsLocalAtTarget
 
@@ -294,6 +297,14 @@ lemma isLocalAtTarget [P.IsMultiplicative]
     · exact hP _ _
     · exact fun H ↦ P.comp_mem _ _ H (of_isOpenImmersion _)
 
+lemma sigmaDesc {X : Scheme.{u}} {ι : Type v} [Small.{u} ι] {Y : ι → Scheme.{u}}
+    {f : ∀ i, Y i ⟶ X} (hf : ∀ i, P (f i)) : P (Sigma.desc f) := by
+  rw [IsLocalAtSource.iff_of_openCover (P := P) (Scheme.IsLocallyDirected.openCover _)]
+  exact fun i ↦ by simp [hf]
+
+instance top : IsLocalAtSource (⊤ : MorphismProperty Scheme.{u}) where
+  iff_of_openCover' := by simp
+
 section IsLocalAtSourceAndTarget
 
 /-- If `P` is local at the source and the target, then restriction on both source and target
@@ -362,18 +373,18 @@ theorem arrow_mk_iso_iff
     (P : AffineTargetMorphismProperty) [P.toProperty.RespectsIso]
     {X Y X' Y' : Scheme} {f : X ⟶ Y} {f' : X' ⟶ Y'}
     (e : Arrow.mk f ≅ Arrow.mk f') {h : IsAffine Y} :
-    letI : IsAffine Y' := isAffine_of_isIso (Y := Y) e.inv.right
+    letI : IsAffine Y' := .of_isIso (Y := Y) e.inv.right
     P f ↔ P f' := by
   rw [← P.toProperty_apply, ← P.toProperty_apply, P.toProperty.arrow_mk_iso_iff e]
 
 theorem respectsIso_mk {P : AffineTargetMorphismProperty}
     (h₁ : ∀ {X Y Z} (e : X ≅ Y) (f : Y ⟶ Z) [IsAffine Z], P f → P (e.hom ≫ f))
     (h₂ : ∀ {X Y Z} (e : Y ≅ Z) (f : X ⟶ Y) [IsAffine Y],
-      P f → @P _ _ (f ≫ e.hom) (isAffine_of_isIso e.inv)) :
+      P f → @P _ _ (f ≫ e.hom) (.of_isIso e.inv)) :
     P.toProperty.RespectsIso := by
   apply MorphismProperty.RespectsIso.mk
   · rintro X Y Z e f ⟨a, h⟩; exact ⟨a, h₁ e f h⟩
-  · rintro X Y Z e f ⟨a, h⟩; exact ⟨isAffine_of_isIso e.inv, h₂ e f h⟩
+  · rintro X Y Z e f ⟨a, h⟩; exact ⟨.of_isIso e.inv, h₂ e f h⟩
 
 instance respectsIso_of
     (P : MorphismProperty Scheme) [P.RespectsIso] :

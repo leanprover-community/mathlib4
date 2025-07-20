@@ -41,9 +41,9 @@ coding theory, and representations of uniform matroids over finite fields.
 ## Main results
 
 * `det_vandermonde`: `det (vandermonde v)` is the product of `v j - v i`, where
-   `(i, j)` ranges over the set of pairs with `i < j`.
+  `(i, j)` ranges over the set of pairs with `i < j`.
 * `det_projVandermonde`: `det (projVandermonde v w)` is the product of `v j * w i - v i * w j`,
-    taken over all pairs with `i < j`.
+  taken over all pairs with `i < j`.
 
 ## Implementation notes
 
@@ -118,18 +118,19 @@ theorem vandermonde_transpose_mul_vandermonde (v : Fin n → R) (i j) :
   simp only [vandermonde_apply, Matrix.mul_apply, Matrix.transpose_apply, pow_add]
 
 theorem rectVandermonde_apply_zero_right {α : Type*} {v w : α → R} {i : α} (hw : w i = 0) :
-    rectVandermonde v w (n+1) i = Pi.single (Fin.last n) ((v i) ^ n) := by
+    rectVandermonde v w (n + 1) i = Pi.single (Fin.last n) ((v i) ^ n) := by
   ext j
   obtain rfl | hlt := j.le_last.eq_or_lt
   · simp [rectVandermonde_apply]
   rw [rectVandermonde_apply, Pi.single_eq_of_ne hlt.ne, hw, zero_pow, mul_zero]
   simpa [Nat.sub_eq_zero_iff_le] using hlt
 
-theorem projVandermonde_apply_of_ne_zero {v w : Fin (n+1) → K} {i j : Fin (n+1)} (hw : w i ≠ 0) :
+theorem projVandermonde_apply_of_ne_zero
+    {v w : Fin (n + 1) → K} {i j : Fin (n + 1)} (hw : w i ≠ 0) :
     projVandermonde v w i j = (v i) ^ j.1 * (w i) ^ n / (w i) ^ j.1 := by
   rw [projVandermonde_apply, eq_div_iff (by simp [hw]), mul_assoc, ← pow_add, rev_add_cast]
 
-theorem projVandermonde_apply_zero_right {v w : Fin (n+1) → R} {i : Fin (n+1)} (hw : w i = 0) :
+theorem projVandermonde_apply_zero_right {v w : Fin (n + 1) → R} {i : Fin (n + 1)} (hw : w i = 0) :
     projVandermonde v w i = Pi.single (Fin.last n) ((v i) ^ n)  := by
   ext j
   obtain rfl | hlt := j.le_last.eq_or_lt
@@ -165,15 +166,15 @@ private theorem det_projVandermonde_of_field (v w : Fin n → K) :
   /- Let `W` be obtained from the matrix by subtracting `r = (v 0) / (w 0)` times each column
   from the next column, starting from the penultimate column. This doesn't change the determinant.-/
   set r := v 0 / w 0 with hr
-  set W : Matrix (Fin (n+1)) (Fin (n+1)) K := .of fun i ↦ (cons (projVandermonde v w i 0)
+  set W : Matrix (Fin (n + 1)) (Fin (n + 1)) K := .of fun i ↦ (cons (projVandermonde v w i 0)
     (fun j ↦ projVandermonde v w i j.succ - r * projVandermonde v w i j.castSucc))
   -- deleting the first row and column of `W` gives a row-scaling of a Vandermonde matrix.
   have hW_eq : (W.submatrix succ succ) = .of fun i j ↦ (v (succ i) - r * w (succ i)) *
       projVandermonde (v ∘ succ) (w ∘ succ) i j := by
     ext i j
     simp only [projVandermonde_apply, val_zero, rev_zero, val_last, val_succ,
-      coe_castSucc, submatrix_apply, cons_succ, Function.comp_apply, rev_succ,
-      Pi.smul_apply, smul_eq_mul, W, r, rev_castSucc]
+      coe_castSucc, submatrix_apply, Function.comp_apply, rev_succ,
+      W, r, rev_castSucc]
     field_simp
     ring
   /- The first row of `W` is `[(w 0)^n, 0, ..., 0]` - take a cofactor expansion along this row,
@@ -182,13 +183,7 @@ private theorem det_projVandermonde_of_field (v w : Fin n → K) :
     (fun i j ↦ by simp [W, r, projVandermonde_apply]), det_succ_row_zero,
     Finset.sum_eq_single 0 _ (by simp)]
   · rw [succAbove_zero, hW_eq, det_mul_column, ih]
-    simp only [Nat.succ_eq_add_one, val_zero, pow_zero, projVandermonde_apply, val_rev,
-      Nat.reduceSubDiff, tsub_zero, one_mul, val_succ, coe_castSucc, cons_zero,
-      Function.comp_apply, W, r, of_apply]
-    rw [prod_univ_succ, ← mul_assoc (a := _ ^ n), show (w 0) ^ n = ∏ x : Fin n, w 0 by simp,
-      ← Finset.prod_mul_distrib]
-    simp_rw [mul_sub, ← mul_assoc (a := w 0), mul_div_cancel₀ _ h0, mul_comm (w 0)]
-    simp
+    field_simp [show W 0 0 = w 0 ^ n by simp [W, projVandermonde_apply], prod_univ_succ, hr]
   intro j _ hj0
   obtain ⟨j, rfl⟩ := j.eq_succ_of_ne_zero hj0
   rw [mul_eq_zero, mul_eq_zero]
@@ -202,13 +197,13 @@ theorem det_projVandermonde (v w : Fin n → R) : (projVandermonde v w).det =
   let u (b : Bool) (i : Fin n) := (algebraMap (MvPolynomial (Fin n × Bool) ℤ)
     (FractionRing (MvPolynomial (Fin n × Bool) ℤ))) (MvPolynomial.X ⟨i, b⟩)
   have hdet := det_projVandermonde_of_field (u true) (u false)
-  simp only [u, RingHom.mapMatrix_apply] at hdet
+  simp only [u] at hdet
   norm_cast at hdet
   rw [projVandermonde_map, ← RingHom.map_det, IsFractionRing.coe_inj] at hdet
   apply_fun MvPolynomial.eval₂Hom (Int.castRingHom R) (fun x ↦ (if x.2 then v else w) x.1) at hdet
   rw [RingHom.map_det] at hdet
   convert hdet <;>
-  simp [← Matrix.ext_iff, projVandermonde_apply, u]
+  simp [← Matrix.ext_iff, projVandermonde_apply]
 
 /-- The formula for the determinant of a Vandermonde matrix. -/
 theorem det_vandermonde (v : Fin n → R) :
@@ -264,7 +259,7 @@ theorem eval_matrixOfPolynomials_eq_vandermonde_mul_matrixOfPolynomials (v : Fin
     (Matrix.vandermonde v) * (Matrix.of (fun (i j : Fin n) => (p j).coeff i)) := by
   ext i j
   rw [Matrix.mul_apply, eval, Matrix.of_apply, eval₂]
-  simp only [eq_intCast, Int.cast_id, Matrix.vandermonde]
+  simp only [Matrix.vandermonde]
   have : (p j).support ⊆ range n := supp_subset_range <| Nat.lt_of_le_of_lt (h_deg j) <| Fin.prop j
   rw [sum_eq_of_subset _ (fun j => zero_mul ((v i) ^ j)) this, ← Fin.sum_univ_eq_sum_range]
   congr
