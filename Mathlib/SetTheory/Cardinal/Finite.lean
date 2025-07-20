@@ -336,16 +336,16 @@ theorem card_eq_zero_iff_empty (α : Type*) : card α = 0 ↔ IsEmpty α := by
   rw [← Cardinal.mk_eq_zero_iff]
   simp [card]
 
-theorem card_ne_zero_iff_nonempty (α : Type*) : card α ≠ 0 ↔ Nonempty α := by
-  simp [card_eq_zero_iff_empty]
+theorem one_le_card_iff_nonempty (α : Type*) : 1 ≤ card α ↔ Nonempty α := by
+  simp [one_le_iff_ne_zero, card_eq_zero_iff_empty]
 
 theorem card_le_one_iff_subsingleton (α : Type*) : card α ≤ 1 ↔ Subsingleton α := by
   rw [← le_one_iff_subsingleton]
   simp [card]
 
 lemma card_eq_one_iff_unique {α : Type*} : card α = 1 ↔ Nonempty (Unique α) := by
-  rw [unique_iff_subsingleton_and_nonempty α, le_antisymm_iff, one_le_iff_ne_zero]
-  exact and_congr (card_le_one_iff_subsingleton α) (card_ne_zero_iff_nonempty α)
+  rw [unique_iff_subsingleton_and_nonempty α, le_antisymm_iff]
+  exact and_congr (card_le_one_iff_subsingleton α) (one_le_card_iff_nonempty α)
 
 theorem one_lt_card_iff_nontrivial (α : Type*) : 1 < card α ↔ Nontrivial α := by
   rw [← Cardinal.one_lt_iff_nontrivial]
@@ -367,7 +367,8 @@ lemma card_fun {α β : Type*} : card (α → β) = (card β) ^ card α := by
     · letI := Fintype.ofFinite α
       letI := Fintype.ofFinite β
       simp
-    · simp [top_epow ((card_ne_zero_iff_nonempty α).2 α_emp)]
+    · simp only [card_eq_top_of_infinite]
+      exact (top_epow (one_le_iff_ne_zero.1 ((one_le_card_iff_nonempty α).2 α_emp))).symm
   · rw [card_eq_top_of_infinite (α := α)]
     rcases lt_trichotomy (card β) 1 with b_0 | b_1 | b_2
     · rw [lt_one_iff_eq_zero, card_eq_zero_iff_empty] at b_0
@@ -377,8 +378,8 @@ lemma card_fun {α β : Type*} : card (α → β) = (card β) ^ card α := by
       apply le_antisymm
       · letI := (card_le_one_iff_subsingleton β).1 b_1.le
         exact (card_le_one_iff_subsingleton (α → β)).2 Pi.instSubsingleton
-      · letI := (card_ne_zero_iff_nonempty β).1 (b_1 ▸ zero_ne_one).symm
-        exact one_le_iff_ne_zero.2 ((card_ne_zero_iff_nonempty (α → β)).2 Pi.instNonempty)
+      · letI := (one_le_card_iff_nonempty β).1 b_1.ge
+        exact (one_le_card_iff_nonempty (α → β)).2 Pi.instNonempty
     · rw [epow_top b_2, card_eq_top]
       rw [one_lt_card_iff_nontrivial β] at b_2
       exact Pi.infinite_of_left

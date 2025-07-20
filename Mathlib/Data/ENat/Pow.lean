@@ -3,6 +3,7 @@ Copyright (c) 2025 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine
 -/
+import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Data.ENat.Basic
 
 /-!
@@ -14,7 +15,8 @@ is compatible with cardinality `ENat.card`.
 
 ## TODO
 
-`ℝ≥0∞` powers of `ℝ≥0∞` numbers and coercion from `ℕ∞`.
+`ℝ≥0∞` powers of `ℝ≥0∞` numbers and coercion from `ℕ∞`: for `x`, `y : ℕ∞`, prove that
+`(x ^ y : ℝ≥0∞) = (x : ℝ≥0∞) ^ (y : ℝ≥0∞)`.
 -/
 
 namespace ENat
@@ -53,70 +55,97 @@ lemma top_epow (h : y ≠ 0) : (⊤ : ℕ∞) ^ y = ⊤ := by
 
 @[simp]
 lemma epow_zero : x ^ (0 : ℕ∞) = 1 := by
-  rw [← coe_zero, epow_natCast, _root_.pow_zero]
+  rw [← coe_zero, epow_natCast, pow_zero]
 
 @[simp]
 lemma epow_one : x ^ (1 : ℕ∞) = x := by
-  rw [← coe_one, epow_natCast, _root_.pow_one]
+  rw [← coe_one, epow_natCast, pow_one]
 
 lemma epow_top (h : 1 < x) : x ^ (⊤ : ℕ∞) = ⊤ := by
   simp only [instHPow, instPow, (zero_le_one.trans_lt h).ne.symm, ↓reduceIte, h.ne.symm]
 
+lemma epow_right_mono (h : x ≠ 0) : Monotone (fun y : ℕ∞ ↦ x ^ y) := by
+  intro y z y_z
+  induction y
+  · rw [top_le_iff.1 y_z]
+  induction z
+  · rcases lt_trichotomy x 1 with x_0 | rfl | x_2
+    · exact (h (lt_one_iff_eq_zero.1 x_0)).rec
+    · simp only [one_epow, le_refl]
+    · simp only [epow_top x_2, le_top]
+  · exact pow_right_mono₀ (one_le_iff_ne_zero.2 h) (Nat.cast_le.1 y_z)
+
+lemma one_le_epow (h : x ≠ 0) : 1 ≤ x ^ y :=
+  le_of_eq_of_le (by simp) (epow_right_mono h (zero_le y))
+
+lemma epow_left_mono : Monotone (fun x : ℕ∞ ↦ x ^ y) := by
+  intro x z x_z
+  simp only
+  induction y
+  · rcases lt_trichotomy x 1 with x_0 | rfl | x_2
+    · rw [lt_one_iff_eq_zero.1 x_0, zero_epow_top]; exact bot_le
+    · rw [one_epow]; exact one_le_epow (one_le_iff_ne_zero.1 x_z)
+    · rw [epow_top (x_2.trans_le x_z)]; exact le_top
+  · simp only [epow_natCast, (pow_left_mono _) x_z]
+
 lemma epow_eq_zero_iff : x ^ y = 0 ↔ x = 0 ∧ y ≠ 0 := by
-  refine ⟨fun h ↦ ?_, fun h ↦ h.1.symm ▸ zero_epow h.2⟩
-  induction y with
-  | top =>
-    simp only [ne_eq, top_ne_zero, not_false_eq_true, and_true]
-    rcases lt_trichotomy x 1 with x_0 | rfl | x_2
-    · exact lt_one_iff_eq_zero.1 x_0
-    · rw [one_epow] at h; contradiction
-    · rw [epow_top x_2] at h; contradiction
-  | coe y =>
-    rw [epow_natCast, pow_eq_zero_iff'] at h
-    exact ⟨h.1, y.cast_ne_zero.2 h.2⟩
+  refine ⟨fun h ↦ ⟨?_, fun y_0 ↦ ?_⟩, fun h ↦ h.1.symm ▸ zero_epow h.2⟩
+  · by_contra x_0
+    exact (one_le_iff_ne_zero.1 (one_le_epow (y := y) x_0) h).rec
+  · rw [y_0, epow_zero] at h; contradiction
+
+lemma epow_eq_one_iff : x ^ y = 1 ↔ x = 1 ∨ y = 0 := by
+  refine ⟨fun h ↦ or_iff_not_imp_right.2 fun y_0 ↦ ?_, fun h ↦ by rcases h with h | h <;> simp [h]⟩
+  rcases lt_trichotomy x 1 with x_0 | rfl | x_2
+  · rw [lt_one_iff_eq_zero.1 x_0, zero_epow y_0] at h; contradiction
+  · rfl
+  · have := epow_right_mono (one_le_iff_ne_zero.1 x_2.le) (one_le_iff_ne_zero.2 y_0)
+    simp only [epow_one, h] at this
+    exact (not_lt_of_ge this x_2).rec
 
 lemma epow_add : x ^ (y + z) = x ^ y * x ^ z := by
   rcases lt_trichotomy x 1 with x_0 | rfl | x_2
-  · rw [lt_one_iff_eq_zero] at x_0
-    rw [x_0]
-    rcases eq_zero_or_pos (y + z) with yz_0 | yz_1
-    · rw [add_eq_zero] at yz_0
-      simp only [yz_0, add_zero, epow_zero, mul_one]
-    · rw [zero_epow yz_1.ne.symm]
-      simp only [add_pos_iff, zero_eq_mul] at yz_1 ⊢
-      exact Or.imp (fun h ↦ zero_epow h.ne.symm) (fun h ↦ zero_epow h.ne.symm) yz_1
+  · rw [lt_one_iff_eq_zero.1 x_0]
+    rcases eq_zero_or_pos y with rfl | y_0
+    · simp only [zero_add, epow_zero, one_mul]
+    · rw [zero_epow y_0.ne.symm, zero_mul]
+      exact zero_epow (add_pos_of_pos_of_nonneg y_0 bot_le).ne.symm
   · simp only [one_epow, mul_one]
   · induction y
-    · rw [top_add, epow_top x_2]
-      refine (WithTop.top_mul ?_).symm
-      rw [ne_eq, epow_eq_zero_iff, not_and]
-      intro h; rw [h] at x_2; contradiction
-    · induction z
-      · rw [add_top, epow_top x_2]
-        refine (WithTop.mul_top ?_).symm
-        rw [ne_eq, epow_eq_zero_iff, not_and]
-        intro h; rw [h] at x_2; contradiction
-      · exact pow_add x _ _
+    · rw [top_add, epow_top x_2, top_mul]
+      exact one_le_iff_ne_zero.1 (one_le_epow (one_le_iff_ne_zero.1 x_2.le))
+    induction z
+    · rw [add_top, epow_top x_2, mul_top]
+      exact one_le_iff_ne_zero.1 (one_le_epow (one_le_iff_ne_zero.1 x_2.le))
+    simp only [← Nat.cast_add, epow_natCast, pow_add x]
 
 lemma mul_epow : (x * y) ^ z = x ^ z * y ^ z := by
   induction z
-  · rcases lt_trichotomy (x * y) 1 with xy_0 | xy_1 | xy_2
-    · rw [lt_one_iff_eq_zero] at xy_0
-      rw [xy_0, zero_epow_top]
-      simp only [mul_eq_zero, zero_eq_mul] at *
-      apply Or.imp _ _ xy_0 <;> exact fun h ↦ h ▸ zero_epow_top
-    · rw [xy_1, (mul_eq_one.1 xy_1).1, (mul_eq_one.1 xy_1).2, one_epow, one_mul]
-    · rw [epow_top xy_2]
-      rcases eq_or_ne x 0 with rfl | x_0
-      · simp only [zero_mul, not_lt_zero] at xy_2
-      rcases eq_or_ne x 1 with rfl | x_1
-      · rw [one_mul] at xy_2; simp only [one_epow, epow_top xy_2, one_mul]
-      rw [epow_top (x_1.lt_of_le' (one_le_iff_ne_zero.2 x_0))]
-      refine (WithTop.top_mul ?_).symm
-      rw [ne_eq, epow_eq_zero_iff, not_and]
-      intro h
-      simp only [h, mul_zero, not_lt_zero] at xy_2
-  · simp only [epow_natCast]
-    exact _root_.mul_pow x y _
+  · rcases lt_trichotomy x 1 with x_0 | rfl | x_2
+    · simp only [lt_one_iff_eq_zero.1 x_0, zero_mul, zero_epow_top]
+    · simp only [one_mul, one_epow]
+    · rcases lt_trichotomy y 1 with y_0 | rfl | y_2
+      · simp only [lt_one_iff_eq_zero.1 y_0, mul_zero, zero_epow_top]
+      · simp only [mul_one, one_epow, epow_top x_2]
+      · rw [epow_top x_2, epow_top y_2, WithTop.top_mul_top]
+        exact epow_top (one_lt_mul x_2.le y_2)
+  · simp only [epow_natCast, mul_pow x y]
+
+lemma epow_mul : x ^ (y * z) = (x ^ y) ^ z := by
+  rcases eq_or_ne y 0 with y_0 | y_0
+  · simp [y_0]
+  rcases eq_or_ne z 0 with z_0 | z_0
+  · simp [z_0]
+  rcases lt_trichotomy x 1 with x_0 | rfl | x_2
+  · rw [lt_one_iff_eq_zero.1 x_0, zero_epow y_0, zero_epow z_0, zero_epow (mul_ne_zero y_0 z_0)]
+  · simp only [one_epow]
+  · induction y
+    · rw [top_mul z_0, epow_top x_2, top_epow z_0]
+    induction z
+    · rw [mul_top y_0, epow_top x_2]
+      apply (epow_top _).symm
+      apply (epow_right_mono (one_le_iff_ne_zero.1 x_2.le) (one_le_iff_ne_zero.2 y_0)).trans_lt'
+      simp only [x_2, epow_one]
+    · simp only [← Nat.cast_mul, epow_natCast, pow_mul x]
 
 end ENat
