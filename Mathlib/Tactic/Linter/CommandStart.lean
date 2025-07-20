@@ -537,34 +537,77 @@ def mex.toString {m} [Monad m] [MonadFileMap m] (ex : mex) : m String := do
   let fm ← getFileMap
   return s!"{ex.error} {(fm.toPosition ex.rg.start, fm.toPosition ex.rg.stop)} ({ex.kinds})"
 
-abbrev unparseable : Array SyntaxNodeKind := #[
-  ``Parser.Command.macro_rules,
-  ``runCmd,
-]
+/--
+A structure combining the various exceptions to the `commandStart` linter.
+* `kinds` is the array of `SyntaxNodeKind`s that are ignored by the `commandStart` linter.
+* `depth` represents how many `SyntaxNodeKind`s the `commandStart` linter climbs, in search of an
+  exception.
+
+  A depth of `none`, means that the linter ignores nodes starting with the given `SyntaxNodeKind`
+  and any sub-node.
+
+  A depth of `some n` means that the linter will only ignore the first `n` `SyntaxNodeKind`s
+  starting from the given `SyntaxNodeKind` and resumes checking for all deeper nodes.
+-/
+structure ExcludedSyntaxNodeKind where
+  /-- `kinds` is the array of `SyntaxNodeKind`s that are ignored by the `commandStart` linter. -/
+  kinds : Array SyntaxNodeKind
+  /--
+  `depth` represents how many `SyntaxNodeKind`s the `commandStart` linter climbs, in search of an
+  exception.
+
+  A depth of `none`, means that the linter ignores nodes starting with the given `SyntaxNodeKind`
+  and any sub-node.
+
+  A depth of `some n` means that the linter will only ignore the first `n` `SyntaxNodeKind`s
+  starting from the given `SyntaxNodeKind` and resumes checking for all deeper nodes.
+  -/
+  depth : Option Nat
+
+def unparseable : ExcludedSyntaxNodeKind where
+  kinds := #[
+    ``Parser.Command.macro_rules,
+    ``runCmd,
+  ]
+  depth := none
+
+def totalExclusions : ExcludedSyntaxNodeKind where
+  kinds := #[
+    ``Parser.Command.docComment,
+    ``Parser.Command.moduleDoc,
+    `Mathlib.Meta.setBuilder,
+  ]
+  depth := some 2
+
+def forceSpaceAfter : ExcludedSyntaxNodeKind where
+  kinds := #[
+    `token.«·»,  -- the focusing dot `·` in `conv` mode
+    -- Syntax nodes that do not pretty-print with a space, if followed by a parenthesis `()`
+    ``Parser.Tactic.rcases, --`rcases (a)`
+    ``Parser.Term.let, --`let (a)` in term mode.
+  ]
+  depth := some 2
+
+def forceNoSpaceAfter : ExcludedSyntaxNodeKind where
+  kinds := #[
+    --``Parser.Term.doubleQuotedName,
+    `atom.«`»,    -- useful for double-quoted names
+    `atom.syntax, -- skips just `syntax:60 ...`
+  ]
+  depth := some 2
+
+def ExcludedSyntaxNodeKind.contains (exc : ExcludedSyntaxNodeKind) (ks : Array SyntaxNodeKind) :
+    Bool :=
+  let lastNodes := if let some n := exc.depth then ks.drop (ks.size - n) else ks
+  !(lastNodes.filter exc.kinds.contains).isEmpty
 
 def filterSortExceptions (as : Array mex) : Array mex :=
-  let filtered := as.filter fun {kinds := k,..} =>
-      !#[
-        ``Parser.Command.docComment,
-        ``Parser.Command.moduleDoc,
-        `Mathlib.Meta.setBuilder,
-      ].any k.contains
+  let filtered := as.filter (!totalExclusions.contains ·.kinds)
   filtered.qsort (·.rg.start < ·.rg.start)
-
-abbrev forceSpaceAfter : Array SyntaxNodeKind := #[
-  ``Parser.Tactic.rcases,
-  `token.«·»,
-  ``Parser.Term.let,
-  ]
-
-abbrev forceNoSpaceAfter : Array SyntaxNodeKind := #[
-  --``Parser.Term.doubleQuotedName,
-  `atom.«`»,  -- useful for double-quoted names
-  `atom.syntax,  -- skips just `syntax:60 ...`
-  ]
 
 def processAtomOrIdent {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions m]
     (k : Array SyntaxNodeKind) (val str : Substring) : m (Substring × Substring × Substring) := do
+  --dbg_trace "forceSpaceAfter.contains {k}: {forceSpaceAfter.contains k}\nStarting with '{val}'\n"
   let read := readWhile val str
   if read == str && (!read.isEmpty) && (!k.contains `hygieneInfo) then
     logWarning m!"No change at '{read}' {k}"
@@ -574,13 +617,14 @@ def processAtomOrIdent {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOp
     if (read.take 1).toString == " "
     then
       -- Case `read = " "` but we do not want a space after
-      if !(forceNoSpaceAfter.filter ((k.drop (k.size - 2)).contains)).isEmpty then
+      if forceNoSpaceAfter.contains k then
         ("".toSubstring, read.drop 1)
       else
         (" ".toSubstring, read.drop 1)
     else
     -- Case `read = ""` but we want a space after anyway
-    if !(forceSpaceAfter.filter ((k.drop (k.size - 2)).contains)).isEmpty then
+    if forceSpaceAfter.contains k then
+      --dbg_trace "adding a space at '{read}'\n"
       (" ".toSubstring, read)
     -- Case `read = ""` and we follow the pretty-printer recommendation
     else
@@ -739,14 +783,16 @@ def getExceptions (stx : Syntax) : CommandElabM (Array mex) := do
     return #[]
 
 open Lean Elab Command in
-elab "#mex " cmd:(command)? : command => do
+elab tk:"#mex " cmd:(command)? : command => do
   if let some cmd := cmd then
   if let .error .. :=
     captureException (← getEnv) Parser.topLevelCommandParserFn cmd.raw.getSubstring?.get!.toString
   then
+    logWarningAt tk m!"{tk}: Parsing failed"
     return
   elabCommand cmd
   if (← get).messages.hasErrors then
+    logWarningAt tk "{tk}: Command has errors"
     return
   let mexs ← getExceptions cmd
   if mexs.isEmpty then
@@ -755,7 +801,9 @@ elab "#mex " cmd:(command)? : command => do
   logInfo m!"{mexs.size} whitespace issue{if mexs.size == 1 then "" else "s"} found!"
   let fm ← getFileMap
   for m in mexs do
-    logInfoAt (.ofRange m.rg) m!"{m.error} {(fm.toPosition m.rg.start, fm.toPosition m.rg.stop)}"
+    logInfoAt (.ofRange m.rg)
+      m!"{m.error} {(fm.toPosition m.rg.start, fm.toPosition m.rg.stop)}\n\n\
+        {m.kinds.map MessageData.ofConstName}"
 
 #mex
 theorem X(_  :Nat) : True:=     --
@@ -1080,6 +1128,17 @@ The linter uses this to figure out which nodes should be ignored.
 def isOutside (rgs : Std.HashSet String.Range) (rg : String.Range) : Bool :=
   rgs.all fun {start := a, stop := b} ↦ !(a ≤ rg.start && rg.stop ≤ b)
 
+def mkWindowSubstring (orig : Substring) (start : String.Pos) (ctx : Nat) : String :=
+  let head : Substring := {orig with stopPos := start} -- `orig`, up to the beginning of the discrepancy
+  let middle : Substring := {orig with startPos := start}
+  let headCtx := head.takeRightWhile (!·.isWhitespace)
+  let tail := middle.drop ctx |>.takeWhile (!·.isWhitespace)
+  s!"{headCtx}{middle.take ctx}{tail}"
+
+def _root_.Mathlib.Linter.mex.mkWindow (orig : Substring) (m : mex) (ctx : Nat := 4) : String :=
+  let lth := ({orig with startPos := m.rg.start, stopPos := m.rg.stop}).toString.length
+  mkWindowSubstring orig m.rg.start (ctx + lth)
+
 /-- `mkWindow orig start ctx` extracts from `orig` a string that starts at the first
 non-whitespace character before `start`, then expands to cover `ctx` more characters
 and continues still until the first non-whitespace character.
@@ -1105,7 +1164,7 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   --if stx.getSubstring?.map toString != some stx.regString then
   --  dbg_trace stx.regString
-  if stx.find? (unparseable.contains ·.getKind) |>.isSome then
+  if stx.find? (unparseable.contains #[·.getKind]) |>.isSome then
     return
   let comps := (← getMainModule).components
   --dbg_trace "lint0"
@@ -1118,8 +1177,16 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   -- If a command does not start on the first column, emit a warning.
   --dbg_trace "lint1"
+  let orig := stx.getSubstring?.getD default
   for m in filterSortExceptions (← getExceptions stx) do
-    logInfoAt (.ofRange m.rg) m!"{m.error} ({m.kinds})"
+    --logInfoAt (.ofRange m.rg) m!"{m.error} ({m.kinds})"
+    let origWindow := m.mkWindow orig
+    Linter.logLint linter.style.commandStart (.ofRange m.rg)
+      m!"{m.error} in the source\n\n\
+      This part of the code\n  '{origWindow.trim}'\n\
+      "
+        --should be written as\n  '{expectedWindow}'\n"
+
 /-
   if let some pos := stx.getPos? then
     let colStart := ((← getFileMap).toPosition pos).column
