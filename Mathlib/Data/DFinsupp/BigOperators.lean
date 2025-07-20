@@ -248,6 +248,16 @@ theorem sumZeroHom_single [∀ i, Zero (β i)] [AddCommMonoid γ] (φ : ∀ i, Z
   dsimp [sumZeroHom, single, Trunc.lift_mk]
   rw [Multiset.toFinset_singleton, Finset.sum_singleton, Pi.single_eq_same]
 
+@[simp]
+theorem sumZeroHom_piSingle [∀ i, Zero (β i)] [AddCommMonoid γ] (i) (φ : ZeroHom (β i) γ) :
+    sumZeroHom (Pi.single i φ) = φ.comp { toFun := (· i), map_zero' := rfl} := by
+  ext ⟨f, sf, hf⟩
+  change (∑ i ∈ _, _) = _
+  dsimp
+  rw [Finset.sum_eq_single i (fun j _ hji => ?_) (fun hi => ?_), Pi.single_eq_same]
+  · simp [hji]
+  · simp [(hf i).resolve_left (by simpa using hi)]
+
 /-- While we didn't need decidable instances to define it, we do to reduce it to a sum -/
 theorem sumZeroHom_apply [∀ i, AddZeroClass (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
     [AddCommMonoid γ] (φ : ∀ i, ZeroHom (β i) γ) (f : Π₀ i, β i) :
@@ -293,6 +303,16 @@ def sumAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (φ : ∀ i, β i 
 @[simp]
 theorem sumAddHom_single [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (φ : ∀ i, β i →+ γ) (i)
     (x : β i) : sumAddHom φ (single i x) = φ i x := sumZeroHom_single _ _ _
+
+@[simp]
+theorem sumAddHom_piSingle [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (i) (φ : β i →+ γ) :
+    sumAddHom (Pi.single i φ) = φ.comp (evalAddMonoidHom i) :=
+  AddMonoidHom.toZeroHom_injective <| by
+    convert sumZeroHom_piSingle i φ.toZeroHom using 1
+    rw [DFinsupp.sumAddHom_toZeroHom]
+    conv_lhs =>
+      enter [1, i]
+      rw [Pi.apply_single (fun i (x : β i →+ γ) => x.toZeroHom) (fun _ => rfl)]
 
 @[simp]
 theorem sumAddHom_comp_single [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (f : ∀ i, β i →+ γ)
