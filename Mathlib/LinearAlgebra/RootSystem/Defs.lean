@@ -368,6 +368,14 @@ lemma coreflection_eq_flip_reflection :
     P.coreflection i = P.flip.reflection i :=
   rfl
 
+lemma reflection_reflectionPerm {i j : ι} :
+    P.reflection (P.reflectionPerm j i) = P.reflection j * P.reflection i * P.reflection j := by
+  ext x
+  simp only [reflection_apply, coreflection_apply, PerfectPairing.flip_apply_apply,
+    coroot_reflectionPerm, root_coroot_eq_pairing, map_sub, map_smul, smul_eq_mul,
+    root_reflectionPerm, LinearEquiv.mul_apply, pairing_same]
+  module
+
 lemma reflection_dualMap_eq_coreflection :
     (P.reflection i).dualMap ∘ₗ P.toLinearMap.flip = P.toLinearMap.flip ∘ₗ P.coreflection i := by
   ext n m

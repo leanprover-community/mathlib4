@@ -106,9 +106,7 @@ theorem charpoly_degree_eq_dim [Nontrivial R] (M : Matrix n n R) :
   rw [h1]
   apply lt_trans (charpoly_sub_diagonal_degree_lt M)
   rw [Nat.cast_lt]
-  rw [← Nat.pred_eq_sub_one]
-  apply Nat.pred_lt
-  apply h
+  omega
 
 @[simp] theorem charpoly_natDegree_eq_dim [Nontrivial R] (M : Matrix n n R) :
     M.charpoly.natDegree = Fintype.card n :=
@@ -130,9 +128,7 @@ theorem charpoly_monic (M : Matrix n n R) : M.charpoly.Monic := by
   rw [degree_neg]
   apply lt_trans (charpoly_sub_diagonal_degree_lt M)
   rw [Nat.cast_lt]
-  rw [← Nat.pred_eq_sub_one]
-  apply Nat.pred_lt
-  apply h
+  omega
 
 /-- See also `Matrix.coeff_charpolyRev_eq_neg_trace`. -/
 theorem trace_eq_neg_charpoly_coeff [Nonempty n] (M : Matrix n n R) :

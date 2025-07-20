@@ -88,7 +88,7 @@ lemma restrictScalars_traceDual {I : Submodule B L} :
 
 @[simp]
 lemma traceDual_bot :
-    (⊥ : Submodule B L)ᵛ = ⊤ := by ext; simpa [mem_traceDual, -RingHom.mem_range] using zero_mem _
+    (⊥ : Submodule B L)ᵛ = ⊤ := by ext; simp [mem_traceDual, -RingHom.mem_range]
 
 open scoped Classical in
 lemma traceDual_top' :
@@ -128,7 +128,7 @@ lemma map_equiv_traceDual [IsDomain A] [IsFractionRing B L] [IsDomain B]
     [FaithfulSMul A B] (I : Submodule B (FractionRing B)) :
     (traceDual A (FractionRing A) I).map (FractionRing.algEquiv B L) =
       traceDual A K (I.map (FractionRing.algEquiv B L)) := by
-  show Submodule.map (FractionRing.algEquiv B L).toLinearEquiv.toLinearMap _ =
+  change Submodule.map (FractionRing.algEquiv B L).toLinearEquiv.toLinearMap _ =
     traceDual A K (I.map (FractionRing.algEquiv B L).toLinearEquiv.toLinearMap)
   rw [Submodule.map_equiv_eq_comap_symm, Submodule.map_equiv_eq_comap_symm]
   ext x
@@ -472,7 +472,7 @@ theorem differentIdeal_ne_bot [Module.Finite A B]
   let L := FractionRing B
   have : IsLocalization (Algebra.algebraMapSubmonoid B A⁰) L :=
     IsIntegralClosure.isLocalization _ K _ _
-  have : FiniteDimensional K L := Module.Finite_of_isLocalization A B _ _ A⁰
+  have : FiniteDimensional K L := .of_isLocalization A B A⁰
   rw [ne_eq, ← FractionalIdeal.coeIdeal_inj (K := L), coeIdeal_differentIdeal (K := K)]
   simp
 
@@ -520,7 +520,7 @@ lemma traceForm_dualSubmodule_adjoin
   conv_lhs => rw [this]
   rw [← span_coeff_minpolyDiv hAx, LinearMap.BilinForm.dualSubmodule_span_of_basis,
     Submodule.smul_span, hpb]
-  show _ = Submodule.span A (_ '' _)
+  change _ = Submodule.span A (_ '' _)
   simp only [← Set.range_comp, smul_eq_mul, div_eq_inv_mul, pbgen,
     minpolyDiv_eq_of_isIntegrallyClosed K hAx]
   apply le_antisymm <;> rw [Submodule.span_le]
@@ -649,8 +649,7 @@ lemma pow_sub_one_dvd_differentIdeal [Algebra.IsSeparable (FractionRing A) (Frac
     (hP : P ^ e ∣ p.map (algebraMap A B)) : P ^ (e - 1) ∣ differentIdeal A B := by
   have : IsLocalization (algebraMapSubmonoid B A⁰) (FractionRing B) :=
     IsIntegralClosure.isLocalization _ (FractionRing A) _ _
-  have : FiniteDimensional (FractionRing A) (FractionRing B) :=
-    Module.Finite_of_isLocalization A B _ _ A⁰
+  have : FiniteDimensional (FractionRing A) (FractionRing B) := .of_isLocalization A B A⁰
   by_cases he : e = 0
   · rw [he, pow_zero]; exact one_dvd _
   exact pow_sub_one_dvd_differentIdeal_aux A (FractionRing A) (FractionRing B) _ he hp hP
@@ -663,7 +662,7 @@ theorem not_dvd_differentIdeal_of_intTrace_not_mem
   by_cases hp : p = ⊥
   · subst hp
     simp only [Ideal.map_bot, Ideal.mul_eq_bot] at hP
-    obtain (rfl|rfl) := hP
+    obtain (rfl | rfl) := hP
     · rw [← Ideal.zero_eq_bot, zero_dvd_iff]
       exact differentIdeal_ne_bot
     · obtain rfl := hxQ
@@ -675,7 +674,7 @@ theorem not_dvd_differentIdeal_of_intTrace_not_mem
   let L := FractionRing B
   have : IsLocalization (Algebra.algebraMapSubmonoid B A⁰) L :=
     IsIntegralClosure.isLocalization _ K _ _
-  have : FiniteDimensional K L := Module.Finite_of_isLocalization A B _ _ A⁰
+  have : FiniteDimensional K L := .of_isLocalization A B A⁰
   rw [Ideal.dvd_iff_le]
   intro H
   replace H := (mul_le_mul_right' H Q).trans_eq hP
@@ -766,8 +765,7 @@ lemma dvd_differentIdeal_of_not_isSeparable
   let L := FractionRing B
   have : IsLocalization (Algebra.algebraMapSubmonoid B A⁰) L :=
     IsIntegralClosure.isLocalization _ K _ _
-  have : FiniteDimensional K L :=
-    Module.Finite_of_isLocalization A B _ _ A⁰
+  have : FiniteDimensional K L := .of_isLocalization A B A⁰
   have hp' := (Ideal.map_eq_bot_iff_of_injective
     (FaithfulSMul.algebraMap_injective A B)).not.mpr hp
   have habot : a ≠ ⊥ := fun ha' ↦ hp' (by simpa [ha'] using ha)
@@ -826,7 +824,7 @@ theorem not_dvd_differentIdeal_iff
     simp only [Submodule.zero_eq_bot, differentIdeal_ne_bot, not_false_eq_true, true_iff]
     let K := FractionRing A
     let L := FractionRing B
-    have : FiniteDimensional K L := Module.Finite_of_isLocalization A B _ _ A⁰
+    have : FiniteDimensional K L := .of_isLocalization A B A⁰
     have : IsLocalization B⁰ (Localization.AtPrime (⊥ : Ideal B)) := by
       convert (inferInstanceAs
         (IsLocalization (⊥ : Ideal B).primeCompl (Localization.AtPrime (⊥ : Ideal B))))

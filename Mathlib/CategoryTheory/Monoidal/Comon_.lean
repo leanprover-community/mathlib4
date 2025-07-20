@@ -236,8 +236,6 @@ instance : HasTerminal (Comon_ C) :=
 
 open Opposite
 
--- variable (C)
-
 /-- Auxiliary definition for `Comon_ToMon_OpOpObj`. -/
 abbrev Comon_ToMon_OpOpObjMon (A : Comon_ C) : Mon_Class (op A.X) where
   one := ε[A.X].op
@@ -327,7 +325,6 @@ variable {C} [BraidedCategory C]
 
 theorem tensorObj_X (A B : Comon_ C) : (A ⊗ B).X = A.X ⊗ B.X := rfl
 
--- @[simps!?]
 instance (A B : C) [Comon_Class A] [Comon_Class B] : Comon_Class (A ⊗ B) :=
   inferInstanceAs <| Comon_Class (Comon_.mk A ⊗ Comon_.mk B).X
 

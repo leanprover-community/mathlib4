@@ -36,8 +36,9 @@ coincide with the existing topology and uniformity on matrices.
 
 -/
 
-
+open WithLp
 open scoped Matrix
+
 variable {𝕜 m n l E : Type*}
 
 section EntrywiseSupNorm
@@ -113,15 +114,21 @@ lemma coe_toEuclideanCLM_eq_toEuclideanLin (A : Matrix n n 𝕜) :
   rfl
 
 @[simp]
+lemma toEuclideanCLM_toLp (A : Matrix n n 𝕜) (x : n → 𝕜) :
+    toEuclideanCLM (n := n) (𝕜 := 𝕜) A (toLp _ x) = toLp _ (A *ᵥ x) := rfl
+
+@[deprecated toEuclideanCLM_toLp (since := "2025-05-07")]
 lemma toEuclideanCLM_piLp_equiv_symm (A : Matrix n n 𝕜) (x : n → 𝕜) :
     toEuclideanCLM (n := n) (𝕜 := 𝕜) A ((WithLp.equiv _ _).symm x) =
-      (WithLp.equiv _ _).symm (A *ᵥ x) :=
-  rfl
+      (WithLp.equiv _ _).symm (A *ᵥ x) := rfl
 
 @[simp]
+lemma ofLp_toEuclideanCLM (A : Matrix n n 𝕜) (x : EuclideanSpace 𝕜 n) :
+    ofLp (toEuclideanCLM (n := n) (𝕜 := 𝕜) A x) = A *ᵥ ofLp x := rfl
+
+@[deprecated ofLp_toEuclideanCLM (since := "2025-05-07")]
 lemma piLp_equiv_toEuclideanCLM (A : Matrix n n 𝕜) (x : EuclideanSpace 𝕜 n) :
-    WithLp.equiv _ _ (toEuclideanCLM (n := n) (𝕜 := 𝕜) A x) =
-      A *ᵥ (WithLp.equiv _ _ x) :=
+    WithLp.equiv _ _ (toEuclideanCLM (n := n) (𝕜 := 𝕜) A x) = A *ᵥ (WithLp.equiv _ _ x) :=
   rfl
 
 /-- An auxiliary definition used only to construct the true `NormedAddCommGroup` (and `Metric`)
