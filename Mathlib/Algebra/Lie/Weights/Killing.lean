@@ -641,10 +641,6 @@ lemma mem_sl2SubalgebraOfRoot_iff {α : Weight K H L} (hα : α.IsNonZero) {h e 
   · simp [hx, mul_smul]
   · simp [hx, mul_smul, hce₀, hcf₀]
 
-
-noncomputable abbrev H_α (α : Weight K H L) : LieSubmodule K H L :=
-  LieSubmodule.map H.toLieSubmodule.incl (LieAlgebra.corootSpace α.toLinear)
-
 lemma sl2SubalgebraOfRoot_stable_under_H (α : Weight K H L) (hα : α.IsNonZero) :
     ∀ (h : H) (x : L), x ∈ sl2SubalgebraOfRoot hα → ⁅(h : L), x⁆ ∈ sl2SubalgebraOfRoot hα := by
   intro h x hx
@@ -685,6 +681,9 @@ noncomputable def sl2SubalgebraOfRoot_as_H_submodule (α : Weight K H L) (hα : 
   lie_mem := by
     intro h x hx
     exact sl2SubalgebraOfRoot_stable_under_H α hα h x hx
+
+noncomputable abbrev H_α (α : Weight K H L) : LieSubmodule K H L :=
+  LieSubmodule.map H.toLieSubmodule.incl (LieAlgebra.corootSpace α.toLinear)
 
 lemma sl2SubalgebraOfRoot_as_H_submodule_eq_sup (α : Weight K H L) (hα : α.IsNonZero) :
     sl2SubalgebraOfRoot_as_H_submodule α hα =
