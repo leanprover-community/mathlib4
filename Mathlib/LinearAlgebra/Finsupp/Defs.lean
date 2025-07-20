@@ -155,6 +155,15 @@ theorem lmapDomain_comp (f : α → α') (g : α' → α'') :
     lmapDomain M R (g ∘ f) = (lmapDomain M R g).comp (lmapDomain M R f) :=
   LinearMap.ext fun _ => mapDomain_comp
 
+/-- `Finsupp.mapDomain` as a `LinearEquiv`. -/
+def mapDomain.linearEquiv (f : α ≃ α') : (α →₀ M) ≃ₗ[R] (α' →₀ M) where
+  __ := lmapDomain M R f.toFun
+  invFun := mapDomain f.symm
+  left_inv _ := by
+    simp [← mapDomain_comp]
+  right_inv _ := by
+    simp [← mapDomain_comp]
+
 end LMapDomain
 
 section LComapDomain
@@ -246,20 +255,21 @@ end Equiv
 
 section Prod
 
+variable {α β R M : Type*} [DecidableEq α] [Semiring R] [AddCommMonoid M] [Module R M]
+
+variable (R) in
 /-- The linear equivalence between `α × β →₀ M` and `α →₀ β →₀ M`.
 
 This is the `LinearEquiv` version of `Finsupp.finsuppProdEquiv`. -/
-@[simps]
-noncomputable def finsuppProdLEquiv {α β : Type*} (R : Type*) {M : Type*} [Semiring R]
-    [AddCommMonoid M] [Module R M] : (α × β →₀ M) ≃ₗ[R] α →₀ β →₀ M :=
+@[simps +simpRhs]
+noncomputable def finsuppProdLEquiv : (α × β →₀ M) ≃ₗ[R] α →₀ β →₀ M :=
   { finsuppProdEquiv with
     map_add' f g := by ext; simp
     map_smul' c f := by ext; simp }
 
-theorem finsuppProdLEquiv_symm_apply_apply
-    {α β R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
-    (f : α →₀ β →₀ M) (xy) : (finsuppProdLEquiv R).symm f xy = f xy.1 xy.2 := by
-  simp [Finsupp.uncurry_apply]
+theorem finsuppProdLEquiv_symm_apply_apply (f : α →₀ β →₀ M) (xy) :
+    (finsuppProdLEquiv R).symm f xy = f xy.1 xy.2 :=
+  rfl
 
 end Prod
 

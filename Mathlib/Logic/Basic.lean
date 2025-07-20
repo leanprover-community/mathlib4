@@ -44,11 +44,11 @@ instance [Subsingleton α] (p : α → Prop) : Subsingleton (Subtype p) :=
   ⟨fun ⟨x, _⟩ ⟨y, _⟩ ↦ by cases Subsingleton.elim x y; rfl⟩
 
 theorem congr_heq {α β γ : Sort _} {f : α → γ} {g : β → γ} {x : α} {y : β}
-    (h₁ : HEq f g) (h₂ : HEq x y) : f x = g y := by
+    (h₁ : f ≍ g) (h₂ : x ≍ y) : f x = g y := by
   cases h₂; cases h₁; rfl
 
 theorem congr_arg_heq {β : α → Sort*} (f : ∀ a, β a) :
-    ∀ {a₁ a₂ : α}, a₁ = a₂ → HEq (f a₁) (f a₂)
+    ∀ {a₁ a₂ : α}, a₁ = a₂ → f a₁ ≍ f a₂
   | _, _, rfl => HEq.rfl
 
 @[simp] theorem eq_iff_eq_cancel_left {b c : α} : (∀ {a}, a = b ↔ a = c) ↔ b = c :=
@@ -223,7 +223,7 @@ instance [Decidable a] [Decidable b] : Decidable (Xor' a b) := inferInstanceAs (
 
 @[simp] theorem xor_false : Xor' False = id := by ext; simp [Xor']
 
-theorem xor_comm (a b : Prop) : Xor' a b = Xor' b a := by simp [Xor', and_comm, or_comm]
+theorem xor_comm (a b : Prop) : Xor' a b = Xor' b a := by simp [Xor', or_comm]
 
 instance : Std.Commutative Xor' := ⟨xor_comm⟩
 
@@ -350,8 +350,14 @@ end Propositional
 
 /-! ### Membership -/
 
-alias Membership.mem.ne_of_not_mem := ne_of_mem_of_not_mem
-alias Membership.mem.ne_of_not_mem' := ne_of_mem_of_not_mem'
+alias Membership.mem.ne_of_notMem := ne_of_mem_of_not_mem
+alias Membership.mem.ne_of_notMem' := ne_of_mem_of_not_mem'
+
+@[deprecated (since := "2025-05-23")]
+alias Membership.mem.ne_of_not_mem := Membership.mem.ne_of_notMem
+
+@[deprecated (since := "2025-05-23")]
+alias Membership.mem.ne_of_not_mem' := Membership.mem.ne_of_notMem'
 
 section Membership
 
@@ -425,32 +431,32 @@ theorem Eq.rec_eq_cast {α : Sort _} {P : α → Sort _} {x y : α} (h : x = y) 
 
 theorem eqRec_heq' {α : Sort*} {a' : α} {motive : (a : α) → a' = a → Sort*}
     (p : motive a' (rfl : a' = a')) {a : α} (t : a' = a) :
-    HEq (@Eq.rec α a' motive p a t) p := by
+    @Eq.rec α a' motive p a t ≍ p := by
   subst t; rfl
 
 theorem rec_heq_of_heq {α β : Sort _} {a b : α} {C : α → Sort*} {x : C a} {y : β}
-    (e : a = b) (h : HEq x y) : HEq (e ▸ x) y := by subst e; exact h
+    (e : a = b) (h : x ≍ y) : e ▸ x ≍ y := by subst e; exact h
 
 theorem rec_heq_iff_heq {α β : Sort _} {a b : α} {C : α → Sort*} {x : C a} {y : β} {e : a = b} :
-    HEq (e ▸ x) y ↔ HEq x y := by subst e; rfl
+    e ▸ x ≍ y ↔ x ≍ y := by subst e; rfl
 
 theorem heq_rec_iff_heq {α β : Sort _} {a b : α} {C : α → Sort*} {x : β} {y : C a} {e : a = b} :
-    HEq x (e ▸ y) ↔ HEq x y := by subst e; rfl
+    x ≍ e ▸ y ↔ x ≍ y := by subst e; rfl
 
 @[simp]
 theorem cast_heq_iff_heq {α β γ : Sort _} (e : α = β) (a : α) (c : γ) :
-    HEq (cast e a) c ↔ HEq a c := by subst e; rfl
+    cast e a ≍ c ↔ a ≍ c := by subst e; rfl
 
 @[simp]
 theorem heq_cast_iff_heq {α β γ : Sort _} (e : β = γ) (a : α) (b : β) :
-    HEq a (cast e b) ↔ HEq a b := by subst e; rfl
+    a ≍ cast e b ↔ a ≍ b := by subst e; rfl
 
 universe u
 variable {α β : Sort u} {e : β = α} {a : α} {b : β}
 
-lemma heq_of_eq_cast (e : β = α) : a = cast e b → HEq a b := by rintro rfl; simp
+lemma heq_of_eq_cast (e : β = α) : a = cast e b → a ≍ b := by rintro rfl; simp
 
-lemma eq_cast_iff_heq : a = cast e b ↔ HEq a b := ⟨heq_of_eq_cast _, fun h ↦ by cases h; rfl⟩
+lemma eq_cast_iff_heq : a = cast e b ↔ a ≍ b := ⟨heq_of_eq_cast _, fun h ↦ by cases h; rfl⟩
 
 end Equality
 

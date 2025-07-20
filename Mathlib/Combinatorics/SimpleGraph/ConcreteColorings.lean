@@ -25,7 +25,7 @@ namespace SimpleGraph
 
 theorem two_le_chromaticNumber_of_adj {α} {G : SimpleGraph α} {u v : α} (hadj : G.Adj u v) :
     2 ≤ G.chromaticNumber := by
-  refine le_of_not_lt ?_
+  refine le_of_not_gt ?_
   intro h
   have hc : G.Colorable 1 := chromaticNumber_le_iff_colorable.mp (Order.le_of_lt_add_one h)
   let c : G.Coloring (Fin 1) := hc.some
@@ -134,7 +134,7 @@ def cycleGraph.tricoloring (n : ℕ) (h : 2 ≤ n) : Coloring (cycleGraph n)
         | inl huv | inr huv =>
           rw [← add_eq_of_eq_sub' huv.symm]
           simp only [Fin.val_add_eq_of_add_lt hv', Fin.val_add_eq_of_add_lt hu', Fin.val_one]
-          rw [show ∀x y : ℕ, x % 2 = y % 2 ↔ (Even x ↔ Even y) by simp [Nat.even_iff]; omega,
+          rw [show ∀ x y : ℕ, x % 2 = y % 2 ↔ (Even x ↔ Even y) by simp [Nat.even_iff]; omega,
             Nat.even_add]
           simp only [Nat.not_even_one, iff_false, not_iff_self, iff_not_self]
           exact id

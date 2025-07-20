@@ -12,7 +12,8 @@ Main statements:
 
 * `MeromorphicAt`: definition of meromorphy at a point
 * `MeromorphicAt.iff_eventuallyEq_zpow_smul_analyticAt`: `f` is meromorphic at `z₀` iff we have
-  `f z = (z - z₀) ^ n • g z` on a punctured nhd of `z₀`, for some `n : ℤ` and `g` analytic at z₀.
+  `f z = (z - z₀) ^ n • g z` on a punctured neighborhood of `z₀`, for some `n : ℤ`
+  and `g` analytic at `z₀`.
 -/
 
 open Filter
@@ -109,20 +110,21 @@ lemma fun_mul {f g : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (hg : Me
 
 /-- Finite products of meromorphic functions are analytic. -/
 @[fun_prop]
-theorem prod  {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜} {x : 𝕜}
+theorem prod {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜} {x : 𝕜}
     (h : ∀ σ, MeromorphicAt (f σ) x) :
     MeromorphicAt (∏ n ∈ s, f n) x := by
   classical
-  apply Finset.induction (motive := fun s ↦ MeromorphicAt (∏ n ∈ s , f n) x)
-  · rw [Finset.prod_empty]
+  induction s using Finset.induction with
+  | empty =>
+    rw [Finset.prod_empty]
     exact analyticAt_const.meromorphicAt
-  · intro σ s hσ hind
+  | insert σ s hσ hind =>
     rw [Finset.prod_insert hσ]
     exact (h σ).mul hind
 
 /-- Finite products of meromorphic functions are analytic. -/
 @[fun_prop]
-theorem fun_prod  {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜} {x : 𝕜}
+theorem fun_prod {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜} {x : 𝕜}
     (h : ∀ σ, MeromorphicAt (f σ) x) :
     MeromorphicAt (fun z ↦ ∏ n ∈ s, f n z) x := by
   convert prod h (s := s)
@@ -344,7 +346,7 @@ theorem congr_codiscreteWithin (hf : MeromorphicOn f U) (h₁ : f =ᶠ[codiscret
     apply mem_nhdsWithin.mpr
     use U, h₂, hx, Set.inter_subset_left
   filter_upwards [this, h₁ x hx] with a h₁a h₂a
-  simp only [Set.mem_compl_iff, Set.mem_diff, Set.mem_setOf_eq, not_and, Decidable.not_not] at h₂a
+  simp only [Set.mem_compl_iff, Set.mem_diff, Set.mem_setOf_eq, not_and] at h₂a
   tauto
 
 lemma id {U : Set 𝕜} : MeromorphicOn id U := fun x _ ↦ .id x

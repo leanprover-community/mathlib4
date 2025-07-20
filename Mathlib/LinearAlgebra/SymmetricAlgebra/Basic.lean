@@ -14,8 +14,8 @@ This is the free commutative `R`-algebra generated (`R`-linearly) by the module 
 ## Notation
 
 * `SymmetricAlgebra R M`: a concrete construction of the symmetric algebra defined as a
-   quotient of the tensor algebra. It is endowed with an R-algebra structure and a commutative
-   ring structure.
+  quotient of the tensor algebra. It is endowed with an R-algebra structure and a commutative
+  ring structure.
 * `SymmetricAlgebra.ι R`: the canonical R-linear map `M →ₗ[R] SymmetricAlgebra R M`.
 * Given a morphism `ι : M →ₗ[R] A`, `IsSymmetricAlgebra ι` is a proposition saying that the algebra
   homomorphism from `SymmetricAlgebra R M` to `A` lifted from `ι` is bijective.
@@ -69,7 +69,7 @@ theorem induction {motive : SymmetricAlgebra R M → Prop}
 open TensorAlgebra in
 instance : CommSemiring (SymmetricAlgebra R M) where
   mul_comm a b := by
-    show Commute a b
+    change Commute a b
     induction b using SymmetricAlgebra.induction with
     | algebraMap r => exact Algebra.commute_algebraMap_right _ _
     | ι x => induction a using SymmetricAlgebra.induction with
@@ -114,7 +114,8 @@ theorem algHom_ext {F G : SymmetricAlgebra R M →ₐ[R] A}
 lemma lift_ι : lift (ι R M) = .id R (SymmetricAlgebra R M) := by
   apply algHom_ext
   rw [lift_comp_ι]
-  rfl
+  ext
+  simp
 
 /-- The left-inverse of `algebraMap`. -/
 def algebraMapInv : SymmetricAlgebra R M →ₐ[R] R :=

@@ -69,7 +69,7 @@ theorem to_mulShift_inj_of_isPrimitive {ψ : AddChar R R'} (hψ : IsPrimitive ψ
     Function.Injective ψ.mulShift := by
   intro a b h
   apply_fun fun x => x * mulShift ψ (-b) at h
-  simp only [mulShift_mul, mulShift_zero, add_neg_cancel, mulShift_apply] at h
+  simp only [mulShift_mul, mulShift_zero, add_neg_cancel] at h
   simpa [← sub_eq_add_neg, sub_eq_zero] using (hψ · h)
 
 -- `AddCommGroup.equiv_direct_sum_zmod_of_fintype`
@@ -295,14 +295,15 @@ private lemma ringChar_ne : ringChar ℂ ≠ ringChar F := by
 
 /-- A primitive additive character on the finite field `F` with values in `ℂ`. -/
 noncomputable def FiniteField.primitiveChar_to_Complex : AddChar F ℂ := by
-  refine MonoidHom.compAddChar ?_ (primitiveChar F ℂ <| ringChar_ne F).char
-  exact (IsCyclotomicExtension.algEquiv ?n ℂ (CyclotomicField ?n ℂ) ℂ : CyclotomicField ?n ℂ →* ℂ)
+  letI ch := primitiveChar F ℂ <| ringChar_ne F
+  refine MonoidHom.compAddChar ?_ ch.char
+  exact (IsCyclotomicExtension.algEquiv {(ch.n : ℕ)} ℂ (CyclotomicField ch.n ℂ) ℂ).toMonoidHom
 
 lemma FiniteField.primitiveChar_to_Complex_isPrimitive :
     (primitiveChar_to_Complex F).IsPrimitive := by
   refine IsPrimitive.compMulHom_of_isPrimitive (PrimitiveAddChar.prim _) ?_
   let nn := (primitiveChar F ℂ <| ringChar_ne F).n
-  exact (IsCyclotomicExtension.algEquiv nn ℂ (CyclotomicField nn ℂ) ℂ).injective
+  exact (IsCyclotomicExtension.algEquiv {(nn : ℕ)} ℂ (CyclotomicField nn ℂ) ℂ).injective
 
 end Field
 

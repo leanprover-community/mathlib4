@@ -364,7 +364,7 @@ variable {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing �
 through `x` is monotone on `s \ {x}`. -/
 lemma ConvexOn.slope_mono (hfc : ConvexOn 𝕜 s f) (hx : x ∈ s) : MonotoneOn (slope f x) (s \ {x}) :=
   (slope_fun_def_field f _).symm ▸ fun _ hy _ hz hz' ↦ hfc.secant_mono hx (mem_of_mem_diff hy)
-    (mem_of_mem_diff hz) (not_mem_of_mem_diff hy :) (not_mem_of_mem_diff hz :) hz'
+    (mem_of_mem_diff hz) (notMem_of_mem_diff hy :) (notMem_of_mem_diff hz :) hz'
 
 lemma ConvexOn.monotoneOn_slope_gt (hfc : ConvexOn 𝕜 s f) (hxs : x ∈ s) :
     MonotoneOn (slope f x) {y ∈ s | x < y} :=
@@ -553,7 +553,7 @@ secant line with left endpoint at `x` is bounded below by the right derivative o
 lemma le_slope_of_hasDerivWithinAt_Ioi (hfc : ConvexOn ℝ S f)
     (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) (hf' : HasDerivWithinAt f f' (Ioi x) x) :
     f' ≤ slope f x y := by
-  apply le_of_tendsto <| (hasDerivWithinAt_iff_tendsto_slope' not_mem_Ioi_self).mp hf'
+  apply le_of_tendsto <| (hasDerivWithinAt_iff_tendsto_slope' notMem_Ioi_self).mp hf'
   simp_rw [eventually_nhdsWithin_iff, slope_def_field]
   filter_upwards [eventually_lt_nhds hxy] with t ht (ht' : x < t)
   refine hfc.secant_mono hx (?_ : t ∈ S) hy ht'.ne' hxy.ne' ht.le
@@ -616,7 +616,7 @@ line with right endpoint at `y` is bounded above by the left derivative of `f` a
 lemma slope_le_of_hasDerivWithinAt_Iio (hfc : ConvexOn ℝ S f)
     (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) (hf' : HasDerivWithinAt f f' (Iio y) y) :
     slope f x y ≤ f' := by
-  apply ge_of_tendsto <| (hasDerivWithinAt_iff_tendsto_slope' not_mem_Iio_self).mp hf'
+  apply ge_of_tendsto <| (hasDerivWithinAt_iff_tendsto_slope' notMem_Iio_self).mp hf'
   simp_rw [eventually_nhdsWithin_iff, slope_comm f x y, slope_def_field]
   filter_upwards [eventually_gt_nhds hxy] with t ht (ht' : t < y)
   refine hfc.secant_mono hy hx (?_ : t ∈ S) hxy.ne ht'.ne ht.le
@@ -791,7 +791,7 @@ section right
 /-- If `f : ℝ → ℝ` is strictly convex on `S` and differentiable at `y ∈ S`, then the slope of any
 secant line with right endpoint at `y` is strictly less than the left derivative at `y`. -/
 lemma slope_lt_of_hasDerivWithinAt_Iio (hfc : StrictConvexOn ℝ S f)
-    (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) (hf' : HasDerivWithinAt f f' (Iio y) y)  :
+    (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) (hf' : HasDerivWithinAt f f' (Iio y) y) :
     slope f x y < f' := by
   obtain ⟨u, hxu, huy⟩ := exists_between hxy
   have hu : u ∈ S := hfc.1.ordConnected.out hx hy ⟨hxu.le, huy.le⟩
@@ -800,7 +800,7 @@ lemma slope_lt_of_hasDerivWithinAt_Iio (hfc : StrictConvexOn ℝ S f)
   exact this.trans_le <| hfc.convexOn.slope_le_of_hasDerivWithinAt_Iio hu hy huy hf'
 
 lemma slope_lt_leftDeriv (hfc : StrictConvexOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y)
-    (hfd : DifferentiableWithinAt ℝ f (Iio y) y)  :
+    (hfd : DifferentiableWithinAt ℝ f (Iio y) y) :
     slope f x y < derivWithin f (Iio y) y :=
   hfc.slope_lt_of_hasDerivWithinAt_Iio hx hy hxy hfd.hasDerivWithinAt
 
@@ -964,8 +964,7 @@ lemma antitoneOn_derivWithin (hfc : ConcaveOn ℝ S f) (hfd : DifferentiableOn �
 antitone (monotone decreasing) on `S`. -/
 theorem antitoneOn_deriv (hfc : ConcaveOn ℝ S f) (hfd : ∀ x ∈ S, DifferentiableAt ℝ f x) :
     AntitoneOn (deriv f) S := by
-  simpa only [Pi.neg_def, deriv.neg, neg_neg] using
-    (hfc.neg.monotoneOn_deriv (fun x hx ↦ (hfd x hx).neg)).neg
+  simpa using (hfc.neg.monotoneOn_deriv (fun x hx ↦ (hfd x hx).neg)).neg
 
 end ConcaveOn
 
@@ -1067,8 +1066,7 @@ lemma strictAntiOn_derivWithin (hfc : StrictConcaveOn ℝ S f) (hfd : Differenti
 
 theorem strictAntiOn_deriv (hfc : StrictConcaveOn ℝ S f) (hfd : ∀ x ∈ S, DifferentiableAt ℝ f x) :
     StrictAntiOn (deriv f) S := by
-  simpa only [Pi.neg_def, deriv.neg, neg_neg] using
-    (hfc.neg.strictMonoOn_deriv (fun x hx ↦ (hfd x hx).neg)).neg
+  simpa using (hfc.neg.strictMonoOn_deriv (fun x hx ↦ (hfd x hx).neg)).neg
 
 end StrictConcaveOn
 

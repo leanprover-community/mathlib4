@@ -20,7 +20,7 @@ To use this space as a basis for the `L^p` spaces and for the Bochner integral, 
 equivalence classes of strongly measurable functions (or, equivalently, of almost everywhere
 strongly measurable functions.)
 
-See `L1Space.lean` for `L¹` space.
+See `Mathlib/MeasureTheory/Function/L1Space/AEEqFun.lean` for `L¹` space.
 
 ## Notation
 
@@ -33,32 +33,32 @@ See `L1Space.lean` for `L¹` space.
 ## Main statements
 
 * The linear structure of `L⁰` :
-    Addition and scalar multiplication are defined on `L⁰` in the natural way, i.e.,
-    `[f] + [g] := [f + g]`, `c • [f] := [c • f]`. So defined, `α →ₘ β` inherits the linear structure
-    of `β`. For example, if `β` is a module, then `α →ₘ β` is a module over the same ring.
+  Addition and scalar multiplication are defined on `L⁰` in the natural way, i.e.,
+  `[f] + [g] := [f + g]`, `c • [f] := [c • f]`. So defined, `α →ₘ β` inherits the linear structure
+  of `β`. For example, if `β` is a module, then `α →ₘ β` is a module over the same ring.
 
-    See `mk_add_mk`,  `neg_mk`,     `mk_sub_mk`,  `smul_mk`,
-        `add_toFun`, `neg_toFun`, `sub_toFun`, `smul_toFun`
+  See `mk_add_mk`, `neg_mk`, `mk_sub`, `smul_mk`,
+  `coeFn_add`, `coeFn_neg`, `coeFn_sub`, `coeFn_smul`
 
 * The order structure of `L⁰` :
-    `≤` can be defined in a similar way: `[f] ≤ [g]` if `f a ≤ g a` for almost all `a` in domain.
-    And `α →ₘ β` inherits the preorder and partial order of `β`.
+  `≤` can be defined in a similar way: `[f] ≤ [g]` if `f a ≤ g a` for almost all `a` in domain.
+  And `α →ₘ β` inherits the preorder and partial order of `β`.
 
-    TODO: Define `sup` and `inf` on `L⁰` so that it forms a lattice. It seems that `β` must be a
-    linear order, since otherwise `f ⊔ g` may not be a measurable function.
+  TODO: Define `sup` and `inf` on `L⁰` so that it forms a lattice. It seems that `β` must be a
+  linear order, since otherwise `f ⊔ g` may not be a measurable function.
 
 ## Implementation notes
 
-* `f.toFun`      : To find a representative of `f : α →ₘ β`, use the coercion `(f : α → β)`, which
+* `f.cast`:      To find a representative of `f : α →ₘ β`, use the coercion `(f : α → β)`, which
                  is implemented as `f.toFun`.
                  For each operation `op` in `L⁰`, there is a lemma called `coe_fn_op`,
                  characterizing, say, `(f op g : α → β)`.
-* `ae_eq_fun.mk` : To constructs an `L⁰` function `α →ₘ β` from an almost everywhere strongly
+* `AEEqFun.mk`:  To constructs an `L⁰` function `α →ₘ β` from an almost everywhere strongly
                  measurable function `f : α → β`, use `ae_eq_fun.mk`
-* `comp`         : Use `comp g f` to get `[g ∘ f]` from `g : β → γ` and `[f] : α →ₘ γ` when `g` is
-                 continuous. Use `comp_measurable` if `g` is only measurable (this requires the
+* `comp`:        Use `comp g f` to get `[g ∘ f]` from `g : β → γ` and `[f] : α →ₘ γ` when `g` is
+                 continuous. Use `compMeasurable` if `g` is only measurable (this requires the
                  target space to be second countable).
-* `comp₂`        : Use `comp₂ g f₁ f₂` to get `[fun a ↦ g (f₁ a) (f₂ a)]`.
+* `comp₂`:       Use `comp₂ g f₁ f₂` to get `[fun a ↦ g (f₁ a) (f₂ a)]`.
                  For example, `[f + g]` is `comp₂ (+)`
 
 
@@ -581,7 +581,8 @@ theorem coeFn_const (b : β) : (const α b : α →ₘ[μ] β) =ᵐ[μ] Function
 @[simp]
 theorem coeFn_const_eq [NeZero μ] (b : β) (x : α) : (const α b : α →ₘ[μ] β) x = b := by
   simp only [cast]
-  split_ifs with h; swap; · exact h.elim ⟨b, rfl⟩
+  split_ifs with h
+  case neg => exact h.elim ⟨b, rfl⟩
   have := Classical.choose_spec h
   set b' := Classical.choose h
   simp_rw [const, mk_eq_mk, EventuallyEq, ← const_def, eventually_const] at this
@@ -741,8 +742,7 @@ section Div
 instance instDiv : Div (α →ₘ[μ] γ) :=
   ⟨comp₂ Div.div continuous_div'⟩
 
-@[to_additive (attr := simp, nolint simpNF)] -- Porting note: LHS does not simplify.
--- It seems the side conditions `hf` and `hg` are not applied by `simpNF`.
+@[to_additive (attr := simp)]
 theorem mk_div (f g : α → γ) (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) :
     mk (f / g) (hf.div hg) = (mk f hf : α →ₘ[μ] γ) / mk g hg :=
   rfl

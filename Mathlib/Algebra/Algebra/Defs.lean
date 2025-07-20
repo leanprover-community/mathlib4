@@ -10,14 +10,14 @@ import Mathlib.Algebra.Module.LinearMap.Defs
 
 In this file we define associative unital `Algebra`s over commutative (semi)rings.
 
-* algebra homomorphisms `AlgHom` are defined in `Mathlib.Algebra.Algebra.Hom`;
+* algebra homomorphisms `AlgHom` are defined in `Mathlib/Algebra/Algebra/Hom.lean`;
 
-* algebra equivalences `AlgEquiv` are defined in `Mathlib.Algebra.Algebra.Equiv`;
+* algebra equivalences `AlgEquiv` are defined in `Mathlib/Algebra/Algebra/Equiv.lean`;
 
-* `Subalgebra`s are defined in `Mathlib.Algebra.Algebra.Subalgebra`;
+* `Subalgebra`s are defined in `Mathlib/Algebra/Algebra/Subalgebra.lean`;
 
-* The category `AlgebraCat R` of `R`-algebras is defined in the file
-  `Mathlib.Algebra.Category.Algebra.Basic`.
+* The category `AlgCat R` of `R`-algebras is defined in the file
+  `Mathlib/Algebra/Category/Algebra/Basic.lean`.
 
 See the implementation notes for remarks about non-associative and non-unital algebras.
 
@@ -370,14 +370,20 @@ instance (priority := 1100) id : Algebra R R where
   toSMul := Mul.toSMul _
   __ := ({RingHom.id R with toFun x := x}).toAlgebra
 
+@[simp] lemma linearMap_self : Algebra.linearMap R R = .id := rfl
+
 variable {R A}
+
+@[simp] lemma algebraMap_self : algebraMap R R = .id _ := rfl
+lemma algebraMap_self_apply (x : R) : algebraMap R R x = x := rfl
 
 namespace id
 
-@[simp]
+@[deprecated algebraMap_self (since := "2025-07-17")]
 theorem map_eq_id : algebraMap R R = RingHom.id _ :=
   rfl
 
+@[deprecated algebraMap_self_apply (since := "2025-07-17")]
 theorem map_eq_self (x : R) : algebraMap R R x = x :=
   rfl
 

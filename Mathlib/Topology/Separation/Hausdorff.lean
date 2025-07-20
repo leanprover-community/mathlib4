@@ -21,8 +21,9 @@ separation axioms, and the related T₂.₅ condition.
   there is two open sets, one containing `x`, and the other `y`, whose closures are disjoint.
   T₂.₅ implies T₂.
 
-See `Mathlib.Topology.Separation.Regular` for regular, T₃, etc spaces; and
-`Mathlib.Topology.Separation.GDelta` for the definitions of `PerfectlyNormalSpace` and `T6Space`.
+See `Mathlib/Topology/Separation/Regular.lean` for regular, T₃, etc spaces; and
+`Mathlib/Topology/Separation/GDelta.lean` for the definitions of `PerfectlyNormalSpace` and
+`T6Space`.
 
 Note that `mathlib` adopts the modern convention that `m ≤ n` if and only if `T_m → T_n`, but
 occasionally the literature swaps definitions for e.g. T₃ and regular.
@@ -46,7 +47,7 @@ occasionally the literature swaps definitions for e.g. T₃ and regular.
   it is a `TotallySeparatedSpace`.
 * `loc_compact_t2_tot_disc_iff_tot_sep`: A locally compact T₂ space is totally disconnected iff
   it is totally separated.
-* `t2Quotient`: the largest T2 quotient of a given topological space.
+* `T2Quotient`: the largest T2 quotient of a given topological space.
 
 If the space is also compact:
 
@@ -88,7 +89,7 @@ theorem t2_separation [T2Space X] {x y : X} (h : x ≠ y) :
 -- todo: use this as a definition?
 theorem t2Space_iff_disjoint_nhds : T2Space X ↔ Pairwise fun x y : X => Disjoint (𝓝 x) (𝓝 y) := by
   refine (t2Space_iff X).trans (forall₃_congr fun x y _ => ?_)
-  simp only [(nhds_basis_opens x).disjoint_iff (nhds_basis_opens y), exists_prop, ← exists_and_left,
+  simp only [(nhds_basis_opens x).disjoint_iff (nhds_basis_opens y), ← exists_and_left,
     and_assoc, and_comm, and_left_comm]
 
 @[simp]
@@ -194,11 +195,14 @@ theorem IsCompact.nhdsSet_inter_eq [T2Space X] {s t : Set X} (hs : IsCompact s) 
 
 /-- In a `T2Space X`, for a compact set `t` and a point `x` outside `t`, there are open sets `U`,
 `V` that separate `t` and `x`. -/
-lemma IsCompact.separation_of_not_mem {X : Type u_1} [TopologicalSpace X] [T2Space X] {x : X}
+lemma IsCompact.separation_of_notMem {X : Type u_1} [TopologicalSpace X] [T2Space X] {x : X}
     {t : Set X} (H1 : IsCompact t) (H2 : x ∉ t) :
     ∃ (U : Set X), ∃ (V : Set X), IsOpen U ∧ IsOpen V ∧ t ⊆ U ∧ x ∈ V ∧ Disjoint U V := by
   simpa [SeparatedNhds] using SeparatedNhds.of_isCompact_isCompact_isClosed H1 isCompact_singleton
     isClosed_singleton <| disjoint_singleton_right.mpr H2
+
+@[deprecated (since := "2025-05-23")]
+alias IsCompact.separation_of_not_mem := IsCompact.separation_of_notMem
 
 /-- In a `T2Space X`, for a compact set `t` and a point `x` outside `t`, `𝓝ˢ t` and `𝓝 x` are
 disjoint. -/
@@ -380,7 +384,7 @@ instance Pi.t2Space {Y : X → Type v} [∀ a, TopologicalSpace (Y a)]
   inferInstance
 
 instance Sigma.t2Space {ι} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ a, T2Space (X a)] :
-    T2Space (Σi, X i) := by
+    T2Space (Σ i, X i) := by
   constructor
   rintro ⟨i, x⟩ ⟨j, y⟩ neq
   rcases eq_or_ne i j with (rfl | h)
@@ -397,44 +401,46 @@ def t2Setoid : Setoid X := sInf {s | T2Space (Quotient s)}
 
 /-- The largest T2 quotient of a topological space. This construction is left-adjoint to the
 inclusion of T2 spaces into all topological spaces. -/
-def t2Quotient := Quotient (t2Setoid X)
+def T2Quotient := Quotient (t2Setoid X)
 
-namespace t2Quotient
+@[deprecated (since := "2025-05-15")] alias t2Quotient := T2Quotient
+
+namespace T2Quotient
 variable {X}
 
-instance : TopologicalSpace (t2Quotient X) :=
+instance : TopologicalSpace (T2Quotient X) :=
   inferInstanceAs <| TopologicalSpace (Quotient _)
 
 /-- The map from a topological space to its largest T2 quotient. -/
-def mk : X → t2Quotient X := Quotient.mk (t2Setoid X)
+def mk : X → T2Quotient X := Quotient.mk (t2Setoid X)
 
 lemma mk_eq {x y : X} : mk x = mk y ↔ ∀ s : Setoid X, T2Space (Quotient s) → s x y :=
   Setoid.quotient_mk_sInf_eq
 
 variable (X)
 
-lemma surjective_mk : Surjective (mk : X → t2Quotient X) := Quotient.mk_surjective
+lemma surjective_mk : Surjective (mk : X → T2Quotient X) := Quotient.mk_surjective
 
-lemma continuous_mk : Continuous (mk : X → t2Quotient X) :=
+lemma continuous_mk : Continuous (mk : X → T2Quotient X) :=
   continuous_quotient_mk'
 
 variable {X}
 
 @[elab_as_elim]
-protected lemma inductionOn {motive : t2Quotient X → Prop} (q : t2Quotient X)
-    (h : ∀ x, motive (t2Quotient.mk x)) : motive q := Quotient.inductionOn q h
+protected lemma inductionOn {motive : T2Quotient X → Prop} (q : T2Quotient X)
+    (h : ∀ x, motive (T2Quotient.mk x)) : motive q := Quotient.inductionOn q h
 
 @[elab_as_elim]
-protected lemma inductionOn₂ [TopologicalSpace Y] {motive : t2Quotient X → t2Quotient Y → Prop}
-    (q : t2Quotient X) (q' : t2Quotient Y) (h : ∀ x y, motive (mk x) (mk y)) : motive q q' :=
+protected lemma inductionOn₂ [TopologicalSpace Y] {motive : T2Quotient X → T2Quotient Y → Prop}
+    (q : T2Quotient X) (q' : T2Quotient Y) (h : ∀ x y, motive (mk x) (mk y)) : motive q q' :=
   Quotient.inductionOn₂ q q' h
 
 /-- The largest T2 quotient of a topological space is indeed T2. -/
-instance : T2Space (t2Quotient X) := by
+instance : T2Space (T2Quotient X) := by
   rw [t2Space_iff]
-  rintro ⟨x⟩ ⟨y⟩ (h : ¬ t2Quotient.mk x = t2Quotient.mk y)
+  rintro ⟨x⟩ ⟨y⟩ (h : ¬ T2Quotient.mk x = T2Quotient.mk y)
   obtain ⟨s, hs, hsxy⟩ : ∃ s, T2Space (Quotient s) ∧ Quotient.mk s x ≠ Quotient.mk s y := by
-    simpa [t2Quotient.mk_eq] using h
+    simpa [T2Quotient.mk_eq] using h
   exact separated_by_continuous (continuous_map_sInf (by exact hs)) hsxy
 
 lemma compatible {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [T2Space Y]
@@ -445,29 +451,29 @@ lemma compatible {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [T2Spac
     (Setoid.ker_lift_injective _) (hf.quotient_lift fun _ _ ↦ id)
 
 /-- The universal property of the largest T2 quotient of a topological space `X`: any continuous
-map from `X` to a T2 space `Y` uniquely factors through `t2Quotient X`. This declaration builds the
-factored map. Its continuity is `t2Quotient.continuous_lift`, the fact that it indeed factors the
-original map is `t2Quotient.lift_mk` and uniqueness is `t2Quotient.unique_lift`. -/
+map from `X` to a T2 space `Y` uniquely factors through `T2Quotient X`. This declaration builds the
+factored map. Its continuity is `T2Quotient.continuous_lift`, the fact that it indeed factors the
+original map is `T2Quotient.lift_mk` and uniqueness is `T2Quotient.unique_lift`. -/
 def lift {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [T2Space Y]
-    {f : X → Y} (hf : Continuous f) : t2Quotient X → Y :=
-  Quotient.lift f (t2Quotient.compatible hf)
+    {f : X → Y} (hf : Continuous f) : T2Quotient X → Y :=
+  Quotient.lift f (T2Quotient.compatible hf)
 
 lemma continuous_lift {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [T2Space Y]
-    {f : X → Y} (hf : Continuous f) : Continuous (t2Quotient.lift hf) :=
+    {f : X → Y} (hf : Continuous f) : Continuous (T2Quotient.lift hf) :=
   continuous_coinduced_dom.mpr hf
 
 @[simp]
 lemma lift_mk {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [T2Space Y]
     {f : X → Y} (hf : Continuous f) (x : X) : lift hf (mk x) = f x :=
-  Quotient.lift_mk (s := t2Setoid X) f (t2Quotient.compatible hf) x
+  Quotient.lift_mk (s := t2Setoid X) f (T2Quotient.compatible hf) x
 
 lemma unique_lift {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [T2Space Y]
-    {f : X → Y} (hf : Continuous f) {g : t2Quotient X → Y} (hfg : g ∘ mk = f) :
+    {f : X → Y} (hf : Continuous f) {g : T2Quotient X → Y} (hfg : g ∘ mk = f) :
     g = lift hf := by
   apply surjective_mk X |>.right_cancellable |>.mp <| funext _
   simp [← hfg]
 
-end t2Quotient
+end T2Quotient
 end
 
 variable {Z : Type*} [TopologicalSpace Y] [TopologicalSpace Z]
@@ -569,24 +575,23 @@ end SeparatedFinset
 
 /-- In a `T2Space`, every compact set is closed. -/
 theorem IsCompact.isClosed [T2Space X] {s : Set X} (hs : IsCompact s) : IsClosed s :=
-  isOpen_compl_iff.1 <| isOpen_iff_forall_mem_open.mpr fun x hx =>
-    let ⟨u, v, _, vo, su, xv, uv⟩ :=
-      SeparatedNhds.of_isCompact_isCompact hs isCompact_singleton (disjoint_singleton_right.2 hx)
-    ⟨v, (uv.mono_left <| show s ≤ u from su).subset_compl_left, vo, by simpa using xv⟩
+  isClosed_iff_forall_filter.2 fun _x _f _ hfs hfx =>
+    let ⟨_y, hy, hfy⟩ := hs.exists_clusterPt hfs
+    mem_of_eq_of_mem (eq_of_nhds_neBot (hfy.mono hfx).neBot).symm hy
 
 theorem IsCompact.preimage_continuous [CompactSpace X] [T2Space Y] {f : X → Y} {s : Set Y}
     (hs : IsCompact s) (hf : Continuous f) : IsCompact (f ⁻¹' s) :=
   (hs.isClosed.preimage hf).isCompact
 
-lemma Pi.isCompact_iff {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
-    [∀ i, T2Space (π i)] {s : Set (Π i, π i)} :
+lemma Pi.isCompact_iff {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
+    [∀ i, T2Space (X i)] {s : Set (Π i, X i)} :
     IsCompact s ↔ IsClosed s ∧ ∀ i, IsCompact (eval i '' s) := by
   constructor <;> intro H
   · exact ⟨H.isClosed, fun i ↦ H.image <| continuous_apply i⟩
   · exact IsCompact.of_isClosed_subset (isCompact_univ_pi H.2) H.1 (subset_pi_eval_image univ s)
 
-lemma Pi.isCompact_closure_iff {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
-    [∀ i, T2Space (π i)] {s : Set (Π i, π i)} :
+lemma Pi.isCompact_closure_iff {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
+    [∀ i, T2Space (X i)] {s : Set (Π i, X i)} :
     IsCompact (closure s) ↔ ∀ i, IsCompact (closure <| eval i '' s) := by
   simp_rw [← exists_isCompact_superset_iff, Pi.exists_compact_superset_iff, image_subset_iff]
 
@@ -633,7 +638,7 @@ theorem ContinuousAt.ne_iff_eventually_ne [T2Space Y] {x : X} {f g : X → Y}
 
 /-- **Local identity principle** for continuous maps: Two continuous maps into a Hausdorff space
 agree in a punctured neighborhood of a non-isolated point iff they agree in a neighborhood. -/
-theorem ContinuousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE [T2Space Y] {x : X} {f g : X → Y}
+theorem ContinuousAt.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE [T2Space Y] {x : X} {f g : X → Y}
     (hf : ContinuousAt f x) (hg : ContinuousAt g x) [(𝓝[≠] x).NeBot] :
     f =ᶠ[𝓝[≠] x] g ↔ f =ᶠ[𝓝 x] g := by
   constructor <;> intro hfg
@@ -642,10 +647,14 @@ theorem ContinuousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE [T2Space Y] {x : X}
     obtain ⟨a, ha⟩ : {x | f x ≠ g x ∧ f x = g x}.Nonempty := by
       have h₁ := (eventually_nhdsWithin_of_eventually_nhds
         ((hf.ne_iff_eventually_ne hg).1 hCon)).and hfg
-      have h₂ : ∅ ∉ 𝓝[≠] x := by exact empty_not_mem (𝓝[≠] x)
+      have h₂ : ∅ ∉ 𝓝[≠] x := by exact empty_notMem (𝓝[≠] x)
       simp_all
     simp at ha
   · exact hfg.filter_mono nhdsWithin_le_nhds
+
+@[deprecated (since := "2025-05-22")]
+alias ContinuousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE :=
+  ContinuousAt.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE
 
 /-- A continuous map from a compact space to a Hausdorff space is a closed map. -/
 protected theorem Continuous.isClosedMap [CompactSpace X] [T2Space Y] {f : X → Y}

@@ -13,21 +13,21 @@ Given a finite type `α`, our goal is to compute the cardinality of conjugacy cl
 in `alternatingGroup α`.
 
 * `AlternatingGroup.card_of_cycleType_mul_eq m` and `AlternatingGroup.card_of_cycleType m`
-compute the number of even permutations of given cycle type.
+  compute the number of even permutations of given cycle type.
 
 * `Equiv.Perm.OnCycleFactors.odd_of_centralizer_le_alternatingGroup` :
-if `Subgroup.centralizer {g} ≤ alternatingGroup α`, then all members of the `g.cycleType` are odd.
+  if `Subgroup.centralizer {g} ≤ alternatingGroup α`, then all members of the `g.cycleType` are odd.
 
 * `Equiv.Perm.card_le_of_centralizer_le_alternating` :
-if `Subgroup.centralizer {g} ≤ alternatingGroup α`, then the cardinality of α
-is at most `g.cycleType.sum` plus one.
+  if `Subgroup.centralizer {g} ≤ alternatingGroup α`, then the cardinality of α
+  is at most `g.cycleType.sum` plus one.
 
 * `Equiv.Perm.count_le_one_of_centralizer_le_alternating` :
-if `Subgroup.centralizer {g} ≤ alternatingGroup α`, then `g.cycleType` has no repetitions.
+  if `Subgroup.centralizer {g} ≤ alternatingGroup α`, then `g.cycleType` has no repetitions.
 
 * `Equiv.Perm.centralizer_le_alternating_iff` :
-the previous three conditions are necessary and sufficient
-for having `Subgroup.centralizer {g} ≤ alternatingGroup α`.
+  the previous three conditions are necessary and sufficient
+  for having `Subgroup.centralizer {g} ≤ alternatingGroup α`.
 
 TODO :
 Deduce the formula for the cardinality of the centralizers
@@ -67,16 +67,15 @@ theorem map_subtype_of_cycleType (m : Multiset ℕ) :
       if Even (m.sum + m.card) then ({g | g.cycleType = m} : Finset (Perm α)) else ∅ := by
   split_ifs with hm
   · ext g
-    simp only [Finset.mem_map, Finset.mem_filter, Finset.mem_univ, true_and,
-      Embedding.coe_subtype, Subtype.exists, mem_alternatingGroup, exists_and_left,
-      exists_prop, exists_eq_right_right, and_iff_left_iff_imp]
+    simp_rw [Finset.mem_map, Finset.mem_filter_univ, Embedding.coe_subtype, Subtype.exists,
+      mem_alternatingGroup, exists_and_left, exists_prop, exists_eq_right_right,
+      and_iff_left_iff_imp]
     intro hg
     rw [sign_of_cycleType, hg, Even.neg_one_pow hm]
-  · rw [Finset.eq_empty_iff_forall_not_mem]
+  · rw [Finset.eq_empty_iff_forall_notMem]
     intro g hg
-    simp only [Finset.mem_map, Finset.mem_filter, Finset.mem_univ, true_and,
-      Embedding.coe_subtype, Subtype.exists, mem_alternatingGroup, exists_and_left,
-      exists_prop, exists_eq_right_right] at hg
+    simp_rw [Finset.mem_map, Finset.mem_filter_univ, Embedding.coe_subtype, Subtype.exists,
+      mem_alternatingGroup, exists_and_left, exists_prop, exists_eq_right_right] at hg
     rcases hg with ⟨hg, hs⟩
     rw [g.sign_of_cycleType, hg, neg_one_pow_eq_one_iff_even (by simp)] at hs
     contradiction

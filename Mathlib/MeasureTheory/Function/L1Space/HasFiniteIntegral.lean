@@ -31,8 +31,9 @@ open Topology ENNReal MeasureTheory NNReal
 
 open Set Filter TopologicalSpace ENNReal EMetric MeasureTheory
 
-variable {α β γ ε ε' : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
+variable {α β γ ε ε' ε'' : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
 variable [NormedAddCommGroup β] [NormedAddCommGroup γ] [ENorm ε] [ENorm ε']
+  [TopologicalSpace ε''] [ENormedAddMonoid ε'']
 
 namespace MeasureTheory
 
@@ -56,13 +57,13 @@ theorem lintegral_edist_triangle {f g h : α → β} (hf : AEStronglyMeasurable 
   apply edist_triangle_right
 
 -- Yaël: Why do the following four lemmas even exist?
-theorem lintegral_enorm_zero : ∫⁻ _ : α, ‖(0 : β)‖ₑ ∂μ = 0 := by simp
+theorem lintegral_enorm_zero : ∫⁻ _ : α, ‖(0 : ε'')‖ₑ ∂μ = 0 := by simp
 
-theorem lintegral_enorm_add_left {f : α → β} (hf : AEStronglyMeasurable f μ) (g : α → γ) :
+theorem lintegral_enorm_add_left {f : α → ε''} (hf : AEStronglyMeasurable f μ) (g : α → ε') :
     ∫⁻ a, ‖f a‖ₑ + ‖g a‖ₑ ∂μ = ∫⁻ a, ‖f a‖ₑ ∂μ + ∫⁻ a, ‖g a‖ₑ ∂μ :=
   lintegral_add_left' hf.enorm _
 
-theorem lintegral_enorm_add_right (f : α → β) {g : α → γ} (hg : AEStronglyMeasurable g μ) :
+theorem lintegral_enorm_add_right (f : α → ε') {g : α → ε''} (hg : AEStronglyMeasurable g μ) :
     ∫⁻ a, ‖f a‖ₑ + ‖g a‖ₑ ∂μ = ∫⁻ a, ‖f a‖ₑ ∂μ + ∫⁻ a, ‖g a‖ₑ ∂μ :=
   lintegral_add_right' _ hg.enorm
 
@@ -87,7 +88,7 @@ theorem hasFiniteIntegral_def {_ : MeasurableSpace α} (f : α → ε) (μ : Mea
   Iff.rfl
 
 theorem hasFiniteIntegral_iff_enorm {f : α → ε} : HasFiniteIntegral f μ ↔ ∫⁻ a, ‖f a‖ₑ ∂μ < ∞ := by
-  simp only [HasFiniteIntegral, ofReal_norm_eq_enorm, enorm_eq_nnnorm]
+  simp only [HasFiniteIntegral]
 
 @[deprecated (since := "2025-01-20")]
 alias hasFiniteIntegral_iff_nnnorm := hasFiniteIntegral_iff_enorm
@@ -177,6 +178,13 @@ theorem hasFiniteIntegral_const [IsFiniteMeasure μ] (c : β) :
     HasFiniteIntegral (fun _ : α => c) μ :=
   hasFiniteIntegral_const_iff.2 <| .inr ‹_›
 
+theorem HasFiniteIntegral.of_mem_Icc_of_ne_top [IsFiniteMeasure μ]
+    {a b : ℝ≥0∞} (ha : a ≠ ⊤) (hb : b ≠ ⊤) {X : α → ℝ≥0∞} (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
+    HasFiniteIntegral X μ := by
+  have : ‖max ‖a‖ₑ ‖b‖ₑ‖ₑ ≠ ⊤ := by simp [ha, hb]
+  apply (hasFiniteIntegral_const_enorm this (μ := μ)).mono'_enorm
+  filter_upwards [h.mono fun ω h ↦ h.1, h.mono fun ω h ↦ h.2] with ω h₁ h₂ using by simp [h₂]
+
 theorem HasFiniteIntegral.of_mem_Icc [IsFiniteMeasure μ] (a b : ℝ) {X : α → ℝ}
     (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
     HasFiniteIntegral X μ := by
@@ -192,7 +200,8 @@ theorem hasFiniteIntegral_of_bounded [IsFiniteMeasure μ] {f : α → β} {C : �
   (hasFiniteIntegral_const C).mono' hC
 
 -- TODO: generalise this to f with codomain ε
--- requires generalising norm_le_pi_norm and friends to enorms
+-- requires generalising `norm_le_pi_norm` and friends to enorms
+@[simp]
 theorem HasFiniteIntegral.of_finite [Finite α] [IsFiniteMeasure μ] {f : α → β} :
     HasFiniteIntegral f μ :=
   let ⟨_⟩ := nonempty_fintype α
@@ -250,12 +259,26 @@ theorem HasFiniteIntegral.norm {f : α → β} (hfi : HasFiniteIntegral f μ) :
     HasFiniteIntegral (fun a => ‖f a‖) μ := by simpa [hasFiniteIntegral_iff_enorm] using hfi
 
 theorem hasFiniteIntegral_enorm_iff (f : α → ε) :
-    HasFiniteIntegral (fun a => ‖f a‖ₑ) μ ↔ HasFiniteIntegral f μ :=
+    HasFiniteIntegral (‖f ·‖ₑ) μ ↔ HasFiniteIntegral f μ :=
   hasFiniteIntegral_congr'_enorm <| Eventually.of_forall fun x => enorm_enorm (f x)
 
 theorem hasFiniteIntegral_norm_iff (f : α → β) :
     HasFiniteIntegral (fun a => ‖f a‖) μ ↔ HasFiniteIntegral f μ :=
   hasFiniteIntegral_congr' <| Eventually.of_forall fun x => norm_norm (f x)
+
+theorem HasFiniteIntegral.of_subsingleton [Subsingleton α] [IsFiniteMeasure μ] {f : α → β} :
+    HasFiniteIntegral f μ :=
+  .of_finite
+
+theorem HasFiniteIntegral.of_isEmpty [IsEmpty α] {f : α → β} :
+    HasFiniteIntegral f μ :=
+  .of_finite
+
+@[simp]
+theorem HasFiniteIntegral.of_subsingleton_codomain
+    {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε] [Subsingleton ε] {f : α → ε} :
+    HasFiniteIntegral f μ :=
+  hasFiniteIntegral_zero _ _ |>.congr <| .of_forall fun _ ↦ Subsingleton.elim _ _
 
 theorem hasFiniteIntegral_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hf : ∫⁻ x, f x ∂μ ≠ ∞) :
     HasFiniteIntegral (fun x ↦ (f x).toReal) μ := by
@@ -266,7 +289,7 @@ theorem hasFiniteIntegral_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hf
   by_cases hfx : f x = ∞
   · simp [hfx]
   · lift f x to ℝ≥0 using hfx with fx h
-    simp [← h, ← NNReal.coe_le_coe]
+    simp
 
 lemma hasFiniteIntegral_toReal_iff {f : α → ℝ≥0∞} (hf : ∀ᵐ x ∂μ, f x ≠ ∞) :
     HasFiniteIntegral (fun x ↦ (f x).toReal) μ ↔ ∫⁻ x, f x ∂μ ≠ ∞ := by
@@ -385,7 +408,7 @@ theorem tendsto_lintegral_norm_of_dominated_convergence
     · calc
         ∫⁻ a, b a ∂μ = 2 * ∫⁻ a, ENNReal.ofReal (bound a) ∂μ := by
           rw [lintegral_const_mul']
-          exact coe_ne_top
+          finiteness
         _ ≠ ∞ := mul_ne_top coe_ne_top bound_hasFiniteIntegral.ne
     filter_upwards [h_bound 0] with _ h using le_trans (norm_nonneg _) h
   -- Show `‖f a - F n a‖ --> 0`
@@ -441,10 +464,16 @@ theorem HasFiniteIntegral.mul_const [NormedRing 𝕜] {f : α → 𝕜} (h : Has
 
 section count
 
-variable [MeasurableSingletonClass α] {f : α → β}
+variable [MeasurableSingletonClass α]
+
+/-- A function has finite integral for the counting measure iff its enorm has finite `tsum`. -/
+-- Note that asking for mere summability makes no sense, as every sequence in ℝ≥0∞ is summable.
+lemma hasFiniteIntegral_count_iff_enorm {f : α → ε} :
+    HasFiniteIntegral f Measure.count ↔ tsum (‖f ·‖ₑ) < ⊤ := by
+  simp only [hasFiniteIntegral_iff_enorm, lintegral_count]
 
 /-- A function has finite integral for the counting measure iff its norm is summable. -/
-lemma hasFiniteIntegral_count_iff :
+lemma hasFiniteIntegral_count_iff {f : α → β} :
     HasFiniteIntegral f Measure.count ↔ Summable (‖f ·‖) := by
   simp only [hasFiniteIntegral_iff_enorm, enorm, lintegral_count, lt_top_iff_ne_top,
     tsum_coe_ne_top_iff_summable, ← summable_coe, coe_nnnorm]
@@ -453,7 +482,7 @@ end count
 
 section restrict
 
-variable {E : Type*} [NormedAddCommGroup E] {f : α → E}
+variable {E : Type*} [NormedAddCommGroup E] {f : α → ε}
 
 lemma HasFiniteIntegral.restrict (h : HasFiniteIntegral f μ) {s : Set α} :
     HasFiniteIntegral f (μ.restrict s) := by

@@ -100,18 +100,18 @@ nonrec def orthogonalProjectionAux (s : AffineSubspace ℝ P) [Nonempty s]
   toFun p := ⟨orthogonalProjectionFn s p, orthogonalProjectionFn_mem p⟩
   linear := s.direction.orthogonalProjection
   map_vadd' p v := by
-    have hs : (s.direction.orthogonalProjection v : V) +ᵥ orthogonalProjectionFn s p ∈ s :=
+    have hs : s.direction.starProjection v +ᵥ orthogonalProjectionFn s p ∈ s :=
       vadd_mem_of_mem_direction (s.direction.orthogonalProjection v).2
         (orthogonalProjectionFn_mem p)
     have ho :
-      (s.direction.orthogonalProjection v : V) +ᵥ orthogonalProjectionFn s p ∈
+      s.direction.starProjection v +ᵥ orthogonalProjectionFn s p ∈
         mk' (v +ᵥ p) s.directionᗮ := by
       rw [← vsub_right_mem_direction_iff_mem (self_mem_mk' _ _) _, direction_mk',
         vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, add_comm, add_sub_assoc]
       refine Submodule.add_mem _ (orthogonalProjectionFn_vsub_mem_direction_orthogonal p) ?_
       rw [Submodule.mem_orthogonal']
       intro w hw
-      rw [← neg_sub, inner_neg_left, Submodule.orthogonalProjection_inner_eq_zero _ w hw, neg_zero]
+      rw [← neg_sub, inner_neg_left, Submodule.starProjection_inner_eq_zero _ w hw, neg_zero]
     have hm :
       (s.direction.orthogonalProjection v : V) +ᵥ orthogonalProjectionFn s p ∈
         ({orthogonalProjectionFn s (v +ᵥ p)} : Set P) := by
@@ -136,6 +136,20 @@ nonrec def orthogonalProjection (s : AffineSubspace ℝ P) [Nonempty s]
 theorem orthogonalProjectionFn_eq {s : AffineSubspace ℝ P} [Nonempty s]
     [s.direction.HasOrthogonalProjection] (p : P) :
     orthogonalProjectionFn s p = orthogonalProjection s p :=
+  rfl
+
+/-- Since both instance arguments are propositions, allow `simp` to rewrite them
+alongside the `s` argument.
+
+Note that without the coercion to `P`, the LHS and RHS would have different types. -/
+@[congr]
+theorem orthogonalProjection_congr {s₁ s₂ : AffineSubspace ℝ P} {p₁ p₂ : P}
+    [Nonempty s₁] [s₁.direction.HasOrthogonalProjection]
+    (h : s₁ = s₂) (hp : p₁ = p₂) :
+    letI : Nonempty s₂ := h ▸ ‹_›
+    letI : s₂.direction.HasOrthogonalProjection := h ▸ ‹_›
+    (orthogonalProjection s₁ p₁ : P) = (orthogonalProjection s₂ p₂ : P) := by
+  subst h hp
   rfl
 
 /-- The linear map corresponding to `orthogonalProjection`. -/
@@ -233,10 +247,13 @@ theorem dist_orthogonalProjection_eq_zero_iff {s : AffineSubspace ℝ P} [Nonemp
 
 /-- The distance between a point and its orthogonal projection is
 nonzero if it does not lie in the subspace. -/
-theorem dist_orthogonalProjection_ne_zero_of_not_mem {s : AffineSubspace ℝ P} [Nonempty s]
+theorem dist_orthogonalProjection_ne_zero_of_notMem {s : AffineSubspace ℝ P} [Nonempty s]
     [s.direction.HasOrthogonalProjection] {p : P} (hp : p ∉ s) :
     dist p (orthogonalProjection s p) ≠ 0 :=
   mt dist_orthogonalProjection_eq_zero_iff.mp hp
+
+@[deprecated (since := "2025-05-23")]
+alias dist_orthogonalProjection_ne_zero_of_not_mem := dist_orthogonalProjection_ne_zero_of_notMem
 
 /-- Subtracting `p` from its `orthogonalProjection` produces a result
 in the orthogonal direction. -/
@@ -428,7 +445,7 @@ theorem reflection_reflection (s : AffineSubspace ℝ P) [Nonempty s]
   have : ∀ a : s, ∀ b : V, s.direction.orthogonalProjection b = 0 →
       reflection s (reflection s (b +ᵥ (a : P))) = b +ᵥ (a : P) := by
     intro _ _ h
-    simp [reflection, h]
+    simp [reflection]
   rw [← vsub_vadd p (orthogonalProjection s p)]
   exact this (orthogonalProjection s p) _ (orthogonalProjection_vsub_orthogonalProjection s p)
 
@@ -563,6 +580,17 @@ theorem dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq
   exact
     Submodule.inner_right_of_mem_orthogonal (vsub_orthogonalProjection_mem_direction p₂ hp₁)
       (orthogonalProjection_vsub_mem_direction_orthogonal _ p₂)
+
+@[simp]
+lemma orthogonalProjectionSpan_eq_point (s : Simplex ℝ P 0) (p : P) :
+    s.orthogonalProjectionSpan p = s.points 0 := by
+  rw [orthogonalProjectionSpan]
+  convert orthogonalProjection_affineSpan_singleton _ _
+  simp [Fin.fin_one_eq_zero]
+
+lemma orthogonalProjectionSpan_faceOpposite_eq_point_rev (s : Simplex ℝ P 1) (i : Fin 2)
+    (p : P) : (s.faceOpposite i).orthogonalProjectionSpan p = s.points i.rev := by
+  simp [faceOpposite_point_eq_point_rev]
 
 end Simplex
 

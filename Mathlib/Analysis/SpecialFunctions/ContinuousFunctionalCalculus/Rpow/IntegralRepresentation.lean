@@ -60,9 +60,9 @@ lemma rpowIntegrand₀₁_zero_left (hp : 0 < p) : rpowIntegrand₀₁ p 0 x = 0
 lemma rpowIntegrand₀₁_nonneg (hp : 0 < p) (ht : 0 ≤ t) (hx : 0 ≤ x) :
     0 ≤ rpowIntegrand₀₁ p t x := by
   unfold rpowIntegrand₀₁
-  rcases eq_or_gt_of_le ht with ht_zero|ht_pos
-  case inl => simp [ht_zero, Real.zero_rpow (ne_of_gt hp)]
-  case inr =>
+  cases eq_or_lt_of_le' ht with
+  | inl ht_zero => simp [ht_zero, Real.zero_rpow (ne_of_gt hp)]
+  | inr ht_pos =>
     refine mul_nonneg (by positivity) ?_
     rw [sub_nonneg]
     gcongr
@@ -143,7 +143,7 @@ lemma rpowIntegrand₀₁_le_rpow_sub_one (hp : p ∈ Ioo 0 1) (ht : 0 ≤ t) (h
     rpowIntegrand₀₁ p t x ≤ t ^ (p - 1) := by
   by_cases hx_zero : x = 0
   case pos =>
-    simp only [rpowIntegrand₀₁, one_div, hx_zero, add_zero, sub_self, mul_zero]
+    simp only [rpowIntegrand₀₁, hx_zero, add_zero, sub_self, mul_zero]
     positivity
   case neg =>
     calc
@@ -232,7 +232,7 @@ lemma integral_rpowIntegrand₀₁_eq_rpow_mul_const (hp : p ∈ Ioo 0 1) (hx : 
     · simpa using fun t _ ↦ hasDerivWithinAt_id t (Ioi t) |>.const_mul x
     · simpa [Set.image_mul_left_Ioi hx] using continuousOn_rpowIntegrand₀₁ hp hx.le
     · simpa [Set.image_mul_left_Ici hx] using integrableOn_rpowIntegrand₀₁_Ici hp hx.le
-    · simp only [Function.comp, rpowIntegrand₀₁_apply_mul' hp hx.le]
+    · simp only [Function.comp]
       rw [integrableOn_congr_fun (rpowIntegrand₀₁_apply_mul_eqOn_Ici hp hx.le) measurableSet_Ici]
       exact Integrable.mul_const (integrableOn_rpowIntegrand₀₁_Ici hp zero_le_one) _
   have heqOn : EqOn (fun t => rpowIntegrand₀₁ p (x * t) x * x)
@@ -273,7 +273,7 @@ lemma integral_rpowIntegrand₀₁_one_pos (hp : p ∈ Ioo 0 1) :
 /-- The integral representation of the function `x ↦ x^p` (where `p ∈ (0, 1)`) . -/
 lemma rpow_eq_const_mul_integral (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
     x ^ p = (∫ t in Ioi 0, rpowIntegrand₀₁ p t 1)⁻¹ * ∫ t in Ioi 0, rpowIntegrand₀₁ p t x := by
-  rcases eq_or_gt_of_le hx with hx_zero|_
+  rcases eq_or_lt_of_le' hx with hx_zero|_
   case inl =>
     simp only [mem_Ioo] at hp
     simp [hx_zero, Real.zero_rpow (by linarith)]
@@ -297,6 +297,6 @@ lemma exists_measure_rpow_eq_integral (hp : p ∈ Ioo 0 1) :
     filter_upwards [ae_restrict_mem measurableSet_Ioi] with t ht
     exact ht
   · rw [integral_smul_nnreal_measure, rpow_eq_const_mul_integral hp hx]
-    rfl
+    simp [C, NNReal.smul_def]
 
 end Real

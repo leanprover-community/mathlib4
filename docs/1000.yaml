@@ -471,6 +471,8 @@ Q505798:
 
 Q510197:
   title: Tutte theorem
+  decl: SimpleGraph.tutte
+  authors: Pim Otte
 
 Q512897:
   title: Brooks's theorem
@@ -488,8 +490,8 @@ Q528987:
   title: Von Neumann bicommutant theorem
 
 Q530152:
-  title: Picard&ndash;Lindelöf theorem
-  decl: IsPicardLindelof.exists_forall_hasDerivWithinAt_Icc_eq
+  title: Picard–Lindelöf theorem
+  decl: IsPicardLindelof.exists_eq_forall_mem_Icc_hasDerivWithinAt
 
 Q535366:
   title: Montel's theorem
@@ -794,8 +796,8 @@ Q766722:
 
 Q776578:
   title: Artin–Wedderburn theorem
-  # using proof_wanted, in Mathlib/RingTheory/SimpleModule.lean
-  statement: isSemisimpleRing_iff_pi_matrix_divisionRing
+  # in Mathlib/RingTheory/SimpleModule/Basic.lean
+  comment: "statement is formalized using proof_wanted (isSemisimpleRing_iff_pi_matrix_divisionRing)"
   # WIP formalisation, but not complete yet (January 1, 2025)
 
 Q777924:
@@ -1615,6 +1617,9 @@ Q1530275:
 
 Q1535225:
   title: Łoś' theorem
+  decl: FirstOrder.Language.Ultraproduct.sentence_realize
+  authors: Aaron Anderson
+  date: 2022-03-09
 
 Q1542114:
   title: Bézout's theorem
@@ -2394,6 +2399,9 @@ Q3527233:
 
 Q3527241:
   title: Krull's principal ideal theorem
+  decl: Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes
+  authors: Andrew Yang
+  date: 2023
 
 Q3527245:
   title: Six exponentials theorem

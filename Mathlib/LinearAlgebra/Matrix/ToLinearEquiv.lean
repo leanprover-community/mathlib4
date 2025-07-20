@@ -18,11 +18,11 @@ to linear equivs.
 
 ## Main definitions
 
- * `Matrix.toLinearEquiv`: a matrix with an invertible determinant forms a linear equiv
+* `Matrix.toLinearEquiv`: a matrix with an invertible determinant forms a linear equiv
 
 ## Main results
 
- * `Matrix.exists_mulVec_eq_zero_iff`: `M` maps some `v ≠ 0` to zero iff `det M = 0`
+* `Matrix.exists_mulVec_eq_zero_iff`: `M` maps some `v ≠ 0` to zero iff `det M = 0`
 
 ## Tags
 
@@ -59,7 +59,7 @@ theorem toLinearEquiv'_apply (P : Matrix n n R) (h : Invertible P) :
 
 @[simp]
 theorem toLinearEquiv'_symm_apply (P : Matrix n n R) (h : Invertible P) :
-    (↑(P.toLinearEquiv' h).symm : Module.End R (n → R)) = Matrix.toLin' (⅟ P) :=
+    (↑(P.toLinearEquiv' h).symm : Module.End R (n → R)) = Matrix.toLin' (⅟P) :=
   rfl
 
 end ToLinearEquiv'
@@ -171,7 +171,7 @@ theorem nondegenerate_iff_det_ne_zero {A : Type*} [DecidableEq n] [CommRing A] [
   constructor
   · intro hM v hv hMv
     obtain ⟨w, hwMv⟩ := hM.exists_not_ortho_of_ne_zero hv
-    simp [dotProduct_mulVec, hMv, zero_dotProduct, ne_eq, not_true] at hwMv
+    simp [dotProduct_mulVec, hMv, zero_dotProduct, ne_eq] at hwMv
   · rw [Matrix.nondegenerate_def]
     intro h v hv
     refine not_imp_not.mp (h v) (funext fun i => ?_)

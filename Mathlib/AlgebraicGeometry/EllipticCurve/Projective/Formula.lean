@@ -21,15 +21,15 @@ be defined in `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Point.lean`.
 
 ## Main definitions
 
- * `WeierstrassCurve.Projective.negY`: the `Y`-coordinate of `-P`.
- * `WeierstrassCurve.Projective.dblZ`: the `Z`-coordinate of `2 • P`.
- * `WeierstrassCurve.Projective.dblX`: the `X`-coordinate of `2 • P`.
- * `WeierstrassCurve.Projective.negDblY`: the `Y`-coordinate of `-(2 • P)`.
- * `WeierstrassCurve.Projective.dblY`: the `Y`-coordinate of `2 • P`.
- * `WeierstrassCurve.Projective.addZ`: the `Z`-coordinate of `P + Q`.
- * `WeierstrassCurve.Projective.addX`: the `X`-coordinate of `P + Q`.
- * `WeierstrassCurve.Projective.negAddY`: the `Y`-coordinate of `-(P + Q)`.
- * `WeierstrassCurve.Projective.addY`: the `Y`-coordinate of `P + Q`.
+* `WeierstrassCurve.Projective.negY`: the `Y`-coordinate of `-P`.
+* `WeierstrassCurve.Projective.dblZ`: the `Z`-coordinate of `2 • P`.
+* `WeierstrassCurve.Projective.dblX`: the `X`-coordinate of `2 • P`.
+* `WeierstrassCurve.Projective.negDblY`: the `Y`-coordinate of `-(2 • P)`.
+* `WeierstrassCurve.Projective.dblY`: the `Y`-coordinate of `2 • P`.
+* `WeierstrassCurve.Projective.addZ`: the `Z`-coordinate of `P + Q`.
+* `WeierstrassCurve.Projective.addX`: the `X`-coordinate of `P + Q`.
+* `WeierstrassCurve.Projective.negAddY`: the `Y`-coordinate of `-(P + Q)`.
+* `WeierstrassCurve.Projective.addY`: the `Y`-coordinate of `P + Q`.
 
 ## Implementation notes
 
@@ -821,12 +821,12 @@ lemma map_dblZ : (W'.map f).toProjective.dblZ (f ∘ P) = f (W'.dblZ P) := by
 
 @[simp]
 lemma map_dblX : (W'.map f).toProjective.dblX (f ∘ P) = f (W'.dblX P) := by
-  simp only [dblX, map_dblU, map_negY]
+  simp only [dblX]
   map_simp
 
 @[simp]
 lemma map_negDblY : (W'.map f).toProjective.negDblY (f ∘ P) = f (W'.negDblY P) := by
-  simp only [negDblY, map_dblU, map_dblX, map_negY]
+  simp only [negDblY]
   map_simp
 
 @[simp]

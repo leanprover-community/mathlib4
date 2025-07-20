@@ -3,12 +3,10 @@ Copyright (c) 2024 Brendan Murphy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Brendan Murphy
 -/
-import Mathlib.RingTheory.Regular.IsSMulRegular
 import Mathlib.RingTheory.Artinian.Module
-import Mathlib.RingTheory.Nakayama
-import Mathlib.Algebra.Equiv.TransferInstance
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-import Mathlib.RingTheory.Noetherian.Basic
+import Mathlib.RingTheory.Nakayama
+import Mathlib.RingTheory.Regular.IsSMulRegular
 
 /-!
 # Regular sequences and weakly regular sequences
@@ -39,7 +37,7 @@ variable [Semiring R] [Semiring S]
 abbrev ofList (rs : List R) := span { r | r ∈ rs }
 
 @[simp] lemma ofList_nil : (ofList [] : Ideal R) = ⊥ :=
-  have : { r | r ∈ [] } = ∅ := Set.eq_empty_of_forall_not_mem (fun _ => List.not_mem_nil)
+  have : { r | r ∈ [] } = ∅ := Set.eq_empty_of_forall_notMem (fun _ => List.not_mem_nil)
   Eq.trans (congrArg span this) span_empty
 
 @[simp] lemma ofList_append (rs₁ rs₂ : List R) :
@@ -284,7 +282,7 @@ lemma cons' {r : R} {rs : List R} (h1 : IsSMulRegular M r)
 /-- Weakly regular sequences can be inductively characterized by:
 * The empty sequence is weakly regular on any module.
 * If `r` is regular on `M` and `rs` is a weakly regular sequence on `M⧸rM` then
-the sequence obtained from `rs` by prepending `r` is weakly regular on `M`.
+  the sequence obtained from `rs` by prepending `r` is weakly regular on `M`.
 
 This is the induction principle produced by the inductive definition above.
 The motive will usually be valued in `Prop`, but `Sort*` works too. -/
@@ -413,7 +411,7 @@ lemma cons' {r : R} {rs : List R} (h1 : IsSMulRegular M r)
 /-- Regular sequences can be inductively characterized by:
 * The empty sequence is regular on any nonzero module.
 * If `r` is regular on `M` and `rs` is a regular sequence on `M⧸rM` then the
-sequence obtained from `rs` by prepending `r` is regular on `M`.
+  sequence obtained from `rs` by prepending `r` is regular on `M`.
 
 This is the induction principle produced by the inductive definition above.
 The motive will usually be valued in `Prop`, but `Sort*` works too. -/

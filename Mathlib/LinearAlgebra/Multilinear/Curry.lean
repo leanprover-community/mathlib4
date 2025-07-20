@@ -103,6 +103,7 @@ linear isomorphism in `multilinearCurryLeftEquiv R M M₂`.
 
 The direct and inverse maps are given by `f.curryLeft` and `f.uncurryLeft`. Use these
 unless you need the full framework of linear equivs. -/
+@[simps]
 def multilinearCurryLeftEquiv :
     MultilinearMap R M M₂ ≃ₗ[R] (M 0 →ₗ[R] MultilinearMap R (fun i : Fin n => M i.succ) M₂) where
   toFun := MultilinearMap.curryLeft
@@ -115,7 +116,6 @@ def multilinearCurryLeftEquiv :
 variable {R M M₂}
 
 /-! #### Right currying -/
-
 
 /-- Given a multilinear map `f` in `n` variables to the space of linear maps from `M (last n)` to
 `M₂`, construct the corresponding multilinear map on `n+1` variables obtained by concatenating
@@ -181,8 +181,50 @@ def multilinearCurryRightEquiv :
   left_inv := MultilinearMap.uncurry_curryRight
   right_inv := MultilinearMap.curry_uncurryRight
 
-namespace MultilinearMap
+variable {R M M₂}
 
+/-- Given a linear map from `M p` to the space of multilinear maps
+in `n` variables `M 0`, ..., `M n` with `M p` removed,
+returns a multilinear map in all `n + 1` variables. -/
+@[simps!]
+def LinearMap.uncurryMid (p : Fin (n + 1))
+    (f : M p →ₗ[R] MultilinearMap R (fun i ↦ M (p.succAbove i)) M₂) : MultilinearMap R M M₂ :=
+  .mk' (fun m ↦ f (m p) (p.removeNth m))
+    (fun m i x y ↦ by cases i using Fin.succAboveCases p <;> simp)
+    (fun m i x y ↦ by cases i using Fin.succAboveCases p <;> simp)
+
+/-- Interpret a multilinear map in `n + 1` variables
+as a linear map in `p`th variable with values in the multilinear maps in the other variables. -/
+@[simps!]
+def MultilinearMap.curryMid (p : Fin (n + 1)) (f : MultilinearMap R M M₂) :
+    M p →ₗ[R] MultilinearMap R (fun i ↦ M (p.succAbove i)) M₂ where
+  toFun x := .mk' fun m ↦ f (p.insertNth x m)
+  map_add' x y := by ext; simp [map_insertNth_add]
+  map_smul' c x := by ext; simp [map_insertNth_smul]
+
+@[simp]
+theorem LinearMap.curryMid_uncurryMid (i : Fin (n + 1))
+    (f : M i →ₗ[R] MultilinearMap R (fun j ↦ M (i.succAbove j)) M₂) :
+    (f.uncurryMid i).curryMid i = f := by ext; simp
+
+@[simp]
+theorem MultilinearMap.uncurryMid_curryMid (i : Fin (n + 1)) (f : MultilinearMap R M M₂) :
+    (f.curryMid i).uncurryMid i = f := by ext; simp
+
+variable (R M M₂)
+
+/-- `MultilinearMap.curryMid` as a linear equivalence. -/
+@[simps]
+def MultilinearMap.curryMidLinearEquiv (p : Fin (n + 1)) :
+    MultilinearMap R M M₂ ≃ₗ[R] M p →ₗ[R] MultilinearMap R (fun i ↦ M (p.succAbove i)) M₂ where
+  toFun := MultilinearMap.curryMid p
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+  invFun := LinearMap.uncurryMid p
+  left_inv := MultilinearMap.uncurryMid_curryMid p
+  right_inv := LinearMap.curryMid_uncurryMid p
+
+namespace MultilinearMap
 
 variable {R M₂} {N : (ι ⊕ ι') → Type*}
   [∀ i, AddCommMonoid (N i)] [∀ i, Module R (N i)]
@@ -214,11 +256,11 @@ theorem currySum_apply' {N : Type*} [AddCommMonoid N] [Module R N]
     currySum f u v = f (Sum.elim u v) := rfl
 
 @[simp]
-lemma currySum_add (f₁ f₂ : MultilinearMap R N M₂):
+lemma currySum_add (f₁ f₂ : MultilinearMap R N M₂) :
     currySum (f₁ + f₂) = currySum f₁ + currySum f₂ := rfl
 
 @[simp]
-lemma currySum_smul (r : R) (f : MultilinearMap R N M₂):
+lemma currySum_smul (r : R) (f : MultilinearMap R N M₂) :
     currySum (r • f) = r • currySum f := rfl
 
 /-- Given a family of modules `N : (ι ⊕ ι') → Type*`, a multilinear map on
@@ -273,8 +315,8 @@ lemma uncurrySum_currySum (f : MultilinearMap R N M₂) :
 lemma currySum_uncurrySum
     (g : MultilinearMap R (fun i : ι ↦ N (.inl i))
       (MultilinearMap R (fun i : ι' ↦ N (.inr i)) M₂)) :
-  currySum (uncurrySum g) = g :=
-    rfl
+    currySum (uncurrySum g) = g :=
+  rfl
 
 /-- Multilinear maps on `N : (ι ⊕ ι') → Type*` identify to multilinear maps
 from `(fun (i : ι) ↦ N (.inl i))` taking values in the space of
@@ -286,7 +328,6 @@ def currySumEquiv : MultilinearMap R N M₂ ≃ₗ[R]
   toFun := currySum
   invFun := uncurrySum
   left_inv _ := by simp
-  right_inv _ := rfl
   map_add' := by aesop
   map_smul' := by aesop
 
@@ -340,7 +381,7 @@ theorem curryFinFinset_symm_apply_piecewise_const {k l n : ℕ} {s : Finset (Fin
     rw [finSumEquivOfFinset_inl, Finset.piecewise_eq_of_mem]
     apply Finset.orderEmbOfFin_mem
   · ext
-    rw [finSumEquivOfFinset_inr, Finset.piecewise_eq_of_not_mem]
+    rw [finSumEquivOfFinset_inr, Finset.piecewise_eq_of_notMem]
     exact Finset.mem_compl.1 (Finset.orderEmbOfFin_mem _ _ _)
 
 @[simp]

@@ -33,8 +33,6 @@ variable (I J K L R R' : Type*)
 def comp : Matrix I J (Matrix K L R) ≃ Matrix (I × K) (J × L) R where
   toFun m ik jl := m ik.1 jl.1 ik.2 jl.2
   invFun n i j k l := n (i, k) (j, l)
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 section Basic
 variable {R I J K L}
@@ -173,6 +171,15 @@ theorem compAlgEquiv_apply (M : Matrix I I (Matrix J J R)) :
 @[simp]
 theorem compAlgEquiv_symm_apply (M : Matrix (I × J) (I × J) R) :
     (compAlgEquiv I J R K).symm M = (comp I I J J R).symm M := rfl
+
+@[simp]
+theorem isUnit_comp_iff {M : Matrix I I (Matrix J J R)} : IsUnit (comp _ _ _ _ _ M) ↔ IsUnit M :=
+  isUnit_map_iff (compAlgEquiv _ _ _ ℕ) M
+
+@[simp]
+theorem isUnit_comp_symm_iff {M : Matrix (I × J) (I × J) R} :
+    IsUnit (comp _ _ _ _ _ |>.symm M) ↔ IsUnit M :=
+  isUnit_map_iff (compAlgEquiv _ _ _ ℕ).symm M
 
 end Algebra
 
