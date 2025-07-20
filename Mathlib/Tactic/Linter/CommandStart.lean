@@ -1087,7 +1087,8 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   -- If a command does not start on the first column, emit a warning.
   --dbg_trace "lint1"
-  for m in (← getExceptions stx) do
+  for m in (← getExceptions stx).filter fun {kinds := k,..} =>
+      !#[``Parser.Command.docComment, ``Parser.Command.moduleDoc].contains (k.pop.back?.getD .anonymous) do
     logInfoAt (.ofRange m.rg) m!"{m.error} ({m.kinds})"
 /-
   if let some pos := stx.getPos? then
