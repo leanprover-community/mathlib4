@@ -11,6 +11,7 @@ import Mathlib.Analysis.LocallyConvex.WeakDual
 import Mathlib.Analysis.Normed.Module.Dual
 import Mathlib.Analysis.Normed.Module.Convex
 import Mathlib.Order.Filter.Bases.Basic
+import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
 
@@ -149,6 +150,28 @@ lemma test4 :
   use w
 
 
+variable (s : Finset F)
+
+variable (g : s)
+
+#check g.val
+
+def mL : s → WeakBilin B →ₗ[𝕜] 𝕜 := fun f => (WeakBilin.eval B) f.val
+
+#check mL B s
+
+#check mem_span_of_iInf_ker_le_ker (ι := s) (L := (mL B s)) (K := f.toLinearMap)
+
+lemma test5 : ∃ (s₁ : Finset F), ↑f ∈ Submodule.span 𝕜 (Set.range (B.mL s)) := by
+  obtain ⟨s₁, hs⟩ := test4 B f
+  use s₁
+  apply mem_span_of_iInf_ker_le_ker (ι := s₁) (L := (mL B s₁)) (K := f.toLinearMap)
+  intro x hx
+  simp at hx
+  simp at hs
+  obtain ⟨r, hr1, hr2⟩ := hs
+  simp_all only [mem_ker, ContinuousLinearMap.coe_coe]
+  sorry
 
 
 
