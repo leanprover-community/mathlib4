@@ -3673,6 +3673,7 @@ import Mathlib.Geometry.Euclidean.Angle.Unoriented.CrossProduct
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.RightAngle
 import Mathlib.Geometry.Euclidean.Basic
 import Mathlib.Geometry.Euclidean.Circumcenter
+import Mathlib.Geometry.Euclidean.Congruence
 import Mathlib.Geometry.Euclidean.Incenter
 import Mathlib.Geometry.Euclidean.Inversion.Basic
 import Mathlib.Geometry.Euclidean.Inversion.Calculus
@@ -4909,6 +4910,7 @@ import Mathlib.Order.Interval.Finset.Defs
 import Mathlib.Order.Interval.Finset.Fin
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Order.Interval.Finset.SuccPred
+import Mathlib.Order.Interval.Lex
 import Mathlib.Order.Interval.Multiset
 import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Order.Interval.Set.Defs
