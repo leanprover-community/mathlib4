@@ -588,6 +588,10 @@ theorem orthogonalProjection_mem_subspace_eq_self (v : K) : K.orthogonalProjecti
   ext
   apply eq_starProjection_of_mem_of_inner_eq_zero <;> simp
 
+@[simp]
+theorem starProjection_mem_subspace_eq_self (v : K) :
+    K.starProjection v = v := by simp [starProjection_apply]
+
 /-- A point equals its orthogonal projection if and only if it lies in the subspace. -/
 theorem starProjection_eq_self_iff {v : E} : K.starProjection v = v ↔ v ∈ K := by
   refine ⟨fun h => ?_, fun h => eq_starProjection_of_mem_of_inner_eq_zero h ?_⟩
@@ -684,9 +688,16 @@ variable (K)
 theorem orthogonalProjection_norm_le : ‖K.orthogonalProjection‖ ≤ 1 :=
   LinearMap.mkContinuous_norm_le _ (by norm_num) _
 
+theorem starProjection_norm_le : ‖K.starProjection‖ ≤ 1 :=
+  K.orthogonalProjection_norm_le
+
 theorem norm_orthogonalProjection_apply {v : E} (hv : v ∈ K) :
     ‖orthogonalProjection K v‖ = ‖v‖ :=
   congr(‖$(K.starProjection_eq_self_iff.mpr hv)‖)
+
+theorem norm_starProjection_apply {v : E} (hv : v ∈ K) :
+    ‖K.starProjection v‖ = ‖v‖ :=
+  norm_orthogonalProjection_apply _ hv
 
 /-- The orthogonal projection onto a closed subspace is norm non-increasing. -/
 theorem norm_orthogonalProjection_apply_le (v : E) :
@@ -695,10 +706,17 @@ theorem norm_orthogonalProjection_apply_le (v : E) :
   _ ≤ 1 * ‖v‖ := by gcongr; exact orthogonalProjection_norm_le K
   _ = _ := by simp
 
+theorem norm_starProjection_apply_le (v : E) :
+    ‖K.starProjection v‖ ≤ ‖v‖ := K.norm_orthogonalProjection_apply_le v
+
 /-- The orthogonal projection onto a closed subspace is a `1`-Lipschitz map. -/
 theorem lipschitzWith_orthogonalProjection :
     LipschitzWith 1 (orthogonalProjection K) :=
   ContinuousLinearMap.lipschitzWith_of_opNorm_le (orthogonalProjection_norm_le K)
+
+theorem lipschitzWith_starProjection :
+    LipschitzWith 1 K.starProjection :=
+  ContinuousLinearMap.lipschitzWith_of_opNorm_le (starProjection_norm_le K)
 
 /-- The operator norm of the orthogonal projection onto a nontrivial subspace is `1`. -/
 theorem norm_orthogonalProjection (hK : K ≠ ⊥) :
@@ -707,6 +725,10 @@ theorem norm_orthogonalProjection (hK : K ≠ ⊥) :
   obtain ⟨x, hxK, hx_ne_zero⟩ := Submodule.exists_mem_ne_zero_of_ne_bot hK
   simpa [K.norm_orthogonalProjection_apply hxK, norm_eq_zero, hx_ne_zero]
     using K.orthogonalProjection.ratio_le_opNorm x
+
+theorem norm_starProjection (hK : K ≠ ⊥) :
+    ‖K.starProjection‖ = 1 :=
+  K.norm_orthogonalProjection hK
 
 variable (𝕜)
 
@@ -953,11 +975,22 @@ theorem orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero [K.HasOrt
   ext
   convert eq_starProjection_of_mem_orthogonal (K := K) _ _ <;> simp [hv]
 
+theorem starProjection_mem_subspace_orthogonalComplement_eq_zero [K.HasOrthogonalProjection]
+    {v : E} (hv : v ∈ Kᗮ) : K.starProjection v = 0 := by
+  simp [starProjection_apply, orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero hv]
+
 /-- The projection into `U` from an orthogonal submodule `V` is the zero map. -/
 theorem IsOrtho.orthogonalProjection_comp_subtypeL {U V : Submodule 𝕜 E}
     [U.HasOrthogonalProjection] (h : U ⟂ V) : U.orthogonalProjection ∘L V.subtypeL = 0 :=
   ContinuousLinearMap.ext fun v =>
     orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero <| h.symm v.prop
+
+theorem IsOrtho.starProjection_comp_starProjection_orthogonal {U V : Submodule 𝕜 E}
+    [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] (h : U ⟂ V) :
+    U.starProjection ∘L V.starProjection = 0 :=
+  calc _ = U.subtypeL ∘L (U.orthogonalProjection ∘L V.subtypeL) ∘L V.orthogonalProjection := by
+        simp only [starProjection, ContinuousLinearMap.comp_assoc]
+    _ = 0 := by simp [h.orthogonalProjection_comp_subtypeL]
 
 /-- The projection into `U` from `V` is the zero map if and only if `U` and `V` are orthogonal. -/
 theorem orthogonalProjection_comp_subtypeL_eq_zero_iff {U V : Submodule 𝕜 E}
@@ -967,6 +1000,17 @@ theorem orthogonalProjection_comp_subtypeL_eq_zero_iff {U V : Submodule 𝕜 E}
     have : U.orthogonalProjection v = 0 := DFunLike.congr_fun h (⟨_, hv⟩ : V)
     rw [starProjection_apply, this, Submodule.coe_zero, sub_zero],
     Submodule.IsOrtho.orthogonalProjection_comp_subtypeL⟩
+
+/-- `U.starProjection ∘ V.starProjection = 0` iff `U` and `V` are pairwise orthogonal. -/
+theorem starProjection_comp_starProjection_orthogonal_eq_zero_iff {U V : Submodule 𝕜 E}
+    [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] :
+    U.starProjection ∘L V.starProjection = 0 ↔ U ⟂ V := by
+  refine ⟨fun h => ?_, fun h => h.starProjection_comp_starProjection_orthogonal⟩
+  rw [← orthogonalProjection_comp_subtypeL_eq_zero_iff]
+  simp only [ContinuousLinearMap.ext_iff, ContinuousLinearMap.comp_apply, subtypeL_apply,
+    starProjection_apply, ContinuousLinearMap.zero_apply, coe_eq_zero] at h ⊢
+  intro x
+  simpa using h (x : E)
 
 theorem orthogonalProjection_eq_linear_proj [K.HasOrthogonalProjection] (x : E) :
     K.orthogonalProjection x =
@@ -992,6 +1036,10 @@ theorem orthogonalProjection_mem_subspace_orthogonal_precomplement_eq_zero
     [Kᗮ.HasOrthogonalProjection] {v : E} (hv : v ∈ K) : Kᗮ.orthogonalProjection v = 0 :=
   orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero (K.le_orthogonal_orthogonal hv)
 
+theorem starProjection_mem_subspace_orthogonal_precomplement_eq_zero
+    [Kᗮ.HasOrthogonalProjection] {v : E} (hv : v ∈ K) : Kᗮ.starProjection v = 0 :=
+  starProjection_mem_subspace_orthogonalComplement_eq_zero (K.le_orthogonal_orthogonal hv)
+
 /-- If `U ≤ V`, then projecting on `V` and then on `U` is the same as projecting on `U`. -/
 theorem orthogonalProjection_starProjection_of_le {U V : Submodule 𝕜 E}
     [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] (h : U ≤ V) (x : E) :
@@ -1003,6 +1051,12 @@ theorem orthogonalProjection_starProjection_of_le {U V : Submodule 𝕜 E}
 
 @[deprecated (since := "07-07-2025")] alias orthogonalProjection_orthogonalProjection_of_le :=
   orthogonalProjection_starProjection_of_le
+
+theorem starProjection_starProjection_of_le {U V : Submodule 𝕜 E}
+    [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] (h : U ≤ V) (x : E) :
+    U.starProjection (V.starProjection x) = U.starProjection x := by
+  nth_rw 1 [starProjection]
+  simp [ContinuousLinearMap.comp_apply, orthogonalProjection_starProjection_of_le h]
 
 /-- Given a monotone family `U` of complete submodules of `E` and a fixed `x : E`,
 the orthogonal projection of `x` on `U i` tends to the orthogonal projection of `x` on
@@ -1194,6 +1248,11 @@ theorem norm_sq_eq_add_norm_sq_projection (x : E) (S : Submodule 𝕜 E) [S.HasO
       simp only [sq]
       exact norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero _ _ <|
         (S.mem_orthogonal _).1 (Sᗮ.orthogonalProjection x).2 _ (S.orthogonalProjection x).2
+
+theorem norm_sq_eq_add_norm_sq_starProjection (x : E) (S : Submodule 𝕜 E)
+    [S.HasOrthogonalProjection] :
+    ‖x‖ ^ 2 = ‖S.starProjection x‖ ^ 2 + ‖Sᗮ.starProjection x‖ ^ 2 :=
+  norm_sq_eq_add_norm_sq_projection x S
 
 /-- In a complete space `E`, the projection maps onto a complete subspace `K` and its orthogonal
 complement sum to the identity. -/
