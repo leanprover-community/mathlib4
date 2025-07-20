@@ -203,12 +203,6 @@ instance {A B : Rep k G} (f : A ⟶ B) [Mono f] : Mono f.hom :=
 instance {A B : Rep k G} (f : A ⟶ B) [Epi f] : Epi f.hom :=
   inferInstanceAs <| Epi ((forget₂ _ _).map f)
 
-instance {A B : Rep k G} (f : A ⟶ B) [Mono f.hom] : Mono f :=
-  (forget₂ _ (ModuleCat k)).mono_of_mono_map <| inferInstanceAs <| Mono f.hom
-
-instance {A B : Rep k G} (f : A ⟶ B) [Epi f.hom] : Epi f :=
-  (forget₂ _ (ModuleCat k)).epi_of_epi_map <| inferInstanceAs <| Epi f.hom
-
 open MonoidalCategory in
 @[simp]
 theorem tensor_ρ {A B : Rep k G} : (A ⊗ B).ρ = A.ρ.tprod B.ρ := rfl

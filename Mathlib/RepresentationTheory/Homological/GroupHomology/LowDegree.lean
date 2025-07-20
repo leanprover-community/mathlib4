@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+import Mathlib.GroupTheory.Abelianization
 import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
 import Mathlib.RepresentationTheory.Invariants
 
@@ -26,6 +27,8 @@ The file also contains an identification between the definitions in
 `cyclesₙ` in this file for `n = 1, 2`, as well as an isomorphism `groupHomology.cycles A 0 ≅ A.V`.
 Moreover, we provide API for the natural maps `cyclesₙ A → Hn A` for `n = 1, 2`.
 
+We show that when the representation on `A` is trivial, `H₁(G, A) ≃+ Gᵃᵇ ⊗[ℤ] A`.
+
 ## Main definitions
 
 * `groupHomology.H0Iso A`: isomorphism between `H₀(G, A)` and the coinvariants `A_G` of the
@@ -34,6 +37,8 @@ Moreover, we provide API for the natural maps `cyclesₙ A → Hn A` for `n = 1,
   to `H₁(G, A)`.
 * `groupHomology.H2π A`: epimorphism from the 2-cycles
   (i.e. `Z₂(G, A) := Ker(d₁ : (G² →₀ A) → (G →₀ A)`) to `H₂(G, A)`.
+* `groupHomology.H1AddEquivOfIsTrivial`: an isomorphism `H₁(G, A) ≃+ Gᵃᵇ ⊗[ℤ] A` when the
+  representation on `A` is trivial.
 
 -/
 
@@ -48,7 +53,6 @@ variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G)
 namespace groupHomology
 
 section Chains
-variable [DecidableEq G]
 
 /-- The 0th object in the complex of inhomogeneous chains of `A : Rep k G` is isomorphic
 to `A` as a `k`-module. -/
@@ -99,9 +103,10 @@ theorem range_d₁₀_eq_coinvariantsKer :
     use single x.1⁻¹ x.2
     simp [d₁₀]
   · rintro x ⟨y, hy⟩
-    induction' y using Finsupp.induction with _ _ _ _ _ h generalizing x
-    · simp [← hy]
-    · simpa [← hy, add_sub_add_comm, sum_add_index, d₁₀_single (G := G)]
+    induction y using Finsupp.induction generalizing x with
+    | zero => simp [← hy]
+    | single_add _ _ _ _ _ h =>
+      simpa [← hy, add_sub_add_comm, sum_add_index, d₁₀_single (G := G)]
         using Submodule.add_mem _ (Coinvariants.mem_ker_of_eq _ _ _ rfl) (h rfl)
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
@@ -202,7 +207,7 @@ lemma d₃₂_single_one_thd (g h : G) (a : A) :
     d₃₂ A (single (g, h, 1) a) = single (h, 1) (A.ρ g⁻¹ a) - single (g * h, 1) a := by
   simp [d₃₂]
 
-variable (A) [DecidableEq G]
+variable (A)
 
 /-- Let `C(G, A)` denote the complex of inhomogeneous chains of `A : Rep k G`. This lemma
 says `d₁₀` gives a simpler expression for the 0th differential: that is, the following
@@ -284,7 +289,7 @@ theorem eq_d₃₂_comp_inv :
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem d₂₁_comp_d₁₀ : d₂₁ A ≫ d₁₀ A = 0 := by
   ext x g
-  simp [d₁₀, d₂₁, sum_add_index, sum_sub_index, sub_sub_sub_comm, add_sub_add_comm]
+  simp [d₁₀, d₂₁, sum_add_index', sum_sub_index, sub_sub_sub_comm, add_sub_add_comm]
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem d₃₂_comp_d₂₁ : d₃₂ A ≫ d₂₁ A = 0 := by
@@ -334,7 +339,7 @@ theorem single_mem_cycles₁_of_mem_invariants (g : G) (a : A) (ha : a ∈ A.ρ.
     single g a ∈ cycles₁ A :=
   (single_mem_cycles₁_iff g a).2 (ha g)
 
-theorem d₂₁_apply_mem_cycles₁ [DecidableEq G] (x : G × G →₀ A) :
+theorem d₂₁_apply_mem_cycles₁ (x : G × G →₀ A) :
     d₂₁ A x ∈ cycles₁ A :=
   congr($(d₂₁_comp_d₁₀ A) x)
 
@@ -345,9 +350,17 @@ theorem cycles₁_eq_top_of_isTrivial [A.IsTrivial] : cycles₁ A = ⊤ := by
 variable (A) in
 /-- The natural inclusion `Z₁(G, A) ⟶ C₁(G, A)` is an isomorphism when the representation
 on `A` is trivial. -/
-abbrev cycles₁IsoOfIsTrivial [A.IsTrivial] :
+def cycles₁IsoOfIsTrivial [A.IsTrivial] :
     ModuleCat.of k (cycles₁ A) ≅ ModuleCat.of k (G →₀ A) :=
   (LinearEquiv.ofTop _ (cycles₁_eq_top_of_isTrivial A)).toModuleIso
+
+@[simp]
+lemma cycles₁IsoOfIsTrivial_hom_apply [A.IsTrivial] (x : cycles₁ A) :
+    (cycles₁IsoOfIsTrivial A).hom x = x.1 := rfl
+
+@[simp]
+lemma cycles₁IsoOfIsTrivial_inv_apply [A.IsTrivial] (x : G →₀ A) :
+    ((cycles₁IsoOfIsTrivial A).inv x).1 = x := rfl
 
 theorem mem_cycles₂_iff (x : G × G →₀ A) :
     x ∈ cycles₂ A ↔ x.sum (fun g a => single g.2 (A.ρ g.1⁻¹ a) + single g.1 a) =
@@ -365,7 +378,7 @@ theorem single_mem_cycles₂_iff (g : G × G) (a : A) :
   rw [← (mapRange_injective (α := G) _ (map_zero _) (A.ρ.apply_bijective g.1⁻¹).1).eq_iff]
   simp [mem_cycles₂_iff, mapRange_add, eq_comm]
 
-theorem d₃₂_apply_mem_cycles₂ [DecidableEq G] (x : G × G × G →₀ A) :
+theorem d₃₂_apply_mem_cycles₂ (x : G × G × G →₀ A) :
     d₃₂ A x ∈ cycles₂ A :=
   congr($(d₃₂_comp_d₂₁ A) x)
 
@@ -387,8 +400,6 @@ def boundaries₂ : Submodule k (G × G →₀ A) :=
 variable {A}
 
 section
-
-variable [DecidableEq G]
 
 lemma mem_cycles₁_of_mem_boundaries₁ (f : G →₀ A) (h : f ∈ boundaries₁ A) :
     f ∈ cycles₁ A := by
@@ -427,8 +438,6 @@ theorem single_inv_ρ_self_add_single_mem_boundaries₁ (g : G) (a : A) :
 
 section
 
-variable [DecidableEq G]
-
 lemma mem_cycles₂_of_mem_boundaries₂ (x : G × G →₀ A) (h : x ∈ boundaries₂ A) :
     x ∈ cycles₂ A := by
   rcases h with ⟨x, rfl⟩
@@ -440,7 +449,7 @@ lemma boundaries₂_le_cycles₂ : boundaries₂ A ≤ cycles₂ A :=
 
 variable (A) in
 /-- The natural inclusion `B₂(G, A) →ₗ[k] Z₂(G, A)`. -/
-abbrev boundariesToCycles₂ [DecidableEq G] : boundaries₂ A →ₗ[k] cycles₂ A :=
+abbrev boundariesToCycles₂ : boundaries₂ A →ₗ[k] cycles₂ A :=
   Submodule.inclusion (boundaries₂_le_cycles₂ A)
 
 @[simp]
@@ -529,7 +538,7 @@ variable (G) in
 /-- A term `x : A` satisfies the 0-boundary condition if there exists a finsupp
 `∑ aᵢ·gᵢ : G →₀ A` such that `∑ gᵢ⁻¹ • aᵢ - aᵢ = x`. -/
 def IsBoundary₀ (a : A) : Prop :=
-  ∃ (x : G →₀ A), x.sum (fun g a => g⁻¹ • a - a) = a
+  ∃ (x : G →₀ A), x.sum (fun g z => g⁻¹ • z - z) = a
 
 /-- A finsupp `x : G →₀ A` satisfies the 1-boundary condition if there's a finsupp
 `∑ aᵢ·(gᵢ, hᵢ) : G × G →₀ A` such that `∑ (gᵢ⁻¹ • aᵢ)·hᵢ - aᵢ·gᵢhᵢ + aᵢ·gᵢ = x`. -/
@@ -545,13 +554,14 @@ def IsBoundary₂ (x : G × G →₀ A) : Prop :=
     single (g.1 * g.2.1, g.2.2) a + single (g.1, g.2.1 * g.2.2) a - single (g.1, g.2.1) a) = x
 
 end
+
 section
 
 variable {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A]
 
 variable (G) in
 theorem isBoundary₀_iff (a : A) :
-    IsBoundary₀ G a ↔ ∃ x : G →₀ A, x.sum (fun g a => g • a - a) = a := by
+    IsBoundary₀ G a ↔ ∃ x : G →₀ A, x.sum (fun g z => g • z - z) = a := by
   constructor
   · rintro ⟨x, hx⟩
     use x.sum (fun g a => single g (- (g⁻¹ • a)))
@@ -584,6 +594,7 @@ theorem isBoundary₂_iff (x : G × G →₀ A) :
     simp_all [sum_sum_index]
 
 end
+
 end IsBoundary
 
 section ofDistribMulAction
@@ -601,11 +612,11 @@ def coinvariantsKerOfIsBoundary₀ (x : A) (hx : IsBoundary₀ G x) :
     rcases (isBoundary₀_iff G x).1 hx with ⟨y, rfl⟩
     exact Submodule.finsuppSum_mem _ _ _ _ fun g _ => Coinvariants.mem_ker_of_eq g (y g) _ rfl⟩
 
-theorem isBoundary₀_of_mem_coinvariantsKer [DecidableEq G]
+theorem isBoundary₀_of_mem_coinvariantsKer
     (x : A) (hx : x ∈ Coinvariants.ker (Representation.ofDistribMulAction k G A)) :
     IsBoundary₀ G x :=
   Submodule.span_induction (fun _ ⟨g, hg⟩ => ⟨single g.1⁻¹ g.2, by simp_all⟩) ⟨0, by simp⟩
-    (fun _ _ _ _ ⟨X, hX⟩ ⟨Y, hY⟩ => ⟨X + Y, by simp_all [sum_add_index, add_sub_add_comm]⟩)
+    (fun _ _ _ _ ⟨X, hX⟩ ⟨Y, hY⟩ => ⟨X + Y, by simp_all [sum_add_index', add_sub_add_comm]⟩)
     (fun r _ _ ⟨X, hX⟩ => ⟨r • X, by simp [← hX, sum_smul_index', smul_comm, smul_sub, smul_sum]⟩)
     hx
 
@@ -674,8 +685,6 @@ lemma shortComplexH0_exact : (shortComplexH0 A).Exact := by
   use x
   rfl
 
-variable [DecidableEq G]
-
 /-- The 0-cycles of the complex of inhomogeneous chains of `A` are isomorphic to `A`. -/
 def cyclesIso₀ : cycles A 0 ≅ A.V :=
   (inhomogeneousChains A).iCyclesIso _ 0 (by aesop) (by aesop) ≪≫ chainsIso₀ A
@@ -715,19 +724,17 @@ end cyclesIso₀
 
 section isoCycles₁
 
-variable [DecidableEq G]
-
 /-- The short complex `(G² →₀ A) --d₂₁--> (G →₀ A) --d₁₀--> A` is isomorphic to the 1st
 short complex associated to the complex of inhomogeneous chains of `A`. -/
 @[simps! hom inv]
-def shortComplexH1Iso : (inhomogeneousChains A).sc 1 ≅ shortComplexH1 A :=
+def isoShortComplexH1 : (inhomogeneousChains A).sc 1 ≅ shortComplexH1 A :=
   (inhomogeneousChains A).isoSc' 2 1 0 (by simp) (by simp) ≪≫
     isoMk (chainsIso₂ A) (chainsIso₁ A) (chainsIso₀ A) (comp_d₂₁_eq A) (comp_d₁₀_eq A)
 
 /-- The 1-cycles of the complex of inhomogeneous chains of `A` are isomorphic to
 `cycles₁ A`, which is a simpler type. -/
 def isoCycles₁ : cycles A 1 ≅ ModuleCat.of k (cycles₁ A) :=
-    cyclesMapIso' (shortComplexH1Iso A) ((inhomogeneousChains A).sc 1).leftHomologyData
+    cyclesMapIso' (isoShortComplexH1 A) ((inhomogeneousChains A).sc 1).leftHomologyData
       (shortComplexH1 A).moduleCatLeftHomologyData
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
@@ -753,19 +760,17 @@ end isoCycles₁
 
 section isoCycles₂
 
-variable [DecidableEq G]
-
 /-- The short complex `(G³ →₀ A) --d₃₂--> (G² →₀ A) --d₂₁--> (G →₀ A)` is isomorphic to the 2nd
 short complex associated to the complex of inhomogeneous chains of `A`. -/
 @[simps! hom inv]
-def shortComplexH2Iso : (inhomogeneousChains A).sc 2 ≅ shortComplexH2 A :=
+def isoShortComplexH2 : (inhomogeneousChains A).sc 2 ≅ shortComplexH2 A :=
   (inhomogeneousChains A).isoSc' 3 2 1 (by simp) (by simp) ≪≫
     isoMk (chainsIso₃ A) (chainsIso₂ A) (chainsIso₁ A) (comp_d₃₂_eq A) (comp_d₂₁_eq A)
 
 /-- The 2-cycles of the complex of inhomogeneous chains of `A` are isomorphic to
 `cycles₂ A`, which is a simpler type. -/
 def isoCycles₂ : cycles A 2 ≅ ModuleCat.of k (cycles₂ A) :=
-    cyclesMapIso' (shortComplexH2Iso A) ((inhomogeneousChains A).sc 2).leftHomologyData
+    cyclesMapIso' (isoShortComplexH2 A) ((inhomogeneousChains A).sc 2).leftHomologyData
       (shortComplexH2 A).moduleCatLeftHomologyData
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
@@ -791,8 +796,6 @@ end isoCycles₂
 
 section Homology
 
-variable [DecidableEq G]
-
 section H0
 
 /-- Shorthand for the 0th group homology of a `k`-linear `G`-representation `A`, `H₀(G, A)`,
@@ -810,7 +813,7 @@ def H0π : A.V ⟶ H0 A := (cyclesIso₀ A).inv ≫ π A 0
 instance : Epi (H0π A) := by unfold H0π; infer_instance
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-lemma π_comp_H0Iso_hom  :
+lemma π_comp_H0Iso_hom :
     π A 0 ≫ (H0Iso A).hom = (cyclesIso₀ A).hom ≫ (coinvariantsMk k G).app A := by
   simp [H0Iso, cyclesIso₀]
 
@@ -855,7 +858,9 @@ theorem π_comp_H0IsoOfIsTrivial_hom :
   simp [H0IsoOfIsTrivial]
 
 end IsTrivial
+
 end H0
+
 section H1
 
 /-- Shorthand for the 1st group homology of a `k`-linear `G`-representation `A`, `H₁(G, A)`,
@@ -871,7 +876,7 @@ instance : Epi (H1π A) := by unfold H1π; infer_instance
 variable {A}
 
 lemma H1π_eq_zero_iff (x : cycles₁ A) : H1π A x = 0 ↔ x.1 ∈ boundaries₁ A := by
-  have h := leftHomologyπ_naturality'_assoc (shortComplexH1Iso A).inv
+  have h := leftHomologyπ_naturality'_assoc (isoShortComplexH1 A).inv
     (shortComplexH1 A).moduleCatLeftHomologyData (leftHomologyData _)
     ((inhomogeneousChains A).sc 1).leftHomologyIso.hom
   simp only [H1π, isoCycles₁, π, HomologicalComplex.homologyπ, homologyπ,
@@ -895,15 +900,101 @@ variable (A)
 /-- The 1st group homology of `A`, defined as the 1st homology of the complex of inhomogeneous
 chains, is isomorphic to `cycles₁ A ⧸ boundaries₁ A`, which is a simpler type. -/
 def H1Iso : H1 A ≅ (shortComplexH1 A).moduleCatLeftHomologyData.H :=
-  (leftHomologyIso _).symm ≪≫ (leftHomologyMapIso' (shortComplexH1Iso A) _ _)
+  (leftHomologyIso _).symm ≪≫ (leftHomologyMapIso' (isoShortComplexH1 A) _ _)
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-lemma π_comp_H1Iso_hom  :
+lemma π_comp_H1Iso_hom :
     π A 1 ≫ (H1Iso A).hom = (isoCycles₁ A).hom ≫
       (shortComplexH1 A).moduleCatLeftHomologyData.π := by
   simp [H1Iso, isoCycles₁, π, HomologicalComplex.homologyπ, leftHomologyπ]
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma π_comp_H1Iso_inv :
+    (shortComplexH1 A).moduleCatLeftHomologyData.π ≫ (H1Iso A).inv = H1π A :=
+  (CommSq.vert_inv ⟨π_comp_H1Iso_hom A⟩).w
+
+section IsTrivial
+
+variable [A.IsTrivial]
+
+open TensorProduct
+
+/-- If a `G`-representation on `A` is trivial, this is the natural map `Gᵃᵇ → A → H₁(G, A)`
+sending `⟦g⟧, a` to `⟦single g a⟧`. -/
+def mkH1OfIsTrivial : Additive (Abelianization G) →ₗ[ℤ] A →ₗ[ℤ] H1 A :=
+  AddMonoidHom.toIntLinearMap <| AddMonoidHom.toMultiplicative'.symm <| Abelianization.lift {
+    toFun g := Multiplicative.ofAdd (AddMonoidHom.toIntLinearMap (AddMonoidHomClass.toAddMonoidHom
+      ((H1π A).hom ∘ₗ (cycles₁IsoOfIsTrivial A).inv.hom ∘ₗ lsingle g)))
+    map_one' := Multiplicative.toAdd.injective <|
+      LinearMap.ext fun _ => (H1π_eq_zero_iff _).2 <| single_one_mem_boundaries₁ _
+    map_mul' g h := Multiplicative.toAdd.injective <| LinearMap.ext fun a => by
+      simpa [← map_add] using ((H1π_eq_iff _ _).2 ⟨single (g, h) a, by
+        simp [cycles₁IsoOfIsTrivial, sub_add_eq_add_sub, add_comm (single h a),
+          d₂₁_single (A := A)]⟩).symm }
+
+variable {A} in
+@[simp]
+lemma mkH1OfIsTrivial_apply (g : G) (a : A) :
+    mkH1OfIsTrivial A (Additive.ofMul (Abelianization.of g)) a =
+      H1π A ((cycles₁IsoOfIsTrivial A).inv (single g a)) := rfl
+
+/-- If a `G`-representation on `A` is trivial, this is the natural map `H₁(G, A) → Gᵃᵇ ⊗[ℤ] A`
+sending `⟦single g a⟧` to `⟦g⟧ ⊗ₜ a`. -/
+def H1ToTensorOfIsTrivial : H1 A →ₗ[ℤ] (Additive <| Abelianization G) ⊗[ℤ] A :=
+  ((QuotientAddGroup.lift _ ((Finsupp.liftAddHom fun g => AddMonoidHomClass.toAddMonoidHom
+    (TensorProduct.mk ℤ _ _ (Additive.ofMul (Abelianization.of g)))).comp
+      (cycles₁ A).toAddSubgroup.subtype) fun ⟨y, hy⟩ ⟨z, hz⟩ => AddMonoidHom.mem_ker.2 <| by
+      simp [← hz, d₂₁, sum_sum_index, sum_add_index', tmul_add, sum_sub_index, tmul_sub,
+        shortComplexH1]).comp <| AddMonoidHomClass.toAddMonoidHom (H1Iso A).hom.hom).toIntLinearMap
+
+variable {A} in
+@[simp]
+lemma H1ToTensorOfIsTrivial_H1π_single (g : G) (a : A) :
+    H1ToTensorOfIsTrivial A (H1π A <| (cycles₁IsoOfIsTrivial A).inv (single g a)) =
+      Additive.ofMul (Abelianization.of g) ⊗ₜ[ℤ] a := by
+  simp only [H1ToTensorOfIsTrivial, H1π,  AddMonoidHom.coe_toIntLinearMap, AddMonoidHom.coe_comp]
+  change QuotientAddGroup.lift _ _ _ ((H1Iso A).hom _) = _
+  simp [π_comp_H1Iso_hom_apply, Submodule.Quotient.mk, QuotientAddGroup.lift, AddCon.lift,
+    AddCon.liftOn, AddSubgroup.subtype, cycles₁IsoOfIsTrivial]
+
+/-- If a `G`-representation on `A` is trivial, this is the group isomorphism between
+`H₁(G, A) ≃+ Gᵃᵇ ⊗[ℤ] A` defined by `⟦single g a⟧ ↦ ⟦g⟧ ⊗ a`. -/
+@[simps! -isSimp]
+def H1AddEquivOfIsTrivial :
+    H1 A ≃+ (Additive <| Abelianization G) ⊗[ℤ] A :=
+  LinearEquiv.toAddEquiv <| LinearEquiv.ofLinear
+    (H1ToTensorOfIsTrivial A) (lift <| mkH1OfIsTrivial A)
+    (ext <| LinearMap.toAddMonoidHom_injective <| by
+      ext g a
+      simp [TensorProduct.mk_apply, TensorProduct.lift.tmul, mkH1OfIsTrivial_apply,
+        H1ToTensorOfIsTrivial_H1π_single g a])
+    (LinearMap.toAddMonoidHom_injective <|
+      (H1Iso A).symm.toLinearEquiv.toAddEquiv.comp_left_injective <|
+      QuotientAddGroup.addMonoidHom_ext _ <|
+      (cycles₁IsoOfIsTrivial A).symm.toLinearEquiv.toAddEquiv.comp_left_injective <| by
+        ext
+        simp only [H1ToTensorOfIsTrivial, Iso.toLinearEquiv, AddMonoidHom.coe_comp,
+          LinearMap.toAddMonoidHom_coe, LinearMap.coe_comp, AddMonoidHom.coe_toIntLinearMap]
+        change TensorProduct.lift _ (QuotientAddGroup.lift _ _ _ ((H1Iso A).hom _)) = _
+        simpa [AddSubgroup.subtype, cycles₁IsoOfIsTrivial_inv_apply (A := A),
+          -π_comp_H1Iso_inv_apply] using (π_comp_H1Iso_inv_apply A _).symm)
+
+@[simp]
+lemma H1AddEquivOfIsTrivial_single (g : G) (a : A) :
+    H1AddEquivOfIsTrivial A (H1π A <| (cycles₁IsoOfIsTrivial A).inv (single g a)) =
+      Additive.ofMul (Abelianization.of g) ⊗ₜ[ℤ] a := by
+  rw [H1AddEquivOfIsTrivial_apply, H1ToTensorOfIsTrivial_H1π_single g a]
+
+@[simp]
+lemma H1AddEquivOfIsTrivial_symm_tmul (g : G) (a : A) :
+    (H1AddEquivOfIsTrivial A).symm (Additive.ofMul (Abelianization.of g) ⊗ₜ[ℤ] a) =
+      H1π A ((cycles₁IsoOfIsTrivial A).inv <| single g a) := by
+  rfl
+
+end IsTrivial
+
 end H1
+
 section H2
 
 /-- Shorthand for the 2nd group homology of a `k`-linear `G`-representation `A`, `H₂(G, A)`,
@@ -919,7 +1010,7 @@ instance : Epi (H2π A) := by unfold H2π; infer_instance
 variable {A}
 
 lemma H2π_eq_zero_iff (x : cycles₂ A) : H2π A x = 0 ↔ x.1 ∈ boundaries₂ A := by
-  have h := leftHomologyπ_naturality'_assoc (shortComplexH2Iso A).inv
+  have h := leftHomologyπ_naturality'_assoc (isoShortComplexH2 A).inv
     (shortComplexH2 A).moduleCatLeftHomologyData (leftHomologyData _)
     ((inhomogeneousChains A).sc 2).leftHomologyIso.hom
   simp only [H2π, isoCycles₂, π, HomologicalComplex.homologyπ, homologyπ,
@@ -943,14 +1034,21 @@ variable (A)
 /-- The 2nd group homology of `A`, defined as the 2nd homology of the complex of inhomogeneous
 chains, is isomorphic to `cycles₂ A ⧸ boundaries₂ A`, which is a simpler type. -/
 def H2Iso : H2 A ≅ (shortComplexH2 A).moduleCatLeftHomologyData.H :=
-  (leftHomologyIso _).symm ≪≫ (leftHomologyMapIso' (shortComplexH2Iso A) _ _)
+  (leftHomologyIso _).symm ≪≫ (leftHomologyMapIso' (isoShortComplexH2 A) _ _)
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-lemma π_comp_H2Iso_hom  :
+lemma π_comp_H2Iso_hom :
     π A 2 ≫ (H2Iso A).hom = (isoCycles₂ A).hom ≫
       (shortComplexH2 A).moduleCatLeftHomologyData.π := by
   simp [H2Iso, isoCycles₂, π, HomologicalComplex.homologyπ, leftHomologyπ]
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma π_comp_H2Iso_inv :
+    (shortComplexH2 A).moduleCatLeftHomologyData.π ≫ (H2Iso A).inv = H2π A :=
+  (CommSq.vert_inv ⟨π_comp_H2Iso_hom A⟩).w
+
 end H2
+
 end Homology
+
 end groupHomology

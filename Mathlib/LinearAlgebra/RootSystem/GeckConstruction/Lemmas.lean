@@ -92,6 +92,11 @@ lemma root_add_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
   simp only [indexNeg_neg, root_reflectionPerm, reflection_apply_self]
   module
 
+lemma root_sub_mem_iff_root_add_mem (hkj : k ≠ j) (hkj' : α k ≠ -α i) (hk : α k + α i - α j ∈ Φ) :
+    α k - α j ∈ Φ ↔ α k + α i ∈ Φ :=
+  ⟨b.root_add_root_mem_of_mem_of_mem i j k hij hi hj hk hkj',
+   b.root_sub_root_mem_of_mem_of_mem i j k hij hi hj hk hkj⟩
+
 end Base
 
 section chainBotCoeff_mul_chainTopCoeff

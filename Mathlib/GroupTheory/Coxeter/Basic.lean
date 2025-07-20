@@ -261,11 +261,11 @@ theorem simple_induction_left {p : W → Prop} (w : W) (one : p 1)
   let p' : (w : W) → w ∈ Submonoid.closure (Set.range cs.simple) → Prop :=
     fun w _ ↦ p w
   have := cs.submonoid_closure_range_simple.symm ▸ Submonoid.mem_top w
-  apply Submonoid.closure_induction_left (p := p')
-  · exact one
-  · rintro _ ⟨i, rfl⟩ y _
-    exact mul_simple_left y i
-  · exact this
+  induction this using Submonoid.closure_induction_left with
+  | one => exact one
+  | mul_left i mi y my ih =>
+    rw [Set.mem_range] at mi
+    exact mi.choose_spec ▸ mul_simple_left _ _ ih
 
 /-- If `p : W → Prop` holds for the identity and it is preserved under multiplying on the right
 by a simple reflection, then it holds for all elements of `W`. -/
@@ -274,11 +274,11 @@ theorem simple_induction_right {p : W → Prop} (w : W) (one : p 1)
   let p' : ((w : W) → w ∈ Submonoid.closure (Set.range cs.simple) → Prop) :=
     fun w _ ↦ p w
   have := cs.submonoid_closure_range_simple.symm ▸ Submonoid.mem_top w
-  apply Submonoid.closure_induction_right (p := p')
-  · exact one
-  · rintro x _ _ ⟨i, rfl⟩
-    exact mul_simple_right x i
-  · exact this
+  induction this using Submonoid.closure_induction_right with
+  | one => exact one
+  | mul_right y my i mi ih =>
+    rw [Set.mem_range] at mi
+    exact mi.choose_spec ▸ mul_simple_right _ _ ih
 
 /-! ### Homomorphisms from a Coxeter group -/
 
