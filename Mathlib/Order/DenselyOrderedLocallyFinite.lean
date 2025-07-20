@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Order.Interval.Finset.Defs
+import Mathlib.Order.Interval.Finset.Basic
 
 /-!
 # Linear locally finite orders are densely ordered iff they are trivial
@@ -20,44 +20,13 @@ variable {X : Type*} [LinearOrder X] [LocallyFiniteOrder X]
 lemma LocallyFiniteOrder.denselyOrdered_iff_subsingleton :
     DenselyOrdered X ↔ Subsingleton X := by
   refine ⟨fun H ↦ ?_, fun h ↦ h.instDenselyOrdered⟩
-  constructor
-  intro a b
-  wlog hab : a < b generalizing a b
-  · push_neg at hab
-    refine hab.eq_or_lt.elim (fun h ↦ h.symm) fun hab' ↦ ?_
-    exact (this _ _ hab').symm
-  choose f hf hf' using H.dense a
-  let g : {x // a < x} → {x // a < x} := fun x ↦ ⟨f x x.prop, hf _ _⟩
-  have hg x : (g x : X) < x := hf' _ _
-  have hga k : a < g^[k + 1] ⟨b, hab⟩ := by
-    rw [Function.iterate_succ', Function.comp_apply]
-    exact hf _ _
-  have hgb k : g^[k + 1] ⟨b, hab⟩ < b := by
-    induction k
-    · simpa using hg _
-    · rw [Function.iterate_succ', Function.comp_apply]
-      exact (hg _).trans ‹_›
-  have hg' k : (g^[k + 1] ⟨b, hab⟩ : X) ∈ finsetIoo a b := by
-    simp only [finset_mem_Ioo a b, hga, hgb, and_self]
-  have hgm : StrictAnti (fun k ↦ g^[k + 1] ⟨b, hab⟩) := by
-    intro k l hkl
-    obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_lt hkl
-    clear hkl
-    simp only [Function.iterate_succ', Function.comp_apply]
-    refine (hg _).trans_le ?_
-    induction n with
-    | zero => simp
-    | succ n IH =>
-      rw [← add_assoc, Function.iterate_succ', Function.comp_apply]
-      exact (hg _).le.trans IH
-  have hr : (Finset.range ((finsetIoo a b).card + 1)).map
-      ⟨_, (Subtype.val_injective.comp hgm.injective).comp Nat.succ_injective⟩ ⊆ finsetIoo a b := by
-    intro x
-    simp only [Finset.mem_map, Finset.mem_range, Function.Embedding.coeFn_mk, Function.comp_apply,
-      forall_exists_index, and_imp]
-    rintro _ _ rfl
-    exact hg' _
-  simpa using Finset.card_le_card hr
+  rw [← not_nontrivial_iff_subsingleton, nontrivial_iff_lt]
+  rintro ⟨a, b, hab⟩
+  induction hs : Finset.Icc a b using Finset.strongInduction generalizing b with | H i ih
+  subst hs
+  obtain ⟨c, hac, hcb⟩ := exists_between hab
+  refine ih _ ?_ c hac rfl
+  exact Finset.Icc_ssubset_Icc_right (hac.trans hcb).le le_rfl hcb
 
 lemma denselyOrdered_set_iff_subsingleton {s : Set X} :
     DenselyOrdered s ↔ s.Subsingleton := by
@@ -67,32 +36,29 @@ lemma denselyOrdered_set_iff_subsingleton {s : Set X} :
 lemma denselyOrdered_withBot_set_iff_subsingleton {s : Set (WithBot X)} :
     DenselyOrdered s ↔ s.Subsingleton := by
   refine ⟨fun H ↦ ?_, fun h ↦ h.denselyOrdered⟩
-  by_cases hs : DenselyOrdered (WithBot.some ⁻¹' s)
-  · contrapose! hs
-    rw [denselyOrdered_set_iff_subsingleton, Set.not_subsingleton_iff]
-    rw [Set.not_subsingleton_iff, ← Set.nontrivial_coe_sort] at hs
-    obtain ⟨x, y, hxy⟩ := hs
-    wlog H : x < y generalizing x y
-    · exact this y x hxy.symm (lt_of_le_of_ne (not_lt.mp H) hxy.symm)
+  rw [← Set.subsingleton_coe, ← not_nontrivial_iff_subsingleton, nontrivial_iff_lt]
+  suffices DenselyOrdered (WithBot.some ⁻¹' s) by
+    rintro ⟨x, y, H⟩
+    rw [denselyOrdered_set_iff_subsingleton] at this
     obtain ⟨z, hz, hz'⟩ := exists_between H
     have hz0 : (⊥ : WithBot X) < z := by simp [(Subtype.coe_lt_coe.mpr hz).trans_le']
-    refine ⟨WithBot.unbot z hz0.ne', by simp, WithBot.unbot y (hz0.trans hz').ne', by simp, ?_⟩
-    rw [ne_eq, ← WithBot.coe_eq_coe]
-    simpa [Subtype.ext_iff] using hz'.ne
-  · contrapose! hs
-    constructor
-    simp only [Subtype.exists, Set.mem_preimage, Subtype.forall, Subtype.mk_lt_mk, exists_and_right,
-      exists_prop]
-    intro x hx y hy hxy
-    have : (⟨_, hx⟩ : s) < ⟨_, hy⟩ := by simp [hxy]
-    obtain ⟨z, hz, hz'⟩ := exists_between this
-    simp only [← Subtype.coe_lt_coe] at hz hz'
-    refine ⟨WithBot.unbot z (hz.trans_le' (by simp)).ne', ⟨?_, ?_⟩, ?_⟩
-    · simp
-    · rw [← WithBot.coe_lt_coe]
-      simp [hz.trans_le]
-    · rw [← WithBot.coe_lt_coe]
-      simp [hz'.trans_le']
+    replace hz' : WithBot.unbot z.val hz0.ne' < WithBot.unbot y (hz0.trans hz').ne' := by
+      rwa [← WithBot.coe_lt_coe, WithBot.coe_unbot, WithBot.coe_unbot]
+    refine absurd (this ?_ ?_) hz'.ne <;>
+    simp
+  constructor
+  simp only [Subtype.exists, Set.mem_preimage, Subtype.forall, Subtype.mk_lt_mk, exists_and_right,
+    exists_prop]
+  intro x hx y hy hxy
+  have : (⟨_, hx⟩ : s) < ⟨_, hy⟩ := by simp [hxy]
+  obtain ⟨z, hz, hz'⟩ := exists_between this
+  simp only [← Subtype.coe_lt_coe] at hz hz'
+  refine ⟨WithBot.unbot z (hz.trans_le' (by simp)).ne', ⟨?_, ?_⟩, ?_⟩
+  · simp
+  · rw [← WithBot.coe_lt_coe]
+    simp [hz.trans_le]
+  · rw [← WithBot.coe_lt_coe]
+    simp [hz'.trans_le']
 
 lemma denselyOrdered_withTop_set_iff_subsingleton {s : Set (WithTop X)} :
     DenselyOrdered s ↔ s.Subsingleton := by
