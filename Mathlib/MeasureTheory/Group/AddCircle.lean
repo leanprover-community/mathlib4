@@ -31,7 +31,7 @@ namespace AddCircle
 variable {T : ℝ} [hT : Fact (0 < T)]
 
 theorem closedBall_ae_eq_ball {x : AddCircle T} {ε : ℝ} : closedBall x ε =ᵐ[volume] ball x ε := by
-  rcases le_or_lt ε 0 with hε | hε
+  rcases le_or_gt ε 0 with hε | hε
   · rw [ball_eq_empty.mpr hε, ae_eq_empty, volume_closedBall,
       min_eq_right (by linarith [hT.out] : 2 * ε ≤ T), ENNReal.ofReal_eq_zero]
     exact mul_nonpos_of_nonneg_of_nonpos zero_le_two hε
@@ -79,7 +79,7 @@ theorem isAddFundamentalDomain_of_ae_ball (I : Set <| AddCircle T) (u x : AddCir
     replace hI := hI.trans closedBall_ae_eq_ball.symm
     haveI : Fintype G := @Fintype.ofFinite _ hu.finite_zmultiples.to_subtype
     have hG_card : #(Finset.univ : Finset G) = n := by
-      show _ = addOrderOf u
+      change _ = addOrderOf u
       rw [← Nat.card_zmultiples, Nat.card_eq_fintype_card]; rfl
     simp_rw [measure_vadd]
     rw [AddCircle.measure_univ, tsum_fintype, Finset.sum_const, measure_congr hI,

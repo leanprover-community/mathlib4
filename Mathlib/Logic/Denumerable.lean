@@ -120,9 +120,9 @@ instance option : Denumerable (Option α) :=
 instance sum : Denumerable (α ⊕ β) :=
   ⟨fun n => by
     suffices ∃ a ∈ @decodeSum α β _ _ n, encodeSum a = bit (bodd n) (div2 n) by simpa [bit_decomp]
-    simp only [decodeSum, boddDiv2_eq, decode_eq_ofNat, Option.some.injEq, Option.map_some,
+    simp only [decodeSum, boddDiv2_eq, decode_eq_ofNat, Option.map_some,
       Option.mem_def, Sum.exists]
-    cases bodd n <;> simp [decodeSum, bit, encodeSum, Nat.two_mul]⟩
+    cases bodd n <;> simp [bit, encodeSum, Nat.two_mul]⟩
 
 section Sigma
 
@@ -130,7 +130,7 @@ variable {γ : α → Type*} [∀ a, Denumerable (γ a)]
 
 /-- A denumerable collection of denumerable types is denumerable. -/
 instance sigma : Denumerable (Sigma γ) :=
-  ⟨fun n => by simp [decodeSigma]⟩
+  ⟨fun n => by simp⟩
 
 @[simp]
 theorem sigma_ofNat_val (n : ℕ) :
@@ -210,13 +210,13 @@ theorem le_succ_of_forall_lt_le {x y : s} (h : ∀ z < x, z ≤ y) : x ≤ succ 
   have hx : ∃ m, (y : ℕ) + m + 1 ∈ s := exists_succ _
   show (x : ℕ) ≤ (y : ℕ) + Nat.find hx + 1 from
     le_of_not_gt fun hxy =>
-      (h ⟨_, Nat.find_spec hx⟩ hxy).not_lt <|
+      (h ⟨_, Nat.find_spec hx⟩ hxy).not_gt <|
         (by omega : (y : ℕ) < (y : ℕ) + Nat.find hx + 1)
 
 theorem lt_succ_self (x : s) : x < succ x :=
   calc
-    (x : ℕ) ≤ (x + _)  := le_add_right ..
-    _       < (succ x) := Nat.lt_succ_self (x + _)
+    (x : ℕ) ≤ (x + _) := le_add_right ..
+    _ < (succ x) := Nat.lt_succ_self (x + _)
 
 theorem lt_succ_iff_le {x y : s} : x < succ y ↔ x ≤ y :=
   ⟨fun h => le_of_not_gt fun h' => not_le_of_gt h (succ_le_of_lt h'), fun h =>
@@ -267,7 +267,7 @@ private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
     rw [toFunAux_eq, card_eq_zero, eq_empty_iff_forall_notMem]
     rintro n hn
     rw [mem_filter, ofNat, mem_range] at hn
-    exact bot_le.not_lt (show (⟨n, hn.2⟩ : s) < ⊥ from hn.1)
+    exact bot_le.not_gt (show (⟨n, hn.2⟩ : s) < ⊥ from hn.1)
   | n + 1 => by
     have ih : toFunAux (ofNat s n) = n := right_inverse_aux n
     have h₁ : (ofNat s n : ℕ) ∉ {x ∈ range (ofNat s n) | x ∈ s} := by simp
@@ -281,7 +281,7 @@ private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
          fun h =>
           h.elim (fun h => h.symm ▸ ⟨lt_succ_self _, (ofNat s n).prop⟩) fun h =>
             ⟨h.1.trans (lt_succ_self _), h.2⟩⟩
-    simp only [toFunAux_eq, ofNat, range_succ] at ih ⊢
+    simp only [toFunAux_eq, ofNat] at ih ⊢
     conv =>
       rhs
       rw [← ih, ← card_insert_of_notMem h₁, ← h₂]

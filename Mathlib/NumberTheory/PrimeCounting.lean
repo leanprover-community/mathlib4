@@ -90,8 +90,10 @@ theorem tendsto_primeCounting' : Tendsto π' atTop atTop := by
   apply tendsto_atTop_atTop_of_monotone' monotone_primeCounting'
   simp [Set.range_eq_univ.mpr surjective_primeCounting']
 
-theorem tensto_primeCounting : Tendsto π atTop atTop :=
+theorem tendsto_primeCounting : Tendsto π atTop atTop :=
   (tendsto_add_atTop_iff_nat 1).mpr tendsto_primeCounting'
+
+@[deprecated (since := "2025-07-08")] alias tensto_primeCounting := tendsto_primeCounting
 
 @[simp]
 theorem prime_nth_prime (n : ℕ) : Prime (nth Prime n) :=
@@ -136,7 +138,7 @@ theorem primeCounting'_add_le {a k : ℕ} (h0 : 0 < a) (h1 : a < k) (n : ℕ) :
       constructor
       · exact ⟨succ_k_le_p, p_lt_n⟩
       · rw [coprime_comm]
-        exact coprime_of_lt_prime h0 (gt_of_ge_of_gt succ_k_le_p h1) p_prime
+        exact coprime_of_lt_prime h0 (lt_of_lt_of_le h1 succ_k_le_p) p_prime
     _ ≤ π' k + totient a * (n / a + 1) := by
       rw [add_le_add_iff_left]
       exact Ico_filter_coprime_le k n h0

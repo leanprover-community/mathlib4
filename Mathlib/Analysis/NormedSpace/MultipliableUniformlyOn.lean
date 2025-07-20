@@ -44,7 +44,7 @@ lemma Summable.tendstoUniformlyOn_tsum_nat_log_one_add {f : ℕ → α → ℂ} 
     TendstoUniformlyOn (fun n x ↦ ∑ m ∈ Finset.range n, log (1 + f m x))
     (fun x ↦ ∑' n, log (1 + f n x)) atTop K := by
   rw [← Nat.cofinite_eq_atTop] at h
-  exact (hu.hasSumUniformlyOn_log_one_add h).tendstoUniformlyOn_finset_range rfl
+  exact (hu.hasSumUniformlyOn_log_one_add h).tendstoUniformlyOn_finsetRange rfl
 
 /-- If `x ↦ ∑' i, log (f i x)` is uniformly convergent on `𝔖`, its sum has bounded-above real part
 on each set in `𝔖`, and the functions `f i x` have no zeroes, then  `∏' i, f i x` is uniformly
@@ -146,7 +146,7 @@ lemma hasProdLocallyUniformlyOn_nat_one_add {f : ℕ → α → R} (hK : IsOpen 
     HasProdLocallyUniformlyOn (fun n x ↦ 1 + f n x) (fun x ↦ ∏' i, (1 + f i x)) K :=
   hasProdLocallyUniformlyOn_one_add hK hu (Nat.cofinite_eq_atTop ▸ h) hcts
 
-lemma multipliableLocallyUniformlyOn_nat_one_add  {f : ℕ → α → R} (hK : IsOpen K) {u : ℕ → ℝ}
+lemma multipliableLocallyUniformlyOn_nat_one_add {f : ℕ → α → R} (hK : IsOpen K) {u : ℕ → ℝ}
     (hu : Summable u) (h : ∀ᶠ n in atTop, ∀ x ∈ K, ‖f n x‖ ≤ u n)
     (hcts : ∀ n, ContinuousOn (f n) K) :
     MultipliableLocallyUniformlyOn (fun n x ↦ 1 + f n x) K :=

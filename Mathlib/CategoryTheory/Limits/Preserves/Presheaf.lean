@@ -39,7 +39,7 @@ is small, we leave this as a TODO.
 * [F. Borceux, *Handbook of Categorical Algebra 1*][borceux-vol1], Proposition 6.1.2
 -/
 
-open CategoryTheory Limits
+open CategoryTheory Limits Functor
 
 universe v u
 

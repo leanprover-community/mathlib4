@@ -85,18 +85,18 @@ theorem card_opow_le_of_omega0_le_left {a : Ordinal} (ha : ω ≤ a) (b : Ordina
       exact max_le_max_left _ le_self_add
     · rw [ne_eq, card_eq_zero, opow_eq_zero]
       rintro ⟨rfl, -⟩
-      cases omega0_pos.not_le ha
+      cases omega0_pos.not_ge ha
     · rwa [aleph0_le_card]
   · intro b hb IH
-    rw [(isNormal_opow (one_lt_omega0.trans_le ha)).apply_of_isLimit hb]
+    rw [(isNormal_opow (one_lt_omega0.trans_le ha)).apply_of_isSuccLimit hb]
     apply (card_iSup_Iio_le_card_mul_iSup _).trans
     rw [Cardinal.lift_id, Cardinal.mul_eq_max_of_aleph0_le_right, max_comm]
     · apply max_le _ (le_max_right _ _)
       apply ciSup_le'
       intro c
       exact (IH c.1 c.2).trans (max_le_max_left _ (card_le_card c.2.le))
-    · simpa using hb.pos.ne'
-    · refine le_ciSup_of_le ?_ ⟨1, one_lt_omega0.trans_le <| omega0_le_of_isLimit hb⟩ ?_
+    · simpa using hb.ne_bot
+    · refine le_ciSup_of_le ?_ ⟨1, one_lt_omega0.trans_le <| omega0_le_of_isSuccLimit hb⟩ ?_
       · exact Cardinal.bddAbove_of_small _
       · simpa
 

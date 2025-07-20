@@ -88,7 +88,7 @@ lemma normalizer_engel (x : L) : normalizer (engel R x) = engel R x := by
   rw [← lie_skew, neg_mem_iff (G := L), mem_engel_iff] at hy
   rcases hy with ⟨n, hn⟩
   rw [mem_engel_iff]
-  use n+1
+  use n + 1
   rw [pow_succ, Module.End.mul_apply]
   exact hn
 
@@ -130,7 +130,7 @@ lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
     | zero =>
       cases y; intro hy; simp only [pow_zero, Module.End.one_apply]
       exact (AddSubmonoid.mk_eq_zero N.toAddSubmonoid).mp hy
-    | succ k ih => simp only [pow_succ, LinearMap.mem_ker, Module.End.mul_apply] at ih ⊢; apply ih
+    | succ k ih => solve_by_elim
   · rw [← Submodule.map_le_iff_le_comap]
     apply le_sup_of_le_right
     rw [Submodule.map_le_iff_le_comap]

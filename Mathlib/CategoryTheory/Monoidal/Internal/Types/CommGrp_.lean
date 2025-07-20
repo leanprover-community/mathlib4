@@ -15,15 +15,17 @@ is equivalent to the category of "native" bundled commutative groups.
 Moreover, this equivalence is compatible with the forgetful functors to `Type`.
 -/
 
+assert_not_exists Field
+
 universe v u
 
-open CategoryTheory
+open CategoryTheory Mon_Class
 
 namespace CommGrpTypeEquivalenceCommGrp
 
-instance commGrpCommGroup (A : CommGrp_ (Type u)) : CommGroup A.X :=
-  { GrpTypeEquivalenceGrp.grpGroup A.toGrp_ with
-    mul_comm := fun x y => by convert congr_fun A.mul_comm (y, x) }
+instance commGrpCommGroup (A : Type u) [Grp_Class A] [IsCommMon A] : CommGroup A :=
+  { GrpTypeEquivalenceGrp.grpGroup A with
+    mul_comm := fun x y => by convert congr_fun (IsCommMon.mul_comm A) (y, x) }
 
 /-- Converting a commutative group object in `Type u` into a group. -/
 noncomputable def functor : CommGrp_ (Type u) ⥤ CommGrp.{u} where
@@ -34,19 +36,20 @@ noncomputable def functor : CommGrp_ (Type u) ⥤ CommGrp.{u} where
 noncomputable def inverse : CommGrp.{u} ⥤ CommGrp_ (Type u) where
   obj A :=
     { grpTypeEquivalenceGrp.inverse.obj ((forget₂ CommGrp Grp).obj A) with
-      mul_comm := by
-        ext ⟨x : A, y : A⟩
-        exact CommMonoid.mul_comm y x }
+      comm :=
+        { mul_comm := by
+            ext ⟨x : A, y : A⟩
+            exact CommMonoid.mul_comm y x } }
   map f := GrpTypeEquivalenceGrp.inverse.map ((forget₂ CommGrp Grp).map f)
 
 @[simp]
 theorem inverse_obj_X {A : CommGrp.{u}} : (inverse.obj A).X = A := rfl
 @[simp]
-theorem inverse_obj_one {A : CommGrp.{u}} {x} : (inverse.obj A).one x = (1 : A) := rfl
+theorem inverse_obj_one {A : CommGrp.{u}} {x} : η[(inverse.obj A).X] x = (1 : A) := rfl
 @[simp]
-theorem inverse_obj_mul {A : CommGrp.{u}} {p} : (inverse.obj A).mul p = (p.1 : A) * p.2 := rfl
+theorem inverse_obj_mul {A : CommGrp.{u}} {p} : μ[(inverse.obj A).X] p = (p.1 : A) * p.2 := rfl
 @[simp]
-theorem inverse_obj_inv {A : CommGrp.{u}} {x} : (inverse.obj A).inv x = (x : A)⁻¹ := rfl
+theorem inverse_obj_inv {A : CommGrp.{u}} {x} : ι[(inverse.obj A).X] x = (x : A)⁻¹ := rfl
 
 end CommGrpTypeEquivalenceCommGrp
 
