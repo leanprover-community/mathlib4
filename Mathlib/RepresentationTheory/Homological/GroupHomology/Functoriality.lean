@@ -381,6 +381,7 @@ instance H1CoresCoinfOfTrivial_g_epi :
 complex `H₁(S, A) ⟶ H₁(G, A) ⟶ H₁(G ⧸ S, A)` is exact. -/
 theorem H1CoresCoinfOfTrivial_exact :
     (H1CoresCoinfOfTrivial A S).Exact := by
+  classical
   rw [ShortComplex.moduleCat_exact_iff_ker_sub_range]
   intro x hx
 /- Denote `C(i) : C(S, A) ⟶ C(G, A), C(π) : C(G, A) ⟶ C(G ⧸ S, A)` and let `x : Z₁(G, A)` map to
