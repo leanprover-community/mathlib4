@@ -144,17 +144,14 @@ variable (s : Finset F)
 --variable (g : s)
 
 
-
-def mL : s → WeakBilin B →ₗ[𝕜] 𝕜 := fun f => (WeakBilin.eval B) f.val
+/-- Hopefully get rid of this later -/
+def mL : s → WeakBilin B →ₗ[𝕜] 𝕜 := fun (f : s) => (WeakBilin.eval B) f.val
 
 theorem iff : ↑f ∈ Submodule.span 𝕜 (Set.range (B.mL s)) ↔
     ∃ γ, ∀ (x : E), ‖f x‖ ≤ γ * ((s.sup B.toSeminormFamily) x) := by
   constructor
   · intro h
-    have e1 : Set.range (B.mL s) = B.mL s '' Set.univ := by
-      aesop
-    rw [e1] at h
-    rw [Finsupp.mem_span_image_iff_linearCombination] at h
+    rw [← Set.image_univ, Finsupp.mem_span_image_iff_linearCombination] at h
     obtain ⟨l, hl1, hl2⟩ := h
     let γ : ℝ := (l.sum fun i d ↦ ‖d‖)
     use γ
