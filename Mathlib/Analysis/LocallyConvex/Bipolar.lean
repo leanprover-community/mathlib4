@@ -129,6 +129,30 @@ lemma test3 : ∃ V ∈ B.toSeminormFamily.basisSets, V ⊆ (f ⁻¹' (Metric.ba
   · apply hV1
   · apply hV2
 
+lemma test4 :
+    ∃ (s : Finset F) (r : ℝ) (_ : 0 < r),
+    Seminorm.ball (s.sup (B.toSeminormFamily)) (0 : E) r ⊆ (f ⁻¹' (Metric.ball 0 1)) := by
+  obtain ⟨V, hV1 , hV2⟩ := test3 B f
+  obtain ⟨sE,hsE1, hsE2⟩ := hV1
+  simp at hsE1
+  obtain ⟨F, hF⟩ := hsE1
+  use F
+  have e1 : (0 : ℝ ) < (1 : ℝ) := by exact Real.zero_lt_one
+  rw [Set.iUnion, iSup] at hF
+  subst hF
+  simp_all only [zero_lt_one, Set.sSup_eq_sUnion, Set.sUnion_range, Set.mem_iUnion,
+    Set.mem_singleton_iff,
+    exists_prop]
+  obtain ⟨w, h⟩ := hsE2
+  obtain ⟨left, right⟩ := h
+  subst right
+  use w
+
+
+
+
+
+
 
 
 
