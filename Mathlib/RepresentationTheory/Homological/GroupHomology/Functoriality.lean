@@ -305,7 +305,6 @@ lemma mapCycles₁_hom :
 
 @[reassoc, elementwise]
 lemma mapCycles₁_comp {G H K : Type u} [Group G] [Group H] [Group K]
-    [DecidableEq G] [DecidableEq H] [DecidableEq K]
     {A : Rep k G} {B : Rep k H} {C : Rep k K} (f : G →* H) (g : H →* K)
     (φ : A ⟶ (Action.res _ f).obj B) (ψ : B ⟶ (Action.res _ g).obj C) :
     mapCycles₁ (g.comp f) (φ ≫ (Action.res _ f).map ψ) =
@@ -467,7 +466,7 @@ end OfTrivial
 
 /-- The short complex `H₁(S, A) ⟶ H₁(G, A) ⟶ H₁(G ⧸ S, A_S)`. -/
 @[simps X₁ X₂ X₃ f g]
-noncomputable def H1CoresCoinf [DecidableEq (G ⧸ S)] :
+noncomputable def H1CoresCoinf :
     ShortComplex (ModuleCat k) where
   X₁ := H1 ((Action.res _ S.subtype).obj A)
   X₂ := H1 A
@@ -476,7 +475,6 @@ noncomputable def H1CoresCoinf [DecidableEq (G ⧸ S)] :
   g := map (QuotientGroup.mk' S) (toCoinvariantsMkQ A S) 1
   zero := by rw [← map_comp, congr (QuotientGroup.mk'_comp_subtype S) (map (n := 1)), map_1_one]
 
-omit [DecidableEq (G ⧸ S)] in
 /-- Given a `G`-representation `A` and a normal subgroup `S ≤ G`, let `I(S)A` denote the submodule
 of `A` spanned by elements of the form `ρ(s)(a) - a` for `s : S, a : A`. Then the image of
 `C₁(G, I(S)A)` in `C₁(G, A)⧸B₁(G, A)` is contained in the image of `C₁(S, A)`. -/
@@ -702,7 +700,6 @@ lemma mapCycles₂_hom :
 
 @[reassoc, elementwise]
 lemma mapCycles₂_comp {G H K : Type u} [Group G] [Group H] [Group K]
-    [DecidableEq G] [DecidableEq H] [DecidableEq K]
     {A : Rep k G} {B : Rep k H} {C : Rep k K} (f : G →* H) (g : H →* K)
     (φ : A ⟶ (Action.res _ f).obj B) (ψ : B ⟶ (Action.res _ g).obj C) :
     mapCycles₂ (g.comp f) (φ ≫ (Action.res _ f).map ψ) =
