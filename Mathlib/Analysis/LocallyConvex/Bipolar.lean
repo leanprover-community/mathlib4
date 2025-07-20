@@ -177,13 +177,66 @@ lemma sn2 (x : E) (f₂ : F) (h : f₂ ∈ s) :
     (B.flip f₂).toSeminorm x ≤ (s.sup (fun fi => (B.flip fi).toSeminorm)) x := by
   apply Seminorm.le_finset_sup_apply h
 
+lemma sn3 : s.sup (fun fi => (B.flip fi).toSeminorm) = (s.sup B.toSeminormFamily) := by
+  rfl
 
+lemma sn_smul (k : 𝕜) (x : E) :
+    (s.sup B.toSeminormFamily) (k • x) = ‖k‖ * (s.sup B.toSeminormFamily) x := by
+  rw [SeminormClass.map_smul_eq_mul]
 
 #instance : SemilatticeSup (Seminorm 𝕜 E) := Seminorm.instSemilatticeSup
 
 #check s.sup (fun fi  => (B.flip fi).toSeminorm  )
 
-lemma test5 : ∃ (s₁ : Finset F), ↑f ∈ Submodule.span 𝕜 (Set.range (B.mL s)) := by
+#check B.toSeminormFamily
+
+#check Finset.sup_const
+
+
+lemma sss (p q : Seminorm 𝕜 E) (x : E) (c : ℝ) (h₁ : p x ≤ c) (h₂ : q x ≤ c) : (p ⊔ q) x ≤ c := by
+  simp_all only [Seminorm.coe_sup, Pi.sup_apply, sup_le_iff, and_self]
+
+lemma sss2 (t : F → Seminorm 𝕜 E) (x : E) (c : ℝ) (hc : 0 ≤ c) (h : ∀ i ∈ s, (t i) x ≤ c) :
+    (s.sup t) x ≤ c := Seminorm.finset_sup_apply_le hc h
+
+--#check s.sup
+
+variable (x : E)
+
+#check B.toSeminormFamily g
+
+lemma csh (x : E) (c : ℝ) (h : ∀ (fi : F), fi ∈ s ∧ B.toSeminormFamily fi x  ≤ c) :
+  (s.sup B.toSeminormFamily) x ≤ c := by
+  simp_all only [toSeminormFamily_apply]
+
+  rw [Finset.sup_def]
+  rw [Multiset.sup]
+
+  rw [Multiset.sup_le]
+  rw [toSeminormFamily_apply]
+  --apply Iff.trans Multiset.sup_le
+  sorry
+
+theorem iff (hs : s.Nonempty) : ↑f ∈ Submodule.span 𝕜 (Set.range (B.mL s)) ↔
+    ∃ γ, ∀ (x : E), ‖f x‖ ≤ γ * (s.sup B.toSeminormFamily) x := by
+  constructor
+  · sorry
+  · intro h
+    obtain ⟨γ, hγ⟩ := h
+    apply mem_span_of_iInf_ker_le_ker
+    intro x hx
+    simp at hx
+    --have e1' : (s.sup B.toSeminormFamily) x = s.sup fun x ↦ 0 := sorry
+    have e1 : (s.sup B.toSeminormFamily) x ≤  0 := by
+      --rw [← Seminorm.le_def]
+      rw [Finset.sup_le_iff]
+      apply Finset.sup_le
+      rw [ Finset.sup_const hs 0]
+      aesop
+
+
+
+lemma test5 : ∃ (s₁ : Finset F), ↑f ∈ Submodule.span 𝕜 (Set.range (B.mL s₁)) := by
   obtain ⟨s₁, hs⟩ := test4 B f
   use s₁
   apply mem_span_of_iInf_ker_le_ker (ι := s₁) (L := (mL B s₁)) (K := f.toLinearMap)
@@ -191,17 +244,71 @@ lemma test5 : ∃ (s₁ : Finset F), ↑f ∈ Submodule.span 𝕜 (Set.range (B.
   simp at hx
   simp at hs
   obtain ⟨r, hr1, hr2⟩ := hs
-  have e1 : ‖f x‖ ≤ r⁻¹ • (s₁.sup (fun fi  => (B.flip fi).toSeminorm  )) := by
-    simp_all only [one_div]
-    let y := ((r+1)⁻¹ * (s₁.sup (α := NNReal)  (fun fi  => ⟨‖(WeakBilin.eval B) fi x‖, norm_nonneg _⟩))⁻¹) • x
+  have hr : 0 ≤ r := by exact le_of_lt hr1
+
+  --have ex : x ∈
+
+  have e1 : ‖f x‖ ≤ r • ((s₁.sup B.toSeminormFamily) x) := by
+    --simp_all only [one_div]
+    let a := (r+1) * ((s₁.sup B.toSeminormFamily) x)
+
+    have c1 : a = 0 ∨ a ≠ 0 := eq_or_ne a 0
+
+    rcases c1 with h1 | h2
+    · have c2 : (s₁.sup B.toSeminormFamily) x = 0 := by
+        by_contra hn
+        simp at hn
+        simp [a] at h1
+        have rz : 0 < r + 1  := by
+          rw [← zero_add 0]
+          apply add_lt_add hr1
+          exact Real.zero_lt_one
+        have rz2 : 0 ≠ r + 1 := by
+          exact ne_of_lt rz
+        aesop
+      rw [c2]
+      simp
+      have ex1 : x ∈ (s₁.sup B.toSeminormFamily).ball 0 r := by
+        rw [Seminorm.mem_ball, sub_zero]
+        rw [← c2] at hr1
+        exact hr1
+      have ex2 (k : 𝕜) : k • x ∈ (s₁.sup B.toSeminormFamily).ball 0 r := by
+        rw [Seminorm.mem_ball, sub_zero]
+        rw [SeminormClass.map_smul_eq_mul]
+        have fibble : ‖k‖ * (s₁.sup B.toSeminormFamily) x = ‖k‖ * 0 := by
+          rw [c2]
+        rw [mul_zero] at fibble
+        rw [← fibble] at hr1
+        exact hr1
+      --simp_all
+      --have ex3 (k : 𝕜) : f k • x
+
+
+
+    let y := a⁻¹ • x
+    /-
     have i1 (fi : s₁) : (⟨‖(WeakBilin.eval B) fi x‖, norm_nonneg _⟩ : NNReal) ≤
         s₁.sup (α := NNReal)  (fun fi  => ⟨‖(WeakBilin.eval B) fi x‖, norm_nonneg _⟩) := by
       --norm_cast
       apply Finset.le_sup (f := (fun fi  => (⟨‖(WeakBilin.eval B) fi x‖, norm_nonneg _⟩): : NNReal)) fi.prop
-
+    -/
 
     have e2 : y ∈ (s₁.sup B.toSeminormFamily).ball 0 r⁻¹ := by
-      simp_all only [NNReal.coe_inv, Seminorm.mem_ball, sub_zero, y]
+      rw [Seminorm.mem_ball, sub_zero]
+      simp only [y]
+      have a1 : 0 ≤ a⁻¹ := by
+        simp_all only [mul_inv_rev, a]
+        rw [mul_nonneg_iff_left_nonneg_of_pos]
+        rw [inv_nonneg]
+        exact apply_nonneg (s₁.sup fun fi ↦ (B.flip fi).toSeminorm) x
+        rw [inv_pos]
+
+
+
+        sorry
+      simp_all only [mul_inv_rev, Seminorm.mem_ball, sub_zero, y, a]
+      sorry
+      --simp_all only [NNReal.coe_inv, Seminorm.mem_ball, sub_zero, y]
 
 
 
