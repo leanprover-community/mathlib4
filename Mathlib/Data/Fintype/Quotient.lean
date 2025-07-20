@@ -157,7 +157,7 @@ lemma finLiftOn₂_mk (f : (∀ i, α i) → (∀ i, β i) → φ)
     (h : ∀ (a₁ : ∀ i, α i) (b₁ : ∀ i, β i) (a₂ : ∀ i, α i) (b₂ : ∀ i, β i),
       (∀ i, a₁ i ≈ a₂ i) → (∀ i, b₁ i ≈ b₂ i) → f a₁ b₁ = f a₂ b₂)
     (a : ∀ i, α i) (b : ∀ i, β i) :
-    finLiftOn₂ (S₁ := S₁) (S₂ := S₂) (φ := φ) (⟦a ·⟧) (⟦b ·⟧) f h = f a b := by
+    finLiftOn₂ (⟦a ·⟧) (⟦b ·⟧) f h = f a b := by
   simp [finLiftOn₂, finLiftOn_mk]
 
 end
