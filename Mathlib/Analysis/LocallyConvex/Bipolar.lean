@@ -143,11 +143,12 @@ variable (s : Finset F)
 
 --variable (g : s)
 
+variable (f : E →ₗ[𝕜] 𝕜)
 
 /-- Hopefully get rid of this later -/
-def mL : s → WeakBilin B →ₗ[𝕜] 𝕜 := fun (f : s) => (WeakBilin.eval B) f.val
+def mL : s → E →ₗ[𝕜] 𝕜 := B.flip ∘ Subtype.val
 
-theorem iff : ↑f ∈ Submodule.span 𝕜 (Set.range (B.mL s)) ↔
+theorem iff : f ∈ Submodule.span 𝕜 (Set.range (B.mL s)) ↔
     ∃ γ, ∀ (x : E), ‖f x‖ ≤ γ * ((s.sup B.toSeminormFamily) x) := by
   constructor
   · intro h
@@ -158,7 +159,6 @@ theorem iff : ↑f ∈ Submodule.span 𝕜 (Set.range (B.mL s)) ↔
     intro x
     have e2 : ‖f x‖ = ‖(Finsupp.linearCombination 𝕜 (B.mL s)) l x‖ := by
       rw [hl2]
-      rfl
     rw [Finsupp.linearCombination_apply] at e2
     simp at e2
     have e3 : ‖f x‖ ≤ l.sum fun i d ↦ ‖d * (B.mL s i) x‖ := by
