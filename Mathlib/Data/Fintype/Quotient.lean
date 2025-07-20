@@ -134,6 +134,24 @@ lemma finLiftOn_mk (a : ∀ i, α i) :
   rw [finChoice_eq]
   rfl
 
+abbrev finLiftOn₂ {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {α : ι → Sort*} {S₁ : ∀ i, Setoid (α i)}
+    {β : ι → Sort*} {S₂ : ∀ i, Setoid (β i)}
+    {φ : Sort*}
+    (q₁ : ∀ i, Quotient (S₁ i)) (q₂ : ∀ i, Quotient (S₂ i))
+    (f : (∀ i, α i) → (∀ i, β i) → φ)
+    (c : ∀ (a₁ : ∀ i, α i), ∀ (b₁ : ∀ i, β i), ∀ (a₂ : ∀ i, α i), ∀ (b₂ : ∀ i, β i),
+        (∀ i, a₁ i ≈ a₂ i) → (∀ i, b₁ i ≈ b₂ i) → f a₁ b₁ = f a₂ b₂) :
+      φ := by
+  apply Quotient.finLiftOn q₁ (fun a₁ ↦ Quotient.finLiftOn q₂ (f a₁)
+    (fun a b ↦ c a₁ a a₁ b (Setoid.refl a₁)))
+  induction q₂ using Quotient.ind_fintype_pi
+  rw [finLiftOn_mk]
+  intros
+  apply c
+  · intro i; simp_all only
+  · exact fun i ↦ Setoid.refl ..
+
 /-- `Quotient.finChoice` as an equivalence. -/
 @[simps]
 def finChoiceEquiv :
