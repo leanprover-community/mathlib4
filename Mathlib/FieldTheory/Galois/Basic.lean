@@ -33,8 +33,8 @@ Together, these two results prove the Galois correspondence.
 
 ## Additional results
 
-- Instances for `IsQuadraticExtension`: a quadratic extension is Galois (if separable) with cyclic
-  and thus abelian Galois group.
+- Instances for `Algebra.IsQuadraticExtension`: a quadratic extension is Galois (if separable)
+  with cyclic and thus abelian Galois group.
 
 -/
 
@@ -109,8 +109,6 @@ theorem card_aut_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
   let iso : F⟮α⟯ ≃ₐ[F] E :=
     { toFun := fun e => e.val
       invFun := fun e => ⟨e, by rw [hα]; exact IntermediateField.mem_top⟩
-      left_inv := fun _ => by ext; rfl
-      right_inv := fun _ => rfl
       map_mul' := fun _ _ => rfl
       map_add' := fun _ _ => rfl
       commutes' := fun _ => rfl }
@@ -123,9 +121,7 @@ theorem card_aut_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
   rw [← LinearEquiv.finrank_eq iso.toLinearEquiv]
   rw [← IntermediateField.AdjoinSimple.card_aut_eq_finrank F E H h_sep h_splits]
   apply Fintype.card_congr
-  apply Equiv.mk (fun ϕ => iso.trans (ϕ.trans iso.symm)) fun ϕ => iso.symm.trans (ϕ.trans iso)
-  · intro ϕ; ext1; simp only [trans_apply, apply_symm_apply]
-  · intro ϕ; ext1; simp only [trans_apply, symm_apply_apply]
+  exact Equiv.mk (fun ϕ => iso.trans (ϕ.trans iso.symm)) fun ϕ => iso.symm.trans (ϕ.trans iso)
 
 end IsGalois
 
@@ -186,37 +182,64 @@ def FixedPoints.intermediateField (M : Type*) [Monoid M] [MulSemiringAction M E]
 
 namespace IntermediateField
 
-/-- The intermediate field fixed by a subgroup -/
+/-- The intermediate field fixed by a subgroup. -/
 def fixedField : IntermediateField F E :=
   FixedPoints.intermediateField H
 
-theorem mem_fixedField_iff (x) :
+@[simp] lemma mem_fixedField_iff (x) :
     x ∈ fixedField H ↔ ∀ f ∈ H, f x = x := by
-  show x ∈ MulAction.fixedPoints H E ↔ _
+  change x ∈ MulAction.fixedPoints H E ↔ _
   simp only [MulAction.mem_fixedPoints, Subtype.forall, Subgroup.mk_smul, AlgEquiv.smul_def]
+
+@[simp] lemma fixedField_bot : fixedField (⊥ : Subgroup (E ≃ₐ[F] E)) = ⊤ := by
+  ext
+  simp
 
 theorem finrank_fixedField_eq_card [FiniteDimensional F E] [DecidablePred (· ∈ H)] :
     finrank (fixedField H) E = Fintype.card H :=
   FixedPoints.finrank_eq_card H E
 
-/-- The subgroup fixing an intermediate field -/
+/-- The subgroup fixing an intermediate field. -/
 nonrec def fixingSubgroup : Subgroup (E ≃ₐ[F] E) :=
   fixingSubgroup (E ≃ₐ[F] E) (K : Set E)
 
 theorem le_iff_le : K ≤ fixedField H ↔ H ≤ fixingSubgroup K :=
   ⟨fun h g hg x => h (Subtype.mem x) ⟨g, hg⟩, fun h x hx g => h (Subtype.mem g) ⟨x, hx⟩⟩
 
-lemma fixingSubgroup_anti : Antitone (IntermediateField.fixingSubgroup (F := F) (E := E)) := by
-  intro K K' h
-  rw [← le_iff_le]
-  exact le_trans h ((le_iff_le _ _).mpr (le_refl K'.fixingSubgroup))
+/-- The map `K ↦ Gal(E/K)` is inclusion-reversing. -/
+theorem fixingSubgroup_le {K1 K2 : IntermediateField F E} (h12 : K1 ≤ K2) :
+    K2.fixingSubgroup ≤ K1.fixingSubgroup :=
+  fun _ hσ ⟨x, hx⟩ ↦ hσ ⟨x, h12 hx⟩
 
-/-- The fixing subgroup of `K : IntermediateField F E` is isomorphic to `E ≃ₐ[K] E` -/
+@[deprecated (since := "2025-05-02")] alias fixingSubgroup.antimono := fixingSubgroup_le
+
+theorem fixedField_le {H1 H2 : Subgroup (E ≃ₐ[F] E)} (h12 : H1 ≤ H2) :
+    fixedField H2 ≤ fixedField H1 :=
+  fun _ hσ ⟨x, hx⟩ ↦ hσ ⟨x, h12 hx⟩
+
+lemma fixingSubgroup_antitone : Antitone (@fixingSubgroup F _ E _ _) :=
+  fun _ _ ↦ fixingSubgroup_le
+
+@[deprecated (since := "2025-05-02")] alias fixingSubgroup_anti := fixingSubgroup_antitone
+
+lemma fixedField_antitone : Antitone (@fixedField F _ E _ _) :=
+  fun _ _ ↦ fixedField_le
+
+@[simp] lemma mem_fixingSubgroup_iff (σ) : σ ∈ fixingSubgroup K ↔ ∀ x ∈ K, σ x = x :=
+  _root_.mem_fixingSubgroup_iff _
+
+@[simp] lemma fixingSubgroup_top : fixingSubgroup (⊤ : IntermediateField F E) = ⊥ := by
+  ext
+  simp [DFunLike.ext_iff]
+
+@[simp] lemma fixingSubgroup_bot : fixingSubgroup (⊥ : IntermediateField F E) = ⊤ := by
+  ext
+  simp [mem_bot]
+
+/-- The fixing subgroup of `K : IntermediateField F E` is isomorphic to `E ≃ₐ[K] E`. -/
 def fixingSubgroupEquiv : fixingSubgroup K ≃* E ≃ₐ[K] E where
   toFun ϕ := { AlgEquiv.toRingEquiv (ϕ : E ≃ₐ[F] E) with commutes' := ϕ.mem }
   invFun ϕ := ⟨ϕ.restrictScalars _, ϕ.commutes⟩
-  left_inv _ := by ext; rfl
-  right_inv _ := by ext; rfl
   map_mul' _ _ := by ext; rfl
 
 theorem fixingSubgroup_fixedField [FiniteDimensional F E] : fixingSubgroup (fixedField H) = H := by
@@ -230,6 +253,13 @@ theorem fixingSubgroup_fixedField [FiniteDimensional F E] : fixingSubgroup (fixe
   refine (FixedPoints.toAlgHomEquiv H E).trans ?_
   refine (algEquivEquivAlgHom (fixedField H) E).toEquiv.symm.trans ?_
   exact (fixingSubgroupEquiv (fixedField H)).toEquiv.symm
+
+/--
+A subgroup is isomorphic to the Galois group of its fixed field.
+-/
+def subgroupEquivAlgEquiv [FiniteDimensional F E] (H : Subgroup (E ≃ₐ[F] E)) :
+    H ≃* E ≃ₐ[IntermediateField.fixedField H] E :=
+ (MulEquiv.subgroupCongr (fixingSubgroup_fixedField H).symm).trans (fixingSubgroupEquiv _)
 
 instance fixedField.smul : SMul K (fixedField (fixingSubgroup K)) where
   smul x y := ⟨x * y, fun ϕ => by
@@ -264,6 +294,19 @@ theorem fixedField_fixingSubgroup [FiniteDimensional F E] [h : IsGalois F E] :
     Fintype.card_congr (IntermediateField.fixingSubgroupEquiv K).toEquiv]
   exact (card_aut_eq_finrank K E).symm
 
+@[simp] lemma fixedField_top [IsGalois F E] [FiniteDimensional F E] :
+    fixedField (⊤ : Subgroup (E ≃ₐ[F] E)) = ⊥ := by
+  rw [← fixingSubgroup_bot, fixedField_fixingSubgroup]
+
+theorem mem_bot_iff_fixed [IsGalois F E] [FiniteDimensional F E] (x : E) :
+    x ∈ (⊥ : IntermediateField F E) ↔ ∀ f : E ≃ₐ[F] E, f x = x := by
+  rw [← fixedField_top, mem_fixedField_iff]
+  simp only [Subgroup.mem_top, forall_const]
+
+theorem mem_range_algebraMap_iff_fixed [IsGalois F E] [FiniteDimensional F E] (x : E) :
+    x ∈ Set.range (algebraMap F E) ↔ ∀ f : E ≃ₐ[F] E, f x = x :=
+  mem_bot_iff_fixed x
+
 theorem card_fixingSubgroup_eq_finrank [DecidablePred (· ∈ IntermediateField.fixingSubgroup K)]
     [FiniteDimensional F E] [IsGalois F E] :
     Fintype.card (IntermediateField.fixingSubgroup K) = finrank K E := by
@@ -281,7 +324,7 @@ def intermediateFieldEquivSubgroup [FiniteDimensional F E] [IsGalois F E] :
     rw [← fixedField_fixingSubgroup L, IntermediateField.le_iff_le, fixedField_fixingSubgroup L]
     rfl
 
-/-- The Galois correspondence as a `GaloisInsertion` -/
+/-- The Galois correspondence as a `GaloisInsertion`. -/
 def galoisInsertionIntermediateFieldSubgroup [FiniteDimensional F E] :
     GaloisInsertion (OrderDual.toDual ∘
       (IntermediateField.fixingSubgroup : IntermediateField F E → Subgroup (E ≃ₐ[F] E)))
@@ -292,7 +335,7 @@ def galoisInsertionIntermediateFieldSubgroup [FiniteDimensional F E] :
   le_l_u H := le_of_eq (IntermediateField.fixingSubgroup_fixedField H).symm
   choice_eq _ _ := rfl
 
-/-- The Galois correspondence as a `GaloisCoinsertion` -/
+/-- The Galois correspondence as a `GaloisCoinsertion`. -/
 def galoisCoinsertionIntermediateFieldSubgroup [FiniteDimensional F E] [IsGalois F E] :
     GaloisCoinsertion (OrderDual.toDual ∘
       (IntermediateField.fixingSubgroup : IntermediateField F E → Subgroup (E ≃ₐ[F] E)))
@@ -315,8 +358,8 @@ open scoped Pointwise
 
 lemma IntermediateField.restrictNormalHom_ker (E : IntermediateField K L) [Normal K E] :
     (restrictNormalHom E).ker = E.fixingSubgroup := by
-  simp [fixingSubgroup, Subgroup.ext_iff, AlgEquiv.ext_iff, Subtype.ext_iff,
-    restrictNormalHom_apply, mem_fixingSubgroup_iff]
+  simp only [Subgroup.ext_iff, MonoidHom.mem_ker, AlgEquiv.ext_iff, one_apply, Subtype.ext_iff,
+    restrictNormalHom_apply, Subtype.forall, mem_fixingSubgroup_iff, implies_true]
 
 namespace IsGalois
 
@@ -352,7 +395,7 @@ theorem map_fixingSubgroup (σ : L ≃ₐ[K] L) :
     (E.map σ).fixingSubgroup = (MulAut.conj σ) • E.fixingSubgroup := by
   ext τ
   simp only [coe_map, AlgHom.coe_coe, Set.mem_image, SetLike.mem_coe, AlgEquiv.smul_def,
-    forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, Subtype.forall,
+    forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
     Subgroup.mem_pointwise_smul_iff_inv_smul_mem, ← symm_apply_eq,
     IntermediateField.fixingSubgroup, mem_fixingSubgroup_iff]
   rfl
@@ -402,11 +445,7 @@ theorem of_card_aut_eq_finrank [FiniteDimensional F E]
   rw [← IntermediateField.finrank_eq_one_iff, ← mul_left_inj' (ne_of_lt p).symm,
     finrank_mul_finrank, ← h, one_mul, IntermediateField.finrank_fixedField_eq_card]
   apply Fintype.card_congr
-  exact
-    { toFun := fun g => ⟨g, Subgroup.mem_top g⟩
-      invFun := (↑)
-      left_inv := fun g => rfl
-      right_inv := fun _ => by ext; rfl }
+  exact { toFun := fun g => ⟨g, Subgroup.mem_top g⟩, invFun := (↑) }
 
 variable {F} {E}
 variable {p : F[X]}
@@ -421,7 +460,7 @@ theorem of_separable_splitting_field_aux [hFE : FiniteDimensional F E] [sp : p.I
   have h : IsIntegral K x := (isIntegral_of_noetherian (IsNoetherian.iff_fg.2 hFE) x).tower_top
   have h1 : p ≠ 0 := fun hp => by
     rw [hp, Polynomial.aroots_zero] at hx
-    exact Multiset.not_mem_zero x hx
+    exact Multiset.notMem_zero x hx
   have h2 : minpoly K x ∣ p.map (algebraMap F K) := by
     apply minpoly.dvd
     rw [Polynomial.aeval_def, Polynomial.eval₂_map, ← Polynomial.eval_map, ←
@@ -478,7 +517,7 @@ theorem of_separable_splitting_field [sp : p.IsSplittingField F E] (hp : p.Separ
   refine LinearEquiv.finrank_eq ?_
   rfl
 
-/-- Equivalent characterizations of a Galois extension of finite degree -/
+/-- Equivalent characterizations of a Galois extension of finite degree. -/
 theorem tfae [FiniteDimensional F E] : List.TFAE [
     IsGalois F E,
     IntermediateField.fixedField (⊤ : Subgroup (E ≃ₐ[F] E)) = ⊥,
@@ -516,20 +555,20 @@ instance (priority := 100) IsAlgClosure.isGalois (k K : Type*) [Field k] [Field 
 
 end IsAlgClosure
 
-section IsQuadraticExtension
+namespace Algebra
+
+variable (F K : Type*) [Field F] [Field K] [Algebra F K] [IsQuadraticExtension F K]
 
 /--
 A quadratic separable extension is Galois.
 -/
-instance (F K : Type*) [Field F] [Field K] [IsQuadraticExtension F K] [Algebra.IsSeparable F K] :
-    IsGalois F K where
+instance IsQuadraticExtension.isGalois [Algebra.IsSeparable F K] : IsGalois F K where
 
 /--
 A quadratic extension has cyclic Galois group.
 -/
-instance (F K : Type*) [Field F] [Field K] [h : IsQuadraticExtension F K] :
-    IsCyclic (K ≃ₐ[F] K) := by
-  have := h.finrank_eq_two ▸ AlgEquiv.card_le
+instance IsQuadraticExtension.isCyclic : IsCyclic (K ≃ₐ[F] K) := by
+  have := finrank_eq_two F K ▸ AlgEquiv.card_le
   interval_cases h : Fintype.card (K ≃ₐ[F] K)
   · simp_all
   · exact @isCyclic_of_subsingleton _ _ (Fintype.card_le_one_iff_subsingleton.mp h.le)
@@ -539,7 +578,7 @@ instance (F K : Type*) [Field F] [Field K] [h : IsQuadraticExtension F K] :
 /--
 A quadratic extension has abelian Galois group.
 -/
-instance (F K : Type*) [Field F] [Field K] [IsQuadraticExtension F K] :
+instance IsQuadraticExtension.isMulCommutative_galoisGroup :
     IsMulCommutative (K ≃ₐ[F] K) := ⟨IsCyclic.commutative⟩
 
-end IsQuadraticExtension
+end Algebra

@@ -55,7 +55,7 @@ theorem compl_ordConnectedSection_ordSeparatingSet_mem_nhdsGE (hd : Disjoint s (
       suffices c < y by
         rw [uIcc_of_ge (hx.2.trans this).le]
         exact ⟨hx.2.le, this.le⟩
-      refine lt_of_not_le fun hyc => ?_
+      refine lt_of_not_ge fun hyc => ?_
       have hya : y < a := not_le.1 fun hay => hsub ⟨hay, hyc.trans hcb⟩ hyt
       exact hxy (Icc_subset_uIcc ⟨hya.le, hx.1⟩) ha
 

@@ -132,11 +132,11 @@ variable [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
 /-- If we remove a smaller interval from a larger, the result is nonempty -/
 theorem nonempty_Ico_sdiff {x dx y dy : α} (h : dy < dx) (hx : 0 < dx) :
     Nonempty ↑(Ico x (x + dx) \ Ico y (y + dy)) := by
-  rcases lt_or_le x y with h' | h'
+  rcases lt_or_ge x y with h' | h'
   · use x
     simp [*, not_le.2 h']
   · use max x (x + dy)
-    simp [*, le_refl]
+    simp [*]
 
 end LinearOrderedAddCommGroup
 
@@ -152,7 +152,7 @@ variable [CommGroup α] [PartialOrder α] [IsOrderedMonoid α] (a b : α)
 @[to_additive]
 theorem pairwise_disjoint_Ioc_mul_zpow :
     Pairwise (Disjoint on fun n : ℤ => Ioc (a * b ^ n) (a * b ^ (n + 1))) := by
-  simp (config := { unfoldPartialApp := true }) only [Function.onFun]
+  simp +unfoldPartialApp only [Function.onFun]
   simp_rw [Set.disjoint_iff]
   intro m n hmn x hx
   apply hmn
@@ -167,7 +167,7 @@ theorem pairwise_disjoint_Ioc_mul_zpow :
 @[to_additive]
 theorem pairwise_disjoint_Ico_mul_zpow :
     Pairwise (Disjoint on fun n : ℤ => Ico (a * b ^ n) (a * b ^ (n + 1))) := by
-  simp (config := { unfoldPartialApp := true }) only [Function.onFun]
+  simp +unfoldPartialApp only [Function.onFun]
   simp_rw [Set.disjoint_iff]
   intro m n hmn x hx
   apply hmn

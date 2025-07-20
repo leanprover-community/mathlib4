@@ -15,10 +15,10 @@ import Mathlib.GroupTheory.QuotientGroup.Defs
 
 ## Main definitions
 
- * `Submodule.Quotient.mk`: a function sending an element of `M` to `M ⧸ p`
- * `Submodule.Quotient.module`: `M ⧸ p` is a module
- * `Submodule.Quotient.mkQ`: a linear map sending an element of `M` to `M ⧸ p`
- * `Submodule.quotEquivOfEq`: if `p` and `p'` are equal, their quotients are equivalent
+* `Submodule.Quotient.mk`: a function sending an element of `M` to `M ⧸ p`
+* `Submodule.Quotient.module`: `M ⧸ p` is a module
+* `Submodule.Quotient.mkQ`: a linear map sending an element of `M` to `M ⧸ p`
+* `Submodule.quotEquivOfEq`: if `p` and `p'` are equal, their quotients are equivalent
 
 -/
 
@@ -102,6 +102,11 @@ theorem mk_neg : (mk (-x) : M ⧸ p) = -(mk x) :=
 @[simp]
 theorem mk_sub : (mk (x - y) : M ⧸ p) = mk x - mk y :=
   rfl
+
+variable {p} in
+@[simp]
+theorem mk_out (m : M ⧸ p) : Submodule.Quotient.mk (Quotient.out m) = m :=
+  Quotient.out_eq m
 
 protected nonrec lemma «forall» {P : M ⧸ p → Prop} : (∀ a, P a) ↔ ∀ a, P (mk a) := Quotient.forall
 

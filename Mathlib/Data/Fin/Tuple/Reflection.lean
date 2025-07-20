@@ -164,4 +164,86 @@ example [CommMonoid α] (a : Fin 3 → α) : ∏ i, a i = a 0 * a 1 * a 2 :=
 example [AddCommMonoid α] (a : Fin 3 → α) : ∑ i, a i = a 0 + a 1 + a 2 :=
   (sum_eq _).symm
 
+section Meta
+open Lean Meta Qq
+
+/-- Produce a term of the form `f 0 * f 1 * ... * f (n - 1)` and an application of `FinVec.prod_eq`
+that shows it is equal to `∏ i, f i`. -/
+def mkProdEqQ {u : Level} {α : Q(Type u)} (inst : Q(CommMonoid $α)) (n : ℕ) (f : Q(Fin $n → $α)) :
+    MetaM <| (val : Q($α)) × Q(∏ i, $f i = $val) := do
+  match n with
+  | 0 => return ⟨q((1 : $α)), q(Fin.prod_univ_zero $f)⟩
+  | m + 1 =>
+    let nezero : Q(NeZero ($m + 1)) := q(⟨Nat.succ_ne_zero _⟩)
+    let val ← makeRHS (m + 1) f nezero (m + 1)
+    let _ : $val =Q FinVec.prod $f := ⟨⟩
+    return ⟨q($val), q(FinVec.prod_eq $f |>.symm)⟩
+where
+  /-- Creates the expression `f 0 * f 1 * ... * f (n - 1)`. -/
+  makeRHS (n : ℕ) (f : Q(Fin $n → $α)) (nezero : Q(NeZero $n)) (k : ℕ) : MetaM Q($α) := do
+  match k with
+  | 0 => failure
+  | 1 => pure q($f 0)
+  | m + 1 =>
+    let pre ← makeRHS n f nezero m
+    let mRaw : Q(ℕ) := mkRawNatLit m
+    pure q($pre * $f (OfNat.ofNat $mRaw))
+
+/-- Produce a term of the form `f 0 + f 1 + ... + f (n - 1)` and an application of `FinVec.sum_eq`
+that shows it is equal to `∑ i, f i`. -/
+def mkSumEqQ {u : Level} {α : Q(Type u)} (inst : Q(AddCommMonoid $α)) (n : ℕ) (f : Q(Fin $n → $α)) :
+    MetaM <| (val : Q($α)) × Q(∑ i, $f i = $val) := do
+  match n with
+  | 0 => return ⟨q((0 : $α)), q(Fin.sum_univ_zero $f)⟩
+  | m + 1 =>
+    let nezero : Q(NeZero ($m + 1)) := q(⟨Nat.succ_ne_zero _⟩)
+    let val ← makeRHS (m + 1) f nezero (m + 1)
+    let _ : $val =Q FinVec.sum $f := ⟨⟩
+    return ⟨q($val), q(FinVec.sum_eq $f |>.symm)⟩
+where
+  /-- Creates the expression `f 0 + f 1 + ... + f (n - 1)`. -/
+  makeRHS (n : ℕ) (f : Q(Fin $n → $α)) (nezero : Q(NeZero $n)) (k : ℕ) : MetaM Q($α) := do
+  match k with
+  | 0 => failure
+  | 1 => pure q($f 0)
+  | m + 1 =>
+    let pre ← makeRHS n f nezero m
+    let mRaw : Q(ℕ) := mkRawNatLit m
+    pure q($pre + $f (OfNat.ofNat $mRaw))
+
+end Meta
+
 end FinVec
+
+namespace Fin
+open Qq Lean FinVec
+
+/-- Rewrites `∏ i : Fin n, f i` as `f 0 * f 1 * ... * f (n - 1)` when `n` is a numeral. -/
+simproc_decl prod_univ_ofNat (∏ _ : Fin _, _) := .ofQ fun u _ e => do
+  match u, e with
+  | .succ _, ~q(@Finset.prod (Fin $n) _ $inst (@Finset.univ _ $instF) $f) => do
+    match (generalizing := false) n.nat? with
+    | .none =>
+      return .continue
+    | .some nVal =>
+      let ⟨res, pf⟩ ← mkProdEqQ inst nVal f
+      let ⟨_⟩ ← assertDefEqQ q($instF) q(Fin.fintype _)
+      have _ : $n =Q $nVal := ⟨⟩
+      return .visit <| .mk q($res) <| some q($pf)
+  | _, _ => return .continue
+
+/-- Rewrites `∑ i : Fin n, f i` as `f 0 + f 1 + ... + f (n - 1)` when `n` is a numeral. -/
+simproc_decl sum_univ_ofNat (∑ _ : Fin _, _) := .ofQ fun u _ e => do
+  match u, e with
+  | .succ _, ~q(@Finset.sum (Fin $n) _ $inst (@Finset.univ _ $instF) $f) => do
+    match n.nat? with
+    | .none =>
+      return .continue
+    | .some nVal =>
+      let ⟨res, pf⟩ ← mkSumEqQ inst nVal f
+      let ⟨_⟩ ← assertDefEqQ q($instF) q(Fin.fintype _)
+      have _ : $n =Q $nVal := ⟨⟩
+      return .visit <| .mk q($res) <| some q($pf)
+  | _, _ => return .continue
+
+end Fin

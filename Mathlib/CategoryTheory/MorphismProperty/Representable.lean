@@ -230,7 +230,7 @@ noncomputable def lift' [Full F] : c ⟶ hf'.pullback g := hf'.lift _ _ hi
 
 @[reassoc (attr := simp)]
 lemma lift'_fst [Full F] [Faithful F] : hf'.lift' i h hi ≫ hf'.fst' g = i :=
-  F.map_injective (by simp [map_fst', lift'])
+  F.map_injective (by simp [lift'])
 
 @[reassoc (attr := simp)]
 lemma lift'_snd [Full F] [Faithful F] : hf'.lift' i h hi ≫ hf'.snd g = h := by
@@ -342,7 +342,7 @@ lemma relative.property_snd {f : X ⟶ Y} (hf : P.relative F f) {a : C} (g : F.o
 `f : X ⟶ Y` satisfies `P.relative` it suffices to show that:
 * The morphism is representable.
 * For any morphism `g : F.obj a ⟶ G`, the property `P` holds for *some* represented pullback
-of `f` by `g`. -/
+  of `f` by `g`. -/
 lemma relative.of_exists [F.Faithful] [F.Full] [P.RespectsIso] {f : X ⟶ Y}
     (h₀ : ∀ ⦃a : C⦄ (g : F.obj a ⟶ Y), ∃ (b : C) (fst : F.obj b ⟶ X) (snd : b ⟶ a)
       (_ : IsPullback fst (F.map snd) f g), P snd) : P.relative F f := by

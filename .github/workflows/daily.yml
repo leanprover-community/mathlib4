@@ -3,6 +3,10 @@ name: Daily CI Workflow
 # running some expensive CI checks that we don't want to run on every PR.
 # It reports results via Zulip.
 
+# This script requires that the ZULIP_API_KEY secret is available in both
+# `leanprover-community/mathlib4` and `leanprover-community/mathlib4-nightly-testing`
+# repositories.
+
 on:
   schedule:
     - cron: '0 0 * * *'   # Runs at 00:00 UTC every day
@@ -15,6 +19,7 @@ env:
 jobs:
   check-lean4checker:
     runs-on: ubuntu-latest
+    if: github.repository == 'leanprover-community/mathlib4' || github.repository == 'leanprover-community/mathlib4-nightly-testing'
     strategy:
       matrix:
         branch_type: [master, nightly]
@@ -56,7 +61,7 @@ jobs:
           ref: ${{ env.BRANCH_REF }}
 
       - name: Configure Lean
-        uses: leanprover/lean-action@e18f2df7f0d4f30d11a4b963bff9b1140999480c # 2025-04-22
+        uses: leanprover/lean-action@f807b338d95de7813c5c50d018f1c23c9b93b4ec # 2025-04-24
         with:
           auto-config: false
           use-github-cache: false

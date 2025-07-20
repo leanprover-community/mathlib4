@@ -3,7 +3,6 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
 
 /-!
@@ -88,6 +87,13 @@ lemma Limits.IsZero.hasProjectiveDimensionLT_zero (hX : IsZero X) :
 
 instance : HasProjectiveDimensionLT (0 : C) 0 :=
   (isZero_zero C).hasProjectiveDimensionLT_zero
+
+lemma isZero_of_hasProjectiveDimensionLT_zero [HasProjectiveDimensionLT X 0] : IsZero X := by
+  letI := HasExt.standard C
+  rw [IsZero.iff_id_eq_zero]
+  apply Ext.homEquiv₀.symm.injective
+  simpa only [Ext.homEquiv₀_symm_apply, Ext.mk₀_zero]
+    using Abelian.Ext.eq_zero_of_hasProjectiveDimensionLT _ 0 (by rfl)
 
 lemma hasProjectiveDimensionLT_of_ge (m : ℕ) (h : n ≤ m)
     [HasProjectiveDimensionLT X n] :

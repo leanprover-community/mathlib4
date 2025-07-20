@@ -78,7 +78,7 @@ theorem naturality_tensorHom {p f₁ g₁ f₂ g₂ pf₁ pf₁f₂ : C} {η : f
     (η_f₁ : p ⊗ f₁ ≅ pf₁) (η_g₁ : p ⊗ g₁ ≅ pf₁) (η_f₂ : pf₁ ⊗ f₂ ≅ pf₁f₂) (η_g₂ : pf₁ ⊗ g₂ ≅ pf₁f₂)
     (ih_η : p ◁ η ≪≫ η_g₁ = η_f₁)
     (ih_θ : pf₁ ◁ θ ≪≫ η_g₂ = η_f₂) :
-    p ◁ (η ⊗ θ) ≪≫ normalizeIsoComp η_g₁ η_g₂ = normalizeIsoComp η_f₁ η_f₂ := by
+    p ◁ (η ⊗ᵢ θ) ≪≫ normalizeIsoComp η_g₁ η_g₂ = normalizeIsoComp η_f₁ η_f₂ := by
   rw [tensorIso_def]
   apply naturality_comp
   · apply naturality_whiskerRight _ _ _ ih_η

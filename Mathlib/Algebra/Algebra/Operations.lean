@@ -437,7 +437,7 @@ theorem map_op_mul :
   · simp_rw [map_le_iff_le_comap]
     refine mul_le.2 fun m hm n hn => ?_
     rw [mem_comap, map_equiv_eq_comap_symm, map_equiv_eq_comap_symm]
-    show op n * op m ∈ _
+    change op n * op m ∈ _
     exact mul_mem_mul hn hm
   · refine mul_le.2 (MulOpposite.rec' fun m hm => MulOpposite.rec' fun n hn => ?_)
     rw [Submodule.mem_map_equiv] at hm hn ⊢
@@ -544,19 +544,8 @@ lemma mul_mem_smul_iff {S} [CommRing S] [Algebra R S] {x : S} {p : Submodule R S
   simp [mem_smul_pointwise_iff_exists, mul_cancel_left_mem_nonZeroDivisors hx]
 
 variable (M N) in
-theorem mul_smul_mul_eq_smul_mul_smul (x y : R) : (x * y) • (M * N) = (x • M) * (y • N) := by
-  ext
-  refine ⟨?_, fun hx ↦ Submodule.mul_induction_on hx ?_ fun _ _ hx hy ↦ Submodule.add_mem _ hx hy⟩
-  · rintro ⟨_, hx, rfl⟩
-    rw [DistribMulAction.toLinearMap_apply]
-    refine Submodule.mul_induction_on hx (fun m hm n hn ↦ ?_) (fun _ _ hn hm ↦ ?_)
-    · rw [mul_smul_mul_comm]
-      exact mul_mem_mul (smul_mem_pointwise_smul m x M hm) (smul_mem_pointwise_smul n y N hn)
-    · rw [smul_add]
-      exact Submodule.add_mem _ hn hm
-  · rintro _ ⟨m, hm, rfl⟩ _ ⟨n, hn, rfl⟩
-    simp_rw [DistribMulAction.toLinearMap_apply, smul_mul_smul_comm]
-    exact smul_mem_pointwise_smul _ _ _ (mul_mem_mul hm hn)
+theorem mul_smul_mul_eq_smul_mul_smul (x y : R) : (x * y) • (M * N) = (x • M) * (y • N) :=
+  mul_smul_mul_comm x y M N
 
 /-- Sub-R-modules of an R-algebra form an idempotent semiring. -/
 instance idemSemiring : IdemSemiring (Submodule R A) where
@@ -564,6 +553,10 @@ instance idemSemiring : IdemSemiring (Submodule R A) where
   one_mul := Submodule.one_mul
   mul_one := Submodule.mul_one
   bot_le _ := bot_le
+
+instance : IsOrderedRing (Submodule R A) where
+  mul_le_mul_of_nonneg_left _ _ _ h _ := mul_le_mul_left' h _
+  mul_le_mul_of_nonneg_right _ _ _ h _ := mul_le_mul_right' h _
 
 variable (M)
 
@@ -684,7 +677,7 @@ theorem map_unop_pow (n : ℕ) (M : Submodule R Aᵐᵒᵖ) :
 /-- `span` is a semiring homomorphism (recall multiplication is pointwise multiplication of subsets
 on either side). -/
 @[simps]
-def span.ringHom : SetSemiring A →+* Submodule R A where
+noncomputable def span.ringHom : SetSemiring A →+* Submodule R A where
   toFun s := Submodule.span R (SetSemiring.down s)
   map_zero' := span_empty
   map_one' := one_eq_span.symm
@@ -744,7 +737,7 @@ theorem prod_span_singleton {ι : Type*} (s : Finset ι) (x : ι → A) :
 variable (R A)
 
 /-- R-submodules of the R-algebra A are a module over `Set A`. -/
-instance moduleSet : Module (SetSemiring A) (Submodule R A) where
+noncomputable instance moduleSet : Module (SetSemiring A) (Submodule R A) where
   smul s P := span R (SetSemiring.down s) * P
   smul_add _ _ _ := mul_add _ _ _
   add_smul s t P := by

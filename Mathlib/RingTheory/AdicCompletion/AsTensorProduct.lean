@@ -300,7 +300,7 @@ private lemma ofTensorProduct_iso [Fintype ι] [IsNoetherianRing R] :
     exact ofTensorProduct_surjective_of_finite I (LinearMap.ker f)
   · apply (ConcreteCategory.isIso_iff_bijective _).mpr
     exact ofTensorProduct_bijective_of_pi_of_fintype I ι
-  · show IsIso (ModuleCat.ofHom 0)
+  · change IsIso (ModuleCat.ofHom 0)
     apply Limits.isIso_of_isTerminal
       <;> exact Limits.IsZero.isTerminal (ModuleCat.isZero_of_subsingleton _)
   · apply ConcreteCategory.mono_of_injective

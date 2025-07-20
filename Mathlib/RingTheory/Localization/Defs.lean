@@ -30,23 +30,23 @@ variable [Algebra R S] [Algebra P Q] (M : Submonoid R) (T : Submonoid P)
 
 ## Main definitions
 
- * `IsLocalization (M : Submonoid R) (S : Type*)` is a typeclass expressing that `S` is a
-   localization of `R` at `M`, i.e. the canonical map `algebraMap R S : R →+* S` is a
-   localization map (satisfying the above properties).
- * `IsLocalization.mk' S` is a surjection sending `(x, y) : R × M` to `f x * (f y)⁻¹`
- * `IsLocalization.lift` is the ring homomorphism from `S` induced by a homomorphism from `R`
-   which maps elements of `M` to invertible elements of the codomain.
- * `IsLocalization.map S Q` is the ring homomorphism from `S` to `Q` which maps elements
-   of `M` to elements of `T`
- * `IsLocalization.ringEquivOfRingEquiv`: if `R` and `P` are isomorphic by an isomorphism
-   sending `M` to `T`, then `S` and `Q` are isomorphic
+* `IsLocalization (M : Submonoid R) (S : Type*)` is a typeclass expressing that `S` is a
+  localization of `R` at `M`, i.e. the canonical map `algebraMap R S : R →+* S` is a
+  localization map (satisfying the above properties).
+* `IsLocalization.mk' S` is a surjection sending `(x, y) : R × M` to `f x * (f y)⁻¹`
+* `IsLocalization.lift` is the ring homomorphism from `S` induced by a homomorphism from `R`
+  which maps elements of `M` to invertible elements of the codomain.
+* `IsLocalization.map S Q` is the ring homomorphism from `S` to `Q` which maps elements
+  of `M` to elements of `T`
+* `IsLocalization.ringEquivOfRingEquiv`: if `R` and `P` are isomorphic by an isomorphism
+  sending `M` to `T`, then `S` and `Q` are isomorphic
 
 ## Main results
 
- * `Localization M S`, a construction of the localization as a quotient type, defined in
-   `GroupTheory.MonoidLocalization`, has `CommRing`, `Algebra R` and `IsLocalization M`
-   instances if `R` is a ring. `Localization.Away`, `Localization.AtPrime` and `FractionRing`
-   are abbreviations for `Localization`s and have their corresponding `IsLocalization` instances
+* `Localization M S`, a construction of the localization as a quotient type, defined in
+  `GroupTheory.MonoidLocalization`, has `CommRing`, `Algebra R` and `IsLocalization M`
+  instances if `R` is a ring. `Localization.Away`, `Localization.AtPrime` and `FractionRing`
+  are abbreviations for `Localization`s and have their corresponding `IsLocalization` instances
 
 ## Implementation notes
 
@@ -427,7 +427,8 @@ theorem smul_mk' (x y : R) (m : M) : x • mk' S y m = mk' S (x * y) m := by
   rw [smul_mk', mk'_mul_cancel_left]
 
 @[simps]
-instance invertible_mk'_one (s : M) : Invertible (IsLocalization.mk' S (1 : R) s) where
+noncomputable instance invertible_mk'_one (s : M) :
+    Invertible (IsLocalization.mk' S (1 : R) s) where
   invOf := algebraMap R S s
   invOf_mul_self := by simp
   mul_invOf_self := by simp
@@ -488,7 +489,7 @@ noncomputable def lift {g : R →+* P} (hg : ∀ y : M, IsUnit (g y)) : S →+* 
         mul_add, mul_comm, eq_comm, lift_spec_mul_add, add_comm, mul_comm, mul_assoc, mul_comm,
         mul_assoc, lift_spec_mul_add]
       simp_rw [← mul_assoc]
-      show g _ * g _ * g _ + g _ * g _ * g _ = g _ * g _ * g _
+      change g _ * g _ * g _ + g _ * g _ * g _ = g _ * g _ * g _
       simp_rw [← map_mul g, ← map_add g]
       apply eq_of_eq (S := S) hg
       simp only [sec_spec', toLocalizationMap_sec, map_add, map_mul]
@@ -798,7 +799,7 @@ section
 
 instance instUniqueLocalization [Subsingleton R] : Unique (Localization M) where
   uniq a := by
-    with_unfolding_all show a = mk 1 1
+    with_unfolding_all change a = mk 1 1
     exact Localization.induction_on a fun _ => by
       congr <;> apply Subsingleton.elim
 

@@ -100,7 +100,7 @@ theorem bagInter_consecutive (n m l : Nat) :
 @[simp]
 theorem succ_singleton {n : ℕ} : Ico n (n + 1) = [n] := by
   dsimp [Ico]
-  simp [range', Nat.add_sub_cancel_left]
+  simp [Nat.add_sub_cancel_left]
 
 theorem succ_top {n m : ℕ} (h : n ≤ m) : Ico n (m + 1) = Ico n m ++ [m] := by
   rwa [← succ_singleton, append_consecutive]
@@ -121,7 +121,9 @@ theorem chain'_succ (n m : ℕ) : Chain' (fun a b => b = succ a) (Ico n m) := by
   · rw [eq_nil_of_le (le_of_not_gt h)]
     trivial
 
-theorem not_mem_top {n m : ℕ} : m ∉ Ico n m := by simp
+theorem notMem_top {n m : ℕ} : m ∉ Ico n m := by simp
+
+@[deprecated (since := "2025-05-23")] alias not_mem_top := notMem_top
 
 theorem filter_lt_of_top_le {n m l : ℕ} (hml : m ≤ l) :
     ((Ico n m).filter fun x => x < l) = Ico n m :=

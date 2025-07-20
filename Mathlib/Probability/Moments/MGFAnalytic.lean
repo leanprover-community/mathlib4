@@ -5,6 +5,7 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Probability.Moments.ComplexMGF
 import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
+import Mathlib.Analysis.Calculus.Taylor
 
 /-!
 # The moment generating function is analytic
@@ -134,7 +135,7 @@ lemma continuousOn_mgf : ContinuousOn (mgf X μ) (interior (integrableExpSet X �
 
 lemma continuous_mgf (h : ∀ t, Integrable (fun ω ↦ exp (t * X ω)) μ) :
     Continuous (mgf X μ) := by
-  rw [continuous_iff_continuousOn_univ]
+  rw [← continuousOn_univ]
   convert continuousOn_mgf
   symm
   rw [interior_eq_univ]
@@ -211,7 +212,7 @@ lemma iteratedDeriv_two_cgf (h : v ∈ interior (integrableExpSet X μ)) :
   calc deriv (fun u ↦ (∫ ω, X ω * exp (u * X ω) ∂μ) / mgf X μ u) v
   _ = (deriv (fun u ↦ ∫ ω, X ω * exp (u * X ω) ∂μ) v * mgf X μ v -
       (∫ ω, X ω * exp (v * X ω) ∂μ) * deriv (mgf X μ) v) / mgf X μ v ^ 2 := by
-    rw [deriv_div]
+    rw [deriv_fun_div]
     · rw [h_d_mgf.symm.differentiableAt_iff, ← iteratedDeriv_one]
       exact differentiableAt_iteratedDeriv_mgf h 1
     · exact differentiableAt_mgf h
@@ -262,13 +263,26 @@ lemma iteratedDeriv_two_cgf_eq_integral (h : v ∈ interior (integrableExpSet X 
     · exact (interior_subset (s := integrableExpSet X μ) h).const_mul _
     rw [integral_sub (integrable_pow_mul_exp_of_mem_interior_integrableExpSet h 2) h_int]
     congr
-    · rw [← integral_mul_left, ← integral_mul_right]
+    · rw [← integral_const_mul, ← integral_mul_const]
       congr with ω
       ring
-    · rw [integral_mul_left, mgf]
+    · rw [integral_const_mul, mgf]
   _ = (∫ ω, (X ω - deriv (cgf X μ) v) ^ 2 * exp (v * X ω) ∂μ) / mgf X μ v := by
     congr with ω
     ring
+
+lemma exists_cgf_eq_iteratedDeriv_two_cgf_mul [IsZeroOrProbabilityMeasure μ] (ht : 0 < t)
+    (hc : μ[X] = 0) (hs : Set.Icc 0 t ⊆ interior (integrableExpSet X μ)) :
+    ∃ u ∈ Set.Ioo 0 t, cgf X μ t = (iteratedDeriv 2 (cgf X μ) u) * t ^ 2 / 2 := by
+  have hu : UniqueDiffOn ℝ (Set.Icc 0 t) := uniqueDiffOn_Icc ht
+  rw [← sub_zero (cgf X μ t)]
+  nth_rw 3 [← sub_zero t]
+  convert taylor_mean_remainder_lagrange_iteratedDeriv ht ((analyticOn_cgf.mono hs).contDiffOn hu)
+  have hd : derivWithin (cgf X μ) (Set.Icc 0 t) 0 = 0 := by
+    convert (analyticAt_cgf (hs ⟨le_refl 0, le_of_lt ht⟩)).differentiableAt.derivWithin _
+    · simpa [hc] using (deriv_cgf_zero (hs ⟨le_refl 0, le_of_lt ht⟩)).symm
+    · exact hu 0 ⟨le_refl 0, le_of_lt ht⟩
+  simp [hd]
 
 end DerivCGF
 

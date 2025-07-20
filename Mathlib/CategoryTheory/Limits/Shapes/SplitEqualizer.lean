@@ -22,7 +22,7 @@ A pair `f g : X ⟶ Y` has a `G`-split equalizer if `G f, G g` has a split equal
 
 These definitions and constructions are useful in particular for the comonadicity theorems.
 
-This file was adapted from `Mathlib.CategoryTheory.Limits.Shapes.SplitCoequalizer`. Please try
+This file was adapted from `Mathlib/CategoryTheory/Limits/Shapes/SplitCoequalizer.lean`. Please try
 to keep them in sync.
 
 -/

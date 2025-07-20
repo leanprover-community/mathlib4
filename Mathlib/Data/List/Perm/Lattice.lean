@@ -30,14 +30,14 @@ theorem Perm.bagInter_right {l₁ l₂ : List α} (t : List α) (h : l₁ ~ l₂
     l₁.bagInter t ~ l₂.bagInter t := by
   induction h generalizing t with
   | nil => simp
-  | cons x => by_cases x ∈ t <;> simp [*, Perm.cons]
+  | cons x => by_cases x ∈ t <;> simp [*]
   | swap x y =>
     by_cases h : x = y
     · simp [h]
     by_cases xt : x ∈ t <;> by_cases yt : y ∈ t
     · simp [xt, yt, mem_erase_of_ne h, mem_erase_of_ne (Ne.symm h), erase_comm, swap]
-    · simp [xt, yt, mt mem_of_mem_erase, Perm.cons]
-    · simp [xt, yt, mt mem_of_mem_erase, Perm.cons]
+    · simp [xt, yt, mt mem_of_mem_erase]
+    · simp [xt, yt, mt mem_of_mem_erase]
     · simp [xt, yt]
   | trans _ _ ih_1 ih_2 => exact (ih_1 _).trans (ih_2 _)
 
@@ -61,7 +61,7 @@ theorem Perm.inter_append {l t₁ t₂ : List α} (h : Disjoint t₁ t₂) :
     · have h₂ : x ∉ t₂ := h h₁
       simp [*]
     by_cases h₂ : x ∈ t₂
-    · simp only [*, inter_cons_of_not_mem, false_or, mem_append, inter_cons_of_mem,
+    · simp only [*, inter_cons_of_notMem, false_or, mem_append, inter_cons_of_mem,
         not_false_iff]
       refine Perm.trans (Perm.cons _ l_ih) ?_
       change [x] ++ xs ∩ t₁ ++ xs ∩ t₂ ~ xs ∩ t₁ ++ ([x] ++ xs ∩ t₂)
@@ -88,7 +88,7 @@ theorem Perm.drop_inter {xs ys : List α} (n : ℕ) (h : xs ~ ys) (h' : ys.Nodup
     rw [inter_reverse]
     apply Perm.take_inter _ _ h'
     apply (reverse_perm _).trans; assumption
-  · have : drop n xs = [] := by
+  · have : xs.drop n = [] := by
       apply eq_nil_of_length_eq_zero
       rw [length_drop, Nat.sub_eq_zero_iff_le]
       apply le_of_not_ge h''

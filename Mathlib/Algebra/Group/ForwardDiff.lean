@@ -91,21 +91,18 @@ def fwdDiffₗ : Module.End ℤ (M → G) where
 lemma coe_fwdDiffₗ : ↑(fwdDiffₗ M G h) = fwdDiff h := rfl
 
 lemma coe_fwdDiffₗ_pow (n : ℕ) : ↑(fwdDiffₗ M G h ^ n) = (fwdDiff h)^[n] := by
-  ext; rw [LinearMap.pow_apply, coe_fwdDiffₗ]
+  ext; rw [Module.End.pow_apply, coe_fwdDiffₗ]
 
 variable (M G) in
 /-- Linear-endomorphism version of the shift-by-1 operator. -/
 def shiftₗ : Module.End ℤ (M → G) := fwdDiffₗ M G h + 1
 
-lemma shiftₗ_apply (f : M → G) (y : M) : shiftₗ M G h f y = f (y + h) := by
-  rw [shiftₗ, LinearMap.add_apply, Pi.add_apply, LinearMap.one_apply, fwdDiffₗ_apply, fwdDiff,
-    sub_add_cancel]
+lemma shiftₗ_apply (f : M → G) (y : M) : shiftₗ M G h f y = f (y + h) := by simp [shiftₗ, fwdDiff]
 
 lemma shiftₗ_pow_apply (f : M → G) (k : ℕ) (y : M) : (shiftₗ M G h ^ k) f y = f (y + k • h) := by
   induction' k with k IH generalizing f
-  · simp only [pow_zero, LinearMap.one_apply, cast_zero, add_zero, zero_smul]
-  · simp only [pow_add, pow_one, LinearMap.mul_apply, IH (shiftₗ M G h f), shiftₗ_apply, add_assoc,
-      add_nsmul, one_smul]
+  · simp
+  · simp [pow_add, IH (shiftₗ M G h f), shiftₗ_apply, add_assoc, add_nsmul]
 
 end fwdDiff_aux
 
@@ -139,7 +136,7 @@ theorem fwdDiff_iter_eq_sum_shift (f : M → G) (n : ℕ) (y : M) :
     Δ_[h]^[n] f y = ∑ k ∈ range (n + 1), ((-1 : ℤ) ^ (n - k) * n.choose k) • f (y + k • h) := by
   -- rewrite in terms of `(shiftₗ - 1) ^ n`
   have : fwdDiffₗ M G h = shiftₗ M G h - 1 := by simp only [shiftₗ, add_sub_cancel_right]
-  rw [← coe_fwdDiffₗ, this, ← LinearMap.pow_apply]
+  rw [← coe_fwdDiffₗ, this, ← Module.End.pow_apply]
   -- use binomial theorem `Commute.add_pow` to expand this
   have : Commute (shiftₗ M G h) (-1) := (Commute.one_right _).neg_right
   convert congr_fun (LinearMap.congr_fun (this.add_pow n) f) y using 3
@@ -148,7 +145,7 @@ theorem fwdDiff_iter_eq_sum_shift (f : M → G) (n : ℕ) (y : M) :
     congr 1 with k
     have : ((-1) ^ (n - k) * n.choose k : Module.End ℤ (M → G))
               = ↑((-1) ^ (n - k) * n.choose k : ℤ) := by norm_cast
-    rw [mul_assoc, LinearMap.mul_apply, this, Module.End.intCast_apply, LinearMap.map_smul,
+    rw [mul_assoc, Module.End.mul_apply, this, Module.End.intCast_apply, LinearMap.map_smul,
       Pi.smul_apply, shiftₗ_pow_apply]
 
 /--
@@ -160,8 +157,7 @@ theorem shift_eq_sum_fwdDiff_iter (f : M → G) (n : ℕ) (y : M) :
   convert congr_fun (LinearMap.congr_fun
       ((Commute.one_right (fwdDiffₗ M G h)).add_pow n) f) y using 1
   · rw [← shiftₗ_pow_apply h f, shiftₗ]
-  · simp only [LinearMap.sum_apply, sum_apply, one_pow, mul_one, LinearMap.mul_apply,
-      Module.End.natCast_apply, map_nsmul, Pi.smul_apply, LinearMap.pow_apply, coe_fwdDiffₗ]
+  · simp [Module.End.pow_apply, coe_fwdDiffₗ]
 
 end newton_formulae
 

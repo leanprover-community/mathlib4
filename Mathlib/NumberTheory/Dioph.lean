@@ -309,7 +309,7 @@ theorem DiophList.forall (l : List (Set <| α → ℕ)) (d : l.Forall Dioph) :
     let ⟨γ, pl, ple⟩ := IH dl
     ⟨β ⊕ γ, p.map (inl ⊗ inr ∘ inl)::pl.map fun q => q.map (inl ⊗ inr ∘ inr),
       fun v => by
-      simp; exact
+      simpa using
         Iff.trans (and_congr (pe v) (ple v))
           ⟨fun ⟨⟨m, hm⟩, ⟨n, hn⟩⟩ =>
             ⟨m ⊗ n, by
@@ -367,7 +367,8 @@ theorem ex_dioph {S : Set (α ⊕ β → ℕ)} : Dioph S → Dioph {v | ∃ x, v
       ⟨fun ⟨x, hx⟩ =>
         let ⟨t, ht⟩ := (pe _).1 hx
         ⟨x ⊗ t, by
-          simp; rw [show (v ⊗ x ⊗ t) ∘ ((inl ⊗ inr ∘ inl) ⊗ inr ∘ inr) = (v ⊗ x) ⊗ t from
+          simp only [Poly.map_apply]
+          rw [show (v ⊗ x ⊗ t) ∘ ((inl ⊗ inr ∘ inl) ⊗ inr ∘ inr) = (v ⊗ x) ⊗ t from
             funext fun s => by rcases s with a | b <;> try { cases a <;> rfl }; rfl]
           exact ht⟩,
         fun ⟨t, ht⟩ =>
@@ -587,10 +588,7 @@ theorem sub_dioph : DiophFn fun v => f v - g v :=
               rcases o with (ae | ⟨yz, x0⟩)
               · rw [ae, add_tsub_cancel_right]
               · rw [x0, tsub_eq_zero_iff_le.mpr yz], by
-              rintro rfl
-              rcases le_total y z with yz | zy
-              · exact Or.inr ⟨yz, tsub_eq_zero_iff_le.mpr yz⟩
-              · exact Or.inl (tsub_add_cancel_of_le zy).symm⟩
+              omega⟩
 
 @[inherit_doc]
 scoped infixl:80 " D- " => Dioph.sub_dioph
