@@ -118,8 +118,7 @@ lemma prod_sum (s : Finset ι) (t : ∀ i, Finset (κ i)) (f : ∀ i, κ i → �
   classical
   induction s using Finset.induction with
   | empty => simp
-  | insert ha ih =>
-    rename_i a s
+  | insert a s ha ih =>
     have h₁ : ∀ x ∈ t a, ∀ y ∈ t a, x ≠ y →
       Disjoint (image (Pi.cons s a x) (pi s t)) (image (Pi.cons s a y) (pi s t)) := by
       intro x _ y _ h

@@ -3,7 +3,6 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Group.Hom.End
 import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.Group.Subsemigroup.Membership
 import Mathlib.Algebra.Group.Subsemigroup.Operations
@@ -336,8 +335,10 @@ theorem mem_closure {x : R} {s : Set R} :
 @[simp, aesop safe 20 apply (rule_sets := [SetLike])]
 theorem subset_closure {s : Set R} : s ⊆ closure s := fun _ hx => mem_closure.2 fun _ hS => hS hx
 
-theorem not_mem_of_not_mem_closure {s : Set R} {P : R} (hP : P ∉ closure s) : P ∉ s := fun h =>
+theorem notMem_of_notMem_closure {s : Set R} {P : R} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)
+
+@[deprecated (since := "2025-05-23")] alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
 
 /-- A non-unital subsemiring `S` includes `closure s` if and only if it includes `s`. -/
 @[simp]
@@ -450,7 +451,7 @@ theorem closure_induction {s : Set R} {p : (x : R) → x ∈ closure s → Prop}
     (mem : ∀ (x) (hx : x ∈ s), p x (subset_closure hx)) (zero : p 0 (zero_mem _))
     (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
     (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
-    {x} (hx : x ∈ closure s)  : p x hx :=
+    {x} (hx : x ∈ closure s) : p x hx :=
   let K : NonUnitalSubsemiring R :=
     { carrier := { x | ∃ hx, p x hx }
       mul_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, mul _ _ _ _ hpx hpy⟩

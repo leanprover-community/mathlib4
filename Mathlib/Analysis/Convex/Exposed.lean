@@ -111,7 +111,7 @@ theorem eq_inter_halfSpace [IsOrderedRing 𝕜] [Nontrivial 𝕜] {A B : Set E} 
     ∃ l : E →L[𝕜] 𝕜, ∃ a, B = { x ∈ A | a ≤ l x } := by
   obtain rfl | hB := B.eq_empty_or_nonempty
   · refine ⟨0, 1, ?_⟩
-    rw [eq_comm, eq_empty_iff_forall_not_mem]
+    rw [eq_comm, eq_empty_iff_forall_notMem]
     rintro x ⟨-, h⟩
     rw [ContinuousLinearMap.zero_apply] at h
     have : ¬(1 : 𝕜) ≤ 0 := not_le_of_lt zero_lt_one
@@ -139,7 +139,7 @@ theorem sInter [IsOrderedRing 𝕜] [ContinuousAdd 𝕜] {F : Finset (Set E)} (h
   classical
   induction F using Finset.induction with
   | empty => exfalso; exact Finset.not_nonempty_empty hF
-  | @insert C F _ hF' =>
+  | insert C F _ hF' =>
     rw [Finset.coe_insert, sInter_insert]
     obtain rfl | hFnemp := F.eq_empty_or_nonempty
     · rw [Finset.coe_empty, sInter_empty, inter_univ]

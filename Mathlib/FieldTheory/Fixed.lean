@@ -128,7 +128,6 @@ theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
     refine hs.2 (hla ▸ Submodule.sum_mem _ fun c hcs => ?_)
     change (⟨l c, this c hcs⟩ : FixedPoints.subfield G F) • c ∈ _
     exact Submodule.smul_mem _ _ <| Submodule.subset_span <| by simpa
-
   intro i his g
   refine
     eq_of_sub_eq_zero
@@ -307,6 +306,14 @@ noncomputable instance AlgEquiv.fintype (K : Type u) (V : Type v) [Field K] [Fie
 theorem finrank_algHom (K : Type u) (V : Type v) [Field K] [Field V] [Algebra K V]
     [FiniteDimensional K V] : Fintype.card (V →ₐ[K] V) ≤ finrank V (V →ₗ[K] V) :=
   (linearIndependent_toLinearMap K V V).fintype_card_le_finrank
+
+theorem AlgHom.card_le {F K : Type*} [Field F] [Field K] [Algebra F K] [FiniteDimensional F K] :
+    Fintype.card (K →ₐ[F] K) ≤ Module.finrank F K :=
+  Module.finrank_linearMap_self F K K ▸ finrank_algHom F K
+
+theorem AlgEquiv.card_le {F K : Type*} [Field F] [Field K] [Algebra F K] [FiniteDimensional F K] :
+    Fintype.card (K ≃ₐ[F] K) ≤ Module.finrank F K :=
+  Fintype.ofEquiv_card (algEquivEquivAlgHom F K).toEquiv.symm ▸ AlgHom.card_le
 
 namespace FixedPoints
 

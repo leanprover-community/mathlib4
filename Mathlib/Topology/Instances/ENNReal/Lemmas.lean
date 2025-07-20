@@ -40,9 +40,6 @@ theorem isOpen_Ico_zero : IsOpen (Ico 0 b) := by
   rw [ENNReal.Ico_eq_Iio]
   exact isOpen_Iio
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_coe := isOpenEmbedding_coe
-
 theorem coe_range_mem_nhds : range ((↑) : ℝ≥0 → ℝ≥0∞) ∈ 𝓝 (r : ℝ≥0∞) :=
   IsOpen.mem_nhds isOpenEmbedding_coe.isOpen_range <| mem_range_self _
 
@@ -383,7 +380,7 @@ theorem tendsto_finset_prod_of_ne_top {ι : Type*} {f : ι → α → ℝ≥0∞
   classical
   induction s using Finset.induction with
   | empty => simp [tendsto_const_nhds]
-  | insert has IH =>
+  | insert _ _ has IH =>
     simp only [Finset.prod_insert has]
     apply Tendsto.mul (h _ (Finset.mem_insert_self _ _))
     · right
@@ -582,6 +579,8 @@ protected theorem hasSum : HasSum f (⨆ s : Finset α, ∑ a ∈ s, f a) :=
 protected theorem summable : Summable f :=
   ⟨_, ENNReal.hasSum⟩
 
+macro_rules | `(tactic| gcongr_discharger) => `(tactic| apply ENNReal.summable)
+
 theorem tsum_coe_ne_top_iff_summable {f : β → ℝ≥0} : (∑' b, (f b : ℝ≥0∞)) ≠ ∞ ↔ Summable f := by
   refine ⟨fun h => ?_, fun h => ENNReal.coe_tsum h ▸ ENNReal.coe_ne_top⟩
   lift ∑' b, (f b : ℝ≥0∞) to ℝ≥0 using h with a ha
@@ -621,10 +620,6 @@ protected theorem tsum_add : ∑' a, (f a + g a) = ∑' a, f a + ∑' a, g a :=
 
 protected theorem tsum_le_tsum (h : ∀ a, f a ≤ g a) : ∑' a, f a ≤ ∑' a, g a :=
   ENNReal.summable.tsum_le_tsum h ENNReal.summable
-
-@[gcongr]
-protected theorem _root_.GCongr.ennreal_tsum_le_tsum (h : ∀ a, f a ≤ g a) : tsum f ≤ tsum g :=
-  ENNReal.tsum_le_tsum h
 
 protected theorem sum_le_tsum {f : α → ℝ≥0∞} (s : Finset α) : ∑ x ∈ s, f x ≤ ∑' x, f x :=
   ENNReal.summable.sum_le_tsum s (fun _ _ => zero_le _)
@@ -1145,8 +1140,8 @@ theorem continuous_edist : Continuous fun p : α × α => edist p.1 p.2 := by
   calc
     edist x y ≤ edist x x' + edist x' y' + edist y' y := edist_triangle4 _ _ _ _
     _ = edist x' y' + (edist x x' + edist y y') := by simp only [edist_comm]; ac_rfl
-    _ ≤ edist x' y' + (edist (x, y) (x', y') + edist (x, y) (x', y')) :=
-      (add_le_add_left (add_le_add (le_max_left _ _) (le_max_right _ _)) _)
+    _ ≤ edist x' y' + (edist (x, y) (x', y') + edist (x, y) (x', y')) := by
+      gcongr <;> apply_rules [le_max_left, le_max_right]
     _ = edist x' y' + 2 * edist (x, y) (x', y') := by rw [← mul_two, mul_comm]
 
 @[continuity, fun_prop]

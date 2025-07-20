@@ -301,7 +301,7 @@ def tensorH1CotangentOfIsLocalization (M : Submonoid S) [IsLocalization M T] :
       (FormallyEtale.of_isLocalization (M := M') (Rₘ := Localization M'))
   · let F : P.ker →ₗ[P.Ring] RingHom.ker fQ := f.mapKer rfl
     refine (isLocalizedModule_iff_isBaseChange M' (Localization M') F).mp ?_
-    have : (Algebra.linearMap P.Ring S).ker.localized' (Localization M') M'
+    have : (LinearMap.ker <| Algebra.linearMap P.Ring S).localized' (Localization M') M'
         (Algebra.linearMap P.Ring (Localization M')) = RingHom.ker fQ := by
       rw [LinearMap.localized'_ker_eq_ker_localizedMap (Localization M') M'
         (Algebra.linearMap P.Ring (Localization M'))
@@ -332,10 +332,10 @@ lemma tensorH1CotangentOfIsLocalization_toLinearMap
   simp only [AlgebraTensorModule.curry_apply, curry_apply, LinearMap.coe_restrictScalars,
     LinearEquiv.coe_coe, LinearMap.liftBaseChange_tmul, one_smul]
   simp only [tensorH1CotangentOfIsLocalization, Generators.toExtension_Ring,
-    Generators.toExtension_commRing, Generators.self_vars, Generators.toExtension_algebra₂,
+    Generators.toExtension_commRing, Generators.toExtension_algebra₂,
     AlgHom.toRingHom_eq_coe, Extension.tensorH1Cotangent,
     LinearEquiv.ofBijective_apply, LinearMap.liftBaseChange_tmul, one_smul,
-    Extension.equivH1CotangentOfFormallySmooth,  LinearEquiv.trans_apply]
+    Extension.equivH1CotangentOfFormallySmooth, LinearEquiv.trans_apply]
   letI P : Extension R S := (Generators.self R S).toExtension
   letI M' := M.comap (algebraMap P.Ring S)
   letI fQ : Localization M' →ₐ[R] T := IsLocalization.liftAlgHom (M := M')

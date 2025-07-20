@@ -47,6 +47,11 @@ def Strictness.toString {e : Q($α)} : Strictness zα pα e → String
   | nonzero _ => "nonzero"
   | none => "none"
 
+/-- Extract a proof that `e` is positive, if possible, from `Strictness` information about `e`. -/
+def Strictness.toPositive {e} : Strictness zα pα e → Option Q(0 < $e)
+  | .positive pf => some pf
+  | _ => .none
+
 /-- Extract a proof that `e` is nonnegative, if possible, from `Strictness` information about `e`.
 -/
 def Strictness.toNonneg {e} : Strictness zα pα e → Option Q(0 ≤ $e)
@@ -420,7 +425,7 @@ end Meta.Positivity
 
 namespace Tactic.Positivity
 
-open Lean Elab Tactic
+open Tactic
 
 /-- Tactic solving goals of the form `0 ≤ x`, `0 < x` and `x ≠ 0`.  The tactic works recursively
 according to the syntax of the expression `x`, if the atoms composing the expression all have
@@ -442,3 +447,9 @@ elab (name := positivity) "positivity" : tactic => do
 end Positivity
 
 end Mathlib.Tactic
+
+/-!
+We register `positivity` with the `hint` tactic.
+-/
+
+register_hint positivity

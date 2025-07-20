@@ -11,10 +11,10 @@ import Mathlib.Data.ENNReal.Real
 In this file we prove elementary properties of algebraic operations on `ℝ≥0∞`, including addition,
 multiplication, natural powers and truncated subtraction, as well as how these interact with the
 order structure on `ℝ≥0∞`. Notably excluded from this list are inversion and division, the
-definitions and properties of which can be found in `Mathlib.Data.ENNReal.Inv`.
+definitions and properties of which can be found in `Mathlib/Data/ENNReal/Inv.lean`.
 
 Note: the definitions of the operations included in this file can be found in
-`Mathlib.Data.ENNReal.Basic`.
+`Mathlib/Data/ENNReal/Basic.lean`.
 -/
 
 assert_not_exists Finset
@@ -30,25 +30,11 @@ section Mul
 @[mono, gcongr]
 theorem mul_lt_mul (ac : a < c) (bd : b < d) : a * b < c * d := WithTop.mul_lt_mul ac bd
 
-@[deprecated mul_left_mono (since := "2024-10-15")]
-protected theorem mul_left_mono : Monotone (a * ·) := mul_left_mono
-
-@[deprecated mul_right_mono (since := "2024-10-15")]
-protected theorem mul_right_mono : Monotone (· * a) := mul_right_mono
-
 protected lemma pow_right_strictMono {n : ℕ} (hn : n ≠ 0) : StrictMono fun a : ℝ≥0∞ ↦ a ^ n :=
   WithTop.pow_right_strictMono hn
 
-@[deprecated (since := "2024-10-15")] alias pow_strictMono := ENNReal.pow_right_strictMono
-
 @[gcongr] protected lemma pow_lt_pow_left (hab : a < b) {n : ℕ} (hn : n ≠ 0) : a ^ n < b ^ n :=
   WithTop.pow_lt_pow_left hab hn
-
-@[deprecated max_mul (since := "2024-10-15")]
-protected theorem max_mul : max a b * c = max (a * c) (b * c) := mul_right_mono.map_max
-
-@[deprecated mul_max (since := "2024-10-15")]
-protected theorem mul_max : a * max b c = max (a * b) (a * c) := mul_left_mono.map_max
 
 -- TODO: generalize to `WithTop`
 theorem mul_left_strictMono (h0 : a ≠ 0) (hinf : a ≠ ∞) : StrictMono (a * ·) := by
@@ -155,7 +141,7 @@ end OperationsAndOrder
 
 section OperationsAndInfty
 
-variable {α : Type*}
+variable {α : Type*} {n : ℕ}
 
 @[simp] theorem add_eq_top : a + b = ∞ ↔ a = ∞ ∨ b = ∞ := WithTop.add_eq_top
 
@@ -200,9 +186,6 @@ theorem top_mul' : ∞ * a = if a = 0 then 0 else ∞ := by convert WithTop.top_
 
 theorem top_mul_top : ∞ * ∞ = ∞ := WithTop.top_mul_top
 
--- TODO: assume `n ≠ 0` instead of `0 < n`
-theorem top_pow {n : ℕ} (n_pos : 0 < n) : (∞ : ℝ≥0∞) ^ n = ∞ := WithTop.top_pow n_pos
-
 theorem mul_eq_top : a * b = ∞ ↔ a ≠ 0 ∧ b = ∞ ∨ a = ∞ ∧ b ≠ 0 :=
   WithTop.mul_eq_top_iff
 
@@ -237,22 +220,21 @@ theorem mul_pos_iff : 0 < a * b ↔ 0 < a ∧ 0 < b :=
 theorem mul_pos (ha : a ≠ 0) (hb : b ≠ 0) : 0 < a * b :=
   mul_pos_iff.2 ⟨pos_iff_ne_zero.2 ha, pos_iff_ne_zero.2 hb⟩
 
--- TODO: generalize to `WithTop`
-@[simp] theorem pow_eq_top_iff {n : ℕ} : a ^ n = ∞ ↔ a = ∞ ∧ n ≠ 0 := by
-  rcases n.eq_zero_or_pos with rfl | (hn : 0 < n)
-  · simp
-  · induction a
-    · simp only [Ne, hn.ne', top_pow hn, not_false_eq_true, and_self]
-    · simp only [← coe_pow, coe_ne_top, false_and]
+@[simp] lemma top_pow {n : ℕ} (hn : n ≠ 0) : (∞ : ℝ≥0∞) ^ n = ∞ := WithTop.top_pow hn
 
-theorem pow_eq_top (n : ℕ) (h : a ^ n = ∞) : a = ∞ :=
-  (pow_eq_top_iff.1 h).1
+@[simp] lemma pow_eq_top_iff : a ^ n = ∞ ↔ a = ∞ ∧ n ≠ 0 := WithTop.pow_eq_top_iff
 
-theorem pow_ne_top (h : a ≠ ∞) {n : ℕ} : a ^ n ≠ ∞ :=
-  mt (pow_eq_top n) h
+lemma pow_ne_top_iff : a ^ n ≠ ∞ ↔ a ≠ ∞ ∨ n = 0 := WithTop.pow_ne_top_iff
 
-theorem pow_lt_top : a < ∞ → ∀ n : ℕ, a ^ n < ∞ := by
-  simpa only [lt_top_iff_ne_top] using pow_ne_top
+@[simp] lemma pow_lt_top_iff : a ^ n < ∞ ↔ a < ∞ ∨ n = 0 := WithTop.pow_lt_top_iff
+
+lemma eq_top_of_pow (n : ℕ) (ha : a ^ n = ∞) : a = ∞ := WithTop.eq_top_of_pow n ha
+
+@[deprecated (since := "2025-04-24")] alias pow_eq_top := eq_top_of_pow
+
+@[aesop (rule_sets := [finiteness]) safe apply]
+lemma pow_ne_top (ha : a ≠ ∞) : a ^ n ≠ ∞ := WithTop.pow_ne_top ha
+lemma pow_lt_top (ha : a < ∞) : a ^ n < ∞ := WithTop.pow_lt_top ha
 
 end OperationsAndInfty
 
@@ -317,7 +299,7 @@ theorem sub_eq_sInf {a b : ℝ≥0∞} : a - b = sInf { d | a ≤ d + b } :=
 @[simp] lemma top_sub (ha : a ≠ ∞) : ∞ - a = ∞ := by lift a to ℝ≥0 using ha; exact top_sub_coe
 
 /-- This is a special case of `WithTop.sub_top` in the `ENNReal` namespace -/
-theorem sub_top : a - ∞ = 0 := WithTop.sub_top
+@[simp] theorem sub_top : a - ∞ = 0 := WithTop.sub_top
 
 @[simp] theorem sub_eq_top_iff : a - b = ∞ ↔ a = ∞ ∧ b ≠ ∞ := WithTop.sub_eq_top_iff
 lemma sub_ne_top_iff : a - b ≠ ∞ ↔ a ≠ ∞ ∨ b = ∞ := WithTop.sub_ne_top_iff
@@ -360,13 +342,11 @@ rather than `b`. -/
 protected lemma sub_eq_of_eq_add_rev' (ha : a ≠ ∞) : a = b + c → a - b = c :=
   (cancel_of_ne ha).tsub_eq_of_eq_add_rev'
 
-@[simp]
-protected theorem add_sub_cancel_left (ha : a ≠ ∞) : a + b - a = b :=
-  (cancel_of_ne ha).add_tsub_cancel_left
+protected theorem add_sub_cancel_left (ha : a ≠ ∞) : a + b - a = b := by
+  simp [ha]
 
-@[simp]
-protected theorem add_sub_cancel_right (hb : b ≠ ∞) : a + b - b = a :=
-  (cancel_of_ne hb).add_tsub_cancel_right
+protected theorem add_sub_cancel_right (hb : b ≠ ∞) : a + b - b = a := by
+  simp [hb]
 
 protected theorem sub_add_eq_add_sub (hab : b ≤ a) (b_ne_top : b ≠ ∞) :
     a - b + c = a + c - b := by

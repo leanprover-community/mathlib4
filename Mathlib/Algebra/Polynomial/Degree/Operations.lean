@@ -432,7 +432,6 @@ theorem coeff_pow_mul_natDegree (p : R[X]) (n : ℕ) :
         calc
           (p ^ i * p).natDegree ≤ (p ^ i).natDegree + p.natDegree := natDegree_mul_le
           _ < i * p.natDegree + p.natDegree := add_lt_add_right h1 _
-
     · rw [← natDegree_pow' hp1, ← leadingCoeff_pow' hp1]
       exact coeff_mul_degree_add_degree _ _
 
@@ -450,12 +449,14 @@ theorem coeff_mul_add_eq_of_natDegree_le {df dg : ℕ} {f g : R[X]}
     (add_eq_add_iff_eq_and_eq hdf' hdg').mp (mem_antidiagonal.1 hmem)
   exact (hne rfl).elim
 
-theorem degree_smul_le (a : R) (p : R[X]) : degree (a • p) ≤ degree p := by
+theorem degree_smul_le {S : Type*} [SMulZeroClass S R] (a : S) (p : R[X]) :
+    degree (a • p) ≤ degree p := by
   refine (degree_le_iff_coeff_zero _ _).2 fun m hm => ?_
   rw [degree_lt_iff_coeff_zero] at hm
   simp [hm m le_rfl]
 
-theorem natDegree_smul_le (a : R) (p : R[X]) : natDegree (a • p) ≤ natDegree p :=
+theorem natDegree_smul_le {S : Type*} [SMulZeroClass S R] (a : S) (p : R[X]) :
+    natDegree (a • p) ≤ natDegree p :=
   natDegree_le_natDegree (degree_smul_le a p)
 
 theorem degree_smul_of_isRightRegular_leadingCoeff (ha : a ≠ 0)
@@ -620,10 +621,13 @@ theorem X_pow_add_C_ne_zero {n : ℕ} (hn : 0 < n) (a : R) : (X : R[X]) ^ n + C 
 theorem X_add_C_ne_zero (r : R) : X + C r ≠ 0 :=
   pow_one (X : R[X]) ▸ X_pow_add_C_ne_zero zero_lt_one r
 
-theorem zero_nmem_multiset_map_X_add_C {α : Type*} (m : Multiset α) (f : α → R) :
+theorem zero_notMem_multiset_map_X_add_C {α : Type*} (m : Multiset α) (f : α → R) :
     (0 : R[X]) ∉ m.map fun a => X + C (f a) := fun mem =>
   let ⟨_a, _, ha⟩ := Multiset.mem_map.mp mem
   X_add_C_ne_zero _ ha
+
+@[deprecated (since := "2025-05-24")]
+alias zero_nmem_multiset_map_X_add_C := zero_notMem_multiset_map_X_add_C
 
 theorem natDegree_X_pow_add_C {n : ℕ} {r : R} : (X ^ n + C r).natDegree = n := by
   by_cases hn : n = 0
@@ -770,10 +774,13 @@ theorem X_pow_sub_C_ne_zero {n : ℕ} (hn : 0 < n) (a : R) : (X : R[X]) ^ n - C 
 theorem X_sub_C_ne_zero (r : R) : X - C r ≠ 0 :=
   pow_one (X : R[X]) ▸ X_pow_sub_C_ne_zero zero_lt_one r
 
-theorem zero_nmem_multiset_map_X_sub_C {α : Type*} (m : Multiset α) (f : α → R) :
+theorem zero_notMem_multiset_map_X_sub_C {α : Type*} (m : Multiset α) (f : α → R) :
     (0 : R[X]) ∉ m.map fun a => X - C (f a) := fun mem =>
   let ⟨_a, _, ha⟩ := Multiset.mem_map.mp mem
   X_sub_C_ne_zero _ ha
+
+@[deprecated (since := "2025-05-24")]
+alias zero_nmem_multiset_map_X_sub_C := zero_notMem_multiset_map_X_sub_C
 
 theorem natDegree_X_pow_sub_C {n : ℕ} {r : R} : (X ^ n - C r).natDegree = n := by
   rw [sub_eq_add_neg, ← map_neg C r, natDegree_X_pow_add_C]

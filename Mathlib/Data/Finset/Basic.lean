@@ -144,7 +144,7 @@ theorem erase_insert_eq_erase (s : Finset α) (a : α) : (insert a s).erase a = 
       false_or, iff_self, imp_true_iff]
 
 theorem erase_insert {a : α} {s : Finset α} (h : a ∉ s) : erase (insert a s) a = s := by
-  rw [erase_insert_eq_erase, erase_eq_of_not_mem h]
+  rw [erase_insert_eq_erase, erase_eq_of_notMem h]
 
 theorem erase_insert_of_ne {a b : α} {s : Finset α} (h : a ≠ b) :
     erase (insert a s) b = insert a (erase s b) :=
@@ -172,7 +172,7 @@ lemma insert_erase_invOn :
 
 theorem erase_ssubset {a : α} {s : Finset α} (h : a ∈ s) : s.erase a ⊂ s :=
   calc
-    s.erase a ⊂ insert a (s.erase a) := ssubset_insert <| not_mem_erase _ _
+    s.erase a ⊂ insert a (s.erase a) := ssubset_insert <| notMem_erase _ _
     _ = _ := insert_erase h
 
 theorem ssubset_iff_exists_subset_erase {s t : Finset α} : s ⊂ t ↔ ∃ a ∈ t, s ⊆ t.erase a := by
@@ -185,7 +185,7 @@ theorem erase_ssubset_insert (s : Finset α) (a : α) : s.erase a ⊂ insert a s
     ⟨a, mem_insert_self _ _, erase_subset_erase _ <| subset_insert _ _⟩
 
 theorem erase_cons {s : Finset α} {a : α} (h : a ∉ s) : (s.cons a h).erase a = s := by
-  rw [cons_eq_insert, erase_insert_eq_erase, erase_eq_of_not_mem h]
+  rw [cons_eq_insert, erase_insert_eq_erase, erase_eq_of_notMem h]
 
 theorem subset_insert_iff {a : α} {s t : Finset α} : s ⊆ insert a t ↔ erase s a ⊆ t := by
   simp only [subset_iff, or_iff_not_imp_left, mem_erase, mem_insert, and_imp]
@@ -197,8 +197,11 @@ theorem erase_insert_subset (a : α) (s : Finset α) : erase (insert a s) a ⊆ 
 theorem insert_erase_subset (a : α) (s : Finset α) : s ⊆ insert a (erase s a) :=
   subset_insert_iff.2 <| Subset.rfl
 
-theorem subset_insert_iff_of_not_mem (h : a ∉ s) : s ⊆ insert a t ↔ s ⊆ t := by
-  rw [subset_insert_iff, erase_eq_of_not_mem h]
+theorem subset_insert_iff_of_notMem (h : a ∉ s) : s ⊆ insert a t ↔ s ⊆ t := by
+  rw [subset_insert_iff, erase_eq_of_notMem h]
+
+@[deprecated (since := "2025-05-23")]
+alias subset_insert_iff_of_not_mem := subset_insert_iff_of_notMem
 
 theorem erase_subset_iff_of_mem (h : a ∈ t) : s.erase a ⊆ t ↔ s ⊆ t := by
   rw [← subset_insert_iff, insert_eq_of_mem h]
@@ -247,11 +250,11 @@ lemma disjoint_erase_insert (ha : a ∉ s) : Disjoint (insert a s) (t.erase a) �
 
 theorem disjoint_of_erase_left (ha : a ∉ t) (hst : Disjoint (s.erase a) t) : Disjoint s t := by
   rw [← erase_insert ha, ← disjoint_erase_comm, disjoint_insert_right]
-  exact ⟨not_mem_erase _ _, hst⟩
+  exact ⟨notMem_erase _ _, hst⟩
 
 theorem disjoint_of_erase_right (ha : a ∉ s) (hst : Disjoint s (t.erase a)) : Disjoint s t := by
   rw [← erase_insert ha, disjoint_erase_comm, disjoint_insert_left]
-  exact ⟨not_mem_erase _ _, hst⟩
+  exact ⟨notMem_erase _ _, hst⟩
 
 theorem inter_erase (a : α) (s t : Finset α) : s ∩ t.erase a = (s ∩ t).erase a := by
   simp only [erase_eq, inter_sdiff_assoc]
@@ -288,9 +291,12 @@ theorem sdiff_insert (s t : Finset α) (x : α) : s \ insert x t = (s \ t).erase
   simp_rw [← sdiff_singleton_eq_erase, insert_eq, sdiff_sdiff_left', sdiff_union_distrib,
     inter_comm]
 
-theorem sdiff_insert_insert_of_mem_of_not_mem {s t : Finset α} {x : α} (hxs : x ∈ s) (hxt : x ∉ t) :
+theorem sdiff_insert_insert_of_mem_of_notMem {s t : Finset α} {x : α} (hxs : x ∈ s) (hxt : x ∉ t) :
     insert x (s \ insert x t) = s \ t := by
   rw [sdiff_insert, insert_erase (mem_sdiff.mpr ⟨hxs, hxt⟩)]
+
+@[deprecated (since := "2025-05-23")]
+alias sdiff_insert_insert_of_mem_of_not_mem := sdiff_insert_insert_of_mem_of_notMem
 
 theorem sdiff_erase (h : a ∈ s) : s \ t.erase a = insert a (s \ t) := by
   rw [← sdiff_singleton_eq_erase, sdiff_sdiff_eq_sdiff_union (singleton_subset_iff.2 h), insert_eq,
@@ -329,7 +335,7 @@ protected alias ⟨_, Nonempty.attach⟩ := attach_nonempty_iff
 
 @[simp]
 theorem attach_eq_empty_iff {s : Finset α} : s.attach = ∅ ↔ s = ∅ := by
-  simp [eq_empty_iff_forall_not_mem]
+  simp [eq_empty_iff_forall_notMem]
 
 /-! ### filter -/
 
@@ -456,7 +462,7 @@ theorem filter_eq [DecidableEq β] (s : Finset β) (b : β) :
     rintro rfl
     exact ⟨h, rfl⟩
   · ext
-    simp only [mem_filter, not_and, iff_false, not_mem_empty, decide_eq_true_eq]
+    simp only [mem_filter, not_and, iff_false, notMem_empty, decide_eq_true_eq]
     rintro m rfl
     exact h m
 

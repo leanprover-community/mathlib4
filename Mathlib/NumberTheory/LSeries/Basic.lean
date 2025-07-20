@@ -14,24 +14,24 @@ Given a sequence `f: ℕ → ℂ`, we define the corresponding L-series.
 
 ## Main Definitions
 
- * `LSeries.term f s n` is the `n`th term of the L-series of the sequence `f` at `s : ℂ`.
+* `LSeries.term f s n` is the `n`th term of the L-series of the sequence `f` at `s : ℂ`.
     We define it to be zero when `n = 0`.
 
- * `LSeries f` is the L-series with a given sequence `f` as its
+* `LSeries f` is the L-series with a given sequence `f` as its
     coefficients. This is not the analytic continuation (which does not necessarily exist),
     just the sum of the infinite series if it exists and zero otherwise.
 
- * `LSeriesSummable f s` indicates that the L-series of `f` converges at `s : ℂ`.
+* `LSeriesSummable f s` indicates that the L-series of `f` converges at `s : ℂ`.
 
- * `LSeriesHasSum f s a` expresses that the L-series of `f` converges (absolutely)
+* `LSeriesHasSum f s a` expresses that the L-series of `f` converges (absolutely)
     at `s : ℂ` to `a : ℂ`.
 
 ## Main Results
 
- * `LSeriesSummable_of_isBigO_rpow`: the `LSeries` of a sequence `f` such that
+* `LSeriesSummable_of_isBigO_rpow`: the `LSeries` of a sequence `f` such that
     `f = O(n^(x-1))` converges at `s` when `x < s.re`.
 
- * `LSeriesSummable.isBigO_rpow`: if the `LSeries` of `f` is summable at `s`,
+* `LSeriesSummable.isBigO_rpow`: if the `LSeries` of `f` is summable at `s`,
     then `f = O(n^(re s))`.
 
 ## Notation
@@ -180,7 +180,7 @@ then so does that of `g`. -/
 lemma LSeriesSummable.congr' {f g : ℕ → ℂ} (s : ℂ) (h : f =ᶠ[atTop] g) (hf : LSeriesSummable f s) :
     LSeriesSummable g s := by
   rw [← Nat.cofinite_eq_atTop] at h
-  refine (summable_norm_iff.mpr hf).of_norm_bounded_eventually _ ?_
+  refine (summable_norm_iff.mpr hf).of_norm_bounded_eventually ?_
   have : term f s =ᶠ[cofinite] term g s := by
     rw [eventuallyEq_iff_exists_mem] at h ⊢
     obtain ⟨S, hS, hS'⟩ := h
@@ -344,7 +344,7 @@ lemma LSeriesSummable_of_le_const_mul_rpow {f : ℕ → ℂ} {x : ℝ} {s : ℂ}
     simp_rw [div_eq_mul_inv, norm_mul, ← cpow_neg]
     have hsx : -s.re + x - 1 < -1 := by linarith only [hs]
     refine Summable.mul_left _ <|
-      Summable.of_norm_bounded_eventually_nat (fun n ↦ (n : ℝ) ^ (-s.re + x - 1)) ?_ ?_
+      Summable.of_norm_bounded_eventually_nat (g := fun n ↦ (n : ℝ) ^ (-s.re + x - 1)) ?_ ?_
     · simpa
     · simp only [norm_norm, Filter.eventually_atTop]
       refine ⟨1, fun n hn ↦ le_of_eq ?_⟩

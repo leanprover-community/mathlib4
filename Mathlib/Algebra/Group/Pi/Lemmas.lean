@@ -6,6 +6,7 @@ Authors: Simon Hudon, Patrick Massot
 import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.Group.Torsion
 import Mathlib.Data.Set.Piecewise
 import Mathlib.Logic.Pairwise
 
@@ -22,9 +23,7 @@ universe u v w
 
 variable {ι α : Type*}
 variable {I : Type u}
-
--- The indexing type
-variable {f : I → Type v}
+variable {f : I → Type v} {M : ι → Type*}
 
 variable (i : I)
 
@@ -38,6 +37,10 @@ theorem Set.preimage_one {α β : Type*} [One β] (s : Set β) [Decidable ((1 : 
   Set.preimage_const 1 s
 
 namespace Pi
+
+instance instIsMulTorsionFree [∀ i, Monoid (M i)] [∀ i, IsMulTorsionFree (M i)] :
+    IsMulTorsionFree (∀ i, M i) where
+  pow_left_injective n hn a b hab := by ext i; exact pow_left_injective hn <| congr_fun hab i
 
 variable {α β : Type*} [Preorder α] [Preorder β]
 
@@ -173,7 +176,7 @@ homomorphism `f` between `α` and `β`. -/
 protected def MonoidHom.compLeft {α β : Type*} [MulOneClass α] [MulOneClass β] (f : α →* β)
     (I : Type*) : (I → α) →* I → β where
   toFun h := f ∘ h
-  map_one' := by ext; dsimp; simp
+  map_one' := by ext; simp
   map_mul' _ _ := by ext; simp
 
 end MonoidHom

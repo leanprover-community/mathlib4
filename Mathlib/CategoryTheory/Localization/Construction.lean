@@ -274,6 +274,7 @@ def natTransExtension {F₁ F₂ : W.Localization ⥤ D} (τ : W.Q ⋙ F₁ ⟶ 
 theorem whiskerLeft_natTransExtension {F G : W.Localization ⥤ D} (τ : W.Q ⋙ F ⟶ W.Q ⋙ G) :
     whiskerLeft W.Q (natTransExtension τ) = τ := by aesop_cat
 
+-- This is not a simp lemma, because the simp norm form of the left-hand side uses `whiskerLeft`.
 theorem natTransExtension_hcomp {F G : W.Localization ⥤ D} (τ : W.Q ⋙ F ⟶ W.Q ⋙ G) :
     𝟙 W.Q ◫ natTransExtension τ = τ := by aesop_cat
 
@@ -292,7 +293,7 @@ namespace WhiskeringLeftEquivalence
 composition with `W.Q : C ⥤ W.Localization`. -/
 @[simps!]
 def functor : (W.Localization ⥤ D) ⥤ W.FunctorsInverting D :=
-  FullSubcategory.lift _ ((whiskeringLeft _ _ D).obj W.Q) fun _ =>
+  ObjectProperty.lift _ ((whiskeringLeft _ _ D).obj W.Q) fun _ =>
     MorphismProperty.IsInvertedBy.of_comp W W.Q W.Q_inverts _
 
 /-- The function `(W.FunctorsInverting D) ⥤ (W.Localization ⥤ D)` induced by

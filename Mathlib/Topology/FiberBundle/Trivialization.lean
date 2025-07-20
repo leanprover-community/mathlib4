@@ -228,13 +228,17 @@ theorem symm_apply (e : Pretrivialization F (π F E)) {b : B} (hb : b ∈ e.base
     e.symm b y = cast (congr_arg E (e.symm_coe_proj hb)) (e.toPartialEquiv.symm (b, y)).2 :=
   dif_pos hb
 
-theorem symm_apply_of_not_mem (e : Pretrivialization F (π F E)) {b : B} (hb : b ∉ e.baseSet)
+theorem symm_apply_of_notMem (e : Pretrivialization F (π F E)) {b : B} (hb : b ∉ e.baseSet)
     (y : F) : e.symm b y = 0 :=
   dif_neg hb
 
-theorem coe_symm_of_not_mem (e : Pretrivialization F (π F E)) {b : B} (hb : b ∉ e.baseSet) :
+@[deprecated (since := "2025-05-23")] alias symm_apply_of_not_mem := symm_apply_of_notMem
+
+theorem coe_symm_of_notMem (e : Pretrivialization F (π F E)) {b : B} (hb : b ∉ e.baseSet) :
     (e.symm b : F → E b) = 0 :=
   funext fun _ => dif_neg hb
+
+@[deprecated (since := "2025-05-23")] alias coe_symm_of_not_mem := coe_symm_of_notMem
 
 theorem mk_symm (e : Pretrivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (y : F) :
     TotalSpace.mk b (e.symm b y) = e.toPartialEquiv.symm (b, y) := by
@@ -539,9 +543,11 @@ theorem symm_apply (e : Trivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet
     e.symm b y = cast (congr_arg E (e.symm_coe_proj hb)) (e.toPartialHomeomorph.symm (b, y)).2 :=
   dif_pos hb
 
-theorem symm_apply_of_not_mem (e : Trivialization F (π F E)) {b : B} (hb : b ∉ e.baseSet) (y : F) :
+theorem symm_apply_of_notMem (e : Trivialization F (π F E)) {b : B} (hb : b ∉ e.baseSet) (y : F) :
     e.symm b y = 0 :=
   dif_neg hb
+
+@[deprecated (since := "2025-05-23")] alias symm_apply_of_not_mem := symm_apply_of_notMem
 
 theorem mk_symm (e : Trivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (y : F) :
     TotalSpace.mk b (e.symm b y) = e.toPartialHomeomorph.symm (b, y) :=
@@ -736,7 +742,7 @@ noncomputable def disjointUnion (e e' : Trivialization F proj) (H : Disjoint e.b
     · show (e.source.piecewise e e' p).1 = proj p
       rw [piecewise_eq_of_mem, e.coe_fst] <;> exact hp
     · show (e.source.piecewise e e' p).1 = proj p
-      rw [piecewise_eq_of_not_mem, e'.coe_fst hp']
+      rw [piecewise_eq_of_notMem, e'.coe_fst hp']
       simp only [source_eq] at hp' ⊢
       exact fun h => H.le_bot ⟨h, hp'⟩
 

@@ -6,6 +6,7 @@ Authors: Robert Y. Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Data.Set.Monotone
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Tactic.Positivity.Core
@@ -294,6 +295,25 @@ theorem IsGLB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsGLB s b) :
 theorem IsGLB.mul_right {s : Set α} (ha : 0 ≤ a) (hs : IsGLB s b) :
     IsGLB ((fun b => b * a) '' s) (b * a) := by simpa [mul_comm] using hs.mul_left ha
 
+/-! ### Results about `IsLUB` -/
+
+
+theorem IsLUB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
+    IsLUB ((fun b => a * b) '' s) (a * b) := by
+  obtain ha | rfl := ha.lt_or_eq
+  · exact (OrderIso.mulLeft₀ _ ha).isLUB_image'.2 hs
+  · simp_rw [zero_mul]
+    obtain rfl | ne := s.eq_empty_or_nonempty
+    · simp only [Set.image_empty, isLUB_empty_iff] at hs ⊢
+      have hb := hs (b + b)
+      rw [le_add_iff_nonneg_right] at hb
+      exact hs.mono hb
+    rw [ne.image_const]
+    exact isLUB_singleton
+
+theorem IsLUB.mul_right {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
+    IsLUB ((fun b => b * a) '' s) (b * a) := by simpa [mul_comm] using hs.mul_left ha
+
 end LinearOrderedSemifield
 
 section
@@ -554,22 +574,6 @@ theorem sub_one_div_inv_le_two (a2 : 2 ≤ a) : (1 - 1 / a)⁻¹ ≤ 2 := by
   -- show `1 - 1 / 2 = 1 / 2`.
   rw [sub_eq_iff_eq_add, ← two_mul, mul_inv_cancel₀ two_ne_zero]
 
-/-! ### Results about `IsLUB` -/
-
-
--- TODO: Generalize to `LinearOrderedSemifield`
-theorem IsLUB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
-    IsLUB ((fun b => a * b) '' s) (a * b) := by
-  rcases lt_or_eq_of_le ha with (ha | rfl)
-  · exact (OrderIso.mulLeft₀ _ ha).isLUB_image'.2 hs
-  · simp_rw [zero_mul]
-    rw [hs.nonempty.image_const]
-    exact isLUB_singleton
-
--- TODO: Generalize to `LinearOrderedSemifield`
-theorem IsLUB.mul_right {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
-    IsLUB ((fun b => b * a) '' s) (b * a) := by simpa [mul_comm] using hs.mul_left ha
-
 /-! ### Miscellaneous lemmas -/
 
 
@@ -673,7 +677,7 @@ theorem uniform_continuous_npow_on_bounded (B : α) {ε : α} (hε : 0 < ε) (n 
 end
 
 namespace Mathlib.Meta.Positivity
-open Lean Meta Qq Function
+open Lean Meta Qq
 
 section LinearOrderedSemifield
 variable {α : Type*} [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] {a b : α}

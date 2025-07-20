@@ -78,9 +78,9 @@ theorem HasDerivAt.pow (hc : HasDerivAt c c' x) :
 
 theorem derivWithin_pow' (hc : DifferentiableWithinAt 𝕜 c s x) :
     derivWithin (fun x => c x ^ n) s x = (n : 𝕜) * c x ^ (n - 1) * derivWithin c s x := by
-  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
-  · exact (hc.hasDerivWithinAt.pow n).derivWithin hxs
-  · simp [derivWithin_zero_of_isolated hxs]
+  by_cases hsx : UniqueDiffWithinAt 𝕜 s x
+  · exact (hc.hasDerivWithinAt.pow n).derivWithin hsx
+  · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
 @[simp]
 theorem deriv_pow'' (hc : DifferentiableAt 𝕜 c x) :

@@ -60,7 +60,7 @@ instance Set.instTietzeExtensionUnitClosedBall {𝕜 : Type v} [RCLike 𝕜] {E 
     refine .of_retract ⟨Subtype.val, by fun_prop⟩ ⟨_, this.codRestrict fun x ↦ ?_⟩ ?_
     · by_cases hx : x ∈ Metric.closedBall 0 1
       · simpa [piecewise_eq_of_mem (hi := hx)] using hx
-      · simp only [g, piecewise_eq_of_not_mem (hi := hx), RCLike.real_smul_eq_coe_smul (K := 𝕜)]
+      · simp only [g, piecewise_eq_of_notMem (hi := hx), RCLike.real_smul_eq_coe_smul (K := 𝕜)]
         by_cases hx' : x = 0 <;> simp [hx']
     · ext x
       simp [piecewise_eq_of_mem (hi := x.property)]

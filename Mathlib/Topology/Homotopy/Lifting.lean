@@ -275,7 +275,7 @@ variable (H : C(I × A, X)) (f : C(A, E)) (H_0 : ∀ a, H (0, a) = p (f a))
   continuous_toFun := cov.isLocalHomeomorph.continuous_lift cov.isSeparatedMap H
     (by ext ⟨t, a⟩; exact congr_fun (cov.liftPath_lifts ..) t)
     (by convert f.continuous with a; exact cov.liftPath_zero ..)
-    fun a ↦ by dsimp only; exact (cov.liftPath ..).2
+    fun a ↦ by dsimp only; exact (cov.liftPath (γ_0 := by simp [*])).2
 
 lemma liftHomotopy_lifts : p ∘ cov.liftHomotopy H f H_0 = H :=
   funext fun ⟨t, _⟩ ↦ congr_fun (cov.liftPath_lifts ..) t

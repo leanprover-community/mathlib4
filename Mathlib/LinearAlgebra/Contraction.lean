@@ -112,7 +112,7 @@ theorem comp_dualTensorHom (f : Module.Dual R M) (n : N) (g : Module.Dual R N) (
 single one and zeros elsewhere -/
 theorem toMatrix_dualTensorHom {m : Type*} {n : Type*} [Fintype m] [Finite n] [DecidableEq m]
     [DecidableEq n] (bM : Basis m R M) (bN : Basis n R N) (j : m) (i : n) :
-    toMatrix bM bN (dualTensorHom R M N (bM.coord j ⊗ₜ bN i)) = stdBasisMatrix i j 1 := by
+    toMatrix bM bN (dualTensorHom R M N (bM.coord j ⊗ₜ bN i)) = single i j 1 := by
   ext i' j'
   by_cases hij : i = i' ∧ j = j' <;>
     simp [LinearMap.toMatrix_apply, Finsupp.single_eq_pi_single, hij]

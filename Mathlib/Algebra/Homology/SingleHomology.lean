@@ -114,6 +114,15 @@ lemma singleObjHomologySelfIso_hom_singleObjOpcyclesSelfIso_hom :
   rw [← cancel_epi (singleObjHomologySelfIso _ _ _).inv,
     Iso.inv_hom_id_assoc, singleObjHomologySelfIso_inv_homologyι]
 
+@[reassoc (attr := simp)]
+lemma pOpcycles_singleObjOpcyclesSelfIso_inv :
+    ((single C c j).obj A).pOpcycles j ≫ (singleObjOpcyclesSelfIso _ _ _).inv =
+      (singleObjXSelf c j A).hom := by
+  have := ((single C c j).obj A).isIso_iCycles j _ rfl (by simp)
+  rw [← cancel_epi (((single C c j).obj A).iCycles j),
+    ← HomologicalComplex.homology_π_ι_assoc, homologyι_singleObjOpcyclesSelfIso_inv,
+    homologyπ_singleObjHomologySelfIso_hom, singleObjCyclesSelfIso_hom]
+
 variable {A}
 variable {B : C} (f : A ⟶ B)
 

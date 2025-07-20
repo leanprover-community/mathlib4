@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
-import Mathlib.Algebra.Category.AlgebraCat.Basic
+import Mathlib.Algebra.Category.AlgCat.Basic
 import Mathlib.CategoryTheory.Monoidal.Mon_
 
 /-!
-# `Mon_ (ModuleCat R) ≌ AlgebraCat R`
+# `Mon_ (ModuleCat R) ≌ AlgCat R`
 
 The category of internal monoid objects in `ModuleCat R`
 is equivalent to the category of "native" bundled `R`-algebras.
@@ -88,9 +88,9 @@ theorem algebraMap (A : Mon_ (ModuleCat.{u} R)) (r : R) : algebraMap R A.X r = A
 /-- Converting a monoid object in `ModuleCat R` to a bundled algebra.
 -/
 @[simps!]
-def functor : Mon_ (ModuleCat.{u} R) ⥤ AlgebraCat R where
-  obj A := AlgebraCat.of R A.X
-  map {_ _} f := AlgebraCat.ofHom
+def functor : Mon_ (ModuleCat.{u} R) ⥤ AlgCat R where
+  obj A := AlgCat.of R A.X
+  map {_ _} f := AlgCat.ofHom
     { f.hom.hom.toAddMonoidHom with
       toFun := f.hom
       map_one' := LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp f.one_hom) (1 : R)
@@ -100,7 +100,7 @@ def functor : Mon_ (ModuleCat.{u} R) ⥤ AlgebraCat R where
 /-- Converting a bundled algebra to a monoid object in `ModuleCat R`.
 -/
 @[simps]
-def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
+def inverseObj (A : AlgCat.{u} R) : Mon_ (ModuleCat.{u} R) where
   X := ModuleCat.of R A
   one := ofHom <| Algebra.linearMap R A
   mul := ofHom <| LinearMap.mul' R A
@@ -110,9 +110,9 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
     refine TensorProduct.ext <| LinearMap.ext_ring <| LinearMap.ext fun x => ?_
     rw [compr₂_apply, compr₂_apply, hom_comp, LinearMap.comp_apply]
     -- Porting note: this `dsimp` does nothing
-    -- dsimp [AlgebraCat.id_apply, TensorProduct.mk_apply, Algebra.linearMap_apply,
+    -- dsimp [AlgCat.id_apply, TensorProduct.mk_apply, Algebra.linearMap_apply,
     --    LinearMap.compr₂_apply, Function.comp_apply, RingHom.map_one,
-    --    ModuleCat.MonoidalCategory.tensorHom_tmul, AlgebraCat.hom_comp,
+    --    ModuleCat.MonoidalCategory.tensorHom_tmul, AlgCat.hom_comp,
     --    ModuleCat.MonoidalCategory.leftUnitor_hom_apply]
     -- Porting note: because `dsimp` is not effective, `rw` needs to be changed to `erw`
     dsimp
@@ -123,9 +123,9 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `TensorProduct.ext`
     refine TensorProduct.ext <| LinearMap.ext fun x => LinearMap.ext_ring ?_
     -- Porting note: this `dsimp` does nothing
-    -- dsimp only [AlgebraCat.id_apply, TensorProduct.mk_apply, Algebra.linearMap_apply,
+    -- dsimp only [AlgCat.id_apply, TensorProduct.mk_apply, Algebra.linearMap_apply,
     --   LinearMap.compr₂_apply, Function.comp_apply, ModuleCat.MonoidalCategory.hom_apply,
-    --   AlgebraCat.coe_comp]
+    --   AlgCat.coe_comp]
     -- Porting note: because `dsimp` is not effective, `rw` needs to be changed to `erw`
     erw [compr₂_apply, compr₂_apply]
     rw [ModuleCat.hom_comp, LinearMap.comp_apply]
@@ -148,7 +148,7 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
 /-- Converting a bundled algebra to a monoid object in `ModuleCat R`.
 -/
 @[simps]
-def inverse : AlgebraCat.{u} R ⥤ Mon_ (ModuleCat.{u} R) where
+def inverse : AlgCat.{u} R ⥤ Mon_ (ModuleCat.{u} R) where
   obj := inverseObj
   map f :=
     { hom := ofHom <| f.hom.toLinearMap
@@ -162,7 +162,7 @@ open MonModuleEquivalenceAlgebra
 /-- The category of internal monoid objects in `ModuleCat R`
 is equivalent to the category of "native" bundled `R`-algebras.
 -/
-def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgebraCat R where
+def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgCat R where
   functor := functor
   inverse := inverse
   unitIso :=
@@ -193,14 +193,14 @@ def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgebraCat R where
   counitIso :=
     NatIso.ofComponents
       (fun A =>
-        { hom := AlgebraCat.ofHom
+        { hom := AlgCat.ofHom
             { toFun := _root_.id
               map_zero' := rfl
               map_add' := fun _ _ => rfl
               map_one' := (algebraMap R A).map_one
               map_mul' := fun x y => @LinearMap.mul'_apply R _ _ _ _ _ _ x y
               commutes' := fun _ => rfl }
-          inv := AlgebraCat.ofHom
+          inv := AlgCat.ofHom
             { toFun := _root_.id
               map_zero' := rfl
               map_add' := fun _ _ => rfl
@@ -208,11 +208,11 @@ def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgebraCat R where
               map_mul' := fun x y => (@LinearMap.mul'_apply R _ _ _ _ _ _ x y).symm
               commutes' := fun _ => rfl } })
 
-/-- The equivalence `Mon_ (ModuleCat R) ≌ AlgebraCat R`
+/-- The equivalence `Mon_ (ModuleCat R) ≌ AlgCat R`
 is naturally compatible with the forgetful functors to `ModuleCat R`.
 -/
 def monModuleEquivalenceAlgebraForget :
-    MonModuleEquivalenceAlgebra.functor ⋙ forget₂ (AlgebraCat.{u} R) (ModuleCat.{u} R) ≅
+    MonModuleEquivalenceAlgebra.functor ⋙ forget₂ (AlgCat.{u} R) (ModuleCat.{u} R) ≅
       Mon_.forget (ModuleCat.{u} R) :=
   NatIso.ofComponents
     (fun A =>

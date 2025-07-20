@@ -6,7 +6,6 @@ Authors: Eric Wieser
 import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
 import Mathlib.LinearAlgebra.CliffordAlgebra.Even
 import Mathlib.LinearAlgebra.QuadraticForm.Prod
-import Mathlib.Tactic.LiftLets
 
 /-!
 # Isomorphisms with the even subalgebra of a Clifford algebra

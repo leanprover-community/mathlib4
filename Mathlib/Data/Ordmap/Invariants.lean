@@ -11,7 +11,7 @@ import Mathlib.Tactic.Abel
 /-!
 # Invariants for the verification of `Ordnode`
 
-An `Ordnode`, defined in `Mathlib.Data.Ordmap.Ordnode`, is an inductive type which describes a
+An `Ordnode`, defined in `Mathlib/Data/Ordmap/Ordnode.lean`, is an inductive type which describes a
 tree which stores the `size` at internal nodes.
 
 In this file we define the correctness invariant of an `Ordnode`, comprising:
@@ -30,7 +30,7 @@ In this file we define the correctness invariant of an `Ordnode`, comprising:
 
 This whole file is in the `Ordnode` namespace, because we first have to prove the correctness of
 all the operations (and defining what correctness means here is somewhat subtle).
-The actual `Ordset` operations are in `Mathlib.Data.Ordmap.Ordset`.
+The actual `Ordset` operations are in `Mathlib/Data/Ordmap/Ordset.lean`.
 
 ## TODO
 
@@ -321,7 +321,10 @@ theorem node3R_size {l x m y r} : size (@node3R α l x m y r) = size l + size m 
 
 theorem node4L_size {l x m y r} (hm : Sized m) :
     size (@node4L α l x m y r) = size l + size m + size r + 2 := by
-  cases m <;> simp [node4L, node3L, node'] <;> [abel; (simp [size, hm.1]; abel)]
+  cases m
+  · simp [node4L, node3L, node']
+    abel
+  · simp [node4L, node3L, node', size, hm.1]; abel
 
 theorem Sized.dual : ∀ {t : Ordnode α}, Sized t → Sized (dual t)
   | nil, _ => ⟨⟩
@@ -606,7 +609,7 @@ theorem balance_eq_balance' {l x r} (hl : Balanced l) (hr : Balanced r) (sl : Si
           · simp [node4R, node', sl.2.2.1]; abel
         · apply Nat.zero_lt_succ
         · exact not_le_of_gt (Nat.succ_lt_succ (add_pos sl.2.1.pos sl.2.2.pos))
-    · simp [balance, balance']
+    · simp only [balance, id_eq, balance', size_node, gt_iff_lt]
       symm; rw [if_neg]
       · split_ifs with h h_1
         · have rd : delta ≤ size rl + size rr := by

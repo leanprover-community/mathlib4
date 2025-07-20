@@ -21,36 +21,36 @@ case of the topology of weak convergence of finite measures.
 ## Main definitions
 
 The main definitions are
- * the type `MeasureTheory.ProbabilityMeasure Ω` with the topology of convergence in
-   distribution (a.k.a. convergence in law, weak convergence of measures);
- * `MeasureTheory.ProbabilityMeasure.toFiniteMeasure`: Interpret a probability measure as
-   a finite measure;
- * `MeasureTheory.FiniteMeasure.normalize`: Normalize a finite measure to a probability measure
-   (returns junk for the zero measure).
- * `MeasureTheory.ProbabilityMeasure.map`: The push-forward `f* μ` of a probability measure
-   `μ` on `Ω` along a measurable function `f : Ω → Ω'`.
+* the type `MeasureTheory.ProbabilityMeasure Ω` with the topology of convergence in
+  distribution (a.k.a. convergence in law, weak convergence of measures);
+* `MeasureTheory.ProbabilityMeasure.toFiniteMeasure`: Interpret a probability measure as
+  a finite measure;
+* `MeasureTheory.FiniteMeasure.normalize`: Normalize a finite measure to a probability measure
+  (returns junk for the zero measure).
+* `MeasureTheory.ProbabilityMeasure.map`: The push-forward `f* μ` of a probability measure
+  `μ` on `Ω` along a measurable function `f : Ω → Ω'`.
 
 ## Main results
 
- * `MeasureTheory.ProbabilityMeasure.tendsto_iff_forall_integral_tendsto`: Convergence of
-   probability measures is characterized by the convergence of expected values of all bounded
-   continuous random variables. This shows that the chosen definition of topology coincides with
-   the common textbook definition of convergence in distribution, i.e., weak convergence of
-   measures. A similar characterization by the convergence of expected values (in the
-   `MeasureTheory.lintegral` sense) of all bounded continuous nonnegative random variables is
-   `MeasureTheory.ProbabilityMeasure.tendsto_iff_forall_lintegral_tendsto`.
- * `MeasureTheory.FiniteMeasure.tendsto_normalize_iff_tendsto`: The convergence of finite
-   measures to a nonzero limit is characterized by the convergence of the probability-normalized
-   versions and of the total masses.
- * `MeasureTheory.ProbabilityMeasure.continuous_map`: For a continuous function `f : Ω → Ω'`, the
-   push-forward of probability measures `f* : ProbabilityMeasure Ω → ProbabilityMeasure Ω'` is
-   continuous.
- * `MeasureTheory.ProbabilityMeasure.t2Space`: The topology of convergence in distribution is
-   Hausdorff on Borel spaces where indicators of closed sets have continuous decreasing
-   approximating sequences (in particular on any pseudo-metrizable spaces).
+* `MeasureTheory.ProbabilityMeasure.tendsto_iff_forall_integral_tendsto`: Convergence of
+  probability measures is characterized by the convergence of expected values of all bounded
+  continuous random variables. This shows that the chosen definition of topology coincides with
+  the common textbook definition of convergence in distribution, i.e., weak convergence of
+  measures. A similar characterization by the convergence of expected values (in the
+  `MeasureTheory.lintegral` sense) of all bounded continuous nonnegative random variables is
+  `MeasureTheory.ProbabilityMeasure.tendsto_iff_forall_lintegral_tendsto`.
+* `MeasureTheory.FiniteMeasure.tendsto_normalize_iff_tendsto`: The convergence of finite
+  measures to a nonzero limit is characterized by the convergence of the probability-normalized
+  versions and of the total masses.
+* `MeasureTheory.ProbabilityMeasure.continuous_map`: For a continuous function `f : Ω → Ω'`, the
+  push-forward of probability measures `f* : ProbabilityMeasure Ω → ProbabilityMeasure Ω'` is
+  continuous.
+* `MeasureTheory.ProbabilityMeasure.t2Space`: The topology of convergence in distribution is
+  Hausdorff on Borel spaces where indicators of closed sets have continuous decreasing
+  approximating sequences (in particular on any pseudo-metrizable spaces).
 
 TODO:
- * Probability measures form a convex space.
+* Probability measures form a convex space.
 
 ## Implementation notes
 
@@ -318,9 +318,16 @@ theorem tendsto_iff_forall_integral_tendsto {γ : Type*} {F : Filter γ}
     Tendsto μs F (𝓝 μ) ↔
       ∀ f : Ω →ᵇ ℝ,
         Tendsto (fun i ↦ ∫ ω, f ω ∂(μs i : Measure Ω)) F (𝓝 (∫ ω, f ω ∂(μ : Measure Ω))) := by
-  rw [tendsto_nhds_iff_toFiniteMeasure_tendsto_nhds]
-  rw [FiniteMeasure.tendsto_iff_forall_integral_tendsto]
-  rfl
+  simp [tendsto_nhds_iff_toFiniteMeasure_tendsto_nhds,
+    FiniteMeasure.tendsto_iff_forall_integral_tendsto]
+
+theorem tendsto_iff_forall_integral_rclike_tendsto {γ : Type*} (𝕜 : Type*) [RCLike 𝕜]
+    {F : Filter γ} {μs : γ → ProbabilityMeasure Ω} {μ : ProbabilityMeasure Ω} :
+    Tendsto μs F (𝓝 μ) ↔
+      ∀ f : Ω →ᵇ 𝕜,
+        Tendsto (fun i ↦ ∫ ω, f ω ∂(μs i : Measure Ω)) F (𝓝 (∫ ω, f ω ∂(μ : Measure Ω))) := by
+  simp [tendsto_nhds_iff_toFiniteMeasure_tendsto_nhds,
+    FiniteMeasure.tendsto_iff_forall_integral_rclike_tendsto 𝕜]
 
 lemma continuous_integral_boundedContinuousFunction
     {α : Type*} [TopologicalSpace α] [MeasurableSpace α] [OpensMeasurableSpace α] (f : α →ᵇ ℝ) :

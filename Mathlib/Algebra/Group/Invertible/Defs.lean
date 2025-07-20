@@ -21,7 +21,7 @@ For constructions of the invertible element given a characteristic, see
 
 ## Notation
 
- * `⅟a` is `Invertible.invOf a`, the inverse of `a`
+* `⅟a` is `Invertible.invOf a`, the inverse of `a`
 
 ## Implementation notes
 

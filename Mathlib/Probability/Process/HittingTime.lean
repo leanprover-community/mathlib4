@@ -82,7 +82,7 @@ theorem hitting_le {m : ι} (ω : Ω) : hitting u s n m ω ≤ m := by
     exact (csInf_le (BddBelow.inter_of_left bddBelow_Icc) (Set.mem_inter hj₁ hj₂)).trans hj₁.2
   · exact le_rfl
 
-theorem not_mem_of_lt_hitting {m k : ι} (hk₁ : k < hitting u s n m ω) (hk₂ : n ≤ k) :
+theorem notMem_of_lt_hitting {m k : ι} (hk₁ : k < hitting u s n m ω) (hk₂ : n ≤ k) :
     u k ω ∉ s := by
   classical
   intro h
@@ -90,6 +90,8 @@ theorem not_mem_of_lt_hitting {m k : ι} (hk₁ : k < hitting u s n m ω) (hk₂
   refine not_le.2 hk₁ ?_
   simp_rw [hitting, if_pos hexists]
   exact csInf_le bddBelow_Icc.inter_of_left ⟨⟨hk₂, le_trans hk₁.le <| hitting_le _⟩, h⟩
+
+@[deprecated (since := "2025-05-23")] alias not_mem_of_lt_hitting := notMem_of_lt_hitting
 
 theorem hitting_eq_end_iff {m : ι} : hitting u s n m ω = m ↔
     (∃ j ∈ Set.Icc n m, u j ω ∈ s) → sInf (Set.Icc n m ∩ {i : ι | u i ω ∈ s}) = m := by
@@ -270,11 +272,11 @@ variable [CompleteLattice ι] {u : ι → Ω → β} {s : Set β}
 theorem hitting_eq_sInf (ω : Ω) : hitting u s ⊥ ⊤ ω = sInf {i : ι | u i ω ∈ s} := by
   simp only [hitting, Set.mem_Icc, bot_le, le_top, and_self_iff, exists_true_left, Set.Icc_bot,
     Set.Iic_top, Set.univ_inter, ite_eq_left_iff, not_exists]
-  intro h_nmem_s
+  intro h_notMem_s
   symm
   rw [sInf_eq_top]
-  simp only [Set.mem_univ, true_and] at h_nmem_s
-  exact fun i hi_mem_s => absurd hi_mem_s (h_nmem_s i)
+  simp only [Set.mem_univ, true_and] at h_notMem_s
+  exact fun i hi_mem_s => absurd hi_mem_s (h_notMem_s i)
 
 end CompleteLattice
 

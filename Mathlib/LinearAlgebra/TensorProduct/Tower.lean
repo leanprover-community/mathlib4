@@ -20,21 +20,21 @@ In this file, we use the convention that `M`, `N`, `P`, `Q` are all `R`-modules,
 
 ## Main definitions
 
- * `TensorProduct.AlgebraTensorModule.curry`
- * `TensorProduct.AlgebraTensorModule.uncurry`
- * `TensorProduct.AlgebraTensorModule.lcurry`
- * `TensorProduct.AlgebraTensorModule.lift`
- * `TensorProduct.AlgebraTensorModule.lift.equiv`
- * `TensorProduct.AlgebraTensorModule.mk`
- * `TensorProduct.AlgebraTensorModule.map`
- * `TensorProduct.AlgebraTensorModule.mapBilinear`
- * `TensorProduct.AlgebraTensorModule.congr`
- * `TensorProduct.AlgebraTensorModule.rid`
- * `TensorProduct.AlgebraTensorModule.homTensorHomMap`
- * `TensorProduct.AlgebraTensorModule.assoc`
- * `TensorProduct.AlgebraTensorModule.leftComm`
- * `TensorProduct.AlgebraTensorModule.rightComm`
- * `TensorProduct.AlgebraTensorModule.tensorTensorTensorComm`
+* `TensorProduct.AlgebraTensorModule.curry`
+* `TensorProduct.AlgebraTensorModule.uncurry`
+* `TensorProduct.AlgebraTensorModule.lcurry`
+* `TensorProduct.AlgebraTensorModule.lift`
+* `TensorProduct.AlgebraTensorModule.lift.equiv`
+* `TensorProduct.AlgebraTensorModule.mk`
+* `TensorProduct.AlgebraTensorModule.map`
+* `TensorProduct.AlgebraTensorModule.mapBilinear`
+* `TensorProduct.AlgebraTensorModule.congr`
+* `TensorProduct.AlgebraTensorModule.rid`
+* `TensorProduct.AlgebraTensorModule.homTensorHomMap`
+* `TensorProduct.AlgebraTensorModule.assoc`
+* `TensorProduct.AlgebraTensorModule.leftComm`
+* `TensorProduct.AlgebraTensorModule.rightComm`
+* `TensorProduct.AlgebraTensorModule.tensorTensorTensorComm`
 
 ## Implementation notes
 
@@ -49,8 +49,8 @@ namespace TensorProduct
 
 namespace AlgebraTensorModule
 
-universe uR uA uB uM uN uP uQ uP' uQ'
-variable {R : Type uR} {A : Type uA} {B : Type uB}
+universe uR uS uA uB uM uN uP uQ uP' uQ'
+variable {R : Type uR} {S : Type uS} {A : Type uA} {B : Type uB}
 variable {M : Type uM} {N : Type uN} {P : Type uP} {Q : Type uQ} {P' : Type uP'} {Q' : Type uQ'}
 
 open LinearMap
@@ -166,7 +166,9 @@ def lift.equiv : (M →ₗ[A] N →ₗ[R] P) ≃ₗ[B] M ⊗[R] N →ₗ[A] P :=
 
 The canonical bilinear map `M →[A] N →[R] M ⊗[R] N`. -/
 @[simps! apply]
-nonrec def mk : M →ₗ[A] N →ₗ[R] M ⊗[R] N :=
+nonrec def mk (A M N : Type*) [Semiring A]
+    [AddCommMonoid M] [Module R M] [Module A M] [SMulCommClass R A M]
+    [AddCommMonoid N] [Module R N] : M →ₗ[A] N →ₗ[R] M ⊗[R] N :=
   { mk R M N with map_smul' := fun _ _ => rfl }
 
 variable {R A B M N P Q}
@@ -217,6 +219,9 @@ theorem map_smul_left (b : B) (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : map (b �
   ext
   simp_rw [curry_apply, TensorProduct.curry_apply, restrictScalars_apply, smul_apply, map_tmul,
     smul_apply, smul_tmul']
+
+/-- The heterobasic version of `map` coincides with the regular version. -/
+theorem map_eq (f : M →ₗ[R] P) (g : N →ₗ[R] Q) : map f g = TensorProduct.map f g := rfl
 
 variable (A M) in
 /-- Heterobasic version of `LinearMap.lTensor` -/
@@ -347,8 +352,8 @@ protected def rid : M ⊗[R] R ≃ₗ[A] M :=
     (LinearMap.ext <| one_smul _)
     (ext fun _ _ => smul_tmul _ _ _ |>.trans <| congr_arg _ <| mul_one _)
 
-theorem rid_eq_rid : AlgebraTensorModule.rid R R M = TensorProduct.rid R M :=
-  LinearEquiv.toLinearMap_injective <| TensorProduct.ext' fun _ _ => rfl
+/-- The heterobasic version of `rid` coincides with the regular version. -/
+theorem rid_eq_rid : AlgebraTensorModule.rid R R M = TensorProduct.rid R M := rfl
 
 variable {R M} in
 @[simp]
@@ -403,6 +408,9 @@ theorem assoc_tmul (m : M) (p : P) (q : Q) :
 theorem assoc_symm_tmul (m : M) (p : P) (q : Q) :
     (assoc R A B M P Q).symm (m ⊗ₜ (p ⊗ₜ q)) = (m ⊗ₜ p) ⊗ₜ q :=
   rfl
+
+/-- The heterobasic version of `assoc` coincides with the regular version. -/
+theorem assoc_eq : assoc R R R M P Q = TensorProduct.assoc R M P Q := rfl
 
 theorem rTensor_tensor [Module R P'] [IsScalarTower R A P'] (g : P →ₗ[A] P') :
     g.rTensor (M ⊗[R] N) =
@@ -465,60 +473,100 @@ theorem leftComm_symm_tmul (m : M) (p : P) (q : Q) :
     (leftComm R A M P Q).symm (p ⊗ₜ (m ⊗ₜ q)) = m ⊗ₜ (p ⊗ₜ q) :=
   rfl
 
+/-- The heterobasic version of `leftComm` coincides with the regular version. -/
+theorem leftComm_eq : leftComm R R M P Q = TensorProduct.leftComm R M P Q := rfl
+
 end leftComm
 
 section rightComm
 
-/-- A tensor product analogue of `mul_right_comm`. -/
-def rightComm : (M ⊗[A] P) ⊗[R] Q ≃ₗ[A] (M ⊗[R] Q) ⊗[A] P :=
+variable [CommSemiring S] [Module S M] [Module S P] [Algebra S B]
+  [IsScalarTower S B M] [SMulCommClass R S M] [SMulCommClass S R M]
+
+variable (S) in
+/-- A tensor product analogue of `mul_right_comm`.
+
+Suppose we have a diagram of algebras `R → B ← S`,
+and a `B`-module `M`, `S`-module `P`, `R`-module `Q`, then
+```
+(M ⊗ˢ P)      ⎛ M ⎞ ⊗ˢ P
+ ⊗ᴿ       ≅ᴮ  ⎜ ⊗ᴿ⎟
+ Q            ⎝ Q ⎠
+```
+-/
+def rightComm : (M ⊗[S] P) ⊗[R] Q ≃ₗ[B] (M ⊗[R] Q) ⊗[S] P :=
   LinearEquiv.ofLinear
-    (lift <| TensorProduct.lift <| LinearMap.flip <|
-      lcurry R A A M Q ((M ⊗[R] Q) ⊗[A] P) ∘ₗ (mk A A (M ⊗[R] Q) P).flip)
-    (TensorProduct.lift <| lift <| LinearMap.flip <|
-      (TensorProduct.lcurry A M P ((M ⊗[A] P) ⊗[R] Q)).restrictScalars R
-        ∘ₗ (mk R A (M ⊗[A] P) Q).flip)
-    -- explicit `Eq.refl`s here help with performance, but also make it clear that the `ext` are
-    -- letting us prove the result as an equality of pure tensors.
-    (TensorProduct.ext <| ext fun m q => LinearMap.ext fun p => Eq.refl <|
-      (m ⊗ₜ[R] q) ⊗ₜ[A] p)
-    (curry_injective <| TensorProduct.ext' fun m p => LinearMap.ext fun q => Eq.refl <|
-      (m ⊗ₜ[A] p) ⊗ₜ[R] q)
+    (lift (lift (LinearMap.lflip ∘ₗ
+      (AlgebraTensorModule.mk _ _ _ _).compr₂ (AlgebraTensorModule.mk _ _ _ _))))
+    (lift (lift (LinearMap.lflip ∘ₗ
+      (AlgebraTensorModule.mk _ _ _ _).compr₂ (AlgebraTensorModule.mk _ _ _ _))))
+    (by ext; simp) (by ext; simp)
 
 variable {M N P Q}
 
 @[simp]
 theorem rightComm_tmul (m : M) (p : P) (q : Q) :
-    rightComm R A M P Q ((m ⊗ₜ p) ⊗ₜ q) = (m ⊗ₜ q) ⊗ₜ p :=
+    rightComm R S B M P Q ((m ⊗ₜ p) ⊗ₜ q) = (m ⊗ₜ q) ⊗ₜ p :=
   rfl
 
 @[simp]
-theorem rightComm_symm_tmul (m : M) (p : P) (q : Q) :
-    (rightComm R A M P Q).symm ((m ⊗ₜ q) ⊗ₜ p) = (m ⊗ₜ p) ⊗ₜ q :=
+theorem rightComm_symm :
+    (rightComm R S B M P Q).symm = rightComm S R B M Q P :=
   rfl
+
+theorem rightComm_symm_tmul (m : M) (p : P) (q : Q) :
+    (rightComm R S B M P Q).symm ((m ⊗ₜ q) ⊗ₜ p) = (m ⊗ₜ p) ⊗ₜ q :=
+  rfl
+
+/-- The heterobasic version of `leftComm` coincides with the regular version. -/
+theorem rightComm_eq [Module R P] : rightComm R R R M P Q = TensorProduct.rightComm R M P Q := rfl
 
 end rightComm
 
 section tensorTensorTensorComm
 variable [Module R P] [IsScalarTower R A P]
 
-/-- Heterobasic version of `tensorTensorTensorComm`. -/
+variable [Algebra A B] [IsScalarTower A B M]
+variable [CommSemiring S] [Algebra R S] [Algebra S B] [Module S M] [Module S N]
+variable [IsScalarTower R S M] [SMulCommClass A S M] [SMulCommClass S A M]
+  [IsScalarTower S B M] [IsScalarTower R S N]
+
+variable (S)
+
+/-- Heterobasic version of `tensorTensorTensorComm`.
+
+Suppose we have towers of algebras `R → S → B` and `R → A → B`, and
+a `B`-module `M`, `S`-module `N`, `A`-module `P`, `R`-module `Q`, then
+```
+(M ⊗ˢ N)      ⎛ M ⎞ ⊗ˢ ⎛ N ⎞
+ ⊗ᴬ       ≅ᴮ  ⎜ ⊗ᴬ⎟    ⎜ ⊗ᴿ⎟
+(P ⊗ᴿ Q)      ⎝ P ⎠    ⎝ Q ⎠
+```
+-/
 def tensorTensorTensorComm :
-    (M ⊗[R] N) ⊗[A] (P ⊗[R] Q) ≃ₗ[A] (M ⊗[A] P) ⊗[R] (N ⊗[R] Q) :=
-(assoc R A A (M ⊗[R] N) P Q).symm
-  ≪≫ₗ congr (rightComm R A M P N).symm (1 : Q ≃ₗ[R] Q)
-  ≪≫ₗ assoc R _ _ (M ⊗[A] P) N Q
+    (M ⊗[S] N) ⊗[A] (P ⊗[R] Q) ≃ₗ[B] (M ⊗[A] P) ⊗[S] (N ⊗[R] Q) :=
+  (assoc R A B (M ⊗[S] N) P Q).symm
+    ≪≫ₗ congr (rightComm A S B M N P) (.refl R Q)
+    ≪≫ₗ assoc R _ _ (M ⊗[A] P) N Q
 
 variable {M N P Q}
 
 @[simp]
 theorem tensorTensorTensorComm_tmul (m : M) (n : N) (p : P) (q : Q) :
-    tensorTensorTensorComm R A M N P Q ((m ⊗ₜ n) ⊗ₜ (p ⊗ₜ q)) = (m ⊗ₜ p) ⊗ₜ (n ⊗ₜ q) :=
+    tensorTensorTensorComm R S A B M N P Q ((m ⊗ₜ n) ⊗ₜ (p ⊗ₜ q)) = (m ⊗ₜ p) ⊗ₜ (n ⊗ₜ q) :=
   rfl
 
 @[simp]
+theorem tensorTensorTensorComm_symm :
+    (tensorTensorTensorComm R S A B M N P Q).symm = tensorTensorTensorComm R A S B M P N Q := rfl
+
 theorem tensorTensorTensorComm_symm_tmul (m : M) (n : N) (p : P) (q : Q) :
-    (tensorTensorTensorComm R A M N P Q).symm ((m ⊗ₜ p) ⊗ₜ (n ⊗ₜ q)) = (m ⊗ₜ n) ⊗ₜ (p ⊗ₜ q) :=
+    (tensorTensorTensorComm R S A B M N P Q).symm ((m ⊗ₜ p) ⊗ₜ (n ⊗ₜ q)) = (m ⊗ₜ n) ⊗ₜ (p ⊗ₜ q) :=
   rfl
+
+/-- The heterobasic version of `tensorTensorTensorComm` coincides with the regular version. -/
+theorem tensorTensorTensorComm_eq :
+    tensorTensorTensorComm R R R R M N P Q = TensorProduct.tensorTensorTensorComm R M N P Q := rfl
 
 end tensorTensorTensorComm
 

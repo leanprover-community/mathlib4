@@ -1263,7 +1263,7 @@ variable {G}
 /-- Given a walk that avoids a set of edges, produce a walk in the graph
 with those edges deleted. -/
 abbrev toDeleteEdges (s : Set (Sym2 V)) {v w : V} (p : G.Walk v w)
-    (hp : ∀ e, e ∈ p.edges → ¬e ∈ s) : (G.deleteEdges s).Walk v w :=
+    (hp : ∀ e, e ∈ p.edges → e ∉ s) : (G.deleteEdges s).Walk v w :=
   p.transfer _ <| by
     simp only [edgeSet_deleteEdges, Set.mem_diff]
     exact fun e ep => ⟨edges_subset_edgeSet p ep, hp e ep⟩

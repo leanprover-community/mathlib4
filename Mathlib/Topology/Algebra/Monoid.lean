@@ -221,7 +221,7 @@ theorem ContinuousMul.of_nhds_one {M : Type u} [Monoid M] [TopologicalSpace M]
         -- Now it fails with `failed to rewrite using equation theorems for 'Function.uncurry'`
         -- and `failed to rewrite using equation theorems for 'Function.comp'`.
         -- Removing those two lemmas, the `rw` would succeed, but then needs a `rfl`.
-        simp (config := { unfoldPartialApp := true }) only [uncurry]
+        simp +unfoldPartialApp only [uncurry]
         simp_rw [hleft x₀, hright y₀, prod_map_map_eq, Filter.map_map, Function.comp_def]
       _ = map ((fun x => x₀ * x) ∘ fun x => x * y₀) (map (uncurry (· * ·)) (𝓝 1 ×ˢ 𝓝 1)) := by
         rw [key, ← Filter.map_map]
@@ -753,7 +753,7 @@ continuous affine addition by constants."]
 instance (priority := 100) IsScalarTower.continuousConstSMul {R A : Type*} [Monoid A] [SMul R A]
     [IsScalarTower R A A] [TopologicalSpace A] [ContinuousMul A] : ContinuousConstSMul R A where
   continuous_const_smul q := by
-    simp (config := { singlePass := true }) only [← smul_one_mul q (_ : A)]
+    simp +singlePass only [← smul_one_mul q (_ : A)]
     exact continuous_const.mul continuous_id
 
 /-- If the action of `R` on `A` commutes with left-multiplication, then continuous multiplication
@@ -767,7 +767,7 @@ Notably, this instances applies when `R = Aᵃᵒᵖ`."]
 instance (priority := 100) SMulCommClass.continuousConstSMul {R A : Type*} [Monoid A] [SMul R A]
     [SMulCommClass R A A] [TopologicalSpace A] [ContinuousMul A] : ContinuousConstSMul R A where
   continuous_const_smul q := by
-    simp (config := { singlePass := true }) only [← mul_smul_one q (_ : A)]
+    simp +singlePass only [← mul_smul_one q (_ : A)]
     exact continuous_id.mul continuous_const
 
 end ContinuousMul

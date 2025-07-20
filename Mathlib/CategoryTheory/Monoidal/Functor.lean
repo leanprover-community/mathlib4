@@ -25,7 +25,8 @@ inverse isomorphisms.
 
 We show that the composition of (lax) monoidal functors gives a (lax) monoidal functor.
 
-See `Mathlib.CategoryTheory.Monoidal.NaturalTransformation` for monoidal natural transformations.
+See `Mathlib/CategoryTheory/Monoidal/NaturalTransformation.lean` for monoidal natural
+transformations.
 
 We show in `Mathlib.CategoryTheory.Monoidal.Mon_` that lax monoidal functors take monoid objects
 to monoid objects.
@@ -57,6 +58,7 @@ namespace Functor
 /-- A functor `F : C ⥤ D` between monoidal categories is lax monoidal if it is
 equipped with morphisms `ε : 𝟙_ D ⟶ F.obj (𝟙_ C)` and `μ X Y : F.obj X ⊗ F.obj Y ⟶ F.obj (X ⊗ Y)`,
 satisfying the appropriate coherences. -/
+@[ext]
 class LaxMonoidal where
   /-- unit morphism -/
   ε' : 𝟙_ D ⟶ F.obj (𝟙_ C)
@@ -240,6 +242,7 @@ end LaxMonoidal
 /-- A functor `F : C ⥤ D` between monoidal categories is oplax monoidal if it is
 equipped with morphisms `η : F.obj (𝟙_ C) ⟶ 𝟙 _D` and `δ X Y : F.obj (X ⊗ Y) ⟶ F.obj X ⊗ F.obj Y`,
 satisfying the appropriate coherences. -/
+@[ext]
 class OplaxMonoidal where
   /-- counit morphism -/
   η' : F.obj (𝟙_ C) ⟶ 𝟙_ D
@@ -374,6 +377,7 @@ open LaxMonoidal OplaxMonoidal
 
 /-- A functor between monoidal categories is monoidal if it is lax and oplax monoidals,
 and both data give inverse isomorphisms. -/
+@[ext]
 class Monoidal extends F.LaxMonoidal, F.OplaxMonoidal where
   ε_η : ε F ≫ η F = 𝟙 _ := by aesop_cat
   η_ε : η F ≫ ε F = 𝟙 _ := by aesop_cat
@@ -525,6 +529,34 @@ instance [F.Monoidal] [G.Monoidal] : (F ⋙ G).Monoidal where
   η_ε := by simp
   μ_δ _ _ := by simp
   δ_μ _ _ := by simp
+
+lemma toLaxMonoidal_injective : Function.Injective
+    (@Monoidal.toLaxMonoidal _ _ _ _ _ _ _ : F.Monoidal → F.LaxMonoidal) := by
+  intro a b eq
+  ext1
+  · exact congr(($eq).ε')
+  · exact congr(($eq).μ')
+  · rw [← cancel_epi (εIso _).hom, ← η, ← η]
+    rw [εIso_hom, ε_η, ← @ε_η _ _ _ _ _ _ _ a, ← εIso_hom]
+    exact congr(($eq.symm).ε' ≫ _)
+  · ext
+    rw [← cancel_epi (μIso F _ _).hom, ← δ, ← δ]
+    rw [μIso_hom, μ_δ, ← @μ_δ _ _ _ _ _ _ _ a, ← μIso_hom]
+    exact congr(($eq.symm).μ' _ _ ≫ _)
+
+lemma toOplaxMonoidal_injective : Function.Injective
+    (@Monoidal.toOplaxMonoidal _ _ _ _ _ _ _ : F.Monoidal → F.OplaxMonoidal) := by
+  intro a b eq
+  ext1
+  · rw [← cancel_mono (εIso _).inv, ← ε, ← ε]
+    rw [εIso_inv, ε_η, ← @ε_η _ _ _ _ _ _ _ a, ← εIso_inv]
+    exact congr(_ ≫ ($eq.symm).η')
+  · ext
+    rw [← cancel_mono (μIso F _ _).inv, ← μ, ← μ]
+    rw [μIso_inv, μ_δ, ← @μ_δ _ _ _ _ _ _ _ a, ← μIso_inv]
+    exact congr(_ ≫ ($eq.symm).δ' _ _)
+  · exact congr(($eq).η')
+  · exact congr(($eq).δ')
 
 end Monoidal
 
@@ -910,7 +942,7 @@ lemma rightAdjointLaxMonoidal_μ (X Y : D) :
     letI := adj.rightAdjointLaxMonoidal
     μ G X Y = adj.homEquiv _ _ (δ F _ _ ≫ (adj.counit.app X ⊗ adj.counit.app Y)) := rfl
 
-/-- When `adj : F ⊣ G` is an adjunction, with `F` oplax monoidal and `G` monoidal,
+/-- When `adj : F ⊣ G` is an adjunction, with `F` oplax monoidal and `G` lax-monoidal,
 this typeclass expresses compatibilities between the adjunction and the (op)lax
 monoidal structures. -/
 class IsMonoidal [G.LaxMonoidal] : Prop where

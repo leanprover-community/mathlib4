@@ -189,7 +189,7 @@ private lemma Alon.of_mem_P_support {ι : Type*} (i : ι) (S : Finset R) (m : ι
     · rw [mapDomain_notin_range, single_eq_of_ne (Ne.symm hj)]
       simp [Set.range_const, Set.mem_singleton_iff, hj]
 
-variable [Fintype σ]
+variable [Finite σ]
 
 open scoped BigOperators
 
@@ -205,9 +205,9 @@ for some `h : σ →₀ MvPolynomial σ R` such that
 theorem combinatorial_nullstellensatz_exists_linearCombination
     [IsDomain R] (S : σ → Finset R) (Sne : ∀ i, (S i).Nonempty)
     (f : MvPolynomial σ R) (Heval : ∀ (x : σ → R), (∀ i, x i ∈ S i) → eval x f = 0) :
-    ∃ (h : σ →₀ MvPolynomial σ R)
-      (_ : ∀ i, ((∏ s ∈ S i, (X i - C s)) * h i).totalDegree ≤ f.totalDegree),
-    f = linearCombination (MvPolynomial σ R) (fun i ↦ ∏ r ∈ S i, (X i - C r)) h := by
+    ∃ (h : σ →₀ MvPolynomial σ R),
+      (∀ i, ((∏ s ∈ S i, (X i - C s)) * h i).totalDegree ≤ f.totalDegree) ∧
+      f = linearCombination (MvPolynomial σ R) (fun i ↦ ∏ r ∈ S i, (X i - C r)) h := by
   letI : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
   obtain ⟨h, r, hf, hh, hr⟩ := degLex.div (b := fun i ↦ Alon.P (S i) i)
       (fun i ↦ by simp only [(Alon.monic_P ..).leadingCoeff_eq_one, isUnit_one]) f

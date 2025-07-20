@@ -31,7 +31,7 @@ structure ContinuousMap (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y] 
   /-- Proposition that `toFun` is continuous -/
   protected continuous_toFun : Continuous toFun := by continuity
 
-/-- The type of continuous maps from `X` to `Y`. -/
+/-- `C(X, Y)` is the type of continuous maps from `X` to `Y`. -/
 notation "C(" X ", " Y ")" => ContinuousMap X Y
 
 section

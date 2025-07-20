@@ -620,7 +620,7 @@ The monoidal category structure on `GradedObject ℕ C` can be inferred
 from the assumptions `[HasFiniteCoproducts C]`,
 `[∀ (X : C), PreservesFiniteCoproducts ((curriedTensor C).obj X)]` and
 `[∀ (X : C), PreservesFiniteCoproducts ((curriedTensor C).flip.obj X)]`.
-This requires importing `Mathlib.CategoryTheory.Limits.Preserves.Finite`.
+This requires importing `Mathlib/CategoryTheory/Limits/Preserves/Finite.lean`.
 -/
 
 end

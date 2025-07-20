@@ -229,6 +229,14 @@ theorem nontrivial_of_univ_nontrivial (h : (univ : Set α).Nontrivial) : Nontriv
 theorem nontrivial_univ_iff : (univ : Set α).Nontrivial ↔ Nontrivial α :=
   ⟨nontrivial_of_univ_nontrivial, fun h => @nontrivial_univ _ h⟩
 
+@[simp]
+theorem singleton_ne_univ [Nontrivial α] (a : α) : {a} ≠ univ :=
+  nonempty_compl.mp (nonempty_compl_of_nontrivial a)
+
+@[simp]
+theorem singleton_ssubset_univ [Nontrivial α] (a : α) : {a} ⊂ univ :=
+  ssubset_univ_iff.mpr <| singleton_ne_univ a
+
 theorem nontrivial_of_nontrivial (hs : s.Nontrivial) : Nontrivial α :=
   let ⟨x, _, y, _, hxy⟩ := hs
   ⟨⟨x, y, hxy⟩⟩

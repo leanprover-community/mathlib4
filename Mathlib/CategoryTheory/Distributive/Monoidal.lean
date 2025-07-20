@@ -50,8 +50,8 @@ pointed types and the coproduct given by the wedge sum is distributive.
 ## References
 
 * [Hans-Joachim Baues, Mamuka Jibladze, Andy Tonks, Cohomology of
-monoids in monoidal categories, in: Operads: Proceedings of Renaissance
-Conferences, Contemporary Mathematics 202, AMS (1997) 137-166][MR1268290]
+  monoids in monoidal categories, in: Operads: Proceedings of Renaissance
+  Conferences, Contemporary Mathematics 202, AMS (1997) 137-166][MR1268290]
 
 -/
 
@@ -159,8 +159,6 @@ namespace Distributive
 notation "∂R" => rightDistrib
 
 end Distributive
-
-open Distributive
 
 lemma IsMonoidalRightDistrib.of_isIso_coprodComparisonTensorRight
     [i : ∀ {X Y Z : C}, IsIso (coprodComparison (tensorRight X) Y Z)] :

@@ -5,6 +5,7 @@ Authors: Joseph Myers
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
 import Mathlib.Algebra.Order.ToIntervalMod
 import Mathlib.Data.Real.Archimedean
 import Mathlib.Tactic.Peel
@@ -25,6 +26,7 @@ First reducing modulo 2, any answer that is not a multiple of 2 is inductively s
 contained in a decreasing sequence of intervals, with empty intersection.
 -/
 
+open Finset
 
 namespace Imo2024Q1
 
@@ -37,10 +39,9 @@ def solutionSet : Set ℝ := {α : ℝ | ∃ m : ℤ, α = 2 * m}
 lemma condition_two_mul_int (m : ℤ) : Condition (2 * m) := by
   rintro n -
   suffices (n : ℤ) ∣ ∑ i ∈ Finset.Icc 0 n, ⌊((i * (2 * m) : ℤ) : ℝ)⌋ by
-    rw [← Nat.Icc_insert_succ_left n.zero_le, Finset.sum_insert_zero (by norm_num)] at this
+    rw [← insert_Icc_add_one_left_eq_Icc n.zero_le, sum_insert_zero (by norm_num)] at this
     exact_mod_cast this
-  simp_rw [Int.floor_intCast, ← Finset.sum_mul, ← Nat.Ico_succ_right, ← Finset.range_eq_Ico,
-           ← mul_assoc]
+  simp_rw [Int.floor_intCast, ← sum_mul, ← Ico_succ_right_eq_Icc, ← range_eq_Ico, ← mul_assoc]
   apply dvd_mul_of_dvd_left
   rw [← Nat.cast_sum, ← Nat.cast_ofNat (n := 2), ← Nat.cast_mul, Finset.sum_range_id_mul_two]
   simp
@@ -109,7 +110,7 @@ lemma mem_Ico_n_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) {n : ℕ} (hn : 0 < n) :
       have hn11 : k + 1 ∉ Finset.Icc 1 k := by
         rw [Finset.mem_Icc]
         omega
-      rw [← Nat.Icc_insert_succ_right (Nat.le_add_left 1 k), Finset.sum_insert hn11, hks]
+      rw [← insert_Icc_right_eq_Icc_add_one (Nat.le_add_left 1 k), sum_insert hn11, hks]
     specialize hc (k + 1) k.succ_pos
     rw [hs] at hc ⊢
     have hkl' : 2 * k ≤ ⌊(k + 1 : ℕ) * α⌋ := by

@@ -8,7 +8,6 @@ import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Order.WithBot
-import Mathlib.Tactic.MinImports
 
 /-! # Adjoining top/bottom elements to ordered monoids.
 -/

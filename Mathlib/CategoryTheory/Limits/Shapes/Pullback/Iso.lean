@@ -111,7 +111,7 @@ theorem hasPullback_of_right_iso : HasPullback f g :=
 
 attribute [local instance] hasPullback_of_right_iso
 
-instance pullback_snd_iso_of_right_iso : IsIso (pullback.fst f g) := by
+instance pullback_fst_iso_of_right_iso : IsIso (pullback.fst f g) := by
   refine ⟨⟨pullback.lift (𝟙 _) (f ≫ inv g) (by simp), ?_, by simp⟩⟩
   ext
   · simp

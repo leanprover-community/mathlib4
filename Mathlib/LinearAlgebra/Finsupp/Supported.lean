@@ -75,6 +75,10 @@ theorem supported_eq_span_single (s : Set α) :
     rw [show single i (l i) = l i • single i 1 by simp [span]]
     exact smul_mem _ (l i) (subset_span (mem_image_of_mem _ (hl il)))
 
+theorem span_le_supported_biUnion_support (s : Set (α →₀ M)) :
+    span R s ≤ supported M R (⋃ x ∈ s, x.support) :=
+  span_le.mpr fun _ h ↦ subset_biUnion_of_mem h (u := (·.support.toSet))
+
 variable (M)
 
 /-- Interpret `Finsupp.filter s` as a linear map from `α →₀ M` to `supported M R s`. -/

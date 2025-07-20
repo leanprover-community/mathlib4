@@ -52,8 +52,8 @@ above version with a sum, as it is simpler and more relevant for algorithms.
 ## TODO
 
 * Specialize this theorem to the very common case where the recurrence is of the form
-`T(n) = ℓT(r_i(n)) + g(n)`
-where `g(n) ∈ Θ(n^t)` for some `t`. (This is often called the "master theorem" in the literature.)
+  `T(n) = ℓT(r_i(n)) + g(n)`
+  where `g(n) ∈ Θ(n^t)` for some `t`. (This is often called the "master theorem" in the literature.)
 * Add the original version of the theorem with an integral instead of a sum.
 
 ## References
@@ -558,7 +558,7 @@ variable (a b) in
 noncomputable irreducible_def p : ℝ := Function.invFun (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) 1
 
 include R in
-@[simp]
+-- Cannot be @[simp] because `T`, `g`, `r`, and `R` can not be inferred by `simp`.
 lemma sumCoeffsExp_p_eq_one : ∑ i, a i * (b i) ^ p a b = 1 := by
   simp only [p]
   exact Function.invFun_eq (by rw [← Set.mem_range]; exact R.one_mem_range_sumCoeffsExp)

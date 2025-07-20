@@ -209,7 +209,7 @@ theorem duplicate_iff_exists_distinct_get {l : List α} {x : α} :
       ∃ (n m : Fin l.length) (_ : n < m),
         x = l.get n ∧ x = l.get m := by
   classical
-    rw [duplicate_iff_two_le_count, le_count_iff_replicate_sublist,
+    rw [duplicate_iff_two_le_count, ← replicate_sublist_iff,
       sublist_iff_exists_fin_orderEmbedding_get_eq]
     constructor
     · rintro ⟨f, hf⟩

@@ -36,7 +36,7 @@ the present file is about their interaction.
 
 
 /-!
-Previously an import dependency on `Mathlib.Algebra.Group.Basic` had crept in.
+Previously an import dependency on `Mathlib/Algebra/Group/Basic.lean` had crept in.
 In general, the `.Defs` files in the basic algebraic hierarchy should only depend on earlier `.Defs`
 files, without importing `.Basic` theory development.
 

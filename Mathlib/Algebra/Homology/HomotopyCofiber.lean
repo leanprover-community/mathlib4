@@ -186,8 +186,7 @@ lemma d_sndX (i j : ι) (hij : c.Rel i j) :
 lemma inlX_d (i j k : ι) (hij : c.Rel i j) (hjk : c.Rel j k) :
     inlX φ j i hij ≫ d φ i j = -F.d j k ≫ inlX φ k j hjk + φ.f j ≫ inrX φ j := by
   apply ext_to_X φ j k hjk
-  · dsimp
-    simp [d_fstX φ  _ _ _ hij hjk]
+  · simp [d_fstX φ  _ _ _ hij hjk]
   · simp [d_sndX φ _ _ hij]
 
 @[reassoc]
@@ -280,7 +279,6 @@ noncomputable def desc :
     else sndX φ j ≫ α.f j
   comm' j k hjk := by
     obtain rfl := c.next_eq' hjk
-    dsimp
     simp [dif_pos hjk]
     have H := hα.comm (c.next j)
     simp only [comp_f, zero_f, add_zero, prevD_eq _ hjk] at H

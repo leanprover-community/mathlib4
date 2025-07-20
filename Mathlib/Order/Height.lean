@@ -196,9 +196,10 @@ theorem chainHeight_image (f : α → β) (hf : ∀ {x y}, x < y ↔ f x < f y) 
       obtain ⟨l', h₁, rfl⟩ := this l hl
       exact ⟨l', h₁, length_map _⟩
     intro l
-    induction' l with x xs hx
-    · exact fun _ ↦ ⟨nil, ⟨trivial, fun x h ↦ (not_mem_nil h).elim⟩, rfl⟩
-    · intro h
+    induction l with
+    | nil => exact fun _ ↦ ⟨nil, ⟨trivial, fun x h ↦ (not_mem_nil h).elim⟩, rfl⟩
+    | cons x xs hx =>
+      intro h
       rw [cons_mem_subchain_iff] at h
       obtain ⟨⟨x, hx', rfl⟩, h₁, h₂⟩ := h
       obtain ⟨l', h₃, rfl⟩ := hx h₁
@@ -271,14 +272,8 @@ theorem chainHeight_insert_of_forall_gt (a : α) (hx : ∀ b ∈ s, a < b) :
     refine ⟨a::l, ⟨?_, ?_⟩, by simp⟩
     · rw [chain'_cons']
       exact ⟨fun y hy ↦ hx _ (hl.2 _ (mem_of_mem_head? hy)), hl.1⟩
-    · -- Porting note: originally this was
-        -- rintro x (rfl | hx)
-        -- exacts [Or.inl (Set.mem_singleton x), Or.inr (hl.2 x hx)]
-      -- but this fails because `List.Mem` is now an inductive prop.
-      -- I couldn't work out how to drive `rcases` here but asked at
-      -- https://leanprover.zulipchat.com/#narrow/stream/348111-std4/topic/rcases.3F/near/347976083
-      rintro x (_ | _)
-      exacts [Or.inl (Set.mem_singleton a), Or.inr (hl.2 x ‹_›)]
+    · rintro x (_ | _)
+      exacts [Or.inl (Set.mem_singleton a), Or.inr (hl.2 x ‹x ∈ l›)]
 
 theorem chainHeight_insert_of_forall_lt (a : α) (ha : ∀ b ∈ s, b < a) :
     (insert a s).chainHeight = s.chainHeight + 1 := by

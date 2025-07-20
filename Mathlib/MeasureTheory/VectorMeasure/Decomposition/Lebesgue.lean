@@ -160,7 +160,7 @@ end
 `rnDeriv s μ` satisfies `μ.withDensityᵥ (s.rnDeriv μ) = s`
 if and only if `s` is absolutely continuous with respect to `μ` and this fact is known as
 `MeasureTheory.SignedMeasure.absolutelyContinuous_iff_withDensity_rnDeriv_eq`
-and can be found in `Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym`. -/
+and can be found in `Mathlib/MeasureTheory/Measure/Decomposition/RadonNikodym.lean`. -/
 def rnDeriv (s : SignedMeasure α) (μ : Measure α) : α → ℝ := fun x =>
   (s.toJordanDecomposition.posPart.rnDeriv μ x).toReal -
     (s.toJordanDecomposition.negPart.rnDeriv μ x).toReal
@@ -243,15 +243,14 @@ theorem toJordanDecomposition_eq_of_eq_add_withDensity {f : α → ℝ} (hf : Me
   simp_rw [JordanDecomposition.toSignedMeasure, hadd]
   ext i hi
   rw [VectorMeasure.sub_apply, toSignedMeasure_apply_measurable hi,
-      toSignedMeasure_apply_measurable hi, add_apply, add_apply, ENNReal.toReal_add,
-      ENNReal.toReal_add, add_sub_add_comm, ← toSignedMeasure_apply_measurable hi,
+      toSignedMeasure_apply_measurable hi, measureReal_add_apply, measureReal_add_apply,
+      add_sub_add_comm, ← toSignedMeasure_apply_measurable hi,
       ← toSignedMeasure_apply_measurable hi, ← VectorMeasure.sub_apply,
       ← JordanDecomposition.toSignedMeasure, toSignedMeasure_toJordanDecomposition,
       VectorMeasure.add_apply, ← toSignedMeasure_apply_measurable hi,
       ← toSignedMeasure_apply_measurable hi,
       withDensityᵥ_eq_withDensity_pos_part_sub_withDensity_neg_part hfi,
-      VectorMeasure.sub_apply] <;>
-    exact (measure_lt_top _ _).ne
+      VectorMeasure.sub_apply]
 
 private theorem haveLebesgueDecomposition_mk' (μ : Measure α) {f : α → ℝ} (hf : Measurable f)
     (hfi : Integrable f μ) (htμ : t ⟂ᵥ μ.toENNRealVectorMeasure) (hadd : s = t + μ.withDensityᵥ f) :

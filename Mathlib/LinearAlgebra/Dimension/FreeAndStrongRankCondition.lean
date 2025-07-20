@@ -3,8 +3,8 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.LinearAlgebra.Dimension.Finite
 import Mathlib.LinearAlgebra.Dimension.Constructions
+import Mathlib.LinearAlgebra.Dimension.Subsingleton
 
 /-!
 
@@ -222,7 +222,7 @@ theorem lift_cardinalMk_eq_lift_cardinalMk_field_pow_lift_rank [Module.Free K V]
   -- `Module.Finite.finite_basis` is in a much later file, so we copy its proof to here
   haveI : Finite s := by
     obtain ⟨t, ht⟩ := ‹Module.Finite K V›
-    exact basis_finite_of_finite_spans _ t.finite_toSet ht hs
+    exact basis_finite_of_finite_spans t.finite_toSet ht hs
   have := lift_mk_eq'.2 ⟨hs.repr.toEquiv⟩
   rwa [Finsupp.equivFunOnFinite.cardinal_eq, mk_arrow, hs.mk_eq_rank'', lift_power, lift_lift,
     lift_lift, lift_umax] at this

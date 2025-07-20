@@ -9,7 +9,6 @@ import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Group.Units.Defs
 import Mathlib.Data.Subtype
 import Mathlib.Tactic.Conv
-import Mathlib.Tactic.MinImports
 
 /-!
 # Idempotents

@@ -167,10 +167,10 @@ theorem degree_eq_one_of_irreducible [IsAlgClosed k] {p : k[X]} (hp : Irreducibl
     p.degree = 1 :=
   degree_eq_one_of_irreducible_of_splits hp (IsAlgClosed.splits_codomain _)
 
-theorem algebraMap_surjective_of_isIntegral {k K : Type*} [Field k] [Ring K] [IsDomain K]
+theorem algebraMap_bijective_of_isIntegral {k K : Type*} [Field k] [Ring K] [IsDomain K]
     [hk : IsAlgClosed k] [Algebra k K] [Algebra.IsIntegral k K] :
-    Function.Surjective (algebraMap k K) := by
-  refine fun x => ⟨-(minpoly k x).coeff 0, ?_⟩
+    Function.Bijective (algebraMap k K) := by
+  refine ⟨RingHom.injective _, fun x ↦ ⟨-(minpoly k x).coeff 0, ?_⟩⟩
   have hq : (minpoly k x).leadingCoeff = 1 := minpoly.monic (Algebra.IsIntegral.isIntegral x)
   have h : (minpoly k x).degree = 1 := degree_eq_one_of_irreducible k (minpoly.irreducible
     (Algebra.IsIntegral.isIntegral x))
@@ -179,11 +179,16 @@ theorem algebraMap_surjective_of_isIntegral {k K : Type*} [Field k] [Ring K] [Is
     add_eq_zero_iff_eq_neg] at this
   exact (RingHom.map_neg (algebraMap k K) ((minpoly k x).coeff 0)).symm ▸ this.symm
 
-theorem algebraMap_surjective_of_isIntegral' {k K : Type*} [Field k] [CommRing K] [IsDomain K]
-    [IsAlgClosed k] (f : k →+* K) (hf : f.IsIntegral) : Function.Surjective f :=
+theorem ringHom_bijective_of_isIntegral {k K : Type*} [Field k] [CommRing K] [IsDomain K]
+    [IsAlgClosed k] (f : k →+* K) (hf : f.IsIntegral) : Function.Bijective f :=
   let _ : Algebra k K := f.toAlgebra
   have : Algebra.IsIntegral k K := ⟨hf⟩
-  algebraMap_surjective_of_isIntegral
+  algebraMap_bijective_of_isIntegral
+
+@[deprecated "ringHom_bijective_of_isIntegral" (since := "2025-04-16")]
+theorem algebraMap_surjective_of_isIntegral' {k K : Type*} [Field k] [CommRing K] [IsDomain K]
+    [IsAlgClosed k] (f : k →+* K) (hf : f.IsIntegral) : Function.Surjective f :=
+  (ringHom_bijective_of_isIntegral f hf).surjective
 
 end IsAlgClosed
 
@@ -195,7 +200,7 @@ This statement is 09GR (4) ⟹ (1)."]
 theorem IntermediateField.eq_bot_of_isAlgClosed_of_isAlgebraic {k K : Type*} [Field k] [Field K]
     [IsAlgClosed k] [Algebra k K] (L : IntermediateField k K) [Algebra.IsAlgebraic k L] :
     L = ⊥ := bot_unique fun x hx ↦ by
-  obtain ⟨y, hy⟩ := IsAlgClosed.algebraMap_surjective_of_isIntegral (k := k) (⟨x, hx⟩ : L)
+  obtain ⟨y, hy⟩ := (IsAlgClosed.algebraMap_bijective_of_isIntegral (k := k)).2 (⟨x, hx⟩ : L)
   exact ⟨y, congr_arg (algebraMap L K) hy⟩
 
 lemma Polynomial.isCoprime_iff_aeval_ne_zero_of_isAlgClosed (K : Type v) [Field K] [IsAlgClosed K]

@@ -3,6 +3,7 @@ Copyright (c) 2023 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
+import Mathlib.Algebra.Group.Torsion
 import Mathlib.Algebra.Polynomial.Smeval
 import Mathlib.Algebra.Ring.NegOnePow
 import Mathlib.Data.NNRat.Order
@@ -52,10 +53,10 @@ of cardinality `n`.
 Further results in Elliot's paper:
 * A CommRing is binomial if and only if it admits a λ-ring structure with trivial Adams operations.
 * The free commutative binomial ring on a set `X` is the ring of integer-valued polynomials in the
-variables `X`.  (also, noncommutative version?)
+  variables `X`.  (also, noncommutative version?)
 * Given a commutative binomial ring `A` and an `A`-algebra `B` that is complete with respect to an
-ideal `I`, formal exponentiation induces an `A`-module structure on the multiplicative subgroup
-`1 + I`.
+  ideal `I`, formal exponentiation induces an `A`-module structure on the multiplicative subgroup
+  `1 + I`.
 
 -/
 section Multichoose
@@ -66,9 +67,7 @@ open Function Polynomial
 suitable factorials. We define this notion as a mixin for additive commutative monoids with natural
 number powers, but retain the ring name. We introduce `Ring.multichoose` as the uniquely defined
 quotient. -/
-class BinomialRing (R : Type*) [AddCommMonoid R] [Pow R ℕ] where
-  /-- Scalar multiplication by positive integers is injective -/
-  nsmul_right_injective {n : ℕ} (h : n ≠ 0) : Injective (n • · : R → R)
+class BinomialRing (R : Type*) [AddCommMonoid R] [Pow R ℕ] extends IsAddTorsionFree R where
   /-- A multichoose function, giving the quotient of Pochhammer evaluations by factorials. -/
   multichoose : R → ℕ → R
   /-- The `n`th ascending Pochhammer polynomial evaluated at any element is divisible by `n!` -/
@@ -79,11 +78,8 @@ namespace Ring
 
 variable {R : Type*} [AddCommMonoid R] [Pow R ℕ] [BinomialRing R]
 
-theorem nsmul_right_injective {n : ℕ} (h : n ≠ 0) :
-    Injective (n • · : R → R) := BinomialRing.nsmul_right_injective h
-
-theorem nsmul_right_inj {n : ℕ} (h : n ≠ 0) {a b : R} : n • a = n • b ↔ a = b :=
-  (nsmul_right_injective h).eq_iff
+@[deprecated (since := "2025-03-15")] protected alias nsmul_right_injective := nsmul_right_injective
+@[deprecated (since := "2025-03-15")] protected alias nsmul_right_inj := nsmul_right_inj
 
 /-- The multichoose function is the quotient of ascending Pochhammer evaluation by the corresponding
 factorial. When applied to natural numbers, `multichoose k n` describes choosing a multiset of `n`
@@ -226,7 +222,7 @@ section Basic_Instances
 open Polynomial
 
 instance Nat.instBinomialRing : BinomialRing ℕ where
-  nsmul_right_injective hn _ _ hrs := Nat.eq_of_mul_eq_mul_left (Nat.pos_of_ne_zero hn) hrs
+  nsmul_right_injective n hn _ _ := Nat.eq_of_mul_eq_mul_left (by omega)
   multichoose := Nat.multichoose
   factorial_nsmul_multichoose r n := by
     rw [smul_eq_mul, Nat.multichoose_eq r n, ← Nat.descFactorial_eq_factorial_mul_choose,
@@ -239,7 +235,7 @@ def Int.multichoose (n : ℤ) (k : ℕ) : ℤ :=
   | negSucc n => Int.negOnePow k * Nat.choose (n + 1) k
 
 instance Int.instBinomialRing : BinomialRing ℤ where
-  nsmul_right_injective hn _ _ hrs := Int.eq_of_mul_eq_mul_left (Int.ofNat_ne_zero.mpr hn) hrs
+  nsmul_right_injective n hn _ _ := Int.eq_of_mul_eq_mul_left (by omega)
   multichoose := Int.multichoose
   factorial_nsmul_multichoose r k := by
     rw [Int.multichoose.eq_def, nsmul_eq_mul]
@@ -426,7 +422,7 @@ theorem descPochhammer_succ_succ_smeval {R} [NonAssocRing R] [Pow R ℕ] [NatPow
   simp only [smeval_comp, smeval_sub, smeval_add, smeval_mul, smeval_X, smeval_one, npow_one,
     npow_zero, one_smul, add_sub_cancel_right, sub_mul, add_mul, add_smul, one_mul]
   rw [← C_eq_natCast, smeval_C, npow_zero, add_comm (k • smeval (descPochhammer ℤ k) r) _,
-    add_assoc, add_comm (k • smeval (descPochhammer ℤ k) r) _, ← add_assoc,  ← add_sub_assoc,
+    add_assoc, add_comm (k • smeval (descPochhammer ℤ k) r) _, ← add_assoc, ← add_sub_assoc,
     nsmul_eq_mul, zsmul_one, Int.cast_natCast, sub_add_cancel, add_comm]
 
 theorem choose_succ_succ [NatPowAssoc R] (r : R) (k : ℕ) :
@@ -466,7 +462,7 @@ end
 open Finset
 
 /-- Pochhammer version of Chu-Vandermonde identity -/
-theorem descPochhammer_smeval_add [Ring R] {r s : R} (k : ℕ) (h: Commute r s) :
+theorem descPochhammer_smeval_add [Ring R] {r s : R} (k : ℕ) (h : Commute r s) :
     (descPochhammer ℤ k).smeval (r + s) = ∑ ij ∈ antidiagonal k,
     Nat.choose k ij.1 * ((descPochhammer ℤ ij.1).smeval r * (descPochhammer ℤ ij.2).smeval s) := by
   induction k with

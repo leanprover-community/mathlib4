@@ -409,8 +409,9 @@ theorem mvPolynomial_aeval_of_surjective_of_closure [AddCommMonoid M] [CommSemir
     Function.Surjective
       (MvPolynomial.aeval fun s : S => of' R M ↑s : MvPolynomial S R → R[M]) := by
   intro f
-  induction' f using induction_on with m f g ihf ihg r f ih
-  · have : m ∈ closure S := hS.symm ▸ mem_top _
+  induction f using induction_on with
+  | hM m =>
+    have : m ∈ closure S := hS.symm ▸ mem_top _
     refine AddSubmonoid.closure_induction (fun m hm => ?_) ?_ ?_ this
     · exact ⟨MvPolynomial.X ⟨m, hm⟩, MvPolynomial.aeval_X _ _⟩
     · exact ⟨1, map_one _⟩
@@ -419,10 +420,12 @@ theorem mvPolynomial_aeval_of_surjective_of_closure [AddCommMonoid M] [CommSemir
         ⟨P₁ * P₂, by
           rw [map_mul, hP₁, hP₂, of_apply, of_apply, of_apply, single_mul_single,
             one_mul]; rfl⟩
-  · rcases ihf with ⟨P, rfl⟩
+  | hadd f g ihf ihg =>
+    rcases ihf with ⟨P, rfl⟩
     rcases ihg with ⟨Q, rfl⟩
     exact ⟨P + Q, map_add _ _ _⟩
-  · rcases ih with ⟨P, rfl⟩
+  | hsmul r f ih =>
+    rcases ih with ⟨P, rfl⟩
     exact ⟨r • P, map_smul _ _ _⟩
 
 variable [AddMonoid M]
@@ -434,8 +437,9 @@ theorem freeAlgebra_lift_of_surjective_of_closure [CommSemiring R] {S : Set M}
     Function.Surjective
       (FreeAlgebra.lift R fun s : S => of' R M ↑s : FreeAlgebra R S → R[M]) := by
   intro f
-  induction' f using induction_on with m f g ihf ihg r f ih
-  · have : m ∈ closure S := hS.symm ▸ mem_top _
+  induction f using induction_on with
+  | hM m =>
+    have : m ∈ closure S := hS.symm ▸ mem_top _
     refine AddSubmonoid.closure_induction (fun m hm => ?_) ?_ ?_ this
     · exact ⟨FreeAlgebra.ι R ⟨m, hm⟩, FreeAlgebra.lift_ι_apply _ _⟩
     · exact ⟨1, map_one _⟩
@@ -444,10 +448,12 @@ theorem freeAlgebra_lift_of_surjective_of_closure [CommSemiring R] {S : Set M}
         ⟨P₁ * P₂, by
           rw [map_mul, hP₁, hP₂, of_apply, of_apply, of_apply, single_mul_single,
             one_mul]; rfl⟩
-  · rcases ihf with ⟨P, rfl⟩
+  | hadd f g ihf ihg =>
+    rcases ihf with ⟨P, rfl⟩
     rcases ihg with ⟨Q, rfl⟩
     exact ⟨P + Q, map_add _ _ _⟩
-  · rcases ih with ⟨P, rfl⟩
+  | hsmul r f ih =>
+    rcases ih with ⟨P, rfl⟩
     exact ⟨r • P, map_smul _ _ _⟩
 
 variable (R M)
@@ -578,8 +584,9 @@ theorem mvPolynomial_aeval_of_surjective_of_closure [CommMonoid M] [CommSemiring
     Function.Surjective
       (MvPolynomial.aeval fun s : S => of R M ↑s : MvPolynomial S R → MonoidAlgebra R M) := by
   intro f
-  induction' f using induction_on with m f g ihf ihg r f ih
-  · have : m ∈ closure S := hS.symm ▸ mem_top _
+  induction f using induction_on with
+  | hM m =>
+    have : m ∈ closure S := hS.symm ▸ mem_top _
     refine Submonoid.closure_induction (fun m hm => ?_) ?_ ?_ this
     · exact ⟨MvPolynomial.X ⟨m, hm⟩, MvPolynomial.aeval_X _ _⟩
     · exact ⟨1, map_one _⟩
@@ -587,9 +594,11 @@ theorem mvPolynomial_aeval_of_surjective_of_closure [CommMonoid M] [CommSemiring
       exact
         ⟨P₁ * P₂, by
           rw [map_mul, hP₁, hP₂, of_apply, of_apply, of_apply, single_mul_single, one_mul]⟩
-  · rcases ihf with ⟨P, rfl⟩; rcases ihg with ⟨Q, rfl⟩
+  | hadd f g ihf ihg =>
+    rcases ihf with ⟨P, rfl⟩; rcases ihg with ⟨Q, rfl⟩
     exact ⟨P + Q, map_add _ _ _⟩
-  · rcases ih with ⟨P, rfl⟩
+  | hsmul r f ih =>
+    rcases ih with ⟨P, rfl⟩
     exact ⟨r • P, map_smul _ _ _⟩
 
 
@@ -602,8 +611,9 @@ theorem freeAlgebra_lift_of_surjective_of_closure [CommSemiring R] {S : Set M}
     Function.Surjective
       (FreeAlgebra.lift R fun s : S => of R M ↑s : FreeAlgebra R S → MonoidAlgebra R M) := by
   intro f
-  induction' f using induction_on with m f g ihf ihg r f ih
-  · have : m ∈ closure S := hS.symm ▸ mem_top _
+  induction f using induction_on with
+  | hM m =>
+    have : m ∈ closure S := hS.symm ▸ mem_top _
     refine Submonoid.closure_induction (fun m hm => ?_) ?_ ?_ this
     · exact ⟨FreeAlgebra.ι R ⟨m, hm⟩, FreeAlgebra.lift_ι_apply _ _⟩
     · exact ⟨1, map_one _⟩
@@ -611,10 +621,12 @@ theorem freeAlgebra_lift_of_surjective_of_closure [CommSemiring R] {S : Set M}
       exact
         ⟨P₁ * P₂, by
           rw [map_mul, hP₁, hP₂, of_apply, of_apply, of_apply, single_mul_single, one_mul]⟩
-  · rcases ihf with ⟨P, rfl⟩
+  | hadd f g ihf ihg =>
+    rcases ihf with ⟨P, rfl⟩
     rcases ihg with ⟨Q, rfl⟩
     exact ⟨P + Q, map_add _ _ _⟩
-  · rcases ih with ⟨P, rfl⟩
+  | hsmul r f ih =>
+    rcases ih with ⟨P, rfl⟩
     exact ⟨r • P, map_smul _ _ _⟩
 
 /-- If a monoid `M` is finitely generated then `MonoidAlgebra R M` is of finite type. -/

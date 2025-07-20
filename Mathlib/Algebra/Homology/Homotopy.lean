@@ -341,14 +341,14 @@ the degreewise morphisms induced by the null homotopic maps constructed
 with `nullHomotopicMap` or `nullHomotopicMap'` -/
 
 
-@[simp]
+-- Cannot be @[simp] because `k₀` and `k₂` can not be inferred by `simp`.
 theorem nullHomotopicMap_f {k₂ k₁ k₀ : ι} (r₂₁ : c.Rel k₂ k₁) (r₁₀ : c.Rel k₁ k₀)
     (hom : ∀ i j, C.X i ⟶ D.X j) :
     (nullHomotopicMap hom).f k₁ = C.d k₁ k₀ ≫ hom k₀ k₁ + hom k₁ k₂ ≫ D.d k₂ k₁ := by
   dsimp only [nullHomotopicMap]
   rw [dNext_eq hom r₁₀, prevD_eq hom r₂₁]
 
-@[simp]
+-- Cannot be @[simp] because `k₀` and `k₂` can not be inferred by `simp`.
 theorem nullHomotopicMap'_f {k₂ k₁ k₀ : ι} (r₂₁ : c.Rel k₂ k₁) (r₁₀ : c.Rel k₁ k₀)
     (h : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) :
     (nullHomotopicMap' h).f k₁ = C.d k₁ k₀ ≫ h k₀ k₁ r₁₀ + h k₁ k₂ r₂₁ ≫ D.d k₂ k₁ := by
@@ -357,7 +357,7 @@ theorem nullHomotopicMap'_f {k₂ k₁ k₀ : ι} (r₂₁ : c.Rel k₂ k₁) (r
   split_ifs
   rfl
 
-@[simp]
+-- Cannot be @[simp] because `k₁` can not be inferred by `simp`.
 theorem nullHomotopicMap_f_of_not_rel_left {k₁ k₀ : ι} (r₁₀ : c.Rel k₁ k₀)
     (hk₀ : ∀ l : ι, ¬c.Rel k₀ l) (hom : ∀ i j, C.X i ⟶ D.X j) :
     (nullHomotopicMap hom).f k₀ = hom k₀ k₁ ≫ D.d k₁ k₀ := by
@@ -365,7 +365,7 @@ theorem nullHomotopicMap_f_of_not_rel_left {k₁ k₀ : ι} (r₁₀ : c.Rel k�
   rw [prevD_eq hom r₁₀, dNext, AddMonoidHom.mk'_apply, C.shape, zero_comp, zero_add]
   exact hk₀ _
 
-@[simp]
+-- Cannot be @[simp] because `k₁` can not be inferred by `simp`.
 theorem nullHomotopicMap'_f_of_not_rel_left {k₁ k₀ : ι} (r₁₀ : c.Rel k₁ k₀)
     (hk₀ : ∀ l : ι, ¬c.Rel k₀ l) (h : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) :
     (nullHomotopicMap' h).f k₀ = h k₀ k₁ r₁₀ ≫ D.d k₁ k₀ := by
@@ -374,7 +374,7 @@ theorem nullHomotopicMap'_f_of_not_rel_left {k₁ k₀ : ι} (r₁₀ : c.Rel k�
   split_ifs
   rfl
 
-@[simp]
+-- Cannot be @[simp] because `k₀` can not be inferred by `simp`.
 theorem nullHomotopicMap_f_of_not_rel_right {k₁ k₀ : ι} (r₁₀ : c.Rel k₁ k₀)
     (hk₁ : ∀ l : ι, ¬c.Rel l k₁) (hom : ∀ i j, C.X i ⟶ D.X j) :
     (nullHomotopicMap hom).f k₁ = C.d k₁ k₀ ≫ hom k₀ k₁ := by
@@ -382,7 +382,7 @@ theorem nullHomotopicMap_f_of_not_rel_right {k₁ k₀ : ι} (r₁₀ : c.Rel k�
   rw [dNext_eq hom r₁₀, prevD, AddMonoidHom.mk'_apply, D.shape, comp_zero, add_zero]
   exact hk₁ _
 
-@[simp]
+-- Cannot be @[simp] because `k₀` can not be inferred by `simp`.
 theorem nullHomotopicMap'_f_of_not_rel_right {k₁ k₀ : ι} (r₁₀ : c.Rel k₁ k₀)
     (hk₁ : ∀ l : ι, ¬c.Rel l k₁) (h : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) :
     (nullHomotopicMap' h).f k₁ = C.d k₁ k₀ ≫ h k₀ k₁ r₁₀ := by
@@ -793,8 +793,7 @@ noncomputable def Homotopy.toShortComplex (ho : Homotopy f g) (i : ι) :
       rw [L.shape _ _ h, comp_zero]
   g_h₃ := by
     split_ifs with h
-    · dsimp
-      simp
+    · simp
     · dsimp
       rw [K.shape _ _ h, zero_comp]
   comm₁ := by

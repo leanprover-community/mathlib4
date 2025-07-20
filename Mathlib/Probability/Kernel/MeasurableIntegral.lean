@@ -101,7 +101,7 @@ theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄
         apply (hfx.norm.add hfx.norm).mono' (s' n x).aestronglyMeasurable
         filter_upwards with y
         simp_rw [s', SimpleFunc.coe_comp]; exact SimpleFunc.norm_approxOn_zero_le _ _ (x, y) n
-      simp only [f',  hfx, SimpleFunc.integral_eq_integral _ (this _), indicator_of_mem,
+      simp only [f', hfx, SimpleFunc.integral_eq_integral _ (this _), indicator_of_mem,
         mem_setOf_eq]
       refine
         tendsto_integral_of_dominated_convergence (fun y => ‖f x y‖ + ‖f x y‖)

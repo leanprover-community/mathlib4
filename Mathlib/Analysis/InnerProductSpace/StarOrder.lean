@@ -32,7 +32,7 @@ lemma IsPositive.spectrumRestricts {f : H →L[𝕜] H} (hf : f.IsPositive) :
   rw [SpectrumRestricts.nnreal_iff]
   intro c hc
   contrapose! hc
-  rw [spectrum.not_mem_iff, IsUnit.sub_iff, sub_eq_add_neg, ← map_neg]
+  rw [spectrum.notMem_iff, IsUnit.sub_iff, sub_eq_add_neg, ← map_neg]
   rw [← neg_pos] at hc
   set c := -c
   exact isUnit_of_forall_le_norm_inner_map _ (c := ⟨c, hc.le⟩) hc fun x ↦ calc

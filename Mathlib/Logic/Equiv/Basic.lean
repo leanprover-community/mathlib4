@@ -151,6 +151,10 @@ def piCongrRight {β₁ β₂ : α → Sort*} (F : ∀ a, β₁ a ≃ β₂ a) :
   ⟨Pi.map fun a ↦ F a, Pi.map fun a ↦ (F a).symm, fun H => funext <| by simp,
     fun H => funext <| by simp⟩
 
+@[simp]
+lemma piCongrRight_refl {β : α → Sort*} : piCongrRight (fun a ↦ .refl (β a)) = .refl (∀ a, β a) :=
+  rfl
+
 /-- Given `φ : α → β → Sort*`, we have an equivalence between `∀ a b, φ a b` and `∀ b a, φ a b`.
 This is `Function.swap` as an `Equiv`. -/
 @[simps apply]
@@ -429,6 +433,70 @@ def subtypePiEquivPi {β : α → Sort v} {p : ∀ a, β a → Prop} :
     funext a
     exact Subtype.ext_val rfl
 
+/-- A sigma of a sigma whose second base does not depend on the first is equivalent
+to a sigma whose base is a product. -/
+@[simps!]
+def sigmaAssocProd {α β : Type*} {γ : α → β → Type*} :
+    (ab : α × β) × γ ab.1 ab.2 ≃ (a : α) × (b : β) × γ a b :=
+  sigmaCongrLeft' (sigmaEquivProd _ _).symm |>.trans <| sigmaAssoc γ
+
+/-- A subtype of a sigma which pins down the base of the sigma is equivalent to
+the respective fiber. -/
+@[simps]
+def sigmaSubtype {α : Type*} {β : α → Type*} (a : α) :
+    {s : Sigma β // s.1 = a} ≃ β a where
+  toFun := fun ⟨⟨_, b⟩, h⟩ => h ▸ b
+  invFun b := ⟨⟨a, b⟩, rfl⟩
+  left_inv := fun ⟨a, h⟩ ↦ by cases h; simp
+  right_inv b := by simp
+
+
+section
+attribute [local simp] Trans.trans sigmaAssoc subtypeSigmaEquiv uniqueSigma eqRec_eq_cast
+
+/-- A subtype of a dependent triple which pins down both bases is equivalent to the
+respective fiber. -/
+@[simps! +simpRhs apply]
+def sigmaSigmaSubtype {α : Type*} {β : α → Type*} {γ : (a : α) → β a → Type*}
+    (p : (a : α) × β a → Prop) [uniq : Unique {ab // p ab}] {a : α} {b : β a} (h : p ⟨a, b⟩) :
+    {s : (a : α) × (b : β a) × γ a b // p ⟨s.1, s.2.1⟩} ≃ γ a b :=
+  calc {s : (a : α) × (b : β a) × γ a b // p ⟨s.1, s.2.1⟩}
+  _ ≃ _ := subtypeEquiv (p := fun ⟨a, b, c⟩ ↦ p ⟨a, b⟩) (q := (p ·.1))
+    (sigmaAssoc γ).symm fun s ↦ by simp [sigmaAssoc]
+  _ ≃ _ := subtypeSigmaEquiv _ _
+  _ ≃ _ := uniqueSigma (fun ab ↦ γ (Sigma.fst <| Subtype.val ab) (Sigma.snd <| Subtype.val ab))
+  _ ≃ γ a b := Equiv.cast <| by rw [← show ⟨⟨a, b⟩, h⟩ = uniq.default from uniq.uniq _]
+
+@[simp]
+lemma sigmaSigmaSubtype_symm_apply {α : Type*} {β : α → Type*} {γ : (a : α) → β a → Type*}
+    (p : (a : α) × β a → Prop) [uniq : Unique {ab // p ab}]
+    {a : α} {b : β a} (c : γ a b) (h : p ⟨a, b⟩) :
+    (sigmaSigmaSubtype p h).symm c = ⟨⟨a, ⟨b, c⟩⟩, h⟩ := by
+  rw [Equiv.symm_apply_eq]; simp
+
+/-- A specialization of `sigmaSigmaSubtype` to the case where the second base
+does not depend on the first, and the property being checked for is simple
+equality. Useful e.g. when `γ` is `Hom` inside a category. -/
+def sigmaSigmaSubtypeEq {α β : Type*} {γ : α → β → Type*} (a : α) (b : β) :
+    {s : (a : α) × (b : β) × γ a b // s.1 = a ∧ s.2.1 = b} ≃ γ a b :=
+  have : Unique (@Subtype ((_ : α) × β) (fun ⟨a', b'⟩ ↦ a' = a ∧ b' = b)) := {
+    default := ⟨⟨a, b⟩, ⟨rfl, rfl⟩⟩
+    uniq := by rintro ⟨⟨a', b'⟩, ⟨rfl, rfl⟩⟩; rfl }
+  sigmaSigmaSubtype (fun ⟨a', b'⟩ ↦ a' = a ∧ b' = b) ⟨rfl, rfl⟩
+
+@[simp]
+lemma sigmaSigmaSubtypeEq_apply {α β : Type*} {γ : α → β → Type*} {a : α} {b : β}
+    (s: {s : (a : α) × (b : β) × γ a b // s.1 = a ∧ s.2.1 = b}) :
+    sigmaSigmaSubtypeEq a b s = cast (congrArg₂ γ s.2.1 s.2.2) s.1.2.2 := by
+  simp [sigmaSigmaSubtypeEq]
+
+@[simp]
+lemma sigmaSigmaSubtypeEq_symm_apply {α β : Type*} {γ : α → β → Type*} {a : α} {b : β} (c : γ a b) :
+    (sigmaSigmaSubtypeEq a b).symm c = ⟨⟨a, ⟨b, c⟩⟩, ⟨rfl, rfl⟩⟩ := by
+  simp [sigmaSigmaSubtypeEq]
+
+end
+
 end
 
 section subtypeEquivCodomain
@@ -655,10 +723,8 @@ theorem apply_swap_eq_self {v : α → β} {i j : α} (hv : v i = v j) (k : α) 
     v (swap i j k) = v k := by
   by_cases hi : k = i
   · rw [hi, swap_apply_left, hv]
-
   by_cases hj : k = j
   · rw [hj, swap_apply_right, hv]
-
   rw [swap_apply_of_ne_of_ne hi hj]
 
 theorem swap_apply_eq_iff {x y z w : α} : swap x y z = w ↔ z = swap x y w := by
@@ -667,13 +733,10 @@ theorem swap_apply_eq_iff {x y z w : α} : swap x y z = w ↔ z = swap x y w := 
 theorem swap_apply_ne_self_iff {a b x : α} : swap a b x ≠ x ↔ a ≠ b ∧ (x = a ∨ x = b) := by
   by_cases hab : a = b
   · simp [hab]
-
   by_cases hax : x = a
   · simp [hax, eq_comm]
-
   by_cases hbx : x = b
   · simp [hbx]
-
   simp [hab, hax, hbx, swap_apply_of_ne_of_ne]
 
 namespace Perm
@@ -694,7 +757,6 @@ theorem sumCongr_refl_swap {α β : Sort _} [DecidableEq α] [DecidableEq β] (i
   ext x
   cases x
   · simp [Sum.map, swap_apply_of_ne_of_ne]
-
   · simp only [Equiv.sumCongr_apply, Sum.map, coe_refl, comp_id, Sum.elim_inr, comp_apply,
       swap_apply_def, Sum.inr.injEq]
     split_ifs <;> rfl
@@ -783,6 +845,9 @@ lemma piCongrLeft'_symm_apply_apply (P : α → Sort*) (e : α ≃ β) (g : ∀ 
   rw [piCongrLeft'_symm_apply, ← heq_iff_eq, rec_heq_iff_heq]
   exact congr_arg_heq _ (e.apply_symm_apply _)
 
+@[simp]
+lemma piCongrLeft'_refl (P : α → Sort*) : piCongrLeft' P (.refl α) = .refl (∀ a, P a) := rfl
+
 end
 
 section
@@ -798,7 +863,6 @@ def piCongrLeft : (∀ a, P (e a)) ≃ ∀ b, P b :=
 /-- Note: the "obvious" statement `(piCongrLeft P e) f b = f (e.symm b)` doesn't typecheck: the
 LHS would have type `P b` while the RHS would have type `P (e (e.symm b))`. For that reason,
 we have to explicitly substitute along `e (e.symm b) = b` in the statement of this lemma. -/
-@[simp]
 lemma piCongrLeft_apply (f : ∀ a, P (e a)) (b : β) :
     (piCongrLeft P e) f b = e.apply_symm_apply b ▸ f (e.symm b) :=
   rfl
@@ -808,10 +872,15 @@ lemma piCongrLeft_symm_apply (g : ∀ b, P b) (a : α) :
     (piCongrLeft P e).symm g a = g (e a) :=
   piCongrLeft'_apply P e.symm g a
 
+@[simp]
+lemma piCongrLeft_refl (P : α → Sort*) : piCongrLeft P (.refl α) = .refl (∀ a, P a) :=
+  rfl
+
 /-- Note: the "obvious" statement `(piCongrLeft P e) f b = f (e.symm b)` doesn't typecheck: the
 LHS would have type `P b` while the RHS would have type `P (e (e.symm b))`. This lemma is a way
 around it in the case where `b` is of the form `e a`, so we can use `f a` instead of
 `f (e.symm (e a))`. -/
+@[simp]
 lemma piCongrLeft_apply_apply (f : ∀ a, P (e a)) (a : α) :
     (piCongrLeft P e) f (e a) = f a :=
   piCongrLeft'_symm_apply_apply P e.symm f a
@@ -856,6 +925,7 @@ theorem coe_piCongr_symm : ((h₁.piCongr h₂).symm :
     (∀ b, Z b) → ∀ a, W a) = fun f a => (h₂ a).symm (f (h₁ a)) :=
   rfl
 
+@[simp]
 theorem piCongr_symm_apply (f : ∀ b, Z b) :
     (h₁.piCongr h₂).symm f = fun a => (h₂ a).symm (f (h₁ a)) :=
   rfl
@@ -900,6 +970,10 @@ end
   left_inv f := rfl
   right_inv f := rfl
 
+lemma eq_conj {α α' β β' : Sort*} (ε₁ : α ≃ α') (ε₂ : β' ≃ β)
+    (f : α → β) (f' : α' → β') : ε₂.symm ∘ f ∘ ε₁.symm = f' ↔ f = ε₂ ∘ f' ∘ ε₁ := by
+  rw [Equiv.symm_comp_eq, Equiv.comp_symm_eq, Function.comp_assoc]
+
 section BinaryOp
 
 variable {α₁ β₁ : Type*} (e : α₁ ≃ β₁) (f : α₁ → α₁ → α₁)
@@ -931,10 +1005,8 @@ theorem Function.Injective.swap_apply
     Equiv.swap (f x) (f y) (f z) = f (Equiv.swap x y z) := by
   by_cases hx : z = x
   · simp [hx]
-
   by_cases hy : z = y
   · simp [hy]
-
   rw [Equiv.swap_apply_of_ne_of_ne hx hy, Equiv.swap_apply_of_ne_of_ne (hf.ne hx) (hf.ne hy)]
 
 theorem Function.Injective.swap_comp

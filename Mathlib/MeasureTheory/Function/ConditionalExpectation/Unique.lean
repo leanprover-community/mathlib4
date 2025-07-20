@@ -13,7 +13,7 @@ Two Lp functions `f, g` which are almost everywhere strongly measurable with res
 `m` and verify `∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ` for all `m`-measurable sets `s` are equal
 almost everywhere. This proves the uniqueness of the conditional expectation, which is not yet
 defined in this file but is introduced in
-`Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic`.
+`Mathlib/MeasureTheory/Function/ConditionalExpectation/Basic.lean`.
 
 ## Main statements
 

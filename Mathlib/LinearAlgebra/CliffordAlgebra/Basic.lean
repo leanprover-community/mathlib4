@@ -271,7 +271,7 @@ theorem ι_mul_ι_mul_ι (a b : M) :
 
 @[simp]
 theorem ι_range_map_lift (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = algebraMap _ _ (Q m)) :
-    (ι Q).range.map (lift Q ⟨f, cond⟩).toLinearMap = LinearMap.range f := by
+    (LinearMap.range (ι Q)).map (lift Q ⟨f, cond⟩).toLinearMap = LinearMap.range f := by
   rw [← LinearMap.range_comp, ι_comp_lift]
 
 section Map
@@ -312,7 +312,7 @@ theorem map_comp_map (f : Q₂ →qᵢ Q₃) (g : Q₁ →qᵢ Q₂) :
 
 @[simp]
 theorem ι_range_map_map (f : Q₁ →qᵢ Q₂) :
-    (ι Q₁).range.map (map f).toLinearMap = f.range.map (ι Q₂) :=
+    (LinearMap.range (ι Q₁)).map (map f).toLinearMap = (LinearMap.range f).map (ι Q₂) :=
   (ι_range_map_lift _ _).trans (LinearMap.range_comp _ _)
 
 open Function in

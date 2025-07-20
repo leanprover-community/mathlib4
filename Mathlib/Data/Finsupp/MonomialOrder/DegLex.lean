@@ -171,7 +171,7 @@ theorem monotone_degree :
   · apply le_of_lt h
   · apply le_of_eq h.1
 
-instance orderBot : OrderBot (DegLex (α →₀ ℕ)) where
+noncomputable instance orderBot : OrderBot (DegLex (α →₀ ℕ)) where
   bot := toDegLex (0 : α →₀ ℕ)
   bot_le x := by
     simp only [le_iff, ofDegLex_toDegLex, toLex_zero, degree_zero]

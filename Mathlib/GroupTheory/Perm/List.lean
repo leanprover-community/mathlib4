@@ -97,8 +97,10 @@ variable {l} {x : α}
 theorem mem_of_formPerm_apply_ne (h : l.formPerm x ≠ x) : x ∈ l := by
   simpa [or_iff_left_of_imp mem_of_mem_tail] using mem_or_mem_of_zipWith_swap_prod_ne h
 
-theorem formPerm_apply_of_not_mem (h : x ∉ l) : formPerm l x = x :=
+theorem formPerm_apply_of_notMem (h : x ∉ l) : formPerm l x = x :=
   not_imp_comm.1 mem_of_formPerm_apply_ne h
+
+@[deprecated (since := "2025-05-23")] alias formPerm_apply_of_not_mem := formPerm_apply_of_notMem
 
 theorem formPerm_apply_mem_of_mem (h : x ∈ l) : formPerm l x ∈ l := by
   rcases l with - | ⟨y, l⟩
@@ -112,11 +114,11 @@ theorem formPerm_apply_mem_of_mem (h : x ∈ l) : formPerm l x ∈ l := by
       · simp
       · simp [*]
     · replace h : x = y := Or.resolve_right (mem_cons.1 h) hx
-      simp [formPerm_apply_of_not_mem hx, ← h]
+      simp [formPerm_apply_of_notMem hx, ← h]
 
 theorem mem_of_formPerm_apply_mem (h : l.formPerm x ∈ l) : x ∈ l := by
   contrapose h
-  rwa [formPerm_apply_of_not_mem h]
+  rwa [formPerm_apply_of_notMem h]
 
 @[simp]
 theorem formPerm_mem_iff_mem : l.formPerm x ∈ l ↔ x ∈ l :=
@@ -140,7 +142,7 @@ theorem formPerm_apply_getElem_length (x : α) (xs : List α) :
   rw [getElem_cons_length rfl, formPerm_apply_getLast]
 
 theorem formPerm_apply_head (x y : α) (xs : List α) (h : Nodup (x :: y :: xs)) :
-    formPerm (x :: y :: xs) x = y := by simp [formPerm_apply_of_not_mem h.not_mem]
+    formPerm (x :: y :: xs) x = y := by simp [formPerm_apply_of_notMem h.notMem]
 
 theorem formPerm_apply_getElem_zero (l : List α) (h : Nodup l) (hl : 1 < l.length) :
     formPerm l l[0] = l[1] := by
@@ -215,7 +217,7 @@ theorem formPerm_rotate_one (l : List α) (h : Nodup l) : formPerm (l.rotate 1) 
   · obtain ⟨k, hk, rfl⟩ := getElem_of_mem hx
     rw [formPerm_apply_getElem _ h', getElem_rotate l, getElem_rotate l, formPerm_apply_getElem _ h]
     simp
-  · rw [formPerm_apply_of_not_mem hx, formPerm_apply_of_not_mem]
+  · rw [formPerm_apply_of_notMem hx, formPerm_apply_of_notMem]
     simpa using hx
 
 theorem formPerm_rotate (l : List α) (h : Nodup l) (n : ℕ) :
@@ -318,8 +320,11 @@ theorem mem_of_formPerm_ne_self (l : List α) (x : α) (h : formPerm l x ≠ x) 
     exact support_formPerm_le' _ this
   simpa using h
 
-theorem formPerm_eq_self_of_not_mem (l : List α) (x : α) (h : x ∉ l) : formPerm l x = x :=
+theorem formPerm_eq_self_of_notMem (l : List α) (x : α) (h : x ∉ l) : formPerm l x = x :=
   by_contra fun H => h <| mem_of_formPerm_ne_self _ _ H
+
+@[deprecated (since := "2025-05-23")]
+alias formPerm_eq_self_of_not_mem := formPerm_eq_self_of_notMem
 
 theorem formPerm_eq_one_iff (hl : Nodup l) : formPerm l = 1 ↔ l.length ≤ 1 := by
   rcases l with - | ⟨hd, tl⟩

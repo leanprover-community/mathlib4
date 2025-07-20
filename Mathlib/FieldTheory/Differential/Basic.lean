@@ -126,7 +126,6 @@ instance (p : F[X]) [Fact (Irreducible p)] [Fact p.Monic] :
 variable {K : Type*} [Field K] [Algebra F K]
 
 variable (F K) in
-
 /--
 If `K` is a finite field extension of `F` then we can define a differential algebra on `K`, by
 choosing a primitive element of `K`, `k` and then using the equivalence to `AdjoinRoot (minpoly k)`.

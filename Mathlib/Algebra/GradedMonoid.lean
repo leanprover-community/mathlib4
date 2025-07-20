@@ -530,7 +530,6 @@ variable {A : ι → S} [SetLike.GradedMonoid A]
 
 namespace GradeZero
 variable (A) in
-
 /-- The submonoid `A 0` of `R`. -/
 @[simps]
 def submonoid : Submonoid R where

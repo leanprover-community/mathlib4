@@ -10,7 +10,7 @@ open Lake DSL
 require "leanprover-community" / "batteries" @ git "main"
 require "leanprover-community" / "Qq" @ git "master"
 require "leanprover-community" / "aesop" @ git "master"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.56" -- ProofWidgets should always be pinned to a specific version
+require "leanprover-community" / "proofwidgets" @ git "v0.0.62" -- ProofWidgets should always be pinned to a specific version
   with NameMap.empty.insert `errorOnBuild
     "ProofWidgets not up-to-date. \
     Please run `lake exe cache get` to fetch the latest ProofWidgets. \
@@ -26,25 +26,9 @@ require "leanprover-community" / "plausible" @ git "main"
 /-- These options are used as `leanOptions`, prefixed by `` `weak``, so that
 `lake build` uses them, as well as `Archive` and `Counterexamples`. -/
 abbrev mathlibOnlyLinters : Array LeanOption := #[
-  -- The `docPrime` linter is disabled: https://github.com/leanprover-community/mathlib4/issues/20560
-  ⟨`linter.docPrime, false⟩,
-  ⟨`linter.hashCommand, true⟩,
-  ⟨`linter.oldObtain, true⟩,
-  ⟨`linter.style.cases, true⟩,
-  ⟨`linter.style.cdot, true⟩,
-  ⟨`linter.style.docString, true⟩,
-  ⟨`linter.style.dollarSyntax, true⟩,
-  ⟨`linter.style.header, true⟩,
-  ⟨`linter.style.lambdaSyntax, true⟩,
-  ⟨`linter.style.longLine, true⟩,
+  ⟨`linter.mathlibStandardSet, true⟩,
   ⟨`linter.style.longFile, .ofNat 1500⟩,
-  ⟨`linter.style.maxHeartbeats, true⟩,
   -- `latest_import.yml` uses this comment: if you edit it, make sure that the workflow still works
-  ⟨`linter.style.missingEnd, true⟩,
-  ⟨`linter.style.multiGoal, true⟩,
-  ⟨`linter.style.openClassical, true⟩,
-  ⟨`linter.style.refine, true⟩,
-  ⟨`linter.style.setOption, true⟩
 ]
 
 /-- These options are passed as `leanOptions` to building mathlib, as well as the
@@ -129,6 +113,9 @@ lean_exe shake where
 /-- `lake exe lint-style` runs text-based style linters. -/
 lean_exe «lint-style» where
   srcDir := "scripts"
+  supportInterpreter := true
+  -- Executables which import `Lake` must set `-lLake`.
+  weakLinkArgs := #["-lLake"]
 
 /--
 `lake exe pole` queries the Mathlib speedcenter for build times for the current commit,

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
 -/
 import Mathlib.Data.DFinsupp.Submonoid
+import Mathlib.Data.DFinsupp.Sigma
 import Mathlib.Data.Finsupp.ToDFinsupp
 import Mathlib.LinearAlgebra.Finsupp.SumProd
 import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
@@ -12,7 +13,7 @@ import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 # Properties of the module `Π₀ i, M i`
 
 Given an indexed collection of `R`-modules `M i`, the `R`-module structure on `Π₀ i, M i`
-is defined in `Mathlib.Data.DFinsupp.Module`.
+is defined in `Mathlib/Data/DFinsupp/Module.lean`.
 
 In this file we define `LinearMap` versions of various maps:
 
@@ -34,7 +35,7 @@ much more developed, but many lemmas in that file should be eligible to copy ove
 function with finite support, module, linear algebra
 -/
 
-variable {ι : Type*} {R : Type*} {S : Type*} {M : ι → Type*} {N : Type*}
+variable {ι ι' : Type*} {R : Type*} {S : Type*} {M : ι → Type*} {N : Type*}
 
 namespace DFinsupp
 
@@ -110,6 +111,35 @@ instance {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
     [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] :
     EquivLike (LinearEquiv σ M M₂) M M₂ :=
   inferInstance
+
+/-- `DFinsupp.equivCongrLeft` as a linear equivalence.
+
+This is the `DFinsupp` version of `Finsupp.domLCongr`. -/
+@[simps! apply]
+def domLCongr (e : ι ≃ ι') : (Π₀ i, M i) ≃ₗ[R] (Π₀ i, M (e.symm i)) where
+  __ := DFinsupp.equivCongrLeft e
+  map_add' _ _ := by ext; rfl
+  map_smul' _ _ := by ext; rfl
+
+/-- `DFinsupp.sigmaCurryEquiv` as a linear equivalence.
+
+This is the `DFinsupp` version of `Finsupp.finsuppProdLEquiv`. -/
+@[simps! apply symm_apply]
+def sigmaCurryLEquiv {α : ι → Type*} {M : (i : ι) → α i → Type*}
+    [Π i j, AddCommMonoid (M i j)] [Π i j, Module R (M i j)] [DecidableEq ι] :
+    (Π₀ (i : (x : ι) × α x), M i.fst i.snd) ≃ₗ[R] Π₀ (i : ι) (j : α i), M i j where
+  __ := DFinsupp.sigmaCurryEquiv
+  map_add' _ _ := by ext; rfl
+  map_smul' _ _ := by ext; rfl
+
+/-- `DFinsupp.equivFunOnFintype` as a linear equivalence.
+
+This is the `DFinsupp` version of `Finsupp.linearEquivFunOnFintype`. -/
+@[simps! apply symm_apply]
+def linearEquivFunOnFintype [Fintype ι] : (Π₀ i, M i) ≃ₗ[R] (Π i, M i) where
+  __ := equivFunOnFintype
+  map_add' _ _ := by ext; rfl
+  map_smul' _ _ := by ext; rfl
 
 /-- The `DFinsupp` version of `Finsupp.lsum`.
 
@@ -194,7 +224,7 @@ lemma mrange_mapRangeAddMonoidHom (f : ∀ i, β₁ i →+ β₂ i) :
     simp only [Finset.coe_sort_coe, mapRange.addMonoidHom_apply, mapRange_apply]
     by_cases mem : i ∈ x.support
     · rw [mk_of_mem mem, hg]
-    · rw [DFinsupp.not_mem_support_iff.mp mem, mk_of_not_mem mem, map_zero]
+    · rw [DFinsupp.notMem_support_iff.mp mem, mk_of_notMem mem, map_zero]
 
 theorem mapRange_smul (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0) (r : R)
     (hf' : ∀ i x, f i (r • x) = r • f i x) (g : Π₀ i, β₁ i) :

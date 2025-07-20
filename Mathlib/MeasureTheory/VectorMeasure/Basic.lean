@@ -3,6 +3,7 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
+import Mathlib.MeasureTheory.Measure.Real
 import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 
@@ -44,7 +45,7 @@ vector measure, signed measure, complex measure
 
 noncomputable section
 
-open NNReal ENNReal MeasureTheory
+open NNReal ENNReal
 
 open scoped Function -- required for scoped `on` notation
 namespace MeasureTheory
@@ -69,7 +70,7 @@ structure VectorMeasure (α : Type*) [MeasurableSpace α] (M : Type*) [AddCommMo
 abbrev SignedMeasure (α : Type*) [MeasurableSpace α] :=
   VectorMeasure α ℝ
 
-open Set MeasureTheory
+open Set
 
 namespace VectorMeasure
 
@@ -328,20 +329,20 @@ open Classical in
 /-- A finite measure coerced into a real function is a signed measure. -/
 @[simps]
 def toSignedMeasure (μ : Measure α) [hμ : IsFiniteMeasure μ] : SignedMeasure α where
-  measureOf' := fun s : Set α => if MeasurableSet s then (μ s).toReal else 0
+  measureOf' := fun s : Set α => if MeasurableSet s then μ.real s else 0
   empty' := by simp [μ.empty]
   not_measurable' _ hi := if_neg hi
   m_iUnion' f hf₁ hf₂ := by
-    simp only [*, MeasurableSet.iUnion hf₁, if_true, measure_iUnion hf₂ hf₁]
+    simp only [*, MeasurableSet.iUnion hf₁, if_true, measure_iUnion hf₂ hf₁, measureReal_def]
     rw [ENNReal.tsum_toReal_eq]
     exacts [(summable_measure_toReal hf₁ hf₂).hasSum, fun _ ↦ measure_ne_top _ _]
 
 theorem toSignedMeasure_apply_measurable {μ : Measure α} [IsFiniteMeasure μ] {i : Set α}
-    (hi : MeasurableSet i) : μ.toSignedMeasure i = (μ i).toReal :=
+    (hi : MeasurableSet i) : μ.toSignedMeasure i = μ.real i :=
   if_pos hi
 
--- Without this lemma, `singularPart_neg` in `Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue`
--- is extremely slow
+-- Without this lemma, `singularPart_neg` in
+-- `Mathlib/MeasureTheory/Measure/Decomposition/Lebesgue.lean` is extremely slow
 theorem toSignedMeasure_congr {μ ν : Measure α} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (h : μ = ν) : μ.toSignedMeasure = ν.toSignedMeasure := by
   congr
@@ -352,8 +353,7 @@ theorem toSignedMeasure_eq_toSignedMeasure_iff {μ ν : Measure α} [IsFiniteMea
   · ext1 i hi
     have : μ.toSignedMeasure i = ν.toSignedMeasure i := by rw [h]
     rwa [toSignedMeasure_apply_measurable hi, toSignedMeasure_apply_measurable hi,
-        ENNReal.toReal_eq_toReal] at this
-      <;> exact measure_ne_top _ _
+        measureReal_eq_measureReal_iff] at this
   · congr
 
 @[simp]
@@ -365,8 +365,7 @@ theorem toSignedMeasure_zero : (0 : Measure α).toSignedMeasure = 0 := by
 theorem toSignedMeasure_add (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     (μ + ν).toSignedMeasure = μ.toSignedMeasure + ν.toSignedMeasure := by
   ext i hi
-  rw [toSignedMeasure_apply_measurable hi, add_apply,
-    ENNReal.toReal_add (ne_of_lt (measure_lt_top _ _)) (ne_of_lt (measure_lt_top _ _)),
+  rw [toSignedMeasure_apply_measurable hi, measureReal_add_apply,
     VectorMeasure.add_apply, toSignedMeasure_apply_measurable hi,
     toSignedMeasure_apply_measurable hi]
 
@@ -375,7 +374,8 @@ theorem toSignedMeasure_smul (μ : Measure α) [IsFiniteMeasure μ] (r : ℝ≥0
     (r • μ).toSignedMeasure = r • μ.toSignedMeasure := by
   ext i hi
   rw [toSignedMeasure_apply_measurable hi, VectorMeasure.smul_apply,
-    toSignedMeasure_apply_measurable hi, coe_smul, Pi.smul_apply, ENNReal.toReal_smul]
+    toSignedMeasure_apply_measurable hi, measureReal_nnreal_smul_apply]
+  rfl
 
 open Classical in
 /-- A measure is a vector measure over `ℝ≥0∞`. -/
@@ -407,7 +407,7 @@ theorem toENNRealVectorMeasure_add (μ ν : Measure α) :
 
 theorem toSignedMeasure_sub_apply {μ ν : Measure α} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     {i : Set α} (hi : MeasurableSet i) :
-    (μ.toSignedMeasure - ν.toSignedMeasure) i = (μ i).toReal - (ν i).toReal := by
+    (μ.toSignedMeasure - ν.toSignedMeasure) i = μ.real i - ν.real i := by
   rw [VectorMeasure.sub_apply, toSignedMeasure_apply_measurable hi,
     Measure.toSignedMeasure_apply_measurable hi]
 
@@ -1154,6 +1154,11 @@ theorem toMeasureOfZeroLE_apply (hi : 0 ≤[i] s) (hi₁ : MeasurableSet i) (hj�
   simp_rw [toMeasureOfZeroLE, Measure.ofMeasurable_apply _ hj₁, toMeasureOfZeroLE',
     s.restrict_apply hi₁ hj₁, Set.inter_comm]
 
+theorem toMeasureOfZeroLE_real_apply (hi : 0 ≤[i] s) (hi₁ : MeasurableSet i)
+    (hj₁ : MeasurableSet j) :
+    (s.toMeasureOfZeroLE i hi₁ hi).real j = s (i ∩ j) := by
+  simp [measureReal_def, toMeasureOfZeroLE_apply, hj₁]
+
 /-- Given a signed measure `s` and a negative measurable set `i`, `toMeasureOfLEZero`
 provides the measure, mapping measurable sets `j` to `-s (i ∩ j)`. -/
 def toMeasureOfLEZero (s : SignedMeasure α) (i : Set α) (hi₁ : MeasurableSet i) (hi₂ : s ≤[i] 0) :
@@ -1167,6 +1172,11 @@ theorem toMeasureOfLEZero_apply (hi : s ≤[i] 0) (hi₁ : MeasurableSet i) (hj�
   erw [toMeasureOfZeroLE_apply]
   · simp
   · assumption
+
+theorem toMeasureOfLEZero_real_apply (hi : s ≤[i] 0) (hi₁ : MeasurableSet i)
+    (hj₁ : MeasurableSet j) :
+    (s.toMeasureOfLEZero i hi₁ hi).real j = -s (i ∩ j) := by
+  simp [measureReal_def, toMeasureOfLEZero_apply _ hi hi₁ hj₁]
 
 /-- `SignedMeasure.toMeasureOfZeroLE` is a finite measure. -/
 instance toMeasureOfZeroLE_finite (hi : 0 ≤[i] s) (hi₁ : MeasurableSet i) :
@@ -1185,12 +1195,12 @@ instance toMeasureOfLEZero_finite (hi : s ≤[i] 0) (hi₁ : MeasurableSet i) :
 theorem toMeasureOfZeroLE_toSignedMeasure (hs : 0 ≤[Set.univ] s) :
     (s.toMeasureOfZeroLE Set.univ MeasurableSet.univ hs).toSignedMeasure = s := by
   ext i hi
-  simp [hi, toMeasureOfZeroLE_apply _ _ _ hi]
+  simp [hi, toMeasureOfZeroLE_apply _ _ _ hi, measureReal_def]
 
 theorem toMeasureOfLEZero_toSignedMeasure (hs : s ≤[Set.univ] 0) :
     (s.toMeasureOfLEZero Set.univ MeasurableSet.univ hs).toSignedMeasure = -s := by
   ext i hi
-  simp [hi, toMeasureOfLEZero_apply _ _ _ hi]
+  simp [hi, toMeasureOfLEZero_apply _ _ _ hi, measureReal_def]
 
 end SignedMeasure
 
@@ -1203,8 +1213,8 @@ variable (μ : Measure α) [IsFiniteMeasure μ]
 theorem zero_le_toSignedMeasure : 0 ≤ μ.toSignedMeasure := by
   rw [← le_restrict_univ_iff_le]
   refine restrict_le_restrict_of_subset_le _ _ fun j hj₁ _ => ?_
-  simp only [Measure.toSignedMeasure_apply_measurable hj₁, coe_zero, Pi.zero_apply,
-    ENNReal.toReal_nonneg, VectorMeasure.coe_zero]
+  simp only [VectorMeasure.coe_zero, Pi.zero_apply, Measure.toSignedMeasure_apply_measurable hj₁,
+    measureReal_nonneg]
 
 theorem toSignedMeasure_toMeasureOfZeroLE :
     μ.toSignedMeasure.toMeasureOfZeroLE Set.univ MeasurableSet.univ
@@ -1213,7 +1223,7 @@ theorem toSignedMeasure_toMeasureOfZeroLE :
   lift μ i to ℝ≥0 using (measure_lt_top _ _).ne with m hm
   rw [SignedMeasure.toMeasureOfZeroLE_apply _ _ _ hi, ENNReal.coe_inj]
   congr
-  simp [hi, ← hm]
+  simp [hi, ← hm, measureReal_def]
 
 end Measure
 

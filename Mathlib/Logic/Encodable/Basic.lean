@@ -136,7 +136,7 @@ theorem decode_unit_succ (n) : decode (succ n) = (none : Option PUnit) :=
 instance _root_.Option.encodable {α : Type*} [h : Encodable α] : Encodable (Option α) :=
   ⟨fun o => Option.casesOn o Nat.zero fun a => succ (encode a), fun n =>
     Nat.casesOn n (some none) fun m => (decode m).map some, fun o => by
-    cases o <;> dsimp; simp [encodek, Nat.succ_ne_zero]⟩
+    cases o <;> simp [encodek, Nat.succ_ne_zero]⟩
 
 @[simp]
 theorem encode_none [Encodable α] : encode (@none α) = 0 :=
@@ -163,7 +163,7 @@ def decode₂ (α) [Encodable α] (n : ℕ) : Option α :=
 
 theorem mem_decode₂' [Encodable α] {n : ℕ} {a : α} :
     a ∈ decode₂ α n ↔ a ∈ decode n ∧ encode a = n := by
-  simp [decode₂, bind_eq_some]
+  simp [decode₂, Option.bind_eq_some_iff]
 
 theorem mem_decode₂ [Encodable α] {n : ℕ} {a : α} : a ∈ decode₂ α n ↔ encode a = n :=
   mem_decode₂'.trans (and_iff_right_of_imp fun e => e ▸ encodek _)

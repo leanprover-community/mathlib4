@@ -22,7 +22,7 @@ theorem lt_iff_sub_pos {x y : PGame} : x < y ↔ 0 < y - x := sorry
 We show that these operations respect the equivalence relation, and hence descend to games. At the
 level of games, these operations satisfy all the laws of a commutative group. To prove the necessary
 equivalence relations at the level of pregames, the notion of a `Relabelling` of a game is used
-(defined in `Mathlib.SetTheory.PGame.Basic`); for example, there is a relabelling between
+(defined in `Mathlib/SetTheory/PGame/Basic.lean`); for example, there is a relabelling between
 `x + (y + z)` and `(x + y) + z`.
 -/
 
@@ -49,8 +49,7 @@ theorem neg_def {xl xr xL xR} : -mk xl xr xL xR = mk xr xl (-xR ·) (-xL ·) :=
 instance : InvolutiveNeg PGame :=
   { inferInstanceAs (Neg PGame) with
     neg_neg := fun x => by
-      induction' x with xl xr xL xR ihL ihR
-      simp_rw [neg_def, ihL, ihR] }
+      induction x with | mk xl xr xL xR ihL ihR => simp_rw [neg_def, ihL, ihR] }
 
 instance : NegZeroClass PGame :=
   { inferInstanceAs (Zero PGame), inferInstanceAs (Neg PGame) with
@@ -85,7 +84,7 @@ theorem isOption_neg {x y : PGame} : IsOption x (-y) ↔ IsOption (-x) y := by
     · apply exists_congr
       intro
       rw [neg_eq_iff_eq_neg]
-      rfl
+      simp only [neg_def, moveRight_mk, moveLeft_mk]
 
 @[simp]
 theorem isOption_neg_neg {x y : PGame} : IsOption (-x) (-y) ↔ IsOption x y := by

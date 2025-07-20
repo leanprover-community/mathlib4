@@ -6,6 +6,7 @@ Authors: Kexing Ying
 import Mathlib.Algebra.Group.Conj
 import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.Group.Subgroup.Ker
+import Mathlib.Algebra.Group.Torsion
 
 /-!
 # Basic results on subgroups
@@ -247,6 +248,12 @@ theorem pi_eq_bot_iff (H : ∀ i, Subgroup (f i)) : pi Set.univ H = ⊥ ↔ ∀ 
     · exact fun h x hx => funext fun i => h _ _ (hx i trivial)
 
 end Pi
+
+instance instIsMulTorsionFree [IsMulTorsionFree G] : IsMulTorsionFree H where
+  pow_left_injective n hn a b := by
+    have := pow_left_injective hn (M := G) (a₁ := a) (a₂ := b)
+    dsimp at *
+    norm_cast at this
 
 end Subgroup
 

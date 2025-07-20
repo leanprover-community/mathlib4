@@ -65,11 +65,9 @@ theorem bijective_of_isAlgClosed_of_isLocalRing
     rw [← IsLocalRing.jacobson_eq_maximalIdeal ⊥]
     · exact IsArtinianRing.isNilpotent_jacobson_bot
     · exact bot_ne_top
-  have : Function.Bijective (Algebra.ofId K (A ⧸ IsLocalRing.maximalIdeal A)) :=
-    ⟨RingHom.injective _, IsAlgClosed.algebraMap_surjective_of_isIntegral⟩
   let e : K ≃ₐ[K] A ⧸ IsLocalRing.maximalIdeal A := {
     __ := Algebra.ofId K (A ⧸ IsLocalRing.maximalIdeal A)
-    __ := Equiv.ofBijective _ this }
+    __ := Equiv.ofBijective _ IsAlgClosed.algebraMap_bijective_of_isIntegral }
   let e' : A ⊗[K] (A ⧸ IsLocalRing.maximalIdeal A) ≃ₐ[A] A :=
     (Algebra.TensorProduct.congr AlgEquiv.refl e.symm).trans (Algebra.TensorProduct.rid K A A)
   let f : A ⧸ IsLocalRing.maximalIdeal A →ₗ[A] A := e'.toLinearMap.comp (sec K A _)

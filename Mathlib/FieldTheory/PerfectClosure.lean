@@ -232,22 +232,23 @@ theorem mk_zero : mk K p 0 = 0 :=
 
 @[simp]
 theorem mk_zero_right (n : ℕ) : mk K p (n, 0) = 0 := by
-  induction' n with n ih
-  · rfl
-  rw [← ih]
-  symm
-  apply Quot.sound
-  have := R.intro (p := p) n (0 : K)
-  rwa [frobenius_zero K p] at this
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+    rw [← ih]
+    apply (Quot.sound _).symm
+    have := R.intro (p := p) n (0 : K)
+    rwa [frobenius_zero K p] at this
 
 theorem R.sound (m n : ℕ) (x y : K) (H : (frobenius K p)^[m] x = y) :
     mk K p (n, x) = mk K p (m + n, y) := by
   subst H
-  induction' m with m ih
-  · simp only [zero_add, iterate_zero_apply]
-  rw [ih, Nat.succ_add, iterate_succ']
-  apply Quot.sound
-  apply R.intro
+  induction m with
+  | zero => simp only [zero_add, iterate_zero_apply]
+  | succ m ih =>
+    rw [ih, Nat.succ_add, iterate_succ']
+    apply Quot.sound
+    apply R.intro
 
 instance instAddCommGroup : AddCommGroup (PerfectClosure K p) :=
   { (inferInstance : Add (PerfectClosure K p)),
@@ -345,15 +346,18 @@ theorem mk_pow (x : ℕ × K) (n : ℕ) : mk K p x ^ n = mk K p (x.1, x.2 ^ n) :
       ← pow_add, mul_assoc, ← pow_add]⟩
 
 theorem natCast (n x : ℕ) : (x : PerfectClosure K p) = mk K p (n, x) := by
-  induction' n with n ih
-  · induction' x with x ih
-    · simp
-    rw [Nat.cast_succ, Nat.cast_succ, ih]
-    rfl
-  rw [ih]; apply Quot.sound
-  suffices R K p (n, (x : K)) (Nat.succ n, frobenius K p (x : K)) by
-    rwa [frobenius_natCast K p x] at this
-  apply R.intro
+  induction n with
+  | zero =>
+    induction x with
+    | zero => simp
+    | succ x ih =>
+      rw [Nat.cast_succ, Nat.cast_succ, ih]
+      rfl
+  | succ n ih =>
+    rw [ih]; apply Quot.sound
+    suffices R K p (n, (x : K)) (Nat.succ n, frobenius K p (x : K)) by
+      rwa [frobenius_natCast K p x] at this
+    apply R.intro
 
 theorem intCast (x : ℤ) : (x : PerfectClosure K p) = mk K p (0, x) := by
   cases x <;> simp [natCast K p 0]
@@ -408,9 +412,9 @@ instance instPerfectRing : PerfectRing (PerfectClosure K p) p where
 @[simp]
 theorem iterate_frobenius_mk (n : ℕ) (x : K) :
     (frobenius (PerfectClosure K p) p)^[n] (mk K p ⟨n, x⟩) = of K p x := by
-  induction' n with n ih
-  · rfl
-  rw [iterate_succ_apply, ← ih, frobenius_mk, mk_succ_pow]
+  induction n with
+  | zero => rfl
+  | succ n ih => rw [iterate_succ_apply, ← ih, frobenius_mk, mk_succ_pow]
 
 /-- Given a ring `K` of characteristic `p` and a perfect ring `L` of the same characteristic,
 any homomorphism `K →+* L` can be lifted to `PerfectClosure K p`. -/

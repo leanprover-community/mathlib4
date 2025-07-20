@@ -398,8 +398,7 @@ instance : SupSet (LieSubmodule R L M) where
         | empty =>
           replace hsm : m = 0 := by simpa using hsm
           simp [hsm]
-        | insert hqt ih =>
-          rename_i q t
+        | insert q t hqt ih =>
           rw [Finset.iSup_insert] at hsm
           obtain ⟨m', hm', u, hu, rfl⟩ := Submodule.mem_sup.mp hsm
           rw [lie_add]

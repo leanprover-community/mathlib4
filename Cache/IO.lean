@@ -128,8 +128,13 @@ private def CacheM.mathlibDepPath (sp : SearchPath) : IO FilePath := do
     | throw <| IO.userError s!"Mathlib not found in dependencies"
   return mathlibSource
 
+def _root_.Lean.SearchPath.relativize (sp : SearchPath) : IO SearchPath := do
+  let pwd ← IO.FS.realPath "."
+  let pwd' := pwd.toString ++ System.FilePath.pathSeparator.toString
+  return sp.map fun x => ⟨if x = pwd then "." else x.toString.stripPrefix pwd'⟩
+
 private def CacheM.getContext : IO CacheM.Context := do
-  let sp ← initSrcSearchPath
+  let sp ← (← getSrcSearchPath).relativize
   let mathlibSource ← CacheM.mathlibDepPath sp
   return {
     mathlibDepPath := mathlibSource,

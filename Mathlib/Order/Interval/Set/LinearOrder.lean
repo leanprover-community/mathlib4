@@ -21,17 +21,25 @@ namespace Set
 
 variable {α : Type*} [LinearOrder α] {a a₁ a₂ b b₁ b₂ c d : α}
 
-theorem not_mem_Ici : c ∉ Ici a ↔ c < a :=
+theorem notMem_Ici : c ∉ Ici a ↔ c < a :=
   not_le
 
-theorem not_mem_Iic : c ∉ Iic b ↔ b < c :=
+@[deprecated (since := "2025-05-23")] alias not_mem_Ici := notMem_Ici
+
+theorem notMem_Iic : c ∉ Iic b ↔ b < c :=
   not_le
 
-theorem not_mem_Ioi : c ∉ Ioi a ↔ c ≤ a :=
+@[deprecated (since := "2025-05-23")] alias not_mem_Iic := notMem_Iic
+
+theorem notMem_Ioi : c ∉ Ioi a ↔ c ≤ a :=
   not_lt
 
-theorem not_mem_Iio : c ∉ Iio b ↔ b ≤ c :=
+@[deprecated (since := "2025-05-23")] alias not_mem_Ioi := notMem_Ioi
+
+theorem notMem_Iio : c ∉ Iio b ↔ b ≤ c :=
   not_lt
+
+@[deprecated (since := "2025-05-23")] alias not_mem_Iio := notMem_Iio
 
 @[simp]
 theorem compl_Iic : (Iic a)ᶜ = Ioi a :=

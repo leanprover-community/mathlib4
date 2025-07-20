@@ -20,9 +20,9 @@ mathlib's conventions for integrals over finite intervals (see `intervalIntegral
 
 ## See also
 
-- `Mathlib.Analysis.SpecialFunctions.Integrals` -- integrals over finite intervals
-- `Mathlib.Analysis.SpecialFunctions.Gaussian` -- integral of `exp (-x ^ 2)`
-- `Mathlib.Analysis.SpecialFunctions.JapaneseBracket`-- integrability of `(1+‖x‖)^(-r)`.
+- `Mathlib/Analysis/SpecialFunctions/Integrals.lean` -- integrals over finite intervals
+- `Mathlib/Analysis/SpecialFunctions/Gaussian.lean` -- integral of `exp (-x ^ 2)`
+- `Mathlib/Analysis/SpecialFunctions/JapaneseBracket.lean`-- integrability of `(1+‖x‖)^(-r)`.
 -/
 
 
@@ -108,18 +108,25 @@ theorem integral_exp_mul_Iic {a : ℝ} (ha : 0 < a) (c : ℝ) :
   simpa [neg_mul, ← mul_neg, integral_comp_neg_Ioi (f := fun x : ℝ ↦ Real.exp (a * x))]
     using integral_exp_mul_Ioi (a := -a) (by simpa) (-c)
 
-/-- If `0 < c`, then `(fun t : ℝ ↦ t ^ a)` is integrable on `(c, ∞)` for all `a < -1`. -/
-theorem integrableOn_Ioi_rpow_of_lt {a : ℝ} (ha : a < -1) {c : ℝ} (hc : 0 < c) :
-    IntegrableOn (fun t : ℝ => t ^ a) (Ioi c) := by
-  have hd : ∀ x ∈ Ici c, HasDerivAt (fun t => t ^ (a + 1) / (a + 1)) (x ^ a) x := by
+/-- If `-m < c`, then `(fun t : ℝ ↦ (t + m) ^ a)` is integrable on `(c, ∞)` for all `a < -1`. -/
+theorem integrableOn_add_rpow_Ioi_of_lt {a c m : ℝ} (ha : a < -1) (hc : -m < c) :
+    IntegrableOn (fun (x : ℝ) ↦ (x + m) ^ a) (Ioi c) := by
+  have hd : ∀ x ∈ Ici c, HasDerivAt (fun t ↦ (t + m) ^ (a + 1) / (a + 1)) ((x + m) ^ a) x := by
     intro x hx
-    convert (hasDerivAt_rpow_const (Or.inl (hc.trans_le hx).ne')).div_const _ using 1
-    field_simp [show a + 1 ≠ 0 from ne_of_lt (by linarith), mul_comm]
-  have ht : Tendsto (fun t => t ^ (a + 1) / (a + 1)) atTop (𝓝 (0 / (a + 1))) := by
-    apply Tendsto.div_const
-    simpa only [neg_neg] using tendsto_rpow_neg_atTop (by linarith : 0 < -(a + 1))
-  exact
-    integrableOn_Ioi_deriv_of_nonneg' hd (fun t ht => rpow_nonneg (hc.trans ht).le a) ht
+    convert (((hasDerivAt_id _).add_const _).rpow_const _).div_const _ using 1
+    field_simp [show a + 1 ≠ 0 by linarith]
+    left; linarith [mem_Ici.mp hx, id_eq x]
+  have ht : Tendsto (fun t ↦ ((t + m) ^ (a + 1)) / (a + 1)) atTop (nhds (0 / (a + 1))) := by
+    rw [← neg_neg (a + 1)]
+    exact (tendsto_rpow_neg_atTop (by linarith)).comp
+      (tendsto_atTop_add_const_right _ m tendsto_id) |>.div_const _
+  exact integrableOn_Ioi_deriv_of_nonneg' hd
+    (fun t ht ↦ rpow_nonneg (by linarith [mem_Ioi.mp ht]) a) ht
+
+/-- If `0 < c`, then `(fun t : ℝ ↦ t ^ a)` is integrable on `(c, ∞)` for all `a < -1`. -/
+theorem integrableOn_Ioi_rpow_of_lt {a c : ℝ} (ha : a < -1) (hc : 0 < c) :
+    IntegrableOn (fun t : ℝ ↦ t ^ a) (Ioi c) := by
+  simpa using integrableOn_add_rpow_Ioi_of_lt ha (by simpa : -0 < c)
 
 theorem integrableOn_Ioi_rpow_iff {s t : ℝ} (ht : 0 < t) :
     IntegrableOn (fun x ↦ x ^ s) (Ioi t) ↔ s < -1 := by
@@ -238,7 +245,7 @@ theorem integral_Ioi_cpow_of_lt {a : ℂ} (ha : a.re < -1) {c : ℝ} (hc : 0 < c
     refine this.congr' ((eventually_gt_atTop 0).mp (Eventually.of_forall fun x hx => ?_))
     dsimp only
     rw [integral_cpow, id]
-    refine Or.inr ⟨?_, not_mem_uIcc_of_lt hc hx⟩
+    refine Or.inr ⟨?_, notMem_uIcc_of_lt hc hx⟩
     apply_fun Complex.re
     rw [Complex.neg_re, Complex.one_re]
     exact ha.ne

@@ -102,7 +102,7 @@ variable [MulRightMono α]
 
 @[to_additive (attr := simp) abs_nonneg] lemma one_le_mabs (a : α) : 1 ≤ |a|ₘ := by
   apply pow_two_semiclosed _
-  rw [mabs, pow_two, mul_sup,  sup_mul, ← pow_two, inv_mul_cancel, sup_comm, ← sup_assoc]
+  rw [mabs, pow_two, mul_sup, sup_mul, ← pow_two, inv_mul_cancel, sup_comm, ← sup_assoc]
   apply le_sup_right
 
 @[to_additive (attr := simp)] lemma mabs_mabs (a : α) : |(|a|ₘ)|ₘ = |a|ₘ :=

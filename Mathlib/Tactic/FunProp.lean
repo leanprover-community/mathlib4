@@ -47,8 +47,8 @@ Fails with the error:
 Issues:
   No theorems found for `Real.sin` in order to prove `Continuous fun x => x.sin`
 ```
-This can be easily fixed by importing `Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic`
- where the theorem `Real.continuous_sin` is marked with the `fun_prop` attribute.
+This can be easily fixed by importing `Mathlib/Analysis/SpecialFunctions/Trigonometric/Basic.lean`
+where the theorem `Real.continuous_sin` is marked with the `fun_prop` attribute.
 
 When the issue is not simply a few missing theorems, you can turn on the option:
 ```lean
@@ -84,7 +84,7 @@ theorem continuous_comp (f : Y → Z) (g : X → Y) (hf : Continuous f) (hg : Co
   Continuous (fun x => f (g x)) := ...
 ```
 The constant theorem is not absolutely necessary as, for example, `IsLinearMap ℝ (fun x => y)` does
- not hold, but we almost certainly want to mark it if it is available.
+not hold, but we almost certainly want to mark it if it is available.
 
 You should also provide theorems for `Prod.mk`, `Prod.fst`, and `Prod.snd`:
 ```lean
@@ -138,7 +138,7 @@ displays:
     form: compositional form
 ```
 This indicates that the theorem `continuous_add` states the continuity of `HAdd.hAdd` in the 4th and
- 5th arguments and the theorem is in compositional form.
+5th arguments and the theorem is in compositional form.
 
 ### Advanced
 

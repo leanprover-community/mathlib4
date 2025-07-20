@@ -12,8 +12,8 @@ import Mathlib.GroupTheory.GroupAction.Ring
 # The derivative map on polynomials
 
 ## Main definitions
- * `Polynomial.derivative`: The formal derivative of polynomials, expressed as a linear map.
- * `Polynomial.derivativeFinsupp`: Iterated derivatives as a finite support function.
+* `Polynomial.derivative`: The formal derivative of polynomials, expressed as a linear map.
+* `Polynomial.derivativeFinsupp`: Iterated derivatives as a finite support function.
 
 -/
 
@@ -136,7 +136,7 @@ theorem derivative_sum {s : Finset ι} {f : ι → R[X]} :
 
 theorem iterate_derivative_sum (k : ℕ) (s : Finset ι) (f : ι → R[X]) :
     derivative^[k] (∑ b ∈ s, f b) = ∑ b ∈ s, derivative^[k] (f b) := by
-  simp_rw [← LinearMap.pow_apply, map_sum]
+  simp_rw [← Module.End.pow_apply, map_sum]
 
 theorem derivative_smul {S : Type*} [SMulZeroClass S R] [IsScalarTower S R R] (s : S)
     (p : R[X]) : derivative (s • p) = s • derivative p :=

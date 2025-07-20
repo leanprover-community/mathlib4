@@ -92,16 +92,12 @@ instance (J : Type u) [Finite J] (f : J → Under R) :
   have hc : IsLimit c := Under.piFanIsLimit f
   preservesLimit_of_preserves_limit_cone hc (piFanTensorProductIsLimit f)
 
-instance (J : Type) [Finite J] :
-    PreservesLimitsOfShape (Discrete J) (tensorProd R S) :=
-  let J' : Type u := ULift.{u} J
-  have : PreservesLimitsOfShape (Discrete J') (tensorProd R S) :=
-    preservesLimitsOfShape_of_discrete (tensorProd R S)
-  let e : Discrete J' ≌ Discrete J := Discrete.equivalence Equiv.ulift
-  preservesLimitsOfShape_of_equiv e (R.tensorProd S)
-
 instance : PreservesFiniteProducts (tensorProd R S) where
-  preserves J := { }
+  preserves n :=
+    let J : Type u := ULift.{u} (Fin n)
+    have : PreservesLimitsOfShape (Discrete J) (tensorProd R S) :=
+      preservesLimitsOfShape_of_discrete (tensorProd R S)
+    preservesLimitsOfShape_of_equiv (Discrete.equivalence Equiv.ulift) (R.tensorProd S)
 
 end Pi
 

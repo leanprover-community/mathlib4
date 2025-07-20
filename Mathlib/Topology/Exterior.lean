@@ -10,7 +10,7 @@ import Mathlib.Topology.Inseparable
 # Exterior of a set
 
 We define `exterior s` to be the intersection of all neighborhoods of `s`,
-see `Topology/Defs/Filter`.
+see `Mathlib/Topology/Defs/Filter.lean`.
 Note that this construction has no standard name in the literature.
 
 In this file we prove basic properties of this operation.
@@ -72,7 +72,7 @@ see `exterior_subset_exterior_iff_nhdsSet`.
 @[gcongr] lemma exterior_subset_exterior (h : s ⊆ t) : exterior s ⊆ exterior t := exterior_mono h
 
 @[simp] lemma exterior_subset_exterior_iff_nhdsSet : exterior s ⊆ exterior t ↔ 𝓝ˢ s ≤ 𝓝ˢ t := by
-  simp (config := {contextual := true}) only [subset_exterior_iff, (hasBasis_nhdsSet _).ge_iff,
+  simp +contextual only [subset_exterior_iff, (hasBasis_nhdsSet _).ge_iff,
     and_imp, IsOpen.mem_nhdsSet, IsOpen.exterior_subset]
 
 theorem exterior_eq_exterior_iff_nhdsSet : exterior s = exterior t ↔ 𝓝ˢ s = 𝓝ˢ t := by

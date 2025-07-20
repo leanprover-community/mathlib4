@@ -17,9 +17,9 @@ Given any term `B` of type `BilinForm`, due to a coercion, can use
 the notation `B x y` to refer to the function field, ie. `B x y = B.bilin x y`.
 
 In this file we use the following type variables:
- - `M`, `M'`, ... are modules over the commutative semiring `R`,
- - `M₁`, `M₁'`, ... are modules over the commutative ring `R₁`,
- - `V`, ... is a vector space over the field `K`.
+- `M`, `M'`, ... are modules over the commutative semiring `R`,
+- `M₁`, `M₁'`, ... are modules over the commutative ring `R₁`,
+- `V`, ... is a vector space over the field `K`.
 
 ## References
 
@@ -247,12 +247,12 @@ theorem iIsOrtho.nondegenerate_iff_not_isOrtho_basis_self {n : Type w} [Nontrivi
     exact hO hij
   · intro hi
     convert zero_mul (M₀ := R) _ using 2
-    exact Finsupp.not_mem_support_iff.mp hi
+    exact Finsupp.notMem_support_iff.mp hi
 
 section
 
 theorem toLin_restrict_ker_eq_inf_orthogonal (B : BilinForm K V) (W : Subspace K V) (b : B.IsRefl) :
-    (B.domRestrict W).ker.map W.subtype = (W ⊓ B.orthogonal ⊤ : Subspace K V) := by
+    (LinearMap.ker <| B.domRestrict W).map W.subtype = (W ⊓ B.orthogonal ⊤ : Subspace K V) := by
   ext x; constructor <;> intro hx
   · rcases hx with ⟨⟨x, hx⟩, hker, rfl⟩
     erw [LinearMap.mem_ker] at hker
@@ -271,7 +271,8 @@ theorem toLin_restrict_ker_eq_inf_orthogonal (B : BilinForm K V) (W : Subspace K
     exact hx.2 _ Submodule.mem_top
 
 theorem toLin_restrict_range_dualCoannihilator_eq_orthogonal (B : BilinForm K V)
-    (W : Subspace K V) : (B.domRestrict W).range.dualCoannihilator = B.orthogonal W := by
+    (W : Subspace K V) :
+    (LinearMap.range (B.domRestrict W)).dualCoannihilator = B.orthogonal W := by
   ext x; constructor <;> rw [mem_orthogonal_iff] <;> intro hx
   · intro y hy
     rw [Submodule.mem_dualCoannihilator] at hx

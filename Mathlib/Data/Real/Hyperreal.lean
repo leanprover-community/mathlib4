@@ -15,9 +15,15 @@ open Filter Germ Topology
 
 /-- Hyperreal numbers on the ultrafilter extending the cofinite filter -/
 def Hyperreal : Type :=
-  Germ (hyperfilter ℕ : Filter ℕ) ℝ deriving Inhabited
+  Germ (hyperfilter ℕ : Filter ℕ) ℝ
 
+#adaptation_note
+/-- After nightly-2025-05-07 we had to remove `deriving Inhabited` on `Hyperreal` above,
+as there is a new error about this instance having to be noncomputable, and `deriving` doesn't allow
+for adding this! -/
 namespace Hyperreal
+
+
 
 @[inherit_doc] notation "ℝ*" => Hyperreal
 
@@ -31,7 +37,7 @@ instance : IsStrictOrderedRing ℝ* :=
   inferInstanceAs (IsStrictOrderedRing (Germ _ _))
 
 /-- Natural embedding `ℝ → ℝ*`. -/
-@[coe] def ofReal : ℝ → ℝ* := const
+@[coe] noncomputable def ofReal : ℝ → ℝ* := const
 
 noncomputable instance : CoeTC ℝ ℝ* := ⟨ofReal⟩
 
@@ -124,7 +130,7 @@ theorem coe_min (x y : ℝ) : ((min x y : ℝ) : ℝ*) = min ↑x ↑y :=
   Germ.const_min _ _
 
 /-- Construct a hyperreal number from a sequence of real numbers. -/
-def ofSeq (f : ℕ → ℝ) : ℝ* := (↑f : Germ (hyperfilter ℕ : Filter ℕ) ℝ)
+noncomputable def ofSeq (f : ℕ → ℝ) : ℝ* := (↑f : Germ (hyperfilter ℕ : Filter ℕ) ℝ)
 
 theorem ofSeq_surjective : Function.Surjective ofSeq := Quot.exists_rep
 
@@ -279,7 +285,7 @@ theorem st_eq_sSup {x : ℝ*} : st x = sSup { y : ℝ | (y : ℝ*) < x } := by
       exact Set.eq_univ_of_forall hx
     | inr hx =>
       convert Real.sSup_empty.symm
-      exact Set.eq_empty_of_forall_not_mem fun y hy ↦ hy.out.not_lt (hx _)
+      exact Set.eq_empty_of_forall_notMem fun y hy ↦ hy.out.not_lt (hx _)
   · exact (isSt_sSup hx).st_eq
 
 theorem exists_st_iff_not_infinite {x : ℝ*} : (∃ r : ℝ, IsSt x r) ↔ ¬Infinite x :=

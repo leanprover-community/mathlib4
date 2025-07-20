@@ -322,7 +322,6 @@ theorem sum_range_pow (n p : ℕ) :
     · left
       congr
     · simp only [mul_comm, factorial, cast_succ, cast_pow]
-
   -- massage `hps` into our goal
   rw [hps, sum_mul]
   refine sum_congr rfl fun x _ => ?_

@@ -13,7 +13,7 @@ import Mathlib.Topology.Category.Profinite.Nobeling.Basic
 This file proves the zero and limit cases of the ordinal induction used in the proof of
 Nöbeling's theorem. See the section docstrings for more information.
 
-For the overall proof outline see `Mathlib.Topology.Category.Profinite.Nobeling.Basic`.
+For the overall proof outline see `Mathlib/Topology/Category/Profinite/Nobeling/Basic.lean`.
 
 ## References
 
@@ -156,7 +156,7 @@ def range_equiv_smaller_toFun (o : Ordinal) (x : range (π C (ord I · < o))) : 
 
 theorem range_equiv_smaller_toFun_bijective (o : Ordinal) :
     Function.Bijective (range_equiv_smaller_toFun C o) := by
-  dsimp (config := { unfoldPartialApp := true }) [range_equiv_smaller_toFun]
+  dsimp +unfoldPartialApp [range_equiv_smaller_toFun]
   refine ⟨fun a b hab ↦ ?_, fun ⟨a, b, hb⟩ ↦ ?_⟩
   · ext1
     simp only [Subtype.mk.injEq] at hab

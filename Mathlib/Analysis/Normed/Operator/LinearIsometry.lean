@@ -486,7 +486,7 @@ instance instSemilinearIsometryEquivClass :
   norm_map e := e.norm_map'
 
 /-- Shortcut instance, saving 8.5% of compilation time in
-`Mathlib.Analysis.InnerProductSpace.Adjoint`.
+`Mathlib/Analysis/InnerProductSpace/Adjoint.lean`.
 
 (This instance was pinpointed by benchmarks; we didn't do an in depth investigation why it is
 specifically needed.)

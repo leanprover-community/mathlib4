@@ -180,8 +180,8 @@ identity to `a`. This is the necessary tool used to establish `cfcHom_comp` and 
 variant `cfc_comp`.
 
 This class has instances, which can be found in
-`Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique`, in each of the common cases
-`ℂ`, `ℝ` and `ℝ≥0` as a consequence of the Stone-Weierstrass theorem.
+`Mathlib/Analysis/CStarAlgebra/ContinuousFunctionalCalculus/Unique.lean`, in each of the common
+cases `ℂ`, `ℝ` and `ℝ≥0` as a consequence of the Stone-Weierstrass theorem.
 
 This class is separate from `ContinuousFunctionalCalculus` primarily because we will later use
 `SpectrumRestricts` to derive an instance of `ContinuousFunctionalCalculus` on a scalar subring
@@ -239,9 +239,6 @@ noncomputable def cfcHom : C(spectrum R a, R) →⋆ₐ[R] A :=
 lemma cfcHom_isClosedEmbedding :
     IsClosedEmbedding <| (cfcHom ha : C(spectrum R a, R) →⋆ₐ[R] A) :=
   (ContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.1
-
-@[deprecated (since := "2024-10-20")]
-alias cfcHom_closedEmbedding := cfcHom_isClosedEmbedding
 
 @[fun_prop]
 lemma cfcHom_continuous : Continuous (cfcHom ha : C(spectrum R a, R) →⋆ₐ[R] A) :=
@@ -724,7 +721,7 @@ variable [Ring A] [StarRing A] [Algebra R A] [ContinuousFunctionalCalculus R A p
 
 lemma isUnit_cfc_iff (f : R → R) (a : A) (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
     (ha : p a := by cfc_tac) : IsUnit (cfc f a) ↔ ∀ x ∈ spectrum R a, f x ≠ 0 := by
-  rw [← spectrum.zero_not_mem_iff R, cfc_map_spectrum ..]
+  rw [← spectrum.zero_notMem_iff R, cfc_map_spectrum ..]
   simp
 
 alias ⟨_, isUnit_cfc⟩ := isUnit_cfc_iff
@@ -764,7 +761,7 @@ lemma cfc_inv_id (a : Aˣ) (ha : p a := by cfc_tac) :
   convert cfc_inv (id : R → R) (a : A) ?_
   · exact (cfc_id R (a : A)).symm
   · rintro x hx rfl
-    exact spectrum.zero_not_mem R a.isUnit hx
+    exact spectrum.zero_notMem R a.isUnit hx
 
 lemma cfc_map_div (f g : R → R) (a : A) (hg' : ∀ x ∈ spectrum R a, g x ≠ 0)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
@@ -782,13 +779,13 @@ variable [Algebra R A]
 @[fun_prop]
 lemma Units.continuousOn_inv₀_spectrum (a : Aˣ) : ContinuousOn (· ⁻¹) (spectrum R (a : A)) :=
   continuousOn_inv₀.mono <| by
-    simpa only [Set.subset_compl_singleton_iff] using spectrum.zero_not_mem R a.isUnit
+    simpa only [Set.subset_compl_singleton_iff] using spectrum.zero_notMem R a.isUnit
 
 @[fun_prop]
 lemma Units.continuousOn_zpow₀_spectrum [ContinuousMul R] (a : Aˣ) (n : ℤ) :
     ContinuousOn (· ^ n) (spectrum R (a : A)) :=
   (continuousOn_zpow₀ n).mono <| by
-    simpa only [Set.subset_compl_singleton_iff] using spectrum.zero_not_mem R a.isUnit
+    simpa only [Set.subset_compl_singleton_iff] using spectrum.zero_notMem R a.isUnit
 
 end ContinuousOnInvSpectrum
 

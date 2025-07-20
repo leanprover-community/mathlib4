@@ -133,8 +133,6 @@ theorem exchange {I J K : D ⥤ E} (α : F ⟶ G) (β : G ⟶ H) (γ : I ⟶ J) 
 
 end NatTrans
 
-open NatTrans
-
 namespace Functor
 
 /-- Flip the arguments of a bifunctor. See also `Currying.lean`. -/

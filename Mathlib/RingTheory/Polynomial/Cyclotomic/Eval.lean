@@ -152,11 +152,12 @@ theorem eval_one_cyclotomic_not_prime_pow {R : Type*} [Ring R] {n : ℕ}
     · simp only [singleton_subset_iff, mem_sdiff, mem_erase, Ne, mem_divisors, dvd_refl,
         true_and, mem_image, mem_range, exists_prop, not_exists, not_and]
       exact ⟨⟨hn.ne', hn'.ne'⟩, fun t _ => h hp _⟩
-    rw [← Int.natAbs_ofNat p, Int.natAbs_dvd_natAbs] at hpe
+    rw [← Int.natAbs_natCast p, Int.natAbs_dvd_natAbs] at hpe
     obtain ⟨t, ht⟩ := hpe
     rw [Finset.prod_singleton, ht, mul_left_comm, mul_comm, ← mul_assoc, mul_assoc] at this
     have : (p : ℤ) ^ padicValNat p n * p ∣ n := ⟨_, this⟩
-    simp only [← _root_.pow_succ, ← Int.natAbs_dvd_natAbs, Int.natAbs_ofNat, Int.natAbs_pow] at this
+    simp only [← _root_.pow_succ, ← Int.natAbs_dvd_natAbs, Int.natAbs_natCast,
+      Int.natAbs_pow] at this
     exact pow_succ_padicValNat_not_dvd hn'.ne' this
   · rintro x - y - hxy
     apply Nat.succ_injective

@@ -52,7 +52,6 @@ namespace Yoneda
 
 theorem obj_map_id {X Y : C} (f : op X ⟶ op Y) :
     (yoneda.obj X).map f (𝟙 X) = (yoneda.map f.unop).app (op Y) (𝟙 Y) := by
-  dsimp
   simp
 
 @[simp]
@@ -469,7 +468,6 @@ lemma yonedaEquiv_naturality {X Y : C} {F : Cᵒᵖ ⥤ Type v₁} (f : yoneda.o
     (g : Y ⟶ X) : F.map g.op (yonedaEquiv f) = yonedaEquiv (yoneda.map g ≫ f) := by
   change (f.app (op X) ≫ F.map g.op) (𝟙 X) = f.app (op Y) (𝟙 Y ≫ g)
   rw [← f.naturality]
-  dsimp
   simp
 
 /-- Variant of `yonedaEquiv_naturality` with general `g`. This is technically strictly more general
@@ -681,7 +679,6 @@ lemma coyonedaEquiv_naturality {X Y : C} {F : C ⥤ Type v₁} (f : coyoneda.obj
     (g : X ⟶ Y) : F.map g (coyonedaEquiv f) = coyonedaEquiv (coyoneda.map g.op ≫ f) := by
   change (f.app X ≫ F.map g) (𝟙 X) = f.app Y (g ≫ 𝟙 Y)
   rw [← f.naturality]
-  dsimp
   simp
 
 lemma coyonedaEquiv_comp {X : C} {F G : C ⥤ Type v₁} (α : coyoneda.obj (op X) ⟶ F) (β : F ⟶ G) :

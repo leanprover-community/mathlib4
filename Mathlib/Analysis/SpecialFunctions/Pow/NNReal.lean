@@ -561,11 +561,23 @@ theorem rpow_eq_top_of_nonneg (x : ℝ≥0∞) {y : ℝ} (hy0 : 0 ≤ y) : x ^ y
     exact h.right hy0
   · exact h.left
 
+-- This is an unsafe rule since we want to try `rpow_ne_top_of_ne_zero` if `y < 0`.
+@[aesop (rule_sets := [finiteness]) unsafe apply]
 theorem rpow_ne_top_of_nonneg {x : ℝ≥0∞} {y : ℝ} (hy0 : 0 ≤ y) (h : x ≠ ⊤) : x ^ y ≠ ⊤ :=
   mt (ENNReal.rpow_eq_top_of_nonneg x hy0) h
 
+-- This is an unsafe rule since we want to try `rpow_ne_top_of_nonneg'` if `x = 0`.
+@[aesop (rule_sets := [finiteness]) unsafe apply]
+theorem rpow_ne_top_of_nonneg' {y : ℝ} {x : ℝ≥0∞} (hx : 0 < x) (hx' : x ≠ ⊤) : x ^ y ≠ ⊤ :=
+  fun h ↦ by simp [rpow_eq_top_iff, hx.ne', hx'] at h
+
 theorem rpow_lt_top_of_nonneg {x : ℝ≥0∞} {y : ℝ} (hy0 : 0 ≤ y) (h : x ≠ ⊤) : x ^ y < ⊤ :=
   lt_top_iff_ne_top.mpr (ENNReal.rpow_ne_top_of_nonneg hy0 h)
+
+-- This is an unsafe rule since we want to try `rpow_ne_top_of_nonneg` if `x = 0`.
+@[aesop (rule_sets := [finiteness]) unsafe apply]
+theorem rpow_ne_top_of_ne_zero {x : ℝ≥0∞} {y : ℝ} (hx : x ≠ 0) (hx' : x ≠ ⊤) : x ^ y ≠ ⊤ := by
+  simp [rpow_eq_top_iff, hx, hx']
 
 theorem rpow_add {x : ℝ≥0∞} (y z : ℝ) (hx : x ≠ 0) (h'x : x ≠ ⊤) : x ^ (y + z) = x ^ y * x ^ z := by
   cases x with
@@ -620,7 +632,7 @@ theorem rpow_mul (x : ℝ≥0∞) (y z : ℝ) : x ^ (y * z) = (x ^ y) ^ z := by
 @[simp, norm_cast]
 theorem rpow_natCast (x : ℝ≥0∞) (n : ℕ) : x ^ (n : ℝ) = x ^ n := by
   cases x
-  · cases n <;> simp [top_rpow_of_pos (Nat.cast_add_one_pos _), top_pow (Nat.succ_pos _)]
+  · cases n <;> simp [top_rpow_of_pos (Nat.cast_add_one_pos _), top_pow (Nat.succ_ne_zero _)]
   · simp [← coe_rpow_of_nonneg _ (Nat.cast_nonneg n)]
 
 @[simp]
@@ -667,7 +679,7 @@ theorem prod_coe_rpow {ι} (s : Finset ι) (f : ι → ℝ≥0) (r : ℝ) :
   classical
   induction s using Finset.induction with
   | empty => simp
-  | insert hi ih => simp_rw [prod_insert hi, ih, ← coe_mul_rpow, coe_mul]
+  | insert _ _ hi ih => simp_rw [prod_insert hi, ih, ← coe_mul_rpow, coe_mul]
 
 theorem mul_rpow_of_ne_zero {x y : ℝ≥0∞} (hx : x ≠ 0) (hy : y ≠ 0) (z : ℝ) :
     (x * y) ^ z = x ^ z * y ^ z := by simp [*, mul_rpow_eq_ite]
@@ -680,7 +692,7 @@ theorem prod_rpow_of_ne_top {ι} {s : Finset ι} {f : ι → ℝ≥0∞} (hf : �
   classical
   induction s using Finset.induction with
   | empty => simp
-  | @insert i s hi ih =>
+  | insert i s hi ih =>
     have h2f : ∀ i ∈ s, f i ≠ ∞ := fun i hi ↦ hf i <| mem_insert_of_mem hi
     rw [prod_insert hi, prod_insert hi, ih h2f, ← mul_rpow_of_ne_top <| hf i <| mem_insert_self ..]
     apply prod_ne_top h2f
@@ -690,7 +702,7 @@ theorem prod_rpow_of_nonneg {ι} {s : Finset ι} {f : ι → ℝ≥0∞} {r : �
   classical
   induction s using Finset.induction with
   | empty => simp
-  | insert hi ih => simp_rw [prod_insert hi, ih, ← mul_rpow_of_nonneg _ _ hr]
+  | insert _ _ hi ih => simp_rw [prod_insert hi, ih, ← mul_rpow_of_nonneg _ _ hr]
 
 theorem inv_rpow (x : ℝ≥0∞) (y : ℝ) : x⁻¹ ^ y = (x ^ y)⁻¹ := by
   rcases eq_or_ne y 0 with (rfl | hy); · simp only [rpow_zero, inv_one]

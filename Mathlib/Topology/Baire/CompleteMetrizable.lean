@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.Tactic.Finiteness
 import Mathlib.Topology.Metrizable.Uniformity
 
 /-!
@@ -28,7 +29,7 @@ instance (priority := 100) BaireSpace.of_pseudoEMetricSpace_completeSpace : Bair
   refine ⟨fun f ho hd => ?_⟩
   let B : ℕ → ℝ≥0∞ := fun n => 1 / 2 ^ n
   have Bpos : ∀ n, 0 < B n := fun n ↦
-    ENNReal.div_pos one_ne_zero <| ENNReal.pow_ne_top ENNReal.coe_ne_top
+    ENNReal.div_pos one_ne_zero <| by finiteness
   /- Translate the density assumption into two functions `center` and `radius` associating
     to any n, x, δ, δpos a center and a positive radius such that
     `closedBall center radius` is included both in `f n` and in `closedBall x δ`.

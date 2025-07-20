@@ -20,17 +20,17 @@ mixed space that is a fundamental domain for the action of `(𝓞 K)ˣ` modulo t
 `u : (𝓞 K)ˣ`, by multiplication component by component with `mixedEmbedding K u`.
 
 * `NumberField.mixedEmbedding.fundamentalCone`: a cone in the mixed space, ie. a subset stable
-by multiplication by a nonzero real number, see `smul_mem_of_mem`, that is also a fundamental
-domain for the action of `(𝓞 K)ˣ` modulo torsion, see `exists_unit_smul_mem` and
-`torsion_unit_smul_mem_of_mem`.
+  by multiplication by a nonzero real number, see `smul_mem_of_mem`, that is also a fundamental
+  domain for the action of `(𝓞 K)ˣ` modulo torsion, see `exists_unit_smul_mem` and
+  `torsion_unit_smul_mem_of_mem`.
 
 * `NumberField.mixedEmbedding.fundamentalCone.idealSet`: for `J` an integral ideal, the intersection
-between the fundamental cone and the `idealLattice` defined by the image of `J`.
+  between the fundamental cone and the `idealLattice` defined by the image of `J`.
 
 * `NumberField.mixedEmbedding.fundamentalCone.idealSetEquivNorm`: for `J` an integral ideal and `n`
-a natural integer, the equivalence between the elements of `idealSet K` of norm `n` and the
-product of the set of nonzero principal ideals of `K` divisible by `J` of norm `n` and the
-torsion of `K`.
+  a natural integer, the equivalence between the elements of `idealSet K` of norm `n` and the
+  product of the set of nonzero principal ideals of `K` divisible by `J` of norm `n` and the
+  torsion of `K`.
 
 ## Tags
 
@@ -458,9 +458,9 @@ theorem integerSetEquivNorm_apply_fst {n : ℕ}
     (a : {a : integerSet K // mixedEmbedding.norm (a : mixedSpace K) = n}) :
     ((integerSetEquivNorm K n a).1 : Ideal (𝓞 K)) =
       span {(preimageOfMemIntegerSet a.val : 𝓞 K)} := by
- simp_rw [integerSetEquivNorm, Equiv.prodSubtypeFstEquivSubtypeProd, Equiv.instTrans_trans,
-   Equiv.prodCongrLeft, Equiv.trans_apply, Equiv.subtypeEquiv_apply, Equiv.coe_fn_mk,
-   Equiv.subtypeSubtypeEquivSubtypeInter_apply_coe, integerSetEquiv_apply_fst]
+  simp_rw [integerSetEquivNorm, Equiv.prodSubtypeFstEquivSubtypeProd, Equiv.trans_def,
+    Equiv.prodCongrLeft, Equiv.trans_apply, Equiv.subtypeEquiv_apply, Equiv.coe_fn_mk,
+    Equiv.subtypeSubtypeEquivSubtypeInter_apply_coe, integerSetEquiv_apply_fst]
 
 variable (K)
 
@@ -470,7 +470,7 @@ theorem card_isPrincipal_norm_eq_mul_torsion (n : ℕ) :
     Nat.card {I : (Ideal (𝓞 K))⁰ | IsPrincipal (I : Ideal (𝓞 K)) ∧
       absNorm (I : Ideal (𝓞 K)) = n} * torsionOrder K =
         Nat.card {a : integerSet K | mixedEmbedding.norm (a : mixedSpace K) = n} := by
-  rw [torsionOrder, PNat.mk_coe, ← Nat.card_eq_fintype_card, ← Nat.card_prod]
+  rw [torsionOrder, ← Nat.card_eq_fintype_card, ← Nat.card_prod]
   exact Nat.card_congr (integerSetEquivNorm K n).symm
 
 variable (J : (Ideal (𝓞 K))⁰)
@@ -513,7 +513,7 @@ def idealSetEquiv : idealSet K J ≃
     ⟨fun _ _ h ↦ (by
         simp_rw [Subtype.ext_iff_val, idealSetMap_apply] at h
         rwa [Subtype.ext_iff_val]),
-    fun ⟨a, ha₂⟩ ↦ ⟨⟨a.val,  mem_idealSet.mpr ⟨a.prop.1,
+    fun ⟨a, ha₂⟩ ↦ ⟨⟨a.val, mem_idealSet.mpr ⟨a.prop.1,
         ⟨preimageOfMemIntegerSet a, ha₂, mixedEmbedding_preimageOfMemIntegerSet a⟩⟩⟩, rfl⟩⟩
 
 variable {K J}
@@ -577,7 +577,7 @@ theorem card_isPrincipal_dvd_norm_le (s : ℝ) :
         Nat.card {a : idealSet K J // mixedEmbedding.norm (a : mixedSpace K) ≤ s} := by
   obtain hs | hs := le_or_gt 0 s
   · simp_rw [← intNorm_idealSetEquiv_apply, ← Nat.le_floor_iff hs]
-    rw [torsionOrder, PNat.mk_coe, ← Nat.card_eq_fintype_card, ← Nat.card_prod]
+    rw [torsionOrder, ← Nat.card_eq_fintype_card, ← Nat.card_prod]
     refine Nat.card_congr <| @Equiv.ofFiberEquiv _ (γ := Finset.Iic ⌊s⌋₊) _
       (fun I ↦ ⟨absNorm I.1.val.1, Finset.mem_Iic.mpr I.1.prop.2.2⟩)
       (fun a ↦ ⟨intNorm (idealSetEquiv K J a.1).1, Finset.mem_Iic.mpr a.prop⟩) fun ⟨i, hi⟩ ↦ ?_

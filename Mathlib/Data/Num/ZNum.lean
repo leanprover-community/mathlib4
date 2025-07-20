@@ -10,7 +10,7 @@ import Mathlib.Data.Num.Lemmas
 /-!
 # Properties of the `ZNum` representation of integers
 
-This file was split from `Mathlib.Data.Num.Lemmas` to keep the former under 1500 lines.
+This file was split from `Mathlib/Data/Num/Lemmas.lean` to keep the former under 1500 lines.
 -/
 
 open Int
@@ -320,10 +320,10 @@ theorem cmp_to_int : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℤ) < n) (m = n
   | 0, 0 => rfl
   | pos a, pos b => by
     have := PosNum.cmp_to_nat a b; revert this; dsimp [cmp]
-    cases PosNum.cmp a b <;> dsimp <;> [simp; exact congr_arg pos; simp [GT.gt]]
+    cases PosNum.cmp a b <;> [simp; exact congr_arg pos; simp [GT.gt]]
   | neg a, neg b => by
     have := PosNum.cmp_to_nat b a; revert this; dsimp [cmp]
-    cases PosNum.cmp b a <;> dsimp <;> [simp; simp +contextual; simp [GT.gt]]
+    cases PosNum.cmp b a <;> [simp; simp +contextual; simp [GT.gt]]
   | pos _, 0 => PosNum.cast_pos _
   | pos _, neg _ => lt_trans (neg_lt_zero.2 <| PosNum.cast_pos _) (PosNum.cast_pos _)
   | 0, neg _ => neg_lt_zero.2 <| PosNum.cast_pos _
@@ -443,7 +443,7 @@ private theorem add_le_add_left : ∀ (a b : ZNum), a ≤ b → ∀ (c : ZNum), 
 instance commRing : CommRing ZNum :=
   { ZNum.addCommGroup, ZNum.addMonoidWithOne with
     mul := (· * ·)
-    mul_assoc a b c := show a * b * c = a * (b * c) by transfer
+    mul_assoc a b c := by transfer
     zero_mul := by transfer
     mul_zero := by transfer
     one_mul := by transfer

@@ -177,8 +177,8 @@ theorem surjective_of_injective_endomorphism (f : M →ₗ[R] M) (s : Injective 
   rw [IsArtinian, WellFoundedLT, isWellFounded_iff]
   refine (RelEmbedding.natGT (LinearMap.range <| f ^ ·) ?_).not_wellFounded_of_decreasing_seq
   intro n
-  simp_rw [pow_succ, LinearMap.mul_eq_comp, LinearMap.range_comp, ← Submodule.map_top (f ^ n)]
-  refine Submodule.map_strictMono_of_injective (LinearMap.iterate_injective s n) (Ne.lt_top ?_)
+  simp_rw [pow_succ, Module.End.mul_eq_comp, LinearMap.range_comp, ← Submodule.map_top (f ^ n)]
+  refine Submodule.map_strictMono_of_injective (Module.End.iterate_injective s n) (Ne.lt_top ?_)
   rwa [Ne, LinearMap.range_eq_top]
 
 /-- Any injective endomorphism of an Artinian module is bijective. -/
@@ -233,8 +233,9 @@ instance isArtinian_of_quotient_of_artinian
 
 theorem isArtinian_of_range_eq_ker [IsArtinian R M] [IsArtinian R P] (f : M →ₗ[R] N) (g : N →ₗ[R] P)
     (h : LinearMap.range f = LinearMap.ker g) : IsArtinian R N :=
-  wellFounded_lt_exact_sequence (LinearMap.range f) (Submodule.map (f.ker.liftQ f le_rfl))
-    (Submodule.comap (f.ker.liftQ f le_rfl))
+  wellFounded_lt_exact_sequence (LinearMap.range f)
+    (Submodule.map ((LinearMap.ker f).liftQ f le_rfl))
+    (Submodule.comap ((LinearMap.ker f).liftQ f le_rfl))
     (Submodule.comap g.rangeRestrict) (Submodule.map g.rangeRestrict)
     (Submodule.gciMapComap <| LinearMap.ker_eq_bot.mp <| Submodule.ker_liftQ_eq_bot _ _ _ le_rfl)
     (Submodule.giMapComap g.surjective_rangeRestrict)
@@ -302,7 +303,7 @@ variable [IsArtinian R M]
 
 /-- For any endomorphism of an Artinian module, any sufficiently high iterate has codisjoint kernel
 and range. -/
-theorem eventually_codisjoint_ker_pow_range_pow (f : M →ₗ[R] M) :
+theorem eventually_codisjoint_ker_pow_range_pow (f : Module.End R M) :
     ∀ᶠ n in atTop, Codisjoint (LinearMap.ker (f ^ n)) (LinearMap.range (f ^ n)) := by
   obtain ⟨n, hn : ∀ m, n ≤ m → LinearMap.range (f ^ n) = LinearMap.range (f ^ m)⟩ :=
     IsArtinian.monotone_stabilizes f.iterateRange
@@ -319,7 +320,7 @@ theorem eventually_codisjoint_ker_pow_range_pow (f : M →ₗ[R] M) :
 /-- This is the Fitting decomposition of the module `M` with respect to the endomorphism `f`.
 
 See also `LinearMap.isCompl_iSup_ker_pow_iInf_range_pow` for an alternative spelling. -/
-theorem eventually_isCompl_ker_pow_range_pow [IsNoetherian R M] (f : M →ₗ[R] M) :
+theorem eventually_isCompl_ker_pow_range_pow [IsNoetherian R M] (f : Module.End R M) :
     ∀ᶠ n in atTop, IsCompl (LinearMap.ker (f ^ n)) (LinearMap.range (f ^ n)) := by
   filter_upwards [f.eventually_disjoint_ker_pow_range_pow.and
     f.eventually_codisjoint_ker_pow_range_pow] with n hn
@@ -375,7 +376,7 @@ theorem isArtinian_of_tower (R) {S M} [Semiring R] [Semiring S] [AddCommMonoid M
     [Module S M] [Module R M] [IsScalarTower R S M] (h : IsArtinian R M) : IsArtinian S M :=
   ⟨(Submodule.restrictScalarsEmbedding R S M).wellFounded h.wf⟩
 
--- See `Mathlib.RingTheory.Artinian.Ring`
+-- See `Mathlib/RingTheory/Artinian/Ring.lean`
 assert_not_exists IsLocalization LocalRing
 
 /-- A ring is Artinian if it is Artinian as a module over itself.
@@ -383,7 +384,7 @@ assert_not_exists IsLocalization LocalRing
 Strictly speaking, this should be called `IsLeftArtinianRing` but we omit the `Left` for
 convenience in the commutative case. For a right Artinian ring, use `IsArtinian Rᵐᵒᵖ R`.
 
-For equivalent definitions, see `Mathlib.RingTheory.Artinian.Ring`.
+For equivalent definitions, see `Mathlib/RingTheory/Artinian/Ring.lean`.
 -/
 @[stacks 00J5]
 abbrev IsArtinianRing (R) [Semiring R] :=

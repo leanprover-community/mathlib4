@@ -171,7 +171,7 @@ theorem zero_modByMonic (p : R[X]) : 0 %ₘ p = 0 := by
   unfold modByMonic divModByMonicAux
   dsimp
   by_cases hp : Monic p
-  · rw [dif_pos hp, if_neg (mt And.right (not_not_intro rfl)), Prod.snd_zero]
+  · rw [dif_pos hp, if_neg (mt And.right (not_not_intro rfl))]
   · rw [dif_neg hp]
 
 @[simp]
@@ -180,7 +180,7 @@ theorem zero_divByMonic (p : R[X]) : 0 /ₘ p = 0 := by
   unfold divByMonic divModByMonicAux
   dsimp
   by_cases hp : Monic p
-  · rw [dif_pos hp, if_neg (mt And.right (not_not_intro rfl)), Prod.fst_zero]
+  · rw [dif_pos hp, if_neg (mt And.right (not_not_intro rfl))]
   · rw [dif_neg hp]
 
 @[simp]
@@ -701,7 +701,7 @@ lemma eval_divByMonic_eq_trailingCoeff_comp {p : R[X]} {t : R} :
 
 /- Porting note: the ML3 proof no longer worked because of a conflict in the
 inferred type and synthesized type for `DecidableRel` when using `Nat.le_find_iff` from
-`Mathlib.Algebra.Polynomial.Div` After some discussion on [Zulip]
+`Mathlib/Algebra/Polynomial/Div.lean` After some discussion on [Zulip]
 (https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/decidability.20leakage)
 introduced `Polynomial.rootMultiplicity_eq_nat_find_of_nonzero` to contain the issue
 -/

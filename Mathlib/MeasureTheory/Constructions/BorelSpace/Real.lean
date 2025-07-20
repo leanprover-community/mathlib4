@@ -262,10 +262,8 @@ instance instMeasurableInv : MeasurableInv ℝ≥0∞ :=
   ⟨continuous_inv.measurable⟩
 
 instance : MeasurableSMul ℝ≥0 ℝ≥0∞ where
-  measurable_const_smul := by
-    simp_rw [ENNReal.smul_def]
-    exact fun _ ↦ MeasurableSMul.measurable_const_smul _
-  measurable_smul_const := fun x ↦ by
+  measurable_const_smul _ := by simp_rw [ENNReal.smul_def]; exact measurable_const_smul _
+  measurable_smul_const _ := by
     simp_rw [ENNReal.smul_def]
     exact measurable_coe_nnreal_ennreal.mul_const _
 

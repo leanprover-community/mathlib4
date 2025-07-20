@@ -99,6 +99,8 @@ def mathlibLabels : Array Label := #[
   { label := "t-combinatorics" },
   { label := "t-computability" },
   { label := "t-condensed" },
+  { label := "t-convex-geometry",
+    dirs := #["Mathlib" / "Geometry" / "Convex"] },
   { label := "t-data"
     dirs := #[
       "Mathlib" / "Control",

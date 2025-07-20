@@ -62,12 +62,8 @@ theorem of_comp {Y Z : C} {q n : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFac
 
 theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFacesVanish q φ)
     (hnaq : n = a + q) :
-    φ ≫ (Hσ q).f (n + 1) =
-      -φ ≫ X.δ ⟨a + 1, Nat.succ_lt_succ (Nat.lt_succ_iff.mpr (Nat.le.intro hnaq.symm))⟩ ≫
-        X.σ ⟨a, Nat.lt_succ_iff.mpr (Nat.le.intro hnaq.symm)⟩ := by
-  have hnaq_shift : ∀ d : ℕ, n + d = a + d + q := by
-    intro d
-    rw [add_assoc, add_comm d, ← add_assoc, hnaq]
+    φ ≫ (Hσ q).f (n + 1) = -φ ≫ X.δ ⟨a + 1, by omega⟩ ≫ X.σ ⟨a, by omega⟩ := by
+  have hnaq_shift (d : ℕ) : n + d = a + d + q := by omega
   rw [Hσ, Homotopy.nullHomotopicMap'_f (c_mk (n + 2) (n + 1) rfl) (c_mk (n + 1) n rfl),
     hσ'_eq hnaq (c_mk (n + 1) n rfl), hσ'_eq (hnaq_shift 1) (c_mk (n + 2) (n + 1) rfl)]
   simp only [AlternatingFaceMapComplex.obj_d_eq, eqToHom_refl, comp_id, comp_sum, sum_comp,
@@ -142,23 +138,16 @@ theorem comp_Hσ_eq_zero {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : Hi
   · simp only [hσ'_eq (show n + 1 = 0 + q by omega) (c_mk (n + 2) (n + 1) rfl), pow_zero,
       Fin.mk_zero, one_zsmul, eqToHom_refl, comp_id, comp_sum,
       AlternatingFaceMapComplex.obj_d_eq]
-    rw [← Fin.sum_congr' _ (show 2 + (n + 1) = n + 1 + 2 by omega), Fin.sum_trunc]
-    · simp only [Fin.sum_univ_castSucc, Fin.sum_univ_zero, zero_add, Fin.last, Fin.castLE_mk,
-        Fin.cast_mk, Fin.castSucc_mk]
-      simp only [Fin.mk_zero, Fin.val_zero, pow_zero, one_zsmul, Fin.mk_one, Fin.val_one, pow_one,
-        neg_smul, comp_neg]
-      rw [← Fin.castSucc_zero (n := n + 1), δ_comp_σ_self, ← Fin.succ_zero_eq_one, δ_comp_σ_succ,
+    -- All terms of the sum but the first two are zeros
+    rw [Fin.sum_univ_succ, Fin.sum_univ_succ, Fintype.sum_eq_zero, add_zero]
+    · simp only [Fin.val_zero, Fin.val_succ, Fin.coe_castSucc, zero_add, pow_zero, one_smul,
+        pow_one, neg_smul, comp_neg, ← Fin.castSucc_zero (n := n + 2), δ_comp_σ_self, δ_comp_σ_succ,
         add_neg_cancel]
     · intro j
-      dsimp [Fin.cast, Fin.castLE, Fin.castLT]
       rw [comp_zsmul, comp_zsmul, δ_comp_σ_of_gt', v.comp_δ_eq_zero_assoc, zero_comp, zsmul_zero]
-      · simp only [Fin.lt_iff_val_lt_val]
-        dsimp [Fin.succ]
-        omega
-      · intro h
-        simp only [Fin.pred, Fin.subNat, Fin.ext_iff, Nat.succ_add_sub_one,
-          Fin.val_zero, add_eq_zero, false_and, reduceCtorEq] at h
-      · simp only [Fin.pred, Fin.subNat, Nat.pred_eq_sub_one, Nat.succ_add_sub_one]
+      · simp only [Fin.succ_lt_succ_iff, j.succ_pos]
+      · simp [Fin.succ_ne_zero]
+      · dsimp
         omega
 
 theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFacesVanish q φ) :

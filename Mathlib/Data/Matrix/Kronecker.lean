@@ -107,15 +107,17 @@ theorem kroneckerMap_smul_right [SMul R β] [SMul R γ] (f : α → β → γ) (
     kroneckerMap f A (r • B) = r • kroneckerMap f A B :=
   ext fun _ _ => hf _ _
 
-theorem kroneckerMap_stdBasisMatrix_stdBasisMatrix
+theorem kroneckerMap_single_single
     [Zero α] [Zero β] [Zero γ] [DecidableEq l] [DecidableEq m] [DecidableEq n] [DecidableEq p]
     (i₁ : l) (j₁ : m) (i₂ : n) (j₂ : p)
     (f : α → β → γ) (hf₁ : ∀ b, f 0 b = 0) (hf₂ : ∀ a, f a 0 = 0) (a : α) (b : β) :
-    kroneckerMap f (stdBasisMatrix i₁ j₁ a) (stdBasisMatrix i₂ j₂ b) =
-      stdBasisMatrix (i₁, i₂) (j₁, j₂) (f a b) := by
+    kroneckerMap f (single i₁ j₁ a) (single i₂ j₂ b) = single (i₁, i₂) (j₁, j₂) (f a b) := by
   ext ⟨i₁', i₂'⟩ ⟨j₁', j₂'⟩
-  dsimp [stdBasisMatrix]
+  dsimp [single]
   aesop
+
+@[deprecated (since := "2025-05-05")]
+alias kroneckerMap_stdBasisMatrix_stdBasisMatrix := kroneckerMap_single_single
 
 theorem kroneckerMap_diagonal_diagonal [Zero α] [Zero β] [Zero γ] [DecidableEq m] [DecidableEq n]
     (f : α → β → γ) (hf₁ : ∀ b, f 0 b = 0) (hf₂ : ∀ a, f a 0 = 0) (a : m → α) (b : n → β) :
@@ -292,11 +294,14 @@ theorem kronecker_smul [Mul α] [SMul R α] [SMulCommClass R α α] (r : R)
     (A : Matrix l m α) (B : Matrix n p α) : A ⊗ₖ (r • B) = r • A ⊗ₖ B :=
   kroneckerMap_smul_right _ _ (fun _ _ => mul_smul_comm _ _ _) _ _
 
-theorem stdBasisMatrix_kronecker_stdBasisMatrix
+theorem single_kronecker_single
     [MulZeroClass α] [DecidableEq l] [DecidableEq m] [DecidableEq n] [DecidableEq p]
     (ia : l) (ja : m) (ib : n) (jb : p) (a b : α) :
-    stdBasisMatrix ia ja a ⊗ₖ stdBasisMatrix ib jb b = stdBasisMatrix (ia, ib) (ja, jb) (a * b) :=
-  kroneckerMap_stdBasisMatrix_stdBasisMatrix _ _ _ _ _ zero_mul mul_zero _ _
+    single ia ja a ⊗ₖ single ib jb b = single (ia, ib) (ja, jb) (a * b) :=
+  kroneckerMap_single_single _ _ _ _ _ zero_mul mul_zero _ _
+
+@[deprecated (since := "2025-05-05")]
+alias stdBasisMatrix_kronecker_stdBasisMatrix := single_kronecker_single
 
 theorem diagonal_kronecker_diagonal [MulZeroClass α] [DecidableEq m] [DecidableEq n] (a : m → α)
     (b : n → α) : diagonal a ⊗ₖ diagonal b = diagonal fun mn => a mn.1 * b mn.2 :=
@@ -460,12 +465,14 @@ theorem kroneckerTMul_smul (r : R) (A : Matrix l m α) (B : Matrix n p α) :
     A ⊗ₖₜ[R] (r • B) = r • A ⊗ₖₜ B :=
   kroneckerMap_smul_right _ _ (fun _ _ => tmul_smul _ _ _) _ _
 
-theorem stdBasisMatrix_kroneckerTMul_stdBasisMatrix
+theorem single_kroneckerTMul_single
     [DecidableEq l] [DecidableEq m] [DecidableEq n] [DecidableEq p]
     (i₁ : l) (j₁ : m) (i₂ : n) (j₂ : p) (a : α) (b : β) :
-    stdBasisMatrix i₁ j₁ a ⊗ₖₜ[R] stdBasisMatrix i₂ j₂ b =
-      stdBasisMatrix (i₁, i₂) (j₁, j₂) (a ⊗ₜ b) :=
-  kroneckerMap_stdBasisMatrix_stdBasisMatrix _ _ _ _ _ (zero_tmul _) (tmul_zero _) _ _
+    single i₁ j₁ a ⊗ₖₜ[R] single i₂ j₂ b = single (i₁, i₂) (j₁, j₂) (a ⊗ₜ b) :=
+  kroneckerMap_single_single _ _ _ _ _ (zero_tmul _) (tmul_zero _) _ _
+
+@[deprecated (since := "2025-05-05")]
+alias stdBasisMatrix_kroneckerTMul_stdBasisMatrix := single_kroneckerTMul_single
 
 theorem diagonal_kroneckerTMul_diagonal [DecidableEq m] [DecidableEq n] (a : m → α) (b : n → α) :
     diagonal a ⊗ₖₜ[R] diagonal b = diagonal fun mn => a mn.1 ⊗ₜ b mn.2 :=
@@ -532,8 +539,7 @@ theorem det_kroneckerTMul [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n
     (A : Matrix m m α) (B : Matrix n n β) :
     det (A ⊗ₖₜ[R] B) = (det A ^ Fintype.card n) ⊗ₜ[R] (det B ^ Fintype.card m) := by
   refine (det_kroneckerMapBilinear (TensorProduct.mk R α β) tmul_mul_tmul _ _).trans ?_
-  simp (config := { eta := false }) only [mk_apply, ← includeLeft_apply (S := R),
-    ← includeRight_apply]
+  simp -eta only [mk_apply, ← includeLeft_apply (S := R), ← includeRight_apply]
   simp only [← AlgHom.mapMatrix_apply, ← AlgHom.map_det]
   simp only [includeLeft_apply, includeRight_apply, tmul_pow, tmul_mul_tmul, one_pow,
     _root_.mul_one, _root_.one_mul]

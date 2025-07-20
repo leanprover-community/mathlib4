@@ -215,7 +215,7 @@ theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
   -- we consider the cases `a = 0`, `a` is a nonzero square and `a` is a nonsquare in turn
   by_cases h₀ : a = 0
   · simp only [h₀, sq_eq_zero_iff, Set.setOf_eq_eq_singleton, Set.toFinset_card,
-    Set.card_singleton, Int.ofNat_succ, Int.ofNat_zero, MulChar.map_zero]
+    Set.card_singleton, Int.natCast_succ, Int.ofNat_zero, MulChar.map_zero]
   · set s := {x : F | x ^ 2 = a}.toFinset
     by_cases h : IsSquare a
     · rw [(quadraticChar_one_iff_isSquare h₀).mpr h]
@@ -231,7 +231,7 @@ theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
       rw [h₁, List.toFinset_cons, List.toFinset_cons, List.toFinset_nil]
       exact card_pair (Ne.symm (mt (Ring.eq_self_iff_eq_zero_of_char_ne_two hF).mp h₀))
     · rw [quadraticChar_neg_one_iff_not_isSquare.mpr h]
-      simp only [neg_add_cancel, Int.natCast_eq_zero, card_eq_zero, eq_empty_iff_forall_not_mem]
+      simp only [neg_add_cancel, Int.natCast_eq_zero, card_eq_zero, eq_empty_iff_forall_notMem]
       simpa [s, isSquare_iff_exists_sq, eq_comm] using h
 
 /-- The sum over the values of the quadratic character is zero when the characteristic is odd. -/

@@ -3,10 +3,11 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.AlgebraicGeometry.Gluing
 import Mathlib.CategoryTheory.Limits.Opposites
-import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
+import Mathlib.CategoryTheory.Monoidal.Cartesian.Over
 
 /-!
 # Fibred products of schemes
@@ -87,7 +88,7 @@ abbrev fV (i j : 𝒰.J) : v 𝒰 f g i j ⟶ pullback (𝒰.map i ≫ f) g :=
   pullback.fst _ _
 
 /-- The map `((Xᵢ ×[Z] Y) ×[X] Xⱼ) ×[Xᵢ ×[Z] Y] ((Xᵢ ×[Z] Y) ×[X] Xₖ)` ⟶
- `((Xⱼ ×[Z] Y) ×[X] Xₖ) ×[Xⱼ ×[Z] Y] ((Xⱼ ×[Z] Y) ×[X] Xᵢ)` needed for gluing -/
+`((Xⱼ ×[Z] Y) ×[X] Xₖ) ×[Xⱼ ×[Z] Y] ((Xⱼ ×[Z] Y) ×[X] Xᵢ)` needed for gluing -/
 def t' (i j k : 𝒰.J) :
     pullback (fV 𝒰 f g i j) (fV 𝒰 f g i k) ⟶ pullback (fV 𝒰 f g j k) (fV 𝒰 f g j i) := by
   refine (pullbackRightPullbackFstIso ..).hom ≫ ?_
@@ -457,6 +458,12 @@ instance isAffine_of_isAffine_isAffine_isAffine {X Y Z : Scheme}
         (Scheme.toSpecΓ_naturality f) (Scheme.toSpecΓ_naturality g) ≫
       (PreservesPullback.iso Scheme.Spec _ _).inv)
 
+-- The converse is also true. See `Scheme.isEmpty_pullback_iff`.
+theorem _root_.AlgebraicGeometry.Scheme.isEmpty_pullback
+    {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S)
+    (H : Disjoint (Set.range f.base) (Set.range g.base)) : IsEmpty ↑(Limits.pullback f g) :=
+  isEmpty_of_commSq (IsPullback.of_hasPullback f g).toCommSq H
+
 /-- Given an open cover `{ Xᵢ }` of `X`, then `X ×[Z] Y` is covered by `Xᵢ ×[Z] Y`. -/
 @[simps! J obj map]
 def openCoverOfLeft (𝒰 : OpenCover X) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover (pullback f g) := by
@@ -688,5 +695,13 @@ lemma diagonal_Spec_map :
   · congr 1; ext x; show x = Algebra.TensorProduct.lmul' R (S := S) (1 ⊗ₜ[R] x); simp
 
 end Spec
+
+section CartesianMonoidalCategory
+variable {S : Scheme}
+
+instance : CartesianMonoidalCategory (Over S) := Over.cartesianMonoidalCategory _
+instance : BraidedCategory (Over S) := .ofCartesianMonoidalCategory
+
+end CartesianMonoidalCategory
 
 end AlgebraicGeometry

@@ -18,19 +18,19 @@ associated to a number field of signature `K` and proves several existence theor
 ## Main definitions and results
 
 * `NumberField.mixedEmbedding.convexBodyLT`: The set of points `x` such that `‖x w‖ < f w` for all
-infinite places `w` with `f : InfinitePlace K → ℝ≥0`.
+  infinite places `w` with `f : InfinitePlace K → ℝ≥0`.
 
 * `NumberField.mixedEmbedding.convexBodySum`: The set of points `x` such that
-`∑ w real, ‖x w‖ + 2 * ∑ w complex, ‖x w‖ ≤ B`
+  `∑ w real, ‖x w‖ + 2 * ∑ w complex, ‖x w‖ ≤ B`
 
 * `NumberField.mixedEmbedding.exists_ne_zero_mem_ideal_lt`: Let `I` be a fractional ideal of `K`.
-Assume that `f` is such that `minkowskiBound K I < volume (convexBodyLT K f)`, then there exists a
-nonzero algebraic number `a` in `I` such that `w a < f w` for all infinite places `w`.
+  Assume that `f` is such that `minkowskiBound K I < volume (convexBodyLT K f)`, then there exists a
+  nonzero algebraic number `a` in `I` such that `w a < f w` for all infinite places `w`.
 
 * `NumberField.mixedEmbedding.exists_ne_zero_mem_ideal_of_norm_le`: Let `I` be a fractional ideal
-of `K`. Assume that `B` is such that `minkowskiBound K I < volume (convexBodySum K B)` (see
-`convexBodySum_volume` for the computation of this volume), then there exists a nonzero algebraic
-number `a` in `I` such that `|Norm a| < (B / d) ^ d` where `d` is the degree of `K`.
+  of `K`. Assume that `B` is such that `minkowskiBound K I < volume (convexBodySum K B)` (see
+  `convexBodySum_volume` for the computation of this volume), then there exists a nonzero algebraic
+  number `a` in `I` such that `|Norm a| < (B / d) ^ d` where `d` is the degree of `K`.
 
 ## Tags
 
@@ -256,7 +256,7 @@ norm and it used to define `convexBodySum`. -/
 noncomputable abbrev convexBodySumFun (x : mixedSpace K) : ℝ := ∑ w, mult w * normAtPlace w x
 
 theorem convexBodySumFun_apply (x : mixedSpace K) :
-    convexBodySumFun x = ∑ w,  mult w * normAtPlace w x := rfl
+    convexBodySumFun x = ∑ w, mult w * normAtPlace w x := rfl
 
 open scoped Classical in
 theorem convexBodySumFun_apply' (x : mixedSpace K) :
@@ -290,7 +290,7 @@ theorem convexBodySumFun_eq_zero_iff (x : mixedSpace K) :
   conv =>
     enter [1, w, hw]
     rw [mul_left_mem_nonZeroDivisors_eq_zero_iff
-      (mem_nonZeroDivisors_iff_ne_zero.mpr <| Nat.cast_ne_zero.mpr mult_ne_zero)]
+      (mem_nonZeroDivisors_iff_ne_zero.mpr mult_coe_ne_zero)]
   simp_rw [Finset.mem_univ, true_implies]
 
 open scoped Classical in
@@ -411,8 +411,8 @@ theorem convexBodySum_volume :
           ← Finset.sum_neg_distrib, exp_add, exp_sum, ← integral_prod_mul, volume_eq_prod]
       _ = (∫ x : ℝ, exp (-|x|)) ^ nrRealPlaces K *
               (∫ x : ℂ, Real.exp (-2 * ‖x‖)) ^ nrComplexPlaces K := by
-        rw [integral_fintype_prod_eq_pow _ (fun x => exp (- ‖x‖)), integral_fintype_prod_eq_pow _
-          (fun x => exp (- 2 * ‖x‖))]
+        rw [integral_fintype_prod_volume_eq_pow _ (fun x => exp (- ‖x‖)),
+          integral_fintype_prod_volume_eq_pow _ (fun x => exp (- 2 * ‖x‖))]
         simp_rw [norm_eq_abs]
       _ =  (2 * Gamma (1 / 1 + 1)) ^ nrRealPlaces K *
               (π * (2 : ℝ) ^ (-(2 : ℝ) / 1) * Gamma (2 / 1 + 1)) ^ nrComplexPlaces K := by
@@ -461,9 +461,9 @@ theorem volume_fundamentalDomain_fractionalIdealLatticeBasis :
 
 theorem minkowskiBound_lt_top : minkowskiBound K I < ⊤ := by
   classical
-  refine ENNReal.mul_lt_top ?_ ?_
-  · exact (fundamentalDomain_isBounded _).measure_lt_top
-  · exact ENNReal.pow_lt_top (lt_top_iff_ne_top.mpr ENNReal.ofNat_ne_top) _
+  -- FIXME: Make `finiteness` work here
+  exact ENNReal.mul_lt_top (fundamentalDomain_isBounded _).measure_lt_top <|
+    ENNReal.pow_lt_top ENNReal.ofNat_lt_top
 
 theorem minkowskiBound_pos : 0 < minkowskiBound K I := by
   classical
@@ -535,7 +535,7 @@ theorem exists_primitive_element_lt_of_isReal {w₀ : InfinitePlace K} (hw₀ : 
     rw [convexBodyLT_volume, ← Finset.prod_erase_mul _ _ (Finset.mem_univ w₀)]
     simp_rw [ite_pow, one_pow]
     rw [Finset.prod_ite_eq']
-    simp_rw [Finset.not_mem_erase, ite_false, mult, hw₀, ite_true, one_mul, pow_one]
+    simp_rw [Finset.notMem_erase, ite_false, mult, hw₀, ite_true, one_mul, pow_one]
     exact hB
   obtain ⟨a, h_nz, h_le⟩ := exists_ne_zero_mem_ringOfIntegers_lt K this
   refine ⟨a, ?_, fun w ↦ lt_of_lt_of_le (h_le w) ?_⟩
@@ -553,7 +553,7 @@ theorem exists_primitive_element_lt_of_isComplex {w₀ : InfinitePlace K} (hw₀
     rw [convexBodyLT'_volume, ← Finset.prod_erase_mul _ _ (Finset.mem_univ w₀)]
     simp_rw [ite_pow, one_pow]
     rw [Finset.prod_ite_eq']
-    simp_rw [Finset.not_mem_erase, ite_false, mult, not_isReal_iff_isComplex.mpr hw₀,
+    simp_rw [Finset.notMem_erase, ite_false, mult, not_isReal_iff_isComplex.mpr hw₀,
       ite_true, ite_false, one_mul, NNReal.sq_sqrt]
     exact hB
   obtain ⟨a, h_nz, h_le, h_le₀⟩ := exists_ne_zero_mem_ringOfIntegers_lt' K ⟨w₀, hw₀⟩ this
@@ -602,7 +602,7 @@ theorem exists_ne_zero_mem_ideal_of_norm_le {B : ℝ}
   obtain ⟨a, ha, rfl⟩ := hx
   refine ⟨a, ha, by simpa using h_nz, ?_⟩
   rw [← rpow_natCast, ← rpow_le_rpow_iff (by simp only [Rat.cast_abs, abs_nonneg])
-      (rpow_nonneg h2 _) h1, ← rpow_mul h2,  mul_inv_cancel₀ (Nat.cast_ne_zero.mpr
+      (rpow_nonneg h2 _) h1, ← rpow_mul h2, mul_inv_cancel₀ (Nat.cast_ne_zero.mpr
       (ne_of_gt finrank_pos)), rpow_one, le_div_iff₀' (Nat.cast_pos.mpr finrank_pos)]
   refine le_trans ?_ ((convexBodySum_mem K B).mp h_mem)
   rw [← le_div_iff₀' (Nat.cast_pos.mpr finrank_pos), ← sum_mult_eq, Nat.cast_sum]

@@ -68,7 +68,7 @@ noncomputable def Scheme.fromSpecStalk (X : Scheme) (x : X) :
 @[simps over] noncomputable
 instance (X : Scheme.{u}) (x : X) : (Spec (X.presheaf.stalk x)).Over X := ⟨X.fromSpecStalk x⟩
 
-@[simps! over] noncomputable
+noncomputable
 instance (X : Scheme.{u}) (x : X) : (Spec (X.presheaf.stalk x)).CanonicallyOver X where
 
 @[simp]

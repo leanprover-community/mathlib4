@@ -84,13 +84,12 @@ variable (p)
 
 /-- `WittVector.verschiebung` has polynomial structure given by `WittVector.verschiebungPoly`.
 -/
--- Porting note: replaced `@[is_poly]` with `instance`.
 instance verschiebungFun_isPoly : IsPoly p fun R _Rcr => @verschiebungFun p R _Rcr := by
   use verschiebungPoly
   simp only [aeval_verschiebung_poly', eq_self_iff_true, forall₃_true_iff]
 
--- Porting note: we add this example as a verification that Lean 4's instance resolution
--- can handle what in Lean 3 we needed the `@[is_poly]` attribute to help with.
+-- We add this example as a verification that Lean 4's instance resolution can handle the `IsPoly`
+-- typeclass, whereas Lean 3 needed a bespoke `@[is_poly]` attribute.
 example (p : ℕ) (f : ⦃R : Type _⦄ → [CommRing R] → WittVector p R → WittVector p R) [IsPoly p f] :
     IsPoly p (fun (R : Type*) (I : CommRing R) ↦ verschiebungFun ∘ (@f R I)) :=
   inferInstance

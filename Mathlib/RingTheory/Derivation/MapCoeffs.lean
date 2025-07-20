@@ -175,7 +175,7 @@ lemma algHom_deriv (f : R →ₐ[A] R') (hf : Function.Injective f) (x : R) (h :
     simp only [AlgHom.coe_comp, Function.comp_apply, ne_eq, map_eq_zero_iff f hf]
     apply Separable.aeval_derivative_ne_zero h (minpoly.aeval A x)
   conv => lhs; rw [Polynomial.aeval_algHom]
-  simp [← map_mul]
+  simp only [AlgHom.coe_comp, Function.comp_apply, ← map_mul]
   apply add_left_cancel (a := aeval (f x) (mapCoeffs p))
   rw [← deriv_aeval_eq]
   simp only [aeval_algHom, AlgHom.coe_comp, Function.comp_apply, ← map_add, ← deriv_aeval_eq,

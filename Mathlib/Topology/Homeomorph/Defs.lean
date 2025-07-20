@@ -227,6 +227,12 @@ theorem isEmbedding (h : X ≃ₜ Y) : IsEmbedding h := ⟨h.isInducing, h.injec
 @[deprecated (since := "2024-10-26")]
 alias embedding := isEmbedding
 
+protected theorem discreteTopology [DiscreteTopology X] (h : X ≃ₜ Y) : DiscreteTopology Y :=
+  h.symm.isEmbedding.discreteTopology
+
+theorem discreteTopology_iff (h : X ≃ₜ Y) : DiscreteTopology X ↔ DiscreteTopology Y :=
+  ⟨fun _ ↦ h.discreteTopology, fun _ ↦ h.symm.discreteTopology⟩
+
 @[simp]
 theorem isOpen_preimage (h : X ≃ₜ Y) {s : Set Y} : IsOpen (h ⁻¹' s) ↔ IsOpen s :=
   h.isQuotientMap.isOpen_preimage
@@ -253,14 +259,8 @@ protected theorem isClosedMap (h : X ≃ₜ Y) : IsClosedMap h := fun _ => h.isC
 theorem isOpenEmbedding (h : X ≃ₜ Y) : IsOpenEmbedding h :=
   .of_isEmbedding_isOpenMap h.isEmbedding h.isOpenMap
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding := isOpenEmbedding
-
 theorem isClosedEmbedding (h : X ≃ₜ Y) : IsClosedEmbedding h :=
   .of_isEmbedding_isClosedMap h.isEmbedding h.isClosedMap
-
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding := isClosedEmbedding
 
 theorem preimage_closure (h : X ≃ₜ Y) (s : Set Y) : h ⁻¹' closure s = closure (h ⁻¹' s) :=
   h.isOpenMap.preimage_closure_eq_closure_preimage h.continuous _
@@ -279,31 +279,6 @@ theorem preimage_frontier (h : X ≃ₜ Y) (s : Set Y) : h ⁻¹' frontier s = f
 
 theorem image_frontier (h : X ≃ₜ Y) (s : Set X) : h '' frontier s = frontier (h '' s) := by
   rw [← preimage_symm, preimage_frontier]
-
-/-- If a bijective map `e : X ≃ Y` is continuous and open, then it is a homeomorphism. -/
-@[simps toEquiv]
-def homeomorphOfContinuousOpen (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsOpenMap e) : X ≃ₜ Y where
-  continuous_toFun := h₁
-  continuous_invFun := e.continuous_symm_iff.2 h₂
-  toEquiv := e
-
-/-- If a bijective map `e : X ≃ Y` is continuous and closed, then it is a homeomorphism. -/
-def homeomorphOfContinuousClosed (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsClosedMap e) : X ≃ₜ Y where
-  continuous_toFun := h₁
-  continuous_invFun := by
-    rw [continuous_iff_isClosed]
-    intro s hs
-    convert ← h₂ s hs using 1
-    apply e.image_eq_preimage
-  toEquiv := e
-
-@[simp]
-theorem homeomorphOfContinuousOpen_apply (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsOpenMap e) :
-    ⇑(homeomorphOfContinuousOpen e h₁ h₂) = e := rfl
-
-@[simp]
-theorem homeomorphOfContinuousOpen_symm_apply (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsOpenMap e) :
-    ⇑(homeomorphOfContinuousOpen e h₁ h₂).symm = e.symm := rfl
 
 @[simp]
 theorem comp_continuous_iff (h : X ≃ₜ Y) {f : Z → X} : Continuous (h ∘ f) ↔ Continuous f :=
@@ -390,6 +365,51 @@ def toHomeomorphOfIsInducing (f : X ≃ Y) (hf : IsInducing f) : X ≃ₜ Y :=
     continuous_invFun := hf.continuous_iff.2 <| by simpa using continuous_id }
 
 @[deprecated (since := "2024-10-28")] alias toHomeomorphOfInducing := toHomeomorphOfIsInducing
+
+/-- If a bijective map `e : X ≃ Y` is continuous and open, then it is a homeomorphism. -/
+@[simps! toEquiv]
+def toHomeomorphOfContinuousOpen (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsOpenMap e) : X ≃ₜ Y :=
+  e.toHomeomorphOfIsInducing <|
+    IsOpenEmbedding.of_continuous_injective_isOpenMap h₁ e.injective h₂ |>.toIsInducing
+
+@[deprecated (since := "2025-04-16")]
+alias _root_.Homeomorph.homeomorphOfContinuousOpen := toHomeomorphOfContinuousOpen
+
+@[deprecated (since := "2025-04-16")]
+alias _root_.Homeomorph.homeomorphOfContinuousOpen_toEquiv := toHomeomorphOfContinuousOpen_toEquiv
+
+@[simp]
+theorem toHomeomorphOfContinuousOpen_apply (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsOpenMap e) :
+    ⇑(e.toHomeomorphOfContinuousOpen h₁ h₂) = e := rfl
+
+@[deprecated (since := "2025-04-16")]
+alias _root_.Homeomorph.homeomorphOfContinuousOpen_apply := toHomeomorphOfContinuousOpen_apply
+
+@[simp]
+theorem toHomeomorphOfContinuousOpen_symm_apply (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsOpenMap e) :
+    ⇑(e.toHomeomorphOfContinuousOpen h₁ h₂).symm = e.symm := rfl
+
+@[deprecated (since := "2025-04-16")]
+alias _root_.Homeomorph.homeomorphOfContinuousOpen_symm_apply :=
+  toHomeomorphOfContinuousOpen_symm_apply
+
+/-- If a bijective map `e : X ≃ Y` is continuous and open, then it is a homeomorphism. -/
+@[simps! toEquiv]
+def toHomeomorphOfContinuousClosed (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsClosedMap e) : X ≃ₜ Y :=
+  e.toHomeomorphOfIsInducing <|
+    IsClosedEmbedding.of_continuous_injective_isClosedMap h₁ e.injective h₂ |>.toIsInducing
+
+@[deprecated (since := "2025-04-16")]
+alias _root_.Homeomorph.homeomorphOfContinuousClosed := toHomeomorphOfContinuousClosed
+
+@[simp]
+theorem toHomeomorphOfContinuousClosed_apply (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsClosedMap e) :
+    ⇑(e.toHomeomorphOfContinuousClosed h₁ h₂) = e := rfl
+
+@[simp]
+theorem toHomeomorphOfContinuousClosed_symm_apply
+    (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsClosedMap e) :
+    ⇑(e.toHomeomorphOfContinuousClosed h₁ h₂).symm = e.symm := rfl
 
 end Equiv
 

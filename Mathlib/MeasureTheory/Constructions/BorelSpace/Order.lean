@@ -767,9 +767,6 @@ protected theorem Measurable.iSup {ι} [Countable ι] {f : ι → δ → α} (hf
     apply csSup_of_not_bddAbove
     exact hb
 
-@[deprecated (since := "2024-10-21")]
-alias measurable_iSup := Measurable.iSup
-
 -- TODO: Why does this error?
 -- /-- Compositional version of `Measurable.iSup` for use by `fun_prop`. -/
 -- @[fun_prop]
@@ -785,24 +782,15 @@ protected theorem AEMeasurable.iSup {ι} {μ : Measure δ} [Countable ι] {f : �
   refine ⟨fun b ↦ ⨆ i, (hf i).mk (f i) b, .iSup (fun i ↦ (hf i).measurable_mk), ?_⟩
   filter_upwards [ae_all_iff.2 (fun i ↦ (hf i).ae_eq_mk)] with b hb using by simp [hb]
 
-@[deprecated (since := "2024-10-21")]
-alias aemeasurable_iSup := AEMeasurable.iSup
-
 @[measurability, fun_prop]
 protected theorem Measurable.iInf {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :
     Measurable fun b => ⨅ i, f i b :=
   .iSup (α := αᵒᵈ) hf
 
-@[deprecated (since := "2024-10-21")]
-alias measurable_iInf := Measurable.iInf
-
 @[measurability, fun_prop]
 protected theorem AEMeasurable.iInf {ι} {μ : Measure δ} [Countable ι] {f : ι → δ → α}
     (hf : ∀ i, AEMeasurable (f i) μ) : AEMeasurable (fun b => ⨅ i, f i b) μ :=
   .iSup (α := αᵒᵈ) hf
-
-@[deprecated (since := "2024-10-21")]
-alias aemeasurable_iInf := AEMeasurable.iInf
 
 protected theorem Measurable.sSup {ι} {f : ι → δ → α} {s : Set ι} (hs : s.Countable)
     (hf : ∀ i ∈ s, Measurable (f i)) :
@@ -811,16 +799,10 @@ protected theorem Measurable.sSup {ι} {f : ι → δ → α} {s : Set ι} (hs :
   have : Countable s := hs.to_subtype
   exact .iSup fun i ↦ hf i i.2
 
-@[deprecated (since := "2024-10-21")]
-alias measurable_sSup := Measurable.sSup
-
 protected theorem Measurable.sInf {ι} {f : ι → δ → α} {s : Set ι} (hs : s.Countable)
     (hf : ∀ i ∈ s, Measurable (f i)) :
     Measurable fun x => sInf ((fun i => f i x) '' s) :=
   .sSup (α := αᵒᵈ) hs hf
-
-@[deprecated (since := "2024-10-21")]
-alias measurable_sInf := Measurable.sInf
 
 theorem Measurable.biSup {ι} (s : Set ι) {f : ι → δ → α} (hs : s.Countable)
     (hf : ∀ i ∈ s, Measurable (f i)) : Measurable fun b => ⨆ i ∈ s, f i b := by
@@ -836,9 +818,6 @@ theorem Measurable.biSup {ι} (s : Set ι) {f : ι → δ → α} (hs : s.Counta
     apply Measurable.sup _ measurable_const
     exact .iSup (fun (i : s) ↦ hf i i.2)
 
-@[deprecated (since := "2024-10-21")]
-alias measurable_biSup := Measurable.biSup
-
 theorem AEMeasurable.biSup {ι} {μ : Measure δ} (s : Set ι) {f : ι → δ → α} (hs : s.Countable)
     (hf : ∀ i ∈ s, AEMeasurable (f i) μ) : AEMeasurable (fun b => ⨆ i ∈ s, f i b) μ := by
   classical
@@ -852,22 +831,13 @@ theorem AEMeasurable.biSup {ι} {μ : Measure δ} (s : Set ι) {f : ι → δ �
   filter_upwards [(ae_ball_iff hs).2 this] with b hb
   exact iSup_congr fun i => iSup_congr (hb i)
 
-@[deprecated (since := "2024-10-21")]
-alias aemeasurable_biSup := AEMeasurable.biSup
-
 theorem Measurable.biInf {ι} (s : Set ι) {f : ι → δ → α} (hs : s.Countable)
     (hf : ∀ i ∈ s, Measurable (f i)) : Measurable fun b => ⨅ i ∈ s, f i b :=
   .biSup (α := αᵒᵈ) s hs hf
 
-@[deprecated (since := "2024-10-21")]
-alias measurable_biInf := Measurable.biInf
-
 theorem AEMeasurable.biInf {ι} {μ : Measure δ} (s : Set ι) {f : ι → δ → α} (hs : s.Countable)
     (hf : ∀ i ∈ s, AEMeasurable (f i) μ) : AEMeasurable (fun b => ⨅ i ∈ s, f i b) μ :=
   .biSup (α := αᵒᵈ) s hs hf
-
-@[deprecated (since := "2024-10-21")]
-alias aemeasurable_biInf := AEMeasurable.biInf
 
 /-- `liminf` over a general filter is measurable. See `Measurable.liminf` for the version over `ℕ`.
 -/
@@ -922,18 +892,12 @@ theorem Measurable.liminf' {ι ι'} {f : ι → δ → α} {v : Filter ι} (hf :
   apply Measurable.find (fun n ↦ F0_meas (g n)) (fun n ↦ ?_)
   exact (m_meas (g n)).union mc_meas
 
-@[deprecated (since := "2024-10-21")]
-alias measurable_liminf' := Measurable.liminf'
-
 /-- `limsup` over a general filter is measurable. See `Measurable.limsup` for the version over `ℕ`.
 -/
 theorem Measurable.limsup' {ι ι'} {f : ι → δ → α} {u : Filter ι} (hf : ∀ i, Measurable (f i))
     {p : ι' → Prop} {s : ι' → Set ι} (hu : u.HasCountableBasis p s) (hs : ∀ i, (s i).Countable) :
     Measurable fun x => limsup (fun i => f i x) u :=
   .liminf' (α := αᵒᵈ) hf hu hs
-
-@[deprecated (since := "2024-10-21")]
-alias measurable_limsup' := Measurable.limsup'
 
 /-- `liminf` over `ℕ` is measurable. See `Measurable.liminf'` for a version with a general filter.
 -/
@@ -942,18 +906,12 @@ theorem Measurable.liminf {f : ℕ → δ → α} (hf : ∀ i, Measurable (f i))
     Measurable fun x => liminf (fun i => f i x) atTop :=
   .liminf' hf atTop_countable_basis fun _ => to_countable _
 
-@[deprecated (since := "2024-10-21")]
-alias measurable_liminf := Measurable.liminf
-
 /-- `limsup` over `ℕ` is measurable. See `Measurable.limsup'` for a version with a general filter.
 -/
 @[measurability, fun_prop]
 theorem Measurable.limsup {f : ℕ → δ → α} (hf : ∀ i, Measurable (f i)) :
     Measurable fun x => limsup (fun i => f i x) atTop :=
   .limsup' hf atTop_countable_basis fun _ => to_countable _
-
-@[deprecated (since := "2024-10-21")]
-alias measurable_limsup := Measurable.limsup
 
 end ConditionallyCompleteLinearOrder
 
@@ -986,7 +944,7 @@ theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow {α : Type*} {mα 
     rw [← measure_union]
     · rw [← inter_union_distrib_left, ← preimage_union, singleton_union, Ioi_insert,
         ← _root_.bot_eq_zero, Ici_bot, preimage_univ, inter_univ]
-    · exact disjoint_singleton_left.mpr not_mem_Ioi_self
+    · exact disjoint_singleton_left.mpr notMem_Ioi_self
         |>.preimage f |>.inter_right' s |>.inter_left' s
     · exact hs.inter (hf measurableSet_Ioi)
   have B : μ (s ∩ f ⁻¹' Ioi 0) = μ (s ∩ f ⁻¹' {∞}) + μ (s ∩ f ⁻¹' Ioo 0 ∞) := by

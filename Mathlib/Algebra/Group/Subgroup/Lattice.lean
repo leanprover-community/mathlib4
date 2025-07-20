@@ -321,8 +321,14 @@ theorem mem_closure {x : G} : x ∈ closure k ↔ ∀ K : Subgroup G, k ⊆ K �
 theorem subset_closure : k ⊆ closure k := fun _ hx => mem_closure.2 fun _ hK => hK hx
 
 @[to_additive]
-theorem not_mem_of_not_mem_closure {P : G} (hP : P ∉ closure k) : P ∉ k := fun h =>
+theorem notMem_of_notMem_closure {P : G} (hP : P ∉ closure k) : P ∉ k := fun h =>
   hP (subset_closure h)
+
+@[deprecated (since := "2025-05-23")]
+alias _root_.AddSubgroup.not_mem_of_not_mem_closure := AddSubgroup.notMem_of_notMem_closure
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
+alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
 
 open Set
 

@@ -784,7 +784,7 @@ theorem eventually_lt_add_pos_of_limsup_le [Preorder β] [AddZeroClass α] [AddL
 
 /-- If `x ≤ Filter.liminf u atTop`, then for all `ε < 0`, eventually we have `x + ε < u b`. -/
 theorem eventually_add_neg_lt_of_le_liminf [Preorder β] [AddZeroClass α] [AddLeftStrictMono α]
-    {x ε : α} {u : β → α} (hu_bdd : IsBoundedUnder GE.ge atTop u) (hu : x ≤ Filter.liminf u atTop )
+    {x ε : α} {u : β → α} (hu_bdd : IsBoundedUnder GE.ge atTop u) (hu : x ≤ Filter.liminf u atTop)
     (hε : ε < 0) :
     ∀ᶠ b : β in atTop, x + ε < u b :=
   eventually_lt_of_lt_liminf (lt_of_lt_of_le (add_lt_of_neg_right x hε) hu) hu_bdd

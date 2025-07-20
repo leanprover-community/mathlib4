@@ -13,10 +13,10 @@ This file defines instances for arbitrary sum of additive and multiplicative act
 
 ## See also
 
-* `Mathlib.Algebra.Group.Action.Option`
-* `Mathlib.Algebra.Group.Action.Pi`
-* `Mathlib.Algebra.Group.Action.Prod`
-* `Mathlib.Algebra.Group.Action.Sum`
+* `Mathlib/Algebra/Group/Action/Option.lean`
+* `Mathlib/Algebra/Group/Action/Pi.lean`
+* `Mathlib/Algebra/Group/Action/Prod.lean`
+* `Mathlib/Algebra/Group/Action/Sum.lean`
 -/
 
 assert_not_exists MonoidWithZero

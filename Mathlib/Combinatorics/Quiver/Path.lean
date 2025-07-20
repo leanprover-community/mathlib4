@@ -152,7 +152,7 @@ lemma eq_toPath_comp_of_length_eq_succ (p : Path a b) {n : ℕ}
   | nil => simp at hp
   | @cons c d p q h =>
     cases n
-    · rw [length_cons, Nat.zero_add, Nat.add_left_eq_self] at hp
+    · rw [length_cons, Nat.zero_add, Nat.add_eq_right] at hp
       obtain rfl := eq_of_length_zero p hp
       obtain rfl := eq_nil_of_length_zero p hp
       exact ⟨d, q, nil, rfl, rfl⟩

@@ -147,7 +147,7 @@ section eisenstein
 open NumberField IsCyclotomicExtension.Rat.Three
 
 variable {K : Type*} [Field K]
-variable {ζ : K} (hζ : IsPrimitiveRoot ζ (3 : ℕ+))
+variable {ζ : K} (hζ : IsPrimitiveRoot ζ 3)
 
 local notation3 "η" => (IsPrimitiveRoot.isUnit (hζ.toInteger_isPrimitiveRoot) (by decide)).unit
 local notation3 "λ" => hζ.toInteger - 1
@@ -245,7 +245,7 @@ lemma a_cube_b_cube_congr_one_or_neg_one :
   rcases lambda_pow_four_dvd_cube_sub_one_or_add_one_of_lambda_not_dvd hζ S'.hb with
     ⟨y, hy⟩ | ⟨y, hy⟩
   · exfalso
-    replace hζ : IsPrimitiveRoot ζ ((3 : ℕ+) ^ 1) := by rwa [pow_one]
+    replace hζ : IsPrimitiveRoot ζ (3 ^ 1) := by rwa [pow_one]
     refine hζ.toInteger_sub_one_not_dvd_two (by decide) ⟨S'.u * λ ^ 2 * z ^ 3 - λ ^ 3 * (x + y), ?_⟩
     symm
     calc _ = S'.u * (λ * z) ^ 3 - λ ^ 4 * x - λ ^ 4 * y := by ring
@@ -256,7 +256,7 @@ lemma a_cube_b_cube_congr_one_or_neg_one :
   · right
     exact ⟨⟨x, hx⟩, ⟨y, hy⟩⟩
   · exfalso
-    replace hζ : IsPrimitiveRoot ζ ((3 : ℕ+) ^ 1) := by rwa [pow_one]
+    replace hζ : IsPrimitiveRoot ζ (3 ^ 1) := by rwa [pow_one]
     refine hζ.toInteger_sub_one_not_dvd_two (by decide) ⟨λ ^ 3 * (x + y) - S'.u * λ ^ 2 * z ^ 3, ?_⟩
     symm
     calc _ =  λ ^ 4 * x + λ ^ 4 * y - S'.u * (λ * z) ^ 3 := by ring

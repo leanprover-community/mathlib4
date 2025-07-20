@@ -529,6 +529,15 @@ theorem map_smul_univ [Fintype ι] (c : ι → R) (m : ∀ i, M₁ i) :
     (f fun i => c i • m i) = (∏ i, c i) • f m :=
   f.toMultilinearMap.map_smul_univ _ _
 
+/-- If two continuous `R`-multilinear maps from `R` are equal on 1, then they are equal.
+
+This is the multilinear version of `ContinuousLinearMap.ext_ring`. -/
+@[ext]
+theorem ext_ring [Finite ι] [TopologicalSpace R]
+    ⦃f g : ContinuousMultilinearMap R (fun _ : ι => R) M₂⦄
+    (h : f (fun _ ↦ 1) = g (fun _ ↦ 1)) : f = g :=
+  toMultilinearMap_injective <| MultilinearMap.ext_ring h
+
 end CommSemiring
 
 section DistribMulAction
@@ -572,7 +581,7 @@ def toMultilinearMapLinear : ContinuousMultilinearMap A M₁ M₂ →ₗ[R'] Mul
   map_smul' := toMultilinearMap_smul
 
 /-- `ContinuousMultilinearMap.pi` as a `LinearEquiv`. -/
-@[simps (config := { simpRhs := true })]
+@[simps +simpRhs]
 def piLinearEquiv {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)]
     [∀ i, TopologicalSpace (M' i)] [∀ i, ContinuousAdd (M' i)] [∀ i, Module R' (M' i)]
     [∀ i, Module A (M' i)] [∀ i, SMulCommClass A R' (M' i)] [∀ i, ContinuousConstSMul R' (M' i)] :

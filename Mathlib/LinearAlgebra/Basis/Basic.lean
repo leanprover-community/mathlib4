@@ -189,7 +189,7 @@ theorem maximal [Nontrivial R] (b : Basis ι R M) : b.linearIndependent.Maximal 
   rw [← Finsupp.sum_embDomain (f := u) (g := fun x r ↦ r • (x : M)),
       ← Finsupp.linearCombination_apply] at e
   -- Now we can contradict the linear independence of `hi`
-  refine hi.linearCombination_ne_of_not_mem_support _ ?_ e
+  refine hi.linearCombination_ne_of_notMem_support _ ?_ e
   simp only [Finset.mem_map, Finsupp.support_embDomain]
   rintro ⟨j, -, W⟩
   simp only [u, Embedding.coeFn_mk, Subtype.mk_eq_mk] at W

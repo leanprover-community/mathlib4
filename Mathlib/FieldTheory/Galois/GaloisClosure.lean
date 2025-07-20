@@ -54,7 +54,6 @@ lemma val_injective : Function.Injective (toIntermediateField (k := k) (K := K))
   simpa only [mk.injEq] using eq
 
 /-- Turns the collection of finite Galois IntermediateFields of `K/k` into a lattice. -/
-
 instance (L₁ L₂ : IntermediateField k K) [IsGalois k L₁] [IsGalois k L₂] :
     IsGalois k ↑(L₁ ⊔ L₂) where
 

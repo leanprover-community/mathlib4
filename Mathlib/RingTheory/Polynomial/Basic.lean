@@ -218,12 +218,10 @@ set `s : R[X]` is finite. There exists a polynomial `p' ∈ s` whose degree domi
 every element of `p ∈ span R s`. -/
 theorem exists_degree_le_of_mem_span_of_finite {s : Set R[X]} (s_fin : s.Finite) (hs : s.Nonempty) :
     ∃ p' ∈ s, ∀ (p : R[X]), p ∈ Submodule.span R s → degree p ≤ degree p' := by
-  rcases Set.Finite.exists_maximal_wrt degree s s_fin hs with ⟨a, has, hmax⟩
+  obtain ⟨a, has, hmax⟩ := s_fin.exists_maximalFor degree s hs
   refine ⟨a, has, fun p hp => ?_⟩
-  rcases exists_degree_le_of_mem_span hs hp with ⟨p', hp'⟩
-  by_cases h : degree a ≤ degree p'
-  · rw [← hmax p' hp'.left h] at hp'; exact hp'.right
-  · exact le_trans hp'.right (not_le.mp h).le
+  obtain ⟨p', hp', hpp'⟩ := exists_degree_le_of_mem_span hs hp
+  exact hpp'.trans <| not_lt.1 <| not_lt_iff_le_imp_le.2 <| hmax hp'
 
 /-- The span of every finite set of polynomials is contained in a `degreeLE n` for some `n`. -/
 theorem span_le_degreeLE_of_finite {s : Set R[X]} (s_fin : s.Finite) :
@@ -510,7 +508,7 @@ theorem polynomial_mem_ideal_of_coeff_mem_ideal (I : Ideal R[X]) (p : R[X])
   sum_C_mul_X_pow_eq p ▸ Submodule.sum_mem I fun n _ => I.mul_mem_right _ (hp n)
 
 /-- The push-forward of an ideal `I` of `R` to `R[X]` via inclusion
- is exactly the set of polynomials whose coefficients are in `I` -/
+is exactly the set of polynomials whose coefficients are in `I` -/
 theorem mem_map_C_iff {I : Ideal R} {f : R[X]} :
     f ∈ (Ideal.map (C : R →+* R[X]) I : Ideal R[X]) ↔ ∀ n : ℕ, f.coeff n ∈ I := by
   constructor
@@ -535,7 +533,7 @@ theorem mem_map_C_iff {I : Ideal R} {f : R[X]} :
     exact (I.map C : Ideal R[X]).mul_mem_left _ (mem_map_of_mem _ (hf n))
 
 theorem _root_.Polynomial.ker_mapRingHom (f : R →+* S) :
-    RingHom.ker (Polynomial.mapRingHom f) = f.ker.map (C : R →+* R[X]) := by
+    RingHom.ker (Polynomial.mapRingHom f) = (RingHom.ker f).map (C : R →+* R[X]) := by
   ext
   simp only [RingHom.mem_ker, coe_mapRingHom]
   rw [mem_map_C_iff, Polynomial.ext_iff]
@@ -676,7 +674,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
         let n := Nat.find hg
         refine ⟨m + n, ?_⟩
         rw [coeff_mul, ← Finset.insert_erase ((Finset.mem_antidiagonal (a := (m,n))).mpr rfl),
-          Finset.sum_insert (Finset.not_mem_erase _ _), (P.add_mem_iff_left _).not]
+          Finset.sum_insert (Finset.notMem_erase _ _), (P.add_mem_iff_left _).not]
         · apply mt h.2
           rw [not_or]
           exact ⟨Nat.find_spec hf, Nat.find_spec hg⟩
@@ -734,8 +732,10 @@ theorem mem_span_C_coeff : f ∈ Ideal.span { g : R[X] | ∃ i : ℕ, g = C (coe
   simp only [monomial_mul_C, one_mul, smul_eq_mul]
   rw [← C_mul_X_pow_eq_monomial]
 
-theorem exists_C_coeff_not_mem : f ∉ I → ∃ i : ℕ, C (coeff f i) ∉ I :=
+theorem exists_C_coeff_notMem : f ∉ I → ∃ i : ℕ, C (coeff f i) ∉ I :=
   Not.imp_symm fun cf => span_le_of_C_coeff_mem (not_exists_not.mp cf) mem_span_C_coeff
+
+@[deprecated (since := "2025-05-23")] alias exists_C_coeff_not_mem := exists_C_coeff_notMem
 
 end Ideal
 
@@ -926,9 +926,9 @@ theorem sup_aeval_range_eq_top_of_isCoprime (f : M →ₗ[R] M) {p q : R[X]} (hp
   rw [Submodule.mem_sup]
   rcases hpq with ⟨p', q', hpq'⟩
   use aeval f (p * p') v
-  use LinearMap.mem_range.2 ⟨aeval f p' v, by simp only [LinearMap.mul_apply, aeval_mul]⟩
+  use LinearMap.mem_range.2 ⟨aeval f p' v, by simp only [Module.End.mul_apply, aeval_mul]⟩
   use aeval f (q * q') v
-  use LinearMap.mem_range.2 ⟨aeval f q' v, by simp only [LinearMap.mul_apply, aeval_mul]⟩
+  use LinearMap.mem_range.2 ⟨aeval f q' v, by simp only [Module.End.mul_apply, aeval_mul]⟩
   simpa only [mul_comm p p', mul_comm q q', aeval_one, aeval_add] using
     congr_arg (fun p : R[X] => aeval f p v) hpq'
 
@@ -940,9 +940,9 @@ theorem sup_ker_aeval_le_ker_aeval_mul {f : M →ₗ[R] M} {p q : R[X]} :
   intro v hv
   rcases Submodule.mem_sup.1 hv with ⟨x, hx, y, hy, hxy⟩
   have h_eval_x : aeval f (p * q) x = 0 := by
-    rw [mul_comm, aeval_mul, LinearMap.mul_apply, LinearMap.mem_ker.1 hx, LinearMap.map_zero]
+    rw [mul_comm, aeval_mul, Module.End.mul_apply, LinearMap.mem_ker.1 hx, LinearMap.map_zero]
   have h_eval_y : aeval f (p * q) y = 0 := by
-    rw [aeval_mul, LinearMap.mul_apply, LinearMap.mem_ker.1 hy, LinearMap.map_zero]
+    rw [aeval_mul, Module.End.mul_apply, LinearMap.mem_ker.1 hy, LinearMap.map_zero]
   rw [LinearMap.mem_ker, ← hxy, LinearMap.map_add, h_eval_x, h_eval_y, add_zero]
 
 theorem sup_ker_aeval_eq_ker_aeval_mul_of_coprime (f : M →ₗ[R] M) {p q : R[X]}
@@ -956,13 +956,11 @@ theorem sup_ker_aeval_eq_ker_aeval_mul_of_coprime (f : M →ₗ[R] M) {p q : R[X
     calc
       aeval f (q * (p * p')) v = aeval f (p' * (p * q)) v := by
         rw [mul_comm, mul_assoc, mul_comm, mul_assoc, mul_comm q p]
-      _ = 0 := by rw [aeval_mul, LinearMap.mul_apply, LinearMap.mem_ker.1 hv, LinearMap.map_zero]
-
+      _ = 0 := by rw [aeval_mul, Module.End.mul_apply, LinearMap.mem_ker.1 hv, LinearMap.map_zero]
   have h_eval₂_pqq' :=
     calc
       aeval f (p * (q * q')) v = aeval f (q' * (p * q)) v := by rw [← mul_assoc, mul_comm]
-      _ = 0 := by rw [aeval_mul, LinearMap.mul_apply, LinearMap.mem_ker.1 hv, LinearMap.map_zero]
-
+      _ = 0 := by rw [aeval_mul, Module.End.mul_apply, LinearMap.mem_ker.1 hv, LinearMap.map_zero]
   rw [aeval_mul] at h_eval₂_qpp' h_eval₂_pqq'
   refine
     ⟨aeval f (q * q') v, LinearMap.mem_ker.1 h_eval₂_pqq', aeval f (p * p') v,
@@ -1084,7 +1082,7 @@ theorem mem_ideal_of_coeff_mem_ideal (I : Ideal (MvPolynomial σ R)) (p : MvPoly
   simpa [Ideal.mem_comap] using hcoe m
 
 /-- The push-forward of an ideal `I` of `R` to `MvPolynomial σ R` via inclusion
- is exactly the set of polynomials whose coefficients are in `I` -/
+is exactly the set of polynomials whose coefficients are in `I` -/
 theorem mem_map_C_iff {I : Ideal R} {f : MvPolynomial σ R} :
     f ∈ (Ideal.map (C : R →+* MvPolynomial σ R) I : Ideal (MvPolynomial σ R)) ↔
       ∀ m : σ →₀ ℕ, f.coeff m ∈ I := by

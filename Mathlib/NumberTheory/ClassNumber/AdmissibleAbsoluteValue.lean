@@ -14,17 +14,17 @@ of the ring of integers of a global field is finite.
 
 ## Main definitions
 
- * `AbsoluteValue.IsAdmissible abv` states the absolute value `abv : R → ℤ`
-   respects the Euclidean domain structure on `R`, and that a large enough set
-   of elements of `R^n` contains a pair of elements whose remainders are
-   pointwise close together.
+* `AbsoluteValue.IsAdmissible abv` states the absolute value `abv : R → ℤ`
+  respects the Euclidean domain structure on `R`, and that a large enough set
+  of elements of `R^n` contains a pair of elements whose remainders are
+  pointwise close together.
 
 ## Main results
 
- * `AbsoluteValue.absIsAdmissible` shows the "standard" absolute value on `ℤ`,
-   mapping negative `x` to `-x`, is admissible.
- * `Polynomial.cardPowDegreeIsAdmissible` shows `cardPowDegree`,
-   mapping `p : Polynomial 𝔽_q` to `q ^ degree p`, is admissible
+* `AbsoluteValue.absIsAdmissible` shows the "standard" absolute value on `ℤ`,
+  mapping negative `x` to `-x`, is admissible.
+* `Polynomial.cardPowDegreeIsAdmissible` shows `cardPowDegree`,
+  mapping `p : Polynomial 𝔽_q` to `q ^ degree p`, is admissible
 -/
 
 local infixl:50 " ≺ " => EuclideanDomain.r

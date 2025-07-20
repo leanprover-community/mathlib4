@@ -18,8 +18,8 @@ on intervals.
 
 ## Notes
 
-This file is very similar to the n-ary section of `Mathlib.Data.Set.Basic`, to
-`Mathlib.Data.Finset.NAry` and to `Mathlib.Order.Filter.NAry`. Please keep them in sync.
+This file is very similar to the n-ary section of `Mathlib/Data/Set/Basic.lean`, to
+`Mathlib/Data/Finset/NAry.lean` and to `Mathlib/Order/Filter/NAry.lean`. Please keep them in sync.
 
 We do not define `Option.map₃` as its only purpose so far would be to prove properties of
 `Option.map₂` and casing already fulfills this task.
@@ -65,13 +65,13 @@ theorem map₂_coe_right (f : α → β → γ) (a : Option α) (b : β) :
     map₂ f a b = a.map fun a => f a b := by cases a <;> rfl
 
 theorem mem_map₂_iff {c : γ} : c ∈ map₂ f a b ↔ ∃ a' b', a' ∈ a ∧ b' ∈ b ∧ f a' b' = c := by
-  simp [map₂, bind_eq_some]
+  simp [map₂, bind_eq_some_iff]
 
 /-- `simp`-normal form of `mem_map₂_iff`. -/
 @[simp]
 theorem map₂_eq_some_iff {c : γ} :
     map₂ f a b = some c ↔ ∃ a' b', a' ∈ a ∧ b' ∈ b ∧ f a' b' = c := by
-  simp [map₂, bind_eq_some]
+  simp [map₂, bind_eq_some_iff]
 
 @[simp]
 theorem map₂_eq_none_iff : map₂ f a b = none ↔ a = none ∨ b = none := by

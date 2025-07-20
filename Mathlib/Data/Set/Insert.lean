@@ -3,7 +3,6 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Algebra.Notation.Defs
 import Mathlib.Data.Set.Disjoint
 
 /-!
@@ -51,8 +50,11 @@ theorem eq_or_mem_of_mem_insert {x a : α} {s : Set α} : x ∈ insert a s → x
 theorem mem_of_mem_insert_of_ne : b ∈ insert a s → b ≠ a → b ∈ s :=
   Or.resolve_left
 
-theorem eq_of_not_mem_of_mem_insert : b ∈ insert a s → b ∉ s → b = a :=
+theorem eq_of_mem_insert_of_notMem : b ∈ insert a s → b ∉ s → b = a :=
   Or.resolve_right
+
+@[deprecated (since := "2025-05-23")]
+alias eq_of_not_mem_of_mem_insert := eq_of_mem_insert_of_notMem
 
 @[simp]
 theorem mem_insert_iff {x a : α} {s : Set α} : x ∈ insert a s ↔ x = a ∨ x ∈ s :=
@@ -62,8 +64,10 @@ theorem mem_insert_iff {x a : α} {s : Set α} : x ∈ insert a s ↔ x = a ∨ 
 theorem insert_eq_of_mem {a : α} {s : Set α} (h : a ∈ s) : insert a s = s :=
   ext fun _ => or_iff_right_of_imp fun e => e.symm ▸ h
 
-theorem ne_insert_of_not_mem {s : Set α} (t : Set α) {a : α} : a ∉ s → s ≠ insert a t :=
+theorem ne_insert_of_notMem {s : Set α} (t : Set α) {a : α} : a ∉ s → s ≠ insert a t :=
   mt fun e => e.symm ▸ mem_insert _ _
+
+@[deprecated (since := "2025-05-23")] alias ne_insert_of_not_mem := ne_insert_of_notMem
 
 @[simp]
 theorem insert_eq_self : insert a s = s ↔ a ∈ s :=
@@ -85,15 +89,22 @@ theorem insert_subset_insert (h : s ⊆ t) : insert a s ⊆ insert a t := fun _ 
   rcases h (subset_insert _ _ hx) with (rfl | hxt)
   exacts [(ha hx).elim, hxt]
 
-theorem subset_insert_iff_of_not_mem (ha : a ∉ s) : s ⊆ insert a t ↔ s ⊆ t :=
+theorem subset_insert_iff_of_notMem (ha : a ∉ s) : s ⊆ insert a t ↔ s ⊆ t :=
   forall₂_congr fun _ hb => or_iff_right <| ne_of_mem_of_not_mem hb ha
+
+@[deprecated (since := "2025-05-23")]
+alias subset_insert_iff_of_not_mem := subset_insert_iff_of_notMem
 
 theorem ssubset_iff_insert {s t : Set α} : s ⊂ t ↔ ∃ a ∉ s, insert a s ⊆ t := by
   simp only [insert_subset_iff, exists_and_right, ssubset_def, not_subset]
   aesop
 
-theorem _root_.HasSubset.Subset.ssubset_of_mem_not_mem (hst : s ⊆ t) (hat : a ∈ t) (has : a ∉ s) :
+theorem _root_.HasSubset.Subset.ssubset_of_mem_notMem (hst : s ⊆ t) (hat : a ∈ t) (has : a ∉ s) :
     s ⊂ t := hst.ssubset_of_not_subset fun a ↦ has (a hat)
+
+@[deprecated (since := "2025-05-23")]
+alias _root_.HasSubset.Subset.ssubset_of_mem_not_mem :=
+  _root_.HasSubset.Subset.ssubset_of_mem_notMem
 
 theorem ssubset_insert {s : Set α} {a : α} (h : a ∉ s) : s ⊂ insert a s :=
   ssubset_iff_insert.2 ⟨a, h, Subset.rfl⟩
@@ -173,8 +184,10 @@ theorem singleton_def (a : α) : ({a} : Set α) = insert a ∅ :=
 theorem mem_singleton_iff {a b : α} : a ∈ ({b} : Set α) ↔ a = b :=
   Iff.rfl
 
-theorem not_mem_singleton_iff {a b : α} : a ∉ ({b} : Set α) ↔ a ≠ b :=
+theorem notMem_singleton_iff {a b : α} : a ∉ ({b} : Set α) ↔ a ≠ b :=
   Iff.rfl
+
+@[deprecated (since := "2025-05-23")] alias not_mem_singleton_iff := notMem_singleton_iff
 
 @[simp]
 theorem setOf_eq_eq_singleton {a : α} : { n | n = a } = {a} :=
@@ -251,8 +264,10 @@ theorem singleton_inter_eq_empty : {a} ∩ s = ∅ ↔ a ∉ s :=
 theorem inter_singleton_eq_empty : s ∩ {a} = ∅ ↔ a ∉ s := by
   rw [inter_comm, singleton_inter_eq_empty]
 
-theorem nmem_singleton_empty {s : Set α} : s ∉ ({∅} : Set (Set α)) ↔ s.Nonempty :=
+theorem notMem_singleton_empty {s : Set α} : s ∉ ({∅} : Set (Set α)) ↔ s.Nonempty :=
   nonempty_iff_ne_empty.symm
+
+@[deprecated (since := "2025-05-24")] alias nmem_singleton_empty := notMem_singleton_empty
 
 instance uniqueSingleton (a : α) : Unique (↥({a} : Set α)) :=
   ⟨⟨⟨a, mem_singleton a⟩⟩, fun ⟨_, h⟩ => Subtype.eq h⟩
@@ -374,36 +389,43 @@ theorem subset_diff_singleton {x : α} {s t : Set α} (h : s ⊆ t) (hx : x ∉ 
 theorem subset_insert_diff_singleton (x : α) (s : Set α) : s ⊆ insert x (s \ {x}) := by
   rw [← diff_singleton_subset_iff]
 
-theorem diff_insert_of_not_mem {x : α} (h : x ∉ s) : s \ insert x t = s \ t := by
+theorem diff_insert_of_notMem {x : α} (h : x ∉ s) : s \ insert x t = s \ t := by
   refine Subset.antisymm (diff_subset_diff (refl _) (subset_insert ..)) fun y hy ↦ ?_
   simp only [mem_diff, mem_insert_iff, not_or] at hy ⊢
   exact ⟨hy.1, fun hxy ↦ h <| hxy ▸ hy.1, hy.2⟩
+
+@[deprecated (since := "2025-05-23")] alias diff_insert_of_not_mem := diff_insert_of_notMem
 
 @[simp]
 theorem insert_diff_of_mem (s) (h : a ∈ t) : insert a s \ t = s \ t := by
   ext
   constructor <;> simp +contextual [or_imp, h]
 
-theorem insert_diff_of_not_mem (s) (h : a ∉ t) : insert a s \ t = insert a (s \ t) := by
+theorem insert_diff_of_notMem (s) (h : a ∉ t) : insert a s \ t = insert a (s \ t) := by
   classical
     ext x
     by_cases h' : x ∈ t
     · simp [h, h', ne_of_mem_of_not_mem h' h]
     · simp [h, h']
 
-theorem insert_diff_self_of_not_mem {a : α} {s : Set α} (h : a ∉ s) : insert a s \ {a} = s := by
+@[deprecated (since := "2025-05-23")] alias insert_diff_of_not_mem := insert_diff_of_notMem
+
+theorem insert_diff_self_of_notMem {a : α} {s : Set α} (h : a ∉ s) : insert a s \ {a} = s := by
   ext x
   simp [and_iff_left_of_imp (ne_of_mem_of_not_mem · h)]
+
+@[deprecated (since := "2025-05-23")]
+alias insert_diff_self_of_not_mem := insert_diff_self_of_notMem
 
 lemma insert_diff_self_of_mem (ha : a ∈ s) : insert a (s \ {a}) = s := by
   ext; simp +contextual [or_and_left, em, ha]
 
 lemma insert_erase_invOn :
     InvOn (insert a) (fun s ↦ s \ {a}) {s : Set α | a ∈ s} {s : Set α | a ∉ s} :=
-  ⟨fun _s ha ↦ insert_diff_self_of_mem ha, fun _s ↦ insert_diff_self_of_not_mem⟩
+  ⟨fun _s ha ↦ insert_diff_self_of_mem ha, fun _s ↦ insert_diff_self_of_notMem⟩
 
 theorem insert_inj (ha : a ∉ s) : insert a s = insert b s ↔ a = b :=
-  ⟨fun h => eq_of_not_mem_of_mem_insert (h ▸ mem_insert a s) ha,
+  ⟨fun h => eq_of_mem_insert_of_notMem (h ▸ mem_insert a s) ha,
     congr_arg (fun x => insert x s)⟩
 
 @[simp]
@@ -420,11 +442,15 @@ theorem inter_insert_of_mem (h : a ∈ s) : s ∩ insert a t = insert a (s ∩ t
 theorem insert_inter_of_mem (h : a ∈ t) : insert a s ∩ t = insert a (s ∩ t) := by
   rw [insert_inter_distrib, insert_eq_of_mem h]
 
-theorem inter_insert_of_not_mem (h : a ∉ s) : s ∩ insert a t = s ∩ t :=
+theorem inter_insert_of_notMem (h : a ∉ s) : s ∩ insert a t = s ∩ t :=
   ext fun _ => and_congr_right fun hx => or_iff_right <| ne_of_mem_of_not_mem hx h
 
-theorem insert_inter_of_not_mem (h : a ∉ t) : insert a s ∩ t = s ∩ t :=
+@[deprecated (since := "2025-05-23")] alias inter_insert_of_not_mem := inter_insert_of_notMem
+
+theorem insert_inter_of_notMem (h : a ∉ t) : insert a s ∩ t = s ∩ t :=
   ext fun _ => and_congr_left fun hx => or_iff_right <| ne_of_mem_of_not_mem hx h
+
+@[deprecated (since := "2025-05-23")] alias insert_inter_of_not_mem := insert_inter_of_notMem
 
 @[simp]
 theorem diff_singleton_eq_self {a : α} {s : Set α} (h : a ∉ s) : s \ {a} = s :=

@@ -1,3 +1,4 @@
+import Lean.Linter.Sets -- for the definition of linter sets
 import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 import Mathlib.Tactic.Linter.DirectoryDependency
 import Mathlib.Tactic.Linter.DocPrime
@@ -16,6 +17,8 @@ import Mathlib.Tactic.Linter.OldObtain
 import Mathlib.Tactic.Linter.UnusedTacticExtension
 import Mathlib.Tactic.Linter.UnusedTactic
 import Mathlib.Tactic.Linter.Style
+-- This import makes the `#min_imports` command available globally.
+import Mathlib.Tactic.MinImports
 
 /-!
 This is the root file in Mathlib: it is imported by virtually *all* Mathlib files.
@@ -47,3 +50,30 @@ All linters imported here have no bulk imports;
 - the `upstreamableDecls` linter, as it is also mostly informational
 
 -/
+
+/-- Define a linter set of all mathlib syntax linters which are enabled by default.
+
+Projects depending on mathlib can use `set_option linter.allMathlibLinters true` to enable
+all these linters, or add the `weak.linter.mathlibStandardSet` option to their lakefile.
+-/
+register_linter_set linter.mathlibStandardSet :=
+  linter.allScriptsDocumented
+  linter.checkInitImports
+
+  linter.oldObtain
+  linter.style.cases
+  linter.style.refine
+  linter.hashCommand
+  linter.style.cdot
+  linter.style.docString
+  linter.style.dollarSyntax
+  linter.style.lambdaSyntax
+  linter.style.header
+  linter.style.longLine
+  linter.style.longFile
+  linter.style.multiGoal
+  linter.style.openClassical
+  linter.style.missingEnd
+  linter.style.setOption
+  linter.style.maxHeartbeats
+  -- The `docPrime` linter is disabled: https://github.com/leanprover-community/mathlib4/issues/20560

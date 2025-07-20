@@ -148,6 +148,10 @@ theorem linearProjOfIsCompl_apply_left (h : IsCompl p q) (x : p) :
 theorem linearProjOfIsCompl_range (h : IsCompl p q) : range (linearProjOfIsCompl p q h) = ⊤ :=
   range_eq_of_proj (linearProjOfIsCompl_apply_left h)
 
+theorem linearProjOfIsCompl_surjective (h : IsCompl p q) :
+    Function.Surjective (linearProjOfIsCompl p q h) :=
+  range_eq_top.mp (linearProjOfIsCompl_range h)
+
 @[simp]
 theorem linearProjOfIsCompl_apply_eq_zero_iff (h : IsCompl p q) {x : E} :
     linearProjOfIsCompl p q h x = 0 ↔ x ∈ q := by simp [linearProjOfIsCompl]
@@ -381,7 +385,7 @@ theorem isProj_iff_isIdempotentElem (f : M →ₗ[S] M) :
       exact mem_range_self f x
     · intro x hx
       obtain ⟨y, hy⟩ := mem_range.1 hx
-      rw [← hy, ← mul_apply, h]
+      rw [← hy, ← Module.End.mul_apply, h]
 
 @[deprecated (since := "2025-01-12")] alias isProj_iff_idempotent := isProj_iff_isIdempotentElem
 

@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Michael Howes, Antoine Chambert-Loir
 -/
 import Mathlib.Data.Finite.Card
-import Mathlib.Data.Finite.Prod
 import Mathlib.GroupTheory.Commutator.Basic
 import Mathlib.GroupTheory.Coset.Basic
-import Mathlib.GroupTheory.Finiteness
+import Mathlib.GroupTheory.Rank
 
 /-!
 # The abelianization of a group
@@ -56,6 +55,10 @@ variable {G} in
 theorem Subgroup.map_subtype_commutator (H : Subgroup G) :
     (_root_.commutator H).map H.subtype = ⁅H, H⁆ := by
   rw [_root_.commutator_def, map_commutator, ← MonoidHom.range_eq_map, H.range_subtype]
+
+variable {G} in
+theorem Subgroup.commutator_le_self (H : Subgroup G) : ⁅H, H⁆ ≤ H :=
+  H.map_subtype_commutator.symm.trans_le (map_subtype_le _)
 
 instance commutator_characteristic : (commutator G).Characteristic :=
   Subgroup.commutator_characteristic ⊤ ⊤

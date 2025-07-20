@@ -207,8 +207,7 @@ variable (G : ι → Type v)
 variable [∀ i, AddCommGroup (G i)] [∀ i, Module R (G i)]
 variable (f : ∀ i j, i ≤ j → G i →ₗ[R] G j) [DirectedSystem G fun i j h ↦ f i j h]
 
-/-- The diagram (in the sense of `CategoryTheory`)
- of an unbundled `directLimit` of modules. -/
+/-- The diagram (in the sense of `CategoryTheory`) of an unbundled `directLimit` of modules. -/
 @[simps]
 def directLimitDiagram : ι ⥤ ModuleCat R where
   obj i := ModuleCat.of R (G i)

@@ -57,18 +57,11 @@ def ofMon (M : Mon_ (C ⥤ C)) : Monad C where
   η := M.one
   μ := M.mul
   left_unit := fun X => by
-    -- Porting note: now using `erw`
-    erw [← whiskerLeft_app, ← NatTrans.comp_app, M.mul_one]
-    rfl
+    simpa [-Mon_.mul_one] using congrArg (fun t ↦ t.app X) M.mul_one
   right_unit := fun X => by
-    -- Porting note: now using `erw`
-    erw [← whiskerRight_app, ← NatTrans.comp_app, M.one_mul]
-    rfl
+    simpa [-Mon_.one_mul] using congrArg (fun t ↦ t.app X) M.one_mul
   assoc := fun X => by
-    rw [← whiskerLeft_app, ← whiskerRight_app, ← NatTrans.comp_app]
-    -- Porting note: had to add this step:
-    erw [M.mul_assoc]
-    simp
+    simpa [-Mon_.mul_assoc] using congrArg (fun t ↦ t.app X) M.mul_assoc
 
 -- Porting note: `@[simps]` fails to generate `ofMon_obj`:
 @[simp] lemma ofMon_obj (M : Mon_ (C ⥤ C)) (X : C) : (ofMon M).obj X = M.X.obj X := rfl
@@ -81,15 +74,10 @@ def monToMonad : Mon_ (C ⥤ C) ⥤ Monad C where
   obj := ofMon
   map {X Y} f :=
     { f.hom with
-      app_η := by
-        intro X
-        erw [← NatTrans.comp_app, f.one_hom]
-        simp only [Functor.id_obj, ofMon_obj, ofMon_η]
-      app_μ := by
-        intro Z
-        erw [← NatTrans.comp_app, f.mul_hom]
-        dsimp
-        simp only [Category.assoc, NatTrans.naturality, ofMon_obj, ofMon] }
+      app_η X := by
+        simpa [-Mon_.Hom.one_hom] using congrArg (fun t ↦ t.app X) f.one_hom
+      app_μ Z := by
+        simpa [-Mon_.Hom.mul_hom] using congrArg (fun t ↦ t.app Z) f.mul_hom }
 
 /-- Oh, monads are just monoids in the category of endofunctors (equivalence of categories). -/
 @[simps]

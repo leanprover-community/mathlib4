@@ -31,7 +31,7 @@ on conditions strictly stronger than T₂.
   necessarily Hausdorff or regular, even if it is T₀.
 * `T5Space`: A T₅ space is a completely normal T₁ space. T₅ implies T₄.
 
-See `Mathlib.Topology.Separation.GDelta` for the definitions of `PerfectlyNormalSpace` and
+See `Mathlib/Topology/Separation/GDelta.lean` for the definitions of `PerfectlyNormalSpace` and
 `T6Space`.
 
 Note that `mathlib` adopts the modern convention that `m ≤ n` if and only if `T_m → T_n`, but
@@ -210,7 +210,7 @@ theorem regularSpace_sInf {X} {T : Set (TopologicalSpace X)} (h : ∀ t ∈ T, @
         If.1.Finite ∧ ∀ i : If.1, If.2 i ∈ @nhds X i a ∧ @IsClosed X i (If.2 i))
       fun If => ⋂ i : If.1, If.snd i := fun a ↦ by
     rw [nhds_sInf, ← iInf_subtype'']
-    exact hasBasis_iInf fun t : T => @closed_nhds_basis X t (h t t.2) a
+    exact .iInf fun t : T => @closed_nhds_basis X t (h t t.2) a
   refine .of_hasBasis this fun a If hIf => isClosed_iInter fun i => ?_
   exact (hIf.2 i).2.mono (sInf_le (i : T).2)
 
@@ -264,9 +264,9 @@ lemma IsClosed.HasSeparatingCover {s t : Set X} [LindelofSpace X] [RegularSpace 
          nsubkc <| (IsClosed.closure_subset_iff ncl).mpr interior_subset ain,
        fun _ ↦ mem_interior_iff_mem_nhds.mpr nna⟩
   -- By Lindelöf, we may obtain a countable subcover witnessing `HasSeparatingCover`
-  choose u u_open u_dis u_nhd using this
+  choose u u_open u_dis u_nhds using this
   obtain ⟨f, f_cov⟩ := s_cl.isLindelof.indexed_countable_subcover
-    u u_open (fun a ainh ↦ mem_iUnion.mpr ⟨a, u_nhd a ainh⟩)
+    u u_open (fun a ainh ↦ mem_iUnion.mpr ⟨a, u_nhds a ainh⟩)
   exact ⟨u ∘ f, f_cov, fun n ↦ ⟨u_open (f n), u_dis (f n)⟩⟩
 
 
@@ -367,7 +367,7 @@ instance (priority := 100) T3Space.t25Space [T3Space X] : T25Space X := by
   refine ⟨fun x y hne => ?_⟩
   rw [lift'_nhds_closure, lift'_nhds_closure]
   have : x ∉ closure {y} ∨ y ∉ closure {x} :=
-    (t0Space_iff_or_not_mem_closure X).mp inferInstance hne
+    (t0Space_iff_or_notMem_closure X).mp inferInstance hne
   simp only [← disjoint_nhds_nhdsSet, nhdsSet_singleton] at this
   exact this.elim id fun h => h.symm
 
@@ -449,9 +449,6 @@ protected theorem Topology.IsClosedEmbedding.normalSpace [TopologicalSpace Y] [N
         (disjoint_image_of_injective hf.injective hst)
     exact (H.preimage hf.continuous).mono (subset_preimage_image _ _) (subset_preimage_image _ _)
 
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.normalSpace := IsClosedEmbedding.normalSpace
-
 protected theorem Homeomorph.normalSpace [TopologicalSpace Y] [NormalSpace X] (h : X ≃ₜ Y) :
     NormalSpace Y :=
   h.symm.isClosedEmbedding.normalSpace
@@ -492,9 +489,6 @@ protected theorem Topology.IsClosedEmbedding.t4Space [TopologicalSpace Y] [T4Spa
     (hf : IsClosedEmbedding f) : T4Space X where
   toT1Space := hf.isEmbedding.t1Space
   toNormalSpace := hf.normalSpace
-
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.t4Space := IsClosedEmbedding.t4Space
 
 protected theorem Homeomorph.t4Space [TopologicalSpace Y] [T4Space X] (h : X ≃ₜ Y) : T4Space Y :=
   h.symm.isClosedEmbedding.t4Space

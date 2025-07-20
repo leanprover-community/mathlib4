@@ -72,7 +72,7 @@ lemma toEnd_pow_apply_mem {χ₁ χ₂ : H → R} {x : L} {m : M}
   induction n with
   | zero => simpa using hm
   | succ n IH =>
-    simp only [pow_succ', LinearMap.mul_apply, toEnd_apply_apply,
+    simp only [pow_succ', Module.End.mul_apply, toEnd_apply_apply,
       Nat.cast_add, Nat.cast_one, rootSpace]
     convert lie_mem_genWeightSpace_of_mem_genWeightSpace hx IH using 2
     rw [succ_nsmul, ← add_assoc, add_comm (n • _)]
@@ -180,10 +180,10 @@ theorem toLieSubmodule_le_rootSpace_zero : H.toLieSubmodule ≤ rootSpace H 0 :=
       LinearMap.coe_comp]
     rfl
   change (g ^ k).comp (H : Submodule R L).subtype ⟨x, hx⟩ = 0
-  rw [LinearMap.commute_pow_left_of_commute hfg k]
+  rw [Module.End.commute_pow_left_of_commute hfg k]
   have h := iterate_toEnd_mem_lowerCentralSeries R H H y ⟨x, hx⟩ k
   rw [hk, LieSubmodule.mem_bot] at h
-  simp only [Submodule.subtype_apply, Function.comp_apply, LinearMap.pow_apply, LinearMap.coe_comp,
+  simp only [Submodule.subtype_apply, Function.comp_apply, Module.End.pow_apply, LinearMap.coe_comp,
     Submodule.coe_eq_zero]
   exact h
 
@@ -211,7 +211,7 @@ theorem zeroRootSubalgebra_normalizer_eq_self :
   obtain ⟨k, hk⟩ := hx ⟨y, hy⟩
   rw [← lie_skew, LinearMap.map_neg, neg_eq_zero] at hk
   use k + 1
-  rw [LinearMap.iterate_succ, LinearMap.coe_comp, Function.comp_apply, toEnd_apply_apply,
+  rw [Module.End.iterate_succ, LinearMap.coe_comp, Function.comp_apply, toEnd_apply_apply,
     LieSubalgebra.coe_bracket_of_module, Submodule.coe_mk, hk]
 
 /-- If the zero root subalgebra of a nilpotent Lie subalgebra `H` is just `H` then `H` is a Cartan

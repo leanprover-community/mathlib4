@@ -150,7 +150,7 @@ theorem chain_eq_iff_eq_replicate {a : α} {l : List α} :
   | [] => by simp
   | b :: l => by
     rw [chain_cons]
-    simp (config := {contextual := true}) [eq_comm, replicate_succ, chain_eq_iff_eq_replicate]
+    simp +contextual [eq_comm, replicate_succ, chain_eq_iff_eq_replicate]
 
 theorem Chain'.imp {S : α → α → Prop} (H : ∀ a b, R a b → S a b) {l : List α} (p : Chain' R l) :
     Chain' S l := by cases l <;> [trivial; exact Chain.imp H p]
@@ -250,6 +250,12 @@ theorem Chain'.cons' {x} : ∀ {l : List α}, Chain' R l → (∀ y ∈ l.head?,
   | [], _, _ => chain'_singleton x
   | _ :: _, hl, H => hl.cons <| H _ rfl
 
+lemma Chain'.cons_of_ne_nil {x : α} {l : List α} (l_ne_nil : l ≠ [])
+    (hl : Chain' R l) (h : R x (l.head l_ne_nil)) : Chain' R (x :: l) := by
+  refine hl.cons' fun y hy ↦ ?_
+  convert h
+  simpa [l.head?_eq_head l_ne_nil] using hy.symm
+
 theorem chain'_cons' {x l} : Chain' R (x :: l) ↔ (∀ y ∈ head? l, R x y) ∧ Chain' R l :=
   ⟨fun h => ⟨h.rel_head?, h.tail⟩, fun ⟨h₁, h₂⟩ => h₂.cons' h₁⟩
 
@@ -333,8 +339,6 @@ lemma chain'_flatten : ∀ {L : List (List α)}, [] ∉ L →
     simp only [forall_mem_cons, and_assoc, flatten, head?_append_of_ne_nil _ hL.2.1.symm]
     exact Iff.rfl.and (Iff.rfl.and <| Iff.rfl.and and_comm)
 
-@[deprecated (since := "2024-10-15")] alias chain'_join := chain'_flatten
-
 theorem chain'_attachWith {l : List α} {p : α → Prop} (h : ∀ x ∈ l, p x)
     {r : {a // p a} → {a // p a} → Prop} :
     (l.attachWith p h).Chain' r ↔ l.Chain' fun a b ↦ ∃ ha hb, r ⟨a, ha⟩ ⟨b, hb⟩ := by
@@ -401,7 +405,7 @@ theorem Chain.backwards_induction (p : α → Prop) (l : List α) (h : Chain r a
     (final : p b) : ∀ i ∈ a :: l, p i := by
   have : Chain' (flip (flip r)) (a :: l) := by simpa [Chain']
   replace this := chain'_reverse.mpr this
-  simp_rw (config := {singlePass := true}) [← List.mem_reverse]
+  simp_rw +singlePass [← List.mem_reverse]
   apply this.induction _ _ (fun _ _ h ↦ carries h)
   simpa only [ne_eq, reverse_eq_nil_iff, not_false_eq_true, head_reverse, forall_true_left, hb,
     reduceCtorEq]

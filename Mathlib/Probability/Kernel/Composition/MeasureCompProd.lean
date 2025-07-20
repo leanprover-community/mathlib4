@@ -190,11 +190,11 @@ lemma dirac_unit_compProd (κ : Kernel Unit β) [IsSFiniteKernel κ] :
     Measure.dirac () ⊗ₘ κ = (κ ()).map (Prod.mk ()) := by
   ext s hs; rw [dirac_compProd_apply hs, Measure.map_apply measurable_prodMk_left hs]
 
-lemma dirac_unit_compProd_const (μ : Measure β) [IsFiniteMeasure μ] :
+lemma dirac_unit_compProd_const (μ : Measure β) [SFinite μ] :
     Measure.dirac () ⊗ₘ Kernel.const Unit μ = μ.map (Prod.mk ()) := by
   rw [dirac_unit_compProd, Kernel.const_apply]
 
-lemma snd_dirac_unit_compProd_const (μ : Measure β) [IsFiniteMeasure μ] :
+lemma snd_dirac_unit_compProd_const (μ : Measure β) [SFinite μ] :
     snd (Measure.dirac () ⊗ₘ Kernel.const Unit μ) = μ := by simp
 
 instance : SFinite (μ ⊗ₘ κ) := by rw [compProd]; infer_instance
@@ -275,7 +275,7 @@ lemma absolutelyContinuous_of_compProd [SFinite μ] [IsSFiniteKernel κ] [h_zero
   exact (h_zero a).out
 
 lemma absolutelyContinuous_compProd_left_iff [SFinite μ] [SFinite ν]
-    [IsFiniteKernel κ] [∀ a, NeZero (κ a)] :
+    [IsSFiniteKernel κ] [∀ a, NeZero (κ a)] :
     μ ⊗ₘ κ ≪ ν ⊗ₘ κ ↔ μ ≪ ν :=
   ⟨absolutelyContinuous_of_compProd, fun h ↦ h.compProd_left κ⟩
 
@@ -286,7 +286,7 @@ lemma AbsolutelyContinuous.compProd_of_compProd [SFinite ν] [IsSFiniteKernel η
   swap; · rw [compProd_of_not_sfinite _ _ hμ]; simp
   refine AbsolutelyContinuous.mk fun s hs hs_zero ↦ ?_
   suffices (μ ⊗ₘ η) s = 0 from hκη this
-  rw [measure_zero_iff_ae_nmem, ae_compProd_iff hs.compl] at hs_zero ⊢
+  rw [measure_zero_iff_ae_notMem, ae_compProd_iff hs.compl] at hs_zero ⊢
   exact hμν.ae_le hs_zero
 
 end AbsolutelyContinuous

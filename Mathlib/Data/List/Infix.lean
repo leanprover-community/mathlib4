@@ -17,7 +17,7 @@ This file proves properties about
 * `List.tails`: The list of prefixes of a list.
 * `insert` on lists
 
-All those (except `insert`) are defined in `Mathlib.Data.List.Defs`.
+All those (except `insert`) are defined in `Mathlib/Data/List/Defs.lean`.
 
 ## Notation
 

@@ -20,14 +20,14 @@ such as Hensel's lemma and Jordan-Chevalley decomposition.
 
 ## Main definitions / results:
 
- * `Polynomial.newtonMap`: the map `x ↦ x - P(x) / P'(x)`, where `P'` is the derivative of the
-   polynomial `P`.
- * `Polynomial.isFixedPt_newtonMap_of_isUnit_iff`: `x` is a fixed point for Newton iteration iff
-   it is a root of `P` (provided `P'(x)` is a unit).
- * `Polynomial.existsUnique_nilpotent_sub_and_aeval_eq_zero`: if `x` is almost a root of `P` in the
-   sense that `P(x)` is nilpotent (and `P'(x)` is a unit) then we may write `x` as a sum
-   `x = n + r` where `n` is nilpotent and `r` is a root of `P`. This can be used to prove the
-   Jordan-Chevalley decomposition of linear endomorphims.
+* `Polynomial.newtonMap`: the map `x ↦ x - P(x) / P'(x)`, where `P'` is the derivative of the
+  polynomial `P`.
+* `Polynomial.isFixedPt_newtonMap_of_isUnit_iff`: `x` is a fixed point for Newton iteration iff
+  it is a root of `P` (provided `P'(x)` is a unit).
+* `Polynomial.existsUnique_nilpotent_sub_and_aeval_eq_zero`: if `x` is almost a root of `P` in the
+  sense that `P(x)` is nilpotent (and `P'(x)` is a unit) then we may write `x` as a sum
+  `x = n + r` where `n` is nilpotent and `r` is a root of `P`. This can be used to prove the
+  Jordan-Chevalley decomposition of linear endomorphims.
 
 -/
 

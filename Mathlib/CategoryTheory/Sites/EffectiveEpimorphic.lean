@@ -61,7 +61,7 @@ the arrow is an effective epi.
 -/
 def isColimitOfEffectiveEpiStruct {X Y : C} (f : Y ⟶ X) (Hf : EffectiveEpiStruct f) :
     IsColimit (Sieve.generateSingleton f : Presieve X).cocone :=
-  letI D := FullSubcategory fun T : Over X => Sieve.generateSingleton f T.hom
+  letI D := ObjectProperty.FullSubcategory fun T : Over X => Sieve.generateSingleton f T.hom
   letI F : D ⥤ _ := (Sieve.generateSingleton f).arrows.diagram
   { desc := fun S => Hf.desc (S.ι.app ⟨Over.mk f, ⟨𝟙 _, by simp⟩⟩) <| by
       intro Z g₁ g₂ h
@@ -170,7 +170,7 @@ the family is an effective epi.
 def isColimitOfEffectiveEpiFamilyStruct {B : C} {α : Type*}
     (X : α → C) (π : (a : α) → (X a ⟶ B)) (H : EffectiveEpiFamilyStruct X π) :
     IsColimit (Sieve.generateFamily X π : Presieve B).cocone :=
-  letI D := FullSubcategory fun T : Over B => Sieve.generateFamily X π T.hom
+  letI D := ObjectProperty.FullSubcategory fun T : Over B => Sieve.generateFamily X π T.hom
   letI F : D ⥤ _ := (Sieve.generateFamily X π).arrows.diagram
   { desc := fun S => H.desc (fun a => S.ι.app ⟨Over.mk (π a), ⟨a,𝟙 _, by simp⟩⟩) <| by
       intro Z a₁ a₂ g₁ g₂ h

@@ -11,7 +11,7 @@ import Mathlib.RingTheory.Spectrum.Prime.Defs
 /-!
 # Prime spectrum of a commutative (semi)ring
 
-For the Zariski topology, see `Mathlib.RingTheory.Spectrum.Prime.Topology`.
+For the Zariski topology, see `Mathlib/RingTheory/Spectrum/Prime/Topology.lean`.
 
 (It is also naturally endowed with a sheaf of rings,
 which is constructed in `AlgebraicGeometry.StructureSheaf`.)
@@ -39,7 +39,7 @@ and Chris Hughes (on an earlier repository).
 * [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
 -/
 
--- A dividing line between this file and `Mathlib.RingTheory.Spectrum.Prime.Topology` is
+-- A dividing line between this file and `Mathlib/RingTheory/Spectrum/Prime/Topology.lean` is
 -- that we should not depend on the Zariski topology here
 assert_not_exists TopologicalSpace
 
@@ -58,13 +58,24 @@ section CommSemiRing
 variable [CommSemiring R] [CommSemiring S]
 variable {R S}
 
+lemma nonempty_iff_nontrivial : Nonempty (PrimeSpectrum R) ↔ Nontrivial R := by
+  refine ⟨fun ⟨p⟩ ↦ ⟨0, 1, fun h ↦ p.2.ne_top ?_⟩, fun h ↦ ?_⟩
+  · simp [Ideal.eq_top_iff_one p.asIdeal, ← h]
+  · obtain ⟨I, hI⟩ := Ideal.exists_maximal R
+    exact ⟨⟨I, hI.isPrime⟩⟩
+
+lemma isEmpty_iff_subsingleton : IsEmpty (PrimeSpectrum R) ↔ Subsingleton R := by
+  rw [← not_iff_not, not_isEmpty_iff, not_subsingleton_iff_nontrivial, nonempty_iff_nontrivial]
+
 instance [Nontrivial R] : Nonempty <| PrimeSpectrum R :=
-  let ⟨I, hI⟩ := Ideal.exists_maximal R
-  ⟨⟨I, hI.isPrime⟩⟩
+  nonempty_iff_nontrivial.mpr inferInstance
 
 /-- The prime spectrum of the zero ring is empty. -/
 instance [Subsingleton R] : IsEmpty (PrimeSpectrum R) :=
-  ⟨fun x ↦ x.isPrime.ne_top <| SetLike.ext' <| Subsingleton.eq_univ_of_nonempty x.asIdeal.nonempty⟩
+  isEmpty_iff_subsingleton.mpr inferInstance
+
+lemma nontrivial (p : PrimeSpectrum R) : Nontrivial R :=
+  nonempty_iff_nontrivial.mp ⟨p⟩
 
 variable (R S)
 
@@ -95,7 +106,7 @@ noncomputable def primeSpectrumProd :
     Equiv.ofBijective (primeSpectrumProdOfSum R S) (by
         constructor
         · rintro (⟨I, hI⟩ | ⟨J, hJ⟩) (⟨I', hI'⟩ | ⟨J', hJ'⟩) h <;>
-          simp only [mk.injEq, Ideal.prod.ext_iff, primeSpectrumProdOfSum] at h
+          simp only [mk.injEq, Ideal.prod_inj, primeSpectrumProdOfSum] at h
           · simp only [h]
           · exact False.elim (hI.ne_top h.left)
           · exact False.elim (hJ.ne_top h.right)
@@ -260,7 +271,7 @@ theorem vanishingIdeal_empty : vanishingIdeal (∅ : Set (PrimeSpectrum R)) = �
   simpa using (gc R).u_top
 
 theorem zeroLocus_empty_of_one_mem {s : Set R} (h : (1 : R) ∈ s) : zeroLocus s = ∅ := by
-  rw [Set.eq_empty_iff_forall_not_mem]
+  rw [Set.eq_empty_iff_forall_notMem]
   intro x hx
   rw [mem_zeroLocus] at hx
   have x_prime : x.asIdeal.IsPrime := by infer_instance
@@ -362,9 +373,12 @@ theorem sup_vanishingIdeal_le (t t' : Set (PrimeSpectrum R)) :
   rw [mem_vanishingIdeal] at hf hg
   apply Submodule.add_mem <;> solve_by_elim
 
-theorem mem_compl_zeroLocus_iff_not_mem {f : R} {I : PrimeSpectrum R} :
+theorem mem_compl_zeroLocus_iff_notMem {f : R} {I : PrimeSpectrum R} :
     I ∈ (zeroLocus {f} : Set (PrimeSpectrum R))ᶜ ↔ f ∉ I.asIdeal := by
   rw [Set.mem_compl_iff, mem_zeroLocus, Set.singleton_subset_iff]; rfl
+
+@[deprecated (since := "2025-05-23")]
+alias mem_compl_zeroLocus_iff_not_mem := mem_compl_zeroLocus_iff_notMem
 
 @[simp]
 lemma zeroLocus_insert_zero (s : Set R) : zeroLocus (insert 0 s) = zeroLocus s := by
@@ -385,7 +399,7 @@ section Order
 
 We endow `PrimeSpectrum R` with a partial order induced from the ideal lattice.
 This is exactly the specialization order.
-See the corresponding section at `Mathlib.RingTheory.Spectrum.Prime.Topology`.
+See the corresponding section at `Mathlib/RingTheory/Spectrum/Prime/Topology.lean`.
 -/
 
 instance : PartialOrder (PrimeSpectrum R) :=
@@ -414,6 +428,14 @@ lemma isMax_iff {x : PrimeSpectrum R} :
   by_contra e
   obtain ⟨m, hm, hm'⟩ := Ideal.exists_le_maximal I e
   exact hx.not_lt (show x < ⟨m, hm.isPrime⟩ from hI.trans_le hm')
+
+lemma zeroLocus_eq_singleton (m : Ideal R) [m.IsMaximal] :
+    zeroLocus m = {⟨m, inferInstance⟩} := by
+  ext I
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · simp only [mem_zeroLocus, SetLike.coe_subset_coe] at h
+    simpa using PrimeSpectrum.ext_iff.mpr (Ideal.IsMaximal.eq_of_le ‹_› I.2.ne_top h).symm
+  · simp [Set.mem_singleton_iff.mp h]
 
 lemma isMin_iff {x : PrimeSpectrum R} :
     IsMin x ↔ x.asIdeal ∈ minimalPrimes R := by

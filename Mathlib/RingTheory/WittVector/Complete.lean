@@ -16,9 +16,9 @@ when `k` is a perfect ring of characteristic `p`.
 ## Main declarations
 
 * `WittVector.eq_zero_of_p_mul_eq_zero` : If `k` is a perfect ring of characteristic `p`,
-then the Witt vector `𝕎 k` is `p`-torsion free.
+  then the Witt vector `𝕎 k` is `p`-torsion free.
 * `isAdicCompleteIdealSpanP` : If `k` is a perfect ring of characteristic `p`,
-then the Witt vector `𝕎 k` is `p`-adically complete.
+  then the Witt vector `𝕎 k` is `p`-adically complete.
 
 ## TODO
 Define the map `𝕎 k / p ≃+* k`.

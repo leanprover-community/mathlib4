@@ -8,7 +8,6 @@ import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.Module.Submodule.Invariant
 import Mathlib.Algebra.Module.Torsion
-import Mathlib.GroupTheory.MonoidLocalization.Basic
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.LinearAlgebra.Dual.Defs
 import Mathlib.LinearAlgebra.FiniteSpan
@@ -28,17 +27,17 @@ is characterised by properties 1 and 2 above, and is a linear isometry.
 
 ## Main definitions / results:
 
- * `Module.preReflection`: the definition of the map `y ↦ y - (f y) • x`. Its main utility lies in
-   the fact that it does not require the assumption `f x = 2`, giving the user freedom to defer
-   discharging this proof obligation.
- * `Module.reflection`: the definition of the map `y ↦ y - (f y) • x`. This requires the assumption
-   that `f x = 2` but by way of compensation it produces a linear equivalence rather than a mere
-   linear map.
- * `Module.reflection_mul_reflection_pow_apply`: a formula for $(r_1 r_2)^m z$, where $r_1$ and
-   $r_2$ are reflections and $z \in M$. It involves the Chebyshev polynomials and holds over any
-   commutative ring. This is used to define reflection representations of Coxeter groups.
- * `Module.Dual.eq_of_preReflection_mapsTo`: a uniqueness result about reflections preserving
-   finite spanning sets that is useful in the theory of root data / systems.
+* `Module.preReflection`: the definition of the map `y ↦ y - (f y) • x`. Its main utility lies in
+  the fact that it does not require the assumption `f x = 2`, giving the user freedom to defer
+  discharging this proof obligation.
+* `Module.reflection`: the definition of the map `y ↦ y - (f y) • x`. This requires the assumption
+  that `f x = 2` but by way of compensation it produces a linear equivalence rather than a mere
+  linear map.
+* `Module.reflection_mul_reflection_pow_apply`: a formula for $(r_1 r_2)^m z$, where $r_1$ and
+  $r_2$ are reflections and $z \in M$. It involves the Chebyshev polynomials and holds over any
+  commutative ring. This is used to define reflection representations of Coxeter groups.
+* `Module.Dual.eq_of_preReflection_mapsTo`: a uniqueness result about reflections preserving
+  finite spanning sets that is useful in the theory of root data / systems.
 
 ## TODO
 
@@ -133,6 +132,21 @@ lemma _root_.Submodule.mem_invtSubmodule_reflection_of_mem (h : f x = 2)
     (End.mem_invtSubmodule _).mpr fun y hy ↦ by simpa using this y hy
   intro y hy
   simpa only [reflection_apply, p.sub_mem_iff_right hy] using p.smul_mem (f y) hx
+
+lemma _root_.Submodule.mem_invtSubmodule_reflection_iff [NeZero (2 : R)] [NoZeroSMulDivisors R M]
+    (h : f x = 2) {p : Submodule R M} (hp : Disjoint p (R ∙ x)) :
+    p ∈ End.invtSubmodule (reflection h) ↔ p ≤ LinearMap.ker f := by
+  refine ⟨fun h' y hy ↦ ?_, fun h' y hy ↦ ?_⟩
+  · have hx : x ≠ 0 := by rintro rfl; exact two_ne_zero (α := R) <| by simp [← h]
+    suffices f y • x ∈ p by
+      have aux : f y • x ∈ p ⊓ (R ∙ x) := ⟨this, Submodule.mem_span_singleton.mpr ⟨f y, rfl⟩⟩
+      rw [hp.eq_bot, Submodule.mem_bot, smul_eq_zero] at aux
+      exact aux.resolve_right hx
+    specialize h' hy
+    simp only [Submodule.mem_comap, LinearEquiv.coe_coe, reflection_apply] at h'
+    simpa using p.sub_mem h' hy
+  · have hy' : f y = 0 := by simpa using h' hy
+    simpa [reflection_apply, hy']
 
 /-! ### Powers of the product of two reflections
 
@@ -332,7 +346,7 @@ lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [NoZeroSMulDivisors R M]
   have hu : u = LinearMap.id (R := R) (M := M) + (f - g).smulRight x := by
     ext y
     simp only [u, reflection_apply, hg₁, two_smul, LinearEquiv.coe_toLinearMap_mul,
-      LinearMap.id_coe, LinearEquiv.coe_coe, LinearMap.mul_apply, LinearMap.add_apply, id_eq,
+      LinearMap.id_coe, LinearEquiv.coe_coe, Module.End.mul_apply, LinearMap.add_apply, id_eq,
       LinearMap.coe_smulRight, LinearMap.sub_apply, map_sub, map_smul, sub_add_cancel_left,
       smul_neg, sub_neg_eq_add, sub_smul]
     abel
@@ -345,7 +359,7 @@ lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [NoZeroSMulDivisors R M]
       have : ((f - g).smulRight x).comp ((n : R) • (f - g).smulRight x) = 0 := by
         ext; simp [hf₁, hg₁]
       rw [pow_succ', LinearEquiv.coe_toLinearMap_mul, ih, hu, add_mul, mul_add, mul_add]
-      simp_rw [LinearMap.mul_eq_comp, LinearMap.comp_id, LinearMap.id_comp, this, add_zero,
+      simp_rw [Module.End.mul_eq_comp, LinearMap.comp_id, LinearMap.id_comp, this, add_zero,
         add_assoc, Nat.cast_succ, add_smul, one_smul]
   suffices IsOfFinOrder u by
     obtain ⟨n, hn₀, hn₁⟩ := isOfFinOrder_iff_pow_eq_one.mp this

@@ -3,8 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
+import Mathlib.Algebra.Group.Finsupp
+import Mathlib.Algebra.Group.Indicator
 import Mathlib.Data.Finset.Max
-import Mathlib.Data.Finsupp.Defs
 
 /-!
 # Finitely supported functions on exactly one point
@@ -69,7 +70,7 @@ theorem single_eq_set_indicator : ⇑(single a b) = Set.indicator {a} fun _ => b
 
 @[simp]
 theorem single_eq_same : (single a b : α →₀ M) a = b := by
-  classical exact Pi.single_eq_same (f := fun _ ↦ M) a b
+  classical exact Pi.single_eq_same (M := fun _ ↦ M) a b
 
 @[simp]
 theorem single_eq_of_ne (h : a ≠ a') : (single a b : α →₀ M) a' = 0 := by
@@ -130,7 +131,7 @@ theorem eq_single_iff {f : α →₀ M} {a b} : f = single a b ↔ f.support ⊆
   rintro ⟨h, rfl⟩
   ext x
   by_cases hx : a = x <;> simp only [hx, single_eq_same, single_eq_of_ne, Ne, not_false_iff]
-  exact not_mem_support_iff.1 (mt (fun hx => (mem_singleton.1 (h hx)).symm) hx)
+  exact notMem_support_iff.1 (mt (fun hx => (mem_singleton.1 (h hx)).symm) hx)
 
 theorem single_eq_single_iff (a₁ a₂ : α) (b₁ b₂ : M) :
     single a₁ b₁ = single a₂ b₂ ↔ a₁ = a₂ ∧ b₁ = b₂ ∨ b₁ = 0 ∧ b₂ = 0 := by
@@ -155,6 +156,9 @@ theorem single_left_injective (h : b ≠ 0) : Function.Injective fun a : α => s
 
 theorem single_left_inj (h : b ≠ 0) : single a b = single a' b ↔ a = a' :=
   (single_left_injective h).eq_iff
+
+lemma apply_surjective (a : α) : Surjective fun f : α →₀ M ↦ f a :=
+  RightInverse.surjective fun _ ↦ single_eq_same
 
 theorem support_single_ne_bot (i : α) (h : b ≠ 0) : (single i b).support ≠ ⊥ := by
   simpa only [support_single_ne_zero _ h] using singleton_ne_empty _
@@ -400,10 +404,12 @@ theorem erase_single_ne {a a' : α} {b : M} (h : a ≠ a') : erase a (single a' 
   · rw [erase_ne hs]
 
 @[simp]
-theorem erase_of_not_mem_support {f : α →₀ M} {a} (haf : a ∉ f.support) : erase a f = f := by
+theorem erase_of_notMem_support {f : α →₀ M} {a} (haf : a ∉ f.support) : erase a f = f := by
   ext b; by_cases hab : b = a
-  · rwa [hab, erase_same, eq_comm, ← not_mem_support_iff]
+  · rwa [hab, erase_same, eq_comm, ← notMem_support_iff]
   · rw [erase_ne hab]
+
+@[deprecated (since := "2025-05-23")] alias erase_of_not_mem_support := erase_of_notMem_support
 
 theorem erase_zero (a : α) : erase a (0 : α →₀ M) = 0 := by
   simp
@@ -417,7 +423,7 @@ theorem erase_update_of_ne (f : α →₀ M) {a a' : α} (ha : a ≠ a') (b : M)
     erase a (update f a' b) = update (erase a f) a' b := by
   rw [erase_eq_update_zero, erase_eq_update_zero, update_comm _ ha]
 
--- not `simp` as `erase_of_not_mem_support` can prove this
+-- not `simp` as `erase_of_notMem_support` can prove this
 theorem erase_idem (f : α →₀ M) (a : α) :
     erase a (erase a f) = erase a f := by
   rw [erase_eq_update_zero, erase_eq_update_zero, update_idem]

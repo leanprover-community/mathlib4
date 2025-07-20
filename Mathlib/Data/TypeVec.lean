@@ -248,7 +248,7 @@ theorem appendFun_id_id {α : TypeVec n} {β : Type*} :
 instance subsingleton0 : Subsingleton (TypeVec 0) :=
   ⟨fun _ _ => funext Fin2.elim0⟩
 
--- See `Mathlib.Tactic.Attr.Register` for `register_simp_attr typevec`
+-- See `Mathlib/Tactic/Attr/Register.lean` for `register_simp_attr typevec`
 
 /-- cases distinction for 0-length type vector -/
 protected def casesNil {β : TypeVec 0 → Sort*} (f : β Fin2.elim0) : ∀ v, β v :=
@@ -412,8 +412,9 @@ def ofRepeat {α : Sort _} : ∀ {n i}, «repeat» n α i → α
 theorem const_iff_true {α : TypeVec n} {i x p} : ofRepeat (TypeVec.const p α i x) ↔ p := by
   induction i with
   | fz      => rfl
-  | fs _ ih => erw [TypeVec.const, @ih (drop α) x]
-
+  | fs _ ih =>
+    rw [TypeVec.const]
+    exact ih
 
 section
 variable {α β : TypeVec.{u} n}
@@ -492,7 +493,9 @@ theorem repeatEq_iff_eq {α : TypeVec n} {i x y} :
     ofRepeat (repeatEq α i (prod.mk _ x y)) ↔ x = y := by
   induction i with
   | fz => rfl
-  | fs _ i_ih => erw [repeatEq, i_ih]
+  | fs _ i_ih =>
+    rw [repeatEq]
+    exact i_ih
 
 /-- given a predicate vector `p` over vector `α`, `Subtype_ p` is the type of vectors
 that contain an `α` that satisfies `p` -/
@@ -609,8 +612,6 @@ theorem dropFun_RelLast' {α : TypeVec n} {β} (R : β → β → Prop) :
   rfl
 
 attribute [simp] drop_append1'
-
-open MvFunctor
 
 @[simp]
 theorem dropFun_prod {α α' β β' : TypeVec (n + 1)} (f : α ⟹ β) (f' : α' ⟹ β') :

@@ -14,7 +14,7 @@ of continuity is equivalent to continuity in ωCPOs.
 
 ## Reference
 
- * https://ncatlab.org/nlab/show/Scott+topology
+* https://ncatlab.org/nlab/show/Scott+topology
 
 -/
 
@@ -105,8 +105,6 @@ theorem notBelow_isOpen : IsOpen (notBelow y) := by
 end notBelow
 
 open Scott hiding IsOpen IsOpen.isUpperSet
-
-open OmegaCompletePartialOrder
 
 theorem isωSup_ωSup {α} [OmegaCompletePartialOrder α] (c : Chain α) : IsωSup c (ωSup c) := by
   constructor

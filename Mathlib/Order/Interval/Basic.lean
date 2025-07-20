@@ -588,7 +588,6 @@ noncomputable instance completeLattice [DecidableLE α] : CompleteLattice (Inter
                 lift s to NonemptyInterval α using ha
                 exact iInf₂_le_of_le s hs (le_iSup₂_of_le s hs s.fst_le_snd)⟩
         le_sSup := fun s s ha => by
-          dsimp only
           split_ifs with h
           · exact (h ha).le
           cases s
@@ -602,7 +601,6 @@ noncomputable instance completeLattice [DecidableLE α] : CompleteLattice (Inter
               exact ha
             · exact le_iSup₂_of_le _ ha le_rfl
         sSup_le := fun s s ha => by
-          dsimp only
           split_ifs with h
           · exact bot_le
           obtain ⟨b, hs, hb⟩ := not_subset.1 h
@@ -622,7 +620,6 @@ noncomputable instance completeLattice [DecidableLE α] : CompleteLattice (Inter
                 iSup₂_le fun s hs => le_iInf₂ <| h.2 hs⟩
           else ⊥
         sInf_le := fun s₁ s ha => by
-          dsimp only
           split_ifs with h
           · lift s to NonemptyInterval α using ne_of_mem_of_not_mem ha h.1
             -- Porting note: Lean failed to figure out the function `f` by itself,
@@ -635,7 +632,6 @@ noncomputable instance completeLattice [DecidableLE α] : CompleteLattice (Inter
           cases s with
           | bot => exact bot_le
           | coe s =>
-            dsimp only
             split_ifs with h
             · exact WithBot.coe_le_coe.2
                 ⟨iSup₂_le fun t hb => (WithBot.coe_le_coe.1 <| ha _ hb).1,

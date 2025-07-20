@@ -81,28 +81,15 @@ def reflTransSymm (p : Path x₀ x₁) : Homotopy (Path.refl x₀) (p.trans p.sy
   continuous_toFun := by fun_prop
   map_zero_left := by simp [reflTransSymmAux]
   map_one_left x := by
-    dsimp only [reflTransSymmAux, Path.coe_toContinuousMap, Path.trans]
-    change _ = ite _ _ _
-    split_ifs with h
-    · rw [Path.extend, Set.IccExtend_of_mem]
-      · norm_num
-      · rw [unitInterval.mul_pos_mem_iff zero_lt_two]
-        exact ⟨unitInterval.nonneg x, h⟩
-    · rw [Path.symm, Path.extend, Set.IccExtend_of_mem]
-      · simp only [Set.Icc.coe_one, one_mul, coe_mk_mk, Function.comp_apply]
-        congr 1
-        ext
-        norm_num [sub_sub_eq_add_sub]
-      · rw [unitInterval.two_mul_sub_one_mem_iff]
-        exact ⟨(not_le.1 h).le, unitInterval.le_one x⟩
-  prop' t x hx := by
-    simp only [Set.mem_singleton_iff, Set.mem_insert_iff] at hx
-    simp only [ContinuousMap.coe_mk, coe_toContinuousMap, Path.refl_apply]
-    cases hx with
-    | inl hx
+    simp only [reflTransSymmAux, Path.coe_toContinuousMap, Path.trans]
+    cases le_or_lt (x : ℝ) 2⁻¹ with
+    | inl hx => simp [hx, ← extend_extends]
     | inr hx =>
-      rw [hx]
-      norm_num [reflTransSymmAux]
+      simp? [hx.not_le, ← extend_extends] says
+        simp only [one_div, hx.not_le, ↓reduceIte, Set.Icc.coe_one, one_mul, ← extend_extends,
+          extend_symm, ContinuousMap.coe_mk, Function.comp_apply]
+      ring_nf
+  prop' t := by norm_num [reflTransSymmAux]
 
 /-- For any path `p` from `x₀` to `x₁`, we have a homotopy from the constant path based at `x₁` to
   `p.symm.trans p`. -/

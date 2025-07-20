@@ -46,7 +46,7 @@ variable {R A}
 lemma unramifiedLocus_eq_compl_support :
     unramifiedLocus R A = (Module.support A (Ω[A⁄R]))ᶜ := by
   ext p
-  simp only [Set.mem_compl_iff, Module.not_mem_support_iff]
+  simp only [Set.mem_compl_iff, Module.notMem_support_iff]
   have := IsLocalizedModule.iso p.asIdeal.primeCompl
     (KaehlerDifferential.map R R A (Localization.AtPrime p.asIdeal))
   exact (Algebra.formallyUnramified_iff _ _).trans this.subsingleton_congr.symm

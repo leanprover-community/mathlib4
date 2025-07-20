@@ -13,7 +13,7 @@ import Mathlib.CategoryTheory.Monoidal.Conv
 ## TODO
 
 * Show that in a cartesian monoidal category Hopf monoids are exactly group objects.
-* Show that `Hopf_ (ModuleCat R) ≌ HopfAlgebraCat R`.
+* Show that `Hopf_ (ModuleCat R) ≌ HopfAlgCat R`.
 -/
 
 noncomputable section

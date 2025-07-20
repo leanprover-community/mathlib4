@@ -189,12 +189,12 @@ this function supports generating lemmas where certain parameters
 are meant to be fixed:
 
 * If `fixedFun` is `false` (the default) then the lemma starts with three arguments for `f`, `f'`,
-and `h : f = f'`. Otherwise, if `fixedFun` is `true` then the lemma starts with just `f`.
+  and `h : f = f'`. Otherwise, if `fixedFun` is `true` then the lemma starts with just `f`.
 
 * If the `fixedParams` argument has `true` for a particular argument index, then this is a hint
-that the congruence lemma may use the same parameter for both sides of the equality. There is
-no guarantee -- it respects it if the types are equal for that parameter (i.e., if the parameter
-does not depend on non-fixed parameters).
+  that the congruence lemma may use the same parameter for both sides of the equality. There is
+  no guarantee -- it respects it if the types are equal for that parameter (i.e., if the parameter
+  does not depend on non-fixed parameters).
 
 If `forceHEq` is `true` then the conclusion of the generated theorem is a `HEq`.
 Otherwise it might be an `Eq` if the equality is homogeneous.

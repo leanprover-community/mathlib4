@@ -124,8 +124,6 @@ theorem mk_out_eq_mul (H K : Subgroup G) (g : G) :
   refine ⟨h⁻¹, k⁻¹, H.inv_mem h_h, K.inv_mem hk, eq_mul_inv_of_mul_eq (eq_inv_mul_of_mul_eq ?_)⟩
   rw [← mul_assoc, ← T]
 
-@[deprecated (since := "2024-10-19")] alias mk_out'_eq_mul := mk_out_eq_mul
-
 theorem mk_eq_of_doset_eq {H K : Subgroup G} {a b : G} (h : doset a H K = doset b H K) :
     mk H K a = mk H K b := by
   rw [eq]
@@ -136,8 +134,6 @@ theorem disjoint_out {H K : Subgroup G} {a b : Quotient H K} :
   contrapose!
   intro h
   simpa [out_eq'] using mk_eq_of_doset_eq (eq_of_not_disjoint h)
-
-@[deprecated (since := "2024-10-19")] alias disjoint_out' := disjoint_out
 
 theorem union_quotToDoset (H K : Subgroup G) : ⋃ q, quotToDoset H K q = Set.univ := by
   ext x

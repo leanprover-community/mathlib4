@@ -35,7 +35,7 @@ open Finset
 namespace Imo2019Q4
 
 theorem upper_bound {k n : ℕ} (hk : k > 0)
-    (h : (k ! : ℤ) = ∏ i ∈ range n, ((2:ℤ) ^ n - (2:ℤ) ^ i)) : n < 6 := by
+    (h : (k ! : ℤ) = ∏ i ∈ range n, ((2 : ℤ) ^ n - (2 : ℤ) ^ i)) : n < 6 := by
   have h2 : ∑ i ∈ range n, i < k := by
     suffices emultiplicity 2 (k ! : ℤ) = ↑(∑ i ∈ range n, i : ℕ) by
       rw [← Nat.cast_lt (α := ℕ∞), ← this]; change emultiplicity ((2 : ℕ) : ℤ) _ < _

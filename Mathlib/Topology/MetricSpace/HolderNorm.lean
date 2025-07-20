@@ -201,11 +201,17 @@ variable {r : ℝ≥0} {f g : X → Y}
 lemma MemHolder.add (hf : MemHolder r f) (hg : MemHolder r g) : MemHolder r (f + g) :=
   (hf.holderWith.add hg.holderWith).memHolder
 
-lemma MemHolder.smul {𝕜} [NormedDivisionRing 𝕜] [Module 𝕜 Y] [IsBoundedSMul 𝕜 Y]
+lemma MemHolder.smul {𝕜} [SeminormedRing 𝕜] [Module 𝕜 Y] [IsBoundedSMul 𝕜 Y]
     {c : 𝕜} (hf : MemHolder r f) : MemHolder r (c • f) :=
   (hf.holderWith.smul c).memHolder
 
-lemma MemHolder.nsmul [Module ℝ Y] [IsBoundedSMul ℝ Y] (n : ℕ) (hf : MemHolder r f) :
+lemma MemHolder.smul_iff {𝕜} [SeminormedRing 𝕜] [Module 𝕜 Y] [NormSMulClass 𝕜 Y]
+    {c : 𝕜} (hc : ‖c‖₊ ≠ 0) : MemHolder r (c • f) ↔ MemHolder r f := by
+  refine ⟨fun ⟨h, hh⟩ => ⟨h * ‖c‖₊⁻¹, ?_⟩, .smul⟩
+  rw [← HolderWith.smul_iff _ hc, inv_mul_cancel_right₀ hc]
+  exact hh
+
+lemma MemHolder.nsmul [NormedSpace ℝ Y] (n : ℕ) (hf : MemHolder r f) :
     MemHolder r (n • f) := by
   simp [← Nat.cast_smul_eq_nsmul (R := ℝ), hf.smul]
 
@@ -225,7 +231,7 @@ lemma eHolderNorm_add_le :
     obtain (h | h) := hfg
     all_goals simp [h]
 
-lemma eHolderNorm_smul {α} [NormedDivisionRing α] [Module α Y] [IsBoundedSMul α Y] (c : α) :
+lemma eHolderNorm_smul {α} [NormedRing α] [Module α Y] [NormSMulClass α Y] (c : α) :
     eHolderNorm r (c • f) = ‖c‖₊ * eHolderNorm r f := by
   by_cases hc : ‖c‖₊ = 0
   · rw [nnnorm_eq_zero] at hc
@@ -241,24 +247,22 @@ lemma eHolderNorm_smul {α} [NormedDivisionRing α] [Module α Y] [IsBoundedSMul
         ← Pi.smul_apply]
       exact hf.smul.holderWith x₁ x₂
   · rw [← eHolderNorm_eq_top] at hf
-    rw [hf, mul_top <| coe_ne_zero.2 hc, eHolderNorm_eq_top]
+    rw [hf, mul_top <| coe_ne_zero.2 hc, eHolderNorm_eq_top, MemHolder.smul_iff hc]
     rw [nnnorm_eq_zero] at hc
     intro h
-    have := h.smul (c := c⁻¹)
-    rw [inv_smul_smul₀ hc] at this
-    exact this.eHolderNorm_lt_top.ne hf
+    exact h.eHolderNorm_lt_top.ne hf
 
-lemma MemHolder.nnHolderNorm_smul {α} [NormedDivisionRing α] [Module α Y] [IsBoundedSMul α Y]
+lemma MemHolder.nnHolderNorm_smul {α} [NormedRing α] [Module α Y] [NormSMulClass α Y]
     (hf : MemHolder r f) (c : α) :
     nnHolderNorm r (c • f) = ‖c‖₊ * nnHolderNorm r f := by
   rw [← ENNReal.coe_inj, coe_mul, hf.coe_nnHolderNorm_eq_eHolderNorm,
     hf.smul.coe_nnHolderNorm_eq_eHolderNorm, eHolderNorm_smul]
 
-lemma eHolderNorm_nsmul [Module ℝ Y] [IsBoundedSMul ℝ Y] (n : ℕ) :
+lemma eHolderNorm_nsmul [NormedSpace ℝ Y] (n : ℕ) :
     eHolderNorm r (n • f) = n • eHolderNorm r f := by
   simp [← Nat.cast_smul_eq_nsmul (R := ℝ), eHolderNorm_smul]
 
-lemma MemHolder.nnHolderNorm_nsmul [Module ℝ Y] [IsBoundedSMul ℝ Y] (n : ℕ) (hf : MemHolder r f) :
+lemma MemHolder.nnHolderNorm_nsmul [NormedSpace ℝ Y] (n : ℕ) (hf : MemHolder r f) :
     nnHolderNorm r (n • f) = n • nnHolderNorm r f := by
   simp [← Nat.cast_smul_eq_nsmul (R := ℝ), hf.nnHolderNorm_smul]
 

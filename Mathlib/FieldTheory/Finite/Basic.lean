@@ -29,10 +29,10 @@ cyclic group, as well as the fact that every finite integral domain is a field
 
 1. `Fintype.card_units`: The unit group of a finite field has cardinality `q - 1`.
 2. `sum_pow_units`: The sum of `x^i`, where `x` ranges over the units of `K`, is
-   - `q-1` if `q-1 ∣ i`
-   - `0`   otherwise
+  - `q-1` if `q-1 ∣ i`
+  - `0`   otherwise
 3. `FiniteField.card`: The cardinality `q` is a power of the characteristic of `K`.
-   See `FiniteField.card'` for a variant.
+  See `FiniteField.card'` for a variant.
 
 ## Notation
 
@@ -109,7 +109,7 @@ theorem prod_univ_units_id_eq_neg_one [CommRing K] [IsDomain K] [Fintype Kˣ] :
       prod_involution (fun x _ => x⁻¹) (by simp)
         (fun a => by simp +contextual [Units.inv_eq_self_iff])
         (fun a => by simp [@inv_eq_iff_eq_inv _ _ a]) (by simp)
-    rw [← insert_erase (mem_univ (-1 : Kˣ)), prod_insert (not_mem_erase _ _), this, mul_one]
+    rw [← insert_erase (mem_univ (-1 : Kˣ)), prod_insert (notMem_erase _ _), this, mul_one]
 
 theorem card_cast_subgroup_card_ne_zero [Ring K] [NoZeroDivisors K] [Nontrivial K]
     (G : Subgroup Kˣ) [Fintype G] : (Fintype.card G : K) ≠ 0 := by
@@ -620,9 +620,10 @@ theorem Int.ModEq.pow_card_sub_one_eq_one {p : ℕ} (hp : Nat.Prime p) {n : ℤ}
   simpa [← ZMod.intCast_eq_intCast_iff] using ZMod.pow_card_sub_one_eq_one this
 
 theorem pow_pow_modEq_one (p m a : ℕ) : (1 + p * a) ^ (p ^ m) ≡ 1 [MOD p ^ m] := by
-  induction' m with m hm
-  · exact Nat.modEq_one
-  · rw [Nat.ModEq.comm, add_comm, Nat.modEq_iff_dvd' (Nat.one_le_pow' _ _)] at hm
+  induction m with
+  | zero => exact Nat.modEq_one
+  | succ m hm =>
+    rw [Nat.ModEq.comm, add_comm, Nat.modEq_iff_dvd' (Nat.one_le_pow' _ _)] at hm
     obtain ⟨d, hd⟩ := hm
     rw [tsub_eq_iff_eq_add_of_le (Nat.one_le_pow' _ _), add_comm] at hd
     rw [pow_succ, pow_mul, hd, add_pow, Finset.sum_range_succ', pow_zero, one_mul, one_pow,
@@ -690,9 +691,9 @@ theorem Subfield.splits_bot :
     Fintype.card_eq_nat_card, card_bot F p]
 
 theorem Subfield.mem_bot_iff_pow_eq_self {x : F} : x ∈ (⊥ : Subfield F) ↔ x ^ p = x := by
-   have := roots_X_pow_char_sub_X_bot F p ▸
-     Polynomial.roots_map (Subfield.subtype _) (splits_bot F p) ▸ Multiset.mem_map (b := x)
-   simpa [sub_eq_zero, iff_comm, FiniteField.X_pow_card_sub_X_ne_zero F (Fact.out : p.Prime).one_lt]
+  have := roots_X_pow_char_sub_X_bot F p ▸
+      Polynomial.roots_map (Subfield.subtype _) (splits_bot F p) ▸ Multiset.mem_map (b := x)
+  simpa [sub_eq_zero, iff_comm, FiniteField.X_pow_card_sub_X_ne_zero F (Fact.out : p.Prime).one_lt]
 
 end prime_subfield
 

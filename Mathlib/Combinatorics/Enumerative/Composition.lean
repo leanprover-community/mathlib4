@@ -433,7 +433,7 @@ theorem blocksFun_congr {n₁ n₂ : ℕ} (c₁ : Composition n₁) (c₂ : Comp
 
 /-- Two compositions (possibly of different integers) coincide if and only if they have the
 same sequence of blocks. -/
-theorem sigma_eq_iff_blocks_eq {c : Σn, Composition n} {c' : Σn, Composition n} :
+theorem sigma_eq_iff_blocks_eq {c : Σ n, Composition n} {c' : Σ n, Composition n} :
     c = c' ↔ c.2.blocks = c'.2.blocks := by
   refine ⟨fun H => by rw [H], fun H => ?_⟩
   rcases c with ⟨n, c⟩
@@ -570,7 +570,6 @@ theorem ne_single_iff {n : ℕ} (hn : 0 < n) {c : Composition n} :
         _ < ∑ k, c.blocksFun k :=
           Finset.single_lt_sum ji (Finset.mem_univ _) (Finset.mem_univ _) (c.one_le_blocksFun j)
             fun _ _ _ => zero_le _
-
     simpa using Fintype.card_eq_one_of_forall_eq this
 
 variable {m : ℕ}
@@ -787,17 +786,12 @@ theorem flatten_splitWrtCompositionAux {ns : List ℕ} :
     · simp
     · rw [length_drop, ← h, add_tsub_cancel_left]
 
-@[deprecated (since := "2024-10-15")]
-alias join_splitWrtCompositionAux := flatten_splitWrtCompositionAux
-
 /-- If one splits a list along a composition, and then flattens the sublists, one gets back the
 original list. -/
 @[simp]
 theorem flatten_splitWrtComposition (l : List α) (c : Composition l.length) :
     (l.splitWrtComposition c).flatten = l :=
   flatten_splitWrtCompositionAux c.blocks_sum
-
-@[deprecated (since := "2024-10-15")] alias join_splitWrtComposition := flatten_splitWrtComposition
 
 /-- If one joins a list of lists and then splits the flattening along the right composition,
 one gets back the original list of lists. -/
@@ -806,9 +800,6 @@ theorem splitWrtComposition_flatten (L : List (List α)) (c : Composition L.flat
     (h : map length L = c.blocks) : splitWrtComposition (flatten L) c = L := by
   simp only [eq_self_iff_true, and_self_iff, eq_iff_flatten_eq, flatten_splitWrtComposition,
     map_length_splitWrtComposition, h]
-
-@[deprecated (since := "2024-10-15")]
-alias splitWrtComposition_join := splitWrtComposition_flatten
 
 end List
 

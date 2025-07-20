@@ -31,7 +31,6 @@ In the namespace `CategoryTheory.ComposableArrows`, we provide constructors
 like `mk₁ f`, `mk₂ f g`, `mk₃ f g h` for `ComposableArrows C n` for small `n`.
 
 TODO (@joelriou):
-* redefine `Arrow C` as `ComposableArrow C 1`?
 * construct some elements in `ComposableArrows m (Fin (n + 1))` for small `n`
   the precomposition with which shall induce functors
   `ComposableArrows C n ⥤ ComposableArrows C m` which correspond to simplicial operations

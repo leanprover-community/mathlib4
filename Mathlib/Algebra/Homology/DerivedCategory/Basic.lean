@@ -50,9 +50,6 @@ instance should be obtained at the beginning of the proof, using the term
 - construct the distinguished triangle associated to a short exact sequence
 of cochain complexes (done), and compare the associated connecting homomorphism
 with the one defined in `Algebra.Homology.HomologySequence`.
-- refactor the definition of Ext groups using morphisms in the derived category
-(which may be shrunk to the universe `v` at least when `C` has enough projectives
-or enough injectives).
 
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
@@ -72,7 +69,8 @@ namespace HomotopyCategory
 
 /-- The triangulated subcategory of `HomotopyCategory C (ComplexShape.up ℤ)` consisting
 of acyclic complexes. -/
-def subcategoryAcyclic : Triangulated.Subcategory (HomotopyCategory C (ComplexShape.up ℤ)) :=
+noncomputable def subcategoryAcyclic :
+    Triangulated.Subcategory (HomotopyCategory C (ComplexShape.up ℤ)) :=
   (homologyFunctor C (ComplexShape.up ℤ) 0).homologicalKernel
 
 instance : (subcategoryAcyclic C).P.IsClosedUnderIsomorphisms := by

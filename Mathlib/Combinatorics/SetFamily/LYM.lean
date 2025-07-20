@@ -75,7 +75,7 @@ theorem local_lubell_yamamoto_meshalkin_inequality_mul (h𝒜 : (𝒜 : Set (Fin
     rw [← mem_coe, h𝒜.empty_mem_iff, coe_eq_singleton]
     rintro rfl
     rw [shadow_singleton_empty] at hs
-    exact not_mem_empty s hs
+    exact notMem_empty s hs
   have h := exists_eq_insert_iff.2 ⟨ht.2, by
     rw [(sized_shadow_iff this).1 (Set.Sized.shadow h𝒜) ht.1, (Set.Sized.shadow h𝒜) hs]⟩
   rcases h with ⟨a, ha, rfl⟩
@@ -150,9 +150,9 @@ theorem slice_union_shadow_falling_succ : 𝒜 # k ∪ ∂ (falling (k + 1) 𝒜
   · rintro ⟨⟨t, ht, hst⟩, hs⟩
     by_cases h : s ∈ 𝒜
     · exact Or.inl ⟨h, hs⟩
-    obtain ⟨a, ha, hst⟩ := ssubset_iff.1 (ssubset_of_subset_of_ne hst (ht.ne_of_not_mem h).symm)
+    obtain ⟨a, ha, hst⟩ := ssubset_iff.1 (ssubset_of_subset_of_ne hst (ht.ne_of_notMem h).symm)
     refine Or.inr ⟨insert a s, ⟨⟨t, ht, hst⟩, ?_⟩, a, mem_insert_self _ _, erase_insert ha⟩
-    rw [card_insert_of_not_mem ha, hs]
+    rw [card_insert_of_notMem ha, hs]
 
 variable {𝒜 k}
 
@@ -165,7 +165,7 @@ theorem IsAntichain.disjoint_slice_shadow_falling {m n : ℕ}
     obtain ⟨s, ⟨⟨t, ht, hst⟩, _⟩, a, ha, rfl⟩ := h₁
     refine h𝒜 (slice_subset h₂) ht ?_ ((erase_subset _ _).trans hst)
     rintro rfl
-    exact not_mem_erase _ _ (hst ha)
+    exact notMem_erase _ _ (hst ha)
 
 /-- A bound on any top part of the sum in LYM in terms of the size of `falling k 𝒜`. -/
 theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
