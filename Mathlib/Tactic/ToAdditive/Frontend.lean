@@ -86,11 +86,6 @@ anyway.
 Warning: interactions between this and the `(reorder := ...)` argument are not well-tested. -/
 syntax (name := to_dual_relevant_arg) "to_dual_relevant_arg " num : attr
 
-/-- An attribute that stores all the declarations that needs their arguments reordered when
-applying `@[to_dual]`. It is applied automatically by the `(reorder := ...)` syntax of
-`to_dual`, and should not usually be added manually. -/
-syntax (name := to_dual_reorder) "to_dual_reorder " (num+),+ : attr
-
 /-- An attribute that stores all the declarations that deal with numeric literals on variable types.
 
 Numeral literals occur in expressions without type information, so in order to decide whether `1`
@@ -578,8 +573,7 @@ def toDualBundle : BundledExtensions where
   attrName := `to_dual
 
 /-- Get the multiplicative → additive translation for the given name. -/
-def findTranslation? (env : Environment) (b : BundledExtensions) :
-    Name → Option Name :=
+def findTranslation? (env : Environment) (b : BundledExtensions) : Name → Option Name :=
   (b.translations.getState env).find?
 
 /-- Add a (multiplicative → additive) name translation to the translations map. -/
@@ -681,9 +675,7 @@ constants if `additiveTest` applied to their relevant argument returns `true`.
 This means we will replace expression applied to e.g. `α` or `α × β`, but not when applied to
 e.g. `ℕ` or `ℝ × α`.
 We ignore all arguments specified by the `ignore` `NameMap`. -/
-def additiveTest (env : Environment) (b : BundledExtensions)
-    (e : Expr) :
-    Option Name :=
+def additiveTest (env : Environment) (b : BundledExtensions) (e : Expr) : Option Name :=
   unsafe additiveTestUnsafe env b e
 
 /-- Swap the first two elements of a list -/
@@ -1185,8 +1177,7 @@ E.g. `Prod.Group` returns 1, and `Pi.One` returns 2.
 Note: we only consider the first argument of each type-class.
 E.g. `[Pow A N]` is a multiplicative type-class on `A`, not on `N`.
 -/
-def firstMultiplicativeArg (b : BundledExtensions)
-    (nm : Name) : MetaM Nat := do
+def firstMultiplicativeArg (b : BundledExtensions) (nm : Name) : MetaM Nat := do
   forallTelescopeReducing (← getConstInfo nm).type fun xs _ ↦ do
     -- xs are the arguments to the constant
     let xs := xs.toList
@@ -1518,8 +1509,7 @@ def proceedFieldsAux (b : BundledExtensions)
 /-- Add the structure fields of `src` to the translations dictionary
 so that future uses of `to_additive` will map them to the corresponding `tgt` fields. -/
 -- TODO: does this need to support `reorder`?
-def proceedFields (b : BundledExtensions)
-    (src tgt : Name) : CoreM Unit := do
+def proceedFields (b : BundledExtensions) (src tgt : Name) : CoreM Unit := do
   let aux := @proceedFieldsAux b src tgt
   -- add translations for the structure fields
   aux fun declName ↦ do
@@ -1591,7 +1581,6 @@ def elabToDual : Syntax → CoreM Config
              self := self.isSome
              ref := (tgt.map (·.raw)).getD tk }
   | _ => throwUnsupportedSyntax
-
 
 mutual
 /-- Apply attributes to the multiplicative and additive declarations. -/
@@ -1802,4 +1791,4 @@ initialize registerBuiltinAttribute {
 
 end ToAdditive
 
-set_option linter.style.longFile 2000
+set_option linter.style.longFile 1900

@@ -165,7 +165,7 @@ theorem le_of_forall_le (H : ∀ c, c ≤ a → c ≤ b) : a ≤ b := H _ le_rfl
 
 @[deprecated (since := "2025-01-30")] alias le_of_forall_le' := le_of_forall_ge
 
-@[to_dual forall_le_iff_ge] -- TODO: should be `forall_ge_iff_le`
+@[to_dual forall_le_iff_ge] -- TODO: name should be `forall_ge_iff_le`
 theorem forall_le_iff_le : (∀ ⦃c⦄, c ≤ a → c ≤ b) ↔ a ≤ b :=
   ⟨le_of_forall_le, fun h _ hca ↦ le_trans hca h⟩
 
@@ -246,13 +246,14 @@ theorem ge_iff_eq (h : a ≤ b) : b ≤ a ↔ a = b :=
 end LE.le
 
 -- See Note [decidable namespace]
+@[to_dual Decidable.le_iff_eq_or_lt']
 protected theorem Decidable.le_iff_eq_or_lt [DecidableLE α] : a ≤ b ↔ a = b ∨ a < b :=
   Decidable.le_iff_lt_or_eq.trans or_comm
 
-@[to_dual le_iff_eq_or_ltOD]
+@[to_dual le_iff_eq_or_lt']
 theorem le_iff_eq_or_lt : a ≤ b ↔ a = b ∨ a < b := le_iff_lt_or_eq.trans or_comm
 
--- @[to_dual lt_iff_le_and_neOD]
+@[to_dual lt_iff_le_and_ne']
 theorem lt_iff_le_and_ne : a < b ↔ a ≤ b ∧ a ≠ b :=
   ⟨fun h ↦ ⟨le_of_lt h, ne_of_lt h⟩, fun ⟨h1, h2⟩ ↦ h1.lt_of_ne h2⟩
 
@@ -262,35 +263,35 @@ lemma eq_iff_not_lt_of_le (hab : a ≤ b) : a = b ↔ ¬ a < b := hab.not_lt_iff
 @[deprecated (since := "2025-06-08")] alias LE.le.eq_iff_not_lt := eq_iff_not_lt_of_le
 
 -- See Note [decidable namespace]
+@[to_dual Decidable.eq_iff_ge_not_gt]
 protected theorem Decidable.eq_iff_le_not_lt [DecidableLE α] : a = b ↔ a ≤ b ∧ ¬a < b :=
   ⟨fun h ↦ ⟨h.le, h ▸ lt_irrefl _⟩, fun ⟨h₁, h₂⟩ ↦
     h₁.antisymm <| Decidable.byContradiction fun h₃ ↦ h₂ (h₁.lt_of_not_ge h₃)⟩
 
+@[to_dual eq_iff_ge_not_gt]
 theorem eq_iff_le_not_lt : a = b ↔ a ≤ b ∧ ¬a < b := open scoped Classical in
   Decidable.eq_iff_le_not_lt
 
 -- See Note [decidable namespace]
+@[to_dual Decidable.eq_or_lt_of_le']
 protected theorem Decidable.eq_or_lt_of_le [DecidableLE α] (h : a ≤ b) : a = b ∨ a < b :=
   (Decidable.lt_or_eq_of_le h).symm
 
+@[to_dual eq_or_lt_of_le']
 theorem eq_or_lt_of_le (h : a ≤ b) : a = b ∨ a < b := (lt_or_eq_of_le h).symm
-theorem eq_or_lt_of_le' (h : a ≤ b) : b = a ∨ a < b := (eq_or_lt_of_le h).imp Eq.symm id
-theorem lt_or_eq_of_le' (h : a ≤ b) : a < b ∨ b = a := (eq_or_lt_of_le' h).symm
 
 alias LE.le.lt_or_eq_dec := Decidable.lt_or_eq_of_le
 alias LE.le.eq_or_lt_dec := Decidable.eq_or_lt_of_le
-alias LE.le.lt_or_eq := lt_or_eq_of_le
-alias LE.le.eq_or_lt := eq_or_lt_of_le
-alias LE.le.eq_or_lt' := eq_or_lt_of_le'
-alias LE.le.lt_or_eq' := lt_or_eq_of_le'
+@[to_dual LE.le.lt_or_eq'] alias LE.le.lt_or_eq := lt_or_eq_of_le
+@[to_dual LE.le.eq_or_lt'] alias LE.le.eq_or_lt := eq_or_lt_of_le
 
 @[deprecated (since := "2025-06-08")] alias eq_or_gt_of_le := eq_or_lt_of_le'
 @[deprecated (since := "2025-06-08")] alias gt_or_eq_of_le := lt_or_eq_of_le'
 @[deprecated (since := "2025-06-08")] alias LE.le.eq_or_gt := LE.le.eq_or_lt'
 @[deprecated (since := "2025-06-08")] alias LE.le.gt_or_eq := LE.le.lt_or_eq'
 
+@[to_dual eq_of_le_of_not_lt']
 theorem eq_of_le_of_not_lt (h₁ : a ≤ b) (h₂ : ¬a < b) : a = b := h₁.eq_or_lt.resolve_right h₂
-theorem eq_of_le_of_not_lt' (h₁ : a ≤ b) (h₂ : ¬a < b) : b = a := (eq_of_le_of_not_lt h₁ h₂).symm
 
 alias LE.le.eq_of_not_lt := eq_of_le_of_not_lt
 alias LE.le.eq_of_not_lt' := eq_of_le_of_not_lt'

@@ -29,8 +29,6 @@ section LinearOrder
 -- defined in core
 attribute [to_dual existing] Min
 attribute [to_dual existing Ordering.gt] Ordering.lt
--- attribute [to_dual self (reorder := 3 4)] Ord.compare
--- attribute [to_dual self (reorder := 2 3)] compareOfLessAndEq
 
 /-- Default definition of `max`. -/
 def maxDefault [LE α] [DecidableLE α] (a b : α) :=
@@ -90,8 +88,6 @@ attribute [instance 900] LinearOrder.toDecidableEq
 def LinearOrder.toDecidableGT : DecidableGT α := fun a b => toDecidableLT b a
 @[to_dual existing toDecidableLE]
 def LinearOrder.toDecidableGE : DecidableGE α := fun a b => toDecidableLE b a
-
--- attribute [to_dual self (reorder := 3 4)] LinearOrder.compare_eq_compareOfLessAndEq
 
 @[to_dual self (reorder := 3 4)]
 lemma le_total : ∀ a b : α, a ≤ b ∨ b ≤ a := LinearOrder.le_total
@@ -166,6 +162,7 @@ theorem le_imp_le_of_lt_imp_lt {α β} [Preorder α] [LinearOrder β] {a b : α}
 
 lemma min_def (a b : α) : min a b = if a ≤ b then a else b := by rw [LinearOrder.min_def a]
 lemma max_def (a b : α) : max a b = if a ≤ b then b else a := by rw [LinearOrder.max_def a]
+
 @[to_dual existing max_def]
 theorem min_def' (a b : α) : min a b = if b ≤ a then b else a := by
   rw [min_def]
@@ -199,8 +196,6 @@ lemma le_min (h₁ : c ≤ a) (h₂ : c ≤ b) : c ≤ min a b := by
   if h : a ≤ b
   then simpa [min_def, if_pos h] using h₁
   else simpa [min_def, if_neg h] using h₂
-
-/- `to_dual` seems to work from here on, the min / max API has been sealed? -/
 
 @[to_dual]
 lemma eq_min (h₁ : c ≤ a) (h₂ : c ≤ b) (h₃ : ∀ {d}, d ≤ a → d ≤ b → d ≤ c) : c = min a b :=

@@ -33,6 +33,7 @@ instance [Repr α] : Repr (WithBot α) :=
 @[to_dual (attr := coe, match_pattern)] def some : α → WithBot α :=
   Option.some
 
+@[to_dual]
 instance coe : Coe α (WithBot α) :=
   ⟨some⟩
 
@@ -62,48 +63,3 @@ theorem recBotCoe_coe {C : WithBot α → Sort*} (d : C ⊥) (f : ∀ a : α, C 
   rfl
 
 end WithBot
-
---TODO(Mario): Construct using order dual on `WithBot`
--- /-- Attach `⊤` to a type. -/
--- def WithTop (α : Type*) :=
---   Option α
-
-namespace WithTop
-
--- instance [Repr α] : Repr (WithTop α) :=
---   ⟨fun o _ =>
---     match o with
---     | none => "⊤"
---     | some a => "↑" ++ repr a⟩
-
-/-- The canonical map from `α` into `WithTop α` -/
--- @[coe, match_pattern] def some : α → WithTop α :=
---   Option.some
-
-@[to_dual]
-instance coeTC : CoeTC α (WithTop α) :=
-  ⟨some⟩
-
--- instance top : Top (WithTop α) :=
---   ⟨none⟩
-
--- instance inhabited : Inhabited (WithTop α) :=
---   ⟨⊤⟩
-
--- /-- Recursor for `WithTop` using the preferred forms `⊤` and `↑a`. -/
--- @[elab_as_elim, induction_eliminator, cases_eliminator]
--- def recTopCoe {C : WithTop α → Sort*} (top : C ⊤) (coe : ∀ a : α, C a) : ∀ n : WithTop α, C n
---   | none => top
---   | Option.some a => coe a
-
--- @[simp]
--- theorem recTopCoe_top {C : WithTop α → Sort*} (d : C ⊤) (f : ∀ a : α, C a) :
---     @recTopCoe _ C d f ⊤ = d :=
---   rfl
-
--- @[simp]
--- theorem recTopCoe_coe {C : WithTop α → Sort*} (d : C ⊤) (f : ∀ a : α, C a) (x : α) :
---     @recTopCoe _ C d f ↑x = f x :=
---   rfl
-
-end WithTop

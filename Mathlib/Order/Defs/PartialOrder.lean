@@ -41,26 +41,20 @@ attribute [to_dual self (reorder := 3 4)] LT.lt
 attribute [to_dual self (reorder := 3 4)] GE.ge
 attribute [to_dual self (reorder := 3 4)] GT.gt
 
+attribute [to_dual DecidableGT "`DecidableGT` is equivalent to `DecidableLT`."] DecidableLT
+attribute [to_dual DecidableGE "`DecidableGE` is equivalent to `DecidableLE`."] DecidableLE
+
 -- Core lemmas that need to_dual tags
 
--- @[simp] theorem ge_iff_le [LE α] {x y : α} : x ≥ y ↔ y ≤ x := Iff.rfl
 set_option linter.existingAttributeWarning false in
 attribute [to_dual self (reorder := 3 4)] ge_iff_le
 
--- @[simp] theorem gt_iff_lt [LT α] {x y : α} : x > y ↔ y < x := Iff.rfl
 set_option linter.existingAttributeWarning false in
 attribute [to_dual self (reorder := 3 4)] gt_iff_lt
 
--- theorem le_of_eq_of_le {a b c : α} [LE α] (h₁ : a = b) (h₂ : b ≤ c) : a ≤ c := h₁ ▸ h₂
 attribute [to_dual le_of_eq_of_le'] le_of_eq_of_le
-
--- theorem le_of_le_of_eq {a b c : α} [LE α] (h₁ : a ≤ b) (h₂ : b = c) : a ≤ c := h₂ ▸ h₁
 attribute [to_dual le_of_le_of_eq'] le_of_le_of_eq
-
--- theorem lt_of_eq_of_lt {a b c : α} [LT α] (h₁ : a = b) (h₂ : b < c) : a < c := h₁ ▸ h₂
 attribute [to_dual lt_of_eq_of_lt'] lt_of_eq_of_lt
-
--- theorem lt_of_lt_of_eq {a b c : α} [LT α] (h₁ : a < b) (h₂ : b = c) : a < c := h₂ ▸ h₁
 attribute [to_dual lt_of_lt_of_eq'] lt_of_lt_of_eq
 
 /-- A preorder is a reflexive, transitive relation `≤` with `a < b` defined in the obvious way. -/
@@ -117,7 +111,6 @@ alias LE.le.not_gt := not_lt_of_ge
 @[deprecated (since := "2025-06-07")] alias LT.lt.not_le := LT.lt.not_ge
 @[deprecated (since := "2025-06-07")] alias LE.le.not_lt := LE.le.not_gt
 
-@[to_dual self]
 lemma lt_irrefl (a : α) : ¬a < a := fun h ↦ not_le_of_gt h le_rfl
 
 @[to_dual lt_of_lt_of_le']
@@ -217,14 +210,6 @@ def decidableEqOfDecidableLE [DecidableLE α] : DecidableEq α
       if hba : b ≤ a then isTrue (le_antisymm hab hba) else isFalse fun heq => hba (heq ▸ le_refl _)
     else isFalse fun heq => hab (heq ▸ le_refl _)
 
--- These type classes are redundant, but they are needed for `to_dual`.
-/-- Abbreviation for `DecidableRel (· > · : α → α → Prop)`. It is equivalent to `DecidableLT`. -/
-@[to_dual existing DecidableLT]
-abbrev DecidableGT (α : Type*) [LT α] := DecidableRel (GT.gt : α → α → Prop)
-/-- Abbreviation for `DecidableRel (· ≥ · : α → α → Prop)`. It is equivalent to `DecidableLE`. -/
-@[to_dual existing DecidableLE]
-abbrev DecidableGE (α : Type*) [LE α] := DecidableRel (GE.ge : α → α → Prop)
-
 -- See Note [decidable namespace]
 @[to_dual Decidable.lt_or_eq_of_le']
 protected lemma Decidable.lt_or_eq_of_le [DecidableLE α] (hab : a ≤ b) : a < b ∨ a = b :=
@@ -234,7 +219,7 @@ protected lemma Decidable.lt_or_eq_of_le [DecidableLE α] (hab : a ≤ b) : a < 
 protected lemma Decidable.le_iff_lt_or_eq [DecidableLE α] : a ≤ b ↔ a < b ∨ a = b :=
   ⟨Decidable.lt_or_eq_of_le, le_of_lt_or_eq⟩
 
-@[to_dual lt_of_eq_of_le']
+@[to_dual lt_or_eq_of_le']
 lemma lt_or_eq_of_le : a ≤ b → a < b ∨ a = b := open scoped Classical in Decidable.lt_or_eq_of_le
 @[to_dual le_iff_lt_or_eq']
 lemma le_iff_lt_or_eq : a ≤ b ↔ a < b ∨ a = b := open scoped Classical in Decidable.le_iff_lt_or_eq

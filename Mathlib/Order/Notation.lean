@@ -143,10 +143,6 @@ class HImp (α : Type*) where
   /-- Heyting implication `⇨` -/
   himp : α → α → α
 
-attribute [to_dual existing (reorder := 3 4) HImp.himp] HImp.himp
-
-attribute [to_dual existing (reorder := 3 4) SDiff.sdiff] SDiff.sdiff
-
 /-- Syntax typeclass for Heyting negation `￢`.
 
 The difference between `HasCompl` and `HNot` is that the former belongs to Heyting algebras,
@@ -177,12 +173,10 @@ class Top (α : Type*) where
   top : α
 
 /-- Typeclass for the `⊥` (`\bot`) notation -/
-@[notation_class, ext]
+@[notation_class, ext, to_dual existing]
 class Bot (α : Type*) where
   /-- The bot (`⊥`, `\bot`) element -/
   bot : α
-
-attribute [to_dual existing] Top
 
 /-- The top (`⊤`, `\top`) element -/
 notation "⊤" => Top.top
