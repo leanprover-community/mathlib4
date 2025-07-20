@@ -161,6 +161,13 @@ lemma nonneg_iff_isPositive (f : E →ₗ[𝕜] E) : 0 ≤ f ↔ f.IsPositive :=
 
 end PartialOrder
 
+/-- An idempotent linear map is positive iff it is symmetric. -/
+theorem IsIdempotentElem.isPositive_iff_isSymmetric {T : E →ₗ[𝕜] E} (hT : IsIdempotentElem T) :
+    T.IsPositive ↔ T.IsSymmetric := by
+  refine ⟨fun h => h.isSymmetric, fun h => ⟨h, fun x => ?_⟩⟩
+  rw [← hT.eq, Module.End.mul_apply, h]
+  exact inner_self_nonneg
+
 end LinearMap
 
 namespace ContinuousLinearMap
@@ -351,24 +358,21 @@ lemma nonneg_iff_isPositive (f : E →L[𝕜] E) : 0 ≤ f ↔ f.IsPositive := b
 
 end PartialOrder
 
+/-- An idempotent operator is positive if and only if it is self-adjoint. -/
+@[grind →]
+theorem IsIdempotentElem.isPositive_iff_isSelfAdjoint
+    {p : E →L[𝕜] E} (hp : IsIdempotentElem p) : p.IsPositive ↔ IsSelfAdjoint p := by
+  rw [← isPositive_toLinearMap_iff, IsIdempotentElem.isPositive_iff_isSymmetric
+    (congr(LinearMapClass.linearMap $hp.eq))]
+  exact isSelfAdjoint_iff_isSymmetric.symm
+
 /-- A star projection operator is positive.
 
 The proof of this will soon be simplified to `IsStarProjection.nonneg` when we
 have `StarOrderedRing (E →L[𝕜] E)`. -/
 @[aesop 10% apply, grind →]
 theorem IsPositive.of_isStarProjection {p : E →L[𝕜] E}
-    (hp : IsStarProjection p) : p.IsPositive := by
-  refine ⟨hp.isSelfAdjoint, ?_⟩
-  rw [← hp.isIdempotentElem.eq]
-  simp_rw [reApplyInnerSelf_apply, ContinuousLinearMap.mul_apply]
-  intro x
-  simp_rw [← ContinuousLinearMap.adjoint_inner_right _ _ x, isSelfAdjoint_iff'.mp hp.isSelfAdjoint]
-  exact inner_self_nonneg
-
-/-- An idempotent operator is positive if and only if it is self-adjoint. -/
-@[grind →]
-theorem IsIdempotentElem.isPositive_iff_isSelfAdjoint
-    {p : E →L[𝕜] E} (hp : IsIdempotentElem p) : p.IsPositive ↔ IsSelfAdjoint p :=
-  ⟨fun h => h.isSelfAdjoint, fun h => IsPositive.of_isStarProjection ⟨hp, h⟩⟩
+    (hp : IsStarProjection p) : p.IsPositive :=
+  hp.isIdempotentElem.isPositive_iff_isSelfAdjoint.mpr hp.isSelfAdjoint
 
 end ContinuousLinearMap
