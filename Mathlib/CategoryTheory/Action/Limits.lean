@@ -249,10 +249,9 @@ instance [PreservesFiniteLimits F] [HasFiniteLimits V] :
 /-- `F.mapAction : Action V G ⥤ Action W G` preserves the colimit of some `K : J ⥤ Action V G` if
 `K ⋙ forget V G` has a colimit and `F` preserves the colimit of `K ⋙ forget V G`. -/
 instance mapActionPreservesColimit_of_preserves (K : J ⥤ Action V G) [HasColimit (K ⋙ forget V G)]
-    [PreservesColimit (K ⋙ Action.forget V G) F] : PreservesColimit K (F.mapAction G) := by
-  refine Action.preservesColimit_of_preserves (F.mapAction G) K ?_
-  have : PreservesColimit K (forget V G ⋙ F) := comp_preservesColimit (forget V G) F
-  exact preservesColimit_of_natIso K (Iso.refl _ : forget V G ⋙ F ≅ F.mapAction G ⋙ forget W G)
+    [PreservesColimit (K ⋙ Action.forget V G) F] : PreservesColimit K (F.mapAction G) :=
+  Action.preservesColimit_of_preserves (F.mapAction G) K <|
+    inferInstanceAs (PreservesColimit K (forget V G ⋙ F))
 
 /-- `F.mapAction : Action V G ⥤ Action W G` preserves colimits of some shape `J` if
 `V` has colimits of shape `J` and `F` preserves colimits of shape `J`. -/
