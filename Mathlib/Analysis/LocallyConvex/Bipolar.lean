@@ -147,64 +147,6 @@ variable (s : Finset F)
 
 def mL : s → WeakBilin B →ₗ[𝕜] 𝕜 := fun f => (WeakBilin.eval B) f.val
 
-/-
-#check mL B s
-
-#check mem_span_of_iInf_ker_le_ker (ι := s) (L := (mL B s)) (K := f.toLinearMap)
-
-#check B.flip
-
--- e -> ‖B e g‖
-#check (B.flip g).toSeminorm
-
-lemma sn1 (x : E) : (B.flip g).toSeminorm x = ‖B x g‖ := rfl
-
-#check Seminorm.le_finset_sup_apply
-
-lemma sn2 (x : E) (f₂ : F) (h : f₂ ∈ s) :
-    (B.flip f₂).toSeminorm x ≤ (s.sup (fun fi => (B.flip fi).toSeminorm)) x := by
-  apply Seminorm.le_finset_sup_apply h
-
-lemma sn3 : s.sup (fun fi => (B.flip fi).toSeminorm) = (s.sup B.toSeminormFamily) := by
-  rfl
-
-lemma sn_smul (k : 𝕜) (x : E) :
-    (s.sup B.toSeminormFamily) (k • x) = ‖k‖ * (s.sup B.toSeminormFamily) x := by
-  rw [SeminormClass.map_smul_eq_mul]
-
-#instance : SemilatticeSup (Seminorm 𝕜 E) := Seminorm.instSemilatticeSup
-
-#check s.sup (fun fi  => (B.flip fi).toSeminorm  )
-
-#check B.toSeminormFamily
-
-#check Finset.sup_const
-
-
-lemma sss (p q : Seminorm 𝕜 E) (x : E) (c : ℝ) (h₁ : p x ≤ c) (h₂ : q x ≤ c) : (p ⊔ q) x ≤ c := by
-  simp_all only [Seminorm.coe_sup, Pi.sup_apply, sup_le_iff, and_self]
-
-lemma sss2 (t : F → Seminorm 𝕜 E) (x : E) (c : ℝ) (hc : 0 ≤ c) (h : ∀ i ∈ s, (t i) x ≤ c) :
-    (s.sup t) x ≤ c := Seminorm.finset_sup_apply_le hc h
-
-lemma sss3 (t : F → Seminorm 𝕜 E) (x : E) (i : s) : t i x ≤ (s.sup t) x := by
-  apply Seminorm.le_finset_sup_apply
-  exact Finset.coe_mem i
-
-
---#check s.sup
-
-variable (x : E)
-
-#check Basis
---  x ∈ span R (v '' s) ↔ ∃ l ∈ supported R R s, linearCombination R v l = x
-
-#check norm_sum_le
-
-#check Finsupp.sum_le_sum
-
--/
-
 theorem iff : ↑f ∈ Submodule.span 𝕜 (Set.range (B.mL s)) ↔
     ∃ γ, ∀ (x : E), ‖f x‖ ≤ γ * ((s.sup B.toSeminormFamily) x) := by
   constructor
