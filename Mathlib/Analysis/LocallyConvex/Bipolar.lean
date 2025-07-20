@@ -10,6 +10,7 @@ import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
 import Mathlib.Analysis.LocallyConvex.WeakDual
 import Mathlib.Analysis.Normed.Module.Dual
 import Mathlib.Analysis.Normed.Module.Convex
+import Mathlib.Order.Filter.Bases.Basic
 
 /-!
 
@@ -88,6 +89,48 @@ variable [Module ℝ E]
 
 
 variable [IsScalarTower ℝ 𝕜 E]
+
+#check LinearMap.hasBasis_weakBilin B
+
+#check (nhds 0).HasBasis
+#check B.toSeminormFamily.basisSets
+#check _root_.id
+
+variable (f : WeakBilin B →L[𝕜] 𝕜)
+
+#check Metric.ball 0 1
+
+#check Continuous
+
+lemma test1 : IsOpen (f ⁻¹' (Metric.ball 0 1)) :=
+  IsOpen.preimage (ContinuousLinearMap.continuous f) Metric.isOpen_ball
+
+lemma test2a : 0 ∈ (f ⁻¹' (Metric.ball 0 1)) := by
+  simp_all only [Set.mem_preimage, map_zero, Metric.mem_ball, dist_self, zero_lt_one]
+
+lemma test2b : 0 ∈ (f ⁻¹' (Metric.ball 0 1)) ∧ IsOpen (f ⁻¹' (Metric.ball 0 1)) := by
+  constructor
+  · exact test2a B f
+  · exact test1 B f
+
+lemma test2 : (f ⁻¹' (Metric.ball 0 1))  ∈ (nhds 0) := by
+  rw [mem_nhds_iff]
+  use f ⁻¹' (Metric.ball 0 1)
+  constructor
+  · exact fun ⦃a⦄ a ↦ a
+  · exact And.symm (test2b B f)
+
+#check (Filter.HasBasis.mem_iff (LinearMap.hasBasis_weakBilin B)).mp (test2 B f)
+
+lemma test3 : ∃ V ∈ B.toSeminormFamily.basisSets, V ⊆ (f ⁻¹' (Metric.ball 0 1)) := by
+  obtain ⟨V, hV1, hV2⟩ := (Filter.HasBasis.mem_iff (LinearMap.hasBasis_weakBilin B)).mp (test2 B f)
+  use V
+  constructor
+  · apply hV1
+  · apply hV2
+
+
+
 
 /-
 See
