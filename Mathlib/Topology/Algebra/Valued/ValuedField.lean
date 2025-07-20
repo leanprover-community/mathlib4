@@ -232,16 +232,15 @@ open WithZeroTopology
 lemma valuation_isClosedMap : IsClosedMap (v : K → Γ₀) := by
   refine IsClosedMap.of_nonempty ?_
   intro U hU hU'
-  simp only [← isOpen_compl_iff, isOpen_iff_mem_nhds, mem_compl_iff, mem_nhds, ne_eq,
-    subset_compl_comm, compl_setOf, not_lt, Subtype.exists, map_eq_zero, exists_prop,
-    Prod.exists] at hU
+  simp only [← isOpen_compl_iff, isOpen_iff_mem_nhds, mem_compl_iff, mem_nhds, subset_compl_comm,
+    compl_setOf, not_lt] at hU
   simp only [isClosed_iff, mem_image, map_eq_zero, exists_eq_right, ne_eq, image_subset_iff]
   refine (em _).imp_right fun h ↦ ?_
-  obtain ⟨r, s, ⟨hr, hs⟩, h⟩ := hU _ h
+  obtain ⟨γ, h⟩ := hU _ h
   simp only [sub_zero] at h
-  refine ⟨v s / v r, by simp [hr, hs], h.trans ?_⟩
+  refine ⟨γ, γ.ne_zero, h.trans ?_⟩
   intro
-  simp [div_le_iff₀ (c := v r) (by simp [zero_lt_iff, hr])]
+  simp
 
 /-- The extension of the valuation of a valued field to the completion of the field. -/
 noncomputable def extension : hat K → Γ₀ :=
