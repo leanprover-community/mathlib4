@@ -17,14 +17,14 @@ This file implements (d)simprocs to compute various objects related to divisors:
 open Lean Meta Simp Qq
 
 /-- The `Nat.divisorsEq` computes the finset `Nat.divisors n` when `n` is a natural number
-literal. -/
+literal. For instance, this simplifies `Nat.divisors 6` to `{1, 2, 3, 6}`. -/
 dsimproc_decl Nat.divisors_ofNat (Nat.divisors _) := fun e => do
   unless e.isAppOfArity `Nat.divisors 1 do return .continue
   let some n ← fromExpr? e.appArg! | return .continue
   return .done <| mkSetLiteralQ q(Finset ℕ) <| ((unsafe n.divisors.val.unquot).map mkNatLit)
 
-/-- Compute the finset `Nat.properDivisorsEq n` when `n` is a numeral;
-for instance, this simplifies `Nat.properDivisorsEq 12` to `{1, 2, 3, 4, 6}`. -/
+/-- Compute the finset `Nat.properDivisorsEq n` when `n` is a numeral.
+For instance, this simplifies `Nat.properDivisorsEq 12` to `{1, 2, 3, 4, 6}`. -/
 dsimproc_decl Nat.properDivisors_ofNat (Nat.properDivisors _) := fun e => do
   unless e.isAppOfArity `Nat.properDivisors 1 do return .continue
   let some n ← fromExpr? e.appArg! | return .continue
