@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 import Mathlib.FieldTheory.Fixed
+import Mathlib.RepresentationTheory.Homological.GroupCohomology.FiniteCyclic
 import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
+import Mathlib.RingTheory.Norm.Basic
 
 /-!
 # Hilbert's Theorem 90
@@ -110,5 +112,40 @@ noncomputable instance H1ofAutOnUnitsUnique : Unique (H1 (Rep.ofAlgebraAutOnUnit
     rcases isMulCoboundary₁_of_isMulCocycle₁_of_aut_to_units x.1
       (isMulCocycle₁_of_mem_cocycles₁ _ x.2) with ⟨β, hβ⟩
     use β
+
+
+variable {K L : Type} [Field K] [Field L] [Algebra K L] [FiniteDimensional K L] [IsGalois K L]
+
+open Additive Rep
+
+-- could move to `RepresentationTheory.Rep` but would have to add imports
+/-- Given `L/K` finite and Galois, and `x : Lˣ`, this essentially says
+`(∏ σ) • x = N_{L/K}(x)`, where the product is over `σ ∈ Gal(L/K)`. -/
+theorem norm_ofAlgebraAutOnUnits_eq (x : Lˣ) :
+    (toMul <| toAdditive ((Rep.ofAlgebraAutOnUnits K L).norm.hom
+      (toAdditive.symm <| ofMul x))).1 = algebraMap K L (Algebra.norm K (x : L)) := by
+  simp [Algebra.norm_eq_prod_automorphisms, Representation.norm]
+
+variable [IsCyclic (L ≃ₐ[K] L)] [DecidableEq (L ≃ₐ[K] L)]
+
+attribute [local instance] IsCyclic.commGroup
+
+/-- Hilbert's Theorem 90: given a finite cyclic Galois extension `L/K`, an element `x : L` such
+that `N_{L/K}(x) = 1`, and a generator `g` of `Gal(L/K)`, there exists `y : Lˣ`
+such that `g(y)/y = x`. -/
+theorem exists_div_of_norm_eq_one (g : L ≃ₐ[K] L)
+    (hg : ∀ x, x ∈ Subgroup.zpowers g) (x : L) (hx : Algebra.norm K x = 1) :
+    ∃ y : Lˣ, g y / y = x := by
+  let xu : Lˣ := (Algebra.norm_ne_zero_iff.1 <| hx ▸ zero_ne_one.symm).isUnit.unit
+  have hx' : algebraMap K L (Algebra.norm K (xu : L)) = _ := congrArg (algebraMap K L) hx
+  rw [← norm_ofAlgebraAutOnUnits_eq xu, map_one] at hx'
+  have := finiteCyclicGroup.groupCohomology.πOdd_eq_zero_iff g hg
+    (ofAlgebraAutOnUnits K L) 1 (by simp) ⟨toAdditive.symm <| ofMul xu, by simp_all⟩
+  rcases this.1 (Subsingleton.elim (α := groupCohomology.H1 (Rep.ofAlgebraAutOnUnits K L)) _ _)
+    with ⟨y, hy⟩
+  use toMul <| toAdditive y
+  simpa [xu, sub_eq_add_neg, div_eq_mul_inv, -toAdditive_apply] using
+    Units.ext_iff.1 congr(toMul <| toAdditive $hy)
+
 
 end groupCohomology
