@@ -808,39 +808,6 @@ def getExceptions (stx : Syntax) : CommandElabM (Array mex) := do
   else
     return #[]
 
-open Lean Elab Command in
-elab tk:"#mex " cmd:(command)? : command => do
-  if let some cmd := cmd then
-  if let .error .. :=
-    captureException (← getEnv) Parser.topLevelCommandParserFn cmd.raw.getSubstring?.get!.toString
-  then
-    logWarningAt tk m!"{tk}: Parsing failed"
-    return
-  elabCommand cmd
-  if (← get).messages.hasErrors then
-    logWarningAt tk "{tk}: Command has errors"
-    return
-  let mexs ← getExceptions cmd
-  if mexs.isEmpty then
-    logInfo "No whitespace issues found!"
-    return
-  let (reported, unreported) := mexs.partition (!totalExclusions.contains ·.kinds)
-  logInfo m!"{mexs.size} whitespace issue{if mexs.size == 1 then "" else "s"} found: \
-      {reported.size} reported and {unreported.size} unreported."
-  let fm ← getFileMap
-  for m in reported do
-    logWarningAt (.ofRange m.rg)
-      m!"reported: {m.error} {(fm.toPosition m.rg.start, fm.toPosition m.rg.stop)}\n\n\
-        {m.kinds.map MessageData.ofConstName}"
-  for m in unreported do
-    logInfoAt (.ofRange m.rg)
-      m!"unreported: {m.error} {(fm.toPosition m.rg.start, fm.toPosition m.rg.stop)}\n\n\
-        {m.kinds.map MessageData.ofConstName}"
-
-#mex
-theorem X(_  :Nat) : True:=     --
-  by  trivial;  done
-
 --/
 /-
 def finalScan (stx : Syntax) (verbose? : Bool) : CommandElabM (Array Exceptions) := do
@@ -1167,6 +1134,28 @@ def mkWindowSubstring (orig : Substring) (start : String.Pos) (ctx : Nat) : Stri
   let tail := middle.drop ctx |>.takeWhile (!·.isWhitespace)
   s!"{headCtx}{middle.take ctx}{tail}"
 
+/--
+We think of `orig` as `orig = ...<wordLeft><whitespaceLeft>|<whitespaceRight><wordRight>...`
+where
+* `<wordLeft>`  and `<wordLeft>` are maximal consecutive sequences of non-whitespace characters,
+* `<whitespaceLeft>` and `<whitespaceRight>` are maximal consecutive sequences of whitespace
+  characters,
+* the `|` denotes the input position `start`.
+
+We carve out the substring `<wordLeft><whitespaceLeft><whitespaceRight><wordRight>`.
+-/
+def mkWindowSubstring' (orig : Substring) (start : String.Pos) : String :=
+  -- Starting from the first discrepancy, we move to the right, consuming all subsequent
+  -- contiguous whitespace and then all subsequent contiguous non-whitespace.
+  let fromError : Substring := {orig with startPos := start}
+  let extRight := fromError.dropWhile (·.isWhitespace) |>.dropWhile (!·.isWhitespace)
+  -- Ending at the first discrepancy, we move to the left, consuming all previous
+  -- contiguous whitespace and then all previous contiguous non-whitespace.
+  let toError : Substring := {orig with stopPos := start}
+  let extLeft := toError.dropRightWhile (·.isWhitespace) |>.dropRightWhile (!·.isWhitespace)
+  -- Carve the substring using the starting and ending positions determined above.
+  {orig with startPos := extLeft.stopPos, stopPos := extRight.startPos}.toString
+
 def _root_.Mathlib.Linter.mex.mkWindow (orig : Substring) (m : mex) (ctx : Nat := 4) : String :=
   let lth := ({orig with startPos := m.rg.start, stopPos := m.rg.stop}).toString.length
   mkWindowSubstring orig m.rg.start (ctx + lth)
@@ -1212,7 +1201,8 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let orig := stx.getSubstring?.getD default
   for m in filterSortExceptions (← getExceptions stx) do
     --logInfoAt (.ofRange m.rg) m!"{m.error} ({m.kinds})"
-    let origWindow := m.mkWindow orig
+    --dbg_trace "{m.mkWindow orig}"
+    let origWindow := mkWindowSubstring' orig m.rg.start
     Linter.logLint linter.style.commandStart (.ofRange m.rg)
       m!"{m.error} in the source\n\n\
       This part of the code\n  '{origWindow.trim}'\n\
@@ -1309,6 +1299,41 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
 -/
 
 initialize addLinter commandStartLinter
+
+open Lean Elab Command in
+elab tk:"#mex " cmd:(command)? : command => do
+  if let some cmd := cmd then if let some cmdSubstring := cmd.raw.getSubstring? then
+  if let .error .. :=
+    captureException (← getEnv) Parser.topLevelCommandParserFn cmd.raw.getSubstring?.get!.toString
+  then
+    logWarningAt tk m!"{tk}: Parsing failed"
+    return
+  elabCommand cmd
+  if (← get).messages.hasErrors then
+    logWarningAt tk "{tk}: Command has errors"
+    return
+  let mexs ← getExceptions cmd
+  if mexs.isEmpty then
+    logInfo "No whitespace issues found!"
+    return
+  let (reported, unreported) := mexs.partition (!totalExclusions.contains ·.kinds)
+  logInfo m!"{mexs.size} whitespace issue{if mexs.size == 1 then "" else "s"} found: \
+      {reported.size} reported and {unreported.size} unreported."
+  let fm ← getFileMap
+  for m in reported do
+    logWarningAt (.ofRange m.rg)
+      m!"reported: {m.error}\n  '{mkWindowSubstring' cmdSubstring m.rg.start}'\n\
+        {(fm.toPosition m.rg.start, fm.toPosition m.rg.stop)}\n\n\
+        {m.kinds.map MessageData.ofConstName}"
+  for m in unreported do
+    logInfoAt (.ofRange m.rg)
+      m!"unreported: {m.error} {(fm.toPosition m.rg.start, fm.toPosition m.rg.stop)}\n\n\
+        {m.kinds.map MessageData.ofConstName}"
+
+#mex
+theorem X(_  :Nat) : True:=     --
+  by  trivial;  done
+
 
 end Style.CommandStart
 
