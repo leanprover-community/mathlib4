@@ -602,6 +602,7 @@ def totalExclusions : ExcludedSyntaxNodeKind where
     ``Parser.Command.docComment, -- of doc-strings.
     ``Parser.Command.moduleDoc, -- of module docs.
     ``«term{_:_//_}», -- of `{a // ...}`.
+    ``«term{_}», -- of a singleton `{a}`.
     `Mathlib.Meta.setBuilder, -- of `{a | ...}`.
     ``Parser.Tactic.tacticSeqBracketed, -- of `{ tactics }`.
     ``Parser.Command.macro, -- of `macro`.
@@ -638,7 +639,6 @@ def forceSpaceAfter : ExcludedSyntaxNodeKind where
     -- Syntax nodes that do not pretty-print with a space, if followed by a parenthesis `()`
     ``Parser.Tactic.rcases, -- `rcases (a)`
     ``Parser.Tactic.replace, -- `replace (a)`
-    ``Parser.Term.let, -- `let (a)` in term mode.
     ``Parser.Term.whereDecls, -- `where`
   ]
   depth := some 2
@@ -646,6 +646,7 @@ def forceSpaceAfter : ExcludedSyntaxNodeKind where
 def forceSpaceAfter' : ExcludedSyntaxNodeKind where
   kinds := #[
     `atom.«have», -- `have (a)` in term mode.
+    `atom.«let», -- `let (a)` in term mode.
   ]
   depth := some 1
 
@@ -820,6 +821,7 @@ def _root_.Lean.SourceInfo.compareSpaces (ks : Array SyntaxNodeKind) :
 partial
 def _root_.Lean.Syntax.compareSpaces : Array SyntaxNodeKind → Array mex → Syntax → Syntax → Array mex
   | kinds, tot, .node _ kind a1, .node _ _ a2 =>
+    let (a1, a2) := if kind == `choice then (a1.take 1, a2.take 1) else (a1, a2)
     a1.zipWith (fun a b => a.compareSpaces (kinds.push kind) tot b) a2 |>.flatten
   | kinds, tot, .ident origInfo rawVal .., .ident ppInfo .. =>
     --let val := rawVal--.toString
@@ -860,6 +862,8 @@ def getExceptions (stx : Syntax) (verbose? : Bool := false) :
     CommandElabM (Option (Array mex)) := do
   let stxNoTrail := stx.unsetTrailing
   if let some stxNoSpaces ← insertSpaces verbose? stx then
+    if verbose? then
+      logInfo m!"Pretty-printed syntax:\n{stxNoSpaces}"
     return stxNoTrail.compareSpaces #[] #[] stxNoSpaces
   else
     return none
@@ -1013,8 +1017,9 @@ def parallelScan (src fmt : String) : Array FormatError :=
 
 partial
 def _root_.Lean.Syntax.compareToString : Array FormatError → Syntax → String → Array FormatError
-  | tot, .node _ `choice args, s => (args.take 1).foldl (init := tot) (· ++ ·.compareToString tot s)
-  | tot, .node _ _ args, s => args.foldl (init := tot) (· ++ ·.compareToString tot s)
+  | tot, .node _ kind args, s =>
+    let args := if kind == `choice then args.take 1 else args
+    args.foldl (init := tot) (· ++ ·.compareToString tot s)
   | tot, .ident i raw _ _, s =>
     let (l, t) := i.getLeadTrail
     let (_r, f) := parallelScanAux tot "" (l ++ raw.toString ++ t).toSubstring s.toSubstring "🐩" "🦤" "😹"
