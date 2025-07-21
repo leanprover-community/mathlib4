@@ -18,25 +18,23 @@ recurrence relations, and establishes some of their key properties and identitie
 # The Stirling numbers of the first kind
 
 The unsigned Stirling numbers of the first kind, represent the number of ways
-to partition n distinct elements into k non-empty cycles.
+to partition `n` distinct elements into `k` non-empty cycles.
 
 # The Stirling numbers of the second kind
 
 The Stirling numbers of the second kind, represent the number of ways to partition
-n distinct elements into k non-empty subsets.
+`n` distinct elements into `k` non-empty subsets.
 
 # Main definitions
 
-* `Nat.stirlingFirst`: the number of ways to partition n distinct elements into k non-empty
+* `Nat.stirlingFirst`: the number of ways to partition `n` distinct elements into `k` non-empty
   cycles, defined by the recursive relationship it satisfies.
-* `Nat.stirlingSecond`: the number of ways to partition n distinct elements into k non-empty
+* `Nat.stirlingSecond`: the number of ways to partition `n` distinct elements into `k` non-empty
   subsets, defined by the recursive relationship it satisfies.
 
-# References:
+## References
 
-* [Stirling Numbers of the First Kind – ProofWiki](https://proofwiki.org/wiki/Definition:Stirling_Numbers_of_the_First_Kind/Unsigned)
-* [Stirling Numbers of the Second Kind – ProofWiki](https://proofwiki.org/wiki/Definition:Stirling_Numbers_of_the_Second_Kind)
-
+* [Knuth, *The Art of Computer Programming*, Volume 1, §1.2.6][knuth1997]
 -/
 
 open Nat
@@ -67,15 +65,13 @@ theorem stirlingFirst_succ_zero (n : ℕ) : stirlingFirst (succ n) 0 = 0 :=
 
 theorem stirlingFirst_succ_left (n k : ℕ) (hk : k ≠ 0) :
     stirlingFirst (n + 1) k = n * stirlingFirst n k + stirlingFirst n (k - 1) := by
-  have hk : 0 < k := Nat.pos_of_ne_zero hk
-  obtain ⟨l, rfl⟩ : ∃ l, k = l + 1 := Nat.exists_eq_add_of_le' hk
+  obtain ⟨l, rfl⟩ := Nat.exists_eq_add_of_le' (Nat.pos_of_ne_zero hk)
   rfl
 
 theorem stirlingFirst_succ_right (n k : ℕ) (hn : n ≠ 0) :
     stirlingFirst n (k + 1) =
       (n - 1) * stirlingFirst (n - 1) (k + 1) + stirlingFirst (n - 1) k := by
-  have hn : 0 < n := Nat.pos_of_ne_zero hn
-  obtain ⟨l, rfl⟩ : ∃ l, n = l + 1 := Nat.exists_eq_add_of_le' hn
+  obtain ⟨l, rfl⟩ := Nat.exists_eq_add_of_le' (Nat.pos_of_ne_zero hn)
   rfl
 
 theorem stirlingFirst_succ_succ (n k : ℕ) :
@@ -86,10 +82,8 @@ theorem stirlingFirst_eq_zero_of_lt : ∀ {n k : ℕ}, n < k → stirlingFirst n
   | _, 0, hk => absurd hk (Nat.not_lt_zero _)
   | 0, _ + 1, _ => by rw [stirlingFirst]
   | n + 1, k + 1, hk => by
-    have hnk : n < k := Nat.lt_of_succ_lt_succ hk
-    have hnk1 : n < k + 1 := Nat.lt_of_succ_lt hk
-    rw [stirlingFirst_succ_succ, stirlingFirst_eq_zero_of_lt hnk,
-      stirlingFirst_eq_zero_of_lt hnk1, mul_zero]
+    rw [stirlingFirst_succ_succ, stirlingFirst_eq_zero_of_lt (Nat.lt_of_succ_lt_succ hk),
+      stirlingFirst_eq_zero_of_lt (Nat.lt_of_succ_lt hk), mul_zero]
 
 theorem stirlingFirst_self (n : ℕ) : stirlingFirst n n = 1 := by
   induction n <;> simp only [*, stirlingFirst, stirlingFirst_eq_zero_of_lt (Nat.lt_succ_self _),
@@ -133,15 +127,13 @@ theorem stirlingSecond_succ_zero (n : ℕ) : stirlingSecond (succ n) 0 = 0 :=
 
 theorem stirlingSecond_succ_left (n k : ℕ) (hk : k ≠ 0) :
     stirlingSecond (n + 1) k = k * stirlingSecond n k + stirlingSecond n (k - 1) := by
-  have hk : 0 < k := Nat.pos_of_ne_zero hk
-  obtain ⟨l, rfl⟩ : ∃ l, k = l + 1 := Nat.exists_eq_add_of_le' hk
+  obtain ⟨l, rfl⟩ := Nat.exists_eq_add_of_le' (Nat.pos_of_ne_zero hk)
   rfl
 
 theorem stirlingSecond_succ_right (n k : ℕ) (hn : n ≠ 0) :
     stirlingSecond n (k + 1) =
       (k + 1) * stirlingSecond (n - 1) (k + 1) + stirlingSecond (n - 1) k := by
-  have hn : 0 < n := Nat.pos_of_ne_zero hn
-  obtain ⟨l, rfl⟩ : ∃ l, n = l + 1 := Nat.exists_eq_add_of_le' hn
+  obtain ⟨l, rfl⟩ := Nat.exists_eq_add_of_le' (Nat.pos_of_ne_zero hn)
   rfl
 
 theorem stirlingSecond_succ_succ (n k : ℕ) :
@@ -152,10 +144,8 @@ theorem stirlingSecond_eq_zero_of_lt : ∀ {n k : ℕ}, n < k → stirlingSecond
   | _, 0, hk => absurd hk (Nat.not_lt_zero _)
   | 0, _ + 1, _ => by rw [stirlingSecond]
   | n + 1, k + 1, hk => by
-    have hnk : n < k := Nat.lt_of_succ_lt_succ hk
-    have hnk1 : n < k + 1 := Nat.lt_of_succ_lt hk
-    simp only [stirlingSecond_succ_succ, stirlingSecond_eq_zero_of_lt hnk,
-      stirlingSecond_eq_zero_of_lt hnk1, mul_zero]
+    simp only [stirlingSecond_succ_succ, stirlingSecond_eq_zero_of_lt (Nat.lt_of_succ_lt_succ hk),
+      stirlingSecond_eq_zero_of_lt (Nat.lt_of_succ_lt hk), mul_zero]
 
 theorem stirlingSecond_self (n : ℕ) : stirlingSecond n n = 1 := by
   induction n <;> simp only [*, stirlingSecond, stirlingSecond_eq_zero_of_lt (lt_succ_self _),
