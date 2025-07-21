@@ -18,6 +18,7 @@ import Mathlib.Data.Set.Lattice
 import Mathlib.Order.ConditionallyCompleteLattice.Defs
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Topology.Instances.Real.Lemmas
+import Mathlib.Data.Finite.Set
 
 /-!
 # Sets with very small doubling
@@ -338,6 +339,17 @@ theorem doubling_lt_three_halves (h : #(A * A) < (3 / 2 : ℚ) * #A) :
 
 variable (ε : ℝ)
 
+omit [DecidableEq G] in
+private lemma rightCoset_eq_of_mem {H : Subgroup G} {c : Set G} {x : G}
+    (hc: c ∈ orbit Gᵐᵒᵖ (H : Set G)) (hx : x ∈ c) : c = H <• x := by
+  rw [mem_orbit_iff] at hc
+  obtain ⟨a', ha⟩ := hc
+  let a := a'.unop
+  have ha : c = H <• a := by exact id (Eq.symm ha)
+  rw [ha, mem_rightCoset_iff] at hx
+  rw [← rightCoset_mem_rightCoset H hx, smul_smul] at ha
+  simp_all only [op_mul, op_inv, mul_inv_cancel_left, SetLike.mem_coe]
+
 private structure ExpansionMeasure (G : Type*) [Group G] [DecidableEq G] where
   K : ℝ
   A : Finset G
@@ -382,6 +394,8 @@ theorem doubling_lt_two {ε : ℝ} (hε₀ : 0 < ε) (hε₁ : ε ≤ 1) (hA : A
     (hS : ∃ (S : Finset G) (_ : #S ≥ #A), #(S * A) ≤ (2 - ε) * #A) :
     ∃ (H : Subgroup G) (_ : Fintype H) (_ : Fintype.card H ≤ (2 / ε - 1) * #A) (Z : Finset G)
       (_ : #Z ≤ 2 / ε - 1), (A : Set G) ⊆ (H : Set G) * Z := by
+  classical
+
   let K := 1 - ε / 2
   let em := expansionMeasure K A
   have min_em (S : Finset G) : ε / 2 * #S ≤ em.toFun S := by
@@ -591,30 +605,70 @@ theorem doubling_lt_two {ε : ℝ} (hε₀ : 0 < ε) (hε₁ : ε ≤ 1) (hA : A
       simpa only [← coe_smul_finset, mem_coe] using ha
   )
 
-  obtain ⟨S, hS₁, hS₂⟩ := hS
+  let preZ := {cH ∈ orbit Gᵐᵒᵖ (H : Set G) | (cH ∩ (H * A)).Nonempty}
+  have fin_preZ : preZ.Finite := by
+    obtain ⟨a, ha⟩ := hA
+    let f_preZ : Set G → (H : Set G) * (A : Set G) := fun cH =>
+      if h : cH ∈ preZ
+      then ⟨Classical.choose h.2, by
+        apply And.right at h
+        apply Classical.choose_spec at h
+        apply Set.mem_of_mem_inter_right at h
+        exact h⟩
+      else ⟨1 * a, Set.mul_mem_mul (H.one_mem) ha⟩
 
-  refine ⟨H, fintypeH, ?cardH, S, ?cardS, ?A_subset_HS⟩
+    have inj_f_preZ : Set.InjOn f_preZ preZ := by
+      unfold Set.InjOn
+      intro c₁ hc₁ c₂ hc₂ hc₁c₂
+      unfold f_preZ at hc₁c₂
+      simp_all
+      let s := Classical.choose hc₁.2
+      have s_mem_c₁ : s ∈ c₁ := by
+        apply And.right at hc₁
+        apply Classical.choose_spec at hc₁
+        exact Set.mem_of_mem_inter_left hc₁
+      have s_mem_c₂ : s ∈ c₂ := by
+        apply And.right at hc₂
+        apply Classical.choose_spec at hc₂
+        rw [← hc₁c₂] at hc₂
+        exact Set.mem_of_mem_inter_left hc₂
+      rw [rightCoset_eq_of_mem hc₁.1 s_mem_c₁, rightCoset_eq_of_mem hc₂.1 s_mem_c₂]
 
-  case cardH =>
-    have : ε / 2 * (Fintype.card H) ≤ (1 - ε / 2) * #A := by
-      calc
-            ε / 2 * (Fintype.card H)
-        _ = ε / 2 * #(H : Set G).toFinset         := by simp [Set.toFinset_card]
-        _ = ε / 2 * #(n⁻¹ •> N : Set G).toFinset  := by abel
-        _ = ε / 2 * #(n⁻¹ •> N)                   := by simp
-        _ ≤ em.toFun (n⁻¹ •> N)                   := min_em (n⁻¹ •> N)
-        _ = em.toFun N                            := em.left_invariant N n⁻¹
-        _ = κ                                     := N_atom.1
-        _ ≤ em.toFun S := κ_min (card_pos.mp (lt_of_lt_of_le (card_pos.mpr hA) hS₁))
-        _ = #(S * A) - K * #S                     := by rfl
-        _ ≤ (2 - ε) * #A - (1 - ε / 2) * #A       := by gcongr; linarith
-        _ = (1 - ε / 2) * #A                      := by linarith
-    rw [← mul_le_mul_left (by positivity)]
-    have : ε / 2 * ((2 / ε - 1) * #A) = (1 - ε / 2) * #A := by field_simp; ring1
-    linarith
+    exact Finite.Set.finite_of_finite_image preZ inj_f_preZ
 
-  · sorry
-  · sorry
+  let preZ' := fin_preZ.toFinset
+  have elts_preZ'_nonempty {cH : Set G} (hcH : cH ∈ preZ') : (cH ∩ (H * A)).Nonempty := by
+    rw [Set.Finite.mem_toFinset, Set.mem_setOf] at hcH
+    exact hcH.2
+
+  choose! chooseZ chooseZ_spec using elts_preZ'_nonempty
+  --let Z := image chooseZ preZ'
+  sorry
+
+  -- obtain ⟨S, hS₁, hS₂⟩ := hS
+
+  -- refine ⟨H, fintypeH, ?cardH, S, ?cardS, ?A_subset_HS⟩
+
+  -- case cardH =>
+  --   have : ε / 2 * (Fintype.card H) ≤ (1 - ε / 2) * #A := by
+  --     calc
+  --           ε / 2 * (Fintype.card H)
+  --       _ = ε / 2 * #(H : Set G).toFinset         := by simp [Set.toFinset_card]
+  --       _ = ε / 2 * #(n⁻¹ •> N : Set G).toFinset  := by abel
+  --       _ = ε / 2 * #(n⁻¹ •> N)                   := by simp
+  --       _ ≤ em.toFun (n⁻¹ •> N)                   := min_em (n⁻¹ •> N)
+  --       _ = em.toFun N                            := em.left_invariant N n⁻¹
+  --       _ = κ                                     := N_atom.1
+  --       _ ≤ em.toFun S := κ_min (card_pos.mp (lt_of_lt_of_le (card_pos.mpr hA) hS₁))
+  --       _ = #(S * A) - K * #S                     := by rfl
+  --       _ ≤ (2 - ε) * #A - (1 - ε / 2) * #A       := by gcongr; linarith
+  --       _ = (1 - ε / 2) * #A                      := by linarith
+  --   rw [← mul_le_mul_left (by positivity)]
+  --   have : ε / 2 * ((2 / ε - 1) * #A) = (1 - ε / 2) * #A := by field_simp; ring1
+  --   linarith
+
+  -- · sorry
+  -- · sorry
 
 
 
