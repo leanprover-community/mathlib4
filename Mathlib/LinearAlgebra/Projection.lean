@@ -301,7 +301,7 @@ theorem ofIsCompl_subtype_zero_eq (hpq : IsCompl p q) :
   simp [ofIsCompl_eq_add]
 
 theorem ofIsCompl_symm (hpq : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} :
-    ofIsCompl hpq φ ψ = ofIsCompl hpq.symm ψ φ := by
+    ofIsCompl hpq.symm ψ φ = ofIsCompl hpq φ ψ := by
   simp [ofIsCompl_eq_add, add_comm]
 
 section
