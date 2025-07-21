@@ -89,11 +89,9 @@ In a Baire space, every nonempty open set is non‐meagre,
 that is, it cannot be written as a countable union of nowhere‐dense sets.
 -/
 theorem nonempty_open_nonmeagre {s : Set X} (hs : IsOpen s) (hne : s.Nonempty) :
-    ¬ IsMeagre s := by
-  intro h
-  rw [IsMeagre] at h
-  have : Dense sᶜ := dense_of_mem_residual h
-  obtain ⟨x, hx, hxc⟩ := this.inter_open_nonempty s hs hne
+    ¬ IsMeagre s := fun h ↦ by
+  rcases (dense_of_mem_residual (by rwa [IsMeagre] at h)).inter_open_nonempty s hs hne
+    with ⟨x, hx, hxc⟩
   exact hxc hx
 
 /-- Baire theorem: a countable intersection of dense Gδ sets is dense. Formulated here with ⋂₀. -/
