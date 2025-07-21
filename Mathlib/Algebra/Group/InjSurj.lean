@@ -22,6 +22,10 @@ Then `H` satisfies the group axioms.
 The relevant definition in this case is `Function.Surjective.group`.
 Dually, there is also `Function.Injective.group`.
 And there are versions for (additive) (commutative) semigroups/monoids.
+
+Note that the `nsmul` and `zsmul` hypotheses in the declarations in this file are declared as
+`∀ x n, f (n • x) = n • f x`, with the binders in a slightly unnatural order, as they are
+`to_additive`ized from the versions for `^`.
 -/
 
 
