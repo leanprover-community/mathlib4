@@ -221,9 +221,8 @@ theorem spanNorm_spanNorm_of_bot_or_top (eq_bot_or_top : ∀ I : Ideal R, I = �
   · rw [h, spanNorm_eq_bot_iff, spanNorm_eq_bot_iff, spanNorm_eq_bot_iff.mp h]
   · exact h ▸ (eq_top_iff_one _).mpr <| le_spanNorm_spanNorm R T I <| (eq_top_iff_one _).mp h
 
-theorem spanNorm_spanNorm [IsDedekindDomain R]
-    [IsDedekindDomain T] [IsDedekindDomain S] (I : Ideal S) :
-    spanNorm R (spanNorm T I) = spanNorm R I := by
+theorem spanNorm_spanNorm [IsDedekindDomain R] [IsDedekindDomain T] [IsDedekindDomain S]
+    (I : Ideal S) : spanNorm R (spanNorm T I) = spanNorm R I := by
   refine eq_of_localization_maximal fun P hP ↦ ?_
   by_cases hP : P = ⊥
   · subst hP
@@ -264,6 +263,8 @@ theorem spanNorm_spanNorm [IsDedekindDomain R]
     have : IsPrincipalIdealRing Sₚ :=
       IsDedekindDomain.isPrincipalIdealRing_localization_over_prime S P hP
     exact IsPrincipalIdealRing.principal _
+  let _ : Algebra (FractionRing Tₚ) (FractionRing Sₚ) := by
+    exact FractionRing.liftAlgebra Tₚ (FractionRing Sₚ)
   rw [← spanIntNorm_localization R (spanNorm T I) _ (primeCompl_le_nonZeroDivisors P) Tₚ,
     ← spanIntNorm_localization T (Rₘ := Tₚ) I _ h Sₚ, ← spanIntNorm_localization R (Rₘ := Rₚ) I _
     (primeCompl_le_nonZeroDivisors P) Sₚ, ← (I.map _).span_singleton_generator, spanNorm_singleton,
