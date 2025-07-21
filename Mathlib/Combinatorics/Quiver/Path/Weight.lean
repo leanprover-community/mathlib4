@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina
 -/
 import Mathlib.Combinatorics.Quiver.Path
-import Mathlib.Tactic
 
 /-!
 # Path weights in a Quiver
