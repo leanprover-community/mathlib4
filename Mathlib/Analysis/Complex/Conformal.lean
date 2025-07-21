@@ -173,8 +173,8 @@ variable
   {f : ℂ → E} {x : ℂ} {s : Set ℂ}
 
 /--
-Helper lemma for `differentiableAt_complex_iff_differentiableAt_real`: A real linear map `ℓ : ℂ
-→ₗ[ℝ] E` respects complex scalar multiplication if it maps `I` to `I • ℓ 1`.
+A real linear map `ℓ : ℂ →ₗ[ℝ] E` respects complex scalar multiplication if it maps `I` to
+`I • ℓ 1`.
 -/
 lemma real_linearMap_map_smul_complex {ℓ : ℂ →ₗ[ℝ] E} (h : ℓ I = I • ℓ 1) (a b : ℂ) :
     ℓ (a • b) = a • ℓ b := by
@@ -192,8 +192,8 @@ lemma real_linearMap_map_smul_complex {ℓ : ℂ →ₗ[ℝ] E} (h : ℓ I = I �
   ring
 
 /--
-Using the helper lemma `differentiableAt_complex_iff_differentiableAt_real`, construct a complex-
-linear map from a real-linear map `ℓ` that maps `I` to `I • ℓ 1`.
+Using `differentiableAt_complex_iff_differentiableAt_real`, construct a complex-linear map from a
+real-linear map `ℓ` that maps `I` to `I • ℓ 1`.
 -/
 def LinearMap.complexOfReal (ℓ : ℂ →ₗ[ℝ] E) (h : ℓ I = I • ℓ 1) : ℂ →ₗ[ℂ] E where
   toFun := ℓ
@@ -205,8 +205,8 @@ lemma LinearMap.coe_complexOfReal (ℓ : ℂ →ₗ[ℝ] E) (h : ℓ I = I • �
     ℓ.complexOfReal h = (ℓ : ℂ → E) := rfl
 
 /--
-Using the helper lemma `differentiableAt_complex_iff_differentiableAt_real`, construct a continuous
-complex- linear map from a continueous real-linear map `ℓ` that maps `I` to `I • ℓ 1`.
+Using `differentiableAt_complex_iff_differentiableAt_real`, construct a continuous complex- linear
+map from a continueous real-linear map `ℓ` that maps `I` to `I • ℓ 1`.
 -/
 def ContinuousLinearMap.complexOfReal (ℓ : ℂ →L[ℝ] E) (h : ℓ I = I • ℓ 1) : ℂ →L[ℂ] E where
   toFun := ℓ
@@ -263,7 +263,8 @@ theorem differentiableAt_complex_iff_differentiableAt_real :
 In cases where the Cauchy-Riemann Equation guarantees complex differentiability, the complex
 derivative equals `ContinuousLinearMap.toComplexOfMapI` of the real derivative.
 -/
-theorem complexOfReal_fderiv (h₁ : DifferentiableAt ℝ f x) h₂ : fderiv ℝ f x I = I • fderiv ℝ f x 1) :
+theorem complexOfReal_fderiv (h₁ : DifferentiableAt ℝ f x)
+    (h₂ : fderiv ℝ f x I = I • fderiv ℝ f x 1) :
     (fderiv ℝ f x).complexOfReal h₂ = fderiv ℂ f x := by
   have := (differentiableAt_complex_iff_differentiableAt_real.2 ⟨h₁, h₂⟩).fderiv_restrictScalars ℝ
   apply DFunLike.ext'
