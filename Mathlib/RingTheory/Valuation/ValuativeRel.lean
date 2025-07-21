@@ -103,8 +103,9 @@ variable {R : Type*} [CommRing R] [ValuativeRel R]
 /-- The strict version of the valuative relation. -/
 def rel_lt (x y : R) : Prop := x ≤ᵥ y ∧ ¬ y ≤ᵥ x
 
-@[inherit_doc ValuativeRel.rel]
-notation:50 (name := valuativeRelLt) x:50 " <ᵥ " y:51 => binrel% ValuativeRel.rel_lt x y
+@[inherit_doc] infix:50 " <ᵥ " => ValuativeRel.rel_lt
+
+macro_rules | `($a <ᵥ $b) => `(binrel% ValuativeRel.rel_lt $a $b)
 
 lemma rel_lt_iff (x y : R) : x <ᵥ y ↔ x ≤ᵥ y ∧ ¬ y ≤ᵥ x := Iff.rfl
 
