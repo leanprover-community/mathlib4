@@ -329,7 +329,7 @@ instance : Unique (Subalgebra R R) :=
       intro S
       refine le_antisymm ?_ bot_le
       intro _ _
-      simp only [Set.mem_range, mem_bot, id.map_eq_self, exists_apply_eq_apply, default] }
+      simp only [Set.mem_range, mem_bot, algebraMap_self_apply, exists_apply_eq_apply, default] }
 
 section Center
 

@@ -78,7 +78,7 @@ lemma cauchySeq_of_tendsto_div_nhds_one {f : ℕ → G}
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h
   clear h hMN'
   induction k with
-  | zero => simpa using one_mem t
+  | zero => simp
   | succ k ih => simpa using t.mul_mem (hN _ (by omega : N ≤ M + k)) ih
 
 /-- Let `G` be a complete nonarchimedean multiplicative abelian group, and let `f : α → G` be a
