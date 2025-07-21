@@ -603,6 +603,7 @@ def totalExclusions : ExcludedSyntaxNodeKind where
     ``Parser.Command.moduleDoc, -- of module docs.
     ``«term{_:_//_}», -- of `{a // ...}`.
     ``«term{_}», -- of a singleton `{a}`.
+    ``«term{}»,  -- of the empty set, the pretty-printer prefers `{ }`
     `Mathlib.Meta.setBuilder, -- of `{a | ...}`.
     ``Parser.Tactic.tacticSeqBracketed, -- of `{ tactics }`.
     ``Parser.Command.macro, -- of `macro`.
@@ -619,6 +620,8 @@ def totalExclusions : ExcludedSyntaxNodeKind where
     `Stream'.«term_::_», -- of `Stream'` notation, analogous to lists.
     `Batteries.Util.LibraryNote.commandLibrary_note___, -- of `library_note "Title"/-- Text -/`.
     `Mathlib.Notation3.notation3, -- of `notation3`.
+    --``Parser.Term.structInstField, -- of the `where` fields: the LHS pps with virtually no spaces.
+    ``Parser.Term.structInst, -- of the `where` fields: the LHS pps with virtually no spaces.
   ]
   depth := none
 
@@ -1265,6 +1268,13 @@ def mkWindow (orig : String) (start ctx : Nat) : String :=
   let tail := middle.drop ctx |>.takeWhile (!·.isWhitespace)
   s!"{headCtx}{middle.take ctx}{tail}"
 
+def _root_.Mathlib.Linter.mex.toLinterWarning (m : mex) (orig : Substring) : MessageData :=
+  let origWindow := mkWindowSubstring' orig m.rg.start
+  let expectedWindow := mkExpectedWindow orig m.rg.start
+  m!"{m.error} in the source\n\n\
+  This part of the code\n  '{origWindow.trim}'\n\
+  should be written as\n  '{expectedWindow}'\n"
+
 @[inherit_doc Mathlib.Linter.linter.style.commandStart]
 def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless Linter.getLinterValue linter.style.commandStart (← getLinterOptions) do
@@ -1294,10 +1304,7 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
     --dbg_trace "{m.mkWindow orig}"
     let origWindow := mkWindowSubstring' orig m.rg.start
     let expectedWindow := mkExpectedWindow orig m.rg.start
-    Linter.logLint linter.style.commandStart (.ofRange m.rg)
-      m!"{m.error} in the source\n\n\
-      This part of the code\n  '{origWindow.trim}'\n\
-      should be written as\n  '{expectedWindow}'\n"
+    Linter.logLint linter.style.commandStart (.ofRange m.rg) <| m.toLinterWarning orig
 
 /-
   if let some pos := stx.getPos? then
@@ -1413,15 +1420,15 @@ elab tk:"#mex " cmd:(command)? : command => do
     let (reported, unreported) := reportedAndUnreportedExceptions mexs
     logInfo m!"{mexs.size} whitespace issue{if mexs.size == 1 then "" else "s"} found: \
         {reported.size} reported and {unreported.size} unreported."
-    let fm ← getFileMap
-    for m in reported do
-      logWarningAt (.ofRange m.rg)
-        m!"reported: {m.error}\n  '{mkWindowSubstring' cmdSubstring m.rg.start}'\n\
-          {(fm.toPosition m.rg.start, fm.toPosition m.rg.stop)}\n\n\
-          {m.kinds.map MessageData.ofConstName}"
+    -- If the linter is active, then we do not need to emit the messages again.
+    if !Linter.getLinterValue linter.style.commandStart (← getLinterOptions) then
+      for m in reported do
+        logWarningAt (.ofRange m.rg) <|
+          m!"reported: {m.toLinterWarning cmdSubstring}\n\n\
+            {m.kinds.map MessageData.ofConstName}"
     for m in unreported do
       logInfoAt (.ofRange m.rg)
-        m!"unreported: {m.error} {(fm.toPosition m.rg.start, fm.toPosition m.rg.stop)}\n\n\
+        m!"unreported: {m.toLinterWarning cmdSubstring}\n\n\
           {m.kinds.map MessageData.ofConstName}"
 
 end Style.CommandStart

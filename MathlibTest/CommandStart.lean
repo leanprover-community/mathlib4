@@ -22,15 +22,23 @@ theorem FX (_ : Nat) : True := by trivial; done
 ---
 info: 6 whitespace issues found: 6 reported and 0 unreported.
 ---
-warning: reported: add space
+warning: reported: add space in the source
+
+This part of the code
   'FX(_'
-(⟨94, 10⟩, ⟨94, 11⟩)
+should be written as
+  'FX (_'
+
 
 [Lean.Parser.Command.declaration, Lean.Parser.Command.theorem, Lean.Parser.Command.declId, ident.FX]
 ---
-warning: reported: remove space
+warning: reported: remove space in the source
+
+This part of the code
   'FX(_  :Nat)'
-(⟨94, 13⟩, ⟨94, 14⟩)
+should be written as
+  'FX(_ :Nat)'
+
 
 [Lean.Parser.Command.declaration,
  Lean.Parser.Command.theorem,
@@ -41,9 +49,13 @@ warning: reported: remove space
  Lean.Parser.Term.hole,
  atom._]
 ---
-warning: reported: add space
+warning: reported: add space in the source
+
+This part of the code
   ':Nat)'
-(⟨94, 15⟩, ⟨94, 16⟩)
+should be written as
+  ': Nat)'
+
 
 [Lean.Parser.Command.declaration,
  Lean.Parser.Command.theorem,
@@ -53,9 +65,13 @@ warning: reported: add space
  null,
  atom.«:»]
 ---
-warning: reported: add space
+warning: reported: add space in the source
+
+This part of the code
   'True:='
-(⟨94, 26⟩, ⟨94, 27⟩)
+should be written as
+  'True :='
+
 
 [Lean.Parser.Command.declaration,
  Lean.Parser.Command.theorem,
@@ -63,9 +79,13 @@ warning: reported: add space
  Lean.Parser.Term.typeSpec,
  ident.True]
 ---
-warning: reported: remove space
+warning: reported: remove space in the source
+
+This part of the code
   'by  trivial;'
-(⟨95, 5⟩, ⟨95, 6⟩)
+should be written as
+  'by trivial;'
+
 
 [Lean.Parser.Command.declaration,
  Lean.Parser.Command.theorem,
@@ -73,9 +93,13 @@ warning: reported: remove space
  Lean.Parser.Term.byTactic,
  atom.by]
 ---
-warning: reported: remove space
+warning: reported: remove space in the source
+
+This part of the code
   'trivial;  done'
-(⟨95, 15⟩, ⟨95, 16⟩)
+should be written as
+  'trivial; done'
+
 
 [Lean.Parser.Command.declaration,
  Lean.Parser.Command.theorem,
@@ -133,7 +157,13 @@ example : ¬False ∨ ¬False := by simp
 ---
 info: 1 whitespace issue found: 0 reported and 1 unreported.
 ---
-info: unreported: remove space (⟨149, 11⟩, ⟨149, 12⟩)
+info: unreported: remove space in the source
+
+This part of the code
+  '¬ False'
+should be written as
+  '¬False'
+
 
 [Lean.Parser.Command.declaration,
  Lean.Parser.Command.example,
