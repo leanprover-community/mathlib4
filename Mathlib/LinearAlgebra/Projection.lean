@@ -180,7 +180,7 @@ theorem linearProjOfIsCompl_idempotent (h : IsCompl p q) (x : E) :
     linearProjOfIsCompl p q h (linearProjOfIsCompl p q h x) = linearProjOfIsCompl p q h x :=
   linearProjOfIsCompl_apply_left h _
 
-lemma linearProjOfIsCompl_isIdempotentElem (hpq : IsCompl p q) :
+lemma isIdempotentElem_subtype_comp_linearProjOfIsCompl (hpq : IsCompl p q) :
     IsIdempotentElem (p.subtype ∘ₗ p.linearProjOfIsCompl q hpq) := by ext; simp
 
 theorem existsUnique_add_of_isCompl_prod (hc : IsCompl p q) (x : E) :
@@ -277,44 +277,32 @@ theorem ofIsCompl_smul {R : Type*} [CommRing R] {E : Type*} [AddCommGroup E] [Mo
     {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} (c : R) : ofIsCompl h (c • φ) (c • ψ) = c • ofIsCompl h φ ψ :=
   ofIsCompl_eq _ (by simp) (by simp)
 
-theorem range_ofIsCompl_subtype_left (hpq : IsCompl p q) :
+theorem range_ofIsCompl_subtype_zero (hpq : IsCompl p q) :
     range (ofIsCompl hpq p.subtype 0) = p := by
   ext; simp [ofIsCompl]
 
-theorem range_ofIsCompl_subtype_right (hpq : IsCompl p q) :
-    range (ofIsCompl hpq 0 q.subtype) = q := by
-  ext; simp [ofIsCompl]
-
-theorem ker_ofIsCompl_subtype_left (hpq : IsCompl p q) :
+theorem ker_ofIsCompl_subtype_zero (hpq : IsCompl p q) :
     ker (ofIsCompl hpq p.subtype 0) = q := by
   ext; simp [ofIsCompl]
 
-theorem ker_ofIsCompl_subtype_right (hpq : IsCompl p q) :
-    ker (ofIsCompl hpq 0 q.subtype) = p := by
-  ext; simp [ofIsCompl]
-
-theorem ofIsCompl_subtype_left_isIdempotentElem (hpq : IsCompl p q) :
+theorem isIdempotentElem_ofIsCompl_subtype_zero (hpq : IsCompl p q) :
     IsIdempotentElem (ofIsCompl hpq p.subtype 0) := by
   ext; simp [ofIsCompl]
 
-theorem ofIsCompl_subtype_right_isIdempotentElem (hpq : IsCompl p q) :
-    IsIdempotentElem (ofIsCompl hpq 0 q.subtype) := by
-  ext; simp [ofIsCompl]
-
-theorem ofIsCompl_eq'' (hpq : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} :
+theorem ofIsCompl_eq_add (hpq : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} :
     ofIsCompl hpq φ ψ = (φ ∘ₗ p.linearProjOfIsCompl q hpq)
       + (ψ ∘ₗ q.linearProjOfIsCompl p hpq.symm) := by
   ext x
   obtain ⟨a, b, rfl, _⟩ := existsUnique_add_of_isCompl hpq x
   simp
 
-theorem ofIsCompl_subtype_left_eq (hpq : IsCompl p q) :
+theorem ofIsCompl_subtype_zero_eq (hpq : IsCompl p q) :
     ofIsCompl hpq p.subtype 0 = p.subtype ∘ₗ p.linearProjOfIsCompl q hpq := by
-  simp [ofIsCompl_eq'']
+  simp [ofIsCompl_eq_add]
 
-theorem ofIsCompl_subtype_right_eq (hpq : IsCompl p q) :
-    ofIsCompl hpq 0 q.subtype = q.subtype ∘ₗ q.linearProjOfIsCompl p hpq.symm := by
-  simp [ofIsCompl_eq'']
+theorem ofIsCompl_symm (hpq : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} :
+    ofIsCompl hpq φ ψ = ofIsCompl hpq.symm ψ φ := by
+  simp [ofIsCompl_eq_add, add_comm]
 
 section
 
@@ -601,12 +589,6 @@ lemma subtype_comp_linearProjOfIsCompl_range_eq (hf : IsIdempotentElem f) :
     (linearProjOfIsCompl_eq_self_iff _ _).mpr hu, hv, mem_ker.mp hv]
   exact (hf.mem_range_iff.mp hu).symm
 
-/-- `U` is `⅟T` invariant if and only if `U ⊆ T(U)`. -/
-lemma _root_.Module.End.mem_invtSubmodule_invOf_iff_le_map [Invertible T] (U : Submodule R E) :
-    U ∈ Module.End.invtSubmodule (⅟T) ↔ U ≤ U.map T :=
-  Module.End.mem_invtSubmodule_symm_iff_le_map
-    (f := LinearMap.GeneralLinearGroup.toLinearEquiv (unitOfInvertible T))
-
 lemma conj_eq_of_range_mem_invtSubmodule (hf : IsIdempotentElem f)
     (h : range f ∈ Module.End.invtSubmodule T) : f ∘ₗ T ∘ₗ f = T ∘ₗ f := by
   ext x
@@ -650,15 +632,17 @@ lemma commute_iff (hf : IsIdempotentElem f) :
     rw [mul_assoc, hf.eq]
   · rw [← h1, ← h2]
 
-/-- An idempotent operator `f` commutes with an invertible operator `T` if and only if
+/-- An idempotent operator `f` commutes with an unit operator `T` if and only if
 `T (range f) = range f` and `T (ker f) = ker f`. -/
-theorem commute_iff_of_invertible [Invertible T] (hf : IsIdempotentElem f) :
+theorem commute_iff_of_isUnit (hT : IsUnit T) (hf : IsIdempotentElem f) :
     Commute f T ↔ (range f).map T = range f ∧ (ker f).map T = ker f := by
+  obtain ⟨S, rfl⟩ := hT
   rw [hf.commute_iff]
-  simp_rw [le_antisymm_iff, ← Module.End.mem_invtSubmodule_iff_map,
-    and_and_and_comm (c := (ker f ∈ Module.End.invtSubmodule T)),
-    iff_self_and, ← Module.End.mem_invtSubmodule_invOf_iff_le_map,
-    ← hf.commute_iff]
-  exact @Commute.units_inv_right _ _ _ (unitOfInvertible T)
+  simp_rw [le_antisymm_iff, ← Module.End.mem_invtSubmodule_iff_map_le,
+    and_and_and_comm (c := (ker f ∈ _)), iff_self_and,
+    ← GeneralLinearGroup.generalLinearEquiv_to_linearMap]
+  have {a : E ≃ₗ[R] E} {b : Submodule R E} : b ≤ b.map a.toLinearMap ↔ b ≤ b.map a := by rfl
+  simp_rw [this, ← Module.End.mem_invtSubmodule_symm_iff_le_map, ← hf.commute_iff]
+  exact Commute.units_inv_right
 
 end LinearMap.IsIdempotentElem
