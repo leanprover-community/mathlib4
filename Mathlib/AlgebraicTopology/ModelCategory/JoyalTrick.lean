@@ -40,9 +40,9 @@ lemma joyal_trick
     [Cofibration i] [Fibration p] [WeakEquivalence p] :
     HasLiftingProperty i p where
   sq_hasLift {f g} sq := by
-    have h := factorizationData (cofibrations C) (trivialFibrations C)
+    let h := factorizationData (cofibrations C) (trivialFibrations C)
       (pushout.desc p g sq.w)
-    have sq' : CommSq (𝟙 X) (pushout.inl _ _ ≫ h.i) p h.p := ⟨by simp⟩
+    have sq' : CommSq (𝟙 X) (pushout.inl _ _ ≫ h.i) p h.p := .mk
     have h₁ : WeakEquivalence ((pushout.inl f i ≫ h.i) ≫ h.p) := by simpa
     have h₂ := comp_mem _ _ _ ((cofibrations C).of_isPushout
       (IsPushout.of_hasPushout f i) (mem_cofibrations i)) h.hi
@@ -52,8 +52,8 @@ lemma joyal_trick
       exact of_postcomp _ _ _ h.hp.2 h₁
     exact ⟨⟨{ l := pushout.inr f i ≫ h.i ≫ sq'.lift
               fac_left := by
-                simpa only [assoc, comp_id, pushout.condition_assoc]
-                  using f ≫= sq'.fac_left }⟩⟩
+                simpa only [assoc, comp_id, pushout.condition_assoc] using
+                  f ≫= sq'.fac_left }⟩⟩
 
 lemma joyal_trick_dual
     [HasFactorization (trivialCofibrations C) (fibrations C)] [HasPullbacks C]
@@ -64,9 +64,9 @@ lemma joyal_trick_dual
     [Cofibration i] [Fibration p] [WeakEquivalence i] :
     HasLiftingProperty i p where
   sq_hasLift {f g} sq := by
-    have h := factorizationData (trivialCofibrations C) (fibrations C)
+    let h := factorizationData (trivialCofibrations C) (fibrations C)
       (pullback.lift f i sq.w)
-    have sq' : CommSq h.i i (h.p ≫ pullback.snd _ _) (𝟙 B) := ⟨by simp⟩
+    have sq' : CommSq h.i i (h.p ≫ pullback.snd _ _) (𝟙 B) := .mk
     have h₁ : WeakEquivalence (h.i ≫ h.p ≫ pullback.snd p g) := by simpa
     have h₂ := comp_mem _ _ _ h.hp ((fibrations C).of_isPullback
       (IsPullback.of_hasPullback p g) (mem_fibrations p))
