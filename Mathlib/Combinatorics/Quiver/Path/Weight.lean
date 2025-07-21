@@ -4,6 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina
 -/
 import Mathlib.Combinatorics.Quiver.Path
+import Mathlib.Algebra.Order.Star.Basic
+import Mathlib.Combinatorics.Quiver.Path
+import Mathlib.Data.Real.Basic
 
 /-!
 # Path weights in a Quiver
@@ -58,10 +61,10 @@ lemma weight_cons (w : ∀ {i j : V}, (i ⟶ j) → R) {a b c : V} (p : Path a b
   · simp [weight, mul_assoc]
 
 lemma weight_of_fn_nil (w : V → V → R) (a : V) :
-    weight_of_fn w (Path.nil : Path a a) = 1 := by simp [weight_of_fn, weight]
+    weight_of_fn w (Path.nil : Path a a) = 1 := by simp [weight_of_fn]
 
 lemma weight_of_fn_cons (w : V → V → R) {a b c : V} (p : Path a b) (e : b ⟶ c) :
-    weight_of_fn w (p.cons e) = weight_of_fn w p * w b c := by unfold weight_of_fn; simp [weight]
+    weight_of_fn w (p.cons e) = weight_of_fn w p * w b c := by unfold weight_of_fn; simp
 
 @[simp]
 lemma weight_comp (w : ∀ {i j : V}, (i ⟶ j) → R) {a b c : V} (p : Path a b) (q : Path b c) :
@@ -103,8 +106,8 @@ lemma weight_of_fn_nonneg {w : V → V → ℝ}
     (hw : ∀ i j : V, 0 ≤ w i j) {i j : V} (p : Path i j) :
     0 ≤ weight_of_fn w p := by
   induction p with
-  | nil => simp
-  | cons p' _ ih => simp [mul_nonneg ih (hw _ _)]
+  | nil => rw [@weight_of_fn_nil, ← Real.mk_zero, Real.mk_zero]; simp_all only [zero_le_one]
+  | cons p' _ ih => rw [@weight_of_fn_cons, @mul_nonneg_iff]; simp_all only [and_self, true_or]
 
 end RealWeight
 
