@@ -182,6 +182,7 @@ theorem factorization_choose_le_log : (choose n k).factorization p ≤ log p n :
   by_cases h : (choose n k).factorization p = 0
   · simp [h]
   have hp : p.Prime := Not.imp_symm (choose n k).factorization_eq_zero_of_non_prime h
+  have := Fact.mk hp
   have hkn : k ≤ n := by
     refine le_of_not_gt fun hnk => h ?_
     simp [choose_eq_zero_of_lt hnk]
