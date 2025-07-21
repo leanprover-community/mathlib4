@@ -455,9 +455,13 @@ theorem choose_smul_choose [NatPowAssoc R] (r : R) {n k : ℕ} (hkn : k ≤ n) :
     ← C_eq_natCast, smeval_C, npow_one, npow_zero, zsmul_one, Int.cast_natCast, nsmul_eq_mul]
 
 theorem choose_add_smul_choose [NatPowAssoc R] (r : R) (n k : ℕ) :
+    (Nat.choose (n + k) k) • choose r (n + k) = choose r k * choose (r - k) n := by
+  rw [choose_smul_choose _ (Nat.le_add_left k n), Nat.add_sub_cancel]
+
+theorem choose_add_smul_choose_add [NatPowAssoc R] (r : R) (n k : ℕ) :
     (Nat.choose (n + k) k) • choose (r + k) (n + k) = choose (r + k) k * choose r n := by
-  rw [choose_smul_choose (r + k) (Nat.le_add_left k n), Nat.add_sub_cancel,
-    add_sub_cancel_right]
+  rw [choose_add_smul_choose (r + k), add_sub_cancel_right]
+
 
 end
 

@@ -28,8 +28,13 @@ def negOnePow (n : ℤ) : ℤˣ := (-1 : ℤˣ) ^ n
 lemma negOnePow_def (n : ℤ) : n.negOnePow = (-1 : ℤˣ) ^ n := rfl
 
 lemma negOnePow_add (n₁ n₂ : ℤ) :
-    (n₁ + n₂).negOnePow =  n₁.negOnePow * n₂.negOnePow :=
+    (n₁ + n₂).negOnePow = n₁.negOnePow * n₂.negOnePow :=
   zpow_add _ _ _
+
+@[simp]
+lemma negOnePow_smul (n₁ n₂ : ℤ) :
+    n₁.negOnePow • n₂.negOnePow = n₁.negOnePow * n₂.negOnePow := by
+  simp [Units.ext_iff, Units.smul_def]
 
 @[simp]
 lemma negOnePow_zero : negOnePow 0 = 1 := rfl

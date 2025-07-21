@@ -334,6 +334,41 @@ noncomputable def arrowCongrLeft {α : Sort u} {β : Sort v} {γ : Sort w} [Inha
   ⟨fun f => extend e f default, fun f₁ f₂ h =>
     funext fun x => by simpa only [e.injective.extend_apply] using congr_fun h (e x)⟩
 
+@[simp]
+theorem arrowCongrLeft_apply {α : Sort u} {β : Sort v} {γ : Sort w} [Inhabited γ] (e : α ↪ β)
+    (f : α → γ) (a : α) :
+    (e.arrowCongrLeft f) (e a) = f a := by
+  simp [arrowCongrLeft, Function.extend]
+
+@[simp]
+theorem arrowCongrLeft_of_not_exists {α : Sort u} {β : Sort v} {γ : Sort w} [Inhabited γ]
+    (e : α ↪ β) (f : α → γ) {b : β} (hb : ¬∃ a, e a = b) :
+    (e.arrowCongrLeft f) b = default :=
+  dif_neg hb
+
+@[simp]
+theorem arrowCongrLeft_trans {α₁ : Sort u} {α₂ : Sort v} {α₃ : Sort x} {γ : Sort w} [Inhabited γ]
+    (e₁₂ : α₁ ↪ α₂) (e₂₃ : α₂ ↪ α₃) (f : α₁ → γ) :
+    e₂₃.arrowCongrLeft (e₁₂.arrowCongrLeft f) = (e₁₂.trans e₂₃).arrowCongrLeft f := by
+  ext a
+  by_cases h₃ : ∃ b, e₂₃ b = a
+  · obtain ⟨b, hb⟩ := h₃
+    simp only [hb.symm, arrowCongrLeft_apply]
+    by_cases h₂ : ∃ c, e₁₂ c = b
+    · obtain ⟨c, hc⟩ := h₂
+      rw [hc.symm, arrowCongrLeft_apply, ← trans_apply, arrowCongrLeft_apply]
+    · have : ¬ ∃ c, (e₁₂.trans e₂₃) c = a := by
+        contrapose! h₂
+        obtain ⟨c, hc⟩ := h₂
+        use c
+        simpa [hb.symm, trans_apply, EmbeddingLike.apply_eq_iff_eq] using hc
+      rw [hb, arrowCongrLeft_of_not_exists e₁₂ f h₂, arrowCongrLeft_of_not_exists _ f this]
+  · rw [arrowCongrLeft_of_not_exists _ _ h₃, arrowCongrLeft_of_not_exists]
+    contrapose! h₃
+    obtain ⟨c, hc⟩ := h₃
+    use e₁₂ c
+    rwa [← trans_apply]
+
 /-- Restrict both domain and codomain of an embedding. -/
 protected def subtypeMap {α β} {p : α → Prop} {q : β → Prop} (f : α ↪ β)
     (h : ∀ ⦃x⦄, p x → q (f x)) :

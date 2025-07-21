@@ -133,6 +133,56 @@ theorem coeff_single_smul {Γ} [PartialOrder Γ] [AddCommGroup Γ] [IsOrderedCan
   nth_rw 1 [this]
   exact coeff_single_smul_vadd (A := A) (V := V) (W := W) g (-g +ᵥ g₁) r
 
+section arrowCongrLeft
+
+--variable [AddCommMonoid Γ] [AddAction Γ Γ₁] [AddAction Γ Γ₂]
+
+theorem arrowCongrLeft_coeff_apply {f : Γ₁ ↪ Γ₂} {A : HVertexOperator Γ₁ R V W} {a : Γ₁} :
+    (f.arrowCongrLeft A.coeff) (f a) = A.coeff a := by
+  simp
+
+theorem arrowCongrLeft_coeff_notin_range {f : Γ₁ ↪ Γ₂} {A : HVertexOperator Γ₁ R V W}
+    {b : Γ₂} (hb : b ∉ Set.range f) :
+    (f.arrowCongrLeft A.coeff) b = 0 :=
+  dif_neg hb
+
+theorem support_arrowCongrLeft_subset {f : Γ₁ ↪ Γ₂} {A : HVertexOperator Γ₁ R V W} :
+    (f.arrowCongrLeft A.coeff).support ⊆ Set.range f := by
+  intro g hg
+  contrapose! hg
+  simp [arrowCongrLeft_coeff_notin_range hg]
+
+@[simp]
+theorem arrowCongrLeft_zero {f : Γ₁ ↪ Γ₂} :
+    f.arrowCongrLeft (0 : HVertexOperator Γ₁ R V W).coeff = 0 := by
+  ext1 g
+  by_cases h : g ∈ f '' Set.univ <;> simp [Function.Embedding.arrowCongrLeft, Function.extend]
+
+theorem support_arrowCongrLeft_coeff_injective {f : Γ₁ ↪ Γ₂} :
+    Function.Injective fun (A : HVertexOperator Γ₁ R V W) ↦ (f.arrowCongrLeft A.coeff) := by
+  intro A B h
+  ext v g
+  simp only [funext_iff] at h
+  have h₁ := h (f g)
+  simp only [Function.Embedding.arrowCongrLeft_apply] at h₁
+  rw [← coeff_apply_apply, h₁, coeff_apply_apply]
+
+theorem arrowCongrLeft_comp {Γ₃ : Type*} {f : Γ₁ ↪ Γ₂} {f' : Γ₂ ↪ Γ₃}
+    (A : HVertexOperator Γ₁ R V W) :
+    (f'.arrowCongrLeft) (f.arrowCongrLeft A.coeff) = (f.trans f').arrowCongrLeft A.coeff := by
+  simp
+
+/-!
+Need:
+ * transport smul of finsupps along monoidHom embeddings
+ * abstract composition along independent embeddings, show they agree with joint embedding
+ * commutator (in VertexOperator file)
+
+-/
+
+
+end arrowCongrLeft
+
 section equivDomain
 
 omit [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] in
@@ -314,7 +364,8 @@ theorem lexComp_support_isPWO (A : HVertexOperator Γ R V W) (B : HVertexOperato
     exact HahnSeries.isPWO_support _
 
 /-- The bilinear composition of two heterogeneous vertex operators, yielding a heterogeneous vertex
-operator on the Lex product. -/
+operator on the Lex product. Note that the exponent group of the left factor ends up on the right
+side of the Lex product. -/
 def lexComp : HVertexOperator Γ R V W →ₗ[R] HVertexOperator Γ₁ R U V →ₗ[R]
     HVertexOperator (Γ₁ ×ₗ Γ) R U W where
   toFun A := {
@@ -322,7 +373,7 @@ def lexComp : HVertexOperator Γ R V W →ₗ[R] HVertexOperator Γ₁ R U V →
       of_coeff (fun g ↦ (coeff A (ofLex g).2) ∘ₗ (coeff B (ofLex g).1))
         (fun u ↦ lexComp_support_isPWO A B u)
     map_add' _ _ := by ext; simp
-    map_smul' _ _ := by ext; simp}
+    map_smul' _ _ := by ext; simp }
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
 
@@ -393,7 +444,25 @@ end Products
 
 end HVertexOperator
 
-section PiLex -- Order.PiLex
+section PiLex
+/-! 2025-7-20
+I need some API for dealing with embeddings of the form `V((z))((w)) ↪ V⟦z, z⁻¹, w, w⁻¹⟧` and three-
+variable variants, so I can compare coefficients in, e.g., Dong's Lemma efficiently. I think a
+potentially good way is an `embCoeff` function, like `HahnSeries.embDomain`, but replacing the
+order-preserving requirement with an algebraic condition. For example, commuting two operators
+should allow me to commute in all domains with a fixed embedding of `ℤ × ℤ`. I need:
+ * a way to strip order off `A.coeff` (or just ask for an injective group hom)
+ * functions to permute variables, or just embed.
+ * Commutators of vertex operators as bare functions.
+ * Scalar multiplication by Finsupps.
+ * Translation from embedded positive `binomialPow` to `Finsupp`.
+ * Comparison of commutator with usual composition
+How do I express weak associativity in terms of power series? This seems to require a substitution.
+
+One way: use `embCoeff f A = f.arrowCongrLeft A.coeff`.
+-/
+
+-- Order.PiLex
 -- use Prod.swap?
 /-! We consider permutations on Lex Pi types. We need this for the following situation:
 To describe locality of vertex operators, we want to say that

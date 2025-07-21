@@ -11,16 +11,17 @@ import Mathlib.RingTheory.LaurentSeries
 In this file we introduce vertex operators as linear maps to Laurent series.
 
 ## Definitions
-* VertexOperator : An `R`-linear map from an `R`-module `V` to `LaurentSeries V`.
-* HasseDerivative : A divided-power derivative.
-* Locality : A weak form of commutativity.
-* Residue products : A family of products on `VertexOperator R V` parametrized by integers.
+ * `VertexOperator` : An `R`-linear map from an `R`-module `V` to `LaurentSeries V`.
+ * `VertexOperator.hasseDeriv` : A divided-power derivative.
+ * `VertexOperator.IsLocalToOrderLeq` : Locality is a weak form of commutativity.
+ * `VertexOperator.resProd` : Residue products on `VertexOperator R V` are binary operations
+   parametrized by integers.
 
 ## Main results
-* Composition rule for Hasse derivatives.
-* Comparison between Hasse derivatives and iterated derivatives.
-* locality at order `≤ n` implies locality at order `≤ n + 1`.
-* Boundedness lemmas for defining residue products
+ * Composition rule for Hasse derivatives.
+ * Comparison between Hasse derivatives and iterated derivatives.
+ * locality at order `≤ n` implies locality at order `≤ n + m`.
+ * Basic results on residue products
 
 ## TODO:
 * residue products with identity give Hasse derivatives.
@@ -236,7 +237,7 @@ function to MvPolynomial, and compare them that way.
 
 end Binomial
 
-section Local
+section BinomComp
 
 variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V] (A B : VertexOperator R V)
 
@@ -304,6 +305,27 @@ theorem binomCompRight_apply_coeff (k l n : ℤ) (v : V) :
     Int.cast_smul_eq_zsmul, Units.smul_def]
   congr 1
   refine finsum_congr fun m ↦ by congr 2; simp; abel_nf
+
+end BinomComp
+
+section Local
+
+/-! 2025-7-20
+I need some API for dealing with embeddings of the form `V((z))((w)) ↪ V⟦z, z⁻¹, w, w⁻¹⟧` and three-
+variable variants, so I can compare coefficients in, e.g., Dong's Lemma efficiently. I think a
+potentially good way is an `embDomain` function, like `HahnSeries.embDomain`, but replacing the
+order-preserving requirement with an algebraic condition. For example, commuting two operators
+should allow me to commute in all domains with a fixed embedding of `ℤ × ℤ`. I need:
+ * a way to strip order off `A.coeff` (or just ask for an injective group hom)
+ * functions to permute variables, or just embed.
+ * Commutators of vertex operators as bare functions.
+ * Scalar multiplication by Finsupps.
+ * Translation from embedded positive `binomialPow` to `Finsupp`.
+ * Comparison of commutator with usual composition
+How do I express weak associativity in terms of power series? This seems to require a substitution.
+-/
+variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V] (A B : VertexOperator R V)
+
 
 /-- Two vertex operators commute if composition in the opposite order yields switched
 coefficients. This should be replaced with locality at order zero. -/
@@ -387,6 +409,7 @@ theorem coeff_resProdLeft_apply (A B : VertexOperator R V) (m n : ℤ) (v : V) :
   dsimp only [resProdLeft, LexResRight, Int.reduceNeg, coeff_of_coeff]
   rw [binomCompLeft_apply_coeff]
 
+@[simp]
 theorem resProdLeft_apply_ncoeff (A B : VertexOperator R V) (m n : ℤ) (v : V) :
     ((A.resProdLeft m B)[[n]]) v =
       ∑ᶠ i : ℕ, Int.negOnePow i • Ring.choose m i •
@@ -477,6 +500,41 @@ theorem resProdLeft_neg_one_one_left (A : VertexOperator R V) : resProdLeft (-1 
   rw [finsum_eq_single _ 0 fun _ _ ↦ (by rw [one_ncoeff_ne_neg_one (by omega)]; simp)]
   simp
 
+@[simp]
+lemma resProdLeft_hasseDeriv_left (m : ℕ) (k : ℤ) (A B : VertexOperator R V) :
+    (A.hasseDeriv m).resProdLeft k B =
+      Int.negOnePow m • Ring.choose k m • A.resProdLeft (k - m) B := by
+  ext v n
+  rw [← coeff_apply_apply, ← coeff_apply_apply]
+  simp only [coeff_eq_ncoeff, resProdLeft_apply_ncoeff, Module.End.smul_def, map_zsmul_unit,
+    LinearMap.map_smul_of_tower, zsmul_eq_mul, Pi.smul_apply, Pi.mul_apply, Pi.intCast_apply,
+    LinearMap.smul_apply, Module.End.mul_apply, Module.End.intCast_apply]
+  rw [← smul_assoc (Int.negOnePow m), smul_finsum', finsum_congr]
+  · intro r
+    rw [hasseDeriv_ncoeff, smul_comm _ (Int.negOnePow r), smul_assoc (Int.negOnePow m),
+      ← smul_assoc (Ring.choose k m), smul_eq_mul (Ring.choose k m), ← Ring.choose_add_smul_choose,
+      smul_comm (Int.negOnePow m)]
+    congr 1
+    rw [show -(k - r) - 1 + m = -(k - r + 1 - m) by omega, Ring.choose_neg,
+      show k - r + 1 - m + m - 1 = k - r by omega]
+    simp only [smul_assoc, zsmul_eq_mul, LinearMap.smul_apply, Module.End.mul_apply,
+      Module.End.intCast_apply, nsmul_eq_mul]
+    rw [smul_comm (Int.negOnePow m), ← smul_assoc (Ring.choose k r), smul_eq_mul,
+      ← Ring.choose_add_smul_choose]
+    congr 2
+    · rw [add_comm m r, Nat.choose_symm_add]
+    · rw [add_comm m r]
+    · rw [tsub_right_comm]
+  · have _ : Finite (Function.support fun (i : ℕ) ↦ (i : ℤ).negOnePow • Ring.choose (k - m) i •
+        (ncoeff A (k - m - i)) ((ncoeff B (-n - 1 + i)) v)) :=
+      finite_supp_ncoeff_ncoeff n (k - m) A B v
+    refine Finite.Set.subset (Function.support fun (i : ℕ) ↦ (i : ℤ).negOnePow •
+      Ring.choose (k - ↑m) i • (ncoeff A (k - ↑m - ↑i)) ((ncoeff B (-n - 1 + ↑i)) v)) ?_
+    intro i hi
+    simp only [Function.mem_support, ne_eq] at ⊢ hi
+    contrapose! hi
+    simp [hi]
+
 /-- The right side of the `m`-th residue product, given by the residue of `(x-y)^m B(x)A(y) dx` at
 `x = 0`, where we formally expand `(x-y)^m` as `(-y)^m(1-x/y)^m` using binomials (i.e., in the
 domain where `x` is big). -/
@@ -490,6 +548,7 @@ theorem coeff_resProdRight_apply (A B : VertexOperator R V) (m n : ℤ) (v : V) 
   dsimp only [resProdRight, LexResLeft, Int.reduceNeg, coeff_of_coeff]
   simp only [LinearMap.coe_mk, AddHom.coe_mk, coeff_of_coeff, binomCompRight_apply_coeff]
 
+@[simp]
 theorem resProdRight_apply_ncoeff (A B : VertexOperator R V) (m n : ℤ) (v : V) :
     ((A.resProdRight m B)[[n]]) v =
       (Int.negOnePow m) • ∑ᶠ i : ℕ, Int.negOnePow i • Ring.choose m i •
@@ -574,6 +633,43 @@ theorem resProdRight_one_left (n : ℤ) (A : VertexOperator R V) :
     rw [one_ncoeff_ne_neg_one (by omega)]
     simp
 
+@[simp]
+lemma resProdRight_hasseDeriv_left (m : ℕ) (k : ℤ) (A B : VertexOperator R V) :
+    (A.hasseDeriv m).resProdRight k B =
+      Int.negOnePow m • Ring.choose k m • A.resProdRight (k - m) B := by
+  ext v n
+  rw [← coeff_apply_apply, coeff_eq_ncoeff, resProdRight_apply_ncoeff, ← finsum_mem_univ,
+    finsum_mem_inter_support_eq _ (s := Set.univ) (t := Set.Ici (0 + m))]
+  · have : Set.Ici (0 + m) = (fun (i : ℕ) ↦ i + m)'' Set.univ := by
+      rw [← Set.image_add_const_Ici]
+      exact (Set.image_eq_image (add_left_injective m)).mpr (by aesop)
+    rw [this, finsum_mem_image (g := fun (i : ℕ) ↦ i + m) (by field_simp), finsum_mem_univ,
+      ← coeff_apply_apply, coeff_eq_ncoeff]
+    simp only [Module.End.smul_def, map_zsmul_unit, LinearMap.map_smul_of_tower,
+      zsmul_eq_mul, Pi.smul_apply, Pi.mul_apply, Pi.intCast_apply, LinearMap.smul_apply,
+      Module.End.mul_apply, resProdRight_apply_ncoeff, Module.End.intCast_apply]
+    rw [← smul_assoc _ (k - m).negOnePow, Int.negOnePow_smul, ← Int.negOnePow_add, add_sub_cancel]
+    congr 1
+    rw [smul_finsum' _ (finite_supp_ncoeff_ncoeff_right n (k - m) A B v), finsum_congr]
+    intro i
+    simp only [hasseDeriv_ncoeff, zsmul_eq_mul, Module.End.mul_apply, Module.End.intCast_apply,
+      LinearMap.map_smul_of_tower]
+    rw [show -(i + m : ℕ) - 1 + (m : ℤ) = - (i + 1) by omega, Ring.choose_neg, show
+      (i : ℤ) + 1 + m - 1 = (m + i : ℕ) by omega, smul_comm (Ring.choose k (i + m)), smul_assoc,
+      ← smul_assoc (Ring.choose _ m), Ring.choose_eq_nat_choose, add_comm m i, natCast_zsmul,
+      Ring.choose_add_smul_choose, smul_comm (Ring.choose k m), ← smul_assoc, Int.negOnePow_smul,
+      ← Int.negOnePow_sub, Nat.cast_add, Int.add_sub_cancel, ← smul_assoc (Ring.choose k m)]
+    congr 2
+    abel_nf
+  · simp only [Module.End.smul_def, Set.univ_inter, Set.right_eq_inter, ne_eq, Set.mem_Ici,
+      Function.support_subset_iff]
+    intro i hi
+    contrapose! hi
+    rw [hasseDeriv_ncoeff, show -(i : ℤ) - 1 + m = -(i + 1 - m) by omega, Ring.choose_neg,
+      show (i : ℤ) + 1 - m + m - 1 = i by omega, Ring.choose_eq_nat_choose,
+      Nat.choose_eq_zero_of_lt (lt_of_lt_of_eq hi (zero_add m))]
+    simp
+
 /-- The the `m`-th residue product of vertex operators, as a bilinear map. -/
 @[simps]
 def resProd (m : ℤ) :
@@ -620,27 +716,76 @@ theorem resProd_nat_one_right_apply (n : ℕ) (A : VertexOperator R V) :
       Ring.choose_eq_nat_choose n (n - m).toNat, Nat.choose_eq_zero_of_lt (by omega)]
     simp
 
---interaction with Hasse derivatives.
+lemma resProd_hasseDeriv_left (m : ℕ) (k : ℤ) (A B : VertexOperator R V) :
+    (A.hasseDeriv m).resProd k B = Int.negOnePow m • Ring.choose k m • A.resProd (k - m) B := by
+  ext v n
+  dsimp only [resProd]
+  simp [smul_sub]
+
+-- locality: If `A.IsLocalToOrderLeq B n`, then `A.resProd k B = 0` when `n ≤ k`.
+
+/-- A product of integer powers of three binomials. -/
+abbrev tripleProductLeft (p q r : ℤ) : HahnSeries ((ℤ ×ₗ ℤ) ×ₗ ℤ) R :=
+    HahnSeries.binomialPow R (toLex (toLex (1, 0), 0) : (ℤ ×ₗ ℤ) ×ₗ ℤ) (toLex (toLex (0, 1), 0)) p *
+    HahnSeries.binomialPow R (toLex (toLex (0, 1), 0) : (ℤ ×ₗ ℤ) ×ₗ ℤ) (toLex (toLex (0, 1), 0)) q *
+    HahnSeries.binomialPow R (toLex (toLex (1, 0), 0) : (ℤ ×ₗ ℤ) ×ₗ ℤ) (toLex (toLex (0, 0), 1)) r
+
+/-- A product of integer powers of three binomials. -/
+abbrev tripleProductRight (p q r : ℤ) : HahnSeries (ℤ ×ₗ (ℤ ×ₗ ℤ)) R :=
+    HahnSeries.binomialPow R (toLex (1, toLex (0, 0)) : ℤ ×ₗ (ℤ ×ₗ ℤ)) (toLex (0, toLex (1, 0))) p *
+    HahnSeries.binomialPow R (toLex (0, toLex (1, 0)) : ℤ ×ₗ (ℤ ×ₗ ℤ)) (toLex (0, toLex (0, 1))) q *
+    HahnSeries.binomialPow R (toLex (1, toLex (0, 0)) : ℤ ×ₗ (ℤ ×ₗ ℤ)) (toLex (0, toLex (0, 1))) r
+/-!
+lemma triple_product_left_nat (k l m : ℕ) (p q r : ℤ) :
+    (tripleProductLeft k l m).coeff (toLex (toLex (p, q), r)) =
+    (tripleProductRight (R := R) k l m).coeff (toLex (p, toLex (q, r))) := by
+  simp [tripleProductLeft, tripleProductRight]
+  sorry
 
 /-!
-/-- A(x)B(y)C(z) - B(y)A(x)C(z) = C(z)A(x)B(y) - C(z)B(y)A(x). For any integers k,l,m, and any
-n satisfying (k₀ - k) + (l₀ - l) + (m₀ - m) - 1 ≤ n, the previous equation times
-(x-y)^m(y-z)^l(x-z)^k(y-z)^n holds.  Here, k₀ is locality order of AC, l₀ is order of BC, m₀ is
-order of AB. -/
-lemma comp_local (A B C : VertexOperator R V) (n : ℤ) (k l m : ℕ)
-    (hAB : isLocaltoOrderLeq A B k) (hAC : isLocaltoOrderLeq A C l)
-    (hBC : isLocaltoOrderLeq B C m) :
-    (X_A - X_B)^{k-n} (X_B - X_C)^m (X_A - X_C)^l (X_A - X_B)^n comp (comp A B) C =
-    (X_A - X_B)^{k-n} (X_B - X_C)^m (X_A - X_C)^l (X_A - X_B)^n comp C (comp A B) := by
+`A(x)B(y)C(z)` is `lexComp A (lexComp B C)`, but coefficients of
+`B(y)A(x)C(z) = lexComp B (lexComp A C)` are switched, so I need to multiply by a different Hahn
+Hahn series.
+C(z)A(x)B(y) - C(z)B(y)A(x)
+-/
+
+/-- Lemma 1.5.4 of Matsuo-Nagatomo. If `A(x)`, `B(y)`, and `C(z)` are mutually local vertex
+operators, then `A(x)B(y)C(z) - B(y)A(x)C(z) = C(z)A(x)B(y) - C(z)B(y)A(x)` holds after
+multiplication by a suitable polynomial of the form `(x-y)^m(y-z)^l(x-z)^k`.  In particular, if the
+orders of locality are `nAB`, `nAC`, and `nBC`, then for any integers k,l,m, and any
+`n` satisfying `(nAC - k) + (nBC - l) + (nAB - m) - 1 ≤ n`, the previous equation times
+`(x-y)^m(y-z)^l(x-z)^k(y-z)^n` holds. -/
+lemma comp_local (A B C : VertexOperator R V) (n p q r : ℤ) (k l m : ℕ)
+    (hAB : IsLocalToOrderLeq A B k) (hAC : IsLocalToOrderLeq A C l)
+    (hBC : IsLocalToOrderLeq B C m) :
+    (HahnSeries.binomialPow R (toLex (1, toLex (0, 0)) : ℤ ×ₗ (ℤ ×ₗ ℤ))
+      (toLex (0, toLex (1, 0))) (k - n : ℤ) •
+    HahnSeries.binomialPow R (toLex (0, toLex (1, 0)) : ℤ ×ₗ (ℤ ×ₗ ℤ))
+      (toLex (0, toLex (0, 1))) (m : ℤ) •
+    HahnSeries.binomialPow R (toLex (1, toLex (0, 0)) : ℤ ×ₗ (ℤ ×ₗ ℤ))
+      (toLex (0, toLex (0, 1))) (l : ℤ) •
+    HahnSeries.binomialPow R (toLex (1, toLex (0, 0)) : ℤ ×ₗ (ℤ ×ₗ ℤ)) (toLex (0, toLex (1, 0))) n •
+    lexComp (lexComp A B) C).coeff (toLex (p, toLex (q, r))) =
+    (HahnSeries.binomialPow R (toLex (toLex (1, 0), 0) : (ℤ ×ₗ ℤ) ×ₗ ℤ)
+      (toLex (toLex (0, 1), 0)) (k - n : ℤ) •
+    HahnSeries.binomialPow R (toLex (toLex (0, 1), 0) : (ℤ ×ₗ ℤ) ×ₗ ℤ)
+      (toLex (toLex (0, 1), 0)) (m : ℤ) •
+    HahnSeries.binomialPow R (toLex (toLex (1, 0), 0) : (ℤ ×ₗ ℤ) ×ₗ ℤ)
+      (toLex (toLex (0, 0), 1)) (l : ℤ) •
+    HahnSeries.binomialPow R (toLex (toLex (1, 0), 0) : (ℤ ×ₗ ℤ) ×ₗ ℤ) (toLex (toLex (0, 1), 0)) n •
+    lexComp A (lexComp B C)).coeff (toLex (toLex (p, q), r)) := by
+  sorry
 
 
-/-- Dong's Lemma: if vertex operators `A` `B` `C` are pairwise local, then `A` is local to `B_n C`
-for all integers `n`. -/
+/-- Dong's Lemma (Matsuo-Nagatomo Lemma 1.5.5): if vertex operators `A` `B` `C` are pairwise local,
+then `A` is local to `B_n C`　for all integers `n`. -/
 theorem local_residue_product (A B C : VertexOperator R V) (n : ℤ) (k l m : ℕ)
-    (hAB : isLocaltoOrderLeq A B k) (hAC : isLocaltoOrderLeq A C l)
-    (hBC : isLocaltoOrderLeq B C m) : isLocaltoOrderLeq (resProd A B n) C (k + l + m - n + 3) := by
+    (hAB : IsLocalToOrderLeq A B k) (hAC : IsLocalToOrderLeq A C l)
+    (hBC : IsLocalToOrderLeq B C m) :
+    IsLocalToOrderLeq (resProd n A B) C (k + l + m - n + 3).toNat := by
   sorry  -- suffices to show triple products are equal after multiplying by
-  --`(X_A - X_B)^{k-n} (X_B - X_C)^m (X_A - X_C)^l`
+  --`(X_A - X_B)^{k-n} (X_B - X_C)^m (X_A - X_C)^l` -- follows from previous lemma
+
 
 Cauchy-Jacobi : `[A(x),[B(y),C(z)]] + [B(y),[C(z),A(x)]] + [C(z),[A(x),B(y)]] = 0`.  This means, for
 any k,l,m ∈ ℤ, the `x^k y^l z^m` coefficient vanishes, or equivalently, the usual Jacobi for

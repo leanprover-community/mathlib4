@@ -343,7 +343,7 @@ instance : Neg (SummableFamily Γ R α) where
         simp_rw [support_neg]
         exact s.isPWO_iUnion_support
       finite_co_support' := fun g => by
-        simp only [coeff_neg, Pi.neg_apply, Ne, neg_eq_zero]
+        simp only [coeff_neg, Ne, neg_eq_zero]
         exact s.finite_co_support g }
 
 @[simp]
