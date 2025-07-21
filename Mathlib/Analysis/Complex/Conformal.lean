@@ -225,14 +225,11 @@ theorem differentiableWithinAt_complex_iff_differentiableWithinAt_real
     (hs : UniqueDiffWithinAt ℝ s x) :
     (DifferentiableWithinAt ℂ f s x) ↔ (DifferentiableWithinAt ℝ f s x) ∧
       (fderivWithin ℝ f s x I = I • fderivWithin ℝ f s x 1) := by
-  constructor
-  · intro h
-    refine ⟨h.restrictScalars ℝ, ?_⟩
-    simp only [← h.restrictScalars_fderivWithin ℝ hs, ContinuousLinearMap.coe_restrictScalars']
+  refine ⟨fun h ↦ ⟨h.restrictScalars ℝ, ?_⟩, fun ⟨h₁, h₂⟩ ↦ ?_⟩
+  · simp only [← h.restrictScalars_fderivWithin ℝ hs, ContinuousLinearMap.coe_restrictScalars']
     rw [(by simp : I = I • 1), (fderivWithin ℂ f s x).map_smul]
     simp
-  · intro ⟨h₁, h₂⟩
-    apply (differentiableWithinAt_iff_restrictScalars ℝ h₁ hs).2
+  · apply (differentiableWithinAt_iff_restrictScalars ℝ h₁ hs).2
     use (fderivWithin ℝ f s x).complexOfReal h₂
     rfl
 
