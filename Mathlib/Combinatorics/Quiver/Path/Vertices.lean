@@ -8,7 +8,6 @@ import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Sub.Basic
 import Mathlib.Combinatorics.Quiver.Path
 import Mathlib.Data.Finset.Dedup
-import Mathlib.Data.List.Infix
 
 /-!
 # Path Vertices
