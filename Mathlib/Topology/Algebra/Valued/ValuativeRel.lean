@@ -17,16 +17,6 @@ to facilitate a refactor.
 
 -/
 
-namespace ValuativeRel
-
-variable {R : Type*} [CommRing R]
-
-instance [UniformSpace R] [IsUniformAddGroup R] [ValuativeRel R] [ValuativeTopology R] :
-    Valued R (ValueGroupWithZero R) :=
-  .mk (valuation R) ValuativeTopology.mem_nhds_iff
-
-end ValuativeRel
-
 namespace ValuativeTopology
 
 variable {R : Type*} [CommRing R] [ValuativeRel R]
@@ -102,13 +92,13 @@ lemma hasBasis_nhds_zero_pair :
 lemma hasBasis_nhds_zero_compatible {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ₀]
     (v : Valuation R Γ₀) [v.Compatible] :
     (𝓝 (0 : R)).HasBasis (fun rs : R × R ↦ v rs.1 ≠ 0 ∧ v rs.2 ≠ 0)
-      fun rs : R × R ↦ { x | v x * v rs.2 < v rs.1 } := by
+      fun rs : R × R ↦ { x | v x * v rs.1 < v rs.2 } := by
   have : v.IsEquiv (valuation R) := isEquiv _ _
   refine ((hasBasis_nhds_zero_pair R).to_hasBasis ?_ ?_) <;>
   · simp only [this.ne_zero, ne_eq, valuation_eq_zero_iff, posSubmonoid_def, setOf_subset_setOf,
     and_imp, Prod.exists, Prod.forall]
     intro r s hr hs
-    refine ⟨r, s, ⟨hr, hs⟩, fun x ↦ ?_⟩
+    refine ⟨s, r, ⟨hs, hr⟩, fun x ↦ ?_⟩
     rw [← map_mul v, ← Valuation.Compatible.rel_lt_iff_lt]
     grind
 
@@ -189,7 +179,8 @@ variable {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpace R]
 for use in porting files from `Valued` to `ValuativeRel`. -/
 scoped instance : Valued R (ValuativeRel.ValueGroupWithZero R) where
   v := ValuativeRel.valuation R
-  is_topological_valuation := ValuativeTopology.mem_nhds_iff
+  is_topological_valuation := by
+    simp [(ValuativeTopology.hasBasis_nhds_zero_compatible (ValuativeRel.valuation R)).mem_iff]
 
 end Valued
 

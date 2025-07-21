@@ -171,7 +171,7 @@ class Valued (R : Type u) [Ring R] (Γ₀ : outParam (Type v))
   [LinearOrderedCommGroupWithZero Γ₀] extends UniformSpace R, IsUniformAddGroup R where
   v : Valuation R Γ₀
   is_topological_valuation : ∀ s, s ∈ 𝓝 (0 : R) ↔ ∃ rs : {rs : R × R // v rs.1 ≠ 0 ∧ v rs.2 ≠ 0},
-    { x : R | v rs.val.1 * v x < v rs.val.2 } ⊆ s
+    { x : R | v x * v rs.val.1  < v rs.val.2 } ⊆ s
 
 namespace Valued
 
@@ -189,7 +189,7 @@ def mk' (v : Valuation R Γ₀) : Valued R Γ₀ :=
       simp only [ne_eq, ltAddSubgroup, Units.val_mk0, AddSubgroup.coe_set_mk, true_and,
         Subtype.forall, and_imp, Prod.forall]
       intro r s hr hs
-      simp [lt_div_iff₀' (zero_lt_iff.mpr hr)] }
+      simp [lt_div_iff₀ (zero_lt_iff.mpr hr)] }
 
 variable (R Γ₀)
 variable [_i : Valued R Γ₀] [Valued K Γ₀]
