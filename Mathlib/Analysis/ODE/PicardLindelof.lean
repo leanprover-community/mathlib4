@@ -494,20 +494,17 @@ lemma picard_eq_of_hasDerivAt {t : ℝ}
     (hf : ContinuousOn (uncurry f) ((uIcc t₀ t) ×ˢ u))
     (hα : ∀ t' ∈ uIcc t₀ t, HasDerivWithinAt α (f t' (α t')) (uIcc t₀ t) t')
     (hmap : MapsTo α (uIcc t₀ t) u) : -- need `Icc` for `uIcc_subset_Icc`
-    picard f t₀ (α t₀) α t = α t :=
-  calc
-    _ = α t₀ + (α t - α t₀) := by
-      rw [picard_apply, integral_eq_sub_of_hasDeriv_right]
-      · intro t' ht'
-        exact hα t' ht' |>.continuousWithinAt
-      · intro t' ht'
-        apply HasDerivAt.hasDerivWithinAt
-        exact hα t' (Ioo_subset_Icc_self ht') |>.hasDerivAt <| Icc_mem_nhds ht'.1 ht'.2
-      · apply ContinuousOn.intervalIntegrable -- kind of repeated later
-        apply continuousOn_comp hf _ hmap
-        intro t' ht' -- repeat
-        exact hα t' ht' |>.continuousWithinAt
-    _ = α t := add_sub_cancel _ _
+    picard f t₀ (α t₀) α t = α t := by
+  rw [← add_sub_cancel (α t₀) (α t), picard_apply, integral_eq_sub_of_hasDeriv_right]
+  · intro t' ht'
+    exact hα t' ht' |>.continuousWithinAt
+  · intro t' ht'
+    apply HasDerivAt.hasDerivWithinAt
+    exact hα t' (Ioo_subset_Icc_self ht') |>.hasDerivAt <| Icc_mem_nhds ht'.1 ht'.2
+  · apply ContinuousOn.intervalIntegrable -- kind of repeated later
+    apply continuousOn_comp hf _ hmap
+    intro t' ht' -- repeat
+    exact hα t' ht' |>.continuousWithinAt
 
 /-- If the time-dependent vector field `f` is $C^n$ and the curve `α` is continuous, then
 `interate f t₀ x₀ α` is also $C^n$. This version works for `n : ℕ`. -/
@@ -536,7 +533,7 @@ lemma contDiffOn_nat_picard_Icc
   · have : Icc tmin tmax = {t₀} := by -- missing lemma!
       rw [not_lt] at hlt
       rw [Icc_eq_singleton_iff]
-      exact ⟨le_antisymm ht₀.1 (le_trans ht₀.2 hlt), le_antisymm (le_trans hlt ht₀.1) ht₀.2⟩
+      exact ⟨le_antisymm ht₀.1 (ht₀.2.trans hlt), le_antisymm (hlt.trans ht₀.1) ht₀.2⟩
     rw [this]
     intro t ht
     rw [eq_of_mem_singleton ht]
@@ -554,15 +551,13 @@ lemma contDiffOn_enat_picard_Icc
   induction n with
   | top =>
     rw [contDiffOn_infty] at *
-    intro k
-    exact contDiffOn_nat_picard_Icc ht₀ (hf k) hα hmem x₀ heqon
+    exact fun k ↦ contDiffOn_nat_picard_Icc ht₀ (hf k) hα hmem x₀ heqon
   | coe n =>
     simp only [WithTop.coe_natCast] at *
     exact contDiffOn_nat_picard_Icc ht₀ hf hα hmem x₀ heqon
 
 /-- Solutions to ODEs defined by $C^n$ vector fields are also $C^n$. -/
-theorem contDiffOn_enat_Icc_of_hasDerivWithinAt
-    {n : ℕ∞}
+theorem contDiffOn_enat_Icc_of_hasDerivWithinAt {n : ℕ∞}
     (hf : ContDiffOn ℝ n (uncurry f) ((Icc tmin tmax) ×ˢ u))
     (hα : ∀ t ∈ Icc tmin tmax, HasDerivWithinAt α (f t (α t)) (Icc tmin tmax) t)
     (hmem : MapsTo α (Icc tmin tmax) u) :
@@ -573,13 +568,8 @@ theorem contDiffOn_enat_Icc_of_hasDerivWithinAt
     have : ∀ t ∈ Icc tmin tmax, α t = picard f t₀ (α t₀) α t := by
       intro t ht
       have : uIcc t₀ t ⊆ Icc tmin tmax := uIcc_subset_Icc ht₀ ht
-      rw [picard_eq_of_hasDerivAt (hf.continuousOn.mono _)]
-      · intro t' ht'
-        exact hα t' (this ht') |>.mono this
-      · apply hmem.mono_left this
-      · -- missing `left/right` lemmas for `prod_subset_prod_iff`
-        rw [prod_subset_prod_iff]
-        exact Or.inl ⟨this, subset_rfl⟩
+      rw [picard_eq_of_hasDerivAt (hf.continuousOn.mono (prod_subset_prod_left this))
+        (fun t' ht' ↦ hα t' (this ht') |>.mono this) (hmem.mono_left this)]
     exact contDiffOn_enat_picard_Icc ht₀ hf
       (fun t ht ↦ hα t ht |>.continuousWithinAt) hmem (α t₀) this |>.congr this
   · rw [not_lt, le_iff_lt_or_eq] at hlt -- missing lemma?
