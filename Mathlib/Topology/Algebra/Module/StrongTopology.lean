@@ -509,6 +509,7 @@ variable {𝕜 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜] [NormedField 𝕜₂]
 def toLinearMap₂ (L : E →SL[σ₁₃] F →SL[σ₂₃] G) : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G :=
   (coeLMₛₗ σ₂₃).comp L.toLinearMap
 
+/-- Send a bilinear map continuous in the second variable to a bilinear map. -/
 def toLinearMap₁₂ (L : E →ₛₗ[σ₁₃] F →SL[σ₂₃] G) : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G :=
   (coeLMₛₗ σ₂₃).comp L
 
