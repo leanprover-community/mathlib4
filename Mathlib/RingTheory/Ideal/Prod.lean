@@ -199,13 +199,3 @@ theorem ideal_prod_prime (I : Ideal (R × S)) :
     · exact isPrime_ideal_prod_top'
 
 end Ideal
-
-instance [IsPrincipalIdealRing R] [IsPrincipalIdealRing S] : IsPrincipalIdealRing (R × S) where
-  principal I := by
-    rw [I.ideal_prod_eq]
-    obtain ⟨r, hr⟩ := Submodule.IsPrincipal.principal (I.map (RingHom.fst R S))
-    obtain ⟨s, hs⟩ := Submodule.IsPrincipal.principal (I.map (RingHom.snd R S))
-    simp_rw [hr, hs, Ideal.submodule_span_eq]
-    rw [← Ideal.span_prod (iff_of_true (by simp) (by simp)), Set.singleton_prod_singleton]
-    exact ⟨_, rfl⟩
-

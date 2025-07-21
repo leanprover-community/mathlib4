@@ -379,6 +379,13 @@ theorem IsPrincipalIdealRing.of_surjective [IsPrincipalIdealRing R] (f : F)
     (hf : Function.Surjective f) : IsPrincipalIdealRing S :=
   ⟨fun I => Ideal.IsPrincipal.of_comap f hf I⟩
 
+instance [IsPrincipalIdealRing R] [IsPrincipalIdealRing S] : IsPrincipalIdealRing (R × S) where
+  principal I := by
+    rw [I.ideal_prod_eq, ← (I.map _).span_singleton_generator,
+      ← (I.map (RingHom.snd R S)).span_singleton_generator,
+      ← Ideal.span_prod (iff_of_true (by simp) (by simp)), Set.singleton_prod_singleton]
+    exact ⟨_, rfl⟩
+
 theorem isPrincipalIdealRing_prod_iff :
     IsPrincipalIdealRing (R × S) ↔ IsPrincipalIdealRing R ∧ IsPrincipalIdealRing S where
   mp h := ⟨h.of_surjective (RingHom.fst R S) Prod.fst_surjective,
