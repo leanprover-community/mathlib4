@@ -9,12 +9,15 @@ import Mathlib.RingTheory.IsAdjoinRoot
 /-!
 # Kummer-Dedekind theorem
 
-This file proves the monogenic version of the Kummer-Dedekind theorem on the splitting of prime
-ideals in an extension of the ring of integers. This states that if `I` is a prime ideal of
-Dedekind domain `R` and `S = R[α]` for some `α` that is integral over `R` with minimal polynomial
-`f`, then the prime factorisations of `I * S` and `f mod I` have the same shape, i.e. they have the
-same number of prime factors, and each prime factors of `I * S` can be paired with a prime factor
-of `f mod I` in a way that ensures multiplicities match (in fact, this pairing can be made explicit
+This file proves the Kummer-Dedekind theorem on the splitting of prime ideals in an extension of
+the ring of integers. This states the following: assume we are given
+  - A prime ideal `I` of Dedekind domain `R`
+  - An `R`-algebra `S` that is a Dedekind Domain
+  - An `α : S` such that that is integral over `R` with minimal polynomial `f`
+If the conductor `𝓒` of `x` is such that `𝓒 ∩ R` is coprime to `I` then the prime
+factorisations of `I * S` and `f mod I` have the same shape, i.e. they have the same number of
+prime factors, and each prime factors of `I * S` can be paired with a prime factor of `f mod I` in
+a way that ensures multiplicities match (in fact, this pairing can be made explicit
 with a formula).
 
 ## Main definitions
@@ -38,8 +41,6 @@ with a formula).
 
 ## TODO
 
-* Prove the Kummer-Dedekind theorem in full generality.
-
 * Prove the converse of `Ideal.irreducible_map_of_irreducible_minpoly`.
 
 ## References
@@ -62,7 +63,7 @@ local notation:max R "<" x:max ">" => adjoin R ({x} : Set S)
     biggest ideal of `S` contained in `R<x>`. -/
 def conductor (x : S) : Ideal S where
   carrier := {a | ∀ b : S, a * b ∈ R<x>}
-  zero_mem' b := by simpa only [zero_mul] using Subalgebra.zero_mem _
+  zero_mem' b := by simp only [zero_mul, zero_mem]
   add_mem' ha hb c := by simpa only [add_mul] using Subalgebra.add_mem _ (ha c) (hb c)
   smul_mem' c a ha b := by simpa only [smul_eq_mul, mul_left_comm, mul_assoc] using ha (c * b)
 
@@ -266,7 +267,7 @@ lemma quotMapEquivQuotQuotMap_symm_apply (hx : (conductor R x).comap (algebraMap
     coe_aeval_mk_apply]
 
 open Classical in
-/-- The first half of the **Kummer-Dedekind Theorem** in the monogenic case, stating that the prime
+/-- The first half of the **Kummer-Dedekind Theorem**, stating that the prime
     factors of `I*S` are in bijection with those of the minimal polynomial of the generator of `S`
     over `R`, taken `mod I`. -/
 noncomputable def normalizedFactorsMapEquivNormalizedFactorsMinPolyMk (hI : IsMaximal I)
@@ -283,7 +284,7 @@ noncomputable def normalizedFactorsMapEquivNormalizedFactorsMinPolyMk (hI : IsMa
     exact Polynomial.map_monic_ne_zero (minpoly.monic hx')
 
 open Classical in
-/-- The second half of the **Kummer-Dedekind Theorem** in the monogenic case, stating that the
+/-- The second half of the **Kummer-Dedekind Theorem**, stating that the
     bijection `FactorsEquiv'` defined in the first half preserves multiplicities. -/
 theorem emultiplicity_factors_map_eq_emultiplicity
     (hI : IsMaximal I) (hI' : I ≠ ⊥)
