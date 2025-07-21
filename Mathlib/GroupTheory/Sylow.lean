@@ -727,11 +727,15 @@ noncomputable def unique_of_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)]
   rw [smul_eq_of_normal] at h1 h2
   rw [← h1, ← h2]
 
-theorem normal_of_subsingleton {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)]
-    (hp : Subsingleton (Sylow p G)) (P : Sylow p G) :
-    P.Normal := by
-  rw [← Subgroup.normalizer_eq_top_iff, ← Subgroup.index_eq_one,
-    ← Sylow.card_eq_index_normalizer, Nat.card_unique]
+instance characteristic_of_subsingleton {p : ℕ} [Subsingleton (Sylow p G)] (P : Sylow p G) :
+    P.Characteristic := by
+  refine Subgroup.characteristic_iff_map_eq.mpr fun ϕ ↦ ?_
+  have h := Subgroup.pointwise_smul_def (a := ϕ) (P : Subgroup G)
+  rwa [← pointwise_smul_def, Subsingleton.elim (ϕ • P) P, eq_comm] at h
+
+theorem normal_of_subsingleton {p : ℕ} [Subsingleton (Sylow p G)] (P : Sylow p G) :
+    P.Normal :=
+  Subgroup.normal_of_characteristic _
 
 section Pointwise
 
@@ -745,13 +749,6 @@ theorem characteristic_of_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (
   change (Φ • P).toSubgroup = P.toSubgroup
   congr
   simp [eq_iff_true_of_subsingleton]
-
-theorem characteristic_of_subsingleton {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)]
-    (hp : Subsingleton (Sylow p G)) (P : Sylow p G) :
-    P.Characteristic :=
-  P.characteristic_of_normal (P.normal_of_subsingleton hp)
-
-end Pointwise
 
 theorem normal_of_normalizer_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
     (hn : P.normalizer.Normal) : P.Normal := by
@@ -829,5 +826,7 @@ noncomputable def directProductOfNormal [Finite G]
         (Finset.prod_finset_coe (fun p => p ^ (Nat.card G).factorization p) _)
       _ = (Nat.card G).factorization.prod (· ^ ·) := rfl
       _ = Nat.card G := Nat.factorization_prod_pow_eq_self Nat.card_pos.ne'
+
+end Pointwise
 
 end Sylow

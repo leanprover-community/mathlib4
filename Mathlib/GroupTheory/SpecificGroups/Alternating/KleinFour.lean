@@ -148,16 +148,16 @@ theorem subsingleton_two_sylow (hα4 : Nat.card α = 4) :
 theorem characteristic_kleinFour (hα4 : Nat.card α = 4) :
     (kleinFour α).Characteristic := by
   obtain ⟨S : Sylow 2 (alternatingGroup α)⟩ := Sylow.nonempty (G := alternatingGroup α)
+  have _ := subsingleton_two_sylow hα4
   rw [← two_sylow_eq_kleinFour_of_four hα4 S]
-  apply Sylow.characteristic_of_subsingleton
-  exact subsingleton_two_sylow hα4
+  exact Sylow.characteristic_of_subsingleton _
 
 theorem normal_kleinFour (hα4 : Nat.card α = 4) :
     (kleinFour α).Normal := by
   have _ := characteristic_kleinFour hα4
   apply Subgroup.normal_of_characteristic
 
-theorem kleinFour_card (hα4 : Nat.card α = 4) :
+theorem kleinFour_card_of_card_eq_four (hα4 : Nat.card α = 4) :
     Nat.card (kleinFour α) = 4 := by
   obtain ⟨S : Sylow 2 (alternatingGroup α)⟩ := Sylow.nonempty (G := alternatingGroup α)
   rw [← two_sylow_eq_kleinFour_of_four hα4 S, card_two_sylow_of_card_eq_four hα4 S]
@@ -184,12 +184,13 @@ theorem exponent_kleinFour_of_card_eq_four (hα4 : Nat.card α = 4) :
       norm_num
   rw [Nat.dvd_prime Nat.prime_two] at this
   apply Or.resolve_left this
-  rw [Monoid.exp_eq_one_iff, ← Finite.card_le_one_iff_subsingleton,  kleinFour_card hα4]
+  rw [Monoid.exp_eq_one_iff, ← Finite.card_le_one_iff_subsingleton,
+    kleinFour_card_of_card_eq_four hα4]
   decide
 
 theorem kleinFour_isKleinFour (hα4 : Nat.card α = 4) :
     IsKleinFour (kleinFour α) where
-  card_four := kleinFour_card hα4
+  card_four := kleinFour_card_of_card_eq_four hα4
   exponent_two := exponent_kleinFour_of_card_eq_four hα4
 
 theorem kleinFour_eq_commutator (hα4 : Nat.card α = 4) :
@@ -198,8 +199,8 @@ theorem kleinFour_eq_commutator (hα4 : Nat.card α = 4) :
   have : Nat.card (alternatingGroup α ⧸ kleinFour α) = 3 := by
     rw [← Nat.mul_left_inj (a := Nat.card (kleinFour α))]
     · rw [← Subgroup.card_eq_card_quotient_mul_card_subgroup]
-      rw [card_of_card_eq_four hα4, kleinFour_card hα4]
-    rw [kleinFour_card hα4]; norm_num
+      rw [card_of_card_eq_four hα4, kleinFour_card_of_card_eq_four hα4]
+    rw [kleinFour_card_of_card_eq_four hα4]; norm_num
   have comm_le : commutator (alternatingGroup α) ≤ kleinFour α := by
     rw [← Subgroup.Normal.quotient_commutative_iff_commutator_le]
     exact (isCyclic_of_prime_card this).commutative
