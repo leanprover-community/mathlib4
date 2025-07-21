@@ -591,6 +591,7 @@ def totalExclusions : ExcludedSyntaxNodeKind where
     ``Parser.Command.macro,  -- Prevents formatting of `macro`.
     ``Parser.Command.elab,  -- Prevents formatting of `elab`.
     ``Parser.Command.elab_rules,  -- Prevents formatting of `elab_rules`.
+    `Mathlib.Meta.«term{_|_}»,  -- Prevents formatting of `{ f x y | (x : X) (y : Y) }`.
   ]
   depth := none
 
@@ -604,6 +605,7 @@ def forceSpaceAfter : ExcludedSyntaxNodeKind where
     ``termThrowError__, -- `throwError "message"`
     -- Syntax nodes that do not pretty-print with a space, if followed by a parenthesis `()`
     ``Parser.Tactic.rcases, -- `rcases (a)`
+    ``Parser.Tactic.replace, -- `replace (a)`
     ``Parser.Term.let, -- `let (a)` in term mode.
   ]
   depth := some 2
