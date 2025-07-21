@@ -130,7 +130,7 @@ lemma IsProper.lintegral_mul (hπ : IsProper π) (h𝓑𝓧 : 𝓑 ≤ 𝓧) (hf
     rw [lintegral_const_mul, hπ.lintegral_indicator_mul h𝓑𝓧 hf hA]
     · measurability
   · rintro g₁ g₂ - _ hg₂_meas hg₁ hg₂
-    simp only [Pi.add_apply, mul_add, add_mul]
+    simp only [Pi.add_apply, add_mul]
     rw [lintegral_add_right, hg₁, hg₂]
     · exact (hg₂_meas.mono h𝓑𝓧 le_rfl).mul hf
   · rintro g' hg'_meas hg'_mono hg'

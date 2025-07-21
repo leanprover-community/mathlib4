@@ -76,7 +76,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
       convert hf ⟨uIcc 0 1, isCompact_uIcc⟩ using 1
       exact funext fun n => neK _ _
     _ = ∑' n : ℤ, ∫ x in (0 : ℝ)..1, (e * f).comp (ContinuousMap.addRight n) x := by
-      simp only [ContinuousMap.comp_apply, mul_comp] at eadd ⊢
+      simp only [mul_comp] at eadd ⊢
       simp_rw [eadd]
     -- Rearrange sum of interval integrals into an integral over `ℝ`.
     _ = ∫ x, e x * f x := by

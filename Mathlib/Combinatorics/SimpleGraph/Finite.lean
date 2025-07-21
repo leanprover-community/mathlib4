@@ -352,7 +352,7 @@ theorem exists_maximal_degree_vertex [DecidableRel G.Adj] [Nonempty V] :
     ∃ v, G.maxDegree = G.degree v := by
   obtain ⟨t, ht⟩ := max_of_nonempty (univ_nonempty.image fun v => G.degree v)
   have ht₂ := mem_of_max ht
-  simp only [mem_image, mem_univ, exists_prop_of_true] at ht₂
+  simp only [mem_image, mem_univ] at ht₂
   rcases ht₂ with ⟨v, _, rfl⟩
   refine ⟨v, ?_⟩
   rw [maxDegree, ht]

@@ -210,13 +210,13 @@ def algebraFunctorOfMonadHom {T₁ T₂ : Monad C} (h : T₂ ⟶ T₁) : Algebra
 The identity monad morphism induces the identity functor from the category of algebras to itself.
 -/
 -- Porting note: `semireducible -> default`
-@[simps (config := { rhsMd := .default })]
+@[simps (rhsMd := .default)]
 def algebraFunctorOfMonadHomId {T₁ : Monad C} : algebraFunctorOfMonadHom (𝟙 T₁) ≅ 𝟭 _ :=
   NatIso.ofComponents fun X => Algebra.isoMk (Iso.refl _)
 
 /-- A composition of monad morphisms gives the composition of corresponding functors.
 -/
-@[simps (config := { rhsMd := .default })]
+@[simps (rhsMd := .default)]
 def algebraFunctorOfMonadHomComp {T₁ T₂ T₃ : Monad C} (f : T₁ ⟶ T₂) (g : T₂ ⟶ T₃) :
     algebraFunctorOfMonadHom (f ≫ g) ≅ algebraFunctorOfMonadHom g ⋙ algebraFunctorOfMonadHom f :=
   NatIso.ofComponents fun X => Algebra.isoMk (Iso.refl _)
@@ -226,7 +226,7 @@ are isomorphic.
 We define it like this as opposed to using `eqToIso` so that the components are nicer to prove
 lemmas about.
 -/
-@[simps (config := { rhsMd := .default })]
+@[simps (rhsMd := .default)]
 def algebraFunctorOfMonadHomEq {T₁ T₂ : Monad C} {f g : T₁ ⟶ T₂} (h : f = g) :
     algebraFunctorOfMonadHom f ≅ algebraFunctorOfMonadHom g :=
   NatIso.ofComponents fun X => Algebra.isoMk (Iso.refl _)

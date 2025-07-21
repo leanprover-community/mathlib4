@@ -437,7 +437,7 @@ theorem apply_eq_prod_continuousLinearEquivAt (e : Trivialization F (π F E)) [e
   · refine e.coe_fst ?_
     rw [e.source_eq]
     exact hb
-  · simp only [coe_coe, continuousLinearEquivAt_apply]
+  · simp only [continuousLinearEquivAt_apply]
 
 protected theorem zeroSection (e : Trivialization F (π F E)) [e.IsLinear R] {x : B}
     (hx : x ∈ e.baseSet) : e (zeroSection F E x) = (x, 0) := by
@@ -654,6 +654,8 @@ theorem mem_localTrivAt_baseSet : b ∈ (Z.localTrivAt b).baseSet :=
 
 instance fiberBundle : FiberBundle F Z.Fiber :=
   Z.toFiberBundleCore.fiberBundle
+
+protected lemma trivializationAt : trivializationAt F Z.Fiber b = Z.localTrivAt b := rfl
 
 instance vectorBundle : VectorBundle R F Z.Fiber where
   trivialization_linear' := by

@@ -417,7 +417,7 @@ section Indexed
 theorem linearIndepOn_iffₛ : LinearIndepOn R v s ↔
       ∀ f ∈ Finsupp.supported R R s, ∀ g ∈ Finsupp.supported R R s,
         Finsupp.linearCombination R v f = Finsupp.linearCombination R v g → f = g := by
-  simp only [LinearIndepOn, linearIndependent_iffₛ, (· ∘ ·), Finsupp.mem_supported,
+  simp only [LinearIndepOn, linearIndependent_iffₛ, Finsupp.mem_supported,
     Finsupp.linearCombination_apply, Set.subset_def, Finset.mem_coe]
   refine ⟨fun h l₁ h₁ l₂ h₂ eq ↦ (Finsupp.subtypeDomain_eq_iff h₁ h₂).1 <| h _ _ <|
     (Finsupp.sum_subtypeDomain_index h₁).trans eq ▸ (Finsupp.sum_subtypeDomain_index h₂).symm,
@@ -435,7 +435,7 @@ theorem linearIndepOn_iffₛ : LinearIndepOn R v s ↔
 theorem linearDepOn_iff'ₛ : ¬LinearIndepOn R v s ↔
       ∃ f g : ι →₀ R, f ∈ Finsupp.supported R R s ∧ g ∈ Finsupp.supported R R s ∧
         Finsupp.linearCombination R v f = Finsupp.linearCombination R v g ∧ f ≠ g := by
-  simp [linearIndepOn_iffₛ, and_left_comm]
+  simp [linearIndepOn_iffₛ]
 
 @[deprecated (since := "2025-02-15")] alias linearDependent_comp_subtype'ₛ := linearDepOn_iff'ₛ
 
@@ -473,11 +473,11 @@ section repr
 
 /-- Canonical isomorphism between linear combinations and the span of linearly independent vectors.
 -/
-@[simps (config := { rhsMd := default }) symm_apply]
+@[simps (rhsMd := default) symm_apply]
 def LinearIndependent.linearCombinationEquiv (hv : LinearIndependent R v) :
     (ι →₀ R) ≃ₗ[R] span R (range v) := by
   refine LinearEquiv.ofBijective (LinearMap.codRestrict (span R (range v))
-                                 (Finsupp.linearCombination R v) ?_) ⟨hv.codRestrict _, ?_⟩
+    (Finsupp.linearCombination R v) ?_) ⟨hv.codRestrict _, ?_⟩
   · simp_rw [← Finsupp.range_linearCombination]; exact fun c ↦ ⟨c, rfl⟩
   rw [← LinearMap.range_eq_top, LinearMap.range_eq_map, LinearMap.map_codRestrict,
     ← LinearMap.range_le_iff_comap, range_subtype, Submodule.map_top,
@@ -727,7 +727,7 @@ theorem linearIndepOn_iff : LinearIndepOn R v s ↔
 `Finsupp.linearCombination` of the vectors that is zero. -/
 theorem linearDepOn_iff' : ¬LinearIndepOn R v s ↔
       ∃ f : ι →₀ R, f ∈ Finsupp.supported R R s ∧ Finsupp.linearCombination R v f = 0 ∧ f ≠ 0 := by
-  simp [linearIndepOn_iff, and_left_comm]
+  simp [linearIndepOn_iff]
 
 @[deprecated (since := "2025-02-15")] alias linearDependent_comp_subtype' := linearDepOn_iff'
 
@@ -738,7 +738,7 @@ theorem linearDepOn_iff : ¬LinearIndepOn R v s ↔
 
 @[deprecated (since := "2025-02-15")] alias linearDependent_comp_subtype := linearDepOn_iff
 
-theorem linearIndepOn_iff_disjoint: LinearIndepOn R v s ↔
+theorem linearIndepOn_iff_disjoint : LinearIndepOn R v s ↔
       Disjoint (Finsupp.supported R R s) (LinearMap.ker <| Finsupp.linearCombination R v) := by
   rw [linearIndepOn_iff, LinearMap.disjoint_ker]
 
@@ -764,7 +764,7 @@ lemma linearIndepOn_iff' : LinearIndepOn R v s ↔ ∀ (t : Finset ι) (g : ι �
   refine ⟨fun h t g hts h0 i hit ↦ ?_, fun h t g h0 i hit ↦ ?_⟩
   · refine h (t.preimage _ Subtype.val_injective.injOn) (fun i ↦ g i) ?_ ⟨i, hts hit⟩ (by simpa)
     rwa [t.sum_preimage ((↑) : s → ι) Subtype.val_injective.injOn (fun i ↦ g i • v i)]
-    simp only [Subtype.range_coe_subtype, setOf_mem_eq, smul_eq_zero]
+    simp only [Subtype.range_coe_subtype, setOf_mem_eq]
     exact fun x hxt hxs ↦ (hxs (hts hxt)) |>.elim
   replace h : ∀ i (hi : i ∈ s), ⟨i, hi⟩ ∈ t → ∀ (h : i ∈ s), g ⟨i, h⟩ = 0 := by
     simpa [h0] using h (t.image (↑)) (fun i ↦ if hi : i ∈ s then g ⟨i, hi⟩ else 0)
