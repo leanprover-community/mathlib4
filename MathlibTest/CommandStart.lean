@@ -312,6 +312,7 @@ structure FX where
   /-- A doc -/
   x : Nat
 
+#exit
 open Lean Elab Command Mathlib.Linter in
 elab "#final_scan " stx:command : command => do
   elabCommand stx
