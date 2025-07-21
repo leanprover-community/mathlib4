@@ -223,7 +223,7 @@ within `s` iff the derivative `fderivWithin ℝ f s x` maps `I` to `I • (fderi
 -/
 theorem differentiableWithinAt_complex_iff_differentiableWithinAt_real
     (hs : UniqueDiffWithinAt ℝ s x) :
-    (DifferentiableWithinAt ℂ f s x) ↔ (DifferentiableWithinAt ℝ f s x) ∧
+    DifferentiableWithinAt ℂ f s x ↔ DifferentiableWithinAt ℝ f s x ∧
       (fderivWithin ℝ f s x I = I • fderivWithin ℝ f s x 1) := by
   refine ⟨fun h ↦ ⟨h.restrictScalars ℝ, ?_⟩, fun ⟨h₁, h₂⟩ ↦ ?_⟩
   · simp only [← h.restrictScalars_fderivWithin ℝ hs, ContinuousLinearMap.coe_restrictScalars']
