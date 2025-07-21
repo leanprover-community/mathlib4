@@ -374,7 +374,7 @@ theorem isClopen_ball [MulArchimedean Γ₀] {r : Γ₀} (hr : r ≠ 0) :
   ⟨isClosed_ball r, isOpen_ball hr⟩
 
 /-- A closed ball centred at the origin in a valued ring is open. -/
-theorem isOpen_closedball' {r : Γ₀} (hr : ∃ (x : R), v x ≠ 0 ∧ v x ≤ r) :
+theorem isOpen_closedBall' {r : Γ₀} (hr : ∃ (x : R), v x ≠ 0 ∧ v x ≤ r) :
     IsOpen (X := R) {x | v x ≤ r} := by
   rw [isOpen_iff_mem_nhds]
   intro x hx
@@ -403,15 +403,17 @@ theorem isOpen_closedball' {r : Γ₀} (hr : ∃ (x : R), v x ≠ 0 ∧ v x ≤ 
 theorem isOpen_closedBall [MulArchimedean Γ₀] {r : Γ₀} (hr : r ≠ 0) :
     IsOpen (X := K) {x | v x ≤ r} := by
   by_cases hr' : ∃ (x : K), v x ≠ 0 ∧ v x ≤ r
-  · exact isOpen_closedball' hr'
+  · exact isOpen_closedBall' hr'
   · push_neg at hr'
     have := discreteTopology_of_forall_lt hr hr'
     simp
 
+@[deprecated (since := "2025-07-20")] alias isOpen_closedball := isOpen_closedBall
+
 /-- A closed ball centred at the origin in a valued ring is clopen. -/
 theorem isClopen_closedBall' {r : Γ₀} (hr : ∃ (x : R), v x ≠ 0 ∧ v x ≤ r) :
     IsClopen (X := R) {x | v x ≤ r} :=
-  ⟨isClosed_closedBall r, isOpen_closedball' hr⟩
+  ⟨isClosed_closedBall r, isOpen_closedBall' hr⟩
 
 /-- A closed ball centred at the origin in a valued ring is clopen. -/
 theorem isClopen_closedBall [MulArchimedean Γ₀] {r : Γ₀} (hr : r ≠ 0) :
@@ -448,7 +450,7 @@ theorem isClosed_sphere [MulArchimedean Γ₀] {r : Γ₀} (hr : r ≠ 0) :
 
 /-- The closed unit ball in a valued ring is open. -/
 theorem isOpen_integer : IsOpen (_i.v.integer : Set R) :=
-  isOpen_closedball' ⟨1, by simp⟩
+  isOpen_closedBall' ⟨1, by simp⟩
 
 @[deprecated (since := "2025-04-25")]
 alias integer_isOpen := isOpen_integer
