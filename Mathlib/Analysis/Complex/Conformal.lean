@@ -299,9 +299,7 @@ derivative equals `ContinuousLinearMap.toComplexOfMapI` of the real derivative.
 -/
 theorem complexOfReal_fderiv (h₁ : DifferentiableAt ℝ f x)
     (h₂ : fderiv ℝ f x I = I • fderiv ℝ f x 1) :
-    (fderiv ℝ f x).complexOfReal h₂ = fderiv ℂ f x := by
-  have := (differentiableAt_complex_iff_differentiableAt_real.2 ⟨h₁, h₂⟩).fderiv_restrictScalars ℝ
-  apply DFunLike.ext'
-  simp_all
+    (fderiv ℝ f x).complexOfReal h₂ = fderiv ℂ f x :=
+  (h₁.hasFDerivAt.complexOfReal_hasFDerivAt h₂).fderiv.symm
 
 end CauchyRiemann
