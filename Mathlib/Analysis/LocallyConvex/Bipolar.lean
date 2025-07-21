@@ -132,13 +132,17 @@ lemma test4 :
   subst right
   use w
 
+def mL (s : Finset F) : s → WeakBilin B →ₗ[𝕜] 𝕜 := fun (f : s) => (WeakBilin.eval B) f.val
 
 
-/-
-
-lemma test5 : ∃ (s₁ : Finset F), ↑f ∈ Submodule.span 𝕜 (Set.range (B.mL s₁)) := by
+lemma test5 : ∃ (s₁ : Finset F),
+    ↑f ∈ Submodule.span 𝕜 (Set.range (ContinuousLinearMap.toLinearMap₁₂
+      (WeakBilin.eval B) ∘ Subtype.val : s₁ → WeakBilin B →ₗ[𝕜] 𝕜)) := by
   obtain ⟨s₁, hs⟩ := test4 B f
   use s₁
+  rw [functional_mem_span_iff]
+  sorry
+  /-
   apply mem_span_of_iInf_ker_le_ker (ι := s₁) (L := (mL B s₁)) (K := f.toLinearMap)
   intro x hx
   simp at hx
@@ -220,9 +224,9 @@ lemma test5 : ∃ (s₁ : Finset F), ↑f ∈ Submodule.span 𝕜 (Set.range (B.
 
     sorry
 
-
-
 -/
+
+
 
 
 
