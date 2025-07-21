@@ -228,7 +228,7 @@ theorem ofModule_asAlgebraHom_apply_apply (r : MonoidAlgebra k G)
   apply MonoidAlgebra.induction_on r
   · intro g
     simp only [one_smul, MonoidAlgebra.lift_symm_apply, MonoidAlgebra.of_apply,
-      Representation.asAlgebraHom_single, Representation.ofModule, AddEquiv.apply_eq_iff_eq,
+      Representation.asAlgebraHom_single, Representation.ofModule,
       RestrictScalars.lsmul_apply_apply]
   · intro f g fw gw
     simp only [fw, gw, map_add, add_smul, LinearMap.add_apply]
@@ -325,7 +325,7 @@ def ofQuotient [IsTrivial (ρ.comp S.subtype)] :
   (QuotientGroup.con S).lift ρ <| by
     rintro x y ⟨⟨z, hz⟩, rfl⟩
     ext w
-    show ρ (_ * z.unop) _ = _
+    change ρ (_ * z.unop) _ = _
     exact congr($(apply_eq_of_coe_eq ρ S _ _ (by simp_all)) w)
 
 @[simp]
@@ -435,14 +435,13 @@ theorem ofMulAction_self_smul_eq_mul (x : MonoidAlgebra k G) (y : (ofMulAction k
   -- Porting note: trouble figuring out the motive
   x.induction_on (p := fun z => z • y = z * y)
     (fun g => by
-      show asAlgebraHom (ofMulAction k G G) _ _ = _; ext
-      simp only [MonoidAlgebra.of_apply, asAlgebraHom_single, one_smul,
-        ofMulAction_apply, smul_eq_mul]
-      -- Porting note: single_mul_apply not firing in simp
-      rw [MonoidAlgebra.single_mul_apply, one_mul]
+      change asAlgebraHom (ofMulAction k G G) _ _ = _
+      ext
+      -- Porting note: single_mul_apply not firing in simp without parentheses
+      simp [(MonoidAlgebra.single_mul_apply)]
     )
     (fun x y hx hy => by simp only [hx, hy, add_mul, add_smul]) fun r x hx => by
-    show asAlgebraHom (ofMulAction k G G) _ _ = _  -- Porting note: was simpa [← hx]
+    change asAlgebraHom (ofMulAction k G G) _ _ = _  -- Porting note: was simpa [← hx]
     simp only [map_smul, smul_apply, Algebra.smul_mul_assoc]
     rw [← hx]
     rfl
@@ -493,7 +492,7 @@ theorem smul_tprod_one_asModule (r : MonoidAlgebra k G) (x : V) (y : W) :
     let x' : ρV.asModule := x
     let z : (ρV.tprod 1).asModule := x ⊗ₜ y
     r • z = (r • x') ⊗ₜ y := by
-  show asAlgebraHom (ρV ⊗ 1) _ _ = asAlgebraHom ρV _ _ ⊗ₜ _
+  change asAlgebraHom (ρV ⊗ 1) _ _ = asAlgebraHom ρV _ _ ⊗ₜ _
   simp only [asAlgebraHom_def, MonoidAlgebra.lift_apply, tprod_apply, MonoidHom.one_apply,
     LinearMap.finsupp_sum_apply, LinearMap.smul_apply, TensorProduct.map_tmul, Module.End.one_apply]
   simp only [Finsupp.sum, TensorProduct.sum_tmul]
@@ -504,7 +503,7 @@ theorem smul_one_tprod_asModule (r : MonoidAlgebra k G) (x : V) (y : W) :
     let y' : ρW.asModule := y
     let z : (1 ⊗ ρW).asModule := x ⊗ₜ y
     r • z = x ⊗ₜ (r • y') := by
-  show asAlgebraHom (1 ⊗ ρW) _ _ = _ ⊗ₜ asAlgebraHom ρW _ _
+  change asAlgebraHom (1 ⊗ ρW) _ _ = _ ⊗ₜ asAlgebraHom ρW _ _
   simp only [asAlgebraHom_def, MonoidAlgebra.lift_apply, tprod_apply, MonoidHom.one_apply,
     LinearMap.finsupp_sum_apply, LinearMap.smul_apply, TensorProduct.map_tmul, Module.End.one_apply]
   simp only [Finsupp.sum, TensorProduct.tmul_sum, TensorProduct.tmul_smul]
@@ -609,7 +608,7 @@ noncomputable def finsuppLEquivFreeAsModule :
       | zero => simp only [smul_zero]
       | single_add _ _ _ _ _ h =>
         rw [smul_add, h]
-        show _ + asAlgebraHom _ _ _ = asAlgebraHom _ _ _
+        change _ + asAlgebraHom _ _ _ = asAlgebraHom _ _ _
         simp only [map_add, smul_single, smul_eq_mul, MonoidAlgebra.mul_def,
           asAlgebraHom_def, MonoidAlgebra.lift_apply]
         simp [free, MonoidAlgebra, asModule, ofMulAction_def, mapDomain, smul_sum, single_sum] }

@@ -163,7 +163,7 @@ scoped[Pointwise] attribute [instance] Finset.smulFinset Finset.vaddFinset
 
 @[to_additive]
 lemma mem_smul_finset {x : β} : x ∈ a • s ↔ ∃ y, y ∈ s ∧ a • y = x := by
-  simp only [Finset.smul_finset_def, and_assoc, mem_image, exists_prop, Prod.exists, mem_product]
+  simp only [Finset.smul_finset_def, mem_image]
 
 @[to_additive (attr := simp, norm_cast)]
 lemma coe_smul_finset (a : α) (s : Finset β) : ↑(a • s) = a • (↑s : Set β) := coe_image
@@ -173,7 +173,7 @@ lemma coe_smul_finset (a : α) (s : Finset β) : ↑(a • s) = a • (↑s : Se
 @[to_additive] lemma smul_finset_card_le : #(a • s) ≤ #s := card_image_le
 
 @[to_additive (attr := simp)]
-lemma smul_finset_empty (a : α) : a • (∅ : Finset β) = ∅ := image_empty _
+lemma smul_finset_empty (a : α) : a • (∅ : Finset β) = ∅ := rfl
 
 @[to_additive (attr := simp)]
 lemma smul_finset_eq_empty : a • s = ∅ ↔ s = ∅ := image_eq_empty

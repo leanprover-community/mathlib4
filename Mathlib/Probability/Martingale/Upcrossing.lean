@@ -450,7 +450,7 @@ theorem crossing_eq_crossing_of_lowerCrossingTime_lt {M : ℕ} (hNM : N ≤ M)
     lt_of_le_of_lt upperCrossingTime_le_lowerCrossingTime h
   induction n with
   | zero =>
-    simp only [upperCrossingTime_zero, bot_eq_zero', eq_self_iff_true,
+    simp only [upperCrossingTime_zero, bot_eq_zero',
       lowerCrossingTime_zero, true_and, eq_comm]
     refine hitting_eq_hitting_of_exists hNM ?_
     rw [lowerCrossingTime, hitting_lt_iff] at h
@@ -503,7 +503,7 @@ theorem upcrossingsBefore_mono (hab : a < b) : Monotone fun N ω => upcrossingsB
     rw [Set.mem_setOf_eq, upperCrossingTime_eq_upperCrossingTime_of_lt hNM hn]
     exact lt_of_lt_of_le hn hNM
   · rw [Set.not_nonempty_iff_eq_empty] at hemp
-    simp [hemp, csSup_empty, bot_eq_zero', zero_le']
+    simp [hemp, csSup_empty]
 
 theorem upcrossingsBefore_lt_of_exists_upcrossing (hab : a < b) {N₁ N₂ : ℕ} (hN₁ : N ≤ N₁)
     (hN₁' : f N₁ ω < a) (hN₂ : N₁ ≤ N₂) (hN₂' : b < f N₂ ω) :
@@ -631,14 +631,7 @@ theorem crossing_pos_eq (hab : a < b) :
     refine ⟨rfl, ?_⟩
     simp +unfoldPartialApp only [lowerCrossingTime_zero, hitting,
       Set.mem_Icc, Set.mem_Iic]
-    ext ω
-    split_ifs with h₁ h₂ h₂
-    · simp_rw [hf']
-    · simp_rw [Set.mem_Iic, ← hf' _ _] at h₂
-      exact False.elim (h₂ h₁)
-    · simp_rw [Set.mem_Iic, hf' _ _] at h₁
-      exact False.elim (h₁ h₂)
-    · rfl
+    simp_all
   | succ k ih =>
     have : upperCrossingTime 0 (b - a) (fun n ω => (f n ω - a)⁺) N (k + 1) =
         upperCrossingTime a b f N (k + 1) := by

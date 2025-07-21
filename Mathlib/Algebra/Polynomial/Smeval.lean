@@ -77,12 +77,12 @@ variable (R)
 
 @[simp]
 theorem smeval_zero : (0 : R[X]).smeval x = 0 := by
-  simp only [smeval_eq_sum, smul_pow, sum_zero_index]
+  simp only [smeval_eq_sum, sum_zero_index]
 
 @[simp]
 theorem smeval_one : (1 : R[X]).smeval x = 1 • x ^ 0 := by
   rw [← C_1, smeval_C]
-  simp only [Nat.cast_one, one_smul]
+  simp only [one_smul]
 
 @[simp]
 theorem smeval_X :
@@ -103,7 +103,7 @@ variable (R : Type*) [Semiring R] (p q : R[X]) {S : Type*} [AddCommMonoid S] [Po
 
 @[simp]
 theorem smeval_add : (p + q).smeval x = p.smeval x + q.smeval x := by
-  simp only [smeval_eq_sum, smul_pow]
+  simp only [smeval_eq_sum]
   refine sum_add_index p q (smul_pow x) (fun _ ↦ ?_) (fun _ _ _ ↦ ?_)
   · rw [smul_pow, zero_smul]
   · rw [smul_pow, smul_pow, smul_pow, add_smul]
@@ -123,7 +123,7 @@ theorem smeval_smul (r : R) : (r • p).smeval x = r • p.smeval x := by
 def smeval.linearMap : R[X] →ₗ[R] S where
   toFun f := f.smeval x
   map_add' f g := by simp only [smeval_add]
-  map_smul' c f := by simp only [smeval_smul, smul_eq_mul, RingHom.id_apply]
+  map_smul' c f := by simp only [smeval_smul, RingHom.id_apply]
 
 @[simp]
 theorem smeval.linearMap_apply : smeval.linearMap R x p = p.smeval x := rfl
@@ -159,11 +159,8 @@ theorem smeval_sub : (p - q).smeval x = p.smeval x - q.smeval x := by
 theorem smeval_neg_nat (S : Type*) [NonAssocRing S] [Pow S ℕ] [NatPowAssoc S] (q : ℕ[X])
     (n : ℕ) : q.smeval (-(n : S)) = q.smeval (-n : ℤ) := by
   rw [smeval_eq_sum, smeval_eq_sum]
-  simp only [Polynomial.smul_pow, sum_def, Int.cast_sum, Int.cast_mul, Int.cast_npow]
-  refine Finset.sum_congr rfl ?_
-  intro k _
-  rw [show -(n : S) = (-n : ℤ) by simp only [Int.cast_neg, Int.cast_natCast], nsmul_eq_mul,
-    ← AddGroupWithOne.intCast_ofNat, ← Int.cast_npow, ← Int.cast_mul, ← nsmul_eq_mul]
+  simp only [Polynomial.smul_pow, sum_def]
+  simp
 
 end Neg
 
@@ -187,11 +184,11 @@ theorem smeval_C_mul : (C r * p).smeval x = r • p.smeval x := by
 
 variable [NatPowAssoc S]
 
-theorem smeval_at_natCast (q : ℕ[X]) : ∀(n : ℕ), q.smeval (n : S) = q.smeval n := by
+theorem smeval_at_natCast (q : ℕ[X]) : ∀ (n : ℕ), q.smeval (n : S) = q.smeval n := by
   induction q using Polynomial.induction_on' with
   | add p q ph qh =>
     intro n
-    simp only [add_mul, smeval_add, ph, qh, Nat.cast_add]
+    simp only [smeval_add, ph, qh, Nat.cast_add]
   | monomial n a =>
     intro n
     rw [smeval_monomial, smeval_monomial, nsmul_eq_mul, smul_eq_mul, Nat.cast_mul, Nat.cast_npow]
@@ -232,7 +229,7 @@ theorem smeval_monomial_mul (n : ℕ) :
     (monomial n r * p).smeval x = r • (x ^ n * p.smeval x) := by
   induction p using Polynomial.induction_on' with
   | add r s hr hs =>
-    simp only [add_comp, hr, hs, smeval_add, add_mul]
+    simp only [smeval_add]
     rw [← C_mul_X_pow_eq_monomial, mul_assoc, smeval_C_mul, smeval_X_pow_mul, smeval_add]
   | monomial n a =>
     rw [smeval_monomial, monomial_mul_monomial, smeval_monomial, npow_add, mul_smul, mul_smul_comm]
@@ -245,8 +242,8 @@ theorem smeval_mul_X : (p * X).smeval x = p.smeval x * x := by
     induction p using Polynomial.induction_on' with
   | add p q ph qh => simp only [add_mul, smeval_add, ph, qh]
   | monomial n a =>
-    simp only [← monomial_one_one_eq_X, monomial_mul_monomial, smeval_monomial, mul_one, pow_succ',
-      mul_assoc, npow_add, smul_mul_assoc, npow_one]
+    simp only [← monomial_one_one_eq_X, monomial_mul_monomial, smeval_monomial, mul_one,
+      npow_add, smul_mul_assoc, npow_one]
 
 theorem smeval_assoc_X_pow (m n : ℕ) :
     p.smeval x * x ^ m * x ^ n = p.smeval x * (x ^ m * x ^ n) := by
@@ -266,9 +263,9 @@ variable [SMulCommClass R S S]
 
 theorem smeval_mul : (p * q).smeval x  = p.smeval x * q.smeval x := by
   induction p using Polynomial.induction_on' with
-  | add r s hr hs => simp only [add_comp, hr, hs, smeval_add, add_mul]
+  | add r s hr hs => simp only [hr, hs, smeval_add, add_mul]
   | monomial n a =>
-    simp only [smeval_monomial, smeval_C_mul, smeval_mul_X_pow, smeval_monomial_mul, smul_mul_assoc]
+    simp only [smeval_monomial, smeval_monomial_mul, smul_mul_assoc]
 
 theorem smeval_pow : ∀ (n : ℕ), (p^n).smeval x = (p.smeval x)^n
   | 0 => by

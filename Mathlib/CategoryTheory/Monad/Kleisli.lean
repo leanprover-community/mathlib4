@@ -125,7 +125,7 @@ def toCokleisli : C ⥤ Cokleisli U where
   map_comp {X} {Y} {_} f g := by
     -- Porting note: working around lack of unfold_projs
     change U.ε.app X ≫ f ≫ g = U.δ.app X ≫ U.map (U.ε.app X ≫ f) ≫ U.ε.app Y ≫ g
-    simp [← U.ε.naturality g]
+    simp
 
 /-- The left adjoint of the adjunction which induces the comonad `(U, ε_ U, δ_ U)`. -/
 @[simps]

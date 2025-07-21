@@ -3,6 +3,7 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Mathlib.Algebra.Group.TypeTags.Finite
 import Mathlib.Data.Nat.Totient
 import Mathlib.Data.ZMod.Aut
 import Mathlib.Data.ZMod.QuotientGroup
@@ -214,6 +215,12 @@ theorem isCyclic_of_surjective {F : Type*} [hH : IsCyclic G']
   obtain ⟨a, rfl⟩ := hf a
   obtain ⟨n, rfl⟩ := hx a
   exact ⟨n, (map_zpow _ _ _).symm⟩
+
+@[to_additive]
+theorem MulEquiv.isCyclic (e : G ≃* G') :
+    IsCyclic G ↔ IsCyclic G' :=
+  ⟨fun _ ↦ isCyclic_of_surjective e e.surjective,
+    fun _ ↦ isCyclic_of_surjective e.symm e.symm.surjective⟩
 
 @[to_additive]
 theorem orderOf_eq_card_of_forall_mem_zpowers {g : α} (hx : ∀ x, x ∈ zpowers g) :
@@ -473,10 +480,10 @@ private theorem card_orderOf_eq_totient_aux₁ {d : ℕ} (hd : d ∣ Fintype.car
     (∑ m ∈ d.properDivisors, #{a : α | orderOf a = m}) =
       ∑ m ∈ d.properDivisors, φ m := by
     refine Finset.sum_congr rfl fun m hm => ?_
-    simp only [mem_filter, mem_range, mem_properDivisors] at hm
+    simp only [mem_properDivisors] at hm
     refine IH m hm.2 (hm.1.trans hd) (Finset.card_pos.2 ⟨a ^ (d / m), ?_⟩)
-    simp only [mem_filter, mem_univ, orderOf_pow a, ha, true_and,
-      Nat.gcd_eq_right (div_dvd_of_dvd hm.1), Nat.div_div_self hm.1 hd0]
+    rw [mem_filter_univ, orderOf_pow a, ha, Nat.gcd_eq_right (div_dvd_of_dvd hm.1),
+      Nat.div_div_self hm.1 hd0]
   have h2 :
     (∑ m ∈ d.divisors, #{a : α | orderOf a = m}) =
       ∑ m ∈ d.divisors, φ m := by
@@ -920,3 +927,99 @@ lemma mulEquivOfOrderOfEq_symm_apply_gen : (mulEquivOfOrderOfEq hg hg' h).symm g
 end mulEquiv
 
 end generator
+
+section prod
+
+@[to_additive] theorem Group.isCyclic_of_coprime_card_range_card_ker {M N : Type*}
+    [CommGroup M] [Group N] (f : M →* N) (h : (Nat.card f.ker).Coprime (Nat.card f.range))
+    [IsCyclic f.ker] [IsCyclic f.range] : IsCyclic M := by
+  cases (finite_or_infinite f.ker).symm
+  · rw [Nat.card_eq_zero_of_infinite, Nat.coprime_zero_left] at h
+    rw [← f.range.eq_bot_iff_card, f.range_eq_bot_iff, ← f.ker_eq_top_iff] at h
+    rwa [← Subgroup.topEquiv.isCyclic, ← h]
+  cases (finite_or_infinite f.range).symm
+  · rw [Nat.card_eq_zero_of_infinite (α := f.range), Nat.coprime_zero_right] at h
+    rwa [(f.ofInjective (f.ker_eq_bot_iff.mp (f.ker.eq_bot_of_card_eq h))).isCyclic]
+  have := f.finite_iff_finite_ker_range.mpr ⟨‹_›, ‹_›⟩
+  rw [IsCyclic.iff_exponent_eq_card]
+  apply dvd_antisymm Group.exponent_dvd_nat_card
+  rw [← f.ker.card_mul_index, Subgroup.index_ker]
+  apply h.mul_dvd_of_dvd_of_dvd <;> rw [← IsCyclic.exponent_eq_card]
+  · exact Monoid.exponent_dvd_of_monoidHom _ f.ker.subtype_injective
+  · exact MonoidHom.exponent_dvd f.rangeRestrict_surjective
+
+@[to_additive] theorem Group.isCyclic_of_coprime_card_ker {M N : Type*}
+    [CommGroup M] [Group N] (f : M →* N) (h : (Nat.card f.ker).Coprime (Nat.card N))
+    [IsCyclic f.ker] [hN : IsCyclic N] (hf : Function.Surjective f) : IsCyclic M := by
+  rw [← Subgroup.topEquiv.isCyclic, ← f.range_eq_top.mpr hf] at hN
+  rw [← Subgroup.card_top (G := N), ← f.range_eq_top.mpr hf] at h
+  exact isCyclic_of_coprime_card_range_card_ker f h
+
+section
+
+variable (M N : Type*) [Group M] [Group N] [cyc : IsCyclic (M × N)]
+include M N
+
+@[to_additive isAddCyclic_left_of_prod] theorem isCyclic_left_of_prod : IsCyclic M :=
+    isCyclic_of_surjective (MonoidHom.fst M N) Prod.fst_surjective
+
+@[to_additive isAddCyclic_right_of_prod] theorem isCyclic_right_of_prod : IsCyclic N :=
+    isCyclic_of_surjective (MonoidHom.snd M N) Prod.snd_surjective
+
+@[to_additive coprime_card_of_isAddCyclic_prod] theorem coprime_card_of_isCyclic_prod
+    [Finite M] [Finite N] : (Nat.card M).Coprime (Nat.card N) := by
+  have hM := isCyclic_left_of_prod M N
+  have hN := isCyclic_right_of_prod M N
+  let _ := cyc.commGroup; let _ := hM.commGroup; let _ := hN.commGroup
+  rw [IsCyclic.iff_exponent_eq_card, Monoid.exponent_prod, Nat.card_prod, lcm_eq_nat_lcm] at *
+  simpa only [hM, hN, Nat.lcm_eq_mul_iff, Nat.card_pos.ne', false_or] using cyc
+
+end
+
+theorem not_isAddCyclic_prod_of_infinite_nontrivial (M N : Type*) [AddGroup M] [AddGroup N]
+    [Infinite M] [Nontrivial N] : ¬ IsAddCyclic (M × N) := fun hMN ↦ by
+  rw [← ((zmodAddCyclicAddEquiv <| isAddCyclic_left_of_prod M N).prodCongr (zmodAddCyclicAddEquiv <|
+    isAddCyclic_right_of_prod M N)).isAddCyclic, Nat.card_eq_zero_of_infinite] at hMN
+  cases (finite_or_infinite N).symm
+  · rw [Nat.card_eq_zero_of_infinite] at hMN
+    let f := (ZMod.castHom (dvd_zero _) (ZMod 2)).toAddMonoidHom
+    have hf := ZMod.castHom_surjective (dvd_zero 2)
+    have := isAddCyclic_of_surjective (f.prodMap f) (Prod.map_surjective.mpr ⟨hf, hf⟩)
+    simpa using coprime_card_of_isAddCyclic_prod (ZMod 2) (ZMod 2)
+  let ZN := ZMod (Nat.card N)
+  have : NeZero (Nat.card N) := ⟨Nat.card_pos.ne'⟩
+  have := isAddCyclic_of_surjective ((ZMod.castHom (dvd_zero _) ZN).toAddMonoidHom.prodMap (.id ZN))
+    (Prod.map_surjective.mpr ⟨ZMod.castHom_surjective (dvd_zero _), Function.surjective_id⟩)
+  exact Finite.one_lt_card (α := N).ne' (by simpa [ZN] using coprime_card_of_isAddCyclic_prod ZN ZN)
+
+@[to_additive existing not_isAddCyclic_prod_of_infinite_nontrivial]
+theorem not_isCyclic_prod_of_infinite_nontrivial (M N : Type*) [Group M] [Group N]
+    [Infinite M] [Nontrivial N] : ¬ IsCyclic (M × N) := by
+  rw [← isAddCyclic_additive_iff, (AddEquiv.prodAdditive ..).isAddCyclic]
+  apply not_isAddCyclic_prod_of_infinite_nontrivial
+
+/-- The product of two finite groups is cyclic iff
+both of them are cyclic and their orders are coprime. -/
+@[to_additive AddGroup.isAddCyclic_prod_iff "The product of two finite additive groups is cyclic iff
+both of them are cyclic and their orders are coprime."]
+theorem Group.isCyclic_prod_iff {M N : Type*} [Group M] [Group N] :
+    IsCyclic (M × N) ↔ IsCyclic M ∧ IsCyclic N ∧ (Nat.card M).Coprime (Nat.card N) := by
+  refine ⟨fun h ↦ ⟨isCyclic_left_of_prod M N, isCyclic_right_of_prod M N, ?_⟩, fun ⟨hM, hN, h⟩ ↦ ?_⟩
+  · cases (finite_or_infinite M).symm
+    · cases subsingleton_or_nontrivial N; · simp
+      exact (not_isCyclic_prod_of_infinite_nontrivial M N h).elim
+    cases (finite_or_infinite N).symm
+    · cases subsingleton_or_nontrivial M; · simp
+      rw [(MulEquiv.prodComm ..).isCyclic] at h
+      exact (not_isCyclic_prod_of_infinite_nontrivial N M h).elim
+    apply coprime_card_of_isCyclic_prod
+  · let f := MonoidHom.snd M N
+    let e : f.ker ≃* M := by
+      rw [MonoidHom.ker_snd]
+      exact ((Subgroup.prodEquiv ..).trans .prodUnique).trans Subgroup.topEquiv
+    let _ := hM.commGroup; let _ := hN.commGroup
+    rw [← e.isCyclic] at hM
+    rw [← Nat.card_congr e.toEquiv] at h
+    exact isCyclic_of_coprime_card_ker f h Prod.snd_surjective
+
+end prod

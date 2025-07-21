@@ -58,7 +58,7 @@ universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
-open Category Localization
+open Category Localization Functor
 
 variable {C₁ : Type u₁} {C₂ : Type u₂} [Category.{v₁} C₁] [Category.{v₂} C₂]
   {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
@@ -95,7 +95,7 @@ lemma isRightDerivabilityStructure_iff [Φ.HasRightResolutions] (e : Φ.functor 
   let e₁ : W₁.Q ⋙ E₁.functor ≅ L₁ := compUniqFunctor W₁.Q L₁ W₁
   let e₂ : W₂.Q ⋙ E₂.functor ≅ L₂ := compUniqFunctor W₂.Q L₂ W₂
   let e'' : (Φ.functor ⋙ W₂.Q) ⋙ E₂.functor ≅ (W₁.Q ⋙ E₁.functor) ⋙ F :=
-    Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ e₂ ≪≫ e ≪≫ isoWhiskerRight e₁.symm F
+    associator _ _ _ ≪≫ isoWhiskerLeft _ e₂ ≪≫ e ≪≫ isoWhiskerRight e₁.symm F
   let e''' : Φ.localizedFunctor W₁.Q W₂.Q ⋙ E₂.functor ≅ E₁.functor ⋙ F :=
     liftNatIso W₁.Q W₁ _ _ _ _ e''
   have : TwoSquare.vComp' e'.hom e'''.hom e₁ e₂ = e.hom := by
