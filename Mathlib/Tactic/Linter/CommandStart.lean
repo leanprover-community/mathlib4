@@ -584,14 +584,16 @@ Deeper nodes are *not* inspected.
 -/
 def totalExclusions : ExcludedSyntaxNodeKind where
   kinds := #[
-    ``Parser.Command.docComment,  -- Prevents formatting of doc-strings.
-    ``Parser.Command.moduleDoc,  -- Prevents formatting of module docs.
-    `Mathlib.Meta.setBuilder,  -- Prevents formatting of `{a | ...}`.
-    ``Parser.Tactic.tacticSeqBracketed,  -- Prevents formatting of `{ tactics }`.
-    ``Parser.Command.macro,  -- Prevents formatting of `macro`.
-    ``Parser.Command.elab,  -- Prevents formatting of `elab`.
-    ``Parser.Command.elab_rules,  -- Prevents formatting of `elab_rules`.
-    `Mathlib.Meta.«term{_|_}»,  -- Prevents formatting of `{ f x y | (x : X) (y : Y) }`.
+    ``Parser.Command.docComment, -- Prevents formatting of doc-strings.
+    ``Parser.Command.moduleDoc, -- Prevents formatting of module docs.
+    `Mathlib.Meta.setBuilder, -- Prevents formatting of `{a | ...}`.
+    ``Parser.Tactic.tacticSeqBracketed, -- Prevents formatting of `{ tactics }`.
+    ``Parser.Command.macro, -- Prevents formatting of `macro`.
+    ``Parser.Command.elab, -- Prevents formatting of `elab`.
+    ``Parser.Command.elab_rules, -- Prevents formatting of `elab_rules`.
+    `Mathlib.Meta.«term{_|_}», -- Prevents formatting of `{ f x y | (x : X) (y : Y) }`.
+    ``«term[_]», -- Prevents formatting of lists.
+    ``«term#[_,]», -- Prevents formatting of arrays.
   ]
   depth := none
 
