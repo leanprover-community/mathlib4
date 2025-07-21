@@ -134,6 +134,12 @@ lemma test4 :
 
 def mL (s : Finset F) : s → WeakBilin B →ₗ[𝕜] 𝕜 := fun (f : s) => (WeakBilin.eval B) f.val
 
+variable (x : E) (a : ℝ)
+
+--variable [IsScalarTower ℝ 𝕜 E]
+
+--#check a • x
+
 
 lemma test5 : ∃ (s₁ : Finset F),
     ↑f ∈ Submodule.span 𝕜 (Set.range (ContinuousLinearMap.toLinearMap₁₂
@@ -145,7 +151,15 @@ lemma test5 : ∃ (s₁ : Finset F),
   obtain ⟨r, hr1, hr2⟩ := hs
   use sorry
   intro x
-
+  simp only [ContinuousLinearMap.coe_coe]
+  have e1 (h : x ∈ ((s₁.sup B.toSeminormFamily).ball 0 r)) : ‖f x‖ < 1 := by
+    have e2 : x ∈ f ⁻¹' Metric.ball 0 1 := by
+      exact hr2 h
+    aesop
+  have e2 : x ∈ (s₁.sup B.toSeminormFamily).ball 0 r  ↔ (s₁.sup B.toSeminormFamily) x < r := by
+    aesop
+  rw [e2] at e1
+  --let y := (r * ((s₁.sup B.toSeminormFamily) x)⁻¹) • x
   --let a := (r+1) * ((s₁.sup B.toSeminormFamily) x)
   sorry
   /-
