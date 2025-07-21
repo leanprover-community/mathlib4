@@ -28,10 +28,12 @@ partial derivative test, calculus
 -/
 
 /-- Update a vector of length 2 in coordinate 0. -/
+@[simp]
 lemma Function.update₀ {α : Type*} {a b c : α} : Function.update ![a,b] 0 c = ![c,b] := by
   ext i; fin_cases i <;> simp
 
 /-- Update a vector of length 2 in coordinate 1. -/
+@[simp]
 lemma Function.update₁ {α : Type*} {a b c : α} : Function.update ![a,b] 1 c = ![a,c] := by
   ext i; fin_cases i <;> simp
 
@@ -61,7 +63,7 @@ noncomputable def hessianLinearCompanion {V : Type*} [NormedAddCommGroup V]
 
 /-- The Hessian companion as a bilinear map. -/
 noncomputable def hessianBilinearCompanion {V : Type*} [NormedAddCommGroup V]
-    [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) : LinearMap.BilinMap ℝ V ℝ := {
+    [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) : V →ₗ[ℝ] V →ₗ[ℝ] ℝ := {
   toFun := hessianLinearCompanion f x₀
   map_add' := fun x y => by
     ext i
