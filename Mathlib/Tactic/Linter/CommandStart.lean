@@ -587,7 +587,10 @@ def totalExclusions : ExcludedSyntaxNodeKind where
     ``Parser.Command.docComment,  -- Prevents formatting of doc-strings.
     ``Parser.Command.moduleDoc,  -- Prevents formatting of module docs.
     `Mathlib.Meta.setBuilder,  -- Prevents formatting of `{a | ...}`.
-    ``Parser.Tactic.tacticSeqBracketed  -- Prevents formatting of `{ tactics }`.
+    ``Parser.Tactic.tacticSeqBracketed,  -- Prevents formatting of `{ tactics }`.
+    ``Parser.Command.macro,  -- Prevents formatting of `macro`.
+    ``Parser.Command.elab,  -- Prevents formatting of `elab`.
+    ``Parser.Command.elab_rules,  -- Prevents formatting of `elab_rules`.
   ]
   depth := none
 
@@ -597,12 +600,19 @@ following nodes, but we overrule it and place a space anyway.
 -/
 def forceSpaceAfter : ExcludedSyntaxNodeKind where
   kinds := #[
-    `token.«·»,  -- the focusing dot `·` in `conv` mode
+    `token.«·», -- the focusing dot `·` in `conv` mode
+    ``termThrowError__, -- `throwError "message"`
     -- Syntax nodes that do not pretty-print with a space, if followed by a parenthesis `()`
-    ``Parser.Tactic.rcases, --`rcases (a)`
-    ``Parser.Term.let, --`let (a)` in term mode.
+    ``Parser.Tactic.rcases, -- `rcases (a)`
+    ``Parser.Term.let, -- `let (a)` in term mode.
   ]
   depth := some 2
+
+def forceSpaceAfter' : ExcludedSyntaxNodeKind where
+  kinds := #[
+    `atom.«have», -- `have (a)` in term mode.
+  ]
+  depth := some 1
 
 /--
 These are the `SyntaxNodeKind`s for which the pretty-printer would likely space out from the
@@ -611,7 +621,7 @@ following nodes, but we overrule it and do not place a space.
 def forceNoSpaceAfter : ExcludedSyntaxNodeKind where
   kinds := #[
     --``Parser.Term.doubleQuotedName,
-    `atom.«`»,    -- useful for double-quoted names
+    `atom.«`», -- useful for double-quoted names
     `atom.syntax, -- skips just `syntax:60 ...`
   ]
   depth := some 2
@@ -650,7 +660,7 @@ def processAtomOrIdent {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOp
         (" ".toSubstring, read.drop 1)
     else
     -- Case `read = ""` but we want a space after anyway
-    if forceSpaceAfter.contains k then
+    if forceSpaceAfter.contains k || forceSpaceAfter'.contains k then
       --dbg_trace "adding a space at '{read}'\n"
       (" ".toSubstring, read)
     -- Case `read = ""` and we follow the pretty-printer recommendation
@@ -802,12 +812,13 @@ def captureException (env : Environment) (s : ParserFn) (input : String) : Excep
   else
     .error ((s.mkError "end of input").toErrorMsg ictx)
 
-def getExceptions (stx : Syntax) : CommandElabM (Array mex) := do
+/-- Returning `none` denotes a processing error. -/
+def getExceptions (stx : Syntax) : CommandElabM (Option (Array mex)) := do
   let stxNoTrail := stx.unsetTrailing
   if let some stxNoSpaces ← insertSpaces false stx then
     return stxNoTrail.compareSpaces #[] #[] stxNoSpaces
   else
-    return #[]
+    return none
 
 --/
 /-
@@ -1200,7 +1211,8 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
   -- If a command does not start on the first column, emit a warning.
   --dbg_trace "lint1"
   let orig := stx.getSubstring?.getD default
-  for m in filterSortExceptions (← getExceptions stx) do
+  if let some mexs ← getExceptions stx then
+  for m in filterSortExceptions mexs do
     --logInfoAt (.ofRange m.rg) m!"{m.error} ({m.kinds})"
     --dbg_trace "{m.mkWindow orig}"
     let origWindow := mkWindowSubstring' orig m.rg.start
@@ -1303,33 +1315,37 @@ initialize addLinter commandStartLinter
 
 open Lean Elab Command in
 elab tk:"#mex " cmd:(command)? : command => do
+  let tktxt := "#mex"
   if let some cmd := cmd then if let some cmdSubstring := cmd.raw.getSubstring? then
   if let .error .. :=
     captureException (← getEnv) Parser.topLevelCommandParserFn cmd.raw.getSubstring?.get!.toString
   then
-    logWarningAt tk m!"{tk}: Parsing failed"
+    logWarningAt tk m!"{tktxt}: Parsing failed"
     return
   elabCommand cmd
+  --dbg_trace "here: {cmd}"
   if (← get).messages.hasErrors then
-    logWarningAt tk "{tk}: Command has errors"
+    logWarningAt tk "{tktxt}: Command has errors"
     return
-  let mexs ← getExceptions cmd
-  if mexs.isEmpty then
-    logInfo "No whitespace issues found!"
-    return
-  let (reported, unreported) := mexs.partition (!totalExclusions.contains ·.kinds)
-  logInfo m!"{mexs.size} whitespace issue{if mexs.size == 1 then "" else "s"} found: \
-      {reported.size} reported and {unreported.size} unreported."
-  let fm ← getFileMap
-  for m in reported do
-    logWarningAt (.ofRange m.rg)
-      m!"reported: {m.error}\n  '{mkWindowSubstring' cmdSubstring m.rg.start}'\n\
-        {(fm.toPosition m.rg.start, fm.toPosition m.rg.stop)}\n\n\
-        {m.kinds.map MessageData.ofConstName}"
-  for m in unreported do
-    logInfoAt (.ofRange m.rg)
-      m!"unreported: {m.error} {(fm.toPosition m.rg.start, fm.toPosition m.rg.stop)}\n\n\
-        {m.kinds.map MessageData.ofConstName}"
+  match ← getExceptions cmd with
+  | none => logWarning m!"{tktxt}: Processing error"
+  | some mexs =>
+    if mexs.isEmpty then
+      logInfo "No whitespace issues found!"
+      return
+    let (reported, unreported) := mexs.partition (!totalExclusions.contains ·.kinds)
+    logInfo m!"{mexs.size} whitespace issue{if mexs.size == 1 then "" else "s"} found: \
+        {reported.size} reported and {unreported.size} unreported."
+    let fm ← getFileMap
+    for m in reported do
+      logWarningAt (.ofRange m.rg)
+        m!"reported: {m.error}\n  '{mkWindowSubstring' cmdSubstring m.rg.start}'\n\
+          {(fm.toPosition m.rg.start, fm.toPosition m.rg.stop)}\n\n\
+          {m.kinds.map MessageData.ofConstName}"
+    for m in unreported do
+      logInfoAt (.ofRange m.rg)
+        m!"unreported: {m.error} {(fm.toPosition m.rg.start, fm.toPosition m.rg.stop)}\n\n\
+          {m.kinds.map MessageData.ofConstName}"
 
 #mex
 theorem X(_  :Nat) : True:=     --
