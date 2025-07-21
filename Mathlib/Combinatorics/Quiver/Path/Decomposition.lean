@@ -51,7 +51,6 @@ section BoundaryEdges
 
 variable {V : Type*} [Quiver V]
 
-@[simp]
 lemma cons_eq_comp_toPath {a b c : V} (p : Path a b) (e : b ⟶ c) :
     p.cons e = p.comp e.toPath := by
   rfl
