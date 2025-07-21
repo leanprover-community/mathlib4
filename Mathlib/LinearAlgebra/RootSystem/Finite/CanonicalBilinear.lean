@@ -284,7 +284,7 @@ lemma rootForm_self_smul_coroot (i : ι) :
     (P.RootForm (P.root i) (P.root i)) • P.coroot i = 2 • P.Polarization (P.root i) := by
   have : (algebraMap R R) ((P.RootFormIn R) (P.rootSpanMem R i) (P.rootSpanMem R i)) • P.coroot i =
       2 • P.Polarization (P.root i) := by
-    rw [Algebra.id.map_eq_self, P.rootFormIn_self_smul_coroot R i, PolarizationIn_eq]
+    rw [Algebra.algebraMap_self_apply, P.rootFormIn_self_smul_coroot R i, PolarizationIn_eq]
   rw [← this, algebraMap_rootFormIn]
 
 lemma corootForm_self_smul_root (i : ι) :
