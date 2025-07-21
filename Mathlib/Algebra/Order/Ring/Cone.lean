@@ -71,5 +71,5 @@ lemma IsOrderedRing.mkOfCone [RingConeClass S R] :
     IsOrderedRing R :=
   letI _ : PartialOrder R := .mkOfAddGroupCone C
   haveI : IsOrderedAddMonoid R := .mkOfCone C
-  haveI : ZeroLEOneClass R := ⟨show _ ∈ C by simpa using one_mem C⟩
+  haveI : ZeroLEOneClass R := ⟨show _ ∈ C by simp⟩
   .of_mul_nonneg fun x y xnn ynn ↦ show _ ∈ C by simpa using mul_mem xnn ynn
