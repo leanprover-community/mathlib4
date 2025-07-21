@@ -44,13 +44,13 @@ theorem dropWhile_eq_nil_iff : dropWhile p l = [] ↔ ∀ x ∈ l, p x := by
   | cons x xs IH => by_cases hp : p x <;> simp [hp, IH]
 
 @[simp]
-theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p (l.get ⟨0, hl⟩) := by
+theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p (l[0]'hl) := by
   rcases l with - | ⟨hd, tl⟩
   · simp
   · rw [dropWhile]
     by_cases h_p_hd : p hd
-    · simp only [h_p_hd, length_cons, Nat.zero_lt_succ, Fin.zero_eta, get_eq_getElem, Fin.val_zero,
-      getElem_cons_zero, not_true_eq_false, imp_false, iff_false]
+    · simp only [h_p_hd, length_cons, Nat.zero_lt_succ, getElem_cons_zero, not_true_eq_false,
+        imp_false, iff_false]
       intro h
       replace h := congrArg length h
       have := length_dropWhile_le p tl
