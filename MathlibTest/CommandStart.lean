@@ -74,9 +74,19 @@ Note: This linter can be disabled with `set_option linter.style.commandStart fal
 example : Nat → Nat → Nat := by
   exact (· +  ·)
 
--- Ideally, this would complain, but the linter ignores `throwError`
+/--
+warning: add space in the source
+
+This part of the code
+  'throwError"s"'
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
 #eval do
+  -- The *linter* forces a space in `throwError"s"`, but the pretty-printer does not.
   if false then throwError"s"
+  if false then throwError "s"
 
 /--
 warning: remove space in the source
@@ -109,14 +119,38 @@ structure X where
 -- The pretty printer does not place spaces around the braces`{}`.
 example : X where A{a}b := a + b
 
--- Ideally, these would complain, but we silenced the linter for `let`.
-example := let(_) := 0; 0
-example := let  _ := 0; 0
+/--
+warning: add space in the source
+
+This part of the code
+  'let(_)'
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+example :=
+  -- The *linter* forces a space in `let(_)`, but the pretty-printer does not.
+  let(_) := 0; 0
+
+/--
+warning: remove space in the source
+
+This part of the code
+  'let  _'
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+example :=
+  let  _ := 0; 0
 
 example : True := by {trivial }
 
-set_option linter.style.commandStart.verbose true in
+/-- warning: #mex: Processing error -/
+#guard_msgs in
+#mex
 open Qq in
+--set_option linter.style.commandStart.verbose true in
 example {u : Lean.Level} (α : Q(Type u)) (_ : Q(Mul $α)) : Mul Q($α) where
   mul x y := q($x * $y)
 
@@ -133,17 +167,48 @@ elab_rules : tactic
 ) => do
   return
 
--- Ideally, this would complain, but we silenced the linter for term-mode `have`.
+/--
+warning: add space in the source
+
+This part of the code
+  'have(h)'
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
 example : True :=
+  -- The *linter* forces a space in `have(_)`, but the pretty-printer does not.
   have(h) := trivial
   h
 
--- Ideally, this would complain, but we silenced the linter for term-mode `replace`.
+/--
+warning: add space in the source
+
+This part of the code
+  'replace(h)'
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
 example (h : ∀ a : Nat, a = a) : 0 = 0 := by
+  -- The *linter* forces a space in `replace(h)`, but the pretty-printer does not.
   replace(h) := h 0
   exact h
 
--- Ideally, this would complain, but we silenced the linter for term-mode
+-- Ideally, `| true|` would complain.
+example {c : Bool} : c = c := by
+  induction c with
+  | true| _ => rfl
+
+/--
+warning: add space in the source
+
+This part of the code
+  '=>rfl'
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
 example {c : Bool} : c = c := by
   induction c with
   | true| _ =>rfl
@@ -154,7 +219,6 @@ example : 0 = 0 := by
 
 -- The pretty-printer prefers no spaces inside `{}`.
 example := { Nat.succ n | n < 0 }
-
 
 end Desiderata_and_todos
 
