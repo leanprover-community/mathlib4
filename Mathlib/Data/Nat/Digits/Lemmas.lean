@@ -62,17 +62,8 @@ theorem digits_length_le_iff {b k : ℕ} (hb : 1 < b) (n : ℕ) :
   by_cases h : n = 0
   · simp [h]
     positivity
-  constructor
-  · intro hbn
-    rw [digits_len b n hb h] at hbn
-    rw [lt_pow_iff_log_lt hb h]
-    exact hbn
-  · intro hbn
-    by_cases h : n = 0
-    · simp [h]
-    rw [digits_len b n hb h]
-    rw [lt_pow_iff_log_lt hb h] at hbn
-    exact hbn
+  rw [digits_len b n hb h, lt_pow_iff_log_lt hb h]
+  exact add_one_le_iff
 
 theorem lt_digits_length_iff {b k : ℕ} (hb : 1 < b) (n : ℕ) :
     k < (b.digits n).length ↔ b ^ k ≤ n := by
