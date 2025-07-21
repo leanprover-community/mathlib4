@@ -64,7 +64,7 @@ where
       cases ys with | nil => contradiction | cons => rfl
 
 /-- If no element satisfies `p` in the list `xs`, then `xs.splitOnP p = [xs]` -/
-theorem splitOnP_eq_single (h : ∀ x ∈ xs, ¬p x) : xs.splitOnP p = [xs] := by
+theorem splitOnP_eq_single (h : ∀ x ∈ xs, p x = false) : xs.splitOnP p = [xs] := by
   induction xs with
   | nil => simp only [splitOnP_nil]
   | cons hd tl ih =>
@@ -73,7 +73,7 @@ theorem splitOnP_eq_single (h : ∀ x ∈ xs, ¬p x) : xs.splitOnP p = [xs] := b
 
 /-- When a list of the form `[...xs, sep, ...as]` is split on `p`, the first element is `xs`,
   assuming no element in `xs` satisfies `p` but `sep` does satisfy `p` -/
-theorem splitOnP_first (h : ∀ x ∈ xs, ¬p x) (sep : α) (hsep : p sep) (as : List α) :
+theorem splitOnP_first (h : ∀ x ∈ xs, p x = false) (sep : α) (hsep : p sep) (as : List α) :
     (xs ++ sep :: as).splitOnP p = xs :: as.splitOnP p := by
   induction xs with
   | nil => simp [hsep]
@@ -101,8 +101,9 @@ theorem splitOn_intercalate [DecidableEq α] (x : α) (hx : ∀ l ∈ ls, x ∉ 
   cases tl
   · suffices hd.splitOn x = [hd] by simpa [flatten]
     refine splitOnP_eq_single _ _ ?_
-    intro y hy H
-    rw [eq_of_beq H] at hy
+    intro y hy
+    rw [beq_eq_false_iff_ne]
+    rintro rfl
     refine hx hd ?_ hy
     simp
   · simp only [intersperse_cons₂, singleton_append, flatten]
@@ -114,8 +115,9 @@ theorem splitOn_intercalate [DecidableEq α] (x : α) (hx : ∀ l ∈ ls, x ∉ 
     · exact List.noConfusion
     have := splitOnP_first (· == x) hd ?h x (beq_self_eq_true _)
     case h =>
-      intro y hy H
-      rw [eq_of_beq H] at hy
+      intro y hy
+      rw [beq_eq_false_iff_ne]
+      rintro rfl
       exact hx hd (.head _) hy
     simp only [splitOn] at ih ⊢
     rw [this, ih]
