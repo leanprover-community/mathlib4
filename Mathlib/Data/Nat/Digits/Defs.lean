@@ -34,7 +34,7 @@ variable {n : ℕ}
 /-- (Impl.) An auxiliary definition for `digits`, to help get the desired definitional unfolding. -/
 def digitsAux0 : ℕ → List ℕ
   | 0 => []
-  | n + 1 => [n + 1]
+  | n + 1 => [n+1]
 
 /-- (Impl.) An auxiliary definition for `digits`, to help get the desired definitional unfolding. -/
 def digitsAux1 (n : ℕ) : List ℕ :=
@@ -82,7 +82,7 @@ theorem digits_zero_zero : digits 0 0 = [] :=
   rfl
 
 @[simp]
-theorem digits_zero_succ (n : ℕ) : digits 0 n.succ = [n + 1] :=
+theorem digits_zero_succ (n : ℕ) : digits 0 n.succ = [n+1] :=
   rfl
 
 theorem digits_zero_succ' : ∀ {n : ℕ}, n ≠ 0 → digits 0 n = [n]
@@ -405,8 +405,8 @@ theorem digits_base_pow_mul {b k m : ℕ} (hb : 1 < b) (hm : 0 < m) :
   induction k generalizing m with
   | zero => simp
   | succ k ih =>
-    rw [pow_succ', mul_assoc, digits_base_mul hb (by positivity), ih hm]
-    rfl
+    rw [pow_succ', mul_assoc, digits_base_mul hb (by positivity), ih hm, List.replicate_succ,
+      List.cons_append]
 
 theorem ofDigits_digits_append_digits {b m n : ℕ} :
     ofDigits b (digits b n ++ digits b m) = n + b ^ (digits b n).length * m := by
