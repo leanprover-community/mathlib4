@@ -261,7 +261,7 @@ theorem complexOfReal_hasDerivWithinAt (h₁ : DifferentiableWithinAt ℝ f s x)
     (h₂ : fderivWithin ℝ f s x I = I • fderivWithin ℝ f s x 1) :
     HasDerivWithinAt f ((fderivWithin ℝ f s x).complexOfReal h₂ 1) s x := by
   rw [hasDerivWithinAt_iff_hasFDerivWithinAt, smulRight_one_one]
-  exact HasFDerivWithinAt.complexOfReal_hasFDerivWithinAt h₁.hasFDerivWithinAt h₂
+  exact (h₁.hasFDerivWithinAt).complexOfReal_hasFDerivWithinAt h₂
 
 /--
 The Cauchy-Riemann Equation: A real-differentiable function `f` on `ℂ` is complex-differentiable if
@@ -271,7 +271,7 @@ theorem differentiableAt_complex_iff_differentiableAt_real :
     DifferentiableAt ℂ f x ↔ DifferentiableAt ℝ f x ∧
       fderiv ℝ f x I = I • fderiv ℝ f x 1 :=
   ⟨fun h ↦ by simp [h.restrictScalars ℝ, h.fderiv_restrictScalars ℝ],
-    fun ⟨h₁, h₂⟩ => (differentiableAt_iff_restrictScalars ℝ h₁).2
+    fun ⟨h₁, h₂⟩ ↦ (differentiableAt_iff_restrictScalars ℝ h₁).2
     ⟨(fderiv ℝ f x).complexOfReal h₂, rfl⟩⟩
 
 /--
