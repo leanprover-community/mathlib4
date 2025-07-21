@@ -6,11 +6,11 @@ Authors: Christopher Hoskin
 
 import Mathlib.Analysis.LocallyConvex.Polar
 import Mathlib.Analysis.LocallyConvex.AbsConvex
-import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
 import Mathlib.Analysis.LocallyConvex.WeakDual
-import Mathlib.Analysis.Normed.Module.Dual
 import Mathlib.Analysis.Normed.Module.Convex
 import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.Analysis.RCLike.Basic
+import Mathlib.Topology.Algebra.Module.StrongTopology
 
 /-!
 
