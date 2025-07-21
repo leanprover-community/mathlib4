@@ -620,7 +620,7 @@ def totalExclusions : ExcludedSyntaxNodeKind where
     `Stream'.«term_::_», -- of `Stream'` notation, analogous to lists.
     `Batteries.Util.LibraryNote.commandLibrary_note___, -- of `library_note "Title"/-- Text -/`.
     `Mathlib.Notation3.notation3, -- of `notation3`.
-    --``Parser.Term.structInstField, -- of the `where` fields: the LHS pps with virtually no spaces.
+    ``Parser.Term.structInstField, -- of the `where` fields: the LHS pps with virtually no spaces.
     ``Parser.Term.structInst, -- of the `where` fields: the LHS pps with virtually no spaces.
   ]
   depth := none
@@ -1299,12 +1299,28 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let orig := stx.getSubstring?.getD default
   if let some mexs ← getExceptions stx then
   let (reported, _) := reportedAndUnreportedExceptions mexs
+  let fname ← getFileName
+  let fm ← getFileMap
+  let mut visitedLines : Std.HashSet Nat := ∅
   for m in reported.qsort (·.rg.start < ·.rg.start) do
     --logInfoAt (.ofRange m.rg) m!"{m.error} ({m.kinds})"
     --dbg_trace "{m.mkWindow orig}"
-    let origWindow := mkWindowSubstring' orig m.rg.start
-    let expectedWindow := mkExpectedWindow orig m.rg.start
     Linter.logLint linter.style.commandStart (.ofRange m.rg) <| m.toLinterWarning orig
+    -- Try to `sed` away.
+    if let #[a, _] := m.kinds.drop (m.kinds.size - 2) then
+      let lineNumber := (fm.toPosition m.rg.start).line
+      if visitedLines.contains lineNumber then
+        continue
+      visitedLines := visitedLines.insert lineNumber
+      let lineStart := fm.lineStart lineNumber
+      let lineEnd := fm.lineStart (lineNumber + 1)
+      let line : Substring := {fm.source.toSubstring with startPos := lineStart, stopPos := lineEnd}.trimRight
+      let origWindow := mkWindowSubstring' orig m.rg.start
+      let expectedWindow := mkExpectedWindow orig m.rg.start
+      let newLine := line.toString.replace origWindow expectedWindow
+      if newLine != line.toString then
+        logInfoAt (.ofRange m.rg) m!"# {a}\n\
+          sed -i '{lineNumber}\{s={line}={newLine}=}' {fname}"
 
 /-
   if let some pos := stx.getPos? then
@@ -1399,37 +1415,39 @@ initialize addLinter commandStartLinter
 
 open Lean Elab Command in
 elab tk:"#mex " cmd:(command)? : command => do
-  let tktxt := "#mex"
-  if let some cmd := cmd then if let some cmdSubstring := cmd.raw.getSubstring? then
-  if let .error .. :=
-    captureException (← getEnv) Parser.topLevelCommandParserFn cmd.raw.getSubstring?.get!.toString
-  then
-    logWarningAt tk m!"{tktxt}: Parsing failed"
-    return
-  elabCommand cmd
-  --dbg_trace "here: {cmd}"
-  if (← get).messages.hasErrors then
-    logWarningAt tk m!"{tktxt}: Command has errors"
-    return
-  match ← getExceptions (verbose? := true) cmd with
-  | none => logWarning m!"{tktxt}: Processing error"
-  | some mexs =>
-    if mexs.isEmpty then
-      logInfo "No whitespace issues found!"
+  let opts ← elabSetOption (mkIdent `linter.style.commandStart) (mkAtom "false")
+  withScope ({ · with opts }) do
+    let tktxt := "#mex"
+    if let some cmd := cmd then if let some cmdSubstring := cmd.raw.getSubstring? then
+    if let .error .. :=
+      captureException (← getEnv) Parser.topLevelCommandParserFn cmd.raw.getSubstring?.get!.toString
+    then
+      logWarningAt tk m!"{tktxt}: Parsing failed"
       return
-    let (reported, unreported) := reportedAndUnreportedExceptions mexs
-    logInfo m!"{mexs.size} whitespace issue{if mexs.size == 1 then "" else "s"} found: \
-        {reported.size} reported and {unreported.size} unreported."
-    -- If the linter is active, then we do not need to emit the messages again.
-    if !Linter.getLinterValue linter.style.commandStart (← getLinterOptions) then
-      for m in reported do
-        logWarningAt (.ofRange m.rg) <|
-          m!"reported: {m.toLinterWarning cmdSubstring}\n\n\
+    elabCommand cmd
+    --dbg_trace "here: {cmd}"
+    if (← get).messages.hasErrors then
+      logWarningAt tk m!"{tktxt}: Command has errors"
+      return
+    match ← getExceptions (verbose? := true) cmd with
+    | none => logWarning m!"{tktxt}: Processing error"
+    | some mexs =>
+      if mexs.isEmpty then
+        logInfo "No whitespace issues found!"
+        return
+      let (reported, unreported) := reportedAndUnreportedExceptions mexs
+      logInfo m!"{mexs.size} whitespace issue{if mexs.size == 1 then "" else "s"} found: \
+          {reported.size} reported and {unreported.size} unreported."
+      -- If the linter is active, then we do not need to emit the messages again.
+      if !Linter.getLinterValue linter.style.commandStart (← getLinterOptions) then
+        for m in reported do
+          logWarningAt (.ofRange m.rg) <|
+            m!"reported: {m.toLinterWarning cmdSubstring}\n\n\
+              {m.kinds.map MessageData.ofConstName}"
+      for m in unreported do
+        logInfoAt (.ofRange m.rg)
+          m!"unreported: {m.toLinterWarning cmdSubstring}\n\n\
             {m.kinds.map MessageData.ofConstName}"
-    for m in unreported do
-      logInfoAt (.ofRange m.rg)
-        m!"unreported: {m.toLinterWarning cmdSubstring}\n\n\
-          {m.kinds.map MessageData.ofConstName}"
 
 end Style.CommandStart
 
