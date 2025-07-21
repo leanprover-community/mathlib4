@@ -229,13 +229,10 @@ example := #[
   0]
 
 /--
-warning: missing space in the source
+warning: add space in the source
 
 This part of the code
   'obtain(⟨h⟩)'
-should be written as
-  'obtain (⟨h⟩)'
-
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
@@ -248,13 +245,10 @@ example := (⟨
   0⟩ : Inhabited Nat)
 
 /--
-warning: missing space in the source
+warning: add space in the source
 
 This part of the code
-  'example: True'
-should be written as
-  'example : True'
-
+  'example:'
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
@@ -267,12 +261,11 @@ section noFalsePositives
 -- Explicit name literals: used to error (and the suggested replacement is invalid syntax).
 example := ``Nat
 
--- This example would trigger the linter if we did not special case
--- `where` in `Mathlib.Linter.Style.CommandStart.getUnlintedRanges`.
-/-- A -/
+-- The *linter* forces a space after `where`, but the pretty-printer does not.
+/-- A doc-string -/
 example := aux
 where
-  /-- A -/
+  /-- A separate doc-string -/
   aux : Unit := ()
 
 -- Strings are ignored by the linter.
