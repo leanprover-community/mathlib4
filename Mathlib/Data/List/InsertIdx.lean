@@ -87,14 +87,14 @@ theorem eraseIdx_map (f : α → β) (l : List α) (n : ℕ) :
 
 theorem get_insertIdx_of_lt (l : List α) (x : α) (n k : ℕ) (hn : k < n) (hk : k < l.length)
     (hk' : k < (l.insertIdx n x).length := hk.trans_le length_le_length_insertIdx) :
-    (l.insertIdx n x).get ⟨k, hk'⟩ = l.get ⟨k, hk⟩ := by
-  simp_all [getElem_insertIdx_of_lt]
+    (l.insertIdx n x).get ⟨k, hk'⟩ = l.get ⟨k, hk⟩ :=
+  getElem_insertIdx_of_lt hn _
 
 theorem get_insertIdx_self (l : List α) (x : α) (n : ℕ) (hn : n ≤ l.length)
     (hn' : n < (l.insertIdx n x).length :=
       (by rwa [length_insertIdx_of_le_length hn, Nat.lt_succ_iff])) :
-    (l.insertIdx n x).get ⟨n, hn'⟩ = x := by
-  simp
+    (l.insertIdx n x).get ⟨n, hn'⟩ = x :=
+  getElem_insertIdx_self _
 
 theorem getElem_insertIdx_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n + k < l.length)
     (hk : n + k + 1 < (l.insertIdx n x).length := (by
@@ -106,8 +106,8 @@ theorem getElem_insertIdx_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n +
 theorem get_insertIdx_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n + k < l.length)
     (hk : n + k + 1 < (l.insertIdx n x).length := (by
       rwa [length_insertIdx_of_le_length (by omega), Nat.succ_lt_succ_iff])) :
-    (l.insertIdx n x).get ⟨n + k + 1, hk⟩ = get l ⟨n + k, hk'⟩ := by
-  simp [getElem_insertIdx_add_succ, hk']
+    (l.insertIdx n x).get ⟨n + k + 1, hk⟩ = get l ⟨n + k, hk'⟩ :=
+  getElem_insertIdx_add_succ _ _ _ _ _
 
 set_option linter.unnecessarySimpa false in
 theorem insertIdx_injective (n : ℕ) (x : α) :

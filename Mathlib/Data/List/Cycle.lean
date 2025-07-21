@@ -108,7 +108,7 @@ For example:
 * `next [1, 1, 2, 3, 2] 1 _ = 1`
 -/
 def next (l : List α) (x : α) (h : x ∈ l) : α :=
-  nextOr l x (l.get ⟨0, length_pos_of_mem h⟩)
+  nextOr l x <| l[0]'(length_pos_of_mem h)
 
 /-- Given an element `x : α` of `l : List α` such that `x ∈ l`, get the previous
 element of `l`. This works from head to tail, (including a check for last element)

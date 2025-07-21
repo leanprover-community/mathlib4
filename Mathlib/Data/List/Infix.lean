@@ -105,12 +105,16 @@ theorem mem_of_mem_dropLast (h : a ∈ l.dropLast) : a ∈ l :=
 attribute [gcongr] Sublist.drop
 attribute [refl] prefix_refl suffix_refl infix_refl
 
-theorem concat_get_prefix {x y : List α} (h : x <+: y) (hl : x.length < y.length) :
-    x ++ [y.get ⟨x.length, hl⟩] <+: y := by
+theorem concat_getElem_prefix {x y : List α} (h : x <+: y) (hl : x.length < y.length) :
+    x ++ [y[x.length]] <+: y := by
   use y.drop (x.length + 1)
   nth_rw 1 [List.prefix_iff_eq_take.mp h]
   convert List.take_append_drop (x.length + 1) y using 2
-  rw [← List.take_concat_get, List.concat_eq_append]; rfl
+  rw [← List.take_concat_get, List.concat_eq_append]
+
+theorem concat_get_prefix {x y : List α} (h : x <+: y) (hl : x.length < y.length) :
+    x ++ [y.get ⟨x.length, hl⟩] <+: y :=
+  concat_getElem_prefix h _
 
 instance decidableInfix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ <:+: l₂)
   | [], l₂ => isTrue ⟨[], l₂, rfl⟩

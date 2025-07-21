@@ -13,6 +13,17 @@ namespace List
 
 variable {α : Type*} (p : α → Bool)
 
+theorem dropWhile_getElem_zero_not (l : List α) (hl : 0 < (l.dropWhile p).length) :
+    ¬p (l.dropWhile p)[0] := by
+  induction l with
+  | nil => cases hl
+  | cons hd tl IH =>
+    simp_all only [dropWhile]
+    cases p hd
+    · simp only [hp]
+      apply IH
+    · simp [hp]
+
 theorem dropWhile_get_zero_not (l : List α) (hl : 0 < (l.dropWhile p).length) :
     ¬p ((l.dropWhile p).get ⟨0, hl⟩) := by
   induction l with

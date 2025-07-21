@@ -476,8 +476,8 @@ theorem forall_mem_iff_getElem {l : List α} {p : α → Prop} :
 
 theorem get_tail (l : List α) (i) (h : i < l.tail.length)
     (h' : i + 1 < l.length := (by simp only [length_tail] at h; omega)) :
-    l.tail.get ⟨i, h⟩ = l.get ⟨i + 1, h'⟩ := by
-  cases l <;> [cases h; rfl]
+    l.tail.get ⟨i, h⟩ = l.get ⟨i + 1, h'⟩ :=
+  getElem_tail _
 
 /-! ### sublists -/
 
@@ -594,9 +594,8 @@ theorem get_length_sub_one {l : List α} (h : l.length - 1 < l.length) :
   (getLast_eq_getElem _).symm
 
 theorem take_one_drop_eq_of_lt_length {l : List α} {n : ℕ} (h : n < l.length) :
-    (l.drop n).take 1 = [l.get ⟨n, h⟩] := by
+    (l.drop n).take 1 = [l[n]] := by
   rw [drop_eq_getElem_cons h, take, take]
-  simp
 
 theorem ext_getElem?' {l₁ l₂ : List α} (h' : ∀ n < max l₁.length l₂.length, l₁[n]? = l₂[n]?) :
     l₁ = l₂ := by
@@ -669,7 +668,7 @@ theorem get_reverse' (l : List α) (n) (hn') :
     l.reverse.get n = l.get ⟨l.length - 1 - n, hn'⟩ := by
   simp
 
-theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) : l = [l.get ⟨0, by omega⟩] := by
+theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) : l = [l[0]] := by
   refine ext_get (by convert h) fun n h₁ h₂ => ?_
   simp
   congr

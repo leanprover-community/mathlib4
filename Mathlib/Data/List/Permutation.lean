@@ -396,8 +396,8 @@ theorem getElem_permutations'Aux (s : List α) (x : α) (n : ℕ)
 
 theorem get_permutations'Aux (s : List α) (x : α) (n : ℕ)
     (hn : n < length (permutations'Aux x s)) :
-    (permutations'Aux x s).get ⟨n, hn⟩ = s.insertIdx n x := by
-  simp [getElem_permutations'Aux]
+    (permutations'Aux x s).get ⟨n, hn⟩ = s.insertIdx n x :=
+  getElem_permutations'Aux _ _ _ hn
 
 theorem count_permutations'Aux_self [DecidableEq α] (l : List α) (x : α) :
     count (x :: l) (permutations'Aux x l) = length (takeWhile (x = ·) l) + 1 := by
