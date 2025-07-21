@@ -49,8 +49,10 @@ instance Module.Free.mulOpposite [Semiring R] [AddCommMonoid H] [Module R H]
   let ⟨b⟩ := exists_basis (R := R) (M := H)
   of_basis b.2.mulOpposite
 
-theorem MulOpposite.finrank [Semiring R] [AddCommMonoid H] [Module R H] :
-    Module.finrank R Hᵐᵒᵖ = Module.finrank R Hᵐᵒᵖ := rfl
+theorem MulOpposite.finrank [DivisionRing R] [AddCommGroup H] [Module R H] :
+    Module.finrank R Hᵐᵒᵖ = Module.finrank R H := by
+  let b := Basis.ofVectorSpace R H
+  rw [Module.finrank_eq_nat_card_basis b, Module.finrank_eq_nat_card_basis b.mulOpposite]
 
 theorem MulOpposite.rank [Semiring R] [StrongRankCondition R] [AddCommMonoid H] [Module R H]
     [Module.Free R H] : Module.rank R Hᵐᵒᵖ = Module.rank R H :=
