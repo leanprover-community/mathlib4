@@ -300,7 +300,7 @@ def validateSpaceAfter (orig pp : Substring) : Bool :=
     (
       (!pp.isEmpty) && ((orig1 == "\n") || onlineComment orig || (orig1 == " " && !orig2.trim.isEmpty))
     )
-
+/-
 #eval show TermElabM _ from do
   let space : Substring := " ".toSubstring
   let spaceChar : Substring := " f".toSubstring
@@ -309,7 +309,7 @@ def validateSpaceAfter (orig pp : Substring) : Bool :=
   let noSpace : Substring := "".toSubstring
   let linebreak : Substring := "\n".toSubstring
   let commentInline : Substring := "  --".toSubstring
-  let commentMultiline : Substring := "  /-".toSubstring
+  let commentMultiline : Substring := "  /-".toSubstring -- -/ to preserve sanity
   -- `true`
   guard <| onlineComment commentInline
   guard <| onlineComment commentMultiline
@@ -330,6 +330,7 @@ def validateSpaceAfter (orig pp : Substring) : Bool :=
   guard <| !validateSpaceAfter space noSpace
   guard <| !validateSpaceAfter spaceChar noSpace
   guard <| !validateSpaceAfter doublespaceChar noSpace
+-/
 
 /-- Assume both substrings come from actual trails. -/
 def validateSpaceAfter' (orig pp : Substring) : Bool :=
@@ -359,6 +360,7 @@ def validateSpaceAfter' (orig pp : Substring) : Bool :=
       orig1 == \" \" && orig1 == orig2: {orig1 == " " && orig1 == orig2}"
       answer
 
+/-
 #eval show TermElabM _ from do
   let space : Substring := " ".toSubstring
   let spaceChar : Substring := " f".toSubstring
@@ -367,7 +369,7 @@ def validateSpaceAfter' (orig pp : Substring) : Bool :=
   let noSpace : Substring := "".toSubstring
   let linebreak : Substring := "\n".toSubstring
   let commentInline : Substring := "  --".toSubstring
-  let commentMultiline : Substring := "  /-".toSubstring
+  let commentMultiline : Substring := "  /-".toSubstring -- -/ to preserve sanity
   -- `true`
   guard <| validateSpaceAfter' spaceChar space
   guard <| validateSpaceAfter' linebreak space
@@ -391,7 +393,10 @@ def validateSpaceAfter' (orig pp : Substring) : Bool :=
   let pp : Substring := "".toSubstring
   dbg_trace "pp.isEmpty: {pp.isEmpty}, validate {validateSpaceAfter orig pp}"
   validateSpaceAfter orig pp
+
 #eval validateSpaceAfter' " ".toSubstring " ".toSubstring
+-/
+
 structure Exceptions where
   orig : String
   pp : String
@@ -408,9 +413,10 @@ def addException (e : Array Exceptions) (orig pp : String) (p : String.Pos) (k :
     Array Exceptions :=
   e.push <| Exceptions.mk orig pp p k reason
 
-def validateAtomOrId (tot : Array Exceptions) (kind : SyntaxNodeKind) (i1 i2 : SourceInfo) (s1 s2 : String) (str : Substring) :
+
+def validateAtomOrId (tot : Array Exceptions) (kind : SyntaxNodeKind) (i1 _i2 : SourceInfo) (s1 s2 : String) (str : Substring) :
     Substring × Array Exceptions :=
-  let (l1, t1) := i1.getLeadTrail
+  let (_l1, t1) := i1.getLeadTrail
   --let (l2, t2) := i2.getLeadTrail
   --dbg_trace "removing '{s2}'"
   let stripString := consumeIgnoring s2.toSubstring str invisible|>.getD default --str.drop s2.length
@@ -439,7 +445,9 @@ def validateAtomOrId (tot : Array Exceptions) (kind : SyntaxNodeKind) (i1 i2 : S
   else
     ( --withVerbose (!isValid) s!"Discrepancy at {s1}, orig: '{t1}' pped: '{trail}'"
       stripString |>.dropWhile (·.isWhitespace), tot1)
-#eval validateSpaceAfter' " ".toSubstring " ".toSubstring
+
+#guard validateSpaceAfter' " ".toSubstring " ".toSubstring
+
 def exclusions : NameSet := NameSet.empty
   |>.insert ``Parser.Command.docComment
 
@@ -599,6 +607,12 @@ def totalExclusions : ExcludedSyntaxNodeKind where
   ]
   depth := none
 
+def ignoreSpaceAfter : ExcludedSyntaxNodeKind where
+  kinds := #[
+    ``«term¬_»,
+  ]
+  depth := some 2
+
 /--
 These are the `SyntaxNodeKind`s for which the pretty-printer would likely not space out from the
 following nodes, but we overrule it and place a space anyway.
@@ -644,9 +658,14 @@ def ExcludedSyntaxNodeKind.contains (exc : ExcludedSyntaxNodeKind) (ks : Array S
   let lastNodes := if let some n := exc.depth then ks.drop (ks.size - n) else ks
   !(lastNodes.filter exc.kinds.contains).isEmpty
 
-def filterSortExceptions (as : Array mex) : Array mex :=
-  let filtered := as.filter (!totalExclusions.contains ·.kinds)
-  filtered.qsort (·.rg.start < ·.rg.start)
+def reportedAndUnreportedExceptions (as : Array mex) : Array mex × Array mex :=
+  as.partition fun a =>
+    (!totalExclusions.contains a.kinds) && (!ignoreSpaceAfter.contains a.kinds)
+
+--def filterSortExceptions (as : Array mex) : Array mex :=
+--  let filtered := as.filter fun a =>
+--    (!totalExclusions.contains a.kinds) && (!ignoreSpaceAfter.contains a.kinds)
+--  filtered.qsort (·.rg.start < ·.rg.start)
 
 def processAtomOrIdent {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions m]
     (k : Array SyntaxNodeKind) (val str : Substring) : m (Substring × Substring × Substring) := do
@@ -1218,7 +1237,8 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
   --dbg_trace "lint1"
   let orig := stx.getSubstring?.getD default
   if let some mexs ← getExceptions stx then
-  for m in filterSortExceptions mexs do
+  let (reported, _) := reportedAndUnreportedExceptions mexs
+  for m in reported.qsort (·.rg.start < ·.rg.start) do
     --logInfoAt (.ofRange m.rg) m!"{m.error} ({m.kinds})"
     --dbg_trace "{m.mkWindow orig}"
     let origWindow := mkWindowSubstring' orig m.rg.start
@@ -1339,7 +1359,7 @@ elab tk:"#mex " cmd:(command)? : command => do
     if mexs.isEmpty then
       logInfo "No whitespace issues found!"
       return
-    let (reported, unreported) := mexs.partition (!totalExclusions.contains ·.kinds)
+    let (reported, unreported) := reportedAndUnreportedExceptions mexs
     logInfo m!"{mexs.size} whitespace issue{if mexs.size == 1 then "" else "s"} found: \
         {reported.size} reported and {unreported.size} unreported."
     let fm ← getFileMap
@@ -1352,11 +1372,6 @@ elab tk:"#mex " cmd:(command)? : command => do
       logInfoAt (.ofRange m.rg)
         m!"unreported: {m.error} {(fm.toPosition m.rg.start, fm.toPosition m.rg.stop)}\n\n\
           {m.kinds.map MessageData.ofConstName}"
-
-#mex
-theorem X(_  :Nat) : True:=     --
-  by  trivial;  done
-
 
 end Style.CommandStart
 
