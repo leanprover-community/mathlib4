@@ -265,7 +265,7 @@ lemma mem_homologicalKernel_trW_iff {X Y : C} (f : X ⟶ Y) :
   · intros
     constructor <;> infer_instance
 
-@[deprecated (since := "2025-04-19")]
+@[deprecated (since := "2025-07-21")]
 alias mem_homologicalKernel_W_iff := mem_homologicalKernel_trW_iff
 
 open ComposableArrows
