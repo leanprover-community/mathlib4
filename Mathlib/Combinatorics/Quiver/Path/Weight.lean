@@ -5,7 +5,6 @@ Authors: Matteo Cipollina
 -/
 import Mathlib.Combinatorics.Quiver.Path
 import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Combinatorics.Quiver.Path
 import Mathlib.Data.Real.Basic
 
 /-!
@@ -13,10 +12,6 @@ import Mathlib.Data.Real.Basic
 
 This file defines the weight of a path in a quiver. The weight of a path is the product of the
 weights of its edges, where weights are taken from a monoid.
-
-This is a foundational component for developing graph-based algorithms and theorems where edges
-have associated values, such as in the Perron-Frobenius theorem for matrices, which can be viewed as
-weighted adjacency matrices of graphs.
 
 ## Main definitions
 
