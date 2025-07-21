@@ -140,6 +140,11 @@ variable (x : E) (a : ℝ)
 
 --#check a • x
 
+lemma testg (a b c : ℝ) (h : 0 < a) (h2: a ≤ b) : 0 < b := by
+  exact gt_of_ge_of_gt h2 h
+  exact inv_mul_lt_one₀ h
+--  exact Iff.symm (mul_lt_mul_left h)
+
 
 lemma test5 : ∃ (s₁ : Finset F),
     ↑f ∈ Submodule.span 𝕜 (Set.range (ContinuousLinearMap.toLinearMap₁₂
@@ -159,7 +164,34 @@ lemma test5 : ∃ (s₁ : Finset F),
   have e2 : x ∈ (s₁.sup B.toSeminormFamily).ball 0 r  ↔ (s₁.sup B.toSeminormFamily) x < r := by
     aesop
   rw [e2] at e1
-  --let y := (r * ((s₁.sup B.toSeminormFamily) x)⁻¹) • x
+  let y := ((r * ((s₁.sup B.toSeminormFamily) x + 1)⁻¹) : 𝕜) • x
+  have e3 : (s₁.sup B.toSeminormFamily) y < r := by
+    subst y
+    rw [SeminormClass.map_smul_eq_mul]
+    rw [norm_mul]
+    rw [norm_algebraMap', Real.norm_eq_abs]
+    rw [abs_eq_self.mpr (le_of_lt hr1)]
+    rw [norm_algebraMap', norm_inv]
+    rw [mul_assoc]
+    conv_rhs => rw [← mul_one r]
+    rw [mul_lt_mul_left hr1]
+    have i1 : 0 < (s₁.sup B.toSeminormFamily) x + 1 := by
+      have i2 : 0 ≤ (s₁.sup B.toSeminormFamily) x := apply_nonneg _ _
+      have i3 : 1 ≤ (s₁.sup B.toSeminormFamily) x + 1 := by exact le_add_of_nonneg_left i2
+      have i0 : (0 : ℝ)  < (1 : ℝ)  := by exact Real.zero_lt_one
+      exact  lt_of_lt_of_le i0 i3
+    rw [inv_mul_lt_one₀]
+    rw [Real.norm_eq_abs]
+    rw [abs_eq_self.mpr (le_of_lt i1)]
+    rw [lt_add_iff_pos_right]
+    exact Real.zero_lt_one
+    aesop
+
+
+
+
+    --aesop?
+
   --let a := (r+1) * ((s₁.sup B.toSeminormFamily) x)
   sorry
   /-
