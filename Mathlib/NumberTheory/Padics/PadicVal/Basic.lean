@@ -8,6 +8,7 @@ import Mathlib.NumberTheory.Padics.PadicVal.Defs
 import Mathlib.Data.Nat.MaxPowDiv
 import Mathlib.Data.Nat.Multiplicity
 import Mathlib.Data.Nat.Prime.Int
+import Mathlib.Data.Nat.Factorization.Defs
 
 /-!
 # `p`-adic Valuation
@@ -106,6 +107,11 @@ theorem padicValNat_eq_maxPowDiv : @padicValNat = @maxPowDiv := by
         rw [go, if_neg]; simp
     · intro h
       simp [h]
+
+lemma _root_.padicValNat_eq_primeFactorsList_count [hp : Fact p.Prime] {m : ℕ} :
+    padicValNat p m = m.primeFactorsList.count p := by
+  induction m <;>
+  simp [primeFactorsList_count_eq, padicValNat_def, multiplicity_eq_factorization hp.out]
 
 end padicValNat
 

@@ -6,6 +6,7 @@ Authors:  Yi. Yuan
 import Mathlib.NumberTheory.LSeries.PrimesInAP
 import Mathlib.NumberTheory.LucasLehmer
 import Mathlib.NumberTheory.Multiplicity
+import Mathlib.Tactic.Simproc.Factors
 
 open Nat Int
 
@@ -210,10 +211,6 @@ lemma bonza_fExample : fExample ∈ bonza := by
     · norm_num
     · exact Nat.two_pow_pos (padicValNat 2 n + 2)
 
-lemma calc_padicValNat_two_four : padicValNat 2 4 = 2 := by
-  have : 4 = 2 ^ 2 := by norm_num
-  rw [this, padicValNat.prime_pow]
-
 theorem apply_le {f : ℕ → ℕ} (hf : f ∈ bonza) {n : ℕ} (hn : 0 < n) : f n ≤ 4 * n := by
   by_cases hnf : ∀ x, x > 0 → f x = x
   · simpa [hnf n hn] using by omega
@@ -234,9 +231,9 @@ theorem apply_le {f : ℕ → ℕ} (hf : f ∈ bonza) {n : ℕ} (hn : 0 < n) : f
           rwa [hk, propext (Nat.pow_le_pow_iff_right Nat.le.refl),
             ← padicValNat_dvd_iff_le (by omega)]
         _ = 4 * 2 ^ padicValNat 2 n := by
-          have := padicValNat.pow_two_sub_pow (x := 3) (y := 1) (by norm_num) (by norm_num)
-            (by norm_num) (n := n) (by omega) ch
-          simp [calc_padicValNat_two_four] at this
+          have : padicValNat 2 (3 ^ n - 1) + 1 = 3 + padicValNat 2 n := by
+            simpa [padicValNat_eq_primeFactorsList_count] using padicValNat.pow_two_sub_pow (x := 3)
+              (y := 1) (by norm_num) (by norm_num) (by norm_num) (by omega) ch
           have : padicValNat 2 (3 ^ n - 1) = 2 + padicValNat 2 n := by omega
           rw [congrArg (HPow.hPow 2) this, Nat.pow_add]
         _ ≤ _ := Nat.mul_le_mul_left 4 (Nat.le_of_dvd hn pow_padicValNat_dvd)
@@ -256,7 +253,5 @@ theorem result : IsLeast {c : ℝ | ∀ f : ℕ → ℕ, f ∈ bonza → ∀ n, 
     exact apply_le hf hn
   · intro c h
     have := h fExample bonza_fExample 4 (by norm_num)
-    simp [fExample, calc_padicValNat_two_four] at this
-    have : c ≥ 16 / 4 := (div_le_iff₀ (by norm_num)).mpr this
-    norm_num at this
-    exact this
+    have : 16 ≤ c * 4 := by simpa [fExample, padicValNat_eq_primeFactorsList_count] using this
+    linarith
