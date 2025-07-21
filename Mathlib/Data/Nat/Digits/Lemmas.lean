@@ -57,6 +57,26 @@ theorem digits_len (b n : ℕ) (hb : 1 < b) (hn : n ≠ 0) : (b.digits n).length
     contrapose! h
     exact div_eq_of_lt h
 
+theorem digits_length_le_of_lt {b k : ℕ} (hb : 1 < b) (n : ℕ) (hn1 : n < b ^ k) :
+    (b.digits n).length ≤ k := by
+  by_cases h : n = 0
+  · simp [h]
+  rw [digits_len b n hb h]
+  exact (lt_pow_iff_log_lt hb h).mp hn1
+
+theorem digits_length_le_iff {b k : ℕ} (hb : 1 < b) (n : ℕ) :
+    (b.digits n).length ≤ k ↔ n < b ^ k  := by
+  by_cases h : n = 0
+  · simp [h]
+    positivity
+  constructor
+  · intro hbn
+    rw [digits_len b n hb h] at hbn
+    rw [lt_pow_iff_log_lt hb h]
+    exact hbn
+  · intro h
+    exact digits_length_le_of_lt hb n h
+
 theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :
     (digits b m).getLast (digits_ne_nil_iff_ne_zero.mpr hm) ≠ 0 := by
   rcases b with (_ | _ | b)
