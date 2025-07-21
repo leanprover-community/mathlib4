@@ -126,6 +126,7 @@ usr_branch=$(git branch --show-current)
 echo
 echo "### [auto] checkout master and pull the latest changes"
 
+git fetch $MAIN_REMOTE master
 git checkout master
 git pull $MAIN_REMOTE master
 

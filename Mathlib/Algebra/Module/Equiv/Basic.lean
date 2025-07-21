@@ -553,17 +553,28 @@ def arrowSemiCongrAddEquiv (e₁ : M₁ ≃ₛₗ[σ₁₃] M₃) (e₂ : M₂ �
 
 end
 
-variable {M₂₁ M₂₂ : Type*} [Semiring R] [AddCommMonoid M₁] [AddCommMonoid M₂]
-  [AddCommMonoid M₂₁] [AddCommMonoid M₂₂] [Module R M₁] [Module R M₂] [Module R M₂₁] [Module R M₂₂]
+section Semilinear
+
+variable {R₁ R₂ R₁' R₂' : Type*} {M₁ M₂ M₁' M₂' : Type*}
+variable [Semiring R₁] [Semiring R₂] [Semiring R₁'] [Semiring R₂']
+variable [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₁'] [AddCommMonoid M₂']
+variable [Module R₁ M₁] [Module R₂ M₂] [Module R₁' M₁'] [Module R₂' M₂']
+variable {σ₁₂ : R₁ →+* R₂} {σ₂₁ : R₂ →+* R₁} {σ₁'₂' : R₁' →+* R₂'} {σ₂'₁' : R₂' →+* R₁'}
+variable {σ₁₁' : R₁ →+* R₁'} {σ₂₂' : R₂ →+* R₂'}
+variable {σ₂₁' : R₂ →+* R₁'} {σ₁₂' : R₁ →+* R₂'}
+variable [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
+variable [RingHomInvPair σ₁'₂' σ₂'₁'] [RingHomInvPair σ₂'₁' σ₁'₂']
+variable [RingHomCompTriple σ₁₁' σ₁'₂' σ₁₂'] [RingHomCompTriple σ₂₁ σ₁₂' σ₂₂']
+variable [RingHomCompTriple σ₂₂' σ₂'₁' σ₂₁'] [RingHomCompTriple σ₁₂ σ₂₁' σ₁₁']
 
 /-- A linear isomorphism between the domains and codomains of two spaces of linear maps gives an
 additive isomorphism between the two function spaces.
 
 See also `LinearEquiv.arrowCongr` for the linear version of this isomorphism. -/
-@[simps] def arrowCongrAddEquiv (e₁ : M₁ ≃ₗ[R] M₂) (e₂ : M₂₁ ≃ₗ[R] M₂₂) :
-    (M₁ →ₗ[R] M₂₁) ≃+ (M₂ →ₗ[R] M₂₂) where
-  toFun f := e₂.comp (f.comp e₁.symm.toLinearMap)
-  invFun f := e₂.symm.comp (f.comp e₁.toLinearMap)
+@[simps] def arrowCongrAddEquiv (e₁ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₂ : M₁' ≃ₛₗ[σ₁'₂'] M₂') :
+    (M₁ →ₛₗ[σ₁₁'] M₁') ≃+ (M₂ →ₛₗ[σ₂₂'] M₂') where
+  toFun f := (e₂.comp f).comp e₁.symm.toLinearMap
+  invFun f := (e₂.symm.comp f).comp e₁.toLinearMap
   left_inv f := by
     ext x
     simp only [symm_apply_apply, Function.comp_apply, coe_comp, coe_coe]
@@ -574,20 +585,23 @@ See also `LinearEquiv.arrowCongr` for the linear version of this isomorphism. -/
     ext x
     simp only [map_add, add_apply, Function.comp_apply, coe_comp, coe_coe]
 
-/-- A linear isomorphism between the domains an codomains of two spaces of linear maps gives a
-linear isomorphism with respect to an action on the domains. -/
-@[simps] def domMulActCongrRight [Semiring S] [Module S M₁] [SMulCommClass R S M₁]
-    (e₂ : M₂₁ ≃ₗ[R] M₂₂) : (M₁ →ₗ[R] M₂₁) ≃ₗ[Sᵈᵐᵃ] (M₁ →ₗ[R] M₂₂) where
-  __ := arrowCongrAddEquiv (.refl ..) e₂
-  map_smul' := DomMulAct.mk.forall_congr_right.mp fun _ _ ↦ by ext; simp
-
 /-- If `M` and `M₂` are linearly isomorphic then the endomorphism rings of `M` and `M₂`
 are isomorphic.
 
 See `LinearEquiv.conj` for the linear version of this isomorphism. -/
-@[simps!] def conjRingEquiv (e : M₁ ≃ₗ[R] M₂) : Module.End R M₁ ≃+* Module.End R M₂ where
+@[simps!] def conjRingEquiv (e : M₁ ≃ₛₗ[σ₁₂] M₂) : Module.End R₁ M₁ ≃+* Module.End R₂ M₂ where
   __ := arrowCongrAddEquiv e e
   map_mul' _ _ := by ext; simp [arrowCongrAddEquiv]
+
+/-- A linear isomorphism between the domains an codomains of two spaces of linear maps gives a
+linear isomorphism with respect to an action on the domains. -/
+@[simps] def domMulActCongrRight [Semiring S] [Module S M₁]
+    [SMulCommClass R₁ S M₁] [RingHomCompTriple σ₁₂' σ₂'₁' σ₁₁']
+    (e₂ : M₁' ≃ₛₗ[σ₁'₂'] M₂') : (M₁ →ₛₗ[σ₁₁'] M₁') ≃ₗ[Sᵈᵐᵃ] (M₁ →ₛₗ[σ₁₂'] M₂') where
+  __ := arrowCongrAddEquiv (.refl ..) e₂
+  map_smul' := DomMulAct.mk.forall_congr_right.mp fun _ _ ↦ by ext; simp
+
+end Semilinear
 
 end Semiring
 
@@ -602,49 +616,110 @@ open LinearMap
 def smulOfUnit (a : Rˣ) : M ≃ₗ[R] M :=
   DistribMulAction.toLinearEquiv R M a
 
+section arrowCongr
+
+-- Difference from above: `R₁` and `R₂` are commutative
+/-!
+The modules for `arrowCongr` and its lemmas below are related via the semilinearities
+```
+M₁  ←⎯⎯⎯σ₁₂⎯⎯⎯→ M₂  ←⎯⎯⎯σ₂₃⎯⎯⎯→ M₃
+⏐               ⏐               ⏐
+σ₁₁'            σ₂₂'            σ₃₃'
+↓               ↓               ↓
+M₁' ←⎯⎯σ₁'₂'⎯⎯→ M₂' ←⎯⎯σ₂'₃'⎯⎯→ M₃
+⏐               ⏐
+σ₁'₁''          σ₂'₂''
+↓               ↓
+M₁''←⎯σ₁''₂''⎯→ M₂''
+```
+where the horizontal direction corresponds to the `≃ₛₗ`s, and is needed for `arrowCongr_trans`,
+while the vertical direction corresponds to the `→ₛₗ`s, and is needed `arrowCongr_comp`.
+
+`Rᵢ` is not necessarily commutative, but `Rᵢ'` and `Rᵢ''` are.
+-/
+variable {R₁ R₂ R₃ R₁' R₂' R₃' R₁'' R₂'' : Type*} {M₁ M₂ M₃ M₁' M₂' M₃' M₁'' M₂'' : Type*}
+variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
+variable [CommSemiring R₁'] [CommSemiring R₂'] [CommSemiring R₃']
+variable [CommSemiring R₁''] [CommSemiring R₂'']
+variable [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [AddCommMonoid M₁'] [AddCommMonoid M₂'] [AddCommMonoid M₃']
+variable [AddCommMonoid M₁''] [AddCommMonoid M₂'']
+variable [Module R₁ M₁] [Module R₂ M₂] [Module R₃ M₃]
+variable [Module R₁' M₁'] [Module R₂' M₂'] [Module R₃' M₃']
+variable [Module R₁'' M₁''] [Module R₂'' M₂'']
+-- horizontal edges and closures
+variable {σ₁₂ : R₁ →+* R₂} {σ₂₁ : R₂ →+* R₁}
+variable {σ₂₃ : R₂ →+* R₃} {σ₃₂ : R₃ →+* R₂}
+variable {σ₁₃ : R₁ →+* R₃} {σ₃₁ : R₃ →+* R₁}
+variable {σ₁'₂' : R₁' →+* R₂'} {σ₂'₁' : R₂' →+* R₁'}
+variable {σ₂'₃' : R₂' →+* R₃'} {σ₃'₂' : R₃' →+* R₂'}
+variable {σ₁'₃' : R₁' →+* R₃'} {σ₃'₁' : R₃' →+* R₁'}
+-- vertical edges and closures
+variable {σ₁''₂'' : R₁'' →+* R₂''} {σ₂''₁'' : R₂'' →+* R₁''}
+variable {σ₁₁' : R₁ →+* R₁'} {σ₂₂' : R₂ →+* R₂'} {σ₃₃' : R₃ →+* R₃'}
+variable {σ₁'₁'' : R₁' →+* R₁''} {σ₂'₂'' : R₂' →+* R₂''}
+variable {σ₁₁'' : R₁ →+* R₁''} {σ₂₂'' : R₂ →+* R₂''}
+-- diagonals
+variable {σ₂₁' : R₂ →+* R₁'} {σ₁₂' : R₁ →+* R₂'}
+variable {σ₃₂' : R₃ →+* R₂'} {σ₂₃' : R₂ →+* R₃'}
+variable {σ₃₁' : R₃ →+* R₁'} {σ₁₃' : R₁ →+* R₃'}
+variable {σ₂'₁'' : R₂' →+* R₁''} {σ₁'₂'' : R₁' →+* R₂''}
+variable {σ₂₁'' : R₂ →+* R₁''} {σ₁₂'' : R₁ →+* R₂''}
+variable [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
+variable [RingHomInvPair σ₁'₂' σ₂'₁'] [RingHomInvPair σ₂'₁' σ₁'₂']
+variable [RingHomInvPair σ₂₃ σ₃₂] [RingHomInvPair σ₃₂ σ₂₃]
+variable [RingHomInvPair σ₂'₃' σ₃'₂'] [RingHomInvPair σ₃'₂' σ₂'₃']
+variable [RingHomInvPair σ₁₃ σ₃₁] [RingHomInvPair σ₃₁ σ₁₃]
+variable [RingHomInvPair σ₁'₃' σ₃'₁'] [RingHomInvPair σ₃'₁' σ₁'₃']
+variable [RingHomInvPair σ₁''₂'' σ₂''₁''] [RingHomInvPair σ₂''₁'' σ₁''₂'']
+variable [RingHomCompTriple σ₁₁' σ₁'₁'' σ₁₁''] [RingHomCompTriple σ₂₂' σ₂'₂'' σ₂₂'']
+variable [RingHomCompTriple σ₁₁' σ₁'₂' σ₁₂'] [RingHomCompTriple σ₂₁ σ₁₂' σ₂₂']
+variable [RingHomCompTriple σ₂₂' σ₂'₁' σ₂₁'] [RingHomCompTriple σ₁₂ σ₂₁' σ₁₁']
+variable [RingHomCompTriple σ₁₁' σ₁'₃' σ₁₃'] [RingHomCompTriple σ₃₁ σ₁₃' σ₃₃']
+variable [RingHomCompTriple σ₃₃' σ₃'₁' σ₃₁'] [RingHomCompTriple σ₁₃ σ₃₁' σ₁₁']
+variable [RingHomCompTriple σ₂₂' σ₂'₃' σ₂₃'] [RingHomCompTriple σ₃₂ σ₂₃' σ₃₃']
+variable [RingHomCompTriple σ₃₃' σ₃'₂' σ₃₂'] [RingHomCompTriple σ₂₃ σ₃₂' σ₂₂']
+variable [RingHomCompTriple σ₁₁'' σ₁''₂'' σ₁₂''] [RingHomCompTriple σ₂₁ σ₁₂'' σ₂₂'']
+variable [RingHomCompTriple σ₂₂'' σ₂''₁'' σ₂₁''] [RingHomCompTriple σ₁₂ σ₂₁'' σ₁₁'']
+variable [RingHomCompTriple σ₁'₁'' σ₁''₂'' σ₁'₂''] [RingHomCompTriple σ₂'₁' σ₁'₂'' σ₂'₂'']
+variable [RingHomCompTriple σ₂'₂'' σ₂''₁'' σ₂'₁''] [RingHomCompTriple σ₁'₂' σ₂'₁'' σ₁'₁'']
+variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₃₂ σ₂₁ σ₃₁]
+variable [RingHomCompTriple σ₁'₂' σ₂'₃' σ₁'₃'] [RingHomCompTriple σ₃'₂' σ₂'₁' σ₃'₁']
+
 /-- A linear isomorphism between the domains and codomains of two spaces of linear maps gives a
 linear isomorphism between the two function spaces.
 
 See `LinearEquiv.arrowCongrAddEquiv` for the additive version of this isomorphism that works
 over a not necessarily commutative semiring. -/
-def arrowCongr {R M₁ M₂ M₂₁ M₂₂ : Sort _} [CommSemiring R] [AddCommMonoid M₁] [AddCommMonoid M₂]
-    [AddCommMonoid M₂₁] [AddCommMonoid M₂₂] [Module R M₁] [Module R M₂] [Module R M₂₁]
-    [Module R M₂₂] (e₁ : M₁ ≃ₗ[R] M₂) (e₂ : M₂₁ ≃ₗ[R] M₂₂) : (M₁ →ₗ[R] M₂₁) ≃ₗ[R] M₂ →ₗ[R] M₂₂ where
+def arrowCongr (e₁ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₂ : M₁' ≃ₛₗ[σ₁'₂'] M₂') :
+    (M₁ →ₛₗ[σ₁₁'] M₁') ≃ₛₗ[σ₁'₂'] (M₂ →ₛₗ[σ₂₂'] M₂') where
   __ := arrowCongrAddEquiv e₁ e₂
-  map_smul' c f := by ext; simp [arrowCongrAddEquiv]
+  map_smul' c f := by ext; simp [arrowCongrAddEquiv, map_smulₛₗ]
 
 @[simp]
-theorem arrowCongr_apply {R M₁ M₂ M₂₁ M₂₂ : Sort _} [CommSemiring R] [AddCommMonoid M₁]
-    [AddCommMonoid M₂] [AddCommMonoid M₂₁] [AddCommMonoid M₂₂] [Module R M₁] [Module R M₂]
-    [Module R M₂₁] [Module R M₂₂] (e₁ : M₁ ≃ₗ[R] M₂) (e₂ : M₂₁ ≃ₗ[R] M₂₂) (f : M₁ →ₗ[R] M₂₁)
+theorem arrowCongr_apply (e₁ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₂ : M₁' ≃ₛₗ[σ₁'₂'] M₂') (f : M₁ →ₛₗ[σ₁₁'] M₁')
     (x : M₂) : arrowCongr e₁ e₂ f x = e₂ (f (e₁.symm x)) :=
   rfl
 
 @[simp]
-theorem arrowCongr_symm_apply {R M₁ M₂ M₂₁ M₂₂ : Sort _} [CommSemiring R] [AddCommMonoid M₁]
-    [AddCommMonoid M₂] [AddCommMonoid M₂₁] [AddCommMonoid M₂₂] [Module R M₁] [Module R M₂]
-    [Module R M₂₁] [Module R M₂₂] (e₁ : M₁ ≃ₗ[R] M₂) (e₂ : M₂₁ ≃ₗ[R] M₂₂) (f : M₂ →ₗ[R] M₂₂)
+theorem arrowCongr_symm_apply (e₁ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₂ : M₁' ≃ₛₗ[σ₁'₂'] M₂') (f : M₂ →ₛₗ[σ₂₂'] M₂')
     (x : M₁) : (arrowCongr e₁ e₂).symm f x = e₂.symm (f (e₁ x)) :=
   rfl
 
-theorem arrowCongr_comp {N N₂ N₃ : Sort _} [AddCommMonoid N] [AddCommMonoid N₂] [AddCommMonoid N₃]
-    [Module R N] [Module R N₂] [Module R N₃] (e₁ : M ≃ₗ[R] N) (e₂ : M₂ ≃ₗ[R] N₂) (e₃ : M₃ ≃ₗ[R] N₃)
-    (f : M →ₗ[R] M₂) (g : M₂ →ₗ[R] M₃) :
+theorem arrowCongr_comp
+    (e₁ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₂ : M₁' ≃ₛₗ[σ₁'₂'] M₂') (e₃ : M₁'' ≃ₛₗ[σ₁''₂''] M₂'')
+    (f : M₁ →ₛₗ[σ₁₁'] M₁') (g : M₁' →ₛₗ[σ₁'₁''] M₁'') :
     arrowCongr e₁ e₃ (g.comp f) = (arrowCongr e₂ e₃ g).comp (arrowCongr e₁ e₂ f) := by
   ext
   simp only [symm_apply_apply, arrowCongr_apply, LinearMap.comp_apply]
 
-theorem arrowCongr_trans {M₁ M₂ M₃ N₁ N₂ N₃ : Sort _} [AddCommMonoid M₁] [Module R M₁]
-    [AddCommMonoid M₂] [Module R M₂] [AddCommMonoid M₃] [Module R M₃] [AddCommMonoid N₁]
-    [Module R N₁] [AddCommMonoid N₂] [Module R N₂] [AddCommMonoid N₃] [Module R N₃]
-    (e₁ : M₁ ≃ₗ[R] M₂) (e₂ : N₁ ≃ₗ[R] N₂) (e₃ : M₂ ≃ₗ[R] M₃) (e₄ : N₂ ≃ₗ[R] N₃) :
-    (arrowCongr e₁ e₂).trans (arrowCongr e₃ e₄) = arrowCongr (e₁.trans e₃) (e₂.trans e₄) :=
+theorem arrowCongr_trans
+    (e₁ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₁' : M₁' ≃ₛₗ[σ₁'₂'] M₂')
+    (e₂ : M₂ ≃ₛₗ[σ₂₃] M₃) (e₂' : M₂' ≃ₛₗ[σ₂'₃'] M₃') :
+    ((arrowCongr e₁ e₁').trans (arrowCongr e₂ e₂' : (M₂ →ₛₗ[σ₂₂'] M₂') ≃ₛₗ[σ₂'₃'] _)) =
+      arrowCongr (e₁.trans e₂) (e₁'.trans e₂')
+      :=
   rfl
-
-/-- If `M₂` and `M₃` are linearly isomorphic then the two spaces of linear maps from `M` into `M₂`
-and `M` into `M₃` are linearly isomorphic. -/
-def congrRight (f : M₂ ≃ₗ[R] M₃) : (M →ₗ[R] M₂) ≃ₗ[R] M →ₗ[R] M₃ :=
-  arrowCongr (LinearEquiv.refl R M) f
 
 omit [Module R M₂] [Module R M₃] in
 /-- A semilinear isomorphism between two modules `M₂` and `M₃` induces a semilinear
@@ -718,42 +793,49 @@ themselves are linearly isomorphic.
 See `LinearEquiv.conjRingEquiv` for the isomorphism between endomorphism rings,
 which works over a not necessarily commutative semiring. -/
 -- TODO: upgrade to AlgEquiv (but this file currently cannot import AlgEquiv)
-def conj (e : M ≃ₗ[R] M₂) : Module.End R M ≃ₗ[R] Module.End R M₂ :=
+def conj (e : M₁' ≃ₛₗ[σ₁'₂'] M₂') : Module.End R₁' M₁' ≃ₛₗ[σ₁'₂'] Module.End R₂' M₂' :=
   arrowCongr e e
 
-theorem conj_apply (e : M ≃ₗ[R] M₂) (f : Module.End R M) :
-    e.conj f = ((↑e : M →ₗ[R] M₂).comp f).comp (e.symm : M₂ →ₗ[R] M) :=
+theorem conj_apply (e : M₁' ≃ₛₗ[σ₁'₂'] M₂') (f : Module.End R₁' M₁') :
+    e.conj f = ((↑e : M₁' →ₛₗ[σ₁'₂'] M₂').comp f).comp (e.symm : M₂' →ₛₗ[σ₂'₁'] M₁') :=
   rfl
 
-theorem conj_apply_apply (e : M ≃ₗ[R] M₂) (f : Module.End R M) (x : M₂) :
+theorem conj_apply_apply (e : M₁' ≃ₛₗ[σ₁'₂'] M₂') (f : Module.End R₁' M₁') (x : M₂') :
     e.conj f x = e (f (e.symm x)) :=
   rfl
 
-theorem symm_conj_apply (e : M ≃ₗ[R] M₂) (f : Module.End R M₂) :
-    e.symm.conj f = ((↑e.symm : M₂ →ₗ[R] M).comp f).comp (e : M →ₗ[R] M₂) :=
+theorem symm_conj_apply (e : M₁' ≃ₛₗ[σ₁'₂'] M₂') (f : Module.End R₂' M₂') :
+    e.symm.conj f = ((↑e.symm : M₂' →ₛₗ[σ₂'₁'] M₁').comp f).comp (e : M₁' →ₛₗ[σ₁'₂'] M₂') :=
   rfl
 
-theorem conj_comp (e : M ≃ₗ[R] M₂) (f g : Module.End R M) :
+theorem conj_comp (e : M₁' ≃ₛₗ[σ₁'₂'] M₂') (f g : Module.End R₁' M₁') :
     e.conj (g.comp f) = (e.conj g).comp (e.conj f) :=
   arrowCongr_comp e e e f g
 
-theorem conj_trans (e₁ : M ≃ₗ[R] M₂) (e₂ : M₂ ≃ₗ[R] M₃) :
+theorem conj_trans (e₁ : M₁' ≃ₛₗ[σ₁'₂'] M₂') (e₂ : M₂' ≃ₛₗ[σ₂'₃'] M₃') :
     e₁.conj.trans e₂.conj = (e₁.trans e₂).conj :=
   rfl
 
-@[simp] lemma conj_conj_symm (e : M ≃ₗ[R] M₂) (f : Module.End R M₂) :
+@[simp] lemma conj_conj_symm (e : M₁' ≃ₛₗ[σ₁'₂'] M₂') (f : Module.End R₂' M₂') :
     e.conj (e.symm.conj f) = f := by ext; simp [conj_apply]
 
-@[simp] lemma conj_symm_conj (e : M ≃ₗ[R] M₂) (f : Module.End R M) :
+@[simp] lemma conj_symm_conj (e : M₁' ≃ₛₗ[σ₁'₂'] M₂') (f : Module.End R₁' M₁') :
     e.symm.conj (e.conj f) = f := by ext; simp [conj_apply]
 
 @[simp]
-theorem conj_id (e : M ≃ₗ[R] M₂) : e.conj LinearMap.id = LinearMap.id := by
+theorem conj_id (e : M₁' ≃ₛₗ[σ₁'₂'] M₂') : e.conj LinearMap.id = LinearMap.id := by
   ext
   simp [conj_apply]
 
 @[simp]
 theorem conj_refl (f : Module.End R M) : (refl R M).conj f = f := rfl
+
+end arrowCongr
+
+/-- If `M₂` and `M₃` are linearly isomorphic then the two spaces of linear maps from `M` into `M₂`
+and `M` into `M₃` are linearly isomorphic. -/
+def congrRight (f : M₂ ≃ₗ[R] M₃) : (M →ₗ[R] M₂) ≃ₗ[R] M →ₗ[R] M₃ :=
+  arrowCongr (LinearEquiv.refl R M) f
 
 variable (M) in
 /-- An `R`-linear isomorphism between two `R`-modules `M₂` and `M₃` induces an `S`-linear
