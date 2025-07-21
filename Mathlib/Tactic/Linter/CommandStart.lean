@@ -592,18 +592,21 @@ Deeper nodes are *not* inspected.
 -/
 def totalExclusions : ExcludedSyntaxNodeKind where
   kinds := #[
-    ``Parser.Command.docComment, -- Prevents formatting of doc-strings.
-    ``Parser.Command.moduleDoc, -- Prevents formatting of module docs.
-    `Mathlib.Meta.setBuilder, -- Prevents formatting of `{a | ...}`.
-    ``Parser.Tactic.tacticSeqBracketed, -- Prevents formatting of `{ tactics }`.
-    ``Parser.Command.macro, -- Prevents formatting of `macro`.
-    ``Parser.Command.elab, -- Prevents formatting of `elab`.
-    ``Parser.Command.elab_rules, -- Prevents formatting of `elab_rules`.
-    `Mathlib.Meta.«term{_|_}», -- Prevents formatting of `{ f x y | (x : X) (y : Y) }`.
-    ``«term[_]», -- Prevents formatting of lists.
-    ``«term#[_,]», -- Prevents formatting of arrays.
-    ``Parser.Term.anonymousCtor, -- Prevents formatting of `⟨...⟩`.
-    ``Parser.Command.syntax, -- Prevents formatting of `syntax ...`.
+    -- Each entry prevents the formatting of...
+    ``Parser.Command.docComment, -- ... of doc-strings.
+    ``Parser.Command.moduleDoc, -- ... of module docs.
+    ``«term{_:_//_}», -- ... of `{a // ...}`.
+    `Mathlib.Meta.setBuilder, -- ... of `{a | ...}`.
+    ``Parser.Tactic.tacticSeqBracketed, -- ... of `{ tactics }`.
+    ``Parser.Command.macro, -- ... of `macro`.
+    ``Parser.Command.elab, -- ... of `elab`.
+    ``Parser.Command.elab_rules, -- ... of `elab_rules`.
+    `Mathlib.Meta.«term{_|_}», -- ... of `{ f x y | (x : X) (y : Y) }`.
+    ``«term[_]», -- ... of lists.
+    ``«term#[_,]», -- ... of arrays.
+    ``Parser.Term.anonymousCtor, -- ... of `⟨...⟩`.
+    ``Parser.Command.syntax, -- ... of `syntax ...`.
+    `Aesop.Frontend.Parser.declareRuleSets, -- ... of `declare_aesop_rule_sets`
   ]
   depth := none
 
