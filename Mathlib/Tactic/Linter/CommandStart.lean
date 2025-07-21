@@ -613,6 +613,7 @@ def totalExclusions : ExcludedSyntaxNodeKind where
     ``Parser.Term.anonymousCtor, -- of `⟨...⟩`.
     ``Parser.Command.syntax, -- of `syntax ...`.
     `Aesop.Frontend.Parser.declareRuleSets, -- of `declare_aesop_rule_sets`.
+    `Aesop.Frontend.Parser.featIdent, -- of `attribute [aesop safe (rule_sets := [CategoryTheory])] Subsingleton.elim`
     ``«term_::_», -- of lists.
     `Stream'.«term_::_», -- of `Stream'` notation, analogous to lists.
     `Batteries.Util.LibraryNote.commandLibrary_note___, -- of `library_note "Title"/-- Text -/`.
@@ -681,12 +682,16 @@ def reportedAndUnreportedExceptions (as : Array mex) : Array mex × Array mex :=
 --  filtered.qsort (·.rg.start < ·.rg.start)
 
 def processAtomOrIdent {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions m]
-    (k : Array SyntaxNodeKind) (val str : Substring) : m (Substring × Substring × Substring) := do
+    (verbose? : Bool) (k : Array SyntaxNodeKind) (val str : Substring) :
+    m (Substring × Substring × Substring) := do
   --dbg_trace "forceSpaceAfter.contains {k}: {forceSpaceAfter.contains k}\nStarting with '{val}'\n"
   let read := readWhile val str
-  if read == str && (!read.isEmpty) && (!k.contains `hygieneInfo) then
-    logWarning m!"No change at '{read}' {k}"
-  --dbg_trace k
+  if verbose? then
+    if read == str && (!read.isEmpty) then
+      logWarning m!"No change at{indentD m!"'{read}'"}\n{k.map MessageData.ofConstName}\n\n\
+      Maybe because the `SyntaxNodeKind`s contain:\n\
+      hygieneInfo: {k.contains `hygieneInfo}\n\
+      choice: {k.contains `choice}"
   let (next, strNew) :=
     -- Case `read = " "`
     if (read.take 1).toString == " "
@@ -729,7 +734,7 @@ def insertSpacesAux {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptio
     --    (" ".toSubstring, read.drop 1)
     --  else
     --    ("".toSubstring, read)
-    let (next, strNew, read) ← processAtomOrIdent (k.push (.str `ident rawVal.toString)) rawVal str
+    let (next, strNew, read) ← processAtomOrIdent verbose? (k.push (.str `ident rawVal.toString)) rawVal str
     if verbose? then
       dbg_trace
         s!"* ident '{rawVal}'\nStr: '{str}'\nRed: '{read}'\nNxt: '{next}'\nNew: '{strNew}'\n"
@@ -744,7 +749,7 @@ def insertSpacesAux {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptio
     --    (" ".toSubstring, read.drop 1)
     --  else
     --    ("".toSubstring, read)
-    let (next, strNew, read) ← processAtomOrIdent (k.push (.str `atom val)) val.toSubstring str
+    let (next, strNew, read) ← processAtomOrIdent verbose? (k.push (.str `atom val)) val.toSubstring str
     if verbose? then
       dbg_trace
         s!"* atom '{val}'\nStr: '{str}'\nRed: '{read}'\nNxt: '{next}'\nNew: '{strNew}'\n"
@@ -851,9 +856,10 @@ def captureException (env : Environment) (s : ParserFn) (input : String) : Excep
     .error ((s.mkError "end of input").toErrorMsg ictx)
 
 /-- Returning `none` denotes a processing error. -/
-def getExceptions (stx : Syntax) : CommandElabM (Option (Array mex)) := do
+def getExceptions (stx : Syntax) (verbose? : Bool := false) :
+    CommandElabM (Option (Array mex)) := do
   let stxNoTrail := stx.unsetTrailing
-  if let some stxNoSpaces ← insertSpaces false stx then
+  if let some stxNoSpaces ← insertSpaces verbose? stx then
     return stxNoTrail.compareSpaces #[] #[] stxNoSpaces
   else
     return none
@@ -1364,9 +1370,9 @@ elab tk:"#mex " cmd:(command)? : command => do
   elabCommand cmd
   --dbg_trace "here: {cmd}"
   if (← get).messages.hasErrors then
-    logWarningAt tk "{tktxt}: Command has errors"
+    logWarningAt tk m!"{tktxt}: Command has errors"
     return
-  match ← getExceptions cmd with
+  match ← getExceptions (verbose? := true) cmd with
   | none => logWarning m!"{tktxt}: Processing error"
   | some mexs =>
     if mexs.isEmpty then
