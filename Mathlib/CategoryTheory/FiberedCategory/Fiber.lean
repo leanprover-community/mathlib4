@@ -43,31 +43,32 @@ instance fiberCategory : Category (Fiber p S) where
   id a := ⟨𝟙 a.1, IsHomLift.id a.2⟩
   comp φ ψ := ⟨φ.val ≫ ψ.val, by have := φ.2; have := ψ.2; infer_instance⟩
 
+variable (p S) in
 /-- The functor including `Fiber p S` into `𝒳`. -/
 def fiberInclusion : Fiber p S ⥤ 𝒳 where
   obj a := a.1
   map φ := φ.1
 
-instance {a b : Fiber p S} (φ : a ⟶ b) : IsHomLift p (𝟙 S) (fiberInclusion.map φ) := φ.2
+instance {a b : Fiber p S} (φ : a ⟶ b) : IsHomLift p (𝟙 S) ((fiberInclusion p S).map φ) := φ.2
 
 @[ext]
 lemma hom_ext {a b : Fiber p S} {φ ψ : a ⟶ b}
-    (h : fiberInclusion.map φ = fiberInclusion.map ψ) : φ = ψ :=
+    (h : (fiberInclusion p S).map φ = (fiberInclusion p S).map ψ) : φ = ψ :=
   Subtype.ext h
 
-instance : (fiberInclusion : Fiber p S ⥤ _).Faithful where
+instance : (fiberInclusion p S).Faithful where
 
-lemma fiberInclusion_obj_inj : (fiberInclusion : Fiber p S ⥤ _).obj.Injective :=
+lemma fiberInclusion_obj_inj : (fiberInclusion p S).obj.Injective :=
   fun _ _ f ↦ Subtype.val_inj.1 f
 
 /-- For fixed `S : 𝒮` this is the natural isomorphism between `fiberInclusion ⋙ p` and the constant
 function valued at `S`. -/
 @[simps!]
-def fiberInclusionCompIsoConst : fiberInclusion ⋙ p ≅ (const (Fiber p S)).obj S :=
+def fiberInclusionCompIsoConst : fiberInclusion p S ⋙ p ≅ (const (Fiber p S)).obj S :=
   NatIso.ofComponents (fun X ↦ eqToIso X.2)
-    (fun φ ↦ by simp [IsHomLift.fac' p (𝟙 S) (fiberInclusion.map φ)])
+    (fun φ ↦ by simp [IsHomLift.fac' p (𝟙 S) ((fiberInclusion p S).map φ)])
 
-lemma fiberInclusion_comp_eq_const : fiberInclusion ⋙ p = (const (Fiber p S)).obj S :=
+lemma fiberInclusion_comp_eq_const : fiberInclusion p S ⋙ p = (const (Fiber p S)).obj S :=
   Functor.ext_of_iso fiberInclusionCompIsoConst (fun x ↦ x.2)
 
 /-- The object of the fiber over `S` corresponding to a `a : 𝒳` such that `p(a) = S`. -/
@@ -75,7 +76,7 @@ def mk {p : 𝒳 ⥤ 𝒮} {S : 𝒮} {a : 𝒳} (ha : p.obj a = S) : Fiber p S 
 
 @[simp]
 lemma fiberInclusion_mk {p : 𝒳 ⥤ 𝒮} {S : 𝒮} {a : 𝒳} (ha : p.obj a = S) :
-    fiberInclusion.obj (mk ha) = a :=
+    (fiberInclusion p S).obj (mk ha) = a :=
   rfl
 
 /-- The morphism in the fiber over `S` corresponding to a morphism in `𝒳` lifting `𝟙 S`. -/
@@ -85,7 +86,7 @@ def homMk (p : 𝒳 ⥤ 𝒮) (S : 𝒮) {a b : 𝒳} (φ : a ⟶ b) [IsHomLift 
 
 @[simp]
 lemma fiberInclusion_homMk (p : 𝒳 ⥤ 𝒮) (S : 𝒮) {a b : 𝒳} (φ : a ⟶ b) [IsHomLift p (𝟙 S) φ] :
-    fiberInclusion.map (homMk p S φ) = φ :=
+    (fiberInclusion p S).map (homMk p S φ) = φ :=
   rfl
 
 @[simp]
@@ -113,17 +114,17 @@ def inducedFunctor : C ⥤ Fiber p S where
 /-- Given a functor `F : C ⥤ 𝒳` such that `F ⋙ p` is constant at some `S : 𝒮`, then
 we get a natural isomorphism between `inducedFunctor _ ⋙ fiberInclusion` and `F`. -/
 @[simps!]
-def inducedFunctorCompIsoSelf : (inducedFunctor hF) ⋙ fiberInclusion ≅ F := .refl _
+def inducedFunctorCompIsoSelf : (inducedFunctor hF) ⋙ fiberInclusion p S ≅ F := .refl _
 
-lemma inducedFunctor_comp : (inducedFunctor hF) ⋙ fiberInclusion = F := rfl
+lemma inducedFunctor_comp : (inducedFunctor hF) ⋙ fiberInclusion p S = F := rfl
 
 @[simp]
 lemma inducedFunctor_comp_obj (X : C) :
-    fiberInclusion.obj ((inducedFunctor hF).obj X) = F.obj X := rfl
+    (fiberInclusion p S).obj ((inducedFunctor hF).obj X) = F.obj X := rfl
 
 @[simp]
 lemma inducedFunctor_comp_map {X Y : C} (f : X ⟶ Y) :
-    fiberInclusion.map ((inducedFunctor hF).map f) = F.map f := rfl
+    (fiberInclusion p S).map ((inducedFunctor hF).map f) = F.map f := rfl
 
 end
 
