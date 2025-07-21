@@ -13,7 +13,7 @@ If `G : D ⥤ C` is an exact functor between abelian categories,
 with a fully faithful right adjoint `F`, then `G` identifies
 `C` to the localization of `D` with respect to the
 class of morphisms `G.kernel.isoModSerre`, i.e. `D`
-is the localization of `C` with respect to Serre class
+is the localization of `C` with respect to the Serre class
 `G.kernel` consisting of the objects in `D`
 that are sent to a zero object by `G`.
 (We also translate this in terms of a left Bousfield localization.)
