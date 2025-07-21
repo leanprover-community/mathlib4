@@ -1252,8 +1252,8 @@ theorem Ideal.primeCompl_le_nonZeroDivisors {R : Type*} [CommSemiring R] [NoZero
 
 theorem Ideal.zero_notMem_primeCompl {R : Type*} [CommSemiring R] [Nontrivial R] [NoZeroDivisors R]
     (P : Ideal R) [P.IsPrime] : 0 ∉ P.primeCompl := by
-    by_contra!
-    exact zero_notMem_nonZeroDivisors <| primeCompl_le_nonZeroDivisors P this
+  by_contra!
+  exact zero_notMem_nonZeroDivisors <| primeCompl_le_nonZeroDivisors P this
 
 namespace Submodule
 
