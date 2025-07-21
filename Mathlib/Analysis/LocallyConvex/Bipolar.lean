@@ -141,6 +141,12 @@ lemma test5 : ∃ (s₁ : Finset F),
   obtain ⟨s₁, hs⟩ := test4 B f
   use s₁
   rw [functional_mem_span_iff]
+  simp at hs
+  obtain ⟨r, hr1, hr2⟩ := hs
+  use sorry
+  intro x
+
+  --let a := (r+1) * ((s₁.sup B.toSeminormFamily) x)
   sorry
   /-
   apply mem_span_of_iInf_ker_le_ker (ι := s₁) (L := (mL B s₁)) (K := f.toLinearMap)
@@ -226,11 +232,6 @@ lemma test5 : ∃ (s₁ : Finset F),
 
 -/
 
-
-
-
-
-
 /-
 See
 - Conway V Theorem 1.3 on p108
@@ -239,11 +240,31 @@ See
      - Mathlib/Analysis/Normed/Group/Hom.lean:theorem isClosed_ker
 - Bourbaki TVS II.43
 - Rudin Theorem 3.10
+-/
 lemma dualEmbedding_isSurjective : Function.Surjective (WeakBilin.eval B) := by
   rw [Function.Surjective]
   intro f₁
-  sorry
--/
+  obtain ⟨s, hs⟩ := test5 B f₁
+  rw [← Set.image_univ, Finsupp.mem_span_image_iff_linearCombination] at hs
+  obtain ⟨l, hl1, hl2⟩ := hs
+  let f := Finsupp.linearCombination 𝕜 Subtype.val l
+  use f
+  rw [Finsupp.supported_univ] at hl1
+  simp only [Submodule.mem_top] at hl1
+  simp only [f]
+  rw [←ContinuousLinearMap.coe_inj]
+  rw [← hl2]
+  rw [WeakBilin.eval]
+  simp
+  rw [ContinuousLinearMap.toLinearMap₁₂]
+  rw [ContinuousLinearMap.coeLMₛₗ]
+  rw [Finsupp.linearCombination_apply]
+  rw [Finsupp.linearCombination_apply]
+  simp
+  rw [map_finsuppSum]
+  aesop
+
+
 
 /-
 def dualEquiv : F ≃ₗ[𝕜] (WeakBilin B) →L[𝕜] 𝕜 where
