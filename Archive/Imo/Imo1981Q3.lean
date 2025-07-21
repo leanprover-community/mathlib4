@@ -185,7 +185,7 @@ numbers in this range, and thus provide the maximum of `specifiedSet`.
 -/
 theorem imo1981_q3 : IsGreatest (specifiedSet 1981) 3524578 := by
   have := fun h => @solution_greatest 1981 16 h 3524578
-  norm_num at this
+  simp only [Nat.reduceAdd, Nat.cast_ofNat] at this
   apply this
   · decide
   · decide
