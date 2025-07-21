@@ -5,9 +5,9 @@ Authors: Kexing Ying
 -/
 import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Data.Set.Inclusion
-import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.FastInstance
+import Mathlib.Algebra.Group.Basic
 
 /-!
 # Subgroups
