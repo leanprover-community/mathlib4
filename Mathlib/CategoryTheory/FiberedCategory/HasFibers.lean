@@ -76,7 +76,7 @@ namespace HasFibers
 /-- The `HasFibers` on `p : 𝒳 ⥤ 𝒮` given by the fibers of `p` -/
 def canonical (p : 𝒳 ⥤ 𝒮) : HasFibers p where
   Fib := Fiber p
-  ι S := fiberInclusion
+  ι S := fiberInclusion p S
   comp_const S := fiberInclusion_comp_eq_const
   equiv S := by exact isEquivalence_of_iso (F := 𝟭 (Fiber p S)) (Iso.refl _)
 
@@ -92,10 +92,10 @@ def inducedFunctor : Fib p S ⥤ Fiber p S :=
   Fiber.inducedFunctor (comp_const S)
 
 /-- The natural transformation `ι S ≅ (inducedFunctor p S) ⋙ (fiberInclusion p S)` -/
-def inducedFunctor.natIso : ι S ≅ (inducedFunctor p S) ⋙ fiberInclusion :=
+def inducedFunctor.natIso : ι S ≅ (inducedFunctor p S) ⋙ fiberInclusion p S :=
   Fiber.inducedFunctorCompIsoSelf (comp_const S)
 
-lemma inducedFunctor_comp : ι S = (inducedFunctor p S) ⋙ fiberInclusion :=
+lemma inducedFunctor_comp : ι S = (inducedFunctor p S) ⋙ fiberInclusion p S :=
   Fiber.inducedFunctor_comp (comp_const S)
 
 instance : Functor.IsEquivalence (inducedFunctor p S) := equiv S
@@ -156,7 +156,7 @@ noncomputable def Fib.mk {S : 𝒮} {a : 𝒳} (ha : p.obj a = S) : Fib p S :=
 /-- Applying `ι S` to the preimage of `a : 𝒳` in `Fib p S` yields an object isomorphic to `a`. -/
 noncomputable def Fib.mkIsoSelf {S : 𝒮} {a : 𝒳} (ha : p.obj a = S) :
     (ι S).obj (Fib.mk ha) ≅ a :=
-  fiberInclusion.mapIso (Functor.objObjPreimageIso (inducedFunctor p S) (Fiber.mk ha))
+  (fiberInclusion p S).mapIso (Functor.objObjPreimageIso (inducedFunctor p S) (Fiber.mk ha))
 
 instance Fib.mkIsoSelfIsHomLift {S : 𝒮} {a : 𝒳} (ha : p.obj a = S) :
     IsHomLift p (𝟙 S) (Fib.mkIsoSelf ha).hom :=
