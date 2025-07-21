@@ -84,11 +84,11 @@ instance : Category X.Etale :=
   inferInstanceAs <| Category (MorphismProperty.Over @IsEtale ⊤ X)
 
 /-- The forgetful functor from schemes étale over `X` to schemes over `X`. -/
-noncomputable def Etale.forget : X.Etale ⥤ Over X :=
+def Etale.forget : X.Etale ⥤ Over X :=
   MorphismProperty.Over.forget @IsEtale ⊤ X
 
 /-- The forgetful functor from schemes étale over `X` to schemes over `X` is fully faithful. -/
-noncomputable def Etale.forgetFullyFaithful : (Etale.forget X).FullyFaithful :=
+def Etale.forgetFullyFaithful : (Etale.forget X).FullyFaithful :=
   MorphismProperty.Comma.forgetFullyFaithful _ _ _
 
 instance : (Etale.forget X).Full :=

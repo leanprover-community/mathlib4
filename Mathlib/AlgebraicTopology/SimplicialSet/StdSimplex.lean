@@ -57,7 +57,7 @@ def objEquiv {n : SimplexCategory} {m : SimplexCategoryᵒᵖ} :
   Equiv.ulift.{u, 0}
 
 /-- If `x : Δ[n] _⦋d⦌` and `i : Fin (d + 1)`, we may evaluate `x i : Fin (n + 1)`. -/
-instance (n i : ℕ) : DFunLike (Δ[n] _⦋i⦌) (Fin (i + 1)) (fun _ ↦ Fin (n + 1)) where
+instance (n i : ℕ) : FunLike (Δ[n] _⦋i⦌) (Fin (i + 1)) (Fin (n + 1)) where
   coe x j := (objEquiv x).toOrderHom j
   coe_injective' _ _ h := objEquiv.injective (by ext : 3; apply congr_fun h)
 

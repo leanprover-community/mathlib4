@@ -45,11 +45,9 @@ variable {M : Type*} {S T : Set M}
 /-- Conditions for an element to be additively central -/
 structure IsAddCentral [Add M] (z : M) : Prop where
   /-- addition commutes -/
-  comm (a : M) : z + a = a + z
+  comm (a : M) : AddCommute z a
   /-- associative property for left addition -/
   left_assoc (b c : M) : z + (b + c) = (z + b) + c
-  /-- middle associative addition property -/
-  mid_assoc (a c : M) : (a + z) + c = a + (z + c)
   /-- associative property for right addition -/
   right_assoc (a b : M) : (a + b) + z = a + (b + z)
 
@@ -57,11 +55,9 @@ structure IsAddCentral [Add M] (z : M) : Prop where
 @[to_additive]
 structure IsMulCentral [Mul M] (z : M) : Prop where
   /-- multiplication commutes -/
-  comm (a : M) : z * a = a * z
+  comm (a : M) : Commute z a
   /-- associative property for left multiplication -/
   left_assoc (b c : M) : z * (b * c) = (z * b) * c
-  /-- middle associative multiplication property -/
-  mid_assoc (a c : M) : (a * z) * c = a * (z * c)
   /-- associative property for right multiplication -/
   right_assoc (a b : M) : (a * b) * z = a * (b * z)
 
@@ -72,15 +68,19 @@ namespace IsMulCentral
 
 variable {a c : M} [Mul M]
 
+@[to_additive]
+protected theorem mid_assoc {z : M} (h : IsMulCentral z) (a c) : a * z * c = a * (z * c) := by
+  rw [h.comm, ← h.right_assoc, ← h.comm, ← h.left_assoc, h.comm]
+
 -- cf. `Commute.left_comm`
 @[to_additive]
 protected theorem left_comm (h : IsMulCentral a) (b c) : a * (b * c) = b * (a * c) := by
-  simp only [h.comm, h.right_assoc]
+  simp only [(h.comm _).eq, h.right_assoc]
 
 -- cf. `Commute.right_comm`
 @[to_additive]
 protected theorem right_comm (h : IsMulCentral c) (a b) : a * b * c = a * c * b := by
-  simp only [h.right_assoc, h.mid_assoc, h.comm]
+  simp only [h.right_assoc, h.mid_assoc, (h.comm _).eq]
 
 end IsMulCentral
 
@@ -122,11 +122,6 @@ theorem mul_mem_center {z₁ z₂ : M} (hz₁ : z₁ ∈ Set.center M) (hz₂ : 
     _ = z₁ * ((z₂ * b) * c) := by rw [hz₂.left_assoc]
     _ = (z₁ * (z₂ * b)) * c := by rw [hz₁.left_assoc]
     _ = z₁ * z₂ * b * c := by rw [hz₂.mid_assoc]
-  mid_assoc (a c : M) := calc
-    a * (z₁ * z₂) * c = ((a * z₁) * z₂) * c := by rw [hz₁.mid_assoc]
-    _ = (a * z₁) * (z₂ * c) := by rw [hz₂.mid_assoc]
-    _ = a * (z₁ * (z₂ * c)) := by rw [hz₁.mid_assoc]
-    _ = a * (z₁ * z₂ * c) := by rw [hz₂.mid_assoc]
   right_assoc (a b : M) := calc
     a * b * (z₁ * z₂) = ((a * b) * z₁) * z₂ := by rw [hz₂.right_assoc]
     _ = (a * (b * z₁)) * z₂ := by rw [hz₁.right_assoc]
@@ -199,8 +194,7 @@ variable [Semigroup M] {a b : M}
 @[to_additive]
 theorem _root_.Semigroup.mem_center_iff {z : M} :
     z ∈ Set.center M ↔ ∀ g, g * z = z * g := ⟨fun a g ↦ by rw [IsMulCentral.comm a g],
-  fun h ↦ ⟨fun _ ↦ (Commute.eq (h _)).symm, fun _ _ ↦ (mul_assoc z _ _).symm,
-  fun _ _ ↦ mul_assoc _ z _, fun _ _ ↦ mul_assoc _ _ z⟩ ⟩
+  fun h ↦ ⟨fun _ ↦ (h _).symm, fun _ _ ↦ (mul_assoc z _ _).symm, fun _ _ ↦ mul_assoc _ _ z⟩ ⟩
 
 @[to_additive (attr := simp) add_mem_addCentralizer]
 lemma mul_mem_centralizer (ha : a ∈ centralizer S) (hb : b ∈ centralizer S) :
@@ -246,9 +240,8 @@ variable [MulOneClass M]
 
 @[to_additive (attr := simp) zero_mem_addCenter]
 theorem one_mem_center : (1 : M) ∈ Set.center M where
-  comm _  := by rw [one_mul, mul_one]
+  comm _ := by rw [commute_iff_eq, one_mul, mul_one]
   left_assoc _ _ := by rw [one_mul, one_mul]
-  mid_assoc _ _ := by rw [mul_one, one_mul]
   right_assoc _ _ := by rw [mul_one, mul_one]
 
 @[to_additive (attr := simp) zero_mem_addCentralizer]
@@ -264,7 +257,7 @@ theorem subset_center_units : ((↑) : Mˣ → M) ⁻¹' center M ⊆ Set.center
   fun _ ha => by
   rw [_root_.Semigroup.mem_center_iff]
   intro _
-  rw [← Units.eq_iff, Units.val_mul, Units.val_mul, ha.comm]
+  rw [← Units.val_inj, Units.val_mul, Units.val_mul, ha.comm]
 
 @[to_additive (attr := simp)]
 theorem units_inv_mem_center {a : Mˣ} (ha : ↑a ∈ Set.center M) : ↑a⁻¹ ∈ Set.center M := by
