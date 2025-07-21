@@ -78,56 +78,13 @@ variable [Module 𝕜 E] [Module 𝕜 F]
 
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
-theorem functional_mem_span_iff (s : Finset F) (f : E →ₗ[𝕜] 𝕜) :
-    f ∈ Submodule.span 𝕜 (Set.range (B.flip ∘ Subtype.val : s → E →ₗ[𝕜] 𝕜)) ↔
-    ∃ γ, ∀ (x : E), ‖f x‖ ≤ γ * ((s.sup B.toSeminormFamily) x) := by
-  constructor
-  · intro h
-    rw [← Set.image_univ, Finsupp.mem_span_image_iff_linearCombination] at h
-    obtain ⟨l, hl1, hl2⟩ := h
-    use (l.sum fun i d ↦ ‖d‖)
-    intro x
-    rw [← hl2, Finsupp.linearCombination_apply, finsupp_sum_apply,
-      (Finsupp.sum_mul ((s.sup B.toSeminormFamily) x) l)]
-    have e4' (i : s) : (B.toSeminormFamily i) x ≤ (s.sup B.toSeminormFamily) x :=
-      Seminorm.le_finset_sup_apply (Finset.coe_mem i)
-    have e4 (d : 𝕜) (i : s) :
-        ‖d * ((B.flip ∘ Subtype.val) i) x‖ ≤ ‖d‖ * ((s.sup B.toSeminormFamily) x) := by
-      rw [norm_mul]
-      exact mul_le_mul_of_nonneg_left (e4' i) (norm_nonneg d)
-    have e6 : (l.sum fun i d ↦ ‖d * ((B.flip ∘ Subtype.val) i) x‖) ≤
-        (l.sum fun i d ↦ (‖d‖ * ((s.sup B.toSeminormFamily) x))) :=
-      Finsupp.sum_le_sum (α := 𝕜) (β := ℝ) (fun i _ => e4 (l i) i)
-    apply le_trans (norm_sum_le _ _)
-    exact (le_trans e6 (Preorder.le_refl (l.sum fun i d ↦ ‖d‖ * (s.sup B.toSeminormFamily) x)))
-  · intro ⟨γ, hγ⟩
-    apply mem_span_of_iInf_ker_le_ker
-    intro x hx
-    rw [mem_ker, ← norm_le_zero_iff]
-    convert (hγ x)
-    rw [Submodule.mem_iInf, Subtype.forall] at hx
-    have e1 : (s.sup B.toSeminormFamily) x = 0 := by
-      rw [le_antisymm_iff]
-      constructor
-      · apply Seminorm.finset_sup_apply_le (Preorder.le_refl 0)
-        intro i his
-        rw [toSeminormFamily_apply, norm_le_zero_iff]
-        exact hx _ his
-      · exact apply_nonneg (s.sup B.toSeminormFamily) x
-    simp_all only [mul_zero]
-
 -- See `LinearMap.dualPairing_nondegenerate` in Mathlib/LinearAlgebra/Dual
 -- `WeakBilin B` is `E` with the σ(E,F)-topology`
 -- `((WeakBilin B) →L[𝕜] 𝕜)` is the topological dual of `E` with the σ(E,F)-topology, from
 --   Topology/Algebra/Module/WeadDual
 -- `WeakBilin.isEmbedding` - topological
 
-
-
-
-
 variable (f : WeakBilin B →L[𝕜] 𝕜)
-
 
 lemma test1 : IsOpen (f ⁻¹' (Metric.ball 0 1)) :=
   IsOpen.preimage (ContinuousLinearMap.continuous f) Metric.isOpen_ball
