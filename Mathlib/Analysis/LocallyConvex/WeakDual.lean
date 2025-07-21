@@ -80,9 +80,9 @@ def toSeminormFamily (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : SeminormFamily �
 theorem toSeminormFamily_apply {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {x y} : (B.toSeminormFamily y) x = ‖B x y‖ :=
   rfl
 
-theorem functional_mem_span_iff {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (s : Finset F) (f : E →ₗ[𝕜] 𝕜) :
-    f ∈ Submodule.span 𝕜 (Set.range (B.flip ∘ Subtype.val : s → E →ₗ[𝕜] 𝕜)) ↔
-    ∃ γ, ∀ (x : E), ‖f x‖ ≤ γ * ((s.sup B.toSeminormFamily) x) := by
+theorem functional_mem_span_iff {B : F →ₗ[𝕜] E →ₗ[𝕜] 𝕜} (s : Finset F) (f : E →ₗ[𝕜] 𝕜) :
+    f ∈ Submodule.span 𝕜 (Set.range (B ∘ Subtype.val : s → E →ₗ[𝕜] 𝕜)) ↔
+    ∃ γ, ∀ (x : E), ‖f x‖ ≤ γ * ((s.sup B.flip.toSeminormFamily) x) := by
   constructor
   · intro h
     rw [← Set.image_univ, Finsupp.mem_span_image_iff_linearCombination] at h
@@ -90,32 +90,32 @@ theorem functional_mem_span_iff {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (s : Fi
     use (l.sum fun i d ↦ ‖d‖)
     intro x
     rw [← hl2, Finsupp.linearCombination_apply, finsupp_sum_apply,
-      (Finsupp.sum_mul ((s.sup B.toSeminormFamily) x) l)]
-    have e4' (i : s) : (B.toSeminormFamily i) x ≤ (s.sup B.toSeminormFamily) x :=
+      (Finsupp.sum_mul ((s.sup B.flip.toSeminormFamily) x) l)]
+    have e4' (i : s) : (B.flip.toSeminormFamily i) x ≤ (s.sup B.flip.toSeminormFamily) x :=
       Seminorm.le_finset_sup_apply (Finset.coe_mem i)
     have e4 (d : 𝕜) (i : s) :
-        ‖d * ((B.flip ∘ Subtype.val) i) x‖ ≤ ‖d‖ * ((s.sup B.toSeminormFamily) x) := by
+        ‖d * ((B ∘ Subtype.val) i) x‖ ≤ ‖d‖ * ((s.sup B.flip.toSeminormFamily) x) := by
       rw [norm_mul]
       exact mul_le_mul_of_nonneg_left (e4' i) (norm_nonneg d)
-    have e6 : (l.sum fun i d ↦ ‖d * ((B.flip ∘ Subtype.val) i) x‖) ≤
-        (l.sum fun i d ↦ (‖d‖ * ((s.sup B.toSeminormFamily) x))) :=
+    have e6 : (l.sum fun i d ↦ ‖d * ((B ∘ Subtype.val) i) x‖) ≤
+        (l.sum fun i d ↦ (‖d‖ * ((s.sup B.flip.toSeminormFamily) x))) :=
       Finsupp.sum_le_sum (α := 𝕜) (β := ℝ) (fun i _ => e4 (l i) i)
     apply le_trans (norm_sum_le _ _)
-    exact (le_trans e6 (Preorder.le_refl (l.sum fun i d ↦ ‖d‖ * (s.sup B.toSeminormFamily) x)))
+    exact (le_trans e6 (Preorder.le_refl (l.sum fun i d ↦ ‖d‖ * (s.sup B.flip.toSeminormFamily) x)))
   · intro ⟨γ, hγ⟩
     apply mem_span_of_iInf_ker_le_ker
     intro x hx
     rw [mem_ker, ← norm_le_zero_iff]
     convert (hγ x)
     rw [Submodule.mem_iInf, Subtype.forall] at hx
-    have e1 : (s.sup B.toSeminormFamily) x = 0 := by
+    have e1 : (s.sup B.flip.toSeminormFamily) x = 0 := by
       rw [le_antisymm_iff]
       constructor
       · apply Seminorm.finset_sup_apply_le (Preorder.le_refl 0)
         intro i his
         rw [toSeminormFamily_apply, norm_le_zero_iff]
         exact hx _ his
-      · exact apply_nonneg (s.sup B.toSeminormFamily) x
+      · exact apply_nonneg (s.sup B.flip.toSeminormFamily) x
     simp_all only [mul_zero]
 
 end LinearMap
