@@ -161,16 +161,13 @@ lemma verify_case_two_dvd {a b : ℕ} {x : ℤ} (hb : 2 ∣ b) (ha : a ≥ 4) (h
   refine dvd_sub ?_ ?_
   · exact Int.dvd_trans (pow_dvd_pow 2 (padicValNat_lemma ha ha2))
       (pow_dvd_pow_of_dvd (ofNat_dvd_right.mpr hb) a)
-  · have : 2 ^ (padicValNat 2 a + 2) ∣ (2 : ℤ) ^ 2 ^ (padicValNat 2 a + 2) := by
-      refine (padicValInt_dvd_iff (padicValNat 2 a + 2) (2 ^ 2 ^ (padicValNat 2 a + 2))).mpr ?_
-      right
-      simp [padicValInt]
-      calc
-      _ < 2 ^ (padicValNat 2 a + 1) := Nat.lt_two_pow_self
-      _ ≤ _ := by
-        rw [propext (Nat.pow_le_pow_iff_right le.refl)]
-        omega
-    exact Int.dvd_trans this (pow_dvd_pow_of_dvd hx (2 ^ (padicValNat 2 a + 2)))
+  · calc
+      _ ∣ (2 : ℤ) ^ 2 ^ (padicValNat 2 a + 2) := by
+        refine pow_dvd_pow 2 ?_
+        calc
+          _ < 2 ^ (padicValNat 2 a + 1) := Nat.lt_two_pow_self
+          _ ≤ _ := by simp [propext (Nat.pow_le_pow_iff_right le.refl)]
+      _ ∣ _ := pow_dvd_pow_of_dvd hx (2 ^ (padicValNat 2 a + 2))
 
 lemma bonza_fExample : fExample ∈ bonza := by
   constructor
