@@ -14,6 +14,126 @@ section Desiderata_and_todos
 
 #mex
 /-!    -/
+
+
+/--
+info: 6 whitespace issues found: 6 reported and 0 unreported.
+---
+warning: reported: add space
+  'FX(_'
+(⟨132, 10⟩, ⟨132, 11⟩)
+
+[Lean.Parser.Command.declaration, Lean.Parser.Command.theorem, Lean.Parser.Command.declId, ident.FX]
+---
+warning: reported: remove space
+  'FX(_  :Nat)'
+(⟨132, 13⟩, ⟨132, 14⟩)
+
+[Lean.Parser.Command.declaration,
+ Lean.Parser.Command.theorem,
+ Lean.Parser.Command.declSig,
+ null,
+ Lean.Parser.Term.explicitBinder,
+ null,
+ Lean.Parser.Term.hole,
+ atom._]
+---
+warning: reported: add space
+  ':Nat)'
+(⟨132, 15⟩, ⟨132, 16⟩)
+
+[Lean.Parser.Command.declaration,
+ Lean.Parser.Command.theorem,
+ Lean.Parser.Command.declSig,
+ null,
+ Lean.Parser.Term.explicitBinder,
+ null,
+ atom.«:»]
+---
+warning: reported: add space
+  'True:='
+(⟨132, 26⟩, ⟨132, 27⟩)
+
+[Lean.Parser.Command.declaration,
+ Lean.Parser.Command.theorem,
+ Lean.Parser.Command.declSig,
+ Lean.Parser.Term.typeSpec,
+ ident.True]
+---
+warning: reported: remove space
+  'by  trivial;'
+(⟨133, 5⟩, ⟨133, 6⟩)
+
+[Lean.Parser.Command.declaration,
+ Lean.Parser.Command.theorem,
+ Lean.Parser.Command.declValSimple,
+ Lean.Parser.Term.byTactic,
+ atom.by]
+---
+warning: reported: remove space
+  'trivial;  done'
+(⟨133, 15⟩, ⟨133, 16⟩)
+
+[Lean.Parser.Command.declaration,
+ Lean.Parser.Command.theorem,
+ Lean.Parser.Command.declValSimple,
+ Lean.Parser.Term.byTactic,
+ Lean.Parser.Tactic.tacticSeq,
+ Lean.Parser.Tactic.tacticSeq1Indented,
+ null,
+ atom.«;»]
+---
+warning: add space in the source
+
+This part of the code
+  'FX(_'
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: remove space in the source
+
+This part of the code
+  'FX(_  :Nat)'
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: add space in the source
+
+This part of the code
+  ':Nat)'
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: add space in the source
+
+This part of the code
+  'True:='
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: remove space in the source
+
+This part of the code
+  'by  trivial;'
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: remove space in the source
+
+This part of the code
+  'trivial;  done'
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+set_option linter.unreachableTactic false in
+set_option linter.unusedTactic false in
+#mex
+theorem FX(_  :Nat) : True:=     --
+  by  trivial;  done
+
+
+
 -- The "tactic `{...}` is ignored entirely:
 -- the pretty-printer does not want a space after `{`, but wants one before `}`.
 --set_option linter.style.commandStart false in
@@ -40,6 +160,25 @@ example : True = True := by
     -- The *linter* forces a space in `·rfl`, but the pretty-printer does not.
     ·rfl
   done
+
+-- Both `¬ False` and `¬False` are allowed.
+/--
+info: 1 whitespace issue found: 0 reported and 1 unreported.
+---
+info: unreported: remove space (⟨181, 11⟩, ⟨181, 12⟩)
+
+[Lean.Parser.Command.declaration,
+ Lean.Parser.Command.example,
+ Lean.Parser.Command.optDeclSig,
+ null,
+ Lean.Parser.Term.typeSpec,
+ «term_∨_»,
+ «term¬_»,
+ atom.«¬»]
+-/
+#guard_msgs in
+#mex
+example : ¬ False ∨ ¬False := by simp
 
 /--
 warning: remove space in the source
@@ -308,7 +447,7 @@ open Nat in
   -- hi
 example : True := trivial
 
-structure FX where
+structure DFX where
   /-- A doc -/
   x : Nat
 
