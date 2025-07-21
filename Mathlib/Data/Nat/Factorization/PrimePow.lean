@@ -147,12 +147,6 @@ theorem Nat.mul_divisors_filter_prime_pow {a b : ℕ} (hab : a.Coprime b) :
     and_congr_left_iff, not_false_iff, Nat.mem_divisors, or_self_iff]
   apply hab.isPrimePow_dvd_mul
 
-lemma IsPrimePow.factorization_minFac_ne_zero {n : ℕ} (hn : IsPrimePow n) :
-    n.factorization n.minFac ≠ 0 := by
-  refine mt (Nat.factorization_eq_zero_iff _ _).mp ?_
-  push_neg
-  exact ⟨n.minFac_prime hn.ne_one, n.minFac_dvd, hn.ne_zero⟩
-
 /-- The canonical equivalence between pairs `(p, k)` with `p` a prime and `k : ℕ`
 and the set of prime powers given by `(p, k) ↦ p^(k+1)`. -/
 def Nat.Primes.prodNatEquiv : Nat.Primes × ℕ ≃ {n : ℕ // IsPrimePow n} where
@@ -167,7 +161,8 @@ def Nat.Primes.prodNatEquiv : Nat.Primes × ℕ ≃ {n : ℕ // IsPrimePow n} wh
   right_inv n := by
     ext1
     dsimp only
-    rw [sub_one_add_one n.prop.factorization_minFac_ne_zero, n.prop.minFac_pow_factorization_eq]
+    rw [sub_one_add_one (Nat.factorization_minFac_ne_zero (n.prop.one_lt)),
+      n.prop.minFac_pow_factorization_eq]
 
 @[simp]
 lemma Nat.Primes.prodNatEquiv_apply (p : Nat.Primes) (k : ℕ) :
