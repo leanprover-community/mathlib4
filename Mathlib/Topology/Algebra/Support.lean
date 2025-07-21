@@ -333,6 +333,13 @@ protected lemma HasCompactMulSupport.inv' {α β : Type*} [TopologicalSpace α] 
     HasCompactMulSupport (f⁻¹) := by
   simpa only [HasCompactMulSupport, mulTSupport, mulSupport_inv'] using hf
 
+@[to_additive]
+theorem HasCompactSupport.div {α β : Type*} [TopologicalSpace α] [DivisionMonoid β]
+    {f f' : α → β} (hf : HasCompactMulSupport f) (hf' : HasCompactMulSupport f') :
+    HasCompactMulSupport (f / f') :=
+  div_eq_mul_inv f f' ▸ hf.mul hf'.inv'
+
+
 end DivisionMonoid
 
 section SMulZeroClass
