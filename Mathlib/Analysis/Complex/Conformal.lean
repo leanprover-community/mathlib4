@@ -201,7 +201,7 @@ def LinearMap.complexOfReal (ℓ : ℂ →ₗ[ℝ] E) (h : ℓ I = I • ℓ 1) 
   map_smul' := real_linearMap_map_smul_complex h
 
 @[simp]
-lemma LinearMap.coe_complexOfReal (ℓ : ℂ →ₗ[ℝ] E) (h : ℓ I = I • ℓ 1) :
+lemma LinearMap.coe_complexOfReal {ℓ : ℂ →ₗ[ℝ] E} (h : ℓ I = I • ℓ 1) :
     ℓ.complexOfReal h = (ℓ : ℂ → E) := rfl
 
 /--
@@ -214,7 +214,7 @@ def ContinuousLinearMap.complexOfReal (ℓ : ℂ →L[ℝ] E) (h : ℓ I = I •
   map_smul' := real_linearMap_map_smul_complex h
 
 @[simp]
-lemma ContinuousLinearMap.coe_complexOfReal (ℓ : ℂ →L[ℝ] E) (h : ℓ I = I • ℓ 1) :
+lemma ContinuousLinearMap.coe_complexOfReal {ℓ : ℂ →L[ℝ] E} (h : ℓ I = I • ℓ 1) :
     ℓ.complexOfReal h = (ℓ : ℂ → E) := rfl
 
 /--
