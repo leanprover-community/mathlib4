@@ -83,8 +83,7 @@ def localized'gi : GaloisInsertion (localized' S p f) (comap f <| ·.restrictSca
   le_l_u N' n hn := by
     obtain ⟨⟨m, s⟩, rfl⟩ := IsLocalizedModule.mk'_surjective p f n
     refine ⟨m, ?_, s, rfl⟩
-    rw [mem_comap, restrictScalars_mem, ← IsLocalizedModule.mk'_cancel' _ _ s,
-      Submonoid.smul_def, ← algebraMap_smul S]
+    rw [mem_comap, restrictScalars_mem, ← IsLocalizedModule.mk'_cancel' _ _ s, ← algebraMap_smul S]
     exact smul_mem _ _ hn
   choice x _ := localized' S p f x
   choice_eq _ _ := rfl
@@ -168,7 +167,7 @@ instance : IsLocalizedModule p (M'.toLocalized₀ p f) where
     · rintro ⟨_, m, hm, s, rfl⟩
       refine ⟨⟨IsLocalizedModule.mk' f m (s * x), ⟨_, hm, _, rfl⟩⟩, Subtype.ext ?_⟩
       rw [Module.algebraMap_end_apply, SetLike.val_smul_of_tower,
-        ← IsLocalizedModule.mk'_smul, ← Submonoid.smul_def, IsLocalizedModule.mk'_cancel_right]
+        ← IsLocalizedModule.mk'_smul, IsLocalizedModule.mk'_cancel_right]
   surj' := by
     rintro ⟨y, x, hx, s, rfl⟩
     exact ⟨⟨⟨x, hx⟩, s⟩, by ext; exact IsLocalizedModule.mk'_cancel' ..⟩
@@ -233,12 +232,12 @@ instance IsLocalizedModule.toLocalizedQuotient' (M' : Submodule R M) :
     obtain ⟨y, rfl⟩ := mk_surjective _ y
     obtain ⟨⟨y, s⟩, rfl⟩ := IsLocalizedModule.mk'_surjective p f y
     exact ⟨⟨Submodule.Quotient.mk y, s⟩,
-      by simp only [Function.uncurry_apply_pair, toLocalizedQuotient'_mk, ← mk_smul, mk'_cancel']⟩
+      by simp [Function.uncurry_apply_pair, toLocalizedQuotient'_mk, ← mk_smul]⟩
   exists_of_eq {m n} e := by
     obtain ⟨⟨m, rfl⟩, n, rfl⟩ := PProd.mk (mk_surjective _ m) (mk_surjective _ n)
     obtain ⟨x, hx, s, hs⟩ : f (m - n) ∈ _ := by simpa [Submodule.Quotient.eq] using e
     obtain ⟨c, hc⟩ := exists_of_eq (S := p)
-      (show f (s • (m - n)) = f x by simpa [← hs] using IsLocalizedModule.mk'_cancel' ..)
+      (show f (s • (m - n)) = f x by simp [← hs])
     exact ⟨c * s, by simpa only [← Quotient.mk_smul, Submodule.Quotient.eq,
       ← smul_sub, mul_smul, hc] using M'.smul_mem c hx⟩
 
@@ -271,7 +270,7 @@ lemma ker_localizedMap_eq_localized₀_ker (g : M →ₗ[R] P) :
   · obtain ⟨⟨a, b⟩, rfl⟩ := IsLocalizedModule.mk'_surjective p f x
     simp only [Function.uncurry_apply_pair, map_mk', mk'_eq_zero, eq_zero_iff p f'] at h
     obtain ⟨c, hc⟩ := h
-    refine ⟨c • a, by simpa, c * b, by simpa using IsLocalizedModule.mk'_cancel_left ..⟩
+    exact ⟨c • a, by simpa, c * b, by simp⟩
   · rintro ⟨m, hm, a, ha, rfl⟩
     simp [IsLocalizedModule.map_mk', hm]
 

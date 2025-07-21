@@ -51,13 +51,15 @@ lemma IsLocalization.mk'_algebraMap_eq_mk' [IsLocalization (Algebra.algebraMapSu
     {x : A} {s : S} : IsLocalization.mk' Aₛ x ⟨_, Algebra.mem_algebraMapSubmonoid_of_mem s⟩ =
       IsLocalizedModule.mk' (IsScalarTower.toAlgHom R A Aₛ).toLinearMap x s := by
   rw [← IsLocalizedModule.smul_inj (IsScalarTower.toAlgHom R A Aₛ).toLinearMap s,
-    IsLocalizedModule.mk'_cancel', Submonoid.smul_def, ← algebraMap_smul A]
+    Submonoid.smul_def, Submonoid.smul_def,
+    IsLocalizedModule.mk'_cancel', ← algebraMap_smul A]
   exact IsLocalization.smul_mk'_self (m := ⟨_, _⟩)
 
 /-- `IsLocalization.mk'` agrees with `IsLocalizedModule.mk'`. -/
 lemma IsLocalization.mk'_eq_mk' [IsLocalization S A] (x : R) (s : S) :
     IsLocalization.mk' A x s = IsLocalizedModule.mk' (Algebra.linearMap R A) x s := by
-  rw [← IsLocalizedModule.smul_inj (Algebra.linearMap R A) s, IsLocalizedModule.mk'_cancel']
+  rw [← IsLocalizedModule.smul_inj (Algebra.linearMap R A) s,
+    Submonoid.smul_def _ (IsLocalizedModule.mk' ..), IsLocalizedModule.mk'_cancel']
   exact IsLocalization.smul_mk'_self
 
 end IsLocalizedModule
