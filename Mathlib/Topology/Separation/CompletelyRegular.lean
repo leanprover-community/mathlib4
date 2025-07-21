@@ -143,8 +143,8 @@ lemma completelyRegularSpace_iInf {ι X : Type*} {t : ι → TopologicalSpace X}
   use I'.attach.sup fs
   constructorm* _ ∧ _
   · solve_by_elim [Continuous.finset_sup, continuous_iInf_dom]
-  · simpa [show (0 : ↥I) = ⊥ from rfl] using hxfs
-  · simp only [EqOn, Pi.one_apply, show (1 : ↥I) = ⊤ from rfl] at hfsU ⊢
+  · simpa [← bot_eq_zero''] using hxfs
+  · simp only [EqOn, Pi.one_apply, ← unitInterval.top_eq] at hfsU ⊢
     conv => equals ∀ x i, x ∈ (V i)ᶜ → ∃ b, fs b x = ⊤ => simp [Finset.sup_eq_top_iff]
     intro x i hxi
     specialize hfsU i (by tauto_set)
