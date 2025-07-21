@@ -16,44 +16,49 @@ variable {R H : Type*}
 
 namespace Basis
 
+open MulOpposite
+
 variable {ι : Type*} [Semiring R] [AddCommMonoid H] [Module R H]
 
-/-- the mulOpposite of a basis: `b.mulOpposite i ↦ MulOpposite.op (b i)` -/
+/-- The multiplicative opposite of a basis: `b.mulOpposite i ↦ op (b i)`. -/
 noncomputable def mulOpposite (b : Basis ι R H) : Basis ι R Hᵐᵒᵖ :=
-  b.map (MulOpposite.opLinearEquiv R)
+  b.map (opLinearEquiv R)
 
 @[simp]
 theorem mulOpposite_apply (b : Basis ι R H) (i : ι) :
-    b.mulOpposite i = MulOpposite.op (b i) := rfl
+    b.mulOpposite i = op (b i) := rfl
 
 theorem mulOpposite_repr_eq (b : Basis ι R H) :
-    b.mulOpposite.repr = (MulOpposite.opLinearEquiv R).symm.trans b.repr := rfl
+    b.mulOpposite.repr = (opLinearEquiv R).symm.trans b.repr := rfl
 
 @[simp]
 theorem mulOpposite_repr_unop (b : Basis ι R H) (x : Hᵐᵒᵖ) :
-    b.repr (MulOpposite.unop x) = b.mulOpposite.repr x := rfl
+    b.repr (unop x) = b.mulOpposite.repr x := rfl
 
 @[simp]
 theorem mulOpposite_repr_op (b : Basis ι R H) (x : H) :
-    b.mulOpposite.repr (MulOpposite.op x) = b.repr x := rfl
+    b.mulOpposite.repr (op x) = b.repr x := rfl
 
 end Basis
 
-instance FiniteDimensional.mulOpposite [DivisionRing R] [AddCommGroup H] [Module R H]
+namespace MulOpposite
+
+instance [DivisionRing R] [AddCommGroup H] [Module R H]
     [FiniteDimensional R H] : FiniteDimensional R Hᵐᵒᵖ := FiniteDimensional.of_finite_basis
-  (Basis.ofVectorSpace R H).mulOpposite
-  (Basis.ofVectorSpaceIndex R H).toFinite
+  (Basis.ofVectorSpace R H).mulOpposite (Basis.ofVectorSpaceIndex R H).toFinite
 
 instance [Semiring R] [AddCommMonoid H] [Module R H]
     [Module.Free R H] : Module.Free R Hᵐᵒᵖ :=
-  let ⟨b⟩ := exists_basis (R := R) (M := H)
-  of_basis b.2.mulOpposite
+  let ⟨b⟩ := Module.Free.exists_basis (R := R) (M := H)
+  Module.Free.of_basis b.2.mulOpposite
 
-theorem MulOpposite.finrank [DivisionRing R] [AddCommGroup H] [Module R H] :
+theorem rank [Semiring R] [StrongRankCondition R] [AddCommMonoid H] [Module R H]
+    [Module.Free R H] : Module.rank R Hᵐᵒᵖ = Module.rank R H :=
+  LinearEquiv.nonempty_equiv_iff_rank_eq.mp ⟨(opLinearEquiv R).symm⟩
+
+theorem finrank [DivisionRing R] [AddCommGroup H] [Module R H] :
     Module.finrank R Hᵐᵒᵖ = Module.finrank R H := by
   let b := Basis.ofVectorSpace R H
   rw [Module.finrank_eq_nat_card_basis b, Module.finrank_eq_nat_card_basis b.mulOpposite]
 
-theorem MulOpposite.rank [Semiring R] [StrongRankCondition R] [AddCommMonoid H] [Module R H]
-    [Module.Free R H] : Module.rank R Hᵐᵒᵖ = Module.rank R H :=
-  LinearEquiv.nonempty_equiv_iff_rank_eq.mp ⟨(MulOpposite.opLinearEquiv R).symm⟩
+end MulOpposite
