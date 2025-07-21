@@ -117,12 +117,7 @@ theorem card_cycleType_eq_one {σ : Perm α} : Multiset.card σ.cycleType = 1 �
   rw [card_eq_one]
   simp_rw [cycleType_def, Multiset.map_eq_singleton, ← Finset.singleton_val, Finset.val_inj,
     cycleFactorsFinset_eq_singleton_iff]
-  constructor
-  · rintro ⟨_, _, ⟨h, -⟩, -⟩
-    exact h
-  · intro h
-    use #σ.support, σ
-    simp [h]
+  grind
 
 theorem Disjoint.cycleType {σ τ : Perm α} (h : Disjoint σ τ) :
     (σ * τ).cycleType = σ.cycleType + τ.cycleType := by
