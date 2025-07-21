@@ -49,8 +49,7 @@ lemma trivialRel_eq_ofValuation_one :
   convert (eq_trivialRel_of_compatible_one (Γ := Γ)).symm
   exact .ofValuation 1
 
-lemma one_apply_posSubmonoid_of_trivialRel [ValuativeRel R]
-    [Valuation.Compatible (1 : Valuation R Γ)] (x : posSubmonoid R) :
+lemma one_apply_posSubmonoid [ValuativeRel R] (x : posSubmonoid R) :
     (1 : Valuation R Γ) x = 1 :=
   Valuation.one_apply_of_ne_zero (by simp)
 
@@ -64,7 +63,7 @@ lemma subsingleton_units_valueGroupWithZero_of_trivialRel [ValuativeRel R]
   obtain ⟨r, s, hr⟩ := valuation_surjective_unit a
   obtain ⟨t, u, ht⟩ := valuation_surjective_unit b
   rw [Units.ext_iff, ← hr, ← ht, div_eq_div_iff, ← map_mul, ← map_mul, this.val_eq] <;>
-  simp [one_apply_posSubmonoid_of_trivialRel]
+  simp [one_apply_posSubmonoid]
 
 lemma not_isNontrivial_trivialRel [ValuativeRel R] [Valuation.Compatible (1 : Valuation R Γ)] :
     ¬ IsNontrivial R := by
