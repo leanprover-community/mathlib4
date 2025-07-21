@@ -1252,7 +1252,7 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
       let newLine := line.toString.replace origWindow expectedWindow
       if newLine != line.toString then
         logInfoAt (.ofRange m.rg) m!"# {a}\n\
-          sed -i '{lineNumber}\{s={line.replace "=" "\"}={newLine.replace "=" "\"}=}' {fname}"
+          sed -i '{lineNumber}\{s={line.toString.replace "=" "\\"}={newLine.replace "=" "\\"}=}' {fname}"
 
 /-
   if let some pos := stx.getPos? then
