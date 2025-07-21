@@ -83,9 +83,7 @@ a `k`-vector space of dimension `1`.
 -/
 lemma simple_iff_end_is_rank_one [NeZero (Fintype.card G : k)] (V : FDRep k G) :
     Simple V ↔ Module.finrank k (V ⟶ V) = 1 where
-  mp h := by
-    rw [finrank_hom_simple_simple_eq_one_iff]
-    exact Nonempty.intro (Iso.refl _)
+  mp h := finrank_endomorphism_simple_eq_one k V
   mpr h := by
     refine {mono_isIso_iff_nonzero f _ := ⟨fun hf habs ↦ ?_, fun hf ↦ ?_⟩}
     · rw [habs] at hf
