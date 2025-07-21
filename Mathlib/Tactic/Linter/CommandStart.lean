@@ -221,14 +221,30 @@ def pretty (stx : Syntax) : CommandElabM (Option String) := do
     return none
 
 /--
+`getChoiceNode kind args n` is a convenience function for handling `choice` nodes in syntax trees.
+
+* If `kind` is not `choice`, then it returns `args`.
+* If `kind` is `choice`, then it returns the array containing only the `n`-th entry of `args`,
+  or `#[]` if `args` has fewer than `n` entries.
+
+The argument `n` is optional and equals `0` by default.
+
+The reason for this function is that we traverse the syntax tree to regenerate the expected
+string.
+If we traversed all of `choice`s children, we would regenerate duplicate parts of the syntax.
+For this reason, we make a default choice of which single child to follow.
+-/
+def getChoiceNode (kind : SyntaxNodeKind) (args : Array Syntax) (n : Nat := 0) : Array Syntax :=
+  if kind == `choice then #[args[n]?].reduceOption else args
+
+/--
 Splays the input syntax into a string.
 
 There is a slight subtlety about `choice` nodes, that are traversed only once.
 -/
 partial
 def _root_.Lean.Syntax.regString : Syntax → String
-  | .node _ `choice args => (args.take 1).foldl (init := "") (· ++ ·.regString)
-  | .node _ _ args => args.foldl (init := "") (· ++ ·.regString)
+  | .node _ kind args => (getChoiceNode kind args).foldl (init := "") (· ++ ·.regString)
   | .ident i raw _ _ => let (l, t) := i.getLeadTrail; l ++ raw.toString ++ t
   | .atom i s => let (l, t) := i.getLeadTrail; l ++ s ++ t
   | .missing => ""
@@ -725,34 +741,17 @@ present.
 This essentially converts `noSpaceStx` into a `Syntax` tree whose traversal reconstructs exactly
 `prettyString`.
 -/
+partial
 def insertSpacesAux {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions m]
     (verbose? : Bool) :
     Array SyntaxNodeKind → Syntax → Substring → m (Syntax × Substring)
   | k, .ident info rawVal val pre, str => do
-    --let read := readWhile rawVal str
-    --if read == str && !read.isEmpty then
-    --  logWarning m!"No change at '{read}'"
-    --let (next, strNew) :=
-    --  if (read.take 1).toString == " " || forceSpaceAfter.contains k
-    --  then
-    --    (" ".toSubstring, read.drop 1)
-    --  else
-    --    ("".toSubstring, read)
     let (next, strNew, read) ← processAtomOrIdent verbose? (k.push (.str `ident rawVal.toString)) rawVal str
     if false then
       dbg_trace
         s!"* ident '{rawVal}'\nStr: '{str}'\nRed: '{read}'\nNxt: '{next}'\nNew: '{strNew}'\n"
     pure (.ident (modifyTail info next) rawVal val pre, strNew)
   | k, .atom info val, str => do
-    --let read := readWhile val.toSubstring str
-    --if read == str && !read.isEmpty then
-    --  logWarning m!"No change at '{read}'"
-    --let (next, strNew) :=
-    --  if (read.take 1).toString == " " || forceSpaceAfter.contains k
-    --  then
-    --    (" ".toSubstring, read.drop 1)
-    --  else
-    --    ("".toSubstring, read)
     let (next, strNew, read) ← processAtomOrIdent verbose? (k.push (.str `atom val)) val.toSubstring str
     if false then
       dbg_trace
@@ -762,7 +761,7 @@ def insertSpacesAux {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptio
     --let kind := if kind == `null then k else kind
     let mut str' := str
     let mut stxs := #[]
-    for arg in args do
+    for arg in getChoiceNode kind args do
       let (newStx, strNew) ← insertSpacesAux verbose? (k.push kind) arg str'
       if false then
         logInfo m!"'{strNew}' intermediate string at {k.push kind}"
@@ -824,10 +823,9 @@ def _root_.Lean.SourceInfo.compareSpaces (ks : Array SyntaxNodeKind) :
 partial
 def _root_.Lean.Syntax.compareSpaces : Array SyntaxNodeKind → Array mex → Syntax → Syntax → Array mex
   | kinds, tot, .node _ kind a1, .node _ _ a2 =>
-    let (a1, a2) := if kind == `choice then (a1.take 1, a2.take 1) else (a1, a2)
+    let (a1, a2) := (getChoiceNode kind a1, getChoiceNode kind a2)
     a1.zipWith (fun a b => a.compareSpaces (kinds.push kind) tot b) a2 |>.flatten
   | kinds, tot, .ident origInfo rawVal .., .ident ppInfo .. =>
-    --let val := rawVal--.toString
     if let some e := origInfo.compareSpaces (kinds.push (.str `ident rawVal.toString)) ppInfo
     then
       tot.push e else tot
@@ -864,80 +862,15 @@ def captureException (env : Environment) (s : ParserFn) (input : String) : Excep
 def getExceptions (stx : Syntax) (verbose? : Bool := false) :
     CommandElabM (Option (Array mex)) := do
   let stxNoTrail := stx.unsetTrailing
-  if let some stxNoSpaces ← insertSpaces verbose? stx then
+  let s ← get
+  let insertSpace ← insertSpaces verbose? stx
+  set s
+  if let some stxNoSpaces := insertSpace then
     if verbose? then
       logInfo m!"Pretty-printed syntax:\n{stxNoSpaces}"
     return stxNoTrail.compareSpaces #[] #[] stxNoSpaces
   else
     return none
-
---/
-/-
-def finalScan (stx : Syntax) (verbose? : Bool) : CommandElabM (Array Exceptions) := do
-  let ustx := stx.eraseLeadTrailSpaces
-  let simplySpaced ← pretty ustx <|> return default
-
-  return scanWatching verbose? #[] stx.getKind stx ustx (simplySpaced).toSubstring |>.2
--/
-
-/-
-#eval True ∧ 0 ^ 0 = 1
-
-open Lean Elab Command in
-elab "#compare " v:(&"v ")? stx:command : command => do
-  elabCommand stx <|> return
-  if (← get).messages.hasErrors then
-    return
-  let ustx := stx.raw.eraseLeadTrailSpaces
-  let simplySpaced ← pretty ustx <|> return default
-  logInfo m!"Source:\n\
-            {stx.raw.getSubstring?.get!}|||\n\
-            Regenerated:\n{simplySpaced}|||\n\
-            {scanWatching v.isSome #[] stx ustx (simplySpaced).toSubstring}"
-
---#compare/-- -/ theorem le : True ∧  0 ^0=  1 :=
---  sorry
---#exit
-/-
-#compare
-example : True  ∧ 0 ^ 0 = 0 :=
-by
-  constructor -- here we split
-  · refine ?_
-    -- Now we know how to prove it
-    exact trivial
-  · apply ?_
-    exact .intro  -- We use the constructor
--/
-
-
-/--
-info: Source:
-example : True  ∧ True := by
-  constructor -- here we split
-  · refine ?_
-    -- Now we know how to prove it
-    exact trivial
-  · apply ?_
-    exact .intro  -- We use the constructor
-
-
-|||
-Regenerated:
-example : True ∧ True := by constructor · refine ?_ exact trivial · apply ?_ exact .intro|||
-(, [])
--/
-#guard_msgs in
-#compare
-example : True  ∧ True := by
-  constructor -- here we split
-  · refine ?_
-    -- Now we know how to prove it
-    exact trivial
-  · apply ?_
-    exact .intro  -- We use the constructor
---/
-
 
 /--
 Scan the two input strings `L` and `M`, assuming `M` is the pretty-printed version of `L`.
@@ -1021,8 +954,7 @@ def parallelScan (src fmt : String) : Array FormatError :=
 partial
 def _root_.Lean.Syntax.compareToString : Array FormatError → Syntax → String → Array FormatError
   | tot, .node _ kind args, s =>
-    let args := if kind == `choice then args.take 1 else args
-    args.foldl (init := tot) (· ++ ·.compareToString tot s)
+    (getChoiceNode kind args).foldl (init := tot) (· ++ ·.compareToString tot s)
   | tot, .ident i raw _ _, s =>
     let (l, t) := i.getLeadTrail
     let (_r, f) := parallelScanAux tot "" (l ++ raw.toString ++ t).toSubstring s.toSubstring "🐩" "🦤" "😹"
