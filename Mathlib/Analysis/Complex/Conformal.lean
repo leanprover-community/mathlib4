@@ -192,8 +192,7 @@ lemma real_linearMap_map_smul_complex {ℓ : ℂ →ₗ[ℝ] E} (h : ℓ I = I �
   ring
 
 /--
-Using `differentiableAt_complex_iff_differentiableAt_real`, construct a complex-linear map from a
-real-linear map `ℓ` that maps `I` to `I • ℓ 1`.
+Construct a complex-linear map from a real-linear map `ℓ` that maps `I` to `I • ℓ 1`.
 -/
 def LinearMap.complexOfReal (ℓ : ℂ →ₗ[ℝ] E) (h : ℓ I = I • ℓ 1) : ℂ →ₗ[ℂ] E where
   toFun := ℓ
@@ -205,8 +204,8 @@ lemma LinearMap.coe_complexOfReal {ℓ : ℂ →ₗ[ℝ] E} (h : ℓ I = I • �
     ℓ.complexOfReal h = (ℓ : ℂ → E) := rfl
 
 /--
-Using `differentiableAt_complex_iff_differentiableAt_real`, construct a continuous complex-linear
-map from a continueous real-linear map `ℓ` that maps `I` to `I • ℓ 1`.
+Construct a continuous complex-linear map from a continueous real-linear map `ℓ` that maps `I` to
+`I • ℓ 1`.
 -/
 def ContinuousLinearMap.complexOfReal (ℓ : ℂ →L[ℝ] E) (h : ℓ I = I • ℓ 1) : ℂ →L[ℂ] E where
   toFun := ℓ
