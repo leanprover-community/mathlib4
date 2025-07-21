@@ -155,12 +155,9 @@ noncomputable instance {J : Type*} [Category J] (K : J ⥤ Action V G) [HasLimit
     PreservesLimit K (Action.forget V G) := by
   change PreservesLimit K ((Action.functorCategoryEquivalence V G).functor ⋙
     (evaluation (SingleObj G) V).obj (SingleObj.star G))
-  have : PreservesLimit (K ⋙ (Action.functorCategoryEquivalence V G).functor)
-      ((evaluation (SingleObj G) V).obj (SingleObj.star G)) := by
-    have : ∀ (k : SingleObj G),
-        HasLimit ((K ⋙ (functorCategoryEquivalence V G).functor).flip.obj k) :=
-      fun _ ↦ (hasLimit_iff_of_iso (Iso.refl _ : _ ≅ K ⋙ forget V G)).mpr inferInstance
-    exact evaluation_preservesLimit (K ⋙ (Action.functorCategoryEquivalence V G).functor) _
+  have (k : SingleObj G) :
+      HasLimit ((K ⋙ (functorCategoryEquivalence V G).functor).flip.obj k) :=
+    inferInstanceAs (HasLimit (K ⋙ forget V G))
   infer_instance
 
 noncomputable instance {J : Type*} [Category J] [HasLimitsOfShape J V] :
@@ -172,12 +169,9 @@ noncomputable instance {J : Type*} [Category J] (K : J ⥤ Action V G) [HasColim
     PreservesColimit K (Action.forget V G) := by
   change PreservesColimit K ((Action.functorCategoryEquivalence V G).functor ⋙
     (evaluation (SingleObj G) V).obj (SingleObj.star G))
-  have : PreservesColimit (K ⋙ (Action.functorCategoryEquivalence V G).functor)
-      ((evaluation (SingleObj G) V).obj (SingleObj.star G)) := by
-    have : ∀ (k : SingleObj G),
-        HasColimit ((K ⋙ (functorCategoryEquivalence V G).functor).flip.obj k) :=
-      fun _ ↦ (hasColimit_iff_of_iso (Iso.refl _ : _ ≅ K ⋙ forget V G)).mpr inferInstance
-    exact evaluation_preservesColimit (K ⋙ (Action.functorCategoryEquivalence V G).functor) _
+  have (k : SingleObj G) :
+      HasColimit ((K ⋙ (functorCategoryEquivalence V G).functor).flip.obj k) :=
+    inferInstanceAs (HasColimit (K ⋙ forget V G))
   infer_instance
 
 noncomputable instance {J : Type*} [Category J] [HasColimitsOfShape J V] :
@@ -232,10 +226,9 @@ variable {W : Type*} [Category W] (F : V ⥤ W) (G : Type*) [Monoid G] {J : Type
 /-- `F.mapAction : Action V G ⥤ Action W G` preserves the limit of some `K : J ⥤ Action V G` if
 `K ⋙ forget V G` has a limit and `F` preserves the limit of `K ⋙ forget V G`. -/
 instance mapActionPreservesLimit_of_preserves (K : J ⥤ Action V G) [HasLimit (K ⋙ forget V G)]
-    [PreservesLimit (K ⋙ Action.forget V G) F] : PreservesLimit K (F.mapAction G) := by
-  refine Action.preservesLimit_of_preserves (F.mapAction G) K ?_
-  have : PreservesLimit K (forget V G ⋙ F) := comp_preservesLimit (forget V G) F
-  exact preservesLimit_of_natIso K (Iso.refl _ : forget V G ⋙ F ≅ F.mapAction G ⋙ forget W G)
+    [PreservesLimit (K ⋙ Action.forget V G) F] : PreservesLimit K (F.mapAction G) :=
+  Action.preservesLimit_of_preserves (F.mapAction G) K <|
+    inferInstanceAs (PreservesLimit K (forget V G ⋙ F))
 
 /-- `F.mapAction : Action V G ⥤ Action W G` preserves limits of some shape `J` if
 `V` has limits of shape `J` and `F` preserves limits of shape `J`. -/
@@ -256,10 +249,9 @@ instance [PreservesFiniteLimits F] [HasFiniteLimits V] :
 /-- `F.mapAction : Action V G ⥤ Action W G` preserves the colimit of some `K : J ⥤ Action V G` if
 `K ⋙ forget V G` has a colimit and `F` preserves the colimit of `K ⋙ forget V G`. -/
 instance mapActionPreservesColimit_of_preserves (K : J ⥤ Action V G) [HasColimit (K ⋙ forget V G)]
-    [PreservesColimit (K ⋙ Action.forget V G) F] : PreservesColimit K (F.mapAction G) := by
-  refine Action.preservesColimit_of_preserves (F.mapAction G) K ?_
-  have : PreservesColimit K (forget V G ⋙ F) := comp_preservesColimit (forget V G) F
-  exact preservesColimit_of_natIso K (Iso.refl _ : forget V G ⋙ F ≅ F.mapAction G ⋙ forget W G)
+    [PreservesColimit (K ⋙ Action.forget V G) F] : PreservesColimit K (F.mapAction G) :=
+  Action.preservesColimit_of_preserves (F.mapAction G) K <|
+    inferInstanceAs (PreservesColimit K (forget V G ⋙ F))
 
 /-- `F.mapAction : Action V G ⥤ Action W G` preserves colimits of some shape `J` if
 `V` has colimits of shape `J` and `F` preserves colimits of shape `J`. -/
