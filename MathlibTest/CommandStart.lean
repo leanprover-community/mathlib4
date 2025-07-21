@@ -17,17 +17,20 @@ section Desiderata_and_todos
 
 
 /--
+info: Pretty-printed syntax:
+theorem FX (_ : Nat) : True := by trivial; done
+---
 info: 6 whitespace issues found: 6 reported and 0 unreported.
 ---
 warning: reported: add space
   'FX(_'
-(⟨91, 10⟩, ⟨91, 11⟩)
+(⟨94, 10⟩, ⟨94, 11⟩)
 
 [Lean.Parser.Command.declaration, Lean.Parser.Command.theorem, Lean.Parser.Command.declId, ident.FX]
 ---
 warning: reported: remove space
   'FX(_  :Nat)'
-(⟨91, 13⟩, ⟨91, 14⟩)
+(⟨94, 13⟩, ⟨94, 14⟩)
 
 [Lean.Parser.Command.declaration,
  Lean.Parser.Command.theorem,
@@ -40,7 +43,7 @@ warning: reported: remove space
 ---
 warning: reported: add space
   ':Nat)'
-(⟨91, 15⟩, ⟨91, 16⟩)
+(⟨94, 15⟩, ⟨94, 16⟩)
 
 [Lean.Parser.Command.declaration,
  Lean.Parser.Command.theorem,
@@ -52,7 +55,7 @@ warning: reported: add space
 ---
 warning: reported: add space
   'True:='
-(⟨91, 26⟩, ⟨91, 27⟩)
+(⟨94, 26⟩, ⟨94, 27⟩)
 
 [Lean.Parser.Command.declaration,
  Lean.Parser.Command.theorem,
@@ -62,7 +65,7 @@ warning: reported: add space
 ---
 warning: reported: remove space
   'by  trivial;'
-(⟨92, 5⟩, ⟨92, 6⟩)
+(⟨95, 5⟩, ⟨95, 6⟩)
 
 [Lean.Parser.Command.declaration,
  Lean.Parser.Command.theorem,
@@ -72,7 +75,7 @@ warning: reported: remove space
 ---
 warning: reported: remove space
   'trivial;  done'
-(⟨92, 15⟩, ⟨92, 16⟩)
+(⟨95, 15⟩, ⟨95, 16⟩)
 
 [Lean.Parser.Command.declaration,
  Lean.Parser.Command.theorem,
@@ -125,9 +128,12 @@ example : True = True := by
 
 -- Both `¬ False` and `¬False` are allowed.
 /--
+info: Pretty-printed syntax:
+example : ¬False ∨ ¬False := by simp
+---
 info: 1 whitespace issue found: 0 reported and 1 unreported.
 ---
-info: unreported: remove space (⟨143, 11⟩, ⟨143, 12⟩)
+info: unreported: remove space (⟨149, 11⟩, ⟨149, 12⟩)
 
 [Lean.Parser.Command.declaration,
  Lean.Parser.Command.example,
@@ -258,16 +264,16 @@ example :=
 warning: remove space in the source
 
 This part of the code
-  'let  _'
+  'let  h'
 should be written as
-  'let _'
+  'let h'
 
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
 #guard_msgs in
 example :=
-  let  _ := 0; 0
+  let  h := 0; h
 
 example : True := by {trivial }
 
