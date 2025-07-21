@@ -401,12 +401,11 @@ theorem doubling_lt_two {ε : ℝ} (hε₀ : 0 < ε) (hε₁ : ε ≤ 1) (hA : A
       0 < ε / 2 * #S := ?_
       _ ≤ em.toFun S := min_em S
     · simp_all only [ge_iff_le, exists_prop, div_pos_iff_of_pos_left, Nat.ofNat_pos,
-        mul_pos_iff_of_pos_left, Nat.cast_pos, card_pos]
+                      mul_pos_iff_of_pos_left, Nat.cast_pos, card_pos]
 
   let im_em := em.toFun '' {S : Finset G | S.Nonempty}
-  have nonempty_im_em : im_em.Nonempty := by
-    use em.toFun {1}
-    aesop
+  have nonempty_im_em : im_em.Nonempty := ⟨em.toFun {1},
+    Set.mem_image_of_mem em.toFun (by exact ⟨1, mem_singleton.mpr (rfl)⟩)⟩
   have bddBelow_im_em : BddBelow im_em := by
     use 0
     intro c hc
@@ -418,9 +417,11 @@ theorem doubling_lt_two {ε : ℝ} (hε₀ : 0 < ε) (hε₁ : ε ≤ 1) (hA : A
     apply csInf_le bddBelow_im_em
     exact Set.mem_image_of_mem em.toFun hS
   have κ_nonneg : 0 ≤ κ := by
-    apply le_csInf ⟨em.toFun {1}, Set.mem_image_of_mem em.toFun (by show {1} ∈ {S : Finset G | S.Nonempty}; sorry)⟩
-
-    sorry
+    apply le_csInf nonempty_im_em
+    intro k hk
+    obtain ⟨S, (hS₁ : S.Nonempty), hS₂⟩ := (Set.mem_image _ _ _).mp hk
+    rw [← hS₂]
+    exact le_of_lt (em_pos hS₁)
   have κ_mem_im_em : κ ∈ im_em := by
     apply by_contradiction
     rw [Set.mem_image]
@@ -608,7 +609,7 @@ theorem doubling_lt_two {ε : ℝ} (hε₀ : 0 < ε) (hε₁ : ε ≤ 1) (hA : A
         _ = #(S * A) - K * #S                     := by rfl
         _ ≤ (2 - ε) * #A - (1 - ε / 2) * #A       := by gcongr; linarith
         _ = (1 - ε / 2) * #A                      := by linarith
-    rw [← mul_le_mul_left (by change 0 < ε / 2; positivity)]
+    rw [← mul_le_mul_left (by positivity)]
     have : ε / 2 * ((2 / ε - 1) * #A) = (1 - ε / 2) * #A := by field_simp; ring1
     linarith
 
