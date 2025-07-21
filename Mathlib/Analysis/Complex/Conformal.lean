@@ -240,17 +240,16 @@ theorem differentiableWithinAt_complex_iff_differentiableWithinAt_real
 In cases where the Cauchy-Riemann Equation guarantees complex differentiability, the complex
 derivative equals `ContinuousLinearMap.toComplexOfMapI` of the real derivative.
 -/
-protected theorem HasFDerivWithinAt.complexOfReal_hasFDerivWithinAt (h₁ : HasFDerivWithinAt f g s x)
-    (h₂ : g x I = I • g x 1) :
-    HasFDerivWithinAt f ((g x).complexOfReal h₂) s x :=
-  HasFDerivWithinAt.of_restrictScalars ℝ h₁.hasFDerivWithinAt rfl
+protected theorem HasFDerivWithinAt.complexOfReal_hasFDerivWithinAt {f' : ℂ →L[ℝ] E}
+    (h₁ : HasFDerivWithinAt f f' s x) (h₂ : f' I = I • f' 1) :
+    HasFDerivWithinAt f (f'.complexOfReal h₂) s x :=
+  HasFDerivWithinAt.of_restrictScalars ℝ h₁ rfl
 
 /--
 In cases where the Cauchy-Riemann Equation guarantees complex differentiability, the complex
 derivative equals `ContinuousLinearMap.toComplexOfMapI` of the real derivative.
 -/
-theorem complexOfReal_fderivWithin
-    (h₁ : DifferentiableWithinAt ℝ f s x)
+theorem complexOfReal_fderivWithin (h₁ : DifferentiableWithinAt ℝ f s x)
     (h₂ : fderivWithin ℝ f s x I = I • fderivWithin ℝ f s x 1) (hs : UniqueDiffWithinAt ℝ s x) :
     fderivWithin ℂ f s x = (fderivWithin ℝ f s x).complexOfReal h₂ := by
   have := ((differentiableWithinAt_complex_iff_differentiableWithinAt_real hs).2
@@ -265,7 +264,7 @@ theorem complexOfReal_hasDerivWithinAt (h₁ : DifferentiableWithinAt ℝ f s x)
     (h₂ : fderivWithin ℝ f s x I = I • fderivWithin ℝ f s x 1) :
     HasDerivWithinAt f ((fderivWithin ℝ f s x).complexOfReal h₂ 1) s x := by
   rw [hasDerivWithinAt_iff_hasFDerivWithinAt, smulRight_one_one]
-  exact complexOfReal_hasFDerivWithinAt h₁ h₂
+  exact HasFDerivWithinAt.complexOfReal_hasFDerivWithinAt h₁.hasFDerivWithinAt h₂
 
 /--
 The Cauchy-Riemann Equation: A real-differentiable function `f` on `ℂ` is complex-differentiable if
@@ -282,10 +281,10 @@ theorem differentiableAt_complex_iff_differentiableAt_real :
 In cases where the Cauchy-Riemann Equation guarantees complex differentiability, the complex
 derivative equals `ContinuousLinearMap.toComplexOfMapI` of the real derivative.
 -/
-theorem complexOfReal_hasFDerivAt (h₁ : DifferentiableAt ℝ f x)
-    (h₂ : fderiv ℝ f x I = I • fderiv ℝ f x 1) :
-    HasFDerivAt f ((fderiv ℝ f x).complexOfReal h₂) x :=
-  hasFDerivAt_of_restrictScalars ℝ h₁.hasFDerivAt rfl
+protected theorem HasFDerivAt.complexOfReal_hasFDerivAt {f' : ℂ →L[ℝ] E}
+    (h₁ : HasFDerivAt f f' x) (h₂ : f' I = I • f' 1) :
+    HasFDerivAt f (f'.complexOfReal h₂) x :=
+  hasFDerivAt_of_restrictScalars ℝ h₁ rfl
 
 /--
 In cases where the Cauchy-Riemann Equation guarantees complex differentiability, the complex
