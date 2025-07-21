@@ -251,7 +251,8 @@ theorem result : IsLeast {c : ℝ | ∀ f : ℕ → ℕ, f ∈ bonza → ∀ n, 
     have : 4 * (n : ℝ) = (4 * n : ℕ) := by simp
     rw [this, Nat.cast_le]
     exact apply_le hf hn
-  · intro c h
-    have := h fExample bonza_fExample 4 (by norm_num)
-    have : 16 ≤ c * 4 := by simpa [fExample, padicValNat_eq_primeFactorsList_count] using this
+  · intro c hc
+    have : 16 ≤ c * 4 := by
+      simpa [fExample, padicValNat_eq_primeFactorsList_count] using
+        hc fExample bonza_fExample 4 (by norm_num)
     linarith
