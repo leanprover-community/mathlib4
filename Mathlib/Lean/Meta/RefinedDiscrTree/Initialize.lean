@@ -149,7 +149,7 @@ Note: It is expensive to create two new `IO.Ref`s for every `MetaM` operation,
 
 
 /--
-Contains the pre discrimination tree and any errors occuring during initialization of
+Contains the pre discrimination tree and any errors occurring during initialization of
 the library search tree.
 -/
 private structure InitResults (α : Type) where

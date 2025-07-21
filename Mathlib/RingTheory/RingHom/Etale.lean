@@ -18,9 +18,8 @@ namespace RingHom
 
 variable {R S : Type u} [CommRing R] [CommRing S]
 
--- Note: `algebraize` currently does not work here, because it is broken mathlib wide
 /-- A ring hom `R →+* S` is etale, if `S` is an etale `R`-algebra. -/
-@[algebraize Algebra.Etale.toAlgebra]
+@[algebraize RingHom.Etale.toAlgebra]
 def Etale {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : Prop :=
   @Algebra.Etale R _ S _ f.toAlgebra
 
