@@ -27,15 +27,15 @@ analytic functions `f : V → ℝ`, where `V` is a finite-dimensional vector spa
 partial derivative test, calculus
 -/
 
-/-- Update a vector in coordinate 0. -/
-lemma update₀ {α : Type*} {a b c : α} : Function.update ![a,b] 0 c = ![c,b] := by
+/-- Update a vector of length 2 in coordinate 0. -/
+lemma Function.update₀ {α : Type*} {a b c : α} : Function.update ![a,b] 0 c = ![c,b] := by
   ext i; fin_cases i <;> simp
 
-/-- Update a vector in coordinate 1. -/
-lemma update₁ {α : Type*} {a b c : α} : Function.update ![a,b] 1 c = ![a,c] := by
+/-- Update a vector of length 2 in coordinate 1. -/
+lemma Function.update₁ {α : Type*} {a b c : α} : Function.update ![a,b] 1 c = ![a,c] := by
   ext i; fin_cases i <;> simp
 
-open Nat ContinuousMultilinearMap Finset
+open Nat ContinuousMultilinearMap Finset Function
 
 /-- The Hessian companion as a linear map. -/
 noncomputable def hessianLinearCompanion {V : Type*} [NormedAddCommGroup V]
