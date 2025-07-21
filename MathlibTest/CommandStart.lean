@@ -21,13 +21,13 @@ info: 6 whitespace issues found: 6 reported and 0 unreported.
 ---
 warning: reported: add space
   'FX(_'
-(⟨132, 10⟩, ⟨132, 11⟩)
+(⟨91, 10⟩, ⟨91, 11⟩)
 
 [Lean.Parser.Command.declaration, Lean.Parser.Command.theorem, Lean.Parser.Command.declId, ident.FX]
 ---
 warning: reported: remove space
   'FX(_  :Nat)'
-(⟨132, 13⟩, ⟨132, 14⟩)
+(⟨91, 13⟩, ⟨91, 14⟩)
 
 [Lean.Parser.Command.declaration,
  Lean.Parser.Command.theorem,
@@ -40,7 +40,7 @@ warning: reported: remove space
 ---
 warning: reported: add space
   ':Nat)'
-(⟨132, 15⟩, ⟨132, 16⟩)
+(⟨91, 15⟩, ⟨91, 16⟩)
 
 [Lean.Parser.Command.declaration,
  Lean.Parser.Command.theorem,
@@ -52,7 +52,7 @@ warning: reported: add space
 ---
 warning: reported: add space
   'True:='
-(⟨132, 26⟩, ⟨132, 27⟩)
+(⟨91, 26⟩, ⟨91, 27⟩)
 
 [Lean.Parser.Command.declaration,
  Lean.Parser.Command.theorem,
@@ -62,7 +62,7 @@ warning: reported: add space
 ---
 warning: reported: remove space
   'by  trivial;'
-(⟨133, 5⟩, ⟨133, 6⟩)
+(⟨92, 5⟩, ⟨92, 6⟩)
 
 [Lean.Parser.Command.declaration,
  Lean.Parser.Command.theorem,
@@ -72,7 +72,7 @@ warning: reported: remove space
 ---
 warning: reported: remove space
   'trivial;  done'
-(⟨133, 15⟩, ⟨133, 16⟩)
+(⟨92, 15⟩, ⟨92, 16⟩)
 
 [Lean.Parser.Command.declaration,
  Lean.Parser.Command.theorem,
@@ -82,50 +82,9 @@ warning: reported: remove space
  Lean.Parser.Tactic.tacticSeq1Indented,
  null,
  atom.«;»]
----
-warning: add space in the source
-
-This part of the code
-  'FX(_'
-
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
----
-warning: remove space in the source
-
-This part of the code
-  'FX(_  :Nat)'
-
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
----
-warning: add space in the source
-
-This part of the code
-  ':Nat)'
-
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
----
-warning: add space in the source
-
-This part of the code
-  'True:='
-
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
----
-warning: remove space in the source
-
-This part of the code
-  'by  trivial;'
-
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
----
-warning: remove space in the source
-
-This part of the code
-  'trivial;  done'
-
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
 #guard_msgs in
+set_option linter.style.commandStart false in
 set_option linter.unreachableTactic false in
 set_option linter.unusedTactic false in
 #mex
@@ -147,6 +106,9 @@ warning: add space in the source
 
 This part of the code
   '·rfl'
+should be written as
+  '· rfl'
+
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
 ---
@@ -165,7 +127,7 @@ example : True = True := by
 /--
 info: 1 whitespace issue found: 0 reported and 1 unreported.
 ---
-info: unreported: remove space (⟨181, 11⟩, ⟨181, 12⟩)
+info: unreported: remove space (⟨143, 11⟩, ⟨143, 12⟩)
 
 [Lean.Parser.Command.declaration,
  Lean.Parser.Command.example,
@@ -185,6 +147,9 @@ warning: remove space in the source
 
 This part of the code
   '( ·'
+should be written as
+  '(·'
+
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
 ---
@@ -192,6 +157,9 @@ warning: remove space in the source
 
 This part of the code
   '· )'
+should be written as
+  '·)'
+
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
@@ -206,6 +174,9 @@ warning: remove space in the source
 
 This part of the code
   '+  ·)'
+should be written as
+  '+ ·)'
+
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
@@ -218,6 +189,9 @@ warning: add space in the source
 
 This part of the code
   'throwError"s"'
+should be written as
+  'throwError "s"'
+
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
@@ -232,6 +206,9 @@ warning: remove space in the source
 
 This part of the code
   'rcases  h'
+should be written as
+  'rcases h'
+
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
@@ -244,6 +221,9 @@ warning: add space in the source
 
 This part of the code
   'rcases(h)'
+should be written as
+  'rcases (h)'
+
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
@@ -263,6 +243,9 @@ warning: add space in the source
 
 This part of the code
   'let(_)'
+should be written as
+  'let (_)'
+
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
@@ -276,6 +259,9 @@ warning: remove space in the source
 
 This part of the code
   'let  _'
+should be written as
+  'let _'
+
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
@@ -296,8 +282,12 @@ example {u : Lean.Level} (α : Q(Type u)) (_ : Q(Mul $α)) : Mul Q($α) where
 -- Ideally, this would complain, but we silenced the linter for `declare_aesop_rule_sets`.
 declare_aesop_rule_sets [$id](default := true)
 
-inspect
+-- `library_note` may have or not have a space between `""` and `/-- -/`
 library_note ""/-- -/
+library_note "" /-- -/
+
+-- The pretty-printer does not place a space after `safe`.
+--`attribute [aesop safe (rule_sets := [CategoryTheory])] Subsingleton.elim`
 
 -- The linter ignores `macro`, `elab` and `elab_rules`
 macro "#F" : command => `(section
@@ -314,6 +304,9 @@ warning: add space in the source
 
 This part of the code
   'have(h)'
+should be written as
+  'have (h)'
+
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
@@ -328,6 +321,9 @@ warning: add space in the source
 
 This part of the code
   'replace(h)'
+should be written as
+  'replace (h)'
+
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
@@ -347,6 +343,9 @@ warning: add space in the source
 
 This part of the code
   '=>rfl'
+should be written as
+  '=> rfl'
+
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
@@ -377,6 +376,9 @@ warning: add space in the source
 
 This part of the code
   'obtain(⟨h⟩)'
+should be written as
+  'obtain (⟨h⟩)'
+
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
@@ -393,6 +395,9 @@ warning: add space in the source
 
 This part of the code
   'example:'
+should be written as
+  'example :'
+
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/

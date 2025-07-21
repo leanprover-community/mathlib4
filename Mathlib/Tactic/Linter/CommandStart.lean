@@ -735,7 +735,7 @@ def insertSpacesAux {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptio
     --  else
     --    ("".toSubstring, read)
     let (next, strNew, read) ← processAtomOrIdent verbose? (k.push (.str `ident rawVal.toString)) rawVal str
-    if verbose? then
+    if false then
       dbg_trace
         s!"* ident '{rawVal}'\nStr: '{str}'\nRed: '{read}'\nNxt: '{next}'\nNew: '{strNew}'\n"
     pure (.ident (modifyTail info next) rawVal val pre, strNew)
@@ -750,7 +750,7 @@ def insertSpacesAux {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptio
     --  else
     --    ("".toSubstring, read)
     let (next, strNew, read) ← processAtomOrIdent verbose? (k.push (.str `atom val)) val.toSubstring str
-    if verbose? then
+    if false then
       dbg_trace
         s!"* atom '{val}'\nStr: '{str}'\nRed: '{read}'\nNxt: '{next}'\nNew: '{strNew}'\n"
     pure (.atom (modifyTail info next) val, strNew)
@@ -760,8 +760,8 @@ def insertSpacesAux {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptio
     let mut stxs := #[]
     for arg in args do
       let (newStx, strNew) ← insertSpacesAux verbose? (k.push kind) arg str'
-      if verbose? then
-        dbg_trace s!"'{strNew}' intermediate string at {k.push kind}"
+      if false then
+        logInfo m!"'{strNew}' intermediate string at {k.push kind}"
       str' := strNew.trimLeft
       stxs := stxs.push newStx
     pure (.node info kind stxs, str')
@@ -1212,6 +1212,33 @@ def mkWindowSubstring' (orig : Substring) (start : String.Pos) : String :=
   -- Carve the substring using the starting and ending positions determined above.
   {orig with startPos := extLeft.stopPos, stopPos := extRight.startPos}.toString
 
+def mkExpectedWindow (orig : Substring) (start : String.Pos) : String :=
+  -- Ending at the first discrepancy, we move to the left, consuming all previous
+  -- contiguous whitespace and then all previous contiguous non-whitespace.
+  let toError : Substring := {orig with stopPos := start}
+  let extLeft := toError.dropRightWhile (·.isWhitespace) |>.dropRightWhile (!·.isWhitespace)
+
+  -- Starting from the first discrepancy, we move to the right, consuming all subsequent
+  -- contiguous whitespace and then all subsequent contiguous non-whitespace.
+  let fromError : Substring := {orig with startPos := start}
+  let first := fromError.take 1
+  let afterWhitespace := fromError.dropWhile (·.isWhitespace) |>.takeWhile (!·.isWhitespace)
+  --dbg_trace "first: '{first}'"
+  --dbg_trace "afterWhitespace: '{afterWhitespace}'"
+  if first.trim.isEmpty then
+    -- Case 1: `first` consists of whitespace, so we discard all consecutive whitespace and
+    -- keep the following non-whitespace block.
+    {orig with startPos := extLeft.stopPos, stopPos := start}.toString ++ afterWhitespace.toString
+  else
+    -- Case 2: `first` is not whitespace, so we simply add a space and then the
+    -- following non-whitespace block.
+    {orig with startPos := extLeft.stopPos, stopPos := start}.toString ++ " " ++
+      {afterWhitespace with startPos := start}.toString
+
+#guard mkExpectedWindow "0123 abcdef    \n ghi".toSubstring ⟨8⟩ == "abc def"
+
+#guard mkExpectedWindow "0123 abc    \n def ghi".toSubstring ⟨9⟩ == "abc def"
+
 def _root_.Mathlib.Linter.mex.mkWindow (orig : Substring) (m : mex) (ctx : Nat := 4) : String :=
   let lth := ({orig with startPos := m.rg.start, stopPos := m.rg.stop}).toString.length
   mkWindowSubstring orig m.rg.start (ctx + lth)
@@ -1261,11 +1288,11 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
     --logInfoAt (.ofRange m.rg) m!"{m.error} ({m.kinds})"
     --dbg_trace "{m.mkWindow orig}"
     let origWindow := mkWindowSubstring' orig m.rg.start
+    let expectedWindow := mkExpectedWindow orig m.rg.start
     Linter.logLint linter.style.commandStart (.ofRange m.rg)
       m!"{m.error} in the source\n\n\
-      This part of the code\n  '{origWindow.trim}'\
-      "
-        --should be written as\n  '{expectedWindow}'\n"
+      This part of the code\n  '{origWindow.trim}'\n\
+      should be written as\n  '{expectedWindow}'\n"
 
 /-
   if let some pos := stx.getPos? then
