@@ -25,6 +25,16 @@ theorem dropWhile_get_zero_not (l : List α) (hl : 0 < (l.dropWhile p).length) :
       simp_all only [dropWhile_cons_of_pos]
     · simp [hp]
 
+theorem length_dropWhile_le (l : List α) : (dropWhile p l).length ≤ l.length := by
+  induction l with
+  | nil => simp
+  | cons head tail ih =>
+    simp only [dropWhile, length_cons]
+    by_cases h_p_head : p head
+    · simp only [h_p_head]
+      omega
+    · simp [h_p_head]
+
 variable {p} {l : List α}
 
 @[simp]
@@ -32,6 +42,21 @@ theorem dropWhile_eq_nil_iff : dropWhile p l = [] ↔ ∀ x ∈ l, p x := by
   induction l with
   | nil => simp [dropWhile]
   | cons x xs IH => by_cases hp : p x <;> simp [hp, IH]
+
+@[simp]
+theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p (l.get ⟨0, hl⟩) := by
+  rcases l with - | ⟨hd, tl⟩
+  · simp
+  · rw [dropWhile]
+    by_cases h_p_hd : p hd
+    · simp only [h_p_hd, length_cons, Nat.zero_lt_succ, Fin.zero_eta, get_eq_getElem, Fin.val_zero,
+      getElem_cons_zero, not_true_eq_false, imp_false, iff_false]
+      intro h
+      replace h := congrArg length h
+      have := length_dropWhile_le p tl
+      simp at h
+      omega
+    · simp [h_p_hd]
 
 @[simp]
 theorem takeWhile_eq_self_iff : takeWhile p l = l ↔ ∀ x ∈ l, p x := by
