@@ -41,6 +41,8 @@ lemma isoModSerre_kernel_eq_inverseImage_isomorphisms :
   · exact CokernelCofork.IsColimit.isZero_of_epi
       (CokernelCofork.mapIsColimit _ (cokernelIsCokernel f) G)
 
+variable {G}
+
 lemma isoModSerre_kernel_eq_leftBousfield_W_of_rightAdjoint
     {F : C ⥤ D} (adj : G ⊣ F) [F.Full] [F.Faithful] :
     G.kernel.isoModSerre = LeftBousfield.W (· ∈ Set.range F.obj) := by
