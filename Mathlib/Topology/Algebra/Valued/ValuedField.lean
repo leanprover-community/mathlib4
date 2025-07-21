@@ -132,6 +132,19 @@ open WithZeroTopology
 
 open Valued
 
+lemma valuation_isClosedMap [Valued K Γ₀] : IsClosedMap (v : K → Γ₀) := by
+  refine IsClosedMap.of_nonempty ?_
+  intro U hU hU'
+  simp only [← isOpen_compl_iff, isOpen_iff_mem_nhds, mem_compl_iff, mem_nhds, subset_compl_comm,
+    compl_setOf, not_lt] at hU
+  simp only [isClosed_iff, mem_image, map_eq_zero, exists_eq_right, ne_eq, image_subset_iff]
+  refine (em _).imp_right fun h ↦ ?_
+  obtain ⟨⟨⟨r, s⟩, hr, hs⟩, h⟩ := hU _ h
+  simp only [sub_zero] at h
+  refine ⟨v s / v r, by simp [hr, hs], h.trans ?_⟩
+  intro
+  simp [div_le_iff₀ (zero_lt_iff.mpr hr)]
+
 theorem Valued.continuous_valuation [MulArchimedean Γ₀] [Valued K Γ₀] :
     Continuous (v : K → Γ₀) := by
   rw [continuous_iff_continuousAt]
@@ -228,19 +241,6 @@ instance (priority := 100) completable : CompletableTopField K :=
           gcongr }
 
 open WithZeroTopology
-
-lemma valuation_isClosedMap : IsClosedMap (v : K → Γ₀) := by
-  refine IsClosedMap.of_nonempty ?_
-  intro U hU hU'
-  simp only [← isOpen_compl_iff, isOpen_iff_mem_nhds, mem_compl_iff, mem_nhds, subset_compl_comm,
-    compl_setOf, not_lt] at hU
-  simp only [isClosed_iff, mem_image, map_eq_zero, exists_eq_right, ne_eq, image_subset_iff]
-  refine (em _).imp_right fun h ↦ ?_
-  obtain ⟨γ, h⟩ := hU _ h
-  simp only [sub_zero] at h
-  refine ⟨γ, γ.ne_zero, h.trans ?_⟩
-  intro
-  simp
 
 /-- The extension of the valuation of a valued field to the completion of the field. -/
 noncomputable def extension : hat K → Γ₀ :=
