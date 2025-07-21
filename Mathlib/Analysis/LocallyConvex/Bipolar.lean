@@ -132,32 +132,7 @@ lemma test4 :
   subst right
   use w
 
-def mL (s : Finset F) : s → WeakBilin B →ₗ[𝕜] 𝕜 := fun (f : s) => (WeakBilin.eval B) f.val
-
-variable (x : E) (a : ℝ)
-
---variable [IsScalarTower ℝ 𝕜 E]
-
---#check a • x
-
-/-
-lemma testhhh (a b : ℝ) (h : ∀ (c : ℝ), 0 < c → a < b + c) : a ≤ b := by
-  exact le_of_forall_pos_lt_add' h
-
-lemma testu (a : ℝ) (h : 0 < a) : 0<‖a‖ := by
-  rw [Real.norm_eq_abs, abs_pos]
-  exact (ne_of_lt h).symm
-  simp_all only [Real.norm_eq_abs, abs_pos, ne_eq]
-  apply Aesop.BuiltinRules.not_intro
-  intro a_1
-  subst a_1
-  simp_all only [lt_self_iff_false]
-
-lemma testg (a b c : ℝ) (h : 0 < a) (h2: a ≤ b) : 0 < b := by
-  exact gt_of_ge_of_gt h2 h
-  exact inv_mul_lt_one₀ h
---  exact Iff.symm (mul_lt_mul_left h)
--/
+--def mL (s : Finset F) : s → WeakBilin B →ₗ[𝕜] 𝕜 := fun (f : s) => (WeakBilin.eval B) f.val
 
 lemma test5 : ∃ (s₁ : Finset F),
     ↑f ∈ Submodule.span 𝕜 (Set.range (ContinuousLinearMap.toLinearMap₁₂
@@ -241,102 +216,6 @@ lemma test5 : ∃ (s₁ : Finset F),
     aesop
   rw [← e9]
   exact e8
-
-
-
-
-
-
-
-
-
-    --aesop?
-
-  --let a := (r+1) * ((s₁.sup B.toSeminormFamily) x)
-
-  /-
-  apply mem_span_of_iInf_ker_le_ker (ι := s₁) (L := (mL B s₁)) (K := f.toLinearMap)
-  intro x hx
-  simp at hx
-  simp at hs
-  obtain ⟨r, hr1, hr2⟩ := hs
-  have hr : 0 ≤ r := by exact le_of_lt hr1
-
-  --have ex : x ∈
-
-  have e1 : ‖f x‖ ≤ r • ((s₁.sup B.toSeminormFamily) x) := by
-    --simp_all only [one_div]
-    let a := (r+1) * ((s₁.sup B.toSeminormFamily) x)
-
-    have c1 : a = 0 ∨ a ≠ 0 := eq_or_ne a 0
-
-    rcases c1 with h1 | h2
-    · have c2 : (s₁.sup B.toSeminormFamily) x = 0 := by
-        by_contra hn
-        simp at hn
-        simp [a] at h1
-        have rz : 0 < r + 1  := by
-          rw [← zero_add 0]
-          apply add_lt_add hr1
-          exact Real.zero_lt_one
-        have rz2 : 0 ≠ r + 1 := by
-          exact ne_of_lt rz
-        aesop
-      rw [c2]
-      simp
-      have ex1 : x ∈ (s₁.sup B.toSeminormFamily).ball 0 r := by
-        rw [Seminorm.mem_ball, sub_zero]
-        rw [← c2] at hr1
-        exact hr1
-      have ex2 (k : 𝕜) : k • x ∈ (s₁.sup B.toSeminormFamily).ball 0 r := by
-        rw [Seminorm.mem_ball, sub_zero]
-        rw [SeminormClass.map_smul_eq_mul]
-        have fibble : ‖k‖ * (s₁.sup B.toSeminormFamily) x = ‖k‖ * 0 := by
-          rw [c2]
-        rw [mul_zero] at fibble
-        rw [← fibble] at hr1
-        exact hr1
-      --simp_all
-      --have ex3 (k : 𝕜) : f k • x
-
-
-
-    let y := a⁻¹ • x
-    /-
-    have i1 (fi : s₁) : (⟨‖(WeakBilin.eval B) fi x‖, norm_nonneg _⟩ : NNReal) ≤
-        s₁.sup (α := NNReal)  (fun fi  => ⟨‖(WeakBilin.eval B) fi x‖, norm_nonneg _⟩) := by
-      --norm_cast
-      apply Finset.le_sup
-        (f := (fun fi  => (⟨‖(WeakBilin.eval B) fi x‖, norm_nonneg _⟩): : NNReal)) fi.prop
-    -/
-
-    have e2 : y ∈ (s₁.sup B.toSeminormFamily).ball 0 r⁻¹ := by
-      rw [Seminorm.mem_ball, sub_zero]
-      simp only [y]
-      have a1 : 0 ≤ a⁻¹ := by
-        simp_all only [mul_inv_rev, a]
-        rw [mul_nonneg_iff_left_nonneg_of_pos]
-        rw [inv_nonneg]
-        exact apply_nonneg (s₁.sup fun fi ↦ (B.flip fi).toSeminorm) x
-        rw [inv_pos]
-
-
-
-        sorry
-      simp_all only [mul_inv_rev, Seminorm.mem_ball, sub_zero, y, a]
-      sorry
-      --simp_all only [NNReal.coe_inv, Seminorm.mem_ball, sub_zero, y]
-
-
-
-
-
-      sorry
-
-
-    sorry
-
--/
 
 /-
 See
