@@ -44,7 +44,7 @@ instance FiniteDimensional.mulOpposite [DivisionRing R] [AddCommGroup H] [Module
   (Basis.ofVectorSpace R H).mulOpposite
   (Basis.ofVectorSpaceIndex R H).toFinite
 
-instance Module.Free.mulOpposite [Semiring R] [AddCommMonoid H] [Module R H]
+instance [Semiring R] [AddCommMonoid H] [Module R H]
     [Module.Free R H] : Module.Free R Hᵐᵒᵖ :=
   let ⟨b⟩ := exists_basis (R := R) (M := H)
   of_basis b.2.mulOpposite
