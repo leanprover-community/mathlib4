@@ -161,7 +161,7 @@ def Nat.Primes.prodNatEquiv : Nat.Primes × ℕ ≃ {n : ℕ // IsPrimePow n} wh
   right_inv n := by
     ext1
     dsimp only
-    rw [sub_one_add_one (Nat.factorization_minFac_ne_zero (n.prop.one_lt)),
+    rw [sub_one_add_one (Nat.factorization_minFac_ne_zero n.prop.one_lt),
       n.prop.minFac_pow_factorization_eq]
 
 @[simp]
