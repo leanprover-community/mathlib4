@@ -491,7 +491,7 @@ def modifyTail (si : SourceInfo) (newTrail : Substring) : SourceInfo :=
 
 /--
 Compares the two substrings `s` and `t`, with the expectation that `t` starts with `s`,
-up to whitespace.
+up to whitespace and guillemets (`«` and `»`).
 
 It returns the substring of `t` that starts from the first position where it differs from `s`,
 after it erased potential whitespace, taking care of preserving the last whitespace, if present.
@@ -514,6 +514,12 @@ def readWhile (s t : Substring) : Substring :=
     else
     if s1.trim.isEmpty then
       readWhile s.trimLeft t
+    else
+    if #["«", "»"].contains t1.toString then
+      readWhile s (t.drop 1)
+    else
+    if #["«", "»"].contains s1.toString then
+      readWhile (s.drop 1) t
     else
       t
 
@@ -593,20 +599,24 @@ Deeper nodes are *not* inspected.
 def totalExclusions : ExcludedSyntaxNodeKind where
   kinds := #[
     -- Each entry prevents the formatting of...
-    ``Parser.Command.docComment, -- ... of doc-strings.
-    ``Parser.Command.moduleDoc, -- ... of module docs.
-    ``«term{_:_//_}», -- ... of `{a // ...}`.
-    `Mathlib.Meta.setBuilder, -- ... of `{a | ...}`.
-    ``Parser.Tactic.tacticSeqBracketed, -- ... of `{ tactics }`.
-    ``Parser.Command.macro, -- ... of `macro`.
-    ``Parser.Command.elab, -- ... of `elab`.
-    ``Parser.Command.elab_rules, -- ... of `elab_rules`.
-    `Mathlib.Meta.«term{_|_}», -- ... of `{ f x y | (x : X) (y : Y) }`.
-    ``«term[_]», -- ... of lists.
-    ``«term#[_,]», -- ... of arrays.
-    ``Parser.Term.anonymousCtor, -- ... of `⟨...⟩`.
-    ``Parser.Command.syntax, -- ... of `syntax ...`.
-    `Aesop.Frontend.Parser.declareRuleSets, -- ... of `declare_aesop_rule_sets`
+    ``Parser.Command.docComment, -- of doc-strings.
+    ``Parser.Command.moduleDoc, -- of module docs.
+    ``«term{_:_//_}», -- of `{a // ...}`.
+    `Mathlib.Meta.setBuilder, -- of `{a | ...}`.
+    ``Parser.Tactic.tacticSeqBracketed, -- of `{ tactics }`.
+    ``Parser.Command.macro, -- of `macro`.
+    ``Parser.Command.elab, -- of `elab`.
+    ``Parser.Command.elab_rules, -- of `elab_rules`.
+    `Mathlib.Meta.«term{_|_}», -- of `{ f x y | (x : X) (y : Y) }`.
+    ``«term[_]», -- of lists.
+    ``«term#[_,]», -- of arrays.
+    ``Parser.Term.anonymousCtor, -- of `⟨...⟩`.
+    ``Parser.Command.syntax, -- of `syntax ...`.
+    `Aesop.Frontend.Parser.declareRuleSets, -- of `declare_aesop_rule_sets`.
+    ``«term_::_», -- of lists.
+    `Stream'.«term_::_», -- of `Stream'` notation, analogous to lists.
+    `Batteries.Util.LibraryNote.commandLibrary_note___, -- of `library_note "Title"/-- Text -/`.
+    `Mathlib.Notation3.notation3, -- of `notation3`.
   ]
   depth := none
 

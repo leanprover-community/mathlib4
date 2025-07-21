@@ -296,6 +296,9 @@ example {u : Lean.Level} (α : Q(Type u)) (_ : Q(Mul $α)) : Mul Q($α) where
 -- Ideally, this would complain, but we silenced the linter for `declare_aesop_rule_sets`.
 declare_aesop_rule_sets [$id](default := true)
 
+inspect
+library_note ""/-- -/
+
 -- The linter ignores `macro`, `elab` and `elab_rules`
 macro "#F" : command => `(section
 )
