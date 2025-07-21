@@ -134,6 +134,30 @@ lemma test4 :
 
 --def mL (s : Finset F) : s → WeakBilin B →ₗ[𝕜] 𝕜 := fun (f : s) => (WeakBilin.eval B) f.val
 
+-- Try to rephrase this in terms of `Analysis/LocallyConvex/WithSeminorms`
+
+--#check Seminorm.IsBounded
+-- def IsBounded (p : ι → Seminorm 𝕜 E) (q : ι' → Seminorm 𝕜₂ F) (f : E →ₛₗ[σ₁₂] F) : Prop :=
+--  ∀ i, ∃ s : Finset ι, ∃ C : ℝ≥0, (q i).comp f ≤ C • s.sup p
+
+
+
+-- ι = F
+-- E = WeakBilin B
+-- F = 𝕜
+-- (f : WeakBilin B →L[𝕜] 𝕜)
+-- p : B.toSeminormFamily
+-- q : Fin 1 => normSeminorm 𝕜 𝕜
+
+#check Seminorm.IsBounded B.toSeminormFamily (fun _ : Fin 1 => normSeminorm 𝕜 𝕜) f.toLinearMap
+
+open NNReal in
+lemma test_isBounded :
+  Seminorm.IsBounded B.toSeminormFamily (fun _ : Fin 1 => normSeminorm 𝕜 𝕜) f.toLinearMap ↔
+  ∃ s : Finset F, ∃ C : ℝ≥0, ∀ (x : WeakBilin B), ‖f x‖  ≤ C • s.sup B.toSeminormFamily x := by
+  rw [Seminorm.isBounded_const]
+  aesop
+
 lemma test5 : ∃ (s₁ : Finset F),
     ↑f ∈ Submodule.span 𝕜 (Set.range (ContinuousLinearMap.toLinearMap₁₂
       (WeakBilin.eval B) ∘ Subtype.val : s₁ → WeakBilin B →ₗ[𝕜] 𝕜)) := by
