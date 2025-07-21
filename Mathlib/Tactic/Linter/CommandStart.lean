@@ -580,15 +580,16 @@ def unparseable : ExcludedSyntaxNodeKind where
 /--
 These are the `SyntaxNodeKind`s for which we want to ignore the pretty-printer.
 
-Deeper nodes are still inspected.
+Deeper nodes are *not* inspected.
 -/
 def totalExclusions : ExcludedSyntaxNodeKind where
   kinds := #[
-    ``Parser.Command.docComment,
-    ``Parser.Command.moduleDoc,
-    `Mathlib.Meta.setBuilder,
+    ``Parser.Command.docComment,  -- Prevents formatting of doc-strings.
+    ``Parser.Command.moduleDoc,  -- Prevents formatting of module docs.
+    `Mathlib.Meta.setBuilder,  -- Prevents formatting of `{a | ...}`.
+    ``Parser.Tactic.tacticSeqBracketed  -- Prevents formatting of `{ tactics }`.
   ]
-  depth := some 2
+  depth := none
 
 /--
 These are the `SyntaxNodeKind`s for which the pretty-printer would likely not space out from the
@@ -1205,7 +1206,7 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let origWindow := mkWindowSubstring' orig m.rg.start
     Linter.logLint linter.style.commandStart (.ofRange m.rg)
       m!"{m.error} in the source\n\n\
-      This part of the code\n  '{origWindow.trim}'\n\
+      This part of the code\n  '{origWindow.trim}'\
       "
         --should be written as\n  '{expectedWindow}'\n"
 
