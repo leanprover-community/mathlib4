@@ -739,12 +739,8 @@ theorem normal_of_subsingleton {p : ℕ} [Subsingleton (Sylow p G)] (P : Sylow p
 
 theorem characteristic_of_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
     (h : P.Normal) : P.Characteristic := by
-  haveI := unique_of_normal P h
-  rw [characteristic_iff_map_eq]
-  intro Φ
-  change (Φ • P).toSubgroup = P.toSubgroup
-  congr
-  simp [eq_iff_true_of_subsingleton]
+  have _ := unique_of_normal P h
+  exact characteristic_of_subsingleton _
 
 theorem normal_of_normalizer_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
     (hn : P.normalizer.Normal) : P.Normal := by
