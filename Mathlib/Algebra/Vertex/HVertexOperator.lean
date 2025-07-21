@@ -228,6 +228,7 @@ variable {Γ' Γ₁' F : Type*} [PartialOrder Γ'] [AddCommMonoid Γ'] [IsOrdere
 
 open scoped HahnModule
 
+/-!
 /-- A Hahn-semilinear isomorphism of heterogeneous vertex operator spaces induced by ordered
 isomorphisms. -/
 def equivDomainSemi :
@@ -235,7 +236,7 @@ def equivDomainSemi :
       HVertexOperator Γ₁' R V W :=
   ((LinearEquiv.congrSemilinear (R := R) (M := V) (R₂ := HahnSeries Γ R) (M₂ := HahnModule Γ₁ R W)
     (σ₂ := HahnSeries.C) (by simp)).trans
-    (LinearEquiv.semiCongrRight (HahnSeries.C) (σ₃ := HahnSeries.C)
+    (LinearEquiv.arrowCongrRight (HahnSeries.C) (σ₃ := HahnSeries.C)
       (HahnModule.equivDomainModuleHom (R := R) (V := W) f f₁))).trans
     (LinearEquiv.congrSemilinear (R := R) (M := V) (R₂ := HahnSeries Γ' R)
       (M₂ := HahnModule Γ₁' R W) (σ₂ := HahnSeries.C) (by simp)).symm
@@ -294,7 +295,7 @@ theorem lexRevSemiEquiv_base_smul (A : HVertexOperator (Γ₁' ×ₗ Γ₁) R V 
   ext g v
   simp only [RingEquiv.toRingHom_eq_coe, lexRevSemiEquiv]
   rw [equivDomainSemi_base_smul]
-
+-/
 end equivDomain
 
 end Module
@@ -679,7 +680,7 @@ variable {Γ' Γ₁ Γ₁' : Type*} [PartialOrder Γ] [AddCommMonoid Γ] [IsOrde
 [IsOrderedCancelVAdd Γ' Γ₁'] (f : Γ ≃+o Γ') (f₁ : OrderedAddActionEquiv f.toEquiv Γ₁ Γ₁')
 
 open scoped HahnModule
-
+/-!
 /-- A semilinear equivalence between state field maps induced by additive order isomorphisms. -/
 def equivDomain :
     HStateFieldMap Γ₁ R U₀ V W ≃ₛₗ[(HahnSeries.equivDomainRingHom (Γ := Γ) (R := R) f).toRingHom]
@@ -704,7 +705,7 @@ theorem equivDomain_symm_apply_apply (Y : HStateFieldMap Γ₁' R U₀ V W) (u :
       (HahnModule.equivDomainModuleHom f f₁).symm (Y u v) := by
   dsimp [equivDomain]
   erw [HVertexOperator.equivDomainSemi_symm_apply_apply]
-
+-/
 end
 
 theorem compLeft_isPWO {Γ} [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HStateFieldMap Γ R V U₂ W)

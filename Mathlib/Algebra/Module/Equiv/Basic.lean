@@ -721,6 +721,7 @@ theorem arrowCongr_trans
       :=
   rfl
 
+/-!
 omit [Module R M₂] [Module R M₃] in
 /-- A semilinear isomorphism between two modules `M₂` and `M₃` induces a semilinear
 isomorphism between semilinear map spaces from a common source, if the actions of the various rings
@@ -786,7 +787,7 @@ theorem congrSemiRight_symm_apply_apply {R₂ R₃} [CommSemiring R₂] [CommSem
     (e : M₂ ≃ₛₗ[σ₂₃] M₃) (f : M →ₗ[R] M₃) (x : M) :
     (congrSemiRight σ₂ h₂ h₃ e).symm f x = e.symm (f x) := by
   rfl
-
+-/
 /-- If `M` and `M₂` are linearly isomorphic then the two spaces of linear maps from `M` and `M₂` to
 themselves are linearly isomorphic.
 
