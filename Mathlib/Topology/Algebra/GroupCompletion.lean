@@ -55,7 +55,8 @@ instance [Sub α] : Sub (Completion α) :=
 theorem UniformSpace.Completion.coe_zero [Zero α] : ((0 : α) : Completion α) = 0 :=
   rfl
 
-@[simp] lemma coe_eq_zero_iff [Zero α] [T0Space α] {x : α} : (x : Completion α) = 0 ↔ x = 0 :=
+@[simp] lemma UniformSpace.Completion.coe_eq_zero_iff [Zero α] [T0Space α] {x : α} :
+    (x : Completion α) = 0 ↔ x = 0 :=
   Completion.coe_inj
 
 end Group
