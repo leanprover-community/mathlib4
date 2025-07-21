@@ -294,31 +294,31 @@ end ObjectProperty
 
 namespace Triangulated
 
-@[deprecated (since := "2025-04-19")]
+@[deprecated (since := "2025-07-21")]
 alias Subcategory := ObjectProperty.IsTriangulated
 
 namespace Subcategory
 
 open ObjectProperty
 
-@[deprecated (since := "2025-04-19")] alias mk' := IsTriangulatedClosed₂.mk'
-@[deprecated (since := "2025-04-19")] alias ext₁ := ext_of_isTriangulatedClosed₁
-@[deprecated (since := "2025-04-19")] alias ext₁' := ext_of_isTriangulatedClosed₁'
-@[deprecated (since := "2025-04-19")] alias ext₂ := ext_of_isTriangulatedClosed₂
-@[deprecated (since := "2025-04-19")] alias ext₂' := ext_of_isTriangulatedClosed₂'
-@[deprecated (since := "2025-04-19")] alias ext₃ := ext_of_isTriangulatedClosed₃
-@[deprecated (since := "2025-04-19")] alias ext₃' := ext_of_isTriangulatedClosed₃'
-@[deprecated (since := "2025-04-19")] alias W := trW
-@[deprecated (since := "2025-04-19")] alias W_iff := trW_iff
-@[deprecated (since := "2025-04-19")] alias W_iff' := trW_iff'
-@[deprecated (since := "2025-04-19")] alias W.mk := trW.mk
-@[deprecated (since := "2025-04-19")] alias W.mk' := trW.mk'
-@[deprecated (since := "2025-04-19")] alias isoClosure_W := trW_isoClosure
-@[deprecated (since := "2025-04-19")] alias W_of_isIso := trW_of_isIso
-@[deprecated (since := "2025-04-19")] alias smul_mem_W_iff := smul_mem_trW_iff
-@[deprecated (since := "2025-04-19")] alias W.shift := trW.shift
-@[deprecated (since := "2025-04-19")] alias W.unshift := trW.unshift
-@[deprecated (since := "2025-04-19")]
+@[deprecated (since := "2025-07-21")] alias mk' := IsTriangulatedClosed₂.mk'
+@[deprecated (since := "2025-07-21")] alias ext₁ := ext_of_isTriangulatedClosed₁
+@[deprecated (since := "2025-07-21")] alias ext₁' := ext_of_isTriangulatedClosed₁'
+@[deprecated (since := "2025-07-21")] alias ext₂ := ext_of_isTriangulatedClosed₂
+@[deprecated (since := "2025-07-21")] alias ext₂' := ext_of_isTriangulatedClosed₂'
+@[deprecated (since := "2025-07-21")] alias ext₃ := ext_of_isTriangulatedClosed₃
+@[deprecated (since := "2025-07-21")] alias ext₃' := ext_of_isTriangulatedClosed₃'
+@[deprecated (since := "2025-07-21")] alias W := trW
+@[deprecated (since := "2025-07-21")] alias W_iff := trW_iff
+@[deprecated (since := "2025-07-21")] alias W_iff' := trW_iff'
+@[deprecated (since := "2025-07-21")] alias W.mk := trW.mk
+@[deprecated (since := "2025-07-21")] alias W.mk' := trW.mk'
+@[deprecated (since := "2025-07-21")] alias isoClosure_W := trW_isoClosure
+@[deprecated (since := "2025-07-21")] alias W_of_isIso := trW_of_isIso
+@[deprecated (since := "2025-07-21")] alias smul_mem_W_iff := smul_mem_trW_iff
+@[deprecated (since := "2025-07-21")] alias W.shift := trW.shift
+@[deprecated (since := "2025-07-21")] alias W.unshift := trW.unshift
+@[deprecated (since := "2025-07-21")]
 alias mem_W_iff_of_distinguished := trW_iff_of_distinguished
 
 end Subcategory
