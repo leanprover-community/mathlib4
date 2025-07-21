@@ -35,13 +35,14 @@ theorem factorization_choose_le_log : (choose n k).factorization p ≤ log p n :
   by_cases h : (choose n k).factorization p = 0
   · simp [h]
   have hp : p.Prime := Not.imp_symm (choose n k).factorization_eq_zero_of_non_prime h
+  have := Fact.mk hp
   have hkn : k ≤ n := by
     refine le_of_not_gt fun hnk => h ?_
     simp [choose_eq_zero_of_lt hnk]
-  rw [factorization_def _ hp, @padicValNat_def _ ⟨hp⟩ _ (choose_ne_zero hkn)]
+  rw [factorization_def _ hp, padicValNat_def (choose_ne_zero hkn)]
   rw [← Nat.cast_le (α := ℕ∞), ← FiniteMultiplicity.emultiplicity_eq_multiplicity]
   · simp only [hp.emultiplicity_choose hkn (lt_add_one _), Nat.cast_le]
-    exact (Finset.card_filter_le _ _).trans (le_of_eq (Nat.card_Ico _ _))
+    exact (Finset.card_filter_le _ _).trans_eq (Nat.card_Ico _ _)
   apply Nat.finiteMultiplicity_iff.2 ⟨hp.ne_one, choose_pos hkn⟩
 
 /-- A `pow` form of `Nat.factorization_choose_le` -/
@@ -61,7 +62,8 @@ theorem factorization_choose_of_lt_three_mul (hp' : p ≠ 2) (hk : p ≤ k) (hk'
   · exact factorization_eq_zero_of_non_prime (choose n k) hp
   rcases lt_or_ge n k with hnk | hkn
   · simp [choose_eq_zero_of_lt hnk]
-  rw [factorization_def _ hp, @padicValNat_def _ ⟨hp⟩ _ (choose_ne_zero hkn),
+  have := Fact.mk hp
+  rw [factorization_def _ hp, padicValNat_def (choose_ne_zero hkn),
     ← emultiplicity_eq_zero_iff_multiplicity_eq_zero]
   simp only [hp.emultiplicity_choose hkn (lt_add_one _), cast_eq_zero, Finset.card_eq_zero,
     Finset.filter_eq_empty_iff, not_le]

@@ -599,7 +599,7 @@ product `V × W`.
 noncomputable def prod : Representation k G (V × W) where
   toFun g := (ρV g).prodMap (ρW g)
   map_one' := by simp
-  map_mul' g h := by simp; rfl
+  map_mul' g h := by simp [prodMap_mul]
 
 end Prod
 
