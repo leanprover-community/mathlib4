@@ -32,7 +32,6 @@ instance distrib [Distrib R] : Distrib (ULift R) :=
     left_distrib := fun _ _ _ => (Equiv.ulift).injective (by simp [left_distrib]),
     right_distrib := fun _ _ _ => (Equiv.ulift).injective (by simp [right_distrib]) }
 
-
 instance instNatCast [NatCast R] : NatCast (ULift R) := ⟨(up ·)⟩
 instance instIntCast [IntCast R] : IntCast (ULift R) := ⟨(up ·)⟩
 
