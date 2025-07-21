@@ -221,7 +221,7 @@ theorem le_of_littleO {V : Type*}
 
 
 /-- Second partial derivative test, "little oh" form. -/
-theorem isLocalMin_of_PosDef_of_Littleo {V : Type*} [NormedAddCommGroup V]
+theorem isLocalMin_of_posDef_of_littleo {V : Type*} [NormedAddCommGroup V]
     [InnerProductSpace ℝ V] [FiniteDimensional ℝ V] {f : V → ℝ} {x₀ : V}
     (h : (fun x => f x - ∑ i ∈ range 3, 1 / (i)! * iteratedFDeriv ℝ i f x₀ fun _ => x - x₀)
       =o[nhds x₀] fun x => ‖x - x₀‖ ^ 2) (h₀ : gradient f x₀ = 0)
@@ -331,4 +331,4 @@ theorem second_derivative_test {V : Type*} [NormedAddCommGroup V] [InnerProductS
     ext
     rw [h₂]
   have h₄ (x : V) := congrArg (HSub.hSub (f x)) (h₃ x)
-  exact isLocalMin_of_PosDef_of_Littleo (funext_iff.mpr h₄ ▸ littleO_of_powerseries hr h₁) h₀ hf
+  exact isLocalMin_of_posDef_of_littleo (funext_iff.mpr h₄ ▸ littleO_of_powerseries hr h₁) h₀ hf
