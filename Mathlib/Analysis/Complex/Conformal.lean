@@ -205,7 +205,7 @@ lemma LinearMap.coe_complexOfReal {ℓ : ℂ →ₗ[ℝ] E} (h : ℓ I = I • �
     ℓ.complexOfReal h = (ℓ : ℂ → E) := rfl
 
 /--
-Using `differentiableAt_complex_iff_differentiableAt_real`, construct a continuous complex- linear
+Using `differentiableAt_complex_iff_differentiableAt_real`, construct a continuous complex-linear
 map from a continueous real-linear map `ℓ` that maps `I` to `I • ℓ 1`.
 -/
 def ContinuousLinearMap.complexOfReal (ℓ : ℂ →L[ℝ] E) (h : ℓ I = I • ℓ 1) : ℂ →L[ℂ] E where
@@ -219,7 +219,8 @@ lemma ContinuousLinearMap.coe_complexOfReal {ℓ : ℂ →L[ℝ] E} (h : ℓ I =
 
 /--
 The **Cauchy-Riemann Equation**: A real-differentiable function `f` on `ℂ` is complex-differentiable
-within `s` iff the derivative `fderivWithin ℝ f s x` maps `I` to `I • (fderivWithin ℝ f s x) 1`.
+at `x` within `s` iff the derivative `fderivWithin ℝ f s x` maps `I` to
+`I • (fderivWithin ℝ f s x) 1`.
 -/
 theorem differentiableWithinAt_complex_iff_differentiableWithinAt_real
     (hs : UniqueDiffWithinAt ℝ s x) :
@@ -234,8 +235,8 @@ theorem differentiableWithinAt_complex_iff_differentiableWithinAt_real
     rfl
 
 /--
-In cases where the Cauchy-Riemann Equation guarantees complex differentiability, the complex
-derivative equals `ContinuousLinearMap.toComplexOfMapI` of the real derivative.
+In cases where the **Cauchy-Riemann Equation** guarantees complex differentiability at `x`, the
+complex derivative equals `ContinuousLinearMap.toComplexOfMapI` of the real derivative.
 -/
 protected theorem HasFDerivWithinAt.complexOfReal_hasFDerivWithinAt {f' : ℂ →L[ℝ] E}
     (h₁ : HasFDerivWithinAt f f' s x) (h₂ : f' I = I • f' 1) :
@@ -243,8 +244,8 @@ protected theorem HasFDerivWithinAt.complexOfReal_hasFDerivWithinAt {f' : ℂ �
   HasFDerivWithinAt.of_restrictScalars ℝ h₁ rfl
 
 /--
-In cases where the Cauchy-Riemann Equation guarantees complex differentiability, the complex
-derivative equals `ContinuousLinearMap.toComplexOfMapI` of the real derivative.
+In cases where the **Cauchy-Riemann Equation** guarantees complex differentiability at `x`, the
+complex derivative equals `ContinuousLinearMap.toComplexOfMapI` of the real derivative.
 -/
 theorem complexOfReal_fderivWithin (h₁ : DifferentiableWithinAt ℝ f s x)
     (h₂ : fderivWithin ℝ f s x I = I • fderivWithin ℝ f s x 1) (hs : UniqueDiffWithinAt ℝ s x) :
@@ -254,8 +255,8 @@ theorem complexOfReal_fderivWithin (h₁ : DifferentiableWithinAt ℝ f s x)
   simpa [DFunLike.ext_iff]
 
 /--
-In cases where the Cauchy-Riemann Equation guarantees complex differentiability, the complex
-derivative equals `ContinuousLinearMap.toComplexOfMapI` of the real derivative.
+In cases where the **Cauchy-Riemann Equation** guarantees complex differentiability at `x`, the
+complex derivative equals `ContinuousLinearMap.toComplexOfMapI` of the real derivative.
 -/
 theorem complexOfReal_hasDerivWithinAt (h₁ : DifferentiableWithinAt ℝ f s x)
     (h₂ : fderivWithin ℝ f s x I = I • fderivWithin ℝ f s x 1) :
@@ -264,8 +265,8 @@ theorem complexOfReal_hasDerivWithinAt (h₁ : DifferentiableWithinAt ℝ f s x)
   exact (h₁.hasFDerivWithinAt).complexOfReal_hasFDerivWithinAt h₂
 
 /--
-The Cauchy-Riemann Equation: A real-differentiable function `f` on `ℂ` is complex-differentiable if
-and only if the derivative `fderiv ℝ f x` maps `I` to `I • (fderiv ℝ f x) 1`.
+The **Cauchy-Riemann Equation**: A real-differentiable function `f` on `ℂ` is complex-differentiable
+at `x` if and only if the derivative `fderiv ℝ f x` maps `I` to `I • (fderiv ℝ f x) 1`.
 -/
 theorem differentiableAt_complex_iff_differentiableAt_real :
     DifferentiableAt ℂ f x ↔ DifferentiableAt ℝ f x ∧
@@ -275,8 +276,8 @@ theorem differentiableAt_complex_iff_differentiableAt_real :
     ⟨(fderiv ℝ f x).complexOfReal h₂, rfl⟩⟩
 
 /--
-In cases where the Cauchy-Riemann Equation guarantees complex differentiability, the complex
-derivative equals `ContinuousLinearMap.toComplexOfMapI` of the real derivative.
+In cases where the **Cauchy-Riemann Equation** guarantees complex differentiability at `x`, the
+complex derivative equals `ContinuousLinearMap.toComplexOfMapI` of the real derivative.
 -/
 protected theorem HasFDerivAt.complexOfReal_hasFDerivAt {f' : ℂ →L[ℝ] E}
     (h₁ : HasFDerivAt f f' x) (h₂ : f' I = I • f' 1) :
@@ -284,8 +285,8 @@ protected theorem HasFDerivAt.complexOfReal_hasFDerivAt {f' : ℂ →L[ℝ] E}
   hasFDerivAt_of_restrictScalars ℝ h₁ rfl
 
 /--
-In cases where the Cauchy-Riemann Equation guarantees complex differentiability, the complex
-derivative equals `ContinuousLinearMap.toComplexOfMapI` of the real derivative.
+In cases where the **Cauchy-Riemann Equation** guarantees complex differentiability at `x`, the
+complex derivative equals `ContinuousLinearMap.toComplexOfMapI` of the real derivative.
 -/
 theorem complexOfReal_hasDerivAt (h₁ : DifferentiableAt ℝ f x)
     (h₂ : fderiv ℝ f x I = I • fderiv ℝ f x 1) :
@@ -294,8 +295,8 @@ theorem complexOfReal_hasDerivAt (h₁ : DifferentiableAt ℝ f x)
   exact hasFDerivAt_of_restrictScalars ℝ h₁.hasFDerivAt rfl
 
 /--
-In cases where the Cauchy-Riemann Equation guarantees complex differentiability, the complex
-derivative equals `ContinuousLinearMap.toComplexOfMapI` of the real derivative.
+In cases where the **Cauchy-Riemann Equation** guarantees complex differentiability at `x`, the
+complex derivative equals `ContinuousLinearMap.toComplexOfMapI` of the real derivative.
 -/
 theorem complexOfReal_fderiv (h₁ : DifferentiableAt ℝ f x)
     (h₂ : fderiv ℝ f x I = I • fderiv ℝ f x 1) :
