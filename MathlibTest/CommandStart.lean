@@ -358,6 +358,8 @@ example : 0 = 0 := by
 
 -- The pretty-printer prefers no spaces inside `{}`.
 example := { Nat.succ n | n < 0 }
+-- The pretty-printer prefers spaces inside `{}`.
+example := {n // n < 0}
 
 end Desiderata_and_todos
 
