@@ -1025,6 +1025,26 @@ theorem lintegral_map {β} [MeasurableSpace β] (g : β →ₛ ℝ≥0∞) {f : 
     g.lintegral (Measure.map f μ) = (g.comp f hf).lintegral μ :=
   Eq.symm <| lintegral_map' _ _ f (fun _ => rfl) fun _s hs => Measure.map_apply hf hs
 
+section Star
+
+variable {R : Type*} [Star R]
+
+instance : Star (α →ₛ R) where
+  star f := f.map Star.star
+
+lemma star_apply (f : α →ₛ R) (x : α) : (star f) x = star (f x) := rfl
+
+end Star
+
+section InvolutiveStar
+
+variable {R : Type*} [TopologicalSpace R] [InvolutiveStar R] [ContinuousStar R]
+
+instance : InvolutiveStar (α →ₛ R) where
+  star_involutive := fun _ => by ext; simp [star_apply]
+
+end InvolutiveStar
+
 end Measure
 
 section FinMeasSupp
