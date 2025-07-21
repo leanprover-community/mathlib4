@@ -594,6 +594,7 @@ def totalExclusions : ExcludedSyntaxNodeKind where
     `Mathlib.Meta.«term{_|_}», -- Prevents formatting of `{ f x y | (x : X) (y : Y) }`.
     ``«term[_]», -- Prevents formatting of lists.
     ``«term#[_,]», -- Prevents formatting of arrays.
+    ``Parser.Term.anonymousCtor, -- Prevents formatting of `⟨...⟩`.
   ]
   depth := none
 
@@ -609,6 +610,7 @@ def forceSpaceAfter : ExcludedSyntaxNodeKind where
     ``Parser.Tactic.rcases, -- `rcases (a)`
     ``Parser.Tactic.replace, -- `replace (a)`
     ``Parser.Term.let, -- `let (a)` in term mode.
+    ``Parser.Term.whereDecls, -- `where`
   ]
   depth := some 2
 
