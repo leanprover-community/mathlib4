@@ -595,6 +595,7 @@ def totalExclusions : ExcludedSyntaxNodeKind where
     ``«term[_]», -- Prevents formatting of lists.
     ``«term#[_,]», -- Prevents formatting of arrays.
     ``Parser.Term.anonymousCtor, -- Prevents formatting of `⟨...⟩`.
+    ``Parser.Command.syntax, -- Prevents formatting of `syntax ...`.
   ]
   depth := none
 
@@ -628,7 +629,6 @@ def forceNoSpaceAfter : ExcludedSyntaxNodeKind where
   kinds := #[
     --``Parser.Term.doubleQuotedName,
     `atom.«`», -- useful for double-quoted names
-    `atom.syntax, -- skips just `syntax:60 ...`
   ]
   depth := some 2
 
