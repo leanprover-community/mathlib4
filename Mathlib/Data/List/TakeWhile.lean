@@ -30,10 +30,9 @@ theorem length_dropWhile_le (l : List α) : (dropWhile p l).length ≤ l.length 
   | nil => simp
   | cons head tail ih =>
     simp only [dropWhile, length_cons]
-    by_cases h_p_head : p head
-    · simp only [h_p_head]
-      omega
-    · simp [h_p_head]
+    split
+    · omega
+    · simp
 
 variable {p} {l : List α}
 
