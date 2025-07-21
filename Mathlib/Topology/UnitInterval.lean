@@ -33,6 +33,9 @@ scoped[unitInterval] notation "I" => unitInterval
 
 namespace unitInterval
 
+theorem bot_eq : (⊥ : Set.Icc (0 : ℝ) 1) = 0 := rfl
+theorem top_eq : (⊤ : Set.Icc (0 : ℝ) 1) = 1 := rfl
+
 theorem zero_mem : (0 : ℝ) ∈ I :=
   ⟨le_rfl, zero_le_one⟩
 
