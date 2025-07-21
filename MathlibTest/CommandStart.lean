@@ -1,32 +1,107 @@
 import Mathlib.Tactic.Linter.CommandStart
+import Qq
 import Aesop.Frontend.Attribute
 import Aesop.Frontend.Command
 --import Mathlib.Tactic.Lemma
---import Mathlib.Data.Set.Defs
---import Mathlib.Logic.Function.Defs
---import Mathlib.adomaniLeanUtils.inspect_syntax
+import Mathlib.Data.Set.Defs
+import Mathlib.Logic.Function.Defs
+import Mathlib.adomaniLeanUtils.inspect_syntax
 --import Mathlib.Util.ParseCommand
 
 set_option linter.style.commandStart true
 
 section Desiderata_and_todos
 
+#mex
+/-!    -/
 -- The "tactic `{...}` is ignored entirely:
--- the pretty-printer wants a space after `{`, but not one before `}`.
-example : True := by {refine ?_   ;    trivial  }
+-- the pretty-printer does not want a space after `{`, but wants one before `}`.
+--set_option linter.style.commandStart false in
+--#mex
+example : True := by { trivial }
+example : True := by {trivial}
+example : True := by { refine ?_   ;    exact (by refine trivial)}
 
--- Ideally, this would complain, but the pretty-printer prefers this version.
+/--
+warning: add space in the source
+
+This part of the code
+  '·rfl'
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: 'done' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs in
 example : True = True := by
-  conv =>
+  · conv =>
+    -- The *linter* forces a space in `·rfl`, but the pretty-printer does not.
     ·rfl
+  done
+
+/--
+warning: remove space in the source
+
+This part of the code
+  '( ·'
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: remove space in the source
+
+This part of the code
+  '· )'
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+example {α} : α → α := by
+  -- Focusing dot and centerdots are "correctly" interpreted, even with the special-casing of
+  -- the `conv`-mode `·`.
+  · exact ( · )
+
+/--
+warning: remove space in the source
+
+This part of the code
+  '+  ·)'
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+example : Nat → Nat → Nat := by
+  exact (· +  ·)
 
 -- Ideally, this would complain, but the linter ignores `throwError`
 #eval do
   if false then throwError"s"
 
--- Ideally, these would complain, but we silenced the linter for `rcases`.
-example (h : False) : False := by rcases  h
-example (h : False) : False := by rcases(h)
+/--
+warning: remove space in the source
+
+This part of the code
+  'rcases  h'
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+example (h : False) : False := by
+  rcases  h
+
+/--
+warning: add space in the source
+
+This part of the code
+  'rcases(h)'
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+example (h : False) : False := by
+  -- The *linter* forces a space in `rcases(h)`, but the pretty-printer does not.
+  rcases(h)
 
 structure X where
   A : {_ : Nat} → Nat → Nat
@@ -39,6 +114,11 @@ example := let(_) := 0; 0
 example := let  _ := 0; 0
 
 example : True := by {trivial }
+
+set_option linter.style.commandStart.verbose true in
+open Qq in
+example {u : Lean.Level} (α : Q(Type u)) (_ : Q(Mul $α)) : Mul Q($α) where
+  mul x y := q($x * $y)
 
 -- Ideally, this would complain, but we silenced the linter for `declare_aesop_rule_sets`.
 declare_aesop_rule_sets [$id](default := true)
@@ -175,7 +255,27 @@ structure FX where
   /-- A doc -/
   x : Nat
 
+open Lean Elab Command Mathlib.Linter in
+elab "#final_scan " stx:command : command => do
+  elabCommand stx
+  let ustx := stx.raw.uniformizeSpaces
+  let simplySpaced ← pretty ustx <|> return default
+  let final := scanWatching true #[] stx.raw.getKind stx ustx (simplySpaced).toSubstring
+
+  logInfo <| m!"Syntax with no spaces:\n{ustx}\n{InspectSyntax.toMessageData ustx}"
+  logInfo <| m!"Reconstructed string:\n{simplySpaced}"
+  let ok? := captureException (← getEnv) Parser.topLevelCommandParserFn simplySpaced
+  if let .ok es := ok? then
+    logInfo <| m!"Reconstruced syntax:\n{es}\n{InspectSyntax.toMessageData es}"
+    logInfo <| m!"Compare: {ustx.compare es}"
+  else
+    logWarning "Did not parse correctly"
+  logInfo m!"{final.1}"
+  logInfo m!"{final.2}"
+
+#final_scan
 open Nat in /- hi -/
+/-- Here is also   -/
 example : True := trivial
 
 -- The notation `0::[]` disables the linter
@@ -191,8 +291,25 @@ example : 0 = 0 :=
        _ = 1 * (0 + 0) := Nat.mul_add .. |>.symm
        _ = 0 := rfl
 
+#eval
+  let s1 := "/--    asd awe  adg ghdrt \n\n ñk -/".toSubstring
+  let s2 := "/-- asd  awe adg ghdrt\n\nñk-/ this one continues".toSubstring
+  Mathlib.Linter.consumeIgnoring s1 s2 (·.all Char.isWhitespace)
+
+
+run_cmd
+  let mut a := "⟨ακ⟩".toSubstring
+  let mut con := 0
+  while !a.isEmpty do
+    dbg_trace "Step {con}: {a}"
+    con := con + 1
+    a := a.drop 1
+  IO.println con
+
+
+--inspect
+#final_scan
 open Function in
-inspect
 theorem leftInverse_of_surjective_of_rightInverse {f : α → β} {g : β → α} (surjf : Surjective f)
     (rfg : RightInverse f g) : LeftInverse f g := fun y =>
   Exists.elim (surjf y) fun x hx =>
@@ -204,7 +321,7 @@ theorem leftInverse_of_surjective_of_rightInverse {f : α → β} {g : β → α
 open Lean Elab Command in
 elab "us " cmd:command : command => do
   let s := cmd.raw.uniformizeSpaces
-  let pretty ← Elab.Command.liftCoreM do Mathlib.Linter.Style.CommandStart.ppCategory' `command s
+  let pretty ← Elab.Command.liftCoreM do Mathlib.Linter.ppCategory' `command s
   let pretty := " ".intercalate <| (pretty.pretty.split (·.isWhitespace)).filter (!·.isEmpty)
   logInfo m!"cmd:\n{cmd}\n---\ns:\n{s}\n---\npretty:\n{pretty}\n---"
   logInfo <| InspectSyntax.toMessageData s
@@ -214,10 +331,10 @@ open Lean in
 run_cmd
   let stx ← `(section     X)
   let s := stx.raw.uniformizeSpaces
-  let pretty ← Elab.Command.liftCoreM do Mathlib.Linter.pretty s
+  let pretty ← Mathlib.Linter.pretty s
   logInfo <| InspectSyntax.toMessageData s
 
-open Lean Parser Mathlib.GuardExceptions in
+open Lean Parser Mathlib.Linter in
 run_cmd
   let str := "example : True := trivial"
   let s := captureException (← getEnv) topLevelCommandParserFn str
@@ -227,9 +344,52 @@ run_cmd
   | _ => logWarning "error!"
 
 
-us
+
+open Lean Elab Command in
+elab "#again " verb?:(&" verbose")? stx:command : command => do
+  elabCommand stx
+  let s := stx.raw.uniformizeSpaces
+  let sstring := reduceWhitespace s.regString
+  let pretty ← Mathlib.Linter.pretty s
+  let sNoSpaces := sstring.replace " " ""
+  let prettyNoSpaces := pretty.replace " " ""
+  let eq? := sNoSpaces == prettyNoSpaces
+  let withSpaces ← insertSpaces verb?.isSome stx -- pretty
+  logInfo <| InspectSyntax.toMessageData withSpaces
+  logInfo
+    m!"{eq?}: reduced and pretty are {if eq? then "" else "not "}equal up to spaces\n\n\
+      Syntax:\n{s}\nReduced:\n{sstring}\nPretty:\n{pretty}\n{withSpaces.regString}\nRegener↑\n{pretty == (reduceWhitespace withSpaces.regString)}"
+
+set_option linter.style.commandStart false in
+#again verbose
+example := 0
+
+
+set_option linter.style.commandStart false in
+#again
+inspect
+/--This    he las      -/
 theorem «--» /- -/ : --
-    ({True} : Set Prop) = {True} /- as -/ := rfl
+    ({ True } : Set Prop) = { True } /- as -/ := rfl
+
+#again
+open Function in
+theorem leftInverse_of_surjective_of_rightInverse1 {f : α → β} {g : β → α} (surjf : Surjective f)
+    (rfg : RightInverse f g) : LeftInverse f g := fun y =>
+  Exists.elim (surjf y) fun x hx =>
+    calc
+      f (g y) = f (g (f x)) := hx ▸ rfl
+      _ = f x := Eq.symm (rfg x) ▸ rfl
+      _ = y := hx
+
+
+
+
+#again
+inspect
+#final_scan
+theorem «--» /- -/ : --
+    ({ True } : Set Prop) = { True } /- as -/ := rfl
 
 
 -- Test that `Prop` and `Type` that are not escaped with `«...»` do not cause problems.
