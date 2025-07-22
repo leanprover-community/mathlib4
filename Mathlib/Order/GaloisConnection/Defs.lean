@@ -51,7 +51,12 @@ theorem monotone_intro (hu : Monotone u) (hl : Monotone l) (hul : ∀ a, a ≤ u
 protected theorem dual {l : α → β} {u : β → α} (gc : GaloisConnection l u) :
     GaloisConnection (OrderDual.toDual ∘ u ∘ OrderDual.ofDual)
       (OrderDual.toDual ∘ l ∘ OrderDual.ofDual) :=
-  fun a b => (gc b a).symm
+  fun a b => (gc b.ofDual a.ofDual).symm
+
+protected theorem of_dual {l : αᵒᵈ → βᵒᵈ} {u : βᵒᵈ → αᵒᵈ} (gc : GaloisConnection l u) :
+    GaloisConnection (OrderDual.ofDual ∘ u ∘ OrderDual.toDual)
+      (OrderDual.ofDual ∘ l ∘ OrderDual.toDual) :=
+  fun a b => (gc (toDual b) (toDual a)).symm
 
 variable (gc : GaloisConnection l u)
 include gc
@@ -74,7 +79,7 @@ theorem l_u_le (a) : l (u a) ≤ a :=
 theorem monotone_u : Monotone u := fun a _ H => gc.le_u ((gc.l_u_le a).trans H)
 
 theorem monotone_l : Monotone l :=
-  gc.dual.monotone_u.dual
+  .of_dual gc.dual.monotone_u
 
 /-- If `(l, u)` is a Galois connection, then the relation `x ≤ u (l y)` is a transitive relation.
 If `l` is a closure operator (`Submodule.span`, `Subgroup.closure`, ...) and `u` is the coercion to
@@ -121,18 +126,22 @@ section PartialOrder
 variable [Preorder α] [PartialOrder β] {l : α → β} {u : β → α} (gc : GaloisConnection l u)
 include gc
 
-theorem l_u_l_eq_l (a : α) : l (u (l a)) = l a := gc.dual.u_l_u_eq_u _
+theorem l_u_l_eq_l (a : α) : l (u (l a)) = l a :=
+  congrArg ofDual <| gc.dual.u_l_u_eq_u _
 
 theorem l_u_l_eq_l' : l ∘ u ∘ l = l := funext gc.l_u_l_eq_l
 
 theorem l_unique {l' : α → β} {u' : β → α} (gc' : GaloisConnection l' u') (hu : ∀ b, u b = u' b)
     {a : α} : l a = l' a :=
-  gc.dual.u_unique gc'.dual hu
+  congrArg ofDual <| gc.dual.u_unique gc'.dual (congrArg toDual <| hu ·.ofDual)
 
 /-- If there exists an `a` such that `b = l a`, then `a = u b` is one such element. -/
-theorem exists_eq_l (b : β) : (∃ a : α, b = l a) ↔ b = l (u b) := gc.dual.exists_eq_u _
+theorem exists_eq_l (b : β) : (∃ a : α, b = l a) ↔ b = l (u b) :=
+  Iff.trans ⟨(·.elim (⟨toDual ·, congrArg toDual ·⟩)), (·.elim (⟨·.ofDual,congrArg ofDual ·⟩))⟩ <|
+    (gc.dual.exists_eq_u (_)).trans ⟨congrArg ofDual,congrArg toDual⟩
 
-theorem l_eq {x : α} {z : β} : l x = z ↔ ∀ y, z ≤ y ↔ x ≤ u y := gc.dual.u_eq
+theorem l_eq {x : α} {z : β} : l x = z ↔ ∀ y, z ≤ y ↔ x ≤ u y :=
+  Iff.trans ⟨congrArg toDual,congrArg ofDual⟩ <| (gc.dual.u_eq).trans ⟨(· <| toDual ·),(· ·.ofDual)⟩
 
 end PartialOrder
 
@@ -156,10 +165,10 @@ section OrderBot
 variable [Preorder α] [PartialOrder β] [OrderBot β]
 
 theorem l_eq_bot {l : α → β} {u : β → α} (gc : GaloisConnection l u) {x} : l x = ⊥ ↔ x ≤ u ⊥ :=
-  gc.dual.u_eq_top
+  Iff.trans ⟨congrArg toDual,congrArg ofDual⟩ <| gc.dual.u_eq_top
 
 theorem l_bot [OrderBot α] {l : α → β} {u : β → α} (gc : GaloisConnection l u) : l ⊥ = ⊥ :=
-  gc.dual.u_top
+  congrArg ofDual <| gc.dual.u_top
 
 theorem l_u_bot {l : α → β} {u : β → α} (gc : GaloisConnection l u) : l (u ⊥) = ⊥ :=
   gc.l_eq_bot.mpr le_rfl
@@ -302,31 +311,36 @@ structure GaloisCoinsertion [Preorder α] [Preorder β] (l : α → β) (u : β 
 `β`. -/
 def GaloisCoinsertion.dual [Preorder α] [Preorder β] {l : α → β} {u : β → α} :
     GaloisCoinsertion l u → GaloisInsertion (toDual ∘ u ∘ ofDual) (toDual ∘ l ∘ ofDual) :=
-  fun x => ⟨x.1, x.2.dual, x.3, x.4⟩
+  fun x => ⟨(toDual <| x.1 ·.ofDual ·), x.2.dual, (x.3 ·.ofDual),
+    (congrArg toDual <| x.4 ·.ofDual ·)⟩
 
 /-- Make a `GaloisCoinsertion` between `αᵒᵈ` and `βᵒᵈ` from a `GaloisInsertion` between `α` and
 `β`. -/
 def GaloisInsertion.dual [Preorder α] [Preorder β] {l : α → β} {u : β → α} :
     GaloisInsertion l u → GaloisCoinsertion (toDual ∘ u ∘ ofDual) (toDual ∘ l ∘ ofDual) :=
-  fun x => ⟨x.1, x.2.dual, x.3, x.4⟩
+  fun x => ⟨(toDual <| x.1 ·.ofDual ·), x.2.dual, (x.3 ·.ofDual),
+    (congrArg toDual <| x.4 ·.ofDual ·)⟩
 
 /-- Make a `GaloisInsertion` between `α` and `β` from a `GaloisCoinsertion` between `αᵒᵈ` and
 `βᵒᵈ`. -/
 def GaloisCoinsertion.ofDual [Preorder α] [Preorder β] {l : αᵒᵈ → βᵒᵈ} {u : βᵒᵈ → αᵒᵈ} :
     GaloisCoinsertion l u → GaloisInsertion (ofDual ∘ u ∘ toDual) (ofDual ∘ l ∘ toDual) :=
-  fun x => ⟨x.1, x.2.dual, x.3, x.4⟩
+  fun x => ⟨(fun a b => (x.1 (toDual a) b).ofDual), x.2.of_dual, (x.3 <| toDual ·),
+    (fun a b => congrArg OrderDual.ofDual <| x.4 (toDual a) b)⟩
 
 /-- Make a `GaloisCoinsertion` between `α` and `β` from a `GaloisInsertion` between `αᵒᵈ` and
 `βᵒᵈ`. -/
 def GaloisInsertion.ofDual [Preorder α] [Preorder β] {l : αᵒᵈ → βᵒᵈ} {u : βᵒᵈ → αᵒᵈ} :
     GaloisInsertion l u → GaloisCoinsertion (ofDual ∘ u ∘ toDual) (ofDual ∘ l ∘ toDual) :=
-  fun x => ⟨x.1, x.2.dual, x.3, x.4⟩
+  fun x => ⟨(fun a b => (x.1 (toDual a) b).ofDual), x.2.of_dual, (x.3 <| toDual ·),
+    (fun a b => congrArg OrderDual.ofDual <| x.4 (toDual a) b)⟩
 
 /-- A constructor for a Galois coinsertion with the trivial `choice` function. -/
 def GaloisCoinsertion.monotoneIntro [Preorder α] [Preorder β] {l : α → β} {u : β → α}
     (hu : Monotone u) (hl : Monotone l) (hlu : ∀ b, l (u b) ≤ b) (hul : ∀ a, u (l a) = a) :
     GaloisCoinsertion l u :=
-  (GaloisInsertion.monotoneIntro hl.dual hu.dual hlu hul).ofDual
+  (GaloisInsertion.monotoneIntro hl.dual hu.dual (hlu ·.ofDual)
+    (congrArg toDual <| hul ·.ofDual)).ofDual
 
 /-- Make a `GaloisCoinsertion l u` from a `GaloisConnection l u` such that `∀ a, u (l a) ≤ a` -/
 def GaloisConnection.toGaloisCoinsertion {α β : Type*} [Preorder α] [Preorder β] {l : α → β}
@@ -348,7 +362,7 @@ namespace GaloisCoinsertion
 variable {l : α → β} {u : β → α}
 
 theorem u_l_eq [PartialOrder α] [Preorder β] (gi : GaloisCoinsertion l u) (a : α) : u (l a) = a :=
-  gi.dual.l_u_eq a
+  congrArg OrderDual.ofDual <| gi.dual.l_u_eq (toDual a)
 
 theorem u_l_leftInverse [PartialOrder α] [Preorder β] (gi : GaloisCoinsertion l u) :
     LeftInverse u l :=
@@ -356,13 +370,13 @@ theorem u_l_leftInverse [PartialOrder α] [Preorder β] (gi : GaloisCoinsertion 
 
 theorem u_bot [PartialOrder α] [Preorder β] [OrderBot α] [OrderBot β] (gi : GaloisCoinsertion l u) :
     u ⊥ = ⊥ :=
-  gi.dual.l_top
+  congrArg OrderDual.ofDual <| gi.dual.l_top
 
 theorem u_surjective [PartialOrder α] [Preorder β] (gi : GaloisCoinsertion l u) : Surjective u :=
-  gi.dual.l_surjective
+  .of_comp_left (.of_comp gi.dual.l_surjective) (Equiv.injective _)
 
 theorem l_injective [PartialOrder α] [Preorder β] (gi : GaloisCoinsertion l u) : Injective l :=
-  gi.dual.u_injective
+  .of_comp_right (.of_comp gi.dual.u_injective) (Equiv.surjective _)
 
 theorem l_le_l_iff [Preorder α] [Preorder β] (gi : GaloisCoinsertion l u) {a b} :
     l a ≤ l b ↔ a ≤ b :=
