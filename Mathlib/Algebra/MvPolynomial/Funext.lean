@@ -51,7 +51,7 @@ include hs
 
 /-- Two multivariate polynomials over an integral domain are equal
 if they are equal when evaluated anywhere in a box with infinite sides. -/
-theorem funext_set (h : ∀ x ∈ Set.pi .univ s, (eval x) p = (eval x) q) :
+theorem funext_set (h : ∀ x ∈ Set.pi .univ s, eval x p = eval x q) :
     p = q := by
   suffices ∀ p, (∀ x ∈ Set.pi .univ s, eval x p = 0) → p = 0 by
     rw [← sub_eq_zero, this (p - q)]
@@ -68,7 +68,7 @@ theorem funext_set (h : ∀ x ∈ Set.pi .univ s, (eval x) p = (eval x) q) :
   · rw [hf.extend_apply]; exact hx _ ⟨⟩
   · simp_rw [Function.extend, dif_neg nex, hg]
 
-theorem funext_set_iff : (∀ x ∈ Set.pi .univ s, (eval x) p = (eval x) q) ↔ p = q :=
+theorem funext_set_iff : (∀ x ∈ Set.pi .univ s, eval x p = eval x q) ↔ p = q :=
   ⟨funext_set s hs, by rintro rfl _ _; rfl⟩
 
 end
