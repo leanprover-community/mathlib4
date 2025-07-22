@@ -32,6 +32,8 @@ universe u
 
 open CategoryTheory Limits
 
+attribute [local grind] inf_le_left inf_le_right le_sup_left le_sup_right 
+
 namespace Lattice
 
 variable {T : Type u} (x₁ x₂ x₃ x₄ : T) [Lattice T]
