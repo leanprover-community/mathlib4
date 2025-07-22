@@ -397,7 +397,7 @@ lemma mem_support_iff_forall (x : X) : x ∈ μ.support ↔ ∀ U ∈ 𝓝 x, 0 
 lemma notMem_support_iff {x : X} : x ∉ μ.support ↔ ∀ᶠ u in (𝓝 x).smallSets, μ u = 0 := by
   simp [mem_support_iff]
 
-lemma notMem_support_iff_exists (x : X) : x ∉ μ.support ↔ ∃ U ∈ 𝓝 x, μ U = 0 := by
+lemma notMem_support_iff_exists {x : X} : x ∉ μ.support ↔ ∃ U ∈ 𝓝 x, μ U = 0 := by
   simp [mem_support_iff_forall]
 
 lemma _root_.Filter.HasBasis.mem_measureSupport {ι : Sort*} {p : ι → Prop}
@@ -413,10 +413,13 @@ lemma support_eq_forall_isOpen : μ.support =
 lemma measure_pos_of_mem_support {x : X} (h : x ∈ μ.support) :
   ∀ U ∈ 𝓝 x, 0 < μ U := by rwa [mem_support_iff_forall] at h
 
-lemma isClosed_support (μ : Measure X) : IsClosed μ.support := by
+lemma isClosed_support {μ : Measure X} : IsClosed μ.support := by
   simp_rw [isClosed_iff_frequently, (nhds_basis_opens _).mem_measureSupport,
     (nhds_basis_opens _).frequently_iff]
   grind
+
+lemma isOpen_compl_support {μ : Measure X} : IsOpen μ.supportᶜ :=
+  isOpen_compl_iff.mpr μ.isClosed_support
 
 open Set
 
@@ -431,18 +434,13 @@ lemma support_eq_compl_Union_open_null :
       rcases (mem_nhds_iff.mp hU_nhds) with ⟨V, hV_sub, hV_open, hVₓ⟩
       exact measure_pos_of_superset hV_sub <| fun a ↦ hx V hV_open a hVₓ
 
+/-- If the complement of the support is Lindelöf, then the support of a measure is conull. -/
 lemma support_mem_ae_of_isLindelof (h : IsLindelof μ.supportᶜ) : μ.support ∈ ae μ := by
-  rw [← compl_compl μ.support]
-  apply h.compl_mem_sets_of_nhdsWithin
-  intro x hx
-  simp only [mem_compl_iff, mem_support_iff, not_frequently, not_lt, nonpos_iff_eq_zero] at hx
-  obtain ⟨u, hu⟩ := Eventually.exists_mem_of_smallSets hx
-  use u ∩ μ.supportᶜ
-  constructor
-  · simpa [inter_comm] using inter_mem_nhdsWithin _ hu.1
-  · simpa [compl_inter, compl_compl] using
-      mem_of_superset (compl_mem_ae_iff.mpr hu.2) subset_union_left
+  refine compl_compl μ.support ▸ h.compl_mem_sets_of_nhdsWithin fun s hs ↦ ?_
+  simpa [compl_mem_ae_iff, isOpen_compl_support.nhdsWithin_eq hs]
+    using notMem_support_iff_exists.mp hs
 
+/-- Maybe the following can be proved from the prior one. -/
 lemma exists_mem_support_of_open_pos [HereditarilyLindelofSpace X] {U : Set X}
     (_ : IsOpen U) (hμ : 0 < μ U) : (U ∩ μ.support).Nonempty := by
   by_contra hn
