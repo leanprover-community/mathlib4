@@ -79,12 +79,12 @@ instance MonoidHom.instCommGroup [MulOneClass M] [CommGroup N] : CommGroup (M �
       rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
 
 @[to_additive]
-instance [MulOneClass M] [CommMonoid N] [IsLeftCancelMul N] : IsLeftCancelMul (M →* N) where
-  mul_left_cancel _ _ _ h := DFunLike.coe_injective <| mul_left_cancel (congrArg DFunLike.coe h)
+instance [MulOneClass M] [CommMonoid N] [IsLeftCancelMul N] : IsLeftCancelMul (M →* N) :=
+  DFunLike.coe_injective.isLeftCancelMul _ fun _ _ => rfl
 
 @[to_additive]
-instance [MulOneClass M] [CommMonoid N] [IsRightCancelMul N] : IsRightCancelMul (M →* N) where
-  mul_right_cancel _ _ _ h := DFunLike.coe_injective <| mul_right_cancel (congrArg DFunLike.coe h)
+instance [MulOneClass M] [CommMonoid N] [IsRightCancelMul N] : IsRightCancelMul (M →* N) :=
+  DFunLike.coe_injective.isRightCancelMul _ fun _ _ => rfl
 
 @[to_additive]
 instance [MulOneClass M] [CommMonoid N] [IsCancelMul N] : IsCancelMul (M →* N) where

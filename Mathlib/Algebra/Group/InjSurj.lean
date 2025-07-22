@@ -68,14 +68,38 @@ protected abbrev commSemigroup [CommSemigroup M₂] (f : M₁ → M₂) (hf : In
   toSemigroup := hf.semigroup f mul
   __ := hf.commMagma f mul
 
+/-- A type has left-cancellative multiplication, if it admits an injective map that
+preserves `*` to another type with cancellative multiplication. -/
+@[to_additive "A type has left-cancellative addition, if it admits an injective map that
+preserves `+` to another type with left-cancellative addition."]
+protected theorem isLeftCancelMul [Mul M₂] [IsLeftCancelMul M₂] (f : M₁ → M₂) (hf : Injective f)
+    (mul : ∀ x y, f (x * y) = f x * f y) : IsLeftCancelMul M₁ where
+  mul_left_cancel x y z H := hf <| mul_left_cancel <| by simpa only [mul] using congrArg f H
+
+/-- A type has right-cancellative multiplication, if it admits an injective map that
+preserves `*` to another type with right-cancellative multiplication. -/
+@[to_additive "A type has right-cancellative addition, if it admits an injective map that
+preserves `+` to another type with cancellative addition."]
+protected theorem isRightCancelMul [Mul M₂] [IsRightCancelMul M₂] (f : M₁ → M₂) (hf : Injective f)
+    (mul : ∀ x y, f (x * y) = f x * f y) : IsRightCancelMul M₁ where
+  mul_right_cancel x y z H := hf <| mul_right_cancel <| by simpa only [mul] using congrArg f H
+
+/-- A type has cancellative multiplication, if it admits an injective map that
+preserves `*` to another type with cancellative multiplication. -/
+@[to_additive "A type has cancellative addition, if it admits an injective map that
+preserves `+` to another type with cancellative addition."]
+protected theorem isCancelMul [Mul M₂] [IsCancelMul M₂] (f : M₁ → M₂) (hf : Injective f)
+    (mul : ∀ x y, f (x * y) = f x * f y) : IsCancelMul M₁ where
+  __ := hf.isLeftCancelMul f mul
+  __ := hf.isRightCancelMul f mul
+
 /-- A type endowed with `*` is a left cancel semigroup, if it admits an injective map that
 preserves `*` to a left cancel semigroup.  See note [reducible non-instances]. -/
 @[to_additive "A type endowed with `+` is an additive left cancel
 semigroup, if it admits an injective map that preserves `+` to an additive left cancel semigroup."]
 protected abbrev leftCancelSemigroup [LeftCancelSemigroup M₂] (f : M₁ → M₂) (hf : Injective f)
     (mul : ∀ x y, f (x * y) = f x * f y) : LeftCancelSemigroup M₁ :=
-  { hf.semigroup f mul with
-    mul_left_cancel := fun x y z H => hf <| (mul_right_inj (f x)).1 <| by rw [← mul, ← mul, H] }
+  { hf.semigroup f mul, hf.isLeftCancelMul f mul with }
 
 /-- A type endowed with `*` is a right cancel semigroup, if it admits an injective map that
 preserves `*` to a right cancel semigroup.  See note [reducible non-instances]. -/
@@ -84,8 +108,7 @@ cancel semigroup, if it admits an injective map that preserves `+` to an additiv
 semigroup."]
 protected abbrev rightCancelSemigroup [RightCancelSemigroup M₂] (f : M₁ → M₂) (hf : Injective f)
     (mul : ∀ x y, f (x * y) = f x * f y) : RightCancelSemigroup M₁ :=
-  { hf.semigroup f mul with
-    mul_right_cancel := fun x y z H => hf <| (mul_left_inj (f y)).1 <| by rw [← mul, ← mul, H] }
+  { hf.semigroup f mul, hf.isRightCancelMul f mul with }
 
 variable [One M₁]
 
