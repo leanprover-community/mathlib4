@@ -201,6 +201,10 @@ lemma pos_or_neg_of_sum_smul_root_mem (f : ι → ℤ)
   replace hf : ∑ j, f' j • P.root j ∈ AddSubmonoid.closure (P.root '' b.support) := by
     suffices ∑ j, f' j • P.root j = ∑ j ∈ b.support, f j • P.root j by rwa [this]
     rw [← b.support.sum_finset_coe]; rfl
+    -- suffices ∑ j, f' j • P.root j = ∑ j, f j • P.root j by rwa [this]
+    -- rw [← Fintype.sum_subset (s := b.support) (by aesop), ← b.support.sum_finset_coe]
+    -- simp_rw [Finset.univ_eq_attach, Finset.coe_sort_coe]
+    -- rw [← Finset.sum_coe_sort_eq_attach]
   rw [← span_nat_eq_addSubmonoid_closure, mem_toAddSubmonoid,
     Fintype.mem_span_image_iff_exists_fun] at hf
   obtain ⟨c, hc⟩ := hf
@@ -209,7 +213,7 @@ lemma pos_or_neg_of_sum_smul_root_mem (f : ι → ℤ)
   have aux : 0 ≤ f := by
     intro i
     by_cases hi : i ∈ b.support
-    · change 0 ≤ f' ⟨i, hi⟩
+    · change _ ≤ f' ⟨i, hi⟩
       simp [← hc]
     · replace hi : i ∉ f.support := by contrapose! hi; exact hf₀ hi
       aesop
@@ -217,6 +221,7 @@ lemma pos_or_neg_of_sum_smul_root_mem (f : ι → ℤ)
   by_contra! contra
   replace contra : f = 0 := le_antisymm contra aux
   contradiction
+  -- XXX
 
 lemma not_nonpos_iff_pos_of_sum_mem_range_root (f : ι → ℤ)
     (hf : ∑ j ∈ b.support, f j • P.root j ∈ range P.root) (hf₀ : f.support ⊆ b.support) :
