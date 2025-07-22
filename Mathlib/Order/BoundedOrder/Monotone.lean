@@ -45,11 +45,13 @@ section OrderBot
 
 variable [PartialOrder α] [OrderBot α] [Preorder β] {f : α → β} {a b : α}
 
-theorem StrictMono.apply_eq_bot_iff (hf : StrictMono f) : f a = f ⊥ ↔ a = ⊥ :=
-  hf.dual.apply_eq_top_iff
+theorem StrictMono.apply_eq_bot_iff (hf : StrictMono f) : f a = f ⊥ ↔ a = ⊥ := by
+  convert (hf.dual.apply_eq_top_iff (a := toDual a))
+  all_goals exact ⟨congrArg toDual,congrArg ofDual⟩
 
-theorem StrictAnti.apply_eq_bot_iff (hf : StrictAnti f) : f a = f ⊥ ↔ a = ⊥ :=
-  hf.dual.apply_eq_top_iff
+theorem StrictAnti.apply_eq_bot_iff (hf : StrictAnti f) : f a = f ⊥ ↔ a = ⊥ := by
+  convert hf.dual.apply_eq_top_iff
+  all_goals exact ⟨congrArg toDual,congrArg ofDual⟩
 
 end OrderBot
 

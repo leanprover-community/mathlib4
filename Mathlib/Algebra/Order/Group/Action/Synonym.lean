@@ -22,34 +22,43 @@ variable {M N α : Type*}
 namespace OrderDual
 
 @[to_additive]
-instance instMulAction [Monoid M] [MulAction M α] : MulAction Mᵒᵈ α := ‹MulAction M α›
+instance instMulAction [Monoid M] [MulAction M α] : MulAction Mᵒᵈ α where
+  one_smul := one_smul M
+  mul_smul := (mul_smul ·.ofDual ·.ofDual)
 
 @[to_additive]
-instance instMulAction' [Monoid M] [MulAction M α] : MulAction M αᵒᵈ := ‹MulAction M α›
+instance instMulAction' [Monoid M] [MulAction M α] : MulAction M αᵒᵈ where
+  one_smul _ := congrArg toDual (one_smul _ _)
+  mul_smul _ _ _ := congrArg toDual (mul_smul _ _ _)
 
 @[to_additive]
-instance instSMulCommClass [SMul M α] [SMul N α] [SMulCommClass M N α] : SMulCommClass Mᵒᵈ N α :=
-  ‹SMulCommClass M N α›
+instance instSMulCommClass [SMul M α] [SMul N α] [SMulCommClass M N α] : SMulCommClass Mᵒᵈ N α where
+  smul_comm a := smul_comm a.ofDual
 
 @[to_additive]
-instance instSMulCommClass' [SMul M α] [SMul N α] [SMulCommClass M N α] : SMulCommClass M Nᵒᵈ α :=
-  ‹SMulCommClass M N α›
+instance instSMulCommClass' [SMul M α] [SMul N α] [SMulCommClass M N α] :
+    SMulCommClass M Nᵒᵈ α where
+  smul_comm a b := smul_comm a b.ofDual
 
 @[to_additive]
-instance instSMulCommClass'' [SMul M α] [SMul N α] [SMulCommClass M N α] : SMulCommClass M N αᵒᵈ :=
-  ‹SMulCommClass M N α›
+instance instSMulCommClass'' [SMul M α] [SMul N α] [SMulCommClass M N α] :
+    SMulCommClass M N αᵒᵈ where
+  smul_comm _ _ _:= congrArg toDual (smul_comm _ _ _)
 
 @[to_additive]
 instance instIsScalarTower [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
-    IsScalarTower Mᵒᵈ N α := ‹IsScalarTower M N α›
+    IsScalarTower Mᵒᵈ N α where
+  smul_assoc a := smul_assoc a.ofDual
 
 @[to_additive]
 instance instIsScalarTower' [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
-    IsScalarTower M Nᵒᵈ α := ‹IsScalarTower M N α›
+    IsScalarTower M Nᵒᵈ α where
+  smul_assoc a b := smul_assoc a b.ofDual
 
 @[to_additive]
 instance instIsScalarTower'' [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
-    IsScalarTower M N αᵒᵈ := ‹IsScalarTower M N α›
+    IsScalarTower M N αᵒᵈ where
+  smul_assoc _ _ _ := congrArg toDual (smul_assoc _ _ _)
 
 end OrderDual
 

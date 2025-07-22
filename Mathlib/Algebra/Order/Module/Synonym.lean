@@ -25,11 +25,11 @@ variable {α β : Type*}
 namespace OrderDual
 
 instance instModule [Semiring α] [AddCommMonoid β] [Module α β] : Module αᵒᵈ β where
-  add_smul := add_smul (R := α)
+  add_smul _ _ := add_smul (R := α) _ _
   zero_smul := zero_smul _
 
 instance instModule' [Semiring α] [AddCommMonoid β] [Module α β] : Module α βᵒᵈ where
-  add_smul := add_smul (M := β)
+  add_smul _ _ _ := congrArg toDual (add_smul _ _ _)
   zero_smul := zero_smul _
 
 end OrderDual

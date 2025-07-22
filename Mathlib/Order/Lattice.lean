@@ -273,20 +273,16 @@ class SemilatticeInf (α : Type u) extends PartialOrder α where
 instance SemilatticeInf.toMin [SemilatticeInf α] : Min α where min a b := SemilatticeInf.inf a b
 
 instance OrderDual.instSemilatticeSup (α) [SemilatticeInf α] : SemilatticeSup αᵒᵈ where
-  sup := @SemilatticeInf.inf α _
-  le_sup_left := @SemilatticeInf.inf_le_left α _
-  le_sup_right := @SemilatticeInf.inf_le_right α _
+  sup := (toDual <| @SemilatticeInf.inf α _ ·.ofDual ·.ofDual)
+  le_sup_left _ _ := @SemilatticeInf.inf_le_left α ..
+  le_sup_right _ _ := @SemilatticeInf.inf_le_right α ..
   sup_le := fun _ _ _ hca hcb => @SemilatticeInf.le_inf α _ _ _ _ hca hcb
 
 instance OrderDual.instSemilatticeInf (α) [SemilatticeSup α] : SemilatticeInf αᵒᵈ where
-  inf := @SemilatticeSup.sup α _
-  inf_le_left := @le_sup_left α _
-  inf_le_right := @le_sup_right α _
+  inf := (toDual <| ·.ofDual ⊔ ·.ofDual)
+  inf_le_left _ _ := @le_sup_left α ..
+  inf_le_right _ _ := @le_sup_right α ..
   le_inf := fun _ _ _ hca hcb => @sup_le α _ _ _ _ hca hcb
-
-theorem SemilatticeSup.dual_dual (α : Type*) [H : SemilatticeSup α] :
-    OrderDual.instSemilatticeSup αᵒᵈ = H :=
-  SemilatticeSup.ext fun _ _ => Iff.rfl
 
 section SemilatticeInf
 
@@ -343,14 +339,14 @@ attribute [simp] inf_of_le_left inf_of_le_right
 
 @[simp]
 theorem inf_lt_left : a ⊓ b < a ↔ ¬a ≤ b :=
-  @left_lt_sup αᵒᵈ _ _ _
+  @left_lt_sup αᵒᵈ ..
 
 @[simp]
 theorem inf_lt_right : a ⊓ b < b ↔ ¬b ≤ a :=
-  @right_lt_sup αᵒᵈ _ _ _
+  @right_lt_sup αᵒᵈ ..
 
 theorem inf_lt_left_or_right (h : a ≠ b) : a ⊓ b < a ∨ a ⊓ b < b :=
-  @left_or_right_lt_sup αᵒᵈ _ _ _ h
+  left_or_right_lt_sup (h ∘ congrArg OrderDual.ofDual)
 
 @[gcongr]
 theorem inf_le_inf (h₁ : a ≤ b) (h₂ : c ≤ d) : a ⊓ c ≤ b ⊓ d :=
@@ -368,50 +364,52 @@ theorem inf_idem (a : α) : a ⊓ a = a := by simp
 
 instance : Std.IdempotentOp (α := α) (· ⊓ ·) := ⟨inf_idem⟩
 
-theorem inf_comm (a b : α) : a ⊓ b = b ⊓ a := @sup_comm αᵒᵈ _ _ _
+theorem inf_comm (a b : α) : a ⊓ b = b ⊓ a := congrArg OrderDual.ofDual <| sup_comm ..
 
 instance : Std.Commutative (α := α) (· ⊓ ·) := ⟨inf_comm⟩
 
-theorem inf_assoc (a b c : α) : a ⊓ b ⊓ c = a ⊓ (b ⊓ c) := @sup_assoc αᵒᵈ _ _ _ _
+theorem inf_assoc (a b c : α) : a ⊓ b ⊓ c = a ⊓ (b ⊓ c) :=
+  congrArg OrderDual.ofDual <| sup_assoc ..
 
 instance : Std.Associative (α := α) (· ⊓ ·) := ⟨inf_assoc⟩
 
 theorem inf_left_right_swap (a b c : α) : a ⊓ b ⊓ c = c ⊓ b ⊓ a :=
-  @sup_left_right_swap αᵒᵈ _ _ _ _
+  congrArg OrderDual.ofDual <| sup_left_right_swap ..
 
 theorem inf_left_idem (a b : α) : a ⊓ (a ⊓ b) = a ⊓ b := by simp
 
 theorem inf_right_idem (a b : α) : a ⊓ b ⊓ b = a ⊓ b := by simp
 
 theorem inf_left_comm (a b c : α) : a ⊓ (b ⊓ c) = b ⊓ (a ⊓ c) :=
-  @sup_left_comm αᵒᵈ _ a b c
+  congrArg OrderDual.ofDual <| sup_left_comm ..
 
 theorem inf_right_comm (a b c : α) : a ⊓ b ⊓ c = a ⊓ c ⊓ b :=
-  @sup_right_comm αᵒᵈ _ a b c
+  congrArg OrderDual.ofDual <| sup_right_comm ..
 
 theorem inf_inf_inf_comm (a b c d : α) : a ⊓ b ⊓ (c ⊓ d) = a ⊓ c ⊓ (b ⊓ d) :=
-  @sup_sup_sup_comm αᵒᵈ _ _ _ _ _
+  congrArg OrderDual.ofDual <| sup_sup_sup_comm ..
 
 theorem inf_inf_distrib_left (a b c : α) : a ⊓ (b ⊓ c) = a ⊓ b ⊓ (a ⊓ c) :=
-  @sup_sup_distrib_left αᵒᵈ _ _ _ _
+  congrArg OrderDual.ofDual <| sup_sup_distrib_left ..
 
 theorem inf_inf_distrib_right (a b c : α) : a ⊓ b ⊓ c = a ⊓ c ⊓ (b ⊓ c) :=
-  @sup_sup_distrib_right αᵒᵈ _ _ _ _
+  congrArg OrderDual.ofDual <| sup_sup_distrib_right ..
 
 theorem inf_congr_left (hb : a ⊓ c ≤ b) (hc : a ⊓ b ≤ c) : a ⊓ b = a ⊓ c :=
-  @sup_congr_left αᵒᵈ _ _ _ _ hb hc
+  congrArg OrderDual.ofDual <| sup_congr_left hb hc
 
 theorem inf_congr_right (h1 : b ⊓ c ≤ a) (h2 : a ⊓ c ≤ b) : a ⊓ c = b ⊓ c :=
-  @sup_congr_right αᵒᵈ _ _ _ _ h1 h2
+  congrArg OrderDual.ofDual <| sup_congr_right h1 h2
 
 theorem inf_eq_inf_iff_left : a ⊓ b = a ⊓ c ↔ a ⊓ c ≤ b ∧ a ⊓ b ≤ c :=
-  @sup_eq_sup_iff_left αᵒᵈ _ _ _ _
+  OrderDual.ofDual.injective.eq_iff.trans <| sup_eq_sup_iff_left ..
+
 
 theorem inf_eq_inf_iff_right : a ⊓ c = b ⊓ c ↔ b ⊓ c ≤ a ∧ a ⊓ c ≤ b :=
-  @sup_eq_sup_iff_right αᵒᵈ _ _ _ _
+  OrderDual.ofDual.injective.eq_iff.trans <| sup_eq_sup_iff_right ..
 
 theorem Ne.inf_lt_or_inf_lt : a ≠ b → a ⊓ b < a ∨ a ⊓ b < b :=
-  @Ne.lt_sup_or_lt_sup αᵒᵈ _ _ _
+  @Ne.lt_sup_or_lt_sup αᵒᵈ _ _ _ ∘ (· ∘ congrArg OrderDual.ofDual)
 
 theorem SemilatticeInf.ext_inf {α} {A B : SemilatticeInf α}
     (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y)
@@ -428,12 +426,9 @@ theorem SemilatticeInf.ext {α} {A B : SemilatticeInf α}
   congr
   ext; apply SemilatticeInf.ext_inf H
 
-theorem SemilatticeInf.dual_dual (α : Type*) [H : SemilatticeInf α] :
-    OrderDual.instSemilatticeInf αᵒᵈ = H :=
-  SemilatticeInf.ext fun _ _ => Iff.rfl
-
 theorem inf_le_ite (s s' : α) (P : Prop) [Decidable P] : s ⊓ s' ≤ ite P s s' :=
-  @ite_le_sup αᵒᵈ _ _ _ _ _
+  OrderDual.toDual_le_toDual.mp <| apply_ite OrderDual.toDual P .. ▸
+    ite_le_sup (α := αᵒᵈ) (.toDual s) (.toDual s') P
 
 end SemilatticeInf
 
@@ -445,10 +440,15 @@ The partial order is defined so that `a ≤ b` unfolds to `b ⊓ a = a`; cf. `in
 -/
 def SemilatticeInf.mk' {α : Type*} [Min α] (inf_comm : ∀ a b : α, a ⊓ b = b ⊓ a)
     (inf_assoc : ∀ a b c : α, a ⊓ b ⊓ c = a ⊓ (b ⊓ c)) (inf_idem : ∀ a : α, a ⊓ a = a) :
-    SemilatticeInf α := by
-  haveI : SemilatticeSup αᵒᵈ := SemilatticeSup.mk' inf_comm inf_assoc inf_idem
-  haveI i := OrderDual.instSemilatticeInf αᵒᵈ
-  exact i
+    SemilatticeInf α where
+  inf := (· ⊓ ·)
+  le a b := b ⊓ a = a
+  le_refl := inf_idem
+  le_trans a b c hab hbc := by rw [← hab, ← inf_assoc, hbc]
+  le_antisymm a b hab hba := by rwa [← hab, ← inf_comm]
+  inf_le_left a b := by rw [← inf_assoc, inf_idem]
+  inf_le_right a b := by rw [inf_comm, inf_assoc, inf_idem]
+  le_inf a b c hba hca := by rwa [inf_comm b,inf_assoc, hba]
 
 /-!
 ### Lattices
@@ -623,8 +623,9 @@ end DistribLattice
 /-- Prove distributivity of an existing lattice from the dual distributive law. -/
 abbrev DistribLattice.ofInfSupLe
     [Lattice α] (inf_sup_le : ∀ a b c : α, a ⊓ (b ⊔ c) ≤ a ⊓ b ⊔ a ⊓ c) : DistribLattice α where
-  le_sup_inf := (@OrderDual.instDistribLattice αᵒᵈ {inferInstanceAs (Lattice αᵒᵈ) with
-      le_sup_inf := inf_sup_le}).le_sup_inf
+  le_sup_inf a b c := (@OrderDual.instDistribLattice αᵒᵈ {inferInstanceAs (Lattice αᵒᵈ) with
+      le_sup_inf _ _ _ := inf_sup_le _ _ _}).le_sup_inf (.toDual (.toDual a))
+        (.toDual (.toDual b)) (.toDual (.toDual c))
 
 /-!
 ### Lattices derived from linear orders
@@ -675,7 +676,7 @@ theorem sup_lt_iff : b ⊔ c < a ↔ b < a ∧ c < a :=
    fun h => sup_ind (p := (· < a)) b c h.1 h.2⟩
 
 theorem inf_ind (a b : α) {p : α → Prop} : p a → p b → p (a ⊓ b) :=
-  @sup_ind αᵒᵈ _ _ _ _
+  @sup_ind αᵒᵈ _ (.toDual a) (.toDual b) (p ·.ofDual)
 
 @[simp]
 theorem inf_le_iff : b ⊓ c ≤ a ↔ b ≤ a ∨ c ≤ a :=
@@ -892,15 +893,15 @@ theorem of_map_inf [SemilatticeInf α] [SemilatticeInf β] {f : α → β}
 
 theorem of_left_le_map_sup [SemilatticeSup α] [Preorder β] {f : α → β}
     (h : ∀ x y, f x ≤ f (x ⊔ y)) : Monotone f :=
-  monotone_dual_iff.1 <| of_map_inf_le_left h
+  monotone_dual_iff.1 <| of_map_inf_le_left (h ·.ofDual ·.ofDual)
 
 theorem of_le_map_sup [SemilatticeSup α] [SemilatticeSup β] {f : α → β}
     (h : ∀ x y, f x ⊔ f y ≤ f (x ⊔ y)) : Monotone f :=
-  monotone_dual_iff.mp <| of_map_inf_le h
+  .of_dual <| of_map_inf_le (h ·.ofDual ·.ofDual)
 
 theorem of_map_sup [SemilatticeSup α] [SemilatticeSup β] {f : α → β}
     (h : ∀ x y, f (x ⊔ y) = f x ⊔ f y) : Monotone f :=
-  (@of_map_inf (OrderDual α) (OrderDual β) _ _ _ h).dual
+  .of_dual (of_map_inf (congrArg toDual <| h ·.ofDual ·.ofDual))
 
 variable [LinearOrder α]
 
@@ -911,7 +912,7 @@ theorem map_sup [SemilatticeSup β] {f : α → β} (hf : Monotone f) (x y : α)
 
 theorem map_inf [SemilatticeInf β] {f : α → β} (hf : Monotone f) (x y : α) :
     f (x ⊓ y) = f x ⊓ f y :=
-  hf.dual.map_sup _ _
+  congrArg ofDual (hf.dual.map_sup _ _)
 
 end Monotone
 
@@ -926,7 +927,7 @@ protected theorem sup [Preorder α] [SemilatticeSup β] {f g : α → β} {s : S
 /-- Pointwise infimum of two monotone functions is a monotone function. -/
 protected theorem inf [Preorder α] [SemilatticeInf β] {f g : α → β} {s : Set α}
     (hf : MonotoneOn f s) (hg : MonotoneOn g s) : MonotoneOn (f ⊓ g) s :=
-  (hf.dual.sup hg.dual).dual
+  .of_dual' ((hf.dual).sup (hg.dual))
 
 /-- Pointwise maximum of two monotone functions is a monotone function. -/
 protected theorem max [Preorder α] [LinearOrder β] {f g : α → β} {s : Set α} (hf : MonotoneOn f s)
@@ -944,7 +945,7 @@ theorem of_map_inf [SemilatticeInf α] [SemilatticeInf β]
 
 theorem of_map_sup [SemilatticeSup α] [SemilatticeSup β]
     (h : ∀ x ∈ s, ∀ y ∈ s, f (x ⊔ y) = f x ⊔ f y) : MonotoneOn f s :=
-  (@of_map_inf αᵒᵈ βᵒᵈ _ _ _ _ h).dual
+  .of_dual (.of_map_inf (f := toDual ∘ f ∘ ofDual) (congrArg toDual <| h ·.ofDual · ·.ofDual ·))
 
 variable [LinearOrder α]
 
@@ -957,7 +958,7 @@ theorem map_sup [SemilatticeSup β] (hf : MonotoneOn f s) (hx : x ∈ s) (hy : y
 
 theorem map_inf [SemilatticeInf β] (hf : MonotoneOn f s) (hx : x ∈ s) (hy : y ∈ s) :
     f (x ⊓ y) = f x ⊓ f y :=
-  hf.dual.map_sup hx hy
+  congrArg ofDual <| (hf.dual).map_sup hx hy
 
 end MonotoneOn
 
@@ -997,11 +998,11 @@ variable [LinearOrder α]
 
 theorem map_sup [SemilatticeInf β] {f : α → β} (hf : Antitone f) (x y : α) :
     f (x ⊔ y) = f x ⊓ f y :=
-  hf.dual_right.map_sup x y
+  congrArg ofDual <| hf.dual_right.map_sup x y
 
 theorem map_inf [SemilatticeSup β] {f : α → β} (hf : Antitone f) (x y : α) :
     f (x ⊓ y) = f x ⊔ f y :=
-  hf.dual_right.map_inf x y
+  congrArg ofDual <| hf.dual_right.map_inf x y
 
 end Antitone
 
@@ -1016,7 +1017,7 @@ protected theorem sup [Preorder α] [SemilatticeSup β] {f g : α → β} {s : S
 /-- Pointwise infimum of two antitone functions is an antitone function. -/
 protected theorem inf [Preorder α] [SemilatticeInf β] {f g : α → β} {s : Set α}
     (hf : AntitoneOn f s) (hg : AntitoneOn g s) : AntitoneOn (f ⊓ g) s :=
-  (hf.dual.sup hg.dual).dual
+  .of_dual' <| hf.dual.sup hg.dual
 
 /-- Pointwise maximum of two antitone functions is an antitone function. -/
 protected theorem max [Preorder α] [LinearOrder β] {f g : α → β} {s : Set α} (hf : AntitoneOn f s)
@@ -1034,7 +1035,7 @@ theorem of_map_inf [SemilatticeInf α] [SemilatticeSup β]
 
 theorem of_map_sup [SemilatticeSup α] [SemilatticeInf β]
     (h : ∀ x ∈ s, ∀ y ∈ s, f (x ⊔ y) = f x ⊓ f y) : AntitoneOn f s :=
-  (@of_map_inf αᵒᵈ βᵒᵈ _ _ _ _ h).dual
+  .of_dual (of_map_inf (f := toDual ∘ f ∘ ofDual) (congrArg toDual <| h ·.ofDual · ·.ofDual ·))
 
 variable [LinearOrder α]
 
@@ -1047,7 +1048,7 @@ theorem map_sup [SemilatticeInf β] (hf : AntitoneOn f s) (hx : x ∈ s) (hy : y
 
 theorem map_inf [SemilatticeSup β] (hf : AntitoneOn f s) (hx : x ∈ s) (hy : y ∈ s) :
     f (x ⊓ y) = f x ⊔ f y :=
-  hf.dual.map_sup hx hy
+  congrArg ofDual <| (hf.dual).map_sup hx hy
 
 end AntitoneOn
 

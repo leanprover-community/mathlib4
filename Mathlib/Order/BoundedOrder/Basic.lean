@@ -218,18 +218,18 @@ namespace OrderDual
 variable (α)
 
 instance instTop [Bot α] : Top αᵒᵈ :=
-  ⟨(⊥ : α)⟩
+  ⟨toDual ⊥⟩
 
 instance instBot [Top α] : Bot αᵒᵈ :=
-  ⟨(⊤ : α)⟩
+  ⟨toDual ⊤⟩
 
 instance instOrderTop [LE α] [OrderBot α] : OrderTop αᵒᵈ where
   __ := inferInstanceAs (Top αᵒᵈ)
-  le_top := @bot_le α _ _
+  le_top a := bot_le (a := a.ofDual)
 
 instance instOrderBot [LE α] [OrderTop α] : OrderBot αᵒᵈ where
   __ := inferInstanceAs (Bot αᵒᵈ)
-  bot_le := @le_top α _ _
+  bot_le a := le_top (a := a.ofDual)
 
 @[simp]
 theorem ofDual_bot [Top α] : ofDual ⊥ = (⊤ : α) :=
@@ -328,15 +328,16 @@ theorem Ne.bot_lt' (h : ⊥ ≠ a) : ⊥ < a :=
 theorem ne_bot_of_le_ne_bot (hb : b ≠ ⊥) (hab : b ≤ a) : a ≠ ⊥ :=
   (hb.bot_lt.trans_le hab).ne'
 
+-- this would be a lot easier if we imported Data.Set.Operations
 lemma bot_notMem_iff {s : Set α} : ⊥ ∉ s ↔ ∀ x ∈ s, ⊥ < x :=
-  top_notMem_iff (α := αᵒᵈ)
+  (top_notMem_iff (s := s ∘ ofDual)).trans ⟨fun h a => h (toDual a),fun h a => h (a.ofDual)⟩
 
 @[deprecated (since := "2025-05-23")] alias bot_not_mem_iff := bot_notMem_iff
 
 variable [Nontrivial α]
 
 theorem not_isMax_bot : ¬IsMax (⊥ : α) :=
-  @not_isMin_top αᵒᵈ _ _ _
+  fun h => @not_isMin_top αᵒᵈ _ _ _ (h.toDual)
 
 end OrderBot
 
