@@ -331,9 +331,9 @@ theorem IsStarProjection.comp_eq_left_iff {p q : E →L[𝕜] E}
     p ∘L q = p ↔ LinearMap.range p ≤ LinearMap.range q := by
   rw [← star_inj]
   simp_rw [star_eq_adjoint, adjoint_comp, hq.isSelfAdjoint.adjoint_eq, hp.adjoint_eq]
-  rw [← coe_inj, coe_comp, LinearMap.IsIdempotentElem.comp_eq_right_iff
-    congr(LinearMapClass.linearMap $hq.isIdempotentElem.eq)]
-  rfl
+  rw [← coe_inj, coe_comp]
+  exact LinearMap.IsIdempotentElem.comp_eq_right_iff
+    congr(LinearMapClass.linearMap $hq.isIdempotentElem.eq) _
 
 open ContinuousLinearMap in
 /-- Star projection operators are equal iff their range are. -/
