@@ -554,6 +554,14 @@ theorem IsIdempotentElem.ker_eq_range {E : Type*} [AddCommGroup E] [Module S E]
     {p : E →ₗ[S] E} (hp : IsIdempotentElem p) : LinearMap.ker p = LinearMap.range (1 - p) := by
   simpa using hp.one_sub.range_eq_ker.symm
 
+open LinearMap in
+theorem IsIdempotentElem.comp_eq_left_iff
+    {M : Type*} [AddCommGroup M] [Module S M] {q : M →ₗ[S] M}
+    (hq : IsIdempotentElem q) {E : Type*} [AddCommGroup E] [Module S E] (p : M →ₗ[S] E) :
+    p ∘ₗ q = p ↔ ker q ≤ ker p := by
+  simp [hq.ker_eq_range, range_le_ker_iff, comp_sub, Module.End.one_eq_id, sub_eq_zero,
+    eq_comm (a := p)]
+
 end LinearMap
 
 end Ring
@@ -590,7 +598,7 @@ lemma range_mem_invtSubmodule_iff (hf : IsIdempotentElem f) :
     range f ∈ Module.End.invtSubmodule T ↔ f ∘ₗ T ∘ₗ f = T ∘ₗ f := by
   rw [hf.comp_eq_right_iff, range_comp, Module.End.mem_invtSubmodule_iff_map_le]
 
-alias ⟨range_mem_invtSubmodule, conj_eq_of_range_mem_invtSubmodule⟩ := range_mem_invtSubmodule_iff
+alias ⟨conj_eq_of_range_mem_invtSubmodule, range_mem_invtSubmodule⟩ := range_mem_invtSubmodule_iff
 
 lemma _root_.LinearMap.IsProj.mem_invtSubmodule_iff {U : Submodule R E}
     (hf : IsProj U f) : U ∈ Module.End.invtSubmodule T ↔ f ∘ₗ T ∘ₗ f = T ∘ₗ f :=
@@ -601,13 +609,9 @@ open LinearMap in
 for idempotent `f`. -/
 lemma ker_mem_invtSubmodule_iff (hf : IsIdempotentElem f) :
     ker f ∈ Module.End.invtSubmodule T ↔ f ∘ₗ T ∘ₗ f = f ∘ₗ T := by
-  rw [← hf.subtype_comp_linearProjOfIsCompl_range_eq]
-  nth_rw 1 [hf.subtype_comp_linearProjOfIsCompl_range_eq]
-  rw [IsProj.mem_invtSubmodule_iff
-    (f := (ker f).subtype.comp (Submodule.linearProjOfIsCompl _ _ hf.isCompl.symm))
-    ⟨by simp, by simp⟩]
-  simp [LinearMap.ext_iff, LinearMap.comp_apply]
-  simp [linearProjOfIsCompl_eq_self_sub_linearProjOfIsCompl hf.isCompl.symm]
+  rw [← comp_assoc, hf.comp_eq_left_iff, ker_comp, Module.End.mem_invtSubmodule]
+
+alias ⟨conj_eq_of_ker_mem_invtSubmodule, ker_mem_invtSubmodule⟩ := ker_mem_invtSubmodule_iff
 
 /-- An idempotent operator `f` commutes with a linear operator `T` if and only if
 both `range f` and `ker f` are invariant under `T`. -/
@@ -620,13 +624,12 @@ lemma commute_iff (hf : IsIdempotentElem f) :
 `T (range f) = range f` and `T (ker f) = ker f`. -/
 theorem commute_iff_of_isUnit (hT : IsUnit T) (hf : IsIdempotentElem f) :
     Commute f T ↔ (range f).map T = range f ∧ (ker f).map T = ker f := by
-  obtain ⟨S, rfl⟩ := hT
-  rw [hf.commute_iff]
-  simp_rw [le_antisymm_iff, ← Module.End.mem_invtSubmodule_iff_map_le,
-    and_and_and_comm (c := (ker f ∈ _)), iff_self_and,
-    ← GeneralLinearGroup.generalLinearEquiv_to_linearMap]
+  lift T to GeneralLinearGroup R E using hT
   have {a : E ≃ₗ[R] E} {b : Submodule R E} : b ≤ b.map a.toLinearMap ↔ b ≤ b.map a := by rfl
-  simp_rw [this, ← Module.End.mem_invtSubmodule_symm_iff_le_map, ← hf.commute_iff]
+  simp_rw [← GeneralLinearGroup.generalLinearEquiv_to_linearMap, le_antisymm_iff,
+    ← Module.End.mem_invtSubmodule_iff_map_le, this, ← Module.End.mem_invtSubmodule_symm_iff_le_map,
+    and_and_and_comm (c := (ker f ∈ _)), ← hf.commute_iff,
+    GeneralLinearGroup.generalLinearEquiv_to_linearMap, iff_self_and]
   exact Commute.units_inv_right
 
 end LinearMap.IsIdempotentElem
