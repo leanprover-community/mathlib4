@@ -149,7 +149,7 @@ lemma test4 :
 -- p : B.toSeminormFamily
 -- q : Fin 1 => normSeminorm 𝕜 𝕜
 
-lemma testnew :
+lemma isBounded_of_Continuous :
     Seminorm.IsBounded B.toSeminormFamily (fun _ : Fin 1 => normSeminorm 𝕜 𝕜) f.toLinearMap := by
   rw [Seminorm.isBounded_const]
   obtain ⟨s₁, hs⟩ := test4 B f
@@ -227,13 +227,8 @@ lemma testnew :
 lemma test5 : ∃ (s₁ : Finset F),
     ↑f ∈ Submodule.span 𝕜 (Set.range (ContinuousLinearMap.toLinearMap₁₂
       (WeakBilin.eval B) ∘ Subtype.val : s₁ → WeakBilin B →ₗ[𝕜] 𝕜)) := by
-  obtain ⟨s,⟨C, hs⟩⟩ := testnew B f (Fin.last 0)
-  use s
-  rw [functional_mem_span_iff]
-  use C.toReal
-  have e9 : (ContinuousLinearMap.toLinearMap₁₂ (WeakBilin.eval B)).flip = B := rfl
-  rw [e9]
-  exact hs
+  obtain ⟨s,⟨C, hs⟩⟩ := isBounded_of_Continuous B f (Fin.last 0)
+  exact ⟨s, functional_mem_span_iff.mpr ⟨C, hs⟩⟩
 
 /-
 See

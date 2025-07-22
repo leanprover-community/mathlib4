@@ -80,7 +80,7 @@ def toSeminormFamily (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : SeminormFamily �
 theorem toSeminormFamily_apply {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {x y} : (B.toSeminormFamily y) x = ‖B x y‖ :=
   rfl
 
-theorem functional_mem_span_iff {B : F →ₗ[𝕜] E →ₗ[𝕜] 𝕜} (s : Finset F) (f : E →ₗ[𝕜] 𝕜) :
+theorem functional_mem_span_iff {B : F →ₗ[𝕜] E →ₗ[𝕜] 𝕜} {s : Finset F} {f : E →ₗ[𝕜] 𝕜} :
     f ∈ Submodule.span 𝕜 (Set.range (B ∘ Subtype.val : s → E →ₗ[𝕜] 𝕜)) ↔
     ∃ γ, ∀ (x : E), ‖f x‖ ≤ γ * ((s.sup B.flip.toSeminormFamily) x) := by
   constructor
