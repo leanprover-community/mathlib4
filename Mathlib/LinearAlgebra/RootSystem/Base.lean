@@ -219,7 +219,7 @@ lemma pos_or_neg_of_sum_smul_root_mem (f : ι → ℤ)
   have aux : 0 ≤ f := by
     intro i
     by_cases hi : i ∈ b.support
-    · change 0 ≤ f' ⟨i, hi⟩
+    · change _ ≤ f' ⟨i, hi⟩
       simp [← hc]
     · replace hi : i ∉ f.support := by contrapose! hi; exact hf₀ hi
       simp_all
@@ -227,6 +227,7 @@ lemma pos_or_neg_of_sum_smul_root_mem (f : ι → ℤ)
   by_contra! contra
   replace contra : f = 0 := le_antisymm contra aux
   contradiction
+  -- XXX
 
 lemma not_nonpos_iff_pos_of_sum_mem_range_root (f : ι → ℤ)
     (hf : ∑ j ∈ b.support, f j • P.root j ∈ range P.root) (hf₀ : f.support ⊆ b.support) :
