@@ -74,7 +74,7 @@ def mulEquiv {n m : ℕ} : ⨂[R]^n M ⊗[R] (⨂[R]^m) M ≃ₗ[R] (⨂[R]^(n +
 /-- As a graded monoid, `⨂[R]^i M` has a `(*) : ⨂[R]^i M → ⨂[R]^j M → ⨂[R]^(i + j) M`. -/
 instance gMul : GradedMonoid.GMul fun i => ⨂[R]^i M where
   mul {i j} a b :=
-    (TensorProduct.mk R _ _).compr₂ ((mulEquiv : _ ≃ₗ[R] (⨂[R]^(i + j)) M).toLinearMap) a b
+    (TensorProduct.mk R _ _).compr₂ (↑(mulEquiv : _ ≃ₗ[R] (⨂[R]^(i + j)) M)) a b
 
 local infixl:70 " ₜ* " => @GradedMonoid.GMul.mul ℕ (fun i => ⨂[R]^i M) _ _ _ _
 
