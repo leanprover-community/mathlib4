@@ -258,6 +258,8 @@ macro_rules
     let haves ← ts.mapM fun (t : Term) => withRef t `(tactic| have := $t)
     `(tactic| ($haves;*; bound%$tk))
 
+syntax "bound? " : tactic
+
 -- Elaborating `bound?` to use `aesop?`'s proof script generation
 elab_rules : tactic
   | `(tactic| bound?) => do
