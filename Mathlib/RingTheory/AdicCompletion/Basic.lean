@@ -367,7 +367,6 @@ def lift {f : (n : ℕ) → N →ₗ[R] M ⧸ (I ^ (a n) • ⊤)}
 The compositon of lift linear map `F : N →ₗ[R] M` with the canonial
 projection `M →ₗ[R] M ⧸ (I ^ a n • ⊤)` is `f n` .
 -/
-@[simp]
 theorem mk_lift {f : (n : ℕ) → N →ₗ[R] M ⧸ (I ^ a n • ⊤)}
     (hf : ∀ {m s}, f m s = factorPow I M (ha.monotone m.le_succ) (f (m + 1) s)) (n : ℕ) (s : N) :
     (Submodule.Quotient.mk (lift ha hf s)) = f n s := by
@@ -405,7 +404,7 @@ theorem eq_lift {f : (n : ℕ) → N →ₗ[R] M ⧸ (I ^ (a n) • ⊤)}
   ext s
   rw [IsHausdorff.eq_iff_smodEq_of_strictMono (I := I) ha]
   intro n
-  simp [SModEq, hF]
+  simp [SModEq, hF, mk_lift]
 
 end StrictMono
 
@@ -445,7 +444,6 @@ def liftRingHom {f : (n : ℕ) → S →+* R ⧸ I ^ a n}
 Then the compositon of lift ring map `F : S →+* R` with the canonial
 projection `R →+* R ⧸ I ^ a n` is `f n` .
 -/
-@[simp]
 theorem mk_liftRingHom {f : (n : ℕ) → S →+* R ⧸ I ^ a n}
     (hf : ∀ {m s}, f m s = factorPow I (ha.monotone m.le_succ) (f (m + 1) s)) (n : ℕ) (s : S) :
     Ideal.Quotient.mk (I ^ a n) (liftRingHom ha hf s) = f n s :=
@@ -469,7 +467,7 @@ theorem eq_liftRingHom {f : (n : ℕ) → S →+* R ⧸ I ^ a n}
   rw [IsHausdorff.eq_iff_smodEq_of_strictMono (I := I) ha]
   simp only [smul_eq_mul, mul_top]
   intro n
-  simp [SModEq, hF]
+  simp [SModEq, hF, mk_liftRingHom]
 
 end StrictMono
 
