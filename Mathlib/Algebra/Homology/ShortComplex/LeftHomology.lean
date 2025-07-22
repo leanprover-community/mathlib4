@@ -222,7 +222,7 @@ data by choosing another kernel and cokernel that are isomorphic to the ones in 
   wπ := by simp [IsKernel.isoKernel]
   hπ := IsColimit.equivOfNatIsoOfIso
     (parallelPair.ext (Iso.refl S.X₁) eK.symm (by simp [IsKernel.isoKernel]) (by simp)) _ _
-    (Cocones.ext eH.symm (by rintro (_ | _) <;> simp [IsKernel.isoKernel])) h.hπ
+    (Cocones.ext (by exact eH.symm) (by rintro (_ | _) <;> simp [IsKernel.isoKernel])) h.hπ
 
 end LeftHomologyData
 
