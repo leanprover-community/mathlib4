@@ -213,7 +213,7 @@ def ofZeros (hf : S.f = 0) (hg : S.g = 0) : S.LeftHomologyData where
 variable {S} in
 /-- Given a left homology data `h` of a short complex `S`, we can construct another left homology
 data by choosing another kernel and cokernel that are isomorphic to the ones in `h`. -/
-@[simps] def copy (K' H' : C) (eK : K' ≅ h.K) (eH : H' ≅ h.H) : S.LeftHomologyData where
+@[simps] def copy {K' H' : C} (eK : K' ≅ h.K) (eH : H' ≅ h.H) : S.LeftHomologyData where
   K := K'
   H := H'
   i := eK.hom ≫ h.i
