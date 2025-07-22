@@ -11,6 +11,7 @@ import Mathlib.Analysis.Normed.Module.Convex
 import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Topology.Algebra.Module.StrongTopology
+import Mathlib.Analysis.LocallyConvex.ContinuousOfBounded
 
 /-!
 
@@ -152,6 +153,35 @@ lemma test4 :
 -- A linear map between two bornological spaces is continuous if and only if it is bounded
 -- (with respect to the usual bornologies).
 -- https://en.wikipedia.org/wiki/Bornology#Bornology_of_a_topological_vector_space
+
+-- Bourbaki TVS III.12 Proposition 1(iii') Let E be a LCS with its canonical Bornology and let F be
+-- a LCS a linear mapping u:E->F is continuous iff u(X) is bounded in F for every X bounded in E.
+-- (Here I think E and F over ℝ or ℂ)
+-- Continuous implies bounded is III.4 Corol 1
+-- We have LinearMap.continuous_of_locally_bounded for `E` is first countable
+
+/-
+#check WithSeminorms.isVonNBounded_iff_finset_seminorm_bounded
+#check WithSeminorms.image_isVonNBounded_iff_finset_seminorm_bounded
+
+#check NormedSpace.isVonNBounded_ball
+
+#check Metric.isBounded_ball
+
+#check LinearMap.continuous_of_locally_bounded
+-/
+
+open Bornology in
+lemma cont_maps_bd : ∀ s, IsVonNBounded 𝕜 s → IsVonNBounded 𝕜 (f '' s) := by
+  exact fun s a ↦ IsVonNBounded.image a f
+
+open Bornology in
+lemma test {s : Set (WeakBilin B)} (h : IsVonNBounded 𝕜 s) : IsVonNBounded 𝕜 (f '' s) := by
+  apply IsVonNBounded.image h
+
+open Bornology in
+lemma testb2 {s : Set (WeakBilin B)} (h : IsVonNBounded 𝕜 s) : IsVonNBounded 𝕜 (f '' s) := by
+  apply IsVonNBounded.image h
 
 lemma isBounded_of_Continuous :
     Seminorm.IsBounded B.toSeminormFamily (fun _ : Fin 1 => normSeminorm 𝕜 𝕜) f.toLinearMap := by
