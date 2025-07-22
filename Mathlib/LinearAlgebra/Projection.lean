@@ -527,7 +527,6 @@ theorem IsIdempotentElem.comp_eq_right_iff {q : M →ₗ[S] M} (hq : IsIdempoten
     SetLike.le_def, mem_range, forall_exists_index, forall_apply_eq_imp_iff]
 
 open LinearMap in
--- name to match `LinearMap.IsProj.isCompl`
 lemma IsIdempotentElem.isCompl {f : E →ₗ[R] E} (hf : IsIdempotentElem f) :
     IsCompl (range f) (ker f) := hf.isProj_range.isCompl
 
