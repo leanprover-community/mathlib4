@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 import Mathlib.FieldTheory.Fixed
+import Mathlib.RepresentationTheory.Homological.GroupCohomology.FiniteCyclic
 import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
+import Mathlib.RingTheory.Norm.Basic
 
 /-!
 # Hilbert's Theorem 90
@@ -15,9 +17,8 @@ it both in terms of $H^1$ and in terms of cocycles being coboundaries.
 
 Hilbert's original statement was that if $L/K$ is Galois, and $Gal(L/K)$ is cyclic, generated
 by an element `σ`, then for every `x : L` such that $N_{L/K}(x) = 1,$ there exists `y : L` such
-that $x = y/σ(y).$ This can be deduced from the fact that the function $Gal(L/K) → L^\times$
-sending $σ^i \mapsto xσ(x)σ^2(x)...σ^{i-1}(x)$ is a 1-cocycle. Alternatively, we can derive it by
-analyzing the cohomology of finite cyclic groups in general.
+that $x = y/σ(y).$ Using the fact that `H¹(G, A) ≅ Ker(N_A)/(ρ(g) - 1)(A)` for any finite cyclic
+group `G` with generator `g`, we deduce the original statement from Noether's generalization.
 
 Noether's generalization also holds for infinite Galois extensions.
 
@@ -27,7 +28,10 @@ Noether's generalization also holds for infinite Galois extensions.
   of Hilbert's Theorem 90: for all $f: Aut_K(L) \to L^\times$ satisfying the 1-cocycle
   condition, there exists `β : Lˣ` such that $g(β)/β = f(g)$ for all `g : Aut_K(L)`.
 * `groupCohomology.H1ofAutOnUnitsUnique`: Noether's generalization of Hilbert's Theorem 90:
-$H^1(Aut_K(L), L^\times)$ is trivial.
+  $H^1(Aut_K(L), L^\times)$ is trivial.
+* `groupCohomology.exists_div_of_norm_eq_one`: Hilbert's Theorem 90: given a finite cyclic Galois
+  extension `L/K`, an element `x : L` such that `N_{L/K}(x) = 1`, and a generator `g` of
+  `Gal(L/K)`, there exists `y : Lˣ` such that `g(y)/y = x`.
 
 ## Implementation notes
 
@@ -39,7 +43,6 @@ statement is clearer.
 
 ## TODO
 
-* The original Hilbert's Theorem 90, deduced from the cohomology of general finite cyclic groups.
 * Develop Galois cohomology to extend Noether's result to infinite Galois extensions.
 * "Additive Hilbert 90": let `L/K` be a finite Galois extension. Then $H^n(Gal(L/K), L)$ is trivial
   for all $1 ≤ n.$
@@ -110,5 +113,37 @@ noncomputable instance H1ofAutOnUnitsUnique : Unique (H1 (Rep.ofAlgebraAutOnUnit
     rcases isMulCoboundary₁_of_isMulCocycle₁_of_aut_to_units x.1
       (isMulCocycle₁_of_mem_cocycles₁ _ x.2) with ⟨β, hβ⟩
     use β
+
+variable {K L} [IsGalois K L]
+
+open Additive Rep
+
+/-- Given `L/K` finite and Galois, and `x : Lˣ`, this essentially says
+`(∏ σ) • x = N_{L/K}(x)`, where the product is over `σ ∈ Gal(L/K)`. -/
+theorem norm_ofAlgebraAutOnUnits_eq (x : Lˣ) :
+    (toMul <| toAdditive ((Rep.ofAlgebraAutOnUnits K L).norm.hom
+      (toAdditive.symm <| ofMul x))).1 = algebraMap K L (Algebra.norm K (x : L)) := by
+  simp [Algebra.norm_eq_prod_automorphisms, Representation.norm]
+
+variable [IsCyclic (L ≃ₐ[K] L)] [DecidableEq (L ≃ₐ[K] L)]
+
+attribute [local instance] IsCyclic.commGroup
+
+/-- Hilbert's Theorem 90: given a finite cyclic Galois extension `L/K`, an element `x : L` such
+that `N_{L/K}(x) = 1`, and a generator `g` of `Gal(L/K)`, there exists `y : Lˣ`
+such that `g(y)/y = x`. -/
+theorem exists_div_of_norm_eq_one (g : L ≃ₐ[K] L)
+    (hg : ∀ x, x ∈ Subgroup.zpowers g) (x : L) (hx : Algebra.norm K x = 1) :
+    ∃ y : Lˣ, g y / y = x := by
+  let xu : Lˣ := (Algebra.norm_ne_zero_iff.1 <| hx ▸ zero_ne_one.symm).isUnit.unit
+  have hx' : algebraMap K L (Algebra.norm K (xu : L)) = _ := congrArg (algebraMap K L) hx
+  rw [← norm_ofAlgebraAutOnUnits_eq xu, map_one] at hx'
+  have := FiniteCyclicGroup.groupCohomologyπOdd_eq_zero_iff  (ofAlgebraAutOnUnits K L) g hg
+    1 (by simp) ⟨toAdditive.symm <| ofMul xu, by simp_all⟩
+  rcases this.1 (Subsingleton.elim (α := groupCohomology.H1 (Rep.ofAlgebraAutOnUnits K L)) _ _)
+    with ⟨y, hy⟩
+  use toMul <| toAdditive y
+  simpa [xu, sub_eq_add_neg, div_eq_mul_inv, -toAdditive_apply] using
+    Units.ext_iff.1 congr(toMul <| toAdditive $hy)
 
 end groupCohomology
