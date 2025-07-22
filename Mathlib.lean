@@ -710,7 +710,6 @@ import Mathlib.Algebra.Module.Submodule.Defs
 import Mathlib.Algebra.Module.Submodule.EqLocus
 import Mathlib.Algebra.Module.Submodule.Equiv
 import Mathlib.Algebra.Module.Submodule.Invariant
-import Mathlib.Algebra.Module.Submodule.IsometryMap
 import Mathlib.Algebra.Module.Submodule.IterateMapComap
 import Mathlib.Algebra.Module.Submodule.Ker
 import Mathlib.Algebra.Module.Submodule.Lattice
@@ -1781,6 +1780,7 @@ import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 import Mathlib.Analysis.Normed.Operator.Compact
 import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 import Mathlib.Analysis.Normed.Operator.LinearIsometry
+import Mathlib.Analysis.Normed.Operator.LinearIsometrySubmoduleMap
 import Mathlib.Analysis.Normed.Order.Basic
 import Mathlib.Analysis.Normed.Order.Hom.Basic
 import Mathlib.Analysis.Normed.Order.Hom.Ultra

@@ -29,10 +29,11 @@ variable [Module R M] [Module R M₁]
 /-- A linear isometry between two modules restricts to a linear isometry from any submodule p of the
 domain onto the image of that submodule.
 
-This is a version of LinearMap.submoduleMap extended to linear isometries -/
+This is a version of `LinearMap.submoduleMap` extended to linear isometries -/
+@[simps!]
 def submoduleMap (p : Submodule R M) (e : M →ₗᵢ[R] M₁) :
     p →ₗᵢ[R] (Submodule.map e p) :=
-  { e.toLinearMap.submoduleMap p with norm_map' := fun x => e.norm_map' x }
+  { e.toLinearMap.submoduleMap p with norm_map' x := e.norm_map' x }
 
 end LinearIsometry
 
@@ -45,9 +46,10 @@ variable {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPai
 /-- A linear isometry equivalence between two modules restricts to a linear isometry equivalence
 from any submodule p of the domain onto the image of that submodule.
 
-This is a version of LinearEquiv.submoduleMap extended to linear isometry equivalences -/
+This is a version of `LinearEquiv.submoduleMap` extended to linear isometry equivalences -/
+@[simps!]
 def submoduleMap (p : Submodule R M) (e : M ≃ₛₗᵢ[σ₁₂] M₂) :
     p ≃ₛₗᵢ[σ₁₂] (Submodule.map e p) :=
-  { e.toLinearEquiv.submoduleMap p with norm_map' := fun x => e.norm_map' x }
+  { e.toLinearEquiv.submoduleMap p with norm_map' x := e.norm_map' x }
 
 end LinearIsometryEquiv
