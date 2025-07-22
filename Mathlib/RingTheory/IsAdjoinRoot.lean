@@ -483,7 +483,7 @@ theorem coeff_injective : Function.Injective h.coeff := fun _ _ hxy =>
   h.ext_elem fun _ _ => hxy ▸ rfl
 
 theorem isIntegral_root : IsIntegral R h.root :=
-  ⟨f, h.Monic, h.aeval_root⟩
+  ⟨f, h.Monic, h.aeval_root_self⟩
 
 end IsAdjoinRootMonic
 
@@ -501,11 +501,11 @@ section lift
 
 @[simp]
 theorem lift_self_apply (x : S) :
-    h.lift (algebraMap R S) h.root h.aeval_root x = x := by
+    h.lift (algebraMap R S) h.root h.aeval_root_self x = x := by
   rw [← h.map_repr x, lift_map, ← aeval_def, h.aeval_root_eq_map]
 
 theorem lift_self :
-    h.lift (algebraMap R S) h.root h.aeval_root = RingHom.id S :=
+    h.lift (algebraMap R S) h.root h.aeval_root_self = RingHom.id S :=
   RingHom.ext h.lift_self_apply
 
 end lift
@@ -520,9 +520,9 @@ This is the converse of `IsAdjoinRoot.ofEquiv`: this turns an `IsAdjoinRoot` int
 `AlgEquiv`, and `IsAdjoinRoot.ofEquiv` turns an `AlgEquiv` into an `IsAdjoinRoot`.
 -/
 def aequiv (h' : IsAdjoinRoot T f) : S ≃ₐ[R] T :=
-  { h.liftHom h'.root h'.aeval_root with
-    toFun := h.liftHom h'.root h'.aeval_root
-    invFun := h'.liftHom h.root h.aeval_root
+  { h.liftHom h'.root h'.aeval_root_self with
+    toFun := h.liftHom h'.root h'.aeval_root_self
+    invFun := h'.liftHom h.root h.aeval_root_self
     left_inv := fun x => by rw [← h.map_repr x]; simp [- map_repr]
     right_inv := fun x => by rw [← h'.map_repr x]; simp [- map_repr] }
 
@@ -558,7 +558,7 @@ theorem liftHom_aequiv {U : Type*} [CommRing U] [Algebra R U]
 theorem aequiv_aequiv {U : Type*} [CommRing U] [Algebra R U]
     (h' : IsAdjoinRoot T f) (h'' : IsAdjoinRoot U f) (x) :
     (h'.aequiv h'') (h.aequiv h' x) = h.aequiv h'' x :=
-  h.liftHom_aequiv _ _ h''.aeval_root _
+  h.liftHom_aequiv _ _ h''.aeval_root_self _
 
 @[simp]
 theorem aequiv_trans {U : Type*} [CommRing U] [Algebra R U]
@@ -602,7 +602,7 @@ variable (h : IsAdjoinRootMonic S f)
 
 theorem minpoly_eq [IsDomain R] [IsDomain S] [NoZeroSMulDivisors R S] [IsIntegrallyClosed R]
   (hirr : Irreducible f) : minpoly R h.root = f :=
-  let ⟨q, hq⟩ := minpoly.isIntegrallyClosed_dvd h.isIntegral_root h.aeval_root
+  let ⟨q, hq⟩ := minpoly.isIntegrallyClosed_dvd h.isIntegral_root h.aeval_root_self
   symm <|
     eq_of_monic_of_associated h.Monic (minpoly.monic h.isIntegral_root) <| by
       convert
