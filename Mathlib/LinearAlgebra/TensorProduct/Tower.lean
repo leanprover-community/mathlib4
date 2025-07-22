@@ -497,17 +497,11 @@ and a `B`-module `M`, `S`-module `P`, `R`-module `Q`, then
 -/
 def rightComm : (M ⊗[S] P) ⊗[R] Q ≃ₗ[B] (M ⊗[R] Q) ⊗[S] P :=
   LinearEquiv.ofLinear
-    (lift <| TensorProduct.lift <| LinearMap.flip <|
-      lcurry R A A M Q ((M ⊗[R] Q) ⊗[A] P) ∘ₗ (mk A A (M ⊗[R] Q) P).flip)
-    (TensorProduct.lift <| lift <| LinearMap.flip <|
-      (TensorProduct.lcurry M P ((M ⊗[A] P) ⊗[R] Q) (.id A)).restrictScalars R
-        ∘ₗ (mk R A (M ⊗[A] P) Q).flip)
-    -- explicit `Eq.refl`s here help with performance, but also make it clear that the `ext` are
-    -- letting us prove the result as an equality of pure tensors.
-    (TensorProduct.ext <| ext fun m q => LinearMap.ext fun p => Eq.refl <|
-      (m ⊗ₜ[R] q) ⊗ₜ[A] p)
-    (curry_injective <| TensorProduct.ext' fun m p => LinearMap.ext fun q => Eq.refl <|
-      (m ⊗ₜ[A] p) ⊗ₜ[R] q)
+    (lift (lift (LinearMap.lflip ∘ₗ
+      (AlgebraTensorModule.mk _ _ _ _).compr₂ (AlgebraTensorModule.mk _ _ _ _))))
+    (lift (lift (LinearMap.lflip ∘ₗ
+      (AlgebraTensorModule.mk _ _ _ _).compr₂ (AlgebraTensorModule.mk _ _ _ _))))
+    (by ext; simp) (by ext; simp)
 
 variable {M N P Q}
 
@@ -573,7 +567,11 @@ theorem tensorTensorTensorComm_symm_tmul (m : M) (n : N) (p : P) (q : Q) :
 
 /-- The heterobasic version of `tensorTensorTensorComm` coincides with the regular version. -/
 theorem tensorTensorTensorComm_eq :
-    tensorTensorTensorComm R R R R M N P Q = TensorProduct.tensorTensorTensorComm R M N P Q := rfl
+    tensorTensorTensorComm R R R R M N P Q = TensorProduct.tensorTensorTensorComm R M N P Q := by
+  -- not defeq anymore
+  rw [← LinearEquiv.toLinearMap_inj]
+  apply TensorProduct.ext_fourfold'
+  simp
 
 end tensorTensorTensorComm
 

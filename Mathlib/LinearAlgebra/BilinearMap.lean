@@ -397,33 +397,71 @@ theorem compl₁₂_inj [SMulCommClass R₂ R₁ Pₗ]
 omit [Module R M] in
 /-- Composing a linear map `P → Q` and a bilinear map `M → N → P` to
 form a bilinear map `M → N → Q`. -/
-def compr₂ (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P →ₛₗ[σ₃₄] Q) : M →ₛₗ[σ₁₄] N →ₛₗ[σ₂₄] Q :=
+def compr₂ₛₗ (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P →ₛₗ[σ₃₄] Q) : M →ₛₗ[σ₁₄] N →ₛₗ[σ₂₄] Q :=
   llcompₛₗ N P Q g ∘ₛₗ f
 
 @[simp]
-theorem compr₂_apply (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P →ₛₗ[σ₃₄] Q) (m : M) (n : N) :
+theorem compr₂ₛₗ_apply (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P →ₛₗ[σ₃₄] Q) (m : M) (n : N) :
+    f.compr₂ₛₗ g m n = g (f m n) := rfl
+
+omit [Module R M] in
+/-- Composing a linear map `P → Q` and a bilinear map `M → N → P` to
+form a bilinear map `M → N → Q`. -/
+def compr₂ [Module R A] [Module A M] [Module A Qₗ]
+    [SMulCommClass R A Qₗ] [IsScalarTower R A Qₗ] [IsScalarTower R A Pₗ]
+    (f : M →ₗ[A] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[A] Qₗ) : M →ₗ[A] Nₗ →ₗ[R] Qₗ where
+  toFun x := g.restrictScalars R ∘ₗ (f x)
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
+
+omit [Module R M] in
+@[simp]
+theorem compr₂_apply [Module R A] [Module A M] [Module A Qₗ]
+    [SMulCommClass R A Qₗ] [IsScalarTower R A Qₗ] [IsScalarTower R A Pₗ]
+    (f : M →ₗ[A] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[A] Qₗ) (m : M) (n : Nₗ) :
     f.compr₂ g m n = g (f m n) := rfl
 
 /-- A version of `Function.Injective.comp` for composition of a bilinear map with a linear map. -/
-theorem injective_compr₂_of_injective (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P →ₛₗ[σ₃₄] Q)
-    (hf : Injective f) (hg : Injective g) : Injective (f.compr₂ g) :=
+theorem injective_compr₂ₛₗ_of_injective (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P →ₛₗ[σ₃₄] Q)
+    (hf : Injective f) (hg : Injective g) : Injective (f.compr₂ₛₗ g) :=
+  hg.injective_linearMapComp_left.comp hf
+
+/-- A version of `Function.Injective.comp` for composition of a bilinear map with a linear map. -/
+theorem injective_compr₂_of_injective (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[R] Qₗ) (hf : Injective f)
+    (hg : Injective g) : Injective (f.compr₂ g) :=
   hg.injective_linearMapComp_left.comp hf
 
 /-- A version of `Function.Surjective.comp` for composition of a bilinear map with a linear map. -/
-theorem surjective_compr₂_of_exists_rightInverse [RingHomInvPair σ₃₄ σ₄₃]
+theorem surjective_compr₂ₛₗ_of_exists_rightInverse [RingHomInvPair σ₃₄ σ₄₃]
     (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P →ₛₗ[σ₃₄] Q)
     (hf : Surjective f) (hg : ∃ g' : Q →ₛₗ[σ₄₃] P, g.comp g' = LinearMap.id) :
+    Surjective (f.compr₂ₛₗ g) := (surjective_comp_left_of_exists_rightInverse hg).comp hf
+
+/-- A version of `Function.Surjective.comp` for composition of a bilinear map with a linear map. -/
+theorem surjective_compr₂_of_exists_rightInverse (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[R] Qₗ)
+    (hf : Surjective f) (hg : ∃ g' : Qₗ →ₗ[R] Pₗ, g.comp g' = LinearMap.id) :
     Surjective (f.compr₂ g) := (surjective_comp_left_of_exists_rightInverse hg).comp hf
 
 /-- A version of `Function.Surjective.comp` for composition of a bilinear map with a linear map. -/
-theorem surjective_compr₂_of_equiv [RingHomInvPair σ₃₄ σ₄₃] [RingHomInvPair σ₄₃ σ₃₄]
+theorem surjective_compr₂ₛₗ_of_equiv [RingHomInvPair σ₃₄ σ₄₃] [RingHomInvPair σ₄₃ σ₃₄]
     (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P ≃ₛₗ[σ₃₄] Q) (hf : Surjective f) :
+    Surjective (f.compr₂ₛₗ g.toLinearMap) :=
+  surjective_compr₂ₛₗ_of_exists_rightInverse f g.toLinearMap hf ⟨g.symm, by simp⟩
+
+/-- A version of `Function.Surjective.comp` for composition of a bilinear map with a linear map. -/
+theorem surjective_compr₂_of_equiv (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ ≃ₗ[R] Qₗ) (hf : Surjective f) :
     Surjective (f.compr₂ g.toLinearMap) :=
   surjective_compr₂_of_exists_rightInverse f g.toLinearMap hf ⟨g.symm, by simp⟩
 
 /-- A version of `Function.Bijective.comp` for composition of a bilinear map with a linear map. -/
-theorem bijective_compr₂_of_equiv [RingHomInvPair σ₃₄ σ₄₃] [RingHomInvPair σ₄₃ σ₃₄]
+theorem bijective_compr₂ₛₗ_of_equiv [RingHomInvPair σ₃₄ σ₄₃] [RingHomInvPair σ₄₃ σ₃₄]
     (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P ≃ₛₗ[σ₃₄] Q) (hf : Bijective f) :
+    Bijective (f.compr₂ₛₗ g.toLinearMap) :=
+  ⟨injective_compr₂ₛₗ_of_injective f g.toLinearMap hf.1 g.bijective.1,
+  surjective_compr₂ₛₗ_of_equiv f g hf.2⟩
+
+/-- A version of `Function.Bijective.comp` for composition of a bilinear map with a linear map. -/
+theorem bijective_compr₂_of_equiv (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ ≃ₗ[R] Qₗ) (hf : Bijective f) :
     Bijective (f.compr₂ g.toLinearMap) :=
   ⟨injective_compr₂_of_injective f g.toLinearMap hf.1 g.bijective.1,
   surjective_compr₂_of_equiv f g hf.2⟩

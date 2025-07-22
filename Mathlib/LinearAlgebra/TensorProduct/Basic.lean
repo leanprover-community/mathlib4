@@ -545,21 +545,29 @@ theorem lift.unique {g : M ⊗[R] N →ₛₗ[σ₁₂] P₂} (H : ∀ x y, g (x
 theorem lift_mk : lift (mk R M N) = LinearMap.id :=
   Eq.symm <| lift.unique fun _ _ => rfl
 
-theorem lift_compr₂ [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] (h : P₂ →ₛₗ[σ₂₃] P₃) :
-    lift (f.compr₂ h) = h.comp (lift f) :=
+theorem lift_compr₂ₛₗ [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] (h : P₂ →ₛₗ[σ₂₃] P₃) :
+    lift (f.compr₂ₛₗ h) = h.comp (lift f) :=
   Eq.symm <| lift.unique fun _ _ => by simp
 
-theorem lift_mk_compr₂ (g : M ⊗ N →ₛₗ[σ₁₂] P₂) : lift ((mk R M N).compr₂ g) = g := by
-  rw [lift_compr₂ g, lift_mk, LinearMap.comp_id]
+theorem lift_compr₂ (g : P →ₗ[R] Q) : lift (f'.compr₂ g) = g.comp (lift f') :=
+  Eq.symm <| lift.unique fun _ _ => by simp
 
-/-- This used to be an `@[ext]` lemma, but it fails very slowly when the `ext` tactic tries to apply
+theorem lift_mk_compr₂ₛₗ (g : M ⊗ N →ₛₗ[σ₁₂] P₂) : lift ((mk R M N).compr₂ₛₗ g) = g := by
+  rw [lift_compr₂ₛₗ g, lift_mk, LinearMap.comp_id]
+
+theorem lift_mk_compr₂ (f : M ⊗ N →ₗ[R] P) : lift ((mk R M N).compr₂ f) = f := by
+  rw [lift_compr₂ f, lift_mk, LinearMap.comp_id]
+
+/-- This used to be an
+ `@[ext]` lemma, but it fails very slowly when the `ext` tactic tries to apply
 it in some cases, notably when one wants to show equality of two linear maps. The `@[ext]`
 attribute is now added locally where it is needed. Using this as the `@[ext]` lemma instead of
 `TensorProduct.ext'` allows `ext` to apply lemmas specific to `M →ₗ _` and `N →ₗ _`.
 
 See note [partially-applied ext lemmas]. -/
-theorem ext {g h : M ⊗ N →ₛₗ[σ₁₂] P₂} (H : (mk R M N).compr₂ g = (mk R M N).compr₂ h) : g = h := by
-  rw [← lift_mk_compr₂ g, H, lift_mk_compr₂]
+theorem ext {g h : M ⊗ N →ₛₗ[σ₁₂] P₂} (H : (mk R M N).compr₂ₛₗ g = (mk R M N).compr₂ₛₗ h) :
+    g = h := by
+  rw [← lift_mk_compr₂ₛₗ g, H, lift_mk_compr₂ₛₗ]
 
 attribute [local ext high] ext
 
@@ -581,7 +589,7 @@ with the property that its composition with the canonical bilinear map `M → N 
 the given bilinear map `M → N → P`. -/
 def lift.equiv : (M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂) ≃ₗ[R₂] M ⊗[R] N →ₛₗ[σ₁₂] P₂ :=
   { uncurry M N P₂ σ₁₂ with
-    invFun := fun f => (mk R M N).compr₂ f
+    invFun := fun f => (mk R M N).compr₂ₛₗ f
     left_inv := fun _ => LinearMap.ext₂ fun _ _ => lift.tmul _ _
     right_inv := fun _ => ext' fun _ _ => rfl }
 -- Why is `rfl` needed above?
@@ -790,7 +798,7 @@ attribute [local ext high] ext
 @[simp]
 theorem map_id : map (id : M →ₗ[R] M) (id : N →ₗ[R] N) = .id := by
   ext
-  simp only [mk_apply, id_coe, compr₂_apply, _root_.id, map_tmul]
+  simp only [mk_apply, id_coe, compr₂ₛₗ_apply, _root_.id, map_tmul]
 
 @[simp]
 protected theorem map_one : map (1 : M →ₗ[R] M) (1 : N →ₗ[R] N) = 1 :=
@@ -810,22 +818,22 @@ protected theorem map_pow (f : M →ₗ[R] M) (g : N →ₗ[R] N) (n : ℕ) :
 theorem map_add_left (f₁ f₂ : M →ₛₗ[σ₁₂] M₂) (g : N →ₛₗ[σ₁₂] N₂) :
     map (f₁ + f₂) g = map f₁ g + map f₂ g := by
   ext
-  simp only [add_tmul, compr₂_apply, mk_apply, map_tmul, add_apply]
+  simp only [add_tmul, compr₂ₛₗ_apply, mk_apply, map_tmul, add_apply]
 
 theorem map_add_right (f : M →ₛₗ[σ₁₂] M₂) (g₁ g₂ : N →ₛₗ[σ₁₂] N₂) :
     map f (g₁ + g₂) = map f g₁ + map f g₂ := by
   ext
-  simp only [tmul_add, compr₂_apply, mk_apply, map_tmul, add_apply]
+  simp only [tmul_add, compr₂ₛₗ_apply, mk_apply, map_tmul, add_apply]
 
 theorem map_smul_left (r : R₂) (f : M →ₛₗ[σ₁₂] M₂) (g : N →ₛₗ[σ₁₂] N₂) :
     map (r • f) g = r • map f g := by
   ext
-  simp only [smul_tmul, compr₂_apply, mk_apply, map_tmul, smul_apply, tmul_smul]
+  simp only [smul_tmul, compr₂ₛₗ_apply, mk_apply, map_tmul, smul_apply, tmul_smul]
 
 theorem map_smul_right (r : R₂) (f : M →ₛₗ[σ₁₂] M₂) (g : N →ₛₗ[σ₁₂] N₂) :
     map f (r • g) = r • map f g := by
   ext
-  simp only [compr₂_apply, mk_apply, map_tmul, smul_apply, tmul_smul]
+  simp only [compr₂ₛₗ_apply, mk_apply, map_tmul, smul_apply, tmul_smul]
 
 variable (M N P M₂ N₂ σ₁₂)
 
@@ -1024,11 +1032,11 @@ def lTensorHom : (N →ₗ[R] P) →ₗ[R] M ⊗[R] N →ₗ[R] M ⊗[R] P where
   toFun := lTensor M
   map_add' f g := by
     ext x y
-    simp only [compr₂_apply, mk_apply, add_apply, lTensor_tmul, tmul_add]
+    simp only [compr₂ₛₗ_apply, mk_apply, add_apply, lTensor_tmul, tmul_add]
   map_smul' r f := by
     dsimp
     ext x y
-    simp only [compr₂_apply, mk_apply, tmul_smul, smul_apply, lTensor_tmul]
+    simp only [compr₂ₛₗ_apply, mk_apply, tmul_smul, smul_apply, lTensor_tmul]
 
 /-- `rTensorHom M` is the natural linear map that sends a linear map `f : N →ₗ P` to `f ⊗ M`.
 
@@ -1037,11 +1045,11 @@ def rTensorHom : (N →ₗ[R] P) →ₗ[R] N ⊗[R] M →ₗ[R] P ⊗[R] M where
   toFun f := f.rTensor M
   map_add' f g := by
     ext x y
-    simp only [compr₂_apply, mk_apply, add_apply, rTensor_tmul, add_tmul]
+    simp only [compr₂ₛₗ_apply, mk_apply, add_apply, rTensor_tmul, add_tmul]
   map_smul' r f := by
     dsimp
     ext x y
-    simp only [compr₂_apply, mk_apply, smul_tmul, tmul_smul, smul_apply, rTensor_tmul]
+    simp only [compr₂ₛₗ_apply, mk_apply, smul_tmul, tmul_smul, smul_apply, rTensor_tmul]
 
 @[simp]
 theorem coe_lTensorHom : (lTensorHom M : (N →ₗ[R] P) → M ⊗[R] N →ₗ[R] M ⊗[R] P) = lTensor M :=
@@ -1077,14 +1085,14 @@ theorem rTensor_smul (r : R) (f : N →ₗ[R] P) : (r • f).rTensor M = r • f
 
 theorem lTensor_comp : (g.comp f).lTensor M = (g.lTensor M).comp (f.lTensor M) := by
   ext m n
-  simp only [compr₂_apply, mk_apply, comp_apply, lTensor_tmul]
+  simp only [compr₂ₛₗ_apply, mk_apply, comp_apply, lTensor_tmul]
 
 theorem lTensor_comp_apply (x : M ⊗[R] N) :
     (g.comp f).lTensor M x = (g.lTensor M) ((f.lTensor M) x) := by rw [lTensor_comp, coe_comp]; rfl
 
 theorem rTensor_comp : (g.comp f).rTensor M = (g.rTensor M).comp (f.rTensor M) := by
   ext m n
-  simp only [compr₂_apply, mk_apply, comp_apply, rTensor_tmul]
+  simp only [compr₂ₛₗ_apply, mk_apply, comp_apply, rTensor_tmul]
 
 theorem rTensor_comp_apply (x : N ⊗[R] M) :
     (g.comp f).rTensor M x = (g.rTensor M) ((f.rTensor M) x) := by rw [rTensor_comp, coe_comp]; rfl

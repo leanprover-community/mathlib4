@@ -124,7 +124,7 @@ protected def assoc : (M ⊗[R] N) ⊗[R] P ≃ₗ[R] M ⊗[R] N ⊗[R] P := by
         (ext <| flip_inj <| LinearMap.ext fun p => ext' fun m n => ?_) <;>
     repeat'
       first
-        |rw [lift.tmul]|rw [compr₂_apply]|rw [comp_apply]|rw [mk_apply]|rw [flip_apply]
+        |rw [lift.tmul]|rw [compr₂ₛₗ_apply]|rw [comp_apply]|rw [mk_apply]|rw [flip_apply]
         |rw [lcurry_apply]|rw [uncurry_apply]|rw [curry_apply]|rw [id_apply]
 
 end
