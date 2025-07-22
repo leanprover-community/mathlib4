@@ -572,7 +572,7 @@ noncomputable instance [CommSemiring K] [Semiring β] [Algebra K β] : Algebra K
       map_mul' _ _:= ext fun _ => (algebraMap K β).map_mul _ _
       map_zero' := SimpleFunc.ext fun _ => (algebraMap K β).map_zero ▸ rfl
       map_add' _ _ := ext fun _ => (algebraMap K β).map_add _ _ }
-    (fun c f => ext fun x => Algebra.commutes c (f x))
+    fun c f => ext fun _ => Algebra.commutes c (f _)
 
 section Star
 
