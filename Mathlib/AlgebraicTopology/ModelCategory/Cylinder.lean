@@ -42,7 +42,7 @@ namespace HomotopicalAlgebra
 variable {C : Type u} [Category.{v} C]
 
 /-- A precylinder for `A : C` is the data of a morphism
-`σ : I ⟶ A` equipped with two sections. -/
+`π : I ⟶ A` equipped with two sections. -/
 structure Precylinder (A : C) where
   /-- the underlying object of a (pre)cylinder -/
   I : C
@@ -102,7 +102,7 @@ lemma symm_i [HasBinaryCoproducts C] : P.symm.i =
 end Precylinder
 
 /-- In a category with weak equivalences, a cylinder is the
-data of a weak equivalence `σ : I ⟶ A` equipped with two sections -/
+data of a weak equivalence `π : I ⟶ A` equipped with two sections -/
 structure Cylinder [CategoryWithWeakEquivalences C] (A : C) extends Precylinder A where
   weakEquivalence_π : WeakEquivalence π := by infer_instance
 

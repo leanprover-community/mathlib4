@@ -125,7 +125,6 @@ instance lieAlgebra (L' : LieSubalgebra R L) : LieAlgebra R L' where
 variable {R L}
 variable (L' : LieSubalgebra R L)
 
-@[simp]
 protected theorem zero_mem : (0 : L) ∈ L' :=
   zero_mem L'
 
