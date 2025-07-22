@@ -101,14 +101,14 @@ instance {R S : Type*} [CommRing R] [NoZeroDivisors R] {P : Ideal R} [CommRing S
     (Localization (Algebra.algebraMapSubmonoid S P.primeCompl)) :=
   NoZeroSMulDivisors_of_isLocalization R S _ _ P.primeCompl_le_nonZeroDivisors
 
-theorem AtPrime.FaithfulSMul (R : Type*) [CommRing R] [Nontrivial R] [NoZeroDivisors R]
-    [Algebra R S] (P : Ideal R) [hp : P.IsPrime] [IsLocalization.AtPrime S P] :
+theorem AtPrime.FaithfulSMul (R : Type*) [CommRing R] [NoZeroDivisors R] [Algebra R S] (P : Ideal R)
+    [hp : P.IsPrime] [IsLocalization.AtPrime S P] :
     FaithfulSMul R S := by
   rw [faithfulSMul_iff_algebraMap_injective, IsLocalization.injective_iff_isRegular P.primeCompl]
   rintro ⟨_, h⟩
   exact isRegular_of_ne_zero <| ne_of_mem_of_not_mem h (Ideal.zero_notMem_primeCompl P)
 
-instance {R : Type*} [CommRing R] [NoZeroDivisors R] [Nontrivial R] (P : Ideal R) [hp : P.IsPrime] :
+instance {R : Type*} [CommRing R] [NoZeroDivisors R] (P : Ideal R) [hp : P.IsPrime] :
     FaithfulSMul R (Localization.AtPrime P) := Localization.AtPrime.FaithfulSMul _ _ P
 
 end Localization
