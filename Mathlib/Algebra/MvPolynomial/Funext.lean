@@ -68,8 +68,8 @@ theorem funext_set (h : ∀ x ∈ Set.pi .univ s, eval x p = eval x q) :
   · rw [hf.extend_apply]; exact hx _ ⟨⟩
   · simp_rw [Function.extend, dif_neg nex, hg]
 
-theorem funext_set_iff : (∀ x ∈ Set.pi .univ s, eval x p = eval x q) ↔ p = q :=
-  ⟨funext_set s hs, by rintro rfl _ _; rfl⟩
+theorem funext_set_iff : p = q ↔ (∀ x ∈ Set.pi .univ s, eval x p = eval x q) :=
+  ⟨by rintro rfl _ _; rfl, funext_set s hs⟩
 
 end
 
