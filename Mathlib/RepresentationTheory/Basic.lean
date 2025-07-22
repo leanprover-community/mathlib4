@@ -81,6 +81,33 @@ theorem isTrivial_apply (ρ : Representation k G V) [IsTrivial ρ] (g : G) (x : 
 
 end trivial
 
+section AddCommGroup
+
+variable {k G V : Type*} [CommSemiring k] [Monoid G] [AddCommGroup V] [Module k V]
+  (ρ : Representation k G V)
+
+@[to_additive]
+lemma _root_.Fin.partialProd_castSucc {n : ℕ} {M : Type*} [Monoid M]
+    {f : Fin (n + 1) → M} {i : Fin (n + 1)} :
+    Fin.partialProd (f ∘ Fin.castSucc) i = Fin.partialProd f i.castSucc :=
+  i.inductionOn (by simp) fun i hi => by simp_all [Fin.partialProd_succ]
+
+/- Given a representation `(V, ρ)` of a monoid `G`, this says
+`(ρ(g) - Id)(x + ρ(g)(x) + ... + ρ(gⁿ)(x)) = ρ(gⁿ⁺¹)(x) - x` for all `n : ℕ, g : G` and `x : V`. -/
+lemma apply_sub_id_partialSum_eq (n : ℕ) (g : G) (x : V) :
+    (ρ g - LinearMap.id (R := k) (M := V)) ((Fin.last _).partialSum
+      (fun (j : Fin (n + 1)) => ρ (g ^ (j : ℕ)) x)) = ρ (g ^ (n + 1)) x - x := by
+  induction n with
+  | zero => simp [Fin.partialSum]
+  | succ n h =>
+    have : (fun (j : Fin (n + 2)) => ρ (g ^ (j : ℕ)) x) ∘ Fin.castSucc =
+      fun (j : Fin (n + 1)) => ρ (g ^ (j : ℕ)) x := by ext; simp
+    rw [← Fin.succ_eq_last_succ.2 rfl, Fin.partialSum_succ, ← Fin.partialSum_castSucc, map_add,
+      this, h]
+    simp [pow_succ']
+
+end AddCommGroup
+
 section Group
 
 variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]
@@ -505,6 +532,51 @@ def asGroupHom : G →* Units (V →ₗ[k] V) :=
 theorem asGroupHom_apply (g : G) : ↑(asGroupHom ρ g) = ρ g := by
   simp only [asGroupHom, MonoidHom.coe_toHomUnits]
 
+section Finite
+
+variable [Fintype G]
+
+open Finsupp
+
+lemma leftRegular_norm_apply :
+    (leftRegular k G).norm =
+      (LinearMap.lsmul k _).flip ((leftRegular k G).norm (single 1 1)) ∘ₗ
+      linearCombination _ (fun _ => 1) := by
+  ext i : 2
+  simpa [Representation.norm] using Finset.sum_bijective _
+    (Group.mulRight_bijective i) (by aesop) (by aesop)
+
+lemma leftRegular_norm_eq_zero_iff (x : G →₀ k) :
+    (leftRegular k G).norm x = 0 ↔ x.linearCombination k (fun _ => (1 : k)) = 0 := by
+  rw [leftRegular_norm_apply]
+  constructor
+  · intro h
+    simpa [norm, Representation.norm] using Finsupp.ext_iff.1 h 1
+  · intro h
+    ext
+    simp_all
+
+lemma ker_leftRegular_norm_eq :
+    LinearMap.ker (leftRegular k G).norm =
+      LinearMap.ker (linearCombination k (fun _ => (1 : k))) := by
+  ext
+  exact leftRegular_norm_eq_zero_iff _
+
+end Finite
+section Cyclic
+
+lemma apply_eq_of_leftRegular_eq_of_generator (g : G) (hg : ∀ x, x ∈ Subgroup.zpowers g)
+    (x : G →₀ k) (hx : leftRegular k G g x = x) (γ : G) :
+    x γ = x g := by
+  rcases hg γ with ⟨i, rfl⟩
+  induction i with | zero => _ | succ n h => _ | pred n h => _
+  · simpa using (Finsupp.ext_iff.1 hx g)
+  · simpa [← h, zpow_natCast, zpow_add_one, pow_mul_comm', pow_succ'] using
+      (Finsupp.ext_iff.1 hx (g ^ (n + 1))).symm
+  · simpa [zpow_sub, ← h, ← mul_inv_rev, ← pow_mul_comm']
+      using Finsupp.ext_iff.1 hx (g ^ (-n : ℤ))
+
+end Cyclic
 end Group
 
 section TensorProduct

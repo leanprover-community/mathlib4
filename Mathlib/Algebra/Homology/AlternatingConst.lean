@@ -1,31 +1,42 @@
 /-
 Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang, Amelia Livingston
+Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.AlgebraicTopology.ExtraDegeneracy
 
 /-!
-# hm
+# The alternating constant complex
+
+Given an object `X : C` and endomorphisms `φ, ψ : X ⟶ X` such that `φ ∘ ψ = ψ ∘ φ = 0`, this file
+defines the periodic chain and cochain complexes
+`... ⟶ X --φ--> X --ψ--> X --φ--> X --ψ--> 0` and `0 ⟶ X --ψ--> X --φ--> X --ψ--> X --φ--> ...`
+(or more generally for any complex shape `c` on `ℕ` where `c.Rel i j` implies `i` and `j` have
+different parity). We calculate the homology of these periodic complexes.
+
+In particular, we show `... ⟶ X --𝟙--> X --0--> X --𝟙--> X --0--> X ⟶ 0` is homotopy equivalent
+to the single complex where `X` is in degree `0`.
 
 -/
-
 universe v u
 
 open CategoryTheory Limits
 
+namespace ComplexShape
+
 @[simp]
-lemma ComplexShape.up_nat_odd_add {i j : ℕ} (h : (ComplexShape.up ℕ).Rel i j) : Odd (i + j) := by
+lemma up_nat_odd_add {i j : ℕ} (h : (ComplexShape.up ℕ).Rel i j) : Odd (i + j) := by
   subst h
   norm_num
 
 @[simp]
-lemma ComplexShape.down_nat_odd_add {i j : ℕ} (h : (ComplexShape.down ℕ).Rel i j) :
-    Odd (i + j) := by
+lemma down_nat_odd_add {i j : ℕ} (h : (ComplexShape.down ℕ).Rel i j) : Odd (i + j) := by
   subst h
   norm_num
+
+end ComplexShape
 
 namespace HomologicalComplex
 
@@ -34,8 +45,10 @@ open ShortComplex
 variable {C : Type*} [Category C] [Limits.HasZeroMorphisms C]
   (A : C) {φ : A ⟶ A} {ψ : A ⟶ A} (hOdd : φ ≫ ψ = 0) (hEven : ψ ≫ φ = 0)
 
-/-- Given `c : ComplexShape ℕ` such that `i j : ℕ` have opposite parity if they are related by
-`c`.vfdsfd -/
+/-- Let `c : ComplexShape ℕ` be such that `i j : ℕ` have opposite parity if they are related by
+`c`. Let `φ, ψ : A ⟶ A` be such that `φ ∘ ψ = ψ ∘ φ = 0`. This is a complex of shape `c` whose
+objects are all `A`. For all `i, j` related by `c`, `dᵢⱼ = φ` when `i` is even, and `dᵢⱼ = ψ` when
+`i` is odd. -/
 @[simps!]
 noncomputable def alternatingConst {c : ComplexShape ℕ} [DecidableRel c.Rel]
     (hc : ∀ i j, c.Rel i j → Odd (i + j)) :
@@ -59,7 +72,9 @@ variable {c : ComplexShape ℕ} [DecidableRel c.Rel] (hc : ∀ i j, c.Rel i j �
 
 open HomologicalComplex hiding mk
 
-noncomputable def alternatingConstScEvenIso
+/-- The `i, j, k`th short complex associated to the alternating constant complex on `φ, ψ : A ⟶ A`
+is `A --ψ--> A --φ--> A` when `i ~ j, j ~ k` and `j` is even. -/
+noncomputable def alternatingConstScIsoEven
     {i j k : ℕ} (hij : c.Rel i j) (hjk : c.Rel j k) (h : Even j) :
     (alternatingConst A hOdd hEven hc).sc' i j k ≅ ShortComplex.mk ψ φ hEven :=
   isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _)
@@ -71,7 +86,9 @@ noncomputable def alternatingConstScEvenIso
       exact False.elim <| Nat.not_odd_iff_even.2 hi <| by simp_all [Nat.odd_add])
     (by simp_all [alternatingConst])
 
-noncomputable def alternatingConstScOddIso
+/-- The `i, j, k`th short complex associated to the alternating constant complex on `φ, ψ : A ⟶ A`
+is `A --φ--> A --ψ--> A` when `i ~ j, j ~ k` and `j` is even. -/
+noncomputable def alternatingConstScIsoOdd
     {i j k : ℕ} (hij : c.Rel i j) (hjk : c.Rel j k) (h : Odd j) :
     (alternatingConst A hOdd hEven hc).sc' i j k ≅ ShortComplex.mk φ ψ hOdd :=
   isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _)
@@ -88,9 +105,9 @@ lemma alternatingConst_iCycles_even_comp [CategoryWithHomology C]
     {j : ℕ} (hpj : c.Rel (c.prev j) j) (hnj : c.Rel j (c.next j)) (h : Even j) :
     (alternatingConst A hOdd hEven hc).iCycles j ≫ φ = 0 := by
   rw [← cancel_epi (ShortComplex.cyclesMapIso
-    (alternatingConstScEvenIso A hOdd hEven hc hpj hnj  h)).inv]
+    (alternatingConstScIsoEven A hOdd hEven hc hpj hnj h)).inv]
   simpa [HomologicalComplex.iCycles, -Preadditive.IsIso.comp_left_eq_zero, HomologicalComplex.sc,
-    HomologicalComplex.shortComplexFunctor, alternatingConstScEvenIso,
+    HomologicalComplex.shortComplexFunctor, alternatingConstScIsoEven,
     Category.id_comp (X := (alternatingConst A hOdd hEven hc).X _)]
     using (ShortComplex.mk ψ φ hEven).iCycles_g
 
@@ -99,21 +116,25 @@ lemma alternatingConst_iCycles_odd_comp [CategoryWithHomology C]
     {j : ℕ} (hpj : c.Rel (c.prev j) j) (hnj : c.Rel j (c.next j)) (h : Odd j) :
     (alternatingConst A hOdd hEven hc).iCycles j ≫ ψ = 0 := by
   rw [← cancel_epi (ShortComplex.cyclesMapIso
-    (alternatingConstScOddIso A hOdd hEven hc hpj hnj h)).inv]
+    (alternatingConstScIsoOdd A hOdd hEven hc hpj hnj h)).inv]
   simpa [HomologicalComplex.iCycles, -Preadditive.IsIso.comp_left_eq_zero, HomologicalComplex.sc,
-    HomologicalComplex.shortComplexFunctor, alternatingConstScOddIso,
+    HomologicalComplex.shortComplexFunctor, alternatingConstScIsoOdd,
     Category.id_comp (X := (alternatingConst A hOdd hEven hc).X _)]
     using (ShortComplex.mk φ ψ hOdd).iCycles_g
 
-noncomputable def alternatingConstHomologyEvenIso [CategoryWithHomology C]
+/-- The `j`th homology of the alternating constant complex on `φ, ψ : A ⟶ A` is the homology of
+`A --ψ--> A --φ--> A` when `prev(j) ~ j, j ~ next(j)` and `j` is even. -/
+noncomputable def alternatingConstHomologyIsoEven [CategoryWithHomology C]
     {j : ℕ} (hpj : c.Rel (c.prev j) j) (hnj : c.Rel j (c.next j)) (h : Even j) :
     (alternatingConst A hOdd hEven hc).homology j ≅ (ShortComplex.mk ψ φ hEven).homology :=
-  ShortComplex.homologyMapIso (alternatingConstScEvenIso A hOdd hEven hc hpj hnj h)
+  ShortComplex.homologyMapIso (alternatingConstScIsoEven A hOdd hEven hc hpj hnj h)
 
-noncomputable def alternatingConstHomologyOddIso [CategoryWithHomology C]
+/-- The `j`th homology of the alternating constant complex on `φ, ψ : A ⟶ A` is the homology of
+`A --φ--> A --ψ--> A` when `prev(j) ~ j, j ~ next(j)` and `j` is odd. -/
+noncomputable def alternatingConstHomologyIsoOdd [CategoryWithHomology C]
     {j : ℕ} (hpj : c.Rel (c.prev j) j) (hnj : c.Rel j (c.next j)) (h : Odd j) :
     (alternatingConst A hOdd hEven hc).homology j ≅ (ShortComplex.mk φ ψ hOdd).homology :=
-  ShortComplex.homologyMapIso (alternatingConstScOddIso A hOdd hEven hc hpj hnj h)
+  ShortComplex.homologyMapIso (alternatingConstScIsoOdd A hOdd hEven hc hpj hnj h)
 
 end HomologicalComplex
 
@@ -133,6 +154,8 @@ noncomputable def alternatingConstFunctor [HasZeroMorphisms C] : C ⥤ ChainComp
     f _ := f
     comm' i j hij := by by_cases Even i <;> simp_all [-Nat.not_even_iff_odd] }
 
+@[deprecated (since := "2025-07-22")] alias alternatingConst := alternatingConstFunctor
+
 variable [HasZeroMorphisms C] [HasZeroObject C]
 
 open ZeroObject
@@ -144,17 +167,26 @@ def alternatingConstFunctorHomologyDataEvenNEZero (X : C) (n : ℕ) (hn : Even n
   .ofIsLimitKernelFork _ (by simp [Nat.even_add_one, hn]) _
     (Limits.zeroKernelOfCancelZero _ (by cases n <;> simp_all))
 
+@[deprecated (since := "2025-07-22")]
+alias alternatingConstHomologyDataEvenNEZero := alternatingConstFunctorHomologyDataEvenNEZero
+
 /-- The `n`-th homology of the alternating constant complex is zero for odd `n`. -/
 noncomputable
 def alternatingConstFunctorHomologyDataOdd (X : C) (n : ℕ) (hn : Odd n) :
     ((alternatingConstFunctor.obj X).sc n).HomologyData :=
   .ofIsColimitCokernelCofork _ (by simp [hn]) _ (Limits.zeroCokernelOfZeroCancel _ (by simp [hn]))
 
+@[deprecated (since := "2025-07-22")]
+alias alternatingConstHomologyDataOdd := alternatingConstFunctorHomologyDataOdd
+
 /-- The `n`-th homology of the alternating constant complex is `X` for `n = 0`. -/
 noncomputable
 def alternatingConstFunctorHomologyDataZero (X : C) (n : ℕ) (hn : n = 0) :
     ((alternatingConstFunctor.obj X).sc n).HomologyData :=
   .ofZeros _ (by simp [hn]) (by simp [hn])
+
+@[deprecated (since := "2025-07-22")]
+alias alternatingConstHomologyDataZero := alternatingConstFunctorHomologyDataZero
 
 instance (X : C) (n : ℕ) : (alternatingConstFunctor.obj X).HasHomology n := by
   rcases n.even_or_odd with h | h
@@ -170,10 +202,16 @@ lemma alternatingConstFunctor_exactAt (X : C) (n : ℕ) (hn : n ≠ 0) :
   · exact ⟨(alternatingConstFunctorHomologyDataEvenNEZero X _ h hn), isZero_zero C⟩
   · exact ⟨(alternatingConstFunctorHomologyDataOdd X _ h), isZero_zero C⟩
 
+@[deprecated (since := "2025-07-22")]
+alias alternatingConst_exactAt := alternatingConstFunctor_exactAt
+
 /-- The `n`-th homology of the alternating constant complex is `X` for `n = 0`. -/
 noncomputable
 def alternatingConstFunctorHomologyZero (X : C) : (alternatingConstFunctor.obj X).homology 0 ≅ X :=
   (alternatingConstFunctorHomologyDataZero X _ rfl).left.homologyIso
+
+@[deprecated (since := "2025-07-22")]
+alias alternatingConstHomologyZero := alternatingConstFunctorHomologyZero
 
 end ChainComplex
 
@@ -187,6 +225,10 @@ noncomputable def AlgebraicTopology.alternatingFaceMapComplexConstFunctor :
     simp [SimplicialObject.δ, ← Finset.sum_smul, Fin.sum_neg_one_pow, Nat.even_add_one,
       -Nat.not_even_iff_odd]) (by intros; ext; simp)
 
+@[deprecated (since := "2025-07-22")]
+alias AlgebraicTopology.alternatingFaceMapComplexConst :=
+ AlgebraicTopology.alternatingFaceMapComplexConstFunctor
+
 namespace ChainComplex
 
 /-- `alternatingConst.obj X` is homotopy equivalent to the chain
@@ -195,5 +237,8 @@ noncomputable def alternatingConstFunctorHomotopyEquiv (X : C) :
     HomotopyEquiv (alternatingConstFunctor.obj X) ((single₀ C).obj X) :=
   (HomotopyEquiv.ofIso (alternatingFaceMapComplexConstFunctor.app X).symm).trans
     ((SimplicialObject.Augmented.ExtraDegeneracy.const X).homotopyEquiv)
+
+@[deprecated (since := "2025-07-22")]
+alias alternatingConstHomotopyEquiv := alternatingConstFunctorHomotopyEquiv
 
 end ChainComplex
