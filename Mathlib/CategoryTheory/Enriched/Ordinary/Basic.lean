@@ -176,7 +176,7 @@ def eHomFunctor : Cᵒᵖ ⥤ C ⥤ V where
   map φ :=
     { app := fun Y => eHomWhiskerRight V φ.unop Y }
 
-instance ForgetEnrichment.EnrichedOrdinaryCategory {D : Type*} [EnrichedCategory V D] :
+instance ForgetEnrichment.enrichedOrdinaryCategory {D : Type*} [EnrichedCategory V D] :
     EnrichedOrdinaryCategory V (ForgetEnrichment V D) where
   toEnrichedCategory := inferInstanceAs (EnrichedCategory V D)
   homEquiv := Equiv.refl _

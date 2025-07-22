@@ -19,6 +19,8 @@ namespace CategoryTheory
 
 open MonoidalCategory
 
+section
+
 variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
   {C : Type u} [Category.{v} C] [EnrichedOrdinaryCategory V C]
 
@@ -74,5 +76,13 @@ lemma EnrichedIso.iso_symm {X Y : C} (I : X ≅[V] Y) :
 lemma EnrichedIso.iso_trans {X Y Z : C} (I : X ≅[V] Y) (J : Y ≅[V] Z) :
     EnrichedIso.iso V (I.trans J) = (EnrichedIso.iso V I).trans (EnrichedIso.iso V J) := by
   ext; simp [eHomEquiv_symm_comp]
+
+end
+
+/-- The type equivalence between isos in `ForgetEnrichment V C` and `V`-enriched isos in `C`. -/
+def ForgetEnrichment.equivIsoEnrichedIso {V : Type u'} [Category.{v'} V] [MonoidalCategory V]
+    {C : Type u} [EnrichedCategory V C] (X Y : ForgetEnrichment V C) :
+    (X ≅ Y) ≃ (ForgetEnrichment.to V X) ≅[V] (ForgetEnrichment.to V Y) :=
+  (EnrichedIso.equivIso V _ _).symm
 
 end CategoryTheory
