@@ -277,7 +277,7 @@ section Norm
 variable {k G V : Type*} [CommSemiring k] [Group G] [Fintype G] [AddCommMonoid V] [Module k V]
 variable (ρ : Representation k G V)
 
-/-- Given a representation `(V, ρ)` of a finite group `G`, this is the linear map `V →ₗ[k] V` 
+/-- Given a representation `(V, ρ)` of a finite group `G`, this is the linear map `V →ₗ[k] V`
 defined by `x ↦ ∑ ρ g x` for `g` in `G`. -/
 def norm : V →ₗ[k] V := ∑ g : G, ρ g
 
