@@ -353,11 +353,9 @@ theorem apply_symm_apply (c : M₂) : e (e.symm c) = c :=
 theorem symm_apply_apply (b : M) : e.symm (e b) = b :=
   e.left_inv b
 
-@[simp]
 theorem comp_symm : e.toLinearMap ∘ₛₗ e.symm.toLinearMap = LinearMap.id :=
   LinearMap.ext e.apply_symm_apply
 
-@[simp]
 theorem symm_comp : e.symm.toLinearMap ∘ₛₗ e.toLinearMap = LinearMap.id :=
   LinearMap.ext e.symm_apply_apply
 
