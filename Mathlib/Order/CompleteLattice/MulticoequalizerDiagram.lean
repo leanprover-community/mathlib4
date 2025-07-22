@@ -52,10 +52,10 @@ variable {x₁ x₂ x₃ x₄} (sq : BicartSq x₁ x₂ x₃ x₄)
 
 include sq
 
-lemma le₁₂ : x₁ ≤ x₂ := by simpa only [← sq.min_eq] using inf_le_left
-lemma le₁₃ : x₁ ≤ x₃ := by simpa only [← sq.min_eq] using inf_le_right
-lemma le₂₄ : x₂ ≤ x₄ := by simpa only [← sq.max_eq] using le_sup_left
-lemma le₃₄ : x₃ ≤ x₄ := by simpa only [← sq.max_eq] using le_sup_right
+lemma le₁₂ : x₁ ≤ x₂ := by grind
+lemma le₁₃ : x₁ ≤ x₃ := by grind
+lemma le₂₄ : x₂ ≤ x₄ := by grind
+lemma le₃₄ : x₃ ≤ x₄ := by grind
 
 /-- The commutative square associated to a bicartesian square in a lattice. -/
 lemma commSq : CommSq (homOfLE sq.le₁₂) (homOfLE sq.le₁₃)
