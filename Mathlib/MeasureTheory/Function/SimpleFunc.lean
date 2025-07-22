@@ -561,11 +561,11 @@ instance [NonUnitalNonAssocSemiring β] : NonUnitalNonAssocSemiring (α →ₛ �
 
 instance [Semiring β] : Semiring (α →ₛ β) where
 
-instance [Monoid K] [Semiring β] [MulAction K β] : MulAction K (α →ₛ β) where
+instance [Monoid K] [MulAction K β] : MulAction K (α →ₛ β) where
   one_smul _ := ext fun _ ↦ one_smul ..
   mul_smul _ _ _ := ext fun _ ↦ mul_smul ..
 
-noncomputable instance [CommSemiring K] [Semiring β] [Algebra K β] : Algebra K (α →ₛ β) :=
+instance [CommSemiring K] [Semiring β] [Algebra K β] : Algebra K (α →ₛ β) :=
   RingHom.toAlgebra'
     { toFun _ := const α <| algebraMap K β _
       map_one' := SimpleFunc.ext fun _ => algebraMap K β |>.map_one ▸ rfl
