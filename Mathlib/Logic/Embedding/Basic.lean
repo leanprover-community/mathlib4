@@ -329,53 +329,47 @@ theorem arrowCongrRight_apply {α : Sort u} {β : Sort v} {γ : Sort w} (e : α 
 /-- An embedding `e : α ↪ β` defines an embedding `(α → γ) ↪ (β → γ)` for any inhabited type `γ`.
 This embedding sends each `f : α → γ` to a function `g : β → γ` such that `g ∘ e = f` and
 `g y = default` whenever `y ∉ range e`. -/
+@[simps]
 noncomputable def arrowCongrLeft {α : Sort u} {β : Sort v} {γ : Sort w} [Inhabited γ] (e : α ↪ β) :
     (α → γ) ↪ β → γ :=
   ⟨fun f => extend e f default, fun f₁ f₂ h =>
     funext fun x => by simpa only [e.injective.extend_apply] using congr_fun h (e x)⟩
 
-@[simp]
-theorem arrowCongrLeft_apply {α : Sort u} {β : Sort v} {γ : Sort w} [Inhabited γ] (e : α ↪ β)
-    (f : α → γ) (a : α) :
-    (e.arrowCongrLeft f) (e a) = f a := by
-  simp [arrowCongrLeft, Function.extend]
-
-@[simp]
-theorem arrowCongrLeft_of_not_exists {α : Sort u} {β : Sort v} {γ : Sort w} [Inhabited γ]
-    (e : α ↪ β) (f : α → γ) {b : β} (hb : ¬∃ a, e a = b) :
-    (e.arrowCongrLeft f) b = default :=
-  dif_neg hb
-
-@[simp]
 theorem arrowCongrLeft_apply_equiv {α : Sort u} {β : Sort v} {γ : Sort w} [Inhabited γ] (e : α ≃ β)
     (f : α → γ) (b : β) :
-    (e.toEmbedding.arrowCongrLeft f) b = f (e.symm b) := by
-  simp [← arrowCongrLeft_apply e.toEmbedding f (e.symm b)]
+    (arrowCongrLeft e f) b = f (e.symm b) := by
+  simp
 
 @[simp]
-theorem arrowCongrLeft_apply_refl {α : Sort u} {γ : Sort w} [Inhabited γ] (f : α → γ) :
-    ((Function.Embedding.refl α).arrowCongrLeft f) = f := by
-  ext a
-  simp [← arrowCongrLeft_apply (Function.Embedding.refl α) f]
+theorem extend_refl {α : Sort u} {γ : Sort w} [Inhabited γ] (f : α → γ) :
+    extend (Embedding.refl α) f (fun _ ↦ default) = f :=
+  funext fun x ↦ Injective.extend_apply (fun ⦃_ _⦄ a ↦ a) f (fun _ ↦ default) x
 
 @[simp]
-theorem arrowCongrLeft_arrowCongrLeft {α₁ : Sort u} {α₂ : Sort v} {α₃ : Sort x} {γ : Sort w}
-    [Inhabited γ] (e₁₂ : α₁ ↪ α₂) (e₂₃ : α₂ ↪ α₃) (f : α₁ → γ) :
-    e₂₃.arrowCongrLeft (e₁₂.arrowCongrLeft f) = (e₁₂.trans e₂₃).arrowCongrLeft f := by
-  ext a
+theorem arrowCongrLeft_apply_refl {α : Sort u} {γ : Sort w} [Inhabited γ] :
+    (Function.Embedding.refl α).arrowCongrLeft (γ := γ) = .refl _ := by
+  ext
+  simp
+
+@[simp]
+theorem trans_arrowCongrLeft {α₁ : Sort u} {α₂ : Sort v} {α₃ : Sort x} {γ : Sort w}
+    [Inhabited γ] (e₁₂ : α₁ ↪ α₂) (e₂₃ : α₂ ↪ α₃) :
+    e₁₂.arrowCongrLeft.trans e₂₃.arrowCongrLeft = (e₁₂.trans e₂₃).arrowCongrLeft (γ := γ) := by
+  ext f a
+  simp only [trans_apply, arrowCongrLeft_apply, Pi.default_def]
   by_cases h₃ : ∃ b, e₂₃ b = a
   · obtain ⟨b, hb⟩ := h₃
-    simp only [hb.symm, arrowCongrLeft_apply]
+    rw [hb.symm, Injective.extend_apply e₂₃.injective, arrowCongrLeft_apply, Pi.default_def]
     by_cases h₂ : ∃ c, e₁₂ c = b
     · obtain ⟨c, hc⟩ := h₂
-      rw [hc.symm, arrowCongrLeft_apply, ← trans_apply, arrowCongrLeft_apply]
+      simp [hc.symm, e₁₂.injective, ← trans_apply, (e₁₂.trans e₂₃).injective]
     · have : ¬ ∃ c, (e₁₂.trans e₂₃) c = a := by
         contrapose! h₂
         obtain ⟨c, hc⟩ := h₂
         use c
-        simpa [hb.symm, trans_apply, EmbeddingLike.apply_eq_iff_eq] using hc
-      rw [hb, arrowCongrLeft_of_not_exists e₁₂ f h₂, arrowCongrLeft_of_not_exists _ f this]
-  · rw [arrowCongrLeft_of_not_exists _ _ h₃, arrowCongrLeft_of_not_exists]
+        simpa [hb.symm, EmbeddingLike.apply_eq_iff_eq] using hc
+      rw [extend_apply' _ _ _ h₂, hb, extend_apply' _ _ _ this]
+  · rw [extend_apply' _ _ _ h₃, extend_apply']
     contrapose! h₃
     obtain ⟨c, hc⟩ := h₃
     use e₁₂ c
