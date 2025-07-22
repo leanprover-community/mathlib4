@@ -43,7 +43,7 @@ instance MonoidHom.instPow [MulOneClass M] [CommMonoid N] : Pow (M →* N) ℕ w
 
 @[to_additive (attr := simp)]
 lemma MonoidHom.pow_apply [MulOneClass M] [CommMonoid N] (f : M →* N) (n : ℕ) (x : M) :
-    (f ^ n) x = (f x) ^ n :=
+    (f ^ n) x = f x ^ n :=
   rfl
 
 /-- `(M →* N)` is a `CommMonoid` if `N` is commutative. -/
@@ -67,7 +67,7 @@ instance MonoidHom.instIntPow [MulOneClass M] [CommGroup N] : Pow (M →* N) ℤ
 
 @[to_additive (attr := simp)]
 lemma MonoidHom.zpow_apply [MulOneClass M] [CommGroup N] (f : M →* N) (z : ℤ) (x : M) :
-    (f ^ z) x = (f x) ^ z :=
+    (f ^ z) x = f x ^ z :=
   rfl
 
 /-- If `G` is a commutative group, then `M →* G` is a commutative group too. -/
