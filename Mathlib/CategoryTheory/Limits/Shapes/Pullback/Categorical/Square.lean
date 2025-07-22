@@ -32,7 +32,8 @@ categorical pullback square. This is realized as the data of a chosen
 (adjoint) inverse to the canonical functor `C₁ ⥤ R ⊡ B` induced by
 the square. The field of this struct are not intended to be accessed directly.
 Instead one should use the corresponding fields of
-`CatPullbackSquare.equivalence`. -/
+`CatPullbackSquare.functorEquiv`, which bundles this into the expected 
+universal property. -/
 class CatPullbackSquare
     {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃} {C₄ : Type u₄}
     [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} C₃] [Category.{v₄} C₄]
