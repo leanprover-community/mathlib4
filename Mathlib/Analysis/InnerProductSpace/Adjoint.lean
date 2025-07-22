@@ -317,14 +317,9 @@ variable {T : E →L[𝕜] E} [CompleteSpace E]
 open ContinuousLinearMap in
 /-- An idempotent operator `T` is self-adjoint iff `(range T)ᗮ = ker T`. -/
 theorem IsIdempotentElem.isSelfAdjoint_iff_orthogonal_range (h : IsIdempotentElem T) :
-    IsSelfAdjoint T ↔ (LinearMap.range T)ᗮ = LinearMap.ker T := by
-  refine ⟨fun hT => hT.isSymmetric.orthogonal_range, fun h1 => ?_⟩
-  rw [isSelfAdjoint_iff, h.star.ext_iff h]
-  refine ⟨?_, orthogonal_range T ▸ h1⟩
-  have := h.hasOrthogonalProjection_range
-  have := h.star.hasOrthogonalProjection_range
-  rw [← Submodule.orthogonal_orthogonal (LinearMap.range (star T)),
-    orthogonal_range, star_eq_adjoint, adjoint_adjoint, ← h1, Submodule.orthogonal_orthogonal]
+    IsSelfAdjoint T ↔ (LinearMap.range T)ᗮ = LinearMap.ker T :=
+  T.isSelfAdjoint_iff_isSymmetric.eq ▸ LinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range
+    congr(LinearMapClass.linearMap $h.eq)
 
 open ContinuousLinearMap in
 /-- Star projection operators are equal iff their range are. -/
