@@ -182,6 +182,7 @@ theorem rtakeWhile_idempotent (p : α → Bool) (l : List α) :
 theorem rtakeWhile_reverse : l.reverse.rtakeWhile p = (l.takeWhile p).reverse := by
   simp_rw [rtakeWhile, reverse_reverse]
 
+@[simp]
 theorem rdropWhile_append_rtakeWhile :
     l.rdropWhile p ++ l.rtakeWhile p = l := by
   simp only [rdropWhile, rtakeWhile]
