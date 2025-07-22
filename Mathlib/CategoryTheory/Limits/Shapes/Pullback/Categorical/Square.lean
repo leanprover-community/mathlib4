@@ -194,8 +194,8 @@ unseal functorEquiv.inverse functorEquiv.counitIsoAppFst
 functorEquiv.counitIsoAppSnd in
 /-- The equivalence of categories `(X ⥤ C₁) ≌ CatCommSqOver R B X` when
 `C₁` is the top left corner of a categorical pullback square. The forward
-direction of this equivalence is the "canonical" functor while the inverse should
-be treated as mostly "opaque".
+direction of this equivalence is the "canonical" functor while the inverse
+should be treated as mostly "opaque".
 This equivalence of categories realizes the universal property of categorical
 pullbacks, and should be the main object to work with. -/
 @[simps functor]
