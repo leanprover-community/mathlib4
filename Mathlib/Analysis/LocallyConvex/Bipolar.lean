@@ -87,32 +87,14 @@ variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
 variable (f : WeakBilin B →L[𝕜] 𝕜)
 
-lemma test1 : IsOpen (f ⁻¹' (Metric.ball 0 1)) :=
-  IsOpen.preimage (ContinuousLinearMap.continuous f) Metric.isOpen_ball
+lemma test2 : (f ⁻¹' (Metric.ball 0 1))  ∈ (nhds 0) :=
+  mem_nhds_iff.mpr ⟨f ⁻¹' (Metric.ball 0 1), ⟨subset_refl _,
+    ⟨IsOpen.preimage (ContinuousLinearMap.continuous f) Metric.isOpen_ball, by
+      rw [Set.mem_preimage, map_zero]
+      exact Metric.mem_ball_self Real.zero_lt_one⟩⟩⟩
 
-lemma test2a : 0 ∈ (f ⁻¹' (Metric.ball 0 1)) := by
-  simp_all only [Set.mem_preimage, map_zero, Metric.mem_ball, dist_self, zero_lt_one]
-
-lemma test2b : 0 ∈ (f ⁻¹' (Metric.ball 0 1)) ∧ IsOpen (f ⁻¹' (Metric.ball 0 1)) := by
-  constructor
-  · exact test2a B f
-  · exact test1 B f
-
-lemma test2 : (f ⁻¹' (Metric.ball 0 1))  ∈ (nhds 0) := by
-  rw [mem_nhds_iff]
-  use f ⁻¹' (Metric.ball 0 1)
-  constructor
-  · exact fun ⦃a⦄ a ↦ a
-  · exact And.symm (test2b B f)
-
---#check (Filter.HasBasis.mem_iff (LinearMap.hasBasis_weakBilin B)).mp (test2 B f)
-
-lemma test3 : ∃ V ∈ B.toSeminormFamily.basisSets, V ⊆ (f ⁻¹' (Metric.ball 0 1)) := by
-  obtain ⟨V, hV1, hV2⟩ := (Filter.HasBasis.mem_iff (LinearMap.hasBasis_weakBilin B)).mp (test2 B f)
-  use V
-  constructor
-  · apply hV1
-  · apply hV2
+lemma test3 : ∃ V ∈ B.toSeminormFamily.basisSets, V ⊆ (f ⁻¹' (Metric.ball 0 1)) :=
+  (Filter.HasBasis.mem_iff (LinearMap.hasBasis_weakBilin B)).mp (test2 B f)
 
 lemma test4 :
     ∃ (s : Finset F) (r : ℝ) (_ : 0 < r),
