@@ -481,61 +481,53 @@ lemma _root_.ContMDiffCovariantDerivativeOn.convexCombination
     · exact (contMDiffOn_const.sub hf).smul_section <| Hcov'.contMDiff hX hσ
 
 /-- A finite convex combination of covariant derivatives is a covariant derivative. -/
-def convexCombination'_aux {ι : Type*} {s : Finset ι} (hs : Finset.Nonempty s)
-    {u : Set M} {cov : ι → (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)}
-    (h : ∀ i, IsCovariantDerivativeOn F (cov i) u) {f : ι → M → 𝕜} (hf : ∑ i ∈ s, f i = 1)
-    (hf' : ∀ i ∈ s, ∀ x ∈ u, f i x ≠ 0) :
-    IsCovariantDerivativeOn F (fun X σ x ↦ ∑ i ∈ s, (f i x) • (cov i) X σ x) u := by
-  sorry
-
-/-- A finite convex combination of covariant derivatives is a covariant derivative. -/
-def convexCombination' {ι : Type*} {s : Finset ι} (hs : Finset.Nonempty s)
+def convexCombination' {ι : Type*} {s : Finset ι} [Nonempty s]
     {u : Set M} {cov : ι → (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)}
     (h : ∀ i, IsCovariantDerivativeOn F (cov i) u) {f : ι → M → 𝕜} (hf : ∑ i ∈ s, f i = 1) :
-    IsCovariantDerivativeOn F (fun X σ x ↦ ∑ i ∈ s, (f i x) • (cov i) X σ x) u := by
-  classical
-  induction hs using Finset.Nonempty.cons_induction generalizing f with
-  | singleton a => simp_all
-  | cons i₀ s hi₀ hs h' =>
-    simp only [Finset.cons_eq_insert]
-    let g : ι → M → 𝕜 := fun i x ↦ f i x / (1 - f i₀ x)
-    have hg : ∑ i ∈ s, g i = 1 := by
-      ext x
-      simp [g]
-      calc ∑ i ∈ s, f i x / (1 - f i₀ x)
-        _ = ∑ i ∈ s, (1 - f i₀ x)⁻¹ • f i x := by simp_rw [smul_eq_mul, inv_mul_eq_div]
-        _ = (1 - f i₀ x)⁻¹ • ∑ i ∈ s, f i x := by rw [Finset.smul_sum]
-        _ = (1 - f i₀ x)⁻¹ • (∑ i ∈ Finset.cons i₀ s hi₀, f i x - f i₀ x):= by
-          congr
-          rw [eq_sub_iff_add_eq, Finset.sum_cons, add_comm]
-        _ = (1 - f i₀ x)⁻¹ • (1 - f i₀ x):= by
-          congr
-          sorry -- exact hf except applied
-        _ = 1 := sorry
-
-    -- TODO: rejigger my set-up to provide this
-    -- at x, some function is non-zero, and then the same holds in a neighbourhood
-    -- (by continuity, which I'll also assume)
-    -- so, need to shrink the open set and patch together, awful, but can be done
-    have bettersetup : ∀ x, f i₀ x ≠ 1 := sorry
-    have side_computation := calc fun X σ x ↦ ∑ i ∈ insert i₀ s, f i x • cov i X σ x
-      _ = fun X σ x ↦ f i₀ x • cov i₀ X σ x + ∑ i ∈ s, f i x • cov i X σ x := by
-        simp [Finset.sum_insert hi₀]
-      _ = fun X σ x ↦ f i₀ x • cov i₀ X σ x + (1 - f i₀ x) • ∑ i ∈ s, g i x • cov i X σ x := by
-        ext X σ x
+    IsCovariantDerivativeOn F (fun X σ x ↦ ∑ i ∈ s, (f i x) • (cov i) X σ x) u where
+  addX X X' σ x hx := by
+    rw [← Finset.sum_add_distrib]
+    congr
+    ext i
+    simp [(h i).addX]
+  smulX X σ g x hx := by
+    rw [Finset.smul_sum]
+    congr
+    ext i
+    simp [(h i).smulX]
+    module
+  addσ X σ σ' x hσ hσ' hx := by
+    rw [← Finset.sum_add_distrib]
+    congr
+    ext i
+    rw [← smul_add, (h i).addσ X hσ hσ' hx]
+  smul_const_σ X {σ a} x hx := by
+    rw [Finset.smul_sum]
+    congr
+    ext i
+    simp [(h i).smul_const_σ]
+    module
+  leibniz X σ g x hσ hg hx := by
+    calc ∑ i ∈ s, f i x • (cov i) X (g • σ) x
+      _ = ∑ i ∈ s, ((g • (f i • (cov i) X σ)) x
+            + f i x • (bar (g x)) ((mfderiv I 𝓘(𝕜) g x) (X x)) • σ x) := by
         congr
-        rw [Finset.smul_sum]
-        congr; ext i
-        simp only [g]
-        -- this should be obvious now!
-        rw [← smul_assoc, smul_eq_mul, mul_div_cancel₀ (a := f i x) (b := 1 - f i₀ x)]
-        rw [sub_ne_zero]; exact (bettersetup x).symm
-    have : IsCovariantDerivativeOn F (fun X σ x ↦
-        f i₀ x • cov i₀ X σ x + (1 - f i₀ x) • ∑ i ∈ s, g i x • cov i X σ x) u :=
-      (h i₀).convexCombination (h' hg) _
-    apply this.congr
-    intro X σ x hx
-    sorry
+        ext i
+        rw [(h i).leibniz _ hσ hg]
+        simp_rw [Pi.smul_apply', smul_add, add_left_inj]
+        rw [smul_comm]
+      _ = ∑ i ∈ s, ((g • (f i • (cov i) X σ)) x)
+        + ∑ i ∈ s, f i x • (bar (g x)) ((mfderiv I 𝓘(𝕜) g x) (X x)) • σ x := by
+        rw [Finset.sum_add_distrib]
+      _ = (g • ∑ i ∈ s, f i • (cov i) X σ) x + (bar (g x)) ((mfderiv I 𝓘(𝕜) g x) (X x)) • σ x := by
+        -- There has to be a shorter proof!
+        simp only [Finset.smul_sum, Pi.smul_apply', Finset.sum_apply, add_right_inj]
+        set B := (bar (g x)) ((mfderiv I 𝓘(𝕜) g x) (X x)) • σ x
+        trans (∑ i ∈ s, f i x) • B
+        · rw [Finset.sum_smul]
+        have : ∑ i ∈ s, f i x = 1 := by convert congr_fun hf x; simp
+        rw [this, one_smul]
+    simp
 
 /-- A convex combination of finitely many `C^k` connections on `u` is a `C^k` connection on `u`. -/
 lemma _root_.ContMDiffCovariantDerivativeOn.convexCombination' {n : ℕ∞}
@@ -689,11 +681,11 @@ def convexCombination (cov cov' : CovariantDerivative I F V) (g : M → 𝕜) :
     cov.isCovariantDerivativeOn.convexCombination cov'.isCovariantDerivativeOn _
 
 /-- A finite convex combination of covariant derivatives is a covariant derivative. -/
-def convexCombination' {ι : Type*} {s : Finset ι} (hs : Finset.Nonempty s)
+def convexCombination' {ι : Type*} {s : Finset ι} [Nonempty s]
     (cov : ι → CovariantDerivative I F V) {f : ι → M → 𝕜} (hf : ∑ i ∈ s, f i = 1) :
     CovariantDerivative I F V where
   toFun X t x := ∑ i ∈ s, (f i x) • (cov i) X t x
-  isCovariantDerivativeOn := IsCovariantDerivativeOn.convexCombination' hs
+  isCovariantDerivativeOn := IsCovariantDerivativeOn.convexCombination'
     (fun i ↦ (cov i).isCovariantDerivativeOn) hf
 
 /-- A convex combination of two `C^k` connections is a `C^k` connection. -/
@@ -707,11 +699,11 @@ lemma ContMDiffCovariantDerivative.convexCombination [IsManifold I 1 M] [VectorB
 
 /-- A convex combination of finitely many `C^k` connections is a `C^k` connection. -/
 lemma ContMDiffCovariantDerivative.convexCombination' [IsManifold I 1 M] [VectorBundle 𝕜 F V]
-    {ι : Type*} {s : Finset ι} (hs : Finset.Nonempty s)
+    {ι : Type*} {s : Finset ι} [Nonempty s]
     (cov : ι → CovariantDerivative I F V) {f : ι → M → 𝕜} (hf : ∑ i ∈ s, f i = 1) {n : ℕ∞}
     (hf' : ∀ i ∈ s, ContMDiff I 𝓘(𝕜) n (f i))
     (hcov : ∀ i ∈ s, ContMDiffCovariantDerivative (cov i) n) :
-    ContMDiffCovariantDerivative (convexCombination' hs cov hf) n where
+    ContMDiffCovariantDerivative (convexCombination' cov hf) n where
   contMDiff :=
     ContMDiffCovariantDerivativeOn.convexCombination'
       (fun i hi ↦ (hcov i hi).contMDiff) (fun i hi ↦ (hf' i hi).contMDiffOn)
