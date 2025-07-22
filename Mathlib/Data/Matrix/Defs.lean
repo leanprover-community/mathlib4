@@ -589,13 +589,9 @@ theorem transpose_mem_matrix_iff {M : Matrix m n α} :
 theorem submatrix_mem_matrix {M : Matrix m n α} {r : l → m} {c : o → n} (hM : M ∈ S.matrix) :
     M.submatrix r c ∈ S.matrix := by simp_all [Set.mem_matrix]
 
-theorem submatrix_mem_matrix_iff_mem_matrix {M : Matrix m n α} {r : l → m} {c : o → n}
+theorem submatrix_mem_matrix_iff {M : Matrix m n α} {r : l → m} {c : o → n}
     (hr : Function.Surjective r) (hc : Function.Surjective c) :
     M.submatrix r c ∈ S.matrix ↔ M ∈ S.matrix :=
-  ⟨ fun h i j =>
-      let ⟨ a , ha ⟩ := hr i
-      let ⟨ b , hb ⟩ := hc j
-      ha ▸ hb ▸ h a b,
-    fun hM => submatrix_mem_matrix hM ⟩
+  ⟨(hr.forall.mpr fun _ => hc.forall.mpr fun _ => · _ _), submatrix_mem_matrix⟩
 
 end Matrix
