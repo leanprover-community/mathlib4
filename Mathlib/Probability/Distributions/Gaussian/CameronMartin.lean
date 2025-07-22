@@ -47,10 +47,9 @@ def UniformSpace.Completion.continuousLinearMapExtension {E F : Type*}
   toFun x := Completion.extension f x
   map_add' x₁ x₂ := by
     refine Completion.induction_on₂ x₁ x₂ ?_ fun x₁' x₂' ↦ ?_
-    · have : Continuous (Completion.extension f) := Completion.continuous_extension
+    · have : Continuous (Completion.extension f) := continuous_extension
       exact isClosed_eq (by fun_prop) (by fun_prop)
-    · rw [Completion.extension_coe, Completion.extension_coe, ← map_add,
-        ← Completion.extension_coe (f := f)]
+    · rw [extension_coe, extension_coe, ← map_add, ← extension_coe (f := f)]
       · congr
         norm_cast
       all_goals exact ContinuousLinearMap.uniformContinuous _
@@ -58,22 +57,36 @@ def UniformSpace.Completion.continuousLinearMapExtension {E F : Type*}
     simp only [RingHom.id_apply]
     induction x using Completion.induction_on with
     | hp =>
-      have h_cont : Continuous ( Completion.extension f) := Completion.continuous_extension
+      have h_cont : Continuous (Completion.extension f) := continuous_extension
       refine isClosed_eq ?_ (by fun_prop)
       -- fun_prop fails here (it also fails in the `have` below)
       have : Continuous fun (a : Completion E) ↦ r • a := continuous_const_smul _
       exact h_cont.comp this
     | ih x =>
-      rw [Completion.extension_coe, ← map_smul,
-        ← Completion.extension_coe (f := f)]
+      rw [extension_coe, ← map_smul, ← extension_coe (f := f)]
       · congr
         norm_cast
       all_goals exact ContinuousLinearMap.uniformContinuous _
-  cont := Completion.continuous_extension
+  cont := continuous_extension
+
+lemma UniformSpace.Completion.continuousLinearMapExtension_apply {E F : Type*}
+    [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
+    (f : E →L[ℝ] F) (x : Completion E) :
+    Completion.continuousLinearMapExtension f x = Completion.extension f x := by
+  simp [continuousLinearMapExtension]
+
+@[simp]
+lemma UniformSpace.Completion.continuousLinearMapExtension_coe {E F : Type*}
+    [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
+    (f : E →L[ℝ] F) (x : E) :
+    Completion.continuousLinearMapExtension f x = f x := by
+  simp [continuousLinearMapExtension, extension_coe f.uniformContinuous]
 
 lemma norm_eval_le_norm_mul_ciSup {E G : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup G] [Module ℝ G] [NormSMulClass ℝ G]
-    (f : Dual ℝ E →L[ℝ] G) {y : E} (hy : ∃ M, ∀ L : Dual ℝ E, ‖f L‖ ≤ 1 → L y ≤ M) (L : Dual ℝ E) :
+    (f : Dual ℝ E →ₗ[ℝ] G) {y : E} (hy : ∃ M, ∀ L : Dual ℝ E, ‖f L‖ ≤ 1 → L y ≤ M) (L : Dual ℝ E) :
     ‖L y‖ ≤ ‖f L‖ * ⨆ (L' : Dual ℝ E) (_ : ‖f L'‖ ≤ 1), L' y := by
   have h_bdd : BddAbove (Set.range fun L' ↦ ⨆ (_ : ‖f L'‖ ≤ 1), L' y) := by
     obtain ⟨M, hM⟩ := hy
@@ -191,14 +204,21 @@ instance [IsFiniteMeasure μ] : CompleteSpace (CameronMartin μ) := by
   unfold CameronMartin; infer_instance
 
 noncomputable
-def pureCameronMartin (μ : Measure E) [IsFiniteMeasure μ] (L : Dual ℝ E) : CameronMartin μ :=
-  (⟨Dual.centeredToLp μ 2 L, Submodule.mem_map.mpr ⟨L, by simp, rfl⟩⟩ :
-    Submodule.map (Dual.centeredToLp μ 2) ⊤)
+def pureCameronMartin (μ : Measure E) [IsFiniteMeasure μ] : Dual ℝ E →ₗ[ℝ] CameronMartin μ :=
+  Completion.toComplL.toLinearMap.comp (((Dual.centeredToLp μ 2).submoduleMap ⊤).comp
+    (Submodule.topEquiv (R := ℝ) (M := Dual ℝ E)).symm.toLinearMap)
+
+omit [CompleteSpace E] [SecondCountableTopology E] in
+lemma pureCameronMartin_apply (L : Dual ℝ E) :
+    pureCameronMartin μ L
+      = (⟨Dual.centeredToLp μ 2 L, Submodule.mem_map.mpr ⟨L, by simp, rfl⟩⟩ :
+        Submodule.map (Dual.centeredToLp μ 2) ⊤) :=
+  rfl
 
 lemma norm_pureCameronMartin (L : Dual ℝ E) :
     ‖pureCameronMartin μ L‖ = √(covarianceBilin μ L L) := by
-  rw [pureCameronMartin, Completion.norm_coe]
-  simp only [AddSubgroupClass.coe_norm]
+  rw [pureCameronMartin_apply]
+  simp only [Completion.norm_coe, AddSubgroupClass.coe_norm]
   exact norm_centeredToLp _
 
 lemma sq_norm_pureCameronMartin (L : Dual ℝ E) :
@@ -223,7 +243,7 @@ lemma norm_eval_le_norm_centeredToLp_mul
     ‖L y‖ ≤ ‖Dual.centeredToLp μ 2 L‖
       * ⨆ (L' : Dual ℝ E) (_ : covarianceBilin μ L' L' ≤ 1), L' y := by
   simp_rw [← sq_norm_centeredToLp, sq_le_one_iff_abs_le_one, abs_norm] at hy ⊢
-  exact norm_eval_le_norm_mul_ciSup (Dual.centeredToLp μ 2) hy L
+  exact norm_eval_le_norm_mul_ciSup (Dual.centeredToLp μ 2).toLinearMap hy L
 
 lemma norm_evalL2_le (hy : ∃ M, ∀ L : Dual ℝ E, covarianceBilin μ L L ≤ 1 → L y ≤ M)
     (x : Submodule.map (Dual.centeredToLp μ 2) ⊤) :
@@ -280,23 +300,30 @@ def evalMapCLM (μ : Measure E) [IsGaussian μ] (y : E)
 lemma evalMapCLM_pureCameronMartin (hy : ∃ M, ∀ L : Dual ℝ E, covarianceBilin μ L L ≤ 1 → L y ≤ M)
     (L : Dual ℝ E) :
     evalMapCLM μ y hy (pureCameronMartin μ L) = L y := by
-  simp only [evalMapCLM, Completion.continuousLinearMapExtension, ContinuousLinearMap.coe_mk',
-    LinearMap.coe_mk, AddHom.coe_mk] -- extract lemma
-  rw [pureCameronMartin, Completion.extension_coe (ContinuousLinearMap.uniformContinuous _)]
-  simp only [LinearMap.mkContinuous_apply, LinearMap.coe_mk, AddHom.coe_mk]
+  rw [pureCameronMartin_apply]
+  simp only [evalMapCLM, Completion.continuousLinearMapExtension_coe,
+    LinearMap.mkContinuous_apply, LinearMap.coe_mk, AddHom.coe_mk]
   rw [evalL2_centeredToLp_eq hy]
 
 noncomputable
 def toCameronMartin (μ : Measure E) [IsGaussian μ] (y : E)
-    (hy : ∃ M, ∀ L : Dual ℝ E, covarianceBilin μ L L ≤ 1 → L y ≤ M) :
+    [Decidable (∃ M, ∀ (L : Dual ℝ E), ((covarianceBilin μ) L) L ≤ 1 → L y ≤ M)] :
     CameronMartin μ :=
-  (InnerProductSpace.toDual ℝ (CameronMartin μ)).symm (evalMapCLM μ y hy)
+  if hy : ∃ M, ∀ L : Dual ℝ E, covarianceBilin μ L L ≤ 1 → L y ≤ M
+  then (InnerProductSpace.toDual ℝ (CameronMartin μ)).symm (evalMapCLM μ y hy)
+  else 0
 
-lemma evalMapCLM_apply (μ : Measure E) [IsGaussian μ]
-    (hy : ∃ M, ∀ L : Dual ℝ E, covarianceBilin μ L L ≤ 1 → L y ≤ M)
+variable [Decidable (∃ M, ∀ (L : Dual ℝ E), ((covarianceBilin μ) L) L ≤ 1 → L y ≤ M)]
+
+lemma toCameronMartin_def (hy : ∃ M, ∀ L : Dual ℝ E, covarianceBilin μ L L ≤ 1 → L y ≤ M) :
+    toCameronMartin μ y
+      = (InnerProductSpace.toDual ℝ (CameronMartin μ)).symm (evalMapCLM μ y hy) := by
+  simp [toCameronMartin, hy]
+
+lemma evalMapCLM_apply (hy : ∃ M, ∀ L : Dual ℝ E, covarianceBilin μ L L ≤ 1 → L y ≤ M)
     (x : CameronMartin μ) :
-    evalMapCLM μ y hy x = ⟪x, toCameronMartin μ y hy⟫_ℝ := by
-  rw [toCameronMartin, real_inner_comm, InnerProductSpace.toDual_symm_apply]
+    evalMapCLM μ y hy x = ⟪x, toCameronMartin μ y⟫_ℝ := by
+  rw [toCameronMartin_def hy, real_inner_comm, InnerProductSpace.toDual_symm_apply]
 
 end EvaluationMap
 
@@ -320,29 +347,24 @@ lemma toInit_eq (x : Submodule.map (Dual.centeredToLp μ 2) ⊤) {L : Dual ℝ E
   _ = ∫ y, Dual.centeredToLp μ 2 L y • (y - ∫ z, z ∂μ) ∂μ := by rw [hL]
   _ = ∫ y, L (y - ∫ z, z ∂μ) • (y - ∫ z, z ∂μ) ∂μ := by
     refine integral_congr_ae ?_
-    filter_upwards [centeredToLp_apply μ (by simp : 2 ≠ ∞) L] with y hy
-    rw [hy]
+    filter_upwards [centeredToLp_apply μ (by simp : 2 ≠ ∞) L] with y hy using by rw [hy]
 
 lemma apply_toInit (x : Submodule.map (Dual.centeredToLp μ 2) ⊤) (L : Dual ℝ E) :
     L (toInit μ x)
       = ∫ y, (Submodule.mem_map.mp x.2).choose (y - ∫ z, z ∂μ) * L (y - ∫ z, z ∂μ) ∂μ := by
   rw [toInit, ← L.integral_comp_comm]
   · simp
-  rw [← integrable_norm_iff]
-  swap; · fun_prop
+  rw [← integrable_norm_iff (by fun_prop)]
   simp only [Submodule.mem_top, true_and, map_sub, norm_smul]
   refine MemLp.integrable_mul (p := 2) (q := 2) ?_ ?_
-  · rw [memLp_norm_iff]
-    swap; · fun_prop
+  · rw [memLp_norm_iff (by fun_prop)]
     exact MemLp.sub (IsGaussian.memLp_dual μ _ 2 (by simp)) (memLp_const _)
-  · rw [memLp_norm_iff]
-    swap; · fun_prop
+  · rw [memLp_norm_iff (by fun_prop)]
     exact MemLp.sub (IsGaussian.memLp_id μ 2 (by simp)) (memLp_const _)
 
 lemma apply_toInit_eq_inner (x : Submodule.map (Dual.centeredToLp μ 2) ⊤) (L : Dual ℝ E) :
     L (toInit μ x) = ⟪Dual.centeredToLp μ 2 L, x⟫_ℝ := by
-  rw [← (Submodule.mem_map.mp x.2).choose_spec.2]
-  rw [L2.inner_def, apply_toInit]
+  rw [← (Submodule.mem_map.mp x.2).choose_spec.2, L2.inner_def, apply_toInit]
   simp only [RCLike.inner_apply, conj_trivial]
   refine integral_congr_ae ?_
   filter_upwards [centeredToLp_apply μ (by simp : 2 ≠ ∞) L,
@@ -366,26 +388,23 @@ def toInitialSpace (μ : Measure E) [IsGaussian μ] : CameronMartin μ →L[ℝ]
   LinearMap.mkContinuous
     { toFun x := toInit μ x
       map_add' x y := by
-        rw [eq_iff_forall_dual_eq (𝕜 := ℝ)]
-        intro L
+        refine (eq_iff_forall_dual_eq (𝕜 := ℝ)).mpr fun L ↦ ?_
         simp_rw [map_add, apply_toInit_eq_inner, Submodule.coe_add, inner_add_right]
       map_smul' r x := by
-        rw [eq_iff_forall_dual_eq (𝕜 := ℝ)]
-        intro L
+        refine (eq_iff_forall_dual_eq (𝕜 := ℝ)).mpr fun L ↦ ?_
         simp_rw [map_smul, apply_toInit_eq_inner, Submodule.coe_smul, inner_smul_right]
         simp }
     ‖Dual.centeredToLp μ 2‖ norm_toInit_le
 
 lemma apply_toInitialSpace_eq_inner (x : CameronMartin μ) (L : Dual ℝ E) :
     L (toInitialSpace μ x) = ⟪pureCameronMartin μ L, x⟫_ℝ := by
-  simp only [toInitialSpace, Completion.continuousLinearMapExtension,
-    ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk] -- extract lemma
+  simp only [toInitialSpace, Completion.continuousLinearMapExtension_apply]
   revert x
   rw [← funext_iff]
   refine Completion.ext (by fun_prop) (by fun_prop) fun x ↦ ?_
   rw [Completion.extension_coe (ContinuousLinearMap.uniformContinuous _)]
   simp only [LinearMap.mkContinuous_apply, LinearMap.coe_mk, AddHom.coe_mk]
-  rw [apply_toInit_eq_inner, pureCameronMartin, Completion.inner_coe]
+  rw [apply_toInit_eq_inner, pureCameronMartin_apply, Completion.inner_coe]
   rfl
 
 lemma eq_zero_of_toInitialSpace_eq_zero {x : CameronMartin μ} (h : toInitialSpace μ x = 0) :
@@ -396,10 +415,7 @@ lemma eq_zero_of_toInitialSpace_eq_zero {x : CameronMartin μ} (h : toInitialSpa
   rw [← funext_iff]
   refine Completion.ext (by fun_prop) (by fun_prop) fun L ↦ ?_
   obtain ⟨L', -, hL'⟩ := Submodule.mem_map.mp L.2
-  have : pureCameronMartin μ L' = ((↑) : Submodule.map (Dual.centeredToLp μ 2) ⊤
-      → Completion (Submodule.map (Dual.centeredToLp μ 2) ⊤)) L := by
-    unfold pureCameronMartin
-    congr
+  have : pureCameronMartin μ L' = L := by rw [pureCameronMartin_apply]; congr
   rw [← this, ← apply_toInitialSpace_eq_inner, h]
   simp
 
@@ -420,11 +436,78 @@ lemma todooo (x : CameronMartin μ) {L : Dual ℝ E} (hL : covarianceBilin μ L 
 
 end ToInitialSpace
 
-lemma toInitialSpace_toCameronMartin {y : E}
+variable {y : E} [Decidable (∃ M, ∀ (L : Dual ℝ E), ((covarianceBilin μ) L) L ≤ 1 → L y ≤ M)]
+
+@[simp]
+lemma toInitialSpace_toCameronMartin
     (hy : ∃ M, ∀ L : Dual ℝ E, covarianceBilin μ L L ≤ 1 → L y ≤ M) :
-    toInitialSpace μ (toCameronMartin μ y hy) = y := by
+    toInitialSpace μ (toCameronMartin μ y) = y := by
   rw [eq_iff_forall_dual_eq (𝕜 := ℝ)]
   intro L
   rw [← evalMapCLM_pureCameronMartin hy, apply_toInitialSpace_eq_inner, evalMapCLM_apply]
+
+open Classical in
+@[simp]
+lemma toCameronMartin_toInitialSpace (x : CameronMartin μ) :
+    toCameronMartin μ (toInitialSpace μ x) = x := by
+  refine toInitialSpace_injective ?_
+  rw [toInitialSpace_toCameronMartin ⟨‖x‖, fun L hL ↦ todooo x hL⟩]
+
+lemma norm_le'' (x : CameronMartin μ) (L : Dual ℝ E) (hL : ‖pureCameronMartin μ L‖ ≤ 1) :
+    ⟪pureCameronMartin μ L, x⟫_ℝ
+      ≤ ⨆ (L : Dual ℝ E) (_ : covarianceBilin μ L L ≤ 1), L (toInitialSpace μ x) := by
+  refine le_ciSup_of_le ?_ L ?_
+  · refine ⟨‖x‖, ?_⟩
+    simp only [mem_upperBounds, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff]
+    intro L
+    by_cases hL : covarianceBilin μ L L ≤ 1
+    · simp only [hL, ciSup_unique]
+      exact todooo x hL
+    · simp [hL]
+  have hL' : covarianceBilin μ L L ≤ 1 := by rwa [norm_pureCameronMartin, Real.sqrt_le_one] at hL
+  simp only [hL', ciSup_unique]
+  rw [← apply_toInitialSpace_eq_inner]
+
+lemma norm_le''' (x : CameronMartin μ) (L : Dual ℝ E) :
+    ⟪pureCameronMartin μ L, x⟫_ℝ
+      ≤ ‖pureCameronMartin μ L‖
+        * ⨆ (L : Dual ℝ E) (_ : covarianceBilin μ L L ≤ 1), L (toInitialSpace μ x) := by
+  by_cases h_zero : ‖pureCameronMartin μ L‖ = 0
+  · simp only [h_zero, zero_mul]
+    rw [inner_eq_zero_of_left _ h_zero]
+  have h := norm_le'' x (‖pureCameronMartin μ L‖⁻¹ • L) ?_
+  · simp only [map_smul, inner_smul_left, map_inv₀, conj_trivial] at h
+    rwa [inv_mul_le_iff₀ (by positivity)] at h
+  · simp only [map_smul, norm_smul, norm_inv, norm_norm]
+    exact inv_mul_le_one
+
+lemma norm_le' (x y : CameronMartin μ) :
+    ⟪y, x⟫_ℝ ≤ ‖y‖ * ⨆ (L : Dual ℝ E) (_ : covarianceBilin μ L L ≤ 1), L (toInitialSpace μ x) := by
+  induction y using Completion.induction_on with
+  | hp =>
+    exact isClosed_le (by fun_prop) (by fun_prop)
+  | ih a =>
+    obtain ⟨L, -, hL⟩ := Submodule.mem_map.mp a.2
+    have : (a : CameronMartin μ) = pureCameronMartin μ L := by
+      simp_rw [pureCameronMartin_apply, hL]
+    rw [this]
+    exact norm_le''' x L
+
+lemma norm_eq (x : CameronMartin μ) :
+    ‖x‖ = ⨆ (L : Dual ℝ E) (_ : covarianceBilin μ L L ≤ 1), L (toInitialSpace μ x) := by
+  refine le_antisymm ?_ ?_
+  · by_cases h_zero : ‖x‖ = 0
+    · simp only [h_zero]
+      by_cases h_bdd :
+          BddAbove (Set.range fun L ↦ ⨆ (_ : covarianceBilin μ L L ≤ 1), L (toInitialSpace μ x))
+      · exact le_ciSup_of_le h_bdd 0 (by simp)
+      · simp [h_bdd]
+    · have h := norm_le' x x
+      rwa [real_inner_self_eq_norm_sq, sq, mul_le_mul_iff_of_pos_left (by positivity)] at h
+  · refine ciSup_le fun L ↦ ?_
+    by_cases hL : covarianceBilin μ L L ≤ 1
+    · simp only [hL, ciSup_unique]
+      exact todooo x hL
+    · simp [hL]
 
 end ProbabilityTheory
