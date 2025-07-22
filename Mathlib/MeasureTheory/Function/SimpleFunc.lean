@@ -1027,23 +1027,32 @@ theorem lintegral_map {β} [MeasurableSpace β] (g : β →ₛ ℝ≥0∞) {f : 
 
 section Star
 
-variable {R : Type*} [Star R]
+variable {R : Type*}
 
-instance : Star (α →ₛ R) where
+instance [Star R] : Star (α →ₛ R) where
   star f := f.map Star.star
 
-lemma star_apply (f : α →ₛ R) (x : α) : (star f) x = star (f x) := rfl
+lemma star_apply [Star R] (f : α →ₛ R) (x : α) : (star f) x = star (f x) := rfl
 
-end Star
-
-section InvolutiveStar
-
-variable {R : Type*} [TopologicalSpace R] [InvolutiveStar R] [ContinuousStar R]
-
-instance : InvolutiveStar (α →ₛ R) where
+instance [InvolutiveStar R] : InvolutiveStar (α →ₛ R) where
   star_involutive := fun _ => by ext; simp [star_apply]
 
-end InvolutiveStar
+instance [AddMonoid R] [StarAddMonoid R] : StarAddMonoid (α →ₛ R) where
+  star_add := fun _ _ => by ext; simp [star_apply]
+
+instance [Mul R] [StarMul R] : StarMul (α →ₛ R) where
+  star_mul := fun _ _ => by ext; simp [star_apply]
+
+instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring (α →ₛ R) where
+  left_distrib := fun _ _ _ => by ext; simp [left_distrib]
+  right_distrib := fun _ _ _ => by ext; simp [right_distrib]
+  zero_mul := fun _ => by ext; simp
+  mul_zero := fun _ => by ext; simp
+
+instance [NonUnitalNonAssocSemiring R] [StarRing R] : StarRing (α →ₛ R) where
+  star_add := fun _ _ => by ext; simp
+
+end Star
 
 end Measure
 
