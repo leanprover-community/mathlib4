@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp, Anne Baanen
 -/
 import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+import Mathlib.Algebra.Order.Sub.Basic
 import Mathlib.Lean.Expr.ExtraRecognizers
 
 /-!
@@ -616,6 +617,114 @@ theorem LinearIndependent.maximal_iff {ι : Type w} {R : Type u} [Semiring R] [N
     simpa using q
 
 end Maximal
+
+section CanonicallyOrderedAdd
+
+variable [LinearOrder R] [CanonicallyOrderedAdd R] [AddLeftMono R] [Sub R] [OrderedSub R]
+variable [IsCancelAdd M]
+
+theorem linearIndependent_iffₒ :
+    LinearIndependent R v ↔
+      ∀ (s t : Finset ι) (f g : ι → R), Disjoint s t →
+        ∑ i ∈ s, f i • v i = ∑ i ∈ t, g i • v i → (∀ i ∈ s, f i = 0) ∧ ∀ i ∈ t, g i = 0 := by
+  classical
+  rw [linearIndependent_iff'ₛ]
+  refine ⟨fun h s t f g hst heq => ?_, fun h s f g heq => ?_⟩
+  · specialize h (s ∪ t) (fun i => if i ∈ s then f i else 0) (fun i => if i ∈ t then g i else 0) ?_
+    · simp [heq]
+    · refine ⟨fun i hi => ?_, fun i hi => ?_⟩
+      · simpa [hi, hst.notMem_of_mem_left_finset hi] using h i (Finset.mem_union_left _ hi)
+      · simpa [hi, hst.notMem_of_mem_right_finset hi] using (h i (Finset.mem_union_right _ hi)).symm
+  · specialize h (s.filter fun i => g i ≤ f i) (s.filter fun i => f i < g i) (f - g) (g - f) ?_ ?_
+    · simp_rw [Finset.disjoint_left, Finset.mem_filter]
+      exact fun i ⟨_, hi⟩ ⟨_, hi'⟩ => hi.not_gt hi'
+    · rw [←add_right_cancel_iff
+        (a := ∑ i ∈ s with g i ≤ f i, g i • v i + ∑ i ∈ s with f i < g i, f i • v i)]
+      conv => lhs; rw [←add_assoc, ←Finset.sum_add_distrib]
+      conv => rhs; rw [add_left_comm, ←Finset.sum_add_distrib]
+      convert heq <;> simp_rw [←Finset.sum_filter_add_sum_filter_not s (fun i => g i ≤ f i), not_le]
+        <;> congr 1
+      · refine Finset.sum_congr rfl fun i hi => ?_
+        simp only [Finset.mem_filter] at hi
+        simp [←add_smul, tsub_add_cancel_of_le hi.2]
+      · refine Finset.sum_congr rfl fun i hi => ?_
+        simp only [Finset.mem_filter] at hi
+        simp [←add_smul, tsub_add_cancel_of_le hi.2.le]
+    · intro i hi
+      by_cases hi' : g i ≤ f i
+      · exact hi'.antisymm' (tsub_eq_zero_iff_le.1 (h.1 i (Finset.mem_filter.2 ⟨hi, hi'⟩)))
+      · simp only [not_le] at hi'
+        exact hi'.le.antisymm (tsub_eq_zero_iff_le.1 (h.2 i (Finset.mem_filter.2 ⟨hi, hi'⟩)))
+
+theorem not_linearIndependent_iffₒ :
+    ¬ LinearIndependent R v ↔
+      ∃ (s t : Finset ι) (f g : ι → R),
+        ∑ i ∈ s, f i • v i = ∑ i ∈ t, g i • v i ∧ Disjoint s t ∧ ∃ i ∈ s, 0 < f i := by
+  rw [linearIndependent_iffₒ]
+  simp only [not_forall]
+  refine ⟨fun ⟨s, t, f, g, hst, heq, h⟩ => ?_,
+    fun ⟨s, t, f, g, heq, hst, i, hfi⟩ =>
+      ⟨s, t, f, g, hst, heq, fun ⟨hf, _⟩ => pos_iff_ne_zero.1 hfi.2 (hf i hfi.1)⟩⟩
+  simp only [not_and, not_or, not_not, imp_iff_not_or, not_forall] at h
+  rcases h with ⟨i, hi, hfi⟩ | ⟨i, hi, hgi⟩
+  · exact ⟨s, t, f, g, heq, hst, i, hi, pos_of_ne_zero hfi⟩
+  · exact ⟨t, s, g, f, heq.symm, hst.symm, i, hi, pos_of_ne_zero hgi⟩
+
+lemma linearIndepOn_finset_iffₒ [DecidableEq ι] {s : Finset ι} :
+    LinearIndepOn R v s ↔ ∀ t ⊆ s, ∀ (f g : ι → R),
+      ∑ i ∈ t, f i • v i = ∑ i ∈ s \ t, g i • v i → (∀ i ∈ t, f i = 0) ∧ ∀ i ∈ s \ t, g i = 0 := by
+  rw [LinearIndepOn, linearIndependent_iffₒ]
+  constructor
+  · intro h t ht f g heq
+    specialize h {i | i.1 ∈ t} {i | i.1 ∉ t} (f ∘ Subtype.val) (g ∘ Subtype.val)
+      (Finset.disjoint_filter_filter_neg _ _ _) ?_
+    · simp only [Function.comp_apply]
+      convert heq
+      · simp_rw [Finset.coe_sort_coe, Finset.univ_eq_attach, Finset.filter_attach (· ∈ t)]
+        simp only [Embedding.subtypeMap, Finset.sum_map, Embedding.coeFn_mk, Subtype.map_coe,
+          Embedding.refl_apply]
+        rw [Finset.sum_attach _ (fun x => f x • v x), Finset.filter_mem_eq_inter,
+          Finset.inter_eq_right.2 ht]
+      · simp_rw [Finset.coe_sort_coe, Finset.univ_eq_attach, Finset.filter_attach (· ∉ t)]
+        simp only [Embedding.subtypeMap, Finset.sum_map, Embedding.coeFn_mk, Subtype.map_coe,
+          Embedding.refl_apply]
+        rw [Finset.sum_attach _ (fun x => g x • v x), Finset.filter_notMem_eq_sdiff]
+    · simp only [Finset.coe_sort_coe, Finset.univ_eq_attach, Finset.mem_filter, Finset.mem_attach,
+        true_and, comp_apply, Subtype.forall] at h
+      exact ⟨fun i hi => h.1 i (ht hi) hi, fun i hi =>
+        h.2 i (Finset.mem_sdiff.1 hi).1 (Finset.mem_sdiff.1 hi).2⟩
+  · intro h t₁ t₂ f g ht₁t₂ heq
+    specialize h (t₁.map (Embedding.subtype _)) (Finset.map_subtype_subset _)
+      (fun i => if h : i ∈ s then f ⟨i, h⟩ else 0)
+      (fun i => if h : i ∈ s then if h' : ⟨i, h⟩ ∈ t₂ then g ⟨i, h⟩ else 0 else 0) ?_
+    · conv =>
+        enter [2, 1, 1]
+        rw [← s.subtype_map_of_mem (fun x hx => hx), Finset.subtype_eq_univ.2 (fun x hx => hx)]
+      erw [← Finset.map_sdiff]
+      simpa [Embedding.subtype, -Finset.univ_eq_attach,
+        (Finset.inter_eq_right (t := .univ \ t₁)).2
+          (Finset.subset_sdiff.2 ⟨t₂.subset_univ, ht₁t₂.symm⟩)] using heq
+    · simp only [Finset.coe_sort_coe, Embedding.subtype, Finset.mem_map, Embedding.coeFn_mk,
+        Subtype.exists, exists_and_right, exists_eq_right, dite_eq_right_iff, forall_exists_index,
+        Finset.mem_sdiff, not_exists, and_imp] at h
+      exact ⟨fun i hi => h.1 i.1 i.2 hi i.2, fun i hi =>
+        h.2 i.1 i.2 (fun _ => ht₁t₂.notMem_of_mem_right_finset hi) i.2 hi⟩
+
+lemma not_linearIndepOn_finset_iffₒ [DecidableEq ι] {s : Finset ι} :
+    ¬LinearIndepOn R v s ↔ ∃ t ⊆ s, ∃ (f g : ι → R),
+      ∑ i ∈ t, f i • v i = ∑ i ∈ s \ t, g i • v i ∧ ∃ i ∈ t, 0 < f i := by
+  rw [linearIndepOn_finset_iffₒ]
+  simp only [not_forall]
+  refine ⟨fun ⟨t, hst, f, g, heq, h⟩ => ?_,
+    fun ⟨t, hst, f, g, heq, i, hfi⟩ =>
+      ⟨t, hst, f, g, heq, fun ⟨hf, ?_⟩ => pos_iff_ne_zero.1 hfi.2 (hf i hfi.1)⟩⟩
+  simp only [not_and, not_or, not_not, imp_iff_not_or, not_forall] at h
+  rcases h with ⟨i, hi, hfi⟩ | ⟨i, hi, hgi⟩
+  · exact ⟨t, hst, f, g, heq, i, hi, pos_of_ne_zero hfi⟩
+  · refine ⟨s \ t, Finset.sdiff_subset, g, f, ?_, i, hi, pos_of_ne_zero hgi⟩
+    simpa [Finset.sdiff_sdiff_eq_self hst] using heq.symm
+
+end CanonicallyOrderedAdd
 
 end Semiring
 
