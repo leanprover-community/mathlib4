@@ -553,6 +553,50 @@ instance instModule [Semiring K] [AddCommMonoid β] [Module K β] : Module K (α
 theorem smul_eq_map [SMul K β] (k : K) (f : α →ₛ β) : k • f = f.map (k • ·) :=
   rfl
 
+instance [NonUnitalNonAssocSemiring β] : NonUnitalNonAssocSemiring (α →ₛ β) where
+  left_distrib _ _ _ := ext fun _ ↦ left_distrib ..
+  right_distrib _ _ _ := ext fun _ ↦ right_distrib ..
+  zero_mul _ := ext fun _ ↦ zero_mul ..
+  mul_zero _ := ext fun _ ↦ mul_zero ..
+
+instance [Semiring β] : Semiring (α →ₛ β) where
+
+noncomputable def simpleFuncAlgebraMap [CommSemiring K] [Semiring β] [Algebra K β] : K →+* α →ₛ β :=
+  { toFun k := const _ <| algebraMap _ β k
+    map_one' := ext fun _ ↦ algebraMap K β |>.map_one ▸ rfl
+    map_mul' _ _ := ext fun _ ↦ algebraMap K β |>.map_mul ..
+    map_zero' := ext fun _ ↦ algebraMap K β |>.map_zero ▸ rfl
+    map_add' _ _ := ext fun _ ↦ algebraMap K β |>.map_add ..}
+
+lemma algebraMap_const_mul_comm [CommSemiring K] [Semiring β] [Algebra K β] :
+     ∀ (c : K), ∀ (f : α →ₛ β), simpleFuncAlgebraMap c * f = f * simpleFuncAlgebraMap c :=
+  fun _ _ => ext fun _ => Algebra.commutes ..
+
+noncomputable instance [CommSemiring K] [Semiring β] [Algebra K β] : Algebra K (α →ₛ β) :=
+  simpleFuncAlgebraMap.toAlgebra' algebraMap_const_mul_comm
+
+section Star
+
+instance [Star β] : Star (α →ₛ β) where
+  star f := f.map Star.star
+
+@[simp]
+lemma star_apply [Star β] {f : α →ₛ β} {x : α} : star f x = star (f x) := rfl
+
+instance [InvolutiveStar β] : InvolutiveStar (α →ₛ β) where
+  star_involutive _ := ext fun _ ↦ star_star _
+
+instance [AddMonoid β] [StarAddMonoid β] : StarAddMonoid (α →ₛ β) where
+  star_add _ _ := ext fun _ ↦ star_add ..
+
+instance [Mul β] [StarMul β] : StarMul (α →ₛ β) where
+  star_mul _ _ := ext fun _ ↦ star_mul ..
+
+instance [NonUnitalNonAssocSemiring β] [StarRing β] : StarRing (α →ₛ β) where
+  star_add _ _ := ext fun _ ↦ star_add ..
+
+end Star
+
 section Preorder
 variable [Preorder β] {s : Set α} {f f₁ f₂ g g₁ g₂ : α →ₛ β} {hs : MeasurableSet s}
 
@@ -1024,35 +1068,6 @@ theorem lintegral_map' {β} [MeasurableSpace β] {μ' : Measure β} (f : α →�
 theorem lintegral_map {β} [MeasurableSpace β] (g : β →ₛ ℝ≥0∞) {f : α → β} (hf : Measurable f) :
     g.lintegral (Measure.map f μ) = (g.comp f hf).lintegral μ :=
   Eq.symm <| lintegral_map' _ _ f (fun _ => rfl) fun _s hs => Measure.map_apply hf hs
-
-section Star
-
-variable {R : Type*}
-
-instance [Star R] : Star (α →ₛ R) where
-  star f := f.map Star.star
-
-lemma star_apply [Star R] (f : α →ₛ R) (x : α) : (star f) x = star (f x) := rfl
-
-instance [InvolutiveStar R] : InvolutiveStar (α →ₛ R) where
-  star_involutive := fun _ => by ext; simp [star_apply]
-
-instance [AddMonoid R] [StarAddMonoid R] : StarAddMonoid (α →ₛ R) where
-  star_add := fun _ _ => by ext; simp [star_apply]
-
-instance [Mul R] [StarMul R] : StarMul (α →ₛ R) where
-  star_mul := fun _ _ => by ext; simp [star_apply]
-
-instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring (α →ₛ R) where
-  left_distrib := fun _ _ _ => by ext; simp [left_distrib]
-  right_distrib := fun _ _ _ => by ext; simp [right_distrib]
-  zero_mul := fun _ => by ext; simp
-  mul_zero := fun _ => by ext; simp
-
-instance [NonUnitalNonAssocSemiring R] [StarRing R] : StarRing (α →ₛ R) where
-  star_add := fun _ _ => by ext; simp
-
-end Star
 
 end Measure
 
