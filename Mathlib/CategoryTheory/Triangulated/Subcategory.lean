@@ -149,7 +149,9 @@ instance [P.IsTriangulated] : P.IsTriangulatedClosed₃ where
 instance [P.IsTriangulated] : P.isoClosure.IsTriangulated where
 
 /-- Given `P : ObjectProperty C` with `C` a pretriangulated category, this is the class
-of morphisms whose cone satisfies `P`. -/
+of morphisms whose cone satisfies `P`. (The name `trW` contains the prefix `tr`
+for "triangulated", and `W` is a letter that is often used to refer to classes of
+morphisms with respect to which we may consider the localized category.) -/
 def trW : MorphismProperty C :=
   fun X Y f => ∃ (Z : C) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧)
     (_ : Triangle.mk f g h ∈ distTriang C), P Z
