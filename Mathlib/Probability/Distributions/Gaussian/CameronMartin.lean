@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Analysis.InnerProductSpace.Completion
+import Mathlib.MeasureTheory.Measure.SeparableMeasure
 import Mathlib.Probability.Distributions.Gaussian.Fernique
 import Mathlib.Probability.Moments.CovarianceBilin
 
@@ -212,20 +213,15 @@ noncomputable
 abbrev CameronMartin (μ : Measure E) [IsFiniteMeasure μ] :=
   Completion (Submodule.map (Dual.centeredToLp μ 2) ⊤)
 
-noncomputable
-instance [IsFiniteMeasure μ] : NormedAddCommGroup (CameronMartin μ) := by
-  unfold CameronMartin; infer_instance
+-- #synth NormedAddCommGroup (CameronMartin μ)
+-- #synth InnerProductSpace ℝ (CameronMartin μ)
+-- #synth CompleteSpace (CameronMartin μ)
 
-noncomputable
-instance [IsFiniteMeasure μ] : InnerProductSpace ℝ (CameronMartin μ) := by
-  unfold CameronMartin; infer_instance
-
-instance [IsFiniteMeasure μ] : CompleteSpace (CameronMartin μ) := by
-  unfold CameronMartin; infer_instance
-
--- TODO: make this work?
--- instance [IsFiniteMeasure μ] : SecondCountableTopology (CameronMartin μ) := by
---   unfold CameronMartin; infer_instance
+-- TODO: make `infer_instance` work?
+instance : SecondCountableTopology (CameronMartin μ) := by
+  suffices SecondCountableTopology (Submodule.map (Dual.centeredToLp μ 2) ⊤) by infer_instance
+  have : Fact (2 ≠ ∞) := ⟨by simp⟩
+  exact TopologicalSpace.Subtype.secondCountableTopology _
 
 noncomputable
 def pureCameronMartin (μ : Measure E) [IsFiniteMeasure μ] : Dual ℝ E →ₗ[ℝ] CameronMartin μ :=
@@ -331,13 +327,13 @@ lemma evalMapCLM_pureCameronMartin (hy : ∃ M, ∀ L : Dual ℝ E, covarianceBi
 
 noncomputable
 def toCameronMartin (μ : Measure E) [IsGaussian μ] (y : E)
-    [Decidable (∃ M, ∀ (L : Dual ℝ E), ((covarianceBilin μ) L) L ≤ 1 → L y ≤ M)] :
+    [Decidable (∃ M, ∀ L : Dual ℝ E, covarianceBilin μ L L ≤ 1 → L y ≤ M)] :
     CameronMartin μ :=
   if hy : ∃ M, ∀ L : Dual ℝ E, covarianceBilin μ L L ≤ 1 → L y ≤ M
   then (InnerProductSpace.toDual ℝ (CameronMartin μ)).symm (evalMapCLM μ y hy)
   else 0
 
-variable [Decidable (∃ M, ∀ (L : Dual ℝ E), ((covarianceBilin μ) L) L ≤ 1 → L y ≤ M)]
+variable [Decidable (∃ M, ∀ L : Dual ℝ E, covarianceBilin μ L L ≤ 1 → L y ≤ M)]
 
 lemma toCameronMartin_def (hy : ∃ M, ∀ L : Dual ℝ E, covarianceBilin μ L L ≤ 1 → L y ≤ M) :
     toCameronMartin μ y
@@ -460,7 +456,7 @@ lemma todooo (x : CameronMartin μ) {L : Dual ℝ E} (hL : covarianceBilin μ L 
 
 end ToInitialSpace
 
-variable {y : E} [Decidable (∃ M, ∀ (L : Dual ℝ E), ((covarianceBilin μ) L) L ≤ 1 → L y ≤ M)]
+variable {y : E} [Decidable (∃ M, ∀ L : Dual ℝ E, covarianceBilin μ L L ≤ 1 → L y ≤ M)]
 
 @[simp]
 lemma toInitialSpace_toCameronMartin
@@ -470,9 +466,9 @@ lemma toInitialSpace_toCameronMartin
   intro L
   rw [← evalMapCLM_pureCameronMartin hy, apply_toInitialSpace_eq_inner, evalMapCLM_apply]
 
-open Classical in
 @[simp]
-lemma toCameronMartin_toInitialSpace (x : CameronMartin μ) :
+lemma toCameronMartin_toInitialSpace (x : CameronMartin μ)
+    [Decidable (∃ M, ∀ L : Dual ℝ E, covarianceBilin μ L L ≤ 1 → L (toInitialSpace μ x) ≤ M)] :
     toCameronMartin μ (toInitialSpace μ x) = x := by
   refine toInitialSpace_injective ?_
   rw [toInitialSpace_toCameronMartin ⟨‖x‖, fun L hL ↦ todooo x hL⟩]
