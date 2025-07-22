@@ -624,12 +624,8 @@ lemma ker_mem_invtSubmodule_iff (hf : IsIdempotentElem f) :
 both `range f` and `ker f` are invariant under `T`. -/
 lemma commute_iff (hf : IsIdempotentElem f) :
     Commute f T ↔ (range f ∈ Module.End.invtSubmodule T ∧ ker f ∈ Module.End.invtSubmodule T) := by
-  simp_rw [Commute, SemiconjBy, hf.range_mem_invtSubmodule_iff,
-    hf.ker_mem_invtSubmodule_iff, ← Module.End.mul_eq_comp]
-  refine ⟨fun h => ?_, fun ⟨h1, h2⟩ => ?_⟩
-  · simp [h, ← mul_assoc]
-    rw [mul_assoc, hf.eq]
-  · rw [← h1, ← h2]
+  simp_rw [hf.range_mem_invtSubmodule_iff, hf.ker_mem_invtSubmodule_iff, ← Module.End.mul_eq_comp]
+  exact ⟨fun h => (by simp [← h.eq, ← mul_assoc, hf.eq]), fun ⟨h1, h2⟩ => h2.symm.trans h1⟩
 
 /-- An idempotent operator `f` commutes with an unit operator `T` if and only if
 `T (range f) = range f` and `T (ker f) = ker f`. -/
