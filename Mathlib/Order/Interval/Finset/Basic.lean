@@ -253,12 +253,13 @@ theorem Ioc_disjoint_Ioc_of_le {d : α} (hbc : b ≤ c) : Disjoint (Ioc a b) (Io
   disjoint_left.2 fun _ h1 h2 ↦ not_and_of_not_left _
     ((mem_Ioc.1 h1).2.trans hbc).not_gt (mem_Ioc.1 h2)
 
-lemma _root_.subsingleton_of_denselyOrdered_of_lt [DenselyOrdered α] {a b : α} (h : a < b) :
-    Subsingleton α := by
+lemma _root_.not_lt_of_denselyOrdered_of_locallyFinite [DenselyOrdered α] (a b : α) :
+    ¬ a < b := by
+  intro h
   induction hs : Finset.Icc a b using Finset.strongInduction generalizing b with | H i ih
   subst hs
   obtain ⟨c, hac, hcb⟩ := exists_between h
-  refine ih _ ?_ hac rfl
+  refine ih _ ?_ c hac rfl
   exact Finset.Icc_ssubset_Icc_right (hac.trans hcb).le le_rfl hcb
 
 variable (a)

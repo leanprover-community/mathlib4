@@ -21,7 +21,7 @@ lemma LocallyFiniteOrder.denselyOrdered_iff_subsingleton :
   refine ⟨fun H ↦ ?_, fun h ↦ h.instDenselyOrdered⟩
   rw [← not_nontrivial_iff_subsingleton, nontrivial_iff_lt]
   rintro ⟨a, b, hab⟩
-  exact absurd ((subsingleton_of_denselyOrdered_of_lt hab).elim _ _) hab.ne'
+  exact not_lt_of_denselyOrdered_of_locallyFinite a b hab
 
 lemma denselyOrdered_set_iff_subsingleton {s : Set X} :
     DenselyOrdered s ↔ s.Subsingleton := by
