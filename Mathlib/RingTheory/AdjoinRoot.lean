@@ -133,6 +133,14 @@ instance [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (f : R[X]) :
 instance [CommSemiring S] [Algebra S R] : Algebra S (AdjoinRoot f) :=
   Ideal.Quotient.algebra S
 
+/-- `R`-algebra homomorphism from `R[x]` to `AdjoinRoot f` sending `X` to the `root`. -/
+def mkₐ : R[X] →ₐ[R] AdjoinRoot f :=
+  Ideal.Quotient.mkₐ R _
+
+@[simp] theorem mkₐ_to_ringHom : (mkₐ f).toRingHom = mk f := rfl
+
+@[simp] theorem coe_mkₐ : ⇑(mkₐ f) = mk f := rfl
+
 @[simp]
 theorem algebraMap_eq : algebraMap R (AdjoinRoot f) = of f :=
   rfl
