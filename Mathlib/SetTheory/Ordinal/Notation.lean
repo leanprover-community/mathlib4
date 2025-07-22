@@ -796,8 +796,6 @@ theorem repr_opow_aux₁ {e a} [Ne : NF e] [Na : NF a] {a' : Ordinal} (e0 : repr
 
 section
 
--- Porting note: `R'` is used in the proof but marked as an unused variable.
-set_option linter.unusedVariables false in
 theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω ∣ repr a')
     (e0 : repr a0 ≠ 0) (h : repr a' + m < (ω ^ repr a0)) (n : ℕ+) (k : ℕ) :
     let R := repr (opowAux 0 a0 (oadd a0 n a' * ofNat m) k m)

@@ -15,41 +15,92 @@ assert_not_exists Field
 
 open scoped nonZeroDivisors
 
+section MonoidWithZero
+
+variable {R : Type*} [MonoidWithZero R] {r : R}
+
+theorem IsLeftRegular.mem_nonZeroDivisorsLeft (h : IsLeftRegular r) : r ∈ nonZeroDivisorsLeft R :=
+  fun x hrx ↦ h (by simpa)
+
+theorem IsRightRegular.mem_nonZeroDivisorsRight (h : IsRightRegular r) :
+    r ∈ nonZeroDivisorsRight R :=
+  fun x hrx ↦ h (by simpa)
+
+end MonoidWithZero
+
+section Monoid
+
+variable {R : Type*} [Monoid R] [Finite R] {r : R}
+
+theorem IsLeftRegular.isUnit_of_finite (h : IsLeftRegular r) : IsUnit r := by
+  rwa [IsUnit.isUnit_iff_mulLeft_bijective, ← Finite.injective_iff_bijective]
+
+theorem IsRightRegular.isUnit_of_finite (h : IsRightRegular r) : IsUnit r := by
+  rwa [IsUnit.isUnit_iff_mulRight_bijective, ← Finite.injective_iff_bijective]
+
+theorem isRegular_iff_isUnit_of_finite {r : R} : IsRegular r ↔ IsUnit r where
+  mp h := h.1.isUnit_of_finite
+  mpr h := h.isRegular
+
+end Monoid
+
 section Ring
+
 variable {R : Type*} [Ring R] {a x y r : R}
 
-lemma mul_cancel_right_mem_nonZeroDivisors (hr : r ∈ R⁰) : x * r = y * r ↔ x = y := by
+lemma mul_cancel_left_mem_nonZeroDivisorsLeft (hr : r ∈ nonZeroDivisorsLeft R) :
+    r * x = r * y ↔ x = y := by
+  refine ⟨fun h ↦ ?_, congrArg (r * ·)⟩
+  rw [← sub_eq_zero, ← mul_left_mem_nonZeroDivisorsLeft_eq_zero_iff hr, mul_sub, h, sub_self]
+
+lemma mul_cancel_right_mem_nonZeroDivisorsRight (hr : r ∈ nonZeroDivisorsRight R) :
+    x * r = y * r ↔ x = y := by
   refine ⟨fun h ↦ ?_, congrArg (· * r)⟩
-  rw [← sub_eq_zero, ← mul_right_mem_nonZeroDivisors_eq_zero_iff hr, sub_mul, h, sub_self]
+  rw [← sub_eq_zero, ← mul_right_mem_nonZeroDivisorsRight_eq_zero_iff hr, sub_mul, h, sub_self]
+
+lemma mul_cancel_right_mem_nonZeroDivisors (hr : r ∈ R⁰) : x * r = y * r ↔ x = y :=
+  mul_cancel_right_mem_nonZeroDivisorsRight hr.2
 
 lemma mul_cancel_right_coe_nonZeroDivisors {c : R⁰} : x * c = y * c ↔ x = y :=
   mul_cancel_right_mem_nonZeroDivisors c.prop
 
-lemma isLeftRegular_iff_mem_nonZeroDivisorsRight : IsLeftRegular r ↔ r ∈ nonZeroDivisorsRight R :=
+lemma isLeftRegular_iff_mem_nonZeroDivisorsLeft : IsLeftRegular r ↔ r ∈ nonZeroDivisorsLeft R :=
   ⟨fun h r' eq ↦ h (by simp_rw [eq, mul_zero]),
     fun h r₁ r₂ eq ↦ sub_eq_zero.mp <| h _ <| by simp_rw [mul_sub, eq, sub_self]⟩
 
-lemma isRightRegular_iff_mem_nonZeroDivisorsLeft : IsRightRegular r ↔ r ∈ nonZeroDivisorsLeft R :=
+lemma isRightRegular_iff_mem_nonZeroDivisorsRight : IsRightRegular r ↔ r ∈ nonZeroDivisorsRight R :=
   ⟨fun h r' eq ↦ h (by simp_rw [eq, zero_mul]),
     fun h r₁ r₂ eq ↦ sub_eq_zero.mp <| h _ <| by simp_rw [sub_mul, eq, sub_self]⟩
 
-lemma le_nonZeroDivisors_iff_isRightRegular {S : Submonoid R} :
-    S ≤ R⁰ ↔ ∀ s : S, IsRightRegular (s : R) := by
-  simp_rw [SetLike.le_def, isRightRegular_iff_mem_nonZeroDivisorsLeft, Subtype.forall,
-    nonZeroDivisorsLeft_eq_nonZeroDivisors]
+lemma isRegular_iff_mem_nonZeroDivisors : IsRegular r ↔ r ∈ R⁰ := by
+  rw [isRegular_iff, isLeftRegular_iff_mem_nonZeroDivisorsLeft,
+    isRightRegular_iff_mem_nonZeroDivisorsRight, nonZeroDivisors, Submonoid.mem_inf]
 
-lemma le_nonZeroDivisors_iff_isRegular {R} [CommRing R] {S : Submonoid R} :
+lemma le_nonZeroDivisorsLeft_iff_isLeftRegular {S : Submonoid R} :
+    S ≤ nonZeroDivisorsLeft R ↔ ∀ s : S, IsLeftRegular (s : R) := by
+  simp_rw [SetLike.le_def, isLeftRegular_iff_mem_nonZeroDivisorsLeft, Subtype.forall]
+
+lemma le_nonZeroDivisorsRight_iff_isRightRegular {S : Submonoid R} :
+    S ≤ nonZeroDivisorsRight R ↔ ∀ s : S, IsRightRegular (s : R) := by
+  simp_rw [SetLike.le_def, isRightRegular_iff_mem_nonZeroDivisorsRight, Subtype.forall]
+
+lemma le_nonZeroDivisors_iff_isRegular {S : Submonoid R} :
     S ≤ R⁰ ↔ ∀ s : S, IsRegular (s : R) := by
-  simp_rw [le_nonZeroDivisors_iff_isRightRegular,
-    Commute.isRightRegular_iff (Commute.all _), Commute.isRegular_iff (Commute.all _)]
+  simp_rw [nonZeroDivisors, le_inf_iff, le_nonZeroDivisorsLeft_iff_isLeftRegular,
+    le_nonZeroDivisorsRight_iff_isRightRegular, isRegular_iff, forall_and]
+
+@[deprecated (since := "2025-07-16")]
+alias isLeftRegular_iff_mem_nonZeroDivisorsRight := isLeftRegular_iff_mem_nonZeroDivisorsLeft
+
+@[deprecated (since := "2025-07-16")]
+alias isRightRegular_iff_mem_nonZeroDivisorsLeft := isRightRegular_iff_mem_nonZeroDivisorsRight
+
+@[deprecated (since := "2025-07-16")]
+alias le_nonZeroDivisors_iff_isRightRegular := le_nonZeroDivisorsRight_iff_isRightRegular
 
 /-- In a finite ring, an element is a unit iff it is a non-zero-divisor. -/
 lemma isUnit_iff_mem_nonZeroDivisors_of_finite [Finite R] : IsUnit a ↔ a ∈ nonZeroDivisors R := by
-  refine ⟨IsUnit.mem_nonZeroDivisors, fun ha ↦ ?_⟩
-  rw [IsUnit.isUnit_iff_mulRight_bijective, ← Finite.injective_iff_bijective]
-  intro b c hbc
-  rw [← sub_eq_zero, ← sub_mul] at hbc
-  exact sub_eq_zero.mp (ha _ hbc)
+  rw [← isRegular_iff_mem_nonZeroDivisors, isRegular_iff_isUnit_of_finite]
 
 end Ring
 
