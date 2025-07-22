@@ -32,7 +32,7 @@ universe u
 
 open CategoryTheory Limits
 
-attribute [local grind] inf_le_left inf_le_right le_sup_left le_sup_right 
+attribute [local grind] inf_le_left inf_le_right le_sup_left le_sup_right
 
 namespace Lattice
 
@@ -78,6 +78,8 @@ structure MulticoequalizerDiagram : Prop where
 
 namespace MulticoequalizerDiagram
 
+attribute [local grind] MulticoequalizerDiagram MultispanShape.prod_fst MultispanShape.prod_snd
+
 variable {x u v} (d : MulticoequalizerDiagram x u v)
 
 /-- The multispan index in the category associated to the complete lattice `T`
@@ -87,14 +89,8 @@ when `d : MulticoequalizerDiagram x u v`. -/
 def multispanIndex : MultispanIndex (.prod ι) T where
   left := fun ⟨i, j⟩ ↦ v i j
   right := u
-  fst (_ : ι × ι) := homOfLE (by
-    dsimp
-    rw [← d.min_eq]
-    exact inf_le_left)
-  snd (_ : ι × ι) := homOfLE (by
-    dsimp
-    rw [← d.min_eq]
-    exact inf_le_right)
+  fst (_ : ι × ι) := homOfLE (by grind)
+  snd (_ : ι × ι) := homOfLE (by grind)
 
 /-- The multicofork in the category associated to the complete lattice `T`
 associated to `d : MulticoequalizerDiagram x u v` with `x : T`.
