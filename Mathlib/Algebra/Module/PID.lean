@@ -269,4 +269,22 @@ theorem equiv_free_prod_directSum [h' : Module.Finite R M] :
           (h.prodCongr g).trans <| LinearEquiv.prodComm.{u, u} R _ (Fin n →₀ R) ⟩⟩
   rw [range_subtype, ker_mkQ]
 
+open LinearMap in
+theorem exists_ker_toSpanSingleton_eq_annihilator [Module.Finite R M] :
+    ∃ x : M, ker (toSpanSingleton R _ x) = annihilator R M := by
+  have ⟨m, ι, _, p, irr, n, ⟨e⟩⟩ := equiv_free_prod_directSum (R := R) (M := M)
+  refine ⟨e.symm (Finsupp.equivFunOnFinite.symm fun _ ↦ 1, DFinsupp.equivFunOnFintype.symm
+    fun _ ↦ Submodule.mkQ _ 1), le_antisymm (fun x h ↦ ?_) fun x h ↦ mem_annihilator.mp h _⟩
+  simp_rw [mem_ker, toSpanSingleton_apply, ← map_smul] at h
+  rw [e.symm.map_eq_zero_iff, Prod.ext_iff, Finsupp.ext_iff, DFinsupp.ext_iff] at h
+  obtain _ | m := m
+  · simp_rw [e.annihilator_eq, annihilator_prod, annihilator_eq_top_iff.mpr inferInstance,
+      DirectSum, annihilator_dfinsupp, top_inf_eq, Ideal.mem_iInf, mem_annihilator]
+    intro i r
+    obtain ⟨r, rfl⟩ := Submodule.mkQ_surjective _ r
+    rw [← mul_one r, ← smul_eq_mul, map_smul, ← mul_smul, mul_comm, mul_smul]
+    exact congr(r • $(h.2 i)).trans (smul_zero _)
+  · rw [show x = 0 by simpa using h.1 0]
+    exact zero_mem _
+
 end Module
