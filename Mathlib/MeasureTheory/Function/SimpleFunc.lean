@@ -567,12 +567,12 @@ instance [Monoid K] [Semiring β] [MulAction K β] : MulAction K (α →ₛ β) 
 
 noncomputable instance [CommSemiring K] [Semiring β] [Algebra K β] : Algebra K (α →ₛ β) :=
   RingHom.toAlgebra'
-    { toFun _ := const α (algebraMap K β _)
-      map_one' := SimpleFunc.ext fun _ => (algebraMap K β).map_one ▸ rfl
-      map_mul' _ _:= ext fun _ => (algebraMap K β).map_mul _ _
-      map_zero' := SimpleFunc.ext fun _ => (algebraMap K β).map_zero ▸ rfl
-      map_add' _ _ := ext fun _ => (algebraMap K β).map_add _ _ }
-    fun c f => ext fun _ => Algebra.commutes c (f _)
+    { toFun _ := const α <| algebraMap K β _
+      map_one' := SimpleFunc.ext fun _ => algebraMap K β |>.map_one ▸ rfl
+      map_mul' _ _:= ext fun _ => algebraMap K β |>.map_mul _ _
+      map_zero' := SimpleFunc.ext fun _ => algebraMap K β |>.map_zero ▸ rfl
+      map_add' _ _ := ext fun _ => algebraMap K β |>.map_add _ _ }
+    fun c f => ext fun _ => Algebra.commutes c <| f _
 
 section Star
 
