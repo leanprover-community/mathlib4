@@ -143,7 +143,9 @@ local notation "ψ" n => ((toEnd R L M f) ^ n) m
 
 -- Although this is true by definition, we include this lemma (and the assumption) to mirror the API
 -- for `lie_h_pow_toEnd_f` and `lie_e_pow_succ_toEnd_f`.
-lemma lie_f_pow_toEnd_f (_ : HasPrimitiveVectorWith t m μ) (n : ℕ) :
+set_option linter.unusedVariables false in
+@[nolint unusedArguments]
+lemma lie_f_pow_toEnd_f (P : HasPrimitiveVectorWith t m μ) (n : ℕ) :
     ⁅f, ψ n⁆ = ψ (n + 1) := by
   simp [pow_succ']
 
