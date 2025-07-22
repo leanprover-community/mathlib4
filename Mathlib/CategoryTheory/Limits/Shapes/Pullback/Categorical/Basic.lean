@@ -224,6 +224,50 @@ lemma w_app {S S' : CatCommSqOver F G X} (φ : S ⟶ S') (x : X) :
     S.iso.hom.app x ≫ G.map (φ.snd.app x) :=
   NatTrans.congr_app φ.w x
 
+@[reassoc (attr := simp)]
+lemma Iso.hom_inv_id_fst_app {S S' : CatCommSqOver F G X} (e : S ≅ S') (x : X) :
+    e.hom.fst.app x ≫ e.inv.fst.app x = 𝟙 _ := by
+  simp [← NatTrans.comp_app, ← comp_fst]
+
+@[reassoc (attr := simp)]
+lemma Iso.hom_inv_id_snd_app {S S' : CatCommSqOver F G X} (e : S ≅ S') (x : X) :
+    e.hom.snd.app x ≫ e.inv.snd.app x = 𝟙 _ := by
+  simp [← NatTrans.comp_app, ← comp_snd]
+
+@[reassoc (attr := simp)]
+lemma Iso.inv_hom_id_fst_app {S S' : CatCommSqOver F G X} (e : S ≅ S') (x : X) :
+    e.inv.fst.app x ≫ e.hom.fst.app x = 𝟙 _ := by
+  simp [← NatTrans.comp_app, ← comp_fst]
+
+@[reassoc (attr := simp)]
+lemma Iso.inv_hom_id_snd_app {S S' : CatCommSqOver F G X} (e : S ≅ S') (x : X) :
+    e.inv.snd.app x ≫ e.hom.snd.app x = 𝟙 _ := by
+  simp [← NatTrans.comp_app, ← comp_snd]
+
+@[reassoc (attr := simp)]
+lemma Iso.hom_inv_id_app_fst_app {J : Type*} [Category J]
+    {S S' : J ⥤ CatCommSqOver F G X} (e : S ≅ S') (j : J) (x : X) :
+    (e.hom.app j).fst.app x ≫ (e.inv.app j).fst.app x = 𝟙 _ := by
+  simp [← NatTrans.comp_app, ← comp_fst]
+
+@[reassoc (attr := simp)]
+lemma Iso.hom_inv_id_app_snd_app {J : Type*} [Category J]
+    {S S' : J ⥤ CatCommSqOver F G X} (e : S ≅ S') (j : J) (x : X) :
+    (e.hom.app j).snd.app x ≫ (e.inv.app j).snd.app x = 𝟙 _ := by
+  simp [← NatTrans.comp_app, ← comp_snd]
+
+@[reassoc (attr := simp)]
+lemma Iso.inv_hom_id_app_fst_app {J : Type*} [Category J]
+    {S S' : J ⥤ CatCommSqOver F G X} (e : S ≅ S') (j : J) (x : X) :
+    (e.inv.app j).fst.app x ≫ (e.hom.app j).fst.app x = 𝟙 _ := by
+  simp [← NatTrans.comp_app, ← comp_fst]
+
+@[reassoc (attr := simp)]
+lemma Iso.inv_hom_id_app_snd_app {J : Type*} [Category J]
+    {S S' : J ⥤ CatCommSqOver F G X} (e : S ≅ S') (j : J) (x : X) :
+    (e.inv.app j).snd.app x ≫ (e.hom.app j).snd.app x = 𝟙 _ := by
+  simp [← NatTrans.comp_app, ← comp_snd]
+
 variable {X} in
 /-- Interpret a `CatCommSq` as a `CatCommSqOver`. -/
 @[simps]
