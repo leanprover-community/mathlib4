@@ -74,7 +74,7 @@ variable {T : Type u} [CompleteLattice T] {ι : Type*} (x : T) (u : ι → T) (v
 and for any `i` and `j`, `v i j` is the minimum of `u i` and `u j`. -/
 structure MulticoequalizerDiagram : Prop where
   iSup_eq : ⨆ (i : ι), u i = x
-  min_eq (i j : ι) : u i ⊓ u j = v i j
+  min_eq (i j : ι) : v i j = u i ⊓ u j
 
 namespace MulticoequalizerDiagram
 
