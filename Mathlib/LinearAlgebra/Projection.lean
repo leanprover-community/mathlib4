@@ -262,6 +262,13 @@ theorem ofIsCompl_eq' (h : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F
     (hφ : φ = χ.comp p.subtype) (hψ : ψ = χ.comp q.subtype) : ofIsCompl h φ ψ = χ :=
   ofIsCompl_eq h (fun _ => hφ.symm ▸ rfl) fun _ => hψ.symm ▸ rfl
 
+theorem ofIsCompl_eq_add (hpq : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} :
+    ofIsCompl hpq φ ψ = (φ ∘ₗ p.linearProjOfIsCompl q hpq)
+      + (ψ ∘ₗ q.linearProjOfIsCompl p hpq.symm) := by
+  ext x
+  obtain ⟨a, b, rfl, _⟩ := existsUnique_add_of_isCompl hpq x
+  simp
+
 @[simp]
 theorem ofIsCompl_zero (h : IsCompl p q) : (ofIsCompl h 0 0 : E →ₗ[R] F) = 0 :=
   ofIsCompl_eq _ (fun _ => rfl) fun _ => rfl
@@ -277,9 +284,16 @@ theorem ofIsCompl_smul {R : Type*} [CommRing R] {E : Type*} [AddCommGroup E] [Mo
     {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} (c : R) : ofIsCompl h (c • φ) (c • ψ) = c • ofIsCompl h φ ψ :=
   ofIsCompl_eq _ (by simp) (by simp)
 
-theorem range_ofIsCompl_subtype_zero (hpq : IsCompl p q) :
-    range (ofIsCompl hpq p.subtype 0) = p := by
-  ext; simp [ofIsCompl]
+@[simp]
+theorem range_ofIsCompl (hpq : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} :
+    range (ofIsCompl hpq φ ψ) = range φ ⊔ range ψ := by
+  rw [ofIsCompl_eq_add]
+  apply le_antisymm
+  · apply range_add_le _ _ |>.trans
+    gcongr
+    all_goals exact range_comp_le_range ..
+  · apply sup_le
+    all_goals rintro - ⟨x, rfl⟩; exact ⟨x, by simp⟩
 
 theorem ker_ofIsCompl_subtype_zero (hpq : IsCompl p q) :
     ker (ofIsCompl hpq p.subtype 0) = q := by
@@ -288,13 +302,6 @@ theorem ker_ofIsCompl_subtype_zero (hpq : IsCompl p q) :
 theorem isIdempotentElem_ofIsCompl_subtype_zero (hpq : IsCompl p q) :
     IsIdempotentElem (ofIsCompl hpq p.subtype 0) := by
   ext; simp [ofIsCompl]
-
-theorem ofIsCompl_eq_add (hpq : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} :
-    ofIsCompl hpq φ ψ = (φ ∘ₗ p.linearProjOfIsCompl q hpq)
-      + (ψ ∘ₗ q.linearProjOfIsCompl p hpq.symm) := by
-  ext x
-  obtain ⟨a, b, rfl, _⟩ := existsUnique_add_of_isCompl hpq x
-  simp
 
 theorem ofIsCompl_subtype_zero_eq (hpq : IsCompl p q) :
     ofIsCompl hpq p.subtype 0 = p.subtype ∘ₗ p.linearProjOfIsCompl q hpq := by
