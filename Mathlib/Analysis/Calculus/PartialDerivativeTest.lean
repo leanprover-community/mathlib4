@@ -98,27 +98,6 @@ noncomputable def iteratedFDerivQuadraticMap {V : Type*} [NormedAddCommGroup V]
     simp only [update₀, update₁, MultilinearMap.toFun_eq_coe, coe_coe, smul_eq_mul] at hsm₀ hsm₁
     rw [smul_eq_mul, mul_assoc, ← hsm₀, hsm₁]}
 
-/-- An everywhere positive function `f:ℝⁿ → ℝ` (`n > 0`) achieves its minimum on the sphere. -/
-lemma sphere_min_of_pos_of_nonzero {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
-    [FiniteDimensional ℝ V] [Nontrivial V] {f : V → ℝ} (hf : Continuous f)
-    (hf' : ∀ x ≠ 0, f x > 0) : ∃ x : Metric.sphere 0 1, ∀ y : Metric.sphere 0 1, f x.1 ≤ f y.1 := by
-  have h₀ : HasCompactSupport fun (x : (Metric.sphere (0:V) 1)) => f x := by
-    rw [hasCompactSupport_def, Function.support]
-    have : {x : Metric.sphere (0:V) (1:ℝ) | f x.1 ≠ 0} = Set.univ := by
-      apply subset_antisymm
-      simp only [ne_eq, Set.subset_univ]
-      intro a ha
-      suffices f a > 0 by aesop
-      apply hf'
-      intro hc
-      simpa [hc] using norm_eq_of_mem_sphere a
-    rw [this]
-    simp only [isClosed_univ, IsClosed.closure_eq]
-    exact CompactSpace.isCompact_univ
-  have : Nonempty (Metric.sphere (0:V) 1) :=
-    (NormedSpace.sphere_nonempty.mpr (by simp)).to_subtype
-  have ⟨m,hm⟩ := (hf.comp' continuous_subtype_val).exists_forall_le_of_hasCompactSupport h₀
-  use m
 
 /-- A continuous multilinear map is bilinear. -/
 noncomputable def continuousBilinearMap_of_continuousMultilinearMap {V : Type*}
@@ -176,7 +155,21 @@ lemma coercive_of_posdef {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
     IsCoercive (continuousBilinearMap_of_continuousMultilinearMap
         (iteratedFDeriv ℝ 2 f x₀)) := by
   nontriviality V
-  have h₀ := sphere_min_of_pos_of_nonzero continuous_hessian hf'
+  have h₀₀ := IsCompact.exists_isMinOn (f := (fun y => (iteratedFDeriv ℝ 2 f x₀) ![y, y]))
+    (isCompact_sphere (0:V) 1) (NormedSpace.sphere_nonempty.mpr (by simp))
+    (by
+      have := @continuous_hessian V _ _ f x₀
+      exact Continuous.continuousOn this)
+  have h₀ : ∃ x : ↑(Metric.sphere 0 1),
+  ∀ (y : ↑(Metric.sphere 0 1)),
+    (fun y ↦ (iteratedFDeriv ℝ 2 f x₀) ![y, y]) x.1 ≤ (fun y ↦ (iteratedFDeriv ℝ 2 f x₀) ![y, y])
+      y.1 := by
+    obtain ⟨x,hx⟩ := h₀₀
+    use ⟨x,hx.1⟩
+    intro y
+    simp [IsMinOn,IsMinFilter] at hx
+    apply hx.2
+    simp
   simp only [Subtype.forall, mem_sphere_iff_norm, sub_zero, Subtype.exists, exists_prop] at h₀
   obtain ⟨m,hm⟩ := h₀
   use iteratedFDeriv ℝ 2 f x₀ ![m, m]
