@@ -14,6 +14,7 @@ import Mathlib.Data.Pi.Interval
 import Mathlib.Data.Rat.Floor
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.ModelTheory.Arithmetic.Presburger.Basic
+import Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Basic
 import Mathlib.ModelTheory.Definability
 import Mathlib.RingTheory.Localization.Module
 
@@ -61,40 +62,6 @@ namespace Set
 open Pointwise Submodule Matrix
 
 variable {v : α → ℕ} {s s₁ s₂ : Set (α → ℕ)}
-
-/-- A set is linear if it is a finitely generated `ℕ`-submodule added by a single vector `v`. -/
-def Linear (s : Set (α → ℕ)) :=
-  ∃ (v : α → ℕ) (t : Finset (α → ℕ)), s = v +ᵥ (span ℕ (t : Set (α → ℕ)) : Set (α → ℕ))
-
-theorem Linear.singleton (v) : ({v} : Set (α → ℕ)).Linear :=
-  ⟨v, ∅, by simp⟩
-
-theorem Linear.span_finset (s : Finset (α → ℕ)) : (span ℕ (s : Set (α → ℕ)) : Set (α → ℕ)).Linear :=
-  ⟨0, s, by simp⟩
-
-theorem Linear.univ [Fintype α] : (univ : Set (α → ℕ)).Linear := by
-  classical
-  convert span_finset ((Finset.univ : Finset α).image (Pi.basisFun ℕ α))
-  rw [← top_coe (R := ℕ), ← Basis.span_eq (Pi.basisFun ℕ α)]
-  simp [-Basis.span_eq, Pi.basisFun]
-
-theorem Linear.vadd (hs : s.Linear) : (v +ᵥ s).Linear := by
-  rcases hs with ⟨u, t, rfl⟩
-  rw [vadd_vadd]
-  exact ⟨v +ᵥ u, t, rfl⟩
-
-theorem Linear.add (hs₁ : s₁.Linear) (hs₂ : s₂.Linear) : (s₁ + s₂).Linear := by
-  classical
-  rcases hs₁ with ⟨v, t₁, rfl⟩
-  rcases hs₂ with ⟨u, t₂, rfl⟩
-  rw [vadd_add_vadd, ← coe_sup, ← span_union, ← Finset.coe_union]
-  exact ⟨v + u, t₁ ∪ t₂, rfl⟩
-
-theorem Linear.image (hs : s.Linear) (f : (α → ℕ) →ₗ[ℕ] (β → ℕ)) : (f '' s).Linear := by
-  classical
-  rcases hs with ⟨v, t, rfl⟩
-  refine ⟨f v, t.image f, ?_⟩
-  simp [image_vadd_distrib]
 
 /-- A verison of *Gordan's lemma*: the solution of a homogeneous linear Diophantine equation
   `A *ᵥ x = B *ᵥ x` is a linear set. -/
@@ -167,119 +134,6 @@ lemma Linear.iff_eq_setOf_vadd_mulVec :
     refine ⟨v, (Finset.univ : Finset _).image A.col, ?_⟩
     ext x
     simp [mem_vadd_set, ← range_mulVecLin]
-
-/-- A set is semilinear if it is a finite union of linear sets. -/
-def Semilinear (s : Set (α → ℕ)) :=
-  ∃ (S : Finset (Set (α → ℕ))), (∀ t ∈ S, t.Linear) ∧ s = ⋃₀ S
-
-theorem Linear.semilinear (h : s.Linear) : s.Semilinear :=
-  ⟨{s}, by simp [h], by simp⟩
-
-theorem Semilinear.empty : (∅ : Set (α → ℕ)).Semilinear :=
-  ⟨∅, by simp, by simp⟩
-
-theorem Semilinear.singleton (v) : ({v} : Set (α → ℕ)).Semilinear :=
-  (Linear.singleton v).semilinear
-
-theorem Semilinear.span_finset (s : Finset (α → ℕ)) :
-    (span ℕ (s : Set (α → ℕ)) : Set (α → ℕ)).Semilinear :=
-  (Linear.span_finset s).semilinear
-
-theorem Semilinear.univ [Fintype α] : (univ : Set (α → ℕ)).Semilinear :=
-  Linear.univ.semilinear
-
-/-- Semilinear sets are closed under union. -/
-theorem Semilinear.union (hs₁ : s₁.Semilinear) (hs₂ : s₂.Semilinear) : (s₁ ∪ s₂).Semilinear := by
-  classical
-  rcases hs₁ with ⟨S₁, hS₁, rfl⟩
-  rcases hs₂ with ⟨S₂, hS₂, rfl⟩
-  rw [← sUnion_union, ← Finset.coe_union]
-  refine ⟨S₁ ∪ S₂, ?_, rfl⟩
-  intro s hs
-  simp only [Finset.mem_union] at hs
-  exact hs.elim (hS₁ s) (hS₂ s)
-
-theorem Semilinear.sUnion_finset {S : Finset (Set (α → ℕ))} (hS : ∀ s ∈ S, s.Semilinear) :
-    (⋃₀ (S : Set (Set (α → ℕ)))).Semilinear := by
-  classical
-  induction S using Finset.induction with
-  | empty => simpa using empty
-  | insert s S _ ih =>
-    simp only [Finset.mem_insert, forall_eq_or_imp] at hS
-    simpa using union hS.1 (ih hS.2)
-
-theorem Semilinear.iUnion_fintype [Fintype ι] {s : ι → Set (α → ℕ)}
-    (hs : ∀ i, (s i).Semilinear) : (⋃ i, s i).Semilinear := by
-  classical
-  rw [← sUnion_range, ← image_univ, ← Finset.coe_univ, ← Finset.coe_image]
-  apply sUnion_finset
-  simpa
-
-theorem Semilinear.biUnion_finset {s : Finset ι} {t : ι → Set (α → ℕ)}
-    (ht : ∀ i ∈ s, (t i).Semilinear) : (⋃ i ∈ s, t i).Semilinear := by
-  classical
-  simp_rw [← Finset.mem_coe, ← sUnion_image, ← Finset.coe_image]
-  apply sUnion_finset
-  simpa
-
-theorem Semilinear.finset (s : Finset (α → ℕ)) : (s : Set (α → ℕ)).Semilinear := by
-  rw [← biUnion_of_singleton (s : Set (α → ℕ))]
-  simp_rw [Finset.mem_coe]
-  apply biUnion_finset
-  simp [singleton]
-
-theorem Finite.semilinear (hs : s.Finite) : s.Semilinear := by
-  rw [← hs.coe_toFinset]
-  exact Semilinear.finset _
-
-theorem Semilinear.vadd (hs : s.Semilinear) : (v +ᵥ s).Semilinear := by
-  classical
-  rcases hs with ⟨S, hS, rfl⟩
-  refine ⟨S.image (v +ᵥ ·), ?_, ?_⟩
-  · simp only [Finset.mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
-    intro s hs
-    exact (hS s hs).vadd
-  · simp [vadd_set_sUnion, sUnion_eq_iUnion (s := v +ᵥ _), mem_vadd_set]
-
-/-- Semilinear sets are closed under set addition. -/
-theorem Semilinear.add (hs₁ : s₁.Semilinear) (hs₂ : s₂.Semilinear) :
-    (s₁ + s₂).Semilinear := by
-  classical
-  rcases hs₁ with ⟨S₁, hS₁, rfl⟩
-  rcases hs₂ with ⟨S₂, hS₂, rfl⟩
-  simp_rw [sUnion_add, add_sUnion, Finset.mem_coe]
-  apply biUnion_finset
-  intro s₁ hs₁
-  apply biUnion_finset
-  intro s₂ hs₂
-  exact ((hS₁ s₁ hs₁).add (hS₂ s₂ hs₂)).semilinear
-
-theorem Semilinear.image (hs : s.Semilinear) (f : (α → ℕ) →ₗ[ℕ] (β → ℕ)) : (f '' s).Semilinear := by
-  classical
-  rcases hs with ⟨S, hS, rfl⟩
-  simp_rw [sUnion_eq_biUnion, Finset.mem_coe, image_iUnion]
-  exact biUnion_finset fun s hs => ((hS s hs).image f).semilinear
-
-theorem Semilinear.reindex (hs : s.Semilinear) (f : β → α) : ((· ∘ f) '' s).Semilinear :=
-  hs.image (LinearMap.funLeft _ _ f)
-
-/-- Semilinear sets are closed under projection. -/
-theorem Semilinear.proj {s : Set (α ⊕ β → ℕ)} (hs : s.Semilinear) :
-    {x | ∃ y, Sum.elim x y ∈ s}.Semilinear := by
-  convert hs.reindex Sum.inl
-  ext x
-  constructor
-  · intro ⟨y, hy⟩
-    refine ⟨Sum.elim x y, hy, ?_⟩
-    rfl
-  · simp only [mem_image, mem_setOf_eq, forall_exists_index, and_imp]
-    rintro y hy rfl
-    refine ⟨y ∘ Sum.inr, ?_⟩
-    simp [hy]
-
-theorem Semilinear.proj' {p : (α → ℕ) → (β → ℕ) → Prop} :
-    {x | p (x ∘ Sum.inl) (x ∘ Sum.inr)}.Semilinear → {x | ∃ y, p x y}.Semilinear :=
-  proj
 
 /-- The solution of a linear Diophantine equation `u + A *ᵥ x = v + B *ᵥ x` is a semilinear set. -/
 theorem Semilinear.of_linear_equation [Fintype β] (u v : α → ℕ) (A B : Matrix α β ℕ) :
@@ -383,196 +237,6 @@ theorem Semilinear.biInter_finset [Fintype α] {s : Finset ι} {t : ι → Set (
   simp_rw [← Finset.mem_coe, ← sInter_image, ← Finset.coe_image]
   apply sInter_finset
   simpa
-
-lemma Linear.span (hs : s.Linear) : (span ℕ s : Set (α → ℕ)).Semilinear := by
-  classical
-  rcases hs with ⟨v, t, rfl⟩
-  convert_to ({0} ∪ (v +ᵥ (span ℕ ({v} ∪ t) : Set (α → ℕ)))).Semilinear
-  · ext x
-    simp only [SetLike.mem_coe, mem_union, mem_singleton_iff]
-    constructor
-    · intro hx
-      induction hx using span_induction with simp only [mem_vadd_set, SetLike.mem_coe] at *
-      | mem x hx =>
-        right
-        rcases hx with ⟨x, hx, rfl⟩
-        refine ⟨x, ?_, rfl⟩
-        simp only [span_union]
-        exact mem_sup_right hx
-      | zero =>
-        left
-        trivial
-      | add x y _ _ ih₁ ih₂ =>
-        rcases ih₁ with rfl | ⟨x, hx, rfl⟩
-        · simpa only [zero_add]
-        · right
-          rcases ih₂ with rfl | ⟨y, hy, rfl⟩
-          · refine ⟨x, hx, ?_⟩
-            simp
-          · refine ⟨v + (x + y), add_mem (mem_span_of_mem ?_) (add_mem hx hy), ?_⟩
-            · simp
-            · simp only [vadd_eq_add]
-              ring_nf
-      | smul n x _ ih =>
-        rcases ih with rfl | ⟨x, hx, rfl⟩
-        · simp
-        · rcases n with (_ | n)
-          · simp
-          · right
-            refine ⟨n • v + (n + 1) • x,
-              add_mem (smul_mem _ _ (mem_span_of_mem ?_)) (smul_mem _ _ hx), ?_⟩
-            · simp
-            · simp only [vadd_eq_add]
-              ring_nf
-    · rintro (hx | hx)
-      · simp [hx]
-      · simp only [mem_vadd_set, SetLike.mem_coe, span_union, mem_sup, mem_span_singleton] at hx
-        rcases hx with ⟨_, ⟨_, ⟨n, rfl⟩, z, hz, rfl⟩, rfl⟩
-        rw [vadd_eq_add, add_left_comm, ← vadd_eq_add v]
-        refine add_mem (smul_mem _ _ (mem_span_of_mem ?_)) (mem_span_of_mem (vadd_mem_vadd_set hz))
-        simp [mem_vadd_set]
-  rw [← Finset.coe_singleton v, ← Finset.coe_union]
-  exact (Semilinear.singleton 0).union (semilinear ⟨v, {v} ∪ t, rfl⟩)
-
-/-- Semilinear sets are closed under `span ℕ` (additive closure). -/
-theorem Semilinear.span (hs : s.Semilinear) : (span ℕ s : Set (α → ℕ)).Semilinear := by
-  classical
-  rcases hs with ⟨S, hS, rfl⟩
-  induction S using Finset.induction with
-  | empty => simpa using singleton 0
-  | insert s S _ ih =>
-    simp only [Finset.mem_insert, forall_eq_or_imp] at hS
-    simpa [span_union, coe_sup] using hS.1.span.add (ih hS.2)
-
-/-- A linear set is proper if its `ℕ`-submodule generators (periods) are linear independent. -/
-def ProperLinear (s : Set (α → ℕ)) :=
-  ∃ (v : α → ℕ) (t : Finset (α → ℕ)),
-    LinearIndepOn ℕ id (t : Set (α → ℕ)) ∧ s = v +ᵥ (span ℕ (t : Set (α → ℕ)) : Set (α → ℕ))
-
-theorem ProperLinear.linear (hs : s.ProperLinear) : s.Linear := by
-  rcases hs with ⟨v, t, _, rfl⟩
-  exact ⟨v, t, rfl⟩
-
-/-- A semilinear set is proper if it is a finite union of proper linear sets. -/
-def ProperSemilinear (s : Set (α → ℕ)) :=
-  ∃ (S : Finset (Set (α → ℕ))), (∀ t ∈ S, t.ProperLinear) ∧ s = ⋃₀ S
-
-theorem ProperSemilinear.semilinear (hs : s.ProperSemilinear) : s.Semilinear := by
-  rcases hs with ⟨S, hS, rfl⟩
-  refine ⟨S, ?_, rfl⟩
-  intro s hs
-  exact (hS s hs).linear
-
-theorem ProperLinear.proper_semilinear (hs : s.ProperLinear) : s.ProperSemilinear :=
-  ⟨{s}, by simp [hs], by simp⟩
-
-theorem ProperSemilinear.empty : (∅ : Set (α → ℕ)).ProperSemilinear :=
-  ⟨∅, by simp, by simp⟩
-
-theorem ProperSemilinear.union (hs₁ : s₁.ProperSemilinear) (hs₂ : s₂.ProperSemilinear) :
-    (s₁ ∪ s₂).ProperSemilinear := by
-  classical
-  rcases hs₁ with ⟨S₁, hS₁, rfl⟩
-  rcases hs₂ with ⟨S₂, hS₂, rfl⟩
-  rw [← sUnion_union, ← Finset.coe_union]
-  refine ⟨S₁ ∪ S₂, ?_, rfl⟩
-  intro s hs
-  simp only [Finset.mem_union] at hs
-  exact hs.elim (hS₁ s) (hS₂ s)
-
-theorem ProperSemilinear.sUnion_finset {S : Finset (Set (α → ℕ))}
-    (hS : ∀ s ∈ S, s.ProperSemilinear) : (⋃₀ (S : Set (Set (α → ℕ)))).ProperSemilinear := by
-  classical
-  induction S using Finset.induction with
-  | empty => simpa using empty
-  | insert s S _ ih =>
-    simp only [Finset.mem_insert, forall_eq_or_imp] at hS
-    simpa using union hS.1 (ih hS.2)
-
-theorem ProperSemilinear.iUnion_fintype [Fintype ι] {s : ι → Set (α → ℕ)}
-    (hs : ∀ i, (s i).ProperSemilinear) : (⋃ i, s i).ProperSemilinear := by
-  classical
-  rw [← sUnion_range, ← image_univ, ← Finset.coe_univ, ← Finset.coe_image]
-  apply sUnion_finset
-  simpa
-
-theorem ProperSemilinear.biUnion_finset {s : Finset ι} {t : ι → Set (α → ℕ)}
-    (ht : ∀ i ∈ s, (t i).ProperSemilinear) : (⋃ i ∈ s, t i).ProperSemilinear := by
-  classical
-  simp_rw [← Finset.mem_coe, ← sUnion_image, ← Finset.coe_image]
-  apply sUnion_finset
-  simpa
-
-lemma Linear.proper_semilinear [Fintype α] (hs : s.Linear) : s.ProperSemilinear := by
-  classical
-  rcases hs with ⟨v, t, rfl⟩
-  induction hn : t.card using Nat.strong_induction_on generalizing v t with | h n ih
-  subst hn
-  by_cases hindep : LinearIndepOn ℕ id (t : Set (α → ℕ))
-  · exact ProperLinear.proper_semilinear ⟨v, t, hindep, rfl⟩
-  · have : ∃ (f g : (α → ℕ) → ℕ),
-        ∑ u ∈ t, f u • u = ∑ u ∈ t, g u • u ∧ ∃ u ∈ t, 0 < f u ∧ g u = 0 := by
-      rw [not_linearIndepOn_finset_iffₛ] at hindep
-      rcases hindep with ⟨f, g, heq, u, hu, hne⟩
-      wlog h : g u < f u generalizing f g
-      · exact this g f heq.symm hne.symm (lt_of_le_of_ne (le_of_not_gt h) hne)
-      · refine ⟨Function.update f u (f u - g u), Function.update g u 0, ?_, u, hu, ?_, ?_⟩
-        · rw [← Finset.sum_erase_add _ _ hu, ← Finset.sum_erase_add _ _ hu] at heq ⊢
-          rw [← add_right_cancel_iff (a := g u • u), add_assoc, add_assoc]
-          convert heq using 2
-          · refine Finset.sum_congr rfl fun j hj => ?_
-            simp only [Finset.mem_erase] at hj
-            simp [hj.1]
-          · rw [Function.update_self, id_eq, ← add_smul, tsub_add_cancel_of_le h.le]
-          · refine Finset.sum_congr rfl fun j hj => ?_
-            simp only [Finset.mem_erase] at hj
-            simp [hj.1]
-          · rw [Function.update_self, id_eq, zero_smul, zero_add]
-        · rwa [Function.update_self, lt_tsub_iff_left_of_le h.le, add_zero]
-        · rw [Function.update_self]
-    rcases this with ⟨f, g, heq, u, hu, hfu, hgu⟩
-    convert_to
-      (⋃ w ∈ t, ⋃ k ∈ Finset.range (f w),
-        (v + k • w) +ᵥ (Submodule.span ℕ (t.erase w : Set (α → ℕ)) : Set (α → ℕ))).ProperSemilinear
-    · ext x
-      simp only [mem_vadd_set, SetLike.mem_coe]
-      constructor
-      · rintro ⟨x, hx, rfl⟩
-        rw [mem_span_finset] at hx
-        rcases hx with ⟨h, hh, rfl⟩
-        clear hh
-        induction hn : h u using Nat.strong_induction_on generalizing h with | h n ih
-        subst hn
-        by_cases hh : ∀ w ∈ t, f w ≤ h w
-        · convert ih (h u - f u) (tsub_lt_self (hfu.trans_le (hh u hu)) hfu)
-            (h - f + g) (by simp [hgu]) using 1
-          simp_rw [Pi.add_apply, Pi.sub_apply, add_smul, Finset.sum_add_distrib, ← heq,
-            ← Finset.sum_add_distrib, ← add_smul]
-          congr 1
-          refine Finset.sum_congr rfl fun w hw => ?_
-          rw [tsub_add_cancel_of_le (hh w hw)]
-        · simp only [not_forall, not_le] at hh
-          rcases hh with ⟨w, hw, hhw⟩
-          simp only [mem_iUnion, Finset.mem_range, mem_vadd_set, SetLike.mem_coe, vadd_eq_add]
-          refine ⟨w, hw, h w, hhw, ∑ x ∈ t.erase w, h x • x,
-            sum_mem fun x hx => (smul_mem _ _ (mem_span_of_mem hx)), ?_⟩
-          rw [← Finset.sum_erase_add _ _ hw, ← add_assoc, add_right_comm]
-      · simp only [mem_iUnion, Finset.mem_range, mem_vadd_set, SetLike.mem_coe, vadd_eq_add]
-        rintro ⟨w, hw, k, hk, y, hy, rfl⟩
-        refine ⟨k • w + y,
-          add_mem (smul_mem _ _ (mem_span_of_mem hw)) ((span_mono (Finset.erase_subset w t)) hy),
-          ?_⟩
-        rw [add_assoc]
-    · exact ProperSemilinear.biUnion_finset fun w hw =>
-        ProperSemilinear.biUnion_finset fun k hk =>
-          ih _ (Finset.card_lt_card (Finset.erase_ssubset hw)) _ _ rfl
-
-/-- The **proper decomposition** of semilinear sets: every semilinear set is a finite union of
-  proper linear sets. -/
-theorem Semilinear.proper_semilinear [Fintype α] (hs : s.Semilinear) : s.ProperSemilinear := by
-  rcases hs with ⟨S, hS, rfl⟩
-  simp_rw [sUnion_eq_biUnion, Finset.mem_coe]
-  exact ProperSemilinear.biUnion_finset fun s hs => (hS s hs).proper_semilinear
 
 private def toRatVec : (α → ℕ) →ₗ[ℕ] (α → ℚ) :=
   LinearMap.compLeft (Nat.castAddMonoidHom ℚ).toNatLinearMap α
@@ -965,8 +629,8 @@ theorem Linear.definable (hs : s.Linear) : A.Definable presburger s := by
   refine ⟨Formula.iExs t (Formula.iInf fun i : α =>
     (Term.var (Sum.inl i)).equal
       (Term.varsToConstants
-        ((v i : presburger.Term _) + presburger.finsum fun x : t =>
-          x.1 i • (Term.var (Sum.inr (Sum.inr x)))))), ?_⟩
+        ((v i : presburger.Term _) + presburger.sum Finset.univ fun x : t =>
+          x.1 i • Term.var (Sum.inr (Sum.inr x))))), ?_⟩
   ext x
   simpa [mem_vadd_set, mem_span_finset'] using exists_congr fun a =>
     funext_iff.trans <| forall_congr' fun b => Eq.comm.trans <|
@@ -1058,7 +722,7 @@ lemma boundedFormula_realize_semilinear {n} (φ : presburger[[A]].BoundedFormula
         | inr i => fin_cases i; simp
 
 lemma formula_realize_semilinear (φ : presburger[[A]].Formula α) :
-    (setOf φ.Realize).Semilinear := by
+    (setOf φ.Realize : Set (α → ℕ)).Semilinear := by
   convert (boundedFormula_realize_semilinear φ).reindex (Equiv.sumEmpty α (Fin 0)).symm
   ext x
   simp only [mem_setOf_eq, mem_image]
