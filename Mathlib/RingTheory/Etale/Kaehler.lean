@@ -314,7 +314,7 @@ def tensorH1CotangentOfIsLocalization (M : Submonoid S) [IsLocalization M T] :
         mul_zero, fQ]
       have : IsLocalization.mk' (Localization M') x ⟨s, hs⟩ =
           IsLocalizedModule.mk' (Algebra.linearMap P.Ring (Localization M')) x ⟨s, hs⟩ := by
-        rw [IsLocalization.mk'_eq_iff_eq_mul, mul_comm, ← Algebra.smul_def, ← Submonoid.smul_def,
+        rw [IsLocalization.mk'_eq_iff_eq_mul, mul_comm, ← Algebra.smul_def,
           IsLocalizedModule.mk'_cancel']
         rfl
       simp [this, ← IsScalarTower.algebraMap_apply]
