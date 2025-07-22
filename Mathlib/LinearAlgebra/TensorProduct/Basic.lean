@@ -588,10 +588,7 @@ with the property that its composition with the canonical bilinear map `M → N 
 the given bilinear map `M → N → P`. -/
 def lift.equiv : (M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂) ≃ₗ[R₂] M ⊗[R] N →ₛₗ[σ₁₂] P₂ :=
   { uncurry M N P₂ σ₁₂ with
-    invFun := fun f => (mk R M N).compr₂ₛₗ f
-    left_inv := fun _ => LinearMap.ext₂ fun _ _ => lift.tmul _ _
-    right_inv := fun _ => ext' fun _ _ => rfl }
--- Why is `rfl` needed above?
+    invFun := fun f => (mk R M N).compr₂ₛₗ f }
 
 @[simp]
 theorem lift.equiv_apply (f : M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂) (m : M) (n : N) :
@@ -606,7 +603,7 @@ theorem lift.equiv_symm_apply (f : M ⊗[R] N →ₛₗ[σ₁₂] P₂) (m : M) 
 /-- Given a linear map `M ⊗ N → P`, compose it with the canonical bilinear map `M → N → M ⊗ N` to
 form a bilinear map `M → N → P`. -/
 def lcurry : (M ⊗[R] N →ₛₗ[σ₁₂] P₂) →ₗ[R₂] M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂ :=
-  (lift.equiv M N P₂ σ₁₂).symm.toLinearMap
+  (lift.equiv M N P₂ σ₁₂).symm
 
 variable {M N P₂ σ₁₂}
 
@@ -676,6 +673,7 @@ theorem comm_symm_tmul (m : M) (n : N) : (TensorProduct.comm R M N).symm (n ⊗�
 lemma lift_comp_comm_eq (f : M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂) :
     (lift f ∘ₛₗ (TensorProduct.comm R N M).toLinearMap) = lift f.flip :=
   ext rfl
+
 end
 
 section CompatibleSMul
