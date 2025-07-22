@@ -178,6 +178,7 @@ private lemma counitCoherence_hom_app' (S : CatCommSqOver R B X) (x : X) :
 
 attribute [irreducible] inverse counitIsoAppFst counitIsoAppSnd
 
+/-- (impl.) The component of the counit isomorphism of `functorEquiv`. -/
 private def counitIsoApp (S : CatCommSqOver R B X) :
     (functor T L R B X).obj (inverse T L R B X|>.obj S) ≅ S :=
   CategoricalPullback.mkIso
@@ -191,6 +192,12 @@ end functorEquiv
 
 unseal functorEquiv.inverse functorEquiv.counitIsoAppFst
 functorEquiv.counitIsoAppSnd in
+/-- The equivalence of categories `(X ⥤ C₁) ≌ CatCommSqOver R B X` when
+`C₁` is the top left corner of a categorical pullback square. The forward
+direction of this equivalence is the "canonical" functor while the inverse should
+be treated as mostly "opaque".
+This equivalence of categories realizes the universal property of categorical
+pullbacks, and should be the main object to work with. -/
 @[simps functor]
 def functorEquiv : (X ⥤ C₁) ≌ CatCommSqOver R B X where
   functor := functorEquiv.functor T L R B X
@@ -216,11 +223,15 @@ def functorEquiv : (X ⥤ C₁) ≌ CatCommSqOver R B X where
     ((equivalence T L R B).congrRight.trans <|
       CategoricalPullback.functorEquiv R B X).functor_unitIso_comp x
 
+/-- The forward direction of `functorEquiv` maps the identity functor
+to the `CatCommSqOver` represented by the square itself. -/
 @[simps!]
 def functorEquivFunctorIdIso :
     (functorEquiv T L R B C₁).functor.obj (𝟭 C₁) ≅ .ofSquare T L R B :=
   CategoricalPullback.mkIso (Functor.leftUnitor _) (Functor.leftUnitor _)
 
+/-- The inverse direction of `functorEquiv` maps (the `CatCommSqOver`
+represented by) the categorical pullback square to the identity functor. -/
 @[simps!]
 def functorEquivInverseOfSquareIso :
     (functorEquiv T L R B C₁).inverse.obj (.ofSquare T L R B) ≅ (𝟭 C₁) :=
@@ -290,6 +301,9 @@ lemma functorEquiv_counitInv_functor_comp_snd_app (F : X ⥤ C₁) (x : X) :
   congrArg (fun t ↦ t.snd.app x) <|
     (functorEquiv T L R B X).counitInv_functor_comp F
 
+/-- The canonical isomorphism between the first projection
+`CatCommSqOver.sndFunctor R B X ⥤ (X ⥤ C₂) ` and composition with `T` through
+`functorEquiv`. -/
 @[simps!]
 def functorEquivInverseWhiskeringIsoFst :
     (functorEquiv T L R B X).inverse ⋙
@@ -297,6 +311,9 @@ def functorEquivInverseWhiskeringIsoFst :
     CatCommSqOver.fstFunctor R B X :=
   Iso.inverseCompIso (.refl _)
 
+/-- The canonical isomorphism between the second projection
+`CatCommSqOver.sndFunctor R B X ⥤ (X ⥤ C₃) ` and composition with `L` through
+`functorEquiv`. -/
 @[simps!]
 def functorEquivInverseWhiskeringIsoSnd :
     (functorEquiv T L R B X).inverse ⋙
@@ -306,7 +323,7 @@ def functorEquivInverseWhiskeringIsoSnd :
 
 end CatPullbackSquare
 
-/-- A `Prop-valued` version of `CatPullbackSquare`, that merely asserts the
+/-- A `Prop`-valued version of `CatPullbackSquare` that merely asserts the
 existence of a `CatPullbackSquare` structure. -/
 class IsCatPullbackSquare
     {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃} {C₄ : Type u₄}
@@ -344,6 +361,8 @@ namespace IsCatPullbackSquare
 
 variable [CatCommSq T L R B]
 
+/-- Noncomputably get a `CatPullbackSquare` from a `CategoryTheory.CatCommSq`
+with an `IsCatPullbackSquare` instance. -/
 noncomputable def catPullbackSquare [IsCatPullbackSquare T L R B] :
     CatPullbackSquare T L R B :=
   nonempty_catPullbackSquare T L R B|>.some
