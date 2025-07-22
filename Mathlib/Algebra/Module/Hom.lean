@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Algebra.GroupWithZero.Action.End
+import Mathlib.Algebra.GroupWithZero.Action.Hom
 import Mathlib.Algebra.Module.End
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.GroupTheory.GroupAction.DomAct.Basic
@@ -22,6 +23,16 @@ We also define bundled versions of `(c • ·)` and `(· • ·)` as `AddMonoidH
 -/
 
 variable {R S M A B : Type*}
+
+namespace ZeroHom
+
+instance instModule [Semiring R] [AddMonoid A] [AddCommMonoid B] [Module R B] :
+    Module R (ZeroHom A B) where
+  __ : MulActionWithZero _ _ := ZeroHom.instMulActionWithZero
+  add_smul _ _ _ := ext fun _ => add_smul _ _ _
+  smul_add _ _ _ := ext fun _ => smul_add _ _ _
+
+end ZeroHom
 
 /-! ### Instances for `AddMonoidHom` -/
 
