@@ -95,18 +95,12 @@ lemma test4 :
     ⟨IsOpen.preimage (ContinuousLinearMap.continuous f) Metric.isOpen_ball, by
       rw [Set.mem_preimage, map_zero]
       exact Metric.mem_ball_self Real.zero_lt_one⟩⟩⟩)
-  obtain ⟨sE,hsE1, hsE2⟩ := hV1
-  simp at hsE1
-  obtain ⟨F, hF⟩ := hsE1
+  obtain ⟨sE, hsE1, hsE2⟩ := hV1
+  obtain ⟨F, hF⟩ := Set.mem_range.mp hsE1
   use F
-  rw [Set.iUnion, iSup] at hF
-  subst hF
-  simp at hsE2
+  simp_rw [← hF, Set.mem_iUnion, Set.mem_singleton_iff, exists_prop] at hsE2
   obtain ⟨w, h1, h2⟩ := hsE2
-  use w
-  use h1
-  exact Eq.trans_subset (_root_.id h2.symm) hV2
-
+  exact ⟨w, h1, h2.symm.trans_subset hV2⟩
 
 --def mL (s : Finset F) : s → WeakBilin B →ₗ[𝕜] 𝕜 := fun (f : s) => (WeakBilin.eval B) f.val
 
