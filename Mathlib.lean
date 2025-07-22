@@ -5945,6 +5945,7 @@ import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.NatLog
 import Mathlib.Tactic.NormNum.NatSqrt
 import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Ordinal
 import Mathlib.Tactic.NormNum.Pow
 import Mathlib.Tactic.NormNum.PowMod
 import Mathlib.Tactic.NormNum.Prime
