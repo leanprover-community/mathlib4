@@ -209,7 +209,7 @@ lemma ofZeros_g' (hf : S.f = 0) (hg : S.g = 0) :
 
 variable {S} in
 /-- Given a right homology data `h` of a short complex `S`, we can construct another right homology
-data by choosing another kernel and cokernel that are isomorphic to the ones in `h`. -/
+data by choosing another cokernel and kernel that are isomorphic to the ones in `h`. -/
 @[simps] def copy {Q' H' : C} (eQ : Q' ≅ h.Q) (eH : H' ≅ h.H) : S.RightHomologyData where
   Q := Q'
   H := H'
