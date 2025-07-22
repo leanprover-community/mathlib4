@@ -82,15 +82,26 @@ theorem toSeminormFamily_apply {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {x y} : 
 
 theorem functional_mem_span_iff {B : F →ₗ[𝕜] E →ₗ[𝕜] 𝕜} {s : Finset F} {f : E →ₗ[𝕜] 𝕜} :
     f ∈ Submodule.span 𝕜 (Set.range (B ∘ Subtype.val : s → E →ₗ[𝕜] 𝕜)) ↔
-    ∃ γ, ∀ (x : E), ‖f x‖ ≤ γ * ((s.sup B.flip.toSeminormFamily) x) := by
+    ∃ (γ : NNReal), ∀ (x : E), ‖f x‖ ≤ γ * ((s.sup B.flip.toSeminormFamily) x) := by
   constructor
   · intro h
     rw [← Set.image_univ, Finsupp.mem_span_image_iff_linearCombination] at h
     obtain ⟨l, hl1, hl2⟩ := h
-    use (l.sum fun i d ↦ ‖d‖)
+    let γ := (l.sum fun i d ↦ (⟨‖d‖, norm_nonneg d⟩  : NNReal))
+    have ex : γ = (l.sum fun i d ↦ ‖d‖ ).toNNReal := by
+      rw [Finsupp.sum]
+      rw [Real.toNNReal_sum_of_nonneg]
+      aesop
+      exact fun i a ↦ norm_nonneg (l i)
+    use γ
     intro x
-    rw [← hl2, Finsupp.linearCombination_apply, finsupp_sum_apply,
-      (Finsupp.sum_mul ((s.sup B.flip.toSeminormFamily) x) l)]
+    rw [← hl2, Finsupp.linearCombination_apply, finsupp_sum_apply]
+    rw [ex]
+    simp
+    have eg : max (l.sum fun i d ↦ ‖d‖) 0 = l.sum fun i d ↦ ‖d‖ :=
+      max_eq_left (Finset.sum_nonneg (fun i a ↦ norm_nonneg (l i)))
+    rw [eg]
+    rw [(Finsupp.sum_mul ((s.sup B.flip.toSeminormFamily) x) l)]
     have e4' (i : s) : (B.flip.toSeminormFamily i) x ≤ (s.sup B.flip.toSeminormFamily) x :=
       Seminorm.le_finset_sup_apply (Finset.coe_mem i)
     have e4 (d : 𝕜) (i : s) :
@@ -117,6 +128,13 @@ theorem functional_mem_span_iff {B : F →ₗ[𝕜] E →ₗ[𝕜] 𝕜} {s : Fi
         exact hx _ his
       · exact apply_nonneg (s.sup B.flip.toSeminormFamily) x
     simp_all only [mul_zero]
+
+/- Restate functional_mem_span_iff in a more useful form -/
+theorem functional_mem_span_iff' {B : F →ₗ[𝕜] E →ₗ[𝕜] 𝕜} {s : Finset F} {f : E →ₗ[𝕜] 𝕜} :
+    f ∈ Submodule.span 𝕜 (Set.range (B ∘ Subtype.val : s → E →ₗ[𝕜] 𝕜)) ↔
+    ∃ (γ : NNReal), norm ∘ f ≤ γ • ((s.sup B.flip.toSeminormFamily) ) := by
+  rw [functional_mem_span_iff]
+  rfl
 
 end LinearMap
 

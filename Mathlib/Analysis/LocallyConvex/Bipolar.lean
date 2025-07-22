@@ -227,8 +227,9 @@ lemma isBounded_of_Continuous :
 lemma test5 : ∃ (s₁ : Finset F),
     ↑f ∈ Submodule.span 𝕜 (Set.range (ContinuousLinearMap.toLinearMap₁₂
       (WeakBilin.eval B) ∘ Subtype.val : s₁ → WeakBilin B →ₗ[𝕜] 𝕜)) := by
-  obtain ⟨s,⟨C, hs⟩⟩ := isBounded_of_Continuous B f (Fin.last 0)
-  exact ⟨s, functional_mem_span_iff.mpr ⟨C, hs⟩⟩
+  obtain ⟨s,hS⟩ := isBounded_of_Continuous B f (Fin.last 0)
+  --simp at hs
+  exact ⟨s, functional_mem_span_iff'.mpr hS⟩
 
 /-
 See
@@ -242,6 +243,8 @@ See
 lemma dualEmbedding_isSurjective : Function.Surjective (WeakBilin.eval B) := by
   rw [Function.Surjective]
   intro f₁
+  --obtain ⟨s, hS⟩ := isBounded_of_Continuous B f₁ (Fin.last 0)
+  --let hs := functional_mem_span_iff'.mpr hS
   obtain ⟨s, hs⟩ := test5 B f₁
   rw [← Set.image_univ, Finsupp.mem_span_image_iff_linearCombination] at hs
   obtain ⟨l, hl1, hl2⟩ := hs
