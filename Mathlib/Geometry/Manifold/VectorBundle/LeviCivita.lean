@@ -438,7 +438,7 @@ noncomputable def lcCandidate_aux [FiniteDimensional ℝ E]
     (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e] :
     ((x : M) → TangentSpace I x) → ((x : M) → TangentSpace I x) → (x : M) → TangentSpace I x :=
   fun X Y x ↦
-  -- Choose a trivialisation of TM near x.
+  -- Choose a trivialisation of `TM` near `x`.
   letI b := Basis.ofVectorSpace ℝ E
   -- Case distinction: if E is trivial, there is only one choice anyway;
   -- otherwise, b must be non-trivial.
@@ -446,8 +446,8 @@ noncomputable def lcCandidate_aux [FiniteDimensional ℝ E]
   have : Fintype ↑(Basis.ofVectorSpaceIndex ℝ E) := by infer_instance
   haveI : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := inferInstance
   letI frame := b.orthonormalFrame e
-  -- The coefficient of the desired tangent vector ∇ X Y x w.r.t. s i
-  -- is given by leviCivita_rhs X Y s i.
+  -- The coefficient of the desired tangent vector `∇ X Y x` w.r.t. `s i`
+  -- is given by `leviCivita_rhs X Y s i`.
   ∑ i, ((leviCivita_rhs I X Y (frame i)) x) • (frame i x)
 
 variable (M) in
@@ -456,8 +456,7 @@ variable (M) in
 the candidate definition for the Levi-Civita connection on `TM`. -/
 noncomputable def lcCandidate [FiniteDimensional ℝ E] :
     (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) :=
-  -- Use the preferred trivialisation at x to write down a candidate for the existence.
-  -- to write down a candidate for the existence.
+  -- Use the preferred trivialisation at `x` to write down a candidate for the existence.
   fun X Y x ↦ lcCandidate_aux I (trivializationAt E (TangentSpace I : M → Type _) x) X Y x
 
 variable (X Y) in
