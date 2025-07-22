@@ -975,17 +975,13 @@ theorem orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero [K.HasOrt
   ext
   convert eq_starProjection_of_mem_orthogonal (K := K) _ _ <;> simp [hv]
 
-theorem starProjection_mem_subspace_orthogonalComplement_eq_zero [K.HasOrthogonalProjection]
-    {v : E} (hv : v ∈ Kᗮ) : K.starProjection v = 0 := by
-  simp [starProjection_apply, orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero hv]
-
 /-- The projection into `U` from an orthogonal submodule `V` is the zero map. -/
 theorem IsOrtho.orthogonalProjection_comp_subtypeL {U V : Submodule 𝕜 E}
     [U.HasOrthogonalProjection] (h : U ⟂ V) : U.orthogonalProjection ∘L V.subtypeL = 0 :=
   ContinuousLinearMap.ext fun v =>
     orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero <| h.symm v.prop
 
-theorem IsOrtho.starProjection_comp_starProjection_orthogonal {U V : Submodule 𝕜 E}
+theorem IsOrtho.starProjection_comp_starProjection {U V : Submodule 𝕜 E}
     [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] (h : U ⟂ V) :
     U.starProjection ∘L V.starProjection = 0 :=
   calc _ = U.subtypeL ∘L (U.orthogonalProjection ∘L V.subtypeL) ∘L V.orthogonalProjection := by
@@ -1002,10 +998,10 @@ theorem orthogonalProjection_comp_subtypeL_eq_zero_iff {U V : Submodule 𝕜 E}
     Submodule.IsOrtho.orthogonalProjection_comp_subtypeL⟩
 
 /-- `U.starProjection ∘ V.starProjection = 0` iff `U` and `V` are pairwise orthogonal. -/
-theorem starProjection_comp_starProjection_orthogonal_eq_zero_iff {U V : Submodule 𝕜 E}
+theorem starProjection_comp_starProjection_eq_zero_iff {U V : Submodule 𝕜 E}
     [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] :
     U.starProjection ∘L V.starProjection = 0 ↔ U ⟂ V := by
-  refine ⟨fun h => ?_, fun h => h.starProjection_comp_starProjection_orthogonal⟩
+  refine ⟨fun h => ?_, fun h => h.starProjection_comp_starProjection⟩
   rw [← orthogonalProjection_comp_subtypeL_eq_zero_iff]
   simp only [ContinuousLinearMap.ext_iff, ContinuousLinearMap.comp_apply, subtypeL_apply,
     starProjection_apply, ContinuousLinearMap.zero_apply, coe_eq_zero] at h ⊢
@@ -1032,13 +1028,19 @@ theorem reflection_mem_subspace_orthogonalComplement_eq_neg [K.HasOrthogonalProj
     orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero hv]
 
 /-- The orthogonal projection onto `Kᗮ` of an element of `K` is zero. -/
-theorem orthogonalProjection_mem_subspace_orthogonal_precomplement_eq_zero
+theorem orthogonalProjection_orthogonal_apply_eq_zero
     [Kᗮ.HasOrthogonalProjection] {v : E} (hv : v ∈ K) : Kᗮ.orthogonalProjection v = 0 :=
   orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero (K.le_orthogonal_orthogonal hv)
 
-theorem starProjection_mem_subspace_orthogonal_precomplement_eq_zero
-    [Kᗮ.HasOrthogonalProjection] {v : E} (hv : v ∈ K) : Kᗮ.starProjection v = 0 :=
-  starProjection_mem_subspace_orthogonalComplement_eq_zero (K.le_orthogonal_orthogonal hv)
+@[deprecated (since := "22-07-2025")] alias
+  orthogonalProjection_mem_subspace_orthogonal_precomplement_eq_zero :=
+  orthogonalProjection_orthogonal_apply_eq_zero
+
+theorem starProjection_orthogonal_apply_eq_zero
+    [Kᗮ.HasOrthogonalProjection] {v : E} (hv : v ∈ K) :
+    Kᗮ.starProjection v = 0 := by
+  rw [starProjection_apply, coe_eq_zero]
+  exact orthogonalProjection_orthogonal_apply_eq_zero hv
 
 /-- If `U ≤ V`, then projecting on `V` and then on `U` is the same as projecting on `U`. -/
 theorem orthogonalProjection_starProjection_of_le {U V : Submodule 𝕜 E}
@@ -1171,8 +1173,13 @@ theorem reflection_mem_subspace_orthogonal_precomplement_eq_neg [K.HasOrthogonal
 /-- The orthogonal projection onto `(𝕜 ∙ v)ᗮ` of `v` is zero. -/
 theorem orthogonalProjection_orthogonalComplement_singleton_eq_zero (v : E) :
     (𝕜 ∙ v)ᗮ.orthogonalProjection v = 0 :=
-  orthogonalProjection_mem_subspace_orthogonal_precomplement_eq_zero
+  orthogonalProjection_orthogonal_apply_eq_zero
     (Submodule.mem_span_singleton_self v)
+
+theorem starProjection_orthogonalComplement_singleton_eq_zero (v : E) :
+    (𝕜 ∙ v)ᗮ.starProjection v = 0 := by
+  rw [starProjection_apply, coe_eq_zero]
+  exact orthogonalProjection_orthogonalComplement_singleton_eq_zero v
 
 /-- The reflection in `(𝕜 ∙ v)ᗮ` of `v` is `-v`. -/
 theorem reflection_orthogonalComplement_singleton_eq_neg (v : E) : reflection (𝕜 ∙ v)ᗮ v = -v :=
@@ -1299,6 +1306,13 @@ theorem starProjection_isSymmetric [K.HasOrthogonalProjection] :
 
 @[deprecated (since := "07-07-2025")] alias
   orthogonalProjection_isSymmetric := starProjection_isSymmetric
+
+theorem starProjection_apply_eq_zero_iff [K.HasOrthogonalProjection] {v : E} :
+    K.starProjection v = 0 ↔ v ∈ Kᗮ := by
+  refine ⟨fun h w hw => ?_, fun hv => ?_⟩
+  · rw [← starProjection_eq_self_iff.mpr hw, inner_starProjection_left_eq_right, h,
+      inner_zero_right]
+  · simp [starProjection_apply, orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero hv]
 
 lemma re_inner_starProjection_eq_normSq [K.HasOrthogonalProjection] (v : E) :
     re ⟪K.starProjection v, v⟫ = ‖K.orthogonalProjection v‖^2 := by
