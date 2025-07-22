@@ -561,8 +561,12 @@ instance [NonUnitalNonAssocSemiring β] : NonUnitalNonAssocSemiring (α →ₛ �
 
 instance [Semiring β] : Semiring (α →ₛ β) where
 
+instance [Monoid K] [Semiring β] [MulAction K β] : MulAction K (α →ₛ β) where
+  one_smul _ := ext fun _ ↦ one_smul ..
+  mul_smul _ _ _ := ext fun _ ↦ mul_smul ..
+
 /-- Convenience constructor providing `toFun` for `Algebra K (α →ₛ β)` instance. -/
-noncomputable def simpleFuncAlgebraMap [CommSemiring K] [Semiring β] [Algebra K β] : K →+* α →ₛ β :=
+def simpleFuncAlgebraMap [CommSemiring K] [Semiring β] [Algebra K β] : K →+* α →ₛ β :=
   { toFun k := const _ <| algebraMap _ β k
     map_one' := ext fun _ ↦ algebraMap K β |>.map_one ▸ rfl
     map_mul' _ _ := ext fun _ ↦ algebraMap K β |>.map_mul ..
@@ -574,7 +578,7 @@ lemma algebraMap_const_mul_comm [CommSemiring K] [Semiring β] [Algebra K β] :
      ∀ (c : K), ∀ (f : α →ₛ β), simpleFuncAlgebraMap c * f = f * simpleFuncAlgebraMap c :=
   fun _ _ => ext fun _ => Algebra.commutes ..
 
-noncomputable instance [CommSemiring K] [Semiring β] [Algebra K β] : Algebra K (α →ₛ β) :=
+instance [CommSemiring K] [Semiring β] [Algebra K β] : Algebra K (α →ₛ β) :=
   simpleFuncAlgebraMap.toAlgebra' algebraMap_const_mul_comm
 
 section Star
