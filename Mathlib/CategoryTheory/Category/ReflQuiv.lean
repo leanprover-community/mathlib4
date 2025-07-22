@@ -141,9 +141,8 @@ theorem FreeRefl.lift_unique' {V} [ReflQuiver V] {D} [Category D] (F₁ F₂ : F
 
 @[simp]
 lemma FreeRefl.quotientFunctor_map_id (V) [ReflQuiver V] (X : V) :
-    (FreeRefl.quotientFunctor V).map (𝟙rq X).toPath = 𝟙 _ := by
-  apply Quotient.sound
-  exact .mk
+    (FreeRefl.quotientFunctor V).map (𝟙rq X).toPath = 𝟙 _ :=
+  Quotient.sound _ .mk
 
 instance (V : Type*) [ReflQuiver V] [Unique V] : Unique (FreeRefl V) :=
   letI : Unique (Paths V) := inferInstanceAs (Unique V)
