@@ -36,7 +36,7 @@ variable {X : C} (P : Precylinder X) {Y : C}
 /-- Given a precylinder `P` for `X`, two maps `f` and `g` in `X ⟶ Y` are homotopic
 when there is a morphism `h : P.I ⟶ Y` such that `P.i₀ ≫ h = f` and `P.i₁ ≫ h = g`. -/
 structure LeftHomotopy (f g : X ⟶ Y) where
-  /-- a morphism from the cylinder object to the target -/
+  /-- a morphism from the (pre)cylinder object to the target -/
   h : P.I ⟶ Y
   h₀ : P.i₀ ≫ h = f := by aesop_cat
   h₁ : P.i₁ ≫ h = g := by aesop_cat
@@ -53,7 +53,7 @@ def refl (f : X ⟶ Y) : P.LeftHomotopy f f where
 variable {P}
 
 /-- If `f` and `g` are homotopic relative to precylinder `P`, then `g` and `f`
-are homotopic are homotopic relative to `P.symm` -/
+are homotopic relative to `P.symm` -/
 @[simps]
 def symm {f g : X ⟶ Y} (h : P.LeftHomotopy f g) : P.symm.LeftHomotopy g f where
   h := h.h
@@ -138,7 +138,7 @@ noncomputable abbrev trans [IsCofibrant X] {f₀ f₁ f₂ : X ⟶ Y}
 
 lemma exists_good {f g : X ⟶ Y} (h : P.LeftHomotopy f g) :
     ∃ (P' : Cylinder X), P'.IsGood ∧ Nonempty (P'.LeftHomotopy f g) := by
-  have d := MorphismProperty.factorizationData (cofibrations C) (trivialFibrations C) P.i
+  let d := MorphismProperty.factorizationData (cofibrations C) (trivialFibrations C) P.i
   exact
    ⟨{ I := d.Z
       i₀ := coprod.inl ≫ d.i
@@ -281,7 +281,7 @@ lemma postcomp_mk [CategoryWithWeakEquivalences C] (f : X ⟶ Y) (g : Y ⟶ Z) :
 
 lemma mk_eq_mk_iff [ModelCategory C] [IsCofibrant X] (f g : X ⟶ Y) :
     mk f = mk g ↔ LeftHomotopyRel f g := by
-  rw [← (LeftHomotopyRel.equivalence X Y).eqvGen_iff ]
+  rw [← (LeftHomotopyRel.equivalence X Y).eqvGen_iff]
   exact Quot.eq
 
 end LeftHomotopyClass
