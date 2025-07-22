@@ -581,12 +581,8 @@ variable {E R : Type*} [Ring R] [AddCommGroup E] [Module R E] {T f : E →ₗ[R]
 
 lemma subtype_comp_linearProjOfIsCompl_range_eq (hf : IsIdempotentElem f) :
     (range f).subtype ∘ₗ (Submodule.linearProjOfIsCompl _ _ hf.isCompl) = f := by
-  ext x
-  obtain ⟨⟨u, hu⟩, ⟨v, hv⟩, rfl, _⟩ :=
-    Submodule.existsUnique_add_of_isCompl hf.isCompl x
-  simp [linearProjOfIsCompl_apply_right',
-    (linearProjOfIsCompl_eq_self_iff _ _).mpr hu, hv, mem_ker.mp hv]
-  exact (hf.mem_range_iff.mp hu).symm
+  convert ofIsCompl_subtype_zero_eq hf.isCompl |>.symm
+  exact ofIsCompl_eq _ (by simp [hf.isProj_range.map_id]) (by simp) |>.symm
 
 /-- `range f` is invariant under `T` if and only if `f ∘ₗ T ∘ₗ f = T ∘ₗ f`,
 for idempotent `f`. -/
