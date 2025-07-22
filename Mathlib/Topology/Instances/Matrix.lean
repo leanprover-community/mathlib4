@@ -20,6 +20,8 @@ This file is a place to collect topological results about matrices.
 
 ## Main results
 
+* `Set.matrix_isOpen`: the set of finite matrices with entries in an open set
+  is itself an open set.
 * Continuity:
   * `Continuous.matrix_det`: the determinant is continuous over a topological ring.
   * `Continuous.matrix_adjugate`: the adjugate is continuous over a topological ring.
@@ -40,6 +42,18 @@ instance [TopologicalSpace R] : TopologicalSpace (Matrix m n R) :=
 
 instance [TopologicalSpace R] [T2Space R] : T2Space (Matrix m n R) :=
   Pi.t2Space
+
+theorem Set.matrix_isOpen [Fintype m] [Fintype n]
+    [TopologicalSpace R] {S : Set R} (hS : IsOpen S) :
+    IsOpen (S.matrix : Set (Matrix m n R)) := by
+  rw [isOpen_pi_iff']
+  intro f hf
+  use fun i ↦ {g | ∀ j, g j ∈ S}
+  refine ⟨fun i ↦ ⟨?_, hf i⟩, fun f hf ↦ by simpa using hf⟩
+  rw [isOpen_pi_iff']
+  intro g hg
+  use fun j ↦ S
+  exact ⟨fun j ↦ ⟨hS, hg j⟩, fun g hg ↦ by simp_all⟩
 
 /-! ### Lemmas about continuity of operations -/
 
