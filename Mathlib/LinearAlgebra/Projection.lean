@@ -588,20 +588,13 @@ lemma subtype_comp_linearProjOfIsCompl_range_eq (hf : IsIdempotentElem f) :
     (linearProjOfIsCompl_eq_self_iff _ _).mpr hu, hv, mem_ker.mp hv]
   exact (hf.mem_range_iff.mp hu).symm
 
-lemma conj_eq_of_range_mem_invtSubmodule (hf : IsIdempotentElem f)
-    (h : range f ∈ Module.End.invtSubmodule T) : f ∘ₗ T ∘ₗ f = T ∘ₗ f := by
-  ext x
-  exact hf.mem_range_iff.mp (h (mem_range_self f x))
-
-lemma range_mem_invtSubmodule (hf : IsIdempotentElem f) (h : f ∘ₗ T ∘ₗ f = T ∘ₗ f) :
-    range f ∈ Module.End.invtSubmodule T := fun u hu => by
-  simpa [mem_comap, hf.mem_range_iff, hf.mem_range_iff.mp hu] using congr($h u)
-
 /-- `range f` is invariant under `T` if and only if `f ∘ₗ T ∘ₗ f = T ∘ₗ f`,
 for idempotent `f`. -/
 lemma range_mem_invtSubmodule_iff (hf : IsIdempotentElem f) :
-    range f ∈ Module.End.invtSubmodule T ↔ f ∘ₗ T ∘ₗ f = T ∘ₗ f :=
-  ⟨hf.conj_eq_of_range_mem_invtSubmodule, hf.range_mem_invtSubmodule⟩
+    range f ∈ Module.End.invtSubmodule T ↔ f ∘ₗ T ∘ₗ f = T ∘ₗ f := by
+  rw [hf.comp_eq_right_iff, range_comp, Module.End.mem_invtSubmodule_iff_map_le]
+
+alias ⟨range_mem_invtSubmodule, conj_eq_of_range_mem_invtSubmodule⟩ := range_mem_invtSubmodule_iff
 
 lemma _root_.LinearMap.IsProj.mem_invtSubmodule_iff {U : Submodule R E}
     (hf : IsProj U f) : U ∈ Module.End.invtSubmodule T ↔ f ∘ₗ T ∘ₗ f = T ∘ₗ f :=
