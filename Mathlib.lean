@@ -4544,6 +4544,7 @@ import Mathlib.ModelTheory.Algebra.Ring.Definability
 import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
 import Mathlib.ModelTheory.Arithmetic.Presburger.Basic
 import Mathlib.ModelTheory.Arithmetic.Presburger.Definability
+import Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Basic
 import Mathlib.ModelTheory.Basic
 import Mathlib.ModelTheory.Bundled
 import Mathlib.ModelTheory.Complexity
