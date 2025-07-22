@@ -39,12 +39,13 @@ lemma Function.update₁ {α : Type*} {a b c : α} : Function.update ![a,b] 1 c 
 
 open Nat ContinuousMultilinearMap Finset Function
 
-/-- The Hessian companion as a linear map. -/
-noncomputable def hessianLinearCompanion {V : Type*} [NormedAddCommGroup V]
-    [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) : V → V →ₗ[ℝ] ℝ := fun a => {
-  toFun := fun b => iteratedFDeriv ℝ 2 f x₀ ![a,b]
-                  + iteratedFDeriv ℝ 2 f x₀ ![b,a]
-  map_add' := fun b c => by
+/-- The Hessian companion as a bilinear map. -/
+noncomputable def hessianBilinearCompanion {V : Type*} [NormedAddCommGroup V]
+    [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) : V →ₗ[ℝ] V →ₗ[ℝ] ℝ := by
+  apply @LinearMap.mk₂ (
+    f := fun a b => iteratedFDeriv ℝ 2 f x₀ ![a,b]
+                  + iteratedFDeriv ℝ 2 f x₀ ![b,a])
+  · intro b c a
     have h₀ := (iteratedFDeriv ℝ 2 f x₀).map_update_add' ![b, a] 0 b c
     have h₁ := (iteratedFDeriv ℝ 2 f x₀).map_update_add' ![a, b] 1 b c
     repeat (
@@ -53,34 +54,29 @@ noncomputable def hessianLinearCompanion {V : Type*} [NormedAddCommGroup V]
     simp only [Fin.isValue, update₀, Nat.succ_eq_add_one, Nat.reduceAdd,
         MultilinearMap.toFun_eq_coe, coe_coe] at h₀)
     linarith
-  map_smul' := fun m x => by
+  · intro m x a
     have h₀ := (iteratedFDeriv ℝ 2 f x₀).map_update_smul' ![x,a] 0 m x
     have h₁ := (iteratedFDeriv ℝ 2 f x₀).map_update_smul' ![a,x] 1 m x
     repeat rw [update₀] at h₀; rw [update₁] at h₁
     simp only [Nat.succ_eq_add_one, Nat.reduceAdd, MultilinearMap.toFun_eq_coe,
-    coe_coe, smul_eq_mul, RingHom.id_apply] at h₀ h₁ ⊢
-    linarith}
-
-/-- The Hessian companion as a bilinear map. -/
-noncomputable def hessianBilinearCompanion {V : Type*} [NormedAddCommGroup V]
-    [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) : V →ₗ[ℝ] V →ₗ[ℝ] ℝ := {
-  toFun := hessianLinearCompanion f x₀
-  map_add' := fun x y => by
-    ext i
+    coe_coe, smul_eq_mul] at h₀ h₁ ⊢
+    linarith
+  · intro i x y
     have had₀ := (iteratedFDeriv ℝ 2 f x₀).map_update_add' ![x,i] 0 x y
     have had₁ := (iteratedFDeriv ℝ 2 f x₀).map_update_add' ![i,i] 1 x y
     repeat rw [update₀] at had₀
     repeat rw [update₁] at had₁
+    simp only [succ_eq_add_one, reduceAdd, MultilinearMap.toFun_eq_coe, coe_coe] at had₀ had₁ ⊢
+    have := @(Mathlib.Tactic.Ring.add_pf_add_overlap had₀.symm had₁.symm).symm
+    linarith
+  · intro m a x
+    have h₀ := (iteratedFDeriv ℝ 2 f x₀).map_update_smul' ![x,a] 0 m x
+    have h₁ := (iteratedFDeriv ℝ 2 f x₀).map_update_smul' ![a,x] 1 m x
+    repeat rw [update₀] at h₀; rw [update₁] at h₁
     simp only [Nat.succ_eq_add_one, Nat.reduceAdd, MultilinearMap.toFun_eq_coe,
-        coe_coe, hessianLinearCompanion, LinearMap.coe_mk, AddHom.coe_mk,
-        LinearMap.add_apply] at had₀ had₁ ⊢
-    exact (Mathlib.Tactic.Ring.add_pf_add_overlap had₀.symm had₁.symm).symm
-  map_smul' := fun m x => LinearMap.ext_iff.mpr fun x₁ => by
-    have hsm₀ := (iteratedFDeriv ℝ 2 f x₀).map_update_smul' ![x,x₁] 0 m x
-    have hsm₁ := (iteratedFDeriv ℝ 2 f x₀).map_update_smul' ![x₁,x] 1 m x
-    have h := CancelDenoms.add_subst hsm₀.symm hsm₁.symm
-    repeat rw [update₀, update₁] at h
-    exact h.symm}
+    coe_coe, smul_eq_mul] at h₀ h₁ ⊢
+    linarith
+
 
 /-- The second iterated Frechét derivative as a quadratic map. -/
 noncomputable def iteratedFDerivQuadraticMap {V : Type*} [NormedAddCommGroup V]
@@ -94,8 +90,7 @@ noncomputable def iteratedFDerivQuadraticMap {V : Type*} [NormedAddCommGroup V]
     have had₁ := had ![x,x] 1 x y
     have had₂ := had ![y,x] 1 x y
     repeat rw [update₀] at had₀; rw [update₁] at had₁ had₂
-    simp only [MultilinearMap.toFun_eq_coe, coe_coe, hessianBilinearCompanion, LinearMap.coe_mk,
-      AddHom.coe_mk, hessianLinearCompanion] at had₀ had₁ had₂ ⊢
+    simp [hessianBilinearCompanion] at had₀ had₁ had₂ ⊢
     linarith
   toFun_smul := fun u v => by
     have hsm₀ := (iteratedFDeriv ℝ 2 f x₀).map_update_smul' ![v, v] 0 u v
