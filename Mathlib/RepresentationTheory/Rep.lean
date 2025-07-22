@@ -135,6 +135,26 @@ instance {H V : Type u} [Group H] [AddCommGroup V] [Module k V] (ρ : Representa
     (f : G →* H) [Representation.IsTrivial (ρ.comp f)] :
     Representation.IsTrivial ((Rep.of ρ).ρ.comp f) := ‹_›
 
+section Commutative
+
+variable {k G : Type u} [CommRing k] [CommMonoid G]
+variable (A : Rep k G)
+
+/-- Given a representation `A` of a commutative monoid `G`, the map `ρ_A(g)` is a representation
+morphism `A ⟶ A` for any `g : G`. -/
+@[simps]
+noncomputable def applyAsHom (g : G) : A ⟶ A where
+  hom := ModuleCat.ofHom (A.ρ g)
+  comm _ := by ext; simp [← Module.End.mul_apply, ← map_mul, mul_comm]
+
+@[reassoc, elementwise]
+lemma applyAsHom_comm {A B : Rep k G} (f : A ⟶ B) (g : G) :
+    A.applyAsHom g ≫ f = f ≫ B.applyAsHom g := by
+  ext
+  simp [hom_comm_apply]
+
+end Commutative
+
 section
 
 variable {G : Type u} [Group G] (A : Rep k G) (S : Subgroup G)
