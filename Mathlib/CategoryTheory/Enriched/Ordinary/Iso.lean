@@ -80,9 +80,9 @@ lemma EnrichedIso.iso_trans {X Y Z : C} (I : X ≅[V] Y) (J : Y ≅[V] Z) :
 end
 
 /-- The type equivalence between isos in `ForgetEnrichment V C` and `V`-enriched isos in `C`. -/
-def ForgetEnrichment.equivIsoEnrichedIso {V : Type u'} [Category.{v'} V] [MonoidalCategory V]
+def ForgetEnrichment.enrichedIsoEquivIso {V : Type u'} [Category.{v'} V] [MonoidalCategory V]
     {C : Type u} [EnrichedCategory V C] (X Y : ForgetEnrichment V C) :
-    (X ≅ Y) ≃ (ForgetEnrichment.to V X) ≅[V] (ForgetEnrichment.to V Y) :=
-  (EnrichedIso.equivIso V _ _).symm
+    ((ForgetEnrichment.to V X) ≅[V] (ForgetEnrichment.to V Y)) ≃ (X ≅ Y)  :=
+  EnrichedIso.equivIso V X Y
 
 end CategoryTheory
