@@ -115,9 +115,12 @@ theorem mem_divisors_self (n : ℕ) (h : n ≠ 0) : n ∈ n.divisors :=
   mem_divisors.2 ⟨dvd_rfl, h⟩
 
 theorem dvd_of_mem_divisors {m : ℕ} (h : n ∈ divisors m) : n ∣ m := by
-  cases m
-  · apply dvd_zero
-  · simp [mem_divisors.1 h]
+  simp only [mem_divisors] at h
+  tauto
+
+theorem ne_zero_of_mem_divisors {m : ℕ} (h : n ∈ divisors m) : m ≠ 0 := by
+  simp only [mem_divisors] at h
+  omega
 
 @[simp]
 theorem mem_divisorsAntidiagonal {x : ℕ × ℕ} :
