@@ -38,6 +38,26 @@ Foobars, barfoos
 open MeasureTheory NormedSpace UniformSpace
 open scoped ENNReal InnerProductSpace
 
+lemma InnerProductSpace.norm_le_dual_bound {E : Type*} [NormedAddCommGroup E]
+    [InnerProductSpace ℝ E] [CompleteSpace E]
+    (x : E) {M : ℝ} (hMp : 0 ≤ M) (hM : ∀ y : E, ⟪x, y⟫_ℝ ≤ M * ‖y‖) :
+    ‖x‖ ≤ M := by
+  refine NormedSpace.norm_le_dual_bound ℝ _ hMp fun f ↦ ?_
+  let y := (InnerProductSpace.toDual ℝ E).symm f
+  obtain hy : f x = ⟪x, y⟫_ℝ := by
+    unfold y
+    rw [real_inner_comm, InnerProductSpace.toDual_symm_apply]
+  rw [hy]
+  simp only [Real.norm_eq_abs, abs_le]
+  constructor
+  · specialize hM (-y)
+    simp only [inner_neg_right, norm_neg] at hM
+    rw [← neg_le]
+    convert hM
+    simp [y]
+  · convert hM y
+    simp [y]
+
 noncomputable
 def UniformSpace.Completion.continuousLinearMapExtension {E F : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -202,6 +222,10 @@ instance [IsFiniteMeasure μ] : InnerProductSpace ℝ (CameronMartin μ) := by
 
 instance [IsFiniteMeasure μ] : CompleteSpace (CameronMartin μ) := by
   unfold CameronMartin; infer_instance
+
+-- TODO: make this work?
+-- instance [IsFiniteMeasure μ] : SecondCountableTopology (CameronMartin μ) := by
+--   unfold CameronMartin; infer_instance
 
 noncomputable
 def pureCameronMartin (μ : Measure E) [IsFiniteMeasure μ] : Dual ℝ E →ₗ[ℝ] CameronMartin μ :=
@@ -496,14 +520,13 @@ lemma norm_le' (x y : CameronMartin μ) :
 lemma norm_eq (x : CameronMartin μ) :
     ‖x‖ = ⨆ (L : Dual ℝ E) (_ : covarianceBilin μ L L ≤ 1), L (toInitialSpace μ x) := by
   refine le_antisymm ?_ ?_
-  · by_cases h_zero : ‖x‖ = 0
-    · simp only [h_zero]
-      by_cases h_bdd :
+  · refine InnerProductSpace.norm_le_dual_bound x ?_ fun y ↦ ?_
+    · by_cases h_bdd :
           BddAbove (Set.range fun L ↦ ⨆ (_ : covarianceBilin μ L L ≤ 1), L (toInitialSpace μ x))
       · exact le_ciSup_of_le h_bdd 0 (by simp)
       · simp [h_bdd]
-    · have h := norm_le' x x
-      rwa [real_inner_self_eq_norm_sq, sq, mul_le_mul_iff_of_pos_left (by positivity)] at h
+    rw [real_inner_comm, mul_comm]
+    exact norm_le' x y
   · refine ciSup_le fun L ↦ ?_
     by_cases hL : covarianceBilin μ L L ≤ 1
     · simp only [hL, ciSup_unique]
