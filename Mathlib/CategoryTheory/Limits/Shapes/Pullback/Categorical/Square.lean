@@ -32,7 +32,7 @@ categorical pullback square. This is realized as the data of a chosen
 (adjoint) inverse to the canonical functor `C₁ ⥤ R ⊡ B` induced by
 the square. The field of this struct are not intended to be accessed directly.
 Instead one should use the corresponding fields of
-`CatPullbackSquare.functorEquiv`, which bundles this into the expected 
+`CatPullbackSquare.functorEquiv`, which bundles this into the expected
 universal property. -/
 class CatPullbackSquare
     {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃} {C₄ : Type u₄}
@@ -141,30 +141,30 @@ def functor : (X ⥤ C₁) ⥤ CatCommSqOver R B X where
 
 /-- (impl.) The inverse direction of `FunctorEquiv`. -/
 private def inverse : CatCommSqOver R B X ⥤ (X ⥤ C₁) :=
-  ((equivalence T L R B).congrRight.trans <|
+  (equivalence T L R B|>.congrRight.trans <|
     CategoricalPullback.functorEquiv R B X).inverse
 
 /-- (impl.) The unit isomorphism of `functorEquiv`. -/
 private def unitIso :
     𝟭 (X ⥤ C₁) ≅ functor T L R B X ⋙ inverse T L R B X :=
-  ((equivalence T L R B).congrRight.trans <|
+  (equivalence T L R B|>.congrRight.trans <|
     CategoricalPullback.functorEquiv R B X).unitIso
 
 /-- (impl.) The first component of the counit isomorphism of `functorEquiv`. -/
 private def counitIsoAppFst
     (S : CatCommSqOver R B X) :
-    ((inverse T L R B X).obj S) ⋙ T ≅ S.fst :=
-  (CatCommSqOver.fstFunctor _ _ _|>.mapIso <|
-    ((equivalence T L R B).congrRight.trans <|
-      CategoricalPullback.functorEquiv R B X).counitIso.app S)
+    (inverse T L R B X|>.obj S) ⋙ T ≅ S.fst :=
+  CatCommSqOver.fstFunctor _ _ _|>.mapIso <|
+    (equivalence T L R B|>.congrRight.trans <|
+      CategoricalPullback.functorEquiv R B X).counitIso.app S
 
 /-- (impl.) The second component of the counit isomorphism of `functorEquiv`. -/
 private def counitIsoAppSnd
     (S : CatCommSqOver R B X) :
     ((inverse T L R B X).obj S) ⋙ L ≅ S.snd :=
-  (CatCommSqOver.sndFunctor _ _ _|>.mapIso <|
-    ((equivalence T L R B).congrRight.trans <|
-      CategoricalPullback.functorEquiv R B X).counitIso.app S)
+  CatCommSqOver.sndFunctor _ _ _|>.mapIso <|
+    (equivalence T L R B|>.congrRight.trans <|
+      CategoricalPullback.functorEquiv R B X).counitIso.app S
 
 @[reassoc]
 private lemma counitCoherence_hom_app' (S : CatCommSqOver R B X) (x : X) :
@@ -174,7 +174,7 @@ private lemma counitCoherence_hom_app' (S : CatCommSqOver R B X) (x : X) :
       (((inverse T L R B X).obj S).obj x) ≫
       B.map ((counitIsoAppSnd T L R B X S).hom.app x) := by
   simpa [counitIsoAppFst, counitIsoAppSnd, inverse] using
-    congr_app (((equivalence T L R B).congrRight.trans <|
+    congr_app ((equivalence T L R B|>.congrRight.trans <|
       CategoricalPullback.functorEquiv R B X).counitIso.app S).hom.w x
 
 attribute [irreducible] inverse counitIsoAppFst counitIsoAppSnd
