@@ -80,7 +80,7 @@ the norm of `P` is congruent to `1` modulo `torsionOrder K`.
 theorem NumberField.torsionOrder_dvd_absNorm_sub_one {P : Ideal (𝓞 K)} (hP₀ : P ≠ ⊥)
     (hP₁ : P.IsPrime) (hP₂ : (absNorm P).Coprime (torsionOrder K)) :
     torsionOrder K ∣ absNorm P - 1 := by
-  have : P.IsMaximal :=  Ring.DimensionLEOne.maximalOfPrime hP₀ hP₁
+  have : P.IsMaximal := Ring.DimensionLEOne.maximalOfPrime hP₀ hP₁
   let _ := Ideal.Quotient.field P
   have hP₃ : absNorm P ≠ 1 := absNorm_eq_one_iff.not.mpr <| IsPrime.ne_top hP₁
   have h := Subgroup.card_dvd_of_injective _ (torsionMapQuot_injective hP₃ hP₂)
