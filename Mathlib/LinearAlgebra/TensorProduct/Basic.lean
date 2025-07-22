@@ -515,7 +515,6 @@ theorem liftAux.smulₛₗ (r : R) (x) : liftAux f (r • x) = σ₁₂ r • li
     (fun p q => by simp_rw [← tmul_smul, liftAux_tmul, (f p).map_smulₛₗ])
     fun p q ih1 ih2 => by simp_rw [smul_add, (liftAux f).map_add, ih1, ih2, smul_add]
 
-@[simp]
 theorem liftAux.smul (r : R) (x) : liftAux f' (r • x) = r • liftAux f' x :=
   liftAux.smulₛₗ r x
 
