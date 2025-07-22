@@ -5,9 +5,9 @@ Authors: Patrick Massot, Kevin Buzzard, Kim Morrison, Johan Commelin, Chris Hugh
   Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Hom.Basic
+import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Tactic.FastInstance
-import Mathlib.Algebra.Group.InjSurj
 
 /-!
 # Instances on spaces of monoid and group morphisms
@@ -22,7 +22,7 @@ operations.
 Finally, we provide the `Ring` structure on `AddMonoid.End`.
 -/
 
-assert_not_exists Ring
+assert_not_exists AddMonoidWithOne Ring
 
 universe uM uN uP uQ
 
