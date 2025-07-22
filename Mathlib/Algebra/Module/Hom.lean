@@ -27,41 +27,10 @@ variable {R S M A B : Type*}
 
 namespace AddMonoidHom
 
-section
-
-instance instDistribSMul [AddZeroClass A] [AddCommMonoid B] [DistribSMul M B] :
-    DistribSMul M (A →+ B) where
-  smul_add _ _ _ := ext fun _ => smul_add _ _ _
-
-variable [Monoid R] [Monoid S] [AddMonoid A] [AddCommMonoid B]
-variable [DistribMulAction R B] [DistribMulAction S B]
-
-instance instDistribMulAction : DistribMulAction R (A →+ B) where
-  smul_zero := smul_zero
-  smul_add := smul_add
-  one_smul _ := ext fun _ => one_smul _ _
-  mul_smul _ _ _ := ext fun _ => mul_smul _ _ _
-
-@[simp] theorem coe_smul (r : R) (f : A →+ B) : ⇑(r • f) = r • ⇑f := rfl
-
-theorem smul_apply (r : R) (f : A →+ B) (x : A) : (r • f) x = r • f x :=
-  rfl
-
-instance smulCommClass [SMulCommClass R S B] : SMulCommClass R S (A →+ B) :=
-  ⟨fun _ _ _ => ext fun _ => smul_comm _ _ _⟩
-
-instance isScalarTower [SMul R S] [IsScalarTower R S B] : IsScalarTower R S (A →+ B) :=
-  ⟨fun _ _ _ => ext fun _ => smul_assoc _ _ _⟩
-
-instance isCentralScalar [DistribMulAction Rᵐᵒᵖ B] [IsCentralScalar R B] :
-    IsCentralScalar R (A →+ B) :=
-  ⟨fun _ _ => ext fun _ => op_smul_eq_smul _ _⟩
-
-end
-
-instance instModule [Semiring R] [AddMonoid A] [AddCommMonoid B] [Module R B] : Module R (A →+ B) :=
-  { add_smul := fun _ _ _=> ext fun _ => add_smul _ _ _
-    zero_smul := fun _ => ext fun _ => zero_smul _ _ }
+instance instModule [Semiring R] [AddMonoid A] [AddCommMonoid B] [Module R B] :
+    Module R (A →+ B) where
+  add_smul _ _ _ := ext fun _ => add_smul _ _ _
+  zero_smul _ := ext fun _ => zero_smul _ _
 
 instance instDomMulActModule
     {S M M₂ : Type*} [Semiring S] [AddCommMonoid M] [AddCommMonoid M₂] [Module S M] :
@@ -101,14 +70,14 @@ theorem smul_apply (r : R) (f : AddMonoid.End A) (x : A) : (r • f) x = r • f
   rfl
 
 instance smulCommClass [SMulCommClass R S A] : SMulCommClass R S (AddMonoid.End A) :=
-  AddMonoidHom.smulCommClass
+  AddMonoidHom.instSMulCommClass
 
 instance isScalarTower [SMul R S] [IsScalarTower R S A] : IsScalarTower R S (AddMonoid.End A) :=
-  AddMonoidHom.isScalarTower
+  AddMonoidHom.instIsScalarTower
 
 instance isCentralScalar [DistribMulAction Rᵐᵒᵖ A] [IsCentralScalar R A] :
     IsCentralScalar R (AddMonoid.End A) :=
-  AddMonoidHom.isCentralScalar
+  AddMonoidHom.instIsCentralScalar
 
 end
 

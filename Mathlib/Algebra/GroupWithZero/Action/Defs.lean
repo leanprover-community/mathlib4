@@ -260,39 +260,6 @@ lemma smul_inv₀ (c : G₀) (x : G₀') : (c • x)⁻¹ = c⁻¹ • x⁻¹ :=
 
 end GroupWithZero
 
-namespace ZeroHom
-variable {C} [Zero A] [Zero B] [Zero C]
-
-instance [SMulZeroClass M B] : SMulZeroClass M (ZeroHom A B) where
-  smul r f :=
-    { toFun := fun a => r • (f a)
-      map_zero' := by simp only [map_zero, smul_zero]  }
-  smul_zero _ := ext fun _ => smul_zero _
-
-theorem smul_apply [SMulZeroClass M B] (m : M) (f : ZeroHom A B) (a : A) :
-    (m • f) a = m • f a := rfl
-
-theorem smul_comp [SMulZeroClass M B] [SMulZeroClass M C]
-    (m : M) (g : ZeroHom B C) (f : ZeroHom A B) :
-    (m • g).comp f = m • g.comp f := rfl
-
-instance [Zero M] [SMulWithZero M B] : SMulWithZero M (ZeroHom A B) where
-  zero_smul _ := ext fun _ => zero_smul _ _
-
-instance [SMulZeroClass M B] [SMulZeroClass N B] [SMulCommClass M N B] :
-    SMulCommClass M N (ZeroHom A B) :=
-  ⟨fun _ _ _ => ext fun _ => smul_comm _ _ _⟩
-
-instance [SMul M N] [SMulZeroClass M B] [SMulZeroClass N B] [IsScalarTower M N B] :
-    IsScalarTower M N (ZeroHom A B) :=
-  ⟨fun _ _ _ => ext fun _ => smul_assoc _ _ _⟩
-
-instance [SMulZeroClass M B] [SMulZeroClass Mᵐᵒᵖ B] [IsCentralScalar M B] :
-    IsCentralScalar M (ZeroHom A B) :=
-  ⟨fun _ _ => ext fun _ => op_smul_eq_smul _ _⟩
-
-end ZeroHom
-
 /-- Typeclass for scalar multiplication that preserves `0` and `+` on the right.
 
 This is exactly `DistribMulAction` without the `MulAction` part.
@@ -308,13 +275,6 @@ variable [AddZeroClass A] [DistribSMul M A]
 
 theorem smul_add (a : M) (b₁ b₂ : A) : a • (b₁ + b₂) = a • b₁ + a • b₂ :=
   DistribSMul.smul_add _ _ _
-
-instance AddMonoidHom.smulZeroClass [AddZeroClass B] : SMulZeroClass M (B →+ A) where
-  smul r f :=
-    { toFun := fun a => r • (f a)
-      map_zero' := by simp only [map_zero, smul_zero]
-      map_add' := fun x y => by simp only [map_add, smul_add] }
-  smul_zero _ := ext fun _ => smul_zero _
 
 /-- Pullback a distributive scalar multiplication along an injective additive monoid
 homomorphism.
