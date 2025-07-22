@@ -65,11 +65,6 @@ lemma vertices_nil (a : V) : (nil : Path a a).vertices = [a] := rfl
 lemma vertices_cons {a b c : V} (p : Path a b) (e : b ⟶ c) :
   (p.cons e).vertices = p.vertices.concat c := rfl
 
-lemma end_map {a b : V} (p : Path a b) : F.obj (p.end) = (F.mapPath p).end := by
-  induction p with
-  | nil => rfl
-  | cons p' e ih => simp [ih]; rfl
-
 -- Vertices of a path are always non-empty
 lemma vertices_nonempty' {V : Type*} [Quiver V] {a b : V} (p : Path a b) :
     p.vertices.length > 0 := by
