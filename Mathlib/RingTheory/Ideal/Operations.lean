@@ -1250,13 +1250,6 @@ theorem Ideal.primeCompl_le_nonZeroDivisors {R : Type*} [CommSemiring R] [NoZero
     (P : Ideal R) [P.IsPrime] : P.primeCompl ≤ nonZeroDivisors R :=
   le_nonZeroDivisors_of_noZeroDivisors <| not_not_intro P.zero_mem
 
-@[simp]
-theorem Ideal.mem_primeCompl_iff {α : Type*} [Semiring α] {P : Ideal α} [hp : P.IsPrime] {x : α} :
-    x ∈ P.primeCompl ↔ x ∉ P := Iff.rfl
-
-theorem Ideal.zero_notMem_primeCompl {R : Type*} [CommSemiring R] (P : Ideal R) [P.IsPrime] :
-    0 ∉ P.primeCompl := by simp
-
 namespace Submodule
 
 variable {R : Type u} {M : Type v}
