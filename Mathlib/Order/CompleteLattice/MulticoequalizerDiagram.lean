@@ -89,8 +89,8 @@ when `d : MulticoequalizerDiagram x u v`. -/
 def multispanIndex : MultispanIndex (.prod ι) T where
   left := fun ⟨i, j⟩ ↦ v i j
   right := u
-  fst (_ : ι × ι) := homOfLE (by grind)
-  snd (_ : ι × ι) := homOfLE (by grind)
+  fst _ := homOfLE (by grind)
+  snd _ := homOfLE (by grind)
 
 /-- The multicofork in the category associated to the complete lattice `T`
 associated to `d : MulticoequalizerDiagram x u v` with `x : T`.
