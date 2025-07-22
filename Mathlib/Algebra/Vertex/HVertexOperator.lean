@@ -152,9 +152,10 @@ theorem support_arrowCongrLeft_subset {f : Γ₁ ↪ Γ₂} {A : HVertexOperator
   contrapose! hg
   simp [arrowCongrLeft_coeff_notin_range hg]
 
+omit [PartialOrder Γ₁] in
 @[simp]
 theorem arrowCongrLeft_zero {f : Γ₁ ↪ Γ₂} :
-    f.arrowCongrLeft (0 : HVertexOperator Γ₁ R V W).coeff = 0 := by
+    f.arrowCongrLeft (0 : Γ₁ → (V →ₗ[R] W)) = 0 := by
   ext1 g
   by_cases h : g ∈ f '' Set.univ <;> simp [Function.Embedding.arrowCongrLeft, Function.extend]
 
