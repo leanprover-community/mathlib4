@@ -363,7 +363,9 @@ variable {D₁ : Type u₅} {D₂ : Type u₆} {D₃ : Type u₇} {D₄ : Type u
 
 variable {R B} {R' B'}
 
-/-- A `CatCospanTransform` induces a functor between the categorical pullbacks. -/
+/-- Given a (not-necessarily pullback) `CatCommSq T L R B`, a 
+`CatCospanTransform ψ R B R' B'` and a `CatPullbackSquare T' L' R' B'`,
+there is an induced functor between the top left corners of the squares. -/
 def functorOfTransform (ψ : CatCospanTransform R B R' B') : C₁ ⥤ D₁ :=
   functorEquiv T' L' R' B' C₁|>.inverse.obj <|
     (CatCommSqOver.transform _ ψ).obj (.ofSquare T L R B)
@@ -373,16 +375,6 @@ instance functorOfTransformFstSquare (ψ : CatCospanTransform R B R' B') :
   iso := ((CatCommSqOver.fstFunctor _ _ _).mapIso
       (functorEquiv T' L' R' B' C₁|>.counitIso.app <|
         (CatCommSqOver.transform _ ψ).obj (.ofSquare T L R B))).symm
-
-instance functorOfTransformFstSquare' (X : Type*) [Category X]
-    (ψ : CatCospanTransform R B R' B') :
-    CatCommSq
-      (Functor.whiskeringRight X _ _ |>.obj T)
-      (Functor.whiskeringRight X _ _ |>.obj <| functorOfTransform T L T' L' ψ)
-      (Functor.whiskeringRight X _ _ |>.obj ψ.left)
-      (Functor.whiskeringRight X _ _ |>.obj T') where
-  iso := Functor.whiskeringRight X _ _ |>.mapIso
-      (CatCommSq.iso T (functorOfTransform T L T' L' ψ) ψ.left T')
 
 omit [CatPullbackSquare T L R B] in
 lemma functorOfTransform_map_fst
