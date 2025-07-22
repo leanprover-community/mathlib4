@@ -34,6 +34,9 @@ instance instAddLeftCancelSemigroup [AddLeftCancelSemigroup α] : AddLeftCancelS
 instance instAddRightCancelSemigroup [AddRightCancelSemigroup α] : AddRightCancelSemigroup αᵐᵒᵖ :=
   unop_injective.addRightCancelSemigroup _ fun _ _ => rfl
 
+instance instAddCommMagma [AddCommMagma α] : AddCommMagma αᵐᵒᵖ :=
+  unop_injective.addCommMagma _ fun _ _ => rfl
+
 instance instAddCommSemigroup [AddCommSemigroup α] : AddCommSemigroup αᵐᵒᵖ :=
   unop_injective.addCommSemigroup _ fun _ _ => rfl
 
