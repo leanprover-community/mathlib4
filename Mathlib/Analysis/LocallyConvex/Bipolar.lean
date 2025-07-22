@@ -87,33 +87,26 @@ variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
 variable (f : WeakBilin B →L[𝕜] 𝕜)
 
-lemma test2 : (f ⁻¹' (Metric.ball 0 1))  ∈ (nhds 0) :=
-  mem_nhds_iff.mpr ⟨f ⁻¹' (Metric.ball 0 1), ⟨subset_refl _,
-    ⟨IsOpen.preimage (ContinuousLinearMap.continuous f) Metric.isOpen_ball, by
-      rw [Set.mem_preimage, map_zero]
-      exact Metric.mem_ball_self Real.zero_lt_one⟩⟩⟩
-
-lemma test3 : ∃ V ∈ B.toSeminormFamily.basisSets, V ⊆ (f ⁻¹' (Metric.ball 0 1)) :=
-  (Filter.HasBasis.mem_iff (LinearMap.hasBasis_weakBilin B)).mp (test2 B f)
-
 lemma test4 :
     ∃ (s : Finset F) (r : ℝ) (_ : 0 < r),
     Seminorm.ball (s.sup (B.toSeminormFamily)) (0 : E) r ⊆ (f ⁻¹' (Metric.ball 0 1)) := by
-  obtain ⟨V, hV1 , hV2⟩ := test3 B f
+  obtain ⟨V, hV1 , hV2⟩ := (Filter.HasBasis.mem_iff (LinearMap.hasBasis_weakBilin B)).mp
+    (mem_nhds_iff.mpr ⟨f ⁻¹' (Metric.ball 0 1), ⟨subset_refl _,
+    ⟨IsOpen.preimage (ContinuousLinearMap.continuous f) Metric.isOpen_ball, by
+      rw [Set.mem_preimage, map_zero]
+      exact Metric.mem_ball_self Real.zero_lt_one⟩⟩⟩)
   obtain ⟨sE,hsE1, hsE2⟩ := hV1
   simp at hsE1
   obtain ⟨F, hF⟩ := hsE1
   use F
-  have e1 : (0 : ℝ ) < (1 : ℝ) := by exact Real.zero_lt_one
   rw [Set.iUnion, iSup] at hF
   subst hF
-  simp_all only [zero_lt_one, Set.sSup_eq_sUnion, Set.sUnion_range, Set.mem_iUnion,
-    Set.mem_singleton_iff,
-    exists_prop]
-  obtain ⟨w, h⟩ := hsE2
-  obtain ⟨left, right⟩ := h
-  subst right
+  simp at hsE2
+  obtain ⟨w, h1, h2⟩ := hsE2
   use w
+  use h1
+  exact Eq.trans_subset (_root_.id h2.symm) hV2
+
 
 --def mL (s : Finset F) : s → WeakBilin B →ₗ[𝕜] 𝕜 := fun (f : s) => (WeakBilin.eval B) f.val
 
