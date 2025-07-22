@@ -397,6 +397,24 @@ instance (K L) [Finite L] [Field K] [Field L] [Algebra K L] : IsCyclic (L ≃ₐ
     ⟨frobeniusAlgEquivOfAlgebraic K L,
       fun f ↦ have ⟨n, hn⟩ := (bijective_frobeniusAlgEquivOfAlgebraic_pow K L).2 f; ⟨n, hn⟩⟩
 
+open Polynomial in
+theorem minpoly_frobeniusAlgHom :
+    minpoly K (frobeniusAlgHom K L).toLinearMap = X ^ Module.finrank K L - 1 := by
+  refine .symm <| minpoly.unique' _ _ (leadingCoeff_X_pow_sub_one Module.finrank_pos)
+    (LinearMap.ext fun x ↦ ?_) fun p lt ↦ or_iff_not_imp_left.mpr fun ne hp ↦ ne ?_
+  · simpa [sub_eq_zero, Module.End.coe_pow] using
+      DFunLike.congr_fun (orderOf_dvd_iff_pow_eq_one.mp (orderOf_frobeniusAlgHom K L).dvd) x
+  rw [← C_1, degree_X_pow_sub_C Module.finrank_pos] at lt
+  rw [p.as_sum_range' (Module.finrank K L)] at hp
+  · have := Fintype.linearIndependent_iff.mp ((linearIndependent_algHom_toLinearMap K L L).comp _
+        (bijective_frobeniusAlgHom_pow K L).1) (algebraMap K L <| p.coeff ·) <| by
+      simpa [sum_range, map_sum, aeval_monomial, ← AlgHom.toEnd_apply, ← map_pow] using hp
+    ext i
+    obtain lt | le := lt_or_ge i (Module.finrank K L)
+    · exact (algebraMap K L).injective (by simpa using this ⟨i, lt⟩)
+    · exact coeff_eq_zero_of_degree_lt (lt.trans_le <| WithBot.coe_le_coe.mpr le)
+  exact (natDegree_lt_iff_degree_lt ne).mpr lt
+
 end frobenius
 
 open Polynomial
