@@ -69,8 +69,8 @@ instance : SMul ℕ (presburger.Term α) where
 
 /-- Summation over a finite set of terms in Presburger arithmetic.
 
-  It is defined via choice, so the result only makes sense when the structure satisfies
-  commutativity (see `realize_sum`). -/
+It is defined via choice, so the result only makes sense when the structure satisfies
+commutativity (see `realize_sum`). -/
 noncomputable def sum {β : Type*} (s : Finset β) (f : β → presburger.Term α) : presburger.Term α :=
   (s.toList.map f).sum
 
