@@ -46,6 +46,23 @@ lemma Ideal.Quotient.factor_ker (H : I ≤ J) [I.IsTwoSided] [J.IsTwoSided] :
     exact Ideal.mem_map_of_mem _ h
   · rcases mem_image_of_mem_map_of_surjective _ Ideal.Quotient.mk_surjective h with ⟨r, hr, eq⟩
     simpa [← eq, Ideal.Quotient.eq_zero_iff_mem] using hr
+lemma Submodule.eq_factor_of_eq_factor_succ {p : ℕ → Submodule R M}
+    (hp : Antitone p) (x : (n : ℕ) → M ⧸ (p n)) (h : ∀ m, x m = factor (hp m.le_succ) (x (m + 1)))
+    (m n : ℕ) (g : m ≤ n) : x m = factor (hp g) (x n) := by
+  induction' hmn : n - m with k ih generalizing m n <;>
+  have : n = m + (n - m) := (Nat.add_sub_of_le g).symm
+  · rw [hmn, Nat.add_zero] at this
+    subst this
+    simp
+  · rw [hmn, ← add_assoc] at this
+    subst this
+    rw [ih m (m + k) (m.le_add_right k) (by simp), h]
+    simp
+
+lemma Ideal.Quotient.eq_factor_of_eq_factor_succ {I : ℕ → Ideal R} [∀ n, (I n).IsTwoSided]
+    (hI : Antitone I) (x : (n : ℕ) → R ⧸ (I n)) (h : ∀ m, x m = factor (hI m.le_succ) (x (m + 1)))
+    (m n : ℕ) (g : m ≤ n) : x m = factor (hI g) (x n) :=
+  Submodule.eq_factor_of_eq_factor_succ hI x h m n g
 
 lemma Ideal.map_mk_comap_factor [J.IsTwoSided] [K.IsTwoSided] (hIJ : J ≤ I) (hJK : K ≤ J) :
     (I.map (mk J)).comap (factor hJK) = I.map (mk K) := by

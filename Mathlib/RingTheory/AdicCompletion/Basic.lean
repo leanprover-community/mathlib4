@@ -44,6 +44,8 @@ class IsPrecomplete : Prop where
     ∃ L : M, ∀ n, f n ≡ L [SMOD (I ^ n • ⊤ : Submodule R M)]
 
 /-- A module `M` is `I`-adically complete if it is Hausdorff and precomplete. -/
+@[stacks 0317 "The equivalence between our definition and Stacks Project is established later at
+`xxx` and `yyy`"]
 class IsAdicComplete : Prop extends IsHausdorff I M, IsPrecomplete I M
 
 variable {I M}
@@ -82,6 +84,7 @@ theorem eq_iff_smodEq' [IsHausdorff I R]
 
 alias ⟨_, eq_of_smodEq'⟩ := eq_iff_smodEq'
 
+section StrictMono
 variable {a : ℕ → ℕ} (ha : StrictMono a)
 include ha
 
@@ -96,7 +99,7 @@ theorem eq_iff_smodEq_of_strictMono {x y : M} :
   rw [← sub_eq_zero]
   apply IsHausdorff.haus' (I := I) (x - y)
   intro n
-  simpa only [SModEq.sub_mem, sub_zero] using SModEq.mono (pow_smul_top_le I M (ha.id_le n)) (h n)
+  simpa [SModEq.sub_mem] using SModEq.mono (pow_smul_top_le I M (ha.id_le n)) (h n)
 
 /--
 The `M = R` invariant of `IsHausdorff.eq_iff_smodEq_of_strictMono`.
@@ -108,7 +111,7 @@ theorem eq_iff_smodEq_of_strictMono' [IsHausdorff I R] {x y : R} :
   apply IsHausdorff.haus' (I := I) (x - y)
   simp only [smul_eq_mul, mul_top]
   intro n
-  simpa only [SModEq.sub_mem, sub_zero] using
+  simpa [SModEq.sub_mem] using
       SModEq.mono (Ideal.pow_le_pow_right (ha.id_le n)) (h n)
 
 /--
@@ -184,6 +187,8 @@ protected theorem eq_zero' [IsHausdorff I R] {L : R} (hL : ∀ n, Ideal.Quotient
     L = 0 := by
   refine (eq_iff_smodEq_of_strictMono' (I := I) ha).mpr (fun n ↦ ?_)
   simpa [SModEq, mk_zero] using hL n
+
+end StrictMono
 
 end IsHausdorff
 
@@ -270,6 +275,7 @@ theorem of_eq_factorPowSucc' [IsPrecomplete I R] {f : (n : ℕ) → R ⧸ I ^ n}
   simpa [f', i, Submodule.factorPowSucc, Submodule.factorPow,
       Ideal.quotEquivOfEq_eq_factor] using this
 
+section StrictMono
 variable {a : ℕ → ℕ} (ha : StrictMono a)
 include ha
 
@@ -337,6 +343,8 @@ theorem function_of_eq_factorPow' [IsPrecomplete I R] {α : Type*} {f : (n : ℕ
   ⟨fun s ↦ Classical.choose <| IsPrecomplete.of_eq_factorPow' ha (hf (s := s)),
     fun n s => (Classical.choose_spec <| IsPrecomplete.of_eq_factorPow' ha (hf (s := s))) n⟩
 
+end StrictMono
+
 end IsPrecomplete
 
 namespace IsAdicComplete
@@ -344,15 +352,16 @@ namespace IsAdicComplete
 section LinearMap
 
 variable [IsAdicComplete I M] {N : Type*} [AddCommMonoid N] [Module R N]
+
+section StrictMono
 variable {a : ℕ → ℕ} (ha : StrictMono a)
 include ha
 
-/-- `Gneralize this to a sequence a n instead of n`
-The limit linear map `F : N →ₗ[R] M` of a sequence of compatible
+/--
+The lift linear map `F : N →ₗ[R] M` of a sequence of compatible
 linear maps `N →ₗ[R] M ⧸ (I ^ a n • ⊤)`.
 -/
-noncomputable
-def limLinearMap {f : (n : ℕ) → N →ₗ[R] M ⧸ (I ^ (a n) • ⊤)}
+def lift' {f : (n : ℕ) → N →ₗ[R] M ⧸ (I ^ (a n) • ⊤)}
     (hf : ∀ {m s}, f m s = factorPow I M (ha.monotone m.le_succ) (f (m + 1) s)) :
     N →ₗ[R] M where
       toFun := Classical.choose <|
@@ -370,9 +379,9 @@ Then the compositon of limit linear map `F : N →ₗ[R] M` with the canonial
 projection `M →ₗ[R] M ⧸ (I ^ a n • ⊤)` is `f n` .
 -/
 @[simp]
-theorem mk_limLinearMap {f : (n : ℕ) → N →ₗ[R] M ⧸ (I ^ a n • ⊤)}
+theorem mk_lift {f : (n : ℕ) → N →ₗ[R] M ⧸ (I ^ a n • ⊤)}
     (hf : ∀ {m s}, f m s = factorPow I M (ha.monotone m.le_succ) (f (m + 1) s)) (n : ℕ) (s : N) :
-    (Submodule.Quotient.mk (limLinearMap ha hf s)) = f n s := by
+    (Submodule.Quotient.mk (lift' ha hf s)) = f n s := by
   simpa using ((Classical.choose_spec <|
       IsPrecomplete.function_of_eq_factorPow (I := I) (f := fun n ↦ f n) ha hf) n s).symm
 
@@ -382,17 +391,21 @@ Then the compositon of limit linear map `F : N →ₗ[R] M` with the canonial
 projection `M →ₗ[R] M ⧸ (I ^ a n • ⊤)` is `f n` .
 -/
 @[simp]
-theorem mkQ_comp_limLinearMap {f : (n : ℕ) → N →ₗ[R] M ⧸ (I ^ (a n) • ⊤)}
+theorem mkQ_comp_lift {f : (n : ℕ) → N →ₗ[R] M ⧸ (I ^ (a n) • ⊤)}
     (hf : ∀ {m s}, f m s = factorPow I M (ha.monotone m.le_succ) (f (m + 1) s)) (n : ℕ) :
-    (mkQ (I ^ (a n) • ⊤ : Submodule R M)).comp (limLinearMap ha hf) = f n := by
+    (mkQ (I ^ (a n) • ⊤ : Submodule R M)).comp (lift' ha hf) = f n := by
   ext
-  simp [IsAdicComplete.mk_limLinearMap ha hf n]
+  simp [IsAdicComplete.mk_lift ha hf n]
+
+end StrictMono
 
 end LinearMap
 
 section RingHom
 
 variable [IsAdicComplete I R] {S : Type*} [NonAssocSemiring S]
+
+section StrictMono
 variable {a : ℕ → ℕ} (ha : StrictMono a)
 include ha
 
@@ -441,6 +454,8 @@ theorem mk_comp_limRingHom {f : (n : ℕ) → S →+* R ⧸ I ^ a n}
     (hf : ∀ {m a}, f m a = factorPow I (ha.monotone m.le_succ) (f (m + 1) a)) (n : ℕ) :
     (Ideal.Quotient.mk (I ^ a n)).comp (limRingHom ha hf) = f n :=
   RingHom.ext (IsAdicComplete.mk_limRingHom ha hf n)
+
+end StrictMono
 
 end RingHom
 
