@@ -44,6 +44,8 @@ structure BicartSq : Prop where
   max_eq : x₂ ⊔ x₃ = x₄
   min_eq : x₂ ⊓ x₃ = x₁
 
+attribute [grind cases] BicartSq
+
 namespace BicartSq
 
 variable {x₁ x₂ x₃ x₄} (sq : BicartSq x₁ x₂ x₃ x₄)
