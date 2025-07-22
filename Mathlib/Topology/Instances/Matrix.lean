@@ -43,7 +43,7 @@ instance [TopologicalSpace R] : TopologicalSpace (Matrix m n R) :=
 instance [TopologicalSpace R] [T2Space R] : T2Space (Matrix m n R) :=
   Pi.t2Space
 
-theorem Set.matrix_isOpen [Fintype m] [Fintype n]
+theorem IsOpen.matrix [Fintype m] [Fintype n]
     [TopologicalSpace R] {S : Set R} (hS : IsOpen S) :
     IsOpen (S.matrix : Set (Matrix m n R)) := by
   rw [isOpen_pi_iff']
