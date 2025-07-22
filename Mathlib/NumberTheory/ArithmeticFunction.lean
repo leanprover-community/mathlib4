@@ -822,6 +822,35 @@ theorem sigma_zero_apply (n : ℕ) : σ 0 n = #n.divisors := by simp [sigma_appl
 theorem sigma_zero_apply_prime_pow {p i : ℕ} (hp : p.Prime) : σ 0 (p ^ i) = i + 1 := by
   simp [sigma_apply_prime_pow hp]
 
+@[simp]
+theorem sigma_one (k : ℕ) : σ k 1 = 1 := by
+  simp only [sigma_apply, divisors_one, sum_singleton, one_pow]
+
+theorem sigma_pos (k n : ℕ) (hn0 : n ≠ 0) : 0 < σ k n := by
+  rw [sigma_apply]
+  apply Finset.sum_pos
+  · intro d hd
+    have hd : d ≠ 0 := by
+      rw [Nat.mem_divisors] at hd
+      rcases hd with ⟨ hd, _⟩
+      exact ne_zero_of_dvd_ne_zero hn0 hd
+    positivity
+  exact nonempty_divisors.mpr hn0
+
+theorem sigma_mono (k k' n : ℕ) (hk : k ≤ k') : σ k n ≤ σ k' n := by
+  by_cases hn0 : n = 0
+  · subst hn0
+    simp
+  rw [sigma_apply, sigma_apply]
+  apply Finset.sum_le_sum
+  intro d hd
+  have hd : d ≠ 0 := by
+    rw [Nat.mem_divisors] at hd
+    rcases hd with ⟨ hd, _⟩
+    exact ne_zero_of_dvd_ne_zero hn0 hd
+  gcongr
+  omega
+
 theorem zeta_mul_pow_eq_sigma {k : ℕ} : ζ * pow k = σ k := by
   ext
   rw [sigma, zeta_mul_apply]
@@ -1280,6 +1309,41 @@ theorem _root_.Nat.card_divisors {n : ℕ} (hn : n ≠ 0) :
   rw [← sigma_zero_apply, isMultiplicative_sigma.multiplicative_factorization _ hn]
   exact Finset.prod_congr n.support_factorization fun _ h =>
     sigma_zero_apply_prime_pow <| Nat.prime_of_mem_primeFactors h
+
+@[simp]
+theorem _root_.Nat.divisors_card_eq_one_iff (n : ℕ) : #n.divisors = 1 ↔ n = 1 := by
+  by_cases hn0 : n = 0
+  · subst hn0
+    simp
+  rw [Nat.card_divisors hn0, Finset.prod_eq_one_iff]
+  constructor
+  · intro h
+    simp only [Nat.mem_primeFactors, ne_eq, Nat.add_eq_right, and_imp] at h
+    by_contra hn1
+    exact Nat.factorization_minFac_ne_zero (by omega)
+            (h n.minFac (Nat.minFac_prime hn1) (Nat.minFac_dvd n) hn0)
+  · intro h _ _
+    subst h
+    simp
+
+/-- `sigma_eq_one_iff` is to be preferred. -/
+private theorem sigma_zero_eq_one_iff (n : ℕ) : σ 0 n = 1 ↔ n = 1 := by
+  simp [sigma_zero_apply]
+
+@[simp]
+theorem sigma_eq_one_iff (k n : ℕ) : σ k n = 1 ↔ n = 1 := by
+  by_cases hn0 : n = 0
+  · subst hn0
+    simp
+  constructor
+  · intro h
+    rw [<- sigma_zero_eq_one_iff]
+    have one_le_sigma := sigma_pos 0 n hn0
+    have sigma_zero_le_sigma := sigma_mono 0 k n (Nat.zero_le k)
+    linarith
+  · intro h
+    subst h
+    simp
 
 theorem _root_.Nat.sum_divisors {n : ℕ} (hn : n ≠ 0) :
     ∑ d ∈ n.divisors, d = ∏ p ∈ n.primeFactors, ∑ k ∈ .range (n.factorization p + 1), p ^ k := by
