@@ -561,6 +561,7 @@ instance [NonUnitalNonAssocSemiring β] : NonUnitalNonAssocSemiring (α →ₛ �
 
 instance [Semiring β] : Semiring (α →ₛ β) where
 
+/-- Convenience constructor providing `toFun` for `Algebra K (α →ₛ β)` instance. -/
 noncomputable def simpleFuncAlgebraMap [CommSemiring K] [Semiring β] [Algebra K β] : K →+* α →ₛ β :=
   { toFun k := const _ <| algebraMap _ β k
     map_one' := ext fun _ ↦ algebraMap K β |>.map_one ▸ rfl
@@ -568,6 +569,7 @@ noncomputable def simpleFuncAlgebraMap [CommSemiring K] [Semiring β] [Algebra K
     map_zero' := ext fun _ ↦ algebraMap K β |>.map_zero ▸ rfl
     map_add' _ _ := ext fun _ ↦ algebraMap K β |>.map_add ..}
 
+/-- Convenience constructor providing `commutes` for `Algebra K (α →ₛ β)` instance. -/
 lemma algebraMap_const_mul_comm [CommSemiring K] [Semiring β] [Algebra K β] :
      ∀ (c : K), ∀ (f : α →ₛ β), simpleFuncAlgebraMap c * f = f * simpleFuncAlgebraMap c :=
   fun _ _ => ext fun _ => Algebra.commutes ..
