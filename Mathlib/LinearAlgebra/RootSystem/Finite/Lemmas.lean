@@ -291,14 +291,6 @@ lemma apply_eq_or (i j : ι) :
   replace h₂ : P.pairing i j' = 0 := by rw [← P.algebraMap_pairingIn ℤ, h₂, map_zero]
   exact (B.apply_root_root_zero_iff i j').mpr h₂
 
-theorem exists_apply_eq_or_aux {x y z : R}
-    (hij : x = 2 * y ∨ x = 3 * y ∨ y = 2 * x ∨ y = 3 * x)
-    (hik : x = 2 * z ∨ x = 3 * z ∨ z = 2 * x ∨ z = 3 * x)
-    (hjk : y = 2 * z ∨ y = 3 * z ∨ z = 2 * y ∨ z = 3 * y) :
-    x = 0 ∧ y = 0 ∧ z = 0 := by
-  suffices y = 0 ∨ z = 0 by grind
-  grind
-
 /-- A reduced irreducible finite crystallographic root system has roots of at most two different
 lengths. -/
 lemma exists_apply_eq_or [Nonempty ι] : ∃ i j, ∀ k,
@@ -315,8 +307,7 @@ lemma exists_apply_eq_or [Nonempty ι] : ∃ i j, ∀ k,
     have hij := (B.apply_eq_or i j).resolve_left hji_ne.symm
     have hik := (B.apply_eq_or i k).resolve_left hki_ne.symm
     have hjk := (B.apply_eq_or j k).resolve_left hkj_ne.symm
-    have := exists_apply_eq_or_aux hij hik hjk
-    aesop
+    grind
 
 lemma apply_eq_or_of_apply_ne
     (h : B.form (α i) (α i) ≠ B.form (α j) (α j)) (k : ι) :
