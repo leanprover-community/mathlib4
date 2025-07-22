@@ -69,7 +69,7 @@ protected abbrev commSemigroup [CommSemigroup M₂] (f : M₁ → M₂) (hf : In
   __ := hf.commMagma f mul
 
 /-- A type has left-cancellative multiplication, if it admits an injective map that
-preserves `*` to another type with cancellative multiplication. -/
+preserves `*` to another type with left-cancellative multiplication. -/
 @[to_additive "A type has left-cancellative addition, if it admits an injective map that
 preserves `+` to another type with left-cancellative addition."]
 protected theorem isLeftCancelMul [Mul M₂] [IsLeftCancelMul M₂] (f : M₁ → M₂) (hf : Injective f)
@@ -79,7 +79,7 @@ protected theorem isLeftCancelMul [Mul M₂] [IsLeftCancelMul M₂] (f : M₁ �
 /-- A type has right-cancellative multiplication, if it admits an injective map that
 preserves `*` to another type with right-cancellative multiplication. -/
 @[to_additive "A type has right-cancellative addition, if it admits an injective map that
-preserves `+` to another type with cancellative addition."]
+preserves `+` to another type with right-cancellative addition."]
 protected theorem isRightCancelMul [Mul M₂] [IsRightCancelMul M₂] (f : M₁ → M₂) (hf : Injective f)
     (mul : ∀ x y, f (x * y) = f x * f y) : IsRightCancelMul M₁ where
   mul_right_cancel x y z H := hf <| mul_right_cancel <| by simpa only [mul] using congrArg f H
