@@ -128,11 +128,13 @@ theorem map_X : h.map X = h.root := rfl
 theorem map_self : h.map f = 0 := by simp
 
 @[simp]
-theorem aeval_eq (p : R[X]) : aeval h.root p = h.map p :=
-  Polynomial.induction_on p
-    (by simp [algebraMap_apply h]) (by simp_all) (by simp [algebraMap_apply h])
+theorem aeval_root_eq_map : aeval h.root = h.map := by ext; simp
 
-theorem aeval_root : aeval h.root f = 0 := by simp
+@[deprecated (since := "2025-07-23")] alias aeval_eq := aeval_root_eq_map
+
+theorem aeval_root_self : aeval h.root f = 0 := by simp
+
+@[deprecated (since := "2025-07-23")] alias aeval_root := aeval_root_self
 
 /-- Choose an arbitrary representative so that `h.map (h.repr x) = x`.
 
@@ -163,7 +165,7 @@ theorem ext_map (h' : IsAdjoinRoot S f) (eq : ∀ x, h.map x = h'.map x) : h = h
 for extensionality of the ring elements. -/
 @[ext]
 theorem ext (h' : IsAdjoinRoot S f) (eq : h.root = h'.root) : h = h' :=
-  h.ext_map h' (fun x => by rw [← h.aeval_eq, ← h'.aeval_eq, eq])
+  h.ext_map h' (fun x => by rw [← h.aeval_root_eq_map, ← h'.aeval_root_eq_map, eq])
 
 section lift
 
@@ -500,7 +502,7 @@ section lift
 @[simp]
 theorem lift_self_apply (x : S) :
     h.lift (algebraMap R S) h.root h.aeval_root x = x := by
-  rw [← h.map_repr x, lift_map, ← aeval_def, h.aeval_eq]
+  rw [← h.map_repr x, lift_map, ← aeval_def, h.aeval_root_eq_map]
 
 theorem lift_self :
     h.lift (algebraMap R S) h.root h.aeval_root = RingHom.id S :=
@@ -521,13 +523,13 @@ def aequiv (h' : IsAdjoinRoot T f) : S ≃ₐ[R] T :=
   { h.liftHom h'.root h'.aeval_root with
     toFun := h.liftHom h'.root h'.aeval_root
     invFun := h'.liftHom h.root h.aeval_root
-    left_inv := fun x => by rw [← h.map_repr x, liftHom_map, aeval_eq, liftHom_map, aeval_eq]
-    right_inv := fun x => by rw [← h'.map_repr x, liftHom_map, aeval_eq, liftHom_map, aeval_eq] }
+    left_inv := fun x => by rw [← h.map_repr x]; simp [- map_repr]
+    right_inv := fun x => by rw [← h'.map_repr x]; simp [- map_repr] }
 
 @[simp]
 theorem aequiv_map (h' : IsAdjoinRoot T f) (z : R[X]) :
     h.aequiv h' (h.map z) = h'.map z := by
-  rw [aequiv, AlgEquiv.coe_mk, Equiv.coe_fn_mk, liftHom_map, aeval_eq]
+  rw [aequiv, AlgEquiv.coe_mk, Equiv.coe_fn_mk, liftHom_map, aeval_root_eq_map]
 
 @[simp]
 theorem aequiv_root (h' : IsAdjoinRoot T f) :
