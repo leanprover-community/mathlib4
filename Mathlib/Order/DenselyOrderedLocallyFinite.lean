@@ -21,11 +21,7 @@ lemma LocallyFiniteOrder.denselyOrdered_iff_subsingleton :
   refine ⟨fun H ↦ ?_, fun h ↦ h.instDenselyOrdered⟩
   rw [← not_nontrivial_iff_subsingleton, nontrivial_iff_lt]
   rintro ⟨a, b, hab⟩
-  induction hs : Finset.Icc a b using Finset.strongInduction generalizing b with | H i ih
-  subst hs
-  obtain ⟨c, hac, hcb⟩ := exists_between hab
-  refine ih _ ?_ c hac rfl
-  exact Finset.Icc_ssubset_Icc_right (hac.trans hcb).le le_rfl hcb
+  exact absurd ((subsingleton_of_denselyOrdered_of_lt hab).elim _ _) hab.ne'
 
 lemma denselyOrdered_set_iff_subsingleton {s : Set X} :
     DenselyOrdered s ↔ s.Subsingleton := by

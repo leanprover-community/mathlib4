@@ -72,7 +72,8 @@ theorem nonempty_Ioc : (Ioc a b).Nonempty ↔ a < b := by
 @[aesop safe apply (rule_sets := [finsetNonempty])]
 alias ⟨_, Aesop.nonempty_Ioc_of_lt⟩ := nonempty_Ioc
 
--- TODO: This is nonsense. A locally finite order is never densely ordered
+-- TODO: This is nonsense. A locally finite order is never densely ordered;
+-- See `subsingleton_of_denselyOrdered_of_lt`
 @[simp]
 theorem nonempty_Ioo [DenselyOrdered α] : (Ioo a b).Nonempty ↔ a < b := by
   rw [← coe_nonempty, coe_Ioo, Set.nonempty_Ioo]
@@ -90,6 +91,7 @@ theorem Ioc_eq_empty_iff : Ioc a b = ∅ ↔ ¬a < b := by
   rw [← coe_eq_empty, coe_Ioc, Set.Ioc_eq_empty_iff]
 
 -- TODO: This is nonsense. A locally finite order is never densely ordered
+-- See `subsingleton_of_denselyOrdered_of_lt`
 @[simp]
 theorem Ioo_eq_empty_iff [DenselyOrdered α] : Ioo a b = ∅ ↔ ¬a < b := by
   rw [← coe_eq_empty, coe_Ioo, Set.Ioo_eq_empty_iff]
@@ -250,6 +252,14 @@ theorem Icc_ssubset_Icc_right (hI : a₂ ≤ b₂) (ha : a₂ ≤ a₁) (hb : b�
 theorem Ioc_disjoint_Ioc_of_le {d : α} (hbc : b ≤ c) : Disjoint (Ioc a b) (Ioc c d) :=
   disjoint_left.2 fun _ h1 h2 ↦ not_and_of_not_left _
     ((mem_Ioc.1 h1).2.trans hbc).not_gt (mem_Ioc.1 h2)
+
+lemma _root_.subsingleton_of_denselyOrdered_of_lt [DenselyOrdered α] {a b : α} (h : a < b) :
+    Subsingleton α := by
+  induction hs : Finset.Icc a b using Finset.strongInduction generalizing b with | H i ih
+  subst hs
+  obtain ⟨c, hac, hcb⟩ := exists_between h
+  refine ih _ ?_ hac rfl
+  exact Finset.Icc_ssubset_Icc_right (hac.trans hcb).le le_rfl hcb
 
 variable (a)
 
