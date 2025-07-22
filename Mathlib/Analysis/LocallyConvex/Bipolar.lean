@@ -149,6 +149,10 @@ lemma test4 :
 -- p : B.toSeminormFamily
 -- q : Fin 1 => normSeminorm 𝕜 𝕜
 
+-- A linear map between two bornological spaces is continuous if and only if it is bounded
+-- (with respect to the usual bornologies).
+-- https://en.wikipedia.org/wiki/Bornology#Bornology_of_a_topological_vector_space
+
 lemma isBounded_of_Continuous :
     Seminorm.IsBounded B.toSeminormFamily (fun _ : Fin 1 => normSeminorm 𝕜 𝕜) f.toLinearMap := by
   rw [Seminorm.isBounded_const]
