@@ -27,14 +27,14 @@ variable {α : Type*}
 
 namespace FirstOrder
 
-/-- The type of Presburger arithmetic functions, defined as (0,1,+) -/
+/-- The type of Presburger arithmetic functions, defined as (0, 1, +). -/
 inductive presburgerFunc : ℕ → Type
   | zero : presburgerFunc 0
   | one : presburgerFunc 0
   | add : presburgerFunc 2
   deriving DecidableEq
 
-/-- The language of Presburger arithmetic, defined as (0,1,+). -/
+/-- The language of Presburger arithmetic, defined as (0, 1, +). -/
 def Language.presburger : Language :=
   { Functions := presburgerFunc
     Relations := fun _ => Empty }
