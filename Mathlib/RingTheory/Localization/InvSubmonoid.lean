@@ -64,11 +64,11 @@ theorem toInvSubmonoid_mul (m : M) : (toInvSubmonoid M S m : S) * algebraMap R S
 theorem mul_toInvSubmonoid (m : M) : algebraMap R S m * (toInvSubmonoid M S m : S) = 1 :=
   Submonoid.mul_leftInvEquiv_symm _ (submonoid_map_le_is_unit _ _) ⟨_, _⟩
 
-theorem smul_toInvSubmonoid (m : M) : m • (toInvSubmonoid M S m : S) = 1 := by
+@[simp]
+theorem smul_toInvSubmonoid (m : M) : (m : R) • (toInvSubmonoid M S m : S) = 1 := by
   convert mul_toInvSubmonoid M S m
   ext
   rw [← Algebra.smul_def]
-  rfl
 
 variable {S}
 
