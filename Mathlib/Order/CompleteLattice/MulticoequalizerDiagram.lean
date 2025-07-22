@@ -98,7 +98,7 @@ associated to `d : MulticoequalizerDiagram x u v` with `x : T`.
 of the obvious functor `Set X ⥤ Type _`.) -/
 @[simps! pt]
 def multicofork : Multicofork d.multispanIndex :=
-  Multicofork.ofπ _ x (fun i ↦ homOfLE (by simpa only [← d.iSup_eq] using le_iSup u i))
+  Multicofork.ofπ _ x (fun i ↦ homOfLE (by grind [multispanIndex_right, le_iSup_iff]))
     (fun _ ↦ rfl)
 
 end MulticoequalizerDiagram
