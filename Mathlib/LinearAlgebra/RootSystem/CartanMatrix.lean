@@ -104,6 +104,60 @@ lemma cartanMatrix_apply_eq_zero_iff_pairing {i j : b.support} :
   rw [cartanMatrix, cartanMatrixIn_def, ← (algebraMap_injective ℤ R).eq_iff,
     algebraMap_pairingIn, map_zero]
 
+section neighbor
+
+-- Probably shouldn't use.
+lemma posForm_rootCombination {f g : b.support →₀ ℤ} (B : P.RootPositiveForm ℤ) :
+    B.posForm (b.rootCombination ℤ f) (b.rootCombination ℤ g) =
+    g.sum fun i m ↦ m • f.sum fun j n ↦ n • B.posForm (P.rootSpanMem ℤ j) (P.rootSpanMem ℤ i) := by
+  simp only [rootCombination, LinearMap.map_finsupp_linearCombination,
+    Finsupp.linearCombination_embDomain]
+  simp only [Embedding.coe_subtype, Finsupp.linearCombination_apply]
+  refine Finsupp.sum_congr ?_
+  intro i hi
+  congr 1
+  exact LinearMap.finsupp_sum_apply f (fun i a ↦ a • B.posForm (P.rootSpanMem ℤ ↑i))
+      (P.rootSpanMem ℤ ↑i)
+
+-- may be superfluous.
+lemma posForm_rootCombination_add {f₁ f₂ f₃ : b.support →₀ ℤ} (B : P.RootPositiveForm ℤ) :
+    B.posForm (b.rootCombination ℤ (f₁ + f₂)) (b.rootCombination ℤ f₃) =
+      B.posForm (b.rootCombination ℤ f₁) (b.rootCombination ℤ f₃) +
+        B.posForm (b.rootCombination ℤ f₂) (b.rootCombination ℤ f₃) := by
+  rw [b.rootCombination_add, LinearMap.BilinForm.add_left]
+
+
+/-!
+replace `posForm_rootCombination` with decomposition rules: given a subset `s` of `f.support`, split
+`posForm` into the sum of the restriction of `f` to `s` and to the complement. Then, add a lemma
+about evaluating on combinations with single support.
+
+-/
+
+lemma finsupp_base_posForm_pos [Fintype ι] [IsDomain R] {f : b.support →₀ ℤ} (hf : f ≠ 0) :
+    0 < (P.posRootForm ℤ).posForm (b.rootCombination ℤ f) (b.rootCombination ℤ f) :=
+  P.posRootForm_posForm_pos_of_ne_zero ℤ (b.rootCombination_ne_zero ℤ hf)
+
+/-- The elements of a base, distinct from a particular element, that are not orthogonal to that
+element. These correspond to adjacent vertices of a Dynkin diagram. -/
+def neighbor (i : b.support) : Set b.support :=
+  {j : b.support | b.cartanMatrix i j < 0}
+
+lemma neighbor_symm [Finite ι] (i j : b.support) :
+    j ∈ b.neighbor i ↔ i ∈ b.neighbor j := by
+  simp [neighbor, cartanMatrix, cartanMatrixIn, mem_setOf_eq]
+  obtain rfl | hij := eq_or_ne i j
+  · exact gt_iff_lt
+  · exact pairingIn_lt_zero_iff P ℤ
+
+lemma self_notMem_neighbor (i : b.support) : i ∉ b.neighbor i := by simp [neighbor]
+
+lemma neighbor_disjoint (i : b.support) {s : Set b.support} (hs : s ⊆ (b.neighbor i)) :
+    Disjoint s {i} :=
+  fun _ h1 h2 _ h3 ↦ ((b.self_notMem_neighbor i) ((h2 h3) ▸ (hs (h1 h3)))).elim
+
+end neighbor
+
 variable [IsDomain R]
 
 lemma cartanMatrix_apply_eq_zero_iff_symm {i j : b.support} :
@@ -161,35 +215,8 @@ lemma cartanMatrix_nondegenerate
   let _i : Fintype ι := Fintype.ofFinite ι
   cartanMatrixIn_nondegenerate ℤ b
 
--- Probably shouldn't use.
-lemma posForm_rootCombination {f g : b.support →₀ ℤ} (B : P.RootPositiveForm ℤ) :
-    B.posForm (b.rootCombination ℤ f) (b.rootCombination ℤ g) =
-    g.sum fun i m ↦ m • f.sum fun j n ↦ n • B.posForm (P.rootSpanMem ℤ j) (P.rootSpanMem ℤ i) := by
-  simp only [rootCombination, LinearMap.map_finsupp_linearCombination,
-    Finsupp.linearCombination_embDomain]
-  simp only [Embedding.coe_subtype, Finsupp.linearCombination_apply]
-  refine Finsupp.sum_congr ?_
-  intro i hi
-  congr 1
-  exact LinearMap.finsupp_sum_apply f (fun i a ↦ a • B.posForm (P.rootSpanMem ℤ ↑i))
-      (P.rootSpanMem ℤ ↑i)
 
--- may be superfluous.
-lemma posForm_rootCombination_add {f₁ f₂ f₃ : b.support →₀ ℤ} (B : P.RootPositiveForm ℤ) :
-    B.posForm (b.rootCombination ℤ (f₁ + f₂)) (b.rootCombination ℤ f₃) =
-      B.posForm (b.rootCombination ℤ f₁) (b.rootCombination ℤ f₃) +
-        B.posForm (b.rootCombination ℤ f₂) (b.rootCombination ℤ f₃) := by
-  rw [b.rootCombination_add, LinearMap.BilinForm.add_left]
-
-
-/-!
-replace `posForm_rootCombination` with decomposition rules: given a subset `s` of `f.support`, split
-`posForm` into the sum of the restriction of `f` to `s` and to the complement. Then, add a lemma
-about evaluating on combinations with single support.
-
--/
-
-lemma nonpos_posForm [Finite ι] [IsDomain R] {i j : b.support} (h : i ≠ j)
+lemma nonpos_posForm {i j : b.support} (h : i ≠ j)
     (B : P.RootPositiveForm ℤ) :
     B.posForm (P.rootSpanMem ℤ i) (P.rootSpanMem ℤ j) ≤ 0 := by
   suffices 2 • B.posForm (P.rootSpanMem ℤ i) (P.rootSpanMem ℤ j) ≤ 0 by
@@ -199,37 +226,15 @@ lemma nonpos_posForm [Finite ι] [IsDomain R] {i j : b.support} (h : i ≠ j)
   exact smul_nonpos_of_nonpos_of_nonneg (b.cartanMatrix_le_zero_of_ne i j h)
     (RootPositiveForm.rootLength_pos B j).le
 
-lemma finsupp_base_posForm_pos [Fintype ι] [IsDomain R] {f : b.support →₀ ℤ} (hf : f ≠ 0) :
-    0 < (P.posRootForm ℤ).posForm (b.rootCombination ℤ f) (b.rootCombination ℤ f) :=
-  P.posRootForm_posForm_pos_of_ne_zero ℤ (b.rootCombination_ne_zero ℤ hf)
-
-/-- The elements of a base, distinct from a particular element, that are not orthogonal to that
-element. These correspond to adjacent vertices of a Dynkin diagram. -/
-def neighbor (i : b.support) : Set b.support :=
-  {j : b.support | b.cartanMatrix i j < 0}
-
-lemma neighbor_symm [Finite ι] (i j : b.support) :
-    j ∈ b.neighbor i ↔ i ∈ b.neighbor j := by
-  simp [neighbor, cartanMatrix, cartanMatrixIn, mem_setOf_eq]
-  obtain rfl | hij := eq_or_ne i j
-  · exact gt_iff_lt
-  · exact pairingIn_lt_zero_iff P ℤ
-
-lemma not_neighbor_iff_orthogonal [Finite ι] [IsDomain R] {i j : b.support} (h : i ≠ j) :
+lemma not_neighbor_iff_orthogonal {i j : b.support} (h : i ≠ j) :
     j ∉ b.neighbor i ↔ P.IsOrthogonal i j := by
   simp only [neighbor, mem_setOf_eq, not_lt, IsOrthogonal]
   have hle := b.cartanMatrix_le_zero_of_ne i j h
-  refine ⟨fun h ↦ ⟨(b.cartanMatrix_zero_iff i j).mp (by omega), ?_⟩,?_⟩
-  · exact pairing_eq_zero_iff'.mp <| (b.cartanMatrix_zero_iff i j).mp (by omega)
-  · exact fun h ↦ Int.le_of_eq ((b.cartanMatrix_zero_iff i j).mpr h.1).symm
+  refine ⟨fun h ↦ ⟨(b.cartanMatrix_apply_eq_zero_iff_pairing).mp (by omega), ?_⟩,?_⟩
+  · exact pairing_eq_zero_iff'.mp <| (b.cartanMatrix_apply_eq_zero_iff_pairing).mp (by omega)
+  · exact fun h ↦ Int.le_of_eq ((b.cartanMatrix_apply_eq_zero_iff_pairing).mpr h.1).symm
 
-lemma self_notMem_neighbor (i : b.support) : i ∉ b.neighbor i := by simp [neighbor]
-
-lemma neighbor_disjoint (i : b.support) {s : Set b.support} (hs : s ⊆ (b.neighbor i)) :
-    Disjoint s {i} :=
-  fun _ h1 h2 _ h3 ↦ ((b.self_notMem_neighbor i) ((h2 h3) ▸ (hs (h1 h3)))).elim
-
-lemma posForm_of_pairing_neg_three [Fintype ι] [IsDomain R] {i j : b.support} (fi fj : ℤ)
+lemma posForm_of_pairing_neg_three [Fintype ι] {i j : b.support} (fi fj : ℤ)
     (hij : P.pairingIn ℤ i j = -3) :
     (P.posRootForm ℤ).posForm (b.rootCombination ℤ (Finsupp.single i fi + Finsupp.single j fj))
       (b.rootCombination ℤ (Finsupp.single i fi + Finsupp.single j fj)) =
@@ -245,7 +250,7 @@ lemma posForm_of_pairing_neg_three [Fintype ι] [IsDomain R] {i j : b.support} (
   simp only [smul_eq_mul, ← mul_assoc, hij, Int.reduceNeg, neg_mul, mul_neg]
   linear_combination
 
-lemma notMem_neighbor_of_pairing_neg_three [IsDomain R] [Fintype ι] {i j k : b.support}
+lemma notMem_neighbor_of_pairing_neg_three [Fintype ι] {i j k : b.support}
     (hij : P.pairingIn ℤ i j = -3) (hjk : j ≠ k) : k ∉ b.neighbor i := by
   by_cases hik : i = k; · exact hik ▸ b.self_notMem_neighbor i
   have hnij : i ≠ j := by
