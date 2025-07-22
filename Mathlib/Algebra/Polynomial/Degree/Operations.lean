@@ -287,11 +287,7 @@ theorem coeff_mul_degree_add_degree (p q : R[X]) :
             zero_mul]
         · rw [not_lt_iff_eq_or_lt] at H
           rcases H with H | H
-          · subst H
-            rw [add_left_cancel_iff] at h₁
-            dsimp at h₁
-            subst h₁
-            exact (h₂ rfl).elim
+          · simp_all
           · suffices natDegree q < j by
               rw [coeff_eq_zero_of_degree_lt
                   (lt_of_le_of_lt degree_le_natDegree (WithBot.coe_lt_coe.2 this)),

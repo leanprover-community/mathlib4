@@ -81,7 +81,7 @@ lemma colimitTypeRel_iff_orbitRel (x y : J.obj (SingleObj.star G)) :
   have h (g : G) : y = g • x ↔ g • x = y := ⟨symm, symm⟩
   conv => rhs; rw [Setoid.comm']
   change (∃ g : G, y = g • x) ↔ (∃ g : G, g • x = y)
-  conv => lhs; simp only [h]
+  grind
 
 @[deprecated (since := "2025-06-22")] alias Types.Quot.Rel.iff_orbitRel :=
   colimitTypeRel_iff_orbitRel

@@ -433,11 +433,7 @@ theorem image_vsub_image {s t : Set P1} (f : P1 →ᵃ[k] P2) :
   ext v
   simp only [Set.mem_vsub, Set.mem_image,
     exists_exists_and_eq_and, ← f.linearMap_vsub]
-  constructor
-  · rintro ⟨x, hx, y, hy, hv⟩
-    exact ⟨x -ᵥ y, ⟨x, hx, y, hy, rfl⟩, hv⟩
-  · rintro ⟨-, ⟨x, hx, y, hy, rfl⟩, rfl⟩
-    exact ⟨x, hx, y, hy, rfl⟩
+  grind
 
 /-! ### Definition of `AffineMap.lineMap` and lemmas about it -/
 

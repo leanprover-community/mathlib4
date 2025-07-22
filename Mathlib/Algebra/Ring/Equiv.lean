@@ -920,4 +920,28 @@ protected theorem isDomain {A : Type*} (B : Type*) [Semiring A] [Semiring B] [Is
     e.injective.isRightCancelMulZero e (map_zero e) (map_mul e) with
     exists_pair_ne := ⟨e.symm 0, e.symm 1, e.symm.injective.ne zero_ne_one⟩ }
 
+theorem isDomain_iff {A B : Type*} [Semiring A] [Semiring B] (e : A ≃* B) :
+    IsDomain A ↔ IsDomain B where
+  mp _ := e.symm.isDomain
+  mpr _ := e.isDomain
+
+variable {A B : Type*} [MulZeroClass A] [MulZeroClass B]
+
+theorem noZeroDivisors_iff (e : A ≃* B) : NoZeroDivisors A ↔ NoZeroDivisors B where
+  mp _ := e.symm.noZeroDivisors
+  mpr _ := e.noZeroDivisors
+
+theorem isLeftCancelMulZero_iff (e : A ≃* B) : IsLeftCancelMulZero A ↔ IsLeftCancelMulZero B where
+  mp _ := e.symm.injective.isLeftCancelMulZero _ (map_zero _) (map_mul _)
+  mpr _ := e.injective.isLeftCancelMulZero _ (map_zero _) (map_mul _)
+
+theorem isRightCancelMulZero_iff (e : A ≃* B) :
+    IsRightCancelMulZero A ↔ IsRightCancelMulZero B where
+  mp _ := e.symm.injective.isRightCancelMulZero _ (map_zero _) (map_mul _)
+  mpr _ := e.injective.isRightCancelMulZero _ (map_zero _) (map_mul _)
+
+theorem isCancelMulZero_iff (e : A ≃* B) : IsCancelMulZero A ↔ IsCancelMulZero B where
+  mp _ := e.symm.injective.isCancelMulZero _ (map_zero _) (map_mul _)
+  mpr _ := e.injective.isCancelMulZero _ (map_zero _) (map_mul _)
+
 end MulEquiv

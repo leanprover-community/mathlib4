@@ -95,10 +95,7 @@ theorem rank_add_rank_split (db : V₂ →ₗ[K] V) (eb : V₃ →ₗ[K] V) (cd 
     have h := eq₂ d (-e)
     simp only [add_eq_zero_iff_eq_neg, LinearMap.prod_apply, mem_ker,
       Prod.mk_inj, coprod_apply, map_neg, neg_apply, LinearMap.mem_range, Pi.prod] at h ⊢
-    intro hde
-    rcases h hde with ⟨c, h₁, h₂⟩
-    refine ⟨c, h₁, ?_⟩
-    rw [h₂, _root_.neg_neg]
+    grind
 
 end
 

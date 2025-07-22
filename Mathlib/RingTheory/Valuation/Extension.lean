@@ -90,7 +90,7 @@ end algebraMap
 
 instance id : vR.HasExtension vR where
   val_isEquiv_comap := by
-    simp only [Algebra.id.map_eq_id, comap_id, IsEquiv.refl]
+    simp only [Algebra.algebraMap_self, comap_id, IsEquiv.refl]
 
 section integer
 

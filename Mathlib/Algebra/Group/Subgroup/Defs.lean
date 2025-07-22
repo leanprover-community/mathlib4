@@ -83,7 +83,7 @@ class AddSubgroupClass (S : Type*) (G : outParam Type*) [SubNegMonoid G] [SetLik
 
 attribute [to_additive] InvMemClass SubgroupClass
 
-attribute [aesop safe apply (rule_sets := [SetLike])] inv_mem neg_mem
+attribute [aesop 90% (rule_sets := [SetLike])] inv_mem neg_mem
 
 @[to_additive (attr := simp)]
 theorem inv_mem_iff {S G} [InvolutiveInv G] {_ : SetLike S G} [InvMemClass S G] {H : S}
@@ -93,12 +93,12 @@ theorem inv_mem_iff {S G} [InvolutiveInv G] {_ : SetLike S G} [InvMemClass S G] 
 variable {M S : Type*} [DivInvMonoid M] [SetLike S M] [hSM : SubgroupClass S M] {H K : S}
 
 /-- A subgroup is closed under division. -/
-@[to_additive (attr := aesop safe apply (rule_sets := [SetLike]))
+@[to_additive (attr := aesop 90% (rule_sets := [SetLike]))
   "An additive subgroup is closed under subtraction."]
 theorem div_mem {x y : M} (hx : x ∈ H) (hy : y ∈ H) : x / y ∈ H := by
   rw [div_eq_mul_inv]; exact mul_mem hx (inv_mem hy)
 
-@[to_additive (attr := aesop safe apply (rule_sets := [SetLike]))]
+@[to_additive (attr := aesop 90% (rule_sets := [SetLike]))]
 theorem zpow_mem {x : M} (hx : x ∈ K) : ∀ n : ℤ, x ^ n ∈ K
   | (n : ℕ) => by
     rw [zpow_natCast]
@@ -347,7 +347,6 @@ theorem mem_toSubmonoid (K : Subgroup G) (x : G) : x ∈ K.toSubmonoid ↔ x ∈
 
 @[to_additive]
 theorem toSubmonoid_injective : Function.Injective (toSubmonoid : Subgroup G → Submonoid G) :=
-  -- fun p q h => SetLike.ext'_iff.2 (show _ from SetLike.ext'_iff.1 h)
   fun p q h => by
     have := SetLike.ext'_iff.1 h
     rw [coe_toSubmonoid, coe_toSubmonoid] at this

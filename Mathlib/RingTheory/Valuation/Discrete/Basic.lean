@@ -84,10 +84,10 @@ lemma generator_mem_valueGroup :
   rw [← IsRankOneDiscrete.generator_zpowers_eq_valueGroup]
   exact mem_zpowers (IsRankOneDiscrete.generator v)
 
-lemma generator_lt_one : (generator v) < 1 :=
+lemma generator_lt_one : generator v < 1 :=
   (exists_generator_lt_one v).choose_spec.2
 
-lemma generator_ne_one : (generator v) ≠ 1 :=
+lemma generator_ne_one : generator v ≠ 1 :=
   ne_of_lt <| generator_lt_one v
 
 lemma generator_zpowers_eq_range (K : Type*) [Field K] (w : Valuation K Γ) [IsRankOneDiscrete w] :

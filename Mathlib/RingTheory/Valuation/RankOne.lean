@@ -64,7 +64,7 @@ def unit : Γ₀ˣ :=
 /-- A proof that `RankOne.unit v ≠ 1`. -/
 theorem unit_ne_one : unit v ≠ 1 := by
   rw [Ne, ← Units.val_inj, Units.val_one]
-  exact ((nontrivial v).choose_spec ).2
+  exact ((nontrivial v).choose_spec).2
 
 instance [RankOne v] : IsNontrivial v where
   exists_val_nontrivial := RankOne.nontrivial v

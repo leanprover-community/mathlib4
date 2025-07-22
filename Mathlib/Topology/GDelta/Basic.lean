@@ -179,7 +179,7 @@ theorem mem_residual_iff {s : Set X} :
 
 end residual
 
-section meagre
+section IsMeagre
 open Function TopologicalSpace Set
 variable {X : Type*} [TopologicalSpace X]
 
@@ -216,7 +216,7 @@ lemma isClosed_isNowhereDense_iff_compl {s : Set X} :
 def IsMeagre (s : Set X) := sᶜ ∈ residual X
 
 /-- The empty set is meagre. -/
-lemma meagre_empty : IsMeagre (∅ : Set X) := by
+lemma IsMeagre.empty : IsMeagre (∅ : Set X) := by
   rw [IsMeagre, compl_empty]
   exact Filter.univ_mem
 
@@ -228,8 +228,14 @@ lemma IsMeagre.mono {s t : Set X} (hs : IsMeagre s) (hts : t ⊆ s) : IsMeagre t
 lemma IsMeagre.inter {s t : Set X} (hs : IsMeagre s) : IsMeagre (s ∩ t) :=
   hs.mono inter_subset_left
 
+/-- A union of two meagre sets is meagre. -/
+lemma IsMeagre.union {s t : Set X} (hs : IsMeagre s) (ht : IsMeagre t) : IsMeagre (s ∪ t) := by
+  rw [IsMeagre, compl_union]
+  exact inter_mem hs ht
+
 /-- A countable union of meagre sets is meagre. -/
-lemma isMeagre_iUnion {s : ℕ → Set X} (hs : ∀ n, IsMeagre (s n)) : IsMeagre (⋃ n, s n) := by
+lemma isMeagre_iUnion [Countable ι] {f : ι → Set X} (hs : ∀ i, IsMeagre (f i))
+    : IsMeagre (⋃ i, f i) := by
   rw [IsMeagre, compl_iUnion]
   exact countable_iInter_mem.mpr hs
 
@@ -247,4 +253,4 @@ lemma isMeagre_iff_countable_union_isNowhereDense {s : Set X} :
     exact ⟨fun s hs ↦ ⟨isClosed_closure, (hS s hs).closure⟩,
       (hc.image _).image _, hsub.trans (sUnion_mono_subsets fun s ↦ subset_closure)⟩
 
-end meagre
+end IsMeagre

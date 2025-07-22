@@ -176,6 +176,14 @@ instance instInvolutiveNeg [InvolutiveNeg α] : InvolutiveNeg αᵐᵒᵖ where
 instance instInvolutiveInv [InvolutiveInv α] : InvolutiveInv αᵐᵒᵖ where
   inv_inv _ := unop_injective <| inv_inv _
 
+instance [Add α] [IsLeftCancelAdd α] : IsLeftCancelAdd αᵐᵒᵖ where
+  add_left_cancel _ _ _ eq := unop_injective <| add_left_cancel (congr_arg unop eq)
+
+instance [Add α] [IsRightCancelAdd α] : IsRightCancelAdd αᵐᵒᵖ where
+  add_right_cancel _ _ _ eq := unop_injective <| add_right_cancel (congr_arg unop eq)
+
+instance [Add α] [IsCancelAdd α] : IsCancelAdd αᵐᵒᵖ where
+
 @[to_additive] instance instSMul [SMul α β] : SMul α βᵐᵒᵖ where smul c x := op (c • unop x)
 
 @[simp] lemma op_zero [Zero α] : op (0 : α) = 0 := rfl

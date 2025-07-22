@@ -197,6 +197,12 @@ theorem mono_iff_injective {A B : Rep k G} (f : A ⟶ B) : Mono f ↔ Function.I
   fun h => (forget₂ _ _).mono_of_mono_map ((ModuleCat.mono_iff_injective <|
     (forget₂ _ _).map f).2 h)⟩
 
+instance {A B : Rep k G} (f : A ⟶ B) [Mono f] : Mono f.hom :=
+  inferInstanceAs <| Mono ((forget₂ _ _).map f)
+
+instance {A B : Rep k G} (f : A ⟶ B) [Epi f] : Epi f.hom :=
+  inferInstanceAs <| Epi ((forget₂ _ _).map f)
+
 open MonoidalCategory in
 @[simp]
 theorem tensor_ρ {A B : Rep k G} : (A ⊗ B).ρ = A.ρ.tprod B.ρ := rfl

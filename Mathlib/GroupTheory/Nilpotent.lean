@@ -87,7 +87,7 @@ quotient group `G/H`.)
 -/
 def upperCentralSeriesStep : Subgroup G where
   carrier := { x : G | ∀ y : G, x * y * x⁻¹ * y⁻¹ ∈ H }
-  one_mem' y := by simp [Subgroup.one_mem]
+  one_mem' y := by simp
   mul_mem' {a b} ha hb y := by
     convert Subgroup.mul_mem _ (ha (b * y * b⁻¹)) (hb y) using 1
     group
