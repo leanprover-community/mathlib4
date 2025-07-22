@@ -78,12 +78,11 @@ theorem ContDiff.inner (hf : ContDiff ℝ n f) (hg : ContDiff ℝ n g) :
     ContDiff ℝ n fun x => ⟪f x, g x⟫ :=
   contDiff_inner.comp (hf.prodMk hg)
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-  added `by exact` to handle a unification issue. -/
 theorem HasFDerivWithinAt.inner (hf : HasFDerivWithinAt f f' s x)
     (hg : HasFDerivWithinAt g g' s x) :
     HasFDerivWithinAt (fun t => ⟪f t, g t⟫) ((fderivInnerCLM 𝕜 (f x, g x)).comp <| f'.prod g') s
       x := by
+  -- `by exact` to handle a tricky unification.
   exact isBoundedBilinearMap_inner (𝕜 := 𝕜) (E := E)
     |>.hasFDerivAt (f x, g x) |>.comp_hasFDerivWithinAt x (hf.prodMk hg)
 
@@ -92,10 +91,9 @@ theorem HasStrictFDerivAt.inner (hf : HasStrictFDerivAt f f' x) (hg : HasStrictF
   isBoundedBilinearMap_inner (𝕜 := 𝕜) (E := E)
     |>.hasStrictFDerivAt (f x, g x) |>.comp x (hf.prodMk hg)
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-  added `by exact` to handle a unification issue. -/
 theorem HasFDerivAt.inner (hf : HasFDerivAt f f' x) (hg : HasFDerivAt g g' x) :
     HasFDerivAt (fun t => ⟪f t, g t⟫) ((fderivInnerCLM 𝕜 (f x, g x)).comp <| f'.prod g') x := by
+  -- `by exact` to handle a tricky unification.
   exact isBoundedBilinearMap_inner (𝕜 := 𝕜) (E := E)
     |>.hasFDerivAt (f x, g x) |>.comp x (hf.prodMk hg)
 
