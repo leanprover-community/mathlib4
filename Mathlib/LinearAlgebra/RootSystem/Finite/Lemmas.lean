@@ -296,20 +296,8 @@ theorem exists_apply_eq_or_aux {x y z : R}
     (hik : x = 2 * z ∨ x = 3 * z ∨ z = 2 * x ∨ z = 3 * x)
     (hjk : y = 2 * z ∨ y = 3 * z ∨ z = 2 * y ∨ z = 3 * y) :
     x = 0 ∧ y = 0 ∧ z = 0 := by
-  /- The below proof (due to Mario Carneiro, Johan Commelin, Bhavik Mehta, Jingting Wang) should
-     not really be necessary: we should have a tactic to crush this. -/
-  suffices y = 0 ∨ z = 0 by apply this.elim <;> rintro rfl <;> simp_all
-  let S : Finset (ℕ × ℕ) := {(1, 2), (1, 3), (2, 1), (3, 1)}
-  obtain ⟨⟨ab, hab, hxy⟩, ⟨cd, hcd, hxz⟩, ⟨ef, hef, hyz⟩⟩ :
-    (∃ ab ∈ S, ab.1 * x = ab.2 * y) ∧
-    (∃ cd ∈ S, cd.1 * x = cd.2 * z) ∧
-    (∃ ef ∈ S, ef.1 * y = ef.2 * z) := by
-    simp_all only [Finset.mem_insert, Finset.mem_singleton, exists_eq_or_imp, Nat.cast_one, one_mul,
-      Nat.cast_ofNat, eq_comm, exists_eq_left, and_self, S]
-  have : (ab.1 * cd.2 * ef.1 : R) ≠ ab.2 * cd.1 * ef.2 := by norm_cast; clear! R; decide +revert
-  have : (ab.1 * cd.2 * ef.1 - ab.2 * cd.1 * ef.2) * (y * z) = 0 := by
-    linear_combination z * cd.1 * ef.2 * hxy - ab.1 * ef.1 * y * hxz + ab.1 * x * cd.1 * hyz
-  simp_all only [ne_eq, mul_eq_zero, sub_eq_zero, false_or, S]
+  suffices y = 0 ∨ z = 0 by grind
+  grind
 
 /-- A reduced irreducible finite crystallographic root system has roots of at most two different
 lengths. -/
