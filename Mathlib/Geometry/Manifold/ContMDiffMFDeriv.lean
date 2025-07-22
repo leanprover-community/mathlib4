@@ -331,7 +331,7 @@ theorem ContMDiff.contMDiff_tangentMap (hf : ContMDiff I I' n f) (hmn : m + 1 �
 theorem ContMDiff.continuous_tangentMap (hf : ContMDiff I I' n f) (hmn : 1 ≤ n) :
     Continuous (tangentMap I I' f) := by
   rw [← contMDiffOn_univ] at hf
-  rw [continuous_iff_continuousOn_univ]
+  rw [← continuousOn_univ]
   convert hf.continuousOn_tangentMapWithin hmn uniqueMDiffOn_univ
   rw [tangentMapWithin_univ]
 
@@ -426,7 +426,7 @@ variable [IsManifold I 1 M] [IsManifold I' 1 M']
 
 /-- The canonical equivalence between the tangent bundle of a product and the product of
 tangent bundles is smooth. -/
-lemma contMDiff_equivTangentBundleProd  :
+lemma contMDiff_equivTangentBundleProd :
     ContMDiff (I.prod I').tangent (I.tangent.prod I'.tangent) n
       (equivTangentBundleProd I M I' M') := by
   rw [equivTangentBundleProd_eq_tangentMap_prod_tangentMap]

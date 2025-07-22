@@ -95,6 +95,12 @@ namespace Localization
 instance AtPrime.isLocalRing : IsLocalRing (Localization P.primeCompl) :=
   IsLocalization.AtPrime.isLocalRing (Localization P.primeCompl) P
 
+instance {R S : Type*} [CommRing R] [NoZeroDivisors R] {P : Ideal R} [CommRing S] [Algebra R S]
+    [NoZeroSMulDivisors R S] [IsDomain S] [P.IsPrime] :
+    NoZeroSMulDivisors (Localization.AtPrime P)
+    (Localization (Algebra.algebraMapSubmonoid S P.primeCompl)) :=
+  NoZeroSMulDivisors_of_isLocalization R S _ _ P.primeCompl_le_nonZeroDivisors
+
 end Localization
 
 end AtPrime
@@ -255,14 +261,15 @@ variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
   [Algebra R A] [Algebra R B] [IsScalarTower R A B]
 
 noncomputable instance (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p] :
-  Algebra (Localization.AtPrime p) (Localization.AtPrime P) :=
-    (Localization.localRingHom p P (algebraMap A B) Ideal.LiesOver.over).toAlgebra
+    Algebra (Localization.AtPrime p) (Localization.AtPrime P) :=
+  (Localization.localRingHom p P (algebraMap A B) Ideal.LiesOver.over).toAlgebra
 
 instance (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p] :
-  IsScalarTower R (Localization.AtPrime p) (Localization.AtPrime P) := .of_algebraMap_eq (by
-  simp [RingHom.algebraMap_toAlgebra, IsScalarTower.algebraMap_apply R A (Localization.AtPrime p),
-    Localization.localRingHom_to_map, IsScalarTower.algebraMap_apply R B (Localization.AtPrime P),
-    IsScalarTower.algebraMap_apply R A B])
+    IsScalarTower R (Localization.AtPrime p) (Localization.AtPrime P) :=
+  .of_algebraMap_eq <| by
+    simp [RingHom.algebraMap_toAlgebra, IsScalarTower.algebraMap_apply R A (Localization.AtPrime p),
+      Localization.localRingHom_to_map, IsScalarTower.algebraMap_apply R B (Localization.AtPrime P),
+      IsScalarTower.algebraMap_apply R A B]
 
 end
 

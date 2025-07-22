@@ -118,7 +118,7 @@ theorem map_refl : s.map (Embedding.refl _) = s :=
 
 @[simp]
 theorem map_cast_heq {α β} (h : α = β) (s : Finset α) :
-    HEq (s.map (Equiv.cast h).toEmbedding) s := by
+    s.map (Equiv.cast h).toEmbedding ≍ s := by
   subst h
   simp
 

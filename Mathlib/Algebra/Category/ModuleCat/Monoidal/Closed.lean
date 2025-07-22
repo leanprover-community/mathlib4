@@ -11,8 +11,6 @@ import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 # The monoidal closed structure on `Module R`.
 -/
 
-suppress_compilation
-
 universe v w x u
 
 open CategoryTheory Opposite

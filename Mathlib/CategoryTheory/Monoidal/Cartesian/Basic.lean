@@ -86,8 +86,10 @@ abbrev tensorHom (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : tensorObj ℬ X₁ X�
   (BinaryFan.IsLimit.lift' (ℬ Y₁ Y₂).isLimit ((ℬ X₁ X₂).cone.π.app ⟨.left⟩ ≫ f)
       (((ℬ X₁ X₂).cone.π.app ⟨.right⟩ : (ℬ X₁ X₂).cone.pt ⟶ X₂) ≫ g)).val
 
-lemma tensor_id (X Y : C) : tensorHom ℬ (𝟙 X) (𝟙 Y) = 𝟙 (tensorObj ℬ X Y) :=
+lemma id_tensorHom_id (X Y : C) : tensorHom ℬ (𝟙 X) (𝟙 Y) = 𝟙 (tensorObj ℬ X Y) :=
   (ℬ _ _).isLimit.hom_ext <| by rintro ⟨_ | _⟩ <;> simp [tensorHom]
+
+@[deprecated (since := "2025-07-14")] alias tensor_id := id_tensorHom_id
 
 lemma tensor_comp (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
     tensorHom ℬ (f₁ ≫ g₁) (f₂ ≫ g₂) = tensorHom ℬ f₁ f₂ ≫ tensorHom ℬ g₁ g₂ :=
@@ -154,7 +156,7 @@ abbrev ofChosenFiniteProducts : CartesianMonoidalCategory C :=
   }
   {
   toMonoidalCategory := .ofTensorHom
-    (tensor_id := tensor_id ℬ)
+    (id_tensorHom_id := id_tensorHom_id ℬ)
     (tensor_comp := tensor_comp ℬ)
     (pentagon := pentagon ℬ)
     (triangle := triangle 𝒯 ℬ)
@@ -383,6 +385,15 @@ lemma lift_rightUnitor_hom {X Y : C} (f : X ⟶ Y) (g : X ⟶ 𝟙_ C) :
     lift f g ≫ (ρ_ Y).hom = f := by
   rw [← Iso.eq_comp_inv]
   aesop_cat
+
+/-- Universal property of the cartesian product: Maps to `X ⊗ Y` correspond to pairs of maps to `X`
+and to `Y`. -/
+@[simps]
+def homEquivToProd {X Y Z : C} : (Z ⟶ X ⊗ Y) ≃ (Z ⟶ X) × (Z ⟶ Y) where
+  toFun f := ⟨f ≫ fst _ _, f ≫ snd _ _⟩
+  invFun f := lift f.1 f.2
+  left_inv _ := by simp
+  right_inv _ := by simp
 
 section BraidedCategory
 
@@ -681,7 +692,7 @@ instance isIso_prodComparison_of_preservesLimit_pair : IsIso (prodComparison F A
   rw [← prodComparisonIso_hom]
   infer_instance
 
-@[simp] lemma prodComparisonIso_id  : prodComparisonIso (𝟭 C) A B = .refl _ := by ext <;> simp
+@[simp] lemma prodComparisonIso_id : prodComparisonIso (𝟭 C) A B = .refl _ := by ext <;> simp
 
 @[simp]
 lemma prodComparisonIso_comp [PreservesLimit (pair A B) (F ⋙ G)]

@@ -47,11 +47,13 @@ section
 
 variable [CompleteSemilatticeSup α] {s t : Set α} {a b : α}
 
+@[gcongr]
+theorem sSup_le_sSup_of_isCofinalFor (h : IsCofinalFor s t) : sSup s ≤ sSup t :=
+  IsLeast.mono (isLUB_sSup t) (isLUB_sSup s) <| upperBounds_mono_of_isCofinalFor h
+
+@[deprecated "use `sSup_le_sSup_of_isCofinalFor` instead" (since := "2025-07-14")]
 theorem sSup_le_sSup_of_forall_exists_le (h : ∀ x ∈ s, ∃ y ∈ t, x ≤ y) : sSup s ≤ sSup t :=
-  le_sSup_iff.2 fun _ hb =>
-    sSup_le fun a ha =>
-      let ⟨_, hct, hac⟩ := h a ha
-      hac.trans (hb hct)
+  sSup_le_sSup_of_isCofinalFor h
 
 -- We will generalize this to conditionally complete lattices in `csSup_singleton`.
 @[simp]
@@ -64,8 +66,13 @@ section
 
 variable [CompleteSemilatticeInf α] {s t : Set α} {a b : α}
 
+@[gcongr]
+theorem sInf_le_sInf_of_isCoinitialFor (h : IsCoinitialFor s t) : sInf t ≤ sInf s :=
+  IsGreatest.mono (isGLB_sInf t) (isGLB_sInf s) <| lowerBounds_mono_of_isCoinitialFor h
+
+@[deprecated "use `sInf_le_sInf_of_isCoinitialFor` instead" (since := "2025-07-14")]
 theorem sInf_le_sInf_of_forall_exists_le (h : ∀ x ∈ s, ∃ y ∈ t, y ≤ x) : sInf t ≤ sInf s :=
-  le_sInf fun x hx ↦ let ⟨_y, hyt, hyx⟩ := h x hx; sInf_le_of_le hyt hyx
+  sInf_le_sInf_of_isCoinitialFor h
 
 -- We will generalize this to conditionally complete lattices in `csInf_singleton`.
 @[simp]
@@ -204,7 +211,7 @@ theorem biSup_congr {p : ι → Prop} (h : ∀ i, p i → f i = g i) :
 theorem biSup_congr' {p : ι → Prop} {f g : (i : ι) → p i → α}
     (h : ∀ i (hi : p i), f i hi = g i hi) :
     ⨆ i, ⨆ (hi : p i), f i hi = ⨆ i, ⨆ (hi : p i), g i hi := by
-  congr; ext i; congr; ext hi; exact h i hi
+  grind
 
 theorem Function.Surjective.iSup_comp {f : ι → ι'} (hf : Surjective f) (g : ι' → α) :
     ⨆ x, g (f x) = ⨆ y, g y := by
@@ -265,7 +272,7 @@ theorem biInf_congr {p : ι → Prop} (h : ∀ i, p i → f i = g i) :
 theorem biInf_congr' {p : ι → Prop} {f g : (i : ι) → p i → α}
     (h : ∀ i (hi : p i), f i hi = g i hi) :
     ⨅ i, ⨅ (hi : p i), f i hi = ⨅ i, ⨅ (hi : p i), g i hi := by
-  congr; ext i; congr; ext hi; exact h i hi
+  grind
 
 theorem Function.Surjective.iInf_comp {f : ι → ι'} (hf : Surjective f) (g : ι' → α) :
     ⨅ x, g (f x) = ⨅ y, g y :=
