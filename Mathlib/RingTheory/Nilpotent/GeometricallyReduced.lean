@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Dion Leijnse. All rights reserved.
+Copyright (c) 2025 Dion Leijnse. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dion Leijnse
 -/
@@ -106,8 +106,9 @@ lemma FGsubalgebra_baseChange_of_element (x : TensorProduct k A B) :
 
 -- If all finitely generated subalgebras of A are geometrically reduced, then A is geometrically
 -- reduced. The result is in https://stacks.math.columbia.edu/tag/030T
-theorem all_FG_geometricallyReduced_isGeometricallyReduced (h : ∀ B : Subalgebra k A,
-    B.FG → IsGeometricallyReduced k B) : IsGeometricallyReduced k A := by
+theorem all_FG_geometricallyReduced_isGeometricallyReduced
+    (h : ∀ B : Subalgebra k A, B.FG → IsGeometricallyReduced k B) :
+    IsGeometricallyReduced k A := by
   by_contra h_contra
   rw [isGeometricallyReduced_iff] at *
   apply notReduced_has_nilpotent at h_contra
