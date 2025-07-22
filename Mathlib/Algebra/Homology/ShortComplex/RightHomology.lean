@@ -207,6 +207,21 @@ lemma ofZeros_g' (hf : S.f = 0) (hg : S.g = 0) :
     (ofZeros S hf hg).g' = 0 := by
   rw [← cancel_epi ((ofZeros S hf hg).p), comp_zero, p_g', hg]
 
+variable {S} in
+/-- Given a right homology data `h` of a short complex `S`, we can construct another right homology
+data by choosing another kernel and cokernel that are isomorphic to the ones in `h`. -/
+@[simps] def copy {Q' H' : C} (eQ : Q' ≅ h.Q) (eH : H' ≅ h.H) : S.RightHomologyData where
+  Q := Q'
+  H := H'
+  p := h.p ≫ eQ.inv
+  ι := eH.hom ≫ h.ι ≫ eQ.inv
+  wp := by rw [← assoc, h.wp, zero_comp]
+  hp := IsCokernel.cokernelIso _ _ h.hp eQ.symm (by simp)
+  wι := by simp [IsCokernel.cokernelIso]
+  hι := IsLimit.equivOfNatIsoOfIso
+    (parallelPair.ext eQ.symm (Iso.refl S.X₃) (by simp [IsCokernel.cokernelIso]) (by simp)) _ _
+    (Cones.ext (by exact eH.symm) (by rintro (_ | _) <;> simp [IsCokernel.cokernelIso])) h.hι
+
 end RightHomologyData
 
 /-- A short complex `S` has right homology when there exists a `S.RightHomologyData` -/
