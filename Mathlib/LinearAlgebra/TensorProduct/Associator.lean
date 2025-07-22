@@ -116,16 +116,12 @@ variable (R M N P)
 
 attribute [local ext high] ext in
 /-- The associator for tensor product of R-modules, as a linear equivalence. -/
-protected def assoc : (M ⊗[R] N) ⊗[R] P ≃ₗ[R] M ⊗[R] N ⊗[R] P := by
-  refine
-      LinearEquiv.ofLinear (lift <| lift <| comp (lcurry _ _ _ (.id R)) <| mk _ _ _)
-        (lift <| comp (uncurry _ _ _ (.id R)) <| curry <| mk _ _ _)
-        (ext <| LinearMap.ext fun m => ext' fun n p => ?_)
-        (ext <| flip_inj <| LinearMap.ext fun p => ext' fun m n => ?_) <;>
-    repeat'
-      first
-        |rw [lift.tmul]|rw [compr₂ₛₗ_apply]|rw [comp_apply]|rw [mk_apply]|rw [flip_apply]
-        |rw [lcurry_apply]|rw [uncurry_apply]|rw [curry_apply]|rw [id_apply]
+protected def assoc : (M ⊗[R] N) ⊗[R] P ≃ₗ[R] M ⊗[R] N ⊗[R] P :=
+  LinearEquiv.ofLinear
+    (lift <| lift <| lcurry _ _ _ _ ∘ₗ mk _ _ _)
+    (lift <| uncurry _ _ _ _ ∘ₗ curry (mk R _ _))
+    (by ext; rfl)
+    (by ext; rfl)
 
 end
 
