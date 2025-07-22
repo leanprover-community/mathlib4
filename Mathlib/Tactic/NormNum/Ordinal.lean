@@ -9,16 +9,18 @@ import Mathlib.Tactic.NormNum.Basic
 
 /-!
 # `norm_num` extensions for Ordinals
+
+The default `norm_num` extensions for multiplication & inequality requires to be semiring,
+so doesn't normalize ordinals that doesn't satisfy right distributive low.
+We require new extensions for them.
+We also define extensions for subtraction, multiplication, modulo, and power in this file.
 -/
 
 namespace Mathlib.Meta.NormNum
 open Lean Lean.Meta Qq Ordinal
 
-/-!
-The default `norm_num` extentions for multiplication & inequality requires to be semiring,
-so doesn't normalize ordinals that doesn't satisfy right distributive low.
-We require new extensions for them.
--/
+/- These `guard_msgs` are for checking whether the current default extensions have been updated and
+the extensions in this file are no longer needed. -/
 
 /-- info: 12 * 5 -/
 #guard_msgs in
@@ -68,8 +70,7 @@ lemma isNat_ordinalLT_false.{u} : ∀ {a b : Ordinal.{u}} {an bn : ℕ},
 @[norm_num (_ : Ordinal) ≤ (_ : Ordinal)]
 def evalOrdinalLE : NormNumExt where
   eval {u α} e := do
-    unless u.isEquiv ql(0) do throwError "level is not zero"
-    haveI' : u =QL 0 := ⟨⟩
+    let ⟨_⟩ ← assertLevelDefEqQ u ql(0)
     match α, e with
     | ~q(Prop), ~q(($a : Ordinal) ≤ ($b : Ordinal)) =>
       let i : Q(AddMonoidWithOne Ordinal.{u_1}) := q(inferInstance)
@@ -87,8 +88,7 @@ def evalOrdinalLE : NormNumExt where
 @[norm_num (_ : Ordinal) < (_ : Ordinal)]
 def evalOrdinalLT : NormNumExt where
   eval {u α} e := do
-    unless u.isEquiv ql(0) do throwError "level is not zero"
-    haveI' : u =QL 0 := ⟨⟩
+    let ⟨_⟩ ← assertLevelDefEqQ u ql(0)
     match α, e with
     | ~q(Prop), ~q(($a : Ordinal) < ($b : Ordinal)) =>
       let i : Q(AddMonoidWithOne Ordinal.{u_1}) := q(inferInstance)
