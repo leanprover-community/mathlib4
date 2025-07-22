@@ -529,12 +529,8 @@ lemma contDiffOn_nat_picard_Icc
       have hα' : ContDiffOn ℝ n α (Icc tmin tmax) := ContDiffOn.congr (hn hf.of_succ) heqon
       apply contDiffOn_comp hf.of_succ hα' hmem |>.congr
       intro t ht
-      apply HasDerivWithinAt.derivWithin (this ht) <| (uniqueDiffOn_Icc hlt).uniqueDiffWithinAt ht
-  · have : Icc tmin tmax = {t₀} := by -- missing lemma!
-      rw [not_lt] at hlt
-      rw [Icc_eq_singleton_iff]
-      exact ⟨le_antisymm ht₀.1 (ht₀.2.trans hlt), le_antisymm (hlt.trans ht₀.1) ht₀.2⟩
-    rw [this]
+      exact HasDerivWithinAt.derivWithin (this ht) <| (uniqueDiffOn_Icc hlt).uniqueDiffWithinAt ht
+  · rw [(subsingleton_Icc_of_ge (not_lt.mp hlt)).eq_singleton_of_mem ht₀]
     intro t ht
     rw [eq_of_mem_singleton ht]
     exact contDiffWithinAt_singleton
