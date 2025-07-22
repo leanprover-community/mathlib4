@@ -218,7 +218,7 @@ lemma ContMDiff.sum_section {s : Finset ι}
 bundle `V → M` is `C^k` once `s` is `C^k` on an open set containing `tsupport ψ` .
 
 This is a vector bundle analogue of `contMDiff_of_tsupport`. -/
-lemma ContMDiffOn.smul_section_of_tsupport {s : Π (x : M), V x} {ψ : M → 𝕜} {u : Set M}
+lemma ContMDiffOn.smul_section_of_tsupport {s : Π (x : M), V x} {ψ : M → 𝕜}
     (hψ : ContMDiffOn I 𝓘(𝕜) n ψ u) (ht : IsOpen u) (ht' : tsupport ψ ⊆ u)
     (hs : ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u) :
     ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (ψ x • s x)) := by
@@ -272,8 +272,7 @@ lemma ContMDiffAt.sum_section_of_locallyFinite (ht : LocallyFinite fun i ↦ {x 
   exact .sum_section_of_locallyFinite ht ht'
 
 /-- The sum of a locally finite collection of sections is `C^k` on a set `u` iff each section is. -/
-lemma ContMDiffOn.sum_section_of_locallyFinite {u : Set M}
-    (ht : LocallyFinite fun i ↦ {x : M | t i x ≠ 0})
+lemma ContMDiffOn.sum_section_of_locallyFinite (ht : LocallyFinite fun i ↦ {x : M | t i x ≠ 0})
     (ht' : ∀ i, ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t i x)) u) :
     ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (∑' i, (t i x))) u :=
   fun x hx ↦ .sum_section_of_locallyFinite ht (ht' · x hx)
