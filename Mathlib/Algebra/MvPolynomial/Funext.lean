@@ -46,6 +46,8 @@ private theorem funext_fin {n : ℕ} {p : MvPolynomial (Fin n) R}
 
 variable {σ : Type*} {p q : MvPolynomial σ R}
 
+/-- Two multivariate polynomials over an integral domain are equal
+if they are equal when evaluated anywhere in a box with infinite sides. -/
 theorem funext_set (s : σ → Set R) (hs : ∀ i, (s i).Infinite)
     (h : ∀ x ∈ Set.pi .univ s, (eval x) p = (eval x) q) :
     p = q := by
