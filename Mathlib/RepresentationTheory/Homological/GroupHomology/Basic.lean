@@ -246,7 +246,7 @@ def groupHomologyIsoTor [DecidableEq G] (n : ℕ) :
 /-- The `n`th group homology of a `k`-linear `G`-representation `A` is isomorphic to
 `Hₙ((A ⊗ P)_G)`, where `P` is any projective resolution of `k` as a trivial `k`-linear
 `G`-representation. -/
-def groupHomologyIso [Group G] [DecidableEq G] (A : Rep k G) (n : ℕ)
+def groupHomologyIso [DecidableEq G] (A : Rep k G) (n : ℕ)
     (P : ProjectiveResolution (Rep.trivial k G k)) :
     groupHomology A n ≅ (P.complex.coinvariantsTensorObj A).homology n :=
   groupHomologyIsoTor A n ≪≫ torIso A P n

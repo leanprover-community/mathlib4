@@ -489,3 +489,18 @@ theorem toAlgHom_injective [FaithfulSMul M A] :
   eq_of_smul_eq_smul fun r => AlgHom.ext_iff.1 h r
 
 end MulSemiringAction
+
+section
+
+variable {R S T : Type*} [CommSemiring R] [Semiring S] [Semiring T] [Algebra R S] [Algebra R T]
+  [Subsingleton T]
+
+instance uniqueOfRight : Unique (S →ₐ[R] T) where
+  default := AlgHom.ofLinearMap default (Subsingleton.elim _ _) (fun _ _ ↦ (Subsingleton.elim _ _))
+  uniq _ := AlgHom.ext fun _ ↦ Subsingleton.elim _ _
+
+@[simp]
+lemma AlgHom.default_apply (x : S) : (default : S →ₐ[R] T) x = 0 :=
+  rfl
+
+end
