@@ -227,6 +227,63 @@ lemma ContMDiffOn.smul_section_of_tsupport {s : Π (x : M), V x} {ψ : M → �
     simp [image_eq_zero_of_notMem_tsupport hy, zeroSection]
   · exact Set.compl_subset_iff_union.mp <| Set.compl_subset_compl.mpr ht'
 
+/-- The sum of a locally finite collection of sections is `C^k` iff each section is.
+Version at a point within a set. -/
+lemma ContMDiffWithinAt.sum_section_of_locallyFinite {ι : Type*} {t : ι → (x : M) → V x}
+    (ht : LocallyFinite fun i ↦ {x : M | t i x ≠ 0})
+    (ht' : ∀ i, ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t i x)) u x₀) :
+    ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (∑' i, (t i x))) u x₀ := by
+  obtain ⟨u', hu', hfin⟩ := ht x₀
+  -- All sections `t i` but a finite set `s` vanish near `x₀`: choose a neighbourhood `u` of `x₀`
+  -- and a finite set `s` of sections which don't vanish.
+  let s := {i | ((fun i ↦ {x | t i x ≠ 0}) i ∩ u').Nonempty}
+  have := hfin.fintype
+  have : ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n
+      (fun x ↦ TotalSpace.mk' F x (∑ i ∈ s, (t i x))) (u ∩ u') x₀ :=
+    ContMDiffWithinAt.sum_section fun i hi ↦ ((ht' i).mono Set.inter_subset_left)
+  apply (contMDiffWithinAt_inter hu').mp
+  apply this.congr fun y hy ↦ ?_
+  · rw [TotalSpace.mk_inj, tsum_eq_sum']
+    refine support_subset_iff'.mpr fun i hi ↦ ?_
+    by_contra! h
+    have : i ∈ s.toFinset := by
+      refine Set.mem_toFinset.mpr ?_
+      simp only [s, ne_eq, Set.mem_setOf_eq]
+      use x₀
+      simpa using ⟨h, mem_of_mem_nhds hu'⟩
+    exact hi this
+  rw [TotalSpace.mk_inj, tsum_eq_sum']
+  refine support_subset_iff'.mpr fun i hi ↦ ?_
+  by_contra! h
+  have : i ∈ s.toFinset := by
+    refine Set.mem_toFinset.mpr ?_
+    simp only [s, ne_eq, Set.mem_setOf_eq]
+    use y
+    simpa using ⟨h, Set.mem_of_mem_inter_right hy⟩
+  exact hi this
+
+/-- The sum of a locally finite collection of sections is `C^k` at `x` iff each section is. -/
+lemma ContMDiffAt.sum_section_of_locallyFinite {ι : Type*} {t : ι → (x : M) → V x}
+    (ht : LocallyFinite fun i ↦ {x : M | t i x ≠ 0})
+    (ht' : ∀ i, ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t i x)) x₀) :
+    ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (∑' i, (t i x))) x₀ := by
+  simp_rw [← contMDiffWithinAt_univ] at ht' ⊢
+  exact .sum_section_of_locallyFinite ht ht'
+
+/-- The sum of a locally finite collection of sections is `C^k` on a set `u` iff each section is. -/
+lemma ContMDiffOn.sum_section_of_locallyFinite {ι : Type*} {t : ι → (x : M) → V x} {u : Set M}
+    (ht : LocallyFinite fun i ↦ {x : M | t i x ≠ 0})
+    (ht' : ∀ i, ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t i x)) u) :
+    ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (∑' i, (t i x))) u :=
+  fun x hx ↦ .sum_section_of_locallyFinite ht (ht' · x hx)
+
+/-- The sum of a locally finite collection of sections is `C^k` iff each section is. -/
+lemma ContMDiff.sum_section_of_locallyFinite {ι : Type*} {t : ι → (x : M) → V x}
+    (ht : LocallyFinite fun i ↦ {x : M | t i x ≠ 0})
+    (ht' : ∀ i, ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t i x))) :
+    ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (∑' i, (t i x))) :=
+  fun x ↦ .sum_section_of_locallyFinite ht fun i ↦ ht' i x
+
 end operations
 
 /-- Bundled `n` times continuously differentiable sections of a vector bundle.
