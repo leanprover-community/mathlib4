@@ -139,7 +139,7 @@ theorem contMDiff_mulInvariantVectorField (v : GroupLieAlgebra I G) :
       (fun (g : G) ↦ (mulInvariantVectorField v g : TangentBundle I G)) := by
   /- We will write the desired map as a composition of obviously smooth maps.
   The derivative of the product `P : (g, h) ↦ g * h` is given by
-  `DP (g, h) ⬝ (u, v) = DL_g v + DR_h u`, where `L_g` and `R_h` are respectively left and right
+  `DP (g, h) · (u, v) = DL_g v + DR_h u`, where `L_g` and `R_h` are respectively left and right
   multiplication by `g` and `h`. As `P` is smooth, so is `DP`.
   Consider the map `F₁ : M → T (M × M)` mapping `g` to `(0, v) ∈ T_(g, e) (M × M)`. Then the
   composition of `DP` with `F₁` maps `g` to `DL_g v ∈ T_g M`, thanks to the above formula. This

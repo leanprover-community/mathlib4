@@ -379,7 +379,7 @@ def Basis.mapPowExpCharPowOfIsSeparable [Algebra.IsSeparable F E]
     (Field.span_map_pow_expChar_pow_eq_top_of_isSeparable q n b.span_eq).ge
 
 /-- For an extension `E / F` of exponential characteristic `q` and a separable element `a : E`, the
-minimal polynomial of `a ^ q ^ n` equals the minimal polynomial of `a` mapped via `(⬝ ^ q ^ n)`. -/
+minimal polynomial of `a ^ q ^ n` equals the minimal polynomial of `a` mapped via `(· ^ q ^ n)`. -/
 theorem minpoly.iterateFrobenius_of_isSeparable [ExpChar E q] (n : ℕ) {a : E}
     (hsep : IsSeparable F a) :
     minpoly F (iterateFrobenius E q n a) = (minpoly F a).map (iterateFrobenius F q n) := by
@@ -399,7 +399,7 @@ theorem minpoly.iterateFrobenius_of_isSeparable [ExpChar E q] (n : ℕ) {a : E}
       ← IntermediateField.adjoin.finrank hapi, iterateFrobenius_def]
 
 /-- For an extension `E / F` of exponential characteristic `q` and a separable element `a : E`, the
-minimal polynomial of `a ^ q` equals the minimal polynomial of `a` mapped via `(⬝ ^ q)`. -/
+minimal polynomial of `a ^ q` equals the minimal polynomial of `a` mapped via `(· ^ q)`. -/
 theorem minpoly.frobenius_of_isSeparable [ExpChar E q] {a : E} (hsep : IsSeparable F a) :
     minpoly F (frobenius E q a) = (minpoly F a).map (frobenius F q) := by
   simpa using minpoly.iterateFrobenius_of_isSeparable q 1 hsep

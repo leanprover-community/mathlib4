@@ -440,7 +440,7 @@ theorem abs_sub_convs_le (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
     fib_le_of_contsAux_b <| Or.inr this
   have zero_lt_conts_b : 0 < conts.b :=
     conts_b_ineq.trans_lt' <| mod_cast fib_pos.2 n.succ_pos
-  -- `den'` is positive, so we can remove `|⬝|` from our goal
+  -- `den'` is positive, so we can remove `|·|` from our goal
   suffices 1 / den' ≤ 1 / den by
     have : |(-1) ^ n / den'| = 1 / den' := by
       suffices 1 / |den'| = 1 / den' by rwa [abs_div, abs_neg_one_pow n]

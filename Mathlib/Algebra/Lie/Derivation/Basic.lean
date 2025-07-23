@@ -224,7 +224,7 @@ section Scalar
 /-- A typeclass mixin saying that scalar multiplication and Lie bracket are left commutative. -/
 class SMulBracketCommClass (S L α : Type*) [SMul S α] [LieRing L] [AddCommGroup α]
     [LieRingModule L α] : Prop where
-  /-- `•` and `⁅⬝, ⬝⁆`  are left commutative -/
+  /-- `•` and `⁅·, ·⁆`  are left commutative -/
   smul_bracket_comm : ∀ (s : S) (l : L) (a : α), s • ⁅l, a⁆ = ⁅l, s • a⁆
 
 variable {S T : Type*}
