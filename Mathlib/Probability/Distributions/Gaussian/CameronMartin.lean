@@ -15,27 +15,57 @@ A Gaussian measure `μ` on a Banach space `E` is characterized by a separable Hi
 called the Cameron-Martin space of `μ`.
 That space is a subspace of `E`, but with a different norm.
 
+In this file, we define a type `CameronMartin μ` and build a bijective continuous linear map from
+that type to the subset of `E` of points `y` such that the quantity
+`⨆ (L : Dual ℝ E) (_ : covarianceBilin μ L L ≤ 1), L y` is finite.
+
+Since `μ` has finite second moment, for every function `L : Dual ℝ E`, the function
+`L ↦ L (x - μ[id])` can be seen as a function in L2.
+The subspace of L2 we obtain that way inherits the scalar product of L2, which is equal to the
+covariance `covarianceBilin μ L L'`.
+We define `CameronMartin μ` as the completion of that subspace. It is a separable Hilbert space.
+
+This is the RKHS construction of the Cameron-Martin space. Another construction would be to
+consider the subspace of `E` consisting of all points `y` such that the quantity
+`⨆ (L : Dual ℝ E) (_ : covarianceBilin μ L L ≤ 1), L y` is finite, and to endow it with the norm
+`‖y‖ = ⨆ (L : Dual ℝ E) (_ : covarianceBilin μ L L ≤ 1), L y`.
+Here we don't define the Cameron-Martin space as a subspace because it would inherit
+the norm from `E`, which is not the norm we want to put on it. And we don't want to have two norms
+on the same type.
+
 ## Main definitions
 
 * `CameronMartin μ`: Cameron-Martin space of the measure `μ`.
+* `CameronMartin.ofDual μ L`: inclusion of the dual space `Dual ℝ E` into the Cameron-Martin space.
+* `CameronMartin.toInitialSpace`: the continuous linear map from the Cameron-Martin space
+  to the initial space `E`. It is injective and its range is the subspace of `E` of points
+  `y` such that `⨆ (L : Dual ℝ E) (_ : covarianceBilin μ L L ≤ 1), L y` is finite.
+* `CameronMartin.ofBounded`: the inverse of `CameronMartin.toInitialSpace`, which
+  takes a point `y : E` with bounded Cameron-Martin norm and returns a point of `CameronMartin μ`.
 
 ## Main statements
 
-* `fooBar_unique`
+* `CameronMartin.range_toInitialSpace`: the range of `CameronMartin.toInitialSpace` is the set
+  `{y : E | ∃ M, ∀ L, covarianceBilin μ L L ≤ 1 → L y ≤ M}`.
+* `CameronMartin.toInitialSpace_ofBounded` and `CameronMartin.ofBounded_toInitialSpace`:
+  the two maps `CameronMartin.toInitialSpace` and `CameronMartin.ofBounded` are inverses
+  of each other.
+
+* `CameronMartin.norm_eq_ciSup`: for `x` in the Cameron-Martin space,
+  `‖x‖ = ⨆ (L) (_ : covarianceBilin μ L L ≤ 1), L (toInitialSpace μ x)`.
+* `CameronMartin.norm_ofBounded`: for `y` in `E` with bounded Cameron-Martin norm,
+  `‖CameronMartin.ofBounded μ y‖ = ⨆ (L) (_ : covarianceBilin μ L L ≤ 1), L y`.
 
 ## Implementation details
 
-We build the Cameron-Martin space for any finite measure with a second moment, not only for
-Gaussian measures. We do so because we can write the definition with that hypothesis only,
-not because of any use of the space beyond the Gaussian case.
+We build the Cameron-Martin space for any finite measure with a finite second moment, not only for
+Gaussian measures. We do so only because we can write the definition with that weaker hypothesis:
+we are not aware of any use of the Cameron-Martin space for non-Gaussian measures.
 
 ## References
 
 * [F. Bar, *Quuxes*][bibkey]
 
-## Tags
-
-Foobars, barfoos
 -/
 
 open MeasureTheory NormedSpace UniformSpace
@@ -257,20 +287,21 @@ lemma centeredToLp_apply [IsFiniteMeasure μ] (hμp : MemLp id p μ) (L : Dual �
   refine integral_congr_ae ?_
   exact Dual.toLp_apply_ae hμ1 L
 
+lemma centeredToLp_two_inner [HasTwoMoments μ] (L₁ L₂ : Dual ℝ E) :
+    ⟪Dual.centeredToLp μ 2 L₁, Dual.centeredToLp μ 2 L₂⟫_ℝ = covarianceBilin μ L₁ L₂ := by
+  rw [real_inner_comm, L2.inner_def, covarianceBilin_apply' memLp_two_id]
+  refine integral_congr_ae ?_
+  filter_upwards [centeredToLp_apply memLp_two_id L₁, centeredToLp_apply memLp_two_id L₂]
+    with x hx₁ hx₂
+  simp [hx₁, hx₂]
+
 lemma norm_centeredToLp_two [HasTwoMoments μ] (L : Dual ℝ E) :
     ‖Dual.centeredToLp μ 2 L‖ = √(covarianceBilin μ L L) := by
-  simp only [covarianceBilin_apply' memLp_two_id, id_eq]
-  rw [norm_eq_sqrt_real_inner]
-  congr
-  refine integral_congr_ae ?_
-  filter_upwards [centeredToLp_apply memLp_two_id L] with x hx
-  simp [hx]
+  rw [norm_eq_sqrt_real_inner, centeredToLp_two_inner]
 
 lemma sq_norm_centeredToLp_two [HasTwoMoments μ] (L : Dual ℝ E) :
     ‖Dual.centeredToLp μ 2 L‖ ^ 2 = covarianceBilin μ L L := by
-  rw [norm_centeredToLp_two, Real.sq_sqrt]
-  rw [covarianceBilin_same_eq_variance memLp_two_id]
-  exact variance_nonneg _ _
+  rw [← real_inner_self_eq_norm_sq, centeredToLp_two_inner]
 
 end centeredToLp
 
@@ -309,21 +340,25 @@ lemma ofDual_apply (L : Dual ℝ E) :
       = (⟨Dual.centeredToLp μ 2 L, Submodule.mem_map.mpr ⟨L, by simp, rfl⟩⟩ :
         Submodule.map (Dual.centeredToLp μ 2) ⊤) := rfl
 
+lemma ofDual_inner (L₁ L₂ : Dual ℝ E) :
+    ⟪ofDual μ L₁, ofDual μ L₂⟫_ℝ = covarianceBilin μ L₁ L₂ := by
+  simp only [ofDual_apply, Completion.inner_coe, Submodule.coe_inner]
+  exact centeredToLp_two_inner L₁ L₂
+
 lemma norm_ofDual (L : Dual ℝ E) : ‖ofDual μ L‖ = √(covarianceBilin μ L L) := by
-  rw [ofDual_apply]
-  simp only [Completion.norm_coe, AddSubgroupClass.coe_norm]
-  exact norm_centeredToLp_two _
+  rw [norm_eq_sqrt_real_inner, ofDual_inner]
 
 lemma sq_norm_ofDual (L : Dual ℝ E) : ‖ofDual μ L‖ ^ 2 = covarianceBilin μ L L := by
-  rw [norm_ofDual, Real.sq_sqrt]
-  rw [covarianceBilin_same_eq_variance memLp_two_id]
-  exact variance_nonneg _ _
+  rw [← real_inner_self_eq_norm_sq, ofDual_inner]
 
 end CameronMartin
 
 end CameronMartinSpace
 
-section EvaluationMap
+section OfBounded
+
+/-! We build a map from the elements of `E` with finite Cameron-Martin norm to
+the Cameron-Martin space. -/
 
 variable [HasTwoMoments μ]
 
@@ -435,9 +470,12 @@ lemma eval_apply (hy : ∃ M, ∀ L, covarianceBilin μ L L ≤ 1 → L y ≤ M)
 
 end CameronMartin
 
-end EvaluationMap
+end OfBounded
 
 section ToInitialSpace
+
+/-! We build an injective continuous linear map from the Cameron-Martin space to the elements
+of `E` with finite Cameron-Martin norm. This is an inverse of `CameronMartin.ofBounded`. -/
 
 variable [SecondCountableTopology E] [HasTwoMoments μ]
 
@@ -525,14 +563,14 @@ def toInitialSpace (μ : Measure E) [HasTwoMoments μ] : CameronMartin μ →L[�
     ‖Dual.centeredToLp μ 2‖ norm_toInit_le
 
 lemma apply_toInitialSpace_eq_inner (x : CameronMartin μ) (L : Dual ℝ E) :
-    L (toInitialSpace μ x) = ⟪CameronMartin.ofDual μ L, x⟫_ℝ := by
+    L (toInitialSpace μ x) = ⟪ofDual μ L, x⟫_ℝ := by
   simp only [toInitialSpace, Completion.continuousLinearMapExtension_apply]
   revert x
   rw [← funext_iff]
   refine Completion.ext (by fun_prop) (by fun_prop) fun x ↦ ?_
   rw [Completion.extension_coe (ContinuousLinearMap.uniformContinuous _)]
   simp only [LinearMap.mkContinuous_apply, LinearMap.coe_mk, AddHom.coe_mk]
-  rw [apply_toInit_eq_inner, CameronMartin.ofDual_apply, Completion.inner_coe]
+  rw [apply_toInit_eq_inner, ofDual_apply, Completion.inner_coe]
   rfl
 
 lemma eq_zero_of_toInitialSpace_eq_zero {x : CameronMartin μ}
@@ -544,7 +582,7 @@ lemma eq_zero_of_toInitialSpace_eq_zero {x : CameronMartin μ}
   rw [← funext_iff]
   refine Completion.ext (by fun_prop) (by fun_prop) fun L ↦ ?_
   obtain ⟨L', -, hL'⟩ := Submodule.mem_map.mp L.2
-  have : CameronMartin.ofDual μ L' = L := by rw [CameronMartin.ofDual_apply]; congr
+  have : ofDual μ L' = L := by rw [ofDual_apply]; congr
   rw [← this, ← apply_toInitialSpace_eq_inner, h]
   simp
 
@@ -586,6 +624,18 @@ lemma ofBounded_toInitialSpace (x : CameronMartin μ)
     ofBounded μ (toInitialSpace μ x) = x := by
   refine toInitialSpace_injective ?_
   rw [toInitialSpace_ofBounded ⟨‖x‖, fun _ hL ↦ apply_toInitialSpace_le_norm x hL⟩]
+
+lemma range_toInitialSpace :
+    Set.range (toInitialSpace μ)
+      = {y : E | ∃ M, ∀ L, covarianceBilin μ L L ≤ 1 → L y ≤ M} := by
+  ext y
+  constructor
+  · rintro ⟨x, rfl⟩
+    exact ⟨‖x‖, fun L hL ↦ apply_toInitialSpace_le_norm x hL⟩
+  · rintro hy
+    classical
+    refine ⟨ofBounded μ y, ?_⟩
+    rw [toInitialSpace_ofBounded hy]
 
 lemma ofDual_inner_le_of_norm_ofDual_le (x : CameronMartin μ) {L : Dual ℝ E}
     (hL : ‖ofDual μ L‖ ≤ 1) :
