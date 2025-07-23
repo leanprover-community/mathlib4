@@ -32,7 +32,7 @@ theorem mulOpposite_repr_eq (b : Basis ι R H) :
     b.mulOpposite.repr = (opLinearEquiv R).symm.trans b.repr := rfl
 
 @[simp]
-theorem mulOpposite_repr_unop (b : Basis ι R H) (x : Hᵐᵒᵖ) :
+theorem repr_unop_eq_mulOpposite_repr (b : Basis ι R H) (x : Hᵐᵒᵖ) :
     b.repr (unop x) = b.mulOpposite.repr x := rfl
 
 @[simp]
