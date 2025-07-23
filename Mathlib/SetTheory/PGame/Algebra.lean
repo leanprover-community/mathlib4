@@ -5,6 +5,7 @@ Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Yuyang Zh
 -/
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.SetTheory.PGame.Order
+import Mathlib.Data.Nat.Cast.Defs
 
 /-!
 # Algebraic structure on pregames

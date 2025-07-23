@@ -276,8 +276,7 @@ theorem degreeOf_sum_le {ι : Type*} (i : σ) (s : Finset ι) (f : ι → MvPoly
 theorem degreeOf_prod_le {ι : Type*} (i : σ) (s : Finset ι) (f : ι → MvPolynomial σ R) :
     degreeOf i (∏ j ∈ s, f j) ≤ ∑ j ∈ s, (f j).degreeOf i := by
   simp_rw [degreeOf_eq_sup]
-  exact supDegree_prod_le (by simp only [coe_zero, Pi.zero_apply])
-    (fun _ _ => by simp only [coe_add, Pi.add_apply])
+  exact supDegree_prod_le (by simp only [coe_zero, Pi.zero_apply]) (by simp)
 
 -- TODO we can prove equality with `NoZeroDivisors R`
 theorem degreeOf_pow_le (i : σ) (p : MvPolynomial σ R) (n : ℕ) :

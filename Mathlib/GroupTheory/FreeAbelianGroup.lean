@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.Module.NatInt
-import Mathlib.GroupTheory.Abelianization
+import Mathlib.GroupTheory.Abelianization.Defs
 import Mathlib.GroupTheory.FreeGroup.Basic
 
 /-!
@@ -20,7 +20,7 @@ under pointwise addition. In this file, it is defined as the abelianisation
 of the free group on `α`. All the constructions and theorems required to show
 the adjointness of the construction and the forgetful functor are proved in this
 file, but the category-theoretic adjunction statement is in
-`Algebra.Category.Group.Adjunctions`.
+`Mathlib/Algebra/Category/Grp/Adjunctions.lean`.
 
 ## Main definitions
 
@@ -63,6 +63,7 @@ are about `FreeAbelianGroup.map`.
 
 -/
 
+assert_not_exists Cardinal Multiset
 
 universe u v
 
@@ -415,7 +416,7 @@ theorem of_mul (x y : α) : of (x * y) = of x * of y :=
 instance distrib : Distrib (FreeAbelianGroup α) :=
   { FreeAbelianGroup.mul α, FreeAbelianGroup.addCommGroup α with
     left_distrib := fun _ _ _ ↦ (lift _).map_add _ _
-    right_distrib x y z := by simp [(· * ·), Mul.mul, ← Pi.add_def] }
+    right_distrib x y z := by simp [mul_def, ← Pi.add_def] }
 
 instance nonUnitalNonAssocRing : NonUnitalNonAssocRing (FreeAbelianGroup α) :=
   { FreeAbelianGroup.distrib,
@@ -583,14 +584,8 @@ def uniqueEquiv (T : Type*) [Unique T] : FreeAbelianGroup T ≃+ ℤ where
 def equivOfEquiv {α β : Type*} (f : α ≃ β) : FreeAbelianGroup α ≃+ FreeAbelianGroup β where
   toFun := map f
   invFun := map f.symm
-  left_inv := by
-    intro x
-    rw [← map_comp_apply, Equiv.symm_comp_self, map_id]
-    rfl
-  right_inv := by
-    intro x
-    rw [← map_comp_apply, Equiv.self_comp_symm, map_id]
-    rfl
+  left_inv x := by rw [← map_comp_apply, Equiv.symm_comp_self, map_id, AddMonoidHom.id_apply]
+  right_inv x := by rw [← map_comp_apply, Equiv.self_comp_symm, map_id, AddMonoidHom.id_apply]
   map_add' := AddMonoidHom.map_add _
 
 end FreeAbelianGroup

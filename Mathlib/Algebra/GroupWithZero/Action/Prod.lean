@@ -52,6 +52,14 @@ instance mulDistribMulAction {R : Type*} [Monoid R] [Monoid M] [Monoid N]
   smul_mul _ _ _ := by ext <;> exact smul_mul' ..
   smul_one _ := by ext <;> exact smul_one _
 
+instance smulWithZero {R : Type*} [Zero R] [Zero M] [Zero N] [SMulWithZero R M] [SMulWithZero R N] :
+    SMulWithZero R (M × N) where
+  zero_smul _ := by ext <;> exact zero_smul ..
+
+instance mulActionWithZero {R : Type*} [MonoidWithZero R] [Zero M] [Zero N] [MulActionWithZero R M]
+    [MulActionWithZero R N] : MulActionWithZero R (M × N) :=
+  { Prod.mulAction, Prod.smulWithZero with }
+
 end Prod
 
 /-! ### Scalar multiplication as a homomorphism -/

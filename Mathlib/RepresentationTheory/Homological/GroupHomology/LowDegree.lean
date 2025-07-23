@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import Mathlib.GroupTheory.Abelianization
+import Mathlib.GroupTheory.Abelianization.Defs
 import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
 import Mathlib.RepresentationTheory.Invariants
 
@@ -13,8 +13,8 @@ import Mathlib.RepresentationTheory.Invariants
 
 Let `k` be a commutative ring and `G` a group. This file contains specialised API for
 the cycles and group homology  of a `k`-linear `G`-representation `A` in degrees 0, 1 and 2.
-In `RepresentationTheory/Homological/GroupHomology/Basic.lean`, we define the `n`th group homology
-of `A` to be the homology of a complex `inhomogeneousChains A`, whose objects are
+In `Mathlib/RepresentationTheory/Homological/GroupHomology/Basic.lean`, we define the `n`th group
+homology of `A` to be the homology of a complex `inhomogeneousChains A`, whose objects are
 `(Fin n →₀ G) → A`; this is unnecessarily unwieldy in low degree.
 
 Given an additive abelian group `A` with an appropriate scalar action of `G`, we provide support
@@ -23,8 +23,9 @@ for turning a finsupp `f : G →₀ A` satisfying the 1-cycle identity into an e
 0-boundaries, 1-boundaries, 2-cycles and 2-boundaries.
 
 The file also contains an identification between the definitions in
-`RepresentationTheory/Homological/GroupHomology/Basic.lean`, `groupHomology.cycles A n`, and the
-`cyclesₙ` in this file for `n = 1, 2`, as well as an isomorphism `groupHomology.cycles A 0 ≅ A.V`.
+`Mathlib/RepresentationTheory/Homological/GroupHomology/Basic.lean`, `groupHomology.cycles A n`, and
+the `cyclesₙ` in this file for `n = 1, 2`, as well as an isomorphism
+`groupHomology.cycles A 0 ≅ A.V`.
 Moreover, we provide API for the natural maps `cyclesₙ A → Hn A` for `n = 1, 2`.
 
 We show that when the representation on `A` is trivial, `H₁(G, A) ≃+ Gᵃᵇ ⊗[ℤ] A`.
