@@ -68,14 +68,36 @@ lemma tv_comp_le (μ ν : Measure 𝓧) [IsFiniteMeasure μ] (κ : Kernel 𝓧 �
     tv (κ ∘ₘ μ) (κ ∘ₘ ν) ≤ tv μ ν :=
   ENNReal.toReal_mono statInfo_ne_top (statInfo_comp_le _ _ _ _)
 
+lemma tv_eq_min_sub_lintegral {ζ : Measure 𝓧} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+    [SigmaFinite ζ] (hμζ : μ ≪ ζ) (hνζ : ν ≪ ζ) :
+    tv μ ν = min (μ.real .univ) (ν.real .univ)
+      - (∫⁻ x, min ((∂μ/∂ζ) x) ((∂ν/∂ζ) x) ∂ζ).toReal := by
+  have h := statInfo_eq_min_sub_lintegral' (boolMeasure 1 1) hμζ hνζ
+  simp only [boolMeasure_apply_false, one_mul, boolMeasure_apply_true] at h
+  rw [tv, h, Measure.real, Measure.real,
+    ← ENNReal.toReal_min (measure_ne_top _ _) (measure_ne_top _ _),
+    ENNReal.toReal_sub_of_le _ (by simp)]
+  calc ∫⁻ x, min ((∂μ/∂ζ) x) ((∂ν/∂ζ) x) ∂ζ
+  _ ≤ min (∫⁻ x, (∂μ/∂ζ) x ∂ζ) (∫⁻ x, (∂ν/∂ζ) x ∂ζ) := by
+    refine le_min ?_ ?_
+    · exact lintegral_mono fun _ ↦ min_le_left _ _
+    · exact lintegral_mono fun _ ↦ min_le_right _ _
+  _ = min (μ .univ) (ν .univ) := by
+    rw [Measure.lintegral_rnDeriv hμζ, Measure.lintegral_rnDeriv hνζ]
+
+lemma tv_eq_one_sub_lintegral {ζ : Measure 𝓧} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
+    [SigmaFinite ζ] (hμζ : μ ≪ ζ) (hνζ : ν ≪ ζ) :
+    tv μ ν = 1 - (∫⁻ x, min ((∂μ/∂ζ) x) ((∂ν/∂ζ) x) ∂ζ).toReal := by
+  simp [tv_eq_min_sub_lintegral hμζ hνζ]
+
 lemma tv_eq_min_sub_iInf_measurableSet (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     tv μ ν = min (μ.real .univ) (ν.real .univ)
       - ⨅ (E : {E // MeasurableSet E}), μ.real E + ν.real E.1ᶜ := by
   have h := statInfo_eq_min_sub_iInf_measurableSet μ ν (boolMeasure 1 1)
   simp only [boolMeasure_apply_false, one_mul, boolMeasure_apply_true] at h
-  rw [tv, h]
-  rw [Measure.real, Measure.real, ← ENNReal.toReal_min (measure_ne_top _ _) (measure_ne_top _ _),
-    ENNReal.toReal_sub_of_le]
+  rw [tv, h, Measure.real, Measure.real,
+    ← ENNReal.toReal_min (measure_ne_top _ _) (measure_ne_top _ _),
+    ENNReal.toReal_sub_of_le _ (by simp)]
   · congr
     rw [iInf_subtype']
     rw [← ENNReal.toReal_ofReal (r := ⨅ (E : {E //  MeasurableSet E}), μ.real E + ν.real E.1ᶜ)]
@@ -88,7 +110,6 @@ lemma tv_eq_min_sub_iInf_measurableSet (μ ν : Measure 𝓧) [IsFiniteMeasure �
     constructor
     · exact (iInf_le _ .univ).trans (by simp)
     · exact (iInf_le _ ∅).trans (by simp)
-  · simp
 
 lemma tv_eq_one_sub_iInf_measurableSet (μ ν : Measure 𝓧) [IsProbabilityMeasure μ]
     [IsProbabilityMeasure ν] :
