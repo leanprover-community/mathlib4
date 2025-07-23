@@ -147,6 +147,8 @@ variable (C)
 
 attribute [local simp] homologyMap_comp cyclesMap_comp opcyclesMap_comp
 
+/-- The functor `HomologicalComplex C c ⥤ ComposableArrows C 3` that maps `K` to the
+diagram `K.homology i ⟶ K.opcycles i ⟶ K.cycles j ⟶ K.homology j`. -/
 @[simps]
 noncomputable def composableArrows₃Functor [CategoryWithHomology C] :
     HomologicalComplex C c ⥤ ComposableArrows C 3 where
