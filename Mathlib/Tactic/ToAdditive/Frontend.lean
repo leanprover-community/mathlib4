@@ -481,7 +481,7 @@ structure Config : Type where
   It can also be used to give a hint to `additiveTest`, such as in
   `attribute [to_additive self] Unit`.
   If `self := true`, we should also have `existing := true`. -/
-  self : Bool
+  self : Bool := false
   deriving Repr
 
 /-- Implementation function for `additiveTest`.
@@ -1129,7 +1129,7 @@ def targetName (cfg : Config) (src : Name) : CoreM Name := do
   if res == src then
     throwError "to_additive: the generated additivised name equals the original name '{src}', \
     meaning that no part of the name was additivised.\n\
-    If this is intentional, use the `@[to_additive self]` syntax. \
+    If this is intentional, use the `@[to_additive self]` syntax.\n\
     Otherwise, check that your declaration name is correct \
     (if your declaration is an instance, try naming it)\n\
     or provide an additivised name using the `@[to_additive my_add_name]` syntax."
