@@ -24,15 +24,12 @@ open TensorProduct MvPolynomial
 
 namespace Algebra.Generators
 
-variable {R S T : Type*} [CommRing R] [CommRing S] [Algebra R S]
+variable {R S T ι : Type*} [CommRing R] [CommRing S] [Algebra R S]
   [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
-variable (g : S) [IsLocalization.Away g T] (P : Generators R S)
+variable (g : S) [IsLocalization.Away g T] (P : Generators R S ι)
 
--- Allow seeing through the `vars` field of `Generators`. For details, see
--- the TODO in `Mathlib/RingTheory/Generators.lean`.
-set_option allowUnsafeReducibility true in
-attribute [local reducible] Generators.localizationAway in
-lemma comp_localizationAway_ker (P : Generators R S) (f : P.Ring) (h : algebraMap P.Ring S f = g) :
+lemma comp_localizationAway_ker (P : Generators R S ι) (f : P.Ring)
+    (h : algebraMap P.Ring S f = g) :
     ((Generators.localizationAway g).comp P).ker =
       Ideal.map ((Generators.localizationAway (S := T) g).toComp P).toAlgHom P.ker ⊔
         Ideal.span {rename Sum.inr f * X (Sum.inl ()) - 1} := by
@@ -55,13 +52,13 @@ def compLocalizationAwayAlgHom : ((Generators.localizationAway g (S := T)).comp 
   aeval (R := R) (S₁ := Localization.Away _)
     (Sum.elim
       (fun _ ↦ IsLocalization.Away.invSelf <| (Ideal.Quotient.mk (P.ker ^ 2) (P.σ g)))
-      (fun i : P.vars ↦ algebraMap P.Ring _ (X i)))
+      (fun i : ι ↦ algebraMap P.Ring _ (X i)))
 
 @[simp]
 lemma compLocalizationAwayAlgHom_toAlgHom_toComp (x : P.Ring) :
     compLocalizationAwayAlgHom T g P (((localizationAway g (S := T)).toComp P).toAlgHom x) =
       algebraMap P.Ring _ x := by
-  simp only [toComp_toAlgHom, Ideal.mem_comap, RingHom.mem_ker, compLocalizationAwayAlgHom, comp,
+  simp only [toComp_toAlgHom, compLocalizationAwayAlgHom, comp,
     localizationAway, AlgHom.toRingHom_eq_coe, aeval_rename,
     Sum.elim_comp_inr, ← IsScalarTower.toAlgHom_apply (R := R), ← comp_aeval_apply,
     aeval_X_left_apply]
@@ -74,7 +71,7 @@ lemma compLocalizationAwayAlgHom_X_inl : compLocalizationAwayAlgHom T g P (X (Su
 lemma compLocalizationAwayAlgHom_relation_eq_zero :
     compLocalizationAwayAlgHom T g P (rename Sum.inr (P.σ g) * X (Sum.inl ()) - 1) = 0 := by
   rw [map_sub, map_one, map_mul, ← toComp_toAlgHom (Generators.localizationAway g (S := T)) P]
-  show (compLocalizationAwayAlgHom T g P) (((localizationAway g).toComp P).toAlgHom _) * _ - _ = _
+  change (compLocalizationAwayAlgHom T g P) (((localizationAway g).toComp P).toAlgHom _) * _ - _ = _
   rw [compLocalizationAwayAlgHom_toAlgHom_toComp, compLocalizationAwayAlgHom_X_inl,
     IsScalarTower.algebraMap_apply P.Ring (P.Ring ⧸ P.ker ^ 2) (Localization.Away _)]
   simp

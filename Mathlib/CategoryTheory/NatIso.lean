@@ -30,9 +30,6 @@ we put some declarations that are specifically about natural isomorphisms in the
 namespace so that they are available using dot notation.
 -/
 
-
-open CategoryTheory
-
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
@@ -218,7 +215,7 @@ def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
     { app := fun X => (app X).inv,
       naturality := fun X Y f => by
         have h := congr_arg (fun f => (app X).inv ≫ f ≫ (app Y).inv) (naturality f).symm
-        simp only [Iso.inv_hom_id_assoc, Iso.hom_inv_id, assoc, comp_id, cancel_mono] at h
+        simp only [Iso.inv_hom_id_assoc, Iso.hom_inv_id, assoc, comp_id] at h
         exact h }
 
 @[simp]

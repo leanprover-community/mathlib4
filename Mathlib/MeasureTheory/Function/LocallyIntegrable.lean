@@ -635,23 +635,44 @@ section SMul
 
 variable {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E]
 
+theorem IntegrableOn.continuousOn_smul_of_subset [SecondCountableTopologyEither X 𝕜] {f : X → 𝕜}
+    (hf : ContinuousOn f K) {g : X → E} (hg : IntegrableOn g A μ)
+    (hK : IsCompact K) (hA : MeasurableSet A) (hAK : A ⊆ K) :
+    IntegrableOn (fun x => f x • g x) A μ := by
+  rcases IsCompact.exists_bound_of_continuousOn hK hf with ⟨C, hC⟩
+  rw [IntegrableOn, ← memLp_one_iff_integrable] at hg ⊢
+  have : ∀ᵐ x ∂μ.restrict A, ‖f x • g x‖ ≤ C * ‖g x‖ := by
+    filter_upwards [ae_restrict_mem hA] with x hx
+    refine (norm_smul_le _ _).trans ?_
+    gcongr
+    exact hC x (hAK hx)
+  exact
+    MemLp.of_le_mul hg (((hf.mono hAK).aestronglyMeasurable hA).smul hg.aestronglyMeasurable) this
+
 theorem IntegrableOn.continuousOn_smul [T2Space X] [SecondCountableTopologyEither X 𝕜] {g : X → E}
     (hg : IntegrableOn g K μ) {f : X → 𝕜} (hf : ContinuousOn f K) (hK : IsCompact K) :
-    IntegrableOn (fun x => f x • g x) K μ := by
-  rw [IntegrableOn, ← integrable_norm_iff]
-  · simp_rw [norm_smul]
-    refine IntegrableOn.continuousOn_mul ?_ hg.norm hK
-    exact continuous_norm.comp_continuousOn hf
-  · exact (hf.aestronglyMeasurable hK.measurableSet).smul hg.1
+    IntegrableOn (fun x => f x • g x) K μ :=
+  hg.continuousOn_smul_of_subset hf hK hK.measurableSet Subset.rfl
+
+theorem IntegrableOn.smul_continuousOn_of_subset [SecondCountableTopologyEither X E] {f : X → 𝕜}
+    (hf : IntegrableOn f A μ) {g : X → E} (hg : ContinuousOn g K)
+    (hA : MeasurableSet A) (hK : IsCompact K) (hAK : A ⊆ K) :
+    IntegrableOn (fun x => f x • g x) A μ := by
+  rcases IsCompact.exists_bound_of_continuousOn hK hg with ⟨C, hC⟩
+  rw [IntegrableOn, ← memLp_one_iff_integrable] at hf ⊢
+  have : ∀ᵐ x ∂μ.restrict A, ‖f x • g x‖ ≤ C * ‖f x‖ := by
+    filter_upwards [ae_restrict_mem hA] with x hx
+    refine (norm_smul_le _ _).trans ?_
+    rw [mul_comm]
+    gcongr
+    exact hC x (hAK hx)
+  exact
+    MemLp.of_le_mul hf (hf.aestronglyMeasurable.smul <| (hg.mono hAK).aestronglyMeasurable hA) this
 
 theorem IntegrableOn.smul_continuousOn [T2Space X] [SecondCountableTopologyEither X E] {f : X → 𝕜}
     (hf : IntegrableOn f K μ) {g : X → E} (hg : ContinuousOn g K) (hK : IsCompact K) :
-    IntegrableOn (fun x => f x • g x) K μ := by
-  rw [IntegrableOn, ← integrable_norm_iff]
-  · simp_rw [norm_smul]
-    refine IntegrableOn.mul_continuousOn hf.norm ?_ hK
-    exact continuous_norm.comp_continuousOn hg
-  · exact hf.1.smul (hg.aestronglyMeasurable hK.measurableSet)
+    IntegrableOn (fun x => f x • g x) K μ :=
+  hf.smul_continuousOn_of_subset hg hK.measurableSet hK (Subset.refl _)
 
 end SMul
 

@@ -376,7 +376,6 @@ theorem degree_add_div (hq0 : q ≠ 0) (hpq : degree q ≤ degree p) :
     calc
       degree (p % q) < degree q := EuclideanDomain.mod_lt _ hq0
       _ ≤ _ := degree_le_mul_left _ (mt (div_eq_zero_iff hq0).1 (not_lt_of_ge hpq))
-
   conv_rhs =>
     rw [← EuclideanDomain.div_add_mod p q, degree_add_eq_left_of_degree_lt this, degree_mul]
 
@@ -604,16 +603,20 @@ theorem X_sub_C_mul_divByMonic_eq_sub_modByMonic {K : Type*} [Ring K] (f : K[X])
   rw [eq_sub_iff_add_eq, ← eq_sub_iff_add_eq', modByMonic_eq_sub_mul_div]
   exact monic_X_sub_C a
 
-theorem divByMonic_add_X_sub_C_mul_derivate_divByMonic_eq_derivative
+theorem divByMonic_add_X_sub_C_mul_derivative_divByMonic_eq_derivative
     {K : Type*} [CommRing K] (f : K[X]) (a : K) :
     f /ₘ (X - C a) + (X - C a) * derivative (f /ₘ (X - C a)) = derivative f := by
   have key := by apply congrArg derivative <| X_sub_C_mul_divByMonic_eq_sub_modByMonic f a
   simpa only [derivative_mul, derivative_sub, derivative_X, derivative_C, sub_zero, one_mul,
     modByMonic_X_sub_C_eq_C_eval] using key
 
+@[deprecated (since := "2025-07-08")]
+alias divByMonic_add_X_sub_C_mul_derivate_divByMonic_eq_derivative :=
+divByMonic_add_X_sub_C_mul_derivative_divByMonic_eq_derivative
+
 theorem X_sub_C_dvd_derivative_of_X_sub_C_dvd_divByMonic {K : Type*} [Field K] (f : K[X]) {a : K}
     (hf : (X - C a) ∣ f /ₘ (X - C a)) : X - C a ∣ derivative f := by
-  have key := divByMonic_add_X_sub_C_mul_derivate_divByMonic_eq_derivative f a
+  have key := divByMonic_add_X_sub_C_mul_derivative_divByMonic_eq_derivative f a
   have ⟨u,hu⟩ := hf
   rw [← key, hu, ← mul_add (X - C a) u _]
   use (u + derivative ((X - C a) * u))

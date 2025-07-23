@@ -49,7 +49,7 @@ case... but by now, the "old" syntax is not clearly better.)
 In the 30 replacements of the last PR, this occurred twice. In both cases, the `suffices` tactic
 could also be used, as was in fact clearer. -/
 
-open Lean Elab
+open Lean Elab Linter
 
 namespace Mathlib.Linter.Style
 
@@ -73,7 +73,7 @@ register_option linter.oldObtain : Bool := {
 
 /-- The `oldObtain` linter: see docstring above -/
 def oldObtainLinter : Linter where run := withSetOptionIn fun stx => do
-    unless Linter.getLinterValue linter.oldObtain (← getOptions) do
+    unless getLinterValue linter.oldObtain (← getLinterOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return

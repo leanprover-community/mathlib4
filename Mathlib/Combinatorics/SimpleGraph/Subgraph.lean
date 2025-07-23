@@ -135,6 +135,9 @@ protected def coe (G' : Subgraph G) : SimpleGraph G'.verts where
   loopless v h := loopless G v (G'.adj_sub h)
 
 @[simp]
+theorem Adj.adj_sub' (G' : Subgraph G) (u v : G'.verts) (h : G'.Adj u v) : G.Adj u v :=
+  G'.adj_sub h
+
 theorem coe_adj_sub (G' : Subgraph G) (u v : G'.verts) (h : G'.coe.Adj u v) : G.Adj u v :=
   G'.adj_sub h
 
@@ -163,7 +166,6 @@ protected def spanningCoe (G' : Subgraph G) : SimpleGraph V where
   symm := G'.symm
   loopless v hv := G.loopless v (G'.adj_sub hv)
 
-@[simp]
 theorem Adj.of_spanningCoe {G' : Subgraph G} {u v : G'.verts} (h : G'.spanningCoe.Adj u v) :
     G.Adj u v :=
   G'.adj_sub h
@@ -188,8 +190,6 @@ def spanningCoeEquivCoeOfSpanning (G' : Subgraph G) (h : G'.IsSpanning) :
     G'.spanningCoe ≃g G'.coe where
   toFun v := ⟨v, h v⟩
   invFun v := v
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_rel_iff' := Iff.rfl
 
 /-- A subgraph is called an *induced subgraph* if vertices of `G'` are adjacent if
@@ -202,7 +202,7 @@ def IsInduced (G' : Subgraph G) : Prop :=
   ⟨coe_adj_sub _ _ _, hG' a.2 b.2⟩
 
 /-- `H.support` is the set of vertices that form edges in the subgraph `H`. -/
-def support (H : Subgraph G) : Set V := Rel.dom H.Adj
+def support (H : Subgraph G) : Set V := Rel.dom {(v, w) | H.Adj v w}
 
 theorem mem_support (H : Subgraph G) {v : V} : v ∈ H.support ↔ ∃ w, H.Adj v w := Iff.rfl
 
@@ -226,8 +226,6 @@ def coeNeighborSetEquiv {G' : Subgraph G} (v : G'.verts) :
     G'.coe.neighborSet v ≃ G'.neighborSet v where
   toFun w := ⟨w, w.2⟩
   invFun w := ⟨⟨w, G'.edge_vert (G'.adj_symm w.2)⟩, w.2⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- The edge set of `G'` consists of a subset of edges of `G`. -/
 def edgeSet (G' : Subgraph G) : Set (Sym2 V) := Sym2.fromRel G'.symm
@@ -423,7 +421,6 @@ def topIso : (⊤ : G.Subgraph).coe ≃g G where
   toFun := (↑)
   invFun a := ⟨a, Set.mem_univ _⟩
   left_inv _ := Subtype.eta ..
-  right_inv _ := rfl
   map_rel_iff' := .rfl
 
 theorem verts_spanningCoe_injective :
@@ -567,7 +564,7 @@ def _root_.SimpleGraph.toSubgraph (H : SimpleGraph V) (h : H ≤ G) : G.Subgraph
   symm := H.symm
 
 theorem support_mono {H H' : Subgraph G} (h : H ≤ H') : H.support ⊆ H'.support :=
-  Rel.dom_mono h.2
+  Rel.dom_mono fun _ hvw ↦ h.2 hvw
 
 theorem _root_.SimpleGraph.toSubgraph.isSpanning (H : SimpleGraph V) (h : H ≤ G) :
     (toSubgraph H h).IsSpanning :=
@@ -584,8 +581,6 @@ lemma sup_spanningCoe (H H' : Subgraph G) :
 def topEquiv : (⊤ : Subgraph G).coe ≃g G where
   toFun v := ↑v
   invFun v := ⟨v, trivial⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_rel_iff' := Iff.rfl
 
 /-- The bottom of the `Subgraph G` lattice is equivalent to the empty graph on the empty
@@ -847,7 +842,7 @@ theorem singletonSubgraph_le_iff (v : V) (H : G.Subgraph) :
 theorem map_singletonSubgraph (f : G →g G') {v : V} :
     Subgraph.map f (G.singletonSubgraph v) = G'.singletonSubgraph (f v) := by
   ext <;> simp only [Relation.Map, Subgraph.map_adj, singletonSubgraph_adj, Pi.bot_apply,
-    exists_and_left, and_iff_left_iff_imp, IsEmpty.forall_iff, Subgraph.map_verts,
+    exists_and_left, and_iff_left_iff_imp, Subgraph.map_verts,
     singletonSubgraph_verts, Set.image_singleton]
   exact False.elim
 
@@ -1015,7 +1010,7 @@ lemma coeSubgraph_le {H : G.Subgraph} (H' : H.coe.Subgraph) :
 lemma coeSubgraph_restrict_eq {H : G.Subgraph} (H' : G.Subgraph) :
     Subgraph.coeSubgraph (H.restrict H') = H ⊓ H' := by
   ext
-  · simp [and_comm]
+  · simp
   · simp_rw [coeSubgraph_adj, restrict_adj]
     simp only [exists_and_left, exists_prop, inf_adj, and_congr_right_iff]
     intro h
@@ -1084,7 +1079,7 @@ theorem coe_deleteEdges_eq (s : Set (Sym2 V)) :
   simp
 
 theorem deleteEdges_le : G'.deleteEdges s ≤ G' := by
-  constructor <;> simp +contextual [subset_rfl]
+  constructor <;> simp +contextual
 
 theorem deleteEdges_le_of_le {s s' : Set (Sym2 V)} (h : s ⊆ s') :
     G'.deleteEdges s' ≤ G'.deleteEdges s := by
@@ -1095,7 +1090,7 @@ theorem deleteEdges_le_of_le {s s' : Set (Sym2 V)} (h : s ⊆ s') :
 @[simp]
 theorem deleteEdges_inter_edgeSet_left_eq :
     G'.deleteEdges (G'.edgeSet ∩ s) = G'.deleteEdges s := by
-  ext <;> simp +contextual [imp_false]
+  ext <;> simp +contextual
 
 @[simp]
 theorem deleteEdges_inter_edgeSet_right_eq :
@@ -1248,12 +1243,12 @@ theorem deleteVerts_anti {s s' : Set V} (h : s ⊆ s') : G'.deleteVerts s' ≤ G
 
 @[simp]
 theorem deleteVerts_inter_verts_left_eq : G'.deleteVerts (G'.verts ∩ s) = G'.deleteVerts s := by
-  ext <;> simp +contextual [imp_false]
+  ext <;> simp +contextual
 
 @[simp]
 theorem deleteVerts_inter_verts_set_right_eq :
     G'.deleteVerts (s ∩ G'.verts) = G'.deleteVerts s := by
-  ext <;> simp +contextual [imp_false]
+  ext <;> simp +contextual
 
 instance instDecidableRel_deleteVerts_adj (u : Set V) [r : DecidableRel G.Adj] :
     DecidableRel ((⊤ : G.Subgraph).deleteVerts u).coe.Adj :=

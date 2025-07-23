@@ -206,7 +206,7 @@ def spanFunctor [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsCompac
   map h := @CompHausLike.ofHom _ _ _ (_) (_) (_) (_) (_) (_) (_) (_)
     ⟨(ProjRestricts C (leOfHom h.unop)), continuous_projRestricts _ _⟩
   map_id J := by simp only [projRestricts_eq_id C (· ∈ (unop J))]; rfl
-  map_comp _ _ := by dsimp; rw [← CompHausLike.ofHom_comp]; congr; dsimp; rw [projRestricts_eq_comp]
+  map_comp _ _ := by rw [← CompHausLike.ofHom_comp]; congr; dsimp; rw [projRestricts_eq_comp]
 
 /-- The limit cone on `spanFunctor` with point `C`. -/
 noncomputable
@@ -217,7 +217,7 @@ def spanCone [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsCompact C
   { app := fun s ↦ TopCat.ofHom ⟨ProjRestrict C (· ∈ unop s), continuous_projRestrict _ _⟩
     naturality := by
       intro X Y h
-      simp only [Functor.const_obj_obj, Homeomorph.setCongr, Homeomorph.homeomorph_mk_coe,
+      simp only [Functor.const_obj_obj,
         Functor.const_obj_map, Category.id_comp, ← projRestricts_comp_projRestrict C
         (leOfHom h.unop)]
       rfl }
@@ -347,7 +347,7 @@ theorem injective : Function.Injective (eval C) := by
   intro ⟨a, ha⟩ ⟨b, hb⟩ h
   dsimp [eval] at h
   by_contra! hne
-  cases hne.lt_or_lt with
+  cases hne.lt_or_gt with
   | inl h' => apply hb; rw [← h]; exact Submodule.subset_span ⟨a, h', rfl⟩
   | inr h' => apply ha; rw [h]; exact Submodule.subset_span ⟨b, h', rfl⟩
 
@@ -509,7 +509,7 @@ theorem Products.prop_of_isGood_of_contained {l : Products I} (o : Ordinal) (h :
     (hsC : contained C o) (i : I) (hi : i ∈ l.val) : ord I i < o := by
   by_contra h'
   apply h
-  suffices eval C l = 0 by simp [this, Submodule.zero_mem]
+  suffices eval C l = 0 by simp [this]
   ext x
   simp only [eval_eq, LocallyConstant.coe_zero, Pi.zero_apply, ite_eq_right_iff, one_ne_zero]
   contrapose! h'
@@ -626,7 +626,7 @@ theorem isGood_mono {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
     (hl : l.isGood (π C (ord I · < o₁))) : l.isGood (π C (ord I · < o₂)) := by
   intro hl'
   apply hl
-  rwa [eval_πs_image' C h (prop_of_isGood  C _ hl), ← eval_πs' C h (prop_of_isGood  C _ hl),
+  rwa [eval_πs_image' C h (prop_of_isGood C _ hl), ← eval_πs' C h (prop_of_isGood C _ hl),
     Submodule.apply_mem_span_image_iff_mem_span (injective_πs' C h)] at hl'
 
 end Products

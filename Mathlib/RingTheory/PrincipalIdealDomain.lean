@@ -6,7 +6,7 @@ Authors: Chris Hughes, Morenikeji Neri
 import Mathlib.Algebra.EuclideanDomain.Basic
 import Mathlib.Algebra.EuclideanDomain.Field
 import Mathlib.Algebra.GCDMonoid.Basic
-import Mathlib.RingTheory.Ideal.Maps
+import Mathlib.RingTheory.Ideal.Prod
 import Mathlib.RingTheory.Ideal.Nonunits
 import Mathlib.RingTheory.Noetherian.UniqueFactorizationDomain
 
@@ -217,7 +217,7 @@ instance nonemptyGCDMonoid [IsBezout R] [IsDomain R] : Nonempty (GCDMonoid R) :=
 
 theorem associated_gcd_gcd [IsDomain R] [GCDMonoid R] :
     Associated (IsBezout.gcd x y) (GCDMonoid.gcd x y) :=
-  gcd_greatest_associated (gcd_dvd_left _ _ ) (gcd_dvd_right _ _) (fun _ => dvd_gcd)
+  gcd_greatest_associated (gcd_dvd_left _ _) (gcd_dvd_right _ _) (fun _ => dvd_gcd)
 
 end IsBezout
 
@@ -301,7 +301,7 @@ theorem isMaximal_of_irreducible [CommSemiring R] [IsPrincipalIdealRing R] {p : 
       rcases principal I with ⟨a, rfl⟩
       rw [Ideal.submodule_span_eq, Ideal.span_singleton_eq_top]
       rcases Ideal.span_singleton_le_span_singleton.1 (le_of_lt hI) with ⟨b, rfl⟩
-      refine (of_irreducible_mul hp).resolve_right (mt (fun hb => ?_) (not_le_of_lt hI))
+      refine (of_irreducible_mul hp).resolve_right (mt (fun hb => ?_) (not_le_of_gt hI))
       rw [Ideal.submodule_span_eq, Ideal.submodule_span_eq,
         Ideal.span_singleton_le_span_singleton, IsUnit.mul_right_dvd hb]⟩⟩
 
@@ -350,7 +350,7 @@ section Surjective
 
 open Submodule
 
-variable {S N F : Type*} [Ring R] [AddCommGroup M] [AddCommGroup N] [Ring S]
+variable {S N F : Type*} [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Semiring S]
 variable [Module R M] [Module R N] [FunLike F R S] [RingHomClass F R S]
 
 theorem Submodule.IsPrincipal.map (f : M →ₗ[R] N) {S : Submodule R M}
@@ -378,6 +378,19 @@ theorem Ideal.IsPrincipal.of_comap (f : F) (hf : Function.Surjective f) (I : Ide
 theorem IsPrincipalIdealRing.of_surjective [IsPrincipalIdealRing R] (f : F)
     (hf : Function.Surjective f) : IsPrincipalIdealRing S :=
   ⟨fun I => Ideal.IsPrincipal.of_comap f hf I⟩
+
+instance [IsPrincipalIdealRing R] [IsPrincipalIdealRing S] : IsPrincipalIdealRing (R × S) where
+  principal I := by
+    rw [I.ideal_prod_eq, ← (I.map _).span_singleton_generator,
+      ← (I.map (RingHom.snd R S)).span_singleton_generator,
+      ← Ideal.span_prod (iff_of_true (by simp) (by simp)), Set.singleton_prod_singleton]
+    exact ⟨_, rfl⟩
+
+theorem isPrincipalIdealRing_prod_iff :
+    IsPrincipalIdealRing (R × S) ↔ IsPrincipalIdealRing R ∧ IsPrincipalIdealRing S where
+  mp h := ⟨h.of_surjective (RingHom.fst R S) Prod.fst_surjective,
+    h.of_surjective (RingHom.snd R S) Prod.snd_surjective⟩
+  mpr := fun ⟨_, _⟩ ↦ inferInstance
 
 end Surjective
 

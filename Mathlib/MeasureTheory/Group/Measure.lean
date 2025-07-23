@@ -413,6 +413,24 @@ instance : (count : Measure G).IsMulRightInvariant where
       count_apply (measurable_mul_const _ hs),
       encard_preimage_of_bijective (Group.mulRight_bijective _)]
 
+@[to_additive]
+protected theorem IsMulLeftInvariant.comap {H} [Group H] {mH : MeasurableSpace H} [MeasurableMul H]
+    (μ : Measure H) [IsMulLeftInvariant μ] {f : G →* H} (hf : MeasurableEmbedding f) :
+    (μ.comap f).IsMulLeftInvariant where
+  map_mul_left_eq_self g := by
+    ext s hs
+    rw [map_apply (by fun_prop) hs]
+    repeat rw [hf.comap_apply]
+    have : f '' ((g * ·) ⁻¹' s) = (f g * ·) ⁻¹' (f '' s) := by
+      ext
+      constructor
+      · rintro ⟨y, hy, rfl⟩
+        exact ⟨g * y, hy, by simp⟩
+      · intro ⟨y, yins, hy⟩
+        exact ⟨g⁻¹ * y, by simp [yins], by simp [hy]⟩
+    rw [this, ← map_apply (by fun_prop), IsMulLeftInvariant.map_mul_left_eq_self]
+    exact hf.measurableSet_image.mpr hs
+
 end MeasurableMul
 
 variable [MeasurableInv G]
@@ -753,6 +771,15 @@ theorem isHaarMeasure_map [BorelSpace G] [ContinuousMul G] {H : Type*} [Group H]
       exact IsCompact.measure_lt_top (g.isCompact_preimage_of_isClosed hK.closure isClosed_closure)
     toIsOpenPosMeasure := hf.isOpenPosMeasure_map h_surj }
 
+protected theorem IsHaarMeasure.comap [BorelSpace G] [MeasurableMul G]
+    [Group H] [TopologicalSpace H] [BorelSpace H] {mH : MeasurableMul H}
+    (μ : Measure H) [IsHaarMeasure μ] {f : G →* H} (hf : Topology.IsOpenEmbedding f) :
+    (μ.comap f).IsHaarMeasure where
+  map_mul_left_eq_self := (IsMulLeftInvariant.comap μ hf.measurableEmbedding).map_mul_left_eq_self
+  lt_top_of_isCompact := (IsFiniteMeasureOnCompacts.comap' μ hf.continuous
+    hf.measurableEmbedding).lt_top_of_isCompact
+  open_pos := (IsOpenPosMeasure.comap μ hf).open_pos
+
 /-- The image of a finite Haar measure under a continuous surjective group homomorphism is again
 a Haar measure. See also `isHaarMeasure_map`. -/
 @[to_additive
@@ -795,9 +822,7 @@ nonrec theorem _root_.MulEquiv.isHaarMeasure_map [BorelSpace G] [ContinuousMul G
     [IsTopologicalGroup H] (e : G ≃* H) (he : Continuous e) (hesymm : Continuous e.symm) :
     IsHaarMeasure (Measure.map e μ) :=
   let f : G ≃ₜ H := .mk e
-  #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-  we needed to write `e.toMonoidHom` instead of just `e`, to avoid unification issues.
-  -/
+  -- We need to write `e.toMonoidHom` instead of just `e`, to avoid unification issues.
   isHaarMeasure_map μ e.toMonoidHom he e.surjective f.isClosedEmbedding.tendsto_cocompact
 
 /--

@@ -127,7 +127,7 @@ include ha hbN
 lemma b_pos : 0 < b := by
   by_contra! h; rw [nonpos_iff_eq_zero] at h; subst h
   replace hbN : ∀ t, #(pool a t) = 0 := fun t ↦ by
-    obtain h | h := le_or_lt t N
+    obtain h | h := le_or_gt t N
     · have : #(pool a t) ≤ #(pool a N) := monotone_card_pool ha h
       rwa [hbN _ le_rfl, nonpos_iff_eq_zero] at this
     · exact hbN _ h.le
@@ -179,7 +179,7 @@ theorem result (ha : Condition a) :
     ∃ b > 0, ∃ N, ∀ m ≥ N, ∀ n > m, |∑ j ∈ Ico m n, (a j - b)| ≤ 1007 ^ 2 := by
   obtain ⟨b, N, hbN⟩ := exists_max_card_pool ha
   have bp := b_pos ha hbN
-  use b, Int.ofNat_pos.mpr bp, N; intro m hm n hn; rw [sum_telescope ha hbN hm hn]
+  use b, Int.natCast_pos.mpr bp, N; intro m hm n hn; rw [sum_telescope ha hbN hm hn]
   calc
     _ ≤ ∑ i ∈ range (b - 1), (2014 - i : ℤ) - ∑ i ∈ range b, (i : ℤ) :=
       abs_sub_le_of_le_of_le (le_sum_pool ha hbN (hm.trans hn.le))

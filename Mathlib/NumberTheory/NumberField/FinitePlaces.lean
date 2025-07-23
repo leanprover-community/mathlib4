@@ -33,7 +33,7 @@ number field, places, finite places
 
 open Ideal IsDedekindDomain HeightOneSpectrum WithZeroMulInt
 
-open scoped Multiplicative NNReal
+open scoped WithZero NNReal
 
 namespace NumberField.RingOfIntegers.HeightOneSpectrum
 
@@ -96,7 +96,7 @@ noncomputable def FinitePlace.embedding : WithVal (v.valuation K) →+* adicComp
 theorem FinitePlace.embedding_apply (x : K) : embedding v x = ↑x := rfl
 
 noncomputable instance instRankOneValuedAdicCompletion :
-    Valuation.RankOne (Valued.v : Valuation (v.adicCompletion K) ℤₘ₀) where
+    Valuation.RankOne (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰) where
   hom := {
     toFun := toNNReal (absNorm_ne_zero v)
     map_zero' := rfl
@@ -104,7 +104,7 @@ noncomputable instance instRankOneValuedAdicCompletion :
     map_mul' := MonoidWithZeroHom.map_mul (toNNReal (absNorm_ne_zero v))
   }
   strictMono' := toNNReal_strictMono (one_lt_absNorm_nnreal v)
-  nontrivial' := by
+  exists_val_nontrivial := by
     rcases Submodule.exists_mem_ne_zero_of_ne_bot v.ne_bot with ⟨x, hx1, hx2⟩
     use x
     dsimp [adicCompletion]
@@ -116,7 +116,7 @@ noncomputable instance instRankOneValuedAdicCompletion :
 
 /-- The `v`-adic completion of `K` is a normed field. -/
 noncomputable instance instNormedFieldValuedAdicCompletion : NormedField (adicCompletion K v) :=
-  Valued.toNormedField (adicCompletion K v) (WithZero (Multiplicative ℤ))
+  Valued.toNormedField (adicCompletion K v) ℤᵐ⁰
 
 /-- A finite place of a number field `K` is a place associated to an embedding into a completion
 with respect to a maximal ideal. -/
@@ -176,17 +176,16 @@ open FinitePlace
 
 /-- The `v`-adic norm of an integer is at most 1. -/
 theorem FinitePlace.norm_le_one (x : 𝓞 (WithVal (v.valuation K))) : ‖embedding v x‖ ≤ 1 := by
-  rw [norm_def', NNReal.coe_le_one, toNNReal_le_one_iff (one_lt_absNorm_nnreal v)]
-  exact valuation_le_one v x
+  rw [norm_def]
+  exact v.adicAbv_coe_le_one (one_lt_absNorm_nnreal v) x
 
 @[deprecated (since := "2025-02-28")] alias norm_le_one := FinitePlace.norm_le_one
 
 /-- The `v`-adic norm of an integer is 1 if and only if it is not in the ideal. -/
 theorem FinitePlace.norm_eq_one_iff_notMem (x : 𝓞 (WithVal (v.valuation K))) :
     ‖embedding v x‖ = 1 ↔ x ∉ v.asIdeal := by
-  rw [norm_def_int, NNReal.coe_eq_one, toNNReal_eq_one_iff (v.intValuation x)
-    (absNorm_ne_zero v) (one_lt_absNorm_nnreal v).ne', ← intValuation_lt_one_iff_mem, not_lt]
-  exact (intValuation_le_one v x).ge_iff_eq.symm
+  rw [norm_def]
+  exact v.adicAbv_coe_eq_one_iff (one_lt_absNorm_nnreal v) x
 
 @[deprecated (since := "2025-05-23")]
 alias FinitePlace.norm_eq_one_iff_not_mem := FinitePlace.norm_eq_one_iff_notMem
@@ -197,8 +196,8 @@ alias FinitePlace.norm_eq_one_iff_not_mem := FinitePlace.norm_eq_one_iff_notMem
 /-- The `v`-adic norm of an integer is less than 1 if and only if it is in the ideal. -/
 theorem FinitePlace.norm_lt_one_iff_mem (x : 𝓞 (WithVal (v.valuation K))) :
     ‖embedding v x‖ < 1 ↔ x ∈ v.asIdeal := by
-  rw [norm_def_int, NNReal.coe_lt_one, toNNReal_lt_one_iff (one_lt_absNorm_nnreal v),
-    intValuation_lt_one_iff_mem]
+  rw [norm_def]
+  exact v.adicAbv_coe_lt_one_iff (one_lt_absNorm_nnreal v) x
 
 @[deprecated (since := "2025-02-28")] alias norm_lt_one_iff_mem := FinitePlace.norm_lt_one_iff_mem
 
@@ -220,7 +219,7 @@ instance : NonnegHomClass (FinitePlace K) K ℝ where
   apply_nonneg w := w.1.nonneg
 
 @[simp]
-theorem mk_apply (v : HeightOneSpectrum (𝓞 K)) (x : K) : mk v x =  ‖embedding v x‖ := rfl
+theorem mk_apply (v : HeightOneSpectrum (𝓞 K)) (x : K) : mk v x = ‖embedding v x‖ := rfl
 
 @[deprecated (since := "2025-02-28")] alias apply := mk_apply
 
@@ -310,7 +309,7 @@ open scoped NumberField
 lemma equivHeightOneSpectrum_symm_apply (v : HeightOneSpectrum (𝓞 K)) (x : K) :
     (equivHeightOneSpectrum.symm v) x = ‖embedding v x‖ := by
   have : v = (equivHeightOneSpectrum.symm v).maximalIdeal := by
-    show v = equivHeightOneSpectrum (equivHeightOneSpectrum.symm v)
+    change v = equivHeightOneSpectrum (equivHeightOneSpectrum.symm v)
     exact (Equiv.apply_symm_apply _ v).symm
   convert (norm_embedding_eq (equivHeightOneSpectrum.symm v) x).symm
 

@@ -116,11 +116,11 @@ instance lawfulApplicative : LawfulApplicative Finset :=
         exact hb
     pure_seq := fun f s => by simp only [pure_def, seq_def, sup_singleton, fmap_def]
     map_pure := fun _ _ => image_singleton _ _
-    seq_pure := fun _ _ => sup_singleton'' _ _
+    seq_pure := fun _ _ => sup_singleton_apply _ _
     seq_assoc := fun s t u => by
       ext a
       simp_rw [seq_def, fmap_def]
-      simp only [exists_prop, mem_sup, mem_image]
+      simp only [mem_sup, mem_image]
       constructor
       · rintro ⟨g, hg, b, ⟨f, hf, a, ha, rfl⟩, rfl⟩
         exact ⟨g ∘ f, ⟨comp g, ⟨g, hg, rfl⟩, f, hf, rfl⟩, a, ha, rfl⟩
@@ -153,10 +153,10 @@ theorem bind_def {α β} : (· >>= ·) = sup (α := Finset α) (β := β) :=
 
 instance : LawfulMonad Finset :=
   { Finset.lawfulApplicative with
-    bind_pure_comp := fun _ _ => sup_singleton'' _ _
+    bind_pure_comp := fun _ _ => sup_singleton_apply _ _
     bind_map := fun _ _ => rfl
     pure_bind := fun _ _ => sup_singleton
-    bind_assoc := fun s f g => by simp only [bind, ← sup_biUnion, sup_eq_biUnion, biUnion_biUnion] }
+    bind_assoc := fun s f g => by simp only [bind, sup_eq_biUnion, biUnion_biUnion] }
 
 end Monad
 

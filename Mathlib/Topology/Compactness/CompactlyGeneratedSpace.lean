@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Etienne Marion
 -/
 import Mathlib.Topology.Category.CompHaus.Basic
-import Mathlib.Topology.Compactification.OnePoint
+import Mathlib.Topology.Compactification.OnePoint.Basic
 
 /-!
 # Compactly generated topological spaces
@@ -94,9 +94,8 @@ instance (X : Type v) [t : TopologicalSpace X] [DiscreteTopology X] :
     rw [DiscreteTopology.eq_bot (t := t)]
     exact bot_le
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/5338
-The new unused variable linter flags `[tY : TopologicalSpace Y]`,
-but we want to use this as a named argument. -/
+/- The unused variable linter flags `[tY : TopologicalSpace Y]`,
+but we want to use this as a named argument, so we need to disable the linter. -/
 set_option linter.unusedVariables false in
 /-- Let `f : X → Y`. Suppose that to prove that `f` is continuous, it suffices to show that
 for every compact Hausdorff space `K` and every continuous map `g : K → X`, `f ∘ g` is continuous.
@@ -350,5 +349,20 @@ instance (priority := 100) [WeaklyLocallyCompactSpace X] :
   rcases exists_compact_mem_nhds x with ⟨K, hK, K_mem⟩
   exact Set.mem_of_mem_inter_left <| isClosed_iff_forall_filter.1 (h _ hK) x ℱ hℱ₁
     (Filter.inf_principal ▸ le_inf hℱ₂ (le_trans hℱ₃ <| Filter.le_principal_iff.2 K_mem)) hℱ₃
+
+/-- Every compactly generated space is a compactly coherent space. -/
+instance to_compactlyCoherentSpace [CompactlyGeneratedSpace X] : CompactlyCoherentSpace X :=
+  CompactlyCoherentSpace.of_isOpen_forall_compactSpace fun _ h ↦ CompactlyGeneratedSpace.isOpen'
+    fun K _ _ _ f hf ↦ h K f hf
+
+/-- A compactly coherent space that is Hausdorff is compactly generated. -/
+instance of_compactlyCoherentSpace_of_t2 [T2Space X] [CompactlyCoherentSpace X] :
+    CompactlyGeneratedSpace X := by
+  apply compactlyGeneratedSpace_of_isClosed_of_t2
+  intro s hs
+  rw [CompactlyCoherentSpace.isClosed_iff]
+  intro K hK
+  rw [← Subtype.preimage_coe_inter_self]
+  exact (hs K hK).preimage_val
 
 end CompactlyGeneratedSpace

@@ -193,7 +193,7 @@ lemma exists_nat [IsNoetherian R M] [NoZeroSMulDivisors R M] [IsDomain R] [CharZ
     {μ - 2 * n | n : ℕ}
     (fun ⟨s, hs⟩ ↦ ψ Classical.choose hs)
     (fun ⟨r, hr⟩ ↦ by simp [lie_h_pow_toEnd_f P, Classical.choose_spec hr, contra,
-      Module.End.hasEigenvector_iff, Module.End.mem_eigenspace_iff])).finite
+      Module.End.hasEigenvector_iff])).finite
 
 lemma pow_toEnd_f_ne_zero_of_eq_nat
     [CharZero R] [NoZeroSMulDivisors R M]
@@ -208,7 +208,7 @@ lemma pow_toEnd_f_ne_zero_of_eq_nat
     rw [← Int.cast_smul_eq_zsmul R, smul_eq_zero, Int.cast_eq_zero, mul_eq_zero, sub_eq_zero,
       Nat.cast_inj, ← @Nat.cast_one ℤ, ← Nat.cast_add, Nat.cast_eq_zero] at this
     simp only [add_eq_zero, one_ne_zero, and_false, false_or] at this
-    exact (hi.trans_eq (this.resolve_right (IH (i.le_succ.trans hi)))).not_lt i.lt_succ_self
+    exact (hi.trans_eq (this.resolve_right (IH (i.le_succ.trans hi)))).not_gt i.lt_succ_self
 
 lemma pow_toEnd_f_eq_zero_of_eq_nat
     [IsNoetherian R M] [NoZeroSMulDivisors R M] [IsDomain R] [CharZero R]

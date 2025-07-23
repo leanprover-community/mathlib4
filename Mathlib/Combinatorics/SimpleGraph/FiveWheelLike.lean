@@ -200,11 +200,11 @@ lemma exists_max_isFiveWheelLike_of_maximal_cliqueFree_not_isCompleteMultipartit
   classical
   obtain ⟨_, _, _, _, _, hw⟩ := Nat.findGreatest_spec (hw.card_inter_lt_of_cliqueFree h.1).le hk
   exact ⟨_, _, _, _, _, _, hw, hw.card_inter_lt_of_cliqueFree h.1,
-         fun _ hj _ _ _ _ _ hv ↦ hj.not_le <| Nat.le_findGreatest
+         fun _ hj _ _ _ _ _ hv ↦ hj.not_ge <| Nat.le_findGreatest
            (hv.card_inter_lt_of_cliqueFree h.1).le ⟨_, _, _, _, _, hv⟩⟩
 
 lemma CliqueFree.fiveWheelLikeFree_of_le (h : G.CliqueFree (r + 2)) (hk : r ≤ k) :
-    G.FiveWheelLikeFree r k := fun hw ↦ (hw.card_inter_lt_of_cliqueFree h).not_le hk
+    G.FiveWheelLikeFree r k := fun hw ↦ (hw.card_inter_lt_of_cliqueFree h).not_ge hk
 
 /-- A maximally `Kᵣ₊₁`-free graph is `r`-colorable iff it is complete-multipartite. -/
 theorem colorable_iff_isCompleteMultipartite_of_maximal_cliqueFree
