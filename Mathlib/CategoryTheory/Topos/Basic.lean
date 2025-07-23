@@ -22,7 +22,7 @@ open CategoryTheory Category Functor Limits MonoidalCategory Opposite
 
 variable {ℰ : Type u} [Category.{v} ℰ] [CartesianMonoidalCategory ℰ]
 
-/-- The covariant functor `B ⊗ [] ⟶ C` from `ℰᵒᵖ` to `Type v`. -/
+/-- The covariant functor `B ⊗ [] ⟶ C` from `ℰᵒᵖ` to `Type`. -/
 def WhiskeredHom (B C : ℰ) : ℰᵒᵖ ⥤ Type v :=
   ⟨ ⟨ fun A ↦ B ⊗ unop A ⟶ C, fun f g ↦ (B ◁ unop f) ≫ g ⟩,
     fun A ↦ by
@@ -34,7 +34,7 @@ def WhiskeredHom (B C : ℰ) : ℰᵒᵖ ⥤ Type v :=
 
 /-- `P` is a power object of `B` if the functor `WhiskeredHom B P` is representable. -/
 def IsPowerObjectOf (hc : Classifier ℰ (𝟙_ ℰ)) (B P : ℰ) :=
-  RepresentableBy (WhiskeredHom B P) hc.Ω
+  RepresentableBy (WhiskeredHom B hc.Ω) P
 
 variable (ℰ) [HasPullbacks ℰ]
 
@@ -44,3 +44,12 @@ structure ElementaryTopos extends Classifier ℰ (𝟙_ ℰ) where
   P (B : ℰ) : ℰ
   /-- `P B` is a power object of `B`. -/
   is_power_object (B : ℰ) : IsPowerObjectOf _ B (P B)
+
+namespace ElementaryTopos
+
+variable {et : ElementaryTopos ℰ}
+
+def ε_ (B : ℰ) : B ⊗ (et.P B) ⟶ et.Ω := by
+  simpa using (et.is_power_object B).homEquiv.toFun (𝟙 (et.P B))
+
+end ElementaryTopos
