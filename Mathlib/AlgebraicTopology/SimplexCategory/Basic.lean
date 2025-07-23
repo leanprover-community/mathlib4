@@ -888,4 +888,21 @@ def toCat : SimplexCategory ⥤ Cat.{0} :=
       forget₂ LinOrd Lat ⋙ forget₂ Lat PartOrd ⋙
       forget₂ PartOrd Preord ⋙ preordToCat
 
+theorem toCat.obj_eq_Fin (n : ℕ) : toCat.obj ⦋n⦌ = Fin (n + 1) := rfl
+
+instance uniqueHomToZero {Δ : SimplexCategory} : Unique (Δ ⟶ ⦋0⦌) where
+  default := Δ.const _ 0
+  uniq := eq_const_to_zero
+
+/-- The object `⦋0⦌` is terminal in `SimplexCategory`. -/
+def isTerminalZero : IsTerminal (⦋0⦌ : SimplexCategory) :=
+  IsTerminal.ofUnique ⦋0⦌
+
+instance : HasTerminal SimplexCategory :=
+  IsTerminal.hasTerminal isTerminalZero
+
+/-- The isomorphism between the terminal object in `SimplexCategory` and `⦋0⦌`. -/
+noncomputable def topIsoZero : ⊤_ SimplexCategory ≅ ⦋0⦌ :=
+  terminalIsoIsTerminal isTerminalZero
+
 end SimplexCategory
