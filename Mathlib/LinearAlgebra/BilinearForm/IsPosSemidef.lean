@@ -1,46 +1,58 @@
+/-
+Copyright (c) 2025 Etienne Marion. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Etienne Marion
+-/
 import Mathlib.LinearAlgebra.Matrix.BilinearForm
 import Mathlib.LinearAlgebra.Matrix.SchurComplement
 
-variable {𝕜 E n : Type*} [AddCommMonoid E]
+/-!
+# Positive semidefinite bilinear forms
+
+In this file we define positive bilinear forms as bilinear forms `f : E × E → ℝ` such that for
+any `x : E`, `0 ≤ f x x`. We then define positive semidefinite bilinear forms as
+symmetric and positive bilinear forms.
+
+## Main definitions
+
+* `LinearMap.BilinForm.IsPos`: A bilinear map `f` is positive if for any `x`, `0 ≤ f x x`.
+* `LinearMap.BilinForm.IsPosSemidef`: A bilinear map is positive semidefinite if it is
+  symmetric and positive.
+
+## Implementation notes
+
+We only define thes predicate for real bilinear forms as the greater generality should be about
+sesquilinear forms.
+
+## TODO
+
+Generalize these definitions to sesquilinear forms.
+
+## Tags
+
+bilinear form, positive, semidefinite
+-/
+
+variable {E n : Type*} [AddCommMonoid E] [Module ℝ E] (f : LinearMap.BilinForm ℝ E)
+    (b : Basis n ℝ E)
 
 namespace LinearMap.BilinForm
 
 section IsPos
 
-section Def
-
-variable [RCLike 𝕜] [Module 𝕜 E] (f : LinearMap.BilinForm 𝕜 E)
-
-/-- A bilinear map `f` is positive if for any `x`, `0 ≤ re (f x x)` -/
+/-- A bilinear map `f` is positive if for any `x`, `0 ≤ f x x`. -/
 structure IsPos : Prop where
-  nonneg_re : ∀ x, 0 ≤ RCLike.re (f x x)
+  nonneg : ∀ x, 0 ≤ f x x
 
-lemma isPos_def : f.IsPos ↔ ∀ x, 0 ≤ RCLike.re (f x x) where
+lemma isPos_def : f.IsPos ↔ ∀ x, 0 ≤ f x x where
   mp := fun ⟨h⟩ ↦ h
   mpr h := ⟨h⟩
 
-end Def
-
-section Real
-
-variable [Module ℝ E] (f : LinearMap.BilinForm ℝ E) (b : Basis n ℝ E)
-
-lemma isPos_def_real : f.IsPos ↔ ∀ x, 0 ≤ f x x := by simp [isPos_def]
-
-variable {f} in
-lemma IsPos.nonneg (hf : IsPos f) (x : E) : 0 ≤ f x x := f.isPos_def_real.1 hf x
-
-end Real
-
 end IsPos
-
-variable [Module ℝ E] (f : LinearMap.BilinForm ℝ E) (b : Basis n ℝ E)
 
 section IsPosSemidef
 
-/-- A bilinear map is positive semidefinite if it is symmetric and positive. We only
-define it for the real field, because for the complex case we may want to consider sesquilinear
-forms instead. -/
+/-- A bilinear map is positive semidefinite if it is symmetric and positive. -/
 structure IsPosSemidef : Prop extends f.IsSymm, f.IsPos
 
 variable {f}
@@ -49,13 +61,13 @@ lemma IsPosSemidef.isSymm (hf : IsPosSemidef f) :f.IsSymm := hf.toIsSymm
 
 lemma IsPosSemidef.isPos (hf : IsPosSemidef f) : f.IsPos := hf.toIsPos
 
-variable (f)
 
+variable (f) in
 lemma isPosSemidef_iff : f.IsPosSemidef ↔ f.IsSymm ∧ f.IsPos where
   mp h := ⟨h.isSymm, h.isPos⟩
   mpr := fun ⟨h₁, h₂⟩ ↦ ⟨h₁, h₂⟩
 
-variable {f} [Fintype n] [DecidableEq n]
+variable [Fintype n] [DecidableEq n]
 
 lemma isPosSemidef_iff_posSemidef_toMatrix :
     f.IsPosSemidef ↔ (BilinForm.toMatrix b f).PosSemidef := by
