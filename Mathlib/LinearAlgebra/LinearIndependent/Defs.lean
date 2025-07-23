@@ -638,18 +638,19 @@ theorem linearIndependent_iffₒ :
   · specialize h (s.filter fun i => g i ≤ f i) (s.filter fun i => f i < g i) (f - g) (g - f) ?_ ?_
     · simp_rw [Finset.disjoint_left, Finset.mem_filter]
       exact fun i ⟨_, hi⟩ ⟨_, hi'⟩ => hi.not_gt hi'
-    · rw [←add_right_cancel_iff
+    · rw [← add_right_cancel_iff
         (a := ∑ i ∈ s with g i ≤ f i, g i • v i + ∑ i ∈ s with f i < g i, f i • v i)]
-      conv => lhs; rw [←add_assoc, ←Finset.sum_add_distrib]
-      conv => rhs; rw [add_left_comm, ←Finset.sum_add_distrib]
-      convert heq <;> simp_rw [←Finset.sum_filter_add_sum_filter_not s (fun i => g i ≤ f i), not_le]
+      conv => lhs; rw [← add_assoc, ← Finset.sum_add_distrib]
+      conv => rhs; rw [add_left_comm, ← Finset.sum_add_distrib]
+      convert heq
+        <;> simp_rw [← Finset.sum_filter_add_sum_filter_not s (fun i => g i ≤ f i), not_le]
         <;> congr 1
       · refine Finset.sum_congr rfl fun i hi => ?_
         simp only [Finset.mem_filter] at hi
-        simp [←add_smul, tsub_add_cancel_of_le hi.2]
+        simp [← add_smul, tsub_add_cancel_of_le hi.2]
       · refine Finset.sum_congr rfl fun i hi => ?_
         simp only [Finset.mem_filter] at hi
-        simp [←add_smul, tsub_add_cancel_of_le hi.2.le]
+        simp [← add_smul, tsub_add_cancel_of_le hi.2.le]
     · intro i hi
       by_cases hi' : g i ≤ f i
       · exact hi'.antisymm' (tsub_eq_zero_iff_le.1 (h.1 i (Finset.mem_filter.2 ⟨hi, hi'⟩)))
