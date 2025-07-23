@@ -40,13 +40,13 @@ terms, as the Fourier transform of `-2πI x * f x` (or `(-2πI x)^n * f x` for h
 We introduce two convenience definitions:
 
 * `VectorFourier.fourierSMulRight L f`: given `f : V → E` and `L` a bilinear pairing
-  between `V` and `W`, then this is the function `fun v ↦ -(2 * π * I) (L v ·) • f v`,
+  between `V` and `W`, then this is the function `fun v ↦ -(2 * π * I) (L v ⬝) • f v`,
   from `V` to `Hom (W, E)`.
   This is essentially `ContinuousLinearMap.smulRight`, up to the factor `- 2πI` designed to make
   sure that the Fourier integral of `fourierSMulRight L f` is the derivative of the Fourier
   integral of `f`.
 * `VectorFourier.fourierPowSMulRight` is the higher order analogue for higher derivatives:
-  `fourierPowSMulRight L f v n` is informally `(-(2 * π * I))^n (L v ·)^n • f v`, in
+  `fourierPowSMulRight L f v n` is informally `(-(2 * π * I))^n (L v ⬝)^n • f v`, in
   the space of continuous multilinear maps `W [×n]→L[ℝ] E`.
 
 With these definitions, the statements read as follows, first in a general context
@@ -332,7 +332,7 @@ lemma norm_fourierPowSMulRight_le (f : V → E) (v : V) (n : ℕ) :
   _ = (2 * π * ‖L‖) ^ n * ‖v‖ ^ n * ‖f v‖ * ∏ i : Fin n, ‖m i‖ := by
       simp [Finset.prod_mul_distrib, mul_pow]; ring
 
-/-- The iterated derivative of a function multiplied by `(L v ·) ^ n` can be controlled in terms
+/-- The iterated derivative of a function multiplied by `(L v ⬝) ^ n` can be controlled in terms
 of the iterated derivatives of the initial function. -/
 lemma norm_iteratedFDeriv_fourierPowSMulRight
     {f : V → E} {K : WithTop ℕ∞} {C : ℝ} (hf : ContDiff ℝ K f) {n : ℕ} {k : ℕ} (hk : k ≤ K)
@@ -349,7 +349,7 @@ lemma norm_iteratedFDeriv_fourierPowSMulRight
   The harder part is to control the iterated derivatives of `v ↦ ∏ i, L v (m i)`. For this, one
   argues that this is multilinear in `v`, to apply general bounds for iterated derivatives of
   multilinear maps. More precisely, we write it as the composition of a multilinear map `T` (making
-  the product operation) and the tuple of linear maps `v ↦ (L v ·, ..., L v ·)` -/
+  the product operation) and the tuple of linear maps `v ↦ (L v ⬝, ..., L v ⬝)` -/
   simp_rw [fourierPowSMulRight_eq_comp]
   -- first step: controlling the iterated derivatives of `v ↦ ∏ i, L v (m i)`, written below
   -- as `v ↦ T (fun _ ↦ L v)`, or `T ∘ (ContinuousLinearMap.pi (fun (_ : Fin n) ↦ L))`.
@@ -511,7 +511,7 @@ theorem contDiff_fourierIntegral {N : ℕ∞}
 
 /-- If `‖v‖^n * ‖f v‖` is integrable for all `n ≤ N`, then the `n`-th derivative of the Fourier
 transform of `f` is the Fourier transform of `fourierPowSMulRight L f v n`,
-i.e., `(L v ·) ^ n • f v`. -/
+i.e., `(L v ⬝) ^ n • f v`. -/
 lemma iteratedFDeriv_fourierIntegral {N : ℕ∞}
     (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun v ↦ ‖v‖ ^ n * ‖f v‖) μ)
     (h'f : AEStronglyMeasurable f μ) {n : ℕ} (hn : n ≤ N) :
@@ -524,7 +524,7 @@ lemma iteratedFDeriv_fourierIntegral {N : ℕ∞}
 end SecondCountableTopology
 
 /-- The Fourier integral of the `n`-th derivative of a function is obtained by multiplying the
-Fourier integral of the original function by `(2πI L w · )^n`. -/
+Fourier integral of the original function by `(2πI L w ⬝ )^n`. -/
 theorem fourierIntegral_iteratedFDeriv [FiniteDimensional ℝ V]
     {μ : Measure V} [Measure.IsAddHaarMeasure μ] {N : ℕ∞} (hf : ContDiff ℝ N f)
     (h'f : ∀ (n : ℕ), n ≤ N → Integrable (iteratedFDeriv ℝ n f) μ) {n : ℕ} (hn : n ≤ N) :
@@ -596,8 +596,8 @@ theorem fourierPowSMulRight_iteratedFDeriv_fourierIntegral [FiniteDimensional �
 /-- One can bound the `k`-th derivative of the Fourier integral of `f`, multiplied by `(L v w) ^ n`,
 in terms of integrals of iterated derivatives of `f` (of order up to `n`) multiplied by `‖v‖ ^ i`
 (for `i ≤ k`).
-Auxiliary version in terms of the operator norm of `fourierPowSMulRight (-L.flip) ·`. For a version
-in terms of `|L v w| ^ n * ·`, see `pow_mul_norm_iteratedFDeriv_fourierIntegral_le`.
+Auxiliary version in terms of the operator norm of `fourierPowSMulRight (-L.flip) ⬝`. For a version
+in terms of `|L v w| ^ n * ⬝`, see `pow_mul_norm_iteratedFDeriv_fourierIntegral_le`.
 -/
 theorem norm_fourierPowSMulRight_iteratedFDeriv_fourierIntegral_le [FiniteDimensional ℝ V]
     {μ : Measure V} [Measure.IsAddHaarMeasure μ] {K N : ℕ∞} (hf : ContDiff ℝ N f)
@@ -670,14 +670,14 @@ variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [FiniteDim
   [MeasurableSpace V] [BorelSpace V] {f : V → E}
 
 /-- The Fréchet derivative of the Fourier transform of `f` is the Fourier transform of
-    `fun v ↦ -2 * π * I ⟪v, ·⟫ f v`. -/
+    `fun v ↦ -2 * π * I ⟪v, ⬝⟫ f v`. -/
 theorem hasFDerivAt_fourierIntegral
     (hf_int : Integrable f) (hvf_int : Integrable (fun v ↦ ‖v‖ * ‖f v‖)) (x : V) :
     HasFDerivAt (𝓕 f) (𝓕 (fourierSMulRight (innerSL ℝ) f) x) x :=
   VectorFourier.hasFDerivAt_fourierIntegral (innerSL ℝ) hf_int hvf_int x
 
 /-- The Fréchet derivative of the Fourier transform of `f` is the Fourier transform of
-    `fun v ↦ -2 * π * I ⟪v, ·⟫ f v`. -/
+    `fun v ↦ -2 * π * I ⟪v, ⬝⟫ f v`. -/
 theorem fderiv_fourierIntegral
     (hf_int : Integrable f) (hvf_int : Integrable (fun v ↦ ‖v‖ * ‖f v‖)) :
     fderiv ℝ (𝓕 f) = 𝓕 (fourierSMulRight (innerSL ℝ) f) :=
@@ -703,7 +703,7 @@ theorem contDiff_fourierIntegral {N : ℕ∞}
   VectorFourier.contDiff_fourierIntegral (innerSL ℝ) hf
 
 /-- If `‖v‖^n * ‖f v‖` is integrable, then the `n`-th derivative of the Fourier transform of `f` is
-  the Fourier transform of `fun v ↦ (-2 * π * I) ^ n ⟪v, ·⟫^n f v`. -/
+  the Fourier transform of `fun v ↦ (-2 * π * I) ^ n ⟪v, ⬝⟫^n f v`. -/
 theorem iteratedFDeriv_fourierIntegral {N : ℕ∞}
     (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun v ↦ ‖v‖ ^ n * ‖f v‖))
     (h'f : AEStronglyMeasurable f) {n : ℕ} (hn : n ≤ N) :
@@ -711,7 +711,7 @@ theorem iteratedFDeriv_fourierIntegral {N : ℕ∞}
   VectorFourier.iteratedFDeriv_fourierIntegral (innerSL ℝ) hf h'f hn
 
 /-- The Fourier integral of the `n`-th derivative of a function is obtained by multiplying the
-Fourier integral of the original function by `(2πI L w · )^n`. -/
+Fourier integral of the original function by `(2πI L w ⬝ )^n`. -/
 theorem fourierIntegral_iteratedFDeriv {N : ℕ∞} (hf : ContDiff ℝ N f)
     (h'f : ∀ (n : ℕ), n ≤ N → Integrable (iteratedFDeriv ℝ n f)) {n : ℕ} (hn : n ≤ N) :
     𝓕 (iteratedFDeriv ℝ n f)

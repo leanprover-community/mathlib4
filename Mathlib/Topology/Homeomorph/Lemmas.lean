@@ -231,7 +231,7 @@ def sumPiEquivProdPi (S T : Type*) (A : S ⊕ T → Type*)
   continuous_invFun := continuous_pi <| by rintro (s | t) <;> simp <;> fun_prop
 
 /-- The product `Π t : α, f t` of a family of topological spaces is homeomorphic to the
-space `f ·` when `α` only contains `·`.
+space `f ⬝` when `α` only contains `⬝`.
 
 This is `Equiv.piUnique` as a `Homeomorph`.
 -/

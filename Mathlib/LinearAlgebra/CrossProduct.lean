@@ -79,32 +79,32 @@ theorem cross_self (v : Fin 3 → R) : v ×₃ v = 0 := by
 
 /-- The cross product of two vectors is perpendicular to the first vector. -/
 @[simp]
-theorem dot_self_cross (v w : Fin 3 → R) : v ·ᵥ v ×₃ w = 0 := by
+theorem dot_self_cross (v w : Fin 3 → R) : v ⬝ᵥ v ×₃ w = 0 := by
   rw [cross_apply, vec3_dotProduct]
   dsimp only [Matrix.cons_val]
   ring
 
 /-- The cross product of two vectors is perpendicular to the second vector. -/
 @[simp]
-theorem dot_cross_self (v w : Fin 3 → R) : w ·ᵥ v ×₃ w = 0 := by
+theorem dot_cross_self (v w : Fin 3 → R) : w ⬝ᵥ v ×₃ w = 0 := by
   rw [← cross_anticomm, dotProduct_neg, dot_self_cross, neg_zero]
 
 /-- Cyclic permutations preserve the triple product. See also `triple_product_eq_det`. -/
-theorem triple_product_permutation (u v w : Fin 3 → R) : u ·ᵥ v ×₃ w = v ·ᵥ w ×₃ u := by
+theorem triple_product_permutation (u v w : Fin 3 → R) : u ⬝ᵥ v ×₃ w = v ⬝ᵥ w ×₃ u := by
   simp_rw [cross_apply, vec3_dotProduct]
   dsimp only [Matrix.cons_val]
   ring
 
 /-- The triple product of `u`, `v`, and `w` is equal to the determinant of the matrix
     with those vectors as its rows. -/
-theorem triple_product_eq_det (u v w : Fin 3 → R) : u ·ᵥ v ×₃ w = Matrix.det ![u, v, w] := by
+theorem triple_product_eq_det (u v w : Fin 3 → R) : u ⬝ᵥ v ×₃ w = Matrix.det ![u, v, w] := by
   rw [vec3_dotProduct, cross_apply, det_fin_three]
   dsimp only [Matrix.cons_val]
   ring
 
 /-- The scalar quadruple product identity, related to the Binet-Cauchy identity. -/
 theorem cross_dot_cross (u v w x : Fin 3 → R) :
-    u ×₃ v ·ᵥ w ×₃ x = u ·ᵥ w * v ·ᵥ x - u ·ᵥ x * v ·ᵥ w := by
+    u ×₃ v ⬝ᵥ w ×₃ x = u ⬝ᵥ w * v ⬝ᵥ x - u ⬝ᵥ x * v ⬝ᵥ w := by
   simp_rw [cross_apply, vec3_dotProduct]
   dsimp only [Matrix.cons_val]
   ring
@@ -167,7 +167,7 @@ lemma crossProduct_ne_zero_iff_linearIndependent {F : Type*} [Field F] {v w : Fi
 
 /-- The scalar triple product expansion of the vector triple product. -/
 theorem cross_cross_eq_smul_sub_smul (u v w : Fin 3 → R) :
-    u ×₃ v ×₃ w = (u ·ᵥ w) • v - (v ·ᵥ w) • u := by
+    u ×₃ v ×₃ w = (u ⬝ᵥ w) • v - (v ⬝ᵥ w) • u := by
   simp_rw [cross_apply, vec3_dotProduct]
   ext i
   fin_cases i <;>
@@ -177,7 +177,7 @@ theorem cross_cross_eq_smul_sub_smul (u v w : Fin 3 → R) :
 
 /-- Alternative form of the scalar triple product expansion of the vector triple product. -/
 theorem cross_cross_eq_smul_sub_smul' (u v w : Fin 3 → R) :
-    u ×₃ (v ×₃ w) = (u ·ᵥ w) • v - (v ·ᵥ u) • w := by
+    u ×₃ (v ×₃ w) = (u ⬝ᵥ w) • v - (v ⬝ᵥ u) • w := by
   simp_rw [cross_apply, vec3_dotProduct]
   ext i
   fin_cases i <;>

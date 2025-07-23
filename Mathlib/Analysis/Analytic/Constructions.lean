@@ -440,7 +440,7 @@ In this section, `f : Π i, E → Fm i` is a family of functions, i.e., each `f 
 from `E` to a space `Fm i`. We discuss whether the family as a whole is analytic as a function
 of `x : E`, i.e., whether `x ↦ (f 1 x, ..., f n x)` is analytic from `E` to the product space
 `Π i, Fm i`. This function is denoted either by `fun x ↦ (fun i ↦ f i x)`, or `fun x i ↦ f i x`,
-or `fun x ↦ (f · x)`. We use the latter spelling in the statements, for readability purposes.
+or `fun x ↦ (f ⬝ x)`. We use the latter spelling in the statements, for readability purposes.
 -/
 
 section

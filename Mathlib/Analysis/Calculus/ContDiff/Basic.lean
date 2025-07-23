@@ -625,7 +625,7 @@ section comp
 We show that the composition of `C^n` functions is `C^n`. One way to do this would be to
 use the following simple inductive proof. Assume it is done for `n`.
 Then, to check it for `n+1`, one needs to check that the derivative of `g ∘ f` is `C^n`, i.e.,
-that `Dg(f x) · Df(x)` is `C^n`. The term `Dg (f x)` is the composition of two `C^n` functions, so
+that `Dg(f x) ⬝ Df(x)` is `C^n`. The term `Dg (f x)` is the composition of two `C^n` functions, so
 it is `C^n` by the inductive assumption. The term `Df(x)` is also `C^n`. Then, the matrix
 multiplication is the application of a bilinear map (which is `C^∞`, and therefore `C^n`) to
 `x ↦ (Dg(f x), Df x)`. As the composition of two `C^n` maps, it is again `C^n`, and we are done.

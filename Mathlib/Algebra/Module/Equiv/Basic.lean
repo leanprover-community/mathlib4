@@ -839,7 +839,7 @@ def sumPiEquivProdPi (R : Type*) [Semiring R] (S T : Type*) (A : S ⊕ T → Typ
   map_smul' _ _ := rfl
 
 /-- The product `Π t : α, f t` of a family of modules is linearly isomorphic to the module
-`f ·` when `α` only contains `·`.
+`f ⬝` when `α` only contains `⬝`.
 
 This is `Equiv.piUnique` as a `LinearEquiv`.
 -/

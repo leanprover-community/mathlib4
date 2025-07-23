@@ -31,7 +31,7 @@ the entries of the matrix
 See [M. Hindry and J. Silverman, Diophantine Geometry: an Introduction][hindrysilverman00].
 -/
 
-/- We set ‖·‖ to be Matrix.seminormedAddCommGroup  -/
+/- We set ‖⬝‖ to be Matrix.seminormedAddCommGroup  -/
 attribute [local instance] Matrix.seminormedAddCommGroup
 
 open Matrix Finset

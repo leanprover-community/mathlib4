@@ -186,24 +186,24 @@ theorem replicateRow_mulVec [Fintype n] [NonUnitalNonAssocSemiring α] (M : Matr
 @[deprecated (since := "2025-03-20")] alias row_mulVec := replicateRow_mulVec
 
 theorem replicateRow_mulVec_eq_const [Fintype m] [NonUnitalNonAssocSemiring α] (v w : m → α) :
-    replicateRow ι v *ᵥ w = Function.const _ (v ·ᵥ w) := rfl
+    replicateRow ι v *ᵥ w = Function.const _ (v ⬝ᵥ w) := rfl
 
 @[deprecated (since := "2025-03-20")] alias row_mulVec_eq_const := replicateRow_mulVec_eq_const
 
 theorem mulVec_replicateCol_eq_const [Fintype m] [NonUnitalNonAssocSemiring α] (v w : m → α) :
-    v ᵥ* replicateCol ι w = Function.const _ (v ·ᵥ w) := rfl
+    v ᵥ* replicateCol ι w = Function.const _ (v ⬝ᵥ w) := rfl
 
 @[deprecated (since := "2025-03-20")] alias mulVec_col_eq_const := mulVec_replicateCol_eq_const
 
 theorem replicateRow_mul_replicateCol [Fintype m] [Mul α] [AddCommMonoid α] (v w : m → α) :
-    replicateRow ι v * replicateCol ι w = of fun _ _ => v ·ᵥ w :=
+    replicateRow ι v * replicateCol ι w = of fun _ _ => v ⬝ᵥ w :=
   rfl
 
 @[deprecated (since := "2025-03-20")] alias row_mul_col := replicateRow_mul_replicateCol
 
 @[simp]
 theorem replicateRow_mul_replicateCol_apply [Fintype m] [Mul α] [AddCommMonoid α] (v w : m → α)
-    (i j) : (replicateRow ι v * replicateCol ι w) i j = v ·ᵥ w :=
+    (i j) : (replicateRow ι v * replicateCol ι w) i j = v ⬝ᵥ w :=
   rfl
 
 @[deprecated (since := "2025-03-20")] alias row_mul_col_apply := replicateRow_mul_replicateCol_apply
@@ -437,7 +437,7 @@ section mul
 
 theorem updateRow_mulVec [DecidableEq l] [Fintype m] [NonUnitalNonAssocSemiring α]
     (A : Matrix l m α) (i : l) (c : m → α) (v : m → α) :
-    A.updateRow i c *ᵥ v = Function.update (A *ᵥ v) i (c ·ᵥ v) := by
+    A.updateRow i c *ᵥ v = Function.update (A *ᵥ v) i (c ⬝ᵥ v) := by
   ext i'
   obtain rfl | hi := eq_or_ne i' i
   · simp [mulVec]
@@ -445,7 +445,7 @@ theorem updateRow_mulVec [DecidableEq l] [Fintype m] [NonUnitalNonAssocSemiring 
 
 theorem vecMul_updateCol [DecidableEq n] [Fintype m] [NonUnitalNonAssocSemiring α]
     (v : m → α) (B : Matrix m n α) (j : n) (r : m → α) :
-    v ᵥ* B.updateCol j r = Function.update (v ᵥ* B) j (v ·ᵥ r) := by
+    v ᵥ* B.updateCol j r = Function.update (v ᵥ* B) j (v ⬝ᵥ r) := by
   ext j'
   obtain rfl | hj := eq_or_ne j' j
   · simp [vecMul]
@@ -484,7 +484,7 @@ theorem single_mul_eq_updateRow_zero
 theorem updateRow_zero_mul_updateCol_zero
     [DecidableEq l] [DecidableEq n] [Fintype m] [NonUnitalNonAssocSemiring α]
     (i : l) (r : m → α) (j : n) (c : m → α) :
-    (0 : Matrix l m α).updateRow i r * (0 : Matrix m n α).updateCol j c = single i j (r ·ᵥ c) := by
+    (0 : Matrix l m α).updateRow i r * (0 : Matrix m n α).updateCol j c = single i j (r ⬝ᵥ c) := by
   rw [updateRow_mul, vecMul_updateCol, mul_updateCol, single_eq_of_single_single, Matrix.zero_mul,
     vecMul_zero, zero_mulVec, updateCol_zero_zero, updateRow, ← Pi.single, ← Pi.single]
 

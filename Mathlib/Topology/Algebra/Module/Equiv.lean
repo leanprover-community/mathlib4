@@ -690,7 +690,7 @@ def sumPiEquivProdPi (R : Type*) [Semiring R] (S T : Type*)
   __ := Homeomorph.sumPiEquivProdPi S T A
 
 /-- The product `Π t : α, f t` of a family of topological modules is isomorphic
-(both topologically and algebraically) to the space `f ·` when `α` only contains `·`.
+(both topologically and algebraically) to the space `f ⬝` when `α` only contains `⬝`.
 
 This is `Equiv.piUnique` as a `ContinuousLinearEquiv`.
 -/

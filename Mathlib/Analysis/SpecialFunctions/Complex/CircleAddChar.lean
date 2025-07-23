@@ -13,7 +13,7 @@ import Mathlib.Topology.Instances.AddCircle.Real
 
 This file defines additive characters, valued in the unit circle, from either
 * the ring `ZMod N` for any non-zero natural `N`,
-* the additive circle `ℝ / T · ℤ`, for any real `T`.
+* the additive circle `ℝ / T ⬝ ℤ`, for any real `T`.
 
 These results are separate from `Analysis.SpecialFunctions.Complex.Circle` in order to reduce
 the imports of that file.

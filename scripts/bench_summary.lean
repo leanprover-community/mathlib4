@@ -43,10 +43,10 @@ def intDecs (z : Int) (exp : Nat := 9) (prec : Nat := 3) : String × Int × Nat 
   let idec := z / p10
   (if sgn < 0 then "-" else "+", idec / (10 ^ prec), (idec % 10 ^ prec).toNat)
 
-/-- `formatDiff z` uses `intDecs` to format an integer `z` as `±x.y·10⁹`. -/
+/-- `formatDiff z` uses `intDecs` to format an integer `z` as `±x.y⬝10⁹`. -/
 def formatDiff (z : Int) : String :=
   let (sgn, intDigs, decDigs) := intDecs z
-  s!"{sgn}{intDigs}.{decDigs}·10⁹"
+  s!"{sgn}{intDigs}.{decDigs}⬝10⁹"
 
 /-- Convert a `Float` into a formatted string of the form `±z.w%`. -/
 def formatPercent (reldiff : Float) : String :=
@@ -61,7 +61,7 @@ def formatPercent (reldiff : Float) : String :=
 /--
 info: [(+0.00%), (+14.28%), (+0.20%), (-0.60%), (-0.08%), (+1.02%)]
 ---
-info: [+0.0·10⁹, +1.0·10⁹, +30.200·10⁹, -0.460·10⁹]
+info: [+0.0⬝10⁹, +1.0⬝10⁹, +30.200⬝10⁹, -0.460⬝10⁹]
 -/
 #guard_msgs in
 run_cmd
@@ -78,7 +78,7 @@ def formatFile (file : String) : String := s!"`{file.dropWhile (!·.isAlpha)}`"
 
 /--
 `summary bc` converts a `Bench` into a formatted string of the form
-``| `file` | ±x.y·10⁹ | ±z.w% |`` (technically, without the spaces).
+``| `file` | ±x.y⬝10⁹ | ±z.w% |`` (technically, without the spaces).
 -/
 def summary (bc : Bench) : String :=
   let middle := [formatFile bc.file, formatDiff bc.diff, formatPercent bc.reldiff]
@@ -87,7 +87,7 @@ def summary (bc : Bench) : String :=
 /--
 `toTable bcs` formats an array of `Bench`es into a markdown table whose columns are
 the file name, the absolute change in instruction counts and the relative change as a percentage.
-A typical entry may look like ``|`Mathlib/Analysis/Seminorm.lean`|+2.509·10⁹|(+1.41%)|``.
+A typical entry may look like ``|`Mathlib/Analysis/Seminorm.lean`|+2.509⬝10⁹|(+1.41%)|``.
 -/
 def toTable (bcs : Array Bench) : String :=
   let header := "|File|Instructions|%|\n|-|-:|:-:|"
