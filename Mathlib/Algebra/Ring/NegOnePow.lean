@@ -32,11 +32,6 @@ lemma negOnePow_add (n₁ n₂ : ℤ) :
   zpow_add _ _ _
 
 @[simp]
-lemma negOnePow_smul (n₁ n₂ : ℤ) :
-    n₁.negOnePow • n₂.negOnePow = n₁.negOnePow * n₂.negOnePow := by
-  simp [Units.ext_iff, Units.smul_def]
-
-@[simp]
 lemma negOnePow_zero : negOnePow 0 = 1 := rfl
 
 @[simp]

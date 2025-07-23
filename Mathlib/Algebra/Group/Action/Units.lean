@@ -75,6 +75,13 @@ instance mulAction' [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M]
   one_smul _ := Units.ext <| one_smul _ _
   mul_smul _ _ _ := Units.ext <| mul_smul _ _ _
 
+@[simp]
+lemma smul_eq_mul {M} [CommMonoid M] (u₁ u₂ : Mˣ) :
+    u₁ • u₂ = u₁ * u₂ := by
+  fail_if_success rfl -- there is an instance diamond here
+  ext
+  rfl
+
 @[to_additive (attr := simp)]
 lemma val_smul [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M] [IsScalarTower G M M]
     (g : G) (m : Mˣ) : ↑(g • m) = g • (m : M) := rfl
