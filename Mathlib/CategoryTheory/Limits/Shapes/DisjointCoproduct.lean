@@ -103,7 +103,7 @@ noncomputable def IsInitial.ofCoproductDisjointOfIsColimit {i j : ι} (hij : i �
 
 /-- If `i ≠ j` and `Xᵢ ← Y → Xⱼ` is a pullback diagram over `∐ X`, `Y` is initial. -/
 noncomputable def IsInitial.ofCoproductDisjointOfIsLimit {i j : ι} (hij : i ≠ j)
-    [HasCoproduct X] (s : PullbackCone (Sigma.ι X i) (Sigma.ι X j))
+    [HasCoproduct X] {s : PullbackCone (Sigma.ι X i) (Sigma.ι X j)}
     (hs : IsLimit s) : IsInitial s.pt :=
   ofCoproductDisjointOfIsColimitOfIsLimit hij (colimit.isColimit _) hs
 
@@ -119,7 +119,7 @@ section
 variable {X Y : C}
 
 lemma BinaryCoproductDisjoint.of_binaryCofan {c : BinaryCofan X Y} (hc : IsColimit c)
-    [Mono c.inl] [Mono c.inr] (s : PullbackCone c.inl c.inr)
+    [Mono c.inl] [Mono c.inr] {s : PullbackCone c.inl c.inr}
     (hs : IsLimit s) (H : IsInitial s.pt) :
     BinaryCoproductDisjoint X Y := by
   have (i : WalkingPair) : Mono (Cofan.inj c i) := by
@@ -223,9 +223,8 @@ attribute [instance 999] CoproductsOfShapeDisjoint.coproductDisjoint
 lemma BinaryCoproductsDisjoint.mk (H : ∀ (X Y : C), BinaryCoproductDisjoint X Y) :
     BinaryCoproductsDisjoint C where
   coproductDisjoint X := by
-    convert H (X .left) (X .right) using 1
-    ext x
-    cases x <;> simp
+    convert H (X .left) (X .right) using 2
+    casesm WalkingPair <;> simp
 
 /-- If `C` has disjoint coproducts, any morphism out of initial is mono. Note it isn't true in
 general that `C` has strict initial objects, for instance consider the category of types and
