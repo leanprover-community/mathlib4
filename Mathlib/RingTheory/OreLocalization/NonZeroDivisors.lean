@@ -18,9 +18,17 @@ section MonoidWithZero
 
 variable {R : Type*} [MonoidWithZero R] {S : Submonoid R} [OreSet S]
 
-theorem nontrivial_of_nonZeroDivisors [Nontrivial R] (hS : S ≤ R⁰) :
+theorem nontrivial_of_nonZeroDivisorsLeft [Nontrivial R] (hS : S ≤ nonZeroDivisorsLeft R) :
+    Nontrivial R[S⁻¹] :=
+  nontrivial_iff.mpr (fun e ↦ one_ne_zero <| hS e 1 (zero_mul _))
+
+theorem nontrivial_of_nonZeroDivisorsRight [Nontrivial R] (hS : S ≤ nonZeroDivisorsRight R) :
     Nontrivial R[S⁻¹] :=
   nontrivial_iff.mpr (fun e ↦ one_ne_zero <| hS e 1 (mul_zero _))
+
+theorem nontrivial_of_nonZeroDivisors [Nontrivial R] (hS : S ≤ R⁰) :
+    Nontrivial R[S⁻¹] :=
+  nontrivial_of_nonZeroDivisorsLeft (hS.trans inf_le_left)
 
 variable [Nontrivial R] [OreSet R⁰]
 
@@ -37,7 +45,7 @@ protected noncomputable def inv : R[R⁰⁻¹] → R[R⁰⁻¹] :=
   liftExpand
     (fun r s =>
       if hr : r = (0 : R) then (0 : R[R⁰⁻¹])
-      else s /ₒ ⟨r, fun _ => eq_zero_of_ne_zero_of_mul_right_eq_zero hr⟩)
+      else s /ₒ ⟨r, mem_nonZeroDivisors_of_ne_zero hr⟩)
     (by
       intro r t s hst
       by_cases hr : r = 0
@@ -56,7 +64,7 @@ open Classical in
 protected theorem inv_def {r : R} {s : R⁰} :
     (r /ₒ s)⁻¹ =
       if hr : r = (0 : R) then (0 : R[R⁰⁻¹])
-      else s /ₒ ⟨r, fun _ => eq_zero_of_ne_zero_of_mul_right_eq_zero hr⟩ := by
+      else s /ₒ ⟨r, mem_nonZeroDivisors_of_ne_zero hr⟩ := by
   with_unfolding_all rfl
 
 protected theorem mul_inv_cancel (x : R[R⁰⁻¹]) (h : x ≠ 0) : x * x⁻¹ = 1 := by
