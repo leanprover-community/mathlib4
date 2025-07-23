@@ -434,9 +434,8 @@ namespace CompleteLattice
 of arbitrary suprema. -/
 instance (priority := 100) [CompleteLattice α] : OmegaCompletePartialOrder α where
   ωSup c := ⨆ i, c i
-  ωSup_le := fun ⟨c, _⟩ s hs => by
-    simp only [iSup_le_iff] at hs ⊢; assumption
-  le_ωSup := fun ⟨c, _⟩ i => by apply le_iSup_of_le i; rfl
+  ωSup_le := fun ⟨c, _⟩ s hs => by simpa only [iSup_le_iff]
+  le_ωSup := fun ⟨c, _⟩ i => le_iSup_of_le i le_rfl
 
 variable [OmegaCompletePartialOrder α] [CompleteLattice β] {f g : α → β}
 
