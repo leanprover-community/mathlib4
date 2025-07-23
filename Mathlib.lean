@@ -2383,6 +2383,7 @@ import Mathlib.CategoryTheory.Localization.Pi
 import Mathlib.CategoryTheory.Localization.Preadditive
 import Mathlib.CategoryTheory.Localization.Predicate
 import Mathlib.CategoryTheory.Localization.Prod
+import Mathlib.CategoryTheory.Localization.Quotient
 import Mathlib.CategoryTheory.Localization.Resolution
 import Mathlib.CategoryTheory.Localization.SmallHom
 import Mathlib.CategoryTheory.Localization.SmallShiftedHom
@@ -4544,6 +4545,7 @@ import Mathlib.ModelTheory.Algebra.Field.IsAlgClosed
 import Mathlib.ModelTheory.Algebra.Ring.Basic
 import Mathlib.ModelTheory.Algebra.Ring.Definability
 import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
+import Mathlib.ModelTheory.Arithmetic.Presburger.Basic
 import Mathlib.ModelTheory.Basic
 import Mathlib.ModelTheory.Bundled
 import Mathlib.ModelTheory.Complexity
