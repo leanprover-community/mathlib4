@@ -229,19 +229,19 @@ lemma partialRightAdjointHomEquiv_comp {X X' : C} {Y : F.PartialRightAdjointSour
 /-- Given `F : C ⥤ D`, this is `F.partialRightAdjoint` on morphisms. -/
 noncomputable def partialRightAdjointMap {X Y : F.PartialRightAdjointSource}
     (f : X ⟶ Y) : F.partialRightAdjointObj X ⟶ F.partialRightAdjointObj Y :=
-    F.partialRightAdjointHomEquiv.symm (F.partialRightAdjointHomEquiv (𝟙 _) ≫ f)
+    F.partialRightAdjointHomEquiv.symm (F.partialRightAdjointHomEquiv (𝟙 _) ≫ f.hom)
 
 @[simp]
 lemma partialRightAdjointHomEquiv_map {X Y : F.PartialRightAdjointSource}
     (f : X ⟶ Y) :
     F.partialRightAdjointHomEquiv (F.partialRightAdjointMap f) =
-      F.partialRightAdjointHomEquiv (𝟙 _) ≫ f := by
+      F.partialRightAdjointHomEquiv (𝟙 _) ≫ f.hom := by
   simp [partialRightAdjointMap]
 
 lemma partialRightAdjointHomEquiv_map_comp {X : C} {Y Y' : F.PartialRightAdjointSource}
     (f : X ⟶ F.partialRightAdjointObj Y) (g : Y ⟶ Y') :
     F.partialRightAdjointHomEquiv (f ≫ F.partialRightAdjointMap g) =
-      F.partialRightAdjointHomEquiv f ≫ g := by
+      F.partialRightAdjointHomEquiv f ≫ g.hom := by
   rw [partialRightAdjointHomEquiv_comp, partialRightAdjointHomEquiv_map,
     ← assoc, ← partialRightAdjointHomEquiv_comp, comp_id]
 
