@@ -422,7 +422,7 @@ instance (A : Rep k G) : ((coinvariantsTensor k G).obj A).Linear k where
 
 section
 
-variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G)
+variable (k : Type u) {G : Type u} [CommRing k] [Group G]
 
 /-- Given a normal subgroup `S ≤ G`, this is the functor sending a `G`-representation `A` to the
 `G ⧸ S`-representation it induces on `A_S`. -/
@@ -437,7 +437,7 @@ noncomputable def quotientToCoinvariantsFunctor (S : Subgroup G) [S.Normal] :
 
 section Finsupp
 
-variable (α : Type u) [DecidableEq α]
+variable {k} (A : Rep k G) (α : Type u) [DecidableEq α]
 
 open MonoidalCategory Finsupp ModuleCat.MonoidalCategory
 
