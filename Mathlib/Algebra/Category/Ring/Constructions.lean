@@ -25,8 +25,6 @@ In this file we provide the explicit (co)cones for various (co)limits in `CommRi
 
 -/
 
-suppress_compilation
-
 universe u u'
 
 open CategoryTheory Limits TensorProduct

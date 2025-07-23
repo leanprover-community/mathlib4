@@ -14,8 +14,6 @@ This file contains statements about operator norm for which it really matters th
 underlying space has a norm (rather than just a seminorm).
 -/
 
-suppress_compilation
-
 open Topology
 open scoped NNReal
 

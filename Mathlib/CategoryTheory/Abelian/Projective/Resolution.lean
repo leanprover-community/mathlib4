@@ -27,8 +27,6 @@ When the underlying category is abelian:
   is projective, we can apply `Projective.d` repeatedly to obtain a projective resolution of `X`.
 -/
 
-suppress_compilation
-
 noncomputable section
 
 universe v u

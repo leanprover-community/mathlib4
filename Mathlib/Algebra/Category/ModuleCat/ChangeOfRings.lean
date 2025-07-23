@@ -43,8 +43,6 @@ Let `R, S` be rings and `f : R →+* S`
   `s ⊗ m : S ⊗[R, f] M`.
 -/
 
-suppress_compilation
-
 
 open CategoryTheory Limits
 

@@ -24,9 +24,6 @@ We construct various limits and colimits in the category of schemes.
 
 -/
 
-suppress_compilation
-
-
 universe u v
 
 open CategoryTheory CategoryTheory.Limits Opposite TopologicalSpace

@@ -13,8 +13,6 @@ This file contains statements about norms of operators on complete normed spaces
 version of the Banach-Alaoglu theorem (`ContinuousLinearMap.isCompact_image_coe_closedBall`).
 -/
 
-suppress_compilation
-
 open Bornology Metric Set Real
 open Filter hiding map_smul
 open scoped NNReal Topology Uniformity

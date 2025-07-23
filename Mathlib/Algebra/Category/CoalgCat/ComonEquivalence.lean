@@ -30,8 +30,6 @@ definitional equalities.
 
 -/
 
-suppress_compilation
-
 universe v u
 
 namespace CoalgCat
