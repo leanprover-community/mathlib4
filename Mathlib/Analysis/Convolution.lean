@@ -810,7 +810,7 @@ theorem convolution_tendsto_right {ι} {g : ι → G → E'} {l : Filter ι} {x�
   rw [Metric.tendsto_nhds] at hcg ⊢
   simp_rw [Metric.eventually_prod_nhds_iff] at hcg
   intro ε hε
-  have h2ε : 0 < ε / 3 := div_pos hε (by norm_num)
+  have h2ε : 0 < ε / 3 := div_pos hε (by simp)
   obtain ⟨p, hp, δ, hδ, hgδ⟩ := hcg _ h2ε
   dsimp only [uncurry] at hgδ
   have h2k := hk.eventually (ball_mem_nhds x₀ <| half_pos hδ)
