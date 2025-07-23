@@ -3,7 +3,11 @@ Copyright (c) 2025 Dion Leijnse. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dion Leijnse
 -/
-import Mathlib
+import Mathlib.Algebra.Lie.OfAssociative
+import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+import Mathlib.LinearAlgebra.TensorProduct.Finiteness
+import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
+import Mathlib.RingTheory.Henselian
 
 /-!
 # Geometrically reduced algebras
