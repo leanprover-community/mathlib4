@@ -28,8 +28,7 @@ instance [DistribSMul M B] : SMulZeroClass M (A →+ B) where
 @[simp] theorem smul_apply [DistribSMul M B] (m : M) (f : A →+ B) (a : A) : (m • f) a = m • f a :=
   rfl
 
-theorem smul_comp [DistribSMul M B] [DistribSMul M C]
-    (m : M) (g : B →+ C) (f : A →+ B) :
+theorem smul_comp [DistribSMul M C] (m : M) (g : B →+ C) (f : A →+ B) :
     (m • g).comp f = m • g.comp f := rfl
 
 instance [DistribSMul M B] [DistribSMul N B] [SMulCommClass M N B] :
