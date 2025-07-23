@@ -5,16 +5,15 @@ Authors: Emily Riehl, Dominic Verity
 -/
 import Mathlib.AlgebraicTopology.Quasicategory.Basic
 import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
-import Mathlib.AlgebraicTopology.SimplicialSet.ColimitOfRepresentable
 import Mathlib.AlgebraicTopology.SimplicialSet.NerveAdjunction
 import Mathlib.CategoryTheory.Category.Cat.Limit
+import Mathlib.CategoryTheory.Closed.FunctorToTypes
 import Mathlib.CategoryTheory.PUnit
 import Mathlib.CategoryTheory.Functor.FullyFaithful
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Presheaf
 import Mathlib.CategoryTheory.Monoidal.Cartesian.Cat
 import Mathlib.CategoryTheory.Monoidal.Functor
-import Mathlib.CategoryTheory.Closed.FunctorToTypes
 /-!
 
 # The homotopy category functor preserves finite products.
@@ -30,7 +29,7 @@ Both `Cat.{u, u}` and `SSet.{u}` are cartesian closed categories. This files pro
 
 section
 
-open CategoryTheory Limits
+open CategoryTheory Functor Limits
 
 variable {C D J : Type*} [Category C] [Category D] [Category J]
 variable (K : J ⥤ C) (L L' : C ⥤ D) (α : L ⟶ L') [IsIso (whiskerLeft K α)]
@@ -128,25 +127,6 @@ def simplexIsNerve' (n : ℕ) : Δ[n] ≅ nerve (ULiftFin.{u} (n + 1)) :=
     (fun i ↦ Equiv.toIso (stdSimplex.objEquiv.trans SimplexCategory.homIsoFunctor'))
     sorry
 
-section preservesTerminal
-
-
-noncomputable def hoFunctor.terminalIso : (hoFunctor.obj (⊤_ SSet)) ≅ (⊤_ Cat) :=
-  hoFunctor.mapIso (terminalIsoIsTerminal isTerminalDeltaZero) ≪≫
-    hoFunctor.mapIso (simplexIsNerve' 0) ≪≫
-    nerveFunctorCompHoFunctorIso.app (Cat.of (ULiftFin 1)) ≪≫
-    ULiftFinDiscretePUnitIso ≪≫ TerminalCatDiscretePUnitIso.symm
-
-instance hoFunctor.preservesTerminal : PreservesLimit (empty.{0} SSet) hoFunctor :=
-  preservesTerminal_of_iso hoFunctor hoFunctor.terminalIso
-
-instance hoFunctor.preservesTerminal' :
-    PreservesLimitsOfShape (Discrete PEmpty.{1}) hoFunctor :=
-  preservesLimitsOfShape_pempty_of_preservesTerminal _
-
-end preservesTerminal
-
-
 /-- Via the whiskered counit (or unit) of `nerveAdjunction`, the triple composite
 `nerveFunctor ⋙ hoFunctor ⋙ nerveFunctor` is naturally isomorphic to `nerveFunctor`.
 As `nerveFunctor` is a right adjoint, this functor preserves binary products.
@@ -194,12 +174,11 @@ the result proven in `hoFunctor.binarySimplexProductIsIso`.
 lemma hoFunctor.binaryProductWithSimplexIsIso (D X : SSet.{u})
     (H : ∀ m, IsIso (prodComparison hoFunctor D Δ[m])) :
     IsIso (prodComparison hoFunctor D X) := by
-  letI Xcolim := CategoryTheory2.Presheaf.colimitOfRepresentable X
+  letI Xcolim := CategoryTheory.Presheaf.colimitOfRepresentable X
   have : (prod.functor.obj D).IsLeftAdjoint := by
     have := (CategoryTheory.FunctorToTypes.adj D).isLeftAdjoint
     exact Functor.isLeftAdjoint_of_iso (CartesianMonoidalCategory.tensorLeftIsoProd _)
-  have : (prod.functor.obj (hoFunctor.obj (D : SSet.{u}))).IsLeftAdjoint := by
-    sorry
+  have : (prod.functor.obj (hoFunctor.obj (D : SSet.{u}))).IsLeftAdjoint := by infer_instance
   have : (hoFunctor).IsLeftAdjoint := nerveAdjunction.isLeftAdjoint
   have : IsIso (whiskerLeft (CategoryTheory2.Presheaf.functorToRepresentables X)
       (prodComparisonNatTrans hoFunctor D)) := by
@@ -254,19 +233,5 @@ instance hoFunctor.preservesFiniteProducts : PreservesFiniteProducts hoFunctor :
 noncomputable instance hoFunctor.laxMonoidal : LaxMonoidal hoFunctor :=
   (Monoidal.ofChosenFiniteProducts hoFunctor).toLaxMonoidal
 
-/--
-QCat is the category of quasi-categories defined as the full subcategory of the category of `SSet`.
--/
-def QCat := ObjectProperty.FullSubcategory Quasicategory
-instance : Category QCat := ObjectProperty.FullSubcategory.category Quasicategory
-
-/-- As objects characterized by a right lifting property, it is straightforward to directly
-verify that. -/
-instance QCat.hasBinaryProducts : HasBinaryProducts QCat := sorry
-
-/-- The construction above should form the product in the category `SSet` and verify that this
-object is a quasi-category. -/
-instance QCat.inclusionPreservesBinaryProducts :
-    PreservesLimitsOfShape (Discrete Limits.WalkingPair) (ObjectProperty.ι Quasicategory) := sorry
 
 end CategoryTheory
