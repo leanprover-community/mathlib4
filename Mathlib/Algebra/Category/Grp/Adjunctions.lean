@@ -159,9 +159,9 @@ def abelianizeAdj : abelianize ⊣ forget₂ CommGrp.{u} Grp.{u} :=
         ext
         simp only
         apply Eq.symm
-        apply Abelianization.lift.unique
+        apply Abelianization.lift_unique
         intros
-        apply Abelianization.lift.of }
+        apply Abelianization.lift_apply_of }
 
 end Abelianization
 

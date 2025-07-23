@@ -54,13 +54,13 @@ theorem FreeAbelianGroup.toFinsupp_comp_toFreeAbelianGroup :
   ext x y; simp only [AddMonoidHom.id_comp]
   rw [AddMonoidHom.comp_assoc, Finsupp.toFreeAbelianGroup_comp_singleAddHom]
   simp only [toFinsupp, AddMonoidHom.coe_comp, Finsupp.singleAddHom_apply, Function.comp_apply,
-    one_smul, lift.of, AddMonoidHom.flip_apply, smulAddHom_apply]
+    one_smul, lift_apply_of, AddMonoidHom.flip_apply, smulAddHom_apply]
 
 @[simp]
 theorem Finsupp.toFreeAbelianGroup_comp_toFinsupp :
     toFreeAbelianGroup.comp toFinsupp = AddMonoidHom.id (FreeAbelianGroup X) := by
   ext
-  rw [toFreeAbelianGroup, toFinsupp, AddMonoidHom.comp_apply, lift.of,
+  rw [toFreeAbelianGroup, toFinsupp, AddMonoidHom.comp_apply, lift_apply_of,
     liftAddHom_apply_single, AddMonoidHom.flip_apply, smulAddHom_apply, one_smul,
     AddMonoidHom.id_apply]
 
