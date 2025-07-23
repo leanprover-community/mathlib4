@@ -947,18 +947,6 @@ variable {E : Type*} [TopologicalSpace E] [ENormedMonoid E]
 @[to_additive enorm_add_le]
 lemma enorm_mul_le' (a b : E) : ‖a * b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := ENormedMonoid.enorm_mul_le a b
 
-/- @[to_additive (attr := simp) enorm_eq_zero]
-lemma enorm_eq_zero' {a : E} : ‖a‖ₑ = 0 ↔ a = 1 := by
-  simp [ENormedMonoid.enorm_eq_zero] -/
-
-/- @[to_additive enorm_ne_zero]
-lemma enorm_ne_zero' {a : E} : ‖a‖ₑ ≠ 0 ↔ a ≠ 1 :=
-  enorm_eq_zero'.ne -/
-
-/- @[to_additive (attr := simp) enorm_pos]
-lemma enorm_pos' {a : E} : 0 < ‖a‖ₑ ↔ a ≠ 1 :=
-  pos_iff_ne_zero.trans enorm_ne_zero' -/
-
 end ENormedMonoid
 
 instance : ENormedAddCommMonoid ℝ≥0∞ where
@@ -1324,12 +1312,20 @@ theorem eq_one_or_nnnorm_pos (a : E) : a = 1 ∨ 0 < ‖a‖₊ :=
 theorem nnnorm_eq_zero' : ‖a‖₊ = 0 ↔ a = 1 := by
   rw [← NNReal.coe_eq_zero, coe_nnnorm', norm_eq_zero']
 
+@[to_additive (attr := simp) enorm_eq_zero]
+lemma enorm_eq_zero' {a : E} : ‖a‖ₑ = 0 ↔ a = 1 := by simp [enorm]
+
 @[to_additive nnnorm_ne_zero_iff]
-theorem nnnorm_ne_zero_iff' : ‖a‖₊ ≠ 0 ↔ a ≠ 1 :=
-  nnnorm_eq_zero'.not
+theorem nnnorm_ne_zero_iff' : ‖a‖₊ ≠ 0 ↔ a ≠ 1 := nnnorm_eq_zero'.not
+
+@[to_additive enorm_ne_zero]
+lemma enorm_ne_zero' {a : E} : ‖a‖ₑ ≠ 0 ↔ a ≠ 1 := enorm_eq_zero'.ne
 
 @[to_additive (attr := simp) nnnorm_pos]
 lemma nnnorm_pos' : 0 < ‖a‖₊ ↔ a ≠ 1 := pos_iff_ne_zero.trans nnnorm_ne_zero_iff'
+
+@[to_additive (attr := simp) enorm_pos]
+lemma enorm_pos' {a : E} : 0 < ‖a‖ₑ ↔ a ≠ 1 := pos_iff_ne_zero.trans enorm_ne_zero'
 
 variable (E)
 
