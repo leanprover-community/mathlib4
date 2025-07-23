@@ -319,31 +319,10 @@ theorem lcomp_apply (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) (x : M) : l
 
 theorem lcomp_apply' (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) : lcomp A Pₗ f g = g ∘ₗ f := rfl
 
-variable (R M Nₗ Pₗ)
-
-/-- Composing linear maps as a bilinear map from `(M →ₗ[R] N) × (N →ₗ[R] P)` to `M →ₗ[R] P` -/
-def llcomp : (Nₗ →ₗ[R] Pₗ) →ₗ[R] (M →ₗ[R] Nₗ) →ₗ[R] M →ₗ[R] Pₗ :=
-  flip
-    { toFun := lcomp R Pₗ
-      map_add' := fun _f _f' => ext₂ fun g _x => g.map_add _ _
-      map_smul' := fun (_c : R) _f => ext₂ fun g _x => g.map_smul _ _ }
-
-variable {R M Nₗ Pₗ}
-
-section
-
-@[simp]
-theorem llcomp_apply (f : Nₗ →ₗ[R] Pₗ) (g : M →ₗ[R] Nₗ) (x : M) :
-    llcomp R M Nₗ Pₗ f g x = f (g x) := rfl
-
-theorem llcomp_apply' (f : Nₗ →ₗ[R] Pₗ) (g : M →ₗ[R] Nₗ) : llcomp R M Nₗ Pₗ f g = f ∘ₗ g := rfl
-
-end
-
 variable (M N P)
 
 /-- Composing linear maps as a bilinear map from `(M →ₗ[R] N) × (N →ₗ[R] P)` to `M →ₗ[R] P` -/
-def llcompₛₗ : (N →ₛₗ[σ₂₃] P) →ₗ[R₃] (M →ₛₗ[σ₁₂] N) →ₛₗ[σ₂₃] M →ₛₗ[σ₁₃] P :=
+def llcomp : (N →ₛₗ[σ₂₃] P) →ₗ[R₃] (M →ₛₗ[σ₁₂] N) →ₛₗ[σ₂₃] M →ₛₗ[σ₁₃] P :=
   flip
     { toFun := lcompₛₗ _ P σ₂₃
       map_add' := fun _f _f' => ext₂ fun g _x => g.map_add _ _
@@ -351,15 +330,11 @@ def llcompₛₗ : (N →ₛₗ[σ₂₃] P) →ₗ[R₃] (M →ₛₗ[σ₁₂]
 
 variable {M N P}
 
-section
-
 @[simp]
-theorem llcompₛₗ_apply (f : N →ₛₗ[σ₂₃] P) (g : M →ₛₗ[σ₁₂] N) (x : M) :
-    llcompₛₗ M N P f g x = f (g x) := rfl
+theorem llcomp_apply (f : N →ₛₗ[σ₂₃] P) (g : M →ₛₗ[σ₁₂] N) (x : M) :
+    llcomp M N P f g x = f (g x) := rfl
 
-theorem llcompₛₗ_apply' (f : N →ₛₗ[σ₂₃] P) (g : M →ₛₗ[σ₁₂] N) : llcompₛₗ M N P f g = f ∘ₛₗ g := rfl
-
-end
+theorem llcomp_apply' (f : N →ₛₗ[σ₂₃] P) (g : M →ₛₗ[σ₁₂] N) : llcomp M N P f g = f ∘ₛₗ g := rfl
 
 section
 
@@ -406,7 +381,7 @@ omit [Module R M] in
 /-- Composing a linear map `P → Q` and a bilinear map `M → N → P` to
 form a bilinear map `M → N → Q`. -/
 def compr₂ₛₗ (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P →ₛₗ[σ₃₄] Q) : M →ₛₗ[σ₁₄] N →ₛₗ[σ₂₄] Q :=
-  llcompₛₗ N P Q g ∘ₛₗ f
+  llcomp N P Q g ∘ₛₗ f
 
 @[simp]
 theorem compr₂ₛₗ_apply (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P →ₛₗ[σ₃₄] Q) (m : M) (n : N) :
