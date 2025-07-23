@@ -100,7 +100,7 @@ namespace Path.Homotopic
 
 attribute [local instance] Path.Homotopic.setoid
 
-local infixl:70 " ⬝ " => Quotient.comp
+local infixl:70 " · " => Quotient.comp
 
 section Pi
 
@@ -122,7 +122,7 @@ theorem pi_lift (γ : ∀ i, Path (as i) (bs i)) :
 /-- Composition and products commute.
   This is `Path.trans_pi_eq_pi_trans` descended to path homotopy classes. -/
 theorem comp_pi_eq_pi_comp (γ₀ : ∀ i, Path.Homotopic.Quotient (as i) (bs i))
-    (γ₁ : ∀ i, Path.Homotopic.Quotient (bs i) (cs i)) : pi γ₀ ⬝ pi γ₁ = pi fun i ↦ γ₀ i ⬝ γ₁ i := by
+    (γ₁ : ∀ i, Path.Homotopic.Quotient (bs i) (cs i)) : pi γ₀ · pi γ₁ = pi fun i ↦ γ₀ i · γ₁ i := by
   induction γ₁ using Quotient.induction_on_pi with | _ a =>
   induction γ₀ using Quotient.induction_on_pi
   simp only [pi_lift]
@@ -176,7 +176,7 @@ variable (r₁ : Path.Homotopic.Quotient a₂ a₃) (r₂ : Path.Homotopic.Quoti
 
 /-- Products commute with path composition.
     This is `trans_prod_eq_prod_trans` descended to the quotient. -/
-theorem comp_prod_eq_prod_comp : prod q₁ q₂ ⬝ prod r₁ r₂ = prod (q₁ ⬝ r₁) (q₂ ⬝ r₂) := by
+theorem comp_prod_eq_prod_comp : prod q₁ q₂ · prod r₁ r₂ = prod (q₁ · r₁) (q₂ · r₂) := by
   induction q₁, q₂ using Quotient.inductionOn₂
   induction r₁, r₂ using Quotient.inductionOn₂
   simp only [prod_lift, ← Path.Homotopic.comp_lift, Path.trans_prod_eq_prod_trans]

@@ -10,8 +10,8 @@ import Mathlib.Algebra.DirectSum.Decomposition
 # Decomposition of the identity of a semiring into orthogonal idempotents
 
 In this file we show that if a semiring `R` can be decomposed into a direct sum
-of (left) ideals `R = V₁ ⊕ V₂ ⊕ ⬝ ⬝ ⬝ ⊕ Vₙ` then in the corresponding decomposition
-`1 = e₁ + e₂ + ⬝ ⬝ ⬝ + eₙ` with `eᵢ ∈ Vᵢ`, each `eᵢ` is an idempotent and the
+of (left) ideals `R = V₁ ⊕ V₂ ⊕ · · · ⊕ Vₙ` then in the corresponding decomposition
+`1 = e₁ + e₂ + · · · + eₙ` with `eᵢ ∈ Vᵢ`, each `eᵢ` is an idempotent and the
 `eᵢ`'s form a family of complete orthogonal idempotents.
 -/
 
@@ -21,8 +21,8 @@ section OrthogonalIdempotents
 
 variable {R I : Type*} [Semiring R] [DecidableEq I] (V : I → Ideal R) [Decomposition V]
 
-/-- The decomposition of `(1 : R)` where `1 = e₁ + e₂ + ⬝ ⬝ ⬝ + eₙ` which is induced by
-  the decomposition of the semiring `R = V1 ⊕ V2 ⊕ ⬝ ⬝ ⬝ ⊕ Vn`. -/
+/-- The decomposition of `(1 : R)` where `1 = e₁ + e₂ + · · · + eₙ` which is induced by
+  the decomposition of the semiring `R = V1 ⊕ V2 ⊕ · · · ⊕ Vn`. -/
 def idempotent (i : I) : R :=
   decompose V 1 i
 

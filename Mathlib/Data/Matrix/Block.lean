@@ -31,7 +31,7 @@ open Matrix
 namespace Matrix
 
 theorem dotProduct_block [Fintype m] [Fintype n] [Mul α] [AddCommMonoid α] (v w : m ⊕ n → α) :
-    v ⬝ᵥ w = v ∘ Sum.inl ⬝ᵥ w ∘ Sum.inl + v ∘ Sum.inr ⬝ᵥ w ∘ Sum.inr :=
+    v ·ᵥ w = v ∘ Sum.inl ·ᵥ w ∘ Sum.inl + v ∘ Sum.inr ·ᵥ w ∘ Sum.inr :=
   Fintype.sum_sum_type _
 
 section BlockMatrices

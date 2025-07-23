@@ -21,16 +21,16 @@ Let `W` be a Weierstrass curve over a commutative ring `R`. The sequence of `n`-
 * `ψ₁ := 1`,
 * `ψ₂ := 2Y + a₁X + a₃`,
 * `ψ₃ := 3X⁴ + b₂X³ + 3b₄X² + 3b₆X + b₈`, and
-* `ψ₄ := ψ₂ ⬝ (2X⁶ + b₂X⁵ + 5b₄X⁴ + 10b₆X³ + 10b₈X² + (b₂b₈ - b₄b₆)X + (b₄b₈ - b₆²))`.
+* `ψ₄ := ψ₂ · (2X⁶ + b₂X⁵ + 5b₄X⁴ + 10b₆X³ + 10b₈X² + (b₂b₈ - b₄b₆)X + (b₄b₈ - b₆²))`.
 
 Furthermore, define the associated sequences `φₙ, ωₙ ∈ R[X, Y]` by
-* `φₙ := Xψₙ² - ψₙ₊₁ ⬝ ψₙ₋₁`, and
-* `ωₙ := (ψ₂ₙ / ψₙ - ψₙ ⬝ (a₁φₙ + a₃ψₙ²)) / 2`.
+* `φₙ := Xψₙ² - ψₙ₊₁ · ψₙ₋₁`, and
+* `ωₙ := (ψ₂ₙ / ψₙ - ψₙ · (a₁φₙ + a₃ψₙ²)) / 2`.
 
 Note that `ωₙ` is always well-defined as a polynomial in `R[X, Y]`. As a start, it can be shown by
 induction that `ψₙ` always divides `ψ₂ₙ` in `R[X, Y]`, so that `ψ₂ₙ / ψₙ` is always well-defined as
 a polynomial, while division by `2` is well-defined when `R` has characteristic different from `2`.
-In general, it can be shown that `2` always divides the polynomial `ψ₂ₙ / ψₙ - ψₙ ⬝ (a₁φₙ + a₃ψₙ²)`
+In general, it can be shown that `2` always divides the polynomial `ψ₂ₙ / ψₙ - ψₙ · (a₁φₙ + a₃ψₙ²)`
 in the characteristic `0` universal ring `𝓡[X, Y] := ℤ[A₁, A₂, A₃, A₄, A₆][X, Y]` of `W`, where the
 `Aᵢ` are indeterminates. Then `ωₙ` can be equivalently defined as the image of this division under
 the associated universal morphism `𝓡[X, Y] → R[X, Y]` mapping `Aᵢ` to `aᵢ`.
@@ -46,14 +46,14 @@ the auxiliary sequence for a normalised EDS with extra parameter `Ψ₂Sq²` and
 * `preΨ₄ := ψ₄ / ψ₂`.
 
 The corresponding normalised EDS `Ψₙ ∈ R[X, Y]` is then given by
-* `Ψₙ := preΨₙ ⬝ ψ₂` if `n` is even, and
+* `Ψₙ := preΨₙ · ψ₂` if `n` is even, and
 * `Ψₙ := preΨₙ` if `n` is odd.
 
 Furthermore, define the associated sequences `ΨSqₙ, Φₙ ∈ R[X]` by
-* `ΨSqₙ := preΨₙ² ⬝ Ψ₂Sq` if `n` is even,
+* `ΨSqₙ := preΨₙ² · Ψ₂Sq` if `n` is even,
 * `ΨSqₙ := preΨₙ²` if `n` is odd,
-* `Φₙ := XΨSqₙ - preΨₙ₊₁ ⬝ preΨₙ₋₁` if `n` is even, and
-* `Φₙ := XΨSqₙ - preΨₙ₊₁ ⬝ preΨₙ₋₁ ⬝ Ψ₂Sq` if `n` is odd.
+* `Φₙ := XΨSqₙ - preΨₙ₊₁ · preΨₙ₋₁` if `n` is even, and
+* `Φₙ := XΨSqₙ - preΨₙ₊₁ · preΨₙ₋₁ · Ψ₂Sq` if `n` is odd.
 
 With these definitions, `ψₙ ∈ R[X, Y]` and `φₙ ∈ R[X, Y]` are congruent in `R[W]` to `Ψₙ ∈ R[X, Y]`
 and `Φₙ ∈ R[X]` respectively, which are defined in terms of `Ψ₂Sq ∈ R[X]` and `preΨₙ ∈ R[X]`.
