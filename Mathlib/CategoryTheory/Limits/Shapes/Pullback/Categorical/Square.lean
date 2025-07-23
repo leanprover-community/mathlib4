@@ -363,7 +363,7 @@ variable {D₁ : Type u₅} {D₂ : Type u₆} {D₃ : Type u₇} {D₄ : Type u
 
 variable {R B} {R' B'}
 
-/-- Given a (not-necessarily pullback) `CatCommSq T L R B`, a 
+/-- Given a (not-necessarily pullback) `CatCommSq T L R B`, a
 `CatCospanTransform ψ R B R' B'` and a `CatPullbackSquare T' L' R' B'`,
 there is an induced functor between the top left corners of the squares. -/
 def functorOfTransform (ψ : CatCospanTransform R B R' B') : C₁ ⥤ D₁ :=
@@ -601,9 +601,9 @@ lemma functorOfTransformComp_inv_app_fst (ψ : CatCospanTransform R B R' B')
     (ψ' : CatCospanTransform R' B' R'' B'') (x : C₁) :
     T''.map ((functorOfTransformComp T L T' L' T'' L'' ψ ψ').inv.app x) =
     (CatCommSq.iso T' (functorOfTransform T' L' T'' L'' ψ')
-       ψ'.left T'').inv.app ((functorOfTransform T L T' L' ψ).obj x) ≫
+        ψ'.left T'').inv.app ((functorOfTransform T L T' L' ψ).obj x) ≫
       ψ'.left.map ((CatCommSq.iso T (functorOfTransform T L T' L' ψ)
-       ψ.left T').inv.app x) ≫
+        ψ.left T').inv.app x) ≫
       (CatCommSq.iso T (functorOfTransform T L T'' L'' (ψ.comp ψ'))
         (ψ.comp ψ').left T'').hom.app x := by
   simpa [← Functor.map_inv, -IsIso.comp_inv_eq, -IsIso.eq_comp_inv,
