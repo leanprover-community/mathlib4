@@ -495,16 +495,12 @@ lemma picard_eq_of_hasDerivAt {t : ℝ}
     (hα : ∀ t' ∈ uIcc t₀ t, HasDerivWithinAt α (f t' (α t')) (uIcc t₀ t) t')
     (hmap : MapsTo α (uIcc t₀ t) u) : -- need `Icc` for `uIcc_subset_Icc`
     picard f t₀ (α t₀) α t = α t := by
-  rw [← add_sub_cancel (α t₀) (α t), picard_apply, integral_eq_sub_of_hasDeriv_right]
-  · intro t' ht' -- new lemma from ∀ .. HasDerivWithinAt to ContinuousOn
-    exact hα t' ht' |>.continuousWithinAt
-  · intro t' ht'
-    apply HasDerivAt.hasDerivWithinAt
-    exact hα t' (Ioo_subset_Icc_self ht') |>.hasDerivAt <| Icc_mem_nhds ht'.1 ht'.2
-  · apply ContinuousOn.intervalIntegrable -- kind of repeated later
-    apply continuousOn_comp hf _ hmap
-    intro t' ht' -- repeat
-    exact hα t' ht' |>.continuousWithinAt
+  rw [← add_sub_cancel (α t₀) (α t), picard_apply,
+    integral_eq_sub_of_hasDeriv_right (HasDerivWithinAt.continuousOn hα) _
+      (continuousOn_comp hf (HasDerivWithinAt.continuousOn hα) hmap |>.intervalIntegrable)]
+  intro t' ht'
+  apply HasDerivAt.hasDerivWithinAt
+  exact hα t' (Ioo_subset_Icc_self ht') |>.hasDerivAt <| Icc_mem_nhds ht'.1 ht'.2
 
 /-- If the time-dependent vector field `f` is $C^n$ and the curve `α` is continuous, then
 `interate f t₀ x₀ α` is also $C^n$. This version works for `n : ℕ`. -/
@@ -516,20 +512,20 @@ lemma contDiffOn_nat_picard_Icc
     (heqon : ∀ t ∈ Icc tmin tmax, α t = picard f t₀ x₀ α t) :
     ContDiffOn ℝ n (picard f t₀ x₀ α) (Icc tmin tmax) := by
   by_cases hlt : tmin < tmax
-  · have {t} (ht : t ∈ Icc tmin tmax) :=
+  · have (t) (ht : t ∈ Icc tmin tmax) :=
       hasDerivWithinAt_picard_Icc ht₀ hf.continuousOn hα hmem x₀ ht
     induction n with
     | zero =>
       simp only [Nat.cast_zero, contDiffOn_zero] at *
-      exact fun _ ht ↦ this ht |>.continuousWithinAt
+      exact HasDerivWithinAt.continuousOn this
     | succ n hn =>
       simp only [Nat.cast_add, Nat.cast_one] at *
       rw [contDiffOn_succ_iff_derivWithin <| uniqueDiffOn_Icc hlt]
-      refine ⟨fun _ ht ↦ HasDerivWithinAt.differentiableWithinAt (this ht), by simp, ?_⟩
+      refine ⟨fun t ht ↦ HasDerivWithinAt.differentiableWithinAt (this t ht), by simp, ?_⟩
       have hα' : ContDiffOn ℝ n α (Icc tmin tmax) := ContDiffOn.congr (hn hf.of_succ) heqon
       apply contDiffOn_comp hf.of_succ hα' hmem |>.congr
       intro t ht
-      exact HasDerivWithinAt.derivWithin (this ht) <| (uniqueDiffOn_Icc hlt).uniqueDiffWithinAt ht
+      exact HasDerivWithinAt.derivWithin (this t ht) <| (uniqueDiffOn_Icc hlt).uniqueDiffWithinAt ht
   · rw [(subsingleton_Icc_of_ge (not_lt.mp hlt)).eq_singleton_of_mem ht₀]
     intro t ht
     rw [eq_of_mem_singleton ht]
@@ -566,8 +562,8 @@ theorem contDiffOn_enat_Icc_of_hasDerivWithinAt {n : ℕ∞}
       have : uIcc t₀ t ⊆ Icc tmin tmax := uIcc_subset_Icc ht₀ ht
       rw [picard_eq_of_hasDerivAt (hf.continuousOn.mono (prod_subset_prod_left this))
         (fun t' ht' ↦ hα t' (this ht') |>.mono this) (hmem.mono_left this)]
-    exact contDiffOn_enat_picard_Icc ht₀ hf
-      (fun t ht ↦ hα t ht |>.continuousWithinAt) hmem (α t₀) this |>.congr this
+    exact contDiffOn_enat_picard_Icc ht₀ hf (HasDerivWithinAt.continuousOn hα) hmem (α t₀) this
+      |>.congr this
   · rw [not_lt, le_iff_lt_or_eq] at hlt -- missing lemma?
     cases hlt with
     | inl h =>
@@ -737,8 +733,7 @@ theorem exists_forall_mem_closedBall_eq_hasDerivWithinAt_continuousOn
   obtain ⟨α, hα1, L', hα2⟩ := hf.exists_forall_mem_closedBall_eq_hasDerivWithinAt_lipschitzOnWith
   refine ⟨uncurry α, hα1, ?_⟩
   apply continuousOn_prod_of_continuousOn_lipschitzOnWith _ L' _ hα2
-  intro x hx t ht
-  exact (hα1 x hx).2 t ht |>.continuousWithinAt
+  exact fun x hx ↦ HasDerivWithinAt.continuousOn (hα1 x hx).2
 
 /-- **Picard-Lindelöf (Cauchy-Lipschitz) theorem**, differential form. This version shows the
 existence of a local flow. -/
