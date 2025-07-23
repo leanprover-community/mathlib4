@@ -268,7 +268,7 @@ end Semiring
 
 section CommSemiring
 
-variable {R R₁ R₂ R₃ R₄ : Type*} [CommSemiring R] [CommSemiring R₁] [CommSemiring R₂]
+variable {R R₁ R₂ R₃ R₄ : Type*} [CommSemiring R] [Semiring R₁] [CommSemiring R₂]
   [CommSemiring R₃] [CommSemiring R₄]
 variable {A : Type*} [Semiring A] {B : Type*} [Semiring B]
 variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*}
@@ -361,6 +361,12 @@ theorem llcompₛₗ_apply' (f : N →ₛₗ[σ₂₃] P) (g : M →ₛₗ[σ₁
 
 end
 
+section
+
+omit [CommSemiring R₂]
+
+variable [Semiring R₂] [Module R₂ Pₗ] [Module R₂ N] [Module R₂ Qₗ']
+
 /-- Composing linear maps `Q → M` and `Q' → N` with a bilinear map `M → N → P` to
 form a bilinear map `Q → Q' → P`. -/
 def compl₁₂ [SMulCommClass R₂ R₁ Pₗ]
@@ -393,6 +399,8 @@ theorem compl₁₂_inj [SMulCommClass R₂ R₁ Pₗ]
     convert LinearMap.congr_fun₂ h x' y' using 0
   · -- B₁ = B₂ → B₁.comp l r = B₂.comp l r
     subst h; rfl
+
+end
 
 omit [Module R M] in
 /-- Composing a linear map `P → Q` and a bilinear map `M → N → P` to
