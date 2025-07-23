@@ -49,8 +49,7 @@ theorem or_eq_true_eq_eq_true_or_eq_true (a b : Bool) :
 
 theorem not_eq_true_eq_eq_false (a : Bool) : (not a = true) = (a = false) := by cases a <;> simp
 
-#adaptation_note /-- nightly-2024-03-05
-this is no longer a simp lemma, as the LHS simplifies. -/
+@[simp]
 theorem and_eq_false_eq_eq_false_or_eq_false (a b : Bool) :
     ((a && b) = false) = (a = false ∨ b = false) := by
   cases a <;> cases b <;> simp
