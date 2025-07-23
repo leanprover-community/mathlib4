@@ -3768,6 +3768,9 @@ import Mathlib.Geometry.RingedSpace.PresheafedSpace.Gluing
 import Mathlib.Geometry.RingedSpace.PresheafedSpace.HasColimits
 import Mathlib.Geometry.RingedSpace.SheafedSpace
 import Mathlib.Geometry.RingedSpace.Stalks
+import Mathlib.Geometry.Synthetic.Avigad.Axioms
+import Mathlib.Geometry.Synthetic.Avigad.EuclidBookI
+import Mathlib.Geometry.Synthetic.Avigad.Tactics
 import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.Archimedean
 import Mathlib.GroupTheory.ArchimedeanDensely
