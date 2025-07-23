@@ -157,7 +157,7 @@ lemma inner_apply (x y : E) : ContinuousBilinForm.inner E x y = ⟪x, y⟫ := rf
 
 lemma isPosSemidef_inner : IsPosSemidef (.inner E) where
   eq := by simp [real_inner_comm]
-  nonneg_re x := real_inner_self_nonneg
+  nonneg x := real_inner_self_nonneg
 
 variable [Fintype n] [DecidableEq n] (b : OrthonormalBasis n ℝ E)
 
