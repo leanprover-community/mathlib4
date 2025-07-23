@@ -96,19 +96,21 @@ end ENorm
 /-- A type `E` equipped with a continuous map `‖·‖ₑ : E → ℝ≥0∞`
 
 NB. We do not demand that the topology is somehow defined by the enorm:
-for ℝ≥0∞ (the motivating example behind this definition), this is not true. -/
+for `ℝ≥0∞` (the motivating example behind this definition), this is not true. -/
 class ContinuousENorm (E : Type*) [TopologicalSpace E] extends ENorm E where
   continuous_enorm : Continuous enorm
 
-/-- An enormed monoid is an additive monoid endowed with a continuous enorm. -/
+/-- An enormed monoid is an additive monoid endowed with a continuous enorm.
+Note that we only ask for the enorm to be a semi-norm: non-trivial elements may have enorm zero. -/
 class ENormedAddMonoid (E : Type*) [TopologicalSpace E] extends ContinuousENorm E, AddMonoid E where
-  enorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 0
+  enorm_eq_zero : ‖(0 : E)‖ₑ = 0 --∀ x : E, ‖x‖ₑ = 0 ↔ x = 0
   protected enorm_add_le : ∀ x y : E, ‖x + y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
 
-/-- An enormed monoid is a monoid endowed with a continuous enorm. -/
+/-- An enormed monoid is a monoid endowed with a continuous enorm.
+Note that we only ask for the enorm to be a semi-norm: non-trivial elements may have enorm zero. -/
 @[to_additive]
 class ENormedMonoid (E : Type*) [TopologicalSpace E] extends ContinuousENorm E, Monoid E where
-  enorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 1
+  enorm_eq_zero : ‖(1 : E)‖ₑ = 0 --∀ x : E, ‖x‖ₑ = 0 ↔ x = 1
   enorm_mul_le : ∀ x y : E, ‖x * y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
 
 /-- An enormed commutative monoid is an additive commutative monoid
@@ -945,17 +947,17 @@ variable {E : Type*} [TopologicalSpace E] [ENormedMonoid E]
 @[to_additive enorm_add_le]
 lemma enorm_mul_le' (a b : E) : ‖a * b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := ENormedMonoid.enorm_mul_le a b
 
-@[to_additive (attr := simp) enorm_eq_zero]
+/- @[to_additive (attr := simp) enorm_eq_zero]
 lemma enorm_eq_zero' {a : E} : ‖a‖ₑ = 0 ↔ a = 1 := by
-  simp [ENormedMonoid.enorm_eq_zero]
+  simp [ENormedMonoid.enorm_eq_zero] -/
 
-@[to_additive enorm_ne_zero]
+/- @[to_additive enorm_ne_zero]
 lemma enorm_ne_zero' {a : E} : ‖a‖ₑ ≠ 0 ↔ a ≠ 1 :=
-  enorm_eq_zero'.ne
+  enorm_eq_zero'.ne -/
 
-@[to_additive (attr := simp) enorm_pos]
+/- @[to_additive (attr := simp) enorm_pos]
 lemma enorm_pos' {a : E} : 0 < ‖a‖ₑ ↔ a ≠ 1 :=
-  pos_iff_ne_zero.trans enorm_ne_zero'
+  pos_iff_ne_zero.trans enorm_ne_zero' -/
 
 end ENormedMonoid
 
