@@ -9,7 +9,7 @@ import Mathlib.Analysis.Analytic.ChangeOrigin
 /-!
 # Properties of analyticity restricted to a set
 
-From `Mathlib.Analysis.Analytic.Basic`, we have the definitions
+From `Mathlib/Analysis/Analytic/Basic.lean`, we have the definitions
 
 1. `AnalyticWithinAt 𝕜 f s x` means a power series at `x` converges to `f` on `𝓝[insert x s] x`.
 2. `AnalyticOn 𝕜 f s t` means `∀ x ∈ t, AnalyticWithinAt 𝕜 f s x`.
@@ -79,9 +79,6 @@ lemma analyticOn_of_locally_analyticOn {f : E → F} {s : Set E}
             simp only [Metric.mem_ball, dist_self_add_left, yr]
         · simp only [EMetric.mem_ball, yr] }⟩
 
-@[deprecated (since := "2024-09-26")]
-alias analyticWithinOn_of_locally_analyticWithinOn := analyticOn_of_locally_analyticOn
-
 /-- On open sets, `AnalyticOnNhd` and `AnalyticOn` coincide -/
 lemma IsOpen.analyticOn_iff_analyticOnNhd {f : E → F} {s : Set E} (hs : IsOpen s) :
     AnalyticOn 𝕜 f s ↔ AnalyticOnNhd 𝕜 f s := by
@@ -99,10 +96,6 @@ lemma IsOpen.analyticOn_iff_analyticOnNhd {f : E → F} {s : Set E} (hs : IsOpen
       apply mem_insert_of_mem
       apply rs
       simp only [Metric.mem_ball, dist_self_add_left, ym.1] }⟩
-
-@[deprecated (since := "2024-09-26")]
-alias IsOpen.analyticWithinOn_iff_analyticOn := IsOpen.analyticOn_iff_analyticOnNhd
-
 
 /-!
 ### Equivalence to analyticity of a local extension

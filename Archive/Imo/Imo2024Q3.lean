@@ -139,7 +139,7 @@ lemma apply_nth_add_one_eq_of_lt {m n : ℕ} (hn : N < Nat.nth (a · = m) n) :
 
 lemma lt_toFinset_card {j : ℕ} (h : M a N ≤ a (j + 1)) (hf : {i | a i = a j}.Finite) :
     M a N - 1 < #hf.toFinset := by
-  rw [Nat.sub_lt_iff_lt_add (M_pos _ _), Nat.lt_one_add_iff]
+  rw [Nat.sub_lt_iff_lt_add' (M_pos _ _), Nat.lt_one_add_iff]
   exact (hc.apply_eq_card (N_lt_of_M_le_apply h) ▸ h).trans (Finset.card_le_card (by simp))
 
 lemma nth_ne_zero_of_M_le_of_lt {i k : ℕ} (hi : M a N ≤ a i) (hk : k < a (i + 1)) :
@@ -152,13 +152,12 @@ lemma apply_add_one_lt_of_apply_eq {i j : ℕ} (hi : N ≤ i) (hij : i < j) (ha 
   rw [hc.apply_add_one_eq_card hi, hc.apply_add_one_eq_card (by omega), ha]
   refine Finset.card_lt_card (Finset.ssubset_def.mp ⟨Finset.filter_subset_filter _
     (by simp [hij.le]), Finset.not_subset.mpr ⟨j, ?_⟩⟩)
-  simp only [Finset.mem_filter, Finset.mem_range, lt_add_iff_pos_right, zero_lt_one, true_and,
-    and_true]
+  simp only [Finset.mem_filter, Finset.mem_range, lt_add_iff_pos_right, and_true]
   omega
 
 lemma apply_add_one_ne_of_apply_eq {i j : ℕ} (hi : N ≤ i) (hj : N ≤ j) (hij : i ≠ j)
     (ha : a i = a j) : a (i + 1) ≠ a (j + 1) :=
-  hij.lt_or_lt.elim (fun h ↦ (hc.apply_add_one_lt_of_apply_eq hi h ha).ne) fun h ↦
+  hij.lt_or_gt.elim (fun h ↦ (hc.apply_add_one_lt_of_apply_eq hi h ha).ne) fun h ↦
     (hc.apply_add_one_lt_of_apply_eq hj h ha.symm).ne'
 
 lemma exists_infinite_setOf_apply_eq : ∃ m, {i | a i = m}.Infinite := by
@@ -173,7 +172,7 @@ lemma exists_infinite_setOf_apply_eq : ∃ m, {i | a i = m}.Infinite := by
   simp only [not_exists, Set.not_infinite] at hi
   have hinj : Set.InjOn (fun i ↦ Nat.nth (a · = i) 0 + 1) (Set.range a \ Set.Ico 0 (M a N)) := by
     rintro _ ⟨⟨_, rfl⟩, hi⟩ _ ⟨⟨_, rfl⟩, hj⟩ h
-    simp only [Set.mem_diff, Set.mem_range, Set.mem_Ico, zero_le, true_and, not_lt] at hi hj
+    simp only [Set.mem_Ico, zero_le, true_and, not_lt] at hi hj
     simp only [add_left_inj] at h
     convert congr(a $h) using 1 <;> simp [apply_nth_zero]
   refine Set.not_infinite.2 (hi 1) (Set.infinite_of_injOn_mapsTo hinj (fun i hi ↦ ?_)
@@ -194,7 +193,7 @@ lemma injOn_setOf_apply_add_one_eq_of_M_le {n : ℕ} (h : M a N ≤ n) :
   rw [← hi', ← hj', hij]
 
 lemma empty_consecutive_apply_ge_M : {i | M a N ≤ a i ∧ M a N ≤ a (i + 1)} = ∅ := by
-  rw [Set.eq_empty_iff_forall_not_mem]
+  rw [Set.eq_empty_iff_forall_notMem]
   intro i
   induction i using Nat.strong_induction_on with | h i ih =>
   -- Let i be the first index where both `a i` and `a (i + 1)` are at least M.
@@ -383,7 +382,7 @@ lemma exists_card_le_of_big {j : ℕ} (h : Big a j) :
   rw [← hc.finite_setOf_apply_eq_iff_not_small (hc.pos_of_big h)] at hns
   use hns
   by_contra! hlt
-  exact not_mem_of_csSup_lt h hc.bddAbove_setOf_k_lt_card fun _ ↦ hlt
+  exact notMem_of_csSup_lt h hc.bddAbove_setOf_k_lt_card fun _ ↦ hlt
 
 variable (a N)
 
@@ -407,7 +406,7 @@ lemma not_medium_of_N'aux_lt {j : ℕ} (h : N'aux a N < j) : ¬Medium a (a j) :=
     refine (Set.finite_Ioc _ _).biUnion ?_
     rintro i ⟨hk, -⟩
     rwa [hc.finite_setOf_apply_eq_iff_not_small (by omega), Small, not_le]
-  exact fun hm ↦ not_mem_of_csSup_lt (le_sup_left.trans_lt h)
+  exact fun hm ↦ notMem_of_csSup_lt (le_sup_left.trans_lt h)
     (hf.subset fun i hi ↦ (by simpa [s] using hi)).bddAbove hm
 
 lemma small_or_big_of_N'aux_lt {j : ℕ} (h : N'aux a N < j) : Small a (a j) ∨ Big a (a j) := by
@@ -425,7 +424,7 @@ omit hc
 lemma nth_sup_k_N_add_one_le_N'aux_of_small {j : ℕ} (h : Small a j) :
     Nat.nth (a · = j) (k a ⊔ (N + 1)) ≤ N'aux a N := by
   by_contra! hn
-  exact not_mem_of_csSup_lt (le_sup_right.trans_lt hn) ((Set.finite_Iic _).image _).bddAbove
+  exact notMem_of_csSup_lt (le_sup_right.trans_lt hn) ((Set.finite_Iic _).image _).bddAbove
     ⟨j, h, rfl⟩
 
 include hc
@@ -636,7 +635,7 @@ lemma apply_add_one_eq_card_small_le_card_eq {i : ℕ} (hi : N' a N < i) (hib : 
       rw [← Nat.count_eq_card_filter_range] at htr
       constructor
       · rwa [add_lt_add_iff_right, ← Nat.lt_nth_iff_count_lt hts,
-          Nat.sub_lt_iff_lt_add (hc.one_le_apply _), Nat.lt_one_add_iff]
+          Nat.sub_lt_iff_lt_add' (hc.one_le_apply _), Nat.lt_one_add_iff]
       · rw [hc.apply_nth_add_one_eq_of_infinite hts]
         · exact Nat.sub_add_cancel (hc.one_le_apply _)
         · refine (Nat.le_nth fun hf ↦ absurd hf hts).trans ((Nat.nth_le_nth hts).2 ?_)
@@ -674,7 +673,7 @@ lemma apply_eq_card_small_le_card_eq_of_small {i : ℕ} (hi : N' a N + 1 < i)
   convert Iff.rfl using 2
   congr 1
   ext t
-  simp only [Finset.mem_filter, Finset.mem_range, and_congr_right_iff]
+  simp only [Finset.mem_filter, Finset.mem_range]
   refine ⟨fun ⟨hti, rfl⟩ ↦ ⟨?_, rfl⟩, fun ⟨_, rfl⟩ ↦ ⟨by omega, rfl⟩⟩
   by_contra hti1
   have htieq : t = i - 1 := by omega
@@ -877,7 +876,7 @@ lemma p_le_two_mul_k {n : ℕ} (hn : N' a N + 2 < n) (hs : Small a (a n)) : p a 
     convert Finset.exists_ne_map_eq_of_card_lt_of_maps_to (t := Finset.Icc 1 (k a)) ?_ ?_
     · simp
     · rintro i -
-      simp [Finset.mem_Icc, Nat.lt_add_one_iff]
+      simp only [Finset.coe_Icc, Set.mem_Icc]
       rw [← Small, hc.small_apply_add_two_mul_iff_small i (by omega)]
       simp [hs, hc.one_le_apply]
   have hs' : Small a (a (n + 2 * x)) := by rwa [hc.small_apply_add_two_mul_iff_small x (by omega)]

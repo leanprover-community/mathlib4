@@ -134,7 +134,7 @@ theorem mk_coord_apply_ne {i j : ι} (h : j ≠ i) : (Basis.mk hli hsp).coord i 
 theorem mk_coord_apply [DecidableEq ι] {i j : ι} :
     (Basis.mk hli hsp).coord i (v j) = if j = i then 1 else 0 := by
   rcases eq_or_ne j i with h | h
-  · simp only [h, if_true, eq_self_iff_true, mk_coord_apply_eq i]
+  · simp only [h, if_true, mk_coord_apply_eq i]
   · simp only [h, if_false, mk_coord_apply_ne h]
 
 end Coord
@@ -149,7 +149,7 @@ protected noncomputable def span : Basis ι R (span R (range v)) :=
     intro x _
     have : ∀ i, v i ∈ span R (range v) := fun i ↦ subset_span (Set.mem_range_self _)
     have h₁ : (((↑) : span R (range v) → M) '' range fun i => ⟨v i, this i⟩) = range v := by
-      simp only [SetLike.coe_sort_coe, ← Set.range_comp]
+      simp only [← Set.range_comp]
       rfl
     have h₂ : map (Submodule.subtype (span R (range v))) (span R (range fun i => ⟨v i, this i⟩)) =
         span R (range v) := by
@@ -189,7 +189,7 @@ theorem maximal [Nontrivial R] (b : Basis ι R M) : b.linearIndependent.Maximal 
   rw [← Finsupp.sum_embDomain (f := u) (g := fun x r ↦ r • (x : M)),
       ← Finsupp.linearCombination_apply] at e
   -- Now we can contradict the linear independence of `hi`
-  refine hi.linearCombination_ne_of_not_mem_support _ ?_ e
+  refine hi.linearCombination_ne_of_notMem_support _ ?_ e
   simp only [Finset.mem_map, Finsupp.support_embDomain]
   rintro ⟨j, -, W⟩
   simp only [u, Embedding.coeFn_mk, Subtype.mk_eq_mk] at W

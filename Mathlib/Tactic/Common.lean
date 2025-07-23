@@ -14,6 +14,7 @@ import ImportGraph.Imports
 
 -- Import common Batteries tactics and commands
 import Batteries.Tactic.Basic
+import Batteries.Tactic.Case
 import Batteries.Tactic.HelpCmd
 
 -- Import syntax for leansearch
@@ -24,7 +25,7 @@ import Mathlib.Tactic.Linter.Lint
 
 -- Now import all tactics defined in Mathlib that do not require theory files.
 import Mathlib.Tactic.ApplyCongr
--- ApplyFun imports `Mathlib.Order.Monotone.Basic`
+-- ApplyFun imports `Mathlib/Order/Monotone/Basic.lean`
 -- import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.ApplyAt
 import Mathlib.Tactic.ApplyWith
@@ -50,12 +51,10 @@ import Mathlib.Tactic.ErwQuestion
 import Mathlib.Tactic.Eqns
 import Mathlib.Tactic.ExistsI
 import Mathlib.Tactic.ExtractGoal
-import Mathlib.Tactic.ExtractLets
 import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.Find
--- `gcongr` currently imports `Algebra.Order.Field.Power` and thence `Algebra.CharZero.Lemmas`
--- Hopefully this can be rearranged.
--- import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.GRewrite
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.GuardGoalNums
 import Mathlib.Tactic.GuardHypNums
@@ -96,7 +95,7 @@ import Mathlib.Tactic.SudoSetOption
 import Mathlib.Tactic.SwapVar
 import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.TermCongr
--- TFAE imports `Mathlib.Data.List.TFAE` and thence `Mathlib.Data.List.Basic`.
+-- TFAE imports `Mathlib/Data/List/TFAE.lean` and thence `Mathlib/Data/List/Basic.lean`.
 -- import Mathlib.Tactic.TFAE
 import Mathlib.Tactic.ToExpr
 import Mathlib.Tactic.ToLevel
@@ -108,6 +107,7 @@ import Mathlib.Tactic.Variable
 import Mathlib.Tactic.Widget.Calc
 import Mathlib.Tactic.Widget.CongrM
 import Mathlib.Tactic.Widget.Conv
+import Mathlib.Tactic.Widget.LibraryRewrite
 import Mathlib.Tactic.WLOG
 import Mathlib.Util.AssertExists
 import Mathlib.Util.CountHeartbeats
@@ -132,6 +132,7 @@ import hierarchy.
 
 section Hint
 
+register_hint grind
 register_hint trivial
 register_hint tauto
 register_hint split

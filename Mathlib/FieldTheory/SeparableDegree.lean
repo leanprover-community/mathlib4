@@ -247,7 +247,7 @@ def embProdEmbOfIsAlgebraic [Algebra E K] [IsScalarTower F E K] [Algebra.IsAlgeb
 
 /-- If the field extension `E / F` is transcendental, then `Field.Emb F E` is infinite. -/
 instance infinite_emb_of_transcendental [H : Algebra.Transcendental F E] : Infinite (Emb F E) := by
-  obtain ⟨ι, x, hx⟩ := exists_isTranscendenceBasis' _ (algebraMap F E).injective
+  obtain ⟨ι, x, hx⟩ := exists_isTranscendenceBasis' F E
   have := hx.isAlgebraic_field
   rw [← (embProdEmbOfIsAlgebraic F (adjoin F (Set.range x)) E).infinite_iff]
   refine @Prod.infinite_of_left _ _ ?_ _
@@ -557,7 +557,7 @@ theorem eq_X_sub_C_pow_of_natSepDegree_eq_one_of_splits (hm : f.Monic)
   classical
   have h1 := eq_prod_roots_of_monic_of_splits_id hm hs
   have h2 := (natSepDegree_eq_of_splits f hs).symm
-  rw [h, aroots_def, Algebra.id.map_eq_id, map_id, Multiset.toFinset_card_eq_one_iff] at h2
+  rw [h, aroots_def, Algebra.algebraMap_self, map_id, Multiset.toFinset_card_eq_one_iff] at h2
   obtain ⟨h2, y, h3⟩ := h2
   exact ⟨_, y, h2, by rwa [h3, Multiset.map_nsmul, Multiset.map_singleton, Multiset.prod_nsmul,
     Multiset.prod_singleton] at h1⟩
@@ -778,7 +778,7 @@ theorem finSepDegree_eq_finrank_iff [FiniteDimensional F E] :
   ⟨fun heq ↦ ⟨fun x ↦ by
     have halg := IsAlgebraic.of_finite F x
     refine (finSepDegree_adjoin_simple_eq_finrank_iff F E x halg).1 <| le_antisymm
-      (finSepDegree_adjoin_simple_le_finrank F E x halg) <| le_of_not_lt fun h ↦ ?_
+      (finSepDegree_adjoin_simple_le_finrank F E x halg) <| le_of_not_gt fun h ↦ ?_
     have := Nat.mul_lt_mul_of_lt_of_le' h (finSepDegree_le_finrank F⟮x⟯ E) Fin.pos'
     rw [finSepDegree_mul_finSepDegree_of_isAlgebraic F F⟮x⟯ E,
       Module.finrank_mul_finrank F F⟮x⟯ E] at this
@@ -900,7 +900,7 @@ if and only if every separable degree one polynomial splits. -/
 theorem perfectField_iff_splits_of_natSepDegree_eq_one (F : Type*) [Field F] :
     PerfectField F ↔ ∀ f : F[X], f.natSepDegree = 1 → f.Splits (RingHom.id F) := by
   refine ⟨fun ⟨h⟩ f hf ↦ or_iff_not_imp_left.2 fun hn g hg hd ↦ ?_, fun h ↦ ?_⟩
-  · rw [map_id] at hn hd
+  · rw [Polynomial.map_id] at hn hd
     have := natSepDegree_le_of_dvd g f hd hn
     rw [hf, (h hg).natSepDegree_eq_natDegree] at this
     exact (degree_eq_iff_natDegree_eq_of_pos one_pos).2 <| this.antisymm <|

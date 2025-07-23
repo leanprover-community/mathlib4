@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Wanyi He, Jiedong Jiang, Xuchun Li, Jingting Wang, Andrew Yang
+Authors: Wanyi He, Jiedong Jiang, Xuchun Li, Christian Merten, Jingting Wang, Andrew Yang
 -/
 import Mathlib.Data.Set.Card
 import Mathlib.Data.ENat.Lattice
@@ -32,7 +32,7 @@ implemented as `spanFinrank` and `spanRank`.
 
 * `rank_eq_spanRank_of_free` : For a ring `R` (not necessarily commutative) satisfying
   `StrongRankCondition R`, if `M` is a free `R`-module, then the `spanRank` of `M` equals to the
-   rank of M.
+  rank of M.
 
 * `rank_le_spanRank` : For a ring `R` (not necessarily commutative) satisfying
   `StrongRankCondition R`, if `M` is an `R`-module, then the `spanRank` of `M` is less than or equal
@@ -83,26 +83,22 @@ lemma spanRank_toENat_eq_iInf_encard (p : Submodule R M) : p.spanRank.toENat =
     exact Cardinal.ofENat_toENat_le _
 
 lemma spanRank_toENat_eq_iInf_finset_card (p : Submodule R M) :
-    p.spanRank.toENat =
-      ⨅ (s : {s : Set M // s.Finite ∧ span R s = p}), (s.2.1.toFinset.card : ℕ∞) := by
+    p.spanRank.toENat = ⨅ (s : {s : Finset M // span R s = p}), (s.1.card : ℕ∞) := by
   rw [spanRank_toENat_eq_iInf_encard]
-  rcases (eq_or_ne (⨅ (s : Set M) (_ : span R s = p), s.encard) ⊤) with (h1 | h2)
+  rcases eq_or_ne (⨅ (s : Set M) (_ : span R s = p), s.encard) ⊤ with (h1 | h2)
   · rw [h1, eq_comm]; simp_rw [iInf_eq_top] at h1 ⊢
-    exact fun s ↦ False.elim (((Set.encard_ne_top_iff (s := s.1)).mpr s.2.1) (h1 s.1 s.2.2))
-  · apply le_antisymm
-    · refine le_iInf (fun s ↦ (le_trans (iInf₂_le s.1 s.2.2) ?_))
-      rw [s.2.1.encard_eq_coe_toFinset_card]
-    · refine le_iInf (fun s ↦ (le_iInf (fun h ↦ ?_)))
+    exact fun s ↦ False.elim (Set.encard_ne_top_iff.mpr s.1.finite_toSet (h1 s.1 s.2))
+  · simp_rw [← Set.encard_coe_eq_coe_finsetCard]
+    apply le_antisymm
+    · exact le_iInf fun s ↦ iInf₂_le (s.1 : Set M) s.2
+    · refine le_iInf fun s ↦ le_iInf fun h ↦ ?_
       by_cases hs : s.Finite
-      · apply @le_trans _ _ _ (hs.toFinset.card : ℕ∞) _
-        · apply iInf_le (fun (s : {s : Set M // s.Finite ∧ span R s = p})
-            ↦ (s.2.1.toFinset.card : ℕ∞)) ⟨s, ⟨hs, h⟩⟩
-        · rw [hs.encard_eq_coe_toFinset_card]
+      · exact iInf_le_of_le ⟨hs.toFinset, by simpa⟩ (by simp)
       · rw [Set.Infinite.encard_eq hs]
         exact OrderTop.le_top _
 
 lemma spanFinrank_eq_iInf (p : Submodule R M) :
-    p.spanFinrank = ⨅ (s : {s : Set M // s.Finite ∧ span R s = p}), s.2.1.toFinset.card := by
+    p.spanFinrank = ⨅ (s : {s : Finset M // span R s = p}), s.1.card := by
   simp [spanFinrank, Cardinal.toNat, spanRank_toENat_eq_iInf_finset_card, ENat.iInf_toNat]
 
 /-- A submodule's `spanRank` is finite if and only if it is finitely generated. -/
@@ -113,10 +109,10 @@ lemma spanRank_finite_iff_fg {p : Submodule R M} : p.spanRank < aleph0 ↔ p.FG 
   · rintro h
     obtain ⟨s, hs⟩ : ⨅ (s : {s : Set M // span R s = p}), #s ∈
       Set.range (fun (s : {s : Set M // span R s = p}) ↦ #s) := csInf_mem ⟨#p, ⟨⟨p, by simp⟩, rfl⟩⟩
-    refine ⟨s.1, ⟨?_, s.2⟩⟩
+    refine ⟨s.1, ?_, s.2⟩
     simpa [← hs] using h
-  · rintro ⟨s, ⟨hs₁, hs₂⟩⟩
-    exact lt_of_le_of_lt (ciInf_le' _ ⟨s, hs₂⟩) (by simpa)
+  · rintro ⟨s, hs₁, hs₂⟩
+    exact (ciInf_le' _ ⟨s, hs₂⟩).trans_lt (by simpa)
 
 /-- A submodule is finitely generated if and only if its `spanRank` is equal to its `spanFinrank`.
 -/
@@ -192,6 +188,11 @@ lemma FG.generators_ncard {p : Submodule R M} (h : p.FG) :
   rw [← Nat.cast_inj (R := Cardinal), ← fg_iff_spanRank_eq_spanFinrank.mpr h, Set.ncard, Set.encard,
      ENat.card, generators_card, toNat_toENat, ← spanFinrank]
   exact (fg_iff_spanRank_eq_spanFinrank.mpr h).symm
+
+lemma FG.finite_generators {p : Submodule R M} (hp : p.FG) :
+    p.generators.Finite := by
+  rw [← Cardinal.lt_aleph0_iff_set_finite, Submodule.generators_card]
+  exact spanRank_finite_iff_fg.mpr hp
 
 /-- The span of the generators equals the submodule. -/
 lemma span_generators (p : Submodule R M) : span R (generators p) = p :=

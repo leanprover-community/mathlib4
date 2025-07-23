@@ -5,6 +5,7 @@ Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Yuyang Zh
 -/
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.SetTheory.PGame.Order
+import Mathlib.Data.Nat.Cast.Defs
 
 /-!
 # Algebraic structure on pregames
@@ -22,7 +23,7 @@ theorem lt_iff_sub_pos {x y : PGame} : x < y ↔ 0 < y - x := sorry
 We show that these operations respect the equivalence relation, and hence descend to games. At the
 level of games, these operations satisfy all the laws of a commutative group. To prove the necessary
 equivalence relations at the level of pregames, the notion of a `Relabelling` of a game is used
-(defined in `Mathlib.SetTheory.PGame.Basic`); for example, there is a relabelling between
+(defined in `Mathlib/SetTheory/PGame/Basic.lean`); for example, there is a relabelling between
 `x + (y + z)` and `(x + y) + z`.
 -/
 
@@ -49,8 +50,7 @@ theorem neg_def {xl xr xL xR} : -mk xl xr xL xR = mk xr xl (-xR ·) (-xL ·) :=
 instance : InvolutiveNeg PGame :=
   { inferInstanceAs (Neg PGame) with
     neg_neg := fun x => by
-      induction' x with xl xr xL xR ihL ihR
-      simp_rw [neg_def, ihL, ihR] }
+      induction x with | mk xl xr xL xR ihL ihR => simp_rw [neg_def, ihL, ihR] }
 
 instance : NegZeroClass PGame :=
   { inferInstanceAs (Zero PGame), inferInstanceAs (Neg PGame) with
@@ -68,7 +68,7 @@ theorem neg_ofLists (L R : List PGame) :
     · simp
     · rintro ⟨⟨a, ha⟩⟩ ⟨⟨b, hb⟩⟩ h
       have :
-        ∀ {m n} (_ : m = n) {b : ULift (Fin m)} {c : ULift (Fin n)} (_ : HEq b c),
+        ∀ {m n} (_ : m = n) {b : ULift (Fin m)} {c : ULift (Fin n)} (_ : b ≍ c),
           (b.down : ℕ) = ↑c.down := by
         rintro m n rfl b c
         simp only [heq_eq_eq]
@@ -76,7 +76,7 @@ theorem neg_ofLists (L R : List PGame) :
         rfl
       simp only [heq_eq_eq]
       congr 5
-      exact this (List.length_map _ _).symm h
+      exact this (List.length_map _).symm h
 
 theorem isOption_neg {x y : PGame} : IsOption x (-y) ↔ IsOption (-x) y := by
   rw [isOption_iff, isOption_iff, or_comm]
@@ -85,7 +85,7 @@ theorem isOption_neg {x y : PGame} : IsOption x (-y) ↔ IsOption (-x) y := by
     · apply exists_congr
       intro
       rw [neg_eq_iff_eq_neg]
-      rfl
+      simp only [neg_def, moveRight_mk, moveLeft_mk]
 
 @[simp]
 theorem isOption_neg_neg {x y : PGame} : IsOption (-x) (-y) ↔ IsOption x y := by
@@ -239,7 +239,7 @@ theorem neg_identical_neg {x y : PGame} : -x ≡ -y ↔ x ≡ y :=
 
 @[simp]
 theorem neg_equiv_neg_iff {x y : PGame} : -x ≈ -y ↔ x ≈ y := by
-  show Equiv (-x) (-y) ↔ Equiv x y
+  change Equiv (-x) (-y) ↔ Equiv x y
   rw [Equiv, Equiv, neg_le_neg_iff, neg_le_neg_iff, and_comm]
 
 @[simp]
@@ -708,7 +708,7 @@ instance addRightMono : AddRightMono PGame :=
   ⟨fun _ _ _ => add_le_add_right'⟩
 
 instance addLeftMono : AddLeftMono PGame :=
-  ⟨fun x _ _ h => (add_comm_le.trans (add_le_add_right h x)).trans add_comm_le⟩
+  ⟨fun x _ _ h => (add_comm_le.trans (by gcongr)).trans add_comm_le⟩
 
 theorem add_lf_add_right {y z : PGame} (h : y ⧏ z) (x) : y + x ⧏ z + x :=
   suffices z + x ≤ y + x → z ≤ y by
@@ -719,7 +719,7 @@ theorem add_lf_add_right {y z : PGame} (h : y ⧏ z) (x) : y + x ⧏ z + x :=
     z ≤ z + 0 := (PGame.add_zero _).symm.le
     _ ≤ z + (x + -x) := add_le_add_left (zero_le_add_neg_cancel x) _
     _ ≤ z + x + -x := (PGame.add_assoc _ _ _).symm.le
-    _ ≤ y + x + -x := add_le_add_right w _
+    _ ≤ y + x + -x := by gcongr
     _ ≤ y + (x + -x) := (PGame.add_assoc _ _ _).le
     _ ≤ y + 0 := add_le_add_left (add_neg_cancel_le_zero x) _
     _ ≤ y := (PGame.add_zero _).le
@@ -763,7 +763,7 @@ theorem le_iff_sub_nonneg {x y : PGame} : x ≤ y ↔ 0 ≤ y - x :=
   ⟨fun h => (zero_le_add_neg_cancel x).trans (add_le_add_right h _), fun h =>
     calc
       x ≤ 0 + x := (PGame.zero_add x).symm.le
-      _ ≤ y - x + x := add_le_add_right h _
+      _ ≤ y - x + x := by gcongr
       _ ≤ y + (-x + x) := (PGame.add_assoc _ _ _).le
       _ ≤ y + 0 := add_le_add_left (neg_add_cancel_le_zero x) _
       _ ≤ y := (PGame.add_zero y).le
@@ -785,7 +785,7 @@ theorem lt_iff_sub_pos {x y : PGame} : x < y ↔ 0 < y - x :=
       x ≤ 0 + x := (PGame.zero_add x).symm.le
       _ < y - x + x := add_lt_add_right h _
       _ ≤ y + (-x + x) := (PGame.add_assoc _ _ _).le
-      _ ≤ y + 0 := add_le_add_left (neg_add_cancel_le_zero x) _
+      _ ≤ y + 0 := by gcongr; exact neg_add_cancel_le_zero x
       _ ≤ y := (PGame.add_zero y).le
       ⟩
 

@@ -3,9 +3,10 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Topology.ContinuousMap.Bounded.ArzelaAscoli
+import Mathlib.Topology.ContinuousMap.Bounded.Normed
 import Mathlib.Topology.MetricSpace.Gluing
 import Mathlib.Topology.MetricSpace.HausdorffDistance
-import Mathlib.Topology.ContinuousMap.Bounded.Basic
 
 /-!
 # The Gromov-Hausdorff distance is realized
@@ -220,9 +221,10 @@ private theorem closed_candidatesB : IsClosed (candidatesB X Y) := by
   rw [this]
   repeat'
     first
-      |apply IsClosed.inter _ _
-      |apply isClosed_iInter _
-      |apply I1 _ _|apply I2 _ _|apply I3 _ _|apply I4 _ _ _|apply I5 _|apply I6 _ _|intro x
+      | apply IsClosed.inter _ _
+      | apply isClosed_iInter _
+      | apply I1 _ _ | apply I2 _ _ | apply I3 _ _ | apply I4 _ _ _ | apply I5 _ | apply I6 _ _
+      | intro x
 
 /-- We will then choose the candidate minimizing the Hausdorff distance. Except that we are not
 in a metric space setting, so we need to define our custom version of Hausdorff distance,
@@ -284,7 +286,7 @@ private theorem HD_lipschitz_aux1 (f g : Cb X Y) :
     refine Monotone.map_ciInf_of_continuousAt (continuousAt_id.add continuousAt_const) ?_ ?_
     · intro x y hx
       simpa
-    · show BddBelow (range fun y : Y => g (inl x, inr y))
+    · change BddBelow (range fun y : Y => g (inl x, inr y))
       exact ⟨cg, forall_mem_range.2 fun i => Hcg _⟩
   have E2 : (⨆ x, ⨅ y, g (inl x, inr y)) + dist f g = ⨆ x, (⨅ y, g (inl x, inr y)) + dist f g := by
     refine Monotone.map_ciSup_of_continuousAt (continuousAt_id.add continuousAt_const) ?_ ?_
@@ -312,7 +314,7 @@ private theorem HD_lipschitz_aux2 (f g : Cb X Y) :
     refine Monotone.map_ciInf_of_continuousAt (continuousAt_id.add continuousAt_const) ?_ ?_
     · intro x y hx
       simpa
-    · show BddBelow (range fun x : X => g (inl x, inr y))
+    · change BddBelow (range fun x : X => g (inl x, inr y))
       exact ⟨cg, forall_mem_range.2 fun i => Hcg _⟩
   have E2 : (⨆ y, ⨅ x, g (inl x, inr y)) + dist f g = ⨆ y, (⨅ x, g (inl x, inr y)) + dist f g := by
     refine Monotone.map_ciSup_of_continuousAt (continuousAt_id.add continuousAt_const) ?_ ?_

@@ -17,6 +17,7 @@ We introduce the bundled categories:
 * `AddMonCat`
 * `CommMonCat`
 * `AddCommMonCat`
+
 along with the relevant forgetful functors between them.
 -/
 
@@ -386,6 +387,16 @@ instance hasForgetToMonCat : HasForget₂ CommMonCat MonCat where
 @[to_additive (attr := simp)] lemma forget₂_map_ofHom {X Y : Type u} [CommMonoid X] [CommMonoid Y]
     (f : X →* Y) :
     (forget₂ CommMonCat MonCat).map (ofHom f) = MonCat.ofHom f := rfl
+
+/-- The forgetful functor from `CommMonCat` to `MonCat` is fully faithful. -/
+@[to_additive fullyFaithfulForgetToAddMonCat
+  "The forgetful functor from `AddCommMonCat` to `AddMonCat` is fully faithful."]
+def fullyFaithfulForgetToMonCat : (forget₂ CommMonCat.{u} MonCat.{u}).FullyFaithful where
+  preimage f := ofHom f.hom
+
+@[to_additive]
+instance : (forget₂ CommMonCat.{u} MonCat.{u}).Full :=
+  fullyFaithfulForgetToMonCat.full
 
 @[to_additive]
 instance : Coe CommMonCat.{u} MonCat.{u} where coe := (forget₂ CommMonCat MonCat).obj

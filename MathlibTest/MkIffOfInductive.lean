@@ -35,7 +35,7 @@ mk_iff_of_inductive_prop Eq       test.eq_iff
 example (α : Sort u) (a b : α) : a = b ↔ b = a := test.eq_iff a b
 
 mk_iff_of_inductive_prop HEq      test.heq_iff
-example {α : Sort u} (a : α) {β : Sort u} (b : β) : HEq a b ↔ β = α ∧ HEq b a := test.heq_iff a b
+example {α : Sort u} (a : α) {β : Sort u} (b : β) : a ≍ b ↔ β = α ∧ b ≍ a := test.heq_iff a b
 
 mk_iff_of_inductive_prop List.Perm test.perm_iff
 open scoped List in
@@ -77,6 +77,6 @@ inductive ReflTransGen {α : Type _} (r : α → α → Prop) (a : α) : α → 
 | refl : ReflTransGen r a a
 | tail {b c} : ReflTransGen r a b → r b c → ReflTransGen r a c
 
-example {α : Type} (r: α → α → Prop) (a c : α) :
+example {α : Type} (r : α → α → Prop) (a c : α) :
     ReflTransGen r a c ↔ c = a ∨ ∃ b : α, ReflTransGen r a b ∧ r b c :=
  reflTransGen_iff r a c

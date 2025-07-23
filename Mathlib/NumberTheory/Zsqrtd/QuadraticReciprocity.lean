@@ -5,7 +5,6 @@ Authors: Chris Hughes
 -/
 import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 import Mathlib.NumberTheory.LegendreSymbol.Basic
-import Mathlib.Analysis.Normed.Ring.Lemmas
 
 /-!
 # Facts about the gaussian integers relying on quadratic reciprocity.
@@ -36,8 +35,7 @@ theorem mod_four_eq_three_of_nat_prime_of_prime (p : ℕ) [hp : Fact p.Prime]
       simp [hp2, Zsqrtd.ext_iff, ← norm_eq_one_iff, norm_def] at this)
     fun hp1 =>
     by_contradiction fun hp3 : p % 4 ≠ 3 => by
-      have hp41 : p % 4 = 1 := by omega
-      let ⟨k, hk⟩ := (ZMod.exists_sq_eq_neg_one_iff (p := p)).2 <| by rw [hp41]; decide
+      let ⟨k, hk⟩ := (ZMod.exists_sq_eq_neg_one_iff (p := p)).2 hp3
       obtain ⟨k, k_lt_p, rfl⟩ : ∃ (k' : ℕ) (_ : k' < p), (k' : ZMod p) = k := by
         exact ⟨k.val, k.val_lt, ZMod.natCast_zmod_val k⟩
       have hpk : p ∣ k ^ 2 + 1 := by
@@ -48,7 +46,7 @@ theorem mod_four_eq_three_of_nat_prime_of_prime (p : ℕ) [hp : Fact p.Prime]
         calc
           1 + k * k ≤ k + k * k := by
             apply add_le_add_right
-            exact (Nat.pos_of_ne_zero fun (hk0 : k = 0) => by clear_aux_decl; simp_all [pow_succ'])
+            exact (Nat.pos_of_ne_zero fun (hk0 : k = 0) => by clear_aux_decl; simp_all)
           _ = k * (k + 1) := by simp [add_comm, mul_add]
           _ < p * p := mul_lt_mul k_lt_p k_lt_p (Nat.succ_pos _) (Nat.zero_le _)
       have hpk₁ : ¬(p : ℤ[i]) ∣ ⟨k, -1⟩ := fun ⟨x, hx⟩ =>
@@ -69,7 +67,6 @@ theorem mod_four_eq_three_of_nat_prime_of_prime (p : ℕ) [hp : Fact p.Prime]
                 show (1 : ℤ) ≠ 0 by decide <| by simpa [hx0] using congr_arg Zsqrtd.im hx
       obtain ⟨y, hy⟩ := hpk
       have := hpi.2.2 ⟨k, 1⟩ ⟨k, -1⟩ ⟨y, by rw [← hkmul, ← Nat.cast_mul p, ← hy]; simp⟩
-      clear_aux_decl
       tauto
 
 theorem prime_of_nat_prime_of_mod_four_eq_three (p : ℕ) [Fact p.Prime] (hp3 : p % 4 = 3) :

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.Module.Submodule.Equiv
+import Mathlib.Data.Finsupp.Option
 import Mathlib.LinearAlgebra.Finsupp.Supported
 
 /-!
@@ -57,7 +58,7 @@ theorem linearCombination_apply (l : α →₀ R) : linearCombination R v l = l.
 theorem linearCombination_apply_of_mem_supported {l : α →₀ R} {s : Finset α}
     (hs : l ∈ supported R R (↑s : Set α)) : linearCombination R v l = s.sum fun i => l i • v i :=
   Finset.sum_subset hs fun x _ hxg =>
-    show l x • v x = 0 by rw [not_mem_support_iff.1 hxg, zero_smul]
+    show l x • v x = 0 by rw [notMem_support_iff.1 hxg, zero_smul]
 
 @[simp]
 theorem linearCombination_single (c : R) (a : α) :
@@ -78,7 +79,7 @@ theorem linearCombination_single_index (c : M) (a : α) (f : α →₀ R) [Decid
     linearCombination R (Pi.single a c) f = f a • c := by
   rw [linearCombination_apply, sum_eq_single a, Pi.single_eq_same]
   · exact fun i _ hi ↦ by rw [Pi.single_eq_of_ne hi, smul_zero]
-  · exact fun _ ↦ by simp only [single_eq_same, zero_smul]
+  · exact fun _ ↦ by simp only [zero_smul]
 
 variable {α M}
 
@@ -134,7 +135,7 @@ theorem range_linearCombination : LinearMap.range (linearCombination R v) = span
 theorem lmapDomain_linearCombination (f : α → α') (g : M →ₗ[R] M') (h : ∀ i, g (v i) = v' (f i)) :
     (linearCombination R v').comp (lmapDomain R R f) = g.comp (linearCombination R v) := by
   ext l
-  simp [linearCombination_apply, Finsupp.sum_mapDomain_index, add_smul, h]
+  simp [linearCombination_apply, h]
 
 theorem linearCombination_comp_lmapDomain (f : α → α') :
     (linearCombination R v').comp (Finsupp.lmapDomain R R f) = linearCombination R (v' ∘ f) := by
@@ -205,16 +206,16 @@ theorem linearCombination_linearCombination {α β : Type*} (A : α → M) (B : 
       linearCombination R (fun b => linearCombination R A (B b)) f := by
   classical
   simp only [linearCombination_apply]
-  apply induction_linear f
-  · simp only [sum_zero_index]
-  · intro f₁ f₂ h₁ h₂
-    simp [sum_add_index, h₁, h₂, add_smul]
-  · simp [sum_single_index, sum_smul_index, smul_sum, mul_smul]
+  induction f using induction_linear with
+  | zero => simp only [sum_zero_index]
+  | add f₁ f₂ h₁ h₂ => simp [sum_add_index, h₁, h₂, add_smul]
+  | single => simp [sum_single_index, sum_smul_index, smul_sum, mul_smul]
 
-theorem linearCombination_smul [Module R S] [Module S M] [IsScalarTower R S M] {w : α' → S} :
+theorem linearCombination_smul [DecidableEq α] [Module R S] [Module S M] [IsScalarTower R S M]
+    {w : α' → S} :
     linearCombination R (fun i : α × α' ↦ w i.2 • v i.1) = (linearCombination S v).restrictScalars R
       ∘ₗ mapRange.linearMap (linearCombination R w) ∘ₗ (finsuppProdLEquiv R).toLinearMap := by
-  ext; simp [finsuppProdLEquiv, finsuppProdEquiv, Finsupp.curry]
+  ext; simp
 
 @[simp]
 theorem linearCombination_fin_zero (f : Fin 0 → M) : linearCombination R f = 0 := by
@@ -277,8 +278,8 @@ See note [bundled maps over different rings] for why separate `R` and `S` semiri
 -/
 def bilinearCombination : (α → M) →ₗ[S] (α →₀ R) →ₗ[R] M where
   toFun v := linearCombination R v
-  map_add' u v := by ext; simp [Finset.sum_add_distrib, Pi.add_apply, smul_add]
-  map_smul' r v := by ext; simp [Finset.smul_sum, smul_comm]
+  map_add' u v := by ext; simp [Pi.add_apply, smul_add]
+  map_smul' r v := by ext; simp [smul_comm]
 
 @[simp]
 theorem bilinearCombination_apply :
@@ -321,7 +322,7 @@ theorem Finsupp.linearCombination_eq_fintype_linearCombination_apply (x : α →
   apply Finset.sum_subset
   · exact Finset.subset_univ _
   · intro x _ hx
-    rw [Finsupp.not_mem_support_iff.mp hx]
+    rw [Finsupp.notMem_support_iff.mp hx]
     exact zero_smul _ _
 
 theorem Finsupp.linearCombination_eq_fintype_linearCombination :
@@ -364,7 +365,7 @@ variable {v} {x : M}
 
 /-- An element `x` lies in the span of `v` iff it can be written as sum `∑ cᵢ • vᵢ = x`.
 -/
-theorem mem_span_range_iff_exists_fun :
+theorem Submodule.mem_span_range_iff_exists_fun :
     x ∈ span R (range v) ↔ ∃ c : α → R, ∑ i, c i • v i = x := by
   rw [Finsupp.equivFunOnFinite.surjective.exists]
   simp only [Finsupp.mem_span_range_iff_exists_finsupp, Finsupp.equivFunOnFinite_apply]
@@ -373,14 +374,14 @@ theorem mem_span_range_iff_exists_fun :
 /-- A family `v : α → V` is generating `V` iff every element `(x : V)`
 can be written as sum `∑ cᵢ • vᵢ = x`.
 -/
-theorem top_le_span_range_iff_forall_exists_fun :
+theorem Submodule.top_le_span_range_iff_forall_exists_fun :
     ⊤ ≤ span R (range v) ↔ ∀ x, ∃ c : α → R, ∑ i, c i • v i = x := by
   simp_rw [← mem_span_range_iff_exists_fun]
   exact ⟨fun h x => h trivial, fun h x _ => h x⟩
 
 omit [Fintype α]
 
-theorem mem_span_image_iff_exists_fun {s : Set α} :
+theorem Submodule.mem_span_image_iff_exists_fun {s : Set α} :
     x ∈ span R (v '' s) ↔ ∃ t : Finset α, ↑t ⊆ s ∧ ∃ c : t → R, ∑ i, c i • v i = x := by
   refine ⟨fun h ↦ ?_, fun ⟨t, ht, c, hx⟩ ↦ ?_⟩
   · obtain ⟨l, hl, hx⟩ := (Finsupp.mem_span_image_iff_linearCombination R).mp h
@@ -425,19 +426,35 @@ theorem LinearMap.map_finsupp_linearCombination (f : M →ₗ[R] N) {ι : Type*}
     (l : ι →₀ R) : f (linearCombination R g l) = linearCombination R (f ∘ g) l :=
   apply_linearCombination _ _ _ _
 
-theorem mem_span_finset {s : Finset M} {x : M} :
-    x ∈ span R (↑s : Set M) ↔ ∃ f : M → R, ∑ i ∈ s, f i • i = x :=
-  ⟨fun hx =>
-    let ⟨v, hvs, hvx⟩ :=
-      (Finsupp.mem_span_image_iff_linearCombination _).1
-        (show x ∈ span R (_root_.id '' (↑s : Set M)) by rwa [Set.image_id])
-    ⟨v, hvx ▸ (linearCombination_apply_of_mem_supported _ hvs).symm⟩,
-    fun ⟨_, hf⟩ => hf ▸ sum_mem fun _ hi => smul_mem _ _ <| subset_span hi⟩
+lemma Submodule.mem_span_iff_exists_finset_subset {s : Set M} {x : M} :
+    x ∈ span R s ↔
+      ∃ (f : M → R) (t : Finset M), ↑t ⊆ s ∧ f.support ⊆ t ∧ ∑ a ∈ t, f a • a = x where
+  mp := by
+    rw [← s.image_id, mem_span_image_iff_linearCombination]
+    rintro ⟨l, hl, rfl⟩
+    exact ⟨l, l.support, by simpa [linearCombination, Finsupp.sum] using hl⟩
+  mpr := by
+    rintro ⟨n, t, hts, -, rfl⟩; exact sum_mem fun x hx ↦ smul_mem _ _ <| subset_span <| hts hx
+
+lemma Submodule.mem_span_finset {s : Finset M} {x : M} :
+    x ∈ span R s ↔ ∃ f : M → R, f.support ⊆ s ∧ ∑ a ∈ s, f a • a = x where
+  mp := by
+    rw [mem_span_iff_exists_finset_subset]
+    rintro ⟨f, t, hts, hf, rfl⟩
+    refine ⟨f, hf.trans hts, .symm <| Finset.sum_subset hts ?_⟩
+    simp +contextual [Function.support_subset_iff'.1 hf]
+  mpr := by rintro ⟨f, -, rfl⟩; exact sum_mem fun x hx ↦ smul_mem _ _ <| subset_span <| hx
+
+/-- A variant of `Submodule.mem_span_finset` using `s` as the index type. -/
+lemma Submodule.mem_span_finset' {s : Finset M} {x : M} :
+    x ∈ span R s ↔ ∃ f : s → R, ∑ a : s, f a • a.1 = x := by
+  rw [← Subtype.range_val (s := s.toSet), ← Fintype.range_linearCombination]
+  simp [Fintype.linearCombination]
 
 /-- An element `m ∈ M` is contained in the `R`-submodule spanned by a set `s ⊆ M`, if and only if
 `m` can be written as a finite `R`-linear combination of elements of `s`.
 The implementation uses `Finsupp.sum`. -/
-theorem mem_span_set {m : M} {s : Set M} :
+theorem Submodule.mem_span_set {m : M} {s : Set M} :
     m ∈ Submodule.span R s ↔
       ∃ c : M →₀ R, (c.support : Set M) ⊆ s ∧ (c.sum fun mi r => r • mi) = m := by
   conv_lhs => rw [← Set.image_id s]
@@ -446,7 +463,7 @@ theorem mem_span_set {m : M} {s : Set M} :
 /-- An element `m ∈ M` is contained in the `R`-submodule spanned by a set `s ⊆ M`, if and only if
 `m` can be written as a finite `R`-linear combination of elements of `s`.
 The implementation uses a sum indexed by `Fin n` for some `n`. -/
-lemma mem_span_set' {m : M} {s : Set M} :
+lemma Submodule.mem_span_set' {m : M} {s : Set M} :
     m ∈ Submodule.span R s ↔ ∃ (n : ℕ) (f : Fin n → R) (g : Fin n → s),
       ∑ i, f i • (g i : M) = m := by
   refine ⟨fun h ↦ ?_, ?_⟩
@@ -460,7 +477,7 @@ lemma mem_span_set' {m : M} {s : Set M} :
 
 /-- The span of a subset `s` is the union over all `n` of the set of linear combinations of at most
 `n` terms belonging to `s`. -/
-lemma span_eq_iUnion_nat (s : Set M) :
+lemma Submodule.span_eq_iUnion_nat (s : Set M) :
     (Submodule.span R s : Set M) = ⋃ (n : ℕ),
       (fun (f : Fin n → (R × M)) ↦ ∑ i, (f i).1 • (f i).2) '' ({f | ∀ i, (f i).2 ∈ s}) := by
   ext m

@@ -37,10 +37,10 @@ topological space, separation setoid
 -/
 
 
-open Set Filter Function Topology List
+open Set Filter Function Topology
 
-variable {X Y Z α ι : Type*} {π : ι → Type*} [TopologicalSpace X] [TopologicalSpace Y]
-  [TopologicalSpace Z] [∀ i, TopologicalSpace (π i)] {x y z : X} {s : Set X} {f g : X → Y}
+variable {X Y Z α ι : Type*} {A : ι → Type*} [TopologicalSpace X] [TopologicalSpace Y]
+  [TopologicalSpace Z] [∀ i, TopologicalSpace (A i)] {x y z : X} {s : Set X} {f g : X → Y}
 
 /-!
 ### `Specializes` relation
@@ -49,7 +49,7 @@ variable {X Y Z α ι : Type*} {π : ι → Type*} [TopologicalSpace X] [Topolog
 /-- A collection of equivalent definitions of `x ⤳ y`. The public API is given by `iff` lemmas
 below. -/
 theorem specializes_TFAE (x y : X) :
-    TFAE [x ⤳ y,
+    List.TFAE [x ⤳ y,
       pure x ≤ 𝓝 y,
       ∀ s : Set X , IsOpen s → y ∈ s → x ∈ s,
       ∀ s : Set X , IsClosed s → x ∈ s → y ∈ s,
@@ -143,9 +143,21 @@ theorem specializes_of_nhdsWithin (h₁ : 𝓝[s] x ≤ 𝓝[s] y) (h₂ : x ∈
       _ ≤ 𝓝[s] y := h₁
       _ ≤ 𝓝 y := inf_le_left
 
-theorem Specializes.map_of_continuousAt (h : x ⤳ y) (hy : ContinuousAt f y) : f x ⤳ f y :=
-  specializes_iff_pure.2 fun _s hs =>
-    mem_pure.2 <| mem_preimage.1 <| mem_of_mem_nhds <| hy.mono_left h hs
+theorem Specializes.map_of_continuousWithinAt {s : Set X} (h : x ⤳ y)
+    (hf : ContinuousWithinAt f s y) (hx : x ∈ s) : f x ⤳ f y := by
+  rw [specializes_iff_pure] at h ⊢
+  calc pure (f x)
+    _ = map f (pure x) := (map_pure f x).symm
+    _ ≤ map f (𝓝 y ⊓ 𝓟 s) := map_mono (le_inf h ((pure_le_principal x).mpr hx))
+    _ = map f (𝓝[s] y) := rfl
+    _ ≤ _ := hf.tendsto
+
+theorem Specializes.map_of_continuousOn {s : Set X} (h : x ⤳ y)
+    (hf : ContinuousOn f s) (hx : x ∈ s) (hy : y ∈ s) : f x ⤳ f y :=
+  h.map_of_continuousWithinAt (hf.continuousWithinAt hy) hx
+
+theorem Specializes.map_of_continuousAt (h : x ⤳ y) (hf : ContinuousAt f y) : f x ⤳ f y :=
+  h.map_of_continuousWithinAt hf.continuousWithinAt (mem_univ x)
 
 theorem Specializes.map (h : x ⤳ y) (hf : Continuous f) : f x ⤳ f y :=
   h.map_of_continuousAt hf.continuousAt
@@ -171,7 +183,7 @@ theorem Specializes.fst {a b : X × Y} (h : a ⤳ b) : a.1 ⤳ b.1 := (specializ
 theorem Specializes.snd {a b : X × Y} (h : a ⤳ b) : a.2 ⤳ b.2 := (specializes_prod.1 h).2
 
 @[simp]
-theorem specializes_pi {f g : ∀ i, π i} : f ⤳ g ↔ ∀ i, f i ⤳ g i := by
+theorem specializes_pi {f g : ∀ i, A i} : f ⤳ g ↔ ∀ i, f i ⤳ g i := by
   simp only [Specializes, nhds_pi, pi_le_pi]
 
 theorem not_specializes_iff_exists_open : ¬x ⤳ y ↔ ∃ S : Set X, IsOpen S ∧ y ∈ S ∧ x ∉ S := by
@@ -388,9 +400,6 @@ lemma Topology.IsInducing.generalizingMap (hf : IsInducing f)
 lemma IsOpenEmbedding.generalizingMap (hf : IsOpenEmbedding f) : GeneralizingMap f :=
   hf.isInducing.generalizingMap hf.isOpen_range.stableUnderGeneralization
 
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.generalizingMap := IsOpenEmbedding.generalizingMap
-
 lemma SpecializingMap.stableUnderSpecialization_range (h : SpecializingMap f) :
     StableUnderSpecialization (range f) :=
   @image_univ _ _ f ▸ stableUnderSpecialization_univ.image h
@@ -479,7 +488,7 @@ theorem Inseparable.prod {x₁ x₂ : X} {y₁ y₂ : Y} (hx : x₁ ~ᵢ x₂) (
   inseparable_prod.2 ⟨hx, hy⟩
 
 @[simp]
-theorem inseparable_pi {f g : ∀ i, π i} : (f ~ᵢ g) ↔ ∀ i, f i ~ᵢ g i := by
+theorem inseparable_pi {f g : ∀ i, A i} : (f ~ᵢ g) ↔ ∀ i, f i ~ᵢ g i := by
   simp only [Inseparable, nhds_pi, funext_iff, pi_inj]
 
 namespace Inseparable
@@ -508,9 +517,19 @@ theorem mem_open_iff (h : x ~ᵢ y) (hs : IsOpen s) : x ∈ s ↔ y ∈ s :=
 theorem mem_closed_iff (h : x ~ᵢ y) (hs : IsClosed s) : x ∈ s ↔ y ∈ s :=
   inseparable_iff_forall_isClosed.1 h s hs
 
+theorem map_of_continuousWithinAt {s t : Set X} (h : x ~ᵢ y)
+    (hfx : ContinuousWithinAt f s x) (hfy : ContinuousWithinAt f t y)
+    (hx : x ∈ t) (hy : y ∈ s) : f x ~ᵢ f y :=
+  (h.specializes.map_of_continuousWithinAt hfy hx).antisymm
+    (h.specializes'.map_of_continuousWithinAt hfx hy)
+
+theorem map_of_continuousOn {s : Set X} (h : x ~ᵢ y)
+    (hf : ContinuousOn f s) (hx : x ∈ s) (hy : y ∈ s) : f x ~ᵢ f y :=
+  h.map_of_continuousWithinAt (hf.continuousWithinAt hx) (hf.continuousWithinAt hy) hx hy
+
 theorem map_of_continuousAt (h : x ~ᵢ y) (hx : ContinuousAt f x) (hy : ContinuousAt f y) :
     f x ~ᵢ f y :=
-  (h.specializes.map_of_continuousAt hy).antisymm (h.specializes'.map_of_continuousAt hx)
+  h.map_of_continuousWithinAt hx.continuousWithinAt hy.continuousWithinAt (mem_univ x) (mem_univ y)
 
 theorem map (h : x ~ᵢ y) (hf : Continuous f) : f x ~ᵢ f y :=
   h.map_of_continuousAt hf.continuousAt hf.continuousAt
@@ -691,7 +710,7 @@ theorem continuousOn_lift {hf : ∀ x y, (x ~ᵢ y) → f x = f y} {s : Set (Sep
 @[simp]
 theorem continuous_lift {hf : ∀ x y, (x ~ᵢ y) → f x = f y} :
     Continuous (lift f hf) ↔ Continuous f := by
-  simp only [continuous_iff_continuousOn_univ, continuousOn_lift, preimage_univ]
+  simp only [← continuousOn_univ, continuousOn_lift, preimage_univ]
 
 /-- Lift a map `f : X → Y → α` such that `Inseparable a b → Inseparable c d → f a c = f b d` to a
 map `SeparationQuotient X → SeparationQuotient Y → α`. -/
@@ -742,7 +761,7 @@ theorem continuousOn_lift₂ {f : X → Y → Z} {hf : ∀ a b c d, (a ~ᵢ c) �
 @[simp]
 theorem continuous_lift₂ {f : X → Y → Z} {hf : ∀ a b c d, (a ~ᵢ c) → (b ~ᵢ d) → f a b = f c d} :
     Continuous (uncurry <| lift₂ f hf) ↔ Continuous (uncurry f) := by
-  simp only [continuous_iff_continuousOn_univ, continuousOn_lift₂, preimage_univ]
+  simp only [← continuousOn_univ, continuousOn_lift₂, preimage_univ]
 
 end SeparationQuotient
 

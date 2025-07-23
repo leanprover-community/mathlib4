@@ -251,7 +251,7 @@ lemma AffineIndependent.card_lt_card_of_affineSpan_lt_affineSpan {s t : Finset V
   obtain rfl | hs' := s.eq_empty_or_nonempty
   · simpa [card_pos] using hst
   obtain rfl | ht' := t.eq_empty_or_nonempty
-  · simp [Set.subset_empty_iff] at hst
+  · simp at hst
   have := hs'.to_subtype
   have := ht'.to_set.to_subtype
   have dir_lt := AffineSubspace.direction_lt_of_nonempty (k := k) hst <| hs'.to_set.affineSpan k
@@ -491,7 +491,7 @@ theorem collinear_iff_not_affineIndependent {p : Fin 3 → P} :
 theorem affineIndependent_iff_not_collinear_set {p₁ p₂ p₃ : P} :
     AffineIndependent k ![p₁, p₂, p₃] ↔ ¬Collinear k ({p₁, p₂, p₃} : Set P) := by
   rw [affineIndependent_iff_not_collinear]
-  simp_rw [Matrix.range_cons, Matrix.range_empty, Set.singleton_union, insert_emptyc_eq]
+  simp_rw [Matrix.range_cons, Matrix.range_empty, Set.singleton_union, insert_empty_eq]
 
 /-- Three points are collinear if and only if they are not affinely independent. -/
 theorem collinear_iff_not_affineIndependent_set {p₁ p₂ p₃ : P} :
@@ -502,9 +502,7 @@ theorem collinear_iff_not_affineIndependent_set {p₁ p₂ p₃ : P} :
 theorem affineIndependent_iff_not_collinear_of_ne {p : Fin 3 → P} {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂)
     (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
     AffineIndependent k p ↔ ¬Collinear k ({p i₁, p i₂, p i₃} : Set P) := by
-  have hu : (Finset.univ : Finset (Fin 3)) = {i₁, i₂, i₃} := by
-    -- Porting note: Originally `by decide!`
-    revert i₁ i₂ i₃; decide
+  have hu : (Finset.univ : Finset (Fin 3)) = {i₁, i₂, i₃} := by decide +revert
   rw [affineIndependent_iff_not_collinear, ← Set.image_univ, ← Finset.coe_univ, hu,
     Finset.coe_insert, Finset.coe_insert, Finset.coe_singleton, Set.image_insert_eq, Set.image_pair]
 
@@ -560,9 +558,7 @@ theorem Collinear.collinear_insert_iff_of_ne {s : Set P} (h : Collinear k s) {p�
     (hp₂ : p₂ ∈ s) (hp₃ : p₃ ∈ s) (hp₂p₃ : p₂ ≠ p₃) :
     Collinear k (insert p₁ s) ↔ Collinear k ({p₁, p₂, p₃} : Set P) := by
   have hv : vectorSpan k (insert p₁ s) = vectorSpan k ({p₁, p₂, p₃} : Set P) := by
-    -- Porting note: Original proof used `conv_lhs` and `conv_rhs`, but these tactics timed out.
-    rw [← direction_affineSpan, ← affineSpan_insert_affineSpan]
-    symm
+    conv_rhs => rw [← direction_affineSpan, ← affineSpan_insert_affineSpan]
     rw [← direction_affineSpan, ← affineSpan_insert_affineSpan, h.affineSpan_eq_of_ne hp₂ hp₃ hp₂p₃]
   rw [Collinear, Collinear, hv]
 
@@ -602,15 +598,14 @@ theorem collinear_insert_insert_insert_left_of_mem_affineSpan_pair {p₁ p₂ p�
     (h₁ : p₁ ∈ line[k, p₄, p₅]) (h₂ : p₂ ∈ line[k, p₄, p₅]) (h₃ : p₃ ∈ line[k, p₄, p₅]) :
     Collinear k ({p₁, p₂, p₃, p₄} : Set P) := by
   refine (collinear_insert_insert_insert_of_mem_affineSpan_pair h₁ h₂ h₃).subset ?_
-  repeat apply Set.insert_subset_insert
-  simp
+  gcongr; simp
 
 /-- If three points lie in the affine span of two points, the first three points are collinear. -/
 theorem collinear_triple_of_mem_affineSpan_pair {p₁ p₂ p₃ p₄ p₅ : P} (h₁ : p₁ ∈ line[k, p₄, p₅])
     (h₂ : p₂ ∈ line[k, p₄, p₅]) (h₃ : p₃ ∈ line[k, p₄, p₅]) :
     Collinear k ({p₁, p₂, p₃} : Set P) := by
   refine (collinear_insert_insert_insert_left_of_mem_affineSpan_pair h₁ h₂ h₃).subset ?_
-  simp [Set.insert_subset_insert]
+  gcongr; simp
 
 variable (k) in
 /-- A set of points is coplanar if their `vectorSpan` has dimension at most `2`. -/

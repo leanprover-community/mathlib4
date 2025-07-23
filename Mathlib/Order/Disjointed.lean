@@ -96,7 +96,7 @@ lemma disjointedRec {f : ι → α} {p : α → Prop} (hdiff : ∀ ⦃t i⦄, p 
   intro s
   induction s using Finset.induction with
   | empty => simpa only [sup_empty, sdiff_bot] using hpi
-  | insert ht IH =>
+  | insert _ _ ht IH =>
     rw [sup_insert, sup_comm, ← sdiff_sdiff]
     exact hdiff IH
 
@@ -118,7 +118,7 @@ theorem partialSups_disjointed (f : ι → α) :
   intro r i hi
   induction r generalizing i with
   | zero =>
-   -- Base case: `n` is minimal, so `partialSups f i = partialSups (disjointed f) n = f i`.
+    -- Base case: `n` is minimal, so `partialSups f i = partialSups (disjointed f) n = f i`.
     simp only [Nat.le_zero, card_eq_zero] at hi
     simp only [partialSups_apply, Iic_eq_cons_Iio, hi, disjointed_apply, sup'_eq_sup, sup_cons,
       sup_empty, sdiff_bot]
@@ -293,7 +293,7 @@ section Nat
 /-!
 ### Functions on `ℕ`
 
-(See also `Mathlib.Algebra.Order.Disjointed` for results with more algebra pre-requsisites.)
+(See also `Mathlib/Algebra/Order/Disjointed.lean` for results with more algebra pre-requsisites.)
 -/
 
 variable [GeneralizedBooleanAlgebra α]

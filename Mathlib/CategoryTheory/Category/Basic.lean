@@ -8,6 +8,7 @@ import Mathlib.Combinatorics.Quiver.Basic
 import Mathlib.Tactic.PPWithUniv
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.StacksAttribute
+import Mathlib.Tactic.TryThis
 
 /-!
 # Categories
@@ -107,6 +108,27 @@ open Lean Meta Elab.Tactic in
     throwError "The goal does not contain `sorry`"
 
 /--
+`rfl_cat` is a macro for `intros; rfl` which is attempted in `aesop_cat` before
+doing the more expensive `aesop` tactic.
+
+This gives a speedup because `simp` (called by `aesop`) can be very slow.
+https://github.com/leanprover-community/mathlib4/pull/25475 contains measurements from June 2025.
+
+Implementation notes:
+* `refine id ?_`:
+  In some cases it is important that the type of the proof matches the expected type exactly.
+  e.g. if the goal is `2 = 1 + 1`, the `rfl` tactic will give a proof of type `2 = 2`.
+  Starting a proof with `refine id ?_` is a trick to make sure that the proof has exactly
+  the expected type, in this case `2 = 1 + 1`. See also
+  https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/changing.20a.20proof.20can.20break.20a.20later.20proof
+* `apply_rfl`:
+  `rfl` is a macro that attempts both `eq_refl` and `apply_rfl`. Since `apply_rfl`
+  subsumes `eq_refl`, we can use `apply_rfl` instead. This fails twice as fast as `rfl`.
+
+-/
+macro (name := rfl_cat) "rfl_cat" : tactic => do `(tactic| (refine id ?_; intros; apply_rfl))
+
+/--
 A thin wrapper for `aesop` which adds the `CategoryTheory` rule set and
 allows `aesop` to look through semireducible definitions when calling `intros`.
 This tactic fails when it is unable to solve the goal, making it suitable for
@@ -114,7 +136,7 @@ use in auto-params.
 -/
 macro (name := aesop_cat) "aesop_cat" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
-  first | sorry_if_sorry |
+  first | sorry_if_sorry | rfl_cat |
   aesop $c* (config := { introsTransparency? := some .default, terminal := true })
             (rule_sets := [$(Lean.mkIdent `CategoryTheory):ident]))
 
@@ -123,7 +145,7 @@ We also use `aesop_cat?` to pass along a `Try this` suggestion when using `aesop
 -/
 macro (name := aesop_cat?) "aesop_cat?" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
-  first | sorry_if_sorry |
+  first | sorry_if_sorry | try_this rfl_cat |
   aesop? $c* (config := { introsTransparency? := some .default, terminal := true })
              (rule_sets := [$(Lean.mkIdent `CategoryTheory):ident]))
 /--
@@ -187,7 +209,7 @@ scoped infixr:80 " =≫ " => eq_whisker
 
 /--
 Notation for whiskering an equation by a morphism (on the left).
-If `g h : Y ⟶ Z` and `w : g = h` and `h : X ⟶ Y`, then `f ≫= w : f ≫ g = f ≫ h`.
+If `g h : Y ⟶ Z` and `w : g = h` and `f : X ⟶ Y`, then `f ≫= w : f ≫ g = f ≫ h`.
 -/
 scoped infixr:80 " ≫= " => whisker_eq
 

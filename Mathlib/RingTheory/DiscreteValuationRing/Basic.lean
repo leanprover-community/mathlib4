@@ -66,8 +66,8 @@ variable {R}
 
 open PrincipalIdealRing
 
-theorem irreducible_of_span_eq_maximalIdeal {R : Type*} [CommRing R] [IsLocalRing R] [IsDomain R]
-    (ϖ : R) (hϖ : ϖ ≠ 0) (h : maximalIdeal R = Ideal.span {ϖ}) : Irreducible ϖ := by
+theorem irreducible_of_span_eq_maximalIdeal {R : Type*} [CommSemiring R] [IsLocalRing R]
+    [IsDomain R] (ϖ : R) (hϖ : ϖ ≠ 0) (h : maximalIdeal R = Ideal.span {ϖ}) : Irreducible ϖ := by
   have h2 : ¬IsUnit ϖ := show ϖ ∈ maximalIdeal R from h.symm ▸ Submodule.mem_span_singleton_self ϖ
   refine ⟨h2, ?_⟩
   intro a b hab
@@ -168,9 +168,9 @@ theorem unique_irreducible (hR : HasUnitMulPowIrreducibleFactorization R)
   · obtain ⟨n, rfl⟩ : ∃ k, n = 1 + k + 1 := Nat.exists_eq_add_of_lt H
     rw [pow_succ'] at this
     rcases this.isUnit_or_isUnit rfl with (H0 | H0)
-    · exact (hϖ.not_unit H0).elim
+    · exact (hϖ.not_isUnit H0).elim
     · rw [add_comm, pow_succ'] at H0
-      exact (hϖ.not_unit (isUnit_of_mul_isUnit_left H0)).elim
+      exact (hϖ.not_isUnit (isUnit_of_mul_isUnit_left H0)).elim
 
 variable [IsDomain R]
 
@@ -187,7 +187,7 @@ theorem toUniqueFactorizationMonoid (hR : HasUnitMulPowIrreducibleFactorization 
     · intro q hq
       have hpq := Multiset.eq_of_mem_replicate hq
       rw [hpq]
-      refine ⟨spec.1.ne_zero, spec.1.not_unit, ?_⟩
+      refine ⟨spec.1.ne_zero, spec.1.not_isUnit, ?_⟩
       intro a b h
       by_cases ha : a = 0
       · rw [ha]
@@ -220,7 +220,7 @@ theorem of_ufd_of_unique_irreducible [UniqueFactorizationMonoid R] (h₁ : ∃ p
   congr 1
   symm
   rw [Multiset.eq_replicate]
-  simp only [true_and, and_imp, Multiset.card_map, eq_self_iff_true, Multiset.mem_map, exists_imp]
+  simp only [true_and, and_imp, Multiset.card_map, Multiset.mem_map, exists_imp]
   rintro _ q hq rfl
   rw [Associates.mk_eq_mk_iff_associated]
   apply h₂ (hfx.1 _ hq) hp
@@ -246,7 +246,7 @@ theorem aux_pid_of_ufd_of_unique_irreducible (R : Type u) [CommRing R] [IsDomain
     simpa only [Units.mul_inv_cancel_right] using I.mul_mem_right (↑u⁻¹) hxI
   constructor
   use p ^ Nat.find ex
-  show I = Ideal.span _
+  change I = Ideal.span _
   apply le_antisymm
   · intro r hr
     by_cases hr0 : r = 0
@@ -324,7 +324,7 @@ theorem associated_pow_irreducible {x : R} (hx : x ≠ 0) {ϖ : R} (hirr : Irred
   rw [← H, ← Associates.prod_mk, Associates.mk_pow, ← Multiset.prod_replicate]
   congr 1
   rw [Multiset.eq_replicate]
-  simp only [true_and, and_imp, Multiset.card_map, eq_self_iff_true, Multiset.mem_map, exists_imp]
+  simp only [true_and, and_imp, Multiset.card_map, Multiset.mem_map, exists_imp]
   rintro _ _ _ rfl
   rw [Associates.mk_eq_mk_iff_associated]
   refine associated_of_irreducible _ ?_ hirr
@@ -464,7 +464,7 @@ lemma addVal_eq_zero_iff {x : R} :
   · simp
   obtain ⟨ϖ, hϖ⟩ := exists_irreducible R
   obtain ⟨n, u, rfl⟩ := eq_unit_mul_pow_irreducible hx hϖ
-  simp [isUnit_pow_iff_of_not_isUnit hϖ.not_unit, hϖ]
+  simp [isUnit_pow_iff_of_not_isUnit hϖ.not_isUnit, hϖ]
 
 end
 
@@ -487,3 +487,48 @@ variable (A : Type u) [CommRing A] [IsDomain A] [IsDiscreteValuationRing A]
 instance (priority := 100) of_isDiscreteValuationRing : ValuationRing A := inferInstance
 
 end
+
+namespace Valuation.Integers
+
+variable {K Γ₀ O : Type*} [Field K] [LinearOrderedCommGroupWithZero Γ₀] [CommRing O]
+    [Algebra O K] {v : Valuation K Γ₀} (hv : v.Integers O)
+include hv
+
+lemma maximalIdeal_eq_setOf_le_v_algebraMap :
+    letI : IsDomain O := hv.hom_inj.isDomain
+    ∀ [IsDiscreteValuationRing O] {ϖ : O} (_h : Irreducible ϖ),
+    (IsLocalRing.maximalIdeal O : Set O) =
+      {y : O | v (algebraMap O K y) ≤ v (algebraMap O K ϖ)} := by
+  letI : IsDomain O := hv.hom_inj.isDomain
+  intros _ _ h
+  rw [← hv.coe_span_singleton_eq_setOf_le_v_algebraMap, ← h.maximalIdeal_eq]
+
+lemma maximalIdeal_pow_eq_setOf_le_v_algebraMap_pow :
+    letI : IsDomain O := hv.hom_inj.isDomain
+    ∀ [IsDiscreteValuationRing O] {ϖ : O} (_h : Irreducible ϖ) (n : ℕ),
+    ((IsLocalRing.maximalIdeal O ^ n : Ideal O) : Set O) =
+      {y : O | v (algebraMap O K y) ≤ v (algebraMap O K ϖ) ^ n} := by
+  letI : IsDomain O := hv.hom_inj.isDomain
+  intros _ ϖ h n
+  have : (v (algebraMap O K ϖ)) ^ n = v (algebraMap O K (ϖ ^ n)) := by simp
+  rw [this, ← hv.coe_span_singleton_eq_setOf_le_v_algebraMap,
+      ← Ideal.span_singleton_pow, ← h.maximalIdeal_eq]
+
+end Valuation.Integers
+
+section Valuation.integer
+
+variable {K Γ₀ : Type*} [Field K] [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation K Γ₀)
+
+lemma _root_.Irreducible.maximalIdeal_eq_setOf_le_v_coe
+    [IsDiscreteValuationRing v.integer] {ϖ : v.integer} (h : Irreducible ϖ) :
+    (IsLocalRing.maximalIdeal v.integer : Set v.integer) = {y : v.integer | v y ≤ v ϖ} :=
+  (Valuation.integer.integers v).maximalIdeal_eq_setOf_le_v_algebraMap h
+
+lemma _root_.Irreducible.maximalIdeal_pow_eq_setOf_le_v_coe_pow
+    [IsDiscreteValuationRing v.integer] {ϖ : v.integer} (h : Irreducible ϖ) (n : ℕ) :
+    ((IsLocalRing.maximalIdeal v.integer ^ n : Ideal v.integer) : Set v.integer) =
+      {y : v.integer | v y ≤ v (ϖ : K) ^ n} :=
+  (Valuation.integer.integers v).maximalIdeal_pow_eq_setOf_le_v_algebraMap_pow h _
+
+end Valuation.integer

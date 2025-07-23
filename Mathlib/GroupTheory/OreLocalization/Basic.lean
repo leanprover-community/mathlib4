@@ -7,6 +7,7 @@ import Mathlib.GroupTheory.OreLocalization.OreSet
 import Mathlib.Tactic.Common
 import Mathlib.Algebra.Group.Submonoid.MulAction
 import Mathlib.Algebra.Group.Units.Defs
+import Mathlib.Algebra.Group.Basic
 
 /-!
 
@@ -182,7 +183,7 @@ def lift₂Expand {C : Sort*} (P : X → S → X → S → C)
       have := hP r₁ 1 s₁ (by simp) r₂ t₂ s₂ ht₂
       simp [this])
     fun r₁ t₁ s₁ ht₁ => by
-    ext x; induction' x with r₂ s₂
+    ext x; cases x with | _ r₂ s₂
     dsimp only
     rw [liftExpand_of, liftExpand_of, hP r₁ t₁ s₁ ht₁ r₂ 1 s₂ (by simp)]; simp
 
@@ -215,7 +216,7 @@ private theorem smul'_char (r₁ : R) (r₂ : X) (s₁ s₂ : S) (u : S) (v : R)
   symm; rw [oreDiv_eq_iff]
   use s₄ * s₃
   use s₄ * r₃
-  simp only [Submonoid.coe_mul, Submonoid.smul_def, smul_eq_mul]
+  simp only [Submonoid.coe_mul, Submonoid.smul_def]
   constructor
   · rw [smul_smul, mul_assoc (c := v₀), ← hs₄]
     simp only [smul_smul, mul_assoc]
@@ -250,8 +251,8 @@ private def smul'' (r : R) (s : S) : X[S⁻¹] → X[S⁻¹] :=
 protected def smul : R[S⁻¹] → X[S⁻¹] → X[S⁻¹] :=
   liftExpand smul'' fun r₁ r₂ s hs => by
     ext x
-    induction' x with x s₂
-    show OreLocalization.smul' r₁ s x s₂ = OreLocalization.smul' (r₂ * r₁) ⟨_, hs⟩ x s₂
+    cases x with | _ x s₂
+    change OreLocalization.smul' r₁ s x s₂ = OreLocalization.smul' (r₂ * r₁) ⟨_, hs⟩ x s₂
     rcases oreCondition r₁ s₂ with ⟨r₁', s₁', h₁⟩
     rw [smul'_char _ _ _ _ _ _ h₁]
     rcases oreCondition (r₂ * r₁) s₂ with ⟨r₂', s₂', h₂⟩
@@ -308,7 +309,7 @@ Ore witnesses and conditions bundled in a sigma type. -/
 @[to_additive "Another characterization lemma for the vector addition on the
   Ore localizaion delivering Ore witnesses and conditions bundled in a sigma type."]
 def oreDivSMulChar' (r₁ : R) (r₂ : X) (s₁ s₂ : S) :
-    Σ'r' : R, Σ's' : S, s' * r₁ = r' * s₂ ∧ (r₁ /ₒ s₁) • (r₂ /ₒ s₂) = r' • r₂ /ₒ (s' * s₁) :=
+    Σ' r' : R, Σ' s' : S, s' * r₁ = r' * s₂ ∧ (r₁ /ₒ s₁) • (r₂ /ₒ s₂) = r' • r₂ /ₒ (s' * s₁) :=
   ⟨oreNum r₁ s₂, oreDenom r₁ s₂, ore_eq r₁ s₂, oreDiv_smul_oreDiv⟩
 
 /-- Another characterization lemma for the multiplication on the Ore localizaion delivering
@@ -316,7 +317,7 @@ Ore witnesses and conditions bundled in a sigma type. -/
 @[to_additive "Another characterization lemma for the addition on the Ore localizaion delivering
   Ore witnesses and conditions bundled in a sigma type."]
 def oreDivMulChar' (r₁ r₂ : R) (s₁ s₂ : S) :
-    Σ'r' : R, Σ's' : S, s' * r₁ = r' * s₂ ∧ r₁ /ₒ s₁ * (r₂ /ₒ s₂) = r' * r₂ /ₒ (s' * s₁) :=
+    Σ' r' : R, Σ' s' : S, s' * r₁ = r' * s₂ ∧ r₁ /ₒ s₁ * (r₂ /ₒ s₂) = r' * r₂ /ₒ (s' * s₁) :=
   ⟨oreNum r₁ s₂, oreDenom r₁ s₂, ore_eq r₁ s₂, oreDiv_mul_oreDiv⟩
 
 /-- `1` in the localization, defined as `1 /ₒ 1`. -/
@@ -346,7 +347,7 @@ protected theorem div_eq_one {s : S} : (s : R) /ₒ s = 1 :=
 
 @[to_additive]
 protected theorem one_smul (x : X[S⁻¹]) : (1 : R[S⁻¹]) • x = x := by
-  induction' x with r s
+  cases x with | _ r s
   simp [OreLocalization.one_def, oreDiv_smul_char 1 r 1 s 1 s (by simp)]
 
 @[to_additive]
@@ -355,15 +356,15 @@ protected theorem one_mul (x : R[S⁻¹]) : 1 * x = x :=
 
 @[to_additive]
 protected theorem mul_one (x : R[S⁻¹]) : x * 1 = x := by
-  induction' x with r s
+  cases x with | _ r s
   simp [OreLocalization.one_def, oreDiv_mul_char r (1 : R) s (1 : S) r 1 (by simp)]
 
 @[to_additive]
 protected theorem mul_smul (x y : R[S⁻¹]) (z : X[S⁻¹]) : (x * y) • z = x • y • z := by
   -- Porting note: `assoc_rw` was not ported yet
-  induction' x with r₁ s₁
-  induction' y with r₂ s₂
-  induction' z with r₃ s₃
+  cases x with | _ r₁ s₁
+  cases y with | _ r₂ s₂
+  cases z with | _ r₃ s₃
   rcases oreDivMulChar' r₁ r₂ s₁ s₂ with ⟨ra, sa, ha, ha'⟩; rw [ha']; clear ha'
   rcases oreDivSMulChar' r₂ r₃ s₂ s₃ with ⟨rb, sb, hb, hb'⟩; rw [hb']; clear hb'
   rcases oreCondition ra sb with ⟨rc, sc, hc⟩
@@ -468,7 +469,6 @@ to a morphism `R[S⁻¹] →* T`. -/
 @[to_additive "The universal lift from a morphism `R →+ T`, which maps elements of `S` to
   additive-units of `T`, to a morphism `AddOreLocalization R S →+ T`."]
 def universalMulHom (hf : ∀ s : S, f s = fS s) : R[S⁻¹] →* T where
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
   toFun x :=
     x.liftExpand (fun r s => ((fS s)⁻¹ : Units T) * f r) fun r t s ht => by
       simp only [smul_eq_mul]
@@ -480,11 +480,8 @@ def universalMulHom (hf : ∀ s : S, f s = fS s) : R[S⁻¹] →* T where
       simp only [one_mul, Units.inv_mul]
   map_one' := by beta_reduce; rw [OreLocalization.one_def, liftExpand_of]; simp
   map_mul' x y := by
-    -- Porting note: `simp only []` required, not just for beta reductions
-    beta_reduce
-    simp only [] -- TODO more!
-    induction' x with r₁ s₁
-    induction' y with r₂ s₂
+    cases x with | _ r₁ s₁
+    cases y with | _ r₂ s₂
     rcases oreDivMulChar' r₁ r₂ s₁ s₂ with ⟨ra, sa, ha, ha'⟩; rw [ha']; clear ha'
     rw [liftExpand_of, liftExpand_of, liftExpand_of, Units.inv_mul_eq_iff_eq_mul, map_mul, map_mul,
       Units.val_mul, mul_assoc, ← mul_assoc (fS s₁ : T), ← mul_assoc (fS s₁ : T), Units.mul_inv,
@@ -506,7 +503,7 @@ theorem universalMulHom_commutes {r : R} : universalMulHom f fS hf (numeratorHom
 @[to_additive "The universal morphism `universalAddHom` is unique."]
 theorem universalMulHom_unique (φ : R[S⁻¹] →* T) (huniv : ∀ r : R, φ (numeratorHom r) = f r) :
     φ = universalMulHom f fS hf := by
-  ext x; induction' x with r s
+  ext x; cases x with | _ r s
   rw [universalMulHom_apply, ← huniv r, numeratorHom_apply, ← one_mul (φ (r /ₒ s)), ←
     Units.val_one, ← inv_mul_cancel (fS s), Units.val_mul, mul_assoc, ← hf, ← huniv, ← φ.map_mul,
     numeratorHom_apply, OreLocalization.mul_cancel]
@@ -545,12 +542,12 @@ theorem smul_oreDiv (r : R) (x : X) (s : S) :
 
 @[to_additive (attr := simp)]
 theorem oreDiv_one_smul (r : M) (x : X[S⁻¹]) : (r /ₒ (1 : S)) • x = r • x := by
-  induction' x using OreLocalization.ind with r' s
+  cases x
   rw [smul_oreDiv, oreDiv_smul_oreDiv, mul_one, smul_eq_mul, mul_one]
 
 @[to_additive]
 theorem smul_one_smul (r : R) (x : X[S⁻¹]) : (r • 1 : M) • x = r • x := by
-  induction' x using OreLocalization.ind with r' s
+  cases x
   simp only [smul_oreDiv, smul_eq_mul, mul_one]
 
 @[to_additive]
@@ -563,7 +560,7 @@ instance : IsScalarTower R R' X[S⁻¹] where
   smul_assoc r m x := by
     rw [← smul_one_oreDiv_one_smul, ← smul_one_oreDiv_one_smul, ← smul_one_oreDiv_one_smul,
       ← mul_smul, mul_div_one]
-    simp only [smul_eq_mul, mul_one, smul_mul_assoc, smul_assoc, one_mul]
+    simp only [smul_mul_assoc, smul_assoc, one_mul]
 
 @[to_additive]
 instance [SMulCommClass R R' M] : SMulCommClass R R' X[S⁻¹] where
@@ -578,8 +575,8 @@ instance : IsScalarTower R M[S⁻¹] X[S⁻¹] where
 @[to_additive]
 instance [SMulCommClass R M M] : SMulCommClass R M[S⁻¹] X[S⁻¹] where
   smul_comm r x y := by
-    induction' x using OreLocalization.ind with r₁ s₁
-    induction' y using OreLocalization.ind with r₂ s₂
+    cases x with | _ r₁ s₁
+    cases y with | _ r₂ s₂
     rw [← smul_one_oreDiv_one_smul, ← smul_one_oreDiv_one_smul, smul_smul, smul_smul,
       mul_div_one, oreDiv_mul_char _ _ _ _ (r • 1) s₁ (by simp), mul_one]
     simp
@@ -615,8 +612,8 @@ theorem oreDiv_mul_oreDiv_comm {r₁ r₂ : R} {s₁ s₂ : S} :
 @[to_additive]
 instance : CommMonoid R[S⁻¹] where
   mul_comm := fun x y => by
-    induction' x with r₁ s₁
-    induction' y with r₂ s₂
+    cases x with | _ r₁ s₁
+    cases y with | _ r₂ s₂
     rw [oreDiv_mul_oreDiv_comm, oreDiv_mul_oreDiv_comm, mul_comm r₁, mul_comm s₁]
 
 end CommMonoid

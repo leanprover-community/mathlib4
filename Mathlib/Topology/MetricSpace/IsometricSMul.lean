@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Basic
 import Mathlib.Algebra.Ring.Pointwise.Set
+import Mathlib.Topology.Algebra.ConstMulAction
 import Mathlib.Topology.MetricSpace.Isometry
 import Mathlib.Topology.MetricSpace.Lipschitz
 
@@ -378,18 +379,18 @@ variable {Y : Type*} [PseudoEMetricSpace X] [PseudoEMetricSpace Y] [SMul M X]
 
 @[to_additive]
 instance Prod.instIsIsometricSMul [SMul M Y] [IsIsometricSMul M Y] : IsIsometricSMul M (X × Y) :=
-  ⟨fun c => (isometry_smul X c).prod_map (isometry_smul Y c)⟩
+  ⟨fun c => (isometry_smul X c).prodMap (isometry_smul Y c)⟩
 
 @[to_additive]
 instance Prod.isIsometricSMul' {N} [Mul M] [PseudoEMetricSpace M] [IsIsometricSMul M M] [Mul N]
     [PseudoEMetricSpace N] [IsIsometricSMul N N] : IsIsometricSMul (M × N) (M × N) :=
-  ⟨fun c => (isometry_smul M c.1).prod_map (isometry_smul N c.2)⟩
+  ⟨fun c => (isometry_smul M c.1).prodMap (isometry_smul N c.2)⟩
 
 @[to_additive]
 instance Prod.isIsometricSMul'' {N} [Mul M] [PseudoEMetricSpace M] [IsIsometricSMul Mᵐᵒᵖ M]
     [Mul N] [PseudoEMetricSpace N] [IsIsometricSMul Nᵐᵒᵖ N] :
     IsIsometricSMul (M × N)ᵐᵒᵖ (M × N) :=
-  ⟨fun c => (isometry_mul_right c.unop.1).prod_map (isometry_mul_right c.unop.2)⟩
+  ⟨fun c => (isometry_mul_right c.unop.1).prodMap (isometry_mul_right c.unop.2)⟩
 
 @[to_additive]
 instance Units.isIsometricSMul [Monoid M] : IsIsometricSMul Mˣ X :=

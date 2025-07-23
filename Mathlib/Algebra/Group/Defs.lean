@@ -58,6 +58,12 @@ def leftMul : G → G → G := fun g : G ↦ fun x : G ↦ g * x
 @[to_additive "`rightAdd g` denotes right addition by `g`"]
 def rightMul : G → G → G := fun g : G ↦ fun x : G ↦ x * g
 
+attribute [deprecated HMul.hMul "Use (g * ·) instead" (since := "2025-04-08")] leftMul
+attribute [deprecated HAdd.hAdd "Use (g + ·) instead" (since := "2025-04-08")] leftAdd
+
+attribute [deprecated HMul.hMul "Use (· * g) instead" (since := "2025-04-08")] rightMul
+attribute [deprecated HAdd.hAdd "Use (· + g) instead" (since := "2025-04-08")] rightAdd
+
 /-- A mixin for left cancellative multiplication. -/
 class IsLeftCancelMul (G : Type u) [Mul G] : Prop where
   /-- Multiplication is left cancellative. -/
@@ -321,18 +327,6 @@ section
 
 variable {M : Type u}
 
-/-- The fundamental power operation in a monoid. `npowRec n a = a*a*...*a` n times.
-Use instead `a ^ n`, which has better definitional behavior. -/
-def npowRec [One M] [Mul M] : ℕ → M → M
-  | 0, _ => 1
-  | n + 1, a => npowRec n a * a
-
-/-- The fundamental scalar multiplication in an additive monoid. `nsmulRec n a = a+a+...+a` n
-times. Use instead `n • a`, which has better definitional behavior. -/
-def nsmulRec [Zero M] [Add M] : ℕ → M → M
-  | 0, _ => 0
-  | n + 1, a => nsmulRec n a + a
-
 attribute [to_additive existing] npowRec
 
 variable [One M] [Semigroup M] (m n : ℕ) (hn : n ≠ 0) (a : M) (ha : 1 * a = a)
@@ -341,7 +335,7 @@ include hn ha
 @[to_additive] theorem npowRec_add : npowRec (m + n) a = npowRec m a * npowRec n a := by
   obtain _ | n := n; · exact (hn rfl).elim
   induction n with
-  | zero => simp only [Nat.zero_add, npowRec, ha]
+  | zero => simp only [npowRec, ha]
   | succ n ih => rw [← Nat.add_assoc, npowRec, ih n.succ_ne_zero]; simp only [npowRec, mul_assoc]
 
 @[to_additive] theorem npowRec_succ : npowRec (n + 1) a = a * npowRec n a := by
@@ -439,7 +433,7 @@ where
     k.binaryRec (fun y _ ↦ y) fun bn _n fn y x ↦ fn (cond bn (y * x) y) (x * x)
 
 /--
-A variant of `npowRec` which is a semigroup homomorphisms from `ℕ₊` to `M`.
+A variant of `npowRec` which is a semigroup homomorphism from `ℕ₊` to `M`.
 -/
 def npowRec' {M : Type*} [One M] [Mul M] : ℕ → M → M
   | 0, _ => 1
@@ -447,7 +441,7 @@ def npowRec' {M : Type*} [One M] [Mul M] : ℕ → M → M
   | k + 2, m => npowRec' (k + 1) m * m
 
 /--
-A variant of `nsmulRec` which is a semigroup homomorphisms from `ℕ₊` to `M`.
+A variant of `nsmulRec` which is a semigroup homomorphism from `ℕ₊` to `M`.
 -/
 def nsmulRec' {M : Type*} [Zero M] [Add M] : ℕ → M → M
   | 0, _ => 0
@@ -478,7 +472,7 @@ theorem npowRec'_mul_comm {M : Type*} [Semigroup M] [One M] {k : ℕ} (k0 : k �
   induction k using Nat.strongRecOn with
   | ind k' ih =>
     match k' with
-    | 1 => simp [npowRec', mul_assoc]
+    | 1 => simp [npowRec']
     | k + 2 => simp [npowRec', ← mul_assoc, ih]
 
 @[to_additive]
@@ -504,7 +498,7 @@ theorem npowBinRec.go_spec {M : Type*} [Semigroup M] [One M] (k : ℕ) (m n : M)
   | z₁ => simp [npowRec']
   | f b k' k'0 ih =>
     rw [Nat.binaryRec_eq _ _ (Or.inl rfl), ih _ _ k'0]
-    cases b <;> simp only [Nat.bit, cond_false, cond_true, ← Nat.two_mul, npowRec'_two_mul]
+    cases b <;> simp only [Nat.bit, cond_false, cond_true, npowRec'_two_mul]
     rw [npowRec'_succ (by omega), npowRec'_two_mul, ← npowRec'_two_mul,
       ← npowRec'_mul_comm (by omega), mul_assoc]
 
@@ -580,8 +574,8 @@ theorem npow_eq_pow (n : ℕ) (x : M) : Monoid.npow n x = x ^ n :=
 @[to_additive] lemma left_inv_eq_right_inv (hba : b * a = 1) (hac : a * c = 1) : b = c := by
   rw [← one_mul c, ← hba, mul_assoc, hac, mul_one b]
 
--- the attributes are intentionally out of order. `zero_smul` proves `zero_nsmul`.
-@[to_additive zero_nsmul, simp]
+-- This lemma is higher priority than later `zero_smul` so that the `simpNF` is happy
+@[to_additive (attr := simp high) zero_nsmul]
 theorem pow_zero (a : M) : a ^ 0 = 1 :=
   Monoid.npow_zero _
 
@@ -600,7 +594,7 @@ lemma pow_one (a : M) : a ^ 1 = a := by rw [pow_succ, pow_zero, one_mul]
     (a * b) ^ n * a = a * (b * a) ^ n := by
   induction n with
   | zero => simp
-  | succ n ih => simp [pow_succ', ← ih, Nat.mul_add, mul_assoc]
+  | succ n ih => simp [pow_succ', ← ih, mul_assoc]
 
 @[to_additive]
 lemma pow_mul_comm' (a : M) (n : ℕ) : a ^ n * a = a * a ^ n := by rw [← pow_succ, pow_succ']
@@ -617,8 +611,8 @@ lemma pow_three' (a : M) : a ^ 3 = a * a * a := by rw [pow_succ, pow_two]
 @[to_additive three_nsmul]
 lemma pow_three (a : M) : a ^ 3 = a * (a * a) := by rw [pow_succ', pow_two]
 
--- the attributes are intentionally out of order.
-@[to_additive nsmul_zero, simp] lemma one_pow : ∀ n, (1 : M) ^ n = 1
+-- This lemma is higher priority than later `smul_zero` so that the `simpNF` is happy
+@[to_additive (attr := simp high) nsmul_zero] lemma one_pow : ∀ n, (1 : M) ^ n = 1
   | 0 => pow_zero _
   | n + 1 => by rw [pow_succ, one_pow, one_mul]
 
@@ -1157,6 +1151,29 @@ lemma mul_inv_cancel_comm (a b : G) : a * b * a⁻¹ = b := by rw [mul_comm, inv
   rw [mul_comm, inv_mul_cancel_right]
 
 end CommGroup
+
+section IsCommutative
+
+/-- A Prop stating that the addition is commutative. -/
+class IsAddCommutative (M : Type*) [Add M] : Prop where
+  is_comm : Std.Commutative (α := M) (· + ·)
+
+/-- A Prop stating that the multiplication is commutative. -/
+@[to_additive]
+class IsMulCommutative (M : Type*) [Mul M] : Prop where
+  is_comm : Std.Commutative (α := M) (· * ·)
+
+@[to_additive]
+instance (priority := 100) CommMonoid.ofIsMulCommutative {M : Type*} [Monoid M]
+    [IsMulCommutative M] :
+    CommMonoid M where
+  mul_comm := IsMulCommutative.is_comm.comm
+
+@[to_additive]
+instance (priority := 100) CommGroup.ofIsMulCommutative {G : Type*} [Group G] [IsMulCommutative G] :
+    CommGroup G where
+
+end IsCommutative
 
 /-! We initialize all projections for `@[simps]` here, so that we don't have to do it in later
 files.

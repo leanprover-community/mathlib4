@@ -61,11 +61,11 @@ theorem norm_repr_le_norm {x : L} (i : ι) : ‖B.repr x i‖ ≤ B.norm x :=
 
 /-- For any `K`-basis of `L`, we have `B.norm 0 = 0`. -/
 protected theorem norm_zero : B.norm 0 = 0 := by
-  simp [norm, map_zero, Pi.zero_apply, norm_zero]
+  simp [norm, map_zero, norm_zero]
 
 /-- For any `K`-basis of `L`, and any `x : L`, we have `B.norm (-x) = B.norm x`. -/
 protected theorem norm_neg (x : L) : B.norm (-x) = B.norm x := by
-  simp [norm, map_neg,  Pi.neg_apply, _root_.norm_neg]
+  simp [norm, map_neg, Pi.neg_apply, _root_.norm_neg]
 
 /-- For any `K`-basis of `L`, and any `x : L`, we have `0 ≤ B.norm x`. -/
 protected theorem norm_nonneg (x : L) : 0 ≤ B.norm x := by
@@ -121,7 +121,7 @@ theorem norm_mul_le_const_mul_norm {i : ι} (hBi : B i = (1 : L))
         (fun i ↦ (B.repr x i • ∑ i_1 : ι, B.repr y i_1 • B.repr (B i * B i_1)) ixy)
         (univ : Finset ι)
     simp only [Finsupp.coe_smul, Finsupp.coe_finset_sum, Pi.smul_apply, sum_apply, smul_eq_mul,
-      norm_mul, sup'_le_iff, mem_univ, forall_const] at hk ⊢
+      norm_mul] at hk ⊢
     apply le_trans hk
     -- We use the above property again.
     obtain ⟨k', hk'⟩ : ∃ (k' : ι),
@@ -181,7 +181,7 @@ theorem exists_nonarchimedean_pow_mul_seminorm_of_finiteDimensional (hfd : Finit
     ∃ f : AlgebraNorm K L, IsPowMul f ∧ (∀ (x : K), f ((algebraMap K L) x) = ‖x‖) ∧
       IsNonarchimedean f := by
   -- Choose a basis B = {1, e2,..., en} of the K-vector space L
-  set h1 : LinearIndependent K fun x : ({1} : Set L) ↦ (x : L) :=
+  set h1 : LinearIndepOn K id ({1} : Set L) :=
     LinearIndepOn.id_singleton _ one_ne_zero
   set ι := { x // x ∈ LinearIndepOn.extend h1 (Set.subset_univ ({1} : Set L)) }
   set B : Basis ι K L := Basis.extend h1

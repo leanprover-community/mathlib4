@@ -85,7 +85,7 @@ variable {ι : Type*} (M : ι → Type*) [∀ i, Monoid (M i)]
 
 /-- A relation on the free monoid on alphabet `Σ i, M i`,
 relating `⟨i, 1⟩` with `1` and `⟨i, x⟩ * ⟨i, y⟩` with `⟨i, x * y⟩`. -/
-inductive Monoid.CoprodI.Rel : FreeMonoid (Σi, M i) → FreeMonoid (Σi, M i) → Prop
+inductive Monoid.CoprodI.Rel : FreeMonoid (Σ i, M i) → FreeMonoid (Σ i, M i) → Prop
   | of_one (i : ι) : Monoid.CoprodI.Rel (FreeMonoid.of ⟨i, 1⟩) 1
   | of_mul {i : ι} (x y : M i) :
     Monoid.CoprodI.Rel (FreeMonoid.of ⟨i, x⟩ * FreeMonoid.of ⟨i, y⟩) (FreeMonoid.of ⟨i, x * y⟩)
@@ -109,7 +109,7 @@ letters can come from the same summand. -/
 structure Word where
   /-- A `Word` is a `List (Σ i, M i)`, such that `1` is not in the list, and no
   two adjacent letters are from the same summand -/
-  toList : List (Σi, M i)
+  toList : List (Σ i, M i)
   /-- A reduced word does not contain `1` -/
   ne_one : ∀ l ∈ toList, Sigma.snd l ≠ 1
   /-- Adjacent letters are not from the same summand. -/
@@ -143,7 +143,7 @@ universal property of the free product, characterizing it as a categorical copro
 @[simps symm_apply]
 def lift : (∀ i, M i →* N) ≃ (CoprodI M →* N) where
   toFun fi :=
-    Con.lift _ (FreeMonoid.lift fun p : Σi, M i => fi p.fst p.snd) <|
+    Con.lift _ (FreeMonoid.lift fun p : Σ i, M i => fi p.fst p.snd) <|
       Con.conGen_le <| by
         simp_rw [Con.ker_rel]
         rintro _ _ (i | ⟨x, y⟩) <;> simp
@@ -205,7 +205,7 @@ theorem induction_left {motive : CoprodI M → Prop} (m : CoprodI M) (one : moti
     (mul : ∀ {i} (m : M i) x, motive x → motive (of m * x)) : motive m := by
   induction m using Submonoid.induction_of_closure_eq_top_left mclosure_iUnion_range_of with
   | one => exact one
-  | mul x hx y ihy =>
+  | mul_left x hx y ihy =>
     obtain ⟨i, m, rfl⟩ : ∃ (i : ι) (m : M i), of m = x := by simpa using hx
     exact mul m y ihy
 
@@ -247,11 +247,13 @@ instance : Group (CoprodI G) :=
 theorem lift_range_le {N} [Group N] (f : ∀ i, G i →* N) {s : Subgroup N}
     (h : ∀ i, (f i).range ≤ s) : (lift f).range ≤ s := by
   rintro _ ⟨x, rfl⟩
-  induction' x using CoprodI.induction_on with i x x y hx hy
-  · exact s.one_mem
-  · simp only [lift_of, SetLike.mem_coe]
+  induction x using CoprodI.induction_on with
+  | one => exact s.one_mem
+  | of i x =>
+    simp only [lift_of]
     exact h i (Set.mem_range_self x)
-  · simp only [map_mul, SetLike.mem_coe]
+  | mul x y hx hy =>
+    simp only [map_mul]
     exact s.mul_mem hx hy
 
 theorem range_eq_iSup {N} [Group N] (f : ∀ i, G i →* N) : (lift f).range = ⨆ i, (f i).range := by
@@ -370,13 +372,7 @@ theorem mem_rcons_iff {i j : ι} (p : Pair M i) (m : M j) :
     ⟨_, m⟩ ∈ (rcons p).toList ↔ ⟨_, m⟩ ∈ p.tail.toList ∨
       m ≠ 1 ∧ (∃ h : i = j, m = h ▸ p.head) := by
   simp only [rcons, cons, ne_eq]
-  by_cases hij : i = j
-  · subst i
-    by_cases hm : m = p.head
-    · subst m
-      split_ifs <;> simp_all
-    · split_ifs <;> simp_all
-  · split_ifs <;> simp_all [Ne.symm hij]
+  grind
 
 end
 
@@ -392,11 +388,11 @@ def consRecOn {motive : Word M → Sort*} (w : Word M) (empty : motive empty)
   | cons m w ih =>
     refine cons m.1 m.2 ⟨w, fun _ hl => h1 _ (List.mem_cons_of_mem _ hl), h2.tail⟩ ?_ ?_ (ih _ _)
     · rw [List.chain'_cons'] at h2
-      simp only [fstIdx, ne_eq, Option.map_eq_some',
+      simp only [fstIdx, ne_eq, Option.map_eq_some_iff,
         Sigma.exists, exists_and_right, exists_eq_right, not_exists]
       intro m' hm'
       exact h2.1 _ hm' rfl
-    · exact h1 _ (List.mem_cons_self _ _)
+    · exact h1 _ List.mem_cons_self
 
 @[simp]
 theorem consRecOn_empty {motive : Word M → Sort*} (h_empty : motive empty)
@@ -424,7 +420,7 @@ private def equivPairAux (i) (w : Word M) : { p : Pair M i // rcons p = w } :=
             tail := w
             fstIdx_ne := ij ▸ h1 }
           property := by subst ij; simp [rcons, h2] }
-      else ⟨⟨1, cons m w h1 h2, by simp [cons, fstIdx, Ne.symm ij]⟩,  by simp [rcons]⟩
+      else ⟨⟨1, cons m w h1 h2, by simp [cons, fstIdx, Ne.symm ij]⟩, by simp [rcons]⟩
 
 /-- The equivalence between words and pairs. Given a word, it decomposes it as a pair by removing
 the first letter if it comes from `M i`. Given a pair, it prepends the head to the tail. -/
@@ -461,7 +457,7 @@ theorem mem_of_mem_equivPair_tail {i j : ι} {w : Word M} (m : M i) :
   rw [mem_equivPair_tail_iff]
   rintro (h | h)
   · exact List.mem_of_mem_tail h
-  · revert h; cases w.toList <;> simp (config := {contextual := true})
+  · revert h; cases w.toList <;> simp +contextual
 
 theorem equivPair_head {i : ι} {w : Word M} :
     (equivPair i w).head =
@@ -522,11 +518,11 @@ theorem mem_smul_iff {i j : ι} {m₁ : M i} {m₂ : M j} {w : Word M} :
     simp only [not_true, ne_eq, false_and, exists_prop, true_and, false_or]
     by_cases hw : ⟨j, m₁⟩ ∈ w.toList.tail
     · simp [hw, show m₁ ≠ 1 from w.ne_one _ (List.mem_of_mem_tail hw)]
-    · simp only [hw, false_or, Option.mem_def, ne_eq, and_congr_right_iff]
+    · simp only [hw, false_or, Option.mem_def, and_congr_right_iff]
       intro hm1
       split_ifs with h
       · rcases h with ⟨hnil, rfl⟩
-        simp only [List.head?_eq_head hnil, Option.some.injEq, ne_eq]
+        simp only [List.head?_eq_head hnil, Option.some.injEq]
         constructor
         · rintro rfl
           exact Or.inl ⟨_, rfl, rfl⟩
@@ -534,16 +530,16 @@ theorem mem_smul_iff {i j : ι} {m₁ : M i} {m₂ : M j} {w : Word M} :
           · simp only [Sigma.ext_iff, heq_eq_eq, true_and] at h
             subst h
             rfl
-          · simp only [fstIdx, Option.map_eq_some', Sigma.exists,
+          · simp only [fstIdx, Option.map_eq_some_iff, Sigma.exists,
               exists_and_right, exists_eq_right, not_exists, ne_eq] at hm'
             exact (hm'.1 (w.toList.head hnil).2 (by rw [List.head?_eq_head])).elim
       · revert h
         rw [fstIdx]
         cases w.toList
         · simp
-        · simp (config := {contextual := true}) [Sigma.ext_iff]
+        · simp +contextual [Sigma.ext_iff]
   · rcases w with ⟨_ | _, _, _⟩ <;>
-    simp [or_comm, hij, Ne.symm hij]; rw [eq_comm]
+    simp [or_comm, hij, Ne.symm hij, eq_comm]
 
 theorem mem_smul_iff_of_ne {i j : ι} (hij : i ≠ j) {m₁ : M i} {m₂ : M j} {w : Word M} :
     ⟨_, m₁⟩ ∈ (of m₂ • w).toList ↔ ⟨i, m₁⟩ ∈ w.toList := by
@@ -627,7 +623,7 @@ open Word
 
 /-- The list represented by a given `NeWord` -/
 @[simp]
-def toList : ∀ {i j} (_w : NeWord M i j), List (Σi, M i)
+def toList : ∀ {i j} (_w : NeWord M i j), List (Σ i, M i)
   | i, _, singleton x _ => [⟨i, x⟩]
   | _, _, append w₁ _ w₂ => w₁.toList ++ w₂.toList
 
@@ -693,9 +689,10 @@ theorem of_word (w : Word M) (h : w ≠ empty) : ∃ (i j : _) (w' : NeWord M i 
     ext
     rw [h]
   obtain ⟨l, hnot1, hchain⟩ := w
-  induction' l with x l hi
-  · contradiction
-  · rw [List.forall_mem_cons] at hnot1
+  induction l with
+  | nil => contradiction
+  | cons x l hi =>
+    rw [List.forall_mem_cons] at hnot1
     rcases l with - | ⟨y, l⟩
     · refine ⟨x.1, x.1, singleton x.2 hnot1.1, ?_⟩
       simp [toWord]
@@ -766,7 +763,7 @@ theorem mulHead_prod {i j : ι} (w : NeWord M i j) (x : M i) (hnotone : x * w.he
     (mulHead w x hnotone).prod = of x * w.prod := by
   unfold mulHead
   induction w with
-  | singleton => simp [mulHead, replaceHead]
+  | singleton => simp [replaceHead]
   | append _ _ _ w_ih_w₁ w_ih_w₂ =>
     specialize w_ih_w₁ _ hnotone
     clear w_ih_w₂
@@ -824,9 +821,10 @@ include hpp
 
 theorem lift_word_ping_pong {i j k} (w : NeWord H i j) (hk : j ≠ k) :
     lift f w.prod • X k ⊆ X i := by
-  induction' w with i x hne_one i j k l w₁ hne w₂ hIw₁ hIw₂ generalizing k
-  · simpa using hpp hk _ hne_one
-  · calc
+  induction w generalizing k with
+  | singleton x hne_one => simpa using hpp hk _ hne_one
+  | @append i j k l w₁ hne w₂ hIw₁ hIw₂ =>
+    calc
       lift f (NeWord.append w₁ hne w₂).prod • X k = lift f w₁.prod • lift f w₂.prod • X k := by
         simp [MulAction.mul_smul]
       _ ⊆ lift f w₁.prod • X _ := smul_set_subset_smul_set_iff.mpr (hIw₂ hk)
@@ -990,7 +988,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
   clear this
   refine Function.Injective.comp ?_ (MulEquiv.injective freeGroupEquivCoprodI)
   -- Step two: Invoke the ping-pong lemma for free products
-  show Function.Injective (lift fun i : ι => FreeGroup.lift fun _ => a i)
+  change Function.Injective (lift fun i : ι => FreeGroup.lift fun _ => a i)
   -- Prepare to instantiate lift_injective_of_ping_pong
   let H : ι → Type _ := fun _i => FreeGroup Unit
   let f : ∀ i, H i →* G := fun i => FreeGroup.lift fun _ => a i
@@ -1006,7 +1004,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
     · exact hXYdisj i j
     · exact (hXYdisj j i).symm
     · exact hYdisj hij
-  · show Pairwise fun i j => ∀ h : H i, h ≠ 1 → f i h • X' j ⊆ X' i
+  · change Pairwise fun i j => ∀ h : H i, h ≠ 1 → f i h • X' j ⊆ X' i
     rintro i j hij
     -- use free_group unit ≃ ℤ
     refine FreeGroup.freeGroupUnitEquivInt.forall_congr_left.mpr ?_
@@ -1028,12 +1026,9 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
           smul_set_mono ((hXYdisj j i).union_left <| hYdisj hij.symm).subset_compl_right
         _ ⊆ X i := by
           clear hnne0 hlt
-          refine Int.le_induction (P := fun n => a i ^ n • (Y i)ᶜ ⊆ X i) ?_ ?_ n h1n
-          · dsimp
-            rw [zpow_one]
-            exact hX i
-          · dsimp
-            intro n _hle hi
+          induction n, h1n using Int.le_induction with
+          | base => rw [zpow_one]; exact hX i
+          | succ n _hle hi =>
             calc
               a i ^ (n + 1) • (Y i)ᶜ = (a i ^ n * a i) • (Y i)ᶜ := by rw [zpow_add, zpow_one]
               _ = a i ^ n • a i • (Y i)ᶜ := MulAction.mul_smul _ _ _
@@ -1048,12 +1043,10 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
         a i ^ n • X' j ⊆ a i ^ n • (X i)ᶜ :=
           smul_set_mono ((hXdisj hij.symm).union_left (hXYdisj i j).symm).subset_compl_right
         _ ⊆ Y i := by
-          refine Int.le_induction_down (P := fun n => a i ^ n • (X i)ᶜ ⊆ Y i) ?_ ?_ _ h1n
-          · dsimp
-            rw [zpow_neg, zpow_one]
-            exact hY i
-          · dsimp
-            intro n _ hi
+          clear hnne0 hgt
+          induction n, h1n using Int.le_induction_down with
+          | base => rw [zpow_neg, zpow_one]; exact hY i
+          | pred n hle hi =>
             calc
               a i ^ (n - 1) • (X i)ᶜ = (a i ^ n * (a i)⁻¹) • (X i)ᶜ := by rw [zpow_sub, zpow_one]
               _ = a i ^ n • (a i)⁻¹ • (X i)ᶜ := MulAction.mul_smul _ _ _

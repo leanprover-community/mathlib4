@@ -14,22 +14,23 @@ import Mathlib.RingTheory.Polynomial.Content
 Gauss's Lemma is one of a few results pertaining to irreducibility of primitive polynomials.
 
 ## Main Results
- - `IsIntegrallyClosed.eq_map_mul_C_of_dvd`: if `R` is integrally closed, `K = Frac(R)` and
+
+- `IsIntegrallyClosed.eq_map_mul_C_of_dvd`: if `R` is integrally closed, `K = Frac(R)` and
   `g : K[X]` divides a monic polynomial with coefficients in `R`, then `g * (C g.leadingCoeff⁻¹)`
   has coefficients in `R`
- - `Polynomial.Monic.irreducible_iff_irreducible_map_fraction_map`:
+- `Polynomial.Monic.irreducible_iff_irreducible_map_fraction_map`:
   A monic polynomial over an integrally closed domain is irreducible iff it is irreducible in a
-    fraction field
- - `isIntegrallyClosed_iff'`:
-   Integrally closed domains are precisely the domains for in which Gauss's lemma holds
-    for monic polynomials
- - `Polynomial.IsPrimitive.irreducible_iff_irreducible_map_fraction_map`:
+  fraction field
+- `isIntegrallyClosed_iff'`:
+  Integrally closed domains are precisely the domains for in which Gauss's lemma holds
+  for monic polynomials
+- `Polynomial.IsPrimitive.irreducible_iff_irreducible_map_fraction_map`:
   A primitive polynomial over a GCD domain is irreducible iff it is irreducible in a fraction field
- - `Polynomial.IsPrimitive.Int.irreducible_iff_irreducible_map_cast`:
+- `Polynomial.IsPrimitive.Int.irreducible_iff_irreducible_map_cast`:
   A primitive polynomial over `ℤ` is irreducible iff it is irreducible over `ℚ`.
- - `Polynomial.IsPrimitive.dvd_iff_fraction_map_dvd_fraction_map`:
+- `Polynomial.IsPrimitive.dvd_iff_fraction_map_dvd_fraction_map`:
   Two primitive polynomials over a GCD domain divide each other iff they do in a fraction field.
- - `Polynomial.IsPrimitive.Int.dvd_iff_map_cast_dvd_map_cast`:
+- `Polynomial.IsPrimitive.Int.dvd_iff_map_cast_dvd_map_cast`:
   Two primitive polynomials over `ℤ` divide each other if they do in `ℚ`.
 
 -/
@@ -119,7 +120,7 @@ theorem IsPrimitive.isUnit_iff_isUnit_map_of_injective : IsUnit f ↔ IsUnit (ma
 theorem IsPrimitive.irreducible_of_irreducible_map_of_injective (h_irr : Irreducible (map φ f)) :
     Irreducible f := by
   refine
-    ⟨fun h => h_irr.not_unit (IsUnit.map (mapRingHom φ) h), fun a b h =>
+    ⟨fun h => h_irr.not_isUnit (IsUnit.map (mapRingHom φ) h), fun a b h =>
       (h_irr.isUnit_or_isUnit <| by rw [h, Polynomial.map_mul]).imp ?_ ?_⟩
   all_goals apply ((isPrimitive_of_dvd hf _).isUnit_iff_isUnit_map_of_injective hinj).mpr
   exacts [Dvd.intro _ h.symm, Dvd.intro_left _ h.symm]
@@ -148,7 +149,7 @@ theorem Monic.irreducible_iff_irreducible_map_fraction_map [IsIntegrallyClosed R
   refine
     ⟨fun hp =>
       irreducible_iff.mpr
-        ⟨hp.not_unit.imp h.isPrimitive.isUnit_iff_isUnit_map.mpr, fun a b H =>
+        ⟨hp.not_isUnit.imp h.isPrimitive.isUnit_iff_isUnit_map.mpr, fun a b H =>
           or_iff_not_imp_left.mpr fun hₐ => ?_⟩,
       fun hp =>
       h.isPrimitive.irreducible_of_irreducible_map_of_injective (IsFractionRing.injective R K) hp⟩
@@ -236,7 +237,7 @@ theorem IsPrimitive.irreducible_iff_irreducible_map_fraction_map {p : R[X]} (hp 
     Irreducible p ↔ Irreducible (p.map (algebraMap R K)) := by
   -- Porting note: was `(IsFractionRing.injective _ _)`
   refine
-    ⟨fun hi => ⟨fun h => hi.not_unit (hp.isUnit_iff_isUnit_map.2 h), fun a b hab => ?_⟩,
+    ⟨fun hi => ⟨fun h => hi.not_isUnit (hp.isUnit_iff_isUnit_map.2 h), fun a b hab => ?_⟩,
       hp.irreducible_of_irreducible_map_of_injective (IsFractionRing.injective R K)⟩
   obtain ⟨⟨c, c0⟩, hc⟩ := integerNormalization_map_to_map R⁰ a
   obtain ⟨⟨d, d0⟩, hd⟩ := integerNormalization_map_to_map R⁰ b

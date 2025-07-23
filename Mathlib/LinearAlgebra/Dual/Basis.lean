@@ -16,7 +16,7 @@ This file concerns bases on dual vector spaces.
 
 * Bases:
   * `Basis.toDual` produces the map `M →ₗ[R] Dual R M` associated to a basis for an `R`-module `M`.
-  * `Basis.toDual_equiv` is the equivalence `M ≃ₗ[R] Dual R M` associated to a finite basis.
+  * `Basis.toDualEquiv` is the equivalence `M ≃ₗ[R] Dual R M` associated to a finite basis.
   * `Basis.dualBasis` is a basis for `Dual R M` given a finite basis for `M`.
   * `Module.DualBases e ε` is the proposition that the families `e` of vectors and `ε` of dual
     vectors have the characteristic properties of a basis and a dual.
@@ -60,21 +60,21 @@ theorem toDual_apply (i j : ι) : b.toDual (b i) (b j) = if i = j then 1 else 0 
 @[simp]
 theorem toDual_linearCombination_left (f : ι →₀ R) (i : ι) :
     b.toDual (Finsupp.linearCombination R b f) (b i) = f i := by
-  rw [Finsupp.linearCombination_apply, Finsupp.sum, _root_.map_sum, LinearMap.sum_apply]
+  rw [Finsupp.linearCombination_apply, Finsupp.sum, map_sum, LinearMap.sum_apply]
   simp_rw [LinearMap.map_smul, LinearMap.smul_apply, toDual_apply, smul_eq_mul, mul_boole,
     Finset.sum_ite_eq']
   split_ifs with h
   · rfl
-  · rw [Finsupp.not_mem_support_iff.mp h]
+  · rw [Finsupp.notMem_support_iff.mp h]
 
 @[simp]
 theorem toDual_linearCombination_right (f : ι →₀ R) (i : ι) :
     b.toDual (b i) (Finsupp.linearCombination R b f) = f i := by
-  rw [Finsupp.linearCombination_apply, Finsupp.sum, _root_.map_sum]
+  rw [Finsupp.linearCombination_apply, Finsupp.sum, map_sum]
   simp_rw [LinearMap.map_smul, toDual_apply, smul_eq_mul, mul_boole, Finset.sum_ite_eq]
   split_ifs with h
   · rfl
-  · rw [Finsupp.not_mem_support_iff.mp h]
+  · rw [Finsupp.notMem_support_iff.mp h]
 
 theorem toDual_apply_left (m : M) (i : ι) : b.toDual m (b i) = b.repr m i := by
   rw [← b.toDual_linearCombination_left, b.linearCombination_repr]
@@ -103,7 +103,7 @@ theorem toDual_injective : Injective b.toDual := fun x y h ↦ b.ext_elem_iff.mp
   simp_rw [← toDual_eq_repr]; exact DFunLike.congr_fun h _
 
 theorem toDual_inj (m : M) (a : b.toDual m = 0) : m = 0 :=
-  b.toDual_injective (by rwa [_root_.map_zero])
+  b.toDual_injective (by rwa [map_zero])
 
 theorem toDual_ker : LinearMap.ker b.toDual = ⊥ :=
   ker_eq_bot'.mpr b.toDual_inj
@@ -115,26 +115,13 @@ theorem toDual_range [Finite ι] : LinearMap.range b.toDual = ⊤ := by
   rw [b.toDual_eq_repr _ i, repr_linearCombination b]
   rfl
 
-end CommSemiring
-
-section
-
-variable [CommSemiring R] [AddCommMonoid M] [Module R M] [Fintype ι]
-variable (b : Basis ι R M)
-
+omit [DecidableEq ι] in
 @[simp]
-theorem sum_dual_apply_smul_coord (f : Module.Dual R M) :
+theorem sum_dual_apply_smul_coord [Fintype ι] (f : Module.Dual R M) :
     (∑ x, f (b x) • b.coord x) = f := by
   ext m
-  simp_rw [LinearMap.sum_apply, LinearMap.smul_apply, smul_eq_mul, mul_comm (f _), ← smul_eq_mul, ←
-    f.map_smul, ← _root_.map_sum, Basis.coord_apply, Basis.sum_repr]
-
-end
-
-section CommRing
-
-variable [CommRing R] [AddCommGroup M] [Module R M] [DecidableEq ι]
-variable (b : Basis ι R M)
+  simp_rw [LinearMap.sum_apply, LinearMap.smul_apply, smul_eq_mul, mul_comm (f _), ← smul_eq_mul,
+    ← f.map_smul, ← map_sum, Basis.coord_apply, Basis.sum_repr]
 
 section Finite
 
@@ -142,7 +129,7 @@ variable [Finite ι]
 
 /-- A vector space is linearly equivalent to its dual space. -/
 def toDualEquiv : M ≃ₗ[R] Dual R M :=
-  .ofBijective b.toDual ⟨ker_eq_bot.mp b.toDual_ker, range_eq_top.mp b.toDual_range⟩
+  .ofBijective b.toDual ⟨b.toDual_injective, range_eq_top.mp b.toDual_range⟩
 
 -- `simps` times out when generating this
 @[simp]
@@ -190,12 +177,13 @@ end Finite
 theorem dualBasis_equivFun [Finite ι] (l : Dual R M) (i : ι) :
     b.dualBasis.equivFun l i = l (b i) := by rw [Basis.equivFun_apply, dualBasis_repr]
 
-theorem eval_ker {ι : Type*} (b : Basis ι R M) :
-    LinearMap.ker (Dual.eval R M) = ⊥ := by
-  rw [ker_eq_bot']
-  intro m hm
-  simp_rw [LinearMap.ext_iff, Dual.eval_apply, zero_apply] at hm
-  exact (Basis.forall_coord_eq_zero_iff _).mp fun i => hm (b.coord i)
+theorem eval_injective {ι : Type*} (b : Basis ι R M) : Function.Injective (Dual.eval R M) := by
+  intro m m' eq
+  simp_rw [LinearMap.ext_iff, Dual.eval_apply] at eq
+  exact b.ext_elem fun i ↦ eq (b.coord i)
+
+theorem eval_ker {ι : Type*} (b : Basis ι R M) : LinearMap.ker (Dual.eval R M) = ⊥ :=
+  ker_eq_bot_of_injective (eval_injective b)
 
 theorem eval_range {ι : Type*} [Finite ι] (b : Basis ι R M) :
     LinearMap.range (Dual.eval R M) = ⊤ := by
@@ -203,14 +191,24 @@ theorem eval_range {ι : Type*} [Finite ι] (b : Basis ι R M) :
     cases nonempty_fintype ι
     rw [← b.toDual_toDual, range_comp, b.toDual_range, Submodule.map_top, toDual_range _]
 
-end CommRing
+lemma dualBasis_coord_toDualEquiv_apply [Finite ι] (i : ι) (f : M) :
+    b.dualBasis.coord i (b.toDualEquiv f) = b.coord i f := by
+  simp [-toDualEquiv_apply, Basis.dualBasis]
+
+lemma coord_toDualEquiv_symm_apply [Finite ι] (i : ι) (f : Module.Dual R M) :
+    b.coord i (b.toDualEquiv.symm f) = b.dualBasis.coord i f := by
+  simp [Basis.dualBasis]
+
+omit [DecidableEq ι]
 
 /-- `simp` normal form version of `linearCombination_dualBasis` -/
 @[simp]
-theorem linearCombination_coord [CommRing R] [AddCommGroup M] [Module R M] [Finite ι]
-    (b : Basis ι R M) (f : ι →₀ R) (i : ι) : Finsupp.linearCombination R b.coord f (b i) = f i := by
+theorem linearCombination_coord [Finite ι] (b : Basis ι R M) (f : ι →₀ R) (i : ι) :
+    Finsupp.linearCombination R b.coord f (b i) = f i := by
   haveI := Classical.decEq ι
   rw [← coe_dualBasis, linearCombination_dualBasis]
+
+end CommSemiring
 
 end Basis
 
@@ -232,7 +230,7 @@ elab "use_finite_instance" : tactic => evalUseFiniteInstance
 structure Module.DualBases (e : ι → M) (ε : ι → Dual R M) : Prop where
   eval_same : ∀ i, ε i (e i) = 1
   eval_of_ne : Pairwise fun i j ↦ ε i (e j) = 0
-  protected total : ∀ {m : M}, (∀ i, ε i m = 0) → m = 0
+  protected total : ∀ {m₁ m₂ : M}, (∀ i, ε i m₁ = ε i m₂) → m₁ = m₂
   protected finite : ∀ m : M, {i | ε i m ≠ 0}.Finite := by use_finite_instance
 
 end DualBases
@@ -242,7 +240,7 @@ namespace Module.DualBases
 open Module Module.Dual LinearMap Function
 
 variable {R M ι : Type*}
-variable [CommRing R] [AddCommGroup M] [Module R M]
+variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 variable {e : ι → M} {ε : ι → Dual R M}
 
 /-- The coefficients of `v` on the basis `e` -/
@@ -269,7 +267,7 @@ variable (h : DualBases e ε)
 include h
 
 theorem dual_lc (l : ι →₀ R) (i : ι) : ε i (DualBases.lc e l) = l i := by
-  rw [lc, _root_.map_finsupp_sum, Finsupp.sum_eq_single i (g := fun a b ↦ (ε i) (b • e a))]
+  rw [lc, map_finsuppSum, Finsupp.sum_eq_single i (g := fun a b ↦ (ε i) (b • e a))]
   · simp [h.eval_same, smul_eq_mul]
   · intro q _ q_ne
     simp [h.eval_of_ne q_ne.symm, smul_eq_mul]
@@ -282,9 +280,7 @@ theorem coeffs_lc (l : ι →₀ R) : h.coeffs (DualBases.lc e l) = l := by
 
 /-- For any m : M n, \sum_{p ∈ Q n} (ε p m) • e p = m -/
 @[simp]
-theorem lc_coeffs (m : M) : DualBases.lc e (h.coeffs m) = m := by
-  refine eq_of_sub_eq_zero <| h.total fun i ↦ ?_
-  simp [LinearMap.map_sub, h.dual_lc, sub_eq_zero]
+theorem lc_coeffs (m : M) : DualBases.lc e (h.coeffs m) = m := h.total <| by simp [h.dual_lc]
 
 /-- `(h : DualBases e ε).basis` shows the family of vectors `e` forms a basis. -/
 @[simps repr_apply, simps -isSimp repr_symm_apply]
@@ -317,7 +313,7 @@ theorem mem_of_mem_span {H : Set ι} {x : M} (hmem : x ∈ Submodule.span R (e '
   apply not_imp_comm.mp ((Finsupp.mem_supported' _ _).mp supp_l i)
   rwa [← lc_def, h.dual_lc] at hi
 
-theorem coe_dualBasis [DecidableEq ι] [_root_.Finite ι] : ⇑h.basis.dualBasis = ε :=
+theorem coe_dualBasis [DecidableEq ι] [Finite ι] : ⇑h.basis.dualBasis = ε :=
   funext fun i => h.basis.ext fun j => by simp
 
 end Module.DualBases

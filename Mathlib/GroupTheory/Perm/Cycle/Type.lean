@@ -85,7 +85,7 @@ theorem CycleType.count_def {σ : Perm α} (n : ℕ) :
   congr 1
   apply Multiset.filter_congr
   intro d h
-  simp only [Function.comp_apply, eq_comm, Finset.mem_val.mp h, exists_const]
+  simp only [eq_comm, Finset.mem_val.mp h, exists_const]
 
 @[simp]
 theorem cycleType_eq_zero {σ : Perm α} : σ.cycleType = 0 ↔ σ = 1 := by
@@ -117,12 +117,7 @@ theorem card_cycleType_eq_one {σ : Perm α} : Multiset.card σ.cycleType = 1 �
   rw [card_eq_one]
   simp_rw [cycleType_def, Multiset.map_eq_singleton, ← Finset.singleton_val, Finset.val_inj,
     cycleFactorsFinset_eq_singleton_iff]
-  constructor
-  · rintro ⟨_, _, ⟨h, -⟩, -⟩
-    exact h
-  · intro h
-    use #σ.support, σ
-    simp [h]
+  grind
 
 theorem Disjoint.cycleType {σ τ : Perm α} (h : Disjoint σ τ) :
     (σ * τ).cycleType = σ.cycleType + τ.cycleType := by
@@ -167,10 +162,11 @@ theorem sign_of_cycleType' (σ : Perm α) :
 theorem sign_of_cycleType (f : Perm α) :
     sign f = (-1 : ℤˣ) ^ (f.cycleType.sum + Multiset.card f.cycleType) := by
   rw [sign_of_cycleType']
-  induction' f.cycleType using Multiset.induction_on with a s ihs
-  · rfl
-  · rw [Multiset.map_cons, Multiset.prod_cons, Multiset.sum_cons, Multiset.card_cons, ihs]
-    simp only [pow_add, pow_one, mul_neg_one, neg_mul, mul_neg, mul_assoc, mul_one]
+  induction f.cycleType using Multiset.induction_on with
+  | empty => rfl
+  | cons a s ihs =>
+    rw [Multiset.map_cons, Multiset.prod_cons, Multiset.sum_cons, Multiset.card_cons, ihs]
+    simp only [pow_add, pow_one, neg_mul, mul_neg, mul_assoc, mul_one]
 
 @[simp]
 theorem lcm_cycleType (σ : Perm α) : σ.cycleType.lcm = orderOf σ := by
@@ -248,10 +244,10 @@ theorem Disjoint.cycleType_noncommProd {ι : Type*} {k : ι → Perm α} {s : Fi
   classical
   induction s using Finset.induction_on with
   | empty => simp
-  | @insert i s hi hrec =>
+  | insert i s hi hrec =>
     have hs' : (s : Set ι).Pairwise fun i j ↦ Disjoint (k i) (k j) :=
       hs.mono (by simp only [Finset.coe_insert, Set.subset_insert])
-    rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ hi, Finset.sum_insert hi]
+    rw [Finset.noncommProd_insert_of_notMem _ _ _ _ hi, Finset.sum_insert hi]
     rw [Equiv.Perm.Disjoint.cycleType_mul, hrec hs']
     apply disjoint_noncommProd_right
     intro j hj
@@ -479,7 +475,7 @@ end VectorsProdEqOne
 `p` in `G`. This is known as Cauchy's theorem. -/
 theorem _root_.exists_prime_orderOf_dvd_card {G : Type*} [Group G] [Fintype G] (p : ℕ)
     [hp : Fact p.Prime] (hdvd : p ∣ Fintype.card G) : ∃ x : G, orderOf x = p := by
-  have hp' : p - 1 ≠ 0 := mt tsub_eq_zero_iff_le.mp (not_le_of_lt hp.out.one_lt)
+  have hp' : p - 1 ≠ 0 := mt tsub_eq_zero_iff_le.mp (not_le_of_gt hp.out.one_lt)
   have Scard :=
     calc
       p ∣ Fintype.card G ^ (p - 1) := hdvd.trans (dvd_pow (dvd_refl _) hp')
@@ -499,7 +495,7 @@ theorem _root_.exists_prime_orderOf_dvd_card {G : Type*} [Group G] [Fintype G] (
       simp only [σ, coe_fn_mk]) k
   replace hσ : σ ^ p ^ 1 = 1 := Perm.ext fun v => by rw [pow_one, hσ, hf3, one_apply]
   let v₀ : vectorsProdEqOne G p :=
-    ⟨Vector.replicate p 1, (List.prod_replicate p 1).trans (one_pow p)⟩
+    ⟨List.Vector.replicate p 1, (List.prod_replicate p 1).trans (one_pow p)⟩
   have hv₀ : σ v₀ = v₀ := Subtype.ext (Subtype.ext (List.rotate_replicate (1 : G) p 1))
   obtain ⟨v, hv1, hv2⟩ := exists_fixed_point_of_prime' Scard hσ hv₀
   refine
@@ -507,7 +503,7 @@ theorem _root_.exists_prime_orderOf_dvd_card {G : Type*} [Group G] [Fintype G] (
       (List.rotate_one_eq_self_iff_eq_replicate.mp (Subtype.ext_iff.mp (Subtype.ext_iff.mp hv1)))
   · rw [← List.prod_replicate, ← v.1.2, ← hg, show v.val.val.prod = 1 from v.2]
   · rw [Subtype.ext_iff_val, Subtype.ext_iff_val, hg, hg', v.1.2]
-    simp only [v₀, Vector.replicate]
+    simp only [v₀, List.Vector.replicate]
 
 -- TODO: Make the `Finite` version of this theorem the default
 /-- For every prime `p` dividing the order of a finite additive group `G` there exists an element of
@@ -647,7 +643,7 @@ theorem isThreeCycle_swap_mul_swap_same {a b c : α} (ab : a ≠ b) (ac : a ≠ 
     rw [← card_support_eq_three_iff, h]
     simp [ab, ac, bc]
   apply le_antisymm ((support_mul_le _ _).trans fun x => _) fun x hx => ?_
-  · simp [ab, ac, bc]
+  · simp [ab, ac]
   · simp only [Finset.mem_insert, Finset.mem_singleton] at hx
     rw [mem_support]
     simp only [Perm.coe_mul, Function.comp_apply, Ne]

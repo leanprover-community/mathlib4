@@ -76,8 +76,8 @@ theorem abs_le_one_iff {a : ℤ} : |a| ≤ 1 ↔ a = 0 ∨ a = 1 ∨ a = -1 := b
   | (n : ℕ) => simp [abs_eq_natAbs]
   | -[n+1] =>
       simp only [negSucc_ne_zero, abs_eq_natAbs, natAbs_negSucc, succ_eq_add_one,
-        natCast_add, Nat.cast_ofNat_Int, add_eq_right, natCast_eq_zero, false_or, reduceNeg]
-      rw [negSucc_eq']
+        Int.natCast_add, cast_ofNat_Int, add_eq_right, natCast_eq_zero, false_or, reduceNeg]
+      rw [negSucc_eq]
       omega
 
 theorem one_le_abs {z : ℤ} (h₀ : z ≠ 0) : 1 ≤ |z| :=
@@ -108,13 +108,11 @@ theorem emod_abs (a b : ℤ) : a % |b| = a % b :=
 theorem emod_lt_abs (a : ℤ) {b : ℤ} (H : b ≠ 0) : a % b < |b| := by
   rw [← emod_abs]; exact emod_lt_of_pos _ (abs_pos.2 H)
 
-@[deprecated (since := "2025-03-10")] alias emod_lt := emod_lt_abs
-
 /-! ### properties of `/` and `%` -/
 
 theorem abs_ediv_le_abs : ∀ a b : ℤ, |a / b| ≤ |a| :=
   suffices ∀ (a : ℤ) (n : ℕ), |a / n| ≤ |a| from fun a b =>
-    match b, eq_nat_or_neg b with
+    match b, Int.eq_nat_or_neg b with
     | _, ⟨n, Or.inl rfl⟩ => this _ _
     | _, ⟨n, Or.inr rfl⟩ => by rw [Int.ediv_neg, abs_neg]; apply this
   fun a n => by
@@ -126,7 +124,7 @@ theorem abs_ediv_le_abs : ∀ a b : ℤ, |a / b| ≤ |a| :=
       | -[m+1], n + 1 => Nat.succ_le_succ (Nat.div_le_self _ _))
 
 theorem abs_sign_of_nonzero {z : ℤ} (hz : z ≠ 0) : |z.sign| = 1 := by
-  rw [abs_eq_natAbs, natAbs_sign_of_nonzero hz, Int.ofNat_one]
+  rw [abs_eq_natAbs, natAbs_sign_of_ne_zero hz, Int.ofNat_one]
 
 protected theorem sign_eq_ediv_abs' (a : ℤ) : sign a = a / |a| :=
   if az : a = 0 then by simp [az]

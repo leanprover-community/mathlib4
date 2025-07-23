@@ -70,7 +70,7 @@ export AddMemClass (add_mem)
 
 attribute [to_additive] MulMemClass
 
-attribute [aesop safe apply (rule_sets := [SetLike])] mul_mem add_mem
+attribute [aesop 90% (rule_sets := [SetLike])] mul_mem add_mem
 
 /-- A subsemigroup of a magma `M` is a subset closed under multiplication. -/
 structure Subsemigroup (M : Type*) [Mul M] where
@@ -94,11 +94,22 @@ namespace Subsemigroup
 instance : SetLike (Subsemigroup M) M :=
   ⟨Subsemigroup.carrier, fun p q h => by cases p; cases q; congr⟩
 
-@[to_additive]
-instance : MulMemClass (Subsemigroup M) M where mul_mem := fun {_ _ _} => Subsemigroup.mul_mem' _
-
 initialize_simps_projections Subsemigroup (carrier → coe, as_prefix coe)
 initialize_simps_projections AddSubsemigroup (carrier → coe, as_prefix coe)
+
+/-- The actual `Subsemigroup` obtained from an element of a `MulMemClass`. -/
+@[to_additive (attr := simps) "The actual `AddSubsemigroup` obtained from an element of a
+`AddMemClass`"]
+def ofClass {S M : Type*} [Mul M] [SetLike S M] [MulMemClass S M] (s : S) : Subsemigroup M :=
+  ⟨s, MulMemClass.mul_mem⟩
+
+@[to_additive]
+instance (priority := 100) : CanLift (Set M) (Subsemigroup M) (↑)
+    (fun s ↦ ∀ {x y}, x ∈ s → y ∈ s → x * y ∈ s) where
+  prf s h := ⟨{ carrier := s, mul_mem' := h }, rfl⟩
+
+@[to_additive]
+instance : MulMemClass (Subsemigroup M) M where mul_mem := fun {_ _ _} => Subsemigroup.mul_mem' _
 
 @[to_additive (attr := simp)]
 theorem mem_carrier {s : Subsemigroup M} {x : M} : x ∈ s.carrier ↔ x ∈ s :=
@@ -162,8 +173,13 @@ instance : Inhabited (Subsemigroup M) :=
   ⟨⊥⟩
 
 @[to_additive]
-theorem not_mem_bot {x : M} : x ∉ (⊥ : Subsemigroup M) :=
-  Set.not_mem_empty x
+theorem notMem_bot {x : M} : x ∉ (⊥ : Subsemigroup M) :=
+  Set.notMem_empty x
+
+@[deprecated (since := "2025-05-23")]
+alias _root_.AddSubsemigroup.not_mem_bot := AddSubsemigroup.notMem_bot
+
+@[to_additive existing, deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
 
 @[to_additive (attr := simp)]
 theorem mem_top (x : M) : x ∈ (⊤ : Subsemigroup M) :=
@@ -196,13 +212,13 @@ theorem mem_inf {p p' : Subsemigroup M} {x : M} : x ∈ p ⊓ p' ↔ x ∈ p ∧
 theorem subsingleton_of_subsingleton [Subsingleton (Subsemigroup M)] : Subsingleton M := by
   constructor; intro x y
   have : ∀ a : M, a ∈ (⊥ : Subsemigroup M) := by simp [Subsingleton.elim (⊥ : Subsemigroup M) ⊤]
-  exact absurd (this x) not_mem_bot
+  exact absurd (this x) notMem_bot
 
 @[to_additive]
 instance [hn : Nonempty M] : Nontrivial (Subsemigroup M) :=
   ⟨⟨⊥, ⊤, fun h => by
       obtain ⟨x⟩ := id hn
-      refine absurd (?_ : x ∈ ⊥) not_mem_bot
+      refine absurd (?_ : x ∈ ⊥) notMem_bot
       simp [h]⟩⟩
 
 end Subsemigroup

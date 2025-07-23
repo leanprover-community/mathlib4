@@ -3,6 +3,7 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
+import Mathlib.Algebra.Order.Group.Units
 import Mathlib.Topology.Algebra.Nonarchimedean.Bases
 import Mathlib.Topology.Algebra.UniformFilterBasis
 import Mathlib.RingTheory.Valuation.ValuationSubring
@@ -13,6 +14,12 @@ import Mathlib.RingTheory.Valuation.ValuationSubring
 In this file, we define the non archimedean topology induced by a valuation on a ring.
 The main definition is a `Valued` type class which equips a ring with a valuation taking
 values in a group with zero. Other instances are then deduced from this.
+
+*NOTE* (2025-07-02):
+The `Valued` class defined in this file will eventually get replaced with `ValuativeRel`
+from `Mathlib.RingTheory.Valuation.ValuativeRel`. New developments on valued rings/fields
+should take this into considation.
+
 -/
 
 open scoped Topology uniformity
@@ -33,9 +40,9 @@ theorem subgroups_basis : RingSubgroupsBasis fun γ : Γ₀ˣ => (v.ltAddSubgrou
   { inter := by
       rintro γ₀ γ₁
       use min γ₀ γ₁
-      simp only [ltAddSubgroup, Units.min_val, Units.val_le_val, lt_min_iff,
+      simp only [ltAddSubgroup, Units.min_val, lt_min_iff,
         AddSubgroup.mk_le_mk, setOf_subset_setOf, le_inf_iff, and_imp, imp_self, implies_true,
-        forall_const, and_true]
+        and_true]
       tauto
     mul := by
       rintro γ
@@ -153,17 +160,100 @@ theorem cauchy_iff {F : Filter R} : Cauchy F ↔
 
 variable (R)
 
-/-- The unit ball of a valued ring is open. -/
-theorem integer_isOpen : IsOpen (_i.v.integer : Set R) := by
+/-- An open ball centred at the origin in a valued ring is open. -/
+theorem isOpen_ball (r : Γ₀) : IsOpen (X := R) {x | v x < r} := by
+  rw [isOpen_iff_mem_nhds]
+  rcases eq_or_ne r 0 with rfl|hr
+  · simp
+  intro x hx
+  rw [mem_nhds]
+  simp only [setOf_subset_setOf]
+  exact ⟨Units.mk0 _ hr,
+    fun y hy => (sub_add_cancel y x).symm ▸ (v.map_add _ x).trans_lt (max_lt hy hx)⟩
+
+/-- An open ball centred at the origin in a valued ring is closed. -/
+theorem isClosed_ball (r : Γ₀) : IsClosed (X := R) {x | v x < r} := by
+  rcases eq_or_ne r 0 with rfl|hr
+  · simp
+  exact AddSubgroup.isClosed_of_isOpen
+    (Valuation.ltAddSubgroup v (Units.mk0 r hr))
+    (isOpen_ball _ _)
+
+/-- An open ball centred at the origin in a valued ring is clopen. -/
+theorem isClopen_ball (r : Γ₀) : IsClopen (X := R) {x | v x < r} :=
+  ⟨isClosed_ball _ _, isOpen_ball _ _⟩
+
+/-- A closed ball centred at the origin in a valued ring is open. -/
+theorem isOpen_closedball {r : Γ₀} (hr : r ≠ 0) : IsOpen (X := R) {x | v x ≤ r} := by
   rw [isOpen_iff_mem_nhds]
   intro x hx
   rw [mem_nhds]
-  exact ⟨1,
+  simp only [setOf_subset_setOf]
+  exact ⟨Units.mk0 _ hr,
     fun y hy => (sub_add_cancel y x).symm ▸ le_trans (v.map_add _ _) (max_le (le_of_lt hy) hx)⟩
 
+/-- A closed ball centred at the origin in a valued ring is closed. -/
+theorem isClosed_closedBall (r : Γ₀) : IsClosed (X := R) {x | v x ≤ r} := by
+  rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
+  intro x hx
+  rw [mem_nhds]
+  have hx' : v x ≠ 0 := ne_of_gt <| lt_of_le_of_lt zero_le' <| lt_of_not_ge hx
+  exact ⟨Units.mk0 _ hx', fun y hy hy' => ne_of_lt hy <| map_sub_swap v x y ▸
+      (Valuation.map_sub_eq_of_lt_left _ <| lt_of_le_of_lt hy' (lt_of_not_ge hx))⟩
+
+/-- A closed ball centred at the origin in a valued ring is clopen. -/
+theorem isClopen_closedBall {r : Γ₀} (hr : r ≠ 0) : IsClopen (X := R) {x | v x ≤ r} :=
+  ⟨isClosed_closedBall _ _, isOpen_closedball _ hr⟩
+
+/-- A sphere centred at the origin in a valued ring is clopen. -/
+theorem isClopen_sphere {r : Γ₀} (hr : r ≠ 0) : IsClopen (X := R) {x | v x = r} := by
+  have h : {x : R | v x = r} = {x | v x ≤ r} \ {x | v x < r} := by
+    ext x
+    simp [← le_antisymm_iff]
+  rw [h]
+  exact IsClopen.diff (isClopen_closedBall _ hr) (isClopen_ball _ _)
+
+/-- A sphere centred at the origin in a valued ring is open. -/
+theorem isOpen_sphere {r : Γ₀} (hr : r ≠ 0) : IsOpen (X := R) {x | v x = r} :=
+  isClopen_sphere _ hr |>.isOpen
+
+/-- A sphere centred at the origin in a valued ring is closed. -/
+theorem isClosed_sphere (r : Γ₀) : IsClosed (X := R) {x | v x = r} := by
+  rcases eq_or_ne r 0 with rfl|hr
+  · simpa using isClosed_closedBall R 0
+  exact isClopen_sphere _ hr |>.isClosed
+
+/-- The closed unit ball in a valued ring is open. -/
+theorem isOpen_integer : IsOpen (_i.v.integer : Set R) :=
+  isOpen_closedball _ one_ne_zero
+
+@[deprecated (since := "2025-04-25")]
+alias integer_isOpen := isOpen_integer
+
+/-- The closed unit ball of a valued ring is closed. -/
+theorem isClosed_integer : IsClosed (_i.v.integer : Set R) :=
+  isClosed_closedBall _ _
+
+/-- The closed unit ball of a valued ring is clopen. -/
+theorem isClopen_integer : IsClopen (_i.v.integer : Set R) :=
+  ⟨isClosed_integer _, isOpen_integer _⟩
+
 /-- The valuation subring of a valued field is open. -/
-theorem valuationSubring_isOpen (K : Type u) [Field K] [hv : Valued K Γ₀] :
+theorem isOpen_valuationSubring (K : Type u) [Field K] [hv : Valued K Γ₀] :
     IsOpen (hv.v.valuationSubring : Set K) :=
-  integer_isOpen K
+  isOpen_integer K
+
+@[deprecated (since := "2025-04-25")]
+alias valuationSubring_isOpen := isOpen_valuationSubring
+
+/-- The valuation subring of a valued field is closed. -/
+theorem isClosed_valuationSubring (K : Type u) [Field K] [hv : Valued K Γ₀] :
+    IsClosed (hv.v.valuationSubring : Set K) :=
+  isClosed_integer K
+
+/-- The valuation subring of a valued field is clopen. -/
+theorem isClopen_valuationSubring (K : Type u) [Field K] [hv : Valued K Γ₀] :
+    IsClopen (hv.v.valuationSubring : Set K) :=
+  isClopen_integer K
 
 end Valued

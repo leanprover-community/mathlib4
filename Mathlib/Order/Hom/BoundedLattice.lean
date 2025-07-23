@@ -596,7 +596,7 @@ theorem comp_apply (f : BoundedLatticeHom β γ) (g : BoundedLatticeHom α β) (
   rfl
 
 @[simp]
--- Porting note: `simp`-normal form of `coe_comp_lattice_hom`
+-- `simp`-normal form of `coe_comp_lattice_hom`
 theorem coe_comp_lattice_hom' (f : BoundedLatticeHom β γ) (g : BoundedLatticeHom α β) :
     (⟨(f : SupHom β γ).comp g, map_inf (f.comp g)⟩ : LatticeHom α γ) =
       (f : LatticeHom β γ).comp g :=
@@ -607,7 +607,7 @@ theorem coe_comp_lattice_hom (f : BoundedLatticeHom β γ) (g : BoundedLatticeHo
   rfl
 
 @[simp]
--- Porting note: `simp`-normal form of `coe_comp_sup_hom`
+-- `simp`-normal form of `coe_comp_sup_hom`
 theorem coe_comp_sup_hom' (f : BoundedLatticeHom β γ) (g : BoundedLatticeHom α β) :
     ⟨f ∘ g, map_sup (f.comp g)⟩ = (f : SupHom β γ).comp g :=
   rfl
@@ -617,7 +617,7 @@ theorem coe_comp_sup_hom (f : BoundedLatticeHom β γ) (g : BoundedLatticeHom α
   rfl
 
 @[simp]
--- Porting note: `simp`-normal form of `coe_comp_inf_hom`
+-- `simp`-normal form of `coe_comp_inf_hom`
 theorem coe_comp_inf_hom' (f : BoundedLatticeHom β γ) (g : BoundedLatticeHom α β) :
     ⟨f ∘ g, map_inf (f.comp g)⟩ = (f : InfHom β γ).comp g :=
   rfl
@@ -680,8 +680,6 @@ lattices. -/
 def dual : SupBotHom α β ≃ InfTopHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨SupHom.dual f.toSupHom, f.map_bot'⟩
   invFun f := ⟨SupHom.dual.symm f.toInfHom, f.map_top'⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp] theorem dual_id : SupBotHom.dual (SupBotHom.id α) = InfTopHom.id _ := rfl
 
@@ -712,8 +710,6 @@ lattices. -/
 protected def dual : InfTopHom α β ≃ SupBotHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨InfHom.dual f.toInfHom, f.map_top'⟩
   invFun f := ⟨InfHom.dual.symm f.toSupHom, f.map_bot'⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp]
 theorem dual_id : InfTopHom.dual (InfTopHom.id α) = SupBotHom.id _ :=
@@ -746,8 +742,6 @@ bounded lattices. -/
 protected def dual : BoundedLatticeHom α β ≃ BoundedLatticeHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨LatticeHom.dual f.toLatticeHom, f.map_bot', f.map_top'⟩
   invFun f := ⟨LatticeHom.dual.symm f.toLatticeHom, f.map_bot', f.map_top'⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp]
 theorem dual_id : BoundedLatticeHom.dual (BoundedLatticeHom.id α) = BoundedLatticeHom.id _ :=

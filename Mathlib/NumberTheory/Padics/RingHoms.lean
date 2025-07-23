@@ -90,7 +90,6 @@ theorem isUnit_den (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) : IsUnit (r.den : �
       _ = _ := hr.symm
       _ < 1 * 1 := mul_lt_mul' h norm_denom_lt (norm_nonneg _) zero_lt_one
       _ = 1 := mul_one 1
-
   have : ↑p ∣ r.num ∧ (p : ℤ) ∣ r.den := by
     simp only [← norm_int_lt_one_iff_dvd, ← padic_norm_e_of_padicInt]
     exact ⟨key, norm_denom_lt⟩
@@ -100,7 +99,7 @@ theorem isUnit_den (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) : IsUnit (r.den : �
 theorem norm_sub_modPart_aux (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) :
     ↑p ∣ r.num - r.num * r.den.gcdA p % p * ↑r.den := by
   rw [← ZMod.intCast_zmod_eq_zero_iff_dvd]
-  simp only [Int.cast_natCast, ZMod.natCast_mod, Int.cast_mul, Int.cast_sub]
+  simp only [Int.cast_natCast, Int.cast_mul, Int.cast_sub]
   have := congr_arg (fun x => x % p : ℤ → ZMod p) (gcd_eq_gcd_ab r.den p)
   simp only [Int.cast_natCast, CharP.cast_eq_zero, EuclideanDomain.mod_zero, Int.cast_add,
     Int.cast_mul, zero_mul, add_zero] at this
@@ -120,13 +119,13 @@ theorem norm_sub_modPart (h : ‖(r : ℚ_[p])‖ ≤ 1) : ‖(⟨r, h⟩ - modP
   let n := modPart p r
   rw [norm_lt_one_iff_dvd, ← (isUnit_den r h).dvd_mul_right]
   suffices ↑p ∣ r.num - n * r.den by
-    convert (Int.castRingHom ℤ_[p]).map_dvd this
+    convert (map_dvd (Int.castRingHom ℤ_[p])) this
     simp only [n, sub_mul, Int.cast_natCast, eq_intCast, Int.cast_mul, sub_left_inj,
       Int.cast_sub]
     apply Subtype.coe_injective
-    simp only [coe_mul, Subtype.coe_mk, coe_natCast]
-    rw_mod_cast [@Rat.mul_den_eq_num r]
-    rfl
+    simp only [coe_mul, coe_natCast]
+    norm_cast
+    simp
   exact norm_sub_modPart_aux r h
 
 theorem exists_mem_range_of_norm_rat_le_one (h : ‖(r : ℚ_[p])‖ ≤ 1) :
@@ -169,13 +168,12 @@ theorem exists_mem_range : ∃ n : ℕ, n < p ∧ x - n ∈ maximalIdeal ℤ_[p]
       _ = ‖(r : ℚ_[p]) - x + x‖ := by ring_nf
       _ ≤ _ := padicNormE.nonarchimedean _ _
       _ ≤ _ := max_le (le_of_lt hr) x.2
-
   obtain ⟨n, hzn, hnp, hn⟩ := exists_mem_range_of_norm_rat_le_one r H
   lift n to ℕ using hzn
   use n
   constructor
   · exact mod_cast hnp
-  simp only [norm_def, coe_sub, Subtype.coe_mk, coe_natCast] at hn ⊢
+  simp only [norm_def, coe_sub, coe_natCast] at hn ⊢
   rw [show (x - n : ℚ_[p]) = x - r + (r - n) by ring]
   apply lt_of_le_of_lt (padicNormE.nonarchimedean _ _)
   apply max_lt hr
@@ -189,8 +187,8 @@ theorem existsUnique_mem_range : ∃! n : ℕ, n < p ∧ x - n ∈ maximalIdeal 
 
 @[deprecated (since := "2024-12-17")] alias exists_unique_mem_range := existsUnique_mem_range
 
-/-- `zmod_repr x` is the unique natural number smaller than `p`
-satisfying `‖(x - zmod_repr x : ℤ_[p])‖ < 1`.
+/-- `zmodRepr x` is the unique natural number smaller than `p`
+satisfying `‖(x - zmodRepr x : ℤ_[p])‖ < 1`.
 -/
 def zmodRepr : ℕ :=
   Classical.choose (existsUnique_mem_range x).exists
@@ -218,18 +216,15 @@ def toZModHom (v : ℕ) (f : ℤ_[p] → ℕ) (f_spec : ∀ x, x - f x ∈ (Idea
     ℤ_[p] →+* ZMod v where
   toFun x := f x
   map_zero' := by
-    dsimp only
     rw [f_congr (0 : ℤ_[p]) _ 0, cast_zero]
     · exact f_spec _
     · simp only [sub_zero, cast_zero, Submodule.zero_mem]
   map_one' := by
-    dsimp only
     rw [f_congr (1 : ℤ_[p]) _ 1, cast_one]
     · exact f_spec _
     · simp only [sub_self, cast_one, Submodule.zero_mem]
   map_add' := by
     intro x y
-    dsimp only
     rw [f_congr (x + y) _ (f x + f y), cast_add]
     · exact f_spec _
     · convert Ideal.add_mem _ (f_spec x) (f_spec y) using 1
@@ -237,7 +232,6 @@ def toZModHom (v : ℕ) (f : ℤ_[p] → ℕ) (f_spec : ∀ x, x - f x ∈ (Idea
       ring
   map_mul' := by
     intro x y
-    dsimp only
     rw [f_congr (x * y) _ (f x * f y), cast_mul]
     · exact f_spec _
     · let I : Ideal ℤ_[p] := Ideal.span {↑v}
@@ -307,7 +301,7 @@ noncomputable def appr : ℤ_[p] → ℕ → ℕ
 
 theorem appr_lt (x : ℤ_[p]) (n : ℕ) : x.appr n < p ^ n := by
   induction n generalizing x with
-  | zero => simp only [appr, zero_eq, _root_.pow_zero, zero_lt_one]
+  | zero => simp only [appr, _root_.pow_zero, zero_lt_one]
   | succ n ih =>
     simp only [appr, map_natCast, ZMod.natCast_self, RingHom.map_pow, Int.natAbs, RingHom.map_mul]
     have hp : p ^ n < p ^ (n + 1) := by apply Nat.pow_lt_pow_right hp_prime.1.one_lt n.lt_add_one
@@ -316,7 +310,6 @@ theorem appr_lt (x : ℤ_[p]) (n : ℕ) : x.appr n < p ^ n := by
     · calc
         _ < p ^ n + p ^ n * (p - 1) := ?_
         _ = p ^ (n + 1) := ?_
-
       · apply add_lt_add_of_lt_of_le (ih _)
         apply Nat.mul_le_mul_left
         apply le_pred_of_lt
@@ -335,7 +328,7 @@ theorem dvd_appr_sub_appr (x : ℤ_[p]) (m n : ℕ) (h : m ≤ n) : p ^ m ∣ x.
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h; clear h
   induction k with
   | zero =>
-    simp only [zero_eq, add_zero, le_refl, tsub_eq_zero_of_le, ne_eq, Nat.isUnit_iff, dvd_zero]
+    simp only [add_zero, le_refl, tsub_eq_zero_of_le, dvd_zero]
   | succ k ih =>
     rw [← add_assoc]
     dsimp [appr]
@@ -349,7 +342,7 @@ theorem dvd_appr_sub_appr (x : ℤ_[p]) (m n : ℕ) (h : m ≤ n) : p ^ m ∣ x.
 theorem appr_spec (n : ℕ) : ∀ x : ℤ_[p], x - appr x n ∈ Ideal.span {(p : ℤ_[p]) ^ n} := by
   simp only [Ideal.mem_span_singleton]
   induction n with
-  | zero => simp only [zero_eq, _root_.pow_zero, isUnit_one, IsUnit.dvd, forall_const]
+  | zero => simp only [_root_.pow_zero, isUnit_one, IsUnit.dvd, forall_const]
   | succ n ih =>
     intro x
     dsimp only [appr]
@@ -379,7 +372,7 @@ theorem appr_spec (n : ℕ) : ∀ x : ℤ_[p], x - appr x n ∈ Ideal.span {(p :
       lift c to ℤ_[p]ˣ using by simp [isUnit_iff, norm_eq_zpow_neg_valuation hc', hc0]
       rw [IsDiscreteValuationRing.unit_mul_pow_congr_unit _ _ _ _ _ hc]
       exact irreducible_p
-    · simp only [Int.natAbs_ofNat, zero_pow hc0, sub_zero, ZMod.cast_zero, mul_zero]
+    · simp only [Int.natAbs_natCast, zero_pow hc0, sub_zero, ZMod.cast_zero, mul_zero]
       rw [unitCoeff_spec hc']
       exact (dvd_pow_self (p : ℤ_[p]) hc0).mul_left _
 
@@ -406,7 +399,7 @@ theorem ker_toZModPow (n : ℕ) :
       convert appr_spec n x
       simp only [this, sub_zero, cast_zero]
     dsimp [toZModPow, toZModHom] at h
-    rw [ZMod.natCast_zmod_eq_zero_iff_dvd] at h
+    rw [ZMod.natCast_eq_zero_iff] at h
     apply eq_zero_of_dvd_of_lt h (appr_lt _ _)
   · intro h
     rw [← sub_zero x] at h
@@ -436,7 +429,7 @@ theorem zmod_cast_comp_toZModPow (m n : ℕ) (h : m ≤ n) :
 theorem cast_toZModPow (m n : ℕ) (h : m ≤ n) (x : ℤ_[p]) :
     ZMod.cast (toZModPow n x) = toZModPow m x := by
   rw [← zmod_cast_comp_toZModPow _ _ h]
-  rfl
+  simp
 
 theorem denseRange_natCast : DenseRange (Nat.cast : ℕ → ℤ_[p]) := by
   intro x
@@ -478,8 +471,7 @@ def nthHom (r : R) : ℕ → ℤ := fun n => (f n r : ZMod (p ^ n)).val
 
 @[simp]
 theorem nthHom_zero : nthHom f 0 = 0 := by
-  simp (config := { unfoldPartialApp := true }) [nthHom]
-  rfl
+  simp +unfoldPartialApp [nthHom, Pi.zero_def]
 
 variable {f}
 variable [hp_prime : Fact p.Prime]
@@ -540,7 +532,7 @@ theorem nthHomSeq_add (r s : R) :
   dsimp [nthHom]
   simp only [ZMod.natCast_val, RingHom.map_add, Int.cast_sub, ZMod.intCast_cast, Int.cast_add]
   rw [ZMod.cast_add (show p ^ n ∣ p ^ j from pow_dvd_pow _ hj)]
-  simp only [cast_add, ZMod.natCast_val, Int.cast_add, ZMod.intCast_cast, sub_self]
+  simp only [sub_self]
 
 theorem nthHomSeq_mul (r s : R) :
     nthHomSeq f_compat (r * s) ≈ nthHomSeq f_compat r * nthHomSeq f_compat s := by
@@ -572,7 +564,7 @@ theorem limNthHom_spec (r : R) :
   use N
   intro n hn
   apply _root_.lt_trans _ hε'
-  change (padicNormE _  : ℝ) < _
+  change (padicNormE _ : ℝ) < _
   norm_cast
   exact hN _ hn
 
@@ -612,9 +604,9 @@ theorem lift_sub_val_mem_span (r : R) (n : ℕ) :
   apply Ideal.add_mem _ _ this
   rw [Ideal.mem_span_singleton]
   convert
-    (Int.castRingHom ℤ_[p]).map_dvd (pow_dvd_nthHom_sub f_compat r n (max n k) (le_max_left _ _))
-  · rw [map_pow]; rfl
-  · rw [map_sub]; rfl
+    map_dvd (Int.castRingHom ℤ_[p]) (pow_dvd_nthHom_sub f_compat r n (max n k) (le_max_left _ _))
+  · simp
+  · simp [nthHom]
 
 /-- One part of the universal property of `ℤ_[p]` as a projective limit.
 See also `PadicInt.lift_unique`.
@@ -642,7 +634,7 @@ end
 
 @[simp]
 theorem lift_self (z : ℤ_[p]) : lift zmod_cast_comp_toZModPow z = z := by
-  show _ = RingHom.id _ z
+  change _ = RingHom.id _ z
   rw [lift_unique zmod_cast_comp_toZModPow (RingHom.id ℤ_[p])]
   intro; rw [RingHom.comp_id]
 
@@ -652,7 +644,7 @@ theorem ext_of_toZModPow {x y : ℤ_[p]} : (∀ n, toZModPow n x = toZModPow n y
   constructor
   · intro h
     rw [← lift_self x, ← lift_self y]
-    simp (config := { unfoldPartialApp := true }) [lift, limNthHom, nthHom, h]
+    simp +unfoldPartialApp [lift, limNthHom, nthHom, h]
   · rintro rfl _
     rfl
 
@@ -663,9 +655,56 @@ theorem toZModPow_eq_iff_ext {R : Type*} [NonAssocSemiring R] {g g' : R →+* �
     ext x : 1
     apply ext_of_toZModPow.mp
     intro n
-    show (toZModPow n).comp g x = (toZModPow n).comp g' x
+    change (toZModPow n).comp g x = (toZModPow n).comp g' x
     rw [hg n]
   · rintro rfl _
     rfl
+
+lemma isCauSeq_padicNorm_of_pow_dvd_sub
+    (f : ℕ → ℤ) (p : ℕ) [Fact p.Prime] (hi : ∀ i, (p : ℤ) ^ i ∣ f (i + 1) - f i) :
+    IsCauSeq (padicNorm p) (f ·) := by
+  intro ε hε
+  obtain ⟨k, hk⟩ := PadicInt.exists_pow_neg_lt_rat p hε
+  simp only [← Int.cast_sub]
+  refine ⟨k, fun i hik ↦ (padicNorm.dvd_iff_norm_le.mp ?_).trans_lt hk⟩
+  obtain ⟨i, rfl⟩ := exists_add_of_le hik
+  clear hik
+  induction i with
+  | zero => simp
+  | succ n IH =>
+    have : (↑(p ^ k) : ℤ) ∣ ↑p ^ (k + n) := ⟨p ^ n, by simp [pow_add]⟩
+    simpa using (this.trans (hi _)).add IH
+
+lemma toZModPow_ofIntSeq_of_pow_dvd_sub
+    (f : ℕ → ℤ) (p : ℕ) [Fact p.Prime] (hi : ∀ i, (p : ℤ) ^ i ∣ f (i + 1) - f i) (n : ℕ) :
+    (PadicInt.ofIntSeq _ (isCauSeq_padicNorm_of_pow_dvd_sub f p hi)).toZModPow n = f n := by
+  set x := PadicInt.ofIntSeq _ (isCauSeq_padicNorm_of_pow_dvd_sub f p hi)
+  let s : PadicSeq p := ⟨(f ·), isCauSeq_padicNorm_of_pow_dvd_sub f p hi⟩
+  have hs : x = Padic.mk s := rfl
+  obtain ⟨e, he⟩ := Ideal.mem_span_singleton.mp (PadicInt.appr_spec n x)
+  rw [sub_eq_iff_eq_add] at he
+  obtain ⟨N, hN⟩ := padicNormE.defn s (ε := p ^ (-n : ℤ))
+    (by simp only [zpow_neg, zpow_natCast, inv_pos]; exact_mod_cast Nat.pos_of_neZero _)
+  replace hN := hN (N + n) (Nat.le_add_right N n)
+  rw [← hs, he, ← Rat.cast_lt (K := ℝ)] at hN
+  push_cast at hN
+  simp only [← add_sub, s, Rat.cast_intCast, padicNormE.is_norm,
+    ← Int.cast_natCast (R := ℚ_[p]) (x.appr n), ← Int.cast_sub] at hN
+  have : ‖(((x.appr n) - f (N + n) : ℤ) : ℚ_[p])‖ ≤ ↑p ^ (-n : ℤ) := by
+    by_contra! H
+    have H' : ‖(p ^ n * e : ℚ_[p])‖ < ‖(((x.appr n) - f (N + n) : ℤ) : ℚ_[p])‖ := by
+      refine LE.le.trans_lt ?_ H
+      simpa using mul_le_mul_of_nonneg le_rfl e.2 (show 0 ≤ (↑p ^ n)⁻¹ by simp) zero_le_one
+    rw [padicNormE.add_eq_max_of_ne H'.ne, sup_eq_right.mpr H'.le] at hN
+    exact lt_asymm hN H
+  rw [padicNormE.norm_int_le_pow_iff_dvd, ← Nat.cast_pow,
+    ← ZMod.intCast_eq_intCast_iff_dvd_sub, Int.cast_natCast] at this
+  refine this.symm.trans ?_
+  clear * - hi
+  induction N with
+  | zero => simp
+  | succ N IH =>
+    rw [← IH, eq_comm, add_right_comm, ZMod.intCast_eq_intCast_iff_dvd_sub]
+    exact .trans ⟨p ^ N, by simp [pow_add, mul_comm]⟩ (hi _)
 
 end PadicInt

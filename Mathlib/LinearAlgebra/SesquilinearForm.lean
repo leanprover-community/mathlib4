@@ -352,7 +352,7 @@ theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →�
     (hx : ¬B.IsOrtho x x) : (K₁ ∙ x) ⊓ Submodule.orthogonalBilin (K₁ ∙ x) B = ⊥ := by
   rw [← Finset.coe_singleton]
   refine eq_bot_iff.2 fun y h ↦ ?_
-  rcases mem_span_finset.1 h.1 with ⟨μ, rfl⟩
+  obtain ⟨μ, -, rfl⟩ := Submodule.mem_span_finset.1 h.1
   replace h := h.2 x (by simp [Submodule.mem_span] : x ∈ Submodule.span K₁ ({x} : Finset V₁))
   rw [Finset.sum_singleton] at h ⊢
   suffices hμzero : μ x = 0 by rw [hμzero, zero_smul, Submodule.mem_bot]
@@ -807,7 +807,7 @@ theorem IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self [NoZeroSMulDivisors 
     replace hij : B (v j) (v i) = 0 := hO hij
     rw [hij, RingHom.id_apply, smul_zero]
   · intro hi
-    replace hi : vi i = 0 := Finsupp.not_mem_support_iff.mp hi
+    replace hi : vi i = 0 := Finsupp.notMem_support_iff.mp hi
     rw [hi, RingHom.id_apply, zero_smul]
 
 /-- Given an orthogonal basis with respect to a bilinear map, the bilinear map is right-separating
@@ -843,7 +843,8 @@ lemma apply_smul_sub_smul_sub_eq [CommRing R] [AddCommGroup M] [Module R M]
     mul_comm (B x y) (B x x), mul_left_comm (B x y) (B x x)]
   abel
 
-variable [LinearOrderedCommRing R] [AddCommGroup M] [Module R M] (B : LinearMap.BilinForm R M)
+variable [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
+  [AddCommGroup M] [Module R M] (B : LinearMap.BilinForm R M)
 
 /-- The **Cauchy-Schwarz inequality** for positive semidefinite forms. -/
 lemma apply_mul_apply_le_of_forall_zero_le (hs : ∀ x, 0 ≤ B x x) (x y : M) :
@@ -851,10 +852,10 @@ lemma apply_mul_apply_le_of_forall_zero_le (hs : ∀ x, 0 ≤ B x x) (x y : M) :
   have aux (x y : M) : 0 ≤ (B x x) * ((B x x) * (B y y) - (B x y) * (B y x)) := by
     rw [← apply_smul_sub_smul_sub_eq B x y]
     exact hs (B x y • x - B x x • y)
-  rcases lt_or_le 0 (B x x) with hx | hx
+  rcases lt_or_ge 0 (B x x) with hx | hx
   · exact sub_nonneg.mp <| nonneg_of_mul_nonneg_right (aux x y) hx
   · replace hx : B x x = 0 := le_antisymm hx (hs x)
-    rcases lt_or_le 0 (B y y) with hy | hy
+    rcases lt_or_ge 0 (B y y) with hy | hy
     · rw [mul_comm (B x y), mul_comm (B x x)]
       exact sub_nonneg.mp <| nonneg_of_mul_nonneg_right (aux y x) hy
     · replace hy : B y y = 0 := le_antisymm hy (hs y)
@@ -919,7 +920,7 @@ lemma apply_mul_apply_lt_iff_linearIndependent [NoZeroSMulDivisors R M]
 /-- Strict **Cauchy-Schwarz** is equivalent to linear independence for positive definite symmetric
 forms. -/
 lemma apply_sq_lt_iff_linearIndependent_of_symm [NoZeroSMulDivisors R M]
-    (hp : ∀ x, x ≠ 0 → 0 < B x x) (hB: B.IsSymm) (x y : M) :
+    (hp : ∀ x, x ≠ 0 → 0 < B x x) (hB : B.IsSymm) (x y : M) :
     (B x y) ^ 2 < (B x x) * (B y y) ↔ LinearIndependent R ![x, y] := by
   rw [show (B x y) ^ 2 = (B x y) * (B y x) by rw [sq, ← hB, RingHom.id_apply]]
   exact apply_mul_apply_lt_iff_linearIndependent B hp x y

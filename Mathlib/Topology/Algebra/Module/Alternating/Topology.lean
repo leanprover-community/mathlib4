@@ -52,9 +52,6 @@ lemma isUniformEmbedding_toContinuousMultilinearMap :
   injective := toContinuousMultilinearMap_injective
   comap_uniformity := rfl
 
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_toContinuousMultilinearMap := isUniformEmbedding_toContinuousMultilinearMap
-
 lemma uniformContinuous_toContinuousMultilinearMap :
     UniformContinuous (toContinuousMultilinearMap : (E [⋀^ι]→L[𝕜] F) → _) :=
   isUniformEmbedding_toContinuousMultilinearMap.uniformContinuous
@@ -89,7 +86,7 @@ section CompleteSpace
 variable [ContinuousSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] [CompleteSpace F]
 
 open UniformOnFun in
-theorem completeSpace (h : RestrictGenTopology {s : Set (ι → E) | IsVonNBounded 𝕜 s}) :
+theorem completeSpace (h : IsCoherentWith {s : Set (ι → E) | IsVonNBounded 𝕜 s}) :
     CompleteSpace (E [⋀^ι]→L[𝕜] F) := by
   wlog hF : T2Space F generalizing F
   · rw [(isUniformInducing_postcomp (SeparationQuotient.mkCLM _ _)
@@ -120,9 +117,6 @@ theorem isUniformEmbedding_restrictScalars :
   rw [← isUniformEmbedding_toContinuousMultilinearMap.of_comp_iff]
   exact (ContinuousMultilinearMap.isUniformEmbedding_restrictScalars 𝕜').comp
     isUniformEmbedding_toContinuousMultilinearMap
-
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_restrictScalars := isUniformEmbedding_restrictScalars
 
 theorem uniformContinuous_restrictScalars :
     UniformContinuous (restrictScalars 𝕜' : E [⋀^ι]→L[𝕜] F → E [⋀^ι]→L[𝕜'] F) :=
@@ -181,23 +175,22 @@ lemma isClosedEmbedding_toContinuousMultilinearMap [T2Space F] :
       (E [⋀^ι]→L[𝕜] F) → ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F) :=
   ⟨isEmbedding_toContinuousMultilinearMap, isClosed_range_toContinuousMultilinearMap⟩
 
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_toContinuousMultilinearMap := isClosedEmbedding_toContinuousMultilinearMap
-
 instance instContinuousEvalConst : ContinuousEvalConst (E [⋀^ι]→L[𝕜] F) (ι → E) F :=
   .of_continuous_forget continuous_toContinuousMultilinearMap
-
-@[deprecated (since := "2024-10-05")]
-protected alias continuous_eval_const := continuous_eval_const
-
-@[deprecated (since := "2024-10-05")]
-protected alias continuous_coe_fun := continuous_coeFun
 
 instance instT2Space [T2Space F] : T2Space (E [⋀^ι]→L[𝕜] F) :=
   .of_injective_continuous DFunLike.coe_injective continuous_coeFun
 
 instance instT3Space [T2Space F] : T3Space (E [⋀^ι]→L[𝕜] F) :=
   inferInstance
+
+/-- The inclusion of *alternating* continuous multi-linear maps into continuous multi-linear maps
+as a continuous linear map. -/
+@[simps! -fullyApplied]
+def toContinuousMultilinearMapCLM
+    (R : Type*) [Semiring R] [Module R F] [ContinuousConstSMul R F] [SMulCommClass 𝕜 R F] :
+    E [⋀^ι]→L[𝕜] F →L[R] ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F :=
+  ⟨toContinuousMultilinearMapLinear, continuous_induced_dom⟩
 
 section RestrictScalars
 

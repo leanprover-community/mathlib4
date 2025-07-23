@@ -832,7 +832,6 @@ abbrev NormedCommRing.induced [CommRing R] [NormedRing S] [NonUnitalRingHomClass
 theorem NormOneClass.induced {F : Type*} (R S : Type*) [Ring R] [SeminormedRing S]
     [NormOneClass S] [FunLike F R S] [RingHomClass F R S] (f : F) :
     @NormOneClass R (SeminormedRing.induced R S f).toNorm _ :=
-  -- Porting note: is this `let` a bad idea somehow?
   let _ : SeminormedRing R := SeminormedRing.induced R S f
   { norm_one := (congr_arg norm (map_one f)).trans norm_one }
 
@@ -841,7 +840,6 @@ theorem NormOneClass.induced {F : Type*} (R S : Type*) [Ring R] [SeminormedRing 
 theorem NormMulClass.induced {F : Type*} (R S : Type*) [Ring R] [SeminormedRing S]
     [NormMulClass S] [FunLike F R S] [RingHomClass F R S] (f : F) :
     @NormMulClass R (SeminormedRing.induced R S f).toNorm _ :=
-  -- Porting note: is this `let` a bad idea somehow?
   let _ : SeminormedRing R := SeminormedRing.induced R S f
   { norm_mul x y := (congr_arg norm (map_mul f x y)).trans <| norm_mul _ _ }
 
@@ -879,13 +877,13 @@ namespace AbsoluteValue
 /-- A real absolute value on a ring determines a `NormedRing` structure. -/
 noncomputable def toNormedRing {R : Type*} [Ring R] (v : AbsoluteValue R ℝ) : NormedRing R where
   norm := v
+  dist x y := v (x - y)
   dist_eq _ _ := rfl
-  dist_self x := by simp only [sub_self, MulHom.toFun_eq_coe, AbsoluteValue.coe_toMulHom, map_zero]
+  dist_self x := by simp only [sub_self, map_zero]
   dist_comm := v.map_sub
   dist_triangle := v.sub_le
   edist_dist x y := rfl
   norm_mul_le x y := (v.map_mul x y).le
-  eq_of_dist_eq_zero := by simp only [MulHom.toFun_eq_coe, AbsoluteValue.coe_toMulHom,
-    AbsoluteValue.map_sub_eq_zero_iff, imp_self, implies_true]
+  eq_of_dist_eq_zero := by simp only [AbsoluteValue.map_sub_eq_zero_iff, imp_self, implies_true]
 
 end AbsoluteValue

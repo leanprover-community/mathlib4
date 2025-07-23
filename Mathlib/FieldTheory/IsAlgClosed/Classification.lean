@@ -118,7 +118,7 @@ For a simpler, but less universe-polymorphic statement, see
 theorem cardinal_eq_cardinal_transcendence_basis_of_aleph0_lt [Nontrivial R]
     (hv : IsTranscendenceBasis R v) (hR : #R ≤ ℵ₀) (hK : ℵ₀ < #K) :
     Cardinal.lift.{w} #K = Cardinal.lift.{v} #ι :=
-  have : ℵ₀ ≤ Cardinal.lift.{max u v} #ι := le_of_not_lt fun h => not_le_of_gt
+  have : ℵ₀ ≤ Cardinal.lift.{max u v} #ι := le_of_not_gt fun h => not_le_of_gt
     (show ℵ₀ < Cardinal.lift.{max u w} #K by simpa) <|
     calc
       Cardinal.lift.{max u w, v} #K ≤ max (max (Cardinal.lift.{max v w, u} #R)
@@ -154,10 +154,8 @@ variable {K : Type u} {L : Type v} [Field K] [Field L] [IsAlgClosed K] [IsAlgClo
 if they have the same cardinality. -/
 theorem ringEquiv_of_equiv_of_charZero [CharZero K] [CharZero L] (hK : ℵ₀ < #K)
     (hKL : Nonempty (K ≃ L)) : Nonempty (K ≃+* L) := by
-  obtain ⟨s, hs⟩ := exists_isTranscendenceBasis ℤ
-    (show Function.Injective (algebraMap ℤ K) from Int.cast_injective)
-  obtain ⟨t, ht⟩ := exists_isTranscendenceBasis ℤ
-    (show Function.Injective (algebraMap ℤ L) from Int.cast_injective)
+  obtain ⟨s, hs⟩ := exists_isTranscendenceBasis ℤ K
+  obtain ⟨t, ht⟩ := exists_isTranscendenceBasis ℤ L
   have hL : ℵ₀ < #L := by
     rwa [← aleph0_lt_lift.{v, u}, ← lift_mk_eq'.2 hKL, aleph0_lt_lift]
   have : Cardinal.lift.{v} #s = Cardinal.lift.{u} #t := by
@@ -173,10 +171,8 @@ private theorem ringEquiv_of_Cardinal_eq_of_charP (p : ℕ) [Fact p.Prime] [Char
     (hK : ℵ₀ < #K) (hKL : Nonempty (K ≃ L)) : Nonempty (K ≃+* L) := by
   letI : Algebra (ZMod p) K := ZMod.algebra _ _
   letI : Algebra (ZMod p) L := ZMod.algebra _ _
-  obtain ⟨s, hs⟩ := exists_isTranscendenceBasis (ZMod p)
-    (show Function.Injective (algebraMap (ZMod p) K) from RingHom.injective _)
-  obtain ⟨t, ht⟩ := exists_isTranscendenceBasis (ZMod p)
-    (show Function.Injective (algebraMap (ZMod p) L) from RingHom.injective _)
+  obtain ⟨s, hs⟩ := exists_isTranscendenceBasis (ZMod p) K
+  obtain ⟨t, ht⟩ := exists_isTranscendenceBasis (ZMod p) L
   have hL : ℵ₀ < #L := by
     rwa [← aleph0_lt_lift.{v, u}, ← lift_mk_eq'.2 hKL, aleph0_lt_lift]
   have : Cardinal.lift.{v} #s = Cardinal.lift.{u} #t := by

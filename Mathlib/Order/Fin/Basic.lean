@@ -3,6 +3,7 @@ Copyright (c) 2017 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 -/
+import Mathlib.Data.Fin.Embedding
 import Mathlib.Data.Fin.Rev
 import Mathlib.Order.Hom.Basic
 
@@ -50,7 +51,10 @@ instance instBoundedOrder [NeZero n] : BoundedOrder (Fin n) where
   top := rev 0
   le_top i := Nat.le_pred_of_lt i.is_lt
   bot := 0
-  bot_le := Fin.zero_le'
+  bot_le := Fin.zero_le
+
+instance instBiheytingAlgebra [NeZero n] : BiheytingAlgebra (Fin n) :=
+  LinearOrder.toBiheytingAlgebra
 
 @[simp, norm_cast]
 theorem coe_max (a b : Fin n) : ↑(max a b) = (max a b : ℕ) := rfl
@@ -75,6 +79,8 @@ These also prevent non-computable instances being used to construct these instan
 
 instance instPartialOrder : PartialOrder (Fin n) := inferInstance
 instance instLattice : Lattice (Fin n) := inferInstance
+instance instHeytingAlgebra [NeZero n] : HeytingAlgebra (Fin n) := inferInstance
+instance instCoheytingAlgebra [NeZero n] : CoheytingAlgebra (Fin n) := inferInstance
 
 /-! ### Miscellaneous lemmas -/
 
@@ -97,8 +103,8 @@ theorem val_top (n : ℕ) [NeZero n] : ((⊤ : Fin n) : ℕ) = n - 1 := rfl
 
 @[simp]
 theorem zero_eq_top {n : ℕ} [NeZero n] : (0 : Fin n) = ⊤ ↔ n = 1 := by
-  rw [← bot_eq_zero, subsingleton_iff_bot_eq_top, subsingleton_iff_le_one, LE.le.le_iff_eq]
-  exact pos_of_neZero n
+  rw [← bot_eq_zero, subsingleton_iff_bot_eq_top, subsingleton_iff_le_one,
+    le_one_iff_eq_zero_or_eq_one, or_iff_right (NeZero.ne n)]
 
 @[simp]
 theorem top_eq_zero {n : ℕ} [NeZero n] : (⊤ : Fin n) = 0 ↔ n = 1 :=
@@ -201,6 +207,10 @@ alias ⟨_, _root_.GCongr.Fin.succAbove_lt_succAbove⟩ := succAbove_lt_succAbov
 theorem natAdd_inj (m) {i j : Fin n} : natAdd m i = natAdd m j ↔ i = j :=
   (strictMono_natAdd _).injective.eq_iff
 
+theorem natAdd_injective (m n : ℕ) :
+    Function.Injective (Fin.natAdd n : Fin m → _) :=
+  (strictMono_natAdd _).injective
+
 @[simp]
 theorem natAdd_le_natAdd_iff (m) {i j : Fin n} : natAdd m i ≤ natAdd m j ↔ i ≤ j :=
   (strictMono_natAdd _).le_iff_le
@@ -267,7 +277,7 @@ lemma predAbove_left_monotone (i : Fin (n + 1)) : Monotone fun p ↦ predAbove p
   · rfl
   · exact pred_le _
   · have : b < a := castSucc_lt_castSucc_iff.mpr (hb.trans_le (le_of_not_gt ha))
-    exact absurd H this.not_le
+    exact absurd H this.not_ge
   · rfl
 
 @[gcongr]
@@ -327,6 +337,14 @@ lemma rev_anti : Antitone (@rev n) := rev_strictAnti.antitone
 @[simps! apply]
 def valOrderEmb (n) : Fin n ↪o ℕ := ⟨valEmbedding, Iff.rfl⟩
 
+namespace OrderEmbedding
+
+@[simps]
+instance : Inhabited (Fin n ↪o ℕ) where
+  default := Fin.valOrderEmb n
+
+end OrderEmbedding
+
 /-- The ordering on `Fin n` is a well order. -/
 instance Lt.isWellOrder (n) : IsWellOrder (Fin n) (· < ·) := (valOrderEmb n).isWellOrder
 
@@ -381,14 +399,12 @@ map. In this lemma we state that for each `i : Fin n` we have `(e i : ℕ) = (i 
 @[simp] lemma coe_orderIso_apply (e : Fin n ≃o Fin m) (i : Fin n) : (e i : ℕ) = i := by
   rcases i with ⟨i, hi⟩
   dsimp only
-  induction' i using Nat.strong_induction_on with i h
+  induction i using Nat.strong_induction_on with | _ i h
   refine le_antisymm (forall_lt_iff_le.1 fun j hj => ?_) (forall_lt_iff_le.1 fun j hj => ?_)
-  · have := e.symm.lt_iff_lt.2 (mk_lt_of_lt_val hj)
-    rw [e.symm_apply_apply] at this
-    -- Porting note: convert was abusing definitional equality
-    have : _ < i := this
-    convert this
-    simpa using h _ this (e.symm _).is_lt
+  · have := e.symm.lt_symm_apply.1 (mk_lt_of_lt_val hj)
+    specialize h _ this (e.symm _).is_lt
+    simp only [Fin.eta, OrderIso.apply_symm_apply] at h
+    rwa [h]
   · rwa [← h j hj (hj.trans hi), ← lt_iff_val_lt_val, e.lt_iff_lt]
 
 end Fin

@@ -72,7 +72,7 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
   simp only [comp_sum, sum_comp, ← Finset.sum_product']
   -- then, we decompose the index set P into a subset S and its complement Sᶜ
   let P := Fin (n + 2) × Fin (n + 3)
-  let S := Finset.univ.filter fun ij : P => (ij.2 : ℕ) ≤ (ij.1 : ℕ)
+  let S : Finset P := {ij : P | (ij.2 : ℕ) ≤ (ij.1 : ℕ)}
   rw [Finset.univ_product_univ, ← Finset.sum_add_sum_compl S, ← eq_neg_iff_add_eq_zero,
     ← Finset.sum_neg_distrib]
   /- we are reduced to showing that two sums are equal, and this is obtained
@@ -83,8 +83,8 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
   apply Finset.sum_bij φ
   · -- φ(S) is contained in Sᶜ
     intro ij hij
-    simp only [S, φ, Finset.mem_univ, Finset.compl_filter, Finset.mem_filter, true_and,
-      Fin.val_succ, Fin.coe_castLT] at hij ⊢
+    simp_rw [S, φ, Finset.compl_filter, Finset.mem_filter_univ, Fin.val_succ,
+      Fin.coe_castLT] at hij ⊢
     omega
   · -- φ : S → Sᶜ is injective
     rintro ⟨i, j⟩ hij ⟨i', j'⟩ hij' h
@@ -93,13 +93,11 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
       by simpa [φ, Fin.castSucc_castLT] using congr_arg Fin.castSucc (congr_arg Prod.fst h)⟩
   · -- φ : S → Sᶜ is surjective
     rintro ⟨i', j'⟩ hij'
-    simp only [S, Finset.mem_univ, forall_true_left, Prod.forall, Finset.compl_filter,
-      not_le, Finset.mem_filter, true_and] at hij'
+    simp_rw [S, Finset.compl_filter, Finset.mem_filter_univ, not_le] at hij'
     refine ⟨(j'.pred <| ?_, Fin.castSucc i'), ?_, ?_⟩
     · rintro rfl
       simp only [Fin.val_zero, not_lt_zero'] at hij'
-    · simpa only [S, Finset.mem_univ, forall_true_left, Prod.forall, Finset.mem_filter,
-        Fin.coe_castSucc, Fin.coe_pred, true_and] using Nat.le_sub_one_of_lt hij'
+    · simpa [S] using Nat.le_sub_one_of_lt hij'
     · simp only [φ, Fin.castLT_castSucc, Fin.succ_pred]
   · -- identification of corresponding terms in both sums
     rintro ⟨i, j⟩ hij
@@ -166,8 +164,8 @@ theorem alternatingFaceMapComplex_obj_X (X : SimplicialObject C) (n : ℕ) :
 @[simp]
 theorem alternatingFaceMapComplex_obj_d (X : SimplicialObject C) (n : ℕ) :
     ((alternatingFaceMapComplex C).obj X).d (n + 1) n = AlternatingFaceMapComplex.objD X n := by
- dsimp only [alternatingFaceMapComplex, AlternatingFaceMapComplex.obj]
- apply ChainComplex.of_d
+  dsimp only [alternatingFaceMapComplex, AlternatingFaceMapComplex.obj]
+  apply ChainComplex.of_d
 
 @[simp]
 theorem alternatingFaceMapComplex_map_f {X Y : SimplicialObject C} (f : X ⟶ Y) (n : ℕ) :

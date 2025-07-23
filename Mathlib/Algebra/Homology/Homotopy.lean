@@ -100,16 +100,16 @@ theorem dNext_nat (C D : ChainComplex V ℕ) (i : ℕ) (f : ∀ i j, C.X i ⟶ D
     dNext i f = C.d i (i - 1) ≫ f (i - 1) i := by
   dsimp [dNext]
   cases i
-  · simp only [shape, ChainComplex.next_nat_zero, ComplexShape.down_Rel, Nat.one_ne_zero,
-      not_false_iff, zero_comp, reduceCtorEq]
+  · simp only [shape, ChainComplex.next_nat_zero, ComplexShape.down_Rel, not_false_iff, zero_comp,
+      reduceCtorEq]
   · congr <;> simp
 
 theorem prevD_nat (C D : CochainComplex V ℕ) (i : ℕ) (f : ∀ i j, C.X i ⟶ D.X j) :
     prevD i f = f i (i - 1) ≫ D.d (i - 1) i := by
   dsimp [prevD]
   cases i
-  · simp only [shape, CochainComplex.prev_nat_zero, ComplexShape.up_Rel, Nat.one_ne_zero,
-      not_false_iff, comp_zero, reduceCtorEq]
+  · simp only [shape, CochainComplex.prev_nat_zero, ComplexShape.up_Rel, not_false_iff, comp_zero,
+      reduceCtorEq]
   · congr <;> simp
 
 /-- A homotopy `h` between chain maps `f` and `g` consists of components `h i j : C.X i ⟶ D.X j`
@@ -184,7 +184,6 @@ def smul {R : Type*} [Semiring R] [Linear R V] (h : Homotopy f g) (a : R) :
     Homotopy (a • f) (a • g) where
   hom i j := a • h.hom i j
   zero i j hij := by
-    dsimp
     rw [h.zero i j hij, smul_zero]
   comm i := by
     dsimp
@@ -196,7 +195,7 @@ def smul {R : Type*} [Semiring R] [Linear R V] (h : Homotopy f g) (a : R) :
 @[simps]
 def compRight {e f : C ⟶ D} (h : Homotopy e f) (g : D ⟶ E) : Homotopy (e ≫ g) (f ≫ g) where
   hom i j := h.hom i j ≫ g.f j
-  zero i j w := by dsimp; rw [h.zero i j w, zero_comp]
+  zero i j w := by rw [h.zero i j w, zero_comp]
   comm i := by rw [comp_f, h.comm i, dNext_comp_right, prevD_comp_right, Preadditive.add_comp,
     comp_f, Preadditive.add_comp]
 
@@ -204,7 +203,7 @@ def compRight {e f : C ⟶ D} (h : Homotopy e f) (g : D ⟶ E) : Homotopy (e ≫
 @[simps]
 def compLeft {f g : D ⟶ E} (h : Homotopy f g) (e : C ⟶ D) : Homotopy (e ≫ f) (e ≫ g) where
   hom i j := e.f i ≫ h.hom i j
-  zero i j w := by dsimp; rw [h.zero i j w, comp_zero]
+  zero i j w := by rw [h.zero i j w, comp_zero]
   comm i := by rw [comp_f, h.comm i, dNext_comp_left, prevD_comp_left, comp_f,
     Preadditive.comp_add, Preadditive.comp_add]
 
@@ -243,7 +242,6 @@ def nullHomotopicMap (hom : ∀ i j, C.X i ⟶ D.X j) : C ⟶ D where
       simp only [prevD, AddMonoidHom.mk'_apply, assoc, d_comp_d, comp_zero]
     have eq2 : C.d i j ≫ dNext j hom = 0 := by
       simp only [dNext, AddMonoidHom.mk'_apply, d_comp_d_assoc, zero_comp]
-    dsimp only
     rw [dNext_eq hom hij, prevD_eq hom hij, Preadditive.comp_add, Preadditive.add_comp, eq1, eq2,
       add_zero, zero_add, assoc]
 
@@ -332,25 +330,21 @@ open Classical in
 @[simps!]
 def nullHomotopy' (h : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) : Homotopy (nullHomotopicMap' h) 0 := by
   apply nullHomotopy fun i j => dite (c.Rel j i) (h i j) fun _ => 0
-  intro i j hij
-  rw [dite_eq_right_iff]
-  intro hij'
-  exfalso
-  exact hij hij'
+  grind
 
 /-! This lemma and the following ones can be used in order to compute
 the degreewise morphisms induced by the null homotopic maps constructed
 with `nullHomotopicMap` or `nullHomotopicMap'` -/
 
 
-@[simp]
+-- Cannot be @[simp] because `k₀` and `k₂` can not be inferred by `simp`.
 theorem nullHomotopicMap_f {k₂ k₁ k₀ : ι} (r₂₁ : c.Rel k₂ k₁) (r₁₀ : c.Rel k₁ k₀)
     (hom : ∀ i j, C.X i ⟶ D.X j) :
     (nullHomotopicMap hom).f k₁ = C.d k₁ k₀ ≫ hom k₀ k₁ + hom k₁ k₂ ≫ D.d k₂ k₁ := by
   dsimp only [nullHomotopicMap]
   rw [dNext_eq hom r₁₀, prevD_eq hom r₂₁]
 
-@[simp]
+-- Cannot be @[simp] because `k₀` and `k₂` can not be inferred by `simp`.
 theorem nullHomotopicMap'_f {k₂ k₁ k₀ : ι} (r₂₁ : c.Rel k₂ k₁) (r₁₀ : c.Rel k₁ k₀)
     (h : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) :
     (nullHomotopicMap' h).f k₁ = C.d k₁ k₀ ≫ h k₀ k₁ r₁₀ + h k₁ k₂ r₂₁ ≫ D.d k₂ k₁ := by
@@ -359,7 +353,7 @@ theorem nullHomotopicMap'_f {k₂ k₁ k₀ : ι} (r₂₁ : c.Rel k₂ k₁) (r
   split_ifs
   rfl
 
-@[simp]
+-- Cannot be @[simp] because `k₁` can not be inferred by `simp`.
 theorem nullHomotopicMap_f_of_not_rel_left {k₁ k₀ : ι} (r₁₀ : c.Rel k₁ k₀)
     (hk₀ : ∀ l : ι, ¬c.Rel k₀ l) (hom : ∀ i j, C.X i ⟶ D.X j) :
     (nullHomotopicMap hom).f k₀ = hom k₀ k₁ ≫ D.d k₁ k₀ := by
@@ -367,7 +361,7 @@ theorem nullHomotopicMap_f_of_not_rel_left {k₁ k₀ : ι} (r₁₀ : c.Rel k�
   rw [prevD_eq hom r₁₀, dNext, AddMonoidHom.mk'_apply, C.shape, zero_comp, zero_add]
   exact hk₀ _
 
-@[simp]
+-- Cannot be @[simp] because `k₁` can not be inferred by `simp`.
 theorem nullHomotopicMap'_f_of_not_rel_left {k₁ k₀ : ι} (r₁₀ : c.Rel k₁ k₀)
     (hk₀ : ∀ l : ι, ¬c.Rel k₀ l) (h : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) :
     (nullHomotopicMap' h).f k₀ = h k₀ k₁ r₁₀ ≫ D.d k₁ k₀ := by
@@ -376,7 +370,7 @@ theorem nullHomotopicMap'_f_of_not_rel_left {k₁ k₀ : ι} (r₁₀ : c.Rel k�
   split_ifs
   rfl
 
-@[simp]
+-- Cannot be @[simp] because `k₀` can not be inferred by `simp`.
 theorem nullHomotopicMap_f_of_not_rel_right {k₁ k₀ : ι} (r₁₀ : c.Rel k₁ k₀)
     (hk₁ : ∀ l : ι, ¬c.Rel l k₁) (hom : ∀ i j, C.X i ⟶ D.X j) :
     (nullHomotopicMap hom).f k₁ = C.d k₁ k₀ ≫ hom k₀ k₁ := by
@@ -384,7 +378,7 @@ theorem nullHomotopicMap_f_of_not_rel_right {k₁ k₀ : ι} (r₁₀ : c.Rel k�
   rw [dNext_eq hom r₁₀, prevD, AddMonoidHom.mk'_apply, D.shape, comp_zero, add_zero]
   exact hk₁ _
 
-@[simp]
+-- Cannot be @[simp] because `k₀` can not be inferred by `simp`.
 theorem nullHomotopicMap'_f_of_not_rel_right {k₁ k₀ : ι} (r₁₀ : c.Rel k₁ k₀)
     (hk₁ : ∀ l : ι, ¬c.Rel l k₁) (h : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) :
     (nullHomotopicMap' h).f k₁ = C.d k₁ k₀ ≫ h k₀ k₁ r₁₀ := by
@@ -495,14 +489,13 @@ def mkInductiveAux₂ :
 
 @[simp] theorem mkInductiveAux₂_zero :
     mkInductiveAux₂ e zero comm_zero one comm_one succ 0 =
-      ⟨0, zero ≫ (Q.xPrevIso rfl).inv, mkInductiveAux₂.proof_3 e zero comm_zero⟩ :=
+      ⟨0, zero ≫ (Q.xPrevIso rfl).inv, by simpa using comm_zero⟩ :=
   rfl
 
 @[simp] theorem mkInductiveAux₂_add_one (n) :
     mkInductiveAux₂ e zero comm_zero one comm_one succ (n + 1) =
-      let I := mkInductiveAux₁ e zero one comm_one succ n
-      ⟨(P.xNextIso rfl).hom ≫ I.1, I.2.1 ≫ (Q.xPrevIso rfl).inv,
-        mkInductiveAux₂.proof_6 e zero one comm_one succ n⟩ :=
+      letI I := mkInductiveAux₁ e zero one comm_one succ n
+      ⟨(P.xNextIso rfl).hom ≫ I.1, I.2.1 ≫ (Q.xPrevIso rfl).inv, by simpa using I.2.2⟩ :=
   rfl
 
 theorem mkInductiveAux₃ (i j : ℕ) (h : i + 1 = j) :
@@ -525,7 +518,7 @@ def mkInductive : Homotopy e 0 where
     if h : i + 1 = j then
       (mkInductiveAux₂ e zero comm_zero one comm_one succ i).2.1 ≫ (Q.xPrevIso h).hom
     else 0
-  zero i j w := by dsimp; rw [dif_neg]; exact w
+  zero i j w := by rw [dif_neg]; exact w
   comm i := by
     dsimp
     simp only [add_zero]
@@ -624,14 +617,13 @@ def mkCoinductiveAux₂ :
 
 @[simp] theorem mkCoinductiveAux₂_zero :
     mkCoinductiveAux₂ e zero comm_zero one comm_one succ 0 =
-      ⟨0, (P.xNextIso rfl).hom ≫ zero, mkCoinductiveAux₂.proof_3 e zero comm_zero⟩ :=
+      ⟨0, (P.xNextIso rfl).hom ≫ zero, by simpa using comm_zero⟩ :=
   rfl
 
 @[simp] theorem mkCoinductiveAux₂_add_one (n) :
     mkCoinductiveAux₂ e zero comm_zero one comm_one succ (n + 1) =
-      let I := mkCoinductiveAux₁ e zero one comm_one succ n
-      ⟨I.1 ≫ (Q.xPrevIso rfl).inv, (P.xNextIso rfl).hom ≫ I.2.1,
-        mkCoinductiveAux₂.proof_6 e zero one comm_one succ n⟩ :=
+      letI I := mkCoinductiveAux₁ e zero one comm_one succ n
+      ⟨I.1 ≫ (Q.xPrevIso rfl).inv, (P.xNextIso rfl).hom ≫ I.2.1, by simpa using I.2.2⟩ :=
   rfl
 
 theorem mkCoinductiveAux₃ (i j : ℕ) (h : i + 1 = j) :
@@ -654,7 +646,7 @@ def mkCoinductive : Homotopy e 0 where
     if h : j + 1 = i then
       (P.xNextIso h).inv ≫ (mkCoinductiveAux₂ e zero comm_zero one comm_one succ j).2.1
     else 0
-  zero i j w := by dsimp; rw [dif_neg]; exact w
+  zero i j w := by rw [dif_neg]; exact w
   comm i := by
     dsimp
     simp only [add_zero]
@@ -685,9 +677,15 @@ Note that this contains data;
 arguably it might be more useful for many applications if we truncated it to a Prop.
 -/
 structure HomotopyEquiv (C D : HomologicalComplex V c) where
+  /-- The forward chain map -/
   hom : C ⟶ D
+  /-- The backward chain map -/
   inv : D ⟶ C
+  /-- A homotopy showing that composing the forward and backward maps is homotopic to the identity
+  on C -/
   homotopyHomInvId : Homotopy (hom ≫ inv) (𝟙 C)
+  /-- A homotopy showing that composing the backward and forward maps is homotopic to the identity
+  on D -/
   homotopyInvHomId : Homotopy (inv ≫ hom) (𝟙 D)
 
 variable (V c) in
@@ -797,8 +795,7 @@ noncomputable def Homotopy.toShortComplex (ho : Homotopy f g) (i : ι) :
       rw [L.shape _ _ h, comp_zero]
   g_h₃ := by
     split_ifs with h
-    · dsimp
-      simp
+    · simp
     · dsimp
       rw [K.shape _ _ h, zero_comp]
   comm₁ := by

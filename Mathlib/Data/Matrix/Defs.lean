@@ -16,9 +16,9 @@ with `Matrix m n α`. For the typical approach of counting rows and columns,
 
 ## Main definitions
 
- * `Matrix.transpose`: transpose of a matrix, turning rows into columns and vice versa
- * `Matrix.submatrix`: take a submatrix by reindexing rows and columns
- * `Matrix.module`: matrices are a module over the ring of entries
+* `Matrix.transpose`: transpose of a matrix, turning rows into columns and vice versa
+* `Matrix.submatrix`: take a submatrix by reindexing rows and columns
+* `Matrix.module`: matrices are a module over the ring of entries
 
 ## Notation
 
@@ -275,7 +275,7 @@ protected theorem map_sub [Sub α] [Sub β] (f : α → β) (hf : ∀ a₁ a₂,
     (M N : Matrix m n α) : (M - N).map f = M.map f - N.map f :=
   ext fun _ _ => hf _ _
 
-theorem map_smul [SMul R α] [SMul R β] (f : α → β) (r : R) (hf : ∀ a, f (r • a) = r • f a)
+protected theorem map_smul [SMul R α] [SMul R β] (f : α → β) (r : R) (hf : ∀ a, f (r • a) = r • f a)
     (M : Matrix m n α) : (r • M).map f = r • M.map f :=
   ext fun _ _ => hf _
 
@@ -334,8 +334,6 @@ namespace Matrix
 
 section Transpose
 
-open Matrix
-
 @[simp]
 theorem transpose_transpose (M : Matrix m n α) : Mᵀᵀ = M := by
   ext
@@ -378,16 +376,16 @@ theorem transpose_map {f : α → β} {M : Matrix m n α} : Mᵀ.map f = (M.map 
 
 end Transpose
 
-/-- Given maps `(r_reindex : l → m)` and `(c_reindex : o → n)` reindexing the rows and columns of
-a matrix `M : Matrix m n α`, the matrix `M.submatrix r_reindex c_reindex : Matrix l o α` is defined
-by `(M.submatrix r_reindex c_reindex) i j = M (r_reindex i) (c_reindex j)` for `(i,j) : l × o`.
+/-- Given maps `(r : l → m)` and `(c : o → n)` reindexing the rows and columns of
+a matrix `M : Matrix m n α`, the matrix `M.submatrix r c : Matrix l o α` is defined
+by `(M.submatrix r c) i j = M (r i) (c j)` for `(i,j) : l × o`.
 Note that the total number of row and columns does not have to be preserved. -/
-def submatrix (A : Matrix m n α) (r_reindex : l → m) (c_reindex : o → n) : Matrix l o α :=
-  of fun i j => A (r_reindex i) (c_reindex j)
+def submatrix (A : Matrix m n α) (r : l → m) (c : o → n) : Matrix l o α :=
+  of fun i j => A (r i) (c j)
 
 @[simp]
-theorem submatrix_apply (A : Matrix m n α) (r_reindex : l → m) (c_reindex : o → n) (i j) :
-    A.submatrix r_reindex c_reindex i j = A (r_reindex i) (c_reindex j) :=
+theorem submatrix_apply (A : Matrix m n α) (r : l → m) (c : o → n) (i j) :
+    A.submatrix r c i j = A (r i) (c j) :=
   rfl
 
 @[simp]
@@ -401,8 +399,8 @@ theorem submatrix_submatrix {l₂ o₂ : Type*} (A : Matrix m n α) (r₁ : l �
   ext fun _ _ => rfl
 
 @[simp]
-theorem transpose_submatrix (A : Matrix m n α) (r_reindex : l → m) (c_reindex : o → n) :
-    (A.submatrix r_reindex c_reindex)ᵀ = Aᵀ.submatrix c_reindex r_reindex :=
+theorem transpose_submatrix (A : Matrix m n α) (r : l → m) (c : o → n) :
+    (A.submatrix r c)ᵀ = Aᵀ.submatrix c r :=
   ext fun _ _ => rfl
 
 theorem submatrix_add [Add α] (A B : Matrix m n α) :
@@ -496,5 +494,74 @@ abbrev subUpLeft {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
 abbrev subDownLeft {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
     Matrix (Fin d) (Fin l) α :=
   subDown (subLeft A)
+
+section RowCol
+
+/-- For an `m × n` `α`-matrix `A`, `A.row i` is the `i`th row of `A` as a vector in `n → α`.
+`A.row` is defeq to `A`, but explicitly refers to the 'row function' of `A`
+while avoiding defeq abuse and noisy eta-expansions,
+such as in expressions like `Set.Injective A.row` and `Set.range A.row`.
+(Note 2025-04-07 : the identifier `Matrix.row` used to refer to a matrix with all rows equal;
+this is now called `Matrix.replicateRow`) -/
+def row (A : Matrix m n α) : m → n → α := A
+
+/-- For an `m × n` `α`-matrix `A`, `A.col j` is the `j`th column of `A` as a vector in `m → α`.
+`A.col` is defeq to `Aᵀ`, but refers to the 'column function' of `A`
+while avoiding defeq abuse and noisy eta-expansions
+(and without the simplifier unfolding transposes) in expressions like `Set.Injective A.col`
+and `Set.range A.col`.
+(Note 2025-04-07 : the identifier `Matrix.col` used to refer to a matrix with all columns equal;
+this is now called `Matrix.replicateCol`) -/
+def col (A : Matrix m n α) : n → m → α := Aᵀ
+
+lemma row_eq_self (A : Matrix m n α) : A.row = of.symm A := rfl
+
+lemma col_eq_transpose (A : Matrix m n α) : A.col = of.symm Aᵀ := rfl
+
+@[simp]
+lemma of_row (f : m → n → α) : (Matrix.of f).row = f := rfl
+
+@[simp]
+lemma of_col (f : m → n → α) : (Matrix.of f)ᵀ.col = f := rfl
+
+lemma row_def (A : Matrix m n α) : A.row = fun i ↦ A i := rfl
+
+lemma col_def (A : Matrix m n α) : A.col = fun j ↦ Aᵀ j := rfl
+
+@[simp]
+lemma row_apply (A : Matrix m n α) (i : m) (j : n) : A.row i j = A i j := rfl
+
+/-- A partially applied version of `Matrix.row_apply` -/
+lemma row_apply' (A : Matrix m n α) (i : m) : A.row i = A i := rfl
+
+@[simp]
+lemma col_apply (A : Matrix m n α) (i : n) (j : m) : A.col i j = A j i := rfl
+
+/-- A partially applied version of `Matrix.col_apply` -/
+lemma col_apply' (A : Matrix m n α) (i : n) : A.col i = fun j ↦ A j i := rfl
+
+lemma row_submatrix {m₀ n₀ : Type*} (A : Matrix m n α) (r : m₀ → m) (c : n₀ → n) (i : m₀) :
+    (A.submatrix r c).row i = (A.submatrix id c).row (r i) := rfl
+
+lemma row_submatrix_eq_comp {m₀ n₀ : Type*} (A : Matrix m n α) (r : m₀ → m) (c : n₀ → n) (i : m₀) :
+    (A.submatrix r c).row i = A.row (r i) ∘ c := rfl
+
+lemma col_submatrix {m₀ n₀ : Type*} (A : Matrix m n α) (r : m₀ → m) (c : n₀ → n) (j : n₀) :
+    (A.submatrix r c).col j = (A.submatrix r id).col (c j) := rfl
+
+lemma col_submatrix_eq_comp {m₀ n₀ : Type*} (A : Matrix m n α) (r : m₀ → m) (c : n₀ → n) (j : n₀) :
+    (A.submatrix r c).col j = A.col (c j) ∘ r := rfl
+
+lemma row_map (A : Matrix m n α) (f : α → β) (i : m) : (A.map f).row i = f ∘ A.row i := rfl
+
+lemma col_map (A : Matrix m n α) (f : α → β) (j : n) : (A.map f).col j = f ∘ A.col j := rfl
+
+@[simp]
+lemma row_transpose (A : Matrix m n α) : Aᵀ.row = A.col := rfl
+
+@[simp]
+lemma col_transpose (A : Matrix m n α) : Aᵀ.col = A.row := rfl
+
+end RowCol
 
 end Matrix

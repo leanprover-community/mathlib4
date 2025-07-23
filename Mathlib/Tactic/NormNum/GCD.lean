@@ -22,11 +22,11 @@ namespace NormNum
 
 theorem int_gcd_helper' {d : ℕ} {x y : ℤ} (a b : ℤ) (h₁ : (d : ℤ) ∣ x) (h₂ : (d : ℤ) ∣ y)
     (h₃ : x * a + y * b = d) : Int.gcd x y = d := by
-  refine Nat.dvd_antisymm ?_ (Int.natCast_dvd_natCast.1 (Int.dvd_gcd h₁ h₂))
+  refine Nat.dvd_antisymm ?_ (Int.natCast_dvd_natCast.1 (Int.dvd_coe_gcd h₁ h₂))
   rw [← Int.natCast_dvd_natCast, ← h₃]
   apply dvd_add
-  · exact Int.gcd_dvd_left.mul_right _
-  · exact Int.gcd_dvd_right.mul_right _
+  · exact (Int.gcd_dvd_left ..).mul_right _
+  · exact (Int.gcd_dvd_right ..).mul_right _
 
 theorem nat_gcd_helper_dvd_left (x y : ℕ) (h : y % x = 0) : Nat.gcd x y = x :=
   Nat.gcd_eq_left (Nat.dvd_of_mod_eq_zero h)
