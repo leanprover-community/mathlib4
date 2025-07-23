@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 -- import Batteries.Data.String.Lemmas -- Temporarily commented out until it is fixed.
-import Batteries.Logic
+import Mathlib.Data.List.Lex
+import Mathlib.Data.Char
+import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Strings
