@@ -11,18 +11,17 @@ import Mathlib.LinearAlgebra.LinearIndependent.Defs
 /-!
 # Linear and semilinear sets
 
-This file defines linear and semilinear sets over any `AddCommMonoid`. A linear set is a finitely
-generated `ℕ`-submodule added by a single element, and a semilinear set is a finite union of linear
-sets.
+This file defines linear and semilinear sets. In an `AddCommMonoid`, a linear set is a finitely
+generated affine `ℕ`-submodule, and a semilinear set is a finite union of linear sets.
 
-We prove that linear and semilinear sets are closed under projection, set addition and additive
-closure. We also prove that any semilinear set can be decomposed into a finite union of proper
-linear sets, which are linear sets with linear independent `ℕ`-submodule generators (periods).
+We prove that semilinear sets are closed under union, projection, set addition and additive closure.
+We also prove that any semilinear set can be decomposed into a finite union of proper linear sets,
+which are linear sets with linear independent `ℕ`-submodule generators (periods).
 
 ## Main Definitions
 
-- `Set.Linear`: a set is linear if is a finitely generated `ℕ`-submodule added by a single vector
-  `v`.
+- `Set.Linear`: a set is linear if is a finitely generated `ℕ`-submodule added by a single element
+  (a finitely generated affine `ℕ`-submodule).
 - `Set.Semilinear`: a set is semilinear if it is a finite union of linear sets.
 - `Set.ProperLinear`: a linear set is proper if its `ℕ`-submodule generators (periods) are linear
   independent.
@@ -30,7 +29,7 @@ linear sets, which are linear sets with linear independent `ℕ`-submodule gener
 
 ## Main Results
 
-- `Set.Linear` and `Set.Semilinear` are closed under projection, set addition and additive closure.
+- `Set.Semilinear` is closed under union, projection, set addition and additive closure.
 - `Set.Semilinear.proper_semilinear`: every semilinear set is a finite union of proper linear sets.
 
 ## References
@@ -48,7 +47,8 @@ variable {α : Type u} {β : Type v} [AddCommMonoid α] [AddCommMonoid β]
 
 open Pointwise Submodule
 
-/-- A set is linear if it is a finitely generated `ℕ`-submodule added by a single element `a`. -/
+/-- A set is linear if is a finitely generated `ℕ`-submodule added by a single element (a finitely
+  generated affine `ℕ`-submodule). -/
 def Linear (s : Set α) :=
   ∃ (a : α) (t : Finset α), s = a +ᵥ (span ℕ (t : Set α) : Set α)
 
