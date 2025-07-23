@@ -5,10 +5,9 @@ Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.Homology.AlternatingConst
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
+import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
+import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.RepresentationTheory.Coinvariants
-import Mathlib.RepresentationTheory.Homological.Resolution
-import Mathlib.RepresentationTheory.Invariants
 
 /-!
 # Projective resolution of `k` as a trivial `k`-linear representation of a finite cyclic group
