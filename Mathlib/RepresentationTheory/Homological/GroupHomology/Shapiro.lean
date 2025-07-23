@@ -11,14 +11,17 @@ import Mathlib.RepresentationTheory.Induced
 /-!
 # Shapiro's lemma for group homology
 
-Given a commutative ring `k` and a subgroup `S ≤ G`, the file
-`RepresentationTheory/Coinduced.lean` proves that the functor `Coind_S^G : Rep k S ⥤ Rep k G`
-preserves epimorphisms. Since `Res(S) : Rep k G ⥤ Rep k S` is left adjoint to `Coind_S^G`, this
-means `Res(S)` preserves projective objects. Since `Res(S)` is also exact, given a projective
-resolution `P` of `k` as a trivial `k`-linear `G`-representation, `Res(S)(P)` is a projective
-resolution of `k` as a trivial `k`-linear `S`-representation.
+Given a commutative ring `k` and a subgroup `S ≤ G`,
+the file `Mathlib/RepresentationTheory/Coinduced.lean` proves that
+the functor `Coind_S^G : Rep k S ⥤ Rep k G` preserves epimorphisms.
+Since `Res(S) : Rep k G ⥤ Rep k S` is left adjoint to `Coind_S^G`,
+this means `Res(S)` preserves projective objects.
+Since `Res(S)` is also exact,
+given a projective resolution `P` of `k` as a trivial `k`-linear `G`-representation,
+`Res(S)(P)` is a projective resolution of `k` as a trivial `k`-linear `S`-representation.
 
-In `RepresentationTheory/Homological/GroupHomology/Induced.lean`, given a `G`-representation `X`,
+In `Mathlib/RepresentationTheory/Homological/GroupHomology/Induced.lean`,
+given a `G`-representation `X`,
 we define a natural isomorphism between the functors `Rep k S ⥤ ModuleCat k` sending `A` to
 `(Ind_S^G A ⊗ X)_G` and to `(A ⊗ Res(S)(X))_S`. Hence a projective resolution `P` of `k` as a
 trivial `G`-representation induces an isomorphism of complexes
