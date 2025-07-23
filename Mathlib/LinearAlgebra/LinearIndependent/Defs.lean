@@ -644,13 +644,10 @@ theorem linearIndependent_iffₒ :
       conv => rhs; rw [add_left_comm, ← Finset.sum_add_distrib]
       convert heq
         <;> simp_rw [← Finset.sum_filter_add_sum_filter_not s (fun i => g i ≤ f i), not_le]
-        <;> congr 1
-      · refine Finset.sum_congr rfl fun i hi => ?_
-        simp only [Finset.mem_filter] at hi
-        simp [← add_smul, tsub_add_cancel_of_le hi.2]
-      · refine Finset.sum_congr rfl fun i hi => ?_
-        simp only [Finset.mem_filter] at hi
-        simp [← add_smul, tsub_add_cancel_of_le hi.2.le]
+        <;> congr 1 <;> refine Finset.sum_congr rfl fun i hi => ?_
+        <;> simp only [Finset.mem_filter] at hi
+      · simp [← add_smul, tsub_add_cancel_of_le hi.2]
+      · simp [← add_smul, tsub_add_cancel_of_le hi.2.le]
     · intro i hi
       by_cases hi' : g i ≤ f i
       · exact hi'.antisymm' (tsub_eq_zero_iff_le.1 (h.1 i (Finset.mem_filter.2 ⟨hi, hi'⟩)))
@@ -703,7 +700,7 @@ lemma linearIndepOn_finset_iffₒ [DecidableEq ι] {s : Finset ι} :
         rw [← s.subtype_map_of_mem (fun x hx => hx), Finset.subtype_eq_univ.2 (fun x hx => hx)]
       erw [← Finset.map_sdiff]
       simpa [Embedding.subtype, -Finset.univ_eq_attach,
-        (Finset.inter_eq_right (t := .univ \ t₁)).2
+        (Finset.inter_eq_right (t := Finset.univ \ t₁)).2
           (Finset.subset_sdiff.2 ⟨t₂.subset_univ, ht₁t₂.symm⟩)] using heq
     · simp only [Finset.coe_sort_coe, Embedding.subtype, Finset.mem_map, Embedding.coeFn_mk,
         Subtype.exists, exists_and_right, exists_eq_right, dite_eq_right_iff, forall_exists_index,
