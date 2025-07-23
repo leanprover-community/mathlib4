@@ -840,11 +840,11 @@ def mapBilinear : (M →ₛₗ[σ₁₂] M₂) →ₗ[R₂] (N →ₛₗ[σ₁�
 
 /-- The canonical linear map from `P ⊗[R] (M →ₗ[R] Q)` to `(M →ₛₗ[σ₁₂] P ⊗[R] Q)` -/
 def lTensorHomToHomLTensor : M₂ ⊗[R₂] (P →ₛₗ[σ₁₂] N₂) →ₗ[R₂] P →ₛₗ[σ₁₂] M₂ ⊗[R₂] N₂ :=
-  TensorProduct.lift (llcompₛₗ P N₂ _ ∘ₛₗ mk R₂ M₂ N₂)
+  TensorProduct.lift (llcomp _ P N₂ _ ∘ₛₗ mk R₂ M₂ N₂)
 
 /-- The canonical linear map from `(M →ₛₗ[σ₁₂] P) ⊗[R] Q` to `(M →ₛₗ[σ₁₂] P ⊗[R] Q)` -/
 def rTensorHomToHomRTensor : (P →ₛₗ[σ₁₂] M₂) ⊗[R₂] N₂ →ₗ[R₂] P →ₛₗ[σ₁₂] M₂ ⊗[R₂] N₂ :=
-  TensorProduct.lift (llcompₛₗ P M₂ _ ∘ₗ (mk R₂ M₂ N₂).flip).flip
+  TensorProduct.lift (llcomp _ P M₂ _ ∘ₗ (mk R₂ M₂ N₂).flip).flip
 
 /-- The linear map from `(M →ₗ P) ⊗ (N →ₗ Q)` to `(M ⊗ N →ₗ P ⊗ Q)` sending `f ⊗ₜ g` to
 the `TensorProduct.map f g`, the tensor product of the two maps. -/
