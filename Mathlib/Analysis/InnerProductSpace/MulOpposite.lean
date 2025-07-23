@@ -28,15 +28,15 @@ theorem MulOpposite.inner_eq' [Inner 𝕜 H] (x y : H) :
     inner 𝕜 (op x) (op y) = inner 𝕜 x y := rfl
 
 variable [RCLike 𝕜] [NormedAddCommGroup H] [InnerProductSpace 𝕜 H]
-instance MulOpposite.innerProductSpace : InnerProductSpace 𝕜 Hᵐᵒᵖ
-    where
+
+instance MulOpposite.innerProductSpace : InnerProductSpace 𝕜 Hᵐᵒᵖ where
   norm_sq_eq_re_inner x := (inner_self_eq_norm_sq x.unop).symm
   conj_inner_symm x y := InnerProductSpace.conj_inner_symm x.unop y.unop
   add_left x y z := InnerProductSpace.add_left x.unop y.unop z.unop
   smul_left x y r := InnerProductSpace.smul_left x.unop y.unop r
 
 theorem Basis.mulOpposite_is_orthonormal_iff {ι : Type*} (b : Basis ι 𝕜 H) :
-    Orthonormal 𝕜 b.mulOpposite ↔ Orthonormal 𝕜 b := by rfl
+    Orthonormal 𝕜 b.mulOpposite ↔ Orthonormal 𝕜 b := Iff.rfl
 
 /-- The mulOpposite of an orthonormal basis. -/
 noncomputable def OrthonormalBasis.mulOpposite {ι : Type*}
@@ -60,7 +60,7 @@ theorem MulOpposite.opContinuousLinearEquiv_is_isometry
 theorem MulOpposite.opLinearEquiv_adjoint [FiniteDimensional 𝕜 H] :
     LinearMap.adjoint (MulOpposite.opLinearEquiv 𝕜 (M:=H)).toLinearMap
       = (MulOpposite.opLinearEquiv 𝕜 (M:=H)).symm.toLinearMap := by
-  letI := FiniteDimensional.complete 𝕜 H
+  have := FiniteDimensional.complete 𝕜 H
   calc LinearMap.adjoint (MulOpposite.opLinearEquiv 𝕜 (M:=H)).toLinearMap
       = ContinuousLinearMap.adjoint
         (MulOpposite.opContinuousLinearEquiv 𝕜 (M:=H)).toContinuousLinearMap := rfl
