@@ -65,7 +65,7 @@ instance : Singleton α (Finset α) :=
 theorem singleton_val (a : α) : ({a} : Finset α).1 = {a} :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem mem_singleton {a b : α} : b ∈ ({a} : Finset α) ↔ b = a :=
   Multiset.mem_singleton
 
@@ -382,7 +382,7 @@ theorem insert_val_of_notMem {a : α} {s : Finset α} (h : a ∉ s) : (insert a 
 
 @[deprecated (since := "2025-05-23")] alias insert_val_of_not_mem := insert_val_of_notMem
 
-@[simp]
+@[simp, grind =]
 theorem mem_insert : a ∈ insert b s ↔ a = b ∨ a ∈ s :=
   mem_ndinsert
 

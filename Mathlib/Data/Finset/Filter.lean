@@ -119,7 +119,7 @@ theorem filter_subset (s : Finset α) : s.filter p ⊆ s :=
 
 variable {p}
 
-@[simp]
+@[simp, grind =]
 theorem mem_filter {s : Finset α} {a : α} : a ∈ s.filter p ↔ a ∈ s ∧ p a :=
   Multiset.mem_filter
 
