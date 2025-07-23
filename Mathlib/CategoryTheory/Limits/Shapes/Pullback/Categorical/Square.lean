@@ -200,7 +200,7 @@ direction of this equivalence is the "canonical" functor while the inverse
 should be treated as mostly "opaque".
 This equivalence of categories realizes the universal property of categorical
 pullbacks, and should be the main object to work with. -/
-@[simps functor]
+@[simps! functor_obj functor_map]
 def functorEquiv : (X ⥤ C₁) ≌ CatCommSqOver R B X where
   functor := functorEquiv.functor T L R B X
   inverse := functorEquiv.inverse T L R B X
