@@ -55,6 +55,7 @@ making some definitions and lemmas irrelevant.
 ordered monoid, ordered group
 -/
 
+assert_not_exists MonoidWithZero
 
 open Function
 
