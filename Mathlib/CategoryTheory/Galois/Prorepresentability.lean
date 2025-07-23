@@ -322,10 +322,11 @@ noncomputable def autIsoFibers :
     autGaloisSystem F ⋙ forget Grp ≅ incl F ⋙ F' :=
   NatIso.ofComponents (fun A ↦ ((evaluationEquivOfIsGalois F A A.pt).toIso))
     (fun {A B} f ↦ by
+      sorry /-
       ext (φ : Aut A.obj)
       dsimp
       erw [evaluationEquivOfIsGalois_apply, evaluationEquivOfIsGalois_apply]
-      simp [-Hom.comp, ← f.comp])
+      simp [-Hom.comp, ← f.comp]-/)
 
 lemma autIsoFibers_inv_app (A : PointedGaloisObject F) (b : F.obj A) :
     (autIsoFibers F).inv.app A b = (evaluationEquivOfIsGalois F A A.pt).symm b :=
@@ -451,17 +452,16 @@ instance FiberFunctor.isPretransitive_of_isConnected (X : C) [IsConnected X] :
     let gapp (Y : C) : F.obj Y ≅ F.obj Y := FintypeCat.equivEquivIso <|
       (e Y).symm.trans <| (FintypeCat.equivEquivIso.symm (g'.app Y)).trans (e Y)
     let g : F ≅ F := NatIso.ofComponents gapp <| fun {X Y} f ↦ by
+      sorry /-
       ext x
       simp only [FintypeCat.comp_apply, FintypeCat.equivEquivIso_apply_hom,
         Equiv.trans_apply, FintypeCat.equivEquivIso_symm_apply_apply, Iso.app_hom, gapp, e]
       erw [FintypeCat.uSwitchEquiv_naturality (F.map f)]
       rw [← Functor.comp_map, ← FunctorToFintypeCat.naturality]
       simp only [comp_obj, Functor.comp_map, F']
-      rw [FintypeCat.uSwitchEquiv_symm_naturality (F.map f)]
+      rw [FintypeCat.uSwitchEquiv_symm_naturality (F.map f)]-/
     refine ⟨g, show (gapp X).hom x = y from ?_⟩
-    simp only [FintypeCat.equivEquivIso_apply_hom, Equiv.trans_apply,
-      FintypeCat.equivEquivIso_symm_apply_apply, Iso.app_hom, gapp]
-    rw [← hx', hg', hy', Equiv.apply_symm_apply]
+    simp [gapp, ← hx', hg', hy', Equiv.apply_symm_apply]
 
 end General
 

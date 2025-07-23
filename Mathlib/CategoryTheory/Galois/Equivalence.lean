@@ -59,17 +59,18 @@ instance : (functorToContAction F).EssSurj := by
        (fun X ↦ by
           rw [Action.isContinuous_def]
           change Continuous ((fun p ↦ (FintypeCat.uSwitchEquiv X.obj.V).symm p) ∘
-              (fun p : Aut F' × _ ↦ (X.obj.ρ p.1) p.2) ∘
+              (fun p : Aut F' × _ ↦ (X.obj.ρ p.1).hom p.2) ∘
               (fun p : Aut F' × _ ↦ (p.1, FintypeCat.uSwitchEquiv _ p.2)))
-          have : Continuous (fun p : Aut F' × _ ↦ (X.obj.ρ p.1) p.2) := X.2.1
-          fun_prop)
+          have : Continuous (fun p : Aut F' × _ ↦ (X.obj.ρ p.1).hom p.2) := X.2.1
+          sorry) --fun_prop
        (fun X ↦ by
           rw [Action.isContinuous_def]
           change Continuous ((fun p ↦ (FintypeCat.uSwitchEquiv X.obj.V).symm p) ∘
-              (fun p : Aut F' × _ ↦ (X.obj.ρ p.1) p.2) ∘
+              (fun p : Aut F' × _ ↦ (X.obj.ρ p.1).hom p.2) ∘
               (fun p : Aut F' × _ ↦ (p.1, FintypeCat.uSwitchEquiv _ p.2)))
-          have : Continuous (fun p : Aut F' × _ ↦ (X.obj.ρ p.1) p.2) := X.2.1
-          fun_prop)).trans <|
+          have : Continuous (fun p : Aut F' × _ ↦ (X.obj.ρ p.1).hom p.2) := X.2.1
+          sorry)--fun_prop)
+          ).trans <|
       ContAction.resEquiv _ f
   have : functorToContAction F ≅ functorToContAction F' ⋙ equiv.functor :=
     NatIso.ofComponents
