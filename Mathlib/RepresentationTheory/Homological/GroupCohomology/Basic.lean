@@ -226,37 +226,3 @@ lemma isZero_groupCohomology_succ_of_subsingleton
     [Group G] [Subsingleton G] (A : Rep k G) (n : ℕ) :
     Limits.IsZero (groupCohomology A (n + 1)) :=
   (isZero_Ext_succ_of_projective (Rep.trivial k G k) A n).of_iso <| groupCohomologyIsoExt _ _
-
-
-#exit
-variable [Group G] [DecidableEq G] (A : Rep k G) (n : ℕ)
-
-#check ((linearYoneda k (Rep k G)).obj A).rightOp
-
-/-
-ProjectiveResolution.isoLeftDerivedObj_hom_naturality (𝟙 (Rep.trivial k G k)) (Rep.barResolution k G)
-  (Rep.standardResolution k G) (Rep.barComplex.isoStandardComplex k G).hom
-  rfl : ∀ (F : Rep k G ⥤ ModuleCat k) [inst : F.Additive] (n : ℕ),
-  (F.leftDerived n).map (𝟙 (Rep.trivial k G k)) ≫ ((Rep.standardResolution k G).isoLeftDerivedObj F n).hom =
-    ((Rep.barResolution k G).isoLeftDerivedObj F n).hom ≫
-      (F.mapHomologicalComplex (ComplexShape.down ℕ) ⋙
-            HomologicalComplex.homologyFunctor (ModuleCat k) (ComplexShape.down ℕ) n).map
-        (Rep.barComplex.isoStandardComplex k G).hom
-
-this says
-Extⁿ(k, A) ⟶ Hⁿ(Hom(P, A)) is equal to
-
-Extⁿ(k, A) ⟶ Hⁿ(Hom(P', A)) ⟶ Hⁿ(Hom(P, A)).
-
-so that
-
-ok so
-
-
-
-
-
--/
-#check ProjectiveResolution.isoLeftDerivedObj_hom_naturality (C := Rep k G) (D := ModuleCat k)
-  (𝟙 (Rep.trivial k G k)) (Rep.barResolution k G) (Rep.standardResolution k G)
-  (Rep.barComplex.isoStandardComplex k G).hom rfl
