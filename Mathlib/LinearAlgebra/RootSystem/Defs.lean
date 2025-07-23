@@ -368,6 +368,14 @@ lemma coreflection_eq_flip_reflection :
     P.coreflection i = P.flip.reflection i :=
   rfl
 
+lemma reflection_reflectionPerm {i j : ι} :
+    P.reflection (P.reflectionPerm j i) = P.reflection j * P.reflection i * P.reflection j := by
+  ext x
+  simp only [reflection_apply, coreflection_apply, PerfectPairing.flip_apply_apply,
+    coroot_reflectionPerm, root_coroot_eq_pairing, map_sub, map_smul, smul_eq_mul,
+    root_reflectionPerm, LinearEquiv.mul_apply, pairing_same]
+  module
+
 lemma reflection_dualMap_eq_coreflection :
     (P.reflection i).dualMap ∘ₗ P.toLinearMap.flip = P.toLinearMap.flip ∘ₗ P.coreflection i := by
   ext n m
@@ -395,7 +403,7 @@ lemma pairing_reflectionPerm (i j k : ι) :
   simp only [pairing, root', coroot_reflectionPerm, root_reflectionPerm]
   simp only [coreflection_apply_coroot, map_sub, map_smul, smul_eq_mul,
     reflection_apply_root]
-  simp [← toLinearMap_eq_toPerfectPairing, map_smul, LinearMap.smul_apply, map_sub, map_smul,
+  simp [← toLinearMap_eq_toPerfectPairing, LinearMap.smul_apply,
     LinearMap.sub_apply, smul_eq_mul]
   simp [mul_comm]
 
@@ -440,8 +448,7 @@ of a root / coroot. -/
     apply P.root.injective
     simp only [root_reflectionPerm, reflection_apply, PerfectPairing.flip_apply_apply,
       root_coroot_eq_pairing, pairing_same, map_sub, map_smul, coroot_reflectionPerm,
-      coreflection_apply_self, LinearMap.sub_apply, map_neg, LinearMap.smul_apply, smul_eq_mul,
-      mul_neg, sub_neg_eq_add]
+      coreflection_apply_self, map_neg]
     module
 
 lemma ne_neg [NeZero (2 : R)] [IsDomain R] :

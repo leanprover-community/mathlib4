@@ -154,7 +154,7 @@ def map (α : F ⟶ G) : ∫ F ⥤ ∫ G where
     · dsimp
     · dsimp
       rw [StrongTrans.naturality_comp_hom_app]
-      simp only [map_comp, toOplax_toPrelaxFunctor, Cat.comp_obj, Strict.associator_eqToIso,
+      simp only [map_comp, Cat.comp_obj, Strict.associator_eqToIso,
         eqToIso_refl, Iso.refl_hom, Cat.id_app, Iso.refl_inv, id_comp, assoc, comp_id]
       slice_lhs 2 4 => simp only [← Functor.map_comp, Iso.inv_hom_id_app, Cat.comp_obj, comp_id]
       simp [← Functor.comp_map]

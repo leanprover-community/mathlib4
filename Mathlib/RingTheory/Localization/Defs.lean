@@ -489,7 +489,7 @@ noncomputable def lift {g : R →+* P} (hg : ∀ y : M, IsUnit (g y)) : S →+* 
         mul_add, mul_comm, eq_comm, lift_spec_mul_add, add_comm, mul_comm, mul_assoc, mul_comm,
         mul_assoc, lift_spec_mul_add]
       simp_rw [← mul_assoc]
-      show g _ * g _ * g _ + g _ * g _ * g _ = g _ * g _ * g _
+      change g _ * g _ * g _ + g _ * g _ * g _ = g _ * g _ * g _
       simp_rw [← map_mul g, ← map_add g]
       apply eq_of_eq (S := S) hg
       simp only [sec_spec', toLocalizationMap_sec, map_add, map_mul]
@@ -774,6 +774,7 @@ variable (M)
 
 theorem nonZeroDivisors_le_comap [IsLocalization M S] :
     nonZeroDivisors R ≤ (nonZeroDivisors S).comap (algebraMap R S) := by
+  simp_rw [← nonZeroDivisorsRight_eq_nonZeroDivisors]
   rintro a ha b (e : b * algebraMap R S a = 0)
   obtain ⟨x, s, rfl⟩ := mk'_surjective M b
   rw [← @mk'_one R _ M, ← mk'_mul, ← (algebraMap R S).map_zero, ← @mk'_one R _ M,
@@ -799,7 +800,7 @@ section
 
 instance instUniqueLocalization [Subsingleton R] : Unique (Localization M) where
   uniq a := by
-    with_unfolding_all show a = mk 1 1
+    with_unfolding_all change a = mk 1 1
     exact Localization.induction_on a fun _ => by
       congr <;> apply Subsingleton.elim
 
@@ -909,7 +910,7 @@ theorem to_map_eq_zero_iff {x : R} (hM : M ≤ nonZeroDivisors R) : algebraMap R
   constructor <;> intro h
   · obtain ⟨c, hc⟩ := (eq_iff_exists M S).mp h
     rw [mul_zero, mul_comm] at hc
-    exact hM c.2 x hc
+    exact (hM c.2).2 x hc
   · rw [h]
 
 protected theorem injective (hM : M ≤ nonZeroDivisors R) : Injective (algebraMap R S) := by
