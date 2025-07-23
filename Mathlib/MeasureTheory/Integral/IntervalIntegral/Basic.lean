@@ -135,7 +135,7 @@ theorem MeasureTheory.IntegrableOn.intervalIntegrable (hf : IntegrableOn f [[a, 
 
 theorem intervalIntegrable_const_iff {c : E} :
     IntervalIntegrable (fun _ => c) μ a b ↔ c = 0 ∨ μ (Ι a b) < ∞ := by
-  simp only [intervalIntegrable_iff, integrableOn_const_iff (C := c)]
+  simp [intervalIntegrable_iff, integrableOn_const_iff (C := c)]
 
 @[simp]
 theorem intervalIntegrable_const [IsLocallyFiniteMeasure μ] {c : E} :
