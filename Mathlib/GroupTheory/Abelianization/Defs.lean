@@ -86,14 +86,19 @@ def lift : (G →* A) ≃ (Abelianization G →* A) where
   right_inv _ := MonoidHom.ext fun x => QuotientGroup.induction_on x fun _ => rfl
 
 @[simp]
-theorem lift.of (x : G) : lift f (of x) = f x :=
+theorem lift_apply_of (x : G) : lift f (of x) = f x :=
   rfl
 
-theorem lift.unique (φ : Abelianization G →* A)
+@[deprecated (since := "2025-07-23")]
+alias lift.of := lift_apply_of
+
+theorem lift_unique (φ : Abelianization G →* A)
     -- hφ : φ agrees with f on the image of G in Gᵃᵇ
     (hφ : ∀ x : G, φ (Abelianization.of x) = f x)
     {x : Abelianization G} : φ x = lift f x :=
   QuotientGroup.induction_on x hφ
+
+@[deprecated (since := "2025-07-23")] alias lift.unique := lift_unique
 
 @[simp]
 theorem lift_of : lift of = MonoidHom.id (Abelianization G) :=
