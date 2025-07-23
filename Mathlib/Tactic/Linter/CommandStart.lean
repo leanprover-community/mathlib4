@@ -759,7 +759,7 @@ def generateCorrespondence {m} [Monad m] [MonadLog m] [AddMessageContext m] [Mon
       {str with startPos := ppEndPos},
       corr.alter (info.getTrailing?.get!.startPos) fun a => if (a.getD default).bracket.isSome then a else PPref.mk ppEndPos cond none)
   | corr, k, .atom info val, str => do
-    dbg_trace "kinds:\n{k}"
+    --dbg_trace "kinds:\n{k}"
     --dbg_trace "val: '{val}'"
     let ppEndPos ← atomOrIdentEndPos verbose? (k.push (.str `atom val)) val.toSubstring str
     let (_, tail) := info.getLeadTrail
@@ -771,11 +771,11 @@ def generateCorrespondence {m} [Monad m] [MonadLog m] [AddMessageContext m] [Mon
   | corr, k, stx@(.node _info kind args), str => do
     let corr :=
       if (k.back?.getD .anonymous) == ``Parser.Term.structInst then
-        dbg_trace "inserting {stx} {(stx.getRange?.map fun | {start := a, stop := b} => (a, b))}\n"
+        --dbg_trace "inserting {stx} {(stx.getRange?.map fun | {start := a, stop := b} => (a, b))}\n"
         corr
         --corr.insert stx.getTailPos?.get! <| PPref.mk stx.getPos?.get! true (some stx.getPos?.get!)
       else
-        dbg_trace "not inserting\n"
+        --dbg_trace "not inserting\n"
         corr
     (getChoiceNode kind args).foldlM (init := (str, corr)) fun (str, corr) arg => do
       generateCorrespondence verbose? corr (k.push kind) arg str
@@ -795,21 +795,37 @@ def mkRangeError (orig pp : Substring) : Option (String.Range × MessageData) :=
   let ppNext := pp.take 1
   -- The next pp-character is a space
   if ppNext.trim.isEmpty then
+    if onlineComment orig then
+      return none
     if origWs.isEmpty then
-      return some (⟨orig.startPos, orig.next orig.startPos⟩, "Missing space")
+      return some (⟨orig.startPos, orig.next orig.startPos⟩, "missing space in the source")
     let origWsNext := origWs.drop 1
     let pastSpaces := origWs.dropWhile (· == ' ')
     if (origWs.take 1).toString == " " && (pastSpaces.take 1).toString == "\n" then
       return some (⟨origWs.startPos, pastSpaces.stopPos⟩, "Please remove spaces before line breaks")
     else
       if (origWs.take 1).toString != "\n" && (!origWsNext.isEmpty) then
-        return some (⟨origWsNext.startPos, origWsNext.stopPos⟩, "At least two spaces")
+        return some (⟨origWsNext.startPos, origWsNext.stopPos⟩, "extra space in the source")
   -- The next pp-character is not a space
   if !ppNext.trim.isEmpty then
     if !origWs.isEmpty then
-      let s := if origWs.toString.length == 1 then "" else "s"
-      return some (⟨origWs.startPos, origWs.stopPos⟩, m!"Remove space{s}")
+      let wsName := if (origWs.take 1).toString == " " then "space" else "line break"
+      let s := if origWs.toString.length == 1 || (origWs.take 1).toString == "\n" then "" else "s"
+      return some (⟨origWs.startPos, origWs.stopPos⟩, m!"extra {wsName}{s} in the source")
   return none
+
+/-- Assumes that the `startPos` of the string is where the "center" of the window will be. -/
+def mkWdw (s : Substring) : String :=
+  let fromStart := {s with startPos := 0, stopPos := s.startPos}
+  let toEnd := {s with startPos := s.startPos, stopPos := s.str.endPos}
+  let leftWhitespaceAndWord := fromStart.trimRight.dropRightWhile (!·.isWhitespace)
+  let rightWhitespaceAndWord := toEnd.trimLeft.dropWhile (!·.isWhitespace)
+  {s with startPos := leftWhitespaceAndWord.stopPos, stopPos := rightWhitespaceAndWord.startPos}.toString.norm
+
+/-
+This part of the code\n  '{origWindow.trim}'\n\
+should be written as\n  '{expectedWindow}'\n"
+-/
 
 open Lean Elab Command in
 elab "#show_corr " cmd:command : command => do
@@ -821,8 +837,13 @@ elab "#show_corr " cmd:command : command => do
     let (_, corr) ← generateCorrespondence true Std.HashMap.emptyWithCapacity #[] cmd pretty.toSubstring
     for (origPos, ppR) in corr do
       let ppPos := ppR.pos
-      if let some (rg, msg) := mkRangeError {orig with startPos := origPos} {pp with startPos := ppPos} then
-        logWarningAt (.ofRange rg) msg
+      let origAtPos := {orig with startPos := origPos}
+      let ppAtPos := {pp with startPos := ppPos}
+      if let some (rg, msg) := mkRangeError origAtPos ppAtPos then
+        logWarningAt (.ofRange rg)
+          m!"{msg}\n\
+          This part of the code\n  '{mkWdw origAtPos}'\n\
+          should be written as\n  '{indentD <| mkWdw ppAtPos}'\n"
     let fm ← getFileMap
     let sorted := corr.toArray.qsort (·.1 < ·.1)
     let mut msgs := #[]
@@ -842,7 +863,7 @@ elab "#show_corr " cmd:command : command => do
 
 #show_corr
 --inspect
-#check (  { default := (  ) }:    Inhabited   Unit
+#check (  { default := (/-  -/) }:    Inhabited   Unit
 )
 
 #check ``Nat
