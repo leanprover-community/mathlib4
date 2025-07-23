@@ -134,7 +134,7 @@ lemma finLiftOn_mk (a : ∀ i, α i) :
   rw [finChoice_eq]
   rfl
 
-section
+section finLift
 
 variable {ι₁ : Type*} [Fintype ι₁] [DecidableEq ι₁] {ι₂ : Type*} [Fintype ι₂] [DecidableEq ι₂]
   {α : ι₁ → Sort*} {S₁ : ∀ i, Setoid (α i)} {β : ι₂ → Sort*} {S₂ : ∀ i, Setoid (β i)} {φ : Sort*}
