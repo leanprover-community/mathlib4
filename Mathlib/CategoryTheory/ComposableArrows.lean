@@ -44,13 +44,14 @@ New `simprocs` that run even in `dsimp` have caused breakages in this file.
 
 (e.g. `dsimp` can now simplify `2 + 3` to `5`)
 
-For now, we just turn off simprocs in this file.
-We'll soon provide finer grained options here, e.g. to turn off simprocs only in `dsimp`, etc.
+For now, we just turn off the offending simprocs in this file.
 
-*However*, hopefully it is possible to refactor the material here so that no backwards compatibility
-`set_option`s are required at all
+*However*, hopefully it is possible to refactor the material here so that no disabling of
+simprocs is needed.
+
+See issue #27382.
 -/
-set_option simprocs false
+attribute [-simp] Fin.reduceFinMk
 
 namespace CategoryTheory
 
@@ -353,7 +354,6 @@ lemma map_comp {i j k : Fin (n + 1 + 1)} (hij : i ≤ j) (hjk : j ≤ k) :
     · obtain _ | _ | k := k
       · simp [Fin.ext_iff] at hjk
       · simp [Fin.le_def] at hjk
-        omega
       · dsimp
         rw [assoc, ← F.map_comp, homOfLE_comp]
   · obtain _ | j := j
