@@ -20,7 +20,7 @@ We use this to transport the notion of `support` from `Finsupp` to `FreeAbelianG
 - `FreeAbelianGroup.support`: the finset of `x : X` that occur in `a : FreeAbelianGroup X`
 -/
 
-assert_not_exists Basis
+assert_not_exists Basis Cardinal
 
 noncomputable section
 

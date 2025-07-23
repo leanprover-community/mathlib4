@@ -5,8 +5,6 @@ Authors: Mitchell Rowett, Kim Morrison
 -/
 import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.Algebra.Quotient
-import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Setoid.Basic
 import Mathlib.GroupTheory.Coset.Defs
 
@@ -37,7 +35,7 @@ If instead `G` is an additive group, we can write (with  `open scoped Pointwise`
 Properly merge with pointwise actions on sets, by renaming and deduplicating lemmas as appropriate.
 -/
 
-assert_not_exists Cardinal
+assert_not_exists Cardinal Multiset
 
 open Function MulOpposite Set
 open scoped Pointwise
@@ -267,25 +265,11 @@ lemma rightRel_pi {ι : Type*} {β : ι → Type*} [∀ i, Group (β i)] (s' : �
   refine Setoid.ext fun x y ↦ ?_
   simp [Setoid.piSetoid_apply, rightRel_apply, Subgroup.mem_pi]
 
-@[to_additive]
-instance fintypeQuotientRightRel [Fintype (α ⧸ s)] :
-    Fintype (Quotient (QuotientGroup.rightRel s)) :=
-  Fintype.ofEquiv (α ⧸ s) (QuotientGroup.quotientRightRelEquivQuotientLeftRel s).symm
-
-@[to_additive]
-theorem card_quotient_rightRel [Fintype (α ⧸ s)] :
-    Fintype.card (Quotient (QuotientGroup.rightRel s)) = Fintype.card (α ⧸ s) :=
-  Fintype.ofEquiv_card (QuotientGroup.quotientRightRelEquivQuotientLeftRel s).symm
-
 end QuotientGroup
 
 namespace QuotientGroup
 
 variable [Group α] {s : Subgroup α}
-
-@[to_additive]
-instance fintype [Fintype α] (s : Subgroup α) [DecidableRel (leftRel s).r] : Fintype (α ⧸ s) :=
-  Quotient.fintype (leftRel s)
 
 variable (s)
 
