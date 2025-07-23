@@ -126,11 +126,11 @@ theorem isSymm_iff_flip : B.IsSymm ↔ flipHom B = B where
 
 section polarization
 
-variable {R : Type*} [Field R] [NeZero (2 : R)] [Module R M]
+variable {R : Type*} [Field R] [NeZero (2 : R)] [Module R M] {B C : BilinForm R M}
 
 /-- Polarization identity: a symmetric bilinear form can be expressed through the values
 it takes on the diagonal. -/
-lemma IsSymm.polarization {B : BilinForm R M} (x y : M) (hB : B.IsSymm) :
+lemma IsSymm.polarization (x y : M) (hB : B.IsSymm) :
     B x y = (B (x + y) (x + y) - B x x - B y y) / 2 := by
   simp only [map_add, LinearMap.add_apply]
   rw [hB.eq y x]
@@ -138,21 +138,21 @@ lemma IsSymm.polarization {B : BilinForm R M} (x y : M) (hB : B.IsSymm) :
   rw [mul_assoc, inv_mul_cancel₀ two_ne_zero, mul_one]
 
 /-- A symmetric bilinear form is characterized by the values it takes on the diagonal. -/
-lemma ext_of_isSymm {B C : BilinForm R M} (hB : IsSymm B) (hC : IsSymm C)
+lemma ext_of_isSymm (hB : IsSymm B) (hC : IsSymm C)
     (h : ∀ x, B x x = C x x) : B = C := by
   ext x y
   rw [hB.polarization, hC.polarization]
   simp_rw [h]
 
 /-- A symmetric bilinear form is characterized by the values it takes on the diagonal. -/
-lemma ext_iff_of_isSymm {B C : BilinForm R M} (hB : IsSymm B) (hC : IsSymm C) :
+lemma ext_iff_of_isSymm (hB : IsSymm B) (hC : IsSymm C) :
     B = C ↔ ∀ x, B x x = C x x where
   mp h := by simp [h]
   mpr := ext_of_isSymm hB hC
 
 end polarization
 
-lemma isSymm_iff_basis {ι : Type*} (b : Basis ι R M) {B : BilinForm R M} :
+lemma isSymm_iff_basis {ι : Type*} (b : Basis ι R M) :
     IsSymm B ↔ ∀ i j, B (b i) (b j) = B (b j) (b i) where
   mp := fun ⟨h⟩ i j ↦ h _ _
   mpr := by
