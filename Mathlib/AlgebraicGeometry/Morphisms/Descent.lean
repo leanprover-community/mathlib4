@@ -5,6 +5,7 @@ Authors: Christian Merten
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.Affine
 import Mathlib.AlgebraicGeometry.Morphisms.AffineAnd
+import Mathlib.AlgebraicGeometry.Morphisms.LocalIso
 import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 import Mathlib.CategoryTheory.MorphismProperty.Descent
 
@@ -77,7 +78,7 @@ lemma IsLocalAtTarget.descendsAlong [IsLocalAtTarget P] [P'.IsStableUnderBaseCha
       apply pullback.hom_ext <;> simp [e, pullback.condition]
     refine this (f := pullback.snd f ι) ?_ ?_ ⟨_, rfl⟩
     · exact P'.pullback_snd _ _ h
-    · show P (pullback.fst (pullback.snd f ι) (pullback.snd g ι))
+    · change P (pullback.fst (pullback.snd f ι) (pullback.snd g ι))
       rw [← heq, P.cancel_left_of_respectsIso]
       exact AlgebraicGeometry.IsLocalAtTarget.of_isPullback (iY := pullback.fst f ι)
         (CategoryTheory.IsPullback.of_hasPullback _ _) hf
@@ -100,7 +101,7 @@ lemma of_pullback_fst_Spec_of_codescendsAlong [P.RespectsIso]
   replace hf : P (pullback.fst (Spec.map <| CommRingCat.ofHom <| algebraMap R T)
     (Spec.map <| CommRingCat.ofHom <| algebraMap R S)) := hf
   rw [H₂]
-  refine hQQ'.algebraMap_tensorProduct (R := R) (S := T) (T := S) _ _ (H₁ h) ?_
+  refine hQQ'.algebraMap_tensorProduct (R := R) (S := T) (T := S) _ (H₁ h) ?_
   rwa [← pullbackSpecIso_hom_fst R T S, P.cancel_left_of_respectsIso, H₂] at hf
 
 /-- If `X` admits a morphism `p : T ⟶ X` from an affine scheme satisfying `P', to
@@ -122,7 +123,7 @@ open Opposite
 
 variable [P'.IsStableUnderBaseChange] [P'.IsStableUnderComposition] [P.IsStableUnderBaseChange]
 variable
-  (H₁ : ∀ (X : Scheme.{u}) [CompactSpace X], ∃ (Y : Scheme.{u}) (p : Y ⟶ X), P' p ∧ IsAffine Y)
+  (H₁ : (@IsLocalIso ⊓ @Surjective : MorphismProperty Scheme) ≤ P')
   (H₂ : ∀ {R S : CommRingCat.{u}} {f : R ⟶ S}, P' (Spec.map f) → Q' f.hom)
 
 include H₁ in
@@ -134,10 +135,10 @@ lemma IsLocalAtTarget.descendsAlong_inf_quasiCompact [IsLocalAtTarget P]
   intro R X Y f g hf h
   wlog hX : ∃ T, X = Spec T generalizing X
   · have _ : CompactSpace X := by simpa [← quasiCompact_over_affine_iff f] using hf.2
-    obtain ⟨Y, p, hP', _⟩ := H₁ X
+    obtain ⟨Y, p, hsurj, hP', hY⟩ := X.exists_hom_isAffine_of_isLocalAtSource @IsLocalIso
     refine this (f := (Y.isoSpec.inv ≫ p) ≫ f) ?_ ?_ ⟨_, rfl⟩
     · rw [Category.assoc, (P' ⊓ @QuasiCompact).cancel_left_of_respectsIso]
-      exact ⟨P'.comp_mem _ _ hP' hf.1, inferInstance⟩
+      exact ⟨P'.comp_mem _ _ (H₁ _ ⟨hP', hsurj⟩) hf.1, inferInstance⟩
     · rw [← pullbackRightPullbackFstIso_inv_fst f g _, P.cancel_left_of_respectsIso]
       exact P.pullback_fst _ _ h
   obtain ⟨T, rfl⟩ := hX
@@ -146,19 +147,15 @@ lemma IsLocalAtTarget.descendsAlong_inf_quasiCompact [IsLocalAtTarget P]
 
 include H₁ H₂ in
 /--
-Let `P` be the morphism property associated to the ring hom property `Q` and
-`P'` be sufficiently stable, imply `Q'` on global sections for affine schemes and
-let `Q` codescend along `Q'`.
+Let `P` be the morphism property associated to the ring hom property `Q`. Suppose
 
-Suppose every quasi-compact scheme `X` admits a morphism `p : Y ⟶ X` from an affine scheme
-such that `p` satisfies `P'` (A).
+- `P'` implies `Q'` on global sections for affine schemes,
+- `P'` is satisfied for all surjective, local isomorphisms, and
+- `Q` codescend along `Q'`.
 
 Then `P` descends along quasi-compact morphisms satisfiying `P'`.
 
-Note: Property (A) is in particular satisfied if `P'` is equivalent to surjective and
-a property local on the source
-(see `Scheme.exists_openCover_property_desc_of_isLocalAtSource`). In particular,
-this is satisfied by faithfully flat morphisms.
+Note: The second condition is in particular satisfied for faithfully flat morphisms.
 -/
 nonrec lemma HasRingHomProperty.descendsAlong [HasRingHomProperty P Q]
     (hQQ' : RingHom.CodescendsAlong Q Q') :
@@ -177,11 +174,18 @@ nonrec lemma HasRingHomProperty.descendsAlong [HasRingHomProperty P Q]
   simp [HasRingHomProperty.Spec_iff (P := P)]
 
 include H₁ H₂ in
-/-- Let `P` be a morphism property associated with `affineAnd Q`. Then if `Q` descends
-along `Q'`, `P'` implies `Q'` on global sections on affine schemes and affine morphisms
-descend along `P''`, `P` descends along quasi-compact morphisms satisfying `P'`.
+/--
+Let `P` be a morphism property associated with `affineAnd Q`. Suppose
 
-For an explanation of assumption `H₁`, see `HasRingHomProperty.descendsAlong`. -/
+- `P'` implies `Q'` on global sections on affine schemes,
+- `P'` is satisfied for surjective, local isomorphisms,
+- affine morphisms descend along `P''`, and
+- `Q` codescends along `Q'`,
+
+Then `P` descends along quasi-compact morphisms satisfying `P'`.
+
+Note: The second condition is in particular satisfied for faithfully flat morphisms.
+-/
 nonrec lemma HasAffineProperty.descendsAlong_of_affineAnd
     (hP : HasAffineProperty P (affineAnd Q)) [MorphismProperty.DescendsAlong @IsAffineHom P']
     (hQ : RingHom.RespectsIso Q) (hQQ' : RingHom.CodescendsAlong Q Q') :

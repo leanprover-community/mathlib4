@@ -228,6 +228,7 @@ variable (Q : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop
 
 variable (R S T : Type u) [CommRing R] [CommRing S] [Algebra R S] [CommRing T] [Algebra R T]
 
+variable (P) in
 /-- A property of ring homomorphisms `Q` codescends along `Q'` if whenever
 `R' →+* R' ⊗[R] S` satisfies `Q` and `R →+* R'` satisfies `Q'`, then `R →+* S` satisfies `Q`. -/
 def CodescendsAlong : Prop :=
