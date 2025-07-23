@@ -65,8 +65,8 @@ def homologicalKernel : ObjectProperty C :=
 
 lemma mem_homologicalKernel_iff [F.ShiftSequence ℤ] (X : C) :
     F.homologicalKernel X ↔ ∀ (n : ℤ), IsZero ((F.shift n).obj X) := by
-  simp only [← fun (n : ℤ) => Iso.isZero_iff ((F.isoShift n).app X)]
-  rfl
+  simp only [← fun (n : ℤ) => Iso.isZero_iff ((F.isoShift n).app X),
+    homologicalKernel, comp_obj]
 
 section Pretriangulated
 
