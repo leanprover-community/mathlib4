@@ -152,6 +152,90 @@ open Bornology in
 lemma testb2 {s : Set (WeakBilin B)} (h : IsVonNBounded 𝕜 s) : IsVonNBounded 𝕜 (f '' s) := by
   apply IsVonNBounded.image h
 
+#check Seminorm.absorbent_ball_zero
+
+variable {s : Finset F} (r : ℝ)
+
+#check ((s.sup B.toSeminormFamily).ball 0 r)
+
+
+#check PseudoMetricSpace.toBornology
+
+#check Set.Ioi
+
+--#check Pointwise
+
+open Pointwise
+
+variable (t : Set E) (a : 𝕜) (c : ℝ)
+
+#check a • t
+
+#check (c :𝕜) • t
+
+#check PseudoMetricSpace.cobounded_sets
+
+#check Balanced
+
+lemma bal {s : Finset F} : Balanced 𝕜 ((s.sup B.toSeminormFamily).ball 0 r) := by
+  exact Seminorm.balanced_ball_zero (s.sup B.toSeminormFamily) r
+
+#check Seminorm.absorbent_ball_zero (s.sup B.toSeminormFamily)
+
+open ComplexOrder in
+lemma absorb {s : Finset F} (hr : 0 < r) : Absorbent 𝕜 ((s.sup B.toSeminormFamily).ball 0 r) := by
+  exact Seminorm.absorbent_ball_zero (s.sup B.toSeminormFamily) hr
+
+/-
+  intro x
+  rw [Absorbs]
+  rw [Filter.Eventually]
+  simp
+  --have e1 : {x_1 | x ∈ (x_1 :𝕜) • ((s.sup B.toSeminormFamily).ball 0 r)} = Set.Ici (((s.sup B.toSeminormFamily) x) : 𝕜) := sorry
+  --rw [e1]
+  rw [← Filter.mem_sets]
+  rw [PseudoMetricSpace.cobounded_sets]
+  simp
+  use 2 * ((s.sup B.toSeminormFamily) x)
+  intro a ha
+  intro b hb
+  have e1 (c : ℝ) (hc : ((s.sup B.toSeminormFamily) x) < c) :
+      x ∈ (c : 𝕜) • ((s.sup B.toSeminormFamily).ball 0 r) := sorry
+  have e1' (c : ℝ) (hc : x ∉ (c : 𝕜) • ((s.sup B.toSeminormFamily).ball 0 r)) :
+      (c ≤ (s.sup B.toSeminormFamily) x) := by
+    by_contra hn
+    simp at hn
+    exact hc (e1 c hn)
+  have test (c : ℝ) :  x ∈ (c : 𝕜) • ((s.sup B.toSeminormFamily).ball 0 r) ↔
+      x ∈ (-c : 𝕜) • ((s.sup B.toSeminormFamily).ball 0 r) := by
+
+    sorry
+  have e2 (c : ℝ) (hc : x ∉ (c : 𝕜) • ((s.sup B.toSeminormFamily).ball 0 r)) :
+      (|c| ≤ (s.sup B.toSeminormFamily) x) := by
+    rw [abs_le']
+    constructor
+    · exact e1' c hc
+    · by_contra hn
+      simp at hn
+
+
+  --     := by
+  -- aesop
+
+
+  apply Filter.Ici_mem_atTop
+  --simp_rw [PseudoMetricSpace.cobounded_sets]
+
+
+  --refine Filter.mem_map'.mp ?_
+  --simp
+  --rw [PseudoMetricSpace.toBornology]
+
+-/
+
+--lemma absorb {s : Set (WeakBilin B)} (h : (s.sup B.toSeminormFamily).ball (0 : (WeakBilin B)) r₀ ⊆ ⇑f ⁻¹' Metric.ball (0 : (WeakBilin B))) (x : E) :
+--    ∃ r, x ∈ r • (s.sup B.toSeminormFamily).ball 0 r₀ := sorry
+
 lemma isBounded_of_Continuous :
     Seminorm.IsBounded B.toSeminormFamily (fun _ : Fin 1 => normSeminorm 𝕜 𝕜) f.toLinearMap := by
   rw [Seminorm.isBounded_const]
