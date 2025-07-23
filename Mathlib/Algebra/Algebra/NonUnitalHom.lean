@@ -154,7 +154,7 @@ variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
 variable [NonUnitalNonAssocSemiring B] [DistribMulAction S B]
 variable [NonUnitalNonAssocSemiring C] [DistribMulAction T C]
 
-instance : DFunLike (A →ₛₙₐ[φ] B) A fun _ => B where
+instance : FunLike (A →ₛₙₐ[φ] B) A B where
   coe f := f.toFun
   coe_injective' := by rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
 
@@ -288,7 +288,6 @@ instance : Inhabited (A →ₛₙₐ[φ] B) :=
 
 variable {φ' : S →* R} {ψ : S →* T} {χ : R →* T}
 
-set_option linter.unusedVariables false in
 /-- The composition of morphisms is a morphism. -/
 def comp (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) [κ : MonoidHom.CompTriple φ ψ χ] :
     A →ₛₙₐ[χ] C :=

@@ -37,7 +37,7 @@ This is `Nat.divisorsAntidiagonal` without a special case for `n = 0`. -/
     x ∈ divisorsAntidiagonal n ↔ x.1 * x.2 = n := by
     simp_rw [divisorsAntidiagonal, Finset.mem_map, Finset.mem_attach, Function.Embedding.coeFn_mk,
       Prod.ext_iff, true_and, ← coe_inj, Subtype.exists]
-    aesop
+    simp
   { antidiagonal := fun n ↦ divisorsAntidiagonal (Additive.toMul n) |>.map
       (.prodMap (Additive.ofMul.toEmbedding) (Additive.ofMul.toEmbedding))
     mem_antidiagonal := by simp [← ofMul_mul, mem_divisorsAntidiagonal] }
@@ -138,11 +138,7 @@ lemma image_apply_finMulAntidiag {d n : ℕ} {i : Fin d} (hd : d ≠ 1) :
     simp only [ite_true, and_true]
     rw [← Finset.mul_prod_erase (h := mem_univ i),
       ← Finset.mul_prod_erase (a := i')]
-    · rw [if_neg hi_ne, if_pos rfl, if_pos rfl, prod_eq_one]
-      · exact ⟨by ring, hn⟩
-      intro j hj
-      simp only [mem_erase, ne_eq, mem_univ, and_true] at hj
-      rw [if_neg hj.1, if_neg hj.2]
+    · simp_all
     exact mem_erase.mpr ⟨hi_ne, mem_univ _⟩
 
 lemma image_piFinTwoEquiv_finMulAntidiag {n : ℕ} :
