@@ -172,7 +172,7 @@ theorem geom_sum₂_mul_of_le [CommSemiring R] [PartialOrder R] [AddLeftReflectL
   simp_all only [Finset.mem_range]
   rw [mul_comm]
   congr
-  omega
+  grind
 
 theorem Commute.sub_dvd_pow_sub_pow [Ring R] {x y : R} (h : Commute x y) (n : ℕ) :
     x - y ∣ x ^ n - y ^ n :=
@@ -315,7 +315,7 @@ protected theorem Commute.mul_geom_sum₂_Ico [Ring R] {x y : R} (h : Commute x 
     rw [← pow_add]
     congr
     rw [mem_range] at j_in
-    omega
+    grind
   rw [this]
   simp_rw [pow_mul_comm y (n - m) _]
   simp_rw [← mul_assoc]
@@ -330,7 +330,7 @@ protected theorem Commute.geom_sum₂_succ_eq [Ring R] {x y : R} (h : Commute x 
   refine sum_congr rfl fun i hi => ?_
   suffices n - 1 - i + 1 = n - i by rw [this]
   rw [Finset.mem_range] at hi
-  omega
+  grind
 
 theorem geom_sum₂_succ_eq [CommRing R] (x y : R) {n : ℕ} :
     ∑ i ∈ range (n + 1), x ^ i * y ^ (n - i) =

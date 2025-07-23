@@ -268,7 +268,7 @@ lemma notMem_range_embeddingUpIntGE_iff (n : ℤ) :
     exact h (n - p).natAbs (by simp; omega)
   · intros
     dsimp
-    omega
+    grind
 
 @[deprecated (since := "2025-05-23")]
 alias not_mem_range_embeddingUpIntGE_iff := notMem_range_embeddingUpIntGE_iff

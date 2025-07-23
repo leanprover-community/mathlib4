@@ -694,9 +694,9 @@ theorem eq_zero_of_mul_eq_zero_of_smul (P : R[X]) (h : ∀ r : R, r • P = 0 �
   simp only [Finset.mem_antidiagonal, ne_eq, Prod.forall, Prod.mk.injEq, not_and]
   intro i j hij H
   obtain hi | rfl | hi := lt_trichotomy i l
-  · have hj : m < j := by omega
+  · have hj : m < j := by grind
     rw [coeff_eq_zero_of_natDegree_lt hj, mul_zero]
-  · omega
+  · grind
   · rw [← coeff_C_mul, ← smul_eq_C_mul, IH _ hi, coeff_zero]
 termination_by Q.natDegree
 
