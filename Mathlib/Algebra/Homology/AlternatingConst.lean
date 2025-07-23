@@ -158,56 +158,41 @@ open ZeroObject
 
 /-- The `n`-th homology of the alternating constant complex is zero for non-zero even `n`. -/
 noncomputable
-def alternatingConstFunctorHomologyDataEvenNEZero (X : C) (n : ℕ) (hn : Even n) (h₀ : n ≠ 0) :
-    ((alternatingConstFunctor.obj X).sc n).HomologyData :=
+def alternatingConstHomologyDataEvenNEZero (X : C) (n : ℕ) (hn : Even n) (h₀ : n ≠ 0) :
+    ((alternatingConst.obj X).sc n).HomologyData :=
   .ofIsLimitKernelFork _ (by simp [Nat.even_add_one, hn]) _
     (Limits.zeroKernelOfCancelZero _ (by cases n <;> simp_all))
 
-@[deprecated (since := "2025-07-22")]
-alias alternatingConstHomologyDataEvenNEZero := alternatingConstFunctorHomologyDataEvenNEZero
-
 /-- The `n`-th homology of the alternating constant complex is zero for odd `n`. -/
 noncomputable
-def alternatingConstFunctorHomologyDataOdd (X : C) (n : ℕ) (hn : Odd n) :
-    ((alternatingConstFunctor.obj X).sc n).HomologyData :=
+def alternatingConstHomologyDataOdd (X : C) (n : ℕ) (hn : Odd n) :
+    ((alternatingConst.obj X).sc n).HomologyData :=
   .ofIsColimitCokernelCofork _ (by simp [hn]) _ (Limits.zeroCokernelOfZeroCancel _ (by simp [hn]))
 
-@[deprecated (since := "2025-07-22")]
-alias alternatingConstHomologyDataOdd := alternatingConstFunctorHomologyDataOdd
-
 /-- The `n`-th homology of the alternating constant complex is `X` for `n = 0`. -/
 noncomputable
-def alternatingConstFunctorHomologyDataZero (X : C) (n : ℕ) (hn : n = 0) :
-    ((alternatingConstFunctor.obj X).sc n).HomologyData :=
+def alternatingConstHomologyDataZero (X : C) (n : ℕ) (hn : n = 0) :
+    ((alternatingConst.obj X).sc n).HomologyData :=
   .ofZeros _ (by simp [hn]) (by simp [hn])
 
-@[deprecated (since := "2025-07-22")]
-alias alternatingConstHomologyDataZero := alternatingConstFunctorHomologyDataZero
-
-instance (X : C) (n : ℕ) : (alternatingConstFunctor.obj X).HasHomology n := by
+instance (X : C) (n : ℕ) : (alternatingConst.obj X).HasHomology n := by
   rcases n.even_or_odd with h | h
   · rcases n with - | n
-    · exact ⟨⟨alternatingConstFunctorHomologyDataZero X _ rfl⟩⟩
-    · exact ⟨⟨alternatingConstFunctorHomologyDataEvenNEZero X _ h (by simp)⟩⟩
-  · exact ⟨⟨alternatingConstFunctorHomologyDataOdd X _ h⟩⟩
+    · exact ⟨⟨alternatingConstHomologyDataZero X _ rfl⟩⟩
+    · exact ⟨⟨alternatingConstHomologyDataEvenNEZero X _ h (by simp)⟩⟩
+  · exact ⟨⟨alternatingConstHomologyDataOdd X _ h⟩⟩
 
 /-- The `n`-th homology of the alternating constant complex is `X` for `n ≠ 0`. -/
-lemma alternatingConstFunctor_exactAt (X : C) (n : ℕ) (hn : n ≠ 0) :
-    (alternatingConstFunctor.obj X).ExactAt n := by
+lemma alternatingConst_exactAt (X : C) (n : ℕ) (hn : n ≠ 0) :
+    (alternatingConst.obj X).ExactAt n := by
   rcases n.even_or_odd with h | h
-  · exact ⟨(alternatingConstFunctorHomologyDataEvenNEZero X _ h hn), isZero_zero C⟩
-  · exact ⟨(alternatingConstFunctorHomologyDataOdd X _ h), isZero_zero C⟩
-
-@[deprecated (since := "2025-07-22")]
-alias alternatingConst_exactAt := alternatingConstFunctor_exactAt
+  · exact ⟨(alternatingConstHomologyDataEvenNEZero X _ h hn), isZero_zero C⟩
+  · exact ⟨(alternatingConstHomologyDataOdd X _ h), isZero_zero C⟩
 
 /-- The `n`-th homology of the alternating constant complex is `X` for `n = 0`. -/
 noncomputable
-def alternatingConstFunctorHomologyZero (X : C) : (alternatingConstFunctor.obj X).homology 0 ≅ X :=
-  (alternatingConstFunctorHomologyDataZero X _ rfl).left.homologyIso
-
-@[deprecated (since := "2025-07-22")]
-alias alternatingConstHomologyZero := alternatingConstFunctorHomologyZero
+def alternatingConstHomologyZero (X : C) : (alternatingConst.obj X).homology 0 ≅ X :=
+  (alternatingConstHomologyDataZero X _ rfl).left.homologyIso
 
 end ChainComplex
 
@@ -221,20 +206,13 @@ noncomputable def AlgebraicTopology.alternatingFaceMapComplexConst :
     simp [SimplicialObject.δ, ← Finset.sum_smul, Fin.sum_neg_one_pow, Nat.even_add_one,
       -Nat.not_even_iff_odd]) (by intros; ext; simp)
 
-@[deprecated (since := "2025-07-22")]
-alias AlgebraicTopology.alternatingFaceMapComplexConst :=
- AlgebraicTopology.alternatingFaceMapComplexConstFunctor
-
 namespace ChainComplex
 
 /-- `alternatingConst.obj X` is homotopy equivalent to the chain
 complex `(single₀ C).obj X`. -/
-noncomputable def alternatingConstFunctorHomotopyEquiv (X : C) :
-    HomotopyEquiv (alternatingConstFunctor.obj X) ((single₀ C).obj X) :=
-  (HomotopyEquiv.ofIso (alternatingFaceMapComplexConstFunctor.app X).symm).trans
+noncomputable def alternatingConstHomotopyEquiv (X : C) :
+    HomotopyEquiv (alternatingConst.obj X) ((single₀ C).obj X) :=
+  (HomotopyEquiv.ofIso (alternatingFaceMapComplexConst.app X).symm).trans
     ((SimplicialObject.Augmented.ExtraDegeneracy.const X).homotopyEquiv)
-
-@[deprecated (since := "2025-07-22")]
-alias alternatingConstHomotopyEquiv := alternatingConstFunctorHomotopyEquiv
 
 end ChainComplex

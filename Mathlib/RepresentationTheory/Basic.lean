@@ -81,33 +81,6 @@ theorem isTrivial_apply (ρ : Representation k G V) [IsTrivial ρ] (g : G) (x : 
 
 end trivial
 
-section AddCommGroup
-
-variable {k G V : Type*} [CommSemiring k] [Monoid G] [AddCommGroup V] [Module k V]
-  (ρ : Representation k G V)
-
-@[to_additive]
-lemma _root_.Fin.partialProd_castSucc {n : ℕ} {M : Type*} [Monoid M]
-    {f : Fin (n + 1) → M} {i : Fin (n + 1)} :
-    Fin.partialProd (f ∘ Fin.castSucc) i = Fin.partialProd f i.castSucc :=
-  i.inductionOn (by simp) fun i hi => by simp_all [Fin.partialProd_succ]
-
-/- Given a representation `(V, ρ)` of a monoid `G`, this says
-`(ρ(g) - Id)(x + ρ(g)(x) + ... + ρ(gⁿ)(x)) = ρ(gⁿ⁺¹)(x) - x` for all `n : ℕ, g : G` and `x : V`. -/
-lemma apply_sub_id_partialSum_eq (n : ℕ) (g : G) (x : V) :
-    (ρ g - LinearMap.id (R := k) (M := V)) ((Fin.last _).partialSum
-      (fun (j : Fin (n + 1)) => ρ (g ^ (j : ℕ)) x)) = ρ (g ^ (n + 1)) x - x := by
-  induction n with
-  | zero => simp [Fin.partialSum]
-  | succ n h =>
-    have : (fun (j : Fin (n + 2)) => ρ (g ^ (j : ℕ)) x) ∘ Fin.castSucc =
-      fun (j : Fin (n + 1)) => ρ (g ^ (j : ℕ)) x := by ext; simp
-    rw [← Fin.succ_eq_last_succ.2 rfl, Fin.partialSum_succ, ← Fin.partialSum_castSucc, map_add,
-      this, h]
-    simp [pow_succ']
-
-end AddCommGroup
-
 section Group
 
 variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]

@@ -54,17 +54,17 @@ where `R[X]` is the coproduct of copies of `R` indexed by elements of `X`. -/
 noncomputable
 def singularChainComplexFunctorIsoOfTotallyDisconnectedSpace :
     ((singularChainComplexFunctor C).obj R).obj X ≅
-      (ChainComplex.alternatingConstFunctor.obj (∐ fun _ : X ↦ R)) :=
+      (ChainComplex.alternatingConst.obj (∐ fun _ : X ↦ R)) :=
   (AlgebraicTopology.alternatingFaceMapComplex _).mapIso
     (((SimplicialObject.whiskering _ _).obj _).mapIso
     (TopCat.toSSetIsoConst X) ≪≫ Functor.constComp _ _ _) ≪≫
-    AlgebraicTopology.alternatingFaceMapComplexConstFunctor.app _
+    AlgebraicTopology.alternatingFaceMapComplexConst.app _
 
 omit [CategoryWithHomology C] in
 lemma singularChainComplexFunctor_exactAt_of_totallyDisconnectedSpace [Limits.HasZeroObject C]
     (hn : n ≠ 0) :
     (((singularChainComplexFunctor C).obj R).obj X).ExactAt n :=
-  .of_iso (ChainComplex.alternatingConstFunctor_exactAt _ _ hn)
+  .of_iso (ChainComplex.alternatingConst_exactAt _ _ hn)
     (singularChainComplexFunctorIsoOfTotallyDisconnectedSpace C R X).symm
 
 lemma isZero_singularHomologyFunctor_of_totallyDisconnectedSpace (hn : n ≠ 0) :
@@ -80,7 +80,7 @@ def singularHomologyFunctorZeroOfTotallyDisconnectedSpace :
   have : Limits.HasZeroObject C := ⟨_, Limits.initialIsInitial.isZero⟩
   (HomologicalComplex.homologyFunctor _ _ 0).mapIso
       (singularChainComplexFunctorIsoOfTotallyDisconnectedSpace C R X) ≪≫
-    ChainComplex.alternatingConstFunctorHomologyZero _
+    ChainComplex.alternatingConstHomologyZero _
 
 end TotallyDisconnectedSpace
 
