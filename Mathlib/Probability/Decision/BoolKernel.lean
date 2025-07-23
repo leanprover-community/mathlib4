@@ -93,15 +93,13 @@ lemma sum_smul_rnDeriv_boolKernel' (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [
     (π : Measure Bool) [IsFiniteMeasure π] :
     ∀ᵐ x ∂(boolKernel μ ν ∘ₘ π), π {true} * ν.rnDeriv (boolKernel μ ν ∘ₘ π) x
       + π {false} * μ.rnDeriv (boolKernel μ ν ∘ₘ π) x = 1 := by
-  filter_upwards [sum_smul_rnDeriv_boolKernel μ ν π] with x hx
-  simpa using hx
+  filter_upwards [sum_smul_rnDeriv_boolKernel μ ν π] with x hx using by simpa using hx
 
 lemma posterior_boolKernel_apply_false (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (π : Measure Bool) [IsFiniteMeasure π] :
     ∀ᵐ x ∂boolKernel μ ν ∘ₘ π, ((boolKernel μ ν)†π) x {false}
       = π {false} * μ.rnDeriv (boolKernel μ ν ∘ₘ π) x := by
-  have h_eq := posterior_eq_withDensity_of_countable (boolKernel μ ν) π
-  filter_upwards [h_eq] with x hx
+  filter_upwards [posterior_eq_withDensity_of_countable (boolKernel μ ν) π] with x hx
   rw [hx]
   simp
 
@@ -109,8 +107,7 @@ lemma posterior_boolKernel_apply_true (μ ν : Measure 𝓧) [IsFiniteMeasure μ
     (π : Measure Bool) [IsFiniteMeasure π] :
     ∀ᵐ x ∂boolKernel μ ν ∘ₘ π, ((boolKernel μ ν)†π) x {true}
       = π {true} * ν.rnDeriv (boolKernel μ ν ∘ₘ π) x := by
-  have h_eq := posterior_eq_withDensity_of_countable (boolKernel μ ν) π
-  filter_upwards [h_eq] with x hx
+  filter_upwards [posterior_eq_withDensity_of_countable (boolKernel μ ν) π] with x hx
   rw [hx]
   simp
 
