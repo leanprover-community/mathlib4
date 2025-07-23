@@ -434,7 +434,7 @@ instance (n : ℕ) : (functor k G n).PreservesZeroMorphisms where
 variable {G}
 
 /-- Given a group homomorphism `f : G →* H`, this is a natural transformation between the functors
-sending `A : Rep k H` to `Hₙ(G, Res(f)(A)) ⟶ Hₙ(H, A)`. -/
+sending `A : Rep k H` to `Hₙ(G, Res(f)(A))` and to `Hₙ(H, A)`. -/
 @[simps]
 noncomputable def coresNatTrans (n : ℕ) :
     Action.res (ModuleCat k) f ⋙ functor k G n ⟶ functor k H n where
