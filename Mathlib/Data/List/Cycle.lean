@@ -275,8 +275,6 @@ theorem next_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
 
 @[deprecated (since := "2025-02-15")] alias next_get := next_getElem
 
--- Unused variable linter incorrectly reports that `h` is unused here.
-set_option linter.unusedVariables false in
 theorem prev_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
     prev l l[i] (get_mem _ _) =
       (l[(i + (l.length - 1)) % l.length]'(Nat.mod_lt _ (by omega))) :=

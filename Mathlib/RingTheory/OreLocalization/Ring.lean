@@ -196,7 +196,7 @@ lemma zsmul_eq_zsmul (n : ℤ) (x : X[S⁻¹]) :
 
 open nonZeroDivisors
 
-theorem numeratorHom_inj (hS : S ≤ nonZeroDivisorsRight R) :
+theorem numeratorHom_inj (hS : S ≤ nonZeroDivisorsLeft R) :
     Function.Injective (numeratorHom : R → R[S⁻¹]) :=
   fun r₁ r₂ h => by
   rw [numeratorHom_apply, numeratorHom_apply, oreDiv_eq_iff] at h

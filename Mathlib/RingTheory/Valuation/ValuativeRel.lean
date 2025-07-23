@@ -95,8 +95,9 @@ class ValuativeRel (R : Type*) [CommRing R] where
   rel_mul_cancel {x y z} : ¬ rel z 0 → rel (x * z) (y * z) → rel x y
   not_rel_one_zero : ¬ rel 1 0
 
-@[inherit_doc ValuativeRel.rel]
-notation:50 (name := valuativeRel) a:50 " ≤ᵥ " b:51 => binrel% ValuativeRel.rel a b
+@[inherit_doc] infix:50 " ≤ᵥ " => ValuativeRel.rel
+
+macro_rules | `($a ≤ᵥ $b) => `(binrel% ValuativeRel.rel $a $b)
 
 /-- If `B` is an `A` algebra and both `A` and `B` have valuative relations,
 we say that `B|A` is a valuative extension if the valuative relation on `A` is
