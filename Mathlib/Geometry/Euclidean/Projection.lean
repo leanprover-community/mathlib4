@@ -513,10 +513,18 @@ theorem coe_orthogonalProjection_vadd_smul_vsub_orthogonalProjection {n : ℕ} {
     ↑(s.orthogonalProjectionSpan (r₁ • (p -ᵥ ↑(s.orthogonalProjectionSpan p)) +ᵥ p₁o)) = p₁o :=
   congrArg ((↑) : _ → P) (orthogonalProjection_vadd_smul_vsub_orthogonalProjection _ _ _ hp₁o)
 
+@[simp]
+lemma orthogonalProjectionSpan_eq_point (s : Simplex 𝕜 P 0) (p : P) :
+    s.orthogonalProjectionSpan p = s.points 0 := by
+  rw [orthogonalProjectionSpan]
+  convert orthogonalProjection_affineSpan_singleton _ _
+  simp [Fin.fin_one_eq_zero]
 
-variable {V : Type*} {P : Type*}
-variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [PseudoMetricSpace P]
-variable [NormedAddTorsor V P]
+lemma orthogonalProjectionSpan_faceOpposite_eq_point_rev (s : Simplex 𝕜 P 1) (i : Fin 2)
+    (p : P) : (s.faceOpposite i).orthogonalProjectionSpan p = s.points i.rev := by
+  simp [faceOpposite_point_eq_point_rev]
+
+variable [InnerProductSpace ℝ V]
 
 theorem dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq {n : ℕ}
     (s : Simplex ℝ P n) {p₁ : P} (p₂ : P) (hp₁ : p₁ ∈ affineSpan ℝ (Set.range s.points)) :
@@ -529,17 +537,6 @@ theorem dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq
   exact
     Submodule.inner_right_of_mem_orthogonal (vsub_orthogonalProjection_mem_direction p₂ hp₁)
       (orthogonalProjection_vsub_mem_direction_orthogonal _ p₂)
-
-@[simp]
-lemma orthogonalProjectionSpan_eq_point (s : Simplex ℝ P 0) (p : P) :
-    s.orthogonalProjectionSpan p = s.points 0 := by
-  rw [orthogonalProjectionSpan]
-  convert orthogonalProjection_affineSpan_singleton _ _
-  simp [Fin.fin_one_eq_zero]
-
-lemma orthogonalProjectionSpan_faceOpposite_eq_point_rev (s : Simplex ℝ P 1) (i : Fin 2)
-    (p : P) : (s.faceOpposite i).orthogonalProjectionSpan p = s.points i.rev := by
-  simp [faceOpposite_point_eq_point_rev]
 
 end Simplex
 
