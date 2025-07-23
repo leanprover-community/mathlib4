@@ -36,9 +36,7 @@ a monoidal structure.
 - [nLab page: Day convolution](https://ncatlab.org/nlab/show/Day+convolution)
 
 ## TODOs (@robin-carlier)
-- Case where `V` is closed.
 - Type alias for `C ⥤ V` with a `LawfulDayConvolutionMonoidalCategoryStruct`.
-- Better constructors for `LawfulDayConvolutionMonoidalCategoryStruct`.
 - Characterization of lax monoidal functors out of a day convolution monoidal category.
 - Case `V = Type u` and its universal property.
 
@@ -866,7 +864,7 @@ class LawfulDayConvolutionMonoidalCategoryStruct
   associator_hom_unit_unit (V) (d d' d'': D) (x y z : C) :
     (convolutionExtensionUnit d d').app (x, y) ▷ (ι.obj d'').obj z ≫
       (convolutionExtensionUnit (d ⊗ d') d'').app (x ⊗ y, z) ≫
-      (ι.mapIso (α_ d d' d'')).hom.app ((x ⊗ y) ⊗ z) =
+      (ι.map (α_ d d' d'').hom).app ((x ⊗ y) ⊗ z) =
     (α_ _ _ _).hom ≫
       ((ι.obj d).obj x ◁ (convolutionExtensionUnit d' d'').app (y, z)) ≫
       (convolutionExtensionUnit d (d' ⊗ d'')).app (x, y ⊗ z) ≫
@@ -875,12 +873,12 @@ class LawfulDayConvolutionMonoidalCategoryStruct
     unitUnit ▷ (ι.obj d).obj y ≫
       (convolutionExtensionUnit (𝟙_ D) d).app
         (𝟙_ C, y) ≫
-      (ι.mapIso (λ_ d)).hom.app (𝟙_ C ⊗ y) =
+      (ι.map (λ_ d).hom).app (𝟙_ C ⊗ y) =
     (λ_ ((ι.obj d).obj y)).hom ≫ (ι.obj d).map (λ_ y).inv
   rightUnitor_hom_unit_app (V) (d : D) (y : C) :
     (ι.obj d).obj y ◁ unitUnit ≫
       (convolutionExtensionUnit d (𝟙_ D)).app (y, 𝟙_ C) ≫
-      (ι.mapIso (ρ_ d)).hom.app (y ⊗ 𝟙_ C) =
+      (ι.map (ρ_ d).hom).app (y ⊗ 𝟙_ C) =
     (ρ_ _).hom ≫ (ι.obj d).map (ρ_ y).inv
 
 namespace LawfulDayConvolutionMonoidalCategoryStruct
@@ -1033,7 +1031,7 @@ def monoidalOfLawfulDayConvolutionMonoidalCategoryStruct
         (CostructuredArrow ((tensor C).prod (𝟭 C)) d) (tensorRight v)] :
     MonoidalCategory D :=
   MonoidalCategory.ofTensorHom
-    (tensor_id := fun x y => by
+    (id_tensorHom_id := fun x y => by
       apply Functor.Faithful.map_injective (F := ι C V D)
       simp only [ι_map_tensorHom_hom_eq_tensorHom, Functor.map_id]
       apply (DayConvolution.corepresentableBy
@@ -1325,11 +1323,11 @@ def mkLawfulDayConvolutionMonoidalCategoryStruct :
         convolutions C V _ _
       apply DayConvolution.associator_hom_unit_unit
     leftUnitor_hom_unit_app _ _ := by
-      simp only [Functor.comp_obj, tensor_obj, leftUnitor, Functor.mapIso_hom,
+      simp only [Functor.comp_obj, tensor_obj, leftUnitor,
         Functor.FullyFaithful.preimageIso_hom, Functor.FullyFaithful.map_preimage]
       apply DayConvolutionUnit.leftUnitor_hom_unit_app
     rightUnitor_hom_unit_app _ _ := by
-      simp only [Functor.comp_obj, tensor_obj, rightUnitor, Functor.mapIso_hom,
+      simp only [Functor.comp_obj, tensor_obj, rightUnitor,
         Functor.FullyFaithful.preimageIso_hom, Functor.FullyFaithful.map_preimage]
       apply DayConvolutionUnit.rightUnitor_hom_unit_app }
 
