@@ -71,6 +71,4 @@ lemma unhat_hat {A B : ℰ} (g : A ⟶ P B) :
 def ε_ (B : ℰ) : B ⊗ (P B) ⟶ hc.Ω :=
   (hP B).homEquiv.toFun (𝟙 (P B))
 
-def comm {A B : ℰ} (f : B ⊗ A ⟶ hc.Ω) : f = (B ◁ (unhat f)) ≫ (ε_ B) := sorry
-
 end ElementaryTopos
