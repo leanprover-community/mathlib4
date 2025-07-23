@@ -504,3 +504,19 @@ fun {α β} [SMul β α] a a_1 => SMul.smul a_1 a
 -/
 #guard_msgs in
 #print myNSMul
+
+@[to_additive]
+def myMul {α : Type} [i : Mul α] (a : α) := unfold% i.1 a
+
+/--
+info: def myMul : {α : Type} → [i : Mul α] → α → α → α :=
+fun {α} [i : Mul α] a => i.1 a
+-/
+#guard_msgs in
+#print myMul
+/--
+info: def myAdd : {α : Type} → [i : Add α] → α → α → α :=
+fun {α} [i : Add α] a => i.1 a
+-/
+#guard_msgs in
+#print myAdd
