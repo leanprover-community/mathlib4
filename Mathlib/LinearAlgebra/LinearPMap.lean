@@ -589,6 +589,16 @@ private theorem sSup_aux (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·)
 protected noncomputable def sSup (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·) c) : E →ₗ.[R] F :=
   ⟨_, Classical.choose <| sSup_aux c hc⟩
 
+theorem domain_sSup {c : Set (E →ₗ.[R] F)} (hc : DirectedOn (· ≤ ·) c) :
+    (LinearPMap.sSup c hc).domain = sSup (LinearPMap.domain '' c) := rfl
+
+theorem mem_domain_sSup_iff {c : Set (E →ₗ.[R] F)} (hnonempty : c.Nonempty)
+    (hc : DirectedOn (· ≤ ·) c) {x : E} :
+    x ∈ (LinearPMap.sSup c hc).domain ↔ ∃ f ∈ c, x ∈ f.domain := by
+  rw [domain_sSup, Submodule.mem_sSup_of_directed (hnonempty.image _)
+    (DirectedOn.mono_comp LinearPMap.domain_mono.monotone hc)]
+  aesop
+
 protected theorem le_sSup {c : Set (E →ₗ.[R] F)} (hc : DirectedOn (· ≤ ·) c) {f : E →ₗ.[R] F}
     (hf : f ∈ c) : f ≤ LinearPMap.sSup c hc :=
   Classical.choose_spec (sSup_aux c hc) hf
@@ -773,11 +783,7 @@ theorem neg_graph (f : E →ₗ.[R] F) :
 theorem mem_graph_snd_inj (f : E →ₗ.[R] F) {x y : E} {x' y' : F} (hx : (x, x') ∈ f.graph)
     (hy : (y, y') ∈ f.graph) (hxy : x = y) : x' = y' := by
   rw [mem_graph_iff] at hx hy
-  rcases hx with ⟨x'', hx1, hx2⟩
-  rcases hy with ⟨y'', hy1, hy2⟩
-  simp only at hx1 hx2 hy1 hy2
-  rw [← hx1, ← hy1, SetLike.coe_eq_coe] at hxy
-  rw [← hx2, ← hy2, hxy]
+  grind
 
 theorem mem_graph_snd_inj' (f : E →ₗ.[R] F) {x y : E × F} (hx : x ∈ f.graph) (hy : y ∈ f.graph)
     (hxy : x.1 = y.1) : x.2 = y.2 := by
