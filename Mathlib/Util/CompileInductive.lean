@@ -73,12 +73,9 @@ def compileDefn (dv : DefinitionVal) : MetaM Unit := do
 
 open Elab
 
-/-- Returns true if the given declaration has already been compiled, either directly or via a
-`@[csimp]` lemma. -/
-def isCompiled (env : Environment) (n : Name) : Bool :=
-  -- `_cstage2` is not accessible via the elab env directly, wait for the full kernel env
-  env.toKernelEnv.constants.contains (n.str "_cstage2") ||
-    (Compiler.CSimp.ext.getState env).map.contains n
+/-- Returns true if the given declaration has a `@[csimp]` lemma. -/
+def hasCSimpLemma (env : Environment) (n : Name) : Bool :=
+  (Compiler.CSimp.ext.getState env).map.contains n
 
 /--
 `compile_def% Foo.foo` adds compiled code for the definition `Foo.foo`.
@@ -88,7 +85,7 @@ for which Lean does not generate compiled code by default
 -/
 elab tk:"compile_def% " i:ident : command => Command.liftTermElabM do
   let n ← realizeGlobalConstNoOverloadWithInfo i
-  if isCompiled (← getEnv) n then
+  if hasCSimpLemma (← getEnv) n then
     logWarningAt tk m!"already compiled {n}"
     return
   let dv ← withRef i <| getConstInfoDefn n
@@ -132,7 +129,7 @@ def compileInductiveOnly (iv : InductiveVal) (warn := true) : MetaM Unit := do
   if ← isProp rv.type then
     if warn then logWarning m!"not compiling {rv.name}"
     return
-  if isCompiled (← getEnv) rv.name then
+  if hasCSimpLemma (← getEnv) rv.name then
     if warn then logWarning m!"already compiled {rv.name}"
     return
   if !iv.isRec && rv.numMotives == 1 && iv.numCtors == 1 && iv.numIndices == 0 then
@@ -203,7 +200,7 @@ compile the `sizeOf` definition (because `sizeOf` definitions depend on `T.rec`)
 partial def compileSizeOf (iv : InductiveVal) : MetaM Unit := do
   let go aux := do
     if let some (.defnInfo dv) := (← getEnv).find? aux then
-      if !isCompiled (← getEnv) aux then
+      if !hasCSimpLemma (← getEnv) aux then
         let deps : NameSet := dv.value.foldConsts ∅ fun c arr =>
           if let .str name "_sizeOf_inst" := c then arr.insert name else arr
         for i in deps do
