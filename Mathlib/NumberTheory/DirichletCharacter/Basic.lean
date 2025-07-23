@@ -311,11 +311,11 @@ lemma Odd.not_even [NeZero (2 : S)] (hψ : Odd ψ) : ¬Even ψ :=
   not_and'.mp ψ.not_even_and_odd hψ
 
 lemma Odd.toUnitHom_eval_neg_one (hψ : ψ.Odd) : ψ.toUnitHom (-1) = -1 := by
-  rw [← Units.eq_iff, MulChar.coe_toUnitHom]
+  rw [← Units.val_inj, MulChar.coe_toUnitHom]
   exact hψ
 
 lemma Even.toUnitHom_eval_neg_one (hψ : ψ.Even) : ψ.toUnitHom (-1) = 1 := by
-  rw [← Units.eq_iff, MulChar.coe_toUnitHom]
+  rw [← Units.val_inj, MulChar.coe_toUnitHom]
   exact hψ
 
 lemma Odd.eval_neg (x : ZMod m) (hψ : ψ.Odd) : ψ (- x) = - ψ x := by
