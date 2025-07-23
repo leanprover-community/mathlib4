@@ -496,7 +496,7 @@ lemma picard_eq_of_hasDerivAt {t : ℝ}
     (hmap : MapsTo α (uIcc t₀ t) u) : -- need `Icc` for `uIcc_subset_Icc`
     picard f t₀ (α t₀) α t = α t := by
   rw [← add_sub_cancel (α t₀) (α t), picard_apply, integral_eq_sub_of_hasDeriv_right]
-  · intro t' ht'
+  · intro t' ht' -- new lemma from ∀ .. HasDerivWithinAt to ContinuousOn
     exact hα t' ht' |>.continuousWithinAt
   · intro t' ht'
     apply HasDerivAt.hasDerivWithinAt
@@ -520,7 +520,7 @@ lemma contDiffOn_nat_picard_Icc
       hasDerivWithinAt_picard_Icc ht₀ hf.continuousOn hα hmem x₀ ht
     induction n with
     | zero =>
-      simp only [CharP.cast_eq_zero, contDiffOn_zero] at *
+      simp only [Nat.cast_zero, contDiffOn_zero] at *
       exact fun _ ht ↦ this ht |>.continuousWithinAt
     | succ n hn =>
       simp only [Nat.cast_add, Nat.cast_one] at *
