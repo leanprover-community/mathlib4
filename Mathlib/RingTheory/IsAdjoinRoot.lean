@@ -364,8 +364,8 @@ def basis : Basis (Fin (natDegree f)) R S :=
         rw [Set.mem_range, not_exists]
         rintro i rfl
         exact i.prop.not_ge hm
-      map_add' := fun x y => by simp [Finsupp.comapDomain_add_of_injective Fin.val_injective]
-      map_smul' := fun c x => by simp [Finsupp.comapDomain_smul_of_injective Fin.val_injective] }
+      map_add' := by simp [Finsupp.comapDomain_add_of_injective Fin.val_injective]
+      map_smul' := by simp [Finsupp.comapDomain_smul_of_injective Fin.val_injective] }
 
 @[simp]
 theorem basis_apply (i) : h.basis i = h.root ^ (i : ℕ) :=
