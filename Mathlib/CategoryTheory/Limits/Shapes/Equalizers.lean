@@ -756,6 +756,7 @@ noncomputable def equalizerIsEqualizer : IsLimit (Fork.ofι (equalizer.ι f g)
     (equalizer.condition f g)) :=
   IsLimit.ofIsoLimit (limit.isLimit _) (Fork.ext (Iso.refl _) (by simp))
 
+/-- The equalizer built from `equalizer.form f g` is limiting. -/
 noncomputable def equalizerIsEqualizer' : IsLimit (equalizer.fork f g) :=
   IsLimit.ofIsoLimit (limit.isLimit _) (Fork.ext (Iso.refl _) (by simp))
 
