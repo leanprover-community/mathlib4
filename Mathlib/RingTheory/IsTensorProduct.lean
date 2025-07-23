@@ -543,4 +543,14 @@ lemma Algebra.IsPushout.comp_iff {T' : Type*} [CommSemiring T'] [Algebra R T']
   rw [isPushout_iff, isPushout_iff, ← heq, IsBaseChange.comp_iff]
   exact Algebra.IsPushout.out
 
+variable {R R' S S'} in
+lemma Algebra.IsPushout.of_equiv [h : IsPushout R R' S S']
+    {T : Type*} [CommSemiring T] [Algebra R' T] [Algebra S T] [Algebra R T]
+    [IsScalarTower R S T] [IsScalarTower R R' T] (e : S' ≃ₐ[R'] T)
+    (he : e.toRingHom.comp (algebraMap S S') = algebraMap S T) :
+    IsPushout R R' S T := by
+  rw [isPushout_iff] at h ⊢
+  refine IsBaseChange.of_equiv (h.equiv ≪≫ₗ e.toLinearEquiv) fun x ↦ ?_
+  simpa [h.equiv_tmul] using DFunLike.congr_fun he x
+
 end IsBaseChange
