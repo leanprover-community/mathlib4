@@ -12,8 +12,9 @@ import Mathlib.CategoryTheory.Products.Associator
 Given functors `F G : C ⥤ V` between two monoidal categories,
 this file defines a typeclass `DayConvolution` on functors `F` `G` that contains
 a functor `F ⊛ G`, as well as the required data to exhibit `F ⊛ G` as a pointwise
-left Kan extension of `F ⊠ G` (see `CategoryTheory/Monoidal/ExternalProduct` for the definition)
-along the tensor product of `C`. Such a functor is called a Day convolution of `F` and `G`, and
+left Kan extension of `F ⊠ G` (see `Mathlib/CategoryTheory/Monoidal/ExternalProduct/Basic.lean`
+for the definition) along the tensor product of `C`.
+Such a functor is called a Day convolution of `F` and `G`, and
 although we do not show it yet, this operation defines a monoidal structure on `C ⥤ V`.
 
 We also define a typeclass `DayConvolutionUnit` on a functor `U : C ⥤ V` that bundle the data
@@ -36,9 +37,7 @@ a monoidal structure.
 
 ## TODOs (@robin-carlier)
 - Braided/symmetric case.
-- Case where `V` is closed.
 - Type alias for `C ⥤ V` with a `LawfulDayConvolutionMonoidalCategoryStruct`.
-- Better constructors for `LawfulDayConvolutionMonoidalCategoryStruct`.
 - Characterization of lax monoidal functors out of a day convolution monoidal category.
 - Case `V = Type u` and its universal property.
 
@@ -332,7 +331,7 @@ lemma pentagon (H K : C ⥤ V)
     [DayConvolution G H] [DayConvolution (F ⊛ G) H] [DayConvolution F (G ⊛ H)]
     [DayConvolution H K] [DayConvolution G (H ⊛ K)] [DayConvolution (G ⊛ H) K]
     [DayConvolution ((F ⊛ G) ⊛ H) K] [DayConvolution (F ⊛ G) (H ⊛ K)]
-    [DayConvolution (F ⊛ G ⊛ H) K] [DayConvolution F  (G ⊛ H ⊛ K)]
+    [DayConvolution (F ⊛ G ⊛ H) K] [DayConvolution F (G ⊛ H ⊛ K)]
     [DayConvolution F ((G ⊛ H) ⊛ K)] :
     map (associator F G H).hom (𝟙 K) ≫
         (associator F (G ⊛ H) K).hom ≫ map (𝟙 F) (associator G H K).hom =
@@ -730,7 +729,7 @@ class LawfulDayConvolutionMonoidalCategoryStruct
   associator_hom_unit_unit (V) (d d' d'': D) (x y z : C) :
     (convolutionExtensionUnit d d').app (x, y) ▷ (ι.obj d'').obj z ≫
       (convolutionExtensionUnit (d ⊗ d') d'').app (x ⊗ y, z) ≫
-      (ι.mapIso (α_ d d' d'')).hom.app ((x ⊗ y) ⊗ z) =
+      (ι.map (α_ d d' d'').hom).app ((x ⊗ y) ⊗ z) =
     (α_ _ _ _).hom ≫
       ((ι.obj d).obj x ◁ (convolutionExtensionUnit d' d'').app (y, z)) ≫
       (convolutionExtensionUnit d (d' ⊗ d'')).app (x, y ⊗ z) ≫
@@ -739,12 +738,12 @@ class LawfulDayConvolutionMonoidalCategoryStruct
     unitUnit ▷ (ι.obj d).obj y ≫
       (convolutionExtensionUnit (𝟙_ D) d).app
         (𝟙_ C, y) ≫
-      (ι.mapIso (λ_ d)).hom.app (𝟙_ C ⊗ y) =
+      (ι.map (λ_ d).hom).app (𝟙_ C ⊗ y) =
     (λ_ ((ι.obj d).obj y)).hom ≫ (ι.obj d).map (λ_ y).inv
   rightUnitor_hom_unit_app (V) (d : D) (y : C) :
     (ι.obj d).obj y ◁ unitUnit ≫
       (convolutionExtensionUnit d (𝟙_ D)).app (y, 𝟙_ C) ≫
-      (ι.mapIso (ρ_ d)).hom.app (y ⊗ 𝟙_ C) =
+      (ι.map (ρ_ d).hom).app (y ⊗ 𝟙_ C) =
     (ρ_ _).hom ≫ (ι.obj d).map (ρ_ y).inv
 
 namespace LawfulDayConvolutionMonoidalCategoryStruct
@@ -828,7 +827,7 @@ attribute [local instance] convolutionUnit
 open DayConvolutionUnit in
 lemma ι_map_leftUnitor_hom_eq_leftUnitor_hom (d : D)
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
-      (CostructuredArrow (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)]:
+      (CostructuredArrow (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)] :
     (ι C V D).map (λ_ d).hom =
     (DayConvolutionUnit.leftUnitor
       (ι C V D|>.obj <| 𝟙_ D) (ι C V D|>.obj d)).hom := by
@@ -844,7 +843,7 @@ lemma ι_map_leftUnitor_hom_eq_leftUnitor_hom (d : D)
 open DayConvolutionUnit in
 lemma ι_map_rightUnitor_hom_eq_rightUnitor_hom (d : D)
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
-      (CostructuredArrow (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorLeft v)]:
+      (CostructuredArrow (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorLeft v)] :
     (ι C V D).map (ρ_ d).hom =
     (DayConvolutionUnit.rightUnitor
       (ι C V D|>.obj <| 𝟙_ D) (ι C V D|>.obj d)).hom := by

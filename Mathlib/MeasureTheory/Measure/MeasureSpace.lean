@@ -632,8 +632,8 @@ theorem exists_measure_iInter_lt {α ι : Type*} {_ : MeasurableSpace α} {μ : 
   have hFAnti : Antitone F :=
       fun i j hij => measure_mono (biInter_subset_biInter_left fun k hki => le_trans hki hij)
   suffices Filter.Tendsto F Filter.atTop (𝓝 0) by
-    rw [@ENNReal.tendsto_atTop_zero_iff_lt_of_antitone
-         _ hfin.nonempty _ _ hFAnti] at this
+    let _ := hfin.nonempty
+    rw [ENNReal.tendsto_atTop_zero_iff_lt_of_antitone hFAnti] at this
     exact this ε hε
   have hzero : μ (⋂ n, f n) = 0 := by
     simp only [hfem, measure_empty]
@@ -1116,7 +1116,7 @@ protected theorem zero_le {_m0 : MeasurableSpace α} (μ : Measure α) : 0 ≤ �
   bot_le
 
 theorem nonpos_iff_eq_zero' : μ ≤ 0 ↔ μ = 0 :=
-  μ.zero_le.le_iff_eq
+  μ.zero_le.ge_iff_eq'
 
 @[simp]
 theorem measure_univ_eq_zero : μ univ = 0 ↔ μ = 0 :=

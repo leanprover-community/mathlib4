@@ -88,8 +88,8 @@ theorem smul_mongePoint_vsub_circumcenter_eq_sum_vsub {n : ℕ} (s : Simplex ℝ
     (n + 1) • (s.mongePoint -ᵥ s.circumcenter) = ∑ i, (s.points i -ᵥ s.circumcenter) := by
   rw [mongePoint_eq_smul_vsub_vadd_circumcenter, vadd_vsub, ← smul_assoc]
   field_simp
-  have h : Invertible (↑n + (2:ℝ) + 1) := by norm_cast; apply invertibleOfPos
-  rw [@smul_eq_iff_eq_invOf_smul _ _ _ _ (↑n + (2:ℝ) + 1)  _ _ h, smul_sum]
+  have h : Invertible (n + 2 + 1 : ℝ) := by norm_cast; apply invertibleOfPos
+  rw [smul_eq_iff_eq_invOf_smul, smul_sum]
   unfold Finset.centroid
   rw [← Finset.sum_smul_vsub_const_eq_affineCombination_vsub _ _ _ _ (by simp)]
   simp only [centroidWeights_apply, card_univ, Fintype.card_fin, Nat.cast_add, Nat.cast_ofNat,
@@ -614,7 +614,6 @@ theorem affineSpan_of_orthocentricSystem {s : Set P} (ho : OrthocentricSystem s)
   refine ext_of_direction_eq ?_
     ⟨p 0, mem_affineSpan ℝ (Set.mem_range_self _), mem_affineSpan ℝ (hps (Set.mem_range_self _))⟩
   have hfd : FiniteDimensional ℝ (affineSpan ℝ s).direction := by rw [hs]; infer_instance
-  haveI := hfd
   refine Submodule.eq_of_le_of_finrank_eq (direction_le (affineSpan_mono ℝ hps)) ?_
   rw [hs, direction_affineSpan, direction_affineSpan, ha.finrank_vectorSpan (Fintype.card_fin _),
     t.independent.finrank_vectorSpan (Fintype.card_fin _)]
