@@ -125,7 +125,7 @@ lemma wInner_const_right (f : ι → 𝕜) (a : 𝕜) :
 
 lemma wInner_one_eq_inner (f g : ι → 𝕜) :
     ⟪f, g⟫_[𝕜, 1] = ⟪WithLp.toLp 2 f, WithLp.toLp 2 g⟫_𝕜 := by
-  simp [wInner, PiLp.inner_apply]
+  simp [PiLp.inner_apply, wInner]
 
 lemma inner_eq_wInner_one (f g : PiLp 2 fun _i : ι ↦ 𝕜) :
     ⟪f, g⟫_𝕜 = ⟪WithLp.ofLp f, WithLp.ofLp g⟫_[𝕜, 1] := by
