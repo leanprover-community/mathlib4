@@ -197,6 +197,11 @@ theorem one_le_norm_iff : 1 ≤ ‖x‖ ↔ 1 ≤ val.v x := by
 theorem one_lt_norm_iff : 1 < ‖x‖ ↔ 1 < val.v x := by
   simpa only [map_one] using (Valuation.RankOne.strictMono val.v).lt_iff_lt (a := 1)
 
+lemma setOf_mem_integer_eq_closedBall :
+    { x : L | x ∈ Valued.v.integer } = Metric.closedBall 0 1 := by
+  ext x
+  simp [mem_integer_iff]
+
 end toNormedField
 
 /--

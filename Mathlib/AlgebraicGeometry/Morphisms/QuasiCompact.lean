@@ -273,12 +273,8 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
   obtain ⟨s, hs, e⟩ := (isCompactOpen_iff_eq_finset_affine_union U.1).mp ⟨hU, U.2⟩
   replace e : U = iSup fun i : s => (i : X.Opens) := by
     ext1; simpa using e
-  have h₁ : ∀ i : s, i.1.1 ≤ U := by
-    intro i
-    #adaptation_note /-- 2025-06-21 lean4#8914 This `change` does nothing. -/
-    -- change (i : X.Opens) ≤ U
+  have h₁ (i : s) : i.1.1 ≤ U := by
     rw [e]
-    -- Porting note: `exact le_iSup _ _` no longer works
     exact le_iSup (fun (i : s) => (i : Opens (X.toPresheafedSpace))) _
   have H' := fun i : s =>
     exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen X i.1.2
