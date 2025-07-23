@@ -627,19 +627,6 @@ noncomputable def resNatTrans (n : ℕ) :
     cochainsMap, congr (MonoidHom.comp_id _) cochainsMap, Category.id_comp
     (X := (Action.res _ _).obj _)]
 
-/-- Given a normal subgroup S ≤ G, this is the functor sending a `G`-representation `A` to the
-`G ⧸ S`-representation it induces on `A^S`. -/
-@[simps obj_V map_hom]
-noncomputable def quotientToInvariantsFunctor (S : Subgroup G) [S.Normal] :
-    Rep k G ⥤ Rep k (G ⧸ S) where
-  obj X := X.quotientToInvariants S
-  map {X Y} f := {
-    hom := (invariantsFunctor k S).map ((Action.res _ S.subtype).map f)
-    comm g := QuotientGroup.induction_on g fun g => by
-      ext x
-      simp [ModuleCat.endRingEquiv, Representation.quotientToInvariants,
-        Representation.toInvariants, invariants, hom_comm_apply] }
-
 /-- Given a normal subgroup `S ≤ G`, this is a natural transformation between the functors
 sending `A : Rep k G` to `Hⁿ(G ⧸ S, A^S)` and to `Hⁿ(G, A)`. -/
 @[simps]
