@@ -3,10 +3,10 @@ Copyright (c) 2025 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
+import Mathlib.Geometry.Euclidean.Projection
 import Mathlib.LinearAlgebra.AffineSpace.ContinuousAffineEquiv
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 import Mathlib.Topology.Algebra.AffineSubspace
-import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Projection
 
 /-!
 # Signed distance to an affine subspace in a Euclidean space.
@@ -27,6 +27,7 @@ of a given reference point.
 -/
 
 
+open EuclideanGeometry
 open scoped RealInnerProductSpace
 
 variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
