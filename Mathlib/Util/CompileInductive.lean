@@ -206,8 +206,9 @@ partial def compileSizeOf (iv : InductiveVal) (rv : RecursorVal) : MetaM Unit :=
         for i in deps do
           -- We only want to recompile inductives defined in external modules, because attempting
           -- to recompile `sizeOf` functions defined in the current module multiple times will lead
-          -- to errors. We assume that any inductives defined in the current module can be marked
-          -- with `compile_inductive%` themselves.
+          -- to errors. An entire mutual block of inductives is compiled when compiling any
+          -- inductive within it, so every inductive within the same module can be explicitly
+          -- compiled using `compile_inductive%` if necessary.
           if ((← getEnv).getModuleIdxFor? i).isSome then
             if let some (.inductInfo iv) := (← getEnv).find? i then
                compileInductive iv (warn := false)
