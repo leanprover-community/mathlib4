@@ -201,8 +201,10 @@ abbrev cycles (n : ℕ) : ModuleCat k := (inhomogeneousChains A).cycles n
 open HomologicalComplex
 
 variable {A} in
-/-- Make an `n + 1`-cycle out of an element of the kernel of the `n`th differential. -/
-abbrev cyclesMk {m : ℕ} (n : ℕ) (h : (ComplexShape.down ℕ).next m = n) (f : (Fin m → G) →₀ A)
+/-- When `m = 0` this makes a term of `cycles A 0` from any element of `A` (or more precisely
+any element in the kernel of `d₀,₀ = 0`). When `m` is positive, this makes a term of `cycles A m`
+from any element of the kernel of `dₘ,ₘ₋₁`. -/
+abbrev cyclesMk (m n : ℕ) (h : (ComplexShape.down ℕ).next m = n) (f : (Fin m → G) →₀ A)
     (hf : (inhomogeneousChains A).d m n f = 0) : cycles A m :=
   (inhomogeneousChains A).cyclesMk f n h hf
 
@@ -213,7 +215,7 @@ abbrev iCycles (n : ℕ) : cycles A n ⟶ (inhomogeneousChains A).X n :=
 variable {A} in
 theorem iCycles_mk {m n : ℕ} (h : (ComplexShape.down ℕ).next m = n) (f : (Fin m → G) →₀ A)
     (hf : (inhomogeneousChains A).d m n f = 0) :
-    iCycles A m (cyclesMk n h f hf) = f := by
+    iCycles A m (cyclesMk m n h f hf) = f := by
   exact (inhomogeneousChains A).i_cyclesMk f n h hf
 
 /-- This is the map from `i`-chains to `j`-cycles induced by the differential in the complex of

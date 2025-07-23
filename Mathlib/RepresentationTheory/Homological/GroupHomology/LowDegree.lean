@@ -715,7 +715,7 @@ lemma coinvariantsMk_comp_opcyclesIso₀_inv :
   (CommSq.vert_inv ⟨pOpcycles_comp_opcyclesIso_hom A⟩).w
 
 lemma cyclesMk₀_eq (x : A) :
-    cyclesMk 0 (by simp) ((chainsIso₀ A).inv x) (by simp) = (cyclesIso₀ A).inv x :=
+    cyclesMk 0 0 (by simp) ((chainsIso₀ A).inv x) (by simp) = (cyclesIso₀ A).inv x :=
   (ModuleCat.mono_iff_injective <| iCycles A 0).1 inferInstance <| by rw [iCycles_mk]; simp
 
 end cyclesIso₀
@@ -755,7 +755,7 @@ lemma toCycles_comp_isoCycles₁_hom :
     shortComplexH1_f]
 
 lemma cyclesMk₁_eq (x : cycles₁ A) :
-    cyclesMk 0 (by simp) ((chainsIso₁ A).inv x) (by simp) = (isoCycles₁ A).inv x :=
+    cyclesMk 1 0 (by simp) ((chainsIso₁ A).inv x) (by simp) = (isoCycles₁ A).inv x :=
   (ModuleCat.mono_iff_injective <| iCycles A 1).1 inferInstance <| by
     rw [iCycles_mk]
     simp only [ChainComplex.of_x, isoCycles₁_inv_comp_iCycles_apply]
@@ -798,7 +798,7 @@ lemma toCycles_comp_isoCycles₂_hom :
     shortComplexH2_f]
 
 lemma cyclesMk₂_eq (x : cycles₂ A) :
-    cyclesMk 1 (by simp) ((chainsIso₂ A).inv x) (by simp) = (isoCycles₂ A).inv x :=
+    cyclesMk 2 1 (by simp) ((chainsIso₂ A).inv x) (by simp) = (isoCycles₂ A).inv x :=
   (ModuleCat.mono_iff_injective <| iCycles A 2).1 inferInstance <| by
     rw [iCycles_mk]
     simp only [ChainComplex.of_x, isoCycles₂_inv_comp_iCycles_apply]

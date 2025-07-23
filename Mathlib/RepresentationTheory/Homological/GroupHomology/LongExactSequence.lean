@@ -98,12 +98,13 @@ theorem isIso_δ_of_isZero (n : ℕ) (hs : IsZero (groupHomology X.X₂ (n + 1))
     IsIso (δ hX (n + 1) n rfl) := SnakeInput.isIso_δ _ hs h
 
 /-- Given an exact sequence of `G`-representations `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0`, this expresses an
-`n`-chain `x : Gⁿ →₀ X₁` such that `f ∘ x ∈ Bₙ(G, X₂)` as a cycle. -/
+`n`-chain `x : Gⁿ →₀ X₁` such that `f ∘ x ∈ Bₙ(G, X₂)` as a cycle. Stated for readability of
+`δ_apply`. -/
 noncomputable abbrev cyclesMkOfCompEqD {i j : ℕ} {y : (Fin i → G) →₀ X.X₂}
     {x : (Fin j → G) →₀ X.X₁}
     (hx : mapRange.linearMap X.f.hom.hom x = (inhomogeneousChains X.X₂).d i j y) :
     cycles X.X₁ j :=
-  cyclesMk ((ComplexShape.down ℕ).next j) rfl x <| by
+  cyclesMk j _ rfl x <| by
     simpa using (map_chainsFunctor_shortExact hX).d_eq_zero_of_f_eq_d_apply i j y x
       (by simpa using hx) _
 
@@ -117,7 +118,7 @@ theorem δ_apply {i j : ℕ} (hij : j + 1 = i)
     (x : (Fin j → G) →₀ X.X₁)
     -- Then `x` is an `j`-cycle and `δ z = x` in `Hⱼ(X₁)`.
     (hx : mapRange.linearMap X.f.hom.hom x = (inhomogeneousChains X.X₂).d i j y) :
-    δ hX i j hij (π X.X₃ i <| cyclesMk j (by simp [← hij]) z (by simpa using hz)) =
+    δ hX i j hij (π X.X₃ i <| cyclesMk i j (by simp [← hij]) z (by simpa using hz)) =
       π X.X₁ j (cyclesMkOfCompEqD hX hx) := by
   exact (map_chainsFunctor_shortExact hX).δ_apply i j hij z hz y hy x (by simpa using hx) _ rfl
 
@@ -135,6 +136,7 @@ theorem δ₀_apply
     ((chainsIso₁ X.X₂).inv y) (Finsupp.ext fun _ => by simp [chainsIso₁, ← hy])
     ((chainsIso₀ X.X₁).inv x) (Finsupp.ext fun _ => by simp [chainsIso₀, ← hx])
 
+/-- Stated for readability of `δ₁_apply`. -/
 theorem mem_cycles₁_of_comp_eq_d₂₁
     {y : G × G →₀ X.X₂} {x : G →₀ X.X₁} (hx : mapRange.linearMap X.f.hom.hom x = d₂₁ X.X₂ y) :
     x ∈ cycles₁ X.X₁ := LinearMap.mem_ker.2 <| (Rep.mono_iff_injective X.f).1 hX.2 <| by
