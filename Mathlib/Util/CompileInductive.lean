@@ -124,13 +124,9 @@ where
 /--
 Generate compiled code for the recursor for `iv`, excluding the `sizeOf` function.
 -/
-def compileInductiveOnly (iv : InductiveVal) (warn := true) : MetaM Unit := do
-  let rv ← getConstInfoRec <| mkRecName iv.name
+def compileInductiveOnly (iv : InductiveVal) (rv : RecursorVal) (warn := true) : MetaM Unit := do
   if ← isProp rv.type then
     if warn then logWarning m!"not compiling {rv.name}"
-    return
-  if hasCSimpLemma (← getEnv) rv.name then
-    if warn then logWarning m!"already compiled {rv.name}"
     return
   if !iv.isRec && rv.numMotives == 1 && iv.numCtors == 1 && iv.numIndices == 0 then
     compileStructOnly iv rv
@@ -190,14 +186,18 @@ mutual
 Generate compiled code for the recursor for `iv`.
 -/
 partial def compileInductive (iv : InductiveVal) (warn := true) : MetaM Unit := do
-  compileInductiveOnly iv warn
-  compileSizeOf iv
+  let rv ← getConstInfoRec <| mkRecName iv.name
+  if hasCSimpLemma (← getEnv) rv.name then
+    if warn then logWarning m!"already compiled {rv.name}"
+    return
+  compileInductiveOnly iv rv warn
+  compileSizeOf iv rv
 
 /--
 Compiles the `sizeOf` auxiliary functions. It also recursively compiles any inductives required to
 compile the `sizeOf` definition (because `sizeOf` definitions depend on `T.rec`).
 -/
-partial def compileSizeOf (iv : InductiveVal) : MetaM Unit := do
+partial def compileSizeOf (iv : InductiveVal) (rv : RecursorVal) : MetaM Unit := do
   let go aux := do
     if let some (.defnInfo dv) := (← getEnv).find? aux then
       if !hasCSimpLemma (← getEnv) aux then
@@ -212,7 +212,6 @@ partial def compileSizeOf (iv : InductiveVal) : MetaM Unit := do
             if let some (.inductInfo iv) := (← getEnv).find? i then
                compileInductive iv (warn := false)
         compileDefn dv
-  let rv ← getConstInfoRec <| mkRecName iv.name
   for name in iv.all do
     for i in [:rv.numMotives] do
       go <| name.str s!"_sizeOf_{i+1}"
@@ -269,7 +268,7 @@ run_cmd Command.liftTermElabM do
     let value ← Elab.Term.elabTerm (← `(fun H t => H t.1))
       (← inferType (.const rv.name (rv.levelParams.map .param)))
     compileStructOnly.go iv rv value
-    compileSizeOf iv
+    compileSizeOf iv rv
 
 -- These need special handling because `Lean.Name.sizeOf` and `Lean.instSizeOfName`
 -- were manually implemented as `noncomputable`
