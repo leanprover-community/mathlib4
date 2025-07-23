@@ -566,20 +566,16 @@ instance [Monoid K] [MulAction K β] : MulAction K (α →ₛ β) where
   mul_smul _ _ _ := ext fun _ ↦ mul_smul ..
 
 instance [CommSemiring K] [Semiring β] [Algebra K β] : IsScalarTower K (α →ₛ β) (α →ₛ β) where
-  smul_assoc x f g := by
-    ext x
-    simp only [smul_eq_mul, coe_mul, coe_smul, Pi.mul_apply, Pi.smul_apply, Algebra.smul_mul_assoc,
-      smul_apply]
+  smul_assoc _ _ _ := ext fun _ ↦ Algebra.smul_mul_assoc ..
 
 instance [CommSemiring K] [Semiring β] [Algebra K β] : SMulCommClass K (α →ₛ β) (α →ₛ β) where
-  smul_comm _ _ _ := by
-    ext x
-    simp only [smul_eq_mul, smul_apply, coe_mul, Pi.mul_apply, coe_smul, Pi.smul_apply,
-      Algebra.mul_smul_comm]
+  smul_comm _ _ _ := ext fun _ ↦ by simp
 
 instance [CommSemiring K] [Semiring β] [Algebra K β] : Algebra K (α →ₛ β) :=
-  Algebra.ofModule' (fun r x ↦ smul_one_mul r x) (fun r x ↦ mul_smul_one r x)
+   Algebra.ofModule' smul_one_mul mul_smul_one
 
+lemma algebraMap_apply [CommSemiring K] [Semiring β] [Algebra K β] (k : K) :
+    algebraMap K (α →ₛ β) k = k • (1 : α →ₛ β) := rfl
 section Star
 
 instance [Star β] : Star (α →ₛ β) where
