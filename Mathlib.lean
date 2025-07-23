@@ -1190,6 +1190,8 @@ import Mathlib.AlgebraicGeometry.Morphisms.FormallyUnramified
 import Mathlib.AlgebraicGeometry.Morphisms.Immersion
 import Mathlib.AlgebraicGeometry.Morphisms.Integral
 import Mathlib.AlgebraicGeometry.Morphisms.IsIso
+import Mathlib.AlgebraicGeometry.Morphisms.LocalClosure
+import Mathlib.AlgebraicGeometry.Morphisms.LocalIso
 import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
 import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
 import Mathlib.AlgebraicGeometry.Morphisms.Proper
@@ -2431,6 +2433,7 @@ import Mathlib.CategoryTheory.Monoidal.CommMon_
 import Mathlib.CategoryTheory.Monoidal.Comon_
 import Mathlib.CategoryTheory.Monoidal.Conv
 import Mathlib.CategoryTheory.Monoidal.DayConvolution
+import Mathlib.CategoryTheory.Monoidal.DayConvolution.Closed
 import Mathlib.CategoryTheory.Monoidal.Discrete
 import Mathlib.CategoryTheory.Monoidal.End
 import Mathlib.CategoryTheory.Monoidal.ExternalProduct
@@ -3766,7 +3769,8 @@ import Mathlib.Geometry.RingedSpace.PresheafedSpace.Gluing
 import Mathlib.Geometry.RingedSpace.PresheafedSpace.HasColimits
 import Mathlib.Geometry.RingedSpace.SheafedSpace
 import Mathlib.Geometry.RingedSpace.Stalks
-import Mathlib.GroupTheory.Abelianization
+import Mathlib.GroupTheory.Abelianization.Defs
+import Mathlib.GroupTheory.Abelianization.Finite
 import Mathlib.GroupTheory.Archimedean
 import Mathlib.GroupTheory.ArchimedeanDensely
 import Mathlib.GroupTheory.ClassEquation
@@ -3965,6 +3969,7 @@ import Mathlib.LinearAlgebra.Basis.Defs
 import Mathlib.LinearAlgebra.Basis.Exact
 import Mathlib.LinearAlgebra.Basis.Fin
 import Mathlib.LinearAlgebra.Basis.Flag
+import Mathlib.LinearAlgebra.Basis.MulOpposite
 import Mathlib.LinearAlgebra.Basis.Prod
 import Mathlib.LinearAlgebra.Basis.SMul
 import Mathlib.LinearAlgebra.Basis.Submodule
@@ -4807,6 +4812,7 @@ import Mathlib.Order.CompleteLattice.Defs
 import Mathlib.Order.CompleteLattice.Finset
 import Mathlib.Order.CompleteLattice.Group
 import Mathlib.Order.CompleteLattice.Lemmas
+import Mathlib.Order.CompleteLattice.MulticoequalizerDiagram
 import Mathlib.Order.CompleteLattice.SetLike
 import Mathlib.Order.CompleteLatticeIntervals
 import Mathlib.Order.CompletePartialOrder

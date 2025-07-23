@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.Module.NatInt
-import Mathlib.GroupTheory.Abelianization
+import Mathlib.GroupTheory.Abelianization.Defs
 import Mathlib.GroupTheory.FreeGroup.Basic
 
 /-!
@@ -63,6 +63,7 @@ are about `FreeAbelianGroup.map`.
 
 -/
 
+assert_not_exists Cardinal Multiset
 
 universe u v
 

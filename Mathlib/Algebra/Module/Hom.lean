@@ -13,7 +13,7 @@ import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 /-!
 # Bundled Hom instances for module and multiplicative actions
 
-This file defines instances for `Module`, `MulAction` and related structures on bundled `Hom` types.
+This file defines instances for `Module` on bundled `Hom` types.
 
 These are analogous to the instances in `Algebra.Module.Pi`, but for bundled instead of unbundled
 functions.
