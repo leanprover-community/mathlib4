@@ -49,6 +49,7 @@ namespace ElementaryTopos
 
 variable {et : ElementaryTopos ℰ}
 
+/-- The element relation as a subobject of `B ⊗ (et.P B)`. -/
 def ε_ (B : ℰ) : B ⊗ (et.P B) ⟶ et.Ω := by
   simpa using (et.is_power_object B).homEquiv.toFun (𝟙 (et.P B))
 
