@@ -409,9 +409,9 @@ the categories of `G`-actions within those categories. -/
 def FullyFaithful.mapAction {F : V ⥤ W} (h : F.FullyFaithful) (G : Type*) [Monoid G] :
     (F.mapAction G).FullyFaithful where
   preimage f := by
-      refine ⟨h.preimage f.hom, fun _ ↦ h.map_injective ?_⟩
-      simp only [map_comp, map_preimage]
-      exact f.comm _
+    refine ⟨h.preimage f.hom, fun _ ↦ h.map_injective ?_⟩
+    simp only [map_comp, map_preimage]
+    exact f.comm _
 
 instance (F : V ⥤ W) (G : Type*) [Monoid G] [F.Faithful] [F.Full] : (F.mapAction G).Full :=
   ((Functor.FullyFaithful.ofFullyFaithful F).mapAction G).full
