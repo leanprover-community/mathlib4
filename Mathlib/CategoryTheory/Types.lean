@@ -37,9 +37,6 @@ namespace CategoryTheory
 -- morphism levels before object levels. See note [CategoryTheory universes].
 universe v v' w u u'
 
-/- The `@[to_additive]` attribute is just a hint that expressions involving this instance can
-  still be additivized. -/
-@[to_additive existing CategoryTheory.types]
 instance types : LargeCategory (Type u) where
   Hom a b := a → b
   id _ := id
