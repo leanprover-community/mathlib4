@@ -197,6 +197,11 @@ example (f g : ℕ → ℕ) (s : Finset ℕ) (h : ∀ i ∈ s, f i ^ 2 + 1 ≤ g
   gcongr ∑ _i ∈ s, (3 + ?_) with i hi
   linarith [h i hi]
 
+example (f g : ℕ → ℕ) (s : Finset ℕ) (h : ∀ i ∈ s, f i ^ 2 + 1 ≤ g i ^ 2 + 1) :
+    ∑ i ∈ s, (f i ^ 2 / 5) ≤ ∑ i ∈ s, (g i ^ 2 / 5) := by
+  gcongr 2 with i hi
+  linarith [h i hi]
+
 axiom f : ℕ → ℕ
 
 example {x y : ℕ} (h : f x ≤ f y) : f x ≤ f y := by

@@ -31,6 +31,8 @@ category of abelian groups.
   abelian groups to groups.
 -/
 
+assert_not_exists Cardinal
+
 noncomputable section
 
 universe u
