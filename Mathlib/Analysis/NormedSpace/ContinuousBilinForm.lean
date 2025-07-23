@@ -149,15 +149,13 @@ protected noncomputable def inner : ContinuousBilinForm ℝ E :=
     (fun c m n ↦ real_inner_smul_left m n c)
     inner_add_right
     (fun c m n ↦ real_inner_smul_right m n c)
-  f.mkContinuous₂ 1 <| by
-    intro x y
-    simp only [LinearMap.mk₂_apply, Real.norm_eq_abs, one_mul, f]
-    exact abs_real_inner_le_norm x y
+  f.mkContinuous₂ 1 fun x y ↦
+    by simpa [f] using abs_real_inner_le_norm x y
 
 @[simp]
 lemma inner_apply (x y : E) : ContinuousBilinForm.inner E x y = ⟪x, y⟫ := rfl
 
-lemma isPosSemidef_inner : IsPosSemidef (ContinuousBilinForm.inner E) where
+lemma isPosSemidef_inner : IsPosSemidef (.inner E) where
   eq := by simp [real_inner_comm]
   nonneg_re x := real_inner_self_nonneg
 
