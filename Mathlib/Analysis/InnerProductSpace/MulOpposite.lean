@@ -21,10 +21,12 @@ def MulOpposite.hasInner [Inner 𝕜 H] :
     Inner 𝕜 Hᵐᵒᵖ where inner x y := inner 𝕜 x.unop y.unop
 
 @[simp]
-theorem MulOpposite.inner_eq [Inner 𝕜 H] (x y : Hᵐᵒᵖ) :
-    inner 𝕜 x y = inner 𝕜 x.unop y.unop := rfl
+theorem inner_unop [Inner 𝕜 H] (x y : Hᵐᵒᵖ) :
+    inner 𝕜 x.unop y.unop = inner 𝕜 x y := rfl
 
-theorem MulOpposite.inner_eq' [Inner 𝕜 H] (x y : H) :
+open MulOpposite in
+@[simp]
+theorem inner_op [Inner 𝕜 H] (x y : H) :
     inner 𝕜 (op x) (op y) = inner 𝕜 x y := rfl
 
 variable [RCLike 𝕜] [NormedAddCommGroup H] [InnerProductSpace 𝕜 H]
@@ -51,9 +53,9 @@ theorem MulOpposite.opContinuousLinearEquiv_adjoint [CompleteSpace H] :
   apply ext_inner_left 𝕜
   intro y
   simp only [ContinuousLinearMap.adjoint_inner_right, ContinuousLinearEquiv.coe_coe,
-    opContinuousLinearEquiv_apply, inner_eq, unop_op, opContinuousLinearEquiv_symm_apply]
+    opContinuousLinearEquiv_apply, ← inner_unop, unop_op, opContinuousLinearEquiv_symm_apply]
 
-theorem MulOpposite.opContinuousLinearEquiv_is_isometry
+theorem MulOpposite.opContinuousLinearEquiv_isometry
     {R M : Type*} [Semiring R] [SeminormedAddCommGroup M] [Module R M] :
     Isometry (MulOpposite.opContinuousLinearEquiv R (M:=M)) := fun _ _ => rfl
 
@@ -61,8 +63,6 @@ theorem MulOpposite.opLinearEquiv_adjoint [FiniteDimensional 𝕜 H] :
     LinearMap.adjoint (MulOpposite.opLinearEquiv 𝕜 (M:=H)).toLinearMap
       = (MulOpposite.opLinearEquiv 𝕜 (M:=H)).symm.toLinearMap := by
   have := FiniteDimensional.complete 𝕜 H
-  calc LinearMap.adjoint (MulOpposite.opLinearEquiv 𝕜 (M:=H)).toLinearMap
-      = ContinuousLinearMap.adjoint
-        (MulOpposite.opContinuousLinearEquiv 𝕜 (M:=H)).toContinuousLinearMap := rfl
-    _ = (MulOpposite.opLinearEquiv 𝕜 (M:=H)).symm.toLinearMap := by
-      rw [MulOpposite.opContinuousLinearEquiv_adjoint]; rfl
+  calc _ = (ContinuousLinearMap.adjoint
+      (MulOpposite.opContinuousLinearEquiv 𝕜 (M:=H)).toContinuousLinearMap).toLinearMap := rfl
+    _ = _ := by rw [MulOpposite.opContinuousLinearEquiv_adjoint]; rfl
