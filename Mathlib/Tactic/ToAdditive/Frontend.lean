@@ -91,9 +91,11 @@ syntax toAdditiveAttrOption := &"attr" " := " Parser.Term.attrInstance,*
 syntax toAdditiveReorderOption := &"reorder" " := " (num+),+
 /-- Options to `to_additive`. -/
 syntax toAdditiveOption := "(" toAdditiveAttrOption <|> toAdditiveReorderOption ")"
+/-- An `existing` or `self` name hint for `to_additive`. -/
+syntax toAdditiveNameHint := (ppSpace (&"existing" <|> &"self"))?
 /-- Remaining arguments of `to_additive`. -/
 syntax toAdditiveRest :=
-  (ppSpace &"existing")? (ppSpace toAdditiveOption)* (ppSpace ident)? (ppSpace str)?
+  toAdditiveNameHint (ppSpace toAdditiveOption)* (ppSpace ident)? (ppSpace str)?
 
 /-- The attribute `to_additive` can be used to automatically transport theorems
 and definitions (but not inductive types and structures) from a multiplicative
@@ -224,7 +226,7 @@ mismatch error.
   * If the fixed type has an additive counterpart (like `↥Semigroup`), give it the `@[to_additive]`
     attribute.
   * If the fixed type has nothing to do with algebraic operations (like `TopCat`), add the attribute
-    `@[to_additive existing Foo]` to the fixed type `Foo`.
+    `@[to_additive self]` to the fixed type `Foo`.
   * If the fixed type occurs inside the `k`-th argument of a declaration `d`, and the
     `k`-th argument is not connected to the multiplicative structure on `d`, consider adding
     attribute `[to_additive_ignore_args k]` to `d`.
@@ -473,6 +475,13 @@ structure Config : Type where
     raise a linter error.
     Note: the linter will never raise an error for inductive types and structures. -/
   existing : Option Bool := none
+  /-- An optional flag stating that the target of the translation is the target itself.
+  This can be used to reorder arguments, such as in
+  `attribute [to_dual self (reorder := 3 4)] LE.le`.
+  It can also be used to give a hint to `additiveTest`, such as in
+  `attribute [to_additive self] Unit`.
+  If `self := true`, we should also have `existing := true`. -/
+  self : Bool
   deriving Repr
 
 /-- Implementation function for `additiveTest`.
@@ -1106,6 +1115,10 @@ def guessName : String → String :=
 
 /-- Return the provided target name or autogenerate one if one was not provided. -/
 def targetName (cfg : Config) (src : Name) : CoreM Name := do
+  if cfg.self then
+    if cfg.tgt != .anonymous then
+      throwError m!"`to_additive self` ignores the provided name {cfg.tgt}"
+    return src
   let .str pre s := src | throwError "to_additive: can't transport {src}"
   trace[to_additive_detail] "The name {s} splits as {s.splitCase}"
   let tgt_auto := guessName s
@@ -1171,7 +1184,7 @@ def proceedFields (src tgt : Name) : CoreM Unit := do
 
 /-- Elaboration of the configuration options for `to_additive`. -/
 def elabToAdditive : Syntax → CoreM Config
-  | `(attr| to_additive%$tk $[?%$trace]? $[existing%$existing]?
+  | `(attr| to_additive%$tk $[?%$trace]? $existing?
       $[$opts:toAdditiveOption]* $[$tgt]? $[$doc]?) => do
     let mut attrs := #[]
     let mut reorder := []
@@ -1183,15 +1196,18 @@ def elabToAdditive : Syntax → CoreM Config
         reorder := reorder ++ reorders.toList.map (·.toList.map (·.raw.isNatLit?.get! - 1))
       | _ => throwUnsupportedSyntax
     reorder := reorder.reverse
+    let (existing, self) := match existing? with
+      | `(toAdditiveNameHint| existing) => (true, false)
+      | `(toAdditiveNameHint| self) => (true, true)
+      | _ => (false, false)
     trace[to_additive_detail] "attributes: {attrs}; reorder arguments: {reorder}"
-    return { trace := trace.isSome
-             tgt := match tgt with | some tgt => tgt.getId | none => Name.anonymous
-             doc := doc.bind (·.raw.isStrLit?)
-             allowAutoName := false
-             attrs
-             reorder
-             existing := some existing.isSome
-             ref := (tgt.map (·.raw)).getD tk }
+    return {
+      trace := trace.isSome
+      tgt := match tgt with | some tgt => tgt.getId | none => Name.anonymous
+      doc := doc.bind (·.raw.isStrLit?)
+      allowAutoName := false
+      attrs, reorder, existing, self
+      ref := (tgt.map (·.raw)).getD tk }
   | _ => throwUnsupportedSyntax
 
 mutual
