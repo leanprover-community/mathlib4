@@ -4808,6 +4808,7 @@ import Mathlib.Order.CompleteLattice.Defs
 import Mathlib.Order.CompleteLattice.Finset
 import Mathlib.Order.CompleteLattice.Group
 import Mathlib.Order.CompleteLattice.Lemmas
+import Mathlib.Order.CompleteLattice.MulticoequalizerDiagram
 import Mathlib.Order.CompleteLattice.SetLike
 import Mathlib.Order.CompleteLatticeIntervals
 import Mathlib.Order.CompletePartialOrder
