@@ -3,7 +3,7 @@ Copyright (c) 2023 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Jon Eugster
 -/
-
+import Std.Data.TreeSet
 import Cache.Lean
 
 variable {α : Type}
@@ -281,7 +281,7 @@ def filterExists (hashMap : ModuleHashMap) (keep : Bool) : IO ModuleHashMap :=
     let add := if keep then exist else !exist
     if add then return acc.insert mod hash else return acc
 
-def hashes (hashMap : ModuleHashMap) : Lean.RBTree UInt64 compare :=
+def hashes (hashMap : ModuleHashMap) : Std.TreeSet UInt64 compare :=
   hashMap.fold (init := ∅) fun acc _ hash => acc.insert hash
 
 end ModuleHashMap
@@ -360,9 +360,9 @@ def packCache (hashMap : ModuleHashMap) (overwrite verbose unpackedOnly : Bool)
   return acc.map (·.2)
 
 /-- Gets the set of all cached files -/
-def getLocalCacheSet : IO <| Lean.RBTree String compare := do
+def getLocalCacheSet : IO <| Std.TreeSet String compare := do
   let paths ← getFilesWithExtension CACHEDIR "ltar"
-  return .fromList (paths.toList.map (·.withoutParent CACHEDIR |>.toString)) _
+  return .ofList (paths.toList.map (·.withoutParent CACHEDIR |>.toString)) _
 
 def isFromMathlib (mod : Name) : Bool :=
   mod.getRoot == `Mathlib
@@ -412,7 +412,7 @@ instance : Ord FilePath where
   compare x y := compare x.toString y.toString
 
 /-- Removes all cache files except for what's in the `keep` set -/
-def cleanCache (keep : Lean.RBTree FilePath compare := ∅) : IO Unit := do
+def cleanCache (keep : Std.TreeSet FilePath compare := ∅) : IO Unit := do
   for path in ← getFilesWithExtension CACHEDIR "ltar" do
     if !keep.contains path then IO.FS.removeFile path
 
@@ -485,7 +485,7 @@ def leanModulesFromSpec (sp : SearchPath) (argₛ : String) :
           (i.e. `Mathlib.Data` when only the folder `Mathlib/Data/` but no \
           file `Mathlib/Data.lean` exists) is not supported yet!"
       else
-        return .error "Invalid argument: non-existing module {mod}"
+        return .error s!"Invalid argument: non-existing module {mod}"
 
 /--
 Parse command line arguments.

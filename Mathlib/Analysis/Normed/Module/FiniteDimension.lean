@@ -14,6 +14,7 @@ import Mathlib.Logic.Encodable.Pi
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 import Mathlib.Topology.Instances.Matrix
+import Mathlib.LinearAlgebra.Dimension.LinearMap
 
 /-!
 # Finite dimensional normed spaces over complete fields

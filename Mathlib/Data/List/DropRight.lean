@@ -120,26 +120,6 @@ variable {p} {l}
 @[simp]
 theorem rdropWhile_eq_nil_iff : rdropWhile p l = [] ↔ ∀ x ∈ l, p x := by simp [rdropWhile]
 
--- it is in this file because it requires `List.Infix`
-@[simp]
-theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p (l.get ⟨0, hl⟩) := by
-  rcases l with - | ⟨hd, tl⟩
-  · simp only [dropWhile, true_iff]
-    intro h
-    by_contra
-    rwa [length_nil, lt_self_iff_false] at h
-  · rw [dropWhile]
-    refine ⟨fun h => ?_, fun h => ?_⟩
-    · intro _ H
-      rw [get] at H
-      refine (cons_ne_self hd tl) (Sublist.antisymm ?_ (sublist_cons_self _ _))
-      rw [← h]
-      simp only [H]
-      exact List.IsSuffix.sublist (dropWhile_suffix p)
-    · have := h (by simp only [length, Nat.succ_pos])
-      rw [get] at this
-      simp_rw [this]
-
 @[simp]
 theorem rdropWhile_eq_self_iff : rdropWhile p l = l ↔ ∀ hl : l ≠ [], ¬p (l.getLast hl) := by
   simp [rdropWhile, reverse_eq_iff, getLast_eq_getElem, Nat.pos_iff_ne_zero]

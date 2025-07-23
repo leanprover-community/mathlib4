@@ -3,10 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Data.Set.BooleanAlgebra
-import Mathlib.Data.Set.FunctorToTypes
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.Limits.Types.Colimits
+import Mathlib.Data.Set.BooleanAlgebra
+import Mathlib.Data.Set.FunctorToTypes
 import Mathlib.Order.CompleteLattice.MulticoequalizerDiagram
 
 /-!
@@ -82,9 +82,9 @@ noncomputable def isColimitOfMulticoequalizerDiagram :
   · dsimp at i₁ i₂ h₁ h₂
     obtain rfl : x₁ = x₂ := by simpa using h
     have eq₁ := e.ιColimitType_map (WalkingMultispan.Hom.fst (J := .prod ι) ⟨i₁, i₂⟩)
-      ⟨x₁, by dsimp; rw [← c.min_eq]; exact ⟨h₁, h₂⟩⟩
+      ⟨x₁, by dsimp; rw [c.min_eq]; exact ⟨h₁, h₂⟩⟩
     have eq₂ := e.ιColimitType_map (WalkingMultispan.Hom.snd (J := .prod ι) ⟨i₁, i₂⟩)
-      ⟨x₁, by dsimp; rw [← c.min_eq]; exact ⟨h₁, h₂⟩⟩
+      ⟨x₁, by dsimp; rw [c.min_eq]; exact ⟨h₁, h₂⟩⟩
     dsimp [e] at eq₁ eq₂
     rw [eq₁, eq₂]
   · simp only [MulticoequalizerDiagram.multicofork_pt, ← c.iSup_eq,
