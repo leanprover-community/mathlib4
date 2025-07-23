@@ -3,8 +3,7 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.LinearAlgebra.Matrix.BilinearForm
-import Mathlib.LinearAlgebra.Matrix.SchurComplement
+import Mathlib.LinearAlgebra.BilinearForm.IsPosSemidef
 
 /-!
 # Continuous bilinear forms
@@ -16,14 +15,7 @@ Define an abbreviation for continuous bilinear forms.
 * `ContinuousBilinForm.toMatrix`: The matrix representing a continuous bilinear form on a
   finite dimensional space.
 * `ContinuousBilinForm.ofMatrix`: The continuous bilinear form represented by a matrix.
-* `ContinuousBilinForm.IsPosSemidef`: A positive semidefinite bilinear form is a symmetric
-  continuous bilinear form `f` satisfying `∀ x, 0 ≤ RCLike.re (f x x)`.
 * `ContinuousBilinForm.inner`: The inner product as a continuous bilinear form.
-
-## Main statement
-
-* `isSymm_toBilinForm_iff_isHermitian_toMatrix`: A continuous bilinear form on a real finite
-  dimensional space is symmetric if and only if it is represented by a Hermitian matrix.
 
 ## Implementation notes
 
@@ -69,6 +61,8 @@ section toMatrix
 /-- A continuous bilinear map on a finite dimensional space can be represented by a matrix. -/
 noncomputable def toMatrix : Matrix n n 𝕜 :=
   BilinForm.toMatrix b f.toBilinForm
+
+lemma toMatrix_def : f.toMatrix b = BilinForm.toMatrix b f.toBilinForm := rfl
 
 @[simp]
 lemma toMatrix_apply (i j : n) : f.toMatrix b i j = f (b i) (b j) := by
@@ -118,92 +112,39 @@ end ofMatrix
 
 end Matrix
 
-section IsPos
-
-/-- A continuous bilinear map `f` is positive if for any `x`, `0 ≤ re (f x x)` -/
-structure IsPos : Prop where
-  nonneg_re : ∀ x, 0 ≤ RCLike.re (f x x)
-
-lemma isPos_def : f.IsPos ↔ ∀ x, 0 ≤ RCLike.re (f x x) where
-  mp := fun ⟨h⟩ ↦ h
-  mpr h := ⟨h⟩
-
-section Real
-
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (f : ContinuousBilinForm ℝ E)
-    (b : Basis n ℝ E)
-
-lemma isPos_def_real : f.IsPos ↔ ∀ x, 0 ≤ f x x := by simp [isPos_def]
-
-variable {f} in
-lemma IsPos.nonneg (hf : IsPos f) (x : E) : 0 ≤ f x x := f.isPos_def_real.1 hf x
-
-variable [Fintype n] [DecidableEq n]
-
-lemma isSymm_toBilinForm_iff_isHermitian_toMatrix :
-    f.toBilinForm.IsSymm ↔ (f.toMatrix b).IsHermitian := by
-  rw [LinearMap.BilinForm.isSymm_iff_basis b, Matrix.IsHermitian.ext_iff]
-  simp [Eq.comm]
-
-end Real
-
-end IsPos
-
 end RCLike
 
 section Real
 
-section NormedSpace
+section IsPosSemidef
 
 variable [NormedSpace ℝ E] (f : ContinuousBilinForm ℝ E) (b : Basis n ℝ E)
 
-section IsPosSemidef
+/-- `f.IsPosSemidef` is an abbreviation for `f.toBilinForm.IsPosSemidef`. -/
+abbrev IsPosSemidef : Prop := f.toBilinForm.IsPosSemidef
 
-/-- A continuous bilinear map is positive semidefinite if it is symmetric and positive. We only
-define it for the real field, because for the complex case we may want to consider sesquilinear
-forms instead. -/
-structure IsPosSemidef : Prop extends f.toBilinForm.IsSymm, f.IsPos
-
-variable {f}
-
-lemma IsPosSemidef.isSymm (hf : IsPosSemidef f) :f.toBilinForm.IsSymm := hf.toIsSymm
-
-lemma IsPosSemidef.isPos (hf : IsPosSemidef f) : IsPos f := hf.toIsPos
-
-variable (f)
-
-lemma isPosSemidef_iff : f.IsPosSemidef ↔ f.toBilinForm.IsSymm ∧ f.IsPos where
-  mp h := ⟨h.isSymm, h.isPos⟩
-  mpr := fun ⟨h₁, h₂⟩ ↦ ⟨h₁, h₂⟩
+lemma isPosSemidef_def : f.IsPosSemidef ↔ f.toBilinForm.IsPosSemidef := .rfl
 
 variable {f} [Fintype n] [DecidableEq n]
 
-lemma isPosSemidef_iff_posSemidef_toMatrix : f.IsPosSemidef ↔ (f.toMatrix b).PosSemidef := by
-  rw [isPosSemidef_iff, Matrix.PosSemidef]
-  apply and_congr (f.isSymm_toBilinForm_iff_isHermitian_toMatrix b)
-  rw [isPos_def]
-  refine ⟨fun h x ↦ ?_, fun h x ↦ ?_⟩
-  · rw [dotProduct_toMatrix_mulVec]
-    exact h _
-  · rw [apply_eq_dotProduct_toMatrix_mulVec f b]
-    exact h _
+lemma isPosSemidef_iff_posSemidef_toMatrix :
+    f.IsPosSemidef ↔ (f.toMatrix b).PosSemidef := by
+  rw [f.isPosSemidef_def, LinearMap.BilinForm.isPosSemidef_iff_posSemidef_toMatrix b, toMatrix_def]
 
 end IsPosSemidef
 
-end NormedSpace
-
-section InnerProductSpace
+section Inner
 
 variable [InnerProductSpace ℝ E]
 
-open scoped InnerProductSpace
+open scoped RealInnerProductSpace
 
 variable (E) in
 /-- The inner product as continuous bilinear form.
 -/
 protected noncomputable def inner : ContinuousBilinForm ℝ E :=
   letI f : LinearMap.BilinForm ℝ E := LinearMap.mk₂ ℝ
-    (fun x y ↦ ⟪x, y⟫_ℝ)
+    (fun x y ↦ ⟪x, y⟫)
     inner_add_left
     (fun c m n ↦ real_inner_smul_left m n c)
     inner_add_right
@@ -214,7 +155,7 @@ protected noncomputable def inner : ContinuousBilinForm ℝ E :=
     exact abs_real_inner_le_norm x y
 
 @[simp]
-lemma inner_apply (x y : E) : ContinuousBilinForm.inner E x y = ⟪x, y⟫_ℝ := rfl
+lemma inner_apply (x y : E) : ContinuousBilinForm.inner E x y = ⟪x, y⟫ := rfl
 
 lemma isPosSemidef_inner : IsPosSemidef (ContinuousBilinForm.inner E) where
   eq := by simp [real_inner_comm]
@@ -226,7 +167,7 @@ lemma inner_toMatrix_eq_one : (ContinuousBilinForm.inner E).toMatrix b.toBasis =
   ext i j
   simp [Matrix.one_apply, b.inner_eq_ite]
 
-end InnerProductSpace
+end Inner
 
 end Real
 

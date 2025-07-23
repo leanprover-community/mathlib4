@@ -43,6 +43,9 @@ def IsHermitian (A : Matrix n n α) : Prop := Aᴴ = A
 instance (A : Matrix n n α) [Decidable (Aᴴ = A)] : Decidable (IsHermitian A) :=
   inferInstanceAs <| Decidable (_ = _)
 
+lemma isHermitian_iff_isSymm [TrivialStar α] (A : Matrix n n α) : A.IsHermitian ↔ A.IsSymm := by
+  rw [IsHermitian, IsSymm, Matrix.conjTranspose_eq_transpose_of_trivial]
+
 theorem IsHermitian.eq {A : Matrix n n α} (h : A.IsHermitian) : Aᴴ = A := h
 
 protected theorem IsHermitian.isSelfAdjoint {A : Matrix n n α} (h : A.IsHermitian) :

@@ -5,6 +5,7 @@ Authors: Anne Baanen, Kexing Ying
 -/
 import Mathlib.LinearAlgebra.BilinearForm.Properties
 import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
+import Mathlib.LinearAlgebra.Matrix.Symmetric
 
 /-!
 # Bilinear form
@@ -246,6 +247,11 @@ theorem Matrix.toBilin_toMatrix (B : BilinForm R₁ M₁) :
 theorem BilinForm.toMatrix_toBilin (M : Matrix n n R₁) :
     BilinForm.toMatrix b (Matrix.toBilin b M) = M :=
   (BilinForm.toMatrix b).apply_symm_apply M
+
+lemma BilinForm.isSymm_iff_isSymm_toMatrix (B : BilinForm R₁ M₁) :
+    B.IsSymm ↔ (BilinForm.toMatrix b B).IsSymm := by
+  rw [LinearMap.BilinForm.isSymm_iff_basis b, Matrix.IsSymm.ext_iff]
+  simp [Eq.comm]
 
 variable {M₂' : Type*} [AddCommMonoid M₂'] [Module R₁ M₂']
 variable (c : Basis o R₁ M₂')
