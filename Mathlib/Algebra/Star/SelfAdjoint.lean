@@ -523,7 +523,7 @@ section SMul
 
 variable [Star R] [TrivialStar R] [AddCommGroup A] [StarAddMonoid A]
 
-@[aesop safe apply (rule_sets := [SetLike])]
+@[aesop 90% (rule_sets := [SetLike])]
 theorem smul_mem [Monoid R] [DistribMulAction R A] [StarModule R A] (r : R) {x : A}
     (h : x ∈ skewAdjoint A) : r • x ∈ skewAdjoint A := by
   rw [mem_iff, star_smul, star_trivial, mem_iff.mp h, smul_neg r]
