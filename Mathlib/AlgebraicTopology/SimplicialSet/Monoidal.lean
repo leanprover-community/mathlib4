@@ -87,8 +87,14 @@ def unitHomEquiv (K : SSet.{u}) : (𝟙_ _ ⟶ K) ≃ K _⦋0⦌ where
   right_inv x := by simp
 
 /-- The object `Δ[0]` is terminal in `SSet`. -/
-def isTerminalDeltaZero : IsTerminal (Δ[0] : SSet.{u}) where
-  lift S := { app := fun X _ => ULift.up <| SimplexCategory.isTerminalZero.from _ }
-  uniq := by intros ; ext ; apply ULift.ext ; apply SimplexCategory.isTerminalZero.hom_ext
+def stdSimplex.isTerminalObj₀ : IsTerminal (Δ[0] : SSet.{u}) :=
+  IsTerminal.ofUniqueHom (fun _ ↦ SSet.const (obj₀Equiv.symm 0))
+    (fun _ _ ↦ by
+      ext ⟨n⟩
+      exact objEquiv.injective (by ext; simp))
+
+@[ext]
+lemma stdSimplex.ext₀ {X : SSet.{u}} {f g : X ⟶ Δ[0]} : f = g :=
+  isTerminalObj₀.hom_ext _ _
 
 end SSet
