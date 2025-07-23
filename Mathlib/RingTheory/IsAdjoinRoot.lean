@@ -614,10 +614,8 @@ end IsAdjoinRoot
 
 namespace IsAdjoinRootMonic
 
-variable (h : IsAdjoinRootMonic S f)
-
 theorem minpoly_eq [IsDomain R] [IsDomain S] [NoZeroSMulDivisors R S] [IsIntegrallyClosed R]
-    (hirr : Irreducible f) : minpoly R h.root = f :=
+    (h : IsAdjoinRootMonic S f) (hirr : Irreducible f) : minpoly R h.root = f :=
   let ⟨q, hq⟩ := minpoly.isIntegrallyClosed_dvd h.isIntegral_root h.aeval_root
   symm <|
     eq_of_monic_of_associated h.Monic (minpoly.monic h.isIntegral_root) <| by
