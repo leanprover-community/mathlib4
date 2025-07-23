@@ -721,7 +721,6 @@ theorem one_apply (a : A) : (1 : A →+[M] A) a = a :=
 instance : Inhabited (A →ₑ+[φ] B) :=
   ⟨0⟩
 
-set_option linter.unusedVariables false in
 /-- Composition of two equivariant additive monoid homomorphisms. -/
 def comp (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) [κ : MonoidHom.CompTriple φ ψ χ] :
     A →ₑ+[χ] C :=
@@ -915,7 +914,6 @@ variable {R S T}
 
 variable {φ φ' ψ χ}
 
-set_option linter.unusedVariables false in
 /-- Composition of two equivariant additive ring homomorphisms. -/
 def comp (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S) [κ : MonoidHom.CompTriple φ ψ χ] : R →ₑ+*[χ] T :=
   { DistribMulActionHom.comp (g : S →ₑ+[ψ] T) (f : R →ₑ+[φ] S),
