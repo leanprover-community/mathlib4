@@ -46,7 +46,8 @@ def weight_of_fn (w : V → V → R) : ∀ {i j : V}, Path i j → R :=
 
 @[simp]
 lemma weight_nil (w : ∀ {i j : V}, (i ⟶ j) → R) (a : V) :
-    weight (fun {_ _} => w) (Path.nil : Path a a) = 1 := by unfold weight; simp
+    weight w (Path.nil : Path a a) = 1 := by
+  simp [weight]
 
 @[simp]
 lemma weight_cons (w : ∀ {i j : V}, (i ⟶ j) → R) {a b c : V} (p : Path a b) (e : b ⟶ c) :
