@@ -58,7 +58,7 @@ lemma inl_v_triangle_mor₃_f (p q : ℤ) (hpq : p + (-1) = q) :
   -- the following list of lemmas was obtained by doing
   -- simp? [Cochain.rightShift_v _ 1 0 (zero_add 1) q q (add_zero q) p (by omega)]
   simp only [Int.reduceNeg, Cochain.rightShift_neg, Cochain.neg_v, shiftFunctor_obj_X',
-    Cochain.rightShift_v _ 1 0 (zero_add 1) q q (add_zero q) p (by omega), shiftFunctor_obj_X,
+    Cochain.rightShift_v _ 1 0 (zero_add 1) q q (add_zero q) p (by grind), shiftFunctor_obj_X,
     shiftFunctorObjXIso, Preadditive.comp_neg, inl_v_fst_v_assoc]
 
 @[reassoc (attr := simp)]
@@ -292,10 +292,10 @@ lemma rotateHomotopyEquiv_comm₃ :
   dsimp [rotateHomotopyEquiv]
   -- the following list of lemmas has been obtained by doing
   -- simp? [lift_f _ _ _ _ _ (p + 1) rfl,
-  --   (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) p (p + 1) rfl (p + 1) (by omega)]
+  --   (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) p (p + 1) rfl (p + 1) (by grind)]
   simp only [Int.reduceNeg, lift_f _ _ _ _ _ (p + 1) rfl, shiftFunctor_obj_X', Cocycle.coe_neg,
     Cocycle.leftShift_coe, Cocycle.ofHom_coe, Cochain.neg_v,
-    (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) p (p + 1) rfl (p + 1) (by omega),
+    (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) p (p + 1) rfl (p + 1) (by grind),
     shiftFunctor_obj_X, mul_one, sub_self, mul_zero, Int.zero_ediv, add_zero, Int.negOnePow_one,
     shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl, Iso.refl_hom, Cochain.ofHom_v, id_comp,
     Units.neg_smul, one_smul, neg_neg, Preadditive.neg_comp, Preadditive.add_comp, assoc,
@@ -401,7 +401,7 @@ lemma map_δ :
     shiftFunctor_obj_X, shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl, Iso.refl_inv,
     comp_neg, comp_id, inr_f_triangle_mor₃_f, comp_zero, add_zero]
   dsimp [triangle]
-  rw [Cochain.rightShift_v _ 1 0 (by omega) n n (by omega) (n + 1) (by omega)]
+  rw [Cochain.rightShift_v _ 1 0 (by grind) n n (by grind) (n + 1) (by grind)]
   simp only [shiftFunctor_obj_X, Cochain.neg_v, shiftFunctorObjXIso,
     HomologicalComplex.XIsoOfEq_rfl, Iso.refl_inv, comp_id, Functor.map_neg]
 
