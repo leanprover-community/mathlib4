@@ -569,13 +569,13 @@ instance [CommSemiring K] [Semiring β] [Algebra K β] : IsScalarTower K (α →
   smul_assoc _ _ _ := ext fun _ ↦ Algebra.smul_mul_assoc ..
 
 instance [CommSemiring K] [Semiring β] [Algebra K β] : SMulCommClass K (α →ₛ β) (α →ₛ β) where
-  smul_comm _ _ _ := ext fun _ ↦ by simp
+  smul_comm _ _ _ := ext fun _ => (Algebra.mul_smul_comm ..).symm
 
 instance [CommSemiring K] [Semiring β] [Algebra K β] : Algebra K (α →ₛ β) :=
    Algebra.ofModule' smul_one_mul mul_smul_one
 
 lemma algebraMap_apply [CommSemiring K] [Semiring β] [Algebra K β] (k : K) :
-    algebraMap K (α →ₛ β) k = k • (1 : α →ₛ β) := rfl
+    algebraMap K (α →ₛ β) k = k • 1 := rfl
 section Star
 
 instance [Star β] : Star (α →ₛ β) where
