@@ -359,12 +359,6 @@ theorem Cofork.coequalizer_ext (s : Cofork f g) {W : C} {k l : s.pt ⟶ W}
   | zero => by simp only [s.app_zero_eq_comp_π_left, Category.assoc, h]
   | one => h
 
--- lemma Cone.ext' {F : J ⥤ C} (w w' : Cone F)
---     (hp : w.pt = w'.pt) (hπ : w.π = hp ▸ w'.π) : w = w' := by
---   cases w; cases hp; cases hπ; rfl
-
-
-/-- *NEW THEOREM* -/
 @[simp]
 theorem Fork.ofι_eq_self (w : Fork f g) : Fork.ofι w.ι w.condition = w :=
   let ext (w w' : Fork f g) (hp : w.pt = w'.pt) (hπ : w.π = hp ▸ w'.π) : w = w' := by
@@ -765,7 +759,6 @@ noncomputable def equalizerIsEqualizer : IsLimit (Fork.ofι (equalizer.ι f g)
 noncomputable def equalizerIsEqualizer' : IsLimit (equalizer.fork f g) :=
   IsLimit.ofIsoLimit (limit.isLimit _) (Fork.ext (Iso.refl _) (by simp))
 
-/-- *NEW THEOREM* -/
 theorem equalizer.fork_ofι :
     Fork.ofι (equalizer.ι f g) (equalizer.condition f g) = equalizer.fork f g :=
   Fork.ofι_eq_self (equalizer.fork f g)

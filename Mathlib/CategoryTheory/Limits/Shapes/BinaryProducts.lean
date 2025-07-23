@@ -1484,19 +1484,4 @@ def BinaryFan.rightUnitor {X : C} {s : Cone (Functor.empty.{0} C)} (P : IsLimit 
       rintro ⟨⟨⟩⟩
 
 end unitor
-
--- @[simp]
--- lemma prod.lift_comp_fst_snd {A B C : C} [HasBinaryProduct B C] (f : A ⟶ B ⨯ C) :
---     prod.lift (f ≫ prod.fst) (f ≫ prod.snd) = f := by
---   apply prod.hom_ext
---   · simp
---   · simp
-
--- @[simp]
--- lemma coprod.desc_comp_inl_inr {A B C : C} [HasBinaryCoproduct A B] (f : A ⨿ B ⟶ C) :
---     coprod.desc (coprod.inl ≫ f) (coprod.inr ≫ f) = f := by
---   apply coprod.hom_ext
---   · simp
---   · simp
-
 end CategoryTheory.Limits

@@ -34,20 +34,6 @@ lemma isPullback_equalizer_prod' [HasBinaryProduct Y Y] (e : Fork f g) (h : IsLi
       _ = s.snd := by rw[reassoc_of% s.condition]; simp
   · exact fun _ _ hm _ ↦ Fork.IsLimit.hom_ext h (Eq.symm (Fork.IsLimit.lift_ι h) ▸ hm)
 
--- /-- If `E` is an equalizer of `f g : X ⟶ Y`, then `E` is also the pullback of the diagonal map
--- `Y ⟶ Y × Y` along `⟨f, g⟩ : X ⟶ Y × Y`. -/
--- lemma isPullback_equalizer_prod'' [HasBinaryProduct Y Y] {E : C} {e : E ⟶ X} (eq : e ≫ f = e ≫ g)
---     (h : IsLimit (Fork.ofι e eq)) : IsPullback e (e ≫ f) (prod.lift f g) (diag _) := by
---   let toFork (s : PullbackCone (prod.lift f g) (diag Y)) :=
---     Fork.ofι s.fst (prod.lift_eq_diag_of_comp_eq (s.condition))
---   refine ⟨⟨by ext <;> simp [eq]⟩, ⟨PullbackCone.IsLimit.mk _ ?_ ?_ ?_ ?_⟩⟩
---   · exact fun s ↦ h.lift (toFork s)
---   · exact fun s ↦ Fork.IsLimit.lift_ι h
---   · exact fun s ↦ by calc
---     _ = (Fork.ι (toFork s)) ≫ f := by simpa using congr($(Fork.IsLimit.lift_ι h) ≫ f)
---     _ = s.snd := by simpa using congr($s.condition ≫ prod.fst)
---   · exact fun _ _ hm _ ↦ Fork.IsLimit.hom_ext h (Eq.symm (Fork.IsLimit.lift_ι h) ▸ hm)
-
 /-- The equalizer of `f g : X ⟶ Y` is the pullback of the diagonal map `Y ⟶ Y × Y`
 along the map `⟨f, g⟩ : X ⟶ Y × Y`. -/
 lemma isPullback_equalizer_prod [HasEqualizer f g] [HasBinaryProduct Y Y] :
