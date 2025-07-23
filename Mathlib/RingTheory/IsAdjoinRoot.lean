@@ -107,12 +107,10 @@ namespace IsAdjoinRoot
 variable (h : IsAdjoinRoot S f)
 
 /-- `(h : IsAdjoinRoot S f).root` is the root of `f` that can be adjoined to generate `S`. -/
-def root : S :=
-  h.map X
+def root : S := h.map X
 
 include h in
-theorem subsingleton [Subsingleton R] : Subsingleton S :=
-  h.map_surjective.subsingleton
+theorem subsingleton [Subsingleton R] : Subsingleton S := h.map_surjective.subsingleton
 
 theorem algebraMap_apply (x : R) :
     algebraMap R S x = h.map (Polynomial.C x) := by rw [h.algebraMap_eq, RingHom.comp_apply]
@@ -121,14 +119,13 @@ theorem mem_ker_map {p} : p ∈ RingHom.ker h.map ↔ f ∣ p := by
   rw [h.ker_map, Ideal.mem_span_singleton]
 
 @[simp]
-theorem map_eq_zero_iff {p} : h.map p = 0 ↔ f ∣ p := by
-  rw [← h.mem_ker_map, RingHom.mem_ker]
+theorem map_eq_zero_iff {p} : h.map p = 0 ↔ f ∣ p := by simpa using h.mem_ker_map
 
 @[simp]
 theorem map_X : h.map X = h.root := rfl
 
 @[simp]
-theorem map_self : h.map f = 0 := h.map_eq_zero_iff.mpr dvd_rfl
+theorem map_self : h.map f = 0 := by simp
 
 @[simp]
 theorem aeval_eq (p : R[X]) : aeval h.root p = h.map p :=
@@ -137,37 +134,35 @@ theorem aeval_eq (p : R[X]) : aeval h.root p = h.map p :=
     rw [map_mul, aeval_C, map_pow, aeval_X, RingHom.map_mul, ← h.algebraMap_apply,
       RingHom.map_pow, map_X]
 
-theorem aeval_root : aeval h.root f = 0 := by rw [aeval_eq, map_self]
+theorem aeval_root : aeval h.root f = 0 := by simp
 
 /-- Choose an arbitrary representative so that `h.map (h.repr x) = x`.
 
 If `f` is monic, use `IsAdjoinRootMonic.modByMonicHom` for a unique choice of representative.
 -/
-def repr (x : S) : R[X] :=
-  (h.map_surjective x).choose
+def repr (x : S) : R[X] := (h.map_surjective x).choose
 
-theorem map_repr (x : S) : h.map (h.repr x) = x :=
-  (h.map_surjective x).choose_spec
+theorem map_repr (x : S) : h.map (h.repr x) = x := (h.map_surjective x).choose_spec
 
 /-- `repr` preserves zero, up to multiples of `f` -/
 theorem repr_zero_mem_span : h.repr 0 ∈ Ideal.span ({f} : Set R[X]) := by
-  rw [← h.ker_map, RingHom.mem_ker, h.map_repr]
+  simp [← h.ker_map, map_repr]
 
 /-- `repr` preserves addition, up to multiples of `f` -/
 theorem repr_add_sub_repr_add_repr_mem_span (x y : S) :
     h.repr (x + y) - (h.repr x + h.repr y) ∈ Ideal.span ({f} : Set R[X]) := by
-  rw [← h.ker_map, RingHom.mem_ker, map_sub, h.map_repr, map_add, h.map_repr, h.map_repr, sub_self]
+  simp [← h.ker_map, map_repr]
 
 /-- Extensionality of the `IsAdjoinRoot` structure itself. See `IsAdjoinRootMonic.ext_elem`
 for extensionality of the ring elements. -/
-theorem ext_map (h h' : IsAdjoinRoot S f) (eq : ∀ x, h.map x = h'.map x) : h = h' := by
+theorem ext_map (h' : IsAdjoinRoot S f) (eq : ∀ x, h.map x = h'.map x) : h = h' := by
   cases h; cases h'; congr
   exact RingHom.ext eq
 
 /-- Extensionality of the `IsAdjoinRoot` structure itself. See `IsAdjoinRootMonic.ext_elem`
 for extensionality of the ring elements. -/
 @[ext]
-theorem ext (h h' : IsAdjoinRoot S f) (eq : h.root = h'.root) : h = h' :=
+theorem ext (h' : IsAdjoinRoot S f) (eq : h.root = h'.root) : h = h' :=
   h.ext_map h' fun x => by rw [← h.aeval_eq, ← h'.aeval_eq, eq]
 
 section lift
@@ -193,23 +188,19 @@ where `S` is given by adjoining a root of `f` to `R`. -/
 def lift (hx : f.eval₂ i x = 0) : S →+* T where
   toFun z := (h.repr z).eval₂ i x
   map_zero' := by
-    rw [h.eval₂_repr_eq_eval₂_of_map_eq hx _ _ (map_zero _), eval₂_zero]
+    simp [h.eval₂_repr_eq_eval₂_of_map_eq hx _ _ (map_zero _)]
   map_add' z w := by
-    rw [h.eval₂_repr_eq_eval₂_of_map_eq hx _ (h.repr z + h.repr w), eval₂_add]
-    rw [map_add, map_repr, map_repr]
+    simp [h.eval₂_repr_eq_eval₂_of_map_eq hx _ (h.repr z + h.repr w), map_repr]
   map_one' := by
-    rw [h.eval₂_repr_eq_eval₂_of_map_eq hx _ _ (map_one _), eval₂_one]
+    simp [h.eval₂_repr_eq_eval₂_of_map_eq hx _ _ (map_one _)]
   map_mul' z w := by
-    rw [h.eval₂_repr_eq_eval₂_of_map_eq hx _ (h.repr z * h.repr w), eval₂_mul]
-    rw [map_mul, map_repr, map_repr]
+    simp [h.eval₂_repr_eq_eval₂_of_map_eq hx _ (h.repr z * h.repr w), map_repr]
 
 variable {i x}
 
 @[simp]
 theorem lift_map (z : R[X]) : h.lift i x hx (h.map z) = z.eval₂ i x := by
-  rw [lift, RingHom.coe_mk]
-  dsimp
-  rw [h.eval₂_repr_eq_eval₂_of_map_eq hx _ _ rfl]
+  simp [lift, h.eval₂_repr_eq_eval₂_of_map_eq hx _ _ rfl]
 
 @[simp]
 theorem lift_root : h.lift i x hx h.root = x := by
@@ -217,14 +208,13 @@ theorem lift_root : h.lift i x hx h.root = x := by
 
 @[simp]
 theorem lift_algebraMap (a : R) :
-    h.lift i x hx (algebraMap R S a) = i a := by rw [h.algebraMap_apply, lift_map, eval₂_C]
+    h.lift i x hx (algebraMap R S a) = i a := by simp [h.algebraMap_apply]
 
 /-- Auxiliary lemma for `apply_eq_lift` -/
 theorem apply_eq_lift (g : S →+* T) (hmap : ∀ a, g (algebraMap R S a) = i a)
     (hroot : g h.root = x) (a : S) : g a = h.lift i x hx a := by
   rw [← h.map_repr a, Polynomial.as_sum_range_C_mul_X_pow (h.repr a)]
-  simp only [map_sum, map_mul, map_pow, h.map_X, hroot, ← h.algebraMap_apply, hmap, lift_root,
-    lift_algebraMap]
+  simp [← h.algebraMap_apply, *]
 
 /-- Unicity of `lift`: a map that agrees on `R` and `h.root` agrees with `lift` everywhere. -/
 theorem eq_lift (g : S →+* T) (hmap : ∀ a, g (algebraMap R S a) = i a)
@@ -274,16 +264,14 @@ variable (f)
 protected def isAdjoinRoot : IsAdjoinRoot (AdjoinRoot f) f where
   map := AdjoinRoot.mk f
   map_surjective := Ideal.Quotient.mk_surjective
-  ker_map := by
-    ext
-    rw [RingHom.mem_ker, ← @AdjoinRoot.mk_self _ _ f, AdjoinRoot.mk_eq_mk, Ideal.mem_span_singleton,
-      ← dvd_add_left (dvd_refl f), sub_add_cancel]
+  ker_map := by ext; simp [Ideal.mem_span_singleton]
   algebraMap_eq := AdjoinRoot.algebraMap_eq f
 
 /-- `AdjoinRoot f` is indeed given by adjoining a root of `f`. If `f` is monic this is more
 powerful than `AdjoinRoot.isAdjoinRoot`. -/
-protected def isAdjoinRootMonic (hf : Monic f) : IsAdjoinRootMonic (AdjoinRoot f) f :=
-  { AdjoinRoot.isAdjoinRoot f with Monic := hf }
+protected def isAdjoinRootMonic (hf : Monic f) : IsAdjoinRootMonic (AdjoinRoot f) f where
+  __ := AdjoinRoot.isAdjoinRoot f
+  Monic := hf
 
 @[simp]
 theorem isAdjoinRoot_map_eq_mk : (AdjoinRoot.isAdjoinRoot f).map = AdjoinRoot.mk f :=
@@ -296,12 +284,12 @@ theorem isAdjoinRootMonic_map_eq_mk (hf : f.Monic) :
 
 @[simp]
 theorem isAdjoinRoot_root_eq_root : (AdjoinRoot.isAdjoinRoot f).root = AdjoinRoot.root f := by
-  simp only [IsAdjoinRoot.root, AdjoinRoot.root, AdjoinRoot.isAdjoinRoot_map_eq_mk]
+  simp [AdjoinRoot.isAdjoinRoot, IsAdjoinRoot.root]
 
 @[simp]
 theorem isAdjoinRootMonic_root_eq_root (hf : Monic f) :
     (AdjoinRoot.isAdjoinRootMonic f hf).root = AdjoinRoot.root f := by
-  simp only [IsAdjoinRoot.root, AdjoinRoot.root, AdjoinRoot.isAdjoinRootMonic_map_eq_mk]
+  simp [IsAdjoinRoot.root]
 
 end AdjoinRoot
 
@@ -325,13 +313,10 @@ def modByMonicHom : S →ₗ[R] R[X] where
   toFun x := h.repr x %ₘ f
   map_add' x y := by
     conv_lhs =>
-      rw [← h.map_repr x, ← h.map_repr y, ← map_add]
-      beta_reduce -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
-      rw [h.modByMonic_repr_map, add_modByMonic]
+      rw [← h.map_repr x, ← h.map_repr y, ← map_add, h.modByMonic_repr_map, add_modByMonic]
   map_smul' c x := by
-    rw [RingHom.id_apply, ← h.map_repr x, Algebra.smul_def, h.algebraMap_apply, ← map_mul]
-    dsimp only -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10752): added `dsimp only`
-    rw [h.modByMonic_repr_map, ← smul_eq_C_mul, smul_modByMonic, h.map_repr]
+    rw [RingHom.id_apply, ← h.map_repr x, Algebra.smul_def, h.algebraMap_apply, ← map_mul,
+        h.modByMonic_repr_map, ← smul_eq_C_mul, smul_modByMonic, h.map_repr]
 
 @[simp]
 theorem modByMonicHom_map (g : R[X]) :
@@ -387,18 +372,8 @@ def basis : Basis (Fin (natDegree f)) R S :=
         rw [Set.mem_range, not_exists]
         rintro i rfl
         exact i.prop.not_ge hm
-      map_add' := fun x y => by
-        rw [map_add, toFinsupp_add, Finsupp.comapDomain_add_of_injective Fin.val_injective]
-      -- Porting note: the original simp proof with the same lemmas does not work
-      -- See https://github.com/leanprover-community/mathlib4/issues/5026
-      -- simp only [map_add, Finsupp.comapDomain_add_of_injective Fin.val_injective, toFinsupp_add]
-      map_smul' := fun c x => by
-        rw [map_smul, toFinsupp_smul, Finsupp.comapDomain_smul_of_injective Fin.val_injective,
-          RingHom.id_apply] }
-      -- Porting note: the original simp proof with the same lemmas does not work
-      -- See https://github.com/leanprover-community/mathlib4/issues/5026
-      -- simp only [map_smul, Finsupp.comapDomain_smul_of_injective Fin.val_injective,
-      --   RingHom.id_apply, toFinsupp_smul] }
+      map_add' := fun x y => by simp [Finsupp.comapDomain_add_of_injective Fin.val_injective]
+      map_smul' := fun c x => by simp [Finsupp.comapDomain_smul_of_injective Fin.val_injective] }
 
 @[simp]
 theorem basis_apply (i) : h.basis i = h.root ^ (i : ℕ) :=
@@ -559,8 +534,8 @@ def aequiv (h' : IsAdjoinRoot T f) : S ≃ₐ[R] T :=
   { h.liftHom h'.root h'.aeval_root with
     toFun := h.liftHom h'.root h'.aeval_root
     invFun := h'.liftHom h.root h.aeval_root
-    left_inv := fun x => by rw [← h.map_repr x, liftHom_map, aeval_eq, liftHom_map, aeval_eq]
-    right_inv := fun x => by rw [← h'.map_repr x, liftHom_map, aeval_eq, liftHom_map, aeval_eq] }
+    left_inv := fun x => by rw [← h.map_repr x]; simp
+    right_inv := fun x => by rw [← h'.map_repr x]; simp }
 
 @[simp]
 theorem aequiv_map (h' : IsAdjoinRoot T f) (z : R[X]) :
