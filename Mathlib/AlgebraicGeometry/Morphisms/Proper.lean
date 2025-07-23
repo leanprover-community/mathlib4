@@ -119,7 +119,7 @@ theorem isIntegral_appTop_of_universallyClosed (f : X ⟶ Y) [UniversallyClosed 
 
 /-- If `X` is an integral scheme that is universally closed over `Spec K`,
 then `Γ(X, ⊤)` is a field. -/
-theorem isField_of_universallyClosed (f : X ⟶ Spec (.of K)) [IsIntegral X] [UniversallyClosed f] :
+theorem isField_of_universallyClosed (f : X ⟶ Spec(K)) [IsIntegral X] [UniversallyClosed f] :
     IsField Γ(X, ⊤) := by
   let F := (Scheme.ΓSpecIso _).inv ≫ f.appTop
   have : F.hom.IsIntegral := by
@@ -130,7 +130,7 @@ theorem isField_of_universallyClosed (f : X ⟶ Spec (.of K)) [IsIntegral X] [Un
 
 /-- If `X` is an integral scheme that is universally closed and of finite type over `Spec K`,
 then `Γ(X, ⊤)` is a finite field extension over `K`. -/
-theorem finite_appTop_of_universallyClosed (f : X ⟶ Spec (.of K))
+theorem finite_appTop_of_universallyClosed (f : X ⟶ Spec(K))
     [IsIntegral X] [UniversallyClosed f] [LocallyOfFiniteType f] :
     f.appTop.hom.Finite := by
   have x : X := Nonempty.some inferInstance

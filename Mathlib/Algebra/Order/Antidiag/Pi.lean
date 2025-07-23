@@ -116,7 +116,7 @@ def piAntidiag (s : Finset ι) (n : μ) : Finset (ι → μ) := by
     simp only [mem_map, mem_finAntidiagonal]
     refine Equiv.exists_congr ((e₁.symm.trans e₂).arrowCongr <| .refl _) fun g ↦ ?_
     have := Fintype.sum_equiv (e₂.symm.trans e₁) _ g fun _ ↦ rfl
-    aesop
+    simp_all
 
 variable {s : Finset ι} {n : μ} {f : ι → μ}
 

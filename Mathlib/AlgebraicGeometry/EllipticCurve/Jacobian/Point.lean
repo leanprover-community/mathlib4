@@ -241,8 +241,9 @@ lemma add_of_Y_ne {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (h
     W.add P Q = addU P Q • ![1, 1, 0] := by
   rw [add_of_not_equiv <| not_equiv_of_Y_ne hy, addXYZ_of_X_eq hP hQ hPz hQz hx]
 
-lemma add_of_Y_ne' {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
-    (hQz : Q z ≠ 0) (hx : P x * Q z ^ 2 = Q x * P z ^ 2) (hy : P y * Q z ^ 3 ≠ W.negY Q * P z ^ 3) :
+lemma add_of_Y_ne' [DecidableEq F] {P Q : Fin 3 → F}
+    (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
+    (hx : P x * Q z ^ 2 = Q x * P z ^ 2) (hy : P y * Q z ^ 3 ≠ W.negY Q * P z ^ 3) :
     W.add P Q = W.dblZ P •
       ![W.toAffine.addX (P x / P z ^ 2) (Q x / Q z ^ 2)
           (W.toAffine.slope (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3) (Q y / Q z ^ 3)),
@@ -252,8 +253,8 @@ lemma add_of_Y_ne' {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (
   rw [add_of_equiv <| equiv_of_X_eq_of_Y_eq hPz hQz hx <| Y_eq_of_Y_ne' hP hQ hx hy,
     dblXYZ_of_Z_ne_zero hP hQ hPz hQz hx hy]
 
-lemma add_of_X_ne {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
-    (hQz : Q z ≠ 0) (hx : P x * Q z ^ 2 ≠ Q x * P z ^ 2) : W.add P Q = addZ P Q •
+lemma add_of_X_ne [DecidableEq F] {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q)
+    (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z ^ 2 ≠ Q x * P z ^ 2) : W.add P Q = addZ P Q •
       ![W.toAffine.addX (P x / P z ^ 2) (Q x / Q z ^ 2)
           (W.toAffine.slope (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3) (Q y / Q z ^ 3)),
         W.toAffine.addY (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3)
@@ -261,7 +262,7 @@ lemma add_of_X_ne {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (h
         1] := by
   rw [add_of_not_equiv <| not_equiv_of_X_ne hx, addXYZ_of_Z_ne_zero hP hQ hPz hQz hx]
 
-private lemma nonsingular_add_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Nonsingular P)
+private lemma nonsingular_add_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F} (hP : W.Nonsingular P)
     (hQ : W.Nonsingular Q) (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
     (hxy : ¬(P x * Q z ^ 2 = Q x * P z ^ 2 ∧ P y * Q z ^ 3 = W.negY Q * P z ^ 3)) : W.Nonsingular
       ![W.toAffine.addX (P x / P z ^ 2) (Q x / Q z ^ 2)
@@ -288,7 +289,8 @@ lemma nonsingular_add {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsing
               isUnit_dblU_of_Y_eq hP hPz hQz hxy.left hy hxy.right, nonsingular_zero]
         · simp only [add_of_Y_ne hP.left hQ.left hPz hQz hxy.left hy,
             nonsingular_smul _ <| isUnit_addU_of_Y_ne hPz hQz hy, nonsingular_zero]
-      · have := nonsingular_add_of_Z_ne_zero hP hQ hPz hQz hxy
+      · classical
+        have := nonsingular_add_of_Z_ne_zero hP hQ hPz hQz hxy
         by_cases hx : P x * Q z ^ 2 = Q x * P z ^ 2
         · simpa only [add_of_Y_ne' hP.left hQ.left hPz hQz hx <| not_and.mp hxy hx,
             nonsingular_smul _ <| isUnit_dblZ_of_Y_ne' hP.left hQ.left hPz hx <| not_and.mp hxy hx]
@@ -337,8 +339,9 @@ lemma addMap_of_Y_eq {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Equation
   · rw [addMap_eq, add_of_Y_ne hP.left hQ hPz hQz hx hy,
       smul_eq _ <| isUnit_addU_of_Y_ne hPz hQz hy]
 
-lemma addMap_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
-    (hQz : Q z ≠ 0) (hxy : ¬(P x * Q z ^ 2 = Q x * P z ^ 2 ∧ P y * Q z ^ 3 = W.negY Q * P z ^ 3)) :
+lemma addMap_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F}
+    (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
+    (hxy : ¬(P x * Q z ^ 2 = Q x * P z ^ 2 ∧ P y * Q z ^ 3 = W.negY Q * P z ^ 3)) :
     W.addMap ⟦P⟧ ⟦Q⟧ =
       ⟦![W.toAffine.addX (P x / P z ^ 2) (Q x / Q z ^ 2)
           (W.toAffine.slope (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3) (Q y / Q z ^ 3)),
@@ -482,8 +485,8 @@ lemma toAffine_neg {P : Fin 3 → F} (hP : W.Nonsingular P) :
         (nonsingular_smul _ <| Ne.isUnit hPz).mp <| neg_of_Z_ne_zero hPz ▸ nonsingular_neg hP,
       toAffine_of_Z_ne_zero hP hPz, Affine.Point.neg_some]
 
-private lemma toAffine_add_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Nonsingular P)
-    (hQ : W.Nonsingular Q) (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
+private lemma toAffine_add_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F}
+    (hP : W.Nonsingular P) (hQ : W.Nonsingular Q) (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
     (hxy : ¬(P x * Q z ^ 2 = Q x * P z ^ 2 ∧ P y * Q z ^ 3 = W.negY Q * P z ^ 3)) : toAffine W
       ![W.toAffine.addX (P x / P z ^ 2) (Q x / Q z ^ 2)
           (W.toAffine.slope (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3) (Q y / Q z ^ 3)),
@@ -494,7 +497,7 @@ private lemma toAffine_add_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Nonsingular 
     toAffine_of_Z_ne_zero hQ hQz,
     Affine.Point.add_some <| by rwa [← X_eq_iff hPz hQz, ← Y_eq_iff' hPz hQz]]
 
-lemma toAffine_add {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsingular Q) :
+lemma toAffine_add [DecidableEq F] {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsingular Q) :
     toAffine W (W.add P Q) = toAffine W P + toAffine W Q := by
   by_cases hPz : P z = 0
   · rw [toAffine_of_Z_eq_zero hPz, zero_add]
@@ -552,7 +555,7 @@ lemma toAffineLift_neg (P : W.Point) : (-P).toAffineLift = -P.toAffineLift := by
   rcases P with @⟨⟨_⟩, hP⟩
   exact toAffine_neg hP
 
-lemma toAffineLift_add (P Q : W.Point) :
+lemma toAffineLift_add [DecidableEq F] (P Q : W.Point) :
     (P + Q).toAffineLift = P.toAffineLift + Q.toAffineLift := by
   rcases P, Q with ⟨@⟨⟨_⟩, hP⟩, @⟨⟨_⟩, hQ⟩⟩
   exact toAffine_add hP hQ
@@ -561,7 +564,7 @@ variable (W) in
 /-- The addition-preserving equivalence between the type of nonsingular Jacobian points on a
 Weierstrass curve `W` and the type of nonsingular points `W⟮F⟯` in affine coordinates. -/
 @[simps]
-noncomputable def toAffineAddEquiv : W.Point ≃+ W.toAffine.Point where
+noncomputable def toAffineAddEquiv [DecidableEq F] : W.Point ≃+ W.toAffine.Point where
   toFun := toAffineLift
   invFun := fromAffine
   left_inv := by
@@ -577,7 +580,7 @@ noncomputable def toAffineAddEquiv : W.Point ≃+ W.toAffine.Point where
     · rw [fromAffine_some, toAffineLift_some]
   map_add' := toAffineLift_add
 
-noncomputable instance : AddCommGroup W.Point where
+noncomputable instance [DecidableEq F] : AddCommGroup W.Point where
   nsmul := nsmulRec
   zsmul := zsmulRec
   zero_add _ := (toAffineAddEquiv W).injective <| by

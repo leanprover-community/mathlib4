@@ -44,6 +44,15 @@ structure LocalizerMorphism where
 
 namespace LocalizerMorphism
 
+variable {W₁ W₂} in
+/-- Constructor for localizer morphisms given by a functor `F : C₁ ⥤ C₂`
+under the stronger assumption that the classes of morphisms `W₁` and `W₂`
+satisfy `W₁ = W₂.inverseImage F`. -/
+@[simps]
+def ofEq {F : C₁ ⥤ C₂} (hW : W₁ = W₂.inverseImage F) : LocalizerMorphism W₁ W₂ where
+  functor := F
+  map := by rw [hW]
+
 /-- The identity functor as a morphism of localizers. -/
 @[simps]
 def id : LocalizerMorphism W₁ W₁ where

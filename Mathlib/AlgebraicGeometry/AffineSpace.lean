@@ -174,7 +174,7 @@ Also see `AffineSpace.SpecIso`.
 -/
 @[simps -isSimp hom inv]
 def isoOfIsAffine [IsAffine S] :
-    𝔸(n; S) ≅ Spec (.of (MvPolynomial n Γ(S, ⊤))) where
+    𝔸(n; S) ≅ Spec(MvPolynomial n Γ(S, ⊤)) where
       hom := 𝔸(n; S).toSpecΓ ≫ Spec.map (CommRingCat.ofHom
         (eval₂Hom ((𝔸(n; S) ↘ S).appTop).hom (coord S)))
       inv := homOfVector (Spec.map (CommRingCat.ofHom C) ≫ S.isoSpec.inv)
@@ -237,7 +237,7 @@ instance [IsAffine S] : IsAffine 𝔸(n; S) := .of_isIso (isoOfIsAffine n S).hom
 variable (n) in
 /-- The affine space over an affine base is isomorphic to the spectrum of the polynomial ring. -/
 def SpecIso (R : CommRingCat.{max u v}) :
-    𝔸(n; Spec R) ≅ Spec (.of (MvPolynomial n R)) :=
+    𝔸(n; Spec R) ≅ Spec(MvPolynomial n R) :=
   isoOfIsAffine _ _ ≪≫ Scheme.Spec.mapIso (MvPolynomial.mapEquiv _
     (Scheme.ΓSpecIso R).symm.commRingCatIsoToRingEquiv).toCommRingCatIso.op
 
