@@ -99,6 +99,11 @@ theorem ClusterPt.of_inf_right {f g : Filter X} (H : ClusterPt x <| f ⊓ g) :
     ClusterPt x g :=
   H.mono inf_le_right
 
+theorem ClusterPt.frequently' {F : Filter X} {p : X → Prop} (hx : ClusterPt x F)
+    (hp : ∀ᶠ y in F, p y) : ∃ᶠ y in nhds x, p y := by
+  rw [eventually_iff, ← le_principal_iff] at hp
+  exact clusterPt_principal_iff_frequently.mp (hx.mono hp)
+
 section MapClusterPt
 
 variable {F : Filter α} {u : α → X} {x : X}
