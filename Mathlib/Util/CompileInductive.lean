@@ -207,8 +207,13 @@ partial def compileSizeOf (iv : InductiveVal) : MetaM Unit := do
         let deps : NameSet := dv.value.foldConsts ∅ fun c arr =>
           if let .str name "_sizeOf_inst" := c then arr.insert name else arr
         for i in deps do
-          if let some (.inductInfo iv) := (← getEnv).find? i then
-            compileInductive iv (warn := false)
+          -- We only want to recompile inductives defined in external modules, because attempting
+          -- to recompile `sizeOf` functions defined in the current module multiple times will lead
+          -- to errors. We assume that any inductives defined in the current module can be marked
+          -- with `compile_inductive%` themselves.
+          if ((← getEnv).getModuleIdxFor? i).isSome then
+            if let some (.inductInfo iv) := (← getEnv).find? i then
+               compileInductive iv (warn := false)
         compileDefn dv
   let rv ← getConstInfoRec <| mkRecName iv.name
   for name in iv.all do
