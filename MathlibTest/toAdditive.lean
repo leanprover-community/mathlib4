@@ -480,3 +480,27 @@ but 'Eq.trans' has type
 #guard_msgs in
 @[to_additive existing Eq.trans]
 lemma one_eq_one''' {α : Type*} [One α] : (1 : α) = 1 := rfl
+
+/-!
+Test that @[to_additive] can reorder arguments of raw kernel projections.
+-/
+open Lean in
+elab "unfold%" e:term : term => do
+  let e ← Elab.Term.elabTerm e none
+  Meta.unfoldDefinition e
+
+@[to_additive]
+def myPow {α β : Type} [i : Pow α β] (a : α) := unfold% i.1 a
+
+/--
+info: def myPow : {α β : Type} → [i : Pow α β] → α → β → α :=
+fun {α β} [i : Pow α β] a => i.1 a
+-/
+#guard_msgs in
+#print myPow
+/--
+info: def myNSMul : {α β : Type} → [i : SMul β α] → α → β → α :=
+fun {α β} [SMul β α] a a_1 => SMul.smul a_1 a
+-/
+#guard_msgs in
+#print myNSMul
