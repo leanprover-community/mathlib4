@@ -5127,6 +5127,7 @@ import Mathlib.RepresentationTheory.GroupCohomology.Functoriality
 import Mathlib.RepresentationTheory.GroupCohomology.Hilbert90
 import Mathlib.RepresentationTheory.GroupCohomology.LowDegree
 import Mathlib.RepresentationTheory.GroupCohomology.Resolution
+import Mathlib.RepresentationTheory.Homological.FiniteCyclic
 import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
 import Mathlib.RepresentationTheory.Homological.GroupCohomology.FiniteCyclic
 import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
@@ -5138,7 +5139,6 @@ import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
 import Mathlib.RepresentationTheory.Homological.GroupHomology.Functoriality
 import Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
 import Mathlib.RepresentationTheory.Homological.GroupHomology.Shapiro
-import Mathlib.RepresentationTheory.Homological.FiniteCyclic
 import Mathlib.RepresentationTheory.Homological.Resolution
 import Mathlib.RepresentationTheory.Induced
 import Mathlib.RepresentationTheory.Invariants

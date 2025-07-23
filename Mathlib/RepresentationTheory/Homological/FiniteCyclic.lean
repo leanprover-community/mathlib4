@@ -5,10 +5,9 @@ Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.Homology.AlternatingConst
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
+import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
+import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.RepresentationTheory.Coinvariants
-import Mathlib.RepresentationTheory.Homological.Resolution
-import Mathlib.RepresentationTheory.Invariants
 
 /-!
 # Projective resolution of `k` as a trivial `k`-linear representation of a finite cyclic group
@@ -75,13 +74,6 @@ lemma coinvariantsKer_leftRegular_eq_ker :
     rw [this]
     exact Submodule.finsuppSum_mem _ _ _ _ fun g _ =>
       Coinvariants.mem_ker_of_eq g (single 1 (x g)) _ (by simp)
-
-lemma mem_invariants_iff (hg : ∀ x, x ∈ Subgroup.zpowers g) (x : V) :
-    x ∈ ρ.invariants ↔ ρ g x = x :=
-  ⟨fun h => h g, fun hx γ => by
-    rcases hg γ with ⟨i, rfl⟩
-    induction i with | zero => simp | succ i _ => simp_all [zpow_add_one] | pred i h => _
-    simpa [neg_sub_comm _ (1 : ℤ), zpow_sub] using congr(ρ g⁻¹ $(h.trans hx.symm))⟩
 
 end Representation.FiniteCyclicGroup
 

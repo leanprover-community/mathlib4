@@ -66,7 +66,7 @@ to the kernel of `ρ(g) - Id(A)`. -/
 noncomputable abbrev groupCohomologyIso₀ (hg : ∀ x, x ∈ Subgroup.zpowers g) :
     groupCohomology A 0 ≅ ModuleCat.of k (LinearMap.ker (applyAsHom A g - 𝟙 A).hom.hom) :=
   groupCohomology.H0Iso A ≪≫ (LinearEquiv.ofEq _ _ <| by ext; simpa [sub_eq_zero]
-    using Representation.FiniteCyclicGroup.mem_invariants_iff A.ρ g hg _).toModuleIso
+    using Representation.mem_invariants_iff_of_forall_mem_zpowers A.ρ g hg _).toModuleIso
 
 variable [DecidableEq G]
 
