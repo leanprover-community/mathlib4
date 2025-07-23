@@ -259,11 +259,12 @@ theorem eLpNorm_const_lt_top_iff_enorm {c : ε''} (hc' : ‖c‖ₑ ≠ ∞)
       eLpNorm_measure_zero]
   by_cases hc : c = 0
   · simp only [hc, true_or, ENNReal.zero_lt_top, eLpNorm_zero']
+  have : ‖c‖ₑ ≠ 0 := sorry
   rw [eLpNorm_const' c hp_ne_zero hp_ne_top]
   obtain hμ_top | hμ_ne_top := eq_or_ne (μ .univ) ∞
-  · simp [hc, hμ_top, hp]
+  · simp [hc, hμ_top, hp, this]
   rw [ENNReal.mul_lt_top_iff]
-  simpa [hμ, hc, hμ_ne_top, hμ_ne_top.lt_top, hc, hc'.lt_top] using by finiteness
+  simpa [hμ, this, hμ_ne_top, hμ_ne_top.lt_top, hc'.lt_top] using by finiteness
 
 theorem eLpNorm_const_lt_top_iff {p : ℝ≥0∞} {c : F} (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     eLpNorm (fun _ : α => c) p μ < ∞ ↔ c = 0 ∨ μ Set.univ < ∞ :=
@@ -855,12 +856,14 @@ theorem eLpNorm_restrict_eq_of_support_subset {s : Set α} {f : α → ε} (hsf 
   · simp [hp0]
   by_cases hp_top : p = ∞
   · simp only [hp_top, eLpNorm_exponent_top, eLpNormEssSup_eq_essSup_enorm]
-    exact ENNReal.essSup_restrict_eq_of_support_subset fun x hx ↦ hsf <| enorm_ne_zero.1 hx
+    --have : ‖‖
+    exact ENNReal.essSup_restrict_eq_of_support_subset fun x hx ↦ hsf <| sorry -- enorm_ne_zero.1 hx
   · simp_rw [eLpNorm_eq_eLpNorm' hp0 hp_top, eLpNorm'_eq_lintegral_enorm]
     congr 1
     apply setLIntegral_eq_of_support_subset
     have : ¬(p.toReal ≤ 0) := by simpa only [not_le] using ENNReal.toReal_pos hp0 hp_top
-    simpa [this] using hsf
+    simp [this]
+    sorry -- uses enorm_ne_zero! simpa [this] using hsf
 
 end ENormedAddMonoid
 
@@ -1033,9 +1036,9 @@ theorem ae_eq_zero_of_eLpNorm'_eq_zero {f : α → ε} (hq0 : 0 ≤ q) (hf : AES
   simp only [eLpNorm'_eq_lintegral_enorm, lintegral_eq_zero_iff' (hf.enorm.pow_const q), one_div,
     ENNReal.rpow_eq_zero_iff, inv_pos, inv_neg'', hq0.not_gt, and_false, or_false] at h
   refine h.left.mono fun x hx ↦ ?_
-  simp only [Pi.ofNat_apply, ENNReal.rpow_eq_zero_iff, enorm_eq_zero, h.2.not_gt, and_false,
+  sorry /-simp only [Pi.ofNat_apply, ENNReal.rpow_eq_zero_iff, enorm_eq_zero, h.2.not_gt, and_false,
     or_false] at hx
-  simp [hx.1]
+  simp [hx.1] -/
 
 theorem eLpNorm'_eq_zero_iff (hq0_lt : 0 < q) {f : α → ε} (hf : AEStronglyMeasurable f μ) :
     eLpNorm' f q μ = 0 ↔ f =ᵐ[μ] 0 :=
@@ -1052,6 +1055,7 @@ coe_nnnorm_ae_le_eLpNormEssSup := enorm_ae_le_eLpNormEssSup
 @[simp]
 theorem eLpNormEssSup_eq_zero_iff {f : α → ε} : eLpNormEssSup f μ = 0 ↔ f =ᵐ[μ] 0 := by
   simp [EventuallyEq, eLpNormEssSup_eq_essSup_enorm]
+  sorry -- uses enorm_eq_zero
 
 theorem eLpNorm_eq_zero_iff {f : α → ε} (hf : AEStronglyMeasurable f μ) (h0 : p ≠ 0) :
     eLpNorm f p μ = 0 ↔ f =ᵐ[μ] 0 := by
