@@ -28,27 +28,28 @@ This file provides embedding of any archimedean groups into reals.
 variable {M : Type*}
 variable [AddCommGroup M] [LinearOrder M] [IsOrderedAddMonoid M] [One M]
 
+theorem mul_smul_one_lt_iff {num : ℤ} {n den : ℕ} (hn : 0 < n) {x : M} :
+    (num * n) • 1 < (n * den : ℤ) • x ↔ num • 1 < den • x := by
+  rw [mul_comm num, mul_smul, mul_smul, natCast_zsmul x den]
+  exact ⟨fun h ↦ lt_of_smul_lt_smul_left h (Int.natCast_nonneg n),
+    fun h ↦ zsmul_lt_zsmul_right (Int.natCast_pos.mpr hn) h⟩
+
 /-- For `u v : ℚ` and `x y : M`, one can informally write
 `u < x → v < y → u + v < x + y`. We formalize this using smul. -/
 theorem num_smul_one_lt_den_smul_add {u v : ℚ} {x y : M}
     (hu : u.num • 1 < u.den • x) (hv : v.num • 1 < v.den • y) :
     (u + v).num • 1 < (u + v).den • (x + y) := by
   have hu' : (u.num * v.den) • 1 < (u.den * v.den : ℤ) • x := by
-    rw [mul_comm u.num, mul_comm (u.den : ℤ), ← smul_smul, ← smul_smul]
-    exact zsmul_lt_zsmul_right (by simpa using v.den_pos) (by simpa using hu)
-  have hv' : (v.num * u.den) • 1 < (u.den * v.den : ℤ) • y := by
-    rw [mul_comm, ← smul_smul, ← smul_smul]
-    exact zsmul_lt_zsmul_right (by simpa using u.den_pos) (by simpa using hv)
+    simpa [mul_comm] using (mul_smul_one_lt_iff v.den_pos).mpr hu
   suffices ((u + v).num * u.den * v.den) • 1 <
       ((u + v).den : ℤ) • (u.den * v.den : ℤ) • (x + y) by
-    rw [mul_assoc, mul_comm, zsmul_comm, ← smul_smul] at this
-    rw [smul_lt_smul_iff_of_pos_left
-      (mul_pos (by simpa using u.den_pos) (by simpa using v.den_pos))] at this
-    simpa using this
+    refine (mul_smul_one_lt_iff (mul_pos u.den_pos v.den_pos)).mp ?_
+    rwa [Nat.cast_mul, ← mul_assoc, mul_comm _ ((u + v).den : ℤ), ← smul_eq_mul ((u + v).den : ℤ),
+      smul_assoc]
   rw [Rat.add_num_den', mul_comm, ← smul_smul]
   rw [smul_lt_smul_iff_of_pos_left (by simpa using (u + v).den_pos)]
   rw [add_smul, smul_add]
-  exact add_lt_add hu' hv'
+  exact add_lt_add hu' ((mul_smul_one_lt_iff u.den_pos).mpr hv)
 
 /-- Given `x` from `M`, one can informally write that, by transitivity,
 `num / den ≤ x → x ≤ n → num / den ≤ n` for `den : ℕ` and `num n : ℕ`.
