@@ -107,9 +107,8 @@ theorem IntegrableOn.of_measure_zero (hs : μ s = 0) : IntegrableOn f s μ := by
 
 @[simp]
 theorem integrableOn_const_iff {C : ε'} (hC : ‖C‖ₑ ≠ ∞ := by finiteness) :
-    IntegrableOn (fun _ ↦ C) s μ ↔ C = 0 ∨ μ s < ∞ := by
-  rw [IntegrableOn, ← enorm_eq_zero, integrable_const_iff_enorm hC, isFiniteMeasure_restrict,
-    lt_top_iff_ne_top]
+    IntegrableOn (fun _ ↦ C) s μ ↔ ‖C‖ₑ = 0 ∨ μ s < ∞ := by
+  rw [IntegrableOn, integrable_const_iff_enorm hC, isFiniteMeasure_restrict, lt_top_iff_ne_top]
 
 theorem integrableOn_const {C : ε'} (hs : μ s ≠ ∞ := by finiteness)
     (hC : ‖C‖ₑ ≠ ∞ := by finiteness) : IntegrableOn (fun _ ↦ C) s μ :=
@@ -191,12 +190,12 @@ theorem integrableOn_union [PseudoMetrizableSpace ε] :
 @[simp]
 theorem integrableOn_singleton_iff {f : α → ε'} {x : α}
     [MeasurableSingletonClass α] (hfx : ‖f x‖ₑ ≠ ⊤ := by finiteness) :
-    IntegrableOn f {x} μ ↔ f x = 0 ∨ μ {x} < ∞ := by
+    IntegrableOn f {x} μ ↔ ‖f x‖ₑ = 0 ∨ μ {x} < ∞ := by
   have : f =ᵐ[μ.restrict {x}] fun _ => f x := by
     filter_upwards [ae_restrict_mem (measurableSet_singleton x)] with _ ha
     simp only [mem_singleton_iff.1 ha]
   rw [IntegrableOn, integrable_congr this, integrable_const_iff_enorm, isFiniteMeasure_restrict,
-    lt_top_iff_ne_top, enorm_eq_zero]
+    lt_top_iff_ne_top]
   exact hfx
 
 theorem integrableOn_singleton {f : α → ε'} {x : α} [MeasurableSingletonClass α]
@@ -332,7 +331,8 @@ theorem IntegrableOn.restrict_toMeasurable {f : α → ε'}
     exact (hf.measure_enorm_ge_lt_top (u_pos n).1 (u_pos n).2.ne).ne
   apply Measure.restrict_toMeasurable_of_cover _ A
   intro x hx
-  have : 0 < ‖f x‖ₑ := by simpa only [enorm_pos] using h's _ hx
+  have : 0 < ‖f x‖ₑ := by
+    sorry -- assumes enorm is a strict norm! simpa only [enorm_pos] using h's _ hx
   obtain ⟨n, hn⟩ : ∃ n, u n < ‖f x‖ₑ := ((tendsto_order.1 u_lim).2 _ this).exists
   exact mem_iUnion.2 ⟨n, subset_toMeasurable _ _ hn.le⟩
 
