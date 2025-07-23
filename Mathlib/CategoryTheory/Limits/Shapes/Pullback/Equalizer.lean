@@ -22,39 +22,36 @@ variable {C : Type u} [Category.{v} C] {X Y : C} (f g : X ⟶ Y)
 
 /-- If `E` is an equalizer of `f g : X ⟶ Y`, then `E` is also the pullback of the diagonal map
 `Y ⟶ Y × Y` along `⟨f, g⟩ : X ⟶ Y × Y`. -/
-lemma isPullback_equalizer_prod'' [HasBinaryProduct Y Y] {E : C} (e : Fork f g)
-    (h : IsLimit e) : IsPullback e.ι (e.ι ≫ f) (prod.lift f g) (diag _) := by
-  let toFork (s : PullbackCone (prod.lift f g) (diag Y)) :=
+lemma isPullback_equalizer_prod' [HasBinaryProduct Y Y] (e : Fork f g) (h : IsLimit e) :
+    IsPullback e.ι (e.ι ≫ f) (prod.lift f g) (diag _) := by
+  let toFork (s : PullbackCone (prod.lift f g) (diag Y)) : Fork f g :=
     Fork.ofι s.fst (prod.lift_eq_diag_of_comp_eq (s.condition))
   refine ⟨⟨by ext <;> simp [e.condition]⟩, ⟨PullbackCone.IsLimit.mk _ ?_ ?_ ?_ ?_⟩⟩
   · exact fun s ↦ h.lift (toFork s)
   · exact fun s ↦ Fork.IsLimit.lift_ι h
   · exact fun s ↦ by calc
-      _ = s.fst ≫ f := by simp
-      _ = s.fst ≫ f ≫ (diag _) ≫ prod.fst := by simp
-      _ = s.fst ≫ (prod.lift f g) ≫ prod.fst := by simp
-      _ = s.snd ≫ (diag Y) ≫ prod.fst := by rw[reassoc_of% s.condition]
-      _ = s.snd := by simp
+      _ = s.fst ≫ (prod.lift f g) ≫ prod.fst := by simp; rfl
+      _ = s.snd := by rw[reassoc_of% s.condition]; simp
   · exact fun _ _ hm _ ↦ Fork.IsLimit.hom_ext h (Eq.symm (Fork.IsLimit.lift_ι h) ▸ hm)
 
-/-- If `E` is an equalizer of `f g : X ⟶ Y`, then `E` is also the pullback of the diagonal map
-`Y ⟶ Y × Y` along `⟨f, g⟩ : X ⟶ Y × Y`. -/
-lemma isPullback_equalizer_prod' [HasBinaryProduct Y Y] {E : C} {e : E ⟶ X} (eq : e ≫ f = e ≫ g)
-    (h : IsLimit (Fork.ofι e eq)) : IsPullback e (e ≫ f) (prod.lift f g) (diag _) := by
-  let toFork (s : PullbackCone (prod.lift f g) (diag Y)) :=
-    Fork.ofι s.fst (prod.lift_eq_diag_of_comp_eq (s.condition))
-  refine ⟨⟨by ext <;> simp [eq]⟩, ⟨PullbackCone.IsLimit.mk _ ?_ ?_ ?_ ?_⟩⟩
-  · exact fun s ↦ h.lift (toFork s)
-  · exact fun s ↦ Fork.IsLimit.lift_ι h
-  · exact fun s ↦ by calc
-    _ = (Fork.ι (toFork s)) ≫ f := by simpa using congr($(Fork.IsLimit.lift_ι h) ≫ f)
-    _ = s.snd := by simpa using congr($s.condition ≫ prod.fst)
-  · exact fun _ _ hm _ ↦ Fork.IsLimit.hom_ext h (Eq.symm (Fork.IsLimit.lift_ι h) ▸ hm)
+-- /-- If `E` is an equalizer of `f g : X ⟶ Y`, then `E` is also the pullback of the diagonal map
+-- `Y ⟶ Y × Y` along `⟨f, g⟩ : X ⟶ Y × Y`. -/
+-- lemma isPullback_equalizer_prod'' [HasBinaryProduct Y Y] {E : C} {e : E ⟶ X} (eq : e ≫ f = e ≫ g)
+--     (h : IsLimit (Fork.ofι e eq)) : IsPullback e (e ≫ f) (prod.lift f g) (diag _) := by
+--   let toFork (s : PullbackCone (prod.lift f g) (diag Y)) :=
+--     Fork.ofι s.fst (prod.lift_eq_diag_of_comp_eq (s.condition))
+--   refine ⟨⟨by ext <;> simp [eq]⟩, ⟨PullbackCone.IsLimit.mk _ ?_ ?_ ?_ ?_⟩⟩
+--   · exact fun s ↦ h.lift (toFork s)
+--   · exact fun s ↦ Fork.IsLimit.lift_ι h
+--   · exact fun s ↦ by calc
+--     _ = (Fork.ι (toFork s)) ≫ f := by simpa using congr($(Fork.IsLimit.lift_ι h) ≫ f)
+--     _ = s.snd := by simpa using congr($s.condition ≫ prod.fst)
+--   · exact fun _ _ hm _ ↦ Fork.IsLimit.hom_ext h (Eq.symm (Fork.IsLimit.lift_ι h) ▸ hm)
 
 /-- The equalizer of `f g : X ⟶ Y` is the pullback of the diagonal map `Y ⟶ Y × Y`
 along the map `⟨f, g⟩ : X ⟶ Y × Y`. -/
 lemma isPullback_equalizer_prod [HasEqualizer f g] [HasBinaryProduct Y Y] :
     IsPullback (equalizer.ι f g) (equalizer.ι f g ≫ f) (prod.lift f g) (diag _) :=
-  isPullback_equalizer_prod' f g (equalizer.condition f g) (equalizerIsEqualizer f g)
+  isPullback_equalizer_prod' f g (equalizer.fork f g) (equalizerIsEqualizer' f g)
 
 end CategoryTheory.Limits

@@ -669,6 +669,11 @@ theorem prod.lift_fst_snd {X Y : C} [HasBinaryProduct X Y] :
 lemma prod.lift_comp_fst_snd {X Y Z : C} [HasBinaryProduct Y Z] (f : X ⟶ Y ⨯ Z) :
     prod.lift (f ≫ prod.fst) (f ≫ prod.snd) = f := by ext <;> simp
 
+@[simp]
+lemma prod.lift_comp_fst_snd_map {W X Y Z : C} [HasBinaryProduct W X] [HasBinaryProduct Y Z]
+    (f : W ⟶ Y) (g : X ⟶ Z) :
+  prod.lift (prod.fst ≫ f) (prod.snd ≫ g) = prod.map f g := by ext <;> simp
+
 @[reassoc (attr := simp)]
 theorem prod.lift_map {V W X Y Z : C} [HasBinaryProduct W X] [HasBinaryProduct Y Z] (f : V ⟶ W)
     (g : V ⟶ X) (h : W ⟶ Y) (k : X ⟶ Z) :
