@@ -343,7 +343,7 @@ theorem orderOf_submonoid {H : Submonoid G} (y : H) : orderOf (y : G) = orderOf 
 
 @[to_additive]
 theorem orderOf_units {y : Gˣ} : orderOf (y : G) = orderOf y :=
-  orderOf_injective (Units.coeHom G) Units.ext y
+  orderOf_injective (Units.coeHom G) Units.val_injective y
 
 /-- If the order of `x` is finite, then `x` is a unit with inverse `x ^ (orderOf x - 1)`. -/
 @[to_additive (attr := simps) "If the additive order of `x` is finite, then `x` is an additive
@@ -409,7 +409,7 @@ theorem orderOf_mul_dvd_lcm (h : Commute x y) :
   exact Function.Commute.minimalPeriod_of_comp_dvd_lcm h.function_commute_mul_left
 
 @[to_additive]
-theorem orderOf_dvd_lcm_mul (h : Commute x y):
+theorem orderOf_dvd_lcm_mul (h : Commute x y) :
     orderOf y ∣ Nat.lcm (orderOf x) (orderOf (x * y)) := by
   by_cases h0 : orderOf x = 0
   · rw [h0, lcm_zero_left]
@@ -422,7 +422,7 @@ theorem orderOf_dvd_lcm_mul (h : Commute x y):
       (lcm_dvd_iff.2 ⟨(orderOf_pow_dvd _).trans (dvd_lcm_left _ _), dvd_lcm_right _ _⟩)
 
 @[to_additive addOrderOf_add_dvd_mul_addOrderOf]
-theorem orderOf_mul_dvd_mul_orderOf (h : Commute x y):
+theorem orderOf_mul_dvd_mul_orderOf (h : Commute x y) :
     orderOf (x * y) ∣ orderOf x * orderOf y :=
   dvd_trans h.orderOf_mul_dvd_lcm (lcm_dvd_mul _ _)
 
@@ -840,6 +840,18 @@ theorem injective_zpow_iff_not_isOfFinOrder : (Injective fun n : ℤ => x ^ n) �
     exact Nat.cast_ne_zero.2 hn.ne' (h <| by simpa using hx)
   rwa [zpow_eq_zpow_iff_modEq, orderOf_eq_zero_iff.2 h, Nat.cast_zero, Int.modEq_zero_iff] at hnm
 
+@[to_additive]
+lemma Subgroup.zpowers_eq_zpowers_iff {x y : G} (hx : ¬IsOfFinOrder x) :
+    zpowers x = zpowers y ↔ x = y ∨ x⁻¹ = y := by
+  refine ⟨fun h ↦ ?_, by rintro (rfl|rfl) <;> simp⟩
+  have hx_mem : x ∈ zpowers y := by simp [← h]
+  have hy_mem : y ∈ zpowers x := by simp [h]
+  obtain ⟨k, rfl⟩ := mem_zpowers_iff.mp hy_mem
+  obtain ⟨l, hl⟩ := mem_zpowers_iff.mp hx_mem
+  rw [← zpow_mul] at hl
+  nth_rewrite 2 [← zpow_one x] at hl
+  have h1 := (injective_zpow_iff_not_isOfFinOrder.mpr hx) hl
+  rcases (Int.mul_eq_one_iff_eq_one_or_neg_one).mp h1 with (h | h) <;> simp [h.1]
 section Finite
 variable [Finite G]
 
