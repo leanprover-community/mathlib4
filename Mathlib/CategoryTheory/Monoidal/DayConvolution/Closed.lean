@@ -71,7 +71,7 @@ structure DayConvolutionInternalHom (F : C ⥤ V) (G : C ⥤ V) (H : C ⥤ V) wh
     π c j ≫ (MonoidalClosed.pre <| F.map f).app (G.obj <| j ⊗ c)
   /-- The wedge defined by `π` and `hπ` is a limit wedge, i.e `H.obj c` is
   an end of `internalHomDiagramFunctor F G|>.obj c`. -/
-  isLimitWedge c :
+  isLimitWedge (c : C) :
     IsLimit <| Wedge.mk
       (F := dayConvolutionInternalHomDiagramFunctor F|>.obj G|>.obj c)
       (H.obj c) (π c) (hπ c)
