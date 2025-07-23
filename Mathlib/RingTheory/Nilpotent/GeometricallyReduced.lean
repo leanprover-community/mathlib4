@@ -32,8 +32,10 @@ variable (k : Type) (A : Type) [Field k] [CommRing A] [Algebra k A]
 variable (B : Type) [CommRing B] [Algebra k B]
 
 
--- Definition of the baseChange of an algebra morphism
-def baseChange (f : A →ₐ[k] B) (K : Type) [CommRing K] [Algebra k K] :=
+/-- Given a morphism f : A →ₐ[k] B of k-algebras and a k-algebra K, the basechange of f by the
+identity map K → K -/
+def baseChange (f : A →ₐ[k] B) (K : Type) [CommRing K] [Algebra k K] :
+    TensorProduct k K A →ₐ[K] TensorProduct k K B :=
     Algebra.TensorProduct.map (AlgHom.id K K) f
 
 
@@ -44,9 +46,9 @@ lemma baseChange_by_field_inj (f : A →ₐ[k] B) (h : Function.Injective f) (K 
   exact h
 
 
+/-- The k-algebra A is geometrically reduced iff its basechange to AlgebraicClosure k is reduced -/
 @[mk_iff]
 class IsGeometricallyReduced : Prop where
-  -- The k-algebra A is geometrically reduced iff its basechange to AlgebraicClosure k is reduced
   baseChangeReduced : IsReduced (TensorProduct k (AlgebraicClosure k) A)
 
 theorem IsGeometricallyReduced_imp_baseChange_by_closure_Reduced (h : IsGeometricallyReduced k A) :
@@ -81,7 +83,8 @@ lemma notReduced_has_nilpotent {R : Type} [Zero R] [Pow R ℕ] (h : ¬IsReduced 
   obtain ⟨x, ⟨hNil, hx⟩⟩ := h
   tauto
 
--- The basechange of a subalgebra gives a subalgebra
+/-- Given a subalgebra C of a k-algebra A, and a k-algebra B, the basechange of C to a subalgebra
+of A ⊗[k] B -/
 def subAlgebraBaseChange (C : Subalgebra k A) : Subalgebra B (TensorProduct k B A) :=
   AlgHom.range (baseChange k C A C.val B)
 
