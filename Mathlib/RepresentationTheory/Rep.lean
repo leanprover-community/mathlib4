@@ -154,6 +154,7 @@ lemma applyAsHom_comm {A B : Rep k G} (f : A ⟶ B) (g : G) :
   simp [hom_comm_apply]
 
 end Commutative
+
 section
 
 variable {G : Type u} [Group G] (A : Rep k G) (S : Subgroup G)
@@ -697,6 +698,7 @@ def normNatTrans : 𝟭 (Rep k G) ⟶ 𝟭 (Rep k G) where
   naturality _ _ := norm_comm
 
 end
+
 section MonoidalClosed
 open MonoidalCategory Action
 

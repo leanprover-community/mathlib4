@@ -271,7 +271,6 @@ instance : IsScalarTower k (MonoidAlgebra k G) ρ.asModule where
       aesop
 
 end MonoidAlgebra
-section
 
 section Norm
 
