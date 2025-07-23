@@ -403,6 +403,9 @@ instance (F : V ⥤ W) (G : Type*) [Monoid G] [F.Faithful] : (F.mapAction G).Fai
     apply_fun (fun f ↦ f.hom) at eq
     exact F.map_injective eq
 
+/--
+A fully faithful functor between categories induces a fully faithful functor between
+the categories of `G`-actions within those categories. -/
 def FullyFaithful.mapAction {F : V ⥤ W} (h : F.FullyFaithful) (G : Type*) [Monoid G] :
     (F.mapAction G).FullyFaithful where
   preimage f := by
