@@ -145,7 +145,7 @@ corresponding to the component at `G` of the "evaluation" natural morphism
 `F ⊛ [F, _] ⟶ 𝟭`. -/
 def ev_app : F ⊛ H ⟶ G :=
   DayConvolution.corepresentableBy F H|>.homEquiv.symm <|
-    { app := fun x => MonoidalClosed.uncurry <| ℌ.π x.2 x.1
+    { app x := MonoidalClosed.uncurry <| ℌ.π x.2 x.1
       naturality {x y} f := by
         have := congrArg (fun t ↦ F.obj x.1 ◁ t) <| ℌ.hπ x.2 f.1
         dsimp at this ⊢
