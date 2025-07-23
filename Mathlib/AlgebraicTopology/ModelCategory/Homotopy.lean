@@ -146,7 +146,6 @@ lemma weakEquivalence_iff {f₀ f₁ : X ⟶ Y} (h : P.RightHomotopy f₀ f₁) 
   rw [← h.h₁]
   infer_instance
 
-
 lemma homotopy_extension {A B : C} {f₀ f₁ : A ⟶ Y}
     [IsFibrant Y] [P.IsGood]
     (h : P.RightHomotopy f₀ f₁) (i : A ⟶ B) [Cofibration i]
