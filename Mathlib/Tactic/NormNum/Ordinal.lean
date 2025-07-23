@@ -19,8 +19,8 @@ We also define extensions for subtraction, multiplication, modulo, and power in 
 namespace Mathlib.Meta.NormNum
 open Lean Lean.Meta Qq Ordinal
 
-/- The `guard_msgs` in this file are for checking whether the current default extensions have been updated and
-the extensions in this file are no longer needed. -/
+/- The `guard_msgs` in this file are for checking whether the current default extensions have been
+updated and the extensions in this file are no longer needed. -/
 
 /-- info: 12 * 5 -/
 #guard_msgs in
