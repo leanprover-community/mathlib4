@@ -33,6 +33,12 @@ open CategoryTheory Rep Finsupp Representation
 variable {k G H : Type u} [CommRing k] [Group G] [Group H]
   {A : Rep k G} {B : Rep k H} (f : G →* H) (φ : A ⟶ (Action.res _ f).obj B) (n : ℕ)
 
+theorem congr {f₁ f₂ : G →* H} (h : f₁ = f₂) {φ : A ⟶ (Action.res _ f₁).obj B} {T : Type*}
+    (F : (f : G →* H) → (φ : A ⟶ (Action.res _ f).obj B) → T) :
+    F f₁ φ = F f₂ (h ▸ φ) := by
+  subst h
+  rfl
+
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the chain map sending `∑ aᵢ·gᵢ : Gⁿ →₀ A` to `∑ φ(aᵢ)·(f ∘ gᵢ) : Hⁿ →₀ B`. -/
 @[simps! -isSimp f f_hom]
@@ -399,7 +405,8 @@ lemma H2π_comp_map :
 
 end H2
 
-variable (k G) in
+variable (k G)
+
 /-- The functor sending a representation to its complex of inhomogeneous chains. -/
 @[simps]
 noncomputable def chainsFunctor :
@@ -411,7 +418,6 @@ noncomputable def chainsFunctor :
 
 instance : (chainsFunctor k G).PreservesZeroMorphisms where
 
-variable (k G) in
 /-- The functor sending a `G`-representation `A` to `Hₙ(G, A)`. -/
 @[simps]
 noncomputable def functor (n : ℕ) : Rep k G ⥤ ModuleCat k where
@@ -424,5 +430,30 @@ noncomputable def functor (n : ℕ) : Rep k G ⥤ ModuleCat k where
 
 instance (n : ℕ) : (functor k G n).PreservesZeroMorphisms where
   map_zero _ _ := by simp [map]
+
+variable {G}
+
+/-- Given a group homomorphism `f : G →* H`, this is a natural transformation between the functors
+sending `A : Rep k H` to `Hₙ(G, Res(f)(A)) ⟶ Hₙ(H, A)`. -/
+@[simps]
+noncomputable def coresNatTrans (n : ℕ) :
+    Action.res (ModuleCat k) f ⋙ functor k G n ⟶ functor k H n where
+  app X := map f (𝟙 _) n
+  naturality {X Y} φ := by simp [← cancel_epi (groupHomology.π _ n),
+    ← HomologicalComplex.cyclesMap_comp_assoc, ← chainsMap_comp, congr (MonoidHom.id_comp _)
+    chainsMap, congr (MonoidHom.comp_id _) chainsMap, Category.id_comp
+    (X := (Action.res _ _).obj _)]
+
+/-- Given a normal subgroup `S ≤ G`, this is a natural transformation between the functors
+sending `A : Rep k G` to `Hₙ(G, A)` and to `Hₙ(G ⧸ S, A_S)`. -/
+@[simps]
+noncomputable def coinfNatTrans (S : Subgroup G) [S.Normal] (n : ℕ) :
+    functor k G n ⟶ quotientToCoinvariantsFunctor k S ⋙ functor k (G ⧸ S) n where
+  app A := map (QuotientGroup.mk' S) (mkQ _ _ <| Coinvariants.le_comap_ker A.ρ S) n
+  naturality {X Y} φ := by
+    simp only [Functor.comp_map, functor_map, ← cancel_epi (groupHomology.π _ n),
+      HomologicalComplex.homologyπ_naturality_assoc, HomologicalComplex.homologyπ_naturality,
+      ← HomologicalComplex.cyclesMap_comp_assoc, ← chainsMap_comp]
+    congr 1
 
 end groupHomology
