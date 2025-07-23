@@ -1,11 +1,12 @@
 /-
 Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Markus Himmel
+Authors: Markus Himmel, Joël Riou
 -/
 import Mathlib.Algebra.Category.ModuleCat.Injective
 import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Connected
 import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Coseparator
+import Mathlib.CategoryTheory.Abelian.SerreClass.Bousfield
 import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
 import Mathlib.CategoryTheory.Preadditive.LiftToFinset
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
@@ -19,23 +20,29 @@ We prove the following Gabriel-Popescu theorem: if `C` is a Grothendieck abelian
 
 We closely follow the elementary proof given by Barry Mitchell.
 
+The Gabriel-Popescu theorem can also be stated by saying that if `C` is a Grothendieck
+abelian category, then `C` identifies to a localization of a category of modules
+with respect a Serre class: we introduce a structure `GabrielPopescuPackage C`
+which contains the necessary data and properties and show that `GabrielPopescuPackage C`
+is nonempty.
+
 ## Future work
 
 The left adjoint `tensorObj G` actually exists as soon as `C` is cocomplete and additive, so the
 construction could be generalized.
-
-The theorem as stated here implies that `C` is a Serre quotient of `ModuleCat (End R)ᵐᵒᵖ`.
 
 ## References
 
 * [Barry Mitchell, *A quick proof of the Gabriel-Popesco theorem*][mitchell1981]
 -/
 
-universe v u
+universe w v v' u u'
 
 open CategoryTheory Limits Abelian
 
 namespace CategoryTheory.IsGrothendieckAbelian
+
+section
 
 variable {C : Type u} [Category.{v} C] [Abelian C] [IsGrothendieckAbelian.{v} C]
 
@@ -146,5 +153,105 @@ theorem GabrielPopescu.preservesFiniteLimits (G : C) (hG : IsSeparator G) :
   have : (tensorObj G).PreservesHomology :=
     (tensorObj G).preservesHomology_of_preservesMonos_and_cokernels
   exact (tensorObj G).preservesFiniteLimits_of_preservesHomology
+
+lemma GabrielPopescu.tensorObj_isLocalization (G : C) (hG : IsSeparator G) :
+    letI := preservesFiniteLimits G hG
+    (tensorObj G).IsLocalization ((tensorObj G).kernel.isoModSerre) := by
+  letI := preservesFiniteLimits G hG
+  have := full G hG
+  have := (isSeparator_iff_faithful_preadditiveCoyonedaObj G).1 hG
+  exact isLocalization_isoModSerre_kernel_of_leftAdjoint
+    (tensorObjPreadditiveCoyonedaObjAdjunction G)
+
+end
+
+section
+
+variable (C : Type u) [Category.{v} C]
+
+/-- A Gabriel-Popescu package for an abelian category `C` consists in
+the data of a Serre class `P` in a category of modules such
+that `C` identifies to the localization of `ModuleCat R` with
+respect to `P`, in such a way that the (exact) localization functor has
+a fully faithful right adjunction. -/
+structure GabrielPopescuPackage [Abelian C] where
+  /-- the underlying type of a ring -/
+  R : Type w
+  /-- `R` is a ring -/
+  ring : Ring R := by infer_instance
+  /-- a Serre class in the category of modules over `R`. -/
+  P : ObjectProperty (ModuleCat.{w} R)
+  isSerreClass : P.IsSerreClass := by infer_instance
+  /-- the localization functor -/
+  L : ModuleCat.{w} R ⥤ C
+  /-- the right adjoint of the localization functor -/
+  F : C ⥤ ModuleCat.{w} R
+  /-- the adjunction -/
+  adj : L ⊣ F
+  full : F.Full := by infer_instance
+  faithful : F.Faithful := by infer_instance
+  /-- the localization functor preserves finite limits (TODO: prove
+  that it automatically follows from the `isLocalization` field.) -/
+  preservesFiniteLimits : PreservesFiniteLimits L := by infer_instance
+  isLocalization : L.IsLocalization P.isoModSerre := by infer_instance
+
+
+variable [Abelian C]
+
+namespace GabrielPopescuPackage
+
+attribute [instance] ring isSerreClass full faithful preservesFiniteLimits isLocalization
+
+variable {C} (p : GabrielPopescuPackage.{w} C)
+
+instance isRightAdjoint : p.F.IsRightAdjoint := ⟨_, ⟨p.adj⟩⟩
+
+instance isLeftAdjoint : p.L.IsLeftAdjoint := ⟨_, ⟨p.adj⟩⟩
+
+instance : p.L.Additive := Functor.additive_of_preserves_binary_products _
+
+instance : p.F.Additive := Functor.additive_of_preserves_binary_products _
+
+instance reflective : Reflective p.F where
+  adj := p.adj
+
+/-- A Gabriel-Popescu can be transported from a category to an equivalent category. -/
+def ofEquivalence {D : Type u'} [Category.{v'} D] [Abelian D] (e : C ≌ D) :
+    GabrielPopescuPackage.{w} D where
+  R := p.R
+  P := p.P
+  L := p.L ⋙ e.functor
+  F := e.inverse ⋙ p.F
+  adj := p.adj.comp e.toAdjunction
+
+end GabrielPopescuPackage
+
+variable {C} in
+/-- The Gabriel-Popescu package obtained from a generator of a Grothendieck abelian category. -/
+noncomputable def GabrielPopescu.package
+    [IsGrothendieckAbelian.{v} C] (G : C) (hG : IsSeparator G) :
+    GabrielPopescuPackage.{v} C := by
+  have := preservesFiniteLimits G hG
+  have := full G hG
+  have := (isSeparator_iff_faithful_preadditiveCoyonedaObj G).1 hG
+  exact {
+    R := (End G)ᵐᵒᵖ
+    P := (tensorObj G).kernel
+    L := tensorObj G
+    F := preadditiveCoyonedaObj G
+    adj := tensorObjPreadditiveCoyonedaObjAdjunction G
+    isLocalization := tensorObj_isLocalization G hG }
+
+instance [IsGrothendieckAbelian.{w} C] :
+    Nonempty (GabrielPopescuPackage.{w} C) :=
+  ⟨GabrielPopescuPackage.ofEquivalence.{w}
+    (GabrielPopescu.package.{w} _ (isSeparator_separator _)) (ShrinkHoms.equivalence C).symm⟩
+
+/-- A choice of a Gabriel-Popescu package for any Grothendieck abelian category. -/
+noncomputable def gabrielPopescuPackage [IsGrothendieckAbelian.{w} C] :
+    GabrielPopescuPackage.{w} C :=
+  Classical.arbitrary _
+
+end
 
 end CategoryTheory.IsGrothendieckAbelian
