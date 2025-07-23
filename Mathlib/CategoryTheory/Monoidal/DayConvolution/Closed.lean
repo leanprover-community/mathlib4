@@ -135,7 +135,7 @@ lemma map_app_comp_π (ℌ : DayConvolutionInternalHom F G H)
 @[simp]
 lemma map_id (ℌ : DayConvolutionInternalHom F G H) : ℌ.map (𝟙 _) ℌ = 𝟙 _ := by
   ext
-  apply Limits.Wedge.IsLimit.hom_ext (ℌ.isLimitWedge _)
+  apply Wedge.IsLimit.hom_ext (ℌ.isLimitWedge _)
   aesop_cat
 
 lemma map_comp (ℌ : DayConvolutionInternalHom F G H)
@@ -145,7 +145,7 @@ lemma map_comp (ℌ : DayConvolutionInternalHom F G H)
     (g : G' ⟶ G'') (ℌ'' : DayConvolutionInternalHom F G'' H'') :
     ℌ.map (f ≫ g) ℌ'' = ℌ.map f ℌ' ≫ ℌ'.map g ℌ'' := by
   ext
-  apply Limits.Wedge.IsLimit.hom_ext (ℌ''.isLimitWedge _)
+  apply Wedge.IsLimit.hom_ext (ℌ''.isLimitWedge _)
   aesop_cat
 
 /-- transport a `DayConvolutionInternalHom F G H` along a natural isomorphism. -/
@@ -154,9 +154,9 @@ def transport (ℌ : DayConvolutionInternalHom F G H) {H' : C ⥤ V} (e : H' ≅
   π c j := e.hom.app c ≫ ℌ.π c j
   hπ c i j f := by simp [hπ]
   isLimitWedge c := by
-    apply Limits.IsLimit.equivOfNatIsoOfIso (.refl _) _ _ _ (ℌ.isLimitWedge _)
-    exact Limits.Wedge.ext (e.symm.app c) (fun j ↦ by
-      simp [Limits.Cones.postcompose, Limits.Multifork.ι])
+    apply IsLimit.equivOfNatIsoOfIso (.refl _) _ _ _ (ℌ.isLimitWedge _)
+    exact Wedge.ext (e.symm.app c) (fun j ↦ by
+      simp [Cones.postcompose, Limits.Multifork.ι])
   map_comp_π f j := by simp
 
 section
@@ -167,26 +167,26 @@ variable (F G)
 functor `C ⥤ V` that is an internal hom of `F` and `G`. -/
 @[simps]
 noncomputable def ihomOfHasEnds
-    [∀ c : C, Limits.HasEnd <|
+    [∀ c : C, HasEnd <|
       dayConvolutionInternalHomDiagramFunctor F |>.obj G |>.obj c] :
     C ⥤ V where
-  obj c := Limits.end_ <|
+  obj c := end_ <|
     dayConvolutionInternalHomDiagramFunctor F |>.obj G |>.obj c
-  map f := Limits.end_.map <|
+  map f := end_.map <|
     dayConvolutionInternalHomDiagramFunctor F |>.obj G |>.map f
 
 /-- If the relevant ends exist, the functor `ihomOfHasEnds F G` is indeed
 an internal hom for Day convolution. -/
 @[simps]
 noncomputable def dayConvolutionInternalHomOfHasEnds
-    [∀ c : C, Limits.HasEnd <|
+    [∀ c : C, HasEnd <|
       dayConvolutionInternalHomDiagramFunctor F |>.obj G |>.obj c] :
     DayConvolutionInternalHom F G (ihomOfHasEnds F G) where
-  π c j := Limits.end_.π _ _
-  hπ c _ _ φ := Limits.end_.condition _ φ
+  π c j := end_.π _ _
+  hπ c _ _ φ := end_.condition _ φ
   isLimitWedge c :=
-    Limits.IsLimit.ofIsoLimit (Limits.limit.isLimit _) <|
-      Limits.Wedge.ext
+    IsLimit.ofIsoLimit (limit.isLimit _) <|
+      Wedge.ext
         (Iso.refl _)
         (fun j ↦ by dsimp; rw [Category.id_comp]; rfl)
   map_comp_π {c c'} f j := by simp
@@ -378,7 +378,7 @@ section ofHasEnds
 variable (D : Type u₃) [Category.{v₃} D] [MonoidalCategoryStruct D]
   [LawfulDayConvolutionMonoidalCategoryStruct C V D]
   [∀ (d d' : D) (c : C),
-    Limits.HasEnd <|
+    HasEnd <|
       dayConvolutionInternalHomDiagramFunctor (ι C V D |>.obj d) |>.obj
         (ι C V D |>.obj d') |>.obj c]
 
@@ -388,10 +388,10 @@ exist. This is an auxiliary construction to construct internal homs in
 `D`. -/
 @[simps]
 noncomputable def ihom' (d d' : D) : (C ⥤ V) where
-  obj c := Limits.end_ <|
+  obj c := end_ <|
     dayConvolutionInternalHomDiagramFunctor (ι C V D|>.obj d) |>.obj
       (ι C V D|>.obj d') |>.obj c
-  map {c c'} f := Limits.end_.map <|
+  map {c c'} f := end_.map <|
     dayConvolutionInternalHomDiagramFunctor (ι C V D|>.obj d) |>.obj
       (ι C V D|>.obj d') |>.map f
 
