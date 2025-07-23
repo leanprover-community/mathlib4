@@ -817,8 +817,8 @@ theorem Module.annihilator_finsupp {ι : Type*} [Nonempty ι] :
     annihilator R (ι →₀ M) = annihilator R M := by
   ext r; simp_rw [mem_annihilator]
   constructor <;> intro h
-  · let i := Classical.arbitrary ι
-    classical simpa using fun m ↦ DFunLike.congr_fun (h (Finsupp.single i m)) i
+  · refine Nonempty.elim ‹_› fun i : ι ↦ ?_
+    simpa using fun m ↦ congr($(h (Finsupp.single i m)) i)
   · intro m; ext i; exact h _
 
 section
