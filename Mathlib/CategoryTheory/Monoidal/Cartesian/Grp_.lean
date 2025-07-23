@@ -14,6 +14,8 @@ by constructing the yoneda embedding `Grp_ C ⥤ Cᵒᵖ ⥤ Grp.{v}` and
 showing that it is fully faithful and its (essential) image is the representable functors.
 -/
 
+assert_not_exists Field
+
 open CategoryTheory MonoidalCategory Limits Opposite CartesianMonoidalCategory Mon_Class
 
 universe w v u

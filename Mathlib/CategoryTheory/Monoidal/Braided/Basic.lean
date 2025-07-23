@@ -200,28 +200,33 @@ theorem hexagon_reverse_inv (X Y Z : C) :
 
 end BraidedCategory
 
+-- FIXME: `reassoc_of%` should unfold `autoParam`.
 /--
 Verifying the axioms for a braiding by checking that the candidate braiding is sent to a braiding
 by a faithful monoidal functor.
 -/
-def braidedCategoryOfFaithful {C D : Type*} [Category C] [Category D] [MonoidalCategory C]
+def BraidedCategory.ofFaithful {C D : Type*} [Category C] [Category D] [MonoidalCategory C]
     [MonoidalCategory D] (F : C ⥤ D) [F.Monoidal] [F.Faithful] [BraidedCategory D]
     (β : ∀ X Y : C, X ⊗ Y ≅ Y ⊗ X)
-    (w : ∀ X Y, μ F _ _ ≫ F.map (β X Y).hom = (β_ _ _).hom ≫ μ F _ _) : BraidedCategory C where
+    (w : ∀ X Y, μ F _ _ ≫ F.map (β X Y).hom = (β_ _ _).hom ≫ μ F _ _ := by aesop_cat) :
+    BraidedCategory C where
   braiding := β
   braiding_naturality_left := by
+    unfold autoParam at w
     intros
     apply F.map_injective
     refine (cancel_epi (μ F ?_ ?_)).1 ?_
     rw [Functor.map_comp, ← μ_natural_left_assoc, w, Functor.map_comp,
       reassoc_of% w, braiding_naturality_left_assoc, μ_natural_right]
   braiding_naturality_right := by
+    unfold autoParam at w
     intros
     apply F.map_injective
     refine (cancel_epi (μ F ?_ ?_)).1 ?_
     rw [Functor.map_comp, ← μ_natural_right_assoc, w, Functor.map_comp,
       reassoc_of% w, braiding_naturality_right_assoc, μ_natural_left]
   hexagon_forward := by
+    unfold autoParam at w
     intros
     apply F.map_injective
     refine (cancel_epi (μ F _ _)).1 ?_
@@ -234,6 +239,7 @@ def braidedCategoryOfFaithful {C D : Type*} [Category C] [Category D] [MonoidalC
       reassoc_of% w, braiding_naturality_right_assoc,
       Functor.LaxMonoidal.associativity, hexagon_forward_assoc]
   hexagon_reverse := by
+    unfold autoParam at w
     intros
     apply F.map_injective
     refine (cancel_epi (μ F _ _)).1 ?_
@@ -245,14 +251,16 @@ def braidedCategoryOfFaithful {C D : Type*} [Category C] [Category D] [MonoidalC
       ← comp_whiskerRight_assoc, w, comp_whiskerRight_assoc, reassoc_of% w,
       braiding_naturality_left_assoc, Functor.LaxMonoidal.associativity_inv, hexagon_reverse_assoc]
 
+@[deprecated (since := "2025-07-12")] alias braidedCategoryOfFaithful := BraidedCategory.ofFaithful
+
 /-- Pull back a braiding along a fully faithful monoidal functor. -/
-noncomputable def braidedCategoryOfFullyFaithful {C D : Type*} [Category C] [Category D]
+noncomputable def BraidedCategory.ofFullyFaithful {C D : Type*} [Category C] [Category D]
     [MonoidalCategory C] [MonoidalCategory D] (F : C ⥤ D) [F.Monoidal] [F.Full]
     [F.Faithful] [BraidedCategory D] : BraidedCategory C :=
-  braidedCategoryOfFaithful F
-    (fun X Y => F.preimageIso
-      ((μIso F _ _).symm ≪≫ β_ (F.obj X) (F.obj Y) ≪≫ (μIso F _ _)))
-    (by simp)
+  .ofFaithful F fun X Y ↦ F.preimageIso ((μIso F _ _).symm ≪≫ β_ (F.obj X) (F.obj Y) ≪≫ μIso F _ _)
+
+@[deprecated (since := "2025-07-12")]
+alias braidedCategoryOfFullyFaithful := BraidedCategory.ofFullyFaithful
 
 section
 
@@ -714,6 +722,28 @@ theorem associator_monoidal (X₁ X₂ X₃ Y₁ Y₂ Y₃ : C) :
         (β_ X₂ Y₁).hom ▷ (Y₂ ⊗ X₃)) ▷ Y₃ ⊗≫ 𝟙 _ := by
           rw [braiding_tensor_right_hom]; monoidal
     _ = _ := by rw [whisker_exchange, braiding_tensor_left_hom]; monoidal
+
+@[reassoc]
+lemma tensorμ_comp_μ_tensorHom_μ_comp_μ (F : C ⥤ D) [F.LaxBraided] (W X Y Z : C) :
+    tensorμ (F.obj W) (F.obj X) (F.obj Y) (F.obj Z) ≫
+      (μ F W Y ⊗ₘ μ F X Z) ≫ μ F (W ⊗ Y) (X ⊗ Z) =
+      (μ F W X ⊗ₘ μ F Y Z) ≫ μ F (W ⊗ X) (Y ⊗ Z) ≫ F.map (tensorμ W X Y Z) := by
+  rw [tensorHom_def]
+  simp only [tensorμ, Category.assoc]
+  rw [whiskerLeft_μ_comp_μ,
+    associator_inv_naturality_left_assoc, ← pentagon_inv_assoc,
+    ← comp_whiskerRight_assoc, ← comp_whiskerRight_assoc, Category.assoc, μ_whiskerRight_comp_μ,
+    whiskerLeft_hom_inv_assoc, Iso.inv_hom_id_assoc, comp_whiskerRight_assoc,
+    comp_whiskerRight_assoc, μ_natural_left_assoc, associator_inv_naturality_middle_assoc,
+    ← comp_whiskerRight_assoc, ← comp_whiskerRight_assoc, ← MonoidalCategory.whiskerLeft_comp,
+    ← Functor.LaxBraided.braided,
+    MonoidalCategory.whiskerLeft_comp_assoc, μ_natural_right, whiskerLeft_μ_comp_μ_assoc,
+    comp_whiskerRight_assoc, comp_whiskerRight_assoc, comp_whiskerRight_assoc,
+    comp_whiskerRight_assoc, pentagon_inv_assoc, μ_natural_left_assoc, μ_natural_left_assoc,
+    Iso.hom_inv_id_assoc, ← associator_inv_naturality_left_assoc, μ_whiskerRight_comp_μ_assoc,
+    Iso.inv_hom_id_assoc, ← tensorHom_def_assoc]
+  simp only [← Functor.map_comp, whisker_assoc, Category.assoc, pentagon_inv_inv_hom_hom_inv,
+    pentagon_inv_hom_hom_hom_inv_assoc]
 
 end Tensor
 

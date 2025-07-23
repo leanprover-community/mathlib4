@@ -313,8 +313,8 @@ theorem add_le_nadd : a + b ≤ a ♯ b := by
   | zero => simp
   | succ c h =>
     rwa [add_succ, nadd_succ, succ_le_succ_iff]
-  | isLimit c hc H =>
-    rw [(isNormal_add_right a).apply_of_isLimit hc, Ordinal.iSup_le_iff]
+  | limit c hc H =>
+    rw [(isNormal_add_right a).apply_of_isSuccLimit hc, Ordinal.iSup_le_iff]
     rintro ⟨i, hi⟩
     exact (H i hi).trans (nadd_le_nadd_left hi.le a)
 
@@ -735,7 +735,7 @@ theorem mul_le_nmul (a b : Ordinal.{u}) : a * b ≤ a ⨳ b := by
   · intro c hc H
     rcases eq_zero_or_pos a with (rfl | ha)
     · simp
-    · rw [(isNormal_mul_right ha).apply_of_isLimit hc, Ordinal.iSup_le_iff]
+    · rw [(isNormal_mul_right ha).apply_of_isSuccLimit hc, Ordinal.iSup_le_iff]
       rintro ⟨i, hi⟩
       exact (H i hi).trans (nmul_le_nmul_left hi.le a)
 

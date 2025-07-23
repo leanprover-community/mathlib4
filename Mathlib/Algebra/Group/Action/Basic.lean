@@ -68,7 +68,7 @@ section Monoid
 variable [Monoid α] [MulAction α β] (c : α) (x y : β) [Invertible c]
 
 @[simp] lemma invOf_smul_smul : ⅟c • c • x = x := inv_smul_smul (unitOfInvertible c) _
-@[simp] lemma smul_invOf_smul : c • (⅟ c • x) = x := smul_inv_smul (unitOfInvertible c) _
+@[simp] lemma smul_invOf_smul : c • (⅟c • x) = x := smul_inv_smul (unitOfInvertible c) _
 
 variable {c x y}
 

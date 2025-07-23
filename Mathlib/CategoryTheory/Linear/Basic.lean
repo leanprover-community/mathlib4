@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Equiv.TransferInstance
+import Mathlib.Algebra.Module.TransferInstance
 import Mathlib.Algebra.Group.Invertible.Defs
 import Mathlib.Algebra.Module.Equiv.Defs
 import Mathlib.CategoryTheory.Preadditive.Basic
@@ -133,12 +133,12 @@ def rightComp (X : C) {Y Z : C} (g : Y ⟶ Z) : (X ⟶ Y) →ₗ[R] X ⟶ Z wher
 instance {X Y : C} (f : X ⟶ Y) [Epi f] (r : R) [Invertible r] : Epi (r • f) :=
   ⟨fun g g' H => by
     rw [smul_comp, smul_comp, ← comp_smul, ← comp_smul, cancel_epi] at H
-    simpa [smul_smul] using congr_arg (fun f => ⅟ r • f) H⟩
+    simpa [smul_smul] using congr_arg (fun f => ⅟r • f) H⟩
 
 instance {X Y : C} (f : X ⟶ Y) [Mono f] (r : R) [Invertible r] : Mono (r • f) :=
   ⟨fun g g' H => by
     rw [comp_smul, comp_smul, ← smul_comp, ← smul_comp, cancel_mono] at H
-    simpa [smul_smul] using congr_arg (fun f => ⅟ r • f) H⟩
+    simpa [smul_smul] using congr_arg (fun f => ⅟r • f) H⟩
 
 /-- Given isomorphic objects `X ≅ Y, W ≅ Z` in a `k`-linear category, we have a `k`-linear
 isomorphism between `Hom(X, W)` and `Hom(Y, Z).` -/
