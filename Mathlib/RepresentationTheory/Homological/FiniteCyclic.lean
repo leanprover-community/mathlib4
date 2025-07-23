@@ -76,13 +76,6 @@ lemma coinvariantsKer_leftRegular_eq_ker :
     exact Submodule.finsuppSum_mem _ _ _ _ fun g _ =>
       Coinvariants.mem_ker_of_eq g (single 1 (x g)) _ (by simp)
 
-noncomputable def mem_invariants_iff (hg : ∀ x, x ∈ Subgroup.zpowers g) (x : V) :
-    x ∈ ρ.invariants ↔ ρ g x = x :=
-  ⟨fun h => h g, fun hx γ => by
-    rcases hg γ with ⟨i, rfl⟩
-    induction i with | zero => simp | succ i _ => simp_all [zpow_add_one] | pred i h => _
-    simpa [neg_sub_comm _ (1 : ℤ), zpow_sub] using congr(ρ g⁻¹ $(h.trans hx.symm))⟩
-
 end Representation.FiniteCyclicGroup
 
 namespace Rep.FiniteCyclicGroup
