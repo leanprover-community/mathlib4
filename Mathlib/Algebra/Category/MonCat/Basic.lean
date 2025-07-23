@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Elementwise
 import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
-# Category instances for `Monoid`, `AddMonoid`, `CommMonoid`, and `AddCommMmonoid`.
+# Category instances for `Monoid`, `AddMonoid`, `CommMonoid`, and `AddCommMonoid`.
 
 We introduce the bundled categories:
 * `MonCat`
@@ -27,13 +27,13 @@ universe u v
 
 open CategoryTheory
 
-/-- The category of additive groups and group morphisms. -/
+/-- The category of additive monoids and monoid morphisms. -/
 structure AddMonCat : Type (u + 1) where
   /-- The underlying type. -/
   (carrier : Type u)
   [str : AddMonoid carrier]
 
-/-- The category of groups and group morphisms. -/
+/-- The category of monoids and monoid morphisms. -/
 @[to_additive AddMonCat]
 structure MonCat : Type (u + 1) where
   /-- The underlying type. -/
@@ -60,14 +60,14 @@ abbrev of (M : Type u) [Monoid M] : MonCat := ⟨M⟩
 
 end MonCat
 
-/-- The type of morphisms in `AddMonCat R`. -/
+/-- The type of morphisms in `AddMonCat`. -/
 @[ext]
 structure AddMonCat.Hom (A B : AddMonCat.{u}) where
   private mk ::
   /-- The underlying monoid homomorphism. -/
   hom' : A →+ B
 
-/-- The type of morphisms in `MonCat R`. -/
+/-- The type of morphisms in `MonCat`. -/
 @[to_additive, ext]
 structure MonCat.Hom (A B : MonCat.{u}) where
   private mk ::
@@ -99,7 +99,6 @@ abbrev Hom.hom {X Y : MonCat.{u}} (f : Hom X Y) :=
 abbrev ofHom {X Y : Type u} [Monoid X] [Monoid Y] (f : X →* Y) : of X ⟶ of Y :=
   ConcreteCategory.ofHom (C := MonCat) f
 
-variable {R} in
 /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
 def Hom.Simps.hom (X Y : MonCat.{u}) (f : Hom X Y) :=
   f.hom
@@ -213,13 +212,13 @@ def uliftFunctor : MonCat.{v} ⥤ MonCat.{max v u} where
 
 end MonCat
 
-/-- The category of additive groups and group morphisms. -/
+/-- The category of additive commutative monoids and monoid morphisms. -/
 structure AddCommMonCat : Type (u + 1) where
   /-- The underlying type. -/
   (carrier : Type u)
   [str : AddCommMonoid carrier]
 
-/-- The category of groups and group morphisms. -/
+/-- The category of commutative monoids and monoid morphisms. -/
 @[to_additive AddCommMonCat]
 structure CommMonCat : Type (u + 1) where
   /-- The underlying type. -/
@@ -246,14 +245,14 @@ abbrev of (M : Type u) [CommMonoid M] : CommMonCat := ⟨M⟩
 
 end CommMonCat
 
-/-- The type of morphisms in `AddCommMonCat R`. -/
+/-- The type of morphisms in `AddCommMonCat`. -/
 @[ext]
 structure AddCommMonCat.Hom (A B : AddCommMonCat.{u}) where
   private mk ::
   /-- The underlying monoid homomorphism. -/
   hom' : A →+ B
 
-/-- The type of morphisms in `CommMonCat R`. -/
+/-- The type of morphisms in `CommMonCat`. -/
 @[to_additive, ext]
 structure CommMonCat.Hom (A B : CommMonCat.{u}) where
   private mk ::
