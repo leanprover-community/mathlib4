@@ -71,14 +71,14 @@ theorem smul_apply (r : R) (f : AddMonoid.End A) (x : A) : (r • f) x = r • f
   rfl
 
 instance smulCommClass [SMulCommClass R S A] : SMulCommClass R S (AddMonoid.End A) :=
-  AddMonoidHom.smulCommClass
+  AddMonoidHom.instSMulCommClass
 
 instance isScalarTower [SMul R S] [IsScalarTower R S A] : IsScalarTower R S (AddMonoid.End A) :=
-  AddMonoidHom.isScalarTower
+  AddMonoidHom.instIsScalarTower
 
 instance isCentralScalar [DistribMulAction Rᵐᵒᵖ A] [IsCentralScalar R A] :
     IsCentralScalar R (AddMonoid.End A) :=
-  AddMonoidHom.isCentralScalar
+  AddMonoidHom.instIsCentralScalar
 
 end
 
