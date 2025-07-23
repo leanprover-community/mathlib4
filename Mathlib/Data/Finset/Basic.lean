@@ -394,19 +394,23 @@ theorem filter_union (s₁ s₂ : Finset α) : (s₁ ∪ s₂).filter p = s₁.f
   ext fun _ => by simp only [mem_filter, mem_union, or_and_right]
 
 theorem filter_union_right (s : Finset α) : s.filter p ∪ s.filter q = s.filter fun x => p x ∨ q x :=
-  ext fun _ => by simp [mem_filter, mem_union, ← and_or_left]
+  ext fun x => by simp [mem_filter, mem_union, ← and_or_left]
 
-theorem filter_mem_eq_inter {s t : Finset α} : (s.filter fun i => i ∈ t) = s ∩ t :=
-  ext fun _ => by simp [mem_filter, mem_inter]
+theorem filter_mem_eq_inter {s t : Finset α} [∀ i, Decidable (i ∈ t)] :
+    (s.filter fun i => i ∈ t) = s ∩ t :=
+  ext fun i => by simp [mem_filter, mem_inter]
 
-theorem filter_notMem_eq_sdiff {s t : Finset α} : (s.filter fun i => i ∉ t) = s \ t :=
+theorem filter_notMem_eq_sdiff {s t : Finset α} [∀ i, Decidable (i ∉ t)] :
+    (s.filter fun i => i ∉ t) = s \ t :=
   ext fun _ => by simp only [mem_filter, mem_sdiff]
 
-theorem filter_inter_distrib (s t : Finset α) : (s ∩ t).filter p = s.filter p ∩ t.filter p :=
-  ext fun _ => by simp [mem_filter, mem_inter, and_assoc]
+theorem filter_inter_distrib (s t : Finset α) : (s ∩ t).filter p = s.filter p ∩ t.filter p := by
+  ext
+  simp [mem_filter, mem_inter, and_assoc]
 
-theorem filter_inter (s t : Finset α) : filter p s ∩ t = filter p (s ∩ t) :=
-  ext fun _ => by simp only [mem_inter, mem_filter, and_right_comm]
+theorem filter_inter (s t : Finset α) : filter p s ∩ t = filter p (s ∩ t) := by
+  ext
+  simp only [mem_inter, mem_filter, and_right_comm]
 
 theorem inter_filter (s t : Finset α) : s ∩ filter p t = filter p (s ∩ t) := by
   rw [inter_comm, filter_inter, inter_comm]
@@ -416,8 +420,9 @@ theorem filter_insert (a : α) (s : Finset α) :
   ext x
   split_ifs with h <;> by_cases h' : x = a <;> simp [h, h']
 
-theorem filter_erase (a : α) (s : Finset α) : filter p (erase s a) = erase (filter p s) a :=
-  ext fun _ => by simp only [and_assoc, mem_filter, iff_self, mem_erase]
+theorem filter_erase (a : α) (s : Finset α) : filter p (erase s a) = erase (filter p s) a := by
+  ext x
+  simp only [and_assoc, mem_filter, iff_self, mem_erase]
 
 theorem filter_or (s : Finset α) : (s.filter fun a => p a ∨ q a) = s.filter p ∪ s.filter q :=
   ext fun _ => by simp [mem_filter, mem_union, and_or_left]
