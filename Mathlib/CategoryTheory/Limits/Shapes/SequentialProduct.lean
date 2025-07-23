@@ -60,7 +60,7 @@ noncomputable def functorMap : ∀ n,
   all_goals split_ifs; try rfl; try omega
 
 lemma functorMap_commSq_succ (n : ℕ) :
-    (Functor.ofOpSequence (functorMap f)).map (homOfLE (by omega : n ≤ n+1)).op ≫ Pi.π _ n ≫
+    (Functor.ofOpSequence (functorMap f)).map (homOfLE (by omega : n ≤ n + 1)).op ≫ Pi.π _ n ≫
       eqToHom (functorObj_eq_neg (by omega : ¬(n < n))) =
         (Pi.π (fun i ↦ if _ : i < (n + 1) then M i else N i) n) ≫
           eqToHom (functorObj_eq_pos (by omega)) ≫ f n := by
