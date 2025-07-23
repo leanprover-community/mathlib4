@@ -181,8 +181,8 @@ theorem ssubset_iff_exists_subset_erase {s t : Finset α} : s ⊂ t ↔ ∃ a �
   exact ⟨a, ht, subset_erase.2 ⟨h.1, hs⟩⟩
 
 theorem erase_ssubset_insert (s : Finset α) (a : α) : s.erase a ⊂ insert a s :=
-  ssubset_iff_exists_subset_erase.2
-    ⟨a, mem_insert_self _ _, erase_subset_erase _ <| subset_insert _ _⟩
+  ssubset_iff_exists_subset_erase.2 <| by
+    exact ⟨a, mem_insert_self _ _, by grw [← subset_insert]⟩
 
 theorem erase_cons {s : Finset α} {a : α} (h : a ∉ s) : (s.cons a h).erase a = s := by
   rw [cons_eq_insert, erase_insert_eq_erase, erase_eq_of_notMem h]
@@ -677,3 +677,14 @@ lemma toFinset_replicate (n : ℕ) (a : α) :
   split_ifs with hn <;> simp [hn]
 
 end Multiset
+
+namespace Finset
+
+theorem mem_union_of_disjoint {α : Type*} [DecidableEq α]
+    {s t : Finset α} (h : Disjoint s t) {x : α} :
+    x ∈ s ∪ t ↔ Xor' (x ∈ s) (x ∈ t) := by
+  rw [Finset.mem_union, Xor']
+  have := disjoint_left.1 h
+  tauto
+
+end Finset

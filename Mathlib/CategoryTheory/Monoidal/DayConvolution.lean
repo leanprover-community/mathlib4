@@ -37,9 +37,7 @@ a monoidal structure.
 
 ## TODOs (@robin-carlier)
 - Braided/symmetric case.
-- Case where `V` is closed.
 - Type alias for `C ⥤ V` with a `LawfulDayConvolutionMonoidalCategoryStruct`.
-- Better constructors for `LawfulDayConvolutionMonoidalCategoryStruct`.
 - Characterization of lax monoidal functors out of a day convolution monoidal category.
 - Case `V = Type u` and its universal property.
 
@@ -1048,7 +1046,7 @@ def monoidalOfLawfulDayConvolutionMonoidalCategoryStruct
         (CostructuredArrow ((tensor C).prod (𝟭 C)) d) (tensorRight v)] :
     MonoidalCategory D :=
   MonoidalCategory.ofTensorHom
-    (tensor_id := fun x y => by
+    (id_tensorHom_id := fun x y => by
       apply Functor.Faithful.map_injective (F := ι C V D)
       simp only [ι_map_tensorHom_hom_eq_tensorHom, Functor.map_id]
       apply (DayConvolution.corepresentableBy

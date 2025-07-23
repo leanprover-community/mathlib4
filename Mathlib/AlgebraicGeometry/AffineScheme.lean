@@ -234,6 +234,12 @@ theorem isAffineOpen_top (X : Scheme) [IsAffine X] : IsAffineOpen (⊤ : X.Opens
   ext1
   exact Set.range_id.symm
 
+theorem exists_isAffineOpen_mem_and_subset {X : Scheme.{u}} {x : X}
+    {U : X.Opens} (hxU : x ∈ U) : ∃ W : X.Opens, IsAffineOpen W ∧ x ∈ W ∧ W.1 ⊆ U := by
+  obtain ⟨R, f, hf⟩ := AlgebraicGeometry.Scheme.exists_affine_mem_range_and_range_subset hxU
+  exact ⟨Scheme.Hom.opensRange f (H := hf.1),
+    ⟨AlgebraicGeometry.isAffineOpen_opensRange f (H := hf.1), hf.2.1, hf.2.2⟩⟩
+
 instance Scheme.isAffine_affineCover (X : Scheme) (i : X.affineCover.J) :
     IsAffine (X.affineCover.obj i) :=
   isAffine_Spec _
@@ -543,7 +549,7 @@ theorem basicOpen :
 
 lemma Spec_basicOpen {R : CommRingCat} (f : R) :
     IsAffineOpen (X := Spec R) (PrimeSpectrum.basicOpen f) :=
-  basicOpen_eq_of_affine f ▸ (isAffineOpen_top (Spec (.of R))).basicOpen _
+  basicOpen_eq_of_affine f ▸ (isAffineOpen_top Spec(R)).basicOpen _
 
 instance [IsAffine X] (r : Γ(X, ⊤)) : IsAffine (X.basicOpen r) :=
   (isAffineOpen_top X).basicOpen _
@@ -850,7 +856,7 @@ def SpecMapRestrictBasicOpenIso {R S : CommRingCat} (f : R ⟶ S) (r : R) :
   letI e₂ : Localization.Away (f.hom r) ≃ₐ[S] Γ(Spec S, basicOpen (f.hom r)) :=
     IsLocalization.algEquiv (Submonoid.powers (f.hom r)) _ _
   refine Arrow.isoMk ?_ ?_ ?_
-  · exact (Spec (.of S)).isoOfEq (comap_basicOpen _ _) ≪≫
+  · exact Spec(S).isoOfEq (comap_basicOpen _ _) ≪≫
       (IsAffineOpen.Spec_basicOpen (f.hom r)).isoSpec ≪≫ Scheme.Spec.mapIso e₂.toCommRingCatIso.op
   · exact (IsAffineOpen.Spec_basicOpen r).isoSpec ≪≫ Scheme.Spec.mapIso e₁.toCommRingCatIso.op
   · have := AlgebraicGeometry.IsOpenImmersion.of_isLocalization
@@ -1092,7 +1098,7 @@ variable {X : Scheme.{u}} {A : CommRingCat}
 this is the lift to `X ⟶ Spec (A ⧸ I)`. -/
 def Scheme.Hom.liftQuotient (f : X.Hom (Spec A)) (I : Ideal A)
     (hI : I ≤ RingHom.ker ((Scheme.ΓSpecIso A).inv ≫ f.appTop).hom) :
-    X ⟶ Spec (.of (A ⧸ I)) :=
+    X ⟶ Spec(A ⧸ I) :=
   X.toSpecΓ ≫ Spec.map (CommRingCat.ofHom
     (Ideal.Quotient.lift _ ((Scheme.ΓSpecIso _).inv ≫ f.appTop).hom hI))
 
