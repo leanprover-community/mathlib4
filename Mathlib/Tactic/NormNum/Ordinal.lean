@@ -26,10 +26,6 @@ the extensions in this file are no longer needed. -/
 #guard_msgs in
 #norm_num (12 : Ordinal.{0}) * (5 : Ordinal.{0})
 
-/-- info: 5 < 12 -/
-#guard_msgs in
-#norm_num (5 : Ordinal.{0}) < 12
-
 lemma isNat_ordinalMul.{u} : ∀ {a b : Ordinal.{u}} {an bn rn : ℕ},
     IsNat a an → IsNat b bn → an * bn = rn → IsNat (a * b) rn
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨Eq.symm <| natCast_mul ..⟩
@@ -49,6 +45,14 @@ def evalOrdinalMul : NormNumExt where
       have : ($an * $bn) =Q $rn := ⟨⟩
       pure (.isNat i rn q(isNat_ordinalMul $pa $pb (.refl $rn)))
     | _, _ => throwError "not multiplication on ordinals"
+
+/-- info: 5 ≤ 12 -/
+#guard_msgs in
+#norm_num (5 : Ordinal.{0}) ≤ 12
+
+/-- info: 5 < 12 -/
+#guard_msgs in
+#norm_num (5 : Ordinal.{0}) < 12
 
 lemma isNat_ordinalLE_true.{u} : ∀ {a b : Ordinal.{u}} {an bn : ℕ},
     IsNat a an → IsNat b bn → decide (an ≤ bn) = true → a ≤ b
@@ -102,6 +106,10 @@ def evalOrdinalLT : NormNumExt where
         pure (.isFalse q(isNat_ordinalLT_false $pa $pb $this))
     | _, _ => throwError "not strict inequality on ordinals"
 
+/-- info: 12 - 5 -/
+#guard_msgs in
+#norm_num (12 : Ordinal.{0}) - 5
+
 lemma isNat_ordinalSub.{u} : ∀ {a b : Ordinal.{u}} {an bn rn : ℕ},
     IsNat a an → IsNat b bn → an - bn = rn → IsNat (a - b) rn
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨Eq.symm <| natCast_sub ..⟩
@@ -122,6 +130,10 @@ def evalOrdinalSub : NormNumExt where
       pure (.isNat i rn q(isNat_ordinalSub $pa $pb (.refl $rn)))
     | _, _ => throwError "not subtration on ordinals"
 
+/-- info: 12 / 5 -/
+#guard_msgs in
+#norm_num (12 : Ordinal.{0}) / 5
+
 lemma isNat_ordinalDiv.{u} : ∀ {a b : Ordinal.{u}} {an bn rn : ℕ},
     IsNat a an → IsNat b bn → an / bn = rn → IsNat (a / b) rn
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨Eq.symm <| natCast_div ..⟩
@@ -141,6 +153,10 @@ def evalOrdinalDiv : NormNumExt where
       have : ($an / $bn) =Q $rn := ⟨⟩
       pure (.isNat i rn q(isNat_ordinalDiv $pa $pb (.refl $rn)))
     | _, _ => throwError "not division on ordinals"
+
+/-- info: 12 % 5 -/
+#guard_msgs in
+#norm_num (12 : Ordinal.{0}) % 5
 
 lemma isNat_ordinalMod.{u} : ∀ {a b : Ordinal.{u}} {an bn rn : ℕ},
     IsNat a an → IsNat b bn → an % bn = rn → IsNat (a % b) rn
@@ -181,6 +197,10 @@ def evalOrdinalOPow : NormNumExt where
       have : ($an ^ $bn) =Q $rn := ⟨⟩
       pure (.isNat i rn q(isNat_ordinalOPow $pa $pb (.refl $rn)))
     | _, _ => throwError "not homogenous power on ordinals"
+
+/-- info: 12 ^ 2 -/
+#guard_msgs in
+#norm_num (12 : Ordinal.{0}) ^ (2 : ℕ)
 
 lemma isNat_ordinalNPow.{u} : ∀ {a : Ordinal.{u}} {b an bn rn : ℕ},
     IsNat a an → IsNat b bn → an ^ bn = rn → IsNat (a ^ b) rn
