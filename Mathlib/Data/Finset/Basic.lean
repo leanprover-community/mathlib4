@@ -400,6 +400,10 @@ theorem filter_mem_eq_inter {s t : Finset α} [∀ i, Decidable (i ∈ t)] :
     (s.filter fun i => i ∈ t) = s ∩ t :=
   ext fun i => by simp [mem_filter, mem_inter]
 
+theorem filter_notMem_eq_sdiff {s t : Finset α} [∀ i, Decidable (i ∉ t)] :
+    (s.filter fun i => i ∉ t) = s \ t :=
+  ext fun _ => by simp only [mem_filter, mem_sdiff]
+
 theorem filter_inter_distrib (s t : Finset α) : (s ∩ t).filter p = s.filter p ∩ t.filter p := by
   ext
   simp [mem_filter, mem_inter, and_assoc]
