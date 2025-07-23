@@ -708,7 +708,26 @@ end Algebra
 
 end CommRing
 
-open scoped IntermediateField in
-theorem IsAdjoinRoot.primitive_element_root {F E : Type*} [Field F] [Field E] [Algebra F E]
-    {f : F[X]} (h : IsAdjoinRoot E f) : F⟮h.root⟯ = ⊤ :=
+section Field
+
+open scoped IntermediateField
+
+variable {F E : Type*} [Field F] [Field E] [Algebra F E] {f : F[X]}
+
+namespace IsAdjoinRoot
+
+theorem primitive_element_root (h : IsAdjoinRoot E f) : F⟮h.root⟯ = ⊤ :=
   IntermediateField.adjoin_eq_top_of_algebra F {h.root} (adjoin_root_eq_top h)
+
+abbrev mkOfPrimitiveElement {α : E} (hα : IsIntegral F α) (hα₂ : F⟮α⟯ = ⊤) :
+    IsAdjoinRoot E (minpoly F α) :=
+  mkOfAdjoinEqTop hα (Algebra.adjoin_eq_top_of_primitive_element hα hα₂)
+
+abbrev _root_.IsAdjoinRootMonic.mkOfPrimitiveElement
+    {α : E} (hα : IsIntegral F α) (hα₂ : F⟮α⟯ = ⊤) : IsAdjoinRootMonic E (minpoly F α) where
+  __ := IsAdjoinRoot.mkOfPrimitiveElement hα hα₂
+  Monic := minpoly.monic hα
+
+end IsAdjoinRoot
+
+end Field
