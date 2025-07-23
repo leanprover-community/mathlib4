@@ -3966,6 +3966,7 @@ import Mathlib.LinearAlgebra.Basis.Defs
 import Mathlib.LinearAlgebra.Basis.Exact
 import Mathlib.LinearAlgebra.Basis.Fin
 import Mathlib.LinearAlgebra.Basis.Flag
+import Mathlib.LinearAlgebra.Basis.HasCanonicalBasis
 import Mathlib.LinearAlgebra.Basis.Prod
 import Mathlib.LinearAlgebra.Basis.SMul
 import Mathlib.LinearAlgebra.Basis.Submodule
