@@ -756,10 +756,11 @@ noncomputable def equalizerIsEqualizer : IsLimit (Fork.ofι (equalizer.ι f g)
     (equalizer.condition f g)) :=
   IsLimit.ofIsoLimit (limit.isLimit _) (Fork.ext (Iso.refl _) (by simp))
 
-/-- The equalizer built from `equalizer.form f g` is limiting. -/
+/-- The equalizer built from `equalizer.fork f g` is limiting. -/
 noncomputable def equalizerIsEqualizer' : IsLimit (equalizer.fork f g) :=
   IsLimit.ofIsoLimit (limit.isLimit _) (Fork.ext (Iso.refl _) (by simp))
 
+@[simp]
 theorem equalizer.fork_ofι :
     Fork.ofι (equalizer.ι f g) (equalizer.condition f g) = equalizer.fork f g :=
   Fork.ofι_eq_self (equalizer.fork f g)
@@ -1252,6 +1253,8 @@ noncomputable def splitEpiOfIdempotentCoequalizer {X : C} {f : X ⟶ X} (hf : f 
   splitEpiOfIdempotentOfIsColimitCofork _ hf (colimit.isColimit _)
 
 variable [HasBinaryProducts C]
+
+local notation X " ◁ " f => prod.lift (𝟙 X) f
 
 /-- ⟨𝟙⨯ f⟩ : X ⟶ X ⨯ Y is the equalizer of the pair (prod.fst ≫ f, prod.snd) : X ⨯ Y ⟶ Y. -/
 noncomputable def graph_as_equivalizer {X Y : C} (f : X ⟶ Y) :

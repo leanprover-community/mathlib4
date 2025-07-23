@@ -559,10 +559,6 @@ noncomputable abbrev prod.lift {W X Y : C} [HasBinaryProduct X Y]
 noncomputable abbrev diag (X : C) [HasBinaryProduct X X] : X ⟶ X ⨯ X :=
   prod.lift (𝟙 _) (𝟙 _)
 
-notation X " ◁ " f => Limits.prod.lift (𝟙 X) f
-
-notation f " ▷ " X => Limits.prod.lift f (𝟙 X)
-
 /-- If the coproduct of `X` and `Y` exists, then every pair of morphisms `f : X ⟶ W` and
     `g : Y ⟶ W` induces a morphism `coprod.desc f g : X ⨿ Y ⟶ W`. -/
 noncomputable abbrev coprod.desc {W X Y : C} [HasBinaryCoproduct X Y]
