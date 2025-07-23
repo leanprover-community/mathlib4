@@ -898,7 +898,7 @@ alias isMulOneCocycle_of_mem_oneCocycles := isMulCocycle₁_of_mem_cocycles₁
 @[simps]
 def coboundariesOfIsMulCoboundary₁ {f : G → M} (hf : IsMulCoboundary₁ f) :
     coboundaries₁ (Rep.ofMulDistribMulAction G M) :=
-  ⟨Additive.toMul ∘ f, hf.choose, funext hf.choose_spec⟩
+  ⟨Additive.ofMul ∘ f, hf.choose, funext hf.choose_spec⟩
 
 @[deprecated (since := "2025-06-25")]
 alias oneCoboundariesOfIsMulOneCoboundary := coboundariesOfIsMulCoboundary₁
