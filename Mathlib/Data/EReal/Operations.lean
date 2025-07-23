@@ -824,7 +824,7 @@ lemma left_distrib_of_nonneg {a b c : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) :
 lemma left_distrib_of_nonneg_of_ne_top {x : EReal} (hx_nonneg : 0 ≤ x)
     (hx_ne_top : x ≠ ⊤) (y z : EReal) :
     x * (y + z) = x * y + x * z := by
-  cases hx_nonneg.eq_or_gt with
+  cases hx_nonneg.eq_or_lt' with
   | inl hx0 => simp [hx0]
   | inr hx0 =>
   lift x to ℝ using ⟨hx_ne_top, hx0.ne_bot⟩
