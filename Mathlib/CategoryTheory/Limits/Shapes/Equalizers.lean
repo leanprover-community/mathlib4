@@ -1254,11 +1254,11 @@ noncomputable def splitEpiOfIdempotentCoequalizer {X : C} {f : X ⟶ X} (hf : f 
 
 variable [HasBinaryProducts C]
 
-local notation X " ◁ " f => prod.lift (𝟙 X) f
+local notation "p⟨" f ", " g "⟩" => Limits.prod.lift f g
 
-/-- ⟨𝟙⨯ f⟩ : X ⟶ X ⨯ Y is the equalizer of the pair (prod.fst ≫ f, prod.snd) : X ⨯ Y ⟶ Y. -/
-noncomputable def graph_as_equivalizer {X Y : C} (f : X ⟶ Y) :
-    IsLimit (Fork.ofι (X ◁ f) ((by simp) : (X ◁ f) ≫ prod.fst ≫ f = (X ◁ f) ≫ prod.snd)) :=
+/-- (𝟙⨯ f) : X ⟶ X ⨯ Y is the equalizer of the pair (prod.fst ≫ f, prod.snd) : X ⨯ Y ⟶ Y. -/
+noncomputable def graph_as_equalizer {X Y : C} (f : X ⟶ Y) :
+    IsLimit (Fork.ofι p⟨𝟙 X, f⟩ ((by simp) : p⟨𝟙 X, f⟩ ≫ prod.fst ≫ f = p⟨𝟙 X, f⟩ ≫ prod.snd)) :=
   Fork.IsLimit.mk _
     (fun s => s.ι ≫ prod.fst)
     (fun s => ((by simp[prod.comp_lift, s.condition])))
