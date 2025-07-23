@@ -886,7 +886,7 @@ def monoidalOfLawfulDayConvolutionMonoidalCategoryStruct
         (CostructuredArrow ((tensor C).prod (𝟭 C)) d) (tensorRight v)] :
     MonoidalCategory D :=
   MonoidalCategory.ofTensorHom
-    (tensor_id := fun x y => by
+    (id_tensorHom_id := fun x y => by
       apply Functor.Faithful.map_injective (F := ι C V D)
       simp only [ι_map_tensorHom_hom_eq_tensorHom, Functor.map_id]
       apply (DayConvolution.corepresentableBy
