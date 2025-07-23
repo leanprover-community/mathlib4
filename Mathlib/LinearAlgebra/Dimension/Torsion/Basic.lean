@@ -28,4 +28,4 @@ theorem rank_quotient_eq_of_le_torsion {R M : Type*} [CommRing R] [AddCommGroup 
     intro t g hg i hi
     obtain ⟨r, hg⟩ := hN hg
     simp_rw [Finset.smul_sum, Submonoid.smul_def, smul_smul] at hg
-    exact r.prop _ (mul_comm (g i) r ▸ hs t _ hg i hi)
+    exact r.prop.2 _ (mul_comm (g i) r ▸ hs t _ hg i hi)
