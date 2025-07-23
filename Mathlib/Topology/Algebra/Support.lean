@@ -339,7 +339,6 @@ theorem HasCompactSupport.div {α β : Type*} [TopologicalSpace α] [DivisionMon
     HasCompactMulSupport (f / f') :=
   div_eq_mul_inv f f' ▸ hf.mul hf'.inv'
 
-
 end DivisionMonoid
 
 section SMulZeroClass
