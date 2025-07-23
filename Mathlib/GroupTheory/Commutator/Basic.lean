@@ -87,12 +87,6 @@ theorem commutator_eq_bot_iff_le_centralizer : ⁅H₁, H₂⁆ = ⊥ ↔ H₁ �
     forall_congr' fun _hp => forall_congr' fun q => forall_congr' fun hq => ?_
   rw [mem_bot, commutatorElement_eq_one_iff_mul_comm, eq_comm]
 
-variable {G} in
-theorem commutator_eq_bot_iff_center_eq_top :
-    commutator G = ⊥ ↔ Subgroup.center G = ⊤ := by
-  simp only [commutator]
-  simp [Subgroup.commutator_eq_bot_iff_le_centralizer]
-
 /-- **The Three Subgroups Lemma** (via the Hall-Witt identity) -/
 theorem commutator_commutator_eq_bot_of_rotate (h1 : ⁅⁅H₂, H₃⁆, H₁⁆ = ⊥) (h2 : ⁅⁅H₃, H₁⁆, H₂⁆ = ⊥) :
     ⁅⁅H₁, H₂⁆, H₃⁆ = ⊥ := by
@@ -253,6 +247,9 @@ lemma Subgroup.commutator_le_self (H : Subgroup G) : ⁅H, H⁆ ≤ H :=
 
 instance commutator_characteristic : (commutator G).Characteristic :=
   Subgroup.commutator_characteristic ⊤ ⊤
+
+theorem commutator_eq_bot_iff_center_eq_top : commutator G = ⊥ ↔ Subgroup.center G = ⊤ := by
+  simp [commutator, Subgroup.commutator_eq_bot_iff_le_centralizer]
 
 lemma commutator_centralizer_commutator_le_center :
     ⁅centralizer (commutator G : Set G), centralizer (commutator G)⁆ ≤ Subgroup.center G := by
