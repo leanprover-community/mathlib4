@@ -65,11 +65,6 @@ noncomputable section
 
 universe u v
 
--- Porting note: this looks like something that should not be here
--- section MoveMe
---
--- end MoveMe
-
 -- This class doesn't really make sense on a predicate
 /-- `IsAdjoinRoot S f` states that the ring `S` can be constructed by adjoining a specified root
 of the polynomial `f : R[X]` to `R`.
