@@ -24,10 +24,44 @@ This file provides embedding of any archimedean groups into reals.
   for any archimedean group `M` without specifying the `1` element in `M`.
 -/
 
-namespace Archimedean
 
 variable {M : Type*}
 variable [AddCommGroup M] [LinearOrder M] [IsOrderedAddMonoid M] [One M]
+
+/-- For `u v : ℚ` and `x y : M`, one can informally write
+`u < x → v < y → u + v < x + y`. We formalize this using smul. -/
+theorem num_smul_one_lt_den_smul_add {u v : ℚ} {x y : M}
+    (hu : u.num • 1 < u.den • x) (hv : v.num • 1 < v.den • y) :
+    (u + v).num • 1 < (u + v).den • (x + y) := by
+  have hu' : (u.num * v.den) • 1 < (u.den * v.den : ℤ) • x := by
+    rw [mul_comm u.num, mul_comm (u.den : ℤ), ← smul_smul, ← smul_smul]
+    exact zsmul_lt_zsmul_right (by simpa using v.den_pos) (by simpa using hu)
+  have hv' : (v.num * u.den) • 1 < (u.den * v.den : ℤ) • y := by
+    rw [mul_comm, ← smul_smul, ← smul_smul]
+    exact zsmul_lt_zsmul_right (by simpa using u.den_pos) (by simpa using hv)
+  suffices ((u + v).num * u.den * v.den) • 1 <
+      ((u + v).den : ℤ) • (u.den * v.den : ℤ) • (x + y) by
+    rw [mul_assoc, mul_comm, zsmul_comm, ← smul_smul] at this
+    rw [smul_lt_smul_iff_of_pos_left
+      (mul_pos (by simpa using u.den_pos) (by simpa using v.den_pos))] at this
+    simpa using this
+  rw [Rat.add_num_den', mul_comm, ← smul_smul]
+  rw [smul_lt_smul_iff_of_pos_left (by simpa using (u + v).den_pos)]
+  rw [add_smul, smul_add]
+  exact add_lt_add hu' hv'
+
+/-- Given `x` from `M`, one can informally write that, by transitivity,
+`num / den ≤ x → x ≤ n → num / den ≤ n` for `den : ℕ` and `num n : ℕ`.
+To avoid writing division for integer `num` and `den`, we express this in terms of
+multiplication. -/
+theorem num_le_nat_mul_den [ZeroLEOneClass M] [NeZero (1 : M)]
+    {num : ℤ} {den : ℕ} {x : M} (h : num • 1 ≤ den • x)
+    {n : ℤ} (hn : x ≤ n • 1) : num ≤ n * den := by
+  refine le_of_smul_le_smul_right (h.trans ?_) (by simp)
+  rw [mul_comm, ← smul_smul]
+  simpa using nsmul_le_nsmul_right hn den
+
+namespace Archimedean
 
 /-- Set of rational numbers that are less than the "number" `x / 1`.
  Formally, these are numbers `p / q` such that `p • 1 < q • x`. -/
@@ -50,7 +84,7 @@ abbrev ratLt' (x : M) : Set ℝ := (Rat.castHom ℝ) '' (ratLt x)
 noncomputable
 abbrev embedRealFun (x : M) := sSup (ratLt' x)
 
-variable [Archimedean M] [ZeroLEOneClass M] [NeZero (1 : M)]
+variable [ZeroLEOneClass M] [NeZero (1 : M)] [Archimedean M]
 
 theorem ratLt_bddAbove (x : M) : BddAbove (ratLt x) := by
   obtain ⟨n, hn⟩ := Archimedean.arch x zero_lt_one
@@ -60,9 +94,7 @@ theorem ratLt_bddAbove (x : M) : BddAbove (ratLt x) := by
   rw [Rat.le_iff]
   suffices num • 1 < den • x → num ≤ n * den by simpa using this
   intro h
-  refine le_of_smul_le_smul_right (h.le.trans ?_) zero_lt_one
-  rw [mul_comm, ← smul_smul]
-  simpa using nsmul_le_nsmul_right hn den
+  exact num_le_nat_mul_den h.le (by simpa using hn)
 
 theorem ratLt_nonempty (x : M) : (ratLt x).Nonempty := by
   obtain hneg | rfl | hxpos := lt_trichotomy x 0
@@ -113,22 +145,7 @@ theorem ratLt_add (x y : M) : ratLt (x + y) = ratLt x + ratLt y := by
     intro ⟨u, hu, v, hv, huv⟩
     rw [← huv]
     rw [Set.mem_setOf_eq] at hu hv ⊢
-    have hu' : (u.num * v.den) • 1 < (u.den * v.den : ℤ) • x := by
-      rw [mul_comm u.num, mul_comm (u.den : ℤ), ← smul_smul, ← smul_smul]
-      exact zsmul_lt_zsmul_right (by simpa using v.den_pos) (by simpa using hu)
-    have hv' : (v.num * u.den) • 1 < (u.den * v.den : ℤ) • y := by
-      rw [mul_comm, ← smul_smul, ← smul_smul]
-      exact zsmul_lt_zsmul_right (by simpa using u.den_pos) (by simpa using hv)
-    suffices ((u + v).num * u.den * v.den) • 1 <
-        ((u + v).den : ℤ) • (u.den * v.den : ℤ) • (x + y) by
-      rw [mul_assoc, mul_comm, zsmul_comm, ← smul_smul] at this
-      rw [smul_lt_smul_iff_of_pos_left
-        (mul_pos (by simpa using u.den_pos) (by simpa using v.den_pos))] at this
-      simpa using this
-    rw [Rat.add_num_den', mul_comm, ← smul_smul]
-    rw [smul_lt_smul_iff_of_pos_left (by simpa using (u + v).den_pos)]
-    rw [add_smul, smul_add]
-    exact add_lt_add hu' hv'
+    exact num_smul_one_lt_den_smul_add hu hv
 
 theorem ratLt'_bddAbove (x : M) : BddAbove (ratLt' x) :=
    Monotone.map_bddAbove Rat.cast_mono <| ratLt_bddAbove x
