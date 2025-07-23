@@ -27,13 +27,13 @@ variable (M : C) [Mon_Class M]
 instance mopMon_Class : Mon_Class (mop M) where
   mul := Mon_Class.mul.mop
   one := Mon_Class.one.mop
-  mul_one' := by
+  mul_one := by
     apply mopEquiv C|>.fullyFaithfulInverse.map_injective
     simp
-  one_mul' := by
+  one_mul := by
     apply mopEquiv C|>.fullyFaithfulInverse.map_injective
     simp
-  mul_assoc' := by
+  mul_assoc := by
     apply mopEquiv C|>.fullyFaithfulInverse.map_injective
     simp
 
@@ -60,13 +60,13 @@ variable (M : Cᴹᵒᵖ) [Mon_Class M]
 instance unmopMon_Class : Mon_Class (unmop M) where
   mul := Mon_Class.mul.unmop
   one := Mon_Class.one.unmop
-  mul_one' := by
+  mul_one := by
     apply mopEquiv C|>.fullyFaithfulFunctor.map_injective
     simp
-  one_mul' := by
+  one_mul := by
     apply mopEquiv C|>.fullyFaithfulFunctor.map_injective
     simp
-  mul_assoc' := by
+  mul_assoc := by
     apply mopEquiv C|>.fullyFaithfulFunctor.map_injective
     simp
 
