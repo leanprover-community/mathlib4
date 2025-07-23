@@ -200,7 +200,7 @@ simproc elimDestruct (Stream'.Seq.destruct _) := fun e => do
     | _ => return .continue
   | _ => return .continue
 
--- TODO: rewrite without macro
+-- TODO: rewrite without macro?
 syntax "elim_destruct" : tactic
 macro_rules
 | `(tactic| elim_destruct) =>

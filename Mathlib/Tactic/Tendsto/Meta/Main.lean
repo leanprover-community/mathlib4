@@ -88,7 +88,7 @@ def computeTendsto (f : Q(ℝ → ℝ)) :
 
     let ~q(List.cons $basis_hd $basis_tl) := ms_trimmed.basis
       | throwError "Unexpected basis in computeTendsto"
-    -- I don't how to avoid Expr here.
+    -- I don't know how to avoid Expr here.
     let h_tendsto : Expr ← match ms_trimmed.val with
     | ~q(PreMS.nil) =>
       pure (q(PreMS.nil_tendsto_zero $ms_trimmed.h_approx) : Expr)

@@ -38,9 +38,7 @@ partial def getLeadingTerm {basis : Q(Basis)} (ms : Q(PreMS $basis)) : MetaM Q(T
 def getLeadingTermWithProof {basis : Q(Basis)} (ms : Q(PreMS $basis)) :
     MetaM ((t : Q(Term)) × Q(PreMS.leadingTerm $ms = $t)) := do
   let rhs ← getLeadingTerm ms
-  let e ← mkFreshExprMVar q(PreMS.leadingTerm $ms = $rhs)
-  e.mvarId!.applyRfl
-  return ⟨rhs, e⟩
+  return ⟨rhs, (q(Eq.refl $rhs) : Expr)⟩
 
 def getLeadingTermCoefPos {basis : Q(Basis)} (ms : Q(PreMS $basis)) :
     TacticM (Option Q(0 < (PreMS.leadingTerm $ms).coef)) := do
