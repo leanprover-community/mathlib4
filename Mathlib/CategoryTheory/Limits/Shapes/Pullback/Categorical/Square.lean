@@ -442,7 +442,7 @@ instance functorEquivFunctorWhiskeringFunctorOfTransformSquare
       (fun {_ _} f ↦ by ext x <;> simp)
 
 /-- The horizontal inverse of `functorEquivFunctorWhiskeringFunctorOfTransformSquare`. -/
-@[simps!]
+@[simps! -isSimp]
 instance functorEquivInverseTransformSquare
     (X : Type u₁₀) [Category.{v₁₀} X]
     (ψ : CatCospanTransform R B R' B') :
