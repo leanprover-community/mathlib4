@@ -743,10 +743,8 @@ def generateCorrespondence {m} [Monad m] [MonadLog m] [AddMessageContext m] [Mon
     let ppEndPos ← atomOrIdentEndPos verbose? (k.push (.str `atom val)) val.toSubstring str
     pure ({str with startPos := ppEndPos}, corr.insert (info.getTailPos?.getD default) ppEndPos)
   | corr, k, .node _info kind args, str => do
-    let mut (str, corr) := (str, corr)
-    for arg in getChoiceNode kind args do
-      (str, corr) ← generateCorrespondence verbose? corr (k.push kind) arg str
-    pure (str, corr)
+    (getChoiceNode kind args).foldlM (init := (str, corr)) fun (str, corr) arg => do
+      generateCorrespondence verbose? corr (k.push kind) arg str
   | corr, _, _stx, str => do
     pure (str, corr)
 
@@ -767,7 +765,7 @@ open /- a comment -/
 -- also here
  Lean
   --logInfo m!"{cmd}"
-
+     Command /- -/ Elab in
 
 
 def processAtomOrIdent {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions m]
