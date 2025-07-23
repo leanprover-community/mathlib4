@@ -106,7 +106,7 @@ theorem comp_P_eq_self {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : High
       have hnaq : n = a + q := by omega
       simp only [v.of_succ.comp_Hσ_eq hnaq, neg_eq_zero, ← assoc]
       have eq := v ⟨a, by omega⟩ (by
-        simp only [hnaq, Nat.succ_eq_add_one, add_assoc]
+        simp only [hnaq, add_assoc]
         rfl)
       simp only [Fin.succ_mk] at eq
       simp only [eq, zero_comp]

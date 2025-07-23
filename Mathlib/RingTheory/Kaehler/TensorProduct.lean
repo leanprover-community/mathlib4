@@ -45,7 +45,7 @@ lemma mulActionBaseChange_smul_zero (a : A) :
 @[local simp]
 lemma mulActionBaseChange_smul_add (a : A) (x y : S ⊗[R] Ω[A⁄R]) :
     a • (x + y) = a • x + a • y := by
-  show (TensorProduct.comm R S (Ω[A⁄R])).symm (a • (TensorProduct.comm R S (Ω[A⁄R])) (x + y)) = _
+  change (TensorProduct.comm R S (Ω[A⁄R])).symm (a • (TensorProduct.comm R S (Ω[A⁄R])) (x + y)) = _
   rw [map_add, smul_add, map_add]
   rfl
 
@@ -92,7 +92,7 @@ instance [Algebra.IsPushout R S A B] :
     IsScalarTower A B (S ⊗[R] Ω[A⁄R]) := by
   apply IsScalarTower.of_algebraMap_smul
   intro r x
-  show (Algebra.pushoutDesc B (Algebra.lsmul R (A := S) S (S ⊗[R] Ω[A⁄R]))
+  change (Algebra.pushoutDesc B (Algebra.lsmul R (A := S) S (S ⊗[R] Ω[A⁄R]))
     (Algebra.lsmul R (A := A) _ _) (LinearMap.ext <| smul_comm · ·)
       (algebraMap A B r)) • x = r • x
   simp only [Algebra.pushoutDesc_right, Module.End.smul_def, Algebra.lsmul_coe]
@@ -101,7 +101,7 @@ instance [Algebra.IsPushout R S A B] :
     IsScalarTower S B (S ⊗[R] Ω[A⁄R]) := by
   apply IsScalarTower.of_algebraMap_smul
   intro r x
-  show (Algebra.pushoutDesc B (Algebra.lsmul R (A := S) S (S ⊗[R] Ω[A⁄R]))
+  change (Algebra.pushoutDesc B (Algebra.lsmul R (A := S) S (S ⊗[R] Ω[A⁄R]))
     (Algebra.lsmul R (A := A) _ _) (LinearMap.ext <| smul_comm · ·)
       (algebraMap S B r)) • x = r • x
   simp only [Algebra.pushoutDesc_left, Module.End.smul_def, Algebra.lsmul_coe]

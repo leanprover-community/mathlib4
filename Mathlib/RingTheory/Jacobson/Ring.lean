@@ -252,7 +252,7 @@ lemma Subring.mem_closure_image_of {S T : Type*} [Ring S] [Ring T] (g : S →+* 
   intro T₁ h₁
   rw [← Subring.mem_comap]
   apply hx
-  simp only [Subring.coe_comap, ← Set.image_subset_iff, SetLike.mem_coe]
+  simp only [Subring.coe_comap, ← Set.image_subset_iff]
   exact h₁
 
 -- Porting note: move to better place
@@ -612,7 +612,7 @@ private lemma aux_IH {R : Type u} {S : Type v} {T : Type w}
   have h_eq : algebraMap R (T ⧸ P) =
     w.toRingEquiv.toRingHom.comp (w'.toRingHom.comp (algebraMap R (S ⧸ Q'))) := by
     ext r
-    simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe, AlgEquiv.toRingEquiv_eq_coe,
+    simp only [AlgHom.toRingHom_eq_coe, AlgEquiv.toRingEquiv_eq_coe,
       RingEquiv.toRingHom_eq_coe, AlgHom.comp_algebraMap_of_tower, coe_comp, coe_coe,
       AlgEquiv.coe_ringEquiv, Function.comp_apply, AlgEquiv.commutes]
   rw [h_eq]
@@ -688,8 +688,7 @@ lemma finite_of_finite_type_of_isJacobsonRing (R S : Type*) [CommRing R] [Field 
   obtain ⟨ι, hι, f, hf⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial'.mp ‹_›
   have : (algebraMap R S).IsIntegral := by
     rw [← f.comp_algebraMap]
-    #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-    we needed to write `f.toRingHom` instead of just `f`, to avoid unification issues. -/
+    -- We need to write `f.toRingHom` instead of just `f`, to avoid unification issues.
     exact MvPolynomial.comp_C_integral_of_surjective_of_isJacobsonRing f.toRingHom hf
   have : Algebra.IsIntegral R S := Algebra.isIntegral_def.mpr this
   exact Algebra.IsIntegral.finite

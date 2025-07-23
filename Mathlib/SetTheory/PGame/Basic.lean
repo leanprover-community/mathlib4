@@ -117,8 +117,8 @@ theorem moveRight_mk {xl xr xL xR} : (⟨xl, xr, xL, xR⟩ : PGame).moveRight = 
   rfl
 
 lemma ext {x y : PGame} (hl : x.LeftMoves = y.LeftMoves) (hr : x.RightMoves = y.RightMoves)
-    (hL : ∀ i j, HEq i j → x.moveLeft i = y.moveLeft j)
-    (hR : ∀ i j, HEq i j → x.moveRight i = y.moveRight j) :
+    (hL : ∀ i j, i ≍ j → x.moveLeft i = y.moveLeft j)
+    (hR : ∀ i j, i ≍ j → x.moveRight i = y.moveRight j) :
     x = y := by
   cases x
   cases y
@@ -242,7 +242,7 @@ macro "pgame_wf_tac" : tactic =>
   `(tactic| solve_by_elim (config := { maxDepth := 8 })
     [Prod.Lex.left, Prod.Lex.right, PSigma.Lex.left, PSigma.Lex.right,
     Subsequent.moveLeft, Subsequent.moveRight, Subsequent.mk_left, Subsequent.mk_right,
-    Subsequent.trans] )
+    Subsequent.trans])
 
 -- Register some consequences of pgame_wf_tac as simp-lemmas for convenience
 -- (which are applied by default for WF goals)
