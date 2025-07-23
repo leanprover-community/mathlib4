@@ -79,11 +79,11 @@ section StarRing
 
 variable [NonUnitalSemiring α] [StarRing α] (v w : m → α)
 
-theorem star_dotProduct_star : star v ⬝ᵥ star w = star (w ⬝ᵥ v) := by simp [dotProduct]
+theorem star_dotProduct_star : star v ·ᵥ star w = star (w ·ᵥ v) := by simp [dotProduct]
 
-theorem star_dotProduct : star v ⬝ᵥ w = star (star w ⬝ᵥ v) := by simp [dotProduct]
+theorem star_dotProduct : star v ·ᵥ w = star (star w ·ᵥ v) := by simp [dotProduct]
 
-theorem dotProduct_star : v ⬝ᵥ star w = star (w ⬝ᵥ star v) := by simp [dotProduct]
+theorem dotProduct_star : v ·ᵥ star w = star (w ·ᵥ star v) := by simp [dotProduct]
 
 end StarRing
 
