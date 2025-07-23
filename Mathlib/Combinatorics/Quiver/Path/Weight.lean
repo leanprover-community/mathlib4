@@ -52,9 +52,7 @@ lemma weight_nil (w : ∀ {i j : V}, (i ⟶ j) → R) (a : V) :
 @[simp]
 lemma weight_cons (w : ∀ {i j : V}, (i ⟶ j) → R) {a b c : V} (p : Path a b) (e : b ⟶ c) :
     weight w (p.cons e) = weight w p * w e := by
-  cases p
-  · simp [weight]
-  · simp [weight, mul_assoc]
+  simp [weight]
 
 lemma weight_of_fn_nil (w : V → V → R) (a : V) :
     weight_of_fn w (Path.nil : Path a a) = 1 := by simp [weight_of_fn]
