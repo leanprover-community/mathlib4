@@ -11,21 +11,23 @@ import Mathlib.Probability.Moments.CovarianceBilin
 /-!
 # Cameron-Martin space
 
+A Gaussian measure `μ` on a Banach space `E` is characterized by a separable Hilbert space,
+called the Cameron-Martin space of `μ`.
+That space is a subspace of `E`, but with a different norm.
+
 ## Main definitions
 
-* `FooBar`
+* `CameronMartin μ`: Cameron-Martin space of the measure `μ`.
 
 ## Main statements
 
 * `fooBar_unique`
 
-## Notation
-
-
-
 ## Implementation details
 
-
+We build the Cameron-Martin space for any finite measure with a second moment, not only for
+Gaussian measures. We do so because we can write the definition with that hypothesis only,
+not because of any use of the space beyond the Gaussian case.
 
 ## References
 
@@ -189,7 +191,7 @@ class HasTwoMoments {E : Type*} {_ : MeasurableSpace E} [ENorm E] [TopologicalSp
     (μ : Measure E) extends IsFiniteMeasure μ where
   memLp_two : MemLp id 2 μ
 
-lemma memLp_id_two {E : Type*} {_ : MeasurableSpace E} [ENorm E] [TopologicalSpace E]
+lemma memLp_two_id {E : Type*} {_ : MeasurableSpace E} [ENorm E] [TopologicalSpace E]
     {μ : Measure E} [HasTwoMoments μ] : MemLp id 2 μ := HasTwoMoments.memLp_two
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
@@ -199,10 +201,16 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace
 instance [SecondCountableTopology E] [IsGaussian μ] : HasTwoMoments μ where
   memLp_two := IsGaussian.memLp_id μ 2 (by simp)
 
+-- todo: modify IsGaussian.memLp_dual to use this
 lemma _root_.ContinuousLinearMap.memLp {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E]
+    [NormedAddCommGroup E] [NormedSpace ℝ E] {_ : MeasurableSpace E}
     {p : ℝ≥0∞} {μ : Measure E} (h : MemLp id p μ) (L : Dual ℝ E) :
     MemLp L p μ := L.comp_memLp' h
+
+lemma _root_.ContinuousLinearMap.memLp_two {E : Type*}
+    [NormedAddCommGroup E] [NormedSpace ℝ E] {_ : MeasurableSpace E}
+    {μ : Measure E} [HasTwoMoments μ] (L : Dual ℝ E) :
+    MemLp L 2 μ := L.memLp memLp_two_id
 
 -- added in another PR
 lemma covarianceBilin_apply' [IsFiniteMeasure μ] (h : MemLp id 2 μ) (L₁ L₂ : Dual ℝ E) :
@@ -251,17 +259,17 @@ lemma centeredToLp_apply [IsFiniteMeasure μ] (hμp : MemLp id p μ) (L : Dual �
 
 lemma norm_centeredToLp_two [HasTwoMoments μ] (L : Dual ℝ E) :
     ‖Dual.centeredToLp μ 2 L‖ = √(covarianceBilin μ L L) := by
-  simp only [covarianceBilin_apply' memLp_id_two, id_eq]
+  simp only [covarianceBilin_apply' memLp_two_id, id_eq]
   rw [norm_eq_sqrt_real_inner]
   congr
   refine integral_congr_ae ?_
-  filter_upwards [centeredToLp_apply memLp_id_two L] with x hx
+  filter_upwards [centeredToLp_apply memLp_two_id L] with x hx
   simp [hx]
 
 lemma sq_norm_centeredToLp_two [HasTwoMoments μ] (L : Dual ℝ E) :
     ‖Dual.centeredToLp μ 2 L‖ ^ 2 = covarianceBilin μ L L := by
   rw [norm_centeredToLp_two, Real.sq_sqrt]
-  rw [covarianceBilin_same_eq_variance memLp_id_two]
+  rw [covarianceBilin_same_eq_variance memLp_two_id]
   exact variance_nonneg _ _
 
 end centeredToLp
@@ -308,7 +316,7 @@ lemma norm_ofDual (L : Dual ℝ E) : ‖ofDual μ L‖ = √(covarianceBilin μ 
 
 lemma sq_norm_ofDual (L : Dual ℝ E) : ‖ofDual μ L‖ ^ 2 = covarianceBilin μ L L := by
   rw [norm_ofDual, Real.sq_sqrt]
-  rw [covarianceBilin_same_eq_variance memLp_id_two]
+  rw [covarianceBilin_same_eq_variance memLp_two_id]
   exact variance_nonneg _ _
 
 end CameronMartin
@@ -452,12 +460,12 @@ lemma toInit_eq (x : Submodule.map (Dual.centeredToLp μ 2) ⊤) {L : Dual ℝ E
     rw [toInit]
     conv_rhs => rw [← (Submodule.mem_map.mp x.2).choose_spec.2]
     refine integral_congr_ae ?_
-    filter_upwards [centeredToLp_apply memLp_id_two (Submodule.mem_map.mp x.2).choose] with y hy
+    filter_upwards [centeredToLp_apply memLp_two_id (Submodule.mem_map.mp x.2).choose] with y hy
     rw [hy]
   _ = ∫ y, Dual.centeredToLp μ 2 L y • (y - ∫ z, z ∂μ) ∂μ := by rw [hL]
   _ = ∫ y, L (y - ∫ z, z ∂μ) • (y - ∫ z, z ∂μ) ∂μ := by
     refine integral_congr_ae ?_
-    filter_upwards [centeredToLp_apply memLp_id_two L] with y hy using by rw [hy]
+    filter_upwards [centeredToLp_apply memLp_two_id L] with y hy using by rw [hy]
 
 lemma apply_toInit (x : Submodule.map (Dual.centeredToLp μ 2) ⊤) (L : Dual ℝ E) :
     L (toInit μ x)
@@ -468,17 +476,17 @@ lemma apply_toInit (x : Submodule.map (Dual.centeredToLp μ 2) ⊤) (L : Dual �
   simp only [Submodule.mem_top, true_and, map_sub, norm_smul]
   refine MemLp.integrable_mul (p := 2) (q := 2) ?_ ?_
   · rw [memLp_norm_iff (by fun_prop)]
-    exact MemLp.sub (ContinuousLinearMap.memLp memLp_id_two _) (memLp_const _)
+    exact (ContinuousLinearMap.memLp_two _).sub (memLp_const _)
   · rw [memLp_norm_iff (by fun_prop)]
-    exact MemLp.sub memLp_id_two (memLp_const _)
+    exact MemLp.sub memLp_two_id (memLp_const _)
 
 lemma apply_toInit_eq_inner (x : Submodule.map (Dual.centeredToLp μ 2) ⊤) (L : Dual ℝ E) :
     L (toInit μ x) = ⟪Dual.centeredToLp μ 2 L, x⟫_ℝ := by
   rw [← (Submodule.mem_map.mp x.2).choose_spec.2, L2.inner_def, apply_toInit]
   simp only [RCLike.inner_apply, conj_trivial]
   refine integral_congr_ae ?_
-  filter_upwards [centeredToLp_apply memLp_id_two L,
-    centeredToLp_apply memLp_id_two (Submodule.mem_map.mp x.2).choose]
+  filter_upwards [centeredToLp_apply memLp_two_id L,
+    centeredToLp_apply memLp_two_id (Submodule.mem_map.mp x.2).choose]
     with y hy₁ hy₂
   rw [hy₁, hy₂]
 
