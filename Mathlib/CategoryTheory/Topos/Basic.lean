@@ -51,7 +51,7 @@ namespace ElementaryTopos
 
 variable {ℰ} [HasPullbacks ℰ] [ElementaryTopos ℰ]
 
-/-- The P-transpose of a morphism `g : B × A ⟶ Ω`. -/
+/-- The P-transpose of a morphism `g : A ⟶ P B`. -/
 def hat {A : ℰ} (B : ℰ) (g : A ⟶ P B) : B ⊗ A ⟶ hc.Ω :=
   (hP B).homEquiv.toFun g
 
@@ -70,5 +70,7 @@ lemma unhat_hat {A B : ℰ} (g : A ⟶ P B) :
 /-- The element relation as a subobject of `B ⨯ (P B)`. -/
 def ε_ (B : ℰ) : B ⊗ (P B) ⟶ hc.Ω :=
   (hP B).homEquiv.toFun (𝟙 (P B))
+
+def comm {A B : ℰ} (f : B ⊗ A ⟶ hc.Ω) : f = (B ◁ (unhat f)) ≫ (ε_ B) := sorry
 
 end ElementaryTopos
