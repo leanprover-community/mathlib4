@@ -5,7 +5,6 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu
 -/
 import Mathlib.Algebra.Algebra.Opposite
 import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.BigOperators.RingEquiv
 import Mathlib.Data.Finite.Prod
 import Mathlib.Data.Matrix.Mul
@@ -692,21 +691,6 @@ def matrix (S : Submodule R M) : Submodule R (Matrix m n M) where
   smul_mem' _ _ hm i j := Submodule.smul_mem _ _ (hm i j)
 
 end Submodule
-
-namespace Subalgebra
-
-variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
-variable [Fintype n] [DecidableEq n]
-
-/-- A version of `Set.matrix` for `Subalgebra`s.
-Given a `Subalgebra` `S`, `S.matrix` is the `Subalgebra` of square matrices `m`
-all of whose entries `m i j` belong to `S`. -/
-def matrix (S : Subalgebra R A) : Subalgebra R (Matrix n n A) where
-  __ := S.toSubsemiring.matrix
-  algebraMap_mem' _ :=
-    (diagonal_mem_matrix (Subalgebra.zero_mem _)).mpr (fun _ => Subalgebra.algebraMap_mem _ _)
-
-end Subalgebra
 
 open Matrix
 
