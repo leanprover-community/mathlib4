@@ -32,7 +32,7 @@ def WhiskeredHom (B C : ℰ) : ℰᵒᵖ ⥤ Type v :=
       have : B ◁ unop (f ≫ f') = B ◁ unop f' ≫ B ◁ unop f := by aesop_cat
       ext; simp[this] ⟩
 
-/-- `P` is a power object of `B` if the functor `WhiskeredHom B P` is representable. -/
+/-- `P` is a power object of `B` if it represents the functor `WhiskeredHom B hc.Ω`. -/
 def IsPowerObjectOf (hc : Classifier ℰ (𝟙_ ℰ)) (B P : ℰ) :=
   RepresentableBy (WhiskeredHom B hc.Ω) P
 
