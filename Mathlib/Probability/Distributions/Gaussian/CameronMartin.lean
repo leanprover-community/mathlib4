@@ -96,16 +96,17 @@ lemma InnerProductSpace.norm_eq_ciSup_inner {E : Type*} [NormedAddCommGroup E]
 
 namespace UniformSpace.Completion
 
-/-- Extension of a continuous linear map `E →L[R] F` into a complete space to the completion of `E`,
-giving a continuous linear map `Completion E →L[R] F`. -/
-noncomputable
-def continuousLinearMapExtension (R : Type*) {E F : Type*} [Semiring R]
+variable {R E F : Type*} [Semiring R]
     [UniformSpace E] [AddCommGroup E] [IsUniformAddGroup E]
     [Module R E] [UniformContinuousConstSMul R E]
     [UniformSpace F] [AddCommGroup F] [IsUniformAddGroup F]
     [Module R F] [UniformContinuousConstSMul R F] [T2Space F] [CompleteSpace F]
-    (f : E →L[R] F) :
-    Completion E →L[R] F where
+
+variable (R) in
+/-- Extension of a continuous linear map `E →L[R] F` into a complete space to the completion of `E`,
+giving a continuous linear map `Completion E →L[R] F`. -/
+noncomputable
+def continuousLinearMapExtension (f : E →L[R] F) : Completion E →L[R] F where
   toFun x := Completion.extension f x
   map_add' x₁ x₂ := by
     refine Completion.induction_on₂ x₁ x₂ ?_ fun x₁' x₂' ↦ ?_
@@ -129,24 +130,13 @@ def continuousLinearMapExtension (R : Type*) {E F : Type*} [Semiring R]
       · congr
         norm_cast
       all_goals exact ContinuousLinearMap.uniformContinuous _
-  cont := continuous_extension
 
-lemma continuousLinearMapExtension_apply {R E F : Type*} [Semiring R]
-    [UniformSpace E] [AddCommGroup E] [IsUniformAddGroup E]
-    [Module R E] [UniformContinuousConstSMul R E]
-    [UniformSpace F] [AddCommGroup F] [IsUniformAddGroup F]
-    [Module R F] [UniformContinuousConstSMul R F] [T2Space F] [CompleteSpace F]
-    (f : E →L[R] F) (x : Completion E) :
+lemma continuousLinearMapExtension_apply (f : E →L[R] F) (x : Completion E) :
     Completion.continuousLinearMapExtension R f x = Completion.extension f x := by
   simp [continuousLinearMapExtension]
 
 @[simp]
-lemma continuousLinearMapExtension_coe {R E F : Type*} [Semiring R]
-    [UniformSpace E] [AddCommGroup E] [IsUniformAddGroup E]
-    [Module R E] [UniformContinuousConstSMul R E]
-    [UniformSpace F] [AddCommGroup F] [IsUniformAddGroup F]
-    [Module R F] [UniformContinuousConstSMul R F] [T2Space F] [CompleteSpace F]
-    (f : E →L[R] F) (x : E) :
+lemma continuousLinearMapExtension_coe (f : E →L[R] F) (x : E) :
     Completion.continuousLinearMapExtension R f x = f x := by
   simp [continuousLinearMapExtension, extension_coe f.uniformContinuous]
 
@@ -194,12 +184,27 @@ lemma norm_eval_le_norm_mul_ciSup {E G : Type*}
 
 namespace ProbabilityTheory
 
+/-- A finite measure has two moments if `∫ x, x ^ 2 ∂μ < ∞`, that is if `MemLp id 2 μ`. -/
+class HasTwoMoments {E : Type*} {_ : MeasurableSpace E} [ENorm E] [TopologicalSpace E]
+    (μ : Measure E) extends IsFiniteMeasure μ where
+  memLp_two : MemLp id 2 μ
+
+lemma memLp_id_two {E : Type*} {_ : MeasurableSpace E} [ENorm E] [TopologicalSpace E]
+    {μ : Measure E} [HasTwoMoments μ] : MemLp id 2 μ := HasTwoMoments.memLp_two
+
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
-  [CompleteSpace E] [SecondCountableTopology E]
-  {μ : Measure E} {p : ℝ≥0∞} [Fact (1 ≤ p)]
+  [CompleteSpace E]
+  {μ : Measure E} {p : ℝ≥0∞} [Fact (1 ≤ p)] {y : E}
+
+instance [SecondCountableTopology E] [IsGaussian μ] : HasTwoMoments μ where
+  memLp_two := IsGaussian.memLp_id μ 2 (by simp)
+
+lemma _root_.ContinuousLinearMap.memLp {E : Type*}
+    [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E]
+    {p : ℝ≥0∞} {μ : Measure E} (h : MemLp id p μ) (L : Dual ℝ E) :
+    MemLp L p μ := L.comp_memLp' h
 
 -- added in another PR
-omit [SecondCountableTopology E] in
 lemma covarianceBilin_apply' [IsFiniteMeasure μ] (h : MemLp id 2 μ) (L₁ L₂ : Dual ℝ E) :
     covarianceBilin μ L₁ L₂ = ∫ x, L₁ (x - μ[id]) * L₂ (x - μ[id]) ∂μ := by
   rw [covarianceBilin_apply h]
@@ -215,46 +220,51 @@ noncomputable
 def integralDualCLM (μ : Measure E) : Dual ℝ E →L[ℝ] ℝ := L1.integralCLM.comp (Dual.toLp μ 1)
 
 /-- The function `L ↦ L (x - μ[id])` as a continuous linear map from the dual to `Lp ℝ p μ`.
-This definition takes meaningful values only if the measure has a first moment and a moment of
-order `p` (`MemLp id 1 μ` and `MemLp id p μ`). -/
+This definition takes meaningful values only if the measure has a moment of order `p`
+(`MemLp id p μ`). -/
 noncomputable
 def Dual.centeredToLp (μ : Measure E) [IsFiniteMeasure μ] (p : ℝ≥0∞) [Fact (1 ≤ p)] :
     Dual ℝ E →L[ℝ] Lp ℝ p μ :=
   Dual.toLp μ p - (Lp.constL p μ ℝ).comp (integralDualCLM μ)
 
-lemma centeredToLp_apply (μ : Measure E) [IsGaussian μ] (hp : p ≠ ∞) (L : Dual ℝ E) :
+lemma centeredToLp_apply [IsFiniteMeasure μ] (hμp : MemLp id p μ) (L : Dual ℝ E) :
     Dual.centeredToLp μ p L =ᵐ[μ] fun x ↦ L (x - ∫ z, z ∂μ) := by
+  have hμ1 : MemLp id 1 μ := MemLp.mono_exponent hμp (Fact.out (p := 1 ≤ p))
+  by_cases hμ_zero : μ = 0
+  · simp only [hμ_zero, ae_zero, integral_zero_measure, sub_zero]
+    exact trivial
+  replace hμ_zero : NeZero μ := ⟨hμ_zero⟩
   simp only [Dual.centeredToLp, ContinuousLinearMap.coe_sub', Pi.sub_apply,
     AddSubgroupClass.coe_sub, map_sub]
-  filter_upwards [Dual.toLp_apply_ae (IsGaussian.memLp_id μ p hp) L,
+  filter_upwards [Dual.toLp_apply_ae hμp L,
     Lp.coeFn_sub (Dual.toLp μ p L) ((Lp.constL p μ ℝ).comp (integralDualCLM μ) L)] with x hx₁ hx₂
   simp only [AddSubgroupClass.coe_sub, Pi.sub_apply] at hx₂
   rw [← hx₁, hx₂]
   congr
   simp only [integralDualCLM, ContinuousLinearMap.coe_comp', Function.comp_apply,
     Lp.constL_apply, Lp.const_val, AEEqFun.coeFn_const_eq]
-  rw [← L1.integral_eq, L1.integral_eq_integral, ← IsGaussian.integral_dual]
+  have h_int_eq := L.integral_comp_comm (hμ1.integrable le_rfl)
+  simp only [id_eq] at h_int_eq
+  rw [← L1.integral_eq, L1.integral_eq_integral, ← h_int_eq]
   refine integral_congr_ae ?_
-  exact Dual.toLp_apply_ae (IsGaussian.memLp_id μ 1 (by simp)) L
+  exact Dual.toLp_apply_ae hμ1 L
 
-lemma norm_centeredToLp [IsGaussian μ] (L : Dual ℝ E) :
+lemma norm_centeredToLp_two [HasTwoMoments μ] (L : Dual ℝ E) :
     ‖Dual.centeredToLp μ 2 L‖ = √(covarianceBilin μ L L) := by
-  simp only [covarianceBilin_apply' (IsGaussian.memLp_id μ 2 (by simp)), id_eq]
+  simp only [covarianceBilin_apply' memLp_id_two, id_eq]
   rw [norm_eq_sqrt_real_inner]
   congr
   refine integral_congr_ae ?_
-  filter_upwards [centeredToLp_apply μ (by simp : 2 ≠ ∞) L] with x hx
+  filter_upwards [centeredToLp_apply memLp_id_two L] with x hx
   simp [hx]
 
-lemma sq_norm_centeredToLp [IsGaussian μ] (L : Dual ℝ E) :
+lemma sq_norm_centeredToLp_two [HasTwoMoments μ] (L : Dual ℝ E) :
     ‖Dual.centeredToLp μ 2 L‖ ^ 2 = covarianceBilin μ L L := by
-  rw [norm_centeredToLp, Real.sq_sqrt]
-  rw [covarianceBilin_same_eq_variance (IsGaussian.memLp_id μ 2 (by simp))]
+  rw [norm_centeredToLp_two, Real.sq_sqrt]
+  rw [covarianceBilin_same_eq_variance memLp_id_two]
   exact variance_nonneg _ _
 
 end centeredToLp
-
-variable [IsGaussian μ]
 
 section CameronMartinSpace
 
@@ -264,12 +274,13 @@ noncomputable
 abbrev CameronMartin (μ : Measure E) [IsFiniteMeasure μ] :=
   Completion (Submodule.map (Dual.centeredToLp μ 2) ⊤)
 
--- Uncomment the following lines to check that we can synthesize instances for `CameronMartin μ`:
+-- Uncomment the following lines to check that `CameronMartin μ` is a Hilbert space:
 -- #synth NormedAddCommGroup (CameronMartin μ)
 -- #synth InnerProductSpace ℝ (CameronMartin μ)
 -- #synth CompleteSpace (CameronMartin μ)
 
-instance (μ : Measure E) [IsFiniteMeasure μ] : SecondCountableTopology (CameronMartin μ) := by
+instance [SecondCountableTopology E] (μ : Measure E) [IsFiniteMeasure μ] :
+    SecondCountableTopology (CameronMartin μ) := by
   suffices SecondCountableTopology (Submodule.map (Dual.centeredToLp μ 2) ⊤) by infer_instance
   have : Fact (2 ≠ ∞) := ⟨by simp⟩
   exact TopologicalSpace.Subtype.secondCountableTopology _
@@ -282,7 +293,9 @@ def ofDual (μ : Measure E) [IsFiniteMeasure μ] : Dual ℝ E →ₗ[ℝ] Camero
   Completion.toComplL.toLinearMap.comp (((Dual.centeredToLp μ 2).submoduleMap ⊤).comp
     (Submodule.topEquiv (R := ℝ) (M := Dual ℝ E)).symm.toLinearMap)
 
-omit [CompleteSpace E] [SecondCountableTopology E] in
+variable [HasTwoMoments μ]
+
+omit [CompleteSpace E] in
 lemma ofDual_apply (L : Dual ℝ E) :
     ofDual μ L
       = (⟨Dual.centeredToLp μ 2 L, Submodule.mem_map.mpr ⟨L, by simp, rfl⟩⟩ :
@@ -291,11 +304,11 @@ lemma ofDual_apply (L : Dual ℝ E) :
 lemma norm_ofDual (L : Dual ℝ E) : ‖ofDual μ L‖ = √(covarianceBilin μ L L) := by
   rw [ofDual_apply]
   simp only [Completion.norm_coe, AddSubgroupClass.coe_norm]
-  exact norm_centeredToLp _
+  exact norm_centeredToLp_two _
 
 lemma sq_norm_ofDual (L : Dual ℝ E) : ‖ofDual μ L‖ ^ 2 = covarianceBilin μ L L := by
   rw [norm_ofDual, Real.sq_sqrt]
-  rw [covarianceBilin_same_eq_variance (IsGaussian.memLp_id μ 2 (by simp))]
+  rw [covarianceBilin_same_eq_variance memLp_id_two]
   exact variance_nonneg _ _
 
 end CameronMartin
@@ -304,7 +317,7 @@ end CameronMartinSpace
 
 section EvaluationMap
 
-variable {y : E}
+variable [HasTwoMoments μ]
 
 namespace CameronMartinAux -- namespace for auxiliary definitions and lemmas
 
@@ -312,14 +325,14 @@ namespace CameronMartinAux -- namespace for auxiliary definitions and lemmas
 `x` at `y : E` by taking `L y` for an arbitrary `L : Dual ℝ E` that is sent to `x`.
 This is an auxiliary definition for `CameronMartin.eval`. -/
 noncomputable
-def evalL2 (μ : Measure E) [IsGaussian μ] (y : E) (x : Submodule.map (Dual.centeredToLp μ 2) ⊤) :
+def evalL2 (μ : Measure E) [HasTwoMoments μ] (y : E) (x : Submodule.map (Dual.centeredToLp μ 2) ⊤) :
     ℝ :=
   (Submodule.mem_map.mp x.2).choose y
 
 lemma norm_eval_le_norm_centeredToLp_mul (hy : ∃ M, ∀ L, covarianceBilin μ L L ≤ 1 → L y ≤ M)
     (L : Dual ℝ E) :
     ‖L y‖ ≤ ‖Dual.centeredToLp μ 2 L‖ * ⨆ (L') (_ : covarianceBilin μ L' L' ≤ 1), L' y := by
-  simp_rw [← sq_norm_centeredToLp, sq_le_one_iff_abs_le_one, abs_norm] at hy ⊢
+  simp_rw [← sq_norm_centeredToLp_two, sq_le_one_iff_abs_le_one, abs_norm] at hy ⊢
   exact norm_eval_le_norm_mul_ciSup (Dual.centeredToLp μ 2).toLinearMap hy L
 
 lemma norm_evalL2_le (hy : ∃ M, ∀ L, covarianceBilin μ L L ≤ 1 → L y ≤ M)
@@ -362,7 +375,7 @@ This map is defined for `y` with bounded Cameron-Martin norm, i.e., such that th
 `∀ L : Dual ℝ E, covarianceBilin μ L L ≤ 1 → L y ≤ M`.
 It satisfies `eval μ y hy (ofDual μ L) = L y`. -/
 noncomputable
-def eval (μ : Measure E) [IsGaussian μ] (y : E)
+def eval (μ : Measure E) [HasTwoMoments μ] (y : E)
     (hy : ∃ M, ∀ L, covarianceBilin μ L L ≤ 1 → L y ≤ M) :
     Dual ℝ (CameronMartin μ) :=
   Completion.continuousLinearMapExtension ℝ <|
@@ -395,7 +408,7 @@ lemma eval_ofDual (hy : ∃ M, ∀ L, covarianceBilin μ L L ≤ 1 → L y ≤ M
 of `μ`. This takes a meaningful value only if the argument has bounded Cameron-Martin norm,
 and takes the default value zero otherwise. -/
 noncomputable
-def ofBounded (μ : Measure E) [IsGaussian μ] (y : E)
+def ofBounded (μ : Measure E) [HasTwoMoments μ] (y : E)
     [Decidable (∃ M, ∀ L, covarianceBilin μ L L ≤ 1 → L y ≤ M)] :
     CameronMartin μ :=
   if hy : ∃ M, ∀ L, covarianceBilin μ L L ≤ 1 → L y ≤ M
@@ -418,6 +431,8 @@ end EvaluationMap
 
 section ToInitialSpace
 
+variable [SecondCountableTopology E] [HasTwoMoments μ]
+
 namespace CameronMartinAux -- namespace for auxiliary definitions and lemmas
 
 /-- From `x` in the image of `Dual ℝ E` by `Dual.centeredToLp μ 2`, we define a point of `E` by
@@ -428,6 +443,7 @@ noncomputable
 def toInit (μ : Measure E) [IsFiniteMeasure μ] (x : Submodule.map (Dual.centeredToLp μ 2) ⊤) : E :=
   ∫ y, (Submodule.mem_map.mp x.2).choose (y - ∫ z, z ∂μ) • (y - ∫ z, z ∂μ) ∂μ
 
+omit [SecondCountableTopology E] in
 lemma toInit_eq (x : Submodule.map (Dual.centeredToLp μ 2) ⊤) {L : Dual ℝ E}
     (hL : Dual.centeredToLp μ 2 L = x) :
     toInit μ x = ∫ y, L (y - ∫ z, z ∂μ) • (y - ∫ z, z ∂μ) ∂μ :=
@@ -436,13 +452,12 @@ lemma toInit_eq (x : Submodule.map (Dual.centeredToLp μ 2) ⊤) {L : Dual ℝ E
     rw [toInit]
     conv_rhs => rw [← (Submodule.mem_map.mp x.2).choose_spec.2]
     refine integral_congr_ae ?_
-    filter_upwards [centeredToLp_apply μ (by simp : 2 ≠ ∞) (Submodule.mem_map.mp x.2).choose]
-      with y hy
+    filter_upwards [centeredToLp_apply memLp_id_two (Submodule.mem_map.mp x.2).choose] with y hy
     rw [hy]
   _ = ∫ y, Dual.centeredToLp μ 2 L y • (y - ∫ z, z ∂μ) ∂μ := by rw [hL]
   _ = ∫ y, L (y - ∫ z, z ∂μ) • (y - ∫ z, z ∂μ) ∂μ := by
     refine integral_congr_ae ?_
-    filter_upwards [centeredToLp_apply μ (by simp : 2 ≠ ∞) L] with y hy using by rw [hy]
+    filter_upwards [centeredToLp_apply memLp_id_two L] with y hy using by rw [hy]
 
 lemma apply_toInit (x : Submodule.map (Dual.centeredToLp μ 2) ⊤) (L : Dual ℝ E) :
     L (toInit μ x)
@@ -453,17 +468,18 @@ lemma apply_toInit (x : Submodule.map (Dual.centeredToLp μ 2) ⊤) (L : Dual �
   simp only [Submodule.mem_top, true_and, map_sub, norm_smul]
   refine MemLp.integrable_mul (p := 2) (q := 2) ?_ ?_
   · rw [memLp_norm_iff (by fun_prop)]
-    exact MemLp.sub (IsGaussian.memLp_dual μ _ 2 (by simp)) (memLp_const _)
+    exact MemLp.sub (ContinuousLinearMap.memLp memLp_id_two _) (memLp_const _)
   · rw [memLp_norm_iff (by fun_prop)]
-    exact MemLp.sub (IsGaussian.memLp_id μ 2 (by simp)) (memLp_const _)
+    exact MemLp.sub memLp_id_two (memLp_const _)
 
 lemma apply_toInit_eq_inner (x : Submodule.map (Dual.centeredToLp μ 2) ⊤) (L : Dual ℝ E) :
     L (toInit μ x) = ⟪Dual.centeredToLp μ 2 L, x⟫_ℝ := by
   rw [← (Submodule.mem_map.mp x.2).choose_spec.2, L2.inner_def, apply_toInit]
   simp only [RCLike.inner_apply, conj_trivial]
   refine integral_congr_ae ?_
-  filter_upwards [centeredToLp_apply μ (by simp : 2 ≠ ∞) L,
-    centeredToLp_apply μ (by simp : 2 ≠ ∞) (Submodule.mem_map.mp x.2).choose] with y hy₁ hy₂
+  filter_upwards [centeredToLp_apply memLp_id_two L,
+    centeredToLp_apply memLp_id_two (Submodule.mem_map.mp x.2).choose]
+    with y hy₁ hy₂
   rw [hy₁, hy₂]
 
 lemma norm_toInit_le (x : Submodule.map (Dual.centeredToLp μ 2) ⊤) :
@@ -487,7 +503,7 @@ which that measure is defined. This map is injective: see `toInitialSpace_inject
 Therefore, we can see the Cameron-Martin space as a subspace of the initial space, with a different
 norm. -/
 noncomputable
-def toInitialSpace (μ : Measure E) [IsGaussian μ] : CameronMartin μ →L[ℝ] E :=
+def toInitialSpace (μ : Measure E) [HasTwoMoments μ] : CameronMartin μ →L[ℝ] E :=
   Completion.continuousLinearMapExtension ℝ <|
   LinearMap.mkContinuous
     { toFun x := toInit μ x
@@ -547,7 +563,8 @@ end ToInitialSpace
 
 namespace CameronMartin
 
-variable {y : E} [Decidable (∃ M, ∀ L, covarianceBilin μ L L ≤ 1 → L y ≤ M)]
+variable [SecondCountableTopology E] [HasTwoMoments μ]
+  [Decidable (∃ M, ∀ L, covarianceBilin μ L L ≤ 1 → L y ≤ M)]
 
 @[simp]
 lemma toInitialSpace_ofBounded (hy : ∃ M, ∀ L, covarianceBilin μ L L ≤ 1 → L y ≤ M) :
