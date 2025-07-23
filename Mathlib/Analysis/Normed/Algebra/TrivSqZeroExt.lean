@@ -195,8 +195,31 @@ variable [SeminormedCommRing S] [SeminormedRing R] [SeminormedAddCommGroup M]
 variable [Algebra S R] [Module S M]
 variable [IsBoundedSMul S R] [IsBoundedSMul S M]
 
+instance : PseudoMetricSpace (tsze R M) :=
+  PseudoMetricSpace.replaceUniformity
+    (SeminormedAddCommGroup.induced _ (WithLp 1 (R × M))
+    ({ toFun := WithLp.toLp 1, map_zero' := WithLp.toLp_zero 1, map_add' := WithLp.toLp_add 1 } :
+      AddMonoidHom _ _)).toPseudoMetricSpace
+    (by
+      set a := (SeminormedAddCommGroup.induced _ (WithLp 1 (R × M))
+    ({ toFun := WithLp.toLp 1, map_zero' := WithLp.toLp_zero 1, map_add' := WithLp.toLp_add 1 } :
+      AddMonoidHom _ _)).toPseudoEMetricSpace.toUniformSpace
+      simp [a]
+      rw [← UniformSpace.comap_comap])
+    --   letI : UniformSpace (tsze R M) := (SeminormedAddCommGroup.induced _ (WithLp 1 (R × M))
+    -- ({ toFun := WithLp.toLp 1, map_zero' := WithLp.toLp_zero 1, map_add' := WithLp.toLp_add 1 } :
+    --   AddMonoidHom _ _)).toPseudoMetricSpace.toUniformSpace
+    --   rw [← IsUniformInducing.comap_uniformity
+    --     (f := @WithLp.toLp 1 (R × M) ∘ (id : tsze R M → R × M))]
+    --   · simp [WithLp.instProdUniformSpace]
+    --     rw [← UniformSpace.comap_comap ]
+    --     rfl
+    --   · apply AntilipschitzWith.isUniformInducing)
+
 instance instL1SeminormedAddCommGroup : SeminormedAddCommGroup (tsze R M) :=
-  inferInstanceAs <| SeminormedAddCommGroup (WithLp 1 <| R × M)
+  SeminormedAddCommGroup.induced _ (WithLp 1 (R × M))
+    ({ toFun := WithLp.toLp 1, map_zero' := WithLp.toLp_zero 1, map_add' := WithLp.toLp_add 1 } :
+      AddMonoidHom _ _)
 
 example :
     (TrivSqZeroExt.instUniformSpace : UniformSpace (tsze R M)) =
