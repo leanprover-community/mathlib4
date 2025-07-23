@@ -604,6 +604,7 @@ theorem doubling_lt_two {ε : ℝ} (hε₀ : 0 < ε) (hε₁ : ε ≤ 1) (hA : A
       change a ∈ n⁻¹ •> (N : Set G) at ha
       simpa only [← coe_smul_finset, mem_coe] using ha
   )
+  have H_eq_HH : (H : Set G) = H * H := by field_simp
 
   let preZ := {cH ∈ orbit Gᵐᵒᵖ (H : Set G) | (cH ∩ (H * A)).Nonempty}
   have fin_preZ : preZ.Finite := by
@@ -637,38 +638,103 @@ theorem doubling_lt_two {ε : ℝ} (hε₀ : 0 < ε) (hε₁ : ε ≤ 1) (hA : A
     exact Finite.Set.finite_of_finite_image preZ inj_f_preZ
 
   let preZ' := fin_preZ.toFinset
-  have elts_preZ'_nonempty {cH : Set G} (hcH : cH ∈ preZ') : (cH ∩ (H * A)).Nonempty := by
+  have elts_preZ'_nonempty (cH : Set G) (hcH : cH ∈ preZ') : (cH ∩ (H * A)).Nonempty := by
     rw [Set.Finite.mem_toFinset, Set.mem_setOf] at hcH
     exact hcH.2
 
-  choose! chooseZ chooseZ_spec using elts_preZ'_nonempty
-  --let Z := image chooseZ preZ'
-  sorry
+  choose! chooseZ' chooseZ'_spec using elts_preZ'_nonempty
+  let Z' := image chooseZ' preZ'
 
-  -- obtain ⟨S, hS₁, hS₂⟩ := hS
+  have Z'_subset_HA : (Z' : Set G) ⊆ H * A := by
+    simpa [Z', Finset.image_subset_iff] using fun x hx ↦ (chooseZ'_spec _ hx).2
 
-  -- refine ⟨H, fintypeH, ?cardH, S, ?cardS, ?A_subset_HS⟩
+  change ∀ (z : G), z ∈ (Z' : Set G) → z ∈ (H : Set G) * A at Z'_subset_HA
+  simp only [mem_coe, Set.mem_mul] at Z'_subset_HA
+  choose! toH h_toH toA h_toA h_toH_toA using Z'_subset_HA
+  let toZ := fun z' => (toH z')⁻¹ * z'
+  let Z := image toZ Z'
 
-  -- case cardH =>
-  --   have : ε / 2 * (Fintype.card H) ≤ (1 - ε / 2) * #A := by
-  --     calc
-  --           ε / 2 * (Fintype.card H)
-  --       _ = ε / 2 * #(H : Set G).toFinset         := by simp [Set.toFinset_card]
-  --       _ = ε / 2 * #(n⁻¹ •> N : Set G).toFinset  := by abel
-  --       _ = ε / 2 * #(n⁻¹ •> N)                   := by simp
-  --       _ ≤ em.toFun (n⁻¹ •> N)                   := min_em (n⁻¹ •> N)
-  --       _ = em.toFun N                            := em.left_invariant N n⁻¹
-  --       _ = κ                                     := N_atom.1
-  --       _ ≤ em.toFun S := κ_min (card_pos.mp (lt_of_lt_of_le (card_pos.mpr hA) hS₁))
-  --       _ = #(S * A) - K * #S                     := by rfl
-  --       _ ≤ (2 - ε) * #A - (1 - ε / 2) * #A       := by gcongr; linarith
-  --       _ = (1 - ε / 2) * #A                      := by linarith
-  --   rw [← mul_le_mul_left (by positivity)]
-  --   have : ε / 2 * ((2 / ε - 1) * #A) = (1 - ε / 2) * #A := by field_simp; ring1
-  --   linarith
+  have Z_subset_A : Z ⊆ A := by
+    intro z hz
+    obtain ⟨z', hz'₁, hz'₂⟩ := mem_image.mp hz
+    unfold toZ at hz'₂
+    rw [← hz'₂, inv_mul_eq_of_eq_mul (Eq.symm (h_toH_toA z' hz'₁))]
+    exact h_toA z' hz'₁
 
-  -- · sorry
-  -- · sorry
+  have HZ_eq_HA : (H : Set G) * Z = H * A := by
+    apply Set.Subset.antisymm (Set.mul_subset_mul_left (coe_subset.mpr Z_subset_A))
+    intro x hx
+    obtain ⟨h, hh, a, ha, hha⟩ := Set.mem_mul.mp hx
+    rw [← hha, H_eq_HH, mul_assoc]
+    apply Set.mul_mem_mul hh
+    let ca := (H : Set G) <• a
+    have ca_in_preZ' : ca ∈ preZ' := by
+      rw [Set.Finite.mem_toFinset, Set.mem_setOf]
+      constructor
+      · simp_all [ca]
+      · use a
+        constructor
+        · rw [← one_mul a]
+          exact mem_rightCoset a (one_mem H)
+        · rw [← one_mul a]
+          exact Set.mul_mem_mul H.one_mem ha
+    let z := toZ (chooseZ' ca)
+    have z_in_ca : z ∈ ca := by
+      unfold z toZ
+      unfold preZ' at ca_in_preZ'
+      nth_rw 1 [rightCoset_eq_of_mem ((Set.Finite.mem_toFinset _).mp ca_in_preZ').1
+            (chooseZ'_spec _ ca_in_preZ').1]
+      apply mem_rightCoset
+      simp
+      exact h_toH _ (mem_image_of_mem chooseZ' ca_in_preZ')
+    have z_in_Z : z ∈ Z := mem_image_of_mem _ (mem_image_of_mem _ ca_in_preZ')
+    have a_in_Hz : a ∈ (H: Set G) <• z := by
+      rw [mem_rightCoset_iff, SetLike.mem_coe]
+      rw [mem_rightCoset_iff, SetLike.mem_coe] at z_in_ca
+      apply inv_mem at z_in_ca
+      simp_all
+    exact Set.op_smul_set_subset_mul z_in_Z a_in_Hz
+
+  have HZ_eq_HA_finset : Set.toFinset H * Z = Set.toFinset H * A := by
+    simpa [← coe_inj, coe_mul] using HZ_eq_HA
+
+  have card_mul_eq_mul_card : #(Set.toFinset H * Z) = Fintype.card H * #Z := by
+    simp [← SetLike.coe_sort_coe, ← Set.toFinset_card, card_mul_iff]
+    unfold Set.InjOn
+    simp only [Set.mem_prod, SetLike.mem_coe, mem_coe, and_imp, Prod.forall, Prod.mk.injEq]
+    intro h₁ z₁ hh₁ hz₁ h₂ z₂ hh₂ hz₂ h
+    sorry
+
+  obtain ⟨S, hS₁, hS₂⟩ := hS
+  have calc₁ : em.toFun (Set.toFinset H) ≤ (1 - ε / 2) * #A := by
+    calc
+          em.toFun (Set.toFinset H)
+      _ = em.toFun (n⁻¹ •> N : Set G).toFinset  := by abel
+      _ = em.toFun (n⁻¹ •> N)                   := by simp
+      _ = em.toFun N                            := em.left_invariant _ _
+      _ = κ                                     := N_atom.1
+      _ ≤ em.toFun S := κ_min (card_pos.mp (lt_of_lt_of_le (card_pos.mpr hA) hS₁))
+      _ = #(S * A) - K * #S                     := by rfl
+      _ ≤ (2 - ε) * #A - (1 - ε / 2) * #A       := by gcongr; linarith
+      _ = (1 - ε / 2) * #A                      := by linarith
+
+  refine ⟨H, fintypeH, ?cardH, Z, ?cardZ, ?A_subset_HZ⟩
+
+  case cardH =>
+    have : ε / 2 * (Fintype.card H) ≤ (1 - ε / 2) * #A := by
+      calc
+            ε / 2 * (Fintype.card H)
+        _ = ε / 2 * #(H : Set G).toFinset := by simp only [Set.toFinset_card, SetLike.coe_sort_coe]
+        _ ≤ em.toFun (Set.toFinset H)     := min_em _
+        _ ≤ (1 - ε / 2) * #A              := calc₁
+    rw [← mul_le_mul_left (by positivity)]
+    have : ε / 2 * ((2 / ε - 1) * #A) = (1 - ε / 2) * #A := by field_simp; ring1
+    linarith
+
+  case cardZ =>
+
+    sorry
+  · sorry
 
 
 
