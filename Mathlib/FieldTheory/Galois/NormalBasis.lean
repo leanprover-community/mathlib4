@@ -15,7 +15,7 @@ import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 # The normal basis theorem
 
 We prove the normal basis theorem `IsGalois.exists_linearIndependent_algEquiv_apply`:
-every finite Galois extension has a basis that is an orbit of the Galois group.
+every finite Galois extension has a basis that is an orbit under the Galois group action.
 -/
 
 variable (K L : Type*) [Field K] [Field L] [Algebra K L]
@@ -46,22 +46,16 @@ private theorem exists_linearIndependent_algEquiv_apply_of_finite [Finite L] :
   simp [AEval'.X_pow_smul_of, Module.End.coe_pow]
   rfl
 
-@[simp] -- `AlgEquiv.aut_inv` doesn't work for me
-theorem AlgEquiv.inv_apply {R A₁ : Type*} [CommSemiring R] [Semiring A₁] [Algebra R A₁]
-    (ϕ : A₁ ≃ₐ[R] A₁) (x : A₁) : ϕ⁻¹ x = ϕ.symm x := rfl
-
-variable [IsGalois K L] [FiniteDimensional K L]
+variable [FiniteDimensional K L]
 
 open scoped Classical in
 private theorem exists_linearIndependent_algEquiv_apply_of_infinite [Infinite K] :
     ∃ x : L, LinearIndependent K fun σ : L ≃ₐ[K] L ↦ σ x := by
-  have e : Basis (L ≃ₐ[K] L) K L :=
-    Module.finBasisOfFinrankEq K L (IsGalois.card_aut_eq_finrank K L).symm
-      |>.reindex (Fintype.equivFin _).symm
-  let M : Matrix (L ≃ₐ[K] L) (L ≃ₐ[K] L) (MvPolynomial (L ≃ₐ[K] L) L) :=
-    .of fun i j => ∑ k : L ≃ₐ[K] L, i.symm (j (e k)) • MvPolynomial.X k
+  have e := Module.Free.chooseBasis K L
+  let M : Matrix (L ≃ₐ[K] L) (L ≃ₐ[K] L) (MvPolynomial _ L) :=
+    .of fun i j ↦ ∑ k, i.symm (j (e k)) • MvPolynomial.X k
   have hM : M.det ≠ 0 := by
-    have hq : Submodule.span L (Set.range fun i j : L ≃ₐ[K] L => j (e i)) = ⊤ := by
+    have hq : Submodule.span L (Set.range fun i (j : L ≃ₐ[K] L) ↦ j (e i)) = ⊤ := by
       rw [← Subspace.dualAnnihilator_inj, Submodule.dualAnnihilator_top, ← le_bot_iff]
       intro x hx
       obtain ⟨x, rfl⟩ := (Pi.basisFun L (L ≃ₐ[K] L)).toDualEquiv.surjective x
@@ -101,21 +95,21 @@ private theorem exists_linearIndependent_algEquiv_apply_of_infinite [Infinite K]
         enter [2]
         rw [e.sum_repr]
       simpa [mul_comm] using h
-    obtain ⟨c, hc⟩ : ∃ c : (L ≃ₐ[K] L) → L, M.det.eval c = 1 := by
-      have h := (congrArg (fun s => Pi.single 1 1 ∈ s) hq).mpr (Submodule.mem_top ..)
+    obtain ⟨c, hc⟩ : ∃ c : _ → L, M.det.eval c = 1 := by
+      have h := (congrArg (fun s ↦ Pi.single 1 1 ∈ s) hq).mpr (Submodule.mem_top ..)
       rw [← Set.image_univ, ← Finset.coe_univ,
-        ← Function.Embedding.coeFn_mk (fun i j : L ≃ₐ[K] L ↦ j (e i))
+        ← Function.Embedding.coeFn_mk (fun i (j : L ≃ₐ[K] L) ↦ j (e i))
           fun a b hab ↦ e.injective (congrFun hab .refl),
         ← Finset.coe_map, Submodule.mem_span_finset'] at h
       obtain ⟨f, hf⟩ := h
-      let g (k : L ≃ₐ[K] L) : L := f ⟨fun j => j (e k), Finset.mem_map_of_mem _ (Finset.mem_univ k)⟩
+      let g k : L := f ⟨fun j ↦ j (e k), Finset.mem_map_of_mem _ (Finset.mem_univ k)⟩
       conv at hf =>
         enter [1, 2, a, 1]
-        equals g (Function.invFun (fun i j : L ≃ₐ[K] L => j (e i)) a) =>
+        equals g (Function.invFun (fun i (j : L ≃ₐ[K] L) => j (e i)) a) =>
           apply congrArg f
           apply Subtype.ext
           symm
-          apply Function.invFun_eq (f := fun i j : L ≃ₐ[K] L => j (e i))
+          apply Function.invFun_eq (f := fun i (j : L ≃ₐ[K] L) => j (e i))
           exact (Finset.mem_map.1 a.prop).imp fun _ => And.right
       rw [Finset.sum_coe_sort (Finset.map ..)
         fun a ↦ g (Function.invFun _ a) • a, Finset.sum_map] at hf
@@ -124,7 +118,7 @@ private theorem exists_linearIndependent_algEquiv_apply_of_infinite [Infinite K]
         equals g a =>
           apply congrArg f
           apply Subtype.ext
-          apply Function.apply_invFun_apply (f := fun i j : L ≃ₐ[K] L => j (e i))
+          apply Function.apply_invFun_apply (f := fun i (j : L ≃ₐ[K] L) => j (e i))
       simp_rw [Function.Embedding.coeFn_mk] at hf
       use g
       rw [RingHom.map_det]
@@ -136,7 +130,7 @@ private theorem exists_linearIndependent_algEquiv_apply_of_infinite [Infinite K]
     rw [ne_eq, MvPolynomial.funext_iff, not_forall]
     use c
     simp only [hc, map_zero, one_ne_zero, not_false_eq_true]
-  obtain ⟨b, hb⟩ : ∃ b : (L ≃ₐ[K] L) → K, M.det.eval (algebraMap K L ∘ b) ≠ 0 := by
+  obtain ⟨b, hb⟩ : ∃ b : _ → K, M.det.eval (algebraMap K L ∘ b) ≠ 0 := by
     by_contra! h
     apply hM
     apply MvPolynomial.funext_set fun _ => Set.range (algebraMap K L)
@@ -148,7 +142,7 @@ private theorem exists_linearIndependent_algEquiv_apply_of_infinite [Infinite K]
       subst hu
       simpa using h u
   rw [RingHom.map_det, RingHom.mapMatrix_apply] at hb
-  use ∑ k : L ≃ₐ[K] L, b k • e k
+  use ∑ k, b k • e k
   rw [linearIndependent_iff]
   intro a ha
   refine DFunLike.coe_injective (Function.Injective.comp_left ((algebraMap K L).injective) ?_)
@@ -165,19 +159,27 @@ private theorem exists_linearIndependent_algEquiv_apply_of_infinite [Infinite K]
   rw [← ha, Finsupp.linearCombination_apply, Finsupp.sum_fintype _ _ fun i => zero_smul K (i _)]
   simp_rw [map_sum, map_smul, Algebra.smul_def, mul_comm]
 
-theorem IsGalois.exists_linearIndependent_algEquiv_apply :
+theorem exists_linearIndependent_algEquiv_apply :
     ∃ x : L, LinearIndependent K fun σ : L ≃ₐ[K] L ↦ σ x := by
   obtain h | h := finite_or_infinite K
   · have := Module.finite_of_finite K (M := L)
     exact exists_linearIndependent_algEquiv_apply_of_finite K L
   · exact exists_linearIndependent_algEquiv_apply_of_infinite K L
 
+namespace IsGalois
+
+variable [IsGalois K L]
+
+/-- Given a finite Galois extension `L/K`, `normalBasis K L` is a basis of `L` over `K`
+that is an orbit under the Galois group action. -/
 noncomputable def normalBasis : Basis (L ≃ₐ[K] L) K L :=
   basisOfLinearIndependentOfCardEqFinrank
-    (IsGalois.exists_linearIndependent_algEquiv_apply K L).choose_spec
-    (IsGalois.card_aut_eq_finrank K L)
+    (exists_linearIndependent_algEquiv_apply K L).choose_spec
+    (card_aut_eq_finrank K L)
 
 variable {K L}
 
 theorem normalBasis_apply (e : L ≃ₐ[K] L) : normalBasis K L e = e (normalBasis K L 1) := by
   rw [normalBasis, coe_basisOfLinearIndependentOfCardEqFinrank, AlgEquiv.one_apply]
+
+end IsGalois
