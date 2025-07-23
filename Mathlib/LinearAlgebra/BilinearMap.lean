@@ -321,6 +321,7 @@ theorem lcomp_apply' (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) : lcomp A 
 
 variable (M N P)
 
+variable (R₃) in
 /-- Composing linear maps as a bilinear map from `(M →ₗ[R] N) × (N →ₗ[R] P)` to `M →ₗ[R] P` -/
 def llcomp : (N →ₛₗ[σ₂₃] P) →ₗ[R₃] (M →ₛₗ[σ₁₂] N) →ₛₗ[σ₂₃] M →ₛₗ[σ₁₃] P :=
   flip
@@ -332,9 +333,9 @@ variable {M N P}
 
 @[simp]
 theorem llcomp_apply (f : N →ₛₗ[σ₂₃] P) (g : M →ₛₗ[σ₁₂] N) (x : M) :
-    llcomp M N P f g x = f (g x) := rfl
+    llcomp _ M N P f g x = f (g x) := rfl
 
-theorem llcomp_apply' (f : N →ₛₗ[σ₂₃] P) (g : M →ₛₗ[σ₁₂] N) : llcomp M N P f g = f ∘ₛₗ g := rfl
+theorem llcomp_apply' (f : N →ₛₗ[σ₂₃] P) (g : M →ₛₗ[σ₁₂] N) : llcomp _ M N P f g = f ∘ₛₗ g := rfl
 
 section
 
@@ -381,7 +382,7 @@ omit [Module R M] in
 /-- Composing a linear map `P → Q` and a bilinear map `M → N → P` to
 form a bilinear map `M → N → Q`. -/
 def compr₂ₛₗ (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P →ₛₗ[σ₃₄] Q) : M →ₛₗ[σ₁₄] N →ₛₗ[σ₂₄] Q :=
-  llcomp N P Q g ∘ₛₗ f
+  llcomp _ N P Q g ∘ₛₗ f
 
 @[simp]
 theorem compr₂ₛₗ_apply (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P →ₛₗ[σ₃₄] Q) (m : M) (n : N) :
