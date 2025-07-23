@@ -7,6 +7,7 @@ import Mathlib.GroupTheory.OreLocalization.OreSet
 import Mathlib.Tactic.Common
 import Mathlib.Algebra.Group.Submonoid.MulAction
 import Mathlib.Algebra.Group.Units.Defs
+import Mathlib.Algebra.Group.Basic
 
 /-!
 
@@ -251,7 +252,7 @@ protected def smul : R[S⁻¹] → X[S⁻¹] → X[S⁻¹] :=
   liftExpand smul'' fun r₁ r₂ s hs => by
     ext x
     cases x with | _ x s₂
-    show OreLocalization.smul' r₁ s x s₂ = OreLocalization.smul' (r₂ * r₁) ⟨_, hs⟩ x s₂
+    change OreLocalization.smul' r₁ s x s₂ = OreLocalization.smul' (r₂ * r₁) ⟨_, hs⟩ x s₂
     rcases oreCondition r₁ s₂ with ⟨r₁', s₁', h₁⟩
     rw [smul'_char _ _ _ _ _ _ h₁]
     rcases oreCondition (r₂ * r₁) s₂ with ⟨r₂', s₂', h₂⟩
@@ -308,7 +309,7 @@ Ore witnesses and conditions bundled in a sigma type. -/
 @[to_additive "Another characterization lemma for the vector addition on the
   Ore localizaion delivering Ore witnesses and conditions bundled in a sigma type."]
 def oreDivSMulChar' (r₁ : R) (r₂ : X) (s₁ s₂ : S) :
-    Σ'r' : R, Σ's' : S, s' * r₁ = r' * s₂ ∧ (r₁ /ₒ s₁) • (r₂ /ₒ s₂) = r' • r₂ /ₒ (s' * s₁) :=
+    Σ' r' : R, Σ' s' : S, s' * r₁ = r' * s₂ ∧ (r₁ /ₒ s₁) • (r₂ /ₒ s₂) = r' • r₂ /ₒ (s' * s₁) :=
   ⟨oreNum r₁ s₂, oreDenom r₁ s₂, ore_eq r₁ s₂, oreDiv_smul_oreDiv⟩
 
 /-- Another characterization lemma for the multiplication on the Ore localizaion delivering
@@ -316,7 +317,7 @@ Ore witnesses and conditions bundled in a sigma type. -/
 @[to_additive "Another characterization lemma for the addition on the Ore localizaion delivering
   Ore witnesses and conditions bundled in a sigma type."]
 def oreDivMulChar' (r₁ r₂ : R) (s₁ s₂ : S) :
-    Σ'r' : R, Σ's' : S, s' * r₁ = r' * s₂ ∧ r₁ /ₒ s₁ * (r₂ /ₒ s₂) = r' * r₂ /ₒ (s' * s₁) :=
+    Σ' r' : R, Σ' s' : S, s' * r₁ = r' * s₂ ∧ r₁ /ₒ s₁ * (r₂ /ₒ s₂) = r' * r₂ /ₒ (s' * s₁) :=
   ⟨oreNum r₁ s₂, oreDenom r₁ s₂, ore_eq r₁ s₂, oreDiv_mul_oreDiv⟩
 
 /-- `1` in the localization, defined as `1 /ₒ 1`. -/

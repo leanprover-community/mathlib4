@@ -14,6 +14,12 @@ import Mathlib.RingTheory.Valuation.ValuationSubring
 In this file, we define the non archimedean topology induced by a valuation on a ring.
 The main definition is a `Valued` type class which equips a ring with a valuation taking
 values in a group with zero. Other instances are then deduced from this.
+
+*NOTE* (2025-07-02):
+The `Valued` class defined in this file will eventually get replaced with `ValuativeRel`
+from `Mathlib.RingTheory.Valuation.ValuativeRel`. New developments on valued rings/fields
+should take this into considation.
+
 -/
 
 open scoped Topology uniformity

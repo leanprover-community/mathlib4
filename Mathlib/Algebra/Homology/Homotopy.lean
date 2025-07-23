@@ -330,11 +330,7 @@ open Classical in
 @[simps!]
 def nullHomotopy' (h : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) : Homotopy (nullHomotopicMap' h) 0 := by
   apply nullHomotopy fun i j => dite (c.Rel j i) (h i j) fun _ => 0
-  intro i j hij
-  rw [dite_eq_right_iff]
-  intro hij'
-  exfalso
-  exact hij hij'
+  grind
 
 /-! This lemma and the following ones can be used in order to compute
 the degreewise morphisms induced by the null homotopic maps constructed
@@ -681,9 +677,15 @@ Note that this contains data;
 arguably it might be more useful for many applications if we truncated it to a Prop.
 -/
 structure HomotopyEquiv (C D : HomologicalComplex V c) where
+  /-- The forward chain map -/
   hom : C ⟶ D
+  /-- The backward chain map -/
   inv : D ⟶ C
+  /-- A homotopy showing that composing the forward and backward maps is homotopic to the identity
+  on C -/
   homotopyHomInvId : Homotopy (hom ≫ inv) (𝟙 C)
+  /-- A homotopy showing that composing the backward and forward maps is homotopic to the identity
+  on D -/
   homotopyInvHomId : Homotopy (inv ≫ hom) (𝟙 D)
 
 variable (V c) in

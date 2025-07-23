@@ -468,7 +468,7 @@ theorem join_map_ret (s : WSeq α) : join (map ret s) ~ʷ s := by
       match c1, c2, h with
       | _, _, ⟨s, rfl, rfl⟩ => by
         clear h
-        have (s) : ∃ s' : WSeq α,
+        have (s : WSeq α) : ∃ s' : WSeq α,
             (map ret s).join.destruct = (map ret s').join.destruct ∧ destruct s = s'.destruct :=
           ⟨s, rfl, rfl⟩
         induction' s using WSeq.recOn with a s s <;> simp [ret, this]

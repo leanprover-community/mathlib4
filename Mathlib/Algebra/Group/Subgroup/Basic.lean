@@ -505,7 +505,7 @@ instance normalClosure_normal : (normalClosure s).Normal :=
     refine Subgroup.closure_induction (fun x hx => ?_) ?_ (fun x y _ _ ihx ihy => ?_)
       (fun x _ ihx => ?_) h
     · exact conjugatesOfSet_subset_normalClosure (conj_mem_conjugatesOfSet hx)
-    · simpa using (normalClosure s).one_mem
+    · simp
     · rw [← conj_mul]
       exact mul_mem ihx ihy
     · rw [← conj_inv]
@@ -901,14 +901,14 @@ theorem SubgroupNormal.mem_comm {H K : Subgroup G} (hK : H ≤ K) [hN : (H.subgr
 theorem commute_of_normal_of_disjoint (H₁ H₂ : Subgroup G) (hH₁ : H₁.Normal) (hH₂ : H₂.Normal)
     (hdis : Disjoint H₁ H₂) (x y : G) (hx : x ∈ H₁) (hy : y ∈ H₂) : Commute x y := by
   suffices x * y * x⁻¹ * y⁻¹ = 1 by
-    show x * y = y * x
+    change x * y = y * x
     · rw [mul_assoc, mul_eq_one_iff_eq_inv] at this
       simpa
   apply hdis.le_bot
   constructor
   · suffices x * (y * x⁻¹ * y⁻¹) ∈ H₁ by simpa [mul_assoc]
     exact H₁.mul_mem hx (hH₁.conj_mem _ (H₁.inv_mem hx) _)
-  · show x * y * x⁻¹ * y⁻¹ ∈ H₂
+  · change x * y * x⁻¹ * y⁻¹ ∈ H₂
     apply H₂.mul_mem _ (H₂.inv_mem hy)
     apply hH₂.conj_mem _ hy
 

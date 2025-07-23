@@ -139,9 +139,17 @@ theorem EuclideanSpace.norm_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype
     (x : EuclideanSpace 𝕜 n) : ‖x‖ = √(∑ i, ‖x i‖ ^ 2) := by
   simpa only [Real.coe_sqrt, NNReal.coe_sum] using congr_arg ((↑) : ℝ≥0 → ℝ) x.nnnorm_eq
 
+theorem EuclideanSpace.norm_sq_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
+    (x : EuclideanSpace 𝕜 n) : ‖x‖ ^ 2 = ∑ i, ‖x i‖ ^ 2 :=
+  PiLp.norm_sq_eq_of_L2 _ x
+
 theorem EuclideanSpace.dist_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
     (x y : EuclideanSpace 𝕜 n) : dist x y = √(∑ i, dist (x i) (y i) ^ 2) :=
   PiLp.dist_eq_of_L2 x y
+
+theorem EuclideanSpace.dist_sq_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
+    (x y : EuclideanSpace 𝕜 n) : dist x y ^ 2 = ∑ i, dist (x i) (y i) ^ 2 :=
+  PiLp.dist_sq_eq_of_L2 x y
 
 theorem EuclideanSpace.nndist_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
     (x y : EuclideanSpace 𝕜 n) : nndist x y = NNReal.sqrt (∑ i, nndist (x i) (y i) ^ 2) :=
@@ -729,6 +737,49 @@ end EuclideanSpace
 instance OrthonormalBasis.instInhabited : Inhabited (OrthonormalBasis ι 𝕜 (EuclideanSpace 𝕜 ι)) :=
   ⟨EuclideanSpace.basisFun ι 𝕜⟩
 
+namespace OrthonormalBasis
+
+variable {E' : Type*} [Fintype ι'] [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
+    (b : OrthonormalBasis ι 𝕜 E) (b' : OrthonormalBasis ι' 𝕜 E') (e : ι ≃ ι')
+
+/-- The `LinearIsometryEquiv` which maps an orthonormal basis to another. This is a convenience
+wrapper around `Orthonormal.equiv`. -/
+protected def equiv : E ≃ₗᵢ[𝕜] E' :=
+  b.repr.trans <| .trans (.piLpCongrLeft _ _ _ e) b'.repr.symm
+
+@[simp]
+lemma equiv_symm : (b.equiv b' e).symm = b'.equiv b e.symm := by
+  apply b'.toBasis.ext_linearIsometryEquiv
+  simp [OrthonormalBasis.equiv]
+
+@[simp]
+lemma equiv_apply_basis (i : ι) : b.equiv b' e (b i) = b' (e i) := by
+  classical
+  simp only [OrthonormalBasis.equiv, LinearIsometryEquiv.trans_apply, OrthonormalBasis.repr_self,
+    LinearIsometryEquiv.piLpCongrLeft_apply]
+  refine DFunLike.congr rfl ?_
+  ext j
+  simp [Equiv.symm_apply_eq]
+
+@[simp]
+lemma equiv_self_rfl : b.equiv b (.refl ι) = .refl 𝕜 E := by
+  apply b.toBasis.ext_linearIsometryEquiv
+  simp
+
+lemma equiv_apply (x : E) : b.equiv b' e x = ∑ i, b.repr x i • b' (e i) := by
+  nth_rw 1 [← b.sum_repr x, map_sum]
+  simp_rw [map_smul, equiv_apply_basis]
+
+lemma equiv_apply_euclideanSpace (x : EuclideanSpace 𝕜 ι) :
+    (EuclideanSpace.basisFun ι 𝕜).equiv b (Equiv.refl ι) x = ∑ i, x i • b i := by
+  simp_rw [equiv_apply, EuclideanSpace.basisFun_repr, Equiv.refl_apply]
+
+lemma coe_equiv_euclideanSpace :
+    ⇑((EuclideanSpace.basisFun ι 𝕜).equiv b (Equiv.refl ι)) = fun x ↦ ∑ i, x i • b i := by
+  simp_rw [← equiv_apply_euclideanSpace]
+
+end OrthonormalBasis
+
 section Complex
 
 /-- `![1, I]` is an orthonormal basis for `ℂ` considered as a real inner product space. -/
@@ -938,7 +989,7 @@ theorem orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ) :
     have : ‖b default‖ = 1 := b.orthonormal.1 _
     rwa [Real.norm_eq_abs, abs_eq (zero_le_one' ℝ)] at this
   rw [eq_const_of_unique b]
-  refine this.imp ?_ ?_ <;> (intro; ext; simp [*])
+  grind
 
 variable {𝕜 E}
 
@@ -1144,13 +1195,11 @@ local notation "⟪" x ", " y "⟫ₑ" => inner 𝕜 (toLp 2 x) (toLp 2 y)
 /-- The inner product of a row of `A` and a row of `B` is an entry of `B * Aᴴ`. -/
 theorem inner_matrix_row_row [Fintype n] (A B : Matrix m n 𝕜) (i j : m) :
     ⟪A i, B j⟫ₑ = (B * Aᴴ) j i := by
-  rfl
+  simp [dotProduct, mul_apply']
 
 /-- The inner product of a column of `A` and a column of `B` is an entry of `Aᴴ * B`. -/
 theorem inner_matrix_col_col [Fintype m] (A B : Matrix m n 𝕜) (i j : n) :
     ⟪Aᵀ i, Bᵀ j⟫ₑ = (Aᴴ * B) i j := by
-  simp_rw [EuclideanSpace.inner_toLp_toLp, Matrix.mul_apply',
-    Matrix.conjTranspose_apply, dotProduct_comm, Pi.star_def]
-  rfl
+  simp [dotProduct, mul_apply', mul_comm]
 
 end Matrix
