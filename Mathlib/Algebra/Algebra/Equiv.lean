@@ -396,9 +396,7 @@ theorem arrowCongr_comp (e₁ : A₁ ≃ₐ[R] A₁') (e₂ : A₂ ≃ₐ[R] A�
     (e₃ : A₃ ≃ₐ[R] A₃') (f : A₁ →ₐ[R] A₂) (g : A₂ →ₐ[R] A₃) :
     arrowCongr e₁ e₃ (g.comp f) = (arrowCongr e₂ e₃ g).comp (arrowCongr e₁ e₂ f) := by
   ext
-  simp only [arrowCongr, Equiv.coe_fn_mk, AlgHom.comp_apply]
-  congr
-  exact (e₂.symm_apply_apply _).symm
+  simp
 
 @[simp]
 theorem arrowCongr_refl : arrowCongr AlgEquiv.refl AlgEquiv.refl = Equiv.refl (A₁ →ₐ[R] A₂) :=
@@ -760,6 +758,23 @@ def toAlgAut : G →* A ≃ₐ[R] A where
 end
 
 end MulSemiringAction
+
+section
+
+variable {R S T : Type*} [CommSemiring R] [Semiring S] [Semiring T] [Algebra R S] [Algebra R T]
+
+instance [Subsingleton S] [Subsingleton T] : Unique (S ≃ₐ[R] T) where
+  default := AlgEquiv.ofAlgHom default default
+    (AlgHom.ext fun _ ↦ Subsingleton.elim _ _)
+    (AlgHom.ext fun _ ↦ Subsingleton.elim _ _)
+  uniq _ := AlgEquiv.ext fun _ ↦ Subsingleton.elim _ _
+
+@[simp]
+lemma AlgEquiv.default_apply [Subsingleton S] [Subsingleton T] (x : S) :
+    (default : S ≃ₐ[R] T) x = 0 :=
+  rfl
+
+end
 
 /-- The algebra equivalence between `ULift A` and `A`. -/
 @[simps! -isSimp apply]

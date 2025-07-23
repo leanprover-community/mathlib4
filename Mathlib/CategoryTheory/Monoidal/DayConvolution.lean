@@ -36,9 +36,6 @@ a monoidal structure.
 - [nLab page: Day convolution](https://ncatlab.org/nlab/show/Day+convolution)
 
 ## TODOs (@robin-carlier)
-- Case where `V` is closed.
-- Type alias for `C ⥤ V` with a `LawfulDayConvolutionMonoidalCategoryStruct`.
-- Better constructors for `LawfulDayConvolutionMonoidalCategoryStruct`.
 - Characterization of lax monoidal functors out of a day convolution monoidal category.
 - Case `V = Type u` and its universal property.
 
