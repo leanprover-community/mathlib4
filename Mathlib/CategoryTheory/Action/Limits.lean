@@ -331,8 +331,7 @@ theorem add_hom {X Y : Action V G} (f g : X ⟶ Y) : (f + g).hom = f.hom + g.hom
   rfl
 
 @[simp]
-theorem sub_hom {X Y : Action V G} (f g : X ⟶ Y) :
-    (f - g).hom = f.hom - g.hom := by
+theorem sub_hom {X Y : Action V G} (f g : X ⟶ Y) : (f - g).hom = f.hom - g.hom := by
   simp [sub_eq_add_neg]
 
 @[simp]

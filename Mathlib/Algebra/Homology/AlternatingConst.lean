@@ -26,12 +26,10 @@ open CategoryTheory Limits
 
 namespace ComplexShape
 
-@[simp]
 lemma up_nat_odd_add {i j : ℕ} (h : (ComplexShape.up ℕ).Rel i j) : Odd (i + j) := by
   subst h
   norm_num
 
-@[simp]
 lemma down_nat_odd_add {i j : ℕ} (h : (ComplexShape.down ℕ).Rel i j) : Odd (i + j) := by
   subst h
   norm_num
@@ -147,14 +145,12 @@ namespace ChainComplex
 /-- The chain complex `X ←0- X ←𝟙- X ←0- X ←𝟙- X ⋯`.
 It is exact away from `0` and has homology `X` at `0`. -/
 @[simps]
-noncomputable def alternatingConstFunctor [HasZeroMorphisms C] : C ⥤ ChainComplex C ℕ where
+noncomputable def alternatingConst [HasZeroMorphisms C] : C ⥤ ChainComplex C ℕ where
   obj X := HomologicalComplex.alternatingConst X (Category.id_comp 0) (Category.comp_id 0)
     (fun _ _ => ComplexShape.down_nat_odd_add)
   map {X Y} f := {
     f _ := f
     comm' i j hij := by by_cases Even i <;> simp_all [-Nat.not_even_iff_odd] }
-
-@[deprecated (since := "2025-07-22")] alias alternatingConst := alternatingConstFunctor
 
 variable [HasZeroMorphisms C] [HasZeroObject C]
 
@@ -218,8 +214,8 @@ end ChainComplex
 variable [Preadditive C] [HasZeroObject C]
 
 /-- The alternating face complex of the constant complex is the alternating constant complex. -/
-noncomputable def AlgebraicTopology.alternatingFaceMapComplexConstFunctor :
-    Functor.const _ ⋙ alternatingFaceMapComplex C ≅ ChainComplex.alternatingConstFunctor :=
+noncomputable def AlgebraicTopology.alternatingFaceMapComplexConst :
+    Functor.const _ ⋙ alternatingFaceMapComplex C ≅ ChainComplex.alternatingConst :=
   NatIso.ofComponents (fun X ↦ HomologicalComplex.Hom.isoOfComponents (fun _ ↦ Iso.refl _) <| by
     rintro _ i rfl
     simp [SimplicialObject.δ, ← Finset.sum_smul, Fin.sum_neg_one_pow, Nat.even_add_one,
