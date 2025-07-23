@@ -5,12 +5,13 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
 import Mathlib.Algebra.Homology.HomotopyCategory.Shift
+import Mathlib.Algebra.Module.Equiv.Basic
 
 /-! Shifting cochains
 
 Let `C` be a preadditive category. Given two cochain complexes (indexed by `ℤ`),
 the type of cochains `HomComplex.Cochain K L n` of degree `n` was introduced
-in `Mathlib.Algebra.Homology.HomotopyCategory.HomComplex`. In this file, we
+in `Mathlib/Algebra/Homology/HomotopyCategory/HomComplex.lean`. In this file, we
 study how these cochains behave with respect to the shift on the complexes `K`
 and `L`.
 
@@ -457,7 +458,7 @@ lemma δ_shift (a m : ℤ) :
   by_cases hnm : n + 1 = m
   · ext p q hpq
     dsimp
-    simp only [shift_v', sub_add_cancel, shiftFunctor_obj_d',
+    simp only [shift_v', shiftFunctor_obj_d',
       δ_v n m hnm _ p q hpq (q - 1) (p + 1) rfl rfl,
       δ_v n m hnm _ (p + a) (q + a) (by omega) (q - 1 + a) (p + 1 + a)
         (by omega) (by omega),

@@ -209,7 +209,7 @@ Bilinear and Quadratic Forms Over a Vector Space:
     Sylvester's law of inertia: 'https://en.wikipedia.org/wiki/Sylvester%27s_law_of_inertia'
     real classification: 'https://en.wikipedia.org/wiki/Sylvester%27s_law_of_inertia'
     complex classification: ''
-    Gram-Schmidt orthogonalisation: 'gramSchmidt_orthogonal'
+    Gram-Schmidt orthogonalisation: 'InnerProductSpace.gramSchmidt_orthogonal'
   Euclidean and Hermitian spaces:
     Euclidean vector spaces: 'InnerProductSpace'
     Hermitian vector spaces: 'InnerProductSpace'
@@ -419,7 +419,7 @@ Topology:
     complete metric spaces: 'Metric.complete_of_cauchySeq_tendsto'
     contraction mapping theorem: 'ContractingWith.exists_fixedPoint'
   Normed vector spaces on $\R$ and $\C$:
-    topology on a normed vector space: 'NormedSpace.isBoundedSMul'
+    topology on a normed vector space: 'NormSMulClass.toIsBoundedSMul'
     equivalent norms: ''
     Banach open mapping theorem: 'ContinuousLinearMap.isOpenMap'
     equivalence of norms in finite dimension: 'LinearEquiv.toContinuousLinearEquiv'
@@ -472,7 +472,7 @@ Multivariable calculus:
     inverse function theorem: 'HasStrictDerivAt.to_localInverse'
     implicit function theorem: 'ImplicitFunctionData.implicitFunction'
   Differential equations:
-    Cauchy-Lipschitz Theorem: 'IsPicardLindelof.exists_forall_hasDerivWithinAt_Icc_eq'
+    Cauchy-Lipschitz Theorem: 'IsPicardLindelof.exists_eq_forall_mem_Icc_hasDerivWithinAt'
     maximal solutions: ''
     Grönwall lemma: 'norm_le_gronwallBound_of_norm_deriv_right_le'
     exit theorem of a compact subspace: ''

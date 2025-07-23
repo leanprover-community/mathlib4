@@ -40,9 +40,9 @@ equalities.
 
 universe v₁ v₂ u₁ u₂
 
-open CategoryTheory Functor Category IsHomLift
-
 namespace CategoryTheory
+
+open Functor Category IsHomLift
 
 variable {𝒮 : Type u₁} {𝒳 : Type u₂} [Category.{v₁} 𝒮] [Category.{v₂} 𝒳]
 
@@ -68,8 +68,6 @@ instance (p : 𝒳 ⥤ 𝒮) [p.IsFibered] {R S T : 𝒮} (f : R ⟶ S) (g : S �
   IsFibered.comp f g φ ψ
 
 namespace Functor.IsPreFibered
-
-open IsCartesian
 
 variable {p : 𝒳 ⥤ 𝒮} [IsPreFibered p] {R S : 𝒮} {a : 𝒳} (ha : p.obj a = S) (f : R ⟶ S)
 
@@ -136,7 +134,7 @@ lemma isStronglyCartesian_of_exists_isCartesian (p : 𝒳 ⥤ 𝒮) (h : ∀ (a 
   use τ' ≫ Φ.hom
   -- It is easily verified that `τ' ≫ Φ.hom` lifts `g` and `τ' ≫ Φ.hom ≫ φ = φ'`
   refine ⟨⟨by simp only [Φ]; infer_instance, ?_⟩, ?_⟩
-  · simp [τ', Φ, IsStronglyCartesian.map_uniq p (p.map φ) ψ rfl φ']
+  · simp [τ', Φ]
   -- It remains to check that it is unique. This follows from the universal property of `ψ`.
   intro π ⟨hπ, hπ_comp⟩
   rw [← Iso.comp_inv_eq]
@@ -176,7 +174,7 @@ T --g--> R --f--> S
 ```
 we have an isomorphism `T ×_S a ≅ T ×_R (R ×_S a)` -/
 noncomputable def pullbackPullbackIso {p : 𝒳 ⥤ 𝒮} [IsFibered p]
-    {R S T : 𝒮}  {a : 𝒳} (ha : p.obj a = S) (f : R ⟶ S) (g : T ⟶ R) :
+    {R S T : 𝒮} {a : 𝒳} (ha : p.obj a = S) (f : R ⟶ S) (g : T ⟶ R) :
       pullbackObj ha (g ≫ f) ≅ pullbackObj (pullbackObj_proj ha f) g :=
   domainUniqueUpToIso p (g ≫ f) (pullbackMap (pullbackObj_proj ha f) g ≫ pullbackMap ha f)
     (pullbackMap ha (g ≫ f))

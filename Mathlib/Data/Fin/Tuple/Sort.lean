@@ -125,10 +125,8 @@ theorem lt_card_le_iff_apply_le_of_monotone [Preorder α] [DecidableLE α]
   contrapose! h
   rw [← Fin.card_Iio, Fintype.card_subtype]
   refine Finset.card_mono (fun i => Function.mtr ?_)
-  simp_rw [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_Iio]
-  intro hij hia
-  apply h
-  exact (h_sorted (le_of_not_lt hij)).trans hia
+  rw [Finset.mem_filter_univ, Finset.mem_Iio]
+  exact fun hij hia ↦ h ((h_sorted (le_of_not_gt hij)).trans hia)
 
 theorem lt_card_ge_iff_apply_ge_of_antitone [Preorder α] [DecidableLE α]
     {m : ℕ} (f : Fin m → α) (a : α) (h_sorted : Antitone f) (j : Fin m) :

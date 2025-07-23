@@ -33,9 +33,9 @@ namespace Tree
 variable {A : Type*} {S T : tree A}
 
 lemma mem_of_append {x y : List A} (h : x ++ y ∈ T) : x ∈ T := by
-  induction' y with y ys ih generalizing x
-  · simpa using h
-  · exact T.prop (ih (by simpa))
+  induction y generalizing x with
+  | nil => simpa using h
+  | cons y ys ih => exact T.prop (ih (by simpa))
 
 lemma mem_of_prefix {x y : List A} (h' : x <+: y) (h : y ∈ T) : x ∈ T := by
   obtain ⟨_, rfl⟩ := h'; exact mem_of_append h
@@ -102,7 +102,7 @@ lemma mem_pullSub_long (hl : x.length ≤ y.length) :
   mp := by
     intro ⟨h1, h2⟩; use y.drop x.length, h2
     nth_rw 1 [← List.take_append_drop x.length y]
-    simpa [- List.take_append_drop, List.prefix_iff_eq_take, hl] using h1
+    simpa [-List.take_append_drop, List.prefix_iff_eq_take, hl] using h1
   mpr := by simp +contextual [pullSub]
 
 @[simp] lemma mem_pullSub_append : x ++ y ∈ pullSub T x ↔ y ∈ T := by simp [mem_pullSub_long]

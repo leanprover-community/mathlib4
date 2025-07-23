@@ -12,8 +12,8 @@ import Mathlib.Algebra.Ring.Hom.Defs
 
 ## Main definitions
 
- * `Module.compHom`: compose a `Module` with a `RingHom`, with action `f s • m`.
- * `RingHom.toModule`: a `RingHom` defines a module structure by `r • x = f r * x`.
+* `Module.compHom`: compose a `Module` with a `RingHom`, with action `f s • m`.
+* `RingHom.toModule`: a `RingHom` defines a module structure by `r • x = f r * x`.
 
 ## Tags
 

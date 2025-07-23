@@ -13,7 +13,7 @@ In this file we define the product of two subalgebras as a subalgebra of the pro
 
 ## Main definitions
 
- * `Subalgebra.prod`: the product of two subalgebras.
+* `Subalgebra.prod`: the product of two subalgebras.
 -/
 
 

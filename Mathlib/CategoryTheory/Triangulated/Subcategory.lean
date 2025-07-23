@@ -3,10 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
-import Mathlib.CategoryTheory.ObjectProperty.Shift
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 import Mathlib.CategoryTheory.Localization.Triangulated
+import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
+import Mathlib.CategoryTheory.ObjectProperty.Shift
 import Mathlib.CategoryTheory.Shift.Localization
 
 /-! # Triangulated subcategories
@@ -20,7 +20,6 @@ and we show that it has both calculus of left and right fractions.
 
 ## TODO
 
-* obtain (pre)triangulated instances on the localized category with respect to `S.W`
 * show that the fullsubcategory attached to `P` (such that `P.IsTriangulated`)
 is a pretriangulated category.
 
@@ -131,7 +130,7 @@ instance [P.IsTriangulatedClosed₂] : P.isoClosure.IsTriangulatedClosed₂ wher
       (isomorphic_distinguished _ hT _
         (Triangle.isoMk _ _ e₁.symm (Iso.refl _) e₃.symm (by simp) (by simp) (by
           dsimp
-          simp only [assoc, Iso.cancel_iso_inv_left, ← Functor.map_comp, e₁.hom_inv_id,
+          simp only [assoc, ← Functor.map_comp, e₁.hom_inv_id,
             Functor.map_id, comp_id]))) h₁ h₃)
 
 /-- The property that `P : ObjectProperty C` is a triangulated subcategory
@@ -150,7 +149,9 @@ instance [P.IsTriangulated] : P.IsTriangulatedClosed₃ where
 instance [P.IsTriangulated] : P.isoClosure.IsTriangulated where
 
 /-- Given `P : ObjectProperty C` with `C` a pretriangulated category, this is the class
-of morphisms whose cone satisfies `S.P`. -/
+of morphisms whose cone satisfies `P`. (The name `trW` contains the prefix `tr`
+for "triangulated", and `W` is a letter that is often used to refer to classes of
+morphisms with respect to which we may consider the localized category.) -/
 def trW : MorphismProperty C :=
   fun X Y f => ∃ (Z : C) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧)
     (_ : Triangle.mk f g h ∈ distTriang C), P Z
@@ -295,31 +296,31 @@ end ObjectProperty
 
 namespace Triangulated
 
-@[deprecated (since := "2025-04-19")]
+@[deprecated (since := "2025-07-21")]
 alias Subcategory := ObjectProperty.IsTriangulated
 
 namespace Subcategory
 
 open ObjectProperty
 
-@[deprecated (since := "2025-04-19")] alias mk' := IsTriangulatedClosed₂.mk'
-@[deprecated (since := "2025-04-19")] alias ext₁ := ext_of_isTriangulatedClosed₁
-@[deprecated (since := "2025-04-19")] alias ext₁' := ext_of_isTriangulatedClosed₁'
-@[deprecated (since := "2025-04-19")] alias ext₂ := ext_of_isTriangulatedClosed₂
-@[deprecated (since := "2025-04-19")] alias ext₂' := ext_of_isTriangulatedClosed₂'
-@[deprecated (since := "2025-04-19")] alias ext₃ := ext_of_isTriangulatedClosed₃
-@[deprecated (since := "2025-04-19")] alias ext₃' := ext_of_isTriangulatedClosed₃'
-@[deprecated (since := "2025-04-19")] alias W := trW
-@[deprecated (since := "2025-04-19")] alias W_iff := trW_iff
-@[deprecated (since := "2025-04-19")] alias W_iff' := trW_iff'
-@[deprecated (since := "2025-04-19")] alias W.mk := trW.mk
-@[deprecated (since := "2025-04-19")] alias W.mk' := trW.mk'
-@[deprecated (since := "2025-04-19")] alias isoClosure_W := trW_isoClosure
-@[deprecated (since := "2025-04-19")] alias W_of_isIso := trW_of_isIso
-@[deprecated (since := "2025-04-19")] alias smul_mem_W_iff := smul_mem_trW_iff
-@[deprecated (since := "2025-04-19")] alias W.shift := trW.shift
-@[deprecated (since := "2025-04-19")] alias W.unshift := trW.unshift
-@[deprecated (since := "2025-04-19")]
+@[deprecated (since := "2025-07-21")] alias mk' := IsTriangulatedClosed₂.mk'
+@[deprecated (since := "2025-07-21")] alias ext₁ := ext_of_isTriangulatedClosed₁
+@[deprecated (since := "2025-07-21")] alias ext₁' := ext_of_isTriangulatedClosed₁'
+@[deprecated (since := "2025-07-21")] alias ext₂ := ext_of_isTriangulatedClosed₂
+@[deprecated (since := "2025-07-21")] alias ext₂' := ext_of_isTriangulatedClosed₂'
+@[deprecated (since := "2025-07-21")] alias ext₃ := ext_of_isTriangulatedClosed₃
+@[deprecated (since := "2025-07-21")] alias ext₃' := ext_of_isTriangulatedClosed₃'
+@[deprecated (since := "2025-07-21")] alias W := trW
+@[deprecated (since := "2025-07-21")] alias W_iff := trW_iff
+@[deprecated (since := "2025-07-21")] alias W_iff' := trW_iff'
+@[deprecated (since := "2025-07-21")] alias W.mk := trW.mk
+@[deprecated (since := "2025-07-21")] alias W.mk' := trW.mk'
+@[deprecated (since := "2025-07-21")] alias isoClosure_W := trW_isoClosure
+@[deprecated (since := "2025-07-21")] alias W_of_isIso := trW_of_isIso
+@[deprecated (since := "2025-07-21")] alias smul_mem_W_iff := smul_mem_trW_iff
+@[deprecated (since := "2025-07-21")] alias W.shift := trW.shift
+@[deprecated (since := "2025-07-21")] alias W.unshift := trW.unshift
+@[deprecated (since := "2025-07-21")]
 alias mem_W_iff_of_distinguished := trW_iff_of_distinguished
 
 end Subcategory

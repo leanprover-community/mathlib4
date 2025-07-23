@@ -65,8 +65,8 @@ def homologicalKernel : ObjectProperty C :=
 
 lemma mem_homologicalKernel_iff [F.ShiftSequence ℤ] (X : C) :
     F.homologicalKernel X ↔ ∀ (n : ℤ), IsZero ((F.shift n).obj X) := by
-  simp only [← fun (n : ℤ) => Iso.isZero_iff ((F.isoShift n).app X)]
-  rfl
+  simp only [← fun (n : ℤ) => Iso.isZero_iff ((F.isoShift n).app X),
+    homologicalKernel, comp_obj]
 
 section Pretriangulated
 
@@ -201,7 +201,7 @@ lemma homologySequenceδ_comp :
   rw [← F.shiftMap_comp, comp_distTriang_mor_zero₃₁ _ hT, shiftMap_zero]
 
 @[reassoc]
-lemma homologySequence_comp  :
+lemma homologySequence_comp :
     (F.shift n₀).map T.mor₁ ≫ (F.shift n₀).map T.mor₂ = 0 := by
   rw [← Functor.map_comp, comp_distTriang_mor_zero₁₂ _ hT, Functor.map_zero]
 
@@ -213,7 +213,7 @@ lemma homologySequence_exact₂ :
     (Triangle.shift_distinguished _ hT n₀))
   exact ShortComplex.isoMk ((F.isoShift n₀).app _)
     (n₀.negOnePow • ((F.isoShift n₀).app _)) ((F.isoShift n₀).app _)
-    (by dsimp; simp) (by dsimp; simp)
+    (by simp) (by simp)
 
 lemma homologySequence_exact₃ :
     (ShortComplex.mk _ _ (F.comp_homologySequenceδ T hT _ _ h)).Exact := by
@@ -265,7 +265,7 @@ lemma mem_homologicalKernel_trW_iff {X Y : C} (f : X ⟶ Y) :
   · intros
     constructor <;> infer_instance
 
-@[deprecated (since := "2025-04-19")]
+@[deprecated (since := "2025-07-21")]
 alias mem_homologicalKernel_W_iff := mem_homologicalKernel_trW_iff
 
 open ComposableArrows

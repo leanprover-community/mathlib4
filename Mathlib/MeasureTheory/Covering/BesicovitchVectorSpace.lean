@@ -133,8 +133,8 @@ theorem card_le_of_separated (s : Finset E) (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
       (s.card : ℝ≥0∞) * ENNReal.ofReal (δ ^ finrank ℝ E) * μ (ball 0 1) = μ A := by
         rw [hA, measure_biUnion_finset D fun c _ => measurableSet_ball]
         have I : 0 < δ := by norm_num
-        simp only [div_pow, μ.addHaar_ball_of_pos _ I]
-        simp only [one_div, one_pow, Finset.sum_const, nsmul_eq_mul, mul_assoc]
+        simp only [μ.addHaar_ball_of_pos _ I]
+        simp only [Finset.sum_const, nsmul_eq_mul, mul_assoc]
       _ ≤ μ (ball (0 : E) ρ) := measure_mono A_subset
       _ = ENNReal.ofReal (ρ ^ finrank ℝ E) * μ (ball 0 1) := by
         simp only [μ.addHaar_ball_of_pos _ ρpos]
@@ -178,7 +178,7 @@ theorem exists_goodδ :
     ∀ δ : ℝ, 0 < δ → ∃ f : Fin N → E, (∀ i : Fin N, ‖f i‖ ≤ 2) ∧
       Pairwise fun i j => 1 - δ ≤ ‖f i - f j‖ := by
     intro δ hδ
-    rcases lt_or_le δ 1 with (hδ' | hδ')
+    rcases lt_or_ge δ 1 with (hδ' | hδ')
     · rcases h δ hδ hδ' with ⟨s, hs, h's, s_card⟩
       obtain ⟨f, f_inj, hfs⟩ : ∃ f : Fin N → E, Function.Injective f ∧ range f ⊆ ↑s := by
         have : Fintype.card (Fin N) ≤ s.card := by simp only [Fintype.card_fin]; exact s_card
@@ -230,7 +230,7 @@ theorem exists_goodδ :
       Finset.mem_image, true_and]
   have h's : ∀ c ∈ s, ∀ d ∈ s, c ≠ d → 1 ≤ ‖c - d‖ := by
     simp only [s, forall_apply_eq_imp_iff, forall_exists_index, Finset.mem_univ, Finset.mem_image,
-      Ne, exists_true_left, forall_apply_eq_imp_iff, forall_true_left, true_and]
+      Ne, forall_apply_eq_imp_iff, true_and]
     intro i j hij
     have : i ≠ j := fun h => by rw [h] at hij; exact hij rfl
     exact h'f this
@@ -273,11 +273,11 @@ theorem le_multiplicity_of_δ_of_fin {n : ℕ} (f : Fin n → E) (h : ∀ i, ‖
   let s := Finset.image f Finset.univ
   have s_card : s.card = n := by rw [Finset.card_image_of_injective _ finj]; exact Finset.card_fin n
   have hs : ∀ c ∈ s, ‖c‖ ≤ 2 := by
-    simp only [s, h, forall_apply_eq_imp_iff, forall_const, forall_exists_index, Finset.mem_univ,
+    simp only [s, h, forall_apply_eq_imp_iff, forall_exists_index, Finset.mem_univ,
       Finset.mem_image, imp_true_iff, true_and]
   have h's : ∀ c ∈ s, ∀ d ∈ s, c ≠ d → 1 - goodδ E ≤ ‖c - d‖ := by
     simp only [s, forall_apply_eq_imp_iff, forall_exists_index, Finset.mem_univ, Finset.mem_image,
-      Ne, exists_true_left, forall_apply_eq_imp_iff, forall_true_left, true_and]
+      Ne, forall_apply_eq_imp_iff, true_and]
     intro i j hij
     have : i ≠ j := fun h => by rw [h] at hij; exact hij rfl
     exact h' this
@@ -348,7 +348,7 @@ theorem exists_normalized_aux2 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
   have D : 0 ≤ 1 - δ / 4 := by linarith only [hδ2]
   have hcrj : ‖a.c j‖ ≤ a.r j + 1 := by simpa only [lastc, lastr, dist_zero_right] using a.inter' j
   have I : a.r i ≤ 2 := by
-    rcases lt_or_le i (last N) with (H | H)
+    rcases lt_or_ge i (last N) with (H | H)
     · apply (a.hlast i H).1.trans
       simpa only [dist_eq_norm, lastc, sub_zero] using hi
     · have : i = last N := top_le_iff.1 H
@@ -457,14 +457,14 @@ theorem exists_normalized {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ) (las
   refine ⟨c', fun n => norm_c'_le n, fun i j inej => ?_⟩
   -- up to exchanging `i` and `j`, one can assume `‖c i‖ ≤ ‖c j‖`.
   wlog hij : ‖a.c i‖ ≤ ‖a.c j‖ generalizing i j
-  · rw [norm_sub_rev]; exact this j i inej.symm (le_of_not_le hij)
-  rcases le_or_lt ‖a.c j‖ 2 with (Hj | Hj)
+  · rw [norm_sub_rev]; exact this j i inej.symm (le_of_not_ge hij)
+  rcases le_or_gt ‖a.c j‖ 2 with (Hj | Hj)
   -- case `‖c j‖ ≤ 2` (and therefore also `‖c i‖ ≤ 2`)
   · simp_rw [c', Hj, hij.trans Hj, if_true]
     exact exists_normalized_aux1 a lastr hτ δ hδ1 hδ2 i j inej
   -- case `2 < ‖c j‖`
   · have H'j : ‖a.c j‖ ≤ 2 ↔ False := by simpa only [not_le, iff_false] using Hj
-    rcases le_or_lt ‖a.c i‖ 2 with (Hi | Hi)
+    rcases le_or_gt ‖a.c i‖ 2 with (Hi | Hi)
     · -- case `‖c i‖ ≤ 2`
       simp_rw [c', Hi, if_true, H'j, if_false]
       exact exists_normalized_aux2 a lastc lastr hτ δ hδ1 hδ2 i j inej Hi Hj

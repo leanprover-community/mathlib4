@@ -91,10 +91,8 @@ mutual
 end
 
 lemma CharP.intCast_eq_mod (R : Type _) [Ring R] (p : ℕ) [CharP R p] (k : ℤ) :
-    (k : R) = (k % p : ℤ) := by
-  calc
-    (k : R) = ↑(k % p + p * (k / p)) := by rw [Int.emod_add_ediv]
-    _ = ↑(k % p) := by simp [CharP.cast_eq_zero R]
+    (k : R) = (k % p : ℤ) :=
+  CharP.intCast_eq_intCast_mod R p
 
 /-- Given an integral expression `e : t` such that `t` is a ring of characteristic `n`,
 reduce `e` modulo `n`. -/
@@ -283,7 +281,7 @@ partial def reduceModCharHyp (expensive := false) (fvarId : FVarId) : TacticM Un
     let prf ← derive (expensive := expensive) hyp
     return (← applySimpResultToLocalDecl goal fvarId prf false).map (·.snd)
 
-open Parser.Tactic Elab.Tactic
+open Parser.Tactic
 
 /--
 The tactic `reduce_mod_char` looks for numeric expressions in characteristic `p`

@@ -128,7 +128,7 @@ theorem le_weight (w : σ → ℕ) {s : σ} (hs : w s ≠ 0) (f : σ →₀ ℕ)
     refine le_trans ?_ (Nat.le_add_right _ _)
     apply Nat.le_mul_of_pos_right
     exact Nat.zero_lt_of_ne_zero hs
-  · simp only [not_mem_support_iff] at h
+  · simp only [notMem_support_iff] at h
     rw [h]
     apply zero_le
 
@@ -207,6 +207,9 @@ variable {R : Type*} [AddCommMonoid R]
 /-- The degree of a finsupp function. -/
 def degree (d : σ →₀ R) : R := ∑ i ∈ d.support, d i
 
+theorem degree_eq_sum [Fintype σ] (f : σ →₀ R) : f.degree = ∑ i, f i := by
+  rw [degree, Finset.sum_subset] <;> simp
+
 @[simp]
 theorem degree_add (a b : σ →₀ R) : (a + b).degree = a.degree + b.degree :=
   sum_add_index' (h := fun _ ↦ id) (congrFun rfl) fun _ _ ↦ congrFun rfl
@@ -226,18 +229,18 @@ lemma degree_eq_zero_iff {R : Type*}
     DFunLike.ext_iff, coe_zero, Pi.zero_apply]
 
 theorem le_degree {R : Type*}
-    [AddCommMonoid R] [PartialOrder R] [IsOrderedAddMonoid R] [CanonicallyOrderedAdd R]
+    [AddCommMonoid R] [PartialOrder R] [CanonicallyOrderedAdd R]
     (s : σ) (f : σ →₀ R) :
     f s ≤ degree f := by
   by_cases h : s ∈ f.support
   · exact CanonicallyOrderedAddCommMonoid.single_le_sum h
-  · simp only [not_mem_support_iff] at h
+  · simp only [notMem_support_iff] at h
     simp only [h, zero_le]
 
 theorem degree_eq_weight_one {R : Type*} [Semiring R] :
     degree (R := R) (σ := σ) = weight (fun _ ↦ 1) := by
   ext d
-  simp only [degree, weight_apply, Pi.one_apply, smul_eq_mul, mul_one, Finsupp.sum]
+  simp only [degree, weight_apply, smul_eq_mul, mul_one, Finsupp.sum]
 
 theorem finite_of_degree_le [Finite σ] (n : ℕ) :
     {f : σ →₀ ℕ | degree f ≤ n}.Finite := by

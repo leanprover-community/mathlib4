@@ -46,10 +46,10 @@ theorem const_inj [Nonempty α] {y₁ y₂ : β} : const α y₁ = const α y₂
 theorem onFun_apply (f : β → β → γ) (g : α → β) (a b : α) : onFun f g a b = f (g a) (g b) :=
   rfl
 
-lemma hfunext {α α' : Sort u} {β : α → Sort v} {β' : α' → Sort v} {f : ∀a, β a} {f' : ∀a, β' a}
-    (hα : α = α') (h : ∀a a', HEq a a' → HEq (f a) (f' a')) : HEq f f' := by
+lemma hfunext {α α' : Sort u} {β : α → Sort v} {β' : α' → Sort v} {f : ∀ a, β a} {f' : ∀ a, β' a}
+    (hα : α = α') (h : ∀ a a', a ≍ a' → f a ≍ f' a') : f ≍ f' := by
   subst hα
-  have : ∀a, HEq (f a) (f' a) := fun a ↦ h a a (HEq.refl a)
+  have : ∀ a, f a ≍ f' a := fun a ↦ h a a (HEq.refl a)
   have : β = β' := by funext a; exact type_eq_of_heq (this a)
   subst this
   apply heq_of_eq
@@ -128,12 +128,12 @@ lemma Injective.dite (p : α → Prop) [DecidablePred p]
     (hf : Injective f) (hf' : Injective f')
     (im_disj : ∀ {x x' : α} {hx : p x} {hx' : ¬ p x'}, f ⟨x, hx⟩ ≠ f' ⟨x', hx'⟩) :
     Function.Injective (fun x ↦ if h : p x then f ⟨x, h⟩ else f' ⟨x, h⟩) := fun x₁ x₂ h => by
- dsimp only at h
- by_cases h₁ : p x₁ <;> by_cases h₂ : p x₂
- · rw [dif_pos h₁, dif_pos h₂] at h; injection (hf h)
- · rw [dif_pos h₁, dif_neg h₂] at h; exact (im_disj h).elim
- · rw [dif_neg h₁, dif_pos h₂] at h; exact (im_disj h.symm).elim
- · rw [dif_neg h₁, dif_neg h₂] at h; injection (hf' h)
+  dsimp only at h
+  by_cases h₁ : p x₁ <;> by_cases h₂ : p x₂
+  · rw [dif_pos h₁, dif_pos h₂] at h; injection (hf h)
+  · rw [dif_pos h₁, dif_neg h₂] at h; exact (im_disj h).elim
+  · rw [dif_neg h₁, dif_pos h₂] at h; exact (im_disj h.symm).elim
+  · rw [dif_neg h₁, dif_neg h₂] at h; injection (hf' h)
 
 theorem Surjective.of_comp {g : γ → α} (S : Surjective (f ∘ g)) : Surjective f := fun y ↦
   let ⟨x, h⟩ := S y
@@ -513,7 +513,7 @@ theorem update_injective (f : ∀ a, β a) (a' : α) : Injective (update f a') :
   have := congr_fun h a'
   rwa [update_self, update_self] at this
 
-lemma forall_update_iff (f : ∀a, β a) {a : α} {b : β a} (p : ∀a, β a → Prop) :
+lemma forall_update_iff (f : ∀ a, β a) {a : α} {b : β a} (p : ∀ a, β a → Prop) :
     (∀ x, p x (update f a b x)) ↔ p a b ∧ ∀ x, x ≠ a → p x (f x) := by
   rw [← and_forall_ne a, update_self]
   simp +contextual
@@ -557,6 +557,12 @@ theorem update_comp_eq_of_forall_ne {α β : Sort*} (g : α' → β) {f : α →
 theorem update_comp_eq_of_injective' (g : ∀ a, β a) {f : α' → α} (hf : Function.Injective f)
     (i : α') (a : β (f i)) : (fun j ↦ update g (f i) a (f j)) = update (fun i ↦ g (f i)) i a :=
   eq_update_iff.2 ⟨update_self .., fun _ hj ↦ update_of_ne (hf.ne hj) _ _⟩
+
+theorem update_apply_of_injective
+    (g : ∀ a, β a) {f : α' → α} (hf : Function.Injective f)
+    (i : α') (a : β (f i)) (j : α') :
+    update g (f i) a (f j) = update (fun i ↦ g (f i)) i a j :=
+  congr_fun (update_comp_eq_of_injective' g hf i a) j
 
 /-- Non-dependent version of `Function.update_comp_eq_of_injective'` -/
 theorem update_comp_eq_of_injective {β : Sort*} (g : α' → β) {f : α → α'}
@@ -638,6 +644,26 @@ theorem update_idem {α} [DecidableEq α] {β : α → Sort*} {a : α} (v w : β
     update (update f a v) a w = update f a w := by
   funext b
   by_cases h : b = a <;> simp [update, h]
+
+@[simp]
+theorem _root_.Pi.map_update {ι : Sort*} [DecidableEq ι] {α β : ι → Sort*}
+    {f : ∀ i, α i → β i}
+    (g : ∀ i, α i) (i : ι) (a : α i) :
+    Pi.map f (Function.update g i a) = Function.update (Pi.map f g) i (f i a) := by
+  ext j
+  obtain rfl | hij := eq_or_ne j i <;> simp [*]
+
+@[simp]
+theorem _root_.Pi.map_injective
+    {ι : Sort*} {α β : ι → Sort*} [∀ i, Nonempty (α i)] {f : ∀ i, α i → β i} :
+    Injective (Pi.map f) ↔ ∀ i, Injective (f i) where
+  mp h i x y hxy := by
+    classical
+    have : Inhabited (∀ i, α i) := ⟨fun _ => Classical.choice inferInstance⟩
+    replace h := @h (Function.update default i x) (Function.update default i y) ?_
+    · simpa using congrFun h i
+    rw [Pi.map_update, Pi.map_update, hxy]
+  mpr := .piMap
 
 end Update
 
@@ -801,13 +827,13 @@ class HasUncurry (α : Type*) (β : outParam Type*) (γ : outParam Type*) where
   for bundled maps. -/
   uncurry : α → β → γ
 
-@[inherit_doc] notation:arg "↿" x:arg => HasUncurry.uncurry x
+@[inherit_doc] prefix:max "↿" => HasUncurry.uncurry
 
 instance hasUncurryBase : HasUncurry (α → β) α β :=
   ⟨id⟩
 
 instance hasUncurryInduction [HasUncurry β γ δ] : HasUncurry (α → β) (α × γ) δ :=
-  ⟨fun f p ↦ (↿(f p.1)) p.2⟩
+  ⟨fun f p ↦ ↿(f p.1) p.2⟩
 
 end Uncurry
 

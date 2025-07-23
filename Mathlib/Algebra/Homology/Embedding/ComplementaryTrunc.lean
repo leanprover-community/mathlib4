@@ -95,7 +95,7 @@ def desc.aux (i j : ι) (hij : i = j) : X i ≃ X j := by
 
 omit ac in
 @[simp]
-lemma desc.aux_trans {i j k : ι} (hij : i = j) (hjk : j = k) (x : X i):
+lemma desc.aux_trans {i j k : ι} (hij : i = j) (hjk : j = k) (x : X i) :
     desc.aux X j k hjk (aux X i j hij x) = desc.aux X i k (hij.trans hjk) x := by
   subst hij hjk
   rfl

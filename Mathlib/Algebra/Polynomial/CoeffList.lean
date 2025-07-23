@@ -59,7 +59,7 @@ theorem coeffList_eq_nil {P : R[X]} : P.coeffList = [] ↔ P = 0 := by
 
 @[simp]
 theorem coeffList_C {x : R} (h : x ≠ 0) : (C x).coeffList = [x] := by
-  simp [coeffList, h, List.range_succ, degree_eq_natDegree (C_ne_zero.mpr h)]
+  simp [coeffList, List.range_succ, degree_eq_natDegree (C_ne_zero.mpr h)]
 
 theorem coeffList_eq_cons_leadingCoeff (h : P ≠ 0) :
     ∃ ls, P.coeffList = P.leadingCoeff :: ls := by
@@ -131,14 +131,14 @@ theorem coeffList_eraseLead (h : P ≠ 0) :
   rintro (_|k)
   · obtain ⟨w,h⟩ := (coeffList_eq_cons_leadingCoeff h)
     simp_all
-  simp only [coeffList, support_eq_empty, h, reduceIte, List.map_reverse, hep]
+  simp only [coeffList, List.map_reverse]
   by_cases hkd : P.natDegree + 1 ≤ k + 1
   · rw [List.getElem?_eq_none]
       <;> simpa [hep, h] using by omega
-  obtain ⟨dk, hdk⟩ := exists_add_of_le (Nat.le_of_lt_succ (Nat.lt_of_not_le hkd))
+  obtain ⟨dk, hdk⟩ := exists_add_of_le (Nat.le_of_lt_succ (Nat.lt_of_not_ge hkd))
   rw [List.getElem?_reverse (by simpa [withBotSucc_degree_eq_natDegree_add_one h] using hkd),
     List.getElem?_cons_succ, List.length_map, List.length_range, List.getElem?_map,
-    List.getElem?_range (by omega), Option.map_some']
+    List.getElem?_range (by omega), Option.map_some]
   conv_lhs => arg 1; equals P.eraseLead.coeff dk =>
     rw [eraseLead_coeff_of_ne (f := P) dk (by omega)]
     congr
@@ -148,7 +148,7 @@ theorem coeffList_eraseLead (h : P ≠ 0) :
   · rw [List.getElem?_append_right (List.length_replicate ▸ Nat.le_of_not_gt hkn),
       List.length_replicate, List.getElem?_reverse, List.getElem?_map]
     · rw [List.length_map, List.length_range,
-        List.getElem?_range (by omega), Option.map_some']
+        List.getElem?_range (by omega), Option.map_some]
       congr 2
       omega
     · simpa using by omega
@@ -161,7 +161,7 @@ variable [Ring R] (P : R[X])
 theorem coeffList_neg : (-P).coeffList = P.coeffList.map (-·) := by
   by_cases hp : P = 0
   · rw [hp, coeffList_zero, neg_zero, coeffList_zero, List.map_nil]
-  · simp [coeffList, hp]
+  · simp [coeffList]
 
 end Ring
 

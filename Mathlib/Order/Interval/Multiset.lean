@@ -136,23 +136,23 @@ alias ⟨_, Ioc_eq_zero⟩ := Ioc_eq_zero_iff
 
 @[simp]
 theorem Ioo_eq_zero (h : ¬a < b) : Ioo a b = 0 :=
-  eq_zero_iff_forall_not_mem.2 fun _x hx => h ((mem_Ioo.1 hx).1.trans (mem_Ioo.1 hx).2)
+  eq_zero_iff_forall_notMem.2 fun _x hx => h ((mem_Ioo.1 hx).1.trans (mem_Ioo.1 hx).2)
 
 @[simp]
 theorem Icc_eq_zero_of_lt (h : b < a) : Icc a b = 0 :=
-  Icc_eq_zero h.not_le
+  Icc_eq_zero h.not_ge
 
 @[simp]
 theorem Ico_eq_zero_of_le (h : b ≤ a) : Ico a b = 0 :=
-  Ico_eq_zero h.not_lt
+  Ico_eq_zero h.not_gt
 
 @[simp]
 theorem Ioc_eq_zero_of_le (h : b ≤ a) : Ioc a b = 0 :=
-  Ioc_eq_zero h.not_lt
+  Ioc_eq_zero h.not_gt
 
 @[simp]
 theorem Ioo_eq_zero_of_le (h : b ≤ a) : Ioo a b = 0 :=
-  Ioo_eq_zero h.not_lt
+  Ioo_eq_zero h.not_gt
 
 variable (a)
 
@@ -176,17 +176,25 @@ theorem right_mem_Icc : b ∈ Icc a b ↔ a ≤ b :=
 theorem right_mem_Ioc : b ∈ Ioc a b ↔ a < b :=
   Finset.right_mem_Ioc
 
-theorem left_not_mem_Ioc : a ∉ Ioc a b :=
-  Finset.left_not_mem_Ioc
+theorem left_notMem_Ioc : a ∉ Ioc a b :=
+  Finset.left_notMem_Ioc
 
-theorem left_not_mem_Ioo : a ∉ Ioo a b :=
-  Finset.left_not_mem_Ioo
+@[deprecated (since := "2025-05-23")] alias left_not_mem_Ioc := left_notMem_Ioc
 
-theorem right_not_mem_Ico : b ∉ Ico a b :=
-  Finset.right_not_mem_Ico
+theorem left_notMem_Ioo : a ∉ Ioo a b :=
+  Finset.left_notMem_Ioo
 
-theorem right_not_mem_Ioo : b ∉ Ioo a b :=
-  Finset.right_not_mem_Ioo
+@[deprecated (since := "2025-05-23")] alias left_not_mem_Ioo := left_notMem_Ioo
+
+theorem right_notMem_Ico : b ∉ Ico a b :=
+  Finset.right_notMem_Ico
+
+@[deprecated (since := "2025-05-23")] alias right_not_mem_Ico := right_notMem_Ico
+
+theorem right_notMem_Ioo : b ∉ Ioo a b :=
+  Finset.right_notMem_Ioo
+
+@[deprecated (since := "2025-05-23")] alias right_not_mem_Ioo := right_notMem_Ioo
 
 theorem Ico_filter_lt_of_le_left [DecidablePred (· < c)] (hca : c ≤ a) :
     ((Ico a b).filter fun x => x < c) = ∅ := by
@@ -227,18 +235,18 @@ theorem Icc_self (a : α) : Icc a a = {a} := by rw [Icc, Finset.Icc_self, Finset
 
 theorem Ico_cons_right (h : a ≤ b) : b ::ₘ Ico a b = Icc a b := by
   classical
-    rw [Ico, ← Finset.insert_val_of_not_mem right_not_mem_Ico, Finset.Ico_insert_right h]
+    rw [Ico, ← Finset.insert_val_of_notMem right_notMem_Ico, Finset.Ico_insert_right h]
     rfl
 
 theorem Ioo_cons_left (h : a < b) : a ::ₘ Ioo a b = Ico a b := by
   classical
-    rw [Ioo, ← Finset.insert_val_of_not_mem left_not_mem_Ioo, Finset.Ioo_insert_left h]
+    rw [Ioo, ← Finset.insert_val_of_notMem left_notMem_Ioo, Finset.Ioo_insert_left h]
     rfl
 
 theorem Ico_disjoint_Ico {a b c d : α} (h : b ≤ c) : Disjoint (Ico a b) (Ico c d) :=
   disjoint_left.mpr fun hab hbc => by
     rw [mem_Ico] at hab hbc
-    exact hab.2.not_le (h.trans hbc.1)
+    exact hab.2.not_ge (h.trans hbc.1)
 
 @[simp]
 theorem Ico_inter_Ico_of_le [DecidableEq α] {a b c d : α} (h : b ≤ c) : Ico a b ∩ Ico c d = 0 :=

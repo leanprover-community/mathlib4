@@ -15,13 +15,13 @@ This file contains some results about vector spaces over the field of fractions 
 
 ## Main results
 
- * `LinearIndependent.localization`: `b` is linear independent over a localization of `R`
-   if it is linear independent over `R` itself
- * `Basis.ofIsLocalizedModule` / `Basis.localizationLocalization`: promote an `R`-basis `b` of `A`
-   to an `Rₛ`-basis of `Aₛ`, where `Rₛ` and `Aₛ` are localizations of `R` and `A` at `s`
-   respectively
- * `LinearIndependent.iff_fractionRing`: `b` is linear independent over `R` iff it is
-   linear independent over `Frac(R)`
+* `LinearIndependent.localization`: `b` is linear independent over a localization of `R`
+  if it is linear independent over `R` itself
+* `Basis.ofIsLocalizedModule` / `Basis.localizationLocalization`: promote an `R`-basis `b` of `A`
+  to an `Rₛ`-basis of `Aₛ`, where `Rₛ` and `Aₛ` are localizations of `R` and `A` at `s`
+  respectively
+* `LinearIndependent.iff_fractionRing`: `b` is linear independent over `R` iff it is
+  linear independent over `Frac(R)`
 -/
 
 

@@ -53,7 +53,7 @@ structure PEquiv (α : Type u) (β : Type v) where
   /-- The partial inverse of `toFun` -/
   invFun : β → Option α
   /-- `invFun` is the partial inverse of `toFun` -/
-  inv : ∀ (a : α) (b : β), a ∈ invFun b ↔ b ∈ toFun a
+  inv : ∀ (a : α) (b : β), invFun b = some a ↔ toFun a = some b
 
 /-- A `PEquiv` is a partial equivalence, a representation of a bijection between a subset
   of `α` and a subset of `β`. See also `PartialEquiv` for a version that requires `toFun` and
@@ -109,7 +109,7 @@ protected def trans (f : α ≃. β) (g : β ≃. γ) :
     α ≃. γ where
   toFun a := (f a).bind g
   invFun a := (g.symm a).bind f.symm
-  inv a b := by simp_all [and_comm, eq_some_iff f, eq_some_iff g, bind_eq_some]
+  inv a b := by simp_all [and_comm, eq_some_iff f, eq_some_iff g, bind_eq_some_iff]
 
 @[simp]
 theorem refl_apply (a : α) : PEquiv.refl α a = some a :=
@@ -134,11 +134,11 @@ theorem trans_assoc (f : α ≃. β) (g : β ≃. γ) (h : γ ≃. δ) :
 
 theorem mem_trans (f : α ≃. β) (g : β ≃. γ) (a : α) (c : γ) :
     c ∈ f.trans g a ↔ ∃ b, b ∈ f a ∧ c ∈ g b :=
-  Option.bind_eq_some'
+  Option.bind_eq_some_iff
 
 theorem trans_eq_some (f : α ≃. β) (g : β ≃. γ) (a : α) (c : γ) :
     f.trans g a = some c ↔ ∃ b, f a = some b ∧ g b = some c :=
-  Option.bind_eq_some'
+  Option.bind_eq_some_iff
 
 theorem trans_eq_none (f : α ≃. β) (g : β ≃. γ) (a : α) :
     f.trans g a = none ↔ ∀ b c, b ∉ f a ∨ c ∉ g b := by
@@ -240,7 +240,7 @@ theorem symm_trans_rev (f : α ≃. β) (g : β ≃. γ) : (f.trans g).symm = g.
 theorem self_trans_symm (f : α ≃. β) : f.trans f.symm = ofSet { a | (f a).isSome } := by
   ext
   dsimp [PEquiv.trans]
-  simp only [eq_some_iff f, Option.isSome_iff_exists, Option.mem_def, bind_eq_some',
+  simp only [eq_some_iff f, Option.isSome_iff_exists, bind_eq_some_iff,
     ofSet_eq_some_iff]
   constructor
   · rintro ⟨b, hb₁, hb₂⟩
@@ -294,9 +294,9 @@ def single (a : α) (b : β) :
   inv x y := by
     split_ifs with h1 h2
     · simp [*]
-    · simp only [mem_def, some.injEq, iff_false, reduceCtorEq] at *
+    · simp only [some.injEq, iff_false] at *
       exact Ne.symm h2
-    · simp only [mem_def, some.injEq, false_iff, reduceCtorEq] at *
+    · simp only [some.injEq, false_iff] at *
       exact Ne.symm h1
     · simp
 
@@ -343,7 +343,7 @@ theorem trans_single_of_eq_none {b : β} (c : γ) {f : δ ≃. β} (h : f.symm b
   ext
   simp only [eq_none_iff_forall_not_mem, Option.mem_def, f.eq_some_iff] at h
   dsimp [PEquiv.trans, single]
-  simp only [mem_def, bind_eq_some, iff_false, not_exists, not_and, reduceCtorEq]
+  simp only [bind_eq_some_iff, iff_false, not_exists, not_and, reduceCtorEq]
   intros
   split_ifs <;> simp_all
 
@@ -390,7 +390,7 @@ instance [DecidableEq α] [DecidableEq β] : SemilatticeInf (α ≃. β) :=
           · contrapose! h2
             rw [h2]
             rw [← h1, hf, h2] at hg
-            simp only [mem_def, true_iff, eq_self_iff_true] at hg
+            simp only [true_iff] at hg
             rw [hg]
           · contrapose! h1
             rw [h1] at hf h2

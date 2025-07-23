@@ -85,7 +85,7 @@ instance : SupSet (I.Filtration M) :=
   ⟨fun S =>
     { N := sSup (Ideal.Filtration.N '' S)
       mono := fun i => by
-        apply sSup_le_sSup_of_forall_exists_le _
+        apply sSup_le_sSup_of_isCofinalFor _
         rintro _ ⟨⟨_, F, hF, rfl⟩, rfl⟩
         exact ⟨_, ⟨⟨_, F, hF, rfl⟩, rfl⟩, F.mono i⟩
       smul_le := fun i => by
@@ -105,7 +105,7 @@ instance : InfSet (I.Filtration M) :=
   ⟨fun S =>
     { N := sInf (Ideal.Filtration.N '' S)
       mono := fun i => by
-        apply sInf_le_sInf_of_forall_exists_le _
+        apply sInf_le_sInf_of_isCoinitialFor _
         rintro _ ⟨⟨_, F, hF, rfl⟩, rfl⟩
         exact ⟨_, ⟨⟨_, F, hF, rfl⟩, rfl⟩, F.mono i⟩
       smul_le := fun i => by
@@ -228,7 +228,7 @@ open PolynomialModule
 variable (F F')
 
 /-- The `R[IX]`-submodule of `M[X]` associated with an `I`-filtration. -/
-protected def submodule : Submodule (reesAlgebra I) (PolynomialModule R M) where
+protected noncomputable def submodule : Submodule (reesAlgebra I) (PolynomialModule R M) where
   carrier := { f | ∀ i, f i ∈ F.N i }
   add_mem' hf hg i := Submodule.add_mem _ (hf i) (hg i)
   zero_mem' _ := Submodule.zero_mem _
@@ -251,7 +251,7 @@ theorem inf_submodule : (F ⊓ F').submodule = F.submodule ⊓ F'.submodule := b
 variable (I M)
 
 /-- `Ideal.Filtration.submodule` as an `InfHom`. -/
-def submoduleInfHom :
+noncomputable def submoduleInfHom :
     InfHom (I.Filtration M) (Submodule (reesAlgebra I) (PolynomialModule R M)) where
   toFun := Ideal.Filtration.submodule
   map_inf' := inf_submodule
@@ -281,8 +281,9 @@ theorem submodule_span_single :
 theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
     F.submodule = Submodule.span _ (⋃ i ≤ n₀, single R i '' (F.N i : Set M)) ↔
       ∀ n ≥ n₀, I • F.N n = F.N (n + 1) := by
-  rw [← submodule_span_single, ← LE.le.le_iff_eq, Submodule.span_le, Set.iUnion_subset_iff]
-  swap; · exact Submodule.span_mono (Set.iUnion₂_subset_iUnion _ _)
+  rw [← submodule_span_single,
+    ← (Submodule.span_mono (Set.iUnion₂_subset_iUnion _ _)).ge_iff_eq',
+    Submodule.span_le, Set.iUnion_subset_iff]
   constructor
   · intro H n hn
     refine (F.smul_le n).antisymm ?_

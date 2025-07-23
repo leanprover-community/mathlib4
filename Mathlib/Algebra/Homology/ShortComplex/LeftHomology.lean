@@ -210,6 +210,21 @@ def ofZeros (hf : S.f = 0) (hg : S.g = 0) : S.LeftHomologyData where
     (ofZeros S hf hg).f' = 0 := by
   rw [← cancel_mono ((ofZeros S hf hg).i), zero_comp, f'_i, hf]
 
+variable {S} in
+/-- Given a left homology data `h` of a short complex `S`, we can construct another left homology
+data by choosing another kernel and cokernel that are isomorphic to the ones in `h`. -/
+@[simps] def copy {K' H' : C} (eK : K' ≅ h.K) (eH : H' ≅ h.H) : S.LeftHomologyData where
+  K := K'
+  H := H'
+  i := eK.hom ≫ h.i
+  π := eK.hom ≫ h.π ≫ eH.inv
+  wi := by rw [assoc, h.wi, comp_zero]
+  hi := IsKernel.isoKernel _ _ h.hi eK (by simp)
+  wπ := by simp [IsKernel.isoKernel]
+  hπ := IsColimit.equivOfNatIsoOfIso
+    (parallelPair.ext (Iso.refl S.X₁) eK.symm (by simp [IsKernel.isoKernel]) (by simp)) _ _
+    (Cocones.ext (by exact eH.symm) (by rintro (_ | _) <;> simp [IsKernel.isoKernel])) h.hπ
+
 end LeftHomologyData
 
 /-- A short complex `S` has left homology when there exists a `S.LeftHomologyData` -/
@@ -890,7 +905,7 @@ namespace LeftHomologyMapData
 /-- This left homology map data expresses compatibilities of the left homology data
 constructed by `LeftHomologyData.ofEpiOfIsIsoOfMono` -/
 @[simps]
-def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : LeftHomologyData S₁)
+noncomputable def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : LeftHomologyData S₁)
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
     LeftHomologyMapData φ h (LeftHomologyData.ofEpiOfIsIsoOfMono φ h) where
   φK := 𝟙 _

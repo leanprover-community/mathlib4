@@ -46,7 +46,7 @@ theorem ae_const_le_iff_forall_lt_measure_zero {β} [LinearOrder β] [Topologica
   intro hc
   by_cases h : ∀ b, c ≤ b
   · have : {a : α | f a < c} = ∅ := by
-      apply Set.eq_empty_iff_forall_not_mem.2 fun x hx => ?_
+      apply Set.eq_empty_iff_forall_notMem.2 fun x hx => ?_
       exact (lt_irrefl _ (lt_of_lt_of_le hx (h (f x)))).elim
     simp [this]
   by_cases H : ¬IsLUB (Set.Iio c) c
@@ -58,7 +58,7 @@ theorem ae_const_le_iff_forall_lt_measure_zero {β} [LinearOrder β] [Topologica
   obtain ⟨u, _, u_lt, u_lim, -⟩ :
     ∃ u : ℕ → β,
       StrictMono u ∧ (∀ n : ℕ, u n < c) ∧ Tendsto u atTop (𝓝 c) ∧ ∀ n : ℕ, u n ∈ Set.Iio c :=
-    H.exists_seq_strictMono_tendsto_of_not_mem (lt_irrefl c) h
+    H.exists_seq_strictMono_tendsto_of_notMem (lt_irrefl c) h
   have h_Union : {x | f x < c} = ⋃ n : ℕ, {x | f x ≤ u n} := by
     ext1 x
     simp_rw [Set.mem_iUnion, Set.mem_setOf_eq]

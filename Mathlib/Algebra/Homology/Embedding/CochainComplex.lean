@@ -92,22 +92,22 @@ abbrev IsLE (n : ℤ) := K.IsSupported (embeddingUpIntLE n)
 lemma isZero_of_isStrictlyGE (n i : ℤ) (hi : i < n) [K.IsStrictlyGE n] :
     IsZero (K.X i) :=
   isZero_X_of_isStrictlySupported K (embeddingUpIntGE n) i
-    (by simpa only [not_mem_range_embeddingUpIntGE_iff] using hi)
+    (by simpa only [notMem_range_embeddingUpIntGE_iff] using hi)
 
 lemma isZero_of_isStrictlyLE (n i : ℤ) (hi : n < i) [K.IsStrictlyLE n] :
     IsZero (K.X i) :=
   isZero_X_of_isStrictlySupported K (embeddingUpIntLE n) i
-    (by simpa only [not_mem_range_embeddingUpIntLE_iff] using hi)
+    (by simpa only [notMem_range_embeddingUpIntLE_iff] using hi)
 
 lemma exactAt_of_isGE (n i : ℤ) (hi : i < n) [K.IsGE n] :
     K.ExactAt i :=
   exactAt_of_isSupported K (embeddingUpIntGE n) i
-    (by simpa only [not_mem_range_embeddingUpIntGE_iff] using hi)
+    (by simpa only [notMem_range_embeddingUpIntGE_iff] using hi)
 
 lemma exactAt_of_isLE (n i : ℤ) (hi : n < i) [K.IsLE n] :
     K.ExactAt i :=
   exactAt_of_isSupported K (embeddingUpIntLE n) i
-    (by simpa only [not_mem_range_embeddingUpIntLE_iff] using hi)
+    (by simpa only [notMem_range_embeddingUpIntLE_iff] using hi)
 
 lemma isZero_of_isGE (n i : ℤ) (hi : i < n) [K.IsGE n] [K.HasHomology i] :
     IsZero (K.homology i) :=
@@ -124,7 +124,7 @@ lemma isStrictlyGE_iff (n : ℤ) :
     exact K.isZero_of_isStrictlyGE n i hi
   · intro h
     refine IsStrictlySupported.mk (fun i hi ↦ ?_)
-    rw [not_mem_range_embeddingUpIntGE_iff] at hi
+    rw [notMem_range_embeddingUpIntGE_iff] at hi
     exact h i hi
 
 lemma isStrictlyLE_iff (n : ℤ) :
@@ -134,7 +134,7 @@ lemma isStrictlyLE_iff (n : ℤ) :
     exact K.isZero_of_isStrictlyLE n i hi
   · intro h
     refine IsStrictlySupported.mk (fun i hi ↦ ?_)
-    rw [not_mem_range_embeddingUpIntLE_iff] at hi
+    rw [notMem_range_embeddingUpIntLE_iff] at hi
     exact h i hi
 
 lemma isGE_iff (n : ℤ) :
@@ -144,7 +144,7 @@ lemma isGE_iff (n : ℤ) :
     exact K.exactAt_of_isGE n i hi
   · intro h
     refine IsSupported.mk (fun i hi ↦ ?_)
-    rw [not_mem_range_embeddingUpIntGE_iff] at hi
+    rw [notMem_range_embeddingUpIntGE_iff] at hi
     exact h i hi
 
 lemma isLE_iff (n : ℤ) :
@@ -154,7 +154,7 @@ lemma isLE_iff (n : ℤ) :
     exact K.exactAt_of_isLE n i hi
   · intro h
     refine IsSupported.mk (fun i hi ↦ ?_)
-    rw [not_mem_range_embeddingUpIntLE_iff] at hi
+    rw [notMem_range_embeddingUpIntLE_iff] at hi
     exact h i hi
 
 lemma isStrictlyLE_of_le (p q : ℤ) (hpq : p ≤ q) [K.IsStrictlyLE p] :
