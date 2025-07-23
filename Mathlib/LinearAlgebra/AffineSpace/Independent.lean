@@ -8,6 +8,7 @@ import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Sign
 import Mathlib.LinearAlgebra.AffineSpace.Combination
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
+import Mathlib.LinearAlgebra.AffineSpace.Restrict
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
@@ -100,11 +101,7 @@ theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
       intro s g hg i hi
       set f : ι → k := fun x => if hx : x = i1 then -∑ y ∈ s, g y else g ⟨x, hx⟩ with hfdef
       let s2 : Finset ι := insert i1 (s.map (Embedding.subtype _))
-      have hfg : ∀ x : { x // x ≠ i1 }, g x = f x := by
-        intro x
-        rw [hfdef]
-        dsimp only
-        rw [dif_neg x.property, Subtype.coe_eta]
+      have hfg : ∀ x : { x // x ≠ i1 }, g x = f x := by grind
       rw [hfg]
       have hf : ∑ ι ∈ s2, f ι = 0 := by
         rw [Finset.sum_insert
@@ -354,8 +351,7 @@ independent, then the original family of points is also affine-independent. -/
 theorem AffineIndependent.of_comp {p : ι → P} (f : P →ᵃ[k] P₂) (hai : AffineIndependent k (f ∘ p)) :
     AffineIndependent k p := by
   rcases isEmpty_or_nonempty ι with h | h
-  · haveI := h
-    apply affineIndependent_of_subsingleton
+  · apply affineIndependent_of_subsingleton
   obtain ⟨i⟩ := h
   rw [affineIndependent_iff_linearIndependent_vsub k p i]
   simp_rw [affineIndependent_iff_linearIndependent_vsub k (f ∘ p) i, Function.comp_apply, ←
@@ -367,8 +363,7 @@ affine-independent. -/
 theorem AffineIndependent.map' {p : ι → P} (hai : AffineIndependent k p) (f : P →ᵃ[k] P₂)
     (hf : Function.Injective f) : AffineIndependent k (f ∘ p) := by
   rcases isEmpty_or_nonempty ι with h | h
-  · haveI := h
-    apply affineIndependent_of_subsingleton
+  · apply affineIndependent_of_subsingleton
   obtain ⟨i⟩ := h
   rw [affineIndependent_iff_linearIndependent_vsub k p i] at hai
   simp_rw [affineIndependent_iff_linearIndependent_vsub k (f ∘ p) i, Function.comp_apply, ←
@@ -979,6 +974,61 @@ theorem reindex_map {m n : ℕ} (s : Simplex k P m) (e : Fin (m + 1) ≃ Fin (n 
     (s.map f hf).reindex e = (s.reindex e).map f hf :=
   rfl
 
+section restrict
+attribute [local instance] AffineSubspace.toAddTorsor
+
+/-- Restrict an affine simplex to an affine subspace that contains it. -/
+@[simps]
+def restrict {n : ℕ} (s : Affine.Simplex k P n) (S : AffineSubspace k P)
+    (hS : affineSpan k (Set.range s.points) ≤ S) :
+    letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    Affine.Simplex (V := S.direction) k S n :=
+  letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  { points i := ⟨s.points i, hS <| mem_affineSpan _ <| Set.mem_range_self _⟩
+    independent := AffineIndependent.of_comp S.subtype s.independent }
+
+/-- Restricting to `S₁` then mapping to a larger `S₂` is the same as restricting to `S₂`. -/
+@[simp]
+theorem restrict_map_inclusion {n : ℕ} (s : Affine.Simplex k P n)
+    (S₁ S₂ : AffineSubspace k P) (hS₁) (hS₂ : S₁ ≤ S₂) :
+    letI := Nonempty.map (AffineSubspace.inclusion hS₁) inferInstance
+    letI := Nonempty.map (Set.inclusion hS₂) ‹_›
+    (s.restrict S₁ hS₁).map (AffineSubspace.inclusion hS₂) (Set.inclusion_injective hS₂) =
+      s.restrict S₂ (hS₁.trans hS₂) :=
+  rfl
+
+@[simp]
+theorem map_subtype_restrict
+    {n : ℕ} (S : AffineSubspace k P) [Nonempty S] (s : Affine.Simplex k S n) :
+    (s.map (AffineSubspace.subtype _) Subtype.coe_injective).restrict
+      S (affineSpan_le.2 <| by rintro x ⟨y, rfl⟩; exact Subtype.prop _) = s := by
+  rfl
+
+/-- Restricting to `S₁` then mapping through the restriction of `f` to `S₁ →ᵃ[k] S₂` is the same
+as mapping through unrestricted `f`, then restricting to `S₂`. -/
+theorem restrict_map_restrict
+    {n : ℕ} (s : Affine.Simplex k P n) (f : P →ᵃ[k] P₂) (hf : Function.Injective f)
+    (S₁ : AffineSubspace k P) (S₂ : AffineSubspace k P₂)
+    (hS₁ : affineSpan k (Set.range s.points) ≤ S₁) (hfS : AffineSubspace.map f S₁ ≤ S₂) :
+    letI := Nonempty.map (AffineSubspace.inclusion hS₁) inferInstance
+    letI : Nonempty (S₁.map f) := AffineSubspace.nonempty_map
+    letI := Nonempty.map (AffineSubspace.inclusion hfS) inferInstance
+    (s.restrict S₁ hS₁).map (f.restrict hfS) (AffineMap.restrict.injective hf _) =
+      (s.map f hf).restrict S₂ (
+        Eq.trans_le
+          (by simp [AffineSubspace.map_span, Set.range_comp])
+          (AffineSubspace.map_mono f hS₁) |>.trans hfS) := by
+  rfl
+
+/-- Restricting to `affineSpan k (Set.range s.points)` can be reversed by mapping through
+`AffineSubspace.subtype`. -/
+@[simp]
+theorem restrict_map_subtype {n : ℕ} (s : Affine.Simplex k P n) :
+    (s.restrict _ le_rfl).map (AffineSubspace.subtype _) Subtype.coe_injective = s :=
+  rfl
+
+end restrict
+
 end Simplex
 
 end Affine
@@ -1084,6 +1134,15 @@ lemma affineCombination_mem_closedInterior_iff {n : ℕ} {s : Simplex k P n} {w 
   simp_rw [← (affineIndependent_iff_eq_of_fintype_affineCombination_eq k s.points).1
     s.independent w' w hw' hw hww']
   exact hw'01
+
+lemma interior_subset_closedInterior {n : ℕ} (s : Simplex k P n) :
+    s.interior ⊆ s.closedInterior :=
+  fun _ ⟨w, hw, hw01, hww⟩ ↦ ⟨w, hw, fun i ↦ ⟨(hw01 i).1.le, (hw01 i).2.le⟩, hww⟩
+
+lemma closedInterior_subset_affineSpan {n : ℕ} {s : Simplex k P n} :
+    s.closedInterior ⊆ affineSpan k (Set.range s.points) := by
+  rintro p ⟨w, hw, hi, rfl⟩
+  exact affineCombination_mem_affineSpan_of_nonempty hw _
 
 end Simplex
 

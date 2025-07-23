@@ -12,11 +12,6 @@ import Mathlib.Order.RelClasses
 
 variable {α : Type*}
 
-@[deprecated "This was a leftover from Lean 3, and has not been needed." (since := "2024-11-26")]
-instance isStrictTotalOrder_of_linearOrder [LinearOrder α] : IsStrictTotalOrder α (· < ·) where
-  irrefl := lt_irrefl
-  trichotomous := lt_trichotomy
-
 section Preorder
 
 variable [MulOneClass α] [Zero α] [Preorder α] {a b c : α}

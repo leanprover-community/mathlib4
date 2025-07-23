@@ -100,18 +100,18 @@ nonrec def orthogonalProjectionAux (s : AffineSubspace ℝ P) [Nonempty s]
   toFun p := ⟨orthogonalProjectionFn s p, orthogonalProjectionFn_mem p⟩
   linear := s.direction.orthogonalProjection
   map_vadd' p v := by
-    have hs : (s.direction.orthogonalProjection v : V) +ᵥ orthogonalProjectionFn s p ∈ s :=
+    have hs : s.direction.starProjection v +ᵥ orthogonalProjectionFn s p ∈ s :=
       vadd_mem_of_mem_direction (s.direction.orthogonalProjection v).2
         (orthogonalProjectionFn_mem p)
     have ho :
-      (s.direction.orthogonalProjection v : V) +ᵥ orthogonalProjectionFn s p ∈
+      s.direction.starProjection v +ᵥ orthogonalProjectionFn s p ∈
         mk' (v +ᵥ p) s.directionᗮ := by
       rw [← vsub_right_mem_direction_iff_mem (self_mem_mk' _ _) _, direction_mk',
         vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, add_comm, add_sub_assoc]
       refine Submodule.add_mem _ (orthogonalProjectionFn_vsub_mem_direction_orthogonal p) ?_
       rw [Submodule.mem_orthogonal']
       intro w hw
-      rw [← neg_sub, inner_neg_left, Submodule.orthogonalProjection_inner_eq_zero _ w hw, neg_zero]
+      rw [← neg_sub, inner_neg_left, Submodule.starProjection_inner_eq_zero _ w hw, neg_zero]
     have hm :
       (s.direction.orthogonalProjection v : V) +ᵥ orthogonalProjectionFn s p ∈
         ({orthogonalProjectionFn s (v +ᵥ p)} : Set P) := by
