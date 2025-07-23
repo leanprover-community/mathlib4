@@ -5,6 +5,35 @@ Authors: Lorenzo Luccioli
 -/
 import Mathlib.MeasureTheory.Measure.WithDensity
 
+/-!
+# BoolMeasure
+
+## Main definitions
+
+* `FooBar`
+
+## Main statements
+
+* `fooBar_unique`
+
+## Notation
+
+
+
+## Implementation details
+
+
+
+## References
+
+* [F. Bar, *Quuxes*][bibkey]
+
+## Tags
+
+Foobars, barfoos
+-/
+
+
 open MeasureTheory
 
 open scoped ENNReal NNReal
@@ -50,9 +79,7 @@ lemma boolMeasure_withDensity (π : Measure Bool) (f : Bool → ℝ≥0∞) :
     π.withDensity f = boolMeasure (f false * π {false}) (f true * π {true}) := by
   ext <;> simp [lintegral_dirac, mul_comm]
 
-instance {x y : ℝ} : IsFiniteMeasure (boolMeasure (.ofReal x) (.ofReal y)) := by
-  constructor
-  simp
+instance {x y : ℝ} : IsFiniteMeasure (boolMeasure (.ofReal x) (.ofReal y)) := ⟨by simp⟩
 
 end BoolMeasure
 
