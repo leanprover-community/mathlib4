@@ -43,13 +43,13 @@ def simprocFromKeys (keys : Array SimpTheoremKey) (dsimprocOnly := false) :
   return out
 
 /-- Print out an array of simprocs, providing the name and the docstring. -/
-def printSimprocList (simprocs : Array SimprocEntry) : CoreM String := do
+def printSimprocList (simprocs : Array SimprocEntry) : CoreM MessageData := do
   let env ← getEnv
   let out ← simprocs.mapM fun simprocEntry ↦ do
     let declName := simprocEntry.declName
     let docString := (← Lean.findDocString? env declName).getD ""
-    return s!"{simprocEntry.declName}:\n{docString}"
-  return "\n\n\n".intercalate out.toList
+    return m!"{simprocEntry.declName}:\n{docString}"
+  return m!"\n\n".joinSep out.toList
 
 /-- Get all simp theorems in the environment that match a pattern in an array of keys. -/
 def simpTheoremsFromKeys (keys : Array SimpTheoremKey) : CoreM <| Array SimpTheorem := do
@@ -60,14 +60,14 @@ def simpTheoremsFromKeys (keys : Array SimpTheoremKey) : CoreM <| Array SimpTheo
   return out
 
 /-- Print out an array of simp theorems, providing the name. -/
-def printSimpTheoremList (simpThms : Array SimpTheorem) : MetaM String := do
+def printSimpTheoremList (simpThms : Array SimpTheorem) : MetaM MessageData := do
   let out ← simpThms.filterMapM fun simpThm ↦ do
     match simpThm.origin with
       | .decl declName _ _ =>
         let decl ← Lean.getConstInfo declName
-        return s!"{declName} :  {← ppExpr decl.type}"
+        return m!"{declName} :  {← ppExpr decl.type}"
       | _ => return none
-  return "\n\n".intercalate out.toList
+  return m!"\n\n".joinSep out.toList
 
 /-- Print all simprocs that match a given pattern. -/
 elab "#simprocs " t:term : command => liftTermElabM do
