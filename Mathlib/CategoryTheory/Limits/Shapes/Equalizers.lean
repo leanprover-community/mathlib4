@@ -1256,7 +1256,8 @@ variable [HasBinaryProducts C]
 
 local notation "p⟨" f ", " g "⟩" => Limits.prod.lift f g
 
-/-- (𝟙⨯ f) : X ⟶ X ⨯ Y is the equalizer of the pair (prod.fst ≫ f, prod.snd) : X ⨯ Y ⟶ Y. -/
+/-- For `f : X ⟶ Y`, the pairing `p⟨𝟙 X, f⟩ : X ⟶ X ⨯ Y` is the equalizer
+of the pair `(prod.fst ≫ f, prod.snd)`. -/
 noncomputable def graph_as_equalizer {X Y : C} (f : X ⟶ Y) :
     IsLimit (Fork.ofι p⟨𝟙 X, f⟩ ((by simp) : p⟨𝟙 X, f⟩ ≫ prod.fst ≫ f = p⟨𝟙 X, f⟩ ≫ prod.snd)) :=
   Fork.IsLimit.mk _
