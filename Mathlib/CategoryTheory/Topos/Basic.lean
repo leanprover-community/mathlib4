@@ -39,18 +39,28 @@ def IsPowerObjectOf (hc : Classifier ℰ (𝟙_ ℰ)) (B P : ℰ) :=
 variable (ℰ) [HasPullbacks ℰ]
 
 /-- An elementary topos is a category with a fixed subobject classifier and power objects. -/
-structure ElementaryTopos extends Classifier ℰ (𝟙_ ℰ) where
+class ElementaryTopos where
+  /-- A fixed choice of subobject classifier in `ℰ`. -/
+  hc : Classifier ℰ (𝟙_ ℰ)
   /-- Every `B` has a power object `P B`. -/
   P (B : ℰ) : ℰ
   /-- `P B` is a power object of `B`. -/
-  is_power_object (B : ℰ) : IsPowerObjectOf _ B (P B)
+  hP (B : ℰ) : IsPowerObjectOf hc B (P B)
 
 namespace ElementaryTopos
 
-variable {et : ElementaryTopos ℰ}
+variable [ElementaryTopos ℰ]
 
-/-- The element relation as a subobject of `B ⊗ (et.P B)`. -/
-def ε_ (B : ℰ) : B ⊗ (et.P B) ⟶ et.Ω := by
-  simpa using (et.is_power_object B).homEquiv.toFun (𝟙 (et.P B))
+/-- The element relation as a subobject of `B ⨯ (P B)`. -/
+def ε_ (B : ℰ) : B ⊗ (P B) ⟶ hc.Ω :=
+  (hP B).homEquiv.toFun (𝟙 (P B))
+
+/-- The P-transpose of a morphism `g : B × A ⟶ Ω`. -/
+def hat {A : ℰ} (B : ℰ) (g : A ⟶ P B) : B ⊗ A ⟶ hc.Ω :=
+  (hP B).homEquiv.toFun g
+
+/-- The P-transpose of a morphism `f : B × A ⟶ Ω`. -/
+def unhat {A B : ℰ} (f : B ⊗ A ⟶ hc.Ω) : (A ⟶ P B) :=
+  (hP B).homEquiv.invFun f
 
 end ElementaryTopos
