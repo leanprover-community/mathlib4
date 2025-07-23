@@ -42,6 +42,16 @@ instance RingCone.instRingConeClass (R : Type*) [Ring R] :
   one_mem {C} := C.one_mem'
   eq_zero_of_mem_of_neg_mem {C} := C.eq_zero_of_mem_of_neg_mem'
 
+@[simp]
+theorem RingCone.mem_mk {R : Type*} [Ring R] {toSubsemiring : Subsemiring R}
+    (eq_zero_of_mem_of_neg_mem) {x : R} :
+    x ∈ mk toSubsemiring eq_zero_of_mem_of_neg_mem ↔ x ∈ toSubsemiring := .rfl
+
+@[simp]
+theorem RingCone.coe_set_mk {R : Type*} [Ring R] {toSubsemiring : Subsemiring R}
+    (eq_zero_of_mem_of_neg_mem) :
+    (mk toSubsemiring eq_zero_of_mem_of_neg_mem : Set R) = toSubsemiring := rfl
+
 namespace RingCone
 
 variable {T : Type*} [Ring T] [PartialOrder T] [IsOrderedRing T] {a : T}
