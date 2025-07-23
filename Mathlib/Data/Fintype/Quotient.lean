@@ -136,7 +136,7 @@ lemma finLiftOn_mk (a : ∀ i, α i) :
 
 section finLift
 
-variable {ι₁ : Type*} [Fintype ι₁] [DecidableEq ι₁] {ι₂ : Type*} [Fintype ι₂] [DecidableEq ι₂]
+variable {ι₁ ι₂ : Type*} [Fintype ι₁] [DecidableEq ι₁] [Fintype ι₂] [DecidableEq ι₂]
   {α : ι₁ → Sort*} {S₁ : ∀ i, Setoid (α i)} {β : ι₂ → Sort*} {S₂ : ∀ i, Setoid (β i)} {φ : Sort*}
   (q₁ : ∀ i, Quotient (S₁ i)) (q₂ : ∀ i, Quotient (S₂ i)) (f : (∀ i, α i) → (∀ i, β i) → φ)
   (c : ∀ (a₁ : ∀ i, α i) (b₁ : ∀ i, β i) (a₂ : ∀ i, α i) (b₂ : ∀ i, β i),
