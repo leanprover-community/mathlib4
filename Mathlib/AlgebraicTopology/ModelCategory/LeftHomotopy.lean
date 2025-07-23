@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.ModelCategory.Cylinder
-import Mathlib.CategoryTheory.Quotient
+import Mathlib.CategoryTheory.Localization.Quotient
 
 /-!
 # Left homotopies in model categories
@@ -178,6 +178,19 @@ lemma Cylinder.LeftHomotopy.leftHomotopyRel [CategoryWithWeakEquivalences C]
   ⟨_, ⟨h⟩⟩
 
 namespace LeftHomotopyRel
+
+variable (C) in
+lemma factorsThroughLocalization [CategoryWithWeakEquivalences C] :
+    LeftHomotopyRel.FactorsThroughLocalization (weakEquivalences C) := by
+  rintro X Y f g ⟨P, ⟨h⟩⟩
+  let L := (weakEquivalences C).Q
+  rw [areEqualizedByLocalization_iff L]
+  suffices L.map P.i₀ = L.map P.i₁ by
+    simp only [← h.h₀, ← h.h₁, L.map_comp, this]
+  have := Localization.inverts L (weakEquivalences C) P.π (by
+    rw [← weakEquivalence_iff]
+    infer_instance)
+  simp only [← cancel_mono (L.map P.π), ← L.map_comp, P.i₀_π, P.i₁_π]
 
 variable {X Y : C}
 
