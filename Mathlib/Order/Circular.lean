@@ -416,10 +416,10 @@ abbrev LinearOrder.toCircularOrder (α : Type*) [LinearOrder α] : CircularOrder
 namespace OrderDual
 
 instance btw (α : Type*) [Btw α] : Btw αᵒᵈ :=
-  ⟨fun a b c : α => Btw.btw c b a⟩
+  ⟨fun a b c => Btw.btw c.ofDual b.ofDual a.ofDual⟩
 
 instance sbtw (α : Type*) [SBtw α] : SBtw αᵒᵈ :=
-  ⟨fun a b c : α => SBtw.sbtw c b a⟩
+  ⟨fun a b c => SBtw.sbtw c.ofDual b.ofDual a.ofDual⟩
 
 instance circularPreorder (α : Type*) [CircularPreorder α] : CircularPreorder αᵒᵈ :=
   { OrderDual.btw α,
@@ -427,14 +427,15 @@ instance circularPreorder (α : Type*) [CircularPreorder α] : CircularPreorder 
     btw_refl := fun _ => @btw_refl α _ _
     btw_cyclic_left := fun {_ _ _} => @btw_cyclic_right α _ _ _ _
     sbtw_trans_left := fun {_ _ _ _} habc hbdc => hbdc.trans_right habc
-    sbtw_iff_btw_not_btw := fun {a b c} => @sbtw_iff_btw_not_btw α _ c b a }
+    sbtw_iff_btw_not_btw := fun {a b c} => @sbtw_iff_btw_not_btw α _ c.ofDual b.ofDual a.ofDual }
 
 instance circularPartialOrder (α : Type*) [CircularPartialOrder α] : CircularPartialOrder αᵒᵈ :=
   { OrderDual.circularPreorder α with
-    btw_antisymm := fun {_ _ _} habc hcba => @btw_antisymm α _ _ _ _ hcba habc }
+    btw_antisymm := fun {_ _ _} habc hcba => (@btw_antisymm α _ _ _ _ hcba habc).imp
+      (congrArg toDual) (·.imp (congrArg toDual) (congrArg toDual)) }
 
 instance (α : Type*) [CircularOrder α] : CircularOrder αᵒᵈ :=
   { OrderDual.circularPartialOrder α with
-    btw_total := fun {a b c} => @btw_total α _ c b a }
+    btw_total := fun {a b c} => @btw_total α _ c.ofDual b.ofDual a.ofDual }
 
 end OrderDual

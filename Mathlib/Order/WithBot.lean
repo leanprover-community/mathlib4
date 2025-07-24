@@ -504,25 +504,27 @@ theorem coe_ne_top : (a : WithTop α) ≠ ⊤ :=
 See `WithTop.toDualBotEquiv` for the related order-iso.
 -/
 protected def toDual : WithTop α ≃ WithBot αᵒᵈ :=
-  Equiv.refl _
+  ⟨Option.map OrderDual.toDual,Option.map OrderDual.ofDual,
+    fun | .some _ => rfl | .none => rfl, fun | .some _ => rfl | .none => rfl⟩
 
 /-- `WithTop.ofDual` is the equivalence sending `⊤` to `⊥` and any `a : αᵒᵈ` to `ofDual a : α`.
 See `WithTop.toDualBotEquiv` for the related order-iso.
 -/
 protected def ofDual : WithTop αᵒᵈ ≃ WithBot α :=
-  Equiv.refl _
+  ⟨Option.map OrderDual.ofDual,Option.map OrderDual.toDual,
+    fun | .some _ => rfl | .none => rfl, fun | .some _ => rfl | .none => rfl⟩
 
 /-- `WithBot.toDual` is the equivalence sending `⊥` to `⊤` and any `a : α` to `toDual a : αᵒᵈ`.
 See `WithBot.toDual_top_equiv` for the related order-iso.
 -/
 protected def _root_.WithBot.toDual : WithBot α ≃ WithTop αᵒᵈ :=
-  Equiv.refl _
+  WithTop.ofDual.symm
 
 /-- `WithBot.ofDual` is the equivalence sending `⊥` to `⊤` and any `a : αᵒᵈ` to `ofDual a : α`.
 See `WithBot.ofDual_top_equiv` for the related order-iso.
 -/
 protected def _root_.WithBot.ofDual : WithBot αᵒᵈ ≃ WithTop α :=
-  Equiv.refl _
+  _root_.WithTop.toDual.symm
 
 @[simp]
 theorem toDual_symm_apply (a : WithBot αᵒᵈ) : WithTop.toDual.symm a = WithBot.ofDual a :=
@@ -537,7 +539,7 @@ theorem toDual_apply_top : WithTop.toDual (⊤ : WithTop α) = ⊥ :=
   rfl
 
 @[simp]
-theorem ofDual_apply_top : WithTop.ofDual (⊤ : WithTop α) = ⊥ :=
+theorem ofDual_apply_top : WithTop.ofDual (⊤ : WithTop αᵒᵈ) = ⊥ :=
   rfl
 
 open OrderDual
@@ -640,15 +642,15 @@ lemma map₂_coe_coe (f : α → β → γ) (a : α) (b : β) : map₂ f a b = f
     map₂ f a b = ⊤ ↔ a = ⊤ ∨ b = ⊤ := Option.map₂_eq_none_iff
 
 theorem map_toDual (f : αᵒᵈ → βᵒᵈ) (a : WithBot α) :
-    map f (WithBot.toDual a) = a.map (toDual ∘ f) :=
-  rfl
+    map f (WithBot.toDual a) = map (f ∘ toDual) a :=
+  congrFun (Option.map_comp_map _ _) a
 
-theorem map_ofDual (f : α → β) (a : WithBot αᵒᵈ) : map f (WithBot.ofDual a) = a.map (ofDual ∘ f) :=
-  rfl
+theorem map_ofDual (f : α → β) (a : WithBot αᵒᵈ) : map f (WithBot.ofDual a) = a.map (f ∘ ofDual) :=
+  congrFun (Option.map_comp_map _ _) a
 
 theorem toDual_map (f : α → β) (a : WithTop α) :
     WithTop.toDual (map f a) = WithBot.map (toDual ∘ f ∘ ofDual) (WithTop.toDual a) :=
-  rfl
+  congrFun (Option.map_comp_map _ _) a
 
 theorem ofDual_map (f : αᵒᵈ → βᵒᵈ) (a : WithTop αᵒᵈ) :
     WithTop.ofDual (map f a) = WithBot.map (ofDual ∘ f ∘ toDual) (WithTop.ofDual a) :=

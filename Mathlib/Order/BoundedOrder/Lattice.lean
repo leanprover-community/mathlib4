@@ -67,7 +67,8 @@ lemma inf_top_eq (a : α) : a ⊓ ⊤ = a := inf_of_le_left le_top
 
 @[simp]
 theorem inf_eq_top_iff : a ⊓ b = ⊤ ↔ a = ⊤ ∧ b = ⊤ :=
-  @sup_eq_bot_iff αᵒᵈ _ _ _ _
+  toDual.apply_eq_iff_eq.symm.trans <| (@sup_eq_bot_iff αᵒᵈ _ _ _ _).trans
+    <| (and_congr toDual.apply_eq_iff_eq toDual.apply_eq_iff_eq)
 
 end SemilatticeInfTop
 
@@ -108,7 +109,8 @@ variable [SemilatticeInf α]
 
 theorem exists_le_and_iff_exists {P : α → Prop} {x₀ : α} (hP : Antitone P) :
     (∃ x, x ≤ x₀ ∧ P x) ↔ ∃ x, P x :=
-  exists_ge_and_iff_exists <| hP.dual_left
+  (OrderDual.toDual.exists_congr_left).trans <|
+    (exists_ge_and_iff_exists <| hP.dual_left).trans (OrderDual.ofDual.exists_congr_left)
 
 lemma exists_and_iff_of_antitone {P Q : α → Prop} (hP : Antitone P) (hQ : Antitone Q) :
     ((∃ x, P x) ∧ ∃ x, Q x) ↔ (∃ x, P x ∧ Q x) :=
@@ -152,7 +154,8 @@ theorem min_eq_bot [OrderBot α] {a b : α} : min a b = ⊥ ↔ a = ⊥ ∨ b = 
 
 @[simp]
 theorem max_eq_top [OrderTop α] {a b : α} : max a b = ⊤ ↔ a = ⊤ ∨ b = ⊤ :=
-  @min_eq_bot αᵒᵈ _ _ a b
+  ofDual.apply_eq_iff_eq.trans <| (@min_eq_bot αᵒᵈ _ _ (toDual a) (toDual b)).trans <|
+    or_congr toDual.apply_eq_iff_eq toDual.apply_eq_iff_eq
 
 @[aesop (rule_sets := [finiteness]) safe apply]
 lemma max_ne_top [OrderTop α] {a b : α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) : max a b ≠ ⊤ := by
