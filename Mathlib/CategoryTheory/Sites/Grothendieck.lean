@@ -282,7 +282,7 @@ instance : CompleteLattice (GrothendieckTopology C) :=
   CompleteLattice.copy (completeLatticeOfInf _ isGLB_sInf) _ rfl (discrete C)
     (by
       apply le_antisymm
-      · exact @CompleteLattice.le_top _ (completeLatticeOfInf _ isGLB_sInf) (discrete C)
+      · exact (completeLatticeOfInf _ isGLB_sInf).le_top (discrete C)
       · intro X S _
         apply Set.mem_univ)
     (trivial C)
@@ -291,7 +291,7 @@ instance : CompleteLattice (GrothendieckTopology C) :=
       · intro X S hS
         rw [trivial_covering] at hS
         apply covering_of_eq_top _ hS
-      · exact @CompleteLattice.bot_le _ (completeLatticeOfInf _ isGLB_sInf) (trivial C))
+      · exact (completeLatticeOfInf _ isGLB_sInf).bot_le (trivial C))
     _ rfl _ rfl _ rfl sInf rfl
 
 instance : Inhabited (GrothendieckTopology C) :=
