@@ -559,7 +559,18 @@ instance [NonUnitalNonAssocSemiring β] : NonUnitalNonAssocSemiring (α →ₛ �
   zero_mul _ := ext fun _ ↦ zero_mul ..
   mul_zero _ := ext fun _ ↦ mul_zero ..
 
+instance [NonAssocSemiring β] : NonAssocSemiring (α →ₛ β) where
+  one_mul _ := ext fun _ ↦ one_mul ..
+  mul_one _ := ext fun _ ↦ mul_one ..
+
+instance [NonUnitalSemiring β] : NonUnitalSemiring (α →ₛ β) where
+  mul_assoc _ _ _ := ext fun _ ↦ mul_assoc ..
+
 instance [Semiring β] : Semiring (α →ₛ β) where
+
+instance [NonUnitalRing β] : NonUnitalRing (α →ₛ β) where
+
+instance [Ring β] : Ring (α →ₛ β) where
 
 instance [Monoid K] [MulAction K β] : MulAction K (α →ₛ β) where
   one_smul _ := ext fun _ ↦ one_smul ..
