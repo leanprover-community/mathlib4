@@ -35,7 +35,6 @@ and complement.
 * [Samuel Eilenberg and M. P. Schützenberger, *Rational Sets in Commutative Monoids*][eilenberg1969]
 -/
 
-
 universe u v w
 
 variable {α : Type u} {β : Type v} {ι : Type w}
@@ -370,7 +369,7 @@ private theorem add_floor_neg_toNat_sum_eq (x) :
   simp only [fract]
   rw [tsub_add_cancel_of_le (hs.floor_toNat_sum_le x)]
 
-private theorem toRatVec_fract_eq (x) : 
+private theorem toRatVec_fract_eq (x) :
     toRatVec (hs.fract x) = toRatVec hs.base +
       ∑ i, Int.fract (hs.basis.repr (toRatVec x - toRatVec hs.base) i) • toRatVec i.1 := by
   simp only [fract]
