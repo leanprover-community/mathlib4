@@ -403,14 +403,18 @@ instance (F : V ⥤ W) (G : Type*) [Monoid G] [F.Faithful] : (F.mapAction G).Fai
     apply_fun (fun f ↦ f.hom) at eq
     exact F.map_injective eq
 
-instance (F : V ⥤ W) (G : Type*) [Monoid G] [F.Faithful] [F.Full] : (F.mapAction G).Full where
-  map_surjective {X Y} f := by
-    have comm : ∀ (a : G), X.ρ a ≫ F.preimage f.hom  = F.preimage f.hom  ≫ Y.ρ a := by
-      intro a
-      refine F.map_injective ?_
-      simp only [map_comp, map_preimage]
-      exact f.comm a
-    exact ⟨⟨F.preimage f.hom , comm⟩, by ext; simp⟩
+/--
+A fully faithful functor between categories induces a fully faithful functor between
+the categories of `G`-actions within those categories. -/
+def FullyFaithful.mapAction {F : V ⥤ W} (h : F.FullyFaithful) (G : Type*) [Monoid G] :
+    (F.mapAction G).FullyFaithful where
+  preimage f := by
+    refine ⟨h.preimage f.hom, fun _ ↦ h.map_injective ?_⟩
+    simp only [map_comp, map_preimage]
+    exact f.comm _
+
+instance (F : V ⥤ W) (G : Type*) [Monoid G] [F.Faithful] [F.Full] : (F.mapAction G).Full :=
+  ((Functor.FullyFaithful.ofFullyFaithful F).mapAction G).full
 
 variable (G : Type*) [Monoid G]
 
