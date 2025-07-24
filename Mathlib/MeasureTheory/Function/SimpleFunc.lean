@@ -565,17 +565,28 @@ instance [Monoid K] [MulAction K β] : MulAction K (α →ₛ β) where
   one_smul _ := ext fun _ ↦ one_smul ..
   mul_smul _ _ _ := ext fun _ ↦ mul_smul ..
 
-instance [CommSemiring K] [Semiring β] [Algebra K β] : IsScalarTower K (α →ₛ β) (α →ₛ β) where
-  smul_assoc _ _ _ := ext fun _ ↦ Algebra.smul_mul_assoc ..
+/-- Induced pointwise SMul. -/
+instance [SMul β β] : SMul (α →ₛ β) (α →ₛ β) :=
+  ⟨fun f g => (f.map (· • ·)).seq g⟩
 
-instance [CommSemiring K] [Semiring β] [Algebra K β] : SMulCommClass K (α →ₛ β) (α →ₛ β) where
-  smul_comm _ _ _ := ext fun _ => Algebra.mul_smul_comm .. |>.symm
+instance [SMul K β] [SMul β β] [IsScalarTower K β β] : IsScalarTower K (α →ₛ β) (α →ₛ β) where
+  smul_assoc _ _ _ := ext fun _ ↦ smul_assoc ..
 
-instance [CommSemiring K] [Semiring β] [Algebra K β] : Algebra K (α →ₛ β) :=
-   Algebra.ofModule' smul_one_mul mul_smul_one
+instance [SMul K β] [SMul β β] [SMulCommClass K β β] : SMulCommClass K (α →ₛ β) (α →ₛ β) where
+  smul_comm _ _ _ := ext fun _ ↦  smul_comm ..
 
-lemma algebraMap_apply [CommSemiring K] [Semiring β] [Algebra K β] (k : K) :
-    algebraMap K (α →ₛ β) k = k • 1 := rfl
+instance [CommSemiring K] [Semiring β] [Algebra K β] : Algebra K (α →ₛ β) where
+  algebraMap :={
+    toFun r := const α <| algebraMap K β r
+    map_one' := ext fun _ ↦ algebraMap K β |>.map_one ▸ rfl
+    map_mul' _ _ := ext fun _ ↦ algebraMap K β |>.map_mul ..
+    map_zero' := ext fun _ ↦ algebraMap K β |>.map_zero ▸ rfl
+    map_add' _ _ := ext fun _ ↦ algebraMap K β |>.map_add ..}
+  commutes' _ _ := ext fun _ ↦ Algebra.commutes ..
+  smul_def' _ _ := ext fun _ ↦ Algebra.smul_def ..
+
+lemma algebraMap_eq_smul_one [CommSemiring K] [Semiring β] [Algebra K β] (k : K) :
+    algebraMap K (α →ₛ β) k = k • 1 := Algebra.algebraMap_eq_smul_one k
 section Star
 
 instance [Star β] : Star (α →ₛ β) where
