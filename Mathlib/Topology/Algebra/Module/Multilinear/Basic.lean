@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Topology.Algebra.Module.LinearMapPiProd
 import Mathlib.LinearAlgebra.Multilinear.Basic
+import Mathlib.Algebra.BigOperators.Fin
 
 /-!
 # Continuous multilinear maps
@@ -587,24 +588,6 @@ def piLinearEquiv {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i
 
 end Module
 
-section CommAlgebra
-
-variable (R ι) (A : Type*) [Fintype ι] [CommSemiring R] [CommSemiring A] [Algebra R A]
-  [TopologicalSpace A] [ContinuousMul A]
-
-/-- The continuous multilinear map on `A^ι`, where `A` is a normed commutative algebra
-over `𝕜`, associating to `m` the product of all the `m i`.
-
-See also `ContinuousMultilinearMap.mkPiAlgebraFin`. -/
-protected def mkPiAlgebra : ContinuousMultilinearMap R (fun _ : ι => A) A where
-  cont := continuous_finset_prod _ fun _ _ => continuous_apply _
-  toMultilinearMap := MultilinearMap.mkPiAlgebra R ι A
-
-@[simp]
-theorem mkPiAlgebra_apply (m : ι → A) : ContinuousMultilinearMap.mkPiAlgebra R ι A m = ∏ i, m i :=
-  rfl
-
-end CommAlgebra
 
 section Algebra
 
@@ -630,6 +613,30 @@ theorem mkPiAlgebraFin_apply (m : Fin n → A) :
   rfl
 
 end Algebra
+
+section CommAlgebra
+
+variable (R ι) (A : Type*) [Fintype ι] [CommSemiring R] [CommSemiring A] [Algebra R A]
+  [TopologicalSpace A] [ContinuousMul A]
+
+/-- The continuous multilinear map on `A^ι`, where `A` is a normed commutative algebra
+over `𝕜`, associating to `m` the product of all the `m i`.
+
+See also `ContinuousMultilinearMap.mkPiAlgebraFin`. -/
+protected def mkPiAlgebra : ContinuousMultilinearMap R (fun _ : ι => A) A where
+  cont := continuous_finset_prod _ fun _ _ => continuous_apply _
+  toMultilinearMap := MultilinearMap.mkPiAlgebra R ι A
+
+@[simp]
+theorem mkPiAlgebra_apply (m : ι → A) : ContinuousMultilinearMap.mkPiAlgebra R ι A m = ∏ i, m i :=
+  rfl
+
+theorem mkPiAlgebra_eq_mkPiAlgebraFin {n : ℕ} : ContinuousMultilinearMap.mkPiAlgebra R (Fin n) A
+    = ContinuousMultilinearMap.mkPiAlgebraFin R n A := by
+  ext
+  simp [List.prod_ofFn]
+
+end CommAlgebra
 
 section SMulRight
 
