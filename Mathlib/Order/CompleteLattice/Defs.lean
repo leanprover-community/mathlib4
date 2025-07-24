@@ -157,7 +157,7 @@ instance {α : Type*} [CompleteSemilatticeSup α] : CompleteSemilatticeInf αᵒ
 
 /-- A complete lattice is a bounded lattice which has suprema and infima for every subset. -/
 class CompleteLattice (α : Type*) extends Lattice α, CompleteSemilatticeSup α,
-  CompleteSemilatticeInf α, BoundedOrder α
+    CompleteSemilatticeInf α, BoundedOrder α
 
 /-- Create a `CompleteLattice` from a `PartialOrder` and `InfSet`
 that returns the greatest lower bound of a set. Usually this constructor provides
