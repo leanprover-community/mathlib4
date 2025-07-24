@@ -93,24 +93,6 @@ theorem Ioc_eq_empty_iff : Ioc a b = ∅ ↔ ¬a < b := by
 -- TODO: This is nonsense. A locally finite order is never densely ordered
 -- See `not_lt_of_denselyOrdered_of_locallyFinite`
 @[simp]
-theorem nonempty_Ioo [DenselyOrdered α] : (Ioo a b).Nonempty ↔ a < b := by
-  rw [← coe_nonempty, coe_Ioo, Set.nonempty_Ioo]
-
-@[simp]
-theorem Icc_eq_empty_iff : Icc a b = ∅ ↔ ¬a ≤ b := by
-  rw [← coe_eq_empty, coe_Icc, Set.Icc_eq_empty_iff]
-
-@[simp]
-theorem Ico_eq_empty_iff : Ico a b = ∅ ↔ ¬a < b := by
-  rw [← coe_eq_empty, coe_Ico, Set.Ico_eq_empty_iff]
-
-@[simp]
-theorem Ioc_eq_empty_iff : Ioc a b = ∅ ↔ ¬a < b := by
-  rw [← coe_eq_empty, coe_Ioc, Set.Ioc_eq_empty_iff]
-
--- TODO: This is nonsense. A locally finite order is never densely ordered
---
-@[simp]
 theorem Ioo_eq_empty_iff [DenselyOrdered α] : Ioo a b = ∅ ↔ ¬a < b := by
   rw [← coe_eq_empty, coe_Ioo, Set.Ioo_eq_empty_iff]
 
