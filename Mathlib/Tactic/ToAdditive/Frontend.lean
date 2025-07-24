@@ -1357,11 +1357,6 @@ def targetName (b : BundledExtensions)
       throwError m!"`to_additive self` ignores the provided name {cfg.tgt}"
     return src
   let .str pre s := src | throwError "to_additive: can't transport {src}"
-  if cfg.self then
-    -- warn the user if they provide a target name (that will get ignored)
-    if cfg.tgt != .anonymous then
-      log m!"to_dual self will ignore the provided target name"
-    return src
   trace[to_additive_detail] "The name {s} splits as {s.splitCase}"
   let tgt_auto := guessName nameDict fixAbbreviation s
   let depth := cfg.tgt.getNumParts
