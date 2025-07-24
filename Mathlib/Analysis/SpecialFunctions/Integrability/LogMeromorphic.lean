@@ -64,7 +64,7 @@ theorem intervalIntegrable_log_norm_meromorphicOn (hf : MeromorphicOn f [[a, b]]
       by_contra hCon
       simp_all [← h₁x.meromorphicOrderAt_eq_zero_iff, t₀ ⟨x, h₂x⟩]
     rw [intervalIntegrable_congr_codiscreteWithin this]
-    apply _root_.intervalIntegrable_const_iff.2
+    apply _root_.intervalIntegrable_const_iff (by finiteness) |>.2
     tauto
 
 /--
