@@ -618,7 +618,14 @@ theorem LinearIndependent.maximal_iff {ι : Type w} {R : Type u} [Semiring R] [N
 
 end Maximal
 
-section CanonicallyOrderedAdd
+/-!
+### Properties which require `LinearOrder R`, `CanonicallyOrderedAdd R` and `OrderedSub R`
+
+If the semiring `R` is linearly and canonically ordered and admits ordered subtraction (e.g.
+`R = ℕ`), `LinearIndependent` can be proved from linear combination over two disjoint sets.
+-/
+
+section LinearlyCanonicallyOrdered
 
 variable [LinearOrder R] [CanonicallyOrderedAdd R] [AddLeftMono R] [Sub R] [OrderedSub R]
 variable [IsCancelAdd M]
@@ -722,7 +729,7 @@ lemma not_linearIndepOn_finset_iffₒ [DecidableEq ι] {s : Finset ι} :
   · refine ⟨s \ t, Finset.sdiff_subset, g, f, ?_, i, hi, pos_of_ne_zero hgi⟩
     simpa [Finset.sdiff_sdiff_eq_self hst] using heq.symm
 
-end CanonicallyOrderedAdd
+end LinearlyCanonicallyOrdered
 
 end Semiring
 
