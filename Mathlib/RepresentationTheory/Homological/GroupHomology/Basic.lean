@@ -157,8 +157,6 @@ theorem d_eq [DecidableEq G] :
 
 end inhomogeneousChains
 
-variable [DecidableEq G]
-
 /-- Given a `k`-linear `G`-representation `A`, this is the complex of inhomogeneous chains
 $$\dots \to \bigoplus_{G^1} A \to \bigoplus_{G^0} A \to 0$$
 which calculates the group homology of `A`. -/
@@ -166,6 +164,7 @@ noncomputable abbrev inhomogeneousChains :
     ChainComplex (ModuleCat k) ℕ :=
   ChainComplex.of (fun n => ModuleCat.of k ((Fin n → G) →₀ A))
     (fun n => inhomogeneousChains.d A n) fun n => by
+    classical
     simp only [inhomogeneousChains.d_eq]
     slice_lhs 3 4 => {rw [Iso.hom_inv_id]}
     slice_lhs 2 4 => {rw [Category.id_comp, ((barComplex k G).coinvariantsTensorObj A).d_comp_d]}
@@ -189,7 +188,7 @@ theorem inhomogeneousChains.d_comp_d :
 
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous chains is isomorphic
 to `(A ⊗[k] P)_G`, where `P` is the bar resolution of `k` as a trivial `G`-representation. -/
-def inhomogeneousChainsIso :
+def inhomogeneousChainsIso [DecidableEq G] :
     inhomogeneousChains A ≅ (barComplex k G).coinvariantsTensorObj A := by
   refine HomologicalComplex.Hom.isoOfComponents ?_ ?_
   · intro i
@@ -216,7 +215,7 @@ end groupHomology
 
 open groupHomology Rep
 
-variable {k G : Type u} [CommRing k] [Group G] [DecidableEq G] (A : Rep k G)
+variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G)
 
 /-- The group homology of a `k`-linear `G`-representation `A`, as the homology of its complex
 of inhomogeneous chains. -/
@@ -239,7 +238,7 @@ theorem groupHomology_induction_on {n : ℕ}
 
 /-- The `n`th group homology of a `k`-linear `G`-representation `A` is isomorphic to
 `Torₙ(A, k)` (taken in `Rep k G`), where `k` is a trivial `k`-linear `G`-representation. -/
-def groupHomologyIsoTor (n : ℕ) :
+def groupHomologyIsoTor [DecidableEq G] (n : ℕ) :
     groupHomology A n ≅ ((Tor k G n).obj A).obj (Rep.trivial k G k) :=
   isoOfQuasiIsoAt (HomotopyEquiv.ofIso (inhomogeneousChainsIso A)).hom n ≪≫
     (torIso A (barResolution k G) n).symm
@@ -247,7 +246,7 @@ def groupHomologyIsoTor (n : ℕ) :
 /-- The `n`th group homology of a `k`-linear `G`-representation `A` is isomorphic to
 `Hₙ((A ⊗ P)_G)`, where `P` is any projective resolution of `k` as a trivial `k`-linear
 `G`-representation. -/
-def groupHomologyIso [Group G] [DecidableEq G] (A : Rep k G) (n : ℕ)
+def groupHomologyIso [DecidableEq G] (A : Rep k G) (n : ℕ)
     (P : ProjectiveResolution (Rep.trivial k G k)) :
     groupHomology A n ≅ (P.complex.coinvariantsTensorObj A).homology n :=
   groupHomologyIsoTor A n ≪≫ torIso A P n

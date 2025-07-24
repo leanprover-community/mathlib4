@@ -452,18 +452,22 @@ theorem Antitone.strictAnti_iff_injective (hf : Antitone f) : StrictAnti f ↔ I
   ⟨fun h ↦ h.injective, hf.strictAnti_of_injective⟩
 
 /-- If a monotone function is equal at two points, it is equal between all of them -/
-theorem Monotone.eq_of_le_of_le {a₁ a₂ : α} (h_mon : Monotone f) (h_fa : f a₁ = f a₂) {i : α}
+theorem Monotone.eq_of_ge_of_le {a₁ a₂ : α} (h_mon : Monotone f) (h_fa : f a₁ = f a₂) {i : α}
     (h₁ : a₁ ≤ i) (h₂ : i ≤ a₂) : f i = f a₁ := by
   apply le_antisymm
   · rw [h_fa]; exact h_mon h₂
   · exact h_mon h₁
 
+@[deprecated (since := "2025-07-18")] alias Monotone.eq_of_le_of_le := Monotone.eq_of_ge_of_le
+
 /-- If an antitone function is equal at two points, it is equal between all of them -/
-theorem Antitone.eq_of_le_of_le {a₁ a₂ : α} (h_anti : Antitone f) (h_fa : f a₁ = f a₂) {i : α}
+theorem Antitone.eq_of_ge_of_le {a₁ a₂ : α} (h_anti : Antitone f) (h_fa : f a₁ = f a₂) {i : α}
     (h₁ : a₁ ≤ i) (h₂ : i ≤ a₂) : f i = f a₁ := by
   apply le_antisymm
   · exact h_anti h₁
   · rw [h_fa]; exact h_anti h₂
+
+@[deprecated (since := "2025-07-18")] alias Antitone.eq_of_le_of_le := Antitone.eq_of_ge_of_le
 
 end PartialOrder
 

@@ -991,7 +991,7 @@ lemma univ_div_univ [Fintype α] : (univ / univ : Finset α) = univ := by simp [
   rw [div_eq_mul_inv]; exact subset_mul_right _ hs
 
 @[to_additive (attr := simp) zsmul_empty]
-lemma empty_zpow (hn : n ≠ 0) : (∅ : Finset α) ^ n = ∅ := by cases n <;> aesop
+lemma empty_zpow (hn : n ≠ 0) : (∅ : Finset α) ^ n = ∅ := by cases n <;> simp_all
 
 @[to_additive]
 lemma Nonempty.zpow (hs : s.Nonempty) : ∀ {n : ℤ}, (s ^ n).Nonempty

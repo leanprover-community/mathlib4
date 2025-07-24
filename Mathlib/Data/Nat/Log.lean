@@ -359,7 +359,9 @@ private lemma logC_aux {m b : ℕ} (hb : 1 < b) (hbm : b ≤ m) : m / (b * b) < 
   rw [div_lt_iff_lt_mul (Nat.mul_pos hb' hb'), ← Nat.mul_assoc, ← div_lt_iff_lt_mul hb']
   exact (Nat.lt_mul_iff_one_lt_right (Nat.div_pos hbm hb')).2 hb
 
--- This option is necessary because of lean4#2920
+/-
+The linter complains about `h : m < pw` being unused, but we need it in the `decreasing_by`.
+-/
 set_option linter.unusedVariables false in
 /--
 An alternate definition for `Nat.log` which computes more efficiently. For mathematical purposes,
