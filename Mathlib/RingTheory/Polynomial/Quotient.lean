@@ -185,9 +185,7 @@ theorem eq_zero_of_polynomial_mem_map_range (I : Ideal R[X]) (x : ((Quotient.mk 
     rw [RingHom.mem_ker, RingHom.map_sub, hf.2, sub_eq_zero, coe_mapRingHom, map_C]
   exact hx
 
-end
-
-variable (R : Type) [CommRing R]
+/-- Given a domain `R`, if `R[X]` is a prinicpal ideal ring, then `R` is a field. -/
 lemma IsField.of_isPrincipalIdealDomain_polynomial [IsDomain R] [IsPrincipalIdealRing R[X]] :
    IsField R := by
   have h : IsField (R[X] ⧸ span ({X- C 0} : Set (R[X]))) :=
@@ -195,6 +193,8 @@ lemma IsField.of_isPrincipalIdealDomain_polynomial [IsDomain R] [IsPrincipalIdea
     (PrincipalIdealRing.isMaximal_of_irreducible (irreducible_X_sub_C 0))
   apply MulEquiv.isField (R[X] ⧸ span ({X- C 0} : Set (R[X]))) h
   exact (quotientSpanXSubCAlgEquiv (0 : R)).symm.toMulEquiv
+
+end
 
 end Ideal
 
