@@ -446,6 +446,10 @@ instance topologicalSpace [∀ i, TopologicalSpace (β i)] : TopologicalSpace (P
 theorem continuous_ofLp [∀ i, TopologicalSpace (β i)] : Continuous (@ofLp p (∀ i, β i)) :=
   continuous_induced_dom
 
+@[fun_prop, continuity]
+nonrec lemma continuous_apply [∀ i, TopologicalSpace (β i)] (i : ι) :
+    Continuous (fun f : PiLp p β ↦ f i) := (continuous_apply i).comp (continuous_ofLp p β)
+
 @[deprecated continuous_ofLp (since := "2024-04-27")]
 theorem continuous_equiv [∀ i, TopologicalSpace (β i)] : Continuous (WithLp.equiv p (Π i, β i)) :=
   continuous_ofLp _ _
@@ -1126,7 +1130,7 @@ variable {𝕜} in
 @[simps!]
 def proj (i : ι) : PiLp p β →L[𝕜] β i where
   __ := projₗ p β i
-  cont := (continuous_apply i).comp (continuous_ofLp _ _)
+  cont := continuous_apply p β i
 
 end Fintype
 
