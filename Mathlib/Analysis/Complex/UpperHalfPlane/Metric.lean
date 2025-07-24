@@ -157,10 +157,8 @@ theorem cmp_dist_eq_cmp_dist_coe_center (z w : ℍ) (r : ℝ) :
       ((mul_neg_of_pos_of_neg w.im_pos (sinh_neg_iff.2 hr₀)).trans_le dist_nonneg).cmp_eq_gt.symm]
   have hr₀' : 0 ≤ w.im * Real.sinh r := by positivity
   have hzw₀ : 0 < 2 * z.im * w.im := by positivity
-  #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-  we need to give Lean the hint `(y := w.im * Real.sinh r)`. -/
   simp only [← cosh_strictMonoOn.cmp_map_eq dist_nonneg hr₀,
-    ← (pow_left_strictMonoOn₀ two_ne_zero).cmp_map_eq dist_nonneg (y := w.im * Real.sinh r) hr₀',
+    ← (pow_left_strictMonoOn₀ (M₀ := ℝ) two_ne_zero).cmp_map_eq dist_nonneg hr₀',
     dist_coe_center_sq]
   rw [← cmp_mul_pos_left hzw₀, ← cmp_sub_zero, ← mul_sub, ← cmp_add_right, zero_add]
 
@@ -203,7 +201,7 @@ nonrec theorem dist_of_re_eq (h : z.re = w.re) : dist z w = dist (log z.im) (log
     sinh_log h₀, dist_of_re_eq, coe_im, coe_im, center_im, cosh_abs, cosh_log h₀, inv_div] <;>
   [skip; exact h]
   nth_rw 4 [← abs_of_pos w.im_pos]
-  simp only [← _root_.abs_mul, coe_im, Real.dist_eq]
+  simp only [← _root_.abs_mul, Real.dist_eq]
   congr 1
   field_simp
   ring

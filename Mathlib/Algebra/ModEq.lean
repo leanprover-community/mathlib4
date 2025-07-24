@@ -101,13 +101,13 @@ theorem add_zsmul_modEq (z : ℤ) : a + z • p ≡ a [PMOD p] :=
   ⟨-z, by simp⟩
 
 theorem zsmul_add_modEq (z : ℤ) : z • p + a ≡ a [PMOD p] :=
-  ⟨-z, by simp [← sub_sub]⟩
+  ⟨-z, by simp⟩
 
 theorem add_nsmul_modEq (n : ℕ) : a + n • p ≡ a [PMOD p] :=
   ⟨-n, by simp⟩
 
 theorem nsmul_add_modEq (n : ℕ) : n • p + a ≡ a [PMOD p] :=
-  ⟨-n, by simp [← sub_sub]⟩
+  ⟨-n, by simp⟩
 
 namespace ModEq
 

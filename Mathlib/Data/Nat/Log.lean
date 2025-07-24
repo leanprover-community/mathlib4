@@ -134,7 +134,7 @@ theorem log_eq_iff {b m n : ℕ} (h : m ≠ 0 ∨ 1 < b ∧ n ≠ 0) :
   rcases hbn with (hb | rfl)
   · obtain rfl | rfl := le_one_iff_eq_zero_or_eq_one.1 hb
     any_goals
-      simp only [ne_eq, zero_eq, reduceSucc, lt_self_iff_false, not_lt_zero, false_and, or_false]
+      simp only [ne_eq, lt_self_iff_false, not_lt_zero, false_and, or_false]
         at h
       simp [h, eq_comm (a := 0), Nat.zero_pow (Nat.pos_iff_ne_zero.2 _)] <;> omega
   · simp [@eq_comm _ 0, hm]
@@ -359,7 +359,9 @@ private lemma logC_aux {m b : ℕ} (hb : 1 < b) (hbm : b ≤ m) : m / (b * b) < 
   rw [div_lt_iff_lt_mul (Nat.mul_pos hb' hb'), ← Nat.mul_assoc, ← div_lt_iff_lt_mul hb']
   exact (Nat.lt_mul_iff_one_lt_right (Nat.div_pos hbm hb')).2 hb
 
--- This option is necessary because of lean4#2920
+/-
+The linter complains about `h : m < pw` being unused, but we need it in the `decreasing_by`.
+-/
 set_option linter.unusedVariables false in
 /--
 An alternate definition for `Nat.log` which computes more efficiently. For mathematical purposes,

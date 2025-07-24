@@ -292,7 +292,7 @@ def inverse (f : X →[M] Y₁) (g : Y₁ → X)
   map_smul' m x :=
     calc
       g (m • x) = g (m • f (g x)) := by rw [h₂]
-      _ = g (f (m • g x)) := by simp only [map_smul, id_eq]
+      _ = g (f (m • g x)) := by simp only [map_smul]
       _ = m • g x := by rw [h₁]
 
 
@@ -331,7 +331,7 @@ theorem comp_inverse' {f : X →ₑ[φ] Y} {g : Y → X}
       = MulActionHom.id M := by
   rw [MulActionHom.ext_iff]
   intro x
-  simp only [comp_apply, inverse_apply, id_apply]
+  simp only [comp_apply, id_apply]
   exact h₁ x
 
 @[to_additive]
@@ -341,7 +341,7 @@ theorem inverse'_comp {f : X →ₑ[φ] Y} {g : Y → X}
     f.comp (inverse' f g k₂ h₁ h₂) (κ := CompTriple.comp_inv k₂) = MulActionHom.id N := by
   rw [MulActionHom.ext_iff]
   intro x
-  simp only [comp_apply, inverse_apply, id_apply]
+  simp only [comp_apply, id_apply]
   exact h₂ x
 
 /-- If actions of `M` and `N` on `α` commute,
@@ -715,7 +715,6 @@ theorem one_apply (a : A) : (1 : A →+[M] A) a = a :=
 instance : Inhabited (A →ₑ+[φ] B) :=
   ⟨0⟩
 
-set_option linter.unusedVariables false in
 /-- Composition of two equivariant additive monoid homomorphisms. -/
 def comp (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) [κ : MonoidHom.CompTriple φ ψ χ] :
     A →ₑ+[χ] C :=
@@ -909,7 +908,6 @@ variable {R S T}
 
 variable {φ φ' ψ χ}
 
-set_option linter.unusedVariables false in
 /-- Composition of two equivariant additive ring homomorphisms. -/
 def comp (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S) [κ : MonoidHom.CompTriple φ ψ χ] : R →ₑ+*[χ] T :=
   { DistribMulActionHom.comp (g : S →ₑ+[ψ] T) (f : R →ₑ+[φ] S),

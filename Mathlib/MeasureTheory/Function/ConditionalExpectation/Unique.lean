@@ -69,10 +69,10 @@ theorem Lp.ae_eq_zero_of_forall_setIntegral_eq_zero' (hm : m ≤ m0) (f : Lp E' 
     (hf_zero : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → ∫ x in s, f x ∂μ = 0)
     (hf_meas : AEStronglyMeasurable[m] f μ) : f =ᵐ[μ] 0 := by
   let f_meas : lpMeas E' 𝕜 m p μ := ⟨f, hf_meas⟩
-  have hf_f_meas : f =ᵐ[μ] f_meas := by simp [f_meas, Subtype.coe_mk]
+  have hf_f_meas : f =ᵐ[μ] f_meas := by simp [f_meas]
   refine hf_f_meas.trans ?_
-  refine lpMeas.ae_eq_zero_of_forall_setIntegral_eq_zero hm f_meas hp_ne_zero hp_ne_top ?_ ?_ <;>
-    assumption
+  exact lpMeas.ae_eq_zero_of_forall_setIntegral_eq_zero
+    hm f_meas hp_ne_zero hp_ne_top hf_int_finite hf_zero
 
 include 𝕜 in
 /-- **Uniqueness of the conditional expectation** -/

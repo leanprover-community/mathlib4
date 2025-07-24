@@ -30,7 +30,7 @@ universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory.Enriched.FunctorCategory
 
-open Category MonoidalCategory Limits
+open Category MonoidalCategory Limits Functor
 
 variable (V : Type u₁) [Category.{v₁} V] [MonoidalCategory V]
   {C : Type u₂} [Category.{v₂} C] {J : Type u₃} [Category.{v₃} J]

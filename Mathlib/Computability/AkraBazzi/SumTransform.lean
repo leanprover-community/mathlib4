@@ -127,8 +127,8 @@ lemma eventually_b_le_r : ∀ᶠ (n : ℕ) in atTop, ∀ i, (b i : ℝ) * n - (n
   have h₁ : 0 ≤ b i := le_of_lt <| R.b_pos _
   rw [sub_le_iff_le_add, add_comm, ← sub_le_iff_le_add]
   calc (b i : ℝ) * n - r i n = ‖b i * n‖ - ‖(r i n : ℝ)‖ := by
-                            simp only [norm_mul, RCLike.norm_natCast, sub_left_inj,
-                                       Nat.cast_eq_zero, Real.norm_of_nonneg h₁]
+                            simp only [norm_mul, RCLike.norm_natCast,
+                                       Real.norm_of_nonneg h₁]
                          _ ≤ ‖(b i * n : ℝ) - r i n‖ := norm_sub_norm_le _ _
                          _ = ‖(r i n : ℝ) - b i * n‖ := norm_sub_rev _ _
                          _ ≤ n / log n ^ 2 := hn i
@@ -330,7 +330,7 @@ lemma eventually_one_sub_smoothingFn_r_pos : ∀ᶠ (n : ℕ) in atTop, ∀ i, 0
 @[aesop safe apply]
 lemma differentiableAt_smoothingFn {x : ℝ} (hx : 1 < x) : DifferentiableAt ℝ ε x := by
   have : log x ≠ 0 := Real.log_ne_zero_of_pos_of_ne_one (by positivity) (ne_of_gt hx)
-  show DifferentiableAt ℝ (fun z => 1 / log z) x
+  change DifferentiableAt ℝ (fun z => 1 / log z) x
   simp_rw [one_div]
   exact DifferentiableAt.inv (differentiableAt_log (by positivity)) this
 
@@ -352,7 +352,7 @@ lemma differentiableOn_one_add_smoothingFn : DifferentiableOn ℝ (fun z => 1 + 
 
 lemma deriv_smoothingFn {x : ℝ} (hx : 1 < x) : deriv ε x = -x⁻¹ / (log x ^ 2) := by
   have : log x ≠ 0 := Real.log_ne_zero_of_pos_of_ne_one (by positivity) (ne_of_gt hx)
-  show deriv (fun z => 1 / log z) x = -x⁻¹ / (log x ^ 2)
+  change deriv (fun z => 1 / log z) x = -x⁻¹ / (log x ^ 2)
   rw [deriv_fun_div] <;> aesop
 
 lemma isLittleO_deriv_smoothingFn : deriv ε =o[atTop] fun x => x⁻¹ := calc
@@ -405,7 +405,7 @@ lemma eventually_one_add_smoothingFn_pos : ∀ᶠ (n : ℕ) in atTop, 0 < 1 + ε
   refine Eventually.natCast_atTop (p := fun n => 0 < 1 + ε n) ?_
   filter_upwards [h₁ (by norm_num : (0 : ℝ) < 1/2), eventually_gt_atTop 1] with x _ hx'
   have : 0 < log x := Real.log_pos hx'
-  show 0 < 1 + 1 / log x
+  change 0 < 1 + 1 / log x
   positivity
 
 include R in
@@ -417,7 +417,7 @@ lemma eventually_one_add_smoothingFn_nonneg : ∀ᶠ (n : ℕ) in atTop, 0 ≤ 1
   filter_upwards [eventually_one_add_smoothingFn_pos] with n hn; exact le_of_lt hn
 
 lemma strictAntiOn_smoothingFn : StrictAntiOn ε (Set.Ioi 1) := by
-  show StrictAntiOn (fun x => 1 / log x) (Set.Ioi 1)
+  change StrictAntiOn (fun x => 1 / log x) (Set.Ioi 1)
   simp_rw [one_div]
   refine StrictAntiOn.comp_strictMonoOn inv_strictAntiOn ?log fun _ hx => log_pos hx
   refine StrictMonoOn.mono strictMonoOn_log (fun x hx => ?_)
@@ -562,7 +562,7 @@ variable {g} {a} {b}
 
 lemma asympBound_def' {α} [Fintype α] (a b : α → ℝ) {n : ℕ} :
     asympBound g a b n = n ^ p a b * (1 + (∑ u ∈ range n, g u / u ^ (p a b + 1))) := by
-  simp [asympBound_def, sumTransform, mul_add, mul_one, Finset.sum_Ico_eq_sum_range]
+  simp [asympBound_def, sumTransform, mul_add, mul_one]
 
 section
 include R

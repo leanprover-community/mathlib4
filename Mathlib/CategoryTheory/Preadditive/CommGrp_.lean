@@ -61,8 +61,8 @@ def commGrpEquivalenceAux : CommGrp_.forget C ⋙ toCommGrp C ≅
   refine NatIso.ofComponents (fun _ => CommGrp_.mkIso (Iso.refl _) ?_ ?_) ?_
   · exact ((IsZero.iff_id_eq_zero _).2 (Subsingleton.elim _ _)).eq_of_src _ _
   · simp only [Functor.comp_obj, CommGrp_.forget_obj, toCommGrp_obj_X, Functor.id_obj,
-    toCommGrp_obj_grp, mul_def, Iso.refl_hom, Category.comp_id, tensorHom_id, id_whiskerRight,
-    Category.id_comp]
+      toCommGrp_obj_grp, mul_def, Iso.refl_hom, Category.comp_id, tensorHom_id, id_whiskerRight,
+      Category.id_comp]
     apply monoidal_hom_ext
     · simp only [comp_add, lift_fst, lift_snd, add_zero]
       convert (Mon_Class.lift_comp_one_right _ 0).symm

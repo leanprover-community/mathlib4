@@ -209,7 +209,7 @@ theorem cbiSup_eq_of_forall {p : ι → Prop} {f : Subtype p → α} (hp : ∀ i
   congr
   apply Subset.antisymm
   · rintro - ⟨i, rfl⟩
-    simp [hp i]
+    simp
   · rintro - ⟨i, rfl⟩
     simp
 
@@ -339,7 +339,7 @@ lemma ciSup_image {α ι ι' : Type*} [ConditionallyCompleteLattice α] [Nonempt
     intro ⟨i, h⟩
     obtain ⟨t, ht⟩ : ∃ t : f '' s, g t = g (f (Subtype.mk i h)) := by
       have : f i ∈ f '' s := Set.mem_image_of_mem _ h
-      exact ⟨⟨f i, this⟩, by simp [this]⟩
+      exact ⟨⟨f i, this⟩, by simp⟩
     rw [← ht]
     refine le_ciSup_set ?_ t.prop
     simpa [bddAbove_def] using hf
