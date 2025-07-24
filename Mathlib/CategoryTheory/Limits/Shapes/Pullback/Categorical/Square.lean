@@ -15,9 +15,7 @@ categorical pullback of `R` and `B`.
 We show that for such squares, we have a universal property characterizing
 functors with values in the top left corner of the square, much like it is
 the case for `CategoricalPullback`.
-
 -/
-
 
 universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 
