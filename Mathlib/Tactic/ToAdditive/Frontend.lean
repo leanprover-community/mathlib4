@@ -694,105 +694,6 @@ def changeNumeral : Expr → Expr
   | e                => e
 
 /--
-`applyReplacementFun' e` is the same as `applyReplacementFun` except it traces hoverable
-expressions. It is much slower, so is only used when detailed tracing is on.
--/
-def applyReplacementFun' (b : BundledExtensions)
-    (e : Expr) : MetaM Expr := do
-  trace[to_additive_detail] "applyReplacementFun: running at {e}"
-  aux (← getEnv) e
-where /-- Implementation of `applyReplacementFun`. -/
-  aux (env : Environment) : Expr → MetaM Expr :=
-  let reorderFn : Name → List (List ℕ) := fun nm ↦ (b.reorderAttr.find? env nm |>.getD [])
-  let relevantArg : Name → ℕ := fun nm ↦ (b.relevantArgAttr.find? env nm).getD 0
-  Lean.Expr.replaceRecM fun r e ↦ do
-    if !e.hasLooseBVars then
-      trace[to_additive_detail] "applyReplacementFun: replacing at {e}"
-    else
-      -- the following causes:
-      -- PANIC at Lean.Meta.whnfEasyCases Lean.Meta.WHNF:338:22: loose bvar in expression
-      -- trace[to_additive_detail] "applyReplacementFun: replacing at {e}"
-      -- Less informative, but doesn't panic
-      trace[to_additive_detail] "applyReplacementFun: replacing at {toString e}"
-    match e with
-    | .const n₀ ls₀ => do
-      let n₁ := n₀.mapPrefix <| findTranslation? env b
-      let ls₁ : List Level := if 0 ∈ (reorderFn n₀).flatten then ls₀.swapFirstTwo else ls₀
-      if n₀ != n₁ then
-        trace[to_additive_detail] "applyReplacementFun: changing {n₀} to {n₁}"
-      if 0 ∈ (reorderFn n₀).flatten then
-        trace[to_additive_detail] "applyReplacementFun: reordering the universe variables from \
-          {ls₀} to {ls₁}"
-      return some <| Lean.mkConst n₁ ls₁
-    | .app g x => do
-      let gf := g.getAppFn
-      if gf.isBVar && x.isLit then
-        trace[to_additive_detail] "applyReplacementFun: Variables applied to numerals are not \
-          changed {g.app x}"
-        return some <| g.app x
-      let gArgs := g.getAppArgs
-      trace[to_additive_detail] "applyReplacementFun: gf: {gf}, gArgs {gArgs}"
-      let mut gAllArgs := gArgs.push x
-      let (gfAdditive, gAllArgsAdditive) ←
-        if let some nm := gf.constName? then
-          -- TODO: factor this logic out into a function?
-          -- e = `(nm y₁ .. yₙ x)
-          /- Test if the head should not be replaced. -/
-          let relevantArgId := relevantArg nm
-          let gfAdditive :=
-            if relevantArgId < gAllArgs.size && gf.isConst then
-              if let some fxd :=
-                additiveTest env b gAllArgs[relevantArgId]! then
-                do
-                  trace[to_additive_detail] "applyReplacementFun: The application of {nm} \
-                    contains the fixed type {fxd}, so it is not changed"
-                  pure gf
-              else
-                r gf
-            else
-              r gf
-          /- Test if arguments should be reordered. -/
-          let reorder := reorderFn nm
-          trace[to_additive_detail] "nm: {nm}, reorder: {reorder}"
-          if !reorder.isEmpty && relevantArgId < gAllArgs.size &&
-            (additiveTest env b gAllArgs[relevantArgId]!).isNone then
-            -- TODO: warn user if permutation is trivial?
-            -- this is panicking?
-            -- dbg_trace "applyReplacementFun': {nm} {gAllArgs} {reorder}"
-            if let some maxReorder := reorder.flatten.max? then
-              if gAllArgs.size > maxReorder then
-                gAllArgs := gAllArgs.permute! reorder
-              else
-                dbg_trace s!"applyReplacementFun: arguments of {nm} was an array of size\
-                  {gAllArgs.size}, attempted to reorder with {reorder}"
-            trace[to_additive_detail] "applyReplacementFun: reordering the arguments of {nm}: \
-              {gAllArgs} using the cyclic permutations {reorder}"
-          /- Do not replace numerals in specific types. -/
-          let firstArg := gAllArgs[0]!
-          if let some changedArgNrs := b.changeNumeralAttr.find? env nm then
-            if additiveTest env b firstArg |>.isNone then
-              trace[to_additive_detail] "applyReplacementFun: We change the numerals in this \
-                expression. However, we will still recurse into all the non-numeral arguments."
-              -- In this case, we still update all arguments of `g` that are not numerals,
-              -- since all other arguments can contain subexpressions like
-              -- `(fun x ↦ ℕ) (1 : G)`, and we have to update the `(1 : G)` to `(0 : G)`
-              gAllArgs := gAllArgs.mapIdx fun argNr arg ↦
-                if changedArgNrs.contains argNr then
-                  changeNumeral arg
-                else
-                  arg
-          pure <| (gfAdditive, ← gAllArgs.mapM r)
-        else
-          pure (r gf, ← gAllArgs.mapM r)
-      return some <| mkAppN (← gfAdditive) gAllArgsAdditive
-    | .proj n₀ idx e => do
-      let n₁ := n₀.mapPrefix <| findTranslation? env b
-      trace[to_additive_detail] "applyReplacementFun: in projection {e}.{idx} of type {n₀}, \
-          replace type with {n₁}"
-      return some <| .proj n₁ idx <| ← r e
-    | _ => return none
-
-/--
 `applyReplacementFun e` replaces the expression `e` with its additive counterpart.
 It translates each identifier (inductive type, defined function etc) in an expression, unless
 * The identifier occurs in an application with first argument `arg`; and
@@ -803,11 +704,7 @@ is tested, instead of the first argument.
 It will also reorder arguments of certain functions, using `reorderFn`:
 e.g. `g x₁ x₂ x₃ ... xₙ` becomes `g x₂ x₁ x₃ ... xₙ` if `reorderFn g = some [1]`.
 -/
-def applyReplacementFun (b : BundledExtensions)
-    (e : Expr) : MetaM Expr := do
-if (← getBoolOption `trace.to_additive_detail) then
-  applyReplacementFun' b e
-else
+def applyReplacementFun (b : BundledExtensions) (e : Expr) : MetaM Expr :=
   return aux (← getEnv) (← getBoolOption `trace.to_additive_detail) e
 where /-- Implementation of `applyReplacementFun`. -/
   aux (env : Environment) (trace : Bool) : Expr → Expr :=
@@ -856,12 +753,7 @@ where /-- Implementation of `applyReplacementFun`. -/
           let reorder := reorderFn nm
           if !reorder.isEmpty && relevantArgId < gAllArgs.size &&
             (additiveTest env b gAllArgs[relevantArgId]!).isNone then
-            if let some maxReorder := reorder.flatten.max? then
-              if gAllArgs.size > maxReorder then
-                gAllArgs := gAllArgs.permute! reorder
-              else
-                dbg_trace s!"applyReplacementFun: arguments of {nm} was an array of size\
-                  {gAllArgs.size}, attempted to reorder with {reorder}"
+            gAllArgs := gAllArgs.permute! reorder
             if trace then
               dbg_trace s!"reordering the arguments of {nm} using the cyclic permutations {reorder}"
           /- Do not replace numerals in specific types. -/
