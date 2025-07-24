@@ -134,7 +134,9 @@ lemma linearIndependent_of_ne_zero_of_wInner_one_eq_zero {f : κ → ι → 𝕜
     (hinner : Pairwise fun k₁ k₂ ↦ ⟪f k₁, f k₂⟫_[𝕜] = 0) : LinearIndependent 𝕜 f := by
   simp_rw [wInner_one_eq_inner] at hinner
   have := linearIndependent_of_ne_zero_of_inner_eq_zero ?_ hinner
-  exacts [this, hf]
+  exacts [LinearMap.linearIndependent_iff_of_injOn
+    (WithLp.linearEquiv 2 𝕜 (ι → 𝕜)).symm.toLinearMap (WithLp.toLp_injective 2).injOn |>.1 this,
+    fun i ↦ (WithLp.toLp_injective 2).ne (hf i)]
 
 lemma linearIndependent_of_ne_zero_of_wInner_cWeight_eq_zero {f : κ → ι → 𝕜} (hf : ∀ k, f k ≠ 0)
     (hinner : Pairwise fun k₁ k₂ ↦ ⟪f k₁, f k₂⟫ₙ_[𝕜] = 0) : LinearIndependent 𝕜 f := by
