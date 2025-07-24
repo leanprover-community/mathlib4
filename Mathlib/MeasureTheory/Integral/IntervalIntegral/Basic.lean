@@ -339,14 +339,13 @@ theorem comp_mul_left (hf : IntervalIntegrable f volume a b) {c : ℝ}
   · ext; simp only [comp_apply]; congr 1; field_simp
   · rw [preimage_mul_const_uIcc (inv_ne_zero hc)]; field_simp [hc]
 
-theorem comp_mul_left_iff {c : ℝ} (hc : c ≠ 0)
-    -- can h' be deduced?
-    (h : ‖f (min a b)‖ₑ ≠ ∞) (h' : ‖f (c * min (a / c) (b / c))‖ₑ ≠ ∞) :
+-- Note that `h'` is **not** implied by `h` if `c` is negative.
+theorem comp_mul_left_iff {c : ℝ} (hc : c ≠ 0) (h : ‖f (min a b)‖ₑ ≠ ∞)
+    (h' : ‖f (c * min (a / c) (b / c))‖ₑ ≠ ∞) :
     IntervalIntegrable (fun x ↦ f (c * x)) volume (a / c) (b / c) ↔
       IntervalIntegrable f volume a b := by
-  refine ⟨fun h ↦ ?_/-simpa [hc] using h.comp_mul_left c⁻¹-/, (comp_mul_left · h h')⟩
-  have aux : ‖f (c * (c⁻¹ * min (a / c / c⁻¹) (b / c / c⁻¹)))‖ₑ ≠ ⊤ := sorry
-  simpa [hc] using h.comp_mul_left (c := c⁻¹) h' aux
+  exact ⟨fun h ↦ by simpa [hc] using h.comp_mul_left (c := c⁻¹) h' (by simp),
+    (comp_mul_left · h h')⟩
 
 theorem comp_mul_right (hf : IntervalIntegrable f volume a b) {c : ℝ}
     (h : ‖f (min a b)‖ₑ ≠ ∞) (h' : ‖f (c * min (a / c) (b / c))‖ₑ ≠ ∞) :
@@ -384,7 +383,7 @@ theorem iff_comp_neg (h : ‖f (min a b)‖ₑ ≠ ∞) :
 
 theorem comp_sub_left (hf : IntervalIntegrable f volume a b) (c : ℝ) (h : ‖f (min a b)‖ₑ ≠ ∞) :
     IntervalIntegrable (fun x ↦ f (c - x)) volume (c - a) (c - b) := by
-  sorry -- simpa only [neg_sub, ← sub_eq_add_neg] using (iff_comp_neg h).mp (hf.comp_add_left 0 h)
+  simpa only [neg_sub, ← sub_eq_add_neg] using (iff_comp_neg (by simp)).mp (hf.comp_add_left c h)
 
 theorem comp_sub_left_iff (c : ℝ) (h : ‖f (min a b)‖ₑ ≠ ∞) :
     IntervalIntegrable (fun x => f (c - x)) volume (c - a) (c - b) ↔
