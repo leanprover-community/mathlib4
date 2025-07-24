@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, James Kiln, Anatole Dedecker, Eric Wieser
 -/
 
-import Mathlib.Analysis.Normed.Algebra.Exponential
-import Mathlib.Topology.MetricSpace.Pseudo.Defs
+import Mathlib.Analysis.Analytic.ChangeOrigin
+import Mathlib.Analysis.Analytic.OfScalars
+import Mathlib.Analysis.Complex.Basic
 
 /-!
 # Logarithm in a Banach algebra
@@ -219,27 +220,6 @@ theorem analyticAt_log_of_mem_ball (x : 𝔸) (hx : x ∈ EMetric.ball (0 : 𝔸
   · have h := pos_iff_ne_zero.mpr h
     exact (hasFPowerSeriesOnBall_log_of_radius_pos h).analyticAt_of_mem hx
 
--- /-- In a Banach-algebra `𝔸` over a normed field `𝕂` of characteristic zero, if `x` and `y` are
--- in the disk of convergence and commute, then
--- `NormedSpace.log 𝕂 (x + y) = (NormedSpace.log 𝕂 x) * (NormedSpace.log 𝕂 y)`. -/
--- theorem log_add_of_commute_of_mem_ball [CharZero 𝕂] {x y : 𝔸} (hxy : Commute x y)
---     (hx : x ∈ EMetric.ball (0 : 𝔸) (logSeries 𝕂 𝔸).radius)
---     (hy : y ∈ EMetric.ball (0 : 𝔸) (logSeries 𝕂 𝔸).radius) : log 𝕂 (x + y + x * y) = log 𝕂 x + log 𝕂 y := by
---   rw [log_eq_tsum,
---     tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm
---       (norm_logSeries_summable_of_mem_ball' x hx) (norm_logSeries_summable_of_mem_ball' y hy)]
---   dsimp only
---   conv_lhs =>
---     congr
---     ext
---     rw [hxy.add_pow' _, Finset.smul_sum]
---   refine tsum_congr fun n => Finset.sum_congr rfl fun kl hkl => ?_
---   rw [← Nat.cast_smul_eq_nsmul 𝕂, smul_smul, smul_mul_smul_comm, ← Finset.mem_antidiagonal.mp hkl,
---     Nat.cast_add_choose, Finset.mem_antidiagonal.mp hkl]
---   congr 1
---   have : (n ! : 𝕂) ≠ 0 := Nat.cast_ne_zero.mpr n.factorial_ne_zero
---   field_simp [this]
-
 /-- Any continuous ring homomorphism commutes with `NormedSpace.log`. -/
 theorem map_log_of_mem_ball {F} [FunLike F 𝔸 𝔹] [RingHomClass F 𝔸 𝔹] (f : F) (hf : Continuous f)
     (x : 𝔸) (hx : x ∈ EMetric.ball (0 : 𝔸) (logSeries 𝕂 𝔸).radius) :
@@ -313,6 +293,3 @@ theorem log_ℝ_ℂ_eq_log_ℂ_ℂ : (log ℝ : ℂ → ℂ) = log ℂ :=
 end ScalarTower
 
 end NormedSpace
-
-
-#min_imports
