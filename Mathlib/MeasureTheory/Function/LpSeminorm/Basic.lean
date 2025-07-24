@@ -1405,6 +1405,34 @@ alias Memℒp.const_mul := MemLp.const_mul
 
 end IsBoundedSMul
 
+section ENormSMulClass
+
+variable {𝕜 : Type*} [NormedRing 𝕜]
+  {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε] [SMul 𝕜 ε] [ENormSMulClass 𝕜 ε]
+  {c : 𝕜} {f : α → ε}
+
+theorem eLpNorm'_const_smul_le' (hq : 0 < q) : eLpNorm' (c • f) q μ ≤ ‖c‖ₑ * eLpNorm' f q μ :=
+  eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul'
+    (Eventually.of_forall fun _ ↦ le_of_eq (enorm_smul ..)) hq
+
+theorem eLpNormEssSup_const_smul_le' : eLpNormEssSup (c • f) μ ≤ ‖c‖ₑ * eLpNormEssSup f μ :=
+  eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul'
+    (Eventually.of_forall fun _ => by simp [enorm_smul])
+
+theorem eLpNorm_const_smul_le' : eLpNorm (c • f) p μ ≤ ‖c‖ₑ * eLpNorm f p μ :=
+  eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul'
+    (Eventually.of_forall fun _ => le_of_eq (enorm_smul ..)) _
+
+theorem MemLp.const_smul' [ContinuousConstSMul 𝕜 ε] (hf : MemLp f p μ) (c : 𝕜) :
+    MemLp (c • f) p μ :=
+  ⟨AEStronglyMeasurable.const_smul hf.1 c,
+    eLpNorm_const_smul_le'.trans_lt (ENNReal.mul_lt_top ENNReal.coe_lt_top hf.2)⟩
+
+theorem MemLp.const_mul' {f : α → 𝕜} (hf : MemLp f p μ) (c : 𝕜) : MemLp (fun x => c * f x) p μ :=
+  hf.const_smul c
+
+end ENormSMulClass
+
 /-!
 ### Bounded actions by normed division rings
 The inequalities in the previous section are now tight.
