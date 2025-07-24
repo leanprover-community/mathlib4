@@ -31,7 +31,7 @@ lemma bonza_apply_dvd_pow (hf : f ∈ bonza) {n : ℕ} (hn : n > 0) : f n ∣ n 
   rwa [← Int.natCast_pow n n, ofNat_dvd] at this
 
 lemma bonza_apply_prime_eq_one_or_dvd_self_sub_apply (hf : f ∈ bonza) {p : ℕ}
-  (hp : Nat.Prime p) : f p = 1 ∨ (∀ b : ℕ, b > 0 → (p : ℤ) ∣ (b : ℤ) - ((f b) : ℤ)) := by
+    (hp : Nat.Prime p) : f p = 1 ∨ (∀ b : ℕ, b > 0 → (p : ℤ) ∣ (b : ℤ) - ((f b) : ℤ)) := by
   have : f p ∣ p ^ p := bonza_apply_dvd_pow hf (Prime.pos hp)
   obtain ⟨k, _, eq⟩ : ∃ k, k ≤ p ∧ f p = p ^ k := (Nat.dvd_prime_pow hp).mp this
   by_cases ch : k = 0
