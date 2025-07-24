@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel
 -/
 import Mathlib.Algebra.DirectSum.Module
-import Mathlib.RingTheory.Finiteness.Finsupp
+import Mathlib.RingTheory.Finiteness.Basic
 
 /-!
 # A finite direct sum of finite modules is finite
