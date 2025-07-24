@@ -145,8 +145,7 @@ def skewAdjointPart : A →ₗ[R] skewAdjoint A where
         neg_sub]⟩
   map_add' x y := by
     ext
-    simp only [sub_add, ← smul_add, sub_sub_eq_add_sub, star_add, AddSubgroup.coe_mk,
-      AddSubgroup.coe_add]
+    simp only [sub_add, ← smul_add, sub_sub_eq_add_sub, star_add, AddSubgroup.coe_add]
   map_smul' r x := by
     ext
     simp [← mul_smul, ← smul_sub,

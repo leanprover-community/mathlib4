@@ -829,7 +829,7 @@ theorem quotientEquivQuotientMinpolyMap_symm_apply_mk (pb : PowerBasis R S) (I :
           (aeval pb.gen g) := by
   simp only [quotientEquivQuotientMinpolyMap, toRingEquiv_eq_coe, symm_trans_apply,
     quotEquivQuotMap_symm_apply_mk, ofRingEquiv_symm_apply, quotientEquiv_symm_mk,
-    toRingEquiv_symm, RingEquiv.symm_symm, AdjoinRoot.equiv'_apply, coe_ringEquiv, liftHom_mk,
+    RingEquiv.symm_symm, AdjoinRoot.equiv'_apply, coe_ringEquiv, liftHom_mk,
     symm_toRingEquiv]
 
 end PowerBasis

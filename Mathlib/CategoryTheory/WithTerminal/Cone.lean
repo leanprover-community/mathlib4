@@ -39,7 +39,7 @@ def commaFromOver : (J ⥤ Over X) ⥤ Comma (𝟭 (J ⥤ C)) (Functor.const J) 
     hom.app a := (K.obj a).hom
   }
   map f := {
-    left := whiskerRight f (Over.forget X)
+    left := Functor.whiskerRight f (Over.forget X)
     right := 𝟙 X
   }
 
@@ -140,7 +140,7 @@ def commaFromUnder : (J ⥤ Under X) ⥤ Comma (Functor.const J) (𝟭 (J ⥤ C)
   }
   map f := {
     left := 𝟙 X
-    right := whiskerRight f (Under.forget X)
+    right := Functor.whiskerRight f (Under.forget X)
   }
 
 /-- For any functor `K : J ⥤ Under X`, there is a canonical extension

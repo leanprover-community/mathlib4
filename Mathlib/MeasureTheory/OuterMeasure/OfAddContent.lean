@@ -140,7 +140,7 @@ noncomputable def measureCaratheodory (m : AddContent C) (hC : IsSetSemiring C)
       apply le_inducedOuterMeasure.mpr fun s hs ↦ ?_
       have hs_meas : MeasurableSet[(inducedOuterMeasure (fun x _ ↦ m x) hC.empty_mem
           addContent_empty).caratheodory] s := by
-        show (inducedOuterMeasure (fun x _ ↦ m x) hC.empty_mem addContent_empty).IsCaratheodory s
+        change (inducedOuterMeasure (fun x _ ↦ m x) hC.empty_mem addContent_empty).IsCaratheodory s
         exact isCaratheodory_inducedOuterMeasure_of_mem hC m hs
       rw [OuterMeasure.trim_eq _ hs_meas, m.inducedOuterMeasure_eq hC m_sigma_subadd hs] }
 

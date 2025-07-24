@@ -99,7 +99,7 @@ theorem isUnit_den (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) : IsUnit (r.den : �
 theorem norm_sub_modPart_aux (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) :
     ↑p ∣ r.num - r.num * r.den.gcdA p % p * ↑r.den := by
   rw [← ZMod.intCast_zmod_eq_zero_iff_dvd]
-  simp only [Int.cast_natCast, ZMod.natCast_mod, Int.cast_mul, Int.cast_sub]
+  simp only [Int.cast_natCast, Int.cast_mul, Int.cast_sub]
   have := congr_arg (fun x => x % p : ℤ → ZMod p) (gcd_eq_gcd_ab r.den p)
   simp only [Int.cast_natCast, CharP.cast_eq_zero, EuclideanDomain.mod_zero, Int.cast_add,
     Int.cast_mul, zero_mul, add_zero] at this
@@ -123,7 +123,7 @@ theorem norm_sub_modPart (h : ‖(r : ℚ_[p])‖ ≤ 1) : ‖(⟨r, h⟩ - modP
     simp only [n, sub_mul, Int.cast_natCast, eq_intCast, Int.cast_mul, sub_left_inj,
       Int.cast_sub]
     apply Subtype.coe_injective
-    simp only [coe_mul, Subtype.coe_mk, coe_natCast]
+    simp only [coe_mul, coe_natCast]
     norm_cast
     simp
   exact norm_sub_modPart_aux r h
@@ -173,7 +173,7 @@ theorem exists_mem_range : ∃ n : ℕ, n < p ∧ x - n ∈ maximalIdeal ℤ_[p]
   use n
   constructor
   · exact mod_cast hnp
-  simp only [norm_def, coe_sub, Subtype.coe_mk, coe_natCast] at hn ⊢
+  simp only [norm_def, coe_sub, coe_natCast] at hn ⊢
   rw [show (x - n : ℚ_[p]) = x - r + (r - n) by ring]
   apply lt_of_le_of_lt (padicNormE.nonarchimedean _ _)
   apply max_lt hr
@@ -301,7 +301,7 @@ noncomputable def appr : ℤ_[p] → ℕ → ℕ
 
 theorem appr_lt (x : ℤ_[p]) (n : ℕ) : x.appr n < p ^ n := by
   induction n generalizing x with
-  | zero => simp only [appr, zero_eq, _root_.pow_zero, zero_lt_one]
+  | zero => simp only [appr, _root_.pow_zero, zero_lt_one]
   | succ n ih =>
     simp only [appr, map_natCast, ZMod.natCast_self, RingHom.map_pow, Int.natAbs, RingHom.map_mul]
     have hp : p ^ n < p ^ (n + 1) := by apply Nat.pow_lt_pow_right hp_prime.1.one_lt n.lt_add_one
@@ -328,7 +328,7 @@ theorem dvd_appr_sub_appr (x : ℤ_[p]) (m n : ℕ) (h : m ≤ n) : p ^ m ∣ x.
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h; clear h
   induction k with
   | zero =>
-    simp only [zero_eq, add_zero, le_refl, tsub_eq_zero_of_le, ne_eq, Nat.isUnit_iff, dvd_zero]
+    simp only [add_zero, le_refl, tsub_eq_zero_of_le, dvd_zero]
   | succ k ih =>
     rw [← add_assoc]
     dsimp [appr]
@@ -342,7 +342,7 @@ theorem dvd_appr_sub_appr (x : ℤ_[p]) (m n : ℕ) (h : m ≤ n) : p ^ m ∣ x.
 theorem appr_spec (n : ℕ) : ∀ x : ℤ_[p], x - appr x n ∈ Ideal.span {(p : ℤ_[p]) ^ n} := by
   simp only [Ideal.mem_span_singleton]
   induction n with
-  | zero => simp only [zero_eq, _root_.pow_zero, isUnit_one, IsUnit.dvd, forall_const]
+  | zero => simp only [_root_.pow_zero, isUnit_one, IsUnit.dvd, forall_const]
   | succ n ih =>
     intro x
     dsimp only [appr]
@@ -532,7 +532,7 @@ theorem nthHomSeq_add (r s : R) :
   dsimp [nthHom]
   simp only [ZMod.natCast_val, RingHom.map_add, Int.cast_sub, ZMod.intCast_cast, Int.cast_add]
   rw [ZMod.cast_add (show p ^ n ∣ p ^ j from pow_dvd_pow _ hj)]
-  simp only [cast_add, ZMod.natCast_val, Int.cast_add, ZMod.intCast_cast, sub_self]
+  simp only [sub_self]
 
 theorem nthHomSeq_mul (r s : R) :
     nthHomSeq f_compat (r * s) ≈ nthHomSeq f_compat r * nthHomSeq f_compat s := by
@@ -634,7 +634,7 @@ end
 
 @[simp]
 theorem lift_self (z : ℤ_[p]) : lift zmod_cast_comp_toZModPow z = z := by
-  show _ = RingHom.id _ z
+  change _ = RingHom.id _ z
   rw [lift_unique zmod_cast_comp_toZModPow (RingHom.id ℤ_[p])]
   intro; rw [RingHom.comp_id]
 
@@ -655,7 +655,7 @@ theorem toZModPow_eq_iff_ext {R : Type*} [NonAssocSemiring R] {g g' : R →+* �
     ext x : 1
     apply ext_of_toZModPow.mp
     intro n
-    show (toZModPow n).comp g x = (toZModPow n).comp g' x
+    change (toZModPow n).comp g x = (toZModPow n).comp g' x
     rw [hg n]
   · rintro rfl _
     rfl

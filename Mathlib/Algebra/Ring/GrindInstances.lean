@@ -14,14 +14,14 @@ open Lean
 
 variable (α : Type*)
 
-instance CommRing.toGrindCommRing [s : CommRing α] :
-    Grind.CommRing α :=
+-- This is a low priority instance so that the built-in `Lean.Grind.Semiring Nat` instance
+-- (which has a non-defeq `ofNat` instance) is used preferentially.
+instance (priority := 100) Semiring.toGrindSemiring [s : Semiring α] :
+    Grind.Semiring α :=
   { s with
     ofNat | 0 | 1 | n + 2 => inferInstance
     natCast := inferInstance
-    intCast := inferInstance
     add_zero := by simp [add_zero]
-    neg_add_cancel := by simp [neg_add_cancel]
     mul_one := by simp [mul_one]
     zero_mul := by simp [zero_mul]
     pow_zero := by simp
@@ -33,23 +33,40 @@ instance CommRing.toGrindCommRing [s : CommRing α] :
     ofNat_succ
     | 0 => by simp [zero_add]
     | 1 => by
-      show Nat.cast 2 = 1 + 1
+      change Nat.cast 2 = 1 + 1
       rw [one_add_one_eq_two]
       rfl
     | n + 2 => by
-      show Nat.cast (n + 2 + 1) = Nat.cast (n + 2) + 1
-      rw [← AddMonoidWithOne.natCast_succ]
+      change Nat.cast (n + 2 + 1) = Nat.cast (n + 2) + 1
+      rw [← AddMonoidWithOne.natCast_succ] }
+
+instance (priority := 100) CommSemiring.toGrindCommSemiring [s : CommSemiring α] :
+    Grind.CommSemiring α :=
+  { Semiring.toGrindSemiring α with
+    mul_comm := s.mul_comm }
+
+instance (priority := 100) Ring.toGrindRing [s : Ring α] :
+    Grind.Ring α :=
+  { s, Semiring.toGrindSemiring α with
+    natCast := inferInstance
+    intCast := inferInstance
+    neg_add_cancel := by simp [neg_add_cancel]
     intCast_ofNat
     | 0 => Int.cast_zero
     | 1 => Int.cast_one
-    | n + 2 => Int.cast_ofNat _
+    | _ + 2 => Int.cast_ofNat _
     intCast_neg := Int.cast_neg }
 
-theorem CommRing.toGrindCommRing_ofNat [CommRing α] (n : ℕ) :
+instance (priority := 100) CommRing.toGrindCommRing [s : CommRing α] :
+    Grind.CommRing α :=
+  { Ring.toGrindRing α with
+    mul_comm := s.mul_comm }
+
+theorem Semiring.toGrindSemiring_ofNat [Semiring α] (n : ℕ) :
     @OfNat.ofNat α n (Lean.Grind.Semiring.ofNat n) = n.cast := by
   match n with
-  | 0 => simp [zero_add]
-  | 1 => simp [one_add_one_eq_two]
+  | 0 => simp
+  | 1 => simp
   | n + 2 => rfl
 
 attribute [local instance] Grind.Semiring.natCast Grind.Ring.intCast in
@@ -73,3 +90,9 @@ example (s : Grind.CommRing α) : CommRing α :=
     intCast_negSucc n := by
       rw [Int.negSucc_eq, Grind.Ring.intCast_neg,
         Grind.Ring.intCast_natCast_add_one, Grind.Semiring.natCast_succ] }
+
+-- Verify that we do not have a defeq problems in `Lean.Grind.Semiring` instances.
+example : (inferInstance : Lean.Grind.Semiring Nat) =
+    (Lean.Grind.CommSemiring.toSemiring : Lean.Grind.Semiring Nat) := rfl
+example : (inferInstance : Lean.Grind.Semiring UInt8) =
+    (Lean.Grind.CommSemiring.toSemiring : Lean.Grind.Semiring UInt8) := rfl

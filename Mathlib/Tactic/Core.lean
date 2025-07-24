@@ -5,7 +5,6 @@ Authors: Arthur Paulino, Aurélien Saue, Mario Carneiro
 -/
 import Lean.Elab.PreDefinition.Basic
 import Lean.Elab.Tactic.ElabTerm
-import Lean.Util.Paths
 import Lean.Meta.Tactic.Intro
 import Mathlib.Lean.Expr.Basic
 import Batteries.Tactic.OpenPrivate
@@ -38,7 +37,7 @@ def toModifiers (nm : Name) (newDoc : Option (TSyntax `Lean.Parser.Command.docCo
       Visibility.regular
     else
       Visibility.protected
-    isNoncomputable := if (env.find? <| nm.mkStr "_cstage1").isSome then false else true
+    computeKind := if (env.find? <| nm.mkStr "_cstage1").isSome then .regular else .noncomputable
     recKind := RecKind.default -- nonrec only matters for name resolution, so is irrelevant (?)
     isUnsafe := d.isUnsafe
     attrs := #[] }

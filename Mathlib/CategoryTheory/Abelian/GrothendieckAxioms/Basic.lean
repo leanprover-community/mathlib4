@@ -49,7 +49,7 @@ individual axioms. An `AB4` category is an _abelian_ category satisfying `AB4`, 
 
 namespace CategoryTheory
 
-open Limits
+open Limits Functor
 
 attribute [instance] comp_preservesFiniteLimits comp_preservesFiniteColimits
 

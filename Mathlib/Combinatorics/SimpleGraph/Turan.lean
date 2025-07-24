@@ -155,7 +155,7 @@ lemma not_adj_trans (h : G.IsTuranMaximal r) (hts : ¬G.Adj t s) (hsu : ¬G.Adj 
     card_edgeFinset_replaceVertex_of_not_adj _ hst, dst, Nat.add_sub_cancel]
   have l1 : (G.replaceVertex s t).degree s = G.degree s := by
     unfold degree; congr 1; ext v
-    simp only [mem_neighborFinset, SimpleGraph.irrefl, ite_self]
+    simp only [mem_neighborFinset]
     by_cases eq : v = t
     · simpa only [eq, not_adj_replaceVertex_same, false_iff]
     · rw [G.adj_replaceVertex_iff_of_ne s nst eq]

@@ -293,7 +293,7 @@ theorem mem_generatePiSystem_iUnion_elim' {α β} {g : β → Set (Set α)} {s :
   have : t ∈ generatePiSystem (⋃ b : Subtype s, (g ∘ Subtype.val) b) := by
     suffices h1 : ⋃ b : Subtype s, (g ∘ Subtype.val) b = ⋃ b ∈ s, g b by rwa [h1]
     ext x
-    simp only [exists_prop, Set.mem_iUnion, Function.comp_apply, Subtype.exists, Subtype.coe_mk]
+    simp only [exists_prop, Set.mem_iUnion, Function.comp_apply, Subtype.exists]
     rfl
   rcases @mem_generatePiSystem_iUnion_elim α (Subtype s) (g ∘ Subtype.val)
       (fun b => h_pi b.val b.property) t this with
@@ -351,7 +351,7 @@ theorem piiUnionInter_singleton (π : ι → Set (Set α)) (i : ι) :
         ext1 x
         simp only [Finset.notMem_empty, iff_false]
         exact fun hx => hi (hti x hx ▸ hx)
-      simp [ht_empty, iInter_false, iInter_univ, Set.mem_singleton univ]
+      simp [ht_empty, iInter_univ, Set.mem_singleton univ]
   · rcases h with hs | hs
     · refine ⟨{i}, ?_, fun _ => s, ⟨fun x hx => ?_, ?_⟩⟩
       · rw [Finset.coe_singleton]

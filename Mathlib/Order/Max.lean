@@ -288,11 +288,11 @@ theorem isMax_iff_forall_not_lt : IsMax a ↔ ∀ b, ¬a < b :=
 
 @[simp]
 theorem not_isMin_iff : ¬IsMin a ↔ ∃ b, b < a := by
-  simp [lt_iff_le_not_ge, IsMin, not_forall, exists_prop]
+  simp [lt_iff_le_not_ge, IsMin, not_forall]
 
 @[simp]
 theorem not_isMax_iff : ¬IsMax a ↔ ∃ b, a < b := by
-  simp [lt_iff_le_not_ge, IsMax, not_forall, exists_prop]
+  simp [lt_iff_le_not_ge, IsMax, not_forall]
 
 @[simp]
 theorem not_isMin [NoMinOrder α] (a : α) : ¬IsMin a :=

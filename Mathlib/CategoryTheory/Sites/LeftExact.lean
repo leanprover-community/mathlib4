@@ -195,8 +195,7 @@ instance preservesLimitsOfShape_plusFunctor
     conv_lhs => dsimp
     simp only [Category.assoc]
     rw [ι_colimitLimitIso_limit_π_assoc]
-    simp only [NatIso.ofComponents_inv_app, colimitObjIsoColimitCompEvaluation_ι_app_hom,
-      Iso.symm_inv]
+    simp only [colimitObjIsoColimitCompEvaluation_ι_app_hom]
     conv_lhs =>
       dsimp [IsLimit.conePointUniqueUpToIso]
     rw [← Category.assoc, ← NatTrans.comp_app, limit.lift_π]
@@ -246,10 +245,10 @@ instance preservesLimitsOfShape_presheafToSheaf
     Limits.hasLimitsOfShape_of_equivalence e
   haveI : FinCategory (AsSmall.{t} (FinCategory.AsType K)) := by
     constructor
-    · show Fintype (ULift _)
+    · change Fintype (ULift _)
       infer_instance
     · intro j j'
-      show Fintype (ULift _)
+      change Fintype (ULift _)
       infer_instance
   refine @preservesLimitsOfShape_of_equiv _ _ _ _ _ _ _ _ e.symm _ (show _ from ?_)
   constructor; intro F; constructor; intro S hS; constructor
@@ -273,7 +272,7 @@ def plusPlusSheafIsoPresheafToSheaf : plusPlusSheaf J D ≅ presheafToSheaf J D 
 
 /-- `plusPlusFunctor` is isomorphic to `sheafification`. -/
 def plusPlusFunctorIsoSheafification : J.sheafification D ≅ sheafification J D :=
-  isoWhiskerRight (plusPlusSheafIsoPresheafToSheaf J D) (sheafToPresheaf J D)
+  Functor.isoWhiskerRight (plusPlusSheafIsoPresheafToSheaf J D) (sheafToPresheaf J D)
 
 /-- `plusPlus` is isomorphic to `sheafify`. -/
 def plusPlusIsoSheafify (P : Cᵒᵖ ⥤ D) : J.sheafify P ≅ sheafify J P :=

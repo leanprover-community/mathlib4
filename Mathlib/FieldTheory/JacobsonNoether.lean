@@ -115,7 +115,7 @@ theorem exists_separable_and_not_isCentral (H : k ≠ (⊤ : Subring D)) :
   obtain ⟨b, hb1⟩ : ∃ b : D, ad k D a b ≠ 0 := by
     rw [Subring.mem_center_iff, not_forall] at ha
     use ha.choose
-    show a * ha.choose - ha.choose * a ≠ 0
+    change a * ha.choose - ha.choose * a ≠ 0
     simpa only [ne_eq, sub_eq_zero] using Ne.symm ha.choose_spec
   -- We find a maximum natural number `n` such that `(a * x - x * a) ^ n b ≠ 0`.
   obtain ⟨n, hn, hb⟩ : ∃ n, 0 < n ∧ (ad k D a)^[n] b ≠ 0 ∧ (ad k D a)^[n + 1] b = 0 := by

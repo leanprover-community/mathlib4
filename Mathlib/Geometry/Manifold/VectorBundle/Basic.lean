@@ -211,24 +211,16 @@ theorem contMDiff_proj : ContMDiff (IB.prod 𝓘(𝕜, F)) IB n (π F E) := fun 
   rw [contMDiffAt_totalSpace] at this
   exact this.1
 
-@[deprecated (since := "2024-11-21")] alias smooth_proj := contMDiff_proj
-
 theorem contMDiffOn_proj {s : Set (TotalSpace F E)} :
     ContMDiffOn (IB.prod 𝓘(𝕜, F)) IB n (π F E) s :=
   (Bundle.contMDiff_proj E).contMDiffOn
 
-@[deprecated (since := "2024-11-21")] alias smoothOn_proj := contMDiffOn_proj
-
 theorem contMDiffAt_proj {p : TotalSpace F E} : ContMDiffAt (IB.prod 𝓘(𝕜, F)) IB n (π F E) p :=
   (Bundle.contMDiff_proj E).contMDiffAt
-
-@[deprecated (since := "2024-11-21")] alias smoothAt_proj := contMDiffAt_proj
 
 theorem contMDiffWithinAt_proj {s : Set (TotalSpace F E)} {p : TotalSpace F E} :
     ContMDiffWithinAt (IB.prod 𝓘(𝕜, F)) IB n (π F E) s p :=
   (Bundle.contMDiffAt_proj E).contMDiffWithinAt
-
-@[deprecated (since := "2024-11-21")] alias smoothWithinAt_proj := contMDiffWithinAt_proj
 
 variable (𝕜) [∀ x, AddCommMonoid (E x)]
 variable [∀ x, Module 𝕜 (E x)] [VectorBundle 𝕜 F E]
@@ -240,8 +232,6 @@ theorem contMDiff_zeroSection : ContMDiff IB (IB.prod 𝓘(𝕜, F)) n (zeroSect
   filter_upwards [(trivializationAt F E x).open_baseSet.mem_nhds
     (mem_baseSet_trivializationAt F E x)] with y hy
     using congr_arg Prod.snd <| (trivializationAt F E x).zeroSection 𝕜 hy
-
-@[deprecated (since := "2024-11-21")] alias smooth_zeroSection := contMDiff_zeroSection
 
 end Bundle
 
@@ -315,19 +305,12 @@ theorem contMDiffOn_symm_coordChangeL :
   refine (ContMDiffVectorBundle.contMDiffOn_coordChangeL e' e).congr fun b hb ↦ ?_
   rw [e.symm_coordChangeL e' hb]
 
-@[deprecated (since := "2024-11-21")] alias smoothOn_coordChangeL := contMDiffOn_coordChangeL
-@[deprecated (since := "2024-11-21")]
-alias smoothOn_symm_coordChangeL := contMDiffOn_symm_coordChangeL
-
-
 variable {e e'}
 
 theorem contMDiffAt_coordChangeL {x : B} (h : x ∈ e.baseSet) (h' : x ∈ e'.baseSet) :
     ContMDiffAt IB 𝓘(𝕜, F →L[𝕜] F) n (fun b : B => (e.coordChangeL 𝕜 e' b : F →L[𝕜] F)) x :=
   (contMDiffOn_coordChangeL e e').contMDiffAt <|
     (e.open_baseSet.inter e'.open_baseSet).mem_nhds ⟨h, h'⟩
-
-@[deprecated (since := "2024-11-21")] alias smoothAt_coordChangeL := contMDiffAt_coordChangeL
 
 variable {s : Set M} {f : M → B} {g : M → F} {x : M}
 
@@ -350,18 +333,6 @@ protected theorem ContMDiff.coordChangeL
     (hf : ContMDiff IM IB n f) (he : ∀ x, f x ∈ e.baseSet) (he' : ∀ x, f x ∈ e'.baseSet) :
     ContMDiff IM 𝓘(𝕜, F →L[𝕜] F) n (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) := fun x ↦
   (hf x).coordChangeL (he x) (he' x)
-
-@[deprecated (since := "2024-11-21")]
-alias SmoothWithinAt.coordChangeL := ContMDiffWithinAt.coordChangeL
-
-@[deprecated (since := "2024-11-21")]
-alias SmoothAt.coordChangeL := ContMDiffAt.coordChangeL
-
-@[deprecated (since := "2024-11-21")]
-alias SmoothOn.coordChangeL := ContMDiffOn.coordChangeL
-
-@[deprecated (since := "2024-11-21")]
-alias Smooth.coordChangeL := ContMDiff.coordChangeL
 
 protected theorem ContMDiffWithinAt.coordChange
     (hf : ContMDiffWithinAt IM IB n f s x) (hg : ContMDiffWithinAt IM 𝓘(𝕜, F) n g s x)
@@ -389,18 +360,6 @@ protected theorem ContMDiff.coordChange (hf : ContMDiff IM IB n f)
     (hg : ContMDiff IM 𝓘(𝕜, F) n g) (he : ∀ x, f x ∈ e.baseSet) (he' : ∀ x, f x ∈ e'.baseSet) :
     ContMDiff IM 𝓘(𝕜, F) n (fun y ↦ e.coordChange e' (f y) (g y)) := fun x ↦
   (hf x).coordChange (hg x) (he x) (he' x)
-
-@[deprecated (since := "2024-11-21")]
-alias SmoothWithinAt.coordChange := ContMDiffWithinAt.coordChange
-
-@[deprecated (since := "2024-11-21")]
-alias SmoothAt.coordChange := ContMDiffAt.coordChange
-
-@[deprecated (since := "2024-11-21")]
-alias SmoothOn.coordChange := ContMDiffOn.coordChange
-
-@[deprecated (since := "2024-11-21")]
-alias Smooth.coordChange := ContMDiff.coordChange
 
 variable (e e')
 
@@ -512,18 +471,6 @@ theorem Trivialization.contMDiff_iff {f : M → TotalSpace F E} (he : ∀ x, f x
       ContMDiff IM 𝓘(𝕜, F) n (fun x ↦ (e (f x)).2) :=
   (forall_congr' fun x ↦ e.contMDiffAt_iff (he x)).trans forall_and
 
-@[deprecated (since := "2024-11-21")]
-alias Trivialization.smoothWithinAt_iff := Trivialization.contMDiffWithinAt_iff
-
-@[deprecated (since := "2024-11-21")]
-alias Trivialization.smoothAt_iff := Trivialization.contMDiffAt_iff
-
-@[deprecated (since := "2024-11-21")]
-alias Trivialization.smoothOn_iff := Trivialization.contMDiffOn_iff
-
-@[deprecated (since := "2024-11-21")]
-alias Trivialization.smooth_iff := Trivialization.contMDiff_iff
-
 theorem Trivialization.contMDiffOn (e : Trivialization F (π F E)) [MemTrivializationAtlas e] :
     ContMDiffOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) n e e.source := by
   have : ContMDiffOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) n id e.source := contMDiffOn_id
@@ -536,11 +483,6 @@ theorem Trivialization.contMDiffOn_symm (e : Trivialization F (π F E)) [MemTriv
   refine ⟨contMDiffOn_fst.congr fun x hx ↦ e.proj_symm_apply hx,
     contMDiffOn_snd.congr fun x hx ↦ ?_⟩
   rw [e.apply_symm_apply hx]
-
-@[deprecated (since := "2024-11-21")] alias Trivialization.smoothOn := Trivialization.contMDiffOn
-
-@[deprecated (since := "2024-11-21")]
-alias Trivialization.smoothOn_symm := Trivialization.contMDiffOn_symm
 
 end
 
@@ -561,9 +503,6 @@ class IsContMDiff (IB : ModelWithCorners 𝕜 EB HB) (n : WithTop ℕ∞) : Prop
 theorem contMDiffOn_coordChange (IB : ModelWithCorners 𝕜 EB HB) [h : Z.IsContMDiff IB n] (i j : ι) :
     ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (Z.coordChange i j) (Z.baseSet i ∩ Z.baseSet j) :=
   h.1 i j
-
-@[deprecated (since := "2024-11-21")]
-alias smoothOn_coordChange := contMDiffOn_coordChange
 
 variable [Z.IsContMDiff IB n]
 
@@ -614,10 +553,10 @@ instance Bundle.Prod.contMDiffVectorBundle : ContMDiffVectorBundle n (F₁ × F�
     refine ContMDiffOn.congr ?_ (e₁.coordChangeL_prod 𝕜 e₁' e₂ e₂')
     refine ContMDiffOn.clm_prodMap ?_ ?_
     · refine (contMDiffOn_coordChangeL e₁ e₁').mono ?_
-      simp only [Trivialization.baseSet_prod, mfld_simps]
+      simp only [Trivialization.prod_baseSet, mfld_simps]
       mfld_set_tac
     · refine (contMDiffOn_coordChangeL e₂ e₂').mono ?_
-      simp only [Trivialization.baseSet_prod, mfld_simps]
+      simp only [Trivialization.prod_baseSet, mfld_simps]
       mfld_set_tac
 
 end Prod
@@ -662,9 +601,6 @@ theorem contMDiffOn_contMDiffCoordChange (he : e ∈ a.pretrivializationAtlas)
 
 @[deprecated (since := "2025-01-09")]
 alias contMDiffOn_smoothCoordChange := contMDiffOn_contMDiffCoordChange
-
-@[deprecated (since := "2024-11-21")]
-alias smoothOn_smoothCoordChange := contMDiffOn_contMDiffCoordChange
 
 theorem contMDiffCoordChange_apply (he : e ∈ a.pretrivializationAtlas)
     (he' : e' ∈ a.pretrivializationAtlas) {b : B} (hb : b ∈ e.baseSet ∩ e'.baseSet) (v : F) :

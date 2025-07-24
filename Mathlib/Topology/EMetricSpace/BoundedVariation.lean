@@ -320,13 +320,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
             simp only [this, A, Finset.sum_singleton]
         · apply Finset.sum_congr rfl fun i hi => ?_
           rw [Finset.mem_Ico] at hi
-          dsimp only [w]
-          have A : ¬1 + i + 1 < N := by omega
-          have B : ¬1 + i + 1 = N := by omega
-          have C : ¬1 + i < N := by omega
-          have D : ¬1 + i = N := by omega
-          rw [if_neg A, if_neg B, if_neg C, if_neg D]
-          congr 3 <;> · rw [add_comm, Nat.sub_one]; apply Nat.pred_succ
+          grind
       _ = (∑ i ∈ Finset.Ico 0 (N - 1), edist (f (w (i + 1))) (f (w i))) +
               edist (f (w (N + 1))) (f (w (N - 1))) +
             ∑ i ∈ Finset.Ico (N + 1) (n + 1), edist (f (w (i + 1))) (f (w i)) := by
@@ -335,7 +329,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
           · dsimp only [w]
             have A : ¬N + 1 < N := Nat.not_succ_lt_self
             have B : N - 1 < N := Nat.pred_lt Npos.ne'
-            simp only [A, not_and, not_lt, Nat.succ_ne_self, Nat.add_succ_sub_one, add_zero,
+            simp only [A, Nat.succ_ne_self, Nat.add_succ_sub_one, add_zero,
               if_false, B, if_true]
         · exact Finset.sum_Ico_add (fun i => edist (f (w (i + 1))) (f (w i))) N n 1
       _ ≤ ((∑ i ∈ Finset.Ico 0 (N - 1), edist (f (w (i + 1))) (f (w i))) +
@@ -606,7 +600,7 @@ protected theorem eq_neg_swap (a b : α) :
   rcases lt_trichotomy a b with (ab | rfl | ba)
   · simp only [variationOnFromTo, if_pos ab.le, if_neg ab.not_ge, neg_neg]
   · simp only [variationOnFromTo.self, neg_zero]
-  · simp only [variationOnFromTo, if_pos ba.le, if_neg ba.not_ge, neg_neg]
+  · simp only [variationOnFromTo, if_pos ba.le, if_neg ba.not_ge]
 
 protected theorem nonpos_of_ge {a b : α} (h : b ≤ a) : variationOnFromTo f s a b ≤ 0 := by
   rw [variationOnFromTo.eq_neg_swap]
@@ -626,8 +620,7 @@ protected theorem add {f : α → E} {s : Set α} (hf : LocallyBoundedVariationO
   symm
   refine additive_of_isTotal ((· : α) ≤ ·) (variationOnFromTo f s) (· ∈ s) ?_ ?_ ha hb hc
   · rintro x y _xs _ys
-    simp only [variationOnFromTo.eq_neg_swap f s y x, Subtype.coe_mk, add_neg_cancel,
-      forall_true_left]
+    simp only [variationOnFromTo.eq_neg_swap f s y x, add_neg_cancel]
   · rintro x y z xy yz xs ys zs
     rw [variationOnFromTo.eq_of_le f s xy, variationOnFromTo.eq_of_le f s yz,
       variationOnFromTo.eq_of_le f s (xy.trans yz),

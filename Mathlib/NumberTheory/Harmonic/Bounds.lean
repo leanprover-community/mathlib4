@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arend Mellendijk
 -/
 
-import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.Analysis.SumIntegralComparisons
 import Mathlib.NumberTheory.Harmonic.Defs
 
@@ -36,7 +36,7 @@ theorem harmonic_le_one_add_log (n : ℕ) :
   rw [← Finset.sum_erase_add (Finset.Icc 1 n) _ (Finset.left_mem_Icc.mpr hn), add_comm,
     Nat.cast_one, inv_one]
   refine add_le_add_left ?_ 1
-  simp only [Nat.lt_one_iff, Finset.mem_Icc, Finset.Icc_erase_left]
+  simp only [Finset.Icc_erase_left]
   calc ∑ d ∈ .Ico 2 (n + 1), (d : ℝ)⁻¹
     _ = ∑ d ∈ .Ico 2 (n + 1), (↑(d + 1) - 1)⁻¹ := ?_
     _ ≤ ∫ x in (2).. ↑(n + 1), (x - 1)⁻¹  := ?_

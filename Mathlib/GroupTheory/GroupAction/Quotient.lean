@@ -151,7 +151,7 @@ theorem injective_ofQuotientStabilizer : Function.Injective (ofQuotientStabilize
   Quotient.inductionOn₂' y₁ y₂ fun g₁ g₂ (H : g₁ • x = g₂ • x) =>
     Quotient.sound' <| by
       rw [leftRel_apply]
-      show (g₁⁻¹ * g₂) • x = x
+      change (g₁⁻¹ * g₂) • x = x
       rw [mul_smul, ← H, inv_smul_smul]
 
 /-- **Orbit-stabilizer theorem**. -/
@@ -393,7 +393,7 @@ noncomputable def equivSubgroupOrbitsQuotientGroup [IsPretransitive α β]
     rw [inv_smul_eq_iff, (exists_smul_eq α _ x).choose_spec]
   right_inv := fun g ↦ by
     cases g using Quotient.inductionOn' with | _ g
-    simp only [Quotient.liftOn'_mk'', Quotient.liftOn'_mk, QuotientGroup.mk]
+    simp only [Quotient.liftOn'_mk'', QuotientGroup.mk]
     rw [Quotient.eq'', leftRel_eq]
     simp only
     convert one_mem H

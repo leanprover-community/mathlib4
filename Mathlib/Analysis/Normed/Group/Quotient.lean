@@ -510,7 +510,7 @@ instance Submodule.Quotient.instIsBoundedSMul (𝕜 : Type*)
     _root_.le_of_forall_pos_le_add fun ε hε => by
       have := (nhds_basis_ball.tendsto_iff nhds_basis_ball).mp
         ((@Real.uniformContinuous_const_mul ‖k‖).continuous.tendsto ‖x‖) ε hε
-      simp only [mem_ball, exists_prop, dist, abs_sub_lt_iff] at this
+      simp only [mem_ball, dist, abs_sub_lt_iff] at this
       rcases this with ⟨δ, hδ, h⟩
       obtain ⟨a, rfl, ha⟩ := Submodule.Quotient.norm_mk_lt x hδ
       specialize h ‖a‖ ⟨by linarith, by linarith [Submodule.Quotient.norm_mk_le S a]⟩
@@ -540,7 +540,7 @@ instance Ideal.Quotient.semiNormedCommRing : SeminormedCommRing (R ⧸ I) where
   norm_mul_le x y := le_of_forall_pos_le_add fun ε hε => by
     have := ((nhds_basis_ball.prod_nhds nhds_basis_ball).tendsto_iff nhds_basis_ball).mp
       (continuous_mul.tendsto (‖x‖, ‖y‖)) ε hε
-    simp only [Set.mem_prod, mem_ball, and_imp, Prod.forall, exists_prop, Prod.exists] at this
+    simp only [Set.mem_prod, mem_ball, and_imp, Prod.forall, Prod.exists] at this
     rcases this with ⟨ε₁, ε₂, ⟨h₁, h₂⟩, h⟩
     obtain ⟨⟨a, rfl, ha⟩, ⟨b, rfl, hb⟩⟩ := Ideal.Quotient.norm_mk_lt x h₁,
       Ideal.Quotient.norm_mk_lt y h₂

@@ -81,7 +81,7 @@ scoped notation "Var[" X "]" => Var[X; MeasureTheory.MeasureSpace.volume]
 theorem evariance_lt_top [IsFiniteMeasure μ] (hX : MemLp X 2 μ) : evariance X μ < ∞ := by
   have := ENNReal.pow_lt_top (hX.sub <| memLp_const <| μ[X]).2 (n := 2)
   rw [eLpNorm_eq_lintegral_rpow_enorm two_ne_zero ENNReal.ofNat_ne_top, ← ENNReal.rpow_two] at this
-  simp only [ENNReal.toReal_ofNat, Pi.sub_apply, ENNReal.toReal_one, one_div] at this
+  simp only [ENNReal.toReal_ofNat, Pi.sub_apply, one_div] at this
   rw [← ENNReal.rpow_mul, inv_mul_cancel₀ (two_ne_zero : (2 : ℝ) ≠ 0), ENNReal.rpow_one] at this
   simp_rw [ENNReal.rpow_two] at this
   exact this
@@ -96,7 +96,7 @@ theorem evariance_eq_top [IsFiniteMeasure μ] (hXm : AEStronglyMeasurable X μ) 
   have : MemLp (fun ω => X ω - μ[X]) 2 μ := by
     refine ⟨by fun_prop, ?_⟩
     rw [eLpNorm_eq_lintegral_rpow_enorm two_ne_zero ENNReal.ofNat_ne_top]
-    simp only [ENNReal.toReal_ofNat, ENNReal.toReal_one, ENNReal.rpow_two, Ne]
+    simp only [ENNReal.toReal_ofNat, ENNReal.rpow_two]
     exact ENNReal.rpow_lt_top_of_nonneg (by linarith) h.ne
   refine hX ?_
   convert this.add (memLp_const μ[X])
@@ -262,7 +262,7 @@ theorem variance_le_expectation_sq [IsProbabilityMeasure μ] {X : Ω → ℝ}
     simp only [sq_nonneg, sub_le_self_iff]
   rw [variance, evariance_eq_lintegral_ofReal, ← integral_eq_lintegral_of_nonneg_ae]
   · by_cases hint : Integrable X μ; swap
-    · simp only [integral_undef hint, Pi.pow_apply, Pi.sub_apply, sub_zero]
+    · simp only [integral_undef hint, Pi.pow_apply, sub_zero]
       exact le_rfl
     · rw [integral_undef]
       · exact integral_nonneg fun a => sq_nonneg _
@@ -304,10 +304,9 @@ theorem meas_ge_le_evariance_div_sq {X : Ω → ℝ} (hX : AEStronglyMeasurable 
   convert meas_ge_le_mul_pow_eLpNorm μ two_ne_zero ENNReal.ofNat_ne_top (hX.sub B) A using 1
   · congr
     simp only [Pi.sub_apply, ENNReal.coe_le_coe, ← Real.norm_eq_abs, ← coe_nnnorm,
-      NNReal.coe_le_coe, ENNReal.ofReal_coe_nnreal]
+      NNReal.coe_le_coe]
   · rw [eLpNorm_eq_lintegral_rpow_enorm two_ne_zero ENNReal.ofNat_ne_top]
-    simp only [show ENNReal.ofNNReal (c ^ 2) = (ENNReal.ofNNReal c) ^ 2 by norm_cast,
-      ENNReal.toReal_ofNat, one_div, Pi.sub_apply]
+    simp only [ENNReal.toReal_ofNat, one_div, Pi.sub_apply]
     rw [div_eq_mul_inv, ENNReal.inv_pow, mul_comm, ENNReal.rpow_two]
     congr
     simp_rw [← ENNReal.rpow_mul, inv_mul_cancel₀ (two_ne_zero : (2 : ℝ) ≠ 0), ENNReal.rpow_two,

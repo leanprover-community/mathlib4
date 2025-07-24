@@ -371,7 +371,7 @@ theorem degree_add_of_ne {f g : MvPolynomial σ R}
     (h : m.degree f ≠ m.degree g) :
     m.toSyn (m.degree (f + g)) = m.toSyn (m.degree f) ⊔ m.toSyn (m.degree g) := by
   by_cases h' : m.degree g ≺[m] m.degree f
-  · simp [degree_add_of_lt h', left_eq_sup, le_of_lt h']
+  · simp [degree_add_of_lt h', le_of_lt h']
   · rw [not_lt, le_iff_eq_or_lt, Classical.or_iff_not_imp_left, EmbeddingLike.apply_eq_iff_eq] at h'
     rw [add_comm, degree_add_of_lt (h' h), right_eq_sup]
     simp only [le_of_lt (h' h)]

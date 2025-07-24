@@ -145,6 +145,7 @@ import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.LinearCombination'
 import Mathlib.Tactic.LinearCombination.Lemmas
 import Mathlib.Tactic.Linter
+import Mathlib.Tactic.Linter.CommandStart
 import Mathlib.Tactic.Linter.DeprecatedModule
 import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 import Mathlib.Tactic.Linter.DirectoryDependency
@@ -281,6 +282,7 @@ import Mathlib.Tactic.Widget.CongrM
 import Mathlib.Tactic.Widget.Conv
 import Mathlib.Tactic.Widget.GCongr
 import Mathlib.Tactic.Widget.InteractiveUnfold
+import Mathlib.Tactic.Widget.LibraryRewrite
 import Mathlib.Tactic.Widget.SelectInsertParamsClass
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Tactic.Widget.StringDiagram

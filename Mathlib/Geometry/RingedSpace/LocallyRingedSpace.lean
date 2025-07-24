@@ -287,8 +287,8 @@ def emptyIsInitial : Limits.IsInitial (∅ : LocallyRingedSpace.{u}) := Limits.I
 theorem basicOpen_zero (X : LocallyRingedSpace.{u}) (U : Opens X.carrier) :
     X.toRingedSpace.basicOpen (0 : X.presheaf.obj <| op U) = ⊥ := by
   ext x
-  simp only [RingedSpace.basicOpen, Opens.coe_mk, Set.mem_image, Set.mem_setOf_eq, Subtype.exists,
-    exists_and_right, exists_eq_right, Opens.coe_bot, Set.mem_empty_iff_false,
+  simp only [RingedSpace.basicOpen, Opens.coe_mk, Set.mem_setOf_eq,
+    Opens.coe_bot, Set.mem_empty_iff_false,
     iff_false, not_exists]
   intros hx
   rw [map_zero, isUnit_zero_iff]
@@ -321,7 +321,7 @@ lemma iso_hom_base_inv_base {X Y : LocallyRingedSpace.{u}} (e : X ≅ Y) :
 @[simp]
 lemma iso_hom_base_inv_base_apply {X Y : LocallyRingedSpace.{u}} (e : X ≅ Y) (x : X) :
     (e.inv.base (e.hom.base x)) = x := by
-  show (e.hom.base ≫ e.inv.base) x = 𝟙 X.toPresheafedSpace x
+  change (e.hom.base ≫ e.inv.base) x = 𝟙 X.toPresheafedSpace x
   simp
 
 @[simp]
@@ -333,7 +333,7 @@ lemma iso_inv_base_hom_base {X Y : LocallyRingedSpace.{u}} (e : X ≅ Y) :
 @[simp]
 lemma iso_inv_base_hom_base_apply {X Y : LocallyRingedSpace.{u}} (e : X ≅ Y) (y : Y) :
     (e.hom.base (e.inv.base y)) = y := by
-  show (e.inv.base ≫ e.hom.base) y = 𝟙 Y.toPresheafedSpace y
+  change (e.inv.base ≫ e.hom.base) y = 𝟙 Y.toPresheafedSpace y
   simp
 
 section Stalks

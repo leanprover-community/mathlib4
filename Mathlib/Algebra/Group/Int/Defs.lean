@@ -55,6 +55,8 @@ These also prevent non-computable instances like `Int.instNormedCommRing` being 
 these instances non-computably.
 -/
 
+set_option linter.style.commandStart false
+
 instance instAddCommMonoid    : AddCommMonoid ℤ    := by infer_instance
 instance instAddMonoid        : AddMonoid ℤ        := by infer_instance
 instance instMonoid           : Monoid ℤ           := by infer_instance
@@ -63,6 +65,8 @@ instance instSemigroup        : Semigroup ℤ        := by infer_instance
 instance instAddGroup         : AddGroup ℤ         := by infer_instance
 instance instAddCommSemigroup : AddCommSemigroup ℤ := by infer_instance
 instance instAddSemigroup     : AddSemigroup ℤ     := by infer_instance
+
+set_option linter.style.commandStart true
 
 end Int
 

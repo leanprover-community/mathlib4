@@ -220,8 +220,7 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
       rwa [hp.1.adj_toSubgraph_iff_of_isCycles hcycles (hp.2 ▸ hacc)])
     obtain ⟨x', hx', hx'p, htw⟩ := Walk.exists_mem_support_forall_mem_support_imp_eq {x, b} <| by
       use x
-      simp only [Finset.mem_filter, Finset.mem_insert, Finset.mem_singleton, true_or, true_and,
-        cycles]
+      simp only [Finset.mem_filter, Finset.mem_insert, Finset.mem_singleton, true_or, true_and]
       rwa [← @Walk.mem_verts_toSubgraph, hp'.2.2, hp.2]
     refine ⟨x', hx', p'.takeUntil x' hx'p, hp'.1.isPath_takeUntil hx'p, ?_, fun h ↦ ?_⟩; swap
     · simp [htw _ (by simp) (Walk.mem_support_of_adj_toSubgraph h.symm),
@@ -231,7 +230,7 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
       rw [Walk.nil_takeUntil]
       aesop
     rwa [Walk.snd_takeUntil, hp'.2.1] at this
-    simp only [Finset.mem_insert, Finset.mem_singleton, cycles] at hx'
+    simp only [Finset.mem_insert, Finset.mem_singleton] at hx'
     obtain rfl | rfl := hx'
     exacts [hxa.ne, hab.ne.symm]
   -- We show this path satisfies all requirements
@@ -252,7 +251,7 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
       exact hadj.symm
     · rw [hw _ hM1xb.symm, ← hw _ hl.1.symm]
       exact hadj
-  simp only [Finset.mem_insert, Finset.mem_singleton, cycles] at hx'
+  simp only [Finset.mem_insert, Finset.mem_singleton] at hx'
   obtain rfl | rfl := hx'
   · exact tutte_exists_isAlternating_isCycles p hp hcalt (hnM2 x' hnxc) hpac hnpxb hM2ac
       hxa hnxc hab.ne hle (aux (by simp))
@@ -302,7 +301,7 @@ lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
     have hbnec : b.val.val ≠ c := by rintro rfl; exact hc.2 hxb.symm
     obtain ⟨_, hG1⟩ := hMaximal _ <| left_lt_sup.mpr (by
       rw [edge_le_iff (v := x.1.1) (w := b.1.1)]
-      simp [not_and, hnxb, hnadjxb, Subtype.val_injective.ne <| Subtype.val_injective.ne hnxb])
+      simp [hnadjxb, Subtype.val_injective.ne <| Subtype.val_injective.ne hnxb])
     obtain ⟨_, hG2⟩ := hMaximal _ <| left_lt_sup.mpr (by
       rwa [edge_le_iff (v := a.1.1) (w := c), adj_comm, not_or])
     have hcnex : c ≠ x.val.val := by rintro rfl; exact hc.2 hxa

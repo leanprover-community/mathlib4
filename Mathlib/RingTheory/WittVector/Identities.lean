@@ -52,7 +52,7 @@ variable (p R)
 
 theorem coeff_p_pow [CharP R p] (i : ℕ) : ((p : 𝕎 R) ^ i).coeff i = 1 := by
   induction' i with i h
-  · simp only [one_coeff_zero, Ne, pow_zero]
+  · simp only [one_coeff_zero, pow_zero]
   · rw [pow_succ, ← frobenius_verschiebung, coeff_frobenius_charP,
       verschiebung_coeff_succ, h, one_pow]
 

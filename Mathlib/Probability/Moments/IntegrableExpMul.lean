@@ -266,7 +266,7 @@ lemma integrable_rpow_abs_mul_exp_add_of_integrable_exp_mul {x : ℝ}
   swap; · rw [← sub_ne_zero]; simp [ht]
   rw [← integrable_norm_iff]
   swap; · fun_prop
-  simp only [norm_mul, norm_pow, norm_eq_abs, sq_abs, abs_exp]
+  simp only [norm_mul, norm_eq_abs, abs_exp]
   have h_le a : |X a| ^ p * exp (v * X a + x * |X a|)
       ≤ (p / (|t| - x)) ^ p * exp (v * X a + |t| * |X a|) := by
     simp_rw [exp_add, mul_comm (exp (v * X a)), ← mul_assoc]
@@ -288,12 +288,12 @@ lemma integrable_rpow_abs_mul_exp_add_of_integrable_exp_mul {x : ℝ}
     simp_rw [add_comm (v * X _)]
     exact integrable_exp_abs_mul_abs_add h_int_pos h_int_neg
   · fun_prop
-  · simp only [sq_abs, norm_mul, norm_pow, norm_eq_abs, abs_exp, norm_div, norm_ofNat]
+  · simp only [norm_mul, norm_eq_abs, abs_exp]
     simp_rw [abs_rpow_of_nonneg (abs_nonneg _), abs_abs]
     refine (h_le ω).trans_eq ?_
     congr
     symm
-    simp only [abs_eq_self, sub_nonneg]
+    simp only [abs_eq_self]
     exact rpow_nonneg (div_nonneg hp (sub_nonneg_of_le hx.le)) _
 
 /-- If `exp ((v + t) * X)` and `exp ((v - t) * X)` are integrable

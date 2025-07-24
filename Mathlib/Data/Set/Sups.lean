@@ -342,7 +342,7 @@ open SetFamily
 theorem upperClosure_sups [SemilatticeSup α] (s t : Set α) :
     upperClosure (s ⊻ t) = upperClosure s ⊔ upperClosure t := by
   ext a
-  simp only [SetLike.mem_coe, mem_upperClosure, Set.mem_sups, exists_and_left, exists_prop,
+  simp only [SetLike.mem_coe, mem_upperClosure, Set.mem_sups,
     UpperSet.coe_sup, Set.mem_inter_iff]
   constructor
   · rintro ⟨_, ⟨b, hb, c, hc, rfl⟩, ha⟩
@@ -354,8 +354,7 @@ theorem upperClosure_sups [SemilatticeSup α] (s t : Set α) :
 theorem lowerClosure_infs [SemilatticeInf α] (s t : Set α) :
     lowerClosure (s ⊼ t) = lowerClosure s ⊓ lowerClosure t := by
   ext a
-  simp only [SetLike.mem_coe, mem_lowerClosure, Set.mem_infs, exists_and_left, exists_prop,
-    LowerSet.coe_sup, Set.mem_inter_iff]
+  simp only [SetLike.mem_coe, mem_lowerClosure, Set.mem_infs]
   constructor
   · rintro ⟨_, ⟨b, hb, c, hc, rfl⟩, ha⟩
     exact ⟨⟨b, hb, ha.trans inf_le_left⟩, c, hc, ha.trans inf_le_right⟩

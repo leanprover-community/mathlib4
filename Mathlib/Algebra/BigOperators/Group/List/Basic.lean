@@ -131,7 +131,7 @@ theorem prod_set :
   | x :: xs, 0, a => by simp [set]
   | x :: xs, i + 1, a => by
     simp [set, prod_set xs i a, mul_assoc, Nat.add_lt_add_iff_right]
-  | [], _, _ => by simp [set, (Nat.zero_le _).not_gt, Nat.zero_le]
+  | [], _, _ => by simp [set, (Nat.zero_le _).not_gt]
 
 /-- We'd like to state this as `L.headI * L.tail.prod = L.prod`, but because `L.headI` relies on an
 inhabited instance to return a garbage value on the empty list, this is not possible.
@@ -249,8 +249,8 @@ lemma prod_mul_prod_eq_prod_zipWith_mul_prod_drop :
     ∀ l l' : List M,
       l.prod * l'.prod =
         (zipWith (· * ·) l l').prod * (l.drop l'.length).prod * (l'.drop l.length).prod
-  | [], ys => by simp [Nat.zero_le]
-  | xs, [] => by simp [Nat.zero_le]
+  | [], ys => by simp
+  | xs, [] => by simp
   | x :: xs, y :: ys => by
     simp only [drop, length, zipWith_cons_cons, prod_cons]
     conv =>
@@ -271,7 +271,7 @@ lemma prod_map_ite (p : α → Prop) [DecidablePred p] (f g : α → M) (l : Lis
   induction l with
   | nil => simp
   | cons x xs ih =>
-    simp only [map_cons, filter_cons, prod_cons, nodup_cons, ne_eq, mem_cons, count_cons] at ih ⊢
+    simp only [map_cons, filter_cons, prod_cons] at ih ⊢
     rw [ih]
     clear ih
     by_cases hx : p x
@@ -367,13 +367,13 @@ lemma prod_map_ite_eq {A : Type*} [DecidableEq A] (l : List A) (f g : A → G) (
   induction l with
   | nil => simp
   | cons x xs ih =>
-    simp only [map_cons, prod_cons, nodup_cons, ne_eq, mem_cons, count_cons] at ih ⊢
+    simp only [map_cons, prod_cons, count_cons] at ih ⊢
     rw [ih]
     clear ih
     by_cases hx : x = a
-    · simp only [hx, ite_true, div_pow, pow_add, pow_one, div_eq_mul_inv, mul_assoc, mul_comm,
-        mul_left_comm, mul_inv_cancel_left, beq_self_eq_true]
-    · simp only [hx, ite_false, ne_comm.mp hx, add_zero, mul_assoc, mul_comm (g x) _, beq_iff_eq]
+    · simp only [hx, ite_true, pow_add, pow_one, div_eq_mul_inv, mul_assoc, mul_comm, mul_left_comm,
+      mul_inv_cancel_left, beq_self_eq_true]
+    · simp only [hx, ite_false, add_zero, mul_assoc, mul_comm (g x) _, beq_iff_eq]
 
 end CommGroup
 
@@ -442,13 +442,13 @@ end Alternating
 
 lemma sum_nat_mod (l : List ℕ) (n : ℕ) : l.sum % n = (l.map (· % n)).sum % n := by
   induction l with
-  | nil => simp only [Nat.zero_mod, map_nil]
+  | nil => simp only [map_nil]
   | cons a l ih =>
     simpa only [map_cons, sum_cons, Nat.mod_add_mod, Nat.add_mod_mod] using congr((a + $ih) % n)
 
 lemma prod_nat_mod (l : List ℕ) (n : ℕ) : l.prod % n = (l.map (· % n)).prod % n := by
   induction l with
-  | nil => simp only [Nat.zero_mod, map_nil]
+  | nil => simp only [map_nil]
   | cons a l ih =>
     simpa only [prod_cons, map_cons, Nat.mod_mul_mod, Nat.mul_mod_mod] using congr((a * $ih) % n)
 
@@ -487,7 +487,7 @@ lemma take_sum_flatten (L : List (List α)) (i : ℕ) :
     L.flatten.take ((L.map length).take i).sum = (L.take i).flatten := by
   induction L generalizing i
   · simp
-  · cases i <;> simp [take_append, *]
+  · cases i <;> simp [take_length_add_append, *]
 
 /-- In a flatten, dropping all the elements up to an index which is the sum of the lengths of the
 first `i` sublists, is the same as taking the join after dropping the first `i` sublists. -/
@@ -495,7 +495,7 @@ lemma drop_sum_flatten (L : List (List α)) (i : ℕ) :
     L.flatten.drop ((L.map length).take i).sum = (L.drop i).flatten := by
   induction L generalizing i
   · simp
-  · cases i <;> simp [take_append, *]
+  · cases i <;> simp [*]
 
 @[deprecated (since := "2024-10-25")] alias take_sum_join' := take_sum_flatten
 @[deprecated (since := "2024-10-25")] alias drop_sum_join' := drop_sum_flatten

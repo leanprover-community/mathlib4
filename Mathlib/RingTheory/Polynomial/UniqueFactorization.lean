@@ -47,7 +47,7 @@ instance (priority := 100) wfDvdMonoid : WfDvdMonoid R[X] where
         apply Prod.Lex.left
         exact WithTop.coe_lt_top _
       have cne0 : c ≠ 0 := right_ne_zero_of_mul hac
-      simp only [cne0, ane0, Polynomial.leadingCoeff_mul]
+      simp only [Polynomial.leadingCoeff_mul]
       by_cases hdeg : c.degree = (0 : ℕ)
       · simp only [hdeg, Nat.cast_zero, add_zero]
         refine Prod.Lex.right _ ⟨?_, ⟨c.leadingCoeff, fun unit_c => not_unit_c ?_, rfl⟩⟩

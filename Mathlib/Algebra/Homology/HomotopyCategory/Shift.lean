@@ -239,9 +239,8 @@ instance commShiftMapCochainComplex :
     ext
     rw [CommShift.isoZero_hom_app]
     dsimp
-    simp only [mapCochainComplexShiftIso_hom_app_f, CochainComplex.shiftFunctorZero_inv_app_f,
-       CochainComplex.shiftFunctorZero_hom_app_f, HomologicalComplex.XIsoOfEq, eqToIso,
-       eqToHom_map, eqToHom_trans, eqToHom_refl]
+    simp only [CochainComplex.shiftFunctorZero_inv_app_f, CochainComplex.shiftFunctorZero_hom_app_f,
+       HomologicalComplex.XIsoOfEq, eqToIso, eqToHom_map, eqToHom_trans, eqToHom_refl]
   add := fun a b => by
     ext
     rw [CommShift.isoAdd_hom_app]

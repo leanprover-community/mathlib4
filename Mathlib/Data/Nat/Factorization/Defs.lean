@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell
 -/
 import Mathlib.Data.Finsupp.Multiset
-import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.NumberTheory.Padics.PadicVal.Defs
 
@@ -91,7 +90,7 @@ theorem multiplicity_eq_factorization {n p : ℕ} (pp : p.Prime) (hn : n ≠ 0) 
 @[simp]
 theorem factorization_prod_pow_eq_self {n : ℕ} (hn : n ≠ 0) : n.factorization.prod (· ^ ·) = n := by
   rw [factorization_eq_primeFactorsList_multiset n]
-  simp only [← prod_toMultiset, factorization, Multiset.prod_coe, Multiset.toFinsupp_toMultiset]
+  simp only [← prod_toMultiset, Multiset.prod_coe, Multiset.toFinsupp_toMultiset]
   exact prod_primeFactorsList hn
 
 theorem eq_of_factorization_eq {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0)
@@ -193,7 +192,7 @@ theorem Prime.factorization_pow {p k : ℕ} (hp : Prime p) : (p ^ k).factorizati
 theorem pow_succ_factorization_not_dvd {n p : ℕ} (hn : n ≠ 0) (hp : p.Prime) :
     ¬p ^ (n.factorization p + 1) ∣ n := by
   intro h
-  rw [← factorization_le_iff_dvd (pow_pos hp.pos _).ne' hn] at h
+  rw [← factorization_le_iff_dvd (pow_ne_zero _ hp.ne_zero) hn] at h
   simpa [hp.factorization] using h p
 
 /-! ### Equivalence between `ℕ+` and `ℕ →₀ ℕ` with support in the primes. -/

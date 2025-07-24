@@ -68,6 +68,9 @@ theorem unit_ne_one : unit v ≠ 1 := by
   rw [Ne, ← Units.eq_iff, Units.val_one]
   exact ((nontrivial v).choose_spec ).2
 
+instance [RankOne v] : IsNontrivial v where
+  exists_val_nontrivial := RankOne.nontrivial v
+
 end RankOne
 
 end Valuation

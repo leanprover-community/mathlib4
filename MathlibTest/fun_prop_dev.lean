@@ -448,7 +448,7 @@ def f3 (a : α) := a
 
 @[fun_prop]
 theorem f3_lin : Lin (fun x : α => f3 x) := by
-  unfold f3; fun_prop (config:={maxTransitionDepth:=0,maxSteps:=10})
+  unfold f3; fun_prop (maxTransitionDepth := 0) (maxSteps := 10)
 
 example : Con (fun x : α => f3 x) := by fun_prop
 
@@ -459,7 +459,7 @@ Issues:
   No theorems found for `f3` in order to prove `Con fun x => f3 x`
 -/
 #guard_msgs in
-example : Con (fun x : α => f3 x) := by fun_prop (config:={maxTransitionDepth:=0})
+example : Con (fun x : α => f3 x) := by fun_prop (maxTransitionDepth := 0)
 
 @[fun_prop] opaque Dif (𝕜:Type) [Add 𝕜] {α β} (f : α → β) : Prop
 
@@ -620,3 +620,12 @@ info: Con
 -/
 #guard_msgs in
 #print_fun_prop_theorems HAdd.hAdd Con
+
+
+def fst (x : α×β) := x.1
+def snd (x : α×β) := x.2
+
+-- make sure that `fun_prop` can't see through `fst` and `snd`
+example (f : α → β → γ) (hf : Con ↿f) : Con (fun x : α×β => f (fst x) (snd x)) := by
+  fail_if_success fun_prop
+  apply silentSorry

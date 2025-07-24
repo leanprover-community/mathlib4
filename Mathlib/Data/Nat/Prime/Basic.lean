@@ -26,7 +26,7 @@ theorem prime_mul_iff {a b : ℕ} : Nat.Prime (a * b) ↔ a.Prime ∧ b = 1 ∨ 
   simp only [irreducible_mul_iff, ← irreducible_iff_nat_prime, Nat.isUnit_iff]
 
 theorem not_prime_mul {a b : ℕ} (a1 : a ≠ 1) (b1 : b ≠ 1) : ¬Prime (a * b) := by
-  simp [prime_mul_iff, _root_.not_or, *]
+  simp [prime_mul_iff, *]
 
 theorem not_prime_of_mul_eq {a b n : ℕ} (h : a * b = n) (h₁ : a ≠ 1) (h₂ : b ≠ 1) : ¬Prime n :=
   h ▸ not_prime_mul h₁ h₂

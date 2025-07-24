@@ -282,7 +282,7 @@ theorem frobenius_eq_map_frobenius : @frobenius p R _ _ = map (_root_.frobenius 
 
 @[simp]
 theorem frobenius_zmodp (x : 𝕎 (ZMod p)) : frobenius x = x := by
-  simp only [WittVector.ext_iff, coeff_frobenius_charP, ZMod.pow_card, eq_self_iff_true,
+  simp only [WittVector.ext_iff, coeff_frobenius_charP, ZMod.pow_card,
     forall_const]
 
 variable (R)

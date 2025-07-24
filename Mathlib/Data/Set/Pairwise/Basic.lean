@@ -216,7 +216,7 @@ end Pairwise
 
 theorem pairwise_subtype_iff_pairwise_set (s : Set α) (r : α → α → Prop) :
     (Pairwise fun (x : s) (y : s) => r x y) ↔ s.Pairwise r := by
-  simp only [Pairwise, Set.Pairwise, SetCoe.forall, Ne, Subtype.ext_iff, Subtype.coe_mk]
+  simp only [Pairwise, Set.Pairwise, SetCoe.forall, Ne, Subtype.ext_iff]
 
 alias ⟨Pairwise.set_of_subtype, Set.Pairwise.subtype⟩ := pairwise_subtype_iff_pairwise_set
 

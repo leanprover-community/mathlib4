@@ -138,6 +138,16 @@ theorem coe_comp (f : Q →ᴬ[R] Q₂) (g : P →ᴬ[R] Q) :
 
 theorem comp_apply (f : Q →ᴬ[R] Q₂) (g : P →ᴬ[R] Q) (x : P) : f.comp g x = f (g x) := rfl
 
+/-- The continuous affine map sending `0` to `p₀` and `1` to `p₁`. -/
+def lineMap (p₀ p₁ : P) [TopologicalSpace R] [TopologicalSpace V]
+    [ContinuousSMul R V] [ContinuousVAdd V P] : R →ᴬ[R] P where
+  toAffineMap := AffineMap.lineMap p₀ p₁
+  cont := (continuous_id.smul continuous_const).vadd continuous_const
+
+@[simp] lemma lineMap_toAffineMap (p₀ p₁ : P) [TopologicalSpace R] [TopologicalSpace V]
+    [ContinuousSMul R V] [ContinuousVAdd V P] :
+    (lineMap p₀ p₁).toAffineMap = AffineMap.lineMap (k := R) p₀ p₁ := rfl
+
 section ModuleValuedMaps
 
 variable {S : Type*}

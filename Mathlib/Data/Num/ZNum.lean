@@ -126,7 +126,7 @@ theorem cast_bitm1 [AddGroupWithOne α] (n : ZNum) : (n.bitm1 : α) = (n : α) +
     lhs
     rw [← zneg_zneg n]
   rw [← zneg_bit1, cast_zneg, cast_bit1]
-  have : ((-1 + n + n : ℤ) : α) = (n + n + -1 : ℤ) := by simp [add_comm, add_left_comm]
+  have : ((-1 + n + n : ℤ) : α) = (n + n + -1 : ℤ) := by simp [add_comm]
   simpa [sub_eq_add_neg] using this
 
 theorem add_zero (n : ZNum) : n + 0 = n := by cases n <;> rfl
@@ -156,11 +156,11 @@ theorem cast_to_znum : ∀ n : PosNum, (n : ZNum) = ZNum.pos n
 theorem cast_sub' [AddGroupWithOne α] : ∀ m n : PosNum, (sub' m n : α) = m - n
   | a, 1 => by
     rw [sub'_one, Num.cast_toZNum, ← Num.cast_to_nat, pred'_to_nat, ← Nat.sub_one]
-    simp [PosNum.cast_pos]
+    simp
   | 1, b => by
     rw [one_sub', Num.cast_toZNumNeg, ← neg_sub, neg_inj, ← Num.cast_to_nat, pred'_to_nat,
         ← Nat.sub_one]
-    simp [PosNum.cast_pos]
+    simp
   | bit0 a, bit0 b => by
     rw [sub', ZNum.cast_bit0, cast_sub' a b]
     have : ((a + -b + (a + -b) : ℤ) : α) = a + a + (-b + -b) := by simp [add_left_comm]
@@ -320,10 +320,10 @@ theorem cmp_to_int : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℤ) < n) (m = n
   | 0, 0 => rfl
   | pos a, pos b => by
     have := PosNum.cmp_to_nat a b; revert this; dsimp [cmp]
-    cases PosNum.cmp a b <;> [simp; exact congr_arg pos; simp [GT.gt]]
+    cases PosNum.cmp a b <;> [simp; exact congr_arg pos; simp]
   | neg a, neg b => by
     have := PosNum.cmp_to_nat b a; revert this; dsimp [cmp]
-    cases PosNum.cmp b a <;> [simp; simp +contextual; simp [GT.gt]]
+    cases PosNum.cmp b a <;> [simp; simp +contextual; simp]
   | pos _, 0 => PosNum.cast_pos _
   | pos _, neg _ => lt_trans (neg_lt_zero.2 <| PosNum.cast_pos _) (PosNum.cast_pos _)
   | 0, neg _ => neg_lt_zero.2 <| PosNum.cast_pos _
@@ -336,7 +336,7 @@ theorem lt_to_int {m n : ZNum} : (m : ℤ) < n ↔ m < n :=
   show (m : ℤ) < n ↔ cmp m n = Ordering.lt from
     match cmp m n, cmp_to_int m n with
     | Ordering.lt, h => by simp only at h; simp [h]
-    | Ordering.eq, h => by simp only at h; simp [h, lt_irrefl]
+    | Ordering.eq, h => by simp only at h; simp [h]
     | Ordering.gt, h => by simp [not_lt_of_gt h]
 
 theorem le_to_int {m n : ZNum} : (m : ℤ) ≤ n ↔ m ≤ n := by
@@ -484,7 +484,7 @@ theorem neg_of_int : ∀ n, ((-n : ℤ) : ZNum) = -n
 theorem ofInt'_eq : ∀ n : ℤ, ZNum.ofInt' n = n
   | (n : ℕ) => rfl
   | -[n+1] => by
-    show Num.toZNumNeg (n + 1 : ℕ) = -(n + 1 : ℕ)
+    change Num.toZNumNeg (n + 1 : ℕ) = -(n + 1 : ℕ)
     rw [← neg_inj, neg_neg, Nat.cast_succ, Num.add_one, Num.zneg_toZNumNeg, Num.toZNum_succ,
       Nat.cast_succ, ZNum.add_one]
     rfl
@@ -549,14 +549,14 @@ theorem divMod_to_nat (d n : PosNum) :
   · unfold divMod
     -- Porting note: `cases'` didn't rewrite at `this`, so `revert` & `intro` are required.
     revert IH; obtain ⟨q, r⟩ := divMod d n; intro IH
-    simp only [divMod] at IH ⊢
+    simp only at IH ⊢
     apply divMod_to_nat_aux <;> simp only [Num.cast_bit1, cast_bit1]
     · rw [← two_mul, ← two_mul, add_right_comm, mul_left_comm, ← mul_add, IH.1]
     · omega
   · unfold divMod
     -- Porting note: `cases'` didn't rewrite at `this`, so `revert` & `intro` are required.
     revert IH; obtain ⟨q, r⟩ := divMod d n; intro IH
-    simp only [divMod] at IH ⊢
+    simp only at IH ⊢
     apply divMod_to_nat_aux
     · simp only [Num.cast_bit0, cast_bit0]
       rw [← two_mul, ← two_mul, mul_left_comm, ← mul_add, ← IH.1]

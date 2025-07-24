@@ -1228,22 +1228,22 @@ theorem iInf_apply {α : Type*} {β : α → Type*} {ι : Sort*} [∀ i, InfSet 
 theorem unary_relation_sSup_iff {α : Type*} (s : Set (α → Prop)) {a : α} :
     sSup s a ↔ ∃ r : α → Prop, r ∈ s ∧ r a := by
   rw [sSup_apply]
-  simp [← eq_iff_iff]
+  simp
 
 theorem unary_relation_sInf_iff {α : Type*} (s : Set (α → Prop)) {a : α} :
     sInf s a ↔ ∀ r : α → Prop, r ∈ s → r a := by
   rw [sInf_apply]
-  simp [← eq_iff_iff]
+  simp
 
 theorem binary_relation_sSup_iff {α β : Type*} (s : Set (α → β → Prop)) {a : α} {b : β} :
     sSup s a b ↔ ∃ r : α → β → Prop, r ∈ s ∧ r a b := by
   rw [sSup_apply]
-  simp [← eq_iff_iff]
+  simp
 
 theorem binary_relation_sInf_iff {α β : Type*} (s : Set (α → β → Prop)) {a : α} {b : β} :
     sInf s a b ↔ ∀ r : α → β → Prop, r ∈ s → r a b := by
   rw [sInf_apply]
-  simp [← eq_iff_iff]
+  simp
 
 section CompleteLattice
 

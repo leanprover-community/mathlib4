@@ -76,7 +76,7 @@ lemma iff_rangeFactorization [Zero P] (hg : 0 ∈ Set.range g) :
     Exact f g ↔ Exact ((↑) : Set.range f → N) (Set.rangeFactorization g) := by
   letI : Zero (Set.range g) := ⟨⟨0, hg⟩⟩
   have : ((0 : Set.range g) : P) = 0 := rfl
-  simp [Exact, Subtype.range_coe, Set.rangeFactorization, Subtype.ext_iff, this]
+  simp [Exact, Set.rangeFactorization, Subtype.ext_iff, this]
 
 /-- If two maps `f : M → N` and `g : N → P` are exact, then the induced maps
 `Set.range f → N → Set.range g` are exact.
@@ -259,7 +259,8 @@ end LinearMap
 variable (f g) in
 lemma LinearEquiv.conj_exact_iff_exact (e : N ≃ₗ[R] N') :
     Function.Exact (e ∘ₗ f) (g ∘ₗ (e.symm : N' →ₗ[R] N)) ↔ Exact f g := by
-  simp_rw [LinearMap.exact_iff, LinearMap.ker_comp, ← e.map_eq_comap, LinearMap.range_comp]
+  simp_rw [LinearMap.exact_iff, LinearMap.ker_comp, ← Submodule.map_equiv_eq_comap_symm,
+    LinearMap.range_comp]
   exact (Submodule.map_injective_of_injective e.injective).eq_iff
 
 namespace Function

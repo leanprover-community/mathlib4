@@ -225,7 +225,7 @@ theorem _root_.IsOpen.exists_iUnion_isClosed {U : Set α} (hU : IsOpen U) :
     have : Filter.Tendsto (fun n => a ^ n) atTop (𝓝 0) :=
       ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one a_lt_one
     rcases ((tendsto_order.1 this).2 _ B).exists with ⟨n, hn⟩
-    simp only [mem_iUnion, mem_Ici, mem_preimage]
+    simp only [mem_iUnion]
     exact ⟨n, hn.le⟩
   show Monotone F
   intro m n hmn x hx
@@ -345,14 +345,14 @@ theorem hausdorffEdist_triangle : hausdorffEdist s u ≤ hausdorffEdist s t + ha
   rw [hausdorffEdist_def]
   simp only [sup_le_iff, iSup_le_iff]
   constructor
-  · show ∀ x ∈ s, infEdist x u ≤ hausdorffEdist s t + hausdorffEdist t u
+  · change ∀ x ∈ s, infEdist x u ≤ hausdorffEdist s t + hausdorffEdist t u
     exact fun x xs =>
       calc
         infEdist x u ≤ infEdist x t + hausdorffEdist t u :=
           infEdist_le_infEdist_add_hausdorffEdist
         _ ≤ hausdorffEdist s t + hausdorffEdist t u :=
           add_le_add_right (infEdist_le_hausdorffEdist_of_mem xs) _
-  · show ∀ x ∈ u, infEdist x s ≤ hausdorffEdist s t + hausdorffEdist t u
+  · change ∀ x ∈ u, infEdist x s ≤ hausdorffEdist s t + hausdorffEdist t u
     exact fun x xu =>
       calc
         infEdist x s ≤ infEdist x t + hausdorffEdist t s :=

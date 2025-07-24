@@ -93,13 +93,13 @@ def SkyscraperPresheafFunctor.map' {a b : C} (f : a ⟶ b) :
 theorem SkyscraperPresheafFunctor.map'_id {a : C} :
     SkyscraperPresheafFunctor.map' p₀ (𝟙 a) = 𝟙 _ := by
   ext U
-  simp only [SkyscraperPresheafFunctor.map'_app, NatTrans.id_app]; split_ifs <;> aesop_cat
+  simp only [SkyscraperPresheafFunctor.map'_app]; split_ifs <;> aesop_cat
 
 theorem SkyscraperPresheafFunctor.map'_comp {a b c : C} (f : a ⟶ b) (g : b ⟶ c) :
     SkyscraperPresheafFunctor.map' p₀ (f ≫ g) =
       SkyscraperPresheafFunctor.map' p₀ f ≫ SkyscraperPresheafFunctor.map' p₀ g := by
   ext U
-  simp only [SkyscraperPresheafFunctor.map'_app, NatTrans.comp_app]
+  simp only [SkyscraperPresheafFunctor.map'_app]
   split_ifs with h <;> aesop_cat
 
 /-- Taking skyscraper presheaf at a point is functorial: `c ↦ skyscraper p₀ c` defines a functor by
@@ -148,8 +148,8 @@ noncomputable def skyscraperPresheafCoconeIsColimitOfSpecializes {y : X} (h : p�
     rw [← c.w (homOfLE <| (le_top : unop U ≤ _)).op]
     change _ ≫ _ ≫ dite _ _ _ ≫ _ = _
     rw [dif_pos]
-    · simp only [skyscraperPresheafCoconeOfSpecializes_ι_app, eqToHom_trans_assoc,
-        eqToHom_refl, Category.id_comp, unop_op, op_unop]
+    · simp only [eqToHom_trans_assoc,
+        eqToHom_refl, Category.id_comp, op_unop]
     · exact h.mem_open U.unop.1.2 U.unop.2
   uniq c f h := by
     dsimp
@@ -339,7 +339,7 @@ def skyscraperPresheafStalkAdjunction [HasColimits C] :
     dsimp [Presheaf.stalkFunctor, toSkyscraperPresheaf]
     ext
     simp only [Functor.comp_obj, Functor.op_obj, ι_colimMap_assoc, skyscraperPresheaf_obj,
-      whiskerLeft_app, Category.comp_id]
+      Functor.whiskerLeft_app, Category.comp_id]
     split_ifs with h
     · simp [skyscraperPresheafStalkOfSpecializes]
       rfl

@@ -121,13 +121,12 @@ noncomputable def LinearOrderedCommGroup.closure_equiv_closure {G G' : Type*}
           ← zpow_right_inj xpos, (A ⟨_, D a⟩).choose_spec]
     · intro a b
       generalize_proofs A B C D E F
-      simp only [Submonoid.coe_mul, coe_toSubmonoid, Submonoid.mk_mul_mk, Subtype.mk.injEq,
-                 coe_mul, MulMemClass.mk_mul_mk, Subtype.ext_iff]
+      simp only [coe_mul, MulMemClass.mk_mul_mk, Subtype.ext_iff]
       rw [← zpow_add, zpow_right_inj ypos, ← zpow_right_inj xpos, zpow_add,
           (A a).choose_spec, (A b).choose_spec, (A (a * b)).choose_spec]
       simp
     · intro a b
-      simp only [MulEquiv.coe_mk, Equiv.coe_fn_mk, Subtype.mk_le_mk]
+      simp only [Subtype.mk_le_mk]
       generalize_proofs A B C D
       simp [zpow_le_zpow_iff_right ypos, ← zpow_le_zpow_iff_right xpos, A.choose_spec,
         B.choose_spec]
@@ -144,7 +143,7 @@ lemma Subgroup.isLeast_of_closure_iff_eq_mabs {a b : G} :
     rw [mem_closure_singleton] at ha
     obtain ⟨n, rfl⟩ := ha
     have := h.left
-    simp only [mem_closure_singleton, mem_setOf_eq, ← mul_zsmul] at this
+    simp only [mem_closure_singleton, mem_setOf_eq] at this
     obtain ⟨m, hm⟩ := this.left
     have key : m * n = 1 := by
       rw [← zpow_right_inj this.right, zpow_mul', hm, zpow_one]
@@ -390,7 +389,7 @@ lemma LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered (G : Type*)
   · refine ⟨withZeroUnitsEquiv.symm.trans (MulEquiv.withZero f), ?_⟩
     intros
     simp only [withZeroUnitsEquiv, MulEquiv.symm_mk, MulEquiv.withZero,
-      MulEquiv.toMonoidHom_eq_coe, MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
+      MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
       MulEquiv.trans_apply, MulEquiv.coe_mk, Equiv.coe_fn_symm_mk, Equiv.coe_fn_mk]
     split_ifs <;>
     simp_all [← Units.val_le_val]
@@ -472,10 +471,10 @@ lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_le_lt_iff_nonempty_disc
     · exact WithZero.withZeroUnitsEquiv.symm.trans f.withZero
     · intro a b
       rcases eq_or_ne a 0 with rfl|ha
-      · simp [WithZero.withZeroUnitsEquiv, MulEquiv.withZero]
+      · simp [WithZero.withZeroUnitsEquiv]
       rcases eq_or_ne b 0 with rfl|hb
-      · simp [WithZero.withZeroUnitsEquiv, MulEquiv.withZero]
-      simp [WithZero.withZeroUnitsEquiv, MulEquiv.withZero, ha, hb, ← Units.val_le_val]
+      · simp [WithZero.withZeroUnitsEquiv]
+      simp [WithZero.withZeroUnitsEquiv, ha, hb, ← Units.val_le_val]
     · exact MulEquiv.withZero.symm (WithZero.withZeroUnitsEquiv.trans f)
     · intros
       rw [← WithZero.coe_le_coe]

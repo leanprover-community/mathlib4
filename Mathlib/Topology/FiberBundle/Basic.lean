@@ -516,8 +516,8 @@ theorem localTrivAsPartialEquiv_trans (i j : ι) :
   · rintro ⟨x, v⟩ hx
     simp only [trivChange, localTrivAsPartialEquiv, PartialEquiv.symm,
       Prod.mk_inj, prodMk_mem_set_prod_eq, PartialEquiv.trans_source, mem_inter_iff,
-      mem_preimage, proj, mem_univ, eq_self_iff_true, (· ∘ ·),
-      PartialEquiv.coe_trans, TotalSpace.proj] at hx ⊢
+      mem_preimage, proj, mem_univ, (· ∘ ·),
+      PartialEquiv.coe_trans] at hx ⊢
     simp only [Z.coordChange_comp, hx, mem_inter_iff, and_self_iff, mem_baseSet_at]
 
 /-- Topological structure on the total space of a fiber bundle created from core, designed so
@@ -560,7 +560,7 @@ def localTriv (i : ι) : Trivialization F Z.proj where
     obtain ⟨j, s, s_open, ts⟩ : ∃ j s, IsOpen s ∧
       t = (localTrivAsPartialEquiv Z j).source ∩ localTrivAsPartialEquiv Z j ⁻¹' s := ht
     rw [ts]
-    simp only [PartialEquiv.right_inv, preimage_inter, PartialEquiv.left_inv]
+    simp only [preimage_inter]
     let e := Z.localTrivAsPartialEquiv i
     let e' := Z.localTrivAsPartialEquiv j
     let f := e.symm.trans e'
@@ -599,7 +599,7 @@ theorem continuous_const_section (v : F)
   refine ((Z.localTrivAt x).toPartialHomeomorph.continuousAt_iff_continuousAt_comp_left ?_).2 ?_
   · exact A
   · apply continuousAt_id.prodMk
-    simp only [(· ∘ ·), mfld_simps, localTrivAt_snd]
+    simp only [mfld_simps]
     have : ContinuousOn (fun _ : B => v) (Z.baseSet (Z.indexAt x)) := continuousOn_const
     refine (this.congr fun y hy ↦ ?_).continuousAt A
     exact h _ _ _ ⟨mem_baseSet_at _ _, hy⟩
@@ -779,7 +779,7 @@ def trivializationOfMemPretrivializationAtlas (he : e ∈ a.pretrivializationAtl
 
 theorem mem_pretrivializationAt_source (b : B) (x : E b) :
     ⟨b, x⟩ ∈ (a.pretrivializationAt b).source := by
-  simp only [(a.pretrivializationAt b).source_eq, mem_preimage, TotalSpace.proj]
+  simp only [(a.pretrivializationAt b).source_eq, mem_preimage]
   exact a.mem_base_pretrivializationAt b
 
 @[simp]

@@ -276,7 +276,7 @@ theorem updateCol_apply [DecidableEq n] {j' : n} :
 theorem updateCol_subsingleton [Subsingleton n] (A : Matrix m n R) (i : n) (b : m → R) :
     A.updateCol i b = (replicateCol (Fin 1) b).submatrix id (Function.const n 0) := by
   ext x y
-  simp [updateCol_apply, Subsingleton.elim i y]
+  simp [Subsingleton.elim i y]
 
 @[deprecated (since := "2024-12-11")] alias updateColumn_subsingleton := updateCol_subsingleton
 
@@ -284,7 +284,7 @@ theorem updateCol_subsingleton [Subsingleton n] (A : Matrix m n R) (i : n) (b : 
 theorem updateRow_subsingleton [Subsingleton m] (A : Matrix m n R) (i : m) (b : n → R) :
     A.updateRow i b = (replicateRow (Fin 1) b).submatrix (Function.const m 0) id := by
   ext x y
-  simp [updateCol_apply, Subsingleton.elim i x]
+  simp [Subsingleton.elim i x]
 
 theorem map_updateRow [DecidableEq m] (f : α → β) :
     map (updateRow M i b) f = updateRow (M.map f) i (f ∘ b) := by

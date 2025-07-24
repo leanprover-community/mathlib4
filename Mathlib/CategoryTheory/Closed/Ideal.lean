@@ -146,9 +146,9 @@ abbrev CartesianMonoidalCategory.ofReflective [CartesianMonoidalCategory C] [Ref
               (tensorProductIsBinaryProduct _ _)
           exact asIso ((reflectorAdjunction i).unit.app (i.obj X ⊗ i.obj Y))|>.symm
         · simp only [BinaryFan.fst, Cones.postcompose, pairComp]
-          simp [← Functor.comp_map, ← NatTrans.naturality_assoc, fst]
+          simp [← Functor.comp_map, ← NatTrans.naturality_assoc]
         · simp only [BinaryFan.snd, Cones.postcompose, pairComp]
-          simp [← Functor.comp_map, ← NatTrans.naturality_assoc, snd] }
+          simp [← Functor.comp_map, ← NatTrans.naturality_assoc] }
 
 @[deprecated (since := "2025-05-15")]
 noncomputable alias reflectiveChosenFiniteProducts := CartesianMonoidalCategory.ofReflective

@@ -126,7 +126,7 @@ theorem ofList_append (xs ys : List α) : ofList (xs ++ ys) = ofList xs * ofList
 
 @[to_additive (attr := simp)]
 theorem toList_prod (xs : List (FreeMonoid α)) : toList xs.prod = (xs.map toList).flatten := by
-  induction xs <;> simp [*, List.flatten]
+  induction xs <;> simp [*]
 
 @[to_additive (attr := simp)]
 theorem ofList_flatten (xs : List (List α)) : ofList xs.flatten = (xs.map ofList).prod :=

@@ -388,13 +388,13 @@ protected def compl {α : Type u} {β : Type v} {s : Set α} {t : Set β} [Decid
     ext x
     by_cases hx : x ∈ s
     · simp only [Set.sumCompl_symm_apply_of_mem hx, ← e.prop ⟨x, hx⟩, Sum.map_inl, sumCongr_apply,
-        trans_apply, Subtype.coe_mk, Set.sumCompl_apply_inl, Trans.trans]
+        trans_apply, Set.sumCompl_apply_inl, Trans.trans]
     · simp only [Set.sumCompl_symm_apply_of_notMem hx, Sum.map_inr, subtypeEquiv_apply,
-        Set.sumCompl_apply_inr, trans_apply, sumCongr_apply, Subtype.coe_mk, Trans.trans]
+        Set.sumCompl_apply_inr, trans_apply, sumCongr_apply, Trans.trans]
   right_inv e :=
     Equiv.ext fun x => by
       simp only [Sum.map_inr, subtypeEquiv_apply, Set.sumCompl_apply_inr, Function.comp_apply,
-        sumCongr_apply, Equiv.coe_trans, Subtype.coe_eta, Subtype.coe_mk, Trans.trans,
+        sumCongr_apply, Equiv.coe_trans, Subtype.coe_eta, Trans.trans,
         Set.sumCompl_symm_apply_compl]
 
 /-- The set product of two sets is equivalent to the type product of their coercions to types. -/
@@ -533,7 +533,7 @@ theorem apply_ofInjective_symm {α β} {f : α → β} (hf : Injective f) (b : r
 theorem ofInjective_symm_apply {α β} {f : α → β} (hf : Injective f) (a : α) :
     (ofInjective f hf).symm ⟨f a, ⟨a, rfl⟩⟩ = a := by
   apply (ofInjective f hf).injective
-  simp [apply_ofInjective_symm hf]
+  simp
 
 theorem coe_ofInjective_symm {α β} {f : α → β} (hf : Injective f) :
     ((ofInjective f hf).symm : range f → α) = rangeSplitting f := by

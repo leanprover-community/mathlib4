@@ -67,13 +67,13 @@ def assocLeft : HolorIndex (ds₁ ++ (ds₂ ++ ds₃)) → HolorIndex (ds₁ ++ 
 theorem take_take : ∀ t : HolorIndex (ds₁ ++ ds₂ ++ ds₃), t.assocRight.take = t.take.take
   | ⟨is, h⟩ =>
     Subtype.eq <| by
-      simp [assocRight, take, cast_type, List.take_take, Nat.le_add_right, min_eq_left]
+      simp [assocRight, take, cast_type, List.take_take, Nat.le_add_right]
 
 theorem drop_take : ∀ t : HolorIndex (ds₁ ++ ds₂ ++ ds₃), t.assocRight.drop.take = t.take.drop
   | ⟨is, h⟩ => Subtype.eq (by simp [assocRight, take, drop, cast_type, List.drop_take])
 
 theorem drop_drop : ∀ t : HolorIndex (ds₁ ++ ds₂ ++ ds₃), t.assocRight.drop.drop = t.drop
-  | ⟨is, h⟩ => Subtype.eq (by simp [add_comm, assocRight, drop, cast_type, List.drop_drop])
+  | ⟨is, h⟩ => Subtype.eq (by simp [assocRight, drop, cast_type, List.drop_drop])
 
 end HolorIndex
 

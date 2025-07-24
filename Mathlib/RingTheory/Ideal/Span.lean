@@ -64,6 +64,10 @@ theorem span_union (s t : Set α) : span (s ∪ t) = span s ⊔ span t :=
 theorem span_iUnion {ι} (s : ι → Set α) : span (⋃ i, s i) = ⨆ i, span (s i) :=
   Submodule.span_iUnion _
 
+theorem iSup_eq_span {ι} (p : ι → Ideal α) :
+    ⨆ i, p i = span (⋃ i, ↑(p i)) :=
+  Submodule.iSup_eq_span p
+
 theorem mem_span {s : Set α} (x) : x ∈ span s ↔ ∀ p : Ideal α, s ⊆ p → x ∈ p :=
   mem_iInter₂
 
@@ -124,6 +128,10 @@ theorem span_singleton_ne_top {α : Type*} [CommSemiring α] {x : α} (hx : ¬Is
 
 @[simp]
 theorem span_zero : span (0 : Set α) = ⊥ := by rw [← Set.singleton_zero, span_singleton_eq_bot]
+
+@[simp]
+theorem span_insert_zero {s : Set α} : span (insert (0 : α) s) = span s :=
+  Submodule.span_insert_zero
 
 @[simp]
 theorem span_one : span (1 : Set α) = ⊤ := by rw [← Set.singleton_one, span_singleton_one]
@@ -256,7 +264,7 @@ theorem ker_toSpanSingleton_eq_span :
   rw [Ideal.mem_span_singleton']
   refine ⟨fun h ↦ ⟨x, by rw [mul_sub, show x * e = 0 from h, mul_one, sub_zero]⟩, fun h ↦ ?_⟩
   obtain ⟨x, rfl⟩ := h
-  show x * (1 - e) * e = 0
+  change x * (1 - e) * e = 0
   rw [mul_assoc, sub_mul, one_mul, he, sub_self, mul_zero]
 
 theorem ker_toSpanSingleton_one_sub_eq_span :

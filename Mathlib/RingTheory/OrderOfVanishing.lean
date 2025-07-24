@@ -34,7 +34,7 @@ The order of vanishing of `1` is `0`.
 -/
 @[simp]
 lemma ord_one : ord R 1 = 0 := by
-  simp_all [ord, Module.length_eq_zero_iff,
+  simp_all [ord,
     Ideal.span_singleton_one, Submodule.Quotient.subsingleton_iff]
 
 end Ring
@@ -109,7 +109,7 @@ theorem ord_mul {a b : R} (hb : b ∈ nonZeroDivisors R) :
           (Ideal.quotOfMul b (Ideal.span {a})) (Ideal.mulQuot_injective (Ideal.span {a}) hb)
           (Ideal.quotOfMul_surjective (Ideal.span {a}))
           (Ideal.exact_mulQuot_quotOfMul (Ideal.span {a}))
-  simp only [Ring.ord, submodule_span_eq, ← this]
+  simp only [Ring.ord, ← this]
   have lem : (({b} : Set R) • Ideal.span {a}) = Ideal.span {b * a} := by
     simp [←Ideal.submodule_span_eq, Submodule.set_smul_span]
   have : (({b} : Set R) • Ideal.span {a}) = b • Ideal.span {a} := Submodule.singleton_set_smul
@@ -174,8 +174,7 @@ def ordFrac : K →*₀ ℤₘ₀ :=
     (ordMonoidWithZeroHom R)
   haveI : ∀ (y : ↥(nonZeroDivisors R)), IsUnit (ordMonoidWithZeroHom R ↑y) := by
     intro y
-    simp only [ Equiv.toFun_as_coe, MonoidWithZeroHom.coe_comp, MonoidWithZeroHom.coe_mk,
-      ZeroHom.coe_mk, Function.comp_apply, isUnit_iff_ne_zero, ne_eq]
+    simp only [isUnit_iff_ne_zero, ne_eq]
     simp [ordMonoidWithZeroHom, ord]
     have := Module.length_ne_top_iff.mpr <| isFiniteLength_quotient_span_singleton R y.2
     have : ∀ k,

@@ -36,8 +36,8 @@ opposite of the one usually considered in the literature.
 -/
 def endofunctorMonoidalCategory : MonoidalCategory (C ⥤ C) where
   tensorObj F G := F ⋙ G
-  whiskerLeft X _ _ F := whiskerLeft X F
-  whiskerRight F X := whiskerRight F X
+  whiskerLeft X _ _ F := Functor.whiskerLeft X F
+  whiskerRight F X := Functor.whiskerRight F X
   tensorHom α β := α ◫ β
   tensorUnit := 𝟭 C
   associator F G H := Functor.associator F G H
@@ -99,7 +99,7 @@ variable [MonoidalCategory C]
 instance : (tensoringRight C).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := (rightUnitorNatIso C).symm
-      μIso := fun X Y => (isoWhiskerRight (curriedAssociatorNatIso C)
+      μIso := fun X Y => (Functor.isoWhiskerRight (curriedAssociatorNatIso C)
       ((evaluation C (C ⥤ C)).obj X ⋙ (evaluation C C).obj Y)) }
 
 @[simp] lemma tensoringRight_ε :

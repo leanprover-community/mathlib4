@@ -47,14 +47,6 @@ instance : Monoid (Conv M N) where
       rw [← whisker_exchange]
     slice_rhs 2 3 =>
       rw [← whisker_exchange]
-    slice_rhs 1 2 =>
-      rw [comul_assoc]
-    slice_rhs 3 4 =>
-      rw [← associator_naturality_left]
-    slice_lhs 6 7 =>
-      rw [← associator_inv_naturality_right]
-    slice_lhs 8 9 =>
-      rw [Mon_Class.mul_assoc]
     simp
 
 end Conv
