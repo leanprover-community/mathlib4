@@ -20,7 +20,6 @@ every finite Galois extension has a basis that is an orbit under the Galois grou
 
 variable (K L : Type*) [Field K] [Field L] [Algebra K L]
 
---attribute [reducible] AdjoinRoot in
 open Polynomial FiniteField Module Submodule LinearMap in
 private theorem exists_linearIndependent_algEquiv_apply_of_finite [Finite L] :
     ∃ x : L, LinearIndependent K fun σ : L ≃ₐ[K] L ↦ σ x := by
@@ -48,55 +47,19 @@ private theorem exists_linearIndependent_algEquiv_apply_of_finite [Finite L] :
 
 variable [FiniteDimensional K L]
 
-open scoped Classical in
 private theorem exists_linearIndependent_algEquiv_apply_of_infinite [Infinite K] :
     ∃ x : L, LinearIndependent K fun σ : L ≃ₐ[K] L ↦ σ x := by
+  classical
   have e := Module.Free.chooseBasis K L
   let M : Matrix (L ≃ₐ[K] L) (L ≃ₐ[K] L) (MvPolynomial _ L) :=
-    .of fun i j ↦ ∑ k, i.symm (j (e k)) • MvPolynomial.X k
+    .of fun i j ↦ ∑ k, i.symm (j (e k)) • .X k
   have hM : M.det ≠ 0 := by
     have hq : Submodule.span L (Set.range fun i (j : L ≃ₐ[K] L) ↦ j (e i)) = ⊤ := by
-      rw [← Subspace.dualAnnihilator_inj, Submodule.dualAnnihilator_top, ← le_bot_iff]
-      intro x hx
-      obtain ⟨x, rfl⟩ := (Pi.basisFun L (L ≃ₐ[K] L)).toDualEquiv.surjective x
-      rw [Submodule.mem_bot, ← LinearEquiv.eq_symm_apply, LinearEquiv.map_zero]
-      rw [← SetLike.mem_coe, Submodule.coe_dualAnnihilator_span,
-        Set.mem_setOf, Set.range_subset_iff] at hx
-      simp_rw [SetLike.mem_coe, LinearMap.mem_ker, Basis.toDualEquiv_apply] at hx
-      conv at hx =>
-        enter [i, 1, 2, j]
-        rw [← Fintype.sum_pi_single j fun j => j (e i), ← Finset.sum_apply]
-        enter [2, c]
-        rw [← mul_one (c (e i)), ← smul_eq_mul, Pi.single_smul', ← Pi.basisFun_apply]
-      simp_rw [map_sum, map_smul, Basis.toDual_apply_left, Pi.basisFun_repr, smul_eq_mul] at hx
-      have ind := (linearIndependent_algHom_toLinearMap K L L).comp AlgEquiv.toAlgHom
-        fun _ _ h => DFunLike.coe_injective (congrArg DFunLike.coe h :)
-      rw [Fintype.linearIndependent_iff] at ind
-      ext i
-      rw [Pi.zero_apply]
-      apply ind
-      ext j
-      rw [LinearMap.zero_apply, LinearMap.coeFn_sum, Finset.sum_apply]
-      simp only [Function.comp_apply, AlgEquiv.toAlgHom_eq_coe, AlgEquiv.toAlgHom_toLinearMap,
-        LinearMap.smul_apply, AlgEquiv.toLinearMap_apply, smul_eq_mul]
-      have h := Fintype.sum_eq_zero _
-        fun i ↦ congr(e.repr j i • $(hx i)).trans (smul_zero (e.repr j i))
-      conv at h =>
-        enter [1, 2, i]
-        rw [Finset.smul_sum]
-        enter [2, k]
-        rw [← smul_eq_mul, ← smul_assoc, ← map_smul]
-      rw [Finset.sum_comm] at h
-      conv at h =>
-        enter [1, 2, k]
-        rw [← Finset.sum_smul]
-        enter [1]
-        rw [← map_sum]
-        enter [2]
-        rw [e.sum_repr]
-      simpa [mul_comm] using h
+      apply span_flip_eq_top_iff_linearIndependent.mpr <|
+        ((linearIndependent_algHom_toLinearMap K L L).comp _
+          (algEquivEquivAlgHom K L).injective).map' _ (e.constr L).symm.ker
     obtain ⟨c, hc⟩ : ∃ c : _ → L, M.det.eval c = 1 := by
-      have h := (congrArg (fun s ↦ Pi.single 1 1 ∈ s) hq).mpr (Submodule.mem_top ..)
+      have h := (congr_arg (fun s ↦ Pi.single 1 1 ∈ s) hq).mpr (Submodule.mem_top ..)
       rw [← Set.image_univ, ← Finset.coe_univ,
         ← Function.Embedding.coeFn_mk (fun i (j : L ≃ₐ[K] L) ↦ j (e i))
           fun a b hab ↦ e.injective (congrFun hab .refl),
@@ -106,7 +69,7 @@ private theorem exists_linearIndependent_algEquiv_apply_of_infinite [Infinite K]
       conv at hf =>
         enter [1, 2, a, 1]
         equals g (Function.invFun (fun i (j : L ≃ₐ[K] L) => j (e i)) a) =>
-          apply congrArg f
+          apply congr_arg f
           apply Subtype.ext
           symm
           apply Function.invFun_eq (f := fun i (j : L ≃ₐ[K] L) => j (e i))
@@ -116,13 +79,13 @@ private theorem exists_linearIndependent_algEquiv_apply_of_infinite [Infinite K]
       conv at hf =>
         enter [1, 2, a, 1]
         equals g a =>
-          apply congrArg f
+          apply congr_arg f
           apply Subtype.ext
           apply Function.apply_invFun_apply (f := fun i (j : L ≃ₐ[K] L) => j (e i))
       simp_rw [Function.Embedding.coeFn_mk] at hf
       use g
       rw [RingHom.map_det]
-      refine (congrArg Matrix.det ?_).trans Matrix.det_one
+      refine (congr_arg Matrix.det ?_).trans Matrix.det_one
       ext i j
       simpa [M, Pi.single_apply, inv_mul_eq_one, mul_comm, Matrix.one_apply]
         using congrFun hf (i⁻¹ * j)
