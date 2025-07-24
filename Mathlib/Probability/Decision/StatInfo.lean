@@ -74,14 +74,6 @@ lemma statInfo_comp_le (μ ν : Measure 𝓧) (π : Measure Bool) (η : Kernel �
   refine tsub_le_tsub ?_ (bayesBinaryRisk_le_bayesBinaryRisk_comp _ _ _ _)
   simp [Measure.bind_apply .univ (Kernel.aemeasurable _)]
 
-lemma toReal_statInfo_eq_toReal_sub [IsFiniteMeasure ν] [IsFiniteMeasure π] :
-    (statInfo μ ν π).toReal = (min (π {false} * μ univ) (π {true} * ν univ)).toReal
-      - (bayesBinaryRisk μ ν π).toReal := by
-  rw [statInfo_eq_min_sub, ENNReal.toReal_sub_of_le]
-  · exact bayesBinaryRisk_le_min _ _ _
-  · simp only [ne_eq, min_eq_top, not_and]
-    exact fun _ ↦  ENNReal.mul_ne_top (measure_ne_top π _) (measure_ne_top ν _)
-
 lemma statInfo_boolMeasure_le_statInfo {E : Set 𝓧} (hE : MeasurableSet E) :
     statInfo (Bool.boolMeasure (μ Eᶜ) (μ E)) (Bool.boolMeasure (ν Eᶜ) (ν E)) π
       ≤ statInfo μ ν π := by

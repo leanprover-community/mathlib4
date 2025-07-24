@@ -38,20 +38,32 @@ open MeasureTheory
 
 open scoped ENNReal NNReal
 
-namespace Bool
-
---rename this and put it in a better place
-lemma cases_set_bool (s : Set Bool) :
-    s = ∅ ∨ s = {true} ∨ s = {false} ∨ s = {true, false} := by
-  by_cases h1 : true ∈ s <;> by_cases h2 : false ∈ s <;> simp [Set.ext_iff, h1, h2]
+lemma MeasureTheory.Measure.ext_of_discrete {α : Type*} {_ : MeasurableSpace α} {μ ν : Measure α}
+    [Countable α] [DiscreteMeasurableSpace α] (h : ∀ a, μ {a} = ν {a}) : μ = ν := by
+  ext s hs
+  rw [← Set.biUnion_of_singleton s, measure_iUnion, measure_iUnion]
+  · congr with i
+    by_cases hi : i ∈ s
+    · simp [hi, h]
+    · simp [hi]
+  · intro i j hij
+    simp [hij.symm]
+  · intro i
+    by_cases hi : i ∈ s <;> simp [hi]
+  · intro i j hij
+    simp [hij.symm]
+  · intro i
+    by_cases hi : i ∈ s <;> simp [hi]
 
 @[ext]
-lemma _root_.MeasureTheory.Measure.measure_bool_ext {π₁ π₂ : Measure Bool}
+lemma MeasureTheory.Measure.ext_of_bool {π₁ π₂ : Measure Bool}
     (h_false : π₁ {false} = π₂ {false}) (h_true : π₁ {true} = π₂ {true}) : π₁ = π₂ := by
-  ext s
-  obtain (rfl | rfl | rfl | rfl) := Bool.cases_set_bool s
-    <;> try simp only [measure_empty, h_true, h_false]
-  rw [Set.insert_eq, measure_union, measure_union, h_true, h_false] <;> simp
+  refine Measure.ext_of_discrete fun a ↦ ?_
+  cases a with
+  | false => exact h_false
+  | true => exact h_true
+
+namespace Bool
 
 lemma lintegral_bool {f : Bool → ℝ≥0∞} (π : Measure Bool) :
     ∫⁻ x, f x ∂π = f false * π {false} + f true * π {true} := by simp [add_comm, lintegral_fintype]

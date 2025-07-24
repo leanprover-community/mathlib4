@@ -112,8 +112,7 @@ lemma bayesRiskPrior_le_bayesRiskPrior_comp (ℓ : Θ → 𝓨 → ℝ≥0∞) (
   exact iInf_le_of_le (κ ∘ₖ η) (iInf_le_of_le inferInstance le_rfl)
 
 /-- An estimator is a Bayes estimator for a prior `π` if it attains the Bayes risk for `π`. -/
-def IsBayesEstimator (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧)
-    (κ : Kernel 𝓧 𝓨) (π : Measure Θ) : Prop :=
+def IsBayesEstimator (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) (κ : Kernel 𝓧 𝓨) (π : Measure Θ) : Prop :=
   bayesianRisk ℓ P κ π = bayesRiskPrior ℓ P π
 
 lemma bayesRiskPrior_le_minimaxRisk (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧)
@@ -214,6 +213,7 @@ lemma IsGenBayesEstimator.bayesianRisk_eq_integral_iInf (hf : IsGenBayesEstimato
   rwa [Kernel.deterministic_apply,
     lintegral_dirac' _ (Measurable.lintegral_prod_left (by fun_prop))]
 
+/-- A generalized Bayes estimator is a Bayes estimator: that is, it minimizes the Bayesian risk. -/
 lemma IsGenBayesEstimator.isBayesEstimator (hf : IsGenBayesEstimator ℓ P f π)
     (hl : Measurable (Function.uncurry ℓ)) :
     IsBayesEstimator ℓ P hf.kernel π := by
