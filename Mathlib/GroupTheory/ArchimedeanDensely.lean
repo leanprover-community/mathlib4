@@ -599,7 +599,7 @@ instance {X : Type*} [Preorder X] [NoMinOrder X] [DenselyOrdered X] :
 lemma Int.not_denselyOrdered : ¬ DenselyOrdered ℤ :=
   (LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered ℤ).mp ⟨.refl _⟩
 
-lemma not_denselyOrdered_withZeroInt : ¬ DenselyOrdered ℤᵐ⁰ :=
+lemma not_denselyOrdered_withZero_int : ¬ DenselyOrdered ℤᵐ⁰ :=
   (LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered _).mp ⟨.refl _⟩
 
 lemma WithZero.denselyOrdered_set_iff_subsingleton {X : Type*} [LinearOrder X]
