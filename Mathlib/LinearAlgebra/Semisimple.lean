@@ -120,7 +120,8 @@ protected lemma _root_.LinearEquiv.isSemisimple_iff {M₂ : Type*} [AddCommGroup
     f.IsSemisimple ↔ g.IsSemisimple := by
   let e : AEval' f ≃ₗ[R[X]] AEval' g := LinearEquiv.ofAEval _ (e.trans (AEval'.of g)) fun x ↦ by
     simpa [AEval'.X_smul_of] using LinearMap.congr_fun he x
-  exact (Submodule.orderIsoMapComap e).complementedLattice_iff
+  simp_rw [IsSemisimple, isSemisimpleModule_iff,
+    (Submodule.orderIsoMapComap e).complementedLattice_iff]
 
 lemma eq_zero_of_isNilpotent_isSemisimple (hn : IsNilpotent f) (hs : f.IsSemisimple) : f = 0 := by
   have ⟨n, h0⟩ := hn
@@ -166,7 +167,7 @@ lemma IsSemisimple.restrict {p : Submodule R M} (hp : p ∈ f.invtSubmodule) (hf
       Iic (AEval.mapSubmodule R M f ⟨p, hp⟩) :=
     (Submodule.orderIsoMapComap <| AEval.restrict_equiv_mapSubmodule f p hp).trans <|
       Submodule.mapIic _
-  exact e.complementedLattice_iff.mpr inferInstance
+  exact (isSemisimpleModule_iff ..).mpr (e.complementedLattice_iff.mpr inferInstance)
 
 lemma IsSemisimple.isFinitelySemisimple (hf : f.IsSemisimple) :
     f.IsFinitelySemisimple :=
