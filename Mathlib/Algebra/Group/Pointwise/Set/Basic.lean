@@ -156,7 +156,7 @@ section Inv
 
 variable {ι : Sort*} [Inv α] {s t : Set α} {a : α}
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem inv_setOf (p : α → Prop) : {x | p x}⁻¹ = {x | p (x⁻¹)} := rfl
 
 @[to_additive (attr := simp)]
