@@ -508,6 +508,19 @@ def functorOfTransform₂Iso {ψ ψ' : CatCospanTransform R B R' B'} (α : ψ �
   hom_inv_id := by simp [← functorOfTransform₂_comp]
   inv_hom_id := by simp [← functorOfTransform₂_comp]
 
+section
+
+variable {ψ ψ' : CatCospanTransform R B R' B'} (α : ψ ⟶ ψ')
+
+instance [IsIso α] : IsIso (functorOfTransform₂ T L T' L' α) :=
+  inferInstanceAs <| IsIso (functorOfTransform₂Iso T L T' L' (asIso α)).hom
+
+lemma inv_functorOfTransform₂ [IsIso α] :
+    inv (functorOfTransform₂ T L T' L' α) = 
+    functorOfTransform₂ T L T' L' (inv α) := by sorry
+
+end
+
 end functorOfTransform₂
 
 variable (R B) in
@@ -595,6 +608,7 @@ section
 open scoped CatCospanTransform
 open Functor
 
+@[reassoc]
 lemma functorOfTransform₂_leftUnitor
     (ψ : CatCospanTransform R B R' B') :
     functorOfTransform₂ T L T' L' (λ_ ψ).hom =
@@ -631,6 +645,7 @@ lemma functorOfTransform₂_leftUnitor
 
 omit [CatPullbackSquare T L R B]
 
+@[reassoc]
 lemma functorOfTransform₂_rightUnitor
     (ψ : CatCospanTransform R B R' B') :
     functorOfTransform₂ T L T' L' (ρ_ ψ).hom =
@@ -645,6 +660,19 @@ lemma functorOfTransform₂_rightUnitor
   · simp [functorOfTransformComp_hom_app_snd,
       CatCommSq.iso, functorOfTransform₂_app_snd]
 
+@[reassoc]
+lemma functorOfTransform₂_rightUnitor_inv
+    (ψ : CatCospanTransform R B R' B') :
+    functorOfTransform₂ T L T' L' (ρ_ ψ).inv =
+    (functorOfTransform T L T' L' ψ).rightUnitor.inv ≫
+      whiskerLeft (functorOfTransform T L T' L' ψ)
+        (functorOfTransformId T' L' R' B').inv ≫
+      (functorOfTransformComp T L T' L' T' L' ψ (.id R' B')).inv := sorry
+  -- simpa [← Functor.map_inv, -IsIso.comp_inv_eq, -IsIso.eq_comp_inv,
+  --   -IsIso.eq_inv_comp, ← Iso.app_hom] using
+  --     IsIso.inv_eq_inv.mpr <| functorOfTransform₂_rightUnitor T L T' L' ψ
+
+@[reassoc]
 lemma functorOfTransform₂_whiskerLeft
     (ψ : CatCospanTransform R B R' B')
     {φ φ' : CatCospanTransform R' B' R'' B''} (α : φ ⟶ φ') :
@@ -672,6 +700,7 @@ lemma functorOfTransform₂_whiskerLeft
       NatIso.cancel_natIso_inv_left]
     simp [← Functor.map_comp_assoc]
 
+@[reassoc]
 lemma functorOfTransform₂_whiskerRight
     {ψ ψ' : CatCospanTransform R B R' B'} (α : ψ ⟶ ψ')
     (φ : CatCospanTransform R' B' R'' B'') :
@@ -705,6 +734,7 @@ lemma functorOfTransform₂_whiskerRight
       Iso.hom_inv_id_app, Iso.hom_inv_id_app_assoc,
       comp_obj, Category.comp_id]
 
+@[reassoc]
 lemma functorOfTransform₂_associator
     {F₁ : Type u₁₃} {F₂ : Type u₁₄} {F₃ : Type u₁₅} {F₄ : Type u₁₆}
     [Category.{v₁₃} F₁] [Category.{v₁₄} F₂]
@@ -744,7 +774,126 @@ lemma functorOfTransform₂_associator
     simp [← Functor.map_comp_assoc, Iso.hom_inv_id_app_assoc,
       ← Functor.map_comp, Iso.hom_inv_id_app]
 
+@[reassoc]
+lemma functorOfTransform₂_associator_inv
+    {F₁ : Type u₁₃} {F₂ : Type u₁₄} {F₃ : Type u₁₅} {F₄ : Type u₁₆}
+    [Category.{v₁₃} F₁] [Category.{v₁₄} F₂]
+    [Category.{v₁₅} F₃] [Category.{v₁₆} F₄]
+    (T''' : F₁ ⥤ F₂) (L''' : F₁ ⥤ F₃) {R''' : F₂ ⥤ F₄} {B''' : F₃ ⥤ F₄}
+    (ψ : CatCospanTransform R B R' B') (φ : CatCospanTransform R' B' R'' B'')
+    (τ : CatCospanTransform R'' B'' R''' B''')
+    [CatCommSq T''' L''' R''' B'''] [CatPullbackSquare T''' L''' R''' B'''] :
+    functorOfTransform₂ T L T''' L''' (α_ ψ φ τ).inv =
+    (functorOfTransformComp T L T' L' T''' L''' ψ (φ.comp τ)).hom ≫
+      whiskerLeft (functorOfTransform T L T' L' ψ)
+        (functorOfTransformComp T' L' T'' L'' T''' L''' φ τ).hom ≫
+      ((functorOfTransform T L T' L' ψ).associator
+        (functorOfTransform T' L' T'' L'' φ)
+          (functorOfTransform T'' L'' T''' L''' τ)).inv ≫
+      whiskerRight (functorOfTransformComp T L T' L' T'' L'' ψ φ).inv
+        (functorOfTransform T'' L'' T''' L''' τ) ≫
+      (functorOfTransformComp T L T'' L'' T''' L''' (ψ.comp φ) τ).inv := by
+  sorry
+--
+    -- (functorOfTransformComp T L T'' L'' T''' L''' (ψ.comp φ) τ).hom ≫
+    --   whiskerRight (functorOfTransformComp T L T' L' T'' L'' ψ φ).hom
+    --     (functorOfTransform T'' L'' T''' L''' τ) ≫
+    --   ((functorOfTransform T L T' L' ψ).associator
+    --     (functorOfTransform T' L' T'' L'' φ)
+    --       (functorOfTransform T'' L'' T''' L''' τ)).hom ≫
+    --   whiskerLeft (functorOfTransform T L T' L' ψ)
+    --     (functorOfTransformComp T' L' T'' L'' T''' L''' φ τ).inv ≫
+    --   (functorOfTransformComp T L T' L' T''' L''' ψ (φ.comp τ)).inv := by
+
 end
+-- #exit
+/-- An adjunction of categorical cospans induce an adjunction between the
+functors induced on the categorical pullbacks -/
+@[simps!]
+def adjunctionOfCatCospanAdjunction (𝔄 : CatCospanAdjunction R B R' B') :
+    functorOfTransform T L T' L' 𝔄.leftAdjoint ⊣
+    functorOfTransform T' L' T L 𝔄.rightAdjoint where
+  unit :=
+    (functorOfTransformId T L R B).inv ≫
+      functorOfTransform₂ T L T L 𝔄.unit ≫
+      (functorOfTransformComp T L T' L' T L _ _).hom
+  counit :=
+    (functorOfTransformComp T' L' T L T' L' _ _).inv ≫
+      functorOfTransform₂ T' L' T' L' 𝔄.counit ≫
+      (functorOfTransformId T' L' _ _).hom
+  left_triangle_components x := by
+    have := congr_app
+      ((Functor.whiskerRight (functorOfTransformId T L R B).inv
+        (functorOfTransform T L T' L' 𝔄.leftAdjoint) ≫
+        (functorOfTransformComp T L T L T' L'
+          (CatCospanTransform.id R B) 𝔄.leftAdjoint).inv) ≫=
+        congr_arg (fun t ↦ functorOfTransform₂ T L T' L' t)
+          𝔄.left_triangle =≫
+        (functorOfTransformComp T L T' L' T' L'
+          𝔄.leftAdjoint (CatCospanTransform.id R' B')).hom ≫
+        (functorOfTransform T L T' L' 𝔄.leftAdjoint).whiskerLeft
+          (functorOfTransformId T' L' R' B').hom) x
+    simp only [functorOfTransform₂_comp, Category.assoc, Iso.inv_hom_id_assoc,
+      Iso.inv_hom_id, Category.comp_id, Category.id_comp,
+      functorOfTransform₂_whiskerRight_assoc T L T L _ _ 𝔄.unit 𝔄.leftAdjoint,
+      functorOfTransform₂_whiskerLeft T L T' L' _ _ 𝔄.leftAdjoint 𝔄.counit,
+      functorOfTransform₂_associator T L T' L' T L _ _
+        𝔄.leftAdjoint 𝔄.rightAdjoint 𝔄.leftAdjoint,
+      functorOfTransform₂_leftUnitor T L T' L' 𝔄.leftAdjoint,
+      functorOfTransform₂_rightUnitor_inv T L T' L' 𝔄.leftAdjoint,
+      ← Functor.whiskerLeft_comp_assoc, ← Functor.whiskerRight_comp_assoc,
+      ← Functor.whiskerLeft_comp, Functor.whiskerRight_id',
+      Functor.whiskerLeft_id'] at this
+    dsimp [-functorOfTransformId_hom_app] at this
+    simp only [Category.id_comp] at this
+    exact this
+  right_triangle_components x := by
+    have right_triangle :=
+      congr_arg (fun t ↦ functorOfTransform₂ T' L' T L t)
+        𝔄.right_triangle
+    simp only [functorOfTransform₂_comp, Category.assoc, Iso.inv_hom_id_assoc,
+      Iso.inv_hom_id, Category.comp_id, Category.id_comp,
+      functorOfTransform₂_whiskerRight T' L' T' L' _ _
+        𝔄.counit 𝔄.rightAdjoint,
+      functorOfTransform₂_whiskerLeft T' L' T L _ _ 𝔄.rightAdjoint 𝔄.unit,
+      functorOfTransform₂_associator_inv T' L' T L T' L' _ _
+        𝔄.rightAdjoint 𝔄.leftAdjoint 𝔄.rightAdjoint,
+      -- functorOfTransform₂_leftUnitor_inv T' L' T L 𝔄.rightAdjoint,
+      functorOfTransform₂_rightUnitor T' L' T L 𝔄.rightAdjoint,
+      ← Functor.whiskerLeft_comp_assoc, ← Functor.whiskerRight_comp_assoc,
+      ← Functor.whiskerLeft_comp, Functor.whiskerRight_id',
+      Functor.whiskerLeft_id'] at right_triangle
+
+    sorry
+    -- ext
+    -- · haveI := 𝔄.leftAdjunction.right_triangle_components
+    --   simpa using (this x.fst)
+    -- · haveI := 𝔄.rightAdjunction.right_triangle_components
+    --   simpa using (this x.snd)
+
+-- /-- A `CatCospanEquivalence` induces an equivalence between the categorical
+-- pullbacks. This fully realizes the fact that the categorical pullback respects
+-- equivalences of categories in all of its arguments.
+-- Note that the corresponding fact is *not* true for the strict pullback of
+-- categories (i.e the pullback in the `1`-category `Cat`), and is the principal
+-- motivation behind using the categorical pullback as a replacement for the strict
+-- pullback. -/
+-- @[simps!]
+-- def equivalenceOfCatCospanEquivalence (E : CatCospanEquivalence F G F' G') :
+--     F ⊡ G ≌ F' ⊡ G' where
+--   functor := functorOfTransform E.transform
+--   inverse := functorOfTransform E.inverse
+--   unitIso :=
+--     (functorOfTransformId _ _).symm ≪≫
+--       functorOfTransform₂Iso E.unitIso ≪≫
+--       (functorOfTransformComp _ _)
+--   counitIso :=
+--     (functorOfTransformComp _ _).symm ≪≫
+--       functorOfTransform₂Iso E.counitIso ≪≫
+--       (functorOfTransformId _ _)
+--   functor_unitIso_comp :=
+--     (adjunctionOfCatCospanAdjunction
+--       E.toCatCospanAdjunction).left_triangle_components
 
 end Pseudofunctoriality
 
