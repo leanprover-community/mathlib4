@@ -1471,6 +1471,47 @@ lemma eLpNorm_nsmul [NormedSpace ℝ F] (n : ℕ) (f : α → F) :
 
 end NormedSpace
 
+section ENormSMulClass
+
+variable {𝕜 : Type*} [NormedDivisionRing 𝕜] {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+  [SMul 𝕜 ε] [ENormSMulClass 𝕜 ε]
+
+theorem eLpNorm'_const_smul' {f : α → ε} (c : 𝕜) (hq_pos : 0 < q) :
+    eLpNorm' (c • f) q μ = ‖c‖ₑ * eLpNorm' f q μ := by
+  obtain rfl | hc := eq_or_ne c 0
+  · simp [eLpNorm'_eq_lintegral_enorm, hq_pos]
+    sorry -- missing: scalar multiplication with 0 is zero
+  refine le_antisymm (eLpNorm'_const_smul_le' hq_pos) <| ENNReal.mul_le_of_le_div' ?_
+  have : eLpNorm' (c⁻¹ • c • f) q μ = eLpNorm' f q μ := by
+    apply eLpNorm'_congr_ae
+    apply Eventually.of_forall fun x ↦ ?_
+    simp only [Pi.smul_apply]
+    sorry -- missing assumption on scalar multiplication!
+  simpa [this, enorm_inv, hc, ENNReal.div_eq_inv_mul]
+    using eLpNorm'_const_smul_le' (c := c⁻¹) (f := c • f) hq_pos (μ := μ)
+
+theorem eLpNormEssSup_const_smul' (c : 𝕜) (f : α → ε) :
+    eLpNormEssSup (c • f) μ = ‖c‖ₑ * eLpNormEssSup f μ := by
+  simp_rw [eLpNormEssSup_eq_essSup_enorm, Pi.smul_apply, enorm_smul,
+    ENNReal.essSup_const_mul]
+
+theorem eLpNorm_const_smul' (c : 𝕜) (f : α → ε) (p : ℝ≥0∞) (μ : Measure α) :
+    eLpNorm (c • f) p μ = ‖c‖ₑ * eLpNorm f p μ := by
+  obtain rfl | hc := eq_or_ne c 0
+  · simp
+    sorry -- missing: scalar mult. with 0 is zero
+  refine le_antisymm eLpNorm_const_smul_le' <| ENNReal.mul_le_of_le_div' ?_
+  have aux := eLpNorm_const_smul_le' (c := c⁻¹) (f := c • f) (μ := μ) (p := p)
+  have : eLpNorm (c⁻¹ • c • f) p μ = eLpNorm f p μ := sorry -- same as above
+  rw [this] at aux
+  simpa [enorm_inv, hc, ENNReal.div_eq_inv_mul] using aux
+
+lemma eLpNorm_nsmul' [NormedSpace ℝ F] (n : ℕ) (f : α → F) :
+    eLpNorm (n • f) p μ = n * eLpNorm f p μ := by
+  simpa [Nat.cast_smul_eq_nsmul] using eLpNorm_const_smul (n : ℝ) f ..
+
+end ENormSMulClass
+
 theorem le_eLpNorm_of_bddBelow (hp : p ≠ 0) (hp' : p ≠ ∞) {f : α → F} (C : ℝ≥0) {s : Set α}
     (hs : MeasurableSet s) (hf : ∀ᵐ x ∂μ, x ∈ s → C ≤ ‖f x‖₊) :
     C • μ s ^ (1 / p.toReal) ≤ eLpNorm f p μ := by
