@@ -228,9 +228,11 @@ if git diff --name-only bump/$BUMPVERSION bump/nightly-$NIGHTLYDATE | grep -q .;
 
   echo
   echo "### [auto] create a PR for the new branch"
-  echo "Creating a pull request. Setting the base of the PR to 'bump/$BUMPVERSION'"
+  echo "Creating a pull request. Setting the base of the PR to 'bump/$BUMPVERSION' on upstream, and the head to the nightly-testing fork."
+
+  pr_title="chore: adaptations for nightly-$NIGHTLYDATE"
+  gh_command="gh pr create -t \"$pr_title\" -b '' -B bump/$BUMPVERSION --repo leanprover-community/mathlib4"
   echo "Running the following 'gh' command to do this:"
-  gh_command="gh pr create -t \"$pr_title\" -b '' -B bump/$BUMPVERSION --repo leanprover-community/mathlib4-nightly-testing"
   echo "> $gh_command"
   gh_output=$(eval $gh_command)
   # Extract the PR number from the output
