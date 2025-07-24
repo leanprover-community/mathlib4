@@ -48,11 +48,11 @@ integral
 
 noncomputable section
 
-open MeasureTheory Set Filter Function
+open MeasureTheory Set Filter Function TopologicalSpace
 
 open scoped Topology Filter ENNReal Interval NNReal
 
-variable {ι 𝕜 E F A : Type*} [NormedAddCommGroup E]
+variable {ι 𝕜 ε E F A : Type*} [NormedAddCommGroup E] [TopologicalSpace ε] [ENormedAddCommMonoid ε]
 
 /-!
 ### Integrability on an interval
@@ -63,7 +63,7 @@ variable {ι 𝕜 E F A : Type*} [NormedAddCommGroup E]
 interval `a..b` if it is integrable on both intervals `(a, b]` and `(b, a]`. One of these
 intervals is always empty, so this property is equivalent to `f` being integrable on
 `(min a b, max a b]`. -/
-def IntervalIntegrable (f : ℝ → E) (μ : Measure ℝ) (a b : ℝ) : Prop :=
+def IntervalIntegrable (f : ℝ → ε) (μ : Measure ℝ) (a b : ℝ) : Prop :=
   IntegrableOn f (Ioc a b) μ ∧ IntegrableOn f (Ioc b a) μ
 
 /-!
@@ -71,7 +71,7 @@ def IntervalIntegrable (f : ℝ → E) (μ : Measure ℝ) (a b : ℝ) : Prop :=
 -/
 section
 
-variable {f : ℝ → E} {a b : ℝ} {μ : Measure ℝ}
+variable [PseudoMetrizableSpace ε] {f : ℝ → ε} {a b : ℝ} {μ : Measure ℝ}
 
 /-- A function is interval integrable with respect to a given measure `μ` on `a..b` if and
   only if it is integrable on `uIoc a b` with respect to `μ`. This is an equivalent
@@ -84,19 +84,19 @@ theorem intervalIntegrable_iff : IntervalIntegrable f μ a b ↔ IntegrableOn f 
 theorem IntervalIntegrable.def' (h : IntervalIntegrable f μ a b) : IntegrableOn f (Ι a b) μ :=
   intervalIntegrable_iff.mp h
 
-theorem IntervalIntegrable.congr {g : ℝ → E} (hf : IntervalIntegrable f μ a b)
+theorem IntervalIntegrable.congr {g : ℝ → ε} (hf : IntervalIntegrable f μ a b)
     (h : f =ᵐ[μ.restrict (Ι a b)] g) :
     IntervalIntegrable g μ a b := by
   rwa [intervalIntegrable_iff, ← integrableOn_congr_fun_ae h, ← intervalIntegrable_iff]
 
 /-- Interval integrability is invariant when functions change along discrete sets. -/
-theorem IntervalIntegrable.congr_codiscreteWithin {g : ℝ → E} [NoAtoms μ]
+theorem IntervalIntegrable.congr_codiscreteWithin {g : ℝ → ε} [NoAtoms μ]
     (h : f =ᶠ[codiscreteWithin (Ι a b)] g) (hf : IntervalIntegrable f μ a b) :
     IntervalIntegrable g μ a b :=
   hf.congr (ae_restrict_le_codiscreteWithin measurableSet_Ioc h)
 
 /-- Interval integrability is invariant when functions change along discrete sets. -/
-theorem intervalIntegrable_congr_codiscreteWithin {g : ℝ → E} [NoAtoms μ]
+theorem intervalIntegrable_congr_codiscreteWithin {g : ℝ → ε} [NoAtoms μ]
     (h : f =ᶠ[codiscreteWithin (Ι a b)] g) :
     IntervalIntegrable f μ a b ↔ IntervalIntegrable g μ a b :=
   ⟨(IntervalIntegrable.congr_codiscreteWithin h ·),
@@ -127,25 +127,28 @@ theorem intervalIntegrable_iff_integrableOn_Ioo_of_le [NoAtoms μ]
   rw [intervalIntegrable_iff_integrableOn_Icc_of_le hab ha,
     integrableOn_Icc_iff_integrableOn_Ioo ha hb]
 
+omit [PseudoMetrizableSpace ε] in
 /-- If a function is integrable with respect to a given measure `μ` then it is interval integrable
   with respect to `μ` on `uIcc a b`. -/
 theorem MeasureTheory.Integrable.intervalIntegrable (hf : Integrable f μ) :
     IntervalIntegrable f μ a b :=
   ⟨hf.integrableOn, hf.integrableOn⟩
 
+omit [PseudoMetrizableSpace ε] in
 theorem MeasureTheory.IntegrableOn.intervalIntegrable (hf : IntegrableOn f [[a, b]] μ) :
     IntervalIntegrable f μ a b :=
   ⟨MeasureTheory.IntegrableOn.mono_set hf (Ioc_subset_Icc_self.trans Icc_subset_uIcc),
     MeasureTheory.IntegrableOn.mono_set hf (Ioc_subset_Icc_self.trans Icc_subset_uIcc')⟩
 
-theorem intervalIntegrable_const_iff {c : E} :
+theorem intervalIntegrable_const_iff {c : ε} (hc : ‖c‖ₑ ≠ ⊤ := by finiteness) :
     IntervalIntegrable (fun _ => c) μ a b ↔ c = 0 ∨ μ (Ι a b) < ∞ := by
-  simp only [intervalIntegrable_iff, integrableOn_const_iff (C := c)]
+  simp only [intervalIntegrable_iff, integrableOn_const_iff hc]
 
 @[simp]
-theorem intervalIntegrable_const [IsLocallyFiniteMeasure μ] {c : E} :
+theorem intervalIntegrable_const [IsLocallyFiniteMeasure μ]
+    {c : E} (hc : ‖c‖ₑ ≠ ⊤ := by finiteness) :
     IntervalIntegrable (fun _ => c) μ a b :=
-  intervalIntegrable_const_iff.2 <| Or.inr measure_Ioc_lt_top
+  intervalIntegrable_const_iff hc |>.2 <| Or.inr measure_Ioc_lt_top
 
 end
 
@@ -277,7 +280,7 @@ protected theorem finsum {f : ι → ℝ → E} (h : ∀ i, IntervalIntegrable (
   by_cases h₁ : f.support.Finite
   · simp [finsum_eq_sum _ h₁, IntervalIntegrable.sum h₁.toFinset (fun i _ ↦ h i)]
   · rw [finsum_of_infinite_support h₁]
-    apply intervalIntegrable_const_iff.2
+    apply intervalIntegrable_const_iff (by finiteness) |>.2
     tauto
 
 section Mul
