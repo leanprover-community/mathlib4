@@ -640,13 +640,6 @@ theorem prod.comp_lift {V W X Y : C} [HasBinaryProduct X Y] (f : V ⟶ W) (g : W
 theorem prod.comp_diag {X Y : C} [HasBinaryProduct Y Y] (f : X ⟶ Y) :
     f ≫ diag Y = lift f f := by simp
 
-theorem prod.lift_eq_diag_of_comp_eq {X Y Z : C} [HasBinaryProduct Z Z]
-    {e : X ⟶ Y} {f g : Y ⟶ Z} {h : X ⟶ Z}
-    (eq : e ≫ prod.lift f g = h ≫ diag Z) : e ≫ f = e ≫ g :=
-  by calc
-    e ≫ f = h     := by simpa using congr($eq ≫ prod.fst)
-    _     = e ≫ g := by simpa using congr($eq.symm ≫ prod.snd)
-
 @[reassoc (attr := simp)]
 theorem prod.map_fst {W X Y Z : C} [HasBinaryProduct W X] [HasBinaryProduct Y Z] (f : W ⟶ Y)
     (g : X ⟶ Z) : prod.map f g ≫ prod.fst = prod.fst ≫ f :=

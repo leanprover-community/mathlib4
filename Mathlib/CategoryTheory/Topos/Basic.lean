@@ -34,7 +34,7 @@ def WhiskeredHom (B C : ℰ) : ℰᵒᵖ ⥤ Type v :=
 
 /-- `P` is a power object of `B` if it represents the functor `WhiskeredHom B hc.Ω`. -/
 def IsPowerObjectOf (hc : Classifier ℰ (𝟙_ ℰ)) (B P : ℰ) :=
-  RepresentableBy (WhiskeredHom B hc.Ω) P
+  (WhiskeredHom B hc.Ω).RepresentableBy P
 
 variable (ℰ)
 
@@ -70,5 +70,10 @@ lemma unhat_hat {A B : ℰ} (g : A ⟶ P B) :
 /-- The element relation as a subobject of `B ⨯ (P B)`. -/
 def ε_ (B : ℰ) : B ⊗ (P B) ⟶ hc.Ω :=
   (hP B).homEquiv.toFun (𝟙 (P B))
+
+@[simp]
+lemma comm {A B : ℰ} (f : B ⊗ A ⟶ hc.Ω) : f = (B ◁ unhat f) ≫ ε_ B := by
+  have : (hP B).homEquiv (unhat f) = f := by unfold unhat; simp
+  simpa [this] using RepresentableBy.homEquiv_eq (hP B) (unhat f)
 
 end ElementaryTopos
