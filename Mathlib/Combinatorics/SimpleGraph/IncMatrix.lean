@@ -122,7 +122,7 @@ theorem sum_incMatrix_apply_of_mem_edgeSet [Fintype α] :
   simp only [incMatrix_apply', sum_boole, mk'_mem_incidenceSet_iff, h]
   congr 2
   ext e
-  simp only [mem_filter, mem_univ, true_and, mem_insert, mem_singleton]
+  simp
 
 theorem sum_incMatrix_apply_of_notMem_edgeSet [Fintype α] (h : e ∉ G.edgeSet) :
     ∑ a, G.incMatrix R a e = 0 :=
