@@ -59,9 +59,8 @@ def hat {A : ℰ} (B : ℰ) (g : A ⟶ P B) : B ⊗ A ⟶ hc.Ω :=
 def unhat {A B : ℰ} (f : B ⊗ A ⟶ hc.Ω) : (A ⟶ P B) :=
   (hP B).homEquiv.invFun f
 
-@[simp]
 lemma hat_unhat {A B : ℰ} (f : B ⊗ A ⟶ hc.Ω) :
-  hat B (unhat f) = f := (hP B).homEquiv.apply_symm_apply f
+  hat B (unhat f) = f := by simp
 
 @[simp]
 lemma unhat_hat {A B : ℰ} (g : A ⟶ P B) :
@@ -72,8 +71,8 @@ def ε_ (B : ℰ) : B ⊗ (P B) ⟶ hc.Ω :=
   (hP B).homEquiv.toFun (𝟙 (P B))
 
 @[simp]
-lemma comm {A B : ℰ} (f : B ⊗ A ⟶ hc.Ω) : f = (B ◁ unhat f) ≫ ε_ B := by
+lemma comm {A B : ℰ} (f : B ⊗ A ⟶ hc.Ω) : (B ◁ unhat f) ≫ ε_ B = f := by
   have : (hP B).homEquiv (unhat f) = f := by unfold unhat; simp
-  simpa [this] using RepresentableBy.homEquiv_eq (hP B) (unhat f)
+  simpa [this] using Eq.symm (RepresentableBy.homEquiv_eq (hP B) (unhat f))
 
 end ElementaryTopos
