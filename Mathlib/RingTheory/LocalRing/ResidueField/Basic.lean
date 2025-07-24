@@ -7,6 +7,7 @@ import Mathlib.Algebra.Ring.Action.End
 import Mathlib.RingTheory.Finiteness.Cardinality
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
+import Mathlib.RingTheory.Ideal.Over
 
 /-!
 
@@ -170,8 +171,11 @@ section FiniteDimensional
 
 variable [Algebra R S] [IsLocalHom (algebraMap R S)]
 
+instance : (maximalIdeal S).LiesOver (maximalIdeal R) :=
+  ⟨(((local_hom_TFAE (algebraMap R S)).out 0 4 rfl rfl).mp inferInstance).symm⟩
+
 noncomputable instance : Algebra (ResidueField R) (ResidueField S) :=
-  (ResidueField.map (algebraMap R S)).toAlgebra
+  Ideal.Quotient.algebraOfLiesOver _ _
 
 instance : IsScalarTower R (ResidueField R) (ResidueField S) :=
   IsScalarTower.of_algebraMap_eq (congrFun rfl)
