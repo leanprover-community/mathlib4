@@ -18,6 +18,7 @@ If `r` is a relation on `α` then a relation series of length `n` is a series
 
 -/
 
+open Set (Rel)
 open scoped Rel
 
 variable {α : Type*} (r : Rel α α)

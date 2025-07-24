@@ -51,6 +51,7 @@ Hall's Marriage Theorem, indexed families
 -/
 
 open Finset Function CategoryTheory
+open Set (Rel)
 open scoped Rel
 
 universe u v
