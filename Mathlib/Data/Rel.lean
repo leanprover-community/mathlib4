@@ -376,3 +376,8 @@ theorem preimage_eq_core (f : α → β) (s : Set β) : f ⁻¹' s = (Function.g
   simp [Set.preimage, Rel.core]
 
 end Set
+
+/-- A shorthand for `α → β → Prop`.
+
+Consider using `Set.Rel` instead if you want extra API for relations. -/
+abbrev Rel (α β : Type*) := α → β → Prop

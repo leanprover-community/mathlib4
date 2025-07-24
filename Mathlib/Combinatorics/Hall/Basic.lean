@@ -52,7 +52,7 @@ Hall's Marriage Theorem, indexed families
 
 open Finset Function CategoryTheory
 open Set (Rel)
-open scoped Rel
+open scoped Set.Rel
 
 universe u v
 
@@ -158,7 +158,7 @@ theorem Finset.all_card_le_biUnion_card_iff_exists_injective {ι : Type u} {α :
 
 /-- Given a relation such that the image of every singleton set is finite, then the image of every
 finite set is finite. -/
-instance {α : Type u} {β : Type v} [DecidableEq β] (R : Rel α β)
+instance {α : Type u} {β : Type v} [DecidableEq β] (R : Set.Rel α β)
     [∀ a : α, Fintype (R.image {a})] (A : Finset α) : Fintype (R.image A) := by
   have h : R.image A = (A.biUnion fun a => (R.image {a}).toFinset : Set β) := by
     ext
@@ -177,7 +177,7 @@ a subrelation of the relation) iff every subset of
 Note: if `[Fintype β]`, then there exist instances for `[∀ (a : α), Fintype (R.image {a})]`.
 -/
 theorem Fintype.all_card_le_rel_image_card_iff_exists_injective {α : Type u} {β : Type v}
-    [DecidableEq β] (R : Rel α β) [∀ a : α, Fintype (R.image {a})] :
+    [DecidableEq β] (R : Set.Rel α β) [∀ a : α, Fintype (R.image {a})] :
     (∀ A : Finset α, #A ≤ Fintype.card (R.image A)) ↔
       ∃ f : α → β, Function.Injective f ∧ ∀ x, x ~[R] f x := by
   let r' a := (R.image {a}).toFinset

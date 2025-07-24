@@ -18,11 +18,10 @@ If `r` is a relation on `α` then a relation series of length `n` is a series
 
 -/
 
-open Set (Rel)
-open scoped Rel
+open scoped Set.Rel
 
-variable {α : Type*} (r : Rel α α)
-variable {β : Type*} (s : Rel β β)
+variable {α : Type*} (r : Set.Rel α α)
+variable {β : Type*} (s : Set.Rel β β)
 
 /--
 Let `r` be a relation on `α`, a relation series of `r` of length `n` is a series
@@ -82,12 +81,12 @@ Given two relations `r, s` on `α` such that `r ≤ s`, any relation series of `
 series of `s`
 -/
 @[simps!]
-def ofLE (x : RelSeries r) {s : Rel α α} (h : r ≤ s) : RelSeries s where
+def ofLE (x : RelSeries r) {s : Set.Rel α α} (h : r ≤ s) : RelSeries s where
   length := x.length
   toFun := x
   step _ := h <| x.step _
 
-lemma coe_ofLE (x : RelSeries r) {s : Rel α α} (h : r ≤ s) :
+lemma coe_ofLE (x : RelSeries r) {s : Set.Rel α α} (h : r ≤ s) :
     (x.ofLE h : _ → _) = x := rfl
 
 /-- Every relation series gives a list -/
@@ -134,7 +133,7 @@ lemma toList_injective : Function.Injective (RelSeries.toList (r := r)) :=
 
 end RelSeries
 
-namespace Rel
+namespace Set.Rel
 
 /-- A relation `r` is said to be finite dimensional iff there is a relation series of `r` with the
   maximum length. -/
@@ -152,25 +151,25 @@ class InfiniteDimensional : Prop where
     arbitrary length. -/
   exists_relSeries_with_length : ∀ n : ℕ, ∃ x : RelSeries r, x.length = n
 
-end Rel
+end Set.Rel
 
 namespace RelSeries
 
 /-- The longest relational series when a relation is finite dimensional -/
 protected noncomputable def longestOf [r.FiniteDimensional] : RelSeries r :=
-  Rel.FiniteDimensional.exists_longest_relSeries.choose
+  Set.Rel.FiniteDimensional.exists_longest_relSeries.choose
 
 lemma length_le_length_longestOf [r.FiniteDimensional] (x : RelSeries r) :
     x.length ≤ (RelSeries.longestOf r).length :=
-  Rel.FiniteDimensional.exists_longest_relSeries.choose_spec _
+  Set.Rel.FiniteDimensional.exists_longest_relSeries.choose_spec _
 
 /-- A relation series with length `n` if the relation is infinite dimensional -/
 protected noncomputable def withLength [r.InfiniteDimensional] (n : ℕ) : RelSeries r :=
-  (Rel.InfiniteDimensional.exists_relSeries_with_length n).choose
+  (Set.Rel.InfiniteDimensional.exists_relSeries_with_length n).choose
 
 @[simp] lemma length_withLength [r.InfiniteDimensional] (n : ℕ) :
     (RelSeries.withLength r n).length = n :=
-  (Rel.InfiniteDimensional.exists_relSeries_with_length n).choose_spec
+  (Set.Rel.InfiniteDimensional.exists_relSeries_with_length n).choose_spec
 
 section
 variable {r} {s : RelSeries r} {x : α}
@@ -180,7 +179,7 @@ lemma nonempty_of_infiniteDimensional [r.InfiniteDimensional] : Nonempty α :=
   ⟨RelSeries.withLength r 0 0⟩
 
 lemma nonempty_of_finiteDimensional [r.FiniteDimensional] : Nonempty α := by
-  obtain ⟨p, _⟩ := (Rel.finiteDimensional_iff r).mp ‹_›
+  obtain ⟨p, _⟩ := (r.finiteDimensional_iff).mp ‹_›
   exact ⟨p 0⟩
 
 instance membership : Membership α (RelSeries r) :=
@@ -235,10 +234,12 @@ lemma head_mem (x : RelSeries r) : x.head ∈ x := ⟨_, rfl⟩
 lemma last_mem (x : RelSeries r) : x.last ∈ x := ⟨_, rfl⟩
 
 @[simp]
-lemma head_singleton {r : Rel α α} (x : α) : (singleton r x).head = x := by simp [singleton, head]
+lemma head_singleton {r : Set.Rel α α} (x : α) : (singleton r x).head = x := by
+  simp [singleton, head]
 
 @[simp]
-lemma last_singleton {r : Rel α α} (x : α) : (singleton r x).last = x := by simp [singleton, last]
+lemma last_singleton {r : Set.Rel α α} (x : α) : (singleton r x).last = x := by
+  simp [singleton, last]
 
 @[simp]
 lemma head_toList (p : RelSeries r) : p.toList.head p.toList_ne_nil = p.head := by
@@ -453,7 +454,7 @@ def reverse (p : RelSeries r) : RelSeries r.inv where
   length := p.length
   toFun := p ∘ Fin.rev
   step i := by
-    rw [Function.comp_apply, Function.comp_apply, Rel.mem_inv]
+    rw [Function.comp_apply, Function.comp_apply, Set.Rel.mem_inv]
     have hi : i.1 + 1 ≤ p.length := by omega
     convert p.step ⟨p.length - (i.1 + 1), Nat.sub_lt_self (by omega) hi⟩
     · ext; simp
@@ -470,7 +471,7 @@ def reverse (p : RelSeries r) : RelSeries r.inv where
 @[simp] lemma head_reverse (p : RelSeries r) : p.reverse.head = p.last := by
   simp [RelSeries.last, RelSeries.head]
 
-@[simp] lemma reverse_reverse {r : Rel α α} (p : RelSeries r) : p.reverse.reverse = p := by
+@[simp] lemma reverse_reverse {r : Set.Rel α α} (p : RelSeries r) : p.reverse.reverse = p := by
   ext <;> simp
 
 /--
@@ -756,7 +757,7 @@ lemma smash_succ_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.len
 
 /-- Given the series `a₀ -r→ … -r→ aᵢ -r→ … -r→ aₙ`, the series `a₀ -r→ … -r→ aᵢ`. -/
 @[simps! length]
-def take {r : Rel α α} (p : RelSeries r) (i : Fin (p.length + 1)) : RelSeries r where
+def take {r : Set.Rel α α} (p : RelSeries r) (i : Fin (p.length + 1)) : RelSeries r where
   length := i
   toFun := fun ⟨j, h⟩ => p.toFun ⟨j, by omega⟩
   step := fun ⟨j, h⟩ => p.step ⟨j, by omega⟩
@@ -791,14 +792,14 @@ lemma last_drop (p : RelSeries r) (i : Fin (p.length + 1)) : (p.drop i).last = p
 end RelSeries
 
 variable {r} in
-lemma Rel.not_finiteDimensional_iff [Nonempty α] :
+lemma Set.Rel.not_finiteDimensional_iff [Nonempty α] :
     ¬ r.FiniteDimensional ↔ r.InfiniteDimensional := by
   rw [finiteDimensional_iff, infiniteDimensional_iff]
   push_neg
   constructor
   · intro H n
     induction n with
-    | zero => refine ⟨⟨0, ![Nonempty.some ‹_›], by simp⟩, by simp⟩
+    | zero => refine ⟨⟨0, ![_root_.Nonempty.some ‹_›], by simp⟩, by simp⟩
     | succ n IH =>
       obtain ⟨l, hl⟩ := IH
       obtain ⟨l', hl'⟩ := H l
@@ -808,55 +809,57 @@ lemma Rel.not_finiteDimensional_iff [Nonempty α] :
     exact ⟨l', by simp [hl']⟩
 
 variable {r} in
-lemma Rel.not_infiniteDimensional_iff [Nonempty α] :
+lemma Set.Rel.not_infiniteDimensional_iff [Nonempty α] :
     ¬ r.InfiniteDimensional ↔ r.FiniteDimensional := by
   rw [← not_finiteDimensional_iff, not_not]
 
-lemma Rel.finiteDimensional_or_infiniteDimensional [Nonempty α] :
+lemma Set.Rel.finiteDimensional_or_infiniteDimensional [Nonempty α] :
     r.FiniteDimensional ∨ r.InfiniteDimensional := by
   rw [← not_finiteDimensional_iff]
   exact em r.FiniteDimensional
 
-instance Rel.FiniteDimensional.inv [FiniteDimensional r] : FiniteDimensional r.inv :=
+instance Set.Rel.FiniteDimensional.inv [FiniteDimensional r] : FiniteDimensional r.inv :=
   ⟨.reverse (.longestOf r), fun s ↦ s.reverse.length_le_length_longestOf r⟩
 
 variable {r} in
 @[simp]
-lemma Rel.finiteDimensional_inv : FiniteDimensional r.inv ↔ FiniteDimensional r :=
+lemma Set.Rel.finiteDimensional_inv : FiniteDimensional r.inv ↔ FiniteDimensional r :=
   ⟨fun _ ↦ .inv r.inv, fun _ ↦ .inv _⟩
 
 @[deprecated (since := "2025-07-06")]
-alias Rel.finiteDimensional_swap_iff := Rel.finiteDimensional_inv
+alias Set.Rel.finiteDimensional_swap_iff := Set.Rel.finiteDimensional_inv
 
-instance Rel.InfiniteDimensional.inv [InfiniteDimensional r] : InfiniteDimensional r.inv :=
+instance Set.Rel.InfiniteDimensional.inv [InfiniteDimensional r] : InfiniteDimensional r.inv :=
   ⟨fun n ↦ ⟨.reverse (.withLength r n), RelSeries.length_withLength r n⟩⟩
 
 variable {r} in
 @[simp]
-lemma Rel.infiniteDimensional_inv : InfiniteDimensional r.inv ↔ InfiniteDimensional r :=
+lemma Set.Rel.infiniteDimensional_inv : InfiniteDimensional r.inv ↔ InfiniteDimensional r :=
   ⟨fun _ ↦ .inv r.inv, fun _ ↦ .inv _⟩
 
 @[deprecated (since := "2025-07-06")]
-alias Rel.infiniteDimensional_swap_iff := Rel.infiniteDimensional_inv
+alias Set.Rel.infiniteDimensional_swap_iff := Set.Rel.infiniteDimensional_inv
 
-lemma Rel.IsWellFounded.inv_of_finiteDimensional [r.FiniteDimensional] : r.inv.IsWellFounded := by
+lemma Set.Rel.IsWellFounded.inv_of_finiteDimensional [r.FiniteDimensional] :
+    r.inv.IsWellFounded := by
   rw [IsWellFounded, WellFounded.wellFounded_iff_no_descending_seq]
   refine ⟨fun ⟨f, hf⟩ ↦ ?_⟩
   let s := RelSeries.mk (r := r) ((RelSeries.longestOf r).length + 1) (f ·) (hf ·)
   exact (RelSeries.longestOf r).length.lt_succ_self.not_ge s.length_le_length_longestOf
 
 @[deprecated (since := "2025-07-06")]
-alias Rel.wellFounded_swap_of_finiteDimensional := Rel.IsWellFounded.inv_of_finiteDimensional
+alias Rel.wellFounded_swap_of_finiteDimensional :=
+  Set.Rel.IsWellFounded.inv_of_finiteDimensional
 
-lemma Rel.IsWellFounded.of_finiteDimensional [Rel.FiniteDimensional r] : r.IsWellFounded :=
+lemma Set.Rel.IsWellFounded.of_finiteDimensional [Rel.FiniteDimensional r] : r.IsWellFounded :=
   .inv_of_finiteDimensional r.inv
 
 @[deprecated (since := "2025-07-06")]
-alias Rel.wellFounded_of_finiteDimensional := Rel.IsWellFounded.of_finiteDimensional
+alias Set.Rel.wellFounded_of_finiteDimensional := Set.Rel.IsWellFounded.of_finiteDimensional
 
 /-- A type is finite dimensional if its `LTSeries` has bounded length. -/
 abbrev FiniteDimensionalOrder (γ : Type*) [Preorder γ] :=
-  Rel.FiniteDimensional {(a, b) : γ × γ | a < b}
+  Set.Rel.FiniteDimensional {(a, b) : γ × γ | a < b}
 
 instance FiniteDimensionalOrder.ofUnique (γ : Type*) [Preorder γ] [Unique γ] :
     FiniteDimensionalOrder γ where
@@ -866,7 +869,7 @@ instance FiniteDimensionalOrder.ofUnique (γ : Type*) [Preorder γ] [Unique γ] 
 
 /-- A type is infinite dimensional if it has `LTSeries` of at least arbitrary length -/
 abbrev InfiniteDimensionalOrder (γ : Type*) [Preorder γ] :=
-  Rel.InfiniteDimensional {(a, b) : γ × γ | a < b}
+  Set.Rel.InfiniteDimensional {(a, b) : γ × γ | a < b}
 
 section LTSeries
 
@@ -898,7 +901,7 @@ lemma nonempty_of_infiniteDimensionalOrder [InfiniteDimensionalOrder α] : Nonem
 alias nonempty_of_infiniteDimensionalType := nonempty_of_infiniteDimensionalOrder
 
 lemma nonempty_of_finiteDimensionalOrder [FiniteDimensionalOrder α] : Nonempty α := by
-  obtain ⟨p, _⟩ := (Rel.finiteDimensional_iff _).mp ‹_›
+  obtain ⟨p, _⟩ := (Set.Rel.finiteDimensional_iff _).mp ‹_›
   exact ⟨p 0⟩
 
 variable {α}
@@ -1107,16 +1110,16 @@ end LTSeries
 
 lemma not_finiteDimensionalOrder_iff [Preorder α] [Nonempty α] :
     ¬ FiniteDimensionalOrder α ↔ InfiniteDimensionalOrder α :=
-  Rel.not_finiteDimensional_iff
+  Set.Rel.not_finiteDimensional_iff
 
 lemma not_infiniteDimensionalOrder_iff [Preorder α] [Nonempty α] :
     ¬ InfiniteDimensionalOrder α ↔ FiniteDimensionalOrder α :=
-  Rel.not_infiniteDimensional_iff
+  Set.Rel.not_infiniteDimensional_iff
 
 variable (α) in
 lemma finiteDimensionalOrder_or_infiniteDimensionalOrder [Preorder α] [Nonempty α] :
     FiniteDimensionalOrder α ∨ InfiniteDimensionalOrder α :=
-  Rel.finiteDimensional_or_infiniteDimensional _
+  Set.Rel.finiteDimensional_or_infiniteDimensional _
 
 /-- If `f : α → β` is a strictly monotonic function and `α` is an infinite dimensional type then so
   is `β`. -/

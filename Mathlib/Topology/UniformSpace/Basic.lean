@@ -48,8 +48,8 @@ variable {α : Type ua} {β : Type ub} {γ : Type uc} {δ : Type ud} {ι : Sort*
 
 open Set (Rel) in
 open scoped Rel in
-lemma IsOpen.relComp [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] {s : Rel α β}
-    {t : Rel β γ} (hs : IsOpen s) (ht : IsOpen t) : IsOpen (s ○ t) := by
+lemma IsOpen.relComp [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
+    {s : Set.Rel α β} {t : Set.Rel β γ} (hs : IsOpen s) (ht : IsOpen t) : IsOpen (s ○ t) := by
   conv =>
     arg 1; equals ⋃ b, (fun p => (p.1, b)) ⁻¹' s ∩ (fun p => (b, p.2)) ⁻¹' t => ext ⟨_, _⟩; simp
   exact isOpen_iUnion fun a ↦ hs.preimage (by fun_prop) |>.inter <| ht.preimage (by fun_prop)
