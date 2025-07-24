@@ -13,9 +13,15 @@ This file defines a `Module.Finite` instance for a finite direct sum of finite m
 
 -/
 
-open DirectSum
+variable {R : Type*} [Semiring R] {ι : Type*} [_root_.Finite ι]
+variable (M : ι → Type*) [∀ i : ι, AddCommMonoid (M i)] [∀ i : ι, Module R (M i)]
 
-section Semiring
+instance Module.Finite.dfinsupp [∀ (i : ι), Module.Finite R (M i)] :
+    Module.Finite R (Π₀ (i : ι), M i) :=
+  letI : Fintype ι := Fintype.ofFinite _
+  Module.Finite.equiv DFinsupp.linearEquivFunOnFintype.symm
+
+open DirectSum
 
 variable (R : Type*) [Semiring R] {ι : Type*} [Finite ι] (M : ι → Type*)
   [∀ i : ι, AddCommMonoid (M i)] [∀ i : ι, Module R (M i)]
@@ -23,5 +29,3 @@ variable (R : Type*) [Semiring R] {ι : Type*} [Finite ι] (M : ι → Type*)
 instance Module.Finite.directSum [∀ i : ι, Module.Finite R (M i)] : Module.Finite R (⨁ i, M i) := by
   dsimp [DirectSum]
   infer_instance
-
-end Semiring
