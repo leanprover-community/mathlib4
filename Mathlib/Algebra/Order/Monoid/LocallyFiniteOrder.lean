@@ -158,7 +158,7 @@ def LocallyFiniteOrder.orderAddMonoidEquiv [Nontrivial G] :
 lemma LocallyFiniteOrder.orderAddMonoidEquiv_apply [Nontrivial G] (x : G) :
   orderAddMonoidEquiv G x = addMonoidHom G x := rfl
 
-/-- Any linearly ordered abelian group that is locally finite is embeds to `Multiplicative ℤ`. -/
+/-- Any linearly ordered abelian group that is locally finite embeds to `Multiplicative ℤ`. -/
 noncomputable
 def LocallyFiniteOrder.orderMonoidEquiv (G : Type*) [CommGroup G] [LinearOrder G]
     [IsOrderedMonoid G] [LocallyFiniteOrder G] [Nontrivial G] :
@@ -166,7 +166,7 @@ def LocallyFiniteOrder.orderMonoidEquiv (G : Type*) [CommGroup G] [LinearOrder G
   have : LocallyFiniteOrder (Additive G) := ‹LocallyFiniteOrder G›
   (orderAddMonoidEquiv (Additive G)).toMultiplicative
 
-/-- Any linearly ordered abelian group that is locally finite is embeds into `Multiplicative ℤ`. -/
+/-- Any linearly ordered abelian group that is locally finite embeds into `Multiplicative ℤ`. -/
 noncomputable
 def LocallyFiniteOrder.orderMonoidHom (G : Type*) [CommGroup G] [LinearOrder G]
     [IsOrderedMonoid G] [LocallyFiniteOrder G] :
