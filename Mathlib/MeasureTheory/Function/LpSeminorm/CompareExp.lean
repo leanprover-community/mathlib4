@@ -167,11 +167,42 @@ end SameSpace
 
 section Bilinear
 
-variable {α E F G : Type*} {m : MeasurableSpace α}
+variable {α ε ε' ε'' E F G : Type*} {m : MeasurableSpace α}
   [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G] {μ : Measure α}
-  {f : α → E} {g : α → F}
+  [TopologicalSpace ε] [ENormedAddMonoid ε] [TopologicalSpace ε'] [ENormedAddMonoid ε']
+  [TopologicalSpace ε''] [ENormedAddMonoid ε'']
 
 open NNReal
+
+theorem eLpNorm_le_eLpNorm_top_mul_eLpNorm_enorm (p : ℝ≥0∞) (f : α → ε) {g : α → ε'}
+    (hg : AEStronglyMeasurable g μ) (b : ε → ε' → ε'') (c : ℝ≥0)
+    (h : ∀ᵐ x ∂μ, ‖b (f x) (g x)‖ₑ ≤ c * ‖f x‖ₑ * ‖g x‖ₑ) :
+    eLpNorm (fun x ↦ b (f x) (g x)) p μ ≤ c * eLpNorm f ∞ μ * eLpNorm g p μ := by
+  calc
+    eLpNorm (fun x => b (f x) (g x)) p μ ≤ eLpNorm (fun x => c • ‖f x‖ₑ * ‖g x‖ₑ) p μ :=
+      sorry--eLpNorm_mono_ae_real h
+    _ ≤ c * eLpNorm f ∞ μ * eLpNorm g p μ := ?_
+  simp only [smul_mul_assoc, ← Pi.smul_def]
+  -- missing part: eLpNorm'_const_smul'; want a version for ℝ≥0!
+  --have aux := eLpNorm'_const_smul' (f := fun i ↦ ‖f i‖ₑ * ‖g i‖ₑ) c
+  --rw [Real.enorm_eq_ofReal c.coe_nonneg, ENNReal.ofReal_coe_nnreal, mul_assoc]
+  --gcongr
+  --obtain (rfl | rfl | hp) := ENNReal.trichotomy p
+  -- · simp
+  -- · rw [← eLpNorm_norm f, ← eLpNorm_norm g]
+  --   simp_rw [eLpNorm_exponent_top, eLpNormEssSup_eq_essSup_enorm, enorm_mul, enorm_norm]
+  --   exact ENNReal.essSup_mul_le (‖f ·‖ₑ) (‖g ·‖ₑ)
+  -- obtain ⟨hp₁, hp₂⟩ := ENNReal.toReal_pos_iff.mp hp
+  -- simp_rw [eLpNorm_eq_lintegral_rpow_enorm hp₁.ne' hp₂.ne, eLpNorm_exponent_top, eLpNormEssSup,
+  --   one_div, ENNReal.rpow_inv_le_iff hp, enorm_mul, enorm_norm]
+  -- rw [ENNReal.mul_rpow_of_nonneg (hz := hp.le), ENNReal.rpow_inv_rpow hp.ne',
+  --   ← lintegral_const_mul'' _ (by fun_prop)]
+  -- simp only [← ENNReal.mul_rpow_of_nonneg (hz := hp.le)]
+  -- apply lintegral_mono_ae
+  -- filter_upwards [h, enorm_ae_le_eLpNormEssSup f μ] with x hb hf
+  -- refine ENNReal.rpow_le_rpow ?_ hp.le
+  -- gcongr
+  sorry -- exact hf
 
 theorem eLpNorm_le_eLpNorm_top_mul_eLpNorm (p : ℝ≥0∞) (f : α → E) {g : α → F}
     (hg : AEStronglyMeasurable g μ) (b : E → F → G) (c : ℝ≥0)
@@ -331,6 +362,21 @@ alias Memℒp.smul := MemLp.smul
 @[deprecated (since := "2025-02-13")] alias Memℒp.smul_of_top_left := MemLp.smul
 
 end IsBoundedSMul
+
+section ENormSMulClass
+
+variable {𝕜 α ε ε' : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedRing 𝕜]
+  [TopologicalSpace ε] [ENormedAddMonoid ε] [TopologicalSpace ε'] [ENormedAddMonoid ε']
+  [SMul 𝕜 ε] [ContinuousConstSMul 𝕜 ε] [ENormSMulClass 𝕜 ε]
+  [SMul 𝕜 ε'] [ContinuousConstSMul 𝕜 ε'] [ENormSMulClass 𝕜 ε'] {f : α → ε}
+
+theorem eLpNorm_smul_le_eLpNorm_top_mul_eLpNorm'' (p : ℝ≥0∞) (hf : AEStronglyMeasurable f μ)
+    (φ : α → 𝕜) : eLpNorm (φ • f) p μ ≤ eLpNorm φ ∞ μ * eLpNorm f p μ := by
+  simpa using (eLpNorm_le_eLpNorm_top_mul_eLpNorm p φ hf (· • ·) 1
+    (.of_forall fun _ => by simpa using nnnorm_smul_le _ _) :)
+
+
+end ENormSMulClass
 
 section Mul
 

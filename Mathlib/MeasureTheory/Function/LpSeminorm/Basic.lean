@@ -1208,8 +1208,10 @@ theorem eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul {f : α → F} {g : α →
   exact h
 
 -- TODO: eventually, deprecate and remove the nnnorm version
-theorem eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul' {f : α → ε} {g : α → ε'} {c : ℝ≥0}
-    (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) {p : ℝ} (hp : 0 < p) :
+theorem eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul'
+    {β : Type*} [TopologicalSpace β] [ENormedAddMonoid β] [SMul β ℝ≥0∞] [ENormSMulClass β ℝ≥0∞]
+    {f : α → ε} {g : α → ε'} {c : β}
+    (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c • ‖g x‖ₑ) {p : ℝ} (hp : 0 < p) :
     eLpNorm' f p μ ≤ c • eLpNorm' g p μ := by
   simp_rw [eLpNorm'_eq_lintegral_enorm]
   rw [← ENNReal.rpow_le_rpow_iff hp, ENNReal.smul_def, smul_eq_mul,
@@ -1407,9 +1409,10 @@ end IsBoundedSMul
 
 section ENormSMulClass
 
-variable {𝕜 : Type*} [NormedRing 𝕜]
-  {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε] [SMul 𝕜 ε] [ENormSMulClass 𝕜 ε]
-  {c : 𝕜} {f : α → ε}
+variable {β ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+  [TopologicalSpace β] [ENormedAddMonoid β] [SMul β ε] [ENormSMulClass β ε]
+  {𝕜 : Type*} [NormedRing 𝕜] [SMul 𝕜 ε] [ENormSMulClass 𝕜 ε]
+  {c : β} {f : α → ε}
 
 theorem eLpNorm'_const_smul_le' (hq : 0 < q) : eLpNorm' (c • f) q μ ≤ ‖c‖ₑ * eLpNorm' f q μ :=
   eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul'
@@ -1418,7 +1421,7 @@ theorem eLpNorm'_const_smul_le' (hq : 0 < q) : eLpNorm' (c • f) q μ ≤ ‖c�
 theorem eLpNormEssSup_const_smul_le' : eLpNormEssSup (c • f) μ ≤ ‖c‖ₑ * eLpNormEssSup f μ :=
   eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul'
     (Eventually.of_forall fun _ => by simp [enorm_smul])
-
+#exit
 theorem eLpNorm_const_smul_le' : eLpNorm (c • f) p μ ≤ ‖c‖ₑ * eLpNorm f p μ :=
   eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul'
     (Eventually.of_forall fun _ => le_of_eq (enorm_smul ..)) _
@@ -1473,10 +1476,10 @@ end NormedSpace
 
 section ENormSMulClass
 
-variable {𝕜 : Type*} [NormedDivisionRing 𝕜] {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
-  [SMul 𝕜 ε] [ENormSMulClass 𝕜 ε]
+variable {β : Type*} {𝕜 : Type*} [NormedDivisionRing 𝕜] {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+  [TopologicalSpace β] [ENormedAddMonoid β] [SMul β ε] [ENormSMulClass β ε] [SMul 𝕜 ε] [ENormSMulClass 𝕜 ε]
 
-theorem eLpNorm'_const_smul' {f : α → ε} (c : 𝕜) (hq_pos : 0 < q) :
+theorem eLpNorm'_const_smul' {f : α → ε} (c : β) (hq_pos : 0 < q) :
     eLpNorm' (c • f) q μ = ‖c‖ₑ * eLpNorm' f q μ := by
   obtain rfl | hc := eq_or_ne c 0
   · simp [eLpNorm'_eq_lintegral_enorm, hq_pos]
@@ -1489,7 +1492,7 @@ theorem eLpNorm'_const_smul' {f : α → ε} (c : 𝕜) (hq_pos : 0 < q) :
     sorry -- missing assumption on scalar multiplication!
   simpa [this, enorm_inv, hc, ENNReal.div_eq_inv_mul]
     using eLpNorm'_const_smul_le' (c := c⁻¹) (f := c • f) hq_pos (μ := μ)
-
+#exit
 theorem eLpNormEssSup_const_smul' (c : 𝕜) (f : α → ε) :
     eLpNormEssSup (c • f) μ = ‖c‖ₑ * eLpNormEssSup f μ := by
   simp_rw [eLpNormEssSup_eq_essSup_enorm, Pi.smul_apply, enorm_smul,
