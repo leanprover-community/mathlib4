@@ -81,9 +81,6 @@ theorem Linear.image (hs : s.Linear) (f : α →ₗ[ℕ] β) : (f '' s).Linear :
   refine ⟨f v, t.image f, ?_⟩
   simp [image_vadd_distrib, span_image]
 
-theorem Linear.image' (hs : s.Linear) (f : α →+ β) : (f '' s).Linear :=
-  hs.image f.toNatLinearMap
-
 /-- A set is semilinear if it is a finite union of linear sets. -/
 def Semilinear (s : Set α) :=
   ∃ (S : Finset (Set α)), (∀ t ∈ S, t.Linear) ∧ s = ⋃₀ S
@@ -174,9 +171,6 @@ theorem Semilinear.image (hs : s.Semilinear) (f : α →ₗ[ℕ] β) : (f '' s).
   rcases hs with ⟨S, hS, rfl⟩
   simp_rw [sUnion_eq_biUnion, Finset.mem_coe, image_iUnion]
   exact biUnion_finset fun s hs => ((hS s hs).image f).semilinear
-
-theorem Semilinear.image' (hs : s.Semilinear) (f : α →+ β) : (f '' s).Semilinear :=
-  hs.image f.toNatLinearMap
 
 theorem Semilinear.reindex {s : Set (ι₁ → α)} (hs : s.Semilinear) (f : ι₂ → ι₁) :
     ((· ∘ f) '' s).Semilinear :=
