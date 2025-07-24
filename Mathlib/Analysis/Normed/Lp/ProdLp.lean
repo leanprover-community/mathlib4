@@ -624,9 +624,17 @@ theorem prod_lipschitzWith_equiv [PseudoEMetricSpace α] [PseudoEMetricSpace β]
     LipschitzWith 1 (WithLp.equiv p (α × β)) :=
   prod_lipschitzWith_ofLp p α β
 
+lemma prod_antilipschitzWith_toLp [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
+    AntilipschitzWith 1 (@toLp p (α × β)) :=
+  (prod_lipschitzWith_ofLp p α β).to_rightInverse (ofLp_toLp p)
+
 lemma prod_antilipschitzWith_ofLp [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     AntilipschitzWith ((2 : ℝ≥0) ^ (1 / p).toReal) (@ofLp p (α × β)) :=
   prod_antilipschitzWith_ofLp_aux p α β
+
+lemma prod_lipschitzWith_toLp [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
+    LipschitzWith ((2 : ℝ≥0) ^ (1 / p).toReal) (@toLp p (α × β)) :=
+  (prod_antilipschitzWith_ofLp p α β).to_rightInverse (ofLp_toLp p)
 
 @[deprecated prod_antilipschitzWith_ofLp (since := "2024-04-27")]
 theorem prod_antilipschitzWith_equiv [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
@@ -657,6 +665,11 @@ instance instProdSeminormedAddCommGroup [SeminormedAddCommGroup α] [SeminormedA
     · simp only [prod_dist_eq_add (zero_lt_one.trans_le h),
         prod_norm_eq_add (zero_lt_one.trans_le h), dist_eq_norm]
       rfl
+
+lemma isUniformInducing_toLp [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
+    IsUniformInducing (@toLp p (α × β)) :=
+  (prod_antilipschitzWith_toLp p α β).isUniformInducing
+    (prod_lipschitzWith_toLp p α β).uniformContinuous
 
 section
 variable {β p}
@@ -1037,7 +1050,15 @@ end NormedSpace
 
 section toProd
 
-
+/-- This definition allows to endow `α × β` with the Lp distance with the uniformity and bornology
+being defeq to the product ones. It is useful to endow a type synonym of `a × β` with the
+Lp distance. -/
+def pseudoMetricSpace_prod [PseudoMetricSpace α] [PseudoMetricSpace β] :
+    PseudoMetricSpace (α × β) :=
+  (isUniformInducing_toLp p α β).comapPseudoMetricSpace.replaceBornology
+    fun s => Filter.ext_iff.1
+      (le_antisymm (prod_antilipschitzWith_toLp p α β).tendsto_cobounded.le_comap
+        (prod_lipschitzWith_toLp p α β).comap_cobounded_le) sᶜ
 
 end toProd
 
