@@ -184,7 +184,8 @@ lemma bounded_exists (f : ℕ → ℕ → Prop) (s : ℕ) [DecidableRel f]
   simp only [PrimrecPred, h1]
   apply PrimrecPred.not
   apply PrimrecRel.comp Primrec.eq ?_ (const [])
-  apply nat_rel_list_filter hf
+  apply nat_rel_list_filter
+  exact hf
 
 /-- If f a b is decidable, then for any fixed n and y, "∀ x < n, f x y" is a
 primitive recursive predicate in n. This is sometimes easier to work with than the fully
