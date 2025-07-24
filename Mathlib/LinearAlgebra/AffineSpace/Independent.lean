@@ -5,7 +5,7 @@ Authors: Joseph Myers
 -/
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Sign
+import Mathlib.Data.Sign.Basic
 import Mathlib.LinearAlgebra.AffineSpace.Combination
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 import Mathlib.LinearAlgebra.AffineSpace.Restrict
@@ -1134,6 +1134,15 @@ lemma affineCombination_mem_closedInterior_iff {n : ℕ} {s : Simplex k P n} {w 
   simp_rw [← (affineIndependent_iff_eq_of_fintype_affineCombination_eq k s.points).1
     s.independent w' w hw' hw hww']
   exact hw'01
+
+lemma interior_subset_closedInterior {n : ℕ} (s : Simplex k P n) :
+    s.interior ⊆ s.closedInterior :=
+  fun _ ⟨w, hw, hw01, hww⟩ ↦ ⟨w, hw, fun i ↦ ⟨(hw01 i).1.le, (hw01 i).2.le⟩, hww⟩
+
+lemma closedInterior_subset_affineSpan {n : ℕ} {s : Simplex k P n} :
+    s.closedInterior ⊆ affineSpan k (Set.range s.points) := by
+  rintro p ⟨w, hw, hi, rfl⟩
+  exact affineCombination_mem_affineSpan_of_nonempty hw _
 
 end Simplex
 
