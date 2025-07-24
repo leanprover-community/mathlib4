@@ -193,8 +193,6 @@ open CategoryTheory
 /-- An `OrderHom` as a functor `X ⥤ Y` between preorder categories. -/
 abbrev toFunctor (f : X →o Y) : X ⥤ Y := f.monotone.functor
 
-variable (X Y)
-
 /-- The equivalence between `X →o Y` and the type of functors `X ⥤ Y` between preorder categories
 `X` and `Y`. -/
 @[simps]
