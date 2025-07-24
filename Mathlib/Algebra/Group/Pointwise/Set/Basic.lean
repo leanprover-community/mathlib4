@@ -156,6 +156,9 @@ section Inv
 
 variable {ι : Sort*} [Inv α] {s t : Set α} {a : α}
 
+@[to_additive]
+theorem inv_setOf (p : α → Prop) : {x | p x}⁻¹ = {x | p (x⁻¹)} := rfl
+
 @[to_additive (attr := simp)]
 theorem mem_inv : a ∈ s⁻¹ ↔ a⁻¹ ∈ s :=
   Iff.rfl
@@ -239,6 +242,18 @@ theorem inv_insert (a : α) (s : Set α) : (insert a s)⁻¹ = insert a⁻¹ s�
 theorem inv_range {ι : Sort*} {f : ι → α} : (range f)⁻¹ = range fun i => (f i)⁻¹ := by
   rw [← image_inv_eq_inv]
   exact (range_comp ..).symm
+
+@[to_additive]
+theorem image_inv_of_apply_inv_eq {f g : α → β} (H : ∀ x ∈ s, f (x⁻¹) = g x) :
+    f '' (s⁻¹) = g '' s := by
+  ext
+  rw [mem_image, ← (Equiv.inv _).exists_congr_right]
+  aesop
+
+@[to_additive]
+theorem image_inv_of_apply_inv_eq_inv [InvolutiveInv β] {f g : α → β}
+    (H : ∀ x ∈ s, f (x⁻¹) = (g x)⁻¹) : f '' (s⁻¹) = (g '' s)⁻¹ := by
+  conv_rhs => rw [← image_inv_eq_inv, image_image, ← image_inv_of_apply_inv_eq H]
 
 open MulOpposite
 
