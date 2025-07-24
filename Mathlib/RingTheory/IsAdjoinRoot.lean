@@ -627,14 +627,14 @@ end lift
 
 section Equiv
 
-variable {T : Type*} [CommRing T] [Algebra R T] (h' : IsAdjoinRoot T f)
+variable {T : Type*} [CommRing T] [Algebra R T] (h' : IsAdjoinRoot T f) {U : Type*} [CommRing U]
 
 @[simp]
-theorem lift_aequiv {U : Type*} [CommRing U] (i : R →+* U) (x hx z) :
-    h'.lift i x hx (h.aequiv h' z) = h.lift i x hx z := by rw [← h.map_repr z]; simp [- map_repr]
+theorem lift_aequiv (i : R →+* U) (x hx z) : h'.lift i x hx (h.aequiv h' z) = h.lift i x hx z := by
+  rw [← h.map_repr z]; simp [- map_repr]
 
 @[simp]
-theorem liftHom_aequiv {U : Type*} [CommRing U] [Algebra R U] (x : U) (hx z) :
+theorem liftHom_aequiv [Algebra R U] (x : U) (hx z) :
     h'.liftHom x hx (h.aequiv h' z) = h.liftHom x hx z := h.lift_aequiv h' _ _ hx _
 
 end Equiv
