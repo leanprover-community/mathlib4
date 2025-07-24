@@ -472,28 +472,50 @@ theorem map {v' : Valuation R Γ₀} (f : Γ₀ →*₀ Γ'₀) (hf : Monotone f
 theorem comap {S : Type*} [Ring S] (f : S →+* R) (h : v₁.IsEquiv v₂) :
     (v₁.comap f).IsEquiv (v₂.comap f) := fun r s => h (f r) (f s)
 
-theorem val_eq (h : v₁.IsEquiv v₂) {r s : R} : v₁ r = v₁ s ↔ v₂ r = v₂ s := by
-  simpa only [le_antisymm_iff] using and_congr (h r s) (h s r)
+variable (h : v₁.IsEquiv v₂) {x y : R}
+include h
 
-theorem ne_zero (h : v₁.IsEquiv v₂) {r : R} : v₁ r ≠ 0 ↔ v₂ r ≠ 0 := by
-  have : v₁ r ≠ v₁ 0 ↔ v₂ r ≠ v₂ 0 := not_congr h.val_eq
-  rwa [v₁.map_zero, v₂.map_zero] at this
+theorem le_iff_le : v₁ x ≤ v₁ y ↔ v₂ x ≤ v₂ y :=
+  h x y
 
-lemma lt_iff_lt (h : v₁.IsEquiv v₂) {x y : R} :
-    v₁ x < v₁ y ↔ v₂ x < v₂ y := by
+lemma lt_iff_lt : v₁ x < v₁ y ↔ v₂ x < v₂ y := by
   rw [← le_iff_le_iff_lt_iff_lt, h]
 
-lemma le_one_iff_le_one (h : v₁.IsEquiv v₂) {x : R} :
-    v₁ x ≤ 1 ↔ v₂ x ≤ 1 := by
-  rw [← v₁.map_one, h, map_one]
+theorem eq_iff_eq : v₁ x = v₁ y ↔ v₂ x = v₂ y := by
+  simpa only [le_antisymm_iff] using and_congr (h x y) (h y x)
 
-lemma eq_one_iff_eq_one (h : v₁.IsEquiv v₂) {x : R} :
-    v₁ x = 1 ↔ v₂ x = 1 := by
-  rw [← v₁.map_one, h.val_eq, map_one]
+@[deprecated (since := "2025-07-25")]
+alias val_eq := eq_iff_eq
 
-lemma lt_one_iff_lt_one (h : v₁.IsEquiv v₂) {x : R} :
-    v₁ x < 1 ↔ v₂ x < 1 := by
+lemma ne_iff_ne : v₁ x ≠ v₁ y ↔ v₂ x ≠ v₂ y := by
+  rw [not_iff_not, h.eq_iff_eq]
+
+lemma le_one_iff_le_one : v₁ x ≤ 1 ↔ v₂ x ≤ 1 := by
+  rw [← v₁.map_one, h.le_iff_le, map_one]
+
+lemma lt_one_iff_lt_one : v₁ x < 1 ↔ v₂ x < 1 := by
   rw [← v₁.map_one, h.lt_iff_lt, map_one]
+
+lemma eq_one_iff_eq_one : v₁ x = 1 ↔ v₂ x = 1 := by
+  rw [← v₁.map_one, h.eq_iff_eq, map_one]
+
+lemma ne_one_iff_ne_one : v₁ x ≠ 1 ↔ v₂ x ≠ 1 := by
+  rw [not_iff_not, h.eq_one_iff_eq_one]
+
+theorem one_le_iff_one_le : 1 ≤ v₁ x ↔ 1 ≤ v₂ x := by
+  rw [← v₁.map_one, h.le_iff_le, map_one]
+
+theorem one_lt_iff_one_lt : 1 < v₁ x ↔ 1 < v₂ x := by
+  rw [← v₁.map_one, h.lt_iff_lt, map_one]
+
+theorem eq_zero_iff_eq_zero : v₁ x = 0 ↔ v₂ x = 0 := by
+  rw [← v₁.map_zero, h.eq_iff_eq, map_zero]
+
+theorem ne_zero_iff_ne_zero : v₁ x ≠ 0 ↔ v₂ x ≠ 0 := by
+  rw [not_iff_not, h.eq_zero_iff_eq_zero]
+
+@[deprecated (since := "2025-07-25")]
+alias ne_zero := ne_zero_iff_ne_zero
 
 end IsEquiv
 
@@ -941,10 +963,10 @@ theorem comap {S : Type*} [Ring S] (f : S →+* R) (h : v₁.IsEquiv v₂) :
   Valuation.IsEquiv.comap f h
 
 theorem val_eq (h : v₁.IsEquiv v₂) {r s : R} : v₁ r = v₁ s ↔ v₂ r = v₂ s :=
-  Valuation.IsEquiv.val_eq h
+  Valuation.IsEquiv.eq_iff_eq h
 
 theorem ne_top (h : v₁.IsEquiv v₂) {r : R} : v₁ r ≠ (⊤ : Γ₀) ↔ v₂ r ≠ (⊤ : Γ'₀) :=
-  Valuation.IsEquiv.ne_zero h
+  Valuation.IsEquiv.ne_zero_iff_ne_zero h
 
 end IsEquiv
 

@@ -91,49 +91,19 @@ class Compatible (v : Valuation R Γ) where
 
 namespace Compatible
 
-variable (v : Valuation R Γ) (v' : Valuation R Γ') [Compatible v] [Compatible v'] (x y : R)
+variable (v : Valuation R Γ) [Compatible v] (x : R)
 
 lemma rel_one_iff_le_one :
     x ≤ᵥ 1 ↔ v x ≤ 1 := by
   rw [← map_one v, ← Valuation.Compatible.rel_iff_le]
 
-lemma rel_zero_iff_nonpos :
-    x ≤ᵥ 0 ↔ v x ≤ 0 := by
-  rw [← map_zero v, ← Valuation.Compatible.rel_iff_le]
+lemma rel_zero_iff_eq_zero :
+    x ≤ᵥ 0 ↔ v x = 0 := by
+  rw [Valuation.Compatible.rel_iff_le (v := v), map_zero, le_zero_iff]
 
 lemma one_rel_iff_one_le :
     1 ≤ᵥ x ↔ 1 ≤ v x := by
   rw [← map_one v, ← Valuation.Compatible.rel_iff_le]
-
-section compare
--- `v` is placed first in these lemmas because that's the valuation one would typically want to
--- rewrite into.
-
-lemma le_iff_le : v' x ≤ v' y ↔ v x ≤ v y := by
-  simp_rw [← Valuation.Compatible.rel_iff_le]
-
-lemma lt_iff_lt : v' x < v' y ↔ v x < v y := by
-  simp_rw [lt_iff_le_not_ge, le_iff_le v v']
-
-lemma nonpos_iff_nonpos : v' x ≤ 0 ↔ v x ≤ 0 := by
-  rw [← v.map_zero, ← v'.map_zero, le_iff_le v v']
-
-lemma pos_iff_pos : 0 < v' x ↔ 0 < v x := by
-  rw [← v.map_zero, ← v'.map_zero, lt_iff_lt v v']
-
-lemma le_one_iff_le_one : v' x ≤ 1 ↔ v x ≤ 1 := by
-  rw [← v.map_one, ← v'.map_one, le_iff_le v v']
-
-lemma one_le_iff_one_le : 1 ≤ v' x ↔ 1 ≤ v x := by
-  rw [← v.map_one, ← v'.map_one, le_iff_le v v']
-
-lemma lt_one_iff_lt_one : v' x < 1 ↔ v x < 1 := by
-  rw [← v.map_one, ← v'.map_one, lt_iff_lt v v']
-
-lemma one_lt_iff_one_lt : 1 < v' x ↔ 1 < v x := by
-  rw [← v.map_one, ← v'.map_one, lt_iff_lt v v']
-
-end compare
 
 end Compatible
 
