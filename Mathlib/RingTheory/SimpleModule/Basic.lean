@@ -63,6 +63,8 @@ variable {ι : Type*} (R S : Type*) [Ring R] [Ring S] (M : Type*) [AddCommGroup 
 
 instance [IsSimpleModule R M] : IsSemisimpleModule R M where
 
+instance (R) [DivisionRing R] : IsSimpleModule R R where
+
 /-- A ring is semisimple if it is semisimple as a module over itself. -/
 abbrev IsSemisimpleRing := IsSemisimpleModule R R
 
