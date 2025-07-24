@@ -7,7 +7,12 @@ import Mathlib.Algebra.Order.Group.Units
 import Mathlib.Data.Int.Interval
 import Mathlib.GroupTheory.Archimedean
 import Mathlib.GroupTheory.OrderOfElement
+<<<<<<< HEAD
 import Mathlib.Order.DenselyOrderedLocallyFinite
+||||||| 4784b207d8
+=======
+import Mathlib.Order.Interval.Finset.DenselyOrdered
+>>>>>>> upstream/master
 
 /-!
 # Archimedean groups are either discrete or densely ordered
@@ -588,29 +593,23 @@ instance [DenselyOrdered X] : DenselyOrdered (Multiplicative X) :=
 instance [DenselyOrdered X] : DenselyOrdered (Additive X) :=
   denselyOrdered_additive_iff.2 ‹_›
 
-lemma denselyOrdered_withZero_iff {M : Type*} [Preorder M] [NoMinOrder M] :
-    DenselyOrdered (WithZero M) ↔ DenselyOrdered M := by
-  constructor <;> intro h <;> constructor
-  · intro a b hab
-    obtain ⟨c, hc⟩ := exists_between (WithZero.coe_lt_coe.mpr hab)
-    induction c with
-    | zero => simp at hc
-    | coe c => exact ⟨c, by simpa using hc⟩
-  · simpa [WithZero.exists, WithZero.forall, exists_lt] using DenselyOrdered.dense
+lemma WithZero.denselyOrdered_iff {M : Type*} [Preorder M] [NoMinOrder M] :
+    DenselyOrdered (WithZero M) ↔ DenselyOrdered M :=
+  WithBot.denselyOrdered_iff
 
 instance {X : Type*} [Preorder X] [NoMinOrder X] [DenselyOrdered X] :
     DenselyOrdered (WithZero X) :=
-  denselyOrdered_withZero_iff.mpr ‹_›
+  WithZero.denselyOrdered_iff.mpr inferInstance
 
 lemma Int.not_denselyOrdered : ¬ DenselyOrdered ℤ :=
   (LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered ℤ).mp ⟨.refl _⟩
 
-lemma not_denselyOrdered_withZeroInt : ¬ DenselyOrdered ℤᵐ⁰ :=
+lemma not_denselyOrdered_withZero_int : ¬ DenselyOrdered ℤᵐ⁰ :=
   (LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered _).mp ⟨.refl _⟩
 
-lemma denselyOrdered_withZero_set_iff_subsingleton {X : Type*} [LinearOrder X]
+lemma WithZero.denselyOrdered_set_iff_subsingleton {X : Type*} [LinearOrder X]
     [LocallyFiniteOrder X] {s : Set (WithZero X)} :
     DenselyOrdered s ↔ s.Subsingleton :=
-  denselyOrdered_withBot_set_iff_subsingleton
+  WithBot.denselyOrdered_set_iff_subsingleton
 
 end DenselyOrdered
