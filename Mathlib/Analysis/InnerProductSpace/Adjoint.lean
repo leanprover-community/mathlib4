@@ -40,7 +40,7 @@ adjoint
 
 noncomputable section
 
-open RCLike
+open Module RCLike
 
 open scoped ComplexConjugate
 

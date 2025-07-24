@@ -34,6 +34,7 @@ Bilinear form,
 
 
 open LinearMap (BilinForm)
+open Module
 
 universe u v w
 
