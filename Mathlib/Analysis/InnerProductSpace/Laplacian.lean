@@ -291,7 +291,7 @@ theorem laplacianWithin_smul_nhds
 /-- The Laplacian commutes with scalar multiplication. -/
 theorem laplacian_smul_nhds (v : ℝ) (h : ContDiffAt ℝ 2 f x) :
     Δ (v • f) =ᶠ[𝓝 x] v • (Δ f) := by
-  filter_upwards [h.eventually (not_eq_of_beq_eq_false rfl)] with a ha
+  filter_upwards [h.eventually (by simp)] with a ha
   simp [laplacian_smul v ha]
 
 /-!

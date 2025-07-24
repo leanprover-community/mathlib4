@@ -259,11 +259,11 @@ theorem isFractionRing_of_isLocalization (S T : Type*) [CommRing S] [CommRing T]
   have := isLocalization_of_submonoid_le S T M (nonZeroDivisors R) hM
   refine @isLocalization_of_is_exists_mul_mem _ _ _ _ _ _ _ this ?_ ?_
   · exact map_nonZeroDivisors_le M S
-  · rintro ⟨x, hx⟩
+  · rintro ⟨x, -, hx⟩
     obtain ⟨⟨y, s⟩, e⟩ := IsLocalization.surj M x
     use algebraMap R S s
     rw [mul_comm, Subtype.coe_mk, e]
-    refine Set.mem_image_of_mem (algebraMap R S) ?_
+    refine Set.mem_image_of_mem (algebraMap R S) (mem_nonZeroDivisors_iff_right.mpr ?_)
     intro z hz
     apply IsLocalization.injective S hM
     rw [map_zero]

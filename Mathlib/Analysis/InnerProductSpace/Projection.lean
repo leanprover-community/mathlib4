@@ -500,7 +500,7 @@ theorem starProjection_inner_eq_zero (v : E) :
     ∀ w ∈ K, ⟪v - K.starProjection v, w⟫ = 0 :=
   orthogonalProjectionFn_inner_eq_zero v
 
-@[deprecated (since := "07-07-2025")] alias orthogonalProjection_inner_eq_zero :=
+@[deprecated (since := "2025-07-07")] alias orthogonalProjection_inner_eq_zero :=
   starProjection_inner_eq_zero
 
 /-- The difference of `v` from its orthogonal projection onto `K` is in `Kᗮ`. -/
@@ -510,7 +510,7 @@ theorem sub_starProjection_mem_orthogonal (v : E) : v - K.starProjection v ∈ K
   rw [inner_eq_zero_symm]
   exact starProjection_inner_eq_zero _ _ hw
 
-@[deprecated (since := "07-07-2025")] alias sub_orthogonalProjection_mem_orthogonal :=
+@[deprecated (since := "2025-07-07")] alias sub_orthogonalProjection_mem_orthogonal :=
   sub_starProjection_mem_orthogonal
 
 /-- The orthogonal projection is the unique point in `K` with the
@@ -519,7 +519,7 @@ theorem eq_starProjection_of_mem_of_inner_eq_zero {u v : E} (hvm : v ∈ K)
     (hvo : ∀ w ∈ K, ⟪u - v, w⟫ = 0) : K.starProjection u = v :=
   eq_orthogonalProjectionFn_of_mem_of_inner_eq_zero hvm hvo
 
-@[deprecated (since := "07-07-2025")] alias eq_orthogonalProjection_of_mem_of_inner_eq_zero :=
+@[deprecated (since := "2025-07-07")] alias eq_orthogonalProjection_of_mem_of_inner_eq_zero :=
   eq_starProjection_of_mem_of_inner_eq_zero
 
 /-- A point in `K` with the orthogonality property (here characterized in terms of `Kᗮ`) must be the
@@ -528,7 +528,7 @@ theorem eq_starProjection_of_mem_orthogonal {u v : E} (hv : v ∈ K)
     (hvo : u - v ∈ Kᗮ) : K.starProjection u = v :=
   eq_orthogonalProjectionFn_of_mem_of_inner_eq_zero hv <| (Submodule.mem_orthogonal' _ _).1 hvo
 
-@[deprecated (since := "07-07-2025")] alias eq_orthogonalProjection_of_mem_orthogonal :=
+@[deprecated (since := "2025-07-07")] alias eq_orthogonalProjection_of_mem_orthogonal :=
   eq_starProjection_of_mem_orthogonal
 
 /-- A point in `K` with the orthogonality property (here characterized in terms of `Kᗮ`) must be the
@@ -537,7 +537,7 @@ theorem eq_starProjection_of_mem_orthogonal' {u v z : E}
     (hv : v ∈ K) (hz : z ∈ Kᗮ) (hu : u = v + z) : K.starProjection u = v :=
   eq_starProjection_of_mem_orthogonal hv (by simpa [hu] )
 
-@[deprecated (since := "07-07-2025")] alias eq_orthogonalProjection_of_mem_orthogonal' :=
+@[deprecated (since := "2025-07-07")] alias eq_orthogonalProjection_of_mem_orthogonal' :=
   eq_starProjection_of_mem_orthogonal'
 
 @[simp]
@@ -546,7 +546,7 @@ theorem starProjection_orthogonal_val (u : E) :
   eq_starProjection_of_mem_orthogonal' (sub_starProjection_mem_orthogonal _)
     (K.le_orthogonal_orthogonal (K.orthogonalProjection u).2) <| (sub_add_cancel _ _).symm
 
-@[deprecated (since := "07-07-2025")] alias orthogonalProjection_orthogonal_val :=
+@[deprecated (since := "2025-07-07")] alias orthogonalProjection_orthogonal_val :=
   starProjection_orthogonal_val
 
 theorem orthogonalProjection_orthogonal (u : E) :
@@ -559,7 +559,7 @@ lemma starProjection_orthogonal (U : Submodule 𝕜 E) [U.HasOrthogonalProjectio
   ext
   simp only [starProjection, ContinuousLinearMap.comp_apply,
     orthogonalProjection_orthogonal]
-  rfl
+  simp
 
 lemma starProjection_orthogonal' (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
     Uᗮ.starProjection = 1 - U.starProjection := starProjection_orthogonal U
@@ -595,7 +595,7 @@ theorem starProjection_eq_self_iff {v : E} : K.starProjection v = v ↔ v ∈ K 
     simp
   · simp
 
-@[deprecated (since := "07-07-2025")] alias orthogonalProjection_eq_self_iff :=
+@[deprecated (since := "2025-07-07")] alias orthogonalProjection_eq_self_iff :=
   starProjection_eq_self_iff
 
 variable (K) in
@@ -645,7 +645,7 @@ theorem _root_.LinearIsometry.map_starProjection {E E' : Type*} [NormedAddCommGr
   rcases hy with ⟨x', hx', rfl : f x' = y⟩
   rw [← f.map_sub, f.inner_map_map, starProjection_inner_eq_zero x x' hx']
 
-@[deprecated (since := "07-07-2025")] alias _root_.LinearIsometry.map_orthogonalProjection :=
+@[deprecated (since := "2025-07-07")] alias _root_.LinearIsometry.map_orthogonalProjection :=
   LinearIsometry.map_starProjection
 
 theorem _root_.LinearIsometry.map_starProjection' {E E' : Type*} [NormedAddCommGroup E]
@@ -655,7 +655,7 @@ theorem _root_.LinearIsometry.map_starProjection' {E E' : Type*} [NormedAddCommG
   have : (p.map f.toLinearMap).HasOrthogonalProjection := ‹_›
   f.map_starProjection p x
 
-@[deprecated (since := "07-07-2025")] alias _root_.LinearIsometry.map_orthogonalProjection' :=
+@[deprecated (since := "2025-07-07")] alias _root_.LinearIsometry.map_orthogonalProjection' :=
   LinearIsometry.map_starProjection'
 
 /-- Orthogonal projection onto the `Submodule.map` of a subspace. -/
@@ -667,7 +667,7 @@ theorem starProjection_map_apply {E E' : Type*} [NormedAddCommGroup E]
   simpa only [f.coe_toLinearIsometry, f.apply_symm_apply] using
     (f.toLinearIsometry.map_starProjection' p (f.symm x)).symm
 
-@[deprecated (since := "07-07-2025")] alias orthogonalProjection_map_apply :=
+@[deprecated (since := "2025-07-07")] alias orthogonalProjection_map_apply :=
   starProjection_map_apply
 
 /-- The orthogonal projection onto the trivial submodule is the zero map. -/
@@ -720,7 +720,7 @@ theorem smul_starProjection_singleton {v : E} (w : E) :
   · rw [← Submodule.mem_orthogonal', Submodule.mem_orthogonal_singleton_iff_inner_left]
     simp [inner_sub_left, inner_smul_left, inner_self_eq_norm_sq_to_K, mul_comm]
 
-@[deprecated (since := "07-07-2025")] alias smul_orthogonalProjection_singleton :=
+@[deprecated (since := "2025-07-07")] alias smul_orthogonalProjection_singleton :=
   smul_starProjection_singleton
 
 /-- Formula for orthogonal projection onto a single vector. -/
@@ -736,7 +736,7 @@ theorem starProjection_singleton {v : E} (w : E) :
     simp [mul_smul, smul_starProjection_singleton 𝕜 w, -map_pow]
   convert key using 1 <;> field_simp [hv']
 
-@[deprecated (since := "07-07-2025")] alias orthogonalProjection_singleton :=
+@[deprecated (since := "2025-07-07")] alias orthogonalProjection_singleton :=
   starProjection_singleton
 
 /-- Formula for orthogonal projection onto a single unit vector. -/
@@ -745,7 +745,7 @@ theorem starProjection_unit_singleton {v : E} (hv : ‖v‖ = 1) (w : E) :
   rw [← smul_starProjection_singleton 𝕜 w]
   simp [hv]
 
-@[deprecated (since := "07-07-2025")] alias orthogonalProjection_unit_singleton :=
+@[deprecated (since := "2025-07-07")] alias orthogonalProjection_unit_singleton :=
   starProjection_unit_singleton
 
 end orthogonalProjection
@@ -1001,7 +1001,7 @@ theorem orthogonalProjection_starProjection_of_le {U V : Submodule 𝕜 E}
       orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero
         (Submodule.orthogonal_le h (sub_starProjection_mem_orthogonal x))
 
-@[deprecated (since := "07-07-2025")] alias orthogonalProjection_orthogonalProjection_of_le :=
+@[deprecated (since := "2025-07-07")] alias orthogonalProjection_orthogonalProjection_of_le :=
   orthogonalProjection_starProjection_of_le
 
 /-- Given a monotone family `U` of complete submodules of `E` and a fixed `x : E`,
@@ -1033,7 +1033,7 @@ theorem starProjection_tendsto_closure_iSup {ι : Type*} [Preorder ι]
   change _ ≤ ‖y - (⟨a, hU hi hI⟩ : U i)‖
   exact ciInf_le ⟨0, Set.forall_mem_range.mpr fun _ => norm_nonneg _⟩ _
 
-@[deprecated (since := "07-07-2025")] alias orthogonalProjection_tendsto_closure_iSup :=
+@[deprecated (since := "2025-07-07")] alias orthogonalProjection_tendsto_closure_iSup :=
   starProjection_tendsto_closure_iSup
 
 /-- Given a monotone family `U` of complete submodules of `E` with dense span supremum,
@@ -1049,7 +1049,7 @@ theorem starProjection_tendsto_self {ι : Type*} [Preorder ι]
   rw [eq_comm, starProjection_eq_self_iff, top_unique hU']
   trivial
 
-@[deprecated (since := "07-07-2025")] alias
+@[deprecated (since := "2025-07-07")] alias
   orthogonalProjection_tendsto_self := starProjection_tendsto_self
 
 /-- The orthogonal complement satisfies `Kᗮᗮᗮ = Kᗮ`. -/
@@ -1180,7 +1180,7 @@ theorem starProjection_add_starProjection_orthogonal [K.HasOrthogonalProjection]
     (w : E) : K.starProjection w + Kᗮ.starProjection w = w := by
   simp
 
-@[deprecated (since := "07-07-2025")] alias
+@[deprecated (since := "2025-07-07")] alias
   orthogonalProjection_add_orthogonalProjection_orthogonal :=
   starProjection_add_starProjection_orthogonal
 
@@ -1203,7 +1203,7 @@ theorem id_eq_sum_starProjection_self_orthogonalComplement [K.HasOrthogonalProje
   ext w
   exact (K.starProjection_add_starProjection_orthogonal w).symm
 
-@[deprecated (since := "07-07-2025")] alias
+@[deprecated (since := "2025-07-07")] alias
   id_eq_sum_orthogonalProjection_self_orthogonalComplement :=
   id_eq_sum_starProjection_self_orthogonalComplement
 
@@ -1229,7 +1229,7 @@ theorem inner_starProjection_left_eq_right [K.HasOrthogonalProjection] (u v : E)
   simp_rw [starProjection_apply, ← inner_orthogonalProjection_eq_of_mem_left,
     inner_orthogonalProjection_eq_of_mem_right]
 
-@[deprecated (since := "07-07-2025")] alias
+@[deprecated (since := "2025-07-07")] alias
   inner_orthogonalProjection_left_eq_right := inner_starProjection_left_eq_right
 
 /-- The orthogonal projection is symmetric. -/
@@ -1237,7 +1237,7 @@ theorem starProjection_isSymmetric [K.HasOrthogonalProjection] :
     (K.starProjection : E →ₗ[𝕜] E).IsSymmetric :=
   inner_starProjection_left_eq_right K
 
-@[deprecated (since := "07-07-2025")] alias
+@[deprecated (since := "2025-07-07")] alias
   orthogonalProjection_isSymmetric := starProjection_isSymmetric
 
 lemma re_inner_starProjection_eq_normSq [K.HasOrthogonalProjection] (v : E) :
@@ -1248,7 +1248,7 @@ lemma re_inner_starProjection_eq_normSq [K.HasOrthogonalProjection] (v : E) :
     ← mul_sub_one, show (2 : ℝ) - 1 = 1 by norm_num, mul_one, sub_eq_iff_eq_add', norm_sub_rev]
   exact orthogonalProjectionFn_norm_sq K v
 
-@[deprecated (since := "07-07-2025")] alias
+@[deprecated (since := "2025-07-07")] alias
   re_inner_orthogonalProjection_eq_normSq := re_inner_starProjection_eq_normSq
 
 lemma re_inner_starProjection_nonneg [K.HasOrthogonalProjection] (v : E) :
@@ -1256,7 +1256,7 @@ lemma re_inner_starProjection_nonneg [K.HasOrthogonalProjection] (v : E) :
   rw [re_inner_starProjection_eq_normSq K v]
   exact sq_nonneg ‖K.orthogonalProjection v‖
 
-@[deprecated (since := "07-07-2025")] alias
+@[deprecated (since := "2025-07-07")] alias
   re_inner_orthogonalProjection_nonneg := re_inner_starProjection_nonneg
 
 open Module

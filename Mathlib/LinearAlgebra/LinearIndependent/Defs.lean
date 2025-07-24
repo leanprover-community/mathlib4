@@ -624,7 +624,14 @@ theorem LinearIndependent.maximal_iff {ι : Type w} {R : Type u} [Semiring R] [N
 
 end Maximal
 
-section CanonicallyOrderedAdd
+/-!
+### Properties which require `LinearOrder R`, `CanonicallyOrderedAdd R` and `OrderedSub R`
+
+If the semiring `R` is linearly and canonically ordered and admits ordered subtraction (e.g.
+`R = ℕ`), `LinearIndependent` can be proved from linear combination over two disjoint sets.
+-/
+
+section LinearlyCanonicallyOrdered
 
 variable [LinearOrder R] [CanonicallyOrderedAdd R] [AddLeftMono R] [Sub R] [OrderedSub R]
 variable [IsCancelAdd M]
@@ -644,18 +651,16 @@ theorem linearIndependent_iffₒ :
   · specialize h (s.filter fun i => g i ≤ f i) (s.filter fun i => f i < g i) (f - g) (g - f) ?_ ?_
     · simp_rw [Finset.disjoint_left, Finset.mem_filter]
       exact fun i ⟨_, hi⟩ ⟨_, hi'⟩ => hi.not_gt hi'
-    · rw [←add_right_cancel_iff
+    · rw [← add_right_cancel_iff
         (a := ∑ i ∈ s with g i ≤ f i, g i • v i + ∑ i ∈ s with f i < g i, f i • v i)]
-      conv => lhs; rw [←add_assoc, ←Finset.sum_add_distrib]
-      conv => rhs; rw [add_left_comm, ←Finset.sum_add_distrib]
-      convert heq <;> simp_rw [←Finset.sum_filter_add_sum_filter_not s (fun i => g i ≤ f i), not_le]
-        <;> congr 1
-      · refine Finset.sum_congr rfl fun i hi => ?_
-        simp only [Finset.mem_filter] at hi
-        simp [←add_smul, tsub_add_cancel_of_le hi.2]
-      · refine Finset.sum_congr rfl fun i hi => ?_
-        simp only [Finset.mem_filter] at hi
-        simp [←add_smul, tsub_add_cancel_of_le hi.2.le]
+      conv => lhs; rw [← add_assoc, ← Finset.sum_add_distrib]
+      conv => rhs; rw [add_left_comm, ← Finset.sum_add_distrib]
+      convert heq
+        <;> simp_rw [← Finset.sum_filter_add_sum_filter_not s (fun i => g i ≤ f i), not_le]
+        <;> congr 1 <;> refine Finset.sum_congr rfl fun i hi => ?_
+        <;> simp only [Finset.mem_filter] at hi
+      · simp [← add_smul, tsub_add_cancel_of_le hi.2]
+      · simp [← add_smul, tsub_add_cancel_of_le hi.2.le]
     · intro i hi
       by_cases hi' : g i ≤ f i
       · exact hi'.antisymm' (tsub_eq_zero_iff_le.1 (h.1 i (Finset.mem_filter.2 ⟨hi, hi'⟩)))
@@ -708,7 +713,7 @@ lemma linearIndepOn_finset_iffₒ [DecidableEq ι] {s : Finset ι} :
         rw [← s.subtype_map_of_mem (fun x hx => hx), Finset.subtype_eq_univ.2 (fun x hx => hx)]
       erw [← Finset.map_sdiff]
       simpa [Embedding.subtype, -Finset.univ_eq_attach,
-        (Finset.inter_eq_right (t := .univ \ t₁)).2
+        (Finset.inter_eq_right (t := Finset.univ \ t₁)).2
           (Finset.subset_sdiff.2 ⟨t₂.subset_univ, ht₁t₂.symm⟩)] using heq
     · simp only [Finset.coe_sort_coe, Embedding.subtype, Finset.mem_map, Embedding.coeFn_mk,
         Subtype.exists, exists_and_right, exists_eq_right, dite_eq_right_iff, forall_exists_index,
@@ -730,7 +735,7 @@ lemma not_linearIndepOn_finset_iffₒ [DecidableEq ι] {s : Finset ι} :
   · refine ⟨s \ t, Finset.sdiff_subset, g, f, ?_, i, hi, pos_of_ne_zero hgi⟩
     simpa [Finset.sdiff_sdiff_eq_self hst] using heq.symm
 
-end CanonicallyOrderedAdd
+end LinearlyCanonicallyOrdered
 
 end Semiring
 

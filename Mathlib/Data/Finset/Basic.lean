@@ -181,8 +181,8 @@ theorem ssubset_iff_exists_subset_erase {s t : Finset α} : s ⊂ t ↔ ∃ a �
   exact ⟨a, ht, subset_erase.2 ⟨h.1, hs⟩⟩
 
 theorem erase_ssubset_insert (s : Finset α) (a : α) : s.erase a ⊂ insert a s :=
-  ssubset_iff_exists_subset_erase.2
-    ⟨a, mem_insert_self _ _, erase_subset_erase _ <| subset_insert _ _⟩
+  ssubset_iff_exists_subset_erase.2 <| by
+    exact ⟨a, mem_insert_self _ _, by grw [← subset_insert]⟩
 
 theorem erase_cons {s : Finset α} {a : α} (h : a ∉ s) : (s.cons a h).erase a = s := by
   rw [cons_eq_insert, erase_insert_eq_erase, erase_eq_of_notMem h]
@@ -394,15 +394,15 @@ theorem filter_union (s₁ s₂ : Finset α) : (s₁ ∪ s₂).filter p = s₁.f
   ext fun _ => by simp only [mem_filter, mem_union, or_and_right]
 
 theorem filter_union_right (s : Finset α) : s.filter p ∪ s.filter q = s.filter fun x => p x ∨ q x :=
-  ext fun x => by simp only [mem_filter, mem_union, ← and_or_left]
+  ext fun x => by simp [mem_filter, mem_union, ← and_or_left]
 
-theorem filter_mem_eq_inter {s t : Finset α} :
+theorem filter_mem_eq_inter {s t : Finset α} [∀ i, Decidable (i ∈ t)] :
     (s.filter fun i => i ∈ t) = s ∩ t :=
-  ext fun i => by simp only [mem_filter, mem_inter]
+  ext fun i => by simp [mem_filter, mem_inter]
 
-theorem filter_notMem_eq_sdiff {s t : Finset α} :
+theorem filter_notMem_eq_sdiff {s t : Finset α} [∀ i, Decidable (i ∉ t)] :
     (s.filter fun i => i ∉ t) = s \ t :=
-  ext fun i => by simp only [mem_filter, mem_sdiff]
+  ext fun _ => by simp only [mem_filter, mem_sdiff]
 
 theorem filter_inter_distrib (s t : Finset α) : (s ∩ t).filter p = s.filter p ∩ t.filter p := by
   ext
