@@ -209,6 +209,7 @@ variable (M) in
 theorem embedReal_injective : Function.Injective (embedReal M) :=
   (embedRealFun_strictMono M).injective
 
+@[simp]
 theorem embedReal_one : (embedReal M) 1 = 1 := by
   rw [embedReal_apply]
   apply le_antisymm
