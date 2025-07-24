@@ -79,7 +79,7 @@ theorem prod_image [DecidableEq ι] {s : Finset κ} {g : κ → ι} :
 lemma prod_attach (s : Finset ι) (f : ι → M) : ∏ x ∈ s.attach, f x = ∏ x ∈ s, f x := by
   classical rw [← prod_image Subtype.coe_injective.injOn, attach_image_val]
 
-@[to_additive (attr := congr, grind)]
+@[to_additive (attr := congr, grind ←)]
 theorem prod_congr (h : s₁ = s₂) : (∀ x ∈ s₂, f x = g x) → s₁.prod f = s₂.prod g := by
   rw [h]; exact fold_congr
 
