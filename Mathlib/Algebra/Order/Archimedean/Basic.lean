@@ -419,7 +419,7 @@ theorem exists_div_btwn {x y : K} {n : ℕ} (h : x < y) (nh : (y - x)⁻¹ < n) 
   refine lt_of_le_of_lt (add_le_add_right ((zh _).1 le_rfl) _) ?_
   rwa [← lt_sub_iff_add_lt', ← sub_mul, ← div_lt_iff₀' (sub_pos.2 h), one_div]
 
-theorem exists_rat_btwn {x y : K} (h : x < y) : ∃ q : ℚ, x < q ∧ (q : K) < y := by
+theorem exists_rat_btwn {x y : K} (h : x < y) : ∃ q : ℚ, x < q ∧ q < y := by
   obtain ⟨n, nh⟩ := exists_nat_gt (y - x)⁻¹
   obtain ⟨z, zh, zh'⟩ := exists_div_btwn h nh
   refine ⟨(z : ℚ) / n, ?_, ?_⟩ <;> simpa
