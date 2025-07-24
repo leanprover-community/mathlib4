@@ -5139,6 +5139,7 @@ import Mathlib.RepresentationTheory.Character
 import Mathlib.RepresentationTheory.Coinduced
 import Mathlib.RepresentationTheory.Coinvariants
 import Mathlib.RepresentationTheory.FDRep
+import Mathlib.RepresentationTheory.FinGroupCharZero
 import Mathlib.RepresentationTheory.FiniteIndex
 import Mathlib.RepresentationTheory.GroupCohomology.Basic
 import Mathlib.RepresentationTheory.GroupCohomology.Functoriality
@@ -5592,6 +5593,7 @@ import Mathlib.RingTheory.RootsOfUnity.Lemmas
 import Mathlib.RingTheory.RootsOfUnity.Minpoly
 import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 import Mathlib.RingTheory.SimpleModule.Basic
+import Mathlib.RingTheory.SimpleModule.InjectiveProjective
 import Mathlib.RingTheory.SimpleModule.IsAlgClosed
 import Mathlib.RingTheory.SimpleModule.Isotypic
 import Mathlib.RingTheory.SimpleModule.Rank

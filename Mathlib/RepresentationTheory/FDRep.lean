@@ -1,134 +1,237 @@
 /-
-Copyright (c) 2025 Sophie Morel. All rights reserved.
+Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sophie Morel
+Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.FGModuleCat.Abelian
-import Mathlib.Algebra.Category.ModuleCat.Injective
-import Mathlib.RepresentationTheory.Character
-import Mathlib.RepresentationTheory.Maschke
-import Mathlib.RingTheory.SimpleModule.InjectiveProjective
+import Mathlib.Algebra.Category.FGModuleCat.Limits
+import Mathlib.Algebra.Category.FGModuleCat.Colimits
+import Mathlib.CategoryTheory.Monoidal.Rigid.Braided
+import Mathlib.CategoryTheory.Preadditive.Schur
+import Mathlib.RepresentationTheory.Basic
+import Mathlib.RepresentationTheory.Rep
 
 /-!
-# Applications of Maschke's theorem
+# `FDRep k G` is the category of finite dimensional `k`-linear representations of `G`.
 
-This proves some properties of representations that follow from Maschke's
-theorem.
+If `V : FDRep k G`, there is a coercion that allows you to treat `V` as a type,
+and this type comes equipped with `Module k V` and `FiniteDimensional k V` instances.
+Also `V.ρ` gives the homomorphism `G →* (V →ₗ[k] V)`.
 
-We prove that, if `G` is a finite group whose order is invertible in a field `k`,
-then every object of `Rep k G` (resp. `FDRep k G`) is injective and projective.
+Conversely, given a homomorphism `ρ : G →* (V →ₗ[k] V)`,
+you can construct the bundled representation as `Rep.of ρ`.
 
-We also give two simpleness criteria for an object `V` of `FDRep k G`, when `k` is
-an algebraically closed field in which the order of `G` is invertible:
-* `FDRep.simple_iff_end_is_rank_one`: `V` is simple if and only `V ⟶ V` is a `k`-vector
-space of dimension `1`.
-* `FDRep.simple_iff_char_is_norm_one`: when `k` is characteristic zero, `V` is simple
-if and only if `∑ g : G, V.character g * V.character g⁻¹ = Fintype.card G`.
+We prove Schur's Lemma: the dimension of the `Hom`-space between two irreducible representation is
+`0` if they are not isomorphic, and `1` if they are.
+This is the content of `finrank_hom_simple_simple`
+
+We verify that `FDRep k G` is a `k`-linear monoidal category, and rigid when `G` is a group.
+
+`FDRep k G` has all finite limits.
+
+## Implementation notes
+
+We define `FDRep R G` for any ring `R` and monoid `G`,
+as the category of finitely generated `R`-linear representations of `G`.
+
+The main case of interest is when `R = k` is a field and `G` is a group,
+and this is reflected in the documentation.
+
+## TODO
+* `FdRep k G ≌ FullSubcategory (FiniteDimensional k)`
+* `FdRep k G` has all finite colimits.
+* `FdRep k G` is abelian.
+* `FdRep k G ≌ FGModuleCat (MonoidAlgebra k G)`.
 
 -/
+
+suppress_compilation
 
 universe u
 
-variable {k : Type u} [Field k] {G : Type u} [Fintype G] [Group G]
+open CategoryTheory
 
-open CategoryTheory Limits
+open CategoryTheory.Limits
 
-namespace Rep
 
-variable [NeZero (Fintype.card G : k)]
+/-- The category of finitely generated `R`-linear representations of a monoid `G`.
 
-/--
-If `G` is finite and its order is nonzero in the field `k`, then every object of
-`Rep k G` is injective.
--/
-instance (V : Rep k G) : Injective V := by
-  rw [← Rep.equivalenceModuleMonoidAlgebra.map_injective_iff,
-    ← Module.injective_iff_injective_object]
-  exact Module.injective_of_semisimple_ring _ _
-
-/--
-If `G` is finite and its order is nonzero in the field `k`, then every object of
-`Rep k G` is projective.
--/
--- Will this clash with the previously defined `Projective` instances?
-instance (V : Rep k G) : Projective V := by
-  rw [← Rep.equivalenceModuleMonoidAlgebra.map_projective_iff,
-    ← IsProjective.iff_projective]
-  exact Module.projective_of_semisimple_ring _ _
-
-end Rep
+Note that `R` can be any ring,
+but the main case of interest is when `R = k` is a field and `G` is a group. -/
+abbrev FDRep (R G : Type u) [Ring R] [Monoid G] :=
+  Action (FGModuleCat.{u} R) G
 
 namespace FDRep
 
-/--
-If `G` is finite and its order is nonzero in the field `k`, then every object of
-`FDRep k G` is injective.
--/
-instance [NeZero (Fintype.card G : k)] (V : FDRep k G) : Injective V := (forget₂ (FDRep k G)
-  (Rep k G)).injective_of_map_injective inferInstance
+variable {R k G : Type u} [CommRing R] [Field k] [Monoid G]
 
-/--
-If `G` is finite and its order is nonzero in the field `k`, then every object of
-`FDRep k G` is projective.
--/
-instance [NeZero (Fintype.card G : k)] (V : FDRep k G) : Projective V := (forget₂ (FDRep k G)
-  (Rep k G)).projective_of_map_projective inferInstance
+-- The `LargeCategory, ConcreteCategory, Preadditive, HasFiniteLimits` instances should be
+-- constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
+instance : LargeCategory (FDRep R G) := inferInstance
+instance : ConcreteCategory (FDRep R G) (Action.HomSubtype _ _) := inferInstance
+instance : Preadditive (FDRep R G) := inferInstance
+instance : HasFiniteLimits (FDRep k G) := inferInstance
 
-variable [IsAlgClosed k]
+instance : Linear R (FDRep R G) := by infer_instance
 
-/--
-If `G` is finite and its order is nonzero in an algebraically closed field `k`,
-then an object of `FDRep k G` is simple if and only if its space of endomorphisms is
-a `k`-vector space of dimension `1`.
--/
-lemma simple_iff_end_is_rank_one [NeZero (Fintype.card G : k)] (V : FDRep k G) :
-    Simple V ↔ Module.finrank k (V ⟶ V) = 1 where
-  mp h := finrank_endomorphism_simple_eq_one k V
-  mpr h := by
-    refine {mono_isIso_iff_nonzero f _ := ⟨fun hf habs ↦ ?_, fun hf ↦ ?_⟩}
-    · rw [habs] at hf
-      obtain ⟨g, hg⟩ := (Module.finrank_pos_iff_exists_ne_zero (R := k) (M := V ⟶ V)).mp
-        (by rw [h]; exact zero_lt_one)
-      exact hg (Limits.IsZero.eq_zero_of_src (IsZero.of_iso (isZero_zero _)
-        ((isIsoZeroEquivIsoZero _ _).toFun hf).2) g)
-    · have : Epi f := by
-        have : Epi (Abelian.image.ι f) := by
-          have h₁ := Injective.comp_factorThru (𝟙 _) (Abelian.image.ι f)
-          have h₂ : Injective.factorThru (𝟙 _) (Abelian.image.ι f) ≫ Abelian.image.ι f ≠ 0 := by
-            intro habs
-            apply_fun (fun x ↦ x ≫ Abelian.image.ι f) at h₁
-            rw [Category.id_comp, Category.assoc, habs, Limits.comp_zero] at h₁
-            rw [← Abelian.image.fac f, ← h₁, Limits.comp_zero] at hf
-            exact hf (Eq.refl _)
-          obtain ⟨c, hc⟩ := (finrank_eq_one_iff_of_nonzero' _ h₂).mp h (𝟙 V)
-          refine Preadditive.epi_of_cancel_zero _ (fun g hg ↦ ?_)
-          apply_fun (fun x ↦ x ≫ g) at hc
-          simp only [equalizer_as_kernel, Linear.smul_comp, Category.assoc, hg, Limits.comp_zero,
-            smul_zero, Category.id_comp] at hc
-          exact hc.symm
-        rw [← Abelian.image.fac f]
-        exact epi_comp _ _
-      exact isIso_of_mono_of_epi f
+instance : CoeSort (FDRep R G) (Type u) :=
+  ⟨fun V => V.V⟩
 
-/--
-If `G` is finite and `k` an algebraically closed field of characteristic `0`,
-then an object of `FDRep k G` is simple if and only if its character has norm `1`.
--/
-lemma simple_iff_char_is_norm_one [CharZero k] (V : FDRep k G) :
-    Simple V ↔ ∑ g : G, V.character g * V.character g⁻¹ = Fintype.card G where
-  mp h := by
-    have := invertibleOfNonzero (NeZero.ne (Fintype.card G : k))
-    have := char_orthonormal V V
-    simp only [Nonempty.intro (Iso.refl V), ↓reduceIte] at this
-    apply_fun (fun x ↦ x * (Fintype.card G : k)) at this
-    rw [mul_comm, ← smul_eq_mul, smul_smul, mul_invOf_self] at this
-    simp only [smul_eq_mul, one_mul] at this
-    exact this
-  mpr h := by
-    have := invertibleOfNonzero (NeZero.ne (Fintype.card G : k))
-    have eq := FDRep.scalar_product_char_eq_finrank_equivariant V V
-    rw [h] at eq
-    simp only [invOf_eq_inv, smul_eq_mul, inv_mul_cancel_of_invertible] at eq
-    rw [simple_iff_end_is_rank_one, ← Nat.cast_inj (R := k), ← eq, Nat.cast_one]
+instance (V : FDRep R G) : AddCommGroup V := by
+  change AddCommGroup ((forget₂ (FDRep R G) (FGModuleCat R)).obj V).obj; infer_instance
+
+instance (V : FDRep R G) : Module R V := by
+  change Module R ((forget₂ (FDRep R G) (FGModuleCat R)).obj V).obj; infer_instance
+
+instance (V : FDRep R G) : Module.Finite R V := by
+  change Module.Finite R ((forget₂ (FDRep R G) (FGModuleCat R)).obj V); infer_instance
+
+instance (V : FDRep k G) : FiniteDimensional k V := by
+  infer_instance
+
+/-- All hom spaces are finite dimensional. -/
+instance (V W : FDRep k G) : FiniteDimensional k (V ⟶ W) :=
+  FiniteDimensional.of_injective ((forget₂ (FDRep k G) (FGModuleCat k)).mapLinearMap k)
+    (Functor.map_injective (forget₂ (FDRep k G) (FGModuleCat k)))
+
+/-- The monoid homomorphism corresponding to the action of `G` onto `V : FDRep R G`. -/
+def ρ (V : FDRep R G) : G →* V →ₗ[R] V :=
+  (ModuleCat.endRingEquiv _).toMonoidHom.comp (Action.ρ V)
+
+@[simp]
+lemma endRingEquiv_symm_comp_ρ (V : FDRep R G) :
+    (MonoidHomClass.toMonoidHom (ModuleCat.endRingEquiv V.V.obj).symm).comp (ρ V) =
+      (Action.ρ V) :=
+  rfl
+
+@[simp]
+lemma endRingEquiv_comp_ρ (V : FDRep R G) :
+    (MonoidHomClass.toMonoidHom (ModuleCat.endRingEquiv V.V.obj)).comp (Action.ρ V) = ρ V := rfl
+
+@[simp]
+lemma hom_action_ρ (V : FDRep R G) (g : G) : (Action.ρ V g).hom = ρ V g := rfl
+
+/-- The underlying `LinearEquiv` of an isomorphism of representations. -/
+def isoToLinearEquiv {V W : FDRep R G} (i : V ≅ W) : V ≃ₗ[R] W :=
+  FGModuleCat.isoToLinearEquiv ((Action.forget (FGModuleCat R) G).mapIso i)
+
+theorem Iso.conj_ρ {V W : FDRep R G} (i : V ≅ W) (g : G) :
+    W.ρ g = (FDRep.isoToLinearEquiv i).conj (V.ρ g) := by
+  rw [FDRep.isoToLinearEquiv, ← hom_action_ρ V, ← FGModuleCat.Iso.conj_hom_eq_conj, Iso.conj_apply,
+      ← ModuleCat.hom_ofHom (W.ρ g), ← ModuleCat.hom_ext_iff,
+      Iso.eq_inv_comp ((Action.forget (FGModuleCat R) G).mapIso i)]
+  exact (i.hom.comm g).symm
+
+/-- Lift an unbundled representation to `FDRep`. -/
+@[simps ρ]
+abbrev of {V : Type u} [AddCommGroup V] [Module R V] [Module.Finite R V]
+    (ρ : Representation R G V) : FDRep R G :=
+  ⟨FGModuleCat.of R V, (ModuleCat.endRingEquiv _).symm.toMonoidHom.comp ρ⟩
+
+/-- This lemma is about `FDRep.ρ`, instead of `Action.ρ` for `of_ρ`. -/
+@[simp]
+theorem of_ρ' {V : Type u} [AddCommGroup V] [Module R V] [Module.Finite R V] (ρ : G →* V →ₗ[R] V) :
+    (of ρ).ρ = ρ := rfl
+
+@[deprecated Representation.inv_self_apply (since := "2025-05-09")]
+theorem ρ_inv_self_apply {G : Type u} [Group G] {A : FDRep R G} (g : G) (x : A) :
+    A.ρ g⁻¹ (A.ρ g x) = x :=
+  show (A.ρ g⁻¹ * A.ρ g) x = x by rw [← map_mul, inv_mul_cancel, map_one, Module.End.one_apply]
+
+@[deprecated Representation.self_inv_apply (since := "2025-05-09")]
+theorem ρ_self_inv_apply {G : Type u} [Group G] {A : FDRep R G} (g : G) (x : A) :
+    A.ρ g (A.ρ g⁻¹ x) = x :=
+  show (A.ρ g * A.ρ g⁻¹) x = x by rw [← map_mul, mul_inv_cancel, map_one, Module.End.one_apply]
+
+instance : HasForget₂ (FDRep R G) (Rep R G) where
+  forget₂ := (forget₂ (FGModuleCat R) (ModuleCat R)).mapAction G
+
+theorem forget₂_ρ (V : FDRep R G) : ((forget₂ (FDRep R G) (Rep R G)).obj V).ρ = V.ρ := by
+  ext g v; rfl
+
+instance [IsNoetherianRing R] : PreservesFiniteLimits (forget₂ (FDRep R G) (Rep R G)) := by
+  change PreservesFiniteLimits ((forget₂ (FGModuleCat R) (ModuleCat R)).mapAction G)
+  infer_instance
+
+instance : PreservesFiniteColimits (forget₂ (FDRep R G) (Rep R G)) := by
+  change PreservesFiniteColimits ((forget₂ (FGModuleCat R) (ModuleCat R)).mapAction G)
+  infer_instance
+
+-- Verify that the monoidal structure is available.
+example : MonoidalCategory (FDRep R G) := by infer_instance
+
+example : MonoidalPreadditive (FDRep R G) := by infer_instance
+
+example : MonoidalLinear R (FDRep R G) := by infer_instance
+
+open Module
+
+-- We need to provide this instance explicitly as otherwise `finrank_hom_simple_simple` gives a
+-- deterministic timeout.
+instance : HasKernels (FDRep k G) := by infer_instance
+
+open scoped Classical in
+/-- Schur's Lemma: the dimension of the `Hom`-space between two irreducible representation is `0` if
+they are not isomorphic, and `1` if they are. -/
+theorem finrank_hom_simple_simple [IsAlgClosed k] (V W : FDRep k G) [Simple V] [Simple W] :
+    finrank k (V ⟶ W) = if Nonempty (V ≅ W) then 1 else 0 :=
+  CategoryTheory.finrank_hom_simple_simple k V W
+
+/-- The forgetful functor to `Rep k G` preserves hom-sets and their vector space structure. -/
+def forget₂HomLinearEquiv (X Y : FDRep R G) :
+    ((forget₂ (FDRep R G) (Rep R G)).obj X ⟶
+      (forget₂ (FDRep R G) (Rep R G)).obj Y) ≃ₗ[R] X ⟶ Y where
+  toFun f := ⟨f.hom, f.comm⟩
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+  invFun f := ⟨(forget₂ (FGModuleCat R) (ModuleCat R)).map f.hom, f.comm⟩
+
+end FDRep
+
+namespace FDRep
+
+variable {k G : Type u} [Field k] [Group G]
+
+-- Verify that the right rigid structure is available when the monoid is a group.
+noncomputable instance : RightRigidCategory (FDRep k G) := by
+  change RightRigidCategory (Action (FGModuleCat k) G); infer_instance
+
+example : RigidCategory (FDRep k G) := by infer_instance
+
+end FDRep
+
+namespace FDRep
+
+-- The variables in this section are slightly weird, living half in `Representation` and half in
+-- `FDRep`. When we have a better API for general monoidal closed and rigid categories and these
+-- structures on `FDRep`, we should remove the dependency of statements about `FDRep` on
+-- `Representation.linHom` and `Representation.dual`. The isomorphism `dualTensorIsoLinHom`
+-- below should then just be obtained from general results about rigid categories.
+open Representation
+
+variable {k G V : Type u} [Field k] [Group G]
+variable [AddCommGroup V] [Module k V]
+variable [FiniteDimensional k V]
+variable (ρV : Representation k G V) (W : FDRep k G)
+
+open scoped MonoidalCategory
+
+/-- Auxiliary definition for `FDRep.dualTensorIsoLinHom`. -/
+noncomputable def dualTensorIsoLinHomAux :
+    (FDRep.of ρV.dual ⊗ W).V ≅ (FDRep.of (linHom ρV W.ρ)).V :=
+  -- Porting note: had to make `V` explicit
+  LinearEquiv.toFGModuleCatIso (V := (FDRep.of ρV.dual ⊗ W).V) (dualTensorHomEquiv k V W)
+
+/-- When `V` and `W` are finite dimensional representations of a group `G`, the isomorphism
+`dualTensorHomEquiv k V W` of vector spaces induces an isomorphism of representations. -/
+noncomputable def dualTensorIsoLinHom : FDRep.of ρV.dual ⊗ W ≅ FDRep.of (linHom ρV W.ρ) := by
+  refine Action.mkIso (dualTensorIsoLinHomAux ρV W) (fun g => ?_)
+  ext : 1
+  exact dualTensorHom_comm ρV W.ρ g
+
+@[simp]
+theorem dualTensorIsoLinHom_hom_hom :
+    (dualTensorIsoLinHom ρV W).hom.hom = ModuleCat.ofHom (dualTensorHom k V W) :=
+  rfl
 
 end FDRep
