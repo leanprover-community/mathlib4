@@ -3525,6 +3525,7 @@ import Mathlib.Data.String.Defs
 import Mathlib.Data.String.Lemmas
 import Mathlib.Data.Subtype
 import Mathlib.Data.Sum.Basic
+import Mathlib.Data.Sum.Decompose
 import Mathlib.Data.Sum.Interval
 import Mathlib.Data.Sum.Lattice
 import Mathlib.Data.Sum.Order
