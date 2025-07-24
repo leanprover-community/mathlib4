@@ -83,7 +83,7 @@ variable (M)
 /-- The subfield of fixed points by a monoid action. -/
 def subfield : Subfield F :=
   Subfield.copy (⨅ m : M, FixedBy.subfield F m) (fixedPoints M F)
-    (by ext z; simp [fixedPoints, FixedBy.subfield, iInf]; rfl)
+    (by ext; simp [FixedBy.subfield])
 
 instance : IsInvariantSubfield M (FixedPoints.subfield M F) where
   smul_mem g x hx g' := by rw [hx, hx]

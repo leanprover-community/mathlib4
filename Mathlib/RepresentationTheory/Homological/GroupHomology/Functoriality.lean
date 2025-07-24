@@ -735,7 +735,8 @@ lemma H2π_comp_map :
 
 end H2
 
-variable (k G) in
+variable (k G)
+
 /-- The functor sending a representation to its complex of inhomogeneous chains. -/
 @[simps]
 noncomputable def chainsFunctor :
@@ -747,7 +748,6 @@ noncomputable def chainsFunctor :
 
 instance : (chainsFunctor k G).PreservesZeroMorphisms where
 
-variable (k G) in
 /-- The functor sending a `G`-representation `A` to `Hₙ(G, A)`. -/
 @[simps]
 noncomputable def functor (n : ℕ) : Rep k G ⥤ ModuleCat k where
@@ -760,5 +760,30 @@ noncomputable def functor (n : ℕ) : Rep k G ⥤ ModuleCat k where
 
 instance (n : ℕ) : (functor k G n).PreservesZeroMorphisms where
   map_zero _ _ := by simp [map]
+
+variable {G}
+
+/-- Given a group homomorphism `f : G →* H`, this is a natural transformation between the functors
+sending `A : Rep k H` to `Hₙ(G, Res(f)(A))` and to `Hₙ(H, A)`. -/
+@[simps]
+noncomputable def coresNatTrans (n : ℕ) :
+    Action.res (ModuleCat k) f ⋙ functor k G n ⟶ functor k H n where
+  app X := map f (𝟙 _) n
+  naturality {X Y} φ := by simp [← cancel_epi (groupHomology.π _ n),
+    ← HomologicalComplex.cyclesMap_comp_assoc, ← chainsMap_comp, congr (MonoidHom.id_comp _)
+    chainsMap, congr (MonoidHom.comp_id _) chainsMap, Category.id_comp
+    (X := (Action.res _ _).obj _)]
+
+/-- Given a normal subgroup `S ≤ G`, this is a natural transformation between the functors
+sending `A : Rep k G` to `Hₙ(G, A)` and to `Hₙ(G ⧸ S, A_S)`. -/
+@[simps]
+noncomputable def coinfNatTrans (S : Subgroup G) [S.Normal] (n : ℕ) :
+    functor k G n ⟶ quotientToCoinvariantsFunctor k S ⋙ functor k (G ⧸ S) n where
+  app A := map (QuotientGroup.mk' S) (mkQ _ _ <| Coinvariants.le_comap_ker A.ρ S) n
+  naturality {X Y} φ := by
+    simp only [Functor.comp_map, functor_map, ← cancel_epi (groupHomology.π _ n),
+      HomologicalComplex.homologyπ_naturality_assoc, HomologicalComplex.homologyπ_naturality,
+      ← HomologicalComplex.cyclesMap_comp_assoc, ← chainsMap_comp]
+    congr 1
 
 end groupHomology
