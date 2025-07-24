@@ -111,11 +111,6 @@ section IsUnramifiedAt
 
 variable (R : Type*) {S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
-noncomputable
-instance (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p] :
-    Algebra p.ResidueField q.ResidueField :=
-  (Ideal.ResidueField.mapₐ p q Ideal.LiesOver.over).toAlgebra
-
 /-- Let `A` be an essentially of finite type `R`-algebra, `q` be a prime over `p`.
 Then `A` is unramified at `p` if and only if `κ(q)/κ(p)` is separable, and `pS_q = qS_q`. -/
 lemma isUnramifiedAt_iff_map_eq [EssFiniteType R S]
