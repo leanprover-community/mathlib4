@@ -596,6 +596,10 @@ instance [CommSemiring K] [Semiring β] [Algebra K β] : Algebra K (α →ₛ β
   commutes' _ _ := ext fun _ ↦ Algebra.commutes ..
   smul_def' _ _ := ext fun _ ↦ Algebra.smul_def ..
 
+@[simp]
+lemma algebraMap_apply [CommSemiring K] [Semiring β] [Algebra K β] (k : K) :
+    algebraMap K (α →ₛ β) k = const α (algebraMap K β k) := rfl
+
 lemma algebraMap_eq_smul_one [CommSemiring K] [Semiring β] [Algebra K β] (k : K) :
     algebraMap K (α →ₛ β) k = k • 1 := Algebra.algebraMap_eq_smul_one k
 section Star
