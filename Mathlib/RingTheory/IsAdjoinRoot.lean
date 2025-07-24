@@ -302,6 +302,7 @@ protected abbrev isAdjoinRootMonic (hf : Monic f) : IsAdjoinRootMonic (AdjoinRoo
 
 theorem isAdjoinRoot_map_eq_mkₐ : (AdjoinRoot.isAdjoinRoot f).map = AdjoinRoot.mkₐ f := rfl
 
+
 @[simp]
 theorem isAdjoinRoot_root_eq_root : (AdjoinRoot.isAdjoinRoot f).root = AdjoinRoot.root f := by
   simp [AdjoinRoot.isAdjoinRoot, IsAdjoinRoot.root]
