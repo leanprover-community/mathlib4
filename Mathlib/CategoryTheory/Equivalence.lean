@@ -87,7 +87,7 @@ structure Equivalence (C : Type u₁) (D : Type u₂) [Category.{v₁} C] [Categ
     ∀ X : C, functor.map (unitIso.hom.app X) ≫ counitIso.hom.app (functor.obj X) =
       𝟙 (functor.obj X) := by aesop_cat
 
-/-- We infix the usual notation for an equivalence -/
+@[inherit_doc Equivalence]
 infixr:10 " ≌ " => Equivalence
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
