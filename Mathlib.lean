@@ -4815,7 +4815,6 @@ import Mathlib.Order.Cover
 import Mathlib.Order.Defs.LinearOrder
 import Mathlib.Order.Defs.PartialOrder
 import Mathlib.Order.Defs.Unbundled
-import Mathlib.Order.DenselyOrderedLocallyFinite
 import Mathlib.Order.Directed
 import Mathlib.Order.DirectedInverseSystem
 import Mathlib.Order.Disjoint
@@ -4907,6 +4906,7 @@ import Mathlib.Order.Interval.Basic
 import Mathlib.Order.Interval.Finset.Basic
 import Mathlib.Order.Interval.Finset.Box
 import Mathlib.Order.Interval.Finset.Defs
+import Mathlib.Order.Interval.Finset.DenselyOrdered
 import Mathlib.Order.Interval.Finset.Fin
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Order.Interval.Finset.SuccPred

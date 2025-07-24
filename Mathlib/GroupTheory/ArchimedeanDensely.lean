@@ -7,7 +7,7 @@ import Mathlib.Algebra.Order.Group.Units
 import Mathlib.Data.Int.Interval
 import Mathlib.GroupTheory.Archimedean
 import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.Order.DenselyOrderedLocallyFinite
+import Mathlib.Order.Interval.Finset.DenselyOrdered
 
 /-!
 # Archimedean groups are either discrete or densely ordered
