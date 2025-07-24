@@ -263,7 +263,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
 
 @[to_additive]
 theorem contMDiff_pow : ∀ i : ℕ, ContMDiff I I n fun a : G => a ^ i
-  | 0 => by simp only [pow_zero]; exact contMDiff_const
+  | 0 => by simp only [pow_zero, contMDiff_const]
   | k + 1 => by simpa [pow_succ] using (contMDiff_pow _).mul contMDiff_id
 
 /-- Morphism of additive `C^n` monoids. -/
