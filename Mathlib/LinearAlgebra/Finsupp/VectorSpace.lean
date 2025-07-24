@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.FreeAbelianGroup.Finsupp
 import Mathlib.Algebra.MonoidAlgebra.Defs
+import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.LinearAlgebra.Basis.Defs
 import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.FreeModule.Basic
@@ -192,13 +193,20 @@ end FreeAbelianGroup
 namespace AddMonoidAlgebra
 variable {ι R S : Type*} [Semiring R] [Semiring S] [Module R S] [Module.Free R S]
 
-instance moduleFree : Module.Free R S[ι] := .finsupp ..
+instance : Module.Free R S[ι] := .finsupp ..
 
 end AddMonoidAlgebra
 
 namespace MonoidAlgebra
 variable {ι R S : Type*} [Semiring R] [Semiring S] [Module R S] [Module.Free R S]
 
-instance moduleFree : Module.Free R (MonoidAlgebra S ι) := .finsupp ..
+instance : Module.Free R (MonoidAlgebra S ι) := .finsupp ..
 
 end MonoidAlgebra
+
+namespace Polynomial
+variable {R S : Type*} [Semiring R] [Semiring S] [Module R S] [Module.Free R S]
+
+instance : Module.Free R R[X] := .of_equiv (Polynomial.toFinsuppIsoLinear _).symm
+
+end Polynomial
