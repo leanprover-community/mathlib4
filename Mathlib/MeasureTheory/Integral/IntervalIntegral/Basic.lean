@@ -163,7 +163,7 @@ namespace IntervalIntegrable
 
 section
 
-variable {f : ℝ → E} {a b c d : ℝ} {μ ν : Measure ℝ}
+variable {f : ℝ → ε} {a b c d : ℝ} {μ ν : Measure ℝ}
 
 @[symm]
 nonrec theorem symm (h : IntervalIntegrable f μ a b) : IntervalIntegrable f μ b a :=
@@ -173,6 +173,8 @@ theorem symm_iff : IntervalIntegrable f μ a b ↔ IntervalIntegrable f μ b a :
 
 @[refl, simp]
 theorem refl : IntervalIntegrable f μ a a := by constructor <;> simp
+
+variable [PseudoMetrizableSpace ε]
 
 @[trans]
 theorem trans {a b c : ℝ} (hab : IntervalIntegrable f μ a b) (hbc : IntervalIntegrable f μ b c) :
@@ -198,16 +200,25 @@ theorem trans_iterate {a : ℕ → ℝ} {n : ℕ}
     IntervalIntegrable f μ (a 0) (a n) :=
   trans_iterate_Ico bot_le fun k hk => hint k hk.2
 
-theorem neg (h : IntervalIntegrable f μ a b) : IntervalIntegrable (-f) μ a b :=
+theorem neg {f : ℝ → E} (h : IntervalIntegrable f μ a b) : IntervalIntegrable (-f) μ a b :=
   ⟨h.1.neg, h.2.neg⟩
 
-theorem norm (h : IntervalIntegrable f μ a b) : IntervalIntegrable (fun x => ‖f x‖) μ a b :=
+omit [PseudoMetrizableSpace ε] in
+theorem enorm (h : IntervalIntegrable f μ a b) : IntervalIntegrable (‖f ·‖ₑ) μ a b :=
+  ⟨h.1.enorm, h.2.enorm⟩
+
+theorem norm {f : ℝ → E} (h : IntervalIntegrable f μ a b) : IntervalIntegrable (‖f ·‖) μ a b :=
   ⟨h.1.norm, h.2.norm⟩
+
+theorem intervalIntegrable_enorm_iff {μ : Measure ℝ} {a b : ℝ}
+    (hf : AEStronglyMeasurable f (μ.restrict (Ι a b))) :
+    IntervalIntegrable (fun t => ‖f t‖ₑ) μ a b ↔ IntervalIntegrable f μ a b := by
+  simp_rw [intervalIntegrable_iff, IntegrableOn, integrable_enorm_iff hf]
 
 theorem intervalIntegrable_norm_iff {f : ℝ → E} {μ : Measure ℝ} {a b : ℝ}
     (hf : AEStronglyMeasurable f (μ.restrict (Ι a b))) :
     IntervalIntegrable (fun t => ‖f t‖) μ a b ↔ IntervalIntegrable f μ a b := by
-  simp_rw [intervalIntegrable_iff, IntegrableOn]; exact integrable_norm_iff hf
+  simp_rw [intervalIntegrable_iff, IntegrableOn, integrable_norm_iff hf]
 
 theorem abs {f : ℝ → ℝ} (h : IntervalIntegrable f μ a b) :
     IntervalIntegrable (fun x => |f x|) μ a b :=
@@ -232,20 +243,23 @@ theorem mono_set' (hf : IntervalIntegrable f μ a b) (hsub : Ι c d ⊆ Ι a b) 
     IntervalIntegrable f μ c d :=
   hf.mono_set_ae <| Eventually.of_forall hsub
 
-theorem mono_fun [NormedAddCommGroup F] {g : ℝ → F} (hf : IntervalIntegrable f μ a b)
+-- TODO: generalise this lemma and the next one!
+theorem mono_fun {f : ℝ → E} [NormedAddCommGroup F] {g : ℝ → F} (hf : IntervalIntegrable f μ a b)
     (hgm : AEStronglyMeasurable g (μ.restrict (Ι a b)))
     (hle : (fun x => ‖g x‖) ≤ᵐ[μ.restrict (Ι a b)] fun x => ‖f x‖) : IntervalIntegrable g μ a b :=
   intervalIntegrable_iff.2 <| hf.def'.integrable.mono hgm hle
 
-theorem mono_fun' {g : ℝ → ℝ} (hg : IntervalIntegrable g μ a b)
+theorem mono_fun' {f : ℝ → E} {g : ℝ → ℝ} (hg : IntervalIntegrable g μ a b)
     (hfm : AEStronglyMeasurable f (μ.restrict (Ι a b)))
     (hle : (fun x => ‖f x‖) ≤ᵐ[μ.restrict (Ι a b)] g) : IntervalIntegrable f μ a b :=
   intervalIntegrable_iff.2 <| hg.def'.integrable.mono' hfm hle
 
+omit [PseudoMetrizableSpace ε] in
 protected theorem aestronglyMeasurable (h : IntervalIntegrable f μ a b) :
     AEStronglyMeasurable f (μ.restrict (Ioc a b)) :=
   h.1.aestronglyMeasurable
 
+omit [PseudoMetrizableSpace ε] in
 protected theorem aestronglyMeasurable' (h : IntervalIntegrable f μ a b) :
     AEStronglyMeasurable f (μ.restrict (Ioc b a)) :=
   h.2.aestronglyMeasurable
