@@ -632,9 +632,9 @@ protected def mkPiAlgebra : ContinuousMultilinearMap R (fun _ : ι => A) A where
 theorem mkPiAlgebra_apply (m : ι → A) : ContinuousMultilinearMap.mkPiAlgebra R ι A m = ∏ i, m i :=
   rfl
 
-theorem mkPiAlgebra_eq_mkPiAlgebraFin {n : ℕ} (m : Fin n → A) :
-    ContinuousMultilinearMap.mkPiAlgebra R (Fin n) A m
-      = ContinuousMultilinearMap.mkPiAlgebraFin R n A m := by
+theorem mkPiAlgebra_eq_mkPiAlgebraFin {n : ℕ} : ContinuousMultilinearMap.mkPiAlgebra R (Fin n) A
+    = ContinuousMultilinearMap.mkPiAlgebraFin R n A := by
+  ext
   simp [List.prod_ofFn]
 
 end CommAlgebra
