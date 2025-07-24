@@ -60,7 +60,7 @@ class HasAntidiagonal (A : Type*) [AddMonoid A] where
 
 export HasAntidiagonal (antidiagonal mem_antidiagonal)
 
-attribute [simp] mem_antidiagonal
+attribute [simp, grind =] mem_antidiagonal
 
 variable {A : Type*}
 
