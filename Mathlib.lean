@@ -4817,6 +4817,7 @@ import Mathlib.Order.Cover
 import Mathlib.Order.Defs.LinearOrder
 import Mathlib.Order.Defs.PartialOrder
 import Mathlib.Order.Defs.Unbundled
+import Mathlib.Order.DenselyOrderedLocallyFinite
 import Mathlib.Order.Directed
 import Mathlib.Order.DirectedInverseSystem
 import Mathlib.Order.Disjoint
