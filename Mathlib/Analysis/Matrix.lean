@@ -225,24 +225,13 @@ $L^\infty$ spaces.
 
 section LinftyOp
 
-private def loneSemiNormedAddCommGroup [SeminormedAddCommGroup α] :
-    SeminormedAddCommGroup (n → α) :=
-  SeminormedAddCommGroup.induced (n → α) (WithLp 1 (n → α))
-    ({ toFun := toLp 1, map_zero' := toLp_zero 1, map_add' := toLp_add 1 } : AddMonoidHom _ _)
-
-private def aux [SeminormedAddCommGroup α] : PseudoMetricSpace (n → α) :=
-  loneSemiNormedAddCommGroup.toPseudoMetricSpace
-
-private def aux' [SeminormedAddCommGroup α] : SeminormedAddGroup (n → α) :=
-  loneSemiNormedAddCommGroup.toSeminormedAddGroup
-
 /-- Seminormed group instance (using sup norm of L1 norm) for matrices over a seminormed group. Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[local instance]
 protected def linftyOpSeminormedAddCommGroup [SeminormedAddCommGroup α] :
     SeminormedAddCommGroup (Matrix m n α) :=
-  @Pi.seminormedAddCommGroup m _ _ (fun _ ↦ loneSemiNormedAddCommGroup)
+  @Pi.seminormedAddCommGroup m _ _ (fun _ ↦ PiLp.seminormedAddCommGroupToPi 1 (fun _ : n ↦ α))
 
 /-- Normed group instance (using sup norm of L1 norm) for matrices over a normed ring.  Not
 declared as an instance because there are several natural choices for defining the norm of a
@@ -250,95 +239,41 @@ matrix. -/
 @[local instance]
 protected def linftyOpNormedAddCommGroup [NormedAddCommGroup α] :
     NormedAddCommGroup (Matrix m n α) :=
-  NormedAddCommGroup.induced (Matrix m n α) (m → PiLp 1 (fun _ : n ↦ α))
-    ({ toFun x i := toLp 1 (x i), map_zero' := by ext; simp, map_add' _ _ := by ext; simp } :
-      AddMonoidHom _ _) (fun _ _ h ↦ funext fun i ↦ toLp_injective 1 (congrFun h i))
+  @Pi.normedAddCommGroup m _ _ (fun _ ↦ PiLp.normedAddCommGroupToPi 1 (fun _ : n ↦ α))
 
-lemma isBoundedSmul_induced {𝓕 : Type*} (E F R : Type*) [EquivLike 𝓕 E F] [AddCommGroup E]
-    [SeminormedAddGroup F] [AddEquivClass 𝓕 E F] (f : 𝓕) [Zero R] [SMul R F]
-    [PseudoMetricSpace R] [IsBoundedSMul R F] :
-    letI : SMul R E := (AddEquivClass.toAddEquiv f).toEquiv.smul R;
-    letI : SeminormedAddCommGroup E :=
-      SeminormedAddCommGroup.induced E F (AddEquivClass.toAddEquiv f).toAddMonoidHom
-    IsBoundedSMul R E :=
-  letI : SMul R E := (AddEquivClass.toAddEquiv f).toEquiv.smul R;
-  letI : SeminormedAddCommGroup E :=
-    SeminormedAddCommGroup.induced E F (AddEquivClass.toAddEquiv f).toAddMonoidHom
-  { dist_smul_pair' x y z := by
-      change dist (f ((f : E ≃ F).symm (x • f y))) (f ((f : E ≃ F).symm (x • f z))) ≤
-        _ * dist (f y) (f z)
-      simp only [EquivLike.apply_coe_symm_apply, dist_smul_pair]
-    dist_pair_smul' x y z := by
-      change dist (f ((f : E ≃ F).symm (x • f z))) (f ((f : E ≃ F).symm (y • f z))) ≤ _
-      simp only [EquivLike.apply_coe_symm_apply, AddEquiv.toAddMonoidHom_eq_coe]
-      nth_grw 1 [dist_pair_smul, ← map_zero f]
-      rfl }
-
-omit [Fintype m] [Fintype n] in
-@[simp]
-lemma smul_apply' [SMul R α] (r : R) (A : Matrix m n α) (i : m) : (r • A) i = r • A i := rfl
-
-attribute [local instance] aux in
 /-- This applies to the sup norm of L1 norm. -/
+@[local instance]
 protected theorem linftyOpIsBoundedSMul
     [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α] [IsBoundedSMul R α] :
     IsBoundedSMul R (Matrix m n α) :=
-  haveI : IsBoundedSMul R (n → α) :=
-    isBoundedSmul_induced (n → α) (WithLp 1 (n → α)) R
-      ({ toEquiv := (WithLp.equiv 1 (n → α)).symm, map_add' := toLp_add 1 } : AddEquiv _ _)
-  Pi.instIsBoundedSMul
+  letI := PiLp.pseudoMetricSpaceToPi 1 (fun _ : n ↦ α)
+  inferInstanceAs (IsBoundedSMul R (m → n → α))
 
-attribute [local instance] Matrix.linftyOpIsBoundedSMul
-
-lemma normSMulClass_induced {𝓕 : Type*} (E F R : Type*) [EquivLike 𝓕 E F] [AddCommGroup E]
-    [SeminormedAddGroup F] [AddEquivClass 𝓕 E F] (f : 𝓕) [Zero R] [SMul R F]
-    [Norm R] [NormSMulClass R F] :
-    letI : SMul R E := (AddEquivClass.toAddEquiv f).toEquiv.smul R;
-    letI : SeminormedAddCommGroup E :=
-      SeminormedAddCommGroup.induced E F (AddEquivClass.toAddEquiv f).toAddMonoidHom
-    NormSMulClass R E :=
-  letI : SMul R E := (AddEquivClass.toAddEquiv f).toEquiv.smul R;
-  letI : SeminormedAddCommGroup E :=
-    SeminormedAddCommGroup.induced E F (AddEquivClass.toAddEquiv f).toAddMonoidHom
-  { norm_smul x y := by
-      change ‖f ((f : E ≃ F).symm (x • f y))‖ = _ * ‖f y‖
-      simp [norm_smul] }
-
-attribute [local instance] loneSemiNormedAddCommGroup aux' in
 /-- This applies to the sup norm of L1 norm. -/
+@[local instance]
 protected theorem linftyOpNormSMulClass
     [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α] [NormSMulClass R α] :
     NormSMulClass R (Matrix m n α) :=
-  haveI : NormSMulClass R (n → α) :=
-    normSMulClass_induced (n → α) (WithLp 1 (n → α)) R
-      ({ toEquiv := (WithLp.equiv 1 (n → α)).symm, map_add' := toLp_add 1 } : AddEquiv _ _)
-  Pi.instNormSMulClass
+  letI := PiLp.seminormedAddCommGroupToPi 1 (fun _ : n ↦ α)
+  inferInstanceAs (NormSMulClass R (m → n → α))
 
-attribute [local instance] Matrix.linftyOpNormSMulClass
-
-attribute [local instance] loneSemiNormedAddCommGroup in
 /-- Normed space instance (using sup norm of L1 norm) for matrices over a normed space.  Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
+@[local instance]
 protected def linftyOpNormedSpace [NormedField R] [SeminormedAddCommGroup α] [NormedSpace R α] :
     NormedSpace R (Matrix m n α) :=
-  letI : NormedSpace R (n → α) :=
-    NormedSpace.induced R (n → α) (WithLp 1 (n → α))
-      (WithLp.linearEquiv 1 R (n → α)).symm.toLinearMap
-  Pi.normedSpace
-
-attribute [local instance] Matrix.linftyOpNormedSpace
+  letI := PiLp.seminormedAddCommGroupToPi 1 (fun _ : n ↦ α)
+  inferInstanceAs (NormedSpace R (m → n → α))
 
 section SeminormedAddCommGroup
 
 variable [SeminormedAddCommGroup α]
 
-attribute [local instance] aux' in
 theorem linfty_opNorm_def (A : Matrix m n α) :
     ‖A‖ = ((Finset.univ : Finset m).sup fun i : m => ∑ j : n, ‖A i j‖₊ : ℝ≥0) := by
-  rw [Pi.norm_def]
-  conv => enter [1, 1, 2, i]; change ‖toLp 1 (A i)‖₊
-  simp [PiLp.nnnorm_eq_of_L1]
+  change ‖fun i ↦ toLp 1 (A i)‖ = _
+  simp [Pi.norm_def, PiLp.nnnorm_eq_of_L1]
 
 theorem linfty_opNNNorm_def (A : Matrix m n α) :
     ‖A‖₊ = (Finset.univ : Finset m).sup fun i : m => ∑ j : n, ‖A i j‖₊ :=
@@ -542,78 +477,44 @@ section frobenius
 
 open scoped Matrix
 
-private def ltwoSemiNormedAddCommGroup [SeminormedAddCommGroup α] :
-    SeminormedAddCommGroup (n → α) :=
-  SeminormedAddCommGroup.induced (n → α) (WithLp 2 (n → α))
-    ({ toFun := toLp 2, map_zero' := toLp_zero 2, map_add' := toLp_add 2 } : AddMonoidHom _ _)
-
-private def ltwoNormedAddCommGroup [NormedAddCommGroup α] :
-    NormedAddCommGroup (n → α) :=
-  NormedAddCommGroup.induced (n → α) (WithLp 2 (n → α))
-    ({ toFun := toLp 2, map_zero' := toLp_zero 2, map_add' := toLp_add 2 } : AddMonoidHom _ _)
-    (fun _ _ h ↦ funext fun i ↦ congrFun (toLp_injective 2 h) i)
-
-private def aux'' [SeminormedAddCommGroup α] : PseudoMetricSpace (n → α) :=
-  ltwoSemiNormedAddCommGroup.toPseudoMetricSpace
-
-private def aux''' [SeminormedAddCommGroup α] : SeminormedAddGroup (n → α) :=
-  ltwoSemiNormedAddCommGroup.toSeminormedAddGroup
-
-attribute [local instance] ltwoSemiNormedAddCommGroup in
 /-- Seminormed group instance (using the Frobenius norm) for matrices over a seminormed group. Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
+@[local instance]
 def frobeniusSeminormedAddCommGroup [SeminormedAddCommGroup α] :
     SeminormedAddCommGroup (Matrix m n α) :=
-  ltwoSemiNormedAddCommGroup
+  @PiLp.seminormedAddCommGroupToPi 2 _ _ _ _ (fun _ ↦ PiLp.seminormedAddCommGroupToPi 2 _)
 
-attribute [local instance] ltwoNormedAddCommGroup in
 /-- Normed group instance (using the Frobenius norm) for matrices over a normed group.  Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
+@[local instance]
 def frobeniusNormedAddCommGroup [NormedAddCommGroup α] : NormedAddCommGroup (Matrix m n α) :=
-  ltwoNormedAddCommGroup
+  @PiLp.normedAddCommGroupToPi 2 _ _ _ _ (fun _ ↦ PiLp.normedAddCommGroupToPi 2 _)
 
-attribute [local instance] frobeniusSeminormedAddCommGroup frobeniusNormedAddCommGroup
-
-attribute [local instance] ltwoSemiNormedAddCommGroup aux'' in
 /-- This applies to the Frobenius norm. -/
+@[local instance]
 theorem frobeniusIsBoundedSMul [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α]
     [IsBoundedSMul R α] :
     IsBoundedSMul R (Matrix m n α) :=
-  haveI : IsBoundedSMul R (n → α) :=
-    isBoundedSmul_induced (n → α) (WithLp 2 (n → α)) R
-      ({ toEquiv := (WithLp.equiv 2 (n → α)).symm, map_add' := toLp_add 2 } : AddEquiv _ _)
-  isBoundedSmul_induced (Matrix m n α) (WithLp 2 (m → n → α)) R
-    ({ toEquiv := (WithLp.equiv 2 (m → n → α)).symm, map_add' := toLp_add 2 } :
-      AddEquiv (Matrix m n α) _)
+  letI := PiLp.seminormedAddCommGroupToPi 2 (fun _ : n ↦ α)
+  PiLp.instIsBoundedSMulForall 2 _
 
-attribute [local instance] ltwoSemiNormedAddCommGroup in
 theorem frobeniusNormSMulClass [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α]
     [NormSMulClass R α] :
     NormSMulClass R (Matrix m n α) :=
-  haveI : NormSMulClass R (n → α) :=
-    normSMulClass_induced (n → α) (WithLp 2 (n → α)) R
-      ({ toEquiv := (WithLp.equiv 2 (n → α)).symm, map_add' := toLp_add 2 } : AddEquiv _ _)
-  normSMulClass_induced (Matrix m n α) (WithLp 2 (m → n → α)) R
-    ({ toEquiv := (WithLp.equiv 2 (m → n → α)).symm, map_add' := toLp_add 2 } :
-      AddEquiv (Matrix m n α) _)
+  letI := PiLp.seminormedAddCommGroupToPi 2 (fun _ : n ↦ α)
+  PiLp.instNormSMulClassForall 2 _
 
 @[deprecated (since := "2025-03-10")] alias frobeniusBoundedSMul := frobeniusIsBoundedSMul
 
-attribute [local instance] ltwoSemiNormedAddCommGroup in
 /-- Normed space instance (using the Frobenius norm) for matrices over a normed space.  Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 def frobeniusNormedSpace [NormedField R] [SeminormedAddCommGroup α] [NormedSpace R α] :
     NormedSpace R (Matrix m n α) :=
-  letI : NormedSpace R (n → α) :=
-    NormedSpace.induced R (n → α) (WithLp 2 (n → α))
-      (WithLp.linearEquiv 2 R (n → α)).symm
-  NormedSpace.induced R (Matrix m n α) (WithLp 2 (m → n → α))
-    (WithLp.linearEquiv 2 R (m → n → α)).symm
-
-attribute [local instance] frobeniusIsBoundedSMul frobeniusNormSMulClass frobeniusNormedSpace
+  letI := PiLp.seminormedAddCommGroupToPi 2 (fun _ : n ↦ α)
+  PiLp.instNormedSpaceForall 2 _
 
 section SeminormedAddCommGroup
 
