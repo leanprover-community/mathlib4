@@ -195,38 +195,15 @@ variable [SeminormedCommRing S] [SeminormedRing R] [SeminormedAddCommGroup M]
 variable [Algebra S R] [Module S M]
 variable [IsBoundedSMul S R] [IsBoundedSMul S M]
 
-instance : PseudoMetricSpace (tsze R M) :=
-  PseudoMetricSpace.replaceUniformity
-    (SeminormedAddCommGroup.induced _ (WithLp 1 (R × M))
-    ({ toFun := WithLp.toLp 1, map_zero' := WithLp.toLp_zero 1, map_add' := WithLp.toLp_add 1 } :
-      AddMonoidHom _ _)).toPseudoMetricSpace
-    (by
-      set a := (SeminormedAddCommGroup.induced _ (WithLp 1 (R × M))
-    ({ toFun := WithLp.toLp 1, map_zero' := WithLp.toLp_zero 1, map_add' := WithLp.toLp_add 1 } :
-      AddMonoidHom _ _)).toPseudoEMetricSpace.toUniformSpace
-      simp [a]
-      rw [← UniformSpace.comap_comap])
-    --   letI : UniformSpace (tsze R M) := (SeminormedAddCommGroup.induced _ (WithLp 1 (R × M))
-    -- ({ toFun := WithLp.toLp 1, map_zero' := WithLp.toLp_zero 1, map_add' := WithLp.toLp_add 1 } :
-    --   AddMonoidHom _ _)).toPseudoMetricSpace.toUniformSpace
-    --   rw [← IsUniformInducing.comap_uniformity
-    --     (f := @WithLp.toLp 1 (R × M) ∘ (id : tsze R M → R × M))]
-    --   · simp [WithLp.instProdUniformSpace]
-    --     rw [← UniformSpace.comap_comap ]
-    --     rfl
-    --   · apply AntilipschitzWith.isUniformInducing)
-
 instance instL1SeminormedAddCommGroup : SeminormedAddCommGroup (tsze R M) :=
-  SeminormedAddCommGroup.induced _ (WithLp 1 (R × M))
-    ({ toFun := WithLp.toLp 1, map_zero' := WithLp.toLp_zero 1, map_add' := WithLp.toLp_add 1 } :
-      AddMonoidHom _ _)
+  WithLp.seminormedAddCommGroupProd 1 R M
 
 example :
     (TrivSqZeroExt.instUniformSpace : UniformSpace (tsze R M)) =
     PseudoMetricSpace.toUniformSpace := rfl
 
 theorem norm_def (x : tsze R M) : ‖x‖ = ‖fst x‖ + ‖snd x‖ := by
-  rw [WithLp.prod_norm_eq_add (by norm_num)]
+  rw [WithLp.norm_seminormedAddCommGroupProd, WithLp.prod_norm_eq_add (by norm_num)]
   simp only [ENNReal.toReal_one, Real.rpow_one, div_one]
   rfl
 
@@ -260,11 +237,10 @@ instance instL1SeminormedRing : SeminormedRing (tsze R M) where
   __ : Ring (tsze R M) := inferInstance
 
 instance instL1IsBoundedSMul : IsBoundedSMul S (tsze R M) :=
-  inferInstanceAs <| IsBoundedSMul S (WithLp 1 <| R × M)
+  WithLp.instIsBoundedSMulProd 1 R M
 
 instance [NormOneClass R] : NormOneClass (tsze R M) where
   norm_one := by rw [norm_def, fst_one, snd_one, norm_zero, norm_one, add_zero]
-
 
 end Ring
 
@@ -290,7 +266,7 @@ variable [NormedRing R] [NormedAddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M
 variable [IsBoundedSMul R M] [IsBoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 
 instance instL1NormedAddCommGroup : NormedAddCommGroup (tsze R M) :=
-  inferInstanceAs <| NormedAddCommGroup (WithLp 1 <| R × M)
+  WithLp.normedAddCommGroupProd 1 R M
 
 instance instL1NormedRing : NormedRing (tsze R M) where
   __ : NormedAddCommGroup (tsze R M) := inferInstance
@@ -318,7 +294,7 @@ variable [IsBoundedSMul R M] [IsBoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐ�
 variable [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]
 
 instance instL1NormedSpace : NormedSpace 𝕜 (tsze R M) :=
-  inferInstanceAs <| NormedSpace 𝕜 (WithLp 1 <| R × M)
+  WithLp.instNormedSpaceProd 1 R M
 
 instance instL1NormedAlgebra : NormedAlgebra 𝕜 (tsze R M) where
   norm_smul_le := _root_.norm_smul_le

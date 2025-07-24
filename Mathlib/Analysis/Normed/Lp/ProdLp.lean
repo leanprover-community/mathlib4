@@ -1050,7 +1050,7 @@ end NormedSpace
 
 section toProd
 
-omit [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
+variable (α β : Type*)
 
 /-- This definition allows to endow `α × β` with the Lp distance with the uniformity and bornology
 being defeq to the product ones. It is useful to endow a type synonym of `a × β` with the
@@ -1078,6 +1078,36 @@ def seminormedAddCommGroupProd [SeminormedAddCommGroup α] [SeminormedAddCommGro
 lemma norm_seminormedAddCommGroupProd [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
     (x : α × β) :
     @Norm.norm _ (seminormedAddCommGroupProd p α β).toNorm x = ‖toLp p x‖ := rfl
+
+instance [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] {R : Type*} [SeminormedRing R]
+    [Module R α] [Module R β] [IsBoundedSMul R α] [IsBoundedSMul R β] :
+    letI := pseudoMetricSpaceProd p α β
+    IsBoundedSMul R (α × β) := by
+  letI := pseudoMetricSpaceProd p α β
+  refine ⟨fun x y z ↦ ?_, fun x y z ↦ ?_⟩
+  · simpa [dist_pseudoMetricSpaceProd] using dist_smul_pair x (toLp p y) (toLp p z)
+  · simpa [dist_pseudoMetricSpaceProd] using dist_pair_smul x y (toLp p z)
+
+instance [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] {R : Type*} [NormedField R]
+    [NormedSpace R α] [NormedSpace R β] :
+    letI := seminormedAddCommGroupProd p α β
+    NormedSpace R (α × β) := by
+  letI := seminormedAddCommGroupProd p α β
+  refine ⟨fun x y ↦ ?_⟩
+  simp [norm_seminormedAddCommGroupProd, norm_smul]
+
+/-- This definition allows to endow `Π i, β i` with the Lp norm with the uniformity and bornology
+being defeq to the product ones. It is useful to endow a type synonym of `Π i, β i` with the
+Lp norm. -/
+def normedAddCommGroupProd [NormedAddCommGroup α] [NormedAddCommGroup β] :
+    NormedAddCommGroup (α × β) where
+  norm x := ‖toLp p x‖
+  toPseudoMetricSpace := pseudoMetricSpaceProd p α β
+  dist_eq x y := by
+    rw [dist_pseudoMetricSpaceProd, SeminormedAddCommGroup.dist_eq, toLp_sub]
+  eq_of_dist_eq_zero {x y} h := by
+    rw [dist_pseudoMetricSpaceProd] at h
+    exact WithLp.toLp_injective p (eq_of_dist_eq_zero h)
 
 end toProd
 
