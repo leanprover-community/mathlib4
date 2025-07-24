@@ -553,6 +553,12 @@ instance instModule [Semiring K] [AddCommMonoid β] [Module K β] : Module K (α
 theorem smul_eq_map [SMul K β] (k : K) (f : α →ₛ β) : k • f = f.map (k • ·) :=
   rfl
 
+lemma smul_const [SMul K β] (k : K) (b : β) :
+    (k • const α b : α →ₛ β) = const α (k • b) := ext fun _ ↦ rfl
+
+@[simp]
+lemma one_eq_const_one [One β] : (1 : α →ₛ β) = const α 1 := rfl
+
 instance [NonUnitalNonAssocSemiring β] : NonUnitalNonAssocSemiring (α →ₛ β) where
   left_distrib _ _ _ := ext fun _ ↦ left_distrib ..
   right_distrib _ _ _ := ext fun _ ↦ right_distrib ..
@@ -599,6 +605,10 @@ instance [CommSemiring K] [Semiring β] [Algebra K β] : Algebra K (α →ₛ β
 @[simp]
 lemma algebraMap_apply [CommSemiring K] [Semiring β] [Algebra K β] (k : K) :
     algebraMap K (α →ₛ β) k = const α (algebraMap K β k) := rfl
+
+@[simp]
+lemma algebraMap_apply_apply [CommSemiring K] [Semiring β] [Algebra K β] (k : K) (x : α) :
+    algebraMap K (α →ₛ β) k x = algebraMap K β k := rfl
 
 lemma algebraMap_eq_smul_one [CommSemiring K] [Semiring β] [Algebra K β] (k : K) :
     algebraMap K (α →ₛ β) k = k • 1 := Algebra.algebraMap_eq_smul_one k
