@@ -172,49 +172,47 @@ section Preorder
 
 variable {X : Type u} {Y : Type v} [Preorder X] [Preorder Y]
 
-namespace CategoryTheory
+namespace CategoryTheory.Functor
 
 /-- A functor between preorder categories is monotone. -/
 @[mono]
-theorem Functor.monotone (f : X ⥤ Y) : Monotone f.obj := fun _ _ hxy => (f.map hxy.hom).le
+theorem monotone (f : X ⥤ Y) : Monotone f.obj := fun _ _ hxy => (f.map hxy.hom).le
 
-end CategoryTheory
+/-- A functor `X ⥤ Y` between preorder categories as an `OrderHom`. -/
+@[simps!]
+def toOrderHom (F : X ⥤ Y) : (X →o Y) where
+  toFun := F.obj
+  monotone' := F.monotone
+
+end CategoryTheory.Functor
 
 namespace OrderHom
 
 open CategoryTheory
 
 /-- An `OrderHom` as a functor `X ⥤ Y` between preorder categories. -/
-def toFunctor (f : X →o Y) : X ⥤ Y := f.monotone.functor
+abbrev toFunctor (f : X →o Y) : X ⥤ Y := f.monotone.functor
 
-/-- A functor `X ⥤ Y` between preorder categories as an `OrderHom`. -/
-def ofFunctor (F : X ⥤ Y) : (X →o Y) where
-  toFun := F.obj
-  monotone' := F.monotone
+variable (X Y)
 
 /-- The equivalence between `X →o Y` and the type of functors `X ⥤ Y` between preorder categories
 `X` and `Y`. -/
+@[simps]
 def equivFunctor : (X →o Y) ≃ (X ⥤ Y) where
   toFun := toFunctor
-  invFun := ofFunctor
-
-/-- The functor from the category of monotone functions `X →o Y` to the category of functors
-`X ⥤ Y` where `X` and `Y` are preorder categories. -/
-def Functor.toFunctor : (X →o Y) ⥤ (X ⥤ Y) where
-  obj := OrderHom.toFunctor
-  map f := { app a := f.down.down a |>.hom }
-
-/-- The functor from the category of functors `X ⥤ Y` where `X` and `Y` are preorder categories to
-the category of monotone functions `X →o Y`. -/
-def Functor.ofFunctor : (X ⥤ Y) ⥤ (X →o Y) where
-  obj := OrderHom.ofFunctor
-  map f := ⟨⟨fun i ↦ f.app i |>.down.down⟩⟩
+  invFun F := F.toOrderHom
 
 /-- The categorical equivalence beween the category of monotone functions `X →o Y` and the category
-of functors `X ⥤ Y` where `X` and `Y` are preorder categories. -/
+of functors `X ⥤ Y`, where `X` and `Y` are preorder categories. -/
+@[simps! functor_obj_obj inverse_obj unitIso_hom_app unitIso_inv_app counitIso_inv_app_app
+  counitIso_hom_app_app]
 def equivalence : (X →o Y) ≌ (X ⥤ Y) where
-  functor := Functor.toFunctor
-  inverse := Functor.ofFunctor
+  functor :=
+    { obj f := f.toFunctor
+      map f := { app a := f.down.down a |>.hom } }
+  inverse :=
+    { obj F := F.toOrderHom
+      map f := ⟨⟨fun i ↦ f.app i |>.down.down⟩⟩ }
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
