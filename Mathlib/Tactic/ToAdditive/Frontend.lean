@@ -977,15 +977,13 @@ def updateDecl (b : BundledExtensions)
   let mut decl := srcDecl.updateName tgt
   if 0 ∈ reorder.flatten then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
-  decl := decl.updateType <| ← applyReplacementFun b <| ← reorderForall reorder
-    <| ← expand b <| ← unfoldAuxLemmas decl.type
+  decl :=
+    decl.updateType <| ← applyReplacementFun b <| ← reorderForall reorder <| ← expand b decl.type
   if let some v := decl.value? then
-    decl := decl.updateValue <| ← applyReplacementFun b <| ← reorderLambda reorder
-      <| ← expand b <| ← unfoldAuxLemmas v
+    decl := decl.updateValue <| ← applyReplacementFun b <| ← reorderLambda reorder <| ← expand b v
   else if let .opaqueInfo info := decl then -- not covered by `value?`
     decl := .opaqueInfo { info with
-      value := ← applyReplacementFun b <| ← reorderLambda reorder <| ← expand b
-        <| ← unfoldAuxLemmas info.value }
+      value := ← applyReplacementFun b <| ← reorderLambda reorder <| ← expand b info.value }
   return decl
 
 /-- Abstracts the nested proofs in the value of `decl` if it is a def. -/
