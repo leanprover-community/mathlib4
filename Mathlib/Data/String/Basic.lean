@@ -3,7 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
--- import Batteries.Data.String.Lemmas -- Temporarily commented out until it is fixed.
+import Batteries.Data.String.Lemmas
 import Mathlib.Data.List.Lex
 import Mathlib.Data.Char
 import Mathlib.Algebra.Order.Group.Nat
@@ -56,14 +56,6 @@ def ltb.inductionOn.{u} {motive : Iterator → Iterator → Sort u} (it₁ it₂
     else base₁ it₁.s it₂.s it₁.i it₂.i h₂ h₁
   else base₂ it₁.s it₂.s it₁.i it₂.i h₂
 
-#adaptation_note
-/--
-The following two theorems rely on material from Batteries
-which is broken on `nightly-2025-07-22`.
-
-They are commented out for now until that is fixed.
--/
-/-
 theorem ltb_cons_addChar (c : Char) (cs₁ cs₂ : List Char) (i₁ i₂ : Pos) :
     ltb ⟨⟨c :: cs₁⟩, i₁ + c⟩ ⟨⟨c :: cs₂⟩, i₂ + c⟩ = ltb ⟨⟨cs₁⟩, i₁⟩ ⟨⟨cs₂⟩, i₂⟩ := by
   apply ltb.inductionOn ⟨⟨cs₁⟩, i₁⟩ ⟨⟨cs₂⟩, i₂⟩ (motive := fun ⟨⟨cs₁⟩, i₁⟩ ⟨⟨cs₂⟩, i₂⟩ ↦
@@ -106,7 +98,6 @@ theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList
         cases e <;> rename_i h'
         · assumption
         · contradiction
--/
 
 instance LE : LE String :=
   ⟨fun s₁ s₂ ↦ ¬s₂ < s₁⟩
@@ -115,9 +106,9 @@ instance decidableLE : DecidableLE String := by
   simp only [DecidableLE, LE]
   infer_instance -- short-circuit type class inference
 
--- @[simp]
--- theorem le_iff_toList_le {s₁ s₂ : String} : s₁ ≤ s₂ ↔ s₁.toList ≤ s₂.toList :=
---   (not_congr lt_iff_toList_lt).trans not_lt
+@[simp]
+theorem le_iff_toList_le {s₁ s₂ : String} : s₁ ≤ s₂ ↔ s₁.toList ≤ s₂.toList :=
+  (not_congr lt_iff_toList_lt).trans not_lt
 
 theorem toList_inj {s₁ s₂ : String} : s₁.toList = s₂.toList ↔ s₁ = s₂ :=
   ⟨congr_arg mk, congr_arg toList⟩
@@ -132,14 +123,6 @@ theorem toList_empty : "".toList = [] :=
 theorem asString_toList (s : String) : s.toList.asString = s :=
   rfl
 
-#adaptation_note
-/--
-The following theorem relies on material from Batteries
-which is broken on `nightly-2025-07-22`.
-
-It is commented out for now until that is fixed.
--/
-/-
 theorem toList_nonempty : ∀ {s : String}, s ≠ "" → s.toList = s.head :: (s.drop 1).toList
   | ⟨s⟩, h => by
     cases s with
@@ -147,20 +130,11 @@ theorem toList_nonempty : ∀ {s : String}, s ≠ "" → s.toList = s.head :: (s
     | cons c cs =>
       simp only [toList, data_drop, List.drop_succ_cons, List.drop_zero, List.cons.injEq, and_true]
       rfl
--/
 
 @[simp]
 theorem head_empty : "".data.head! = default :=
   rfl
 
-#adaptation_note
-/--
-The following instance relies on material from Batteries
-which is broken on `nightly-2025-07-22`.
-
-It is commented out for now until that is fixed.
--/
-/-
 instance : LinearOrder String where
   le_refl _ := le_iff_toList_le.mpr le_rfl
   le_trans a b c := by
@@ -181,7 +155,6 @@ instance : LinearOrder String where
     simp only [compare, compareOfLessAndEq, instLT, List.instLT, lt_iff_toList_lt, toList]
     split_ifs <;>
     simp only [List.lt_iff_lex_lt] at *
--/
 
 end String
 
