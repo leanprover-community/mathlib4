@@ -1466,18 +1466,16 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   if (← get).messages.hasErrors then
     return
-  --if stx.getSubstring?.map toString != some stx.regString then
-  --  dbg_trace stx.regString
-  if stx.find? (unparseable.contains #[·.getKind]) |>.isSome then
+  -- If the file is mostly a "meta" file, then do not lint.  The heuristic for this is to look
+  -- at the name of the module.
+  let comps : ExcludedSyntaxNodeKind := .mk (← getMainModule).components.toArray none
+  if comps.contains #[`Tactic, `Util, `Lean, `Meta] then
     return
-  let comps := (← getMainModule).components
-  --dbg_trace "lint0"
-  if comps.contains `Tactic ||
-     comps.contains `Util ||
-     comps.contains `Lean ||
-     comps.contains `Meta
-  then
-    --dbg_trace comps
+  -- Skip `eoi` and `#exit`.
+  if Parser.isTerminalCommand stx then return
+  -- Some `SyntaxNodeKind`s are prone to produce incorrect pretty-printed text, so we skip
+  -- commands that contain them.
+  if stx.find? (unparseable.contains #[·.getKind]) |>.isSome then
     return
   -- If a command does not start on the first column, emit a warning.
   --dbg_trace "lint1"
