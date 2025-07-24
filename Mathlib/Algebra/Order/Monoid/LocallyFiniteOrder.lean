@@ -17,9 +17,9 @@ import Mathlib.Tactic.Abel
 
 ## Main results
 - `LocallyFiniteOrder.orderAddMonoidEquiv`:
-  Any nontrivial linearly ordered abelian group that is locally finite is isomorphic to `ℤ`.
+  Any nontrivial linearly ordered additive abelian group that is locally finite is isomorphic to `ℤ`.
 - `LocallyFiniteOrder.orderMonoidEquiv`:
-  Any nontrivial linearly ordered abelian group that is locally finite is isomorphic to `ℤ`.
+  Any nontrivial linearly ordered abelian group that is locally finite is isomorphic to `Multiplicative ℤ`.
 - `LocallyFiniteOrder.orderMonoidEquivWithZero`:
   Any nontrivial linearly ordered abelian group with zero that is locally finite
   is isomorphic to `ℤᵐ⁰`.
@@ -62,7 +62,7 @@ variable {M G : Type*} [AddCancelCommMonoid M] [LinearOrder M] [IsOrderedAddMono
     [IsOrderedAddMonoid G] [LocallyFiniteOrder G]
 
 variable (G) in
-/-- The canonical embedding (as a monoid hom) from a linearly ordered cancellative monoid into `ℤ`.
+/-- The canonical embedding (as a monoid hom) from a linearly ordered cancellative additive monoid into `ℤ`.
 This is either surjective or zero. -/
 def LocallyFiniteOrder.addMonoidHom :
     G →+ ℤ where
