@@ -250,11 +250,6 @@ lemma coe_neg {α : Type*} [One α] [SubtractionMonoid α] (s : SignType) :
     (↑(-s) : α) = -↑s := by
   cases s <;> simp
 
-/-- Casting `SignType → ℤ → α` is the same as casting directly `SignType → α`. -/
-@[simp, norm_cast]
-lemma intCast_cast {α : Type*} [AddGroupWithOne α] (s : SignType) : ((s : ℤ) : α) = s :=
-  map_cast' _ Int.cast_one Int.cast_zero (@Int.cast_one α _ ▸ Int.cast_neg 1) _
-
 end cast
 
 end SignType

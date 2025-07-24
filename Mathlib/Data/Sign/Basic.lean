@@ -21,6 +21,11 @@ variable {α : Type u}
 
 namespace SignType
 
+/-- Casting `SignType → ℤ → α` is the same as casting directly `SignType → α`. -/
+@[simp, norm_cast]
+lemma intCast_cast {α : Type*} [AddGroupWithOne α] (s : SignType) : ((s : ℤ) : α) = s :=
+  map_cast' _ Int.cast_one Int.cast_zero (@Int.cast_one α _ ▸ Int.cast_neg 1) _
+
 theorem pow_odd (s : SignType) {n : ℕ} (hn : Odd n) : s ^ n = s := by
   obtain ⟨k, rfl⟩ := hn
   rw [pow_add, pow_one, pow_mul, sq]
