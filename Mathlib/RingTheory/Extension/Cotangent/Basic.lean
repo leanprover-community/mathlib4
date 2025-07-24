@@ -35,7 +35,7 @@ apply them to infinitesimal smooth (or versal) extensions later.
 
 -/
 
-open KaehlerDifferential TensorProduct MvPolynomial
+open KaehlerDifferential Module MvPolynomial TensorProduct
 
 namespace Algebra
 

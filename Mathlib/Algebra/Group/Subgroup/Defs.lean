@@ -3,6 +3,7 @@ Copyright (c) 2020 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
+import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Data.Set.Inclusion
 import Mathlib.Tactic.Common
@@ -347,7 +348,6 @@ theorem mem_toSubmonoid (K : Subgroup G) (x : G) : x ∈ K.toSubmonoid ↔ x ∈
 
 @[to_additive]
 theorem toSubmonoid_injective : Function.Injective (toSubmonoid : Subgroup G → Submonoid G) :=
-  -- fun p q h => SetLike.ext'_iff.2 (show _ from SetLike.ext'_iff.1 h)
   fun p q h => by
     have := SetLike.ext'_iff.1 h
     rw [coe_toSubmonoid, coe_toSubmonoid] at this

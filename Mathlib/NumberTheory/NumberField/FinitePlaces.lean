@@ -48,7 +48,7 @@ variable (A : Type*) [CommRing A] [IsDedekindDomain A]
 
 instance : IsPrincipalIdealRing (v.valuation K).integer := by
   rw [(Valuation.integer.integers (v.valuation K)).isPrincipalIdealRing_iff_not_denselyOrdered,
-    denselyOrdered_units_withZeroInt_set_iff_subsingleton]
+    WithZero.denselyOrdered_set_iff_subsingleton]
   simpa using (v.valuation K).toMonoidWithZeroHom.range_nontrivial
 
 -- TODO: make this inferred from `IsRankOneDiscrete`
@@ -65,7 +65,7 @@ instance : IsDiscreteValuationRing (v.valuation K).integer where
 instance : IsPrincipalIdealRing (v.adicCompletionIntegers K) := by
   unfold HeightOneSpectrum.adicCompletionIntegers
   rw [(Valuation.valuationSubring.integers (Valued.v)).isPrincipalIdealRing_iff_not_denselyOrdered,
-    denselyOrdered_units_withZeroInt_set_iff_subsingleton]
+    WithZero.denselyOrdered_set_iff_subsingleton]
   simpa using Valued.v.range_nontrivial
 
 -- TODO: make this inferred from `IsRankOneDiscrete`, or

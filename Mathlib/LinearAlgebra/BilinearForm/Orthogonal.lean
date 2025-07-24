@@ -30,8 +30,8 @@ In this file we use the following type variables:
 Bilinear form,
 -/
 
-
 open LinearMap (BilinForm)
+open Module
 
 universe u v w
 
