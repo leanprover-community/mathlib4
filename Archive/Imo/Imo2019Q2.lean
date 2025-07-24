@@ -349,8 +349,7 @@ theorem A₂_ne_C : cfg.A₂ ≠ cfg.C := by
   have hc : Collinear ℝ ({cfg.A, cfg.B, cfg.C, cfg.A₁} : Set Pt) :=
     collinear_insert_insert_of_mem_affineSpan_pair h₁.left_mem_affineSpan
       cfg.sbtw_B_A₁_C.left_mem_affineSpan
-  refine hc.subset ?_
-  gcongr
+  refine hc.subset (Set.insert_subset_insert (Set.insert_subset_insert ?_))
   rw [Set.singleton_subset_iff]
   exact Set.mem_insert _ _
 
@@ -484,11 +483,11 @@ theorem symm_ω : cfg.symm.ω = cfg.ω := by
   · simp only [trianglePQB₂, Matrix.range_cons, Matrix.range_empty, Set.singleton_union,
       insert_empty_eq]
     rw [Set.insert_comm]
-    gcongr
+    refine Set.insert_subset_insert (Set.insert_subset_insert ?_)
     simp
   · simp only [triangleQPA₂, Matrix.range_cons, Matrix.range_empty, Set.singleton_union,
       insert_empty_eq]
-    gcongr
+    refine Set.insert_subset_insert (Set.insert_subset_insert ?_)
     simp
 
 /-! ### The second angle chase in the solution -/

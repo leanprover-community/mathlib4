@@ -5,7 +5,6 @@ Authors: Anne Baanen, Yury Kudryashov, Joseph Myers, Heather Macbeth, Kim Morris
 -/
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.Group.Torsion
-import Mathlib.Tactic.Contrapose
 
 /-!
 # `NoZeroSMulDivisors`

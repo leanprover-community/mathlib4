@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Logic.Pairwise
 

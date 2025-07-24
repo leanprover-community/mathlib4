@@ -181,8 +181,8 @@ theorem ssubset_iff_exists_subset_erase {s t : Finset α} : s ⊂ t ↔ ∃ a �
   exact ⟨a, ht, subset_erase.2 ⟨h.1, hs⟩⟩
 
 theorem erase_ssubset_insert (s : Finset α) (a : α) : s.erase a ⊂ insert a s :=
-  ssubset_iff_exists_subset_erase.2 <| by
-    exact ⟨a, mem_insert_self _ _, by grw [← subset_insert]⟩
+  ssubset_iff_exists_subset_erase.2
+    ⟨a, mem_insert_self _ _, erase_subset_erase _ <| subset_insert _ _⟩
 
 theorem erase_cons {s : Finset α} {a : α} (h : a ∉ s) : (s.cons a h).erase a = s := by
   rw [cons_eq_insert, erase_insert_eq_erase, erase_eq_of_notMem h]

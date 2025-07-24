@@ -55,9 +55,6 @@ instance mul : Mul (Completion α) :=
 theorem coe_one : ((1 : α) : Completion α) = 1 :=
   rfl
 
-@[simp] lemma coe_eq_one_iff [T0Space α] {x : α} : (x : Completion α) = 1 ↔ x = 1 :=
-  Completion.coe_inj
-
 end one_and_mul
 
 variable {α : Type*} [Ring α] [UniformSpace α] [IsTopologicalRing α]

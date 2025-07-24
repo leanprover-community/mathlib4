@@ -5,8 +5,7 @@ Authors: Kenny Lau, Joey van Langen, Casper Putz
 -/
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.Group.Fin.Basic
-import Mathlib.Algebra.Ring.ULift
-import Mathlib.Algebra.Ring.Opposite
+import Mathlib.Algebra.Group.ULift
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Cast.Prod
 import Mathlib.Data.ULift
