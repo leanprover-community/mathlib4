@@ -187,54 +187,42 @@ lemma absorb {s : Finset F} (hr : 0 < r) : Absorbent 𝕜 ((s.sup B.toSeminormFa
   exact Seminorm.absorbent_ball_zero (s.sup B.toSeminormFamily) hr
 
 /-
-  intro x
-  rw [Absorbs]
-  rw [Filter.Eventually]
-  simp
-  --have e1 : {x_1 | x ∈ (x_1 :𝕜) • ((s.sup B.toSeminormFamily).ball 0 r)} = Set.Ici (((s.sup B.toSeminormFamily) x) : 𝕜) := sorry
-  --rw [e1]
-  rw [← Filter.mem_sets]
-  rw [PseudoMetricSpace.cobounded_sets]
-  simp
-  use 2 * ((s.sup B.toSeminormFamily) x)
-  intro a ha
-  intro b hb
-  have e1 (c : ℝ) (hc : ((s.sup B.toSeminormFamily) x) < c) :
-      x ∈ (c : 𝕜) • ((s.sup B.toSeminormFamily).ball 0 r) := sorry
-  have e1' (c : ℝ) (hc : x ∉ (c : 𝕜) • ((s.sup B.toSeminormFamily).ball 0 r)) :
-      (c ≤ (s.sup B.toSeminormFamily) x) := by
-    by_contra hn
-    simp at hn
-    exact hc (e1 c hn)
-  have test (c : ℝ) :  x ∈ (c : 𝕜) • ((s.sup B.toSeminormFamily).ball 0 r) ↔
-      x ∈ (-c : 𝕜) • ((s.sup B.toSeminormFamily).ball 0 r) := by
-
-    sorry
-  have e2 (c : ℝ) (hc : x ∉ (c : 𝕜) • ((s.sup B.toSeminormFamily).ball 0 r)) :
-      (|c| ≤ (s.sup B.toSeminormFamily) x) := by
-    rw [abs_le']
-    constructor
-    · exact e1' c hc
-    · by_contra hn
-      simp at hn
-
-
-  --     := by
-  -- aesop
-
-
-  apply Filter.Ici_mem_atTop
-  --simp_rw [PseudoMetricSpace.cobounded_sets]
-
-
-  --refine Filter.mem_map'.mp ?_
-  --simp
-  --rw [PseudoMetricSpace.toBornology]
-
+We already have `Seminorm.absorbent_ball_zero` but this gives more precise information than
+"eventually"
 -/
-
---lemma absorb {s : Set (WeakBilin B)} (h : (s.sup B.toSeminormFamily).ball (0 : (WeakBilin B)) r₀ ⊆ ⇑f ⁻¹' Metric.ball (0 : (WeakBilin B))) (x : E) :
---    ∃ r, x ∈ r • (s.sup B.toSeminormFamily).ball 0 r₀ := sorry
+open ComplexOrder in
+lemma precise_absorb {s : Finset F} (x : E) (hr : 0 < r) :
+    ∀ a ∈ Set.Ioi (r⁻¹ * (s.sup B.toSeminormFamily) x),
+    x ∈ (a : 𝕜) • ((s.sup B.toSeminormFamily).ball 0 r) := by
+  intro a ha
+  have hapos : 0 < a := by
+      have t1 : 0 ≤ r⁻¹ * (s.sup B.toSeminormFamily) x := by
+        apply mul_nonneg
+        apply le_of_lt (Right.inv_pos.mpr hr)
+        exact apply_nonneg (s.sup B.toSeminormFamily) x
+      apply lt_of_le_of_lt t1 ha
+  let y:= (a⁻¹ : 𝕜) • x
+  have e1 : y ∈ (s.sup B.toSeminormFamily).ball 0 r := by
+    rw [Seminorm.mem_ball, sub_zero]
+    unfold y
+    rw [SeminormClass.map_smul_eq_mul]
+    simp only [norm_inv, norm_algebraMap', Real.norm_eq_abs]
+    rw [Set.mem_Ioi] at ha
+    rw [abs_of_pos hapos]
+    rw [inv_mul_lt_iff₀ hapos]
+    rw [inv_mul_lt_iff₀ hr] at ha
+    rw [mul_comm]
+    exact ha
+  have ex : x = (a : 𝕜) • y := by
+    unfold y
+    rw [← smul_assoc]
+    rw [smul_eq_mul]
+    rw [CommGroupWithZero.mul_inv_cancel]
+    rw [one_smul]
+    apply ne_of_gt
+    exact RCLike.ofReal_pos.mpr hapos
+  rw [ex]
+  exact Set.smul_mem_smul_set e1
 
 lemma isBounded_of_Continuous :
     Seminorm.IsBounded B.toSeminormFamily (fun _ : Fin 1 => normSeminorm 𝕜 𝕜) f.toLinearMap := by
@@ -251,7 +239,8 @@ lemma isBounded_of_Continuous :
     aesop
   have e2 (z : WeakBilin B) :
       z ∈ (s₁.sup B.toSeminormFamily).ball 0 r  ↔ (s₁.sup B.toSeminormFamily) z < r := by
-    aesop
+    simp_all only [inv_pos, Seminorm.mem_ball, sub_zero]
+    rfl
   simp_rw [e2] at e1
   have i1 {a : ℝ} (ha : 0 < a) : 0 < (s₁.sup B.toSeminormFamily) x + a := by
     have i2 : 0 ≤ (s₁.sup B.toSeminormFamily) x := apply_nonneg _ _
