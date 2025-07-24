@@ -10,7 +10,6 @@ import Mathlib.RingTheory.Ideal.IsPrincipalPowQuotient
 import Mathlib.RingTheory.Valuation.Archimedean
 import Mathlib.Topology.Algebra.Valued.NormedValued
 import Mathlib.Topology.Algebra.Valued.ValuedField
-import Mathlib.Algebra.Order.Archimedean.Submonoid
 
 /-!
 # Necessary and sufficient conditions for a locally compact valued field
