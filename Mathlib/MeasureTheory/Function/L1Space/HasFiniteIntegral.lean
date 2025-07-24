@@ -191,9 +191,9 @@ theorem HasFiniteIntegral.of_mem_Icc [IsFiniteMeasure μ] (a b : ℝ) {X : α �
   apply (hasFiniteIntegral_const (max ‖a‖ ‖b‖)).mono'
   filter_upwards [h.mono fun ω h ↦ h.1, h.mono fun ω h ↦ h.2] with ω using abs_le_max_abs_abs
 
-theorem hasFiniteIntegral_of_bounded_enorm [IsFiniteMeasure μ] {f : α → ε} {C : ℝ≥0}
+theorem hasFiniteIntegral_of_bounded_enorm [IsFiniteMeasure μ] {f : α → ε} {C} (hC' : ‖C‖ₑ ≠ ∞)
     (hC : ∀ᵐ a ∂μ, ‖f a‖ₑ ≤ C) : HasFiniteIntegral f μ :=
-  (hasFiniteIntegral_const_enorm (enorm_ne_top (x := C))).mono'_enorm hC
+  (hasFiniteIntegral_const_enorm hC').mono'_enorm hC
 
 theorem hasFiniteIntegral_of_bounded [IsFiniteMeasure μ] {f : α → β} {C : ℝ}
     (hC : ∀ᵐ a ∂μ, ‖f a‖ ≤ C) : HasFiniteIntegral f μ :=
