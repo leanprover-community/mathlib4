@@ -8,7 +8,72 @@ import Mathlib.Logic.Function.Defs
 import Mathlib.adomaniLeanUtils.inspect_syntax
 --import Mathlib.Util.ParseCommand
 
+open Lean Elab Command Mathlib Linter Style.CommandStart in
+elab tk:"#reformat " cmd:command : command => do
+  let tktxt := "#reformat"
+  if let some cmdSubstring := cmd.raw.getSubstring? then
+  if let .error .. :=
+    captureException (← getEnv) Parser.topLevelCommandParserFn cmd.raw.getSubstring?.get!.toString
+  then
+    logWarningAt tk m!"{tktxt}: Parsing failed"
+    return
+  elabCommand cmd
+  if (← get).messages.hasErrors then
+    logWarningAt tk m!"{tktxt}: Command has errors"
+    return
+  match ← getExceptions (verbose? := false) cmd with
+  | none => logWarningAt tk m!"{tktxt} internal error!"
+--  | some #[] => logInfoAt tk "All is good!"
+  | some mex =>
+    let (reported, _) := reportedAndUnreportedExceptions mex
+    if reported.isEmpty then
+      logInfoAt tk "All is good!"
+      return
+    let parts := mkStrings cmdSubstring (reported.map (·.rg.start))
+    let reformatted := parts.foldl (· ++ ·.toString) ""
+    liftTermElabM do Meta.liftMetaM do Lean.Meta.Tactic.TryThis.addSuggestion cmd reformatted
+
+#reformat
 set_option linter.style.commandStart true
+
+#reformat
+example : True ∧ True := by
+  refine ?_
+  constructor
+  · {exact trivial}
+  · apply ?_
+    first | assumption | done | assumption | trivial
+set_option linter.style.commandStart false in
+
+#reformat
+example    :   True∧
+   True    :=by
+  refine ?_
+  constructor
+  ·{exact  trivial}
+  · apply  ?_    ;
+    first|assumption|
+     done|assumption   |     trivial
+
+
+
+
+
+
+
+
+
+example : True ∧ True := by
+  refine ?_
+  constructor
+  ·{exact  trivial}
+  · apply  ?_    ;
+    first|assumption|
+     done|assumption   |     trivial
+
+
+
+
 
 section Desiderata_and_todos
 
@@ -150,6 +215,7 @@ example : True = True := by
     ·rfl
   done
 
+set_option linter.style.commandStart false in
 -- Both `¬ False` and `¬False` are allowed.
 /--
 info: Pretty-printed syntax:
@@ -178,13 +244,16 @@ should be written as
 #mex
 example : ¬ False ∨ ¬False := by simp
 
+#mex
+example : ¬ False ∨ ¬False := by simp
+
 /--
 warning: remove space in the source
 
 This part of the code
   '( ·'
 should be written as
-  '(·'
+  '(·)'
 
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
@@ -194,7 +263,7 @@ warning: remove space in the source
 This part of the code
   '· )'
 should be written as
-  '·)'
+  '(·)'
 
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
@@ -352,6 +421,11 @@ example : True :=
   have(h) := trivial
   h
 
+example : True :=
+  -- The *linter* forces a space in `have(_)`, but the pretty-printer does not.
+  have (h) := trivial
+  h
+
 /--
 warning: add space in the source
 
@@ -448,10 +522,12 @@ example := ``Nat
 
 -- The *linter* forces a space after `where`, but the pretty-printer does not.
 /-- A doc-string -/
-example := aux
+example := if bool then aux else aux
 where
   /-- A separate doc-string -/
   aux : Unit := ()
+  /-- Another too -/
+  bool := true
 
 -- Strings are ignored by the linter.
 variable (a : String := "  ")
