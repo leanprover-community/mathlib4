@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dexin Zhang
 -/
 import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-import Mathlib.GroupTheory.Finiteness
+import Mathlib.RingTheory.Finiteness.Defs
 import Mathlib.LinearAlgebra.Span.Basic
 import Mathlib.LinearAlgebra.LinearIndependent.Defs
 
@@ -58,11 +58,10 @@ theorem Linear.singleton (v) : ({v} : Set α).Linear :=
 theorem Linear.span_finset (s : Finset α) : (span ℕ (s : Set α) : Set α).Linear :=
   ⟨0, s, by rw [zero_vadd]⟩
 
-theorem Linear.univ [h : AddMonoid.FG α] : (univ : Set α).Linear := by
-  obtain ⟨s, hs, hfinite⟩ := AddMonoid.fg_iff.1 h
-  refine ⟨0, hfinite.toFinset, ?_⟩
-  rw [← AddSubmonoid.coe_top, ← hs, ← Submodule.span_nat_eq_addSubmonoid_closure]
-  simp
+theorem Linear.univ [h : Module.Finite ℕ α] : (univ : Set α).Linear := by
+  obtain ⟨s, hs⟩ := h.fg_top
+  refine ⟨0, s, ?_⟩
+  rw [zero_vadd, hs, top_coe]
 
 theorem Linear.vadd (hs : s.Linear) : (a +ᵥ s).Linear := by
   rcases hs with ⟨b, t, rfl⟩
@@ -76,12 +75,11 @@ theorem Linear.add (hs₁ : s₁.Linear) (hs₂ : s₂.Linear) : (s₁ + s₂).L
   rw [vadd_add_vadd, ← coe_sup, ← span_union, ← Finset.coe_union]
   exact ⟨v + u, t₁ ∪ t₂, rfl⟩
 
-theorem Linear.image (hs : s.Linear) (f : α →+ β) : (f '' s).Linear := by
+theorem Linear.image (hs : s.Linear) (f : α →ₗ[ℕ] β) : (f '' s).Linear := by
   classical
   rcases hs with ⟨v, t, rfl⟩
-  refine ⟨f v, t.image f.toNatLinearMap, ?_⟩
-  rw [Finset.coe_image, span_image]
-  simp [image_vadd_distrib]
+  refine ⟨f v, t.image f, ?_⟩
+  simp [image_vadd_distrib, span_image]
 
 /-- A set is semilinear if it is a finite union of linear sets. -/
 def Semilinear (s : Set α) :=
@@ -99,7 +97,7 @@ theorem Semilinear.singleton (v) : ({v} : Set α).Semilinear :=
 theorem Semilinear.span_finset (s : Finset α) : (span ℕ (s : Set α) : Set α).Semilinear :=
   (Linear.span_finset s).semilinear
 
-theorem Semilinear.univ [AddMonoid.FG α] : (univ : Set α).Semilinear :=
+theorem Semilinear.univ [Module.Finite ℕ α] : (Set.univ : Set α).Semilinear :=
   Linear.univ.semilinear
 
 /-- Semilinear sets are closed under union. -/
@@ -168,7 +166,7 @@ theorem Semilinear.add (hs₁ : s₁.Semilinear) (hs₂ : s₂.Semilinear) :
   intro s₂ hs₂
   exact ((hS₁ s₁ hs₁).add (hS₂ s₂ hs₂)).semilinear
 
-theorem Semilinear.image (hs : s.Semilinear) (f : α →+ β) : (f '' s).Semilinear := by
+theorem Semilinear.image (hs : s.Semilinear) (f : α →ₗ[ℕ] β) : (f '' s).Semilinear := by
   classical
   rcases hs with ⟨S, hS, rfl⟩
   simp_rw [sUnion_eq_biUnion, Finset.mem_coe, image_iUnion]
@@ -176,7 +174,7 @@ theorem Semilinear.image (hs : s.Semilinear) (f : α →+ β) : (f '' s).Semilin
 
 theorem Semilinear.reindex {s : Set (ι₁ → α)} (hs : s.Semilinear) (f : ι₂ → ι₁) :
     ((· ∘ f) '' s).Semilinear :=
-  hs.image (LinearMap.funLeft ℕ α f).toAddMonoidHom
+  hs.image (LinearMap.funLeft ℕ α f)
 
 /-- Semilinear sets are closed under projection. -/
 theorem Semilinear.proj {s : Set (ι₁ ⊕ ι₂ → α)} (hs : s.Semilinear) :
