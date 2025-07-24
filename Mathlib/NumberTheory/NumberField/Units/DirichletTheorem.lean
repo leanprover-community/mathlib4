@@ -35,11 +35,9 @@ subgroup is a free `ℤ`-module of rank `card (InfinitePlace K) - 1`.
 number field, units, Dirichlet unit theorem
 -/
 
-open scoped NumberField
-
 noncomputable section
 
-open NumberField NumberField.InfinitePlace NumberField.Units
+open Module NumberField NumberField.InfinitePlace NumberField.Units
 
 variable (K : Type*) [Field K]
 
@@ -310,7 +308,7 @@ theorem unitLattice_span_eq_top :
     logEmbedding K (Additive.ofMul (exists_unit K w).choose)
   -- To prove the result, it is enough to prove that the family `v` is linearly independent
   suffices B.det v ≠ 0 by
-    rw [← isUnit_iff_ne_zero, ← is_basis_iff_det] at this
+    rw [← isUnit_iff_ne_zero, ← Basis.is_basis_iff_det] at this
     rw [← this.2]
     refine Submodule.span_monotone fun _ ⟨w, hw⟩ ↦ ⟨(exists_unit K w).choose, trivial, hw⟩
   rw [Basis.det_apply]

@@ -31,10 +31,8 @@ module can be accessed via `ρ.asModule`. Conversely, given a `MonoidAlgebra k G
 `M.ofModule` is the associociated representation seen as a homomorphism.
 -/
 
-
 open MonoidAlgebra (lift of)
-
-open LinearMap
+open LinearMap Module
 
 section
 

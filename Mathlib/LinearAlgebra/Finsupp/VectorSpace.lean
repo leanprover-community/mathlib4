@@ -21,7 +21,7 @@ This file contains results on the `R`-module structure on functions of finite su
 
 noncomputable section
 
-open Set LinearMap Submodule
+open Set LinearMap Module Submodule
 
 universe u v w
 
@@ -177,7 +177,7 @@ variable {R S : Type*} [CommRing R] [Ring S] [Algebra R S] {ι : Type*} (B : Bas
 
 /-- For any `r : R`, `s : S`, we have
   `B.repr ((algebra_map R S r) * s) i = r * (B.repr s i) `. -/
-theorem Basis.repr_smul' (i : ι) (r : R) (s : S) :
+theorem Module.Basis.repr_smul' (i : ι) (r : R) (s : S) :
     B.repr (algebraMap R S r * s) i = r * B.repr s i := by
   rw [← smul_eq_mul, ← smul_eq_mul, algebraMap_smul, map_smul, Finsupp.smul_apply]
 

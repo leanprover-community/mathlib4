@@ -61,7 +61,7 @@ We also set up the theory for `PseudoEMetricSpace` and `PseudoMetricSpace`.
 -/
 
 
-open Real Set Filter RCLike Bornology Uniformity Topology NNReal ENNReal WithLp
+open Module Real Set Filter RCLike Bornology Uniformity Topology NNReal ENNReal WithLp
 
 noncomputable section
 

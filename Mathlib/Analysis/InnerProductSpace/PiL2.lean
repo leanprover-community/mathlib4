@@ -54,7 +54,7 @@ For consequences in infinite dimension (Hilbert bases, etc.), see the file
 -/
 
 
-open Real Set Filter RCLike Submodule Function Uniformity Topology NNReal ENNReal
+open Module Real Set Filter RCLike Submodule Function Uniformity Topology NNReal ENNReal
   ComplexConjugate DirectSum WithLp
 
 noncomputable section
@@ -548,7 +548,7 @@ protected theorem toBasis_map {G : Type*} [NormedAddCommGroup G] [InnerProductSp
   rfl
 
 /-- A basis that is orthonormal is an orthonormal basis. -/
-def _root_.Basis.toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonormal 𝕜 v) :
+def _root_.Module.Basis.toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonormal 𝕜 v) :
     OrthonormalBasis ι 𝕜 E :=
   OrthonormalBasis.ofRepr <|
     LinearEquiv.isometryOfInner v.equivFun
@@ -563,22 +563,23 @@ def _root_.Basis.toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonormal 𝕜
         · rw [← v.equivFun.symm_apply_apply y, v.equivFun_symm_apply])
 
 @[simp]
-theorem _root_.Basis.coe_toOrthonormalBasis_repr (v : Basis ι 𝕜 E) (hv : Orthonormal 𝕜 v) :
+theorem _root_.Module.Basis.coe_toOrthonormalBasis_repr (v : Basis ι 𝕜 E) (hv : Orthonormal 𝕜 v) :
     ((v.toOrthonormalBasis hv).repr : E → EuclideanSpace 𝕜 ι) = v.equivFun :=
   rfl
 
 @[simp]
-theorem _root_.Basis.coe_toOrthonormalBasis_repr_symm (v : Basis ι 𝕜 E) (hv : Orthonormal 𝕜 v) :
+theorem _root_.Module.Basis.coe_toOrthonormalBasis_repr_symm (v : Basis ι 𝕜 E)
+    (hv : Orthonormal 𝕜 v) :
     ((v.toOrthonormalBasis hv).repr.symm : EuclideanSpace 𝕜 ι → E) = v.equivFun.symm :=
   rfl
 
 @[simp]
-theorem _root_.Basis.toBasis_toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonormal 𝕜 v) :
+theorem _root_.Module.Basis.toBasis_toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonormal 𝕜 v) :
     (v.toOrthonormalBasis hv).toBasis = v := by
   simp [Basis.toOrthonormalBasis, OrthonormalBasis.toBasis]
 
 @[simp]
-theorem _root_.Basis.coe_toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonormal 𝕜 v) :
+theorem _root_.Module.Basis.coe_toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonormal 𝕜 v) :
     (v.toOrthonormalBasis hv : ι → E) = (v : ι → E) :=
   calc
     (v.toOrthonormalBasis hv : ι → E) = ((v.toOrthonormalBasis hv).toBasis : ι → E) := by
@@ -636,7 +637,7 @@ protected def mk (hon : Orthonormal 𝕜 v) (hsp : ⊤ ≤ Submodule.span 𝕜 (
 @[simp]
 protected theorem coe_mk (hon : Orthonormal 𝕜 v) (hsp : ⊤ ≤ Submodule.span 𝕜 (Set.range v)) :
     ⇑(OrthonormalBasis.mk hon hsp) = v := by
-  classical rw [OrthonormalBasis.mk, _root_.Basis.coe_toOrthonormalBasis, Basis.coe_mk]
+  classical rw [OrthonormalBasis.mk, _root_.Module.Basis.coe_toOrthonormalBasis, Basis.coe_mk]
 
 /-- Any finite subset of an orthonormal family is an `OrthonormalBasis` for its span. -/
 protected def span [DecidableEq E] {v' : ι' → E} (h : Orthonormal 𝕜 v') (s : Finset ι') :

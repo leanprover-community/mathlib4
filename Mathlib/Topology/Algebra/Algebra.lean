@@ -27,7 +27,7 @@ TODO: add continuous algebra isomorphisms.
 
 -/
 
-assert_not_exists Basis
+assert_not_exists Module.Basis
 
 open Algebra Set TopologicalSpace Topology
 

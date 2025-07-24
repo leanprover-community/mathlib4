@@ -14,9 +14,11 @@ import Mathlib.LinearAlgebra.FreeModule.Finite.Quotient
 
 -/
 
+open Module
+open scoped DirectSum
+
 namespace Ideal
 
-open scoped DirectSum
 
 variable {ι R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 variable [IsDomain R] [IsPrincipalIdealRing R] [IsDomain S] [Finite ι]

@@ -46,9 +46,9 @@ variable [AddCommGroup V'] [Module K V']
 variable [AddCommGroup V₁] [Module K V₁]
 
 /-- If a vector space has a finite dimension, the index set of `Basis.ofVectorSpace` is finite. -/
-theorem Basis.finite_ofVectorSpaceIndex_of_rank_lt_aleph0 (h : Module.rank K V < ℵ₀) :
+theorem Module.Basis.finite_ofVectorSpaceIndex_of_rank_lt_aleph0 (h : Module.rank K V < ℵ₀) :
     (Basis.ofVectorSpaceIndex K V).Finite :=
-  finite_def.2 <| (Basis.ofVectorSpace K V).nonempty_fintype_index_of_rank_lt_aleph0 h
+  Set.finite_def.2 <| (Basis.ofVectorSpace K V).nonempty_fintype_index_of_rank_lt_aleph0 h
 
 /-- Also see `rank_quotient_add_rank`. -/
 theorem rank_quotient_add_rank_of_divisionRing (p : Submodule K V) :

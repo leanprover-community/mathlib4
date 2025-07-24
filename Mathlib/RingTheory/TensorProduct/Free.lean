@@ -24,6 +24,7 @@ and deduce that `Module.Free` is stable under base change.
 
 assert_not_exists Cardinal
 
+open Module
 open scoped TensorProduct
 
 namespace Algebra
@@ -86,7 +87,7 @@ variable [Fintype ι]
 variable {ι' N : Type*} [Fintype ι'] [DecidableEq ι'] [AddCommMonoid N] [Module R N]
 variable (A : Type*) [CommSemiring A] [Algebra R A]
 
-lemma _root_.Basis.baseChange_linearMap (b : Basis ι R M) (b' : Basis ι' R N) (ij : ι × ι') :
+lemma _root_.Module.Basis.baseChange_linearMap (b : Basis ι R M) (b' : Basis ι' R N) (ij : ι × ι') :
     baseChange A (b'.linearMap b ij) = (basis A b').linearMap (basis A b) ij := by
   apply (basis A b').ext
   intro k
@@ -96,7 +97,7 @@ lemma _root_.Basis.baseChange_linearMap (b : Basis ι R M) (b' : Basis ι' R N) 
 
 variable [DecidableEq ι]
 
-lemma _root_.Basis.baseChange_end (b : Basis ι R M) (ij : ι × ι) :
+lemma _root_.Module.Basis.baseChange_end (b : Basis ι R M) (ij : ι × ι) :
     baseChange A (b.end ij) = (basis A b).end ij :=
   b.baseChange_linearMap A b ij
 

@@ -92,8 +92,8 @@ theorem continuous_polarCoord_symm :
 
 /-- The derivative of `polarCoord.symm`, see `hasFDerivAt_polarCoord_symm`. -/
 def fderivPolarCoordSymm (p : ℝ × ℝ) : ℝ × ℝ →L[ℝ] ℝ × ℝ :=
-  LinearMap.toContinuousLinearMap (Matrix.toLin (Basis.finTwoProd ℝ)
-    (Basis.finTwoProd ℝ) !![cos p.2, -p.1 * sin p.2; sin p.2, p.1 * cos p.2])
+  (Matrix.toLin (.finTwoProd ℝ) (.finTwoProd ℝ)
+    !![cos p.2, -p.1 * sin p.2; sin p.2, p.1 * cos p.2]).toContinuousLinearMap
 
 theorem hasFDerivAt_polarCoord_symm (p : ℝ × ℝ) :
     HasFDerivAt polarCoord.symm (fderivPolarCoordSymm p) p := by

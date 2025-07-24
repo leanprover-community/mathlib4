@@ -29,7 +29,7 @@ Generalize linear independence to:
   * arbitrary sets of polynomials which are pairwise different degree.
 -/
 
-open Submodule
+open Module Submodule
 open scoped Function
 
 variable (R : Type*)

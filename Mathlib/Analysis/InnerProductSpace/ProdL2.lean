@@ -16,14 +16,14 @@ $$
 This is recorded in this file as an inner product space instance on `WithLp 2 (E × F)`.
 -/
 
+open Module
+open scoped InnerProductSpace
+
 variable {𝕜 ι₁ ι₂ E F : Type*}
 variable [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [NormedAddCommGroup F]
   [InnerProductSpace 𝕜 F]
 
 namespace WithLp
-open scoped InnerProductSpace
-
-variable (E F)
 
 noncomputable instance instProdInnerProductSpace :
     InnerProductSpace 𝕜 (WithLp 2 (E × F)) where
@@ -38,8 +38,6 @@ noncomputable instance instProdInnerProductSpace :
   smul_left x y r := by
     simp only [smul_fst, inner_smul_left, smul_snd]
     ring
-
-variable {E F}
 
 @[simp]
 theorem prod_inner_apply (x y : WithLp 2 (E × F)) :

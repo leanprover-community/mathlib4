@@ -31,6 +31,8 @@ import Mathlib.RingTheory.Trace.Quotient
 - Show properties of the different ideal
 -/
 
+open Module
+
 universe u
 
 attribute [local instance] FractionRing.liftAlgebra FractionRing.isScalarTower_liftAlgebra

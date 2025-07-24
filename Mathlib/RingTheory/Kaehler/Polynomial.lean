@@ -11,8 +11,8 @@ import Mathlib.Algebra.Polynomial.Derivation
 # The Kaehler differential module of polynomial algebras
 -/
 
+open Algebra Module
 open scoped TensorProduct
-open Algebra
 
 universe u v
 

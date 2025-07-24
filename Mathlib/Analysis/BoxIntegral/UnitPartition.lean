@@ -323,8 +323,8 @@ local notation "L" => span ℤ (Set.range (Pi.basisFun ℝ ι))
 variable {n} in
 theorem mem_smul_span_iff {v : ι → ℝ} :
     v ∈ (n : ℝ)⁻¹ • L ↔ ∀ i, n * v i ∈ Set.range (algebraMap ℤ ℝ) := by
-  rw [ZSpan.smul _ (inv_ne_zero (NeZero.ne _)), Basis.mem_span_iff_repr_mem]
-  simp_rw [Basis.repr_isUnitSMul, Pi.basisFun_repr, Units.smul_def, Units.val_inv_eq_inv_val,
+  rw [ZSpan.smul _ (inv_ne_zero (NeZero.ne _)), Module.Basis.mem_span_iff_repr_mem]
+  simp_rw [Module.Basis.repr_isUnitSMul, Pi.basisFun_repr, Units.smul_def, Units.val_inv_eq_inv_val,
     IsUnit.unit_spec, inv_inv, smul_eq_mul]
 
 theorem tag_mem_smul_span (ν : ι → ℤ) :
