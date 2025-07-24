@@ -466,9 +466,9 @@ lemma spec_le_iff (R : CommRingCat) (p q : Spec R) :
 
 /--
 One should bear this equality in mind when breaking the `Spec R/ PrimeSpectrum R` abstraction
-boundary.
+boundary, since these instances are not definitionally equal.
 -/
-lemma preorder_instance_eq_spec (R : CommRingCat) :
+example (R : CommRingCat) :
   inferInstance (α := Preorder (Spec R)) =
   inferInstance (α := Preorder (PrimeSpectrum R)ᵒᵈ) := by aesop (add simp spec_le_iff)
 
