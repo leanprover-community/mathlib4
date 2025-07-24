@@ -737,10 +737,6 @@ theorem normalize_finite_fraction_representation (U : Opens (PrimeSpectrum.Top R
   rw [pow_succ]
   ring
 
--- Porting note: in the following proof there are two places where `⋃ i, ⋃ (hx : i ∈ _), ... `
--- though `hx` is not used in `...` part, it is still required to maintain the structure of
--- the original proof in mathlib3.
-set_option linter.unusedVariables false in
 -- The proof here follows the argument in Hartshorne's Algebraic Geometry, Proposition II.2.2.
 theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) := by
   intro s

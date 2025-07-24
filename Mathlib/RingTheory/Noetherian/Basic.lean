@@ -7,7 +7,7 @@ import Mathlib.Algebra.Order.PartialSups
 import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.RingTheory.Noetherian.Defs
 import Mathlib.RingTheory.Finiteness.Cardinality
-import Mathlib.RingTheory.Finiteness.ExactSequence
+import Mathlib.RingTheory.Finiteness.Finsupp
 import Mathlib.RingTheory.Ideal.Prod
 
 /-!
