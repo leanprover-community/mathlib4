@@ -5,7 +5,7 @@ Authors: Joseph Myers
 -/
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Sign
+import Mathlib.Data.Sign.Basic
 import Mathlib.LinearAlgebra.AffineSpace.Combination
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 import Mathlib.LinearAlgebra.AffineSpace.Restrict

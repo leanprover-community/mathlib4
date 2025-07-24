@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Kexing Ying, Eric Wieser
 -/
 import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
-import Mathlib.Data.Sign
+import Mathlib.Data.Sign.Basic
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Analysis.RCLike.Basic
 
