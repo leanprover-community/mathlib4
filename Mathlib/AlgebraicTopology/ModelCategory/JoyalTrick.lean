@@ -31,7 +31,11 @@ variable {C : Type*} [Category C]
   [CategoryWithCofibrations C] [CategoryWithFibrations C] [CategoryWithWeakEquivalences C]
   [(weakEquivalences C).HasTwoOutOfThreeProperty]
 
-lemma joyal_trick
+/-- Joyal's trick: that cofibrations have the left lifting property
+with respect to trivial fibrations follows from the left lifting property
+of trivial cofibrations with respect to fibrations and a few other
+consequences of the model categories axioms. -/
+lemma hasLiftingProperty_of_joyalTrick
     [HasFactorization (cofibrations C) (trivialFibrations C)] [HasPushouts C]
     [(cofibrations C).IsStableUnderComposition] [(cofibrations C).IsStableUnderCobaseChange]
     (h : ∀ {A B X Y : C} (i : A ⟶ B) (p : X ⟶ Y)
@@ -55,7 +59,11 @@ lemma joyal_trick
                 simpa only [assoc, comp_id, pushout.condition_assoc] using
                   f ≫= sq'.fac_left }⟩⟩
 
-lemma joyal_trick_dual
+/-- Joyal's trick (dual): that trivial cofibrations have the left lifting
+property with respect to fibrations follows from the left lifting property
+of cofibrations with respect to trivial fibrations and a few other
+consequences of the model categories axioms. -/
+lemma hasLiftingProperty_of_joyalTrickDual
     [HasFactorization (trivialCofibrations C) (fibrations C)] [HasPullbacks C]
     [(fibrations C).IsStableUnderComposition] [(fibrations C).IsStableUnderBaseChange]
     (h : ∀ {A B X Y : C} (i : A ⟶ B) (p : X ⟶ Y)
