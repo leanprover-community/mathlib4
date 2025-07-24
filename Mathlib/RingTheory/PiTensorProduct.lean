@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 
-import Mathlib.LinearAlgebra.PiTensorProduct
+import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Data.Finset.NoncommProd
