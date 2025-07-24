@@ -762,31 +762,3 @@ lemma mapValueGroupWithZero_valuation (a : A) :
   simp [mapValueGroupWithZero, ValueGroupWithZero.embed]
 
 end ValuativeExtension
-
-variable {R : Type} [CommRing R] [ValuativeRel R]
-
-lemma ValuativeRel.IsRankLeOne.of_compatible_nnreal (v : Valuation R NNReal) [v.Compatible] :
-    ValuativeRel.IsRankLeOne R where
-  nonempty := ⟨⟨ValuativeRel.ValueGroupWithZero.embed v,
-    ValuativeRel.ValueGroupWithZero.embed_strictMono v⟩⟩
-
-open WithZero
-lemma ValuativeRel.IsRankLeOne.of_compatible_withZeroMulInt (v : Valuation R ℤᵐ⁰) [v.Compatible] :
-    ValuativeRel.IsRankLeOne R := by
-  let e : ℤᵐ⁰ →*₀ NNReal := {
-    toFun := recZeroCoe 0 (fun x ↦ 2 ^ (log (x : ℤᵐ⁰)))  -- the base doesn't matter
-    map_zero' := by simp
-    map_one' := by simp
-    map_mul' := by
-      simp only [«forall», mul_zero, recZeroCoe_zero, recZeroCoe_coe, Multiplicative.forall,
-        true_and, zero_mul, implies_true]
-      intro x y
-      have : exp (x + y) = unzero (x := (exp (x + y))) exp_ne_zero := rfl
-      rw [← exp, ← exp, ← exp_add, this, recZeroCoe_coe, unzero_coe, ← exp, ← NNReal.coe_inj]
-      push_cast
-      simp [zpow_add₀]
-  }
-  have he : StrictMono e := by
-    simp [StrictMono, «forall», e, zpow_pos, -inv_zpow', zpow_lt_zpow_iff_right₀]
-  exact ⟨⟨MonoidWithZeroHom.comp e (ValuativeRel.ValueGroupWithZero.embed v),
-    he.comp (ValuativeRel.ValueGroupWithZero.embed_strictMono v)⟩⟩
