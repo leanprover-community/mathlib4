@@ -340,10 +340,13 @@ theorem comp_mul_left (hf : IntervalIntegrable f volume a b) {c : ℝ}
   · rw [preimage_mul_const_uIcc (inv_ne_zero hc)]; field_simp [hc]
 
 theorem comp_mul_left_iff {c : ℝ} (hc : c ≠ 0)
+    -- can h' be deduced?
     (h : ‖f (min a b)‖ₑ ≠ ∞) (h' : ‖f (c * min (a / c) (b / c))‖ₑ ≠ ∞) :
     IntervalIntegrable (fun x ↦ f (c * x)) volume (a / c) (b / c) ↔
-      IntervalIntegrable f volume a b :=
-  ⟨fun h ↦ by /-simp [hc];-/ sorry /- using h.comp_mul_left c⁻¹-/, (comp_mul_left · h h')⟩
+      IntervalIntegrable f volume a b := by
+  refine ⟨fun h ↦ ?_/-simpa [hc] using h.comp_mul_left c⁻¹-/, (comp_mul_left · h h')⟩
+  have aux : ‖f (c * (c⁻¹ * min (a / c / c⁻¹) (b / c / c⁻¹)))‖ₑ ≠ ⊤ := sorry
+  simpa [hc] using h.comp_mul_left (c := c⁻¹) h' aux
 
 theorem comp_mul_right (hf : IntervalIntegrable f volume a b) {c : ℝ}
     (h : ‖f (min a b)‖ₑ ≠ ∞) (h' : ‖f (c * min (a / c) (b / c))‖ₑ ≠ ∞) :
