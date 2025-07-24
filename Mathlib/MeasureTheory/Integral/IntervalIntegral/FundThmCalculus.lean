@@ -1116,7 +1116,7 @@ theorem integral_eq_sub_of_hasDeriv_right_of_le (hab : a ≤ b) (hcont : Continu
   rw [← g.intervalIntegral_comp_comm f'int, g.map_sub]
   exact integral_eq_sub_of_hasDeriv_right_of_le_real hab (g.continuous.comp_continuousOn hcont)
     (fun x hx => g.hasFDerivAt.comp_hasDerivWithinAt x (hderiv x hx))
-    (g.integrable_comp ((intervalIntegrable_iff_integrableOn_Icc_of_le hab).1 f'int))
+    (g.integrable_comp ((intervalIntegrable_iff_integrableOn_Icc_of_le hab (enorm_ne_top)).1 f'int))
 
 /-- Fundamental theorem of calculus-2: If `f : ℝ → E` is continuous on `[a, b]` and
   has a right derivative at `f' x` for all `x` in `[a, b)`, and `f'` is integrable on `[a, b]` then
@@ -1207,7 +1207,7 @@ theorem integrableOn_deriv_right_of_nonneg (hcont : ContinuousOn g (Icc a b))
     (g'pos : ∀ x ∈ Ioo a b, 0 ≤ g' x) : IntegrableOn g' (Ioc a b) := by
   by_cases hab : a < b; swap
   · simp [Ioc_eq_empty hab]
-  rw [integrableOn_Ioc_iff_integrableOn_Ioo]
+  rw [integrableOn_Ioc_iff_integrableOn_Ioo (by finiteness)]
   have meas_g' : AEMeasurable g' (volume.restrict (Ioo a b)) := by
     apply (aemeasurable_derivWithin_Ioi g _).congr
     refine (ae_restrict_mem measurableSet_Ioo).mono fun x hx => ?_
@@ -1230,7 +1230,7 @@ theorem integrableOn_deriv_right_of_nonneg (hcont : ContinuousOn g (Icc a b))
   have B : (∫ x : ℝ in Ioo a b, F x) ≤ g b - g a := by
     rw [← integral_Ioc_eq_integral_Ioo, ← intervalIntegral.integral_of_le hab.le]
     refine integral_le_sub_of_hasDeriv_right_of_le hab.le hcont hderiv ?_ fun x hx => ?_
-    · rwa [integrableOn_Icc_iff_integrableOn_Ioo]
+    · rwa [integrableOn_Icc_iff_integrableOn_Ioo (by finiteness) (by finiteness)]
     · convert NNReal.coe_le_coe.2 (fle x)
       simp only [Real.norm_of_nonneg (g'pos x hx), coe_nnnorm]
   exact lt_irrefl _ (hf.trans_le (ENNReal.ofReal_le_ofReal B))

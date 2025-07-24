@@ -103,7 +103,7 @@ theorem integral_comp_abs {f : ℝ → ℝ} :
       let m : MeasurableEmbedding fun x : ℝ => -x := (Homeomorph.neg ℝ).measurableEmbedding
       rw [m.integrableOn_map_iff]
       simp_rw [Function.comp_def, abs_neg, neg_preimage, neg_Iic, neg_zero]
-      exact integrableOn_Ici_iff_integrableOn_Ioi.mpr hf
+      exact integrableOn_Ici_iff_integrableOn_Ioi (by finiteness)|>.mpr hf
     calc
       _ = (∫ x in Iic 0, f |x|) + ∫ x in Ioi 0, f |x| := by
         rw [← setIntegral_union (Iic_disjoint_Ioi le_rfl) measurableSet_Ioi int_Iic hf,
