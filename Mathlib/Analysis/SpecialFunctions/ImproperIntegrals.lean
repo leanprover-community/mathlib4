@@ -39,7 +39,8 @@ theorem integrableOn_exp_Iic (c : ℝ) : IntegrableOn exp (Iic c) := by
   exact (exp_pos _).le
 
 theorem integrableOn_exp_neg_Ioi (c : ℝ) : IntegrableOn (fun (x : ℝ) => exp (-x)) (Ioi c) :=
-  integrableOn_Ici_iff_integrableOn_Ioi.mp (integrableOn_exp_Iic (-c)).comp_neg_Ici
+  integrableOn_Ici_iff_integrableOn_Ioi (by finiteness) |>.mp
+    (integrableOn_exp_Iic (-c)).comp_neg_Ici
 
 theorem integral_exp_Iic (c : ℝ) : ∫ x : ℝ in Iic c, exp x = exp c := by
   refine
@@ -68,7 +69,7 @@ theorem integrableOn_exp_mul_complex_Ioi {a : ℂ} (ha : a.re < 0) (c : ℝ) :
 
 theorem integrableOn_exp_mul_complex_Iic {a : ℂ} (ha : 0 < a.re) (c : ℝ) :
     IntegrableOn (fun x : ℝ => Complex.exp (a * x)) (Iic c) := by
-  simpa using integrableOn_Iic_iff_integrableOn_Iio.mpr
+  simpa using integrableOn_Iic_iff_integrableOn_Iio (by finiteness) |>.mpr
     (integrableOn_exp_mul_complex_Ioi (a := -a) (by simpa) (-c)).comp_neg_Iio
 
 theorem integrableOn_exp_mul_Ioi {a : ℝ} (ha : a < 0) (c : ℝ) :
