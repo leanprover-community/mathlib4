@@ -3,7 +3,10 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.LinearAlgebra.DFinsupp
+import Mathlib.Algebra.FreeAbelianGroup.Finsupp
+import Mathlib.Algebra.MonoidAlgebra.Defs
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.RingTheory.Finiteness.Basic
 
 /-!
@@ -19,9 +22,29 @@ instance Module.Finite.finsupp [Module.Finite R V] :
     Module.Finite R (ι →₀ V) :=
   Module.Finite.equiv (Finsupp.linearEquivFunOnFinite R V ι).symm
 
-variable (M : ι → Type*) [∀ i : ι, AddCommMonoid (M i)] [∀ i : ι, Module R (M i)]
+end
 
-instance [∀ (i : ι), Module.Finite R (M i)] :
-    Module.Finite R (Π₀ (i : ι), M i) :=
-  letI : Fintype ι := Fintype.ofFinite _
-  Module.Finite.equiv DFinsupp.linearEquivFunOnFintype.symm
+namespace AddMonoidAlgebra
+variable {ι R S : Type*} [Finite ι] [Semiring R] [Semiring S] [Module R S] [Module.Finite R S]
+
+instance moduleFinite : Module.Finite R S[ι] := .finsupp
+
+end AddMonoidAlgebra
+
+namespace MonoidAlgebra
+variable {ι R S : Type*} [Finite ι] [Semiring R] [Semiring S] [Module R S] [Module.Finite R S]
+
+instance moduleFinite : Module.Finite R (MonoidAlgebra S ι) := .finsupp
+
+end MonoidAlgebra
+
+namespace FreeAbelianGroup
+variable {σ : Type*} [Finite σ]
+
+instance : Module.Finite ℤ (FreeAbelianGroup σ) :=
+  .of_surjective _ (FreeAbelianGroup.equivFinsupp σ).toIntLinearEquiv.symm.surjective
+
+instance : AddMonoid.FG (FreeAbelianGroup σ) := by
+  rw [← AddGroup.fg_iff_addMonoid_fg, ← Module.Finite.iff_addGroup_fg]; infer_instance
+
+end FreeAbelianGroup
