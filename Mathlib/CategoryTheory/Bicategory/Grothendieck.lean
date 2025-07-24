@@ -17,7 +17,7 @@ The category `∫ F` is defined as follows:
 * Objects: pairs `(S, a)` where `S` is an object of the base category and `a` is an object of the
   category `F(S)`.
 * Morphisms: morphisms `(R, b) ⟶ (S, a)` are defined as pairs `(f, h)` where `f : R ⟶ S` is a
-  morphism in `𝒮` and `h : b ⟶ F(f)(a) `
+  morphism in `𝒮` and `h : b ⟶ F(f)(a)`
 
 The projection functor `∫ F ⥤ 𝒮` is then given by projecting to the first factors, i.e.
 * On objects, it sends `(S, a)` to `S`
@@ -33,7 +33,7 @@ This is consistent with the convention for the Grothendieck construction on 1-fu
 ## Future work / TODO
 
 1. Once the bicategory of pseudofunctors has been defined, show that this construction forms a
-pseudofunctor from `Pseudofunctor (LocallyDiscrete 𝒮) Cat` to `Cat`.
+pseudofunctor from `Pseudofunctor (LocallyDiscrete 𝒮) Catᵒᵖ` to `Cat`.
 2. Develop the covariant version of `coGrothendieck` and
 deduce the results in `CategoryTheory.Grothendieck` as a specialization of the
 results in this file.
@@ -66,7 +66,7 @@ namespace coGrothendieck
 scoped prefix:75 "∫ " => coGrothendieck
 
 /-- A morphism in the Grothendieck category consists of
-`base : X.base ⟶ Y.base` and `f.fiber : (F.map base).obj X.fiber ⟶ Y.fiber`.
+`base : X.base ⟶ Y.base` and `f.fiber : X.fiber ⟶ (F.map base.op.toLoc).obj Y.fiber`.
 -/
 structure Hom (X Y : ∫ F) where
   /-- The morphism between base objects. -/
