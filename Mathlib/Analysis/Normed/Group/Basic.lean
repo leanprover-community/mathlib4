@@ -143,7 +143,7 @@ We don't have `ENormedAddCommMonoid` extend `EMetricSpace`, since the canonical 
 is not an `EMetricSpace`. This is because `ℝ≥0∞` carries the order topology, which is distinct from
 the topology coming from `edist`. -/
 class StrictENormedAddCommMonoid (E : Type*) [TopologicalSpace E]
-  extends StrictENormedAddMonoid E, AddCommMonoid E where
+  extends ENormedAddCommMonoid E, StrictENormedAddMonoid E where
 
 /-- An enormed commutative monoid is a commutative monoid endowed with a continuous enorm. -/
 @[to_additive]
@@ -153,7 +153,7 @@ class ENormedCommMonoid (E : Type*) [TopologicalSpace E] extends ENormedMonoid E
 which is positive definite. -/
 @[to_additive]
 class StrictENormedCommMonoid (E : Type*) [TopologicalSpace E]
-  extends StrictENormedMonoid E, CommMonoid E where
+  extends ENormedAddMonoid E, StrictENormedAddMonoid E where
 
 /-- A seminormed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖`
 defines a pseudometric space structure. -/
