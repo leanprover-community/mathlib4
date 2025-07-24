@@ -6,7 +6,6 @@ Authors: Damiano Testa
 
 import Lean.Parser.Syntax
 import Mathlib.Tactic.Linter.Header
-import Mathlib.adomaniLeanUtils.inspect_syntax
 
 
 /-!
