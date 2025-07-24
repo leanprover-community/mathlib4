@@ -54,7 +54,7 @@ For consequences in infinite dimension (Hilbert bases, etc.), see the file
 -/
 
 
-open Real Set Filter RCLike Submodule Function Uniformity Topology NNReal ENNReal
+open Module Real Set Filter RCLike Submodule Function Uniformity Topology NNReal ENNReal
   ComplexConjugate DirectSum WithLp
 
 noncomputable section
@@ -548,7 +548,7 @@ protected theorem toBasis_map {G : Type*} [NormedAddCommGroup G] [InnerProductSp
   rfl
 
 /-- A basis that is orthonormal is an orthonormal basis. -/
-def _root_.Basis.toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonormal 𝕜 v) :
+def _root_.Module.Basis.toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonormal 𝕜 v) :
     OrthonormalBasis ι 𝕜 E :=
   OrthonormalBasis.ofRepr <|
     LinearEquiv.isometryOfInner (v.equivFun.trans (WithLp.linearEquiv 2 𝕜 (ι → 𝕜)).symm)
@@ -577,14 +577,14 @@ theorem _root_.Basis.coe_toOrthonormalBasis_repr_symm (v : Basis ι 𝕜 E) (hv 
   rfl
 
 @[simp]
-theorem _root_.Basis.toBasis_toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonormal 𝕜 v) :
+theorem _root_.Module.Basis.toBasis_toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonormal 𝕜 v) :
     (v.toOrthonormalBasis hv).toBasis = v := by
   simp only [OrthonormalBasis.toBasis, Basis.toOrthonormalBasis,
     LinearEquiv.isometryOfInner_toLinearEquiv]
   exact Basis.ofEquivFun_equivFun v
 
 @[simp]
-theorem _root_.Basis.coe_toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonormal 𝕜 v) :
+theorem _root_.Module.Basis.coe_toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonormal 𝕜 v) :
     (v.toOrthonormalBasis hv : ι → E) = (v : ι → E) :=
   calc
     (v.toOrthonormalBasis hv : ι → E) = ((v.toOrthonormalBasis hv).toBasis : ι → E) := by
@@ -642,7 +642,7 @@ protected def mk (hon : Orthonormal 𝕜 v) (hsp : ⊤ ≤ Submodule.span 𝕜 (
 @[simp]
 protected theorem coe_mk (hon : Orthonormal 𝕜 v) (hsp : ⊤ ≤ Submodule.span 𝕜 (Set.range v)) :
     ⇑(OrthonormalBasis.mk hon hsp) = v := by
-  classical rw [OrthonormalBasis.mk, _root_.Basis.coe_toOrthonormalBasis, Basis.coe_mk]
+  classical rw [OrthonormalBasis.mk, _root_.Module.Basis.coe_toOrthonormalBasis, Basis.coe_mk]
 
 /-- Any finite subset of an orthonormal family is an `OrthonormalBasis` for its span. -/
 protected def span [DecidableEq E] {v' : ι' → E} (h : Orthonormal 𝕜 v') (s : Finset ι') :
@@ -742,6 +742,48 @@ end EuclideanSpace
 
 instance OrthonormalBasis.instInhabited : Inhabited (OrthonormalBasis ι 𝕜 (EuclideanSpace 𝕜 ι)) :=
   ⟨EuclideanSpace.basisFun ι 𝕜⟩
+
+namespace OrthonormalBasis
+
+variable {E' : Type*} [Fintype ι'] [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
+    (b : OrthonormalBasis ι 𝕜 E) (b' : OrthonormalBasis ι' 𝕜 E') (e : ι ≃ ι')
+
+/-- The `LinearIsometryEquiv` which maps an orthonormal basis to another. This is a convenience
+wrapper around `Orthonormal.equiv`. -/
+protected def equiv : E ≃ₗᵢ[𝕜] E' :=
+  b.repr.trans <| .trans (.piLpCongrLeft _ _ _ e) b'.repr.symm
+
+@[simp]
+lemma equiv_symm : (b.equiv b' e).symm = b'.equiv b e.symm := by
+  apply b'.toBasis.ext_linearIsometryEquiv
+  simp [OrthonormalBasis.equiv]
+
+@[simp]
+lemma equiv_apply_basis (i : ι) : b.equiv b' e (b i) = b' (e i) := by
+  classical
+  simp only [OrthonormalBasis.equiv, LinearIsometryEquiv.trans_apply, OrthonormalBasis.repr_self]
+  refine DFunLike.congr rfl ?_
+  ext j
+  simp [Pi.single_apply, Equiv.symm_apply_eq]
+
+@[simp]
+lemma equiv_self_rfl : b.equiv b (.refl ι) = .refl 𝕜 E := by
+  apply b.toBasis.ext_linearIsometryEquiv
+  simp
+
+lemma equiv_apply (x : E) : b.equiv b' e x = ∑ i, b.repr x i • b' (e i) := by
+  nth_rw 1 [← b.sum_repr x, map_sum]
+  simp_rw [map_smul, equiv_apply_basis]
+
+lemma equiv_apply_euclideanSpace (x : EuclideanSpace 𝕜 ι) :
+    (EuclideanSpace.basisFun ι 𝕜).equiv b (Equiv.refl ι) x = ∑ i, x i • b i := by
+  simp_rw [equiv_apply, EuclideanSpace.basisFun_repr, Equiv.refl_apply]
+
+lemma coe_equiv_euclideanSpace :
+    ⇑((EuclideanSpace.basisFun ι 𝕜).equiv b (Equiv.refl ι)) = fun x ↦ ∑ i, x i • b i := by
+  simp_rw [← equiv_apply_euclideanSpace]
+
+end OrthonormalBasis
 
 section Complex
 
