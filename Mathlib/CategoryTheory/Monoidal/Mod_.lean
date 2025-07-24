@@ -68,6 +68,9 @@ variable (M) in
 abbrev regular : Mod_Class M M where
   smul := μ
 
+attribute [local instance] regular in
+@[simp] lemma smul_eq_mul (M : C) [Mon_Class M] : γ[M, M] = μ[M] := rfl
+
 /-- If `C` acts monoidally on `D`, then every object of `D` is canonically a
 module over the trivial monoid. -/
 @[simps]
