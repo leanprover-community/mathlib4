@@ -763,10 +763,6 @@ lemma mapValueGroupWithZero_valuation (a : A) :
 
 end ValuativeExtension
 
-namespace ValuativeRel.ValueGroupWithZero
-
-end ValuativeRel.ValueGroupWithZero
-
 variable {R : Type} [CommRing R] [ValuativeRel R]
 
 lemma ValuativeRel.IsRankLeOne.of_compatible_nnreal (v : Valuation R NNReal) [v.Compatible] :
