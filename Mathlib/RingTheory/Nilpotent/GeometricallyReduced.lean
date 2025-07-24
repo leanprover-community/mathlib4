@@ -27,6 +27,8 @@ if the tensor product `A ⊗[k] AlgebraicClosure k` is reduced.
 
 -/
 
+open TensorProduct
+
 noncomputable section
 variable (k : Type) (A : Type) [Field k] [CommRing A] [Algebra k A]
 variable (B : Type) [CommRing B] [Algebra k B]
@@ -35,7 +37,7 @@ variable (B : Type) [CommRing B] [Algebra k B]
 /-- Given a morphism f : A →ₐ[k] B of k-algebras and a k-algebra K, the basechange of f by the
 identity map K → K -/
 def baseChange (f : A →ₐ[k] B) (K : Type) [CommRing K] [Algebra k K] :
-    TensorProduct k K A →ₐ[K] TensorProduct k K B :=
+    K ⊗[k] A →ₐ[K] K ⊗[k] B :=
     Algebra.TensorProduct.map (AlgHom.id K K) f
 
 
@@ -49,10 +51,10 @@ lemma baseChange_by_field_inj (f : A →ₐ[k] B) (h : Function.Injective f) (K 
 /-- The k-algebra A is geometrically reduced iff its basechange to AlgebraicClosure k is reduced -/
 @[mk_iff]
 class IsGeometricallyReduced : Prop where
-  baseChangeReduced : IsReduced (TensorProduct k (AlgebraicClosure k) A)
+  baseChangeReduced : IsReduced ((AlgebraicClosure k) ⊗[k] A)
 
 theorem IsGeometricallyReduced_imp_baseChange_by_closure_Reduced (h : IsGeometricallyReduced k A) :
-    IsReduced (TensorProduct k (AlgebraicClosure k) A) := by
+    IsReduced ((AlgebraicClosure k) ⊗[k] A) := by
     exact h.baseChangeReduced
 
 lemma isGeometricallyReduced_of_injective (B : Type) [CommRing B] [Algebra k B] (f : A →ₐ[k] B)
@@ -67,7 +69,7 @@ lemma isGeometricallyReduced_of_injective (B : Type) [CommRing B] [Algebra k B] 
 theorem isGeometricallyReduced_isReduced [IsGeometricallyReduced k A] : IsReduced A := by
   -- We prove this by providing an injection A →ₐ[k] A ⊗[k] AlgebraicClosure k and then
   -- applying isReduced_of_injective
-  let f : A →ₐ[k] TensorProduct k (AlgebraicClosure k) A := Algebra.TensorProduct.includeRight
+  let f : A →ₐ[k] (AlgebraicClosure k) ⊗[k] A := Algebra.TensorProduct.includeRight
   expose_names
   rw [isGeometricallyReduced_iff] at inst_3
   have hf : Function.Injective f := by
@@ -85,10 +87,10 @@ lemma notReduced_has_nilpotent {R : Type} [Zero R] [Pow R ℕ] (h : ¬IsReduced 
 
 /-- Given a subalgebra C of a k-algebra A, and a k-algebra B, the basechange of C to a subalgebra
 of A ⊗[k] B -/
-def subAlgebraBaseChange (C : Subalgebra k A) : Subalgebra B (TensorProduct k B A) :=
+def subAlgebraBaseChange (C : Subalgebra k A) : Subalgebra B (B ⊗[k] A) :=
   AlgHom.range (baseChange k C A C.val B)
 
-lemma FGsubalgebra_baseChange_of_element (x : TensorProduct k A B) :
+lemma FGsubalgebra_baseChange_of_element (x : A ⊗[k] B) :
     ∃ C : Subalgebra k B , C.FG ∧ x ∈ subAlgebraBaseChange k B A C := by
   obtain ⟨S, hS⟩ := TensorProduct.exists_finset x
   let S1 := Set.image (fun j ↦ j.2) S.toSet
@@ -121,7 +123,7 @@ theorem all_FG_geometricallyReduced_isGeometricallyReduced
   apply notReduced_has_nilpotent at h_contra
   obtain ⟨x, hx⟩ := h_contra
   obtain ⟨C, hC⟩ := FGsubalgebra_baseChange_of_element _ _ _ x
-  have hy : ∃ y : (TensorProduct k (AlgebraicClosure k) C), y ≠ 0 ∧ IsNilpotent y := by
+  have hy : ∃ y : ((AlgebraicClosure k) ⊗[k] C), y ≠ 0 ∧ IsNilpotent y := by
     let f := baseChange k C A C.val (AlgebraicClosure k)
     have h_inj : Function.Injective f := by
       apply baseChange_by_field_inj
