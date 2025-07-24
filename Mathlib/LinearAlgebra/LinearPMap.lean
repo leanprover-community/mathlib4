@@ -707,7 +707,7 @@ def graph (f : E →ₗ.[R] F) : Submodule R (E × F) :=
 theorem mem_graph_iff' (f : E →ₗ.[R] F) {x : E × F} :
     x ∈ f.graph ↔ ∃ y : f.domain, (↑y, f y) = x := by simp [graph]
 
-@[simp]
+@[simp, grind =]
 theorem mem_graph_iff (f : E →ₗ.[R] F) {x : E × F} :
     x ∈ f.graph ↔ ∃ y : f.domain, (↑y : E) = x.1 ∧ f y = x.2 := by
   cases x
@@ -782,7 +782,6 @@ theorem neg_graph (f : E →ₗ.[R] F) :
 
 theorem mem_graph_snd_inj (f : E →ₗ.[R] F) {x y : E} {x' y' : F} (hx : (x, x') ∈ f.graph)
     (hy : (y, y') ∈ f.graph) (hxy : x = y) : x' = y' := by
-  rw [mem_graph_iff] at hx hy
   grind
 
 theorem mem_graph_snd_inj' (f : E →ₗ.[R] F) {x y : E × F} (hx : x ∈ f.graph) (hy : y ∈ f.graph)
@@ -800,12 +799,7 @@ theorem mem_domain_iff {f : E →ₗ.[R] F} {x : E} : x ∈ f.domain ↔ ∃ y :
   constructor <;> intro h
   · use f ⟨x, h⟩
     exact f.mem_graph ⟨x, h⟩
-  obtain ⟨y, h⟩ := h
-  rw [mem_graph_iff] at h
-  obtain ⟨x', h⟩ := h
-  simp only at h
-  rw [← h.1]
-  simp
+  grind
 
 theorem mem_domain_of_mem_graph {f : E →ₗ.[R] F} {x : E} {y : F} (h : (x, y) ∈ f.graph) :
     x ∈ f.domain := by
@@ -814,13 +808,7 @@ theorem mem_domain_of_mem_graph {f : E →ₗ.[R] F} {x : E} {y : F} (h : (x, y)
 
 theorem image_iff {f : E →ₗ.[R] F} {x : E} {y : F} (hx : x ∈ f.domain) :
     y = f ⟨x, hx⟩ ↔ (x, y) ∈ f.graph := by
-  rw [mem_graph_iff]
-  constructor <;> intro h
-  · use ⟨x, hx⟩
-    simp [h]
-  rcases h with ⟨⟨x', hx'⟩, ⟨h1, h2⟩⟩
-  simp only at h1 h2
-  simp only [← h2, h1]
+  grind
 
 theorem mem_range_iff {f : E →ₗ.[R] F} {y : F} : y ∈ Set.range f ↔ ∃ x : E, (x, y) ∈ f.graph := by
   constructor <;> intro h
@@ -829,13 +817,7 @@ theorem mem_range_iff {f : E →ₗ.[R] F} {y : F} : y ∈ Set.range f ↔ ∃ x
     use x
     rw [← h]
     exact f.mem_graph ⟨x, hx⟩
-  obtain ⟨x, h⟩ := h
-  rw [mem_graph_iff] at h
-  obtain ⟨x, h⟩ := h
-  rw [Set.mem_range]
-  use x
-  simp only at h
-  rw [h.2]
+  grind
 
 theorem mem_domain_iff_of_eq_graph {f g : E →ₗ.[R] F} (h : f.graph = g.graph) {x : E} :
     x ∈ f.domain ↔ x ∈ g.domain := by simp_rw [mem_domain_iff, h]
@@ -1029,11 +1011,7 @@ theorem mem_inverse_graph (x : f.domain) : (f x, (x : E)) ∈ (inverse f).graph 
 theorem inverse_apply_eq {y : (inverse f).domain} {x : f.domain} (hxy : f x = y) :
     (inverse f) y = x := by
   have := mem_inverse_graph hf x
-  simp only [mem_graph_iff, Subtype.exists, exists_and_left, exists_eq_left] at this
-  rcases this with ⟨hx, h⟩
-  rw [← h]
-  congr
-  simp only [hxy, Subtype.coe_eta]
+  grind
 
 end inverse
 
