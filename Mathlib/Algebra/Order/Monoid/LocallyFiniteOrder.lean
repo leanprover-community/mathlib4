@@ -101,6 +101,14 @@ def LocallyFiniteOrder.orderAddMonoidHom :
     suffices 0 ≤ addMonoidHom G b by simpa
     simp [addMonoidHom, hab]
 
+@[simp]
+lemma LocallyFiniteOrder.orderAddMonoidHom_toAddMonoidHom :
+  orderAddMonoidHom G = addMonoidHom G := rfl
+
+@[simp]
+lemma LocallyFiniteOrder.orderAddMonoidHom_apply (x : G) :
+  orderAddMonoidHom G x = addMonoidHom G x := rfl
+
 lemma LocallyFiniteOrder.orderAddMonoidHom_injective :
     Function.Injective (orderAddMonoidHom G) := by
   rw [injective_iff_map_eq_zero]
@@ -146,6 +154,9 @@ def LocallyFiniteOrder.orderAddMonoidEquiv [Nontrivial G] :
     obtain hb | hb := le_total 0 b
     · simp [orderAddMonoidHom, addMonoidHom, hb]
     · simp [orderAddMonoidHom, addMonoidHom, hb]
+
+lemma LocallyFiniteOrder.orderAddMonoidEquiv_apply [Nontrivial G] (x : G) :
+  orderAddMonoidEquiv G x = addMonoidHom G x := rfl
 
 variable (G) in
 /-- Any nontrivial linearly ordered abelian group that is locally finite is isomorphic to `ℤ`. -/
