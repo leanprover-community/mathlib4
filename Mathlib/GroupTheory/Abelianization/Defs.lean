@@ -92,6 +92,9 @@ theorem lift_apply_of (x : G) : lift f (of x) = f x :=
 @[deprecated (since := "2025-07-23")]
 alias lift.of := lift_apply_of
 
+@[simp]
+theorem lift_symm_apply (f : Abelianization G →* A) : lift.symm f = f.comp of := rfl
+
 theorem lift_unique (φ : Abelianization G →* A)
     -- hφ : φ agrees with f on the image of G in Gᵃᵇ
     (hφ : ∀ x : G, φ (Abelianization.of x) = f x)
