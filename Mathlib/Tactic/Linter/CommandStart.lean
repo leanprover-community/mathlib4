@@ -792,17 +792,21 @@ def byTens (s : String) (n : Nat := 9) : String :=
 def mkRangeError (ks : Array SyntaxNodeKind) (orig pp : Substring) :
     Option (String.Range × MessageData × String) := Id.run do
   let origWs := orig.takeWhile (·.isWhitespace)
+  --dbg_trace "here for '{(orig.take 10).toString}'\n{ks}\n"
   --dbg_trace ks
   if forceSpaceAfter.contains ks || forceSpaceAfter'.contains ks  then
+    --dbg_trace "forceSpaceAfter"
+    let space := if (pp.take 1).trim.isEmpty then "" else " "
     if origWs.isEmpty then
-      return some (⟨origWs.startPos, origWs.next origWs.startPos⟩, "add space in the source", " ")
+      return some (⟨origWs.startPos, origWs.next origWs.startPos⟩, "add space in the source", space)
     else
-    if origWs.toString.length == 1 then
+    if origWs.toString.length == 1 || (orig.take 1).toString == "\n" then
       return none
     else
       let origWsNext := origWs.drop 1
-      return some (⟨origWsNext.startPos, origWsNext.stopPos⟩, "remove space in the source", "")
+      return some (⟨origWsNext.startPos, origWsNext.stopPos⟩, "remove space in the source", space)
   else if forceNoSpaceAfter.contains ks then
+    --dbg_trace "forceNoSpaceAfter"
     if !origWs.isEmpty then
       return some (⟨origWs.startPos, origWs.stopPos⟩, "remove space in the source", "")
     else
@@ -811,6 +815,7 @@ def mkRangeError (ks : Array SyntaxNodeKind) (orig pp : Substring) :
   let ppNext := pp.take 1
   -- The next pp-character is a space
   if ppNext.trim.isEmpty then
+    --dbg_trace "next is whitespace"
     if onlineComment orig then
       return none
     if origWs.isEmpty then
@@ -824,6 +829,7 @@ def mkRangeError (ks : Array SyntaxNodeKind) (orig pp : Substring) :
         return some (⟨origWsNext.startPos, origWsNext.stopPos⟩, "remove space in the source", "")
   -- The next pp-character is not a space
   if !ppNext.trim.isEmpty then
+    --dbg_trace "next is not whitespace"
     if !origWs.isEmpty then
       let wsName := if (origWs.take 1).toString == " " then "space" else "line break"
       let s := if origWs.toString.length == 1 || (origWs.take 1).toString == "\n" then "" else "s"
