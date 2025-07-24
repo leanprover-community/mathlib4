@@ -180,7 +180,7 @@ def consCases {P : (∀ i : Fin n.succ, α i) → Sort v} (h : ∀ x₀ x, P (Fi
 
 @[simp]
 theorem consCases_cons {P : (∀ i : Fin n.succ, α i) → Sort v} (h : ∀ x₀ x, P (Fin.cons x₀ x))
-    (x₀ : α 0) (x : ∀ i : Fin n, α i.succ) : @consCases _ _ _ h (cons x₀ x) = h x₀ x := by
+    (x₀ : α 0) (x : ∀ i : Fin n, α i.succ) : consCases h (cons x₀ x) = h x₀ x := by
   rw [consCases, cast_eq]
   congr
 
