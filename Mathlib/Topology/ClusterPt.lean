@@ -46,6 +46,18 @@ theorem ClusterPt.frequently {F : Filter X} {p : X → Prop} (hx : ClusterPt x F
     (hp : ∀ᶠ y in 𝓝 x, p y) : ∃ᶠ y in F, p y :=
   clusterPt_iff_frequently.mp hx {y | p y} hp
 
+theorem Filter.HasBasis.clusterPt_iff_frequently' {ι} {p : ι → Prop} {s : ι → Set X} {F : Filter X}
+    (hx : F.HasBasis p s) : ClusterPt x F ↔ ∀ i, p i → ∃ᶠ x in 𝓝 x, x ∈ s i := by
+  simp only [(𝓝 x).basis_sets.clusterPt_iff hx, Filter.frequently_iff]
+  exact ⟨fun h a b c d ↦ h d b, fun h a b c d ↦ h c d b⟩
+
+theorem clusterPt_iff_frequently' {F : Filter X} : ClusterPt x F ↔ ∀ s ∈ F, ∃ᶠ y in 𝓝 x, y ∈ s :=
+  F.basis_sets.clusterPt_iff_frequently'
+
+theorem ClusterPt.frequently' {F : Filter X} {p : X → Prop} (hx : ClusterPt x F)
+    (hp : ∀ᶠ y in F, p y) : ∃ᶠ y in 𝓝 x, p y :=
+  clusterPt_iff_frequently'.mp hx {y | p y} hp
+
 theorem clusterPt_iff_nonempty {F : Filter X} :
     ClusterPt x F ↔ ∀ ⦃U : Set X⦄, U ∈ 𝓝 x → ∀ ⦃V⦄, V ∈ F → (U ∩ V).Nonempty :=
   inf_neBot_iff
@@ -98,11 +110,6 @@ theorem ClusterPt.of_inf_left {f g : Filter X} (H : ClusterPt x <| f ⊓ g) : Cl
 theorem ClusterPt.of_inf_right {f g : Filter X} (H : ClusterPt x <| f ⊓ g) :
     ClusterPt x g :=
   H.mono inf_le_right
-
-theorem ClusterPt.frequently' {F : Filter X} {p : X → Prop} (hx : ClusterPt x F)
-    (hp : ∀ᶠ y in F, p y) : ∃ᶠ y in nhds x, p y := by
-  rw [eventually_iff, ← le_principal_iff] at hp
-  exact clusterPt_principal_iff_frequently.mp (hx.mono hp)
 
 section MapClusterPt
 
