@@ -52,7 +52,8 @@ open MeasureTheory Set Filter Function TopologicalSpace
 
 open scoped Topology Filter ENNReal Interval NNReal
 
-variable {ι 𝕜 ε E F A : Type*} [NormedAddCommGroup E] [TopologicalSpace ε] [ENormedAddCommMonoid ε]
+variable {ι 𝕜 ε ε' E F A : Type*} [NormedAddCommGroup E]
+  [TopologicalSpace ε] [ENormedAddCommMonoid ε] [TopologicalSpace ε'] [ENormedAddCommMonoid ε']
 
 /-!
 ### Integrability on an interval
@@ -243,12 +244,17 @@ theorem mono_set' (hf : IntervalIntegrable f μ a b) (hsub : Ι c d ⊆ Ι a b) 
     IntervalIntegrable f μ c d :=
   hf.mono_set_ae <| Eventually.of_forall hsub
 
--- TODO: generalise this lemma and the next one!
+theorem mono_fun_enorm [PseudoMetrizableSpace ε'] {g : ℝ → ε'}
+    (hf : IntervalIntegrable f μ a b) (hgm : AEStronglyMeasurable g (μ.restrict (Ι a b)))
+    (hle : (‖g ·‖ₑ) ≤ᵐ[μ.restrict (Ι a b)] (‖f ·‖ₑ)) : IntervalIntegrable g μ a b :=
+  intervalIntegrable_iff.2 <| hf.def'.integrable.mono_enorm hgm hle
+
 theorem mono_fun {f : ℝ → E} [NormedAddCommGroup F] {g : ℝ → F} (hf : IntervalIntegrable f μ a b)
     (hgm : AEStronglyMeasurable g (μ.restrict (Ι a b)))
     (hle : (fun x => ‖g x‖) ≤ᵐ[μ.restrict (Ι a b)] fun x => ‖f x‖) : IntervalIntegrable g μ a b :=
   intervalIntegrable_iff.2 <| hf.def'.integrable.mono hgm hle
 
+-- XXX: what would an enorm version of this lemma look like?
 theorem mono_fun' {f : ℝ → E} {g : ℝ → ℝ} (hg : IntervalIntegrable g μ a b)
     (hfm : AEStronglyMeasurable f (μ.restrict (Ι a b)))
     (hle : (fun x => ‖f x‖) ≤ᵐ[μ.restrict (Ι a b)] g) : IntervalIntegrable f μ a b :=
@@ -269,7 +275,7 @@ end
 variable [NormedRing A] {f g : ℝ → E} {a b : ℝ} {μ : Measure ℝ}
 
 theorem smul {R : Type*} [NormedAddCommGroup R] [SMulZeroClass R E] [IsBoundedSMul R E]
-    {f : ℝ → E} {a b : ℝ} {μ : Measure ℝ} (h : IntervalIntegrable f μ a b) (r : R) :
+    {a b : ℝ} {μ : Measure ℝ} (h : IntervalIntegrable f μ a b) (r : R) :
     IntervalIntegrable (r • f) μ a b :=
   ⟨h.1.smul r, h.2.smul r⟩
 
