@@ -286,7 +286,7 @@ lemma apply_eq_or (i j : ι) :
     B.form (α j) (α j) = 2 * B.form (α i) (α i) ∨
     B.form (α j) (α j) = 3 * B.form (α i) (α i) := by
   obtain ⟨j', h₁, h₂⟩ := P.exists_form_eq_form_and_form_ne_zero B i j
-  suffices P.pairingIn ℤ i j' ≠ 0 by simp only [← h₁, B.apply_eq_or_aux i j' this]
+  suffices P.pairingIn ℤ i j' ≠ 0 by simp only [← h₁]; exact B.apply_eq_or_aux i j' this
   contrapose! h₂
   replace h₂ : P.pairing i j' = 0 := by rw [← P.algebraMap_pairingIn ℤ, h₂, map_zero]
   exact (B.apply_root_root_zero_iff i j').mpr h₂

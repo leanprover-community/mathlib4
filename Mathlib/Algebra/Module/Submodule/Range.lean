@@ -299,7 +299,7 @@ theorem submoduleOf_sup_of_le {N₁ N₂ N : Submodule R M} (h₁ : N₁ ≤ N) 
     (N₁ ⊔ N₂).submoduleOf N = N₁.submoduleOf N ⊔ N₂.submoduleOf N := by
   apply Submodule.map_injective_of_injective N.subtype_injective
   simp only [submoduleOf, map_comap_eq]
-  simp_all
+  aesop
 
 @[simp]
 lemma comap_subtype_le_iff {p q r : Submodule R M} :

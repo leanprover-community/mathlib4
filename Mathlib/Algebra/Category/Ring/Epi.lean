@@ -23,7 +23,9 @@ lemma CommRingCat.epi_iff_tmul_eq_tmul {R S : Type u} [CommRing R] [CommRing S] 
       ∀ s : S, s ⊗ₜ[R] 1 = 1 ⊗ₜ s := by
   constructor
   · intro H
-    have := H.1 (CommRingCat.ofHom <| Algebra.TensorProduct.includeLeftRingHom)
+    #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+    we need to add `(R := R) (A := S)` in the next line to deal with unification issues. -/
+    have := H.1 (CommRingCat.ofHom <| Algebra.TensorProduct.includeLeftRingHom (R := R))
       (CommRingCat.ofHom <| (Algebra.TensorProduct.includeRight (R := R) (A := S)).toRingHom)
       (by ext r; change algebraMap R S r ⊗ₜ 1 = 1 ⊗ₜ algebraMap R S r;
           simp only [Algebra.algebraMap_eq_smul_one, smul_tmul])

@@ -37,7 +37,7 @@ This is `Nat.divisorsAntidiagonal` without a special case for `n = 0`. -/
     x ∈ divisorsAntidiagonal n ↔ x.1 * x.2 = n := by
     simp_rw [divisorsAntidiagonal, Finset.mem_map, Finset.mem_attach, Function.Embedding.coeFn_mk,
       Prod.ext_iff, true_and, ← coe_inj, Subtype.exists]
-    simp
+    aesop
   { antidiagonal := fun n ↦ divisorsAntidiagonal (Additive.toMul n) |>.map
       (.prodMap (Additive.ofMul.toEmbedding) (Additive.ofMul.toEmbedding))
     mem_antidiagonal := by simp [← ofMul_mul, mem_divisorsAntidiagonal] }

@@ -737,49 +737,6 @@ end EuclideanSpace
 instance OrthonormalBasis.instInhabited : Inhabited (OrthonormalBasis ι 𝕜 (EuclideanSpace 𝕜 ι)) :=
   ⟨EuclideanSpace.basisFun ι 𝕜⟩
 
-namespace OrthonormalBasis
-
-variable {E' : Type*} [Fintype ι'] [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
-    (b : OrthonormalBasis ι 𝕜 E) (b' : OrthonormalBasis ι' 𝕜 E') (e : ι ≃ ι')
-
-/-- The `LinearIsometryEquiv` which maps an orthonormal basis to another. This is a convenience
-wrapper around `Orthonormal.equiv`. -/
-protected def equiv : E ≃ₗᵢ[𝕜] E' :=
-  b.repr.trans <| .trans (.piLpCongrLeft _ _ _ e) b'.repr.symm
-
-@[simp]
-lemma equiv_symm : (b.equiv b' e).symm = b'.equiv b e.symm := by
-  apply b'.toBasis.ext_linearIsometryEquiv
-  simp [OrthonormalBasis.equiv]
-
-@[simp]
-lemma equiv_apply_basis (i : ι) : b.equiv b' e (b i) = b' (e i) := by
-  classical
-  simp only [OrthonormalBasis.equiv, LinearIsometryEquiv.trans_apply, OrthonormalBasis.repr_self,
-    LinearIsometryEquiv.piLpCongrLeft_apply]
-  refine DFunLike.congr rfl ?_
-  ext j
-  simp [Equiv.symm_apply_eq]
-
-@[simp]
-lemma equiv_self_rfl : b.equiv b (.refl ι) = .refl 𝕜 E := by
-  apply b.toBasis.ext_linearIsometryEquiv
-  simp
-
-lemma equiv_apply (x : E) : b.equiv b' e x = ∑ i, b.repr x i • b' (e i) := by
-  nth_rw 1 [← b.sum_repr x, map_sum]
-  simp_rw [map_smul, equiv_apply_basis]
-
-lemma equiv_apply_euclideanSpace (x : EuclideanSpace 𝕜 ι) :
-    (EuclideanSpace.basisFun ι 𝕜).equiv b (Equiv.refl ι) x = ∑ i, x i • b i := by
-  simp_rw [equiv_apply, EuclideanSpace.basisFun_repr, Equiv.refl_apply]
-
-lemma coe_equiv_euclideanSpace :
-    ⇑((EuclideanSpace.basisFun ι 𝕜).equiv b (Equiv.refl ι)) = fun x ↦ ∑ i, x i • b i := by
-  simp_rw [← equiv_apply_euclideanSpace]
-
-end OrthonormalBasis
-
 section Complex
 
 /-- `![1, I]` is an orthonormal basis for `ℂ` considered as a real inner product space. -/

@@ -697,9 +697,9 @@ open nonZeroDivisors
 /-- *McCoy theorem*: a polynomial `P : R[X]` is a zerodivisor if and only if there is `a : R`
 such that `a ≠ 0` and `a • P = 0`. -/
 theorem notMem_nonZeroDivisors_iff {P : R[X]} : P ∉ R[X]⁰ ↔ ∃ a : R, a ≠ 0 ∧ a • P = 0 := by
-  refine ⟨fun hP ↦ ?_, fun ⟨a, ha, h⟩ h1 ↦ ha <| C_eq_zero.1 <| (h1.2 _) <| smul_eq_C_mul a ▸ h⟩
+  refine ⟨fun hP ↦ ?_, fun ⟨a, ha, h⟩ h1 ↦ ha <| C_eq_zero.1 <| (h1 _) <| smul_eq_C_mul a ▸ h⟩
   by_contra! h
-  obtain ⟨Q, hQ⟩ := notMem_nonZeroDivisors_iff_right.1 hP
+  obtain ⟨Q, hQ⟩ := _root_.notMem_nonZeroDivisors_iff.1 hP
   refine hQ.2 (eq_zero_of_mul_eq_zero_of_smul P (fun a ha ↦ ?_) Q (mul_comm P _ ▸ hQ.1))
   contrapose! ha
   exact h a ha
@@ -711,7 +711,7 @@ protected lemma mem_nonZeroDivisors_iff {P : R[X]} : P ∈ R[X]⁰ ↔ ∀ a : R
 
 lemma mem_nonzeroDivisors_of_coeff_mem {p : R[X]} (n : ℕ) (hp : p.coeff n ∈ R⁰) :
     p ∈ R[X]⁰ :=
-  Polynomial.mem_nonZeroDivisors_iff.mpr fun r hr ↦ hp.2 _ (by simpa using congr(coeff $hr n))
+  Polynomial.mem_nonZeroDivisors_iff.mpr fun r hr ↦ hp _ (by simpa using congr(coeff $hr n))
 
 lemma X_mem_nonzeroDivisors : X ∈ R[X]⁰ :=
   mem_nonzeroDivisors_of_coeff_mem 1 (by simp [one_mem])

@@ -52,12 +52,6 @@ theorem commutator_eq_normalClosure : commutator G = Subgroup.normalClosure (com
   simp [commutator, Subgroup.commutator_def', commutatorSet]
 
 variable {G} in
-theorem commutator_eq_bot_iff_center_eq_top :
-    commutator G = ⊥ ↔ Subgroup.center G = ⊤ := by
-  simp only [commutator]
-  simp [Subgroup.commutator_eq_bot_iff_le_centralizer]
-
-variable {G} in
 theorem Subgroup.map_subtype_commutator (H : Subgroup G) :
     (_root_.commutator H).map H.subtype = ⁅H, H⁆ := by
   rw [_root_.commutator_def, map_commutator, ← MonoidHom.range_eq_map, H.range_subtype]

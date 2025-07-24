@@ -58,7 +58,11 @@ namespace Localization
 
 theorem cardinalMk {S : Submonoid R} (hS : S ≤ R⁰) : #(Localization S) = #R := by
   apply OreLocalization.cardinalMk
-  rwa [nonZeroDivisorsLeft_eq_nonZeroDivisors]
+  convert hS using 1
+  ext x
+  rw [mem_nonZeroDivisorsRight_iff, mem_nonZeroDivisors_iff]
+  congr! 3
+  rw [mul_comm]
 
 end Localization
 

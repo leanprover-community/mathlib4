@@ -69,25 +69,22 @@ namespace HomotopyCategory
 
 /-- The triangulated subcategory of `HomotopyCategory C (ComplexShape.up ℤ)` consisting
 of acyclic complexes. -/
-def subcategoryAcyclic : ObjectProperty (HomotopyCategory C (ComplexShape.up ℤ)) :=
+noncomputable def subcategoryAcyclic :
+    Triangulated.Subcategory (HomotopyCategory C (ComplexShape.up ℤ)) :=
   (homologyFunctor C (ComplexShape.up ℤ) 0).homologicalKernel
 
-instance : (subcategoryAcyclic C).IsTriangulated := by
-  dsimp [subcategoryAcyclic]
-  infer_instance
-
-instance : (subcategoryAcyclic C).IsClosedUnderIsomorphisms := by
+instance : (subcategoryAcyclic C).P.IsClosedUnderIsomorphisms := by
   dsimp [subcategoryAcyclic]
   infer_instance
 
 variable {C}
 
 lemma mem_subcategoryAcyclic_iff (X : HomotopyCategory C (ComplexShape.up ℤ)) :
-    subcategoryAcyclic C X ↔ ∀ (n : ℤ), IsZero ((homologyFunctor _ _ n).obj X) :=
+    (subcategoryAcyclic C).P X ↔ ∀ (n : ℤ), IsZero ((homologyFunctor _ _ n).obj X) :=
   Functor.mem_homologicalKernel_iff _ X
 
 lemma quotient_obj_mem_subcategoryAcyclic_iff_exactAt (K : CochainComplex C ℤ) :
-    subcategoryAcyclic C ((quotient _ _).obj K) ↔ ∀ (n : ℤ), K.ExactAt n := by
+    (subcategoryAcyclic C).P ((quotient _ _).obj K) ↔ ∀ (n : ℤ), K.ExactAt n := by
   rw [mem_subcategoryAcyclic_iff]
   refine forall_congr' (fun n => ?_)
   simp only [HomologicalComplex.exactAt_iff_isZero_homology]
@@ -96,9 +93,9 @@ lemma quotient_obj_mem_subcategoryAcyclic_iff_exactAt (K : CochainComplex C ℤ)
 variable (C)
 
 lemma quasiIso_eq_subcategoryAcyclic_W :
-    quasiIso C (ComplexShape.up ℤ) = (subcategoryAcyclic C).trW := by
+    quasiIso C (ComplexShape.up ℤ) = (subcategoryAcyclic C).W := by
   ext K L f
-  exact ((homologyFunctor C (ComplexShape.up ℤ) 0).mem_homologicalKernel_trW_iff f).symm
+  exact ((homologyFunctor C (ComplexShape.up ℤ) 0).mem_homologicalKernel_W_iff f).symm
 
 end HomotopyCategory
 
@@ -154,15 +151,15 @@ instance : Qh.IsLocalization (HomotopyCategory.quasiIso C (ComplexShape.up ℤ))
   dsimp [Qh, DerivedCategory]
   infer_instance
 
-instance : Qh.IsLocalization (HomotopyCategory.subcategoryAcyclic C).trW := by
+instance : Qh.IsLocalization (HomotopyCategory.subcategoryAcyclic C).W := by
   rw [← HomotopyCategory.quasiIso_eq_subcategoryAcyclic_W]
   infer_instance
 
 noncomputable instance : Preadditive (DerivedCategory C) :=
-  Localization.preadditive Qh (HomotopyCategory.subcategoryAcyclic C).trW
+  Localization.preadditive Qh (HomotopyCategory.subcategoryAcyclic C).W
 
 instance : (Qh (C := C)).Additive :=
-  Localization.functor_additive Qh (HomotopyCategory.subcategoryAcyclic C).trW
+  Localization.functor_additive Qh (HomotopyCategory.subcategoryAcyclic C).W
 
 instance : (Q (C := C)).Additive :=
   Functor.additive_of_iso (quotientCompQhIso C)
@@ -171,10 +168,10 @@ noncomputable instance : HasZeroObject (DerivedCategory C) :=
   Q.hasZeroObject_of_additive
 
 noncomputable instance : HasShift (DerivedCategory C) ℤ :=
-  HasShift.localized Qh (HomotopyCategory.subcategoryAcyclic C).trW ℤ
+  HasShift.localized Qh (HomotopyCategory.subcategoryAcyclic C).W ℤ
 
 noncomputable instance : (Qh (C := C)).CommShift ℤ :=
-  Functor.CommShift.localized Qh (HomotopyCategory.subcategoryAcyclic C).trW ℤ
+  Functor.CommShift.localized Qh (HomotopyCategory.subcategoryAcyclic C).W ℤ
 
 noncomputable instance : (Q (C := C)).CommShift ℤ :=
   Functor.CommShift.ofIso (quotientCompQhIso C) ℤ
@@ -184,23 +181,23 @@ instance : NatTrans.CommShift (quotientCompQhIso C).hom ℤ :=
 
 instance (n : ℤ) : (shiftFunctor (DerivedCategory C) n).Additive := by
   rw [Localization.functor_additive_iff
-    Qh (HomotopyCategory.subcategoryAcyclic C).trW]
+    Qh (HomotopyCategory.subcategoryAcyclic C).W]
   exact Functor.additive_of_iso (Qh.commShiftIso n)
 
 noncomputable instance : Pretriangulated (DerivedCategory C) :=
   Triangulated.Localization.pretriangulated
-    Qh (HomotopyCategory.subcategoryAcyclic C).trW
+    Qh (HomotopyCategory.subcategoryAcyclic C).W
 
 instance : (Qh (C := C)).IsTriangulated :=
   Triangulated.Localization.isTriangulated_functor
-    Qh (HomotopyCategory.subcategoryAcyclic C).trW
+    Qh (HomotopyCategory.subcategoryAcyclic C).W
 
 noncomputable instance : IsTriangulated (DerivedCategory C) :=
   Triangulated.Localization.isTriangulated
-    Qh (HomotopyCategory.subcategoryAcyclic C).trW
+    Qh (HomotopyCategory.subcategoryAcyclic C).W
 
 instance : (Qh (C := C)).mapArrow.EssSurj :=
-  Localization.essSurj_mapArrow _ (HomotopyCategory.subcategoryAcyclic C).trW
+  Localization.essSurj_mapArrow _ (HomotopyCategory.subcategoryAcyclic C).W
 
 instance {D : Type*} [Category D] : ((Functor.whiskeringLeft _ _ D).obj (Qh (C := C))).Full :=
   inferInstanceAs
