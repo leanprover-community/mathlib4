@@ -158,6 +158,10 @@ variable [Field K]
 
 instance (priority := 100) Field.toGrindField [Field K] : Lean.Grind.Field K :=
   { CommRing.toGrindCommRing K, ‹Field K› with
+    zpow := ⟨fun a n => a^n⟩
+    zpow_zero a := by simp
+    zpow_one a := by simp
+    zpow_add a n m := sorry -- Oops, just not true when `a = 0`, `n = 1`, `m = -1`
     zero_ne_one := zero_ne_one' K }
 
 attribute [local simp] mul_assoc mul_comm mul_left_comm
