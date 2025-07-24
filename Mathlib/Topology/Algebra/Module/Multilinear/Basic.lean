@@ -612,7 +612,6 @@ theorem mkPiAlgebraFin_apply (m : Fin n → A) :
     ContinuousMultilinearMap.mkPiAlgebraFin R n A m = (List.ofFn m).prod :=
   rfl
 
-
 end Algebra
 
 section CommAlgebra
