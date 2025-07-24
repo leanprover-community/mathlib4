@@ -153,7 +153,7 @@ class ENormedCommMonoid (E : Type*) [TopologicalSpace E] extends ENormedMonoid E
 which is positive definite. -/
 @[to_additive]
 class StrictENormedCommMonoid (E : Type*) [TopologicalSpace E]
-  extends ENormedAddMonoid E, StrictENormedAddMonoid E where
+  extends ENormedCommMonoid E, StrictENormedMonoid E where
 
 /-- A seminormed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖`
 defines a pseudometric space structure. -/
