@@ -230,7 +230,6 @@ if git diff --name-only bump/$BUMPVERSION bump/nightly-$NIGHTLYDATE | grep -q .;
   echo "### [auto] create a PR for the new branch"
   echo "Creating a pull request. Setting the base of the PR to 'bump/$BUMPVERSION' on upstream."
 
-  pr_title="chore: adaptations for nightly-$NIGHTLYDATE"
   gh_command="gh pr create -t \"$pr_title\" -b '' -B bump/$BUMPVERSION --repo leanprover-community/mathlib4"
   echo "Running the following 'gh' command to do this:"
   echo "> $gh_command"
