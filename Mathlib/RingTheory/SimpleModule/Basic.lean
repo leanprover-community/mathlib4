@@ -53,12 +53,12 @@ import Mathlib.RingTheory.Noetherian.Defs
 variable {ι : Type*} (R S : Type*) [Ring R] [Ring S] (M : Type*) [AddCommGroup M] [Module R M]
 
 /-- A module is simple when it has only two submodules, `⊥` and `⊤`. -/
-abbrev IsSimpleModule extends
+class IsSimpleModule extends
   IsSimpleOrder (Submodule R M)
 
 /-- A module is semisimple when every submodule has a complement, or equivalently, the module
   is a direct sum of simple modules. -/
-abbrev IsSemisimpleModule extends
+class IsSemisimpleModule extends
   ComplementedLattice (Submodule R M)
 
 /-- A ring is semisimple if it is semisimple as a module over itself. -/
