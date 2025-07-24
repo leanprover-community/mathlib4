@@ -42,7 +42,7 @@ class RankOne (v : Valuation R Γ₀) extends Valuation.IsNontrivial v where
 
 open WithZero
 
-lemma rankOne_iff_mulArchimedean {v : Valuation R Γ₀} [v.IsNontrivial] :
+lemma nonempty_rankOne_iff_mulArchimedean {v : Valuation R Γ₀} [v.IsNontrivial] :
     Nonempty v.RankOne ↔ MulArchimedean Γ₀ := by
   constructor
   · rintro ⟨⟨f, hf⟩⟩
@@ -153,7 +153,7 @@ lemma ValuativeRel.isRankLeOne_iff_mulArchimedean :
   · intro h
     by_cases H : IsNontrivial R
     · rw [isNontrivial_iff_isNontrivial] at H
-      rw [← (valuation R).rankOne_iff_mulArchimedean] at h
+      rw [← (valuation R).nonempty_rankOne_iff_mulArchimedean] at h
       obtain ⟨f⟩ := h
       exact isRankLeOne_of_rankOne
     · refine ⟨⟨{ emb := 1, strictMono := ?_ }⟩⟩

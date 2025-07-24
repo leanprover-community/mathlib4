@@ -91,17 +91,15 @@ lemma WithZero.withZeroUnitsEquiv_strictMono :
   cases a <;> cases b <;>
   simp
 
-lemma WithZero.withZeroUnitsEquiv_symm_strictMono :
-    StrictMono (withZeroUnitsEquiv (G := α)).symm := by
-  intro a b h
-  rw [← withZeroUnitsEquiv_strictMono.lt_iff_lt]
-  simp only [MulEquiv.apply_symm_apply, h]
-
 /-- Given any linearly ordered commutative group with zero `α`, this is the order isomorphism
 between `WithZero αˣ` with `α`. -/
 @[simps!]
 def OrderIso.withZeroUnits : WithZero αˣ ≃o α where
   __ := withZeroUnitsEquiv
   map_rel_iff' := WithZero.withZeroUnitsEquiv_strictMono.le_iff_le
+
+lemma WithZero.withZeroUnitsEquiv_symm_strictMono :
+    StrictMono (withZeroUnitsEquiv (G := α)).symm :=
+  OrderIso.withZeroUnits.symm.strictMono
 
 end Units
