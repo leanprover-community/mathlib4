@@ -103,8 +103,8 @@ theorem val_top (n : ℕ) [NeZero n] : ((⊤ : Fin n) : ℕ) = n - 1 := rfl
 
 @[simp]
 theorem zero_eq_top {n : ℕ} [NeZero n] : (0 : Fin n) = ⊤ ↔ n = 1 := by
-  rw [← bot_eq_zero, subsingleton_iff_bot_eq_top, subsingleton_iff_le_one, LE.le.ge_iff_eq']
-  exact pos_of_neZero n
+  rw [← bot_eq_zero, subsingleton_iff_bot_eq_top, subsingleton_iff_le_one,
+    le_one_iff_eq_zero_or_eq_one, or_iff_right (NeZero.ne n)]
 
 @[simp]
 theorem top_eq_zero {n : ℕ} [NeZero n] : (⊤ : Fin n) = 0 ↔ n = 1 :=
@@ -336,6 +336,14 @@ lemma rev_anti : Antitone (@rev n) := rev_strictAnti.antitone
 /-- The inclusion map `Fin n → ℕ` is an order embedding. -/
 @[simps! apply]
 def valOrderEmb (n) : Fin n ↪o ℕ := ⟨valEmbedding, Iff.rfl⟩
+
+namespace OrderEmbedding
+
+@[simps]
+instance : Inhabited (Fin n ↪o ℕ) where
+  default := Fin.valOrderEmb n
+
+end OrderEmbedding
 
 /-- The ordering on `Fin n` is a well order. -/
 instance Lt.isWellOrder (n) : IsWellOrder (Fin n) (· < ·) := (valOrderEmb n).isWellOrder
