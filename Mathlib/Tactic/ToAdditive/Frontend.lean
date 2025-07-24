@@ -639,31 +639,41 @@ where /-- Implementation of `applyReplacementFun`. -/
 def etaExpandN (n : Nat) (e : Expr) : MetaM Expr := do
   forallBoundedTelescope (← inferType e) (some n) fun xs _ ↦ mkLambdaFVars xs (mkAppN e xs)
 
-/-- `e.expand` eta-expands all expressions that have as head a constant `n` in
-`reorder`. They are expanded until they are applied to one more argument than the maximum in
-`reorder.find n`. -/
+/-- `e.expand` eta-expands all expressions that have as head a constant `n` in `reorder`.
+They are expanded until they are applied to one more argument than the maximum in `reorder.find n`.
+It also expands all kernel projections that have as head a constant `n` in `reorder`. -/
 def expand (e : Expr) : MetaM Expr := do
   let env ← getEnv
   let reorderFn : Name → List (List ℕ) := fun nm ↦ (reorderAttr.find? env nm |>.getD [])
-  let e₂ ← Lean.Meta.transform (input := e) (post := fun e => return .done e) fun e ↦ do
-    let e0 := e.getAppFn
-    let es := e.getAppArgs
-    let some e0n := e0.constName? | return .continue
-    let reorder := reorderFn e0n
-    if reorder.isEmpty then
-      -- no need to expand if nothing needs reordering
-      return .continue
-    let needed_n := reorder.flatten.foldr Nat.max 0 + 1
-    -- the second disjunct is a temporary fix to avoid infinite loops.
-    -- We may need to use `replaceRec` or something similar to not change the head of an application
-    if needed_n ≤ es.size || es.size == 0 then
-      return .continue
-    else
-      -- in this case, we need to reorder arguments that are not yet
-      -- applied, so first η-expand the function.
-      let e' ← etaExpandN (needed_n - es.size) e
-      trace[to_additive_detail] "expanded {e} to {e'}"
-      return .continue e'
+  let e₂ ← Lean.Meta.transform (input := e) (post := fun e => return .done e) fun e ↦
+    e.withApp fun f args ↦ do
+    match f with
+    | .proj n i s =>
+      let some info := getStructureInfo? (← getEnv) n | return .continue -- e.g. if `n` is `Exists`
+      let some projName := info.getProjFn? i | unreachable!
+      -- if `projName` requires reordering, replace `f` with the application `projName s`
+      -- and then visit `projName s args` again.
+      if (reorderFn projName).isEmpty then
+        return .continue
+      return .visit <| (← whnfD (← inferType s)).withApp fun sf sargs ↦
+        mkAppN (mkApp (mkAppN (.const projName sf.constLevels!) sargs) s) args
+    | .const c _ =>
+      let reorder := reorderFn c
+      if reorder.isEmpty then
+        -- no need to expand if nothing needs reordering
+        return .continue
+      let needed_n := reorder.flatten.foldr Nat.max 0 + 1
+      -- the second disjunct is a temporary fix to avoid infinite loops. We may need to use
+      -- `replaceRec` or something similar to not change the head of an application
+      if needed_n ≤ args.size || args.size == 0 then
+        return .continue
+      else
+        -- in this case, we need to reorder arguments that are not yet
+        -- applied, so first η-expand the function.
+        let e' ← etaExpandN (needed_n - args.size) e
+        trace[to_additive_detail] "expanded {e} to {e'}"
+        return .continue e'
+    | _ => return .continue
   if e != e₂ then
     trace[to_additive_detail] "expand:\nBefore: {e}\nAfter: {e₂}"
   return e₂
