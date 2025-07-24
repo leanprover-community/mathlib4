@@ -11,7 +11,23 @@ import Mathlib.Analysis.Complex.Basic
 /-!
 # Logarithm in a Banach algebra
 
+In this file, we define `NormedSpace.log 𝕂 : 𝔸 → 𝔸` in a topological algebra `𝔸` over a field `𝕂`,
+through its `FormalMultilinearSeries` expansion around `1`.
 
+While for most interesting results we need `𝔸` to be normed algebra, we do not require this in the
+definition in order to make `NormedSpace.log` independent of a particular choice of norm. The
+definition also does not require that `𝔸` be complete, but we need to assume it for most results.
+
+We then prove some basic results, but we avoid importing derivatives here to minimize dependencies.
+
+## Main results
+
+TODO
+
+### Other useful compatibility results
+
+- `NormedSpace.log_eq_log` : if `𝔸` is a normed algebra over two fields `𝕂` and `𝕂'`,
+  then `NormedSpace.log 𝕂 = NormedSpace.log 𝕂' 𝔸`
 
 -/
 
