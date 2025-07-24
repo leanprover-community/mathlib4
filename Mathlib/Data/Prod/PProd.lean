@@ -14,9 +14,6 @@ open Function
 
 variable {α β γ δ : Sort*}
 
-#adaptation_note /-- this will not be needed after nightly-2025-07-01 -/
-attribute [grind cases eager] PProd
-
 namespace PProd
 
 def mk.injArrow {α : Type*} {β : Type*} {x₁ : α} {y₁ : β} {x₂ : α} {y₂ : β} :
