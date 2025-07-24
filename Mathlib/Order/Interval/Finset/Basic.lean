@@ -1122,7 +1122,6 @@ section Cover
 
 open Finset Relation
 
-set_option linter.unusedVariables false in -- `have` for wf induction triggers linter
 lemma transGen_wcovBy_of_le [Preorder α] [LocallyFiniteOrder α] {x y : α} (hxy : x ≤ y) :
     TransGen (· ⩿ ·) x y := by
   -- We proceed by well-founded induction on the cardinality of `Icc x y`.
@@ -1159,7 +1158,6 @@ lemma le_iff_reflTransGen_covBy [PartialOrder α] [LocallyFiniteOrder α] {x y :
     x ≤ y ↔ ReflTransGen (· ⋖ ·) x y := by
   rw [le_iff_transGen_wcovBy, wcovBy_eq_reflGen_covBy, transGen_reflGen]
 
-set_option linter.unusedVariables false in -- `have` for wf induction triggers linter
 lemma transGen_covBy_of_lt [Preorder α] [LocallyFiniteOrder α] {x y : α} (hxy : x < y) :
     TransGen (· ⋖ ·) x y := by
   -- We proceed by well-founded induction on the cardinality of `Ico x y`.

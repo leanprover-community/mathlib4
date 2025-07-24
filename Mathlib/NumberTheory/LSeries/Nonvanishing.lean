@@ -373,10 +373,8 @@ private lemma LFunction_ne_zero_of_not_quadratic_or_ne_one {t : ℝ} (h : χ ^ 2
   -- go via absolute value to translate into a statement over `ℝ`
   replace H := (H₀.trans H).norm_right
   simp only [norm_real] at H
-  #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-  we needed to add `(F' := ℝ)` to `H.of_norm_right`. -/
   exact isLittleO_irrefl (.of_forall (fun _ ↦ one_ne_zero)) <|
-    (H.of_norm_right (F' := ℝ)).trans_isLittleO <| isLittleO_id_one.mono nhdsWithin_le_nhds
+    H.of_norm_right.trans_isLittleO <| isLittleO_id_one.mono nhdsWithin_le_nhds
 
 /-- If `χ` is a Dirichlet character, then `L(χ, s)` does not vanish when `s.re = 1`
 except when `χ` is trivial and `s = 1` (then `L(χ, s)` has a simple pole at `s = 1`). -/
