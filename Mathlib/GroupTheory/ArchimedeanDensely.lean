@@ -297,6 +297,39 @@ instance Multiplicative.instUniqueOrderdMonoidIso {G H : Type*}
 
 end TypeTags
 
+/-- Any locally finite linear group is mul-archimedean. -/
+@[to_additive "Any locally finite linear additive group is archimedean."]
+lemma MulArchimedean.of_locallyFiniteOrder {G : Type*} [CommGroup G] [LinearOrder G]
+    [IsOrderedMonoid G] [LocallyFiniteOrder G] :
+    MulArchimedean G where
+  arch := by
+    intro x y hy
+    rcases le_or_gt x y with hx | hx
+    · use 1
+      simp [hx]
+    · use (Finset.Icc y x).card + 1
+      by_contra!
+      have hb : y ^ ((Finset.Icc y x).card + 1) ∈ Finset.Icc y x := by
+        rw [Finset.mem_Icc]
+        refine ⟨le_self_pow hy.le fun H ↦ ?_, this.le⟩
+        simp [hx.not_gt] at H
+      have hf : StrictMono (fun k ↦ y ^ (k + 1)) := by
+        refine strictMono_nat_of_lt_succ ?_
+        simp [pow_succ, hy]
+      have hk k : k ≤ (Finset.Icc y x).card → y ^ (k + 1) ∈ Finset.Icc y x := by
+        intro hk
+        simp only [Finset.mem_Icc] at hb ⊢
+        refine ⟨le_self_pow hy.le (by simp), hb.right.trans' ?_⟩
+        exact hf.monotone (by grind)
+      have H : (Finset.range ((Finset.Icc y x).card + 1)).map ⟨_, hf.injective⟩ ⊆
+        Finset.Icc y x := by
+        intro
+        simp only [Finset.mem_map, Finset.mem_range, Function.Embedding.coeFn_mk,
+          forall_exists_index, and_imp, Nat.lt_succ]
+        rintro n hn rfl
+        exact hk _ hn
+      simpa using Finset.card_le_card H
+
 /-- Any linearly ordered archimedean additive group is either isomorphic (and order-isomorphic)
 to the integers, or is densely ordered. -/
 lemma LinearOrderedAddCommGroup.discrete_or_denselyOrdered (G : Type*)
