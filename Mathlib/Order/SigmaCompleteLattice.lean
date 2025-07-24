@@ -3,7 +3,6 @@ Copyright (c) 2025 Pierre Quinton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre Quinton
 -/
-import Mathlib.Order.SetNotation
 import Mathlib.Data.Set.Countable
 
 /-!
@@ -63,7 +62,7 @@ lemma isGLB_σiSup : IsGLB (Set.range f) (iInf f) :=
 lemma le_σsSup (hs : s.Countable) (ha : a ∈ s) : a ≤ sSup s := (isLUB_σsSup hs).left ha
 lemma σsInf_le (hs : s.Countable) (ha : a ∈ s) : sInf s ≤ a := (isGLB_σsInf hs).left ha
 
-lemma le_σiSup  (i : ι) : f i ≤ ⨆ j, f j := le_σsSup (Set.countable_range f) ⟨_, rfl⟩
+lemma le_σiSup (i : ι) : f i ≤ ⨆ j, f j := le_σsSup (Set.countable_range f) ⟨_, rfl⟩
 lemma σiInf_le (i : ι) : ⨅ j, f j ≤ f i := σsInf_le (Set.countable_range f) ⟨_, rfl⟩
 
 lemma σsSup_le (hs : s.Countable) (ha : ∀ b ∈ s, b ≤ a) : sSup s ≤ a := (isLUB_σsSup hs).right ha
