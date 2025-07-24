@@ -50,7 +50,7 @@ lemma sum_Ico_le_integral_of_le
     (hg : IntegrableOn g (Set.Ico a b)) :
     ∑ i ∈ Finset.Ico a b, f i ≤ ∫ x in a..b, g x := by
   have A i (hi : i ∈ Finset.Ico a b) : IntervalIntegrable g volume i (i + 1 : ℕ) := by
-    rw [intervalIntegrable_iff_integrableOn_Ico_of_le (by simp) (by finiteness) (by finiteness)]
+    rw [intervalIntegrable_iff_integrableOn_Ico_of_le (by simp)]
     apply hg.mono _ le_rfl
     rintro x ⟨hx, h'x⟩
     simp only [Finset.mem_Ico, mem_Ico] at hi ⊢

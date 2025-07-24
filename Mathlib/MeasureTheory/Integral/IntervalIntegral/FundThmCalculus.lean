@@ -1230,7 +1230,7 @@ theorem integrableOn_deriv_right_of_nonneg (hcont : ContinuousOn g (Icc a b))
   have B : (∫ x : ℝ in Ioo a b, F x) ≤ g b - g a := by
     rw [← integral_Ioc_eq_integral_Ioo, ← intervalIntegral.integral_of_le hab.le]
     refine integral_le_sub_of_hasDeriv_right_of_le hab.le hcont hderiv ?_ fun x hx => ?_
-    · rwa [integrableOn_Icc_iff_integrableOn_Ioo (by finiteness) (by finiteness)]
+    · rwa [integrableOn_Icc_iff_integrableOn_Ioo]
     · convert NNReal.coe_le_coe.2 (fle x)
       simp only [Real.norm_of_nonneg (g'pos x hx), coe_nnnorm]
   exact lt_irrefl _ (hf.trans_le (ENNReal.ofReal_le_ofReal B))
