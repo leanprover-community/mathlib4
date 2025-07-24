@@ -348,6 +348,8 @@ theorem div_const {𝕜 : Type*} {f : ℝ → 𝕜} [NormedDivisionRing 𝕜] (h
     (c : 𝕜) : IntervalIntegrable (fun x => f x / c) μ a b := by
   simpa only [div_eq_mul_inv] using mul_const h c⁻¹
 
+variable {f : ℝ → ε} [PseudoMetrizableSpace ε]
+
 theorem comp_mul_left (hf : IntervalIntegrable f volume a b) {c : ℝ}
     (h : ‖f (min a b)‖ₑ ≠ ∞ := by finiteness)
     (h' : ‖f (c * min (a / c) (b / c))‖ₑ ≠ ∞ := by finiteness) :
@@ -365,7 +367,8 @@ theorem comp_mul_left (hf : IntervalIntegrable f volume a b) {c : ℝ}
   · rw [preimage_mul_const_uIcc (inv_ne_zero hc)]; field_simp [hc]
 
 -- Note that `h'` is **not** implied by `h` if `c` is negative.
-theorem comp_mul_left_iff {c : ℝ} (hc : c ≠ 0) (h : ‖f (min a b)‖ₑ ≠ ∞ := by finiteness)
+-- TODO: generalise this lemma also!
+theorem comp_mul_left_iff {f : ℝ → E} {c : ℝ} (hc : c ≠ 0) (h : ‖f (min a b)‖ₑ ≠ ∞ := by finiteness)
     (h' : ‖f (c * min (a / c) (b / c))‖ₑ ≠ ∞ := by finiteness) :
     IntervalIntegrable (fun x ↦ f (c * x)) volume (a / c) (b / c) ↔
       IntervalIntegrable f volume a b := by
@@ -405,6 +408,8 @@ theorem comp_sub_right (hf : IntervalIntegrable f volume a b) (c : ℝ)
     (h : ‖f (min a b)‖ₑ ≠ ∞ := by finiteness) :
     IntervalIntegrable (fun x ↦ f (x - c)) volume (a + c) (b + c) := by
   simpa only [sub_neg_eq_add] using IntervalIntegrable.comp_add_right hf (-c) h
+
+variable {f : ℝ → E} -- TODO: generalise the next three lemmas also!
 
 theorem iff_comp_neg (h : ‖f (min a b)‖ₑ ≠ ∞ := by finiteness) :
     IntervalIntegrable f volume a b ↔ IntervalIntegrable (fun x ↦ f (-x)) volume (-a) (-b) := by
