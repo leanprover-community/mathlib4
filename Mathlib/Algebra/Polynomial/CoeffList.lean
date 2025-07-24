@@ -103,7 +103,7 @@ theorem coeffList_monomial {x : R} (hx : x ≠ 0) (n : ℕ) :
     have : ((monomial n) x).natDegree.succ = n + 1 := by
       simp [Polynomial.natDegree_monomial_eq n hx]
     simpa [coeffList, withBotSucc_degree_eq_natDegree_add_one h]
-      using Polynomial.coeff_monomial_of_ne _ (by grind)
+      using Polynomial.coeff_monomial_of_ne _ (by omega)
 
 /- Coefficients of a polynomial `P` are always the leading coefficient, some number of zeros, and
 then `coeffList P.eraseLead`. -/
@@ -125,7 +125,7 @@ theorem coeffList_eraseLead (h : P ≠ 0) :
       d = P.natDegree - P.eraseLead.degree.succ := by
     use P.natDegree - P.eraseLead.natDegree -  1
     have := eraseLead_natDegree_le P
-    grind
+    omega
   rw [← hn2]; clear hn2
   apply List.ext_getElem?
   rintro (_ | k)
@@ -134,24 +134,24 @@ theorem coeffList_eraseLead (h : P ≠ 0) :
   simp only [coeffList, List.map_reverse]
   by_cases hkd : P.natDegree + 1 ≤ k + 1
   · rw [List.getElem?_eq_none]
-      <;> simpa [hep, h] using by grind
+      <;> simpa [hep, h] using by omega
   obtain ⟨dk, hdk⟩ := exists_add_of_le (Nat.le_of_lt_succ (Nat.lt_of_not_ge hkd))
   rw [List.getElem?_reverse (by simpa [withBotSucc_degree_eq_natDegree_add_one h] using hkd),
     List.getElem?_cons_succ, List.length_map, List.length_range, List.getElem?_map,
-    List.getElem?_range (by grind), Option.map_some]
+    List.getElem?_range (by omega), Option.map_some]
   conv_lhs => arg 1; equals P.eraseLead.coeff dk =>
-    rw [eraseLead_coeff_of_ne (f := P) dk (by grind)]
+    rw [eraseLead_coeff_of_ne (f := P) dk (by omega)]
     congr
-    grind
+    omega
   by_cases hkn : k < n
-  · simpa [List.getElem?_append, hkn] using coeff_eq_zero_of_natDegree_lt (by grind)
+  · simpa [List.getElem?_append, hkn] using coeff_eq_zero_of_natDegree_lt (by omega)
   · rw [List.getElem?_append_right (List.length_replicate ▸ Nat.le_of_not_gt hkn),
       List.length_replicate, List.getElem?_reverse, List.getElem?_map]
     · rw [List.length_map, List.length_range,
-        List.getElem?_range (by grind), Option.map_some]
+        List.getElem?_range (by omega), Option.map_some]
       congr 2
-      grind
-    · simpa using by grind
+      omega
+    · simpa using by omega
 
 end Semiring
 section Ring
