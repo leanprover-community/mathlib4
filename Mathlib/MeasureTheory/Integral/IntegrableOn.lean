@@ -335,33 +335,34 @@ theorem IntegrableOn.restrict_toMeasurable {f : α → ε'}
     ((tendsto_order.1 u_lim).2 _ (pos_of_ne_zero (h's x hx))).exists
   exact mem_iUnion.2 ⟨n, subset_toMeasurable _ _ hn.le⟩
 
+-- TODO: generalise this to non-strict enormed comm. monoids,
+-- by merely assuming ‖f x‖ₑ vanishes on t \ s
+variable {ε' : Type*} [TopologicalSpace ε'] [StrictENormedAddMonoid ε'] in
 /-- If a function is integrable on a set `s`, and its enorm vanishes on `t \ s`,
 then it is integrable on `t` if `t` is null-measurable. -/
 theorem IntegrableOn.of_ae_diff_eq_zero [PseudoMetrizableSpace ε'] {f : α → ε'}
     (hf : IntegrableOn f s μ) (ht : NullMeasurableSet t μ)
-    (h't : ∀ᵐ x ∂μ, x ∈ t \ s → ‖f x‖ₑ = 0) : IntegrableOn f t μ := by
-  let u := { x ∈ s | ‖f x‖ₑ ≠ 0 }
+    (h't : ∀ᵐ x ∂μ, x ∈ t \ s → f x = 0) : IntegrableOn f t μ := by
+  let u := { x ∈ s | f x ≠ 0 }
   have hu : IntegrableOn f u μ := hf.mono_set fun x hx => hx.1
   let v := toMeasurable μ u
   have A : IntegrableOn f v μ := by
     rw [IntegrableOn, hu.restrict_toMeasurable]
     · exact hu
-    · intro x hx; exact hx.2
-  have B : IntegrableOn ‖f ·‖ₑ (t \ v) μ := by
+    · intro x hx; simpa using hx.2
+  have B : IntegrableOn f (t \ v) μ := by
     apply integrableOn_zero.congr
     filter_upwards [ae_restrict_of_ae h't,
       ae_restrict_mem₀ (ht.diff (measurableSet_toMeasurable μ u).nullMeasurableSet)] with x hxt hx
     by_cases h'x : x ∈ s
     · by_contra H
-      refine hx.2 (subset_toMeasurable μ u ⟨h'x, ?_⟩)
-      sorry -- Ne.symm H
-
-    · sorry--exact (hxt ⟨hx.1, h'x⟩).symm
+      exact hx.2 (subset_toMeasurable μ u ⟨h'x, Ne.symm H⟩)
+    · exact (hxt ⟨hx.1, h'x⟩).symm
   apply (A.union B).mono_set _
   rw [union_diff_self]
   exact subset_union_right
 
-#exit
+variable {ε' : Type*} [TopologicalSpace ε'] [StrictENormedAddMonoid ε'] in
 /-- If a function is integrable on a set `s`, and vanishes on `t \ s`, then it is integrable on `t`
 if `t` is measurable. -/
 theorem IntegrableOn.of_forall_diff_eq_zero [PseudoMetrizableSpace ε'] {f : α → ε'}
@@ -369,6 +370,7 @@ theorem IntegrableOn.of_forall_diff_eq_zero [PseudoMetrizableSpace ε'] {f : α 
     (h't : ∀ x ∈ t \ s, f x = 0) : IntegrableOn f t μ :=
   hf.of_ae_diff_eq_zero ht.nullMeasurableSet (Eventually.of_forall h't)
 
+variable {ε' : Type*} [TopologicalSpace ε'] [StrictENormedAddMonoid ε'] in
 /-- If a function is integrable on a set `s` and vanishes almost everywhere on its complement,
 then it is integrable. -/
 theorem IntegrableOn.integrable_of_ae_notMem_eq_zero [PseudoMetrizableSpace ε']
@@ -380,6 +382,7 @@ theorem IntegrableOn.integrable_of_ae_notMem_eq_zero [PseudoMetrizableSpace ε']
 @[deprecated (since := "2025-05-23")]
 alias IntegrableOn.integrable_of_ae_not_mem_eq_zero := IntegrableOn.integrable_of_ae_notMem_eq_zero
 
+variable {ε' : Type*} [TopologicalSpace ε'] [StrictENormedAddMonoid ε'] in
 /-- If a function is integrable on a set `s` and vanishes everywhere on its complement,
 then it is integrable. -/
 theorem IntegrableOn.integrable_of_forall_notMem_eq_zero [PseudoMetrizableSpace ε']
@@ -390,6 +393,7 @@ theorem IntegrableOn.integrable_of_forall_notMem_eq_zero [PseudoMetrizableSpace 
 alias IntegrableOn.integrable_of_forall_not_mem_eq_zero :=
   IntegrableOn.integrable_of_forall_notMem_eq_zero
 
+variable {ε' : Type*} [TopologicalSpace ε'] [StrictENormedAddMonoid ε'] in
 theorem integrableOn_iff_integrable_of_support_subset [PseudoMetrizableSpace ε']
     {f : α → ε'} (h1s : support f ⊆ s) : IntegrableOn f s μ ↔ Integrable f μ := by
   refine ⟨fun h => ?_, fun h => h.integrableOn⟩
