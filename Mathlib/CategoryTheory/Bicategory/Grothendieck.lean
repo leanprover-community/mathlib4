@@ -50,14 +50,6 @@ variable {𝒮 : Type u₁} [Category.{v₁} 𝒮] {F : Pseudofunctor (LocallyDi
 
 /-- The type of objects in the fibered category associated to a presheaf valued in types. -/
 @[ext]
-structure Grothendieck (F : Pseudofunctor (LocallyDiscrete 𝒮) Cat.{v₂, u₂}) where
-  /-- The underlying object in the base category. -/
-  base : 𝒮
-  /-- The object in the fiber of the base object. -/
-  fiber : F.obj ⟨base⟩
-
-/-- The type of objects in the fibered category associated to a presheaf valued in types. -/
-@[ext]
 structure coGrothendieck (F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}) where
   /-- The underlying object in the base category. -/
   base : 𝒮
