@@ -111,17 +111,15 @@ lemma LocallyFiniteOrder.orderAddMonoidHom_toAddMonoidHom :
 lemma LocallyFiniteOrder.orderAddMonoidHom_apply (x : G) :
   orderAddMonoidHom G x = addMonoidHom G x := rfl
 
-lemma LocallyFiniteOrder.orderAddMonoidHom_injective :
-    Function.Injective (orderAddMonoidHom G) := by
-  rw [injective_iff_map_eq_zero]
+lemma LocallyFiniteOrder.orderAddMonoidHom_strictMono :
+    StrictMono (orderAddMonoidHom G) := by
+  rw [strictMono_iff_map_pos]
   intro g H
-  obtain hg | hg := le_total 0 g
-  · exact hg.antisymm' (by simpa [orderAddMonoidHom, addMonoidHom, hg] using H)
-  · exact hg.antisymm (by simpa [orderAddMonoidHom, addMonoidHom, hg] using H)
+  simpa [addMonoidHom, H.le]
 
 lemma LocallyFiniteOrder.orderAddMonoidHom_bijective [Nontrivial G] :
     Function.Bijective (orderAddMonoidHom G) := by
-  refine ⟨orderAddMonoidHom_injective, ?_⟩
+  refine ⟨orderAddMonoidHom_strictMono.injective, ?_⟩
   suffices 1 ∈ (orderAddMonoidHom G).range by
     obtain ⟨x, hx⟩ := this
     exact fun a ↦ ⟨a • x, by simp_all⟩
@@ -176,12 +174,11 @@ def LocallyFiniteOrder.orderMonoidHom (G : Type*) [CommGroup G] [LinearOrder G]
   have : LocallyFiniteOrder (Additive G) := ‹LocallyFiniteOrder G›
   ⟨(orderAddMonoidHom (Additive G)).toMultiplicative, (orderAddMonoidHom (Additive G)).2⟩
 
-lemma LocallyFiniteOrder.orderMonoidHom_injective {G : Type*} [CommGroup G] [LinearOrder G]
+lemma LocallyFiniteOrder.orderMonoidHom_strictMono {G : Type*} [CommGroup G] [LinearOrder G]
     [IsOrderedMonoid G] [LocallyFiniteOrder G] :
-    Function.Injective (orderMonoidHom G) := by
+    StrictMono (orderMonoidHom G) :=
   let : LocallyFiniteOrder (Additive G) := ‹LocallyFiniteOrder G›
-  exact (Multiplicative.ofAdd.injective.comp
-    ((orderAddMonoidHom_injective (G := Additive G)).comp Multiplicative.toAdd.injective))
+  fun a b h ↦ orderAddMonoidHom_strictMono h
 
 open scoped WithZero in
 /-- Any nontrivial linearly ordered abelian group with zero that is locally finite
@@ -200,8 +197,9 @@ def LocallyFiniteOrder.orderMonoidWithZeroHom (G : Type*) [LinearOrderedCommGrou
     OrderMonoidIso.withZeroUnits.symm.toMonoidWithZeroHom
   monotone' a b h := by have := (orderMonoidHom Gˣ).monotone'; aesop
 
-lemma LocallyFiniteOrder.orderMonoidWithZeroHom_injective {G : Type*}
+lemma LocallyFiniteOrder.orderMonoidWithZeroHom_strictMono {G : Type*}
     [LinearOrderedCommGroupWithZero G] [LocallyFiniteOrder Gˣ] :
-    Function.Injective (orderMonoidWithZeroHom G) :=
-  (WithZero.map'_injective_iff.mpr (orderMonoidHom_injective (G := Gˣ))).comp
-    OrderMonoidIso.withZeroUnits.symm.injective
+    StrictMono (orderMonoidWithZeroHom G) := by
+  have := orderMonoidHom_strictMono (G := Gˣ)
+  intro a b h
+  aesop (add simp orderMonoidWithZeroHom)
