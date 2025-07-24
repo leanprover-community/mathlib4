@@ -249,8 +249,7 @@ theorem aequiv_ofEquiv {U : Type*} [CommRing U] [Algebra R U] (e : T ≃ₐ[R] U
   simp [aequiv_def, AlgEquiv.trans_apply, adjoinRootEquiv_apply_eq_map, ofEquiv_map_apply]
 
 @[simp]
-theorem ofEquiv_aequiv {U : Type*} [CommRing U] [Algebra R U] (e : S ≃ₐ[R] T) :
-    (h.ofEquiv e).aequiv h' = e.symm.trans (h.aequiv h') := by
+theorem ofEquiv_aequiv (e : S ≃ₐ[R] T) : (h.ofEquiv e).aequiv h' = e.symm.trans (h.aequiv h') := by
   ext a
   simp_rw [aequiv_def, AlgEquiv.trans_apply, EmbeddingLike.apply_eq_iff_eq, AlgEquiv.symm_apply_eq,
            adjoinRootEquiv_apply_eq_map, ofEquiv_map_apply, ← adjoinRootEquiv_apply_eq_map,
