@@ -82,7 +82,13 @@ structure Equivalence (C : Type u₁) (D : Type u₂) [Category.{v₁} C] [Categ
   unitIso : 𝟭 C ≅ functor ⋙ inverse
   /-- The composition `inverse ⋙ functor` is isomorphic to the identity. -/
   counitIso : inverse ⋙ functor ≅ 𝟭 D
-  /-- The unit and counit of an equivalence compose to the identity under the forwards direction. -/
+  /--
+  The triangle law for the forwards direction of an equivalence: the unit and counit compose
+  to the identity when whiskered along the forwards direction.
+
+  We state this as a family of equalities among morphisms instead of an equality of natural
+  transformations to avoid inserting natural transformations like `F ⟶ F𝟭`.
+  -/
   functor_unitIso_comp :
     ∀ X : C, functor.map (unitIso.hom.app X) ≫ counitIso.hom.app (functor.obj X) =
       𝟙 (functor.obj X) := by aesop_cat
