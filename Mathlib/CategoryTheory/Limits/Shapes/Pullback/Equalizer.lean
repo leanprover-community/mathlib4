@@ -24,14 +24,10 @@ variable {C : Type u} [Category.{v} C] {X Y : C} (f g : X ⟶ Y)
 `Y ⟶ Y × Y` along `⟨f, g⟩ : X ⟶ Y × Y`. -/
 lemma isPullback_equalizer_prod' [HasBinaryProduct Y Y] (e : Fork f g) (h : IsLimit e) :
     IsPullback e.ι (e.ι ≫ f) (prod.lift f g) (diag _) := by
-  let toFork (s : PullbackCone (prod.lift f g) (diag Y)) : Fork f g :=
-    Fork.ofι s.fst (prod.lift_eq_diag_of_comp_eq (s.condition))
   refine ⟨⟨by ext <;> simp [e.condition]⟩, ⟨PullbackCone.IsLimit.mk _ ?_ ?_ ?_ ?_⟩⟩
-  · exact fun s ↦ h.lift (toFork s)
+  · exact fun s ↦ h.lift (Fork.ofι s.fst (prod.lift_eq_diag_of_comp_eq (s.condition)))
   · exact fun s ↦ Fork.IsLimit.lift_ι h
-  · exact fun s ↦ by calc
-      _ = s.fst ≫ (prod.lift f g) ≫ prod.fst := by simp; rfl
-      _ = s.snd := by rw[reassoc_of% s.condition]; simp
+  · exact fun s ↦ by simpa using congr($s.condition ≫ prod.fst)
   · exact fun _ _ hm _ ↦ Fork.IsLimit.hom_ext h (Eq.symm (Fork.IsLimit.lift_ι h) ▸ hm)
 
 /-- The equalizer of `f g : X ⟶ Y` is the pullback of the diagonal map `Y ⟶ Y × Y`
