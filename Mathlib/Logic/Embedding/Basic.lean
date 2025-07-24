@@ -341,15 +341,10 @@ theorem arrowCongrLeft_apply_equiv {α : Sort u} {β : Sort v} {γ : Sort w} [In
   simp
 
 @[simp]
-theorem extend_refl {α : Sort u} {γ : Sort w} [Inhabited γ] (f : α → γ) :
-    extend (Embedding.refl α) f (fun _ ↦ default) = f :=
-  funext fun x ↦ Injective.extend_apply (fun ⦃_ _⦄ a ↦ a) f (fun _ ↦ default) x
-
-@[simp]
-theorem arrowCongrLeft_apply_refl {α : Sort u} {γ : Sort w} [Inhabited γ] :
+theorem arrowCongrLeft_refl {α : Sort u} {γ : Sort w} [Inhabited γ] :
     (Function.Embedding.refl α).arrowCongrLeft (γ := γ) = .refl _ := by
   ext
-  simp
+  simp [← mk_id]
 
 @[simp]
 theorem trans_arrowCongrLeft {α₁ : Sort u} {α₂ : Sort v} {α₃ : Sort x} {γ : Sort w}
@@ -357,23 +352,9 @@ theorem trans_arrowCongrLeft {α₁ : Sort u} {α₂ : Sort v} {α₃ : Sort x} 
     e₁₂.arrowCongrLeft.trans e₂₃.arrowCongrLeft = (e₁₂.trans e₂₃).arrowCongrLeft (γ := γ) := by
   ext f a
   simp only [trans_apply, arrowCongrLeft_apply, Pi.default_def]
-  by_cases h₃ : ∃ b, e₂₃ b = a
-  · obtain ⟨b, hb⟩ := h₃
-    rw [hb.symm, Injective.extend_apply e₂₃.injective, arrowCongrLeft_apply, Pi.default_def]
-    by_cases h₂ : ∃ c, e₁₂ c = b
-    · obtain ⟨c, hc⟩ := h₂
-      simp [hc.symm, e₁₂.injective, ← trans_apply, (e₁₂.trans e₂₃).injective]
-    · have : ¬ ∃ c, (e₁₂.trans e₂₃) c = a := by
-        contrapose! h₂
-        obtain ⟨c, hc⟩ := h₂
-        use c
-        simpa [hb.symm, EmbeddingLike.apply_eq_iff_eq] using hc
-      rw [extend_apply' _ _ _ h₂, hb, extend_apply' _ _ _ this]
-  · rw [extend_apply' _ _ _ h₃, extend_apply']
-    contrapose! h₃
-    obtain ⟨c, hc⟩ := h₃
-    use e₁₂ c
-    rwa [← trans_apply]
+  rw [show (e₁₂.trans e₂₃) = e₂₃ ∘ e₁₂ by rfl,
+    Equiv.Injective.extend_comp _ e₁₂.injective _ e₂₃.injective]
+  rfl
 
 /-- Restrict both domain and codomain of an embedding. -/
 protected def subtypeMap {α β} {p : α → Prop} {q : β → Prop} (f : α ↪ β)
