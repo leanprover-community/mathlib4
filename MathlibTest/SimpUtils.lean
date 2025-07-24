@@ -1,53 +1,44 @@
-import Mathlib.Tactic.SimpUtils
+import Mathlib.Tactic
+
 
 /--
-info: Lean.Elab.WF.paramProj:
+info: dsimproc Lean.Elab.WF.paramProj: _
 
 
-
-Lean.Elab.WF.paramMatcher:
-
+dsimproc Lean.Elab.WF.paramMatcher: _
 
 
-Lean.Elab.WF.paramLet:
+dsimproc Lean.Elab.WF.paramLet: _
 
 
-
-Lean.Elab.WF.paramProj:
-
+dsimproc Lean.Elab.WF.paramProj: _
 
 
-Lean.Elab.WF.paramMatcher:
+dsimproc Lean.Elab.WF.paramMatcher: _
 
 
-
-Lean.Elab.WF.paramLet:
+dsimproc Lean.Elab.WF.paramLet: _
 -/
 #guard_msgs in
 #simprocs ∃ _, _
 
 /--
-info: Lean.Elab.WF.paramProj:
+info: dsimproc Lean.Elab.WF.paramProj: _
 
 
-
-Lean.Elab.WF.paramMatcher:
-
+dsimproc Lean.Elab.WF.paramMatcher: _
 
 
-Lean.Elab.WF.paramLet:
+dsimproc Lean.Elab.WF.paramLet: _
 
 
-
-Lean.Elab.WF.paramProj:
-
+dsimproc Lean.Elab.WF.paramProj: _
 
 
-Lean.Elab.WF.paramMatcher:
+dsimproc Lean.Elab.WF.paramMatcher: _
 
 
-
-Lean.Elab.WF.paramLet:
+dsimproc Lean.Elab.WF.paramLet: _
 -/
 #guard_msgs in
 #dsimprocs ∃ _, _
