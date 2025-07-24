@@ -221,11 +221,11 @@ theorem aequiv_apply_map (z : R[X]) : h.aequiv h' (h.map z) = h'.map z := by
 @[simp] theorem aequiv_symm : (h.aequiv h').symm = h'.aequiv h := rfl
 
 @[simp]
-theorem aequiv_aequiv {U : Type*} [CommRing U] [Algebra R U] (h'' : IsAdjoinRoot U f) (x) :
+theorem aequiv_aequiv {U : Type*} [Ring U] [Algebra R U] (h'' : IsAdjoinRoot U f) (x) :
     (h'.aequiv h'') (h.aequiv h' x) = h.aequiv h'' x := by simp [aequiv_def]
 
 @[simp]
-theorem aequiv_trans {U : Type*} [CommRing U] [Algebra R U] (h'' : IsAdjoinRoot U f) :
+theorem aequiv_trans {U : Type*} [Ring U] [Algebra R U] (h'' : IsAdjoinRoot U f) :
     (h.aequiv h').trans (h'.aequiv h'') = h.aequiv h'' := by ext; simp
 
 /-- Transfer `IsAdjoinRoot` across an algebra isomorphism.
@@ -243,13 +243,14 @@ def ofEquiv (e : S ≃ₐ[R] T) : IsAdjoinRoot T f where
 theorem ofEquiv_root (e : S ≃ₐ[R] T) : (h.ofEquiv e).root = e h.root := rfl
 
 @[simp]
-theorem aequiv_ofEquiv {U : Type*} [CommRing U] [Algebra R U] (e : T ≃ₐ[R] U) :
+theorem aequiv_ofEquiv {U : Type*} [Ring U] [Algebra R U] (e : T ≃ₐ[R] U) :
     h.aequiv (h'.ofEquiv e) = (h.aequiv h').trans e := by
   ext a
   simp [aequiv_def, AlgEquiv.trans_apply, adjoinRootEquiv_apply_eq_map, ofEquiv_map_apply]
 
 @[simp]
-theorem ofEquiv_aequiv (e : S ≃ₐ[R] T) : (h.ofEquiv e).aequiv h' = e.symm.trans (h.aequiv h') := by
+theorem ofEquiv_aequiv {U : Type*} [Ring U] [Algebra R U] (h'' : IsAdjoinRoot U f)
+    (e : S ≃ₐ[R] T) : (h.ofEquiv e).aequiv h'' = e.symm.trans (h.aequiv h'') := by
   ext a
   simp_rw [aequiv_def, AlgEquiv.trans_apply, EmbeddingLike.apply_eq_iff_eq, AlgEquiv.symm_apply_eq,
            adjoinRootEquiv_apply_eq_map, ofEquiv_map_apply, ← adjoinRootEquiv_apply_eq_map,
