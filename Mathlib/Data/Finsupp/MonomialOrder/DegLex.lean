@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
+import Mathlib.Algebra.Group.TransferInstance
 import Mathlib.Data.Finsupp.MonomialOrder
 import Mathlib.Data.Finsupp.Weight
-import Mathlib.Algebra.Equiv.TransferInstance
 
 /-! Homogeneous lexicographic monomial ordering
 
