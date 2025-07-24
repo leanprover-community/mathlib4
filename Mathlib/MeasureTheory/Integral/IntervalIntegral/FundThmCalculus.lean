@@ -1207,7 +1207,7 @@ theorem integrableOn_deriv_right_of_nonneg (hcont : ContinuousOn g (Icc a b))
     (g'pos : ∀ x ∈ Ioo a b, 0 ≤ g' x) : IntegrableOn g' (Ioc a b) := by
   by_cases hab : a < b; swap
   · simp [Ioc_eq_empty hab]
-  rw [integrableOn_Ioc_iff_integrableOn_Ioo (by finiteness)]
+  rw [integrableOn_Ioc_iff_integrableOn_Ioo]
   have meas_g' : AEMeasurable g' (volume.restrict (Ioo a b)) := by
     apply (aemeasurable_derivWithin_Ioi g _).congr
     refine (ae_restrict_mem measurableSet_Ioo).mono fun x hx => ?_
