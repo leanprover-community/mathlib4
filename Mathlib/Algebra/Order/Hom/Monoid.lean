@@ -8,7 +8,6 @@ import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Algebra.Order.Group.Unbundled.Basic
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Order.Hom.Basic
-
 /-!
 # Ordered monoid and group homomorphisms
 

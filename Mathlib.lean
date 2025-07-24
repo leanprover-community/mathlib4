@@ -450,6 +450,7 @@ import Mathlib.Algebra.GroupWithZero.Action.ConjAct
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.GroupWithZero.Action.End
 import Mathlib.Algebra.GroupWithZero.Action.Faithful
+import Mathlib.Algebra.GroupWithZero.Action.Hom
 import Mathlib.Algebra.GroupWithZero.Action.Opposite
 import Mathlib.Algebra.GroupWithZero.Action.Pi
 import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Finset
@@ -1190,6 +1191,7 @@ import Mathlib.AlgebraicGeometry.Morphisms.AffineAnd
 import Mathlib.AlgebraicGeometry.Morphisms.Basic
 import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 import Mathlib.AlgebraicGeometry.Morphisms.Constructors
+import Mathlib.AlgebraicGeometry.Morphisms.Descent
 import Mathlib.AlgebraicGeometry.Morphisms.Etale
 import Mathlib.AlgebraicGeometry.Morphisms.Finite
 import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
@@ -1274,6 +1276,7 @@ import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
 import Mathlib.AlgebraicTopology.ModelCategory.Cylinder
 import Mathlib.AlgebraicTopology.ModelCategory.Instances
 import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
+import Mathlib.AlgebraicTopology.ModelCategory.JoyalTrick
 import Mathlib.AlgebraicTopology.MooreComplex
 import Mathlib.AlgebraicTopology.Quasicategory.Basic
 import Mathlib.AlgebraicTopology.Quasicategory.Nerve
@@ -3444,6 +3447,7 @@ import Mathlib.Data.Real.CompleteField
 import Mathlib.Data.Real.ConjExponents
 import Mathlib.Data.Real.ENatENNReal
 import Mathlib.Data.Real.EReal
+import Mathlib.Data.Real.Embedding
 import Mathlib.Data.Real.GoldenRatio
 import Mathlib.Data.Real.Hyperreal
 import Mathlib.Data.Real.Irrational
@@ -3525,6 +3529,8 @@ import Mathlib.Data.Sigma.Interval
 import Mathlib.Data.Sigma.Lex
 import Mathlib.Data.Sigma.Order
 import Mathlib.Data.Sign
+import Mathlib.Data.Sign.Basic
+import Mathlib.Data.Sign.Defs
 import Mathlib.Data.Stream.Defs
 import Mathlib.Data.Stream.Init
 import Mathlib.Data.String.Basic
@@ -5156,6 +5162,7 @@ import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 import Mathlib.RepresentationTheory.Homological.GroupCohomology.Shapiro
 import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
 import Mathlib.RepresentationTheory.Homological.GroupHomology.Functoriality
+import Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSequence
 import Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
 import Mathlib.RepresentationTheory.Homological.GroupHomology.Shapiro
 import Mathlib.RepresentationTheory.Homological.Resolution

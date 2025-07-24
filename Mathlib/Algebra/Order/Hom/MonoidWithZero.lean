@@ -5,19 +5,15 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
 import Mathlib.Algebra.Order.Hom.Monoid
-import Mathlib.Algebra.Order.Monoid.Units
-
 
 /-!
 # Ordered monoid and group homomorphisms
 
-This file defines morphisms between (additive) ordered monoids.
+This file defines morphisms between (additive) ordered monoids with zero.
 
 ## Types of morphisms
 
 * `OrderMonoidWithZeroHom`: Ordered monoid with zero homomorphisms.
-* `OrderAddMonoidIso`: Ordered additive monoid isomorphisms.
-* `OrderMonoidIso`: Ordered monoid isomorphisms.
 
 ## Notation
 
@@ -29,14 +25,13 @@ This file defines morphisms between (additive) ordered monoids.
 
 ## Tags
 
-ordered monoid with zero
+monoid with zero
 -/
 
 
 open Function
 
 variable {F α β γ δ : Type*}
-
 
 section MonoidWithZero
 
