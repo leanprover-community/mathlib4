@@ -28,13 +28,13 @@ lemma denselyOrdered_set_iff_subsingleton {s : Set X} :
   classical
   simp [LocallyFiniteOrder.denselyOrdered_iff_subsingleton]
 
-lemma denselyOrdered_withBot_set_iff_subsingleton {s : Set (WithBot X)} :
+lemma WithBot.denselyOrdered_set_iff_subsingleton {s : Set (WithBot X)} :
     DenselyOrdered s ↔ s.Subsingleton := by
   refine ⟨fun H ↦ ?_, fun h ↦ h.denselyOrdered⟩
   rw [← Set.subsingleton_coe, ← not_nontrivial_iff_subsingleton, nontrivial_iff_lt]
   suffices DenselyOrdered (WithBot.some ⁻¹' s) by
     rintro ⟨x, y, H⟩
-    rw [denselyOrdered_set_iff_subsingleton] at this
+    rw [_root_.denselyOrdered_set_iff_subsingleton] at this
     obtain ⟨z, hz, hz'⟩ := exists_between H
     have hz0 : (⊥ : WithBot X) < z := by simp [(Subtype.coe_lt_coe.mpr hz).trans_le']
     replace hz' : WithBot.unbot z.val hz0.ne' < WithBot.unbot y (hz0.trans hz').ne' := by
@@ -55,9 +55,9 @@ lemma denselyOrdered_withBot_set_iff_subsingleton {s : Set (WithBot X)} :
   · rw [← WithBot.coe_lt_coe]
     simp [hz'.trans_le']
 
-lemma denselyOrdered_withTop_set_iff_subsingleton {s : Set (WithTop X)} :
+lemma WithTop.denselyOrdered_set_iff_subsingleton {s : Set (WithTop X)} :
     DenselyOrdered s ↔ s.Subsingleton := by
   have he : StrictAnti (WithTop.toDual.image s) :=
     WithTop.toDual.image_strictAnti _ (fun ⦃a b⦄ a ↦ a)
-  rw [denselyOrdered_iff_of_strictAnti _ he, denselyOrdered_withBot_set_iff_subsingleton,
+  rw [denselyOrdered_iff_of_strictAnti _ he, WithBot.denselyOrdered_set_iff_subsingleton,
     WithTop.toDual.injective.subsingleton_image_iff]
