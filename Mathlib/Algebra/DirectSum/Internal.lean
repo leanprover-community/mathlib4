@@ -459,7 +459,7 @@ theorem mul_apply_eq_zero {r r' : ⨁ i, A i} {m n : ι}
   obtain (hx | hx) : x.1 < m ∨ x.2 < n := by
     by_contra! h
     obtain ⟨hm, hn⟩ := h
-    obtain rfl : x.1 + x.2 = k := by aesop
+    obtain rfl : x.1 + x.2 = k := by simp_all
     apply lt_irrefl (m + n) <| lt_of_le_of_lt (by gcongr) hk
   all_goals simp [hr, hr', hx]
 
