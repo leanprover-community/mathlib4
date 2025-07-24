@@ -56,7 +56,7 @@ private theorem LSeriesSummable_of_sum_norm_bigO_aux (hf : f 0 = 0)
   simp_rw [LSeriesSummable, funext (LSeries.term_def₀ hf s), mul_comm (f _)]
   refine summable_mul_of_bigO_atTop' (f := fun t ↦ (t : ℂ) ^ (-s))
     (g := fun t ↦ t ^ (-(s.re + 1) + r)) _ h₃ ?_ ?_ ?_ ?_
-  · refine (integrableOn_Ici_iff_integrableOn_Ioi.mpr
+  · refine (integrableOn_Ici_iff_integrableOn_Ioi (by finiteness) |>.mpr
       (integrableOn_Ioi_deriv_norm_ofReal_cpow zero_lt_one ?_)).locallyIntegrableOn
     exact neg_re _ ▸ neg_nonpos.mpr <| hr.trans hs.le
   · refine (IsBigO.mul_atTop_rpow_natCast_of_isBigO_rpow _ _ _ ?_ hO h₂).congr_right (by simp)
@@ -113,7 +113,7 @@ private theorem LSeries_eq_mul_integral_aux {f : ℕ → ℂ} (hf : f 0 = 0) {r 
     rw [deriv_ofReal_cpow_const (zero_lt_one.trans ht).ne', h₄]
     · ring_nf
     · exact neg_ne_zero.mpr <| ne_zero_of_re_pos (hr.trans_lt hs)
-  · refine (integrableOn_Ici_iff_integrableOn_Ioi.mpr <|
+  · refine (integrableOn_Ici_iff_integrableOn_Ioi (by finiteness) |>.mpr <|
       integrableOn_Ioi_deriv_ofReal_cpow zero_lt_one
         (by simpa using hr.trans_lt hs)).locallyIntegrableOn
   · have hlim : Tendsto (fun n : ℕ ↦ (n : ℝ) ^ (-(s.re - r))) atTop (𝓝 0) :=
