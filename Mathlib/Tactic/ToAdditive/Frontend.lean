@@ -551,6 +551,8 @@ structure BundledExtensions : Type where
   changeNumeralAttr : NameMapExtension (List Nat)
   translations : NameMapExtension Name
   attrName : Name
+  /-- When `isDual := true`, every translation `A → B` will also give a translation `B → A`. -/
+  isDual : Bool
 
 def toAdditiveBundle : BundledExtensions where
   ignoreArgsAttr := toAdditiveIgnoreArgsAttr
@@ -560,6 +562,7 @@ def toAdditiveBundle : BundledExtensions where
   changeNumeralAttr := toAdditiveChangeNumeralAttr
   translations := additiveTranslations
   attrName := `to_additive
+  isDual := false
 
 def toDualBundle : BundledExtensions where
   ignoreArgsAttr := toDualIgnoreArgsAttr
@@ -569,6 +572,7 @@ def toDualBundle : BundledExtensions where
   changeNumeralAttr := toDualChangeNumeralAttr
   translations := toDualTranslations
   attrName := `to_dual
+  isDual := true
 
 /-- Get the multiplicative → additive translation for the given name. -/
 def findTranslation? (env : Environment) (b : BundledExtensions) : Name → Option Name :=
@@ -585,8 +589,7 @@ def insertTranslation (b : BundledExtensions)
       return
   modifyEnv (b.translations.addEntry · (src, tgt))
   trace[to_additive] "Added translation {src} ↦ {tgt}"
-  -- HACK: special case to_dual
-  if b.attrName = `to_dual && src != tgt then
+  if b.isDual && src != tgt then
     if let some src' := findTranslation? (← getEnv) b tgt then
       if failIfExists then
         throwError "The translation {tgt} ↦ {src'} already exists"
@@ -1399,7 +1402,6 @@ def proceedFieldsAux (b : BundledExtensions)
 
 /-- Add the structure fields of `src` to the translations dictionary
 so that future uses of `to_additive` will map them to the corresponding `tgt` fields. -/
--- TODO: does this need to support `reorder`?
 def proceedFields (b : BundledExtensions) (src tgt : Name) : CoreM Unit := do
   let aux := @proceedFieldsAux b src tgt
   -- add translations for the structure fields
@@ -1627,12 +1629,11 @@ partial def addToAdditiveAttr (b : BundledExtensions)
     trace[to_additive] "@[to_additive] will reorder the arguments of {tgt} according to \
       {cfg.reorder}."
     b.reorderAttr.add src cfg.reorder
-    -- HACK: special case to_dual
-    if b.attrName = `to_dual && src != tgt then
-      let reorderInv := cfg.reorder.map .reverse
+    if b.isDual && src != tgt then
+      let reorderRev := cfg.reorder.map .reverse
       trace[to_additive] "@[to_additive] will also reorder the arguments of {src} according to \
-        {reorderInv}."
-      b.reorderAttr.add tgt reorderInv
+        {reorderRev}."
+      b.reorderAttr.add tgt reorderRev
     -- we allow using this attribute if it's only to add the reorder configuration
     if findTranslation? (← getEnv) b src |>.isSome then
       return #[tgt]
@@ -1648,8 +1649,6 @@ partial def addToAdditiveAttr (b : BundledExtensions)
       trace[to_additive_detail] "declaration {tgt} already exists."
       proceedFields b src tgt
       copyMetaData b nameDict fixAbbreviation cfg src tgt
-      -- TODO: for to_dual validate that the existing declaration has the correct type
-      -- HACK: special case to_dual
     else
       -- tgt doesn't exist, so let's make it
       transformDecl b nameDict fixAbbreviation cfg src tgt
@@ -1686,4 +1685,4 @@ initialize registerBuiltinAttribute {
 
 end ToAdditive
 
-set_option linter.style.longFile 1900
+set_option linter.style.longFile 1800
