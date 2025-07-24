@@ -15,7 +15,7 @@ value at `a` is the sum of `f x * (x • g y)` over all pairs `x, y` such that `
 where `•` denotes the action of `G` on `k`. When this action is trivial, this product is
 the usual convolution product.
 
-In fact the construction of the skew monoid algebra makes sense when  `G` is not even a monoid, but
+In fact the construction of the skew monoid algebra makes sense when `G` is not even a monoid, but
 merely a magma, i.e., when `G` carries a multiplication which is not required to satisfy any
 conditions at all, and `k` is a not-necessarily-associative semiring. In this case the construction
 yields a not-necessarily-unital, not-necessarily-associative algebra.
@@ -780,7 +780,7 @@ def toFinsuppLinearEquiv [AddCommMonoid k] [Module S k] : SkewMonoidAlgebra k G 
   AddEquiv.toLinearEquiv toFinsuppAddEquiv (by simp)
 
 /-- The basis on `SkewMonoidAlgebra k G` with basis vectors `fun i ↦ single i 1` -/
-def basisSingleOne [Semiring k] : Basis G k (SkewMonoidAlgebra k G) where
+def basisSingleOne [Semiring k] : Module.Basis G k (SkewMonoidAlgebra k G) where
   repr := toFinsuppLinearEquiv
 
 instance [Semiring k] : Module.Free k (SkewMonoidAlgebra k G) :=
