@@ -8,7 +8,7 @@ import Mathlib.Order.BooleanSigmaAlgebra.Defs
 /-!
 # Theory of Boolean σ-algebras
 
-A Boolean σ-algebra is a Booleanalgebra in which every countable subset `s` has a least upper bound
+A Boolean σ-algebra is a Boolean algebra in which every countable subset `s` has a least upper bound
 and a greatest lower bound, denoted below by `sSup s` and `sInf s`. This provides a natural
 generalization for σ-algebras.
 
