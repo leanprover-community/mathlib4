@@ -59,8 +59,9 @@ def hat {A : ℰ} (B : ℰ) (g : A ⟶ P B) : B ⊗ A ⟶ hc.Ω :=
 def unhat {A B : ℰ} (f : B ⊗ A ⟶ hc.Ω) : (A ⟶ P B) :=
   (hP B).homEquiv.invFun f
 
+@[simp]
 lemma hat_unhat {A B : ℰ} (f : B ⊗ A ⟶ hc.Ω) :
-  hat B (unhat f) = f := by simp
+  hat B (unhat f) = f := (hP B).homEquiv.apply_symm_apply f
 
 @[simp]
 lemma unhat_hat {A B : ℰ} (g : A ⟶ P B) :
