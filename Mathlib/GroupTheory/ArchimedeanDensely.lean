@@ -590,6 +590,12 @@ lemma WithZero.mulArchimedean_iff {α} [CommGroup α] [PartialOrder α] :
   · exact OrderMonoidIso.unitsWithZero.mulArchimedean
   · infer_instance
 
+lemma Units.mulArchimedean_iff {G₀} [LinearOrderedCommGroupWithZero G₀] :
+    MulArchimedean G₀ˣ ↔ MulArchimedean G₀ := by
+  constructor <;> intro _
+  · exact OrderMonoidIso.withZeroUnits.mulArchimedean
+  · infer_instance
+
 section LocallyFiniteOrder
 
 variable {X : Type*} [Preorder X] [LocallyFiniteOrder X]
