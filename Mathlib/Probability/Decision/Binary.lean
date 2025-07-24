@@ -134,13 +134,6 @@ lemma bayesBinaryRisk_le_bayesBinaryRisk_comp (μ ν : Measure 𝓧) (π : Measu
     bayesBinaryRisk μ ν π ≤ bayesBinaryRisk (η ∘ₘ μ) (η ∘ₘ ν) π :=
   (bayesRiskPrior_le_bayesRiskPrior_comp _ _ _ η).trans_eq (by simp [bayesBinaryRisk])
 
-lemma nonempty_subtype_isMarkovKernel_of_nonempty {𝓧 : Type*} {m𝓧 : MeasurableSpace 𝓧}
-    {𝓨 : Type*} {m𝓨 : MeasurableSpace 𝓨} [Nonempty 𝓨] :
-    Nonempty (Subtype (@IsMarkovKernel 𝓧 𝓨 m𝓧 m𝓨)) := by
-  simp only [nonempty_subtype]
-  let y : 𝓨 := Classical.ofNonempty
-  exact ⟨Kernel.const _ (Measure.dirac y), inferInstance⟩
-
 @[simp]
 lemma bayesBinaryRisk_self (μ : Measure 𝓧) (π : Measure Bool) :
     bayesBinaryRisk μ μ π = min (π {false}) (π {true}) * μ .univ := by
@@ -163,10 +156,7 @@ lemma bayesBinaryRisk_self (μ : Measure 𝓧) (π : Measure Bool) :
           (by trivial), (set_fintype_card_eq_univ_iff ({false} ∪ {true})).mp rfl,
           Measure.comp_apply_univ]
         rfl
-      _ = _ := by
-        rw [iInf_subtype']
-        convert iInf_const
-        exact nonempty_subtype_isMarkovKernel_of_nonempty
+      _ = _ := by simp [iInf_subtype']
 
 lemma bayesBinaryRisk_dirac (a b : ℝ≥0∞) (x : 𝓧) (π : Measure Bool) :
     bayesBinaryRisk (a • Measure.dirac x) (b • Measure.dirac x) π
@@ -260,14 +250,13 @@ lemma bayesianRisk_binary_of_deterministic_indicator (μ ν : Measure 𝓧) (π 
 
 lemma bayesBinaryRisk_eq_iInf_measurableSet (μ ν : Measure 𝓧) [IsFiniteMeasure μ]
     [IsFiniteMeasure ν] (π : Measure Bool) [IsFiniteMeasure π] :
-    bayesBinaryRisk μ ν π = ⨅ E, ⨅ (_ : MeasurableSet E), π {false} * μ E + π {true} * ν Eᶜ := by
+    bayesBinaryRisk μ ν π = ⨅ (E) (_ : MeasurableSet E), π {false} * μ E + π {true} * ν Eᶜ := by
   apply le_antisymm
   · simp_rw [le_iInf_iff, bayesBinaryRisk, bayesRiskPrior]
     intro E hE
     rw [← bayesianRisk_binary_of_deterministic_indicator _ _ _ hE]
     exact iInf_le_of_le _ (iInf_le _ (Kernel.isMarkovKernel_deterministic _))
-  · let E := {x | π {false} * (∂μ/∂boolKernel μ ν ∘ₘ π) x
-      ≤ π {true} * (∂ν/∂boolKernel μ ν ∘ₘ π) x}
+  · let E := {x | π {false} * (∂μ/∂boolKernel μ ν ∘ₘ π) x ≤ π {true} * (∂ν/∂boolKernel μ ν ∘ₘ π) x}
     have hE : MeasurableSet E := measurableSet_le (by fun_prop) (by fun_prop)
     rw [bayesBinaryRisk, ← IsGenBayesEstimator.isBayesEstimator
       (isGenBayesEstimator_binaryGenBayesEstimator μ ν π) .of_discrete, IsGenBayesEstimator.kernel]
@@ -284,7 +273,7 @@ lemma bayesRiskPrior_eq_of_hasGenBayesEstimator_binary {𝓨 : Type*}
       = ∫⁻ x, ⨅ z, π {true} * (P true).rnDeriv (P ∘ₘ π) x * ℓ true z
         + π {false} * (P false).rnDeriv (P ∘ₘ π) x * ℓ false z ∂(P ∘ₘ π) := by
   rw [bayesRiskPrior_eq_of_hasGenBayesEstimator hl]
-  have h2 : P = boolKernel (P false) (P true) := Kernel_bool_eq_boolKernel P
+  have h2 : P = boolKernel (P false) (P true) := Kernel.eq_boolKernel P
   have h3 : (P†π) = (boolKernel (P false) (P true))†π := by congr
   nth_rw 1 3 [h2]
   simp_rw [h3]

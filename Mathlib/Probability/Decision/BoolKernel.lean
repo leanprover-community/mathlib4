@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Rémy Degenne. All rights reserved.
+Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
@@ -40,8 +40,7 @@ instance [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
   simp only [boolKernel_apply]
   split <;> infer_instance
 
-lemma Kernel_bool_eq_boolKernel (κ : Kernel Bool 𝓧) :
-    κ = boolKernel (κ false) (κ true) := by
+lemma Kernel.eq_boolKernel (κ : Kernel Bool 𝓧) : κ = boolKernel (κ false) (κ true) := by
   ext (_ | _) <;> simp
 
 @[simp]
@@ -49,9 +48,7 @@ lemma comp_boolKernel (κ : Kernel 𝓧 𝓨) :
     κ ∘ₖ (boolKernel μ ν) = boolKernel (κ ∘ₘ μ) (κ ∘ₘ ν) := by
   ext b : 1
   rw [Kernel.comp_apply]
-  cases b with
-  | false => simp
-  | true => simp
+  cases b <;> simp
 
 lemma boolKernel_comp_measure (μ ν : Measure 𝓧) (π : Measure Bool) :
     boolKernel μ ν ∘ₘ π = π {true} • ν + π {false} • μ := by

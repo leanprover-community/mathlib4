@@ -36,11 +36,36 @@ by the loss function `ℓ θ z`.
 open MeasureTheory
 open scoped ENNReal NNReal
 
+lemma iInf_mul_le_lintegral {α : Type*} {_ : MeasurableSpace α} (μ : Measure α) (f : α → ℝ≥0∞) :
+    (⨅ x, f x) * μ .univ ≤ ∫⁻ x, f x ∂μ := by
+  have : (⨅ x, f x) * μ .univ = ∫⁻ y, ⨅ x, f x ∂μ := by simp
+  rw [this]
+  gcongr
+  exact iInf_le _ _
+
+lemma iInf_le_lintegral {α : Type*} {_ : MeasurableSpace α} (μ : Measure α) [IsProbabilityMeasure μ]
+    (f : α → ℝ≥0∞) :
+    ⨅ x, f x ≤ ∫⁻ x, f x ∂μ :=
+  le_trans (by simp) (iInf_mul_le_lintegral μ f)
+
 namespace ProbabilityTheory
+
+@[simp]
+lemma Kernel.comp_const {α β γ : Type*} {_ : MeasurableSpace α} {_ : MeasurableSpace β}
+    {_ : MeasurableSpace γ}
+    (κ : Kernel β γ) (μ : Measure β) : κ ∘ₖ Kernel.const α μ = Kernel.const α (κ ∘ₘ μ) := by
+  ext x s hs
+  rw [Kernel.comp_apply, Measure.bind_apply hs (by fun_prop), Kernel.const_apply,
+    Kernel.const_apply, Measure.bind_apply hs (by fun_prop)]
 
 variable {Θ Θ' 𝓧 𝓧' 𝓨 : Type*} {mΘ : MeasurableSpace Θ} {mΘ' : MeasurableSpace Θ'}
   {m𝓧 : MeasurableSpace 𝓧} {m𝓧' : MeasurableSpace 𝓧'} {m𝓨 : MeasurableSpace 𝓨}
   {ℓ : Θ → 𝓨 → ℝ≥0∞} {P : Kernel Θ 𝓧} {κ : Kernel 𝓧 𝓨} {π : Measure Θ}
+
+instance [Nonempty 𝓨] : Nonempty (Subtype (@IsMarkovKernel 𝓧 𝓨 m𝓧 m𝓨)) := by
+  simp only [nonempty_subtype]
+  let y : 𝓨 := Classical.ofNonempty
+  exact ⟨Kernel.const _ (Measure.dirac y), inferInstance⟩
 
 section Definitions
 
@@ -79,6 +104,112 @@ end Definitions
 
 @[simp]
 lemma bayesianRisk_of_isEmpty [IsEmpty Θ] : bayesianRisk ℓ P κ π = 0 := by simp [bayesianRisk]
+
+section Zero
+
+@[simp]
+lemma risk_zero_left (ℓ : Θ → 𝓨 → ℝ≥0∞) (κ : Kernel 𝓧 𝓨) (θ : Θ) :
+    risk ℓ (0 : Kernel Θ 𝓧) κ θ = 0 := by simp [risk]
+
+@[simp]
+lemma risk_zero_right (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) (θ : Θ) :
+    risk ℓ P (0 : Kernel 𝓧 𝓨) θ = 0 := by simp [risk]
+
+@[simp]
+lemma bayesianRisk_zero_left (ℓ : Θ → 𝓨 → ℝ≥0∞) (κ : Kernel 𝓧 𝓨) (π : Measure Θ) :
+    bayesianRisk ℓ (0 : Kernel Θ 𝓧) κ π = 0 := by simp [bayesianRisk]
+
+@[simp]
+lemma bayesianRisk_zero_right (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) (π : Measure Θ) :
+    bayesianRisk ℓ P (0 : Kernel 𝓧 𝓨) π = 0 := by simp [bayesianRisk]
+
+@[simp]
+lemma bayesianRisk_zero_prior (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) (κ : Kernel 𝓧 𝓨) :
+    bayesianRisk ℓ P κ 0 = 0 := by simp [bayesianRisk]
+
+@[simp]
+lemma bayesRiskPrior_zero_left (ℓ : Θ → 𝓨 → ℝ≥0∞) (π : Measure Θ) [Nonempty 𝓨] :
+    bayesRiskPrior ℓ (0 : Kernel Θ 𝓧) π = 0 := by
+  simp only [bayesRiskPrior, bayesianRisk_zero_left]
+  rw [iInf_subtype']
+  simp
+
+lemma bayesRiskPrior_zero_right (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) [Nonempty 𝓨] :
+    bayesRiskPrior ℓ P (0 : Measure Θ) = 0 := by
+  simp only [bayesRiskPrior, bayesianRisk_zero_prior]
+  rw [iInf_subtype']
+  simp
+
+end Zero
+
+section Const
+
+lemma risk_const (ℓ : Θ → 𝓨 → ℝ≥0∞) (μ : Measure 𝓧) (κ : Kernel 𝓧 𝓨) (θ : Θ) :
+    risk ℓ (Kernel.const Θ μ) κ θ = ∫⁻ z, ℓ θ z ∂(κ ∘ₘ μ) := by simp [risk]
+
+lemma risk_const_right (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) (ν : Measure 𝓨) (θ : Θ) :
+    risk ℓ P (Kernel.const 𝓧 ν) θ = P θ .univ * ∫⁻ z, ℓ θ z ∂ν := by simp [risk, Kernel.const_comp]
+
+lemma bayesianRisk_const (ℓ : Θ → 𝓨 → ℝ≥0∞) (μ : Measure 𝓧) (κ : Kernel 𝓧 𝓨) (π : Measure Θ) :
+    bayesianRisk ℓ (Kernel.const Θ μ) κ π = ∫⁻ θ, ∫⁻ z, ℓ θ z ∂(κ ∘ₘ μ) ∂π := by
+  simp [bayesianRisk, risk]
+
+lemma bayesianRisk_const' (hl : Measurable (Function.uncurry ℓ)) (μ : Measure 𝓧) [SFinite μ]
+    (κ : Kernel 𝓧 𝓨) [IsSFiniteKernel κ] (π : Measure Θ) [SFinite π] :
+    bayesianRisk ℓ (Kernel.const Θ μ) κ π = ∫⁻ z, ∫⁻ θ, ℓ θ z ∂π ∂(κ ∘ₘ μ) := by
+  rw [bayesianRisk_const, lintegral_lintegral_swap (by fun_prop)]
+
+lemma bayesianRisk_const_right (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) (ν : Measure 𝓨) (π : Measure Θ) :
+    bayesianRisk ℓ P (Kernel.const 𝓧 ν) π = ∫⁻ θ, P θ .univ * ∫⁻ z, ℓ θ z ∂ν ∂π := by
+  simp only [bayesianRisk, risk_const_right]
+
+lemma bayesRiskPrior_le_inf' (hl : Measurable (Function.uncurry ℓ)) (P : Kernel Θ 𝓧)
+    (π : Measure Θ) :
+    bayesRiskPrior ℓ P π ≤ ⨅ z : 𝓨, ∫⁻ θ, ℓ θ z * P θ .univ ∂π := by
+  simp_rw [le_iInf_iff, bayesRiskPrior]
+  refine fun z ↦ iInf_le_of_le (Kernel.const _ (Measure.dirac z)) ?_
+  simp only [iInf_pos, bayesianRisk_const_right, mul_comm]
+  gcongr with θ
+  rw [lintegral_dirac' _ (by fun_prop)]
+
+lemma bayesRiskPrior_le_inf (hl : Measurable (Function.uncurry ℓ)) (P : Kernel Θ 𝓧)
+    (π : Measure Θ) [IsMarkovKernel P] :
+    bayesRiskPrior ℓ P π ≤ ⨅ z : 𝓨, ∫⁻ θ, ℓ θ z ∂π :=
+  (bayesRiskPrior_le_inf' hl P π).trans_eq (by simp)
+
+lemma bayesRiskPrior_const''' (hl : Measurable (Function.uncurry ℓ))
+    (μ : Measure 𝓧) [SFinite μ] (π : Measure Θ) [SFinite π]
+    (hl_pos : μ .univ = ∞ → ⨅ z, ∫⁻ θ, ℓ θ z ∂π = 0 → ∃ z, ∫⁻ θ, ℓ θ z ∂π = 0)
+    (h_zero : μ = 0 → Nonempty 𝓨) :
+    bayesRiskPrior ℓ (Kernel.const Θ μ) π = ⨅ z : 𝓨, ∫⁻ θ, ℓ θ z * μ .univ ∂π := by
+  refine le_antisymm ?_ ?_
+  · exact (bayesRiskPrior_le_inf' hl _ _).trans_eq (by simp)
+  · simp_rw [bayesRiskPrior, le_iInf_iff]
+    intro κ hκ
+    rw [bayesianRisk_const' hl]
+    refine le_trans ?_ (iInf_mul_le_lintegral (κ ∘ₘ μ) (fun z ↦ ∫⁻ θ, ℓ θ z ∂π))
+    simp only [Measure.comp_apply_univ]
+    rw [ENNReal.iInf_mul' hl_pos (fun hμ ↦ h_zero (by simpa using hμ))]
+    gcongr with z
+    rw [lintegral_mul_const]
+    fun_prop
+
+lemma bayesRiskPrior_const'' (hl : Measurable (Function.uncurry ℓ))
+    (μ : Measure 𝓧) [NeZero μ] [IsFiniteMeasure μ] (π : Measure Θ) [SFinite π] :
+    bayesRiskPrior ℓ (Kernel.const Θ μ) π = ⨅ z : 𝓨, ∫⁻ θ, ℓ θ z * μ .univ ∂π :=
+  bayesRiskPrior_const''' hl μ π (by simp) (by simp [NeZero.out])
+
+lemma bayesRiskPrior_const' [Nonempty 𝓨] (hl : Measurable (Function.uncurry ℓ))
+    (μ : Measure 𝓧) [IsFiniteMeasure μ] (π : Measure Θ) [SFinite π] :
+    bayesRiskPrior ℓ (Kernel.const Θ μ) π = ⨅ z : 𝓨, ∫⁻ θ, ℓ θ z * μ .univ ∂π :=
+  bayesRiskPrior_const''' hl μ π (by simp) (fun _ ↦ inferInstance)
+
+lemma bayesRiskPrior_const (hl : Measurable (Function.uncurry ℓ))
+    (μ : Measure 𝓧) [IsProbabilityMeasure μ] (π : Measure Θ) [SFinite π] :
+    bayesRiskPrior ℓ (Kernel.const Θ μ) π = ⨅ z : 𝓨, ∫⁻ θ, ℓ θ z ∂π := by
+  simp [bayesRiskPrior_const'' hl μ π]
+
+end Const
 
 lemma bayesianRisk_le_iSup_risk (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) (κ : Kernel 𝓧 𝓨)
     (π : Measure Θ) [IsProbabilityMeasure π] :
@@ -134,20 +265,6 @@ lemma bayesRiskPrior_compProd_le_bayesRiskPrior (ℓ : Θ → 𝓨 → ℝ≥0�
     rw [Kernel.deterministic_comp_eq_map, ← Kernel.fst_eq, Kernel.fst_compProd]
   nth_rw 2 [this]
   exact bayesRiskPrior_le_bayesRiskPrior_comp _ _ _ _
-
--- Do we also need a version without the `IsMarkovKernel` assumption? it would be of the form:
--- `bayesRiskPrior E π ≤ ⨅ z : 𝓨, ∫⁻ θ, E.ℓ (E.y θ, z) * (E.P θ) .univ ∂π`
-lemma bayesRiskPrior_le_inf (hl : Measurable (Function.uncurry ℓ)) (P : Kernel Θ 𝓧)
-    (π : Measure Θ) [IsMarkovKernel P] :
-    bayesRiskPrior ℓ P π ≤ ⨅ z : 𝓨, ∫⁻ θ, ℓ θ z ∂π := by
-  simp_rw [le_iInf_iff, bayesRiskPrior]
-  refine fun z ↦ iInf_le_of_le (Kernel.const _ (Measure.dirac z)) ?_
-  convert iInf_le _ ?_ using 1
-  · simp_rw [bayesianRisk, risk, Kernel.const_comp', Kernel.const_apply]
-    congr with θ
-    rw [lintegral_dirac']
-    fun_prop
-  · infer_instance
 
 /-- The Bayesian risk of an estimator `κ` with respect to a prior `π` can be expressed as
 an integral in the following way: `R_π(κ) = ((P†π × κ) ∘ P ∘ π)[(θ, z) ↦ ℓ(y(θ), z)]`. -/

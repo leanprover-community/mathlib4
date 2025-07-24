@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Lorenzo Luccioli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Lorenzo Luccioli
+Authors: Rémy Degenne, Lorenzo Luccioli
 -/
 import Mathlib.MeasureTheory.Measure.WithDensity
 
@@ -38,30 +38,10 @@ open MeasureTheory
 
 open scoped ENNReal NNReal
 
-lemma MeasureTheory.Measure.ext_of_discrete {α : Type*} {_ : MeasurableSpace α} {μ ν : Measure α}
-    [Countable α] [DiscreteMeasurableSpace α] (h : ∀ a, μ {a} = ν {a}) : μ = ν := by
-  ext s hs
-  rw [← Set.biUnion_of_singleton s, measure_iUnion, measure_iUnion]
-  · congr with i
-    by_cases hi : i ∈ s
-    · simp [hi, h]
-    · simp [hi]
-  · intro i j hij
-    simp [hij.symm]
-  · intro i
-    by_cases hi : i ∈ s <;> simp [hi]
-  · intro i j hij
-    simp [hij.symm]
-  · intro i
-    by_cases hi : i ∈ s <;> simp [hi]
-
 @[ext]
 lemma MeasureTheory.Measure.ext_of_bool {π₁ π₂ : Measure Bool}
-    (h_false : π₁ {false} = π₂ {false}) (h_true : π₁ {true} = π₂ {true}) : π₁ = π₂ := by
-  refine Measure.ext_of_discrete fun a ↦ ?_
-  cases a with
-  | false => exact h_false
-  | true => exact h_true
+    (h_false : π₁ {false} = π₂ {false}) (h_true : π₁ {true} = π₂ {true}) : π₁ = π₂ :=
+  Measure.ext_of_singleton fun a ↦ by cases a; exacts [h_false, h_true]
 
 namespace Bool
 
