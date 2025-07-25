@@ -210,29 +210,15 @@ theorem rTensor_mul'_comp_assoc_symm_comp_lTensor_comul_eq_comul_comp_mul :
   lTensor_mul'_comp_assoc_comp_rTensor_comul (R := R) (A := A)
     ▸ lTensor_mul'_comp_assoc_comp_rTensor_comul_eq_comul_comp_mul'
 
-theorem rTensor_counit_comp_mul'_comp_assoc_symm_comp_lTensor_comul :
-    (rTensor A (counit ∘ₗ mul' R A)) ∘ₗ (ϰ _ _ _).symm.toLinearMap ∘ₗ (lTensor A comul)
-    = (τ _).symm.toLinearMap ∘ₗ mul' R A := by
-  rw [rTensor_comp, LinearMap.comp_assoc,
-    rTensor_mul'_comp_assoc_symm_comp_lTensor_comul_eq_comul_comp_mul,
-    ← LinearMap.comp_assoc, rTensor_counit_comp_comul]
-  rfl
-
-theorem lTensor_counit_comp_mul'_comp_assoc_comp_rTensor_comul :
-    (lTensor A (counit ∘ₗ mul' R A)) ∘ₗ (ϰ _ _ _).toLinearMap ∘ₗ (rTensor A comul)
-    = (TensorProduct.rid _ _).symm.toLinearMap ∘ₗ mul' R A := by
-  rw [lTensor_comp, comp_assoc, lTensor_mul'_comp_assoc_comp_rTensor_comul_eq_comul_comp_mul',
-    ← comp_assoc, lTensor_counit_comp_comul]
-  rfl
-
 /-- "snake equations" v1 -/
 theorem rTensor_counit_comp_mul'_assoc_symm_comp_lTensor_comul_comp_algebra_linearMap :
     (rTensor A (counit ∘ₗ mul' R A)) ∘ₗ (ϰ _ _ _).symm.toLinearMap
     ∘ₗ (lTensor A (comul ∘ₗ Algebra.linearMap R A))
     = (TensorProduct.comm _ _ _).toLinearMap := by
-  have : (mul' R A) ∘ₗ (lTensor A (Algebra.linearMap R A)) = TensorProduct.rid R A := by ext; simp
   simp_rw [lTensor_comp, ← comp_assoc (lTensor A (Algebra.linearMap R A)),
-    rTensor_counit_comp_mul'_comp_assoc_symm_comp_lTensor_comul, comp_assoc, this]
+    rTensor_comp, LinearMap.comp_assoc _ (rTensor _ _),
+    rTensor_mul'_comp_assoc_symm_comp_lTensor_comul_eq_comul_comp_mul,
+    ← LinearMap.comp_assoc, rTensor_counit_comp_comul]
   ext
   simp
 
@@ -241,9 +227,10 @@ theorem lTensor_counit_comp_mul_comp_assoc_comp_rTensor_comul_comp_algebra_linea
     (lTensor A (counit ∘ₗ mul' R A)) ∘ₗ (ϰ _ _ _).toLinearMap
     ∘ₗ (rTensor A (comul ∘ₗ Algebra.linearMap R A))
     = (TensorProduct.comm _ _ _).toLinearMap := by
-  have : (mul' R A) ∘ₗ (rTensor A (Algebra.linearMap R A)) = TensorProduct.lid R A := by ext; simp
   simp_rw [rTensor_comp, ← comp_assoc (rTensor A (Algebra.linearMap R A)),
-    lTensor_counit_comp_mul'_comp_assoc_comp_rTensor_comul, comp_assoc, this]
+    lTensor_comp, comp_assoc _ (lTensor _ _),
+    lTensor_mul'_comp_assoc_comp_rTensor_comul_eq_comul_comp_mul',
+    ← comp_assoc, lTensor_counit_comp_comul]
   ext
   simp
 
