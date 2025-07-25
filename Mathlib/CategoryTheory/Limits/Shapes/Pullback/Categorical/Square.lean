@@ -99,7 +99,7 @@ instance : (inverse T L R B).IsEquivalence :=
 they satisfy. -/
 @[simps!]
 def precomposeEquivalenceInverseIsoDefault :
-    (CatCommSqOver.precompose R B (equivalence T L R B).inverse).obj
+    (CatCommSqOver.precompose R B|>.obj (equivalence T L R B).inverse).obj
       (.ofSquare T L R B) ≅
     default :=
   mkIso (Iso.inverseCompIso (.refl _)) (Iso.inverseCompIso (.refl _))
@@ -335,7 +335,7 @@ instance whiskeringLeftFunctorEquivFunctorSquare
       ((Functor.whiskeringLeft X Y C₁).obj U)
       (functorEquiv T L R B Y).functor
       (functorEquiv T L R B X).functor
-      (precompose R B U) where
+      (precompose R B|>.obj U) where
   iso :=
     NatIso.ofComponents (fun _ =>
       CategoricalPullback.mkIso
@@ -348,7 +348,7 @@ instance precomposeToFunctorToCategoricalPullbackSquare
     {X : Type u₅} {Y : Type u₆} [Category.{v₅} X] [Category.{v₆} Y]
     (U : X ⥤ Y) :
     CatCommSq
-      (precompose R B U)
+      (precompose R B|>.obj U)
       (functorEquiv T L R B Y).inverse
       (functorEquiv T L R B X).inverse
       (Functor.whiskeringLeft X Y C₁|>.obj U) :=
@@ -368,15 +368,15 @@ there is an induced functor between the top left corners of the squares. -/
 def functorOfTransform :
     (CatCospanTransform R B R' B') ⥤ (C₁ ⥤ D₁) where
   obj ψ := functorEquiv T' L' R' B' C₁|>.inverse.obj <|
-    (CatCommSqOver.transform _ ψ).obj (.ofSquare T L R B)
+    CatCommSqOver.transform _|>.obj ψ|>.obj (.ofSquare T L R B)
   map α := functorEquiv T' L' R' B' C₁|>.inverse.map <|
-    (transform₂ _ α).app (.ofSquare T L R B)
+    transform _|>.map α|>.app <| .ofSquare T L R B
 
 instance functorOfTransformObjFstSquare (ψ : CatCospanTransform R B R' B') :
     CatCommSq T (functorOfTransform T L T' L'|>.obj ψ) ψ.left T' where
-  iso := ((CatCommSqOver.fstFunctor _ _ _).mapIso
-      (functorEquiv T' L' R' B' C₁|>.counitIso.app <|
-        (CatCommSqOver.transform _ ψ).obj (.ofSquare T L R B))).symm
+  iso := (CatCommSqOver.fstFunctor _ _ _|>.mapIso <|
+    functorEquiv T' L' R' B' C₁|>.counitIso.app <|
+      CatCommSqOver.transform _|>.obj ψ|>.obj <| .ofSquare T L R B).symm
 
 omit [CatPullbackSquare T L R B] in
 lemma functorOfTransform_obj_map_fst
@@ -392,9 +392,9 @@ lemma functorOfTransform_obj_map_fst
 
 instance functorOfTransformObjSndSquare (ψ : CatCospanTransform R B R' B') :
     CatCommSq L (functorOfTransform T L T' L'|>.obj ψ) ψ.right L' where
-  iso := ((CatCommSqOver.sndFunctor _ _ _).mapIso
-      (functorEquiv T' L' R' B' C₁|>.counitIso.app <|
-        (CatCommSqOver.transform _ ψ).obj (.ofSquare T L R B))).symm
+  iso := (CatCommSqOver.sndFunctor _ _ _|>.mapIso <|
+    functorEquiv T' L' R' B' C₁|>.counitIso.app <|
+      CatCommSqOver.transform _|>.obj ψ|>.obj <| .ofSquare T L R B).symm
 
 omit [CatPullbackSquare T L R B] in
 lemma functorOfTransform_obj_map_snd
@@ -402,10 +402,10 @@ lemma functorOfTransform_obj_map_snd
     {x y : C₁} (f : x ⟶ y) :
     L'.map (functorOfTransform T L T' L'|>.obj ψ |>.map f) =
     (CatCommSq.iso L (functorOfTransform T L T' L'|>.obj ψ)
-      ψ.right L').inv.app _ ≫
+      ψ.right L').inv.app x ≫
       ψ.right.map (L.map f) ≫
       (CatCommSq.iso L (functorOfTransform T L T' L'|>.obj ψ)
-        ψ.right L').hom.app _ := by
+        ψ.right L').hom.app y := by
   simp
 
 /-- The canonical square that expresses that `functorEquiv` maps
@@ -416,9 +416,9 @@ instance functorEquivFunctorWhiskeringFunctorOfTransformObjSquare
     (ψ : CatCospanTransform R B R' B') :
     CatCommSq
       (functorEquiv T L R B X).functor
-      (Functor.whiskeringRight X _ _|>.obj <|
+      (Functor.whiskeringRight X C₁ D₁|>.obj <|
         (functorOfTransform T L T' L').obj ψ)
-      (transform _ ψ)
+      (transform X|>.obj ψ)
       (functorEquiv T' L' R' B' X).functor where
   iso :=
     NatIso.ofComponents
@@ -433,12 +433,14 @@ instance functorEquivFunctorWhiskeringFunctorOfTransformObjSquare
           ext x
           haveI :=
             R'.map (functorEquiv T' L' R' B' C₁|>.counitIso.inv.app
-              (transform C₁ ψ|>.obj <|ofSquare T L R B)|>.fst.app (J.obj x)) ≫=
+              (transform C₁|>.obj ψ|>.obj <|ofSquare T L R B)|>.fst.app <|
+                J.obj x) ≫=
               (congr_app (functorEquiv T' L' R' B' C₁|>.counitIso.hom.app <|
-                (CatCommSqOver.transform _ ψ).obj (.ofSquare T L R B)).w <|
-                  J.obj x) =≫
+                CatCommSqOver.transform _|>.obj ψ|>.obj <|
+                    .ofSquare T L R B).w <| J.obj x) =≫
               B'.map (functorEquiv T' L' R' B' C₁|>.counitIso.inv.app
-                (transform C₁ ψ|>.obj <| ofSquare T L R B)|>.snd.app (J.obj x))
+                (transform C₁|>.obj ψ|>.obj <| ofSquare T L R B)|>.snd.app <|
+                  J.obj x)
           dsimp at this
           simp only [Category.comp_id, Category.id_comp, Category.assoc] at this
           simp only [← Functor.map_comp_assoc, ← Functor.map_comp] at this
@@ -447,15 +449,16 @@ instance functorEquivFunctorWhiskeringFunctorOfTransformObjSquare
           simpa using this.symm ))
       (fun {_ _} f ↦ by ext x <;> simp)
 
-/-- The horizontal inverse of `functorEquivFunctorWhiskeringFunctorOfTransformSquare`. -/
+/-- The horizontal inverse of
+`functorEquivFunctorWhiskeringFunctorOfTransformObjSquare`. -/
 @[simps! -isSimp]
-instance functorEquivInverseTransformSquare
+instance functorEquivInverseTransformObjSquare
     (X : Type u₁₀) [Category.{v₁₀} X]
     (ψ : CatCospanTransform R B R' B') :
     CatCommSq
       (functorEquiv T L R B X).inverse
-      (transform _ ψ)
-      (Functor.whiskeringRight X _ _|>.obj
+      (transform X|>.obj ψ)
+      (Functor.whiskeringRight X C₁ D₁|>.obj
         (functorOfTransform T L T' L'|>.obj ψ))
       (functorEquiv T' L' R' B' X).inverse :=
   CatCommSq.hInv (functorEquiv T L R B X) _ _ (functorEquiv T' L' R' B' X)
@@ -494,7 +497,7 @@ variable (R B) in
 def functorOfTransformObjId :
     (functorOfTransform T L T L).obj (.id R B) ≅ 𝟭 C₁ :=
   (functorEquiv T L R B C₁|>.inverse.mapIso <|
-    (transformId _ R B).app (.ofSquare T L R B)) ≪≫
+    (transformObjId C₁ R B).app (.ofSquare T L R B)) ≪≫
     (functorEquivInverseOfSquareIso T L R B)
 
 variable
@@ -510,9 +513,9 @@ def functorOfTransformObjComp
     (functorOfTransform T L T' L').obj ψ ⋙
       (functorOfTransform T' L' T'' L'').obj ψ' :=
   (functorEquiv T'' L'' R'' B'' C₁|>.inverse.mapIso <|
-    (transformComp _ ψ ψ').app (.ofSquare T L R B)) ≪≫
-    (functorEquivInverseTransformSquare _ _ _ _ _ ψ').iso.symm.app
-      (transform _ ψ|>.obj (.ofSquare T L R B))
+    transformObjComp _ ψ ψ'|>.app <| .ofSquare T L R B) ≪≫
+    (functorEquivInverseTransformObjSquare _ _ _ _ _ ψ').iso.symm.app
+      (transform _|>.obj ψ|>.obj <| .ofSquare T L R B)
 
 section functorOfTransformObjComp
 omit [CatPullbackSquare T L R B]
