@@ -121,15 +121,15 @@ def str (X : Compactum) : Ultrafilter X → X :=
 
 /-- The monadic join. -/
 def join (X : Compactum) : Ultrafilter (Ultrafilter X) → Ultrafilter X :=
-  (β ).μ.app _
+  (β).μ.app _
 
 /-- The inclusion of `X` into `Ultrafilter X`. -/
 def incl (X : Compactum) : X → Ultrafilter X :=
-  (β ).η.app _
+  (β).η.app _
 
 @[simp]
 theorem str_incl (X : Compactum) (x : X) : X.str (X.incl x) = x := by
-  change ((β ).η.app _ ≫ X.a) _ = _
+  change ((β).η.app _ ≫ X.a) _ = _
   rw [Monad.Algebra.unit]
   rfl
 
@@ -143,7 +143,7 @@ theorem str_hom_commute (X Y : Compactum) (f : X ⟶ Y) (xs : Ultrafilter X) :
 @[simp]
 theorem join_distrib (X : Compactum) (uux : Ultrafilter (Ultrafilter X)) :
     X.str (X.join uux) = X.str (map X.str uux) := by
-  change ((β ).μ.app _ ≫ X.a) _ = _
+  change ((β).μ.app _ ≫ X.a) _ = _
   rw [Monad.Algebra.assoc]
   rfl
 
@@ -469,9 +469,9 @@ monadicity.
 noncomputable instance CompHaus.forgetCreatesLimits : CreatesLimits (forget CompHaus) := by
   let e : forget CompHaus ≅ compactumToCompHaus.inv ⋙ Compactum.forget :=
     (((forget CompHaus).leftUnitor.symm ≪≫
-    isoWhiskerRight compactumToCompHaus.asEquivalence.symm.unitIso (forget CompHaus)) ≪≫
+    Functor.isoWhiskerRight compactumToCompHaus.asEquivalence.symm.unitIso (forget CompHaus)) ≪≫
     compactumToCompHaus.inv.associator compactumToCompHaus (forget CompHaus)) ≪≫
-    isoWhiskerLeft _ compactumToCompHausCompForget
+    Functor.isoWhiskerLeft _ compactumToCompHausCompForget
   exact createsLimitsOfNatIso e.symm
 
 noncomputable instance Profinite.forgetCreatesLimits : CreatesLimits (forget Profinite) := by

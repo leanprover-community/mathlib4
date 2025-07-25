@@ -76,7 +76,7 @@ private lemma ineq [ExistsAddOfLE β] {a₀ a₁ b₀ b₁ c₀ c₁ d₀ d₁ :
     _ = a₀ * b₀ + (a₀ * b₁ + a₁ * b₀) + a₁ * b₁ := by ring
     _ ≤ c₀ * d₀ + (c₀ * d₁ + c₁ * d₀) + c₁ * d₁ := add_le_add_three h₀₀ ?_ h₁₁
     _ = (c₀ + c₁) * (d₀ + d₁) := by ring
-  obtain hcd | hcd := (mul_nonneg hc₀ hd₁).eq_or_gt
+  obtain hcd | hcd := (mul_nonneg hc₀ hd₁).eq_or_lt'
   · rw [hcd] at h₀₁ h₁₀
     rw [h₀₁.antisymm, h₁₀.antisymm, add_zero] <;> positivity
   refine le_of_mul_le_mul_right ?_ hcd
@@ -134,7 +134,7 @@ lemma collapse_nonneg (hf : 0 ≤ f) : 0 ≤ collapse 𝒜 a f := fun _s ↦ sum
 
 lemma collapse_modular [ExistsAddOfLE β]
     (hu : a ∉ u) (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 ≤ f₃) (h₄ : 0 ≤ f₄)
-    (h : ∀ ⦃s⦄, s ⊆ insert a u → ∀ ⦃t⦄, t ⊆ insert a u →  f₁ s * f₂ t ≤ f₃ (s ∩ t) * f₄ (s ∪ t))
+    (h : ∀ ⦃s⦄, s ⊆ insert a u → ∀ ⦃t⦄, t ⊆ insert a u → f₁ s * f₂ t ≤ f₃ (s ∩ t) * f₄ (s ∪ t))
     (𝒜 ℬ : Finset (Finset α)) :
     ∀ ⦃s⦄, s ⊆ u → ∀ ⦃t⦄, t ⊆ u → collapse 𝒜 a f₁ s * collapse ℬ a f₂ t ≤
       collapse (𝒜 ⊼ ℬ) a f₃ (s ∩ t) * collapse (𝒜 ⊻ ℬ) a f₄ (s ∪ t) := by

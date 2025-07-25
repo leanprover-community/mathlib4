@@ -118,7 +118,7 @@ theorem map_refl : s.map (Embedding.refl _) = s :=
 
 @[simp]
 theorem map_cast_heq {α β} (h : α = β) (s : Finset α) :
-    HEq (s.map (Equiv.cast h).toEmbedding) s := by
+    s.map (Equiv.cast h).toEmbedding ≍ s := by
   subst h
   simp
 
@@ -222,6 +222,10 @@ theorem map_union [DecidableEq α] [DecidableEq β] {f : α ↪ β} (s₁ s₂ :
 theorem map_inter [DecidableEq α] [DecidableEq β] {f : α ↪ β} (s₁ s₂ : Finset α) :
     (s₁ ∩ s₂).map f = s₁.map f ∩ s₂.map f :=
   mod_cast Set.image_inter f.injective (s := s₁) (t := s₂)
+
+theorem map_sdiff [DecidableEq α] [DecidableEq β] {f : α ↪ β} (s₁ s₂ : Finset α) :
+    (s₁ \ s₂).map f = s₁.map f \ s₂.map f :=
+  mod_cast Set.image_diff f.injective (s := s₁) (t := s₂)
 
 @[simp]
 theorem map_singleton (f : α ↪ β) (a : α) : map f {a} = {f a} :=

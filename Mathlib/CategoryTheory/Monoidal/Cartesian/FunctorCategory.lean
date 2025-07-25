@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
+import Mathlib.CategoryTheory.Monoidal.Types.Basic
 
 /-!
 # Functor categories have chosen finite products
@@ -17,13 +18,17 @@ namespace CategoryTheory
 
 open Limits MonoidalCategory Category CartesianMonoidalCategory
 
-variable (J C : Type*) [Category J] [Category C] [CartesianMonoidalCategory C]
+universe v
+variable {J C D E : Type*} [Category J] [Category C] [Category D] [Category E]
+  [CartesianMonoidalCategory C] [CartesianMonoidalCategory E]
 
 namespace Functor
 
+variable (J C) in
 /-- The chosen terminal object in `J ⥤ C`. -/
 abbrev chosenTerminal : J ⥤ C := (Functor.const J).obj (𝟙_ C)
 
+variable (J C) in
 /-- The chosen terminal object in `J ⥤ C` is terminal. -/
 def chosenTerminalIsTerminal : IsTerminal (chosenTerminal J C) :=
   evaluationJointlyReflectsLimits _
@@ -31,7 +36,6 @@ def chosenTerminalIsTerminal : IsTerminal (chosenTerminal J C) :=
 
 section
 
-variable {J C}
 variable (F₁ F₂ : J ⥤ C)
 
 /-- The chosen binary product on `J ⥤ C`. -/
@@ -69,8 +73,6 @@ instance cartesianMonoidalCategory : CartesianMonoidalCategory (J ⥤ C) :=
 namespace Monoidal
 
 open CartesianMonoidalCategory
-
-variable {J C}
 
 @[simp]
 lemma tensorObj_obj (F₁ F₂ : J ⥤ C) (j : J) : (F₁ ⊗ F₂).obj j = (F₁.obj j) ⊗ (F₂.obj j) := rfl
@@ -166,6 +168,25 @@ instance {K : Type*} [Category K] [HasColimitsOfShape K C]
   haveI : tensorLeft F ⋙ (evaluation J C).obj k ≅ (evaluation J C).obj k ⋙ tensorLeft (F.obj k) :=
     NatIso.ofComponents (fun _ ↦ Iso.refl _)
   exact preservesColimitsOfShape_of_natIso this.symm
+
+/-- A finite-products-preserving functor distributes over the tensor product of functors. -/
+@[simps!]
+noncomputable def tensorObjComp (F G : D ⥤ C) (H : C ⥤ E) [PreservesFiniteProducts H] :
+    (F ⊗ G) ⋙ H ≅ (F ⋙ H) ⊗ (G ⋙ H) :=
+  NatIso.ofComponents (fun X ↦ prodComparisonIso H (F.obj X) (G.obj X)) fun {X Y} f ↦ by
+    dsimp; ext <;> simp [← Functor.map_comp]
+
+/-- A tensor product of representable functors is representable. -/
+@[simps]
+protected def RepresentableBy.tensorObj {F : Cᵒᵖ ⥤ Type v} {G : Cᵒᵖ ⥤ Type v} {X Y : C}
+    (h₁ : F.RepresentableBy X) (h₂ : G.RepresentableBy Y) : (F ⊗ G).RepresentableBy (X ⊗ Y) where
+  homEquiv {I} := homEquivToProd.trans (h₁.homEquiv.prodCongr h₂.homEquiv)
+  homEquiv_comp {I W} f g := by
+    refine Prod.ext ?_ ?_
+    · change h₁.homEquiv ((f ≫ g) ≫ fst X Y) = F.map f.op (h₁.homEquiv (g ≫ fst X Y))
+      simp [h₁.homEquiv_comp]
+    · change h₂.homEquiv ((f ≫ g) ≫ snd X Y) = G.map f.op (h₂.homEquiv (g ≫ snd X Y))
+      simp [h₂.homEquiv_comp]
 
 end Monoidal
 

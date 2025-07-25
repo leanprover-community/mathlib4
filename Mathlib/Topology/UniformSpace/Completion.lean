@@ -358,6 +358,10 @@ theorem coe_injective [T0Space α] : Function.Injective ((↑) : α → Completi
 
 variable {α}
 
+@[simp]
+lemma coe_inj [T0Space α] {a b : α} : (a : Completion α) = b ↔ a = b :=
+  (coe_injective _).eq_iff
+
 theorem isDenseInducing_coe : IsDenseInducing ((↑) : α → Completion α) :=
   { (isUniformInducing_coe α).isInducing with dense := denseRange_coe }
 

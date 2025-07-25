@@ -60,8 +60,6 @@ binary tensor product in `LinearAlgebra/TensorProduct.lean`.
 multilinear, tensor, tensor product
 -/
 
-suppress_compilation
-
 open Function
 
 section Semiring
@@ -103,7 +101,6 @@ def PiTensorProduct : Type _ :=
 
 variable {R}
 
-unsuppress_compilation in
 /-- This enables the notation `⨂[R] i : ι, s i` for the pi tensor product `PiTensorProduct`,
 given an indexed family of types `s : ι → Type*`. -/
 scoped[TensorProduct] notation3:100"⨂["R"] "(...)", "r:(scoped f => PiTensorProduct R f) => r
@@ -281,7 +278,6 @@ def tprod : MultilinearMap R s (⨂[R] i, s i) where
   map_update_smul' {_ f} i r x := by
     rw [smul_tprodCoeff', ← smul_tprodCoeff (1 : R) _ i, update_idem, update_self]
 
-unsuppress_compilation in
 @[inherit_doc tprod]
 notation3:100 "⨂ₜ["R"] "(...)", "r:(scoped f => tprod R f) => r
 
@@ -687,12 +683,7 @@ variable (s) in
 def reindex (e : ι ≃ ι₂) : (⨂[R] i : ι, s i) ≃ₗ[R] ⨂[R] i : ι₂, s (e.symm i) :=
   let f := domDomCongrLinearEquiv' R R s (⨂[R] (i : ι₂), s (e.symm i)) e
   let g := domDomCongrLinearEquiv' R R s (⨂[R] (i : ι), s i) e
-  #adaptation_note /-- v4.7.0-rc1
-  An alternative to the last two proofs would be `aesop (simp_config := {zetaDelta := true})`
-  or a wrapper macro to that effect. -/
-  LinearEquiv.ofLinear (lift <| f.symm <| tprod R) (lift <| g <| tprod R)
-    (by aesop (add norm simp [f, g]))
-    (by aesop (add norm simp [f, g]))
+  LinearEquiv.ofLinear (lift <| f.symm <| tprod R) (lift <| g <| tprod R) (by aesop) (by aesop)
 
 end
 
