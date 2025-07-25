@@ -782,10 +782,10 @@ lemma functorOfTransform_map_associator_inv
         functorOfTransform_map_associator T L T' L' T'' L'' T''' L''' ψ φ τ
 
 end
--- #exit
+
 /-- An adjunction of categorical cospans induce an adjunction between the
 functors induced on the categorical pullbacks -/
-@[simps!]
+@[simps]
 def adjunctionOfCatCospanAdjunction (𝔄 : CatCospanAdjunction R B R' B') :
     (functorOfTransform T L T' L').obj 𝔄.leftAdjoint ⊣
     (functorOfTransform T' L' T L).obj 𝔄.rightAdjoint where
@@ -852,29 +852,30 @@ def adjunctionOfCatCospanAdjunction (𝔄 : CatCospanAdjunction R B R' B') :
     simp only [Category.id_comp] at this
     exact this
 
--- /-- A `CatCospanEquivalence` induces an equivalence between the categorical
--- pullbacks. This fully realizes the fact that the categorical pullback respects
--- equivalences of categories in all of its arguments.
--- Note that the corresponding fact is *not* true for the strict pullback of
--- categories (i.e the pullback in the `1`-category `Cat`), and is the principal
--- motivation behind using the categorical pullback as a replacement for the strict
--- pullback. -/
--- @[simps!]
--- def equivalenceOfCatCospanEquivalence (E : CatCospanEquivalence F G F' G') :
---     F ⊡ G ≌ F' ⊡ G' where
---   functor := functorOfTransform E.transform
---   inverse := functorOfTransform E.inverse
---   unitIso :=
---     (functorOfTransformId _ _).symm ≪≫
---       functorOfTransform₂Iso E.unitIso ≪≫
---       (functorOfTransformComp _ _)
---   counitIso :=
---     (functorOfTransformComp _ _).symm ≪≫
---       functorOfTransform₂Iso E.counitIso ≪≫
---       (functorOfTransformId _ _)
---   functor_unitIso_comp :=
---     (adjunctionOfCatCospanAdjunction
---       E.toCatCospanAdjunction).left_triangle_components
+/-- A `CatCospanEquivalence` induces an equivalence between the top left corners
+of categorical pullback squares.
+This fully realizes the fact that the notion of categorical pullback respects
+equivalences of categories in all of its arguments.
+Note that the corresponding fact is *not* true for the strict pullback of
+categories (i.e the pullback in the `1`-category `Cat`) and is the principal
+motivation behind using categorical pullbacks as a replacement for the strict
+pullback. -/
+@[simps]
+def equivalenceOfCatCospanEquivalence (E : CatCospanEquivalence R B R' B') :
+    C₁ ≌ D₁ where
+  functor := functorOfTransform T L T' L'|>.obj E.transform
+  inverse := functorOfTransform T' L' T L|>.obj E.inverse
+  unitIso :=
+    (functorOfTransformObjId _ _ _ _).symm ≪≫
+      (functorOfTransform _ _ _ _|>.mapIso E.unitIso) ≪≫
+      (functorOfTransformObjComp _ _ _ _ _ _ _ _)
+  counitIso :=
+    (functorOfTransformObjComp _ _ _ _ _ _ _ _).symm ≪≫
+      (functorOfTransform _ _ _ _).mapIso E.counitIso ≪≫
+      (functorOfTransformObjId _ _ _ _)
+  functor_unitIso_comp :=
+    (adjunctionOfCatCospanAdjunction _ _ _ _
+      E.toCatCospanAdjunction).left_triangle_components
 
 end Pseudofunctoriality
 
