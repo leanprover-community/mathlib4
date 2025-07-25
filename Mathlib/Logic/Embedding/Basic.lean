@@ -335,11 +335,6 @@ noncomputable def arrowCongrLeft {α : Sort u} {β : Sort v} {γ : Sort w} [Inha
   ⟨fun f => extend e f default, fun f₁ f₂ h =>
     funext fun x => by simpa only [e.injective.extend_apply] using congr_fun h (e x)⟩
 
-theorem arrowCongrLeft_apply_equiv {α : Sort u} {β : Sort v} {γ : Sort w} [Inhabited γ] (e : α ≃ β)
-    (f : α → γ) (b : β) :
-    (arrowCongrLeft e f) b = f (e.symm b) := by
-  simp
-
 @[simp]
 theorem arrowCongrLeft_refl {α : Sort u} {γ : Sort w} [Inhabited γ] :
     (Function.Embedding.refl α).arrowCongrLeft (γ := γ) = .refl _ := by
