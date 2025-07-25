@@ -95,12 +95,56 @@ end OrderedRing
 
 section LinearOrderedRing
 
+section
+
+variable [Ring k] [LinearOrder k] [IsOrderedRing k]
+  [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [Module k E] [OrderedSMul k E]
+  {a b : E} {r r' : k}
+
+theorem lineMap_le_lineMap_iff_of_lt' (h : a < b) : lineMap a b r ≤ lineMap a b r' ↔ r ≤ r' := by
+  simp only [lineMap_apply_module']
+  rw [add_le_add_iff_right, smul_le_smul_iff_of_pos_right (sub_pos.mpr h)]
+
+theorem left_le_lineMap_iff_nonneg (h : a < b) : a ≤ lineMap a b r ↔ 0 ≤ r := by
+  rw [← lineMap_le_lineMap_iff_of_lt' h, lineMap_apply_zero,]
+
+theorem lineMap_le_left_iff_nonpos (h : a < b) : lineMap a b r ≤ a ↔ r ≤ 0 := by
+  rw [← lineMap_le_lineMap_iff_of_lt' h, lineMap_apply_zero]
+
+theorem lineMap_le_right_iff_le_one (h : a < b) : lineMap a b r ≤ b ↔ r ≤ 1 := by
+  rw [← lineMap_le_lineMap_iff_of_lt' h, lineMap_apply_one]
+
+theorem right_le_lineMap_iff_one_le (h : a < b) : b ≤ lineMap a b r ↔ 1 ≤ r  := by
+  rw [← lineMap_le_lineMap_iff_of_lt' h, lineMap_apply_one]
+
+theorem lineMap_lt_lineMap_iff_of_lt' (h : a < b) : lineMap a b r < lineMap a b r' ↔ r < r' := by
+  simp only [lineMap_apply_module']
+  rw [add_lt_add_iff_right, smul_lt_smul_iff_of_pos_right (sub_pos.mpr h)]
+
+theorem left_lt_lineMap_iff_pos (h : a < b) : a < lineMap a b r ↔ 0 < r := by
+  rw [← lineMap_lt_lineMap_iff_of_lt' h, lineMap_apply_zero]
+
+theorem lineMap_lt_left_iff_neg (h : a < b) : lineMap a b r < a ↔ r < 0 := by
+  rw [← lineMap_lt_lineMap_iff_of_lt' h, lineMap_apply_zero]
+
+theorem lineMap_lt_right_iff_lt_one (h : a < b) : lineMap a b r < b ↔ r < 1 := by
+  rw [← lineMap_lt_lineMap_iff_of_lt' h, lineMap_apply_one]
+
+theorem right_lt_lineMap_iff_one_lt (h : a < b) : b < lineMap a b r ↔ 1 < r  := by
+  rw [← lineMap_lt_lineMap_iff_of_lt' h, lineMap_apply_one]
+
+end
+
+section
+
 variable [Ring k] [LinearOrder k] [IsStrictOrderedRing k]
   [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [Module k E] [OrderedSMul k E]
   [Invertible (2 : k)] {a a' b b' : E} {r r' : k}
 
 theorem midpoint_le_midpoint (ha : a ≤ a') (hb : b ≤ b') : midpoint k a b ≤ midpoint k a' b' :=
   lineMap_mono_endpoints ha hb (invOf_nonneg.2 zero_le_two) <| invOf_le_one one_le_two
+
+end
 
 end LinearOrderedRing
 
@@ -144,22 +188,6 @@ theorem right_le_lineMap_iff_le (h : r < 1) : b ≤ lineMap a b r ↔ b ≤ a :=
 
 @[simp]
 theorem right_le_midpoint : b ≤ midpoint k a b ↔ b ≤ a := right_le_lineMap_iff_le two_inv_lt_one
-
-theorem lineMap_le_lineMap_iff_of_lt' (h : a < b) : lineMap a b r ≤ lineMap a b r' ↔ r ≤ r' := by
-  simp only [lineMap_apply_module']
-  rw [add_le_add_iff_right, smul_le_smul_iff_of_pos_right (sub_pos.mpr h)]
-
-theorem left_le_lineMap_iff_nonneg (h : a < b) : a ≤ lineMap a b r ↔ 0 ≤ r :=
-  Iff.trans (by rw [lineMap_apply_zero]) (lineMap_le_lineMap_iff_of_lt' h)
-
-theorem lineMap_le_left_iff_nonpos (h : a < b) : lineMap a b r ≤ a ↔ r ≤ 0 :=
-  Iff.trans (by rw [lineMap_apply_zero]) (lineMap_le_lineMap_iff_of_lt' h)
-
-theorem lineMap_le_right_iff_le_one (h : a < b) : lineMap a b r ≤ b ↔ r ≤ 1 :=
-  Iff.trans (by rw [lineMap_apply_one]) (lineMap_le_lineMap_iff_of_lt' h)
-
-theorem right_le_lineMap_iff_one_le (h : a < b) : b ≤ lineMap a b r ↔ 1 ≤ r  :=
-  Iff.trans (by rw [lineMap_apply_one]) (lineMap_le_lineMap_iff_of_lt' h)
 
 end
 
