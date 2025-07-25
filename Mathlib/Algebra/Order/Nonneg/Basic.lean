@@ -201,7 +201,7 @@ variable [Semiring α] [PartialOrder α] [ZeroLEOneClass α]
 
 instance semiring : Semiring { x : α // 0 ≤ x } :=
   Subtype.coe_injective.semiring _ Nonneg.coe_zero Nonneg.coe_one
-    (fun _ _ => rfl) (fun _ _=> rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ => rfl
 
 instance monoidWithZero : MonoidWithZero { x : α // 0 ≤ x } := by infer_instance

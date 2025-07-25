@@ -153,7 +153,7 @@ namespace Augmented
 namespace StandardSimplex
 
 /-- When `[Zero X]`, the shift of a map `f : Fin n → X`
-is a map `Fin (n+1) → X` which sends `0` to `0` and `i.succ` to `f i`. -/
+is a map `Fin (n + 1) → X` which sends `0` to `0` and `i.succ` to `f i`. -/
 def shiftFun {n : ℕ} {X : Type*} [Zero X] (f : Fin n → X) (i : Fin (n + 1)) : X :=
   Matrix.vecCons 0 f i
 

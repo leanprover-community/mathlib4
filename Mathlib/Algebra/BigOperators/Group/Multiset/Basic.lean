@@ -129,7 +129,7 @@ lemma _root_.map_multiset_prod [FunLike F M N] [MonoidHomClass F M N] (f : F) (s
 
 @[to_additive]
 lemma _root_.map_multiset_ne_zero_prod [FunLike F M N] [MulHomClass F M N] (f : F)
-    {s : Multiset M} (hs : s ≠ 0):
+    {s : Multiset M} (hs : s ≠ 0) :
     f s.prod = (s.map f).prod := (s.prod_hom_ne_zero hs f).symm
 
 @[to_additive]

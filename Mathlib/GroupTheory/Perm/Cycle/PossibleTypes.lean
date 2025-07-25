@@ -106,10 +106,7 @@ theorem Equiv.Perm.exists_with_cycleType_iff {m : Multiset ℕ} :
       ·-- length
         rw [List.toFinset_card_of_nodup (hp_nodup x hx)]
       · -- length >= 1
-        intro a h
-        apply Nat.not_succ_le_self 1
-        conv_rhs => rw [← List.length_singleton (a := a)]; rw [← h]
-        exact hp2 x hx
+        grind
     · -- cycles
       intro g
       rw [List.mem_map]
