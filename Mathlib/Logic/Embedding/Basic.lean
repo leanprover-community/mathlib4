@@ -359,7 +359,7 @@ theorem trans_arrowCongrLeft {α₁ : Sort u} {α₂ : Sort v} {α₃ : Sort x} 
     e₁₂.arrowCongrLeft.trans e₂₃.arrowCongrLeft = (e₁₂.trans e₂₃).arrowCongrLeft (γ := γ) := by
   ext f a
   simp only [trans_apply, arrowCongrLeft_apply, Pi.default_def, coe_trans]
-  rw [Injective.extend_comp _ e₁₂.injective _ e₂₃.injective, Function.comp_def]
+  rw [e₁₂.injective.extend_comp e₂₃.injective, Function.comp_def]
 
 /-- Restrict both domain and codomain of an embedding. -/
 protected def subtypeMap {α β} {p : α → Prop} {q : β → Prop} (f : α ↪ β)

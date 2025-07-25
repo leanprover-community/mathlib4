@@ -721,8 +721,8 @@ theorem extend_id (g : α → γ) (e' : α → γ) :
     extend id g e' = g :=
   funext <| injective_id.extend_apply g _
 
-theorem Injective.extend_comp {α₁ α₂ α₃ : Sort*} (f₁₂ : α₁ → α₂) (h₁₂ : Function.Injective f₁₂)
-    (f₂₃ : α₂ → α₃) (h₂₃ : Function.Injective f₂₃) (g : α₁ → γ) (e' : α₃ → γ) :
+theorem Injective.extend_comp {α₁ α₂ α₃ : Sort*} {f₁₂ : α₁ → α₂} (h₁₂ : Function.Injective f₁₂)
+    {f₂₃ : α₂ → α₃} (h₂₃ : Function.Injective f₂₃) (g : α₁ → γ) (e' : α₃ → γ) :
     extend (f₂₃ ∘ f₁₂) g e' = extend f₂₃ (extend f₁₂ g (e' ∘ f₂₃)) e' := by
   ext a
   by_cases h₃ : ∃ b, f₂₃ b = a
