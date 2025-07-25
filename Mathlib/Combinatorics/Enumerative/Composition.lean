@@ -722,11 +722,7 @@ theorem map_length_splitWrtCompositionAux {ns : List ℕ} :
     ∀ {l : List α}, ns.sum ≤ l.length → map length (l.splitWrtCompositionAux ns) = ns := by
   induction ns with
   | nil => simp [splitWrtCompositionAux]
-  | cons n ns IH =>
-    intro l h; simp only [sum_cons] at h
-    have := le_trans (Nat.le_add_right _ _) h
-    simp only [splitWrtCompositionAux_cons]
-    grind
+  | cons n ns IH => grind [splitWrtCompositionAux_cons]
 
 /-- When one splits a list along a composition `c`, the lengths of the sublists thus created are
 given by the block sizes in `c`. -/

@@ -660,10 +660,7 @@ theorem map_isPath_of_injective (hinj : Function.Injective f) (hp : p.IsPath) :
 protected theorem IsPath.of_map {f : G →g G'} (hp : (p.map f).IsPath) : p.IsPath := by
   induction p with
   | nil => simp
-  | cons _ _ ih =>
-    rw [map_cons, Walk.cons_isPath_iff, support_map] at hp
-    rw [Walk.cons_isPath_iff]
-    grind
+  | cons _ _ ih => grind [map_cons, Walk.cons_isPath_iff, support_map]
 
 theorem map_isPath_iff_of_injective (hinj : Function.Injective f) : (p.map f).IsPath ↔ p.IsPath :=
   ⟨IsPath.of_map, map_isPath_of_injective hinj⟩
