@@ -10,7 +10,6 @@ import Lean.Server.InfoUtils
 -- this file has a valid copyright header and module docstring.
 import Mathlib.Tactic.Linter.Header
 import Mathlib.Tactic.DeclarationNames
-import Batteries.Data.Array
 
 /-!
 ## Style linters
@@ -641,6 +640,14 @@ def mergeRange (x y : String.Range) : String.Range where
   start := min x.start y.start
   stop := max x.stop y.stop
 
+/--
+`O(|xs| + |ys|)`. Merge arrays `xs` and `ys`, which must be sorted according to `compare` and must
+not contain duplicates. Equal elements are merged using `merge`. If `merge` respects the order
+(i.e. for all `x`, `y`, `y'`, `z`, if `x < y < z` and `x < y' < z` then `x < merge y y' < z`)
+then the resulting array is again sorted.
+
+Copy from `Array.mergeDedupWith` in `Batteries/Data/Array/Merge.lean`.
+-/
 def mergeDedupWith {α} [ord : Ord α] (xs ys : Array α) (merge : α → α → α) : Array α :=
   go (Array.mkEmpty (xs.size + ys.size)) 0 0
 where
@@ -663,7 +670,7 @@ where
 Merge an array of `Ranges`' into one `Ranges`.
 -/
 def mergeRanges (ranges : Array Ranges) : Ranges :=
-  ranges.foldl (·.mergeDedupWith (ord := ⟨compareRange⟩) · mergeRange) #[]
+  ranges.foldl (mergeDedupWith (ord := ⟨compareRange⟩) (merge := mergeRange)) #[]
 
 /--
 Determine whether `range : String.Range` overlaps of `ranges : Ranges`.
