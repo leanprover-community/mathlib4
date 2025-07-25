@@ -314,7 +314,7 @@ lemma div_two_mul_two_add_one_of_odd (h : Odd n) : n / 2 * 2 + 1 = n := by
 lemma one_add_div_two_mul_two_of_odd (h : Odd n) : 1 + n / 2 * 2 = n := by
   rw [← odd_iff.mp h, mod_add_div']
 
-lemma Even_mul_add_one (m : ℕ) : Even (m * (m + 1)) := by
+lemma even_mul_add_one (m : ℕ) : Even (m * (m + 1)) := by
   rcases (even_or_odd m) with ch | ch
   · exact even_mul_succ_self m
   · exact even_mul_succ_self m
