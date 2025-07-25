@@ -29,8 +29,9 @@ namespace Set
 @[to_additive]
 theorem IsPWO.smul [Preorder G] [Preorder P] [SMul G P] [IsOrderedSMul G P]
     {s : Set G} {t : Set P} (hs : s.IsPWO) (ht : t.IsPWO) : IsPWO (s • t) := by
-  rw [← @image_smul_prod]
-  exact (hs.prod ht).image_of_monotone (monotone_fst.smul monotone_snd)
+  rw [← image_smul_prod]
+  exact (hs.prod ht).image_of_monotone <| monotone_prod_iff.mpr
+    ⟨fun a ↦ Covariant.monotone_of_const a, fun b ↦ Monotone.smul (fun ⦃a b⦄ a ↦ a) monotone_const⟩
 
 @[to_additive]
 theorem IsWF.smul [LinearOrder G] [LinearOrder P] [SMul G P] [IsOrderedSMul G P] {s : Set G}
