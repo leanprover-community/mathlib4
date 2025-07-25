@@ -546,6 +546,10 @@ instance instCommGroup [CommGroup β] : CommGroup (α →ₛ β) :=
   Function.Injective.commGroup (fun f => show α → β from f) coe_injective coe_one coe_mul coe_inv
     coe_div coe_pow coe_zpow
 
+instance [Monoid K] [MulAction K β] : MulAction K (α →ₛ β) where
+  one_smul _ := ext fun _ ↦ one_smul ..
+  mul_smul _ _ _ := ext fun _ ↦ mul_smul ..
+
 instance instModule [Semiring K] [AddCommMonoid β] [Module K β] : Module K (α →ₛ β) :=
   Function.Injective.module K ⟨⟨fun f => show α → β from f, coe_zero⟩, coe_add⟩
     coe_injective coe_smul
@@ -558,11 +562,10 @@ lemma smul_const [SMul K β] (k : K) (b : β) :
 
 lemma one_eq_const_one [One β] : (1 : α →ₛ β) = const α 1 := rfl
 
-instance [NonUnitalNonAssocSemiring β] : NonUnitalNonAssocSemiring (α →ₛ β) where
-  left_distrib _ _ _ := ext fun _ ↦ left_distrib ..
-  right_distrib _ _ _ := ext fun _ ↦ right_distrib ..
-  zero_mul _ := ext fun _ ↦ zero_mul ..
-  mul_zero _ := ext fun _ ↦ mul_zero ..
+open Function in
+instance [NonUnitalNonAssocSemiring β] : NonUnitalNonAssocSemiring (α →ₛ β) :=
+  Injective.nonUnitalNonAssocSemiring (fun f : α →ₛ β ↦ ⇑f) SimpleFunc.coe_injective
+      rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 instance [NonAssocSemiring β] : NonAssocSemiring (α →ₛ β) where
   one_mul _ := ext fun _ ↦ one_mul ..
@@ -576,10 +579,6 @@ instance [Semiring β] : Semiring (α →ₛ β) where
 instance [NonUnitalRing β] : NonUnitalRing (α →ₛ β) where
 
 instance [Ring β] : Ring (α →ₛ β) where
-
-instance [Monoid K] [MulAction K β] : MulAction K (α →ₛ β) where
-  one_smul _ := ext fun _ ↦ one_smul ..
-  mul_smul _ _ _ := ext fun _ ↦ mul_smul ..
 
 instance [SMul K γ] [SMul γ β] [SMul K β] [IsScalarTower K γ β] : IsScalarTower K γ (α →ₛ β) where
   smul_assoc _ _ _ := ext fun _ ↦ smul_assoc ..
