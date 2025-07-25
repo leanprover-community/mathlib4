@@ -59,15 +59,11 @@ def SimplexCategory.homEquivOrderHom {a b : SimplexCategory} :
     (a ⟶ b) ≃ (Fin (a.len + 1) →o Fin (b.len + 1)) where
   toFun := Hom.toOrderHom
   invFun := Hom.mk
-  left_inv f := by ext; rfl
-  right_inv f := by ext; rfl
 
 def OrderHom.uliftMapIso {α β : Type*} [Preorder α] [Preorder β] :
     (ULift α →o ULift β) ≃ (α →o β) where
   toFun f := ⟨fun x ↦ (f ⟨x⟩).down, fun _ _ h ↦ f.monotone (by simpa)⟩
   invFun := OrderHom.uliftMap
-  left_inv f := by ext; rfl
-  right_inv f := by ext; rfl
 
 -- set_option pp.universes true
 
