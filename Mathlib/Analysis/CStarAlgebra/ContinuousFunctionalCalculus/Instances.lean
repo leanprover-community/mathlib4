@@ -417,9 +417,6 @@ theorem IsIdempotentElem.isSelfAdjoint_iff_isStarNormal {A : Type*} [Topological
     [NonUnitalContinuousFunctionalCalculus ℂ A IsStarNormal] {p : A} (hp : IsIdempotentElem p) :
     IsSelfAdjoint p ↔ IsStarNormal p := by
   refine ⟨fun h => h.isStarNormal, fun h =>
-    isSelfAdjoint_iff_isStarNormal_and_quasispectrumRestricts.mpr ⟨h, ?_⟩⟩
-  rw [quasispectrumRestricts_iff, Set.RightInvOn, Set.LeftInvOn]
-  refine ⟨fun x hx => ?_, congrFun rfl⟩
-  rcases hp.quasispectrum_subset hx with (h | h)
-  · simp [h]
-  · simp at h; simp [h]
+    isSelfAdjoint_iff_isStarNormal_and_quasispectrumRestricts.mpr
+    ⟨h, ⟨fun x hx => ?_, congrFun rfl⟩⟩⟩
+  rcases hp.quasispectrum_subset hx with (h | h) <;> simp [Set.mem_singleton_iff.mp h]
