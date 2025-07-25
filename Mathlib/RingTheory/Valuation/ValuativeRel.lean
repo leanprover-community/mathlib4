@@ -680,10 +680,38 @@ class ValuativeTopology (R : Type*) [CommRing R] [ValuativeRel R] [TopologicalSp
 
 namespace ValuativeRel
 
-variable
-  {R Γ : Type*} [CommRing R] [ValuativeRel R] [TopologicalSpace R]
-  [LinearOrderedCommGroupWithZero Γ]
-  (v : Valuation R Γ) [v.Compatible]
+variable {R Γ : Type*} [CommRing R] [ValuativeRel R] [LinearOrderedCommGroupWithZero Γ]
+  (v : Valuation R Γ)
+
+/-- Any valuation compatible with the valuative relation can be factored through
+the value group. -/
+noncomputable
+def ValueGroupWithZero.embed [h : v.Compatible] : ValueGroupWithZero R →*₀ Γ where
+  toFun := ValuativeRel.ValueGroupWithZero.lift (fun r s ↦ v r / v (s : R)) <| by
+    intro x y r s
+    simp only [h.rel_iff_le, map_mul, ← and_imp, ← le_antisymm_iff]
+    rw [div_eq_div_iff] <;> simp
+  map_zero' := by simp [ValueGroupWithZero.lift_zero]
+  map_one' := by simp
+  map_mul' _ _ := by
+    apply ValuativeRel.ValueGroupWithZero.lift_mul
+    field_simp
+
+@[simp]
+lemma ValueGroupWithZero.embed_valuation_apply (γ : ValueGroupWithZero R) :
+    embed (valuation R) γ = γ := by
+  obtain ⟨r, s, rfl⟩ := valuation_surjective γ
+  simp [embed]
+
+lemma ValueGroupWithZero.embed_strictMono [h : v.Compatible] : StrictMono (embed v) := by
+  intro a b h
+  obtain ⟨a, r, rfl⟩ := valuation_surjective a
+  obtain ⟨b, s, rfl⟩ := valuation_surjective b
+  simp only [map_div₀]
+  rw [div_lt_div_iff₀] at h ⊢
+  any_goals simp [zero_lt_iff]
+  rw [← map_mul, ← map_mul, (isEquiv (valuation R) v).lt_iff_lt] at h
+  simpa [embed] using h
 
 end ValuativeRel
 
@@ -715,101 +743,22 @@ def mapPosSubmonoid : posSubmonoid A →* posSubmonoid B where
   map_one' := by simp
   map_mul' := by simp
 
+variable (A) in
+instance compatible_comap_of_extension {Γ : Type*}
+    [LinearOrderedCommMonoidWithZero Γ] (w : Valuation B Γ) [w.Compatible] :
+    (w.comap (algebraMap A B)).Compatible := by
+  constructor
+  simp [← rel_iff_rel (A := A) (B := B), Valuation.Compatible.rel_iff_le (v := w)]
+
 variable (A B) in
 /-- The map on value groups-with-zero associated to the structure morphism of an algebra. -/
-def mapValueGroupWithZero : ValueGroupWithZero A →*₀ ValueGroupWithZero B where
-  toFun := ValueGroupWithZero.lift
-    (fun a u => ValueGroupWithZero.mk (algebraMap _ _ a) (mapPosSubmonoid _ _ u)) <| by
-      intro x y s t h1 h2
-      apply ValueGroupWithZero.sound <;>
-        simpa only [mapPosSubmonoid_apply_coe, ← (algebraMap A B).map_mul, rel_iff_rel]
-  map_zero' := by
-    apply ValueGroupWithZero.sound <;> simp
-  map_one' := by
-    apply ValueGroupWithZero.sound <;> simp
-  map_mul' x y := by
-    apply x.ind; apply y.ind
-    intro x s y t
-    simp
+def mapValueGroupWithZero : ValueGroupWithZero A →*₀ ValueGroupWithZero B :=
+  have := compatible_comap_of_extension A (valuation B)
+  ValueGroupWithZero.embed ((valuation B).comap (algebraMap A B))
 
 @[simp]
 lemma mapValueGroupWithZero_valuation (a : A) :
     mapValueGroupWithZero A B (valuation _ a) = valuation _ (algebraMap _ _ a) := by
-  apply ValueGroupWithZero.sound <;> simp
+  simp [mapValueGroupWithZero, ValueGroupWithZero.embed]
 
 end ValuativeExtension
-
-namespace ValuativeRel.ValueGroupWithZero
-
-variable {R Γ : Type*} [CommRing R] [ValuativeRel R] [LinearOrderedCommGroupWithZero Γ]
-  (v : Valuation R Γ)
-
-/-- Any valuation compatible with the valuative relation can be factored through
-the value group. -/
-noncomputable
-def unquot [h : v.Compatible] : ValuativeRel.ValueGroupWithZero R →*₀ Γ :=
-  ⟨⟨ValuativeRel.ValueGroupWithZero.lift (fun r s ↦ v r / v (s : R)) <| by
-    intro x y r s
-    simp only [h.rel_iff_le, map_mul, ← and_imp, ← le_antisymm_iff]
-    rw [div_eq_div_iff] <;> simp,
-    by simp [lift_zero]⟩,
-    by simp, by
-      intros
-      simp only
-      apply ValuativeRel.ValueGroupWithZero.lift_mul
-      field_simp⟩
-
-@[simp]
-lemma unquot_valuation_apply (γ : ValuativeRel.ValueGroupWithZero R) :
-    unquot (valuation R) γ = γ := by
-  obtain ⟨r, s, rfl⟩ := valuation_surjective γ
-  simp [unquot]
-
-lemma unquot_strictMono [h : v.Compatible] : StrictMono (unquot v) := by
-  intro a b h
-  obtain ⟨a, r, rfl⟩ := valuation_surjective a
-  obtain ⟨b, s, rfl⟩ := valuation_surjective b
-  simp only [map_div₀]
-  rw [div_lt_div_iff₀] at h ⊢
-  any_goals simp [zero_lt_iff]
-  rw [← map_mul, ← map_mul, (isEquiv (valuation R) v).lt_iff_lt] at h
-  simpa [unquot] using h
-
-end ValuativeRel.ValueGroupWithZero
-
-namespace ValuativeRel
-
-variable {R : Type} [CommRing R] [ValuativeRel R]
-
-lemma IsRankLeOne.of_compatible_nnreal (v : Valuation R NNReal) [v.Compatible] :
-    IsRankLeOne R where
-  nonempty := ⟨⟨ValueGroupWithZero.unquot v, ValueGroupWithZero.unquot_strictMono v⟩⟩
-
-open WithZero
-lemma IsRankLeOne.of_compatible_withZeroMulInt (v : Valuation R ℤᵐ⁰) [v.Compatible] :
-    ValuativeRel.IsRankLeOne R := by
-  let e : ℤᵐ⁰ →*₀ NNReal := {
-    toFun := recZeroCoe 0 (fun x ↦ 2 ^ (log (x : ℤᵐ⁰)))  -- the base doesn't matter
-    map_zero' := by simp
-    map_one' := by simp
-    map_mul' := by
-      simp only [«forall», mul_zero, recZeroCoe_zero, recZeroCoe_coe, Multiplicative.forall,
-        true_and, zero_mul, implies_true]
-      intro x y
-      have : exp (x + y) = unzero (x := (exp (x + y))) exp_ne_zero := rfl
-      rw [← exp, ← exp, ← exp_add, this, recZeroCoe_coe, unzero_coe, ← exp, ← NNReal.coe_inj]
-      push_cast
-      simp [zpow_add₀]
-  }
-  have he : StrictMono e := by
-    simp [StrictMono, «forall», e, zpow_pos, -inv_zpow', zpow_lt_zpow_iff_right₀]
-  exact ⟨⟨MonoidWithZeroHom.comp e (ValueGroupWithZero.unquot v),
-    he.comp (ValueGroupWithZero.unquot_strictMono v)⟩⟩
-
-instance [IsRankLeOne R] : MulArchimedean (ValueGroupWithZero R) := by
-  obtain ⟨⟨f, hf⟩⟩ := IsRankLeOne.nonempty (R := R)
-  exact .comap f.toMonoidHom hf
-
-proof_wanted IsRankLeOne.ofMulArchimedean [MulArchimedean (ValueGroupWithZero R)] : IsRankLeOne R
-
-end ValuativeRel

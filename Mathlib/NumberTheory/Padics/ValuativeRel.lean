@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.NumberTheory.Padics.PadicNumbers
-import Mathlib.RingTheory.Valuation.ValuativeRel
+import Mathlib.RingTheory.Valuation.RankOne
 
 /-!
 # p-adic numbers with a valuative relation
@@ -38,6 +38,6 @@ lemma valuation_p_lt_one : v p < 1 := by
 instance : IsNontrivial ℚ_[p] where
   condition := ⟨ValuativeRel.valuation _ p, valuation_p_ne_zero _, (valuation_p_lt_one _).ne⟩
 
-instance : IsRankLeOne ℚ_[p] := .of_compatible_withZeroMulInt mulValuation
+instance : IsRankLeOne ℚ_[p] := .of_compatible_mulArchimedean mulValuation
 
 end Padic
