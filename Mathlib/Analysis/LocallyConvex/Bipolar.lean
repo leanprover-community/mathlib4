@@ -152,16 +152,16 @@ open Bornology in
 lemma testb2 {s : Set (WeakBilin B)} (h : IsVonNBounded 𝕜 s) : IsVonNBounded 𝕜 (f '' s) := by
   apply IsVonNBounded.image h
 
-#check Seminorm.absorbent_ball_zero
+--#check Seminorm.absorbent_ball_zero
 
 variable {s : Finset F} (r : ℝ)
 
-#check ((s.sup B.toSeminormFamily).ball 0 r)
+--#check ((s.sup B.toSeminormFamily).ball 0 r)
 
 
-#check PseudoMetricSpace.toBornology
+--#check PseudoMetricSpace.toBornology
 
-#check Set.Ioi
+--#check Set.Ioi
 
 --#check Pointwise
 
@@ -169,6 +169,7 @@ open Pointwise
 
 variable (t : Set E) (a : 𝕜) (c : ℝ)
 
+/-
 #check a • t
 
 #check (c :𝕜) • t
@@ -176,11 +177,12 @@ variable (t : Set E) (a : 𝕜) (c : ℝ)
 #check PseudoMetricSpace.cobounded_sets
 
 #check Balanced
+-/
 
 lemma bal {s : Finset F} : Balanced 𝕜 ((s.sup B.toSeminormFamily).ball 0 r) := by
   exact Seminorm.balanced_ball_zero (s.sup B.toSeminormFamily) r
 
-#check Seminorm.absorbent_ball_zero (s.sup B.toSeminormFamily)
+-- #check Seminorm.absorbent_ball_zero (s.sup B.toSeminormFamily)
 
 open ComplexOrder in
 lemma absorb {s : Finset F} (hr : 0 < r) : Absorbent 𝕜 ((s.sup B.toSeminormFamily).ball 0 r) := by
