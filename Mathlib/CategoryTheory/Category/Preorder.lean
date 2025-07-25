@@ -204,7 +204,7 @@ def equivFunctor : (X →o Y) ≃ (X ⥤ Y) where
 of functors `X ⥤ Y`, where `X` and `Y` are preorder categories. -/
 @[simps! functor_obj_obj inverse_obj unitIso_hom_app unitIso_inv_app counitIso_inv_app_app
   counitIso_hom_app_app]
-def equivalence : (X →o Y) ≌ (X ⥤ Y) where
+def equivalenceFunctor : (X →o Y) ≌ (X ⥤ Y) where
   functor :=
     { obj f := f.toFunctor
       map f := { app a := f.down.down a |>.hom } }
