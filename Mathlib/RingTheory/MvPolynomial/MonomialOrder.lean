@@ -641,7 +641,7 @@ protected theorem Monic.prod {ι : Type*} {P : ι → MvPolynomial σ R} {s : Fi
 /--
 The leading term in a multivariate polynomial is zero if and only if this polynomial is zero.
 -/
-lemma leadingTerm_eq_zero_iff (p : MvPolynomial σ R): m.leadingTerm p = 0 ↔ p = 0 := by
+lemma leadingTerm_eq_zero_iff (p : MvPolynomial σ R) : m.leadingTerm p = 0 ↔ p = 0 := by
   simp only [leadingTerm, monomial_eq_zero, leadingCoeff_eq_zero_iff]
 
 /--
