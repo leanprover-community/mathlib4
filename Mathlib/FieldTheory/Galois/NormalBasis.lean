@@ -53,74 +53,33 @@ private theorem exists_linearIndependent_algEquiv_apply_of_infinite [Infinite K]
   have e := Module.Free.chooseBasis K L
   let M : Matrix (L ≃ₐ[K] L) (L ≃ₐ[K] L) (MvPolynomial _ L) :=
     .of fun i j ↦ ∑ k, i.symm (j (e k)) • .X k
-  have hM : M.det ≠ 0 := by
+  have hM : M.det ≠ 0 := fun h0 ↦ by
     have hq : Submodule.span L (Set.range fun i (j : L ≃ₐ[K] L) ↦ j (e i)) = ⊤ := by
       apply span_flip_eq_top_iff_linearIndependent.mpr <|
         ((linearIndependent_algHom_toLinearMap K L L).comp _
           (algEquivEquivAlgHom K L).injective).map' _ (e.constr L).symm.ker
     obtain ⟨c, hc⟩ : ∃ c : _ → L, M.det.eval c = 1 := by
-      have h := (congr_arg (fun s ↦ Pi.single 1 1 ∈ s) hq).mpr (Submodule.mem_top ..)
-      rw [← Set.image_univ, ← Finset.coe_univ,
-        ← Function.Embedding.coeFn_mk (fun i (j : L ≃ₐ[K] L) ↦ j (e i))
-          fun a b hab ↦ e.injective (congrFun hab .refl),
-        ← Finset.coe_map, Submodule.mem_span_finset'] at h
-      obtain ⟨f, hf⟩ := h
-      let g k : L := f ⟨fun j ↦ j (e k), Finset.mem_map_of_mem _ (Finset.mem_univ k)⟩
-      conv at hf =>
-        enter [1, 2, a, 1]
-        equals g (Function.invFun (fun i (j : L ≃ₐ[K] L) => j (e i)) a) =>
-          apply congr_arg f
-          apply Subtype.ext
-          symm
-          apply Function.invFun_eq (f := fun i (j : L ≃ₐ[K] L) => j (e i))
-          exact (Finset.mem_map.1 a.prop).imp fun _ => And.right
-      rw [Finset.sum_coe_sort (Finset.map ..)
-        fun a ↦ g (Function.invFun _ a) • a, Finset.sum_map] at hf
-      conv at hf =>
-        enter [1, 2, a, 1]
-        equals g a =>
-          apply congr_arg f
-          apply Subtype.ext
-          apply Function.apply_invFun_apply (f := fun i (j : L ≃ₐ[K] L) => j (e i))
-      simp_rw [Function.Embedding.coeFn_mk] at hf
-      use g
-      rw [RingHom.map_det]
-      refine (congr_arg Matrix.det ?_).trans Matrix.det_one
+      obtain ⟨g, hg⟩ := (Submodule.mem_span_range_iff_exists_fun _).mp
+        (hq ▸ Submodule.mem_top (x := Pi.single 1 1))
+      simp_rw [RingHom.map_det]
+      refine ⟨g, congr(Matrix.det $(?_)).trans Matrix.det_one⟩
       ext i j
       simpa [M, Pi.single_apply, inv_mul_eq_one, mul_comm, Matrix.one_apply]
-        using congrFun hf (i⁻¹ * j)
-    have : Infinite L := .of_injective (algebraMap K L) (algebraMap K L).injective
-    rw [ne_eq, MvPolynomial.funext_iff, not_forall]
-    use c
-    simp only [hc, map_zero, one_ne_zero, not_false_eq_true]
+        using congr($hg (i⁻¹ * j))
+    simpa [hc] using congr(($h0).eval c)
   obtain ⟨b, hb⟩ : ∃ b : _ → K, M.det.eval (algebraMap K L ∘ b) ≠ 0 := by
     by_contra! h
-    apply hM
-    apply MvPolynomial.funext_set fun _ => Set.range (algebraMap K L)
-    · exact fun _ => Set.infinite_range_of_injective (algebraMap K L).injective
-    · intro x hx
-      simp only [Set.mem_pi, Set.mem_univ, Set.mem_range, forall_const] at hx
-      choose u hu using hx
-      replace hu : algebraMap K L ∘ u = x := funext hu
-      subst hu
-      simpa using h u
+    refine hM (MvPolynomial.funext_set _
+      (fun _ ↦ Set.infinite_range_of_injective (algebraMap K L).injective) fun x hx ↦ ?_)
+    obtain ⟨x, rfl⟩ := Set.range_piMap _ ▸ hx
+    simpa using h x
+  refine ⟨∑ k, b k • e k, Fintype.linearIndependent_iff.mpr fun a ha ↦
+    funext_iff.mp <| (algebraMap K L).injective.comp_left ?_⟩
+  simp_rw [Function.comp_def, map_zero]
   rw [RingHom.map_det, RingHom.mapMatrix_apply] at hb
-  use ∑ k, b k • e k
-  rw [linearIndependent_iff]
-  intro a ha
-  refine DFunLike.coe_injective (Function.Injective.comp_left ((algebraMap K L).injective) ?_)
-  dsimp
-  simp only [map_zero, Function.const_zero]
-  apply Matrix.eq_zero_of_mulVec_eq_zero hb
-  ext i
-  apply i.injective
-  unfold M
-  simp only [Matrix.mulVec_eq_sum, Function.comp_apply, op_smul_eq_smul, algebraMap_smul,
-    Finset.sum_apply, Pi.smul_apply, Matrix.transpose_apply, Matrix.map_apply, Matrix.of_apply,
-    map_sum, MvPolynomial.smul_eval, MvPolynomial.eval_X, map_smul, map_mul,
-    AlgEquiv.apply_symm_apply, AlgEquiv.commutes, Pi.zero_apply, map_zero]
-  rw [← ha, Finsupp.linearCombination_apply, Finsupp.sum_fintype _ _ fun i => zero_smul K (i _)]
-  simp_rw [map_sum, map_smul, Algebra.smul_def, mul_comm]
+  refine Matrix.eq_zero_of_mulVec_eq_zero hb (funext fun i ↦ i.injective ?_)
+  simp_rw [M, Pi.zero_apply, map_zero, ← ha]
+  simp [Algebra.smul_def, Matrix.mulVec_eq_sum, mul_comm]
 
 theorem exists_linearIndependent_algEquiv_apply :
     ∃ x : L, LinearIndependent K fun σ : L ≃ₐ[K] L ↦ σ x := by
