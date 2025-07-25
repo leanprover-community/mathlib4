@@ -511,47 +511,49 @@ theorem zpow_apply [DivInvMonoid β] (z : ℤ) (f : α →ₛ β) (a : α) : (f 
 section Additive
 
 instance instAddMonoid [AddMonoid β] : AddMonoid (α →ₛ β) :=
-  Function.Injective.addMonoid (fun f => show α → β from f) coe_injective coe_zero coe_add
-    fun _ _ => coe_smul _ _
+  fast_instance% Function.Injective.addMonoid (fun f => show α → β from f) coe_injective coe_zero
+    coe_add fun _ _ => coe_smul _ _
 
 instance instAddCommMonoid [AddCommMonoid β] : AddCommMonoid (α →ₛ β) :=
-  Function.Injective.addCommMonoid (fun f => show α → β from f) coe_injective coe_zero coe_add
-    fun _ _ => coe_smul _ _
+  fast_instance% Function.Injective.addCommMonoid (fun f => show α → β from f)
+    coe_injective coe_zero coe_add fun _ _ => coe_smul _ _
 
 instance instAddGroup [AddGroup β] : AddGroup (α →ₛ β) :=
   Function.Injective.addGroup (fun f => show α → β from f) coe_injective coe_zero coe_add coe_neg
     coe_sub (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
 
 instance instAddCommGroup [AddCommGroup β] : AddCommGroup (α →ₛ β) :=
-  Function.Injective.addCommGroup (fun f => show α → β from f) coe_injective coe_zero coe_add
-    coe_neg coe_sub (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
+  fast_instance% Function.Injective.addCommGroup (fun f => show α → β from f) coe_injective
+    coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
 
 end Additive
 
 @[to_additive existing]
 instance instMonoid [Monoid β] : Monoid (α →ₛ β) :=
-  Function.Injective.monoid (fun f => show α → β from f) coe_injective coe_one coe_mul coe_pow
+  fast_instance% Function.Injective.monoid (fun f => show α → β from f) coe_injective coe_one
+    coe_mul coe_pow
 
 @[to_additive existing]
 instance instCommMonoid [CommMonoid β] : CommMonoid (α →ₛ β) :=
-  Function.Injective.commMonoid (fun f => show α → β from f) coe_injective coe_one coe_mul coe_pow
+  fast_instance% Function.Injective.commMonoid (fun f => show α → β from f) coe_injective coe_one
+    coe_mul coe_pow
 
 @[to_additive existing]
 instance instGroup [Group β] : Group (α →ₛ β) :=
-  Function.Injective.group (fun f => show α → β from f) coe_injective coe_one coe_mul coe_inv
-    coe_div coe_pow coe_zpow
+  fast_instance% Function.Injective.group (fun f => show α → β from f) coe_injective coe_one
+    coe_mul coe_inv coe_div coe_pow coe_zpow
 
 @[to_additive existing]
 instance instCommGroup [CommGroup β] : CommGroup (α →ₛ β) :=
-  Function.Injective.commGroup (fun f => show α → β from f) coe_injective coe_one coe_mul coe_inv
-    coe_div coe_pow coe_zpow
+  fast_instance% Function.Injective.commGroup (fun f => show α → β from f) coe_injective coe_one
+    coe_mul coe_inv coe_div coe_pow coe_zpow
 
 instance [Monoid K] [MulAction K β] : MulAction K (α →ₛ β) where
   one_smul _ := ext fun _ ↦ one_smul ..
   mul_smul _ _ _ := ext fun _ ↦ mul_smul ..
 
 instance instModule [Semiring K] [AddCommMonoid β] [Module K β] : Module K (α →ₛ β) :=
-  Function.Injective.module K ⟨⟨fun f => show α → β from f, coe_zero⟩, coe_add⟩
+  fast_instance% Function.Injective.module K ⟨⟨fun f => show α → β from f, coe_zero⟩, coe_add⟩
     coe_injective coe_smul
 
 theorem smul_eq_map [SMul K β] (k : K) (f : α →ₛ β) : k • f = f.map (k • ·) :=
@@ -563,18 +565,18 @@ lemma smul_const [SMul K β] (k : K) (b : β) :
 lemma one_eq_const_one [One β] : (1 : α →ₛ β) = const α 1 := rfl
 
 instance [NonUnitalNonAssocSemiring β] : NonUnitalNonAssocSemiring (α →ₛ β) :=
-  Function.Injective.nonUnitalNonAssocSemiring (fun f : α →ₛ β ↦ ⇑f) SimpleFunc.coe_injective
-      rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+  fast_instance% Function.Injective.nonUnitalNonAssocSemiring (fun f : α →ₛ β ↦ ⇑f)
+    SimpleFunc.coe_injective rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 instance [NonUnitalSemiring β] : NonUnitalSemiring (α →ₛ β) :=
-  Function.Injective.nonUnitalSemiring (fun f : α →ₛ β ↦ ⇑f) SimpleFunc.coe_injective
+  fast_instance% Function.Injective.nonUnitalSemiring (fun f : α →ₛ β ↦ ⇑f) SimpleFunc.coe_injective
       rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 instance [NatCast β] : NatCast (α →ₛ β) where
   natCast n := const _ (NatCast.natCast n)
 
 instance [NonAssocSemiring β] : NonAssocSemiring (α →ₛ β) :=
-  Function.Injective.nonAssocSemiring (fun f : α →ₛ β ↦ ⇑f) SimpleFunc.coe_injective
+  fast_instance% Function.Injective.nonAssocSemiring (fun f : α →ₛ β ↦ ⇑f) SimpleFunc.coe_injective
       rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
 
 instance [Semiring β] : Semiring (α →ₛ β) where
