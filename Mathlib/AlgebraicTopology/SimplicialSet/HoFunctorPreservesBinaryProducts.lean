@@ -72,37 +72,45 @@ def OrderHom.uliftMapIso {α β : Type*} [Preorder α] [Preorder β] :
 --   hom := _
 --   inv := _
 
-
 -- what's the policy on defining short-but-convenient compositions?
 def SimplexCategory.homIsoFunctor {a b : SimplexCategory} :
     (a ⟶ b) ≃ (Fin (a.len + 1) ⥤ Fin (b.len + 1)) :=
-  Equiv.trans SimplexCategory.homEquivOrderHom OrderHom.isoFunctor.toEquiv
+  SimplexCategory.homEquivOrderHom.trans OrderHom.equivFunctor
 
-def SimplexCategory.homIsoFunctor' {a b : SimplexCategory} :
+/- This requires either:
+1. type-level whiskering in the ULiftHom API, such that `A ⥤ B ≃ A ⥤ ULiftHom <| ULift B`
+2. `StrictEquivalence`s, such that a strict equivalence between `Fin n` and `ULiftFin n` would give
+us whiskering + descend to an equiv "for free"
+3. removal of the problem by removing the need to use `ULiftFin` in the first place
+
+For now we take option 1., which is arguably the least appealing.
+
+Another issue is that `ULiftFin` has no preorder instance, and gets its category instance from
+`Fin`. (This means we cannot put `OrderHom.equivFunctor` at the end of this chain, which is not a
+problem, but is indicative of a limitation.) -/
+def SimplexCategory.homIsoFunctorULiftRight {a b : SimplexCategory} :
     (a ⟶ b) ≃ (Fin (a.len + 1) ⥤ ULiftFin (b.len + 1)) :=
-  Equiv.trans SimplexCategory.homIsoFunctor sorry
+  SimplexCategory.homEquivOrderHom.trans OrderHom.equivFunctor
+    |>.trans ULiftHomULiftCategory.equivCongrLeft
 
 /-- Nerves of finite non-empty ordinals are representable functors. -/
 def nerve.RepresentableBySimplex (n : ℕ) : (nerve (Fin (n + 1))).RepresentableBy ⦋n⦌ where
   homEquiv := SimplexCategory.homIsoFunctor
   homEquiv_comp {_ _} _ _ := rfl
 
--- /-- The Yoneda embedding from the `SimplexCategory` into simplicial sets is naturally
--- isomorphic to `SimplexCategory.toCat ⋙ nerveFunctor` with component isomorphisms
--- `Δ[n] ≅ nerve (Fin (n + 1))`. -/
--- -- def simplexIsNerve (n : ℕ) : Δ[n] ≅ nerve (Fin (n + 1)) := NatIso.ofComponents <| fun n ↦
--- --     Equiv.toIso stdSimplex.objEquiv ≪≫ SimplexCategory.homIsoFunctor
+/-- The Yoneda embedding from the `SimplexCategory` into simplicial sets is naturally
+isomorphic to `SimplexCategory.toCat ⋙ nerveFunctor` with component isomorphisms
+`Δ[n] ≅ nerve (Fin (n + 1))`. -/
+def simplexIsNerve (n : ℕ) : Δ[n] ≅ nerve (Fin (n + 1)) := NatIso.ofComponents <| fun n ↦
+    Equiv.toIso <| stdSimplex.objEquiv.trans SimplexCategory.homIsoFunctor
 
--- -- Alternate definition:
--- -- `:= SSet.stdSimplex.isoOfRepresentableBy <| nerve.RepresentableBySimplex n`
--- -- Though slightly shorter, this would essentially have us convert to an equiv then back to an iso.
+-- Alternate definition:
+-- `:= SSet.stdSimplex.isoOfRepresentableBy <| nerve.RepresentableBySimplex n`
+-- Though slightly shorter, this would essentially have us convert to an equiv then back to an iso.
 
--- set_option pp.universes true
-
-def simplexIsNerve' (n : ℕ) : Δ[n] ≅ nerve (ULiftFin.{u} (n + 1)) :=
-  NatIso.ofComponents
-    (fun i ↦ Equiv.toIso (stdSimplex.objEquiv.trans SimplexCategory.homIsoFunctor'))
-    sorry
+def simplexIsNerveULiftFin (n : ℕ) : Δ[n] ≅ nerve (ULiftFin.{u} (n + 1)) :=
+  NatIso.ofComponents fun i ↦
+    Equiv.toIso <| stdSimplex.objEquiv.trans SimplexCategory.homIsoFunctorULiftRight
 
 /-- Via the whiskered counit (or unit) of `nerveAdjunction`, the triple composite
 `nerveFunctor ⋙ hoFunctor ⋙ nerveFunctor` is naturally isomorphic to `nerveFunctor`.
