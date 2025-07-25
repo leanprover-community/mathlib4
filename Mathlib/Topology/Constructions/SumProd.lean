@@ -1015,13 +1015,11 @@ theorem Topology.IsInducing.sumElim (hf : IsInducing f) (hg : IsInducing g)
   rw [isInducing_iff_nhds]
   intro x
   apply le_antisymm ((hf.continuous.sumElim hg.continuous).tendsto x).le_comap
-  intro s hs
-  rw [comap_sumElim_eq, mem_sup, mem_map, mem_map]
   obtain x | x := x <;>
-  simp only [nhds_inl, nhds_inr, mem_map] at hs <;>
-  simp only [elim_inl, elim_inr, ← hf.nhds_eq_comap, ← hg.nhds_eq_comap, hs, true_and, and_true] <;>
-  convert mem_bot <;>
-  rw [comap_eq_bot_iff_compl_range]
+  simp only [comap_sumElim_eq, nhds_inl, nhds_inr, mem_map, elim_inl, elim_inr, ← hf.nhds_eq_comap,
+    ← hg.nhds_eq_comap, sup_le_iff, le_rfl, true_and, and_true] <;>
+  convert bot_le (α := Filter (X ⊕ Y)) <;>
+  rw [map_eq_bot_iff, comap_eq_bot_iff_compl_range]
   · rw [← disjoint_principal_right]
     exact hfG.mono_left (nhds_le_nhdsSet (mem_range_self x))
   · rw [← disjoint_principal_left]
@@ -1031,22 +1029,14 @@ theorem Topology.IsInducing.sumElim (hf : IsInducing f) (hg : IsInducing g)
 This is an auxiliary result towards proving `isInducing_sumElim`. -/
 theorem Topology.IsInducing.disjoint_of_sumElim_aux (h : IsInducing (Sum.elim f g)) :
     Disjoint (closure (range f)) (range g) := by
-  simp_rw [isInducing_iff_nhds, Filter.ext_iff] at h
-  have h (x : X ⊕ Y) : map inl (comap f (𝓝 (Sum.elim f g x))) ⊔
-      map inr (comap g (𝓝 (Sum.elim f g x))) = 𝓝 x := by
-    ext s
-    rw [h x s]
-    simp_rw [mem_sup, mem_map, mem_comap_iff_compl, ← inter_mem_iff]
-    rw [← image_preimage_inl_union_image_preimage_inr sᶜ, image_union]
-    simp_rw [image_image, elim_inl, elim_inr, preimage_compl, compl_union]
-  simp only [disjoint_principal_left, disjoint_principal_right,
-    ← disjoint_principal_nhdsSet, ← disjoint_nhdsSet_principal, mem_nhdsSet_iff_forall]
-  rintro _ ⟨x, rfl⟩
-  rw [← comap_eq_bot_iff_compl_range]
-  specialize h (inr x)
-  rw [nhds_inr, elim_inr] at h
-  simpa only [map_inl_inf_map_inr, inf_sup_left, sup_bot_eq, ← map_inf, inl_injective, top_inf_eq,
-    map_eq_bot_iff] using congr(map inl ⊤ ⊓ $h)
+  rcases h.isClosed_iff.mp isClosed_range_inl with ⟨C, C_closed, hC⟩
+  have A : closure (range f) ⊆ C := by
+    rw [C_closed.closure_subset_iff, ← elim_comp_inl f g, range_comp, image_subset_iff, hC]
+  have B : Disjoint C (range g) := by
+    rw [← image_univ, disjoint_image_right, ← elim_comp_inr f g, preimage_comp, hC,
+        ← disjoint_image_right, ← image_univ]
+    exact disjoint_image_inl_image_inr
+  exact B.mono_left A
 
 theorem IsOpenEmbedding.sumSwap : IsOpenEmbedding (@Sum.swap X Y) :=
   (Homeomorph.sumComm X Y).isOpenEmbedding
