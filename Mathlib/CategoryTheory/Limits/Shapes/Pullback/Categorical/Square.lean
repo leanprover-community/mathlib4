@@ -115,12 +115,16 @@ directly as
 ```
 but this leads to unsatisfying unfoldings in practice: terms that mention `R ⊡ B`
 keep appearing with this approach, while you don’t want to work with a
-categorical pullback square by constantly going through an model of the
+categorical pullback square by constantly going through a generic model of the
 categorical pullback.
 Instead, we split the equivalence over several definitions to create a stronger
 abstraction barrier, and mark irreducible all of its "non-canonical" components,
 i.e the ones that might refer to `R ⊡ B`, so that the API is completely
-blind to the existence of a default categorical pullback. -/
+blind to the existence of a default categorical pullback.
+
+In situations where you know you have good lemmas for the fields of `functorEquiv`,
+you can `unseal` its various fields locally for proving the lemmas.
+-/
 
 namespace functorEquiv
 
