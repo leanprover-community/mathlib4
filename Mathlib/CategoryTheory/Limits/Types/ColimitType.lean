@@ -32,7 +32,7 @@ by using `Functor.ColimitType`.
 
 -/
 
-universe w₃ w₂ w₁ w₀ v u
+universe w₃ w₂ w₁ w₀ w₀' v u
 
 assert_not_exists CategoryTheory.Limits.Cocone
 
@@ -73,6 +73,17 @@ def postcomp (c : CoconeTypes.{w₁} F) {T : Type w₂} (φ : c.pt → T) :
   pt := T
   ι j := φ.comp (c.ι j)
 
+/-- The cocone for `G : J ⥤ Type w₀'` that is deduced from a cocone for `F : J ⥤ Type w₀`
+and a natural map `G.obj j → F.obj j` for all `j : J`. -/
+@[simps -fullyApplied]
+def precompose (c : CoconeTypes.{w₁} F) {G : J ⥤ Type w₀'} (app : ∀ j, G.obj j → F.obj j)
+    (naturality : ∀ {j j'} (f : j ⟶ j'), app j' ∘ G.map f = F.map f ∘ app j) :
+    CoconeTypes.{w₁} G where
+  pt := c.pt
+  ι j := c.ι j ∘ app j
+  ι_naturality f := by
+    rw [Function.comp_assoc, naturality, ← Function.comp_assoc, ι_naturality]
+
 end CoconeTypes
 
 /-- Given `F : J ⥤ Type w₀`, this is the relation `Σ j, F.obj j` which
@@ -88,6 +99,11 @@ def ColimitType : Type (max u w₀) := Quot F.ColimitTypeRel
 /-- The canonical maps `F.obj j → F.ColimitType`. -/
 def ιColimitType (j : J) (x : F.obj j) : F.ColimitType :=
   Quot.mk _ ⟨j, x⟩
+
+lemma ιColimitType_eq_iff {j j' : J} (x : F.obj j) (y : F.obj j') :
+    F.ιColimitType j x = F.ιColimitType j' y ↔
+      Relation.EqvGen F.ColimitTypeRel ⟨j, x⟩ ⟨ j', y⟩ :=
+  Quot.eq
 
 lemma ιColimitType_jointly_surjective (t : F.ColimitType) :
     ∃ j x, F.ιColimitType j x = t := by
@@ -228,6 +244,22 @@ def down (hc : IsColimitCore.{max w₂ w₃} c) :
       simpa using congr_fun this x
     exact hc.funext (fun j ↦ by simp [Function.comp_assoc, h])
 
+/-- A colimit cocone for `F : J ⥤ Type w₀` induces a colimit cocone
+for `G : J ⥤ Type w₉'` when we have a natural equivalence `G.obj j ≃ F.obj j`
+for all `j : J`. -/
+def precompose (hc : IsColimitCore.{w₂} c)
+    {G : J ⥤ Type w₀'} (e : ∀ j, G.obj j ≃ F.obj j)
+    (naturality : ∀ {j j'} (f : j ⟶ j'), e j' ∘ G.map f = F.map f ∘ e j) :
+    IsColimitCore.{w₂} (c.precompose _ naturality) where
+  desc c' := hc.desc (c'.precompose _ (FunctorToTypes.naturality_symm e naturality))
+  fac c' j := by
+    rw [precompose_ι, ← Function.comp_assoc, hc.fac, precompose_ι, Function.comp_assoc,
+      Equiv.symm_comp_self, Function.comp_id]
+  funext {T f g} h := hc.funext (fun j ↦ by
+    ext x
+    obtain ⟨y, rfl⟩ := (e j).surjective x
+    exact congr_fun (h j) y)
+
 end IsColimitCore
 
 variable {c} in
@@ -257,6 +289,19 @@ lemma IsColimitCore.isColimit (hc : IsColimitCore.{max u w₀ w₁} c) :
                 coconeTypes_ι, descColimitType_comp_ι])
           exact congr_fun this }
     exact e.bijective
+
+variable {c} in
+lemma IsColimit.precompose (hc : c.IsColimit) {G : J ⥤ Type w₀'} (e : ∀ j, G.obj j ≃ F.obj j)
+    (naturality : ∀ {j j'} (f : j ⟶ j'), e j' ∘ G.map f = F.map f ∘ e j) :
+    (c.precompose _ naturality).IsColimit :=
+  (hc.isColimitCore.precompose e naturality).isColimit
+
+lemma isColimit_precompose_iff {G : J ⥤ Type w₀'} (e : ∀ j, G.obj j ≃ F.obj j)
+    (naturality : ∀ {j j'} (f : j ⟶ j'), e j' ∘ G.map f = F.map f ∘ e j) :
+    (c.precompose _ naturality).IsColimit ↔ c.IsColimit :=
+  ⟨fun hc ↦ (hc.precompose (fun j ↦ (e j).symm)
+      (FunctorToTypes.naturality_symm e naturality)).of_equiv (Equiv.refl _) (by simp),
+    fun hc ↦ hc.precompose e naturality⟩
 
 end CoconeTypes
 
