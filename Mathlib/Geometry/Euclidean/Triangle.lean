@@ -79,7 +79,7 @@ theorem sin_angle_mul_norm_eq_sin_angle_mul_norm (x y : V) :
 /-- A variant of the law of sines, (two given sides are nonzero), vector angle form. -/
 theorem sin_angle_div_norm_eq_sin_angle_div_norm (x y : V) (hx : x ≠ 0) (hxy : x - y ≠ 0) :
     Real.sin (angle x y) / ‖x - y‖ = Real.sin (angle y (x - y)) / ‖x‖ := by
-  field_simp; exact sin_angle_mul_norm_eq_sin_angle_mul_norm x y
+  field_simp [sin_angle_mul_norm_eq_sin_angle_mul_norm x y]
 
 /-- **Pons asinorum**, vector angle form. -/
 theorem angle_sub_eq_angle_sub_rev_of_norm_eq {x y : V} (h : ‖x‖ = ‖y‖) :

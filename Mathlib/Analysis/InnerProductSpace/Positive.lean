@@ -220,7 +220,7 @@ end PartialOrder
 The proof of this will soon be simplified to `IsStarProjection.nonneg` when we
 have `StarOrderedRing (E →L[𝕜] E)`. -/
 @[aesop 10% apply, grind →]
-theorem IsPositive.of_isStarPojection {p : E →L[𝕜] E}
+theorem IsPositive.of_isStarProjection {p : E →L[𝕜] E}
     (hp : IsStarProjection p) : p.IsPositive := by
   refine ⟨hp.isSelfAdjoint, ?_⟩
   rw [← hp.isIdempotentElem.eq]
@@ -233,7 +233,7 @@ theorem IsPositive.of_isStarPojection {p : E →L[𝕜] E}
 @[grind →]
 theorem IsIdempotentElem.isPositive_iff_isSelfAdjoint
     {p : E →L[𝕜] E} (hp : IsIdempotentElem p) : p.IsPositive ↔ IsSelfAdjoint p :=
-  ⟨fun h => h.isSelfAdjoint, fun h => IsPositive.of_isStarPojection ⟨hp, h⟩⟩
+  ⟨fun h => h.isSelfAdjoint, fun h => IsPositive.of_isStarProjection ⟨hp, h⟩⟩
 
 end ContinuousLinearMap
 
@@ -258,13 +258,17 @@ theorem IsPositive.re_inner_nonneg_right {T : E →ₗ[𝕜] E} (hT : IsPositive
   rw [inner_re_symm]
   exact hT.re_inner_nonneg_left x
 
-lemma isPositive_toContinuousLinearMap_iff [CompleteSpace E] (T : E →ₗ[𝕜] E) :
+lemma isPositive_toContinuousLinearMap_iff (T : E →ₗ[𝕜] E) :
+    have : CompleteSpace E := FiniteDimensional.complete 𝕜 _
     T.toContinuousLinearMap.IsPositive ↔ T.IsPositive := by
+  intro
   simp [ContinuousLinearMap.IsPositive, IsPositive, isSelfAdjoint_toContinuousLinearMap_iff T,
     ContinuousLinearMap.reApplyInnerSelf]
 
-lemma _root_.ContinuousLinearMap.isPositive_toLinearMap_iff [CompleteSpace E] (T : E →L[𝕜] E) :
+lemma _root_.ContinuousLinearMap.isPositive_toLinearMap_iff (T : E →L[𝕜] E) :
+    have := FiniteDimensional.complete 𝕜 E
     (T : E →ₗ[𝕜] E).IsPositive ↔ T.IsPositive := by
+  intro
   simp [ContinuousLinearMap.IsPositive, IsPositive, isSelfAdjoint_toLinearMap_iff T,
     ContinuousLinearMap.reApplyInnerSelf]
 
@@ -282,6 +286,9 @@ end Complex
 
 theorem IsPositive.isSymmetric {T : E →ₗ[𝕜] E} (hT : IsPositive T) :
     IsSymmetric T := (isSymmetric_iff_isSelfAdjoint T).mpr hT.isSelfAdjoint
+
+theorem IsPositive.adjoint_eq {T : E →ₗ[𝕜] E} (hT : IsPositive T) :
+    T.adjoint = T := hT.isSelfAdjoint
 
 open ComplexOrder in
 theorem isPositive_iff (T : E →ₗ[𝕜] E) :

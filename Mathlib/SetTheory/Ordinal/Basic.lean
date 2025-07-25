@@ -314,7 +314,6 @@ theorem _root_.PrincipalSeg.ordinal_type_lt {α β} {r : α → α → Prop} {s 
     [IsWellOrder α r] [IsWellOrder β s] (h : r ≺i s) : type r < type s :=
   ⟨h⟩
 
-@[simp]
 protected theorem zero_le (o : Ordinal) : 0 ≤ o :=
   inductionOn o fun _ r _ => (InitialSeg.ofIsEmpty _ r).ordinal_type_le
 
@@ -329,7 +328,6 @@ theorem bot_eq_zero : (⊥ : Ordinal) = 0 :=
 instance instIsEmptyIioZero : IsEmpty (Iio (0 : Ordinal)) := by
   simp [← bot_eq_zero]
 
-@[simp]
 protected theorem le_zero {o : Ordinal} : o ≤ 0 ↔ o = 0 :=
   le_bot_iff
 
@@ -1002,23 +1000,17 @@ theorem mk_toType (o : Ordinal) : #o.toType = o.card :=
 /-- The ordinal corresponding to a cardinal `c` is the least ordinal
   whose cardinal is `c`. For the order-embedding version, see `ord.order_embedding`. -/
 def ord (c : Cardinal) : Ordinal :=
-  let F := fun α : Type u => ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2
-  Quot.liftOn c F
-    (by
-      suffices ∀ {α β}, α ≈ β → F α ≤ F β from
-        fun α β h => (this h).antisymm (this (Setoid.symm h))
-      rintro α β ⟨f⟩
-      refine le_ciInf_iff'.2 fun i => ?_
-      haveI := @RelEmbedding.isWellOrder _ _ (f ⁻¹'o i.1) _ (↑(RelIso.preimage f i.1)) i.2
-      exact
-        (ciInf_le' _
-              (Subtype.mk (f ⁻¹'o i.val)
-                (@RelEmbedding.isWellOrder _ _ _ _ (↑(RelIso.preimage f i.1)) i.2))).trans_eq
-          (Quot.sound ⟨RelIso.preimage f i.1⟩))
+  Quot.liftOn c (fun α : Type u => ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2) <| by
+  rintro α β ⟨f⟩
+  refine congr_arg sInf <| ext fun o ↦ ⟨?_, ?_⟩ <;>
+    rintro ⟨⟨r, hr⟩, rfl⟩ <;>
+    refine ⟨⟨_, RelIso.IsWellOrder.preimage r ?_⟩, type_preimage _ _⟩
+  exacts [f.symm, f]
 
 theorem ord_eq_Inf (α : Type u) : ord #α = ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2 :=
   rfl
 
+/-- There exists a well-order on `α` whose order type is exactly `ord #α`. -/
 theorem ord_eq (α) : ∃ (r : α → α → Prop) (wo : IsWellOrder α r), ord #α = @type α r wo :=
   let ⟨r, wo⟩ := ciInf_mem fun r : { r // IsWellOrder α r } => @type α r.1 r.2
   ⟨r.1, r.2, wo.symm⟩
@@ -1026,19 +1018,16 @@ theorem ord_eq (α) : ∃ (r : α → α → Prop) (wo : IsWellOrder α r), ord 
 theorem ord_le_type (r : α → α → Prop) [h : IsWellOrder α r] : ord #α ≤ type r :=
   ciInf_le' _ (Subtype.mk r h)
 
-theorem ord_le {c o} : ord c ≤ o ↔ c ≤ o.card :=
-  inductionOn c fun α =>
-    Ordinal.inductionOn o fun β s _ => by
-      let ⟨r, _, e⟩ := ord_eq α
-      simp only [card_type]; constructor <;> intro h
-      · rw [e] at h
-        exact
-          let ⟨f⟩ := h
-          ⟨f.toEmbedding⟩
-      · obtain ⟨f⟩ := h
-        have g := RelEmbedding.preimage f s
-        haveI := RelEmbedding.isWellOrder g
-        exact le_trans (ord_le_type _) g.ordinal_type_le
+theorem ord_le {c o} : ord c ≤ o ↔ c ≤ o.card := by
+  refine c.inductionOn fun α ↦ o.inductionOn fun β s _ ↦ ?_
+  let ⟨r, _, e⟩ := ord_eq α
+  constructor <;> intro h
+  · rw [e] at h
+    exact card_le_card h
+  · obtain ⟨f⟩ := h
+    have g := RelEmbedding.preimage f s
+    have := RelEmbedding.isWellOrder g
+    exact (ord_le_type _).trans g.ordinal_type_le
 
 theorem gc_ord_card : GaloisConnection ord card := fun _ _ => ord_le
 
@@ -1071,8 +1060,7 @@ initial ordinal of cardinality `c`, then its cardinal is no greater than `c`.
 
 The converse, however, is false (for instance, `o = ω+1` and `c = ℵ₀`).
 -/
-lemma card_le_of_le_ord {o : Ordinal} {c : Cardinal} (ho : o ≤ c.ord) :
-    o.card ≤ c := by
+lemma card_le_of_le_ord {o : Ordinal} {c : Cardinal} (ho : o ≤ c.ord) : o.card ≤ c := by
   rw [← card_ord c]; exact Ordinal.card_le_card ho
 
 @[mono]
@@ -1096,28 +1084,25 @@ theorem ord_zero : ord 0 = 0 :=
   gc_ord_card.l_bot
 
 @[simp]
-theorem ord_nat (n : ℕ) : ord n = n :=
-  (ord_le.2 (card_nat n).ge).antisymm
-    (by
-      induction n with
-      | zero => apply Ordinal.zero_le
-      | succ n IH =>
-        exact succ_le_of_lt (IH.trans_lt <| ord_lt_ord.2 <| Nat.cast_lt.2 (Nat.lt_succ_self n)))
-
-@[simp]
-theorem ord_one : ord 1 = 1 := by simpa using ord_nat 1
+theorem ord_nat (n : ℕ) : ord n = n := by
+  apply (ord_le.2 (card_nat n).ge).antisymm
+  induction n with
+  | zero => exact Ordinal.zero_le _
+  | succ n IH => exact (IH.trans_lt <| by simpa using Nat.cast_lt.2 n.lt_succ_self).succ_le
 
 @[simp]
 theorem ord_ofNat (n : ℕ) [n.AtLeastTwo] : ord ofNat(n) = OfNat.ofNat n :=
   ord_nat n
 
 @[simp]
-theorem ord_aleph0 : ord.{u} ℵ₀ = ω :=
-  le_antisymm (ord_le.2 le_rfl) <|
-    le_of_forall_lt fun o h => by
-      rcases Ordinal.lt_lift_iff.1 h with ⟨o, h', rfl⟩
-      rw [lt_ord, ← lift_card, lift_lt_aleph0, ← typein_enum (· < ·) h']
-      exact lt_aleph0_iff_fintype.2 ⟨Set.fintypeLTNat _⟩
+theorem ord_one : ord 1 = 1 := by simpa using ord_nat 1
+
+@[simp]
+theorem ord_aleph0 : ord.{u} ℵ₀ = ω := by
+  refine le_antisymm (ord_le.2 le_rfl) <| le_of_forall_lt fun o h ↦ ?_
+  rcases Ordinal.lt_lift_iff.1 h with ⟨o, ho, rfl⟩
+  rw [lt_ord, ← lift_card, lift_lt_aleph0, ← typein_enum _ ho]
+  exact lt_aleph0_iff_fintype.2 ⟨Set.fintypeLTNat _⟩
 
 @[simp]
 theorem lift_ord (c) : Ordinal.lift.{u,v} (ord c) = ord (lift.{u,v} c) := by

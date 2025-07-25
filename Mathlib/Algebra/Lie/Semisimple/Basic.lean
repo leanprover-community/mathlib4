@@ -207,10 +207,7 @@ lemma finitelyAtomistic : ∀ s : Finset (LieIdeal R L), ↑s ⊆ {I : LieIdeal 
   set K := s'.sup id
   suffices I ≤ K by
     obtain ⟨t, hts', htI⟩ := finitelyAtomistic s' hs'S I this
-    #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-    we could write `hts'.trans hs'.subset` instead of
-    `Finset.Subset.trans hts' hs'.subset` in the next line. -/
-    exact ⟨t, Finset.Subset.trans hts' hs'.subset, htI⟩
+    exact ⟨t, hts'.trans hs'.subset, htI⟩
   -- Since `I` is contained in the supremum of `J` with the supremum of `s'`,
   -- any element `x` of `I` can be written as `y + z` for some `y ∈ J` and `z ∈ K`.
   intro x hx
@@ -222,10 +219,7 @@ lemma finitelyAtomistic : ∀ s : Finset (LieIdeal R L), ↑s ⊆ {I : LieIdeal 
   -- Since `x` was arbitrary, we have shown that `I` is contained in the supremum of `s'`.
   suffices ⟨y, hy⟩ ∈ LieAlgebra.center R J by
     have _inst := isSimple_of_isAtom J (hs hJs)
-    rw [center_eq_bot R J, LieSubmodule.mem_bot] at this
-    apply_fun Subtype.val at this
-    dsimp at this
-    rwa [this, zero_add]
+    simp_all
   -- To show that `y` is in the center of `J`,
   -- we show that any `j ∈ J` brackets to `0` with `z` and with `x = y + z`.
   -- By a simple computation, that implies `⁅j, y⁆ = 0`, for all `j`, as desired.
