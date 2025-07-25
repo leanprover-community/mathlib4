@@ -30,13 +30,12 @@ private theorem exists_linearIndependent_algEquiv_apply_of_finite [Finite L] :
   obtain ⟨x, rfl⟩ := (AEval'.of _).surjective x
   use x
   rw [← span_minpoly_eq_annihilator, minpoly_frobeniusAlgHom, eq_comm] at hx
-  have ind := (AdjoinRoot.powerBasis (X_pow_sub_C_ne_zero Module.finrank_pos 1)).basis
-    |>.linearIndependent.map' ((AEval'.of _).symm.toLinearMap ∘ₗ (Submodule.subtype _ ∘ₗ
-      (quotEquivOfEq _ _ hx ≪≫ₗ quotKerEquivRange _).toLinearMap).restrictScalars K)
-    (ker_eq_bot.mpr <| by simpa using EquivLike.injective _)
   rw [← linearIndependent_equiv ((finCongr <| natDegree_X_pow_sub_C (R := K)).trans <|
     .ofBijective _ <| bijective_frobeniusAlgEquivOfAlgebraic_pow K L)]
-  convert ind
+  convert (AdjoinRoot.powerBasis (X_pow_sub_C_ne_zero Module.finrank_pos 1)).basis.linearIndependent
+    |>.map' ((AEval'.of _).symm.toLinearMap ∘ₗ (Submodule.subtype _ ∘ₗ
+      (quotEquivOfEq _ _ hx ≪≫ₗ quotKerEquivRange _).toLinearMap).restrictScalars K)
+    (ker_eq_bot.mpr <| by simpa using EquivLike.injective _)
   ext i
   simp only [Function.comp_apply, AdjoinRoot.powerBasis, AdjoinRoot.powerBasisAux,
     coe_comp, LinearEquiv.coe_coe, LinearMap.coe_restrictScalars, coe_subtype,
