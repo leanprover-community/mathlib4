@@ -18,9 +18,7 @@ variable {𝕜 H : Type*}
 namespace MulOpposite
 
 /-- The inner product of `Hᵐᵒᵖ` is given by `⟪x, y⟫ ↦ ⟪x.unop, y.unop⟫`. -/
-@[instance]
-def hasInner [Inner 𝕜 H] :
-    Inner 𝕜 Hᵐᵒᵖ where inner x y := inner 𝕜 x.unop y.unop
+instance [Inner 𝕜 H] : Inner 𝕜 Hᵐᵒᵖ where inner x y := inner 𝕜 x.unop y.unop
 
 @[simp]
 theorem inner_unop [Inner 𝕜 H] (x y : Hᵐᵒᵖ) :
