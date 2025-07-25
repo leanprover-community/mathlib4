@@ -24,10 +24,4 @@ theorem injective_of_isSemisimpleRing : Module.Injective R M where
 theorem surjective_of_isSemisimpleRing : Module.Projective R M :=
   Module.Projective.of_lifting_property'' (IsSemisimpleModule.lifting_property · · _)
 
-@[deprecated (since := "2025-07-25")]
-alias injective_of_semisimple_ring := injective_of_isSemisimpleRing
-
-@[deprecated (since := "2025-07-25")]
-alias projective_of_semisimple_ring := surjective_of_isSemisimpleRing
-
 end Module
