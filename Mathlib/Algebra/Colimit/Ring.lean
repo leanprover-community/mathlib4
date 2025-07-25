@@ -3,11 +3,11 @@ Copyright (c) 2019 Kenny Lau, Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Jujian Zhang
 -/
+import Mathlib.Algebra.Colimit.DirectLimit
 import Mathlib.Data.Finset.Order
 import Mathlib.RingTheory.FreeCommRing
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Ideal.Quotient.Defs
-import Mathlib.Algebra.Colimit.DirectLimit
 import Mathlib.Tactic.SuppressCompilation
 
 /-!
@@ -25,6 +25,8 @@ the disjoint union so as to make the operations (addition etc.) "computable".
 * `Ring.DirectLimit G f`
 
 -/
+
+assert_not_exists Cardinal
 
 suppress_compilation
 
@@ -273,7 +275,7 @@ def congr (e : (i : ι) → G i ≃+* G' i)
       have eq1 := DFunLike.congr_fun (he i j h) ((e i).symm x)
       simp only [RingEquiv.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
         RingEquiv.apply_symm_apply] at eq1 ⊢
-      simp [← eq1, of_f])
+      simp [← eq1])
     (by simp [map_comp]) (by simp [map_comp])
 
 lemma congr_apply_of (e : (i : ι) → G i ≃+* G' i)

@@ -187,7 +187,7 @@ theorem liftRel_dropn_destruct {R : α → β → Prop} {s t} (H : LiftRel R s t
     ∀ n, Computation.LiftRel (LiftRelO R (LiftRel R)) (destruct (drop s n)) (destruct (drop t n))
   | 0 => liftRel_destruct H
   | n + 1 => by
-    simp only [LiftRelO, drop, Nat.add_eq, Nat.add_zero, destruct_tail, tail.aux]
+    simp only [drop, destruct_tail]
     apply liftRel_bind
     · apply liftRel_dropn_destruct H n
     exact fun {a b} o =>
@@ -351,7 +351,7 @@ theorem liftRel_append (R : α → β → Prop) {s1 s2 : WSeq α} {t1 t2 : WSeq 
       intro a b; apply LiftRelO.imp_right
       intro s t; apply Or.inl
     | _, _, Or.inr ⟨s1, t1, rfl, rfl, h⟩ => by
-      simp only [LiftRelO, exists_and_left, destruct_append, destruct_append.aux]
+      simp only [exists_and_left, destruct_append]
       apply Computation.liftRel_bind _ _ (liftRel_destruct h)
       intro o p h
       rcases o with - | a <;> rcases p with - | b
@@ -402,7 +402,7 @@ theorem liftRel_join.lem (R : α → β → Prop) {S T} {U : WSeq α → WSeq β
           refine ⟨ob, ?_, rob⟩
           · simp +unfoldPartialApp only [destruct_join, destruct_join.aux]
             apply mem_bind mT
-            simp only [destruct_append, destruct_append.aux]
+            simp only [destruct_append]
             apply think_mem
             apply mem_bind mt
             exact mb
@@ -411,7 +411,7 @@ theorem liftRel_join.lem (R : α → β → Prop) {S T} {U : WSeq α → WSeq β
           refine ⟨some (b, append t' (join T')), ?_, ?_⟩
           · simp +unfoldPartialApp only [destruct_join, destruct_join.aux]
             apply mem_bind mT
-            simp only [destruct_append, destruct_append.aux]
+            simp only [destruct_append]
             apply think_mem
             apply mem_bind mt
             apply ret_mem
@@ -468,10 +468,10 @@ theorem join_map_ret (s : WSeq α) : join (map ret s) ~ʷ s := by
       match c1, c2, h with
       | _, _, ⟨s, rfl, rfl⟩ => by
         clear h
-        have (s) : ∃ s' : WSeq α,
+        have (s : WSeq α) : ∃ s' : WSeq α,
             (map ret s).join.destruct = (map ret s').join.destruct ∧ destruct s = s'.destruct :=
           ⟨s, rfl, rfl⟩
-        induction' s using WSeq.recOn with a s s <;> simp [ret, ret_mem, this, Option.exists]
+        induction' s using WSeq.recOn with a s s <;> simp [ret, this]
   · exact ⟨s, rfl, rfl⟩
 
 @[simp]

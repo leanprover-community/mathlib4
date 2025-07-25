@@ -67,3 +67,8 @@ macro (name := finiteness_nonterminal) "finiteness_nonterminal" c:Aesop.tactic_c
     (config := { introsTransparency? := some .reducible, terminal := false, enableSimp := false,
                  warnOnNonterminal := false  })
     (rule_sets := [$(Lean.mkIdent `finiteness):ident, -default, -builtin]))
+
+/-!
+ We register `finiteness` with the `hint` tactic.
+ -/
+register_hint finiteness

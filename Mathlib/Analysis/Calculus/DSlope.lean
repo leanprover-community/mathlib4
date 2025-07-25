@@ -115,7 +115,7 @@ theorem continuousOn_dslope (h : s ∈ 𝓝 a) :
 theorem DifferentiableWithinAt.of_dslope (h : DifferentiableWithinAt 𝕜 (dslope f a) s b) :
     DifferentiableWithinAt 𝕜 f s b := by
   simpa only [id, sub_smul_dslope f a, sub_add_cancel] using
-    ((differentiableWithinAt_id.sub_const a).smul h).add_const (f a)
+    ((differentiableWithinAt_id.sub_const a).fun_smul h).add_const (f a)
 
 theorem DifferentiableAt.of_dslope (h : DifferentiableAt 𝕜 (dslope f a) b) :
     DifferentiableAt 𝕜 f b :=

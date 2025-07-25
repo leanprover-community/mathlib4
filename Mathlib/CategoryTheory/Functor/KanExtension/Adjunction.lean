@@ -78,7 +78,7 @@ lemma ι_leftKanExtensionObjIsoColimit_inv [HasLeftKanExtension L F] (X : D)
     (f : CostructuredArrow L X) :
     colimit.ι _ f ≫ (L.leftKanExtensionObjIsoColimit F X).inv =
     (L.leftKanExtensionUnit F).app f.left ≫ (L.leftKanExtension F).map f.hom := by
-  simp [leftKanExtensionObjIsoColimit, lanUnit]
+  simp [leftKanExtensionObjIsoColimit]
 
 @[reassoc (attr := simp)]
 lemma ι_leftKanExtensionObjIsoColimit_hom (X : D) (f : CostructuredArrow L X) :
