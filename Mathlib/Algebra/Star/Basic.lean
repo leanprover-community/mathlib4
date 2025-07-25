@@ -43,9 +43,6 @@ open MulOpposite
 class Star (R : Type u) where
   star : R → R
 
--- https://github.com/leanprover/lean4/issues/2096
-compile_def% Star.star
-
 variable {R : Type u}
 
 export Star (star)
