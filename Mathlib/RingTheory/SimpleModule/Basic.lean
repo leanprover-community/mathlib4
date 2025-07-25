@@ -44,7 +44,7 @@ import Mathlib.RingTheory.Noetherian.Defs
 * `RingHom.isSemisimpleRing_of_surjective`: any quotient of a semisimple ring is semisimple.
 
 ## TODO
-* Artin-Wedderburn Theory
+* Artin-Wedderburn Theory (uniqueness)
 * Unify with the work on Schur's Lemma in a category theory context
 
 -/
