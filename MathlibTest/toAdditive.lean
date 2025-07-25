@@ -521,3 +521,7 @@ fun {α} [i : Add α] a => i.1 a
 -/
 #guard_msgs in
 #print myAdd
+
+/-! Test that the `existingAttributeWarning` linter doesn't fire for `to_additive self`. -/
+@[simp, to_additive self]
+theorem to_additive_self : 5 = 5 := rfl
