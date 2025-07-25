@@ -833,6 +833,13 @@ def normedField [CompleteSpace K] : NormedField L :=
     norm_mul x y := by simp [← spectralMulAlgNorm_def, map_mul]
     edist_dist x y := by rw [ENNReal.ofReal_eq_coe_nnreal] }
 
+/-- `L` with the spectral norm is a `NontriviallyNormedField`. -/
+def nontriviallyNormedField [CompleteSpace K] : NontriviallyNormedField L where
+  __ := spectralNorm.normedField K L
+  non_trivial :=
+    let ⟨x, hx⟩ := NontriviallyNormedField.non_trivial (α := K)
+    ⟨algebraMap K L x, hx.trans_eq <| (spectralNorm_extends _).symm⟩
+
 /-- `L` with the spectral norm is a `normed_add_comm_group`. -/
 def normedAddCommGroup [CompleteSpace K] : NormedAddCommGroup L := by
   haveI : NormedField L := normedField K L

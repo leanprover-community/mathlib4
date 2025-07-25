@@ -22,9 +22,8 @@ assert_not_exists Polynomial
 
 universe uR uS uA uB
 
-open Pointwise
-
-open Submodule Subsemiring
+open Module Submodule Subsemiring
+open scoped Pointwise
 
 variable {R : Type uR} {S : Type uS} {A : Type uA} {B : Type uB}
 
