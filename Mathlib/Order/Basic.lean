@@ -74,13 +74,18 @@ variable [LE α] {a b c : α}
 protected lemma LE.le.ge (h : a ≤ b) : b ≥ a := h
 protected lemma GE.ge.le (h : a ≥ b) : b ≤ a := h
 
+@[to_dual le_of_le_of_eq''']
 theorem le_of_le_of_eq' : b ≤ c → a = b → a ≤ c := flip le_of_eq_of_le
+@[to_dual le_of_eq_of_le''']
 theorem le_of_eq_of_le' : b = c → a ≤ b → a ≤ c := flip le_of_le_of_eq
 
+@[to_dual LE.le.trans_eq'']
 alias LE.le.trans_eq := le_of_le_of_eq
+@[to_dual LE.le.trans_eq''']
 alias LE.le.trans_eq' := le_of_le_of_eq'
+
+@[to_dual Eq.trans_ge]
 alias Eq.trans_le := le_of_eq_of_le
-alias Eq.trans_ge := le_of_eq_of_le'
 
 end LE
 
@@ -91,13 +96,10 @@ variable [LT α] {a b c : α}
 protected lemma LT.lt.gt (h : a < b) : b > a := h
 protected lemma GT.gt.lt (h : a > b) : b < a := h
 
-theorem lt_of_lt_of_eq' : b < c → a = b → a < c := flip lt_of_eq_of_lt
-theorem lt_of_eq_of_lt' : b = c → a < b → a < c := flip lt_of_lt_of_eq
-
+@[to_dual LT.lt.trans_eq']
 alias LT.lt.trans_eq := lt_of_lt_of_eq
-alias LT.lt.trans_eq' := lt_of_lt_of_eq'
+@[to_dual Eq.trans_gt]
 alias Eq.trans_lt := lt_of_eq_of_lt
-alias Eq.trans_gt := lt_of_eq_of_lt'
 
 end LT
 
@@ -119,6 +121,9 @@ section Preorder
 
 variable [Preorder α] {a b c d : α}
 
+@[to_dual ge_trans'] alias le_trans' := ge_trans
+@[to_dual gt_trans'] alias lt_trans' := gt_trans
+
 theorem not_lt_iff_not_le_or_ge : ¬a < b ↔ ¬a ≤ b ∨ b ≤ a := by
   rw [lt_iff_le_not_ge, Classical.not_and_iff_not_or_not, Classical.not_not]
 
@@ -127,63 +132,53 @@ lemma not_lt_iff_le_imp_ge : ¬ a < b ↔ (a ≤ b → b ≤ a) := by
   simp [not_lt_iff_not_le_or_ge, or_iff_not_imp_left]
 
 @[deprecated (since := "2025-05-11")] alias not_lt_iff_le_imp_le := not_lt_iff_le_imp_ge
+-- TODO: why not @[simp] on `lt_irrefl`?
+@[to_dual self, simp] lemma lt_self_iff_false (x : α) : x < x ↔ False := ⟨lt_irrefl x, False.elim⟩
 
-lemma ge_of_eq (h : a = b) : b ≤ a := le_of_eq h.symm
-
-@[simp] lemma lt_self_iff_false (x : α) : x < x ↔ False := ⟨lt_irrefl x, False.elim⟩
-
-alias le_trans' := ge_trans
-alias lt_trans' := gt_trans
-alias LE.le.trans := le_trans
-alias LE.le.trans' := le_trans'
-alias LT.lt.trans := lt_trans
-alias LT.lt.trans' := lt_trans'
-alias LE.le.trans_lt := lt_of_le_of_lt
-alias LE.le.trans_lt' := lt_of_le_of_lt'
-alias LT.lt.trans_le := lt_of_lt_of_le
-alias LT.lt.trans_le' := lt_of_lt_of_le'
-alias LE.le.lt_of_not_ge := lt_of_le_not_ge
-alias LT.lt.le := le_of_lt
-alias LT.lt.ne := ne_of_lt
-alias Eq.le := le_of_eq
-alias Eq.ge := ge_of_eq
-alias LT.lt.asymm := lt_asymm
-alias LT.lt.not_gt := lt_asymm
+@[to_dual LE.le.trans'] alias LE.le.trans := le_trans
+@[to_dual LT.lt.trans'] alias LT.lt.trans := lt_trans
+@[to_dual LE.le.trans_lt'] alias LE.le.trans_lt := lt_of_le_of_lt
+@[to_dual LT.lt.trans_le'] alias LT.lt.trans_le := lt_of_lt_of_le
+@[to_dual self (reorder := 3 4)] alias LE.le.lt_of_not_ge := lt_of_le_not_ge
+@[to_dual self (reorder := 3 4)] alias LT.lt.le := le_of_lt
+@[to_dual LT.lt.ne'] alias LT.lt.ne := ne_of_lt
+@[to_dual Eq.ge] alias Eq.le := le_of_eq
+@[to_dual self (reorder := 3 4)] alias LT.lt.asymm := lt_asymm
+@[to_dual self (reorder := 3 4)] alias LT.lt.not_gt := lt_asymm
 
 @[deprecated (since := "2025-05-11")] alias LE.le.lt_of_not_le := LE.le.lt_of_not_ge
 @[deprecated (since := "2025-06-07")] alias LT.lt.not_lt := LT.lt.not_gt
 
+@[to_dual ne_of_not_ge]
 theorem ne_of_not_le (h : ¬a ≤ b) : a ≠ b := fun hab ↦ h (le_of_eq hab)
 
+@[to_dual Eq.not_gt]
 protected lemma Eq.not_lt (hab : a = b) : ¬a < b := fun h' ↦ h'.ne hab
-protected lemma Eq.not_gt (hab : a = b) : ¬b < a := hab.symm.not_lt
 
-@[simp] lemma le_of_subsingleton [Subsingleton α] : a ≤ b := (Subsingleton.elim a b).le
+@[to_dual self (reorder := 3 4), simp]
+lemma le_of_subsingleton [Subsingleton α] : a ≤ b := (Subsingleton.elim a b).le
 
 -- Making this a @[simp] lemma causes confluence problems downstream.
-@[nontriviality]
+@[to_dual self (reorder := 3 4), nontriviality]
 lemma not_lt_of_subsingleton [Subsingleton α] : ¬a < b := (Subsingleton.elim a b).not_lt
 
 namespace LT.lt
 
-protected theorem false : a < a → False := lt_irrefl a
-
-theorem ne' (h : a < b) : b ≠ a := h.ne.symm
+@[to_dual self] protected theorem false : a < a → False := lt_irrefl a
 
 end LT.lt
 
+@[to_dual le_of_forall_ge]
 theorem le_of_forall_le (H : ∀ c, c ≤ a → c ≤ b) : a ≤ b := H _ le_rfl
-theorem le_of_forall_ge (H : ∀ c, a ≤ c → b ≤ c) : b ≤ a := H _ le_rfl
 
 @[deprecated (since := "2025-01-30")] alias le_of_forall_le' := le_of_forall_ge
 
+@[to_dual forall_le_iff_ge] -- TODO: name should be `forall_ge_iff_le`
 theorem forall_le_iff_le : (∀ ⦃c⦄, c ≤ a → c ≤ b) ↔ a ≤ b :=
   ⟨le_of_forall_le, fun h _ hca ↦ le_trans hca h⟩
 
-theorem forall_le_iff_ge : (∀ ⦃c⦄, a ≤ c → b ≤ c) ↔ b ≤ a :=
-  ⟨le_of_forall_ge, fun h _ hca ↦ le_trans h hca⟩
-
 /-- monotonicity of `≤` with respect to `→` -/
+@[to_dual self (reorder := 3 4, 5 6, 7 8)]
 theorem le_implies_le_of_le_of_le (hca : c ≤ a) (hbd : b ≤ d) : a ≤ b → c ≤ d :=
   fun hab ↦ (hca.trans hab).trans hbd
 
@@ -221,55 +216,36 @@ section PartialOrder
 
 variable [PartialOrder α] {a b : α}
 
-theorem ge_antisymm : a ≤ b → b ≤ a → b = a :=
-  flip le_antisymm
-
-theorem lt_of_le_of_ne' : a ≤ b → b ≠ a → a < b := fun h₁ h₂ ↦ lt_of_le_of_ne h₁ h₂.symm
-
+@[to_dual Ne.lt_of_le']
 theorem Ne.lt_of_le : a ≠ b → a ≤ b → a < b :=
   flip lt_of_le_of_ne
 
-theorem Ne.lt_of_le' : b ≠ a → a ≤ b → a < b :=
-  flip lt_of_le_of_ne'
-
-alias LE.le.antisymm := le_antisymm
-alias LE.le.antisymm' := ge_antisymm
-alias LE.le.lt_of_ne := lt_of_le_of_ne
-alias LE.le.lt_of_ne' := lt_of_le_of_ne'
+@[to_dual LE.le.antisymm'] alias LE.le.antisymm := le_antisymm
+@[to_dual LE.le.lt_of_ne'] alias LE.le.lt_of_ne := lt_of_le_of_ne
 
 -- Unnecessary brackets are here for readability
-lemma le_imp_eq_iff_le_imp_ge' : (a ≤ b → b = a) ↔ (a ≤ b → b ≤ a) where
-  mp h hab := (h hab).le
-  mpr h hab := (h hab).antisymm hab
-
-@[deprecated (since := "2025-05-11")] alias le_imp_eq_iff_le_imp_le := le_imp_eq_iff_le_imp_ge'
-
--- Unnecessary brackets are here for readability
+@[to_dual le_imp_eq_iff_le_imp_ge']
 lemma le_imp_eq_iff_le_imp_ge : (a ≤ b → a = b) ↔ (a ≤ b → b ≤ a) where
   mp h hab := (h hab).ge
   mpr h hab := hab.antisymm (h hab)
+
+@[deprecated (since := "2025-05-11")] alias le_imp_eq_iff_le_imp_le := le_imp_eq_iff_le_imp_ge'
 
 @[deprecated (since := "2025-05-11")] alias ge_imp_eq_iff_le_imp_le := le_imp_eq_iff_le_imp_ge
 
 namespace LE.le
 
+@[to_dual lt_iff_ne']
 theorem lt_iff_ne (h : a ≤ b) : a < b ↔ a ≠ b :=
   ⟨fun h ↦ h.ne, h.lt_of_ne⟩
 
-theorem lt_iff_ne' (h : a ≤ b) : a < b ↔ b ≠ a :=
-  ⟨fun h ↦ h.ne.symm, h.lt_of_ne'⟩
-
+@[to_dual not_lt_iff_eq']
 theorem not_lt_iff_eq (h : a ≤ b) : ¬a < b ↔ a = b :=
   h.lt_iff_ne.not_left
 
-theorem not_lt_iff_eq' (h : a ≤ b) : ¬a < b ↔ b = a :=
-  h.lt_iff_ne'.not_left
-
+@[to_dual ge_iff_eq']
 theorem ge_iff_eq (h : a ≤ b) : b ≤ a ↔ a = b :=
   ⟨h.antisymm, Eq.ge⟩
-
-theorem ge_iff_eq' (h : a ≤ b) : b ≤ a ↔ b = a :=
-  ⟨fun h' ↦ h'.antisymm h, Eq.le⟩
 
 @[deprecated (since := "2025-06-08")] alias gt_iff_ne := lt_iff_ne'
 @[deprecated (since := "2025-06-08")] alias le_iff_eq := ge_iff_eq'
@@ -278,11 +254,14 @@ theorem ge_iff_eq' (h : a ≤ b) : b ≤ a ↔ b = a :=
 end LE.le
 
 -- See Note [decidable namespace]
+@[to_dual Decidable.le_iff_eq_or_lt']
 protected theorem Decidable.le_iff_eq_or_lt [DecidableLE α] : a ≤ b ↔ a = b ∨ a < b :=
   Decidable.le_iff_lt_or_eq.trans or_comm
 
+@[to_dual le_iff_eq_or_lt']
 theorem le_iff_eq_or_lt : a ≤ b ↔ a = b ∨ a < b := le_iff_lt_or_eq.trans or_comm
 
+@[to_dual lt_iff_le_and_ne']
 theorem lt_iff_le_and_ne : a < b ↔ a ≤ b ∧ a ≠ b :=
   ⟨fun h ↦ ⟨le_of_lt h, ne_of_lt h⟩, fun ⟨h1, h2⟩ ↦ h1.lt_of_ne h2⟩
 
@@ -292,35 +271,35 @@ lemma eq_iff_not_lt_of_le (hab : a ≤ b) : a = b ↔ ¬ a < b := hab.not_lt_iff
 @[deprecated (since := "2025-06-08")] alias LE.le.eq_iff_not_lt := eq_iff_not_lt_of_le
 
 -- See Note [decidable namespace]
+@[to_dual Decidable.eq_iff_ge_not_gt]
 protected theorem Decidable.eq_iff_le_not_lt [DecidableLE α] : a = b ↔ a ≤ b ∧ ¬a < b :=
   ⟨fun h ↦ ⟨h.le, h ▸ lt_irrefl _⟩, fun ⟨h₁, h₂⟩ ↦
     h₁.antisymm <| Decidable.byContradiction fun h₃ ↦ h₂ (h₁.lt_of_not_ge h₃)⟩
 
+@[to_dual eq_iff_ge_not_gt]
 theorem eq_iff_le_not_lt : a = b ↔ a ≤ b ∧ ¬a < b := open scoped Classical in
   Decidable.eq_iff_le_not_lt
 
 -- See Note [decidable namespace]
+@[to_dual Decidable.eq_or_lt_of_le']
 protected theorem Decidable.eq_or_lt_of_le [DecidableLE α] (h : a ≤ b) : a = b ∨ a < b :=
   (Decidable.lt_or_eq_of_le h).symm
 
+@[to_dual eq_or_lt_of_le']
 theorem eq_or_lt_of_le (h : a ≤ b) : a = b ∨ a < b := (lt_or_eq_of_le h).symm
-theorem eq_or_lt_of_le' (h : a ≤ b) : b = a ∨ a < b := (eq_or_lt_of_le h).imp Eq.symm id
-theorem lt_or_eq_of_le' (h : a ≤ b) : a < b ∨ b = a := (eq_or_lt_of_le' h).symm
 
 alias LE.le.lt_or_eq_dec := Decidable.lt_or_eq_of_le
 alias LE.le.eq_or_lt_dec := Decidable.eq_or_lt_of_le
-alias LE.le.lt_or_eq := lt_or_eq_of_le
-alias LE.le.eq_or_lt := eq_or_lt_of_le
-alias LE.le.eq_or_lt' := eq_or_lt_of_le'
-alias LE.le.lt_or_eq' := lt_or_eq_of_le'
+@[to_dual LE.le.lt_or_eq'] alias LE.le.lt_or_eq := lt_or_eq_of_le
+@[to_dual LE.le.eq_or_lt'] alias LE.le.eq_or_lt := eq_or_lt_of_le
 
 @[deprecated (since := "2025-06-08")] alias eq_or_gt_of_le := eq_or_lt_of_le'
 @[deprecated (since := "2025-06-08")] alias gt_or_eq_of_le := lt_or_eq_of_le'
 @[deprecated (since := "2025-06-08")] alias LE.le.eq_or_gt := LE.le.eq_or_lt'
 @[deprecated (since := "2025-06-08")] alias LE.le.gt_or_eq := LE.le.lt_or_eq'
 
+@[to_dual eq_of_le_of_not_lt']
 theorem eq_of_le_of_not_lt (h₁ : a ≤ b) (h₂ : ¬a < b) : a = b := h₁.eq_or_lt.resolve_right h₂
-theorem eq_of_le_of_not_lt' (h₁ : a ≤ b) (h₂ : ¬a < b) : b = a := (eq_of_le_of_not_lt h₁ h₂).symm
 
 alias LE.le.eq_of_not_lt := eq_of_le_of_not_lt
 alias LE.le.eq_of_not_lt' := eq_of_le_of_not_lt'
@@ -387,23 +366,6 @@ lemma gt_or_lt (h : a < b) (c : α) : a < c ∨ c < b := (le_or_gt b c).imp h.tr
 @[deprecated (since := "2025-06-07")] alias lt_or_lt := gt_or_lt
 
 end LT.lt
-
--- Variant of `min_def` with the branches reversed.
-theorem min_def' (a b : α) : min a b = if b ≤ a then b else a := by
-  rw [min_def]
-  rcases lt_trichotomy a b with (lt | eq | gt)
-  · rw [if_pos lt.le, if_neg (not_le.mpr lt)]
-  · rw [if_pos eq.le, if_pos eq.ge, eq]
-  · rw [if_neg (not_le.mpr gt.gt), if_pos gt.le]
-
--- Variant of `min_def` with the branches reversed.
--- This is sometimes useful as it used to be the default.
-theorem max_def' (a b : α) : max a b = if b ≤ a then a else b := by
-  rw [max_def]
-  rcases lt_trichotomy a b with (lt | eq | gt)
-  · rw [if_pos lt.le, if_neg (not_le.mpr lt)]
-  · rw [if_pos eq.le, if_pos eq.ge, eq]
-  · rw [if_neg (not_le.mpr gt.gt), if_pos gt.le]
 
 @[deprecated (since := "2025-05-11")] alias lt_of_not_le := lt_of_not_ge
 @[deprecated (since := "2025-05-11")] alias lt_iff_not_le := lt_iff_not_ge

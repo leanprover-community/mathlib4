@@ -35,6 +35,7 @@ namespace CategoryTheory
 variable {C : Type*} [Category C]
 
 /-- A variant of `eq_whisker` with a more convenient argument order for use in tactics. -/
+@[to_dual whisker_eq']
 theorem eq_whisker' {X Y : C} {f g : X ⟶ Y} (w : f = g) {Z : C} (h : Y ⟶ Z) :
     f ≫ h = g ≫ h := by rw [w]
 

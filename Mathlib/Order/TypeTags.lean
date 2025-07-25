@@ -17,10 +17,12 @@ without exploding its imports.
 variable {α : Type*}
 
 /-- Attach `⊥` to a type. -/
+@[to_dual]
 def WithBot (α : Type*) := Option α
 
 namespace WithBot
 
+@[to_dual]
 instance [Repr α] : Repr (WithBot α) :=
   ⟨fun o _ =>
     match o with
@@ -28,76 +30,36 @@ instance [Repr α] : Repr (WithBot α) :=
     | some a => "↑" ++ repr a⟩
 
 /-- The canonical map from `α` into `WithBot α` -/
-@[coe, match_pattern] def some : α → WithBot α :=
+@[to_dual (attr := coe, match_pattern)] def some : α → WithBot α :=
   Option.some
 
+@[to_dual]
 instance coe : Coe α (WithBot α) :=
   ⟨some⟩
 
+@[to_dual]
 instance bot : Bot (WithBot α) :=
   ⟨none⟩
 
+@[to_dual]
 instance inhabited : Inhabited (WithBot α) :=
   ⟨⊥⟩
 
 /-- Recursor for `WithBot` using the preferred forms `⊥` and `↑a`. -/
-@[elab_as_elim, induction_eliminator, cases_eliminator]
+@[to_dual (attr := elab_as_elim, induction_eliminator, cases_eliminator)
+"Recursor for `WithTop` using the preferred forms `⊤` and `↑a`."]
 def recBotCoe {C : WithBot α → Sort*} (bot : C ⊥) (coe : ∀ a : α, C a) : ∀ n : WithBot α, C n
   | ⊥ => bot
   | (a : α) => coe a
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem recBotCoe_bot {C : WithBot α → Sort*} (d : C ⊥) (f : ∀ a : α, C a) :
     @recBotCoe _ C d f ⊥ = d :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem recBotCoe_coe {C : WithBot α → Sort*} (d : C ⊥) (f : ∀ a : α, C a) (x : α) :
     @recBotCoe _ C d f ↑x = f x :=
   rfl
 
 end WithBot
-
---TODO(Mario): Construct using order dual on `WithBot`
-/-- Attach `⊤` to a type. -/
-def WithTop (α : Type*) :=
-  Option α
-
-namespace WithTop
-
-instance [Repr α] : Repr (WithTop α) :=
-  ⟨fun o _ =>
-    match o with
-    | none => "⊤"
-    | some a => "↑" ++ repr a⟩
-
-/-- The canonical map from `α` into `WithTop α` -/
-@[coe, match_pattern] def some : α → WithTop α :=
-  Option.some
-
-instance coeTC : CoeTC α (WithTop α) :=
-  ⟨some⟩
-
-instance top : Top (WithTop α) :=
-  ⟨none⟩
-
-instance inhabited : Inhabited (WithTop α) :=
-  ⟨⊤⟩
-
-/-- Recursor for `WithTop` using the preferred forms `⊤` and `↑a`. -/
-@[elab_as_elim, induction_eliminator, cases_eliminator]
-def recTopCoe {C : WithTop α → Sort*} (top : C ⊤) (coe : ∀ a : α, C a) : ∀ n : WithTop α, C n
-  | none => top
-  | Option.some a => coe a
-
-@[simp]
-theorem recTopCoe_top {C : WithTop α → Sort*} (d : C ⊤) (f : ∀ a : α, C a) :
-    @recTopCoe _ C d f ⊤ = d :=
-  rfl
-
-@[simp]
-theorem recTopCoe_coe {C : WithTop α → Sort*} (d : C ⊤) (f : ∀ a : α, C a) (x : α) :
-    @recTopCoe _ C d f ↑x = f x :=
-  rfl
-
-end WithTop
