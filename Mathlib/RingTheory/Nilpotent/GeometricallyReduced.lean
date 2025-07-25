@@ -35,23 +35,18 @@ variable {k : Type} {A : Type} [Field k] [CommRing A] [Algebra k A]
 /-- The k-algebra A is geometrically reduced iff its basechange to AlgebraicClosure k is reduced -/
 @[mk_iff]
 class IsGeometricallyReduced (k : Type) (A : Type) [Field k] [CommRing A] [Algebra k A] : Prop where
-  baseChangeReduced : IsReduced ((AlgebraicClosure k) ⊗[k] A)
+  reduced_algebraicClosure_tensor : IsReduced ((AlgebraicClosure k) ⊗[k] A)
+attribute [instance] IsGeometricallyReduced.reduced_algebraicClosure_tensor
 
 
 lemma geometricallyReduced_indep_of_algebraicClosure (k : Type) (A : Type) [Field k] [CommRing A]
     [Algebra k A] (K : Type) [Field K] [Algebra k K] [IsAlgClosure k K]
     (h : IsGeometricallyReduced k A) : IsReduced (K ⊗[k] A) := by
   have f : K ≃ₐ[k] (AlgebraicClosure k) := IsAlgClosure.equiv _ _ _
-  have hReduced := h.baseChangeReduced
   apply isReduced_of_injective
       (Algebra.TensorProduct.map ((↑f : K →ₐ[k] AlgebraicClosure k)) (AlgHom.id k A))
   apply Module.Flat.rTensor_preserves_injective_linearMap
   exact EquivLike.injective f
-
-theorem IsGeometricallyReduced_imp_baseChange_by_closure_Reduced (k : Type) (A : Type) [Field k]
-    [CommRing A] [Algebra k A] (h : IsGeometricallyReduced k A) :
-    IsReduced ((AlgebraicClosure k) ⊗[k] A) := by
-  exact h.baseChangeReduced
 
 lemma isGeometricallyReduced_of_injective {B : Type} [CommRing B] [Algebra k B] (f : A →ₐ[k] B)
     (hf : Function.Injective f) [IsGeometricallyReduced k B] : IsGeometricallyReduced k A := by
@@ -59,7 +54,6 @@ lemma isGeometricallyReduced_of_injective {B : Type} [CommRing B] [Algebra k B] 
       (Algebra.TensorProduct.map (AlgHom.id (AlgebraicClosure k) (AlgebraicClosure k)) f) := by
     apply Module.Flat.lTensor_preserves_injective_linearMap
     exact hf
-  expose_names
   rw [isGeometricallyReduced_iff] at *
   exact isReduced_of_injective (Algebra.TensorProduct.map 1 f) hfK
 
@@ -68,8 +62,6 @@ theorem isGeometricallyReduced_isReduced [IsGeometricallyReduced k A] : IsReduce
   -- We prove this by providing an injection A →ₐ[k] A ⊗[k] AlgebraicClosure k and then
   -- applying isReduced_of_injective
   let f : A →ₐ[k] (AlgebraicClosure k) ⊗[k] A := Algebra.TensorProduct.includeRight
-  expose_names
-  rw [isGeometricallyReduced_iff] at inst_3
   have hf : Function.Injective f := by
     apply Algebra.TensorProduct.includeRight_injective
     exact FaithfulSMul.algebraMap_injective k (AlgebraicClosure k)
