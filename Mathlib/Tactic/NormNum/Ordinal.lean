@@ -10,10 +10,10 @@ import Mathlib.Tactic.NormNum.Basic
 /-!
 # `norm_num` extensions for Ordinals
 
-The default `norm_num` extensions for multiplication & inequality requires to be semiring,
-so doesn't normalize ordinals that doesn't satisfy right distributive low.
-We require new extensions for them.
-We also define extensions for subtraction, multiplication, modulo, and power in this file.
+The default `norm_num` extensions for many operators requires a semiring,
+which without a right distributive law, ordinals do not have.
+
+We must therefore define new extensions for them.
 -/
 
 namespace Mathlib.Meta.NormNum
