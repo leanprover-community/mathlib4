@@ -39,6 +39,16 @@ variable (B : Type) [CommRing B] [Algebra k B]
 class IsGeometricallyReduced : Prop where
   baseChangeReduced : IsReduced ((AlgebraicClosure k) ⊗[k] A)
 
+
+lemma geometricallyReduced_indep_of_algebraicClosure (K : Type) [Field K] [Algebra k K]
+  [IsAlgClosure k K] (h : IsGeometricallyReduced k A) : IsReduced (K ⊗[k] A) := by
+  have f : K ≃ₐ[k] (AlgebraicClosure k) := IsAlgClosure.equiv _ _ _
+  have hReduced := h.baseChangeReduced
+  apply isReduced_of_injective
+      (Algebra.TensorProduct.map ((↑f : K →ₐ[k] AlgebraicClosure k)) (AlgHom.id k A))
+  apply Module.Flat.rTensor_preserves_injective_linearMap
+  exact EquivLike.injective f
+
 theorem IsGeometricallyReduced_imp_baseChange_by_closure_Reduced (h : IsGeometricallyReduced k A) :
     IsReduced ((AlgebraicClosure k) ⊗[k] A) := by
     exact h.baseChangeReduced
