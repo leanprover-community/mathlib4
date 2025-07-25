@@ -77,9 +77,9 @@ morphisms. It is more complicated if we write it as an equality of natural trans
 then we would either have to insert natural transformations like `F ⟶ F𝟭` or abuse defeq. -/
 @[ext, stacks 001J]
 structure Equivalence (C : Type u₁) (D : Type u₂) [Category.{v₁} C] [Category.{v₂} D] where mk' ::
-  /-- The forwards direction of the equivalence. -/
+  /-- The forwards direction of an equivalence. -/
   functor : C ⥤ D
-  /-- The backwards direction of the equivalence. -/
+  /-- The backwards direction of an equivalence. -/
   inverse : D ⥤ C
   /-- The composition `functor ⋙ inverse` is isomorphic to the identity. -/
   unitIso : 𝟭 C ≅ functor ⋙ inverse
