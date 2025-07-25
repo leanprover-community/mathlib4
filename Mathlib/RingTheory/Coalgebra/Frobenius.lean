@@ -198,7 +198,7 @@ class FrobeniusAlgebra (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
 
 namespace FrobeniusAlgebra
 
-variable {A : Type*} [Semiring A] [Algebra R A] [Coalgebra R A] [FrobeniusAlgebra R A]
+variable [FrobeniusAlgebra R A]
 
 theorem lTensor_mul'_comp_assoc_comp_rTensor_comul_eq_comul_comp_mul' :
     (lTensor A (mul' R A)) ∘ₗ (ϰ A A A) ∘ₗ (rTensor A comul) = comul ∘ₗ mul' R A :=
