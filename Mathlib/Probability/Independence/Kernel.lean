@@ -893,18 +893,7 @@ theorem iIndepFun_iff_measure_inter_preimage_eq_mul {ι : Type*} {β : ι → Ty
     intro i hi_mem
     simp_rw [setsβ, dif_pos hi_mem]
     exact (h_meas i hi_mem).choose_spec.2.symm
-  have h_left_eq : ∀ a, κ a (⋂ i ∈ S, setsΩ i) = κ a (⋂ i ∈ S, (f i) ⁻¹' (setsβ i)) := by
-    intro a
-    congr 1 with x
-    simp_rw [Set.mem_iInter]
-    constructor <;> intro h i hi_mem <;> specialize h i hi_mem
-    · rwa [h_preim i hi_mem] at h
-    · rwa [h_preim i hi_mem]
-  have h_right_eq : ∀ a, (∏ i ∈ S, κ a (setsΩ i)) = ∏ i ∈ S, κ a ((f i) ⁻¹' (setsβ i)) := by
-    refine fun a ↦ Finset.prod_congr rfl fun i hi_mem => ?_
-    rw [h_preim i hi_mem]
-  filter_upwards [h S h_measβ] with a ha
-  rw [h_left_eq a, h_right_eq a, ha]
+  simp_all
 
 alias ⟨iIndepFun.measure_inter_preimage_eq_mul, _⟩ := iIndepFun_iff_measure_inter_preimage_eq_mul
 

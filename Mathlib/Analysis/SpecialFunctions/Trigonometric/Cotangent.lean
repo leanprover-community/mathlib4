@@ -73,7 +73,7 @@ noncomputable abbrev sineTerm (x : ℂ) (n : ℕ) : ℂ := -x ^ 2 / (n + 1) ^ 2
 lemma sineTerm_ne_zero {x : ℂ} (hx : x ∈ ℂ_ℤ) (n : ℕ) : 1 + sineTerm x n ≠ 0 := by
   simp only [sineTerm, ne_eq]
   rw [add_eq_zero_iff_eq_neg, neg_div', eq_div_iff]
-  · have := (integerComplement_pow_two_ne_pow_two hx ((n + 1) : ℤ))
+  · have := (integerComplement_pow_two_ne_pow_two hx (n + 1 : ℤ))
     aesop
   · simp [Nat.cast_add_one_ne_zero n]
 
@@ -86,14 +86,14 @@ theorem tendsto_euler_sin_prod' (h0 : x ≠ 0) :
 
 theorem multipliable_sineTerm (x : ℂ) : Multipliable fun i ↦ (1 + sineTerm x i) := by
   apply multipliable_one_add_of_summable
-  have := (summable_pow_div_add (x ^ 2) 2 1 (Nat.one_lt_two))
+  have := summable_pow_div_add (x ^ 2) 2 1 Nat.one_lt_two
   simpa [sineTerm] using this
 
 lemma euler_sineTerm_tprod (hx : x ∈ ℂ_ℤ) :
     ∏' i : ℕ, (1 + sineTerm x i) = Complex.sin (π * x) / (π * x) := by
   rw [← Multipliable.hasProd_iff (multipliable_sineTerm x) ,
-    Multipliable.hasProd_iff_tendsto_nat (multipliable_sineTerm x )]
-  exact tendsto_euler_sin_prod' (by apply integerComplement.ne_zero hx)
+    Multipliable.hasProd_iff_tendsto_nat (multipliable_sineTerm x)]
+  exact tendsto_euler_sin_prod' (integerComplement.ne_zero hx)
 
 private lemma sineTerm_bound_aux (hZ : IsCompact Z) :
     ∃ u : ℕ → ℝ, Summable u ∧ ∀ j z, z ∈ Z → ‖sineTerm z j‖ ≤ u j := by
@@ -125,7 +125,7 @@ theorem HasProdUniformlyOn_sineTerm_prod_on_compact (hZ2 : Z ⊆ ℂ_ℤ)
 theorem HasProdLocallyUniformlyOn_euler_sin_prod :
     HasProdLocallyUniformlyOn (fun n : ℕ => fun z : ℂ => (1 + sineTerm z n))
     (fun x => (Complex.sin (π * x) / (π * x))) ℂ_ℤ := by
-  apply hasProdLocallyUniformlyOn_of_forall_compact (by apply isOpen_compl_range_intCast)
+  apply hasProdLocallyUniformlyOn_of_forall_compact isOpen_compl_range_intCast
   exact fun _ hZ hZC => HasProdUniformlyOn_sineTerm_prod_on_compact hZ hZC
 
 theorem sin_pi_z_ne_zero (hz : x ∈ ℂ_ℤ) : Complex.sin (π * x) ≠ 0 := by
@@ -146,7 +146,7 @@ theorem tendsto_logDeriv_euler_sin_div (hx : x ∈ ℂ_ℤ) :
 theorem logDeriv_sin_div_eq_cot (hz : x ∈ ℂ_ℤ) :
     logDeriv (fun t ↦ (Complex.sin (π * t) / (π * t))) x = π * cot (π * x) - 1 / x := by
   have : (fun t ↦ (Complex.sin (π * t)/ (π * t))) = fun z ↦
-    (Complex.sin ∘ fun t ↦ π * t) z / (π * z) := by rfl
+    (Complex.sin ∘ fun t ↦ π * t) z / (π * z) := by simp
   rw [this, logDeriv_div _ (by apply sin_pi_z_ne_zero hz) ?_
     (DifferentiableAt.comp _ (Complex.differentiableAt_sin) (by fun_prop)) (by fun_prop),
     logDeriv_comp (Complex.differentiableAt_sin) (by fun_prop), Complex.logDeriv_sin,
