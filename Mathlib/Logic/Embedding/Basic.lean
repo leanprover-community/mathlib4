@@ -353,7 +353,7 @@ theorem trans_arrowCongrLeft {α₁ : Sort u} {α₂ : Sort v} {α₃ : Sort x} 
   ext f a
   simp only [trans_apply, arrowCongrLeft_apply, Pi.default_def]
   rw [show (e₁₂.trans e₂₃) = e₂₃ ∘ e₁₂ by rfl,
-    Equiv.Injective.extend_comp _ e₁₂.injective _ e₂₃.injective]
+    Injective.extend_comp _ e₁₂.injective _ e₂₃.injective]
   rfl
 
 /-- Restrict both domain and codomain of an embedding. -/

@@ -17,7 +17,7 @@ import Mathlib.Order.Defs.Unbundled
 
 open Function
 
-universe u v w
+universe u v w x
 
 namespace Function
 
@@ -716,6 +716,28 @@ theorem extend_apply' (g : α → γ) (e' : β → γ) (b : β) (hb : ¬∃ a, f
   classical
   simp [Function.extend_def, hb]
 
+@[simp]
+theorem extend_id {α : Sort u} {γ : Sort w} (f : α → γ) (g : α → γ) :
+    extend id f g = f :=
+  funext <| injective_id.extend_apply f _
+
+theorem Injective.extend_comp {α₁ : Sort u} {α₂ : Sort v} {α₃ : Sort x} {γ : Sort w}
+    (e₁₂ : α₁ → α₂) (h₁₂ : Function.Injective e₁₂) (e₂₃ : α₂ → α₃) (h₂₃ : Function.Injective e₂₃)
+    (f : α₁ → γ) (j) :
+    extend (e₂₃ ∘ e₁₂) f j = extend e₂₃ (extend e₁₂ f (j ∘ e₂₃)) j := by
+  ext a
+  by_cases h₃ : ∃ b, e₂₃ b = a
+  · obtain ⟨b, rfl⟩ := h₃
+    rw [Injective.extend_apply h₂₃]
+    by_cases h₂ : ∃ c, e₁₂ c = b
+    · obtain ⟨c, rfl⟩ := h₂
+      rw [h₁₂.extend_apply]
+      exact (h₂₃.comp h₁₂).extend_apply _ _ _
+    · rw [extend_apply' _ _ _ h₂, extend_apply', comp_apply]
+      exact fun h ↦ h₂ (Exists.casesOn h fun c hc ↦ Exists.intro c (h₂₃ hc))
+  · rw [extend_apply' _ _ _ h₃, extend_apply']
+    exact fun h ↦ h₃ (Exists.casesOn h fun c hc ↦ Exists.intro (e₁₂ c) (hc))
+
 lemma factorsThrough_iff (g : α → γ) [Nonempty γ] : g.FactorsThrough f ↔ ∃ (e : β → γ), g = e ∘ f :=
   ⟨fun hf => ⟨extend f g (const β (Classical.arbitrary γ)),
       funext (fun x => by simp only [comp_apply, hf.extend_apply])⟩,
@@ -746,7 +768,7 @@ theorem extend_comp (hf : Injective f) (g : α → γ) (e' : β → γ) : extend
 
 theorem Injective.surjective_comp_right' (hf : Injective f) (g₀ : β → γ) :
     Surjective fun g : β → γ ↦ g ∘ f :=
-  fun g ↦ ⟨extend f g g₀, extend_comp hf _ _⟩
+  fun g ↦ ⟨extend f g g₀, Function.extend_comp hf _ _⟩
 
 theorem Injective.surjective_comp_right [Nonempty γ] (hf : Injective f) :
     Surjective fun g : β → γ ↦ g ∘ f :=

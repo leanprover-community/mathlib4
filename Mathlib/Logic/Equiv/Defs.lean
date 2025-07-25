@@ -336,27 +336,6 @@ theorem extend_apply {f : α ≃ β} (g : α → γ) (e' : β → γ) (b : β) :
     extend f g e' b = g (f.symm b) := by
   rw [← f.apply_symm_apply b, f.injective.extend_apply, apply_symm_apply]
 
-@[simp]
-theorem extend_id {α : Sort u} {γ : Sort w} (f : α → γ) (g : α → γ) :
-    extend id f g = f :=
-  funext <| injective_id.extend_apply f _
-
-theorem Injective.extend_comp {α₁ : Sort u} {α₂ : Sort v} {α₃ : Sort z} {γ : Sort w} (e₁₂ : α₁ → α₂)
-    (h₁₂ : Function.Injective e₁₂) (e₂₃ : α₂ → α₃) (h₂₃ : Function.Injective e₂₃) (f : _ → γ) (j) :
-    extend (e₂₃ ∘ e₁₂) f j = extend e₂₃ (extend e₁₂ f (j ∘ e₂₃)) j := by
-  ext a
-  by_cases h₃ : ∃ b, e₂₃ b = a
-  · obtain ⟨b, rfl⟩ := h₃
-    rw [Injective.extend_apply h₂₃]
-    by_cases h₂ : ∃ c, e₁₂ c = b
-    · obtain ⟨c, rfl⟩ := h₂
-      rw [h₁₂.extend_apply]
-      exact (h₂₃.comp h₁₂).extend_apply _ _ _
-    · rw [extend_apply' _ _ _ h₂, extend_apply', comp_apply]
-      exact fun h ↦ h₂ (Exists.casesOn h fun c hc ↦ Exists.intro c (h₂₃ hc))
-  · rw [extend_apply' _ _ _ h₃, extend_apply']
-    exact fun h ↦ h₃ (Exists.casesOn h fun c hc ↦ Exists.intro (e₁₂ c) (hc))
-
 /-- If `α` is equivalent to `β` and `γ` is equivalent to `δ`, then the type of equivalences `α ≃ γ`
 is equivalent to the type of equivalences `β ≃ δ`. -/
 def equivCongr {δ : Sort*} (ab : α ≃ β) (cd : γ ≃ δ) : (α ≃ γ) ≃ (β ≃ δ) where
