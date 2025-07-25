@@ -5,7 +5,6 @@ Authors: Etienne Marion
 -/
 import Mathlib.Analysis.Normed.Lp.PiLp
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.MeasureTheory.Constructions.Polish.Basic
 
 /-!
 # Measurable space structure on `WithLp`
