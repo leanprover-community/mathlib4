@@ -651,7 +651,8 @@ lemma functorOfTransform_map_whiskerLeft
     simp only [functorOfTransform_map_app_snd, comp_obj,
       CatCospanTransform.comp_right,
       CatCospanTransformMorphism.whiskerLeft_right, whiskerLeft_app, map_comp,
-      functorOfTransformObjComp_hom_app_snd, functorOfTransformObjComp_inv_app_snd,
+      functorOfTransformObjComp_hom_app_snd,
+      functorOfTransformObjComp_inv_app_snd,
       Category.assoc, Iso.hom_inv_id_app_assoc, NatTrans.naturality_assoc,
       NatIso.cancel_natIso_inv_left]
     simp [← Functor.map_comp_assoc]
@@ -670,7 +671,8 @@ lemma functorOfTransform_map_whiskerRight
     simp only [functorOfTransform_map_app_fst, comp_obj,
       CatCospanTransform.comp_left,
       CatCospanTransformMorphism.whiskerRight_left, whiskerRight_app, map_comp,
-      functorOfTransformObjComp_hom_app_fst, functorOfTransformObjComp_inv_app_fst,
+      functorOfTransformObjComp_hom_app_fst,
+      functorOfTransformObjComp_inv_app_fst,
       CatCommSq.iso_inv_naturality_assoc, Category.assoc,
       Iso.hom_inv_id_app_assoc, NatIso.cancel_natIso_inv_left]
     -- needs to be squeezed to avoid infinite recursion
@@ -681,7 +683,8 @@ lemma functorOfTransform_map_whiskerRight
     simp only [functorOfTransform_map_app_snd, comp_obj,
       CatCospanTransform.comp_right,
       CatCospanTransformMorphism.whiskerRight_right, whiskerRight_app, map_comp,
-      functorOfTransformObjComp_hom_app_snd, functorOfTransformObjComp_inv_app_snd,
+      functorOfTransformObjComp_hom_app_snd,
+      functorOfTransformObjComp_inv_app_snd,
       CatCommSq.iso_inv_naturality_assoc, Category.assoc,
       Iso.hom_inv_id_app_assoc, NatIso.cancel_natIso_inv_left]
     -- needs to be squeezed to avoid infinite recursion
@@ -722,7 +725,8 @@ lemma functorOfTransform_map_associator
     simp only [functorOfTransform_map_app_snd, comp_obj,
       CatCospanTransform.comp_right,
       CatCospanTransform.associator_hom_right_app, Category.id_comp, map_comp,
-      functorOfTransformObjComp_hom_app_snd, functorOfTransformObjComp_inv_app_snd,
+      functorOfTransformObjComp_hom_app_snd,
+      functorOfTransformObjComp_inv_app_snd,
       Functor.comp_map, Category.assoc, Iso.hom_inv_id_app_assoc,
       CatCommSq.iso_inv_naturality_assoc, NatIso.cancel_natIso_inv_left]
     simp [← Functor.map_comp_assoc, Iso.hom_inv_id_app_assoc,
