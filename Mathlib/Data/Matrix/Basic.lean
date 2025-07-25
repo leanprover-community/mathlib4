@@ -683,6 +683,19 @@ def matrix (S : Subring R) : Subring (Matrix n n R) where
 
 end Subring
 
+namespace Submodule
+
+variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+
+/-- A version of `Set.matrix` for `Submodule`s.
+Given a `Submodule` `S`, `S.matrix` is the `Submodule` of matrices `m`
+all of whose entries `m i j` belong to `S`. -/
+def matrix (S : Submodule R M) : Submodule R (Matrix m n M) where
+  __ := S.toAddSubmonoid.matrix
+  smul_mem' _ _ hm i j := Submodule.smul_mem _ _ (hm i j)
+
+end Submodule
+
 open Matrix
 
 namespace Matrix
