@@ -199,21 +199,10 @@ theorem lifting_property (f : M →ₗ[R] N) (hf : Function.Surjective f) :
     Submodule.quotientEquivOfIsCompl _ m compl).toLinearMap
   ext x
   dsimp
-  obtain ⟨z, hz⟩ := hf x
-  have eqz: z = ((Submodule.prodEquivOfIsCompl _ _ compl).symm z).1 +
-      ((Submodule.prodEquivOfIsCompl _ _ compl).symm z).2 := by
-    refine (Submodule.prodEquivOfIsCompl _ _ compl).symm.injective ?_
-    simp
-  have eq : (((LinearMap.ker f).quotientEquivOfIsCompl m compl)
-      ((f.quotKerEquivOfSurjective hf).symm x)) =
-      ((Submodule.prodEquivOfIsCompl _ _ compl).symm z).2 := by
-    refine ((LinearMap.ker f).quotientEquivOfIsCompl m compl).symm.injective ?_
-    refine (f.quotKerEquivOfSurjective hf).injective ?_
-    conv_lhs => rw [← hz, eqz]
-    simp [LinearMap.quotKerEquivOfSurjective]
-  rw [eq]
-  conv_rhs => rw [← hz, eqz]
-  simp
+  obtain ⟨z, rfl⟩ := hf x
+  rw [← LinearMap.sub_mem_ker_iff, ← Submodule.Quotient.mk_eq_zero, ← Submodule.mkQ_apply,
+    map_sub, Submodule.mkQ_apply, Submodule.mkQ_apply, Submodule.mk_quotientEquivOfIsCompl_apply,
+    ← LinearMap.quotKerEquivOfSurjective_apply_mk f hf, LinearEquiv.symm_apply_apply, sub_self]
 
 theorem eq_bot_or_exists_simple_le (N : Submodule R M) : N = ⊥ ∨ ∃ m ≤ N, IsSimpleModule R m := by
   simpa only [isSimpleModule_iff_isAtom, and_comm] using eq_bot_or_exists_atom_le _
