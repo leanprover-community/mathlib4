@@ -391,6 +391,9 @@ protected lemma comm [R.IsSymm] : a ~[R] b ↔ b ~[R] a := comm_of (· ~[R] ·)
 variable (R) in
 @[simp] lemma inv_eq_self [R.IsSymm] : R.inv = R := by ext; exact R.comm
 
+instance isSymm_empty : (∅ : Rel α α).IsSymm where symm _ _ := by simp
+instance isSymm_univ : Rel.IsSymm (Set.univ : Rel α α) where symm _ _ := by simp
+
 instance isSymm_inter [R₁.IsSymm] [R₂.IsSymm] : (R₁ ∩ R₂).IsSymm where
   symm _ _ := .imp R₁.symm R₂.symm
 
@@ -400,6 +403,8 @@ protected lemma IsSymm.sInter {ℛ : Set <| Rel α α} (hℛ : ∀ R ∈ ℛ, R.
 
 instance isSymm_iInter {ι : Sort*} {R : ι → Rel α α} [∀ i, (R i).IsSymm] :
     Rel.IsSymm (⋂ i, R i) := .sInter <| by simpa
+
+instance isSymm_id : (Rel.id : Rel α α).IsSymm where symm _ _ := .symm
 
 instance isSymm_preimage {f : β → α} [R.IsSymm] : Rel.IsSymm (Prod.map f f ⁻¹' R) where
   symm _ _ := R.symm
@@ -439,9 +444,9 @@ lemma isTrans_iff_comp_subset_self : R.IsTrans ↔ R ○ R ⊆ R where
   mp _ := comp_subset_self
   mpr h := ⟨fun _ _ _ hx hy ↦ h ⟨_, hx, hy⟩⟩
 
-lemma isTrans_empty : (∅ : Rel α α).IsTrans where trans _ _ _ := by simp
-lemma isTrans_univ : Rel.IsTrans (Set.univ : Rel α α) where trans _ _ _ := by simp
-lemma isTrans_singleton (x : α × α) : Rel.IsTrans {x} where trans _ _ _ := by aesop
+instance isTrans_empty : (∅ : Rel α α).IsTrans where trans _ _ _ := by simp
+instance isTrans_univ : Rel.IsTrans (Set.univ : Rel α α) where trans _ _ _ := by simp
+instance isTrans_singleton (x : α × α) : Rel.IsTrans {x} where trans _ _ _ := by aesop
 
 instance isTrans_inter [R₁.IsTrans] [R₂.IsTrans] : (R₁ ∩ R₂).IsTrans where
   trans _a _b _c hab hbc := ⟨R₁.trans hab.1 hbc.1, R₂.trans hab.2 hbc.2⟩
@@ -452,6 +457,8 @@ protected lemma IsTrans.sInter {ℛ : Set <| Rel α α} (hℛ : ∀ R ∈ ℛ, R
 
 instance isTrans_iInter {ι : Sort*} {R : ι → Rel α α} [∀ i, (R i).IsTrans] :
     Rel.IsTrans (⋂ i, R i) := .sInter <| by simpa
+
+instance isTrans_id : (Rel.id : Rel α α).IsTrans where trans _ _ _ := .trans
 
 instance isTrans_preimage {f : β → α} [R.IsTrans] : Rel.IsTrans (Prod.map f f ⁻¹' R) where
   trans _ _ _ := R.trans
