@@ -528,7 +528,8 @@ lemma functorOfTransformObjComp_hom_app_fst (ψ : CatCospanTransform R B R' B')
       ψ'.left.map ((CatCommSq.iso T (functorOfTransform T L T' L'|>.obj ψ)
         ψ.left T').hom.app x) ≫
       (CatCommSq.iso T' (functorOfTransform T' L' T'' L''|>.obj ψ')
-        ψ'.left T'').hom.app (functorOfTransform T L T' L'|>.obj ψ|>.obj x) := by
+        ψ'.left T'').hom.app
+          (functorOfTransform T L T' L'|>.obj ψ|>.obj x) := by
   simp [functorOfTransformObjComp, CatCommSq.iso, functorOfTransform]
 
 lemma functorOfTransformObjComp_hom_app_snd (ψ : CatCospanTransform R B R' B')
@@ -539,7 +540,8 @@ lemma functorOfTransformObjComp_hom_app_snd (ψ : CatCospanTransform R B R' B')
       ψ'.right.map ((CatCommSq.iso L (functorOfTransform T L T' L'|>.obj ψ)
         ψ.right L').hom.app x) ≫
       (CatCommSq.iso L' (functorOfTransform T' L' T'' L''|>.obj ψ')
-        ψ'.right L'').hom.app (functorOfTransform T L T' L'|>.obj ψ|>.obj x) := by
+        ψ'.right L'').hom.app
+          (functorOfTransform T L T' L'|>.obj ψ|>.obj x) := by
   simp [functorOfTransformObjComp, CatCommSq.iso, functorOfTransform]
 
 lemma functorOfTransformObjComp_inv_app_fst (ψ : CatCospanTransform R B R' B')
