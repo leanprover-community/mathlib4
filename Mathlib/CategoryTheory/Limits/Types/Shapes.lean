@@ -815,7 +815,7 @@ lemma equivalence_rel' [Mono f] : _root_.Equivalence (Rel' f g) where
   refl := Rel'.refl
   symm h := h.symm
   trans := by
-    rintro x y z (_|⟨_, _, h⟩|s|_) hyz
+    rintro x y z (_ | ⟨_, _, h⟩ | s | _) hyz
     · exact hyz
     · obtain z₁|z₂ := z
       · rw [inl_rel'_inl_iff] at hyz
@@ -855,7 +855,7 @@ def equivPushout' : Pushout f g ≃ Pushout' f g where
     apply Quot.sound
     apply Rel'.inl_inr)
   invFun := Quot.lift (Quot.mk _) (by
-    rintro a b (_|⟨x₀, y₀, h⟩|_|_)
+    rintro a b (_ | ⟨x₀, y₀, h⟩ | _ | _)
     · rfl
     · have h₀ : Rel f g _ _ := Rel.inl_inr x₀
       rw [Quot.sound h₀, h]
@@ -939,7 +939,7 @@ def MulticospanIndex.sectionsEquiv :
         | .left i => s.val i
         | .right j => I.fst j (s.val _)
       property := by
-        rintro _ _ (_|_|r)
+        rintro _ _ (_ | _ | r)
         · rfl
         · rfl
         · exact (s.property r).symm }
@@ -947,7 +947,7 @@ def MulticospanIndex.sectionsEquiv :
     { val := fun i ↦ s.val (.left i)
       property := fun r ↦ (s.property (.fst r)).trans (s.property (.snd r)).symm }
   right_inv s := by
-    ext (_|r)
+    ext (_ | r)
     · rfl
     · exact s.property (.fst r)
 
