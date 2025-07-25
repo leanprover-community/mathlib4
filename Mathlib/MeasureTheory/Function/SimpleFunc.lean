@@ -562,17 +562,20 @@ lemma smul_const [SMul K β] (k : K) (b : β) :
 
 lemma one_eq_const_one [One β] : (1 : α →ₛ β) = const α 1 := rfl
 
-open Function in
 instance [NonUnitalNonAssocSemiring β] : NonUnitalNonAssocSemiring (α →ₛ β) :=
-  Injective.nonUnitalNonAssocSemiring (fun f : α →ₛ β ↦ ⇑f) SimpleFunc.coe_injective
+  Function.Injective.nonUnitalNonAssocSemiring (fun f : α →ₛ β ↦ ⇑f) SimpleFunc.coe_injective
       rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
-instance [NonAssocSemiring β] : NonAssocSemiring (α →ₛ β) where
-  one_mul _ := ext fun _ ↦ one_mul ..
-  mul_one _ := ext fun _ ↦ mul_one ..
+instance [NonUnitalSemiring β] : NonUnitalSemiring (α →ₛ β) :=
+  Function.Injective.nonUnitalSemiring (fun f : α →ₛ β ↦ ⇑f) SimpleFunc.coe_injective
+      rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
-instance [NonUnitalSemiring β] : NonUnitalSemiring (α →ₛ β) where
-  mul_assoc _ _ _ := ext fun _ ↦ mul_assoc ..
+instance [NatCast β] : NatCast (α →ₛ β) where
+  natCast n := const _ (NatCast.natCast n)
+
+instance [NonAssocSemiring β] : NonAssocSemiring (α →ₛ β) :=
+  Function.Injective.nonAssocSemiring (fun f : α →ₛ β ↦ ⇑f) SimpleFunc.coe_injective
+      rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
 
 instance [Semiring β] : Semiring (α →ₛ β) where
 
