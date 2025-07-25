@@ -169,7 +169,7 @@ protected theorem LocallyIntegrableOn.neg {f : X → E} (hf : LocallyIntegrableO
 
 end LocallyIntegrableOn
 
-/-- A function `f : X → E` is *locally integrable* if it is integrable on a neighborhood of every
+/-- A function `f : X → ε` is *locally integrable* if it is integrable on a neighborhood of every
 point. In particular, it is integrable on all compact sets,
 see `LocallyIntegrable.integrableOn_isCompact`. -/
 def LocallyIntegrable (f : X → ε) (μ : Measure X := by volume_tac) : Prop :=
@@ -310,7 +310,7 @@ theorem LocallyIntegrable.indicator {f : X → ε''} (hf : LocallyIntegrable f �
   rcases hf x with ⟨U, hU, h'U⟩
   exact ⟨U, hU, h'U.indicator hs⟩
 
-theorem locallyIntegrable_map_homeomorph [BorelSpace X] [BorelSpace Y] (e : X ≃ₜ Y) {f : Y → E}
+theorem locallyIntegrable_map_homeomorph [BorelSpace X] [BorelSpace Y] (e : X ≃ₜ Y) {f : Y → ε''}
     {μ : Measure X} : LocallyIntegrable f (Measure.map e μ) ↔ LocallyIntegrable (f ∘ e) μ := by
   refine ⟨fun h x => ?_, fun h x => ?_⟩
   · rcases h (e x) with ⟨U, hU, h'U⟩
@@ -390,7 +390,9 @@ theorem LocallyIntegrable.integrable_smul_right_of_hasCompactSupport
 
 open Filter
 
-theorem integrable_iff_integrableAtFilter_cocompact [PseudoMetrizableSpace ε] :
+variable [PseudoMetrizableSpace ε]
+
+theorem integrable_iff_integrableAtFilter_cocompact :
     Integrable f μ ↔ (IntegrableAtFilter f (cocompact X) μ ∧ LocallyIntegrable f μ) := by
   refine ⟨fun hf ↦ ⟨hf.integrableAtFilter _, hf.locallyIntegrable⟩, fun ⟨⟨s, hsc, hs⟩, hloc⟩ ↦ ?_⟩
   obtain ⟨t, htc, ht⟩ := mem_cocompact'.mp hsc
@@ -407,23 +409,20 @@ theorem integrable_iff_integrableAtFilter_atBot_atTop
     have aux := (IntegrableAtFilter.sup_iff.mpr h.1)
     exact (IntegrableAtFilter.sup_iff.mpr h.1).filter_mono cocompact_le_atBot_atTop
 
-theorem integrable_iff_integrableAtFilter_atBot
-    [PseudoMetrizableSpace ε] [LinearOrder X] [OrderTop X] [CompactIccSpace X] :
+theorem integrable_iff_integrableAtFilter_atBot [LinearOrder X] [OrderTop X] [CompactIccSpace X] :
     Integrable f μ ↔ IntegrableAtFilter f atBot μ ∧ LocallyIntegrable f μ := by
   constructor
   · exact fun hf ↦ ⟨hf.integrableAtFilter _, hf.locallyIntegrable⟩
   · refine fun h ↦ integrable_iff_integrableAtFilter_cocompact.mpr ⟨?_, h.2⟩
     exact h.1.filter_mono cocompact_le_atBot
 
-theorem integrable_iff_integrableAtFilter_atTop
-    [PseudoMetrizableSpace ε] [LinearOrder X] [OrderBot X] [CompactIccSpace X] :
+theorem integrable_iff_integrableAtFilter_atTop [LinearOrder X] [OrderBot X] [CompactIccSpace X] :
     Integrable f μ ↔ IntegrableAtFilter f atTop μ ∧ LocallyIntegrable f μ :=
   integrable_iff_integrableAtFilter_atBot (X := Xᵒᵈ)
 
 variable {a : X}
 
-theorem integrableOn_Iic_iff_integrableAtFilter_atBot
-    [PseudoMetrizableSpace ε] [LinearOrder X] [CompactIccSpace X] :
+theorem integrableOn_Iic_iff_integrableAtFilter_atBot [LinearOrder X] [CompactIccSpace X] :
     IntegrableOn f (Iic a) μ ↔ IntegrableAtFilter f atBot μ ∧ LocallyIntegrableOn f (Iic a) μ := by
   refine ⟨fun h ↦ ⟨⟨Iic a, Iic_mem_atBot a, h⟩, h.locallyIntegrableOn⟩, fun ⟨⟨s, hsl, hs⟩, h⟩ ↦ ?_⟩
   haveI : Nonempty X := Nonempty.intro a
@@ -431,13 +430,12 @@ theorem integrableOn_Iic_iff_integrableAtFilter_atBot
   refine (integrableOn_union.mpr ⟨hs.mono ha' le_rfl, ?_⟩).mono Iic_subset_Iic_union_Icc le_rfl
   exact h.integrableOn_compact_subset Icc_subset_Iic_self isCompact_Icc
 
-theorem integrableOn_Ici_iff_integrableAtFilter_atTop
-    [PseudoMetrizableSpace ε] [LinearOrder X] [CompactIccSpace X] :
+theorem integrableOn_Ici_iff_integrableAtFilter_atTop [LinearOrder X] [CompactIccSpace X] :
     IntegrableOn f (Ici a) μ ↔ IntegrableAtFilter f atTop μ ∧ LocallyIntegrableOn f (Ici a) μ :=
   integrableOn_Iic_iff_integrableAtFilter_atBot (X := Xᵒᵈ)
 
 theorem integrableOn_Iio_iff_integrableAtFilter_atBot_nhdsWithin
-    [PseudoMetrizableSpace ε] [LinearOrder X] [CompactIccSpace X] [NoMinOrder X] [OrderTopology X] :
+    [LinearOrder X] [CompactIccSpace X] [NoMinOrder X] [OrderTopology X] :
     IntegrableOn f (Iio a) μ ↔ IntegrableAtFilter f atBot μ ∧
     IntegrableAtFilter f (𝓝[<] a) μ ∧ LocallyIntegrableOn f (Iio a) μ := by
   constructor
@@ -450,7 +448,7 @@ theorem integrableOn_Iio_iff_integrableAtFilter_atBot_nhdsWithin
       ⟨hbot, hlocal.mono_set (Iic_subset_Iio.mpr hs'_mono)⟩
 
 theorem integrableOn_Ioi_iff_integrableAtFilter_atTop_nhdsWithin
-    [PseudoMetrizableSpace ε] [LinearOrder X] [CompactIccSpace X] [NoMaxOrder X] [OrderTopology X] :
+    [LinearOrder X] [CompactIccSpace X] [NoMaxOrder X] [OrderTopology X] :
     IntegrableOn f (Ioi a) μ ↔ IntegrableAtFilter f atTop μ ∧
     IntegrableAtFilter f (𝓝[>] a) μ ∧ LocallyIntegrableOn f (Ioi a) μ :=
   integrableOn_Iio_iff_integrableAtFilter_atBot_nhdsWithin (X := Xᵒᵈ)
