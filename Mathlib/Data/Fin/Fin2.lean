@@ -150,6 +150,6 @@ instance instFintype : ∀ n, Fintype (Fin2 n)
   | n + 1 =>
     let ⟨elems, compl⟩ := instFintype n
     { elems    := elems.map ⟨Fin2.fs, @fs.inj _⟩ |>.cons .fz (by simp)
-      complete := by rintro (_|i) <;> simp [compl] }
+      complete := by rintro (_ | i) <;> simp [compl] }
 
 end Fin2
