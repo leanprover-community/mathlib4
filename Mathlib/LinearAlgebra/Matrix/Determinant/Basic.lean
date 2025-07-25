@@ -781,7 +781,7 @@ theorem det_succ_row {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) (i : Fin
   rw [← det_permute, det_succ_row_zero]
   refine Finset.sum_congr rfl fun j _ => ?_
   rw [mul_assoc, Matrix.submatrix_apply, submatrix_submatrix, id_comp, Function.comp_def, id]
-  congr 3
+  congr
   · rw [Equiv.Perm.inv_def, Fin.cycleRange_symm_zero]
   · ext i' j'
     rw [Equiv.Perm.inv_def, Matrix.submatrix_apply, Matrix.submatrix_apply,

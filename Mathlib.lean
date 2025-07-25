@@ -3775,7 +3775,6 @@ import Mathlib.Geometry.RingedSpace.PresheafedSpace.Gluing
 import Mathlib.Geometry.RingedSpace.PresheafedSpace.HasColimits
 import Mathlib.Geometry.RingedSpace.SheafedSpace
 import Mathlib.Geometry.RingedSpace.Stalks
-import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.Abelianization.Defs
 import Mathlib.GroupTheory.Abelianization.Finite
 import Mathlib.GroupTheory.Archimedean
@@ -5126,6 +5125,7 @@ import Mathlib.Probability.ProbabilityMassFunction.Integrals
 import Mathlib.Probability.ProbabilityMassFunction.Monad
 import Mathlib.Probability.Process.Adapted
 import Mathlib.Probability.Process.Filtration
+import Mathlib.Probability.Process.FiniteDimensionalLaws
 import Mathlib.Probability.Process.HittingTime
 import Mathlib.Probability.Process.Kolmogorov
 import Mathlib.Probability.Process.PartitionFiltration

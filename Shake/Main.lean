@@ -205,7 +205,7 @@ abbrev Edits := Std.HashMap Name (NameSet × Bitset)
 /-- Register that we want to remove `tgt` from the imports of `src`. -/
 def Edits.remove (ed : Edits) (src tgt : Name) : Edits :=
   match ed.get? src with
-  | none => ed.insert src (NameSet.insert ∅ tgt, 0)
+  | none => ed.insert src (RBTree.insert ∅ tgt, 0)
   | some (a, b) => ed.insert src (a.insert tgt, b)
 
 /-- Register that we want to add `tgt` to the imports of `src`. -/
@@ -419,11 +419,11 @@ structure Args where
 
 instance {α} [FromJson α] : FromJson (NameMap α) where
   fromJson? j := do
-    (← j.getObj?).foldlM (init := mkNameMap _) fun m a b => do
+    (← j.getObj?).foldM (init := mkNameMap _) fun m a b => do
       m.insert a.toName <$> fromJson? b
 instance {α} [ToJson α] : ToJson (NameMap α) where
-  toJson m := Json.obj <| m.foldl (init := ∅) fun m a b =>
-      m.insert (toString a) (toJson b)
+  toJson m := Json.obj <| m.fold (init := ∅) fun m a b =>
+      m.insert compare (toString a) (toJson b)
 
 /-- The config file format, which we both read and write. -/
 structure ShakeCfg where
@@ -517,7 +517,7 @@ def main (args : List String) : IO UInt32 := do
   -- Parse the config file
   let ignoreMods := toBitset s (cfg.ignoreAll?.getD [])
   let ignoreImps := toBitset s (cfg.ignoreImport?.getD [])
-  let ignore := (cfg.ignore?.getD {}).foldl (init := (∅ : Std.HashMap _ _)) fun m a v =>
+  let ignore := (cfg.ignore?.getD {}).fold (init := (∅ : Std.HashMap _ _)) fun m a v =>
     m.insert a (toBitset s v.toList)
 
   let noIgnore (i : Nat) :=
@@ -560,11 +560,11 @@ def main (args : List String) : IO UInt32 := do
         if args.global then
           -- in global mode all the edits are added to `ignoreImport`
           ignoreImportSet := edits.fold (init := ignoreImportSet)
-            (fun ignore _ (remove, _) => ignore.append remove)
+            (fun ignore _ (remove, _) => ignore.union remove)
         else
           -- in local mode all the edits are added to `ignore`
           ignore := edits.fold (init := ignore) fun ignore mod (remove, _) =>
-            let ns := (ignore.getD mod #[]).foldl (init := remove) (·.insert ·)
+            let ns := (ignore.findD mod #[]).foldl (init := remove) (·.insert ·)
             if ns.isEmpty then ignore.erase mod else
               ignore.insert mod ns.toArray
       -- If an entry is in `ignoreAll`, the `ignore` key is redundant
@@ -572,7 +572,7 @@ def main (args : List String) : IO UInt32 := do
         if ignore.contains i then
           ignore := ignore.erase i
       -- If an entry is in `ignoreImport`, the `ignore` value is redundant
-      ignore := ignore.foldl (init := {}) fun ignore mod ns =>
+      ignore := ignore.fold (init := {}) fun ignore mod ns =>
         let ns := ns.filter (!ignoreImportSet.contains ·)
         if ns.isEmpty then ignore else ignore.insert mod (ns.qsort (·.toString < ·.toString))
       -- Sort the lists alphabetically

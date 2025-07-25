@@ -34,8 +34,6 @@ In this file we have:
 * `freeCommRingEquivMvPolynomialInt : FreeCommRing α ≃+* MvPolynomial α ℤ` :
     `FreeCommRing α` is isomorphic to a polynomial ring.
 
-
-
 ## Implementation notes
 
 `FreeCommRing α` is implemented not using `MvPolynomial` but
@@ -47,6 +45,7 @@ of monomials in this free commutative ring.
 free commutative ring, free ring
 -/
 
+assert_not_exists Cardinal
 
 noncomputable section
 
@@ -125,7 +124,9 @@ protected theorem induction_on {motive : FreeCommRing α → Prop} (z : FreeComm
   have neg : ∀ x, motive x → motive (-x) := fun x ih => neg_one_mul x ▸ mul _ _ neg_one ih
   have one : motive 1 := neg_neg (1 : FreeCommRing α) ▸ neg _ neg_one
   FreeAbelianGroup.induction_on z (neg_add_cancel (1 : FreeCommRing α) ▸ add _ _ neg_one one)
-    (fun m => Multiset.induction_on m one fun a _ ih => mul (FreeCommRing.of a) _ (of a) ih)
+    (fun m => Multiset.induction_on m one fun a m ih => by
+      convert mul (FreeCommRing.of a) _ (of a) ih
+      apply of_cons)
     (fun _ ih => neg _ ih) add
 
 section lift
@@ -160,7 +161,7 @@ def lift : (α → R) ≃ (FreeCommRing α →+* R) :=
 
 @[simp]
 theorem lift_of (x : α) : lift f (of x) = f x :=
-  (FreeAbelianGroup.lift.of _ _).trans <| mul_one _
+  (FreeAbelianGroup.lift_apply_of _ _).trans <| mul_one _
 
 @[simp]
 theorem lift_comp_of (f : FreeCommRing α →+* R) : lift (f ∘ of) = f :=
@@ -367,8 +368,8 @@ theorem coe_eq : ((↑) : FreeRing α → FreeCommRing α) =
   dsimp [castFreeCommRing, toFreeCommRing, FreeRing.lift, FreeRing, FreeAbelianGroup.liftMonoid_coe,
     Functor.map]
   rw [← AddMonoidHom.coe_coe]
-  apply FreeAbelianGroup.lift.unique; intro L
-  simp only [AddMonoidHom.coe_coe, comp_apply, FreeAbelianGroup.lift.of]
+  apply FreeAbelianGroup.lift_unique; intro L
+  simp only [AddMonoidHom.coe_coe, comp_apply, FreeAbelianGroup.lift_apply_of]
   exact
     FreeMonoid.recOn L rfl fun hd tl ih => by
       rw [(FreeMonoid.lift _).map_mul, FreeMonoid.lift_eval_of, ih]

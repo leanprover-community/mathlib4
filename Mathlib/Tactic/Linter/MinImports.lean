@@ -89,7 +89,7 @@ open Mathlib.Command.MinImports
 It returns the modules that are transitively imported by `ms`, using the data in `tc`.
 -/
 def importsBelow (tc : NameMap NameSet) (ms : NameSet) : NameSet :=
-  ms.foldl (·.append <| tc.getD · default) ms
+  ms.fold (·.append <| tc.findD · default) ms
 
 @[inherit_doc Mathlib.Linter.linter.minImports]
 macro "#import_bumps" : command => `(
@@ -120,9 +120,9 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- when the linter reaches the end of the file or `#exit`, it gives a report
     if #[``Parser.Command.eoi, ``Lean.Parser.Command.exit].contains stx.getKind then
       let explicitImportsInFile : NameSet :=
-        .ofArray ((env.imports.map (·.module)).erase `Init)
-      let newImps := importsSoFar \ explicitImportsInFile
-      let currentlyUnneededImports := explicitImportsInFile \ importsSoFar
+        .fromArray ((env.imports.map (·.module)).erase `Init) Name.quickCmp
+      let newImps := importsSoFar.diff explicitImportsInFile
+      let currentlyUnneededImports := explicitImportsInFile.diff importsSoFar
       -- we read the current file, to do a custom parsing of the imports:
       -- this is a hack to obtain some `Syntax` information for the `import X` commands
       let fname ← getFileName
@@ -144,7 +144,7 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let newImports := getIrredundantImports env (← getAllImports stx id)
     let tot := (newImports.append importsSoFar)
     let redundant := env.findRedundantImports tot.toArray
-    let currImports := tot \ redundant
+    let currImports := tot.diff redundant
     let currImpArray := currImports.toArray.qsort Name.lt
     if currImpArray != #[] &&
        currImpArray ≠ importsSoFar.toArray.qsort Name.lt then

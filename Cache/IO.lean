@@ -3,7 +3,7 @@ Copyright (c) 2023 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Jon Eugster
 -/
-
+import Std.Data.TreeSet
 import Cache.Lean
 
 variable {α : Type}

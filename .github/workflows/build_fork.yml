@@ -394,7 +394,7 @@ jobs:
             ##  we filter out the output lines that begin with `✔ [xx/yy]`, where xx, yy
             ##  are either numbers or ?, and the "Build completed successfully." message.
             ##  We keep the rest, which are actual outputs of the files
-            awk '!($0 ~ "^\\s*✔ \\[[?0-9]*/[?0-9]*\\]" || $0 ~ "^Build completed successfully( \\([0-9]+ jobs\\))?\\.?$"){ print $0 }')"
+            awk '!($0 ~ "^\\s*✔ \\[[?0-9]*/[?0-9]*\\]" || $0 == "Build completed successfully."){ print $0 }')"
           if [ -n "${buildMsgs}" ]
           then
             printf $'%s\n' "${buildMsgs}"

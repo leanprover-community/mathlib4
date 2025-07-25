@@ -7,6 +7,7 @@ import Batteries.Tactic.Exact
 import Batteries.Tactic.Init
 import Mathlib.Logic.Basic
 import Mathlib.Util.AtomM
+import Std.Data.TreeMap
 import Qq
 
 /-!

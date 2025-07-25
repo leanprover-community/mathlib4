@@ -44,7 +44,7 @@ theorem norm_coe_mul (x : ℝ) (t : ℝ) :
   obtain rfl | ht := eq_or_ne t 0
   · simp
   simp only [norm_eq_infDist, ← Real.norm_eq_abs, ← infDist_smul₀ ht, smul_zero]
-  congr 1 with m
+  congr with m
   simp only [zmultiples, eq_iff_sub_mem, zsmul_eq_mul, mem_mk, mem_setOf_eq,
     mem_smul_set_iff_inv_smul_mem₀ ht, smul_eq_mul]
   simp_rw [mul_left_comm, ← smul_eq_mul, Set.range_smul, mem_smul_set_iff_inv_smul_mem₀ ht]
