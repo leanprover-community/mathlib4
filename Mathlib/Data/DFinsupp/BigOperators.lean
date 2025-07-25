@@ -211,7 +211,6 @@ lemma prod_ne_zero_iff : f.prod g ≠ 0 ↔ ∀ i ∈ f.support, g i (f i) ≠ 0
 
 end CommMonoidWithZero
 
-
 /--
 When summing over an `ZeroHom`, the decidability assumption is not needed, and the result is
 also an `ZeroHom`.
