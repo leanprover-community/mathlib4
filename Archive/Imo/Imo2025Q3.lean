@@ -134,7 +134,7 @@ def fExample : ℕ → ℕ := fun x ↦
 lemma LTE_lemma_of_pow_sub {a b : ℕ} (h1b : 1 < b) (hb : ¬2 ∣ b) (ha : a ≠ 0) (Evena : Even a) :
     (padicValNat 2 a + 2) ≤ padicValNat 2 (b ^ a - 1) := by
   have dvd : 2 ∣ b - 1 := by
-    simp at hb
+    simp only [Nat.two_dvd_ne_zero] at hb
     exact dvd_iff_mod_eq_zero.mpr (sub_mod_eq_zero_of_mod_eq hb)
   have Oddb : Odd b := Nat.odd_iff.mpr (Nat.two_dvd_ne_zero.mp hb)
   have : padicValNat 2 (b ^ a - 1) = padicValNat 2 ((b + 1) * (b - 1)) + padicValNat 2 a - 1 := by
