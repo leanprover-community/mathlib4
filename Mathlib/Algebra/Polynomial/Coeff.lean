@@ -222,10 +222,7 @@ end Fewnomials
 theorem coeff_mul_X_pow (p : R[X]) (n d : ℕ) :
     coeff (p * Polynomial.X ^ n) (d + n) = coeff p d := by
   rw [coeff_mul, Finset.sum_eq_single (d, n), coeff_X_pow, if_pos rfl, mul_one]
-  · simp only [mem_antidiagonal, ne_eq, coeff_X_pow, mul_ite, mul_one, mul_zero,
-      ite_eq_right_iff, Prod.forall, Prod.mk.injEq, not_and]
-    grind
-  · exact fun h1 => (h1 (mem_antidiagonal.2 rfl)).elim
+  all_goals grind [mem_antidiagonal, coeff_X_pow, mul_zero]
 
 @[simp]
 theorem coeff_X_pow_mul (p : R[X]) (n d : ℕ) :

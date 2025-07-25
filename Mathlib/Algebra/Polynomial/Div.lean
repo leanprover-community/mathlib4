@@ -135,9 +135,7 @@ theorem degree_modByMonic_lt [Nontrivial R] :
       have _wf := div_wf_lemma ⟨h.1, h.2⟩ hq
       have :=
         degree_modByMonic_lt (p - q * (C (leadingCoeff p) * X ^ (natDegree p - natDegree q))) hq
-      unfold modByMonic at this ⊢
-      unfold divModByMonicAux
-      grind
+      grind [divModByMonicAux, modByMonic]
     else
       Or.casesOn (not_and_or.1 h)
         (by
@@ -164,15 +162,11 @@ theorem natDegree_modByMonic_lt (p : R[X]) {q : R[X]} (hmq : Monic q) (hq : q �
 
 @[simp]
 theorem zero_modByMonic (p : R[X]) : 0 %ₘ p = 0 := by
-  classical
-  unfold modByMonic divModByMonicAux
-  grind
+  grind [modByMonic, divModByMonicAux]
 
 @[simp]
 theorem zero_divByMonic (p : R[X]) : 0 /ₘ p = 0 := by
-  classical
-  unfold divByMonic divModByMonicAux
-  grind
+  grind [divByMonic, divModByMonicAux]
 
 @[simp]
 theorem modByMonic_zero (p : R[X]) : p %ₘ 0 = p :=

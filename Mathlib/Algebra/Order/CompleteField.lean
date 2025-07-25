@@ -110,8 +110,7 @@ theorem coe_mem_cutMap_iff [CharZero β] : (q : β) ∈ cutMap β a ↔ (q : α)
 
 theorem cutMap_self (a : α) : cutMap α a = Iio a ∩ range (Rat.cast : ℚ → α) := by
   ext
-  simp only [mem_cutMap_iff, mem_inter_iff, mem_Iio, mem_range]
-  grind
+  grind [mem_cutMap_iff, mem_inter_iff, mem_range]
 
 end DivisionRing
 

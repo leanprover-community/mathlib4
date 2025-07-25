@@ -183,9 +183,7 @@ theorem vars_sum_of_disjoint [DecidableEq σ] (h : Pairwise <| (Disjoint on fun 
     unfold Pairwise onFun at h
     rw [hsum]
     simp only [Finset.disjoint_iff_ne] at h ⊢
-    intro v hv v2 hv2
-    rw [Finset.mem_biUnion] at hv2
-    grind
+    grind [Finset.mem_biUnion]
 
 end Sum
 
