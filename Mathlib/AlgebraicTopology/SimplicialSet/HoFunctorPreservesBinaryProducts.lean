@@ -132,12 +132,13 @@ instance hoFunctor.binaryProductNerveIsIso (C D : Type v) [Category.{v} C] [Cate
     exact IsIso.of_isIso_fac_right (prodComparison_comp hoFunctor nerveFunctor).symm
   apply isIso_of_fully_faithful nerveFunctor
 
+-- Note: `(Δ[n] : SSet.{w})` works, but I'm not sure it's the right thing to do here.
 /-- By `simplexIsNerve` this is isomorphic to a map of the form
 `hoFunctor.binaryProductNerveIsIso`. -/
-instance hoFunctor.binarySimplexProductIsIso (n m : ℕ) :
-    IsIso (prodComparison hoFunctor Δ[n] Δ[m]) :=
-  IsIso.of_isIso_fac_right
-    (prodComparison_natural hoFunctor (simplexIsNerve' n).hom (simplexIsNerve' m).hom).symm
+instance hoFunctor.binarySimplexProductIsIso.{w} (n m : ℕ) :
+    IsIso (prodComparison hoFunctor (Δ[n] : SSet.{w}) Δ[m]) :=
+  IsIso.of_isIso_fac_right (prodComparison_natural
+    hoFunctor (simplexIsNerveULiftFin.{w} n).hom (simplexIsNerveULiftFin m).hom).symm
 
 noncomputable
 def CartesianMonoidalCategory.tensorLeftIsoProd
