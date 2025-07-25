@@ -62,7 +62,8 @@ open CategoryTheory.Functor NatIso Category
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
-/-- An equivalence of categories.
+/--
+An equivalence of categories.
 
 We define an equivalence between `C` and `D` as a half-adjoint equivalence: a pair of functors
 `F : C ⥤ D` and `G : D ⥤ C` with a unit `η : 𝟭 C ≅ F ⋙ G` and counit `ε : G ⋙ F ≅ 𝟭 D`, such that
@@ -74,7 +75,8 @@ equivalence. I.e., the composite `G ⟶ GFG ⟶ G` is also the identity.
 
 The triangle equation `functor_unitIso_comp` is written as a family of equalities between
 morphisms. It is more complicated if we write it as an equality of natural transformations, because
-then we would either have to insert natural transformations like `F ⟶ F𝟭` or abuse defeq. -/
+then we would either have to insert natural transformations like `F ⟶ F𝟭` or abuse defeq.
+-/
 @[ext, stacks 001J]
 structure Equivalence (C : Type u₁) (D : Type u₂) [Category.{v₁} C] [Category.{v₂} D] where mk' ::
   /-- The forwards direction of an equivalence. -/
@@ -85,13 +87,11 @@ structure Equivalence (C : Type u₁) (D : Type u₂) [Category.{v₁} C] [Categ
   unitIso : 𝟭 C ≅ functor ⋙ inverse
   /-- The composition `inverse ⋙ functor` is isomorphic to the identity. -/
   counitIso : inverse ⋙ functor ≅ 𝟭 D
-  /--
-  The triangle law for the forwards direction of an equivalence: the unit and counit compose
+  /-- The triangle law for the forwards direction of an equivalence: the unit and counit compose
   to the identity when whiskered along the forwards direction.
 
   We state this as a family of equalities among morphisms instead of an equality of natural
-  transformations to avoid abusing defeq or inserting natural transformations like `F ⟶ F𝟭`.
-  -/
+  transformations to avoid abusing defeq or inserting natural transformations like `F ⟶ F𝟭`. -/
   functor_unitIso_comp :
     ∀ X : C, functor.map (unitIso.hom.app X) ≫ counitIso.hom.app (functor.obj X) =
       𝟙 (functor.obj X) := by aesop_cat
