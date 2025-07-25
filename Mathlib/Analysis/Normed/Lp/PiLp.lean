@@ -468,6 +468,9 @@ def homeomorph [∀ i, TopologicalSpace (β i)] : (Π i, β i) ≃ₜ PiLp p β 
   continuous_toFun := continuous_toLp p β
   continuous_invFun := continuous_ofLp p β
 
+lemma isOpenMap_apply [∀ i, TopologicalSpace (β i)] (i : ι) :
+    IsOpenMap (fun f : PiLp p β ↦ f i) := (isOpenMap_eval i).comp (homeomorph p β).symm.isOpenMap
+
 instance instProdT0Space [∀ i, TopologicalSpace (β i)] [∀ i, T0Space (β i)] :
     T0Space (PiLp p β) :=
   (homeomorph p β).t0Space
