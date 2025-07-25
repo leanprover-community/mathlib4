@@ -411,12 +411,19 @@ theorem IsIdempotentElem.quasispectrum_subset {𝕜 A : Type*} [Field 𝕜] [Rin
   simp [pow_two, ← Unitization.inr_mul, hp.eq, sub_eq_zero] at this
   exact fun a ha => eq_zero_or_one_of_sq_eq_self (pow_two (M := 𝕜) _ ▸ this a ha)
 
+variable {A : Type*} [TopologicalSpace A]
+  [Ring A] [StarRing A] [Module ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A]
+  [NonUnitalContinuousFunctionalCalculus ℂ A IsStarNormal]
+
 /-- An idempotent element in a C⋆-algebra is self-adjoint iff it is normal. -/
-theorem IsIdempotentElem.isSelfAdjoint_iff_isStarNormal {A : Type*} [TopologicalSpace A]
-    [Ring A] [StarRing A] [Module ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A]
-    [NonUnitalContinuousFunctionalCalculus ℂ A IsStarNormal] {p : A} (hp : IsIdempotentElem p) :
+theorem IsIdempotentElem.isSelfAdjoint_iff_isStarNormal {p : A} (hp : IsIdempotentElem p) :
     IsSelfAdjoint p ↔ IsStarNormal p := by
   refine ⟨fun h => h.isStarNormal, fun h =>
     isSelfAdjoint_iff_isStarNormal_and_quasispectrumRestricts.mpr
     ⟨h, ⟨fun x hx => ?_, congrFun rfl⟩⟩⟩
   rcases hp.quasispectrum_subset hx with (h | h) <;> simp [Set.mem_singleton_iff.mp h]
+
+/-- An element in a C⋆-algebra is a star projection if and only if it is idempotent and normal. -/
+theorem isStarProjection_iff'' {p : A} :
+    IsStarProjection p ↔ IsIdempotentElem p ∧ IsStarNormal p :=
+  (isStarProjection_iff p).eq ▸ and_congr_right_iff.eq ▸ fun h => h.isSelfAdjoint_iff_isStarNormal
