@@ -6,7 +6,7 @@ Authors: Yakov Pechersky
 
 import Mathlib.Algebra.GroupWithZero.Range
 import Mathlib.GroupTheory.ArchimedeanDensely
-import Mathlib.RingTheory.Valuation.ValuativeRel
+import Mathlib.RingTheory.Valuation.RankOne
 
 /-!
 
@@ -24,7 +24,7 @@ variable {R : Type} [CommRing R] [ValuativeRel R]
 
 open WithZero
 
-lemma nonempty_orderIsoWithZeroMulInt_iff :
+lemma nonempty_orderIso_withZeroMul_int_iff :
     Nonempty (ValueGroupWithZero R ≃*o ℤᵐ⁰) ↔
       IsDiscrete R ∧ IsNontrivial R ∧ MulArchimedean (ValueGroupWithZero R) := by
   constructor
@@ -50,17 +50,17 @@ lemma nonempty_orderIsoWithZeroMulInt_iff :
 
 lemma IsDiscrete.of_compatible_withZeroMulInt (v : Valuation R ℤᵐ⁰) [v.Compatible] :
     IsDiscrete R := by
-  have : IsRankLeOne R := .of_compatible_withZeroMulInt v
+  have : IsRankLeOne R := .of_compatible_mulArchimedean v
   have : MulArchimedean (ValueGroupWithZero R) := inferInstance
   by_cases h : IsNontrivial R
   · by_cases H : DenselyOrdered (ValueGroupWithZero R)
     · exfalso
-      refine (MonoidWithZeroHom.range_nontrivial (ValueGroupWithZero.unquot v)).not_subsingleton ?_
-      rw [← denselyOrdered_withZero_set_iff_subsingleton]
-      exact (ValueGroupWithZero.unquot_strictMono v).denselyOrdered_range
+      refine (MonoidWithZeroHom.range_nontrivial (ValueGroupWithZero.embed v)).not_subsingleton ?_
+      rw [← WithZero.denselyOrdered_set_iff_subsingleton]
+      exact (ValueGroupWithZero.embed_strictMono v).denselyOrdered_range
     · rw [isNontrivial_iff_nontrivial_units] at h
       rw [← LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered] at H
-      rw [nonempty_orderIsoWithZeroMulInt_iff] at H
+      rw [nonempty_orderIso_withZeroMul_int_iff] at H
       exact H.left
   · rw [isNontrivial_iff_nontrivial_units, not_nontrivial_iff_subsingleton] at h
     refine ⟨⟨0, zero_lt_one, fun y hy ↦ ?_⟩⟩
