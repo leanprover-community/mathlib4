@@ -598,17 +598,33 @@ register_option linter.style.declarationIndenting : Bool := {
 
 namespace Style.declarationIndenting
 
--- "Sorted" array of `String.Range`, used for range of non-comment code.
+/--
+Array of `String.Range`, used for range of non-comment code. It is well-formed w.r.t. if
+- any range in such an array neither overlaps nor be adjacent with another one, and
+- the order in the array is consistent with the order in string.
+
+The following functions work with well-formed `Ranges`.
+-/
 def Ranges := Array String.Range
 
--- It returns `Compare.eq` if they are overlaped, and with `overlap := true` it returns `.eq` also
--- when they are end to end. `compareRange x y (overlap := true) = .eq` means they can be merged.
-def compareRange (x y : String.Range) (overlap := true) :=
-  bif String.Range.overlaps x y (includeFirstStop := overlap) (includeSecondStop := overlap) then
+/--
+It returns `Compare.eq` if the two ranges are overlapped, and with `eqIfAdjacent := true` it returns
+`.eq` also when they are adjacent. In other cases, the order returned is consistent with their order
+in string. Also refer to `Ranges`.
+
+`x` and `y` can be merged if and only if `compareRange x y (overlap := true) = .eq`.
+-/
+def compareRange (x y : String.Range) (eqIfAdjacent := true) :=
+  bif String.Range.overlaps x y
+      (includeFirstStop := eqIfAdjacent) (includeSecondStop := eqIfAdjacent) then
     .eq
   else compare x.start.byteIdx y.start.byteIdx
 
-def expandRangeWithSpaces (str : String) (range : String.Range) : String.Range where
+/--
+Expand a range in the string until non-space character is reached, and continue to expand the right
+side if there are newline characters.
+-/
+def auxExpandRange (str : String) (range : String.Range) : String.Range where
   start := str.revFindAux (· != ' ') range.start |>.map (str.next ·) |>.getD 0
   stop :=
     let stop := str.findAux (· != ' ') str.endPos range.stop
@@ -617,21 +633,35 @@ def expandRangeWithSpaces (str : String) (range : String.Range) : String.Range w
     -- isn't comment, so we extend it again with only `'\n'`
     str.findAux (· != '\n') str.endPos stop
 
+/--
+Assuming `x y : String.Range` can be merged, merge them.
+
+(For more details, also refer to `compareRange`)
+-/
 def mergeRange (x y : String.Range) : String.Range where
   start := min x.start y.start
   stop := max x.stop y.stop
 
-def mergeRanges (ranges : Array <| Ranges) : Ranges :=
+/--
+Merge an array of `Ranges`' into one `Ranges`.
+-/
+def mergeRanges (ranges : Array Ranges) : Ranges :=
   ranges.foldl (·.mergeDedupWith (ord := ⟨compareRange⟩) · mergeRange) #[]
 
+/--
+Determine whether `range : String.Range` overlaps of `ranges : Ranges`.
+-/
 def overlapsWithRange (ranges : Ranges) (range : String.Range) :=
   ranges.binSearch range (compareRange · · false |>.isLT) |>.isSome
 
-partial def rangesOfSyntax (src : String) (stx : Syntax) : Ranges :=
+/--
+The non-comment range of `stx : Syntax`.
+-/
+def rangesOfSyntax (stx : Syntax) : Ranges :=
   match stx with
-  | .node _ _ args => mergeRanges <| args.map (rangesOfSyntax src)
-  | .atom (.original _ start _ stop) ..
-  | .ident (.original _ start _ stop) .. => #[expandRangeWithSpaces src ⟨start, stop⟩]
+  | .node _ _ args => mergeRanges <| args.map rangesOfSyntax
+  | .atom (.original _ start t stop) ..
+  | .ident (.original _ start t stop) .. => #[auxExpandRange t.str ⟨start, stop⟩]
   | _ => #[]
 
 open Qq Lean.Parser.Command in
@@ -669,7 +699,7 @@ def declarationIndentingLinter : Linter where run := withSetOptionIn fun stx => 
     let .some <| .atom head_src@(.original _ _ ⟨_, _, _⟩ headEndPos) _ := declHead_ | unreachable!
 
     -- ranges of codes that aren't comments
-    let declRanges := mergeRanges <| mid.map (rangesOfSyntax src)
+    let declRanges := mergeRanges <| mid.map rangesOfSyntax
 
     let warn (highlightText : String.Range) :=
       logLint linter.style.declarationIndenting
