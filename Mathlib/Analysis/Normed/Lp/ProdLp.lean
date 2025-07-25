@@ -482,6 +482,7 @@ lemma prod_continuous_ofLp : Continuous (@ofLp p (α × β)) := continuous_induc
 theorem prod_continuous_equiv : Continuous (WithLp.equiv p (α × β)) :=
   prod_continuous_ofLp _ _ _
 
+/-- `WithLp.equiv` as a homeomorphism. -/
 def homeomorph_prod : α × β ≃ₜ WithLp p (α × β) where
   toEquiv := (WithLp.equiv p (α × β)).symm
   continuous_toFun := prod_continuous_toLp p α β
@@ -520,6 +521,7 @@ lemma prod_uniformContinuous_ofLp : UniformContinuous (@ofLp p (α × β)) :=
 theorem prod_uniformContinuous_equiv : UniformContinuous (WithLp.equiv p (α × β)) :=
   prod_uniformContinuous_ofLp _ _ _
 
+/-- `WithLp.equiv` as a uniform isomorphism. -/
 def uniformEquiv_prod : α × β ≃ᵤ WithLp p (α × β) where
   toEquiv := (WithLp.equiv p (α × β)).symm
   uniformContinuous_toFun := prod_uniformContinuous_toLp p α β

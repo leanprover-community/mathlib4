@@ -830,10 +830,6 @@ instance : Ring (euclidean.mixedSpace K) :=
   have : Ring (EuclideanSpace ℂ {w : InfinitePlace K // IsComplex w}) := (WithLp.equiv 2 _).ring
   (WithLp.equiv 2 _).ring
 
-instance : MeasurableSpace (euclidean.mixedSpace K) := borel _
-
-instance : BorelSpace (euclidean.mixedSpace K) := ⟨rfl⟩
-
 variable [NumberField K]
 
 open Classical in

@@ -126,13 +126,7 @@ end
 /-! Note that the unapplied versions of these lemmas are deliberately omitted, as they break
 the use of the type synonym. -/
 
-@[deprecated "This lemma is a syntactic tautology." (since := "2025-07-25")]
-lemma ofLp_apply (x : PiLp p α) (i : ι) : ofLp x i = x i := rfl
 @[simp] lemma toLp_apply (x : ∀ i, α i) (i : ι) : toLp p x i = x i := rfl
-
-@[deprecated ofLp_apply (since := "2024-04-27")]
-theorem _root_.WithLp.equiv_pi_apply (x : PiLp p α) (i : ι) : WithLp.equiv p _ x i = x i :=
-  rfl
 
 @[deprecated toLp_apply (since := "2024-04-27")]
 theorem _root_.WithLp.equiv_symm_pi_apply (x : ∀ i, α i) (i : ι) :
@@ -464,6 +458,7 @@ theorem continuous_equiv_symm [∀ i, TopologicalSpace (β i)] :
     Continuous (WithLp.equiv p (Π i, β i)).symm :=
   continuous_toLp _ _
 
+/-- `WithLp.equiv` as a homeomorphism. -/
 def homeomorph [∀ i, TopologicalSpace (β i)] : (Π i, β i) ≃ₜ PiLp p β where
   toEquiv := (WithLp.equiv p (Π i, β i)).symm
   continuous_toFun := continuous_toLp p β
@@ -501,6 +496,7 @@ theorem uniformContinuous_equiv_symm [∀ i, UniformSpace (β i)] :
     UniformContinuous (WithLp.equiv p (∀ i, β i)).symm :=
   uniformContinuous_toLp _ _
 
+/-- `WithLp.equiv` as a uniform isomorphism. -/
 def uniformEquiv [∀ i, UniformSpace (β i)] : (Π i, β i) ≃ᵤ PiLp p β where
   toEquiv := (WithLp.equiv p (Π i, β i)).symm
   uniformContinuous_toFun := uniformContinuous_toLp p β
