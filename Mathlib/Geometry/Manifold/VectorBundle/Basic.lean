@@ -164,7 +164,8 @@ bundle at all, just that it is a fiber bundle over a charted base space.
 
 namespace Bundle
 
-/-- Characterization of `C^n` functions into a vector bundle. -/
+/-- Characterization of `C^n` functions into a vector bundle.
+Version at a point within a set. -/
 theorem contMDiffWithinAt_totalSpace {f : M → TotalSpace F E} {s : Set M} {x₀ : M} :
     ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F)) n f s x₀ ↔
       ContMDiffWithinAt IM IB n (fun x => (f x).proj) s x₀ ∧
@@ -185,7 +186,7 @@ theorem contMDiffWithinAt_totalSpace {f : M → TotalSpace F E} {s : Set M} {x�
     exact hx
   · simp only [mfld_simps]
 
-/-- Characterization of `C^n` functions into a vector bundle. -/
+/-- Characterization of `C^n` functions into a vector bundle. Version at a point. -/
 theorem contMDiffAt_totalSpace {f : M → TotalSpace F E} {x₀ : M} :
     ContMDiffAt IM (IB.prod 𝓘(𝕜, F)) n f x₀ ↔
       ContMDiffAt IM IB n (fun x ↦ (f x).proj) x₀ ∧
@@ -213,21 +214,22 @@ theorem contMDiff_proj : ContMDiff (IB.prod 𝓘(𝕜, F)) IB n (π F E) := fun 
 
 theorem contMDiffOn_proj {s : Set (TotalSpace F E)} :
     ContMDiffOn (IB.prod 𝓘(𝕜, F)) IB n (π F E) s :=
-  (Bundle.contMDiff_proj E).contMDiffOn
+  (contMDiff_proj E).contMDiffOn
 
 theorem contMDiffAt_proj {p : TotalSpace F E} : ContMDiffAt (IB.prod 𝓘(𝕜, F)) IB n (π F E) p :=
-  (Bundle.contMDiff_proj E).contMDiffAt
+  (contMDiff_proj E).contMDiffAt
 
 theorem contMDiffWithinAt_proj {s : Set (TotalSpace F E)} {p : TotalSpace F E} :
     ContMDiffWithinAt (IB.prod 𝓘(𝕜, F)) IB n (π F E) s p :=
-  (Bundle.contMDiffAt_proj E).contMDiffWithinAt
+  (contMDiffAt_proj E).contMDiffWithinAt
 
 variable (𝕜) [∀ x, AddCommMonoid (E x)]
 variable [∀ x, Module 𝕜 (E x)] [VectorBundle 𝕜 F E]
 
-theorem contMDiff_zeroSection : ContMDiff IB (IB.prod 𝓘(𝕜, F)) n (zeroSection F E) := fun x ↦ by
+theorem contMDiff_zeroSection : ContMDiff IB (IB.prod 𝓘(𝕜, F)) n (zeroSection F E) := by
+  intro x
   unfold zeroSection
-  rw [Bundle.contMDiffAt_section]
+  rw [contMDiffAt_section]
   apply (contMDiffAt_const (c := 0)).congr_of_eventuallyEq
   filter_upwards [(trivializationAt F E x).open_baseSet.mem_nhds
     (mem_baseSet_trivializationAt F E x)] with y hy
@@ -494,6 +496,49 @@ theorem Trivialization.contMDiffOn_symm (e : Trivialization F (π F E)) [MemTriv
   refine ⟨contMDiffOn_fst.congr fun x hx ↦ e.proj_symm_apply hx,
     contMDiffOn_snd.congr fun x hx ↦ ?_⟩
   rw [e.apply_symm_apply hx]
+
+/-- Smoothness of a `C^n` section at `x₀` within a set `a` can be determined
+using any trivialisation whose `baseSet` contains `x₀`. -/
+theorem Trivialization.contMDiffWithinAt_section {s : ∀ x, E x} (a : Set B) {x₀ : B}
+    {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B)}
+    [MemTrivializationAtlas e] (hx₀ : x₀ ∈ e.baseSet) :
+    ContMDiffWithinAt IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) a x₀ ↔
+      ContMDiffWithinAt IB 𝓘(𝕜, F) n (fun x ↦ (e ⟨x, s x⟩).2) a x₀ := by
+  rw [e.contMDiffWithinAt_iff]
+  · change ContMDiffWithinAt IB IB n id a x₀ ∧ _ ↔ _
+    simp [contMDiffWithinAt_id]
+  · rwa [mem_source]
+
+/-- Smoothness of a `C^n` section at `x₀` can be determined
+using any trivialisation whose `baseSet` contains `x₀`. -/
+theorem contMDiffAt_section_of_mem_baseSet {s : ∀ x, E x} {x₀ : B}
+    {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B)}
+    [MemTrivializationAtlas e] (hx₀ : x₀ ∈ e.baseSet) :
+    ContMDiffAt IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) x₀ ↔
+      ContMDiffAt IB 𝓘(𝕜, F) n (fun x ↦ (e ⟨x, s x⟩).2) x₀ := by
+  simp_rw [← contMDiffWithinAt_univ]
+  exact e.contMDiffWithinAt_section univ hx₀
+
+/-- Smoothness of a `C^n` section on `s` can be determined
+using any trivialisation whose `baseSet` contains `s`. -/
+theorem contMDiffOn_section_of_mem_baseSet {s : ∀ x, E x} {a : Set B}
+    {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B)}
+    [MemTrivializationAtlas e] (ha : IsOpen a) (ha' : a ⊆ e.baseSet) :
+    ContMDiffOn IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) a ↔
+      ContMDiffOn IB 𝓘(𝕜, F) n (fun x ↦ (e ⟨x, s x⟩).2) a := by
+  refine ⟨fun h x hx ↦ ?_, fun h x hx ↦ ?_⟩ <;>
+  have := (h x hx).contMDiffAt <| ha.mem_nhds hx
+  · exact ((contMDiffAt_section_of_mem_baseSet (ha' hx)).mp this).contMDiffWithinAt
+  · exact ((contMDiffAt_section_of_mem_baseSet (ha' hx)).mpr this).contMDiffWithinAt
+
+/-- For any trivialization `e`, the smoothness of a `C^n` section on `e.baseSet`
+can be determined using `e`. -/
+theorem contMDiffOn_section_of_mem_baseSet₀ {s : ∀ x, E x}
+    {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B)}
+    [MemTrivializationAtlas e] :
+    ContMDiffOn IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) e.baseSet ↔
+      ContMDiffOn IB 𝓘(𝕜, F) n (fun x ↦ (e ⟨x, s x⟩).2) e.baseSet :=
+  contMDiffOn_section_of_mem_baseSet e.open_baseSet (subset_refl _)
 
 end
 

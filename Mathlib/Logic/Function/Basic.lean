@@ -47,9 +47,9 @@ theorem onFun_apply (f : β → β → γ) (g : α → β) (a b : α) : onFun f 
   rfl
 
 lemma hfunext {α α' : Sort u} {β : α → Sort v} {β' : α' → Sort v} {f : ∀ a, β a} {f' : ∀ a, β' a}
-    (hα : α = α') (h : ∀ a a', HEq a a' → HEq (f a) (f' a')) : HEq f f' := by
+    (hα : α = α') (h : ∀ a a', a ≍ a' → f a ≍ f' a') : f ≍ f' := by
   subst hα
-  have : ∀a, HEq (f a) (f' a) := fun a ↦ h a a (HEq.refl a)
+  have : ∀ a, f a ≍ f' a := fun a ↦ h a a (HEq.refl a)
   have : β = β' := by funext a; exact type_eq_of_heq (this a)
   subst this
   apply heq_of_eq
@@ -827,13 +827,13 @@ class HasUncurry (α : Type*) (β : outParam Type*) (γ : outParam Type*) where
   for bundled maps. -/
   uncurry : α → β → γ
 
-@[inherit_doc] notation:arg "↿" x:arg => HasUncurry.uncurry x
+@[inherit_doc] prefix:max "↿" => HasUncurry.uncurry
 
 instance hasUncurryBase : HasUncurry (α → β) α β :=
   ⟨id⟩
 
 instance hasUncurryInduction [HasUncurry β γ δ] : HasUncurry (α → β) (α × γ) δ :=
-  ⟨fun f p ↦ (↿(f p.1)) p.2⟩
+  ⟨fun f p ↦ ↿(f p.1) p.2⟩
 
 end Uncurry
 

@@ -1616,6 +1616,9 @@ Q1530275:
 
 Q1535225:
   title: Łoś' theorem
+  decl: FirstOrder.Language.Ultraproduct.sentence_realize
+  authors: Aaron Anderson
+  date: 2022-03-09
 
 Q1542114:
   title: Bézout's theorem

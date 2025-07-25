@@ -836,13 +836,13 @@ def extendRestrictScalarsAdj {R : Type u₁} {S : Type u₂} [CommRing R] [CommR
 lemma extendRestrictScalarsAdj_homEquiv_apply
     {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S]
     {f : R →+* S} {M : ModuleCat.{max v u₂} R} {N : ModuleCat S}
-    (φ : (extendScalars f).obj M ⟶ N) (m : M):
+    (φ : (extendScalars f).obj M ⟶ N) (m : M) :
     (extendRestrictScalarsAdj f).homEquiv _ _ φ m = φ ((1 : S) ⊗ₜ m) :=
   rfl
 
 lemma extendRestrictScalarsAdj_unit_app_apply
     {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S]
-    (f : R →+* S) (M : ModuleCat.{max v u₂} R) (m : M):
+    (f : R →+* S) (M : ModuleCat.{max v u₂} R) (m : M) :
     (extendRestrictScalarsAdj f).unit.app M m = (1 : S) ⊗ₜ[R,f] m :=
   rfl
 
@@ -880,7 +880,7 @@ noncomputable def extendScalarsId : extendScalars (RingHom.id R) ≅ 𝟭 _ :=
   ((conjugateIsoEquiv (extendRestrictScalarsAdj (RingHom.id R)) Adjunction.id).symm
     (restrictScalarsId R)).symm
 
-lemma extendScalarsId_inv_app_apply (M : ModuleCat R) (m : M):
+lemma extendScalarsId_inv_app_apply (M : ModuleCat R) (m : M) :
     (extendScalarsId R).inv.app M m = (1 : R) ⊗ₜ m := rfl
 
 lemma homEquiv_extendScalarsId (M : ModuleCat R) :

@@ -180,7 +180,7 @@ def consCases {P : (∀ i : Fin n.succ, α i) → Sort v} (h : ∀ x₀ x, P (Fi
 
 @[simp]
 theorem consCases_cons {P : (∀ i : Fin n.succ, α i) → Sort v} (h : ∀ x₀ x, P (Fin.cons x₀ x))
-    (x₀ : α 0) (x : ∀ i : Fin n, α i.succ) : @consCases _ _ _ h (cons x₀ x) = h x₀ x := by
+    (x₀ : α 0) (x : ∀ i : Fin n, α i.succ) : consCases h (cons x₀ x) = h x₀ x := by
   rw [consCases, cast_eq]
   congr
 
@@ -707,7 +707,7 @@ def snocCases {P : (∀ i : Fin n.succ, α i) → Sort*}
   _root_.cast (by rw [Fin.snoc_init_self]) <| h (Fin.init x) (x <| Fin.last _)
 
 @[simp] lemma snocCases_snoc
-    {P : (∀ i : Fin (n+1), α i) → Sort*} (h : ∀ x x₀, P (Fin.snoc x x₀))
+    {P : (∀ i : Fin (n + 1), α i) → Sort*} (h : ∀ x x₀, P (Fin.snoc x x₀))
     (x : ∀ i : Fin n, (Fin.init α) i) (x₀ : α (Fin.last _)) :
     snocCases h (Fin.snoc x x₀) = h x x₀ := by
   rw [snocCases, cast_eq_iff_heq, Fin.init_snoc, Fin.snoc_last]
@@ -1026,8 +1026,8 @@ not a definitional equality. -/
 /-- A `HEq` version of `Fin.removeNth_removeNth_eq_swap`. -/
 theorem removeNth_removeNth_heq_swap {α : Fin (n + 2) → Sort*} (m : ∀ i, α i)
     (i : Fin (n + 1)) (j : Fin (n + 2)) :
-    HEq (i.removeNth (j.removeNth m))
-      ((i.predAbove j).removeNth ((j.succAbove i).removeNth m)) := by
+    i.removeNth (j.removeNth m) ≍
+      (i.predAbove j).removeNth ((j.succAbove i).removeNth m) := by
   apply Function.hfunext rfl
   simp only [heq_iff_eq]
   rintro k _ rfl

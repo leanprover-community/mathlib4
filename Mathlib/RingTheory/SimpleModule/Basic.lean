@@ -199,6 +199,18 @@ theorem extension_property {P} [AddCommGroup P] [Module R P] (f : N →ₗ[R] M)
   have ⟨m, compl⟩ := exists_isCompl (LinearMap.range f)
   ⟨g ∘ₗ LinearMap.linearProjOfIsCompl _ f hf compl, by ext; simp⟩
 
+theorem lifting_property (f : M →ₗ[R] N) (hf : Function.Surjective f) :
+    ∃ h : N →ₗ[R] M, f ∘ₗ h = LinearMap.id := by
+  have ⟨m, compl⟩ := exists_isCompl (LinearMap.ker f)
+  use Submodule.subtype _ ∘ₗ ((f.quotKerEquivOfSurjective hf).symm ≪≫ₗ
+    Submodule.quotientEquivOfIsCompl _ m compl).toLinearMap
+  ext x
+  dsimp
+  obtain ⟨z, rfl⟩ := hf x
+  rw [← LinearMap.sub_mem_ker_iff, ← Submodule.Quotient.mk_eq_zero, ← Submodule.mkQ_apply,
+    map_sub, Submodule.mkQ_apply, Submodule.mkQ_apply, Submodule.mk_quotientEquivOfIsCompl_apply,
+    ← LinearMap.quotKerEquivOfSurjective_apply_mk f hf, LinearEquiv.symm_apply_apply, sub_self]
+
 theorem sSup_simples_le (N : Submodule R M) :
     sSup { m : Submodule R M | IsSimpleModule R m ∧ m ≤ N } = N := by
   simpa only [isSimpleModule_iff_isAtom] using sSup_atoms_le_eq _

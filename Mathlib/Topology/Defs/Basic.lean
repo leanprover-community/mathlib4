@@ -63,7 +63,6 @@ universe u v
 open Set
 
 /-- A topology on `X`. -/
-@[to_additive existing TopologicalSpace]
 class TopologicalSpace (X : Type u) where
   /-- A predicate saying that a set is an open set. Use `IsOpen` in the root namespace instead. -/
   protected IsOpen : Set X → Prop

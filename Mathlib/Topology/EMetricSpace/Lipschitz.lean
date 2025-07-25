@@ -266,7 +266,7 @@ protected theorem iterate {f : α → α} (hf : LipschitzWith K f) : ∀ n, Lips
   | n + 1 => by rw [pow_succ]; exact (LipschitzWith.iterate hf n).comp hf
 
 theorem edist_iterate_succ_le_geometric {f : α → α} (hf : LipschitzWith K f) (x n) :
-    edist (f^[n] x) (f^[n + 1] x) ≤ edist x (f x) * (K : ℝ≥0∞) ^ n := by
+    edist (f^[n] x) (f^[n+1] x) ≤ edist x (f x) * (K : ℝ≥0∞) ^ n := by
   rw [iterate_succ, mul_comm]
   simpa only [ENNReal.coe_pow] using (hf.iterate n) x (f x)
 
@@ -483,7 +483,7 @@ theorem continuous_prod_of_dense_continuous_lipschitzWith [PseudoEMetricSpace α
     [TopologicalSpace β] [PseudoEMetricSpace γ] (f : α × β → γ) (K : ℝ≥0) {s : Set α}
     (hs : Dense s) (ha : ∀ a ∈ s, Continuous fun y => f (a, y))
     (hb : ∀ b, LipschitzWith K fun x => f (x, b)) : Continuous f := by
-  simp only [continuous_iff_continuousOn_univ, ← univ_prod_univ, ← lipschitzOnWith_univ] at *
+  simp only [← continuousOn_univ, ← univ_prod_univ, ← lipschitzOnWith_univ] at *
   exact continuousOn_prod_of_subset_closure_continuousOn_lipschitzOnWith f (subset_univ _)
     hs.closure_eq.ge K ha fun b _ => hb b
 

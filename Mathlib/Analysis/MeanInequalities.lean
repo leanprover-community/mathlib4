@@ -243,7 +243,7 @@ theorem geom_mean_eq_arith_mean_weighted_iff (w z : ι → ℝ) (hw : ∀ i ∈ 
     simp only [h2, rpow_zero, ne_self_iff_false] at h1
   rw [← sum_filter_of_ne h, ← prod_filter_of_ne h', geom_mean_eq_arith_mean_weighted_iff']
   · simp
-  · simp +contextual [(hw _ _).gt_iff_ne]
+  · simp +contextual [(hw _ _).lt_iff_ne']
   · rwa [sum_filter_ne_zero]
   · simp_all only [ne_eq, mul_eq_zero, not_or, not_false_eq_true, implies_true, mem_filter]
 
