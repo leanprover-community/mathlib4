@@ -669,7 +669,7 @@ theorem absdiscr_prime_pow [IsCyclotomicExtension {p ^ k} ℚ K] :
     rw [← Algebra.discr_reindex _ _ (finCongr this)]
     congr 1
     ext i
-    simp_rw [Function.comp_apply, Basis.localizationLocalization_apply, powerBasis_dim,
+    simp_rw [Function.comp_apply, Module.Basis.localizationLocalization_apply, powerBasis_dim,
       PowerBasis.coe_basis, pB₁, integralPowerBasis_gen]
     convert ← ((IsPrimitiveRoot.powerBasis ℚ hζ).basis_eq_pow i).symm using 1
   · simp_rw [algebraMap_int_eq, map_mul, map_pow, map_neg, map_one, map_natCast]
