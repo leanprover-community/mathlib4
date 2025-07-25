@@ -20,8 +20,6 @@ import Mathlib.RingTheory.TensorProduct.Basic
   where the forward map is the (tensor-ified) Kronecker product.
 -/
 
-suppress_compilation
-
 open TensorProduct Algebra.TensorProduct Matrix
 
 variable {l m n p : Type*} {R S A B M N : Type*}
@@ -156,7 +154,7 @@ theorem invFun_smul (a : A) (M : Matrix n n A) :
 @[simp]
 theorem invFun_algebraMap (M : Matrix n n R) : invFun n R A (M.map (algebraMap R A)) = 1 ⊗ₜ M := by
   dsimp [invFun]
-  simp only [Algebra.algebraMap_eq_smul_one, smul_tmul, ← tmul_sum, mul_boole]
+  simp only [Algebra.algebraMap_eq_smul_one, smul_tmul, ← tmul_sum]
   congr
   conv_rhs => rw [matrix_eq_sum_single M]
   convert Finset.sum_product (β := Matrix n n R) ..; simp

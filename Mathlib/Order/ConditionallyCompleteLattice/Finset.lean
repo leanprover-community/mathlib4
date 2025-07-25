@@ -72,7 +72,7 @@ theorem Finset.ciInf_eq_min'_image {s : Finset ι} (h : ∃ x ∈ s, f x ≤ sIn
     ⨅ i ∈ s, f i = (s.image f).min' h' := by
   classical
   rw [← OrderDual.toDual_inj, toDual_min', toDual_iInf]
-  simp only [Function.comp_apply, toDual_iInf]
+  simp only [toDual_iInf]
   rw [ciSup_eq_max'_image _ h]
   simp only [image_image]
   congr
@@ -110,10 +110,7 @@ theorem Set.Finite.ciSup_lt_iff {s : Set ι} {f : ι → α} (hs : s.Finite)
       intro
       simp only [ciSup_eq_ite, dite_eq_ite, mem_range, union_singleton, mem_insert_iff, mem_image,
         forall_exists_index]
-      intro x hx
-      split_ifs at hx
-      · exact Or.inr ⟨_, by assumption, hx⟩
-      · simp_all
+      grind
     · simp only [mem_range]
       refine ⟨x, ?_⟩
       simp [hx]
@@ -135,10 +132,7 @@ theorem Set.Finite.lt_ciInf_iff {s : Set ι} {f : ι → α} (hs : s.Finite)
       intro
       simp only [ciInf_eq_ite, dite_eq_ite, mem_range, union_singleton, mem_insert_iff, mem_image,
         forall_exists_index]
-      intro x hx
-      split_ifs at hx
-      · exact Or.inr ⟨_, by assumption, hx⟩
-      · simp_all
+      grind
     · simp only [mem_range]
       refine ⟨x, ?_⟩
       simp [hx]

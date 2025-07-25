@@ -93,7 +93,7 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone R A B) :=
         commutes' := fun r => by
           change h (algebraMap R A r ⊗ₜ[R] 1) = s.inl (algebraMap R A r)
           rw [← eq1]
-          simp only [pushoutCocone_pt, coe_of, AlgHom.toRingHom_eq_coe]
+          simp only [pushoutCocone_pt, coe_of]
           rfl }
     suffices h' = Algebra.TensorProduct.productMap f' g' by
       ext x
@@ -178,7 +178,7 @@ def coproductCoconeIsColimit : IsColimit (coproductCocone A B) where
     · ext a
       simp [map_one, mul_one, ←hm (Discrete.mk WalkingPair.left)]
     · ext b
-      simp [map_one, mul_one, ←hm (Discrete.mk WalkingPair.right)]
+      simp [map_one, ←hm (Discrete.mk WalkingPair.right)]
 
 /-- The limit cone of the tensor product `A ⊗[ℤ] B` in `CommRingCat`. -/
 def coproductColimitCocone : Limits.ColimitCocone (pair A B) :=
@@ -243,9 +243,7 @@ def prodFanIsLimit : IsLimit (prodFan A B) where
   fac c j := by
     ext
     rcases j with ⟨⟨⟩⟩ <;>
-    simp only [pair_obj_left, prodFan_pt, BinaryFan.π_app_left, BinaryFan.π_app_right,
-      FunctorToTypes.map_comp_apply, forget_map, coe_of, RingHom.prod_apply] <;>
-    rfl
+    simp only [pair_obj_left, prodFan_pt, BinaryFan.π_app_left, BinaryFan.π_app_right] <;> rfl
   uniq s m h := by
     ext x
     change m x = (BinaryFan.fst s x, BinaryFan.snd s x)

@@ -286,7 +286,7 @@ alias StdBasisMatrix.mul_left_apply_same := single_mul_apply_same
 omit [DecidableEq l] in
 @[simp]
 theorem mul_single_apply_same (i : m) (j : n) (a : l) (M : Matrix l m α) :
-    (M * single i j c) a j = M a i * c := by simp [mul_apply, single, mul_comm]
+    (M * single i j c) a j = M a i * c := by simp [mul_apply, single]
 
 @[deprecated (since := "2025-05-05")]
 alias StdBasisMatrix.mul_right_apply_same := mul_single_apply_same
@@ -311,7 +311,7 @@ alias StdBasisMatrix.mul_right_apply_of_ne := mul_single_apply_of_ne
 theorem single_mul_single_same (i : l) (j : m) (k : n) (d : α) :
     single i j c * single j k d = single i k (c * d) := by
   ext a b
-  simp only [mul_apply, single, boole_mul]
+  simp only [mul_apply, single]
   by_cases h₁ : i = a <;> by_cases h₂ : k = b <;> simp [h₁, h₂]
 
 @[deprecated (since := "2025-05-05")] alias StdBasisMatrix.mul_same := single_mul_single_same
@@ -321,7 +321,7 @@ theorem single_mul_mul_single [Fintype n]
     (i : l) (i' : m) (j' : n) (j : o) (a : α) (x : Matrix m n α) (b : α) :
     single i i' a * x * single j' j b = single i j (a * x i' j' * b) := by
   ext i'' j''
-  simp only [mul_apply, single, boole_mul]
+  simp only [mul_apply, single]
   by_cases h₁ : i = i'' <;> by_cases h₂ : j = j'' <;> simp [h₁, h₂]
 
 @[deprecated (since := "2025-05-05")]
@@ -331,7 +331,7 @@ alias StdBasisMatrix.stdBasisMatrix_mul_mul_stdBasisMatrix := single_mul_mul_sin
 theorem single_mul_single_of_ne (i : l) (j k : m) {l : n} (h : j ≠ k) (d : α) :
     single i j c * single k l d = 0 := by
   ext a b
-  simp only [mul_apply, boole_mul, single, of_apply]
+  simp only [mul_apply, single, of_apply]
   by_cases h₁ : i = a
   · simp [h₁, h, Finset.sum_eq_zero]
   · simp [h₁]

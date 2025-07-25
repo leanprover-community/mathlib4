@@ -182,7 +182,7 @@ lemma isPrime_of_maximally_disjoint (I : Ideal α)
     by_contra! rid
     have hx := maximally_disjoint (I ⊔ span {x}) (Submodule.lt_sup_iff_notMem.mpr rid.1)
     have hy := maximally_disjoint (I ⊔ span {y}) (Submodule.lt_sup_iff_notMem.mpr rid.2)
-    simp only [Set.not_disjoint_iff, mem_inter_iff, SetLike.mem_coe, Submodule.mem_sup,
+    simp only [Set.not_disjoint_iff, SetLike.mem_coe, Submodule.mem_sup,
       mem_span_singleton] at hx hy
     obtain ⟨s₁, ⟨i₁, hi₁, ⟨_, ⟨r₁, rfl⟩, hr₁⟩⟩, hs₁⟩ := hx
     obtain ⟨s₂, ⟨i₂, hi₂, ⟨_, ⟨r₂, rfl⟩, hr₂⟩⟩, hs₂⟩ := hy
@@ -215,6 +215,27 @@ theorem exists_le_prime_notMem_of_isIdempotentElem (a : α) (ha : IsIdempotentEl
 
 @[deprecated (since := "2025-05-24")]
 alias exists_le_prime_nmem_of_isIdempotentElem := exists_le_prime_notMem_of_isIdempotentElem
+
+section IsPrincipalIdealRing
+
+variable [IsPrincipalIdealRing α]
+
+theorem isPrime_iff_of_isPrincipalIdealRing {P : Ideal α} (hP : P ≠ ⊥) :
+    P.IsPrime ↔ ∃ p, Prime p ∧ P = span {p} where
+  mp h := by
+    obtain ⟨p, rfl⟩ := Submodule.IsPrincipal.principal P
+    exact ⟨p, (span_singleton_prime (by simp [·] at hP)).mp h, rfl⟩
+  mpr := by
+    rintro ⟨p, hp, rfl⟩
+    rwa [span_singleton_prime (by simp [hp.ne_zero])]
+
+theorem isPrime_iff_of_isPrincipalIdealRing_of_noZeroDivisors [NoZeroDivisors α] [Nontrivial α]
+    {P : Ideal α} : P.IsPrime ↔ P = ⊥ ∨ ∃ p, Prime p ∧ P = span {p} := by
+  rw [or_iff_not_imp_left, ← forall_congr' isPrime_iff_of_isPrincipalIdealRing,
+    ← or_iff_not_imp_left, or_iff_right_of_imp]
+  rintro rfl; exact bot_prime
+
+end IsPrincipalIdealRing
 
 end Ideal
 

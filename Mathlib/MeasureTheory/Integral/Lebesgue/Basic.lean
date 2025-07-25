@@ -23,7 +23,7 @@ We introduce the following notation for the lower Lebesgue integral of a functio
   to the canonical measure `volume`, defined as `∫⁻ x, f x ∂(volume.restrict s)`.
 -/
 
-assert_not_exists Basis Norm MeasureTheory.MeasurePreserving MeasureTheory.Measure.dirac
+assert_not_exists Module.Basis Norm MeasureTheory.MeasurePreserving MeasureTheory.Measure.dirac
 
 open Set hiding restrict restrict_apply
 
@@ -277,6 +277,10 @@ lemma setLIntegral_eq_zero {f : α → ℝ≥0∞} {s : Set α} (hs : Measurable
 
 section
 
+theorem lintegral_eq_zero_of_ae_eq_zero {f : α → ℝ≥0∞} (h : f =ᵐ[μ] 0) :
+    ∫⁻ a, f a ∂μ = 0 :=
+  (lintegral_congr_ae h).trans lintegral_zero
+
 /-- The Lebesgue integral is zero iff the function is a.e. zero.
 
 The measurability assumption is necessary, otherwise there are counterexamples: for instance, the
@@ -286,7 +290,7 @@ theorem lintegral_eq_zero_iff' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) 
     ∫⁻ a, f a ∂μ = 0 ↔ f =ᵐ[μ] 0 := by
   -- The proof implicitly uses Markov's inequality,
   -- but it has been inlined for the sake of imports
-  refine ⟨fun h ↦ ?_, fun h ↦ (lintegral_congr_ae h).trans lintegral_zero⟩
+  refine ⟨fun h ↦ ?_, lintegral_eq_zero_of_ae_eq_zero⟩
   have meas_levels_0 : ∀ ε > 0, μ { x | ε ≤ f x } = 0 := fun ε εpos ↦ by
     by_contra! h'; rw [← zero_lt_iff] at h'
     refine ((mul_pos_iff.mpr ⟨εpos, h'⟩).trans_le ?_).ne' h

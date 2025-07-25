@@ -14,6 +14,12 @@ import Mathlib.RingTheory.Valuation.ValuationSubring
 In this file, we define the non archimedean topology induced by a valuation on a ring.
 The main definition is a `Valued` type class which equips a ring with a valuation taking
 values in a group with zero. Other instances are then deduced from this.
+
+*NOTE* (2025-07-02):
+The `Valued` class defined in this file will eventually get replaced with `ValuativeRel`
+from `Mathlib.RingTheory.Valuation.ValuativeRel`. New developments on valued rings/fields
+should take this into considation.
+
 -/
 
 open scoped Topology uniformity
@@ -34,9 +40,9 @@ theorem subgroups_basis : RingSubgroupsBasis fun γ : Γ₀ˣ => (v.ltAddSubgrou
   { inter := by
       rintro γ₀ γ₁
       use min γ₀ γ₁
-      simp only [ltAddSubgroup, Units.min_val, Units.val_le_val, lt_min_iff,
+      simp only [ltAddSubgroup, Units.min_val, lt_min_iff,
         AddSubgroup.mk_le_mk, setOf_subset_setOf, le_inf_iff, and_imp, imp_self, implies_true,
-        forall_const, and_true]
+        and_true]
       tauto
     mul := by
       rintro γ

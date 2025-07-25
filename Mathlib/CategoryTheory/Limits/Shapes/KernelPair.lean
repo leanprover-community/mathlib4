@@ -184,7 +184,7 @@ protected theorem pullback {X Y Z A : C} {g : Y ⟶ Z} {a₁ a₂ : A ⟶ Y} (h 
       · simpa using hm WalkingCospan.right =≫ pullback.snd f g
 
 theorem mono_of_isIso_fst (h : IsKernelPair f a b) [IsIso a] : Mono f := by
-  obtain ⟨l, h₁, h₂⟩ := Limits.PullbackCone.IsLimit.lift' h.isLimit (𝟙 _) (𝟙 _) (by simp [h.w])
+  obtain ⟨l, h₁, h₂⟩ := Limits.PullbackCone.IsLimit.lift' h.isLimit (𝟙 _) (𝟙 _) (by simp)
   rw [IsPullback.cone_fst, ← IsIso.eq_comp_inv, Category.id_comp] at h₁
   rw [h₁, IsIso.inv_comp_eq, Category.comp_id] at h₂
   constructor

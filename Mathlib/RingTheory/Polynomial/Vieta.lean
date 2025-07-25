@@ -45,7 +45,7 @@ theorem prod_X_add_C_eq_sum_esymm (s : Multiset R) :
     rw [mem_powersetCard] at ht
     dsimp
     rw [prod_hom' s (Polynomial.C : R →+* R[X])]
-    simp [ht, map_const, prod_replicate, prod_hom', map_id', card_sub]
+    simp [ht, prod_replicate, map_id', card_sub]
 
 /-- Vieta's formula for the coefficients of the product of linear terms `X + λ` where `λ` runs
 through a multiset `s` : the `k`th coefficient is the symmetric function `esymm (card s - k) s`. -/

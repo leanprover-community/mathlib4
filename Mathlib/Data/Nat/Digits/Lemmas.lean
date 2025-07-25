@@ -49,13 +49,27 @@ theorem digits_len (b n : ℕ) (hb : 1 < b) (hn : n ≠ 0) : (b.digits n).length
   induction' n using Nat.strong_induction_on with n IH
   rw [digits_eq_cons_digits_div hb hn, List.length]
   by_cases h : n / b = 0
-  · simp [IH, h]
+  · simp [h]
     aesop
   · have : n / b < n := div_lt_self (Nat.pos_of_ne_zero hn) hb
     rw [IH _ this h, log_div_base, tsub_add_cancel_of_le]
     refine Nat.succ_le_of_lt (log_pos hb ?_)
     contrapose! h
     exact div_eq_of_lt h
+
+theorem digits_length_le_iff {b k : ℕ} (hb : 1 < b) (n : ℕ) :
+    (b.digits n).length ≤ k ↔ n < b ^ k  := by
+  by_cases h : n = 0
+  · simp [h]
+    positivity
+  rw [digits_len b n hb h, lt_pow_iff_log_lt hb h]
+  exact add_one_le_iff
+
+theorem lt_digits_length_iff {b k : ℕ} (hb : 1 < b) (n : ℕ) :
+    k < (b.digits n).length ↔ b ^ k ≤ n := by
+  rw [← not_iff_not]
+  push_neg
+  exact digits_length_le_iff hb n
 
 theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :
     (digits b m).getLast (digits_ne_nil_iff_ne_zero.mpr hm) ≠ 0 := by
@@ -65,8 +79,7 @@ theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :
     · simp
   · cases m
     · cases hm rfl
-    rename ℕ => m
-    simp only [zero_add, digits_one, List.getLast_replicate_succ m 1]
+    simp only [zero_add, digits_one, List.getLast_replicate_succ]
     exact Nat.one_ne_zero
   revert hm
   induction m using Nat.strongRecOn with | ind n IH => ?_
@@ -230,7 +243,7 @@ theorem ofDigits_mod (b k : ℕ) (L : List ℕ) : ofDigits b L % k = ofDigits (b
   ofDigits_modEq b k L
 
 theorem ofDigits_mod_eq_head! (b : ℕ) (l : List ℕ) : ofDigits b l % b = l.head! % b := by
-  induction l <;> simp [Nat.ofDigits, Int.ModEq]
+  induction l <;> simp [Nat.ofDigits]
 
 theorem head!_digits {b n : ℕ} (h : b ≠ 1) : (Nat.digits b n).head! = n % b := by
   by_cases hb : 1 < b

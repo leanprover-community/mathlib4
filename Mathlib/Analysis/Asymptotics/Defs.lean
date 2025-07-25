@@ -1094,8 +1094,7 @@ variable {g g' l}
 
 @[simp]
 theorem isBigOWith_zero_right_iff : (IsBigOWith c l f'' fun _x => (0 : F')) ↔ f'' =ᶠ[l] 0 := by
-  simp only [IsBigOWith_def, exists_prop, norm_zero, mul_zero,
-    norm_le_zero_iff, EventuallyEq, Pi.zero_apply]
+  simp only [IsBigOWith_def, norm_zero, mul_zero, norm_le_zero_iff, EventuallyEq, Pi.zero_apply]
 
 @[simp]
 theorem isBigO_zero_right_iff : (f'' =O[l] fun _x => (0 : F')) ↔ f'' =ᶠ[l] 0 :=
@@ -1348,9 +1347,9 @@ variable {ι : Type*} {A : ι → α → E'} {C : ι → ℝ} {s : Finset ι}
 theorem IsBigOWith.sum (h : ∀ i ∈ s, IsBigOWith (C i) l (A i) g) :
     IsBigOWith (∑ i ∈ s, C i) l (fun x => ∑ i ∈ s, A i x) g := by
   induction s using Finset.cons_induction with
-  | empty => simp only [isBigOWith_zero', Finset.sum_empty, forall_true_iff]
+  | empty => simp only [isBigOWith_zero', Finset.sum_empty]
   | cons i s is IH =>
-    simp only [is, Finset.sum_cons, Finset.forall_mem_cons] at h ⊢
+    simp only [Finset.sum_cons, Finset.forall_mem_cons] at h ⊢
     exact h.1.add (IH h.2)
 
 theorem IsBigO.sum (h : ∀ i ∈ s, A i =O[l] g) : (fun x => ∑ i ∈ s, A i x) =O[l] g := by

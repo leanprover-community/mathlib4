@@ -44,13 +44,14 @@ New `simprocs` that run even in `dsimp` have caused breakages in this file.
 
 (e.g. `dsimp` can now simplify `2 + 3` to `5`)
 
-For now, we just turn off simprocs in this file.
-We'll soon provide finer grained options here, e.g. to turn off simprocs only in `dsimp`, etc.
+For now, we just turn off the offending simprocs in this file.
 
-*However*, hopefully it is possible to refactor the material here so that no backwards compatibility
-`set_option`s are required at all
+*However*, hopefully it is possible to refactor the material here so that no disabling of
+simprocs is needed.
+
+See issue #27382.
 -/
-set_option simprocs false
+attribute [-simp] Fin.reduceFinMk
 
 namespace CategoryTheory
 
@@ -347,13 +348,12 @@ lemma map_comp {i j k : Fin (n + 1 + 1)} (hij : i ≤ j) (hjk : j ≤ k) :
     · dsimp
       rw [id_comp]
     · obtain _ | _ | k := k
-      · simp [Nat.succ.injEq] at hjk
+      · simp at hjk
       · simp
       · rfl
     · obtain _ | _ | k := k
       · simp [Fin.ext_iff] at hjk
       · simp [Fin.le_def] at hjk
-        omega
       · dsimp
         rw [assoc, ← F.map_comp, homOfLE_comp]
   · obtain _ | j := j
@@ -433,7 +433,7 @@ a functor `Fin (n + 1) ⥤ Fin (m + 1)`. -/
 def whiskerLeftFunctor (Φ : Fin (n + 1) ⥤ Fin (m + 1)) :
     ComposableArrows C m ⥤ ComposableArrows C n where
   obj F := F.whiskerLeft Φ
-  map f := CategoryTheory.whiskerLeft Φ f
+  map f := Functor.whiskerLeft Φ f
 
 /-- The functor `Fin n ⥤ Fin (n + 1)` which sends `i` to `i.succ`. -/
 @[simps]
@@ -704,10 +704,10 @@ lemma hom_ext₄ {f g : ComposableArrows C 4} {φ φ' : f ⟶ g}
     φ = φ' :=
   hom_ext_succ h₀ (hom_ext₃ h₁ h₂ h₃ h₄)
 
-lemma map'_inv_eq_inv_map' {n m : ℕ} (h : n+1 ≤ m) {f g : ComposableArrows C m}
-    (app : f.obj' n ≅ g.obj' n) (app' : f.obj' (n+1) ≅ g.obj' (n+1))
-    (w : f.map' n (n+1) ≫ app'.hom = app.hom ≫ g.map' n (n+1)) :
-    map' g n (n+1) ≫ app'.inv = app.inv ≫ map' f n (n+1) := by
+lemma map'_inv_eq_inv_map' {n m : ℕ} (h : n + 1 ≤ m) {f g : ComposableArrows C m}
+    (app : f.obj' n ≅ g.obj' n) (app' : f.obj' (n + 1) ≅ g.obj' (n + 1))
+    (w : f.map' n (n + 1) ≫ app'.hom = app.hom ≫ g.map' n (n + 1)) :
+    map' g n (n + 1) ≫ app'.inv = app.inv ≫ map' f n (n + 1) := by
   rw [← cancel_epi app.hom, ← reassoc_of% w, app'.hom_inv_id, comp_id, app.hom_inv_id_assoc]
 
 /-- Constructor for isomorphisms in `ComposableArrows C 4`. -/

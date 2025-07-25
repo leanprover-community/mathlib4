@@ -17,7 +17,7 @@ and proves basic properties about it such as the Chinese Remainder Theorem
 
 ## Notations
 
-`a ≡ b [MOD n]` is notation for `nat.ModEq n a b`, which is defined to mean `a % n = b % n`.
+`a ≡ b [MOD n]` is notation for `Nat.ModEq n a b`, which is defined to mean `a % n = b % n`.
 
 ## Tags
 
@@ -28,7 +28,7 @@ assert_not_exists OrderedAddCommMonoid Function.support
 
 namespace Nat
 
-/-- Modular equality. `n.ModEq a b`, or `a ≡ b [MOD n]`, means that `a - b` is a multiple of `n`. -/
+/-- Modular equality. `n.ModEq a b`, or `a ≡ b [MOD n]`, means that `a % n = b % n`. -/
 def ModEq (n a b : ℕ) :=
   a % n = b % n
 
@@ -89,6 +89,9 @@ theorem mod_modEq (a n) : a % n ≡ a [MOD n] :=
   mod_mod _ _
 
 namespace ModEq
+
+theorem self_mul_add : ModEq m (m * a + b) b := by
+  simp [Nat.ModEq]
 
 lemma of_dvd (d : m ∣ n) (h : a ≡ b [MOD n]) : a ≡ b [MOD m] :=
   modEq_of_dvd <| Int.ofNat_dvd.mpr d |>.trans h.dvd
@@ -264,7 +267,7 @@ lemma cancel_right_div_gcd' (hm : 0 < m) (hcd : c ≡ d [MOD m]) (h : a * c ≡ 
 lemma cancel_left_of_coprime (hmc : gcd m c = 1) (h : c * a ≡ c * b [MOD m]) : a ≡ b [MOD m] := by
   rcases m.eq_zero_or_pos with (rfl | hm)
   · simp only [gcd_zero_left] at hmc
-    simp only [gcd_zero_left, hmc, one_mul, modEq_zero_iff] at h
+    simp only [hmc, one_mul, modEq_zero_iff] at h
     subst h
     rfl
   simpa [hmc] using h.cancel_left_div_gcd hm

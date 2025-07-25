@@ -31,6 +31,7 @@ bilinear form, bilin form, BilinearForm, matrix, basis
 -/
 
 open LinearMap (BilinForm)
+open Module
 
 variable {R₁ : Type*} {M₁ : Type*} [CommSemiring R₁] [AddCommMonoid M₁] [Module R₁ M₁]
 variable {R₂ : Type*} {M₂ : Type*} [CommRing R₂] [AddCommGroup M₂] [Module R₂ M₂]
@@ -95,7 +96,7 @@ theorem Matrix.toBilin'Aux_eq (M : Matrix n n R₁) : Matrix.toBilin'Aux M = Mat
 theorem Matrix.toBilin'_apply (M : Matrix n n R₁) (x y : n → R₁) :
     Matrix.toBilin' M x y = ∑ i, ∑ j, x i * M i j * y j :=
   (Matrix.toLinearMap₂'_apply _ _ _).trans
-    (by simp only [smul_eq_mul, mul_assoc, mul_comm, mul_left_comm])
+    (by simp only [smul_eq_mul, mul_comm, mul_left_comm])
 
 theorem Matrix.toBilin'_apply' (M : Matrix n n R₁) (v w : n → R₁) :
     Matrix.toBilin' M v w = v ⬝ᵥ M *ᵥ w := Matrix.toLinearMap₂'_apply' _ _ _
@@ -196,7 +197,7 @@ theorem BilinForm.toMatrix_apply (B : BilinForm R₁ M₁) (i j : n) :
 theorem Matrix.toBilin_apply (M : Matrix n n R₁) (x y : M₁) :
     Matrix.toBilin b M x y = ∑ i, ∑ j, b.repr x i * M i j * b.repr y j :=
   (Matrix.toLinearMap₂_apply _ _ _ _ _).trans
-    (by simp only [smul_eq_mul, mul_assoc, mul_comm, mul_left_comm])
+    (by simp only [smul_eq_mul, mul_comm, mul_left_comm])
 
 -- Not a `simp` lemma since `BilinForm.toMatrix` needs an extra argument
 theorem BilinearForm.toMatrixAux_eq (B : BilinForm R₁ M₁) :
