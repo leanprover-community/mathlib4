@@ -110,9 +110,7 @@ noncomputable def dividedPowersBot : DividedPowers (⊥ : Ideal A) where
     · simp [h]
     · symm
       apply sum_eq_zero
-      intro i hi
-      simp only [mem_antidiagonal] at hi
-      grind
+      grind [mem_antidiagonal]
   dpow_mul {n} _ _ hx := by
     rw [mem_bot.mp hx]
     simp only [mul_zero, true_and, mul_ite, mul_one]
