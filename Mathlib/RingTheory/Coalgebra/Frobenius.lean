@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Monica Omar
 -/
 import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 import Mathlib.RingTheory.Coalgebra.Basic
 
