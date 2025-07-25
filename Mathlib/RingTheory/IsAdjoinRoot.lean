@@ -56,10 +56,7 @@ Using `IsAdjoinRoot` to map out of `S`:
   `f`, if `f` is irreducible and monic, and `R` is a GCD domain
 -/
 
-
-open scoped Polynomial
-
-open Polynomial
+open Module Polynomial
 
 noncomputable section
 
