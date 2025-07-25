@@ -10,7 +10,7 @@ import Mathlib.Probability.IdentDistrib
 /-!
 # Finite dimensional distributions of a stochastic process
 
-For a stochasitc process `X : T → Ω → 𝓧` and a finite measure `P` on `Ω`, the law of the process is
+For a stochastic process `X : T → Ω → 𝓧` and a finite measure `P` on `Ω`, the law of the process is
 `P.map (fun ω ↦ (X · ω))`, and its finite dimensional distributions are
 `P.map (fun ω ↦ I.restrict (X · ω))` for `I : Finset T`.
 
