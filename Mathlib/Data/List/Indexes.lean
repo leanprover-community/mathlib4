@@ -55,9 +55,7 @@ theorem map_enumFrom_eq_zipWith : ∀ (l : List α) (n : ℕ) (f : ℕ → α �
     rw [this]; rfl
   · rcases l with - | ⟨head, tail⟩
     · contradiction
-    · simp only [enumFrom_cons, map_cons, range_succ_eq_map, zipWith_cons_cons,
-        Nat.zero_add, zipWith_map_left]
-      grind
+    · grind [enumFrom_cons, map_cons, range_succ_eq_map, zipWith_cons_cons, zipWith_map_left]
 
 set_option linter.deprecated false in
 @[deprecated "Deprecated without replacement." (since := "2025-01-29")]
