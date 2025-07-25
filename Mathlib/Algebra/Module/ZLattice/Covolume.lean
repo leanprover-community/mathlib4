@@ -152,7 +152,7 @@ theorem volume_image_eq_volume_div_covolume' {E : Type*} [NormedAddCommGroup E]
     ((stdOrthonormalBasis ℝ E).reindex e).repr.toContinuousLinearEquiv.symm
   have hf : MeasurePreserving f :=
     ((stdOrthonormalBasis ℝ E).reindex e).measurePreserving_repr_symm.comp
-      (EuclideanSpace.volume_preserving_measurableEquiv ι).symm
+      (PiLp.volume_preserving_toLp ι)
   rw [← hf.measure_preimage hs, ← (covolume_comap L volume volume hf),
     ← volume_image_eq_volume_div_covolume (ZLattice.comap ℝ L f.toLinearMap)
     (b.ofZLatticeComap ℝ L f.toLinearEquiv), Basis.ofZLatticeBasis_comap,
