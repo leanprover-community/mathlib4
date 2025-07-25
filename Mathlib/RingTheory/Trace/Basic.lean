@@ -26,7 +26,8 @@ the roots of the minimal polynomial of `s` over `R`.
 * `Algebra.embeddingsMatrixReindex A C b e : Matrix κ κ C` is the matrix whose `(i, j)`
   coefficient is `σⱼ (b i)`, where `σⱼ : B →ₐ[A] C` is the embedding corresponding to `j : κ`
   given by a bijection `e : κ ≃ (B →ₐ[A] C)`.
-* `Basis.traceDual`: The dual basis of a basis under the trace form in a finite separable extension.
+* `Module.Basis.traceDual`: The dual basis of a basis under the trace form in a finite separable
+  extension.
 
 ## Main results
 
@@ -34,7 +35,7 @@ the roots of the minimal polynomial of `s` over `R`.
   algebraically closed field
 * `traceForm_nondegenerate`: the trace form over a separable extension is a nondegenerate
   bilinear form
-* `Basis.traceDual_powerBasis_eq`: The dual basis of a powerbasis `{1, x, x²...}` under the
+* `Module.Basis.traceDual_powerBasis_eq`: The dual basis of a powerbasis `{1, x, x²...}` under the
   trace form is `aᵢ / f'(x)`, with `f` being the minpoly of `x` and `f / (X - x) = ∑ aᵢxⁱ`.
 
 ## References
@@ -553,47 +554,47 @@ variable [FiniteDimensional K L] [Algebra.IsSeparable K L] [Finite ι] [Decidabl
 /--
 The dual basis of a basis under the trace form in a finite separable extension.
 -/
-noncomputable def Basis.traceDual :
+noncomputable def Module.Basis.traceDual :
     Basis ι K L :=
   (traceForm K L).dualBasis (traceForm_nondegenerate K L) b
 
 
-theorem Basis.traceDual_def :
+theorem Module.Basis.traceDual_def :
     b.traceDual = (traceForm K L).dualBasis (traceForm_nondegenerate K L) b := rfl
 
 @[simp]
-theorem Basis.traceDual_repr_apply (x : L) (i : ι) :
+theorem Module.Basis.traceDual_repr_apply (x : L) (i : ι) :
     (b.traceDual).repr x i = (traceForm K L x) (b i) :=
   (traceForm K L).dualBasis_repr_apply _ b _ i
 
 @[simp]
-theorem Basis.trace_traceDual_mul (i j : ι) :
+theorem Module.Basis.trace_traceDual_mul (i j : ι) :
     trace K L ((b.traceDual i) * (b j)) = if j = i then 1 else 0 :=
   (traceForm K L).apply_dualBasis_left _ _ i j
 
 @[simp]
-theorem Basis.trace_mul_traceDual (i j : ι) :
+theorem Module.Basis.trace_mul_traceDual (i j : ι) :
     trace K L ((b i) * (b.traceDual j)) = if i = j then 1 else 0 := by
   refine (traceForm K L).apply_dualBasis_right _ (traceForm_isSymm K) _ i j
 
 @[simp]
-theorem Basis.traceDual_traceDual :
+theorem Module.Basis.traceDual_traceDual :
     b.traceDual.traceDual = b :=
   (traceForm K L).dualBasis_dualBasis _ (traceForm_isSymm K) _
 
 variable (K L)
 
-theorem Basis.traceDual_involutive :
+theorem Module.Basis.traceDual_involutive :
     Function.Involutive (Basis.traceDual : Basis ι K L → Basis ι K L) :=
   fun b ↦ traceDual_traceDual b
 
-theorem Basis.traceDual_injective :
+theorem Module.Basis.traceDual_injective :
     Function.Injective (Basis.traceDual : Basis ι K L → Basis ι K L) :=
   (traceDual_involutive K L).injective
 
 variable {K L b}
 
-theorem Basis.traceDual_inj {b' : Basis ι K L} :
+theorem Module.Basis.traceDual_inj {b' : Basis ι K L} :
     b.traceDual = b'.traceDual ↔ b = b' :=
   (traceDual_injective K L).eq_iff
 
@@ -602,37 +603,15 @@ A family of vectors `v` is the dual for the trace of the basis `b` iff
 `∀ i j, Tr(v i * b j) = δ_ij`.
 -/
 @[simp]
-theorem Basis.traceDual_eq_iff {v : ι → L} :
+theorem Module.Basis.traceDual_eq_iff {v : ι → L} :
     b.traceDual = v ↔ ∀ i j, traceForm K L (v i) (b j) = if j = i then 1 else 0 :=
   (traceForm K L).dualBasis_eq_iff (traceForm_nondegenerate K L) b v
-
-example (pb : PowerBasis K L) (i) :
-    (Algebra.traceForm K L).dualBasis (traceForm_nondegenerate K L) pb.basis i =
-      (minpolyDiv K pb.gen).coeff i / aeval pb.gen (derivative <| minpoly K pb.gen) := by
-  classical
-  apply ((Algebra.traceForm K L).toDual (traceForm_nondegenerate K L)).injective
-  apply pb.basis.ext
-  intro j
-  simp only [BilinForm.toDual_def, BilinForm.apply_dualBasis_left]
-  apply (algebraMap K (AlgebraicClosure K)).injective
-  have := congr_arg (coeff · i) (sum_smul_minpolyDiv_eq_X_pow (AlgebraicClosure K)
-    pb.adjoin_gen_eq_top (r := j) (pb.finrank.symm ▸ j.prop))
-  simp only [Polynomial.map_smul, map_div₀,
-    map_pow, RingHom.coe_coe, finset_sum_coeff, coeff_smul, coeff_map, smul_eq_mul,
-    coeff_X_pow, ← Fin.ext_iff, @eq_comm _ i] at this
-  rw [PowerBasis.coe_basis]
-  simp only [MonoidWithZeroHom.map_ite_one_zero, traceForm_apply]
-  rw [← this, trace_eq_sum_embeddings (E := AlgebraicClosure K)]
-  apply Finset.sum_congr rfl
-  intro σ _
-  simp only [map_mul, map_div₀, map_pow]
-  ring
 
 /--
 The dual basis of a powerbasis `{1, x, x²...}` under the trace form is `aᵢ / f'(x)`,
 with `f` being the minimal polynomial of `x` and `f / (X - x) = ∑ aᵢxⁱ`.
 -/
-lemma Basis.traceDual_powerBasis_eq (pb : PowerBasis K L) (i) :
+lemma Module.Basis.traceDual_powerBasis_eq (pb : PowerBasis K L) (i) :
     pb.basis.traceDual i =
       (minpolyDiv K pb.gen).coeff i / aeval pb.gen (derivative <| minpoly K pb.gen) := by
   revert i
@@ -641,9 +620,8 @@ lemma Basis.traceDual_powerBasis_eq (pb : PowerBasis K L) (i) :
   apply (algebraMap K (AlgebraicClosure K)).injective
   have := congr_arg (coeff · i) (sum_smul_minpolyDiv_eq_X_pow (AlgebraicClosure K)
     pb.adjoin_gen_eq_top (r := j) (pb.finrank.symm ▸ j.prop))
-  simp only [AlgEquiv.toAlgHom_eq_coe, Polynomial.map_smul, map_div₀,
-    map_pow, RingHom.coe_coe, AlgHom.coe_coe, finset_sum_coeff, coeff_smul, coeff_map, smul_eq_mul,
-    coeff_X_pow, ← Fin.ext_iff, @eq_comm _ i] at this
+  simp only [Polynomial.map_smul, map_div₀, map_pow, RingHom.coe_coe, finset_sum_coeff, coeff_smul,
+    coeff_map, smul_eq_mul, coeff_X_pow, ← Fin.ext_iff, @eq_comm _ i] at this
   rw [PowerBasis.coe_basis]
   simp only [traceForm_apply, MonoidWithZeroHom.map_ite_one_zero]
   rw [← this, trace_eq_sum_embeddings (E := AlgebraicClosure K)]
@@ -653,6 +631,6 @@ lemma Basis.traceDual_powerBasis_eq (pb : PowerBasis K L) (i) :
   ring
 
 @[deprecated (since := "2025-06-25")] alias traceForm_dualBasis_powerBasis_eq :=
-  Basis.traceDual_powerBasis_eq
+  Module.Basis.traceDual_powerBasis_eq
 
 end Basis
