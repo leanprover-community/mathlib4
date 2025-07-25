@@ -1046,9 +1046,9 @@ theorem InvImage.equivalence {α : Sort u} {β : Sort v} (r : β → β → Prop
   ⟨fun _ ↦ h.1 _, h.symm, h.trans⟩
 
 instance {α β : Type*} {r : α → β → Prop} {x : α × β} [Decidable (r x.1 x.2)] :
-  Decidable (uncurry r x) :=
-‹Decidable _›
+    Decidable (uncurry r x) :=
+  ‹Decidable _›
 
 instance {α β : Type*} {r : α × β → Prop} {a : α} {b : β} [Decidable (r (a, b))] :
-  Decidable (curry r a b) :=
-‹Decidable _›
+    Decidable (curry r a b) :=
+  ‹Decidable _›
