@@ -602,6 +602,11 @@ theorem infty_equiv_isometry [∀ i, PseudoEMetricSpace (β i)] :
     Isometry (WithLp.equiv ∞ (∀ i, β i)) :=
   isometry_ofLp_infty _
 
+lemma cobounded [∀ i, PseudoMetricSpace (β i)] :
+    cobounded (PiLp p β) = (cobounded (Π i, β i)).comap ofLp :=
+  le_antisymm (antilipschitzWith_ofLp_aux p β).tendsto_cobounded.le_comap
+    (lipschitzWith_ofLp_aux p β).comap_cobounded_le
+
 /-- seminormed group instance on the product of finitely many normed groups, using the `L^p`
 norm. -/
 instance seminormedAddCommGroup [∀ i, SeminormedAddCommGroup (β i)] :
