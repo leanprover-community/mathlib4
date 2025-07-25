@@ -92,7 +92,7 @@ private lemma sqrt_isSqrt (n : ℕ) : IsSqrt n (sqrt n) := by
   | 0 => simp [IsSqrt, sqrt]
   | 1 => simp [IsSqrt, sqrt]
   | n + 2 =>
-    have h : ¬ (n + 2) ≤ 1 := by simp
+    have h : ¬(n + 2) ≤ 1 := by simp
     simp only [IsSqrt, sqrt, h, ite_false]
     refine ⟨sqrt.iter_sq_le _ _, sqrt.lt_iter_succ_sq _ _ ?_⟩
     simp only [Nat.mul_add, Nat.add_mul, Nat.one_mul, Nat.mul_one, ← Nat.add_assoc]

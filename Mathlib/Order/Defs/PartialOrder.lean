@@ -59,14 +59,14 @@ lemma lt_iff_le_not_ge : a < b ↔ a ≤ b ∧ ¬b ≤ a := Preorder.lt_iff_le_n
 
 @[deprecated (since := "2025-05-11")] alias lt_iff_le_not_le := lt_iff_le_not_ge
 
-lemma lt_of_le_not_ge (hab : a ≤ b) (hba : ¬ b ≤ a) : a < b := lt_iff_le_not_ge.2 ⟨hab, hba⟩
+lemma lt_of_le_not_ge (hab : a ≤ b) (hba : ¬b ≤ a) : a < b := lt_iff_le_not_ge.2 ⟨hab, hba⟩
 
 @[deprecated (since := "2025-05-11")] alias lt_of_le_not_le := lt_of_le_not_ge
 
 lemma le_of_eq (hab : a = b) : a ≤ b := by rw [hab]
 lemma le_of_lt (hab : a < b) : a ≤ b := (lt_iff_le_not_ge.1 hab).1
-lemma not_le_of_gt (hab : a < b) : ¬ b ≤ a := (lt_iff_le_not_ge.1 hab).2
-lemma not_lt_of_ge (hab : a ≤ b) : ¬ b < a := imp_not_comm.1 not_le_of_gt hab
+lemma not_le_of_gt (hab : a < b) : ¬b ≤ a := (lt_iff_le_not_ge.1 hab).2
+lemma not_lt_of_ge (hab : a ≤ b) : ¬b < a := imp_not_comm.1 not_le_of_gt hab
 
 @[deprecated (since := "2025-05-11")] alias not_le_of_lt := not_le_of_gt
 @[deprecated (since := "2025-05-11")] alias not_lt_of_le := not_lt_of_ge
