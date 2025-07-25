@@ -579,6 +579,21 @@ instance [NonAssocSemiring β] : NonAssocSemiring (α →ₛ β) :=
   fast_instance% Function.Injective.nonAssocSemiring (fun f : α →ₛ β ↦ ⇑f) SimpleFunc.coe_injective
       rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
 
+instance [NonAssocRing β] : NonAssocRing (α →ₛ β) where
+
+instance [NonUnitalCommSemiring β] : NonUnitalCommSemiring (α →ₛ β) :=
+  fast_instance% Function.Injective.nonUnitalCommSemiring (fun f : α →ₛ β ↦ ⇑f)
+    SimpleFunc.coe_injective rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+
+instance [CommSemiring β] : CommSemiring (α →ₛ β) where
+
+instance [NonUnitalCommRing β] : NonUnitalCommRing (α →ₛ β) :=
+  fast_instance% Function.Injective.nonUnitalCommRing (fun f : α →ₛ β ↦ ⇑f)
+    SimpleFunc.coe_injective rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
+      (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+
+instance [CommRing β] : CommRing (α →ₛ β) where
+
 instance [Semiring β] : Semiring (α →ₛ β) where
 
 instance [NonUnitalRing β] : NonUnitalRing (α →ₛ β) where
