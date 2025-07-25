@@ -572,8 +572,6 @@ lemma functorOfTransformObjComp_inv_app_snd (ψ : CatCospanTransform R B R' B')
 
 end functorOfTransformObjComp
 
-end Pseudofunctoriality
-
 section
 
 open scoped CatCospanTransform
@@ -591,24 +589,24 @@ lemma functorOfTransform_map_leftUnitor
   · dsimp
     simp only [functorOfTransform_map_app_fst, comp_obj,
       CatCospanTransform.comp_left, CatCospanTransform.id_left, id_obj,
-      CatCommSq.iso, π₁_obj, transform_obj_fst, ofSquare_fst, Iso.symm_inv,
+      CatCommSq.iso, π₁_obj, transform_obj_obj_fst, ofSquare_fst, Iso.symm_inv,
       mapIso_hom, Iso.app_hom, π₁_map,
       CatCospanTransform.leftUnitor_hom_left_app, Iso.symm_hom, mapIso_inv,
       Iso.app_inv, Category.id_comp, map_comp, Category.comp_id,
       functorOfTransformObjComp_hom_app_fst, functorOfTransform_obj_map_fst,
-      functorEquivInverse_map_app_fst, transformId_hom_app_fst_app,
+      functorEquivInverse_map_app_fst, transformObjId_hom_app_fst_app,
       Category.assoc, functorEquivFunctorIdIso_inv_fst_app,
       Iso.inv_hom_id_app_fst_app_assoc]
     simp [← Functor.map_comp_assoc]
   · dsimp
     simp only [functorOfTransform_map_app_snd, comp_obj,
       CatCospanTransform.comp_right, CatCospanTransform.id_right, id_obj,
-      CatCommSq.iso, π₂_obj, transform_obj_snd, ofSquare_snd, Iso.symm_inv,
+      CatCommSq.iso, π₂_obj, transform_obj_obj_snd, ofSquare_snd, Iso.symm_inv,
       mapIso_hom, Iso.app_hom, π₂_map,
       CatCospanTransform.leftUnitor_hom_right_app, Iso.symm_hom,
       mapIso_inv, Iso.app_inv, Category.id_comp, map_comp, Category.comp_id,
       functorOfTransformObjComp_hom_app_snd, functorOfTransform_obj_map_snd,
-      functorEquivInverse_map_app_snd, transformId_hom_app_snd_app,
+      functorEquivInverse_map_app_snd, transformObjId_hom_app_snd_app,
       Category.assoc, functorEquivFunctorIdIso_inv_snd_app,
       Iso.inv_hom_id_app_snd_app_assoc]
     simp [← Functor.map_comp_assoc]
@@ -729,6 +727,8 @@ lemma functorOfTransform_map_associator
       ← Functor.map_comp, Iso.hom_inv_id_app]
 
 end
+
+end Pseudofunctoriality
 
 end CatPullbackSquare
 
