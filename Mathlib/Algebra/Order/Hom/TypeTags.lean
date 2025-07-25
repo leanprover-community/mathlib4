@@ -5,6 +5,7 @@ Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.Algebra.Order.Hom.Monoid
+import Mathlib.Algebra.Order.Monoid.Unbundled.TypeTags
 
 /-!
 
