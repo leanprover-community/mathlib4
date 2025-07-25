@@ -566,31 +566,35 @@ lemma one_eq_const_one [One β] : (1 : α →ₛ β) = const α 1 := rfl
 
 instance [NonUnitalNonAssocSemiring β] : NonUnitalNonAssocSemiring (α →ₛ β) :=
   fast_instance% Function.Injective.nonUnitalNonAssocSemiring (fun f : α →ₛ β ↦ ⇑f)
-    SimpleFunc.coe_injective rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    coe_injective coe_zero coe_add coe_mul coe_smul
 
 instance [NonUnitalSemiring β] : NonUnitalSemiring (α →ₛ β) :=
   fast_instance% Function.Injective.nonUnitalSemiring (fun f : α →ₛ β ↦ ⇑f) SimpleFunc.coe_injective
-      rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+      coe_zero coe_add coe_mul coe_smul
 
 instance [NatCast β] : NatCast (α →ₛ β) where
   natCast n := const _ (NatCast.natCast n)
 
+@[simp, norm_cast]
+lemma coe_natCast [NatCast β] (n : ℕ) :
+    ⇑(↑n : α →ₛ β) = fun _ ↦ ↑n := rfl
+
 instance [NonAssocSemiring β] : NonAssocSemiring (α →ₛ β) :=
   fast_instance% Function.Injective.nonAssocSemiring (fun f : α →ₛ β ↦ ⇑f) SimpleFunc.coe_injective
-      rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
+      coe_zero coe_one coe_add coe_mul coe_smul coe_natCast
 
 instance [NonAssocRing β] : NonAssocRing (α →ₛ β) where
 
 instance [NonUnitalCommSemiring β] : NonUnitalCommSemiring (α →ₛ β) :=
   fast_instance% Function.Injective.nonUnitalCommSemiring (fun f : α →ₛ β ↦ ⇑f)
-    SimpleFunc.coe_injective rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    coe_injective coe_zero coe_add coe_mul coe_smul
 
 instance [CommSemiring β] : CommSemiring (α →ₛ β) where
 
 instance [NonUnitalCommRing β] : NonUnitalCommRing (α →ₛ β) :=
   fast_instance% Function.Injective.nonUnitalCommRing (fun f : α →ₛ β ↦ ⇑f)
-    SimpleFunc.coe_injective rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
-      (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    coe_injective coe_zero coe_add coe_mul coe_neg coe_sub
+      coe_smul coe_smul
 
 instance [CommRing β] : CommRing (α →ₛ β) where
 
