@@ -11,7 +11,6 @@ import Lean.Server.InfoUtils
 import Mathlib.Tactic.Linter.Header
 import Mathlib.Tactic.DeclarationNames
 import Batteries.Data.Array
-import Qq
 
 /-!
 ## Style linters
@@ -609,8 +608,8 @@ def Ranges := Array String.Range
 
 /--
 It returns `Compare.eq` if the two ranges are overlapped, and with `eqIfAdjacent := true` it returns
-`.eq` also when they are adjacent. In other cases, the order returned is consistent with their order
-in string. Also refer to `Ranges`.
+`.eq` also when they are adjacent. In other cases, result is consistent with their order in string.
+Also refer to `Ranges`.
 
 `x` and `y` can be merged if and only if `compareRange x y (overlap := true) = .eq`.
 -/
@@ -642,6 +641,24 @@ def mergeRange (x y : String.Range) : String.Range where
   start := min x.start y.start
   stop := max x.stop y.stop
 
+def mergeDedupWith {α} [ord : Ord α] (xs ys : Array α) (merge : α → α → α) : Array α :=
+  go (Array.mkEmpty (xs.size + ys.size)) 0 0
+where
+  /-- Auxiliary definition for `mergeDedupWith`. -/
+  go (acc : Array α) (i j : Nat) : Array α :=
+    if hi : i ≥ xs.size then
+      acc ++ ys[j:]
+    else if hj : j ≥ ys.size then
+      acc ++ xs[i:]
+    else
+      let x := xs[i]
+      let y := ys[j]
+      match compare x y with
+      | .lt => go (acc.push x) (i + 1) j
+      | .gt => go (acc.push y) i (j + 1)
+      | .eq => go (acc.push (merge x y)) (i + 1) (j + 1)
+  termination_by xs.size + ys.size - (i + j)
+
 /--
 Merge an array of `Ranges`' into one `Ranges`.
 -/
@@ -664,7 +681,7 @@ def rangesOfSyntax (stx : Syntax) : Ranges :=
   | .ident (.original _ start t stop) .. => #[auxExpandRange t.str ⟨start, stop⟩]
   | _ => #[]
 
-open Qq Lean.Parser.Command in
+open Lean.Parser.Command in
 @[inherit_doc Mathlib.Linter.linter.style.declarationIndenting]
 def declarationIndentingLinter : Linter where run := withSetOptionIn fun stx => do
   unless getLinterValue linter.style.declarationIndenting (← getLinterOptions) do
