@@ -106,6 +106,7 @@ variable [PartialOrder Γ] [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [Par
   [AddCommGroup W] [Module R W]
 
 --#synth Module (HahnSeries Γ R) (HVertexOperator Γ₁ R V W) -- LinearMap.module
+--#synth SMul (Finsupp Γ R) (HVertexOperator Γ R V W) -- nope
 
 @[simp]
 theorem smul_eq {x : HahnSeries Γ R} {A : HVertexOperator Γ₁ R V W} {v : V} :
@@ -180,7 +181,6 @@ Need:
  * commutator (in VertexOperator file)
 
 -/
-
 
 end arrowCongrLeft
 
