@@ -144,8 +144,7 @@ theorem smul_single_apply (i : ℕ) (f : R[X]) (m : M) (n : ℕ) :
   · rw [add_smul, Finsupp.add_apply, hp, hq, coeff_add, add_smul]
     split_ifs
     exacts [rfl, zero_add 0]
-  · rw [monomial_smul_single, single_apply, coeff_monomial, ite_smul, zero_smul]
-    grind
+  · grind [monomial_smul_single, single_apply, coeff_monomial, zero_smul]
 
 theorem smul_apply (f : R[X]) (g : PolynomialModule R M) (n : ℕ) :
     (f • g) n = ∑ x ∈ Finset.antidiagonal n, f.coeff x.1 • g x.2 := by
@@ -192,8 +191,7 @@ noncomputable def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] :
             rw [Finset.mem_antidiagonal, tsub_add_cancel_of_le hn]
         · symm
           rw [Finset.sum_ite_of_false, Finset.sum_const_zero]
-          simp_rw [Finset.mem_antidiagonal]
-          grind }
+          grind [Finset.mem_antidiagonal] }
 
 /-- `PolynomialModule R S` is isomorphic to `S[X]` as an `R` module. -/
 noncomputable def equivPolynomial {S : Type*} [CommRing S] [Algebra R S] :
