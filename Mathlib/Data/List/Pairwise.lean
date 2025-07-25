@@ -92,7 +92,7 @@ theorem Pairwise.rel_getLast [IsRefl α R] (h₁ : l.Pairwise R) (ha : a ∈ l) 
     R a (l.getLast <| ne_nil_of_mem ha) :=
   h₁.rel_getLast_of_rel_getLast_getLast ha (refl_of ..)
 
-theorem Pairwise.mem_list_of_mem_pwFilter
+theorem mem_of_mem_pwFilter
     [DecidableRel R]
     : {l : List α}
     → (a ∈ pwFilter R l)
@@ -103,12 +103,12 @@ theorem Pairwise.mem_list_of_mem_pwFilter
       rw [pwFilter_cons_of_pos h, mem_cons] at h'
       rcases h' with rfl|h'
       · exact mem_cons_self
-      · exact mem_cons_of_mem x <| mem_list_of_mem_pwFilter h'
+      · exact mem_cons_of_mem x <| mem_of_mem_pwFilter h'
     else
       rw [pwFilter_cons_of_neg h] at h'
-      exact mem_cons_of_mem x <| mem_list_of_mem_pwFilter h'
+      exact mem_cons_of_mem x <| mem_of_mem_pwFilter h'
 
-theorem Pairwise.pairwise_pwfilter_of_pairwise
+theorem pairwise_pwfilter_of_pairwise
     {R' : _ → _ → Prop}
     [DecidableRel R]
     : {ls : List α}
@@ -119,7 +119,7 @@ theorem Pairwise.pairwise_pwfilter_of_pairwise
     if h : ∀ y ∈ pwFilter R l, R x y then
       pwFilter_cons_of_pos h ▸
         .cons
-          (hx · ∘ mem_list_of_mem_pwFilter)
+          (hx · ∘ mem_of_mem_pwFilter)
           (pairwise_pwfilter_of_pairwise hl)
     else
       pwFilter_cons_of_neg h ▸ pairwise_pwfilter_of_pairwise hl
