@@ -38,7 +38,7 @@ lemma Algebra.trace_quotient_mk [IsLocalRing R] (x : S) :
       Ideal.Quotient.mk p (Algebra.trace R S x) := by
   classical
   let ι := Module.Free.ChooseBasisIndex R S
-  let b : Basis ι R S := Module.Free.chooseBasis R S
+  let b : Module.Basis ι R S := Module.Free.chooseBasis R S
   rw [trace_eq_matrix_trace b, trace_eq_matrix_trace (basisQuotient b), AddMonoidHom.map_trace]
   congr 1
   ext i j
