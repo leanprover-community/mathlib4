@@ -235,14 +235,14 @@ section Semiring
 
 variable [Semiring R]
 
-theorem isNilpotent_mul_left (h_comm : Commute x y) (h : IsNilpotent x) : IsNilpotent (x * y) := by
+theorem isNilpotent_mul_right (h_comm : Commute x y) (h : IsNilpotent x) : IsNilpotent (x * y) := by
   obtain ⟨n, hn⟩ := h
   use n
   rw [h_comm.mul_pow, hn, zero_mul]
 
-theorem isNilpotent_mul_right (h_comm : Commute x y) (h : IsNilpotent y) : IsNilpotent (x * y) := by
+theorem isNilpotent_mul_left (h_comm : Commute x y) (h : IsNilpotent y) : IsNilpotent (x * y) := by
   rw [h_comm.eq]
-  exact h_comm.symm.isNilpotent_mul_left h
+  exact h_comm.symm.isNilpotent_mul_right h
 
 end Semiring
 
