@@ -47,6 +47,11 @@ theorem quotKerEquivRange_apply_mk (x : M) :
   rfl
 
 @[simp]
+theorem quotKerEquivOfSurjective_apply_mk (hf : Function.Surjective f) (x : M) :
+    (f.quotKerEquivOfSurjective hf (Submodule.Quotient.mk x) : M₂) = f x :=
+  rfl
+
+@[simp]
 theorem quotKerEquivRange_symm_apply_image (x : M) (h : f x ∈ LinearMap.range f) :
     f.quotKerEquivRange.symm ⟨f x, h⟩ = (LinearMap.ker f).mkQ x :=
   f.quotKerEquivRange.symm_apply_apply ((LinearMap.ker f).mkQ x)
