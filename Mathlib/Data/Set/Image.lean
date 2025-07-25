@@ -1284,8 +1284,6 @@ end Subtype
 /-! ### Images and preimages on `Option` -/
 
 
-open Set
-
 namespace Option
 
 theorem injective_iff {α β} {f : Option α → β} :
@@ -1302,8 +1300,6 @@ theorem range_eq {α β} (f : Option α → β) : range f = insert (f none) (ran
 end Option
 
 namespace Set
-
-open Function
 
 /-! ### Injectivity and surjectivity lemmas for image and preimage -/
 
