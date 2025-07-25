@@ -8,7 +8,6 @@ import Mathlib.Analysis.InnerProductSpace.ProdL2
 import Mathlib.MeasureTheory.Measure.Haar.Unique
 import Mathlib.NumberTheory.NumberField.FractionalIdeal
 import Mathlib.NumberTheory.NumberField.Units.Basic
-import Mathlib.Topology.MetricSpace.Polish
 
 /-!
 # Canonical embedding of a number field
