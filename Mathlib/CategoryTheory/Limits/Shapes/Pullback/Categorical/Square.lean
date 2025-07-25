@@ -93,6 +93,24 @@ instance :
 instance : (inverse T L R B).IsEquivalence :=
   inferInstanceAs (equivalence T L R B).inverse.IsEquivalence
 
+open CatCommSqOver in
+/-- An alternative constructor for categorical pullback squares:
+to exhibit a square as a `CatPullbackSquare`, it suffices to provide an
+equivalence with the default categorical pullback, as well as a
+natural isomorphism between the forward direction of the equivalence and
+the canonical functor. -/
+def mkOfEquivalence
+    {D₁ : Type u₅} {D₂ : Type u₆} {D₃ : Type u₇} {D₄ : Type u₈}
+    [Category.{v₅} D₁] [Category.{v₆} D₂] [Category.{v₇} D₃] [Category.{v₈} D₄]
+    (T' : D₁ ⥤ D₂) (L' : D₁ ⥤ D₃) (R' : D₂ ⥤ D₄) (B' : D₃ ⥤ D₄)
+    [CatCommSq T' L' R' B'] (e : D₁ ≌ R' ⊡ B')
+    (η : e.functor ≅
+      (toFunctorToCategoricalPullback _ _ _).obj (.ofSquare T' L' R' B')) :
+    CatPullbackSquare T' L' R' B' where
+  inverse := e.inverse
+  unitIso := (e.changeFunctor η).unitIso
+  counitIso := (e.changeFunctor η).counitIso
+
 /-- An isomorphism of `catCommSqOver` which bundles the natural ismorphisms
 `(equivalence T L R B).inverse ⋙ T ≅ π₁ R B`,
 `(equivalence T L R B).inverse ⋙ L ≅ π₂ R B` as well as the coherence conditions
@@ -880,6 +898,13 @@ def equivalenceOfCatCospanEquivalence (E : CatCospanEquivalence R B R' B') :
   functor_unitIso_comp :=
     (adjunctionOfCatCospanAdjunction _ _ _ _
       E.toCatCospanAdjunction).left_triangle_components
+
+omit [CatPullbackSquare T' L' R' B'] in
+/-- If a `CatCommSq T' L' R' B'` is equivalent to a
+`CatPullbackSquare T L R B` via a `CatCospanEquivalence R B R' B'`, then
+the `CatCommSq T' L' R' B'` is also a `CatPullbackSquare`. -/
+def ofEquivCatPullbackSquare (E : CatCospanEquivalence R B R' B') :
+    CatPullbackSquare T' L' R' B' := sorry
 
 end Pseudofunctoriality
 
