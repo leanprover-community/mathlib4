@@ -592,8 +592,7 @@ instance [CommSemiring β] : CommSemiring (α →ₛ β) where
 
 instance [NonUnitalCommRing β] : NonUnitalCommRing (α →ₛ β) :=
   fast_instance% Function.Injective.nonUnitalCommRing (fun f => show α → β from f)
-    coe_injective coe_zero coe_add coe_mul coe_neg coe_sub
-      coe_smul coe_smul
+    coe_injective coe_zero coe_add coe_mul coe_neg coe_sub coe_smul coe_smul
 
 instance [CommRing β] : CommRing (α →ₛ β) where
 
