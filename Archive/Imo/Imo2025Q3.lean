@@ -192,11 +192,10 @@ lemma bonza_fExample : fExample ∈ bonza := by
       split_ifs with hb1 hb2
       · by_cases lt : b = 1
         · simp [lt]
-        simp at ch1
         have : (padicValNat 2 a + 2) ≤ padicValInt 2 (b ^ a - 1) := by
           rw [← LucasLehmer.Int.natCast_pow_pred b a hb]
           exact LTE_lemma_of_pow_sub (by omega) (Nat.two_dvd_ne_zero.mpr hb1)
-            (by omega) (Nat.even_iff.mpr ch1)
+            (by omega) (Nat.even_iff.mpr (by simpa using ch1))
         exact Int.dvd_trans (pow_dvd_pow 2 this) (padicValInt_dvd ((b : ℤ) ^ a - 1))
       · exact verify_case_two_dvd (by simp [hb2]) a_gt_four two_dvd_a (by norm_num)
       · exact verify_case_two_dvd (dvd_of_mod_eq_zero (mod_two_ne_one.mp hb1)) a_gt_four two_dvd_a
