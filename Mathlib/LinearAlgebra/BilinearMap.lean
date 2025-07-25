@@ -322,7 +322,8 @@ theorem lcomp_apply' (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) : lcomp A 
 variable (M N P)
 
 variable (R₃) in
-/-- Composing linear maps as a bilinear map from `(M →ₗ[σ₁₂] N) × (N →ₗ[σ₂₃] P)` to `M →ₗ[σ₁₃] P` -/
+/-- Composing linear maps as a bilinear map from `(M →ₛₗ[σ₁₂] N) × (N →ₛₗ[σ₂₃] P)`
+to `M →ₛₗ[σ₁₃] P`. -/
 def llcomp : (N →ₛₗ[σ₂₃] P) →ₗ[R₃] (M →ₛₗ[σ₁₂] N) →ₛₗ[σ₂₃] M →ₛₗ[σ₁₃] P :=
   flip
     { toFun := lcompₛₗ _ P σ₂₃
