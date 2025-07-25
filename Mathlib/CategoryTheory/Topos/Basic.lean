@@ -15,7 +15,6 @@ This ongoing work formalizes the elementary definition of a topos and the direct
 * [S. MacLane and I. Moerdijk, *Sheaves in Geometry and Logic*][MM92]
 -/
 
-
 universe u v
 
 open CategoryTheory Category Functor Limits MonoidalCategory Opposite
@@ -97,8 +96,9 @@ variable (ℰ) [HasPullbacks ℰ]
 class ElementaryTopos where
   /-- A fixed choice of subobject classifier in `ℰ`. -/
   sc : Classifier ℰ (𝟙_ ℰ)
-  /-- Every `B` has a power object `P B`. -/
+  /-- The power object functor -/
   P : ℰᵒᵖ ⥤ ℰ
+  /-- `P` actually assigns power objects. -/
   hP (B : ℰ) : IsPowerObjectOf sc B (P.obj (op B))
 
 namespace ElementaryTopos
