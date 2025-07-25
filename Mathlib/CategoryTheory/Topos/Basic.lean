@@ -76,4 +76,34 @@ lemma comm {A B : ℰ} (f : B ⊗ A ⟶ hc.Ω) : (B ◁ unhat f) ≫ ε_ B = f :
   have : (hP B).homEquiv (unhat f) = f := by unfold unhat; simp
   simpa [this] using Eq.symm (RepresentableBy.homEquiv_eq (hP B) (unhat f))
 
+lemma uniq {A B : ℰ} (f : B ⊗ A ⟶ hc.Ω) (g : A ⟶ P B)
+    (h : f = (B ◁ g) ≫ ε_ B) : g = unhat f := by
+  have : hat B g = f := by rw [← comm (hat B g)]; simp [h]
+  simpa using congr(unhat $this)
+
+/-- The morphism `P_morph h` is the functorial action on a morphism `h : B ⟶ C`,
+    defined as the P-transpose of `ε_C ∘ (h ⨯ 𝟙)`. -/
+def P_morph {B C : ℰ} (h : B ⟶ C) : P C ⟶ P B := unhat ((h ▷ P C) ≫ ε_ C)
+
+/-- Naturality (dinaturality) of `ε`. This corresponds to the naturality square of ε
+    in MM92 diagram (5). -/
+lemma ε_dinaturality {B C : ℰ} (h : B ⟶ C) :
+  (h ▷ P C) ≫ ε_ C = (B ◁ (P_morph h)) ≫ ε_ B := Eq.symm (comm _)
+
+/-- `P` covariantly preserves composition, shown by stacking dinaturality squares. -/
+private lemma P_compose {B C D : ℰ} (h : B ⟶ C) (h' : C ⟶ D) :
+    P_morph (h ≫ h') = P_morph h' ≫ P_morph h := by
+  let comm_outer : (h ▷ P D) ≫ (h' ▷ P D) ≫ ε_ D =
+      (B ◁ (P_morph h')) ≫ (B ◁ (P_morph h)) ≫ ε_ B := by
+    rw [ε_dinaturality h', ← reassoc_of% whisker_exchange h, ε_dinaturality h]
+  rw [P_morph]; simp; rw[comm_outer, ← uniq _ (P_morph h' ≫ P_morph h) (by aesop_cat)]
+
+/-- The power object functor `P : ℰᵒᵖ ⥤ ℰ` defined from `P` and `P_morph`. -/
+def P_functor : ℰᵒᵖ ⥤ ℰ := {
+  obj B := P (unop B),
+  map h := P_morph h.unop,
+  map_id B := Eq.symm (uniq _ _ (by aesop_cat)),
+  map_comp {B C D : ℰᵒᵖ} (h : B ⟶ C) (h' : C ⟶ D) := P_compose h'.unop h.unop
+}
+
 end ElementaryTopos
