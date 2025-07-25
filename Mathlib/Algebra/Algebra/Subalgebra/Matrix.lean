@@ -28,9 +28,10 @@ variable {n : Type*} [Fintype n] [DecidableEq n]
 /-- A version of `Set.matrix` for `Subalgebra`s.
 Given a `Subalgebra` `S`, `S.matrix` is the `Subalgebra` of square matrices `m`
 all of whose entries `m i j` belong to `S`. -/
+@[simps!]
 def matrix (S : Subalgebra R A) : Subalgebra R (Matrix n n A) where
   __ := S.toSubsemiring.matrix
   algebraMap_mem' _ :=
-    (diagonal_mem_matrix (Subalgebra.zero_mem _)).mpr (fun _ => Subalgebra.algebraMap_mem _ _)
+    (diagonal_mem_matrix_iff (Subalgebra.zero_mem _)).mpr (fun _ => Subalgebra.algebraMap_mem _ _)
 
 end Subalgebra
