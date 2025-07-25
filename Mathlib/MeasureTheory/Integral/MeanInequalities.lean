@@ -248,13 +248,13 @@ theorem lintegral_mul_prod_norm_pow_le {α ι : Type*} [MeasurableSpace α] {μ 
     ≤ ∏ j ∈ insertNone s, (∫⁻ t, Option.elim j (g t) (fun j ↦ f j t) ∂μ) ^ Option.elim j q p by
     simpa using this
   refine ENNReal.lintegral_prod_norm_pow_le _ ?_ ?_ ?_
-  · rintro (_|i) hi
+  · rintro (_ | i) hi
     · exact hg
     · refine hf i ?_
       simpa using hi
   · simp_rw [sum_insertNone, Option.elim]
     exact hpq
-  · rintro (_|i) hi
+  · rintro (_ | i) hi
     · exact hq
     · refine hp i ?_
       simpa using hi

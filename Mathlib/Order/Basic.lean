@@ -123,7 +123,7 @@ theorem not_lt_iff_not_le_or_ge : ¬a < b ↔ ¬a ≤ b ∨ b ≤ a := by
   rw [lt_iff_le_not_ge, Classical.not_and_iff_not_or_not, Classical.not_not]
 
 -- Unnecessary brackets are here for readability
-lemma not_lt_iff_le_imp_ge : ¬ a < b ↔ (a ≤ b → b ≤ a) := by
+lemma not_lt_iff_le_imp_ge : ¬a < b ↔ (a ≤ b → b ≤ a) := by
   simp [not_lt_iff_not_le_or_ge, or_iff_not_imp_left]
 
 @[deprecated (since := "2025-05-11")] alias not_lt_iff_le_imp_le := not_lt_iff_le_imp_ge
@@ -287,7 +287,7 @@ theorem lt_iff_le_and_ne : a < b ↔ a ≤ b ∧ a ≠ b :=
   ⟨fun h ↦ ⟨le_of_lt h, ne_of_lt h⟩, fun ⟨h1, h2⟩ ↦ h1.lt_of_ne h2⟩
 
 @[deprecated LE.le.not_lt_iff_eq (since := "2025-06-08")]
-lemma eq_iff_not_lt_of_le (hab : a ≤ b) : a = b ↔ ¬ a < b := hab.not_lt_iff_eq.symm
+lemma eq_iff_not_lt_of_le (hab : a ≤ b) : a = b ↔ ¬a < b := hab.not_lt_iff_eq.symm
 
 @[deprecated (since := "2025-06-08")] alias LE.le.eq_iff_not_lt := eq_iff_not_lt_of_le
 
@@ -473,21 +473,21 @@ lemma ltByCases_eq (h : x = y) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ :
 
 set_option linter.deprecated false in
 @[deprecated lt_trichotomy (since := "2025-04-21")]
-lemma ltByCases_not_lt (h : ¬ x < y) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P}
-    (p : ¬ y < x → x = y := fun h' => (le_antisymm (le_of_not_gt h') (le_of_not_gt h))) :
+lemma ltByCases_not_lt (h : ¬x < y) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P}
+    (p : ¬y < x → x = y := fun h' => (le_antisymm (le_of_not_gt h') (le_of_not_gt h))) :
     ltByCases x y h₁ h₂ h₃ = if h' : y < x then h₃ h' else h₂ (p h') := dif_neg h
 
 set_option linter.deprecated false in
 @[deprecated lt_trichotomy (since := "2025-04-21")]
-lemma ltByCases_not_gt (h : ¬ y < x) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P}
-    (p : ¬ x < y → x = y := fun h' => (le_antisymm (le_of_not_gt h) (le_of_not_gt h'))) :
+lemma ltByCases_not_gt (h : ¬y < x) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P}
+    (p : ¬x < y → x = y := fun h' => (le_antisymm (le_of_not_gt h) (le_of_not_gt h'))) :
     ltByCases x y h₁ h₂ h₃ = if h' : x < y then h₁ h' else h₂ (p h') :=
   dite_congr rfl (fun _ => rfl) (fun _ => dif_neg h)
 
 set_option linter.deprecated false in
 @[deprecated lt_trichotomy (since := "2025-04-21")]
 lemma ltByCases_ne (h : x ≠ y) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P}
-    (p : ¬ x < y → y < x := fun h' => h.lt_or_gt.resolve_left h') :
+    (p : ¬x < y → y < x := fun h' => h.lt_or_gt.resolve_left h') :
     ltByCases x y h₁ h₂ h₃ = if h' : x < y then h₁ h' else h₃ (p h') :=
   dite_congr rfl (fun _ => rfl) (fun _ => dif_pos _)
 
@@ -564,12 +564,12 @@ lemma ltTrichotomy_eq (h : x = y) : ltTrichotomy x y p q r = q := ltByCases_eq h
 
 set_option linter.deprecated false in
 @[deprecated lt_trichotomy (since := "2025-04-21")]
-lemma ltTrichotomy_not_lt (h : ¬ x < y) :
+lemma ltTrichotomy_not_lt (h : ¬x < y) :
     ltTrichotomy x y p q r = if y < x then r else q := ltByCases_not_lt h
 
 set_option linter.deprecated false in
 @[deprecated lt_trichotomy (since := "2025-04-21")]
-lemma ltTrichotomy_not_gt (h : ¬ y < x) :
+lemma ltTrichotomy_not_gt (h : ¬y < x) :
     ltTrichotomy x y p q r = if x < y then p else q := ltByCases_not_gt h
 
 set_option linter.deprecated false in
@@ -989,7 +989,7 @@ theorem compare_of_injective_eq_compareOfLessAndEq (a b : α) [LinearOrder β]
   have h := LinearOrder.compare_eq_compareOfLessAndEq (f a) (f b)
   simp only [h, compareOfLessAndEq]
   split_ifs <;> try (first | rfl | contradiction)
-  · have : ¬ f a = f b := by rename_i h; exact inj.ne h
+  · have : ¬f a = f b := by rename_i h; exact inj.ne h
     contradiction
   · grind
 
