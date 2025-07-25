@@ -646,7 +646,7 @@ not contain duplicates. Equal elements are merged using `merge`. If `merge` resp
 (i.e. for all `x`, `y`, `y'`, `z`, if `x < y < z` and `x < y' < z` then `x < merge y y' < z`)
 then the resulting array is again sorted.
 
-Copy from `Array.mergeDedupWith` in `Batteries/Data/Array/Merge.lean`.
+Copied from `Array.mergeDedupWith` in `Batteries/Data/Array/Merge.lean`.
 -/
 def mergeDedupWith {α} [ord : Ord α] (xs ys : Array α) (merge : α → α → α) : Array α :=
   go (Array.mkEmpty (xs.size + ys.size)) 0 0
