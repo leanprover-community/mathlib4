@@ -21,7 +21,7 @@ instance [Algebra.IsSeparable (A ⧸ p) (B ⧸ q)] :
     (.ofBijective _ p.bijective_algebraMap_quotient_residueField)
     (.ofBijective _ q.bijective_algebraMap_quotient_residueField) ?_
   ext x
-  simp [RingHom.algebraMap_toAlgebra, Algebra.ofId_apply, ← IsScalarTower.algebraMap_apply]
+  simp [RingHom.algebraMap_toAlgebra, Algebra.ofId_apply]
 
 instance [Algebra.IsSeparable p.ResidueField q.ResidueField] :
     Algebra.IsSeparable (A ⧸ p) (B ⧸ q) := by
@@ -35,7 +35,7 @@ instance [Algebra.IsSeparable p.ResidueField q.ResidueField] :
   apply (RingEquiv.ofBijective _ q.bijective_algebraMap_quotient_residueField).injective
   simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, RingEquiv.symm_apply_apply,
     RingEquiv.apply_symm_apply]
-  simp [RingHom.algebraMap_toAlgebra, Algebra.ofId_apply, ← IsScalarTower.algebraMap_apply]
+  simp [RingHom.algebraMap_toAlgebra, Algebra.ofId_apply]
 
 lemma Algebra.isSeparable_residueField_iff
     {p : Ideal A} [p.IsMaximal] {q : Ideal B} [q.IsMaximal] [q.LiesOver p] :
