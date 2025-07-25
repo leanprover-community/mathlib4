@@ -219,6 +219,20 @@ instance : (invariantsFunctor k G).PreservesZeroMorphisms where
 instance : (invariantsFunctor k G).Additive where
 instance : (invariantsFunctor k G).Linear k where
 
+variable {G} in
+/-- Given a normal subgroup S ≤ G, this is the functor sending a `G`-representation `A` to the
+`G ⧸ S`-representation it induces on `A^S`. -/
+@[simps obj_V map_hom]
+noncomputable def quotientToInvariantsFunctor (S : Subgroup G) [S.Normal] :
+    Rep k G ⥤ Rep k (G ⧸ S) where
+  obj X := X.quotientToInvariants S
+  map {X Y} f := {
+    hom := (invariantsFunctor k S).map ((Action.res _ S.subtype).map f)
+    comm g := QuotientGroup.induction_on g fun g => by
+      ext x
+      simp [ModuleCat.endRingEquiv, Representation.quotientToInvariants,
+        Representation.toInvariants, invariants, hom_comm_apply] }
+
 /-- The adjunction between the functor equipping a module with the trivial representation, and
 the functor sending a representation to its submodule of invariants. -/
 @[simps]
