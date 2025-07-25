@@ -1331,6 +1331,10 @@ partial def addToAdditiveAttr (src : Name) (cfg : Config) (kind := AttributeKind
   if cfg.reorder != [] then
     trace[to_additive] "@[to_additive] will reorder the arguments of {tgt}."
     reorderAttr.add src cfg.reorder
+    -- we allow using this attribute if it's only to add the reorder configuration
+    -- for example, this is necessary for `HPow.hPow`
+    if findTranslation? (← getEnv) src |>.isSome then
+      return #[tgt]
   let firstMultArg ← MetaM.run' <| firstMultiplicativeArg src
   if firstMultArg != 0 then
     trace[to_additive_detail] "Setting relevant_arg for {src} to be {firstMultArg}."
