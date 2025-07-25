@@ -34,7 +34,7 @@ relation, Galois connection, induced bijection, fixed points
 
 variable {α β : Type*} (R : Rel α β)
 
-namespace Rel
+namespace Set.Rel
 
 /-! ### Pairs of adjoint maps defined by relations -/
 
@@ -97,4 +97,4 @@ theorem leftDual_rightDual_le_of_le {I I' : Set β} (h : I' ∈ R.rightFixedPoin
   apply R.gc_leftDual_rightDual.monotone_u
   exact h₁
 
-end Rel
+end Set.Rel

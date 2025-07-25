@@ -687,7 +687,7 @@ lemma le_krullDim_iff {n : ℕ} : n ≤ krullDim α ↔ ∃ l : LTSeries α, l.l
     constructor
     · exact fun H ↦ ⟨(LTSeries.longestOf α).take ⟨_, Nat.lt_succ.mpr H⟩, rfl⟩
     · exact fun ⟨l, hl⟩ ↦ hl ▸ l.longestOf_is_longest
-  · simpa [krullDim_eq_top] using Rel.InfiniteDimensional.exists_relSeries_with_length n
+  · simpa [krullDim_eq_top] using Set.Rel.InfiniteDimensional.exists_relSeries_with_length n
 
 /-- A definition of krullDim for nonempty `α` that avoids `WithBot` -/
 lemma krullDim_eq_iSup_length [Nonempty α] :

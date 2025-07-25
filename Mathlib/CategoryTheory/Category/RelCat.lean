@@ -21,7 +21,7 @@ By flipping the arguments to a relation, we construct an equivalence `opEquivale
 `RelCat` and its opposite.
 -/
 
-open Rel
+open Set.Rel
 
 namespace CategoryTheory
 
@@ -42,7 +42,7 @@ structure Hom (X Y : RelCat.{u}) : Type u where
   /-- Build a morphism `X ⟶ Y` for `X Y : RelCat` from a relation between `X` and `Y`. -/
   ofRel ::
   /-- The underlying relation between `X` and `Y` of a morphism `X ⟶ Y` for `X Y : RelCat`. -/
-  rel : Rel X Y
+  rel : Set.Rel X Y
 
 initialize_simps_projections Hom (as_prefix rel)
 
