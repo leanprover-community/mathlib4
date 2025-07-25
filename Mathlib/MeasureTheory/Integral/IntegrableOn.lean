@@ -81,10 +81,11 @@ theorem hasFiniteIntegral_restrict_of_bounded [NormedAddCommGroup E] {f : α →
 variable [NormedAddCommGroup E] {f g : α → ε} {s t : Set α} {μ ν : Measure α}
   [TopologicalSpace ε] [ContinuousENorm ε]
 
-theorem hasFiniteIntegral_restrict_of_bounded_enorm {f : α → ε} {s : Set α}
-    {μ : Measure α} {C} (hC : ‖C‖ₑ ≠ ∞ := by finiteness) (hs : μ s ≠ ∞ := by finiteness) (hf : ∀ᵐ x ∂μ.restrict s, ‖f x‖ₑ ≤ C) :
+theorem hasFiniteIntegral_restrict_of_bounded_enorm {f : α → ε} {s : Set α} {μ : Measure α}
+    {C : ℝ≥0∞} (hC : ‖C‖ₑ ≠ ∞ := by finiteness) (hs : μ s ≠ ∞ := by finiteness)
+    (hf : ∀ᵐ x ∂μ.restrict s, ‖f x‖ₑ ≤ C) :
     HasFiniteIntegral f (μ.restrict s) :=
-  haveI : IsFiniteMeasure (μ.restrict s) := ⟨by rwa [Measure.restrict_apply_univ]⟩
+  haveI : IsFiniteMeasure (μ.restrict s) := ⟨by rw [Measure.restrict_apply_univ]; exact hs.lt_top⟩
   hasFiniteIntegral_of_bounded_enorm hC hf
 
 /-- A function is `IntegrableOn` a set `s` if it is almost everywhere strongly measurable on `s`
