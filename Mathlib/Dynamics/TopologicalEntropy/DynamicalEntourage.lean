@@ -43,8 +43,8 @@ open scoped Rel Topology Uniformity
 variable {X : Type*}
 
 /-- The dynamical entourage associated to a transformation `T`, entourage `U` and time `n`
-is the set of points `(x, y)` such that `(T^[k] x, T^[k] y) ∈ U` for all `k < n`, i.e.
-which are `U`-close up to time `n`. -/
+is the entourage where `x` and `y` are close iff `T^[k] x` and `T^[k] y` are `U`-close
+for all `k < n`, i.e. iff they are `U`-close up to time `n`. -/
 def dynEntourage (T : X → X) (U : Rel X X) (n : ℕ) : Rel X X :=
   ⋂ k < n, (map T T)^[k] ⁻¹' U
 
