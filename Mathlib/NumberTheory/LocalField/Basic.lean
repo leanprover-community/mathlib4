@@ -12,14 +12,14 @@ import Mathlib.RingTheory.Valuation.RankOne
 
 # Definition of (Non-archimedean) local fields
 
-Given a topological field `K` equipped with an equivalence class of valuation (a `ValuativeRel`),
+Given a topological field `K` equipped with an equivalence class of valuations (a `ValuativeRel`),
 we say that it is a non-archimedean local field if the topology comes from the given valuation,
 and it is locally compact and non-discrete.
 
 -/
 
 /--
-Given a topological field `K` equipped with an equivalence class of valuation (a `ValuativeRel`),
+Given a topological field `K` equipped with an equivalence class of valuations (a `ValuativeRel`),
 we say that it is a non-archimedean local field if the topology comes from the given valuation,
 and it is locally compact and non-discrete.
 
