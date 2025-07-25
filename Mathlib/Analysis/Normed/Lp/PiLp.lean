@@ -126,7 +126,8 @@ end
 /-! Note that the unapplied versions of these lemmas are deliberately omitted, as they break
 the use of the type synonym. -/
 
-@[simp] lemma ofLp_apply (x : PiLp p α) (i : ι) : ofLp x i = x i := rfl
+@[deprecated "This lemma is a syntactic tautology." (since := "2025-07-25")]
+lemma ofLp_apply (x : PiLp p α) (i : ι) : ofLp x i = x i := rfl
 @[simp] lemma toLp_apply (x : ∀ i, α i) (i : ι) : toLp p x i = x i := rfl
 
 @[deprecated ofLp_apply (since := "2024-04-27")]
