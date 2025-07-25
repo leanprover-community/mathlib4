@@ -73,7 +73,7 @@ theorem coe_eta (a : { a // p a }) (h : p a) : mk (↑a) h = a :=
 theorem coe_mk (a h) : (@mk α p a h : α) = a :=
   rfl
 
-/-- Restatement of `subtype.mk.injEq` as an iff. -/
+/-- Restatement of `Subtype.mk.injEq` as an iff. -/
 theorem mk_eq_mk {a h a' h'} : @mk α p a h = @mk α p a' h' ↔ a = a' := by simp
 
 theorem coe_eq_of_eq_mk {a : { a // p a }} {b : α} (h : ↑a = b) : a = ⟨b, h ▸ a.2⟩ :=
@@ -178,6 +178,18 @@ theorem map_injective {p : α → Prop} {q : β → Prop} {f : α → β} (h : �
 theorem map_involutive {p : α → Prop} {f : α → α} (h : ∀ a, p a → p (f a))
     (hf : Involutive f) : Involutive (map f h) :=
   fun x ↦ Subtype.ext (hf x)
+
+theorem map_eq {p : α → Prop} {q : β → Prop} {f g : α → β}
+    (h₁ : ∀ a : α, p a → q (f a)) (h₂ : ∀ a : α, p a → q (g a))
+    {x y : Subtype p} :
+    map f h₁ x = map g h₂ y ↔ f x = g y :=
+  Subtype.ext_iff
+
+theorem map_ne {p : α → Prop} {q : β → Prop} {f g : α → β}
+    (h₁ : ∀ a : α, p a → q (f a)) (h₂ : ∀ a : α, p a → q (g a))
+    {x y : Subtype p} :
+    map f h₁ x ≠ map g h₂ y ↔ f x ≠ g y :=
+  map_eq h₁ h₂ |>.not
 
 instance [HasEquiv α] (p : α → Prop) : HasEquiv (Subtype p) :=
   ⟨fun s t ↦ (s : α) ≈ (t : α)⟩
