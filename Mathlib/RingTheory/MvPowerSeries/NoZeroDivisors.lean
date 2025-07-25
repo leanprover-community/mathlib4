@@ -65,7 +65,7 @@ theorem mem_nonZeroDivisorsRight_of_constantCoeff {φ : MvPowerSeries σ R}
     apply lt_of_le_of_ne
     · simp only [← mem_antidiagonal.mp huv, le_add_iff_nonneg_right, zero_le]
     · rintro rfl
-      simp_all
+      simp_all only [coeff_zero, mem_antidiagonal, add_eq_right, ne_eq, not_true_eq_false]
   · simp only [mem_antidiagonal, add_zero, not_true_eq_false, coeff_zero_eq_constantCoeff,
       false_implies]
 
@@ -87,7 +87,7 @@ theorem mem_nonZeroDivisorsLeft_of_constantCoeff {φ : MvPowerSeries σ R}
     apply lt_of_le_of_ne
     · simp only [← mem_antidiagonal.mp huv, le_add_iff_nonneg_left, zero_le]
     · rintro rfl
-      simp_all
+      simp_all only [coeff_zero, mem_antidiagonal, add_eq_right, ne_eq, not_true_eq_false]
   · simp only [mem_antidiagonal, zero_add, not_true_eq_false, coeff_zero_eq_constantCoeff,
       false_implies]
 
