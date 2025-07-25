@@ -557,7 +557,7 @@ theorem div_le_div_iff_div_le_div : v₁ x / v₁ x' ≤ v₁ y / v₁ y' ↔ v�
     rw [div_le_iff₀ hx, div_mul_eq_mul_div₀, ← map_mul, h'.le_div_iff_le_div,
       map_mul, ← div_mul_eq_mul_div₀, ← div_le_iff₀ (h'.zero_lt_iff_zero_lt.1 hx)]
 
-theorem div_lt_div_iff_div_lt_divv : v₁ x / v₁ x' < v₁ y / v₁ y' ↔ v₂ x / v₂ x' < v₂ y / v₂ y' := by
+theorem div_lt_div_iff_div_lt_div : v₁ x / v₁ x' < v₁ y / v₁ y' ↔ v₂ x / v₂ x' < v₂ y / v₂ y' := by
   simp_rw [lt_iff_not_ge, h'.div_le_div_iff_div_le_div]
 
 theorem div_eq_div_iff_div_eq_div : v₁ x / v₁ x' = v₁ y / v₁ y' ↔ v₂ x / v₂ x' = v₂ y / v₂ y' := by
