@@ -82,7 +82,7 @@ variable [NormedAddCommGroup E] {f g : α → ε} {s t : Set α} {μ ν : Measur
   [TopologicalSpace ε] [ContinuousENorm ε]
 
 theorem hasFiniteIntegral_restrict_of_bounded_enorm {f : α → ε} {s : Set α}
-    {μ : Measure α} {C} (hC : ‖C‖ₑ ≠ ∞) (hs : μ s < ∞) (hf : ∀ᵐ x ∂μ.restrict s, ‖f x‖ₑ ≤ C) :
+    {μ : Measure α} {C} (hC : ‖C‖ₑ ≠ ∞ := by finiteness) (hs : μ s ≠ ∞ := by finiteness) (hf : ∀ᵐ x ∂μ.restrict s, ‖f x‖ₑ ≤ C) :
     HasFiniteIntegral f (μ.restrict s) :=
   haveI : IsFiniteMeasure (μ.restrict s) := ⟨by rwa [Measure.restrict_apply_univ]⟩
   hasFiniteIntegral_of_bounded_enorm hC hf
