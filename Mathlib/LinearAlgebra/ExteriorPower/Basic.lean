@@ -62,7 +62,7 @@ noncomputable def ιMulti_family {I : Type*} [LinearOrder I] (v : I → M)
   ιMulti R n fun i ↦ v <| Finset.orderIsoOfFin s.val s.property i
 
 @[simp] lemma ιMulti_family_apply_coe {I : Type*} [LinearOrder I] (v : I → M)
-  (s : {s : Finset I // Finset.card s = n}) :
+    (s : {s : Finset I // Finset.card s = n}) :
     ιMulti_family R n v s = ExteriorAlgebra.ιMulti_family R n v s := rfl
 
 variable (M)
@@ -242,7 +242,7 @@ lemma map_comp_ιMulti_family {I : Type*} [LinearOrder I] (v : I → M) (f : M �
 
 @[simp]
 lemma map_apply_ιMulti_family {I : Type*} [LinearOrder I] (v : I → M) (f : M →ₗ[R] N)
-  (s : {s : Finset I // s.card = n}) :
+    (s : {s : Finset I // s.card = n}) :
     (map n f) (ιMulti_family R n v s) = ιMulti_family R n (f ∘ v) s := by
   simp only [ιMulti_family, map, alternatingMapLinearEquiv_apply_ιMulti]
   rfl

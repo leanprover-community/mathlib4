@@ -96,8 +96,7 @@ lemma inr_i : coprod.inr ≫ P.i = P.i₁ := by simp [i]
 end
 
 @[simp, reassoc]
-lemma symm_i [HasBinaryCoproducts C] : P.symm.i =
-  (coprod.braiding A A).hom ≫ P.i := by aesop_cat
+lemma symm_i [HasBinaryCoproducts C] : P.symm.i = (coprod.braiding A A).hom ≫ P.i := by aesop_cat
 
 end Precylinder
 

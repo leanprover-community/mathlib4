@@ -85,7 +85,7 @@ lemma exists_pow_mem_center_of_inseparable' (p : ℕ) [ExpChar D p] {a : D}
   every `n` greater than `(p ^ m)`. -/
 lemma exist_pow_eq_zero_of_le (p : ℕ) [hchar : ExpChar D p]
     {a : D} (ha : a ∉ k) (hinsep : ∀ x : D, IsSeparable k x → x ∈ k):
-  ∃ m, 1 ≤ m ∧ ∀ n, p ^ m ≤ n → (ad k D a)^[n] = 0 := by
+    ∃ m, 1 ≤ m ∧ ∀ n, p ^ m ≤ n → (ad k D a)^[n] = 0 := by
   obtain ⟨m, hm⟩ := exists_pow_mem_center_of_inseparable' p ha hinsep
   refine ⟨m, ⟨hm.1, fun n hn ↦ ?_⟩⟩
   have inter : (ad k D a)^[p ^ m] = 0 := by

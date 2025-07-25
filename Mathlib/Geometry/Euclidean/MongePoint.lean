@@ -429,7 +429,7 @@ theorem dist_circumcenter_reflection_orthocenter (t : Triangle ℝ P) {i₁ i₂
 /-- The distance from the circumcenter to the reflection of the orthocenter in a side equals the
 circumradius, variant using a `Finset`. -/
 theorem dist_circumcenter_reflection_orthocenter_finset (t : Triangle ℝ P) {i₁ i₂ : Fin 3}
-  (h : i₁ ≠ i₂) :
+    (h : i₁ ≠ i₂) :
     dist t.circumcenter
       (reflection (affineSpan ℝ (t.points '' ↑({i₁, i₂} : Finset (Fin 3)))) t.orthocenter) =
       t.circumradius := by

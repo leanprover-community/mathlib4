@@ -346,7 +346,7 @@ end ULift
 pseudometric spaces. We make sure that the uniform structure thus constructed is the one
 corresponding to the product of uniform spaces, to avoid diamond problems. -/
 instance Prod.pseudoEMetricSpaceMax [PseudoEMetricSpace β] :
-  PseudoEMetricSpace (α × β) where
+    PseudoEMetricSpace (α × β) where
   edist x y := edist x.1 y.1 ⊔ edist x.2 y.2
   edist_self x := by simp
   edist_comm x y := by simp [edist_comm]

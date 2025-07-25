@@ -87,11 +87,9 @@ noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) (x : U.unop) :
     ((StructureSheaf.openToLocalization R U.unop x x.2).hom)
 
 @[simp]
-lemma sections_smul_localizations_def
-    {U : (Opens (PrimeSpectrum.Top R))ᵒᵖ} (x : U.unop)
-    (r : (Spec.structureSheaf R).val.obj U)
-    (m : Localizations M ↑x) :
-  r • m = r.1 x • m := rfl
+lemma sections_smul_localizations_def {U : (Opens (PrimeSpectrum.Top R))ᵒᵖ} (x : U.unop)
+    (r : (Spec.structureSheaf R).val.obj U) (m : Localizations M ↑x) :
+    r • m = r.1 x • m := rfl
 
 /--
 For any `R`-module `M` and any open subset `U ⊆ Spec R`, `M^~(U)` is an `𝒪_{Spec R}(U)`-submodule

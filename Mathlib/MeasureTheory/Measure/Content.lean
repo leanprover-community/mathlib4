@@ -92,7 +92,7 @@ variable (μ : Content G)
 
 @[simp]
 lemma mk_apply (toFun : Compacts G → ℝ≥0) (mono' sup_disjoint' sup_le') (K : Compacts G) :
-  mk toFun mono' sup_disjoint' sup_le' K = toFun K := rfl
+    mk toFun mono' sup_disjoint' sup_le' K = toFun K := rfl
 
 @[simp] lemma apply_ne_top {K : Compacts G} : μ K ≠ ∞ := coe_ne_top
 

@@ -996,8 +996,8 @@ lemma ofAddValuation_symm_eq : ofAddValuation.symm = toAddValuation (R := R) (Γ
 lemma toAddValuation_symm_eq : toAddValuation.symm = ofAddValuation (R := R) (Γ₀ := Γ₀) := rfl
 
 @[simp]
-lemma ofAddValuation_toAddValuation (v : Valuation R Γ₀) :
-  ofAddValuation (toAddValuation v) = v := rfl
+lemma ofAddValuation_toAddValuation (v : Valuation R Γ₀) : ofAddValuation (toAddValuation v) = v :=
+  rfl
 
 @[simp]
 lemma toValuation_ofValuation (v : AddValuation R (Additive Γ₀)ᵒᵈ) :

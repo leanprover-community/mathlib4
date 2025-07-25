@@ -414,7 +414,7 @@ noncomputable def reindex (P : PreSubmersivePresentation R S ι σ)
     exact f.injective
 
 lemma jacobiMatrix_reindex {ι' σ' : Type*} (e : ι' ≃ ι) (f : σ' ≃ σ)
-  [Fintype σ'] [DecidableEq σ'] [Fintype σ] [DecidableEq σ] :
+    [Fintype σ'] [DecidableEq σ'] [Fintype σ] [DecidableEq σ] :
     (P.reindex e f).jacobiMatrix =
       (P.jacobiMatrix.reindex f.symm f.symm).map (MvPolynomial.rename e.symm) := by
   ext i j : 1
