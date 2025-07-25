@@ -56,8 +56,8 @@ where
   go (s : Syntax) : TermElabM Tree := do
     match s with
     | `(fbinop% $f $lhs $rhs) => processBinOp s f lhs rhs
-    | `(($e)) =>
-      if hasCDot e then
+    | `(($h:hygieneInfo $e)) =>
+      if hasCDot e h.getHygieneInfo then
         processLeaf s
       else
         go e
