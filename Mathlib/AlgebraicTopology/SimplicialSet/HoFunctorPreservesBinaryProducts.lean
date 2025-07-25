@@ -49,25 +49,6 @@ lemma foo : IsIso (α.app c.pt) := by
 
 end
 
--- Where do these belong?
--- BM: `Mathlib.CategoryTheory.Category.Preorder`
-namespace OrderHom
-
-open CategoryTheory Functor SSet
-
--- BM: golfed this, at the cost of being a bit less explicit
-def toFunctor {X Y} [Preorder X] [Preorder Y] (f : X →o Y) : X ⥤ Y := f.monotone.functor
-
-def ofFunctor {X Y} [Preorder X] [Preorder Y] (F : X ⥤ Y) : (X →o Y) where
-  toFun := F.obj
-  monotone' := monotone F
-
-def isoFunctor {X Y} [Preorder X] [Preorder Y] : (X →o Y) ≅ (X ⥤ Y) where
-  hom := toFunctor
-  inv := ofFunctor
-
-end OrderHom
-
 namespace CategoryTheory
 
 universe u v
