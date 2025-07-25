@@ -65,7 +65,7 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 /-- An equivalence of categories.
 
 We define an equivalence between `C` and `D` as a half-adjoint equivalence: a pair of functors
-`F : C ⥤ D` and `G : D ⥤ C` with a unit `η : 𝟭 C ≅ F ⋙ G` and counit `ε : G ⋙ F ≅ 𝟭 D` such that
+`F : C ⥤ D` and `G : D ⥤ C` with a unit `η : 𝟭 C ≅ F ⋙ G` and counit `ε : G ⋙ F ≅ 𝟭 D`, such that
 the natural isomorphisms `η` and `ε` satisfy the triangle law for `F`: namely, `Fη ≫ εF = 𝟙 F`. Or,
 in other words, the composite `F ⟶ FGF ⟶ F` is the identity.
 
