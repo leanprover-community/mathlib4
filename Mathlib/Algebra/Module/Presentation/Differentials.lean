@@ -31,8 +31,6 @@ from the file `Mathlib/RingTheory/Kaehler/CotangentComplex.lean`.
 
 -/
 
-open Module
-
 universe w' t w u v
 
 namespace Algebra.Presentation

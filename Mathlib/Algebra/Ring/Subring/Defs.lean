@@ -84,7 +84,7 @@ instance (priority := 100) SubringClass.nonUnitalSubringClass (S : Type*) (R : T
 
 variable [SetLike S R] [hSR : SubringClass S R] (s : S)
 
-@[simp, aesop safe (rule_sets := [SetLike])]
+@[aesop safe (rule_sets := [SetLike])]
 theorem intCast_mem (n : ℤ) : (n : R) ∈ s := by simp only [← zsmul_one, zsmul_mem, one_mem]
 
 namespace SubringClass

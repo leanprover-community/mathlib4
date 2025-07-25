@@ -31,8 +31,6 @@ category of abelian groups.
   abelian groups to groups.
 -/
 
-assert_not_exists Cardinal
-
 noncomputable section
 
 universe u
@@ -159,9 +157,9 @@ def abelianizeAdj : abelianize ⊣ forget₂ CommGrp.{u} Grp.{u} :=
         ext
         simp only
         apply Eq.symm
-        apply Abelianization.lift_unique
+        apply Abelianization.lift.unique
         intros
-        apply Abelianization.lift_apply_of }
+        apply Abelianization.lift.of }
 
 end Abelianization
 

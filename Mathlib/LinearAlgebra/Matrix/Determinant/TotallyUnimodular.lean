@@ -5,7 +5,7 @@ Authors: Martin Dvorak, Vladimir Kolmogorov, Ivan Sergeev, Bhavik Mehta
 -/
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.Data.Matrix.ColumnRowPartitioned
-import Mathlib.Data.Sign.Basic
+import Mathlib.Data.Sign
 
 /-!
 # Totally unimodular matrices

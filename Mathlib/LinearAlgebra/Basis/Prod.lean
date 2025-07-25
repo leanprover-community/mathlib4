@@ -22,10 +22,13 @@ open Function Set Submodule Finsupp
 
 variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {M : Type*} {M' : Type*}
 
-namespace Module.Basis
+section Module
 
 variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
-  (b : Basis ι R M)
+
+namespace Basis
+
+variable (b : Basis ι R M)
 
 section Prod
 

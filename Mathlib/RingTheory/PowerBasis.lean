@@ -40,7 +40,8 @@ power basis, powerbasis
 
 -/
 
-open Finsupp Module Polynomial
+
+open Polynomial Finsupp
 
 variable {R S T : Type*} [CommRing R] [Ring S] [Algebra R S]
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]

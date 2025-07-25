@@ -122,8 +122,8 @@ identify `realSpace K` with its image in `mixedSpace K`).
 
 variable (K : Type*) [Field K]
 
-open Finset Module NumberField NumberField.InfinitePlace NumberField.mixedEmbedding
-  NumberField.Units dirichletUnitTheorem
+open Finset NumberField NumberField.InfinitePlace NumberField.mixedEmbedding NumberField.Units
+  NumberField.Units.dirichletUnitTheorem
 
 namespace NumberField.mixedEmbedding.fundamentalCone
 

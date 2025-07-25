@@ -19,7 +19,7 @@ We also prove some lemmas about this definition.
 
 open Set Submodule
 
-namespace Module.Basis
+namespace Basis
 
 section Semiring
 
@@ -122,4 +122,4 @@ theorem isMaxChain_range_flag (b : Basis (Fin n) K V) : IsMaxChain (· ≤ ·) (
 
 end DivisionRing
 
-end Module.Basis
+end Basis

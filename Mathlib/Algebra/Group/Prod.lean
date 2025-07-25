@@ -36,7 +36,9 @@ We also prove trivial `simp` lemmas, and define the following operations on `Mon
 * `divMonoidHom`: Division bundled as a monoid homomorphism.
 -/
 
-assert_not_exists MonoidWithZero DenselyOrdered AddMonoidWithOne
+assert_not_exists MonoidWithZero DenselyOrdered
+-- TODO:
+-- assert_not_exists AddMonoidWithOne
 
 variable {G : Type*} {H : Type*} {M : Type*} {N : Type*} {P : Type*}
 

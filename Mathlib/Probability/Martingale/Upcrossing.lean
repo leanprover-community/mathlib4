@@ -631,7 +631,14 @@ theorem crossing_pos_eq (hab : a < b) :
     refine ⟨rfl, ?_⟩
     simp +unfoldPartialApp only [lowerCrossingTime_zero, hitting,
       Set.mem_Icc, Set.mem_Iic]
-    simp_all
+    ext ω
+    split_ifs with h₁ h₂ h₂
+    · simp_rw [hf']
+    · simp_rw [Set.mem_Iic, ← hf' _ _] at h₂
+      exact False.elim (h₂ h₁)
+    · simp_rw [Set.mem_Iic, hf' _ _] at h₁
+      exact False.elim (h₁ h₂)
+    · rfl
   | succ k ih =>
     have : upperCrossingTime 0 (b - a) (fun n ω => (f n ω - a)⁺) N (k + 1) =
         upperCrossingTime a b f N (k + 1) := by

@@ -314,7 +314,12 @@ lemma associator_naturality (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ 
     [HasGoodTensor₁₂Tensor Y₁ Y₂ Y₃] [HasGoodTensorTensor₂₃ Y₁ Y₂ Y₃] :
     tensorHom (tensorHom f₁ f₂) f₃ ≫ (associator Y₁ Y₂ Y₃).hom =
       (associator X₁ X₂ X₃).hom ≫ tensorHom f₁ (tensorHom f₂ f₃) := by
-        aesop_cat
+        #adaptation_note /-- https://github.com/leanprover/lean4/pull/4154
+        this used to be aesop_cat -/
+        ext x i₁ i₂ i₃ h : 2
+        simp only [categoryOfGradedObjects_comp, ιTensorObj₃'_tensorHom_assoc,
+          associator_conjugation, ιTensorObj₃'_associator_hom, assoc, Iso.inv_hom_id_assoc,
+          ιTensorObj₃'_associator_hom_assoc, ιTensorObj₃_tensorHom]
 
 end
 

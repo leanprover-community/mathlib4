@@ -34,6 +34,8 @@ In this file we have:
 * `freeCommRingEquivMvPolynomialInt : FreeCommRing α ≃+* MvPolynomial α ℤ` :
     `FreeCommRing α` is isomorphic to a polynomial ring.
 
+
+
 ## Implementation notes
 
 `FreeCommRing α` is implemented not using `MvPolynomial` but
@@ -45,7 +47,6 @@ of monomials in this free commutative ring.
 free commutative ring, free ring
 -/
 
-assert_not_exists Cardinal
 
 noncomputable section
 
@@ -159,7 +160,7 @@ def lift : (α → R) ≃ (FreeCommRing α →+* R) :=
 
 @[simp]
 theorem lift_of (x : α) : lift f (of x) = f x :=
-  (FreeAbelianGroup.lift_apply_of _ _).trans <| mul_one _
+  (FreeAbelianGroup.lift.of _ _).trans <| mul_one _
 
 @[simp]
 theorem lift_comp_of (f : FreeCommRing α →+* R) : lift (f ∘ of) = f :=
@@ -366,8 +367,8 @@ theorem coe_eq : ((↑) : FreeRing α → FreeCommRing α) =
   dsimp [castFreeCommRing, toFreeCommRing, FreeRing.lift, FreeRing, FreeAbelianGroup.liftMonoid_coe,
     Functor.map]
   rw [← AddMonoidHom.coe_coe]
-  apply FreeAbelianGroup.lift_unique; intro L
-  simp only [AddMonoidHom.coe_coe, comp_apply, FreeAbelianGroup.lift_apply_of]
+  apply FreeAbelianGroup.lift.unique; intro L
+  simp only [AddMonoidHom.coe_coe, comp_apply, FreeAbelianGroup.lift.of]
   exact
     FreeMonoid.recOn L rfl fun hd tl ih => by
       rw [(FreeMonoid.lift _).map_mul, FreeMonoid.lift_eval_of, ih]

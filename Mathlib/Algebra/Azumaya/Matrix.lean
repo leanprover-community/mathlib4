@@ -38,7 +38,8 @@ abbrev AlgHom.mulLeftRightMatrix_inv :
 lemma AlgHom.mulLeftRightMatrix.inv_comp :
     (AlgHom.mulLeftRightMatrix_inv R n).comp
     (AlgHom.mulLeftRight R (Matrix n n R)).toLinearMap = .id :=
-  ((Matrix.stdBasis _ _ _).tensorProduct ((Matrix.stdBasis _ _ _).map (opLinearEquiv ..))).ext
+  Basis.ext (Basis.tensorProduct (Matrix.stdBasis _ _ _)
+    ((Matrix.stdBasis _ _ _).map (opLinearEquiv ..)))
   fun ⟨⟨i0, j0⟩, k0, l0⟩ ↦ by
     simp [stdBasis_eq_single, ite_and, Fintype.sum_prod_type,
       mulLeftRight_apply, single, Matrix.mul_apply]
@@ -47,7 +48,7 @@ lemma AlgHom.mulLeftRightMatrix.comp_inv :
     (AlgHom.mulLeftRight R (Matrix n n R)).toLinearMap.comp
     (AlgHom.mulLeftRightMatrix_inv R n) = .id := by
   ext f : 1
-  apply (Matrix.stdBasis _ _ _).ext
+  apply Basis.ext (Matrix.stdBasis _ _ _)
   intro ⟨i, j⟩
   simp only [LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply, map_sum,
     map_smul, stdBasis_eq_single, LinearMap.coeFn_sum, Finset.sum_apply,

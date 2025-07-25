@@ -108,12 +108,12 @@ theorem HasSubst.add (hf : HasSubst f) (hg : HasSubst g) :
 theorem HasSubst.mul_left (hf : HasSubst f) :
     HasSubst (f * g) := by
   simp only [HasSubst, map_mul]
-  exact (Commute.all _ _).isNilpotent_mul_right hf
+  exact (Commute.all _ _).isNilpotent_mul_left hf
 
 theorem HasSubst.mul_right (hf : HasSubst f) :
     HasSubst (g * f) := by
   simp only [HasSubst, map_mul]
-  exact (Commute.all _ _).isNilpotent_mul_left hf
+  exact (Commute.all _ _).isNilpotent_mul_right hf
 
 theorem HasSubst.smul (r : MvPowerSeries τ S) {a : MvPowerSeries τ S}
     (ha : HasSubst a) :

@@ -49,8 +49,7 @@ noncomputable section
 
 open Function Set Submodule
 open FaithfulSMul (algebraMap_injective)
-open Module
-open End (invtSubmodule mem_invtSubmodule)
+open Module.End (invtSubmodule mem_invtSubmodule)
 
 variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 

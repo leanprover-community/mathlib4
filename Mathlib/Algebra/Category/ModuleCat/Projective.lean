@@ -14,7 +14,7 @@ import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 
 universe v u w
 
-open CategoryTheory Module ModuleCat
+open CategoryTheory ModuleCat
 
 variable {R : Type u} [Ring R] (P : ModuleCat.{v} R)
 

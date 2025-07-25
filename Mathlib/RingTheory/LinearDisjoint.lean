@@ -131,7 +131,6 @@ linearly disjoint, linearly independent, tensor product
 
 -/
 
-open Module
 open scoped TensorProduct
 
 noncomputable section

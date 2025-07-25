@@ -18,28 +18,9 @@ assert_not_exists Field
 
 open scoped Pointwise
 
-variable {α : Type*} [Group α] {s : Subgroup α}
-
-namespace QuotientGroup
-
-@[to_additive]
-instance fintype [Fintype α] (s : Subgroup α) [DecidableRel (leftRel s).r] : Fintype (α ⧸ s) :=
-  Quotient.fintype (leftRel s)
-
-@[to_additive]
-instance fintypeQuotientRightRel [Fintype (α ⧸ s)] :
-    Fintype (Quotient (QuotientGroup.rightRel s)) :=
-  .ofEquiv (α ⧸ s) (QuotientGroup.quotientRightRelEquivQuotientLeftRel s).symm
-
-variable (s) in
-@[to_additive]
-lemma card_quotient_rightRel [Fintype (α ⧸ s)] :
-    Fintype.card (Quotient (QuotientGroup.rightRel s)) = Fintype.card (α ⧸ s) :=
-  Fintype.ofEquiv_card (QuotientGroup.quotientRightRelEquivQuotientLeftRel s).symm
-
-end QuotientGroup
-
 namespace Subgroup
+
+variable {α : Type*} [Group α]
 
 @[to_additive AddSubgroup.card_eq_card_quotient_mul_card_addSubgroup]
 theorem card_eq_card_quotient_mul_card_subgroup (s : Subgroup α) :

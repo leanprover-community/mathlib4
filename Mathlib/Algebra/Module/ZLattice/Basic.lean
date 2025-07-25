@@ -55,7 +55,7 @@ noncomputable section
 
 namespace ZSpan
 
-open MeasureTheory MeasurableSet Module Submodule Bornology
+open MeasureTheory MeasurableSet Submodule Bornology
 
 variable {E ι : Type*}
 
@@ -597,15 +597,15 @@ theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
     rw [← topEquiv.finrank_eq, ← h_spanE]
     convert finrank_span_le_card (R := K) (Set.range b)
 
+open Module
+
 variable {ι : Type*} [hs : IsZLattice K L] (b : Basis ι ℤ L)
-
-namespace Module.Basis
-
 /-- Any `ℤ`-basis of `L` is also a `K`-basis of `E`. -/
-def ofZLatticeBasis : Basis ι K E := by
+def Basis.ofZLatticeBasis :
+    Basis ι K E := by
   have : Module.Finite ℤ L := ZLattice.module_finite K L
   have : Free ℤ L := ZLattice.module_free K L
-  let e :=  (Free.chooseBasis ℤ L).indexEquiv  b
+  let e :=  Basis.indexEquiv (Free.chooseBasis ℤ L) b
   have : Fintype ι := Fintype.ofEquiv _ e
   refine basisOfTopLeSpanOfCardEqFinrank (L.subtype ∘ b) ?_ ?_
   · rw [← span_span_of_tower ℤ, Set.range_comp, ← map_span, Basis.span_eq, Submodule.map_top,
@@ -613,11 +613,11 @@ def ofZLatticeBasis : Basis ι K E := by
   · rw [← Fintype.card_congr e, ← finrank_eq_card_chooseBasisIndex, ZLattice.rank K L]
 
 @[simp]
-theorem ofZLatticeBasis_apply (i : ι) : b.ofZLatticeBasis K L i = b i := by
-  simp [Basis.ofZLatticeBasis]
+theorem Basis.ofZLatticeBasis_apply (i : ι) :
+    b.ofZLatticeBasis K L i = b i := by simp [Basis.ofZLatticeBasis]
 
 @[simp]
-theorem ofZLatticeBasis_repr_apply (x : L) (i : ι) :
+theorem Basis.ofZLatticeBasis_repr_apply (x : L) (i : ι) :
     (b.ofZLatticeBasis K L).repr x i = b.repr x i := by
   suffices ((b.ofZLatticeBasis K L).repr.toLinearMap.restrictScalars ℤ) ∘ₗ L.subtype
       = Finsupp.mapRange.linearMap (Algebra.linearMap ℤ K) ∘ₗ b.repr.toLinearMap by
@@ -627,13 +627,12 @@ theorem ofZLatticeBasis_repr_apply (x : L) (i : ι) :
     LinearEquiv.coe_coe, coe_subtype, ← b.ofZLatticeBasis_apply K, repr_self,
     Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single, Algebra.linearMap_apply, map_one]
 
-theorem ofZLatticeBasis_span : span ℤ (Set.range (b.ofZLatticeBasis K)) = L := by
-  calc span ℤ (Set.range (b.ofZLatticeBasis K))
-    _ = span ℤ (L.subtype '' Set.range b) := by congr; ext; simp
-    _ = map L.subtype (span ℤ (Set.range b)) := by rw [Submodule.map_span]
+theorem Basis.ofZLatticeBasis_span :
+    (span ℤ (Set.range (b.ofZLatticeBasis K))) = L := by
+  calc (span ℤ (Set.range (b.ofZLatticeBasis K)))
+    _ = (span ℤ (L.subtype '' (Set.range b))) := by congr; ext; simp
+    _ = (map L.subtype (span ℤ (Set.range b))) := by rw [Submodule.map_span]
     _ = L := by simp [b.span_eq]
-
-end Module.Basis
 
 open MeasureTheory in
 theorem ZLattice.isAddFundamentalDomain {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -726,22 +725,22 @@ def ZLattice.comap_equiv (e : F ≃ₗ[K] E) :
 theorem ZLattice.comap_equiv_apply (e : F ≃ₗ[K] E) (x : L) :
     ZLattice.comap_equiv K L e x = e.symm x := rfl
 
-namespace Module.Basis
-
 /-- The basis of `ZLattice.comap K L e` given by the image of a basis `b` of `L` by `e.symm`. -/
-def ofZLatticeComap (e : F ≃ₗ[K] E) {ι : Type*} (b : Basis ι ℤ L) :
+def Basis.ofZLatticeComap (e : F ≃ₗ[K] E) {ι : Type*}
+    (b : Basis ι ℤ L) :
     Basis ι ℤ (ZLattice.comap K L e.toLinearMap) := b.map (ZLattice.comap_equiv K L e)
 
 @[simp]
-theorem ofZLatticeComap_apply (e : F ≃ₗ[K] E) {ι : Type*} (b : Basis ι ℤ L) (i : ι) :
+theorem Basis.ofZLatticeComap_apply (e : F ≃ₗ[K] E) {ι : Type*}
+    (b : Basis ι ℤ L) (i : ι) :
     b.ofZLatticeComap K L e i = e.symm (b i) := by simp [Basis.ofZLatticeComap]
 
 @[simp]
-theorem ofZLatticeComap_repr_apply (e : F ≃ₗ[K] E) {ι : Type*} (b : Basis ι ℤ L) (x : L) (i : ι) :
+theorem Basis.ofZLatticeComap_repr_apply (e : F ≃ₗ[K] E) {ι : Type*} (b : Basis ι ℤ L) (x : L)
+    (i : ι) :
     (b.ofZLatticeComap K L e).repr (ZLattice.comap_equiv K L e x) i = b.repr x i := by
   simp [Basis.ofZLatticeComap]
 
-end Module.Basis
 end comap
 
 section NormedLinearOrderedField_comap
@@ -754,7 +753,7 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace K F] [FiniteDimensional
   [ProperSpace F]
 variable (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice K L]
 
-theorem Module.Basis.ofZLatticeBasis_comap (e : F ≃L[K] E) {ι : Type*} (b : Basis ι ℤ L) :
+theorem Basis.ofZLatticeBasis_comap (e : F ≃L[K] E) {ι : Type*} (b : Basis ι ℤ L) :
     (b.ofZLatticeComap K L e.toLinearEquiv).ofZLatticeBasis K (ZLattice.comap K L e.toLinearMap) =
     (b.ofZLatticeBasis K L).map e.symm.toLinearEquiv := by
   ext

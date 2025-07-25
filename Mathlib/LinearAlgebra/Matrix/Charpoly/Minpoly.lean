@@ -16,13 +16,15 @@ This also includes some miscellaneous results about `minpoly` on matrices.
 
 noncomputable section
 
-open Matrix Module Polynomial
-
 universe u v w
+
+open Polynomial Matrix
 
 variable {R : Type u} [CommRing R]
 variable {n : Type v} [DecidableEq n] [Fintype n]
 variable {N : Type w} [AddCommGroup N] [Module R N]
+
+open Finset
 
 namespace Matrix
 

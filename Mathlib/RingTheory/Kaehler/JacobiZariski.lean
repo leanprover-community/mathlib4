@@ -27,7 +27,7 @@ and the exactness lemmas are
 - `KaehlerDifferential.map_surjective`
 -/
 
-open KaehlerDifferential Module MvPolynomial TensorProduct
+open KaehlerDifferential TensorProduct MvPolynomial
 
 namespace Algebra
 

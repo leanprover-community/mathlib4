@@ -1324,7 +1324,7 @@ end LinearMap
 
 namespace QuadraticMap
 
-open Finset Module
+open Finset
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
 variable {ι : Type*}

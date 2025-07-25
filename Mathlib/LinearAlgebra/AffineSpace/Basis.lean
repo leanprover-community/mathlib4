@@ -39,7 +39,7 @@ barycentric coordinate of `q : P` is `1 - fᵢ (q -ᵥ p i)`.
 
 -/
 
-open Affine Module Set
+open Affine Set
 open scoped Pointwise
 
 universe u₁ u₂ u₃ u₄

@@ -35,7 +35,7 @@ section
 
 variable {R S ι σ : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
-open Extension Module MvPolynomial
+open Extension MvPolynomial
 
 namespace PreSubmersivePresentation
 

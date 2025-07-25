@@ -50,7 +50,6 @@ are computable.
 quaternion
 -/
 
-open Module
 
 /-- Quaternion algebra over a type with fixed coefficients where $i^2 = a + bi$ and $j^2 = c$,
 denoted as `ℍ[R,a,b]`.

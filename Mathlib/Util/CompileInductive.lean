@@ -73,9 +73,12 @@ def compileDefn (dv : DefinitionVal) : MetaM Unit := do
 
 open Elab
 
-/-- Returns true if the given declaration has a `@[csimp]` lemma. -/
-def hasCSimpLemma (env : Environment) (n : Name) : Bool :=
-  (Compiler.CSimp.ext.getState env).map.contains n
+/-- Returns true if the given declaration has already been compiled, either directly or via a
+`@[csimp]` lemma. -/
+def isCompiled (env : Environment) (n : Name) : Bool :=
+  -- `_cstage2` is not accessible via the elab env directly, wait for the full kernel env
+  env.toKernelEnv.constants.contains (n.str "_cstage2") ||
+    (Compiler.CSimp.ext.getState env).map.contains n
 
 /--
 `compile_def% Foo.foo` adds compiled code for the definition `Foo.foo`.
@@ -85,7 +88,7 @@ for which Lean does not generate compiled code by default
 -/
 elab tk:"compile_def% " i:ident : command => Command.liftTermElabM do
   let n ← realizeGlobalConstNoOverloadWithInfo i
-  if hasCSimpLemma (← getEnv) n then
+  if isCompiled (← getEnv) n then
     logWarningAt tk m!"already compiled {n}"
     return
   let dv ← withRef i <| getConstInfoDefn n
@@ -124,9 +127,13 @@ where
 /--
 Generate compiled code for the recursor for `iv`, excluding the `sizeOf` function.
 -/
-def compileInductiveOnly (iv : InductiveVal) (rv : RecursorVal) (warn := true) : MetaM Unit := do
+def compileInductiveOnly (iv : InductiveVal) (warn := true) : MetaM Unit := do
+  let rv ← getConstInfoRec <| mkRecName iv.name
   if ← isProp rv.type then
     if warn then logWarning m!"not compiling {rv.name}"
+    return
+  if isCompiled (← getEnv) rv.name then
+    if warn then logWarning m!"already compiled {rv.name}"
     return
   if !iv.isRec && rv.numMotives == 1 && iv.numCtors == 1 && iv.numIndices == 0 then
     compileStructOnly iv rv
@@ -186,33 +193,24 @@ mutual
 Generate compiled code for the recursor for `iv`.
 -/
 partial def compileInductive (iv : InductiveVal) (warn := true) : MetaM Unit := do
-  let rv ← getConstInfoRec <| mkRecName iv.name
-  if hasCSimpLemma (← getEnv) rv.name then
-    if warn then logWarning m!"already compiled {rv.name}"
-    return
-  compileInductiveOnly iv rv warn
-  compileSizeOf iv rv
+  compileInductiveOnly iv warn
+  compileSizeOf iv
 
 /--
 Compiles the `sizeOf` auxiliary functions. It also recursively compiles any inductives required to
 compile the `sizeOf` definition (because `sizeOf` definitions depend on `T.rec`).
 -/
-partial def compileSizeOf (iv : InductiveVal) (rv : RecursorVal) : MetaM Unit := do
+partial def compileSizeOf (iv : InductiveVal) : MetaM Unit := do
   let go aux := do
     if let some (.defnInfo dv) := (← getEnv).find? aux then
-      if !hasCSimpLemma (← getEnv) aux then
+      if !isCompiled (← getEnv) aux then
         let deps : NameSet := dv.value.foldConsts ∅ fun c arr =>
           if let .str name "_sizeOf_inst" := c then arr.insert name else arr
         for i in deps do
-          -- We only want to recompile inductives defined in external modules, because attempting
-          -- to recompile `sizeOf` functions defined in the current module multiple times will lead
-          -- to errors. An entire mutual block of inductives is compiled when compiling any
-          -- inductive within it, so every inductive within the same module can be explicitly
-          -- compiled using `compile_inductive%` if necessary.
-          if ((← getEnv).getModuleIdxFor? i).isSome then
-            if let some (.inductInfo iv) := (← getEnv).find? i then
-               compileInductive iv (warn := false)
+          if let some (.inductInfo iv) := (← getEnv).find? i then
+            compileInductive iv (warn := false)
         compileDefn dv
+  let rv ← getConstInfoRec <| mkRecName iv.name
   for name in iv.all do
     for i in [:rv.numMotives] do
       go <| name.str s!"_sizeOf_{i+1}"
@@ -269,7 +267,7 @@ run_cmd Command.liftTermElabM do
     let value ← Elab.Term.elabTerm (← `(fun H t => H t.1))
       (← inferType (.const rv.name (rv.levelParams.map .param)))
     compileStructOnly.go iv rv value
-    compileSizeOf iv rv
+    compileSizeOf iv
 
 -- These need special handling because `Lean.Name.sizeOf` and `Lean.instSizeOfName`
 -- were manually implemented as `noncomputable`

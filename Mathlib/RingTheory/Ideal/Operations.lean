@@ -15,7 +15,7 @@ import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 # More operations on modules and ideals
 -/
 
-assert_not_exists Module.Basis -- See `RingTheory.Ideal.Basis`
+assert_not_exists Basis -- See `RingTheory.Ideal.Basis`
   Submodule.hasQuotient -- See `RingTheory.Ideal.Quotient.Operations`
 
 universe u v w x
@@ -1242,8 +1242,7 @@ open scoped nonZeroDivisors in
 theorem Ideal.span_singleton_nonZeroDivisors {R : Type*} [CommSemiring R] [NoZeroDivisors R]
     {r : R} : span {r} ∈ (Ideal R)⁰ ↔ r ∈ R⁰ := by
   cases subsingleton_or_nontrivial R
-  · simp_rw [← nonZeroDivisorsRight_eq_nonZeroDivisors]
-    exact ⟨fun _ _ _ ↦ Subsingleton.eq_zero _, fun _ _ _ ↦ Subsingleton.eq_zero _⟩
+  · exact ⟨fun _ _ _ ↦ Subsingleton.eq_zero _, fun _ _ _ ↦ Subsingleton.eq_zero _⟩
   · rw [mem_nonZeroDivisors_iff_ne_zero, mem_nonZeroDivisors_iff_ne_zero, ne_eq, zero_eq_bot,
       span_singleton_eq_bot]
 

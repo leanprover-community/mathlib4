@@ -31,7 +31,7 @@ this is a basis over `Fin 3 → R`.
 
 -/
 
-open Function Module Set Submodule
+open Function Set Submodule
 
 namespace Pi
 

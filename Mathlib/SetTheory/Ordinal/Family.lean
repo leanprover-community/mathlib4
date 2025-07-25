@@ -996,6 +996,13 @@ theorem Ordinal.not_bddAbove_compl_of_small (s : Set Ordinal.{u}) [hs : Small.{u
 
 namespace Ordinal
 
+/-! ### Properties of ω -/
+
+theorem lt_add_of_limit {a b c : Ordinal.{u}} (h : IsSuccLimit c) :
+    a < b + c ↔ ∃ c' < c, a < b + c' := by
+  -- Porting note: `bex_def` is required.
+  rw [← IsNormal.bsup_eq.{u, u} (isNormal_add_right b) h, lt_bsup, bex_def]
+
 /-! ### Casting naturals into ordinals, compatibility with operations -/
 
 @[simp]

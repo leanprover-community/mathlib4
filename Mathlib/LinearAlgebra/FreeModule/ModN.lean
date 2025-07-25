@@ -13,7 +13,7 @@ import Mathlib.LinearAlgebra.Dimension.Free
 If `G` is a rank `d` free `ℤ`-module, then `G/nG` is a finite group of cardinality `n ^ d`.
 -/
 
-open Finsupp Function Module
+open Finsupp Function
 
 variable {G H M : Type*} [AddCommGroup G] {n : ℕ}
 

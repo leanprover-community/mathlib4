@@ -83,7 +83,7 @@ in June 2024.
 
 universe t t' w w' u v
 
-open TensorProduct Module MvPolynomial
+open TensorProduct MvPolynomial
 
 variable (n m : ℕ)
 

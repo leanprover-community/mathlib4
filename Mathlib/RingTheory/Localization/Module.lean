@@ -97,39 +97,39 @@ lemma IsLocalizedModule.linearIndependent_lift {ι} {v : ι → Mₛ} (hf : Line
     hf t (fun i ↦ _ * (sec (v i)).2) (fun i ↦ _ * (sec (v i)).2) ?_ i hit
   simp_rw [mul_smul, ← Submonoid.smul_def, hsec, ← map_smul, ← map_sum, eq]
 
-namespace Module.Basis
+section Basis
 
 variable {ι : Type*} (b : Basis ι R M)
 
 /-- If `M` has an `R`-basis, then localizing `M` at `S` has a basis over `R` localized at `S`. -/
-noncomputable def ofIsLocalizedModule : Basis ι Rₛ Mₛ :=
+noncomputable def Basis.ofIsLocalizedModule : Basis ι Rₛ Mₛ :=
   .mk (b.linearIndependent.of_isLocalizedModule Rₛ S f) <| by
     rw [Set.range_comp, span_eq_top_of_isLocalizedModule Rₛ S _ b.span_eq]
 
 @[simp]
-theorem ofIsLocalizedModule_apply (i : ι) : b.ofIsLocalizedModule Rₛ S f i = f (b i) := by
+theorem Basis.ofIsLocalizedModule_apply (i : ι) : b.ofIsLocalizedModule Rₛ S f i = f (b i) := by
   rw [ofIsLocalizedModule, coe_mk, Function.comp_apply]
 
 @[simp]
-theorem ofIsLocalizedModule_repr_apply (m : M) (i : ι) :
+theorem Basis.ofIsLocalizedModule_repr_apply (m : M) (i : ι) :
     ((b.ofIsLocalizedModule Rₛ S f).repr (f m)) i = algebraMap R Rₛ (b.repr m i) := by
   suffices ((b.ofIsLocalizedModule Rₛ S f).repr.toLinearMap.restrictScalars R) ∘ₗ f =
       Finsupp.mapRange.linearMap (Algebra.linearMap R Rₛ) ∘ₗ b.repr.toLinearMap by
     exact DFunLike.congr_fun (LinearMap.congr_fun this m) i
-  refine ext b fun i ↦ ?_
+  refine Basis.ext b fun i ↦ ?_
   rw [LinearMap.coe_comp, Function.comp_apply, LinearMap.coe_restrictScalars,
     LinearEquiv.coe_coe, ← b.ofIsLocalizedModule_apply Rₛ S f, repr_self, LinearMap.coe_comp,
     Function.comp_apply, LinearEquiv.coe_coe, repr_self, Finsupp.mapRange.linearMap_apply,
     Finsupp.mapRange_single, Algebra.linearMap_apply, map_one]
 
-theorem ofIsLocalizedModule_span :
+theorem Basis.ofIsLocalizedModule_span :
     span R (Set.range (b.ofIsLocalizedModule Rₛ S f)) = LinearMap.range f := by
   calc span R (Set.range (b.ofIsLocalizedModule Rₛ S f))
     _ = span R (f '' (Set.range b)) := by congr; ext; simp
     _ = map f (span R (Set.range b)) := by rw [Submodule.map_span]
     _ = LinearMap.range f := by rw [b.span_eq, Submodule.map_top]
 
-end Module.Basis
+end Basis
 
 end IsLocalizedModule
 
@@ -154,30 +154,27 @@ theorem span_eq_top_localization_localization {v : Set A} (hv : span R v = ⊤) 
     span Rₛ (algebraMap A Aₛ '' v) = ⊤ :=
   span_eq_top_of_isLocalizedModule Rₛ S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap hv
 
-namespace Module.Basis
-
 /-- If `A` has an `R`-basis, then localizing `A` at `S` has a basis over `R` localized at `S`.
 
 A suitable instance for `[Algebra A Aₛ]` is `localizationAlgebra`.
 -/
-noncomputable def localizationLocalization {ι : Type*} (b : Basis ι R A) : Basis ι Rₛ Aₛ :=
+noncomputable def Basis.localizationLocalization {ι : Type*} (b : Basis ι R A) : Basis ι Rₛ Aₛ :=
   b.ofIsLocalizedModule Rₛ S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap
 
 @[simp]
-theorem localizationLocalization_apply {ι : Type*} (b : Basis ι R A) (i) :
+theorem Basis.localizationLocalization_apply {ι : Type*} (b : Basis ι R A) (i) :
     b.localizationLocalization Rₛ S Aₛ i = algebraMap A Aₛ (b i) :=
   b.ofIsLocalizedModule_apply Rₛ S _ i
 
 @[simp]
-theorem localizationLocalization_repr_algebraMap {ι : Type*} (b : Basis ι R A) (x i) :
+theorem Basis.localizationLocalization_repr_algebraMap {ι : Type*} (b : Basis ι R A) (x i) :
     (b.localizationLocalization Rₛ S Aₛ).repr (algebraMap A Aₛ x) i =
       algebraMap R Rₛ (b.repr x i) := b.ofIsLocalizedModule_repr_apply Rₛ S _ _ i
 
-theorem localizationLocalization_span {ι : Type*} (b : Basis ι R A) :
+theorem Basis.localizationLocalization_span {ι : Type*} (b : Basis ι R A) :
     Submodule.span R (Set.range (b.localizationLocalization Rₛ S Aₛ)) =
       LinearMap.range (IsScalarTower.toAlgHom R A Aₛ) := b.ofIsLocalizedModule_span Rₛ S _
 
-end Module.Basis
 end LocalizationLocalization
 
 

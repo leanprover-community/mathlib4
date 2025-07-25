@@ -18,10 +18,9 @@ import Mathlib.LinearAlgebra.Quotient.Pi
 
 -/
 
-open Module
-open scoped DirectSum
-
 namespace Submodule
+
+open scoped DirectSum
 
 variable {ι R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 variable [IsDomain R] [IsPrincipalIdealRing R] [Finite ι]

@@ -16,7 +16,7 @@ This file contains results about nilpotent elements that involve ring theory.
 
 universe u v
 
-open Function Module Set
+open Function Set
 
 variable {R S : Type*} {x y : R}
 
