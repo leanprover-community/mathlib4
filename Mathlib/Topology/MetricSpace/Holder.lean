@@ -30,7 +30,7 @@ for `r` to ensure that `d ^ r` is monotone in `d`. It might be a good idea to us
 
 Hölder continuity, Lipschitz continuity
 
- -/
+-/
 
 
 variable {X Y Z : Type*}
@@ -293,6 +293,13 @@ lemma smul {α} [SeminormedAddCommGroup α] [SMulZeroClass α Y] [IsBoundedSMul 
   rw [coe_mul, ENNReal.smul_def, smul_eq_mul, mul_comm (C : ℝ≥0∞), mul_assoc]
   gcongr
   exact hf x₁ x₂
+
+lemma smul_iff {α} [SeminormedRing α] [Module α Y] [NormSMulClass α Y] (a : α)
+    (ha : ‖a‖₊ ≠ 0) :
+    HolderWith (C * ‖a‖₊) r (a • f) ↔ HolderWith C r f := by
+  simp_rw [HolderWith, coe_mul, Pi.smul_apply, edist_smul₀, ENNReal.smul_def, smul_eq_mul,
+    mul_comm (C : ℝ≥0∞), mul_assoc,
+    ENNReal.mul_le_mul_left (ENNReal.coe_ne_zero.mpr ha) ENNReal.coe_ne_top, mul_comm]
 
 end HolderWith
 

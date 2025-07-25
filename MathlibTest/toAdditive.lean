@@ -203,7 +203,7 @@ def myFin (_ : ℕ) := ℕ
 instance : One (myFin n) := ⟨(1 : ℕ)⟩
 
 @[to_additive bar]
-def myFin.foo : myFin (n+1) := 1
+def myFin.foo : myFin (n + 1) := 1
 
 /-- We can pattern-match with `1`, which creates a term with a pure nat literal.
 See https://github.com/leanprover-community/mathlib4/pull/2046 -/
@@ -331,7 +331,7 @@ example {α : Type _} [Add α] (x y z : α) : reorderAddThree z x y = x + y + z 
 
 def Ones : ℕ → Q(Nat)
   | 0     => q(1)
-  | (n+1) => q($(Ones n) + $(Ones n))
+  | (n + 1) => q($(Ones n) + $(Ones n))
 
 
 -- This test just exists to see if this finishes in finite time. It should take <100ms.
@@ -437,7 +437,8 @@ run_cmd do
 warning: The source declaration one_eq_one was given the simp-attribute(s) simp, reduce_mod_char before calling @[to_additive].
 The preferred method is to use something like `@[to_additive (attr := simp, reduce_mod_char)]`
 to apply the attribute to both one_eq_one and the target declaration zero_eq_zero.
-note: this linter can be disabled with `set_option linter.existingAttributeWarning false`
+
+Note: This linter can be disabled with `set_option linter.existingAttributeWarning false`
 -/
 #guard_msgs in
 @[simp, reduce_mod_char, to_additive]
@@ -450,11 +451,73 @@ lemma one_eq_one' {α : Type*} [One α] : (1 : α) = 1 := rfl
 
 /--
 error: to_additive: the generated additivised name equals the original name 'foo', meaning that no part of the name was additivised.
-Check that your declaration name is correct (if your declaration is an instance, try naming it)
-or provide an additivised name using the '@[to_additive my_add_name]' syntax.
+If this is intentional, use the `@[to_additive self]` syntax.
+Otherwise, check that your declaration name is correct (if your declaration is an instance, try naming it)
+or provide an additivised name using the `@[to_additive my_add_name]` syntax.
 ---
 warning: declaration uses 'sorry'
 -/
 #guard_msgs in
 @[to_additive]
 instance foo {α : Type*} [Semigroup α] : Monoid α := sorry
+
+-- Test the error message for a wrong `to_additive existing`.
+
+/--
+error: `to_additive` validation failed:
+  expected 1 universe levels, but 'Nat.le_trans' has 0 universe levels
+-/
+#guard_msgs in
+@[to_additive existing Nat.le_trans]
+lemma one_eq_one'' {α : Type*} [One α] : (1 : α) = 1 := rfl
+
+
+/--
+error: `to_additive` validation failed: expected
+  ∀ {α : Type u} [inst : Zero α], 0 = 0
+but 'Eq.trans' has type
+  ∀ {α : Sort u} {a b c : α}, a = b → b = c → a = c
+-/
+#guard_msgs in
+@[to_additive existing Eq.trans]
+lemma one_eq_one''' {α : Type*} [One α] : (1 : α) = 1 := rfl
+
+/-!
+Test that @[to_additive] can reorder arguments of raw kernel projections.
+-/
+open Lean in
+elab "unfold%" e:term : term => do
+  let e ← Elab.Term.elabTerm e none
+  Meta.unfoldDefinition e
+
+@[to_additive]
+def myPow {α β : Type} [i : Pow α β] (a : α) := unfold% i.1 a
+
+/--
+info: def myPow : {α β : Type} → [i : Pow α β] → α → β → α :=
+fun {α β} [i : Pow α β] a => i.1 a
+-/
+#guard_msgs in
+#print myPow
+/--
+info: def myNSMul : {α β : Type} → [i : SMul β α] → α → β → α :=
+fun {α β} [SMul β α] a a_1 => SMul.smul a_1 a
+-/
+#guard_msgs in
+#print myNSMul
+
+@[to_additive]
+def myMul {α : Type} [i : Mul α] (a : α) := unfold% i.1 a
+
+/--
+info: def myMul : {α : Type} → [i : Mul α] → α → α → α :=
+fun {α} [i : Mul α] a => i.1 a
+-/
+#guard_msgs in
+#print myMul
+/--
+info: def myAdd : {α : Type} → [i : Add α] → α → α → α :=
+fun {α} [i : Add α] a => i.1 a
+-/
+#guard_msgs in
+#print myAdd

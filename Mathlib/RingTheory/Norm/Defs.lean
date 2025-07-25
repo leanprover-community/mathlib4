@@ -28,7 +28,7 @@ See also `Algebra.trace`, which is defined similarly as the trace of
 
 ## References
 
- * https://en.wikipedia.org/wiki/Field_norm
+* https://en.wikipedia.org/wiki/Field_norm
 
 -/
 
@@ -58,6 +58,11 @@ noncomputable def norm : S →* R :=
   LinearMap.det.comp (lmul R S).toRingHom.toMonoidHom
 
 theorem norm_apply (x : S) : norm R x = LinearMap.det (lmul R S x) := rfl
+
+@[simp]
+theorem norm_self : Algebra.norm R = MonoidHom.id R := by
+  ext
+  simp [norm_apply]
 
 theorem norm_eq_one_of_not_exists_basis (h : ¬∃ s : Finset S, Nonempty (Basis s R S)) (x : S) :
     norm R x = 1 := by rw [norm_apply, LinearMap.det]; split_ifs <;> trivial
@@ -93,7 +98,6 @@ protected theorem norm_algebraMap {L : Type*} [Ring L] [Algebra K L] (x : K) :
   by_cases H : ∃ s : Finset L, Nonempty (Basis s K L)
   · rw [norm_algebraMap_of_basis H.choose_spec.some, finrank_eq_card_basis H.choose_spec.some]
   · rw [norm_eq_one_of_not_exists_basis K H, finrank_eq_zero_of_not_exists_basis, pow_zero]
-    rintro ⟨s, ⟨b⟩⟩
-    exact H ⟨s, ⟨b⟩⟩
+    assumption_mod_cast
 
 end Algebra

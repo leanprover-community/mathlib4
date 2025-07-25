@@ -18,7 +18,7 @@ of linear maps on such spaces.
 Preservation of finite-dimensionality and formulas for the dimension are given for
 - submodules (`FiniteDimensional.finiteDimensional_submodule`)
 - quotients (for the dimension of a quotient, see `Submodule.finrank_quotient_add_finrank` in
-  `Mathlib.LinearAlgebra.FiniteDimensional`)
+  `Mathlib/LinearAlgebra/FiniteDimensional.lean`)
 - linear equivs, in `LinearEquiv.finiteDimensional`
 
 Basic properties of linear maps of a finite-dimensional vector space are given. Notably, the
@@ -31,7 +31,7 @@ and `LinearMap.comp_eq_id_comm`.
 You should not assume that there has been any effort to state lemmas as generally as possible.
 
 Plenty of the results hold for general fg modules or notherian modules, and they can be found in
-`Mathlib.LinearAlgebra.FreeModule.Finite.Rank` and `Mathlib.RingTheory.Noetherian`.
+`Mathlib/LinearAlgebra/FreeModule/Finite/Rank.lean` and `Mathlib/RingTheory/Noetherian.lean`.
 -/
 
 universe u v v' w
@@ -102,7 +102,7 @@ end
 noncomputable def basisSingleton (ι : Type*) [Unique ι] (h : finrank K V = 1) (v : V)
     (hv : v ≠ 0) : Basis ι K V :=
   let b := Module.basisUnique ι h
-  let h : b.repr v default ≠ 0 := mt Module.basisUnique_repr_eq_zero_iff.mp hv
+  have h : b.repr v default ≠ 0 := mt Module.basisUnique_repr_eq_zero_iff.mp hv
   Basis.ofRepr
     { toFun := fun w => Finsupp.single default (b.repr w default / b.repr v default)
       invFun := fun f => f default • v
@@ -355,7 +355,7 @@ theorem ker_noncommProd_eq_of_supIndep_ker [FiniteDimensional K V] {ι : Type*} 
   | insert i s hi ih =>
     replace ih : ker (Finset.noncommProd s f <| Set.Pairwise.mono (s.subset_insert i) comm) =
         ⨆ x ∈ s, ker (f x) := ih _ (h.subset (s.subset_insert i))
-    rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ hi, Module.End.mul_eq_comp,
+    rw [Finset.noncommProd_insert_of_notMem _ _ _ _ hi, Module.End.mul_eq_comp,
       ker_comp_eq_of_commute_of_disjoint_ker]
     · simp_rw [Finset.mem_insert_coe, iSup_insert, Finset.mem_coe, ih]
     · exact s.noncommProd_commute _ _ _ fun j hj ↦
@@ -393,6 +393,26 @@ theorem ofInjectiveEndo_left_inv (f : V →ₗ[K] V) (h_inj : Injective f) :
     ((ofInjectiveEndo f h_inj).symm : V →ₗ[K] V) * f = 1 :=
   LinearMap.ext <| (ofInjectiveEndo f h_inj).symm_apply_apply
 
+variable {V' : Type*} [AddCommGroup V'] [Module K V'] [FiniteDimensional K V']
+omit [FiniteDimensional K V]
+
+/-- An injective linear map between finite-dimensional modules of equal rank
+is a linear equivalence.
+
+Unlike `LinearEquiv.ofFinrankEq` (which creates an *abstract* linear equivalence from `V` to `V'`),
+this lemma improves a *given* injective linear map to a linear equivalence.
+-/
+noncomputable def ofInjectiveOfFinrankEq (f : V →ₗ[K] V') (hinj : Function.Injective f)
+    (hrank : Module.finrank K V = Module.finrank K V') : V ≃ₗ[K] V' :=
+  haveI : LinearMap.range f = ⊤ :=
+    Submodule.eq_top_of_finrank_eq ((LinearMap.finrank_range_of_inj hinj).trans hrank)
+  (ofInjective f hinj).trans (ofTop (LinearMap.range f) this)
+
+@[simp]
+lemma coe_ofInjectiveOfFinrankEq (f : V →ₗ[K] V') (hinj : Function.Injective f)
+    (hrank : Module.finrank K V = Module.finrank K V') :
+    (ofInjectiveOfFinrankEq f hinj hrank).toLinearMap = f :=
+  rfl
 end LinearEquiv
 
 namespace LinearMap

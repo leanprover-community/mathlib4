@@ -187,7 +187,7 @@ theorem not_dvd_of_natDegree_lt (hp : Monic p) (h0 : q ≠ 0) (hl : natDegree q 
     ¬p ∣ q := by
   rintro ⟨r, rfl⟩
   rw [hp.natDegree_mul' <| right_ne_zero_of_mul h0] at hl
-  exact hl.not_le (Nat.le_add_right _ _)
+  exact hl.not_ge (Nat.le_add_right _ _)
 
 theorem not_dvd_of_degree_lt (hp : Monic p) (h0 : q ≠ 0) (hl : degree q < degree p) : ¬p ∣ q :=
   Monic.not_dvd_of_natDegree_lt hp h0 <| natDegree_lt_natDegree h0 hl
@@ -271,7 +271,7 @@ theorem Monic.nextCoeff_multiset_prod (t : Multiset ι) (f : ι → R[X]) (h : �
     nextCoeff (t.map f).prod = (t.map fun i => nextCoeff (f i)).sum := by
   revert h
   refine Multiset.induction_on t ?_ fun a t ih ht => ?_
-  · simp only [Multiset.not_mem_zero, forall_prop_of_true, forall_prop_of_false, Multiset.map_zero,
+  · simp only [Multiset.notMem_zero, forall_prop_of_true, forall_prop_of_false, Multiset.map_zero,
       Multiset.prod_zero, Multiset.sum_zero, not_false_iff, forall_true_iff]
     rw [← C_1]
     rw [nextCoeff_C_eq_zero]
@@ -372,13 +372,7 @@ theorem Monic.natDegree_map [Semiring S] [Nontrivial S] {P : R[X]} (hmo : P.Moni
 @[simp]
 theorem Monic.degree_map [Semiring S] [Nontrivial S] {P : R[X]} (hmo : P.Monic) (f : R →+* S) :
     (P.map f).degree = P.degree := by
-  by_cases hP : P = 0
-  · simp [hP]
-  · refine le_antisymm degree_map_le ?_
-    rw [degree_eq_natDegree hP]
-    refine le_degree_of_ne_zero ?_
-    rw [coeff_map, Monic.coeff_natDegree hmo, RingHom.map_one]
-    exact one_ne_zero
+  simp_all
 
 section Injective
 
@@ -555,7 +549,7 @@ theorem monic_of_isUnit_leadingCoeff_inv_smul (h : IsUnit p.leadingCoeff) :
   rw [Monic.def, leadingCoeff_smul_of_smul_regular _ (isSMulRegular_of_group _), Units.smul_def]
   obtain ⟨k, hk⟩ := h
   simp only [← hk, smul_eq_mul, ← Units.val_mul, Units.val_eq_one, inv_mul_eq_iff_eq_mul]
-  simp [Units.ext_iff, IsUnit.unit_spec]
+  simp
 
 theorem isUnit_leadingCoeff_mul_right_eq_zero_iff (h : IsUnit p.leadingCoeff) {q : R[X]} :
     p * q = 0 ↔ q = 0 := by
@@ -580,7 +574,7 @@ theorem isUnit_leadingCoeff_mul_left_eq_zero_iff (h : IsUnit p.leadingCoeff) {q 
     simp only [zero_mul] at hp
     rwa [mul_assoc, Monic.mul_left_eq_zero_iff] at hp
     refine monic_mul_C_of_leadingCoeff_mul_eq_one ?_
-    simp [Units.mul_inv_eq_iff_eq_mul, IsUnit.unit_spec]
+    simp
   · rintro rfl
     rw [zero_mul]
 

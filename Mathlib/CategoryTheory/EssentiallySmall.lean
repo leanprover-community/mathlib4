@@ -179,6 +179,14 @@ noncomputable def equivalence : C ≌ ShrinkHoms C where
 instance : (functor C).IsEquivalence := (equivalence C).isEquivalence_functor
 instance : (inverse C).IsEquivalence := (equivalence C).isEquivalence_inverse
 
+instance {T : Type u} [Unique T] : Unique (ShrinkHoms.{u} T) where
+  default := ShrinkHoms.toShrinkHoms (default : T)
+  uniq _ := congr_arg ShrinkHoms.fromShrinkHoms (Unique.uniq _ _)
+
+instance {T : Type u} [Category.{v} T] [IsDiscrete T] : IsDiscrete (ShrinkHoms.{u} T) where
+  subsingleton _ _ := { allEq _ _ := Shrink.ext (Subsingleton.elim _ _) }
+  eq_of_hom f := IsDiscrete.eq_of_hom  (C := T) ((equivShrink _).symm f)
+
 end ShrinkHoms
 
 namespace Shrink
@@ -221,6 +229,15 @@ theorem essentiallySmall_iff (C : Type u) [Category.{v} C] :
 theorem essentiallySmall_of_small_of_locallySmall [Small.{w} C] [LocallySmall.{w} C] :
     EssentiallySmall.{w} C :=
   (essentiallySmall_iff C).2 ⟨small_of_surjective Quotient.exists_rep, by infer_instance⟩
+
+instance small_skeleton_of_essentiallySmall [h : EssentiallySmall.{w} C] : Small.{w} (Skeleton C) :=
+  essentiallySmall_iff C |>.1 h |>.1
+
+variable {C} in
+theorem essentiallySmall_of_fully_faithful {D : Type u'} [Category.{v'} D] (F : C ⥤ D)
+    [F.Full] [F.Faithful] [EssentiallySmall.{w} D] : EssentiallySmall.{w} C :=
+  (essentiallySmall_iff C).2 ⟨small_of_injective F.mapSkeleton_injective,
+    locallySmall_of_faithful F⟩
 
 section FullSubcategory
 

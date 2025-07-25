@@ -3,7 +3,8 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.Module.ULift
 import Mathlib.Data.Finsupp.Fintype
 import Mathlib.LinearAlgebra.Basis.Basic
 import Mathlib.Logic.Small.Basic
@@ -160,7 +161,7 @@ instance (priority := 100) of_subsingleton' [Subsingleton R] : Module.Free R N :
 
 end Semiring
 
-end Module.Free
+end Free
 
 namespace Basis
 
@@ -176,4 +177,4 @@ theorem repr_algebraMap {ι : Type*} [DecidableEq ι] {B : Basis ι R S} {i : ι
   rw [Algebra.algebraMap_eq_smul_one, map_smul, ← hBi, Finsupp.smul_apply, B.repr_self_apply]
   simp
 
-end Basis
+end Module.Basis

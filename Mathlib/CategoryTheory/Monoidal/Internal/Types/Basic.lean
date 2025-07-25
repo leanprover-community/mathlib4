@@ -20,16 +20,16 @@ assert_not_exists MonoidWithZero
 
 universe v u
 
-open CategoryTheory
+open CategoryTheory Mon_Class
 
 namespace MonTypeEquivalenceMon
 
-instance monMonoid (A : Mon_ (Type u)) : Monoid A.X where
-  one := A.one PUnit.unit
-  mul x y := A.mul (x, y)
-  one_mul x := by convert congr_fun A.one_mul (PUnit.unit, x)
-  mul_one x := by convert congr_fun A.mul_one (x, PUnit.unit)
-  mul_assoc x y z := by convert congr_fun A.mul_assoc ((x, y), z)
+instance monMonoid (A : Type u) [Mon_Class A] : Monoid A where
+  one := η[A] PUnit.unit
+  mul x y := μ[A] (x, y)
+  one_mul x := by convert congr_fun (one_mul A) (PUnit.unit, x)
+  mul_one x := by convert congr_fun (mul_one A) (x, PUnit.unit)
+  mul_assoc x y z := by convert congr_fun (mul_assoc A) ((x, y), z)
 
 /-- Converting a monoid object in `Type` to a bundled monoid.
 -/
@@ -37,20 +37,21 @@ noncomputable def functor : Mon_ (Type u) ⥤ MonCat.{u} where
   obj A := MonCat.of A.X
   map f := MonCat.ofHom
     { toFun := f.hom
-      map_one' := congr_fun f.one_hom PUnit.unit
-      map_mul' := fun x y => congr_fun f.mul_hom (x, y) }
+      map_one' := congr_fun (IsMon_Hom.one_hom f.hom) PUnit.unit
+      map_mul' x y := congr_fun (IsMon_Hom.mul_hom f.hom) (x, y) }
 
 /-- Converting a bundled monoid to a monoid object in `Type`.
 -/
 noncomputable def inverse : MonCat.{u} ⥤ Mon_ (Type u) where
   obj A :=
     { X := A
-      one := fun _ => 1
-      mul := fun p => p.1 * p.2
-      one_mul := by ext ⟨_, _⟩; dsimp; simp
-      mul_one := by ext ⟨_, _⟩; dsimp; simp
-      mul_assoc := by ext ⟨⟨x, y⟩, z⟩; simp [mul_assoc] }
-  map f := { hom := f }
+      mon :=
+        { one := fun _ => 1
+          mul := fun p => p.1 * p.2
+          one_mul := by ext ⟨_, _⟩; simp
+          mul_one := by ext ⟨_, _⟩; simp
+          mul_assoc := by ext ⟨⟨x, y⟩, z⟩; simp [_root_.mul_assoc] } }
+  map f := .mk' f
 
 end MonTypeEquivalenceMon
 
@@ -79,9 +80,9 @@ noncomputable instance monTypeInhabited : Inhabited (Mon_ (Type u)) :=
 
 namespace CommMonTypeEquivalenceCommMon
 
-instance commMonCommMonoid (A : CommMon_ (Type u)) : CommMonoid A.X :=
-  { MonTypeEquivalenceMon.monMonoid A.toMon_ with
-    mul_comm := fun x y => by convert congr_fun A.mul_comm (y, x) }
+instance commMonCommMonoid (A : Type u) [Mon_Class A] [IsCommMon A] : CommMonoid A :=
+  { MonTypeEquivalenceMon.monMonoid A with
+    mul_comm := fun x y => by convert congr_fun (IsCommMon.mul_comm A) (y, x) }
 
 /-- Converting a commutative monoid object in `Type` to a bundled commutative monoid.
 -/
@@ -94,9 +95,10 @@ noncomputable def functor : CommMon_ (Type u) ⥤ CommMonCat.{u} where
 noncomputable def inverse : CommMonCat.{u} ⥤ CommMon_ (Type u) where
   obj A :=
     { MonTypeEquivalenceMon.inverse.obj ((forget₂ CommMonCat MonCat).obj A) with
-      mul_comm := by
-        ext ⟨x : A, y : A⟩
-        exact CommMonoid.mul_comm y x }
+      comm :=
+        { mul_comm := by
+            ext ⟨x : A, y : A⟩
+            exact CommMonoid.mul_comm y x } }
   map f := MonTypeEquivalenceMon.inverse.map ((forget₂ CommMonCat MonCat).map f)
 
 end CommMonTypeEquivalenceCommMon

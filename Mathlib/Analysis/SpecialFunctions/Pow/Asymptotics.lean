@@ -192,7 +192,7 @@ theorem isBigO_cpow_rpow (hl : IsBoundedUnder (· ≤ ·) l fun x => |(g x).im|)
     _ =Θ[l] (show α → ℝ from fun x => ‖f x‖ ^ (g x).re / (1 : ℝ)) :=
       ((isTheta_refl _ _).div (isTheta_exp_arg_mul_im hl))
     _ =ᶠ[l] (show α → ℝ from fun x => ‖f x‖ ^ (g x).re) := by
-      simp only [ofReal_one, div_one, EventuallyEq.rfl]
+      simp only [div_one, EventuallyEq.rfl]
 
 theorem isTheta_cpow_rpow (hl_im : IsBoundedUnder (· ≤ ·) l fun x => |(g x).im|)
     (hl : ∀ᶠ x in l, f x = 0 → re (g x) = 0 → g x = 0) :
@@ -204,7 +204,7 @@ theorem isTheta_cpow_rpow (hl_im : IsBoundedUnder (· ≤ ·) l fun x => |(g x).
     _ =Θ[l] fun x => ‖f x‖ ^ (g x).re / (1 : ℝ) :=
       (isTheta_refl _ _).div (isTheta_exp_arg_mul_im hl_im)
     _ =ᶠ[l] (fun x => ‖f x‖ ^ (g x).re) := by
-      simp only [ofReal_one, div_one, EventuallyEq.rfl]
+      simp only [div_one, EventuallyEq.rfl]
 
 theorem isTheta_cpow_const_rpow {b : ℂ} (hl : b.re = 0 → b ≠ 0 → ∀ᶠ x in l, f x ≠ 0) :
     (fun x => f x ^ b) =Θ[l] fun x => ‖f x‖ ^ b.re :=
@@ -246,11 +246,11 @@ theorem IsLittleO.rpow (hr : 0 < r) (hg : 0 ≤ᶠ[l] g) (h : f =o[l] g) :
   refine (h.forall_isBigOWith ?_).rpow ?_ ?_ hg <;> positivity
 
 protected lemma IsBigO.sqrt (hfg : f =O[l] g) (hg : 0 ≤ᶠ[l] g) :
-    (Real.sqrt <| f ·) =O[l] (Real.sqrt <| g ·) := by
+    (fun x ↦ √(f x)) =O[l] (fun x ↦ √(g x)) := by
   simpa [Real.sqrt_eq_rpow] using hfg.rpow one_half_pos.le hg
 
 protected lemma IsLittleO.sqrt (hfg : f =o[l] g) (hg : 0 ≤ᶠ[l] g) :
-    (Real.sqrt <| f ·) =o[l] (Real.sqrt <| g ·) := by
+    (fun x ↦ √(f x)) =o[l] (fun x ↦ √(g x)) := by
   simpa [Real.sqrt_eq_rpow] using hfg.rpow one_half_pos hg
 
 protected lemma IsTheta.sqrt (hfg : f =Θ[l] g) (hf : 0 ≤ᶠ[l] f) (hg : 0 ≤ᶠ[l] g) :

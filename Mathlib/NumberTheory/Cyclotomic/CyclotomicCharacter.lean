@@ -32,13 +32,13 @@ Let `L` be an integral domain, `g : L ≃+* L` and `n : ℕ+`. Let `d` be the nu
 of `1` in `L`.
 
 * `modularCyclotomicCharacter L n hn : (L ≃+* L) →* (ZMod n)ˣ` sends `g` to the unique `j` such
-   that `g(ζ)=ζ^j` for all `ζ : rootsOfUnity n L`. Here `hn` is a proof that there
-   are `n` `n`th roots of unity in `L`.
+  that `g(ζ)=ζ^j` for all `ζ : rootsOfUnity n L`. Here `hn` is a proof that there
+  are `n` `n`th roots of unity in `L`.
 
 * `cyclotomicCharacter L p : (L ≃+* L) →* ℤ_[p]ˣ` sends `g` to the unique `j` such
-   that `g(ζ) = ζ ^ (j mod pⁱ)` for all `pⁱ`'th roots of unity `ζ`.
+  that `g(ζ) = ζ ^ (j mod pⁱ)` for all `pⁱ`'th roots of unity `ζ`.
 
-   Note: This is defined to be the trivial character if `L` has no enough roots of unity.
+  Note: This is defined to be the trivial character if `L` has no enough roots of unity.
 
 ## Implementation note
 
@@ -84,8 +84,8 @@ theorem rootsOfUnity.integer_power_of_ringEquiv' (g : L ≃+* L) :
   simpa using rootsOfUnity.integer_power_of_ringEquiv n g
 
 /-- `modularCyclotomicCharacter_aux g n` is a non-canonical auxiliary integer `j`,
-   only well-defined modulo the number of `n`'th roots of unity in `L`, such that `g(ζ)=ζ^j`
-   for all `n`'th roots of unity `ζ` in `L`. -/
+  only well-defined modulo the number of `n`'th roots of unity in `L`, such that `g(ζ)=ζ^j`
+  for all `n`'th roots of unity `ζ` in `L`. -/
 noncomputable def modularCyclotomicCharacter.aux (g : L ≃+* L) (n : ℕ) [NeZero n] : ℤ :=
   (rootsOfUnity.integer_power_of_ringEquiv n g).choose
 
@@ -170,7 +170,7 @@ lemma comp (g h : L ≃+* L) : χ₀ n (g * h) =
     ← Subgroup.coe_pow]
   congr 2
   norm_cast
-  simp only [pow_eq_pow_iff_modEq, ← ZMod.natCast_eq_natCast_iff, SubmonoidClass.coe_pow,
+  simp only [pow_eq_pow_iff_modEq, ← ZMod.natCast_eq_natCast_iff,
     ZMod.natCast_val, Nat.cast_mul, ZMod.cast_mul (m := orderOf ζ) orderOf_dvd_card]
 
 end modularCyclotomicCharacter
@@ -258,7 +258,7 @@ open scoped Classical in
 /-- The underlying function of the cyclotomic character. See `cyclotomicCharacter`. -/
 noncomputable def cyclotomicCharacter.toFun (p : ℕ) [Fact p.Prime] (g : L ≃+* L) : ℤ_[p] :=
   if H : ∀ (i : ℕ), ∃ ζ : L, IsPrimitiveRoot ζ (p ^ i) then
-    haveI (i) : HasEnoughRootsOfUnity L (p ^ i) := ⟨H i, rootsOfUnity.isCyclic _ _⟩
+    haveI _ (i) : HasEnoughRootsOfUnity L (p ^ i) := ⟨H i, rootsOfUnity.isCyclic _ _⟩
     PadicInt.ofIntSeq _ (PadicInt.isCauSeq_padicNorm_of_pow_dvd_sub
       (aux g <| p ^ ·) _ fun i ↦ pow_dvd_aux_pow_sub_aux_pow g p i.le_succ)
   else 1
@@ -305,13 +305,13 @@ noncomputable def cyclotomicCharacter (p : ℕ) [Fact p.Prime] :
   { toFun g := cyclotomicCharacter.toFun p g
     map_one' := by
       by_cases H : ∀ (i : ℕ), ∃ ζ : L, IsPrimitiveRoot ζ (p ^ i)
-      · haveI (i) : HasEnoughRootsOfUnity L (p ^ i) := ⟨H i, rootsOfUnity.isCyclic _ _⟩
+      · haveI _ (i) : HasEnoughRootsOfUnity L (p ^ i) := ⟨H i, rootsOfUnity.isCyclic _ _⟩
         refine PadicInt.ext_of_toZModPow.mp fun n ↦ ?_
         simp [cyclotomicCharacter.toZModPow_toFun]
       · simp [cyclotomicCharacter.toFun, dif_neg H]
     map_mul' f g := by
       by_cases H : ∀ (i : ℕ), ∃ ζ : L, IsPrimitiveRoot ζ (p ^ i)
-      · haveI (i) : HasEnoughRootsOfUnity L (p ^ i) := ⟨H i, rootsOfUnity.isCyclic _ _⟩
+      · haveI _ (i) : HasEnoughRootsOfUnity L (p ^ i) := ⟨H i, rootsOfUnity.isCyclic _ _⟩
         refine PadicInt.ext_of_toZModPow.mp fun n ↦ ?_
         simp [cyclotomicCharacter.toZModPow_toFun]
       · simp [cyclotomicCharacter.toFun, dif_neg H] }
@@ -335,7 +335,7 @@ lemma cyclotomicCharacter.continuous (p : ℕ) [Fact p.Prime]
   by_cases H : ∀ (i : ℕ), ∃ ζ : L, IsPrimitiveRoot ζ (p ^ i); swap
   · simp only [cyclotomicCharacter, cyclotomicCharacter.toFun, dif_neg H, MonoidHom.coe_comp]
     exact continuous_const (y := 1)
-  haveI (i) : HasEnoughRootsOfUnity L (p ^ i) := ⟨H i, rootsOfUnity.isCyclic _ _⟩
+  haveI _ (i) : HasEnoughRootsOfUnity L (p ^ i) := ⟨H i, rootsOfUnity.isCyclic _ _⟩
   choose ζ hζ using H
   refine Continuous.of_coeHom_comp ?_
   apply continuous_of_continuousAt_one

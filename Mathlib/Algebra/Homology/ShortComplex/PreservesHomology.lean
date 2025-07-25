@@ -250,6 +250,19 @@ noncomputable def HomologyMapData.map {φ : S₁ ⟶ S₂} {h₁ : S₁.Homology
   left := ψ.left.map F
   right := ψ.right.map F
 
+lemma map_leftRightHomologyComparison' (F : C ⥤ D) [F.PreservesZeroMorphisms]
+    (hₗ : S.LeftHomologyData) (hᵣ : S.RightHomologyData) [hₗ.IsPreservedBy F] [hᵣ.IsPreservedBy F] :
+    F.map (leftRightHomologyComparison' hₗ hᵣ) =
+      leftRightHomologyComparison' (hₗ.map F) (hᵣ.map F) := by
+  apply Cofork.IsColimit.hom_ext (hₗ.map F).hπ
+  apply Fork.IsLimit.hom_ext (hᵣ.map F).hι
+  trans F.map (hₗ.i ≫ hᵣ.p)
+  · simp [← Functor.map_comp]
+  trans (hₗ.map F).π ≫ ShortComplex.leftRightHomologyComparison'
+    (hₗ.map F) (hᵣ.map F) ≫ (hᵣ.map F).ι
+  · rw [ShortComplex.π_leftRightHomologyComparison'_ι]; simp
+  · simp
+
 end ShortComplex
 
 namespace Functor
@@ -362,7 +375,7 @@ variable [hl₁.IsPreservedBy F] [hl₂.IsPreservedBy F]
 lemma map_cyclesMap' : F.map (ShortComplex.cyclesMap' φ hl₁ hl₂) =
     ShortComplex.cyclesMap' (F.mapShortComplex.map φ) (hl₁.map F) (hl₂.map F) := by
   have γ : ShortComplex.LeftHomologyMapData φ hl₁ hl₂ := default
-  rw [γ.cyclesMap'_eq, (γ.map F).cyclesMap'_eq,  ShortComplex.LeftHomologyMapData.map_φK]
+  rw [γ.cyclesMap'_eq, (γ.map F).cyclesMap'_eq, ShortComplex.LeftHomologyMapData.map_φK]
 
 lemma map_leftHomologyMap' : F.map (ShortComplex.leftHomologyMap' φ hl₁ hl₂) =
     ShortComplex.leftHomologyMap' (F.mapShortComplex.map φ) (hl₁.map F) (hl₂.map F) := by
@@ -379,7 +392,7 @@ variable [hr₁.IsPreservedBy F] [hr₂.IsPreservedBy F]
 lemma map_opcyclesMap' : F.map (ShortComplex.opcyclesMap' φ hr₁ hr₂) =
     ShortComplex.opcyclesMap' (F.mapShortComplex.map φ) (hr₁.map F) (hr₂.map F) := by
   have γ : ShortComplex.RightHomologyMapData φ hr₁ hr₂ := default
-  rw [γ.opcyclesMap'_eq, (γ.map F).opcyclesMap'_eq,  ShortComplex.RightHomologyMapData.map_φQ]
+  rw [γ.opcyclesMap'_eq, (γ.map F).opcyclesMap'_eq, ShortComplex.RightHomologyMapData.map_φQ]
 
 lemma map_rightHomologyMap' : F.map (ShortComplex.rightHomologyMap' φ hr₁ hr₂) =
     ShortComplex.rightHomologyMap' (F.mapShortComplex.map φ) (hr₁.map F) (hr₂.map F) := by
@@ -481,8 +494,8 @@ lemma LeftHomologyData.mapHomologyIso_eq [S.HasHomology]
   dsimp only [mapHomologyIso, homologyIso, ShortComplex.leftHomologyIso,
     leftHomologyMapIso', leftHomologyIso, Functor.mapIso,
     Iso.symm, Iso.trans, Iso.refl]
-  simp only [F.map_comp, map_leftHomologyMap', ← leftHomologyMap'_comp, comp_id,
-    Functor.map_id, Functor.mapShortComplex_obj]
+  simp only [map_leftHomologyMap', ← leftHomologyMap'_comp, comp_id, Functor.map_id,
+    Functor.mapShortComplex_obj]
 
 lemma RightHomologyData.mapHomologyIso'_eq [S.HasHomology]
     [(S.map F).HasHomology] [F.PreservesRightHomologyOf S] :
@@ -620,7 +633,7 @@ lemma mapHomologyIso'_eq_mapHomologyIso [S.HasHomology] [F.PreservesLeftHomology
     Functor.map_comp, RightHomologyData.map_rightHomologyMap', Functor.mapShortComplex_obj,
     Functor.map_id, LeftHomologyData.map_H, leftHomologyMapIso'_inv, leftHomologyMapIso'_hom,
     LeftHomologyData.map_leftHomologyMap', ← rightHomologyMap'_comp_assoc, ← leftHomologyMap'_comp,
-    ← leftHomologyMap'_comp_assoc, id_comp]
+    id_comp]
   have γ : HomologyMapData (𝟙 (S.map F)) (map S F).homologyData (S.homologyData.map F) := default
   have eq := γ.comm
   rw [← γ.left.leftHomologyMap'_eq, ← γ.right.rightHomologyMap'_eq] at eq

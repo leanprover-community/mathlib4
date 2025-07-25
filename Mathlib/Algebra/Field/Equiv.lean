@@ -9,7 +9,7 @@ import Mathlib.Algebra.GroupWithZero.Equiv
 /-!
 # If a semiring is a field, any isomorphic semiring is also a field.
 
-This is in a separate file to avoiding need to import `Field` in `Mathlib.Algebra.Ring.Equiv.`
+This is in a separate file to avoiding need to import `Field` in `Mathlib/Algebra/Ring/Equiv/.lean`
 -/
 
 namespace MulEquiv

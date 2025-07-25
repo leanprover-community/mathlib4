@@ -50,7 +50,7 @@ variable [L.Structure M] [L.Structure N] [L.Structure P]
 
 open FirstOrder Cardinal
 
-open Structure Cardinal
+open Structure
 
 section ClosedUnder
 
@@ -236,8 +236,10 @@ theorem mem_closure {x : M} : x ∈ closure L s ↔ ∀ S : L.Substructure M, s 
 theorem subset_closure : s ⊆ closure L s :=
   (closure L).le_closure s
 
-theorem not_mem_of_not_mem_closure {P : M} (hP : P ∉ closure L s) : P ∉ s := fun h =>
+theorem notMem_of_notMem_closure {P : M} (hP : P ∉ closure L s) : P ∉ s := fun h =>
   hP (subset_closure h)
+
+@[deprecated (since := "2025-05-23")] alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
 
 @[simp]
 theorem closed (S : L.Substructure M) : (closure L).closed (S : Set M) :=
@@ -286,7 +288,7 @@ theorem lift_card_closure_le_card_term : Cardinal.lift.{max u w} #(closure L s) 
 
 theorem lift_card_closure_le :
     Cardinal.lift.{u, w} #(closure L s) ≤
-      max ℵ₀ (Cardinal.lift.{u, w} #s + Cardinal.lift.{w, u} #(Σi, L.Functions i)) := by
+      max ℵ₀ (Cardinal.lift.{u, w} #s + Cardinal.lift.{w, u} #(Σ i, L.Functions i)) := by
   rw [← lift_umax]
   refine lift_card_closure_le_card_term.trans (Term.card_le.trans ?_)
   rw [mk_sum, lift_umax.{w, u}]
@@ -409,7 +411,7 @@ instance [IsEmpty L.Constants] : IsEmpty (⊥ : L.Substructure M) := by
     · intro x hx
       simp only [mem_empty_iff_false, forall_const] at hx
   rw [← closure_empty, ← SetLike.mem_coe, h]
-  exact Set.not_mem_empty _
+  exact Set.notMem_empty _
 
 variable {L} {M}
 
@@ -632,7 +634,7 @@ def subtype (S : L.Substructure M) : S ↪[L] M where
 theorem subtype_apply {S : L.Substructure M} {x : S} : subtype S x = x :=
   rfl
 
-theorem subtype_injective (S : L.Substructure M): Function.Injective (subtype S) :=
+theorem subtype_injective (S : L.Substructure M) : Function.Injective (subtype S) :=
   Subtype.coe_injective
 
 @[simp]
@@ -647,7 +649,6 @@ def topEquiv : (⊤ : L.Substructure M) ≃[L] M where
   toFun := subtype ⊤
   invFun m := ⟨m, mem_top m⟩
   left_inv m := by simp
-  right_inv _ := rfl
 
 @[simp]
 theorem coe_topEquiv :

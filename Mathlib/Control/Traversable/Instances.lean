@@ -26,7 +26,7 @@ variable {F G : Type u → Type u}
 variable [Applicative F] [Applicative G]
 variable [LawfulApplicative G]
 
-theorem Option.id_traverse {α} (x : Option α) : Option.traverse (pure : α → Id α) x = x := by
+theorem Option.id_traverse {α} (x : Option α) : Option.traverse (pure : α → Id α) x = pure x := by
   cases x <;> rfl
 
 theorem Option.comp_traverse {α β γ} (f : β → F γ) (g : α → G β) (x : Option α) :
@@ -66,8 +66,8 @@ variable [LawfulApplicative G]
 
 open Applicative Functor List
 
-protected theorem id_traverse {α} (xs : List α) : List.traverse (pure : α → Id α) xs = xs := by
-  induction xs <;> simp! [*, List.traverse, functor_norm]; rfl
+protected theorem id_traverse {α} (xs : List α) : (List.traverse pure xs : Id _) = pure xs := by
+  induction xs <;> simp! [*, List.traverse, functor_norm]
 
 protected theorem comp_traverse {α β γ} (f : β → F γ) (g : α → G β) (x : List α) :
     List.traverse (Comp.mk ∘ (f <$> ·) ∘ g) x =
@@ -76,7 +76,7 @@ protected theorem comp_traverse {α β γ} (f : β → F γ) (g : α → G β) (
 
 protected theorem traverse_eq_map_id {α β} (f : α → β) (x : List α) :
     List.traverse ((pure : _ → Id _) ∘ f) x = (pure : _ → Id _) (f <$> x) := by
-  induction x <;> simp! [*, functor_norm]; rfl
+  induction x <;> simp! [*, functor_norm]
 
 variable [LawfulApplicative F] (η : ApplicativeTransformation F G)
 
@@ -139,7 +139,7 @@ open Applicative Functor
 
 protected theorem traverse_map {α β γ : Type u} (g : α → β) (f : β → G γ) (x : σ ⊕ α) :
     Sum.traverse f (g <$> x) = Sum.traverse (f ∘ g) x := by
-  cases x <;> simp [Sum.traverse, id_map, functor_norm] <;> rfl
+  cases x <;> simp [Sum.traverse, functor_norm] <;> rfl
 
 protected theorem id_traverse {σ α} (x : σ ⊕ α) :
     Sum.traverse (pure : α → Id α) x = x := by cases x <;> rfl
@@ -157,7 +157,7 @@ protected theorem traverse_eq_map_id {α β} (f : α → β) (x : σ ⊕ α) :
 
 protected theorem map_traverse {α β γ} (g : α → G β) (f : β → γ) (x : σ ⊕ α) :
     (f <$> ·) <$> Sum.traverse g x = Sum.traverse (f <$> g ·) x := by
-  cases x <;> simp [Sum.traverse, id_map, functor_norm] <;> congr
+  cases x <;> simp [Sum.traverse, functor_norm] <;> congr
 
 variable [LawfulApplicative F] (η : ApplicativeTransformation F G)
 

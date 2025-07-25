@@ -98,7 +98,7 @@ General algebra:
 
   Algebras over a ring:
     associative algebra over a commutative ring: 'Algebra'
-    the category of algebras over a ring: 'AlgebraCat'
+    the category of algebras over a ring: 'AlgCat'
     free algebra of a commutative ring: 'FreeAlgebra'
     tensor product of algebras: 'Algebra.TensorProduct.instAlgebra'
     tensor algebra of a commutative ring: 'TensorAlgebra'
@@ -145,6 +145,7 @@ General algebra:
   Algebraic Number Theory:
     Finiteness of the class number: 'NumberField.RingOfIntegers.instFintypeClassGroup'
     Dirichlet unit theorem: 'NumberField.Units.exist_unique_eq_mul_prod'
+    Dirichlet class number formula: 'NumberField.tendsto_sub_one_mul_dedekindZeta_nhdsGT'
 
   Representation theory:
     representation : 'Representation'
@@ -161,16 +162,16 @@ Linear algebra:
     quotient space: 'Submodule.hasQuotient'
     tensor product: 'TensorProduct'
     noetherian module: 'IsNoetherian'
-    basis: 'Basis'
+    basis: 'Module.Basis'
     multilinear map: 'MultilinearMap'
     alternating map: 'AlternatingMap'
     general linear group: 'LinearMap.GeneralLinearGroup'
   Duality:
     dual vector space: 'Module.Dual'
-    dual basis: 'Basis.dualBasis'
+    dual basis: 'Module.Basis.dualBasis'
   Finite-dimensional vector spaces:
     finite-dimensionality : 'FiniteDimensional'
-    isomorphism with $K^n$: 'Basis.equivFun'
+    isomorphism with $K^n$: 'Module.Basis.equivFun'
     isomorphism with bidual: 'Module.evalEquiv'
   Finitely generated modules over a PID:
     structure theorem: 'Module.equiv_free_prod_directSum'
@@ -265,7 +266,7 @@ Analysis:
 
   Normed vector spaces/Banach spaces:
     normed vector space over a normed field: 'NormedSpace'
-    topology on a normed vector space: 'NormedSpace.isBoundedSMul'
+    topology on a normed vector space: 'NormSMulClass.toIsBoundedSMul'
     equivalence of norms in finite dimension: 'LinearEquiv.toContinuousLinearEquiv'
     finite dimensional normed spaces over complete normed fields are complete: 'Submodule.complete_of_finiteDimensional'
     Heine-Borel theorem (finite dimensional normed spaces are proper): 'FiniteDimensional.proper'
@@ -561,6 +562,7 @@ Logic and computation:
     halting problem: 'ComputablePred.halting_problem'
     Rice theorem: 'ComputablePred.rice'
     combinatorial game: 'SetTheory.Game'
+    Turing degrees: 'TuringDegree'
   Complexity:
     polynomial-time computation: 'Turing.TM2ComputableInPolyTime'
   Formal languages:
