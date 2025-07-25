@@ -144,8 +144,8 @@ def ofMapMulInv {H : Type*} [Group H] (f : G → H)
 
 @[to_additive (attr := simp)]
 theorem coe_of_map_mul_inv {H : Type*} [Group H] (f : G → H)
-    (map_div : ∀ a b : G, f (a * b⁻¹) = f a * (f b)⁻¹) :
-  ↑(ofMapMulInv f map_div) = f := rfl
+    (map_div : ∀ a b : G, f (a * b⁻¹) = f a * (f b)⁻¹) : ↑(ofMapMulInv f map_div) = f :=
+  rfl
 
 /-- Define a morphism of additive groups given a map which respects ratios. -/
 @[to_additive "Define a morphism of additive groups given a map which respects difference."]
