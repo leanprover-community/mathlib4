@@ -612,6 +612,8 @@ theorem mul_apply (e₁ e₂ : A₁ ≃ₐ[R] A₁) (x : A₁) : (e₁ * e₂) x
 lemma aut_inv (ϕ : A₁ ≃ₐ[R] A₁) : ϕ⁻¹ = ϕ.symm := rfl
 
 @[simp]
+lemma coe_inv (ϕ : A₁ ≃ₐ[R] A₁) : ⇑(ϕ⁻¹) = ⇑ϕ.symm := rfl
+
 lemma inv_apply (ϕ : A₁ ≃ₐ[R] A₁) (x : A₁) : ϕ⁻¹ x = ϕ.symm x := rfl
 
 @[simp] theorem coe_pow (e : A₁ ≃ₐ[R] A₁) (n : ℕ) : ⇑(e ^ n) = e^[n] :=
