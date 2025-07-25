@@ -1424,13 +1424,13 @@ def proceedFields (b : BundledExtensions) (src tgt : Name) : CoreM Unit := do
     | _ => pure #[]
 
 /-- Elaboration of the configuration options for `to_additive`. -/
-def elabToAdditive : Syntax → CoreM Config
-  | `(attr| to_additive%$tk $[?%$trace]? $existing?
-      $[$opts:toAdditiveOption]* $[$tgt]? $[$doc]?) => do
+def elabAttr (stx : Syntax) : CoreM Config :=
+  match stx[2] with
+  | `(toAdditiveRest| $existing? $[$opts:toAdditiveOption]* $[$tgt]? $[$doc]?) => do
     let mut attrs := #[]
     let mut reorder := []
-    for stx in opts do
-      match stx with
+    for opt in opts do
+      match opt with
       | `(toAdditiveOption| (attr := $[$stxs],*)) =>
         attrs := attrs ++ stxs
       | `(toAdditiveOption| (reorder := $[$[$reorders:num]*],*)) =>
@@ -1443,40 +1443,12 @@ def elabToAdditive : Syntax → CoreM Config
       | _ => (false, false)
     trace[to_additive_detail] "attributes: {attrs}; reorder arguments: {reorder}"
     return {
-      trace := trace.isSome
-      tgt := match tgt with | some tgt => tgt.getId | none => Name.anonymous
+      trace := !stx[1].isNone
+      tgt := (tgt.map (·.getId)).getD Name.anonymous
       doc := doc.bind (·.raw.isStrLit?)
       allowAutoName := false
       attrs, reorder, existing, self
-      ref := (tgt.map (·.raw)).getD tk }
-  | _ => throwUnsupportedSyntax
-
-/-- Elaboration of the configuration options for `to_dual`. -/
-def elabToDual : Syntax → CoreM Config
-  | `(attr| to_dual%$tk $[?%$trace]? $existing?
-      $[$opts:toAdditiveOption]* $[$tgt]? $[$doc]?) => do
-    let mut attrs := #[]
-    let mut reorder := []
-    for stx in opts do
-      match stx with
-      | `(toAdditiveOption| (attr := $[$stxs],*)) =>
-        attrs := attrs ++ stxs
-      | `(toAdditiveOption| (reorder := $[$[$reorders:num]*],*)) =>
-        reorder := reorder ++ reorders.toList.map (·.toList.map (·.raw.isNatLit?.get! - 1))
-      | _ => throwUnsupportedSyntax
-    reorder := reorder.reverse
-    let (existing, self) := match existing? with
-      | `(toAdditiveNameHint| existing) => (true, false)
-      | `(toAdditiveNameHint| self) => (true, true)
-      | _ => (false, false)
-    trace[to_additive_detail] "attributes: {attrs}; reorder arguments: {reorder}"
-    return {
-      trace := trace.isSome
-      tgt := match tgt with | some tgt => tgt.getId | none => Name.anonymous
-      doc := doc.bind (·.raw.isStrLit?)
-      allowAutoName := false
-      attrs, reorder, existing, self
-      ref := (tgt.map (·.raw)).getD tk }
+      ref := (tgt.map (·.raw)).getD stx[0] }
   | _ => throwUnsupportedSyntax
 
 mutual
@@ -1517,7 +1489,7 @@ partial def applyAttributes (b : BundledExtensions)
     match additiveAttrs.size with
       | 0 => pure #[]
       | 1 => (addToAdditiveAttr b nameDict fixAbbreviation tgt
-          (← elabToAdditive additiveAttrs[0]!.stx) additiveAttrs[0]!.kind)
+          (← elabAttr additiveAttrs[0]!.stx) additiveAttrs[0]!.kind)
       | _ => throwError "cannot apply {thisAttr} multiple times."
   let allDecls := #[src, tgt] ++ nestedDecls
   if attrs.size > 0 then
@@ -1668,7 +1640,7 @@ initialize registerBuiltinAttribute {
     descr := "Transport multiplicative to additive"
     add := fun src stx kind ↦
       do _ ← (addToAdditiveAttr toAdditiveBundle
-        additiveNameDict additiveFixAbbreviation src (← elabToAdditive stx) kind)
+        additiveNameDict additiveFixAbbreviation src (← elabAttr stx) kind)
     -- we (presumably) need to run after compilation to properly add the `simp` attribute
     applicationTime := .afterCompilation
   }
@@ -1678,7 +1650,7 @@ initialize registerBuiltinAttribute {
     descr := "Transport to dual"
     add := fun src stx kind ↦
       do _ ← (addToAdditiveAttr toDualBundle
-        toDualDict toDualFixAbbreviation src (← elabToDual stx) kind)
+        toDualDict toDualFixAbbreviation src (← elabAttr stx) kind)
     -- we (presumably) need to run after compilation to properly add the `simp` attribute
     applicationTime := .afterCompilation
   }
