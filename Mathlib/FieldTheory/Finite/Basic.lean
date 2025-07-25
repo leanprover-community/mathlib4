@@ -399,19 +399,13 @@ instance (K L) [Finite L] [Field K] [Field L] [Algebra K L] : IsCyclic (L ≃ₐ
 
 open Polynomial in
 theorem minpoly_frobeniusAlgHom :
-    minpoly K (frobeniusAlgHom K L).toLinearMap = X ^ Module.finrank K L - 1 := by
-  refine .symm <| minpoly.unique' _ _ (leadingCoeff_X_pow_sub_one Module.finrank_pos)
-    (LinearMap.ext fun x ↦ ?_) fun p lt ↦ or_iff_not_imp_left.mpr fun ne hp ↦ ne (ext fun i ↦ ?_)
-  · simpa [sub_eq_zero, Module.End.coe_pow] using
-      DFunLike.congr_fun (orderOf_dvd_iff_pow_eq_one.mp (orderOf_frobeniusAlgHom K L).dvd) x
-  rw [← C_1, degree_X_pow_sub_C Module.finrank_pos] at lt
-  rw [p.as_sum_range' _ ((natDegree_lt_iff_degree_lt ne).mpr lt)] at hp
-  have := Fintype.linearIndependent_iff.mp ((linearIndependent_algHom_toLinearMap K L L).comp _
-      (bijective_frobeniusAlgHom_pow K L).1) (algebraMap K L <| p.coeff ·) <| by
-    simpa [sum_range, map_sum, aeval_monomial, ← AlgHom.toEnd_apply, ← map_pow] using hp
-  obtain lt | le := lt_or_ge i (Module.finrank K L)
-  · exact (algebraMap K L).injective (by simpa using this ⟨i, lt⟩)
-  · exact coeff_eq_zero_of_degree_lt (lt.trans_le <| WithBot.coe_le_coe.mpr le)
+    minpoly K (frobeniusAlgHom K L).toLinearMap = X ^ Module.finrank K L - 1 :=
+  minpoly.eq_of_linearIndependent _ _ (leadingCoeff_X_pow_sub_one Module.finrank_pos)
+    (LinearMap.ext fun x ↦ by simpa [sub_eq_zero, Module.End.coe_pow, orderOf_frobeniusAlgHom] using
+      congr($(pow_orderOf_eq_one (frobeniusAlgHom K L)) x)) _
+    (degree_X_pow_sub_C Module.finrank_pos _) <| by
+      simpa [← AlgHom.toEnd_apply, ← map_pow] using (linearIndependent_algHom_toLinearMap K L L
+        |>.restrict_scalars' K).comp _ (bijective_frobeniusAlgHom_pow K L).1
 
 end frobenius
 
