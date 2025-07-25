@@ -548,9 +548,8 @@ instance instCommGroup [CommGroup β] : CommGroup (α →ₛ β) :=
   fast_instance% Function.Injective.commGroup (fun f => show α → β from f) coe_injective coe_one
     coe_mul coe_inv coe_div coe_pow coe_zpow
 
-instance [Monoid K] [MulAction K β] : MulAction K (α →ₛ β) where
-  one_smul _ := ext fun _ ↦ one_smul ..
-  mul_smul _ _ _ := ext fun _ ↦ mul_smul ..
+instance [Monoid K] [MulAction K β] : MulAction K (α →ₛ β) :=
+  fast_instance% Function.Injective.mulAction (fun f => show α → β from f) coe_injective coe_smul
 
 instance instModule [Semiring K] [AddCommMonoid β] [Module K β] : Module K (α →ₛ β) :=
   fast_instance% Function.Injective.module K ⟨⟨fun f => show α → β from f, coe_zero⟩, coe_add⟩
@@ -565,12 +564,12 @@ lemma smul_const [SMul K β] (k : K) (b : β) :
 lemma one_eq_const_one [One β] : (1 : α →ₛ β) = const α 1 := rfl
 
 instance [NonUnitalNonAssocSemiring β] : NonUnitalNonAssocSemiring (α →ₛ β) :=
-  fast_instance% Function.Injective.nonUnitalNonAssocSemiring (fun f : α →ₛ β ↦ ⇑f)
+  fast_instance% Function.Injective.nonUnitalNonAssocSemiring (fun f => show α → β from f)
     coe_injective coe_zero coe_add coe_mul coe_smul
 
 instance [NonUnitalSemiring β] : NonUnitalSemiring (α →ₛ β) :=
-  fast_instance% Function.Injective.nonUnitalSemiring (fun f : α →ₛ β ↦ ⇑f) SimpleFunc.coe_injective
-      coe_zero coe_add coe_mul coe_smul
+  fast_instance% Function.Injective.nonUnitalSemiring (fun f => show α → β from f)
+    SimpleFunc.coe_injective coe_zero coe_add coe_mul coe_smul
 
 instance [NatCast β] : NatCast (α →ₛ β) where
   natCast n := const _ (NatCast.natCast n)
@@ -580,19 +579,19 @@ lemma coe_natCast [NatCast β] (n : ℕ) :
     ⇑(↑n : α →ₛ β) = fun _ ↦ ↑n := rfl
 
 instance [NonAssocSemiring β] : NonAssocSemiring (α →ₛ β) :=
-  fast_instance% Function.Injective.nonAssocSemiring (fun f : α →ₛ β ↦ ⇑f) SimpleFunc.coe_injective
-      coe_zero coe_one coe_add coe_mul coe_smul coe_natCast
+  fast_instance% Function.Injective.nonAssocSemiring (fun f => show α → β from f)
+    SimpleFunc.coe_injective coe_zero coe_one coe_add coe_mul coe_smul coe_natCast
 
 instance [NonAssocRing β] : NonAssocRing (α →ₛ β) where
 
 instance [NonUnitalCommSemiring β] : NonUnitalCommSemiring (α →ₛ β) :=
-  fast_instance% Function.Injective.nonUnitalCommSemiring (fun f : α →ₛ β ↦ ⇑f)
+  fast_instance% Function.Injective.nonUnitalCommSemiring (fun f => show α → β from f)
     coe_injective coe_zero coe_add coe_mul coe_smul
 
 instance [CommSemiring β] : CommSemiring (α →ₛ β) where
 
 instance [NonUnitalCommRing β] : NonUnitalCommRing (α →ₛ β) :=
-  fast_instance% Function.Injective.nonUnitalCommRing (fun f : α →ₛ β ↦ ⇑f)
+  fast_instance% Function.Injective.nonUnitalCommRing (fun f => show α → β from f)
     coe_injective coe_zero coe_add coe_mul coe_neg coe_sub
       coe_smul coe_smul
 
