@@ -524,4 +524,14 @@ fun {α} [i : Add α] a => i.1 a
 
 /-! Test that the `existingAttributeWarning` linter doesn't fire for `to_additive self`. -/
 @[simp, to_additive self]
-theorem to_additive_self : 5 = 5 := rfl
+theorem test1 : 5 = 5 := rfl
+
+/-! Test that we can't write `to_additive self (attr := ..)`. -/
+
+/--
+error: invalid `(attr := ...)` after `self`, as there is only one declaration for the attributes.
+Instead, you can write the attributes in the usual way.
+-/
+#guard_msgs in
+@[to_additive self (attr := simp)]
+theorem test2 : 5 = 5 := rfl

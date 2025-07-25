@@ -1211,8 +1211,8 @@ def elabToAdditive : Syntax → CoreM Config
       | `(toAdditiveNameHint| self) => (true, true)
       | _ => (false, false)
     if self && !attrs.isEmpty then
-      throwError "invalid `(attr := ..)` in combination with `self`, \
-        because there is only one declaration to put the attributes on. \
+      throwError "invalid `(attr := ...)` after `self`, \
+        as there is only one declaration for the attributes.\n\
         Instead, you can write the attributes in the usual way."
     trace[to_additive_detail] "attributes: {attrs}; reorder arguments: {reorder}"
     return {
