@@ -74,12 +74,12 @@ equivalence. I.e., the composite `G ⟶ GFG ⟶ G` is also the identity.
 
 The triangle equation `functor_unitIso_comp` is written as a family of equalities between
 morphisms. It is more complicated if we write it as an equality of natural transformations, because
-then we would have to insert natural transformations like `F ⟶ F𝟭`. -/
+then we would either have to insert natural transformations like `F ⟶ F𝟭` or abuse defeq. -/
 @[ext, stacks 001J]
 structure Equivalence (C : Type u₁) (D : Type u₂) [Category.{v₁} C] [Category.{v₂} D] where mk' ::
-  /-- The forwards direction of `C ≌ D`. -/
+  /-- The forwards direction of the equivalence. -/
   functor : C ⥤ D
-  /-- The backwards direction of `C ≌ D`. -/
+  /-- The backwards direction of the equivalence. -/
   inverse : D ⥤ C
   /-- The composition `functor ⋙ inverse` is isomorphic to the identity. -/
   unitIso : 𝟭 C ≅ functor ⋙ inverse
@@ -90,7 +90,7 @@ structure Equivalence (C : Type u₁) (D : Type u₂) [Category.{v₁} C] [Categ
   to the identity when whiskered along the forwards direction.
 
   We state this as a family of equalities among morphisms instead of an equality of natural
-  transformations to avoid inserting natural transformations like `F ⟶ F𝟭`.
+  transformations to avoid abusing defeq or inserting natural transformations like `F ⟶ F𝟭`.
   -/
   functor_unitIso_comp :
     ∀ X : C, functor.map (unitIso.hom.app X) ≫ counitIso.hom.app (functor.obj X) =
