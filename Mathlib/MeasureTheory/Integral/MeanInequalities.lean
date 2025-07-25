@@ -170,10 +170,10 @@ theorem lintegral_mul_norm_pow_le {α} [MeasurableSpace α] {μ : Measure α}
     {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
     {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q) (hpq : p + q = 1) :
     ∫⁻ a, f a ^ p * g a ^ q ∂μ ≤ (∫⁻ a, f a ∂μ) ^ p * (∫⁻ a, g a ∂μ) ^ q := by
-  rcases hp.eq_or_lt with rfl|hp
+  rcases hp.eq_or_lt with rfl | hp
   · rw [zero_add] at hpq
     simp [hpq]
-  rcases hq.eq_or_lt with rfl|hq
+  rcases hq.eq_or_lt with rfl | hq
   · rw [add_zero] at hpq
     simp [hpq]
   have h2p : 1 < 1 / p := by

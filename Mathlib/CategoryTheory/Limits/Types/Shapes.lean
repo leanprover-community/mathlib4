@@ -817,9 +817,9 @@ lemma equivalence_rel' [Mono f] : _root_.Equivalence (Rel' f g) where
   trans := by
     rintro x y z (_ | ⟨_, _, h⟩ | s | _) hyz
     · exact hyz
-    · obtain z₁|z₂ := z
+    · obtain z₁ | z₂ := z
       · rw [inl_rel'_inl_iff] at hyz
-        obtain rfl|⟨_, _, h', h'', rfl⟩ := hyz
+        obtain rfl | ⟨_, _, h', h'', rfl⟩ := hyz
         · exact Rel'.inl_inl _ _ h
         · obtain rfl := (mono_iff_injective f).1 inferInstance h''
           exact Rel'.inl_inl _ _ (h.trans h')
@@ -828,7 +828,7 @@ lemma equivalence_rel' [Mono f] : _root_.Equivalence (Rel' f g) where
         obtain rfl := (mono_iff_injective f).1 inferInstance hs
         rw [← h]
         apply Rel'.inl_inr
-    · obtain z₁|z₂ := z
+    · obtain z₁ | z₂ := z
       · replace hyz := hyz.symm
         rw [inl_rel'_inr_iff] at hyz
         obtain ⟨s', rfl, hs'⟩ := hyz
@@ -836,9 +836,9 @@ lemma equivalence_rel' [Mono f] : _root_.Equivalence (Rel' f g) where
       · rw [inr_rel'_inr_iff] at hyz
         subst hyz
         apply Rel'.inl_inr
-    · obtain z₁|z₂ := z
+    · obtain z₁ | z₂ := z
       · rw [inl_rel'_inl_iff] at hyz
-        obtain rfl|⟨_, _, h, h', rfl⟩  := hyz
+        obtain rfl | ⟨_, _, h, h', rfl⟩  := hyz
         · apply Rel'.inr_inl
         · obtain rfl := (mono_iff_injective f).1 inferInstance h'
           rw [h]

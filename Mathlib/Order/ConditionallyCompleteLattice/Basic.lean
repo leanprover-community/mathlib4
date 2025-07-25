@@ -491,10 +491,10 @@ lemma ciInf_eq_univ_of_not_bddBelow (hf : ¬BddBelow (range f)) : ⨅ i, f i = s
 theorem csSup_eq_csSup_of_forall_exists_le {s t : Set α}
     (hs : ∀ x ∈ s, ∃ y ∈ t, x ≤ y) (ht : ∀ y ∈ t, ∃ x ∈ s, y ≤ x) :
     sSup s = sSup t := by
-  rcases eq_empty_or_nonempty s with rfl|s_ne
+  rcases eq_empty_or_nonempty s with rfl | s_ne
   · have : t = ∅ := eq_empty_of_forall_notMem (fun y yt ↦ by simpa using ht y yt)
     rw [this]
-  rcases eq_empty_or_nonempty t with rfl|t_ne
+  rcases eq_empty_or_nonempty t with rfl | t_ne
   · have : s = ∅ := eq_empty_of_forall_notMem (fun x xs ↦ by simpa using hs x xs)
     rw [this]
   by_cases B : BddAbove s ∨ BddAbove t
