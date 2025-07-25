@@ -74,11 +74,11 @@ lemma has_decomp_quotients (X : Action FintypeCat G)
   have (i : ι) : ContinuousSMul G (f i).V := ContinuousSMul.mk <| by
     let r : f i ⟶ X := Sigma.ι f i ≫ u.hom
     let r'' (p : G × (f i).V) : G × X.V := (p.1, r.hom p.2)
-    let q (p : G × X.V) : X.V := X.ρ p.1 p.2
-    let q' (p : G × (f i).V) : (f i).V := (f i).ρ p.1 p.2
+    let q (p : G × X.V) : X.V := (X.ρ p.1).hom p.2
+    let q' (p : G × (f i).V) : (f i).V := ((f i).ρ p.1).hom p.2
     have heq : q ∘ r'' = r.hom ∘ q' := by
       ext (p : G × (f i).V)
-      exact (congr_fun (r.comm p.1) p.2).symm
+      exact (DFunLike.congr_fun (r.comm p.1) p.2).symm
     have hrinj : Function.Injective r.hom :=
       (ConcreteCategory.mono_iff_injective_of_preservesPullback r).mp <| mono_comp _ _
     let t₁ : TopologicalSpace (G × (f i).V) := inferInstance
@@ -165,18 +165,21 @@ private def coconeQuotientDiag :
 private def coconeQuotientDiagDesc
     (s : Cocone (quotientDiag V h u ⋙ functorToAction F)) :
       (coconeQuotientDiag h u hUinV).pt ⟶ s.pt where
-  hom := Quotient.lift (fun σ ↦ (u.inv ≫ s.ι.app (SingleObj.star _)).hom ⟦σ⟧) <| fun σ τ hst ↦ by
-    let J' := quotientDiag V h u ⋙ functorToAction F
-    let m : End (SingleObj.star (V.toSubgroup ⧸ Subgroup.subgroupOf U V)) :=
-      ⟦⟨σ⁻¹ * τ, (QuotientGroup.leftRel_apply).mp hst⟩⟧
-    have h1 : J'.map m ≫ s.ι.app (SingleObj.star _) = s.ι.app (SingleObj.star _) := s.ι.naturality m
-    conv_rhs => rw [← h1]
-    have h2 : (J'.map m).hom (u.inv.hom ⟦τ⟧) = u.inv.hom ⟦σ⟧ := by
-      simp only [comp_obj, quotientDiag_obj, Functor.comp_map, quotientDiag_map, J',
-        functorToAction_map_quotientToEndObjectHom V h u m]
-      change (u.inv ≫ u.hom ≫ _ ≫ u.inv).hom ⟦τ⟧ = u.inv.hom ⟦σ⟧
-      simp [m]
-    simp only [← h2, const_obj_obj, Action.comp_hom, FintypeCat.comp_apply]
+  hom := FintypeCat.homMk
+    (Quotient.lift (fun σ ↦ (u.inv ≫ s.ι.app (SingleObj.star _)).hom ⟦σ⟧) <| fun σ τ hst ↦ by
+      let J' := quotientDiag V h u ⋙ functorToAction F
+      let m : End (SingleObj.star (V.toSubgroup ⧸ Subgroup.subgroupOf U V)) :=
+        ⟦⟨σ⁻¹ * τ, (QuotientGroup.leftRel_apply).mp hst⟩⟧
+      have h1 : J'.map m ≫ s.ι.app (SingleObj.star _) = s.ι.app (SingleObj.star _) :=
+        s.ι.naturality m
+      conv_rhs => rw [← h1]
+      have h2 : (J'.map m).hom (u.inv.hom ⟦τ⟧) = u.inv.hom ⟦σ⟧ := by
+        simp only [comp_obj, quotientDiag_obj, Functor.comp_map, quotientDiag_map, J',
+          functorToAction_map_quotientToEndObjectHom V h u m]
+        change (u.inv ≫ u.hom ≫ _ ≫ u.inv).hom ⟦τ⟧ = u.inv.hom ⟦σ⟧
+        simp [m]
+      simp only [← h2, const_obj_obj, Action.comp_hom, FintypeCat.comp_apply]
+      sorry)
   comm g := by
     ext (x : Aut F ⧸ V.toSubgroup)
     induction' x using Quotient.inductionOn with σ
@@ -204,7 +207,12 @@ private def coconeQuotientDiagIsColimit :
     apply Action.hom_ext
     ext (x : Aut F ⧸ V.toSubgroup)
     induction' x using Quotient.inductionOn with σ
-    simp [← hf (SingleObj.star _)]
+    dsimp
+    rw [← hf (SingleObj.star _)]
+    dsimp
+    simp only [← ConcreteCategory.comp_apply, Action.inv_hom_hom, Category.id_comp,
+      quotientToQuotientOfLE_hom_mk]
+
 
 end
 

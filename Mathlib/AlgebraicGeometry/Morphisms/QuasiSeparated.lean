@@ -87,7 +87,7 @@ theorem quasiCompact_affineProperty_iff_quasiSeparatedSpace {X Y : Scheme} [IsAf
     let g : pullback U.1.ι V.1.ι ⟶ X := pullback.fst _ _ ≫ U.1.ι
     have : IsOpenImmersion g := inferInstance
     have e := this.base_open.isEmbedding.toHomeomorph
-    rw [IsOpenImmersion.range_pullback_to_base_of_left] at e
+    rw [InducedCategory.homMk_hom, IsOpenImmersion.range_pullback_to_base_of_left] at e
     erw [Subtype.range_coe, Subtype.range_coe] at e
     rw [isCompact_iff_compactSpace]
     exact @Homeomorph.compactSpace _ _ _ _ (H _ _) e
@@ -95,7 +95,7 @@ theorem quasiCompact_affineProperty_iff_quasiSeparatedSpace {X Y : Scheme} [IsAf
     let g : pullback f₁ f₂ ⟶ X := pullback.fst _ _ ≫ f₁
     have : IsOpenImmersion g := inferInstance
     have e := this.base_open.isEmbedding.toHomeomorph
-    rw [IsOpenImmersion.range_pullback_to_base_of_left] at e
+    rw [InducedCategory.homMk_hom, IsOpenImmersion.range_pullback_to_base_of_left] at e
     simp_rw [isCompact_iff_compactSpace] at H
     exact
       @Homeomorph.compactSpace _ _ _ _

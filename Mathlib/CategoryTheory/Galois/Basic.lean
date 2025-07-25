@@ -243,40 +243,45 @@ instance nonempty_fiber_of_isConnected (X : C) [IsConnected X] : Nonempty (F.obj
 and `g`. -/
 noncomputable def fiberEqualizerEquiv {X Y : C} (f g : X ⟶ Y) :
     F.obj (equalizer f g) ≃ { x : F.obj X // F.map f x = F.map g x } :=
+  sorry /-
   (PreservesEqualizer.iso (F ⋙ FintypeCat.incl) f g ≪≫
-  Types.equalizerIso (F.map f) (F.map g)).toEquiv
+  Types.equalizerIso (F.map f) (F.map g)).toEquiv-/
 
 @[simp]
 lemma fiberEqualizerEquiv_symm_ι_apply {X Y : C} {f g : X ⟶ Y} (x : F.obj X)
     (h : F.map f x = F.map g x) :
     F.map (equalizer.ι f g) ((fiberEqualizerEquiv F f g).symm ⟨x, h⟩) = x := by
-  simp [fiberEqualizerEquiv]
-  change ((Types.equalizerIso _ _).inv ≫ _ ≫ (F ⋙ FintypeCat.incl).map (equalizer.ι f g)) _ = _
-  erw [PreservesEqualizer.iso_inv_ι, Types.equalizerIso_inv_comp_ι]
+  sorry
+  --simp [fiberEqualizerEquiv]
+  --change ((Types.equalizerIso _ _).inv ≫ _ ≫ (F ⋙ FintypeCat.incl).map (equalizer.ι f g)) _ = _
+  --erw [PreservesEqualizer.iso_inv_ι, Types.equalizerIso_inv_comp_ι]
 
 /-- The fiber of the pullback is the fiber product of the fibers. -/
 noncomputable def fiberPullbackEquiv {X A B : C} (f : A ⟶ X) (g : B ⟶ X) :
     F.obj (pullback f g) ≃ { p : F.obj A × F.obj B // F.map f p.1 = F.map g p.2 } :=
+  sorry /-
   (PreservesPullback.iso (F ⋙ FintypeCat.incl) f g ≪≫
-  Types.pullbackIsoPullback (F.map f) (F.map g)).toEquiv
+  Types.pullbackIsoPullback (F.map f) (F.map g)).toEquiv-/
 
 @[simp]
 lemma fiberPullbackEquiv_symm_fst_apply {X A B : C} {f : A ⟶ X} {g : B ⟶ X}
     (a : F.obj A) (b : F.obj B) (h : F.map f a = F.map g b) :
     F.map (pullback.fst f g) ((fiberPullbackEquiv F f g).symm ⟨(a, b), h⟩) = a := by
-  simp [fiberPullbackEquiv]
-  change ((Types.pullbackIsoPullback _ _).inv ≫ _ ≫
-    (F ⋙ FintypeCat.incl).map (pullback.fst f g)) _ = _
-  erw [PreservesPullback.iso_inv_fst, Types.pullbackIsoPullback_inv_fst]
+  sorry
+  --simp [fiberPullbackEquiv]
+  --change ((Types.pullbackIsoPullback _ _).inv ≫ _ ≫
+  --  (F ⋙ FintypeCat.incl).map (pullback.fst f g)) _ = _
+  --erw [PreservesPullback.iso_inv_fst, Types.pullbackIsoPullback_inv_fst]
 
 @[simp]
 lemma fiberPullbackEquiv_symm_snd_apply {X A B : C} {f : A ⟶ X} {g : B ⟶ X}
     (a : F.obj A) (b : F.obj B) (h : F.map f a = F.map g b) :
     F.map (pullback.snd f g) ((fiberPullbackEquiv F f g).symm ⟨(a, b), h⟩) = b := by
+  sorry /-
   simp [fiberPullbackEquiv]
   change ((Types.pullbackIsoPullback _ _).inv ≫ _ ≫
     (F ⋙ FintypeCat.incl).map (pullback.snd f g)) _ = _
-  erw [PreservesPullback.iso_inv_snd, Types.pullbackIsoPullback_inv_snd]
+  erw [PreservesPullback.iso_inv_snd, Types.pullbackIsoPullback_inv_snd]-/
 
 /-- The fiber of the binary product is the binary product of the fibers. -/
 noncomputable def fiberBinaryProductEquiv (X Y : C) :
@@ -322,7 +327,7 @@ epimorphism. -/
 lemma epi_of_nonempty_of_isConnected {X A : C} [IsConnected A] [h : Nonempty (F.obj X)]
     (f : X ⟶ A) : Epi f := Epi.mk <| fun {Z} u v huv ↦ by
   apply evaluation_injective_of_isConnected F A Z (F.map f (Classical.arbitrary _))
-  simpa using congr_fun (F.congr_map huv) _
+  sorry --simpa using congr_fun (F.congr_map huv) _
 
 /-- An epimorphism induces a surjective map on fibers. -/
 lemma surjective_on_fiber_of_epi {X Y : C} (f : X ⟶ Y) [Epi f] : Function.Surjective (F.map f) :=

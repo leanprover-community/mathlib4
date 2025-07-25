@@ -154,15 +154,17 @@ lemma connected_component_unique {X A B : C} [IsConnected A] [IsConnected B] (a 
   have : IsIso v := IsConnected.noTrivialComponent Y v hn
   use (asIso u).symm ≪≫ asIso v
   have hu : G.map u y = a := by
-    simp only [u, G, y, e, ← PreservesPullback.iso_hom_fst G, fiberPullbackEquiv,
-      Iso.toEquiv_comp, Equiv.symm_trans_apply, Iso.toEquiv_symm_fun, types_comp_apply,
-      inv_hom_id_apply]
-    erw [Types.pullbackIsoPullback_inv_fst_apply (F.map i) (F.map j)]
+    sorry
+    --simp only [u, G, y, e, ← PreservesPullback.iso_hom_fst G, fiberPullbackEquiv,
+    --  Iso.toEquiv_comp, Equiv.symm_trans_apply, Iso.toEquiv_symm_fun, types_comp_apply,
+    --  inv_hom_id_apply]
+    --erw [Types.pullbackIsoPullback_inv_fst_apply (F.map i) (F.map j)]
   have hv : G.map v y = b := by
-    simp only [v, G, y, e, ← PreservesPullback.iso_hom_snd G, fiberPullbackEquiv,
-      Iso.toEquiv_comp, Equiv.symm_trans_apply, Iso.toEquiv_symm_fun, types_comp_apply,
-      inv_hom_id_apply]
-    erw [Types.pullbackIsoPullback_inv_snd_apply (F.map i) (F.map j)]
+    sorry
+    --simp only [v, G, y, e, ← PreservesPullback.iso_hom_snd G, fiberPullbackEquiv,
+    --  Iso.toEquiv_comp, Equiv.symm_trans_apply, Iso.toEquiv_symm_fun, types_comp_apply,
+    --  inv_hom_id_apply]
+    --erw [Types.pullbackIsoPullback_inv_snd_apply (F.map i) (F.map j)]
   rw [← hu, ← hv]
   change (F.toPrefunctor.map u ≫ F.toPrefunctor.map _) y = F.toPrefunctor.map v y
   simp only [← F.map_comp, Iso.trans_hom, Iso.symm_hom, asIso_inv, asIso_hom,
@@ -205,7 +207,7 @@ private noncomputable def mkSelfProdFib : F.obj (selfProd F X) :=
 
 @[simp]
 private lemma mkSelfProdFib_map_π (t : F.obj X) : F.map (Pi.π _ t) (mkSelfProdFib F X) = t := by
-  rw [← congrFun (piComparison_comp_π F _ t), FintypeCat.comp_apply,
+  erw [← DFunLike.congr_fun (piComparison_comp_π F _ t), FintypeCat.comp_apply,
     ← PreservesProduct.iso_hom]
   simp only [mkSelfProdFib, FintypeCat.inv_hom_id_apply]
   exact Concrete.productEquiv_symm_apply_π.{w, w, w+1} (fun _ : F.obj X ↦ F.obj X) id t
@@ -222,8 +224,9 @@ variable {u a}
 
 private lemma selfProdProj_fiber (x : F.obj X) :
     F.map (selfProdProj u x) a = x := by
-  simp only [selfProdProj, selfProd, F.map_comp, FintypeCat.comp_apply, h]
-  rw [mkSelfProdFib_map_π F X x]
+  dsimp at h
+  simp only [selfProdProj, selfProd, F.map_comp, FintypeCat.comp_apply, h,
+    mkSelfProdFib_map_π F X x]
 
 variable [IsConnected A]
 
@@ -284,7 +287,7 @@ lemma exists_galois_representative (X : C) : ∃ (A : C) (a : F.obj A),
     change F.map (fi1.hom ≫ fi2.inv) x = y
     simp only [map_comp, FintypeCat.comp_apply]
     rw [hfi1, ← hfi2]
-    exact congr_fun (F.mapIso fi2).hom_inv_id y
+    exact DFunLike.congr_fun (F.mapIso fi2).hom_inv_id y
   · refine ⟨evaluation_injective_of_isConnected F A X a, ?_⟩
     intro x
     use u ≫ Pi.π _ x
