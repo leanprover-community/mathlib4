@@ -1224,34 +1224,35 @@ def elabToAdditive : Syntax → CoreM Config
 
 mutual
 /-- Apply attributes to the multiplicative and additive declarations. -/
-partial def applyAttributes (cfg : Config) (thisAttr src tgt : Name) : TermElabM (Array Name) := do
+partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr src tgt : Name) :
+  TermElabM (Array Name) := do
   -- we only copy the `instance` attribute, since `@[to_additive] instance` is nice to allow
   copyInstanceAttribute src tgt
   -- Warn users if the multiplicative version has an attribute
-  if !cfg.self && linter.existingAttributeWarning.get (← getOptions) then
+  if src != tgt && linter.existingAttributeWarning.get (← getOptions) then
     let appliedAttrs ← getAllSimpAttrs src
     if appliedAttrs.size > 0 then
       let appliedAttrs := ", ".intercalate (appliedAttrs.toList.map toString)
       -- Note: we're not bothering to print the correct attribute arguments.
-      Linter.logLintIf linter.existingAttributeWarning cfg.ref m!"\
+      Linter.logLintIf linter.existingAttributeWarning stx m!"\
         The source declaration {src} was given the simp-attribute(s) {appliedAttrs} before \
         calling @[{thisAttr}].\nThe preferred method is to use something like \
         `@[{thisAttr} (attr := {appliedAttrs})]`\nto apply the attribute to both \
         {src} and the target declaration {tgt}."
-    warnAttr cfg.ref Lean.Elab.Tactic.Ext.extExtension
+    warnAttr stx Lean.Elab.Tactic.Ext.extExtension
       (fun b n => (b.tree.values.any fun t => t.declName = n)) thisAttr `ext src tgt
-    warnAttr cfg.ref Lean.Meta.Rfl.reflExt (·.values.contains ·) thisAttr `refl src tgt
-    warnAttr cfg.ref Lean.Meta.Symm.symmExt (·.values.contains ·) thisAttr `symm src tgt
-    warnAttr cfg.ref Batteries.Tactic.transExt (·.values.contains ·) thisAttr `trans src tgt
-    warnAttr cfg.ref Lean.Meta.coeExt (·.contains ·) thisAttr `coe src tgt
-    warnParametricAttr cfg.ref Lean.Linter.deprecatedAttr thisAttr `deprecated src tgt
+    warnAttr stx Lean.Meta.Rfl.reflExt (·.values.contains ·) thisAttr `refl src tgt
+    warnAttr stx Lean.Meta.Symm.symmExt (·.values.contains ·) thisAttr `symm src tgt
+    warnAttr stx Batteries.Tactic.transExt (·.values.contains ·) thisAttr `trans src tgt
+    warnAttr stx Lean.Meta.coeExt (·.contains ·) thisAttr `coe src tgt
+    warnParametricAttr stx Lean.Linter.deprecatedAttr thisAttr `deprecated src tgt
     -- the next line also warns for `@[to_additive, simps]`, because of the application times
-    warnParametricAttr cfg.ref simpsAttr thisAttr `simps src tgt
-    warnExt cfg.ref Term.elabAsElim.ext (·.contains ·) thisAttr `elab_as_elim src tgt
+    warnParametricAttr stx simpsAttr thisAttr `simps src tgt
+    warnExt stx Term.elabAsElim.ext (·.contains ·) thisAttr `elab_as_elim src tgt
   -- add attributes
   -- the following is similar to `Term.ApplyAttributesCore`, but we hijack the implementation of
   -- `simps` and `to_additive`.
-  let attrs ← elabAttrs cfg.attrs
+  let attrs ← elabAttrs rawAttrs
   let (additiveAttrs, attrs) := attrs.partition (·.name == `to_additive)
   let nestedDecls ←
     match additiveAttrs.size with
@@ -1302,7 +1303,7 @@ partial def copyMetaData (cfg : Config) (src tgt : Name) : CoreM (Array Name) :=
     additivizeLemmas #[src, tgt] "equation lemmas" fun nm ↦
       (·.getD #[]) <$> MetaM.run' (getEqnsFor? nm)
   MetaM.run' <| Elab.Term.TermElabM.run' <|
-    applyAttributes cfg `to_additive src tgt
+    applyAttributes cfg.ref cfg.attrs `to_additive src tgt
 
 /--
 Make a new copy of a declaration, replacing fragments of the names of identifiers in the type and
