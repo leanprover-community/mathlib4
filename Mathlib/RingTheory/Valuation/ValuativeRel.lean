@@ -762,3 +762,16 @@ lemma mapValueGroupWithZero_valuation (a : A) :
   simp [mapValueGroupWithZero, ValueGroupWithZero.embed]
 
 end ValuativeExtension
+
+namespace ValuativeRel
+
+variable {R : Type*} [CommRing R] [ValuativeRel R]
+
+/-- Any rank-at-most-one valuation has a mularchimedean value group.
+The converse (for any compatible valuation) is `ValuativeRel.isRankLeOne_iff_mulArchimedean`
+which is in a later file since it requires a larget theory of reals. -/
+instance [IsRankLeOne R] : MulArchimedean (ValueGroupWithZero R) := by
+  obtain ⟨⟨f, hf⟩⟩ := IsRankLeOne.nonempty (R := R)
+  exact .comap f.toMonoidHom hf
+
+end ValuativeRel
