@@ -401,3 +401,25 @@ lemma cfcₙ_nnreal_eq_real {a : A} (f : ℝ≥0 → ℝ≥0) (ha : 0 ≤ a := b
 end NNRealEqRealNonUnital
 
 end
+
+theorem IsIdempotentElem.quasispectrum_subset {𝕜 A : Type*} [Field 𝕜] [Ring A] [Module 𝕜 A]
+    [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A] {p : A} (hp : IsIdempotentElem p) :
+    quasispectrum 𝕜 p ⊆ {0, 1} := by
+  rw [Unitization.quasispectrum_eq_spectrum_inr' 𝕜 𝕜]
+  have := spectrum.subset_polynomial_aeval (𝕜 := 𝕜) (p : Unitization 𝕜 A)
+    (Polynomial.X ^ 2 - Polynomial.X)
+  simp [pow_two, ← Unitization.inr_mul, hp.eq, sub_eq_zero] at this
+  exact fun a ha => eq_zero_or_one_of_sq_eq_self (pow_two (M := 𝕜) _ ▸ this a ha)
+
+/-- An idempotent element in a C⋆-algebra is self-adjoint iff it is normal. -/
+theorem IsIdempotentElem.isSelfAdjoint_iff_isStarNormal {A : Type*} [TopologicalSpace A]
+    [Ring A] [StarRing A] [Module ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A]
+    [NonUnitalContinuousFunctionalCalculus ℂ A IsStarNormal] {p : A} (hp : IsIdempotentElem p) :
+    IsSelfAdjoint p ↔ IsStarNormal p := by
+  refine ⟨fun h => h.isStarNormal, fun h =>
+    isSelfAdjoint_iff_isStarNormal_and_quasispectrumRestricts.mpr ⟨h, ?_⟩⟩
+  rw [quasispectrumRestricts_iff, Set.RightInvOn, Set.LeftInvOn]
+  refine ⟨fun x hx => ?_, congrFun rfl⟩
+  rcases hp.quasispectrum_subset hx with (h | h)
+  · simp [h]
+  · simp at h; simp [h]
