@@ -27,9 +27,7 @@ For the existence of orthonormal bases, Hilbert bases, etc., see the file
 
 noncomputable section
 
-open RCLike Real Filter
-
-open Topology ComplexConjugate Finsupp
+open RCLike Real Filter Module Topology ComplexConjugate Finsupp
 
 open LinearMap (BilinForm)
 
@@ -40,7 +38,7 @@ section OrthonormalSets_Seminormed
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 variable {ι : Type*} (𝕜)
 
@@ -49,6 +47,16 @@ def Orthonormal (v : ι → E) : Prop :=
   (∀ i, ‖v i‖ = 1) ∧ Pairwise fun i j => ⟪v i, v j⟫ = 0
 
 variable {𝕜}
+
+@[simp]
+lemma Orthonormal.of_isEmpty [IsEmpty ι] (v : ι → E) : Orthonormal 𝕜 v :=
+  ⟨IsEmpty.elim ‹_›, Subsingleton.pairwise⟩
+
+@[simp]
+lemma orthonormal_vecCons_iff {n : ℕ} {v : E} {vs : Fin n → E} :
+    Orthonormal 𝕜 (Matrix.vecCons v vs) ↔ ‖v‖ = 1 ∧ (∀ i, ⟪v, vs i⟫ = 0) ∧ Orthonormal 𝕜 vs := by
+  simp_rw [Orthonormal, pairwise_fin_succ_iff_of_isSymm, Fin.forall_fin_succ]
+  tauto
 
 lemma Orthonormal.norm_eq_one {v : ι → E} (h : Orthonormal 𝕜 v) (i : ι) :
     ‖v i‖ = 1 := h.1 i
@@ -163,7 +171,7 @@ sum of the weights.
 theorem Orthonormal.inner_left_right_finset {s : Finset ι} {v : ι → E} (hv : Orthonormal 𝕜 v)
     {a : ι → ι → 𝕜} : (∑ i ∈ s, ∑ j ∈ s, a i j • ⟪v j, v i⟫) = ∑ k ∈ s, a k k := by
   classical
-  simp [orthonormal_iff_ite.mp hv, Finset.sum_ite_of_true]
+  simp [orthonormal_iff_ite.mp hv]
 
 /-- An orthonormal set is linearly independent. -/
 theorem Orthonormal.linearIndependent {v : ι → E} (hv : Orthonormal 𝕜 v) :
@@ -226,7 +234,7 @@ variable (𝕜 E)
 
 theorem orthonormal_empty : Orthonormal 𝕜 (fun x => x : (∅ : Set E) → E) := by
   classical
-  simp [orthonormal_subtype_iff_ite]
+  simp
 
 variable {𝕜 E}
 
@@ -285,7 +293,7 @@ open scoped InnerProductSpace
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 section
 
@@ -418,7 +426,7 @@ variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 variable {ι : Type*} (x : E) {v : ι → E}
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 /-- Bessel's inequality for finite sums. -/
 theorem Orthonormal.sum_inner_products_le {s : Finset ι} (hv : Orthonormal 𝕜 v) :
@@ -428,7 +436,7 @@ theorem Orthonormal.sum_inner_products_le {s : Finset ι} (hv : Orthonormal 𝕜
     classical exact hv.inner_left_right_finset
   have h₃ : ∀ z : 𝕜, re (z * conj z) = ‖z‖ ^ 2 := by
     intro z
-    simp only [mul_conj, normSq_eq_def']
+    simp only [mul_conj]
     norm_cast
   suffices hbf : ‖x - ∑ i ∈ s, ⟪v i, x⟫ • v i‖ ^ 2 = ‖x‖ ^ 2 - ∑ i ∈ s, ‖⟪v i, x⟫‖ ^ 2 by
     rw [← sub_nonneg, ← hbf]

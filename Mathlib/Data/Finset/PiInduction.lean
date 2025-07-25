@@ -51,7 +51,7 @@ theorem induction_on_pi_of_choice (r : ∀ i, α i → Finset (α i) → Prop)
     clear_value g
     have hx' : x ∉ g i := by
       rw [hg, update_self]
-      apply not_mem_erase
+      apply notMem_erase
     rw [show f = update g i (insert x (g i)) by
       rw [hg, update_idem, update_self, insert_erase x_mem, update_eq_self]] at hr ihs ⊢
     clear hg
@@ -70,7 +70,7 @@ that require `∀ i, LinearOrder (α i)`. -/
 theorem induction_on_pi {p : (∀ i, Finset (α i)) → Prop} (f : ∀ i, Finset (α i)) (h0 : p fun _ ↦ ∅)
     (step : ∀ (g : ∀ i, Finset (α i)) (i : ι), ∀ x ∉ g i, p g → p (update g i (insert x (g i)))) :
     p f :=
-  induction_on_pi_of_choice (fun _ x s ↦ x ∉ s) (fun _ s ⟨x, hx⟩ ↦ ⟨x, hx, not_mem_erase x s⟩) f
+  induction_on_pi_of_choice (fun _ x s ↦ x ∉ s) (fun _ s ⟨x, hx⟩ ↦ ⟨x, hx, notMem_erase x s⟩) f
     h0 step
 
 /-- Given a predicate on functions `∀ i, Finset (α i)` defined on a finite type, it is true on all

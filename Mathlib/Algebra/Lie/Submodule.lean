@@ -102,7 +102,6 @@ theorem mem_toSubmodule {x : M} : x ∈ (N : Submodule R M) ↔ x ∈ N :=
 theorem mem_coe {x : M} : x ∈ (N : Set M) ↔ x ∈ N :=
   Iff.rfl
 
-@[simp]
 protected theorem zero_mem : (0 : M) ∈ N :=
   zero_mem N
 
@@ -398,8 +397,7 @@ instance : SupSet (LieSubmodule R L M) where
         | empty =>
           replace hsm : m = 0 := by simpa using hsm
           simp [hsm]
-        | insert hqt ih =>
-          rename_i q t
+        | insert q t hqt ih =>
           rw [Finset.iSup_insert] at hsm
           obtain ⟨m', hm', u, hu, rfl⟩ := Submodule.mem_sup.mp hsm
           rw [lie_add]
@@ -558,9 +556,7 @@ nonrec theorem eq_bot_iff : N = ⊥ ↔ ∀ m : M, m ∈ N → m = 0 := by rw [e
 
 instance subsingleton_of_bot : Subsingleton (LieSubmodule R L (⊥ : LieSubmodule R L M)) := by
   apply subsingleton_of_bot_eq_top
-  ext ⟨_, hx⟩
-  simp only [mem_bot, mk_eq_zero, mem_top, iff_true]
-  exact hx
+  subsingleton
 
 instance : IsModularLattice (LieSubmodule R L M) where
   sup_inf_le_assoc_of_le _ _ := by
@@ -746,10 +742,7 @@ lemma isCompactElement_lieSpan_singleton (m : M) :
   rw [CompleteLattice.isCompactElement_iff_le_of_directed_sSup_le]
   intro s hne hdir hsup
   replace hsup : m ∈ (↑(sSup s) : Set M) := (SetLike.le_def.mp hsup) (subset_lieSpan rfl)
-  suffices (↑(sSup s) : Set M) = ⋃ N ∈ s, ↑N by
-    obtain ⟨N : LieSubmodule R L M, hN : N ∈ s, hN' : m ∈ N⟩ := by
-      simp_rw [this, Set.mem_iUnion, SetLike.mem_coe, exists_prop] at hsup; assumption
-    exact ⟨N, hN, by simpa⟩
+  suffices (↑(sSup s) : Set M) = ⋃ N ∈ s, ↑N by simp_all
   replace hne : Nonempty s := Set.nonempty_coe_sort.mpr hne
   have := Submodule.coe_iSup_of_directed _ hdir.directed_val
   simp_rw [← iSup_toSubmodule, Set.iUnion_coe_set, coe_toSubmodule] at this
@@ -873,7 +866,7 @@ theorem map_comp
     {M'' : Type*} [AddCommGroup M''] [Module R M''] [LieRingModule L M''] {g : M' →ₗ⁅R,L⁆ M''} :
     N.map (g.comp f) = (N.map f).map g :=
   SetLike.coe_injective <| by
-    simp only [← Set.image_comp, coe_map, LinearMap.coe_comp, LieModuleHom.coe_comp]
+    simp only [← Set.image_comp, coe_map, LieModuleHom.coe_comp]
 
 @[simp]
 theorem map_id : N.map LieModuleHom.id = N := by ext; simp
@@ -1078,9 +1071,7 @@ variable [LieAlgebra R L] [LieModule R L M]
 This is the Lie subalgebra version of `Submodule.topEquiv`. -/
 def LieSubalgebra.topEquiv : (⊤ : LieSubalgebra R L) ≃ₗ⁅R⁆ L :=
   { (⊤ : LieSubalgebra R L).incl with
-    invFun := fun x ↦ ⟨x, Set.mem_univ x⟩
-    left_inv := fun x ↦ by ext; rfl
-    right_inv := fun _ ↦ rfl }
+    invFun := fun x ↦ ⟨x, Set.mem_univ x⟩ }
 
 @[simp]
 theorem LieSubalgebra.topEquiv_apply (x : (⊤ : LieSubalgebra R L)) : LieSubalgebra.topEquiv x = x :=

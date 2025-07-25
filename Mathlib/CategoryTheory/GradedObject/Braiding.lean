@@ -72,7 +72,7 @@ lemma hexagon_forward [HasTensor X Y] [HasTensor Y X] [HasTensor Y Z]
   conv_lhs => rw [ιTensorObj₃'_associator_hom_assoc, ιTensorObj₃_eq X Y Z i₁ i₂ i₃ k h _ rfl,
     assoc, ι_tensorObjDesc_assoc, assoc, ← MonoidalCategory.id_tensorHom,
     BraidedCategory.braiding_naturality_assoc,
-    BraidedCategory.braiding_tensor_right, assoc, assoc, assoc, assoc, Iso.hom_inv_id_assoc,
+    BraidedCategory.braiding_tensor_right_hom, assoc, assoc, assoc, assoc, Iso.hom_inv_id_assoc,
     MonoidalCategory.tensorHom_id,
     ← ιTensorObj₃'_eq_assoc Y Z X i₂ i₃ i₁ k (by rw [add_comm _ i₁, ← add_assoc, h]) _ rfl,
     ιTensorObj₃'_associator_hom, Iso.inv_hom_id_assoc]
@@ -101,7 +101,7 @@ lemma hexagon_reverse [HasTensor X Y] [HasTensor Y Z] [HasTensor Z X]
     [HasTensor X (tensorObj Z Y)] [HasTensor (tensorObj X Z) Y]
     [HasGoodTensor₁₂Tensor X Y Z] [HasGoodTensorTensor₂₃ X Y Z]
     [HasGoodTensor₁₂Tensor Z X Y] [HasGoodTensorTensor₂₃ Z X Y]
-    [HasGoodTensor₁₂Tensor X Z Y] [HasGoodTensorTensor₂₃ X Z Y]:
+    [HasGoodTensor₁₂Tensor X Z Y] [HasGoodTensorTensor₂₃ X Z Y] :
     (associator X Y Z).inv ≫ (braiding (tensorObj X Y) Z).hom ≫ (associator Z X Y).inv =
       whiskerLeft X (braiding Y Z).hom ≫ (associator X Z Y).inv ≫
         whiskerRight (braiding X Z).hom Y := by
@@ -110,7 +110,7 @@ lemma hexagon_reverse [HasTensor X Y] [HasTensor Y Z] [HasTensor Z X]
   conv_lhs => rw [ιTensorObj₃_associator_inv_assoc, ιTensorObj₃'_eq X Y Z i₁ i₂ i₃ k h _ rfl, assoc,
     ι_tensorObjDesc_assoc, assoc, ← MonoidalCategory.tensorHom_id,
     BraidedCategory.braiding_naturality_assoc,
-    BraidedCategory.braiding_tensor_left, assoc, assoc, assoc, assoc, Iso.inv_hom_id_assoc,
+    BraidedCategory.braiding_tensor_left_hom, assoc, assoc, assoc, assoc, Iso.inv_hom_id_assoc,
     MonoidalCategory.id_tensorHom,
     ← ιTensorObj₃_eq_assoc Z X Y i₃ i₁ i₂ k (by rw [add_assoc, add_comm i₃, h]) _ rfl,
     ιTensorObj₃_associator_inv, Iso.hom_inv_id_assoc]
@@ -170,7 +170,7 @@ The braided/symmetric monoidal category structure on `GradedObject ℕ C` can
 be inferred from the assumptions `[HasFiniteCoproducts C]`,
 `[∀ (X : C), PreservesFiniteCoproducts ((curriedTensor C).obj X)]` and
 `[∀ (X : C), PreservesFiniteCoproducts ((curriedTensor C).flip.obj X)]`.
-This requires importing `Mathlib.CategoryTheory.Limits.Preserves.Finite`.
+This requires importing `Mathlib/CategoryTheory/Limits/Preserves/Finite.lean`.
 -/
 
 end Instances

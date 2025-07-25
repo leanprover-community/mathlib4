@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Combinatorics.SimpleGraph.Path
+import Mathlib.Combinatorics.SimpleGraph.Paths
 import Mathlib.Combinatorics.SimpleGraph.Operations
 import Mathlib.Data.Finset.Pairwise
 import Mathlib.Data.Fintype.Pigeonhole
@@ -45,13 +45,16 @@ abbrev IsClique (s : Set α) : Prop :=
 theorem isClique_iff : G.IsClique s ↔ s.Pairwise G.Adj :=
   Iff.rfl
 
+lemma not_isClique_iff : ¬ G.IsClique s ↔ ∃ (v w : s), v ≠ w ∧ ¬ G.Adj v w := by
+  aesop (add simp [isClique_iff, Set.Pairwise])
+
 /-- A clique is a set of vertices whose induced graph is complete. -/
 theorem isClique_iff_induce_eq : G.IsClique s ↔ G.induce s = ⊤ := by
   rw [isClique_iff]
   constructor
   · intro h
     ext ⟨v, hv⟩ ⟨w, hw⟩
-    simp only [comap_adj, Subtype.coe_mk, top_adj, Ne, Subtype.mk_eq_mk]
+    simp only [comap_adj, top_adj, Ne, Subtype.mk_eq_mk]
     exact ⟨Adj.ne, h hv hw⟩
   · intro h v hv w hw hne
     have h2 : (G.induce s).Adj ⟨v, hv⟩ ⟨w, hw⟩ = _ := rfl
@@ -77,9 +80,11 @@ lemma isClique_pair : G.IsClique {a, b} ↔ a ≠ b → G.Adj a b := Set.pairwis
 lemma isClique_insert : G.IsClique (insert a s) ↔ G.IsClique s ∧ ∀ b ∈ s, a ≠ b → G.Adj a b :=
   Set.pairwise_insert_of_symmetric G.symm
 
-lemma isClique_insert_of_not_mem (ha : a ∉ s) :
+lemma isClique_insert_of_notMem (ha : a ∉ s) :
     G.IsClique (insert a s) ↔ G.IsClique s ∧ ∀ b ∈ s, G.Adj a b :=
-  Set.pairwise_insert_of_symmetric_of_not_mem G.symm ha
+  Set.pairwise_insert_of_symmetric_of_notMem G.symm ha
+
+@[deprecated (since := "2025-05-23")] alias isClique_insert_of_not_mem := isClique_insert_of_notMem
 
 lemma IsClique.insert (hs : G.IsClique s) (h : ∀ b ∈ s, a ≠ b → G.Adj a b) :
     G.IsClique (insert a s) := hs.insert_of_symmetric G.symm h
@@ -139,11 +144,11 @@ theorem isClique_map_finset_iff_of_nontrivial (ht : t.Nontrivial) :
 
 theorem isClique_map_finset_iff :
     (G.map f).IsClique t ↔ #t ≤ 1 ∨ ∃ (s : Finset α), G.IsClique s ∧ s.map f = t := by
-  obtain (ht | ht) := le_or_lt #t 1
+  obtain (ht | ht) := le_or_gt #t 1
   · simp only [ht, true_or, iff_true]
     exact IsClique.of_subsingleton <| card_le_one.1 ht
   rw [isClique_map_finset_iff_of_nontrivial, ← not_lt]
-  · simp [ht, Finset.map_eq_image]
+  · simp [ht]
   exact Finset.one_lt_card_iff_nontrivial.mp ht
 
 protected theorem IsClique.finsetMap {f : α ↪ β} {s : Finset α} (h : G.IsClique s) :
@@ -151,7 +156,7 @@ protected theorem IsClique.finsetMap {f : α ↪ β} {s : Finset α} (h : G.IsCl
   simpa
 
 /-- If a set of vertices `A` is a clique in subgraph of `G` induced by a superset of `A`,
- its embedding is a clique in `G`. -/
+its embedding is a clique in `G`. -/
 theorem IsClique.of_induce {S : Subgraph G} {F : Set α} {A : Set F}
     (c : (S.induce F).coe.IsClique A) : G.IsClique (Subtype.val '' A) := by
   simp only [Set.Pairwise, Set.mem_image, Subtype.exists, exists_and_right, exists_eq_right]
@@ -164,7 +169,7 @@ lemma IsClique.sdiff_of_sup_edge {v w : α} {s : Set α} (hc : (G ⊔ edge v w).
   have := hc hx.1 hy.1 hxy
   simp_all [sup_adj, edge_adj]
 
-lemma isClique_sup_edge_of_ne_sdiff {v w : α} {s : Set α} (h : v ≠ w ) (hv : G.IsClique (s \ {v}))
+lemma isClique_sup_edge_of_ne_sdiff {v w : α} {s : Set α} (h : v ≠ w) (hv : G.IsClique (s \ {v}))
     (hw : G.IsClique (s \ {w})) : (G ⊔ edge v w).IsClique s := by
   intro x hx y hy hxy
   by_cases h' : x ∈ s \ {v} ∧ y ∈ s \ {v} ∨ x ∈ s \ {w} ∧ y ∈ s \ {w}
@@ -217,7 +222,7 @@ protected theorem IsNClique.map (h : G.IsNClique n s) {f : α ↪ β} :
 theorem isNClique_map_iff (hn : 1 < n) {t : Finset β} {f : α ↪ β} :
     (G.map f).IsNClique n t ↔ ∃ s : Finset α, G.IsNClique n s ∧ s.map f = t := by
   rw [isNClique_iff, isClique_map_finset_iff, or_and_right,
-    or_iff_right (by rintro ⟨h', rfl⟩; exact h'.not_lt hn)]
+    or_iff_right (by rintro ⟨h', rfl⟩; exact h'.not_gt hn)]
   constructor
   · rintro ⟨⟨s, hs, rfl⟩, rfl⟩
     simp [isNClique_iff, hs]
@@ -248,7 +253,7 @@ protected theorem IsNClique.insert (hs : G.IsNClique n s) (h : ∀ b ∈ s, G.Ad
   constructor
   · push_cast
     exact hs.1.insert fun b hb _ => h _ hb
-  · rw [card_insert_of_not_mem fun ha => (h _ ha).ne rfl, hs.2]
+  · rw [card_insert_of_notMem fun ha => (h _ ha).ne rfl, hs.2]
 
 lemma IsNClique.erase_of_mem (hs : G.IsNClique n s) (ha : a ∈ s) :
     G.IsNClique (n - 1) (s.erase a) where
@@ -259,13 +264,13 @@ protected lemma IsNClique.insert_erase
     (hs : G.IsNClique n s) (ha : ∀ w ∈ s \ {b}, G.Adj a w) (hb : b ∈ s) :
     G.IsNClique n (insert a (erase s b)) := by
   cases n with
-  | zero => exact False.elim <| not_mem_empty _ (isNClique_zero.1 hs ▸ hb)
+  | zero => exact False.elim <| notMem_empty _ (isNClique_zero.1 hs ▸ hb)
   | succ _ => exact (hs.erase_of_mem hb).insert fun w h ↦ by aesop
 
 theorem is3Clique_triple_iff : G.IsNClique 3 {a, b, c} ↔ G.Adj a b ∧ G.Adj a c ∧ G.Adj b c := by
-  simp only [isNClique_iff, isClique_iff, Set.pairwise_insert_of_symmetric G.symm, coe_insert]
+  simp only [isNClique_iff, Set.pairwise_insert_of_symmetric G.symm, coe_insert]
   by_cases hab : a = b <;> by_cases hbc : b = c <;> by_cases hac : a = c <;> subst_vars <;>
-    simp [G.ne_of_adj, and_rotate, *]
+    simp [and_rotate, *]
 
 theorem is3Clique_iff :
     G.IsNClique 3 s ↔ ∃ a b c, G.Adj a b ∧ G.Adj a c ∧ G.Adj b c ∧ s = {a, b, c} := by
@@ -287,12 +292,12 @@ theorem is3Clique_iff_exists_cycle_length_three :
     (fun ⟨_, .cons hab (.cons hbc (.cons hca nil)), _, _⟩ => ⟨_, _, _, _, hab, hca.symm, hbc, rfl⟩)⟩
 
 /-- If a set of vertices `A` is an `n`-clique in subgraph of `G` induced by a superset of `A`,
- its embedding is an `n`-clique in `G`. -/
+its embedding is an `n`-clique in `G`. -/
 theorem IsNClique.of_induce {S : Subgraph G} {F : Set α} {s : Finset { x // x ∈ F }} {n : ℕ}
     (cc : (S.induce F).coe.IsNClique n s) :
     G.IsNClique n (Finset.map ⟨Subtype.val, Subtype.val_injective⟩ s) := by
   rw [isNClique_iff] at cc ⊢
-  simp only [Subgraph.induce_verts, coe_map, card_map]
+  simp only [coe_map, card_map]
   exact ⟨cc.left.of_induce, cc.right⟩
 
 lemma IsNClique.erase_of_sup_edge_of_mem [DecidableEq α] {v w : α} {s : Finset α} {n : ℕ}
@@ -322,7 +327,7 @@ theorem not_cliqueFree_of_top_embedding {n : ℕ} (f : (⊤ : SimpleGraph (Fin n
     ¬G.CliqueFree n := by
   simp only [CliqueFree, isNClique_iff, isClique_iff_induce_eq, not_forall, Classical.not_not]
   use Finset.univ.map f.toEmbedding
-  simp only [card_map, Finset.card_fin, eq_self_iff_true, and_true]
+  simp only [card_map, Finset.card_fin, and_true]
   ext ⟨v, hv⟩ ⟨w, hw⟩
   simp only [coe_map, Set.mem_image, coe_univ, Set.mem_univ, true_and] at hv hw
   obtain ⟨v', rfl⟩ := hv
@@ -342,10 +347,10 @@ noncomputable def topEmbeddingOfNotCliqueFree {n : ℕ} (h : ¬G.CliqueFree n) :
   convert (Embedding.induce ↑h.choose.toSet).comp this.toEmbedding
   exact hb.symm
 
-theorem not_cliqueFree_iff (n : ℕ) : ¬G.CliqueFree n ↔ Nonempty ((⊤ : SimpleGraph (Fin n)) ↪g G) :=
+theorem not_cliqueFree_iff (n : ℕ) : ¬G.CliqueFree n ↔ Nonempty (completeGraph (Fin n) ↪g G) :=
   ⟨fun h ↦ ⟨topEmbeddingOfNotCliqueFree h⟩, fun ⟨f⟩ ↦ not_cliqueFree_of_top_embedding f⟩
 
-theorem cliqueFree_iff {n : ℕ} : G.CliqueFree n ↔ IsEmpty ((⊤ : SimpleGraph (Fin n)) ↪g G) := by
+theorem cliqueFree_iff {n : ℕ} : G.CliqueFree n ↔ IsEmpty (completeGraph (Fin n) ↪g G) := by
   rw [← not_iff_not, not_cliqueFree_iff, not_isEmpty_iff]
 
 theorem not_cliqueFree_card_of_top_embedding [Fintype α] (f : (⊤ : SimpleGraph α) ↪g G) :
@@ -377,7 +382,7 @@ theorem CliqueFree.comap {H : SimpleGraph β} (f : H ↪g G) : G.CliqueFree n �
 
 @[simp] theorem cliqueFree_map_iff {f : α ↪ β} [Nonempty α] :
     (G.map f).CliqueFree n ↔ G.CliqueFree n := by
-  obtain (hle | hlt) := le_or_lt n 1
+  obtain (hle | hlt) := le_or_gt n 1
   · obtain (rfl | rfl) := Nat.le_one_iff_eq_zero_or_eq_one.1 hle
     · simp [CliqueFree]
     simp [CliqueFree, show ∃ (_ : β), True from ⟨f (Classical.arbitrary _), trivial⟩]
@@ -463,7 +468,7 @@ lemma cliqueFree_one : G.CliqueFree 1 ↔ IsEmpty α := by
 theorem cliqueFree_two : G.CliqueFree 2 ↔ G = ⊥ := by
   classical
   constructor
-  · simp_rw [← edgeSet_eq_empty, Set.eq_empty_iff_forall_not_mem, Sym2.forall, mem_edgeSet]
+  · simp_rw [← edgeSet_eq_empty, Set.eq_empty_iff_forall_notMem, Sym2.forall, mem_edgeSet]
     exact fun h a b hab => h _ ⟨by simpa [hab.ne], card_pair hab.ne⟩
   · rintro rfl
     exact cliqueFree_bot le_rfl
@@ -480,6 +485,23 @@ protected theorem CliqueFree.sup_edge (h : G.CliqueFree n) (v w : α) :
    (G ⊔ edge v w).CliqueFree (n + 1) :=
   fun _ hs ↦ (hs.erase_of_sup_edge_of_mem <|
     (h.mono n.le_succ).mem_of_sup_edge_isNClique hs).not_cliqueFree h
+
+lemma IsNClique.exists_not_adj_of_cliqueFree_succ (hc : G.IsNClique n s)
+    (h : G.CliqueFree (n + 1)) (x : α) : ∃ y, y ∈ s ∧ ¬ G.Adj x y := by
+  classical
+  by_contra! hf
+  exact (hc.insert hf).not_cliqueFree h
+
+lemma exists_of_maximal_cliqueFree_not_adj [DecidableEq α]
+    (h : Maximal (fun H ↦ H.CliqueFree (n + 1)) G) {x y : α} (hne : x ≠ y) (hn : ¬ G.Adj x y) :
+    ∃ s, x ∉ s ∧ y ∉ s ∧ G.IsNClique n (insert x s) ∧ G.IsNClique n (insert y s) := by
+  obtain ⟨t, hc⟩ := not_forall_not.1 <| h.not_prop_of_gt <| G.lt_sup_edge _ _ hne hn
+  use (t.erase x).erase y, erase_right_comm (a := x) ▸ (notMem_erase _ _), notMem_erase _ _
+  have h1 := h.1.mem_of_sup_edge_isNClique hc
+  have h2 := h.1.mem_of_sup_edge_isNClique (edge_comm .. ▸ hc)
+  rw [insert_erase <| mem_erase_of_ne_of_mem hne.symm h2, erase_right_comm,
+      insert_erase <| mem_erase_of_ne_of_mem hne h1]
+  exact ⟨(edge_comm .. ▸ hc).erase_of_sup_edge_of_mem h2, hc.erase_of_sup_edge_of_mem h1⟩
 
 end CliqueFree
 
@@ -518,7 +540,7 @@ protected theorem CliqueFree.cliqueFreeOn (hG : G.CliqueFree n) : G.CliqueFreeOn
   fun _t _ ↦ hG _
 
 theorem cliqueFreeOn_of_card_lt {s : Finset α} (h : #s < n) : G.CliqueFreeOn s n :=
-  fun _t hts ht => h.not_le <| ht.2.symm.trans_le <| card_mono hts
+  fun _t hts ht => h.not_ge <| ht.2.symm.trans_le <| card_mono hts
 
 -- TODO: Restate using `SimpleGraph.IndepSet` once we have it
 @[simp]
@@ -527,7 +549,7 @@ theorem cliqueFreeOn_two : G.CliqueFreeOn s 2 ↔ s.Pairwise (G.Adjᶜ) := by
   refine ⟨fun h a ha b hb _ hab => h ?_ ⟨by simpa [hab.ne], card_pair hab.ne⟩, ?_⟩
   · push_cast
     exact Set.insert_subset_iff.2 ⟨ha, Set.singleton_subset_iff.2 hb⟩
-  simp only [CliqueFreeOn, isNClique_iff, card_eq_two, coe_subset, not_and, not_exists]
+  simp only [CliqueFreeOn, isNClique_iff, card_eq_two, not_and, not_exists]
   rintro h t hst ht a b hab rfl
   simp only [coe_insert, coe_singleton, Set.insert_subset_iff, Set.singleton_subset_iff] at hst
   refine h hst.1 hst.2 hab (ht ?_ ?_ hab) <;> simp
@@ -560,7 +582,7 @@ theorem mem_cliqueSet_iff : s ∈ G.cliqueSet n ↔ G.IsNClique n s :=
 
 @[simp]
 theorem cliqueSet_eq_empty_iff : G.cliqueSet n = ∅ ↔ G.CliqueFree n := by
-  simp_rw [CliqueFree, Set.eq_empty_iff_forall_not_mem, mem_cliqueSet_iff]
+  simp_rw [CliqueFree, Set.eq_empty_iff_forall_notMem, mem_cliqueSet_iff]
 
 protected alias ⟨_, CliqueFree.cliqueSet⟩ := cliqueSet_eq_empty_iff
 
@@ -635,7 +657,7 @@ lemma IsClique.card_le_cliqueNum [Finite α] {t : Finset α} {tc : G.IsClique t}
 
 lemma exists_isNClique_cliqueNum [Finite α] : ∃ s, G.IsNClique G.cliqueNum s := by
   cases nonempty_fintype α
-  exact Nat.sSup_mem ⟨0, by simp [isNClique_empty.mpr rfl]⟩ G.fintype_cliqueNum_bddAbove
+  exact Nat.sSup_mem ⟨0, by simp⟩ G.fintype_cliqueNum_bddAbove
 
 /-- A maximum clique in a graph `G` is a clique with the largest possible size. -/
 structure IsMaximumClique [Fintype α] (G : SimpleGraph α) (s : Finset α) : Prop where
@@ -698,7 +720,7 @@ variable {G}
 
 @[simp]
 theorem cliqueFinset_eq_empty_iff : G.cliqueFinset n = ∅ ↔ G.CliqueFree n := by
-  simp_rw [CliqueFree, eq_empty_iff_forall_not_mem, mem_cliqueFinset_iff]
+  simp_rw [CliqueFree, eq_empty_iff_forall_notMem, mem_cliqueFinset_iff]
 
 protected alias ⟨_, CliqueFree.cliqueFinset⟩ := cliqueFinset_eq_empty_iff
 
@@ -771,7 +793,7 @@ lemma IsIndepSet.nonempty_mem_compl_mem_edge
   · exact (c vins).left rfl
 
 /-- The neighbors of a vertex `v` form an independent set in a triangle free graph `G`. -/
-theorem isIndepSet_neighborSet_of_triangleFree (h: G.CliqueFree 3) (v : α) :
+theorem isIndepSet_neighborSet_of_triangleFree (h : G.CliqueFree 3) (v : α) :
     G.IsIndepSet (G.neighborSet v) := by
   classical
   by_contra nind
@@ -782,7 +804,7 @@ theorem isIndepSet_neighborSet_of_triangleFree (h: G.CliqueFree 3) (v : α) :
   exact h {v, j, k} (is3Clique_triple_iff.mpr (by simp [avj, avk, ajk]))
 
 /-- The embedding of an independent set of an induced subgraph of the subgraph `G` is an independent
- set in `G` and vice versa. -/
+set in `G` and vice versa. -/
 theorem isIndepSet_induce {F : Set α} {s : Set F} :
     ((⊤ : Subgraph G).induce F).coe.IsIndepSet s ↔ G.IsIndepSet (Subtype.val '' s) := by
   simp [Set.Pairwise]

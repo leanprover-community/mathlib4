@@ -184,6 +184,14 @@ instance instT2Space [T2Space F] : T2Space (E [⋀^ι]→L[𝕜] F) :=
 instance instT3Space [T2Space F] : T3Space (E [⋀^ι]→L[𝕜] F) :=
   inferInstance
 
+/-- The inclusion of *alternating* continuous multi-linear maps into continuous multi-linear maps
+as a continuous linear map. -/
+@[simps! -fullyApplied]
+def toContinuousMultilinearMapCLM
+    (R : Type*) [Semiring R] [Module R F] [ContinuousConstSMul R F] [SMulCommClass 𝕜 R F] :
+    E [⋀^ι]→L[𝕜] F →L[R] ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F :=
+  ⟨toContinuousMultilinearMapLinear, continuous_induced_dom⟩
+
 section RestrictScalars
 
 variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]

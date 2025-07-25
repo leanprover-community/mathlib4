@@ -23,7 +23,7 @@ theorem Pi.exists_forall_pos_add_lt [ExistsAddOfLE α] [Finite ι] {x y : ι →
   cases nonempty_fintype ι
   cases isEmpty_or_nonempty ι
   · obtain ⟨a, ha⟩ := exists_ne (0 : α)
-    obtain ha | ha := ha.lt_or_lt <;> obtain ⟨b, hb, -⟩ := exists_pos_add_of_lt' ha <;>
+    obtain ha | ha := ha.lt_or_gt <;> obtain ⟨b, hb, -⟩ := exists_pos_add_of_lt' ha <;>
       exact ⟨b, hb, isEmptyElim⟩
   choose ε hε hxε using fun i => exists_pos_add_of_lt' (h i)
   obtain rfl : x + ε = y := funext hxε

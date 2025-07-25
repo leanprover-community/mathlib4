@@ -263,7 +263,7 @@ instance Prod.instNeBotNhdsWithinIio [Preorder X] [Preorder Y] {x : X × Y}
   exact nhdsWithin_mono _ fun _ ⟨h₁, h₂⟩ ↦ Prod.lt_iff.2 <| .inl ⟨h₁, h₂.le⟩
 
 instance Prod.instNeBotNhdsWithinIoi [Preorder X] [Preorder Y] {x : X × Y}
-    [hx₁: (𝓝[>] x.1).NeBot] [hx₂ : (𝓝[>] x.2).NeBot] : (𝓝[>] x).NeBot := by
+    [hx₁ : (𝓝[>] x.1).NeBot] [hx₂ : (𝓝[>] x.2).NeBot] : (𝓝[>] x).NeBot := by
   refine (hx₁.prod hx₂).mono ?_
   rw [← nhdsWithin_prod_eq]
   exact nhdsWithin_mono _ fun _ ⟨h₁, h₂⟩ ↦ Prod.lt_iff.2 <| .inl ⟨h₁, h₂.le⟩
@@ -506,7 +506,7 @@ theorem isOpen_prod_iff' {s : Set X} {t : Set Y} :
       · simpa only [fst_image_prod _ st.2] using isOpenMap_fst _ H
       · simpa only [snd_image_prod st.1 t] using isOpenMap_snd _ H
     · intro H
-      simp only [st.1.ne_empty, st.2.ne_empty, not_false_iff, or_false] at H
+      simp only [st.1.ne_empty, st.2.ne_empty, or_false] at H
       exact H.1.prod H.2
 
 theorem isQuotientMap_fst [Nonempty Y] : IsQuotientMap (Prod.fst : X × Y → X) :=
@@ -587,6 +587,12 @@ lemma Topology.isInducing_prod_const {y : Y} {f : X → Z} :
 
 @[deprecated (since := "2024-10-28")] alias inducing_prod_const := isInducing_prod_const
 
+lemma isInducing_prodMkLeft (y : Y) : IsInducing (fun x : X ↦ (x, y)) :=
+  .of_comp (.prodMk_left y) continuous_fst .id
+
+lemma isInducing_prodMkRight (x : X) : IsInducing (Prod.mk x : Y → X × Y) :=
+  .of_comp (.prodMk_right x) continuous_snd .id
+
 lemma Topology.IsEmbedding.prodMap {f : X → Y} {g : Z → W} (hf : IsEmbedding f)
     (hg : IsEmbedding g) : IsEmbedding (Prod.map f g) where
   toIsInducing := hf.isInducing.prodMap hg.isInducing
@@ -609,15 +615,94 @@ lemma isEmbedding_graph {f : X → Y} (hf : Continuous f) : IsEmbedding fun x =>
 @[deprecated (since := "2024-10-26")]
 alias embedding_graph := isEmbedding_graph
 
-lemma isEmbedding_prodMk (x : X) : IsEmbedding (Prod.mk x : Y → X × Y) :=
+lemma isEmbedding_prodMkLeft (y : Y) : IsEmbedding (fun x : X ↦ (x, y)) :=
+  .of_comp (.prodMk_left y) continuous_fst .id
+
+lemma isEmbedding_prodMkRight (x : X) : IsEmbedding (Prod.mk x : Y → X × Y) :=
   .of_comp (.prodMk_right x) continuous_snd .id
 
-@[deprecated (since := "2024-10-26")]
-alias embedding_prod_mk := isEmbedding_prodMk
+@[deprecated (since := "2025-06-12")] alias isEmbedding_prodMk := isEmbedding_prodMkRight
+@[deprecated (since := "2024-10-26")] alias embedding_prod_mk := isEmbedding_prodMkRight
 
 theorem IsOpenQuotientMap.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenQuotientMap f)
     (hg : IsOpenQuotientMap g) : IsOpenQuotientMap (Prod.map f g) :=
   ⟨.prodMap hf.1 hg.1, .prodMap hf.2 hg.2, .prodMap hf.3 hg.3⟩
+
+-- Homeomorphisms between the various product: products of two homeomorphisms,
+-- as well as commutativity and associativity. See below for the analogous results for sums,
+-- as well as distributivity, etc.
+namespace Homeomorph
+
+variable {X' Y' : Type*} [TopologicalSpace X'] [TopologicalSpace Y']
+
+/-- Product of two homeomorphisms. -/
+def prodCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : X × Y ≃ₜ X' × Y' where
+  toEquiv := h₁.toEquiv.prodCongr h₂.toEquiv
+
+@[simp]
+theorem prodCongr_symm (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') :
+    (h₁.prodCongr h₂).symm = h₁.symm.prodCongr h₂.symm :=
+  rfl
+
+@[simp]
+theorem coe_prodCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : ⇑(h₁.prodCongr h₂) = Prod.map h₁ h₂ :=
+  rfl
+
+variable (W X Y Z)
+
+/-- `X × Y` is homeomorphic to `Y × X`. -/
+def prodComm : X × Y ≃ₜ Y × X where
+  continuous_toFun := continuous_snd.prodMk continuous_fst
+  continuous_invFun := continuous_snd.prodMk continuous_fst
+  toEquiv := Equiv.prodComm X Y
+
+@[simp]
+theorem prodComm_symm : (prodComm X Y).symm = prodComm Y X :=
+  rfl
+
+@[simp]
+theorem coe_prodComm : ⇑(prodComm X Y) = Prod.swap :=
+  rfl
+
+/-- `(X × Y) × Z` is homeomorphic to `X × (Y × Z)`. -/
+def prodAssoc : (X × Y) × Z ≃ₜ X × Y × Z where
+  continuous_toFun := continuous_fst.fst.prodMk (continuous_fst.snd.prodMk continuous_snd)
+  continuous_invFun := (continuous_fst.prodMk continuous_snd.fst).prodMk continuous_snd.snd
+  toEquiv := Equiv.prodAssoc X Y Z
+
+@[simp]
+lemma prodAssoc_toEquiv : (prodAssoc X Y Z).toEquiv = Equiv.prodAssoc X Y Z := rfl
+
+/-- Four-way commutativity of `prod`. The name matches `mul_mul_mul_comm`. -/
+def prodProdProdComm : (X × Y) × W × Z ≃ₜ (X × W) × Y × Z where
+  toEquiv := Equiv.prodProdProdComm X Y W Z
+  continuous_toFun := by
+    unfold Equiv.prodProdProdComm
+    dsimp only
+    fun_prop
+  continuous_invFun := by
+    unfold Equiv.prodProdProdComm
+    dsimp only
+    fun_prop
+
+@[simp]
+theorem prodProdProdComm_symm : (prodProdProdComm X Y W Z).symm = prodProdProdComm X W Y Z :=
+  rfl
+
+/-- `X × {*}` is homeomorphic to `X`. -/
+@[simps! -fullyApplied apply]
+def prodPUnit : X × PUnit ≃ₜ X where
+  toEquiv := Equiv.prodPUnit X
+  continuous_toFun := continuous_fst
+  continuous_invFun := .prodMk_left _
+
+/-- `{*} × X` is homeomorphic to `X`. -/
+def punitProd : PUnit × X ≃ₜ X :=
+  (prodComm _ _).trans (prodPUnit _)
+
+@[simp] theorem coe_punitProd : ⇑(punitProd X) = Prod.snd := rfl
+
+end Homeomorph
 
 end Prod
 
@@ -798,14 +883,11 @@ lemma IsClosedEmbedding.sumElim {f : X → Z} {g : Y → Z}
   rw [IsClosedEmbedding.isClosedEmbedding_iff_continuous_injective_isClosedMap] at hf hg ⊢
   exact ⟨hf.1.sumElim hg.1, h, hf.2.2.sumElim hg.2.2⟩
 
-end Sum
-
--- Homeomorphisms between the various constructions: sums and products of two homeomorphisms,
--- as well as commutativity, associativity and distributivity between these.
+-- Homeomorphisms between the various constructions: sums of two homeomorphisms,
+-- as well as commutativity, associativity and distributivity with products.
 namespace Homeomorph
 
-variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace W] [TopologicalSpace Z]
-  {X' Y' : Type*} [TopologicalSpace X'] [TopologicalSpace Y']
+variable {X' Y' : Type*} [TopologicalSpace X'] [TopologicalSpace Y']
 
 /-- Sum of two homeomorphisms. -/
 def sumCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : X ⊕ Y ≃ₜ X' ⊕ Y' where
@@ -828,19 +910,6 @@ theorem sumCongr_trans {X'' Y'' : Type*} [TopologicalSpace X''] [TopologicalSpac
     (sumCongr h₁ h₂).trans (sumCongr h₃ h₄) = sumCongr (h₁.trans h₃) (h₂.trans h₄) := by
   ext i
   cases i <;> rfl
-
-/-- Product of two homeomorphisms. -/
-def prodCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : X × Y ≃ₜ X' × Y' where
-  toEquiv := h₁.toEquiv.prodCongr h₂.toEquiv
-
-@[simp]
-theorem prodCongr_symm (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') :
-    (h₁.prodCongr h₂).symm = h₁.symm.prodCongr h₂.symm :=
-  rfl
-
-@[simp]
-theorem coe_prodCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : ⇑(h₁.prodCongr h₂) = Prod.map h₁ h₂ :=
-  rfl
 
 variable (W X Y Z)
 
@@ -895,58 +964,6 @@ lemma sumSumSumComm_toEquiv : (sumSumSumComm W X Y Z).toEquiv = (Equiv.sumSumSum
 @[simp]
 lemma sumSumSumComm_symm : (sumSumSumComm X Y W Z).symm = (sumSumSumComm X W Y Z) := rfl
 
-/-- `X × Y` is homeomorphic to `Y × X`. -/
-def prodComm : X × Y ≃ₜ Y × X where
-  continuous_toFun := continuous_snd.prodMk continuous_fst
-  continuous_invFun := continuous_snd.prodMk continuous_fst
-  toEquiv := Equiv.prodComm X Y
-
-@[simp]
-theorem prodComm_symm : (prodComm X Y).symm = prodComm Y X :=
-  rfl
-
-@[simp]
-theorem coe_prodComm : ⇑(prodComm X Y) = Prod.swap :=
-  rfl
-
-/-- `(X × Y) × Z` is homeomorphic to `X × (Y × Z)`. -/
-def prodAssoc : (X × Y) × Z ≃ₜ X × Y × Z where
-  continuous_toFun := continuous_fst.fst.prodMk (continuous_fst.snd.prodMk continuous_snd)
-  continuous_invFun := (continuous_fst.prodMk continuous_snd.fst).prodMk continuous_snd.snd
-  toEquiv := Equiv.prodAssoc X Y Z
-
-@[simp]
-lemma prodAssoc_toEquiv : (prodAssoc X Y Z).toEquiv = Equiv.prodAssoc X Y Z := rfl
-
-/-- Four-way commutativity of `prod`. The name matches `mul_mul_mul_comm`. -/
-def prodProdProdComm : (X × Y) × W × Z ≃ₜ (X × W) × Y × Z where
-  toEquiv := Equiv.prodProdProdComm X Y W Z
-  continuous_toFun := by
-    unfold Equiv.prodProdProdComm
-    dsimp only
-    fun_prop
-  continuous_invFun := by
-    unfold Equiv.prodProdProdComm
-    dsimp only
-    fun_prop
-
-@[simp]
-theorem prodProdProdComm_symm : (prodProdProdComm X Y W Z).symm = prodProdProdComm X W Y Z :=
-  rfl
-
-/-- `X × {*}` is homeomorphic to `X`. -/
-@[simps! -fullyApplied apply]
-def prodPUnit : X × PUnit ≃ₜ X where
-  toEquiv := Equiv.prodPUnit X
-  continuous_toFun := continuous_fst
-  continuous_invFun := .prodMk_left _
-
-/-- `{*} × X` is homeomorphic to `X`. -/
-def punitProd : PUnit × X ≃ₜ X :=
-  (prodComm _ _).trans (prodPUnit _)
-
-@[simp] theorem coe_punitProd : ⇑(punitProd X) = Prod.snd := rfl
-
 /-- The sum of `X` with any empty topological space is homeomorphic to `X`. -/
 @[simps! -fullyApplied apply]
 def sumEmpty [IsEmpty Y] : X ⊕ Y ≃ₜ X where
@@ -965,7 +982,7 @@ variable {W X Y Z}
 @[simps!]
 def sumProdDistrib : (X ⊕ Y) × Z ≃ₜ (X × Z) ⊕ (Y × Z) :=
   Homeomorph.symm <|
-    homeomorphOfContinuousOpen (Equiv.sumProdDistrib X Y Z).symm
+    (Equiv.sumProdDistrib X Y Z).symm.toHomeomorphOfContinuousOpen
         ((continuous_inl.prodMap continuous_id).sumElim
           (continuous_inr.prodMap continuous_id)) <|
       (isOpenMap_inl.prodMap IsOpenMap.id).sumElim (isOpenMap_inr.prodMap IsOpenMap.id)
@@ -975,3 +992,5 @@ def prodSumDistrib : X × (Y ⊕ Z) ≃ₜ (X × Y) ⊕ (X × Z) :=
   (prodComm _ _).trans <| sumProdDistrib.trans <| sumCongr (prodComm _ _) (prodComm _ _)
 
 end Homeomorph
+
+end Sum

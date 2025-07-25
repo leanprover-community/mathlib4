@@ -558,7 +558,7 @@ variable [HasCoproduct Z]
 instance : HasLimit (Discrete.functor Z).op := hasLimit_op_of_hasColimit (Discrete.functor Z)
 
 instance : HasLimit ((Discrete.opposite α).inverse ⋙ (Discrete.functor Z).op) :=
-  hasLimitEquivalenceComp (Discrete.opposite α).symm
+  hasLimit_equivalence_comp (Discrete.opposite α).symm
 
 instance : HasProduct (op <| Z ·) := hasLimit_of_iso
   ((Discrete.natIsoFunctor ≪≫ Discrete.natIso (fun _ ↦ by rfl)) :
@@ -597,6 +597,17 @@ def opCoproductIsoProduct :
   opCoproductIsoProduct' (coproductIsCoproduct Z) (productIsProduct (op <| Z ·))
 
 end
+
+@[reassoc (attr := simp)]
+lemma opCoproductIsoProduct'_hom_comp_proj {c : Cofan Z} {f : Fan (op <| Z ·)}
+    (hc : IsColimit c) (hf : IsLimit f) (i : α) :
+    (opCoproductIsoProduct' hc hf).hom ≫ f.proj i = (c.inj i).op := by
+  simp [opCoproductIsoProduct', Fan.proj]
+
+@[reassoc (attr := simp)]
+lemma opCoproductIsoProduct_hom_comp_π [HasCoproduct Z] (i : α) :
+    (opCoproductIsoProduct Z).hom ≫ Pi.π _ i = (Sigma.ι _ i).op :=
+  Limits.opCoproductIsoProduct'_hom_comp_proj ..
 
 theorem opCoproductIsoProduct'_inv_comp_inj {c : Cofan Z} {f : Fan (op <| Z ·)}
     (hc : IsColimit c) (hf : IsLimit f) (b : α) :
@@ -745,7 +756,7 @@ variable {A B : C} [HasBinaryProduct A B]
 
 instance : HasBinaryCoproduct (op A) (op B) := by
   have : HasProduct fun x ↦ (WalkingPair.casesOn x A B : C) := ‹_›
-  show HasCoproduct _
+  change HasCoproduct _
   convert inferInstanceAs (HasCoproduct fun x ↦ op (WalkingPair.casesOn x A B : C)) with x
   cases x <;> rfl
 
@@ -760,7 +771,7 @@ def opProdIsoCoprod : op (A ⨯ B) ≅ (op A ⨿ op B) where
   hom_inv_id := by
     apply Quiver.Hom.unop_inj
     ext <;>
-    · simp only [limit.lift_π]
+    · simp only
       apply Quiver.Hom.op_inj
       simp
   inv_hom_id := by

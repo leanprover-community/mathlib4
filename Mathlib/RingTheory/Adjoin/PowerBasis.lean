@@ -14,15 +14,11 @@ This file defines the canonical power basis on `Algebra.adjoin R {x}`,
 where `x` is an integral element over `R`.
 -/
 
+open Module Polynomial PowerBasis
 
 variable {K S : Type*} [Field K] [CommRing S] [Algebra K S]
 
 namespace Algebra
-
-
-open Polynomial
-open PowerBasis
-
 
 /-- The elements `1, x, ..., x ^ (d - 1)` for a basis for the `K`-module `K[x]`,
 where `d` is the degree of the minimal polynomial of `x`. -/
@@ -102,14 +98,14 @@ theorem repr_gen_pow_isIntegral (hB : IsIntegral R B.gen)
     letI : Nontrivial R := Nontrivial.of_polynomial_ne hQ
     exact degree_modByMonic_lt _ (minpoly.monic hB)
   rw [this, aeval_eq_sum_range' hlt]
-  simp only [map_sum, LinearEquiv.map_smulₛₗ, RingHom.id_apply, Finset.sum_apply']
+  simp only [map_sum, Finset.sum_apply']
   refine IsIntegral.sum _ fun j hj => ?_
   replace hj := Finset.mem_range.1 hj
   rw [← Fin.val_mk hj, ← B.basis_eq_pow, Algebra.smul_def, IsScalarTower.algebraMap_apply R S A, ←
     Algebra.smul_def, LinearEquiv.map_smul]
   simp only [algebraMap_smul, Finsupp.coe_smul, Pi.smul_apply, B.basis.repr_self_apply]
   by_cases hij : (⟨j, hj⟩ : Fin _) = i
-  · simp only [hij, eq_self_iff_true, if_true]
+  · simp only [hij, if_true]
     rw [Algebra.smul_def, mul_one]
     exact isIntegral_algebraMap
   · simp [hij, isIntegral_zero]

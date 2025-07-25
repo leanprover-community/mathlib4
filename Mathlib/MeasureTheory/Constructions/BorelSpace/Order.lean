@@ -758,14 +758,12 @@ protected theorem Measurable.iSup {ι} [Countable ι] {f : ι → δ → α} (hf
     measurableSet_bddAbove_range hf
   have : Measurable (fun (_b : δ) ↦ sSup (∅ : Set α)) := measurable_const
   apply Measurable.isLUB_of_mem hf A _ _ this
-  · rintro b ⟨c, hc⟩
+  · intro b hb
     apply isLUB_ciSup
-    refine ⟨c, ?_⟩
-    rintro d ⟨i, rfl⟩
-    exact hc (mem_range_self i)
+    simpa
   · intro b hb
     apply csSup_of_not_bddAbove
-    exact hb
+    simpa
 
 -- TODO: Why does this error?
 -- /-- Compositional version of `Measurable.iSup` for use by `fun_prop`. -/
@@ -915,17 +913,8 @@ theorem Measurable.limsup {f : ℕ → δ → α} (hf : ∀ i, Measurable (f i))
 
 end ConditionallyCompleteLinearOrder
 
-/-- Convert a `Homeomorph` to a `MeasurableEquiv`. -/
-def Homemorph.toMeasurableEquiv (h : α ≃ₜ β) : α ≃ᵐ β where
-  toEquiv := h.toEquiv
-  measurable_toFun := h.continuous_toFun.measurable
-  measurable_invFun := h.continuous_invFun.measurable
-
-protected theorem IsFiniteMeasureOnCompacts.map (μ : Measure α) [IsFiniteMeasureOnCompacts μ]
-    (f : α ≃ₜ β) : IsFiniteMeasureOnCompacts (Measure.map f μ) := by
-  refine ⟨fun K hK ↦ ?_⟩
-  rw [← Homeomorph.toMeasurableEquiv_coe, MeasurableEquiv.map_apply]
-  exact IsCompact.measure_lt_top (f.isCompact_preimage.2 hK)
+@[deprecated (since := "2025-05-30")]
+alias Homemorph.toMeasurableEquiv := Homeomorph.toMeasurableEquiv
 
 end BorelSpace
 
@@ -944,7 +933,7 @@ theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow {α : Type*} {mα 
     rw [← measure_union]
     · rw [← inter_union_distrib_left, ← preimage_union, singleton_union, Ioi_insert,
         ← _root_.bot_eq_zero, Ici_bot, preimage_univ, inter_univ]
-    · exact disjoint_singleton_left.mpr not_mem_Ioi_self
+    · exact disjoint_singleton_left.mpr notMem_Ioi_self
         |>.preimage f |>.inter_right' s |>.inter_left' s
     · exact hs.inter (hf measurableSet_Ioi)
   have B : μ (s ∩ f ⁻¹' Ioi 0) = μ (s ∩ f ⁻¹' {∞}) + μ (s ∩ f ⁻¹' Ioo 0 ∞) := by
@@ -954,7 +943,7 @@ theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow {α : Type*} {mα 
       ext x
       simp only [mem_singleton_iff, mem_union, mem_Ioo, mem_Ioi, mem_preimage]
       obtain (H | H) : f x = ∞ ∨ f x < ∞ := eq_or_lt_of_le le_top
-      · simp only [H, eq_self_iff_true, or_false, ENNReal.zero_lt_top, not_top_lt, and_false]
+      · simp only [H, or_false, ENNReal.zero_lt_top, not_top_lt, and_false]
       · simp only [H, H.ne, and_true, false_or]
     · refine disjoint_left.2 fun x hx h'x => ?_
       have : f x < ∞ := h'x.2.2
@@ -967,7 +956,7 @@ theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow {α : Type*} {mα 
       preimage_iUnion, inter_iUnion]
     · intro i j hij
       wlog h : i < j generalizing i j
-      · exact (this hij.symm (hij.lt_or_lt.resolve_left h)).symm
+      · exact (this hij.symm (hij.lt_or_gt.resolve_left h)).symm
       refine disjoint_left.2 fun x hx h'x => lt_irrefl (f x) ?_
       calc
         f x < (t : ℝ≥0∞) ^ (i + 1) := hx.2.2

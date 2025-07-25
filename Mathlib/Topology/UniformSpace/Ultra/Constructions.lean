@@ -58,7 +58,7 @@ lemma IsUltraUniformity.iInf {ι : Type*} {U : (i : ι) → UniformSpace X}
     (hU : ∀ i, @IsUltraUniformity X (U i)) :
     @IsUltraUniformity _ (⨅ i, U i : UniformSpace X) := by
   letI : UniformSpace X := ⨅ i, U i
-  refine .mk_of_hasBasis (iInf_uniformity ▸ (Filter.hasBasis_iInf (fun i ↦ (hU i).hasBasis))) ?_ ?_
+  refine .mk_of_hasBasis (iInf_uniformity ▸ Filter.HasBasis.iInf fun i ↦ (hU i).hasBasis) ?_ ?_
   · exact fun _ ⟨_, h⟩ ↦ IsSymmetricRel.iInter fun i ↦ (h i).right.left
   · exact fun _ ⟨_, h⟩ ↦ IsTransitiveRel.iInter fun i ↦ (h i).right.right
 

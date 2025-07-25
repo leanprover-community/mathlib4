@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.Algebra.Pi
-import Mathlib.LinearAlgebra.Finsupp.SumProd
+import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 
@@ -23,16 +23,15 @@ this is a basis over `Fin 3 → R`.
 
 ## Main definitions
 
- - `Pi.basis s`: given a basis `s i` for each `M i`, the standard basis on `Π i, M i`
- - `Pi.basisFun R η`: the standard basis on `R^η`, i.e. `η → R`, given by
-   `Pi.basisFun R η i j = Pi.single i 1 j = if i = j then 1 else 0`.
- - `Matrix.stdBasis R n m`: the standard basis on `Matrix n m R`, given by
-   `Matrix.stdBasis R n m (i, j) i' j' = if (i, j) = (i', j') then 1 else 0`.
+- `Pi.basis s`: given a basis `s i` for each `M i`, the standard basis on `Π i, M i`
+- `Pi.basisFun R η`: the standard basis on `R^η`, i.e. `η → R`, given by
+  `Pi.basisFun R η i j = Pi.single i 1 j = if i = j then 1 else 0`.
+- `Matrix.stdBasis R n m`: the standard basis on `Matrix n m R`, given by
+  `Matrix.stdBasis R n m (i, j) i' j' = if (i, j) = (i', j') then 1 else 0`.
 
 -/
 
-
-open Function Set Submodule
+open Function Module Set Submodule
 
 namespace Pi
 
@@ -46,38 +45,16 @@ section Module
 
 variable {η : Type*} {ιs : η → Type*} {Ms : η → Type*}
 
-theorem linearIndependent_single [Ring R] [∀ i, AddCommGroup (Ms i)] [∀ i, Module R (Ms i)]
+theorem linearIndependent_single [Semiring R] [∀ i, AddCommMonoid (Ms i)] [∀ i, Module R (Ms i)]
     [DecidableEq η] (v : ∀ j, ιs j → Ms j) (hs : ∀ i, LinearIndependent R (v i)) :
-    LinearIndependent R fun ji : Σj, ιs j ↦ Pi.single ji.1 (v ji.1 ji.2) := by
-  have hs' : ∀ j : η, LinearIndependent R fun i : ιs j => LinearMap.single R Ms j (v j i) := by
-    intro j
-    exact (hs j).map' _ (LinearMap.ker_single _ _ _)
-  apply linearIndependent_iUnion_finite hs'
-  intro j J _ hiJ
-  have h₀ :
-    ∀ j, span R (range fun i : ιs j => LinearMap.single R Ms j (v j i)) ≤
-      LinearMap.range (LinearMap.single R Ms j) := by
-    intro j
-    rw [span_le, LinearMap.range_coe]
-    apply range_comp_subset_range
-  have h₁ :
-    span R (range fun i : ιs j => LinearMap.single R Ms j (v j i)) ≤
-      ⨆ i ∈ ({j} : Set _), LinearMap.range (LinearMap.single R Ms i) := by
-    rw [@iSup_singleton _ _ _ fun i => LinearMap.range (LinearMap.single R (Ms) i)]
-    apply h₀
-  have h₂ :
-    ⨆ j ∈ J, span R (range fun i : ιs j => LinearMap.single R Ms j (v j i)) ≤
-      ⨆ j ∈ J, LinearMap.range (LinearMap.single R (fun j : η => Ms j) j) :=
-    iSup₂_mono fun i _ => h₀ i
-  have h₃ : Disjoint (fun i : η => i ∈ ({j} : Set _)) J := by
-    convert Set.disjoint_singleton_left.2 hiJ using 0
-  exact (disjoint_single_single _ _ _ _ h₃).mono h₁ h₂
+    LinearIndependent R fun ji : Σ j, ιs j ↦ Pi.single ji.1 (v ji.1 ji.2) := by
+  convert (DFinsupp.linearIndependent_single _ hs).map_injOn _ DFinsupp.injective_pi_lapply.injOn
 
-theorem linearIndependent_single_one (ι R : Type*) [Ring R] [DecidableEq ι] :
+theorem linearIndependent_single_one (ι R : Type*) [Semiring R] [DecidableEq ι] :
     LinearIndependent R (fun i : ι ↦ Pi.single i (1 : R)) := by
   rw [← linearIndependent_equiv (Equiv.sigmaPUnit ι)]
   exact Pi.linearIndependent_single (fun (_ : ι) (_ : Unit) ↦ (1 : R))
-    <| by simp +contextual [Fintype.linearIndependent_iff]
+    <| by simp +contextual [Fintype.linearIndependent_iffₛ]
 
 lemma linearIndependent_single_of_ne_zero {ι R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
     [NoZeroSMulDivisors R M] [DecidableEq ι] {v : ι → M} (hv : ∀ i, v i ≠ 0) :
@@ -105,7 +82,7 @@ given by `s j` on each component.
 For the standard basis over `R` on the finite-dimensional space `η → R` see `Pi.basisFun`.
 -/
 protected noncomputable def basis (s : ∀ j, Basis (ιs j) R (Ms j)) :
-    Basis (Σj, ιs j) R (∀ j, Ms j) :=
+    Basis (Σ j, ιs j) R (∀ j, Ms j) :=
   Basis.ofRepr
     ((LinearEquiv.piCongrRight fun j => (s j).repr) ≪≫ₗ
       (Finsupp.sigmaFinsuppLEquivPiFinsupp R).symm)
@@ -117,13 +94,13 @@ theorem basis_repr_single [DecidableEq η] (s : ∀ j, Basis (ιs j) R (Ms j)) (
   ext ⟨j', i'⟩
   by_cases hj : j = j'
   · subst hj
-    simp only [Pi.basis, LinearEquiv.trans_apply, Basis.repr_self, Pi.single_eq_same,
+    simp only [Pi.basis, LinearEquiv.trans_apply,
       LinearEquiv.piCongrRight, Finsupp.sigmaFinsuppLEquivPiFinsupp_symm_apply,
-      Basis.repr_symm_apply, LinearEquiv.coe_mk, ne_eq, Sigma.mk.inj_iff, heq_eq_eq, true_and]
+      Basis.repr_symm_apply, LinearEquiv.coe_mk]
     symm
     simp [Finsupp.single_apply]
   simp only [Pi.basis, LinearEquiv.trans_apply, Finsupp.sigmaFinsuppLEquivPiFinsupp_symm_apply,
-    LinearEquiv.piCongrRight, coe_single]
+    LinearEquiv.piCongrRight]
   dsimp
   rw [Pi.single_eq_of_ne (Ne.symm hj), LinearEquiv.map_zero, Finsupp.zero_apply,
     Finsupp.single_eq_of_ne]
