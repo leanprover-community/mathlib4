@@ -332,18 +332,18 @@ protected theorem IsBot.lt_of_ne (ha : IsBot a) (h : a ≠ b) : a < b :=
 protected theorem IsTop.lt_of_ne (ha : IsTop a) (h : b ≠ a) : b < a :=
   (ha b).lt_of_ne h
 
-protected theorem IsBot.not_isMax [Nontrivial α] (ha : IsBot a) : ¬ IsMax a := by
+protected theorem IsBot.not_isMax [Nontrivial α] (ha : IsBot a) : ¬IsMax a := by
   intro ha'
   obtain ⟨b, hb⟩ := exists_ne a
   exact hb <| ha'.eq_of_ge (ha.lt_of_ne hb.symm).le
 
-protected theorem IsTop.not_isMin [Nontrivial α] (ha : IsTop a) : ¬ IsMin a :=
+protected theorem IsTop.not_isMin [Nontrivial α] (ha : IsTop a) : ¬IsMin a :=
   ha.toDual.not_isMax
 
-protected theorem IsBot.not_isTop [Nontrivial α] (ha : IsBot a) : ¬ IsTop a :=
+protected theorem IsBot.not_isTop [Nontrivial α] (ha : IsBot a) : ¬IsTop a :=
   mt IsTop.isMax ha.not_isMax
 
-protected theorem IsTop.not_isBot [Nontrivial α] (ha : IsTop a) : ¬ IsBot a :=
+protected theorem IsTop.not_isBot [Nontrivial α] (ha : IsTop a) : ¬IsBot a :=
   ha.toDual.not_isTop
 
 end PartialOrder

@@ -69,10 +69,10 @@ alias ⟨Minimal.of_dual, Minimal.dual⟩ := minimal_toDual
 
 alias ⟨Maximal.of_dual, Maximal.dual⟩ := maximal_toDual
 
-@[simp] theorem minimal_false : ¬ Minimal (fun _ ↦ False) x := by
+@[simp] theorem minimal_false : ¬Minimal (fun _ ↦ False) x := by
   simp [Minimal]
 
-@[simp] theorem maximal_false : ¬ Maximal (fun _ ↦ False) x := by
+@[simp] theorem maximal_false : ¬Maximal (fun _ ↦ False) x := by
   simp [Maximal]
 
 @[simp] theorem minimal_true : Minimal (fun _ ↦ True) x ↔ IsMin x := by
@@ -139,10 +139,10 @@ theorem Maximal.and_left (h : Maximal P x) (hQ : Q x) : Maximal (fun x ↦ (Q x 
 @[simp] theorem maximal_eq_iff : Maximal (· = y) x ↔ x = y := by
   simp +contextual [Maximal]
 
-theorem not_minimal_iff (hx : P x) : ¬ Minimal P x ↔ ∃ y, P y ∧ y ≤ x ∧ ¬ (x ≤ y) := by
+theorem not_minimal_iff (hx : P x) : ¬Minimal P x ↔ ∃ y, P y ∧ y ≤ x ∧ ¬(x ≤ y) := by
   simp [Minimal, hx]
 
-theorem not_maximal_iff (hx : P x) : ¬ Maximal P x ↔ ∃ y, P y ∧ x ≤ y ∧ ¬ (y ≤ x) :=
+theorem not_maximal_iff (hx : P x) : ¬Maximal P x ↔ ∃ y, P y ∧ x ≤ y ∧ ¬(y ≤ x) :=
   not_minimal_iff (α := αᵒᵈ) hx
 
 theorem Minimal.or (h : Minimal (fun x ↦ P x ∨ Q x) x) : Minimal P x ∨ Minimal Q x := by
@@ -176,16 +176,16 @@ section Preorder
 
 variable [Preorder α]
 
-theorem minimal_iff_forall_lt : Minimal P x ↔ P x ∧ ∀ ⦃y⦄, y < x → ¬ P y := by
+theorem minimal_iff_forall_lt : Minimal P x ↔ P x ∧ ∀ ⦃y⦄, y < x → ¬P y := by
   simp [Minimal, lt_iff_le_not_ge, imp.swap]
 
-theorem maximal_iff_forall_gt : Maximal P x ↔ P x ∧ ∀ ⦃y⦄, x < y → ¬ P y :=
+theorem maximal_iff_forall_gt : Maximal P x ↔ P x ∧ ∀ ⦃y⦄, x < y → ¬P y :=
   minimal_iff_forall_lt (α := αᵒᵈ)
 
-theorem Minimal.not_prop_of_lt (h : Minimal P x) (hlt : y < x) : ¬ P y :=
+theorem Minimal.not_prop_of_lt (h : Minimal P x) (hlt : y < x) : ¬P y :=
   (minimal_iff_forall_lt.1 h).2 hlt
 
-theorem Maximal.not_prop_of_gt (h : Maximal P x) (hlt : x < y) : ¬ P y :=
+theorem Maximal.not_prop_of_gt (h : Maximal P x) (hlt : x < y) : ¬P y :=
   (maximal_iff_forall_gt.1 h).2 hlt
 
 theorem Minimal.not_lt (h : Minimal P x) (hy : P y) : ¬ (y < x) :=
@@ -206,12 +206,12 @@ theorem Maximal.not_gt (h : Maximal P x) (hy : P y) : ¬ (x < y) :=
 @[simp] theorem maximal_gt_iff : Maximal (y < ·) x ↔ y < x ∧ IsMax x :=
   minimal_lt_iff (α := αᵒᵈ)
 
-theorem not_minimal_iff_exists_lt (hx : P x) : ¬ Minimal P x ↔ ∃ y, y < x ∧ P y := by
+theorem not_minimal_iff_exists_lt (hx : P x) : ¬Minimal P x ↔ ∃ y, y < x ∧ P y := by
   simp_rw [not_minimal_iff hx, lt_iff_le_not_ge, and_comm]
 
 alias ⟨exists_lt_of_not_minimal, _⟩ := not_minimal_iff_exists_lt
 
-theorem not_maximal_iff_exists_gt (hx : P x) : ¬ Maximal P x ↔ ∃ y, x < y ∧ P y :=
+theorem not_maximal_iff_exists_gt (hx : P x) : ¬Maximal P x ↔ ∃ y, x < y ∧ P y :=
   not_minimal_iff_exists_lt (α := αᵒᵈ) hx
 
 alias ⟨exists_gt_of_not_maximal, _⟩ := not_maximal_iff_exists_gt
@@ -336,19 +336,19 @@ theorem minimal_subset_iff' : Minimal P s ↔ P s ∧ ∀ ⦃t⦄, P t → t ⊆
 theorem maximal_subset_iff' : Maximal P s ↔ P s ∧ ∀ ⦃t⦄, P t → s ⊆ t → t ⊆ s :=
   Iff.rfl
 
-theorem not_minimal_subset_iff (hs : P s) : ¬ Minimal P s ↔ ∃ t, t ⊂ s ∧ P t :=
+theorem not_minimal_subset_iff (hs : P s) : ¬Minimal P s ↔ ∃ t, t ⊂ s ∧ P t :=
   not_minimal_iff_exists_lt hs
 
-theorem not_maximal_subset_iff (hs : P s) : ¬ Maximal P s ↔ ∃ t, s ⊂ t ∧ P t :=
+theorem not_maximal_subset_iff (hs : P s) : ¬Maximal P s ↔ ∃ t, s ⊂ t ∧ P t :=
   not_maximal_iff_exists_gt hs
 
-theorem Set.minimal_iff_forall_ssubset : Minimal P s ↔ P s ∧ ∀ ⦃t⦄, t ⊂ s → ¬ P t :=
+theorem Set.minimal_iff_forall_ssubset : Minimal P s ↔ P s ∧ ∀ ⦃t⦄, t ⊂ s → ¬P t :=
   minimal_iff_forall_lt
 
-theorem Minimal.not_prop_of_ssubset (h : Minimal P s) (ht : t ⊂ s) : ¬ P t :=
+theorem Minimal.not_prop_of_ssubset (h : Minimal P s) (ht : t ⊂ s) : ¬P t :=
   (minimal_iff_forall_lt.1 h).2 ht
 
-theorem Minimal.not_ssubset (h : Minimal P s) (ht : P t) : ¬ t ⊂ s :=
+theorem Minimal.not_ssubset (h : Minimal P s) (ht : P t) : ¬t ⊂ s :=
   h.not_lt ht
 
 theorem Maximal.mem_of_prop_insert (h : Maximal P s) (hx : P (insert x s)) : x ∈ s :=
@@ -361,32 +361,32 @@ theorem Minimal.notMem_of_prop_diff_singleton (h : Minimal P s) (hx : P (s \ {x}
 alias Minimal.not_mem_of_prop_diff_singleton := Minimal.notMem_of_prop_diff_singleton
 
 theorem Set.minimal_iff_forall_diff_singleton (hP : ∀ ⦃s t⦄, P t → t ⊆ s → P s) :
-    Minimal P s ↔ P s ∧ ∀ x ∈ s, ¬ P (s \ {x}) :=
+    Minimal P s ↔ P s ∧ ∀ x ∈ s, ¬P (s \ {x}) :=
   ⟨fun h ↦ ⟨h.1, fun _ hx hP ↦ h.notMem_of_prop_diff_singleton hP hx⟩,
     fun h ↦ ⟨h.1, fun _ ht hts x hxs ↦ by_contra fun hxt ↦
       h.2 x hxs (hP ht <| subset_diff_singleton hts hxt)⟩⟩
 
 theorem Set.exists_diff_singleton_of_not_minimal (hP : ∀ ⦃s t⦄, P t → t ⊆ s → P s) (hs : P s)
-    (h : ¬ Minimal P s) : ∃ x ∈ s, P (s \ {x}) := by
+    (h : ¬Minimal P s) : ∃ x ∈ s, P (s \ {x}) := by
   simpa [Set.minimal_iff_forall_diff_singleton hP, hs] using h
 
-theorem Set.maximal_iff_forall_ssuperset : Maximal P s ↔ P s ∧ ∀ ⦃t⦄, s ⊂ t → ¬ P t :=
+theorem Set.maximal_iff_forall_ssuperset : Maximal P s ↔ P s ∧ ∀ ⦃t⦄, s ⊂ t → ¬P t :=
   maximal_iff_forall_gt
 
-theorem Maximal.not_prop_of_ssuperset (h : Maximal P s) (ht : s ⊂ t) : ¬ P t :=
+theorem Maximal.not_prop_of_ssuperset (h : Maximal P s) (ht : s ⊂ t) : ¬P t :=
   (maximal_iff_forall_gt.1 h).2 ht
 
-theorem Maximal.not_ssuperset (h : Maximal P s) (ht : P t) : ¬ s ⊂ t :=
+theorem Maximal.not_ssuperset (h : Maximal P s) (ht : P t) : ¬s ⊂ t :=
   h.not_gt ht
 
 theorem Set.maximal_iff_forall_insert (hP : ∀ ⦃s t⦄, P t → s ⊆ t → P s) :
-    Maximal P s ↔ P s ∧ ∀ x ∉ s, ¬ P (insert x s) := by
+    Maximal P s ↔ P s ∧ ∀ x ∉ s, ¬P (insert x s) := by
   simp only [not_imp_not]
   exact ⟨fun h ↦ ⟨h.1, fun x ↦ h.mem_of_prop_insert⟩,
     fun h ↦ ⟨h.1, fun t ht hst x hxt ↦ h.2 x (hP ht <| insert_subset hxt hst)⟩⟩
 
 theorem Set.exists_insert_of_not_maximal (hP : ∀ ⦃s t⦄, P t → s ⊆ t → P s) (hs : P s)
-    (h : ¬ Maximal P s) : ∃ x ∉ s, P (insert x s) := by
+    (h : ¬Maximal P s) : ∃ x ∉ s, P (insert x s) := by
   simpa [Set.maximal_iff_forall_insert hP, hs] using h
 
 /- TODO : generalize `minimal_iff_forall_diff_singleton` and `maximal_iff_forall_insert`
