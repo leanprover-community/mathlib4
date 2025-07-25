@@ -65,7 +65,7 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 /-- An equivalence of categories. We define an equivalence as a half-adjoint equivalence: a pair
 of functors `F : C ⥤ D` and `G : D ⥤ C` with a unit `η : 𝟭 C ≅ F ⋙ G` and counit
 `ε : G ⋙ F ≅ 𝟭 D`. `η` and `ε` are natural isomorphisms that satisfy the triangle law for `F`:
-`Fη ≫ εF = 𝟙 F`. Or in other words, the composite `F ⟶ FGF ⟶ F` is the identity.
+`Fη ≫ εF = 𝟙 F`. Or, in other words, the composite `F ⟶ FGF ⟶ F` is the identity.
 
 In `unit_inverse_comp`, we show that this is sufficient to establish a full adjoint
 equivalence—i.e., that the composite `G ⟶ GFG ⟶ G` must also be the identity.
