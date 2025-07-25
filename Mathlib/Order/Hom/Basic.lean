@@ -1189,12 +1189,8 @@ lemma StrictMono.denselyOrdered_range {X Y : Type*} [LinearOrder X] [DenselyOrde
     {f : X → Y} (hf : StrictMono f) :
     DenselyOrdered (Set.range f) := by
   constructor
-  simp only [Subtype.exists, Set.mem_range, Subtype.forall, Subtype.mk_lt_mk, exists_and_right,
-    forall_exists_index, exists_prop, forall_apply_eq_imp_iff, hf.lt_iff_lt]
-  intro a b hab
-  obtain ⟨c, hc⟩ := exists_between hab
-  use f c
-  simp_all [hf.lt_iff_lt]
+  simpa [← exists_and_left, ← exists_and_right, exists_comm, hf.lt_iff_lt]
+    using fun _ _ ↦ exists_between
 
 lemma denselyOrdered_iff_of_orderIsoClass {X Y F : Type*} [Preorder X] [Preorder Y]
     [EquivLike F X Y] [OrderIsoClass F X Y] (f : F) :
@@ -1216,7 +1212,7 @@ lemma denselyOrdered_iff_of_strictAnti {X Y F : Type*} [LinearOrder X] [Preorder
   let e : Xᵒᵈ ≃o Y := ⟨OrderDual.ofDual.trans (f : X ≃ Y), ?_⟩
   · exact denselyOrdered_iff_of_orderIsoClass e
   · simp only [Equiv.trans_apply, EquivLike.coe_coe, OrderDual.forall, OrderDual.ofDual_toDual,
-    OrderDual.toDual_le_toDual]
+      OrderDual.toDual_le_toDual]
     intro a b
     rw [hf.le_iff_le]
 
