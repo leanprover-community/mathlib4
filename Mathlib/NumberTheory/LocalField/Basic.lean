@@ -91,12 +91,6 @@ lemma isCompact_closedBall (γ : ValueGroupWithZero K) : IsCompact { x | valuati
 
 instance : CompactSpace 𝒪[K] := isCompact_iff_compactSpace.mp (isCompact_closedBall K 1)
 
-instance {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
-    (v : Valuation K Γ₀) [v.Compatible] : v.IsNontrivial := by
-  constructor
-  obtain ⟨x, hx, hx'⟩ := Valuation.IsNontrivial.exists_lt_one (v := v)
-  exact ⟨x, by simpa using hx, hx'.ne⟩
-
 instance (K : Type*) [Field K] [ValuativeRel K] [UniformSpace K] [IsUniformAddGroup K]
     [ValuativeTopology K] : (Valued.v (R := K) (Γ₀ := ValueGroupWithZero K)).Compatible :=
   inferInstanceAs (valuation K).Compatible
