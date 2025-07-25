@@ -34,13 +34,6 @@ variable (k : Type) (A : Type) [Field k] [CommRing A] [Algebra k A]
 variable (B : Type) [CommRing B] [Algebra k B]
 
 
-/-- Given a morphism f : A →ₐ[k] B of k-algebras and a k-algebra K, the basechange of f by the
-identity map K → K -/
-def baseChange (f : A →ₐ[k] B) (K : Type) [CommRing K] [Algebra k K] :
-    K ⊗[k] A →ₐ[K] K ⊗[k] B :=
-    Algebra.TensorProduct.map (AlgHom.id K K) f
-
-
 lemma baseChange_by_field_inj (f : A →ₐ[k] B) (h : Function.Injective f) (K : Type) [Field K]
     [Algebra k K] :
     Function.Injective (Algebra.TensorProduct.map (AlgHom.id K K) f) := by
@@ -59,11 +52,10 @@ theorem IsGeometricallyReduced_imp_baseChange_by_closure_Reduced (h : IsGeometri
 
 lemma isGeometricallyReduced_of_injective (B : Type) [CommRing B] [Algebra k B] (f : A →ₐ[k] B)
     (hf : Function.Injective f) [IsGeometricallyReduced k B] : IsGeometricallyReduced k A := by
-  let fK := baseChange  k A B f (AlgebraicClosure k)
-  have hfK : Function.Injective fK := baseChange_by_field_inj k A _ f hf _
+  have hfK : Function.Injective (Algebra.TensorProduct.map 1 f) := baseChange_by_field_inj k A _ f hf (AlgebraicClosure k)
   expose_names
   rw [isGeometricallyReduced_iff] at *
-  exact isReduced_of_injective fK hfK
+  exact isReduced_of_injective (Algebra.TensorProduct.map 1 f) hfK
 
 
 theorem isGeometricallyReduced_isReduced [IsGeometricallyReduced k A] : IsReduced A := by
@@ -88,7 +80,8 @@ lemma notReduced_has_nilpotent {R : Type} [Zero R] [Pow R ℕ] (h : ¬IsReduced 
 /-- Given a subalgebra C of a k-algebra A, and a k-algebra B, the basechange of C to a subalgebra
 of A ⊗[k] B -/
 def subAlgebraBaseChange (C : Subalgebra k A) : Subalgebra B (B ⊗[k] A) :=
-  AlgHom.range (baseChange k C A C.val B)
+  -- AlgHom.range (baseChange k C A C.val B)
+  AlgHom.range (Algebra.TensorProduct.map (AlgHom.id B B) C.val)
 
 lemma FGsubalgebra_baseChange_of_element (x : A ⊗[k] B) :
     ∃ C : Subalgebra k B , C.FG ∧ x ∈ subAlgebraBaseChange k B A C := by
@@ -124,7 +117,7 @@ theorem all_FG_geometricallyReduced_isGeometricallyReduced
   obtain ⟨x, hx⟩ := h_contra
   obtain ⟨C, hC⟩ := FGsubalgebra_baseChange_of_element _ _ _ x
   have hy : ∃ y : ((AlgebraicClosure k) ⊗[k] C), y ≠ 0 ∧ IsNilpotent y := by
-    let f := baseChange k C A C.val (AlgebraicClosure k)
+    let f := Algebra.TensorProduct.map (AlgHom.id (AlgebraicClosure k) (AlgebraicClosure k) ) C.val
     have h_inj : Function.Injective f := by
       apply baseChange_by_field_inj
       exact (AlgHom.injective_codRestrict C.val C Subtype.property).mp fun ⦃a₁ a₂⦄ a ↦ a
