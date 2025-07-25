@@ -92,6 +92,13 @@ lemma mul_eq_trans (f g : M ≃ₗ[R] M) : f * g = g.trans f := rfl
 @[simp]
 lemma coe_one : ↑(1 : M ≃ₗ[R] M) = id := rfl
 
+lemma inv_def (f : M ≃ₗ[R] M) : f⁻¹ = f.symm := rfl
+
+@[simp]
+lemma coe_inv (f : M ≃ₗ[R] M) : ⇑(f⁻¹) = ⇑f.symm := rfl
+
+lemma inv_apply (f : M ≃ₗ[R] M) (x : M) : f⁻¹ x = f.symm := rfl
+
 @[simp]
 lemma coe_toLinearMap_one : (↑(1 : M ≃ₗ[R] M) : M →ₗ[R] M) = LinearMap.id := rfl
 
