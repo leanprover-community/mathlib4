@@ -93,7 +93,7 @@ end PowerObject
 variable (ℰ) [HasPullbacks ℰ]
 
 /-- An elementary topos is a category with a fixed subobject classifier and power objects. -/
-class ElementaryTopos where
+class ElementaryTopos [HasPullbacks ℰ] where
   /-- A fixed choice of subobject classifier in `ℰ`. -/
   sc : Classifier ℰ (𝟙_ ℰ)
   /-- The power object functor -/
@@ -103,6 +103,8 @@ class ElementaryTopos where
 
 namespace ElementaryTopos
 
+section
+
 open PowerObject
 
 /-- Construct an elementary topos pointwise defined power objects. -/
@@ -111,10 +113,27 @@ def mkFromPointwisePowerObjects (sc : Classifier ℰ (𝟙_ ℰ))
   { sc := sc
     P :=
     { obj B := P' B.unop,
-      map {B C : ℰᵒᵖ} (h : B ⟶ C) := P_map (hP C.unop) (hP B.unop) h.unop,
-      map_id B := Eq.symm (uniq (hP B.unop) _ _ (by simp)),
-      map_comp {B C D : ℰᵒᵖ} _ _ :=
-        P_compose (hP D.unop) (hP C.unop) (hP B.unop) _ _ }
-    hP B := hP B }
+      map {B C} (h : B ⟶ C) := P_map (hP C.unop) (hP B.unop) h.unop,
+      map_id _ := Eq.symm (uniq (hP _) _ _ (by simp)),
+      map_comp {B C D} _ _ := P_compose (hP D.unop) (hP C.unop) (hP B.unop) _ _ }
+    hP := hP }
+
+end
+
+variable {ℰ} [ElementaryTopos ℰ]
+
+abbrev hat {A B : ℰ} (g : A ⟶ P.obj (op B)) := PowerObject.hat (hP B) g
+
+abbrev unhat {A B : ℰ} (f : B ⊗ A ⟶ sc.Ω) := PowerObject.unhat (hP B) f
+
+@[simp]
+abbrev hat_unhat {A B : ℰ} (f : B ⊗ A ⟶ sc.Ω) := PowerObject.hat_unhat (hP B) f
+
+@[simp]
+abbrev unhat_hat {A B : ℰ} (g : A ⟶ P.obj (op B)) := PowerObject.unhat_hat (hP B) g
+
+abbrev ε {B : ℰ} : B ⊗ (P.obj (op B)) ⟶ sc.Ω := PowerObject.ε (hP B)
+
+abbrev εdinaturality {B C : ℰ} (h : B ⟶ C) := PowerObject.εdinaturality (hP B) (hP C) h
 
 end ElementaryTopos
