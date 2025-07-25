@@ -198,6 +198,9 @@ def idealX : IsDedekindDomain.HeightOneSpectrum K[X] where
 @[simp]
 theorem idealX_span : (idealX K).asIdeal = Ideal.span {X} := rfl
 
+variable [DecidableEq K[X]] [DecidableEq (Associates (Ideal K[X]))]
+  [∀ (p : Associates (Ideal K[X])), Decidable (Irreducible p)]
+
 @[simp]
 theorem valuation_X_eq_neg_one :
     (idealX K).valuation (RatFunc K) RatFunc.X = Multiplicative.ofAdd (-1 : ℤ) := by
@@ -296,6 +299,9 @@ namespace RatFunc
 open scoped WithZero
 
 open Polynomial
+
+variable [DecidableEq K[X]] [DecidableEq (Associates (Ideal K[X]))]
+  [∀ (p : Associates (Ideal K[X])), Decidable (Irreducible p)]
 
 instance : Valued (RatFunc K) ℤᵐ⁰ := Valued.mk' ((idealX K).valuation _)
 

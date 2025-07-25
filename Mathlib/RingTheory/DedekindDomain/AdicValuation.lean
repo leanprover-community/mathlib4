@@ -62,9 +62,10 @@ noncomputable section
 
 open WithZero Multiplicative IsDedekindDomain
 
-variable {R : Type*} [CommRing R] [IsDedekindDomain R] {K S : Type*} [Field K] [CommSemiring S]
-  [Algebra R K] [IsFractionRing R K] (v : HeightOneSpectrum R) [DecidableEq R]
-  [DecidableEq (Associates (Ideal R))] [(p : Associates (Ideal R)) → Decidable (Irreducible p)]
+variable {R : Type*} [CommRing R] [IsDedekindDomain R] [DecidableEq R]
+  [DecidableEq (Associates (Ideal R))] [∀ p : Associates (Ideal R), Decidable (Irreducible p)]
+  {K S : Type*} [Field K] [CommSemiring S]
+  [Algebra R K] [IsFractionRing R K] (v : HeightOneSpectrum R)
 namespace IsDedekindDomain.HeightOneSpectrum
 
 /-! ### Adic valuations on the Dedekind domain R -/

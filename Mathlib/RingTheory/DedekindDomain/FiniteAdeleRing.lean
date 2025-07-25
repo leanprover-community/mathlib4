@@ -26,8 +26,9 @@ field, its finite adèle ring is just defined to be the trivial ring.
 finite adèle ring, dedekind domain
 -/
 
-variable (R : Type*) [CommRing R] [IsDedekindDomain R] {K : Type*}
-    [Field K] [Algebra R K] [IsFractionRing R K]
+variable (R : Type*) [CommRing R] [IsDedekindDomain R] [DecidableEq R]
+  [DecidableEq (Associates (Ideal R))] [∀ p : Associates (Ideal R), Decidable (Irreducible p)]
+  {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
 
 namespace IsDedekindDomain
 
