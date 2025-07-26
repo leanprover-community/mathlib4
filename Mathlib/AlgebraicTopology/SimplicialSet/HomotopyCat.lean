@@ -142,7 +142,7 @@ def OneTruncation₂.nerveEquiv :
 
 /-- A hom equivalence over the function `OneTruncation₂.nerveEquiv`. -/
 def OneTruncation₂.nerveHomEquiv (X Y : OneTruncation₂ ((SSet.truncation 2).obj (nerve C))) :
-  (X ⟶ Y) ≃ (nerveEquiv X ⟶ nerveEquiv Y) where
+    (X ⟶ Y) ≃ (nerveEquiv X ⟶ nerveEquiv Y) where
   toFun φ := eqToHom (congr_arg ComposableArrows.left φ.src_eq.symm) ≫ φ.edge.hom ≫
       eqToHom (congr_arg ComposableArrows.left φ.tgt_eq)
   invFun f :=
