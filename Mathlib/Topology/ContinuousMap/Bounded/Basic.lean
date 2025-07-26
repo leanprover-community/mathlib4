@@ -444,7 +444,7 @@ theorem dist_extend_extend (f : α ↪ δ) (g₁ g₂ : α →ᵇ β) (h₁ h₂
       _ ≤ _ := dist_coe_le_dist _
 
 theorem isometry_extend (f : α ↪ δ) (h : δ →ᵇ β) : Isometry fun g : α →ᵇ β => extend f g h :=
-  Isometry.of_dist_eq fun g₁ g₂ => by simp [dist_nonneg]
+  Isometry.of_dist_eq fun g₁ g₂ => by simp
 
 end Extend
 
@@ -547,8 +547,8 @@ instance instMulOneClass [MulOneClass R] [BoundedMul R] [ContinuousMul R] : MulO
 @[to_additive (attr := simps)
 "Composition on the left by a (lipschitz-continuous) homomorphism of topological `AddMonoid`s, as a
 `AddMonoidHom`. Similar to `AddMonoidHom.compLeftContinuous`."]
-protected def _root_.MonoidHom.compLeftContinuousBounded (α : Type*) [TopologicalSpace α]
-    [PseudoMetricSpace β] [Monoid β] [BoundedMul β] [ContinuousMul β]
+protected def _root_.MonoidHom.compLeftContinuousBounded (α : Type*)
+    [TopologicalSpace α] [PseudoMetricSpace β] [Monoid β] [BoundedMul β] [ContinuousMul β]
     [PseudoMetricSpace γ] [Monoid γ] [BoundedMul γ] [ContinuousMul γ]
     (g : β →* γ) {C : NNReal} (hg : LipschitzWith C g) :
     (α →ᵇ β) →* (α →ᵇ γ) where

@@ -400,7 +400,7 @@ noncomputable def Hom.comp {X Y Z : C} (z₁ : Hom W X Y) (z₂ : Hom W Y Z) : H
       refine ⟨Z, q.f ≫ u, q.s ≫ u, ?_, ?_, ?_⟩
       · simp only [p₁, p₂, assoc, reassoc_of% fac₃]
       · rw [assoc, assoc, assoc, assoc, fac₄, reassoc_of% hft]
-      · simp only [p₁, p₂, assoc, ← reassoc_of% fac₃]
+      · simp only [p₁, assoc, ← reassoc_of% fac₃]
         exact W.comp_mem _ _ b.hs (W.comp_mem _ _ z₂.hs
           (W.comp_mem _ _ w₂.hs (W.comp_mem _ _ q.hs hu)))
     · have eq : a₂.s ≫ z₂.f ≫ w₂.s = a₂.s ≫ t₂ ≫ w₂.f := by
@@ -445,7 +445,7 @@ noncomputable instance : Category (Localization W) where
     change (Hom.mk (ofHom W (𝟙 X))).comp (Hom.mk z) = Hom.mk z
     rw [Hom.comp_eq, comp_eq (ofHom W (𝟙 X)) z (ofHom W z.f) (by simp)]
     dsimp
-    simp only [comp₀, id_comp, comp_id]
+    simp only [id_comp, comp_id]
   assoc := by
     rintro (X₁ X₂ X₃ X₄ : C) f₁ f₂ f₃
     obtain ⟨z₁, rfl⟩ := Hom.mk_surjective f₁
@@ -559,9 +559,8 @@ noncomputable def Hom.map {X Y : C} (f : Hom W X Y) (F : C ⥤ E) (hF : W.IsInve
       F.map_comp, map_comp_map_s_assoc]) f
 
 @[simp]
-lemma Hom.map_mk {W} {X Y : C} (f : LeftFraction W X Y)
-    (F : C ⥤ E) (hF : W.IsInvertedBy F) :
-  Hom.map (Hom.mk f) F hF = f.map F hF := rfl
+lemma Hom.map_mk {W} {X Y : C} (f : LeftFraction W X Y) (F : C ⥤ E) (hF : W.IsInvertedBy F) :
+    Hom.map (Hom.mk f) F hF = f.map F hF := rfl
 
 namespace StrictUniversalPropertyFixedTarget
 

@@ -5,7 +5,7 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Analysis.LocallyConvex.ContinuousOfBounded
 import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
-import Mathlib.Probability.Moments.Variance
+import Mathlib.Probability.Moments.Covariance
 
 /-!
 # Covariance in Banach spaces
@@ -97,7 +97,7 @@ lemma norm_toLpₗ_le [OpensMeasurableSpace E] (L : Dual 𝕜 E) :
     rw [eLpNorm_eq_lintegral_rpow_enorm (by simp [hp]) hp_top, ENNReal.toReal_rpow]
     simp
   rw [Dual.toLpₗ_apply h_Lp, Lp.norm_toLp, eLpNorm_eq_lintegral_rpow_enorm (by simp [hp]) hp_top]
-  simp only [ENNReal.toReal_ofNat, ENNReal.rpow_ofNat, one_div]
+  simp only [one_div]
   refine ENNReal.toReal_le_of_le_ofReal (by positivity) ?_
   suffices ∫⁻ x, ‖L x‖ₑ ^ p.toReal ∂μ ≤ ‖L‖ₑ ^ p.toReal * ∫⁻ x, ‖x‖ₑ ^ p.toReal ∂μ by
     rw [← ENNReal.ofReal_rpow_of_nonneg (by positivity) (by positivity)]
@@ -179,6 +179,11 @@ lemma uncenteredCovarianceBilin_of_not_memLp (h : ¬ MemLp id 2 μ) (L₁ L₂ :
     uncenteredCovarianceBilin μ L₁ L₂ = 0 := by
   simp [uncenteredCovarianceBilin, Dual.toLp_of_not_memLp h]
 
+lemma uncenteredCovarianceBilin_zero : uncenteredCovarianceBilin (0 : Measure E) = 0 := by
+  ext
+  have : Subsingleton (Lp ℝ 2 (0 : Measure E)) := ⟨fun x y ↦ Lp.ext_iff.2 rfl⟩
+  simp [uncenteredCovarianceBilin, Subsingleton.eq_zero (Dual.toLp 0 2)]
+
 lemma norm_uncenteredCovarianceBilin_le (L₁ L₂ : Dual ℝ E) :
     ‖uncenteredCovarianceBilin μ L₁ L₂‖ ≤ ‖L₁‖ * ‖L₂‖ * ∫ x, ‖x‖ ^ 2 ∂μ := by
   by_cases h : MemLp id 2 μ
@@ -229,6 +234,18 @@ lemma covarianceBilin_of_not_memLp (h : ¬ MemLp id 2 μ) (L₁ L₂ : Dual ℝ 
   rw [this]
   exact h_Lp.add (memLp_const _)
 
+@[simp]
+lemma covarianceBilin_zero : covarianceBilin (0 : Measure E) = 0 := by
+  rw [covarianceBilin, Measure.map_zero, uncenteredCovarianceBilin_zero]
+
+lemma covarianceBilin_comm (L₁ L₂ : Dual ℝ E) :
+    covarianceBilin μ L₁ L₂ = covarianceBilin μ L₂ L₁ := by
+  by_cases h : MemLp id 2 μ
+  · have h' : MemLp id 2 (Measure.map (fun x ↦ x - ∫ (x : E), x ∂μ) μ) :=
+      (measurableEmbedding_subRight _).memLp_map_measure_iff.mpr <| h.sub (memLp_const _)
+    simp_rw [covarianceBilin, uncenteredCovarianceBilin_apply h', mul_comm (L₁ _)]
+  · simp [h]
+
 variable [CompleteSpace E]
 
 lemma covarianceBilin_apply (h : MemLp id 2 μ) (L₁ L₂ : Dual ℝ E) :
@@ -239,10 +256,22 @@ lemma covarianceBilin_apply (h : MemLp id 2 μ) (L₁ L₂ : Dual ℝ E) :
     simp [← hL]
   · exact (measurableEmbedding_subRight _).memLp_map_measure_iff.mpr <| h.sub (memLp_const _)
 
-lemma covarianceBilin_same_eq_variance (h : MemLp id 2 μ) (L : Dual ℝ E) :
+lemma covarianceBilin_apply' (h : MemLp id 2 μ) (L₁ L₂ : Dual ℝ E) :
+    covarianceBilin μ L₁ L₂ = ∫ x, L₁ (x - μ[id]) * L₂ (x - μ[id]) ∂μ := by
+  rw [covarianceBilin_apply h]
+  have hL (L : Dual ℝ E) : μ[L] = L (∫ x, x ∂μ) := L.integral_comp_comm (h.integrable (by simp))
+  simp [← hL]
+
+lemma covarianceBilin_eq_covariance (h : MemLp id 2 μ) (L₁ L₂ : Dual ℝ E) :
+    covarianceBilin μ L₁ L₂ = cov[L₁, L₂; μ] := by
+  rw [covarianceBilin_apply h, covariance]
+
+lemma covarianceBilin_self_eq_variance (h : MemLp id 2 μ) (L : Dual ℝ E) :
     covarianceBilin μ L L = Var[L; μ] := by
-  rw [covarianceBilin_apply h, variance_eq_integral (by fun_prop)]
-  simp_rw [pow_two]
+  rw [covarianceBilin_eq_covariance h, covariance_self (by fun_prop)]
+
+@[deprecated (since := "2025-07-16")] alias covarianceBilin_same_eq_variance :=
+  covarianceBilin_self_eq_variance
 
 end Covariance
 

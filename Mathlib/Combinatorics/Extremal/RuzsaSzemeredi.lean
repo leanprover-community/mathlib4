@@ -126,12 +126,12 @@ private lemma mem_triangleIndices :
 
 @[simp]
 private lemma card_triangleIndices : #(triangleIndices s) = card α * #s := by
-  simp [triangleIndices, card_univ]
+  simp [triangleIndices]
 
 private lemma noAccidental (hs : ThreeAPFree (s : Set α)) :
     NoAccidental (triangleIndices s : Finset (α × α × α)) where
   eq_or_eq_or_eq := by
-    simp only [mem_triangleIndices, Prod.mk_inj, exists_prop, forall_exists_index, and_imp]
+    simp only [mem_triangleIndices, Prod.mk_inj, forall_exists_index, and_imp]
     rintro _ _ _ _ _ _ d a ha rfl rfl rfl b' b hb rfl rfl h₁ d' c hc rfl h₂ rfl
     have : a + c = b + b := by linear_combination h₁.symm - h₂.symm
     obtain rfl := hs ha hb hc this
@@ -141,15 +141,15 @@ variable [Fact <| IsUnit (2 : α)]
 
 private instance : ExplicitDisjoint (triangleIndices s : Finset (α × α × α)) where
   inj₀ := by
-    simp only [mem_triangleIndices, Prod.mk_inj, exists_prop, forall_exists_index, and_imp]
+    simp only [mem_triangleIndices, Prod.mk_inj, forall_exists_index, and_imp]
     rintro _ _ _ _ x a ha rfl rfl rfl y b hb rfl h₁ h₂
     linear_combination 2 * h₁.symm - h₂.symm
   inj₁ := by
-    simp only [mem_triangleIndices, Prod.mk_inj, exists_prop, forall_exists_index, and_imp]
+    simp only [mem_triangleIndices, Prod.mk_inj, forall_exists_index, and_imp]
     rintro _ _ _ _ x a ha rfl rfl rfl y b hb rfl rfl h
     simpa [(Fact.out (p := IsUnit (2 : α))).mul_right_inj, eq_comm] using h
   inj₂ := by
-    simp only [mem_triangleIndices, Prod.mk_inj, exists_prop, forall_exists_index, and_imp]
+    simp only [mem_triangleIndices, Prod.mk_inj, forall_exists_index, and_imp]
     rintro _ _ _ _ x a ha rfl rfl rfl y b hb rfl h rfl
     simpa [(Fact.out (p := IsUnit (2 : α))).mul_right_inj, eq_comm] using h
 
@@ -239,7 +239,7 @@ open Asymptotics Filter
 There exists a graph with `n` vertices and `Ω((n ^ 2 * exp (-4 * √(log n))))` edges such that
 each edge belongs to exactly one triangle. -/
 theorem ruzsaSzemerediNumberNat_asymptotic_lower_bound :
-   (fun n ↦ n ^ 2 * exp (-4 * √(log n)) : ℕ → ℝ) =O[atTop]
+    (fun n ↦ n ^ 2 * exp (-4 * √(log n)) : ℕ → ℝ) =O[atTop]
      fun n ↦ (ruzsaSzemerediNumberNat n : ℝ) := by
   trans fun n ↦ (n / 3 - 2) * ↑((n - 3) / 6) * exp (-4 * √(log ↑((n - 3) / 6)))
   · simp_rw [sq]

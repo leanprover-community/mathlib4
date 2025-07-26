@@ -176,11 +176,7 @@ instance (a b : Thunk ℕ) {εa εb : Type*} [Estimator a εa] [Estimator b εb]
     dsimp
     have s₁ := Estimator.improve_spec (a := a) e.1
     have s₂ := Estimator.improve_spec (a := b) e.2
-    revert s₁ s₂
-    cases improve a e.fst <;> cases improve b e.snd <;> intro s₁ s₂ <;> simp_all only
-    · apply Nat.add_lt_add_left s₂
-    · apply Nat.add_lt_add_right s₁
-    · apply Nat.add_lt_add_right s₁
+    grind
 
 end add
 
@@ -230,7 +226,7 @@ def Estimator.fstInst [DecidableLT α] [∀ (p : α × β), WellFoundedGT { q //
     simp only [EstimatorData.improve, decide_eq_true_eq]
     match Estimator.improveUntil (a.prod b) _ _ with
     | .error _ =>
-      simp only [Option.map_none]
+      simp only
       exact fun w =>
         eq_of_le_of_not_lt
           (Estimator.bound_le e.inner : bound (a.prod b) e.inner ≤ (a.get, b.get)).1 w

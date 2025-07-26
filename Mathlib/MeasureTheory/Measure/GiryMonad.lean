@@ -166,7 +166,7 @@ theorem join_zero : (0 : Measure (Measure α)).join = 0 := by
 @[fun_prop]
 theorem measurable_join : Measurable (join : Measure (Measure α) → Measure α) :=
   measurable_of_measurable_coe _ fun s hs => by
-    simp only [join_apply hs]; exact measurable_lintegral (measurable_coe hs)
+    simp only [join_apply hs, measurable_lintegral (measurable_coe hs)]
 
 theorem lintegral_join {m : Measure (Measure α)} {f : α → ℝ≥0∞} (hf : AEMeasurable f (join m)) :
     ∫⁻ x, f x ∂join m = ∫⁻ μ, ∫⁻ x, f x ∂μ ∂m := by
@@ -297,7 +297,7 @@ theorem join_map_map {f : α → β} (hf : Measurable f) (μ : Measure (Measure 
   simp_rw [map_apply hf hs]
 
 theorem join_map_join (μ : Measure (Measure (Measure α))) : join (map join μ) = join (join μ) := by
-  show bind μ join = join (join μ)
+  change bind μ join = join (join μ)
   rw [join_eq_bind, join_eq_bind, bind_bind aemeasurable_id aemeasurable_id]
   apply congr_arg (bind μ)
   funext ν

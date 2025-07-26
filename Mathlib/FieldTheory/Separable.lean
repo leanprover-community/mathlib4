@@ -514,12 +514,7 @@ theorem _root_.Irreducible.separable [CharZero F] {f : F[X]} (hf : Irreducible f
     f.Separable := by
   rw [separable_iff_derivative_ne_zero hf, Ne, ← degree_eq_bot, degree_derivative_eq]
   · rintro ⟨⟩
-  rw [pos_iff_ne_zero, Ne, natDegree_eq_zero_iff_degree_le_zero, degree_le_zero_iff]
-  refine fun hf1 => hf.not_isUnit ?_
-  rw [hf1, isUnit_C, isUnit_iff_ne_zero]
-  intro hf2
-  rw [hf2, C_0] at hf1
-  exact absurd hf1 hf.ne_zero
+  exact Irreducible.natDegree_pos hf
 
 end Field
 
