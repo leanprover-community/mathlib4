@@ -55,15 +55,7 @@ theorem map_enumFrom_eq_zipWith : ∀ (l : List α) (n : ℕ) (f : ℕ → α �
     rw [this]; rfl
   · rcases l with - | ⟨head, tail⟩
     · contradiction
-    · simp only [enumFrom_cons, map_cons, range_succ_eq_map, zipWith_cons_cons,
-        Nat.zero_add, zipWith_map_left]
-      rw [ih]
-      · suffices (fun i ↦ f (i + (n + 1))) = ((fun i ↦ f (i + n)) ∘ Nat.succ) by
-          rw [this]
-          rfl
-        funext n' a
-        simp only [comp, Nat.add_comm, Nat.add_succ]
-      simp only [length_cons, Nat.succ.injEq] at e; exact e
+    · grind [enumFrom_cons, map_cons, range_succ_eq_map, zipWith_cons_cons, zipWith_map_left]
 
 set_option linter.deprecated false in
 @[deprecated "Deprecated without replacement." (since := "2025-01-29")]
