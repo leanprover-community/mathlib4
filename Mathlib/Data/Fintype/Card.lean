@@ -512,3 +512,19 @@ theorem card_finset_fin_le {n : ℕ} (s : Finset (Fin n)) : #s ≤ n := by
   simpa only [Fintype.card_fin] using s.card_le_univ
 
 end Fin
+
+lemma Finset.exists_image_eq_and_card_le_of_surjOn [DecidableEq β] {f : α → β}
+    (s : Set α) (t : Finset β) (hfs : s.SurjOn f t) :
+    ∃ (u : Finset α), u.image f = t ∧ u.card ≤ t.card ∧ (u : Set _) ⊆ s := by
+  classical
+  have hm : (s ∩ f ⁻¹' t).MapsTo f (t : Set β) :=
+    .mono_left (Set.mapsTo_preimage _ _) Set.inter_subset_right
+  have : Function.Surjective (hm.restrict f _ _) := by
+    refine (Set.MapsTo.restrict_surjective_iff _).mpr fun x hx ↦ ?_
+    obtain ⟨a, hmem, rfl⟩ := hfs hx
+    use a, ⟨hmem, hx⟩
+  obtain ⟨u, hu⟩ := Finset.exists_image_eq_and_card_le_of_surjective this .univ
+  refine ⟨Finset.image Subtype.val u, ?_, le_trans Finset.card_image_le (by simpa using hu.2), ?_⟩
+  · rw [Finset.image_image, ← Set.MapsTo.restrict_commutes, ← Finset.image_image, hu.1]
+    simp
+  · exact subset_trans (by simpa only [coe_image] using Subtype.coe_image_subset _ _) (by simp)
