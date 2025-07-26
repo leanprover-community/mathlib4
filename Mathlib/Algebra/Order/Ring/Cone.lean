@@ -42,6 +42,16 @@ instance RingCone.instRingConeClass (R : Type*) [Ring R] :
   one_mem {C} := C.one_mem'
   eq_zero_of_mem_of_neg_mem {C} := C.eq_zero_of_mem_of_neg_mem'
 
+@[simp]
+theorem RingCone.mem_mk {R : Type*} [Ring R] {toSubsemiring : Subsemiring R}
+    (eq_zero_of_mem_of_neg_mem) {x : R} :
+    x ∈ mk toSubsemiring eq_zero_of_mem_of_neg_mem ↔ x ∈ toSubsemiring := .rfl
+
+@[simp]
+theorem RingCone.coe_set_mk {R : Type*} [Ring R] {toSubsemiring : Subsemiring R}
+    (eq_zero_of_mem_of_neg_mem) :
+    (mk toSubsemiring eq_zero_of_mem_of_neg_mem : Set R) = toSubsemiring := rfl
+
 namespace RingCone
 
 variable {T : Type*} [Ring T] [PartialOrder T] [IsOrderedRing T] {a : T}
@@ -71,5 +81,5 @@ lemma IsOrderedRing.mkOfCone [RingConeClass S R] :
     IsOrderedRing R :=
   letI _ : PartialOrder R := .mkOfAddGroupCone C
   haveI : IsOrderedAddMonoid R := .mkOfCone C
-  haveI : ZeroLEOneClass R := ⟨show _ ∈ C by simpa using one_mem C⟩
+  haveI : ZeroLEOneClass R := ⟨show _ ∈ C by simp⟩
   .of_mul_nonneg fun x y xnn ynn ↦ show _ ∈ C by simpa using mul_mem xnn ynn

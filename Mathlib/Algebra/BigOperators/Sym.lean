@@ -25,8 +25,6 @@ theorem sum_sym2_filter_not_isDiag {ι M} [LinearOrder ι] [AddCommMonoid M]
 
 theorem sum_count_of_mem_sym {α} [DecidableEq α] {m : ℕ} {k : Sym α m} {s : Finset α}
     (hk : k ∈ s.sym m) : (∑ i ∈ s, count i k) = m := by
-  simp_rw [← k.prop, ← toFinset_sum_count_eq, eq_comm]
-  refine sum_subset_zero_on_sdiff (fun _ _ ↦ ?_) ?_ (fun _ _ ↦ rfl)
-  all_goals aesop
+  simp_all
 
 end Finset

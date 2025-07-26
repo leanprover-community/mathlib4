@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
 import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Equiv.TransferInstance
+import Mathlib.Algebra.Module.Submodule.Lattice
+import Mathlib.Algebra.Ring.TransferInstance
 import Mathlib.Topology.Algebra.GroupCompletion
 import Mathlib.Topology.Algebra.Ring.Ideal
 import Mathlib.Topology.Algebra.IsUniformGroup.Basic
@@ -53,6 +54,9 @@ instance mul : Mul (Completion α) :=
 @[norm_cast]
 theorem coe_one : ((1 : α) : Completion α) = 1 :=
   rfl
+
+@[simp] lemma coe_eq_one_iff [T0Space α] {x : α} : (x : Completion α) = 1 ↔ x = 1 :=
+  Completion.coe_inj
 
 end one_and_mul
 

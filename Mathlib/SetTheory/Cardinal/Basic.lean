@@ -294,7 +294,7 @@ theorem exists_finset_le_card (α : Type*) (n : ℕ) (h : n ≤ #α) :
 
 theorem card_le_of {α : Type u} {n : ℕ} (H : ∀ s : Finset α, s.card ≤ n) : #α ≤ n := by
   contrapose! H
-  apply exists_finset_le_card α (n+1)
+  apply exists_finset_le_card α (n + 1)
   simpa only [nat_succ, succ_le_iff] using H
 
 theorem cantor' (a) {b : Cardinal} (hb : 1 < b) : a < b ^ a := by

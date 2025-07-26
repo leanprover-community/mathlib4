@@ -94,9 +94,8 @@ instance (X : Type v) [t : TopologicalSpace X] [DiscreteTopology X] :
     rw [DiscreteTopology.eq_bot (t := t)]
     exact bot_le
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/5338
-The new unused variable linter flags `[tY : TopologicalSpace Y]`,
-but we want to use this as a named argument. -/
+/- The unused variable linter flags `[tY : TopologicalSpace Y]`,
+but we want to use this as a named argument, so we need to disable the linter. -/
 set_option linter.unusedVariables false in
 /-- Let `f : X → Y`. Suppose that to prove that `f` is continuous, it suffices to show that
 for every compact Hausdorff space `K` and every continuous map `g : K → X`, `f ∘ g` is continuous.

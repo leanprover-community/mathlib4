@@ -68,14 +68,14 @@ instance locallyOfFiniteType_isStableUnderBaseChange :
     MorphismProperty.IsStableUnderBaseChange @LocallyOfFiniteType :=
   HasRingHomProperty.isStableUnderBaseChange RingHom.finiteType_isStableUnderBaseChange
 
-instance {R} [CommRing R] [IsJacobsonRing R] : JacobsonSpace (Spec (.of R)) :=
+instance {R} [CommRing R] [IsJacobsonRing R] : JacobsonSpace Spec(R) :=
   inferInstanceAs (JacobsonSpace (PrimeSpectrum R))
 
 instance {R : CommRingCat} [IsJacobsonRing R] : JacobsonSpace (Spec R) :=
   inferInstanceAs (JacobsonSpace (PrimeSpectrum R))
 
 nonrec lemma LocallyOfFiniteType.jacobsonSpace
-  (f : X ⟶ Y) [LocallyOfFiniteType f] [JacobsonSpace Y] : JacobsonSpace X := by
+    (f : X ⟶ Y) [LocallyOfFiniteType f] [JacobsonSpace Y] : JacobsonSpace X := by
   wlog hY : ∃ S, Y = Spec S
   · rw [(Scheme.OpenCover.isOpenCover_opensRange (Y.affineCover.pullbackCover f)).jacobsonSpace_iff]
     intro i

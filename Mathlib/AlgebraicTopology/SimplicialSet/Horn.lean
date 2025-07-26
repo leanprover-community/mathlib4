@@ -185,7 +185,7 @@ def primitiveTriangle {n : ℕ} (i : Fin (n + 4))
   · exact Ne.symm hl.2.2.2
 
 /-- The `j`th face of codimension `1` of the `i`-th horn. -/
-def face {n : ℕ} (i j : Fin (n + 2)) (h : j ≠ i) : (Λ[n+1, i] : SSet.{u}) _⦋n⦌ :=
+def face {n : ℕ} (i j : Fin (n + 2)) (h : j ≠ i) : (Λ[n + 1, i] : SSet.{u}) _⦋n⦌ :=
   yonedaEquiv (Subpresheaf.lift (stdSimplex.δ j) (by
     simpa using face_le_horn _ _ h))
 

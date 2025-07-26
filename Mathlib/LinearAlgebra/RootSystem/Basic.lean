@@ -102,7 +102,7 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
     simp only [root_reflectionPerm, reflection_apply, coroot']
     simp only [hr, he, hc']
   suffices P₁.coroot = P₂.coroot by
-    obtain ⟨p₁⟩ := P₁; obtain ⟨p₂⟩ := P₂; cases p₁; cases p₂; congr; exact hp this
+    obtain ⟨p₁⟩ := P₁; obtain ⟨p₂⟩ := P₂; grind
   have := NoZeroSMulDivisors.int_of_charZero R M
   ext i
   apply P₁.injOn_dualMap_subtype_span_root_coroot (mem_range_self i) (hc ▸ mem_range_self i)
