@@ -576,6 +576,11 @@ def matrix (S : Set α) : Set (Matrix m n α) := {M | ∀ i j, M i j ∈ S}
 theorem mem_matrix {S : Set α} {M : Matrix m n α} :
     M ∈ S.matrix ↔ ∀ i j, M i j ∈ S := .rfl
 
+theorem matrix_eq_pi {S : Set α} :
+    S.matrix = of.symm ⁻¹' Set.univ.pi fun (_ : m) ↦ Set.univ.pi fun (_ : n) ↦ S := by
+  ext
+  simp [Set.mem_matrix]
+
 end Set
 
 namespace Matrix
