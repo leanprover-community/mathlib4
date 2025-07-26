@@ -397,6 +397,16 @@ instance (K L) [Finite L] [Field K] [Field L] [Algebra K L] : IsCyclic (L ≃ₐ
     ⟨frobeniusAlgEquivOfAlgebraic K L,
       fun f ↦ have ⟨n, hn⟩ := (bijective_frobeniusAlgEquivOfAlgebraic_pow K L).2 f; ⟨n, hn⟩⟩
 
+open Polynomial in
+theorem minpoly_frobeniusAlgHom :
+    minpoly K (frobeniusAlgHom K L).toLinearMap = X ^ Module.finrank K L - 1 :=
+  minpoly.eq_of_linearIndependent _ _ (leadingCoeff_X_pow_sub_one Module.finrank_pos)
+    (LinearMap.ext fun x ↦ by simpa [sub_eq_zero, Module.End.coe_pow, orderOf_frobeniusAlgHom] using
+      congr($(pow_orderOf_eq_one (frobeniusAlgHom K L)) x)) _
+    (degree_X_pow_sub_C Module.finrank_pos _) <| by
+      simpa [← AlgHom.toEnd_apply, ← map_pow] using (linearIndependent_algHom_toLinearMap K L L
+        |>.restrict_scalars' K).comp _ (bijective_frobeniusAlgHom_pow K L).1
+
 end frobenius
 
 open Polynomial
