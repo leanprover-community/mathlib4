@@ -745,7 +745,7 @@ def declarationIndentingLinter : Linter where run := withSetOptionIn fun stx => 
     | _ => return
     let .some declSplit := declSplit_ | return
     let .original _ splitPos ⟨src, _, _⟩ splitEndPos := declSplit.getHeadInfo | return
-    let .some <| .atom head_src@(.original _ _ ⟨_, _, _⟩ headEndPos) headStr := declHead_ |
+    let .some <| .atom head_src@(.original _ headStartPos ⟨_, _, _⟩ _) headStr := declHead_ |
       unreachable!
 
     let fileMap ← getFileMap
@@ -753,24 +753,32 @@ def declarationIndentingLinter : Linter where run := withSetOptionIn fun stx => 
     let rangeDbg (r : String.Range) := s!"[{posDbg r.start}, {posDbg r.stop})"
     let rangesDbg (ranges : Ranges) := s!"{ranges.map rangeDbg}"
 
+    -- non-comments range before declaration value
+    let mut declRangesBeforeVal := mergeRanges <| beforeVal.map rangesOfSyntax
+
     if checkModifiers then
-      match modifiers with
+      match modifiers with -- find the first parts of kinds of modifiers
       | .node _ ``declModifiers args =>
-        let modifiers ← modifiers.rewriteBottomUpM fun s ↦ do
-          if s.getKind = ``docComment then
-            if debug then dbg_trace s!"docstring: {rangesDbg <| rangesOfSyntax s}"
-            pure .missing
-          else pure s
-        beforeVal := beforeVal ++ #[modifiers]
+        for arg in args do
+          match arg with
+          | .node _ `null args =>
+            if let #[modifier] := args then
+              for s in modifier.topDown do
+                match s with
+                | .ident info _ v _
+                | .atom info v => -- the first part of a kind of modifiers
+                  if let .original _ start _ stop := info then
+                    if debug then dbg_trace s!"found a modifier `{v}` in {rangeDbg ⟨start, stop⟩}"
+                    declRangesBeforeVal := mergeRanges #[declRangesBeforeVal, #[⟨start, stop⟩]]
+                  break
+                | _ => pure ()
+          | _ => unreachable!
       | _ => unreachable!
 
-    -- non-comments range before declaration value
-    let declRangesBeforeVal := mergeRanges <| beforeVal.map rangesOfSyntax
-
     if debug then
-      dbg_trace s!"Range of declaration before value (without docstring): \
+      dbg_trace s!"Range of declaration before value: \
         {rangesDbg declRangesBeforeVal}.\n\
-        Position of the head `{headStr}`: {posDbg headEndPos}"
+        Position of the head `{headStr}`: {posDbg headStartPos}"
 
     let warn (highlightText : String.Range) :=
       logLint linter.style.declarationIndenting
@@ -785,7 +793,7 @@ def declarationIndentingLinter : Linter where run := withSetOptionIn fun stx => 
         if overlapsWithRange declRangesBeforeVal line.range then -- this line is not comment
           if checkModifiers && spaces.bsize != 0 then
             warn spaces.range m!"Here should not be spaces at the beginning of this line"
-          if line.range.contains headEndPos then
+          if line.range.contains headStartPos then
             if debug then
               dbg_trace s!"Here ends the declaration modifier: {rangeDbg line.range}"
             inModifier := false
