@@ -41,31 +41,24 @@ attribute [instance] IsGeometricallyReduced.reduced_algebraicClosure_tensor
 
 lemma geometricallyReduced_indep_of_algebraicClosure (k : Type) (A : Type) [Field k] [Ring A]
     [Algebra k A] (K : Type) [Field K] [Algebra k K] [IsAlgClosure k K]
-    (h : IsGeometricallyReduced k A) : IsReduced (K ⊗[k] A) := by
-  have f : K ≃ₐ[k] (AlgebraicClosure k) := IsAlgClosure.equiv _ _ _
-  apply isReduced_of_injective
-      (Algebra.TensorProduct.map ((↑f : K →ₐ[k] AlgebraicClosure k)) (AlgHom.id k A))
-  apply Module.Flat.rTensor_preserves_injective_linearMap
-  exact EquivLike.injective f
+    (h : IsGeometricallyReduced k A) : IsReduced (K ⊗[k] A) :=
+  isReduced_of_injective
+    (Algebra.TensorProduct.map
+      ((↑(IsAlgClosure.equiv k K (AlgebraicClosure k)) : K →ₐ[k] AlgebraicClosure k)) 1)
+    (Module.Flat.rTensor_preserves_injective_linearMap _
+      (EquivLike.injective (IsAlgClosure.equiv k K (AlgebraicClosure k))))
+
 
 lemma isGeometricallyReduced_of_injective {B : Type} [Ring B] [Algebra k B] (f : A →ₐ[k] B)
-    (hf : Function.Injective f) [IsGeometricallyReduced k B] : IsGeometricallyReduced k A := by
-  have hfK : Function.Injective
-      (Algebra.TensorProduct.map (AlgHom.id (AlgebraicClosure k) (AlgebraicClosure k)) f) := by
-    apply Module.Flat.lTensor_preserves_injective_linearMap
-    exact hf
-  rw [isGeometricallyReduced_iff] at *
-  exact isReduced_of_injective (Algebra.TensorProduct.map 1 f) hfK
+    (hf : Function.Injective f) [IsGeometricallyReduced k B] : IsGeometricallyReduced k A :=
+    ⟨isReduced_of_injective (Algebra.TensorProduct.map 1 f)
+    (Module.Flat.lTensor_preserves_injective_linearMap _ hf)⟩
 
 
-theorem isGeometricallyReduced_isReduced [IsGeometricallyReduced k A] : IsReduced A := by
-  -- We prove this by providing an injection A →ₐ[k] A ⊗[k] AlgebraicClosure k and then
-  -- applying isReduced_of_injective
-  let f : A →ₐ[k] (AlgebraicClosure k) ⊗[k] A := Algebra.TensorProduct.includeRight
-  have hf : Function.Injective f := by
-    apply Algebra.TensorProduct.includeRight_injective
-    exact FaithfulSMul.algebraMap_injective k (AlgebraicClosure k)
-  exact isReduced_of_injective f hf
+theorem isGeometricallyReduced_isReduced [IsGeometricallyReduced k A] : IsReduced A :=
+  isReduced_of_injective
+    (Algebra.TensorProduct.includeRight : A →ₐ[k] (AlgebraicClosure k) ⊗[k] A)
+    (Algebra.TensorProduct.includeRight_injective <| FaithfulSMul.algebraMap_injective _ _)
 
 lemma notReduced_has_nilpotent {R : Type} [Zero R] [Pow R ℕ] (h : ¬IsReduced R) :
     ∃ x : R, x ≠ 0 ∧ IsNilpotent x := by
