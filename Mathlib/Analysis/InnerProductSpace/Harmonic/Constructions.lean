@@ -16,7 +16,7 @@ If `f : ℂ → F` is complex-differentiable, then `f` is harmonic. If `F = ℂ`
 part, imaginary part, and complex conjugate. If `f` has no zero, then `log ‖f‖` is harmonic.
 -/
 
-open Complex InnerProductSpace Topology
+open Complex ComplexConjugate InnerProductSpace Topology
 
 variable
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
@@ -45,20 +45,20 @@ theorem AnalyticAt.harmonicAt [CompleteSpace F] (h : AnalyticAt ℂ f x) : Harmo
 /--
 If `f : ℂ → ℂ` is complex-analytic, then its real part is harmonic.
 -/
-theorem ContDiffAt.harmonicAt_realPart {f : ℂ → ℂ} (h : AnalyticAt ℂ f x) :
-    HarmonicAt (reCLM ∘ f) x := h.harmonicAt.comp_CLM reCLM
+theorem ContDiffAt.harmonicAt_re {f : ℂ → ℂ} (h : AnalyticAt ℂ f x) :
+    HarmonicAt (fun z ↦ (f z).re) x := h.harmonicAt.comp_CLM reCLM
 
 /--
 If `f : ℂ → ℂ` is complex-analytic, then its imaginary part is harmonic.
 -/
-theorem ContDiffAt.harmonicAt_imaginaryPart {f : ℂ → ℂ} (h : AnalyticAt ℂ f x) :
-  HarmonicAt (imCLM ∘ f) x := h.harmonicAt.comp_CLM imCLM
+theorem ContDiffAt.harmonicAt_im {f : ℂ → ℂ} (h : AnalyticAt ℂ f x) :
+  HarmonicAt (fun z ↦ (f z).im) x := h.harmonicAt.comp_CLM imCLM
 
 /--
 If `f : ℂ → ℂ` is complex-analytic, then its complex conjugate is harmonic.
 -/
-theorem ContDiffAt.harmonicAt_conjugate {f : ℂ → ℂ} (h : AnalyticAt ℂ f x) :
-  HarmonicAt (conjCLE ∘ f) x := (harmonicAt_comp_CLE_iff conjCLE).2 h.harmonicAt
+theorem ContDiffAt.harmonicAt_conj {f : ℂ → ℂ} (h : AnalyticAt ℂ f x) :
+  HarmonicAt (conj f) x := (harmonicAt_comp_CLE_iff conjCLE).2 h.harmonicAt
 
 /-!
 ## Harmonicity of `log ‖analytic‖`
