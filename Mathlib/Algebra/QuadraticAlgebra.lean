@@ -304,11 +304,11 @@ section CommRing
 
 instance instSemiring [CommSemiring R] : Semiring (QuadraticAlgebra R a b) where
   __ := inferInstanceAs (AddCommMonoidWithOne (QuadraticAlgebra R a b))
-  left_distrib _ _ _ := by ext <;> simp <;> ring
-  right_distrib _ _ _ := by ext <;> simp <;> ring
+  left_distrib _ _ _ := by ext <;> simpa using by ring
+  right_distrib _ _ _ := by ext <;> simpa using by ring
   zero_mul _ := by ext <;> simp
   mul_zero _ := by ext <;> simp
-  mul_assoc _ _ _ := by ext <;> simp <;> ring
+  mul_assoc _ _ _ := by ext <;> simpa using by ring
   one_mul _ := by ext <;> simp
   mul_one _ := by ext <;> simp
 
