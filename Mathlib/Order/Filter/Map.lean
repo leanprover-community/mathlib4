@@ -149,6 +149,12 @@ theorem eventually_pure {a : α} {p : α → Prop} : (∀ᶠ x in pure a, p x) �
 theorem principal_singleton (a : α) : 𝓟 {a} = pure a :=
   Filter.ext fun s => by simp only [mem_pure, mem_principal, singleton_subset_iff]
 
+theorem principal_eq_biSup_pure {s : Set α} : 𝓟 s = ⨆ a ∈ s, pure a :=
+  Filter.ext fun s => by simp only [mem_iSup]; rfl
+
+theorem top_eq_iSup_pure : (⊤ : Filter α) = ⨆ a, pure a := by
+  rw [← principal_univ, principal_eq_biSup_pure, iSup_univ]
+
 @[simp]
 theorem map_pure (f : α → β) (a : α) : map f (pure a) = pure (f a) :=
   rfl
