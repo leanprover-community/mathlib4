@@ -18,8 +18,9 @@ the bundle is a smooth function.
 If the fibers of a bundle `E` have a preexisting topology (like the tangent bundle), one can not
 assume additionally `[∀ b, InnerProductSpace ℝ (E b)]` as this would create diamonds. Instead,
 use `[RiemannianBundle E]`, which endows the fibers with a scalar product while ensuring that
-there is no diamond. We provide a constructor for `[RiemannianBundle E]` from a smooth family
-of metrics, which registers automatically `[IsContMDiffRiemannianBundle IB n F E]`.
+there is no diamond (for this, the `Bundle` scope should be open). We provide a
+constructor for `[RiemannianBundle E]` from a smooth family of metrics, which registers
+automatically `[IsContMDiffRiemannianBundle IB n F E]`.
 
 The following code block is the standard way to say "Let `E` be a smooth vector bundle equipped with
 a `C^n` Riemannian structure over a `C^n` manifold `B`":

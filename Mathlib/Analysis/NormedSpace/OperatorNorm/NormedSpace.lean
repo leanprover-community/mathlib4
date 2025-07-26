@@ -215,9 +215,7 @@ theorem opNorm_comp_linearIsometryEquiv (f : F →SL[σ₂₃] G) (g : F' ≃ₛ
     haveI := g.symm.surjective.nontrivial
     simp [g.symm.toLinearIsometry.norm_toContinuousLinearMap]
 
--- `SeminormedAddGroup (Fₗ →L[𝕜] E →L[𝕜] Fₗ)` is too slow to synthesize in the `simpNF` linter,
--- which fails on this lemma with a deterministic timeout
-@[simp, nolint simpNF]
+@[simp]
 theorem norm_smulRightL (c : E →L[𝕜] 𝕜) [Nontrivial Fₗ] : ‖smulRightL 𝕜 E Fₗ c‖ = ‖c‖ :=
   ContinuousLinearMap.homothety_norm _ c.norm_smulRight_apply
 
