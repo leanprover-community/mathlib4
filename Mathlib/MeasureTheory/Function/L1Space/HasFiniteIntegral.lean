@@ -463,6 +463,7 @@ theorem HasFiniteIntegral.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β]
 -- TODO: weaken the hypothesis to a version of `ENormSMulClass` with `≤`,
 -- once such a typeclass exists.
 -- This will let us unify with `HasFiniteIntegral.smul` above.
+@[fun_prop]
 theorem HasFiniteIntegral.smul_enorm [NormedAddGroup 𝕜] [SMul 𝕜 ε''] [ENormSMulClass 𝕜 ε'']
     (c : 𝕜) {f : α → ε''} (hf : HasFiniteIntegral f μ) : HasFiniteIntegral (c • f) μ := by
   simp only [HasFiniteIntegral]

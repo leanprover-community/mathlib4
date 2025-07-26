@@ -963,10 +963,11 @@ theorem Integrable.fun_smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β] [I
     {f : α → β} (hf : Integrable f μ) : Integrable (fun x ↦ c • f x) μ :=
   hf.smul c
 
+@[fun_prop]
 theorem Integrable.smul_enorm
     [NormedAddCommGroup 𝕜] [SMul 𝕜 ε] [ContinuousConstSMul 𝕜 ε] [ENormSMulClass 𝕜 ε] (c : 𝕜)
-    {f : α → ε} (hf : Integrable f μ) : Integrable (c • f) μ :=
-  ⟨by fun_prop, hf.hasFiniteIntegral.smul_enorm c⟩
+    {f : α → ε} (hf : Integrable f μ) : Integrable (c • f) μ := by
+  constructor <;> fun_prop
 
 theorem Integrable.fun_smul_enorm
     [NormedAddCommGroup 𝕜] [SMul 𝕜 ε] [ContinuousConstSMul 𝕜 ε] [ENormSMulClass 𝕜 ε] (c : 𝕜)
