@@ -99,6 +99,15 @@ lemma cdf_measure_stieltjesFunction (f : StieltjesFunction) (hf0 : Tendsto f atB
     ⟨by rw [f.measure_univ hf0 hf1, sub_zero, ENNReal.ofReal_one]⟩
   exact measure_cdf f.measure
 
+open unitInterval in
+lemma unitInterval.cdf_eq_real (μ : Measure I) [IsProbabilityMeasure μ] (x : I) :
+    cdf (μ.map Subtype.val) x.1 = μ.real (Icc 0 x) := by
+  haveI : IsProbabilityMeasure (μ.map Subtype.val) := isProbabilityMeasure_map (by fun_prop)
+  rw [ProbabilityTheory.cdf_eq_real (μ.map Subtype.val) x, measureReal_def, measureReal_def,
+    Measure.map_apply (by fun_prop) measurableSet_Iic]
+  congr with x
+  simp only [preimage_subtype_val_Iic, mem_Iic, mem_Icc, zero_le', true_and]
+
 end ProbabilityTheory
 
 open ProbabilityTheory
