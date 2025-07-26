@@ -34,9 +34,7 @@ variable {R : Type*} [Semiring R]
 
 /-- The left ideal of matrices with entries in `I ≤ R`. -/
 def matricesOver (I : Ideal R) : Ideal (Matrix n n R) where
-  carrier := { M | ∀ i j, M i j ∈ I }
-  add_mem' ha hb i j := I.add_mem (ha i j) (hb i j)
-  zero_mem' _ _ := I.zero_mem
+  __ := I.toAddSubmonoid.matrix
   smul_mem' M N hN := by
     intro i j
     rw [smul_eq_mul, mul_apply]
