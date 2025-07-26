@@ -156,7 +156,7 @@ instance instBaseSMul {V} [Monoid R] [AddMonoid V] [DistribMulAction R V] :
 
 @[simp] theorem of_symm_zero : (of R).symm (0 : HahnModule Γ R V) = 0 := rfl
 @[simp] theorem of_symm_add (x y : HahnModule Γ R V) :
-  (of R).symm (x + y) = (of R).symm x + (of R).symm y := rfl
+    (of R).symm (x + y) = (of R).symm x + (of R).symm y := rfl
 
 variable [PartialOrder Γ'] [VAdd Γ Γ'] [IsOrderedCancelVAdd Γ Γ']
 

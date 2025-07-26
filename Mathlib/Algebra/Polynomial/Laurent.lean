@@ -570,8 +570,8 @@ theorem eval₂_C (r : R) : eval₂ f x (C r) = f r := by
 theorem eval₂_C_mul_T_n (r : R) (n : ℕ) : eval₂ f x (C r * T n) = f r * x ^ n := by
   rw [←Polynomial.toLaurent_C_mul_T, eval₂_toLaurent, eval₂_monomial]
 
-theorem eval₂_C_mul_T_neg_n (r : R) (n : ℕ) : eval₂ f x (C r * T (-n)) =
-  f r * x⁻¹ ^ n := by rw [map_mul, eval₂_T_neg_n, eval₂_C]
+theorem eval₂_C_mul_T_neg_n (r : R) (n : ℕ) : eval₂ f x (C r * T (-n)) = f r * x⁻¹ ^ n := by
+  rw [map_mul, eval₂_T_neg_n, eval₂_C]
 
 @[simp]
 theorem eval₂_C_mul_T (r : R) (n : ℤ) : eval₂ f x (C r * T n) = f r * (x ^ n).val := by
