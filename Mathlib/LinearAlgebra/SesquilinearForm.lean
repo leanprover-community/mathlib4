@@ -34,6 +34,7 @@ basic lemmas about construction and elementary calculations are found there.
 Sesquilinear form, Sesquilinear map,
 -/
 
+open Module
 
 variable {R R₁ R₂ R₃ M M₁ M₂ M₃ Mₗ₁ Mₗ₁' Mₗ₂ Mₗ₂' K K₁ K₂ V V₁ V₂ n : Type*}
 
@@ -920,7 +921,7 @@ lemma apply_mul_apply_lt_iff_linearIndependent [NoZeroSMulDivisors R M]
 /-- Strict **Cauchy-Schwarz** is equivalent to linear independence for positive definite symmetric
 forms. -/
 lemma apply_sq_lt_iff_linearIndependent_of_symm [NoZeroSMulDivisors R M]
-    (hp : ∀ x, x ≠ 0 → 0 < B x x) (hB: B.IsSymm) (x y : M) :
+    (hp : ∀ x, x ≠ 0 → 0 < B x x) (hB : B.IsSymm) (x y : M) :
     (B x y) ^ 2 < (B x x) * (B y y) ↔ LinearIndependent R ![x, y] := by
   rw [show (B x y) ^ 2 = (B x y) * (B y x) by rw [sq, ← hB, RingHom.id_apply]]
   exact apply_mul_apply_lt_iff_linearIndependent B hp x y

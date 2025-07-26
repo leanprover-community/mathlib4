@@ -206,7 +206,7 @@ lemma isClosedMap_iff_specializingMap (f : X ⟶ Y) [QuasiCompact f] :
     IsClosedMap f.base ↔ SpecializingMap f.base := by
   refine ⟨fun h ↦ h.specializingMap, fun H ↦ ?_⟩
   wlog hY : ∃ R, Y = Spec R
-  · show topologically @IsClosedMap f
+  · change topologically @IsClosedMap f
     rw [IsLocalAtTarget.iff_of_openCover (P := topologically @IsClosedMap) Y.affineCover]
     intro i
     haveI hqc : QuasiCompact (Y.affineCover.pullbackHom f i) :=
@@ -254,14 +254,7 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen (X : Sch
     (H : x |_ (X.basicOpen f) = 0) :
     ∃ n : ℕ, f ^ n * x = 0 := by
   rw [← map_zero (X.presheaf.map (homOfLE <| X.basicOpen_le f : X.basicOpen f ⟶ U).op).hom] at H
-  #adaptation_note /-- nightly-2024-09-29
-  we could use dot notation here:
-  `(hU.isLocalization_basicOpen f).exists_of_eq H`
-  This is no longer possible;
-  likely changing the signature of `IsLocalization.Away.exists_of_eq` is in order.
--/
-  obtain ⟨n, e⟩ :=
-    @IsLocalization.Away.exists_of_eq _ _ _ _ _ _ (hU.isLocalization_basicOpen f) _ _ H
+  obtain ⟨n, e⟩ := (hU.isLocalization_basicOpen f).exists_of_eq _ H
   exact ⟨n, by simpa [mul_comm x] using e⟩
 
 /-- If `x : Γ(X, U)` is zero on `D(f)` for some `f : Γ(X, U)`, and `U` is quasi-compact, then
@@ -273,17 +266,14 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
   obtain ⟨s, hs, e⟩ := (isCompactOpen_iff_eq_finset_affine_union U.1).mp ⟨hU, U.2⟩
   replace e : U = iSup fun i : s => (i : X.Opens) := by
     ext1; simpa using e
-  have h₁ : ∀ i : s, i.1.1 ≤ U := by
-    intro i
-    change (i : X.Opens) ≤ U
+  have h₁ (i : s) : i.1.1 ≤ U := by
     rw [e]
-    -- Porting note: `exact le_iSup _ _` no longer works
     exact le_iSup (fun (i : s) => (i : Opens (X.toPresheafedSpace))) _
   have H' := fun i : s =>
     exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen X i.1.2
       (X.presheaf.map (homOfLE (h₁ i)).op x) (X.presheaf.map (homOfLE (h₁ i)).op f) ?_
   swap
-  · show (X.presheaf.map (homOfLE _).op) ((X.presheaf.map (homOfLE _).op).hom x) = 0
+  · change (X.presheaf.map (homOfLE _).op) ((X.presheaf.map (homOfLE _).op).hom x) = 0
     have H : (X.presheaf.map (homOfLE _).op) x = 0 := H
     convert congr_arg (X.presheaf.map (homOfLE _).op).hom H
     · simp only [← CommRingCat.comp_apply, ← Functor.map_comp]
@@ -298,7 +288,7 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
     subst e
     apply TopCat.Sheaf.eq_of_locally_eq X.sheaf fun i : s => (i : X.Opens)
     intro i
-    show _ = (X.sheaf.val.map _) 0
+    change _ = (X.sheaf.val.map _) 0
     rw [map_zero]
     apply this
   intro i
@@ -322,7 +312,7 @@ lemma Scheme.isNilpotent_iff_basicOpen_eq_bot_of_isCompact {X : Scheme.{u}}
     have : Subsingleton Γ(X, ⊥) :=
       CommRingCat.subsingleton_of_isTerminal X.sheaf.isTerminalOfEmpty
     rw [Subsingleton.eq_zero (1 |_ ⊥)]
-    show X.presheaf.map _ 0 = 0
+    change X.presheaf.map _ 0 = 0
     rw [map_zero]
   obtain ⟨n, hn⟩ := exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact X hU 1 f h
   rw [mul_one] at hn

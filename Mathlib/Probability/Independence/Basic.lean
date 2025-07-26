@@ -602,8 +602,7 @@ theorem indepFun_iff_indepSet_preimage {mβ : MeasurableSpace β} {mβ' : Measur
     [IsZeroOrProbabilityMeasure μ] (hf : Measurable f) (hg : Measurable g) :
     IndepFun f g μ ↔
       ∀ s t, MeasurableSet s → MeasurableSet t → IndepSet (f ⁻¹' s) (g ⁻¹' t) μ := by
-  simp only [IndepFun, IndepSet, Kernel.indepFun_iff_indepSet_preimage hf hg, ae_dirac_eq,
-    Filter.eventually_pure, Kernel.const_apply]
+  simp only [IndepFun, IndepSet, Kernel.indepFun_iff_indepSet_preimage hf hg]
 
 theorem indepFun_iff_map_prod_eq_prod_map_map' {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
@@ -772,7 +771,7 @@ lemma iIndepFun.of_precomp {g : ι' → ι} (hg : g.Surjective)
     simpa [A] using (A j).symm ▸ hs j hj
   have eq : ∏ i ∈ Finset.image (Function.invFun g) t, μ (s (g i)) = ∏ i ∈ t, μ (s i) := by
     rw [Finset.prod_image (fun x hx y hy h => ?_), Finset.prod_congr rfl (fun x _ => by rw [A])]
-    rw [←A x, ← A y, h]
+    rw [← A x, ← A y, h]
   simpa [A, eq] using h (t.image (Function.invFun g)) (f' := fun i ↦ s (g i)) this
 
 lemma iIndepFun_precomp_of_bijective {g : ι' → ι} (hg : g.Bijective) :
@@ -943,15 +942,15 @@ lemma cond_iInter [Finite ι] (hY : ∀ i, Measurable (Y i))
         _ = _ := Set.iInter_congr fun i ↦ by by_cases hi : i ∈ s <;> simp [hi, g]
     _ = (∏ i, μ (Y i ⁻¹' t i))⁻¹ * μ (⋂ i, g i) := by
       rw [hindep.meas_iInter]
-      exact fun i ↦ ⟨.univ ×ˢ t i, MeasurableSet.univ.prod (ht _), by ext; simp [eq_comm]⟩
+      exact fun i ↦ ⟨.univ ×ˢ t i, MeasurableSet.univ.prod (ht _), by ext; simp⟩
     _ = (∏ i, μ (Y i ⁻¹' t i))⁻¹ * ∏ i, μ (g i) := by
       rw [hindep.meas_iInter]
       intro i
       by_cases hi : i ∈ s <;> simp only [hi, ↓reduceIte, g]
       · obtain ⟨A, hA, hA'⟩ := hf i hi
-        exact .inter ⟨.univ ×ˢ t i, MeasurableSet.univ.prod (ht _), by ext; simp [eq_comm]⟩
+        exact .inter ⟨.univ ×ˢ t i, MeasurableSet.univ.prod (ht _), by ext; simp⟩
           ⟨A ×ˢ Set.univ, hA.prod .univ, by ext; simp [← hA']⟩
-      · exact ⟨.univ ×ˢ t i, MeasurableSet.univ.prod (ht _), by ext; simp [eq_comm]⟩
+      · exact ⟨.univ ×ˢ t i, MeasurableSet.univ.prod (ht _), by ext; simp⟩
     _ = ∏ i, (μ (Y i ⁻¹' t i))⁻¹ * μ (g i) := by
       rw [Finset.prod_mul_distrib, ENNReal.prod_inv_distrib]
       exact fun _ _ i _ _ ↦ .inr <| measure_ne_top _ _
