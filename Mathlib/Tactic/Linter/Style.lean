@@ -594,6 +594,16 @@ register_option linter.style.declarationIndenting : Bool := {
   descr := "enable the declarationIndenting linter"
 }
 
+register_option linter.style.declarationIndenting.debug : Bool := {
+  defValue := false
+  descr := "print some debug information of \"declarationIndenting\" linter."
+}
+
+register_option linter.style.declarationIndenting.modifiersAndFirstLine : Bool := {
+  defValue := false
+  descr := "check also declaration modifier lines and the first line."
+}
+
 namespace Style.declarationIndenting
 
 /--
@@ -603,7 +613,7 @@ Array of `String.Range`, used for range of non-comment code. It is well-formed w
 
 The following functions work with well-formed `Ranges`.
 -/
-def Ranges := Array String.Range
+abbrev Ranges := Array String.Range
 
 /--
 It returns `Compare.eq` if the two ranges are overlapped, and with `eqIfAdjacent := true` it returns
@@ -636,7 +646,7 @@ Assuming `x y : String.Range` can be merged, merge them.
 
 (For more details, also refer to `compareRange`)
 -/
-def mergeRange (x y : String.Range) : String.Range where
+def _root_.String.Range.mergeRange (x y : String.Range) : String.Range where
   start := min x.start y.start
   stop := max x.stop y.stop
 
@@ -670,7 +680,7 @@ where
 Merge an array of `Ranges`' into one `Ranges`.
 -/
 def mergeRanges (ranges : Array Ranges) : Ranges :=
-  ranges.foldl (mergeDedupWith (ord := ⟨compareRange⟩) (merge := mergeRange)) #[]
+  ranges.foldl (mergeDedupWith (ord := ⟨compareRange⟩) (merge := String.Range.mergeRange)) #[]
 
 /--
 Determine whether `range : String.Range` overlaps of `ranges : Ranges`.
@@ -688,6 +698,17 @@ def rangesOfSyntax (stx : Syntax) : Ranges :=
   | .ident (.original _ start t stop) .. => #[auxExpandRange t.str ⟨start, stop⟩]
   | _ => #[]
 
+/--
+The range of a substring.
+-/
+def _root_.Substring.range (s : Substring) : String.Range := ⟨s.startPos, s.stopPos⟩
+
+/--
+A substring in a range
+-/
+def _root_.String.toSubstringWithRange (s : String) (r : String.Range) : Substring :=
+  ⟨s, r.start, r.stop⟩
+
 open Lean.Parser.Command in
 @[inherit_doc Mathlib.Linter.linter.style.declarationIndenting]
 def declarationIndentingLinter : Linter where run := withSetOptionIn fun stx => do
@@ -695,20 +716,24 @@ def declarationIndentingLinter : Linter where run := withSetOptionIn fun stx => 
     return
   if (← get).messages.hasErrors then
     return
+  let debug := getLinterValue linter.style.declarationIndenting.debug (← getLinterOptions)
+  let checkModifiers :=
+    getLinterValue linter.style.declarationIndenting.modifiersAndFirstLine (← getLinterOptions)
   match stx with
-  | .node _ ``declaration #[_, decl@(.node _ name decl_args)]
-  | .node _ `«lemma» #[_, decl@(.node _ name@(`group) decl_args)] =>
+  | decl@(.node _ ``declaration #[modifiers@(_), .node _ name decl_args])
+  | decl@(.node _ `«lemma» #[modifiers@(_), .node _ name@(`group) decl_args]) =>
     let mut declHead_ : Option Syntax := .none -- the atom `def`, `lemma`, `theorem`, etc.
     let mut declSplit_ : Option Syntax := .none -- the atom `:=`
-    let mut mid : Array Syntax := #[]
+    -- parts before declaration value
+    let mut beforeVal : Array Syntax := #[]
     match name with
     | ``«abbrev» | ``definition | ``«theorem» | ``«opaque» | ``«axiom» | ``«example»
     | ``«instance» | `group =>
       for arg in decl_args do
         if declHead_.isNone then
+          beforeVal := beforeVal ++ #[arg]
           if let .atom .. := arg then
             declHead_ := .some arg
-            mid := #[arg]
         else
           match arg with
           | .node _ ``declValSimple _
@@ -716,30 +741,66 @@ def declarationIndentingLinter : Linter where run := withSetOptionIn fun stx => 
           | .node _ ``whereStructInst _ =>
             declSplit_ := .some arg
             break
-          | _ => mid := mid ++ #[arg]
+          | _ => beforeVal := beforeVal ++ #[arg]
     | _ => return
     let .some declSplit := declSplit_ | return
     let .original _ splitPos ⟨src, _, _⟩ splitEndPos := declSplit.getHeadInfo | return
-    let .some <| .atom head_src@(.original _ _ ⟨_, _, _⟩ headEndPos) _ := declHead_ | unreachable!
+    let .some <| .atom head_src@(.original _ _ ⟨_, _, _⟩ headEndPos) headStr := declHead_ |
+      unreachable!
 
-    -- ranges of codes that aren't comments
-    let declRanges := mergeRanges <| mid.map rangesOfSyntax
+    let fileMap ← getFileMap
+    let posDbg (p : String.Pos) := s!"{fileMap.toPosition p}"
+    let rangeDbg (r : String.Range) := s!"[{posDbg r.start}, {posDbg r.stop})"
+    let rangesDbg (ranges : Ranges) := s!"{ranges.map rangeDbg}"
+
+    if checkModifiers then
+      match modifiers with
+      | .node _ ``declModifiers args =>
+        let modifiers ← modifiers.rewriteBottomUpM fun s ↦ do
+          if s.getKind = ``docComment then
+            if debug then dbg_trace s!"docstring: {rangesDbg <| rangesOfSyntax s}"
+            pure .missing
+          else pure s
+        beforeVal := beforeVal ++ #[modifiers]
+      | _ => unreachable!
+
+    -- non-comments range before declaration value
+    let declRangesBeforeVal := mergeRanges <| beforeVal.map rangesOfSyntax
+
+    if debug then
+      dbg_trace s!"Range of declaration before value (without docstring): \
+        {rangesDbg declRangesBeforeVal}.\n\
+        Position of the head `{headStr}`: {posDbg headEndPos}"
 
     let warn (highlightText : String.Range) :=
       logLint linter.style.declarationIndenting
         (decl.setInfo <| .synthetic highlightText.start highlightText.stop)
 
-    -- check indenting of type
-    for line in Substring.splitOn ⟨src, headEndPos, splitPos⟩ "\n" |>.tail do
+    -- check indenting of head and type
+    let mut inModifier := true
+    for line in Substring.splitOn ⟨src, declRangesBeforeVal[0]!.start, splitPos⟩ "\n" do
       if line.trimLeft.isEmpty then continue
       let spaces := line.takeWhile (·=' ')
-      if !overlapsWithRange declRanges ⟨line.startPos, line.stopPos⟩ then -- this line is comment
+      if inModifier then
+        if overlapsWithRange declRangesBeforeVal line.range then -- this line is not comment
+          if checkModifiers && spaces.bsize != 0 then
+            warn spaces.range m!"Here should not be spaces at the beginning of this line"
+          if line.range.contains headEndPos then
+            if debug then
+              dbg_trace s!"Here ends the declaration modifier: {rangeDbg line.range}"
+            inModifier := false
+          else if debug then
+            dbg_trace s!"Line of modifiers: {rangeDbg line.range}"
+        else if debug then
+          dbg_trace s!"Comment line {rangeDbg line.range} in declaration modifiers."
+      else if !overlapsWithRange declRangesBeforeVal line.range then -- this line is comment
         if spaces.bsize < 2 then
-          warn ⟨spaces.startPos, spaces.stopPos⟩ m!"There are too few spaces at the beginning of \
+          warn spaces.range m!"There are too few spaces at the beginning of \
           the line. Please use at least 2 spaces."
       else if spaces.bsize < 4 then
-        warn ⟨spaces.startPos, spaces.stopPos⟩ m!"There are too few spaces at the beginning of the \
+        warn spaces.range m!"There are too few spaces at the beginning of the \
           line. It should be indented by at least 4 spaces."
+    assert! !inModifier
 
     -- check `:=`
     unless declSplit.getKind = ``declValSimple do return
