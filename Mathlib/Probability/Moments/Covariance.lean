@@ -186,8 +186,7 @@ lemma variance_sub [IsFiniteMeasure μ] (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) 
   · exact hX.aemeasurable.sub hY.aemeasurable
 
 lemma variance_fun_sub [IsFiniteMeasure μ] (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
-    Var[fun ω ↦ X ω - Y ω; μ] = Var[fun ω ↦ X ω; μ] -
-      2 * cov[fun ω ↦ X ω, fun ω ↦ Y ω; μ] + Var[fun ω ↦ Y ω; μ] :=
+    Var[fun ω ↦ X ω - Y ω; μ] = Var[X; μ] - 2 * cov[X, Y; μ] + Var[Y; μ] :=
   variance_sub hX hY
 
 section Sum
@@ -215,13 +214,13 @@ lemma covariance_sum_left [Fintype ι] (hX : ∀ i, MemLp (X i) 2 μ)
 
 lemma covariance_fun_sum_left' (hX : ∀ i ∈ s, MemLp (X i) 2 μ)
     (hY : MemLp Y 2 μ) :
-    cov[fun ω ↦ ∑ i ∈ s, X i ω, Y; μ] = ∑ i ∈ s, cov[fun ω ↦ X i ω, Y; μ] := by
+    cov[fun ω ↦ ∑ i ∈ s, X i ω, Y; μ] = ∑ i ∈ s, cov[X i, Y; μ] := by
   convert covariance_sum_left' hX hY
   simp
 
 lemma covariance_fun_sum_left [Fintype ι] (hX : ∀ i, MemLp (X i) 2 μ)
     (hY : MemLp Y 2 μ) :
-    cov[fun ω ↦ ∑ i, X i ω, Y; μ] = ∑ i, cov[fun ω ↦ X i ω, Y; μ] := by
+    cov[fun ω ↦ ∑ i, X i ω, Y; μ] = ∑ i, cov[X i, Y; μ] := by
   convert covariance_sum_left hX hY
   simp
 
@@ -235,12 +234,12 @@ lemma covariance_sum_right [Fintype ι] (hX : ∀ i, MemLp (X i) 2 μ) (hY : Mem
   covariance_sum_right' (fun _ _ ↦ hX _) hY
 
 lemma covariance_fun_sum_right' (hX : ∀ i ∈ s, MemLp (X i) 2 μ) (hY : MemLp Y 2 μ) :
-    cov[Y, fun ω ↦ ∑ i ∈ s, X i ω; μ] = ∑ i ∈ s, cov[Y, fun ω ↦ X i ω; μ] := by
+    cov[Y, fun ω ↦ ∑ i ∈ s, X i ω; μ] = ∑ i ∈ s, cov[Y, X i; μ] := by
   convert covariance_sum_right' hX hY
   simp
 
 lemma covariance_fun_sum_right [Fintype ι] (hX : ∀ i, MemLp (X i) 2 μ) (hY : MemLp Y 2 μ) :
-    cov[Y, fun ω ↦ ∑ i, X i ω; μ] = ∑ i, cov[Y, fun ω ↦ X i ω; μ] :=
+    cov[Y, fun ω ↦ ∑ i, X i ω; μ] = ∑ i, cov[Y, X i; μ] :=
   covariance_fun_sum_right' (fun _ _ ↦ hX _) hY
 
 lemma covariance_sum_sum' {ι' : Type*} {Y : ι' → Ω → ℝ} {t : Finset ι'}
@@ -257,15 +256,14 @@ lemma covariance_sum_sum [Fintype ι] {ι' : Type*} [Fintype ι'] {Y : ι' → �
 
 lemma covariance_fun_sum_fun_sum' {ι' : Type*} {Y : ι' → Ω → ℝ} {t : Finset ι'}
     (hX : ∀ i ∈ s, MemLp (X i) 2 μ) (hY : ∀ i ∈ t, MemLp (Y i) 2 μ) :
-    cov[fun ω ↦ ∑ i ∈ s, X i ω, fun ω ↦ ∑ j ∈ t, Y j ω; μ] =
-    ∑ i ∈ s, ∑ j ∈ t, cov[fun ω ↦ X i ω, fun ω ↦ Y j ω; μ] := by
+    cov[fun ω ↦ ∑ i ∈ s, X i ω, fun ω ↦ ∑ j ∈ t, Y j ω; μ]
+      = ∑ i ∈ s, ∑ j ∈ t, cov[X i, Y j; μ] := by
   convert covariance_sum_sum' hX hY
   all_goals simp
 
 lemma covariance_fun_sum_fun_sum [Fintype ι] {ι' : Type*} [Fintype ι'] {Y : ι' → Ω → ℝ}
     (hX : ∀ i, MemLp (X i) 2 μ) (hY : ∀ i, MemLp (Y i) 2 μ) :
-    cov[fun ω ↦ ∑ i, X i ω, fun ω ↦ ∑ j, Y j ω; μ] =
-    ∑ i, ∑ j, cov[fun ω ↦ X i ω, fun ω ↦ Y j ω; μ] :=
+    cov[fun ω ↦ ∑ i, X i ω, fun ω ↦ ∑ j, Y j ω; μ] = ∑ i, ∑ j, cov[X i, Y j; μ] :=
   covariance_fun_sum_fun_sum' (fun _ _ ↦ hX _) (fun _ _ ↦ hY _)
 
 lemma variance_sum' (hX : ∀ i ∈ s, MemLp (X i) 2 μ) :
@@ -281,12 +279,12 @@ lemma variance_sum [Fintype ι] (hX : ∀ i, MemLp (X i) 2 μ) :
   variance_sum' (fun _ _ ↦ hX _)
 
 lemma variance_fun_sum' (hX : ∀ i ∈ s, MemLp (X i) 2 μ) :
-    Var[fun ω ↦ ∑ i ∈ s, X i ω; μ] = ∑ i ∈ s, ∑ j ∈ s, cov[fun ω ↦ X i ω, fun ω ↦ X j ω; μ] := by
+    Var[fun ω ↦ ∑ i ∈ s, X i ω; μ] = ∑ i ∈ s, ∑ j ∈ s, cov[X i, X j; μ] := by
   convert variance_sum' hX
   simp
 
 lemma variance_fun_sum [Fintype ι] (hX : ∀ i, MemLp (X i) 2 μ) :
-    Var[fun ω ↦ ∑ i, X i ω; μ] = ∑ i, ∑ j, cov[fun ω ↦ X i ω, fun ω ↦ X j ω; μ] := by
+    Var[fun ω ↦ ∑ i, X i ω; μ] = ∑ i, ∑ j, cov[X i, X j; μ] := by
   convert variance_sum hX
   simp
 
