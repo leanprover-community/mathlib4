@@ -318,6 +318,30 @@ Note: This linter can be disabled with `set_option linter.style.commandStart fal
  section
 
 /--
+warning: 'example : True :=
+  trivial' starts on column 1, but all commands should start at the beginning of the line.
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+ example : True := trivial
+
+-- TODO: the `lemma` in a declaration is not linted, only the doc-string
+#guard_msgs in
+/-- Doc-string -/
+ lemma qux : True := trivial
+
+/--
+warning: 'example : True :=
+  trivial' starts on column 1, but all commands should start at the beginning of the line.
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+-- normal comments are different syntax, hence the linter still applies after them
+ example : True := trivial
+
+/--
 warning: extra space in the source
 
 This part of the code
