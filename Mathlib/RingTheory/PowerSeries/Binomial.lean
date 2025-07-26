@@ -61,35 +61,16 @@ lemma binomialSeries_add [Ring A] [Algebra R A] (r s : R) :
   rw [mul_comm, mul_smul]
 
 @[simp]
-lemma binomialSeries_nat [CommRing A] [Algebra R A] (d : ℕ) :
+lemma binomialSeries_nat [Ring A] [Algebra R A] (d : ℕ) :
     binomialSeries A (d : R) = (1 + X) ^ d := by
   ext n
-  by_cases h : d < n
-  · have hleft : (coeff A n) (binomialSeries A (d : R)) = 0 := by
-      simp [Ring.choose_natCast, Nat.choose_eq_zero_of_lt h]
-    have hright : (1 + X) ^ d = (((1 : Polynomial A) + (Polynomial.X)) ^ d).toPowerSeries := by
-      simp
-    rw [hleft, hright, Polynomial.coeff_coe]
-    refine (Polynomial.coeff_eq_zero_of_degree_lt ?_).symm
-    cases subsingleton_or_nontrivial A
-    · rw [Polynomial.degree_of_subsingleton]
-      exact WithBot.bot_lt_coe n
-    · rw [add_comm, ← Polynomial.C_1, Polynomial.degree_pow', Polynomial.degree_X_add_C,
-        Nat.smul_one_eq_cast, Nat.cast_lt]
-      · exact h
-      · rw [Polynomial.leadingCoeff_X_add_C, one_pow]
-        exact one_ne_zero
-  · rw [binomialSeries_coeff, add_comm, add_pow]
-    simp only [mul_one, one_pow, map_sum]
-    rw [sum_eq_single_of_mem n (by simp only [mem_range]; omega) ?_, coeff_X_pow_mul',
-      Ring.choose_eq_nat_choose]
-    · simp [Nat.cast_smul_eq_nsmul]
-    · intro k hk hkn
-      rw [mul_comm, ← map_natCast (C A), coeff_C_mul_X_pow]
-      exact if_neg (Ne.symm hkn)
+  have hright : (1 + X) ^ d = (((1 : Polynomial A) + (Polynomial.X)) ^ d).toPowerSeries := by
+    simp
+  rw [hright, Polynomial.coeff_coe, binomialSeries_coeff, Polynomial.coeff_one_add_X_pow]
+  simp [Ring.choose_eq_nat_choose, Nat.cast_smul_eq_nsmul]
 
 @[simp]
-lemma binomialSeries_zero [CommRing A] [Algebra R A] :
+lemma binomialSeries_zero [Ring A] [Algebra R A] :
     binomialSeries A (0 : R) = (1 : A⟦X⟧) := by
   simpa using binomialSeries_nat 0
 
