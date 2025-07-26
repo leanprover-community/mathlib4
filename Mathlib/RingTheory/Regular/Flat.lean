@@ -21,23 +21,6 @@ open RingTheory.Sequence Module
 
 section Flat
 
-section CommSemiring
-
-variable {R S M N : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S] [Flat R S]
-  [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] [Module S N] [IsScalarTower R S N]
-
-theorem IsSMulRegular.of_flat_of_isBaseChange {f : M →ₗ[R] N} (hf : IsBaseChange S f) {x : R}
-    (reg : IsSMulRegular M x) : IsSMulRegular N (algebraMap R S x) := by
-  have h := Flat.isBaseChange_preserves_injective_linearMap hf hf ((LinearMap.lsmul R M) x) reg
-  rwa [show hf.lift (f ∘ₗ (LinearMap.lsmul R M) x) = (LinearMap.lsmul S N) (algebraMap R S x)
-    from hf.algHom_ext _ _ (fun _ ↦ by simp [hf.lift_eq])] at h
-
-theorem IsSMulRegular.of_flat {x : R} (reg : IsSMulRegular R x) :
-    IsSMulRegular S (algebraMap R S x) :=
-  reg.of_flat_of_isBaseChange (IsBaseChange.linearMap R S)
-
-end CommSemiring
-
 variable {R S M N : Type*} [CommRing R] [CommRing S] [Algebra R S] [Flat R S]
   [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] [Module S N] [IsScalarTower R S N]
 
