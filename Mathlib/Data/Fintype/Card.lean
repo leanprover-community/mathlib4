@@ -513,7 +513,7 @@ theorem card_finset_fin_le {n : ℕ} (s : Finset (Fin n)) : #s ≤ n := by
 
 end Fin
 
-lemma Finset.exists_image_eq_and_card_le_of_image_eq [DecidableEq β] {f : α → β}
+lemma Finset.exists_image_eq_and_card_le_of_surjOn [DecidableEq β] {f : α → β}
     (s : Set α) (t : Finset β) (hfs : s.SurjOn f t) :
     ∃ (u : Finset α), u.image f = t ∧ u.card ≤ t.card ∧ (u : Set _) ⊆ s := by
   classical

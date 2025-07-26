@@ -323,7 +323,7 @@ lemma Ideal.height_le_height_add_of_liesOver [IsNoetherianRing S] (p : Ideal R) 
     rw [SetLike.mem_coe, Ideal.mem_quotient_iff_mem] at hx
     use y, hx
     rw [Ideal.map_le_iff_le_comap, Ideal.LiesOver.over (p := p) (P := P)]
-  obtain ⟨o, himgo, hcardo, ho⟩ := s'.exists_image_eq_and_card_le_of_image_eq (P : Set S) this
+  obtain ⟨o, himgo, hcardo, ho⟩ := s'.exists_image_eq_and_card_le_of_surjOn (P : Set S) this
   let t : Finset S := Finset.image (algebraMap R S) s ∪ o
   suffices h : P.height ≤ t.card by
     rw [← heq, ← heq']
