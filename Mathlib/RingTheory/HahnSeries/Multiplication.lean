@@ -205,9 +205,9 @@ instance instBaseSMulZeroClass [SMulZeroClass R V] :
   inferInstanceAs <| SMulZeroClass R (HahnSeries Γ V)
 
 @[simp] theorem of_smul [SMulZeroClass R V] (r : R) (x : HahnSeries Γ V) :
-  (of R) (r • x) = r • (of R) x := rfl
+    (of R) (r • x) = r • (of R) x := rfl
 @[simp] theorem of_symm_smul [SMulZeroClass R V] (r : R) (x : HahnModule Γ R V) :
-  (of R).symm (r • x) = r • (of R).symm x := rfl
+    (of R).symm (r • x) = r • (of R).symm x := rfl
 
 variable [Zero R]
 

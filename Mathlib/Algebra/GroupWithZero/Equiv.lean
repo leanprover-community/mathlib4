@@ -53,7 +53,6 @@ lemma toMonoidWithZeroHom_bijective (f : G ≃* H) :
 
 @[simp] lemma toMonoidWithZeroHom_inj {f g : G ≃* H} :
     f.toMonoidWithZeroHom = g.toMonoidWithZeroHom ↔ f = g := by
-  rw [MonoidWithZeroHom.ext_iff, MulEquiv.ext_iff]
-  rfl
+  simp [MonoidWithZeroHom.ext_iff, MulEquiv.ext_iff]
 
 end MulEquiv
