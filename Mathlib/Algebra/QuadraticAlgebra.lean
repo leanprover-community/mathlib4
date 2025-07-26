@@ -257,12 +257,8 @@ variable [AddCommGroupWithOne R]
 
 instance : AddCommGroupWithOne (QuadraticAlgebra R a b) where
   intCast n := ((n : R) : QuadraticAlgebra R a b)
-  intCast_ofNat n:= by
-    ext
-    · simp
-      sorry
-    · sorry
-  intCast_negSucc n := sorry
+  intCast_ofNat n:= by ext <;> simp <;> rfl
+  intCast_negSucc n := by ext <;> simp <;> rfl
 
 @[simp, norm_cast]
 theorem natCast_re (n : ℕ) : (n : QuadraticAlgebra R a b).re = n := rfl
@@ -292,21 +288,29 @@ end AddCommGroupWithOne
 
 section CommRing
 
-instance instSemiring [Semiring R] : Semiring (QuadraticAlgebra R a b) where
+instance instSemiring [CommSemiring R] : Semiring (QuadraticAlgebra R a b) where
   __ := inferInstanceAs (AddCommMonoidWithOne (QuadraticAlgebra R a b))
-  left_distrib := sorry
-  right_distrib := sorry
-  zero_mul := sorry
-  mul_zero := sorry
-  mul_assoc := sorry
-  one_mul := sorry
-  mul_one := sorry
+  left_distrib a_1 b_1 c:= by
+    ext
+    · simp [left_distrib]
+      rw [add_assoc,add_comm (a_1.re * c.re),add_assoc,add_comm (b * a_1.im * c.im),add_assoc]
+    · simp [left_distrib]
+      rw [add_assoc (a_1.re * b_1.im),add_comm (a_1.re * c.im),add_assoc (a_1.re * b_1.im),
+      add_assoc (a_1.im * b_1.re),add_assoc,add_comm (a_1.im * c.re + a_1.re * c.im),add_assoc,
+      add_comm (a * a_1.im * c.im),add_comm (a_1.im * c.re)]
+      simp [add_assoc]
+  right_distrib a_1 b_1 c:= by ext <;> simp <;> ring
+  zero_mul a_1 := by ext <;> simp
+  mul_zero a_1:= by ext <;> simp
+  mul_assoc a_1 b_1 c:= by ext <;> simp <;> ring
+  one_mul a_1:= by ext <;> simp
+  mul_one a_1:= by ext <;> simp
 
 instance instCommSemiring [CommSemiring R] : CommSemiring (QuadraticAlgebra R a b) where
   __ := inferInstanceAs (Semiring (QuadraticAlgebra R a b))
   mul_comm z w := by ext <;> simp <;> ring
 
-instance instRing [Ring R] : Ring (QuadraticAlgebra R a b) where
+instance instRing [CommRing R] : Ring (QuadraticAlgebra R a b) where
   __ := inferInstanceAs (AddCommGroupWithOne (QuadraticAlgebra R a b))
   __ := inferInstanceAs (Semiring (QuadraticAlgebra R a b))
 
@@ -320,13 +324,13 @@ theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] [AddCommMonoidWithOne R] :
   ext <;> rfl
 
 
-instance [CommSemiring S] [Semiring R] [Algebra S R] :
+instance [CommSemiring S] [CommSemiring R] [Algebra S R] :
     Algebra S (QuadraticAlgebra R a b) where
   algebraMap.toFun s := coe (algebraMap S R s)
-  algebraMap.map_one' := sorry
-  algebraMap.map_mul' := sorry
-  algebraMap.map_zero' := sorry
-  algebraMap.map_add' := sorry
+  algebraMap.map_one' := by ext <;> simp
+  algebraMap.map_mul' x y:= by ext <;> simp
+  algebraMap.map_zero' := by ext <;> simp
+  algebraMap.map_add' x y:= by ext <;> simp
   commutes' s z := by ext <;> simp [Algebra.commutes]
   smul_def' s x := by ext <;> simp [Algebra.smul_def]
 
