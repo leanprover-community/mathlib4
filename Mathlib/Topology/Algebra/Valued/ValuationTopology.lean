@@ -163,7 +163,7 @@ variable (R)
 /-- An open ball centred at the origin in a valued ring is open. -/
 theorem isOpen_ball (r : Γ₀) : IsOpen (X := R) {x | v x < r} := by
   rw [isOpen_iff_mem_nhds]
-  rcases eq_or_ne r 0 with rfl|hr
+  rcases eq_or_ne r 0 with rfl | hr
   · simp
   intro x hx
   rw [mem_nhds]
@@ -173,7 +173,7 @@ theorem isOpen_ball (r : Γ₀) : IsOpen (X := R) {x | v x < r} := by
 
 /-- An open ball centred at the origin in a valued ring is closed. -/
 theorem isClosed_ball (r : Γ₀) : IsClosed (X := R) {x | v x < r} := by
-  rcases eq_or_ne r 0 with rfl|hr
+  rcases eq_or_ne r 0 with rfl | hr
   · simp
   exact AddSubgroup.isClosed_of_isOpen
     (Valuation.ltAddSubgroup v (Units.mk0 r hr))
@@ -219,7 +219,7 @@ theorem isOpen_sphere {r : Γ₀} (hr : r ≠ 0) : IsOpen (X := R) {x | v x = r}
 
 /-- A sphere centred at the origin in a valued ring is closed. -/
 theorem isClosed_sphere (r : Γ₀) : IsClosed (X := R) {x | v x = r} := by
-  rcases eq_or_ne r 0 with rfl|hr
+  rcases eq_or_ne r 0 with rfl | hr
   · simpa using isClosed_closedBall R 0
   exact isClopen_sphere _ hr |>.isClosed
 
