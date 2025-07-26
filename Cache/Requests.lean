@@ -345,7 +345,6 @@ def downloadFiles
     if failed > 0 then
       IO.println s!"{failed} download(s) failed"
       IO.Process.exit 1
-  else IO.println "No files to download"
 
 /-- Check if the project's `lean-toolchain` file matches mathlib's.
 Print and error and exit the process with error code 1 otherwise. -/
