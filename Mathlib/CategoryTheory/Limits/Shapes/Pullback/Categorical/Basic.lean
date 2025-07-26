@@ -210,8 +210,8 @@ instance asSquare (S : CatCommSqOver F G X) : CatCommSq S.fst S.snd F G where
 
 @[reassoc (attr := simp)]
 lemma iso_hom_naturality (S : CatCommSqOver F G X) {x x' : X} (f : x ⟶ x') :
-   F.map (S.fst.map f) ≫ S.iso.hom.app x' =
-   S.iso.hom.app x ≫ G.map (S.snd.map f) :=
+    F.map (S.fst.map f) ≫ S.iso.hom.app x' =
+    S.iso.hom.app x ≫ G.map (S.snd.map f) :=
   S.iso.hom.naturality f
 
 @[reassoc (attr := simp)]
