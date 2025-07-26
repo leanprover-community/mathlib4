@@ -260,10 +260,10 @@ lemma comp_assoc {n₁ n₂ n₃ n₁₂ n₂₃ n₁₂₃ : ℤ}
       z₁.comp (z₂.comp z₃ h₂₃) (by rw [← h₂₃, ← h₁₂₃, add_assoc]) := by
   substs h₁₂ h₂₃ h₁₂₃
   ext p q hpq
-  rw [comp_v _ _ rfl p (p + n₁ + n₂) q (add_assoc _ _ _).symm (by omega),
-    comp_v z₁ z₂ rfl p (p + n₁) (p + n₁ + n₂) (by omega) (by omega),
-    comp_v z₁ (z₂.comp z₃ rfl) (add_assoc n₁ n₂ n₃).symm p (p + n₁) q (by omega) (by omega),
-    comp_v z₂ z₃ rfl (p + n₁) (p + n₁ + n₂) q (by omega) (by omega), assoc]
+  rw [comp_v _ _ rfl p (p + n₁ + n₂) q (add_assoc _ _ _).symm (by grind),
+    comp_v z₁ z₂ rfl p (p + n₁) (p + n₁ + n₂) (by grind) (by grind),
+    comp_v z₁ (z₂.comp z₃ rfl) (add_assoc n₁ n₂ n₃).symm p (p + n₁) q (by grind) (by grind),
+    comp_v z₂ z₃ rfl (p + n₁) (p + n₁ + n₂) q (by grind) (by grind), assoc]
 
 /-! The formulation of the associativity of the composition of cochains given by the
 lemma `comp_assoc` often requires a careful selection of degrees with good definitional
@@ -275,19 +275,19 @@ lemma comp_assoc_of_first_is_zero_cochain {n₂ n₃ n₂₃ : ℤ}
     (z₁ : Cochain F G 0) (z₂ : Cochain G K n₂) (z₃ : Cochain K L n₃)
     (h₂₃ : n₂ + n₃ = n₂₃) :
     (z₁.comp z₂ (zero_add n₂)).comp z₃ h₂₃ = z₁.comp (z₂.comp z₃ h₂₃) (zero_add n₂₃) :=
-  comp_assoc _ _ _ _ _ (by omega)
+  comp_assoc _ _ _ _ _ (by grind)
 
 @[simp]
 lemma comp_assoc_of_second_is_zero_cochain {n₁ n₃ n₁₃ : ℤ}
     (z₁ : Cochain F G n₁) (z₂ : Cochain G K 0) (z₃ : Cochain K L n₃) (h₁₃ : n₁ + n₃ = n₁₃) :
     (z₁.comp z₂ (add_zero n₁)).comp z₃ h₁₃ = z₁.comp (z₂.comp z₃ (zero_add n₃)) h₁₃ :=
-  comp_assoc _ _ _ _ _ (by omega)
+  comp_assoc _ _ _ _ _ (by grind)
 
 @[simp]
 lemma comp_assoc_of_third_is_zero_cochain {n₁ n₂ n₁₂ : ℤ}
     (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (z₃ : Cochain K L 0) (h₁₂ : n₁ + n₂ = n₁₂) :
     (z₁.comp z₂ h₁₂).comp z₃ (add_zero n₁₂) = z₁.comp (z₂.comp z₃ (add_zero n₂)) h₁₂ :=
-  comp_assoc _ _ _ _ _ (by omega)
+  comp_assoc _ _ _ _ _ (by grind)
 
 @[simp]
 lemma comp_assoc_of_second_degree_eq_neg_third_degree {n₁ n₂ n₁₂ : ℤ}
@@ -295,37 +295,37 @@ lemma comp_assoc_of_second_degree_eq_neg_third_degree {n₁ n₂ n₁₂ : ℤ}
     (z₁.comp z₂ h₁₂).comp z₃
       (show n₁₂ + n₂ = n₁ by rw [← h₁₂, add_assoc, neg_add_cancel, add_zero]) =
       z₁.comp (z₂.comp z₃ (neg_add_cancel n₂)) (add_zero n₁) :=
-  comp_assoc _ _ _ _ _ (by omega)
+  comp_assoc _ _ _ _ _ (by grind)
 
 @[simp]
 protected lemma zero_comp {n₁ n₂ n₁₂ : ℤ} (z₂ : Cochain G K n₂)
     (h : n₁ + n₂ = n₁₂) : (0 : Cochain F G n₁).comp z₂ h = 0 := by
   ext p q hpq
-  simp only [comp_v _ _ h p _ q rfl (by omega), zero_v, zero_comp]
+  simp only [comp_v _ _ h p _ q rfl (by grind), zero_v, zero_comp]
 
 @[simp]
 protected lemma add_comp {n₁ n₂ n₁₂ : ℤ} (z₁ z₁' : Cochain F G n₁) (z₂ : Cochain G K n₂)
     (h : n₁ + n₂ = n₁₂) : (z₁ + z₁').comp z₂ h = z₁.comp z₂ h + z₁'.comp z₂ h := by
   ext p q hpq
-  simp only [comp_v _ _ h p _ q rfl (by omega), add_v, add_comp]
+  simp only [comp_v _ _ h p _ q rfl (by grind), add_v, add_comp]
 
 @[simp]
 protected lemma sub_comp {n₁ n₂ n₁₂ : ℤ} (z₁ z₁' : Cochain F G n₁) (z₂ : Cochain G K n₂)
     (h : n₁ + n₂ = n₁₂) : (z₁ - z₁').comp z₂ h = z₁.comp z₂ h - z₁'.comp z₂ h := by
   ext p q hpq
-  simp only [comp_v _ _ h p _ q rfl (by omega), sub_v, sub_comp]
+  simp only [comp_v _ _ h p _ q rfl (by grind), sub_v, sub_comp]
 
 @[simp]
 protected lemma neg_comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂)
     (h : n₁ + n₂ = n₁₂) : (-z₁).comp z₂ h = -z₁.comp z₂ h := by
   ext p q hpq
-  simp only [comp_v _ _ h p _ q rfl (by omega), neg_v, neg_comp]
+  simp only [comp_v _ _ h p _ q rfl (by grind), neg_v, neg_comp]
 
 @[simp]
 protected lemma smul_comp {n₁ n₂ n₁₂ : ℤ} (k : R) (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂)
     (h : n₁ + n₂ = n₁₂) : (k • z₁).comp z₂ h = k • (z₁.comp z₂ h) := by
   ext p q hpq
-  simp only [comp_v _ _ h p _ q rfl (by omega), smul_v, Linear.smul_comp]
+  simp only [comp_v _ _ h p _ q rfl (by grind), smul_v, Linear.smul_comp]
 
 @[simp]
 lemma units_smul_comp {n₁ n₂ n₁₂ : ℤ} (k : Rˣ) (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂)
@@ -342,31 +342,31 @@ protected lemma id_comp {n : ℤ} (z₂ : Cochain F G n) :
 protected lemma comp_zero {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁)
     (h : n₁ + n₂ = n₁₂) : z₁.comp (0 : Cochain G K n₂) h = 0 := by
   ext p q hpq
-  simp only [comp_v _ _ h p _ q rfl (by omega), zero_v, comp_zero]
+  simp only [comp_v _ _ h p _ q rfl (by grind), zero_v, comp_zero]
 
 @[simp]
 protected lemma comp_add {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ z₂' : Cochain G K n₂)
     (h : n₁ + n₂ = n₁₂) : z₁.comp (z₂ + z₂') h = z₁.comp z₂ h + z₁.comp z₂' h := by
   ext p q hpq
-  simp only [comp_v _ _ h p _ q rfl (by omega), add_v, comp_add]
+  simp only [comp_v _ _ h p _ q rfl (by grind), add_v, comp_add]
 
 @[simp]
 protected lemma comp_sub {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ z₂' : Cochain G K n₂)
     (h : n₁ + n₂ = n₁₂) : z₁.comp (z₂ - z₂') h = z₁.comp z₂ h - z₁.comp z₂' h := by
   ext p q hpq
-  simp only [comp_v _ _ h p _ q rfl (by omega), sub_v, comp_sub]
+  simp only [comp_v _ _ h p _ q rfl (by grind), sub_v, comp_sub]
 
 @[simp]
 protected lemma comp_neg {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂)
     (h : n₁ + n₂ = n₁₂) : z₁.comp (-z₂) h = -z₁.comp z₂ h := by
   ext p q hpq
-  simp only [comp_v _ _ h p _ q rfl (by omega), neg_v, comp_neg]
+  simp only [comp_v _ _ h p _ q rfl (by grind), neg_v, comp_neg]
 
 @[simp]
 protected lemma comp_smul {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (k : R) (z₂ : Cochain G K n₂)
     (h : n₁ + n₂ = n₁₂) : z₁.comp (k • z₂) h = k • (z₁.comp z₂ h) := by
   ext p q hpq
-  simp only [comp_v _ _ h p _ q rfl (by omega), smul_v, Linear.comp_smul]
+  simp only [comp_v _ _ h p _ q rfl (by grind), smul_v, Linear.comp_smul]
 
 @[simp]
 lemma comp_units_smul {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (k : Rˣ) (z₂ : Cochain G K n₂)
@@ -416,8 +416,8 @@ lemma δ_v (hnm : n + 1 = m) (z : Cochain F G n) (p q : ℤ) (hpq : p + m = q) (
     z.v p q₁ (by rw [hq₁, ← hpq, ← hnm, ← add_assoc, add_sub_cancel_right]) ≫ G.d q₁ q
       + m.negOnePow • F.d p q₂ ≫ z.v q₂ q
           (by rw [← hq₂, add_assoc, add_comm 1, hnm, hpq]) := by
-  obtain rfl : q₁ = p + n := by omega
-  obtain rfl : q₂ = p + m - n := by omega
+  obtain rfl : q₁ = p + n := by grind
+  obtain rfl : q₂ = p + m - n := by grind
   rfl
 
 lemma δ_shape (hnm : ¬ n + 1 = m) (z : Cochain F G n) : δ n m z = 0 := by
@@ -426,7 +426,7 @@ lemma δ_shape (hnm : ¬ n + 1 = m) (z : Cochain F G n) : δ n m z = 0 := by
   rw [Cochain.mk_v, Cochain.zero_v, F.shape, G.shape, comp_zero, zero_add, zero_comp, smul_zero]
   all_goals
     simp only [ComplexShape.up_Rel]
-    exact fun _ => hnm (by omega)
+    exact fun _ => hnm (by grind)
 
 variable (F G) (R)
 
@@ -476,8 +476,8 @@ lemma δ_δ (n₀ n₁ n₂ : ℤ) (z : Cochain F G n₀) : δ n₁ n₂ (δ n�
   ext p q hpq
   dsimp
   simp only [δ_v n₁ n₂ h₁₂ _ p q hpq _ _ rfl rfl,
-    δ_v n₀ n₁ h₀₁ z p (q-1) (by omega) (q-2) _ (by omega) rfl,
-    δ_v n₀ n₁ h₀₁ z (p+1) q (by omega) _ (p+2) rfl (by omega),
+    δ_v n₀ n₁ h₀₁ z p (q-1) (by grind) (q-2) _ (by grind) rfl,
+    δ_v n₀ n₁ h₀₁ z (p+1) q (by grind) _ (p+2) rfl (by grind),
     ← h₁₂, Int.negOnePow_succ, add_comp, assoc,
     HomologicalComplex.d_comp_d, comp_zero, zero_add, comp_add,
     HomologicalComplex.d_comp_d_assoc, zero_comp, smul_zero,
@@ -492,14 +492,14 @@ lemma δ_comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochai
   subst h₁₂ h₁ h₂ h
   ext p q hpq
   dsimp
-  rw [z₁.comp_v _ (add_assoc n₁ n₂ 1).symm p _ q rfl (by omega),
-    Cochain.comp_v _ _ (show n₁ + 1 + n₂ = n₁ + n₂ + 1 by omega) p (p+n₁+1) q
-      (by omega) (by omega),
-    δ_v (n₁ + n₂) _ rfl (z₁.comp z₂ rfl) p q hpq (p + n₁ + n₂) _ (by omega) rfl,
+  rw [z₁.comp_v _ (add_assoc n₁ n₂ 1).symm p _ q rfl (by grind),
+    Cochain.comp_v _ _ (show n₁ + 1 + n₂ = n₁ + n₂ + 1 by grind) p (p+n₁+1) q
+      (by grind) (by grind),
+    δ_v (n₁ + n₂) _ rfl (z₁.comp z₂ rfl) p q hpq (p + n₁ + n₂) _ (by grind) rfl,
     z₁.comp_v z₂ rfl p _ _ rfl rfl,
-    z₁.comp_v z₂ rfl (p+1) (p+n₁+1) q (by omega) (by omega),
-    δ_v n₂ (n₂+1) rfl z₂ (p+n₁) q (by omega) (p+n₁+n₂) _ (by omega) rfl,
-    δ_v n₁ (n₁+1) rfl z₁ p (p+n₁+1) (by omega) (p+n₁) _ (by omega) rfl]
+    z₁.comp_v z₂ rfl (p+1) (p+n₁+1) q (by grind) (by grind),
+    δ_v n₂ (n₂+1) rfl z₂ (p+n₁) q (by grind) (p+n₁+n₂) _ (by grind) rfl,
+    δ_v n₁ (n₁+1) rfl z₁ p (p+n₁+1) (by grind) (p+n₁) _ (by grind) rfl]
   simp only [assoc, comp_add, add_comp, Int.negOnePow_succ, Int.negOnePow_add n₁ n₂,
     Units.neg_smul, comp_neg, neg_comp, smul_neg, smul_smul, Linear.units_smul_comp,
     mul_comm n₁.negOnePow n₂.negOnePow, Linear.comp_units_smul, smul_add]
@@ -522,7 +522,7 @@ lemma δ_comp_zero_cochain {n₁ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochai
 @[simp]
 lemma δ_zero_cochain_v (z : Cochain F G 0) (p q : ℤ) (hpq : p + 1 = q) :
     (δ 0 1 z).v p q hpq = z.v p p (add_zero p) ≫ G.d p q - F.d p q ≫ z.v q q (add_zero q) := by
-  simp only [δ_v 0 1 (zero_add 1) z p q hpq p q (by omega) hpq, Int.negOnePow_one, Units.neg_smul,
+  simp only [δ_v 0 1 (zero_add 1) z p q hpq p q (by grind) hpq, Int.negOnePow_one, Units.neg_smul,
     one_smul, sub_eq_add_neg]
 
 @[simp]
@@ -532,7 +532,7 @@ lemma δ_ofHom {p : ℤ} (φ : F ⟶ G) : δ 0 p (Cochain.ofHom φ) = 0 := by
     ext
     simp
   · rw [δ_shape]
-    omega
+    grind
 
 @[simp]
 lemma δ_ofHomotopy {φ₁ φ₂ : F ⟶ G} (h : Homotopy φ₁ φ₂) :
@@ -811,7 +811,7 @@ lemma map_comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cocha
     (Cochain.comp z₁ z₂ h).map Φ = Cochain.comp (z₁.map Φ) (z₂.map Φ) h := by
   ext p q hpq
   dsimp
-  simp only [map_v, comp_v _ _ h p _ q rfl (by omega), Φ.map_comp]
+  simp only [map_v, comp_v _ _ h p _ q rfl (by grind), Φ.map_comp]
 
 @[simp]
 lemma map_ofHom :

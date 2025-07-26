@@ -110,16 +110,16 @@ lemma d_comp_d (n m p : ℤ) : h.d n m ≫ h.d m p = 0 := by
   · rw [h.shape m p hmp, comp_zero]
   obtain n | (_ | _ | n) := n
   · obtain rfl : m = .ofNat (n + 1) := by simp [← hnm]
-    obtain rfl : p = .ofNat (n + 2) := by simp [← hmp]; omega
+    obtain rfl : p = .ofNat (n + 2) := by simp [← hmp]; grind
     simp only [Int.ofNat_eq_coe, X_ofNat, d_ofNat, HomologicalComplex.d_comp_d]
-  · obtain rfl : m = 0 := by omega
-    obtain rfl : p = 1 := by omega
+  · obtain rfl : m = 0 := by grind
+    obtain rfl : p = 1 := by grind
     simp
-  · obtain rfl : m = -1 := by omega
-    obtain rfl : p = 0 := by omega
+  · obtain rfl : m = -1 := by grind
+    obtain rfl : p = 0 := by grind
     simp
-  · obtain rfl : m = .negSucc (n + 1) := by omega
-    obtain rfl : p = .negSucc n := by omega
+  · obtain rfl : m = .negSucc (n + 1) := by grind
+    obtain rfl : p = .negSucc n := by grind
     simp
 
 /-- Given `h : ConnectData K L` where `K : ChainComplex C ℕ` and `L : CochainComplex C ℕ`,

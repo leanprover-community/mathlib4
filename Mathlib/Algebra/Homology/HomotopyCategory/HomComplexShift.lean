@@ -66,7 +66,7 @@ lemma leftShift_v (a n' : ℤ) (hn' : n + a = n') (p q : ℤ) (hpq : p + n' = q)
     (γ.leftShift a n' hn').v p q hpq = (a * n' + ((a * (a - 1))/2)).negOnePow •
       (K.shiftFunctorObjXIso a p p'
         (by rw [← add_left_inj n, hp', add_assoc, add_comm a, hn', hpq])).hom ≫ γ.v p' q hp' := by
-  obtain rfl : p' = p + a := by omega
+  obtain rfl : p' = p + a := by grind
   dsimp only [leftShift]
   simp only [mk_v]
 
@@ -93,8 +93,8 @@ def leftUnshift {n' a : ℤ} (γ : Cochain (K⟦a⟧) L n') (n : ℤ) (hn : n + 
 lemma leftUnshift_v {n' a : ℤ} (γ : Cochain (K⟦a⟧) L n') (n : ℤ) (hn : n + a = n')
     (p q : ℤ) (hpq : p + n = q) (p' : ℤ) (hp' : p' + n' = q) :
     (γ.leftUnshift n hn).v p q hpq = (a * n' + ((a * (a-1))/2)).negOnePow •
-      (K.shiftFunctorObjXIso a p' p (by omega)).inv ≫ γ.v p' q (by omega) := by
-  obtain rfl : p' = p - a := by omega
+      (K.shiftFunctorObjXIso a p' p (by grind)).inv ≫ γ.v p' q (by grind) := by
+  obtain rfl : p' = p - a := by grind
   rfl
 
 /-- The map `Cochain K L n → Cochain (K⟦a⟧) (L⟦a⟧) n`. -/
@@ -111,7 +111,7 @@ lemma shift_v (a : ℤ) (p q : ℤ) (hpq : p + n = q) (p' q' : ℤ)
   rfl
 
 lemma shift_v' (a : ℤ) (p q : ℤ) (hpq : p + n = q) :
-    (γ.shift a).v p q hpq = γ.v (p + a) (q + a) (by omega) := by
+    (γ.shift a).v p q hpq = γ.v (p + a) (q + a) (by grind) := by
   simp only [shift_v γ a p q hpq _ _ rfl rfl, shiftFunctor_obj_X, shiftFunctorObjXIso,
     HomologicalComplex.XIsoOfEq_rfl, Iso.refl_hom, Iso.refl_inv, comp_id, id_comp]
 
@@ -135,16 +135,16 @@ lemma rightShift_rightUnshift {a n' : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : �
 lemma leftUnshift_leftShift (a n' : ℤ) (hn' : n + a = n') :
     (γ.leftShift a n' hn').leftUnshift n hn' = γ := by
   ext p q hpq
-  rw [(γ.leftShift a n' hn').leftUnshift_v n hn' p q hpq (q-n') (by omega),
-    γ.leftShift_v a n' hn' (q-n') q (by omega) p hpq, Linear.comp_units_smul,
+  rw [(γ.leftShift a n' hn').leftUnshift_v n hn' p q hpq (q-n') (by grind),
+    γ.leftShift_v a n' hn' (q-n') q (by grind) p hpq, Linear.comp_units_smul,
     Iso.inv_hom_id_assoc, smul_smul, Int.units_mul_self, one_smul]
 
 @[simp]
 lemma leftShift_leftUnshift {a n' : ℤ} (γ : Cochain (K⟦a⟧) L n') (n : ℤ) (hn' : n + a = n') :
     (γ.leftUnshift n hn').leftShift a n' hn' = γ := by
   ext p q hpq
-  rw [(γ.leftUnshift n hn').leftShift_v a n' hn' p q hpq (q-n) (by omega),
-    γ.leftUnshift_v n hn' (q-n) q (by omega) p hpq, Linear.comp_units_smul, smul_smul,
+  rw [(γ.leftUnshift n hn').leftShift_v a n' hn' p q hpq (q-n) (by grind),
+    γ.leftUnshift_v n hn' (q-n) q (by grind) p hpq, Linear.comp_units_smul, smul_smul,
     Iso.hom_inv_id_assoc, Int.units_mul_self, one_smul]
 
 @[simp]
@@ -159,7 +159,7 @@ lemma leftShift_add (a n' : ℤ) (hn' : n + a = n') :
     (γ₁ + γ₂).leftShift a n' hn' = γ₁.leftShift a n' hn' + γ₂.leftShift a n' hn' := by
   ext p q hpq
   dsimp
-  simp only [leftShift_v _ a n' hn' p q hpq (p + a) (by omega), add_v, comp_add, smul_add]
+  simp only [leftShift_v _ a n' hn' p q hpq (p + a) (by grind), add_v, comp_add, smul_add]
 
 @[simp]
 lemma shift_add (a : ℤ) :
@@ -283,7 +283,7 @@ lemma leftShift_smul (a n' : ℤ) (hn' : n + a = n') (x : R) :
     (x • γ).leftShift a n' hn' = x • γ.leftShift a n' hn' := by
   ext p q hpq
   dsimp
-  simp only [leftShift_v _ a n' hn' p q hpq (p + a) (by omega), smul_v, Linear.comp_smul,
+  simp only [leftShift_v _ a n' hn' p q hpq (p + a) (by grind), smul_v, Linear.comp_smul,
     smul_comm x]
 
 @[simp]
@@ -364,25 +364,25 @@ lemma leftUnshift_units_smul {n' a : ℤ} (γ : Cochain (K⟦a⟧) L n') (n : �
 lemma rightUnshift_comp {m : ℤ} {a : ℤ} (γ' : Cochain L (M⟦a⟧) m) {nm : ℤ} (hnm : n + m = nm)
     (nm' : ℤ) (hnm' : nm + a = nm') (m' : ℤ) (hm' : m + a = m') :
     (γ.comp γ' hnm).rightUnshift nm' hnm' =
-      γ.comp (γ'.rightUnshift m' hm') (by omega) := by
+      γ.comp (γ'.rightUnshift m' hm') (by grind) := by
   ext p q hpq
-  rw [(γ.comp γ' hnm).rightUnshift_v nm' hnm' p q hpq (p + n + m) (by omega),
+  rw [(γ.comp γ' hnm).rightUnshift_v nm' hnm' p q hpq (p + n + m) (by grind),
     γ.comp_v γ' hnm p (p + n) (p + n + m) rfl rfl,
-    comp_v _ _ (show n + m' = nm' by omega) p (p + n) q (by omega) (by omega),
-    γ'.rightUnshift_v m' hm' (p + n) q (by omega) (p + n + m) rfl, assoc]
+    comp_v _ _ (show n + m' = nm' by grind) p (p + n) q (by grind) (by grind),
+    γ'.rightUnshift_v m' hm' (p + n) q (by grind) (p + n + m) rfl, assoc]
 
 lemma leftShift_comp (a n' : ℤ) (hn' : n + a = n') {m t t' : ℤ} (γ' : Cochain L M m)
     (h : n + m = t) (ht' : t + a = t') :
     (γ.comp γ' h).leftShift a t' ht' = (a * m).negOnePow • (γ.leftShift a n' hn').comp γ'
       (by rw [← ht', ← h, ← hn', add_assoc, add_comm a, add_assoc]) := by
   ext p q hpq
-  have h' : n' + m = t' := by omega
+  have h' : n' + m = t' := by grind
   dsimp
-  simp only [Cochain.comp_v _ _ h' p (p + n') q rfl (by omega),
-    γ.leftShift_v a n' hn' p (p + n') rfl (p + a) (by omega),
-    (γ.comp γ' h).leftShift_v a t' (by omega) p q hpq (p + a) (by omega),
+  simp only [Cochain.comp_v _ _ h' p (p + n') q rfl (by grind),
+    γ.leftShift_v a n' hn' p (p + n') rfl (p + a) (by grind),
+    (γ.comp γ' h).leftShift_v a t' (by grind) p q hpq (p + a) (by grind),
     smul_smul, Linear.units_smul_comp, assoc, Int.negOnePow_add, ← mul_assoc, ← h',
-    comp_v _ _ h (p + a) (p + n') q (by omega) (by omega)]
+    comp_v _ _ h (p + a) (p + n') q (by grind) (by grind)]
   congr 2
   rw [add_comm n', mul_add, Int.negOnePow_add]
 
@@ -395,14 +395,14 @@ lemma leftShift_comp_zero_cochain (a n' : ℤ) (hn' : n + a = n') (γ' : Cochain
 lemma δ_rightShift (a n' m' : ℤ) (hn' : n' + a = n) (m : ℤ) (hm' : m' + a = m) :
     δ n' m' (γ.rightShift a n' hn') = a.negOnePow • (δ n m γ).rightShift a m' hm' := by
   by_cases hnm : n + 1 = m
-  · have hnm' : n' + 1 = m' := by omega
+  · have hnm' : n' + 1 = m' := by grind
     ext p q hpq
     dsimp
     rw [(δ n m γ).rightShift_v a m' hm' p q hpq _ rfl,
-      δ_v n m hnm _ p (p+m) rfl (p+n) (p+1) (by omega) rfl,
-      δ_v n' m' hnm' _ p q hpq (p+n') (p+1) (by omega) rfl,
+      δ_v n m hnm _ p (p+m) rfl (p+n) (p+1) (by grind) rfl,
+      δ_v n' m' hnm' _ p q hpq (p+n') (p+1) (by grind) rfl,
       γ.rightShift_v a n' hn' p (p+n') rfl (p+n) rfl,
-      γ.rightShift_v a n' hn' (p+1) q _ (p+m) (by omega)]
+      γ.rightShift_v a n' hn' (p+1) q _ (p+m) (by grind)]
     simp only [shiftFunctorObjXIso, shiftFunctor_obj_d',
       Linear.comp_units_smul, assoc, HomologicalComplex.XIsoOfEq_inv_comp_d,
       add_comp, HomologicalComplex.d_comp_XIsoOfEq_inv, Linear.units_smul_comp, smul_add,
@@ -410,7 +410,7 @@ lemma δ_rightShift (a n' m' : ℤ) (hn' : n' + a = n) (m : ℤ) (hm' : m' + a =
     congr 1
     simp only [← hm', add_comm m', Int.negOnePow_add, ← mul_assoc,
       Int.units_mul_self, one_mul]
-  · have hnm' : ¬ n' + 1 = m' := fun _ => hnm (by omega)
+  · have hnm' : ¬ n' + 1 = m' := fun _ => hnm (by grind)
     rw [δ_shape _ _ hnm', δ_shape _ _ hnm, rightShift_zero, smul_zero]
 
 lemma δ_rightUnshift {a n' : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : ℤ) (hn : n' + a = n)
@@ -424,14 +424,14 @@ lemma δ_rightUnshift {a n' : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : ℤ) (hn 
 lemma δ_leftShift (a n' m' : ℤ) (hn' : n + a = n') (m : ℤ) (hm' : m + a = m') :
     δ n' m' (γ.leftShift a n' hn') = a.negOnePow • (δ n m γ).leftShift a m' hm' := by
   by_cases hnm : n + 1 = m
-  · have hnm' : n' + 1 = m' := by omega
+  · have hnm' : n' + 1 = m' := by grind
     ext p q hpq
     dsimp
-    rw [(δ n m γ).leftShift_v a m' hm' p q hpq (p+a) (by omega),
-      δ_v n m hnm _ (p+a) q (by omega) (p+n') (p+1+a) (by omega) (by omega),
-      δ_v n' m' hnm' _ p q hpq (p+n') (p+1) (by omega) rfl,
-      γ.leftShift_v a n' hn' p (p+n') rfl (p+a) (by omega),
-      γ.leftShift_v a n' hn' (p+1) q (by omega) (p+1+a) (by omega)]
+    rw [(δ n m γ).leftShift_v a m' hm' p q hpq (p+a) (by grind),
+      δ_v n m hnm _ (p+a) q (by grind) (p+n') (p+1+a) (by grind) (by grind),
+      δ_v n' m' hnm' _ p q hpq (p+n') (p+1) (by grind) rfl,
+      γ.leftShift_v a n' hn' p (p+n') rfl (p+a) (by grind),
+      γ.leftShift_v a n' hn' (p+1) q (by grind) (p+1+a) (by grind)]
     simp only [shiftFunctor_obj_X, shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl,
       Iso.refl_hom, id_comp, Linear.units_smul_comp, shiftFunctor_obj_d',
       Linear.comp_units_smul, smul_add, smul_smul]
@@ -441,7 +441,7 @@ lemma δ_leftShift (a n' m' : ℤ) (hn' : n + a = n') (m : ℤ) (hm' : m + a = m
     · simp only [← Int.negOnePow_add, ← hn', ← hm', ← hnm]
       congr 1
       linarith
-  · have hnm' : ¬ n' + 1 = m' := fun _ => hnm (by omega)
+  · have hnm' : ¬ n' + 1 = m' := fun _ => hnm (by grind)
     rw [δ_shape _ _ hnm', δ_shape _ _ hnm, leftShift_zero, smul_zero]
 
 lemma δ_leftUnshift {a n' : ℤ} (γ : Cochain (K⟦a⟧) L n') (n : ℤ) (hn : n + a = n')
@@ -460,8 +460,8 @@ lemma δ_shift (a m : ℤ) :
     dsimp
     simp only [shift_v', shiftFunctor_obj_d',
       δ_v n m hnm _ p q hpq (q - 1) (p + 1) rfl rfl,
-      δ_v n m hnm _ (p + a) (q + a) (by omega) (q - 1 + a) (p + 1 + a)
-        (by omega) (by omega),
+      δ_v n m hnm _ (p + a) (q + a) (by grind) (q - 1 + a) (p + 1 + a)
+        (by grind) (by grind),
       smul_add, Linear.units_smul_comp, Linear.comp_units_smul, add_right_inj]
     rw [smul_comm]
   · rw [δ_shape _ _ hnm, δ_shape _ _ hnm, shift_zero, smul_zero]
@@ -470,8 +470,8 @@ lemma leftShift_rightShift (a n' : ℤ) (hn' : n' + a = n) :
     (γ.rightShift a n' hn').leftShift a n hn' =
       (a * n + (a * (a - 1)) / 2).negOnePow • γ.shift a := by
   ext p q hpq
-  simp only [leftShift_v _ a n hn' p q hpq (p + a) (by omega),
-    rightShift_v _ a n' hn' (p + a) q (by omega) (q + a) (by omega), units_smul_v, shift_v']
+  simp only [leftShift_v _ a n hn' p q hpq (p + a) (by grind),
+    rightShift_v _ a n' hn' (p + a) q (by grind) (q + a) (by grind), units_smul_v, shift_v']
   dsimp
   rw [id_comp, comp_id]
 
@@ -479,8 +479,8 @@ lemma rightShift_leftShift (a n' : ℤ) (hn' : n + a = n') :
     (γ.leftShift a n' hn').rightShift a n hn' =
       (a * n' + (a * (a - 1)) / 2).negOnePow • γ.shift a := by
   ext p q hpq
-  simp only [rightShift_v _ a n hn' p q hpq (q + a) (by omega),
-    leftShift_v _ a n' hn' p (q + a) (by omega) (p + a) (by omega), units_smul_v, shift_v']
+  simp only [rightShift_v _ a n hn' p q hpq (q + a) (by grind),
+    leftShift_v _ a n' hn' p (q + a) (by grind) (p + a) (by grind), units_smul_v, shift_v']
   dsimp
   rw [id_comp, comp_id]
 
