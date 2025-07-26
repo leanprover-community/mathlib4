@@ -68,11 +68,13 @@ variable {q : ℚ≥0}
 protected def rec {α : ℚ≥0 → Sort*} (h : ∀ m n : ℕ, α (m / n)) (q : ℚ≥0) : α q := by
   rw [← num_div_den q]; apply h
 
+/-- A version of `Rat.mul_den` without division. -/
 theorem den_mul_den_eq_den_mul_gcd (q₁ q₂ : ℚ≥0) :
     q₁.den * q₂.den = (q₁ * q₂).den * ((q₁.num * q₂.num).gcd (q₁.den * q₂.den)) := by
   convert Rat.den_mul_den_eq_den_mul_gcd q₁ q₂
   norm_cast
 
+/-- A version of `Rat.mul_num` without division. -/
 theorem num_mul_num_eq_num_mul_gcd (q₁ q₂ : ℚ≥0) :
     q₁.num * q₂.num = (q₁ * q₂).num * ((q₁.num * q₂.num).gcd (q₁.den * q₂.den)) := by
   zify
