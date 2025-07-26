@@ -180,7 +180,7 @@ theorem monotone (f : X ⥤ Y) : Monotone f.obj := fun _ _ hxy => (f.map hxy.hom
 
 /-- A functor `X ⥤ Y` between preorder categories as an `OrderHom`. -/
 @[simps!]
-def toOrderHom (F : X ⥤ Y) : (X →o Y) where
+def toOrderHom (F : X ⥤ Y) : X →o Y where
   toFun := F.obj
   monotone' := F.monotone
 
