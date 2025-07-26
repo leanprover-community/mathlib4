@@ -178,6 +178,91 @@ def distincts (n : ℕ) : Finset (Partition n) :=
 def oddDistincts (n : ℕ) : Finset (Partition n) :=
   odds n ∩ distincts n
 
+/--
+The number of partitions of `n` that contain `r` as a part and have all parts ≤ `r`
+equals the number of partitions of `n - r` whose largest part is ≤ `r`.
+
+This bijective proof shows how to:
+1. Remove `r` from a partition of `n` to get a partition of `n - r` (with appropriate bounds)
+2. Add `r` to a partition of `n - r` (with appropriate bounds) to recover the original partition
+-/
+theorem partition_max_equals_bound (n r : ℕ) (h₁ : r ≤ n) (h₂ : r ≠ 0) :
+  Fintype.card {π : Partition n // r ∈ π.parts ∧ ∀ x ∈ π.parts, x ≤ r}
+    = Fintype.card {π : Partition (n - r) // π.parts.sup ≤ r} := by
+
+  let f : {π : Partition n // r ∈ π.parts ∧ ∀ x ∈ π.parts, x ≤ r}
+    → {π : Partition (n - r) // π.parts.sup ≤ r} :=
+  fun π =>
+    let parts' := π.val.parts.erase r
+    have hr : r ∈ π.val.parts := π.property.left
+    have erased : parts'.sum = π.val.parts.sum - r := by
+      refine Nat.eq_sub_of_add_eq' ?_
+      exact Multiset.sum_erase hr
+    have total : π.val.parts.sum = n := π.val.parts_sum
+    have hsum : parts'.sum = n - r := by rw [erased, total]
+    have hpos : ∀ (i : ℕ), i ∈ parts' → 0 < i := by
+      intro i hi
+      have hi' := Multiset.mem_of_mem_erase hi
+      exact Partition.parts_pos _ hi'
+    have hpos' : ∀ i ∈ parts', 0 < i := by
+      intro i hi
+      exact hpos i hi
+    have hsup : parts'.sup ≤ r := Multiset.sup_le.mpr (by
+      intros x hx
+      exact π.property.right x (Multiset.mem_of_mem_erase hx))
+    ⟨{ parts := parts', parts_sum := hsum, parts_pos := by
+        intros i hi
+        exact hpos' i hi
+     }, hsup⟩
+
+  let g : {π : Partition (n - r) // π.parts.sup ≤ r}
+    → {π : Partition n // r ∈ π.parts ∧ ∀ x ∈ π.parts, x ≤ r} :=
+  fun π =>
+    let parts := π.val.parts.cons r
+    have hsum : parts.sum = n := by
+      rw [Multiset.sum_cons, π.val.parts_sum]
+      exact add_sub_of_le h₁
+    have hpos : ∀ i ∈ parts, 0 < i := by
+      intro i hi
+      cases Multiset.mem_cons.mp hi with
+      | inl hi_eq => rw [hi_eq]; exact Nat.pos_of_ne_zero h₂
+      | inr hi_in => exact π.val.parts_pos hi_in
+    have hbound : r ∈ parts ∧ ∀ x ∈ parts, x ≤ r := by
+      constructor
+      · exact Multiset.mem_cons_self r π.val.parts
+      · intro x hx
+        cases Multiset.mem_cons.mp hx with
+        | inl hx_eq => rw [hx_eq]
+        | inr hx_in =>  apply le_trans (Multiset.le_sup hx_in) π.property
+
+    ⟨{ parts := parts, parts_sum := hsum, parts_pos := by
+        intros i hi
+        exact hpos i hi
+      }, hbound⟩
+
+  have fg_id : ∀ (π : {π : Partition n // r ∈ π.parts ∧ ∀ x ∈ π.parts, x ≤ r}),
+    g (f π) = π := by
+    intro π
+    let parts := π.val.parts
+    have hr : r ∈ parts := π.property.left
+    have : Multiset.cons r (Multiset.erase parts r) = parts := Multiset.cons_erase hr
+    apply Subtype.ext
+    exact Nat.Partition.ext_iff.mpr this
+
+  have gf_id : ∀ (π : {π : Partition (n - r) // π.parts.sup ≤ r}),
+    f (g π) = π := by
+    intro π
+    let parts := π.val.parts
+    have : (parts.cons r).erase r = parts := Multiset.erase_cons_head r parts
+    apply Subtype.ext
+    exact Nat.Partition.ext_iff.mpr this
+
+  have e : {π : Partition n // r ∈ π.parts ∧ ∀ x ∈ π.parts, x ≤ r} ≃
+           {π : Partition (n - r) // π.parts.sup ≤ r} :=
+    { toFun := f, invFun := g, left_inv := fg_id, right_inv := gf_id }
+
+  exact Fintype.card_congr e
+
 end Partition
 
 end Nat
