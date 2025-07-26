@@ -1205,7 +1205,6 @@ def elabToAdditive : Syntax → CoreM Config
       | `(toAdditiveOption| (reorder := $[$[$reorders:num]*],*)) =>
         reorder := reorder ++ reorders.toList.map (·.toList.map (·.raw.isNatLit?.get! - 1))
       | _ => throwUnsupportedSyntax
-    reorder := reorder.reverse
     let (existing, self) := match existing? with
       | `(toAdditiveNameHint| existing) => (true, false)
       | `(toAdditiveNameHint| self) => (true, true)
