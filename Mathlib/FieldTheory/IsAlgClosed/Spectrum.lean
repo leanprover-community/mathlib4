@@ -3,7 +3,7 @@ Copyright (c) 2021 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Spectrum.Basic
+import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 /-!
@@ -151,3 +151,17 @@ theorem nonempty_of_isAlgClosed_of_finiteDimensional [IsAlgClosed 𝕜] [Nontriv
 end ScalarField
 
 end spectrum
+
+open Polynomial in
+theorem IsIdempotentElem.spectrum_subset (𝕜 : Type*) {A : Type*} [Field 𝕜] [Ring A] [Algebra 𝕜 A]
+    {p : A} (hp : IsIdempotentElem p) : spectrum 𝕜 p ⊆ {0, 1} := by
+  nontriviality A
+  apply Set.image_subset_iff.mp (spectrum.subset_polynomial_aeval p (X ^ 2 - X)) |>.trans
+  refine fun a ha => eq_zero_or_one_of_sq_eq_self ?_
+  simpa [pow_two p, hp.eq, sub_eq_zero] using ha
+
+open Unitization in
+theorem IsIdempotentElem.quasispectrum_subset {𝕜 A : Type*} [Field 𝕜] [NonUnitalRing A] [Module 𝕜 A]
+    [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A] {p : A} (hp : IsIdempotentElem p) :
+    quasispectrum 𝕜 p ⊆ {0, 1} :=
+  quasispectrum_eq_spectrum_inr' 𝕜 𝕜 p ▸ (hp.inr _ |>.spectrum_subset _)
