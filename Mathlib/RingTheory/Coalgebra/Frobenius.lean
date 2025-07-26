@@ -32,49 +32,6 @@ variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Coalgebra R 
 local notation "ϰ" => TensorProduct.assoc R
 local notation "τ" => TensorProduct.lid R
 
--- move to `Coalgebra/Basic`
-lemma Coalgebra.rTensor_counit_comp_comul' {A : Type*} [AddCommMonoid A] [Module R A]
-    [Coalgebra R A] :
-    (rTensor _ counit) ∘ₗ comul = (τ A).symm.toLinearMap :=
-  rTensor_counit_comp_comul
-
-section move
-variable {A B C D : Type*}
-  [AddCommMonoid A] [AddCommMonoid B] [AddCommMonoid C] [AddCommMonoid D]
-  [Module R A] [Module R B] [Module R C] [Module R D]
-
-lemma TensorProduct.assoc_symm_comp_rTensor (x : A →ₗ[R] D) :
-    (ϰ D B C).symm ∘ₗ (rTensor _ x) = (rTensor _ (rTensor _ x)) ∘ₗ (ϰ A B C).symm.toLinearMap := by
-  ext; simp
-
-lemma TensorProduct.assoc_symm_comp_lTensor_lTensor (x : A →ₗ[R] D) :
-    (ϰ B C D).symm.toLinearMap ∘ₗ (lTensor _ (lTensor _ x))
-      = (lTensor _ x) ∘ₗ (ϰ B C A).symm.toLinearMap := by
-  ext; simp
-
-lemma TensorProduct.rTensor_lTensor_comp_assoc_symm (x : A →ₗ[R] D) :
-    (rTensor _ (lTensor _ x)) ∘ₗ (ϰ _ _ _).symm.toLinearMap
-    = (ϰ B D C).symm.toLinearMap ∘ₗ (lTensor _ (rTensor _ x)) := by
-  simp_rw [rTensor, lTensor, map_map_comp_assoc_symm_eq]
-
-lemma TensorProduct.assoc_comp_rTensor_rTensor (x : A →ₗ[R] D) :
-    (ϰ D B C).toLinearMap ∘ₗ (rTensor _ (rTensor _ x))
-      = (rTensor _ x) ∘ₗ (ϰ _ _ _).toLinearMap := by
-  ext; simp
-
-lemma TensorProduct.assoc_comp_rTensor_assoc_symm_comp_assoc_symm_comp_lTensor_assoc_symm :
-    (ϰ _ _ _).toLinearMap ∘ₗ (rTensor _ (ϰ _ _ _).symm.toLinearMap) ∘ₗ (ϰ _ _ _).symm.toLinearMap
-    ∘ₗ (lTensor _ (ϰ _ _ _).symm.toLinearMap) = (ϰ A B (C ⊗[R] D)).symm.toLinearMap := by
-  ext; simp
-
-lemma TensorProduct.lid_tensor :
-    (τ (A ⊗[R] B)).toLinearMap = rTensor _ (τ _).toLinearMap ∘ₗ (ϰ _ _ _).symm.toLinearMap := by
-  ext; simp
-
-end move
-
-open TensorProduct
-
 /-- If `(id ⊗ mul) ∘ assoc ∘ (comul ⊗ id) = (mul ⊗ id) ∘ assoc.symm ∘ (id ⊗ comul)`,
 then `(id ⊗ mul) ∘ assoc ∘ (comul ⊗ id) = comul ∘ mul`.
 
