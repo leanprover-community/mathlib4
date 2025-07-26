@@ -76,7 +76,7 @@ theorem HasFiniteIntegral.restrict_of_bounded [NormedAddCommGroup E] {f : α →
     {μ : Measure α} {C} (hs : μ s < ∞) (hf : ∀ᵐ x ∂μ.restrict s, ‖f x‖ ≤ C) :
     HasFiniteIntegral f (μ.restrict s) :=
   haveI : IsFiniteMeasure (μ.restrict s) := ⟨by rwa [Measure.restrict_apply_univ]⟩
-  hasFiniteIntegral_of_bounded hf
+  .of_bounded hf
 
 @[deprecated (since := "2025-07-26")]
 alias hasFiniteIntegral_restrict_of_bounded := HasFiniteIntegral.restrict_of_bounded
@@ -89,7 +89,7 @@ theorem HasFiniteIntegral.restrict_of_bounded_enorm {f : α → ε} {s : Set α}
     (hf : ∀ᵐ x ∂μ.restrict s, ‖f x‖ₑ ≤ C) :
     HasFiniteIntegral f (μ.restrict s) :=
   haveI : IsFiniteMeasure (μ.restrict s) := ⟨by rw [Measure.restrict_apply_univ]; exact hs.lt_top⟩
-  hasFiniteIntegral_of_bounded_enorm hC hf
+  .of_bounded_enorm hC hf
 
 /-- A function is `IntegrableOn` a set `s` if it is almost everywhere strongly measurable on `s`
 and if the integral of its pointwise norm over `s` is less than infinity. -/

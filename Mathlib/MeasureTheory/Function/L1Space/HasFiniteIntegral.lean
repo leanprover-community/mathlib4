@@ -191,13 +191,19 @@ theorem HasFiniteIntegral.of_mem_Icc [IsFiniteMeasure μ] (a b : ℝ) {X : α �
   apply (hasFiniteIntegral_const (max ‖a‖ ‖b‖)).mono'
   filter_upwards [h.mono fun ω h ↦ h.1, h.mono fun ω h ↦ h.2] with ω using abs_le_max_abs_abs
 
-theorem hasFiniteIntegral_of_bounded_enorm [IsFiniteMeasure μ] {f : α → ε} {C : ℝ≥0∞}
+theorem HasFiniteIntegral.of_bounded_enorm [IsFiniteMeasure μ] {f : α → ε} {C : ℝ≥0∞}
     (hC' : ‖C‖ₑ ≠ ∞ := by finiteness) (hC : ∀ᵐ a ∂μ, ‖f a‖ₑ ≤ C) : HasFiniteIntegral f μ :=
   (hasFiniteIntegral_const_enorm hC').mono'_enorm hC
 
-theorem hasFiniteIntegral_of_bounded [IsFiniteMeasure μ] {f : α → β} {C : ℝ}
+@[deprecated (since := "2025-07-26")]
+alias hasFiniteIntegral_of_bounded_enorm := HasFiniteIntegral.of_bounded_enorm
+
+theorem HasFiniteIntegral.of_bounded [IsFiniteMeasure μ] {f : α → β} {C : ℝ}
     (hC : ∀ᵐ a ∂μ, ‖f a‖ ≤ C) : HasFiniteIntegral f μ :=
   (hasFiniteIntegral_const C).mono' hC
+
+@[deprecated (since := "2025-07-26")]
+alias hasFiniteIntegral_of_bounded := HasFiniteIntegral.of_bounded
 
 -- TODO: generalise this to f with codomain ε
 -- requires generalising `norm_le_pi_norm` and friends to enorms
@@ -205,7 +211,7 @@ theorem hasFiniteIntegral_of_bounded [IsFiniteMeasure μ] {f : α → β} {C : �
 theorem HasFiniteIntegral.of_finite [Finite α] [IsFiniteMeasure μ] {f : α → β} :
     HasFiniteIntegral f μ :=
   let ⟨_⟩ := nonempty_fintype α
-  hasFiniteIntegral_of_bounded <| ae_of_all μ <| norm_le_pi_norm f
+  HasFiniteIntegral.of_bounded <| ae_of_all μ <| norm_le_pi_norm f
 
 theorem HasFiniteIntegral.mono_measure {f : α → ε} (h : HasFiniteIntegral f ν) (hμ : μ ≤ ν) :
     HasFiniteIntegral f μ :=

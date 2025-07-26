@@ -750,7 +750,7 @@ theorem Adapted.integrable_upcrossingsBefore [IsFiniteMeasure μ] (hf : Adapted 
     rw [Real.norm_eq_abs, Nat.abs_cast, Nat.cast_le]
     exact upcrossingsBefore_le _ _ hab
   ⟨Measurable.aestronglyMeasurable (measurable_from_top.comp (hf.measurable_upcrossingsBefore hab)),
-    hasFiniteIntegral_of_bounded this⟩
+    HasFiniteIntegral.of_bounded this⟩
 
 /-- The number of upcrossings of a realization of a stochastic process (`upcrossings` takes value
 in `ℝ≥0∞` and so is allowed to be `∞`). -/
