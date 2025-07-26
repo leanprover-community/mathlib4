@@ -74,8 +74,7 @@ private lemma analyticAt_harmonicAt_log_normSq {z : ℂ} {g : ℂ → ℂ} (h₁
   · have t₀ := h₁g.differentiableAt.continuousAt.preimage_mem_nhds
       ((isOpen_slitPlane.inter isOpen_ne).mem_nhds ⟨h₃g, h₂g⟩)
     calc Real.log ∘ normSq ∘ g
-    _ =ᶠ[𝓝 z] reCLM ∘ ofRealCLM ∘ Real.log ∘ normSq ∘ g:= by
-      aesop
+    _ =ᶠ[𝓝 z] reCLM ∘ ofRealCLM ∘ Real.log ∘ normSq ∘ g := by aesop
     _ =ᶠ[𝓝 z] reCLM ∘ log ∘ ((conjCLE ∘ g) * g) := by
       filter_upwards with x
       simp only [Function.comp_apply, ofRealCLM_apply, Pi.mul_apply, conjCLE_apply]
