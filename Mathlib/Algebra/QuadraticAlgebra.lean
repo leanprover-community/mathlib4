@@ -238,8 +238,7 @@ theorem coe_smul [Zero R] [SMulZeroClass S R] (s : S) (r : R) :
   QuadraticAlgebra.ext rfl (smul_zero _).symm
 
 instance [AddMonoid R] : AddMonoid (QuadraticAlgebra R a b) := by
-  refine (equivProd a b).injective.addMonoid _ rfl ?_ ?_
-  all_goals intros; rfl
+  refine (equivProd a b).injective.addMonoid _ rfl ?_ ?_ <;> intros <;> rfl
 
 instance [Monoid S] [AddMonoid R] [DistribMulAction S R] :
     DistribMulAction S (QuadraticAlgebra R a b) where
