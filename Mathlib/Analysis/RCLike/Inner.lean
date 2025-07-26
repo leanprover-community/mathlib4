@@ -21,7 +21,7 @@ from `RCLike.innerProductSpace`.
   convention, similarly to `MeasureTheory.average`?
 -/
 
-open Finset Function Real
+open Finset Function Real WithLp
 open scoped BigOperators ComplexConjugate ComplexOrder InnerProductSpace
 
 variable {ι κ 𝕜 : Type*} {E : ι → Type*} [Fintype ι]
@@ -124,19 +124,18 @@ lemma wInner_const_right (f : ι → 𝕜) (a : 𝕜) :
     ⟪f, const _ a⟫ₙ_[𝕜] = a * (𝔼 i, conj (f i)) := by simp [wInner_cWeight_eq_expect, mul_expect]
 
 lemma wInner_one_eq_inner (f g : ι → 𝕜) :
-    ⟪f, g⟫_[𝕜, 1] = ⟪WithLp.toLp 2 f, WithLp.toLp 2 g⟫_𝕜 := by
+    ⟪f, g⟫_[𝕜, 1] = ⟪toLp 2 f, toLp 2 g⟫_𝕜 := by
   simp [wInner]
 
 lemma inner_eq_wInner_one (f g : PiLp 2 fun _i : ι ↦ 𝕜) :
-    ⟪f, g⟫_𝕜 = ⟪WithLp.ofLp f, WithLp.ofLp g⟫_[𝕜, 1] := by simp [wInner]
+    ⟪f, g⟫_𝕜 = ⟪ofLp f, ofLp g⟫_[𝕜, 1] := by simp [wInner]
 
 lemma linearIndependent_of_ne_zero_of_wInner_one_eq_zero {f : κ → ι → 𝕜} (hf : ∀ k, f k ≠ 0)
     (hinner : Pairwise fun k₁ k₂ ↦ ⟪f k₁, f k₂⟫_[𝕜] = 0) : LinearIndependent 𝕜 f := by
   simp_rw [wInner_one_eq_inner] at hinner
   have := linearIndependent_of_ne_zero_of_inner_eq_zero ?_ hinner
-  exacts [LinearMap.linearIndependent_iff_of_injOn
-    (WithLp.linearEquiv 2 𝕜 (ι → 𝕜)).symm.toLinearMap (WithLp.toLp_injective 2).injOn |>.1 this,
-    fun i ↦ (WithLp.toLp_injective 2).ne (hf i)]
+  exacts [(WithLp.linearEquiv 2 𝕜 (ι → 𝕜)).symm.toLinearMap.linearIndependent_iff_of_injOn
+    (toLp_injective 2).injOn |>.1 this, fun i ↦ (toLp_eq_zero 2).ne.2 (hf i)]
 
 lemma linearIndependent_of_ne_zero_of_wInner_cWeight_eq_zero {f : κ → ι → 𝕜} (hf : ∀ k, f k ≠ 0)
     (hinner : Pairwise fun k₁ k₂ ↦ ⟪f k₁, f k₂⟫ₙ_[𝕜] = 0) : LinearIndependent 𝕜 f := by

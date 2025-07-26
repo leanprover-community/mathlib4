@@ -44,7 +44,7 @@ typeclass. We provide it as `[Fact (x < y)]`.
 
 noncomputable section
 
-open Set Function
+open Set Function WithLp
 
 open scoped Manifold ContDiff ENNReal
 
@@ -182,7 +182,7 @@ a model for manifolds with boundary. In the locale `Manifold`, use the shortcut 
 def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n) where
   toFun := Subtype.val
-  invFun x := ⟨WithLp.toLp 2 (update x 0 (max (x 0) 0)), by simp⟩
+  invFun x := ⟨toLp 2 (update x 0 (max (x 0) 0)), by simp⟩
   source := univ
   target := { x | 0 ≤ x 0 }
   map_source' x _ := x.property
@@ -191,8 +191,8 @@ def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     rw [Subtype.mk_eq_mk, ← WithLp.equiv_symm_apply, Equiv.symm_apply_eq, update_eq_iff]
     exact ⟨max_eq_left xprop, fun i _ => rfl⟩
   right_inv' _ hx := by
-    rw [Subtype.coe_mk, ← WithLp.equiv_symm_apply, Equiv.symm_apply_eq]
-    exact update_eq_iff.2 ⟨max_eq_left hx, fun _ _ => rfl⟩
+    rw [Subtype.coe_mk, ← WithLp.equiv_symm_apply, Equiv.symm_apply_eq, update_eq_iff]
+    exact ⟨max_eq_left hx, fun _ _ => rfl⟩
   source_eq := rfl
   convex_range' := by
     simp only [instIsRCLikeNormedField, ↓reduceDIte]
@@ -201,7 +201,7 @@ def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     exact EuclideanHalfSpace.convex (n := n)
   nonempty_interior' := by
     rw [range_euclideanHalfSpace, interior_halfSpace]
-    refine ⟨WithLp.toLp 2 fun i ↦ 1, by simp⟩
+    exact ⟨toLp 2 fun i ↦ 1, by simp⟩
   continuous_toFun := continuous_subtype_val
   continuous_invFun := by
     exact ((PiLp.continuous_toLp 2 _).comp <| (PiLp.continuous_ofLp 2 _).update 0 <|
@@ -213,7 +213,7 @@ model for manifolds with corners -/
 def modelWithCornersEuclideanQuadrant (n : ℕ) :
     ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanQuadrant n) where
   toFun := Subtype.val
-  invFun x := ⟨WithLp.toLp 2 fun i ↦ max (x i) 0,
+  invFun x := ⟨toLp 2 fun i ↦ max (x i) 0,
     fun i ↦ by simp only [PiLp.toLp_apply, le_sup_right]⟩
   source := univ
   target := { x | ∀ i, 0 ≤ x i }
@@ -229,7 +229,7 @@ def modelWithCornersEuclideanQuadrant (n : ℕ) :
     exact EuclideanQuadrant.convex
   nonempty_interior' := by
     rw [range_euclideanQuadrant, interior_euclideanQuadrant]
-    exact ⟨WithLp.toLp 2 fun i ↦ 1, by simp⟩
+    exact ⟨toLp 2 fun i ↦ 1, by simp⟩
   continuous_toFun := continuous_subtype_val
   continuous_invFun := Continuous.subtype_mk ((PiLp.continuous_toLp 2 _).comp <|
     (continuous_pi fun i ↦ ((PiLp.continuous_apply 2 _ i).max continuous_const))) _
@@ -274,7 +274,7 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
     PartialHomeomorph (Icc x y) (EuclideanHalfSpace 1) where
   source := { z : Icc x y | z.val < y }
   target := { z : EuclideanHalfSpace 1 | z.val 0 < y - x }
-  toFun := fun z : Icc x y => ⟨WithLp.toLp 2 fun _ ↦ z.val - x, sub_nonneg.mpr z.property.1⟩
+  toFun := fun z : Icc x y => ⟨toLp 2 fun _ ↦ z.val - x, sub_nonneg.mpr z.property.1⟩
   invFun z := ⟨min (z.val 0 + x) y, by simp [z.prop, h.out.le]⟩
   map_source' := by simp only [mem_setOf_eq, Fin.isValue, PiLp.toLp_apply, sub_lt_sub_iff_right,
     imp_self, implies_true]
@@ -349,7 +349,7 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
     PartialHomeomorph (Icc x y) (EuclideanHalfSpace 1) where
   source := { z : Icc x y | x < z.val }
   target := { z : EuclideanHalfSpace 1 | z.val 0 < y - x }
-  toFun z := ⟨WithLp.toLp 2 fun _ ↦ y - z.val, sub_nonneg.mpr z.property.2⟩
+  toFun z := ⟨toLp 2 fun _ ↦ y - z.val, sub_nonneg.mpr z.property.2⟩
   invFun z :=
     ⟨max (y - z.val 0) x, by simp [z.prop, h.out.le, sub_eq_add_neg]⟩
   map_source' := by simp only [mem_setOf_eq, Fin.isValue, PiLp.toLp_apply, sub_lt_sub_iff_left,
@@ -479,7 +479,7 @@ lemma boundary_product [I.Boundaryless] :
 instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : WithTop ℕ∞} :
     IsManifold (𝓡∂ 1) n (Icc x y) := by
   have M : ContDiff ℝ n (show EuclideanSpace ℝ (Fin 1) → EuclideanSpace ℝ (Fin 1)
-      from fun z ↦ WithLp.toLp 2 fun i ↦ -z i + (y - x)) :=
+      from fun z ↦ toLp 2 fun i ↦ -z i + (y - x)) :=
     PiLp.contDiff_toLp.comp <| PiLp.contDiff_ofLp.neg.add contDiff_const
   apply isManifold_of_contDiffOn
   intro e e' he he'
@@ -494,7 +494,7 @@ instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : WithTop ℕ∞} :
     rintro _ ⟨⟨hz₁, hz₂⟩, ⟨⟨z, hz₀⟩, rfl⟩⟩
     simp only [IccLeftChart, Fin.isValue, lt_sub_iff_add_lt, PartialHomeomorph.symm_symm,
       modelWithCornersEuclideanHalfSpace, ModelWithCorners.mk_symm, ModelWithCorners.mk_coe,
-      PartialEquiv.coe_symm_mk, hz₀, sup_of_le_left, update_eq_self, WithLp.toLp_ofLp, mem_setOf_eq,
+      PartialEquiv.coe_symm_mk, hz₀, sup_of_le_left, update_eq_self, toLp_ofLp, mem_setOf_eq,
       PartialHomeomorph.mk_coe_symm, IccRightChart, preimage_setOf_eq, lt_inf_iff,
       lt_add_iff_pos_left] at hz₁ hz₂
     ext i
@@ -502,14 +502,14 @@ instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : WithTop ℕ∞} :
     simp only [modelWithCornersEuclideanHalfSpace, Fin.isValue, ModelWithCorners.mk_coe,
       IccLeftChart, IccRightChart, PartialHomeomorph.coe_trans, PartialHomeomorph.mk_coe,
       PartialHomeomorph.mk_coe_symm, PartialEquiv.coe_symm_mk, ModelWithCorners.mk_symm, comp_apply,
-      sup_of_le_left, update_eq_self, WithLp.toLp_ofLp, min_eq_left hz₁.le, PiLp.toLp_apply, hz₀]
+      sup_of_le_left, update_eq_self, toLp_ofLp, min_eq_left hz₁.le, PiLp.toLp_apply, hz₀]
     abel
   · -- `e = right chart`, `e' = left chart`
     apply M.contDiffOn.congr
     rintro _ ⟨⟨hz₁, hz₂⟩, ⟨z, hz₀⟩, rfl⟩
     simp only [IccRightChart, Fin.isValue, PartialHomeomorph.symm_symm,
       modelWithCornersEuclideanHalfSpace, ModelWithCorners.mk_symm, ModelWithCorners.mk_coe,
-      PartialEquiv.coe_symm_mk, max_eq_left hz₀, update_eq_self, WithLp.toLp_ofLp, mem_setOf_eq,
+      PartialEquiv.coe_symm_mk, max_eq_left hz₀, update_eq_self, toLp_ofLp, mem_setOf_eq,
       PartialHomeomorph.mk_coe_symm, IccLeftChart, preimage_setOf_eq, sup_lt_iff,
       sub_lt_self_iff] at hz₁ hz₂
     rw [lt_sub_comm] at hz₁
@@ -518,7 +518,7 @@ instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : WithTop ℕ∞} :
     simp only [modelWithCornersEuclideanHalfSpace, Fin.isValue, ModelWithCorners.mk_coe,
       IccRightChart, IccLeftChart, PartialHomeomorph.coe_trans, PartialHomeomorph.mk_coe,
       PartialHomeomorph.mk_coe_symm, PartialEquiv.coe_symm_mk, ModelWithCorners.mk_symm, comp_apply,
-      hz₀, sup_of_le_left, update_eq_self, WithLp.toLp_ofLp, hz₁.le, PiLp.toLp_apply]
+      hz₀, sup_of_le_left, update_eq_self, toLp_ofLp, hz₁.le, PiLp.toLp_apply]
     abel
   ·-- `e = right chart`, `e' = right chart`
     exact (mem_groupoid_of_pregroupoid.mpr (symm_trans_mem_contDiffGroupoid _)).1

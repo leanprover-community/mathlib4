@@ -280,7 +280,7 @@ theorem EuclideanSpace.single_apply (i : ι) (a : 𝕜) (j : ι) :
 
 @[simp]
 theorem EuclideanSpace.single_eq_zero_iff {i : ι} {a : 𝕜} :
-    EuclideanSpace.single i a = 0 ↔ a = 0 := (toLp_injective 2).eq_iff.trans Pi.single_eq_zero_iff
+    EuclideanSpace.single i a = 0 ↔ a = 0 := (toLp_eq_zero 2).trans Pi.single_eq_zero_iff
 
 variable [Fintype ι]
 

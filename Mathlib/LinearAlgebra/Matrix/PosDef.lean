@@ -28,6 +28,8 @@ of quadratic forms. Most results require `𝕜 = ℝ` or `ℂ`.
   matrix. (See `Matrix.PosSemidef.eq_sqrt_of_sq_eq` for the proof of uniqueness.)
 -/
 
+open WithLp
+
 open scoped ComplexOrder
 
 namespace Matrix
@@ -517,7 +519,7 @@ theorem toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.PosDef) :
 lemma eigenvalues_pos [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : Matrix.PosDef A) (i : n) : 0 < hA.1.eigenvalues i := by
   simp only [hA.1.eigenvalues_eq]
-  exact hA.re_dotProduct_pos <| (WithLp.ofLp_injective 2).ne <|
+  exact hA.re_dotProduct_pos <| (ofLp_eq_zero 2).ne.2 <|
     hA.1.eigenvectorBasis.orthonormal.ne_zero i
 
 theorem det_pos [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) : 0 < det M := by

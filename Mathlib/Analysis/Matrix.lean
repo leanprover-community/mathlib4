@@ -272,6 +272,7 @@ variable [SeminormedAddCommGroup α]
 
 theorem linfty_opNorm_def (A : Matrix m n α) :
     ‖A‖ = ((Finset.univ : Finset m).sup fun i : m => ∑ j : n, ‖A i j‖₊ : ℝ≥0) := by
+  -- Porting note: added
   change ‖fun i ↦ toLp 1 (A i)‖ = _
   simp [Pi.norm_def, PiLp.nnnorm_eq_of_L1]
 
@@ -281,7 +282,7 @@ theorem linfty_opNNNorm_def (A : Matrix m n α) :
 
 @[simp]
 theorem linfty_opNNNorm_replicateCol (v : m → α) : ‖replicateCol ι v‖₊ = ‖v‖₊ := by
-  rw [linfty_opNNNorm_def, Pi.nnnorm_def v]
+  rw [linfty_opNNNorm_def, Pi.nnnorm_def]
   simp
 
 @[deprecated (since := "2025-03-20")] alias linfty_opNNNorm_col := linfty_opNNNorm_replicateCol
@@ -498,13 +499,13 @@ theorem frobeniusIsBoundedSMul [SeminormedRing R] [SeminormedAddCommGroup α] [M
     [IsBoundedSMul R α] :
     IsBoundedSMul R (Matrix m n α) :=
   letI := PiLp.seminormedAddCommGroupToPi 2 (fun _ : n ↦ α)
-  PiLp.instIsBoundedSMulForall 2 _
+  PiLp.isBoundedSMulSeminormedAddCommGroupToPi 2 _
 
 theorem frobeniusNormSMulClass [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α]
     [NormSMulClass R α] :
     NormSMulClass R (Matrix m n α) :=
   letI := PiLp.seminormedAddCommGroupToPi 2 (fun _ : n ↦ α)
-  PiLp.instNormSMulClassForall 2 _
+  PiLp.normSMulClassSeminormedAddCommGroupToPi 2 _
 
 @[deprecated (since := "2025-03-10")] alias frobeniusBoundedSMul := frobeniusIsBoundedSMul
 
@@ -514,7 +515,7 @@ matrix. -/
 def frobeniusNormedSpace [NormedField R] [SeminormedAddCommGroup α] [NormedSpace R α] :
     NormedSpace R (Matrix m n α) :=
   letI := PiLp.seminormedAddCommGroupToPi 2 (fun _ : n ↦ α)
-  PiLp.instNormedSpaceForall 2 _
+  PiLp.normedSpaceSeminormedAddCommGroupToPi 2 _
 
 section SeminormedAddCommGroup
 

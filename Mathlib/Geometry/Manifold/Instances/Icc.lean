@@ -30,7 +30,7 @@ embeddings. Once this is done,
   with the projection `ℝ → Icc x y` is
 -/
 
-open Set
+open Set WithLp
 open scoped Manifold Topology
 
 noncomputable section
@@ -84,7 +84,7 @@ lemma contMDiff_subtype_coe_Icc :
     have : ContDiff ℝ n (fun (z : EuclideanSpace ℝ (Fin 1)) ↦ z 0 + x) := by fun_prop
     apply this.contDiffWithinAt.congr_of_eventuallyEq_of_mem; swap
     · simpa using z.2.1
-    have : {w : EuclideanSpace ℝ (Fin 1) | w 0 < y - x} ∈ 𝓝 (WithLp.toLp 2 fun i ↦ z - x) := by
+    have : {w : EuclideanSpace ℝ (Fin 1) | w 0 < y - x} ∈ 𝓝 (toLp 2 fun i ↦ z - x) := by
       apply (isOpen_lt (PiLp.continuous_apply 2 _ 0) continuous_const).mem_nhds
       simpa using hz
     filter_upwards [self_mem_nhdsWithin, nhdsWithin_le_nhds this] with w hw h'w
@@ -100,7 +100,7 @@ lemma contMDiff_subtype_coe_Icc :
     have : ContDiff ℝ n (fun (z : EuclideanSpace ℝ (Fin 1)) ↦ y - z 0) := by fun_prop
     apply this.contDiffWithinAt.congr_of_eventuallyEq_of_mem; swap
     · simpa using z.2.2
-    have : {w : EuclideanSpace ℝ (Fin 1) | w 0 < y - x} ∈ 𝓝 (WithLp.toLp 2 fun i ↦ y - z) := by
+    have : {w : EuclideanSpace ℝ (Fin 1) | w 0 < y - x} ∈ 𝓝 (toLp 2 fun i ↦ y - z) := by
       apply (isOpen_lt (PiLp.continuous_apply 2 _ 0) continuous_const).mem_nhds
       simpa using h.out.trans_le hz
     filter_upwards [self_mem_nhdsWithin, nhdsWithin_le_nhds this] with w hw h'w
@@ -128,7 +128,7 @@ lemma contMDiffOn_projIcc :
       simp only [modelWithCornersEuclideanHalfSpace, Fin.isValue, ModelWithCorners.mk_coe,
         IccLeftChart, PartialHomeomorph.mk_coe, Function.comp_def, projIcc]
     have : ContDiff ℝ n (fun (w : ℝ) ↦
-        (show EuclideanSpace ℝ (Fin 1) from WithLp.toLp 2 fun (_ : Fin 1) ↦ w - x)) := by
+        (show EuclideanSpace ℝ (Fin 1) from toLp 2 fun (_ : Fin 1) ↦ w - x)) := by
       dsimp
       apply contDiff_euclidean.2 (fun i ↦ by fun_prop)
     apply this.contDiffWithinAt.congr_of_eventuallyEq_of_mem _ hz
@@ -141,7 +141,7 @@ lemma contMDiffOn_projIcc :
       simp only [modelWithCornersEuclideanHalfSpace, Fin.isValue, ModelWithCorners.mk_coe,
         IccRightChart, PartialHomeomorph.mk_coe, Function.comp_def, projIcc]
     have : ContDiff ℝ n (fun (w : ℝ) ↦
-        (show EuclideanSpace ℝ (Fin 1) from WithLp.toLp 2 fun (_ : Fin 1) ↦ y - w)) := by
+        (show EuclideanSpace ℝ (Fin 1) from toLp 2 fun (_ : Fin 1) ↦ y - w)) := by
       dsimp
       apply contDiff_euclidean.2 (fun i ↦ by fun_prop)
     apply this.contDiffWithinAt.congr_of_eventuallyEq_of_mem _ hz

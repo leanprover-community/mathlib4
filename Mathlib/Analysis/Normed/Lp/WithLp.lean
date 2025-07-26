@@ -48,7 +48,7 @@ instance, on `Prod` and finite `Pi` types). -/
 @[nolint unusedArguments]
 structure WithLp (_p : ℝ≥0∞) (V : Type uV) : Type uV where
   /-- Converts an element of `V` to an element of `WithLp p V`. One should used `toLp` instead
-  so that `p` is explicit -/
+  so that `p` is explicit. -/
   toLp' ::
   /-- Converts an element of `WithLp p V` to an element of `V`. -/
   ofLp : V

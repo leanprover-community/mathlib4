@@ -30,6 +30,9 @@ We ensure that the topology, bornology and uniform structure on `PiLp p α` are 
 product topology, product bornology and product uniformity, to be able to use freely continuity
 statements for the coordinate functions, for instance.
 
+If you wish to endow a type synonym of `Π i, α i` with the `L^p` distance, you can use
+`pseudoMetricSpaceToPi` and the declarations below that one.
+
 ## Implementation notes
 
 We only deal with the `L^p` distance on a product of finitely many metric spaces, which may be
@@ -420,11 +423,8 @@ private lemma uniformity_aux : 𝓤 (PiLp p β) = 𝓤[UniformSpace.comap ofLp i
   rw [← (isUniformInducing_ofLp_aux p β).comap_uniformity]
   rfl
 
-instance boronlogy (p : ℝ≥0∞) (β : ι → Type*) [∀ i, Bornology (β i)] :
-    Bornology (PiLp p β) where
-  cobounded' := (Bornology.cobounded (Π i, β i)).comap ofLp
-  le_cofinite' := GCongr.Filter.comap_le_comap (Bornology.le_cofinite (Π i, β i)) |>.trans
-    (Filter.comap_cofinite_le _)
+instance bornology (p : ℝ≥0∞) (β : ι → Type*) [∀ i, Bornology (β i)] :
+    Bornology (PiLp p β) := Bornology.induced ofLp
 
 private lemma cobounded_aux : @cobounded _ PseudoMetricSpace.toBornology = cobounded (PiLp p α) :=
   le_antisymm (antilipschitzWith_ofLp_aux p α).tendsto_cobounded.le_comap
@@ -598,11 +598,6 @@ lemma isometry_ofLp_infty [∀ i, PseudoEMetricSpace (β i)] :
 theorem infty_equiv_isometry [∀ i, PseudoEMetricSpace (β i)] :
     Isometry (WithLp.equiv ∞ (∀ i, β i)) :=
   isometry_ofLp_infty _
-
-lemma cobounded [∀ i, PseudoMetricSpace (β i)] :
-    cobounded (PiLp p β) = (cobounded (Π i, β i)).comap ofLp :=
-  le_antisymm (antilipschitzWith_ofLp_aux p β).tendsto_cobounded.le_comap
-    (lipschitzWith_ofLp_aux p β).comap_cobounded_le
 
 /-- seminormed group instance on the product of finitely many normed groups, using the `L^p`
 norm. -/
@@ -798,7 +793,7 @@ variable (p 𝕜)
 variable (E : Type*) [SeminormedAddCommGroup E] [Module 𝕜 E]
 
 /-- An equivalence of finite domains induces a linearly isometric equivalence of finitely supported
-functions -/
+functions. -/
 def _root_.LinearIsometryEquiv.piLpCongrLeft (e : ι ≃ ι') :
     (PiLp p fun _ : ι => E) ≃ₗᵢ[𝕜] PiLp p fun _ : ι' => E where
   toLinearEquiv := (WithLp.linearEquiv p 𝕜 (ι → E)).trans
@@ -878,9 +873,8 @@ theorem _root_.LinearIsometryEquiv.piLpCongrRight_symm (e : ∀ i, α i ≃ₗ�
 theorem _root_.LinearIsometryEquiv.piLpCongrRight_single (e : ∀ i, α i ≃ₗᵢ[𝕜] β i) [DecidableEq ι]
     (i : ι) (v : α i) :
     LinearIsometryEquiv.piLpCongrRight p e (toLp p <| Pi.single i v) =
-      toLp p (Pi.single i (e _ v)) := by
-  ext
-  simpa using Pi.apply_single (e ·) (fun _ => map_zero _) _ _ _
+      toLp p (Pi.single i (e _ v)) :=
+  PiLp.ext <| Pi.apply_single (e ·) (fun _ => map_zero _) _ _
 
 end piLpCongrRight
 
@@ -1186,70 +1180,81 @@ nonrec theorem basis_toMatrix_basisFun_mul [Fintype ι]
 
 section toPi
 
+/-!
+### `L^p` distance on a product space
+
+In this section we define a pseudometric space structure on `Π i, α i`, as well as a seminormed
+group structure. These are meant to be used to put the desired instances on type synonyms
+of `Π i, α i`. See for instance `Matrix.frobeniusSeminormedAddCommGroup`.
+-/
+
 variable [Fact (1 ≤ p)] [Fintype ι]
 
-/-- This definition allows to endow `Π i, β i` with the Lp distance with the uniformity and
-bornology being defeq to the product ones. It is useful to endow a type synonym of `Π i, β i` with
+/-- This definition allows to endow `Π i, α i` with the Lp distance with the uniformity and
+bornology being defeq to the product ones. It is useful to endow a type synonym of `Π i, α i` with
 the Lp distance. -/
-def pseudoMetricSpaceToPi [∀ i, PseudoMetricSpace (β i)] :
-    PseudoMetricSpace (Π i, β i) :=
-  (isUniformInducing_toLp p β).comapPseudoMetricSpace.replaceBornology
+def pseudoMetricSpaceToPi [∀ i, PseudoMetricSpace (α i)] :
+    PseudoMetricSpace (Π i, α i) :=
+  (isUniformInducing_toLp p α).comapPseudoMetricSpace.replaceBornology
     fun s => Filter.ext_iff.1
-      (le_antisymm (antilipschitzWith_toLp p β).tendsto_cobounded.le_comap
-        (lipschitzWith_toLp p β).comap_cobounded_le) sᶜ
+      (le_antisymm (antilipschitzWith_toLp p α).tendsto_cobounded.le_comap
+        (lipschitzWith_toLp p α).comap_cobounded_le) sᶜ
 
-lemma dist_pseudoMetricSpaceToPi [∀ i, PseudoMetricSpace (β i)] (x y : Π i, β i) :
-    @dist _ (pseudoMetricSpaceToPi p β).toDist x y = dist (toLp p x) (toLp p y) := rfl
+lemma dist_pseudoMetricSpaceToPi [∀ i, PseudoMetricSpace (α i)] (x y : Π i, α i) :
+    @dist _ (pseudoMetricSpaceToPi p α).toDist x y = dist (toLp p x) (toLp p y) := rfl
 
-/-- This definition allows to endow `Π i, β i` with the Lp norm with the uniformity and bornology
-being defeq to the product ones. It is useful to endow a type synonym of `Π i, β i` with the
+/-- This definition allows to endow `Π i, α i` with the Lp norm with the uniformity and bornology
+being defeq to the product ones. It is useful to endow a type synonym of `Π i, α i` with the
 Lp norm. -/
-def seminormedAddCommGroupToPi [∀ i, SeminormedAddCommGroup (β i)] :
-    SeminormedAddCommGroup (Π i, β i) where
+def seminormedAddCommGroupToPi [∀ i, SeminormedAddCommGroup (α i)] :
+    SeminormedAddCommGroup (Π i, α i) where
   norm x := ‖toLp p x‖
-  toPseudoMetricSpace := pseudoMetricSpaceToPi p β
+  toPseudoMetricSpace := pseudoMetricSpaceToPi p α
   dist_eq x y := by
     rw [dist_pseudoMetricSpaceToPi, SeminormedAddCommGroup.dist_eq, toLp_sub]
 
-lemma norm_seminormedAddCommGroupToPi [∀ i, SeminormedAddCommGroup (β i)] (x : Π i, β i) :
-    @Norm.norm _ (seminormedAddCommGroupToPi p β).toNorm x = ‖toLp p x‖ := rfl
+lemma norm_seminormedAddCommGroupToPi [∀ i, SeminormedAddCommGroup (α i)] (x : Π i, α i) :
+    @Norm.norm _ (seminormedAddCommGroupToPi p α).toNorm x = ‖toLp p x‖ := rfl
 
-lemma nnnorm_seminormedAddCommGroupToPi [∀ i, SeminormedAddCommGroup (β i)] (x : Π i, β i) :
-    @NNNorm.nnnorm _ (seminormedAddCommGroupToPi p β).toSeminormedAddGroup.toNNNorm x =
+lemma nnnorm_seminormedAddCommGroupToPi [∀ i, SeminormedAddCommGroup (α i)] (x : Π i, α i) :
+    @NNNorm.nnnorm _ (seminormedAddCommGroupToPi p α).toSeminormedAddGroup.toNNNorm x =
     ‖toLp p x‖₊ := rfl
 
-instance [∀ i, SeminormedAddCommGroup (β i)] {R : Type*} [SeminormedRing R]
-    [∀ i, Module R (β i)] [∀ i, IsBoundedSMul R (β i)] :
-    letI := pseudoMetricSpaceToPi p β
-    IsBoundedSMul R (Π i, β i) := by
-  letI := pseudoMetricSpaceToPi p β
+instance isBoundedSMulSeminormedAddCommGroupToPi
+    [∀ i, SeminormedAddCommGroup (α i)] {R : Type*} [SeminormedRing R]
+    [∀ i, Module R (α i)] [∀ i, IsBoundedSMul R (α i)] :
+    letI := pseudoMetricSpaceToPi p α
+    IsBoundedSMul R (Π i, α i) := by
+  letI := pseudoMetricSpaceToPi p α
   refine ⟨fun x y z ↦ ?_, fun x y z ↦ ?_⟩
   · simpa [dist_pseudoMetricSpaceToPi] using dist_smul_pair x (toLp p y) (toLp p z)
   · simpa [dist_pseudoMetricSpaceToPi] using dist_pair_smul x y (toLp p z)
 
-instance [∀ i, SeminormedAddCommGroup (β i)] {R : Type*} [SeminormedRing R]
-    [∀ i, Module R (β i)] [∀ i, NormSMulClass R (β i)] :
-    letI := seminormedAddCommGroupToPi p β
-    NormSMulClass R (Π i, β i) := by
-  letI := seminormedAddCommGroupToPi p β
+instance normSMulClassSeminormedAddCommGroupToPi
+    [∀ i, SeminormedAddCommGroup (α i)] {R : Type*} [SeminormedRing R]
+    [∀ i, Module R (α i)] [∀ i, NormSMulClass R (α i)] :
+    letI := seminormedAddCommGroupToPi p α
+    NormSMulClass R (Π i, α i) := by
+  letI := seminormedAddCommGroupToPi p α
   refine ⟨fun x y ↦ ?_⟩
   simp [norm_seminormedAddCommGroupToPi, norm_smul]
 
-instance [∀ i, SeminormedAddCommGroup (β i)] {R : Type*} [NormedField R]
-    [∀ i, NormedSpace R (β i)] :
-    letI := seminormedAddCommGroupToPi p β
-    NormedSpace R (Π i, β i) := by
-  letI := seminormedAddCommGroupToPi p β
+instance normedSpaceSeminormedAddCommGroupToPi
+    [∀ i, SeminormedAddCommGroup (α i)] {R : Type*} [NormedField R]
+    [∀ i, NormedSpace R (α i)] :
+    letI := seminormedAddCommGroupToPi p α
+    NormedSpace R (Π i, α i) := by
+  letI := seminormedAddCommGroupToPi p α
   refine ⟨fun x y ↦ ?_⟩
   simp [norm_seminormedAddCommGroupToPi, norm_smul]
 
-/-- This definition allows to endow `Π i, β i` with the Lp norm with the uniformity and bornology
-being defeq to the product ones. It is useful to endow a type synonym of `Π i, β i` with the
+/-- This definition allows to endow `Π i, α i` with the Lp norm with the uniformity and bornology
+being defeq to the product ones. It is useful to endow a type synonym of `Π i, α i` with the
 Lp norm. -/
-def normedAddCommGroupToPi [∀ i, NormedAddCommGroup (β i)] :
-    NormedAddCommGroup (Π i, β i) where
+def normedAddCommGroupToPi [∀ i, NormedAddCommGroup (α i)] :
+    NormedAddCommGroup (Π i, α i) where
   norm x := ‖toLp p x‖
-  toPseudoMetricSpace := pseudoMetricSpaceToPi p β
+  toPseudoMetricSpace := pseudoMetricSpaceToPi p α
   dist_eq x y := by
     rw [dist_pseudoMetricSpaceToPi, SeminormedAddCommGroup.dist_eq, toLp_sub]
   eq_of_dist_eq_zero {x y} h := by

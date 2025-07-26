@@ -20,16 +20,16 @@ variable (p : ℝ≥0∞) (X : Type*) [MeasurableSpace X]
 namespace WithLp
 
 instance measurableSpace : MeasurableSpace (WithLp p X) :=
-  MeasurableSpace.comap WithLp.ofLp inferInstance
+  MeasurableSpace.comap ofLp inferInstance
 
 @[fun_prop, measurability]
-lemma measurable_ofLp : Measurable (@WithLp.ofLp p X) := comap_measurable _
+lemma measurable_ofLp : Measurable (@ofLp p X) := comap_measurable _
 
 @[deprecated measurable_ofLp (since := "2024-04-27")]
 lemma measurable_equiv : Measurable (WithLp.equiv p X) := measurable_ofLp p X
 
 @[fun_prop, measurability]
-lemma measurable_toLp : Measurable (@WithLp.toLp p X) := fun s hs ↦ by
+lemma measurable_toLp : Measurable (@toLp p X) := fun s hs ↦ by
   obtain ⟨t, ht, rfl⟩ := hs
   simpa [Set.preimage_preimage]
 

@@ -35,6 +35,7 @@ the subtype of `PreLp` satisfying `Memℓp`.
 
 -/
 
+open WithLp
 
 open scoped ENNReal
 
@@ -56,8 +57,8 @@ theorem Memℓp.all (f : ∀ i, E i) : Memℓp f p := by
 
 /-- The canonical `Equiv` between `lp E p ≃ PiLp p E` when `E : α → Type u` with `[Finite α]`. -/
 def Equiv.lpPiLp : lp E p ≃ PiLp p E where
-  toFun f := WithLp.toLp p ⇑f
-  invFun f := ⟨WithLp.ofLp f, Memℓp.all f⟩
+  toFun f := toLp p ⇑f
+  invFun f := ⟨ofLp f, Memℓp.all f⟩
 
 theorem coe_equiv_lpPiLp (f : lp E p) : Equiv.lpPiLp f = ⇑f :=
   rfl
