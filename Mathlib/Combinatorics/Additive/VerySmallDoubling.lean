@@ -350,262 +350,28 @@ private lemma rightCoset_eq_of_mem {H : Subgroup G} {c : Set G} {x : G}
   rw [← rightCoset_mem_rightCoset H hx, smul_smul] at ha
   simp_all only [op_mul, op_inv, mul_inv_cancel_left, SetLike.mem_coe]
 
-private structure ExpansionMeasure (G : Type*) [Group G] [DecidableEq G] where
-  K : ℝ
+private structure RCosRepFin (G : Type*) [Group G] [DecidableEq G] where
+  H : Subgroup G
   A : Finset G
-  toFun : Finset G → ℝ
-  left_invariant : ∀ (S : Finset G) (x : G), toFun (x •> S) = toFun S
-  submodularity : ∀ (S : Finset G) (T : Finset G),
-      toFun (S ∩ T) + toFun (S ∪ T) ≤ toFun S + toFun T
+  preZ : Set (Set G)
+  fin_preZ : preZ.Finite
+  preZ' : Finset (Set G)
+  chooseZ' : Set G → G
+  chooseZ'_spec : ∀ cH ∈ preZ', chooseZ' cH ∈ cH ∩ (↑H * ↑A)
+  Z' : Finset G
+  --Z'_subset_HA : (Z' : Set G) ⊆ H * A
+  toH : G → G
+  toH_mem_H : ∀ z ∈ Z', toH z ∈ ↑H
+  toA : G → G
+  toA_mem_A : ∀ z ∈ Z', toA z ∈ A
+  toH_mul_toA : ∀ z ∈ Z', toH z * toA z = z
+  toZ : G → G
+  toZ_comp_chooseZ'_mem_self {c : Set G} (hc : c ∈ preZ') : toZ (chooseZ' c) ∈ c
+  Z : Finset G
 
-private def expansionMeasure {G : Type*} [Group G] [DecidableEq G] (K : ℝ)
-    (A : Finset G) : ExpansionMeasure G := {
-  K := K
-  A := A
-  toFun := fun S => #(S * A) - K * #S
-  left_invariant := fun _ _ => by simp_all only [card_smul_finset, smul_mul_assoc]
-  submodularity := by
-    intro S T
-    have eq1 : K * #(S ∩ T) + K * #(S ∪ T) = K * #S + K * #T := by
-      simpa [← mul_add, ← Nat.cast_add] using Or.inl (card_inter_add_card_union S T)
-    have eq2 : (#((S ∩ T) * A) : ℝ) + #((S ∪ T) * A) ≤ #(S * A) + #(T * A) := by
-      calc
-        (#((S ∩ T) * A) : ℝ) + #((S ∪ T) * A) ≤ #((S * A) ∩ (T * A)) + #((S * A) ∪ (T * A))
-                                        := by gcongr; exact inter_mul_subset; exact union_mul.le
-                                            _ = #(S * A) + #(T * A)
-                                        := ?_
-      · norm_cast
-        exact card_inter_add_card_union (S * A) (T * A)
-    have eq3 : #((S ∩ T) * A) - K * #(S ∩ T) + (#((S ∪ T) * A) - K * #(S ∪ T))
-        = #((S ∩ T) * A) + #((S ∪ T) * A) - (K * #(S ∩ T) + K * #(S ∪ T)) := by ring1
-    have eq4 : #(S * A) - K * #S + (#(T * A) - K * #T)
-        = #(S * A) + #(T * A) - (K * #S + K * #T) := by ring1
-    rw [eq3, eq4, eq1]
-    exact sub_le_sub_right eq2 _
-}
-
-
--- def expansionMeasure (K : ℝ) (B : Finset G) : Finset G → ℝ := fun S => #(S * B) - K * #S
-
--- lemma expansionMeasure_left_invariant (K : ℝ) (B : Finset G) (S : Finset G) (x : G) :
---     expansionMeasure K B (x •> S) = expansionMeasure K B S := sorry
-
-theorem doubling_lt_two {ε : ℝ} (hε₀ : 0 < ε) (hε₁ : ε ≤ 1) (hA : A.Nonempty)
-    (hS : ∃ (S : Finset G) (_ : #S ≥ #A), #(S * A) ≤ (2 - ε) * #A) :
-    ∃ (H : Subgroup G) (_ : Fintype H) (_ : Fintype.card H ≤ (2 / ε - 1) * #A) (Z : Finset G)
-      (_ : #Z ≤ 2 / ε - 1), (A : Set G) ⊆ (H : Set G) * Z := by
+private noncomputable def rCosRepFin (H : Subgroup G) [Fintype H] {A : Finset G}
+    (hA : A.Nonempty) : RCosRepFin G := by
   classical
-
-  let K := 1 - ε / 2
-  let em := expansionMeasure K A
-  have min_em (S : Finset G) : ε / 2 * #S ≤ em.toFun S := by
-    change ε / 2 * #S ≤ #(S * A) - K * #S
-    obtain ⟨a, ha⟩ := hA
-    calc
-      ε / 2 * #S  = #S - (1 - ε / 2) * #S := by ring1
-                _ = #S - K * #S           := by rfl
-                _ = #(S * {a}) - K * #S   := by norm_num
-                _ ≤ #(S * A)  - K * #S    := ?_
-    · apply sub_le_sub_right
-      norm_cast
-      apply card_le_card
-      exact mul_subset_mul_left (singleton_subset_iff.mpr ha)
-  have em_pos {S : Finset G} (hS : S.Nonempty) : 0 < em.toFun S := by
-    calc
-      0 < ε / 2 * #S := ?_
-      _ ≤ em.toFun S := min_em S
-    · simp_all only [ge_iff_le, exists_prop, div_pos_iff_of_pos_left, Nat.ofNat_pos,
-                      mul_pos_iff_of_pos_left, Nat.cast_pos, card_pos]
-
-  let im_em := em.toFun '' {S : Finset G | S.Nonempty}
-  have nonempty_im_em : im_em.Nonempty := ⟨em.toFun {1},
-    Set.mem_image_of_mem em.toFun (by exact ⟨1, mem_singleton.mpr (rfl)⟩)⟩
-  have bddBelow_im_em : BddBelow im_em := by
-    use 0
-    intro c hc
-    obtain ⟨S, (hS₁ : S.Nonempty), hS₂⟩ := hc
-    simpa only [hS₂] using le_of_lt (em_pos hS₁)
-
-  let κ := sInf im_em
-  have κ_min {S : Finset G} (hS : S.Nonempty) : κ ≤ em.toFun S := by
-    apply csInf_le bddBelow_im_em
-    exact Set.mem_image_of_mem em.toFun hS
-  have κ_nonneg : 0 ≤ κ := by
-    apply le_csInf nonempty_im_em
-    intro k hk
-    obtain ⟨S, (hS₁ : S.Nonempty), hS₂⟩ := (Set.mem_image _ _ _).mp hk
-    rw [← hS₂]
-    exact le_of_lt (em_pos hS₁)
-  have κ_mem_im_em : κ ∈ im_em := by
-    apply by_contradiction
-    rw [Set.mem_image]
-    push_neg
-    intro h
-    let t := Nat.floor (2 * (κ + 1) / ε)
-    have largeT {T : Finset G} (hT : t < #T) : κ + 1 < em.toFun T := by
-      rw [Nat.lt_iff_add_one_le] at hT
-      calc
-            κ + 1
-        _ = (κ + 1) / (2 * (κ + 1) / ε) * (2 * (κ + 1) / ε)
-              := Eq.symm (div_mul_cancel₀ _ (by positivity))
-        _ < (κ + 1) / (2 * (κ + 1) / ε) * (t + 1)
-              := by gcongr; exact Nat.lt_floor_add_one (2 * (κ + 1) / ε)
-        _ = ε / 2 * (t + 1)   := by field_simp; ring1
-        _ ≤ ε / 2 * #T        := by gcongr; rw [← Nat.cast_add_one, Nat.cast_le]; exact hT
-        _ ≤ em.toFun T        := min_em T
-    let im_smallT := (((Icc #A (t * #A)).map Nat.castEmbedding : Finset ℝ)
-                      - K • ((Icc 1 t).map Nat.castEmbedding)).filter (fun x => κ < x)
-    have smallT {T : Finset G} (hT₁ : T.Nonempty) (hT₂ : #T ≤ t) : em.toFun T ∈ im_smallT := by
-      rw [mem_filter]
-      constructor
-      · apply sub_mem_sub
-        · apply mem_map_of_mem
-          rw [mem_Icc]
-          constructor
-          obtain ⟨x, hx⟩ := hT₁
-          · calc
-                  #A
-              _ = #(x •> A)   := Eq.symm (card_smul_finset x A)
-              _ ≤ #(T •> A)   := card_le_card (smul_finset_subset_smul hx)
-              _ ≤ #(T * A)    := by simp
-          · calc
-                  #(T * A)
-              _ ≤ #T * #A     := card_mul_le
-              _ ≤ t * #A      := Nat.mul_le_mul_right (#A) hT₂
-        · rw [← smul_eq_mul]
-          apply smul_mem_smul_finset
-          apply mem_map_of_mem
-          rw [mem_Icc]
-          exact ⟨Nat.one_le_iff_ne_zero.mpr (Nat.pos_iff_ne_zero.mp (card_pos.mpr hT₁)), hT₂⟩
-      · exact lt_of_le_of_ne (κ_min hT₁) (Ne.symm (h T hT₁))
-    let k := (im_smallT ∪ {κ + 1}).min' (by finiteness)
-    have : κ < k := by
-      rw [lt_min'_iff _ (by finiteness)]
-      intro x hx
-      rw [mem_union] at hx
-      cases hx with
-      | inl hx =>
-        exact (Finset.mem_filter.mp hx).2
-      | inr hx =>
-        rw [mem_singleton] at hx
-        linarith
-    obtain ⟨s, hs₁, hs₂⟩ := (csInf_lt_iff bddBelow_im_em nonempty_im_em).mp this
-    obtain ⟨S, (hS₁ : S.Nonempty), hS₂⟩ := (Set.mem_image _ _ _).mp hs₁
-    have : em.toFun S ≤ κ + 1 := by
-      calc
-            em.toFun S
-        _ = s           := hS₂
-        _ ≤ k           := le_of_lt hs₂
-        _ ≤ κ + 1       := min'_le _ _ (by simp)
-    have := not_lt.mp (mt largeT (not_lt.mpr this))
-    apply smallT hS₁ at this
-    rw [hS₂] at this
-    exact (and_not_self_iff (s ∈ im_smallT)).mp ⟨this,
-      (notMem_union.mp (mt (min'_le (im_smallT ∪ {κ + 1}) _) (not_le.mpr hs₂))).1⟩
-  have κ_pos : 0 < κ := by
-    obtain ⟨S, (hS₁ : S.Nonempty), hS₂⟩ := (Set.mem_image _ _ _).mp κ_mem_im_em
-    exact lt_of_lt_of_eq (em_pos hS₁) hS₂
-
-  let isFragment (S : Finset G) : Prop := em.toFun S = κ
-  have fragment_inter {S T : Finset G} (hS : isFragment S) (hT : isFragment T)
-      (hST : (S ∩ T).Nonempty) : isFragment (S ∩ T) := by
-    unfold isFragment at *
-    have ub := em.submodularity S T
-    rw [hS, hT, ← two_mul] at ub
-    have lb₁ : κ ≤ em.toFun (S ∩ T) := κ_min hST
-    have lb₂ : κ ≤ em.toFun (S ∪ T) := κ_min (Set.Nonempty.mono inter_subset_union hST)
-    linarith
-  have fragment_left_invariance {S : Finset G} (hS : isFragment S)
-      (x : G) : isFragment (x •> S) := Eq.trans (em.left_invariant S x) hS
-  have fragment_nonempty {S : Finset G} (hS : isFragment S) : S.Nonempty := by
-    apply by_contradiction
-    rw [not_nonempty_iff_eq_empty]
-    intro hS_empty
-    have : κ = 0 := by
-      rw [← hS, hS_empty]
-      change #(∅ * A) - K * #∅ = 0
-      rw [empty_mul, card_empty]
-      ring1
-    rw [this, lt_self_iff_false] at κ_pos
-    assumption
-
-  let isAtom (S : Finset G) : Prop := isFragment S ∧ ∀ (T : Finset G), isFragment T → #S ≤ #T
-  have atom_partition {S T : Finset G} (hS : isAtom S) (hT : isAtom T) :
-      (S ∩ T).Nonempty → S = T := by
-    intro hST₁
-    obtain ⟨hS₁, hS₂⟩ := hS
-    obtain ⟨hT₁, hT₂⟩ := hT
-    have hST₂ := fragment_inter hS₁ hT₁ hST₁
-    have hS₃ := eq_of_subset_of_card_le inter_subset_left (hS₂ _ hST₂)
-    have hT₃ := eq_of_subset_of_card_le inter_subset_right (hT₂ _ hST₂)
-    exact Eq.trans (Eq.symm hS₃) hT₃
-  have atom_left_invariance {S : Finset G} (hS : isAtom S) (x : G) : isAtom (x •> S) := by
-    unfold isAtom
-    constructor
-    · exact fragment_left_invariance hS.1 x
-    · simpa only [card_smul_finset] using hS.2
-  have atom_nonempty {S : Finset G} (hS : isAtom S) : S.Nonempty := fragment_nonempty hS.1
-
-  let fragments := {S : Finset G | isFragment S}
-  have fragments_nonempty : fragments.Nonempty := by
-    obtain ⟨S, _, (hS : isFragment S)⟩ := (Set.mem_image _ _ _).mp κ_mem_im_em
-    exact ⟨S, hS⟩
-  let N := Function.argminOn card fragments fragments_nonempty
-  have N_atom : isAtom N := ⟨Function.argminOn_mem card _ fragments_nonempty,
-    fun T hT => Function.argminOn_le card _ hT⟩
-
-  obtain ⟨n, hn⟩ := atom_nonempty N_atom
-
-  have one_mem_n1N : 1 ∈ n⁻¹ •> N := by
-    apply smul_mem_smul_finset (a := n⁻¹) at hn
-    simpa [smul_eq_mul, inv_mul_cancel] using hn
-  let H : Subgroup G := {
-    carrier := n⁻¹ •> N
-    one_mem' := by
-      simpa only [← coe_smul_finset, mem_coe] using one_mem_n1N
-    mul_mem' := by
-      intro a b ha hb
-      rw [← coe_smul_finset, mem_coe] at *
-      apply smul_mem_smul_finset (a := a) at hb
-      rw [smul_eq_mul] at hb
-      have ha' : a ∈ a • n⁻¹ • N := by
-        apply smul_mem_smul_finset (a := a) at one_mem_n1N
-        simpa only [smul_eq_mul, mul_one] using one_mem_n1N
-      have : (n⁻¹ •> N ∩ a •> n⁻¹ •> N).Nonempty := by
-        use a
-        rw [mem_inter]
-        exact ⟨ha, ha'⟩
-      simpa only [← atom_partition (atom_left_invariance N_atom n⁻¹)
-                  (atom_left_invariance (atom_left_invariance N_atom n⁻¹) a) this] using hb
-    inv_mem' := by
-      intro a ha
-      rw [← coe_smul_finset, mem_coe] at *
-      apply smul_mem_smul_finset (a := a⁻¹) at ha
-      rw [smul_eq_mul, inv_mul_cancel] at ha
-      have ha' : a⁻¹ ∈ a⁻¹ •> n⁻¹ •> N := by
-        apply smul_mem_smul_finset (a := a⁻¹) at one_mem_n1N
-        simpa only [smul_eq_mul, mul_one] using one_mem_n1N
-      have : (n⁻¹ •> N ∩ a⁻¹ •> n⁻¹ •> N).Nonempty := by
-        use 1
-        rw [mem_inter]
-        exact ⟨one_mem_n1N, ha⟩
-      simpa only [← atom_partition (atom_left_invariance N_atom n⁻¹)
-                  (atom_left_invariance (atom_left_invariance N_atom n⁻¹) a⁻¹) this] using ha'
-  }
-  have fintypeH : Fintype H := Fintype.ofFinset (n⁻¹ •> N) (by
-    intro a
-    constructor
-    · intro ha
-      rw [SetLike.mem_coe, ← Subgroup.mem_carrier]
-      change a ∈ n⁻¹ •> (N : Set G)
-      simpa only [← coe_smul_finset, mem_coe] using ha
-    · intro ha
-      rw [SetLike.mem_coe, ← Subgroup.mem_carrier] at ha
-      change a ∈ n⁻¹ •> (N : Set G) at ha
-      simpa only [← coe_smul_finset, mem_coe] using ha
-  )
-  have H_eq_HH : (H : Set G) = H * H := by field_simp
-
   let preZ := {cH ∈ orbit Gᵐᵒᵖ (H : Set G) | (cH ∩ (H * A)).Nonempty}
   have fin_preZ : preZ.Finite := by
     obtain ⟨a, ha⟩ := hA
@@ -622,7 +388,7 @@ theorem doubling_lt_two {ε : ℝ} (hε₀ : 0 < ε) (hε₁ : ε ≤ 1) (hA : A
       unfold Set.InjOn
       intro c₁ hc₁ c₂ hc₂ hc₁c₂
       unfold f_preZ at hc₁c₂
-      simp_all
+      simp_all only [↓reduceDIte, Subtype.mk.injEq]
       let s := Classical.choose hc₁.2
       have s_mem_c₁ : s ∈ c₁ := by
         apply And.right at hc₁
@@ -646,78 +412,441 @@ theorem doubling_lt_two {ε : ℝ} (hε₀ : 0 < ε) (hε₁ : ε ≤ 1) (hA : A
   let Z' := image chooseZ' preZ'
 
   have Z'_subset_HA : (Z' : Set G) ⊆ H * A := by
-    simpa [Z', Finset.image_subset_iff] using fun x hx ↦ (chooseZ'_spec _ hx).2
+    simpa only [coe_image, Set.image_subset_iff, Z'] using fun x hx ↦ (chooseZ'_spec _ hx).2
 
   change ∀ (z : G), z ∈ (Z' : Set G) → z ∈ (H : Set G) * A at Z'_subset_HA
   simp only [mem_coe, Set.mem_mul] at Z'_subset_HA
-  choose! toH h_toH toA h_toA h_toH_toA using Z'_subset_HA
+  choose! toH toH_mem_H toA toA_mem_A toH_mul_toA using Z'_subset_HA
   let toZ := fun z' => (toH z')⁻¹ * z'
+
+  have toZ_comp_chooseZ'_mem_self {c : Set G} (hc : c ∈ preZ')
+      : toZ (chooseZ' c) ∈ c := by
+    unfold toZ
+    nth_rw 1 [rightCoset_eq_of_mem ((Set.Finite.mem_toFinset _).mp hc).1 (chooseZ'_spec _ hc).1]
+    apply mem_rightCoset
+    apply H.inv_mem
+    exact toH_mem_H _ (mem_image_of_mem chooseZ' hc)
+
   let Z := image toZ Z'
+  exact ⟨H, A, preZ, fin_preZ, preZ', chooseZ', chooseZ'_spec, Z', toH, toH_mem_H, toA,
+          toA_mem_A, toH_mul_toA, toZ, toZ_comp_chooseZ'_mem_self, Z⟩
 
-  have Z_subset_A : Z ⊆ A := by
-    intro z hz
-    obtain ⟨z', hz'₁, hz'₂⟩ := mem_image.mp hz
-    unfold toZ at hz'₂
-    rw [← hz'₂, inv_mul_eq_of_eq_mul (Eq.symm (h_toH_toA z' hz'₁))]
-    exact h_toA z' hz'₁
+private noncomputable def rightCosetRepresentingFinset (H : Subgroup G) [Fintype H] {A : Finset G}
+    (hA : A.Nonempty) : Finset G :=
+  (rCosRepFin H hA).Z
 
-  have HZ_eq_HA : (H : Set G) * Z = H * A := by
-    apply Set.Subset.antisymm (Set.mul_subset_mul_left (coe_subset.mpr Z_subset_A))
-    intro x hx
-    obtain ⟨h, hh, a, ha, hha⟩ := Set.mem_mul.mp hx
-    rw [← hha, H_eq_HH, mul_assoc]
-    apply Set.mul_mem_mul hh
-    let ca := (H : Set G) <• a
-    have ca_in_preZ' : ca ∈ preZ' := by
-      rw [Set.Finite.mem_toFinset, Set.mem_setOf]
+private lemma rightCosetRepresentingFinset_subset_finset (H : Subgroup G) [Fintype H] {A : Finset G}
+    (hA : A.Nonempty) : rightCosetRepresentingFinset H hA ⊆ A := by
+  intro z hz
+  obtain ⟨z', hz'₁, (hz'₂ : ((rCosRepFin H hA).toH z')⁻¹ * z' = z)⟩ := mem_image.mp hz
+  rw [← hz'₂, inv_mul_eq_of_eq_mul (Eq.symm ((rCosRepFin H hA).toH_mul_toA z' hz'₁))]
+  exact (rCosRepFin H hA).toA_mem_A z' hz'₁
+
+private lemma mul_rightCosetRepresentingFinset_eq_mul_set (H : Subgroup G) [Fintype H]
+    {A : Finset G} (hA : A.Nonempty) : (H : Set G) * (rightCosetRepresentingFinset H hA) = H * A
+    := by
+  have H_eq_HH : (H : Set G) = H * H := by simp only [coe_mul_coe]
+  let rcrf := rCosRepFin H hA
+  apply Set.Subset.antisymm (Set.mul_subset_mul_left
+          (coe_subset.mpr (rightCosetRepresentingFinset_subset_finset H hA)))
+  intro x hx
+  obtain ⟨h, hh, a, ha, hha⟩ := Set.mem_mul.mp hx
+  rw [← hha, H_eq_HH, mul_assoc]
+  apply Set.mul_mem_mul hh
+  let ca := (H : Set G) <• a
+  have ca_mem_preZ' : ca ∈ rcrf.preZ' := by
+    change ca ∈ rcrf.fin_preZ.toFinset
+    rw [Set.Finite.mem_toFinset]
+    change ca ∈ {cH ∈ orbit Gᵐᵒᵖ (H : Set G) | (cH ∩ (H * A)).Nonempty}
+    rw [Set.mem_setOf]
+    constructor
+    · simp_all only [coe_mul_coe, SetLike.mem_coe, mem_coe, mem_orbit, ca]
+    · use a
       constructor
-      · simp_all [ca]
-      · use a
+      · rw [← one_mul a]
+        exact mem_rightCoset a (one_mem H)
+      · rw [← one_mul a]
+        exact Set.mul_mem_mul H.one_mem ha
+  let z := rcrf.toZ (rcrf.chooseZ' ca)
+  have z_mem_ca : z ∈ ca := rcrf.toZ_comp_chooseZ'_mem_self (ca_mem_preZ')
+  have z_mem_Z : z ∈ rightCosetRepresentingFinset H hA :=
+    mem_image_of_mem _ (mem_image_of_mem _ ca_mem_preZ')
+  have a_mem_Hz : a ∈ (H: Set G) <• z := by
+    rw [mem_rightCoset_iff, SetLike.mem_coe]
+    rw [mem_rightCoset_iff, SetLike.mem_coe] at z_mem_ca
+    apply inv_mem at z_mem_ca
+    simp_all only [coe_mul_coe, SetLike.mem_coe, mem_coe, mul_inv_rev, inv_inv]
+  exact Set.op_smul_set_subset_mul z_mem_Z a_mem_Hz
+
+private lemma mul_rightCosetRepresentingFinset_eq_mul_finset (H : Subgroup G) [Fintype H]
+    {A : Finset G} (hA : A.Nonempty)
+    : Set.toFinset H * (rightCosetRepresentingFinset H hA) = Set.toFinset H * A := by
+  simpa only [← coe_inj, coe_mul, Set.coe_toFinset]
+    using mul_rightCosetRepresentingFinset_eq_mul_set H hA
+
+private lemma card_mul_rightCosetRepresentingFinset_eq_mul_card (H : Subgroup G) [Fintype H]
+    {A : Finset G} (hA : A.Nonempty) : #(Set.toFinset H * (rightCosetRepresentingFinset H hA))
+    = Fintype.card H * #(rightCosetRepresentingFinset H hA) := by
+  let rcrf := rCosRepFin H hA
+  simp only [← SetLike.coe_sort_coe, ← Set.toFinset_card, card_mul_iff, Set.coe_toFinset]
+  unfold Set.InjOn
+  simp only [Set.mem_prod, SetLike.mem_coe, mem_coe, and_imp, Prod.forall, Prod.mk.injEq]
+  intro h z hh (hz : z ∈ image rcrf.toZ rcrf.Z')
+        g t hg (ht : t ∈ image rcrf.toZ rcrf.Z') hyp
+  rw [mem_image] at hz ht
+
+  obtain ⟨z', (hz'₁ : z' ∈ image rcrf.chooseZ' rcrf.preZ'), hz'₂⟩ := hz
+  obtain ⟨t', (ht'₁ : t' ∈ image rcrf.chooseZ' rcrf.preZ'), ht'₂⟩ := ht
+  rw [mem_image] at hz'₁ ht'₁
+
+  obtain ⟨cz, hcz₁, hcz₂⟩ := hz'₁
+  have hcz₃ : z ∈ cz := by simp only [← hz'₂, ← hcz₂, rcrf.toZ_comp_chooseZ'_mem_self hcz₁]
+  change cz ∈ rcrf.fin_preZ.toFinset at hcz₁
+  rw [Set.Finite.mem_toFinset rcrf.fin_preZ] at hcz₁
+  have hcz₄ := rightCoset_eq_of_mem hcz₁.1 hcz₃
+
+  obtain ⟨ct, hct₁, hct₂⟩ := ht'₁
+  have hct₃ : t ∈ ct := by simp only [← ht'₂, ← hct₂, rcrf.toZ_comp_chooseZ'_mem_self hct₁]
+  change ct ∈ rcrf.fin_preZ.toFinset at hct₁
+  rw [Set.Finite.mem_toFinset rcrf.fin_preZ] at hct₁
+  have hct₄ := rightCoset_eq_of_mem hct₁.1 hct₃
+
+  rw [← inv_mul_eq_iff_eq_mul, ← mul_assoc] at hyp
+  rw [← hyp, op_mul, ← smul_smul, rightCoset_mem_rightCoset H (H.mul_mem (H.inv_mem hg) hh),
+      ← hcz₄] at hct₄
+  rw [hct₄, hcz₂] at hct₂
+  apply congr_arg rcrf.toZ at hct₂
+  rw [hz'₂, ht'₂] at hct₂
+  rw [hct₂, mul_eq_right, inv_mul_eq_one] at hyp
+  exact ⟨Eq.symm hyp, hct₂⟩
+
+
+private structure ExpansionMeasure (G : Type*) [Group G] [DecidableEq G] where
+  K : ℝ
+  hK : K < 1
+  A : Finset G
+  hA : A.Nonempty
+  toFun : Finset G → ℝ
+  toFun_def : ∀ (S : Finset G), toFun S = #(S * A) - K * #S
+  left_invariant : ∀ (S : Finset G) (x : G), toFun (x •> S) = toFun S
+  submodularity : ∀ (S : Finset G) (T : Finset G),
+      toFun (S ∩ T) + toFun (S ∪ T) ≤ toFun S + toFun T
+  lower_bound : ∀ (S : Finset G), (1 - K) * #S ≤ toFun S
+
+private def expansionMeasure {K : ℝ} (hK : K < 1) {A : Finset G} (hA : A.Nonempty)
+    : ExpansionMeasure G := {
+  K := K
+  hK := hK
+  A := A
+  hA := hA
+  toFun := fun S => #(S * A) - K * #S
+  toFun_def := fun S => rfl
+  left_invariant := fun _ _ => by simp_all only [card_smul_finset, smul_mul_assoc]
+  submodularity := by
+    intro S T
+    have eq1 : K * #(S ∩ T) + K * #(S ∪ T) = K * #S + K * #T := by
+      simpa only [← mul_add, ← Nat.cast_add, mul_eq_mul_left_iff, Nat.cast_inj]
+        using Or.inl (card_inter_add_card_union S T)
+    have eq2 : (#((S ∩ T) * A) : ℝ) + #((S ∪ T) * A) ≤ #(S * A) + #(T * A) := by
+      calc
+        (#((S ∩ T) * A) : ℝ) + #((S ∪ T) * A) ≤ #((S * A) ∩ (T * A)) + #((S * A) ∪ (T * A))
+                                        := by gcongr; exact inter_mul_subset; exact union_mul.le
+                                            _ = #(S * A) + #(T * A)
+                                        := ?_
+      · norm_cast
+        exact card_inter_add_card_union (S * A) (T * A)
+    have eq3 : #((S ∩ T) * A) - K * #(S ∩ T) + (#((S ∪ T) * A) - K * #(S ∪ T))
+        = #((S ∩ T) * A) + #((S ∪ T) * A) - (K * #(S ∩ T) + K * #(S ∪ T)) := by ring1
+    have eq4 : #(S * A) - K * #S + (#(T * A) - K * #T)
+        = #(S * A) + #(T * A) - (K * #S + K * #T) := by ring1
+    rw [eq3, eq4, eq1]
+    exact sub_le_sub_right eq2 _
+  lower_bound := by
+    intro S
+    obtain ⟨a, ha⟩ := hA
+    calc
+          (1 - K) * #S
+      _ = #S - K * #S           := by ring1
+      _ = #S - K * #S           := by rfl
+      _ = #(S * {a}) - K * #S   := by norm_num
+      _ ≤ #(S * A)  - K * #S    := ?_
+    apply sub_le_sub_right
+    norm_cast
+    apply card_le_card
+    exact mul_subset_mul_left (singleton_subset_iff.mpr ha)
+}
+
+private lemma expansionMeasure_pos (em : ExpansionMeasure G)
+    : ∀ {S : Finset G} (_ : S.Nonempty), 0 < em.toFun S := by
+  intro S hS
+  calc
+          0
+      _ < (1 - em.K) * #S   := ?_
+      _ ≤ em.toFun S        := em.lower_bound S
+  simp_all only [em.hK, sub_pos, mul_pos_iff_of_pos_left, Nat.cast_pos, card_pos]
+
+private def expansionMeasure_image (em : ExpansionMeasure G) : Set ℝ :=
+  em.toFun '' {S : Finset G | S.Nonempty}
+
+private lemma expansionMeasure_image_nonempty (em : ExpansionMeasure G)
+    : (expansionMeasure_image em).Nonempty :=
+  ⟨em.toFun {1}, Set.mem_image_of_mem em.toFun (by exact ⟨1, mem_singleton.mpr (rfl)⟩)⟩
+
+private lemma expansionMeasure_image_bddBelow (em : ExpansionMeasure G)
+    : BddBelow (expansionMeasure_image em) := ⟨0, fun c hc => by
+  obtain ⟨S, (hS₁ : S.Nonempty), hS₂⟩ := hc
+  simpa only [hS₂] using le_of_lt (expansionMeasure_pos em hS₁)
+⟩
+
+private noncomputable def connectivity (em : ExpansionMeasure G) : ℝ :=
+  sInf (expansionMeasure_image em)
+
+private lemma connectivity_le (em : ExpansionMeasure G) : ∀ {S : Finset G} (_ : S.Nonempty),
+    connectivity em ≤ em.toFun S := fun hS =>
+  csInf_le (expansionMeasure_image_bddBelow em) (Set.mem_image_of_mem em.toFun hS)
+
+private lemma connectivity_nonneg (em : ExpansionMeasure G) : 0 ≤ connectivity em := by
+  apply le_csInf (expansionMeasure_image_nonempty em)
+  intro k hk
+  obtain ⟨S, (hS₁ : S.Nonempty), hS₂⟩ := (Set.mem_image _ _ _).mp hk
+  rw [← hS₂]
+  exact le_of_lt (expansionMeasure_pos em hS₁)
+
+private lemma connectivity_mem_expansionMeasure_image (em : ExpansionMeasure G)
+    : connectivity em ∈ expansionMeasure_image em := by
+  apply by_contradiction
+
+  let κ := connectivity em
+  have κ_add_one_pos : 0 < κ + 1 := by linarith [connectivity_nonneg em]
+  have one_sub_K_pos : 0 < 1 - em.K := by linarith [em.hK]
+
+  unfold expansionMeasure_image
+  rw [Set.mem_image]
+  push_neg
+  intro h
+
+  let t := Nat.floor ((κ + 1) / (1 - em.K))
+  have largeT {T : Finset G} (hT : t < #T) : κ + 1 < em.toFun T := by
+    rw [Nat.lt_iff_add_one_le] at hT
+    calc
+          κ + 1
+      _ = (κ + 1) / ((κ + 1) / (1 - em.K)) * ((κ + 1) / (1 - em.K))
+            := Eq.symm (div_mul_cancel₀ _ (div_ne_zero (by linarith) (by linarith)))
+      _ < (κ + 1) / ((κ + 1) / (1 - em.K)) * (t + 1)
+            := by gcongr; exact Nat.lt_floor_add_one ((κ + 1) / (1 - em.K))
+      _ = (1 - em.K) * (t + 1)    := by field_simp
+      _ ≤ (1 - em.K) * #T         := by gcongr; rw [← Nat.cast_add_one, Nat.cast_le]; exact hT
+      _ ≤ em.toFun T              := em.lower_bound T
+
+  let im_smallT := (((Icc #em.A (t * #em.A)).map Nat.castEmbedding : Finset ℝ)
+                    - em.K • ((Icc 1 t).map Nat.castEmbedding)).filter (fun x => κ < x)
+  have smallT {T : Finset G} (hT₁ : T.Nonempty) (hT₂ : #T ≤ t) : em.toFun T ∈ im_smallT := by
+    rw [mem_filter]
+    constructor
+    · rw [em.toFun_def]
+      apply sub_mem_sub
+      · apply mem_map_of_mem
+        rw [mem_Icc]
         constructor
-        · rw [← one_mul a]
-          exact mem_rightCoset a (one_mem H)
-        · rw [← one_mul a]
-          exact Set.mul_mem_mul H.one_mem ha
-    let z := toZ (chooseZ' ca)
-    have z_in_ca : z ∈ ca := by
-      unfold z toZ
-      unfold preZ' at ca_in_preZ'
-      nth_rw 1 [rightCoset_eq_of_mem ((Set.Finite.mem_toFinset _).mp ca_in_preZ').1
-            (chooseZ'_spec _ ca_in_preZ').1]
-      apply mem_rightCoset
-      simp
-      exact h_toH _ (mem_image_of_mem chooseZ' ca_in_preZ')
-    have z_in_Z : z ∈ Z := mem_image_of_mem _ (mem_image_of_mem _ ca_in_preZ')
-    have a_in_Hz : a ∈ (H: Set G) <• z := by
-      rw [mem_rightCoset_iff, SetLike.mem_coe]
-      rw [mem_rightCoset_iff, SetLike.mem_coe] at z_in_ca
-      apply inv_mem at z_in_ca
-      simp_all
-    exact Set.op_smul_set_subset_mul z_in_Z a_in_Hz
+        obtain ⟨x, hx⟩ := hT₁
+        · calc
+                #em.A
+            _ = #(x •> em.A)    := Eq.symm (card_smul_finset x em.A)
+            _ ≤ #(T •> em.A)    := card_le_card (smul_finset_subset_smul hx)
+            _ ≤ #(T * em.A)     := by simp only [smul_eq_mul, le_refl]
+        · calc
+                #(T * em.A)
+            _ ≤ #T * #em.A      := card_mul_le
+            _ ≤ t * #em.A       := Nat.mul_le_mul_right (#em.A) hT₂
+      · rw [← smul_eq_mul]
+        apply smul_mem_smul_finset
+        apply mem_map_of_mem
+        rw [mem_Icc]
+        exact ⟨Nat.one_le_iff_ne_zero.mpr (Nat.pos_iff_ne_zero.mp (card_pos.mpr hT₁)), hT₂⟩
+    · exact lt_of_le_of_ne (connectivity_le em hT₁) (Ne.symm (h T hT₁))
+  let k := (im_smallT ∪ {κ + 1}).min' (by finiteness)
+  have : κ < k := by
+    rw [lt_min'_iff _ (by finiteness)]
+    intro x hx
+    rw [mem_union] at hx
+    cases hx with
+    | inl hx =>
+      exact (Finset.mem_filter.mp hx).2
+    | inr hx =>
+      rw [mem_singleton] at hx
+      linarith
+  obtain ⟨s, hs₁, hs₂⟩ := (csInf_lt_iff (expansionMeasure_image_bddBelow em)
+                                        (expansionMeasure_image_nonempty em)).mp this
+  obtain ⟨S, (hS₁ : S.Nonempty), hS₂⟩ := (Set.mem_image _ _ _).mp hs₁
+  have : em.toFun S ≤ κ + 1 := by
+    calc
+          em.toFun S
+      _ = s           := hS₂
+      _ ≤ k           := le_of_lt hs₂
+      _ ≤ κ + 1       := min'_le _ _ (by simp only [mem_union, mem_singleton, or_true])
+  have := not_lt.mp (mt largeT (not_lt.mpr this))
+  apply smallT hS₁ at this
+  rw [hS₂] at this
+  exact (and_not_self_iff (s ∈ im_smallT)).mp ⟨this,
+    (notMem_union.mp (mt (min'_le (im_smallT ∪ {κ + 1}) _) (not_le.mpr hs₂))).1⟩
 
-  have HZ_eq_HA_finset : Set.toFinset H * Z = Set.toFinset H * A := by
-    simpa [← coe_inj, coe_mul] using HZ_eq_HA
+private lemma connectivity_pos (em : ExpansionMeasure G) : 0 < connectivity em := by
+  obtain ⟨S, hS₁, hS₂⟩ := (Set.mem_image _ _ _).mp
+    (connectivity_mem_expansionMeasure_image em)
+  exact lt_of_lt_of_eq (expansionMeasure_pos em hS₁) hS₂
 
-  have card_mul_eq_mul_card : #(Set.toFinset H * Z) = Fintype.card H * #Z := by
-    simp [← SetLike.coe_sort_coe, ← Set.toFinset_card, card_mul_iff]
-    unfold Set.InjOn
-    simp only [Set.mem_prod, SetLike.mem_coe, mem_coe, and_imp, Prod.forall, Prod.mk.injEq]
-    intro h₁ z₁ hh₁ hz₁ h₂ z₂ hh₂ hz₂ h
-    sorry
+private def isFragment (em : ExpansionMeasure G) : Finset G → Prop :=
+  fun S => em.toFun S = connectivity em
+
+private lemma fragment_inter_of_inter_nonempty {em : ExpansionMeasure G} {S T : Finset G}
+    (hS : isFragment em S) (hT : isFragment em T) (hST : (S ∩ T).Nonempty)
+    : isFragment em (S ∩ T) := by
+  unfold isFragment at *
+  let κ := connectivity em
+  have ub := em.submodularity S T
+  rw [hS, hT, ← two_mul] at ub
+  have lb₁ : κ ≤ em.toFun (S ∩ T) := connectivity_le em hST
+  have lb₂ : κ ≤ em.toFun (S ∪ T) := connectivity_le em
+    (Set.Nonempty.mono inter_subset_union hST)
+  linarith
+
+private lemma fragment_left_invariant {em : ExpansionMeasure G} {S : Finset G}
+    (hS : isFragment em S) (x : G) : isFragment em (x •> S) :=
+  Eq.trans (em.left_invariant S x) hS
+
+private lemma fragment_nonempty {em : ExpansionMeasure G} {S : Finset G} (hS : isFragment em S)
+    : S.Nonempty := by
+  apply by_contradiction
+  let κ := connectivity em
+  rw [not_nonempty_iff_eq_empty]
+  intro hS_empty
+  have : κ = 0 := by
+    unfold κ
+    rw [← hS, hS_empty, em.toFun_def]
+    rw [empty_mul, card_empty]
+    ring1
+  have : κ ≠ 0 := ne_of_gt (connectivity_pos em)
+  contradiction
+
+private def isAtom (em : ExpansionMeasure G) : Finset G → Prop :=
+  fun S => isFragment em S ∧ ∀ (T : Finset G), isFragment em T → #S ≤ #T
+
+private lemma atom_partition {em : ExpansionMeasure G} {S T : Finset G} (hS : isAtom em S)
+    (hT : isAtom em T) : (S ∩ T).Nonempty → S = T := by
+  intro hST₁
+  obtain ⟨hS₁, hS₂⟩ := hS
+  obtain ⟨hT₁, hT₂⟩ := hT
+  have hST₂ := fragment_inter_of_inter_nonempty hS₁ hT₁ hST₁
+  have hS₃ := eq_of_subset_of_card_le inter_subset_left (hS₂ _ hST₂)
+  have hT₃ := eq_of_subset_of_card_le inter_subset_right (hT₂ _ hST₂)
+  exact Eq.trans (Eq.symm hS₃) hT₃
+
+private lemma atom_left_invariant {em : ExpansionMeasure G} {S : Finset G} (hS : isAtom em S)
+    (x : G) : isAtom em (x •> S) :=
+  ⟨fragment_left_invariant hS.1 x, by simpa only [card_smul_finset] using hS.2⟩
+
+private lemma atom_nonempty {em : ExpansionMeasure G} {S : Finset G} (hS : isAtom em S)
+    : S.Nonempty :=
+  fragment_nonempty hS.1
+
+private lemma atom_exists (em : ExpansionMeasure G) : ∃ N, isAtom em N := by
+  have : {S : Finset G | isFragment em S}.Nonempty := by
+    obtain ⟨S, _, (hS : isFragment em S)⟩ := (Set.mem_image _ _ _).mp
+      (connectivity_mem_expansionMeasure_image em)
+    exact ⟨S, hS⟩
+  exact ⟨ Function.argminOn card {S : Finset G | isFragment em S} this,
+    ⟨Function.argminOn_mem card _ this, fun T hT => Function.argminOn_le card _ hT⟩ ⟩
+
+private def atomicSubgroup {em : ExpansionMeasure G} {N : Finset G} (hN : isAtom em N) {n : G}
+    (hn : n ∈ N) : Subgroup G := by
+  have one_mem_carrier : 1 ∈ n⁻¹ •> N := by
+    apply smul_mem_smul_finset (a := n⁻¹) at hn
+    simpa only [smul_eq_mul, inv_mul_cancel] using hn
+
+  exact {
+    carrier := n⁻¹ •> N
+
+    one_mem' := by
+      simpa only [← coe_smul_finset, mem_coe] using one_mem_carrier
+
+    mul_mem' := by
+      intro a b ha hb
+      rw [← coe_smul_finset, mem_coe] at *
+      apply smul_mem_smul_finset (a := a) at hb
+      rw [smul_eq_mul] at hb
+      have ha' : a ∈ a • n⁻¹ • N := by
+        apply smul_mem_smul_finset (a := a) at one_mem_carrier
+        simpa only [smul_eq_mul, mul_one] using one_mem_carrier
+      have : (n⁻¹ •> N ∩ a •> n⁻¹ •> N).Nonempty := by
+        use a
+        rw [mem_inter]
+        exact ⟨ha, ha'⟩
+      simpa only [← atom_partition (atom_left_invariant hN n⁻¹)
+                  (atom_left_invariant (atom_left_invariant hN n⁻¹) a) this] using hb
+
+    inv_mem' := by
+      intro a ha
+      rw [← coe_smul_finset, mem_coe] at *
+      apply smul_mem_smul_finset (a := a⁻¹) at ha
+      rw [smul_eq_mul, inv_mul_cancel] at ha
+      have ha' : a⁻¹ ∈ a⁻¹ •> n⁻¹ •> N := by
+        apply smul_mem_smul_finset (a := a⁻¹) at one_mem_carrier
+        simpa only [smul_eq_mul, mul_one] using one_mem_carrier
+      have : (n⁻¹ •> N ∩ a⁻¹ •> n⁻¹ •> N).Nonempty := by
+        use 1
+        rw [mem_inter]
+        exact ⟨one_mem_carrier, ha⟩
+      simpa only [← atom_partition (atom_left_invariant hN n⁻¹)
+                  (atom_left_invariant (atom_left_invariant hN n⁻¹) a⁻¹) this] using ha'
+  }
+
+private def atomicSubgroup_fintype {em : ExpansionMeasure G} {N : Finset G} (hN : isAtom em N)
+    {n : G} (hn : n ∈ N) : Fintype (atomicSubgroup hN hn) := Fintype.ofFinset (n⁻¹ •> N) (by
+  intro a
+  let H := atomicSubgroup hN hn
+  rw [← mem_coe, coe_smul_finset]
+  change a ∈ H.carrier ↔ a ∈ H
+  exact H.mem_carrier
+)
+
+-- def expansionMeasure (K : ℝ) (B : Finset G) : Finset G → ℝ := fun S => #(S * B) - K * #S
+
+-- lemma expansionMeasure_left_invariant (K : ℝ) (B : Finset G) (S : Finset G) (x : G) :
+--     expansionMeasure K B (x •> S) = expansionMeasure K B S := sorry
+
+theorem doubling_lt_two {ε : ℝ} (hε₀ : 0 < ε) (hε₁ : ε ≤ 1) (hA : A.Nonempty)
+    (hS : ∃ (S : Finset G) (_ : #S ≥ #A), #(S * A) ≤ (2 - ε) * #A) :
+    ∃ (H : Subgroup G) (_ : Fintype H) (_ : Fintype.card H ≤ (2 / ε - 1) * #A) (Z : Finset G)
+      (_ : #Z ≤ 2 / ε - 1), (A : Set G) ⊆ (H : Set G) * Z := by
+  classical
+
+  let K := 1 - ε / 2
+  have hK : K < 1 := by unfold K; linarith [hε₀]
+
+  let em := expansionMeasure hK hA
+  let κ := connectivity em
+
+  obtain ⟨N, hN⟩ := atom_exists em
+  obtain ⟨n, hn⟩ := atom_nonempty hN
+
+  let H := atomicSubgroup hN hn
+  let fintypeH := atomicSubgroup_fintype hN hn
+  have _ : Fintype ((n⁻¹ •> N : Set G)) := by finiteness
 
   obtain ⟨S, hS₁, hS₂⟩ := hS
   have calc₁ : em.toFun (Set.toFinset H) ≤ (1 - ε / 2) * #A := by
     calc
           em.toFun (Set.toFinset H)
-      _ = em.toFun (n⁻¹ •> N : Set G).toFinset  := by abel
-      _ = em.toFun (n⁻¹ •> N)                   := by simp
+      _ = em.toFun (n⁻¹ •> N : Set G).toFinset  := congr_arg _ (Set.toFinset_inj.mpr rfl)
+      _ = em.toFun (n⁻¹ •> N) := by simp only [Set.toFinset_smul_set, toFinset_coe]
       _ = em.toFun N                            := em.left_invariant _ _
-      _ = κ                                     := N_atom.1
-      _ ≤ em.toFun S := κ_min (card_pos.mp (lt_of_lt_of_le (card_pos.mpr hA) hS₁))
+      _ = κ                                     := hN.1
+      _ ≤ em.toFun S := connectivity_le em (card_pos.mp (lt_of_lt_of_le (card_pos.mpr hA) hS₁))
       _ = #(S * A) - K * #S                     := by rfl
       _ ≤ (2 - ε) * #A - (1 - ε / 2) * #A       := by gcongr; linarith
       _ = (1 - ε / 2) * #A                      := by linarith
 
+  let Z := rightCosetRepresentingFinset H hA
   refine ⟨H, fintypeH, ?cardH, Z, ?cardZ, ?A_subset_HZ⟩
 
   case cardH =>
@@ -725,17 +854,44 @@ theorem doubling_lt_two {ε : ℝ} (hε₀ : 0 < ε) (hε₁ : ε ≤ 1) (hA : A
       calc
             ε / 2 * (Fintype.card H)
         _ = ε / 2 * #(H : Set G).toFinset := by simp only [Set.toFinset_card, SetLike.coe_sort_coe]
-        _ ≤ em.toFun (Set.toFinset H)     := min_em _
+        _ = (1 - K) * #(H : Set G).toFinset := by ring1
+        _ ≤ em.toFun (Set.toFinset H)     := em.lower_bound (Set.toFinset H)
         _ ≤ (1 - ε / 2) * #A              := calc₁
     rw [← mul_le_mul_left (by positivity)]
     have : ε / 2 * ((2 / ε - 1) * #A) = (1 - ε / 2) * #A := by field_simp; ring1
     linarith
 
   case cardZ =>
+    have card_HA_bound : #(Set.toFinset H * A) ≤ (2 / ε - 1) * #(H : Set G).toFinset := by
+      rw [← mul_le_mul_left (by change 0 < 1 - K; linarith [hK])]
+      suffices (1 - K) * #(Set.toFinset H * A) ≤ (1 - ε / 2) * #(H : Set G).toFinset by
+        apply le_of_eq_of_le' _ this; field_simp; ring1
+      rw [sub_mul, one_mul, sub_le_iff_le_add]
+      calc
+            (#(Set.toFinset H * A) : ℝ)
+        _ = K * #(H : Set G).toFinset + (#(Set.toFinset H * A) - K * #(H : Set G).toFinset)
+              := by ring1
+        _ = K * #(H : Set G).toFinset + em.toFun (Set.toFinset H)   := by rfl
+        _ ≤ K * #(H : Set G).toFinset + (1 - ε / 2) * #A            := by linarith [calc₁]
+        _ ≤ K *  #(H : Set G).toFinset + (1 - ε / 2) * #(Set.toFinset H * A)
+              := by gcongr; linarith; simp only [Set.mem_toFinset, SetLike.mem_coe,
+                                                  H.one_mem, subset_mul_right]
+    calc
+          (#Z : ℝ)
+      _ = #(H : Set G).toFinset * #Z / #(H : Set G).toFinset          := by field_simp
+      _ = #(Set.toFinset H * Z) / #(H : Set G).toFinset               := ?_
+      _ = #(Set.toFinset H * A) / #(H : Set G).toFinset
+            := by rw [mul_rightCosetRepresentingFinset_eq_mul_finset H hA]
+      _ ≤ (2 / ε - 1) * #(H : Set G).toFinset / #(H : Set G).toFinset := by gcongr
+      _ = 2 / ε - 1                                                   := by field_simp; ring1
 
-    sorry
-  · sorry
+    · nth_rw 1 [Set.toFinset_card]
+      simp only [SetLike.coe_sort_coe]
+      rw [← Nat.cast_mul, ← card_mul_rightCosetRepresentingFinset_eq_mul_card H hA]
 
+  case A_subset_HZ =>
+    rw [mul_rightCosetRepresentingFinset_eq_mul_set H hA]
+    exact Set.subset_mul_right _ H.one_mem
 
 
 end Finset
