@@ -5,6 +5,7 @@ Authors: Anne Baanen, Kexing Ying
 -/
 import Mathlib.LinearAlgebra.BilinearForm.Properties
 import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
+import Mathlib.LinearAlgebra.Matrix.Symmetric
 
 /-!
 # Bilinear form
@@ -193,6 +194,23 @@ theorem BilinForm.toMatrix_apply (B : BilinForm R₁ M₁) (i j : n) :
     BilinForm.toMatrix b B i j = B (b i) (b j) :=
   LinearMap.toMatrix₂_apply _ _ B _ _
 
+theorem BilinForm.dotProduct_toMatrix_mulVec (B : BilinForm R₁ M₁) (x y : n → R₁) :
+    x ⬝ᵥ (BilinForm.toMatrix b B) *ᵥ y = B (b.equivFun.symm x) (b.equivFun.symm y) := by
+  simp only [dotProduct, mulVec_eq_sum, op_smul_eq_smul, Finset.sum_apply, Pi.smul_apply,
+    transpose_apply, toMatrix_apply, smul_eq_mul, mul_sum, Basis.equivFun_symm_apply, map_sum,
+    map_smul, coeFn_sum, LinearMap.smul_apply]
+  rw [Finset.sum_comm]
+  refine Finset.sum_congr rfl (fun i _ ↦ Finset.sum_congr rfl fun j _ ↦ ?_)
+  ring
+
+lemma BilinForm.apply_eq_dotProduct_toMatrix_mulVec (B : BilinForm R₁ M₁) (x y : M₁) :
+    B x y = (b.repr x) ⬝ᵥ (BilinForm.toMatrix b B) *ᵥ (b.repr y) := by
+  nth_rw 1 [← b.sum_repr x, ← b.sum_repr y]
+  simp [dotProduct, Matrix.mulVec_eq_sum, Finset.mul_sum]
+  rw [Finset.sum_comm]
+  refine Finset.sum_congr rfl (fun i _ ↦ Finset.sum_congr rfl fun j _ ↦ ?_)
+  ring
+
 @[simp]
 theorem Matrix.toBilin_apply (M : Matrix n n R₁) (x y : M₁) :
     Matrix.toBilin b M x y = ∑ i, ∑ j, b.repr x i * M i j * b.repr y j :=
@@ -230,6 +248,11 @@ theorem Matrix.toBilin_toMatrix (B : BilinForm R₁ M₁) :
 theorem BilinForm.toMatrix_toBilin (M : Matrix n n R₁) :
     BilinForm.toMatrix b (Matrix.toBilin b M) = M :=
   (BilinForm.toMatrix b).apply_symm_apply M
+
+lemma BilinForm.isSymm_iff_isSymm_toMatrix (B : BilinForm R₁ M₁) :
+    B.IsSymm ↔ (BilinForm.toMatrix b B).IsSymm := by
+  rw [LinearMap.BilinForm.isSymm_iff_basis b, Matrix.IsSymm.ext_iff]
+  simp [Eq.comm]
 
 variable {M₂' : Type*} [AddCommMonoid M₂'] [Module R₁ M₂']
 variable (c : Basis o R₁ M₂')
