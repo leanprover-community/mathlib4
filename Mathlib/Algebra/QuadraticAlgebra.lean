@@ -37,6 +37,7 @@ structure QuadraticAlgebra (R : Type u) (a b : R) : Type u where
   re : R
   /-- Imaginaty part of an element in quadratic algerba -/
   im : R
+deriving DecidableEq
 
 namespace QuadraticAlgebra
 
