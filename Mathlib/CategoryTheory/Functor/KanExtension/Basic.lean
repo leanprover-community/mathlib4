@@ -39,12 +39,12 @@ namespace Functor
 variable {C C' H D D' : Type*} [Category C] [Category C'] [Category H] [Category D] [Category D']
 
 /-- Given two functors `L : C ⥤ D` and `F : C ⥤ H`, this is the category of functors
-`F' : H ⥤ D` equipped with a natural transformation `L ⋙ F' ⟶ F`. -/
+`F' : D ⥤ H` equipped with a natural transformation `L ⋙ F' ⟶ F`. -/
 abbrev RightExtension (L : C ⥤ D) (F : C ⥤ H) :=
   CostructuredArrow ((whiskeringLeft C D H).obj L) F
 
 /-- Given two functors `L : C ⥤ D` and `F : C ⥤ H`, this is the category of functors
-`F' : H ⥤ D` equipped with a natural transformation `F ⟶ L ⋙ F'`. -/
+`F' : D ⥤ H` equipped with a natural transformation `F ⟶ L ⋙ F'`. -/
 abbrev LeftExtension (L : C ⥤ D) (F : C ⥤ H) :=
   StructuredArrow F ((whiskeringLeft C D H).obj L)
 

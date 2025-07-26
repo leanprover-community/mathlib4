@@ -307,7 +307,7 @@ end
 namespace CommShift
 
 instance of_iso_inv [NatTrans.CommShift e.hom A] :
-  NatTrans.CommShift e.inv A := ⟨fun a => by
+    NatTrans.CommShift e.inv A := ⟨fun a => by
   ext X
   dsimp
   rw [← cancel_epi (e.hom.app (X⟦a⟧)), e.hom_inv_id_app_assoc, ← shift_app_comm_assoc,

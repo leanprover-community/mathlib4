@@ -45,10 +45,8 @@ lemma integerComplement.ne_one {x : ℂ} (hx : x ∈ ℂ_ℤ) : x ≠ 1 :=
   fun hx' ↦ hx ⟨1, by exact_mod_cast hx'.symm⟩
 
 lemma integerComplement_pow_two_ne_pow_two {x : ℂ} (hx : x ∈ ℂ_ℤ) (n : ℤ) : x ^ 2 ≠ n ^ 2 := by
-  intro h
-  have := (not_exists.mp hx n)
+  have := not_exists.mp hx n
   have := not_exists.mp hx (-n)
-  simp only [sq_eq_sq_iff_eq_or_eq_neg] at *
-  aesop
+  simp_all [sq_eq_sq_iff_eq_or_eq_neg, eq_comm]
 
 end Complex

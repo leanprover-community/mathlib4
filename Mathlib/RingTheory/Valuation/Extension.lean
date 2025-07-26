@@ -90,7 +90,7 @@ end algebraMap
 
 instance id : vR.HasExtension vR where
   val_isEquiv_comap := by
-    simp only [Algebra.id.map_eq_id, comap_id, IsEquiv.refl]
+    simp only [Algebra.algebraMap_self, comap_id, IsEquiv.refl]
 
 section integer
 
@@ -179,7 +179,7 @@ instance instAlgebra_valuationSubring : Algebra K₀ L₀ :=
 
 @[simp]
 lemma coe_algebraMap_valuationSubring_eq (x : K₀) :
-  (algebraMap K₀ L₀ x : L) = algebraMap K L (x : K) := rfl
+    (algebraMap K₀ L₀ x : L) = algebraMap K L (x : K) := rfl
 
 instance instIsScalarTower_valuationSubring : IsScalarTower K₀ K L :=
   inferInstanceAs (IsScalarTower vK.integer K L)

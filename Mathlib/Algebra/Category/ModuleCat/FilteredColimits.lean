@@ -162,9 +162,9 @@ def colimitDesc (t : Cocone F) : colimit F ⟶ t.pt :=
     congr_fun ((forget _).congr_map (h.fac ((forget₂ _ _).mapCocone t) j)) x
   ofHom
     { f with
-    map_smul' := fun r x => by
-      obtain ⟨j, x, rfl⟩ := M.mk_surjective F x
-      simp [hf] }
+      map_smul' := fun r x => by
+        obtain ⟨j, x, rfl⟩ := M.mk_surjective F x
+        simp [hf] }
 
 @[reassoc (attr := simp)]
 lemma ι_colimitDesc (t : Cocone F) (j : J) :

@@ -192,9 +192,9 @@ private partial def evalLazyEntryAux (entry : LazyEntry) (eta : Bool) :
     match stackEntry with
     | .star =>
       return some [(.star, entry)]
-    | .expr { expr, bvars, lctx, localInsts, cfg, transparency } =>
+    | .expr { expr, bvars, lctx, localInsts, cfg } =>
       withLCtx lctx localInsts do
-      withConfig (fun _ => cfg) do withTransparency transparency do
+      withConfig (fun _ => cfg) do
         if eta then
           return some (← encodingStepWithEta expr false entry |>.run { bvars := bvars })
         else
@@ -215,11 +215,7 @@ where
         if ← isIgnoredArg arg d bi then
           loop b (i+1) j (.star :: entries)
         else
-          -- Recall that on implicit arguments `isDefEq` switches to `default` transparency.
-          -- We don't want such strong reducibility, but `instances` transparency can be useful.
-          let info ← (if bi.isExplicit then id else withReducibleAndInstances) do
-            mkExprInfo arg bvars
-          loop b (i+1) j (.expr info :: entries)
+          loop b (i+1) j (.expr (← mkExprInfo arg bvars) :: entries)
       let rec reduce := do
         match ← whnfD (fnType.instantiateRevRange j i args) with
         | .forallE _ d b bi => cont i d b bi
@@ -244,9 +240,9 @@ If `entry.previous.isSome`, then replace it with `none`, and add the required en
 to entry.stack`.
 -/
 private def processPrevious (entry : LazyEntry) : MetaM LazyEntry := do
-  let some { expr, bvars, lctx, localInsts, cfg, transparency } := entry.previous | return entry
+  let some { expr, bvars, lctx, localInsts, cfg } := entry.previous | return entry
   let entry := { entry with previous := none }
-  withLCtx lctx localInsts do withConfig (fun _ => cfg) do withTransparency transparency do
+  withLCtx lctx localInsts do withConfig (fun _ => cfg) do
   expr.withApp fun fn args => do
 
     let stackArgs (entry : LazyEntry) : MetaM LazyEntry := do

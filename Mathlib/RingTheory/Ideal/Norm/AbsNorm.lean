@@ -37,6 +37,7 @@ the quotient `R ⧸ I` (setting it to 0 if the cardinality is infinite).
   norm of its generator
 -/
 
+open Module
 open scoped nonZeroDivisors
 
 section abs_norm

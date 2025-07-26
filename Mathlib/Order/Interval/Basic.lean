@@ -59,11 +59,17 @@ instance [IsEmpty α] : IsEmpty (NonemptyInterval α) :=
 instance [Subsingleton α] : Subsingleton (NonemptyInterval α) :=
   toDualProd_injective.subsingleton
 
+instance [DecidableEq α] : DecidableEq (NonemptyInterval α) :=
+  toDualProd_injective.decidableEq
+
 instance le : LE (NonemptyInterval α) :=
   ⟨fun s t => t.fst ≤ s.fst ∧ s.snd ≤ t.snd⟩
 
 theorem le_def : s ≤ t ↔ t.fst ≤ s.fst ∧ s.snd ≤ t.snd :=
   Iff.rfl
+
+instance [DecidableLE α] : DecidableLE (NonemptyInterval α) :=
+  fun _ _ => decidable_of_iff' _ le_def
 
 /-- `toDualProd` as an order embedding. -/
 @[simps]
@@ -93,6 +99,10 @@ variable [Preorder α] [Preorder β] [Preorder γ] {s : NonemptyInterval α} {x 
 
 instance : Preorder (NonemptyInterval α) :=
   Preorder.lift toDualProd
+
+theorem toDualProd_mono : Monotone (toDualProd : _ → αᵒᵈ × α) := fun _ _ => id
+
+theorem toDualProd_strictMono : StrictMono (toDualProd : _ → αᵒᵈ × α) := fun _ _ => id
 
 instance : Coe (NonemptyInterval α) (Set α) :=
   ⟨fun s => Icc s.fst s.snd⟩
@@ -189,6 +199,9 @@ variable [PartialOrder α] [PartialOrder β] {s t : NonemptyInterval α} {a b : 
 
 instance : PartialOrder (NonemptyInterval α) :=
   PartialOrder.lift _ toDualProd_injective
+
+instance [DecidableLE α] : DecidableLE (NonemptyInterval α) :=
+  fun _ _ => decidable_of_iff' _ le_def
 
 /-- Consider a nonempty interval `[a, b]` as the set `[a, b]`. -/
 def coeHom : NonemptyInterval α ↪o Set α :=

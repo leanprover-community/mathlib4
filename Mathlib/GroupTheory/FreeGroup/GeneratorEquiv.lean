@@ -23,7 +23,7 @@ noncomputable section
 
 variable {α β G H : Type*}
 
-open IsFreeGroup
+open IsFreeGroup Module
 
 /-- `A` is a basis of the ℤ-module `FreeAbelianGroup A`. -/
 noncomputable def FreeAbelianGroup.basis (α : Type*) : Basis α ℤ (FreeAbelianGroup α) :=

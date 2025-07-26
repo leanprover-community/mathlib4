@@ -44,6 +44,9 @@ consisting of the even permutations.
 * `Equiv.Perm.alternatingGroup_le_of_index_le_two` shows that a subgroup of index at most 2
   of `Equiv.Perm α` contains the alternating group.
 
+* `Equiv.Perm.alternatingGroup.center_eq_bot`: when `4 ≤ Nat.card α`,
+then center of `alternatingGroup α` is trivial.
+
 ## Instances
 
 * The alternating group is a characteristic subgroup of the permutaiton group.
@@ -109,7 +112,6 @@ theorem alternatingGroup.index_eq_two [Nontrivial α] :
 @[nontriviality]
 theorem alternatingGroup.index_eq_one [Subsingleton α] : (alternatingGroup α).index = 1 := by
   rw [Subgroup.index_eq_one]; apply Subsingleton.elim
-
 /-- The group isomorphism between `alternatingGroup (Fin n)` and `alternatingGroup (Fin (n + 1))`
 that fixes one element. -/
 @[simps apply_coe symm_apply_coe]
@@ -121,7 +123,7 @@ def Fin.altExtendSuccAboveMulEquiv {n} (i : Fin (n + 1)) :
       by simp [mem_alternatingGroup.mp σs.2, extendDomain_apply_not_subtype]⟩
   invFun σs :=
     ⟨(finSuccAboveEquiv i).permCongr.symm (subtypePerm σs.1 <|
-        by simp [not_iff_not, σs.1.injective.eq_iff' σs.2.2]), by
+        by simp [σs.1.injective.eq_iff' σs.2.2]), by
       simp only [ne_eq, permCongr_symm, mem_alternatingGroup, sign_permCongr]
       rw [sign_subtypePerm _ _ (by simpa [not_imp_not] using σs.2.2), σs.2.1]⟩
   left_inv σs := by ext j : 2; simp
@@ -142,13 +144,21 @@ def Equiv.altCongrMulEquiv {β : Type*} [Fintype β] [DecidableEq β] (e : α �
       simp [e.permCongr.symm.surjective.exists,
         show sign (e.permCongr.symm p) = sign p by simp, - permCongr_symm]
 
-theorem Fintype.two_mul_card_alternatingGroup [Nontrivial α] :
-    2 * card (alternatingGroup α) = (card α)! := by
-  simp_rw [← Nat.card_eq_fintype_card, ← alternatingGroup.index_eq_two (α := α), index_mul_card,
-    Nat.card_perm]
+theorem two_mul_nat_card_alternatingGroup [Nontrivial α] :
+    2 * Nat.card (alternatingGroup α) = Nat.card (Perm α) := by
+  simp only [← alternatingGroup.index_eq_two (α := α), index_mul_card]
 
-lemma Fintype.card_alternatingGroup [Nontrivial α] : card (alternatingGroup α) = (card α)! / 2 := by
-  rw [← two_mul_card_alternatingGroup]; omega
+theorem two_mul_card_alternatingGroup [Nontrivial α] :
+    2 * card (alternatingGroup α) = card (Perm α) := by
+  simp only [← Nat.card_eq_fintype_card, two_mul_nat_card_alternatingGroup]
+
+theorem card_alternatingGroup [Nontrivial α] :
+    card (alternatingGroup α) = (card α).factorial / 2 :=
+  Nat.eq_div_of_mul_eq_right two_ne_zero (two_mul_card_alternatingGroup.trans card_perm)
+
+theorem nat_card_alternatingGroup [Nontrivial α] :
+    Nat.card (alternatingGroup α) = (Nat.card α).factorial / 2 := by
+  simp only [Nat.card_eq_fintype_card, card_alternatingGroup]
 
 namespace alternatingGroup
 
@@ -397,7 +407,7 @@ theorem nontrivial_of_three_le_card (h3 : 3 ≤ card α) : Nontrivial (alternati
   haveI := Fintype.one_lt_card_iff_nontrivial.1 (lt_trans (by decide) h3)
   rw [← Fintype.one_lt_card_iff_nontrivial]
   refine lt_of_mul_lt_mul_left ?_ (le_of_lt Nat.prime_two.pos)
-  rw [two_mul_card_alternatingGroup, ← Nat.succ_le_iff]
+  rw [two_mul_card_alternatingGroup, card_perm, ← Nat.succ_le_iff]
   exact le_trans h3 (card α).self_le_factorial
 
 instance {n : ℕ} : Nontrivial (alternatingGroup (Fin (n + 3))) :=
@@ -561,6 +571,41 @@ theorem isSimpleGroup_five : IsSimpleGroup ↥(alternatingGroup (Fin 5)) :=
     · -- If `n = 5`, then `g` is itself a 5-cycle, conjugate to `finRotate 5`.
       refine (isConj_iff_cycleType_eq.2 ?_).normalClosure_eq_top_of normalClosure_finRotate_five
       rw [cycleType_of_card_le_mem_cycleType_add_two (by decide) ng, cycleType_finRotate]⟩
+
+theorem center_eq_bot (hα4 : 4 ≤ Nat.card α) :
+    Subgroup.center (alternatingGroup α) = ⊥ := by
+  rw [eq_bot_iff]
+  rintro ⟨g, hg⟩ hg'
+  simp only [Subgroup.mem_bot]
+  simp only [← Subtype.coe_inj, Subgroup.coe_one, ← support_eq_empty_iff,
+    Finset.eq_empty_iff_forall_notMem]
+  intro a ha
+  have hab : g a ≠ a := by rw [← mem_support]; exact ha
+  have : 2 ≤ (({a, g a} : Finset α)ᶜ).card := by
+    rw [← Nat.add_le_add_iff_left, Finset.card_add_card_compl]
+    rw [← Nat.card_eq_fintype_card]
+    rw [Finset.card_pair (id (Ne.symm hab))]
+    exact hα4
+  rw [← Nat.lt_iff_add_one_le, Finset.one_lt_card_iff] at this
+  obtain ⟨c, d, hc, hd, hcd⟩ := this
+  simp only [Finset.compl_insert, Finset.mem_erase, ne_eq, Finset.mem_compl,
+    Finset.mem_singleton] at hc hd
+  let k := swap (g a) d * swap (g a) c
+  have hka : k • a = a := by
+    simp only [Perm.smul_def, Perm.coe_mul, Function.comp_apply, k]
+    rw [swap_apply_of_ne_of_ne (x := a) hab.symm (Ne.symm hc.1)]
+    rw [swap_apply_of_ne_of_ne (Ne.symm hab) (Ne.symm hd.1)]
+  have hkga : k • (g a) = c := by
+    simp only [Perm.smul_def, Perm.coe_mul, Function.comp_apply, swap_apply_left, k]
+    rw [swap_apply_of_ne_of_ne hc.2 hcd]
+  suffices k • (⟨g, hg⟩ : alternatingGroup α) • a ≠ c by
+    apply this; simp [← hkga]
+  suffices k • (⟨g, hg⟩ : alternatingGroup α) • a = (⟨g, hg⟩ : alternatingGroup α) • k • a by
+    rw [this, hka]; exact Ne.symm hc.right
+  rw [Subgroup.mem_center_iff] at hg'
+  suffices k ∈ alternatingGroup α by
+    simp only [← Subgroup.mk_smul k this, ← mul_smul, hg']
+  simp [k, Ne.symm hc.2, Ne.symm hd.2]
 
 /-- $A_n (5 \leq n)$ is simple. -/
 theorem isSimpleGroup_of_five_le {n} (h5 : 5 ≤ n) :

@@ -100,14 +100,14 @@ lemma inl_fst :
 @[simp]
 lemma inl_snd :
     (inl φ).comp (snd φ) (add_zero (-1)) = 0 := by
-  ext p q hpq
-  simp [Cochain.comp_v _ _ (add_zero (-1)) p q q (by omega) (by omega)]
+  ext
+  simp
 
 @[simp]
 lemma inr_fst :
     (Cochain.ofHom (inr φ)).comp (fst φ).1 (zero_add 1) = 0 := by
-  ext p q hpq
-  simp [Cochain.comp_v _ _ (zero_add 1) p p q (by omega) (by omega)]
+  ext
+  simp
 
 @[simp]
 lemma inr_snd :

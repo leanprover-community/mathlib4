@@ -239,7 +239,7 @@ the current goal, not to make some inconclusive progress.
 A mostly trivial example would be:
 
 ```lean
-example (a b c : ℕ) (f : ℕ → ℕ) (h: a = b) (h' : b = c) : f a = f c := by
+example (a b c : ℕ) (f : ℕ → ℕ) (h : a = b) (h' : b = c) : f a = f c := by
   cc
 ```
 

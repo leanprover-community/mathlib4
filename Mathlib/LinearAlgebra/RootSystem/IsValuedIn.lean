@@ -291,6 +291,12 @@ lemma pairingIn_eq_zero_iff {S : Type*} [CommRing S] [Algebra S R] [FaithfulSMul
   simpa only [← FaithfulSMul.algebraMap_eq_zero_iff S R, algebraMap_pairingIn] using
     P.pairing_eq_zero_iff
 
+variable {P i j} in
+lemma reflection_apply_root' (S : Type*) [CommRing S] [Algebra S R]
+    [Module S M] [IsScalarTower S R M] [P.IsValuedIn S] :
+    P.reflection i (P.root j) = P.root j - (P.pairingIn S j i) • P.root i := by
+  rw [reflection_apply_root, ← P.algebraMap_pairingIn S, algebraMap_smul]
+
 /-- A variant of `RootPairing.coxeterWeight` for root pairings which are valued in a smaller set of
 coefficients.
 

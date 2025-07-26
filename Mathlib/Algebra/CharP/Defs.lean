@@ -6,6 +6,7 @@ Authors: Kenny Lau, Joey van Langen, Casper Putz
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Nat.Find
 import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Order.Lattice
 
 /-!
@@ -68,7 +69,7 @@ lemma cast_eq_mod (k : ℕ) : (k : R) = (k % p : ℕ) :=
 lemma cast_eq_iff_mod_eq [IsLeftCancelAdd R] : (a:R) = (b:R) ↔ a % p = b % p := by
   wlog hle : a ≤ b
   · simpa only [eq_comm] using (this _ _ (lt_of_not_ge hle).le)
-  obtain ⟨c, rfl⟩ := Nat.le.dest hle
+  obtain ⟨c, rfl⟩ := Nat.exists_eq_add_of_le hle
   rw [Nat.cast_add, left_eq_add, CharP.cast_eq_zero_iff R p]
   constructor
   · simp +contextual [Nat.add_mod, Nat.dvd_iff_mod_eq_zero]

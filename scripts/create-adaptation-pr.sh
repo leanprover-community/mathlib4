@@ -126,8 +126,15 @@ usr_branch=$(git branch --show-current)
 echo
 echo "### [auto] checkout master and pull the latest changes"
 
-git checkout master
-git pull $MAIN_REMOTE master
+git fetch $MAIN_REMOTE master
+
+# Ensure local master branch exists and tracks $MAIN_REMOTE/master
+if git show-ref --verify --quiet refs/heads/master; then
+  git checkout master
+  git pull $MAIN_REMOTE master
+else
+  git checkout -b master $MAIN_REMOTE/master
+fi
 
 echo
 echo "### [auto] checkout 'bump/$BUMPVERSION' and merge the latest changes from '$MAIN_REMOTE/master'"

@@ -110,7 +110,7 @@ lemma Even.LFunction_neg_two_mul_nat {χ : DirichletCharacter ℂ N} (hχ : Even
 
 /-- The L-function of an odd Dirichlet character vanishes at negative odd integers. -/
 @[simp] lemma Odd.LFunction_neg_two_mul_nat_sub_one
-  {χ : DirichletCharacter ℂ N} (hχ : Odd χ) (n : ℕ) :
+    {χ : DirichletCharacter ℂ N} (hχ : Odd χ) (n : ℕ) :
     LFunction χ (-(2 * n) - 1) = 0 :=
   ZMod.LFunction_neg_two_mul_nat_sub_one hχ.to_fun n
 

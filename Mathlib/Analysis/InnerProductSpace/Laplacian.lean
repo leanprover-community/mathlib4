@@ -92,16 +92,15 @@ lemma tensorIteratedFDerivWithinTwo_eq_iteratedFDerivWithin {e : E} {s : Set E} 
     (hs : UniqueDiffOn 𝕜 s) (he : e ∈ s) (e₁ e₂ : E) :
     tensorIteratedFDerivWithinTwo 𝕜 f s e (e₁ ⊗ₜ[𝕜] e₂) =
       iteratedFDerivWithin 𝕜 2 f s e ![e₁, e₂] := by
-  rw [← bilinearIteratedFDerivWithinTwo_eq_iteratedFDeriv f hs he, tensorIteratedFDerivWithinTwo]
-  rfl
+  rw [← bilinearIteratedFDerivWithinTwo_eq_iteratedFDeriv f hs he, tensorIteratedFDerivWithinTwo,
+    lift.tmul]
 
 /--
 Expression of `tensorIteratedFDerivTwo` in terms of `iteratedFDeriv`.
 -/
 lemma tensorIteratedFDerivTwo_eq_iteratedFDeriv (f : E → F) (e e₁ e₂ : E) :
     tensorIteratedFDerivTwo 𝕜 f e (e₁ ⊗ₜ[𝕜] e₂) = iteratedFDeriv 𝕜 2 f e ![e₁, e₂] := by
-  rw [← bilinearIteratedFDerivTwo_eq_iteratedFDeriv, tensorIteratedFDerivTwo]
-  rfl
+  rw [← bilinearIteratedFDerivTwo_eq_iteratedFDeriv, tensorIteratedFDerivTwo, lift.tmul]
 
 end secondDerivativeAPI
 
@@ -292,7 +291,7 @@ theorem laplacianWithin_smul_nhds
 /-- The Laplacian commutes with scalar multiplication. -/
 theorem laplacian_smul_nhds (v : ℝ) (h : ContDiffAt ℝ 2 f x) :
     Δ (v • f) =ᶠ[𝓝 x] v • (Δ f) := by
-  filter_upwards [h.eventually (not_eq_of_beq_eq_false rfl)] with a ha
+  filter_upwards [h.eventually (by simp)] with a ha
   simp [laplacian_smul v ha]
 
 /-!

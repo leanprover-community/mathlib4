@@ -32,7 +32,7 @@ variable [Semiring R] {P : R[X]}
 
 lemma isNilpotent_C_mul_pow_X_of_isNilpotent (n : ℕ) (hnil : IsNilpotent r) :
     IsNilpotent ((C r) * X ^ n) := by
-  refine Commute.isNilpotent_mul_left (commute_X_pow _ _).symm ?_
+  refine Commute.isNilpotent_mul_right (commute_X_pow _ _).symm ?_
   obtain ⟨m, hm⟩ := hnil
   refine ⟨m, ?_⟩
   rw [← C_pow, hm, C_0]
@@ -53,7 +53,7 @@ lemma isNilpotent_pow_X_mul_C_of_isNilpotent (n : ℕ) (hnil : IsNilpotent r) :
 @[simp] lemma isNilpotent_X_mul_iff :
     IsNilpotent (X * P) ↔ IsNilpotent P := by
   refine ⟨fun h ↦ ?_, ?_⟩
-  · rwa [Commute.isNilpotent_mul_right_iff (commute_X P) (by simp)] at h
+  · rwa [Commute.isNilpotent_mul_left_iff (commute_X P) (by simp)] at h
   · rintro ⟨k, hk⟩
     exact ⟨k, by simp [(commute_X P).mul_pow, hk]⟩
 
@@ -195,7 +195,7 @@ lemma isNilpotent_aeval_sub_of_isNilpotent_sub (h : IsNilpotent (a - b)) :
     IsNilpotent (aeval a P - aeval b P) := by
   simp only [← eval_map_algebraMap]
   have ⟨c, hc⟩ := evalSubFactor (map (algebraMap R S) P) a b
-  exact hc ▸ (Commute.all _ _).isNilpotent_mul_right h
+  exact hc ▸ (Commute.all _ _).isNilpotent_mul_left h
 
 variable {P}
 

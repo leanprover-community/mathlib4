@@ -238,7 +238,7 @@ protected theorem coe_pow (x : S) (n : ℕ) : (↑(x ^ n : S) : L) = (x : L) ^ n
 
 end InheritedLemmas
 
-theorem natCast_mem (n : ℕ) : (n : L) ∈ S := by simpa using intCast_mem S n
+theorem natCast_mem (n : ℕ) : (n : L) ∈ S := by simp
 
 instance instSMulMemClass : SMulMemClass (IntermediateField K L) K L where
   smul_mem := fun _ _ hx ↦ IntermediateField.smul_mem _ hx

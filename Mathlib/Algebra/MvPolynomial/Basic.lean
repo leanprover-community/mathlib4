@@ -860,12 +860,12 @@ lemma coeffs_add [DecidableEq R] {p q : MvPolynomial σ R} (h : Disjoint p.suppo
   have hr (n : σ →₀ ℕ) (hne : q.coeff n ≠ 0) : p.coeff n = 0 :=
     notMem_support_iff.mp <| h.notMem_of_mem_right_finset (mem_support_iff.mpr hne)
   have hor (n) (h : ¬coeff n p + coeff n q = 0) : coeff n p ≠ 0 ∨ coeff n q ≠ 0 := by
-    by_cases hp : coeff n p = 0 <;> aesop
+    by_cases hp : coeff n p = 0 <;> simp_all
   refine ⟨fun ⟨n, hn1, hn2⟩ ↦ ?_, ?_⟩
-  · obtain (h|h) := hor n hn1
+  · obtain (h | h) := hor n hn1
     · exact Or.inl ⟨n, by simp [h, hn2, hl n h]⟩
     · exact Or.inr ⟨n, by simp [h, hn2, hr n h]⟩
-  · rintro (⟨n, hn, rfl⟩|⟨n, hn, rfl⟩)
+  · rintro (⟨n, hn, rfl⟩ | ⟨n, hn, rfl⟩)
     · exact ⟨n, by simp [hl n hn, hn]⟩
     · exact ⟨n, by simp [hr n hn, hn]⟩
 

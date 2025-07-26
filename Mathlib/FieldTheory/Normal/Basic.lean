@@ -32,7 +32,7 @@ variable (F K : Type*) [Field F] [Field K] [Algebra F K]
 theorem Normal.exists_isSplittingField [h : Normal F K] [FiniteDimensional F K] :
     ∃ p : F[X], IsSplittingField F K p := by
   classical
-  let s := Basis.ofVectorSpace F K
+  let s := Module.Basis.ofVectorSpace F K
   refine
     ⟨∏ x, minpoly F (s x), splits_prod _ fun x _ => h.splits (s x),
       Subalgebra.toSubmodule.injective ?_⟩

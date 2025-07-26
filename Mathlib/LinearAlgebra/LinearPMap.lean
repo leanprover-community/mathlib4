@@ -589,6 +589,16 @@ private theorem sSup_aux (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·)
 protected noncomputable def sSup (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·) c) : E →ₗ.[R] F :=
   ⟨_, Classical.choose <| sSup_aux c hc⟩
 
+theorem domain_sSup {c : Set (E →ₗ.[R] F)} (hc : DirectedOn (· ≤ ·) c) :
+    (LinearPMap.sSup c hc).domain = sSup (LinearPMap.domain '' c) := rfl
+
+theorem mem_domain_sSup_iff {c : Set (E →ₗ.[R] F)} (hnonempty : c.Nonempty)
+    (hc : DirectedOn (· ≤ ·) c) {x : E} :
+    x ∈ (LinearPMap.sSup c hc).domain ↔ ∃ f ∈ c, x ∈ f.domain := by
+  rw [domain_sSup, Submodule.mem_sSup_of_directed (hnonempty.image _)
+    (DirectedOn.mono_comp LinearPMap.domain_mono.monotone hc)]
+  aesop
+
 protected theorem le_sSup {c : Set (E →ₗ.[R] F)} (hc : DirectedOn (· ≤ ·) c) {f : E →ₗ.[R] F}
     (hf : f ∈ c) : f ≤ LinearPMap.sSup c hc :=
   Classical.choose_spec (sSup_aux c hc) hf

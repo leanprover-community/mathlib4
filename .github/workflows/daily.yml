@@ -116,7 +116,7 @@ jobs:
           api-key: ${{ secrets.ZULIP_API_KEY }}
           email: 'github-mathlib4-bot@leanprover.zulipchat.com'
           organization-url: 'https://leanprover.zulipchat.com'
-          to: 'mathlib reviewers'
+          to: 'nightly-testing'
           type: 'stream'
           topic: 'lean4checker'
           content: |
@@ -129,7 +129,7 @@ jobs:
           api-key: ${{ secrets.ZULIP_API_KEY }}
           email: 'github-mathlib4-bot@leanprover.zulipchat.com'
           organization-url: 'https://leanprover.zulipchat.com'
-          to: 'mathlib reviewers'
+          to: 'nightly-testing'
           type: 'stream'
           topic: 'mathlib test executable'
           content: |
@@ -142,7 +142,7 @@ jobs:
           api-key: ${{ secrets.ZULIP_API_KEY }}
           email: 'github-mathlib4-bot@leanprover.zulipchat.com'
           organization-url: 'https://leanprover.zulipchat.com'
-          to: 'mathlib reviewers'
+          to: 'nightly-testing'
           type: 'stream'
           topic: 'lean4checker failure'
           content: |
@@ -156,7 +156,7 @@ jobs:
           api-key: ${{ secrets.ZULIP_API_KEY }}
           email: 'github-mathlib4-bot@leanprover.zulipchat.com'
           organization-url: 'https://leanprover.zulipchat.com'
-          to: 'mathlib reviewers'
+          to: 'nightly-testing'
           type: 'stream'
           topic: 'mathlib test executable failure'
           content: |

@@ -253,7 +253,7 @@ section deprecated
 /-- The basic open sets form an affine open cover of `Spec R`. -/
 def affineBasisCoverOfAffine (R : CommRingCat.{u}) : OpenCover (Spec R) where
   J := R
-  obj r := Spec (CommRingCat.of <| Localization.Away r)
+  obj r := Spec(Localization.Away r)
   map r := Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away r)))
   f _ := 1
   covers r := by

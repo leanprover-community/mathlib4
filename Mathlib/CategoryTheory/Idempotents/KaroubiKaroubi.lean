@@ -64,10 +64,10 @@ def equivalence : Karoubi C ≌ Karoubi (Karoubi C) where
   counitIso := KaroubiKaroubi.counitIso C
 
 instance equivalence.additive_functor [Preadditive C] :
-  Functor.Additive (equivalence C).functor where
+    Functor.Additive (equivalence C).functor where
 
 instance equivalence.additive_inverse [Preadditive C] :
-  Functor.Additive (equivalence C).inverse where
+    Functor.Additive (equivalence C).inverse where
 
 end KaroubiKaroubi
 

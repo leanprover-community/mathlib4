@@ -5,6 +5,7 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Probability.Moments.ComplexMGF
 import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
+import Mathlib.Analysis.Calculus.Taylor
 
 /-!
 # The moment generating function is analytic
@@ -269,6 +270,19 @@ lemma iteratedDeriv_two_cgf_eq_integral (h : v ∈ interior (integrableExpSet X 
   _ = (∫ ω, (X ω - deriv (cgf X μ) v) ^ 2 * exp (v * X ω) ∂μ) / mgf X μ v := by
     congr with ω
     ring
+
+lemma exists_cgf_eq_iteratedDeriv_two_cgf_mul [IsZeroOrProbabilityMeasure μ] (ht : 0 < t)
+    (hc : μ[X] = 0) (hs : Set.Icc 0 t ⊆ interior (integrableExpSet X μ)) :
+    ∃ u ∈ Set.Ioo 0 t, cgf X μ t = (iteratedDeriv 2 (cgf X μ) u) * t ^ 2 / 2 := by
+  have hu : UniqueDiffOn ℝ (Set.Icc 0 t) := uniqueDiffOn_Icc ht
+  rw [← sub_zero (cgf X μ t)]
+  nth_rw 3 [← sub_zero t]
+  convert taylor_mean_remainder_lagrange_iteratedDeriv ht ((analyticOn_cgf.mono hs).contDiffOn hu)
+  have hd : derivWithin (cgf X μ) (Set.Icc 0 t) 0 = 0 := by
+    convert (analyticAt_cgf (hs ⟨le_refl 0, le_of_lt ht⟩)).differentiableAt.derivWithin _
+    · simpa [hc] using (deriv_cgf_zero (hs ⟨le_refl 0, le_of_lt ht⟩)).symm
+    · exact hu 0 ⟨le_refl 0, le_of_lt ht⟩
+  simp [hd]
 
 end DerivCGF
 

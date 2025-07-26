@@ -379,10 +379,10 @@ lemma Scheme.isoOfEq_inv_ι (X : Scheme.{u}) {U V : X.Opens} (e : U = V) :
   IsOpenImmersion.isoOfRangeEq_inv_fac _ _ _
 
 lemma Scheme.isoOfEq_hom (X : Scheme.{u}) {U V : X.Opens} (e : U = V) :
-  (X.isoOfEq e).hom = X.homOfLE e.le := rfl
+    (X.isoOfEq e).hom = X.homOfLE e.le := rfl
 
 lemma Scheme.isoOfEq_inv (X : Scheme.{u}) {U V : X.Opens} (e : U = V) :
-  (X.isoOfEq e).inv = X.homOfLE e.ge := rfl
+    (X.isoOfEq e).inv = X.homOfLE e.ge := rfl
 
 @[simp]
 lemma Scheme.isoOfEq_rfl (X : Scheme.{u}) (U : X.Opens) : X.isoOfEq (refl U) = Iso.refl _ := by
@@ -431,8 +431,7 @@ lemma Scheme.Opens.isoOfLE_inv_ι {X : Scheme.{u}} {U V : X.Opens}
 
 /-- For `f : R`, `D(f)` as an open subscheme of `Spec R` is isomorphic to `Spec R[1/f]`. -/
 def basicOpenIsoSpecAway {R : CommRingCat.{u}} (f : R) :
-    Scheme.Opens.toScheme (X := Spec R) (PrimeSpectrum.basicOpen f) ≅
-      Spec (CommRingCat.of (Localization.Away f)) :=
+    Scheme.Opens.toScheme (X := Spec R) (PrimeSpectrum.basicOpen f) ≅ Spec(Localization.Away f) :=
   IsOpenImmersion.isoOfRangeEq (Scheme.Opens.ι _) (Spec.map (CommRingCat.ofHom (algebraMap _ _)))
     (by
       simp only [Scheme.Opens.range_ι]
