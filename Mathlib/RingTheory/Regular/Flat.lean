@@ -70,26 +70,6 @@ end FaithfullyFlat
 
 section IsLocalizedModule
 
-section CommSemiring
-
-variable {R : Type*} [CommSemiring R] (S : Submonoid R) (R' : Type*) [CommSemiring R']
-  [Algebra R R'] [IsLocalization S R']
-
-include S
-
-theorem IsSMulRegular.of_isLocalizedModule {M : Type*} [AddCommMonoid M] [Module R M]
-    {M' : Type*} [AddCommMonoid M'] [Module R M'] [Module R' M'] [IsScalarTower R R' M']
-    (f : M →ₗ[R] M') [IsLocalizedModule S f] {x : R} (reg : IsSMulRegular M x) :
-    IsSMulRegular M' (algebraMap R R' x) :=
-  have : Flat R R' := IsLocalization.flat R' S
-  reg.of_flat_of_isBaseChange (IsLocalizedModule.isBaseChange S R' f)
-
-theorem IsSMulRegular.of_isLocalization {x : R} (reg : IsSMulRegular R x) :
-    IsSMulRegular R' (algebraMap R R' x) :=
-  reg.of_isLocalizedModule S R' (Algebra.linearMap R R')
-
-end CommSemiring
-
 variable {R : Type*} [CommRing R] (S : Submonoid R) (R' : Type*) [CommRing R'] [Algebra R R']
   [IsLocalization S R']
 
