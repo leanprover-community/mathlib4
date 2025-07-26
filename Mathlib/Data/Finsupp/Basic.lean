@@ -1304,7 +1304,7 @@ protected def domCongr [AddCommMonoid M] (e : α ≃ β) : (α →₀ M) ≃+ (�
     intro v
     simp only [← equivMapDomain_trans, Equiv.symm_trans_self]
     exact equivMapDomain_refl _
-  map_add' a b := by simp only [equivMapDomain_eq_mapDomain]; exact mapDomain_add
+  map_add' a b := by simp only [equivMapDomain_eq_mapDomain, mapDomain_add]
 
 @[simp]
 theorem domCongr_refl [AddCommMonoid M] :
