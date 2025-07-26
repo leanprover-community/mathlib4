@@ -919,7 +919,7 @@ theorem iIndepFun.congr' {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i
   convert h'a using 2 with i hi
   exact A i hi
 
-theorem iIndepFun_congr_iff {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
+theorem iIndepFun_congr' {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
     {f g : Π i, Ω → β i} (h : ∀ i, ∀ᵐ a ∂μ, f i =ᵐ[κ a] g i) :
     iIndepFun f κ μ ↔ iIndepFun g κ μ where
   mp h' := h'.congr' h
