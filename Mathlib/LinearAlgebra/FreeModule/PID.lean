@@ -636,7 +636,7 @@ is a square diagonal matrix; these are the entries of the diagonal matrix. See:
   forms a square diagonal matrix.
 -/
 noncomputable def Submodule.smithNormalFormCoeffs (b : Basis ι R M)
-  (h : Module.finrank R N = Module.finrank R M) : ι → R :=
+    (h : Module.finrank R N = Module.finrank R M) : ι → R :=
   (exists_smith_normal_form_of_rank_eq b h).choose_spec.choose
 
 @[simp]
