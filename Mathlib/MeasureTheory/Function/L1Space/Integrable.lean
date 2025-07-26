@@ -248,9 +248,8 @@ theorem integrable_add_measure [PseudoMetrizableSpace ε] {f : α → ε} :
   ⟨fun h => ⟨h.left_of_add_measure, h.right_of_add_measure⟩, fun h => h.1.add_measure h.2⟩
 
 @[simp]
-theorem integrable_zero_measure {f : α → ε} :
-    Integrable f (0 : Measure α) :=
-  ⟨by fun_prop, by fun_prop⟩
+theorem integrable_zero_measure {f : α → ε} : Integrable f (0 : Measure α) := by
+  constructor <;> fun_prop
 
 /-- In a measurable space with measurable singletons, every function is integrable with respect to
 a Dirac measure.
