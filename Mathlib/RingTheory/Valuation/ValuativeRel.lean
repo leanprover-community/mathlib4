@@ -81,13 +81,31 @@ macro_rules | `($a ≤ᵥ $b) => `(binrel% ValuativeRel.rel $a $b)
 
 namespace Valuation
 
-variable {R Γ : Type*} [CommRing R] [LinearOrderedCommMonoidWithZero Γ]
-  (v : Valuation R Γ)
+variable {R Γ Γ' : Type*} [CommRing R] [ValuativeRel R]
+  [LinearOrderedCommMonoidWithZero Γ] [LinearOrderedCommMonoidWithZero Γ']
 
 /-- We say that a valuation `v` is `Compatible` if the relation `x ≤ᵥ y`
 is equivalent to `v x ≤ x y`. -/
-class Compatible [ValuativeRel R] where
+class Compatible (v : Valuation R Γ) where
   rel_iff_le (x y : R) : x ≤ᵥ y ↔ v x ≤ v y
+
+namespace Compatible
+
+variable (v : Valuation R Γ) [Compatible v] (x : R)
+
+lemma rel_one_iff_le_one :
+    x ≤ᵥ 1 ↔ v x ≤ 1 := by
+  rw [← map_one v, ← Valuation.Compatible.rel_iff_le]
+
+lemma rel_zero_iff_eq_zero :
+    x ≤ᵥ 0 ↔ v x = 0 := by
+  rw [Valuation.Compatible.rel_iff_le (v := v), map_zero, le_zero_iff]
+
+lemma one_rel_iff_one_le :
+    1 ≤ᵥ x ↔ 1 ≤ v x := by
+  rw [← map_one v, ← Valuation.Compatible.rel_iff_le]
+
+end Compatible
 
 end Valuation
 

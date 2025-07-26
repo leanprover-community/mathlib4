@@ -472,28 +472,96 @@ theorem map {v' : Valuation R Γ₀} (f : Γ₀ →*₀ Γ'₀) (hf : Monotone f
 theorem comap {S : Type*} [Ring S] (f : S →+* R) (h : v₁.IsEquiv v₂) :
     (v₁.comap f).IsEquiv (v₂.comap f) := fun r s => h (f r) (f s)
 
-theorem val_eq (h : v₁.IsEquiv v₂) {r s : R} : v₁ r = v₁ s ↔ v₂ r = v₂ s := by
-  simpa only [le_antisymm_iff] using and_congr (h r s) (h s r)
+variable (h : v₁.IsEquiv v₂) {x y : R}
+include h
 
-theorem ne_zero (h : v₁.IsEquiv v₂) {r : R} : v₁ r ≠ 0 ↔ v₂ r ≠ 0 := by
-  have : v₁ r ≠ v₁ 0 ↔ v₂ r ≠ v₂ 0 := not_congr h.val_eq
-  rwa [v₁.map_zero, v₂.map_zero] at this
+theorem le_iff_le : v₁ x ≤ v₁ y ↔ v₂ x ≤ v₂ y :=
+  h x y
 
-lemma lt_iff_lt (h : v₁.IsEquiv v₂) {x y : R} :
-    v₁ x < v₁ y ↔ v₂ x < v₂ y := by
+lemma lt_iff_lt : v₁ x < v₁ y ↔ v₂ x < v₂ y := by
   rw [← le_iff_le_iff_lt_iff_lt, h]
 
-lemma le_one_iff_le_one (h : v₁.IsEquiv v₂) {x : R} :
-    v₁ x ≤ 1 ↔ v₂ x ≤ 1 := by
-  rw [← v₁.map_one, h, map_one]
+theorem eq_iff_eq : v₁ x = v₁ y ↔ v₂ x = v₂ y := by
+  simpa only [le_antisymm_iff] using and_congr (h x y) (h y x)
 
-lemma eq_one_iff_eq_one (h : v₁.IsEquiv v₂) {x : R} :
-    v₁ x = 1 ↔ v₂ x = 1 := by
-  rw [← v₁.map_one, h.val_eq, map_one]
+@[deprecated (since := "2025-07-25")]
+alias val_eq := eq_iff_eq
 
-lemma lt_one_iff_lt_one (h : v₁.IsEquiv v₂) {x : R} :
-    v₁ x < 1 ↔ v₂ x < 1 := by
+lemma ne_iff_ne : v₁ x ≠ v₁ y ↔ v₂ x ≠ v₂ y := by
+  rw [not_iff_not, h.eq_iff_eq]
+
+lemma le_one_iff_le_one : v₁ x ≤ 1 ↔ v₂ x ≤ 1 := by
+  rw [← v₁.map_one, h.le_iff_le, map_one]
+
+lemma lt_one_iff_lt_one : v₁ x < 1 ↔ v₂ x < 1 := by
   rw [← v₁.map_one, h.lt_iff_lt, map_one]
+
+lemma eq_one_iff_eq_one : v₁ x = 1 ↔ v₂ x = 1 := by
+  rw [← v₁.map_one, h.eq_iff_eq, map_one]
+
+lemma ne_one_iff_ne_one : v₁ x ≠ 1 ↔ v₂ x ≠ 1 := by
+  rw [not_iff_not, h.eq_one_iff_eq_one]
+
+theorem one_le_iff_one_le : 1 ≤ v₁ x ↔ 1 ≤ v₂ x := by
+  rw [← v₁.map_one, h.le_iff_le, map_one]
+
+theorem one_lt_iff_one_lt : 1 < v₁ x ↔ 1 < v₂ x := by
+  rw [← v₁.map_one, h.lt_iff_lt, map_one]
+
+theorem eq_zero_iff_eq_zero : v₁ x = 0 ↔ v₂ x = 0 := by
+  rw [← v₁.map_zero, h.eq_iff_eq, map_zero]
+
+theorem ne_zero_iff_ne_zero : v₁ x ≠ 0 ↔ v₂ x ≠ 0 := by
+  rw [not_iff_not, h.eq_zero_iff_eq_zero]
+
+theorem zero_lt_iff_zero_lt : 0 < v₁ x ↔ 0 < v₂ x := by
+  rw [← v₁.map_zero, h.lt_iff_lt, map_zero]
+
+@[deprecated (since := "2025-07-25")]
+alias ne_zero := ne_zero_iff_ne_zero
+
+omit h
+variable {Γ₀ Γ'₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ'₀]
+  {v₁ : Valuation R Γ₀} {v₂ : Valuation R Γ'₀} (h' : v₁.IsEquiv v₂) {x x' y y' z : R}
+include h'
+
+theorem div_le_iff_div_le : v₁ x / v₁ y ≤ v₁ z ↔ v₂ x / v₂ y ≤ v₂ z := by
+  by_cases hy : v₁ y = 0
+  · rw [hy, div_zero, eq_true zero_le', h'.eq_zero_iff_eq_zero.1 hy, div_zero, eq_true zero_le']
+  · replace hy := zero_lt_iff.2 hy
+    rw [div_le_iff₀ hy, div_le_iff₀ (h'.zero_lt_iff_zero_lt.1 hy), ← map_mul, ← map_mul, h']
+
+theorem le_div_iff_le_div : v₁ x ≤ v₁ y / v₁ z ↔ v₂ x ≤ v₂ y / v₂ z := by
+  by_cases hz : v₁ z = 0
+  · rw [hz, div_zero, le_zero_iff, h'.eq_zero_iff_eq_zero.1 hz, div_zero, le_zero_iff,
+      h'.eq_zero_iff_eq_zero]
+  · replace hz := zero_lt_iff.2 hz
+    rw [le_div_iff₀ hz, le_div_iff₀ (h'.zero_lt_iff_zero_lt.1 hz), ← map_mul, ← map_mul, h']
+
+theorem div_lt_iff_div_lt : v₁ x / v₁ y < v₁ z ↔ v₂ x / v₂ y < v₂ z := by
+  simp_rw [lt_iff_not_ge, h'.le_div_iff_le_div]
+
+theorem div_eq_iff_div_eq : v₁ x / v₁ y = v₁ z ↔ v₂ x / v₂ y = v₂ z := by
+  simp_rw [le_antisymm_iff, h'.div_le_iff_div_le, h'.le_div_iff_le_div]
+
+theorem lt_div_iff_lt_div : v₁ x < v₁ y / v₁ z ↔ v₂ x < v₂ y / v₂ z := by
+  simp_rw [lt_iff_not_ge, h'.div_le_iff_div_le]
+
+theorem eq_div_iff_eq_div : v₁ x = v₁ y / v₁ z ↔ v₂ x = v₂ y / v₂ z := by
+  rw [eq_comm, h'.div_eq_iff_div_eq, eq_comm]
+
+theorem div_le_div_iff_div_le_div : v₁ x / v₁ x' ≤ v₁ y / v₁ y' ↔ v₂ x / v₂ x' ≤ v₂ y / v₂ y' := by
+  by_cases hx : v₁ x' = 0
+  · rw [hx, h'.eq_zero_iff_eq_zero.1 hx]; simp
+  · replace hx := zero_lt_iff.2 hx
+    rw [div_le_iff₀ hx, div_mul_eq_mul_div₀, ← map_mul, h'.le_div_iff_le_div,
+      map_mul, ← div_mul_eq_mul_div₀, ← div_le_iff₀ (h'.zero_lt_iff_zero_lt.1 hx)]
+
+theorem div_lt_div_iff_div_lt_div : v₁ x / v₁ x' < v₁ y / v₁ y' ↔ v₂ x / v₂ x' < v₂ y / v₂ y' := by
+  simp_rw [lt_iff_not_ge, h'.div_le_div_iff_div_le_div]
+
+theorem div_eq_div_iff_div_eq_div : v₁ x / v₁ x' = v₁ y / v₁ y' ↔ v₂ x / v₂ x' = v₂ y / v₂ y' := by
+  simp_rw [le_antisymm_iff, h'.div_le_div_iff_div_le_div]
 
 end IsEquiv
 
@@ -941,10 +1009,10 @@ theorem comap {S : Type*} [Ring S] (f : S →+* R) (h : v₁.IsEquiv v₂) :
   Valuation.IsEquiv.comap f h
 
 theorem val_eq (h : v₁.IsEquiv v₂) {r s : R} : v₁ r = v₁ s ↔ v₂ r = v₂ s :=
-  Valuation.IsEquiv.val_eq h
+  Valuation.IsEquiv.eq_iff_eq h
 
 theorem ne_top (h : v₁.IsEquiv v₂) {r : R} : v₁ r ≠ (⊤ : Γ₀) ↔ v₂ r ≠ (⊤ : Γ'₀) :=
-  Valuation.IsEquiv.ne_zero h
+  Valuation.IsEquiv.ne_zero_iff_ne_zero h
 
 end IsEquiv
 
