@@ -97,7 +97,7 @@ theorem functional_mem_span_iff {B : F →ₗ[𝕜] E →ₗ[𝕜] 𝕜} {s : Fi
     intro x
     rw [← hl2, Finsupp.linearCombination_apply, finsupp_sum_apply]
     rw [ex]
-    simp
+    simp only [Function.comp_apply, smul_apply, smul_eq_mul, Real.coe_toNNReal']
     have eg : max (l.sum fun i d ↦ ‖d‖) 0 = l.sum fun i d ↦ ‖d‖ :=
       max_eq_left (Finset.sum_nonneg (fun i a ↦ norm_nonneg (l i)))
     rw [eg]
