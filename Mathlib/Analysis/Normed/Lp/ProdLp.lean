@@ -52,6 +52,14 @@ variable {p 𝕜 α β}
 variable [Semiring 𝕜] [AddCommGroup α] [AddCommGroup β]
 variable (x y : WithLp p (α × β)) (c : 𝕜)
 
+/-- The projection on the first coordinate in `WithLp`. If `x : WithLp p (α × β)`, you
+shoudl always write `x.fst` instead of `x.1` to avoid defeq abuse. -/
+protected def fst (x : WithLp p (α × β)) : α := (ofLp x).fst
+
+/-- The projection on the scond coordinate in `WithLp`. If `x : WithLp p (α × β)`, you
+shoudl always write `x.snd` instead of `x.2` to avoid defeq abuse. -/
+protected def snd (x : WithLp p (α × β)) : β := (ofLp x).snd
+
 @[simp]
 theorem zero_fst : (0 : WithLp p (α × β)).fst = 0 :=
   rfl
@@ -107,6 +115,7 @@ variable {p α β}
 @[simp] lemma toLp_snd (x : α × β) : (toLp p x).snd = x.snd := rfl
 @[simp] lemma ofLp_fst (x : WithLp p (α × β)) : (ofLp x).fst = x.fst := rfl
 @[simp] lemma ofLp_snd (x : WithLp p (α × β)) : (ofLp x).snd = x.snd := rfl
+@[simp] lemma toLp_fst_snd (x : WithLp p (α × β)) : toLp p (x.fst, x.snd) = x := rfl
 
 @[deprecated ofLp_fst (since := "2024-04-27")]
 theorem equiv_fst (x : WithLp p (α × β)) : (WithLp.equiv p (α × β) x).fst = x.fst :=
@@ -529,6 +538,32 @@ def prodContinuousLinearEquiv : WithLp p (α × β) ≃L[𝕜] α × β where
   continuous_toFun := continuous_id
   continuous_invFun := continuous_id
 
+lemma prodContinuousLinearEquiv_apply :
+    ⇑(prodContinuousLinearEquiv p 𝕜 α β) = ofLp := rfl
+
+lemma prodContinuousLinearEquiv_symm_apply :
+    ⇑(prodContinuousLinearEquiv p 𝕜 α β).symm = toLp p := rfl
+
+/-- The projection on the first coordinate in `WithLp` as continuous linear map. -/
+protected def fstCLM : WithLp p (α × β) →L[𝕜] α :=
+  (ContinuousLinearMap.fst 𝕜 α β).comp
+    (WithLp.prodContinuousLinearEquiv p 𝕜 α β).toContinuousLinearMap
+
+/-- The projection on the second coordinate in `WithLp` as continuous linear map. -/
+protected def sndCLM : WithLp p (α × β) →L[𝕜] β :=
+  (ContinuousLinearMap.snd 𝕜 α β).comp
+    (WithLp.prodContinuousLinearEquiv p 𝕜 α β).toContinuousLinearMap
+
+lemma coe_fstCLM : ⇑(WithLp.fstCLM p 𝕜 α β) = WithLp.fst := rfl
+
+lemma coe_sndCLM : ⇑(WithLp.sndCLM p 𝕜 α β) = WithLp.snd := rfl
+
+@[simp]
+lemma fstCLM_apply (x : WithLp p (α × β)) : WithLp.fstCLM p 𝕜 α β x = x.fst := rfl
+
+@[simp]
+lemma sndCLM_apply (x : WithLp p (α × β)) : WithLp.sndCLM p 𝕜 α β x = x.snd := rfl
+
 end ContinuousLinearEquiv
 
 /-! Throughout the rest of the file, we assume `1 ≤ p` -/
@@ -712,7 +747,7 @@ theorem prod_nnnorm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖₊ = ‖f.fst�
   norm_cast
 
 @[simp] lemma prod_nnnorm_ofLp (f : WithLp ∞ (α × β)) : ‖ofLp f‖₊ = ‖f‖₊ := by
-  rw [prod_nnnorm_eq_sup, Prod.nnnorm_def, ofLp_fst, ofLp_snd]
+  rw [prod_nnnorm_eq_sup f, Prod.nnnorm_def, ofLp_fst, ofLp_snd]
 
 @[deprecated prod_nnnorm_ofLp (since := "2024-04-27")]
 theorem prod_nnnorm_equiv (f : WithLp ∞ (α × β)) : ‖WithLp.equiv ⊤ _ f‖₊ = ‖f‖₊ :=
@@ -913,6 +948,34 @@ theorem edist_equiv_symm_snd (y₁ y₂ : β) :
       edist y₁ y₂ :=
   edist_toLp_snd _ _ _ _ _
 
+variable [Semiring 𝕜] [Module 𝕜 α] [Module 𝕜 β]
+
+/-- The canonical injection from `α` to `x : WithLp p (α × β)`, as a linear isometry. -/
+protected def inl : α →ₗᵢ[𝕜] WithLp p (α × β) where
+  toLinearMap := (WithLp.linearEquiv p 𝕜 (α × β)).symm.comp (.inl 𝕜 α β)
+  norm_map' x := norm_toLp_fst p α β x
+
+/-- The canonical injection from `β` to `x : WithLp p (α × β)`, as a linear isometry. -/
+protected def inr : β →ₗᵢ[𝕜] WithLp p (α × β) where
+  toLinearMap := (WithLp.linearEquiv p 𝕜 (α × β)).symm.comp (.inr 𝕜 α β)
+  norm_map' x := norm_toLp_snd p α β x
+
+@[simp]
+lemma inl_apply (x : α) : WithLp.inl p 𝕜 α β x = toLp p (x, 0) := rfl
+
+@[simp]
+lemma inr_apply (x : β) : WithLp.inr p 𝕜 α β x = toLp p (0, x) := rfl
+
+lemma inl_add_inr (x : α) (y : β) :
+    WithLp.inl p 𝕜 α β x + WithLp.inr p 𝕜 α β y = toLp p (x, y) := by
+  rw [inl_apply, inr_apply, ← toLp_add]
+  simp
+
+lemma comp_inl_add_comp_inr {γ : Type*}
+    [AddCommGroup γ] [Module 𝕜 γ] (L : WithLp p (α × β) →ₗ[𝕜] γ) (x : WithLp p (α × β)) :
+    L (WithLp.inl p 𝕜 α β x.fst) + L (WithLp.inr p 𝕜 α β x.snd) = L x := by
+  simp [← map_add, inl_add_inr, -inl_apply, -inr_apply]
+
 end Single
 
 section IsBoundedSMul
@@ -967,9 +1030,9 @@ def idemFst : AddMonoid.End (WithLp p (α × β)) := (AddMonoidHom.inl α β).co
 /-- Projection on `WithLp p (α × β)` with range `β` and kernel `α` -/
 def idemSnd : AddMonoid.End (WithLp p (α × β)) := (AddMonoidHom.inr α β).comp (AddMonoidHom.snd α β)
 
-lemma idemFst_apply (x : WithLp p (α × β)) : idemFst x = toLp p (x.1, 0) := rfl
+lemma idemFst_apply (x : WithLp p (α × β)) : idemFst x = toLp p (x.fst, 0) := rfl
 
-lemma idemSnd_apply (x : WithLp p (α × β)) : idemSnd x = toLp p (0, x.2) := rfl
+lemma idemSnd_apply (x : WithLp p (α × β)) : idemSnd x = toLp p (0, x.snd) := rfl
 
 @[simp]
 lemma idemFst_add_idemSnd :
@@ -987,14 +1050,14 @@ lemma idemSnd_compl : (1 : AddMonoid.End (WithLp p (α × β))) - idemSnd = idem
 
 theorem prod_norm_eq_idemFst_sup_idemSnd (x : WithLp ∞ (α × β)) :
     ‖x‖ = max ‖idemFst x‖ ‖idemSnd x‖ := by
-  rw [WithLp.prod_norm_eq_sup, ← WithLp.norm_toLp_fst ∞ α β x.1,
-    ← WithLp.norm_toLp_snd ∞ α β x.2]
+  rw [WithLp.prod_norm_eq_sup, ← WithLp.norm_toLp_fst ∞ α β x.fst,
+    ← WithLp.norm_toLp_snd ∞ α β x.snd]
   rfl
 
 lemma prod_norm_eq_add_idemFst [Fact (1 ≤ p)] (hp : 0 < p.toReal) (x : WithLp p (α × β)) :
     ‖x‖ = (‖idemFst x‖ ^ p.toReal + ‖idemSnd x‖ ^ p.toReal) ^ (1 / p.toReal) := by
-  rw [WithLp.prod_norm_eq_add hp, ← WithLp.norm_toLp_fst p α β x.1,
-    ← WithLp.norm_toLp_snd p α β x.2]
+  rw [WithLp.prod_norm_eq_add hp, ← WithLp.norm_toLp_fst p α β x.fst,
+    ← WithLp.norm_toLp_snd p α β x.snd]
   rfl
 
 lemma prod_norm_eq_idemFst_of_L1 (x : WithLp 1 (α × β)) : ‖x‖ = ‖idemFst x‖ + ‖idemSnd x‖ := by
