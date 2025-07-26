@@ -78,8 +78,7 @@ instance : IsComon_Hom (𝟙 M) where
 
 instance (f : M ⟶ N) (g : N ⟶ O) [IsComon_Hom f] [IsComon_Hom g] : IsComon_Hom (f ≫ g) where
 
-instance (f : M ≅ N) [IsComon_Hom f.hom] :
-   IsComon_Hom f.inv where
+instance (f : M ≅ N) [IsComon_Hom f.hom] : IsComon_Hom f.inv where
   hom_counit := by simp [Iso.inv_comp_eq]
   hom_comul := by simp [Iso.inv_comp_eq]
 

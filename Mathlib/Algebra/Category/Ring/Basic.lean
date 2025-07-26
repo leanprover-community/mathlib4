@@ -420,7 +420,7 @@ lemma hom_ext {R S : CommSemiRingCat} {f g : R ⟶ S} (hf : f.hom = g.hom) : f =
 
 @[simp]
 lemma hom_ofHom {R S : Type u} [CommSemiring R] [CommSemiring S] (f : R →+* S) :
-  (ofHom f).hom = f := rfl
+    (ofHom f).hom = f := rfl
 
 @[simp]
 lemma ofHom_hom {R S : CommSemiRingCat} (f : R ⟶ S) :
@@ -580,8 +580,7 @@ lemma hom_ext {R S : CommRingCat} {f g : R ⟶ S} (hf : f.hom = g.hom) : f = g :
   Hom.ext hf
 
 @[simp]
-lemma hom_ofHom {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) :
-  (ofHom f).hom = f := rfl
+lemma hom_ofHom {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : (ofHom f).hom = f := rfl
 
 @[simp]
 lemma ofHom_hom {R S : CommRingCat} (f : R ⟶ S) :
@@ -692,16 +691,16 @@ def commRingCatIsoToRingEquiv {R S : CommRingCat.{u}} (e : R ≅ S) : R ≃+* S 
   RingEquiv.ofHomInv e.hom.hom e.inv.hom (by ext; simp) (by ext; simp)
 
 @[simp] lemma semiRingCatIsoToRingEquiv_toRingHom {R S : SemiRingCat.{u}} (e : R ≅ S) :
-  (e.semiRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
+    (e.semiRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
 
 @[simp] lemma ringCatIsoToRingEquiv_toRingHom {R S : RingCat.{u}} (e : R ≅ S) :
-  (e.ringCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
+    (e.ringCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
 
 @[simp] lemma commSemiRingCatIsoToRingEquiv_toRingHom {R S : CommSemiRingCat.{u}} (e : R ≅ S) :
-  (e.commSemiRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
+    (e.commSemiRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
 
 @[simp] lemma commRingCatIsoToRingEquiv_toRingHom {R S : CommRingCat.{u}} (e : R ≅ S) :
-  (e.commRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
+    (e.commRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
 
 end CategoryTheory.Iso
 

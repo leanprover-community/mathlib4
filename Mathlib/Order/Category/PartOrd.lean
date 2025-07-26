@@ -203,9 +203,9 @@ def preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd :
 @[simp]
 lemma preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd_inv_app_hom_coe' (X)
     (a : preordToPartOrd.obj (Preord.dual.obj X)) :
-  (PartOrd.Hom.hom
-      (X := preordToPartOrd.obj (Preord.dual.obj X))
-      (Y := PartOrd.dual.obj (preordToPartOrd.obj X))
-      (preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd.inv.app X)) a =
-    (OrderIso.dualAntisymmetrization ↑X).symm a :=
+    (PartOrd.Hom.hom
+        (X := preordToPartOrd.obj (Preord.dual.obj X))
+        (Y := PartOrd.dual.obj (preordToPartOrd.obj X))
+        (preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd.inv.app X)) a =
+      (OrderIso.dualAntisymmetrization ↑X).symm a :=
   rfl

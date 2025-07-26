@@ -75,9 +75,8 @@ abbrev Hom.hom {X Y : P.Comma L R Q W} (f : Comma.Hom X Y) : X.toComma ⟶ Y.toC
   f.toCommaMorphism
 
 @[simp, nolint simpVarHead]
-lemma Hom.hom_mk {X Y : P.Comma L R Q W}
-    (f : CommaMorphism X.toComma Y.toComma) (hf) (hg) :
-  Comma.Hom.hom ⟨f, hf, hg⟩ = f := rfl
+lemma Hom.hom_mk {X Y : P.Comma L R Q W} (f : CommaMorphism X.toComma Y.toComma) (hf) (hg) :
+    Comma.Hom.hom ⟨f, hf, hg⟩ = f := rfl
 
 lemma Hom.hom_left {X Y : P.Comma L R Q W} (f : Comma.Hom X Y) : f.hom.left = f.left := rfl
 

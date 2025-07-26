@@ -150,8 +150,8 @@ theorem unitCompPartialBijective_natural [Reflective i] (A : C) {B B' : C} (h : 
   rw [← Equiv.eq_symm_apply, unitCompPartialBijective_symm_natural A h, Equiv.symm_apply_apply]
 
 instance [Reflective i] (X : Functor.EssImageSubcategory i) :
-  IsIso (NatTrans.app (reflectorAdjunction i).unit X.obj) :=
-Functor.essImage.unit_isIso X.property
+    IsIso (NatTrans.app (reflectorAdjunction i).unit X.obj) :=
+  Functor.essImage.unit_isIso X.property
 
 -- These attributes are necessary to make automation work in `equivEssImageOfReflective`.
 -- Making them global doesn't break anything elsewhere, but this is enough for now.

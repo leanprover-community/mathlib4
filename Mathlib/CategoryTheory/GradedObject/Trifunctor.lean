@@ -148,11 +148,11 @@ lemma ι_mapTrifunctorMapMap {X₁ Y₁ : GradedObject I₁ C₁} (f₁ : X₁ �
     [HasMap ((((mapTrifunctor F I₁ I₂ I₃).obj X₁).obj X₂).obj X₃) p]
     [HasMap ((((mapTrifunctor F I₁ I₂ I₃).obj Y₁).obj Y₂).obj Y₃) p]
     (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J) (h : p ⟨i₁, i₂, i₃⟩ = j) :
-  ιMapTrifunctorMapObj F p X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ mapTrifunctorMapMap F p f₁ f₂ f₃ j =
-    ((F.map (f₁ i₁)).app (X₂ i₂)).app (X₃ i₃) ≫
-      ((F.obj (Y₁ i₁)).map (f₂ i₂)).app (X₃ i₃) ≫
-      ((F.obj (Y₁ i₁)).obj (Y₂ i₂)).map (f₃ i₃) ≫
-      ιMapTrifunctorMapObj F p Y₁ Y₂ Y₃ i₁ i₂ i₃ j h := by
+    ιMapTrifunctorMapObj F p X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ mapTrifunctorMapMap F p f₁ f₂ f₃ j =
+      ((F.map (f₁ i₁)).app (X₂ i₂)).app (X₃ i₃) ≫
+        ((F.obj (Y₁ i₁)).map (f₂ i₂)).app (X₃ i₃) ≫
+        ((F.obj (Y₁ i₁)).obj (Y₂ i₂)).map (f₃ i₃) ≫
+        ιMapTrifunctorMapObj F p Y₁ Y₂ Y₃ i₁ i₂ i₃ j h := by
   dsimp only [ιMapTrifunctorMapObj, mapTrifunctorMapMap]
   rw [ι_mapMap]
   dsimp

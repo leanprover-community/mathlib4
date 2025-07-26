@@ -225,7 +225,7 @@ lemma coconeEquiv_functor_obj_ι_app_star : (coconeEquiv.functor.obj t).ι.app s
 
 @[simp]
 lemma coconeEquiv_functor_obj_ι_app_of (Y : J) :
-   (coconeEquiv.functor.obj t).ι.app (of Y) = (t.ι.app Y).right := rfl
+    (coconeEquiv.functor.obj t).ι.app (of Y) = (t.ι.app Y).right := rfl
 
 /-- A cocone `t` of `K : J ⥤ Under X` is a colimit if and only if the corresponding cocone
 `coconeLift t` of `liftFromUnder.obj K : WithInitial K ⥤ C` is a colimit. -/

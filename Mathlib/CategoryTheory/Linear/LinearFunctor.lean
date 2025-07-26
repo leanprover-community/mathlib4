@@ -111,11 +111,10 @@ end Functor
 
 namespace Equivalence
 
-instance inverseLinear (e : C ≌ D) [e.functor.Linear R] :
-  e.inverse.Linear R where
-    map_smul r f := by
-      apply e.functor.map_injective
-      simp
+instance inverseLinear (e : C ≌ D) [e.functor.Linear R] : e.inverse.Linear R where
+  map_smul r f := by
+    apply e.functor.map_injective
+    simp
 
 end Equivalence
 

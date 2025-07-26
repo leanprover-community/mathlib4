@@ -302,13 +302,13 @@ instance module {S} [Semiring S] [Module S R] : Module S R[X] :=
     toFinsupp_injective toFinsupp_smul
 
 instance smulCommClass {S₁ S₂} [SMulZeroClass S₁ R] [SMulZeroClass S₂ R] [SMulCommClass S₁ S₂ R] :
-  SMulCommClass S₁ S₂ R[X] :=
+    SMulCommClass S₁ S₂ R[X] :=
   ⟨by
     rintro m n ⟨f⟩
     simp_rw [← ofFinsupp_smul, smul_comm m n f]⟩
 
 instance isScalarTower {S₁ S₂} [SMul S₁ S₂] [SMulZeroClass S₁ R] [SMulZeroClass S₂ R]
-  [IsScalarTower S₁ S₂ R] : IsScalarTower S₁ S₂ R[X] :=
+    [IsScalarTower S₁ S₂ R] : IsScalarTower S₁ S₂ R[X] :=
   ⟨by
     rintro _ _ ⟨⟩
     simp_rw [← ofFinsupp_smul, smul_assoc]⟩
@@ -320,7 +320,7 @@ instance isScalarTower_right {α K : Type*} [Semiring K] [DistribSMul α K] [IsS
     simp_rw [smul_eq_mul, ← ofFinsupp_smul, ← ofFinsupp_mul, ← ofFinsupp_smul, smul_mul_assoc]⟩
 
 instance isCentralScalar {S} [SMulZeroClass S R] [SMulZeroClass Sᵐᵒᵖ R] [IsCentralScalar S R] :
-  IsCentralScalar S R[X] :=
+    IsCentralScalar S R[X] :=
   ⟨by
     rintro _ ⟨⟩
     simp_rw [← ofFinsupp_smul, op_smul_eq_smul]⟩

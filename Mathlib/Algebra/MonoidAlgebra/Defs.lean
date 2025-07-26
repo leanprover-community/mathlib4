@@ -411,8 +411,7 @@ theorem ext [Semiring k] ⦃f g : MonoidAlgebra k G⦄ (H : ∀ (x : G), f x = g
 /-- A copy of `Finsupp.singleAddHom` for `MonoidAlgebra`. -/
 abbrev singleAddHom [Semiring k] (a : G) : k →+ MonoidAlgebra k G := Finsupp.singleAddHom a
 
-@[simp] lemma singleAddHom_apply [Semiring k] (a : G) (b : k) :
-  singleAddHom a b = single a b := rfl
+@[simp] lemma singleAddHom_apply [Semiring k] (a : G) (b : k) : singleAddHom a b = single a b := rfl
 
 /-- A copy of `Finsupp.addHom_ext'` for `MonoidAlgebra`. -/
 @[ext high]
@@ -1188,8 +1187,7 @@ theorem ext [Semiring k] ⦃f g : AddMonoidAlgebra k G⦄ (H : ∀ (x : G), f x 
 /-- A copy of `Finsupp.singleAddHom` for `AddMonoidAlgebra`. -/
 abbrev singleAddHom [Semiring k] (a : G) : k →+ AddMonoidAlgebra k G := Finsupp.singleAddHom a
 
-@[simp] lemma singleAddHom_apply [Semiring k] (a : G) (b : k) :
-  singleAddHom a b = single a b := rfl
+@[simp] lemma singleAddHom_apply [Semiring k] (a : G) (b : k) : singleAddHom a b = single a b := rfl
 
 /-- A copy of `Finsupp.addHom_ext'` for `AddMonoidAlgebra`. -/
 @[ext high]
@@ -1214,7 +1212,7 @@ abbrev lsingle [Semiring R] [Semiring k] [Module R k] (a : G) :
     k →ₗ[R] AddMonoidAlgebra k G := Finsupp.lsingle a
 
 @[simp] lemma lsingle_apply [Semiring R] [Semiring k] [Module R k] (a : G) (b : k) :
-  lsingle (R := R) a b = single a b := rfl
+    lsingle (R := R) a b = single a b := rfl
 
 /-- A copy of `Finsupp.lhom_ext'` for `AddMonoidAlgebra`. -/
 @[ext high]
