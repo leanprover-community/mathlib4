@@ -23,11 +23,19 @@ The projection functor `∫ F ⥤ 𝒮` is then given by projecting to the first
 * On objects, it sends `(S, a)` to `S`
 * On morphisms, it sends `(f, h)` to `f`
 
+## Naming conventions
+
+The name `Grothendieck` is reserved for the construction on covariant pseudofunctors from `𝒮` to
+`Cat`, whereas the word `coGrothendieck` will be used for the contravariant construction.
+This is consistent with the convention for the Grothendieck construction on 1-functors
+`CategoryTheory.Grothendieck`.
+
 ## Future work / TODO
 
 1. Once the bicategory of pseudofunctors has been defined, show that this construction forms a
-pseudofunctor from `Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat` to `Cat`.
-2. One could probably deduce the results in `CategoryTheory.Grothendieck` as a specialization of the
+pseudofunctor from `Pseudofunctor (LocallyDiscrete 𝒮) Catᵒᵖ` to `Cat`.
+2. Develop the covariant version of `coGrothendieck` and
+deduce the results in `CategoryTheory.Grothendieck` as a specialization of the
 results in this file.
 
 ## References
@@ -46,19 +54,19 @@ variable {𝒮 : Type u₁} [Category.{v₁} 𝒮] {F : Pseudofunctor (LocallyDi
 
 /-- The type of objects in the fibered category associated to a presheaf valued in types. -/
 @[ext]
-structure Grothendieck (F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}) where
+structure coGrothendieck (F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}) where
   /-- The underlying object in the base category. -/
   base : 𝒮
   /-- The object in the fiber of the base object. -/
   fiber : F.obj ⟨op base⟩
 
-namespace Grothendieck
+namespace coGrothendieck
 
 /-- Notation for the Grothendieck category associated to a pseudofunctor `F`. -/
-scoped prefix:75 "∫ " => Grothendieck
+scoped prefix:75 "∫ " => coGrothendieck
 
-/-- A morphism in the Grothendieck category `F : C ⥤ Cat` consists of
-`base : X.base ⟶ Y.base` and `f.fiber : (F.map base).obj X.fiber ⟶ Y.fiber`.
+/-- A morphism in the Grothendieck category consists of
+`base : X.base ⟶ Y.base` and `f.fiber : X.fiber ⟶ (F.map base.op.toLoc).obj Y.fiber`.
 -/
 structure Hom (X Y : ∫ F) where
   /-- The morphism between base objects. -/
@@ -103,7 +111,7 @@ end
 
 /-- The category structure on `∫ F`. -/
 instance category : Category (∫ F) where
-  toCategoryStruct := Pseudofunctor.Grothendieck.categoryStruct
+  toCategoryStruct := Pseudofunctor.coGrothendieck.categoryStruct
   id_comp {a b} f := by
     ext
     · simp
@@ -170,7 +178,7 @@ section
 
 variable (F)
 
-/-- The natural isomorphism witnessing the pseudo-unity constraint of `Grothendieck.map`. -/
+/-- The natural isomorphism witnessing the pseudo-unity constraint of `coGrothendieck.map`. -/
 def mapIdIso : map (𝟙 F) ≅ 𝟭 (∫ F) :=
   NatIso.ofComponents (fun _ ↦ eqToIso (by aesop_cat))
 
@@ -179,7 +187,7 @@ lemma map_id_eq : map (𝟙 F) = 𝟭 (∫ F) :=
 
 end
 
-/-- The natural isomorphism witnessing the pseudo-functoriality of `Grothendieck.map`. -/
+/-- The natural isomorphism witnessing the pseudo-functoriality of `coGrothendieck.map`. -/
 def mapCompIso (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ≅ map α ⋙ map β :=
   NatIso.ofComponents (fun _ ↦ eqToIso (by aesop_cat)) (fun f ↦ by
     dsimp
@@ -191,6 +199,6 @@ lemma map_comp_eq (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) = map α ⋙ m
 
 end
 
-end Pseudofunctor.Grothendieck
+end Pseudofunctor.coGrothendieck
 
 end CategoryTheory
