@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Geometry.Manifold.VectorBundle.Hom
+import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 import Mathlib.Topology.VectorBundle.Riemannian
 
 /-! # Riemannian vector bundles
@@ -154,6 +155,61 @@ lemma ContMDiff.inner_bundle
   fun x ↦ (hv x).inner_bundle (hw x)
 
 end ContMDiff
+
+section MDifferentiable
+
+variable
+  {EM : Type*} [NormedAddCommGroup EM] [NormedSpace ℝ EM]
+  {HM : Type*} [TopologicalSpace HM] {IM : ModelWithCorners ℝ EM HM}
+  {M : Type*} [TopologicalSpace M] [ChartedSpace HM M]
+  [h : IsContMDiffRiemannianBundle IB 1 F E]
+  {b : M → B} {v w : ∀ x, E (b x)} {s : Set M} {x : M}
+
+/-- Given two differentiable maps into the same fibers of a Riemannian bundle,
+their scalar product is differentiable. -/
+lemma MDifferentiableWithinAt.inner_bundle
+    (hv : MDifferentiableWithinAt IM (IB.prod 𝓘(ℝ, F)) (fun m ↦ (v m : TotalSpace F E)) s x)
+    (hw : MDifferentiableWithinAt IM (IB.prod 𝓘(ℝ, F)) (fun m ↦ (w m : TotalSpace F E)) s x) :
+    MDifferentiableWithinAt IM 𝓘(ℝ) (fun m ↦ ⟪v m, w m⟫) s x := by
+  rcases h.exists_contMDiff with ⟨g, g_smooth, hg⟩
+  have hb : MDifferentiableWithinAt IM IB b s x := by
+    simp only [mdifferentiableWithinAt_totalSpace] at hv
+    exact hv.1
+  simp only [hg]
+  have : MDifferentiableWithinAt IM (IB.prod 𝓘(ℝ))
+      (fun m ↦ TotalSpace.mk' ℝ (E := Bundle.Trivial B ℝ) (b m) (g (b m) (v m) (w m))) s x := by
+    apply MDifferentiableWithinAt.clm_bundle_apply₂ (F₁ := F) (F₂ := F)
+    · exact MDifferentiableAt.comp_mdifferentiableWithinAt x (g_smooth.mdifferentiableAt le_rfl) hb
+    · exact hv
+    · exact hw
+  simp only [mdifferentiableWithinAt_totalSpace] at this
+  exact this.2
+
+/-- Given two smooth maps into the same fibers of a Riemannian bundle,
+their scalar product is smooth. -/
+lemma MDifferentiableAt.inner_bundle
+    (hv : MDifferentiableAt IM (IB.prod 𝓘(ℝ, F)) (fun m ↦ (v m : TotalSpace F E)) x)
+    (hw : MDifferentiableAt IM (IB.prod 𝓘(ℝ, F)) (fun m ↦ (w m : TotalSpace F E)) x) :
+    MDifferentiableAt IM 𝓘(ℝ) (fun b ↦ ⟪v b, w b⟫) x :=
+  MDifferentiableWithinAt.inner_bundle hv hw
+
+/-- Given two smooth maps into the same fibers of a Riemannian bundle,
+their scalar product is smooth. -/
+lemma MDifferentiableOn.inner_bundle
+    (hv : MDifferentiableOn IM (IB.prod 𝓘(ℝ, F)) (fun m ↦ (v m : TotalSpace F E)) s)
+    (hw : MDifferentiableOn IM (IB.prod 𝓘(ℝ, F)) (fun m ↦ (w m : TotalSpace F E)) s) :
+    MDifferentiableOn IM 𝓘(ℝ) (fun b ↦ ⟪v b, w b⟫) s :=
+  fun x hx ↦ (hv x hx).inner_bundle (hw x hx)
+
+/-- Given two smooth maps into the same fibers of a Riemannian bundle,
+their scalar product is smooth. -/
+lemma MDifferentiable.inner_bundle
+    (hv : MDifferentiable IM (IB.prod 𝓘(ℝ, F)) (fun m ↦ (v m : TotalSpace F E)))
+    (hw : MDifferentiable IM (IB.prod 𝓘(ℝ, F)) (fun m ↦ (w m : TotalSpace F E))) :
+    MDifferentiable IM 𝓘(ℝ) (fun b ↦ ⟪v b, w b⟫) :=
+  fun x ↦ (hv x).inner_bundle (hw x)
+
+end MDifferentiable
 
 end
 
