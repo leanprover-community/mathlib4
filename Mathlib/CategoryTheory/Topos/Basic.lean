@@ -111,9 +111,6 @@ class ElementaryTopos [HasPullbacks ℰ] where
   P (B : ℰ) : ℰ
   /-- `P` actually assigns power objects. -/
   hP (B : ℰ) : IsPowerObjectOf sc B (P B)
-  /-- Uniqueness of the P-transpose. -/
-  uniq (A B : ℰ) (f : B ⊗ A ⟶ sc.Ω) (g : A ⟶ (P B)) (h : B ◁ g ≫ (ε (hP B)) = f) :
-    g = unhat (hP B) f
 
 namespace ElementaryTopos
 
@@ -135,6 +132,12 @@ lemma unhat_hat {A B : ℰ} (g : A ⟶ (P B)) : unhat (hat g) = g :=
 
 /-- The element relation as a subobject of `B ⨯ (P B)`. -/
 def ε (B : ℰ) : B ⊗ (P B) ⟶ sc.Ω := PowerObject.ε (hP B)
+
+@[simp]
+lemma comm {A B : ℰ} (f : B ⊗ A ⟶ sc.Ω) : (B ◁ unhat f) ≫ ε B = f := PowerObject.comm (hP B) f
+
+lemma uniq {A B : ℰ} (f : B ⊗ A ⟶ sc.Ω) (g : A ⟶ P B)
+    (h : f = (B ◁ g) ≫ ε B) : g = unhat f := PowerObject.uniq (hP B) f g h
 
 /-- The morphism `P_map h` is the functorial action on a morphism `h : B ⟶ C`,
     defined as the P-transpose of `εC ∘ (h ⨯ 𝟙)`. -/
