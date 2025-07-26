@@ -200,7 +200,7 @@ lemma norm_log_one_add_le {z : ℂ} (hz : ‖z‖ < 1) :
   exact norm_add_le_of_le (Complex.norm_log_one_add_sub_self_le hz) le_rfl
 
 /-- For `‖z‖ ≤ 1/2`, the complex logarithm is bounded by `(3/2) * ‖z‖`. -/
-lemma norm_log_one_add_half_le_self {z : ℂ} (hz : ‖z‖ ≤ 1/2) : ‖log (1 + z)‖ ≤ (3/2) * ‖z‖ := by
+lemma norm_log_one_add_half_le_self {z : ℂ} (hz : ‖z‖ ≤ 1 / 2) : ‖log (1 + z)‖ ≤ (3/2) * ‖z‖ := by
   apply le_trans (norm_log_one_add_le (lt_of_le_of_lt hz one_half_lt_one))
   have hz3 : (1 - ‖z‖)⁻¹ ≤ 2 := by
     rw [inv_eq_one_div, div_le_iff₀]

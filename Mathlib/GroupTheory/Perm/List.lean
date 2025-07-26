@@ -57,7 +57,7 @@ theorem formPerm_singleton (x : α) : formPerm [x] = 1 :=
 @[simp]
 theorem formPerm_cons_cons (x y : α) (l : List α) :
     formPerm (x :: y :: l) = swap x y * formPerm (y :: l) :=
-  prod_cons
+  rfl
 
 theorem formPerm_pair (x y : α) : formPerm [x, y] = swap x y :=
   rfl
@@ -159,7 +159,7 @@ theorem formPerm_eq_head_iff_eq_getLast (x y : α) :
   Iff.trans (by rw [formPerm_apply_getLast]) (formPerm (y :: l)).injective.eq_iff
 
 theorem formPerm_apply_lt_getElem (xs : List α) (h : Nodup xs) (n : ℕ) (hn : n + 1 < xs.length) :
-    formPerm xs xs[n] = xs[n + 1] := by
+    formPerm xs xs[n] = xs[n+1] := by
   induction n generalizing xs with
   | zero => simpa using formPerm_apply_getElem_zero _ h _
   | succ n IH =>

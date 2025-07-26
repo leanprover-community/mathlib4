@@ -190,6 +190,30 @@ theorem cancel_left_div_gcd (hm : 0 < m) (h : c * a ≡ c * b [ZMOD m]) : a ≡ 
 theorem of_div (h : a / c ≡ b / c [ZMOD m / c]) (ha : c ∣ a) (ha : c ∣ b) (ha : c ∣ m) :
     a ≡ b [ZMOD m] := by convert h.mul_left' <;> rwa [Int.mul_ediv_cancel']
 
+/-- Cancel left multiplication on both sides of the `≡` and in the modulus.
+
+For cancelling left multiplication in the modulus, see `Int.ModEq.of_mul_left`. -/
+protected theorem mul_left_cancel' (hc : c ≠ 0) :
+    c * a ≡ c * b [ZMOD c * m] → a ≡ b [ZMOD m] := by
+  simp only [modEq_iff_dvd, ← Int.mul_sub]
+  exact Int.dvd_of_mul_dvd_mul_left hc
+
+protected theorem mul_left_cancel_iff' (hc : c ≠ 0) :
+    c * a ≡ c * b [ZMOD c * m] ↔ a ≡ b [ZMOD m] :=
+  ⟨ModEq.mul_left_cancel' hc, Int.ModEq.mul_left'⟩
+
+/-- Cancel right multiplication on both sides of the `≡` and in the modulus.
+
+For cancelling right multiplication in the modulus, see `Int.ModEq.of_mul_right`. -/
+protected theorem mul_right_cancel' (hc : c ≠ 0) :
+    a * c ≡ b * c [ZMOD m * c] → a ≡ b [ZMOD m] := by
+  simp only [modEq_iff_dvd, ← Int.sub_mul]
+  exact Int.dvd_of_mul_dvd_mul_right hc
+
+protected theorem mul_right_cancel_iff' (hc : c ≠ 0) :
+    a * c ≡ b * c [ZMOD m * c] ↔ a ≡ b [ZMOD m] :=
+  ⟨ModEq.mul_right_cancel' hc, ModEq.mul_right'⟩
+
 end ModEq
 
 theorem modEq_one : a ≡ b [ZMOD 1] :=

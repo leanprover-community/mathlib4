@@ -108,7 +108,7 @@ theorem exists_of_length_succ {n} : ∀ l : List α, l.length = n + 1 → ∃ h 
       · subsingleton
       · apply ih; simpa using hl
 
-@[simp default+1] -- Raise priority above `length_injective_iff`.
+@[simp default + 1] -- Raise priority above `length_injective_iff`.
 lemma length_injective [Subsingleton α] : Injective (length : List α → ℕ) :=
   length_injective_iff.mpr inferInstance
 
@@ -509,7 +509,7 @@ theorem Sublist.antisymm (s₁ : l₁ <+ l₂) (s₂ : l₂ <+ l₁) : l₁ = l�
 /-- If the first element of two lists are different, then a sublist relation can be reduced. -/
 theorem Sublist.of_cons_of_ne {a b} (h₁ : a ≠ b) (h₂ : a :: l₁ <+ b :: l₂) : a :: l₁ <+ l₂ :=
   match h₁, h₂ with
-  | _, .cons _ h =>  h
+  | _, .cons _ h => h
 
 /-! ### indexOf -/
 
@@ -548,18 +548,7 @@ theorem idxOf_of_notMem {l : List α} {a : α} : a ∉ l → idxOf a l = length 
 
 @[deprecated (since := "2025-01-30")] alias indexOf_of_not_mem := idxOf_of_notMem
 
-theorem idxOf_le_length {a : α} {l : List α} : idxOf a l ≤ length l := by
-  induction l with | nil => rfl | cons b l ih => ?_
-  simp only [length, idxOf_cons, cond_eq_if, beq_iff_eq]
-  by_cases h : b = a
-  · rw [if_pos h]; exact Nat.zero_le _
-  · rw [if_neg h]; exact succ_le_succ ih
-
 @[deprecated (since := "2025-01-30")] alias indexOf_le_length := idxOf_le_length
-
-theorem idxOf_lt_length_iff {a} {l : List α} : idxOf a l < length l ↔ a ∈ l :=
-  ⟨fun h => Decidable.byContradiction fun al => Nat.ne_of_lt h <| idxOf_eq_length_iff.2 al,
-   fun al => (lt_of_le_of_ne idxOf_le_length) fun h => idxOf_eq_length_iff.1 h al⟩
 
 @[deprecated (since := "2025-01-30")] alias indexOf_lt_length_iff := idxOf_lt_length_iff
 
@@ -1005,7 +994,7 @@ theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {l : List α} (hx : x ∈ l
 /-! ### filter -/
 
 theorem length_eq_length_filter_add {l : List (α)} (f : α → Bool) :
-    l.length = (l.filter f).length + (l.filter (! f ·)).length := by
+    l.length = (l.filter f).length + (l.filter (!f ·)).length := by
   simp_rw [← List.countP_eq_length_filter, l.length_eq_countP_add_countP f, Bool.not_eq_true,
     Bool.decide_eq_false]
 
@@ -1306,14 +1295,12 @@ end lookup
 section range'
 
 @[simp]
-lemma range'_0 (a b : ℕ) :
-   range' a b 0 = replicate b a := by
+lemma range'_0 (a b : ℕ) : range' a b 0 = replicate b a := by
   induction b with
   | zero => simp
   | succ b ih => simp [range'_succ, ih, replicate_succ]
 
-lemma left_le_of_mem_range' {a b s x : ℕ}
-    (hx : x ∈ List.range' a b s) : a ≤ x := by
+lemma left_le_of_mem_range' {a b s x : ℕ} (hx : x ∈ List.range' a b s) : a ≤ x := by
   obtain ⟨i, _, rfl⟩ := List.mem_range'.mp hx
   exact le_add_right a (s * i)
 

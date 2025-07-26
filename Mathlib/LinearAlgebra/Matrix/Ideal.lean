@@ -34,9 +34,7 @@ variable {R : Type*} [Semiring R]
 
 /-- The left ideal of matrices with entries in `I ≤ R`. -/
 def matricesOver (I : Ideal R) : Ideal (Matrix n n R) where
-  carrier := { M | ∀ i j, M i j ∈ I }
-  add_mem' ha hb i j := I.add_mem (ha i j) (hb i j)
-  zero_mem' _ _ := I.zero_mem
+  __ := I.toAddSubmonoid.matrix
   smul_mem' M N hN := by
     intro i j
     rw [smul_eq_mul, mul_apply]
@@ -361,7 +359,7 @@ theorem jacobson_matricesOver (I : TwoSidedIdeal R) :
     (I.matricesOver n).jacobson = I.jacobson.matricesOver n := by
   apply le_antisymm
   · apply jacobson_matricesOver_le
-  · show asIdeal (I.matricesOver n).jacobson ≥ asIdeal (I.jacobson.matricesOver n)
+  · change asIdeal (I.matricesOver n).jacobson ≥ asIdeal (I.jacobson.matricesOver n)
     simp [asIdeal_jacobson, asIdeal_matricesOver, Ideal.matricesOver_jacobson_le]
 
 theorem matricesOver_jacobson_bot :
