@@ -254,8 +254,7 @@ instance [Semiring S] [AddCommMonoid R] [Module S R] : Module S (QuadraticAlgebr
   zero_smul x := by ext <;> simp
 
 instance [AddGroup R] : AddGroup (QuadraticAlgebra R a b) := by
-  refine (equivProd a b).injective.addGroup _ rfl ?_ ?_ ?_ ?_ ?_
-  all_goals intros; rfl
+  refine (equivProd a b).injective.addGroup _ rfl ?_ ?_ ?_ ?_ ?_ <;> intros <;> rfl
 
 instance [AddCommGroup R] : AddCommGroup (QuadraticAlgebra R a b) where
   __ := inferInstanceAs (AddGroup (QuadraticAlgebra R a b))
