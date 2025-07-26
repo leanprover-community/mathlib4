@@ -951,6 +951,7 @@ end PosPart
 section IsBoundedSMul
 
 variable {𝕜 : Type*}
+  {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
 
 @[fun_prop]
 theorem Integrable.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β] [IsBoundedSMul 𝕜 β] (c : 𝕜)
@@ -961,6 +962,16 @@ theorem Integrable.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β] [IsBou
 theorem Integrable.fun_smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β] [IsBoundedSMul 𝕜 β] (c : 𝕜)
     {f : α → β} (hf : Integrable f μ) : Integrable (fun x ↦ c • f x) μ :=
   hf.smul c
+
+theorem Integrable.smul_enorm
+    [NormedAddCommGroup 𝕜] [SMul 𝕜 ε] [ContinuousConstSMul 𝕜 ε] [ENormSMulClass 𝕜 ε] (c : 𝕜)
+    {f : α → ε} (hf : Integrable f μ) : Integrable (c • f) μ :=
+  ⟨by fun_prop, hf.hasFiniteIntegral.smul_enorm c⟩
+
+theorem Integrable.fun_smul_enorm
+    [NormedAddCommGroup 𝕜] [SMul 𝕜 ε] [ContinuousConstSMul 𝕜 ε] [ENormSMulClass 𝕜 ε] (c : 𝕜)
+    {f : α → ε} (hf : Integrable f μ) : Integrable (fun x ↦ c • f x) μ :=
+  hf.smul_enorm c
 
 theorem _root_.IsUnit.integrable_smul_iff [NormedRing 𝕜] [MulActionWithZero 𝕜 β]
     [IsBoundedSMul 𝕜 β] {c : 𝕜} (hc : IsUnit c) (f : α → β) :
