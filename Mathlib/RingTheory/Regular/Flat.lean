@@ -73,7 +73,7 @@ variable {R S M N : Type*} [CommRing R] [CommRing S] [Algebra R S] [FaithfullyFl
 /-- Let `R` be a commutative ring, `M` be an `R`-module, `S` be a faithfully flat `R`-algebra,
   `N` be the base change of `M` to `S`. If `[r₁, …, rₙ]` is a regular `M`-sequence, then its image
   in `N` is a regular `N`-sequence. -/
-theorem RingTheory.Sequence.IsRegular.of_faithfullyFlat_isBaseChange
+theorem RingTheory.Sequence.IsRegular.of_faithfullyFlat_of_isBaseChange
     {f : M →ₗ[R] N} (hf : IsBaseChange S f) {rs : List R} (reg : IsRegular M rs) :
     IsRegular N (rs.map (algebraMap R S)) := by
   refine ⟨reg.1.of_flat_isBaseChange hf, ?_⟩
