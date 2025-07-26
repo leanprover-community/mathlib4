@@ -15,7 +15,7 @@ and splitting finite sequences.
 
 ## Main results
 
-- this file contains a basic API for this style of finite sequences
+- A basic API for appending and de-appending finite sequences
 
 sample lemmas:
 -'append_apply_lt': extracting the initial part of the append of two sequences
@@ -46,8 +46,10 @@ variable (R : Type*) [Semiring R] [PartialOrder R]
 
 namespace Fin
 
-theorem sum_append (a : Fin m → E) (b : Fin n → E) :
-    (∑ i, append a b i) = (∑ i, a i) + (∑ i, b i) := by
+/-- Summing over appended v and w, and then extracting
+the less than part, gives back the original first sequence v. -/
+theorem sum_append (v : Fin m → E) (w : Fin n → E) :
+    (∑ i, append v w i) = (∑ i, v i) + (∑ i, w i) := by
   simp [sum_univ_add]
 
 /-- Appending two sequences v and w, and then extracting
@@ -75,13 +77,13 @@ theorem append_forall_iff (P : α → Prop) (v1 : Fin m → α) (v2 : Fin n → 
     intro h
     constructor --conjunction
     · intro i
-      have : append v1 v2 (Fin.castAdd n i) = v1 i := by simp [append_apply_lt]
-      rw [← this]
+      have h2 : append v1 v2 (Fin.castAdd n i) = v1 i := by simp [append_apply_lt]
+      rw [← h2]
       exact h _
     · intro i
-      have : append v1 v2 (Fin.natAdd m i) = v2 i := by
+      have h3 : append v1 v2 (Fin.natAdd m i) = v2 i := by
         simp
-      rw [← this]
+      rw [← h3]
       exact h _
   · --bi-implication left-to-right part
     intro ⟨h1, h2⟩ i
@@ -117,5 +119,6 @@ theorem smul_append_distrib (c1 : Fin m → R) (v1 : Fin m → E)
   by_cases h : i < m
   · simp [addCases, h]
   · simp [addCases, h]
+
 
 end Fin

@@ -22,12 +22,12 @@ We define the algebraic dual of a cone (which is independent of an inner product
 and define the minimal and maximal tensor products of two pointed cones:
 
 'algebraicDual C': the algebraic dual of the pointed cone 'C'
-'minimalTensorProduct C₁ C₂'
-'maximalTensorProduct C₁ C₂'
+'minTensorProduct C₁ C₂'
+'maxTensorProduct C₁ C₂'
 
 ## Main results
 
-- `minimalTensorProduct_le_maximalTensorProduct`: the minimal tensor product
+- `minTensorProduct_le_maxTensorProduct`: the minimal tensor product
   is less than or equal to the maximal tensor product
 
 ## ToDo
@@ -82,7 +82,7 @@ def algebraicDual (C : PointedCone K G) : PointedCone K (Dual K G) where
 /-- The minimal tensor product of two cones is given by
 all conical combinations of elementary tensor products x ⊗ₜ y
 of cone elements. -/
-noncomputable def minimalTensorProduct (C₁ : PointedCone K G) (C₂ : PointedCone K H)
+noncomputable def minTensorProduct (C₁ : PointedCone K G) (C₂ : PointedCone K H)
     : PointedCone K (G ⊗[K] H) :=
   conicalHull K {z | ∃ x y, x ∈ C₁ ∧ y ∈ C₂ ∧ z = x ⊗ₜ[K] y}
 
@@ -90,7 +90,7 @@ noncomputable def minimalTensorProduct (C₁ : PointedCone K G) (C₂ : PointedC
 all elements of the module tensor product space for which
 all elementary tensor products of dual cone elements φ₁ ⊗ₜ φ₂
 are positive. -/
-noncomputable def maximalTensorProduct (C₁ : PointedCone K G) (C₂ : PointedCone K H)
+noncomputable def maxTensorProduct (C₁ : PointedCone K G) (C₂ : PointedCone K H)
     : PointedCone K (G ⊗[K] H) where
   carrier :=
     {z : G ⊗[K] H | ∀ (φ₁ : Dual K G)(φ₂ : Dual K H),
@@ -110,8 +110,8 @@ noncomputable def maximalTensorProduct (C₁ : PointedCone K G) (C₂ : PointedC
     exact add_nonneg (hz₁ φ₁ φ₂ hφ₁ hφ₂) (hz₂ φ₁ φ₂ hφ₁ hφ₂)
 
 /-- The minimal tensor product is less than or equal to the maximal tensor product. -/
-theorem minimalTensorProduct_le_maximalTensorProduct (C₁ : PointedCone K G) (C₂ : PointedCone K H)
-    : (minimalTensorProduct C₁ C₂) ≤ (maximalTensorProduct C₁ C₂)
+theorem minTensorProduct_le_maxTensorProduct (C₁ : PointedCone K G) (C₂ : PointedCone K H)
+    : (minTensorProduct C₁ C₂) ≤ (maxTensorProduct C₁ C₂)
     := by
   intro z h
   obtain ⟨n, c, v, hv, hc, hz⟩ := h

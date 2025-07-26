@@ -66,7 +66,7 @@ theorem generator_conical_comb {v₁ : E} (h_mem : v₁ ∈ s) :
 variable [PosMulMono R]
 omit [ZeroLEOneClass R]
 /-- A scalar multiple of a conical combination is a conical combination. -/
-theorem smul_conical_comb_is_conical_comb (c₁ : R) (h : 0 ≤ c₁) (v₁ : E)
+theorem smul_conical_comb (c₁ : R) (h : 0 ≤ c₁) (v₁ : E)
     (h_conicalcomb : IsConicalComb R s v₁) : IsConicalComb R s (c₁ • v₁) := by
   obtain ⟨n, c, v, h_mem, h_nonneg, h_eq⟩ := h_conicalcomb
   --instantiate extensional quantifier with the original sequence multiplied by c₁
@@ -78,7 +78,7 @@ theorem smul_conical_comb_is_conical_comb (c₁ : R) (h : 0 ≤ c₁) (v₁ : E)
 
 omit [PosMulMono R]
 /-- Adding two conical combinations produces a new conical combination. -/
-theorem conical_comb_add_is_conical_comb (x₁ x₂ : E)
+theorem conical_comb_add (x₁ x₂ : E)
     (h₁ : IsConicalComb R s x₁) (h₂ : IsConicalComb R s x₂) :
     IsConicalComb R s (x₁ + x₂) := by
   obtain ⟨n₁, c₁, v₁, h2₁, h3₁, h4₁⟩ := h₁
@@ -96,7 +96,6 @@ theorem conical_comb_add_is_conical_comb (x₁ x₂ : E)
   rw [h8, h7]
   exact id (Eq.symm h6)
 
-
 /-- The 'conical_hull R s' is the set of all conical combinations
 of elements of s with scalars from R. It is a pointed cone. -/
 def conicalHull [IsOrderedRing R] : PointedCone R E where
@@ -105,10 +104,10 @@ def conicalHull [IsOrderedRing R] : PointedCone R E where
   smul_mem' := by
     simp only [Set.mem_setOf_eq, Subtype.forall, Nonneg.mk_smul]
     intro c₁ hc₁ v₁ hv₁
-    exact smul_conical_comb_is_conical_comb R s c₁ hc₁ v₁ hv₁
+    exact smul_conical_comb R s c₁ hc₁ v₁ hv₁
   add_mem' := by
     intro v₁ v₂ hv₁ hv₂
-    exact conical_comb_add_is_conical_comb R s v₁ v₂ hv₁ hv₂
+    exact conical_comb_add R s v₁ v₂ hv₁ hv₂
 
 
 /-- The collection of all conical combinations over a set s (i.e., the conical hull of s)
@@ -136,11 +135,6 @@ theorem nonempty {R : Type*} [Semiring R] [PartialOrder R] [IsOrderedRing R]
     C.carrier.Nonempty := by
   rw [Set.nonempty_iff_ne_empty, ne_eq]
   exact ne_of_mem_of_not_mem' C.zero_mem' fun a ↦ a
-
-/-- If a set is a pointed cone, then it is nonempty -/
-theorem nonempty' (C : Set E) (hC : IsPointedCone R E C) : C.Nonempty := by
-  obtain ⟨T, rfl⟩ := hC
-  exact PointedCone.nonempty T
 
 /-- C is a pointed cone iff C is nonempty and contains all two element conical combinations.
 This gives an equivalent more compact characterization of pointed cones
