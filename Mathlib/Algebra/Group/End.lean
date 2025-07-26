@@ -285,6 +285,25 @@ completely in terms of the group structure. -/
 theorem permCongr_eq_mul (e p : Perm α) : e.permCongr p = e * p * e⁻¹ :=
   rfl
 
+@[simp]
+lemma _root_.Equiv.permCongr_mul (e : α ≃ β) (p q : Perm α) :
+    e.permCongr (p * q) = e.permCongr p * e.permCongr q :=
+  permCongr_trans e q p |>.symm
+
+/-- `Equiv.permCongr` as a `MulEquiv`. -/
+def _root_.Equiv.permCongrMulEquiv (e : α ≃ β) : Perm α ≃* Perm β :=
+  { toEquiv := e.permCongr
+    map_mul' p q := e.permCongr_mul p q }
+
+@[simp]
+lemma _root_.Equiv.permCongrMulEquiv_coe_equiv (e : α ≃ β) :
+    (↑e.permCongrMulEquiv : Perm α ≃ Perm β) = e.permCongr :=
+  rfl
+
+@[simp]
+lemma _root_.Equiv.permCongrMulEquiv_coe (e : α ≃ β) : ⇑e.permCongrMulEquiv = ⇑e.permCongr :=
+  rfl
+
 section ExtendDomain
 
 /-! Lemmas about `Equiv.Perm.extendDomain` re-expressed via the group structure. -/
