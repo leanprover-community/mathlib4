@@ -35,7 +35,7 @@ namespace II
 variable {n m : ℕ}
 
 /-- Auxiliary definition for `map'`. Given `f : Fin (n + 1) →o Fin (m + 1)` and
-`x : Fin (m + 2)`, `map' f x` shall we the smallest element in
+`x : Fin (m + 2)`, `map' f x` shall be the smallest element in
 this `finset f x : Finset (Fin (n + 2))`. -/
 def finset (f : Fin (n + 1) →o Fin (m + 1)) (x : Fin (m + 2)) : Finset (Fin (n + 2)) :=
   Finset.univ.filter (fun i ↦ i = Fin.last _ ∨
