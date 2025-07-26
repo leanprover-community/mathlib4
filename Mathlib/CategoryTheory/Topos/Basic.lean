@@ -76,64 +76,72 @@ def P_map (h : B ⟶ C) : PC ⟶ PB := unhat hPB ((h ▷ PC) ≫ ε hPC)
 
 /-- Naturality (dinaturality) of `ε`. This corresponds to the naturality square of ε
     in MM92 diagram (5). -/
-lemma εdinaturality (h : B ⟶ C) :
-  (h ▷ PC) ≫ ε hPC = (B ◁ (P_map hPB hPC h)) ≫ ε hPB := Eq.symm (comm hPB _)
+lemma εDinaturality (h : B ⟶ C) :
+  (h ▷ PC) ≫ ε hPC = (B ◁ (P_map hPB hPC h)) ≫ ε hPB :=
+  have : (unhat hPB ((h ▷ PC) ≫ ε hPC)) = ((P_map hPB hPC h)) := rfl
+  Eq.symm (comm hPB ((h ▷ PC) ≫ ε hPC))
 
 /-- `P` covariantly preserves composition, shown by stacking dinaturality squares. -/
 lemma P_compose {D PD : ℰ} (hPD : IsPowerObjectOf sc D PD) (h : B ⟶ C) (h' : C ⟶ D) :
     P_map hPB hPD (h ≫ h') = P_map hPC hPD h' ≫ P_map hPB hPC h := by
   let comm_outer : (h ▷ PD) ≫ (h' ▷ PD) ≫ ε hPD =
       (B ◁ (P_map _ _ h')) ≫ (B ◁ (P_map _ _ h)) ≫ ε _ := by
-    rw [εdinaturality hPC hPD, ← reassoc_of% whisker_exchange h, εdinaturality hPB hPC]
+    rw [εDinaturality hPC hPD, ← reassoc_of% whisker_exchange h, εDinaturality hPB hPC]
   rw [P_map]; simp
   rw[comm_outer, ← uniq _ _ (P_map hPC hPD h' ≫ P_map hPB hPC h) (by aesop_cat)]
 
+/-- A function `P` assigning power objects, turns into a functor `P : ℰᵒᵖ ⥤ ℰ`. -/
+def functor (P : ℰ → ℰ) (hP : ∀ B : ℰ, IsPowerObjectOf sc B (P B)) : ℰᵒᵖ ⥤ ℰ :=
+    { obj B := P B.unop,
+      map {B C} (h : B ⟶ C) := P_map (hP C.unop) (hP B.unop) h.unop,
+      map_id _ := Eq.symm (uniq (hP _) _ _ (by simp)),
+      map_comp {B C D} _ _ := P_compose (hP D.unop) (hP C.unop) (hP B.unop) _ _ }
+
 end PowerObject
 
-variable (ℰ) [HasPullbacks ℰ]
+open PowerObject
+
+variable (ℰ)
 
 /-- An elementary topos is a category with a fixed subobject classifier and power objects. -/
 class ElementaryTopos [HasPullbacks ℰ] where
   /-- A fixed choice of subobject classifier in `ℰ`. -/
   sc : Classifier ℰ (𝟙_ ℰ)
   /-- The power object functor -/
-  P : ℰᵒᵖ ⥤ ℰ
+  P (B : ℰ) : ℰ
   /-- `P` actually assigns power objects. -/
-  hP (B : ℰ) : IsPowerObjectOf sc B (P.obj (op B))
+  hP (B : ℰ) : IsPowerObjectOf sc B (P B)
+  /-- Uniqueness of the P-transpose. -/
+  uniq (A B : ℰ) (f : B ⊗ A ⟶ sc.Ω) (g : A ⟶ (P B)) (h : B ◁ g ≫ (ε (hP B)) = f) :
+    g = unhat (hP B) f
 
 namespace ElementaryTopos
 
-section
+variable {ℰ} [HasPullbacks ℰ] [ElementaryTopos ℰ]
 
-open PowerObject
+/-- The P-transpose of a morphism `g : A ⟶ P B`. -/
+def hat {A B : ℰ} (g : A ⟶ (P B)) : B ⊗ A ⟶ sc.Ω := PowerObject.hat (hP B) g
 
-/-- Construct an elementary topos pointwise defined power objects. -/
-def mkFromPointwisePowerObjects (sc : Classifier ℰ (𝟙_ ℰ))
-    (P' : ℰ → ℰ) (hP : ∀ B : ℰ, IsPowerObjectOf sc B (P' B)) : ElementaryTopos ℰ :=
-  { sc := sc
-    P :=
-    { obj B := P' B.unop,
-      map {B C} (h : B ⟶ C) := P_map (hP C.unop) (hP B.unop) h.unop,
-      map_id _ := Eq.symm (uniq (hP _) _ _ (by simp)),
-      map_comp {B C D} _ _ := P_compose (hP D.unop) (hP C.unop) (hP B.unop) _ _ }
-    hP := hP }
-
-end
-
-variable {ℰ} [ElementaryTopos ℰ]
-
-abbrev hat {A B : ℰ} (g : A ⟶ P.obj (op B)) := PowerObject.hat (hP B) g
-
-abbrev unhat {A B : ℰ} (f : B ⊗ A ⟶ sc.Ω) := PowerObject.unhat (hP B) f
+/-- The P-transpose of a morphism `f : B × A ⟶ Ω`. -/
+def unhat {A B : ℰ} (f : B ⊗ A ⟶ sc.Ω) : (A ⟶ (P B)) := PowerObject.unhat (hP B) f
 
 @[simp]
-abbrev hat_unhat {A B : ℰ} (f : B ⊗ A ⟶ sc.Ω) := PowerObject.hat_unhat (hP B) f
+lemma hat_unhat {A B : ℰ} (f : B ⊗ A ⟶ sc.Ω) : hat (unhat f) = f :=
+  PowerObject.hat_unhat (hP B) f
 
 @[simp]
-abbrev unhat_hat {A B : ℰ} (g : A ⟶ P.obj (op B)) := PowerObject.unhat_hat (hP B) g
+lemma unhat_hat {A B : ℰ} (g : A ⟶ (P B)) : unhat (hat g) = g :=
+  PowerObject.unhat_hat (hP B) g
 
-abbrev ε {B : ℰ} : B ⊗ (P.obj (op B)) ⟶ sc.Ω := PowerObject.ε (hP B)
+/-- The element relation as a subobject of `B ⨯ (P B)`. -/
+def ε (B : ℰ) : B ⊗ (P B) ⟶ sc.Ω := PowerObject.ε (hP B)
 
-abbrev εdinaturality {B C : ℰ} (h : B ⟶ C) := PowerObject.εdinaturality (hP B) (hP C) h
+/-- The morphism `P_map h` is the functorial action on a morphism `h : B ⟶ C`,
+    defined as the P-transpose of `εC ∘ (h ⨯ 𝟙)`. -/
+def P_map {B C : ℰ} (h : B ⟶ C) : (P C) ⟶ (P B) :=
+  PowerObject.P_map (hP B) (hP C) h
+
+lemma εDinaturality {B C : ℰ} (h : B ⟶ C) :
+  (h ▷ P C) ≫ ε C = (B ◁ (P_map h)) ≫ ε B := PowerObject.εDinaturality (hP B) (hP C) h
 
 end ElementaryTopos
