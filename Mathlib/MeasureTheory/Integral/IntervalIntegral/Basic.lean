@@ -106,21 +106,26 @@ theorem intervalIntegrable_iff_integrableOn_Ioc_of_le (hab : a ≤ b) :
     IntervalIntegrable f μ a b ↔ IntegrableOn f (Ioc a b) μ := by
   rw [intervalIntegrable_iff, uIoc_of_le hab]
 
-theorem intervalIntegrable_iff' [NoAtoms μ] :
+theorem intervalIntegrable_iff' [NoAtoms μ] (h : ‖f (min a b)‖ₑ ≠ ∞ := by finiteness) :
     IntervalIntegrable f μ a b ↔ IntegrableOn f (uIcc a b) μ := by
-  rw [intervalIntegrable_iff, ← Icc_min_max, uIoc, integrableOn_Icc_iff_integrableOn_Ioc]
+  rw [intervalIntegrable_iff, ← Icc_min_max, uIoc, integrableOn_Icc_iff_integrableOn_Ioc h]
 
-theorem intervalIntegrable_iff_integrableOn_Icc_of_le {f : ℝ → E} {a b : ℝ} (hab : a ≤ b)
-    {μ : Measure ℝ} [NoAtoms μ] : IntervalIntegrable f μ a b ↔ IntegrableOn f (Icc a b) μ := by
-  rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hab, integrableOn_Icc_iff_integrableOn_Ioc]
+theorem intervalIntegrable_iff_integrableOn_Icc_of_le [NoAtoms μ]
+    (hab : a ≤ b) (ha : ‖f a‖ₑ ≠ ∞ := by finiteness) :
+    IntervalIntegrable f μ a b ↔ IntegrableOn f (Icc a b) μ := by
+  rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hab, integrableOn_Icc_iff_integrableOn_Ioc ha]
 
-theorem intervalIntegrable_iff_integrableOn_Ico_of_le [NoAtoms μ] (hab : a ≤ b) :
+theorem intervalIntegrable_iff_integrableOn_Ico_of_le [NoAtoms μ]
+    (hab : a ≤ b) (ha : ‖f a‖ₑ ≠ ∞ := by finiteness) (hb : ‖f b‖ₑ ≠ ∞ := by finiteness) :
     IntervalIntegrable f μ a b ↔ IntegrableOn f (Ico a b) μ := by
-  rw [intervalIntegrable_iff_integrableOn_Icc_of_le hab, integrableOn_Icc_iff_integrableOn_Ico]
+  rw [intervalIntegrable_iff_integrableOn_Icc_of_le hab ha,
+    integrableOn_Icc_iff_integrableOn_Ico hb]
 
-theorem intervalIntegrable_iff_integrableOn_Ioo_of_le [NoAtoms μ] (hab : a ≤ b) :
+theorem intervalIntegrable_iff_integrableOn_Ioo_of_le [NoAtoms μ]
+    (hab : a ≤ b) (ha : ‖f a‖ₑ ≠ ∞ := by finiteness) (hb : ‖f b‖ₑ ≠ ∞ := by finiteness) :
     IntervalIntegrable f μ a b ↔ IntegrableOn f (Ioo a b) μ := by
-  rw [intervalIntegrable_iff_integrableOn_Icc_of_le hab, integrableOn_Icc_iff_integrableOn_Ioo]
+  rw [intervalIntegrable_iff_integrableOn_Icc_of_le hab ha,
+    integrableOn_Icc_iff_integrableOn_Ioo ha hb]
 
 /-- If a function is integrable with respect to a given measure `μ` then it is interval integrable
   with respect to `μ` on `uIcc a b`. -/
@@ -320,10 +325,13 @@ theorem div_const {𝕜 : Type*} {f : ℝ → 𝕜} [NormedDivisionRing 𝕜] (h
     (c : 𝕜) : IntervalIntegrable (fun x => f x / c) μ a b := by
   simpa only [div_eq_mul_inv] using mul_const h c⁻¹
 
-theorem comp_mul_left (hf : IntervalIntegrable f volume a b) (c : ℝ) :
+theorem comp_mul_left (hf : IntervalIntegrable f volume a b) {c : ℝ}
+    (h : ‖f (min a b)‖ₑ ≠ ∞ := by finiteness)
+    (h' : ‖f (c * min (a / c) (b / c))‖ₑ ≠ ∞ := by finiteness) :
     IntervalIntegrable (fun x => f (c * x)) volume (a / c) (b / c) := by
   rcases eq_or_ne c 0 with (hc | hc); · rw [hc]; simp
-  rw [intervalIntegrable_iff'] at hf ⊢
+  rw [intervalIntegrable_iff' h] at hf
+  rw [intervalIntegrable_iff' h'] at ⊢
   have A : MeasurableEmbedding fun x => x * c⁻¹ :=
     (Homeomorph.mulRight₀ _ (inv_ne_zero hc)).isClosedEmbedding.measurableEmbedding
   rw [← Real.smul_map_volume_mul_right (inv_ne_zero hc), IntegrableOn, Measure.restrict_smul,
@@ -333,46 +341,61 @@ theorem comp_mul_left (hf : IntervalIntegrable f volume a b) (c : ℝ) :
   · ext; simp only [comp_apply]; congr 1; field_simp
   · rw [preimage_mul_const_uIcc (inv_ne_zero hc)]; field_simp [hc]
 
-theorem comp_mul_left_iff {c : ℝ} (hc : c ≠ 0) :
+-- Note that `h'` is **not** implied by `h` if `c` is negative.
+theorem comp_mul_left_iff {c : ℝ} (hc : c ≠ 0) (h : ‖f (min a b)‖ₑ ≠ ∞ := by finiteness)
+    (h' : ‖f (c * min (a / c) (b / c))‖ₑ ≠ ∞ := by finiteness) :
     IntervalIntegrable (fun x ↦ f (c * x)) volume (a / c) (b / c) ↔
-      IntervalIntegrable f volume a b :=
-  ⟨fun h ↦ by simpa [hc] using h.comp_mul_left c⁻¹, (comp_mul_left · c)⟩
+      IntervalIntegrable f volume a b := by
+  exact ⟨fun h ↦ by simpa [hc] using h.comp_mul_left (c := c⁻¹) h' (by simp),
+    (comp_mul_left · h h')⟩
 
-theorem comp_mul_right (hf : IntervalIntegrable f volume a b) (c : ℝ) :
+theorem comp_mul_right (hf : IntervalIntegrable f volume a b) {c : ℝ}
+    (h : ‖f (min a b)‖ₑ ≠ ∞ := by finiteness)
+    (h' : ‖f (c * min (a / c) (b / c))‖ₑ ≠ ∞ := by finiteness) :
     IntervalIntegrable (fun x => f (x * c)) volume (a / c) (b / c) := by
-  simpa only [mul_comm] using comp_mul_left hf c
+  simpa only [mul_comm] using comp_mul_left hf h h'
 
-theorem comp_add_right (hf : IntervalIntegrable f volume a b) (c : ℝ) :
-    IntervalIntegrable (fun x => f (x + c)) volume (a - c) (b - c) := by
-  wlog h : a ≤ b generalizing a b
-  · exact IntervalIntegrable.symm (this hf.symm (le_of_not_ge h))
-  rw [intervalIntegrable_iff'] at hf ⊢
+theorem comp_add_right (hf : IntervalIntegrable f volume a b) (c : ℝ)
+    (h : ‖f (min a b)‖ₑ ≠ ∞ := by finiteness) :
+    IntervalIntegrable (fun x ↦ f (x + c)) volume (a - c) (b - c) := by
+  have h' : ‖f (min (a - c) (b - c) + c)‖ₑ ≠ ⊤ := by
+    rw [min_sub_sub_right, sub_add, sub_self, sub_zero]
+    exact h
+  wlog hab : a ≤ b generalizing a b
+  · apply IntervalIntegrable.symm (this hf.symm ?_ ?_ (le_of_not_ge hab))
+    · rw [min_comm]; exact h
+    · rw [min_comm]; exact h'
+  rw [intervalIntegrable_iff' h] at hf
+  rw [intervalIntegrable_iff' h'] at ⊢
   have A : MeasurableEmbedding fun x => x + c :=
     (Homeomorph.addRight c).isClosedEmbedding.measurableEmbedding
   rw [← map_add_right_eq_self volume c] at hf
   convert (MeasurableEmbedding.integrableOn_map_iff A).mp hf using 1
   rw [preimage_add_const_uIcc]
 
-theorem comp_add_left (hf : IntervalIntegrable f volume a b) (c : ℝ) :
-    IntervalIntegrable (fun x => f (c + x)) volume (a - c) (b - c) := by
-  simpa only [add_comm] using IntervalIntegrable.comp_add_right hf c
+theorem comp_add_left (hf : IntervalIntegrable f volume a b) (c : ℝ)
+    (h : ‖f (min a b)‖ₑ ≠ ∞ := by finiteness) :
+    IntervalIntegrable (fun x ↦ f (c + x)) volume (a - c) (b - c) := by
+  simpa [add_comm] using IntervalIntegrable.comp_add_right hf c h
 
-theorem comp_sub_right (hf : IntervalIntegrable f volume a b) (c : ℝ) :
-    IntervalIntegrable (fun x => f (x - c)) volume (a + c) (b + c) := by
-  simpa only [sub_neg_eq_add] using IntervalIntegrable.comp_add_right hf (-c)
+theorem comp_sub_right (hf : IntervalIntegrable f volume a b) (c : ℝ)
+    (h : ‖f (min a b)‖ₑ ≠ ∞ := by finiteness) :
+    IntervalIntegrable (fun x ↦ f (x - c)) volume (a + c) (b + c) := by
+  simpa only [sub_neg_eq_add] using IntervalIntegrable.comp_add_right hf (-c) h
 
-theorem iff_comp_neg :
-    IntervalIntegrable f volume a b ↔ IntervalIntegrable (fun x => f (-x)) volume (-a) (-b) := by
-  rw [← comp_mul_left_iff (neg_ne_zero.2 one_ne_zero)]; simp [div_neg]
+theorem iff_comp_neg (h : ‖f (min a b)‖ₑ ≠ ∞ := by finiteness) :
+    IntervalIntegrable f volume a b ↔ IntervalIntegrable (fun x ↦ f (-x)) volume (-a) (-b) := by
+  rw [← comp_mul_left_iff (neg_ne_zero.2 one_ne_zero) h (by simp)]; simp [div_neg]
 
-theorem comp_sub_left (hf : IntervalIntegrable f volume a b) (c : ℝ) :
-    IntervalIntegrable (fun x => f (c - x)) volume (c - a) (c - b) := by
-  simpa only [neg_sub, ← sub_eq_add_neg] using iff_comp_neg.mp (hf.comp_add_left c)
+theorem comp_sub_left (hf : IntervalIntegrable f volume a b) (c : ℝ)
+    (h : ‖f (min a b)‖ₑ ≠ ∞ := by finiteness) :
+    IntervalIntegrable (fun x ↦ f (c - x)) volume (c - a) (c - b) := by
+  simpa only [neg_sub, ← sub_eq_add_neg] using (iff_comp_neg (by simp)).mp (hf.comp_add_left c h)
 
-theorem comp_sub_left_iff (c : ℝ) :
+theorem comp_sub_left_iff (c : ℝ) (h : ‖f (min a b)‖ₑ ≠ ∞ := by finiteness) :
     IntervalIntegrable (fun x => f (c - x)) volume (c - a) (c - b) ↔
       IntervalIntegrable f volume a b :=
-  ⟨fun h ↦ by simpa using h.comp_sub_left c, (.comp_sub_left · c)⟩
+  ⟨fun h ↦ by simpa using h.comp_sub_left c, (.comp_sub_left · c h)⟩
 
 end IntervalIntegrable
 
@@ -439,10 +462,11 @@ interval of the form `0..x`, for positive `x`.
 
 See `intervalIntegrable_of_even` for a stronger result. -/
 lemma intervalIntegrable_of_even₀ (h₁f : ∀ x, f x = f (-x))
-    (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) (t : ℝ) :
+    (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x)
+    {t : ℝ} (ht : ‖f (min 0 t)‖ₑ ≠ ∞ := by finiteness) :
     IntervalIntegrable f volume 0 t := by
   rcases lt_trichotomy t 0 with h | h | h
-  · rw [IntervalIntegrable.iff_comp_neg]
+  · rw [IntervalIntegrable.iff_comp_neg ht]
     conv => arg 1; intro t; rw [← h₁f]
     simp [h₂f (-t) (by norm_num [h])]
   · rw [h]
@@ -452,22 +476,24 @@ lemma intervalIntegrable_of_even₀ (h₁f : ∀ x, f x = f (-x))
 if it is interval integrable (with respect to the volume measure) on every interval of the form
 `0..x`, for positive `x`. -/
 theorem intervalIntegrable_of_even
-    (h₁f : ∀ x, f x = f (-x)) (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) (a b : ℝ) :
+    (h₁f : ∀ x, f x = f (-x)) (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) {a b : ℝ}
+    (ha : ‖f (min 0 a)‖ₑ ≠ ∞ := by finiteness) (hb : ‖f (min 0 b)‖ₑ ≠ ∞ := by finiteness) :
     IntervalIntegrable f volume a b :=
   -- Split integral and apply lemma
-  (intervalIntegrable_of_even₀ h₁f h₂f a).symm.trans (b := 0)
-    (intervalIntegrable_of_even₀ h₁f h₂f b)
+  (intervalIntegrable_of_even₀ h₁f h₂f ha).symm.trans (b := 0)
+    (intervalIntegrable_of_even₀ h₁f h₂f hb)
 
 /-- An odd function is interval integrable (with respect to the volume measure) on every interval
 of the form `0..x` if it is interval integrable (with respect to the volume measure) on every
 interval of the form `0..x`, for positive `x`.
 
 See `intervalIntegrable_of_odd` for a stronger result. -/
-lemma intervalIntegrable_of_odd₀
-    (h₁f : ∀ x, -f x = f (-x)) (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) (t : ℝ) :
+lemma intervalIntegrable_of_odd₀ (h₁f : ∀ x, -f x = f (-x))
+    (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) {t : ℝ}
+    (ht : ‖f (min 0 t)‖ₑ ≠ ∞ := by finiteness) :
     IntervalIntegrable f volume 0 t := by
   rcases lt_trichotomy t 0 with h | h | h
-  · rw [IntervalIntegrable.iff_comp_neg]
+  · rw [IntervalIntegrable.iff_comp_neg ht]
     conv => arg 1; intro t; rw [← h₁f]
     apply IntervalIntegrable.neg
     simp [h₂f (-t) (by norm_num [h])]
@@ -478,10 +504,11 @@ lemma intervalIntegrable_of_odd₀
 iff it is interval integrable (with respect to the volume measure) on every interval of the form
 `0..x`, for positive `x`. -/
 theorem intervalIntegrable_of_odd
-    (h₁f : ∀ x, -f x = f (-x)) (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) (a b : ℝ) :
+    (h₁f : ∀ x, -f x = f (-x)) (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) {a b : ℝ}
+    (ha : ‖f (min 0 a)‖ₑ ≠ ∞ := by finiteness) (hb : ‖f (min 0 b)‖ₑ ≠ ∞ := by finiteness) :
     IntervalIntegrable f volume a b :=
   -- Split integral and apply lemma
-  (intervalIntegrable_of_odd₀ h₁f h₂f a).symm.trans (b := 0) (intervalIntegrable_of_odd₀ h₁f h₂f b)
+  (intervalIntegrable_of_odd₀ h₁f h₂f ha).symm.trans (intervalIntegrable_of_odd₀ h₁f h₂f hb)
 
 end
 
