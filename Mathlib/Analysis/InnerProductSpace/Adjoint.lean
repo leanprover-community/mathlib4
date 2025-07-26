@@ -339,6 +339,15 @@ theorem IsIdempotentElem.isSelfAdjoint_iff_orthogonal_range (h : IsIdempotentEle
   rw [← Submodule.orthogonal_orthogonal (LinearMap.range (star T)),
     orthogonal_range, star_eq_adjoint, adjoint_adjoint, ← h1, Submodule.orthogonal_orthogonal]
 
+theorem IsStarProjection.comp_eq_left_iff {p q : E →L[𝕜] E}
+    (hp : IsSelfAdjoint p) (hq : IsStarProjection q) :
+    p ∘L q = p ↔ LinearMap.range p ≤ LinearMap.range q := by
+  rw [← star_inj]
+  simp_rw [star_eq_adjoint, adjoint_comp, hq.isSelfAdjoint.adjoint_eq, hp.adjoint_eq,
+    ← coe_inj, coe_comp]
+  exact LinearMap.IsIdempotentElem.comp_eq_right_iff
+    congr(LinearMapClass.linearMap $hq.isIdempotentElem.eq) _
+
 open ContinuousLinearMap in
 /-- Star projection operators are equal iff their range are. -/
 theorem IsStarProjection.ext_iff {S T : E →L[𝕜] E}
