@@ -468,7 +468,7 @@ lemma pairing_zero_of_trivial_sum_diff_spaces
     have h_mem := idx.property
     simp only [LieSubalgebra.root, Finset.mem_filter, Finset.mem_univ, true_and] at h_mem
     exact h_mem
-  have contradiction_from_nontrivial (β γ : H →ₗ[K] K) (h_bot : genWeightSpace L β = ⊥)
+  have h_c (β γ : H →ₗ[K] K) (h_bot : genWeightSpace L β = ⊥)
       (idx : { w : Weight K H L // w ∈ H.root }) (h_eq : S.root idx = γ)
       (h_beta_eq : β = γ) : False := by
     have h_nontrivial : genWeightSpace L β ≠ ⊥ := by
@@ -484,8 +484,7 @@ lemma pairing_zero_of_trivial_sum_diff_spaces
       have h_sum_zero : S.root i + S.root j = 0 := by rw [h_eq]; simp only [neg_add_cancel]
       exact w_plus h_sum_zero
     obtain ⟨idx, hidx⟩ := h_add_mem
-    exact contradiction_from_nontrivial (χ.toLinear + α.toLinear) (S.root i + S.root j)
-      h_plus_bot idx hidx rfl
+    exact h_c (χ.toLinear + α.toLinear) (S.root i + S.root j) h_plus_bot idx hidx rfl
   | inr h_rest =>
     cases h_rest with
     | inl h_zero => exact (S.algebraMap_pairingIn ℤ i j ▸ by simp [h_zero])
@@ -497,8 +496,7 @@ lemma pairing_zero_of_trivial_sum_diff_spaces
         have h_chi_eq_alpha : χ = α := by injection h_eq
         exact w_minus (by rw [h_chi_eq_alpha]; simp only [sub_self])
       obtain ⟨idx, hidx⟩ := h_sub_mem
-      exact contradiction_from_nontrivial (χ.toLinear - α.toLinear) (S.root i - S.root j)
-        h_minus_bot idx hidx rfl
+      exact h_c (χ.toLinear - α.toLinear) (S.root i - S.root j) h_minus_bot idx hidx rfl
 
 section IsSimple
 
