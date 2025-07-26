@@ -322,10 +322,13 @@ def functorEquivInverseWhiskeringIsoSnd :
 
 section Pseudofunctoriality
 
+seal functorEquiv.inverse functorEquiv.counitIsoAppFst functorEquiv.counitIsoAppSnd
+
 open CatCommSqOver
 
 /-- The equivalence `functorEquiv` identifies the functoriality
 in `X` of `X ⥤ C₁` and `CatCommSqOver R B X`. -/
+@[simps!]
 instance whiskeringLeftFunctorEquivFunctorSquare
     {X : Type u₅} {Y : Type u₆} [Category.{v₅} X] [Category.{v₆} Y]
     (U : X ⥤ Y) :
@@ -342,6 +345,7 @@ instance whiskeringLeftFunctorEquivFunctorSquare
 
 /-- The equivalence `functorEquiv` identifies the functoriality
 on `X` of `X ⥤ C₁` and `CatCommSqOver F G X` (inverse direction). -/
+@[simps!]
 instance precomposeToFunctorToCategoricalPullbackSquare
     {X : Type u₅} {Y : Type u₆} [Category.{v₅} X] [Category.{v₆} Y]
     (U : X ⥤ Y) :
@@ -363,6 +367,7 @@ variable {R B} {R' B'}
 /-- Given a (not-necessarily pullback) `CatCommSq T L R B`, a
 `CatCospanTransform ψ R B R' B'` and a `CatPullbackSquare T' L' R' B'`,
 there is an induced functor between the top left corners of the squares. -/
+@[simps]
 def functorOfTransform :
     (CatCospanTransform R B R' B') ⥤ (C₁ ⥤ D₁) where
   obj ψ := functorEquiv T' L' R' B' C₁|>.inverse.obj <|
@@ -370,6 +375,7 @@ def functorOfTransform :
   map α := functorEquiv T' L' R' B' C₁|>.inverse.map <|
     transform _|>.map α|>.app <| .ofSquare T L R B
 
+@[simps!]
 instance functorOfTransformObjFstSquare (ψ : CatCospanTransform R B R' B') :
     CatCommSq T (functorOfTransform T L T' L'|>.obj ψ) ψ.left T' where
   iso := (CatCommSqOver.fstFunctor _ _ _|>.mapIso <|
@@ -491,7 +497,6 @@ end functorOfTransform_map
 
 variable (R B) in
 /-- `functorOfTransform` repects identities up to isomorphism. -/
-@[simps!]
 def functorOfTransformObjId :
     (functorOfTransform T L T L).obj (.id R B) ≅ 𝟭 C₁ :=
   (functorEquiv T L R B C₁|>.inverse.mapIso <|
