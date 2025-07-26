@@ -594,6 +594,13 @@ theorem det_basis (b : Basis ι A M) (b' : Basis ι A M) :
     LinearMap.det (b'.equiv b (Equiv.refl ι)).toLinearMap = b'.det b :=
   (b.det_comp_basis b' (LinearMap.id)).symm
 
+theorem det_mul (b b' b'' : Basis ι A M) :
+    b.det b' * b'.det b'' = b.det b'' := by
+  have : b'' = (b'.equiv b'' (Equiv.refl ι)).toLinearMap ∘ b'  := by
+    ext; simp
+  nth_rewrite 2 [this]
+  rw [Basis.det_comp, det_basis, mul_comm]
+
 theorem det_inv (b : Basis ι A M) (b' : Basis ι A M) :
     (b.isUnit_det b').unit⁻¹ = b'.det b := by
   rw [← Units.mul_eq_one_iff_inv_eq, IsUnit.unit_spec, ← det_basis, ← det_basis]
