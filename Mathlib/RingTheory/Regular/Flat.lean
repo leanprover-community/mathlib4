@@ -44,7 +44,7 @@ variable {R S M N : Type*} [CommRing R] [CommRing S] [Algebra R S] [Flat R S]
 /-- Let `R` be a commutative ring, `M` be an `R`-module, `S` be a flat `R`-algebra, `N` be the base
   change of `M` to `S`. If `[r₁, …, rₙ]` is a weakly regular `M`-sequence, then its image in `N` is
   a weakly regular `N`-sequence. -/
-theorem RingTheory.Sequence.IsWeaklyRegular.of_flat_isBaseChange
+theorem RingTheory.Sequence.IsWeaklyRegular.of_flat_of_isBaseChange
     {f : M →ₗ[R] N} (hf : IsBaseChange S f) {rs : List R} (reg : IsWeaklyRegular M rs) :
     IsWeaklyRegular N (rs.map (algebraMap R S)) := by
   induction rs generalizing M N with
