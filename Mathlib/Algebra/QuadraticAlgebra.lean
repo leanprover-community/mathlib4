@@ -271,8 +271,8 @@ variable [AddCommGroupWithOne R]
 
 instance : AddCommGroupWithOne (QuadraticAlgebra R a b) where
   intCast n := ((n : R) : QuadraticAlgebra R a b)
-  intCast_ofNat n:= by ext <;> simp <;> rfl
-  intCast_negSucc n := by ext <;> simp <;> rfl
+  intCast_ofNat n := by norm_cast
+  intCast_negSucc n := by rw [Int.negSucc_eq, Int.cast_neg, coe_neg]; norm_cast
 
 @[simp, norm_cast]
 theorem natCast_re (n : ℕ) : (n : QuadraticAlgebra R a b).re = n := rfl
