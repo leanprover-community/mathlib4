@@ -372,7 +372,7 @@ theorem div_le_radius_compContinuousLinearMap (p : FormalMultilinearSeries 𝕜 
       gcongr
       exact nnnorm_compContinuousLinearMap_le p u n
     _ = ‖p n‖ * r ^ n := by
-      simp only [NNReal.coe_div, coe_nnnorm, div_pow, mul_assoc, norm_eq_zero]
+      simp only [NNReal.coe_div, coe_nnnorm, div_pow, mul_assoc]
       rw [mul_div_cancel₀]
       rw [← NNReal.coe_pos] at h_zero
       positivity
