@@ -240,7 +240,7 @@ lemma IsBaseChange.of_equiv (e : S ⊗[R] M ≃ₗ[S] N) (he : ∀ x, e (1 ⊗�
   simp [show x ⊗ₜ[R] y = x • (1 ⊗ₜ[R] y) by simp [smul_tmul'], he]
 
 variable (R S) in
-theorem IsBaseChange.of_algebra_linearMap : IsBaseChange S (Algebra.linearMap R S) :=
+theorem IsBaseChange.linearMap : IsBaseChange S (Algebra.linearMap R S) :=
   of_equiv (AlgebraTensorModule.rid R S S) fun x ↦ by
     simpa using (Algebra.algebraMap_eq_smul_one x).symm
 
