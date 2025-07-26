@@ -1123,8 +1123,8 @@ instance normedSpaceSeminormedAddCommGroupToProd
   refine ⟨fun x y ↦ ?_⟩
   simp [norm_seminormedAddCommGroupToProd, norm_smul]
 
-/-- This definition allows to endow `Π i, β i` with the Lp norm with the uniformity and bornology
-being defeq to the product ones. It is useful to endow a type synonym of `Π i, β i` with the
+/-- This definition allows to endow `α × β` with the Lp norm with the uniformity and bornology
+being defeq to the product ones. It is useful to endow a type synonym of `α × β` with the
 Lp norm. -/
 def normedAddCommGroupToProd [NormedAddCommGroup α] [NormedAddCommGroup β] :
     NormedAddCommGroup (α × β) where
