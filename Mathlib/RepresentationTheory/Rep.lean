@@ -135,6 +135,26 @@ instance {H V : Type u} [Group H] [AddCommGroup V] [Module k V] (ρ : Representa
     (f : G →* H) [Representation.IsTrivial (ρ.comp f)] :
     Representation.IsTrivial ((Rep.of ρ).ρ.comp f) := ‹_›
 
+section Commutative
+
+variable {k G : Type u} [CommRing k] [CommMonoid G]
+variable (A : Rep k G)
+
+/-- Given a representation `A` of a commutative monoid `G`, the map `ρ_A(g)` is a representation
+morphism `A ⟶ A` for any `g : G`. -/
+@[simps]
+noncomputable def applyAsHom (g : G) : A ⟶ A where
+  hom := ModuleCat.ofHom (A.ρ g)
+  comm _ := by ext; simp [← Module.End.mul_apply, ← map_mul, mul_comm]
+
+@[reassoc, elementwise]
+lemma applyAsHom_comm {A B : Rep k G} (f : A ⟶ B) (g : G) :
+    A.applyAsHom g ≫ f = f ≫ B.applyAsHom g := by
+  ext
+  simp [hom_comm_apply]
+
+end Commutative
+
 section
 
 variable {G : Type u} [Group G] (A : Rep k G) (S : Subgroup G)
@@ -362,12 +382,18 @@ variable (M G : Type) [Monoid M] [CommGroup G] [MulDistribMulAction M G]
 `ℤ`-linear `M`-representation on `Additive G`. -/
 def ofMulDistribMulAction : Rep ℤ M := Rep.of (Representation.ofMulDistribMulAction M G)
 
+variable {G M}
+
+/-- Unfolds `ofMulDistribMulAction`; useful to keep track of additivity. -/
+@[simps!]
+def toAdditive : ofMulDistribMulAction M G ≃+ Additive G := AddEquiv.refl _
+
 @[simp] theorem ofMulDistribMulAction_ρ_apply_apply (g : M) (a : Additive G) :
     (ofMulDistribMulAction M G).ρ g a = Additive.ofMul (g • a.toMul) := rfl
 
 /-- Given an `R`-algebra `S`, the `ℤ`-linear representation associated to the natural action of
 `S ≃ₐ[R] S` on `Sˣ`. -/
-@[simp] def ofAlgebraAutOnUnits (R S : Type) [CommRing R] [CommRing S] [Algebra R S] :
+abbrev ofAlgebraAutOnUnits (R S : Type) [CommRing R] [CommRing S] [Algebra R S] :
     Rep ℤ (S ≃ₐ[R] S) := Rep.ofMulDistribMulAction (S ≃ₐ[R] S) Sˣ
 
 end
@@ -650,6 +676,32 @@ theorem diagonalHomEquiv_symm_partialProd_succ (f : (Fin n → G) → A) (g : Fi
   congr
   ext
   rw [← Fin.partialProd_succ, Fin.inv_partialProd_mul_eq_contractNth]
+
+section
+
+variable [Fintype G] (A : Rep k G)
+
+/-- Given a representation `A` of a finite group `G`, this is the representation morphism `A ⟶ A`
+defined by `x ↦ ∑ A.ρ g x` for `g` in `G`. -/
+@[simps]
+def norm : A ⟶ A where
+  hom := ModuleCat.ofHom <| Representation.norm A.ρ
+  comm g := by ext; simp
+
+@[reassoc, elementwise]
+lemma norm_comm {A B : Rep k G} (f : A ⟶ B) :
+    f ≫ norm B = norm A ≫ f := by
+  ext
+  simp [Representation.norm, hom_comm_apply]
+
+/-- Given a representation `A` of a finite group `G`, the norm map `A ⟶ A` defined by
+`x ↦ ∑ A.ρ g x` for `g` in `G` defined a natural endomorphism of the identity functor. -/
+@[simps]
+def normNatTrans : 𝟭 (Rep k G) ⟶ 𝟭 (Rep k G) where
+  app := norm
+  naturality _ _ := norm_comm
+
+end
 
 section MonoidalClosed
 open MonoidalCategory Action
