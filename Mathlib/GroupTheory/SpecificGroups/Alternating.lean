@@ -21,7 +21,7 @@ consisting of the even permutations.
 ## Main results
 * `alternatingGroup.index_eq_two` shows that the index of the alternating group is two.
 
-* `Fintype.card_alternatingGroup` shows that the alternating group is half as large as
+* `two_mul_card_alternatingGroup` shows that the alternating group is half as large as
   the permutation group it is a subgroup of.
 
 * `closure_three_cycles_eq_alternating` shows that the alternating group is
