@@ -3,6 +3,7 @@ import Archive.Examples.Eisenstein
 import Archive.Examples.IfNormalization.Result
 import Archive.Examples.IfNormalization.Statement
 import Archive.Examples.IfNormalization.WithoutAesop
+import Archive.Examples.Kuratowski
 import Archive.Examples.MersennePrimes
 import Archive.Examples.PropEncodable
 import Archive.Hairer
