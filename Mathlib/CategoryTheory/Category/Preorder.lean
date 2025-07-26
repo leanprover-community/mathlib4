@@ -207,10 +207,10 @@ of functors `X ⥤ Y`, where `X` and `Y` are preorder categories. -/
 def equivalenceFunctor : (X →o Y) ≌ (X ⥤ Y) where
   functor :=
     { obj f := f.toFunctor
-      map f := { app _ := homOfLE (leOfHom f _) } }
+      map f := { app x := homOfLE <| leOfHom f x } }
   inverse :=
     { obj F := F.toOrderHom
-      map f := homOfLE (fun i ↦ leOfHom (f.app i) ) }
+      map f := homOfLE fun x ↦ leOfHom <| f.app x }
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
