@@ -12,7 +12,7 @@ import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 To show that an element is a star projection in a non-unital C⋆-algebra,
 it is enough to show that it is idempotent and normal,
 because self-adjointedness and normality are equivalent for idempotent
-elemtents in non-unital C⋆-algebras.
+elements in non-unital C⋆-algebras.
 
 -/
 
