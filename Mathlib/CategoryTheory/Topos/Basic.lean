@@ -150,6 +150,7 @@ lemma P_dinaturality {B C : ℰ} (h : B ⟶ C) :(h ▷ P C) ≫ ε C = (B ◁ (P
 lemma P_compose {B C D : ℰ} (h : B ⟶ C) (h' : C ⟶ D) : P_map (h ≫ h') = P_map h' ≫ P_map h :=
   PowerObject.compose (hP B) (hP C) (hP D) h h'
 
+/-- The power object functor -/
 def P_functor : ℰᵒᵖ ⥤ ℰ := PowerObject.functor P hP
 
 end ElementaryTopos
