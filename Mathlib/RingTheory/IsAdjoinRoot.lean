@@ -93,7 +93,9 @@ Bundling `Monic` into this structure is very useful when working with explicit `
 -- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
 structure IsAdjoinRootMonic {R : Type u} (S : Type v) [CommSemiring R] [Semiring S] [Algebra R S]
     (f : R[X]) extends IsAdjoinRoot S f where
-  Monic : Monic f
+  monic : Monic f
+
+@[deprecated (since := "2025-07-26")] alias IsAdjoinRootMonic.Monic := IsAdjoinRootMonic.monic
 
 section Ring
 
@@ -263,7 +265,7 @@ protected def isAdjoinRoot : IsAdjoinRoot (AdjoinRoot f) f where
 powerful than `AdjoinRoot.isAdjoinRoot`. -/
 protected def isAdjoinRootMonic (hf : Monic f) : IsAdjoinRootMonic (AdjoinRoot f) f where
   __ := AdjoinRoot.isAdjoinRoot f
-  Monic := hf
+  monic := hf
 
 @[simp]
 theorem isAdjoinRoot_map_eq_mk : (AdjoinRoot.isAdjoinRoot f).map = AdjoinRoot.mk f := rfl
