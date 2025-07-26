@@ -152,7 +152,7 @@ lemma abs_cartanMatrix_apply [DecidableEq ι] {i j : b.support} :
 
 @[simp]
 lemma cartanMatrix_map_abs [DecidableEq ι] :
-    b.cartanMatrix.map abs = 4 • 1 - b.cartanMatrix := by
+    b.cartanMatrix.map abs = 4 - b.cartanMatrix := by
   ext; simp [abs_cartanMatrix_apply, Matrix.ofNat_apply]
 
 lemma cartanMatrix_nondegenerate
