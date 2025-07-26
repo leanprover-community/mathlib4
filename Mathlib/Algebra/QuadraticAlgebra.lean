@@ -314,7 +314,7 @@ instance instSemiring [CommSemiring R] : Semiring (QuadraticAlgebra R a b) where
 
 instance instCommSemiring [CommSemiring R] : CommSemiring (QuadraticAlgebra R a b) where
   __ := inferInstanceAs (Semiring (QuadraticAlgebra R a b))
-  mul_comm z w := by ext <;> simp <;> ring
+  mul_comm z w := by ext <;> simpa using by ring
 
 instance instRing [CommRing R] : Ring (QuadraticAlgebra R a b) where
   __ := inferInstanceAs (AddCommGroupWithOne (QuadraticAlgebra R a b))
