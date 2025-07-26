@@ -64,6 +64,7 @@ lemma lt_of_le_not_ge (hab : a ≤ b) (hba : ¬ b ≤ a) : a < b := lt_iff_le_no
 @[deprecated (since := "2025-05-11")] alias lt_of_le_not_le := lt_of_le_not_ge
 
 lemma le_of_eq (hab : a = b) : a ≤ b := by rw [hab]
+lemma ge_of_eq (hab : a = b) : b ≤ a := by rw [hab]
 lemma le_of_lt (hab : a < b) : a ≤ b := (lt_iff_le_not_ge.1 hab).1
 lemma not_le_of_gt (hab : a < b) : ¬ b ≤ a := (lt_iff_le_not_ge.1 hab).2
 lemma not_lt_of_ge (hab : a ≤ b) : ¬ b < a := imp_not_comm.1 not_le_of_gt hab
@@ -108,7 +109,9 @@ alias not_lt_of_gt := lt_asymm
 @[deprecated (since := "2025-05-11")] alias not_lt_of_lt := not_lt_of_gt
 
 lemma le_of_lt_or_eq (h : a < b ∨ a = b) : a ≤ b := h.elim le_of_lt le_of_eq
+lemma le_of_lt_or_eq' (h : a < b ∨ b = a) : a ≤ b := h.elim le_of_lt ge_of_eq
 lemma le_of_eq_or_lt (h : a = b ∨ a < b) : a ≤ b := h.elim le_of_eq le_of_lt
+lemma le_of_eq_or_lt' (h : b = a ∨ a < b) : a ≤ b := h.elim ge_of_eq le_of_lt
 
 instance (priority := 900) : @Trans α α α LE.le LE.le LE.le := ⟨le_trans⟩
 instance (priority := 900) : @Trans α α α LT.lt LT.lt LT.lt := ⟨lt_trans⟩
@@ -159,6 +162,7 @@ class PartialOrder (α : Type*) extends Preorder α where
 variable [PartialOrder α] {a b : α}
 
 lemma le_antisymm : a ≤ b → b ≤ a → a = b := PartialOrder.le_antisymm _ _
+lemma ge_antisymm : b ≤ a → a ≤ b → a = b := fun h₁ h₂ ↦ le_antisymm h₂ h₁
 
 alias eq_of_le_of_ge := le_antisymm
 
@@ -167,8 +171,14 @@ alias eq_of_le_of_ge := le_antisymm
 lemma le_antisymm_iff : a = b ↔ a ≤ b ∧ b ≤ a :=
   ⟨fun e => ⟨le_of_eq e, le_of_eq e.symm⟩, fun ⟨h1, h2⟩ => le_antisymm h1 h2⟩
 
+lemma ge_antisymm_iff : a = b ↔ b ≤ a ∧ a ≤ b :=
+  le_antisymm_iff.trans and_comm
+
 lemma lt_of_le_of_ne : a ≤ b → a ≠ b → a < b := fun h₁ h₂ =>
   lt_of_le_not_ge h₁ <| mt (le_antisymm h₁) h₂
+
+lemma lt_of_le_of_ne' : a ≤ b → b ≠ a → a < b := fun h₁ h₂ =>
+  lt_of_le_not_ge h₁ <| mt (ge_antisymm h₁) h₂
 
 /-- Equality is decidable if `≤` is. -/
 def decidableEqOfDecidableLE [DecidableLE α] : DecidableEq α
@@ -180,12 +190,5 @@ def decidableEqOfDecidableLE [DecidableLE α] : DecidableEq α
 -- See Note [decidable namespace]
 protected lemma Decidable.lt_or_eq_of_le [DecidableLE α] (hab : a ≤ b) : a < b ∨ a = b :=
   if hba : b ≤ a then Or.inr (le_antisymm hab hba) else Or.inl (lt_of_le_not_ge hab hba)
-
-protected lemma Decidable.le_iff_lt_or_eq [DecidableLE α] : a ≤ b ↔ a < b ∨ a = b :=
-  ⟨Decidable.lt_or_eq_of_le, le_of_lt_or_eq⟩
-
-
-lemma lt_or_eq_of_le : a ≤ b → a < b ∨ a = b := open scoped Classical in Decidable.lt_or_eq_of_le
-lemma le_iff_lt_or_eq : a ≤ b ↔ a < b ∨ a = b := open scoped Classical in Decidable.le_iff_lt_or_eq
 
 end PartialOrder
