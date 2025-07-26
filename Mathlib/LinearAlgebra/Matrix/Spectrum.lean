@@ -158,7 +158,8 @@ lemma exists_eigenvector_of_ne_zero (hA : IsHermitian A) (h_ne : A ≠ 0) :
     rwa [h_ne, Pi.comp_zero, RCLike.ofReal_zero, (by rfl : Function.const n (0 : 𝕜) = fun _ ↦ 0),
       diagonal_zero, mul_zero, zero_mul] at this
   obtain ⟨i, hi⟩ := Function.ne_iff.mp this
-  exact ⟨_, _, hi, hA.eigenvectorBasis.orthonormal.ne_zero i, hA.mulVec_eigenvectorBasis i⟩
+  exact ⟨_, _, hi, (WithLp.ofLp_injective 2).ne <| hA.eigenvectorBasis.orthonormal.ne_zero i,
+    hA.mulVec_eigenvectorBasis i⟩
 
 end IsHermitian
 

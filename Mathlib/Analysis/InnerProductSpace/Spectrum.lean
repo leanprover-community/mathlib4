@@ -180,12 +180,13 @@ theorem diagonalization_apply_self_apply (hT : T.IsSymmetric) (v : E) (μ : Eige
     hT.diagonalization (T v) μ = (μ : 𝕜) • hT.diagonalization v μ := by
   suffices
     ∀ w : PiLp 2 fun μ : Eigenvalues T => eigenspace T μ,
-      T (hT.diagonalization.symm w) = hT.diagonalization.symm fun μ => (μ : 𝕜) • w μ by
+      T (hT.diagonalization.symm w) = hT.diagonalization.symm
+        (WithLp.toLp 2 fun μ => (μ : 𝕜) • w μ) by
     simpa only [LinearIsometryEquiv.symm_apply_apply, LinearIsometryEquiv.apply_symm_apply] using
       congr_arg (fun w => hT.diagonalization w μ) (this (hT.diagonalization v))
   intro w
   have hwT : ∀ μ, T (w μ) = (μ : 𝕜) • w μ := fun μ => mem_eigenspace_iff.1 (w μ).2
-  simp only [hwT, diagonalization_symm_apply, map_sum, Submodule.coe_smul_of_tower]
+  simp only [diagonalization_symm_apply, map_sum, hwT, PiLp.toLp_apply, SetLike.val_smul]
 
 end Version1
 
@@ -274,7 +275,7 @@ theorem eigenvectorBasis_apply_self_apply (hT : T.IsSymmetric) (hn : Module.finr
   suffices
     ∀ w : EuclideanSpace 𝕜 (Fin n),
       T ((hT.eigenvectorBasis hn).repr.symm w) =
-        (hT.eigenvectorBasis hn).repr.symm fun i => hT.eigenvalues hn i * w i by
+        (hT.eigenvectorBasis hn).repr.symm (WithLp.toLp 2 fun i => hT.eigenvalues hn i * w i) by
     simpa [OrthonormalBasis.sum_repr_symm] using
       congr_arg (fun v => (hT.eigenvectorBasis hn).repr v i)
         (this ((hT.eigenvectorBasis hn).repr v))
@@ -283,6 +284,7 @@ theorem eigenvectorBasis_apply_self_apply (hT : T.IsSymmetric) (hn : Module.finr
   apply Fintype.sum_congr
   intro a
   rw [smul_smul, mul_comm]
+  simp
 
 end Version2
 

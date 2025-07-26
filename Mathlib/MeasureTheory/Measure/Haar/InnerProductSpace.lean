@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.InnerProductSpace.Orientation
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 
 /-!
 # Volume forms and measures on inner product spaces
@@ -122,37 +123,37 @@ section PiLp
 variable (ι : Type*) [Fintype ι]
 
 /-- The measure equivalence between `EuclideanSpace ℝ ι` and `ι → ℝ` is volume preserving. -/
-theorem EuclideanSpace.volume_preserving_measurableEquiv :
-    MeasurePreserving (EuclideanSpace.measurableEquiv ι) := by
-  suffices volume = map (EuclideanSpace.measurableEquiv ι).symm volume by
-    convert ((EuclideanSpace.measurableEquiv ι).symm.measurable.measurePreserving _).symm
+theorem EuclideanSpace.volume_preserving_measurableEquiv_toLp_symm :
+    MeasurePreserving (MeasurableEquiv.toLp 2 (ι → ℝ)).symm := by
+  suffices volume = map (MeasurableEquiv.toLp 2 (ι → ℝ)) volume by
+    convert ((MeasurableEquiv.toLp 2 (ι → ℝ)).measurable.measurePreserving _).symm
   rw [← addHaarMeasure_eq_volume_pi, ← Basis.parallelepiped_basisFun, ← Basis.addHaar_def,
-    coe_measurableEquiv_symm, ← PiLp.continuousLinearEquiv_symm_apply 2 ℝ, Basis.map_addHaar]
+    MeasurableEquiv.coe_toLp, ← PiLp.continuousLinearEquiv_symm_apply 2 ℝ, Basis.map_addHaar]
   exact (EuclideanSpace.basisFun _ _).addHaar_eq_volume.symm
 
 /-- A copy of `EuclideanSpace.volume_preserving_measurableEquiv` for the canonical spelling of the
 equivalence. -/
 theorem PiLp.volume_preserving_ofLp : MeasurePreserving (@WithLp.ofLp 2 (ι → ℝ)) :=
-  EuclideanSpace.volume_preserving_measurableEquiv ι
+  EuclideanSpace.volume_preserving_measurableEquiv_toLp_symm ι
 
 @[deprecated PiLp.volume_preserving_ofLp (since := "2024-04-27")]
 theorem PiLp.volume_preserving_equiv : MeasurePreserving (WithLp.equiv 2 (ι → ℝ)) :=
-  EuclideanSpace.volume_preserving_measurableEquiv ι
+  EuclideanSpace.volume_preserving_measurableEquiv_toLp_symm ι
 
 /-- The reverse direction of `PiLp.volume_preserving_measurableEquiv`, since
 `MeasurePreserving.symm` only works for `MeasurableEquiv`s. -/
 theorem PiLp.volume_preserving_toLp : MeasurePreserving (@WithLp.toLp 2 (ι → ℝ)) :=
-  (EuclideanSpace.volume_preserving_measurableEquiv ι).symm
+  (EuclideanSpace.volume_preserving_measurableEquiv_toLp_symm ι).symm
 
 @[deprecated PiLp.volume_preserving_toLp (since := "2024-04-27")]
 theorem PiLp.volume_preserving_equiv_symm : MeasurePreserving (WithLp.equiv 2 (ι → ℝ)).symm :=
-  (EuclideanSpace.volume_preserving_measurableEquiv ι).symm
+  (EuclideanSpace.volume_preserving_measurableEquiv_toLp_symm ι).symm
 
 lemma volume_euclideanSpace_eq_dirac [IsEmpty ι] :
     (volume : Measure (EuclideanSpace ℝ ι)) = Measure.dirac 0 := by
-  rw [← ((EuclideanSpace.volume_preserving_measurableEquiv ι).symm).map_eq,
-    volume_pi_eq_dirac 0, map_dirac (MeasurableEquiv.measurable _),
-    EuclideanSpace.coe_measurableEquiv_symm, WithLp.toLp_zero]
+  rw [← ((EuclideanSpace.volume_preserving_measurableEquiv_toLp_symm ι).symm).map_eq,
+    volume_pi_eq_dirac 0, map_dirac (MeasurableEquiv.measurable _), MeasurableEquiv.symm_symm,
+    MeasurableEquiv.coe_toLp, WithLp.toLp_zero]
 
 end PiLp
 

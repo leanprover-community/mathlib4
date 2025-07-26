@@ -513,11 +513,12 @@ theorem toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.PosDef) :
     toLinearMap₂'_apply']
   apply hM.2 x hx
 
-/-- The eigenvalues of a positive definite matrix are positive -/
+/-- The eigenvalues of a positive definite matrix are positive. -/
 lemma eigenvalues_pos [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : Matrix.PosDef A) (i : n) : 0 < hA.1.eigenvalues i := by
   simp only [hA.1.eigenvalues_eq]
-  exact hA.re_dotProduct_pos <| hA.1.eigenvectorBasis.orthonormal.ne_zero i
+  exact hA.re_dotProduct_pos <| (WithLp.ofLp_injective 2).ne <|
+    hA.1.eigenvectorBasis.orthonormal.ne_zero i
 
 theorem det_pos [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) : 0 < det M := by
   rw [hM.isHermitian.det_eq_prod_eigenvalues]

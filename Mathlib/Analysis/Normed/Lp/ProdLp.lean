@@ -52,6 +52,12 @@ variable {p 𝕜 α β}
 variable [Semiring 𝕜] [AddCommGroup α] [AddCommGroup β]
 variable (x y : WithLp p (α × β)) (c : 𝕜)
 
+/-- The projection on the first coordinate in `WithLp`. -/
+protected def fst (x : WithLp p (α × β)) : α := (ofLp x).fst
+
+/-- The projection on the second coordinate in `WithLp`. -/
+protected def snd (x : WithLp p (α × β)) : β := (ofLp x).snd
+
 @[simp]
 theorem zero_fst : (0 : WithLp p (α × β)).fst = 0 :=
   rfl
@@ -435,18 +441,20 @@ private lemma isUniformInducing_ofLp_aux [PseudoEMetricSpace α] [PseudoEMetricS
     (prod_lipschitzWith_ofLp_aux p α β).uniformContinuous
 
 private lemma prod_uniformity_aux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
-    𝓤 (WithLp p (α × β)) = 𝓤[instUniformSpaceProd] := by
-  have : (fun x : WithLp p (α × β) × WithLp p (α × β) =>
-    (ofLp x.fst, ofLp x.snd)) = id := rfl
-  rw [← (isUniformInducing_ofLp_aux p α β).comap_uniformity, this, comap_id]
+    𝓤 (WithLp p (α × β)) = 𝓤[UniformSpace.comap ofLp inferInstance] := by
+  rw [← (isUniformInducing_ofLp_aux p α β).comap_uniformity]
+  rfl
+
+instance instProdBornology (p : ℝ≥0∞) (α β : Type*) [Bornology α] [Bornology β] :
+    Bornology (WithLp p (α × β)) where
+  cobounded' := (Bornology.cobounded (α × β)).comap ofLp
+  le_cofinite' := GCongr.Filter.comap_le_comap (Bornology.le_cofinite (α × β)) |>.trans
+    (Filter.comap_cofinite_le _)
 
 private lemma prod_cobounded_aux [PseudoMetricSpace α] [PseudoMetricSpace β] :
-    cobounded (WithLp p (α × β)) = @cobounded _ Prod.instBornology :=
-  calc
-    cobounded (WithLp p (α × β)) = comap (@ofLp p (α × β)) (cobounded _) :=
-      le_antisymm (prod_antilipschitzWith_ofLp_aux p α β).tendsto_cobounded.le_comap
-        (prod_lipschitzWith_ofLp_aux p α β).comap_cobounded_le
-    _ = _ := comap_id
+    @cobounded _ PseudoMetricSpace.toBornology = cobounded (WithLp p (α × β)) :=
+  le_antisymm (prod_antilipschitzWith_ofLp_aux p α β).tendsto_cobounded.le_comap
+      (prod_lipschitzWith_ofLp_aux p α β).comap_cobounded_le
 
 end Aux
 
@@ -457,31 +465,38 @@ section TopologicalSpace
 variable [TopologicalSpace α] [TopologicalSpace β]
 
 instance instProdTopologicalSpace : TopologicalSpace (WithLp p (α × β)) :=
-  instTopologicalSpaceProd
+  instTopologicalSpaceProd.induced ofLp
 
 @[continuity, fun_prop]
-lemma prod_continuous_toLp : Continuous (@toLp p (α × β)) := continuous_id
+lemma prod_continuous_toLp : Continuous (@toLp p (α × β)) :=
+  continuous_induced_rng.2 continuous_id
 
 @[deprecated prod_continuous_toLp (since := "2024-04-27")]
 theorem prod_continuous_equiv_symm : Continuous (WithLp.equiv p (α × β)).symm :=
   prod_continuous_toLp _ _ _
 
 @[continuity, fun_prop]
-lemma prod_continuous_ofLp : Continuous (@ofLp p (α × β)) := continuous_id
+lemma prod_continuous_ofLp : Continuous (@ofLp p (α × β)) := continuous_induced_dom
 
 @[deprecated prod_continuous_ofLp (since := "2024-04-27")]
 theorem prod_continuous_equiv : Continuous (WithLp.equiv p (α × β)) :=
   prod_continuous_ofLp _ _ _
 
+/-- `WithLp.equiv` as a homeomorphism. -/
+def homeomorph_prod : α × β ≃ₜ WithLp p (α × β) where
+  toEquiv := (WithLp.equiv p (α × β)).symm
+  continuous_toFun := prod_continuous_toLp p α β
+  continuous_invFun := prod_continuous_ofLp p α β
+
 variable [T0Space α] [T0Space β]
 
 instance instProdT0Space : T0Space (WithLp p (α × β)) :=
-  Prod.instT0Space
+  (homeomorph_prod p α β).t0Space
 
 variable [SecondCountableTopology α] [SecondCountableTopology β]
 
 instance secondCountableTopology : SecondCountableTopology (WithLp p (α × β)) :=
-  inferInstanceAs <| SecondCountableTopology (α × β)
+  (homeomorph_prod p α β).symm.secondCountableTopology
 
 end TopologicalSpace
 
@@ -490,31 +505,34 @@ section UniformSpace
 variable [UniformSpace α] [UniformSpace β]
 
 instance instProdUniformSpace : UniformSpace (WithLp p (α × β)) :=
-  instUniformSpaceProd
+  instUniformSpaceProd.comap ofLp
 
 lemma prod_uniformContinuous_toLp : UniformContinuous (@toLp p (α × β)) :=
-  uniformContinuous_id
+  uniformContinuous_comap' uniformContinuous_id
 
 @[deprecated prod_uniformContinuous_toLp (since := "2024-04-27")]
 theorem prod_uniformContinuous_equiv_symm : UniformContinuous (WithLp.equiv p (α × β)).symm :=
   prod_uniformContinuous_toLp _ _ _
 
 lemma prod_uniformContinuous_ofLp : UniformContinuous (@ofLp p (α × β)) :=
-  uniformContinuous_id
+  uniformContinuous_comap
 
 @[deprecated prod_uniformContinuous_ofLp (since := "2024-04-27")]
 theorem prod_uniformContinuous_equiv : UniformContinuous (WithLp.equiv p (α × β)) :=
   prod_uniformContinuous_ofLp _ _ _
 
+/-- `WithLp.equiv` as a uniform isomorphism. -/
+def uniformEquiv_prod : α × β ≃ᵤ WithLp p (α × β) where
+  toEquiv := (WithLp.equiv p (α × β)).symm
+  uniformContinuous_toFun := prod_uniformContinuous_toLp p α β
+  uniformContinuous_invFun := prod_uniformContinuous_ofLp p α β
+
 variable [CompleteSpace α] [CompleteSpace β]
 
 instance instProdCompleteSpace : CompleteSpace (WithLp p (α × β)) :=
-  CompleteSpace.prod
+  (uniformEquiv_prod p α β).completeSpace_iff.1 inferInstance
 
 end UniformSpace
-
-instance instProdBornology [Bornology α] [Bornology β] : Bornology (WithLp p (α × β)) :=
-  Prod.instBornology
 
 section ContinuousLinearEquiv
 
@@ -526,8 +544,8 @@ variable [Module 𝕜 α] [Module 𝕜 β]
 -- This is not specific to products and should be generalised!
 def prodContinuousLinearEquiv : WithLp p (α × β) ≃L[𝕜] α × β where
   toLinearEquiv := WithLp.linearEquiv _ _ _
-  continuous_toFun := continuous_id
-  continuous_invFun := continuous_id
+  continuous_toFun := prod_continuous_ofLp p α β
+  continuous_invFun := prod_continuous_toLp p α β
 
 end ContinuousLinearEquiv
 
@@ -608,9 +626,17 @@ theorem prod_lipschitzWith_equiv [PseudoEMetricSpace α] [PseudoEMetricSpace β]
     LipschitzWith 1 (WithLp.equiv p (α × β)) :=
   prod_lipschitzWith_ofLp p α β
 
+lemma prod_antilipschitzWith_toLp [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
+    AntilipschitzWith 1 (@toLp p (α × β)) :=
+  (prod_lipschitzWith_ofLp p α β).to_rightInverse (ofLp_toLp p)
+
 lemma prod_antilipschitzWith_ofLp [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     AntilipschitzWith ((2 : ℝ≥0) ^ (1 / p).toReal) (@ofLp p (α × β)) :=
   prod_antilipschitzWith_ofLp_aux p α β
+
+lemma prod_lipschitzWith_toLp [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
+    LipschitzWith ((2 : ℝ≥0) ^ (1 / p).toReal) (@toLp p (α × β)) :=
+  (prod_antilipschitzWith_ofLp p α β).to_rightInverse (ofLp_toLp p)
 
 @[deprecated prod_antilipschitzWith_ofLp (since := "2024-04-27")]
 theorem prod_antilipschitzWith_equiv [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
@@ -641,6 +667,11 @@ instance instProdSeminormedAddCommGroup [SeminormedAddCommGroup α] [SeminormedA
     · simp only [prod_dist_eq_add (zero_lt_one.trans_le h),
         prod_norm_eq_add (zero_lt_one.trans_le h), dist_eq_norm]
       rfl
+
+lemma isUniformInducing_toLp [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
+    IsUniformInducing (@toLp p (α × β)) :=
+  (prod_antilipschitzWith_toLp p α β).isUniformInducing
+    (prod_lipschitzWith_toLp p α β).uniformContinuous
 
 section
 variable {β p}
@@ -937,10 +968,11 @@ variable {𝕜 p α β}
 /-- The canonical map `WithLp.equiv` between `WithLp ∞ (α × β)` and `α × β` as a linear isometric
 equivalence. -/
 def prodEquivₗᵢ : WithLp ∞ (α × β) ≃ₗᵢ[𝕜] α × β where
-  __ := WithLp.equiv p _
+  __ := WithLp.equiv ∞ _
   map_add' _f _g := rfl
   map_smul' _c _f := rfl
-  norm_map' := prod_norm_toLp
+  norm_map' x := prod_norm_toLp (ofLp x)
+
 
 end IsBoundedSMul
 
@@ -962,14 +994,20 @@ open ENNReal
 variable {p : ℝ≥0∞} {α β}
 
 /-- Projection on `WithLp p (α × β)` with range `α` and kernel `β` -/
-def idemFst : AddMonoid.End (WithLp p (α × β)) := (AddMonoidHom.inl α β).comp (AddMonoidHom.fst α β)
+def idemFst : AddMonoid.End (WithLp p (α × β)) where
+  toFun x := toLp p (x.fst, 0)
+  map_zero' := by simp
+  map_add' := by simp [← toLp_add]
 
 /-- Projection on `WithLp p (α × β)` with range `β` and kernel `α` -/
-def idemSnd : AddMonoid.End (WithLp p (α × β)) := (AddMonoidHom.inr α β).comp (AddMonoidHom.snd α β)
+def idemSnd : AddMonoid.End (WithLp p (α × β)) where
+  toFun x := toLp p (0, x.snd)
+  map_zero' := by simp
+  map_add' := by simp [← toLp_add]
 
-lemma idemFst_apply (x : WithLp p (α × β)) : idemFst x = toLp p (x.1, 0) := rfl
+lemma idemFst_apply (x : WithLp p (α × β)) : idemFst x = toLp p (x.fst, 0) := rfl
 
-lemma idemSnd_apply (x : WithLp p (α × β)) : idemSnd x = toLp p (0, x.2) := rfl
+lemma idemSnd_apply (x : WithLp p (α × β)) : idemSnd x = toLp p (0, x.snd) := rfl
 
 @[simp]
 lemma idemFst_add_idemSnd :
@@ -987,14 +1025,14 @@ lemma idemSnd_compl : (1 : AddMonoid.End (WithLp p (α × β))) - idemSnd = idem
 
 theorem prod_norm_eq_idemFst_sup_idemSnd (x : WithLp ∞ (α × β)) :
     ‖x‖ = max ‖idemFst x‖ ‖idemSnd x‖ := by
-  rw [WithLp.prod_norm_eq_sup, ← WithLp.norm_toLp_fst ∞ α β x.1,
-    ← WithLp.norm_toLp_snd ∞ α β x.2]
+  rw [WithLp.prod_norm_eq_sup, ← WithLp.norm_toLp_fst ∞ α β x.fst,
+    ← WithLp.norm_toLp_snd ∞ α β x.snd]
   rfl
 
 lemma prod_norm_eq_add_idemFst [Fact (1 ≤ p)] (hp : 0 < p.toReal) (x : WithLp p (α × β)) :
     ‖x‖ = (‖idemFst x‖ ^ p.toReal + ‖idemSnd x‖ ^ p.toReal) ^ (1 / p.toReal) := by
-  rw [WithLp.prod_norm_eq_add hp, ← WithLp.norm_toLp_fst p α β x.1,
-    ← WithLp.norm_toLp_snd p α β x.2]
+  rw [WithLp.prod_norm_eq_add hp, ← WithLp.norm_toLp_fst p α β x.fst,
+    ← WithLp.norm_toLp_snd p α β x.snd]
   rfl
 
 lemma prod_norm_eq_idemFst_of_L1 (x : WithLp 1 (α × β)) : ‖x‖ = ‖idemFst x‖ + ‖idemSnd x‖ := by
@@ -1011,5 +1049,68 @@ instance instProdNormedSpace [NormedField 𝕜] [NormedSpace 𝕜 α] [NormedSpa
   norm_smul_le := norm_smul_le
 
 end NormedSpace
+
+section toProd
+
+variable (α β : Type*)
+
+/-- This definition allows to endow `α × β` with the Lp distance with the uniformity and bornology
+being defeq to the product ones. It is useful to endow a type synonym of `a × β` with the
+Lp distance. -/
+def pseudoMetricSpaceProd [PseudoMetricSpace α] [PseudoMetricSpace β] :
+    PseudoMetricSpace (α × β) :=
+  (isUniformInducing_toLp p α β).comapPseudoMetricSpace.replaceBornology
+    fun s => Filter.ext_iff.1
+      (le_antisymm (prod_antilipschitzWith_toLp p α β).tendsto_cobounded.le_comap
+        (prod_lipschitzWith_toLp p α β).comap_cobounded_le) sᶜ
+
+lemma dist_pseudoMetricSpaceProd [PseudoMetricSpace α] [PseudoMetricSpace β] (x y : α × β) :
+    @dist _ (pseudoMetricSpaceProd p α β).toDist x y = dist (toLp p x) (toLp p y) := rfl
+
+/-- This definition allows to endow `α × β` with the Lp norm with the uniformity and bornology
+being defeq to the product ones. It is useful to endow a type synonym of `a × β` with the
+Lp norm. -/
+def seminormedAddCommGroupProd [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] :
+    SeminormedAddCommGroup (α × β) where
+  norm x := ‖toLp p x‖
+  toPseudoMetricSpace := pseudoMetricSpaceProd p α β
+  dist_eq x y := by
+    rw [dist_pseudoMetricSpaceProd, SeminormedAddCommGroup.dist_eq, toLp_sub]
+
+lemma norm_seminormedAddCommGroupProd [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
+    (x : α × β) :
+    @Norm.norm _ (seminormedAddCommGroupProd p α β).toNorm x = ‖toLp p x‖ := rfl
+
+instance [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] {R : Type*} [SeminormedRing R]
+    [Module R α] [Module R β] [IsBoundedSMul R α] [IsBoundedSMul R β] :
+    letI := pseudoMetricSpaceProd p α β
+    IsBoundedSMul R (α × β) := by
+  letI := pseudoMetricSpaceProd p α β
+  refine ⟨fun x y z ↦ ?_, fun x y z ↦ ?_⟩
+  · simpa [dist_pseudoMetricSpaceProd] using dist_smul_pair x (toLp p y) (toLp p z)
+  · simpa [dist_pseudoMetricSpaceProd] using dist_pair_smul x y (toLp p z)
+
+instance [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] {R : Type*} [NormedField R]
+    [NormedSpace R α] [NormedSpace R β] :
+    letI := seminormedAddCommGroupProd p α β
+    NormedSpace R (α × β) := by
+  letI := seminormedAddCommGroupProd p α β
+  refine ⟨fun x y ↦ ?_⟩
+  simp [norm_seminormedAddCommGroupProd, norm_smul]
+
+/-- This definition allows to endow `Π i, β i` with the Lp norm with the uniformity and bornology
+being defeq to the product ones. It is useful to endow a type synonym of `Π i, β i` with the
+Lp norm. -/
+def normedAddCommGroupProd [NormedAddCommGroup α] [NormedAddCommGroup β] :
+    NormedAddCommGroup (α × β) where
+  norm x := ‖toLp p x‖
+  toPseudoMetricSpace := pseudoMetricSpaceProd p α β
+  dist_eq x y := by
+    rw [dist_pseudoMetricSpaceProd, SeminormedAddCommGroup.dist_eq, toLp_sub]
+  eq_of_dist_eq_zero {x y} h := by
+    rw [dist_pseudoMetricSpaceProd] at h
+    exact WithLp.toLp_injective p (eq_of_dist_eq_zero h)
+
+end toProd
 
 end WithLp
