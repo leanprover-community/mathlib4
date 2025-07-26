@@ -95,7 +95,7 @@ linearly disjoint over `F`. -/
 theorem IntermediateField.linearDisjoint_of_isPurelyInseparable_of_isSeparable
     [IsPurelyInseparable F E] (S : IntermediateField F K) [Algebra.IsSeparable F S] :
     S.LinearDisjoint E :=
-  have ⟨ι, ⟨b⟩⟩ := Basis.exists_basis F S
+  have ⟨ι, ⟨b⟩⟩ := Module.Basis.exists_basis F S
   .of_basis_left b <| b.linearIndependent.map' S.val.toLinearMap
     (LinearMap.ker_eq_bot_of_injective S.val.injective)
     |>.map_of_isPurelyInseparable_of_isSeparable E fun i ↦ by
