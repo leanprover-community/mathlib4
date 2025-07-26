@@ -336,6 +336,184 @@ private lemma rightCoset_eq_of_mem {H : Subgroup G} {c : Set G} {x : G}
   rw [← rightCoset_mem_rightCoset H hx, smul_smul] at ha
   simp_all only [op_mul, op_inv, mul_inv_cancel_left, SetLike.mem_coe]
 
+/-- Underlying structure for the set of representatives of a finite set of right cosets -/
+private structure RCosRepFin (G : Type*) [Group G] [DecidableEq G] where
+  H : Subgroup G
+  A : Finset G
+  preZ : Set (Set G)
+  fin_preZ : preZ.Finite
+  preZ' : Finset (Set G)
+  chooseZ' : Set G → G
+  chooseZ'_spec : ∀ cH ∈ preZ', chooseZ' cH ∈ cH ∩ (↑H * ↑A)
+  Z' : Finset G
+  toH : G → G
+  toH_mem_H : ∀ z ∈ Z', toH z ∈ ↑H
+  toA : G → G
+  toA_mem_A : ∀ z ∈ Z', toA z ∈ A
+  toH_mul_toA : ∀ z ∈ Z', toH z * toA z = z
+  toZ : G → G
+  toZ_comp_chooseZ'_mem_self {c : Set G} (hc : c ∈ preZ') : toZ (chooseZ' c) ∈ c
+  Z : Finset G
+
+private noncomputable def rCosRepFin (H : Subgroup G) [Fintype H] {A : Finset G}
+    (hA : A.Nonempty) : RCosRepFin G := by
+  -- we first take all right cosets that intersect `A`, show that there is finitely many
+  --  of them and take for `Z'` a set of representatives of all these cosets; then we
+  --  multiply every element of `Z'` with an appropriate element of `H` to make `Z ⊆ A`
+  classical
+  let preZ := {cH ∈ orbit Gᵐᵒᵖ (H : Set G) | (cH ∩ (H * A)).Nonempty}
+  have fin_preZ : preZ.Finite := by
+    obtain ⟨a, ha⟩ := hA
+    let f_preZ : Set G → (H : Set G) * (A : Set G) := fun cH =>
+      if h : cH ∈ preZ
+      then ⟨Classical.choose h.2, by
+        apply And.right at h
+        apply Classical.choose_spec at h
+        apply Set.mem_of_mem_inter_right at h
+        exact h⟩
+      else ⟨1 * a, Set.mul_mem_mul (H.one_mem) ha⟩
+
+    have inj_f_preZ : Set.InjOn f_preZ preZ := by
+      unfold Set.InjOn
+      intro c₁ hc₁ c₂ hc₂ hc₁c₂
+      unfold f_preZ at hc₁c₂
+      simp_all only [↓reduceDIte, Subtype.mk.injEq]
+      let s := Classical.choose hc₁.2
+      have s_mem_c₁ : s ∈ c₁ := by
+        apply And.right at hc₁
+        apply Classical.choose_spec at hc₁
+        exact Set.mem_of_mem_inter_left hc₁
+      have s_mem_c₂ : s ∈ c₂ := by
+        apply And.right at hc₂
+        apply Classical.choose_spec at hc₂
+        rw [← hc₁c₂] at hc₂
+        exact Set.mem_of_mem_inter_left hc₂
+      rw [rightCoset_eq_of_mem hc₁.1 s_mem_c₁, rightCoset_eq_of_mem hc₂.1 s_mem_c₂]
+
+    exact Finite.Set.finite_of_finite_image preZ inj_f_preZ
+
+  let preZ' := fin_preZ.toFinset
+  have elts_preZ'_nonempty (cH : Set G) (hcH : cH ∈ preZ') : (cH ∩ (H * A)).Nonempty := by
+    rw [Set.Finite.mem_toFinset, Set.mem_setOf] at hcH
+    exact hcH.2
+
+  choose! chooseZ' chooseZ'_spec using elts_preZ'_nonempty
+  let Z' := image chooseZ' preZ'
+
+  have Z'_subset_HA : (Z' : Set G) ⊆ H * A := by
+    simpa only [coe_image, Set.image_subset_iff, Z'] using fun x hx ↦ (chooseZ'_spec _ hx).2
+
+  change ∀ (z : G), z ∈ (Z' : Set G) → z ∈ (H : Set G) * A at Z'_subset_HA
+  simp only [mem_coe, Set.mem_mul] at Z'_subset_HA
+  choose! toH toH_mem_H toA toA_mem_A toH_mul_toA using Z'_subset_HA
+  let toZ := fun z' => (toH z')⁻¹ * z'
+
+  have toZ_comp_chooseZ'_mem_self {c : Set G} (hc : c ∈ preZ')
+      : toZ (chooseZ' c) ∈ c := by
+    unfold toZ
+    nth_rw 1 [rightCoset_eq_of_mem ((Set.Finite.mem_toFinset _).mp hc).1 (chooseZ'_spec _ hc).1]
+    apply mem_rightCoset
+    apply H.inv_mem
+    exact toH_mem_H _ (mem_image_of_mem chooseZ' hc)
+
+  let Z := image toZ Z'
+  exact ⟨H, A, preZ, fin_preZ, preZ', chooseZ', chooseZ'_spec, Z', toH, toH_mem_H, toA,
+          toA_mem_A, toH_mul_toA, toZ, toZ_comp_chooseZ'_mem_self, Z⟩
+
+-- TODO: Here `Z` is defined by extracting a representative from each coset and the definitional
+--  property is actually not (explicitely) proved as it is not needed here; as far as I could check,
+--  no such coset representing set is available in the library at this point, although it might be
+--  useful independently of this section
+/-- Given a finite subset `A` of group `G` and a subgroup `H ≤ G`, right coset representing set of
+`H * A` is a subset `Z` of `A` such that `H * Z = H * A` and `∀ z₁ z₂ ∈ Z → Hz₁ ≠ Hz₂` -/
+private noncomputable def rightCosetRepresentingFinset (H : Subgroup G) [Fintype H] {A : Finset G}
+    (hA : A.Nonempty) : Finset G :=
+  (rCosRepFin H hA).Z
+
+private lemma rightCosetRepresentingFinset_subset_finset (H : Subgroup G) [Fintype H] {A : Finset G}
+    (hA : A.Nonempty) : rightCosetRepresentingFinset H hA ⊆ A := by
+  intro z hz
+  obtain ⟨z', hz'₁, (hz'₂ : ((rCosRepFin H hA).toH z')⁻¹ * z' = z)⟩ := mem_image.mp hz
+  rw [← hz'₂, inv_mul_eq_of_eq_mul (Eq.symm ((rCosRepFin H hA).toH_mul_toA z' hz'₁))]
+  exact (rCosRepFin H hA).toA_mem_A z' hz'₁
+
+private lemma mul_rightCosetRepresentingFinset_eq_mul_set (H : Subgroup G) [Fintype H]
+    {A : Finset G} (hA : A.Nonempty) : (H : Set G) * (rightCosetRepresentingFinset H hA) = H * A
+    := by
+  have H_eq_HH : (H : Set G) = H * H := by simp only [coe_mul_coe]
+  let rcrf := rCosRepFin H hA
+  apply Set.Subset.antisymm (Set.mul_subset_mul_left
+          (coe_subset.mpr (rightCosetRepresentingFinset_subset_finset H hA)))
+  intro x hx
+  obtain ⟨h, hh, a, ha, hha⟩ := Set.mem_mul.mp hx
+  rw [← hha, H_eq_HH, mul_assoc]
+  apply Set.mul_mem_mul hh
+  let ca := (H : Set G) <• a
+  have ca_mem_preZ' : ca ∈ rcrf.preZ' := by
+    change ca ∈ rcrf.fin_preZ.toFinset
+    rw [Set.Finite.mem_toFinset]
+    change ca ∈ {cH ∈ orbit Gᵐᵒᵖ (H : Set G) | (cH ∩ (H * A)).Nonempty}
+    rw [Set.mem_setOf]
+    constructor
+    · simp_all only [coe_mul_coe, SetLike.mem_coe, mem_coe, mem_orbit, ca]
+    · use a
+      constructor
+      · rw [← one_mul a]
+        exact mem_rightCoset a (one_mem H)
+      · rw [← one_mul a]
+        exact Set.mul_mem_mul H.one_mem ha
+  let z := rcrf.toZ (rcrf.chooseZ' ca)
+  have z_mem_ca : z ∈ ca := rcrf.toZ_comp_chooseZ'_mem_self (ca_mem_preZ')
+  have z_mem_Z : z ∈ rightCosetRepresentingFinset H hA :=
+    mem_image_of_mem _ (mem_image_of_mem _ ca_mem_preZ')
+  have a_mem_Hz : a ∈ (H: Set G) <• z := by
+    rw [mem_rightCoset_iff, SetLike.mem_coe]
+    rw [mem_rightCoset_iff, SetLike.mem_coe] at z_mem_ca
+    apply inv_mem at z_mem_ca
+    simp_all only [coe_mul_coe, SetLike.mem_coe, mem_coe, mul_inv_rev, inv_inv]
+  exact Set.op_smul_set_subset_mul z_mem_Z a_mem_Hz
+
+private lemma mul_rightCosetRepresentingFinset_eq_mul_finset (H : Subgroup G) [Fintype H]
+    {A : Finset G} (hA : A.Nonempty)
+    : Set.toFinset H * (rightCosetRepresentingFinset H hA) = Set.toFinset H * A := by
+  simpa only [← coe_inj, coe_mul, Set.coe_toFinset]
+    using mul_rightCosetRepresentingFinset_eq_mul_set H hA
+
+private lemma card_mul_rightCosetRepresentingFinset_eq_mul_card (H : Subgroup G) [Fintype H]
+    {A : Finset G} (hA : A.Nonempty) : #(Set.toFinset H * (rightCosetRepresentingFinset H hA))
+    = Fintype.card H * #(rightCosetRepresentingFinset H hA) := by
+  let rcrf := rCosRepFin H hA
+  simp only [← SetLike.coe_sort_coe, ← Set.toFinset_card, card_mul_iff, Set.coe_toFinset]
+  unfold Set.InjOn
+  simp only [Set.mem_prod, SetLike.mem_coe, mem_coe, and_imp, Prod.forall, Prod.mk.injEq]
+  intro h z hh (hz : z ∈ image rcrf.toZ rcrf.Z')
+        g t hg (ht : t ∈ image rcrf.toZ rcrf.Z') hyp
+  rw [mem_image] at hz ht
+
+  obtain ⟨z', (hz'₁ : z' ∈ image rcrf.chooseZ' rcrf.preZ'), hz'₂⟩ := hz
+  obtain ⟨t', (ht'₁ : t' ∈ image rcrf.chooseZ' rcrf.preZ'), ht'₂⟩ := ht
+  rw [mem_image] at hz'₁ ht'₁
+
+  obtain ⟨cz, hcz₁, hcz₂⟩ := hz'₁
+  have hcz₃ : z ∈ cz := by simp only [← hz'₂, ← hcz₂, rcrf.toZ_comp_chooseZ'_mem_self hcz₁]
+  change cz ∈ rcrf.fin_preZ.toFinset at hcz₁
+  rw [Set.Finite.mem_toFinset rcrf.fin_preZ] at hcz₁
+  have hcz₄ := rightCoset_eq_of_mem hcz₁.1 hcz₃
+
+  obtain ⟨ct, hct₁, hct₂⟩ := ht'₁
+  have hct₃ : t ∈ ct := by simp only [← ht'₂, ← hct₂, rcrf.toZ_comp_chooseZ'_mem_self hct₁]
+  change ct ∈ rcrf.fin_preZ.toFinset at hct₁
+  rw [Set.Finite.mem_toFinset rcrf.fin_preZ] at hct₁
+  have hct₄ := rightCoset_eq_of_mem hct₁.1 hct₃
+
+  rw [← inv_mul_eq_iff_eq_mul, ← mul_assoc] at hyp
+  rw [← hyp, op_mul, ← smul_smul, rightCoset_mem_rightCoset H (H.mul_mem (H.inv_mem hg) hh),
+      ← hcz₄] at hct₄
+  rw [hct₄, hcz₂] at hct₂
+  apply congr_arg rcrf.toZ at hct₂
+  rw [hz'₂, ht'₂] at hct₂
+  rw [hct₂, mul_eq_right, inv_mul_eq_one] at hyp
+  exact ⟨Eq.symm hyp, hct₂⟩
 
 private lemma big_intersection_inv {x y : G} (hx : x ∈ A) (hy : y ∈ A) :
     2 * #A ≤ #((x⁻¹ • A) ∩ (y⁻¹ • A)) + #(A⁻¹ * A) := by
@@ -347,7 +525,6 @@ private lemma big_intersection_inv {x y : G} (hx : x ∈ A) (hy : y ∈ A) :
   apply (add_le_add_left this _).trans_eq'
   rw [card_inter_add_card_union]
   simp only [card_smul_finset, two_mul]
-
 
 private lemma card_pairs_eq_card_smul_inter_smul {x y : G} :
     #{xy ∈ A ×ˢ A | xy.1 * (xy.2 : G)⁻¹ = x * y⁻¹} = #(x⁻¹ •> A ∩ y⁻¹ •> A) :=
@@ -409,124 +586,38 @@ theorem doubling_lt_golden_ratio {K : ℝ} (hK₁ : 1 < K) (hKφ : K < φ)
   have hK₂' : 0 < 2 - K := by linarith [gold_lt_two]
   have const_pos : 0 < K * (2 - K) / ((φ - K) * (K - ψ)) := by positivity
 
-  have calc1 : (1 - K * (K - 1)) = (φ - K) * (K - ψ) := by
+  have calc₁ : (1 - K * (K - 1)) = (φ - K) * (K - ψ) := by
     rw [mul_sub, ← sub_add, mul_sub, sub_mul, sub_mul,
-          ← sub_add, gold_mul_goldConj, sub_neg_eq_add]
+        ← sub_add, gold_mul_goldConj, sub_neg_eq_add]
     ring_nf
-  rw [calc1]
+  rw [calc₁]
 
   -- we need to consider the trivial case A = ∅ separately
-  obtain rfl | emptyA := A.eq_empty_or_nonempty
-  · exact ⟨⊥, inferInstance, ∅, by simp [const_pos.le]⟩
+  obtain rfl | A_nonempty := A.eq_empty_or_nonempty
+  · exact ⟨⊥, inferInstance, ∅, by simp only [coe_empty, inv_empty, Set.mul_empty,
+      Subgroup.coe_bot, card_empty, CharP.cast_eq_zero, const_pos.le, exists_const]⟩
 
   -- the main case A ≠ ∅
   let S := A * A⁻¹
-  have id_in_S : 1 ∈ S := by obtain ⟨a, ha⟩ := emptyA; simpa using mul_mem_mul ha (inv_mem_inv ha)
+  have S_nonempty : S.Nonempty := ⟨1, by
+    obtain ⟨a, ha⟩ := A_nonempty
+    simpa only [mul_inv_cancel] using mul_mem_mul ha (inv_mem_inv ha)⟩
 
   let H := stabilizer G S
-  have HS_eq_S : (H : Set G) * S = S := by simp [H, ← stabilizer_coe_finset]
   have finH : Finite H := by
-    simpa [H, ← stabilizer_coe_finset] using stabilizer_finite (by simpa [S]) S.finite_toSet
+    simpa only [H, mem_stabilizer_iff, ← stabilizer_coe_finset]
+      using stabilizer_finite (by simpa only [coe_mul, coe_inv, Set.mul_nonempty, coe_nonempty,
+        Set.nonempty_inv, and_self, S]) S.finite_toSet
   cases nonempty_fintype H
 
-  -- we define Z: we first take all right cosets
-  --  that intersect S, show that there is finitely many of them
-  --  and take for Z a set of representatives of all these cosets
-  let preZ := {cH ∈ orbit Gᵐᵒᵖ (H : Set G) | (cH ∩ S : Set G).Nonempty}
+  let Z := rightCosetRepresentingFinset H S_nonempty
 
-  -- to show finiteness of preZ, we show that the function that
-  --  maps a coset from preZ to its arbitrary element is injective
-  --  with image in a finite set S
-  have fin_preZ : preZ.Finite := by
-    let f_preZ : Set G → S := fun cH =>
-      if h: cH ∈ preZ
-      then ⟨Classical.choose h.2, by
-        let s:= Classical.choose h.2
-        apply And.right at h
-        apply Classical.choose_spec at h
-        apply Set.mem_of_mem_inter_right at h
-        exact mem_coe.mp h
-      ⟩ else ⟨(1 : G), id_in_S⟩
-
-    have inj_f_preZ : Set.InjOn f_preZ preZ := by
-      unfold Set.InjOn
-      intro c₁ hc₁ c₂ hc₂ hc₁c₂
-      unfold f_preZ at hc₁c₂
-      simp_all
-      let s := Classical.choose hc₁.2
-      have s_in_c₁ : s ∈ c₁ := by
-        apply And.right at hc₁
-        apply Classical.choose_spec at hc₁
-        exact Set.mem_of_mem_inter_left hc₁
-      have s_in_c₂ : s ∈ c₂ := by
-        apply And.right at hc₂
-        apply Classical.choose_spec at hc₂
-        rw [← hc₁c₂] at hc₂
-        exact Set.mem_of_mem_inter_left hc₂
-      rw [rightCoset_eq_of_mem hc₁.1 s_in_c₁, rightCoset_eq_of_mem hc₂.1 s_in_c₂]
-
-    exact Finite.Set.finite_of_finite_image preZ inj_f_preZ
-
-  -- we take the Finset given by preZ and show explicitely that its
-  --  elements are nonempty, which allows us to define the choice function
-  --  that will give us Z
-  let preZ' := fin_preZ.toFinset
-  have elts_preZ'_nonempty (cH : Set G) (hcH : cH ∈ preZ') : (cH ∩ S).Nonempty := by
-    rw [Set.Finite.mem_toFinset, Set.mem_setOf] at hcH
-    exact hcH.2
-
-  choose! chooseZ chooseZ_spec using elts_preZ'_nonempty
-  let Z := Finset.image chooseZ preZ'
-
-  -- some claims about Z
-  have Z_subset_S : Z ⊆ S := by
-    simpa [Z, Finset.image_subset_iff] using fun x hx ↦ (chooseZ_spec _ hx).2
-
-  have S_eq_HZ : (S: Set G) = H * Z := by
-    apply Set.Subset.antisymm
-    · intro x hx
-      rw [mem_coe] at hx
-      let cx := (H: Set G) <• x
-      have cx_in_preZ' : cx ∈ preZ' := by
-        rw [Set.Finite.mem_toFinset, Set.mem_setOf]
-        constructor
-        · simp_all [cx]
-        · unfold Set.Nonempty
-          use x
-          constructor
-          · rw [← one_mul x]
-            exact mem_rightCoset x (one_mem H)
-          · exact hx
-      let z := chooseZ cx
-      have z_in_cx : z ∈ cx := (chooseZ_spec _ cx_in_preZ').1
-      have z_in_Z : z ∈ Z := by
-        apply Finset.mem_image_of_mem
-        exact cx_in_preZ'
-      have x_in_Hz : x ∈ (H: Set G) <• z := by
-        rw [mem_rightCoset_iff, SetLike.mem_coe]
-        rw [mem_rightCoset_iff, SetLike.mem_coe] at z_in_cx
-        apply inv_mem at z_in_cx
-        simp_all
-      exact Set.op_smul_set_subset_mul z_in_Z x_in_Hz
-    · calc
-        (H: Set G) * Z  ⊆ H * S   := by gcongr
-                      _ ⊆ S       := by exact Eq.subset HS_eq_S
-
-  -- this is only the Finset version of the previous claim
-  have S_eq_HZ_finsets : S = Set.toFinset H * Z := by
-    apply Subset.antisymm
-    · intro s hs
-      rw [← mem_coe, S_eq_HZ, Set.mem_mul] at hs
-      obtain ⟨x, hx, y, hy, hxy⟩ := hs
-      rw [← Set.mem_toFinset] at hx
-      rw [mem_coe] at hy
-      rw [← hxy]
-      exact mul_mem_mul hx hy
-    · intro xz hxz
-      rw [mem_mul] at hxz
-      obtain ⟨y, hy, z, hz, hyz⟩ := hxz
-      rw [← mem_coe, S_eq_HZ, ← hyz]
-      exact Set.mul_mem_mul (Set.mem_toFinset.mp hy) (mem_coe.mpr hz)
+  have S_eq_HZ : S = (H : Set G) * Z := Eq.symm <| Eq.trans
+    (mul_rightCosetRepresentingFinset_eq_mul_set H S_nonempty)
+    (by simp only [← stabilizer_coe_finset, stabilizer_mul_self, H])
+  have S_eq_HZ_finset : S = Set.toFinset H * Z := by
+    simpa only [← coe_inj, coe_mul, Set.coe_toFinset]
+      using S_eq_HZ
 
   -- it remains to prove that Z is not "too big"
   refine ⟨H, inferInstance, Z, ?_, mod_cast S_eq_HZ⟩
@@ -538,22 +629,22 @@ theorem doubling_lt_golden_ratio {K : ℝ} (hK₁ : 1 < K) (hKφ : K < φ)
   have many_big_z : #{z ∈ S | (K - 1) * #A < r z} ≥ (φ - K) * (K - ψ) / (2 - K) * #A := by
     let k := #{z ∈ S | (K - 1) * #A < r z}
 
-    have ineq1 : #A * #A ≤ ((2 - K) * k + K * (K - 1) * #A) * #A := by
+    have ineq₁ : #A * #A ≤ ((2 - K) * k + K * (K - 1) * #A) * #A := by
       calc
             (#A : ℝ) * #A
         _ = #(A ×ˢ A) := by simp only [card_product, Nat.cast_mul]
-        _ = ∑ z ∈ S, r z                                            := ?eq1
-        _ = ∑ z ∈ S with (K - 1) * #A < r z, r z + ∑ z ∈ S with ¬ (K - 1) * #A < r z, r z := ?eq2
+        _ = ∑ z ∈ S, r z                                            := ?eq₁
+        _ = ∑ z ∈ S with (K - 1) * #A < r z, r z + ∑ z ∈ S with ¬ (K - 1) * #A < r z, r z := ?eq₂
         _ ≤ ∑ z ∈ S with (K - 1) * #A < r z, r z
-              + ∑ z ∈ S with ¬ (K - 1) * #A < r z, (K - 1) * #A     := ?eq3
+              + ∑ z ∈ S with ¬ (K - 1) * #A < r z, (K - 1) * #A     := ?eq₃
         _ ≤ ∑ z ∈ S with (K - 1) * #A < r z, r z
-              + (K - 1) * #A * #{z ∈ S | ¬ (K - 1) * #A < r z}      := ?eq4
-        _ ≤ ∑ z ∈ S with (K - 1) * #A < r z, r z + (K - 1) * #A * (K * #A - k)  := ?eq5
+              + (K - 1) * #A * #{z ∈ S | ¬ (K - 1) * #A < r z}      := ?eq₄
+        _ ≤ ∑ z ∈ S with (K - 1) * #A < r z, r z + (K - 1) * #A * (K * #A - k)  := ?eq₅
         _ = ∑ z ∈ S with (K - 1) * #A < r z, r z + (K * (K - 1) * #A - (K - 1) * k) * #A := by ring
-        _ ≤ ∑ z ∈ S with (K - 1) * #A < r z, #A + (K * (K - 1) * #A - (K - 1) * k) * #A := ?eq6
-        _ = k * #A + (K * (K - 1) * #A - (K - 1) * k) * #A          := ?eq7
+        _ ≤ ∑ z ∈ S with (K - 1) * #A < r z, #A + (K * (K - 1) * #A - (K - 1) * k) * #A := ?eq₆
+        _ = k * #A + (K * (K - 1) * #A - (K - 1) * k) * #A          := ?eq₇
         _ = ((2 - K) * k + K * (K - 1) * #A) * #A                   := by ring
-      case eq1 =>
+      case eq₁ =>
         unfold r
         rw [Nat.cast_inj]
         let f : G × G → G := fun xy => xy.1 * xy.2⁻¹
@@ -565,23 +656,23 @@ theorem doubling_lt_golden_ratio {K : ℝ} (hK₁ : 1 < K) (hKφ : K < φ)
           rw [mem_coe]
           exact mul_mem_mul (mem_product.mp hxy).1 (inv_mem_inv (mem_product.mp hxy).2)
         )
-      case eq2 =>
+      case eq₂ =>
         rw [← Nat.cast_add, Nat.cast_inj]
         exact Eq.symm (sum_filter_add_sum_filter_not S (fun z => (K - 1) * #A < r z) r)
-      case eq3 =>
+      case eq₃ =>
         push_cast
         gcongr with z hz
         exact not_lt.mp (mem_filter.mp hz).2
-      case eq4 =>
+      case eq₄ =>
         gcongr
         rw [card_eq_sum_ones {z ∈ S | ¬ (K - 1) * #A < r z}, Nat.cast_sum,
             mul_sum, mul_assoc, ← Nat.cast_mul, mul_one]
-      case eq5 =>
+      case eq₅ =>
         have : 0 ≤ K - 1 := by linarith
         gcongr
         simp only [le_sub_iff_add_le', k, ← Nat.cast_add, filter_card_add_filter_neg_card_eq_card]
         exact hA₂
-      case eq6 =>
+      case eq₆ =>
         gcongr with z hz
         apply card_le_card_of_injOn (fun xy => xy.1)
         · intro a ha
@@ -596,16 +687,16 @@ theorem doubling_lt_golden_ratio {K : ℝ} (hK₁ : 1 < K) (hKφ : K < φ)
           apply mul_left_cancel at hxy
           rw [inv_inj] at hxy
           exact Prod.ext h hxy
-      case eq7 =>
+      case eq₇ =>
         rw [add_right_cancel_iff, ← Nat.cast_mul, Nat.cast_inj]
         unfold k
         rw [card_eq_sum_ones {z ∈ S | (K - 1) * #A < r z}, sum_mul, one_mul]
 
-    have ineq2 := le_of_mul_le_mul_right ineq1 <| by simpa
+    have ineq₂ := le_of_mul_le_mul_right ineq₁ <| by simpa only [Nat.cast_pos, card_pos]
 
-    have ineq3 : (φ - K) * (K - ψ) * #A ≤ (2 - K) * k := by
-      rw [← calc1]
-      linarith only [ineq2]
+    have ineq₃ : (φ - K) * (K - ψ) * #A ≤ (2 - K) * k := by
+      rw [← calc₁]
+      linarith only [ineq₂]
 
     apply le_of_mul_le_mul_of_pos_left ?_ hK₂'
     have : (2 - K) * ((φ - K) * (K - ψ) / (2 - K) * (#A: ℝ)) = (φ - K) * (K - ψ) * #A := by
@@ -613,7 +704,7 @@ theorem doubling_lt_golden_ratio {K : ℝ} (hK₁ : 1 < K) (hKφ : K < φ)
       ring
 
     rw [this]
-    exact ineq3
+    exact ineq₃
 
   -- here we show that those z ∈ S that have "a lot of" representations
   --  are actually in H
@@ -643,12 +734,14 @@ theorem doubling_lt_golden_ratio {K : ℝ} (hK₁ : 1 < K) (hKφ : K < φ)
     have big_w' : (2 - K) * #A ≤ #(A ∩ (b * a⁻¹)⁻¹ • A) := by
       apply big_w.trans
       rw [← card_smul_finset a]
-      simp [smul_smul, smul_finset_inter]
+      simp only [smul_finset_inter, smul_smul, mul_inv_cancel, one_smul,
+                  mul_inv_rev, inv_inv, le_refl]
 
     have big_z' : (K - 1) * #A < #(A ∩ (x * y⁻¹)⁻¹ • A) := by
       apply hrz.trans_le
       rw [← card_smul_finset y]
-      simp [smul_smul, smul_finset_inter, inter_comm]
+      simp only [smul_finset_inter, smul_smul, mul_inv_cancel, one_smul,
+                  inter_comm, mul_inv_rev, inv_inv, le_refl]
 
     have ⟨t, ht⟩ : ((A ∩ (x * y⁻¹)⁻¹ •> A) ∩ (A ∩ (b * a⁻¹)⁻¹ •> A)).Nonempty := by
       rw [← card_pos, ← Nat.cast_pos (α := ℝ)]
@@ -662,7 +755,8 @@ theorem doubling_lt_golden_ratio {K : ℝ} (hK₁ : 1 < K) (hKφ : K < φ)
     simp only [inter_inter_inter_comm, inter_self, mem_inter, ← inv_smul_mem_iff, inv_inv,
         smul_eq_mul, mul_assoc, mul_inv_rev] at ht
     rw [mem_mul]
-    exact ⟨x * y⁻¹ * t, by simp [ht, mul_assoc], ((a * b⁻¹)⁻¹ * t)⁻¹, by simp [ht, mul_assoc]⟩
+    exact ⟨x * y⁻¹ * t, by simp only [mul_assoc, ht], ((a * b⁻¹)⁻¹ * t)⁻¹,
+      by simp only [mul_inv_rev, inv_inv, mul_assoc, mem_inv', ht, mul_inv_cancel_left, and_self]⟩
 
   -- now we show that H is relatively big, which will then
   --  make Z relatively small once we show that #S = #H * #Z
@@ -680,48 +774,9 @@ theorem doubling_lt_golden_ratio {K : ℝ} (hK₁ : 1 < K) (hKφ : K < φ)
       exact mem_H_of_big_z (mem_filter.mp hz)
     )
 
-  have card_mul_eq_mul_card : #S = (Fintype.card H) * #Z := by
-    change #S = (Fintype.card (H : Set G)) * #Z
-    rw [← Set.toFinset_card]
-    apply le_antisymm
-    · calc
-        #S = #((H : Set G).toFinset * Z)  := by exact congrArg card S_eq_HZ_finsets
-          _≤ #(H: Set G).toFinset * #Z    := by exact card_mul_le
-
-    rw [← card_product (Set.toFinset (H: Set G)) Z]
-    apply card_le_card_of_injOn (fun xy => xy.1 * xy.2)
-    · intro xz hxz
-      rw [← mem_coe, S_eq_HZ]
-      rw [mem_product] at hxz
-      apply Set.mul_mem_mul
-      · simp_all only [Set.mem_toFinset]
-      · exact mem_coe.mpr hxz.2
-
-    simp only [Set.InjOn, coe_product, Set.coe_toFinset, coe_image,
-      Set.mem_prod, SetLike.mem_coe, and_imp, Prod.forall, Prod.mk.injEq, Z]
-    rintro x y hx hy w t hw ht hxywt
-    rw [Set.mem_image] at hy ht
-
-    obtain ⟨cx, hcx1, hcx2⟩ := hy
-    change (cx : Set G) ∈ preZ' at hcx1
-    have hcx3 : y ∈ (cx : Set G) := by simpa [hcx2] using (chooseZ_spec _ hcx1).1
-    rw [Set.Finite.mem_toFinset fin_preZ] at hcx1
-    have hcx4 := rightCoset_eq_of_mem hcx1.1 hcx3
-
-    obtain ⟨cw, hcw1, hcw2⟩ := ht
-    change (cw : Set G) ∈ preZ' at hcw1
-    have hcw3 : t ∈ (cw : Set G) := by simpa [hcw2] using (chooseZ_spec _ hcw1).1
-    rw [Set.Finite.mem_toFinset fin_preZ] at hcw1
-    have hcw4 := rightCoset_eq_of_mem hcw1.1 hcw3
-
-    rw [← inv_mul_eq_iff_eq_mul, ← mul_assoc] at hxywt
-    rw [← hxywt, op_mul, ← smul_smul,
-        rightCoset_mem_rightCoset H (H.mul_mem (H.inv_mem hw) hx),
-        ← hcx4] at hcw4
-
-    rw [hcw4, hcx2] at hcw2
-    rw [hcw2, mul_eq_right, inv_mul_eq_one] at hxywt
-    exact ⟨(Eq.symm hxywt), hcw2⟩
+  have card_S_eq_card_H_mul_card_Z : #S = (Fintype.card H) * #Z := by
+    rw [← card_mul_rightCosetRepresentingFinset_eq_mul_card H S_nonempty]
+    exact congr_arg _ S_eq_HZ_finset
 
   -- we have all the claims that we need in order to prove that
   --  Z is not too large, we will just multiply both sides with #H
@@ -732,13 +787,13 @@ theorem doubling_lt_golden_ratio {K : ℝ} (hK₁ : 1 < K) (hKφ : K < φ)
     exact Finset.Nonempty.card_pos ⟨(1 : H), mem_univ 1⟩
   )
 
-  rw [← Nat.cast_mul, ← card_mul_eq_mul_card]
+  rw [← Nat.cast_mul, ← card_S_eq_card_H_mul_card_Z]
 
-  have K_ineq1 : 0 < (1 + √5) - 2 * K := by
-    have _ : 0 < (1 + √5) / 2 - K := by simp [hKφ]
+  have K_ineq₁ : 0 < (1 + √5) - 2 * K := by
+    have _ : 0 < (1 + √5) / 2 - K := by simp only [sub_pos, hKφ]
     linarith
-  have K_ineq2 : 0 < K * 2 - (1 - √5) := by
-    have _ : 0 < K - (1 - √5) / 2 := by simp [lt_trans goldConj_neg K_pos]
+  have K_ineq₂ : 0 < K * 2 - (1 - √5) := by
+    have _ : 0 < K - (1 - √5) / 2 := by simp only [sub_pos, lt_trans goldConj_neg K_pos]
     linarith
 
   calc
