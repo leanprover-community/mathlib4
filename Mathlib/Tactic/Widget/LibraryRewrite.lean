@@ -559,7 +559,7 @@ def SectionToMessageData (sec : Array (Rewrite × Name) × Bool) : MetaM (Option
   return some <| "Pattern " ++ head ++ "\n" ++ rewrites
 
 /-- `#rw? e` gives all possible rewrites of `e`. It is a testing command for the `rw?` tactic -/
-syntax (name := rw?Command) "#rw?" ("all")? term : command
+syntax (name := rw?Command) "#rw?" (&"all")? term : command
 
 open Elab
 /-- Elaborate a `#rw?` command. -/

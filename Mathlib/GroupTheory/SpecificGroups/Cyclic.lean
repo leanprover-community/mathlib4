@@ -482,8 +482,8 @@ private theorem card_orderOf_eq_totient_aux₁ {d : ℕ} (hd : d ∣ Fintype.car
     refine Finset.sum_congr rfl fun m hm => ?_
     simp only [mem_properDivisors] at hm
     refine IH m hm.2 (hm.1.trans hd) (Finset.card_pos.2 ⟨a ^ (d / m), ?_⟩)
-    simp only [mem_filter, mem_univ, orderOf_pow a, ha, true_and,
-      Nat.gcd_eq_right (div_dvd_of_dvd hm.1), Nat.div_div_self hm.1 hd0]
+    rw [mem_filter_univ, orderOf_pow a, ha, Nat.gcd_eq_right (div_dvd_of_dvd hm.1),
+      Nat.div_div_self hm.1 hd0]
   have h2 :
     (∑ m ∈ d.divisors, #{a : α | orderOf a = m}) =
       ∑ m ∈ d.divisors, φ m := by
@@ -1023,3 +1023,11 @@ theorem Group.isCyclic_prod_iff {M N : Type*} [Group M] [Group N] :
     exact isCyclic_of_coprime_card_ker f h Prod.snd_surjective
 
 end prod
+
+section WithZero
+
+instance (G : Type*) [Group G] [IsCyclic G] : IsCyclic (WithZero G)ˣ := by
+    apply isCyclic_of_injective (G := (WithZero G)ˣ) (WithZero.unitsWithZeroEquiv).toMonoidHom
+    apply Equiv.injective
+
+end WithZero

@@ -110,15 +110,10 @@ instance [K.HasHomology i] [K.HasHomology j] :
   dsimp
   infer_instance
 
-#adaptation_note /-- nightly-2024-03-11
-We turn off simprocs here.
-Ideally someone will investigate whether `simp` lemmas can be rearranged
-so that this works without the `set_option`,
-*or* come up with a proposal regarding finer control of disabling simprocs. -/
-set_option simprocs false in
 instance [K.HasHomology i] [K.HasHomology j] :
     Epi ((composableArrows₃ K i j).map' 2 3) := by
-  dsimp
+  -- Disable `Fin.reduceFinMk`, otherwise `Precomp.obj_succ` does not fire. (#27382)
+  dsimp [-Fin.reduceFinMk]
   infer_instance
 
 include hij in
@@ -152,12 +147,6 @@ variable (C)
 
 attribute [local simp] homologyMap_comp cyclesMap_comp opcyclesMap_comp
 
-#adaptation_note /-- nightly-2024-03-11
-We turn off simprocs here.
-Ideally someone will investigate whether `simp` lemmas can be rearranged
-so that this works without the `set_option`,
-*or* come up with a proposal regarding finer control of disabling simprocs. -/
-set_option simprocs false in
 /-- The functor `HomologicalComplex C c ⥤ ComposableArrows C 3` that maps `K` to the
 diagram `K.homology i ⟶ K.opcycles i ⟶ K.cycles j ⟶ K.homology j`. -/
 @[simps]
@@ -165,7 +154,8 @@ noncomputable def composableArrows₃Functor [CategoryWithHomology C] :
     HomologicalComplex C c ⥤ ComposableArrows C 3 where
   obj K := composableArrows₃ K i j
   map {K L} φ := ComposableArrows.homMk₃ (homologyMap φ i) (opcyclesMap φ i) (cyclesMap φ j)
-    (homologyMap φ j) (by simp) (by simp) (by simp)
+    -- Disable `Fin.reduceFinMk`, otherwise `Precomp.obj_succ` does not fire. (#27382)
+    (homologyMap φ j) (by simp) (by simp [-Fin.reduceFinMk]) (by simp [-Fin.reduceFinMk])
 
 end HomologySequence
 
