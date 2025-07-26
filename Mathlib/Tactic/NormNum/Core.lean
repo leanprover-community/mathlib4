@@ -140,7 +140,7 @@ returning a `Simp.Result`. -/
 def eval (e : Expr) (post := false) : MetaM Simp.Result := do
   if e.isExplicitNumber then return { expr := e }
   let ⟨_, _, e⟩ ← inferTypeQ' e
-  (← derive e post).toSimpResult
+  (← derive e post).toSimpResultQ
 
 /-- Erases a name marked `norm_num` by adding it to the state's `erased` field and
   removing it from the state's list of `Entry`s. -/
