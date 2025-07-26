@@ -337,6 +337,42 @@ def congr (f : Γ₀ ≃*o Γ'₀) : Valuation R Γ₀ ≃ Valuation R Γ'₀ wh
   left_inv ν := by ext; simp
   right_inv ν := by ext; simp
 
+section One
+
+variable [Nontrivial R] [NoZeroDivisors R] [DecidablePred fun x : R ↦ x = 0]
+
+variable (R Γ₀) in
+/-- The trivial valuation, sending everything to 1 other than 0. -/
+protected instance one : One (Valuation R Γ₀) where
+  one := {
+    __ : R →*₀ Γ₀ := 1
+    map_add_le_max' x y := by
+      simp only [ZeroHom.toFun_eq_coe, MonoidWithZeroHom.toZeroHom_coe,
+        MonoidWithZeroHom.one_apply_def, le_sup_iff]
+      split_ifs <;> simp_all
+  }
+
+lemma one_apply_def (x : R) : (1 : Valuation R Γ₀) x = if x = 0 then 0 else 1 := rfl
+
+@[simp] lemma toMonoidWithZeroHome_one : ((1 : Valuation R Γ₀).toMonoidWithZeroHom) = 1 := rfl
+
+lemma one_apply_of_ne_zero {x : R} (hx : x ≠ 0) : (1 : Valuation R Γ₀) x = 1 := if_neg hx
+
+@[simp]
+lemma one_apply_eq_zero_iff [NeZero (1 : Γ₀)] {x : R} : (1 : Valuation R Γ₀) x = 0 ↔ x = 0 :=
+  MonoidWithZeroHom.one_apply_eq_zero_iff
+
+lemma one_apply_le_one (x : R) : (1 : Valuation R Γ₀) x ≤ 1 := by
+  rw [one_apply_def]
+  split_ifs <;> simp_all
+
+@[simp]
+lemma one_apply_lt_one_iff [NeZero (1 : Γ₀)] {x : R} : (1 : Valuation R Γ₀) x < 1 ↔ x = 0 := by
+  rw [one_apply_def]
+  split_ifs <;> simp_all
+
+end One
+
 end Monoid
 
 section Group
@@ -404,6 +440,12 @@ lemma IsNontrivial.nontrivial_codomain [hv : IsNontrivial v] :
     Nontrivial Γ₀ := by
   obtain ⟨x, hx0, hx1⟩ := hv.exists_val_nontrivial
   exact ⟨v x, 1, hx1⟩
+
+lemma not_isNontrivial_one [Nontrivial R] [NoZeroDivisors R] [DecidablePred fun x : R ↦ x = 0] :
+    ¬(1 : Valuation R Γ₀).IsNontrivial := by
+  rintro ⟨⟨x, hx, hx'⟩⟩
+  rcases eq_or_ne x 0 with rfl | hx0 <;>
+  simp_all [one_apply_of_ne_zero]
 
 section Field
 
