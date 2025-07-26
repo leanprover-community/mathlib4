@@ -175,7 +175,11 @@ variable (Q)
 theorem toFun_eq_coe : Q.toFun = ⇑Q :=
   rfl
 
--- this must come after the coe_to_fun definition
+@[simp]
+theorem coe_mk (toFun : M → N) (toFun_smul exists_companion') :
+    ⇑({toFun, toFun_smul, exists_companion'} : QuadraticMap R M N) = toFun := rfl
+
+-- this must come after the instFunLike definition
 initialize_simps_projections QuadraticMap (toFun → apply)
 
 variable {Q}
@@ -389,7 +393,7 @@ instance : SMul S (QuadraticMap R M N) :=
         letI := SMulCommClass.symm S R N
         ⟨a • B, by simp [h]⟩ }⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coeFn_smul (a : S) (Q : QuadraticMap R M N) : ⇑(a • Q) = a • ⇑Q :=
   rfl
 
@@ -410,7 +414,7 @@ instance : Zero (QuadraticMap R M N) :=
       toFun_smul := fun a _ => by simp only [smul_zero]
       exists_companion' := ⟨0, fun _ _ => by simp only [add_zero, LinearMap.zero_apply]⟩ }⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coeFn_zero : ⇑(0 : QuadraticMap R M N) = 0 :=
   rfl
 
@@ -431,7 +435,7 @@ instance : Add (QuadraticMap R M N) :=
         ⟨B + B', fun x y => by
           simp_rw [Pi.add_apply, h, h', LinearMap.add_apply, add_add_add_comm]⟩ }⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coeFn_add (Q Q' : QuadraticMap R M N) : ⇑(Q + Q') = Q + Q' :=
   rfl
 
@@ -458,7 +462,7 @@ def evalAddMonoidHom (m : M) : QuadraticMap R M N →+ N :=
 
 section Sum
 
-@[simp]
+@[simp, norm_cast]
 theorem coeFn_sum {ι : Type*} (Q : ι → QuadraticMap R M N) (s : Finset ι) :
     ⇑(∑ i ∈ s, Q i) = ∑ i ∈ s, ⇑(Q i) :=
   map_sum coeFnAddMonoidHom Q s
@@ -504,7 +508,7 @@ instance : Neg (QuadraticMap R M N) :=
         let ⟨B, h⟩ := Q.exists_companion
         ⟨-B, fun x y => by simp_rw [Pi.neg_apply, h, LinearMap.neg_apply, neg_add]⟩ }⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coeFn_neg (Q : QuadraticMap R M N) : ⇑(-Q) = -Q :=
   rfl
 
@@ -515,7 +519,7 @@ theorem neg_apply (Q : QuadraticMap R M N) (x : M) : (-Q) x = -Q x :=
 instance : Sub (QuadraticMap R M N) :=
   ⟨fun Q Q' => (Q + -Q').copy (Q - Q') (sub_eq_add_neg _ _)⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coeFn_sub (Q Q' : QuadraticMap R M N) : ⇑(Q - Q') = Q - Q' :=
   rfl
 
@@ -735,7 +739,7 @@ def toQuadraticMapAddMonoidHom : (BilinMap R M N) →+ QuadraticMap R M N where
   map_add' := toQuadraticMap_add
 
 /-- `LinearMap.BilinMap.toQuadraticMap` as a linear map -/
-@[simps!]
+@[simps]
 def toQuadraticMapLinearMap [Semiring S] [Module S N] [SMulCommClass S R N] [SMulCommClass R S N] :
     (BilinMap R M N) →ₗ[S] QuadraticMap R M N where
   toFun := toQuadraticMap
