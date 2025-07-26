@@ -10,7 +10,6 @@ import Mathlib.RingTheory.Ideal.IsPrincipalPowQuotient
 import Mathlib.RingTheory.Valuation.Archimedean
 import Mathlib.Topology.Algebra.Valued.NormedValued
 import Mathlib.Topology.Algebra.Valued.ValuedField
-import Mathlib.Algebra.Order.Archimedean.Submonoid
 
 /-!
 # Necessary and sufficient conditions for a locally compact valued field
@@ -171,118 +170,132 @@ section CompactDVR
 
 open Valued
 
-lemma isPrincipalIdealRing_of_compactSpace [CompactSpace 𝒪[K]]
-    [MulArchimedean (MonoidHom.mrange (Valued.v : Valuation K Γ₀))]
-    [hv : Valuation.IsNontrivial (Valued.v : Valuation K Γ₀)] :
+lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X := K) 𝒪[K]) :
+    Nonempty (LocallyFiniteOrder (MonoidHom.mrange (Valued.v : Valuation K Γ₀))ˣ):= by
+  constructor
+  refine LocallyFiniteOrder.ofFiniteIcc ?_
+  -- We only need to show that we can construct a finite set for some set between
+  -- a non-zero `z : Γ₀` and 1, because we can scale/invert this set to cover the whole group.
+  suffices ∀ z : (MonoidHom.mrange (Valued.v : Valuation K Γ₀))ˣ, (Set.Icc z 1).Finite by
+    rintro x y
+    rcases lt_trichotomy y x with hxy | rfl | hxy
+    · rw [Set.Icc_eq_empty_of_lt]
+      · exact Set.finite_empty
+      · simp [hxy]
+    · simp
+    wlog h : x ≤ 1 generalizing x y
+    · push_neg at h
+      specialize this y⁻¹ x⁻¹ (inv_lt_inv' hxy) (inv_le_one_of_one_le (h.trans hxy).le)
+      refine (this.inv).subset ?_
+      rw [Set.inv_Icc]
+      intro
+      simp +contextual
+    generalize_proofs _ _ _ _ hxu hyu
+    rcases le_total y 1 with hy | hy
+    · exact (this x).subset (Set.Icc_subset_Icc_right hy)
+    · have H : (Set.Icc y⁻¹ 1).Finite := this _
+      refine ((this x).union H.inv).subset (le_of_eq ?_)
+      rw [Set.inv_Icc, inv_one, Set.Icc_union_Icc_eq_Icc] <;>
+      simp [h, hy]
+  -- We can construct a family of spheres at every single element of the valuation ring
+  -- outside of a closed ball, which will cover.
+  -- Since we are in a compact space, this cover has a finite subcover.
+  -- First, we need to pick a threshold element with a nontrivial valuation less than 1,
+  -- which will form -- the inner closed ball of the cover, which we need to cover 0.
+  intro z
+  obtain ⟨a, ha⟩ := z.val.prop
+  rcases lt_or_ge 1 z with hz1 | hz1
+  · rw [Set.Icc_eq_empty_of_lt]
+    · exact Set.finite_empty
+    · simp [hz1]
+  have z0' : 0 < (z : MonoidHom.mrange (Valued.v : Valuation K Γ₀)) := by simp
+  have z0 : 0 < ((z : MonoidHom.mrange (Valued.v : Valuation K Γ₀)) : Γ₀) :=
+    Subtype.coe_lt_coe.mpr z0'
+  have a0 : 0 < v a := by simp [ha, z0]
+  -- Construct our cover, which has an inner closed ball, and spheres for each element
+  -- outside of the closed ball. These are all open sets by the nonarchimedean property.
+  let U : K → Set K := fun y ↦ if v (y : K) ≤ z
+    then {w | v (w : K) ≤ z}
+    else {w | v (w : K) = v (y : K)}
+  have := hc.elim_finite_subcover U
+  specialize this ?_ ?_
+  · intro w
+    simp only [U]
+    split_ifs with hw
+    · exact Valued.isOpen_closedball _ z0.ne'
+    · refine Valued.isOpen_sphere _ ?_
+      push_neg at hw
+      refine (hw.trans' ?_).ne'
+      simp [z0]
+  · intro w
+    simp only [integer, SetLike.mem_coe, Valuation.mem_integer_iff, Set.mem_iUnion, U]
+    intro hw
+    use if v w ≤ z then a else w
+    split_ifs <;>
+    simp_all
+  -- For each element of the valuation ring that is bigger than our threshold element above,
+  -- there must be something in the cover that has the precise valuation of the element,
+  -- because it must be outside the inner closed ball, and thus is covered by some sphere.
+  obtain ⟨t, ht⟩ := this
+  classical
+  refine (t.finite_toSet.dependent_image ?_).subset ?_
+  · refine fun i hi ↦ if hi' : v i ≤ z then z else Units.mk0 ⟨(v i), by simp⟩ ?_
+    push_neg at hi'
+    exact Subtype.coe_injective.ne_iff.mp (hi'.trans' z0).ne'
+  · intro i
+    simp only [Set.mem_Icc, Finset.mem_coe, exists_prop, Set.mem_setOf_eq, and_imp]
+    -- we get the `c` from the cover that covers our arbitrary `i` with its set
+    obtain ⟨c, hc⟩ := i.val.prop
+    intro hzi hi1
+    have hj := ht (hc.trans_le hi1)
+    simp only [Set.mem_iUnion, exists_prop, U] at hj
+    obtain ⟨j, hj, hj'⟩ := hj
+    use j, hj
+    -- and this `c` is either less than or greater than (or equal to) the threshold element
+    split_ifs at hj' with hcj
+    · simp only [Set.mem_setOf_eq, hc, Subtype.coe_le_coe, Units.val_le_val] at hj'
+      simp [hcj, le_antisymm hj' hzi]
+    · simp only [Set.mem_setOf_eq] at hj'
+      rw [dif_neg hcj]
+      simp [← hj', hc]
+
+lemma mulArchimedean_mrange_of_isCompact_integer (hc : IsCompact (X := K) 𝒪[K]) :
+    MulArchimedean (MonoidHom.mrange (Valued.v : Valuation K Γ₀)) := by
+  rw [← Units.mulArchimedean_iff]
+  obtain ⟨_⟩ := locallyFiniteOrder_units_mrange_of_isCompact_integer hc
+  exact MulArchimedean.of_locallyFiniteOrder
+
+lemma isPrincipalIdealRing_of_compactSpace [hc : CompactSpace 𝒪[K]] :
     IsPrincipalIdealRing 𝒪[K] := by
   -- TODO: generalize to `Valuation.Integer`, which will require showing that `IsCompact`
   -- pulls back across `TopologicalSpace.induced` from a `LocallyCompactSpace`.
   -- The strategy to show that we have a PIR is by contradiction,
   -- assuming that the range of the valuation is densely ordered.
-  -- We can construct a family of spheres at every single element of the valuation ring
-  -- outside of a closed ball, which will cover.
-  -- Since we are in a compact space, this cover has a finite subcover.
-  -- This subcover, when excluding the sphere at 1, then has a max element since it is finite.
-  -- However, since we are densely ordered, we can find an element with a valuation between
-  -- the max element and 1, which is a contradiction, since it is outside the cover.
-
-  -- First, we need to pick a threshold element with a nontrivial valuation less than 1,
-  -- which will form -- the inner closed ball of the cover, which we need to cover 0.
-  -- We have such an element by construction.
-  obtain ⟨x, hx, hx'⟩ : ∃ x : 𝒪[K], 0 < v (x : K) ∧ v (x : K) < 1 := by
-    obtain ⟨x, hx, hx'⟩ := hv.exists_lt_one
-    exact ⟨⟨x, hx'.le⟩, by simpa [zero_lt_iff] using hx, hx'⟩
+  -- We can also construct that it has a locally finite ordered, by compactness
+  -- which leads to a contradiction.
   -- the key result is that a valuation ring that maps into a `MulArchimedean` value group
   -- is a PIR iff the value group is not densely ordered.
   have hi : Valuation.Integers (R := K) Valued.v 𝒪[K] := Valuation.integer.integers v
+  have hc : IsCompact (X := K) 𝒪[K] := by
+    simpa [← isCompact_univ_iff, Subtype.isCompact_iff, Set.image_univ,
+      Subtype.range_coe_subtype] using hc
+  obtain ⟨_⟩ := locallyFiniteOrder_units_mrange_of_isCompact_integer hc
+  have hm := mulArchimedean_mrange_of_isCompact_integer hc
   rw [hi.isPrincipalIdealRing_iff_not_denselyOrdered]
   intro H
-  -- Construct our cover, which has an inner closed ball, and spheres for each element
-  -- outside of the closed ball. These are all open sets by the nonarchimedean property.
-  let U : 𝒪[K] → Set 𝒪[K] := fun y ↦ if v (y : K) < v (x : K)
-    then {z | v (z : K) ≤ v (x : K)}
-    else {z | v (z : K) = v (y : K)}
-  -- Extract out the finite subcover from our cover, which is a finite set of elements of
-  -- the valuation ring, whose spheres cover the whole ring.
-  obtain ⟨t, ht⟩ := CompactSpace.elim_nhds_subcover U <| by
-    intro y
-    simp only [U]
-    split_ifs with hy
-    · refine IsOpen.mem_nhds ((Valued.isOpen_closedball _ hx.ne').preimage ?_) ?_
-      · exact continuous_subtype_val
-      · simp [hy.le]
-    · refine IsOpen.mem_nhds ((Valued.isOpen_sphere _ ?_).preimage ?_) ?_
-      · simp only [not_lt] at hy
-        exact (hx.trans_le hy).ne'
-      · exact continuous_subtype_val
-      · simp
-  -- For each element of the valuation ring that is bigger than our threshold element above,
-  -- then there must be something in the cover that has the precise valuation of the element,
-  -- because it must be outside the inner closed ball, and thus is covered by some sphere.
-  have htm : ∀ y : 𝒪[K], v (x : K) < v (y : K) → ∃ z ∈ t, v (z : K) = v (y : K) := by
-    intro y hy
-    have := ht.ge (Set.mem_univ y)
-    simp only [Set.mem_iUnion, exists_prop', nonempty_prop, U] at this
-    -- we get the `z` from the cover that covers our arbitrary `y` with its set
-    obtain ⟨z, hz, hz'⟩ := this
-    -- and this `z` is either less than or greater than (or equal to) the threshold element
-    split_ifs at hz' with h
-    -- the `z` is inside closed ball case, which is a contradiction since we know `y` is outside
-    · simp [hy.not_ge] at hz'
-    -- the `z` is gives a sphere, so we plug it in
-    · simp only [Set.mem_setOf_eq] at hz'
-      exact ⟨z, hz, hz'.symm⟩
-  -- Pick an element of the valuation ring to use as the excluded element of the subcover
-  -- (since we know that all elements of the valuation ring have valuation less than or equal to 1).
-  obtain ⟨y, _, hy'⟩ : ∃ y : 𝒪[K], y ∈ t ∧ v (y : K)= 1 := by simpa using htm 1 (by simpa using hx')
-  -- And pick an element in the subcover that is greater than the threshold element, but less
-  -- than valuation 1. We will need this to show that the subcover excluding the element
-  -- with valuation 1 is nonempty, which will allow us to take a max element.
-  obtain ⟨w, hwt, hw1, hxw⟩ : ∃ w : 𝒪[K], w ∈ t ∧ v (w : K) < 1 ∧ v (x : K) < v (w : K) := by
-    replace hx' : (⟨_, x, rfl⟩ : Set.range (v : K → Γ₀)) < ⟨_, 1, rfl⟩ := by simpa using hx'
-    obtain ⟨⟨_, w, rfl⟩, hw, hw'⟩ := exists_between hx'
-    obtain ⟨u, hu, hu'⟩ := htm ⟨w, by simpa using hw'.le⟩ hw
-    exact ⟨u, hu, hu' ▸ by simpa using hw', hu' ▸ by simpa using hw⟩
-  -- We're ready to work with the cover that excludes elements with valuation 1.
-  let u := t.filter (fun a : 𝒪[K] ↦ v (a : K) < 1)
-  have hwu : w ∈ u := by simp [u, hwt, hw1] -- and it is nonempty.
-  -- So the element that takes on the largest valuation in this partial cover is in the cover itself
-  -- which is the case because this partial cover is closed under the max (`⊔`) operation:
-  -- if `‖x‖ ∈ u` and `‖y‖ ∈ u`, then `max ‖x‖ ‖y‖ ∈ u`
-  obtain hl' := (u.image (v ∘ ((↑) : 𝒪[K] → K))).max'_mem <| by simpa using ⟨_, hwu⟩
-  simp only [Finset.mem_image, Finset.mem_filter, Function.comp_apply, u] at hl'
-  obtain ⟨l, ⟨hl, hl'⟩, hvl⟩ := hl'
-  -- we know that this largest element must have valuation less than 1,
-  -- since it is in the partial cover, and this is the property of the partial cover
-  have hm : (⟨v (l : K), l, rfl⟩ : Set.range (v : K → Γ₀)) < (⟨1, y, hy'⟩) := by simpa using hl'
-  -- Prepare the contradiction, pick an element that has a valuation between the max element and 1.
-  obtain ⟨⟨_, m, rfl⟩, hm⟩ := exists_between hm
-  simp only [Subtype.mk_lt_mk] at hm
-  -- well, it is in the ring, so there is something in the cover that covers it,
-  -- and it must be a sphere since it is larger than the threshold element by virtue of
-  -- `v x < v l < v m`.
-  obtain ⟨n, hn, hn'⟩ : ∃ n ∈ t, v (n : K) = v m := by
-    refine htm ⟨m, hm.right.le⟩ (hxw.trans (hm.left.trans_le' ?_))
-    rw [hvl]
-    refine Finset.le_max' _ _ ?_
-    simp only [Finset.mem_image, Finset.mem_filter, Function.comp_apply]
-    exact ⟨w, ⟨hwt, hw1⟩, rfl⟩
-  rw [← hn'] at hm -- clean up what valuations we refer to
-  -- to supply the contradiction, we have `v l < v n`, now prove that also `v n ≤ v l`
-  refine hm.left.not_ge ?_
-  -- which is the case since `‖l‖ = u.max' ..` and the property of `Finset.max'`
-  rw [hvl]
-  refine Finset.le_max' _ _ ?_
-  simp only [Finset.mem_image, Finset.mem_filter, Function.comp_apply]
-  use n
-  simp [hn, hm.right]
+  -- since we are densely ordered, we necessarily are nontrivial
+  replace H : DenselyOrdered (MonoidHom.mrange (v : Valuation K Γ₀)) := H
+  obtain ⟨x, hx, hx'⟩ := exists_between (α := (MonoidHom.mrange (v : Valuation K Γ₀))) zero_lt_one
+  lift x to (MonoidHom.mrange (v : Valuation K Γ₀))ˣ using IsUnit.mk0 _ hx.ne'
+  rw [← Units.val_one, Units.val_lt_val] at hx'
+  have : Nontrivial (MonoidHom.mrange (Valued.v : Valuation K Γ₀))ˣ := ⟨_, _, hx'.ne'⟩
+  rw [← denselyOrdered_units_iff] at H
+  exact not_lt_of_denselyOrdered_of_locallyFinite _ _ hx'
 
-lemma isDiscreteValuationRing_of_compactSpace [hv : (Valued.v : Valuation K Γ₀).RankOne]
+lemma isDiscreteValuationRing_of_compactSpace [hn : (Valued.v : Valuation K Γ₀).IsNontrivial]
     [CompactSpace 𝒪[K]] : IsDiscreteValuationRing 𝒪[K] := by
   -- To prove we have a DVR, we need to show it is
   -- a local ring (instance is directly inferred) and a PIR and not a field.
-  have hn : Valuation.IsNontrivial (Valued.v : Valuation K Γ₀) := inferInstance
-  have hm : MulArchimedean Γ₀ := .comap hv.hom.toMonoidHom hv.strictMono
   obtain ⟨x, hx, hx'⟩ := hn.exists_lt_one
   have key : IsPrincipalIdealRing 𝒪[K] := isPrincipalIdealRing_of_compactSpace
   exact {
