@@ -65,6 +65,7 @@ which is the natural relation arising from (the equivalence class of) a valuatio
 More precisely, if v is a valuation on R then the associated relation is `x ≤ᵥ y ↔ v x ≤ v y`.
 Use this class to talk about the case where `R` is equipped with an equivalence class
 of valuations. -/
+@[ext]
 class ValuativeRel (R : Type*) [CommRing R] where
   /-- The relation operator arising from `ValuativeRel`. -/
   rel : R → R → Prop
@@ -158,6 +159,14 @@ lemma right_cancel_posSubmonoid (x y : R) (u : posSubmonoid R) :
 lemma left_cancel_posSubmonoid (x y : R) (u : posSubmonoid R) :
     u * x ≤ᵥ u * y ↔ x ≤ᵥ y := by
   simp only [← right_cancel_posSubmonoid x y u, mul_comm]
+
+@[simp]
+lemma val_posSubmonoid_ne_zero (x : posSubmonoid R) :
+    (x : R) ≠ 0 := by
+  have := x.prop
+  rw [posSubmonoid_def] at this
+  contrapose! this
+  simp [this]
 
 variable (R) in
 /-- The setoid used to construct `ValueGroupWithZero R`. -/
@@ -494,6 +503,15 @@ lemma ValueGroupWithZero.lift_valuation {α : Sort*} (f : R → posSubmonoid R �
     ValueGroupWithZero.lift f hf (valuation R x) = f x 1 :=
   rfl
 
+lemma valuation_eq_zero_iff {x : R} :
+    valuation R x = 0 ↔ x ≤ᵥ 0 :=
+  ValueGroupWithZero.mk_eq_zero _ _
+
+lemma valuation_posSubmonoid_ne_zero (x : posSubmonoid R) :
+    valuation R (x : R) ≠ 0 := by
+  rw [ne_eq, valuation_eq_zero_iff]
+  exact x.prop
+
 /-- Construct a valuative relation on a ring using a valuation. -/
 def ofValuation
     {S Γ : Type*} [CommRing S]
@@ -528,6 +546,12 @@ lemma isEquiv {Γ₁ Γ₂ : Type*}
     v₁.IsEquiv v₂ := by
   intro x y
   simp_rw [← Valuation.Compatible.rel_iff_le]
+
+@[simp]
+lemma valuation_posSubmonoid_ne_zero_of_compatible {Γ : Type*} [LinearOrderedCommMonoidWithZero Γ]
+    (v : Valuation R Γ) [v.Compatible] (x : posSubmonoid R) :
+    v (x : R) ≠ 0 := by
+  simp [(isEquiv v (valuation R)).ne_zero, valuation_posSubmonoid_ne_zero]
 
 variable (R) in
 /-- An alias for endowing a ring with a preorder defined as the valuative relation. -/
@@ -645,6 +669,18 @@ lemma valuation_surjective (γ : ValueGroupWithZero R) :
   induction γ using ValueGroupWithZero.ind with | mk a b
   use a, b
   simp [valuation, div_eq_mul_inv, ValueGroupWithZero.inv_mk (b : R) 1 b.prop]
+
+lemma valuation_surjective_unit (γ : (ValueGroupWithZero R)ˣ) :
+    ∃ (a b : posSubmonoid R), valuation R a / valuation _ (b : R) = γ := by
+  obtain ⟨a, b, hab⟩ := valuation_surjective γ.val
+  refine ⟨⟨a, ?_⟩, b, hab⟩
+  rw [posSubmonoid_def]
+  intro H
+  suffices γ.val * (valuation R) b ≤ 0 by simp at this
+  rw [← hab]
+  simp only [isUnit_iff_ne_zero, ne_eq, valuation_posSubmonoid_ne_zero_of_compatible,
+    not_false_eq_true, IsUnit.div_mul_cancel]
+  rwa [← map_zero (valuation R), ← Valuation.Compatible.rel_iff_le]
 
 end ValuativeRel
 
