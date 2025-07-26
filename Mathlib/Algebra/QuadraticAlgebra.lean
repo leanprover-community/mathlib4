@@ -1,10 +1,12 @@
 /-
 Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yunzhou Xie, Kenny Lau
+Authors: Yunzhou Xie, Kenny Lau, Jiayang Hong
 -/
 
-import Mathlib
+import Mathlib.Algebra.Lie.OfAssociative
+import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
 /-!
 
@@ -211,8 +213,8 @@ end SMul
 section MulAction
 
 instance [Monoid S] [MulAction S R] : MulAction S (QuadraticAlgebra R a b) where
-  one_smul x := by ext <;> simp
-  mul_smul x y b_1:= by ext <;> simp[mul_smul]
+  one_smul _ := by ext <;> simp
+  mul_smul _ _ _ := by ext <;> simp[mul_smul]
 
 end MulAction
 
@@ -227,16 +229,16 @@ instance [AddMonoid R] : AddMonoid (QuadraticAlgebra R a b) := by
 
 instance [Monoid S] [AddMonoid R] [DistribMulAction S R] :
     DistribMulAction S (QuadraticAlgebra R a b) where
-  smul_zero a_1:= by ext <;> simp
-  smul_add a_1 x y := by ext <;> simp
+  smul_zero _ := by ext <;> simp
+  smul_add _ _ _ := by ext <;> simp
 
 instance [AddCommMonoid R] : AddCommMonoid (QuadraticAlgebra R a b) where
   __ := inferInstanceAs (AddMonoid (QuadraticAlgebra R a b))
   add_comm _ _ := by ext <;> simp [add_comm]
 
 instance [Semiring S] [AddCommMonoid R] [Module S R] : Module S (QuadraticAlgebra R a b) where
-  add_smul r s x:= by ext <;> simp[add_smul]
-  zero_smul x:= by ext <;> simp
+  add_smul r s x := by ext <;> simp[add_smul]
+  zero_smul x := by ext <;> simp
 
 instance [AddGroup R] : AddGroup (QuadraticAlgebra R a b) := by
   refine (equivProd a b).injective.addGroup _ rfl ?_ ?_ ?_ ?_ ?_
@@ -290,21 +292,13 @@ section CommRing
 
 instance instSemiring [CommSemiring R] : Semiring (QuadraticAlgebra R a b) where
   __ := inferInstanceAs (AddCommMonoidWithOne (QuadraticAlgebra R a b))
-  left_distrib a_1 b_1 c:= by
-    ext
-    · simp [left_distrib]
-      rw [add_assoc,add_comm (a_1.re * c.re),add_assoc,add_comm (b * a_1.im * c.im),add_assoc]
-    · simp [left_distrib]
-      rw [add_assoc (a_1.re * b_1.im),add_comm (a_1.re * c.im),add_assoc (a_1.re * b_1.im),
-      add_assoc (a_1.im * b_1.re),add_assoc,add_comm (a_1.im * c.re + a_1.re * c.im),add_assoc,
-      add_comm (a * a_1.im * c.im),add_comm (a_1.im * c.re)]
-      simp [add_assoc]
-  right_distrib a_1 b_1 c:= by ext <;> simp <;> ring
-  zero_mul a_1 := by ext <;> simp
-  mul_zero a_1:= by ext <;> simp
-  mul_assoc a_1 b_1 c:= by ext <;> simp <;> ring
-  one_mul a_1:= by ext <;> simp
-  mul_one a_1:= by ext <;> simp
+  left_distrib _ _ _ := by ext <;> simp <;> ring
+  right_distrib _ _ _ := by ext <;> simp <;> ring
+  zero_mul _ := by ext <;> simp
+  mul_zero _ := by ext <;> simp
+  mul_assoc _ _ _ := by ext <;> simp <;> ring
+  one_mul _ := by ext <;> simp
+  mul_one _ := by ext <;> simp
 
 instance instCommSemiring [CommSemiring R] : CommSemiring (QuadraticAlgebra R a b) where
   __ := inferInstanceAs (Semiring (QuadraticAlgebra R a b))
@@ -346,5 +340,94 @@ instance [NoZeroDivisors R] : NoZeroSMulDivisors R (QuadraticAlgebra R a b) := �
   exact or_iff_not_imp_left.2 <| fun ht ↦ by simpa [QuadraticAlgebra.ext_iff, ht] using h⟩
 
 end CommRing
+
+section
+
+variable (a b) [CommRing R]
+
+/-- `QuadraticAlgebra.re` as a `LinearMap` -/
+@[simps]
+def reₗ : QuadraticAlgebra R a b →ₗ[R] R where
+  toFun := re
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+/-- `QuadraticAlgebra.im` as a `LinearMap` -/
+@[simps]
+def imₗ : QuadraticAlgebra R a b →ₗ[R] R where
+  toFun := im
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+/-- `QuadraticAlgebra.equivTuple` as a `LinearEquiv` -/
+def linearEquivTuple : QuadraticAlgebra R a b ≃ₗ[R] (Fin 2 → R) :=
+  LinearEquiv.symm {
+  (equivTuple a b).symm with
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl }
+
+@[simp]
+lemma coe_linearEquivTuple :
+    ⇑(linearEquivTuple a b) = equivTuple a b := rfl
+
+@[simp]
+lemma coe_linearEquivTuple_symm :
+    ⇑(linearEquivTuple a b).symm = (equivTuple a b).symm := rfl
+
+/-- `QuadraticAlgebra R a b` has a basis over `R` given by `1` and `i` -/
+noncomputable def basisOneI : Module.Basis (Fin 2) R (QuadraticAlgebra R a b) :=
+  .ofEquivFun <| linearEquivTuple a b
+
+@[simp]
+theorem coe_basisOneI_repr (x : QuadraticAlgebra R a b) :
+    (basisOneI a b).repr x = ![x.re, x.im] := rfl
+
+instance : Module.Finite R (QuadraticAlgebra R a b) := .of_basis (basisOneI a b)
+
+instance : Module.Free R (QuadraticAlgebra R a b) := .of_basis (basisOneI a b)
+
+theorem rank_eq_two [StrongRankCondition R] : Module.rank R (QuadraticAlgebra R a b) = 2 := by
+  simp [rank_eq_card_basis (basisOneI a b)]
+
+theorem finrank_eq_two [StrongRankCondition R] : Module.finrank R (QuadraticAlgebra R a b) = 2 := by
+  simp [Module.finrank, rank_eq_two]
+
+end
+
+section
+
+variable [CommRing R]
+
+@[norm_cast, simp]
+theorem coe_sub (r1 r2 : R) : ((r1 - r2 : R) : QuadraticAlgebra R a b) = r1 - r2 :=
+  (algebraMap R (QuadraticAlgebra R a b)).map_sub r1 r2
+
+@[norm_cast, simp]
+theorem coe_pow (n : ℕ) (r : R) : ((r ^ n : R) : QuadraticAlgebra R a b) =
+    (r : QuadraticAlgebra R a b) ^ n :=
+  (algebraMap R (QuadraticAlgebra R a b)).map_pow r n
+
+theorem coe_commutes (r : R) (x : QuadraticAlgebra R a b) :
+    (r : QuadraticAlgebra R a b) * x = x * (r : QuadraticAlgebra R a b) :=
+  Algebra.commutes r x
+
+theorem coe_commute (r : R) (x : QuadraticAlgebra R a b) :
+    Commute (r : QuadraticAlgebra R a b) x :=
+  coe_commutes r x
+
+theorem coe_mul_eq_smul (r : R) (x : QuadraticAlgebra R a b) :
+    (r * x : QuadraticAlgebra R a b) = r • x := Algebra.smul_def r x |>.symm
+
+theorem mul_coe_eq_smul (r : R) (x : QuadraticAlgebra R a b) :
+    (x * r : QuadraticAlgebra R a b) = r • x := by
+  rw [mul_comm, coe_mul_eq_smul r x]
+
+@[norm_cast, simp]
+theorem coe_algebraMap : ⇑(algebraMap R (QuadraticAlgebra R a b)) = coe := rfl
+
+theorem smul_coe (r1 r2 : R) : r1 • (r2 : QuadraticAlgebra R a b) = ↑(r1 * r2) := by
+  rw [coe_mul, coe_mul_eq_smul]
+
+end
 
 end QuadraticAlgebra
