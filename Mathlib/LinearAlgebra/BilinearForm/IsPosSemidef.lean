@@ -33,6 +33,8 @@ Generalize these definitions to sesquilinear forms.
 bilinear form, positive, semidefinite
 -/
 
+open Module
+
 variable {E n : Type*} [AddCommMonoid E] [Module ℝ E] (f : LinearMap.BilinForm ℝ E)
     (b : Basis n ℝ E)
 
