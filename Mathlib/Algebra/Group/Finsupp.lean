@@ -120,6 +120,9 @@ lemma embDomain_add (f : ι ↪ F) (v w : ι →₀ M) :
 lemma single_add (a : ι) (b₁ b₂ : M) : single a (b₁ + b₂) = single a b₁ + single a b₂ :=
   (zipWith_single_single _ _ _ _ _).symm
 
+lemma single_add_apply (a : α) (m₁ m₂ : M) (b : α) :
+    single a (m₁ + m₂) b = single a m₁ b + single a m₂ b := by simp
+
 lemma support_single_add {a : ι} {b : M} {f : ι →₀ M} (ha : a ∉ f.support) (hb : b ≠ 0) :
     support (single a b + f) = cons a f.support ha := by
   classical
