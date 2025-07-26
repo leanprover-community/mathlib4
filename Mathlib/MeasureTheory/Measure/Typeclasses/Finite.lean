@@ -158,14 +158,6 @@ theorem ae_mem_iff_measure_eq [IsFiniteMeasure μ] {s : Set α} (hs : NullMeasur
     (∀ᵐ a ∂μ, a ∈ s) ↔ μ s = μ univ :=
   ae_iff_measure_eq hs
 
-lemma Measure.measure_inter_eq_of_ae [IsFiniteMeasure μ] {s t : Set α} (hs : MeasurableSet s)
-    (ht : NullMeasurableSet t μ) (h : ∀ᵐ a ∂μ, a ∈ t) :
-    μ (t ∩ s) = μ s := by
-  rw [Measure.measure_inter_eq_of_measure_eq hs _ (Set.subset_univ _) (measure_ne_top _ _),
-    Set.univ_inter]
-  rwa [ae_iff_measure_eq] at h
-  exact ht
-
 lemma tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint
     {X : Type*} [MeasurableSpace X] {μ : Measure X} [IsFiniteMeasure μ]
     {Es : ℕ → Set X} (Es_mble : ∀ i, NullMeasurableSet (Es i) μ)
