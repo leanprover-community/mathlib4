@@ -11,7 +11,7 @@ import Mathlib.Order.CompletePartialOrder
 
 The goal of this file is to prove the theorem `pair_reduction` which is used to prove a
 Kolmogorov–Chentsov theorem for general metric spaces. Given pseudometric spaces `T` and `E`,
-`c > 0`, and a finite subset `J` of `T` such that `|J| ≤ aⁿ` for some `a > 1` and `n : ℕ`,
+`c ≥ 0`, and a finite subset `J` of `T` such that `|J| ≤ aⁿ` for some `a ≥ 0` and `n : ℕ`,
 `pair_reduction` states that there exists a set `K ⊆ J²` such that for any function `f : T → E`:
 
 1. `|K| ≤ a|J|`
@@ -26,7 +26,9 @@ set of size up to `|J|²`) to bounding a supremum over a set of points with size
 
 open scoped ENNReal NNReal Finset
 
-variable {T : Type*} [PseudoEMetricSpace T] {a c : ℝ≥0∞} {n : ℕ} {V : Finset T} {t : T}
+variable {T : Type*} [PseudoEMetricSpace T] {a c : ℝ≥0∞} {n : ℕ} {V J : Finset T} {t : T}
+
+namespace pairReduction
 
 lemma exists_radius_le (t : T) (V : Finset T) (ha : 1 < a) (c : ℝ≥0∞) :
     ∃ r : ℕ, 1 ≤ r ∧ #(V.filter fun x ↦ edist t x ≤ r * c) ≤ a ^ r := by
@@ -107,8 +109,6 @@ def logSizeBallSeq (J : Finset T) (hJ : J.Nonempty) (a c : ℝ≥0∞) : ℕ →
       { finset := V',
         point := t',
         radius := logSizeRadius t' V' a c })
-
-variable {J : Finset T}
 
 lemma finset_logSizeBallSeq_zero (hJ : J.Nonempty) :
     (logSizeBallSeq J hJ a c 0).finset = J := rfl
@@ -387,6 +387,11 @@ lemma iSup_edist_pairSet {E : Type*} [PseudoEMetricSpace E] (ha : 1 < a) (f : T 
   rw [edist_comm]
   apply add_le_add (sup_bound hsP) (sup_bound htP)
 
+end pairReduction
+
+variable [DecidableEq T]
+
+open pairReduction in
 theorem pair_reduction (hJ_card : #J ≤ a ^ n) (ha : 1 < a)
     (E : Type*) [PseudoEMetricSpace E] :
     ∃ K : Finset (T × T), K ⊆ J.product J
