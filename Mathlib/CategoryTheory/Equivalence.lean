@@ -67,10 +67,11 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 We define an equivalence between `C` and `D`, with notation `C ≌ D`, as a half-adjoint equivalence:
 a pair of functors `F : C ⥤ D` and `G : D ⥤ C` with a unit `η : 𝟭 C ≅ F ⋙ G` and counit
 `ε : G ⋙ F ≅ 𝟭 D`, such that the natural isomorphisms `η` and `ε` satisfy the triangle law for
-`F`: namely, `Fη ≫ εF = 𝟙 F`. Or, more informally, the composite `F ⟶ FGF ⟶ F` is the identity.
+`F`: namely, `Fη ≫ εF = 𝟙 F`. Or, in other words, the composite `F` ⟶ `F ⋙ G ⋙ F` ⟶ `F` is the
+identity.
 
 In `unit_inverse_comp`, we show that this is sufficient to establish a full adjoint
-equivalence. I.e., the composite `G ⟶ GFG ⟶ G` is also the identity.
+equivalence. I.e., the composite `G` ⟶ `G ⋙ F ⋙ G` ⟶ `G` is also the identity.
 
 The triangle equation `functor_unitIso_comp` is written as a family of equalities between
 morphisms. It is more complicated if we write it as an equality of natural transformations, because
