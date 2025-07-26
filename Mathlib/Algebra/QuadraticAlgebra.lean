@@ -29,7 +29,8 @@ Quadratic algebra, quadratic extension
 universe u
 
 /-- Quadratic algebra over a type with fixed coefficient where $i^2 = a + bi$, implemented as
-a structure with two fields, `re` and `im`. -/
+a structure with two fields, `re` and `im`. When `R` is a commutative ring, this is isomorphic to
+`R[X]/(X^2-b*X-a)`. -/
 @[ext]
 structure QuadraticAlgebra (R : Type u) (a b : R) : Type u where
   /-- Real part of an element in quadratic algebra -/
