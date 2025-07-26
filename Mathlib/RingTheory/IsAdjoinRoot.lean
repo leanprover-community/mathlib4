@@ -265,7 +265,7 @@ protected def isAdjoinRoot : IsAdjoinRoot (AdjoinRoot f) f where
 powerful than `AdjoinRoot.isAdjoinRoot`. -/
 protected def isAdjoinRootMonic (hf : Monic f) : IsAdjoinRootMonic (AdjoinRoot f) f where
   __ := AdjoinRoot.isAdjoinRoot f
-  Monic := hf
+  monic := hf
 
 @[simp]
 theorem isAdjoinRoot_map_eq_mk : (AdjoinRoot.isAdjoinRoot f).map = AdjoinRoot.mk f := rfl
@@ -292,12 +292,12 @@ variable (h : IsAdjoinRootMonic S f)
 open IsAdjoinRoot
 
 theorem map_modByMonic (g : R[X]) : h.map (g %ₘ f) = h.map g := by
-  rw [← RingHom.sub_mem_ker_iff, mem_ker_map, modByMonic_eq_sub_mul_div _ h.Monic, sub_right_comm,
+  rw [← RingHom.sub_mem_ker_iff, mem_ker_map, modByMonic_eq_sub_mul_div _ h.monic, sub_right_comm,
     sub_self, zero_sub, dvd_neg]
   exact ⟨_, rfl⟩
 
 theorem modByMonic_repr_map (g : R[X]) : h.repr (h.map g) %ₘ f = g %ₘ f :=
-  modByMonic_eq_of_dvd_sub h.Monic <| by rw [← h.mem_ker_map, RingHom.sub_mem_ker_iff, map_repr]
+  modByMonic_eq_of_dvd_sub h.monic <| by rw [← h.mem_ker_map, RingHom.sub_mem_ker_iff, map_repr]
 
 /-- `IsAdjoinRoot.modByMonicHom` sends the equivalence class of `f` mod `g` to `f %ₘ g`. -/
 def modByMonicHom : S →ₗ[R] R[X] where
@@ -478,7 +478,7 @@ theorem coeff_injective : Function.Injective h.coeff := fun _ _ hxy =>
   h.ext_elem fun _ _ => hxy ▸ rfl
 
 theorem isIntegral_root : IsIntegral R h.root :=
-  ⟨f, h.Monic, h.aeval_root⟩
+  ⟨f, h.monic, h.aeval_root⟩
 
 end IsAdjoinRootMonic
 
