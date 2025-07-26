@@ -542,7 +542,7 @@ theorem Measure.FiniteAtFilter.integrableAtFilter {f : α → E} {l : Filter α}
     hf.imp fun C hC => eventually_smallSets.2 ⟨_, hC, fun t => id⟩
   rcases (hfm.eventually.and (hμ.eventually.and hC)).exists_measurable_mem_of_smallSets with
     ⟨s, hsl, hsm, hfm, hμ, hC⟩
-  refine ⟨s, hsl, ⟨hfm, HasFiniteIntegral.restrict_of_bounded hμ (C := C) ?_⟩⟩
+  refine ⟨s, hsl, ⟨hfm, .restrict_of_bounded hμ (C := C) ?_⟩⟩
   rw [ae_restrict_eq hsm, eventually_inf_principal]
   exact Eventually.of_forall hC
 
@@ -566,7 +566,7 @@ alias _root_.Filter.Tendsto.integrableAtFilter :=
 lemma Measure.integrableOn_of_bounded {f : α → E} (s_finite : μ s ≠ ∞)
     (f_mble : AEStronglyMeasurable f μ) {M : ℝ} (f_bdd : ∀ᵐ a ∂(μ.restrict s), ‖f a‖ ≤ M) :
     IntegrableOn f s μ :=
-  ⟨f_mble.restrict, HasFiniteIntegral.restrict_of_bounded (C := M) s_finite.lt_top f_bdd⟩
+  ⟨f_mble.restrict, .restrict_of_bounded (C := M) s_finite.lt_top f_bdd⟩
 
 theorem integrable_add_of_disjoint {f g : α → E} (h : Disjoint (support f) (support g))
     (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :

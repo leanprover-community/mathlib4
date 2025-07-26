@@ -211,7 +211,7 @@ alias hasFiniteIntegral_of_bounded := HasFiniteIntegral.of_bounded
 theorem HasFiniteIntegral.of_finite [Finite α] [IsFiniteMeasure μ] {f : α → β} :
     HasFiniteIntegral f μ :=
   let ⟨_⟩ := nonempty_fintype α
-  HasFiniteIntegral.of_bounded <| ae_of_all μ <| norm_le_pi_norm f
+  .of_bounded <| ae_of_all μ <| norm_le_pi_norm f
 
 theorem HasFiniteIntegral.mono_measure {f : α → ε} (h : HasFiniteIntegral f ν) (hμ : μ ≤ ν) :
     HasFiniteIntegral f μ :=
