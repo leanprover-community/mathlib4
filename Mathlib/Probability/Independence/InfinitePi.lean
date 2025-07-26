@@ -17,7 +17,7 @@ There are several possible measurability assumptions:
 Although the first two options are equivalent, the last two are not if the index set is not
 countable. Therefore we first prove the third case `iIndepFun_iff_map_fun_eq_infinitePi_map₀`,
 then deduce the fourth case in `iIndepFun_iff_map_fun_eq_infinitePi_map₀'` (assuming the index
-type is countable), and we prove the first case in ``iIndepFun_iff_map_fun_eq_infinitePi_map`.
+type is countable), and we prove the first case in `iIndepFun_iff_map_fun_eq_infinitePi_map`.
 -/
 
 open MeasureTheory Measure ProbabilityTheory
@@ -25,18 +25,18 @@ open MeasureTheory Measure ProbabilityTheory
 namespace ProbabilityTheory
 
 variable {ι Ω : Type*} {mΩ : MeasurableSpace Ω} {μ : Measure Ω} [IsProbabilityMeasure μ]
-    {𝒳 : ι → Type*} {m𝒳 : ∀ i, MeasurableSpace (𝒳 i)} {X : Π i, Ω → 𝒳 i}
+    {𝓧 : ι → Type*} {m𝓧 : ∀ i, MeasurableSpace (𝓧 i)} {X : Π i, Ω → 𝓧 i}
 
 /-- Random variables are independent iff their joint distribution is the product measure. This
 is a version where the random variable `ω ↦ (Xᵢ(ω))ᵢ` is almost everywhere measurable.
-See `iIndepFun_iff_map_fun_eq_infinitePi_map₀` -/
+See `iIndepFun_iff_map_fun_eq_infinitePi_map₀'` for a version which only assumes that
+each `Xᵢ` is almost everywhere measurable and that `ι` is countable. -/
 lemma iIndepFun_iff_map_fun_eq_infinitePi_map₀ (mX : AEMeasurable (fun ω i ↦ X i ω) μ) :
     haveI _ i := isProbabilityMeasure_map (mX.eval i)
     iIndepFun X μ ↔ μ.map (fun ω i ↦ X i ω) = infinitePi (fun i ↦ μ.map (X i)) where
   mp h := by
-    haveI _ i := isProbabilityMeasure_map (mX.eval i)
-    apply eq_infinitePi
-    intro s t ht
+    have _ i := isProbabilityMeasure_map (mX.eval i)
+    refine eq_infinitePi _ fun s t ht ↦ ?_
     rw [iIndepFun_iff_finite] at h
     have : s.toSet.pi t = s.restrict ⁻¹' ((@Set.univ s ).pi fun i ↦ t i) := by ext; simp
     rw [this, ← map_apply, AEMeasurable.map_map_of_aemeasurable]

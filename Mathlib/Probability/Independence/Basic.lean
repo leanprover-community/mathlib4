@@ -583,7 +583,7 @@ alias ⟨iIndepFun.measure_inter_preimage_eq_mul, _⟩ := iIndepFun_iff_measure_
 
 theorem iIndepFun_congr {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
     {f g : Π i, Ω → β i} (h : ∀ i, f i =ᵐ[μ] g i) :
-    iIndepFun f μ ↔ iIndepFun g μ := Kernel.iIndepFun_congr_iff (by simp [h])
+    iIndepFun f μ ↔ iIndepFun g μ := Kernel.iIndepFun_congr' (by simp [h])
 
 alias ⟨iIndepFun.congr, _⟩ := iIndepFun_congr
 
