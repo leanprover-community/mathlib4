@@ -31,7 +31,7 @@ braiding and associating isomorphisms, and the product comparison morphism.
 
 universe v v₁ u u₁ u₂
 
-open CategoryTheory
+open CategoryTheory Category
 
 namespace CategoryTheory.Limits
 
@@ -387,7 +387,7 @@ theorem BinaryFan.isLimit_iff_isIso_fst {X Y : C} (h : IsTerminal Y) (c : Binary
     obtain ⟨l, hl, -⟩ := BinaryFan.IsLimit.lift' H (𝟙 X) (h.from X)
     exact
       ⟨⟨l,
-          BinaryFan.IsLimit.hom_ext H (by simpa [hl, -Category.comp_id] using Category.comp_id _)
+          BinaryFan.IsLimit.hom_ext H (by simpa [hl, -comp_id] using comp_id _)
             (h.hom_ext _ _),
           hl⟩⟩
   · intro
@@ -408,15 +408,15 @@ noncomputable def BinaryFan.isLimitCompLeftIso {X Y X' : C} (c : BinaryFan X Y) 
   fapply BinaryFan.isLimitMk
   · exact fun s => h.lift (BinaryFan.mk (s.fst ≫ inv f) s.snd)
   · intro s -- Porting note: simp timed out here
-    simp only [Category.comp_id,BinaryFan.π_app_left,IsIso.inv_hom_id,
-      BinaryFan.mk_fst,IsLimit.fac_assoc,Category.assoc]
+    simp only [comp_id,BinaryFan.π_app_left,IsIso.inv_hom_id,
+      BinaryFan.mk_fst,IsLimit.fac_assoc,assoc]
   · intro s -- Porting note: simp timed out here
     simp only [BinaryFan.π_app_right,BinaryFan.mk_snd,IsLimit.fac]
   · intro s m e₁ e₂
      -- Porting note: simpa timed out here also
     apply BinaryFan.IsLimit.hom_ext h
     · simpa only
-      [BinaryFan.π_app_left,BinaryFan.mk_fst,Category.assoc,IsLimit.fac,IsIso.eq_comp_inv]
+      [BinaryFan.π_app_left,BinaryFan.mk_fst,assoc,IsLimit.fac,IsIso.eq_comp_inv]
     · simpa only [BinaryFan.π_app_right,BinaryFan.mk_snd,IsLimit.fac]
 
 /-- If `Y' ≅ Y`, then `X x Y` also is the product of `X` and `Y'`. -/
@@ -439,9 +439,9 @@ theorem BinaryCofan.isColimit_iff_isIso_inl {X Y : C} (h : IsInitial Y) (c : Bin
   · rintro ⟨H⟩
     obtain ⟨l, hl, -⟩ := BinaryCofan.IsColimit.desc' H (𝟙 X) (h.to X)
     refine ⟨⟨l, hl, BinaryCofan.IsColimit.hom_ext H (?_) (h.hom_ext _ _)⟩⟩
-    rw [Category.comp_id]
+    rw [comp_id]
     have e : (inl c ≫ l) ≫ inl c = 𝟙 X ≫ inl c := congrArg (·≫inl c) hl
-    rwa [Category.assoc,Category.id_comp] at e
+    rwa [assoc,id_comp] at e
   · intro
     exact
       ⟨BinaryCofan.IsColimit.mk _ (fun f _ => inv c.inl ≫ f)
@@ -463,7 +463,7 @@ noncomputable def BinaryCofan.isColimitCompLeftIso {X Y X' : C} (c : BinaryCofan
   · intro s
     -- Porting note: simp timed out here too
     simp only [IsColimit.fac,BinaryCofan.ι_app_left,
-      Category.assoc,BinaryCofan.mk_inl,IsIso.hom_inv_id_assoc]
+      assoc,BinaryCofan.mk_inl,IsIso.hom_inv_id_assoc]
   · intro s
     -- Porting note: simp timed out here too
     simp only [IsColimit.fac,BinaryCofan.ι_app_right,BinaryCofan.mk_inr]
@@ -472,7 +472,7 @@ noncomputable def BinaryCofan.isColimitCompLeftIso {X Y X' : C} (c : BinaryCofan
     · rw [← cancel_epi f]
     -- Porting note: simp timed out here too
       simpa only [IsColimit.fac,BinaryCofan.ι_app_left,eq_self_iff_true,
-      Category.assoc,BinaryCofan.mk_inl,IsIso.hom_inv_id_assoc] using e₁
+      assoc,BinaryCofan.mk_inl,IsIso.hom_inv_id_assoc] using e₁
     -- Porting note: simp timed out here too
     · simpa only [IsColimit.fac,BinaryCofan.ι_app_right,eq_self_iff_true,BinaryCofan.mk_inr]
 
@@ -526,8 +526,8 @@ noncomputable def prodIsProd (X Y : C) [HasBinaryProduct X Y] :
     IsLimit (BinaryFan.mk (prod.fst : X ⨯ Y ⟶ X) prod.snd) :=
   (limit.isLimit _).ofIsoLimit (Cones.ext (Iso.refl _) (fun ⟨u⟩ => by
     cases u
-    · dsimp; simp only [Category.id_comp]; rfl
-    · dsimp; simp only [Category.id_comp]; rfl
+    · dsimp; simp only [id_comp]; rfl
+    · dsimp; simp only [id_comp]; rfl
   ))
 
 /-- The binary cofan constructed from the coprojection maps is a colimit. -/
@@ -535,8 +535,8 @@ noncomputable def coprodIsCoprod (X Y : C) [HasBinaryCoproduct X Y] :
     IsColimit (BinaryCofan.mk (coprod.inl : X ⟶ X ⨿ Y) coprod.inr) :=
   (colimit.isColimit _).ofIsoColimit (Cocones.ext (Iso.refl _) (fun ⟨u⟩ => by
     cases u
-    · dsimp; simp only [Category.comp_id]
-    · dsimp; simp only [Category.comp_id]
+    · dsimp; simp only [comp_id]
+    · dsimp; simp only [comp_id]
   ))
 
 @[ext 1100]
@@ -638,7 +638,7 @@ theorem prod.comp_lift {V W X Y : C} [HasBinaryProduct X Y] (f : V ⟶ W) (g : W
     f ≫ prod.lift g h = prod.lift (f ≫ g) (f ≫ h) := by ext <;> simp
 
 theorem prod.comp_diag {X Y : C} [HasBinaryProduct Y Y] (f : X ⟶ Y) :
-    f ≫ diag Y = prod.lift f f := by simp
+    f ≫ diag Y = lift f f := by simp
 
 @[reassoc (attr := simp)]
 theorem prod.map_fst {W X Y Z : C} [HasBinaryProduct W X] [HasBinaryProduct Y Z] (f : W ⟶ Y)
@@ -657,6 +657,10 @@ theorem prod.map_id_id {X Y : C} [HasBinaryProduct X Y] : prod.map (𝟙 X) (�
 @[simp]
 theorem prod.lift_fst_snd {X Y : C} [HasBinaryProduct X Y] :
     prod.lift prod.fst prod.snd = 𝟙 (X ⨯ Y) := by ext <;> simp
+
+@[simp]
+lemma prod.lift_comp_fst_snd {X Y Z : C} [HasBinaryProduct Y Z] (f : X ⟶ Y ⨯ Z) :
+    prod.lift (f ≫ prod.fst) (f ≫ prod.snd) = f := by ext <;> simp
 
 @[reassoc (attr := simp)]
 theorem prod.lift_map {V W X Y Z : C} [HasBinaryProduct W X] [HasBinaryProduct Y Z] (f : V ⟶ W)
@@ -759,6 +763,10 @@ theorem coprod.map_id_id {X Y : C} [HasBinaryCoproduct X Y] : coprod.map (𝟙 X
 @[simp]
 theorem coprod.desc_inl_inr {X Y : C} [HasBinaryCoproduct X Y] :
     coprod.desc coprod.inl coprod.inr = 𝟙 (X ⨿ Y) := by ext <;> simp
+
+@[simp]
+lemma coprod.desc_comp_inl_inr {X Y Z : C} [HasBinaryCoproduct X Y] (f : X ⨿ Y ⟶ Z) :
+    coprod.desc (coprod.inl ≫ f) (coprod.inr ≫ f) = f := by ext <;> simp
 
 -- The simp linter says simp can prove the reassoc version of this lemma.
 @[reassoc, simp]
@@ -929,7 +937,7 @@ theorem prod.leftUnitor_hom_naturality [HasBinaryProducts C] (f : X ⟶ Y) :
 @[reassoc]
 theorem prod.leftUnitor_inv_naturality [HasBinaryProducts C] (f : X ⟶ Y) :
     (prod.leftUnitor X).inv ≫ prod.map (𝟙 _) f = f ≫ (prod.leftUnitor Y).inv := by
-  rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, prod.leftUnitor_hom_naturality]
+  rw [Iso.inv_comp_eq, ← assoc, Iso.eq_comp_inv, prod.leftUnitor_hom_naturality]
 
 @[reassoc]
 theorem prod.rightUnitor_hom_naturality [HasBinaryProducts C] (f : X ⟶ Y) :
@@ -939,7 +947,7 @@ theorem prod.rightUnitor_hom_naturality [HasBinaryProducts C] (f : X ⟶ Y) :
 @[reassoc]
 theorem prod_rightUnitor_inv_naturality [HasBinaryProducts C] (f : X ⟶ Y) :
     (prod.rightUnitor X).inv ≫ prod.map f (𝟙 _) = f ≫ (prod.rightUnitor Y).inv := by
-  rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, prod.rightUnitor_hom_naturality]
+  rw [Iso.inv_comp_eq, ← assoc, Iso.eq_comp_inv, prod.rightUnitor_hom_naturality]
 
 theorem prod.triangle [HasBinaryProducts C] (X Y : C) :
     (prod.associator X (⊤_ C) Y).hom ≫ prod.map (𝟙 X) (prod.leftUnitor Y).hom =
@@ -1114,7 +1122,7 @@ theorem prodComparison_inv_natural (f : A ⟶ A') (g : B ⟶ B') [IsIso (prodCom
     [IsIso (prodComparison F A' B')] :
     inv (prodComparison F A B) ≫ F.map (prod.map f g) =
       prod.map (F.map f) (F.map g) ≫ inv (prodComparison F A' B') := by
-  rw [IsIso.eq_comp_inv, Category.assoc, IsIso.inv_comp_eq, prodComparison_natural]
+  rw [IsIso.eq_comp_inv, assoc, IsIso.inv_comp_eq, prodComparison_natural]
 
 /-- The natural isomorphism `F(A ⨯ -) ≅ FA ⨯ F-`, provided each `prodComparison F A B` is an
 isomorphism (as `B` changes).
@@ -1191,7 +1199,7 @@ theorem coprodComparison_inv_natural (f : A ⟶ A') (g : B ⟶ B') [IsIso (copro
     [IsIso (coprodComparison F A' B')] :
     inv (coprodComparison F A B) ≫ coprod.map (F.map f) (F.map g) =
       F.map (coprod.map f g) ≫ inv (coprodComparison F A' B') := by
-  rw [IsIso.eq_comp_inv, Category.assoc, IsIso.inv_comp_eq, coprodComparison_natural]
+  rw [IsIso.eq_comp_inv, assoc, IsIso.inv_comp_eq, coprodComparison_natural]
 
 /-- The natural isomorphism `FA ⨿ F- ≅ F(A ⨿ -)`, provided each `coprodComparison F A B` is an
 isomorphism (as `B` changes).
@@ -1226,7 +1234,7 @@ noncomputable def Over.coprod [HasBinaryCoproducts C] {A : C} : Over A ⥤ Over 
   obj f := Over.coprodObj f
   map k :=
     { app := fun g => Over.homMk (coprod.map k.left (𝟙 _)) (by
-        dsimp; rw [coprod.map_desc, Category.id_comp, Over.w k])
+        dsimp; rw [coprod.map_desc, id_comp, Over.w k])
       naturality := fun f g k => by
         ext
         simp }
