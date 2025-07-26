@@ -113,18 +113,16 @@ directly as
 ```
 (equivalence T L R B).congrRight.trans <| CategoricalPullback.functorEquiv R B X
 ```
-but this leads to unsatisfying unfoldings in practice: terms that mention `R ⊡ B`
+but this leads to unsatisfying unfoldings in practice, especially
+when using `@[simps!]`: terms that mention `R ⊡ B`
 keep appearing with this approach, while you don’t want to work with a
 categorical pullback square by constantly going through a generic model of the
 categorical pullback.
 Instead, we split the equivalence over several definitions to create a stronger
-abstraction barrier, and mark irreducible all of its "non-canonical" components,
-i.e the ones that might refer to `R ⊡ B`, so that the API is completely
-blind to the existence of a default categorical pullback.
-
-In situations where you know you have good lemmas for the fields of `functorEquiv`,
-you can `unseal` its various fields locally for proving the lemmas.
--/
+abstraction barrier, and mark `local irreducible` all of its "non-canonical"
+(i.e the ones that might refer to `R ⊡ B`) components when building the API,
+so that the API is completely blind to the existence of a default
+categorical pullback. -/
 
 namespace functorEquiv
 
@@ -143,18 +141,18 @@ def functor : (X ⥤ C₁) ⥤ CatCommSqOver R B X where
       snd := Functor.whiskerRight f L }
 
 /-- (impl.) The inverse direction of `FunctorEquiv`. -/
-private def inverse : CatCommSqOver R B X ⥤ (X ⥤ C₁) :=
+def inverse : CatCommSqOver R B X ⥤ (X ⥤ C₁) :=
   (equivalence T L R B|>.congrRight.trans <|
     CategoricalPullback.functorEquiv R B X).inverse
 
 /-- (impl.) The unit isomorphism of `functorEquiv`. -/
-private def unitIso :
+def unitIso :
     𝟭 (X ⥤ C₁) ≅ functor T L R B X ⋙ inverse T L R B X :=
   (equivalence T L R B|>.congrRight.trans <|
     CategoricalPullback.functorEquiv R B X).unitIso
 
 /-- (impl.) The first component of the counit isomorphism of `functorEquiv`. -/
-private def counitIsoAppFst
+def counitIsoAppFst
     (S : CatCommSqOver R B X) :
     (inverse T L R B X|>.obj S) ⋙ T ≅ S.fst :=
   CatCommSqOver.fstFunctor _ _ _|>.mapIso <|
@@ -162,14 +160,13 @@ private def counitIsoAppFst
       CategoricalPullback.functorEquiv R B X).counitIso.app S
 
 /-- (impl.) The second component of the counit isomorphism of `functorEquiv`. -/
-private def counitIsoAppSnd
+def counitIsoAppSnd
     (S : CatCommSqOver R B X) :
     ((inverse T L R B X).obj S) ⋙ L ≅ S.snd :=
   CatCommSqOver.sndFunctor _ _ _|>.mapIso <|
     (equivalence T L R B|>.congrRight.trans <|
       CategoricalPullback.functorEquiv R B X).counitIso.app S
 
-@[reassoc]
 private lemma counitCoherence_hom_app' (S : CatCommSqOver R B X) (x : X) :
     R.map ((counitIsoAppFst T L R B X S).hom.app x) ≫
       S.iso.hom.app x =
@@ -180,48 +177,42 @@ private lemma counitCoherence_hom_app' (S : CatCommSqOver R B X) (x : X) :
     congr_app ((equivalence T L R B|>.congrRight.trans <|
       CategoricalPullback.functorEquiv R B X).counitIso.app S).hom.w x
 
-attribute [irreducible] inverse counitIsoAppFst counitIsoAppSnd
-
-/-- (impl.) The component of the counit isomorphism of `functorEquiv`. -/
-private def counitIsoApp (S : CatCommSqOver R B X) :
-    (functor T L R B X).obj (inverse T L R B X|>.obj S) ≅ S :=
-  CategoricalPullback.mkIso
-    (counitIsoAppFst T L R B X S)
-    (counitIsoAppSnd T L R B X S)
-    (by
-      ext x
-      simp [counitCoherence_hom_app'])
-
 end functorEquiv
 
-unseal functorEquiv.inverse functorEquiv.counitIsoAppFst
-functorEquiv.counitIsoAppSnd in
 /-- The equivalence of categories `(X ⥤ C₁) ≌ CatCommSqOver R B X` when
 `C₁` is the top left corner of a categorical pullback square. The forward
 direction of this equivalence is the "canonical" functor while the inverse
 should be treated as mostly "opaque".
 This equivalence of categories realizes the universal property of categorical
-pullbacks, and should be the main object to work with. -/
+pullbacks, and should be the main object to work with.
+
+### Implementation note:
+When building general definitions using this equivalence, one should be
+very cautious about the usage of `@[simps!]`, and should always carefully
+check that it does not generate lemmas that unfold the inverse or
+the co/unit isomorphisms of this equivalence. A good hint that it did
+is the appearance of terms containing `CatPullbackSquare.equivalence` in the
+generated lemmas.
+If they do appear, one should locally `seal` the relevant declarations by doing
+```
+seal functorEquiv.inverse functorEquiv.counitIsoAppFst
+functorEquiv.counitIsoAppSnd functorEquiv.unitIso
+```
+-/
 @[simps! functor_obj_fst functor_obj_snd functor_obj_iso
 functor_map_fst functor_map_snd]
 def functorEquiv : (X ⥤ C₁) ≌ CatCommSqOver R B X where
   functor := functorEquiv.functor T L R B X
   inverse := functorEquiv.inverse T L R B X
   counitIso := NatIso.ofComponents
-    (functorEquiv.counitIsoApp T L R B X ·)
-    (fun {x y} f ↦ by
-      dsimp
-      have e :
-        (functorEquiv.counitIsoApp T L R B X y) =
-          ((equivalence T L R B).congrRight.trans <|
-            CategoricalPullback.functorEquiv R B X).counitIso.app y := rfl
-      have e' :
-        (functorEquiv.counitIsoApp T L R B X x) =
-          ((equivalence T L R B).congrRight.trans <|
-            CategoricalPullback.functorEquiv R B X).counitIso.app x := rfl
-      rw [e, e']
-      exact
-        ((equivalence T L R B).congrRight.trans <|
+    (fun S ↦ CategoricalPullback.mkIso
+      (functorEquiv.counitIsoAppFst T L R B X S)
+      (functorEquiv.counitIsoAppSnd T L R B X S)
+      (by
+        ext x
+        simp [functorEquiv.counitCoherence_hom_app']))
+    (fun {x y} f ↦
+      ((equivalence T L R B).congrRight.trans <|
           CategoricalPullback.functorEquiv R B X).counitIso.hom.naturality f)
   unitIso := functorEquiv.unitIso T L R B X
   functor_unitIso_comp x :=
@@ -328,10 +319,13 @@ def functorEquivInverseWhiskeringIsoSnd :
 
 section Pseudofunctoriality
 
+seal functorEquiv.inverse functorEquiv.counitIsoAppFst functorEquiv.counitIsoAppSnd
+
 open CatCommSqOver
 
 /-- The equivalence `functorEquiv` identifies the functoriality
 in `X` of `X ⥤ C₁` and `CatCommSqOver R B X`. -/
+@[simps!]
 instance whiskeringLeftFunctorEquivFunctorSquare
     {X : Type u₅} {Y : Type u₆} [Category.{v₅} X] [Category.{v₆} Y]
     (U : X ⥤ Y) :
@@ -348,6 +342,7 @@ instance whiskeringLeftFunctorEquivFunctorSquare
 
 /-- The equivalence `functorEquiv` identifies the functoriality
 on `X` of `X ⥤ C₁` and `CatCommSqOver F G X` (inverse direction). -/
+@[simps!]
 instance precomposeToFunctorToCategoricalPullbackSquare
     {X : Type u₅} {Y : Type u₆} [Category.{v₅} X] [Category.{v₆} Y]
     (U : X ⥤ Y) :
@@ -369,6 +364,7 @@ variable {R B} {R' B'}
 /-- Given a (not-necessarily pullback) `CatCommSq T L R B`, a
 `CatCospanTransform ψ R B R' B'` and a `CatPullbackSquare T' L' R' B'`,
 there is an induced functor between the top left corners of the squares. -/
+@[simps]
 def functorOfTransform :
     (CatCospanTransform R B R' B') ⥤ (C₁ ⥤ D₁) where
   obj ψ := functorEquiv T' L' R' B' C₁|>.inverse.obj <|
@@ -376,6 +372,7 @@ def functorOfTransform :
   map α := functorEquiv T' L' R' B' C₁|>.inverse.map <|
     transform _|>.map α|>.app <| .ofSquare T L R B
 
+@[simps!]
 instance functorOfTransformObjFstSquare (ψ : CatCospanTransform R B R' B') :
     CatCommSq T (functorOfTransform T L T' L'|>.obj ψ) ψ.left T' where
   iso := (CatCommSqOver.fstFunctor _ _ _|>.mapIso <|
@@ -497,7 +494,6 @@ end functorOfTransform_map
 
 variable (R B) in
 /-- `functorOfTransform` repects identities up to isomorphism. -/
-@[simps!]
 def functorOfTransformObjId :
     (functorOfTransform T L T L).obj (.id R B) ≅ 𝟭 C₁ :=
   (functorEquiv T L R B C₁|>.inverse.mapIso <|
