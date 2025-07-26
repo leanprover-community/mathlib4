@@ -7,7 +7,8 @@ import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Ring.GrindInstances
 import Mathlib.Algebra.Ring.Commute
 import Mathlib.Algebra.Ring.Invertible
-import Mathlib.Order.Synonym
+import Mathlib.Algebra.Order.Group.Synonym
+import Mathlib.Data.Nat.Cast.Synonym
 
 /-!
 # Lemmas about division (semi)rings and (semi)fields
@@ -279,11 +280,35 @@ end Function.Injective
 
 namespace OrderDual
 
-instance instRatCast [RatCast K] : RatCast Kᵒᵈ := ‹_›
-instance instDivisionSemiring [DivisionSemiring K] : DivisionSemiring Kᵒᵈ := ‹_›
-instance instDivisionRing [DivisionRing K] : DivisionRing Kᵒᵈ := ‹_›
-instance instSemifield [Semifield K] : Semifield Kᵒᵈ := ‹_›
-instance instField [Field K] : Field Kᵒᵈ := ‹_›
+instance instRatCast [RatCast K] : RatCast Kᵒᵈ where
+  ratCast q := toDual q
+
+instance instDivisionSemiring [DivisionSemiring K] : DivisionSemiring Kᵒᵈ where
+  left_distrib _ _ _ := congrArg toDual (left_distrib _ _ _)
+  right_distrib _ _ _ := congrArg toDual (right_distrib _ _ _)
+  zero_mul _ := congrArg toDual (zero_mul _)
+  mul_zero _ := congrArg toDual (mul_zero _)
+  inv_zero := congrArg toDual (inv_zero)
+  mul_inv_cancel _ h := congrArg toDual <| mul_inv_cancel₀ (h ∘ congrArg toDual)
+  nnqsmul q k := toDual (q • k.ofDual)
+  nnqsmul_def _ _ := congrArg toDual (DivisionSemiring.nnqsmul_def _ _)
+  nnratCast q := toDual q
+  nnratCast_def _ := congrArg toDual (DivisionSemiring.nnratCast_def _)
+
+instance instDivisionRing [DivisionRing K] : DivisionRing Kᵒᵈ where
+  __ : AddCommGroup (Kᵒᵈ) := inferInstance
+  __ : DivisionSemiring (Kᵒᵈ) := inferInstance
+  intCast z := toDual z
+  intCast_ofNat _ := congrArg toDual (Ring.intCast_ofNat _)
+  intCast_negSucc _ := congrArg toDual (Ring.intCast_negSucc _)
+  ratCast q := toDual q
+  ratCast_def q := congrArg toDual (DivisionRing.ratCast_def q)
+  qsmul q k := toDual (q • k.ofDual)
+  qsmul_def _ _ := congrArg toDual (DivisionRing.qsmul_def _ _)
+
+instance instSemifield [Semifield K] : Semifield Kᵒᵈ where
+
+instance instField [Field K] : Field Kᵒᵈ where
 
 end OrderDual
 

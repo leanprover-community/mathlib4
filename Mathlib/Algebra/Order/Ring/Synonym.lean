@@ -18,39 +18,61 @@ variable {R : Type*}
 /-! ### Order dual -/
 
 
-instance [h : Distrib R] : Distrib Rᵒᵈ := h
+instance [Distrib R] : Distrib Rᵒᵈ where
+  left_distrib _ _ _ := congrArg OrderDual.toDual (left_distrib _ _ _)
+  right_distrib _ _ _ := congrArg OrderDual.toDual (right_distrib _ _ _)
 
-instance [Mul R] [Add R] [h : LeftDistribClass R] : LeftDistribClass Rᵒᵈ := h
+instance [Mul R] [Add R] [LeftDistribClass R] : LeftDistribClass Rᵒᵈ where
+  left_distrib _ _ _ := congrArg OrderDual.toDual (left_distrib _ _ _)
 
-instance [Mul R] [Add R] [h : RightDistribClass R] : RightDistribClass Rᵒᵈ := h
+instance [Mul R] [Add R] [RightDistribClass R] : RightDistribClass Rᵒᵈ where
+  right_distrib _ _ _ := congrArg OrderDual.toDual (right_distrib _ _ _)
 
-instance [h : NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring Rᵒᵈ := h
+instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring Rᵒᵈ where
+  zero_add _ := congrArg OrderDual.toDual (zero_add _)
+  add_zero _ := congrArg OrderDual.toDual (add_zero _)
+  nsmul n r := .toDual (n • r.ofDual)
+  nsmul_zero _ := congrArg OrderDual.toDual (zero_nsmul _)
+  nsmul_succ _ _ := congrArg OrderDual.toDual (AddMonoid.nsmul_succ _ _)
+  zero_mul _ := congrArg OrderDual.toDual (zero_mul _)
+  mul_zero _ := congrArg OrderDual.toDual (mul_zero _)
 
-instance [h : NonUnitalSemiring R] : NonUnitalSemiring Rᵒᵈ := h
+instance [NonUnitalSemiring R] : NonUnitalSemiring Rᵒᵈ where
 
-instance [h : NonAssocSemiring R] : NonAssocSemiring Rᵒᵈ := h
+instance [NonAssocSemiring R] : NonAssocSemiring Rᵒᵈ where
 
-instance [h : Semiring R] : Semiring Rᵒᵈ := h
+instance [Semiring R] : Semiring Rᵒᵈ where
 
-instance [h : NonUnitalCommSemiring R] : NonUnitalCommSemiring Rᵒᵈ := h
+instance [NonUnitalCommSemiring R] : NonUnitalCommSemiring Rᵒᵈ where
 
-instance [h : CommSemiring R] : CommSemiring Rᵒᵈ := h
+instance [CommSemiring R] : CommSemiring Rᵒᵈ where
 
-instance [Mul R] [h : HasDistribNeg R] : HasDistribNeg Rᵒᵈ := h
+instance [Mul R] [HasDistribNeg R] : HasDistribNeg Rᵒᵈ where
+  neg_mul _ _ := congrArg OrderDual.toDual (neg_mul _ _)
+  mul_neg _ _ := congrArg OrderDual.toDual (mul_neg _ _)
 
-instance [h : NonUnitalNonAssocRing R] : NonUnitalNonAssocRing Rᵒᵈ := h
+instance [NonUnitalNonAssocRing R] : NonUnitalNonAssocRing Rᵒᵈ where
 
-instance [h : NonUnitalRing R] : NonUnitalRing Rᵒᵈ := h
+instance [NonUnitalRing R] : NonUnitalRing Rᵒᵈ where
 
-instance [h : NonAssocRing R] : NonAssocRing Rᵒᵈ := h
+instance [NonAssocRing R] : NonAssocRing Rᵒᵈ where
 
-instance [h : Ring R] : Ring Rᵒᵈ := h
+instance [Ring R] : Ring Rᵒᵈ where
+  __ : Semiring (Rᵒᵈ) := inferInstance
+  __ : AddGroup (Rᵒᵈ) := inferInstance
 
-instance [h : NonUnitalCommRing R] : NonUnitalCommRing Rᵒᵈ := h
+instance [NonUnitalCommRing R] : NonUnitalCommRing Rᵒᵈ where
 
-instance [h : CommRing R] : CommRing Rᵒᵈ := h
+instance [CommRing R] : CommRing Rᵒᵈ where
 
-instance [Ring R] [h : IsDomain R] : IsDomain Rᵒᵈ := h
+instance [Ring R] [IsDomain R] : IsDomain Rᵒᵈ where
+  mul_left_cancel_of_ne_zero hzero h :=
+    congrArg OrderDual.toDual (mul_left_cancel₀ (hzero ∘ congrArg OrderDual.toDual)
+      (congrArg OrderDual.ofDual h))
+  mul_right_cancel_of_ne_zero hzero h :=
+    congrArg OrderDual.toDual (mul_right_cancel₀ (hzero ∘ congrArg OrderDual.toDual)
+      (congrArg OrderDual.ofDual h))
+
 
 /-! ### Lexicographical order -/
 
