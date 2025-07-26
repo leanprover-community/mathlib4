@@ -62,7 +62,7 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
     (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i)) :
     LieIdeal K L where
     __ := ⨆ α : {α : Weight K H L // α.toLinear ∈ q ∧ α.IsNonZero},
-      IsKilling.sl2SubalgebraOfRoot_as_H_submodule α.1 α.2.2
+      IsKilling.sl2SubmoduleOfRoot α.1 α.2.2
     lie_mem := by
       intro x m hm
       have hx : x ∈ ⨆ χ : Weight K H L, genWeightSpace L χ := by
@@ -71,8 +71,8 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
       | mem χ x_χ hx_χ =>
         induction hm using LieSubmodule.iSup_induction' with
         | mem α m_α hm_α =>
-          have hm_α_original : m_α ∈ IsKilling.sl2SubalgebraOfRoot_as_H_submodule α.1 α.2.2 := hm_α
-          rw [IsKilling.sl2SubalgebraOfRoot_as_H_submodule_eq_sup] at hm_α
+          have hm_α_original : m_α ∈ IsKilling.sl2SubmoduleOfRoot α.1 α.2.2 := hm_α
+          rw [IsKilling.sl2SubmoduleOfRoot_eq_sup] at hm_α
           obtain ⟨m_αneg, hm_αneg, m_h, hm_h, hm_eq⟩ := Submodule.mem_sup.mp hm_α
           obtain ⟨m_pos, hm_pos, m_neg, hm_neg, hm_αneg_eq⟩ := Submodule.mem_sup.mp hm_αneg
 
@@ -128,7 +128,7 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
           · have h_chi_neg_alpha : χ.toLinear = -α.1.toLinear := by
               simp only [add_eq_zero_iff_eq_neg] at w_plus; exact w_plus
             apply LieSubmodule.mem_iSup_of_mem α
-            simp only [IsKilling.sl2SubalgebraOfRoot_as_H_submodule]
+            simp only [IsKilling.sl2SubmoduleOfRoot]
             have hx_χ_neg_alpha : x_χ ∈ genWeightSpace L (-α.1.toLinear) := by
               rw [← h_chi_neg_alpha]; exact hx_χ
             have hx_χ_in_sl2 : x_χ ∈ sl2SubalgebraOfRoot α.2.2 := by
@@ -149,7 +149,7 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
               exact ⟨0, c, 0, by simp [hc_proj]⟩
             have h_bracket_in_sl2 : ⁅x_χ, m_α⁆ ∈ sl2SubalgebraOfRoot α.2.2 := by
               have hm_α_in_sl2 : m_α ∈ sl2SubalgebraOfRoot α.2.2 := by
-                simp only [IsKilling.sl2SubalgebraOfRoot_as_H_submodule] at hm_α_original
+                simp only [IsKilling.sl2SubmoduleOfRoot] at hm_α_original
                 exact hm_α_original
               apply LieSubalgebra.lie_mem; exact hx_χ_in_sl2; exact hm_α_in_sl2
             exact h_bracket_in_sl2
@@ -157,7 +157,7 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
           · have h_chi_eq_alpha : χ.toLinear = α.1.toLinear := by
               simp only [sub_eq_zero] at w_minus; exact w_minus
             apply LieSubmodule.mem_iSup_of_mem α
-            simp only [IsKilling.sl2SubalgebraOfRoot_as_H_submodule]
+            simp only [IsKilling.sl2SubmoduleOfRoot]
             have hx_χ_alpha : x_χ ∈ genWeightSpace L α.1.toLinear := by
               rw [← h_chi_eq_alpha]; exact hx_χ
             have hx_χ_in_sl2 : x_χ ∈ sl2SubalgebraOfRoot α.2.2 := by
@@ -178,7 +178,7 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
               exact ⟨c, 0, 0, by simp [hc_proj]⟩
             have h_bracket_in_sl2 : ⁅x_χ, m_α⁆ ∈ sl2SubalgebraOfRoot α.2.2 := by
               have hm_α_in_sl2 : m_α ∈ sl2SubalgebraOfRoot α.2.2 := by
-                simp only [IsKilling.sl2SubalgebraOfRoot_as_H_submodule] at hm_α_original
+                simp only [IsKilling.sl2SubmoduleOfRoot] at hm_α_original
                 exact hm_α_original
               apply LieSubalgebra.lie_mem; exact hx_χ_in_sl2; exact hm_α_in_sl2
             exact h_bracket_in_sl2
@@ -190,12 +190,9 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
               have h_apply : (χ.toLinear : H → K) h = 0 := by rw [w_chi]; rfl
               exact h_apply.symm
             apply LieSubmodule.mem_iSup_of_mem α
-            simp only [IsKilling.sl2SubalgebraOfRoot_as_H_submodule]
-            have hm_α_base : m_α ∈ sl2SubalgebraOfRoot α.2.2 := by
-              simp only [IsKilling.sl2SubalgebraOfRoot_as_H_submodule] at hm_α_original
-              exact hm_α_original
-            exact IsKilling.sl2SubalgebraOfRoot_stable_under_H α.1 α.2.2 ⟨x_χ, hx_χ_in_H⟩ m_α
-              hm_α_base
+            simp only [IsKilling.sl2SubmoduleOfRoot]
+            rw [← (by rfl : ⁅(⟨x_χ, hx_χ_in_H⟩ : H), m_α⁆ = ⁅x_χ, m_α⁆)]
+            exact (IsKilling.sl2SubmoduleOfRoot α.1 α.2.2).lie_mem hm_α_original
 
           have hχ_nonzero : χ.IsNonZero := by
             intro h_zero
@@ -212,7 +209,7 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
             have h_plus_containment :
               genWeightSpace L (χ.toLinear + α.1.toLinear) ≤
               ⨆ β : {β : Weight K H L // β.toLinear ∈ q ∧ β.IsNonZero},
-                IsKilling.sl2SubalgebraOfRoot_as_H_submodule β.1 β.2.2 := by
+                IsKilling.sl2SubmoduleOfRoot β.1 β.2.2 := by
               by_cases h_plus_trivial : genWeightSpace L (χ.toLinear + α.1.toLinear) = ⊥
               · simp [h_plus_trivial]
               · let β : Weight K H L := {
@@ -239,15 +236,15 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
                 let β_indexed : {γ : Weight K H L // γ.toLinear ∈ q ∧ γ.IsNonZero} :=
                   ⟨β, hβ_in_index_set⟩
                 have β_term_in_supr :
-                    IsKilling.sl2SubalgebraOfRoot_as_H_submodule β β_indexed.property.right ≤
+                    IsKilling.sl2SubmoduleOfRoot β β_indexed.property.right ≤
                     ⨆ (γ : {γ : Weight K H L // γ.toLinear ∈ q ∧ γ.IsNonZero}),
-                    IsKilling.sl2SubalgebraOfRoot_as_H_submodule γ γ.property.right := by
+                    IsKilling.sl2SubmoduleOfRoot γ γ.property.right := by
                   have h := le_iSup (fun γ : {γ : Weight K H L // γ.toLinear ∈ q ∧ γ.IsNonZero} =>
-                    IsKilling.sl2SubalgebraOfRoot_as_H_submodule γ.1 γ.2.2) β_indexed
+                    IsKilling.sl2SubmoduleOfRoot γ.1 γ.2.2) β_indexed
                   exact h
                 have h_β_contains : genWeightSpace L (χ.toLinear + α.1.toLinear) ≤
-                    IsKilling.sl2SubalgebraOfRoot_as_H_submodule β β_indexed.property.right := by
-                  rw [IsKilling.sl2SubalgebraOfRoot_as_H_submodule_eq_sup]
+                    IsKilling.sl2SubmoduleOfRoot β β_indexed.property.right := by
+                  rw [IsKilling.sl2SubmoduleOfRoot_eq_sup]
                   apply le_sup_of_le_left
                   apply le_sup_of_le_left
                   have h_eq : β.toLinear = χ.toLinear + α.1.toLinear := rfl
@@ -264,7 +261,7 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
             have h_minus_containment :
               genWeightSpace L (χ.toLinear - α.1.toLinear) ≤
               ⨆ β : {β : Weight K H L // β.toLinear ∈ q ∧ β.IsNonZero},
-                IsKilling.sl2SubalgebraOfRoot_as_H_submodule β.1 β.2.2 := by
+                IsKilling.sl2SubmoduleOfRoot β.1 β.2.2 := by
               by_cases h_minus_trivial : genWeightSpace L (χ.toLinear - α.1.toLinear) = ⊥
               · simp [h_minus_trivial]
               · let β : Weight K H L := {
@@ -291,15 +288,15 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
                 let β_indexed : {γ : Weight K H L // γ.toLinear ∈ q ∧ γ.IsNonZero} :=
                   ⟨β, hβ_in_index_set⟩
                 have β_term_in_supr :
-                    IsKilling.sl2SubalgebraOfRoot_as_H_submodule β β_indexed.property.right ≤
+                    IsKilling.sl2SubmoduleOfRoot β β_indexed.property.right ≤
                     ⨆ (γ : {γ : Weight K H L // γ.toLinear ∈ q ∧ γ.IsNonZero}),
-                    IsKilling.sl2SubalgebraOfRoot_as_H_submodule γ γ.property.right := by
+                    IsKilling.sl2SubmoduleOfRoot γ γ.property.right := by
                   have h := le_iSup (fun γ : {γ : Weight K H L // γ.toLinear ∈ q ∧ γ.IsNonZero} =>
-                    IsKilling.sl2SubalgebraOfRoot_as_H_submodule γ.1 γ.2.2) β_indexed
+                    IsKilling.sl2SubmoduleOfRoot γ.1 γ.2.2) β_indexed
                   exact h
                 have h_β_contains : genWeightSpace L (χ.toLinear - α.1.toLinear) ≤
-                    IsKilling.sl2SubalgebraOfRoot_as_H_submodule β β_indexed.property.right := by
-                  rw [IsKilling.sl2SubalgebraOfRoot_as_H_submodule_eq_sup]
+                    IsKilling.sl2SubmoduleOfRoot β β_indexed.property.right := by
+                  rw [IsKilling.sl2SubmoduleOfRoot_eq_sup]
                   apply le_sup_of_le_left
                   apply le_sup_of_le_left
                   have h_eq : β.toLinear = χ.toLinear - α.1.toLinear := rfl
@@ -309,7 +306,7 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
             have h_chi_containment :
               genWeightSpace L χ.toLinear ≤
               ⨆ β : {β : Weight K H L // β.toLinear ∈ q ∧ β.IsNonZero},
-                IsKilling.sl2SubalgebraOfRoot_as_H_submodule β.1 β.2.2 := by
+                IsKilling.sl2SubmoduleOfRoot β.1 β.2.2 := by
               by_cases h_chi_trivial : genWeightSpace L χ.toLinear = ⊥
               · rw [h_chi_trivial]
                 simp
@@ -332,15 +329,15 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
                 let χ_indexed : {γ : Weight K H L // γ.toLinear ∈ q ∧ γ.IsNonZero} :=
                   ⟨χ, hχ_in_index_set⟩
                 have χ_term_in_supr :
-                    IsKilling.sl2SubalgebraOfRoot_as_H_submodule χ χ_indexed.property.right ≤
+                    IsKilling.sl2SubmoduleOfRoot χ χ_indexed.property.right ≤
                     ⨆ (γ : {γ : Weight K H L // γ.toLinear ∈ q ∧ γ.IsNonZero}),
-                    IsKilling.sl2SubalgebraOfRoot_as_H_submodule γ γ.property.right := by
+                    IsKilling.sl2SubmoduleOfRoot γ γ.property.right := by
                   have h := le_iSup (fun γ : {γ : Weight K H L // γ.toLinear ∈ q ∧ γ.IsNonZero} =>
-                    IsKilling.sl2SubalgebraOfRoot_as_H_submodule γ.1 γ.2.2) χ_indexed
+                    IsKilling.sl2SubmoduleOfRoot γ.1 γ.2.2) χ_indexed
                   exact h
                 have h_χ_contains : genWeightSpace L χ.toLinear ≤
-                    IsKilling.sl2SubalgebraOfRoot_as_H_submodule χ χ_indexed.property.right := by
-                  rw [IsKilling.sl2SubalgebraOfRoot_as_H_submodule_eq_sup]
+                    IsKilling.sl2SubmoduleOfRoot χ χ_indexed.property.right := by
+                  rw [IsKilling.sl2SubmoduleOfRoot_eq_sup]
                   apply le_sup_of_le_left
                   apply le_sup_of_le_left
                   rfl
@@ -351,7 +348,7 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
               genWeightSpace L (χ.toLinear - α.1.toLinear) ⊔
               genWeightSpace L χ.toLinear ≤
               ⨆ β : {β : Weight K H L // β.toLinear ∈ q ∧ β.IsNonZero},
-                IsKilling.sl2SubalgebraOfRoot_as_H_submodule β.1 β.2.2 := by
+                IsKilling.sl2SubmoduleOfRoot β.1 β.2.2 := by
               apply sup_le
               · apply sup_le
                 · exact h_plus_containment
