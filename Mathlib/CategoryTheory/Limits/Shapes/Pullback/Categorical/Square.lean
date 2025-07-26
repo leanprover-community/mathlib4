@@ -364,7 +364,6 @@ variable {R B} {R' B'}
 /-- Given a (not-necessarily pullback) `CatCommSq T L R B`, a
 `CatCospanTransform ψ R B R' B'` and a `CatPullbackSquare T' L' R' B'`,
 there is an induced functor between the top left corners of the squares. -/
-@[simps]
 def functorOfTransform :
     (CatCospanTransform R B R' B') ⥤ (C₁ ⥤ D₁) where
   obj ψ := functorEquiv T' L' R' B' C₁|>.inverse.obj <|
@@ -389,7 +388,7 @@ lemma functorOfTransform_obj_map_fst
       ψ.left.map (T.map f) ≫
       (CatCommSq.iso T (functorOfTransform T L T' L'|>.obj ψ)
         ψ.left T').hom.app _ := by
-  simp
+  simp [functorOfTransform]
 
 @[simps!]
 instance functorOfTransformObjSndSquare (ψ : CatCospanTransform R B R' B') :
@@ -408,7 +407,7 @@ lemma functorOfTransform_obj_map_snd
       ψ.right.map (L.map f) ≫
       (CatCommSq.iso L (functorOfTransform T L T' L'|>.obj ψ)
         ψ.right L').hom.app y := by
-  simp
+  simp [functorOfTransform]
 
 /-- The canonical square that expresses that `functorEquiv` maps
 (postcomposition by) `functorOfTransform` to `CatCommSqOver.transform`. -/
@@ -449,7 +448,7 @@ instance functorEquivFunctorWhiskeringFunctorOfTransformObjSquare
           simp only [← NatTrans.comp_app, ← comp_fst, ← comp_snd,
             Iso.inv_hom_id, Iso.hom_inv_id] at this
           simpa using this.symm ))
-      (fun {_ _} f ↦ by ext x <;> simp)
+      (fun {_ _} f ↦ by ext x <;> simp [functorOfTransform])
 
 /-- The horizontal inverse of
 `functorEquivFunctorWhiskeringFunctorOfTransformObjSquare`. -/
@@ -554,8 +553,8 @@ lemma functorOfTransformObjComp_inv_app_fst (ψ : CatCospanTransform R B R' B')
         ψ.left T').inv.app x) ≫
       (CatCommSq.iso T (functorOfTransform T L T'' L''|>.obj <| ψ.comp ψ')
         (ψ.comp ψ').left T'').hom.app x := by
-  simpa [← Functor.map_inv, -IsIso.comp_inv_eq, -IsIso.eq_comp_inv,
-    -IsIso.eq_inv_comp, ← Iso.app_hom] using
+  simpa [functorOfTransform, ← Functor.map_inv, -IsIso.comp_inv_eq,
+    -IsIso.eq_comp_inv, -IsIso.eq_inv_comp, ← Iso.app_hom] using
       IsIso.inv_eq_inv.mpr <|
         functorOfTransformObjComp_hom_app_fst T L T' L' T'' L'' ψ ψ' x
 
@@ -568,8 +567,8 @@ lemma functorOfTransformObjComp_inv_app_snd (ψ : CatCospanTransform R B R' B')
         ψ.right L').inv.app x) ≫
       (CatCommSq.iso L (functorOfTransform T L T'' L''|>.obj <| ψ.comp ψ')
         (ψ.comp ψ').right L'').hom.app x := by
-  simpa [← Functor.map_inv, -IsIso.comp_inv_eq, -IsIso.eq_comp_inv,
-    -IsIso.eq_inv_comp, ← Iso.app_hom] using
+  simpa [functorOfTransform, ← Functor.map_inv, -IsIso.comp_inv_eq,
+    -IsIso.eq_comp_inv, -IsIso.eq_inv_comp, ← Iso.app_hom] using
       IsIso.inv_eq_inv.mpr <|
         functorOfTransformObjComp_hom_app_snd T L T' L' T'' L'' ψ ψ' x
 
@@ -594,25 +593,21 @@ lemma functorOfTransform_map_leftUnitor
     simp only [functorOfTransform_map_app_fst, comp_obj,
       CatCospanTransform.comp_left, CatCospanTransform.id_left, id_obj,
       CatCommSq.iso, π₁_obj, transform_obj_obj_fst, ofSquare_fst, Iso.symm_inv,
-      mapIso_hom, Iso.app_hom, π₁_map,
+      mapIso_hom, Iso.app_hom, π₁_map, functorOfTransformObjId,
       CatCospanTransform.leftUnitor_hom_left_app, Iso.symm_hom, mapIso_inv,
       Iso.app_inv, Category.id_comp, map_comp, Category.comp_id,
       functorOfTransformObjComp_hom_app_fst, functorOfTransform_obj_map_fst,
-      functorEquivInverse_map_app_fst, transformObjId_hom_app_fst_app,
-      Category.assoc, functorEquivFunctorIdIso_inv_fst_app,
-      Iso.inv_hom_id_app_fst_app_assoc]
+      Category.assoc, Iso.inv_hom_id_app_fst_app_assoc]
     simp [← Functor.map_comp_assoc]
   · dsimp
-    simp only [functorOfTransform_map_app_snd, comp_obj,
+    simp only [functorOfTransform_map_app_snd, comp_obj, functorOfTransformObjId,
       CatCospanTransform.comp_right, CatCospanTransform.id_right, id_obj,
       CatCommSq.iso, π₂_obj, transform_obj_obj_snd, ofSquare_snd, Iso.symm_inv,
-      mapIso_hom, Iso.app_hom, π₂_map,
+      mapIso_hom, Iso.app_hom, π₂_map, functorOfTransformObjId,
       CatCospanTransform.leftUnitor_hom_right_app, Iso.symm_hom,
       mapIso_inv, Iso.app_inv, Category.id_comp, map_comp, Category.comp_id,
       functorOfTransformObjComp_hom_app_snd, functorOfTransform_obj_map_snd,
-      functorEquivInverse_map_app_snd, transformObjId_hom_app_snd_app,
-      Category.assoc, functorEquivFunctorIdIso_inv_snd_app,
-      Iso.inv_hom_id_app_snd_app_assoc]
+      Category.assoc, Iso.inv_hom_id_app_snd_app_assoc]
     simp [← Functor.map_comp_assoc]
 
 @[reassoc]
@@ -639,9 +634,9 @@ lemma functorOfTransform_map_rightUnitor
       (functorOfTransform T L T' L'|>.obj ψ).rightUnitor.hom := by
   apply functorEquiv T' L' R' B' C₁|>.functor.map_injective
   ext x
-  · simp [functorOfTransformObjComp_hom_app_fst,
+  · simp [functorOfTransformObjComp_hom_app_fst, functorOfTransformObjId,
       CatCommSq.iso, functorOfTransform_map_app_fst]
-  · simp [functorOfTransformObjComp_hom_app_snd,
+  · simp [functorOfTransformObjComp_hom_app_snd, functorOfTransformObjId,
       CatCommSq.iso, functorOfTransform_map_app_snd]
 
 @[reassoc]
@@ -749,8 +744,7 @@ lemma functorOfTransform_map_associator
       functorOfTransformObjComp_inv_app_fst, Functor.comp_map, Category.assoc,
       Iso.hom_inv_id_app_assoc, CatCommSq.iso_inv_naturality_assoc,
       NatIso.cancel_natIso_inv_left]
-    simp [← Functor.map_comp_assoc, Iso.hom_inv_id_app_assoc,
-      ← Functor.map_comp, Iso.hom_inv_id_app]
+    simp [← Functor.map_comp_assoc, ← Functor.map_comp, Iso.hom_inv_id_app]
   · dsimp
     simp only [functorOfTransform_map_app_snd, comp_obj,
       CatCospanTransform.comp_right,
@@ -759,8 +753,7 @@ lemma functorOfTransform_map_associator
       functorOfTransformObjComp_inv_app_snd,
       Functor.comp_map, Category.assoc, Iso.hom_inv_id_app_assoc,
       CatCommSq.iso_inv_naturality_assoc, NatIso.cancel_natIso_inv_left]
-    simp [← Functor.map_comp_assoc, Iso.hom_inv_id_app_assoc,
-      ← Functor.map_comp, Iso.hom_inv_id_app]
+    simp [← Functor.map_comp_assoc, ← Functor.map_comp, Iso.hom_inv_id_app]
 
 @[reassoc]
 lemma functorOfTransform_map_associator_inv
