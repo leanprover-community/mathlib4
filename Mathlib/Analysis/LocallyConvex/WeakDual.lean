@@ -80,9 +80,12 @@ def toSeminormFamily (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : SeminormFamily �
 theorem toSeminormFamily_apply {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {x y} : (B.toSeminormFamily y) x = ‖B x y‖ :=
   rfl
 
-theorem functional_mem_span_iff {B : F →ₗ[𝕜] E →ₗ[𝕜] 𝕜} {s : Finset F} {f : E →ₗ[𝕜] 𝕜} :
+/- Restate functional_mem_span_iff in a more useful form -/
+theorem functional_mem_span_iff' {B : F →ₗ[𝕜] E →ₗ[𝕜] 𝕜} {s : Finset F} {f : E →ₗ[𝕜] 𝕜} :
     f ∈ Submodule.span 𝕜 (Set.range (B ∘ Subtype.val : s → E →ₗ[𝕜] 𝕜)) ↔
-    ∃ (γ : NNReal), ∀ (x : E), ‖f x‖ ≤ γ * ((s.sup B.flip.toSeminormFamily) x) := by
+    ∃ (γ : NNReal), norm ∘ f ≤ γ • ((s.sup B.flip.toSeminormFamily) ) := by
+  suffices (f ∈ Submodule.span 𝕜 (Set.range (B ∘ Subtype.val : s → E →ₗ[𝕜] 𝕜)) ↔
+    ∃ (γ : NNReal), ∀ (x : E), ‖f x‖ ≤ γ * ((s.sup B.flip.toSeminormFamily) x)) by exact this
   constructor
   · intro h
     rw [← Set.image_univ, Finsupp.mem_span_image_iff_linearCombination] at h
@@ -128,13 +131,6 @@ theorem functional_mem_span_iff {B : F →ₗ[𝕜] E →ₗ[𝕜] 𝕜} {s : Fi
         exact hx _ his
       · exact apply_nonneg (s.sup B.flip.toSeminormFamily) x
     simp_all only [mul_zero]
-
-/- Restate functional_mem_span_iff in a more useful form -/
-theorem functional_mem_span_iff' {B : F →ₗ[𝕜] E →ₗ[𝕜] 𝕜} {s : Finset F} {f : E →ₗ[𝕜] 𝕜} :
-    f ∈ Submodule.span 𝕜 (Set.range (B ∘ Subtype.val : s → E →ₗ[𝕜] 𝕜)) ↔
-    ∃ (γ : NNReal), norm ∘ f ≤ γ • ((s.sup B.flip.toSeminormFamily) ) := by
-  rw [functional_mem_span_iff]
-  rfl
 
 end LinearMap
 
