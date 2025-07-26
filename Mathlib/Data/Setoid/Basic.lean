@@ -410,8 +410,8 @@ def quotientQuotientEquivQuotient (s : Setoid α) (h : r ≤ s) :
     (Quotient.liftOn' x fun w => @Quotient.mk'' _ (ker <| Quot.mapRight h) <| @Quotient.mk'' _ r w)
       fun _ _ H => Quotient.sound' <| show @Quot.mk _ _ _ = @Quot.mk _ _ _ from Quotient.sound H
   left_inv x :=
-    Quotient.inductionOn' x fun y => Quotient.inductionOn' y fun w => by show ⟦_⟧ = _; rfl
-  right_inv x := Quotient.inductionOn' x fun y => by show ⟦_⟧ = _; rfl
+    Quotient.inductionOn' x fun y => Quotient.inductionOn' y fun w => by change ⟦_⟧ = _; rfl
+  right_inv x := Quotient.inductionOn' x fun y => by change ⟦_⟧ = _; rfl
 
 variable {r f}
 
@@ -443,16 +443,15 @@ end Setoid
 
 @[simp]
 theorem Quotient.subsingleton_iff {s : Setoid α} : Subsingleton (Quotient s) ↔ s = ⊤ := by
-  simp only [_root_.subsingleton_iff, eq_top_iff, Setoid.le_def, Setoid.top_def, Pi.top_apply,
-    forall_const]
+  simp only [_root_.subsingleton_iff, eq_top_iff, Setoid.le_def, Setoid.top_def, Pi.top_apply]
   refine Quotient.mk'_surjective.forall.trans (forall_congr' fun a => ?_)
   refine Quotient.mk'_surjective.forall.trans (forall_congr' fun b => ?_)
   simp_rw [Prop.top_eq_true, true_implies, Quotient.eq']
 
 theorem Quot.subsingleton_iff (r : α → α → Prop) :
     Subsingleton (Quot r) ↔ Relation.EqvGen r = ⊤ := by
-  simp only [_root_.subsingleton_iff, _root_.eq_top_iff, Pi.le_def, Pi.top_apply, forall_const]
+  simp only [_root_.subsingleton_iff, _root_.eq_top_iff, Pi.le_def, Pi.top_apply]
   refine Quot.mk_surjective.forall.trans (forall_congr' fun a => ?_)
   refine Quot.mk_surjective.forall.trans (forall_congr' fun b => ?_)
   rw [Quot.eq]
-  simp only [forall_const, le_Prop_eq, Pi.top_apply, Prop.top_eq_true, true_implies]
+  simp only [forall_const, le_Prop_eq, Prop.top_eq_true]

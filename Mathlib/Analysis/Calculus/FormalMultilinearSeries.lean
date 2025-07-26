@@ -384,7 +384,7 @@ theorem constFormalMultilinearSeries_apply_nonzero [NontriviallyNormedField 𝕜
 alias constFormalMultilinearSeries_apply := constFormalMultilinearSeries_apply_nonzero
 
 @[simp]
-lemma constFormalMultilinearSeries_zero [NontriviallyNormedField 𝕜] [NormedAddCommGroup E ]
+lemma constFormalMultilinearSeries_zero [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
     [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] :
     constFormalMultilinearSeries 𝕜 E (0 : F) = 0 := by
   ext n x

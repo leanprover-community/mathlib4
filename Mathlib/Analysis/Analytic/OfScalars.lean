@@ -135,12 +135,12 @@ theorem ofScalarsSum_of_subsingleton [Subsingleton E] {x : E} : ofScalarsSum c x
 @[simp]
 theorem ofScalarsSum_op [T2Space E] (x : E) :
     ofScalarsSum c (MulOpposite.op x) = MulOpposite.op (ofScalarsSum c x) := by
-  simp [ofScalars, ofScalars_sum_eq, ← MulOpposite.op_pow, ← MulOpposite.op_smul, tsum_op]
+  simp [ofScalars_sum_eq, ← MulOpposite.op_pow, ← MulOpposite.op_smul, tsum_op]
 
 @[simp]
 theorem ofScalarsSum_unop [T2Space E] (x : Eᵐᵒᵖ) :
     ofScalarsSum c (MulOpposite.unop x) = MulOpposite.unop (ofScalarsSum c x) := by
-  simp [ofScalars, ofScalars_sum_eq, ← MulOpposite.unop_pow, ← MulOpposite.unop_smul, tsum_unop]
+  simp [ofScalars_sum_eq, ← MulOpposite.unop_pow, ← MulOpposite.unop_smul, tsum_unop]
 
 end Field
 
@@ -287,7 +287,7 @@ theorem ofScalars_radius_eq_inv_of_tendsto_ENNReal [NormOneClass E] {r : ℝ≥0
       filter_upwards [h]
       simp
     · apply (ofScalars E c).radius_eq_top_of_eventually_eq_zero
-      simp only [eventually_atTop, not_exists, not_forall, Classical.not_imp, not_not] at h ⊢
+      simp only [eventually_atTop, not_exists, not_forall, not_not] at h ⊢
       obtain ⟨ti, hti⟩ := eventually_atTop.mp (hc'.eventually_ne zero_ne_top)
       obtain ⟨zi, hzi, z⟩ := h ti
       refine ⟨zi, Nat.le_induction (ofScalars_eq_zero_of_scalar_zero E z) fun n hmn a ↦ ?_⟩

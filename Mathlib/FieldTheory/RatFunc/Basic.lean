@@ -658,7 +658,7 @@ instance : IsFractionRing K[X] (RatFunc K) where
   surj' := by
     rintro ⟨z⟩
     convert IsLocalization.surj K[X]⁰ z
-    simp only [← ofFractionRing_algebraMap, Function.comp_apply, ← ofFractionRing_mul,
+    simp only [← ofFractionRing_algebraMap, ← ofFractionRing_mul,
       ofFractionRing.injEq]
 
 variable {K}
@@ -719,7 +719,7 @@ theorem toFractionRing_eq :
 theorem toFractionRingRingEquiv_symm_eq :
     (toFractionRingRingEquiv K).symm = (IsLocalization.algEquiv K[X]⁰ _ _).toRingEquiv := by
   ext x
-  simp [toFractionRingRingEquiv, ofFractionRing_eq, AlgEquiv.coe_ringEquiv']
+  simp [toFractionRingRingEquiv, ofFractionRing_eq]
 
 end IsDomain
 
