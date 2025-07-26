@@ -82,7 +82,7 @@ theorem toSeminormFamily_apply {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {x y} : 
 
 variable {ι : Type*}
 
-theorem functional_mem_span_iff {pl : ι → E →ₗ[𝕜] 𝕜} (s : Finset ι) (f : E →ₗ[𝕜] 𝕜) :
+theorem functional_mem_span_iff {pl : ι → E →ₗ[𝕜] 𝕜} {s : Finset ι} {f : E →ₗ[𝕜] 𝕜} :
     f ∈ Submodule.span 𝕜 (Set.range (pl ∘ Subtype.val : s → E →ₗ[𝕜] 𝕜)) ↔
     ∃ (γ : NNReal), f.toSeminorm ≤ γ • (s.sup (LinearMap.toSeminorm ∘ pl)) := by
   suffices f ∈ Submodule.span 𝕜 (Set.range (pl ∘ Subtype.val : s → E →ₗ[𝕜] 𝕜)) ↔
@@ -137,7 +137,7 @@ theorem functional_mem_span_iff {pl : ι → E →ₗ[𝕜] 𝕜} (s : Finset ι
 
 example {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (s : Finset F) (f : E →ₗ[𝕜] 𝕜) :
     f ∈ Submodule.span 𝕜 (Set.range (B.flip ∘ Subtype.val : s → E →ₗ[𝕜] 𝕜)) ↔
-    ∃ (γ : NNReal), f.toSeminorm ≤ γ • (s.sup B.toSeminormFamily) := functional_mem_span_iff _ _
+    ∃ (γ : NNReal), f.toSeminorm ≤ γ • (s.sup B.toSeminormFamily) := functional_mem_span_iff
 
 end LinearMap
 
