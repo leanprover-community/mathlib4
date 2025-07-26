@@ -2438,6 +2438,8 @@ import Mathlib.CategoryTheory.Monoidal.Comon_
 import Mathlib.CategoryTheory.Monoidal.Conv
 import Mathlib.CategoryTheory.Monoidal.DayConvolution
 import Mathlib.CategoryTheory.Monoidal.DayConvolution.Closed
+import Mathlib.CategoryTheory.Monoidal.DayConvolution.DayFunctor
+import Mathlib.CategoryTheory.Monoidal.DayConvolution.Types
 import Mathlib.CategoryTheory.Monoidal.Discrete
 import Mathlib.CategoryTheory.Monoidal.End
 import Mathlib.CategoryTheory.Monoidal.ExternalProduct
@@ -2455,7 +2457,8 @@ import Mathlib.CategoryTheory.Monoidal.Internal.Module
 import Mathlib.CategoryTheory.Monoidal.Internal.Types.Basic
 import Mathlib.CategoryTheory.Monoidal.Internal.Types.CommGrp_
 import Mathlib.CategoryTheory.Monoidal.Internal.Types.Grp_
-import Mathlib.CategoryTheory.Monoidal.Limits
+import Mathlib.CategoryTheory.Monoidal.Limits.Basic
+import Mathlib.CategoryTheory.Monoidal.Limits.Preserves
 import Mathlib.CategoryTheory.Monoidal.Linear
 import Mathlib.CategoryTheory.Monoidal.Mod_
 import Mathlib.CategoryTheory.Monoidal.Mon_
