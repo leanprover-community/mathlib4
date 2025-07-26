@@ -63,7 +63,7 @@ lemma tv_le [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
   · have h := statInfo_le_min (μ := μ) (ν := ν) (π := boolMeasure 1 1)
     simpa only [boolMeasure_apply_false, one_mul, boolMeasure_apply_true] using h
 
-/-- **Data processing inequality** for the total variation. -/
+/-- **Data processing inequality** for the total variation distance. -/
 lemma tv_comp_le (μ ν : Measure 𝓧) [IsFiniteMeasure μ] (κ : Kernel 𝓧 𝓨) [IsMarkovKernel κ] :
     tv (κ ∘ₘ μ) (κ ∘ₘ ν) ≤ tv μ ν :=
   ENNReal.toReal_mono statInfo_ne_top (statInfo_comp_le _ _ _ _)

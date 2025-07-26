@@ -211,6 +211,8 @@ lemma bayesRiskPrior_const (hl : Measurable (Function.uncurry ℓ))
 
 end Const
 
+section BayesRiskLeMinimaxRisk
+
 lemma bayesianRisk_le_iSup_risk (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) (κ : Kernel 𝓧 𝓨)
     (π : Measure Θ) [IsProbabilityMeasure π] :
     bayesianRisk ℓ P κ π ≤ ⨆ θ, risk ℓ P κ θ := by
@@ -219,32 +221,11 @@ lemma bayesianRisk_le_iSup_risk (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel �
   _ ≤ ∫⁻ _, (⨆ θ', risk ℓ P κ θ') ∂π := lintegral_mono (fun θ ↦ le_iSup _ _)
   _ = ⨆ θ, risk ℓ P κ θ := by simp
 
-lemma bayesianRisk_comap_measurableEquiv (hl : Measurable (Function.uncurry ℓ)) (P : Kernel Θ 𝓧)
-    [IsSFiniteKernel P]
-    (κ : Kernel 𝓧 𝓨) [IsSFiniteKernel κ] (π : Measure Θ) (e : Θ ≃ᵐ Θ') :
-    bayesianRisk (fun θ z ↦ ℓ (e.symm θ) z) (P.comap e.symm e.symm.measurable)
-      κ (π.map e) = bayesianRisk ℓ P κ π := by
-  simp only [bayesianRisk, risk]
-  rw [lintegral_map _ e.measurable]
-  · congr with θ
-    congr
-    · ext z hz
-      simp [κ.comp_apply' _ _ hz, Kernel.comap_apply]
-    · simp
-  · fun_prop
-
-/-- **Data processing inequality** for the Bayes risk with respect to a prior. -/
-lemma bayesRiskPrior_le_bayesRiskPrior_comp (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧)
-    (π : Measure Θ) (η : Kernel 𝓧 𝓧') [IsMarkovKernel η] :
-    bayesRiskPrior ℓ P π ≤ bayesRiskPrior ℓ (η ∘ₖ P) π := by
-  simp only [bayesRiskPrior, bayesianRisk, risk, le_iInf_iff]
-  intro κ hκ
-  rw [← κ.comp_assoc η]
-  exact iInf_le_of_le (κ ∘ₖ η) (iInf_le_of_le inferInstance le_rfl)
-
-/-- An estimator is a Bayes estimator for a prior `π` if it attains the Bayes risk for `π`. -/
-def IsBayesEstimator (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) (κ : Kernel 𝓧 𝓨) (π : Measure Θ) : Prop :=
-  bayesianRisk ℓ P κ π = bayesRiskPrior ℓ P π
+lemma bayesRiskPrior_le_bayesianRisk (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) (κ : Kernel 𝓧 𝓨)
+    (π : Measure Θ) [hκ : IsMarkovKernel κ] :
+    bayesRiskPrior ℓ P π ≤ bayesianRisk ℓ P κ π := by
+  simp only [bayesRiskPrior]
+  exact iInf₂_le κ hκ
 
 lemma bayesRiskPrior_le_minimaxRisk (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧)
     (π : Measure Θ) [IsProbabilityMeasure π] :
@@ -256,19 +237,49 @@ lemma bayesRisk_le_minimaxRisk (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ
   simp only [bayesRisk, iSup_le_iff]
   exact fun _ _ ↦ bayesRiskPrior_le_minimaxRisk _ _ _
 
-/-! ### Properties of the Bayes risk of a prior -/
+end BayesRiskLeMinimaxRisk
+
+section Compositions
+
+/-- **Data processing inequality** for the Bayes risk with respect to a prior: composition of the
+data generating kernel by a Markov kernel increases the risk. -/
+lemma bayesRiskPrior_le_bayesRiskPrior_comp (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧)
+    (π : Measure Θ) (η : Kernel 𝓧 𝓧') [IsMarkovKernel η] :
+    bayesRiskPrior ℓ P π ≤ bayesRiskPrior ℓ (η ∘ₖ P) π := by
+  simp only [bayesRiskPrior, bayesianRisk, risk, le_iInf_iff]
+  intro κ hκ
+  rw [← κ.comp_assoc η]
+  exact iInf_le_of_le (κ ∘ₖ η) (iInf_le_of_le inferInstance le_rfl)
 
 lemma bayesRiskPrior_compProd_le_bayesRiskPrior (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧)
-    [IsSFiniteKernel P] (π : Measure Θ) (κ : Kernel (Θ × 𝓧) 𝓧') [IsMarkovKernel κ] :
-    bayesRiskPrior ℓ (P ⊗ₖ κ) π ≤ bayesRiskPrior ℓ P π := by
-  have : P = (Kernel.deterministic Prod.fst (by fun_prop)) ∘ₖ (P ⊗ₖ κ) := by
+    [IsSFiniteKernel P] (π : Measure Θ) (η : Kernel (Θ × 𝓧) 𝓧') [IsMarkovKernel η] :
+    bayesRiskPrior ℓ (P ⊗ₖ η) π ≤ bayesRiskPrior ℓ P π := by
+  have : P = (Kernel.deterministic Prod.fst (by fun_prop)) ∘ₖ (P ⊗ₖ η) := by
     rw [Kernel.deterministic_comp_eq_map, ← Kernel.fst_eq, Kernel.fst_compProd]
-  nth_rw 2 [this]
+  conv_rhs => rw [this]
   exact bayesRiskPrior_le_bayesRiskPrior_comp _ _ _ _
+
+lemma bayesianRisk_comap_measurableEquiv (hl : Measurable (Function.uncurry ℓ)) (P : Kernel Θ 𝓧)
+    [IsSFiniteKernel P] (κ : Kernel 𝓧 𝓨) [IsSFiniteKernel κ] (π : Measure Θ) (e : Θ' ≃ᵐ Θ) :
+    bayesianRisk (fun θ z ↦ ℓ (e θ) z) (P.comap e e.measurable) κ (π.comap e)
+      = bayesianRisk ℓ P κ π := by
+  simp only [bayesianRisk, risk]
+  rw [← MeasurableEquiv.map_symm, lintegral_map (by fun_prop) e.symm.measurable]
+  congr with θ
+  congr
+  · ext z hz
+    simp [κ.comp_apply' _ _ hz, Kernel.comap_apply]
+  · simp
+
+end Compositions
+
+section Posterior
+
+variable [StandardBorelSpace Θ] [Nonempty Θ]
 
 /-- The Bayesian risk of an estimator `κ` with respect to a prior `π` can be expressed as
 an integral in the following way: `R_π(κ) = ((P†π × κ) ∘ P ∘ π)[(θ, z) ↦ ℓ(y(θ), z)]`. -/
-lemma bayesianRisk_eq_lintegral_bayesInv_prod [StandardBorelSpace Θ] [Nonempty Θ]
+lemma bayesianRisk_eq_lintegral_posterior_prod
     (hl : Measurable (Function.uncurry ℓ)) (P : Kernel Θ 𝓧) [IsFiniteKernel P] (κ : Kernel 𝓧 𝓨)
     (π : Measure Θ) [IsFiniteMeasure π] [IsSFiniteKernel κ] :
     bayesianRisk ℓ P κ π = ∫⁻ (θz : Θ × 𝓨), ℓ θz.1 θz.2 ∂(((P†π) ×ₖ κ) ∘ₘ (P ∘ₘ π)) := by
@@ -280,80 +291,30 @@ lemma bayesianRisk_eq_lintegral_bayesInv_prod [StandardBorelSpace Θ] [Nonempty 
   _ = ((P†π) ×ₖ κ) ∘ₘ P ∘ₘ π := by
       rw [Measure.comp_assoc, Kernel.parallelComp_comp_prod, Kernel.id_comp, Kernel.comp_id]
 
-lemma bayesianRisk_eq_integral_integral_integral [StandardBorelSpace Θ] [Nonempty Θ]
+lemma bayesianRisk_eq_lintegral_lintegral_lintegral
     (hl : Measurable (Function.uncurry ℓ)) (P : Kernel Θ 𝓧) [IsFiniteKernel P] (κ : Kernel 𝓧 𝓨)
     (π : Measure Θ) [IsFiniteMeasure π] [IsSFiniteKernel κ] :
     bayesianRisk ℓ P κ π = ∫⁻ x, ∫⁻ z, ∫⁻ θ, ℓ θ z ∂(P†π) x ∂κ x ∂(P ∘ₘ π) := by
-  rw [bayesianRisk_eq_lintegral_bayesInv_prod hl,
+  rw [bayesianRisk_eq_lintegral_posterior_prod hl,
     Measure.lintegral_bind ((P†π) ×ₖ κ).aemeasurable (by fun_prop)]
   congr with x
   rw [Kernel.prod_apply, lintegral_prod_symm' _ (by fun_prop)]
 
-lemma bayesianRisk_ge_lintegral_iInf_bayesInv [StandardBorelSpace Θ] [Nonempty Θ]
+lemma lintegral_iInf_posterior_le_bayesianRisk
     (hl : Measurable (Function.uncurry ℓ)) (P : Kernel Θ 𝓧) [IsFiniteKernel P] (κ : Kernel 𝓧 𝓨)
     (π : Measure Θ) [IsFiniteMeasure π] [IsMarkovKernel κ] :
-    bayesianRisk ℓ P κ π ≥ ∫⁻ x, ⨅ z : 𝓨, ∫⁻ θ, ℓ θ z ∂((P†π) x) ∂(P ∘ₘ π) := by
-  rw [bayesianRisk_eq_integral_integral_integral hl]
+    ∫⁻ x, ⨅ z : 𝓨, ∫⁻ θ, ℓ θ z ∂((P†π) x) ∂(P ∘ₘ π) ≤ bayesianRisk ℓ P κ π := by
+  rw [bayesianRisk_eq_lintegral_lintegral_lintegral hl]
   gcongr with x
-  calc
-    _ ≥ ∫⁻ _, ⨅ z, ∫⁻ (θ : Θ), ℓ θ z ∂(P†π) x ∂κ x := lintegral_mono fun z ↦ iInf_le _ z
-    _ = ⨅ z, ∫⁻ (θ : Θ), ℓ θ z ∂(P†π) x := by rw [lintegral_const, measure_univ, mul_one]
+  exact iInf_le_lintegral _ _
 
-section IsGenBayesEstimator
+lemma lintegral_iInf_posterior_le_bayesRiskPrior
+    (hl : Measurable (Function.uncurry ℓ)) (P : Kernel Θ 𝓧) [IsFiniteKernel P]
+    (π : Measure Θ) [IsFiniteMeasure π] :
+    ∫⁻ x, ⨅ z : 𝓨, ∫⁻ θ, ℓ θ z ∂((P†π) x) ∂(P ∘ₘ π) ≤ bayesRiskPrior ℓ P π := by
+  simp only [bayesRiskPrior, le_iInf_iff]
+  exact fun κ _ ↦ lintegral_iInf_posterior_le_bayesianRisk hl P κ π
 
-/-! ### Generalized Bayes estimator -/
-
-variable [StandardBorelSpace Θ] [Nonempty Θ] {f : 𝓧 → 𝓨}
-  [IsFiniteKernel P] [IsFiniteMeasure π]
-
-/-- We say that a measurable function `f : 𝓧 → 𝓨` is a Generalized Bayes estimator for the
-estimation problem `E` with respect to the prior `π` if for `(P ∘ₘ π)`-almost every `x` it is of
-the form `x ↦ argmin_z P†π(x)[θ ↦ ℓ(y(θ), z)]`. -/
-structure IsGenBayesEstimator {𝓨 : Type*} [MeasurableSpace 𝓨]
-    (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) [IsFiniteKernel P] (f : 𝓧 → 𝓨)
-    (π : Measure Θ) [IsFiniteMeasure π] : Prop where
-  measurable : Measurable f
-  property : ∀ᵐ x ∂(P ∘ₘ π), ∫⁻ θ, ℓ θ (f x) ∂(P†π) x
-    = ⨅ z, ∫⁻ θ, ℓ θ z ∂(P†π) x
-
-/-- Given a Generalized Bayes estimator `f`, we can define a deterministic kernel. -/
-noncomputable
-abbrev IsGenBayesEstimator.kernel (h : IsGenBayesEstimator ℓ P f π) : Kernel 𝓧 𝓨 :=
-  Kernel.deterministic f h.measurable
-
-lemma IsGenBayesEstimator.bayesianRisk_eq_integral_iInf (hf : IsGenBayesEstimator ℓ P f π)
-    (hl : Measurable (Function.uncurry ℓ)) :
-    bayesianRisk ℓ P hf.kernel π = ∫⁻ x, ⨅ z, ∫⁻ θ, ℓ θ z ∂(P†π) x ∂(P ∘ₘ π) := by
-  rw [bayesianRisk_eq_integral_integral_integral hl]
-  refine lintegral_congr_ae ?_
-  filter_upwards [hf.property] with x hx
-  rwa [Kernel.deterministic_apply,
-    lintegral_dirac' _ (Measurable.lintegral_prod_left (by fun_prop))]
-
-/-- A generalized Bayes estimator is a Bayes estimator: that is, it minimizes the Bayesian risk. -/
-lemma IsGenBayesEstimator.isBayesEstimator (hf : IsGenBayesEstimator ℓ P f π)
-    (hl : Measurable (Function.uncurry ℓ)) :
-    IsBayesEstimator ℓ P hf.kernel π := by
-  simp_rw [IsBayesEstimator, bayesRiskPrior]
-  apply le_antisymm
-  · rw [hf.bayesianRisk_eq_integral_iInf hl]
-    simp_all [bayesianRisk_ge_lintegral_iInf_bayesInv]
-  · refine iInf_le_of_le hf.kernel ?_
-    exact iInf_le _ (Kernel.isMarkovKernel_deterministic hf.measurable)
-
-/-- The estimation problem admits a Generalized Bayes estimator with respect to the prior `π`. -/
-class HasGenBayesEstimator {𝓨 : Type*} [MeasurableSpace 𝓨]
-    (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) [IsFiniteKernel P] (π : Measure Θ) [IsFiniteMeasure π] where
-  /-- The Generalized Bayes estimator. -/
-  estimator : 𝓧 → 𝓨
-  isGenBayesEstimator : IsGenBayesEstimator ℓ P estimator π
-
-lemma bayesRiskPrior_eq_of_hasGenBayesEstimator
-    (hl : Measurable (Function.uncurry ℓ)) [h : HasGenBayesEstimator ℓ P π] :
-    bayesRiskPrior ℓ P π = ∫⁻ x, ⨅ z, ∫⁻ θ, ℓ θ z ∂((P†π) x) ∂(P ∘ₘ π) := by
-  rw [← h.isGenBayesEstimator.isBayesEstimator hl,
-    IsGenBayesEstimator.bayesianRisk_eq_integral_iInf _ hl]
-
-end IsGenBayesEstimator
+end Posterior
 
 end ProbabilityTheory

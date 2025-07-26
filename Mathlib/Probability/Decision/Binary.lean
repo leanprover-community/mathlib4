@@ -3,7 +3,9 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
+import Mathlib.Probability.Decision.BayesEstimator
 import Mathlib.Probability.Decision.BoolKernel
+import Mathlib.Probability.Decision.BoolMeasure
 
 /-!
 # Simple Bayesian binary hypothesis testing
@@ -53,49 +55,47 @@ lemma risk_binaryLoss_false (μ ν : Measure 𝓧) (κ : Kernel 𝓧 Bool) :
   simp [risk, binaryLoss, Bool.lintegral_bool]
 
 /-- The function `x ↦ 𝕀{π₀ * ∂μ/∂(boolKernel μ ν ∘ₘ π) x ≤ π₁ * ∂ν/∂(boolKernel μ ν ∘ₘ π) x}`.
-It is a Generalized Bayes estimator for the simple binary hypothesis testing problem. -/
+It is a generalized Bayes estimator for the simple binary hypothesis testing problem. -/
 noncomputable
-def binaryGenBayesEstimator (μ ν : Measure 𝓧) (π : Measure Bool) : 𝓧 → Bool :=
+def binaryBayesEstimator (μ ν : Measure 𝓧) (π : Measure Bool) : 𝓧 → Bool :=
   fun x ↦
     (π {false} * μ.rnDeriv (boolKernel μ ν ∘ₘ π) x ≤ π {true} * ν.rnDeriv (boolKernel μ ν ∘ₘ π) x)
 
-lemma binaryGenBayesEstimator_eq :
-    binaryGenBayesEstimator μ ν π =
+lemma binaryBayesEstimator_eq :
+    binaryBayesEstimator μ ν π =
       let E : Set 𝓧 := {x | π {false} * μ.rnDeriv (boolKernel μ ν ∘ₘ π) x
         ≤ π {true} * ν.rnDeriv (boolKernel μ ν ∘ₘ π) x}
       fun x ↦ Bool.ofNat (E.indicator 1 x) := by
-  unfold binaryGenBayesEstimator
+  unfold binaryBayesEstimator
   ext x
   simp [Bool.ofNat]
 
 @[fun_prop]
-lemma measurable_binaryGenBayesEstimator : Measurable (binaryGenBayesEstimator μ ν π) :=
+lemma measurable_binaryBayesEstimator : Measurable (binaryBayesEstimator μ ν π) :=
   Measurable.ite (measurableSet_le (by fun_prop) (by fun_prop)) (by fun_prop) (by fun_prop)
 
-lemma isGenBayesEstimator_binaryGenBayesEstimator (μ ν : Measure 𝓧) [IsFiniteMeasure μ]
+lemma isGenBayesEstimator_binaryBayesEstimator (μ ν : Measure 𝓧) [IsFiniteMeasure μ]
     [IsFiniteMeasure ν] (π : Measure Bool) [IsFiniteMeasure π] :
-    IsGenBayesEstimator binaryLoss (boolKernel μ ν)
-      (binaryGenBayesEstimator μ ν π) π := by
+    IsGenBayesEstimator binaryLoss (boolKernel μ ν) (binaryBayesEstimator μ ν π) π := by
   refine ⟨by fun_prop, ?_⟩
+  simp only [binaryLoss, Bool.lintegral_bool, Bool.false_eq, ite_mul, zero_mul, one_mul,
+    Bool.true_eq]
   filter_upwards [posterior_boolKernel_apply_true μ ν π,
     posterior_boolKernel_apply_false μ ν π] with x h_true h_false
   refine le_antisymm (le_iInf fun b ↦ ?_) (iInf_le _ _)
-  simp only [binaryLoss, binaryGenBayesEstimator_eq, Bool.ofNat, ne_eq,
-    Set.indicator_apply_eq_zero, Set.mem_setOf_eq, Pi.ofNat_apply, one_ne_zero, imp_false,
-    Bool.lintegral_bool, Bool.false_eq, decide_eq_false_iff_not, ite_mul, zero_mul,
-    one_mul, Bool.true_eq, decide_eq_true_eq]
+  simp only [binaryBayesEstimator, decide_eq_false_iff_not, not_le, h_false, decide_eq_true_eq,
+    h_true]
   by_cases hπ : π {false} * (∂μ/∂boolKernel μ ν ∘ₘ π) x ≤ π {true} * (∂ν/∂boolKernel μ ν ∘ₘ π) x
-  · simp only [hπ, not_true_eq_false, not_false_eq_true, ↓reduceIte, add_zero]
-    cases b <;> simp_all
-  · cases b
-    · simp_all
-    · refine le_of_lt ?_
-      simp_all
+    <;> cases b
+  · simp [hπ, not_lt.mpr hπ]
+  · simp [hπ, not_lt.mpr hπ]
+  · simp [hπ, not_le.mp hπ]
+  · simpa [hπ, not_le.mp hπ] using (not_le.mp hπ).le
 
 noncomputable instance (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (π : Measure Bool) [IsFiniteMeasure π] :
     HasGenBayesEstimator binaryLoss (boolKernel μ ν) π :=
-  ⟨binaryGenBayesEstimator μ ν π, isGenBayesEstimator_binaryGenBayesEstimator μ ν π⟩
+  ⟨binaryBayesEstimator μ ν π, isGenBayesEstimator_binaryBayesEstimator μ ν π⟩
 
 end binaryLoss
 
@@ -259,8 +259,8 @@ lemma bayesBinaryRisk_eq_iInf_measurableSet (μ ν : Measure 𝓧) [IsFiniteMeas
   · let E := {x | π {false} * (∂μ/∂boolKernel μ ν ∘ₘ π) x ≤ π {true} * (∂ν/∂boolKernel μ ν ∘ₘ π) x}
     have hE : MeasurableSet E := measurableSet_le (by fun_prop) (by fun_prop)
     rw [bayesBinaryRisk, ← IsGenBayesEstimator.isBayesEstimator
-      (isGenBayesEstimator_binaryGenBayesEstimator μ ν π) .of_discrete, IsGenBayesEstimator.kernel]
-    simp_rw [binaryGenBayesEstimator_eq]
+      (isGenBayesEstimator_binaryBayesEstimator μ ν π) .of_discrete, IsGenBayesEstimator.kernel]
+    simp_rw [binaryBayesEstimator_eq]
     rw [bayesianRisk_binary_of_deterministic_indicator _ _ _ hE]
     exact iInf_le_of_le E (iInf_le _ hE)
 

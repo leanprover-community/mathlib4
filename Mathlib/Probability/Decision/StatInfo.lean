@@ -28,11 +28,12 @@ open scoped ENNReal NNReal
 
 namespace ProbabilityTheory
 
-variable {𝓧 𝓧' : Type*} {m𝓧 : MeasurableSpace 𝓧} {m𝓧' : MeasurableSpace 𝓧'}
+variable {𝓧 𝓨 : Type*} {m𝓧 : MeasurableSpace 𝓧} {m𝓨 : MeasurableSpace 𝓨}
   {μ ν : Measure 𝓧} {π : Measure Bool}
 
 /-- The statistical information of the measures `μ` and `ν` with respect to
-the prior `π ∈ ℳ({0,1})`. -/
+the prior `π` on `Bool`.
+This is the difference of the Bayes risks between estimation without seeing the data and with it. -/
 noncomputable
 def statInfo (μ ν : Measure 𝓧) (π : Measure Bool) : ℝ≥0∞ :=
   bayesBinaryRisk (Kernel.discard 𝓧 ∘ₘ μ) (Kernel.discard 𝓧 ∘ₘ ν) π - bayesBinaryRisk μ ν π
@@ -69,7 +70,7 @@ lemma statInfo_of_measure_false_eq_zero (μ ν : Measure 𝓧) (hπ : π {false}
   le_antisymm (statInfo_le_min.trans (by simp [hπ])) zero_le'
 
 /-- **Data processing inequality** for the statistical information. -/
-lemma statInfo_comp_le (μ ν : Measure 𝓧) (π : Measure Bool) (η : Kernel 𝓧 𝓧') [IsMarkovKernel η] :
+lemma statInfo_comp_le (μ ν : Measure 𝓧) (π : Measure Bool) (η : Kernel 𝓧 𝓨) [IsMarkovKernel η] :
     statInfo (η ∘ₘ μ) (η ∘ₘ ν) π ≤ statInfo μ ν π := by
   refine tsub_le_tsub ?_ (bayesBinaryRisk_le_bayesBinaryRisk_comp _ _ _ _)
   simp [Measure.bind_apply .univ (Kernel.aemeasurable _)]
