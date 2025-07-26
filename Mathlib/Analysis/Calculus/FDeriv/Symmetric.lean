@@ -42,7 +42,7 @@ and `ω` otherwise.
 
 For the proof, we obtain an asymptotic expansion to order two of `f (x + v + w) - f (x + v)`, by
 using the mean value inequality applied to a suitable function along the
-segment `[x + v, x + v + w]`. This expansion involves `f'' ⬝ w` as we move along a segment directed
+segment `[x + v, x + v + w]`. This expansion involves `f'' · w` as we move along a segment directed
 by `w` (see `Convex.taylor_approx_two_segment`).
 
 Consider the alternate sum `f (x + v + w) + f x - f (x + v) - f (x + w)`, corresponding to the
@@ -211,7 +211,7 @@ include s_conv hf xs hx
 /-- Assume that `f` is differentiable inside a convex set `s`, and that its derivative `f'` is
 differentiable at a point `x`. Then, given two vectors `v` and `w` pointing inside `s`, one can
 Taylor-expand to order two the function `f` on the segment `[x + h v, x + h (v + w)]`, giving a
-bilinear estimate for `f (x + hv + hw) - f (x + hv)` in terms of `f' w` and of `f'' ⬝ w`, up to
+bilinear estimate for `f (x + hv + hw) - f (x + hv)` in terms of `f' w` and of `f'' · w`, up to
 `o(h^2)`.
 
 This is a technical statement used to show that the second derivative is symmetric. -/

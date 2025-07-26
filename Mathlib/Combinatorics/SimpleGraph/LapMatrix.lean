@@ -67,7 +67,7 @@ theorem lapMatrix_mulVec_const_eq_zero [NonAssocRing R] :
   simp
 
 theorem dotProduct_mulVec_degMatrix [CommSemiring R] (x : V → R) :
-    x ⬝ᵥ (G.degMatrix R *ᵥ x) = ∑ i : V, G.degree i * x i * x i := by
+    x ·ᵥ (G.degMatrix R *ᵥ x) = ∑ i : V, G.degree i * x i * x i := by
   simp only [dotProduct, degMatrix, mulVec_diagonal, ← mul_assoc, mul_comm]
 
 variable (R)

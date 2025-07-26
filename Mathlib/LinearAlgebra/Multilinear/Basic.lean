@@ -1067,7 +1067,7 @@ protected noncomputable def iteratedFDeriv [Fintype ι]
   ∑ e : Fin k ↪ ι, iteratedFDerivComponent f e.toEquivRange (fun i ↦ x i)
 
 /-- If `f` is a collection of linear maps, then the construction `MultilinearMap.compLinearMap`
-sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g`. -/
+sending a multilinear map `g` to `g (f₁ · , ..., fₙ · )` is linear in `g`. -/
 @[simps] def compLinearMapₗ (f : Π (i : ι), M₁ i →ₗ[R] M₁' i) :
     (MultilinearMap R M₁' M₂) →ₗ[R] MultilinearMap R M₁ M₂ where
   toFun := fun g ↦ g.compLinearMap f
@@ -1087,7 +1087,7 @@ def _root_.LinearEquiv.multilinearMapCongrLeft (e : Π (i : ι), M₁ i ≃ₗ[R
   right_inv _ := by ext; simp
 
 /-- If `f` is a collection of linear maps, then the construction `MultilinearMap.compLinearMap`
-sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g` and multilinear in
+sending a multilinear map `g` to `g (f₁ · , ..., fₙ · )` is linear in `g` and multilinear in
 `f₁, ..., fₙ`. -/
 @[simps] def compLinearMapMultilinear :
   @MultilinearMap R ι (fun i ↦ M₁ i →ₗ[R] M₁' i)
