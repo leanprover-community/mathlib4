@@ -376,12 +376,25 @@ theorem Continuous.subtype_mk {f : Y → X} (h : Continuous f) (hp : ∀ x, p (f
     Continuous fun x => (⟨f x, hp x⟩ : Subtype p) :=
   continuous_induced_rng.2 h
 
+theorem IsOpenMap.subtype_mk {f : Y → X} (hf : IsOpenMap f) {s : Set X} (hfs : ∀ x, f x ∈ s) :
+    IsOpenMap fun x ↦ (⟨f x, hfs x⟩ : Subtype s) := fun u hu ↦ by
+  convert (hf u hu).preimage continuous_subtype_val
+  exact Set.ext fun _ ↦ exists_congr fun _ ↦ and_congr_right' Subtype.ext_iff
+
 theorem Continuous.subtype_map {f : X → Y} (h : Continuous f) {q : Y → Prop}
     (hpq : ∀ x, p x → q (f x)) : Continuous (Subtype.map f hpq) :=
   (h.comp continuous_subtype_val).subtype_mk _
 
+theorem IsOpenMap.subtype_map {f : X → Y} (hf : IsOpenMap f) {s : Set X} {t : Set Y} (hs : IsOpen s)
+    (hst : ∀ x, s x → t (f x)) : IsOpenMap (Subtype.map f hst) :=
+  (hf.comp hs.isOpenMap_subtype_val).subtype_mk _
+
 theorem continuous_inclusion {s t : Set X} (h : s ⊆ t) : Continuous (inclusion h) :=
   continuous_id.subtype_map h
+
+theorem IsOpen.isOpenMap_inclusion {s t : Set X} (hs : IsOpen s) (h : s ⊆ t) :
+    IsOpenMap (inclusion h) :=
+  IsOpenMap.id.subtype_map hs h
 
 theorem continuousAt_subtype_val {p : X → Prop} {x : Subtype p} :
     ContinuousAt ((↑) : Subtype p → X) x :=
@@ -429,10 +442,18 @@ theorem Continuous.codRestrict {f : X → Y} {s : Set Y} (hf : Continuous f) (hs
     Continuous (s.codRestrict f hs) :=
   hf.subtype_mk hs
 
+theorem IsOpenMap.codRestrict {f : X → Y} (hf : IsOpenMap f) {s : Set Y} (hs : ∀ a, f a ∈ s) :
+    IsOpenMap (s.codRestrict f hs) :=
+  hf.subtype_mk hs
+
 @[continuity, fun_prop]
 theorem Continuous.restrict {f : X → Y} {s : Set X} {t : Set Y} (h1 : MapsTo f s t)
     (h2 : Continuous f) : Continuous (h1.restrict f s t) :=
   (h2.comp continuous_subtype_val).codRestrict _
+
+lemma IsOpenMap.restrict_mapsTo {f : X → Y} (hf : IsOpenMap f) {s : Set X} {t : Set Y}
+    (hs : IsOpen s) (ht : MapsTo f s t) : IsOpenMap ht.restrict :=
+  (hf.restrict hs).codRestrict _
 
 @[continuity, fun_prop]
 theorem Continuous.restrictPreimage {f : X → Y} {s : Set Y} (h : Continuous f) :
