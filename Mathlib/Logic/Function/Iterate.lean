@@ -79,12 +79,18 @@ theorem iterate_one : f^[1] = f :=
 
 theorem iterate_mul (m : ℕ) : ∀ n, f^[m * n] = f^[m]^[n]
   | 0 => by simp only [Nat.mul_zero, iterate_zero]
-  | n + 1 => by simp only [Nat.mul_succ, Nat.mul_one, iterate_one, iterate_add, iterate_mul m n]
+  | n + 1 => by simp only [Nat.mul_succ, iterate_one, iterate_add, iterate_mul m n]
 
 variable {f}
 
 theorem iterate_fixed {x} (h : f x = x) (n : ℕ) : f^[n] x = x :=
   Nat.recOn n rfl fun n ihn ↦ by rw [iterate_succ_apply, h, ihn]
+
+/-- If a function `g` is invariant under composition with a function `f` (i.e., `g ∘ f = g`), then
+`g` is invariant under composition with any iterate of `f`. -/
+theorem iterate_invariant {g : α → β} (h : g ∘ f = g) (n : ℕ) : g ∘ f^[n] = g := match n with
+  | 0 => by rw [iterate_zero, comp_id]
+  | m + 1 => by rwa [iterate_succ, ← comp_assoc, iterate_invariant h m]
 
 theorem Injective.iterate (Hinj : Injective f) (n : ℕ) : Injective f^[n] :=
   Nat.recOn n injective_id fun _ ihn ↦ ihn.comp Hinj

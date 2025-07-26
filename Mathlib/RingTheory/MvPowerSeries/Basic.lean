@@ -430,7 +430,7 @@ def constantCoeff : MvPowerSeries σ R →+* R :=
   { coeff R (0 : σ →₀ ℕ) with
     toFun := coeff R (0 : σ →₀ ℕ)
     map_one' := coeff_zero_one
-    map_mul' := fun φ ψ => by classical simp [coeff_mul, support_single_ne_zero]
+    map_mul' := fun φ ψ => by classical simp [coeff_mul]
     map_zero' := LinearMap.map_zero _ }
 
 variable {σ} {R}
@@ -515,8 +515,8 @@ def map : MvPowerSeries σ R →+* MvPowerSeries σ S where
         classical
         rw [coeff_one, coeff_one]
         split_ifs with h
-        · simp only [ite_true, map_one, h]
-        · simp only [ite_false, map_zero, h]
+        · simp only [map_one]
+        · simp only [map_zero]
   map_add' φ ψ :=
     ext fun n => show f ((coeff R n) (φ + ψ)) = f ((coeff R n) φ) + f ((coeff R n) ψ) by simp
   map_mul' φ ψ :=
@@ -599,7 +599,7 @@ theorem X_pow_dvd_iff {s : σ} {n : ℕ} {φ : MvPowerSeries σ R} :
           rw [← hij, ← hi, Prod.mk_inj]
           refine ⟨rfl, ?_⟩
           ext t
-          simp only [add_tsub_cancel_left, Finsupp.add_apply, Finsupp.tsub_apply]
+          simp only [add_tsub_cancel_left]
         · exact zero_mul _
       · intro hni
         exfalso
@@ -621,7 +621,7 @@ theorem X_pow_dvd_iff {s : σ} {n : ℕ} {φ : MvPowerSeries σ R} :
         by_cases hst : s = t
         · subst t
           simpa using tsub_add_cancel_of_le H
-        · simp [Finsupp.single_apply, hst]
+        · simp [hst]
 
 theorem X_dvd_iff {s : σ} {φ : MvPowerSeries σ R} :
     (X s : MvPowerSeries σ R) ∣ φ ↔ ∀ m : σ →₀ ℕ, m s = 0 → coeff R m φ = 0 := by
@@ -804,7 +804,7 @@ theorem coe_monomial (n : σ →₀ ℕ) (a : R) :
   MvPowerSeries.ext fun m => by
     classical
     rw [coeff_coe, coeff_monomial, MvPowerSeries.coeff_monomial]
-    split_ifs with h₁ h₂ <;> first |rfl|subst m; contradiction
+    split_ifs with h₁ h₂ <;> first | rfl | subst m; contradiction
 
 @[simp, norm_cast]
 theorem coe_zero : ((0 : MvPolynomial σ R) : MvPowerSeries σ R) = 0 :=
@@ -888,7 +888,7 @@ as an algebra homomorphism.
 -/
 def coeToMvPowerSeries.algHom : MvPolynomial σ R →ₐ[R] MvPowerSeries σ A :=
   { (MvPowerSeries.map σ (algebraMap R A)).comp coeToMvPowerSeries.ringHom with
-    commutes' := fun r => by simp [algebraMap_apply, MvPowerSeries.algebraMap_apply] }
+    commutes' := fun r => by simp [MvPowerSeries.algebraMap_apply] }
 
 @[simp]
 theorem coeToMvPowerSeries.algHom_apply :
@@ -904,13 +904,13 @@ theorem _root_.MvPowerSeries.prod_smul_X_eq_smul_monomial_one
   · have (a : A) (f : MvPowerSeries σ R) : a • f =
       (MvPowerSeries.C σ R) ((algebraMap A R) a) * f := by
       rw [← MvPowerSeries.smul_eq_C_mul, IsScalarTower.algebraMap_smul]
-    simp only [mul_pow, Finsupp.prod_mul, ← map_pow , ← MvPowerSeries.monomial_one_eq, this]
+    simp only [mul_pow, Finsupp.prod_mul, ← map_pow, ← MvPowerSeries.monomial_one_eq, this]
     simp only [map_finsuppProd, map_pow]
   · intro x _
     rw [algebra_compatible_smul R, MvPowerSeries.smul_eq_C_mul]
 
 theorem _root_.MvPowerSeries.monomial_eq (e : σ →₀ ℕ) (r : σ → R) :
-    MvPowerSeries.monomial R e (e.prod (fun s n => r s ^  n))
+    MvPowerSeries.monomial R e (e.prod (fun s n => r s ^ n))
       = e.prod fun s e => (r s • MvPowerSeries.X s) ^ e := by
   rw [MvPowerSeries.prod_smul_X_eq_smul_monomial_one, ← map_smul, smul_eq_mul, mul_one]
 

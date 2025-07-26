@@ -321,6 +321,8 @@ theorem _root_.RCLike.re_eq_complex_re : ⇑(RCLike.re : ℂ →+ ℝ) = Complex
 theorem _root_.RCLike.im_eq_complex_im : ⇑(RCLike.im : ℂ →+ ℝ) = Complex.im :=
   rfl
 
+theorem _root_.RCLike.ofReal_eq_complex_ofReal : (RCLike.ofReal : ℝ → ℂ) = Complex.ofReal := rfl
+
 -- TODO: Replace `mul_conj` and `conj_mul` once `norm` has replaced `abs`
 lemma mul_conj' (z : ℂ) : z * conj z = ‖z‖ ^ 2 := RCLike.mul_conj z
 lemma conj_mul' (z : ℂ) : conj z * z = ‖z‖ ^ 2 := RCLike.conj_mul z
@@ -332,6 +334,20 @@ lemma exists_norm_eq_mul_self (z : ℂ) : ∃ c, ‖c‖ = 1 ∧ ‖z‖ = c * z
 
 lemma exists_norm_mul_eq_self (z : ℂ) : ∃ c, ‖c‖ = 1 ∧ c * ‖z‖ = z :=
   RCLike.exists_norm_mul_eq_self _
+
+lemma im_eq_zero_iff_isSelfAdjoint (x : ℂ) : Complex.im x = 0 ↔ IsSelfAdjoint x := by
+  rw [← RCLike.im_eq_complex_im]
+  exact RCLike.im_eq_zero_iff_isSelfAdjoint
+
+lemma re_eq_ofReal_of_isSelfAdjoint {x : ℂ} {y : ℝ} (hx : IsSelfAdjoint x) :
+    Complex.re x = y ↔ x = y := by
+  rw [← RCLike.re_eq_complex_re]
+  exact RCLike.re_eq_ofReal_of_isSelfAdjoint hx
+
+lemma ofReal_eq_re_of_isSelfAdjoint {x : ℂ} {y : ℝ} (hx : IsSelfAdjoint x) :
+    y = Complex.re x ↔ y = x := by
+  rw [← RCLike.re_eq_complex_re]
+  exact RCLike.ofReal_eq_re_of_isSelfAdjoint hx
 
 /-- The natural isomorphism between `𝕜` satisfying `RCLike 𝕜` and `ℂ` when
 `RCLike.im RCLike.I = 1`. -/
@@ -390,6 +406,19 @@ lemma orderClosedTopology : OrderClosedTopology ℂ where
     refine IsClosed.inter (isClosed_le ?_ ?_) (isClosed_eq ?_ ?_) <;> continuity
 
 scoped[ComplexOrder] attribute [instance] Complex.orderClosedTopology
+
+theorem norm_of_nonneg' {x : ℂ} (hx : 0 ≤ x) : ‖x‖ = x := by
+  rw [← RCLike.ofReal_eq_complex_ofReal]
+  exact RCLike.norm_of_nonneg' hx
+
+lemma re_nonneg_iff_nonneg {x : ℂ} (hx : IsSelfAdjoint x) : 0 ≤ re x ↔ 0 ≤ x := by
+  rw [← RCLike.re_eq_complex_re]
+  exact RCLike.re_nonneg_of_nonneg hx
+
+@[gcongr]
+lemma re_le_re {x y : ℂ} (h : x ≤ y) : re x ≤ re y := by
+  rw [RCLike.le_iff_re_im] at h
+  exact h.1
 
 end ComplexOrder
 

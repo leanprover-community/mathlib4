@@ -84,7 +84,7 @@ theorem is_sol_mkSol (init : Fin E.order → R) : E.IsSolution (E.mkSol init) :=
 theorem mkSol_eq_init (init : Fin E.order → R) : ∀ n : Fin E.order, E.mkSol init n = init n := by
   intro n
   rw [mkSol]
-  simp only [n.is_lt, dif_pos, Fin.mk_val, Fin.eta]
+  simp only [n.is_lt, dif_pos, Fin.mk_val]
 
 /-- If `u` is a solution to `E` and `init` designates its first `E.order` values,
   then `∀ n, u n = E.mkSol init n`. -/

@@ -132,7 +132,7 @@ theorem is_prime_iff {a : Cardinal} : Prime a ↔ ℵ₀ ≤ a ∨ ∃ p : ℕ, 
 theorem isPrimePow_iff {a : Cardinal} : IsPrimePow a ↔ ℵ₀ ≤ a ∨ ∃ n : ℕ, a = n ∧ IsPrimePow n := by
   by_cases h : ℵ₀ ≤ a
   · simp [h, (prime_of_aleph0_le h).isPrimePow]
-  simp only [h, Nat.cast_inj, exists_eq_left', false_or, isPrimePow_nat_iff]
+  simp only [h, false_or, isPrimePow_nat_iff]
   lift a to ℕ using not_le.mp h
   rw [isPrimePow_def]
   refine

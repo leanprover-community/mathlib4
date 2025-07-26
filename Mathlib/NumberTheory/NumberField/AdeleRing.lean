@@ -103,8 +103,8 @@ ring to the mixed embedding `x ↦ (φᵢ(x))ᵢ` of `K` into the space `ℝ ^ r
 theorem mixedEmbedding_eq_algebraMap_comp {x : K} :
     mixedEmbedding K x = ringEquiv_mixedSpace K (algebraMap K _ x) := by
   ext v <;> simp only [ringEquiv_mixedSpace_apply, algebraMap_apply,
-    ringEquivRealOfIsReal, ringEquivComplexOfIsComplex, extensionEmbedding,
-    extensionEmbeddingOfIsReal, extensionEmbedding_of_comp, RingEquiv.coe_ofBijective,
+    extensionEmbedding,
+    extensionEmbeddingOfIsReal, extensionEmbedding_of_comp,
     RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, UniformSpace.Completion.extensionHom]
   · rw [UniformSpace.Completion.extension_coe
       (WithAbs.isUniformInducing_of_comp <| v.1.norm_embedding_of_isReal v.2).uniformContinuous x]
@@ -126,7 +126,7 @@ in practice are easier to work with than `AdeleRing (𝓞 ℚ) ℚ`.
 Note that this definition does not give the correct answer in the function field case.
 -/
 def AdeleRing (R K : Type*) [CommRing R] [IsDedekindDomain R] [Field K]
-  [Algebra R K] [IsFractionRing R K] := InfiniteAdeleRing K × FiniteAdeleRing R K
+    [Algebra R K] [IsFractionRing R K] := InfiniteAdeleRing K × FiniteAdeleRing R K
 
 namespace AdeleRing
 

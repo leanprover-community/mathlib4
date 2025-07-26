@@ -87,7 +87,7 @@ theorem card_roots_sub_C' {p : R[X]} {a : R} (hp0 : 0 < degree p) :
     Multiset.card (p - C a).roots ≤ natDegree p :=
   WithBot.coe_le_coe.1
     (le_trans (card_roots_sub_C hp0)
-      (le_of_eq <| degree_eq_natDegree fun h => by simp_all [lt_irrefl]))
+      (le_of_eq <| degree_eq_natDegree fun h => by simp_all))
 
 @[simp]
 theorem count_roots [DecidableEq R] (p : R[X]) : p.roots.count a = rootMultiplicity a p := by
@@ -117,7 +117,7 @@ theorem mem_roots_map_of_injective [Semiring S] {p : S[X]} {f : S →+* R}
 
 lemma mem_roots_iff_aeval_eq_zero {x : R} (w : p ≠ 0) : x ∈ roots p ↔ aeval x p = 0 := by
   rw [aeval_def, ← mem_roots_map_of_injective (FaithfulSMul.algebraMap_injective _ _) w,
-    Algebra.id.map_eq_id, map_id]
+    Algebra.algebraMap_self, map_id]
 
 theorem card_le_degree_of_subset_roots {p : R[X]} {Z : Finset R} (h : Z.val ⊆ p.roots) :
     #Z ≤ p.natDegree :=
@@ -281,7 +281,7 @@ theorem mem_nthRoots {n : ℕ} (hn : 0 < n) {a x : R} : x ∈ nthRoots n a ↔ x
 
 @[simp]
 theorem nthRoots_zero (r : R) : nthRoots 0 r = 0 := by
-  simp only [empty_eq_zero, pow_zero, nthRoots, ← C_1, ← C_sub, roots_C]
+  simp only [pow_zero, nthRoots, ← C_1, ← C_sub, roots_C]
 
 @[simp]
 theorem nthRoots_zero_right {R} [CommRing R] [IsDomain R] (n : ℕ) :
@@ -292,7 +292,7 @@ theorem card_nthRoots (n : ℕ) (a : R) : Multiset.card (nthRoots n a) ≤ n := 
   classical exact
   (if hn : n = 0 then
     if h : (X : R[X]) ^ n - C a = 0 then by
-      simp [Nat.zero_le, nthRoots, roots, h, dif_pos rfl, empty_eq_zero, Multiset.card_zero]
+      simp [nthRoots, roots, h, empty_eq_zero, Multiset.card_zero]
     else
       WithBot.coe_le_coe.1
         (le_trans (card_roots h)
@@ -367,6 +367,11 @@ theorem ne_zero_of_mem_nthRootsFinset {η : R} {a : R} (ha : a ≠ 0) (hη : η 
 
 theorem one_mem_nthRootsFinset (hn : 0 < n) : 1 ∈ nthRootsFinset n (1 : R) := by
   rw [mem_nthRootsFinset hn, one_pow]
+
+lemma nthRoots_two_one : Polynomial.nthRoots 2 (1 : R) = {-1,1} := by
+  have h₁ : (X ^ 2 - C 1 : R[X]) = (X + C 1) * (X - C 1) := by simp [← sq_sub_sq]
+  have h₂ : (X ^ 2 - C 1 : R[X]) ≠ 0 := fun h ↦ by simpa using congrArg (coeff · 0) h
+  rw [nthRoots, h₁, roots_mul (h₁ ▸ h₂), roots_X_add_C, roots_X_sub_C]; rfl
 
 end NthRoots
 
@@ -729,7 +734,7 @@ variable {A B : Type*} [CommRing A] [CommRing B]
 theorem le_rootMultiplicity_map {p : A[X]} {f : A →+* B} (hmap : map f p ≠ 0) (a : A) :
     rootMultiplicity a p ≤ rootMultiplicity (f a) (p.map f) := by
   rw [le_rootMultiplicity_iff hmap]
-  refine _root_.trans ?_ ((mapRingHom f).map_dvd (pow_rootMultiplicity_dvd p a))
+  refine _root_.trans ?_ (_root_.map_dvd (mapRingHom f) (pow_rootMultiplicity_dvd p a))
   rw [map_pow, map_sub, coe_mapRingHom, map_X, map_C]
 
 theorem eq_rootMultiplicity_map {p : A[X]} {f : A →+* B} (hf : Function.Injective f) (a : A) :

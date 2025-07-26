@@ -14,6 +14,26 @@ to learn about it as well!
   https://leanprover-community.github.io/install/macos.html
   If these web pages are deprecated or removed, we should remove these scripts.
 
+**Repository analysis and reporting**
+- `user_activity_report.py`
+  Generates a comprehensive report of all users with repository access and their last commit activity.
+  Shows username, age of last commit, and access level, sorted by commit recency (most recent first).
+
+  **Features:**
+  - Fetches repository collaborators and organization members via GitHub API
+  - Intelligent caching: user lists (24h TTL) and commit data (6h TTL) for performance
+  - Access level filtering: `--admin` (admin users only), `--write` (write+ access)
+  - Single user analysis: `--user USERNAME` for debugging specific users
+  - Result limiting: `--limit N` for testing with smaller datasets
+  - Inactive user cleanup: `--remove N` generates (but doesn't execute) gh commands
+    to remove write access from non-admin users inactive for more than N days
+  - Fallback to contributors API if collaborators access is restricted (`--contributors-only`)
+
+  **Caching:** Results cached in `scripts/users_cache.json` and `scripts/commits_cache.json`
+  (automatically added to .gitignore). Cache saved after each commit lookup to prevent data loss.
+
+  **Requirements:** `gh` (GitHub CLI) installed and authenticated (`gh auth login`).
+
 **Tools for manual maintenance**
 - `fix_unused.py`
   Bulk processing of unused variable warnings, replacing them with `_`.
@@ -21,6 +41,20 @@ to learn about it as well!
   It assumes that the only difference between master and the current status of the PR consists
   of renames. More precisely, any change on a line that contains a declaration name
   and is not a rename, will likely confuse the script.
+- `migrate_to_fork.py`
+  Helps contributors migrate from having direct write access to the main repository
+  to using a fork-based workflow. This comprehensive script automates the entire migration process:
+  * Validates the current branch (prevents migration of system branches like master, nightly-testing)
+  * Checks GitHub CLI installation/authentication with OS-specific installation instructions
+  * Creates or syncs a fork of mathlib4 automatically
+  * Sets up git remotes correctly (`upstream` for leanprover-community/mathlib4, `origin` for user's fork)
+  * Detects already-completed migration steps and skips them for efficiency
+  * Migrates the current branch to the fork with proper upstream tracking
+  * Intelligently handles existing PRs (migrates main repo PRs to fork-based PRs, detects existing fork PRs)
+  * Uses fast delete/re-add approach for remote operations to avoid slow branch tracking updates
+  * Provides comprehensive status reporting and next steps guidance
+  Run with `python3 scripts/migrate_to_fork.py` (interactive) or `python3 scripts/migrate_to_fork.py -y` (auto-accept).
+  Requires GitHub CLI (`gh`) installed and authenticated. Safe to run multiple times.
 
 **Analyzing Mathlib's import structure**
 - `unused_in_pole.sh` (followed by an optional `<target>`, defaulting to `Mathlib`)
@@ -118,6 +152,8 @@ please do not add new entries to these files. PRs removing (the need for) entrie
   This reaction is ✌️ (`:peace_sign:`) for delegated, `:bors:` for PRs sent to bors,
   `:merge` for merged PRs, ✍️ (`:writing:`) for PRs awaiting-author,
   🔨 (`:hammer:`) for maintainer-merged PRs and `:closed-pr:` for closed PRs.
+  PRs which were migrated to a fork (as indicated by the `migrated-to-fork` label)
+  additionally receive a reaction ... (`skip_forward`).
   Two of these are custom emojis configured on zulip.
 - `late_importers.sh` is the main script used by the `latest_import.yml` action: it formats
   the `linter.minImports` output, summarizing the data in a table.  See the module docs of

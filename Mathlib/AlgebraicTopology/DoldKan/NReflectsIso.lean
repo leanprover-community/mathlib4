@@ -55,10 +55,9 @@ instance : (N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)).Reflects
       have h₁₀ := h₁ 0
       have h₂₀ := h₂ 0
       dsimp at h₁₀ h₂₀
-      simp only [id_comp, comp_id] at h₁₀ h₂₀
+      simp only [id_comp] at h₁₀ h₂₀
       tauto
     | succ n hn =>
-      haveI := hn
       use φ { a := PInfty.f (n + 1) ≫ (inv (N₁.map f)).f.f (n + 1)
               b := fun i => inv (f.app (op ⦋n⦌)) ≫ X.σ i }
       simp only [MorphComponents.id, ← id_φ, ← preComp_φ, preComp, ← postComp_φ, postComp,
@@ -75,7 +74,7 @@ theorem compatibility_N₂_N₁_karoubi :
     · ext n
       · rfl
       · dsimp
-        simp only [karoubi_PInfty_f, comp_id, PInfty_f_naturality, id_comp, eqToHom_refl]
+        simp only [karoubi_PInfty_f, comp_id, PInfty_f_naturality, id_comp]
     · rintro _ n (rfl : n + 1 = _)
       ext
       have h := (AlternatingFaceMapComplex.map P.p).comm (n + 1) n

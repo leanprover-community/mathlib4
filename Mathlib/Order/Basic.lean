@@ -187,6 +187,32 @@ theorem forall_le_iff_ge : (∀ ⦃c⦄, a ≤ c → b ≤ c) ↔ b ≤ a :=
 theorem le_implies_le_of_le_of_le (hca : c ≤ a) (hbd : b ≤ d) : a ≤ b → c ≤ d :=
   fun hab ↦ (hca.trans hab).trans hbd
 
+namespace GCongr
+
+-- The `≤`-transitivity lemmas aren't strictly needed
+-- but it is a very common case, so we tag them anyways
+@[gcongr] theorem le_imp_le (h₁ : c ≤ a) (h₂ : b ≤ d) : a ≤ b → c ≤ d :=
+  fun h => le_trans (le_trans h₁ h) h₂
+
+attribute [gcongr] le_trans ge_trans
+
+@[gcongr] theorem lt_imp_lt (h₁ : c ≤ a) (h₂ : b ≤ d) : a < b → c < d :=
+  fun h => lt_of_lt_of_le (lt_of_le_of_lt h₁ h) h₂
+
+attribute [gcongr] lt_of_le_of_lt lt_of_le_of_lt'
+
+@[gcongr] theorem gt_imp_gt (h₁ : a ≤ c) (h₂ : d ≤ b) : a > b → c > d := lt_imp_lt h₂ h₁
+
+@[gcongr] theorem gt_imp_gt_left (h : a ≤ b) : c > b → c > a := lt_of_le_of_lt h
+
+@[gcongr] theorem gt_imp_gt_right (h : b ≤ a) : b > c → a > c := lt_of_le_of_lt' h
+
+/-- See if the term is `a < b` and the goal is `a ≤ b`. -/
+@[gcongr_forward] def exactLeOfLt : Mathlib.Tactic.GCongr.ForwardExt where
+  eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``le_of_lt #[h])
+
+end GCongr
+
 end Preorder
 
 /-! ### Partial order -/
@@ -210,7 +236,6 @@ alias LE.le.antisymm := le_antisymm
 alias LE.le.antisymm' := ge_antisymm
 alias LE.le.lt_of_ne := lt_of_le_of_ne
 alias LE.le.lt_of_ne' := lt_of_le_of_ne'
-alias LE.le.lt_or_eq := lt_or_eq_of_le
 
 -- Unnecessary brackets are here for readability
 lemma le_imp_eq_iff_le_imp_ge' : (a ≤ b → b = a) ↔ (a ≤ b → b ≤ a) where
@@ -231,20 +256,24 @@ namespace LE.le
 theorem lt_iff_ne (h : a ≤ b) : a < b ↔ a ≠ b :=
   ⟨fun h ↦ h.ne, h.lt_of_ne⟩
 
-theorem gt_iff_ne (h : a ≤ b) : a < b ↔ b ≠ a :=
+theorem lt_iff_ne' (h : a ≤ b) : a < b ↔ b ≠ a :=
   ⟨fun h ↦ h.ne.symm, h.lt_of_ne'⟩
 
 theorem not_lt_iff_eq (h : a ≤ b) : ¬a < b ↔ a = b :=
   h.lt_iff_ne.not_left
 
-theorem not_gt_iff_eq (h : a ≤ b) : ¬a < b ↔ b = a :=
-  h.gt_iff_ne.not_left
-
-theorem le_iff_eq (h : a ≤ b) : b ≤ a ↔ b = a :=
-  ⟨fun h' ↦ h'.antisymm h, Eq.le⟩
+theorem not_lt_iff_eq' (h : a ≤ b) : ¬a < b ↔ b = a :=
+  h.lt_iff_ne'.not_left
 
 theorem ge_iff_eq (h : a ≤ b) : b ≤ a ↔ a = b :=
   ⟨h.antisymm, Eq.ge⟩
+
+theorem ge_iff_eq' (h : a ≤ b) : b ≤ a ↔ b = a :=
+  ⟨fun h' ↦ h'.antisymm h, Eq.le⟩
+
+@[deprecated (since := "2025-06-08")] alias gt_iff_ne := lt_iff_ne'
+@[deprecated (since := "2025-06-08")] alias le_iff_eq := ge_iff_eq'
+@[deprecated (since := "2025-06-08")] alias not_gt_iff_eq := not_lt_iff_eq'
 
 end LE.le
 
@@ -257,34 +286,47 @@ theorem le_iff_eq_or_lt : a ≤ b ↔ a = b ∨ a < b := le_iff_lt_or_eq.trans o
 theorem lt_iff_le_and_ne : a < b ↔ a ≤ b ∧ a ≠ b :=
   ⟨fun h ↦ ⟨le_of_lt h, ne_of_lt h⟩, fun ⟨h1, h2⟩ ↦ h1.lt_of_ne h2⟩
 
-lemma eq_iff_not_lt_of_le (hab : a ≤ b) : a = b ↔ ¬ a < b := by simp [hab, lt_iff_le_and_ne]
+@[deprecated LE.le.not_lt_iff_eq (since := "2025-06-08")]
+lemma eq_iff_not_lt_of_le (hab : a ≤ b) : a = b ↔ ¬ a < b := hab.not_lt_iff_eq.symm
 
-alias LE.le.eq_iff_not_lt := eq_iff_not_lt_of_le
+@[deprecated (since := "2025-06-08")] alias LE.le.eq_iff_not_lt := eq_iff_not_lt_of_le
 
 -- See Note [decidable namespace]
 protected theorem Decidable.eq_iff_le_not_lt [DecidableLE α] : a = b ↔ a ≤ b ∧ ¬a < b :=
   ⟨fun h ↦ ⟨h.le, h ▸ lt_irrefl _⟩, fun ⟨h₁, h₂⟩ ↦
     h₁.antisymm <| Decidable.byContradiction fun h₃ ↦ h₂ (h₁.lt_of_not_ge h₃)⟩
 
-theorem eq_iff_le_not_lt : a = b ↔ a ≤ b ∧ ¬a < b :=
-  haveI := Classical.dec
+theorem eq_iff_le_not_lt : a = b ↔ a ≤ b ∧ ¬a < b := open scoped Classical in
   Decidable.eq_iff_le_not_lt
 
-theorem eq_or_lt_of_le (h : a ≤ b) : a = b ∨ a < b := h.lt_or_eq.symm
-theorem eq_or_gt_of_le (h : a ≤ b) : b = a ∨ a < b := h.lt_or_eq.symm.imp Eq.symm id
-theorem gt_or_eq_of_le (h : a ≤ b) : a < b ∨ b = a := (eq_or_gt_of_le h).symm
+-- See Note [decidable namespace]
+protected theorem Decidable.eq_or_lt_of_le [DecidableLE α] (h : a ≤ b) : a = b ∨ a < b :=
+  (Decidable.lt_or_eq_of_le h).symm
+
+theorem eq_or_lt_of_le (h : a ≤ b) : a = b ∨ a < b := (lt_or_eq_of_le h).symm
+theorem eq_or_lt_of_le' (h : a ≤ b) : b = a ∨ a < b := (eq_or_lt_of_le h).imp Eq.symm id
+theorem lt_or_eq_of_le' (h : a ≤ b) : a < b ∨ b = a := (eq_or_lt_of_le' h).symm
 
 alias LE.le.lt_or_eq_dec := Decidable.lt_or_eq_of_le
 alias LE.le.eq_or_lt_dec := Decidable.eq_or_lt_of_le
+alias LE.le.lt_or_eq := lt_or_eq_of_le
 alias LE.le.eq_or_lt := eq_or_lt_of_le
-alias LE.le.eq_or_gt := eq_or_gt_of_le
-alias LE.le.gt_or_eq := gt_or_eq_of_le
+alias LE.le.eq_or_lt' := eq_or_lt_of_le'
+alias LE.le.lt_or_eq' := lt_or_eq_of_le'
 
-theorem eq_of_le_of_not_lt (hab : a ≤ b) (hba : ¬a < b) : a = b := hab.eq_or_lt.resolve_right hba
-theorem eq_of_ge_of_not_gt (hab : a ≤ b) (hba : ¬a < b) : b = a := (eq_of_le_of_not_lt hab hba).symm
+@[deprecated (since := "2025-06-08")] alias eq_or_gt_of_le := eq_or_lt_of_le'
+@[deprecated (since := "2025-06-08")] alias gt_or_eq_of_le := lt_or_eq_of_le'
+@[deprecated (since := "2025-06-08")] alias LE.le.eq_or_gt := LE.le.eq_or_lt'
+@[deprecated (since := "2025-06-08")] alias LE.le.gt_or_eq := LE.le.lt_or_eq'
+
+theorem eq_of_le_of_not_lt (h₁ : a ≤ b) (h₂ : ¬a < b) : a = b := h₁.eq_or_lt.resolve_right h₂
+theorem eq_of_le_of_not_lt' (h₁ : a ≤ b) (h₂ : ¬a < b) : b = a := (eq_of_le_of_not_lt h₁ h₂).symm
 
 alias LE.le.eq_of_not_lt := eq_of_le_of_not_lt
-alias LE.le.eq_of_not_gt := eq_of_ge_of_not_gt
+alias LE.le.eq_of_not_lt' := eq_of_le_of_not_lt'
+
+@[deprecated (since := "2025-06-08")] alias eq_of_ge_of_not_gt := eq_of_le_of_not_lt'
+@[deprecated (since := "2025-06-08")] alias LE.le.eq_of_not_gt := LE.le.eq_of_not_lt'
 
 theorem Ne.le_iff_lt (h : a ≠ b) : a ≤ b ↔ a < b := ⟨fun h' ↦ lt_of_le_of_ne h' h, fun h ↦ h.le⟩
 
@@ -949,8 +991,7 @@ theorem compare_of_injective_eq_compareOfLessAndEq (a b : α) [LinearOrder β]
   split_ifs <;> try (first | rfl | contradiction)
   · have : ¬ f a = f b := by rename_i h; exact inj.ne h
     contradiction
-  · have : f a = f b := by rename_i h; exact congrArg f h
-    contradiction
+  · grind
 
 /-- Transfer a `LinearOrder` on `β` to a `LinearOrder` on `α` using an injective
 function `f : α → β`. This version takes `[Max α]` and `[Min α]` as arguments, then uses
@@ -1058,10 +1099,14 @@ theorem mk_le_mk [LE α] {p : α → Prop} {x y : α} {hx : p x} {hy : p y} :
     (⟨x, hx⟩ : Subtype p) ≤ ⟨y, hy⟩ ↔ x ≤ y :=
   Iff.rfl
 
+@[gcongr] alias ⟨_, GCongr.mk_le_mk⟩ := mk_le_mk
+
 @[simp]
 theorem mk_lt_mk [LT α] {p : α → Prop} {x y : α} {hx : p x} {hy : p y} :
     (⟨x, hx⟩ : Subtype p) < ⟨y, hy⟩ ↔ x < y :=
   Iff.rfl
+
+@[gcongr] alias ⟨_, GCongr.mk_lt_mk⟩ := mk_lt_mk
 
 @[simp, norm_cast]
 theorem coe_le_coe [LE α] {p : α → Prop} {x y : Subtype p} : (x : α) ≤ y ↔ x ≤ y :=

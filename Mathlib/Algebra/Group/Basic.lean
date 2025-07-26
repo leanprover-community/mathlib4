@@ -173,16 +173,16 @@ lemma pow_eq_pow_mod (m : ℕ) (ha : a ^ n = 1) : a ^ m = a ^ (m % n) := by
 
 @[to_additive (attr := simp)]
 lemma mul_left_iterate (a : M) : ∀ n : ℕ, (a * ·)^[n] = (a ^ n * ·)
-  | 0 =>  by ext; simp
+  | 0 => by ext; simp
   | n + 1 => by ext; simp [pow_succ, mul_left_iterate]
 
 @[to_additive (attr := simp)]
 lemma mul_right_iterate (a : M) : ∀ n : ℕ, (· * a)^[n] = (· * a ^ n)
-  | 0 =>  by ext; simp
+  | 0 => by ext; simp
   | n + 1 => by ext; simp [pow_succ', mul_right_iterate]
 
 @[to_additive]
-lemma mul_left_iterate_apply_one (a : M) : (a * ·)^[n] 1 = a ^ n := by simp [mul_right_iterate]
+lemma mul_left_iterate_apply_one (a : M) : (a * ·)^[n] 1 = a ^ n := by simp
 
 @[to_additive]
 lemma mul_right_iterate_apply_one (a : M) : (· * a)^[n] 1 = a ^ n := by simp [mul_right_iterate]
@@ -254,7 +254,7 @@ end LeftCancelMonoid
 
 section RightCancelMonoid
 
-variable [RightCancelMonoid M] {a b : M}
+variable [Monoid M] [IsRightCancelMul M] {a b : M}
 
 @[to_additive (attr := simp)]
 theorem mul_eq_right : a * b = b ↔ a = 1 := calc
@@ -444,7 +444,7 @@ lemma inv_pow (a : α) : ∀ n : ℕ, a⁻¹ ^ n = (a ^ n)⁻¹
 -- the attributes are intentionally out of order. `smul_zero` proves `zsmul_zero`.
 @[to_additive zsmul_zero, simp]
 lemma one_zpow : ∀ n : ℤ, (1 : α) ^ n = 1
-  | (n : ℕ)    => by rw [zpow_natCast, one_pow]
+  | (n : ℕ) => by rw [zpow_natCast, one_pow]
   | .negSucc n => by rw [zpow_negSucc, one_pow, inv_one]
 
 @[to_additive (attr := simp) neg_zsmul]
@@ -461,7 +461,7 @@ lemma mul_zpow_neg_one (a b : α) : (a * b) ^ (-1 : ℤ) = b ^ (-1 : ℤ) * a ^ 
 
 @[to_additive zsmul_neg]
 lemma inv_zpow (a : α) : ∀ n : ℤ, a⁻¹ ^ n = (a ^ n)⁻¹
-  | (n : ℕ)    => by rw [zpow_natCast, zpow_natCast, inv_pow]
+  | (n : ℕ) => by rw [zpow_natCast, zpow_natCast, inv_pow]
   | .negSucc n => by rw [zpow_negSucc, zpow_negSucc, inv_pow]
 
 @[to_additive (attr := simp) zsmul_neg']
@@ -730,7 +730,7 @@ lemma div_mul_cancel_right (a b : G) : a / (b * a) = b⁻¹ := by rw [← inv_di
 
 @[to_additive (attr := simp)]
 theorem mul_div_mul_right_eq_div (a b c : G) : a * c / (b * c) = a / b := by
-  rw [div_mul_eq_div_div_swap]; simp only [mul_left_inj, eq_self_iff_true, mul_div_cancel_right]
+  rw [div_mul_eq_div_div_swap]; simp only [mul_div_cancel_right]
 
 @[to_additive eq_sub_of_add_eq]
 theorem eq_div_of_mul_eq' (h : a * c = b) : a = b / c := by simp [← h]
@@ -1062,3 +1062,37 @@ lemma hom_coe_pow {F : Type*} [Monoid F] (c : F → M → M) (h1 : c 1 = id)
     rw [pow_zero, h1]
     rfl
   | n + 1 => by rw [pow_succ, iterate_succ, hmul, hom_coe_pow c h1 hmul f n]
+
+/-!
+# Instances for `grind`.
+-/
+
+open Lean
+
+variable (α : Type*)
+
+instance AddCommMonoid.toGrindNatModule [s : AddCommMonoid α] :
+    Grind.NatModule α :=
+  { s with
+    nsmul := ⟨s.nsmul⟩
+    zero_nsmul := AddMonoid.nsmul_zero
+    one_nsmul := one_nsmul
+    add_nsmul n m a := add_nsmul a n m
+    nsmul_zero := nsmul_zero
+    nsmul_add n a b := nsmul_add a b n }
+
+instance AddCommGroup.toGrindIntModule [s : AddCommGroup α] :
+    Grind.IntModule α :=
+  { s with
+    nsmul := ⟨s.nsmul⟩
+    zsmul := ⟨s.zsmul⟩
+    zero_zsmul := SubNegMonoid.zsmul_zero'
+    one_zsmul := one_zsmul
+    add_zsmul n m a := add_zsmul a n m
+    zsmul_zero := zsmul_zero
+    zsmul_add n a b := zsmul_add a b n
+    zsmul_natCast_eq_nsmul n a := by simp }
+
+instance IsRightCancelAdd.toGrindAddRightCancel [AddSemigroup α] [IsRightCancelAdd α] :
+    Grind.AddRightCancel α where
+  add_right_cancel _ _ _ := add_right_cancel
