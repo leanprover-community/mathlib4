@@ -1205,11 +1205,11 @@ local notation "⟪" x ", " y "⟫ₑ" => inner 𝕜 (toLp 2 x) (toLp 2 y)
 /-- The inner product of a row of `A` and a row of `B` is an entry of `B * Aᴴ`. -/
 theorem inner_matrix_row_row [Fintype n] (A B : Matrix m n 𝕜) (i j : m) :
     ⟪A i, B j⟫ₑ = (B * Aᴴ) j i := by
-  simp [dotProduct, mul_apply']
+  simp [PiLp.inner_apply, dotProduct, mul_apply']
 
 /-- The inner product of a column of `A` and a column of `B` is an entry of `Aᴴ * B`. -/
 theorem inner_matrix_col_col [Fintype m] (A B : Matrix m n 𝕜) (i j : n) :
     ⟪Aᵀ i, Bᵀ j⟫ₑ = (Aᴴ * B) i j := by
-  simp [dotProduct, mul_apply', mul_comm]
+  simp [PiLp.inner_apply, dotProduct, mul_apply', mul_comm]
 
 end Matrix
