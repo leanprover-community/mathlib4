@@ -819,7 +819,7 @@ def adjunctionOfCatCospanAdjunction (𝔄 : CatCospanAdjunction R B R' B') :
       ← Functor.whiskerLeft_comp_assoc, ← Functor.whiskerRight_comp_assoc,
       ← Functor.whiskerLeft_comp, Functor.whiskerRight_id',
       Functor.whiskerLeft_id'] at this
-    dsimp [-functorOfTransformObjId_hom_app] at this
+    dsimp at this
     simp only [Category.id_comp] at this
     exact this
   right_triangle_components x := by
@@ -846,7 +846,7 @@ def adjunctionOfCatCospanAdjunction (𝔄 : CatCospanAdjunction R B R' B') :
       ← Functor.whiskerLeft_comp_assoc, ← Functor.whiskerRight_comp_assoc,
       ← Functor.whiskerRight_comp, Functor.whiskerRight_id',
       Functor.whiskerLeft_id'] at this
-    dsimp [-functorOfTransformObjId_hom_app] at this
+    dsimp at this
     simp only [Category.id_comp] at this
     exact this
 
