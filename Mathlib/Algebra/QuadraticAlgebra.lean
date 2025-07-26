@@ -373,11 +373,10 @@ def imₗ : QuadraticAlgebra R a b →ₗ[R] R where
   map_smul' _ _ := rfl
 
 /-- `QuadraticAlgebra.equivTuple` as a `LinearEquiv` -/
-def linearEquivTuple : QuadraticAlgebra R a b ≃ₗ[R] (Fin 2 → R) :=
-  LinearEquiv.symm {
-  (equivTuple a b).symm with
-  map_add' _ _ := rfl
-  map_smul' _ _ := rfl }
+def linearEquivTuple : QuadraticAlgebra R a b ≃ₗ[R] (Fin 2 → R) where
+  __ := equivTuple a b
+  map_add' _ _ := funext <| Fin.forall_fin_two.2 ⟨rfl, rfl⟩
+  map_smul' _ _ := funext <| Fin.forall_fin_two.2 ⟨rfl, rfl⟩
 
 @[simp]
 lemma coe_linearEquivTuple :
