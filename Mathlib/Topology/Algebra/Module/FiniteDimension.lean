@@ -548,3 +548,16 @@ theorem ContinuousLinearMap.exists_right_inverse_of_surjective [FiniteDimensiona
     ∃ g : F →L[𝕜] E, f.comp g = ContinuousLinearMap.id 𝕜 F :=
   let ⟨g, hg⟩ := (f : E →ₗ[𝕜] F).exists_rightInverse_of_surjective hf
   ⟨LinearMap.toContinuousLinearMap g, ContinuousLinearMap.coe_inj.1 hg⟩
+
+/-- If `K` is a complete field and `L` is a finite dimensional vector space over `K`, and `K` is
+locally compact, then `L` is locally compact.
+
+This is not an instance because `K` cannot be inferred. -/
+theorem LocallyCompactSpace.of_finiteDimensional_of_complete (K L : Type*)
+    [NontriviallyNormedField K] [CompleteSpace K] [LocallyCompactSpace K]
+    [AddCommGroup L] [TopologicalSpace L] [IsTopologicalAddGroup L] [T2Space L]
+    [Module K L] [ContinuousSMul K L] [FiniteDimensional K L] :
+    LocallyCompactSpace L := by
+  obtain ⟨s, ⟨b⟩⟩ := Basis.exists_basis K L
+  haveI := FiniteDimensional.fintypeBasisIndex b
+  exact b.equivFun.toContinuousLinearEquiv.toHomeomorph.isOpenEmbedding.locallyCompactSpace
