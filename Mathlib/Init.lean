@@ -80,6 +80,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.setOption
   linter.style.show
   linter.style.maxHeartbeats
+  linter.style.indenting
   -- The `docPrime` linter is disabled: https://github.com/leanprover-community/mathlib4/issues/20560
 
 -- Check that all linter options mentioned in the mathlib standard linter set exist.

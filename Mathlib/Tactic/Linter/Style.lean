@@ -582,4 +582,117 @@ initialize addLinter showLinter
 
 end Style.show
 
+/-- docstring TODO -/
+register_option linter.style.indenting : Bool := {
+  defValue := false
+  descr := "enable the indenting linter"
+}
+
+register_option linter.style.indenting.strictlyIncrease : Bool := {
+  defValue := false
+  descr := "TODO"
+}
+
+namespace Style.indenting
+
+/-- docstring TODO -/
+inductive PositionInfo where
+| node (pos : Option String.Pos) (children : Array PositionInfo) (stx : Syntax)
+| leaf (pos : Option String.Pos) (stx : Syntax)
+
+/-- docstring TODO -/
+def PositionInfo.pos (p : PositionInfo) : Option String.Pos :=
+  match p with
+  | .node pos ..
+  | .leaf pos _ => pos
+
+/-- docstring TODO -/
+def PositionInfo.stx (p : PositionInfo) : Syntax :=
+  match p with
+  | .node _ _ stx
+  | .leaf _ stx => stx
+
+/-- docstring TODO -/
+def PositionInfo.headTail (p : PositionInfo) : Option <| PositionInfo × Array PositionInfo :=
+  match p with
+  | .node _ children _ =>
+    children[0]?.map fun head ↦ (head, children[1:])
+  | .leaf .. => .none
+
+/-- docstring TODO -/
+partial def PositionInfo.ofSyntax (stx : Syntax) : Option PositionInfo :=
+  match stx with
+  | .atom s ..
+  | .ident s .. =>
+    let pos : Option String.Pos := match s with
+      | .original _ start _ _ => .some start
+      | _ => .none
+    .some <| .leaf pos stx
+  | .node _ _ args =>
+    let children := args.map PositionInfo.ofSyntax |>.filterMap id
+    children[0]?.map (.node ·.pos children stx)
+  | .missing => .none
+
+/-- docstring TODO -/
+def spacesBefore (str : String) (pos : String.Pos) : Option Nat :=
+  let beforePos : Substring := ⟨str, str.findLineStart pos, pos⟩
+  if beforePos.all (· == ' ') then .some beforePos.bsize else .none
+
+/-- docstring TODO.
+
+TODO: enable `strictlyIncrease` for specific (hard-coded) kinds of syntax?
+-/
+partial def checkIndenting (src : String) (posInfo : PositionInfo)
+    (strictlyIncrease : Bool := false) (oldIndenting : Option Nat := .none)
+    (continueWhenFailed : Bool := true) : CommandElabM Unit := do
+  let warn (msg) : CommandElabM Unit := do
+    logLint linter.style.indenting posInfo.stx msg
+  if let .leaf .. := posInfo then -- warn only in leaf to avoid duplicating warnings
+    if let .some pos := posInfo.pos then
+      if let .some spaces := spacesBefore src pos then
+        match oldIndenting with
+        | .none =>
+          if spaces != 0 then
+            warn "here should be no space at the beginning of the line"
+            if !continueWhenFailed then return
+        | .some oldIndenting =>
+          let atLeast := if strictlyIncrease then oldIndenting + 2 else oldIndenting
+          if spaces < atLeast then
+            warn s!"too few spaces, which should be at least {atLeast}"
+            if !continueWhenFailed then return
+
+  if let .some ⟨head, headTail⟩ := posInfo.headTail then
+    checkIndenting src head strictlyIncrease oldIndenting continueWhenFailed
+    if headTail.isEmpty then return
+    /- `parentIndentingOfTail` is to deal with cases like
+      example : Nat → Nat
+        | 0 => 0
+        | _ => whenNeZero
+      where
+        whenNeZero : Nat := 0
+    -/
+    let parentIndentingOfTail := match posInfo.stx with
+      | .node _ ``Term.matchAltsWhereDecls _ => oldIndenting
+      | _ =>
+        let oldIndenting := oldIndenting.getD 0
+        posInfo.pos.map (spacesBefore src · |>.getD oldIndenting) |>.getD oldIndenting
+    for child in headTail do
+      checkIndenting src child strictlyIncrease parentIndentingOfTail continueWhenFailed
+
+@[inherit_doc Mathlib.Linter.linter.style.indenting]
+partial def indentingLinter : Linter where run := withSetOptionIn fun stx => do
+  unless getLinterValue linter.style.indenting (← getLinterOptions) do
+    return
+  if (← get).messages.hasErrors then
+    return
+  let posInfo := PositionInfo.ofSyntax stx
+  let .some posInfo := posInfo | return
+  let src := (← getFileMap).source
+  checkIndenting src posInfo
+    (getLinterValue linter.style.indenting.strictlyIncrease (← getLinterOptions))
+
+initialize addLinter indentingLinter
+
+end Style.indenting
+
 end Mathlib.Linter
