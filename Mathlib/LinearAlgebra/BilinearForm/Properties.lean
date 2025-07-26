@@ -34,6 +34,7 @@ Bilinear form,
 
 
 open LinearMap (BilinForm)
+open Module
 
 universe u v w
 
@@ -321,11 +322,9 @@ noncomputable def dualBasis (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basi
 theorem dualBasis_repr_apply
     (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basis ι K V) (x i) :
     (B.dualBasis hB b).repr x i = B x (b i) := by
-  #adaptation_note /-- https://github.com/leanprover/lean4/pull/4814
-  we did not need the `@` in front of `toDual_def` in the `rw`.
-  I'm confused! -/
+  have := FiniteDimensional.of_fintype_basis b
   rw [dualBasis, Basis.map_repr, LinearEquiv.symm_symm, LinearEquiv.trans_apply,
-    Basis.dualBasis_repr, @toDual_def]
+    Basis.dualBasis_repr, toDual_def]
 
 theorem apply_dualBasis_left (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basis ι K V) (i j) :
     B (B.dualBasis hB b i) (b j) = if j = i then 1 else 0 := by
@@ -375,7 +374,7 @@ theorem comp_symmCompOfNondegenerate_apply (B₁ : BilinForm K V) {B₂ : BilinF
     (b₂ : B₂.Nondegenerate) (v : V) :
     B₂ (B₁.symmCompOfNondegenerate B₂ b₂ v) = B₁ v := by
   rw [symmCompOfNondegenerate]
-  simp only [coe_comp, LinearEquiv.coe_coe, Function.comp_apply, DFunLike.coe_fn_eq]
+  simp only [coe_comp, LinearEquiv.coe_coe, Function.comp_apply]
   erw [LinearEquiv.apply_symm_apply (B₂.toDual b₂)]
 
 @[simp]

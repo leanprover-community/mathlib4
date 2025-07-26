@@ -205,7 +205,7 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
       · rw [mem_coe, ← apply_mem_support, mem_support] at hxτ
         rw [Set.union_apply_right, Set.union_apply_right]
         · simp only [subtypeEquiv_apply, Perm.coe_mul, Sum.map_inr, comp_apply,
-            Set.union_symm_apply_right, Subtype.coe_mk, apply_eq_iff_eq]
+            Set.union_symm_apply_right, Subtype.coe_mk]
           have h := (hd2 (g (τ x))).resolve_right ?_
           · rw [mul_apply, mul_apply] at h
             rw [inv_apply_self, h, (hd1 (τ x)).resolve_right hxτ]

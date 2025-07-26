@@ -11,8 +11,8 @@ import Mathlib.Algebra.Polynomial.Derivation
 # The Kaehler differential module of polynomial algebras
 -/
 
+open Algebra Module
 open scoped TensorProduct
-open Algebra
 
 universe u v
 
@@ -33,7 +33,7 @@ def KaehlerDifferential.mvPolynomialEquiv (σ : Type*) :
     induction x using Finsupp.induction_linear with
     | zero => simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom]; rw [map_zero, map_zero]
     | add => simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, map_add] at *; simp only [*]
-    | single a b => simp [LinearMap.map_smul, -map_smul]
+    | single a b => simp [-map_smul]
   left_inv := by
     intro x
     obtain ⟨x, rfl⟩ := linearCombination_surjective _ _ x

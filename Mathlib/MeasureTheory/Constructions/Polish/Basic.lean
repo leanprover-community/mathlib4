@@ -263,7 +263,7 @@ theorem AnalyticSet.iInter [hι : Nonempty ι] [Countable ι] [T2Space α] {s : 
       choose x hx using A
       have xt : x ∈ t := by
         refine mem_iInter.2 fun n => ?_
-        simp [γ, t, F, hx]
+        simp [γ, hx]
       refine ⟨⟨x, xt⟩, ?_⟩
       exact hx i₀
   rw [← F_range]
@@ -277,7 +277,7 @@ theorem AnalyticSet.iUnion [Countable ι] {s : ι → Set α} (hs : ∀ n, Analy
     coincides with `f n` on `β n` sends it to `⋃ n, s n`. -/
   choose β hβ h'β f f_cont f_range using fun n =>
     analyticSet_iff_exists_polishSpace_range.1 (hs n)
-  let γ := Σn, β n
+  let γ := Σ n, β n
   let F : γ → α := fun ⟨n, x⟩ ↦ f n x
   have F_cont : Continuous F := continuous_sigma f_cont
   have F_range : range F = ⋃ n, s n := by
@@ -726,10 +726,7 @@ theorem MeasureTheory.measurableSet_range_of_continuous_injective {β : Type*} [
     have C2 : ∀ n, (s n).1.Nonempty := by
       intro n
       rw [nonempty_iff_ne_empty]
-      intro hn
-      have := (s n).2
-      rw [hn] at this
-      exact b_nonempty this
+      grind
     -- choose a point `y n ∈ s n`.
     choose y hy using C2
     have I : ∀ m n, ((s m).1 ∩ (s n).1).Nonempty := by
@@ -909,9 +906,9 @@ end
 section LinearOrder
 
 variable {α β : Type*} {t : Set α} {g : α → β}
-[TopologicalSpace α] [MeasurableSpace α] [BorelSpace α] [LinearOrder α] [OrderTopology α]
-[PolishSpace α]
-[TopologicalSpace β] [MeasurableSpace β] [BorelSpace β] [LinearOrder β] [OrderTopology β]
+  [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α] [LinearOrder α] [OrderTopology α]
+  [PolishSpace α]
+  [TopologicalSpace β] [MeasurableSpace β] [BorelSpace β] [LinearOrder β] [OrderTopology β]
 
 theorem MeasurableSet.image_of_monotoneOn_of_continuousOn
     (ht : MeasurableSet t) (hg : MonotoneOn g t) (h'g : ContinuousOn g t) :

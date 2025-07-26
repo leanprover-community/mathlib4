@@ -30,8 +30,8 @@ In this file we use the following type variables:
 Bilinear form,
 -/
 
-
 open LinearMap (BilinForm)
+open Module
 
 universe u v w
 
@@ -288,7 +288,7 @@ lemma ker_restrict_eq_of_codisjoint {p q : Submodule R M} (hpq : Codisjoint p q)
   simp only [LinearMap.mem_ker, Submodule.mem_comap, Submodule.coe_subtype]
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · ext w
-    obtain ⟨x, hx, y, hy, rfl⟩ := Submodule.exists_add_eq_of_codisjoint hpq w
+    obtain ⟨x, y, hx, hy, rfl⟩ := Submodule.codisjoint_iff_exists_add_eq.mp hpq w
     simpa [hB z hz y hy] using LinearMap.congr_fun h ⟨x, hx⟩
   · ext ⟨x, hx⟩
     simpa using LinearMap.congr_fun h x

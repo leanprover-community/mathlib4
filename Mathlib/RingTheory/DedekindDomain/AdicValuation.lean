@@ -60,9 +60,7 @@ dedekind domain, dedekind ring, adic valuation
 
 noncomputable section
 
-open scoped Multiplicative
-
-open Multiplicative IsDedekindDomain
+open WithZero Multiplicative IsDedekindDomain
 
 variable {R : Type*} [CommRing R] [IsDedekindDomain R] {K S : Type*} [Field K] [CommSemiring S]
   [Algebra R K] [IsFractionRing R K] (v : HeightOneSpectrum R)
@@ -75,7 +73,7 @@ open scoped Classical in
 /-- The additive `v`-adic valuation of `r ∈ R` is the exponent of `v` in the factorization of the
 ideal `(r)`, if `r` is nonzero, or infinity, if `r = 0`. `intValuationDef` is the corresponding
 multiplicative valuation. -/
-def intValuationDef (r : R) : ℤₘ₀ :=
+def intValuationDef (r : R) : ℤᵐ⁰ :=
   if r = 0 then 0
   else
     ↑(Multiplicative.ofAdd
@@ -167,7 +165,7 @@ theorem intValuation.map_add_le_max' (x y : R) :
         apply v.associates_irreducible
 
 /-- The `v`-adic valuation on `R`. -/
-def intValuation : Valuation R ℤₘ₀ where
+def intValuation : Valuation R ℤᵐ⁰ where
   toFun := v.intValuationDef
   map_zero' := intValuation.map_zero' v
   map_one' := intValuation.map_one' v
@@ -281,7 +279,7 @@ theorem intValuation_exists_uniformizer :
   rw [Associates.mk_pow, Associates.prime_pow_dvd_iff_le hπ hv, not_le] at notMem
   exact Nat.eq_of_le_of_lt_succ mem notMem
 
-/-- The `I`-adic valuation of a generator of `I` equals `(-1 : ℤₘ₀)` -/
+/-- The `I`-adic valuation of a generator of `I` equals `(-1 : ℤᵐ⁰)` -/
 theorem intValuation_singleton {r : R} (hr : r ≠ 0) (hv : v.asIdeal = Ideal.span {r}) :
     v.intValuation r = Multiplicative.ofAdd (-1 : ℤ) := by
   classical
@@ -294,7 +292,7 @@ theorem intValuation_singleton {r : R} (hr : r ≠ 0) (hv : v.asIdeal = Ideal.sp
 variable (K) in
 /-- The `v`-adic valuation of `x ∈ K` is the valuation of `r` divided by the valuation of `s`,
 where `r` and `s` are chosen so that `x = r/s`. -/
-def valuation (v : HeightOneSpectrum R) : Valuation K ℤₘ₀ :=
+def valuation (v : HeightOneSpectrum R) : Valuation K ℤᵐ⁰ :=
   v.intValuation.extendToLocalization
     (fun r hr => Set.mem_compl <| v.intValuation_ne_zero' ⟨r, hr⟩) K
 
@@ -386,7 +384,7 @@ ring of integers, denoted `v.adicCompletionIntegers`. -/
 variable {K}
 
 /-- `K` as a valued field with the `v`-adic valuation. -/
-def adicValued : Valued K ℤₘ₀ :=
+def adicValued : Valued K ℤᵐ⁰ :=
   Valued.mk' (v.valuation K)
 
 theorem adicValued_apply {x : K} : v.adicValued.v x = v.valuation K x :=
@@ -477,7 +475,7 @@ end Algebra
 
 theorem coe_algebraMap_mem (r : R) : ↑((algebraMap R K) r) ∈ adicCompletionIntegers K v := by
   rw [mem_adicCompletionIntegers]
-  letI : Valued K ℤₘ₀ := adicValued v
+  letI : Valued K ℤᵐ⁰ := adicValued v
   dsimp only [adicCompletion]
   rw [Valued.valuedCompletion_apply]
   exact v.valuation_le_one _
@@ -506,7 +504,7 @@ instance : Algebra R (v.adicCompletionIntegers K) where
     rw [mul_comm]
   smul_def' r x := by
     ext
-    simp only [Subring.coe_mul, Algebra.smul_def]
+    simp only [Algebra.smul_def]
     rfl
 
 variable {R K} in
@@ -556,7 +554,7 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
     (a : v.adicCompletion K) : ∃ b ∈ R⁰, a * b ∈ v.adicCompletionIntegers K := by
   by_cases ha : a ∈ v.adicCompletionIntegers K
   · use 1
-    simp [ha, Submonoid.one_mem]
+    simp [ha]
   · rw [notMem_adicCompletionIntegers] at ha
     -- Let the additive valuation of a be -d with d>0
     obtain ⟨d, hd⟩ : ∃ d : ℤ, Valued.v a = ofAdd d :=
@@ -567,7 +565,7 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
     have hϖ0 : ϖ ≠ 0 := by rintro rfl; simp at hϖ
     -- use ϖ^d
     refine ⟨ϖ^d.natAbs, pow_mem (mem_nonZeroDivisors_of_ne_zero hϖ0) _, ?_⟩
-    -- now manually translate the goal (an inequality in ℤₘ₀) to an inequality in ℤ
+    -- now manually translate the goal (an inequality in ℤᵐ⁰) to an inequality in ℤ
     rw [mem_adicCompletionIntegers, algebraMap.coe_pow, map_mul, hd, map_pow,
       valuedAdicCompletion_eq_valuation, valuation_of_algebraMap, hϖ, ← WithZero.coe_pow,
       ← WithZero.coe_mul, WithZero.coe_le_one, ← toAdd_le, toAdd_mul, toAdd_ofAdd, toAdd_pow,
@@ -605,7 +603,7 @@ def adicAbv (v : HeightOneSpectrum R) {b : NNReal} (hb : 1 < b) : AbsoluteValue 
   map_mul' _ _ := by simp [adicAbvDef]
   nonneg' _ := NNReal.zero_le_coe
   eq_zero' _ := by simp [adicAbvDef]
-  add_le' _ _ := (isNonarchimedean_adicAbvDef v hb).add_le fun _ ↦ zero_le _
+  add_le' _ _ := (isNonarchimedean_adicAbvDef v hb).add_le fun _ ↦ bot_le
 
 variable {R K} in
 /-- The `v`-adic absolute value is nonarchimedean -/

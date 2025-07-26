@@ -123,10 +123,16 @@ theorem apply_eq_iff_eq {α β} (f : α ↪ β) (x y : α) : f x = f y ↔ x = y
 protected def refl (α : Sort*) : α ↪ α :=
   ⟨id, injective_id⟩
 
+@[norm_cast]
+theorem coe_refl (α : Sort*) : ⇑(Embedding.refl α) = id := rfl
+
 /-- Composition of `f : α ↪ β` and `g : β ↪ γ`. -/
 @[trans, simps +simpRhs]
 protected def trans {α β γ} (f : α ↪ β) (g : β ↪ γ) : α ↪ γ :=
   ⟨g ∘ f, g.injective.comp f.injective⟩
+
+@[norm_cast]
+theorem coe_trans {α β γ} (f : α ↪ β) (g : β ↪ γ) : ⇑(f.trans g) = ⇑g ∘ ⇑f := rfl
 
 instance : Trans Embedding Embedding Embedding := ⟨Embedding.trans⟩
 
@@ -172,7 +178,7 @@ def setValue {α β : Sort*} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidabl
   ⟨fun a' => if a' = a then b else if f a' = b then f a else f a', by
     intro x y h
     simp only at h
-    split_ifs at h <;> (try subst b) <;> (try simp only [f.injective.eq_iff] at *) <;> cc⟩
+    split_ifs at h <;> (try subst b) <;> (try simp only [f.injective.eq_iff] at *) <;> grind⟩
 
 @[simp]
 theorem setValue_eq {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = a)]
@@ -299,13 +305,13 @@ variable {α α' : Type*} {β : α → Type*} {β' : α' → Type*}
 
 /-- `Sigma.mk` as a `Function.Embedding`. -/
 @[simps apply]
-def sigmaMk (a : α) : β a ↪ Σx, β x :=
+def sigmaMk (a : α) : β a ↪ Σ x, β x :=
   ⟨Sigma.mk a, sigma_mk_injective⟩
 
 /-- If `f : α ↪ α'` is an embedding and `g : Π a, β α ↪ β' (f α)` is a family
 of embeddings, then `Sigma.map f g` is an embedding. -/
 @[simps apply]
-def sigmaMap (f : α ↪ α') (g : ∀ a, β a ↪ β' (f a)) : (Σa, β a) ↪ Σa', β' a' :=
+def sigmaMap (f : α ↪ α') (g : ∀ a, β a ↪ β' (f a)) : (Σ a, β a) ↪ Σ a', β' a' :=
   ⟨Sigma.map f fun a => g a, f.injective.sigma_map fun a => (g a).injective⟩
 
 end Sigma
@@ -333,6 +339,27 @@ noncomputable def arrowCongrLeft {α : Sort u} {β : Sort v} {γ : Sort w} [Inha
     (α → γ) ↪ β → γ :=
   ⟨fun f => extend e f default, fun f₁ f₂ h =>
     funext fun x => by simpa only [e.injective.extend_apply] using congr_fun h (e x)⟩
+
+-- `simps` would generate this over-applied
+@[simp]
+theorem arrowCongrLeft_apply {α : Sort u} {β : Sort v} {γ : Sort w} [Inhabited γ] (e : α ↪ β)
+    (f : α → γ) :
+    arrowCongrLeft e f = extend e f default :=
+  rfl
+
+@[simp]
+theorem arrowCongrLeft_refl {α : Sort u} {γ : Sort w} [Inhabited γ] :
+    (Function.Embedding.refl α).arrowCongrLeft (γ := γ) = .refl _ := by
+  ext
+  simp [coe_refl]
+
+@[simp]
+theorem trans_arrowCongrLeft {α₁ : Sort u} {α₂ : Sort v} {α₃ : Sort x} {γ : Sort w}
+    [Inhabited γ] (e₁₂ : α₁ ↪ α₂) (e₂₃ : α₂ ↪ α₃) :
+    e₁₂.arrowCongrLeft.trans e₂₃.arrowCongrLeft = (e₁₂.trans e₂₃).arrowCongrLeft (γ := γ) := by
+  ext f a
+  simp only [trans_apply, arrowCongrLeft_apply, Pi.default_def, coe_trans]
+  rw [e₁₂.injective.extend_comp e₂₃.injective, Function.comp_def]
 
 /-- Restrict both domain and codomain of an embedding. -/
 protected def subtypeMap {α β} {p : α → Prop} {q : β → Prop} (f : α ↪ β)
