@@ -7,6 +7,7 @@ import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Analysis.Normed.Operator.LinearIsometry
 import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Analysis.Normed.Module.Basic
+import Mathlib.LinearAlgebra.AffineSpace.ContinuousAffineEquiv
 import Mathlib.LinearAlgebra.AffineSpace.Restrict
 import Mathlib.Tactic.FailIfNoProgress
 
@@ -171,6 +172,23 @@ theorem diam_image (s : Set P) : Metric.diam (f '' s) = Metric.diam s :=
 theorem diam_range : Metric.diam (range f) = Metric.diam (univ : Set P) :=
   f.isometry.diam_range
 
+/-- Interpret an affine isometry as a continuous affine map. -/
+def toContinuousAffineMap : P →ᴬ[𝕜] P₂ where
+  toAffineMap := f.toAffineMap
+  cont := f.continuous
+
+theorem toContinuousAffineMap_injective :
+    Function.Injective (toContinuousAffineMap : _ → P →ᴬ[𝕜] P₂) := fun x _ h =>
+  coeFn_injective (congr_arg _ h : ⇑x.toContinuousAffineMap = _)
+
+@[simp]
+theorem toContinuousAffineMap_inj {f g : P →ᵃⁱ[𝕜] P₂} :
+    f.toContinuousAffineMap = g.toContinuousAffineMap ↔ f = g :=
+  toContinuousAffineMap_injective.eq_iff
+
+@[simp]
+theorem coe_toContinuousAffineMap : ⇑f.toContinuousAffineMap = f := rfl
+
 @[simp]
 theorem comp_continuous_iff {α : Type*} [TopologicalSpace α] {g : α → P} :
     Continuous (f ∘ g) ↔ Continuous g :=
@@ -309,6 +327,9 @@ theorem toAffineEquiv_injective : Injective (toAffineEquiv : (P ≃ᵃⁱ[𝕜] 
 theorem ext {e e' : P ≃ᵃⁱ[𝕜] P₂} (h : ∀ x, e x = e' x) : e = e' :=
   toAffineEquiv_injective <| AffineEquiv.ext h
 
+theorem coeFn_injective : @Injective (P ≃ᵃⁱ[𝕜] P₂) (P → P₂) (fun f => f) :=
+  DFunLike.coe_injective
+
 /-- Reinterpret an `AffineIsometryEquiv` as an `AffineIsometry`. -/
 def toAffineIsometry : P →ᵃⁱ[𝕜] P₂ :=
   ⟨e.1.toAffineMap, e.2⟩
@@ -407,6 +428,38 @@ protected theorem continuousOn {s} : ContinuousOn e s :=
 
 protected theorem continuousWithinAt {s x} : ContinuousWithinAt e s x :=
   e.continuous.continuousWithinAt
+
+/-- Interpret a `LinearIsometryEquiv` as a `ContinuousLinearEquiv`. -/
+def toContinuousAffineEquiv : P ≃ᴬ[𝕜] P₂ :=
+  { e.toAffineEquiv, e.toHomeomorph with }
+
+theorem toContinuousAffineEquiv_injective :
+    Function.Injective (toContinuousAffineEquiv : _ → P ≃ᴬ[𝕜] P₂) := fun x _ h =>
+  coeFn_injective (congr_arg _ h : ⇑x.toContinuousAffineEquiv = _)
+
+@[simp]
+theorem toContinuousAffineEquiv_inj {f g : P ≃ᵃⁱ[𝕜] P₂} :
+    f.toContinuousAffineEquiv = g.toContinuousAffineEquiv ↔ f = g :=
+  toContinuousAffineEquiv_injective.eq_iff
+
+@[simp]
+theorem coe_toContinuousAffineEquiv : ⇑e.toContinuousAffineEquiv = e :=
+  rfl
+
+/-- Reinterpret a `LinearIsometryEquiv` as a `ContinuousLinearEquiv`. -/
+instance instCoeTCContinuousAffineEquiv : CoeTC (P ≃ᵃⁱ[𝕜] P₂) (P ≃ᴬ[𝕜] P₂) :=
+  ⟨fun e => e.toContinuousAffineEquiv⟩
+
+instance instCoeTCContinuousAffineMap : CoeTC (P ≃ᵃⁱ[𝕜] P₂) (P →ᴬ[𝕜] P₂) :=
+  ⟨fun e => e.toContinuousAffineEquiv.toContinuousAffineMap⟩
+
+@[simp]
+theorem coe_coe : ⇑(e : P ≃ᴬ[𝕜] P₂) = e :=
+  rfl
+
+@[simp]
+theorem coe_coe' : ⇑(e : P →ᴬ[𝕜] P₂) = e :=
+  rfl
 
 variable (𝕜 P)
 
