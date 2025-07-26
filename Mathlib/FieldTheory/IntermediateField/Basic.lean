@@ -683,6 +683,11 @@ theorem restrictScalars_injective :
     Function.Injective (restrictScalars K : IntermediateField L' L → IntermediateField K L) :=
   fun U V H => ext fun x => by rw [← mem_restrictScalars K, H, mem_restrictScalars]
 
+@[simp]
+theorem restrictScalars_inj {E E' : IntermediateField L' L} :
+    E.restrictScalars K = E'.restrictScalars K ↔ E = E' :=
+  (restrictScalars_injective K).eq_iff
+
 end RestrictScalars
 
 /-- This was formerly an instance called `lift2_alg`, but an instance above already provides it. -/
