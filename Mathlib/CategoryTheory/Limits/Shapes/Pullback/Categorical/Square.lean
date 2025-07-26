@@ -391,6 +391,7 @@ lemma functorOfTransform_obj_map_fst
         ψ.left T').hom.app _ := by
   simp
 
+@[simps!]
 instance functorOfTransformObjSndSquare (ψ : CatCospanTransform R B R' B') :
     CatCommSq L (functorOfTransform T L T' L'|>.obj ψ) ψ.right L' where
   iso := (CatCommSqOver.sndFunctor _ _ _|>.mapIso <|
