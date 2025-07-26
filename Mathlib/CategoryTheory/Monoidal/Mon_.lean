@@ -204,6 +204,9 @@ instance {A B : Mon_ C} (f : A ⟶ B) [e : IsIso ((forget C).map f)] : IsIso f.h
 instance : (forget C).ReflectsIsomorphisms where
   reflects f e := ⟨⟨.mk' (inv f.hom), by aesop_cat⟩⟩
 
+instance {M N : Mon_ C} {f : M ⟶ N} [IsIso f] : IsIso f.hom :=
+  inferInstanceAs <| IsIso <| (forget C).map f
+
 /-- Construct an isomorphism of monoids by giving an isomorphism between the underlying objects
 and checking compatibility with unit and multiplication only in the forward direction.
 -/
