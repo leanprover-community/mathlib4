@@ -81,7 +81,7 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
 
           have hm_pos_weight : m_pos ∈ genWeightSpace L α.1.toLinear := hm_pos
           have hm_neg_weight : m_neg ∈ genWeightSpace L (-α.1).toLinear := hm_neg
-          have hm_h_coroot : m_h ∈ IsKilling.H_α α.1 := hm_h
+          have hm_h_coroot : m_h ∈ IsKilling.corootSubmodule α.1 := hm_h
 
           have h_bracket_sum : ⁅x_χ, m_α⁆ = ⁅x_χ, m_pos⁆ + ⁅x_χ, m_neg⁆ + ⁅x_χ, m_h⁆ := by
             rw [hm_α_decomp, lie_add, lie_add]
@@ -506,7 +506,7 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
                   exact this
                 rw [hi_val, hj_val] at h_pairing_eq
                 exact h_pairing_eq.symm
-              simp only [IsKilling.H_α] at hm_h
+              simp only [IsKilling.corootSubmodule] at hm_h
               obtain ⟨h_elem, hh_elem, hh_eq⟩ := hm_h
               have h_bracket_elem : ⁅x_χ, (h_elem : L)⁆ = 0 :=
                 IsKilling.zero_pairing_implies_zero_bracket H χ α.1 x_χ hx_χ h_elem hh_elem
