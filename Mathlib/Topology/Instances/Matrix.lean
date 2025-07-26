@@ -50,15 +50,10 @@ section Set
 
 theorem IsOpen.matrix [Fintype m] [Fintype n]
     [TopologicalSpace R] {S : Set R} (hS : IsOpen S) :
-    IsOpen (S.matrix : Set (Matrix m n R)) := by
-  rw [isOpen_pi_iff']
-  intro f hf
-  use fun i ↦ {g | ∀ j, g j ∈ S}
-  refine ⟨fun i ↦ ⟨?_, hf i⟩, fun f hf ↦ by simpa using hf⟩
-  rw [isOpen_pi_iff']
-  intro g hg
-  use fun j ↦ S
-  exact ⟨fun j ↦ ⟨hS, hg j⟩, fun g hg ↦ by simp_all⟩
+    IsOpen (S.matrix : Set (Matrix m n R)) :=
+  Set.matrix_eq_pi ▸
+    (isOpen_set_pi Set.finite_univ fun _ _ =>
+    isOpen_set_pi Set.finite_univ fun _ _ => hS).preimage continuous_id
 
 theorem IsCompact.matrix [TopologicalSpace R] {S : Set R} (hS : IsCompact S) :
     IsCompact (S.matrix : Set (Matrix m n R)) :=
