@@ -10,19 +10,31 @@ import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
 /-!
 
-# R[X] / (X² − a • X − b)
+# Quadratic Algebra
 
-TODO: Add module docstring
+In this file we define the quadratic algebra `QuadraticAlgebra R a b` over a commutative ring `R`,
+and define some algebraic structures on it.
+
+## Main definitions
+
+* `QuadraticAlgebra R a b`:
+  [Bourbaki, *Algebra I*][bourbaki1989] with coefficients `a`, `b` in `R`.
+
+## Tags
+
+Quadratic algebra, quadratic extension
+
 -/
--- a + b α
+
 universe u
 
-/-- `R[X]/(X^2−a*X−b)` -/
+/-- Quadratic algebra over a type with fixed coefficient where $i^2 = a + bi$, implemented as
+a structure with two fields, `re` and `im`. -/
 @[ext]
 structure QuadraticAlgebra (R : Type u) (a b : R) : Type u where
-  /-- TODO: Add docstring -/
+  /-- Real part of an element in quadratic algebra -/
   re : R
-  /-- TODO: Add docstring -/
+  /-- Imaginaty part of an element in quadratic algerba -/
   im : R
 
 namespace QuadraticAlgebra
