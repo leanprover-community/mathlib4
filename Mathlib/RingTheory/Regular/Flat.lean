@@ -47,19 +47,16 @@ variable {R S M N : Type*} [CommRing R] [CommRing S] [Algebra R S] [Flat R S]
 theorem RingTheory.Sequence.IsWeaklyRegular.of_flat_isBaseChange
     {f : M →ₗ[R] N} (hf : IsBaseChange S f) {rs : List R} (reg : IsWeaklyRegular M rs) :
     IsWeaklyRegular N (rs.map (algebraMap R S)) := by
-  generalize len : rs.length = n
-  induction' n with n ih generalizing M N rs
-  · simp [List.length_eq_zero_iff.mp len]
-  · match rs with
-    | [] => simp at len
-    | x :: rs' =>
-      simp only [List.length_cons, Nat.add_right_cancel_iff] at len
-      simp only [isWeaklyRegular_cons_iff, List.map_cons] at reg ⊢
-      have e := (QuotSMulTop.algebraMapTensorEquivTensorQuotSMulTop x M S).symm ≪≫ₗ
-        QuotSMulTop.congr ((algebraMap R S) x) hf.equiv
-      have hg : IsBaseChange S <|
-          e.toLinearMap.restrictScalars R ∘ₗ TensorProduct.mk R S (QuotSMulTop x M) 1 :=
-        IsBaseChange.of_equiv e (fun _ ↦ by simp)
+  induction rs generalizing M N with
+  | nil => simp
+  | cons x rs ih =>
+    simp only [List.map_cons, isWeaklyRegular_cons_iff] at reg ⊢
+    have e := (QuotSMulTop.algebraMapTensorEquivTensorQuotSMulTop x M S).symm ≪≫ₗ
+      QuotSMulTop.congr ((algebraMap R S) x) hf.equiv
+    have hg : IsBaseChange S <|
+        e.toLinearMap.restrictScalars R ∘ₗ TensorProduct.mk R S (QuotSMulTop x M) 1 :=
+      IsBaseChange.of_equiv e (fun _ ↦ by simp)
+    exact ⟨reg.1.of_flat_isBaseChange hf, ih hg reg.2⟩
       exact ⟨reg.1.of_flat_isBaseChange hf, ih hg reg.2 len⟩
 
 theorem RingTheory.Sequence.IsWeaklyRegular.of_flat {rs : List R} (reg : IsWeaklyRegular R rs) :
