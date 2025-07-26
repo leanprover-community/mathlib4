@@ -243,6 +243,22 @@ theorem linearIndependent_one_tmul {S} [Semiring S] [Algebra R S] [Flat R S] {ι
     Finsupp.linearCombination_one_tmul]
   simpa using lTensor_preserves_injective_linearMap _ hv
 
+section IsTensorProduct
+
+variable {M₁ M₂ N₁ N₂ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁] [Module R M₂]
+  [AddCommMonoid N₁] [AddCommMonoid N₂] [Module R N₁] [Module R N₂]
+  {gm : M₁ →ₗ[R] M₂ →ₗ[R] M} {gn : N₁ →ₗ[R] N₂ →ₗ[R] N}
+
+theorem _root_.IsTensorProduct.map_injective_of_flat [Module.Flat R M₂] [Module.Flat R N₁]
+    (hm : IsTensorProduct gm) (hn : IsTensorProduct gn) (f : M₁ →ₗ[R] N₁) (g : M₂ →ₗ[R] N₂)
+    (hf : Function.Injective f) (hg : Function.Injective g) :
+    Function.Injective (IsTensorProduct.map hm hn f g) := by sorry
+
+theorem _root_.IsTensorProduct.map_injective_of_flat' [Module.Flat R M₁] [Module.Flat R N₂]
+    (hm : IsTensorProduct gm) (hn : IsTensorProduct gn) (f : M₁ →ₗ[R] N₁) (g : M₂ →ₗ[R] N₂)
+    (hf : Function.Injective f) (hg : Function.Injective g) :
+    Function.Injective (IsTensorProduct.map hm hn f g) := by sorry
+
 theorem isBaseChange_preserves_injective_linearMap
     {S : Type*} [CommSemiring S] [Algebra R S] [Flat R S]
     {M' : Type*} [AddCommMonoid M'] [Module R M'] [Module S M'] [IsScalarTower R S M']
@@ -261,6 +277,8 @@ theorem isBaseChange_preserves_injective_linearMap
     · intro _ _ h₁ h₂
       simp [h₁, h₂]
   simpa [h] using lTensor_preserves_injective_linearMap f hf
+
+end IsTensorProduct
 
 end Flat
 
