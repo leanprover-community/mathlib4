@@ -155,6 +155,16 @@ theorem norm_toContinuousLinearMap [Nontrivial E] [RingHomIsometric σ₁₂] (f
     ‖f.toContinuousLinearMap‖ = 1 :=
   f.toContinuousLinearMap.homothety_norm <| by simp
 
+@[simp]
+theorem nnnorm_toContinuousLinearMap [Nontrivial E] [RingHomIsometric σ₁₂] (f : E →ₛₗᵢ[σ₁₂] F) :
+    ‖f.toContinuousLinearMap‖₊ = 1 :=
+  Subtype.ext f.norm_toContinuousLinearMap
+
+@[simp]
+theorem enorm_toContinuousLinearMap [Nontrivial E] [RingHomIsometric σ₁₂] (f : E →ₛₗᵢ[σ₁₂] F) :
+    ‖f.toContinuousLinearMap‖ₑ = 1 :=
+  congrArg _ f.nnnorm_toContinuousLinearMap
+
 variable {σ₁₃ : 𝕜 →+* 𝕜₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 
 /-- Postcomposition of a continuous linear map with a linear isometry preserves
