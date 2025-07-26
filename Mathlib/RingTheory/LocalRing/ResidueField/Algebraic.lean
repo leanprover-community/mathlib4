@@ -23,5 +23,5 @@ instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) (P 
   haveI : IsScalarTower (R ⧸ p) p.ResidueField P.ResidueField := by
     refine .of_algebraMap_eq fun x ↦ ?_
     obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-    simp [RingHom.algebraMap_toAlgebra, Algebra.ofId_apply]
+    simp [RingHom.algebraMap_toAlgebra, Algebra.ofId_apply, ← IsScalarTower.algebraMap_apply]
   refine .extendScalars (Ideal.injective_algebraMap_quotient_residueField p)

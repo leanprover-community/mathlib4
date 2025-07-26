@@ -265,11 +265,24 @@ noncomputable instance (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.Li
   (Localization.localRingHom p P (algebraMap A B) Ideal.LiesOver.over).toAlgebra
 
 instance (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p] :
+    IsLocalHom (algebraMap (Localization.AtPrime p) (Localization.AtPrime P)) :=
+  Localization.isLocalHom_localRingHom _ _ _ Ideal.LiesOver.over
+
+instance (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p] :
     IsScalarTower R (Localization.AtPrime p) (Localization.AtPrime P) :=
   .of_algebraMap_eq <| by
     simp [RingHom.algebraMap_toAlgebra, IsScalarTower.algebraMap_apply R A (Localization.AtPrime p),
       Localization.localRingHom_to_map, IsScalarTower.algebraMap_apply R B (Localization.AtPrime P),
       IsScalarTower.algebraMap_apply R A B]
+
+instance {R : Type*} [CommRing R] [Algebra R A] [Algebra R B] [IsScalarTower R A B]
+    (p : Ideal R) [p.IsPrime] (P : Ideal A) [P.IsPrime] [P.LiesOver p]
+    (Q : Ideal B) [Q.IsPrime] [Q.LiesOver P] [Q.LiesOver p] :
+    IsScalarTower (Localization.AtPrime p) (Localization.AtPrime P) (Localization.AtPrime Q) :=
+  .of_algebraMap_eq' <| by
+    apply IsLocalization.ringHom_ext (M := p.primeCompl)
+    rw [← IsScalarTower.algebraMap_eq, RingHom.comp_assoc, ← IsScalarTower.algebraMap_eq,
+      ← IsScalarTower.algebraMap_eq]
 
 end
 
