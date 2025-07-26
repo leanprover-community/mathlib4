@@ -581,11 +581,11 @@ theorem iIndepFun_iff_measure_inter_preimage_eq_mul {ι : Type*} {β : ι → Ty
 
 alias ⟨iIndepFun.measure_inter_preimage_eq_mul, _⟩ := iIndepFun_iff_measure_inter_preimage_eq_mul
 
-theorem iIndepFun_congr_iff {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
+theorem iIndepFun_congr {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
     {f g : Π i, Ω → β i} (h : ∀ i, f i =ᵐ[μ] g i) :
     iIndepFun f μ ↔ iIndepFun g μ := Kernel.iIndepFun_congr_iff (by simp [h])
 
-alias ⟨iIndepFun.congr, _⟩ := iIndepFun_congr_iff
+alias ⟨iIndepFun.congr, _⟩ := iIndepFun_congr
 
 nonrec lemma iIndepFun.comp {β γ : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
     {mγ : ∀ i, MeasurableSpace (γ i)} {f : ∀ i, Ω → β i}
