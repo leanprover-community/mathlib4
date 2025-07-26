@@ -137,14 +137,7 @@ private lemma triple_eq_triple_of_mem (hst : Disjoint s t) (hsu : Disjoint s u) 
     (x₁, y₁, z₁) = (x₂, y₂, z₂) := by
   simp only [Finset.Subset.antisymm_iff, subset_iff, mem_insert, mem_singleton, forall_eq_or_imp,
     forall_eq] at h
-  rw [disjoint_left] at hst hsu htu
-  rw [Prod.mk_inj, Prod.mk_inj]
-  simp only [and_assoc, @or_left_comm _ (y₁ = y₂), @or_comm _ (z₁ = z₂),
-    @or_left_comm _ (z₁ = z₂)] at h
-  refine ⟨h.1.resolve_right (not_or_intro ?_ ?_), h.2.1.resolve_right (not_or_intro ?_ ?_),
-    h.2.2.1.resolve_right (not_or_intro ?_ ?_)⟩ <;>
-  · rintro rfl
-    solve_by_elim
+  grind [disjoint_left]
 
 variable [Fintype α]
 
