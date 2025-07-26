@@ -494,6 +494,29 @@ lemma ValueGroupWithZero.lift_valuation {α : Sort*} (f : R → posSubmonoid R �
     ValueGroupWithZero.lift f hf (valuation R x) = f x 1 :=
   rfl
 
+lemma ValueGroupWithZero.mk_eq_valuation {K : Type*} [Field K] [ValuativeRel K]
+    (x : K) (y : posSubmonoid K) :
+    ValueGroupWithZero.mk x y = valuation K (x / y) := by
+  rw [Valuation.map_div]
+  change ValueGroupWithZero.mk x y = .mk x 1 / .mk y 1
+  rw [div_eq_mul_inv, ← ValueGroupWithZero.inv_mk, inv_inv, ValueGroupWithZero.mk_mul_mk]
+  simp
+
+lemma exists_valuation_div_valuation_eq (γ : ValueGroupWithZero R) :
+    ∃ (a : R) (b : posSubmonoid R), valuation _ a / valuation _ (b : R) = γ := by
+  induction γ using ValueGroupWithZero.ind with | mk a b
+  use a, b
+  simp [valuation, div_eq_mul_inv, ValueGroupWithZero.inv_mk (b : R) 1 b.prop]
+
+-- See `exists_valuation_div_valuation_eq` for the version that works for all rings.
+theorem valuation_surjective {K : Type*} [Field K] [ValuativeRel K] :
+    Function.Surjective (valuation K) := by
+  intro a
+  induction a using ValueGroupWithZero.ind with
+  | mk x y =>
+    rw [ValueGroupWithZero.mk_eq_valuation]
+    exact ⟨_, rfl⟩
+
 /-- Construct a valuative relation on a ring using a valuation. -/
 def ofValuation
     {S Γ : Type*} [CommRing S]
@@ -616,22 +639,28 @@ lemma isNontrivial_iff_nontrivial_units :
     · exact ⟨s.val, by simp, by simpa using h.symm⟩
     · exact ⟨r.val, by simp, by simpa using hr⟩
 
-lemma isNontrivial_iff_isNontrivial :
-    IsNontrivial R ↔ (valuation R).IsNontrivial := by
+lemma isNontrivial_iff_isNontrivial
+    {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ₀] (v : Valuation R Γ₀) [v.Compatible] :
+    IsNontrivial R ↔ v.IsNontrivial := by
   constructor
   · rintro ⟨r, hr, hr'⟩
     induction r using ValueGroupWithZero.ind with | mk r s
-    by_cases hs : valuation R s = 1
-    · refine ⟨r, ?_, ?_⟩
-      · simpa [valuation] using hr
-      · simp only [ne_eq, ValueGroupWithZero.mk_eq_one, not_and, valuation, Valuation.coe_mk,
-          MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, OneMemClass.coe_one] at hr' hs ⊢
-        contrapose! hr'
-        exact hr'.imp hs.right.trans' hs.left.trans
-    · refine ⟨s, ?_, hs⟩
-      simp [valuation, ← posSubmonoid_def]
+    replace hγ : v r ≠ 0 := by simpa [Valuation.Compatible.rel_iff_le (v := v)] using hr
+    replace hγ' : v r ≤ v s → v r < v s := by
+      simpa [Valuation.Compatible.rel_iff_le (v := v)] using hr'
+    by_cases hr : v r = 1
+    · refine ⟨s, ?_, ?_⟩
+      · simpa [-SetLike.coe_mem, Valuation.Compatible.rel_iff_le (v := v)] using s.2
+      · intro h
+        simp [h, hr] at hγ'
+    · exact ⟨r, by simpa using hγ, hr⟩
   · rintro ⟨r, hr, hr'⟩
-    exact ⟨valuation R r, hr, hr'⟩
+    exact ⟨valuation R r, (isEquiv v (valuation R)).ne_zero.mp hr,
+      by simpa [(isEquiv v (valuation R)).eq_one_iff_eq_one] using hr'⟩
+
+instance {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ₀]
+    [IsNontrivial R] (v : Valuation R Γ₀) [v.Compatible] :
+    v.IsNontrivial := by rwa [← isNontrivial_iff_isNontrivial]
 
 variable (R) in
 /-- A ring with a valuative relation is discrete if its value group-with-zero
@@ -639,12 +668,6 @@ has a maximal element `< 1`. -/
 class IsDiscrete where
   has_maximal_element :
     ∃ γ : ValueGroupWithZero R, γ < 1 ∧ (∀ δ : ValueGroupWithZero R, δ < 1 → δ ≤ γ)
-
-lemma valuation_surjective (γ : ValueGroupWithZero R) :
-    ∃ (a : R) (b : posSubmonoid R), valuation _ a / valuation _ (b : R) = γ := by
-  induction γ using ValueGroupWithZero.ind with | mk a b
-  use a, b
-  simp [valuation, div_eq_mul_inv, ValueGroupWithZero.inv_mk (b : R) 1 b.prop]
 
 end ValuativeRel
 
