@@ -156,9 +156,8 @@ theorem circleAverage_mono_on_of_le_circle {f : ℂ → ℝ} {a : ℝ} (hf : Cir
     circleAverage f c R ≤ a := by
   rw [← circleAverage_const a c |R|, circleAverage, circleAverage, smul_eq_mul, smul_eq_mul,
     mul_le_mul_iff_of_pos_left (inv_pos.2 two_pi_pos)]
-  apply intervalIntegral.integral_mono_on_of_le_Ioo (le_of_lt two_pi_pos) hf
-  · apply intervalIntegrable_const
-  · exact fun θ _ ↦ h₂f (circleMap c R θ) (circleMap_mem_sphere' c R θ)
+  exact intervalIntegral.integral_mono_on_of_le_Ioo (le_of_lt two_pi_pos) hf
+    intervalIntegrable_const (fun θ _ ↦ h₂f (circleMap c R θ) (circleMap_mem_sphere' c R θ))
 
 /--
 Analogue of `intervalIntegral.abs_integral_le_integral_abs`: The absolute value of a circle average
