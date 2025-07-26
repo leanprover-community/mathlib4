@@ -342,7 +342,7 @@ instance whiskeringLeftFunctorEquivFunctorSquare
 
 /-- The equivalence `functorEquiv` identifies the functoriality
 on `X` of `X ⥤ C₁` and `CatCommSqOver F G X` (inverse direction). -/
-@[simps!]
+@[simps! -isSimp]
 instance precomposeToFunctorToCategoricalPullbackSquare
     {X : Type u₅} {Y : Type u₆} [Category.{v₅} X] [Category.{v₆} Y]
     (U : X ⥤ Y) :
