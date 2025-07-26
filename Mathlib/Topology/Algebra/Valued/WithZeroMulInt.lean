@@ -24,11 +24,13 @@ variable {R Γ₀ : Type*} [Ring R] [LinearOrderedCommGroupWithZero Γ₀]
 -- TODO: use ValuativeRel after #26833
 lemma tendsto_zero_pow_of_v_lt_one [MulArchimedean Γ₀] [Valued R Γ₀] {x : R} (hx : v x < 1) :
     Tendsto (fun n : ℕ ↦ x ^ n) atTop (𝓝 0) := by
-  simp only [(hasBasis_nhds_zero _ _).tendsto_right_iff, mem_setOf_eq, map_pow, eventually_atTop,
-    forall_const]
-  intro y
-  obtain ⟨n, hn⟩ := exists_pow_lt₀ hx y
+  simp only [(hasBasis_nhds_zero _ _).tendsto_right_iff, ne_eq, mem_setOf_eq, map_pow,
+    eventually_atTop, ge_iff_le, and_imp, Prod.forall]
+  rintro r s hr hs
+  obtain ⟨n, hn⟩ := exists_pow_lt₀ hx (Units.mk0 (v s / v r) (by simp [hr, hs]))
   refine ⟨n, fun m hm ↦ ?_⟩
+  rw [← lt_div_iff₀ (zero_lt_iff.mpr hr)]
+  simp only [Units.val_mk0] at hn
   refine hn.trans_le' ?_
   exact pow_le_pow_right_of_le_one' hx.le hm
 

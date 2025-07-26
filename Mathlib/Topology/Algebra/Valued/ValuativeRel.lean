@@ -17,29 +17,92 @@ to facilitate a refactor.
 
 -/
 
-namespace ValuativeRel
-
-variable {R : Type*} [CommRing R]
-
-instance [UniformSpace R] [IsUniformAddGroup R] [ValuativeRel R] [ValuativeTopology R] :
-    Valued R (ValueGroupWithZero R) :=
-  .mk (valuation R) ValuativeTopology.mem_nhds_iff
-
-end ValuativeRel
-
 namespace ValuativeTopology
 
-variable {R : Type*} [CommRing R] [ValuativeRel R] [TopologicalSpace R] [ValuativeTopology R]
+variable {R : Type*} [CommRing R] [ValuativeRel R]
 
 open ValuativeRel TopologicalSpace Filter Topology Set
 
-local notation "v" => valuation R
+lemma of_hasBasis [TopologicalSpace R] (h : (𝓝 (0 : R)).HasBasis (fun _ ↦ True)
+    fun γ : (ValueGroupWithZero R)ˣ ↦ { x | (valuation R) x < γ }) :
+    ValuativeTopology R :=
+  ⟨by simp [h.mem_iff]⟩
+
+lemma of_hasBasis_pair [TopologicalSpace R]
+    (h : (𝓝 (0 : R)).HasBasis (fun rs : R × R ↦ rs.1 ∈ posSubmonoid R ∧ rs.2 ∈ posSubmonoid R)
+      fun rs  ↦ { x | x * rs.2 <ᵥ rs.1 }) :
+    ValuativeTopology R := by
+  refine of_hasBasis (h.to_hasBasis ?_ ?_)
+  · rintro ⟨r, s⟩ ⟨hr, hs⟩
+    refine ⟨Units.mk0 (.mk r ⟨s, hs⟩) ?_, trivial, ?_⟩
+    · simpa using hr
+    · simp [valuation]
+  · rintro γ -
+    obtain ⟨r, s, h⟩ := valuation_surjective γ.val
+    by_cases hr : valuation R r = 0
+    · simp [hr, eq_comm] at h
+    · refine ⟨⟨r, s⟩, ⟨by simpa [valuation_eq_zero_iff] using hr, s.prop⟩, ?_⟩
+      simp only [← h, Set.setOf_subset_setOf]
+      intro x hx
+      rw [lt_div_iff₀ (by simp [zero_lt_iff])]
+      simp [valuation, hx]
+
+lemma of_hasBasis_compatible {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ₀] [TopologicalSpace R]
+    {v : Valuation R Γ₀} [v.Compatible]
+    (h : (𝓝 (0 : R)).HasBasis (fun rs : R × R ↦ v rs.1 ≠ 0 ∧ v rs.2 ≠ 0)
+    fun rs : R × R ↦ { x | v x * v rs.2 < v rs.1 }) :
+    ValuativeTopology R := by
+  have : v.IsEquiv (valuation R) := isEquiv _ _
+  refine of_hasBasis_pair (h.to_hasBasis ?_ ?_) <;>
+  · simp only [this.ne_zero, ne_eq, valuation_eq_zero_iff, posSubmonoid_def, setOf_subset_setOf,
+    and_imp, Prod.exists, Prod.forall]
+    intro r s hr hs
+    refine ⟨r, s, ⟨hr, hs⟩, fun x ↦ ?_⟩
+    rw [← map_mul v, ← Valuation.Compatible.rel_lt_iff_lt]
+    grind
+
+variable [TopologicalSpace R] [ValuativeTopology R]
 
 variable (R) in
 theorem hasBasis_nhds_zero :
     (𝓝 (0 : R)).HasBasis (fun _ => True)
-      fun γ : (ValueGroupWithZero R)ˣ => { x | v x < γ } := by
+      fun γ : (ValueGroupWithZero R)ˣ => { x | valuation _ x < γ } := by
   simp [Filter.hasBasis_iff, mem_nhds_iff]
+
+variable (R) in
+lemma hasBasis_nhds_zero_pair :
+    (𝓝 (0 : R)).HasBasis (fun rs : R × R ↦ rs.1 ∈ posSubmonoid R ∧ rs.2 ∈ posSubmonoid R)
+      fun rs  ↦ { x | x * rs.2 <ᵥ rs.1 } := by
+  refine (hasBasis_nhds_zero R).to_hasBasis ?_ ?_
+  · simp only [posSubmonoid_def, setOf_subset_setOf, Prod.exists, forall_const]
+    intro γ
+    obtain ⟨r, s, h⟩ := valuation_surjective γ.val
+    by_cases hr : valuation R r = 0
+    · simp [hr, eq_comm] at h
+    · refine ⟨r, s, ⟨by simpa [valuation_eq_zero_iff] using hr, s.prop⟩, ?_⟩
+      simp only [← h]
+      intro x hx
+      rw [lt_div_iff₀ (by simp [zero_lt_iff])]
+      simp [valuation, hx]
+  · rintro ⟨r, s⟩ ⟨hr, hs⟩
+    refine ⟨Units.mk0 (.mk r ⟨s, hs⟩) ?_, trivial, ?_⟩
+    · simpa using hr
+    · simp [valuation]
+
+lemma hasBasis_nhds_zero_compatible {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ₀]
+    (v : Valuation R Γ₀) [v.Compatible] :
+    (𝓝 (0 : R)).HasBasis (fun rs : R × R ↦ v rs.1 ≠ 0 ∧ v rs.2 ≠ 0)
+      fun rs : R × R ↦ { x | v x * v rs.1 < v rs.2 } := by
+  have : v.IsEquiv (valuation R) := isEquiv _ _
+  refine ((hasBasis_nhds_zero_pair R).to_hasBasis ?_ ?_) <;>
+  · simp only [this.ne_zero, ne_eq, valuation_eq_zero_iff, posSubmonoid_def, setOf_subset_setOf,
+    and_imp, Prod.exists, Prod.forall]
+    intro r s hr hs
+    refine ⟨s, r, ⟨hs, hr⟩, fun x ↦ ?_⟩
+    rw [← map_mul v, ← Valuation.Compatible.rel_lt_iff_lt]
+    grind
+
+local notation "v" => valuation R
 
 variable [IsTopologicalAddGroup R]
 
@@ -116,7 +179,8 @@ variable {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpace R]
 for use in porting files from `Valued` to `ValuativeRel`. -/
 scoped instance : Valued R (ValuativeRel.ValueGroupWithZero R) where
   v := ValuativeRel.valuation R
-  is_topological_valuation := ValuativeTopology.mem_nhds_iff
+  is_topological_valuation := by
+    simp [(ValuativeTopology.hasBasis_nhds_zero_compatible (ValuativeRel.valuation R)).mem_iff]
 
 end Valued
 
