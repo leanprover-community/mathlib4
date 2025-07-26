@@ -42,7 +42,7 @@ def testTagAppFns (n : Name) : TermElabM Unit := do
   let e ← elabTermAndSynthesize stx none
   let f ← Meta.ppExprWithInfos e
   -- Find tags for the constant `n`
-  let tags : Array Nat := f.infos.foldl (init := #[]) fun tags tag info =>
+  let tags : Array Nat := f.infos.fold (init := #[]) fun tags tag info =>
     match info with
     | .ofTermInfo info | .ofDelabTermInfo info =>
       if info.expr.isConstOf n then
@@ -167,14 +167,14 @@ end
 def idStr : String → String := id
 
 /--
-error: Application type mismatch: The argument
+error: Application type mismatch: In the application
+  idStr Nat.zero
+the argument
   Nat.zero
 has type
-  ℕ
+  ℕ : Type
 but is expected to have type
-  String
-in the application
-  idStr Nat.zero
+  String : Type
 ---
 warning: Was not able to generate a pretty printer for this notation. If you do not expect it to be pretty printable, then you can use `notation3 (prettyPrint := false)`. If the notation expansion refers to section variables, be sure to do `local notation3`. Otherwise, you might be able to adjust the notation expansion to make it matchable; pretty printing relies on deriving an expression matcher from the expansion. (Use `set_option trace.notation3 true` to get some debug information.)
 -/
@@ -211,7 +211,7 @@ section test_scoped
 
 scoped[MyNotation] notation3 "π" => (3 : Nat)
 
-/-- error: Unknown identifier `π` -/
+/-- error: unknown identifier 'π' -/
 #guard_msgs in #check π
 
 open scoped MyNotation

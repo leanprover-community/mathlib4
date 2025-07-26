@@ -295,7 +295,7 @@ def _root_.CoxeterMatrix.IsLiftable {G : Type*} [Monoid G] (M : CoxeterMatrix B)
 private theorem relations_liftable {G : Type*} [Group G] {f : B → G} (hf : IsLiftable M f)
     (r : FreeGroup B) (hr : r ∈ M.relationsSet) : (FreeGroup.lift f) r = 1 := by
   rcases hr with ⟨⟨i, i'⟩, rfl⟩
-  rw [uncurry, relation, map_pow, map_mul, FreeGroup.lift.of, FreeGroup.lift.of]
+  rw [uncurry, relation, map_pow, map_mul, FreeGroup.lift_apply_of, FreeGroup.lift_apply_of]
   exact hf i i'
 
 private def groupLift {G : Type*} [Group G] {f : B → G} (hf : IsLiftable M f) : W →* G :=

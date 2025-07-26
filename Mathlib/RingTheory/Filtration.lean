@@ -281,8 +281,9 @@ theorem submodule_span_single :
 theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
     F.submodule = Submodule.span _ (⋃ i ≤ n₀, single R i '' (F.N i : Set M)) ↔
       ∀ n ≥ n₀, I • F.N n = F.N (n + 1) := by
-  rw [← submodule_span_single, ← LE.le.ge_iff_eq', Submodule.span_le, Set.iUnion_subset_iff]
-  swap; · exact Submodule.span_mono (Set.iUnion₂_subset_iUnion _ _)
+  rw [← submodule_span_single,
+    ← (Submodule.span_mono (Set.iUnion₂_subset_iUnion _ _)).ge_iff_eq',
+    Submodule.span_le, Set.iUnion_subset_iff]
   constructor
   · intro H n hn
     refine (F.smul_le n).antisymm ?_

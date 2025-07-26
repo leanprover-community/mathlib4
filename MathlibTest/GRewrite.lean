@@ -204,8 +204,7 @@ relation does not have its main goals proved by `gcongr` (in the two examples he
 the inequality goes in the wrong direction). -/
 
 /--
-error: Tactic `grewrite` failed: could not discharge x ≤ y using x ≥ y
-
+error: tactic 'grewrite' failed, could not discharge x ≤ y using x ≥ y
 case a.h
 α : Type u_1
 inst✝² : CommRing α
@@ -251,8 +250,7 @@ example {Prime : ℕ → Prop} {a a' : ℕ} (h₁ : Prime (a + 1)) (h₂ : a = a
   exact test_sorry
 
 /--
-error: Tactic `grewrite` failed: could not discharge b ≤ a using a ≤ b
-
+error: tactic 'grewrite' failed, could not discharge b ≤ a using a ≤ b
 case h₁.h
 α : Type u_1
 inst✝² : CommRing α

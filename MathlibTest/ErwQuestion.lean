@@ -12,9 +12,8 @@ example : f 37 = 38 := by
   erw? [f]
 
 /--
-error: Tactic `rewrite` failed: did not find instance of the pattern in the target expression
+error: tactic 'rewrite' failed, did not find instance of the pattern in the target expression
   f a
-
 ⊢ f b = 38
 -/
 #guard_msgs in

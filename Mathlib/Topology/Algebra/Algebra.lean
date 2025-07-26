@@ -27,7 +27,7 @@ TODO: add continuous algebra isomorphisms.
 
 -/
 
-assert_not_exists Basis
+assert_not_exists Module.Basis
 
 open Algebra Set TopologicalSpace Topology
 
@@ -592,7 +592,7 @@ def Algebra.elemental (x : A) : Subalgebra R A :=
 
 namespace Algebra.elemental
 
-@[aesop safe (rule_sets := [SetLike])]
+@[simp, aesop safe (rule_sets := [SetLike])]
 theorem self_mem (x : A) : x ∈ elemental R x :=
   le_topologicalClosure _ <| self_mem_adjoin_singleton R x
 

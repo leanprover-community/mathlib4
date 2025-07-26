@@ -14,9 +14,9 @@ set_option pp.mvars false
 error: type mismatch
   n
 has type
-  ℕ
+  ℕ : Type
 but is expected to have type
-  Fin 3
+  Fin 3 : Type
 ---
 info: fun n => sorry : (n : ℕ) → ?_ n
 -/

@@ -79,7 +79,7 @@ example (n : ℕ) : True := by
   extract_goal n using foo
   sorry
 
-/-- error: Unknown identifier `k` -/
+/-- error: unknown identifier 'k' -/
 #guard_msgs in
 example (n : ℕ) : True := by
   extract_goal k
