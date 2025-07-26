@@ -265,7 +265,7 @@ section AddCommGroupWithOne
 instance [AddCommMonoidWithOne R] : AddCommMonoidWithOne (QuadraticAlgebra R a b) where
   natCast n := ((n : R) : QuadraticAlgebra R a b)
   natCast_zero := by ext <;> simp
-  natCast_succ n:= by ext <;> simp
+  natCast_succ n := by ext <;> simp
 
 variable [AddCommGroupWithOne R]
 
