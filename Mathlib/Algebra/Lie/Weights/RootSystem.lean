@@ -8,6 +8,7 @@ import Mathlib.LinearAlgebra.RootSystem.Basic
 import Mathlib.LinearAlgebra.RootSystem.Irreducible
 import Mathlib.LinearAlgebra.RootSystem.Reduced
 import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
+import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 import Mathlib.Algebra.Algebra.Rat
 
 /-!
@@ -422,6 +423,80 @@ instance : (rootSystem H).IsReduced where
       (by ext x; exact DFunLike.congr_fun hu.symm x)
     · right; ext x; simpa [neg_eq_iff_eq_neg] using DFunLike.congr_fun h.symm x
     · left; ext x; simpa using DFunLike.congr_fun h.symm x
+
+lemma zero_pairing_implies_zero_bracket
+  (χ α : Weight K H L)
+  (x : L) (hx : x ∈ genWeightSpace L χ.toLinear)
+  (h : H) (hh : h ∈ corootSpace α.toLinear)
+  (h_zero : χ (coroot α) = 0) :
+  ⁅x, (h : L)⁆ = 0 := by
+  obtain ⟨c, hc⟩ := Submodule.mem_span_singleton.mp <| by
+    rw [← coe_corootSpace_eq_span_singleton α, LieSubmodule.mem_toSubmodule]
+    exact hh
+  have h_chi_h_zero : (χ.toLinear) h = 0 := by
+    rw [← hc, LinearMap.map_smul]
+    have h_convert : (χ.toLinear) (coroot α) = χ (coroot α) := rfl
+    rw [h_convert, h_zero, smul_zero]
+  rw [genWeightSpace, LieSubmodule.mem_iInf] at hx
+  have hx_eigen : x ∈ (ad K L (h : L)).eigenspace 0 := by
+    have h_semisimple := isSemisimple_ad_of_mem_isCartanSubalgebra h.property
+    rw [← h_semisimple.isFinitelySemisimple.maxGenEigenspace_eq_eigenspace]
+    have h_eq : toEnd K H L h = ad K L (h : L) := by
+      ext y
+      simp only [toEnd_apply_apply, LieSubalgebra.coe_bracket_of_module, ad_apply]
+    rw [← h_eq]
+    have := hx h
+    rwa [h_chi_h_zero, genWeightSpaceOf] at this
+  rw [Module.End.mem_eigenspace_iff, ad_apply, zero_smul, ← lie_skew] at hx_eigen
+  exact neg_eq_zero.mp hx_eigen
+
+lemma pairing_zero_of_trivial_sum_diff_spaces
+  (χ α : Weight K H L) (hχ : χ.IsNonZero) (hα : α.IsNonZero)
+  (w_plus : χ.toLinear + α.toLinear ≠ 0) (w_minus : χ.toLinear - α.toLinear ≠ 0)
+  (h_plus_bot : genWeightSpace L (χ.toLinear + α.toLinear) = ⊥)
+  (h_minus_bot : genWeightSpace L (χ.toLinear - α.toLinear) = ⊥) :
+  let S := rootSystem H
+  ∃ (i j : { w : Weight K H L // w ∈ H.root }),
+    S.root i = χ.toLinear ∧ S.root j = α.toLinear ∧ S.pairing i j = 0 := by
+  let S := rootSystem H
+  let i : { w : Weight K H L // w ∈ H.root } := ⟨χ, by
+    rw [LieSubalgebra.root, Finset.mem_filter]; exact ⟨Finset.mem_univ χ, hχ⟩⟩
+  let j : { w : Weight K H L // w ∈ H.root } := ⟨α, by
+    rw [LieSubalgebra.root, Finset.mem_filter]; exact ⟨Finset.mem_univ α, hα⟩⟩
+  use i, j, rfl, rfl
+  have root_isNonZero (idx : { w : Weight K H L // w ∈ H.root }) : idx.val.IsNonZero := by
+    have h_mem := idx.property
+    simp only [LieSubalgebra.root, Finset.mem_filter, Finset.mem_univ, true_and] at h_mem
+    exact h_mem
+  have h_c (β γ : H →ₗ[K] K) (h_bot : genWeightSpace L β = ⊥)
+      (idx : { w : Weight K H L // w ∈ H.root }) (h_eq : S.root idx = γ)
+      (h_beta_eq : β = γ) : False := by
+    have h_nontrivial : genWeightSpace L β ≠ ⊥ := by
+      rw [h_beta_eq, ← h_eq, rootSystem_root_apply H idx]
+      exact idx.val.genWeightSpace_ne_bot
+    exact h_nontrivial h_bot
+  cases lt_trichotomy (S.pairingIn ℤ i j) 0 with
+  | inl h_neg =>
+    exfalso
+    have h_add_mem : S.root i + S.root j ∈ Set.range S.root := by
+      apply RootPairing.root_add_root_mem_of_pairingIn_neg S.toRootPairing h_neg
+      intro h_eq
+      have h_sum_zero : S.root i + S.root j = 0 := by rw [h_eq]; simp only [neg_add_cancel]
+      exact w_plus h_sum_zero
+    obtain ⟨idx, hidx⟩ := h_add_mem
+    exact h_c (χ.toLinear + α.toLinear) (S.root i + S.root j) h_plus_bot idx hidx rfl
+  | inr h_rest =>
+    cases h_rest with
+    | inl h_zero => exact (S.algebraMap_pairingIn ℤ i j ▸ by simp [h_zero])
+    | inr h_pos =>
+      exfalso
+      have h_sub_mem : S.root i - S.root j ∈ Set.range S.root := by
+        apply RootPairing.root_sub_root_mem_of_pairingIn_pos S.toRootPairing h_pos
+        intro h_eq
+        have h_chi_eq_alpha : χ = α := by injection h_eq
+        exact w_minus (by rw [h_chi_eq_alpha]; simp only [sub_self])
+      obtain ⟨idx, hidx⟩ := h_sub_mem
+      exact h_c (χ.toLinear - α.toLinear) (S.root i - S.root j) h_minus_bot idx hidx rfl
 
 section IsSimple
 
