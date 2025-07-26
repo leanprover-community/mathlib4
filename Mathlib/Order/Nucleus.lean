@@ -25,19 +25,20 @@ open Order InfHom Set
 variable {X : Type*}
 
 /-- A nucleus is an inflationary idempotent `inf`-preserving endomorphism of a semilattice.
-In a frame, nuclei correspond to sublocales. -/
-structure Nucleus (X : Type*) [CompleteLattice X] extends InfHom X X where
-  /-- A `Nucleus` is idempotent.
+
+In a frame, nuclei correspond to sublocales. See `nucleusIsoSublocale`. -/
+structure Nucleus (X : Type*) [SemilatticeInf X] extends InfHom X X where
+  /-- A nucleus is idempotent.
 
   Do not use this directly. Instead use `NucleusClass.idempotent`. -/
   idempotent' (x : X) : toFun (toFun x) ≤ toFun x
-  /-- A `Nucleus` is increasing.
+  /-- A nucleus is increasing.
 
   Do not use this directly. Instead use `NucleusClass.le_apply`. -/
   le_apply' (x : X) : x ≤ toFun x
 
 /-- `NucleusClass F X` states that F is a type of nuclei. -/
-class NucleusClass (F X : Type*) [CompleteLattice X] [FunLike F X X] : Prop
+class NucleusClass (F X : Type*) [SemilatticeInf X] [FunLike F X X] : Prop
     extends InfHomClass F X X where
   /-- A nucleus is idempotent. -/
   idempotent (x : X) (f : F) : f (f x) ≤ f x
@@ -45,10 +46,8 @@ class NucleusClass (F X : Type*) [CompleteLattice X] [FunLike F X X] : Prop
   le_apply (x : X) (f : F) : x ≤ f x
 
 namespace Nucleus
-
-section CompleteLattice
-
-variable [CompleteLattice X] {n m : Nucleus X} {x y : X}
+section SemilatticeInf
+variable [SemilatticeInf X] {n m : Nucleus X} {x y : X}
 
 instance : FunLike (Nucleus X) X X where
   coe x := x.toFun
@@ -68,7 +67,7 @@ instance : NucleusClass (Nucleus X) X where
   le_apply _ _ := le_apply' ..
   map_inf _ _ _ := map_inf' ..
 
-/-- Every `Nucleus` is a `ClosureOperator`. -/
+/-- Every nucleus is a `ClosureOperator`. -/
 def toClosureOperator (n : Nucleus X) : ClosureOperator X :=
   ClosureOperator.mk' n (OrderHomClass.mono n) n.le_apply' n.idempotent'
 
@@ -85,10 +84,6 @@ lemma map_inf : n (x ⊓ y) = n x ⊓ n y :=
 @[ext] lemma ext {m n : Nucleus X} (h : ∀ a, m a = n a) : m = n :=
   DFunLike.ext m n h
 
-/-- A `Nucleus` preserves ⊤. -/
-instance : TopHomClass (Nucleus X) X X where
-  map_top _ := eq_top_iff.mpr le_apply
-
 instance : PartialOrder (Nucleus X) := .lift (⇑) DFunLike.coe_injective
 
 @[simp, norm_cast] lemma coe_le_coe : ⇑m ≤ n ↔ m ≤ n := .rfl
@@ -99,29 +94,56 @@ instance : PartialOrder (Nucleus X) := .lift (⇑) DFunLike.coe_injective
     mk toInfHom₁ le_apply₁ idempotent₁ ≤ mk toInfHom₂ le_apply₂ idempotent₂ ↔
       toInfHom₁ ≤ toInfHom₂ := .rfl
 
-/-- The smallest `Nucleus` is the identity. -/
-instance instBot : Bot (Nucleus X) where
+instance : Min (Nucleus X) where
+  min m n := {
+    toFun := m ⊓ n
+    map_inf' x y := by simp [inf_inf_inf_comm]
+    idempotent' x := by
+      simp only [Pi.inf_apply, map_inf, idempotent]
+      exact inf_le_inf inf_le_left inf_le_right
+    le_apply' x := le_inf m.le_apply n.le_apply
+  }
+
+@[simp, norm_cast] lemma coe_inf (m n : Nucleus X) : ⇑(m ⊓ n) = ⇑m ⊓ ⇑n := rfl
+@[simp] lemma inf_apply (m n : Nucleus X) (x : X) : (m ⊓ n) x = m x ⊓ n x := rfl
+
+instance : SemilatticeInf (Nucleus X) := DFunLike.coe_injective.semilatticeInf _ coe_inf
+
+/-- The smallest nucleus is the identity. -/
+instance instBot : OrderBot (Nucleus X) where
   bot.toFun x := x
   bot.idempotent' := by simp
   bot.le_apply' := by simp
   bot.map_inf' := by simp
+  bot_le n _ := n.le_apply
 
-/-- The biggest `Nucleus` sends everything to `⊤`. -/
+@[simp, norm_cast] lemma coe_bot : ⇑(⊥ : Nucleus X) = id := rfl
+@[simp] lemma bot_apply (x : X) : (⊥ : Nucleus X) x = x := rfl
+
+variable [OrderTop X]
+
+/-- A nucleus preserves ⊤. -/
+instance : TopHomClass (Nucleus X) X X where
+  map_top _ := eq_top_iff.mpr le_apply
+
+/-- The largest nucleus sends everything to `⊤`. -/
 instance instTop : Top (Nucleus X) where
   top.toFun := ⊤
   top.idempotent' := by simp
   top.le_apply' := by simp
   top.map_inf' := by simp
 
-@[simp, norm_cast] lemma coe_bot : ⇑(⊥ : Nucleus X) = id := rfl
 @[simp, norm_cast] lemma coe_top : ⇑(⊤ : Nucleus X) = ⊤ := rfl
-
-@[simp] lemma bot_apply (x : X) : (⊥ : Nucleus X) x = x := rfl
 @[simp] lemma top_apply (x : X) : (⊤ : Nucleus X) x = ⊤ := rfl
 
 instance : BoundedOrder (Nucleus X) where
   bot_le _ _ := le_apply
   le_top _ _ := by simp
+
+end SemilatticeInf
+
+section CompleteLattice
+variable [CompleteLattice X]
 
 instance : InfSet (Nucleus X) where
   sInf s :=
@@ -135,21 +157,23 @@ instance : InfSet (Nucleus X) where
     idempotent' x := iInf₂_mono fun f hf ↦ (f.monotone <| iInf₂_le f hf).trans_eq (f.idempotent _)
     le_apply' x := by simp [le_apply] }
 
-@[simp] theorem sInf_apply (s : Set (Nucleus X)) (x : X) : sInf s x = ⨅ j ∈ s, j x := rfl
+@[simp] lemma sInf_apply (s : Set (Nucleus X)) (x : X) : sInf s x = ⨅ j ∈ s, j x := rfl
 
-@[simp] theorem iInf_apply {ι : Type*} (f : ι → (Nucleus X)) (x : X) : iInf f x = ⨅ j, f j x := by
+@[simp] lemma iInf_apply {ι : Type*} (f : ι → (Nucleus X)) (x : X) : iInf f x = ⨅ j, f j x := by
   rw [iInf, sInf_apply, iInf_range]
 
 instance : CompleteSemilatticeInf (Nucleus X) where
   sInf_le := by simp +contextual [← coe_le_coe, Pi.le_def, iInf_le_iff]
   le_sInf := by simp +contextual [← coe_le_coe, Pi.le_def]
 
-instance : CompleteLattice (Nucleus X) := completeLatticeOfCompleteSemilatticeInf (Nucleus X)
-
-@[simp] theorem inf_apply (m n : Nucleus X) (x : X) : (m ⊓ n) x = m x ⊓ n x := by
-  rw [← sInf_pair, sInf_apply, iInf_pair]
+instance : CompleteLattice (Nucleus X) where
+  __ : SemilatticeInf (Nucleus X) := inferInstance
+  __ : OrderBot (Nucleus X) := inferInstance
+  __ : OrderTop (Nucleus X) := inferInstance
+  __ := completeLatticeOfCompleteSemilatticeInf (Nucleus X)
 
 end CompleteLattice
+
 section Frame
 variable [Order.Frame X] {n m : Nucleus X} {x y : X}
 
@@ -191,7 +215,7 @@ instance : HImp (Nucleus X) where
     le_apply' := by
       simpa using fun _ _ h ↦ inf_le_of_left_le <| h.trans n.le_apply }
 
-@[simp] theorem himp_apply (m n : Nucleus X) (x : X) : (m ⇨ n) x = ⨅ y ≥ x, m y ⇨ n y := rfl
+@[simp] lemma himp_apply (m n : Nucleus X) (x : X) : (m ⇨ n) x = ⨅ y ≥ x, m y ⇨ n y := rfl
 
 instance : HeytingAlgebra (Nucleus X) where
   compl m := m ⇨ ⊥
