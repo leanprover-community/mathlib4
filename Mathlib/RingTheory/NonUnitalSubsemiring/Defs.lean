@@ -85,6 +85,15 @@ instance toNonUnitalCommSemiring {R} [NonUnitalCommSemiring R] [SetLike S R]
 
 /-! Note: currently, there are no ordered versions of non-unital rings. -/
 
+variable {s} in
+@[aesop unsafe 80% (rule_sets := [SetLike])]
+theorem neg_mul_mem [HasDistribNeg R] {x y : R} (hx : -x ∈ s) (hy : y ∈ s) : -(x * y) ∈ s := by
+  simpa using mul_mem hx hy
+
+variable {s} in
+@[aesop unsafe 80% (rule_sets := [SetLike])]
+theorem mul_neg_mem [HasDistribNeg R] {x y : R} (hx : x ∈ s) (hy : -y ∈ s) : -(x * y) ∈ s := by
+  simpa using mul_mem hx hy
 
 end NonUnitalSubsemiringClass
 
