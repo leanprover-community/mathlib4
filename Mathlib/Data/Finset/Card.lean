@@ -504,6 +504,12 @@ theorem inj_on_of_surj_on_of_card_le (f : ∀ a ∈ s, β) (hf : ∀ a ha, f a h
   have hinj' := injOn_of_surjOn_of_card_le f' (fun x hx ↦ hf _ _) hsurj' (by simpa)
   exact congrArg Subtype.val (@hinj' ⟨a₁, ha₁⟩ (by simp) ⟨a₂, ha₂⟩ (by simp) ha₁a₂)
 
+lemma exists_image_eq_and_card_le_of_surjective [DecidableEq β] {f : α → β}
+    (hf : f.Surjective) (t : Finset β) :
+    ∃ (s : Finset α), s.image f = t ∧ #s ≤ #t := by
+  classical
+  exact ⟨t.image (f.surjInv hf), by simp [Finset.image_image], Finset.card_image_le⟩
+
 end bij
 
 @[simp]
