@@ -780,6 +780,24 @@ theorem nodup_tail_support_reverse {u : V} {p : G.Walk u u} :
     ← getVert_eq_support_getElem? _ (by rw [Walk.length_support]; omega)]
   aesop
 
+theorem edges_eq_support {u v : V} {p : G.Walk u v} :
+    p.edges = (p.support.zip p.support.tail).map (fun x ↦ s(x.1, x.2)) := by
+  induction p with
+  | nil => simp
+  | cons _ p' ih => cases p' <;> simp [edges_cons, ih]
+
+theorem darts_toProd_eq {u v : V} {p : G.Walk u v} (n : ℕ) (h : n < p.darts.length) :
+    p.darts[n].toProd = (p.getVert n, p.getVert (n + 1)) := by
+  rw [p.length_darts] at h
+  repeat rw [p.getVert_eq_support_getElem (by omega)]
+  ext
+  · by_cases h' : n = 0
+    · simp [h', List.getElem_zero]
+    · have := List.chain'_getElem p.chain'_dartAdj_darts (n - 1) (by omega)
+      simp only [DartAdj, show n - 1 + 1 = n by omega] at this
+      simp [← p.cons_map_snd_darts, List.getElem_cons, ← this, h']
+  · simp [← p.cons_map_snd_darts]
+
 theorem edges_injective {u v : V} : Function.Injective (Walk.edges : G.Walk u v → List (Sym2 V))
   | .nil, .nil, _ => rfl
   | .nil, .cons _ _, h => by simp at h
