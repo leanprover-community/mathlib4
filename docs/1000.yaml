@@ -3125,6 +3125,9 @@ Q5638112:
 
 Q5638886:
   title: Hahn embedding theorem
+  decl: exists_orderAddMonoidHom_hahnSeries_real_injective
+  authors: Weiyi Wang
+  date: 2025
 
 Q5643485:
   title: Halpern–Läuchli theorem
