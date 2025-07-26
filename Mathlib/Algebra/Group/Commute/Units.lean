@@ -117,6 +117,26 @@ lemma IsUnit.of_pow_eq_one (ha : a ^ n = 1) (hn : n ≠ 0) : IsUnit a :=
 @[deprecated (since := "2025-02-03")] alias isUnit_ofPowEqOne := IsUnit.of_pow_eq_one
 @[deprecated (since := "2025-02-03")] alias isAddUnit_ofNSMulEqZero := IsAddUnit.of_nsmul_eq_zero
 
+@[to_additive]
+lemma _root_.Units.commute_iff_inv_mul_cancel {u : Mˣ} {a : M} :
+    Commute ↑u a ↔ ↑u⁻¹ * a * u = a := by
+  rw [mul_assoc, Units.inv_mul_eq_iff_eq_mul, eq_comm, Commute, SemiconjBy]
+
+@[to_additive]
+lemma _root_.Units.commute_iff_inv_mul_cancel_assoc {u : Mˣ} {a : M} :
+    Commute ↑u a ↔ ↑u⁻¹ * (a * u) = a := by
+  rw [u.commute_iff_inv_mul_cancel, mul_assoc]
+
+@[to_additive]
+lemma _root_.Units.commute_iff_mul_inv_cancel {u : Mˣ} {a : M} :
+    Commute ↑u a ↔ ↑u * a * ↑u⁻¹ = a := by
+  rw [Units.mul_inv_eq_iff_eq_mul, Commute, SemiconjBy]
+
+@[to_additive]
+lemma _root_.Units.commute_iff_mul_inv_cancel_assoc {u : Mˣ} {a : M} :
+    Commute ↑u a ↔ ↑u * (a * ↑u⁻¹) = a := by
+  rw [u.commute_iff_mul_inv_cancel, mul_assoc]
+
 end Monoid
 
 namespace Commute
