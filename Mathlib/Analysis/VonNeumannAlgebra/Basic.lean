@@ -5,6 +5,7 @@ Authors: Kim Morrison
 -/
 import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 import Mathlib.Analysis.Normed.Module.Dual
+import Mathlib.Algebra.Module.Submodule.Invariant
 
 /-!
 # Von Neumann algebras
@@ -132,5 +133,19 @@ theorem mem_commutant_iff {S : VonNeumannAlgebra H} {z : H →L[ℂ] H} :
 @[simp]
 theorem commutant_commutant (S : VonNeumannAlgebra H) : S.commutant.commutant = S :=
   SetLike.coe_injective <| by simp
+
+open ContinuousLinearMap in
+/-- An idempotent operator `e` is an element in the von Neumann algebra `S`
+if and only if `range e` and `ker e` are `S.commutant` invariant subspaces. -/
+theorem mem_iff_range_and_ker_mem_invtSubmodule_commutant_of_isIdempotentElem {e : H →L[ℂ] H}
+    (h : IsIdempotentElem e) (S : VonNeumannAlgebra H) :
+    e ∈ S ↔ ∀ y ∈ S.commutant,
+    LinearMap.range e ∈ Module.End.invtSubmodule y
+      ∧ LinearMap.ker e ∈ Module.End.invtSubmodule y := by
+  simp_rw [h.range_and_ker_mem_invtSubmodule_iff_commute]
+  refine ⟨fun he y hy => mem_commutant_iff.mp hy _ he, fun H' => ?_⟩
+  rw [← commutant_commutant S, mem_commutant_iff]
+  intro m hm
+  exact (H' _ hm).symm
 
 end VonNeumannAlgebra
