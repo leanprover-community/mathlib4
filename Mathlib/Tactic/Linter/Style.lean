@@ -582,4 +582,175 @@ initialize addLinter showLinter
 
 end Style.show
 
+/-! # The "declarationIndenting" linter -/
+
+/--
+The "declarationIndenting" linter emits a warning on a declaration including `def`, `theorem`,
+`example`, etc., if the type of the declaration spans multiple lines and its subsequent lines are
+indented by too few spaces (less than 4 spaces), or if `:=` is at the beginning of a line.
+-/
+register_option linter.style.declarationIndenting : Bool := {
+  defValue := false
+  descr := "enable the declarationIndenting linter"
+}
+
+namespace Style.declarationIndenting
+
+/--
+Array of `String.Range`, used for range of non-comment code. It is well-formed w.r.t. if
+- any range in such an array neither overlaps nor be adjacent with another one, and
+- the order in the array is consistent with the order in string.
+
+The following functions work with well-formed `Ranges`.
+-/
+def Ranges := Array String.Range
+
+/--
+It returns `Compare.eq` if the two ranges are overlapped, and with `eqIfAdjacent := true` it returns
+`.eq` also when they are adjacent. In other cases, result is consistent with their order in string.
+Also refer to `Ranges`.
+
+`x` and `y` can be merged if and only if `compareRange x y (overlap := true) = .eq`.
+-/
+def compareRange (x y : String.Range) (eqIfAdjacent := true) :=
+  bif String.Range.overlaps x y
+      (includeFirstStop := eqIfAdjacent) (includeSecondStop := eqIfAdjacent) then
+    .eq
+  else compare x.start.byteIdx y.start.byteIdx
+
+/--
+Expand a range in the string until non-space character is reached, and continue to expand the right
+side if there are newline characters.
+-/
+def auxExpandRange (str : String) (range : String.Range) : String.Range where
+  start := str.revFindAux (· != ' ') range.start |>.map (str.next ·) |>.getD 0
+  stop :=
+    let stop := str.findAux (· != ' ') str.endPos range.stop
+    -- We don't want it to extend to a comment-only line so `· != ' '` instead of
+    -- `!·.isWhitespace` has been used, but we still want it to merge continuous lines where there
+    -- isn't comment, so we extend it again with only `'\n'`
+    str.findAux (· != '\n') str.endPos stop
+
+/--
+Assuming `x y : String.Range` can be merged, merge them.
+
+(For more details, also refer to `compareRange`)
+-/
+def mergeRange (x y : String.Range) : String.Range where
+  start := min x.start y.start
+  stop := max x.stop y.stop
+
+/--
+`O(|xs| + |ys|)`. Merge arrays `xs` and `ys`, which must be sorted according to `compare` and must
+not contain duplicates. Equal elements are merged using `merge`. If `merge` respects the order
+(i.e. for all `x`, `y`, `y'`, `z`, if `x < y < z` and `x < y' < z` then `x < merge y y' < z`)
+then the resulting array is again sorted.
+
+Copied from `Array.mergeDedupWith` in `Batteries/Data/Array/Merge.lean`.
+-/
+def mergeDedupWith {α} [ord : Ord α] (xs ys : Array α) (merge : α → α → α) : Array α :=
+  go (Array.mkEmpty (xs.size + ys.size)) 0 0
+where
+  /-- Auxiliary definition for `mergeDedupWith`. -/
+  go (acc : Array α) (i j : Nat) : Array α :=
+    if hi : i ≥ xs.size then
+      acc ++ ys[j:]
+    else if hj : j ≥ ys.size then
+      acc ++ xs[i:]
+    else
+      let x := xs[i]
+      let y := ys[j]
+      match compare x y with
+      | .lt => go (acc.push x) (i + 1) j
+      | .gt => go (acc.push y) i (j + 1)
+      | .eq => go (acc.push (merge x y)) (i + 1) (j + 1)
+  termination_by xs.size + ys.size - (i + j)
+
+/--
+Merge an array of `Ranges`' into one `Ranges`.
+-/
+def mergeRanges (ranges : Array Ranges) : Ranges :=
+  ranges.foldl (mergeDedupWith (ord := ⟨compareRange⟩) (merge := mergeRange)) #[]
+
+/--
+Determine whether `range : String.Range` overlaps of `ranges : Ranges`.
+-/
+def overlapsWithRange (ranges : Ranges) (range : String.Range) :=
+  ranges.binSearch range (compareRange · · false |>.isLT) |>.isSome
+
+/--
+The non-comment range of `stx : Syntax`.
+-/
+def rangesOfSyntax (stx : Syntax) : Ranges :=
+  match stx with
+  | .node _ _ args => mergeRanges <| args.map rangesOfSyntax
+  | .atom (.original _ start t stop) ..
+  | .ident (.original _ start t stop) .. => #[auxExpandRange t.str ⟨start, stop⟩]
+  | _ => #[]
+
+open Lean.Parser.Command in
+@[inherit_doc Mathlib.Linter.linter.style.declarationIndenting]
+def declarationIndentingLinter : Linter where run := withSetOptionIn fun stx => do
+  unless getLinterValue linter.style.declarationIndenting (← getLinterOptions) do
+    return
+  if (← get).messages.hasErrors then
+    return
+  match stx with
+  | .node _ ``declaration #[_, decl@(.node _ name decl_args)]
+  | .node _ `«lemma» #[_, decl@(.node _ name@(`group) decl_args)] =>
+    let mut declHead_ : Option Syntax := .none -- the atom `def`, `lemma`, `theorem`, etc.
+    let mut declSplit_ : Option Syntax := .none -- the atom `:=`
+    let mut mid : Array Syntax := #[]
+    match name with
+    | ``«abbrev» | ``definition | ``«theorem» | ``«opaque» | ``«axiom» | ``«example»
+    | ``«instance» | `group =>
+      for arg in decl_args do
+        if declHead_.isNone then
+          if let .atom .. := arg then
+            declHead_ := .some arg
+            mid := #[arg]
+        else
+          match arg with
+          | .node _ ``declValSimple _
+          | .node _ ``declValEqns _
+          | .node _ ``whereStructInst _ =>
+            declSplit_ := .some arg
+            break
+          | _ => mid := mid ++ #[arg]
+    | _ => return
+    let .some declSplit := declSplit_ | return
+    let .original _ splitPos ⟨src, _, _⟩ splitEndPos := declSplit.getHeadInfo | return
+    let .some <| .atom head_src@(.original _ _ ⟨_, _, _⟩ headEndPos) _ := declHead_ | unreachable!
+
+    -- ranges of codes that aren't comments
+    let declRanges := mergeRanges <| mid.map rangesOfSyntax
+
+    let warn (highlightText : String.Range) :=
+      logLint linter.style.declarationIndenting
+        (decl.setInfo <| .synthetic highlightText.start highlightText.stop)
+
+    -- check indenting of type
+    for line in Substring.splitOn ⟨src, headEndPos, splitPos⟩ "\n" |>.tail do
+      if line.trimLeft.isEmpty then continue
+      let spaces := line.takeWhile (·=' ')
+      if !overlapsWithRange declRanges ⟨line.startPos, line.stopPos⟩ then -- this line is comment
+        if spaces.bsize < 2 then
+          warn ⟨spaces.startPos, spaces.stopPos⟩ m!"There are too few spaces at the beginning of \
+          the line. Please use at least 2 spaces."
+      else if spaces.bsize < 4 then
+        warn ⟨spaces.startPos, spaces.stopPos⟩ m!"There are too few spaces at the beginning of the \
+          line. It should be indented by at least 4 spaces."
+
+    -- check `:=`
+    unless declSplit.getKind = ``declValSimple do return
+    let beforeSplit : Substring := ⟨src, src.findLineStart splitPos, splitPos⟩
+    if beforeSplit.trimLeft.isEmpty then
+      warn ⟨beforeSplit.startPos, splitEndPos⟩ "':=' should be put before a line break rather than \
+      at the beginning of the next line."
+  | _ => pure ()
+
+initialize addLinter declarationIndentingLinter
+
+end Style.declarationIndenting
+
 end Mathlib.Linter

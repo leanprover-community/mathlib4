@@ -587,3 +587,87 @@ example := by
   rfl
 
 end showLinter
+
+section declarationIndenting
+set_option linter.style.declarationIndenting true
+
+/--
+warning: There are too few spaces at the beginning of the line. It should be indented by at least 4
+spaces.
+
+Note: This linter can be disabled with `set_option linter.style.declarationIndenting false`
+-/
+#guard_msgs in
+theorem simple :
+True := trivial
+
+/--
+warning: There are too few spaces at the beginning of the line. Please use at least 2 spaces.
+
+Note: This linter can be disabled with `set_option linter.style.declarationIndenting false`
+---
+warning: There are too few spaces at the beginning of the line. It should be indented by at least 4
+spaces.
+
+Note: This linter can be disabled with `set_option linter.style.declarationIndenting false`
+-/
+#guard_msgs in
+theorem with_comments : --comment
+  /- comment -/
+  -- comment
+--commtn
+True := trivial
+
+/--
+-/
+#guard_msgs in
+theorem with_comments_find : True ∧ --comment
+  /-comment-/
+    True ∧
+  /-comment-/
+      True ∧ -- comment
+        True := by simp
+
+
+/--
+warning: There are too few spaces at the beginning of the line. It should be indented by at least 4 spaces.
+
+Note: This linter can be disabled with `set_option linter.style.declarationIndenting false`
+---
+warning: ':=' should be put before a line break rather than at the beginning of the next line.
+
+Note: This linter can be disabled with `set_option linter.style.declarationIndenting false`
+-/
+#guard_msgs in
+theorem body_indent : --comment
+  /- comment -/
+  -- commtn
+  --commtn
+  True
+  := trivial
+
+/--
+warning: There are too few spaces at the beginning of the line. It should be indented by at least 4
+spaces.
+
+Note: This linter can be disabled with `set_option linter.style.declarationIndenting false`
+---
+warning: There are too few spaces at the beginning of the line. It should be indented by at least 4
+spaces.
+
+Note: This linter can be disabled with `set_option linter.style.declarationIndenting false`
+---
+warning: ':=' should be put before a line break rather than at the beginning of the next line.
+
+Note: This linter can be disabled with `set_option linter.style.declarationIndenting false`
+-/
+#guard_msgs in
+lemma
+  lemma_ /-comment-/: --comment
+  /- comment -/
+  -- commtn
+  --comment
+  True
+:= trivial
+
+end declarationIndenting
