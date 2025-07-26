@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Order.Pi
+import Mathlib.Algebra.Algebra.Pi
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 
 /-!
@@ -561,8 +562,6 @@ theorem smul_eq_map [SMul K β] (k : K) (f : α →ₛ β) : k • f = f.map (k 
 lemma smul_const [SMul K β] (k : K) (b : β) :
     (k • const α b : α →ₛ β) = const α (k • b) := ext fun _ ↦ rfl
 
-lemma one_eq_const_one [One β] : (1 : α →ₛ β) = const α 1 := rfl
-
 instance [NonUnitalNonAssocSemiring β] : NonUnitalNonAssocSemiring (α →ₛ β) :=
   fast_instance% Function.Injective.nonUnitalNonAssocSemiring (fun f => show α → β from f)
     coe_injective coe_zero coe_add coe_mul coe_smul
@@ -637,12 +636,13 @@ instance [CommSemiring K] [Semiring β] [Algebra K β] : Algebra K (α →ₛ β
   commutes' _ _ := ext fun _ ↦ Algebra.commutes ..
   smul_def' _ _ := ext fun _ ↦ Algebra.smul_def ..
 
-lemma algebraMap_apply [CommSemiring K] [Semiring β] [Algebra K β] (k : K) :
-    algebraMap K (α →ₛ β) k = const α (algebraMap K β k) := rfl
+@[simp]
+lemma const_algebraMap [CommSemiring K] [Semiring β] [Algebra K β] (k : K) :
+    const α (algebraMap K β k) = algebraMap K (α →ₛ β) k := rfl
 
 @[simp]
-lemma algebraMap_apply_apply [CommSemiring K] [Semiring β] [Algebra K β] (k : K) (x : α) :
-    algebraMap K (α →ₛ β) k x = algebraMap K β k := rfl
+lemma coe_algebraMap [CommSemiring K] [Semiring β] [Algebra K β] (k : K) (x : α) :
+    ⇑(algebraMap K (α →ₛ β)) k x = algebraMap K (α → β) k x := rfl
 
 section Star
 
@@ -650,7 +650,7 @@ instance [Star β] : Star (α →ₛ β) where
   star f := f.map Star.star
 
 @[simp]
-lemma star_apply [Star β] {f : α →ₛ β} {x : α} : star f x = star (f x) := rfl
+lemma coe_star [Star β] {f : α →ₛ β} : ⇑(star f) = star ⇑f := rfl
 
 instance [InvolutiveStar β] : InvolutiveStar (α →ₛ β) where
   star_involutive _ := ext fun _ ↦ star_star _
