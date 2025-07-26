@@ -385,7 +385,7 @@ theorem ContDiffWithinAt.comp_continuousLinearMap {x : G} (g : G →L[𝕜] E)
       change AnalyticOn 𝕜 (fun x ↦
         ContinuousMultilinearMap.compContinuousLinearMapL (fun _ ↦ g) (p (g x) i)) (⇑g ⁻¹' u)
       apply AnalyticOn.comp _ _ (Set.mapsTo_univ _ _)
-      · exact ContinuousLinearEquiv.analyticOn _ _
+      · exact ContinuousLinearMap.analyticOn _ _
       · exact (h'p i).comp (g.analyticOn _) (mapsTo_preimage _ _)
   | (n : ℕ∞) =>
     intro m hm
