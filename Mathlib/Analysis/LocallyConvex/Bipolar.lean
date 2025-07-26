@@ -181,49 +181,7 @@ variable (t : Set E) (a : 𝕜) (c : ℝ)
 lemma bal {s : Finset F} : Balanced 𝕜 ((s.sup B.toSeminormFamily).ball 0 r) := by
   exact Seminorm.balanced_ball_zero (s.sup B.toSeminormFamily) r
 
--- #check Seminorm.absorbent_ball_zero (s.sup B.toSeminormFamily)
 
-open ComplexOrder in
-lemma absorb {s : Finset F} (hr : 0 < r) : Absorbent 𝕜 ((s.sup B.toSeminormFamily).ball 0 r) := by
-  exact Seminorm.absorbent_ball_zero (s.sup B.toSeminormFamily) hr
-
-/-
-We already have `Seminorm.absorbent_ball_zero` but this gives more precise information than
-"eventually"
--/
-open ComplexOrder in
-lemma precise_absorb {s : Finset F} (x : E) (hr : 0 < r) :
-    ∀ a ∈ Set.Ioi (r⁻¹ * (s.sup B.toSeminormFamily) x),
-    x ∈ (a : 𝕜) • ((s.sup B.toSeminormFamily).ball 0 r) := by
-  intro a ha
-  have hapos : 0 < a := by
-      have t1 : 0 ≤ r⁻¹ * (s.sup B.toSeminormFamily) x := by
-        apply mul_nonneg
-        apply le_of_lt (Right.inv_pos.mpr hr)
-        exact apply_nonneg (s.sup B.toSeminormFamily) x
-      apply lt_of_le_of_lt t1 ha
-  let y:= (a⁻¹ : 𝕜) • x
-  have e1 : y ∈ (s.sup B.toSeminormFamily).ball 0 r := by
-    rw [Seminorm.mem_ball, sub_zero]
-    unfold y
-    rw [SeminormClass.map_smul_eq_mul]
-    simp only [norm_inv, norm_algebraMap', Real.norm_eq_abs]
-    rw [Set.mem_Ioi] at ha
-    rw [abs_of_pos hapos]
-    rw [inv_mul_lt_iff₀ hapos]
-    rw [inv_mul_lt_iff₀ hr] at ha
-    rw [mul_comm]
-    exact ha
-  have ex : x = (a : 𝕜) • y := by
-    unfold y
-    rw [← smul_assoc]
-    rw [smul_eq_mul]
-    rw [CommGroupWithZero.mul_inv_cancel]
-    rw [one_smul]
-    apply ne_of_gt
-    exact RCLike.ofReal_pos.mpr hapos
-  rw [ex]
-  exact Set.smul_mem_smul_set e1
 
 -- c.f. LinearMap.continuous_of_locally_bounded
 lemma isBounded_of_Continuous :
