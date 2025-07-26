@@ -321,8 +321,10 @@ theorem Quotient.liftOn_mk {s : Setoid α} (f : α → β) (h : ∀ a b : α, a 
   rfl
 
 @[simp]
-theorem Quotient.liftOn₂_mk {α : Sort*} {β : Sort*} {_ : Setoid α} (f : α → α → β)
-    (h : ∀ a₁ a₂ b₁ b₂ : α, a₁ ≈ b₁ → a₂ ≈ b₂ → f a₁ a₂ = f b₁ b₂) (x y : α) :
+theorem Quotient.liftOn₂_mk {α : Sort*} {β : Sort*} {γ : Sort*} {_ : Setoid α} {_ : Setoid β}
+    (f : α → β → γ)
+    (h : ∀ (a₁ : α) (a₂ : β) (b₁ : α) (b₂ : β), a₁ ≈ b₁ → a₂ ≈ b₂ → f a₁ a₂ = f b₁ b₂)
+    (x : α) (y : β) :
     Quotient.liftOn₂ (Quotient.mk _ x) (Quotient.mk _ y) f h = f x y :=
   rfl
 
