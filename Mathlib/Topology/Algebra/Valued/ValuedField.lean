@@ -343,6 +343,11 @@ noncomputable instance valuedCompletion : Valued (hat K) Γ₀ where
 theorem valuedCompletion_apply (x : K) : Valued.v (x : hat K) = v x :=
   extension_extends x
 
+instance {R : Type*} [CommSemiring R] [Algebra R K] [UniformContinuousConstSMul R K]
+    [FaithfulSMul R K] : FaithfulSMul R (hat K) := by
+  rw [faithfulSMul_iff_algebraMap_injective R (hat K)]
+  exact (FaithfulSMul.algebraMap_injective K (hat K)).comp (FaithfulSMul.algebraMap_injective R K)
+
 end Valued
 
 section Notation
