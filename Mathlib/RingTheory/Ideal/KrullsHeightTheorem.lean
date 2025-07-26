@@ -213,6 +213,13 @@ nonrec lemma Ideal.height_le_spanRank_toENat_of_mem_minimal_primes
       refine hspan.trans <| radical_mono ?_
       rw [← Set.union_singleton, span_union]
 
+lemma Ideal.height_le_card_of_mem_minimalPrimes {p : Ideal R} [p.IsPrime] {s : Finset R}
+    (hI : p ∈ (Ideal.span s).minimalPrimes) :
+    p.height ≤ s.card := by
+  trans (Cardinal.toENat (Submodule.spanRank (Ideal.span (s : Set R))))
+  · exact Ideal.height_le_spanRank_toENat_of_mem_minimal_primes _ _ hI
+  · simpa using Submodule.spanRank_span_le_card (s : Set R)
+
 /-- In a commutative Noetherian ring `R`, the height of a (finitely-generated) ideal is smaller
 than or equal to the minimum number of generators for this ideal. -/
 lemma Ideal.height_le_spanRank_toENat (I : Ideal R) (hI : I ≠ ⊤) :
@@ -290,3 +297,44 @@ lemma Ideal.exists_finset_card_eq_height_of_isNoetherianRing (p : Ideal R) [p.Is
     · symm
       simpa [Submodule.fg_iff_spanRank_eq_spanFinrank] using (IsNoetherian.noetherian I)
     · exact I.height_le_spanRank_toENat_of_mem_minimal_primes _ hI
+
+section Algebra
+
+variable {S : Type*} [CommRing S] [Algebra R S]
+
+/--
+If `P` lies over `p`, the height of `P` is bounded by the height of `p` plus
+the height of the image of `P` in `S ⧸ p S`.
+Equality holds if `S` satisfies going-down as an `R`-algebra.
+-/
+lemma Ideal.height_le_height_add_of_liesOver [IsNoetherianRing S] (p : Ideal R) [p.IsPrime]
+      (P : Ideal S) [P.IsPrime] [P.LiesOver p] :
+    P.height ≤ p.height +
+      (P.map (Ideal.Quotient.mk <| p.map (algebraMap R S))).height := by
+  classical
+  obtain ⟨s, hp, heq⟩ := p.exists_finset_card_eq_height_of_isNoetherianRing
+  let P' := P.map (Ideal.Quotient.mk <| p.map (algebraMap R S))
+  obtain ⟨s', hP', heq'⟩ := P'.exists_finset_card_eq_height_of_isNoetherianRing
+  have hsP'sub : (s' : Set <| S ⧸ (Ideal.map (algebraMap R S) p)) ⊆ (P' : Set <| S ⧸ _) :=
+    fun x hx ↦ hP'.1.2 (Ideal.subset_span hx)
+  have : Set.SurjOn (Ideal.Quotient.mk (p.map (algebraMap R S))) P s' := by
+    refine Set.SurjOn.mono subset_rfl hsP'sub fun x hx ↦ ?_
+    obtain ⟨y, rfl⟩ := Ideal.Quotient.mk_surjective x
+    rw [SetLike.mem_coe, Ideal.mem_quotient_iff_mem] at hx
+    use y, hx
+    rw [Ideal.map_le_iff_le_comap, Ideal.LiesOver.over (p := p) (P := P)]
+  obtain ⟨o, himgo, hcardo, ho⟩ := s'.exists_image_eq_and_card_le_of_image_eq (P : Set S) this
+  let t : Finset S := Finset.image (algebraMap R S) s ∪ o
+  suffices h : P.height ≤ t.card by
+    rw [← heq, ← heq']
+    apply le_trans h
+    norm_cast
+    exact le_trans (Finset.card_union_le _ _) (add_le_add Finset.card_image_le hcardo)
+  refine Ideal.height_le_card_of_mem_minimalPrimes ?_
+  have : Ideal.span t = Ideal.map (algebraMap R S) (.span s) ⊔ .span o := by
+    simp [t, Ideal.span_union, Ideal.map_span]
+  refine this ▸ map_sup_mem_minimalPrimes_of_map_quotientMk_mem_minimalPrimes hp (span_le.mpr ho) ?_
+  convert hP'
+  simp [Ideal.map_span, ← himgo]
+
+end Algebra
