@@ -45,7 +45,7 @@ variable {P Q : C}
 with respect to monomorphisms. -/
 class StrongEpi (f : P ⟶ Q) : Prop where
   /-- The epimorphism condition on `f` -/
-  epi : Epi f
+  epi : Epi f := by infer_instance
   /-- The left lifting property with respect to all monomorphism -/
   llp : ∀ ⦃X Y : C⦄ (z : X ⟶ Y) [Mono z], HasLiftingProperty f z
 
@@ -61,14 +61,13 @@ theorem StrongEpi.mk' {f : P ⟶ Q} [Epi f]
 with respect to epimorphisms. -/
 class StrongMono (f : P ⟶ Q) : Prop where
   /-- The monomorphism condition on `f` -/
-  mono : Mono f
+  mono : Mono f := by infer_instance
   /-- The right lifting property with respect to all epimorphisms -/
   rlp : ∀ ⦃X Y : C⦄ (z : X ⟶ Y) [Epi z], HasLiftingProperty z f
 
 theorem StrongMono.mk' {f : P ⟶ Q} [Mono f]
     (hf : ∀ (X Y : C) (z : X ⟶ Y) (_ : Epi z) (u : X ⟶ P)
       (v : Y ⟶ Q) (sq : CommSq u z f v), sq.HasLift) : StrongMono f where
-  mono := inferInstance
   rlp := fun {X Y} z hz => ⟨fun {u v} sq => hf X Y z hz u v sq⟩
 
 attribute [instance 100] StrongEpi.llp
@@ -124,12 +123,10 @@ theorem strongMono_of_strongMono [StrongMono (f ≫ g)] : StrongMono f :=
 
 /-- An isomorphism is in particular a strong epimorphism. -/
 instance (priority := 100) strongEpi_of_isIso [IsIso f] : StrongEpi f where
-  epi := by infer_instance
   llp {_ _} _ := HasLiftingProperty.of_left_iso _ _
 
 /-- An isomorphism is in particular a strong monomorphism. -/
 instance (priority := 100) strongMono_of_isIso [IsIso f] : StrongMono f where
-  mono := by infer_instance
   rlp {_ _} _ := HasLiftingProperty.of_right_iso _ _
 
 theorem StrongEpi.of_arrow_iso {A B A' B' : C} {f : A ⟶ B} {g : A' ⟶ B'}
