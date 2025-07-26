@@ -30,16 +30,16 @@ if the tensor product `A ⊗[k] AlgebraicClosure k` is reduced.
 open TensorProduct
 
 noncomputable section
-variable {k : Type} {A : Type} [Field k] [CommRing A] [Algebra k A]
+variable {k : Type} {A : Type} [Field k] [Ring A] [Algebra k A]
 
 /-- The k-algebra A is geometrically reduced iff its basechange to AlgebraicClosure k is reduced -/
 @[mk_iff]
-class IsGeometricallyReduced (k : Type) (A : Type) [Field k] [CommRing A] [Algebra k A] : Prop where
+class IsGeometricallyReduced (k : Type) (A : Type) [Field k] [Ring A] [Algebra k A] : Prop where
   reduced_algebraicClosure_tensor : IsReduced ((AlgebraicClosure k) ⊗[k] A)
 attribute [instance] IsGeometricallyReduced.reduced_algebraicClosure_tensor
 
 
-lemma geometricallyReduced_indep_of_algebraicClosure (k : Type) (A : Type) [Field k] [CommRing A]
+lemma geometricallyReduced_indep_of_algebraicClosure (k : Type) (A : Type) [Field k] [Ring A]
     [Algebra k A] (K : Type) [Field K] [Algebra k K] [IsAlgClosure k K]
     (h : IsGeometricallyReduced k A) : IsReduced (K ⊗[k] A) := by
   have f : K ≃ₐ[k] (AlgebraicClosure k) := IsAlgClosure.equiv _ _ _
@@ -48,7 +48,7 @@ lemma geometricallyReduced_indep_of_algebraicClosure (k : Type) (A : Type) [Fiel
   apply Module.Flat.rTensor_preserves_injective_linearMap
   exact EquivLike.injective f
 
-lemma isGeometricallyReduced_of_injective {B : Type} [CommRing B] [Algebra k B] (f : A →ₐ[k] B)
+lemma isGeometricallyReduced_of_injective {B : Type} [Ring B] [Algebra k B] (f : A →ₐ[k] B)
     (hf : Function.Injective f) [IsGeometricallyReduced k B] : IsGeometricallyReduced k A := by
   have hfK : Function.Injective
       (Algebra.TensorProduct.map (AlgHom.id (AlgebraicClosure k) (AlgebraicClosure k)) f) := by
@@ -77,11 +77,12 @@ lemma notReduced_has_nilpotent {R : Type} [Zero R] [Pow R ℕ] (h : ¬IsReduced 
 
 /-- Given a subalgebra C of a k-algebra A, and a k-algebra B, the basechange of C to a subalgebra
 of A ⊗[k] B -/
-def subAlgebraBaseChange (B : Type) [CommRing B] [Algebra k B] (C : Subalgebra k A) :
-    Subalgebra B (B ⊗[k] A) :=
+def subAlgebraBaseChange {A : Type} [Ring A] [Algebra k A] (B : Type) [CommRing B] [Algebra k B]
+    (C : Subalgebra k A) : Subalgebra B (B ⊗[k] A) :=
   AlgHom.range (Algebra.TensorProduct.map (AlgHom.id B B) C.val)
 
-lemma FGsubalgebra_baseChange_of_element {B : Type} [CommRing B] [Algebra k B] (x : A ⊗[k] B) :
+lemma FGsubalgebra_baseChange_of_element {A : Type} {B : Type} [CommRing B] [CommRing A]
+    [Algebra k A] [Algebra k B] (x : A ⊗[k] B) :
     ∃ C : Subalgebra k B , C.FG ∧ x ∈ subAlgebraBaseChange A C := by
   obtain ⟨S, hS⟩ := TensorProduct.exists_finset x
   let S1 := Set.image (fun j ↦ j.2) S.toSet
@@ -106,7 +107,7 @@ lemma FGsubalgebra_baseChange_of_element {B : Type} [CommRing B] [Algebra k B] (
 
 -- If all finitely generated subalgebras of A are geometrically reduced, then A is geometrically
 -- reduced. The result is in https://stacks.math.columbia.edu/tag/030T
-theorem all_FG_geometricallyReduced_isGeometricallyReduced
+theorem all_FG_geometricallyReduced_isGeometricallyReduced {A : Type} [CommRing A] [Algebra k A]
     (h : ∀ B : Subalgebra k A, B.FG → IsGeometricallyReduced k B) :
     IsGeometricallyReduced k A := by
   by_contra h_contra
