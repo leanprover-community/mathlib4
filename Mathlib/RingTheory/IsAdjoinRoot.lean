@@ -292,12 +292,12 @@ variable (h : IsAdjoinRootMonic S f)
 open IsAdjoinRoot
 
 theorem map_modByMonic (g : R[X]) : h.map (g %ₘ f) = h.map g := by
-  rw [← RingHom.sub_mem_ker_iff, mem_ker_map, modByMonic_eq_sub_mul_div _ h.Monic, sub_right_comm,
+  rw [← RingHom.sub_mem_ker_iff, mem_ker_map, modByMonic_eq_sub_mul_div _ h.monic, sub_right_comm,
     sub_self, zero_sub, dvd_neg]
   exact ⟨_, rfl⟩
 
 theorem modByMonic_repr_map (g : R[X]) : h.repr (h.map g) %ₘ f = g %ₘ f :=
-  modByMonic_eq_of_dvd_sub h.Monic <| by rw [← h.mem_ker_map, RingHom.sub_mem_ker_iff, map_repr]
+  modByMonic_eq_of_dvd_sub h.monic <| by rw [← h.mem_ker_map, RingHom.sub_mem_ker_iff, map_repr]
 
 /-- `IsAdjoinRoot.modByMonicHom` sends the equivalence class of `f` mod `g` to `f %ₘ g`. -/
 def modByMonicHom : S →ₗ[R] R[X] where
@@ -321,7 +321,7 @@ theorem map_modByMonicHom (x : S) : h.map (h.modByMonicHom x) = x := by
 theorem modByMonicHom_root_pow {n : ℕ} (hdeg : n < natDegree f) :
     h.modByMonicHom (h.root ^ n) = X ^ n := by
   nontriviality R
-  rw [← h.map_X, ← map_pow, modByMonicHom_map, modByMonic_eq_self_iff h.Monic, degree_X_pow]
+  rw [← h.map_X, ← map_pow, modByMonicHom_map, modByMonic_eq_self_iff h.monic, degree_X_pow]
   contrapose! hdeg
   simpa [natDegree_le_iff_degree_le] using hdeg
 
@@ -349,14 +349,14 @@ def basis : Basis (Fin (natDegree f)) R S :=
           modByMonicHom, LinearMap.coe_mk, Finset.mem_coe]
         obtain rfl | hf := eq_or_ne f 1
         · simp
-        · exact coeff_eq_zero_of_natDegree_lt <| (natDegree_modByMonic_lt _ h.Monic hf).trans_le hi
+        · exact coeff_eq_zero_of_natDegree_lt <| (natDegree_modByMonic_lt _ h.monic hf).trans_le hi
       right_inv := fun g => by
         nontriviality R
         ext i
         simp only [h.modByMonicHom_map, Finsupp.comapDomain_apply, Polynomial.toFinsupp_apply]
-        rw [(Polynomial.modByMonic_eq_self_iff h.Monic).mpr, Polynomial.coeff]
+        rw [(Polynomial.modByMonic_eq_self_iff h.monic).mpr, Polynomial.coeff]
         · rw [Finsupp.mapDomain_apply Fin.val_injective]
-        rw [degree_eq_natDegree h.Monic.ne_zero, degree_lt_iff_coeff_zero]
+        rw [degree_eq_natDegree h.monic.ne_zero, degree_lt_iff_coeff_zero]
         intro m hm
         rw [Polynomial.coeff]
         rw [Finsupp.mapDomain_notin_range]
@@ -429,7 +429,7 @@ theorem coeff_apply_le (z : S) (i : ℕ) (hi : natDegree f ≤ i) : h.coeff z i 
   nontriviality R
   exact
     Polynomial.coeff_eq_zero_of_degree_lt
-      ((degree_modByMonic_lt _ h.Monic).trans_le (Polynomial.degree_le_of_natDegree_le hi))
+      ((degree_modByMonic_lt _ h.monic).trans_le (Polynomial.degree_le_of_natDegree_le hi))
 
 theorem coeff_apply (z : S) (i : ℕ) :
     h.coeff z i = if hi : i < natDegree f then h.basis.repr z ⟨i, hi⟩ else 0 := by
@@ -478,7 +478,7 @@ theorem coeff_injective : Function.Injective h.coeff := fun _ _ hxy =>
   h.ext_elem fun _ _ => hxy ▸ rfl
 
 theorem isIntegral_root : IsIntegral R h.root :=
-  ⟨f, h.Monic, h.aeval_root⟩
+  ⟨f, h.monic, h.aeval_root⟩
 
 end IsAdjoinRootMonic
 
@@ -597,7 +597,7 @@ theorem minpoly_eq [IsDomain R] [IsDomain S] [NoZeroSMulDivisors R S] [IsIntegra
     (h : IsAdjoinRootMonic S f) (hirr : Irreducible f) : minpoly R h.root = f :=
   let ⟨q, hq⟩ := minpoly.isIntegrallyClosed_dvd h.isIntegral_root h.aeval_root
   symm <|
-    eq_of_monic_of_associated h.Monic (minpoly.monic h.isIntegral_root) <| by
+    eq_of_monic_of_associated h.monic (minpoly.monic h.isIntegral_root) <| by
       convert
         Associated.mul_left (minpoly R h.root) <|
           associated_one_iff_isUnit.2 <|
