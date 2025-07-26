@@ -28,7 +28,7 @@ def toPerfectPairing :
   ((A.toLinearEquiv' h).trans (dotProductEquiv R n)).toPerfectPairing
 
 @[simp] lemma toPerfectPairing_apply_apply (v w : n → R) :
-    A.toPerfectPairing h v w = A *ᵥ v ⬝ᵥ w :=
+    A.toPerfectPairing h v w = A *ᵥ v ·ᵥ w :=
   rfl
 
 end Matrix

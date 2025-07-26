@@ -409,7 +409,7 @@ theorem det_one_sub_mul_comm (A : Matrix m n α) (B : Matrix n m α) :
 
 /-- A special case of the **Matrix determinant lemma** for when `A = I`. -/
 theorem det_one_add_replicateCol_mul_replicateRow {ι : Type*} [Unique ι] (u v : m → α) :
-    det (1 + replicateCol ι u * replicateRow ι v) = 1 + v ⬝ᵥ u := by
+    det (1 + replicateCol ι u * replicateRow ι v) = 1 + v ·ᵥ u := by
   rw [det_one_add_mul_comm, det_unique, Pi.add_apply, Pi.add_apply, Matrix.one_apply_eq,
     Matrix.replicateRow_mul_replicateCol_apply]
 
@@ -420,7 +420,7 @@ theorem det_one_add_replicateCol_mul_replicateRow {ι : Type*} [Unique ι] (u v 
 /-- The **Matrix determinant lemma**
 
 TODO: show the more general version without `hA : IsUnit A.det` as
-`(A + replicateCol u * replicateRow v).det = A.det + v ⬝ᵥ (adjugate A) *ᵥ u`.
+`(A + replicateCol u * replicateRow v).det = A.det + v ·ᵥ (adjugate A) *ᵥ u`.
 -/
 theorem det_add_replicateCol_mul_replicateRow {ι : Type*} [Unique ι]
     {A : Matrix m m α} (hA : IsUnit A.det) (u v : m → α) :
@@ -458,9 +458,9 @@ scoped infixl:65 " ⊕ᵥ " => Sum.elim
 theorem schur_complement_eq₁₁ [Fintype m] [DecidableEq m] [Fintype n] {A : Matrix m m 𝕜}
     (B : Matrix m n 𝕜) (D : Matrix n n 𝕜) (x : m → 𝕜) (y : n → 𝕜) [Invertible A]
     (hA : A.IsHermitian) :
-    (star (x ⊕ᵥ y)) ᵥ* (fromBlocks A B Bᴴ D) ⬝ᵥ (x ⊕ᵥ y) =
-      (star (x + (A⁻¹ * B) *ᵥ y)) ᵥ* A ⬝ᵥ (x + (A⁻¹ * B) *ᵥ y) +
-        (star y) ᵥ* (D - Bᴴ * A⁻¹ * B) ⬝ᵥ y := by
+    (star (x ⊕ᵥ y)) ᵥ* (fromBlocks A B Bᴴ D) ·ᵥ (x ⊕ᵥ y) =
+      (star (x + (A⁻¹ * B) *ᵥ y)) ᵥ* A ·ᵥ (x + (A⁻¹ * B) *ᵥ y) +
+        (star y) ᵥ* (D - Bᴴ * A⁻¹ * B) ·ᵥ y := by
   simp [Function.star_sumElim, vecMul_fromBlocks, add_vecMul,
     dotProduct_mulVec, vecMul_sub, Matrix.mul_assoc, hA.eq,
     conjTranspose_nonsing_inv, star_mulVec]
@@ -469,9 +469,9 @@ theorem schur_complement_eq₁₁ [Fintype m] [DecidableEq m] [Fintype n] {A : M
 theorem schur_complement_eq₂₂ [Fintype m] [Fintype n] [DecidableEq n] (A : Matrix m m 𝕜)
     (B : Matrix m n 𝕜) {D : Matrix n n 𝕜} (x : m → 𝕜) (y : n → 𝕜) [Invertible D]
     (hD : D.IsHermitian) :
-    (star (x ⊕ᵥ y)) ᵥ* (fromBlocks A B Bᴴ D) ⬝ᵥ (x ⊕ᵥ y) =
-      (star ((D⁻¹ * Bᴴ) *ᵥ x + y)) ᵥ* D ⬝ᵥ ((D⁻¹ * Bᴴ) *ᵥ x + y) +
-        (star x) ᵥ* (A - B * D⁻¹ * Bᴴ) ⬝ᵥ x := by
+    (star (x ⊕ᵥ y)) ᵥ* (fromBlocks A B Bᴴ D) ·ᵥ (x ⊕ᵥ y) =
+      (star ((D⁻¹ * Bᴴ) *ᵥ x + y)) ᵥ* D ·ᵥ ((D⁻¹ * Bᴴ) *ᵥ x + y) +
+        (star x) ᵥ* (A - B * D⁻¹ * Bᴴ) ·ᵥ x := by
   simp [Function.star_sumElim, vecMul_fromBlocks, add_vecMul,
     dotProduct_mulVec, vecMul_sub, Matrix.mul_assoc, hD.eq,
     conjTranspose_nonsing_inv, star_mulVec]

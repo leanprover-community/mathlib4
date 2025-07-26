@@ -78,13 +78,13 @@ theorem vec_sum [AddCommMonoid R] (s : Finset ι) (A : ι → Matrix m n R) :
 
 theorem vec_dotProduct_vec [NonUnitalNonAssocSemiring R] [Fintype m] [Fintype n]
     (A B : Matrix m n R) :
-    vec A ⬝ᵥ vec B = (Aᵀ * B).trace := by
+    vec A ·ᵥ vec B = (Aᵀ * B).trace := by
   simp_rw [Matrix.trace, Matrix.diag, Matrix.mul_apply, dotProduct, vec, transpose_apply,
     ← Finset.univ_product_univ, Finset.sum_product]
 
 theorem star_vec_dotProduct_vec [NonUnitalNonAssocSemiring R] [StarRing R] [Fintype m] [Fintype n]
     (A B : Matrix m n R) :
-    star (vec A) ⬝ᵥ vec B = (Aᴴ * B).trace := by
+    star (vec A) ·ᵥ vec B = (Aᴴ * B).trace := by
   simp_rw [Matrix.trace, Matrix.diag, Matrix.mul_apply, dotProduct, vec, conjTranspose_apply,
     ← Finset.univ_product_univ, Finset.sum_product, Pi.star_apply, vec]
 

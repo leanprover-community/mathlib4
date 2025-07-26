@@ -99,7 +99,7 @@ theorem Matrix.toBilin'_apply (M : Matrix n n R₁) (x y : n → R₁) :
     (by simp only [smul_eq_mul, mul_comm, mul_left_comm])
 
 theorem Matrix.toBilin'_apply' (M : Matrix n n R₁) (v w : n → R₁) :
-    Matrix.toBilin' M v w = v ⬝ᵥ M *ᵥ w := Matrix.toLinearMap₂'_apply' _ _ _
+    Matrix.toBilin' M v w = v ·ᵥ M *ᵥ w := Matrix.toLinearMap₂'_apply' _ _ _
 
 @[simp]
 theorem Matrix.toBilin'_single (M : Matrix n n R₁) (i j : n) :
