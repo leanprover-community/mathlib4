@@ -21,13 +21,13 @@ namespace RingTheory.Sequence
 
 open Module
 
-variable {R S M N : Type*} [CommRing R] [CommRing S] [Algebra R S] [Flat R S]
+variable {R S M N : Type*} [CommRing R] [CommRing S] [Algebra R S]
   [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] [Module S N] [IsScalarTower R S N]
 
 /-- Let `R` be a commutative ring, `M` be an `R`-module, `S` be a flat `R`-algebra, `N` be the base
   change of `M` to `S`. If `[r₁, …, rₙ]` is a weakly regular `M`-sequence, then its image in `N` is
   a weakly regular `N`-sequence. -/
-theorem IsWeaklyRegular.of_flat_of_isBaseChange {f : M →ₗ[R] N} (hf : IsBaseChange S f)
+theorem IsWeaklyRegular.of_flat_of_isBaseChange [Flat R S] {f : M →ₗ[R] N} (hf : IsBaseChange S f)
     {rs : List R} (reg : IsWeaklyRegular M rs) : IsWeaklyRegular N (rs.map (algebraMap R S)) := by
   induction rs generalizing M N with
   | nil => simp
@@ -40,11 +40,9 @@ theorem IsWeaklyRegular.of_flat_of_isBaseChange {f : M →ₗ[R] N} (hf : IsBase
       IsBaseChange.of_equiv e (fun _ ↦ by simp)
     exact ⟨reg.1.of_flat_of_isBaseChange hf, ih hg reg.2⟩
 
-theorem IsWeaklyRegular.of_flat {rs : List R} (reg : IsWeaklyRegular R rs) :
+theorem IsWeaklyRegular.of_flat [Flat R S] {rs : List R} (reg : IsWeaklyRegular R rs) :
     IsWeaklyRegular S (rs.map (algebraMap R S)) :=
   reg.of_flat_of_isBaseChange (IsBaseChange.linearMap R S)
-
-omit [Flat R S]
 
 variable (S) (T : Submonoid R) [IsLocalization T S]
 
