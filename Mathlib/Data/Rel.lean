@@ -130,7 +130,8 @@ protected def id : Rel α α := {(a₁, a₂) | a₁ = a₂}
 
 @[simp] lemma mem_id : a₁ ~[Rel.id] a₂ ↔ a₁ = a₂ := .rfl
 
-@[simp] lemma inv_id : (.id : Rel α α).inv = .id := by aesop
+-- Not simp because `Rel.inv_eq_self` already proves it
+lemma inv_id : (.id : Rel α α).inv = .id := by aesop
 
 /-- Composition of relation.
 
