@@ -24,7 +24,7 @@ space is analytic, as well as the inverse on invertible operators.
 ## Main definitions
 
 Let `p` be a formal multilinear series from `E` to `F`, i.e., `p n` is a multilinear map on `E^n`
-for `n : ℕ`, and `f` be a function from `E` to `F`.
+for `n : ℕ`.
 
 * `HasFPowerSeriesOnBall f p x r`: on the ball of center `x` with radius `r`,
   `f (x + y) = ∑'_n pₙ yⁿ`.
