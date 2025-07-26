@@ -159,6 +159,14 @@ lemma left_cancel_posSubmonoid (x y : R) (u : posSubmonoid R) :
     u * x ≤ᵥ u * y ↔ x ≤ᵥ y := by
   simp only [← right_cancel_posSubmonoid x y u, mul_comm]
 
+@[simp]
+lemma val_posSubmonoid_ne_zero (x : posSubmonoid R) :
+    (x : R) ≠ 0 := by
+  have := x.prop
+  rw [posSubmonoid_def] at this
+  contrapose! this
+  simp [this]
+
 variable (R) in
 /-- The setoid used to construct `ValueGroupWithZero R`. -/
 def valueSetoid : Setoid (R × posSubmonoid R) where
@@ -655,15 +663,6 @@ class ValuativeTopology (R : Type*) [CommRing R] [ValuativeRel R] [TopologicalSp
   mem_nhds_iff : ∀ s : Set R, s ∈ 𝓝 (0 : R) ↔
     ∃ γ : (ValueGroupWithZero R)ˣ, { x | valuation _ x < γ } ⊆ s
 
-namespace ValuativeRel
-
-variable
-  {R Γ : Type*} [CommRing R] [ValuativeRel R] [TopologicalSpace R]
-  [LinearOrderedCommGroupWithZero Γ]
-  (v : Valuation R Γ) [v.Compatible]
-
-end ValuativeRel
-
 /-- If `B` is an `A` algebra and both `A` and `B` have valuative relations,
 we say that `B|A` is a valuative extension if the valuative relation on `A` is
 induced by the one on `B`. -/
@@ -713,5 +712,12 @@ def mapValueGroupWithZero : ValueGroupWithZero A →*₀ ValueGroupWithZero B wh
 lemma mapValueGroupWithZero_valuation (a : A) :
     mapValueGroupWithZero A B (valuation _ a) = valuation _ (algebraMap _ _ a) := by
   apply ValueGroupWithZero.sound <;> simp
+
+lemma mapValueGroupWithZero_strictMono :
+    StrictMono (mapValueGroupWithZero A B) := by
+  intro x y
+  induction x using ValueGroupWithZero.ind
+  induction y using ValueGroupWithZero.ind
+  simp [mapValueGroupWithZero, ← map_mul, rel_iff_rel]
 
 end ValuativeExtension
