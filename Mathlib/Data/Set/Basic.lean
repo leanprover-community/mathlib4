@@ -907,7 +907,7 @@ theorem sep_eq_of_subset (h : s ⊆ t) : { x ∈ t | x ∈ s } = s :=
 @[simp]
 theorem sep_subset (s : Set α) (p : α → Prop) : { x ∈ s | p x } ⊆ s := fun _ => And.left
 
-theorem sep_subset_setOf (s : Set α) (p : α → Prop) : {x ∈ s | p x} ⊆ {x | p x} :=
+theorem sep_subset_setOf (s : Set α) (p : α → Prop) : { x ∈ s | p x } ⊆ { x | p x } :=
   fun _ => And.right
 
 @[simp]
