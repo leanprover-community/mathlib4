@@ -70,32 +70,32 @@ lemma uniq {A : ℰ} (f : B ⊗ A ⟶ sc.Ω) (g : A ⟶ PB)
 
 variable {C PC : ℰ} (hPC : IsPowerObjectOf sc C PC)
 
-/-- The morphism `P_map h` is the functorial action on a morphism `h : B ⟶ C`,
+/-- The morphism `map h` is the functorial action on a morphism `h : B ⟶ C`,
     defined as the P-transpose of `εC ∘ (h ⨯ 𝟙)`. -/
-def P_map (h : B ⟶ C) : PC ⟶ PB := unhat hPB ((h ▷ PC) ≫ ε hPC)
+def map (h : B ⟶ C) : PC ⟶ PB := unhat hPB ((h ▷ PC) ≫ ε hPC)
 
 /-- Naturality (dinaturality) of `ε`. This corresponds to the naturality square of ε
     in MM92 diagram (5). -/
-lemma εDinaturality (h : B ⟶ C) :
-  (h ▷ PC) ≫ ε hPC = (B ◁ (P_map hPB hPC h)) ≫ ε hPB :=
-  have : (unhat hPB ((h ▷ PC) ≫ ε hPC)) = ((P_map hPB hPC h)) := rfl
+lemma dinaturality (h : B ⟶ C) :
+  (h ▷ PC) ≫ ε hPC = (B ◁ (map hPB hPC h)) ≫ ε hPB :=
+  have : (unhat hPB ((h ▷ PC) ≫ ε hPC)) = ((map hPB hPC h)) := rfl
   Eq.symm (comm hPB ((h ▷ PC) ≫ ε hPC))
 
 /-- `P` covariantly preserves composition, shown by stacking dinaturality squares. -/
-lemma P_compose {D PD : ℰ} (hPD : IsPowerObjectOf sc D PD) (h : B ⟶ C) (h' : C ⟶ D) :
-    P_map hPB hPD (h ≫ h') = P_map hPC hPD h' ≫ P_map hPB hPC h := by
+lemma compose {D PD : ℰ} (hPD : IsPowerObjectOf sc D PD) (h : B ⟶ C) (h' : C ⟶ D) :
+    map hPB hPD (h ≫ h') = map hPC hPD h' ≫ map hPB hPC h := by
   let comm_outer : (h ▷ PD) ≫ (h' ▷ PD) ≫ ε hPD =
-      (B ◁ (P_map _ _ h')) ≫ (B ◁ (P_map _ _ h)) ≫ ε _ := by
-    rw [εDinaturality hPC hPD, ← reassoc_of% whisker_exchange h, εDinaturality hPB hPC]
-  rw [P_map]; simp
-  rw[comm_outer, ← uniq _ _ (P_map hPC hPD h' ≫ P_map hPB hPC h) (by aesop_cat)]
+      (B ◁ (map _ _ h')) ≫ (B ◁ (map _ _ h)) ≫ ε _ := by
+    rw [dinaturality hPC hPD, ← reassoc_of% whisker_exchange h, dinaturality hPB hPC]
+  rw [map]; simp
+  rw[comm_outer, ← uniq _ _ (map hPC hPD h' ≫ map hPB hPC h) (by aesop_cat)]
 
 /-- A function `P` assigning power objects, turns into a functor `P : ℰᵒᵖ ⥤ ℰ`. -/
 def functor (P : ℰ → ℰ) (hP : ∀ B : ℰ, IsPowerObjectOf sc B (P B)) : ℰᵒᵖ ⥤ ℰ :=
     { obj B := P B.unop,
-      map {B C} (h : B ⟶ C) := P_map (hP C.unop) (hP B.unop) h.unop,
+      map {B C} (h : B ⟶ C) := map (hP C.unop) (hP B.unop) h.unop,
       map_id _ := Eq.symm (uniq (hP _) _ _ (by simp)),
-      map_comp {B C D} _ _ := P_compose (hP D.unop) (hP C.unop) (hP B.unop) _ _ }
+      map_comp {B C D} _ _ := compose (hP D.unop) (hP C.unop) (hP B.unop) _ _ }
 
 end PowerObject
 
@@ -134,17 +134,22 @@ lemma unhat_hat {A B : ℰ} (g : A ⟶ (P B)) : unhat (hat g) = g :=
 def ε (B : ℰ) : B ⊗ (P B) ⟶ sc.Ω := PowerObject.ε (hP B)
 
 @[simp]
-lemma comm {A B : ℰ} (f : B ⊗ A ⟶ sc.Ω) : (B ◁ unhat f) ≫ ε B = f := PowerObject.comm (hP B) f
+lemma P_comm {A B : ℰ} (f : B ⊗ A ⟶ sc.Ω) : (B ◁ unhat f) ≫ ε B = f := PowerObject.comm (hP B) f
 
-lemma uniq {A B : ℰ} (f : B ⊗ A ⟶ sc.Ω) (g : A ⟶ P B)
+lemma P_uniq {A B : ℰ} (f : B ⊗ A ⟶ sc.Ω) (g : A ⟶ P B)
     (h : f = (B ◁ g) ≫ ε B) : g = unhat f := PowerObject.uniq (hP B) f g h
 
-/-- The morphism `P_map h` is the functorial action on a morphism `h : B ⟶ C`,
+/-- The morphism `map h` is the functorial action on a morphism `h : B ⟶ C`,
     defined as the P-transpose of `εC ∘ (h ⨯ 𝟙)`. -/
 def P_map {B C : ℰ} (h : B ⟶ C) : (P C) ⟶ (P B) :=
-  PowerObject.P_map (hP B) (hP C) h
+  PowerObject.map (hP B) (hP C) h
 
-lemma εDinaturality {B C : ℰ} (h : B ⟶ C) :
-  (h ▷ P C) ≫ ε C = (B ◁ (P_map h)) ≫ ε B := PowerObject.εDinaturality (hP B) (hP C) h
+lemma P_dinaturality {B C : ℰ} (h : B ⟶ C) :(h ▷ P C) ≫ ε C = (B ◁ (P_map h)) ≫ ε B :=
+  PowerObject.dinaturality (hP B) (hP C) h
+
+lemma P_compose {B C D : ℰ} (h : B ⟶ C) (h' : C ⟶ D) : P_map (h ≫ h') = P_map h' ≫ P_map h :=
+  PowerObject.compose (hP B) (hP C) (hP D) h h'
+
+def P_functor : ℰᵒᵖ ⥤ ℰ := PowerObject.functor P hP
 
 end ElementaryTopos
