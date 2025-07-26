@@ -228,20 +228,11 @@ lemma precise_absorb {s : Finset F} (x : E) (hr : 0 < r) :
 -- c.f. LinearMap.continuous_of_locally_bounded
 lemma isBounded_of_Continuous :
     Seminorm.IsBounded B.toSeminormFamily (fun _ : Fin 1 => normSeminorm 𝕜 𝕜) f.toLinearMap := by
-  have hc : Continuous f.toSeminorm := by
-    rw [coe_toSeminorm]
-    apply Continuous.comp
-    exact continuous_norm
-    simp_all only [ContinuousLinearMap.coe_coe]
-    exact ContinuousLinearMap.continuous f
-  obtain ⟨s,C, hC1, hC2⟩  :=
-    Seminorm.bound_of_continuous (E :=  WeakBilin B) (ι := F) (𝕜 := 𝕜) B.weakBilin_withSeminorms
-      f.toSeminorm hc
-  rw [Seminorm.IsBounded]
-  simp
-  use s
-  use C
-  exact hC2
+  obtain ⟨s,C, hC1, hC2⟩ :=
+    Seminorm.bound_of_continuous B.weakBilin_withSeminorms
+      f.toSeminorm (continuous_norm.comp f.continuous)
+  rw [Seminorm.IsBounded, forall_const]
+  exact ⟨s, ⟨C, hC2⟩⟩
 
 lemma test5 : ∃ (s₁ : Finset F),
     ↑f ∈ Submodule.span 𝕜 (Set.range (ContinuousLinearMap.toLinearMap₁₂
