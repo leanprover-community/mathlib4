@@ -592,25 +592,21 @@ lemma functorOfTransform_map_leftUnitor
     simp only [functorOfTransform_map_app_fst, comp_obj,
       CatCospanTransform.comp_left, CatCospanTransform.id_left, id_obj,
       CatCommSq.iso, π₁_obj, transform_obj_obj_fst, ofSquare_fst, Iso.symm_inv,
-      mapIso_hom, Iso.app_hom, π₁_map,
+      mapIso_hom, Iso.app_hom, π₁_map, functorOfTransformObjId,
       CatCospanTransform.leftUnitor_hom_left_app, Iso.symm_hom, mapIso_inv,
       Iso.app_inv, Category.id_comp, map_comp, Category.comp_id,
       functorOfTransformObjComp_hom_app_fst, functorOfTransform_obj_map_fst,
-      functorEquivInverse_map_app_fst, transformObjId_hom_app_fst_app,
-      Category.assoc, functorEquivFunctorIdIso_inv_fst_app,
-      Iso.inv_hom_id_app_fst_app_assoc]
+      Category.assoc, Iso.inv_hom_id_app_fst_app_assoc]
     simp [← Functor.map_comp_assoc]
   · dsimp
-    simp only [functorOfTransform_map_app_snd, comp_obj,
+    simp only [functorOfTransform_map_app_snd, comp_obj, functorOfTransformObjId,
       CatCospanTransform.comp_right, CatCospanTransform.id_right, id_obj,
       CatCommSq.iso, π₂_obj, transform_obj_obj_snd, ofSquare_snd, Iso.symm_inv,
-      mapIso_hom, Iso.app_hom, π₂_map,
+      mapIso_hom, Iso.app_hom, π₂_map, functorOfTransformObjId,
       CatCospanTransform.leftUnitor_hom_right_app, Iso.symm_hom,
       mapIso_inv, Iso.app_inv, Category.id_comp, map_comp, Category.comp_id,
       functorOfTransformObjComp_hom_app_snd, functorOfTransform_obj_map_snd,
-      functorEquivInverse_map_app_snd, transformObjId_hom_app_snd_app,
-      Category.assoc, functorEquivFunctorIdIso_inv_snd_app,
-      Iso.inv_hom_id_app_snd_app_assoc]
+      Category.assoc, Iso.inv_hom_id_app_snd_app_assoc]
     simp [← Functor.map_comp_assoc]
 
 omit [CatPullbackSquare T L R B]
@@ -624,9 +620,9 @@ lemma functorOfTransform_map_rightUnitor
       (functorOfTransform T L T' L'|>.obj ψ).rightUnitor.hom := by
   apply functorEquiv T' L' R' B' C₁|>.functor.map_injective
   ext x
-  · simp [functorOfTransformObjComp_hom_app_fst,
+  · simp [functorOfTransformObjComp_hom_app_fst, functorOfTransformObjId,
       CatCommSq.iso, functorOfTransform_map_app_fst]
-  · simp [functorOfTransformObjComp_hom_app_snd,
+  · simp [functorOfTransformObjComp_hom_app_snd, functorOfTransformObjId,
       CatCommSq.iso, functorOfTransform_map_app_snd]
 
 lemma functorOfTransform_map_whiskerLeft
@@ -719,8 +715,7 @@ lemma functorOfTransform_map_associator
       functorOfTransformObjComp_inv_app_fst, Functor.comp_map, Category.assoc,
       Iso.hom_inv_id_app_assoc, CatCommSq.iso_inv_naturality_assoc,
       NatIso.cancel_natIso_inv_left]
-    simp [← Functor.map_comp_assoc, Iso.hom_inv_id_app_assoc,
-      ← Functor.map_comp, Iso.hom_inv_id_app]
+    simp [← Functor.map_comp_assoc, ← Functor.map_comp, Iso.hom_inv_id_app]
   · dsimp
     simp only [functorOfTransform_map_app_snd, comp_obj,
       CatCospanTransform.comp_right,
@@ -729,8 +724,7 @@ lemma functorOfTransform_map_associator
       functorOfTransformObjComp_inv_app_snd,
       Functor.comp_map, Category.assoc, Iso.hom_inv_id_app_assoc,
       CatCommSq.iso_inv_naturality_assoc, NatIso.cancel_natIso_inv_left]
-    simp [← Functor.map_comp_assoc, Iso.hom_inv_id_app_assoc,
-      ← Functor.map_comp, Iso.hom_inv_id_app]
+    simp [← Functor.map_comp_assoc, ← Functor.map_comp, Iso.hom_inv_id_app]
 
 end
 
