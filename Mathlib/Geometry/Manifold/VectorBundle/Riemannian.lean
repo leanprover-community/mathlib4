@@ -185,24 +185,24 @@ lemma MDifferentiableWithinAt.inner_bundle
   simp only [mdifferentiableWithinAt_totalSpace] at this
   exact this.2
 
-/-- Given two smooth maps into the same fibers of a Riemannian bundle,
-their scalar product is smooth. -/
+/-- Given two differentiable maps into the same fibers of a Riemannian bundle,
+their scalar product is differentiable. -/
 lemma MDifferentiableAt.inner_bundle
     (hv : MDifferentiableAt IM (IB.prod 𝓘(ℝ, F)) (fun m ↦ (v m : TotalSpace F E)) x)
     (hw : MDifferentiableAt IM (IB.prod 𝓘(ℝ, F)) (fun m ↦ (w m : TotalSpace F E)) x) :
     MDifferentiableAt IM 𝓘(ℝ) (fun b ↦ ⟪v b, w b⟫) x :=
   MDifferentiableWithinAt.inner_bundle hv hw
 
-/-- Given two smooth maps into the same fibers of a Riemannian bundle,
-their scalar product is smooth. -/
+/-- Given two differentiable maps into the same fibers of a Riemannian bundle,
+their scalar product is differentiable. -/
 lemma MDifferentiableOn.inner_bundle
     (hv : MDifferentiableOn IM (IB.prod 𝓘(ℝ, F)) (fun m ↦ (v m : TotalSpace F E)) s)
     (hw : MDifferentiableOn IM (IB.prod 𝓘(ℝ, F)) (fun m ↦ (w m : TotalSpace F E)) s) :
     MDifferentiableOn IM 𝓘(ℝ) (fun b ↦ ⟪v b, w b⟫) s :=
   fun x hx ↦ (hv x hx).inner_bundle (hw x hx)
 
-/-- Given two smooth maps into the same fibers of a Riemannian bundle,
-their scalar product is smooth. -/
+/-- Given two differentiable maps into the same fibers of a Riemannian bundle,
+their scalar product is differentiable. -/
 lemma MDifferentiable.inner_bundle
     (hv : MDifferentiable IM (IB.prod 𝓘(ℝ, F)) (fun m ↦ (v m : TotalSpace F E)))
     (hw : MDifferentiable IM (IB.prod 𝓘(ℝ, F)) (fun m ↦ (w m : TotalSpace F E))) :
