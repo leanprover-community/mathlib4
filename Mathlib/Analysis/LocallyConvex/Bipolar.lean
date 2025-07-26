@@ -11,7 +11,6 @@ import Mathlib.Analysis.Normed.Module.Convex
 import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Topology.Algebra.Module.StrongTopology
-import Mathlib.Analysis.LocallyConvex.ContinuousOfBounded
 
 /-!
 
@@ -226,6 +225,7 @@ lemma precise_absorb {s : Finset F} (x : E) (hr : 0 < r) :
   rw [ex]
   exact Set.smul_mem_smul_set e1
 
+-- c.f. LinearMap.continuous_of_locally_bounded
 lemma isBounded_of_Continuous' :
     Seminorm.IsBounded B.toSeminormFamily (fun _ : Fin 1 => normSeminorm 𝕜 𝕜) f.toLinearMap := by
   have hc : Continuous f.toSeminorm := by
