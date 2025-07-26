@@ -91,7 +91,7 @@ lemma Module.length_ne_top_iff : Module.length R M ≠ ⊤ ↔ IsFiniteLength R 
   refine ⟨fun h ↦ ?_, fun H ↦ ?_⟩
   · rw [length_ne_top_iff_finiteDimensionalOrder] at h
     rw [isFiniteLength_iff_isNoetherian_isArtinian, isNoetherian_iff, isArtinian_iff]
-    let R : Rel (Submodule R M) (Submodule R M) :=
+    let R : Set.Rel (Submodule R M) (Submodule R M) :=
       {(N₁, N₂) : Submodule R M × Submodule R M | N₁ < N₂}
     change R.inv.IsWellFounded ∧ R.IsWellFounded
     exact ⟨.of_finiteDimensional R.inv, .of_finiteDimensional R⟩
