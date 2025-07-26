@@ -267,6 +267,25 @@ def costructuredArrowYonedaEquivalenceInverseπ (F : Cᵒᵖ ⥤ Type v) :
     (costructuredArrowYonedaEquivalence F).inverse ⋙ (π F).leftOp ≅ CostructuredArrow.proj _ _ :=
   Iso.refl _
 
+@[simps]
+def costructuredArrowULiftYonedaEquivalence (F : Cᵒᵖ ⥤ Type max w v) :
+    F.Elementsᵒᵖ ≌ CostructuredArrow uliftYoneda.{w} F where
+  functor :=
+    { obj x := CostructuredArrow.mk (uliftYonedaEquiv.{w}.symm x.unop.2)
+      map f := CostructuredArrow.homMk f.1.1.unop (by
+        dsimp
+        rw [← uliftYonedaEquiv_symm_map, map_snd]) }
+  inverse :=
+    { obj X := op (F.elementsMk _ (uliftYonedaEquiv.{w} X.hom))
+      map f := (homMk _ _ f.left.op (by
+        dsimp
+        rw [← CostructuredArrow.w f, uliftYonedaEquiv_naturality, Quiver.Hom.unop_op])).op
+      map_id := by aesop
+      map_comp := by aesop }
+  unitIso := NatIso.ofComponents (fun x ↦ Iso.op (isoMk _ _ (Iso.refl _) (by simp)))
+    (fun f ↦ Quiver.Hom.unop_inj (by aesop))
+  counitIso := NatIso.ofComponents (fun X ↦ CostructuredArrow.isoMk (Iso.refl _))
+
 end CategoryOfElements
 
 namespace Functor
