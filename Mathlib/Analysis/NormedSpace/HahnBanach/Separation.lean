@@ -5,11 +5,10 @@ Authors: Bhavik Mehta, Yaël Dillies
 -/
 import Mathlib.Analysis.Convex.Cone.Extension
 import Mathlib.Analysis.Convex.Gauge
-import Mathlib.Topology.Algebra.Module.FiniteDimension
-import Mathlib.Topology.Algebra.Module.LocallyConvex
-import Mathlib.Topology.Algebra.MulAction
-import Mathlib.Analysis.RCLike.Basic
+import Mathlib.Analysis.Normed.Module.Convex
 import Mathlib.Analysis.NormedSpace.Extend
+import Mathlib.Topology.Algebra.Module.FiniteDimension
+import Mathlib.Topology.Instances.RealVectorSpace
 
 /-!
 # Separation Hahn-Banach theorem
@@ -40,13 +39,18 @@ open Set
 
 open Pointwise
 
-variable {𝕜 E : Type*}
+variable {E : Type*} {s t : Set E} {x y : E}
+
+section
+
+variable [AddCommGroup E] [Module ℝ E] [TopologicalSpace E]
+variable [IsTopologicalAddGroup E] [ContinuousSMul ℝ E]
 
 /-- Given a set `s` which is a convex neighbourhood of `0` and a point `x₀` outside of it, there is
 a continuous linear functional `f` separating `x₀` and `s`, in the sense that it sends `x₀` to 1 and
 all of `s` to values strictly below `1`. -/
-theorem separate_convex_open_set [TopologicalSpace E] [AddCommGroup E] [IsTopologicalAddGroup E]
-    [Module ℝ E] [ContinuousSMul ℝ E] {s : Set E} (hs₀ : (0 : E) ∈ s) (hs₁ : Convex ℝ s)
+theorem separate_convex_open_set
+    (hs₀ : (0 : E) ∈ s) (hs₁ : Convex ℝ s)
     (hs₂ : IsOpen s) {x₀ : E} (hx₀ : x₀ ∉ s) : ∃ f : E →L[ℝ] ℝ, f x₀ = 1 ∧ ∀ x ∈ s, f x < 1 := by
   let f : E →ₗ.[ℝ] ℝ := LinearPMap.mkSpanSingleton x₀ 1 (ne_of_mem_of_not_mem hs₀ hx₀).symm
   have := exists_extension_of_le_sublinear f (gauge s) (fun c hc => gauge_smul_of_nonneg hc.le)
@@ -75,12 +79,6 @@ theorem separate_convex_open_set [TopologicalSpace E] [AddCommGroup E] [IsTopolo
     exact
       one_le_gauge_of_notMem (hs₁.starConvex hs₀)
         (absorbent_nhds_zero <| hs₂.mem_nhds hs₀).absorbs hx₀
-
-variable [TopologicalSpace E] [AddCommGroup E] [Module ℝ E]
-  {s t : Set E} {x y : E}
-section
-
-variable [IsTopologicalAddGroup E] [ContinuousSMul ℝ E]
 
 /-- A version of the **Hahn-Banach theorem**: given disjoint convex sets `s`, `t` where `s` is open,
 there is a continuous linear functional which separates them. -/
@@ -212,7 +210,11 @@ end
 
 namespace RCLike
 
-variable [RCLike 𝕜] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E]
+variable {𝕜 : Type*} [RCLike 𝕜]
+
+section
+
+variable [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E]
 
 /-- Real linear extension of continuous extension of `LinearMap.extendTo𝕜'` -/
 noncomputable def extendTo𝕜'ₗ [ContinuousConstSMul 𝕜 E] : (E →L[ℝ] ℝ) →ₗ[ℝ] (E →L[𝕜] 𝕜) :=
@@ -320,5 +322,100 @@ theorem iInter_halfSpaces_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
   obtain ⟨y, hy, hxy⟩ := hx l
   exact ((hxy.trans_lt (hlA y hy)).trans hl).false
 @[deprecated (since := "2024-11-12")] alias iInter_halfspaces_eq := iInter_halfSpaces_eq
+
+end
+
+section Countable
+
+open TopologicalSpace Metric
+
+variable [NormedAddCommGroup E] [NormedSpace ℝ E] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
+
+/-! In particular, in a separable space, a closed convex set is the intersection of countably many
+half-spaces. -/
+
+/-- A closed convex set is the intersection of countably many half spaces in a separable Banach
+space.
+This is Lemma 1.2.9 in [Hytonen_VanNeerven_Veraar_Wies_2016]. -/
+theorem iInter_nat_halfSpaces_eq
+    (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) (hsep : IsSeparable sᶜ) :
+    ∃ (L : ℕ → E →L[𝕜] 𝕜) (c : ℕ → ℝ),
+    ⋂ (i : ℕ), {x | c i ≤ re (L i x)} = s ∧
+    (s.Nonempty → s ≠ univ → ∀ i, ∃ x, re (L i x) ≠ 0) := by
+  obtain rfl | hs₃ := s.eq_empty_or_nonempty
+  · use 0, 1
+    simp [iInter_eq_empty_iff]
+  obtain rfl | hs_univ := eq_or_ne s univ
+  · use 0, 0
+    simp [nonempty_iff_ne_empty]
+  -- maybe this should be a definition `IsSeparable.denseSeq`?
+  have ⟨f, hfmem, hf⟩ : ∃ f : ℕ → E, (∀ i, f i ∈ sᶜ) ∧ sᶜ ⊆ closure (range f) := by
+    have : Nonempty ↑sᶜ := (nonempty_compl.mpr hs_univ).to_subtype
+    have : SeparableSpace ↑sᶜ := hsep.separableSpace
+    use fun i ↦ (denseSeq ↑sᶜ i : E), by simp
+    intro x hx
+    change ↑(Subtype.mk x hx) ∈ closure (range (((↑) : ↑sᶜ → E) ∘ _))
+    rw [range_comp, ← closure_subtype, (denseRange_denseSeq ↑sᶜ).closure_range]
+    trivial
+  have φc : ∀ (i : ℕ), ∃ (φ : E →L[𝕜] 𝕜) (c : ℝ),
+      (∀ a ∈ ball (f i) (infDist (f i) s), re (φ a) < c) ∧ ∀ b ∈ s, c ≤ re (φ b) :=
+    fun i ↦ geometric_hahn_banach_open (convex_ball _ _) isOpen_ball hs₁ disjoint_ball_infDist
+  choose L c hLc using φc
+  use L, c
+  constructor
+  · ext x
+    simp only [mem_iInter, mem_setOf_eq]
+    constructor
+    · intro hx
+      contrapose! hx
+      have pos : 0 < infDist x s / 2 := by
+        refine div_pos ?_ (by positivity)
+        exact (IsClosed.notMem_iff_infDist_pos hs₂ hs₃).mp hx
+      obtain ⟨_, ⟨i, rfl⟩, hi⟩ := Metric.mem_closure_iff.mp (hf hx) _ pos
+      refine ⟨i, (hLc i).1 _ ?_⟩
+      have hfix : infDist (f i) s ≥ infDist x s / 2 := by
+        by_contra! hp
+        obtain ⟨y, hy1, hy2⟩ := (infDist_lt_iff hs₃).mp hp
+        have hxy : dist x y < infDist x s := by linarith [dist_triangle x (f i) y]
+        exact notMem_of_dist_lt_infDist hxy hy1
+      rw [mem_ball]
+      linarith
+    · intro hx i
+      exact (hLc i).2 x hx
+  · intro _ _ j
+    cases le_or_gt (c j) 0 with
+    | inl hl =>
+      use f j
+      have : re (L j (f j)) < c j := (hLc j).1 _ <| mem_ball_self <|
+        (IsClosed.notMem_iff_infDist_pos hs₂ hs₃).mp (hfmem j)
+      linarith
+    | inr hr =>
+      obtain ⟨x, hxs⟩ := hs₃
+      use x
+      have : c j ≤ re (L j x) := (hLc j).2 _ hxs
+      linarith
+
+/-- `iInter_nat_halfSpaces_eq` for product spaces. -/
+theorem iInter_nat_halfSpaces_eq_of_prod {F : Type*} {s : Set (E × F)}
+    [NormedAddCommGroup F] [NormedSpace ℝ F]
+    [Module 𝕜 F] [ContinuousSMul 𝕜 F]
+    (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) (hsep : IsSeparable sᶜ) :
+    ∃ (L : ℕ → E →L[𝕜] 𝕜) (T : ℕ → F →L[𝕜] 𝕜) (c : ℕ → ℝ),
+    ⋂ (i : ℕ), {(x, y) | c i ≤ re (L i x) + re (T i y) } = s
+    ∧ (s.Nonempty → s ≠ univ → ∀ i, ∃ (x : E), ∃ (y : F), re (L i x) + re (T i y) ≠ 0) := by
+  have ⟨LT, c, eq1, eq2⟩ := iInter_nat_halfSpaces_eq (𝕜 := 𝕜) hs₁ hs₂ hsep
+  use fun i ↦ (LT i).comp (.inl 𝕜 E F), fun i ↦ (LT i).comp (.inr 𝕜 E F), c
+  constructor
+  · rw [← eq1]
+    apply iInter_congr
+    intro i
+    ext ⟨x, y⟩
+    simp [← map_add]
+  · intro hs₃ hsne i
+    obtain ⟨z, hz⟩ := eq2 hs₃ hsne i
+    use z.1, z.2
+    simpa [← map_add] using hz
+
+end Countable
 
 end RCLike
