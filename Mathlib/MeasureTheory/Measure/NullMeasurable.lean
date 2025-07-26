@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.MeasurableSpace.EventuallyMeasurable
-import Mathlib.MeasureTheory.MeasurableSpace.Basic
+import Mathlib.MeasureTheory.MeasurableSpace.Embedding
 import Mathlib.MeasureTheory.Measure.AEDisjoint
 
 /-!
@@ -295,6 +295,14 @@ theorem measure_add_measure_compl₀ {s : Set α} (hs : NullMeasurableSet s μ) 
 
 lemma measure_of_measure_compl_eq_zero (hs : μ sᶜ = 0) : μ s = μ Set.univ := by
   simpa [hs] using measure_add_measure_compl₀ <| .of_compl <| .of_null hs
+
+theorem nullMeasurableSet_image_of_measure_eq {f : α → α}
+    (hf : MeasurableEmbedding f) (H : ∀ s, μ s = 0 → μ (f '' s) = 0) (hs : NullMeasurableSet s μ) :
+    NullMeasurableSet (f '' s) μ := by
+  obtain ⟨t, hts, ht, hts'⟩ := exists_measurable_subset_ae_eq hs
+  rw [← union_diff_cancel hts, image_union]
+  apply (hf.measurableSet_image' ht).nullMeasurableSet.union (.of_null <| H _ _)
+  rwa [← union_ae_eq_right, union_eq_self_of_subset_right hts, ae_eq_comm]
 
 section MeasurableSingletonClass
 
