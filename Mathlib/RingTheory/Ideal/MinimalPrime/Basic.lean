@@ -161,7 +161,7 @@ variable {S : Type*} [CommRing S] [Algebra R S]
 a minimal prime over the image of `K` in `S ⧸ p S`, then `P` is a minimal prime
 over `I S ⊔ P`. -/
 lemma Ideal.map_sup_mem_minimalPrimes_of_map_quotientMk_mem_minimalPrimes
-    {I p : Ideal R} [p.IsPrime] {P : Ideal S} [P.IsPrime] [P.LiesOver p]
+    {I p : Ideal R} {P : Ideal S} [P.IsPrime] [P.LiesOver p]
     (hI : p ∈ I.minimalPrimes) {K : Ideal S} (hKP : K ≤ P)
     (hK : P.map (Ideal.Quotient.mk _) ∈
       (K.map (Ideal.Quotient.mk (p.map (algebraMap R S)))).minimalPrimes) :

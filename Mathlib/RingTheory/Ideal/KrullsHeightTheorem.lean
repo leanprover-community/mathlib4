@@ -214,7 +214,7 @@ nonrec lemma Ideal.height_le_spanRank_toENat_of_mem_minimal_primes
       refine hspan.trans <| radical_mono ?_
       rw [← Set.union_singleton, span_union]
 
-lemma Ideal.height_le_card_of_mem_minimalPrimes {p : Ideal R} [p.IsPrime] {s : Finset R}
+lemma Ideal.height_le_card_of_mem_minimalPrimes {p : Ideal R} {s : Finset R}
     (hI : p ∈ (Ideal.span s).minimalPrimes) :
     p.height ≤ s.card := by
   trans (Cardinal.toENat (Submodule.spanRank (Ideal.span (s : Set R))))
