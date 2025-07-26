@@ -580,7 +580,18 @@ lemma coe_natCast [NatCast β] (n : ℕ) :
 
 instance [NonAssocSemiring β] : NonAssocSemiring (α →ₛ β) :=
   fast_instance% Function.Injective.nonAssocSemiring (fun f => show α → β from f)
-    SimpleFunc.coe_injective coe_zero coe_one coe_add coe_mul coe_smul coe_natCast
+    coe_injective coe_zero coe_one coe_add coe_mul coe_smul coe_natCast
+
+instance [IntCast β] : IntCast (α →ₛ β) where
+  intCast n := const _ (IntCast.intCast n)
+
+@[simp, norm_cast]
+lemma coe_intCast [IntCast β] (n : ℤ) :
+    ⇑(↑n : α →ₛ β) = fun _ ↦ ↑n := rfl
+
+instance [NonAssocRing β] : NonAssocRing (α →ₛ β) :=
+  fast_instance% Function.Injective.nonAssocRing (fun f => show α → β from f) coe_injective
+    coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_smul coe_smul coe_natCast coe_intCast
 
 instance [NonAssocRing β] : NonAssocRing (α →ₛ β) where
 
@@ -594,13 +605,21 @@ instance [NonUnitalCommRing β] : NonUnitalCommRing (α →ₛ β) :=
   fast_instance% Function.Injective.nonUnitalCommRing (fun f => show α → β from f)
     coe_injective coe_zero coe_add coe_mul coe_neg coe_sub coe_smul coe_smul
 
-instance [CommRing β] : CommRing (α →ₛ β) where
+instance [CommRing β] : CommRing (α →ₛ β) :=
+  fast_instance% Function.Injective.commRing (fun f => show α → β from f) coe_injective coe_zero
+    coe_one coe_add coe_mul coe_neg coe_sub coe_smul coe_smul coe_pow coe_natCast coe_intCast
 
-instance [Semiring β] : Semiring (α →ₛ β) where
+instance [Semiring β] : Semiring (α →ₛ β) :=
+  fast_instance% Function.Injective.semiring (fun (f : α →ₛ β) ↦ ⇑f) coe_injective coe_zero coe_one
+    coe_add coe_mul coe_smul coe_pow coe_natCast
 
-instance [NonUnitalRing β] : NonUnitalRing (α →ₛ β) where
+instance [NonUnitalRing β] : NonUnitalRing (α →ₛ β) :=
+  fast_instance% Function.Injective.nonUnitalRing (fun (f : α →ₛ β) ↦ ⇑f) coe_injective coe_zero
+   coe_add coe_mul coe_neg coe_sub coe_smul coe_smul
 
-instance [Ring β] : Ring (α →ₛ β) where
+instance [Ring β] : Ring (α →ₛ β) :=
+  fast_instance% Function.Injective.ring (fun (f : α →ₛ β) ↦ ⇑f) coe_injective coe_zero
+   coe_one coe_add coe_mul coe_neg coe_sub coe_smul coe_smul coe_pow coe_natCast coe_intCast
 
 instance [SMul K γ] [SMul γ β] [SMul K β] [IsScalarTower K γ β] : IsScalarTower K γ (α →ₛ β) where
   smul_assoc _ _ _ := ext fun _ ↦ smul_assoc ..
@@ -624,6 +643,7 @@ lemma algebraMap_apply [CommSemiring K] [Semiring β] [Algebra K β] (k : K) :
 @[simp]
 lemma algebraMap_apply_apply [CommSemiring K] [Semiring β] [Algebra K β] (k : K) (x : α) :
     algebraMap K (α →ₛ β) k x = algebraMap K β k := rfl
+
 section Star
 
 instance [Star β] : Star (α →ₛ β) where
