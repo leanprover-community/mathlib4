@@ -233,8 +233,7 @@ def checkRewrite (thm e : Expr) (symm : Bool) : MetaM (Option Rewrite) := do
   let proof ← instantiateMVars (mkAppN thm mvars)
   return some { symm, proof, replacement, stringLength, extraGoals, makesNewMVars }
 
-initialize
-  registerTraceClass `rw?
+initialize registerTraceClass `rw?
 
 /-- Try to rewrite `e` with each of the rewrite lemmas, and sort the resulting rewrites. -/
 def checkAndSortRewriteLemmas (e : Expr) (rewrites : Array RewriteLemma) :
@@ -529,7 +528,7 @@ are filtered out, as well as rewrites that have new metavariables in the replace
 To see all suggestions, click on the filter button (▼) in the top right.
 
 This implementation of `rw?` overrides the implementation of `rw?` in core Lean that is
-not interactive.
+not interactive. You can use `rw? at ⊢` to use the core version (`⊢` is typed as `\goal`).
 -/
 elab stx:"rw?" : tactic => do
   let some range := (← getFileMap).rangeOfStx? stx | return
