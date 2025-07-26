@@ -707,8 +707,6 @@ lemma sl2SubmoduleOfRoot_eq_sup (α : Weight K H L) (hα : α.IsNonZero) :
       exact Submodule.smul_mem _ _ hfα
     · apply Submodule.mem_sup_right
       rw [ht.lie_e_f]
-      have h_coroot_eq : h' = ↑(LieAlgebra.IsKilling.coroot α) :=
-        IsSl2Triple.h_eq_coroot hα ht heα hfα
       use c₃ • LieAlgebra.IsKilling.coroot α
       constructor
       · have h_span : (LieAlgebra.corootSpace α.toLinear).toSubmodule =
@@ -717,7 +715,7 @@ lemma sl2SubmoduleOfRoot_eq_sup (α : Weight K H L) (hα : α.IsNonZero) :
         change c₃ • LieAlgebra.IsKilling.coroot α ∈ (LieAlgebra.corootSpace α.toLinear).toSubmodule
         rw [h_span]
         exact Submodule.smul_mem _ _ (Submodule.mem_span_singleton_self _)
-      · rw [h_coroot_eq, map_smul]
+      · rw [IsSl2Triple.h_eq_coroot hα ht heα hfα, map_smul]
         rfl
   · intro hx
     obtain ⟨x_αneg, hx_αneg, x_h, hx_h, hx_eq⟩ := Submodule.mem_sup.mp hx
@@ -734,7 +732,8 @@ lemma sl2SubmoduleOfRoot_eq_sup (α : Weight K H L) (hα : α.IsNonZero) :
       obtain ⟨c, hc⟩ := (finrank_eq_one_iff_of_nonzero' ⟨g, hg⟩ hg_subtype_ne_zero).mp h_dim ⟨y, hy⟩
       use c
       have : y = (⟨y, hy⟩ : rootSpace H β.toLinear).val := rfl
-      rw [this, ← hc]; simp
+      rw [this, ← hc];
+      simp only [Weight.coe_coe, SetLike.mk_smul_mk]
     obtain ⟨c₁, hx_pos_eq⟩ := aux hα hx_pos heα ht.e_ne_zero
     obtain ⟨c₂, hx_neg_eq⟩ := aux (Weight.IsNonZero.neg hα) hx_neg hfα ht.f_ne_zero
     obtain ⟨y, hy_coroot, hy_eq⟩ := hx_h
@@ -751,9 +750,7 @@ lemma sl2SubmoduleOfRoot_eq_sup (α : Weight K H L) (hα : α.IsNonZero) :
       rw [hx_pos_eq, hx_neg_eq]
       suffices h_x_h_eq : x_h = c₃ • ⁅e, f⁆ by
         rw [h_x_h_eq]
-      have h_coroot_eq : ⁅e, f⁆ = ↑(LieAlgebra.IsKilling.coroot α) := by
-        rw [ht.lie_e_f, IsSl2Triple.h_eq_coroot hα ht heα hfα]
-      rw [h_coroot_eq, ← hy_eq, ← hc₃]
+      rw [ht.lie_e_f, IsSl2Triple.h_eq_coroot hα ht heα hfα, ← hy_eq, ← hc₃]
       rfl
     exact hx_final
 
