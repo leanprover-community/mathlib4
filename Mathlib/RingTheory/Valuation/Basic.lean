@@ -475,6 +475,7 @@ theorem comap {S : Type*} [Ring S] (f : S →+* R) (h : v₁.IsEquiv v₂) :
 variable (h : v₁.IsEquiv v₂) {x y : R}
 include h
 
+/-- A restatement of the definition, for the sake of consistency. -/
 theorem le_iff_le : v₁ x ≤ v₁ y ↔ v₂ x ≤ v₂ y :=
   h x y
 
