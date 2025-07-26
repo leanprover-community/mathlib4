@@ -587,7 +587,7 @@ theorem sumArrowIsometryEquivProdArrow_toHomeomorph {α β : Type*} [Fintype α]
 theorem _root_.Fin.edist_append_eq_max_edist (m n : ℕ) {x x2 : Fin m → α} {y y2 : Fin n → α} :
     edist (Fin.append x y) (Fin.append x2 y2) = max (edist x x2) (edist y y2) := by
   simp [edist_pi_def, Finset.sup_univ_eq_iSup, ← Equiv.iSup_comp (e := finSumFinEquiv),
-    Prod.edist_eq, iSup_sum]
+    iSup_sum]
 
 /-- The natural `IsometryEquiv` between `(Fin m → α) × (Fin n → α)` and `Fin (m + n) → α`.
 `Fin.appendEquiv` as an `IsometryEquiv`. -/

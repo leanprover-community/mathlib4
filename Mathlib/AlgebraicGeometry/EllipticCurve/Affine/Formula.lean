@@ -11,22 +11,22 @@ import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
 Let `W` be a Weierstrass curve over a field `F` with coefficients `aᵢ`. The nonsingular affine
 points on `W` can be given negation and addition operations defined by a secant-and-tangent process.
 * Given a nonsingular affine point `P`, its *negation* `-P` is defined to be the unique third
-    nonsingular point of intersection between `W` and the vertical line through `P`.
-    Explicitly, if `P` is `(x, y)`, then `-P` is `(x, -y - a₁x - a₃)`.
+  nonsingular point of intersection between `W` and the vertical line through `P`.
+  Explicitly, if `P` is `(x, y)`, then `-P` is `(x, -y - a₁x - a₃)`.
 * Given two nonsingular affine points `P` and `Q`, their *addition* `P + Q` is defined to be the
-    negation of the unique third nonsingular point of intersection between `W` and the line `L`
-    through `P` and `Q`. Explicitly, let `P` be `(x₁, y₁)` and let `Q` be `(x₂, y₂)`.
-      * If `x₁ = x₂` and `y₁ = -y₂ - a₁x₂ - a₃`, then `L` is vertical.
-      * If `x₁ = x₂` and `y₁ ≠ -y₂ - a₁x₂ - a₃`, then `L` is the tangent of `W` at `P = Q`, and has
-        slope `ℓ := (3x₁² + 2a₂x₁ + a₄ - a₁y₁) / (2y₁ + a₁x₁ + a₃)`.
-      * Otherwise `x₁ ≠ x₂`, then `L` is the secant of `W` through `P` and `Q`, and has slope
-        `ℓ := (y₁ - y₂) / (x₁ - x₂)`.
+  negation of the unique third nonsingular point of intersection between `W` and the line `L`
+  through `P` and `Q`. Explicitly, let `P` be `(x₁, y₁)` and let `Q` be `(x₂, y₂)`.
+    * If `x₁ = x₂` and `y₁ = -y₂ - a₁x₂ - a₃`, then `L` is vertical.
+    * If `x₁ = x₂` and `y₁ ≠ -y₂ - a₁x₂ - a₃`, then `L` is the tangent of `W` at `P = Q`, and has
+      slope `ℓ := (3x₁² + 2a₂x₁ + a₄ - a₁y₁) / (2y₁ + a₁x₁ + a₃)`.
+    * Otherwise `x₁ ≠ x₂`, then `L` is the secant of `W` through `P` and `Q`, and has slope
+      `ℓ := (y₁ - y₂) / (x₁ - x₂)`.
 
-    In the last two cases, the `X`-coordinate of `P + Q` is then the unique third solution of the
-    equation obtained by substituting the line `Y = ℓ(X - x₁) + y₁` into the Weierstrass equation,
-    and can be written down explicitly as `x := ℓ² + a₁ℓ - a₂ - x₁ - x₂` by inspecting the
-    coefficients of `X²`. The `Y`-coordinate of `P + Q`, after applying the final negation that maps
-    `Y` to `-Y - a₁X - a₃`, is precisely `y := -(ℓ(x - x₁) + y₁) - a₁x - a₃`.
+  In the last two cases, the `X`-coordinate of `P + Q` is then the unique third solution of the
+  equation obtained by substituting the line `Y = ℓ(X - x₁) + y₁` into the Weierstrass equation,
+  and can be written down explicitly as `x := ℓ² + a₁ℓ - a₂ - x₁ - x₂` by inspecting the
+  coefficients of `X²`. The `Y`-coordinate of `P + Q`, after applying the final negation that maps
+  `Y` to `-Y - a₁X - a₃`, is precisely `y := -(ℓ(x - x₁) + y₁) - a₁x - a₃`.
 
 This file defines polynomials associated to negation and addition of nonsingular affine points,
 including slopes of non-vertical lines. The actual group law on nonsingular points in affine
@@ -155,7 +155,10 @@ This does not depend on `W`, and has argument order: `x`, `y`, `ℓ`. -/
 noncomputable def linePolynomial (x y ℓ : R) : R[X] :=
   C ℓ * (X - C x) + C y
 
-open scoped Classical in
+section slope
+
+variable [DecidableEq F]
+
 variable (W) in
 /-- The slope of the line through two nonsingular affine points `(x₁, y₁)` and `(x₂, y₂)` on a
 Weierstrass curve `W`.
@@ -166,7 +169,7 @@ at `(x₁, y₁) = (x₂, y₂)`, and has slope `(3x₁² + 2a₂x₁ + a₄ - a
 this line is vertical, in which case this returns the value `0`.
 
 This depends on `W`, and has argument order: `x₁`, `x₂`, `y₁`, `y₂`. -/
-noncomputable def slope (x₁ x₂ y₁ y₂ : F) : F :=
+def slope (x₁ x₂ y₁ y₂ : F) : F :=
   if x₁ = x₂ then if y₁ = W.negY x₂ y₂ then 0
     else (3 * x₁ ^ 2 + 2 * W.a₂ * x₁ + W.a₄ - W.a₁ * y₁) / (y₁ - W.negY x₁ y₁)
   else (y₁ - y₂) / (x₁ - x₂)
@@ -200,6 +203,8 @@ lemma slope_of_Y_ne_eq_evalEval {x₁ x₂ y₁ y₂ : F} (hx : x₁ = x₂) (hy
   ring1
 
 @[deprecated (since := "2025-03-05")] alias slope_of_Y_ne_eq_eval := slope_of_Y_ne_eq_evalEval
+
+end slope
 
 /-! ## Addition formulae in affine coordinates -/
 
@@ -256,6 +261,10 @@ This depends on `W`, and has argument order: `x₁`, `x₂`, `y₁`, `ℓ`. -/
 @[simp]
 def addY (x₁ x₂ y₁ ℓ : R) : R :=
   W'.negY (W'.addX x₁ x₂ ℓ) (W'.negAddY x₁ x₂ y₁ ℓ)
+
+section slope
+
+variable [DecidableEq F]
 
 lemma addPolynomial_slope {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
     (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) : W.addPolynomial x₁ y₁ (W.slope x₁ x₂ y₁ y₂) =
@@ -382,6 +391,8 @@ lemma addY_sub_negY_addY {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x₂) :
   simp_rw [addY, negY, eq_div_iff (sub_ne_zero.mpr hx.symm)]
   linear_combination (norm := ring1) 2 * cyclic_sum_Y_mul_X_sub_X y₁ y₂ hx
 
+end slope
+
 /-! ## Maps and base changes -/
 
 variable (f : R →+* S) (x y x₁ y₁ x₂ y₂ ℓ : R)
@@ -418,7 +429,7 @@ lemma map_addY :
     (W'.map f).toAffine.addY (f x₁) (f x₂) (f y₁) (f ℓ) = f (W'.toAffine.addY x₁ x₂ y₁ ℓ) := by
   simp only [addY, map_negAddY, map_addX, map_negY]
 
-lemma map_slope (f : F →+* K) (x₁ x₂ y₁ y₂ : F) :
+lemma map_slope [DecidableEq F] [DecidableEq K] (f : F →+* K) (x₁ x₂ y₁ y₂ : F) :
     (W.map f).toAffine.slope (f x₁) (f x₂) (f y₁) (f y₂) = f (W.slope x₁ x₂ y₁ y₂) := by
   by_cases hx : x₁ = x₂
   · by_cases hy : y₁ = W.negY x₂ y₂
@@ -456,9 +467,10 @@ lemma baseChange_addY : (W'.baseChange B).toAffine.addY (f x₁) (f x₂) (f y�
     f ((W'.baseChange A).toAffine.addY x₁ x₂ y₁ ℓ) := by
   rw [← RingHom.coe_coe, ← map_addY, map_baseChange]
 
-lemma baseChange_slope [Algebra R F] [Algebra S F] [IsScalarTower R S F] [Algebra R K] [Algebra S K]
-  [IsScalarTower R S K] (f : F →ₐ[S] K) (x₁ x₂ y₁ y₂ : F) :
-  (W'.baseChange K).toAffine.slope (f x₁) (f x₂) (f y₁) (f y₂) =
+lemma baseChange_slope [DecidableEq F] [DecidableEq K]
+    [Algebra R F] [Algebra S F] [IsScalarTower R S F] [Algebra R K] [Algebra S K]
+    [IsScalarTower R S K] (f : F →ₐ[S] K) (x₁ x₂ y₁ y₂ : F) :
+    (W'.baseChange K).toAffine.slope (f x₁) (f x₂) (f y₁) (f y₂) =
     f ((W'.baseChange F).toAffine.slope x₁ x₂ y₁ y₂) := by
   rw [← RingHom.coe_coe, ← map_slope, map_baseChange]
 

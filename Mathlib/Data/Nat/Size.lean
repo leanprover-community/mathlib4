@@ -18,7 +18,7 @@ section
 theorem shiftLeft_eq_mul_pow (m) : ∀ n, m <<< n = m * 2 ^ n := shiftLeft_eq _
 
 theorem shiftLeft'_tt_eq_mul_pow (m) : ∀ n, shiftLeft' true m n + 1 = (m + 1) * 2 ^ n
-  | 0 => by simp [shiftLeft', pow_zero, Nat.one_mul]
+  | 0 => by simp [shiftLeft', pow_zero]
   | k + 1 => by
     rw [shiftLeft', bit_val, Bool.toNat_true, add_assoc, ← Nat.mul_add_one,
       shiftLeft'_tt_eq_mul_pow m k, mul_left_comm, mul_comm 2, pow_succ]
@@ -26,7 +26,7 @@ theorem shiftLeft'_tt_eq_mul_pow (m) : ∀ n, shiftLeft' true m n + 1 = (m + 1) 
 end
 
 theorem shiftLeft'_ne_zero_left (b) {m} (h : m ≠ 0) (n) : shiftLeft' b m n ≠ 0 := by
-  induction n <;> simp [bit_ne_zero, shiftLeft', *]
+  induction n <;> simp [shiftLeft', *]
 
 theorem shiftLeft'_tt_ne_zero (m) : ∀ {n}, (n ≠ 0) → shiftLeft' true m n ≠ 0
   | 0, h => absurd rfl h

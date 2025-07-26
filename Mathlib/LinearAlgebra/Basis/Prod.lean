@@ -22,13 +22,10 @@ open Function Set Submodule Finsupp
 
 variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {M : Type*} {M' : Type*}
 
-section Module
+namespace Module.Basis
 
 variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
-
-namespace Basis
-
-variable (b : Basis ι R M)
+  (b : Basis ι R M)
 
 section Prod
 
@@ -53,7 +50,7 @@ theorem prod_apply_inl_fst (i) : (b.prod b' (Sum.inl i)).1 = b i :=
     ext j
     simp only [Basis.prod, Basis.coe_ofRepr, LinearEquiv.symm_trans_apply,
       LinearEquiv.prodCongr_symm, LinearEquiv.prodCongr_apply, b.repr.apply_symm_apply,
-      LinearEquiv.symm_symm, repr_self, Equiv.toFun_as_coe, Finsupp.fst_sumFinsuppLEquivProdFinsupp]
+      LinearEquiv.symm_symm, repr_self, Finsupp.fst_sumFinsuppLEquivProdFinsupp]
     apply Finsupp.single_apply_left Sum.inl_injective
 
 theorem prod_apply_inr_fst (i) : (b.prod b' (Sum.inr i)).1 = 0 :=
@@ -61,7 +58,7 @@ theorem prod_apply_inr_fst (i) : (b.prod b' (Sum.inr i)).1 = 0 :=
     ext i
     simp only [Basis.prod, Basis.coe_ofRepr, LinearEquiv.symm_trans_apply,
       LinearEquiv.prodCongr_symm, LinearEquiv.prodCongr_apply, b.repr.apply_symm_apply,
-      LinearEquiv.symm_symm, repr_self, Equiv.toFun_as_coe, Finsupp.fst_sumFinsuppLEquivProdFinsupp,
+      LinearEquiv.symm_symm, Finsupp.fst_sumFinsuppLEquivProdFinsupp,
       LinearEquiv.map_zero, Finsupp.zero_apply]
     apply Finsupp.single_eq_of_ne Sum.inr_ne_inl
 
@@ -70,7 +67,7 @@ theorem prod_apply_inl_snd (i) : (b.prod b' (Sum.inl i)).2 = 0 :=
     ext j
     simp only [Basis.prod, Basis.coe_ofRepr, LinearEquiv.symm_trans_apply,
       LinearEquiv.prodCongr_symm, LinearEquiv.prodCongr_apply, b'.repr.apply_symm_apply,
-      LinearEquiv.symm_symm, repr_self, Equiv.toFun_as_coe, Finsupp.snd_sumFinsuppLEquivProdFinsupp,
+      LinearEquiv.symm_symm, Finsupp.snd_sumFinsuppLEquivProdFinsupp,
       LinearEquiv.map_zero, Finsupp.zero_apply]
     apply Finsupp.single_eq_of_ne Sum.inl_ne_inr
 
@@ -79,7 +76,7 @@ theorem prod_apply_inr_snd (i) : (b.prod b' (Sum.inr i)).2 = b' i :=
     ext i
     simp only [Basis.prod, Basis.coe_ofRepr, LinearEquiv.symm_trans_apply,
       LinearEquiv.prodCongr_symm, LinearEquiv.prodCongr_apply, b'.repr.apply_symm_apply,
-      LinearEquiv.symm_symm, repr_self, Equiv.toFun_as_coe, Finsupp.snd_sumFinsuppLEquivProdFinsupp]
+      LinearEquiv.symm_symm, repr_self, Finsupp.snd_sumFinsuppLEquivProdFinsupp]
     apply Finsupp.single_apply_left Sum.inr_injective
 
 @[simp]

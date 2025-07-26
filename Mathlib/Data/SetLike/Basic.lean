@@ -92,7 +92,7 @@ Then you should *not* repeat the `outParam` declaration so `SetLike` will supply
 This ensures your subclass will not have issues with synthesis of the `[Mul M]` parameter starting
 before the value of `M` is known.
 -/
-@[notation_class * carrier Simps.findCoercionArgs]
+@[notation_class* carrier Simps.findCoercionArgs]
 class SetLike (A : Type*) (B : outParam Type*) where
   /-- The coercion from a term of a `SetLike` to its corresponding `Set`. -/
   protected coe : A → Set B
@@ -177,7 +177,7 @@ theorem coe_eq_coe {x y : p} : (x : B) = y ↔ x = y :=
 theorem coe_mem (x : p) : (x : B) ∈ p :=
   x.2
 
-@[aesop 5% apply (rule_sets := [SetLike])]
+@[aesop 5% (rule_sets := [SetLike!])]
 lemma mem_of_subset {s : Set B} (hp : s ⊆ p) {x : B} (hx : x ∈ s) : x ∈ p := hp hx
 
 @[simp]
@@ -195,6 +195,8 @@ theorem le_def {S T : A} : S ≤ T ↔ ∀ ⦃x : B⦄, x ∈ S → x ∈ T :=
 @[simp, norm_cast] lemma coe_subset_coe {S T : A} : (S : Set B) ⊆ T ↔ S ≤ T := .rfl
 @[simp, norm_cast] lemma coe_ssubset_coe {S T : A} : (S : Set B) ⊂ T ↔ S < T := .rfl
 
+@[gcongr low] -- lower priority than `Set.mem_of_subset_of_mem`
+protected alias ⟨GCongr.mem_of_le_of_mem, _⟩ := le_def
 @[gcongr] protected alias ⟨_, GCongr.coe_subset_coe⟩ := coe_subset_coe
 @[gcongr] protected alias ⟨_, GCongr.coe_ssubset_coe⟩ := coe_ssubset_coe
 

@@ -168,7 +168,7 @@ theorem adjoint_apply_of_not_dense (hT : ¬Dense (T.domain : Set E)) (y : T†.d
 theorem adjoint_apply_of_dense (y : T†.domain) : T† y = adjointAux hT y := by
   classical
   change (if hT : Dense (T.domain : Set E) then adjointAux hT else 0) y = _
-  simp only [hT, dif_pos, LinearMap.coe_mk]
+  simp only [hT, dif_pos]
 
 include hT in
 theorem adjoint_apply_eq (y : T†.domain) {x₀ : E} (hx₀ : ∀ x : T.domain, ⟪x₀, x⟫ = ⟪(y : F), T x⟫) :
@@ -206,7 +206,7 @@ theorem toPMap_adjoint_eq_adjoint_toPMap_of_dense (hp : Dense (p : Set E)) :
       LinearPMap.mem_adjoint_domain_iff, LinearMap.coe_comp, innerₛₗ_apply_coe]
     exact ((innerSL 𝕜 x).comp <| A.comp <| Submodule.subtypeL _).cont
   refine LinearPMap.adjoint_apply_eq hp _ fun v => ?_
-  simp only [adjoint_inner_left, hxy, LinearMap.toPMap_apply, coe_coe]
+  simp only [adjoint_inner_left, LinearMap.toPMap_apply, coe_coe]
 
 end ContinuousLinearMap
 

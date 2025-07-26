@@ -126,7 +126,7 @@ theorem ofList_append (xs ys : List α) : ofList (xs ++ ys) = ofList xs * ofList
 
 @[to_additive (attr := simp)]
 theorem toList_prod (xs : List (FreeMonoid α)) : toList xs.prod = (xs.map toList).flatten := by
-  induction xs <;> simp [*, List.flatten]
+  induction xs <;> simp [*]
 
 @[to_additive (attr := simp)]
 theorem ofList_flatten (xs : List (List α)) : ofList xs.flatten = (xs.map ofList).prod :=
@@ -252,7 +252,8 @@ section induction_principles
 "An induction principle on free monoids, with cases for `0`, `FreeAddMonoid.of` and `+`."]
 protected theorem inductionOn {C : FreeMonoid α → Prop} (z : FreeMonoid α) (one : C 1)
     (of : ∀ (x : α), C (FreeMonoid.of x)) (mul : ∀ (x y : FreeMonoid α), C x → C y → C (x * y)) :
-  C z := List.rec one (fun _ _ ih => mul [_] _ (of _) ih) z
+    C z :=
+  List.rec one (fun _ _ ih => mul [_] _ (of _) ih) z
 
 /-- An induction principle for free monoids which mirrors induction on lists, with cases analogous
 to the empty list and cons -/
@@ -307,8 +308,6 @@ def lift : (α → M) ≃ (FreeMonoid α →* M) where
     map_one' := rfl
     map_mul' := fun _ _ ↦ by simp only [prodAux_eq, toList_mul, List.map_append, List.prod_append] }
   invFun f x := f (of x)
-  left_inv _ := rfl
-  right_inv _ := hom_eq fun _ ↦ rfl
 
 @[to_additive (attr := simp)]
 theorem lift_ofList (f : α → M) (l : List α) : lift f (ofList l) = (l.map f).prod :=
@@ -473,7 +472,7 @@ variable {α β : Type*}
 /-- free monoids over isomorphic types are isomorphic -/
 @[to_additive "if two types are isomorphic, the additive free monoids over those types are
 isomorphic"]
-def freeMonoidCongr (e : α ≃ β) :  FreeMonoid α ≃* FreeMonoid β where
+def freeMonoidCongr (e : α ≃ β) : FreeMonoid α ≃* FreeMonoid β where
   toFun := FreeMonoid.map ⇑e
   invFun := FreeMonoid.map ⇑e.symm
   left_inv _ := map_symm_apply_map_eq e
