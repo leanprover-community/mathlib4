@@ -646,7 +646,8 @@ variable (f : ι₂ → ι₁) (hf : Tendsto f 𝓕₂ 𝓕₁)
 
 variable (φ : ∀ j, R₁ (f j) → R₂ j) (hφ : ∀ᶠ j in 𝓕₂, MapsTo (φ j) (A₁ (f j)) (A₂ j))
 
-theorem map_continuous (φ_cont : ∀ j, Continuous (φ j)) : Continuous (map R₁ R₂ f hf φ hφ) := by
+theorem map_continuous (φ_cont : ∀ j, Continuous (φ j)) :
+    Continuous (mapAlong R₁ R₂ f hf φ hφ) := by
   rw [continuous_dom]
   intro S hS
   set T := f ⁻¹' S ∩ {j | MapsTo (φ j) (A₁ (f j)) (A₂ j)}
@@ -655,8 +656,8 @@ theorem map_continuous (φ_cont : ∀ j, Continuous (φ j)) : Continuous (map R�
     exact inter_mem (hf hS) hφ
   have hf' : Tendsto f (𝓟 T) (𝓟 S) := by aesop
   have hφ' : ∀ᶠ j in 𝓟 T, MapsTo (φ j) (A₁ (f j)) (A₂ j) := by aesop
-  have key : map R₁ R₂ f hf φ hφ ∘ inclusion R₁ A₁ hS =
-      inclusion R₂ A₂ hT ∘ map R₁ R₂ f hf' φ hφ' := rfl
+  have key : mapAlong R₁ R₂ f hf φ hφ ∘ inclusion R₁ A₁ hS =
+      inclusion R₂ A₂ hT ∘ mapAlong R₁ R₂ f hf' φ hφ' := rfl
   rw [key]
   exact continuous_inclusion _ |>.comp <|
     continuous_rng_of_principal.mpr <|
