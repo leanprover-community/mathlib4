@@ -592,13 +592,13 @@ instance [NonAssocRing β] : NonAssocRing (α →ₛ β) :=
   fast_instance% Function.Injective.nonAssocRing (fun f => show α → β from f) coe_injective
     coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_smul coe_smul coe_natCast coe_intCast
 
-instance [NonAssocRing β] : NonAssocRing (α →ₛ β) where
-
 instance [NonUnitalCommSemiring β] : NonUnitalCommSemiring (α →ₛ β) :=
   fast_instance% Function.Injective.nonUnitalCommSemiring (fun f => show α → β from f)
     coe_injective coe_zero coe_add coe_mul coe_smul
 
-instance [CommSemiring β] : CommSemiring (α →ₛ β) where
+instance [CommSemiring β] : CommSemiring (α →ₛ β) :=
+  fast_instance% Function.Injective.commSemiring (fun f => show α → β from f)
+    coe_injective coe_zero coe_one coe_add coe_mul coe_smul coe_pow coe_natCast
 
 instance [NonUnitalCommRing β] : NonUnitalCommRing (α →ₛ β) :=
   fast_instance% Function.Injective.nonUnitalCommRing (fun f => show α → β from f)
@@ -609,15 +609,15 @@ instance [CommRing β] : CommRing (α →ₛ β) :=
     coe_one coe_add coe_mul coe_neg coe_sub coe_smul coe_smul coe_pow coe_natCast coe_intCast
 
 instance [Semiring β] : Semiring (α →ₛ β) :=
-  fast_instance% Function.Injective.semiring (fun (f : α →ₛ β) ↦ ⇑f) coe_injective coe_zero coe_one
-    coe_add coe_mul coe_smul coe_pow coe_natCast
+  fast_instance% Function.Injective.semiring (fun f => show α → β from f) coe_injective coe_zero
+    coe_one coe_add coe_mul coe_smul coe_pow coe_natCast
 
 instance [NonUnitalRing β] : NonUnitalRing (α →ₛ β) :=
-  fast_instance% Function.Injective.nonUnitalRing (fun (f : α →ₛ β) ↦ ⇑f) coe_injective coe_zero
-   coe_add coe_mul coe_neg coe_sub coe_smul coe_smul
+  fast_instance% Function.Injective.nonUnitalRing (fun f => show α → β from f) coe_injective
+   coe_zero coe_add coe_mul coe_neg coe_sub coe_smul coe_smul
 
 instance [Ring β] : Ring (α →ₛ β) :=
-  fast_instance% Function.Injective.ring (fun (f : α →ₛ β) ↦ ⇑f) coe_injective coe_zero
+  fast_instance% Function.Injective.ring (fun f => show α → β from f) coe_injective coe_zero
    coe_one coe_add coe_mul coe_neg coe_sub coe_smul coe_smul coe_pow coe_natCast coe_intCast
 
 instance [SMul K γ] [SMul γ β] [SMul K β] [IsScalarTower K γ β] : IsScalarTower K γ (α →ₛ β) where
