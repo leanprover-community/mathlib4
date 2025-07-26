@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Kim Morrison
 -/
 import Mathlib.Algebra.BigOperators.Finsupp.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset.Preimage
+import Mathlib.Algebra.Group.Indicator
 import Mathlib.Data.Rat.BigOperators
 
 /-!

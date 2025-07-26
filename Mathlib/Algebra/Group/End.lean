@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Equiv.TypeTags
+import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Data.Set.Basic
 import Mathlib.Tactic.Common
-import Mathlib.Algebra.Group.Prod
 
 /-!
 # Monoids of endomorphisms, groups of automorphisms
