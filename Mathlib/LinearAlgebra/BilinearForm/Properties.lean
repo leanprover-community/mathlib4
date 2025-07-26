@@ -164,7 +164,7 @@ lemma isSymm_iff_basis {ι : Type*} (b : Basis ι R M) :
       (by simp : y ∈ Submodule.span R (Set.range b))
     rw [← hx, ← hy]
     simp only [map_sum, map_smul, coeFn_sum, Finset.sum_apply, smul_apply, smul_eq_mul,
-      Finset.mul_sum, RingHom.id_apply]
+      Finset.mul_sum]
     rw [Finset.sum_comm]
     refine Finset.sum_congr rfl (fun b₁ h₁ ↦ Finset.sum_congr rfl fun b₂ h₂ ↦ ?_)
     rw [mul_left_comm]
