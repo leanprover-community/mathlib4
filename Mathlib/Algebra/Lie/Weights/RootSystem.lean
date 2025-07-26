@@ -493,7 +493,7 @@ lemma pairing_zero_of_trivial_sum_diff_spaces
         apply RootPairing.root_sub_root_mem_of_pairingIn_pos S.toRootPairing h_pos
         intro h_eq
         have h_chi_eq_alpha : χ = α := by injection h_eq
-        exact w_minus (by rw [h_chi_eq_alpha]; simp)
+        exact w_minus (by rw [h_chi_eq_alpha]; simp only [sub_self])
       obtain ⟨idx, hidx⟩ := h_sub_mem
       exact contradiction_from_nontrivial (χ.toLinear - α.toLinear) (S.root i - S.root j)
         h_minus_bot idx hidx rfl
