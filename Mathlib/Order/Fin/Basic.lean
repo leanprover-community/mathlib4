@@ -54,7 +54,7 @@ instance instBoundedOrder [NeZero n] : BoundedOrder (Fin n) where
   bot_le := Fin.zero_le
 
 instance instBiheytingAlgebra [NeZero n] : BiheytingAlgebra (Fin n) :=
-  LinearOrder.toBiheytingAlgebra
+  LinearOrder.toBiheytingAlgebra (Fin n)
 
 @[simp, norm_cast]
 theorem coe_max (a b : Fin n) : ↑(max a b) = (max a b : ℕ) := rfl
