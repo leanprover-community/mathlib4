@@ -3,7 +3,7 @@ Copyright (c) 2025 Bjørn Solheim. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Solheim
 -/
-import Mathlib.Geometry.Convex.Cone.ConicalCombination
+import Mathlib.Geometry.Convex.Cone.ConicalHull
 import Mathlib.LinearAlgebra.TensorProduct.Basic
 import Mathlib.LinearAlgebra.Dual.Lemmas
 
