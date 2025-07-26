@@ -296,6 +296,11 @@ noncomputable abbrev mapCycles₁ :
   ShortComplex.cyclesMap' (mapShortComplexH1 f φ) (shortComplexH1 A).moduleCatLeftHomologyData
     (shortComplexH1 B).moduleCatLeftHomologyData
 
+lemma mapCycles₁_hom :
+    (mapCycles₁ f φ).hom = (chainsMap₁ f φ).hom.restrict (fun x _ => by
+      have := congr($((mapShortComplexH1 f φ).comm₂₃) x); simp_all [cycles₁, shortComplexH1]) :=
+  rfl
+
 @[reassoc, elementwise]
 lemma mapCycles₁_comp_i :
     mapCycles₁ f φ ≫ (shortComplexH1 B).moduleCatLeftHomologyData.i =
@@ -316,6 +321,134 @@ lemma cyclesMap_comp_isoCycles₁_hom :
 lemma H1π_comp_map :
     H1π A ≫ map f φ 1 = mapCycles₁ f φ ≫ H1π B := by
   simp [H1π, Iso.inv_comp_eq, ← cyclesMap_comp_isoCycles₁_hom_assoc]
+
+@[simp]
+lemma map_1_one (φ : A ⟶ (Action.res _ (1 : G →* H)).obj B) :
+    map (1 : G →* H) φ 1 = 0 := by
+  simp only [← cancel_epi (H1π A), H1π_comp_map, Limits.comp_zero]
+  ext x
+  rw [ModuleCat.hom_comp]
+  refine (H1π_eq_zero_iff _).2 ?_
+  simpa [coe_mapCycles₁ _ φ x, mapDomain, map_finsuppSum] using
+    (boundaries₁ B).finsuppSum_mem k x.1 _ fun _ _ => single_one_mem_boundaries₁ (A := B) _
+
+section CoresCoinf
+
+variable (A) (S : Subgroup G) [S.Normal]
+
+section OfTrivial
+
+variable [IsTrivial (A.ρ.comp S.subtype)]
+
+instance mapCycles₁_quotientGroupMk'_epi :
+    Epi (mapCycles₁ (QuotientGroup.mk' S) (resOfQuotientIso A S).inv) := by
+  rw [ModuleCat.epi_iff_surjective]
+  rintro ⟨x, hx⟩
+  choose! s hs using QuotientGroup.mk_surjective (s := S)
+  have hs₁ : QuotientGroup.mk ∘ s = id := funext hs
+  refine ⟨⟨mapDomain s x, ?_⟩, Subtype.ext <| by
+    simp [mapCycles₁_hom, ← mapDomain_comp, hs₁]⟩
+  simpa [mem_cycles₁_iff, ← (mem_cycles₁_iff _).1 hx, sum_mapDomain_index_inj (f := s)
+      (fun x y h => by rw [← hs x, ← hs y, h])]
+    using Finsupp.sum_congr fun a b => QuotientGroup.induction_on a fun a => by
+      simp [← QuotientGroup.mk_inv, apply_eq_of_coe_eq A.ρ S (s a)⁻¹ a⁻¹ (by simp [hs])]
+
+/-- Given a `G`-representation `A` on which a normal subgroup `S ≤ G` acts trivially, this is the
+short complex `H₁(S, A) ⟶ H₁(G, A) ⟶ H₁(G ⧸ S, A)`. -/
+@[simps X₁ X₂ X₃ f g]
+noncomputable def H1CoresCoinfOfTrivial :
+    ShortComplex (ModuleCat k) where
+  X₁ := H1 ((Action.res _ S.subtype).obj A)
+  X₂ := H1 A
+  X₃ := H1 (ofQuotient A S)
+  f := map S.subtype (𝟙 _) 1
+  g := map (QuotientGroup.mk' S) (resOfQuotientIso A S).inv 1
+  zero := by rw [← map_comp, congr (QuotientGroup.mk'_comp_subtype S) (map (n := 1)), map_1_one]
+
+instance map_1_quotientGroupMk'_epi :
+    Epi (map (QuotientGroup.mk' S) (resOfQuotientIso A S).inv 1) := by
+  convert epi_of_epi (H1π A) _
+  rw [H1π_comp_map]
+  exact @epi_comp _ _ _ _ _ _ (mapCycles₁_quotientGroupMk'_epi A S) (H1π _) inferInstance
+
+/-- Given a `G`-representation `A` on which a normal subgroup `S ≤ G` acts trivially, the
+induced map `H₁(G, A) ⟶ H₁(G ⧸ S, A)` is an epimorphism. -/
+instance H1CoresCoinfOfTrivial_g_epi :
+    Epi (H1CoresCoinfOfTrivial A S).g :=
+  inferInstanceAs <| Epi (map _ _ 1)
+
+/-- Given a `G`-representation `A` on which a normal subgroup `S ≤ G` acts trivially, the short
+complex `H₁(S, A) ⟶ H₁(G, A) ⟶ H₁(G ⧸ S, A)` is exact. -/
+theorem H1CoresCoinfOfTrivial_exact :
+    (H1CoresCoinfOfTrivial A S).Exact := by
+  classical
+  rw [ShortComplex.moduleCat_exact_iff_ker_sub_range]
+  intro x hx
+/- Denote `C(i) : C(S, A) ⟶ C(G, A), C(π) : C(G, A) ⟶ C(G ⧸ S, A)` and let `x : Z₁(G, A)` map to
+0 in `H₁(G ⧸ S, A)`. -/
+  induction x using H1_induction_on with | @h x =>
+  rcases x with ⟨x, hxc⟩
+  simp_all only [H1CoresCoinfOfTrivial_X₂, H1CoresCoinfOfTrivial_X₃, H1CoresCoinfOfTrivial_g,
+    LinearMap.mem_ker, H1π_comp_map_apply (QuotientGroup.mk' S)]
+/- Choose `y := ∑ y(σ, τ)·(σ, τ) ∈ C₂(G ⧸ S, A)` such that `C₁(π)(x) = d(y)`. -/
+  rcases (H1π_eq_zero_iff _).1 hx with ⟨y, hy⟩
+/- Let `s : G ⧸ S → G` be a section of the quotient map. -/
+  choose! s hs using QuotientGroup.mk'_surjective S
+  have hs₁ : QuotientGroup.mk (s := S) ∘ s = id := funext hs
+/- Let `z := ∑ y(σ, τ)·(s(σ), s(τ))`. -/
+  let z : G × G →₀ A := lmapDomain _ k (Prod.map s s) y
+/- We have that `C₂(π)(z) = y`. -/
+  have hz : lmapDomain _ k (QuotientGroup.mk' S) (d₂₁ A z) = d₂₁ (A.ofQuotient S) y := by
+    have := congr($((mapShortComplexH1 (QuotientGroup.mk' S)
+      (resOfQuotientIso A S).inv).comm₁₂.symm) z)
+    simp_all [shortComplexH1, z, ← mapDomain_comp, Prod.map_comp_map]
+  let v := x - d₂₁ _ z
+/- We have `C₁(s ∘ π)(v) = ∑ v(g)·s(π(g)) = 0`, since `C₁(π)(v) = dC₁(π)(z) - C₁(π)(dz) = 0` by
+previous assumptions. -/
+  have hv : mapDomain (s ∘ QuotientGroup.mk) v = 0 := by
+    rw [mapDomain_comp]
+    simp_all [v, mapDomain, sum_sub_index, coe_mapCycles₁ _ _ ⟨x, hxc⟩]
+  let e : G → G × G := fun (g : G) => (s (g : G ⧸ S), (s (g : G ⧸ S))⁻¹ * g)
+  have he : e.Injective := fun x y hxy => by
+    obtain ⟨(h₁ : s _ = s _), (h₂ : _ * _ = _ * _)⟩ := Prod.ext_iff.1 hxy
+    exact (mul_right_inj _).1 (h₁ ▸ h₂)
+/- Let `ve := ∑ v(g)·(s(π(g)), s(π(g))⁻¹g)`. -/
+  let ve : G × G →₀ A := mapDomain e v
+  have hS : (v + d₂₁ _ ve).support.toSet ⊆ S := by
+  /- We have `d(ve) = ∑ ρ(s(π(g))⁻¹)(v(g))·s(π(g))⁻¹g - ∑ v(g)·g + ∑ v(g)·s(π(g))`.
+    The second sum is `v`, so cancels: -/
+    simp only [d₂₁, ve, ModuleCat.hom_ofHom, coe_lsum, sum_mapDomain_index_inj he, sum_single,
+      LinearMap.add_apply, LinearMap.sub_apply, LinearMap.coe_comp, Function.comp_apply,
+      lsingle_apply, sum_add, sum_sub, mul_inv_cancel_left, ← add_assoc, add_sub_cancel, e]
+    intro w hw
+    · obtain (hl | hr) := Finset.mem_union.1 (support_add hw)
+    /- The first sum clearly has support in `S`: -/
+      · obtain ⟨t, _, ht⟩ := Finset.mem_biUnion.1 (support_sum hl)
+        apply support_single_subset at ht
+        simp_all [← QuotientGroup.eq]
+    /- The third sum is 0, by `hv`. -/
+      · simp_all [mapDomain]
+  /- Now `v + d(ve)` has support in `S` and agrees with `x` in `H₁(G, A)`: -/
+  use H1π _ ⟨comapDomain Subtype.val (v + d₂₁ _ ve) <|
+    Set.injOn_of_injective Subtype.val_injective, ?_⟩
+  · simp only [H1CoresCoinfOfTrivial_f, H1CoresCoinfOfTrivial_X₁, H1π_comp_map_apply]
+    refine (H1π_eq_iff _ _).2 ?_
+  /- Indeed, `v + d(ve) - x = d(ve - z) ∈ B₁(G, A)`, since `v := x - dz`. -/
+    use ve - z
+    have := mapDomain_comapDomain (α := S) Subtype.val Subtype.val_injective
+      (v + d₂₁ A ve) (fun x hx => ⟨⟨x, hS hx⟩, rfl⟩)
+    simp_all [mapCycles₁_hom, v, add_sub_assoc, sub_add_sub_cancel']
+  /- And `v + d(ve) := x - dz + d(ve)` is a 1-cycle because `x` is. -/
+  · have : v + d₂₁ _ ve ∈ cycles₁ A := Submodule.add_mem _
+      (Submodule.sub_mem _ hxc <| d₂₁_apply_mem_cycles₁ _) (d₂₁_apply_mem_cycles₁ _)
+    rw [mem_cycles₁_iff] at this ⊢
+    rwa [← sum_comapDomain, ← sum_comapDomain (g := fun _ a => a)] at this <;>
+    exact ⟨Set.mapsTo_preimage _ _, Set.injOn_of_injective Subtype.val_injective,
+      fun x hx => ⟨⟨x, hS hx⟩, hx, rfl⟩⟩
+
+end OfTrivial
+
+end CoresCoinf
 
 end H1
 
@@ -381,6 +514,11 @@ noncomputable abbrev mapCycles₂ :
     ModuleCat.of k (cycles₂ A) ⟶ ModuleCat.of k (cycles₂ B) :=
   ShortComplex.cyclesMap' (mapShortComplexH2 f φ) (shortComplexH2 A).moduleCatLeftHomologyData
     (shortComplexH2 B).moduleCatLeftHomologyData
+
+lemma mapCycles₂_hom :
+    (mapCycles₂ f φ).hom = (chainsMap₂ f φ).hom.restrict (fun x _ => by
+      have := congr($((mapShortComplexH2 f φ).comm₂₃) x); simp_all [cycles₂, shortComplexH2]) :=
+  rfl
 
 @[reassoc, elementwise]
 lemma mapCycles₂_comp_i :
