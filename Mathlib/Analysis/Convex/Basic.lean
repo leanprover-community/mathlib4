@@ -318,6 +318,23 @@ end LinearOrderedAddCommMonoid
 
 end Module
 
+section IsScalarTower
+
+variable [IsOrderedRing 𝕜] [Module 𝕜 E]
+variable (R : Type*) [Semiring R] [PartialOrder R] [Module R E]
+variable [Module R 𝕜] [IsScalarTower R 𝕜 E] [SMulPosMono R 𝕜]
+
+/-- Lift the convexity of a set up through a scalar tower. -/
+theorem Convex.lift {s : Set E} (hs : Convex 𝕜 s) : Convex R s := by
+  intro x hx y hy a b ha hb hab
+  suffices (a • (1 : 𝕜)) • x + (b • (1 : 𝕜)) • y ∈ s by simpa using this
+  apply hs hx hy
+  · exact zero_smul R (1 : 𝕜) ▸ smul_le_smul_of_nonneg_right ha zero_le_one
+  · exact zero_smul R (1 : 𝕜) ▸ smul_le_smul_of_nonneg_right hb zero_le_one
+  · simpa [add_smul] using congrArg (· • (1 : 𝕜)) hab
+
+end IsScalarTower
+
 end AddCommMonoid
 
 section LinearOrderedAddCommMonoid
