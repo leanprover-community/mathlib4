@@ -459,8 +459,10 @@ lemma pairing_zero_of_trivial_sum_diff_spaces
   ∃ (i j : { w : Weight K H L // w ∈ H.root }),
     S.root i = χ.toLinear ∧ S.root j = α.toLinear ∧ S.pairing i j = 0 := by
   let S := rootSystem H
-  let i : { w : Weight K H L // w ∈ H.root } := ⟨χ, by simp [LieSubalgebra.root]; exact hχ⟩
-  let j : { w : Weight K H L // w ∈ H.root } := ⟨α, by simp [LieSubalgebra.root]; exact hα⟩
+  let i : { w : Weight K H L // w ∈ H.root } := ⟨χ, by
+    rw [LieSubalgebra.root, Finset.mem_filter]; exact ⟨Finset.mem_univ χ, hχ⟩⟩
+  let j : { w : Weight K H L // w ∈ H.root } := ⟨α, by
+    rw [LieSubalgebra.root, Finset.mem_filter]; exact ⟨Finset.mem_univ α, hα⟩⟩
   use i, j, rfl, rfl
   have root_isNonZero (idx : { w : Weight K H L // w ∈ H.root }) : idx.val.IsNonZero := by
     have h_mem := idx.property
