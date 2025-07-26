@@ -84,9 +84,8 @@ alias hasFiniteIntegral_restrict_of_bounded := HasFiniteIntegral.restrict_of_bou
 variable [NormedAddCommGroup E] {f g : α → ε} {s t : Set α} {μ ν : Measure α}
   [TopologicalSpace ε] [ContinuousENorm ε]
 
-theorem HasFiniteIntegral.restrict_of_bounded_enorm {f : α → ε} {s : Set α} {μ : Measure α}
-    {C : ℝ≥0∞} (hC : ‖C‖ₑ ≠ ∞ := by finiteness) (hs : μ s ≠ ∞ := by finiteness)
-    (hf : ∀ᵐ x ∂μ.restrict s, ‖f x‖ₑ ≤ C) :
+theorem HasFiniteIntegral.restrict_of_bounded_enorm {C : ℝ≥0∞} (hC : ‖C‖ₑ ≠ ∞ := by finiteness)
+    (hs : μ s ≠ ∞ := by finiteness) (hf : ∀ᵐ x ∂μ.restrict s, ‖f x‖ₑ ≤ C) :
     HasFiniteIntegral f (μ.restrict s) :=
   haveI : IsFiniteMeasure (μ.restrict s) := ⟨by rw [Measure.restrict_apply_univ]; exact hs.lt_top⟩
   .of_bounded_enorm hC hf
