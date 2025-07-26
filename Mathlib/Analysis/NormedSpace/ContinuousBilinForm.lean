@@ -27,6 +27,8 @@ to allow for dot notation.
 continuous bilinear form
 -/
 
+open Module
+
 open scoped Matrix
 
 namespace ContinuousBilinForm
@@ -98,7 +100,7 @@ lemma ofMatrix_apply (x y : E) :
   simp [ofMatrix_apply', Matrix.toBilin_apply, dotProduct, Matrix.mulVec, Finset.mul_sum, mul_assoc]
 
 lemma ofMatrix_basis (i j : n) : ofMatrix b M (b i) (b j) = M i j := by
-  simp [ofMatrix_apply, Finsupp.single_eq_pi_single, Matrix.mulVec_single_one]
+  simp [ofMatrix_apply, Finsupp.single_eq_pi_single]
 
 lemma toMatrix_ofMatrix : ofMatrix b (f.toMatrix b) = f := by
   ext x y
