@@ -444,7 +444,7 @@ theorem ContinuousOn.integrableOn_compact'
   have : Fact (μ K < ∞) := ⟨hK.measure_lt_top⟩
   obtain ⟨C, hC⟩ : ∃ C, ∀ x ∈ f '' K, ‖x‖ ≤ C :=
     IsBounded.exists_norm_le (hK.image_of_continuousOn hf).isBounded
-  apply hasFiniteIntegral_of_bounded (C := C)
+  apply HasFiniteIntegral.of_bounded (C := C)
   filter_upwards [ae_restrict_mem h'K] with x hx using hC _ (mem_image_of_mem f hx)
 
 theorem ContinuousOn.integrableOn_compact [T2Space X]
