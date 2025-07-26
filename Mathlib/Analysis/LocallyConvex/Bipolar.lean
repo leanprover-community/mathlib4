@@ -239,7 +239,7 @@ lemma test5 : ∃ (s₁ : Finset F),
       (WeakBilin.eval B) ∘ Subtype.val : s₁ → WeakBilin B →ₗ[𝕜] 𝕜)) := by
   obtain ⟨s,hS⟩ := isBounded_of_Continuous B f (Fin.last 0)
   --simp at hs
-  exact ⟨s, functional_mem_span_iff'.mpr hS⟩
+  exact ⟨s, functional_mem_span_iff.mpr hS⟩
 
 /-
 See
