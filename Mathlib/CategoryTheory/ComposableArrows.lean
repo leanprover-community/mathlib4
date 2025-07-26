@@ -890,48 +890,52 @@ section
 universe u v
 
 /-- An alias for the underlying type of the category `Fin n` lifted to an object of `Cat.{v, u}`. -/
-def ULiftFin (n : ℕ) : Type u := (ULiftHom.{u,u} (ULift.{u} (Fin n)))
+def ULiftFin (n : ℕ) : Type u := (ULiftHom.{v} (ULift.{u} (Fin n)))
 
 instance {n : ℕ} : Category (ULiftFin n) := ULiftHom.category
+
 namespace ULiftFin
 
-variable {n : ℕ} {C : Type u} [Category.{v} C]
+/-- The `Fin` underlying some `ULiftFin`. -/
+def toFin {n : ℕ} (a : ULiftFin n) : Fin n := a.objDown.down
 
-/-- A functor `ULiftFin (n + 1) ⥤ C` defines a term of type `ComposableArrows C n`. -/
-def toComposableArrows (F : ULiftFin (n + 1) ⥤ C) : ComposableArrows C n :=
-  ULift.upFunctor ⋙ ULiftHom.up ⋙ F
+/-- The type-level equivalence between `Fin n` and `ULiftFin n`. -/
+def equiv {n : ℕ} : Fin n ≃ ULiftFin n := ULiftHomULiftCategory.objEquiv
 
-/-- A term of type `ComposableArrows C n` defines a functor `ULiftFin (n + 1) ⥤ C`. -/
-def ofComposableArrows (G : ComposableArrows C n) : (ULiftFin (n + 1) ⥤ C) :=
-  ULiftHom.down (C := ULift.{u} (Fin (n + 1))) ⋙ ULift.downFunctor ⋙ G
-
-@[simp]
-theorem to_ofComposableArrows :
-    Function.LeftInverse (toComposableArrows (C := C) (n := n)) ofComposableArrows := by
-  intro
-  apply ComposableArrows.ext (by rfl_cat)
-  · intros
-    simp only [ComposableArrows.map', homOfLE_leOfHom, eqToHom_refl, comp_id, id_comp]
-    rfl
-
-@[simp]
-theorem of_toComposableArrows :
-    Function.RightInverse (toComposableArrows (C := C) (n := n)) ofComposableArrows := by
-  intro G; unfold ofComposableArrows toComposableArrows
-  refine Functor.ext_of_iso (by rfl_cat) ?_ (by rfl_cat)
-  · rw (occs := .pos [2]) [← Functor.assoc]; rfl_cat
+/-- The canonical equivalence between `Fin n` and `ULiftFin n`. -/
+def equivalence {n : ℕ} : Fin n ≌ ULiftFin n := ULiftHomULiftCategory.equiv _
 
 end ULiftFin
 
-end
+namespace ComposableArrows
 
-variable {C}
+variable {C} {n : ℕ}
 
-section
+/-- The equivalence between `ComposableArrows C n` and `ULiftFin (n + 1) ⥤ C` obtained via the
+equivalence between `Fin (n + 1)` and `ULiftFin (n + 1)`. -/
+@[simps!] def equivalenceULiftFin : ComposableArrows C n ≌ (ULiftFin (n + 1) ⥤ C) :=
+  ULiftFin.equivalence.congrLeft
+
+/-- A term of type `ComposableArrows C n` defines a functor `ULiftFin (n + 1) ⥤ C`. -/
+@[simps!] def toULiftFin (G : ComposableArrows C n) : (ULiftFin (n + 1) ⥤ C) :=
+  equivalenceULiftFin.functor.obj G
+
+/-- A functor `ULiftFin (n + 1) ⥤ C` defines a term of type `ComposableArrows C n`. -/
+@[simps!] def _root_.CategoryTheory.ULiftFin.toComposableArrows (F : ULiftFin (n + 1) ⥤ C) :
+    ComposableArrows C n :=
+  equivalenceULiftFin.inverse.obj F
+
+/-- The type-level equivalence between `ComposableArrows C n` and `ULiftFin (n + 1) ⥤ C`. -/
+@[simps]
+def equivULiftFin : ComposableArrows C n ≃ (ULiftFin (n + 1) ⥤ C) where
+  toFun := toULiftFin
+  invFun := ULiftFin.toComposableArrows
+
+end ComposableArrows
 
 open ComposableArrows
 
-variable {D : Type*} [Category D] (G : C ⥤ D) (n : ℕ)
+variable {C} {D : Type*} [Category D] (G : C ⥤ D) (n : ℕ)
 
 /-- The functor `ComposableArrows C n ⥤ ComposableArrows D n` obtained by postcomposition
 with a functor `C ⥤ D`. -/

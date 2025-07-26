@@ -106,11 +106,15 @@ noncomputable def TerminalCatDiscretePUnitIso : ⊤_ Cat.{u,u} ≅ Cat.of (Discr
 
 /-- An isomorphism between `ULiftFin 1` and `Discrete PUnit`. -/
 def ULiftFinDiscretePUnitIso : Cat.of (ULiftFin 1) ≅ Cat.of (Discrete PUnit) where
-  hom := toCatHom (star (ULiftFin 1))
-  inv := toCatHom (fromPUnit (ULift.up 0))
-  hom_inv_id := by
-    apply (Function.RightInverse.injective ULiftFin.of_toComposableArrows)
-    exact ComposableArrows.ext₀ rfl
-  inv_hom_id := rfl
+  hom := toCatHom <| star (ULiftFin 1)
+  inv := toCatHom <| fromPUnit (ULift.up 0)
+  hom_inv_id :=
+    ComposableArrows.equivULiftFin.right_inv.injective (ComposableArrows.ext₀ rfl)
+
+def DiscretePUnit.equivalenceULiftFin : ULiftFin.{u} 1 ≌ Discrete.{v} PUnit where
+  functor := star (ULiftFin 1)
+  inverse := fromPUnit (ULift.up 0)
+  unitIso := NatIso.ofComponents fun ⟨0⟩ ↦ Iso.refl _
+  counitIso := Iso.refl _
 
 end CategoryTheory
