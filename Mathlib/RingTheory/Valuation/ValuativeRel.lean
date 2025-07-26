@@ -159,6 +159,14 @@ lemma left_cancel_posSubmonoid (x y : R) (u : posSubmonoid R) :
     u * x ≤ᵥ u * y ↔ x ≤ᵥ y := by
   simp only [← right_cancel_posSubmonoid x y u, mul_comm]
 
+@[simp]
+lemma val_posSubmonoid_ne_zero (x : posSubmonoid R) :
+    (x : R) ≠ 0 := by
+  have := x.prop
+  rw [posSubmonoid_def] at this
+  contrapose! this
+  simp [this]
+
 variable (R) in
 /-- The setoid used to construct `ValueGroupWithZero R`. -/
 def valueSetoid : Setoid (R × posSubmonoid R) where
@@ -494,6 +502,10 @@ lemma ValueGroupWithZero.lift_valuation {α : Sort*} (f : R → posSubmonoid R �
     ValueGroupWithZero.lift f hf (valuation R x) = f x 1 :=
   rfl
 
+lemma valuation_eq_zero_iff {x : R} :
+    valuation R x = 0 ↔ x ≤ᵥ 0 :=
+  ValueGroupWithZero.mk_eq_zero _ _
+
 /-- Construct a valuative relation on a ring using a valuation. -/
 def ofValuation
     {S Γ : Type*} [CommRing S]
@@ -645,6 +657,12 @@ lemma valuation_surjective (γ : ValueGroupWithZero R) :
   induction γ using ValueGroupWithZero.ind with | mk a b
   use a, b
   simp [valuation, div_eq_mul_inv, ValueGroupWithZero.inv_mk (b : R) 1 b.prop]
+
+@[simp]
+lemma valuation_posSubmonoid_ne_zero (x : posSubmonoid R) :
+    valuation R (x : R) ≠ 0 := by
+  rw [ne_eq, valuation_eq_zero_iff]
+  exact x.prop
 
 end ValuativeRel
 
