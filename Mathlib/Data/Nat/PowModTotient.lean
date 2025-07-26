@@ -14,7 +14,8 @@ when the base is coprime to the modulus.
 
 ## Main Results
 
-* `pow_totient_mod`: If `x` is coprime to `n`, then `x ^ φ n % n = 1`.
+* `pow_totient_mod`: If `x` is coprime to `n`, then the modular exponentiation
+  `x ^ k % n` can be reduced to `x ^ (k % φ n) % n`.
 
 ## TODOs
 
