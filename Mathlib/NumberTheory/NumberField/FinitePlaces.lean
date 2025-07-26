@@ -64,6 +64,9 @@ lemma absNorm_ne_zero : (absNorm v.asIdeal : ℝ≥0) ≠ 0 :=
 
 @[deprecated (since := "2025-02-28")] alias norm_ne_zero := absNorm_ne_zero
 
+variable [DecidableEq (𝓞 K)] [DecidableEq (Associates (Ideal (𝓞 K)))]
+  [∀ p : Associates (Ideal (𝓞 K)), Decidable (Irreducible p)]
+
 /-- The `v`-adic absolute value on `K` defined as the norm of `v` raised to negative `v`-adic
 valuation -/
 noncomputable def adicAbv : AbsoluteValue K ℝ := v.adicAbv <| one_lt_absNorm_nnreal v
@@ -83,7 +86,10 @@ end AbsoluteValue
 end RingOfIntegers.HeightOneSpectrum
 
 section FinitePlace
-variable {K : Type*} [Field K] [NumberField K] (v : HeightOneSpectrum (𝓞 K))
+
+variable {K : Type*} [Field K] [NumberField K] [DecidableEq (𝓞 K)]
+  [DecidableEq (Associates (Ideal (𝓞 K)))]
+  [∀ p : Associates (Ideal (𝓞 K)), Decidable (Irreducible p)] (v : HeightOneSpectrum (𝓞 K))
 
 open RingOfIntegers.HeightOneSpectrum
 
@@ -118,9 +124,10 @@ noncomputable instance instRankOneValuedAdicCompletion :
 noncomputable instance instNormedFieldValuedAdicCompletion : NormedField (adicCompletion K v) :=
   Valued.toNormedField (adicCompletion K v) ℤᵐ⁰
 
+variable (K) in
 /-- A finite place of a number field `K` is a place associated to an embedding into a completion
 with respect to a maximal ideal. -/
-def FinitePlace (K : Type*) [Field K] [NumberField K] :=
+def FinitePlace :=
   {w : AbsoluteValue K ℝ // ∃ v : HeightOneSpectrum (𝓞 K), place (FinitePlace.embedding v) = w}
 
 /-- Return the finite place defined by a maximal ideal `v`. -/
@@ -204,7 +211,10 @@ theorem FinitePlace.norm_lt_one_iff_mem (x : 𝓞 (WithVal (v.valuation K))) :
 end FinitePlace
 
 namespace FinitePlace
-variable {K : Type*} [Field K] [NumberField K]
+
+variable {K : Type*} [Field K] [NumberField K] [DecidableEq (𝓞 K)]
+  [DecidableEq (Associates (Ideal (𝓞 K)))]
+  [∀ p : Associates (Ideal (𝓞 K)), Decidable (Irreducible p)]
 
 instance : FunLike (FinitePlace K) K ℝ where
   coe w x := w.1 x
@@ -300,14 +310,18 @@ end NumberField
 
 namespace IsDedekindDomain.HeightOneSpectrum
 
-variable {K : Type*} [Field K] [NumberField K]
+open NumberField
+
+variable {K : Type*} [Field K] [NumberField K] [DecidableEq (𝓞 K)]
+  [DecidableEq (Associates (Ideal (𝓞 K)))]
+  [∀ p : Associates (Ideal (𝓞 K)), Decidable (Irreducible p)]
 
 open NumberField.FinitePlace NumberField.RingOfIntegers
   NumberField.RingOfIntegers.HeightOneSpectrum
 open scoped NumberField
 
 lemma equivHeightOneSpectrum_symm_apply (v : HeightOneSpectrum (𝓞 K)) (x : K) :
-    (equivHeightOneSpectrum.symm v) x = ‖embedding v x‖ := by
+    (equivHeightOneSpectrum.symm v) x = ‖FinitePlace.embedding v x‖ := by
   have : v = (equivHeightOneSpectrum.symm v).maximalIdeal := by
     change v = equivHeightOneSpectrum (equivHeightOneSpectrum.symm v)
     exact (Equiv.apply_symm_apply _ v).symm
@@ -315,14 +329,19 @@ lemma equivHeightOneSpectrum_symm_apply (v : HeightOneSpectrum (𝓞 K)) (x : K)
 
 open Ideal in
 lemma embedding_mul_absNorm (v : HeightOneSpectrum (𝓞 K)) {x : 𝓞 (WithVal (v.valuation K))}
-    (h_x_nezero : x ≠ 0) : ‖embedding v x‖ * absNorm (v.maxPowDividing (span {x})) = 1 := by
-  rw [maxPowDividing, map_pow, Nat.cast_pow, norm_def, adicAbv_def,
+    (h_x_nezero : x ≠ 0) :
+    ‖FinitePlace.embedding v x‖ * absNorm (v.maxPowDividing (span {x})) = 1 := by
+  rw [maxPowDividing, map_pow, Nat.cast_pow, FinitePlace.norm_def, adicAbv_def,
     WithZeroMulInt.toNNReal_neg_apply _
       ((v.valuation K).ne_zero_iff.mpr (coe_ne_zero_iff.mpr h_x_nezero))]
   push_cast
   rw [← zpow_natCast, ← zpow_add₀ <| mod_cast (zero_lt_one.trans (one_lt_absNorm_nnreal v)).ne']
   norm_cast
   rw [zpow_eq_one_iff_right₀ (Nat.cast_nonneg' _) (mod_cast (one_lt_absNorm_nnreal v).ne')]
-  simp [valuation_of_algebraMap, intValuation_if_neg, h_x_nezero]
+  simp only [valuation_of_algebraMap, ne_eq, h_x_nezero, not_false_eq_true, intValuation_if_neg,
+    Submodule.zero_eq_bot, span_singleton_eq_bot, Associates.factors_mk, ofAdd_neg,
+    WithZero.coe_inv, WithZero.unzero_coe, toAdd_inv, toAdd_ofAdd, neg_add_eq_zero]
+  congr
+
 
 end IsDedekindDomain.HeightOneSpectrum

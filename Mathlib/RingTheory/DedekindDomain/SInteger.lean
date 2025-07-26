@@ -49,7 +49,8 @@ open scoped nonZeroDivisors
 
 universe u v
 
-variable {R : Type u} [CommRing R] [IsDedekindDomain R]
+variable {R : Type u} [CommRing R] [IsDedekindDomain R] [DecidableEq R]
+  [DecidableEq (Associates (Ideal R))] [∀ p : Associates (Ideal R), Decidable (Irreducible p)]
   (S : Set <| HeightOneSpectrum R) (K : Type v) [Field K] [Algebra R K] [IsFractionRing R K]
 
 /-! ## `S`-integers -/
