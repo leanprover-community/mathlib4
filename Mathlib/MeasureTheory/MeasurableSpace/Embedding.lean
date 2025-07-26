@@ -743,6 +743,35 @@ noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : Measu
   apply hx
   exact ⟨y, h, rfl⟩
 
+lemma equivRange_apply (hf : MeasurableEmbedding f) (x : α) :
+    hf.equivRange x = ⟨f x, mem_range_self x⟩ := by
+  suffices f x = (hf.equivRange x).1 by simp [this]
+  simp [MeasurableEmbedding.equivRange, MeasurableEquiv.cast, MeasurableEquiv.Set.univ,
+    MeasurableEmbedding.equivImage]
+
+lemma equivRange_symm_apply_mk (hf : MeasurableEmbedding f) (x : α) :
+    hf.equivRange.symm ⟨f x, mem_range_self x⟩ = x := by
+  have : x = hf.equivRange.symm (hf.equivRange x) := EquivLike.inv_apply_eq.mp rfl
+  conv_rhs => rw [this, hf.equivRange_apply]
+
+/-- The left-inverse of a MeasurableEmbedding -/
+protected noncomputable
+def invFun [Nonempty α] (hf : MeasurableEmbedding f) [∀ x, Decidable (x ∈ range f)] (x : β) : α :=
+  if hx : x ∈ range f then hf.equivRange.symm ⟨x, hx⟩ else (Nonempty.some inferInstance)
+
+@[fun_prop]
+lemma measurable_invFun [Nonempty α] [∀ x, Decidable (x ∈ range f)]
+    (hf : MeasurableEmbedding f) :
+    Measurable (hf.invFun : β → α) :=
+  Measurable.dite (by fun_prop) measurable_const hf.measurableSet_range
+
+lemma leftInverse_invFun [Nonempty α] [∀ x, Decidable (x ∈ range f)]
+    (hf : MeasurableEmbedding f) :
+    Function.LeftInverse hf.invFun f := by
+  intro x
+  simp only [MeasurableEmbedding.invFun, mem_range, exists_apply_eq_apply, ↓reduceDIte]
+  exact hf.equivRange_symm_apply_mk x
+
 end MeasurableEmbedding
 
 theorem MeasurableSpace.comap_compl {m' : MeasurableSpace β} [BooleanAlgebra β]
