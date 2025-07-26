@@ -550,6 +550,23 @@ partial def _root_.Lean.MVarId.gcongr
   sErr.restore
   throw e
 
+/-- First elaborate the `template`, and then run `Lean.MVarId.gcongr`. -/
+def templateGCongr (g : MVarId) (template : Option Term) (names : List (TSyntax ``binderIdent)) :
+    TermElabM (Bool × List (TSyntax `Lean.binderIdent) × Array MVarId) :=
+  g.withContext do
+  match template with
+  | none => g.gcongr none names
+  | some e => match e.raw.isNatLit? with
+    | some depth => g.gcongr none names (depth := depth)
+    | none =>
+      -- Elaborate the template (e.g. `x * ?_ + _`)
+      let rel ← withReducible g.getType'
+      let some (_rel, lhs, _rhs) := getRel rel | throwError "gcongr failed, {rel} is not a relation"
+      let template ← Term.elabPattern e (← inferType lhs)
+      unless ← containsHole template do
+        throwError "invalid template {template}, it doesn't contain any `?_`"
+      g.gcongr template names
+
 /-- The `gcongr` tactic applies "generalized congruence" rules, reducing a relational goal
 between a LHS and RHS matching the same pattern to relational subgoals between the differing
 inputs to the pattern.  For example,
@@ -598,27 +615,47 @@ example {f g : ℕ → ℝ≥0∞} (h : ∀ n, f n ≤ g n) : ⨆ n, f n ≤ ⨆
 -/
 elab "gcongr" template:(colGt term)?
     withArg:((" with" (ppSpace colGt binderIdent)+)?) : tactic => do
-  let g ← getMainGoal
-  g.withContext do
-  let some (_rel, lhs, _rhs) := getRel (← withReducible g.getType')
-    | throwError "gcongr failed, not a relation"
   -- Get the names from the `with x y z` list
   let names := (withArg.raw[1].getArgs.map TSyntax.mk).toList
-  -- Time to actually run the core tactic `Lean.MVarId.gcongr`!
-  let (progress, _, unsolvedGoalStates) ← match template with
-    | none => g.gcongr none names
-    | some e => match e.raw.isNatLit? with
-      | some depth => g.gcongr none names (depth := depth)
-      | none =>
-        -- Elaborate the template (e.g. `x * ?_ + _`)
-        let template ← Term.elabPattern e (← inferType lhs)
-        unless ← containsHole template do
-          throwError "invalid template {template}, it doesn't contain any `?_`"
-        g.gcongr template names
+  let (progress, _, unsolvedGoals) ← templateGCongr (← getMainGoal) template names
   if progress then
-    replaceMainGoal unsolvedGoalStates.toList
+    replaceMainGoal unsolvedGoals.toList
   else
-    throwError "gcongr did not make progress"
+    throwError "`gcongr` did not make progress"
+
+/--
+Interesting doc-string about `gconvert`
+-/
+syntax (name := gconvert) "gconvert" ppSpace term (" using " colGt term)?
+  (" with" (ppSpace colGt binderIdent)+)? : tactic
+
+elab_rules : tactic
+| `(tactic| gconvert $e $[using $t]? $[with $[$vs]*]?) =>
+  withMainContext do
+    /- we use `elabTermForApply` instead of `elabTerm` so that terms passed to `peel` can contain
+    quantifiers with implicit bound variables without causing errors or requiring `@`.  -/
+    let e ← elabTermForApply e
+    let goal ← getMainGoal
+    -- If the goal is `⊢ P` and the tactic is `gconvert Q`, then we construct the goal `⊢ Q → P`.
+    let imp := mkForall `_a .default (← inferType e) (← goal.getType)
+    let impGoal ← mkFreshExprSyntheticOpaqueMVar imp
+    goal.assign (mkApp impGoal e)
+    let (progress, names, unsolvedGoals) ←
+      templateGCongr impGoal.mvarId! t (vs.elim [] (·.toList))
+    unless progress do
+      throwError "`gcongr` did not make progress\n{impGoal.mvarId!}"
+    -- For each of the unsolved goals that are implications,
+    -- we run `intro n`, where `n` comes from the provided variable names
+    let mut names := names
+    let mut finalGoals := #[]
+    for g in unsolvedGoals do
+      if (← g.getType).isForall then
+        let name := names.head?.elim `this fun | `(binderIdent | $n:ident) => n.getId | _ => `_
+        names := names.tail
+        finalGoals := finalGoals.push (← g.intro name).2
+      else
+        finalGoals := finalGoals.push g
+    replaceMainGoal finalGoals.toList
 
 /-- The `rel` tactic applies "generalized congruence" rules to solve a relational goal by
 "substitution".  For example,
