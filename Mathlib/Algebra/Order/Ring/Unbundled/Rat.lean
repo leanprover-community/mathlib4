@@ -147,6 +147,18 @@ instance linearOrder : LinearOrder ℚ where
   toDecidableLT := inferInstance
   lt_iff_le_not_ge _ _ := by rw [← Rat.not_le, and_iff_right_of_imp Rat.le_total.resolve_left]
 
+theorem mkRat_nonneg_iff (a : ℤ) {b : ℕ} (hb : b ≠ 0) : 0 ≤ mkRat a b ↔ 0 ≤ a :=
+  divInt_nonneg_iff_of_pos_right (show 0 < (b : ℤ) by simpa using Nat.pos_of_ne_zero hb)
+
+theorem mkRat_pos_iff (a : ℤ) {b : ℕ} (hb : b ≠ 0) : 0 < mkRat a b ↔ 0 < a := by
+  grind [lt_iff_le_and_ne, mkRat_nonneg_iff, Rat.mkRat_eq_zero]
+
+theorem mkRat_nonpos_iff (a : ℤ) {b : ℕ} (hb : b ≠ 0) : mkRat a b ≤ 0 ↔ a ≤ 0 := by
+  grind [lt_iff_not_ge, mkRat_pos_iff]
+
+theorem mkRat_neg_iff (a : ℤ) {b : ℕ} (hb : b ≠ 0) : mkRat a b < 0 ↔ a < 0 := by
+  grind [lt_iff_not_ge, mkRat_nonneg_iff]
+
 /-!
 ### Extra instances to short-circuit type class resolution
 
