@@ -112,6 +112,7 @@ theorem alternatingGroup.index_eq_two [Nontrivial α] :
 @[nontriviality]
 theorem alternatingGroup.index_eq_one [Subsingleton α] : (alternatingGroup α).index = 1 := by
   rw [Subgroup.index_eq_one]; apply Subsingleton.elim
+
 /-- The group isomorphism between `alternatingGroup (Fin n)` and `alternatingGroup (Fin (n + 1))`
 that fixes one element. -/
 @[simps apply_coe symm_apply_coe]
