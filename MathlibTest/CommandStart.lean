@@ -327,9 +327,35 @@ Note: This linter can be disabled with `set_option linter.style.commandStart fal
  example : True := trivial
 
 -- TODO: the `lemma` in a declaration is not linted, only the doc-string
+/--
+warning: Keyword syntax '/-- Doc-string -/
+lemma qux : True :=
+  trivial' starts on column 7675, need to filter for false positives still
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+info: go here
+real group? (group
+ "lemma"
+ (Command.declId `qux [])
+ (Command.declSig [] (Term.typeSpec ":" `True))
+ (Command.declValSimple ":=" `trivial (Termination.suffix [] []) []))
+-/
 #guard_msgs in
 /-- Doc-string -/
  lemma qux : True := trivial
+
+-- TODO: no false positive!
+/--
+info: go here
+real group? (group
+ "lemma"
+ (Command.declId `hoge [])
+ (Command.declSig [] (Term.typeSpec ":" `True))
+ (Command.declValSimple ":=" `trivial (Termination.suffix [] []) []))
+-/
+#guard_msgs in
+@[simp] lemma hoge : True := trivial
 
 /--
 warning: 'example : True :=
