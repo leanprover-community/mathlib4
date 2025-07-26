@@ -189,7 +189,7 @@ instance (priority := 75) toCommGroup {G : Type*} [CommGroup G] [SetLike S G] [S
     (fun _ _ => rfl) fun _ _ => rfl
 
 /-- The natural group hom from a subgroup of group `G` to `G`. -/
-@[to_additive (attr := coe)
+@[to_additive (attr := simps (config := .asFn))
   "The natural group hom from an additive subgroup of `AddGroup` `G` to `G`."]
 protected def subtype : H →* G where
   toFun := ((↑) : H → G); map_one' := rfl; map_mul' := fun _ _ => rfl
@@ -203,10 +203,6 @@ lemma subtype_apply (x : H) :
 lemma subtype_injective :
     Function.Injective (SubgroupClass.subtype H) :=
   Subtype.coe_injective
-
-@[to_additive (attr := simp)]
-theorem coe_subtype : (SubgroupClass.subtype H : H → G) = ((↑) : H → G) := by
-  rfl
 
 @[deprecated (since := "2025-02-18")]
 alias coeSubtype := coe_subtype
@@ -249,9 +245,7 @@ theorem inclusion_inclusion {L : S} (hHK : H ≤ K) (hKL : K ≤ L) (x : H) :
   rfl
 
 @[to_additive (attr := simp)]
-theorem coe_inclusion {H K : S} {h : H ≤ K} (a : H) : (inclusion h a : G) = a := by
-  cases a
-  simp only [inclusion, MonoidHom.mk'_apply]
+theorem coe_inclusion {H K : S} {h : H ≤ K} (a : H) : (inclusion h a : G) = a := rfl
 
 @[to_additive (attr := simp)]
 theorem subtype_comp_inclusion {H K : S} (hH : H ≤ K) :
@@ -566,9 +560,7 @@ def inclusion {H K : Subgroup G} (h : H ≤ K) : H →* K :=
   MonoidHom.mk' (fun x => ⟨x, h x.2⟩) fun _ _ => rfl
 
 @[to_additive (attr := simp)]
-theorem coe_inclusion {H K : Subgroup G} {h : H ≤ K} (a : H) : (inclusion h a : G) = a := by
-  cases a
-  simp only [inclusion, coe_mk, MonoidHom.mk'_apply]
+theorem coe_inclusion {H K : Subgroup G} {h : H ≤ K} (a : H) : (inclusion h a : G) = a := rfl
 
 @[to_additive]
 theorem inclusion_injective {H K : Subgroup G} (h : H ≤ K) : Function.Injective <| inclusion h :=
