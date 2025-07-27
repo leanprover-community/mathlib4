@@ -651,9 +651,9 @@ def expand (e : Expr) : MetaM Expr := do
     | .proj n i s =>
       let some info := getStructureInfo? (← getEnv) n | return .continue -- e.g. if `n` is `Exists`
       let some projName := info.getProjFn? i | unreachable!
-      -- if `projName` requires reordering, replace `f` with the application `projName s`
-      -- and then visit `projName s args` again.
-      if (reorderFn projName).isEmpty then
+      -- if `projName` is explicitly tagged with `@[to_additive]`,
+      -- replace `f` with the application `projName s` and then visit `projName s args` again.
+      if findTranslation? env projName |>.isNone then
         return .continue
       return .visit <| (← whnfD (← inferType s)).withApp fun sf sargs ↦
         mkAppN (mkApp (mkAppN (.const projName sf.constLevels!) sargs) s) args
