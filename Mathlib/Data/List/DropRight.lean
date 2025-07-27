@@ -53,8 +53,8 @@ theorem rdrop_eq_reverse_drop_reverse : l.rdrop n = reverse (l.reverse.drop n) :
   induction' l using List.reverseRecOn with xs x IH generalizing n
   · simp
   · cases n
-    · simp [take_append]
-    · simp [take_append_eq_append_take, IH]
+    · simp [take_length_add_append]
+    · simp [take_append, IH]
 
 @[simp]
 theorem rdrop_concat_succ (x : α) : rdrop (l ++ [x]) (n + 1) = rdrop l n := by
@@ -76,7 +76,7 @@ theorem rtake_eq_reverse_take_reverse : l.rtake n = reverse (l.reverse.take n) :
   · simp
   · cases n
     · exact drop_length
-    · simp [drop_append_eq_append_drop, IH]
+    · simp [drop_append, IH]
 
 @[simp]
 theorem rtake_concat_succ (x : α) : rtake (l ++ [x]) (n + 1) = rtake l n ++ [x] := by
@@ -119,26 +119,6 @@ variable {p} {l}
 
 @[simp]
 theorem rdropWhile_eq_nil_iff : rdropWhile p l = [] ↔ ∀ x ∈ l, p x := by simp [rdropWhile]
-
--- it is in this file because it requires `List.Infix`
-@[simp]
-theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p (l.get ⟨0, hl⟩) := by
-  rcases l with - | ⟨hd, tl⟩
-  · simp only [dropWhile, true_iff]
-    intro h
-    by_contra
-    rwa [length_nil, lt_self_iff_false] at h
-  · rw [dropWhile]
-    refine ⟨fun h => ?_, fun h => ?_⟩
-    · intro _ H
-      rw [get] at H
-      refine (cons_ne_self hd tl) (Sublist.antisymm ?_ (sublist_cons_self _ _))
-      rw [← h]
-      simp only [H]
-      exact List.IsSuffix.sublist (dropWhile_suffix p)
-    · have := h (by simp only [length, Nat.succ_pos])
-      rw [get] at this
-      simp_rw [this]
 
 @[simp]
 theorem rdropWhile_eq_self_iff : rdropWhile p l = l ↔ ∀ hl : l ≠ [], ¬p (l.getLast hl) := by

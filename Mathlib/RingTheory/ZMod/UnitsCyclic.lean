@@ -7,14 +7,14 @@ import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Analysis.Normed.Ring.Lemmas
 import Mathlib.Data.Nat.Choose.Dvd
 import Mathlib.Data.ZMod.Units
-import Mathlib.GroupTheory.SpecificGroups.ZGroup
+import Mathlib.FieldTheory.Finite.Basic
 
 /-! # Cyclicity of the units of `ZMod n`
 
 `ZMod.isCyclic_units_iff` : `(ZMod n)ˣ` is cyclic iff
 one of the following mutually exclusive cases happens:
   - `n = 0` (then `ZMod 0 ≃+* ℤ` and the group of units is cyclic of order 2);
-  - `n = `1`,  `2`  or `4`
+  - `n = 1`, `2` or `4`
   - `n` is a power `p ^ e` of an odd prime number, or twice such a power
   (with `1 ≤ e`).
 
@@ -139,7 +139,7 @@ lemma exists_one_add_mul_pow_prime_pow_eq {u v : R}
       (mul_dvd_mul_left _ hvu)
       (by
         rw [mul_pow]
-        simp only [← mul_assoc, mul_comm _ p]
+        simp only [← mul_assoc]
         rw [mul_assoc, mul_assoc, ← mul_assoc u, mul_comm u]
         apply mul_dvd_mul _ hpuv
         rw [← pow_two]
@@ -170,7 +170,7 @@ theorem orderOf_one_add_mul_prime_pow {p : ℕ} (hp : p.Prime) (m : ℕ) (hm0 : 
           pow_succ, Nat.cast_mul, Int.mul_dvd_mul_iff_left (by simp [hp.ne_zero])]
       · obtain ⟨y, hy⟩ := this (n + 1)
         rw [hy, ← pow_add, ← Nat.cast_pow]
-        simp [ZMod.natCast_self]
+        simp
     · rw [← pow_succ', ← pow_succ, ← pow_mul, mul_comm]
       exact pow_dvd_pow _ hpm
 
@@ -294,7 +294,7 @@ theorem not_isCyclic_units_of_mul_coprime (m n : ℕ)
 
 theorem isCyclic_units_iff_of_odd {n : ℕ} (hn : Odd n) :
     IsCyclic (ZMod n)ˣ ↔ ∃ (p m : ℕ), p.Prime ∧ Odd p ∧ n = p ^ m := by
-  have hn0 : n ≠ 0 := by rintro rfl; revert hn; decide
+  have hn0 : n ≠ 0 := by rintro rfl; exact Nat.not_odd_zero hn
   obtain rfl | h1 := eq_or_ne n 1
   · simp_rw [isCyclic_units_one, true_iff]
     exact ⟨3, 0, Nat.prime_three, by simp [Nat.odd_iff], by rw [pow_zero]⟩
@@ -331,7 +331,7 @@ theorem isCyclic_units_iff (n : ℕ) :
   · rw [h2]; simp [isCyclic_units_two]
   by_cases h4 : n = 4
   · rw [h4]; simp [isCyclic_units_four]
-  simp only [h0, h1, h2, h4, exists_and_left, false_or, and_or_left, exists_or, ← exists_and_left]
+  simp only [h0, h1, h2, h4, false_or, and_or_left, exists_or]
   rcases (n.even_or_odd).symm with hn | hn
   · rw [isCyclic_units_iff_of_odd hn, or_iff_left]
     · congr! with p m

@@ -27,7 +27,7 @@ assert_not_exists Field
 
 open Finset
 
-variable {α M : Type*}
+variable {ι M : Type*}
 
 namespace Finset
 
@@ -92,7 +92,7 @@ alias sum_univ_get := sum_univ_getElem
 alias prod_univ_get := prod_univ_getElem
 
 @[to_additive (attr := simp)]
-theorem prod_univ_fun_getElem (l : List α) (f : α → M) :
+theorem prod_univ_fun_getElem (l : List ι) (f : ι → M) :
     ∏ i : Fin l.length, f l[i.1] = (l.map f).prod := by
   simp [Finset.prod_eq_multiset_prod]
 
@@ -120,7 +120,7 @@ theorem prod_univ_two (f : Fin 2 → M) : ∏ i, f i = f 0 * f 1 := by
   simp [prod_univ_succ]
 
 @[to_additive]
-theorem prod_univ_two' (f : α → M) (a b : α) : ∏ i, f (![a, b] i) = f a * f b :=
+theorem prod_univ_two' (f : ι → M) (a b : ι) : ∏ i, f (![a, b] i) = f a * f b :=
   prod_univ_two _
 
 @[to_additive]
@@ -428,24 +428,24 @@ lemma sum_neg_one_pow (R : Type*) [Ring R] (m : ℕ) :
 
 section PartialProd
 
-variable [Monoid α] {n : ℕ}
+variable [Monoid M] {n : ℕ}
 
 /-- For `f = (a₁, ..., aₙ)` in `αⁿ`, `partialProd f` is `(1, a₁, a₁a₂, ..., a₁...aₙ)` in `αⁿ⁺¹`. -/
 @[to_additive "For `f = (a₁, ..., aₙ)` in `αⁿ`, `partialSum f` is\n
 `(0, a₁, a₁ + a₂, ..., a₁ + ... + aₙ)` in `αⁿ⁺¹`."]
-def partialProd (f : Fin n → α) (i : Fin (n + 1)) : α :=
+def partialProd (f : Fin n → M) (i : Fin (n + 1)) : M :=
   ((List.ofFn f).take i).prod
 
 @[to_additive (attr := simp)]
-theorem partialProd_zero (f : Fin n → α) : partialProd f 0 = 1 := by simp [partialProd]
+theorem partialProd_zero (f : Fin n → M) : partialProd f 0 = 1 := by simp [partialProd]
 
 @[to_additive]
-theorem partialProd_succ (f : Fin n → α) (j : Fin n) :
+theorem partialProd_succ (f : Fin n → M) (j : Fin n) :
     partialProd f j.succ = partialProd f (Fin.castSucc j) * f j := by
   simp [partialProd, List.take_succ]
 
 @[to_additive]
-theorem partialProd_succ' (f : Fin (n + 1) → α) (j : Fin (n + 1)) :
+theorem partialProd_succ' (f : Fin (n + 1) → M) (j : Fin (n + 1)) :
     partialProd f j.succ = f 0 * partialProd (Fin.tail f) j := by
   simp [partialProd]
   rfl
@@ -671,10 +671,10 @@ namespace List
 
 section CommMonoid
 
-variable [CommMonoid α]
+variable [CommMonoid M]
 
 @[to_additive]
-theorem prod_take_ofFn {n : ℕ} (f : Fin n → α) (i : ℕ) :
+theorem prod_take_ofFn {n : ℕ} (f : Fin n → M) (i : ℕ) :
     ((ofFn f).take i).prod = ∏ j with j.val < i, f j := by
   induction i with
   | zero =>
@@ -700,7 +700,7 @@ theorem prod_take_ofFn {n : ℕ} (f : Fin n → α) (i : ℕ) :
       simp [← A, B, IH]
 
 @[to_additive]
-theorem prod_ofFn {n : ℕ} {f : Fin n → α} : (ofFn f).prod = ∏ i, f i :=
+theorem prod_ofFn {n : ℕ} {f : Fin n → M} : (ofFn f).prod = ∏ i, f i :=
   Fin.prod_ofFn f
 
 end CommMonoid
@@ -712,7 +712,7 @@ theorem alternatingProd_eq_finset_prod {G : Type*} [DivisionCommMonoid G] :
     rw [alternatingProd, Finset.prod_eq_one]
     rintro ⟨i, ⟨⟩⟩
   | g::[] => by
-    show g = ∏ i : Fin 1, [g][i] ^ (-1 : ℤ) ^ (i : ℕ)
+    change g = ∏ i : Fin 1, [g][i] ^ (-1 : ℤ) ^ (i : ℕ)
     rw [Fin.prod_univ_succ]; simp
   | g::h::L =>
     calc g * h⁻¹ * L.alternatingProd

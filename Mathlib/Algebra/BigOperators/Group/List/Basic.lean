@@ -64,7 +64,7 @@ theorem rel_prod {R : M → N → Prop} (h : R 1 1) (hf : (R ⇒ R ⇒ R) (· * 
 @[to_additive]
 theorem prod_hom_nonempty {l : List M} {F : Type*} [FunLike F M N] [MulHomClass F M N] (f : F)
     (hl : l ≠ []) : (l.map f).prod = f l.prod :=
-  match l, hl with | x :: xs, hl => by induction xs generalizing x <;> aesop
+  match l, hl with | x :: xs, hl => by induction xs generalizing x <;> simp_all
 
 @[to_additive]
 theorem prod_hom (l : List M) {F : Type*} [FunLike F M N] [MonoidHomClass F M N] (f : F) :
@@ -76,7 +76,7 @@ theorem prod_hom (l : List M) {F : Type*} [FunLike F M N] [MonoidHomClass F M N]
 theorem prod_hom₂_nonempty {l : List ι} (f : M → N → P)
     (hf : ∀ a b c d, f (a * b) (c * d) = f a c * f b d) (f₁ : ι → M) (f₂ : ι → N) (hl : l ≠ []) :
     (l.map fun i => f (f₁ i) (f₂ i)).prod = f (l.map f₁).prod (l.map f₂).prod := by
-  match l, hl with | x :: xs, hl => induction xs generalizing x <;> aesop
+  match l, hl with | x :: xs, hl => induction xs generalizing x <;> simp_all
 
 @[to_additive]
 theorem prod_hom₂ (l : List ι) (f : M → N → P) (hf : ∀ a b c d, f (a * b) (c * d) = f a c * f b d)
@@ -86,7 +86,7 @@ theorem prod_hom₂ (l : List ι) (f : M → N → P) (hf : ∀ a b c d, f (a * 
     ← l.foldr_hom₂ f _ _ (fun x y => f (f₁ x) (f₂ x) * y) _ _ (by simp [hf]), hf']
 
 @[to_additive (attr := simp)]
-theorem prod_map_mul {α : Type*} [CommMonoid α] {l : List ι} {f g : ι → α} :
+theorem prod_map_mul {M : Type*} [CommMonoid M] {l : List ι} {f g : ι → M} :
     (l.map fun i => f i * g i).prod = (l.map f).prod * (l.map g).prod :=
   l.prod_hom₂ (· * ·) mul_mul_mul_comm (mul_one _) _ _
 
@@ -402,39 +402,39 @@ section Alternating
 
 section
 
-variable [One α] [Mul α] [Inv α]
+variable [One G] [Mul G] [Inv G]
 
 @[to_additive (attr := simp)]
-theorem alternatingProd_nil : alternatingProd ([] : List α) = 1 :=
+theorem alternatingProd_nil : alternatingProd ([] : List G) = 1 :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem alternatingProd_singleton (a : α) : alternatingProd [a] = a :=
+theorem alternatingProd_singleton (a : G) : alternatingProd [a] = a :=
   rfl
 
 @[to_additive]
-theorem alternatingProd_cons_cons' (a b : α) (l : List α) :
+theorem alternatingProd_cons_cons' (a b : G) (l : List G) :
     alternatingProd (a :: b :: l) = a * b⁻¹ * alternatingProd l :=
   rfl
 
 end
 
 @[to_additive]
-theorem alternatingProd_cons_cons [DivInvMonoid α] (a b : α) (l : List α) :
+theorem alternatingProd_cons_cons [DivInvMonoid G] (a b : G) (l : List G) :
     alternatingProd (a :: b :: l) = a / b * alternatingProd l := by
   rw [div_eq_mul_inv, alternatingProd_cons_cons']
 
-variable [CommGroup α]
+variable [CommGroup G]
 
 @[to_additive]
 theorem alternatingProd_cons' :
-    ∀ (a : α) (l : List α), alternatingProd (a :: l) = a * (alternatingProd l)⁻¹
+    ∀ (a : G) (l : List G), alternatingProd (a :: l) = a * (alternatingProd l)⁻¹
   | a, [] => by rw [alternatingProd_nil, inv_one, mul_one, alternatingProd_singleton]
   | a, b :: l => by
     rw [alternatingProd_cons_cons', alternatingProd_cons' b l, mul_inv, inv_inv, mul_assoc]
 
 @[to_additive (attr := simp)]
-theorem alternatingProd_cons (a : α) (l : List α) :
+theorem alternatingProd_cons (a : G) (l : List G) :
     alternatingProd (a :: l) = a / alternatingProd l := by
   rw [div_eq_mul_inv, alternatingProd_cons']
 
@@ -487,7 +487,7 @@ lemma take_sum_flatten (L : List (List α)) (i : ℕ) :
     L.flatten.take ((L.map length).take i).sum = (L.take i).flatten := by
   induction L generalizing i
   · simp
-  · cases i <;> simp [take_append, *]
+  · cases i <;> simp [take_length_add_append, *]
 
 /-- In a flatten, dropping all the elements up to an index which is the sum of the lengths of the
 first `i` sublists, is the same as taking the join after dropping the first `i` sublists. -/
