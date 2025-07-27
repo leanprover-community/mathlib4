@@ -1054,6 +1054,14 @@ theorem Summable.toNNReal {f : α → ℝ} (hf : Summable f) : Summable fun n =>
   refine .of_nonneg_of_le (fun n => NNReal.coe_nonneg _) (fun n => ?_) hf.abs
   simp only [le_abs_self, Real.coe_toNNReal', max_le_iff, abs_nonneg, and_self_iff]
 
+lemma Summable.tsum_ofReal_lt_top {f : α → ℝ} (hf : Summable f) : ∑' i, .ofReal (f i) < ∞ := by
+  unfold ENNReal.ofReal
+  rw [lt_top_iff_ne_top, ENNReal.tsum_coe_ne_top_iff_summable]
+  exact hf.toNNReal
+
+lemma Summable.tsum_ofReal_ne_top {f : α → ℝ} (hf : Summable f) : ∑' i, .ofReal (f i) ≠ ∞ :=
+  hf.tsum_ofReal_lt_top.ne
+
 /-- Finitely summable non-negative functions have countable support -/
 theorem _root_.Summable.countable_support_ennreal {f : α → ℝ≥0∞} (h : ∑' (i : α), f i ≠ ∞) :
     f.support.Countable := by

@@ -33,7 +33,7 @@ and then as a right-rigid monoidal category.
 
 noncomputable section
 
-open CategoryTheory
+open CategoryTheory Module
 
 universe v w u
 
@@ -87,7 +87,7 @@ section Ring
 variable (R : Type u) [Ring R]
 
 @[simp] lemma hom_comp (A B C : FGModuleCat.{v} R) (f : A ⟶ B) (g : B ⟶ C) :
-  (f ≫ g).hom = g.hom.comp f.hom := rfl
+    (f ≫ g).hom = g.hom.comp f.hom := rfl
 
 @[simp] lemma hom_id (A : FGModuleCat.{v} R) : (𝟙 A : A ⟶ A).hom = LinearMap.id := rfl
 
@@ -100,7 +100,7 @@ abbrev of (V : Type v) [AddCommGroup V] [Module R V] [Module.Finite R V] : FGMod
 
 @[simp]
 lemma of_carrier (V : Type v) [AddCommGroup V] [Module R V] [Module.Finite R V] :
-  of R V = V := rfl
+    of R V = V := rfl
 
 variable {R} in
 /-- Lift a linear map between finitely generated modules to `FGModuleCat R`. -/

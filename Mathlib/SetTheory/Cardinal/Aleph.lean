@@ -555,7 +555,8 @@ theorem preBeth_omega : preBeth ω = ℵ₀ := by
 theorem preBeth_pos {o : Ordinal} : 0 < preBeth o ↔ 0 < o := by
   simpa using preBeth_lt_preBeth (o₁ := 0)
 
-theorem isNormal_preBeth : IsNormal (ord ∘ preBeth) := by
+-- TODO: reprove this as `Order.IsNormal preBeth`.
+theorem isNormal_preBeth : Ordinal.IsNormal (ord ∘ preBeth) := by
   refine (isNormal_iff_strictMono_limit _).2
     ⟨ord_strictMono.comp preBeth_strictMono, fun o ho a ha ↦ ?_⟩
   rw [comp_apply, preBeth_limit ho.isSuccPrelimit, ord_le]
@@ -629,7 +630,8 @@ theorem beth_pos (o : Ordinal) : 0 < ℶ_ o :=
 theorem beth_ne_zero (o : Ordinal) : ℶ_ o ≠ 0 :=
   (beth_pos o).ne'
 
-theorem isNormal_beth : IsNormal (ord ∘ beth) :=
+-- TODO: reprove this as `Order.IsNormal beth`.
+theorem isNormal_beth : Ordinal.IsNormal (ord ∘ beth) :=
   isNormal_preBeth.trans (isNormal_add_right ω)
 
 theorem isStrongLimit_beth {o : Ordinal} (H : IsSuccPrelimit o) : IsStrongLimit (ℶ_ o) := by
