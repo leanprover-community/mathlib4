@@ -89,6 +89,7 @@ lemma volume_Ioc : volume (Ioc x y) = .ofReal (y - x) := by
     rw [ENNReal.ofReal_eq_zero]
     exact tsub_nonpos.mpr (not_lt.mp hx)
 
+@[simp]
 lemma volume_Ioo : volume (Ioo x y) = .ofReal (y - x) := by
   by_cases hx : x < y
   · suffices volume (Ioo x y) = volume (Ico x y) by
