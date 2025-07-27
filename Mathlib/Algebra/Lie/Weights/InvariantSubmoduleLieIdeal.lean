@@ -134,155 +134,31 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
             exact h_zero_eq
 
           by_cases h_chi_in_q : χ.toLinear ∈ q
-          · have h_plus_containment :
-              genWeightSpace L (χ.toLinear + α.1.toLinear) ≤
-              ⨆ β : {β : Weight K H L // β.toLinear ∈ q ∧ β.IsNonZero},
-                IsKilling.sl2SubmoduleOfRoot β.1 β.2.2 := by
-              by_cases h_plus_trivial : genWeightSpace L (χ.toLinear + α.1.toLinear) = ⊥
-              · simp [h_plus_trivial]
-              · let β : Weight K H L := {
-                  toFun := χ.toLinear + α.1.toLinear,
-                  genWeightSpace_ne_bot' := h_plus_trivial
-                }
-                have hβ_in_index_set : β.toLinear ∈ q ∧ β.IsNonZero := by
-                  constructor
-                  · exact q.add_mem h_chi_in_q α.2.1
-                  · intro h_eq
-                    apply w_plus
-                    have h_zero_eq : (β.toLinear : H →ₗ[K] K) = 0 := by
-                      ext h
-                      simp [Weight.IsZero.eq h_eq]
-                    have h_beta_def : (β : H → K) = ⇑(χ.toLinear) + ⇑(α.1.toLinear) := rfl
-                    have h_coe_zero : ⇑(χ.toLinear) + ⇑(α.1.toLinear) = 0 := by
-                      rw [← h_beta_def]
-                      exact Weight.IsZero.eq h_eq
-                    ext h
-                    have := congr_fun h_coe_zero h
-                    simpa using this
-                have β_mem_index_set : β ∈ {γ : Weight K H L | γ.toLinear ∈ q ∧ γ.IsNonZero} :=
-                  hβ_in_index_set
-                let β_indexed : {γ : Weight K H L // γ.toLinear ∈ q ∧ γ.IsNonZero} :=
-                  ⟨β, hβ_in_index_set⟩
-                have β_term_in_supr :
-                    IsKilling.sl2SubmoduleOfRoot β β_indexed.property.right ≤
-                    ⨆ (γ : {γ : Weight K H L // γ.toLinear ∈ q ∧ γ.IsNonZero}),
-                    IsKilling.sl2SubmoduleOfRoot γ γ.property.right := by
-                  have h := le_iSup (fun γ : {γ : Weight K H L // γ.toLinear ∈ q ∧ γ.IsNonZero} =>
-                    IsKilling.sl2SubmoduleOfRoot γ.1 γ.2.2) β_indexed
-                  exact h
-                have h_β_contains : genWeightSpace L (χ.toLinear + α.1.toLinear) ≤
-                    IsKilling.sl2SubmoduleOfRoot β β_indexed.property.right := by
-                  rw [IsKilling.sl2SubmoduleOfRoot_eq_sup]
-                  apply le_sup_of_le_left
-                  apply le_sup_of_le_left
-                  have h_eq : β.toLinear = χ.toLinear + α.1.toLinear := rfl
-                  rw [h_eq]
-                exact h_β_contains.trans β_term_in_supr
-
-            have h_chi_minus_alpha_in_q : χ.toLinear - α.1.toLinear ∈ q := by
-              rw [sub_eq_add_neg]
-              apply q.add_mem h_chi_in_q
-              have h_neg_smul : -α.1.toLinear = (-1 : K) • α.1.toLinear := by simp
-              rw [h_neg_smul]
-              exact q.smul_mem (-1) α.2.1
-
-            have h_minus_containment :
-              genWeightSpace L (χ.toLinear - α.1.toLinear) ≤
-              ⨆ β : {β : Weight K H L // β.toLinear ∈ q ∧ β.IsNonZero},
-                IsKilling.sl2SubmoduleOfRoot β.1 β.2.2 := by
-              by_cases h_minus_trivial : genWeightSpace L (χ.toLinear - α.1.toLinear) = ⊥
-              · simp [h_minus_trivial]
-              · let β : Weight K H L := {
-                  toFun := χ.toLinear - α.1.toLinear,
-                  genWeightSpace_ne_bot' := h_minus_trivial
-                }
-                have hβ_in_index_set : β.toLinear ∈ q ∧ β.IsNonZero := by
-                  constructor
-                  · exact h_chi_minus_alpha_in_q
-                  · intro h_eq
-                    apply w_minus
-                    have h_zero_eq : (β.toLinear : H →ₗ[K] K) = 0 := by
-                      ext h
-                      simp [Weight.IsZero.eq h_eq]
-                    have h_beta_def : (β : H → K) = ⇑(χ.toLinear) - ⇑(α.1.toLinear) := rfl
-                    have h_coe_zero : ⇑(χ.toLinear) - ⇑(α.1.toLinear) = 0 := by
-                      rw [← h_beta_def]
-                      exact Weight.IsZero.eq h_eq
-                    ext h
-                    have := congr_fun h_coe_zero h
-                    simpa using this
-                have β_mem_index_set : β ∈ {γ : Weight K H L | γ.toLinear ∈ q ∧ γ.IsNonZero} :=
-                  hβ_in_index_set
-                let β_indexed : {γ : Weight K H L // γ.toLinear ∈ q ∧ γ.IsNonZero} :=
-                  ⟨β, hβ_in_index_set⟩
-                have β_term_in_supr :
-                    IsKilling.sl2SubmoduleOfRoot β β_indexed.property.right ≤
-                    ⨆ (γ : {γ : Weight K H L // γ.toLinear ∈ q ∧ γ.IsNonZero}),
-                    IsKilling.sl2SubmoduleOfRoot γ γ.property.right := by
-                  have h := le_iSup (fun γ : {γ : Weight K H L // γ.toLinear ∈ q ∧ γ.IsNonZero} =>
-                    IsKilling.sl2SubmoduleOfRoot γ.1 γ.2.2) β_indexed
-                  exact h
-                have h_β_contains : genWeightSpace L (χ.toLinear - α.1.toLinear) ≤
-                    IsKilling.sl2SubmoduleOfRoot β β_indexed.property.right := by
-                  rw [IsKilling.sl2SubmoduleOfRoot_eq_sup]
-                  apply le_sup_of_le_left
-                  apply le_sup_of_le_left
-                  have h_eq : β.toLinear = χ.toLinear - α.1.toLinear := rfl
-                  rw [h_eq]
-                exact h_β_contains.trans β_term_in_supr
-
-            have h_chi_containment :
-              genWeightSpace L χ.toLinear ≤
-              ⨆ β : {β : Weight K H L // β.toLinear ∈ q ∧ β.IsNonZero},
-                IsKilling.sl2SubmoduleOfRoot β.1 β.2.2 := by
-              by_cases h_chi_trivial : genWeightSpace L χ.toLinear = ⊥
-              · rw [h_chi_trivial]
-                simp
-              · have hχ_in_index_set : χ.toLinear ∈ q ∧ χ.IsNonZero := by
-                  constructor
-                  · exact h_chi_in_q
-                  · intro h_eq
-                    apply w_chi
-                    have h_coe_zero : (χ : H → K) = 0 := Weight.IsZero.eq h_eq
-                    convert h_coe_zero
-                    simp only [LinearMap.ext_iff, LinearMap.zero_apply]
-                    constructor
-                    · intro h
-                      ext x
-                      exact h x
-                    · intro h x
-                      have := congr_fun h x
-                      simp at this
-                      exact this
-                let χ_indexed : {γ : Weight K H L // γ.toLinear ∈ q ∧ γ.IsNonZero} :=
-                  ⟨χ, hχ_in_index_set⟩
-                have χ_term_in_supr :
-                    IsKilling.sl2SubmoduleOfRoot χ χ_indexed.property.right ≤
-                    ⨆ (γ : {γ : Weight K H L // γ.toLinear ∈ q ∧ γ.IsNonZero}),
-                    IsKilling.sl2SubmoduleOfRoot γ γ.property.right := by
-                  have h := le_iSup (fun γ : {γ : Weight K H L // γ.toLinear ∈ q ∧ γ.IsNonZero} =>
-                    IsKilling.sl2SubmoduleOfRoot γ.1 γ.2.2) χ_indexed
-                  exact h
-                have h_χ_contains : genWeightSpace L χ.toLinear ≤
-                    IsKilling.sl2SubmoduleOfRoot χ χ_indexed.property.right := by
-                  rw [IsKilling.sl2SubmoduleOfRoot_eq_sup]
-                  apply le_sup_of_le_left
-                  apply le_sup_of_le_left
-                  rfl
-                exact h_χ_contains.trans χ_term_in_supr
-
-            have h_total_containment :
-              genWeightSpace L (χ.toLinear + α.1.toLinear) ⊔
-              genWeightSpace L (χ.toLinear - α.1.toLinear) ⊔
-              genWeightSpace L χ.toLinear ≤
-              ⨆ β : {β : Weight K H L // β.toLinear ∈ q ∧ β.IsNonZero},
-                IsKilling.sl2SubmoduleOfRoot β.1 β.2.2 := by
-              apply sup_le
-              · apply sup_le
-                · exact h_plus_containment
-                · exact h_minus_containment
-              · exact h_chi_containment
-            exact h_total_containment h_bracket_decomp
+          · let I := ⨆ β : {β : Weight K H L // β.toLinear ∈ q ∧ β.IsNonZero},
+              IsKilling.sl2SubmoduleOfRoot β.1 β.2.2
+            have genWeightSpace_le_I (β_lin : H →ₗ[K] K) (hβ_in_q : β_lin ∈ q)
+                (hβ_ne_zero : β_lin ≠ 0) : genWeightSpace L β_lin ≤ I := by
+              by_cases h_trivial : genWeightSpace L β_lin = ⊥
+              · simp [h_trivial]
+              · let β : Weight K H L := ⟨β_lin, h_trivial⟩
+                have hβ_nonzero : β.IsNonZero := by
+                  intro h_zero; apply hβ_ne_zero
+                  have h_zero_eq : (β.toLinear : H →ₗ[K] K) = 0 := by
+                    ext h; simp [Weight.IsZero.eq h_zero]
+                  exact h_zero_eq
+                refine le_trans ?_ (le_iSup _ ⟨β, hβ_in_q, hβ_nonzero⟩)
+                rw [IsKilling.sl2SubmoduleOfRoot_eq_sup]
+                exact le_sup_of_le_left (le_sup_of_le_left le_rfl)
+            have h_plus_contain : genWeightSpace L (χ.toLinear + α.1.toLinear) ≤ I :=
+              genWeightSpace_le_I _ (q.add_mem h_chi_in_q α.2.1) w_plus
+            have h_minus_contain : genWeightSpace L (χ.toLinear - α.1.toLinear) ≤ I :=
+              genWeightSpace_le_I _ (by
+                have : -α.1.toLinear = (-1 : K) • α.1.toLinear := by simp
+                rw [sub_eq_add_neg, this]
+                exact q.add_mem h_chi_in_q (q.smul_mem (-1) α.2.1)) w_minus
+            have h_chi_contain : genWeightSpace L χ.toLinear ≤ I :=
+              genWeightSpace_le_I _ h_chi_in_q (fun h_eq => (w_chi h_eq).elim)
+            exact sup_le (sup_le h_plus_contain h_minus_contain) h_chi_contain h_bracket_decomp
           · have h_plus_bot : genWeightSpace L (χ.toLinear + α.1.toLinear) = ⊥ := by
               by_contra h_ne_bot
               let S := LieAlgebra.IsKilling.rootSystem H
