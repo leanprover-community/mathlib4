@@ -19,6 +19,7 @@ jobs:
           ref: nightly-testing
           path: nightly-testing
           token: ${{ secrets.NIGHTLY_TESTING }}
+          fetch-depth: 0
 
       - name: Configure Lean
         uses: leanprover/lean-action@f807b338d95de7813c5c50d018f1c23c9b93b4ec # 2025-04-24
