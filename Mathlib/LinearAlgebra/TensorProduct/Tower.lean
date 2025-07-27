@@ -742,12 +742,12 @@ variable {R A B C D : Type*} [CommSemiring R] [AddCommMonoid A]
 open LinearMap
 open scoped TensorProduct
 
-lemma TensorProduct.assoc_comp_rTensor_assoc_symm_comp_assoc_symm_comp_lTensor_assoc_symm :
-    (TensorProduct.assoc R _ _ _).toLinearMap
+lemma TensorProduct.assoc_tensor :
+    (TensorProduct.assoc R A B (C ⊗[R] D)).symm.toLinearMap
+    = (TensorProduct.assoc R _ _ _).toLinearMap
     ∘ₗ (rTensor _ (TensorProduct.assoc R _ _ _).symm.toLinearMap)
     ∘ₗ (TensorProduct.assoc R _ _ _).symm.toLinearMap
-    ∘ₗ (lTensor _ (TensorProduct.assoc R _ _ _).symm.toLinearMap)
-    = (TensorProduct.assoc R A B (C ⊗[R] D)).symm.toLinearMap := by
+    ∘ₗ (lTensor _ (TensorProduct.assoc R _ _ _).symm.toLinearMap) := by
   ext; simp
 
 lemma TensorProduct.lid_tensor :

@@ -115,7 +115,7 @@ theorem lTensor_mul'_comp_assoc_comp_rTensor_comul_of
     _ = (τ (A ⊗[R] A)).toLinearMap ∘ₗ (rTensor _ counit) ∘ₗ (rTensor _ (mul' R A))
       ∘ₗ ((ϰ _ _ _).symm.toLinearMap ∘ₗ (lTensor _ (lTensor A comul))) ∘ₗ (lTensor _ comul) := by
         symm
-        rw [← assoc_comp_rTensor_assoc_symm_comp_assoc_symm_comp_lTensor_assoc_symm]
+        rw [assoc_tensor]
         simp_rw [comp_assoc]
     _ = (τ (A ⊗[R] A)).toLinearMap ∘ₗ (rTensor _ counit) ∘ₗ ((rTensor _ (mul' R A))
       ∘ₗ (lTensor _ comul)) ∘ₗ (ϰ _ _ _).symm.toLinearMap ∘ₗ (lTensor _ comul) := by
