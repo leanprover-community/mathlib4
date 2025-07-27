@@ -254,8 +254,8 @@ theorem _root_.Submodule.IsCompl.projection_isSymmetric_iff
       ← Submodule.linearProjOfIsCompl_apply_left hUV ⟨u, hu⟩, ← U.subtype_apply, ← comp_apply,
       ← h, comp_apply, linearProjOfIsCompl_apply_right hUV ⟨v, hv⟩,
       map_zero, inner_zero_left]
-  · nth_rw 2 [← linear_proj_add_linearProjOfIsCompl_eq_self hUV x]
-    nth_rw 1 [← linear_proj_add_linearProjOfIsCompl_eq_self hUV y]
+  · nth_rw 2 [← linearProjOfIsCompl_add_linearProjOfIsCompl_eq_self hUV x]
+    nth_rw 1 [← linearProjOfIsCompl_add_linearProjOfIsCompl_eq_self hUV y]
     rw [isOrtho_iff_inner_eq] at h
     simp [inner_add_right, inner_add_left, h, inner_eq_zero_symm]
 
