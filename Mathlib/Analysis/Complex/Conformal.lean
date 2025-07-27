@@ -268,7 +268,7 @@ theorem complexOfReal_hasDerivWithinAt (h₁ : DifferentiableWithinAt ℝ f s x)
 
 /--
 In cases where the **Cauchy-Riemann Equation** guarantees complex differentiability at `x`, the
-complex derivative equals `ContinuousLinearMap.complexOfReal` of the real derivative.
+complex derivative equals the real derivative.
 -/
 theorem complexOfReal_derivWithin (h₁ : DifferentiableWithinAt ℝ f s x)
     (h₂ : fderivWithin ℝ f s x I = I • fderivWithin ℝ f s x 1) (hs : UniqueDiffWithinAt ℂ s x) :
@@ -307,7 +307,7 @@ theorem complexOfReal_hasDerivAt (h₁ : DifferentiableAt ℝ f x)
 
 /--
 In cases where the **Cauchy-Riemann Equation** guarantees complex differentiability at `x`, the
-complex derivative equals `ContinuousLinearMap.complexOfReal` of the real derivative.
+complex derivative equals the real derivative.
 -/
 theorem complexOfReal_deriv (h₁ : DifferentiableAt ℝ f x)
     (h₂ : fderiv ℝ f x I = I • fderiv ℝ f x 1) :
