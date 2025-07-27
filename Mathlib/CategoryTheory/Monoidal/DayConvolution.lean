@@ -27,7 +27,6 @@ a map `𝟙_ V ⟶ U.obj (𝟙_ C)` that exhibits `U` as a pointwise left Kan ex
 
 ## TODOs (@robin-carlier)
 - Braided/symmetric case.
-- Case where `V` is closed.
 - Define a typeclass `DayConvolutionMonoidalCategory` extending `MonoidalCategory`
 - Characterization of lax monoidal functors out of a day convolution monoidal category.
 - Case `V = Type u` and its universal property.
@@ -134,7 +133,7 @@ variable (f : F ⟶ F') (g : G ⟶ G') (x y : C)
 
 @[reassoc (attr := simp)]
 lemma unit_app_map_app :
-  (unit F G).app (x, y) ≫ (map f g).app (x ⊗ y : C) =
+    (unit F G).app (x, y) ≫ (map f g).app (x ⊗ y : C) =
     (f.app x ⊗ₘ g.app y) ≫ (unit F' G').app (x, y) := by
   simpa [tensorHom_def] using
     (Functor.descOfIsLeftKanExtension_fac_app (F ⊛ G) (unit F G) (F' ⊛ G') <|

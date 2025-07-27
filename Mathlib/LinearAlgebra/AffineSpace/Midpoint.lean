@@ -214,6 +214,14 @@ theorem midpoint_sub_add (x y : V) : midpoint R (x - y) (x + y) = x := by
 theorem midpoint_add_sub (x y : V) : midpoint R (x + y) (x - y) = x := by
   rw [midpoint_comm]; simp
 
+theorem midpoint_vsub_midpoint_same_left (p₁ p₂ p₃ : P) :
+    midpoint R p₁ p₂ -ᵥ midpoint R p₁ p₃ = (⅟ 2 : R) • (p₂ -ᵥ p₃) := by
+  rw [midpoint_vsub_midpoint, vsub_self, midpoint_eq_smul_add, zero_add]
+
+theorem midpoint_vsub_midpoint_same_right (p₁ p₂ p₃ : P) :
+    midpoint R p₁ p₃ -ᵥ midpoint R p₂ p₃ = (⅟ 2 : R) • (p₁ -ᵥ p₂) := by
+  rw [midpoint_vsub_midpoint, vsub_self, midpoint_eq_smul_add, add_zero]
+
 end
 
 namespace AddMonoidHom
