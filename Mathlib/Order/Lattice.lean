@@ -1296,7 +1296,7 @@ structure LatticeCon (α) [Lattice α] extends Setoid α where
 
 @[simp]
 lemma r_inf_sup_iff [Lattice α] (c : LatticeCon α) {x y : α} :
-    c.r (x ⊓ y) (x ⊔ y) ↔ c.r x y  := by
+    c.r (x ⊓ y) (x ⊔ y) ↔ c.r x y := by
   constructor
   · intro h
     exact c.trans (b := x ⊓ y) (by
