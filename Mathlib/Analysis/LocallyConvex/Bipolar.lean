@@ -263,11 +263,6 @@ def strictEquiv2 (hl : B.SeparatingLeft) : E ≃ₗ[𝕜] (WeakBilin B.flip) →
   apply dualEquiv _ hl
 
 
-lemma testcontr (a b : ℝ) (h₁ : a ≤ b) : ¬ (b < a)  := by
-  exact LE.le.not_gt h₁
-
-
-
 variable [Module ℝ E]
 variable [IsScalarTower ℝ 𝕜 E]
 
@@ -293,13 +288,44 @@ theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s
       rw [fg]
       simp only [ ContinuousLinearMap.coe_smul', Pi.smul_apply]
       rw [RCLike.smul_re]
-      have t1 : RCLike.re (f a) < u := hf₁ a ha
-      simp [t1]
+      --have t1 : RCLike.re (f a) < u := hf₁ a ha
+      simp
       rw [← (inv_mul_cancel₀ (lt_iff_le_and_ne.mp e3).2.symm)]
       exact mul_lt_mul_of_pos_left ((hf₁ a) ha) (inv_pos_of_pos e3)
     obtain ⟨f₀,hf₀⟩ := B.dualEmbedding_isSurjective g
-    have hg₃ : f₀ ∈ (B.polar (E := WeakBilin B) s) := sorry
-    have todo : 1 < RCLike.re (B x f₀) := sorry
+    have hg₃ : f₀ ∈ (B.polar (E := WeakBilin B) s) := by
+      rw [← hf₀] at hg₁
+      simp [WeakBilin.eval] at hg₁
+      rw [polar_mem_iff]
+      intro x hx
+      sorry
+      --simp_rw [flip_apply] at hg₁
+    have fg2 : u • g = f := by
+      rw [fg]
+      simp only [one_div]
+      rw [← smul_assoc]
+      rw [smul_eq_mul]
+      rw [mul_inv_cancel₀, one_smul]
+      exact Ne.symm (ne_of_lt e3)
+    have one_lt_x_f₀ : 1 < RCLike.re (B x f₀) := by
+      rw [← one_lt_inv_mul₀ e3] at hf₂
+      suffices u⁻¹ * RCLike.re (f x) = RCLike.re ((B x) f₀) by exact lt_of_lt_of_eq hf₂ this
+      rw [← RCLike.re_ofReal_mul]
+      congr
+      simp
+      rw [← fg2]
+      rw [← hf₀]
+      simp [WeakBilin.eval]
+      rw [← smul_eq_mul]
+      rw [← smul_assoc]
+      suffices u • ((algebraMap ℝ 𝕜) u)⁻¹ = 1 by
+        rw [this]
+        rw [one_smul]
+        rfl
+      norm_cast
+      rw [smul_eq_mul]
+      have unz : u ≠ 0 := by exact Ne.symm (ne_of_lt e3)
+      exact CommGroupWithZero.mul_inv_cancel u unz
     by_contra hc
     simp at hc
     have hc₁ : ‖B x f₀‖ ≤ 1 := by
@@ -308,9 +334,9 @@ theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s
       exact RCLike.re_le_norm ((B x) f₀)
     have hc₃ : RCLike.re (B x f₀) ≤ 1 := by
       exact Preorder.le_trans (RCLike.re ((B x) f₀)) ‖(B x) f₀‖ 1 hc₂ (hc f₀ hg₃)
-    rw [lt_iff_le_not_ge] at todo
+    rw [lt_iff_le_not_ge] at one_lt_x_f₀
     have hc₄ : ¬RCLike.re ((B x) f₀) ≤ 1 := by
-      exact todo.2
+      exact one_lt_x_f₀.2
     exact hc₄ hc₃
 
   · exact closedAbsConvexHull_min (subset_bipolar B s) (polar_AbsConvex _) (polar_isClosed B.flip _)
