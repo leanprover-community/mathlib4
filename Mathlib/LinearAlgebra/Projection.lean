@@ -5,6 +5,8 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.LinearAlgebra.Prod
+import Mathlib.Algebra.Module.Submodule.Invariant
+import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.Algebra.Ring.Idempotent
 
 /-!
@@ -178,6 +180,9 @@ theorem linearProjOfIsCompl_idempotent (h : IsCompl p q) (x : E) :
     linearProjOfIsCompl p q h (linearProjOfIsCompl p q h x) = linearProjOfIsCompl p q h x :=
   linearProjOfIsCompl_apply_left h _
 
+lemma isIdempotentElem_subtype_comp_linearProjOfIsCompl (hpq : IsCompl p q) :
+    IsIdempotentElem (p.subtype ∘ₗ p.linearProjOfIsCompl q hpq) := by ext; simp
+
 theorem existsUnique_add_of_isCompl_prod (hc : IsCompl p q) (x : E) :
     ∃! u : p × q, (u.fst : E) + u.snd = x :=
   (prodEquivOfIsCompl _ _ hc).toEquiv.bijective.existsUnique _
@@ -187,11 +192,24 @@ theorem existsUnique_add_of_isCompl (hc : IsCompl p q) (x : E) :
   let ⟨u, hu₁, hu₂⟩ := existsUnique_add_of_isCompl_prod hc x
   ⟨u.1, u.2, hu₁, fun r s hrs => Prod.eq_iff_fst_eq_snd_eq.1 (hu₂ ⟨r, s⟩ hrs)⟩
 
-theorem linear_proj_add_linearProjOfIsCompl_eq_self (hpq : IsCompl p q) (x : E) :
+theorem linearProjOfIsCompl_add_linearProjOfIsCompl_eq_self (hpq : IsCompl p q) (x : E) :
     (p.linearProjOfIsCompl q hpq x + q.linearProjOfIsCompl p hpq.symm x : E) = x := by
   dsimp only [linearProjOfIsCompl]
   rw [← prodComm_trans_prodEquivOfIsCompl _ _ hpq]
   exact (prodEquivOfIsCompl _ _ hpq).apply_symm_apply x
+
+@[deprecated (since := "2025-07-11")] alias linear_proj_add_linearProjOfIsCompl_eq_self :=
+  linearProjOfIsCompl_add_linearProjOfIsCompl_eq_self
+
+lemma linearProjOfIsCompl_eq_self_sub_linearProjOfIsCompl (hpq : IsCompl p q) (x : E) :
+    (q.linearProjOfIsCompl p hpq.symm x : E) = x - (p.linearProjOfIsCompl q hpq x : E) := by
+  rw [eq_sub_iff_add_eq, linearProjOfIsCompl_add_linearProjOfIsCompl_eq_self]
+
+/-- The projection to `p` along `q` of `x` equals `x` if and only if `x ∈ p`. -/
+@[simp] lemma linearProjOfIsCompl_eq_self_iff (hpq : IsCompl p q) (x : E) :
+    (p.linearProjOfIsCompl q hpq x : E) = x ↔ x ∈ p := by
+  rw [eq_comm, ← sub_eq_zero, ← linearProjOfIsCompl_eq_self_sub_linearProjOfIsCompl,
+    coe_eq_zero, linearProjOfIsCompl_apply_eq_zero_iff]
 
 end Submodule
 
@@ -244,6 +262,13 @@ theorem ofIsCompl_eq' (h : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F
     (hφ : φ = χ.comp p.subtype) (hψ : ψ = χ.comp q.subtype) : ofIsCompl h φ ψ = χ :=
   ofIsCompl_eq h (fun _ => hφ.symm ▸ rfl) fun _ => hψ.symm ▸ rfl
 
+theorem ofIsCompl_eq_add (hpq : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} :
+    ofIsCompl hpq φ ψ = (φ ∘ₗ p.linearProjOfIsCompl q hpq)
+      + (ψ ∘ₗ q.linearProjOfIsCompl p hpq.symm) := by
+  ext x
+  obtain ⟨a, b, rfl, _⟩ := existsUnique_add_of_isCompl hpq x
+  simp
+
 @[simp]
 theorem ofIsCompl_zero (h : IsCompl p q) : (ofIsCompl h 0 0 : E →ₗ[R] F) = 0 :=
   ofIsCompl_eq _ (fun _ => rfl) fun _ => rfl
@@ -266,6 +291,25 @@ theorem surjective_comp_linearProjOfIsCompl (h : IsCompl p q) [Module R M] :
 theorem surjective_comp_subtype_of_isComplemented (h : IsComplemented p) [Module R M] :
     Function.Surjective fun f : E →ₗ[R] M ↦ f ∘ₗ p.subtype :=
   have ⟨q, h⟩ := h; fun f ↦ ⟨f ∘ₗ p.linearProjOfIsCompl q h, by ext; simp⟩
+
+@[simp]
+theorem range_ofIsCompl (hpq : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} :
+    range (ofIsCompl hpq φ ψ) = range φ ⊔ range ψ := by
+  rw [ofIsCompl_eq_add]
+  apply le_antisymm
+  · apply range_add_le _ _ |>.trans
+    gcongr
+    all_goals exact range_comp_le_range ..
+  · apply sup_le
+    all_goals rintro - ⟨x, rfl⟩; exact ⟨x, by simp⟩
+
+theorem ofIsCompl_subtype_zero_eq (hpq : IsCompl p q) :
+    ofIsCompl hpq p.subtype 0 = p.subtype ∘ₗ p.linearProjOfIsCompl q hpq := by
+  simp [ofIsCompl_eq_add]
+
+theorem ofIsCompl_symm (hpq : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} :
+    ofIsCompl hpq.symm ψ φ = ofIsCompl hpq φ ψ := by
+  simp [ofIsCompl_eq_add, add_comm]
 
 section
 
@@ -478,8 +522,7 @@ open LinearMap in
 /-- Given an idempotent linear operator `p`, we have
 `x ∈ range p` if and only if `p(x) = x` for all `x`. -/
 theorem IsIdempotentElem.mem_range_iff {p : M →ₗ[S] M} (hp : IsIdempotentElem p) {x : M} :
-    x ∈ range p ↔ p x = x :=
-  hp.isProj_range.mem_iff_map_id
+    x ∈ range p ↔ p x = x := hp.isProj_range.mem_iff_map_id
 
 open LinearMap in
 /-- Given an idempotent linear operator `q`,
@@ -491,6 +534,10 @@ theorem IsIdempotentElem.comp_eq_right_iff {q : M →ₗ[S] M} (hq : IsIdempoten
     SetLike.le_def, mem_range, forall_exists_index, forall_apply_eq_imp_iff]
 
 open LinearMap in
+lemma IsIdempotentElem.isCompl {f : E →ₗ[R] E} (hf : IsIdempotentElem f) :
+    IsCompl (range f) (ker f) := hf.isProj_range.isCompl
+
+open LinearMap in
 /-- Idempotent operators are equal iff their range and kernels are. -/
 lemma IsIdempotentElem.ext_iff {p q : E →ₗ[R] E}
     (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) :
@@ -498,7 +545,7 @@ lemma IsIdempotentElem.ext_iff {p q : E →ₗ[R] E}
   refine ⟨fun h => ⟨congrArg range h, congrArg ker h⟩, fun ⟨hr, hk⟩ => ?_⟩
   ext x
   obtain ⟨⟨v, hv⟩, ⟨w, hw⟩, rfl, _⟩ :=
-    (ker p).existsUnique_add_of_isCompl hp.isProj_range.isCompl.symm x
+    (ker p).existsUnique_add_of_isCompl hp.isCompl.symm x
   simp [mem_ker.mp, hv, (hk ▸ hv), (mem_range_iff hp).mp, hw, (mem_range_iff hq).mp, (hr ▸ hw)]
 
 alias ⟨_, IsIdempotentElem.ext⟩ := IsIdempotentElem.ext_iff
@@ -513,6 +560,13 @@ open LinearMap in
 theorem IsIdempotentElem.ker_eq_range {E : Type*} [AddCommGroup E] [Module S E]
     {p : E →ₗ[S] E} (hp : IsIdempotentElem p) : LinearMap.ker p = LinearMap.range (1 - p) := by
   simpa using hp.one_sub.range_eq_ker.symm
+
+open LinearMap in
+theorem IsIdempotentElem.comp_eq_left_iff {M : Type*} [AddCommGroup M] [Module S M] {q : M →ₗ[S] M}
+    (hq : IsIdempotentElem q) {E : Type*} [AddCommGroup E] [Module S E] (p : M →ₗ[S] E) :
+    p ∘ₗ q = p ↔ ker q ≤ ker p := by
+  simp [hq.ker_eq_range, range_le_ker_iff, comp_sub, Module.End.one_eq_id, sub_eq_zero,
+    eq_comm (a := p)]
 
 end LinearMap
 
@@ -532,3 +586,56 @@ theorem IsProj.eq_conj_prodMap {f : E →ₗ[R] E} (h : IsProj p f) :
 end LinearMap
 
 end CommRing
+
+namespace LinearMap.IsIdempotentElem
+
+open Submodule LinearMap
+
+variable {E R : Type*} [Ring R] [AddCommGroup E] [Module R E] {T f : E →ₗ[R] E}
+
+lemma subtype_comp_linearProjOfIsCompl_range_eq (hf : IsIdempotentElem f) :
+    (range f).subtype ∘ₗ (Submodule.linearProjOfIsCompl _ _ hf.isCompl) = f := by
+  convert ofIsCompl_subtype_zero_eq hf.isCompl |>.symm
+  exact ofIsCompl_eq _ (by simp [hf.isProj_range.map_id]) (by simp) |>.symm
+
+/-- `range f` is invariant under `T` if and only if `f ∘ₗ T ∘ₗ f = T ∘ₗ f`,
+for idempotent `f`. -/
+lemma range_mem_invtSubmodule_iff (hf : IsIdempotentElem f) :
+    range f ∈ Module.End.invtSubmodule T ↔ f ∘ₗ T ∘ₗ f = T ∘ₗ f := by
+  rw [hf.comp_eq_right_iff, range_comp, Module.End.mem_invtSubmodule_iff_map_le]
+
+alias ⟨conj_eq_of_range_mem_invtSubmodule, range_mem_invtSubmodule⟩ := range_mem_invtSubmodule_iff
+
+lemma _root_.LinearMap.IsProj.mem_invtSubmodule_iff {U : Submodule R E}
+    (hf : IsProj U f) : U ∈ Module.End.invtSubmodule T ↔ f ∘ₗ T ∘ₗ f = T ∘ₗ f :=
+  hf.range ▸ hf.isIdempotentElem.range_mem_invtSubmodule_iff
+
+open LinearMap in
+/-- `ker f` is invariant under `T` if and only if `f ∘ₗ T ∘ₗ f = f ∘ₗ T`,
+for idempotent `f`. -/
+lemma ker_mem_invtSubmodule_iff (hf : IsIdempotentElem f) :
+    ker f ∈ Module.End.invtSubmodule T ↔ f ∘ₗ T ∘ₗ f = f ∘ₗ T := by
+  rw [← comp_assoc, hf.comp_eq_left_iff, ker_comp, Module.End.mem_invtSubmodule]
+
+alias ⟨conj_eq_of_ker_mem_invtSubmodule, ker_mem_invtSubmodule⟩ := ker_mem_invtSubmodule_iff
+
+/-- An idempotent operator `f` commutes with a linear operator `T` if and only if
+both `range f` and `ker f` are invariant under `T`. -/
+lemma commute_iff (hf : IsIdempotentElem f) :
+    Commute f T ↔ (range f ∈ Module.End.invtSubmodule T ∧ ker f ∈ Module.End.invtSubmodule T) := by
+  simp_rw [hf.range_mem_invtSubmodule_iff, hf.ker_mem_invtSubmodule_iff, ← Module.End.mul_eq_comp]
+  exact ⟨fun h => (by simp [← h.eq, ← mul_assoc, hf.eq]), fun ⟨h1, h2⟩ => h2.symm.trans h1⟩
+
+/-- An idempotent operator `f` commutes with an unit operator `T` if and only if
+`T (range f) = range f` and `T (ker f) = ker f`. -/
+theorem commute_iff_of_isUnit (hT : IsUnit T) (hf : IsIdempotentElem f) :
+    Commute f T ↔ (range f).map T = range f ∧ (ker f).map T = ker f := by
+  lift T to GeneralLinearGroup R E using hT
+  have {a : E ≃ₗ[R] E} {b : Submodule R E} : b ≤ b.map a.toLinearMap ↔ b ≤ b.map a := by rfl
+  simp_rw [← GeneralLinearGroup.generalLinearEquiv_to_linearMap, le_antisymm_iff,
+    ← Module.End.mem_invtSubmodule_iff_map_le, this, ← Module.End.mem_invtSubmodule_symm_iff_le_map,
+    and_and_and_comm (c := (ker f ∈ _)), ← hf.commute_iff,
+    GeneralLinearGroup.generalLinearEquiv_to_linearMap, iff_self_and]
+  exact Commute.units_inv_right
+
+end LinearMap.IsIdempotentElem
