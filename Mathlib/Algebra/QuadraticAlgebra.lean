@@ -383,7 +383,7 @@ lemma coe_linearEquivTuple_symm :
     ⇑(linearEquivTuple a b).symm = (equivTuple a b).symm := rfl
 
 /-- `QuadraticAlgebra R a b` has a basis over `R` given by `1` and `i` -/
-noncomputable def basisOneI : Module.Basis (Fin 2) R (QuadraticAlgebra R a b) :=
+noncomputable def basis : Module.Basis (Fin 2) R (QuadraticAlgebra R a b) :=
   .ofEquivFun <| linearEquivTuple a b
 
 @[simp]
