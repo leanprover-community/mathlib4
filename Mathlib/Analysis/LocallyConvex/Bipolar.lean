@@ -72,7 +72,6 @@ See
 - Rudin Theorem 3.10
 -/
 lemma dualEmbedding_isSurjective : Function.Surjective (WeakBilin.eval B) := by
-  rw [Function.Surjective]
   intro f₁
   have test5 : ∃ (s₁ : Finset F),
     ↑f₁ ∈ Submodule.span 𝕜 (Set.range (ContinuousLinearMap.toLinearMap₁₂
@@ -81,23 +80,13 @@ lemma dualEmbedding_isSurjective : Function.Surjective (WeakBilin.eval B) := by
     exact ⟨s, functional_mem_span_iff.mpr hS⟩
   obtain ⟨s, hs⟩ := test5
   rw [← Set.image_univ, Finsupp.mem_span_image_iff_linearCombination] at hs
-  obtain ⟨l, hl1, hl2⟩ := hs
-  let f := Finsupp.linearCombination 𝕜 Subtype.val l
-  use f
-  rw [Finsupp.supported_univ] at hl1
-  simp only [Submodule.mem_top] at hl1
-  simp only [f]
-  rw [←ContinuousLinearMap.coe_inj]
-  rw [← hl2]
-  rw [WeakBilin.eval]
+  obtain ⟨l, _, hl2⟩ := hs
+  use Finsupp.linearCombination 𝕜 Subtype.val l
+  rw [←ContinuousLinearMap.coe_inj, ← hl2, WeakBilin.eval, coe_mk, AddHom.coe_mk]
+  simp only
+  rw [ContinuousLinearMap.toLinearMap₁₂, ContinuousLinearMap.coeLMₛₗ,
+    Finsupp.linearCombination_apply, Finsupp.linearCombination_apply, map_finsuppSum]
   simp
-  rw [ContinuousLinearMap.toLinearMap₁₂]
-  rw [ContinuousLinearMap.coeLMₛₗ]
-  rw [Finsupp.linearCombination_apply]
-  rw [Finsupp.linearCombination_apply]
-  simp
-  rw [map_finsuppSum]
-  aesop
 
 lemma dualEmbedding_isInjective_of_separatingRight (hr : B.SeparatingRight) :
     Function.Injective (WeakBilin.eval B) := by
@@ -106,7 +95,6 @@ lemma dualEmbedding_isInjective_of_separatingRight (hr : B.SeparatingRight) :
   simp [← ContinuousLinearMap.coe_inj, WeakBilin.eval] at hf
   rw [separatingRight_iff_linear_flip_nontrivial] at hr
   exact hr f hf
-
 
 /-- When `B` is right-separating, `F` is linearly equivalent to the topological dual of `E` with the
 weak topology. -/
