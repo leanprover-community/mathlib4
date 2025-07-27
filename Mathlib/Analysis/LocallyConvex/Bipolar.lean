@@ -17,11 +17,25 @@ import Mathlib.Topology.Algebra.Module.StrongTopology
 
 # Bipolar Theorem
 
+## Main definitions
+
+- `LinearMap.rightDualEquiv`: When `B` is right-separating, `F` is linearly equivalent to the
+  topological dual of `E` with the weak topology.
+- `LinearMap.leftDualEquiv`: When `B` is left-separating, `E` is linearly equivalent to the
+  topological dual of `F` with the weak topology.
+
+## Main statements
+
+- `LinearMap.flip_polar_polar_eq`: The Bipolar Theorem: The bipolar of a set coincides with its
+  closed absolutely convex hull.
 
 ## References
 
 * [Conway, *A course in functional analysis*][conway1990]
 
+## Tags
+
+bipolar
 -/
 
 variable {𝕜 E F : Type*}
@@ -46,14 +60,11 @@ theorem polar_AbsConvex : AbsConvex 𝕜 (B.polar s) := by
 
 end NormedField
 
-
--- `RCLike 𝕜` and `IsScalarTower ℝ 𝕜 E` needed for `RCLike.geometric_hahn_banach_closed_point`
 variable [RCLike 𝕜] [AddCommGroup E] [AddCommGroup F]
 variable [Module 𝕜 E] [Module 𝕜 F]
 
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
--- c.f. LinearMap.continuous_of_locally_bounded
 lemma isBounded_of_Continuous (f : WeakBilin B →L[𝕜] 𝕜) :
     Seminorm.IsBounded B.toSeminormFamily (fun _ : Fin 1 => normSeminorm 𝕜 𝕜) f.toLinearMap := by
   obtain ⟨s,C, hC1, hC2⟩ :=
@@ -62,15 +73,6 @@ lemma isBounded_of_Continuous (f : WeakBilin B →L[𝕜] 𝕜) :
   rw [Seminorm.IsBounded, forall_const]
   exact ⟨s, ⟨C, hC2⟩⟩
 
-/-
-See
-- Conway V Theorem 1.3 on p108
-     - III 2.1 on p68 - continuous iff cont at 0 iff cont at a point iff scalar bound
-     - III 5.3 on p54 - a linear funtional is continuous iff the kernel is closed (a iff d in 3.1)
-     - Mathlib/Analysis/Normed/Group/Hom.lean:theorem isClosed_ker
-- Bourbaki TVS II.43
-- Rudin Theorem 3.10
--/
 lemma dualEmbedding_isSurjective : Function.Surjective (WeakBilin.eval B) := by
   intro f₁
   have test5 : ∃ (s₁ : Finset F),
@@ -94,21 +96,21 @@ lemma dualEmbedding_isInjective_of_separatingRight (hr : B.SeparatingRight) :
 
 /-- When `B` is right-separating, `F` is linearly equivalent to the topological dual of `E` with the
 weak topology. -/
-noncomputable def dualEquiv (hr : B.SeparatingRight) : F ≃ₗ[𝕜] (WeakBilin B) →L[𝕜] 𝕜 :=
+noncomputable def rightDualEquiv (hr : B.SeparatingRight) : F ≃ₗ[𝕜] (WeakBilin B) →L[𝕜] 𝕜 :=
   LinearEquiv.ofBijective (WeakBilin.eval B)
     ⟨dualEmbedding_isInjective_of_separatingRight B hr, dualEmbedding_isSurjective B⟩
 
 /-- When `B` is left-separating, `E` is linearly equivalent to the topological dual of `F` with the
 weak topology. -/
-noncomputable def strictEquiv2 (hl : B.SeparatingLeft) : E ≃ₗ[𝕜] (WeakBilin B.flip) →L[𝕜] 𝕜 :=
-  dualEquiv _ (LinearMap.flip_separatingRight.mpr hl)
+noncomputable def leftDualEquiv (hl : B.SeparatingLeft) : E ≃ₗ[𝕜] (WeakBilin B.flip) →L[𝕜] 𝕜 :=
+  rightDualEquiv _ (LinearMap.flip_separatingRight.mpr hl)
 
 variable [Module ℝ E]
 variable [IsScalarTower ℝ 𝕜 E]
 
--- Conway p127
+/- The Bipolar Theorem: The bipolar of a set coincides with its closed absolutely convex hull. -/
 open scoped ComplexConjugate
-theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s] :
+theorem flip_polar_polar_eq {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s] :
     B.flip.polar (B.polar s) = closedAbsConvexHull (E := WeakBilin B) 𝕜 s := by
   apply le_antisymm
   · simp only [Set.le_eq_subset]
