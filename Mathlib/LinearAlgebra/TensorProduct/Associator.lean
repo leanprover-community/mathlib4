@@ -193,8 +193,8 @@ attribute [local ext high] ext in
 /-- A tensor product analogue of `mul_right_comm`. -/
 def rightComm : (M ⊗[R] N) ⊗[R] P ≃ₗ[R] (M ⊗[R] P) ⊗[R] N :=
   LinearEquiv.ofLinear
-    (lift (lift (LinearMap.lflip ∘ₗ (mk _ _ _).compr₂ (mk _ _ _))))
-    (lift (lift (LinearMap.lflip ∘ₗ (mk _ _ _).compr₂ (mk _ _ _))))
+    (lift (lift (LinearMap.lflip.toLinearMap ∘ₗ (mk _ _ _).compr₂ (mk _ _ _))))
+    (lift (lift (LinearMap.lflip.toLinearMap ∘ₗ (mk _ _ _).compr₂ (mk _ _ _))))
   (by ext; rfl) (by ext; rfl)
 
 @[simp]
