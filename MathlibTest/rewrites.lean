@@ -20,7 +20,7 @@ info: Try this: rw [List.map_append]
 -/
 #guard_msgs in
 example (f : α → β) (L M : List α) : (L ++ M).map f = L.map f ++ M.map f := by
-  rw?
+  rw? at ⊢
 
 open CategoryTheory
 
@@ -30,7 +30,7 @@ info: Try this: rw [Category.id_comp]
 -/
 #guard_msgs in
 example [Category C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : f ≫ 𝟙 _ ≫ g = f ≫ g := by
-  rw?
+  rw? at ⊢
 
 /--
 info: Try this: rw [mul_eq_right]
@@ -50,7 +50,7 @@ This may need to wait until the next release. -/
 -- -/
 -- #guard_msgs in
 -- lemma prime_of_prime (n : ℕ) : Prime n ↔ Nat.Prime n := by
---   rw?
+--   rw? at ⊢
 
 #guard_msgs(drop info) in
 example [Group G] (h : G) (hyp : g * 1 = h) : g = h := by
@@ -60,12 +60,12 @@ example [Group G] (h : G) (hyp : g * 1 = h) : g = h := by
 #guard_msgs(drop info) in
 example : ∀ (x y : ℕ), x ≤ y := by
   intros x y
-  rw? -- Used to be an error here https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/panic.20and.20error.20with.20rw.3F/near/370495531
+  rw? at ⊢ -- Used to be an error here https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/panic.20and.20error.20with.20rw.3F/near/370495531
   exact test_sorry
 
 example : ∀ (x y : ℕ), x ≤ y := by
   -- Used to be a panic here https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/panic.20and.20error.20with.20rw.3F/near/370495531
-  success_if_fail_with_msg "Could not find any lemmas which can rewrite the goal" rw?
+  success_if_fail_with_msg "Could not find any lemmas which can rewrite the goal" rw? at ⊢
   exact test_sorry
 
 axiom K : Type
@@ -75,7 +75,7 @@ noncomputable def foo : K → K := test_sorry
 
 #guard_msgs(drop info) in
 example : foo x = 1 ↔ ∃ k : ℤ, x = k := by
-  rw? -- Used to panic, see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/panic.20and.20error.20with.20rw.3F/near/370598036
+  rw? at ⊢ -- Used to panic, see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/panic.20and.20error.20with.20rw.3F/near/370598036
   exact test_sorry
 
 lemma six_eq_seven : 6 = 7 := test_sorry
@@ -84,20 +84,20 @@ lemma six_eq_seven : 6 = 7 := test_sorry
 -- it previously also reported `Nat.cast_ofNat`
 #guard_msgs(drop info) in
 example : ∀ (x : ℕ), x ≤ 6 := by
-  rw?
+  rw? at ⊢
   guard_target = ∀ (x : ℕ), x ≤ 7
   exact test_sorry
 
 #guard_msgs(drop info) in
 example : ∀ (x : ℕ) (_w : x ≤ 6), x ≤ 8 := by
-  rw?
+  rw? at ⊢
   guard_target = ∀ (x : ℕ) (_w : x ≤ 7), x ≤ 8
   exact test_sorry
 
 -- check we can look inside let expressions
 #guard_msgs(drop info) in
 example (n : ℕ) : let y := 3; n + y = 3 + n := by
-  rw?
+  rw? at ⊢
 
 axiom α : Type
 axiom f : α → α
@@ -110,13 +110,13 @@ axiom f_eq (n) : f n = z
 #guard_msgs(drop info) in
 lemma test : f n = f m := by
   fail_if_success rw? [-f_eq] -- Check that we can forbid lemmas.
-  rw?
+  rw? at ⊢
   rw [f_eq]
 
 -- Check that we can rewrite by local hypotheses.
 #guard_msgs(drop info) in
 example (h : 1 = 2) : 2 = 1 := by
-  rw?
+  rw? at ⊢
 
 def testConst : Nat := 4
 
@@ -124,7 +124,7 @@ def testConst : Nat := 4
 -- rather than `withReducible` `rfl`.
 #guard_msgs(drop info) in
 example : testConst = 4 := by
-  rw?
+  rw? at ⊢
   exact test_sorry
 
 -- Discharge side conditions from local hypotheses.
@@ -134,7 +134,7 @@ info: Try this: rw [h p]
 -/
 #guard_msgs in
 example {P : Prop} (p : P) (h : P → 1 = 2) : 2 = 1 := by
-  rw?
+  rw? at ⊢
 
 -- Use `solve_by_elim` to discharge side conditions.
 /--
@@ -143,7 +143,7 @@ info: Try this: rw [h (f p)]
 -/
 #guard_msgs in
 example {P Q : Prop} (p : P) (f : P → Q) (h : Q → 1 = 2) : 2 = 1 := by
-  rw?
+  rw? at ⊢
 
 
 -- Rewrite in reverse, discharging side conditions from local hypotheses.
@@ -153,5 +153,5 @@ info: Try this: rw [← h₁ p]
 -/
 #guard_msgs in
 example {P : Prop} (p : P) (Q : α → Prop) (a b : α) (h₁ : P → a = b) (w : Q a) : Q b := by
-  rw?
+  rw? at ⊢
   exact w
