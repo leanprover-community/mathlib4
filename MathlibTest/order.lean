@@ -1,8 +1,6 @@
 import Mathlib.Data.Matrix.Rank
 import Mathlib.Tactic.Order
 
-#eval IO.setRandSeed 1
-
 example (a b c : Nat) (h1 : a ≤ b) (h2 : b ≤ c) : a ≤ c := by
   order
 
@@ -135,16 +133,9 @@ trace: [order] Working on type α (partial order)
     #5 := #6 ⊔ #7
     #0 ≠ #5
     ¬ #0 < #5
-[order] Working on type ℕ (linear order)
-[order] Collected atoms:
-    #0 := x
-    #1 := y
-[order] Collected facts:
-    #0 ≠ #1
-    #0 ≤ #1
 -/
 #guard_msgs in
-example (a b c : α) (x y : Nat) (h : x < y) [Lattice α] : a ⊓ (b ⊔ c) ≤ (a ⊓ b) ⊔ (a ⊓ c) := by
+example [Lattice α] (a b c : α) : a ⊓ (b ⊔ c) ≤ (a ⊓ b) ⊔ (a ⊓ c) := by
   order
 
 -- This used to work when a different matching strategy was used in `order`.
