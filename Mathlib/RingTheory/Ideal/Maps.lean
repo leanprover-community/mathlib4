@@ -966,7 +966,7 @@ theorem map_isPrime_of_surjective {f : F} (hf : Function.Surjective f) {I : Idea
     exact
       (H.mem_or_mem this).imp (fun h => ha ▸ mem_map_of_mem f h) fun h => hb ▸ mem_map_of_mem f h
 
-lemma isMaximal_map_of_surjective_of_ker_le {f : F} (hf : Function.Surjective f) {m : Ideal R}
+lemma IsMaximal.map_of_surjective_of_ker_le {f : F} (hf : Function.Surjective f) {m : Ideal R}
     [m.IsMaximal] (hk : RingHom.ker f ≤ m) : (m.map f).IsMaximal := by
   obtain h | h := m.map_eq_top_or_isMaximal_of_surjective f hf ‹_›
   · apply congr_arg (comap f) at h
