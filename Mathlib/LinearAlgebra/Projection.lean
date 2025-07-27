@@ -249,6 +249,10 @@ lemma linearProjOfIsCompl_eq_self_sub_linearProjOfIsCompl (hpq : IsCompl p q) (x
   rw [eq_comm, ← sub_eq_zero, ← linearProjOfIsCompl_eq_self_sub_linearProjOfIsCompl,
     coe_eq_zero, linearProjOfIsCompl_apply_eq_zero_iff]
 
+@[simp] lemma IsCompl.projection_eq_self_iff (hpq : IsCompl p q) (x : E) :
+    hpq.projection x = x ↔ x ∈ p := by
+  rw [hpq.projection_apply, linearProjOfIsCompl_eq_self_iff hpq]
+
 end Submodule
 
 namespace LinearMap
@@ -549,6 +553,10 @@ theorem submodule_eq_bot_iff {f : M →ₗ[S] M} (hf : IsProj m f) :
 end IsProj
 
 open LinearMap in
+lemma IsIdempotentElem.isCompl {f : E →ₗ[R] E} (hf : IsIdempotentElem f) :
+    IsCompl (range f) (ker f) := hf.isProj_range.isCompl
+
+open LinearMap in
 /-- Given an idempotent linear operator `p`, we have
 `x ∈ range p` if and only if `p(x) = x` for all `x`. -/
 theorem IsIdempotentElem.mem_range_iff {p : M →ₗ[S] M} (hp : IsIdempotentElem p) {x : M} :
@@ -557,13 +565,10 @@ theorem IsIdempotentElem.mem_range_iff {p : M →ₗ[S] M} (hp : IsIdempotentEle
 open LinearMap in
 /-- Any idempotent linear operator is equal to the linear projection onto
 its range along its kernel. -/
-theorem IsIdempotentElem.eq_isCompl_projection
-    {T : E →ₗ[R] E} (hT : IsIdempotentElem T) :
-    T = hT.isProj_range.isCompl.projection := by
-  ext x
-  obtain ⟨⟨a,ha⟩,⟨b,hb⟩, rfl, _⟩ := existsUnique_add_of_isCompl hT.isProj_range.isCompl x
-  simp [IsCompl.projection, mem_ker.mp, hb, Submodule.linearProjOfIsCompl_apply_left
-    hT.isProj_range.isCompl (⟨a,ha⟩), hT.mem_range_iff.mp ha]
+theorem IsIdempotentElem.eq_isCompl_projection {T : E →ₗ[R] E} (hT : IsIdempotentElem T) :
+    T = hT.isCompl.projection := by
+  convert ofIsCompl_subtype_zero_eq hT.isCompl
+  exact ofIsCompl_eq _ (by simp [hT.isProj_range.map_id]) (by simp) |>.symm
 
 open LinearMap in
 /-- A linear map is an idempotent if and only if it equals the projection
@@ -581,10 +586,6 @@ theorem IsIdempotentElem.comp_eq_right_iff {q : M →ₗ[S] M} (hq : IsIdempoten
     q.comp p = p ↔ range p ≤ range q := by
   simp_rw [LinearMap.ext_iff, comp_apply, ← hq.mem_range_iff,
     SetLike.le_def, mem_range, forall_exists_index, forall_apply_eq_imp_iff]
-
-open LinearMap in
-lemma IsIdempotentElem.isCompl {f : E →ₗ[R] E} (hf : IsIdempotentElem f) :
-    IsCompl (range f) (ker f) := hf.isProj_range.isCompl
 
 open LinearMap in
 /-- Idempotent operators are equal iff their range and kernels are. -/
@@ -641,11 +642,6 @@ namespace LinearMap.IsIdempotentElem
 open Submodule LinearMap
 
 variable {E R : Type*} [Ring R] [AddCommGroup E] [Module R E] {T f : E →ₗ[R] E}
-
-lemma subtype_comp_linearProjOfIsCompl_range_eq (hf : IsIdempotentElem f) :
-    (range f).subtype ∘ₗ (Submodule.linearProjOfIsCompl _ _ hf.isCompl) = f := by
-  convert ofIsCompl_subtype_zero_eq hf.isCompl |>.symm
-  exact ofIsCompl_eq _ (by simp [hf.isProj_range.map_id]) (by simp) |>.symm
 
 /-- `range f` is invariant under `T` if and only if `f ∘ₗ T ∘ₗ f = T ∘ₗ f`,
 for idempotent `f`. -/
