@@ -504,7 +504,7 @@ def liftAux : M ⊗[R] N →+ P₂ :=
 theorem liftAux_tmul (m n) : liftAux f' (m ⊗ₜ n) = f' m n :=
   rfl
 
-variable {f}
+variable {f f'}
 
 @[simp]
 theorem liftAux.smulₛₗ (r : R) (x) : liftAux f' (r • x) = σ₁₂ r • liftAux f' x :=
@@ -513,14 +513,14 @@ theorem liftAux.smulₛₗ (r : R) (x) : liftAux f' (r • x) = σ₁₂ r • l
     fun p q ih1 ih2 => by simp_rw [smul_add, (liftAux f').map_add, ih1, ih2, smul_add]
 
 theorem liftAux.smul (r : R) (x) : liftAux f (r • x) = r • liftAux f x :=
-  liftAux.smulₛₗ _ _ _
+  liftAux.smulₛₗ _ _
 
 variable (f') in
 /-- Constructing a linear map `M ⊗ N → P` given a bilinear map `M → N → P` with the property that
 its composition with the canonical bilinear map `M → N → M ⊗ N` is
 the given bilinear map `M → N → P`. -/
 def lift : M ⊗[R] N →ₛₗ[σ₁₂] P₂ :=
-  { liftAux f' with map_smul' := liftAux.smulₛₗ f' }
+  { liftAux f' with map_smul' := liftAux.smulₛₗ }
 
 @[simp]
 theorem lift.tmul (x y) : lift f' (x ⊗ₜ y) = f' x y :=
@@ -713,7 +713,7 @@ open LinearMap
 
 /-- The tensor product of a pair of linear maps between modules. -/
 def map (f : M →ₛₗ[σ₁₂] M₂) (g : N →ₛₗ[σ₁₂] N₂) : M ⊗[R] N →ₛₗ[σ₁₂] M₂ ⊗[R₂] N₂ :=
-  liftₛₗ <| comp (compl₂ (mk _ _ _) g) f
+  lift <| comp (compl₂ (mk _ _ _) g) f
 
 @[simp]
 theorem map_tmul (f : M →ₛₗ[σ₁₂] M₂) (g : N →ₛₗ[σ₁₂] N₂) (m : M) (n : N) :
