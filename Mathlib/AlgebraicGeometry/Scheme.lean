@@ -125,6 +125,17 @@ lemma Hom.continuous {X Y : Scheme} (f : X.Hom Y) : Continuous f.base := f.base.
 protected abbrev sheaf (X : Scheme) :=
   X.toSheafedSpace.sheaf
 
+instance {X : Scheme} : Preorder X := specializationPreorder X
+
+open Order in
+lemma height_closed_point {X : Scheme} {x : X} (hx : IsClosed {x}) : height x = 0 := by
+  simp only [height_eq_zero]
+  intro b _
+  by_cases h : b ≠ x
+  · have := IsClosed.not_specializes hx rfl h
+    contradiction
+  · aesop
+
 namespace Hom
 
 variable {X Y : Scheme.{u}} (f : Hom X Y) {U U' : Y.Opens} {V V' : X.Opens}
