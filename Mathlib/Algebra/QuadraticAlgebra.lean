@@ -388,14 +388,14 @@ noncomputable def basis : Module.Basis (Fin 2) R (QuadraticAlgebra R a b) :=
 
 @[simp]
 theorem coe_basisOneI_repr (x : QuadraticAlgebra R a b) :
-    (basisOneI a b).repr x = ![x.re, x.im] := rfl
+    (basis a b).repr x = ![x.re, x.im] := rfl
 
-instance : Module.Finite R (QuadraticAlgebra R a b) := .of_basis (basisOneI a b)
+instance : Module.Finite R (QuadraticAlgebra R a b) := .of_basis (basis a b)
 
-instance : Module.Free R (QuadraticAlgebra R a b) := .of_basis (basisOneI a b)
+instance : Module.Free R (QuadraticAlgebra R a b) := .of_basis (basis a b)
 
 theorem rank_eq_two [StrongRankCondition R] : Module.rank R (QuadraticAlgebra R a b) = 2 := by
-  simp [rank_eq_card_basis (basisOneI a b)]
+  simp [rank_eq_card_basis (basis a b)]
 
 theorem finrank_eq_two [StrongRankCondition R] : Module.finrank R (QuadraticAlgebra R a b) = 2 := by
   simp [Module.finrank, rank_eq_two]
