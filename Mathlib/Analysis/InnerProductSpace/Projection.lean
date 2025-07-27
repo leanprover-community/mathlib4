@@ -1054,6 +1054,12 @@ theorem orthogonalProjection_starProjection_of_le {U V : Submodule 𝕜 E}
 @[deprecated (since := "07-07-2025")] alias orthogonalProjection_orthogonalProjection_of_le :=
   orthogonalProjection_starProjection_of_le
 
+theorem starProjection_comp_starProjection_of_le {U V : Submodule 𝕜 E}
+    [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] (h : U ≤ V) :
+    U.starProjection ∘L V.starProjection = U.starProjection := ContinuousLinearMap.ext fun _ => by
+  nth_rw 1 [starProjection]
+  simp [orthogonalProjection_starProjection_of_le h]
+
 /-- Given a monotone family `U` of complete submodules of `E` and a fixed `x : E`,
 the orthogonal projection of `x` on `U i` tends to the orthogonal projection of `x` on
 `(⨆ i, U i).topologicalClosure` along `atTop`. -/
