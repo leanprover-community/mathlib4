@@ -173,10 +173,7 @@ def sectionsSubring (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     fconstructor
     · intro H; cases y.isPrime.mem_or_mem H <;> contradiction
     · simp only [Opens.apply_mk, Pi.add_apply, RingHom.map_mul, add_mul, RingHom.map_add] at wa wb ⊢
-      rw [← wa, ← wb]
-      simp only [mul_assoc]
-      congr 2
-      rw [mul_comm]
+      grind
   neg_mem' := by
     intro a ha x
     rcases ha x with ⟨V, m, i, r, s, w⟩
@@ -639,7 +636,7 @@ theorem locally_const_basicOpen (U : Opens (PrimeSpectrum.Top R))
   obtain ⟨c, hc⟩ := hn
   have basic_opens_eq := PrimeSpectrum.basicOpen_pow h (n + 1) (by omega)
   have i_basic_open := eqToHom basic_opens_eq ≫ homOfLE hDhV
-  -- We claim that `(f * c) / h ^ (n+1)` is our desired representation
+  -- We claim that `(f * c) / h ^ (n + 1)` is our desired representation
   use f * c, h ^ (n + 1), i_basic_open ≫ iVU, (basic_opens_eq.symm.le :) hxDh
   rw [op_comp, Functor.map_comp, ConcreteCategory.comp_apply, ← s_eq, res_const]
   -- Note that the last rewrite here generated an additional goal, which was a parameter
@@ -787,7 +784,7 @@ theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) :
   rw [Finsupp.linearCombination_apply_of_mem_supported R b_supp] at hb
   dsimp at hb
   -- Finally, we have all the ingredients.
-  -- We claim that our preimage is given by `(∑ (i : ι) ∈ t, b i * a i) / f ^ (n+1)`
+  -- We claim that our preimage is given by `(∑ (i : ι) ∈ t, b i * a i) / f ^ (n + 1)`
   use
     IsLocalization.mk' (Localization.Away f) (∑ i ∈ t, b i * a i)
       (⟨f ^ (n + 1), n + 1, rfl⟩ : Submonoid.powers _)

@@ -171,10 +171,7 @@ theorem mapAlgHom_coe_ringHom (f : A →ₐ[R] B) :
 @[simp]
 theorem mapAlgHom_comp (C : Type*) [Semiring C] [Algebra R C] (f : B →ₐ[R] C) (g : A →ₐ[R] B) :
     (mapAlgHom f).comp (mapAlgHom g) = mapAlgHom (f.comp g) := by
-  apply AlgHom.ext
-  intro x
-  simp [map_map]
-  congr
+  ext <;> simp
 
 theorem mapAlgHom_eq_eval₂AlgHom'_CAlgHom (f : A →ₐ[R] B) : mapAlgHom f = eval₂AlgHom'
     (CAlgHom.comp f) X (fun a => (commute_X (C (f a))).symm) := by
@@ -206,10 +203,8 @@ theorem mapAlgEquiv_toAlgHom (f : A ≃ₐ[R] B) :
 @[simp]
 theorem mapAlgEquiv_comp (C : Type*) [Semiring C] [Algebra R C] (f : A ≃ₐ[R] B) (g : B ≃ₐ[R] C) :
     (mapAlgEquiv f).trans (mapAlgEquiv g) = mapAlgEquiv (f.trans g) := by
-  apply AlgEquiv.ext
-  intro x
-  simp [AlgEquiv.trans_apply, map_map]
-  congr
+  ext
+  simp
 
 end Map
 
@@ -293,11 +288,11 @@ theorem algEquivOfCompEqX_symm (p q : R[X]) (hpq : p.comp q = X) (hqp : q.comp p
   with inverse `p(X) ↦ p(a⁻¹ * (X - b))`. -/
 @[simps!]
 def algEquivCMulXAddC {R : Type*} [CommRing R] (a b : R) [Invertible a] : R[X] ≃ₐ[R] R[X] :=
-  algEquivOfCompEqX (C a * X + C b) (C ⅟ a * (X - C b))
+  algEquivOfCompEqX (C a * X + C b) (C ⅟a * (X - C b))
     (by simp [← C_mul, ← mul_assoc]) (by simp [← C_mul, ← mul_assoc])
 
 theorem algEquivCMulXAddC_symm_eq {R : Type*} [CommRing R] (a b : R) [Invertible a] :
-    (algEquivCMulXAddC a b).symm =  algEquivCMulXAddC (⅟ a) (- ⅟ a * b) := by
+    (algEquivCMulXAddC a b).symm =  algEquivCMulXAddC (⅟a) (- ⅟a * b) := by
   ext p : 1
   simp only [algEquivCMulXAddC_symm_apply, neg_mul, algEquivCMulXAddC_apply, map_neg, map_mul]
   congr
@@ -585,7 +580,7 @@ lemma comp_X_add_C_eq_zero_iff : p.comp (X + C t) = 0 ↔ p = 0 :=
 lemma comp_X_add_C_ne_zero_iff : p.comp (X + C t) ≠ 0 ↔ p ≠ 0 := comp_X_add_C_eq_zero_iff.not
 
 lemma dvd_comp_C_mul_X_add_C_iff (p q : R[X]) (a b : R) [Invertible a] :
-    p ∣ q.comp (C a * X + C b) ↔ p.comp (C ⅟ a * (X - C b)) ∣ q := by
+    p ∣ q.comp (C a * X + C b) ↔ p.comp (C ⅟a * (X - C b)) ∣ q := by
   convert map_dvd_iff <| algEquivCMulXAddC a b using 2
   simp [← comp_eq_aeval, comp_assoc, ← mul_assoc, ← C_mul]
 
