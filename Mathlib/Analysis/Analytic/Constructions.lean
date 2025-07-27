@@ -1323,15 +1323,13 @@ theorem HasFPowerSeriesWithinOnBall.compContinuousLinearMap
   r_pos := by
     simp only [ENNReal.div_pos_iff, ne_eq, enorm_ne_top, not_false_eq_true, and_true]
     exact pos_iff_ne_zero.mp hf.r_pos
-  hasSum := by
-    intro y hy1 hy2
-    convert hf.hasSum (y := u y) _ _
+  hasSum hy1 hy2 := by
+    convert hf.hasSum _ _
     · simp
     · simp only [Set.mem_insert_iff, add_eq_left, Set.mem_preimage, map_add] at hy1 ⊢
       rcases hy1 with (hy1 | hy1) <;> simp [hy1]
-    simp only [EMetric.ball, edist_zero_right, Set.mem_setOf_eq] at hy2 ⊢
-    apply lt_of_le_of_lt (ContinuousLinearMap.le_opNorm_enorm _ _)
-    exact mul_lt_of_lt_div' hy2
+    · simp only [EMetric.ball, edist_zero_right, Set.mem_setOf_eq] at hy2 ⊢
+      exact lt_of_le_of_lt (ContinuousLinearMap.le_opNorm_enorm _ _) (mul_lt_of_lt_div' hy2)
 
 theorem HasFPowerSeriesOnBall.compContinuousLinearMap (hf : HasFPowerSeriesOnBall f pf (u x) r) :
     HasFPowerSeriesOnBall (f ∘ u) (pf.compContinuousLinearMap u) x (r / ‖u‖₊) := by
