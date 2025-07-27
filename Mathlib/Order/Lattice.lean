@@ -1294,15 +1294,10 @@ structure LatticeCon (α) [Lattice α] extends Setoid α where
   inf : ∀ {w x y z}, r w x → r y z → r (w ⊓ y) (x ⊓ z)
   sup : ∀ {w x y z}, r w x → r y z → r (w ⊔ y) (x ⊔ z)
 
-lemma r_iff_r_inf_sup [Lattice α] (c : LatticeCon α) {x y : α} :
-    c.r x y ↔ c.r (x ⊓ y) (x ⊔ y) := by
+@[simp]
+lemma r_inf_sup_iff_r [Lattice α] (c : LatticeCon α) {x y : α} :
+    c.r (x ⊓ y) (x ⊔ y) ↔ c.r x y  := by
   constructor
-  · intro h
-    exact c.trans (b := y) (by
-      conv_rhs => rw [← inf_idem y]
-      exact c.inf h (c.refl y)) (by
-        conv_lhs => rw [← sup_idem y]
-        exact c.sup (c.symm h) (c.refl y))
   · intro h
     exact c.trans (b := x ⊓ y) (by
         conv_lhs => rw [← inf_sup_self (a := x) (b := y)]
@@ -1311,6 +1306,12 @@ lemma r_iff_r_inf_sup [Lattice α] (c : LatticeCon α) {x y : α} :
         conv_rhs => rw [← inf_sup_self (a := y) (b := x), inf_comm, sup_comm]
         conv_lhs => rw [← inf_idem y, ← inf_assoc]
         exact c.inf h (c.refl y))
+  · intro h
+    exact c.trans (b := y) (by
+      conv_rhs => rw [← inf_idem y]
+      exact c.inf h (c.refl y)) (by
+        conv_lhs => rw [← sup_idem y]
+        exact c.sup (c.symm h) (c.refl y))
 
 lemma closed_interval [Lattice α] {r : α → α → Prop}
     (h₂ : ∀ ⦃x y : α⦄, r x y ↔ r (x ⊓ y) (x ⊔ y))
