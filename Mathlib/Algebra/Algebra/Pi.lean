@@ -48,7 +48,7 @@ variable {ι} (R)
 `Pi.algHom g : B →ₐ[R] Π i, A i` given by `Pi.algHom g x i = g i x`. -/
 @[simps!]
 def algHom {B : Type*} [Semiring B] [Algebra R B] (g : ∀ i, B →ₐ[R] A i) : B →ₐ[R] Π i, A i where
-  __ := Pi.ringHom fun i ↦ (g i).toRingHom
+  toRingHom := Pi.ringHom fun i ↦ (g i).toRingHom
   commutes' r := by ext; simp
 
 /-- `Function.eval` as an `AlgHom`. The name matches `Pi.evalRingHom`, `Pi.evalMonoidHom`,
@@ -202,7 +202,7 @@ section
 variable (S : Type*) [Semiring S] [Algebra R S]
 
 variable (ι R) in
-/-- If `ι` as a unique element, then `ι → S` is isomorphic to `S` as an `R`-algebra. -/
+/-- If `ι` has a unique element, then `ι → S` is isomorphic to `S` as an `R`-algebra. -/
 def funUnique [Unique ι] : (ι → S) ≃ₐ[R] S :=
   .ofRingEquiv (f := .piUnique (fun i : ι ↦ S)) (by simp)
 

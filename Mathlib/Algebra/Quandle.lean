@@ -67,10 +67,10 @@ Use `open quandles` to use these.
 
 ## TODO
 
-* If `g` is the Lie algebra of a Lie group `G`, then `(x ◃ y) = Ad (exp x) x` forms a quandle.
+* If `g` is the Lie algebra of a Lie group `G`, then `(x ◃ y) = Ad (exp x) y` forms a quandle.
 * If `X` is a symmetric space, then each point has a corresponding involution that acts on `X`,
   forming a quandle.
-* Alexander quandle with `a ◃ b = t * b + (1 - t) * b`, with `a` and `b` elements
+* Alexander quandle with `a ◃ b = t * b + (1 - t) * a`, with `a` and `b` elements
   of a module over `Z[t,t⁻¹]`.
 * If `G` is a group, `H` a subgroup, and `z` in `H`, then there is a quandle `(G/H;z)` defined by
   `yH ◃ xH = yzy⁻¹xH`.  Every homogeneous quandle (i.e., a quandle `Q` whose automorphism group acts
@@ -404,7 +404,7 @@ def Conj.map {G : Type*} {H : Type*} [Group G] [Group H] (f : G →* H) : Conj G
   toFun := f
   map_act' := by simp
 
-/-- The dihedral quandle. This is the conjugation quandle of the dihedral group restrict to flips.
+/-- The dihedral quandle. This is the conjugation quandle of the dihedral group restricted to flips.
 
 Used for Fox n-colorings of knots. -/
 def Dihedral (n : ℕ) :=
@@ -475,8 +475,9 @@ importantly, the relationship between conjugation and the rack action
 
 None of this forms a 2-category yet, for example due to lack of
 associativity of `trans`.  The `PreEnvelGroupRel` relation is a
-`Prop`-valued version of `PreEnvelGroupRel'`, and making it
-`Prop`-valued essentially introduces enough 3-isomorphisms so that
+`Prop`-valued version of `PreEnvelGroupRel'`, which is used to define
+`EnvelGroup` itself.
+Making it `Prop`-valued essentially introduces enough 3-isomorphisms so that
 every pair of compatible 2-morphisms is isomorphic.  Now, while
 composition in `PreEnvelGroup` does not strictly satisfy the category
 axioms, `PreEnvelGroup` and `PreEnvelGroupRel'` do form a weak
