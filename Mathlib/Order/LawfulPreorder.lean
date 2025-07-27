@@ -7,8 +7,40 @@ import Mathlib.Order.SetNotation
 import Mathlib.Order.Bounds.Defs
 import Mathlib.Order.Defs.PartialOrder
 
-variable {α β : Type*}
+/-!
+# Lawful Suprema and Infima
 
+This file introduces type classes that enforce correctness properties for suprema and infima
+operations on preorders, ensuring they return actual least upper bounds and greatest lower bounds
+whenever they exist.
+
+## Main declarations
+
+
+- `LawfulSupPreorder`: Typeclass ensuring that whenever a set `s` has a least upper bound, `sSup s`
+  returns a least upper bound.
+- `LawfulInfPreorder`: Typeclass ensuring that whenever a set `s` has a greatest lower bound,
+  `sInf s` returns a greatest lower bound.
+- `LawfulPreorder`: Typeclass combining both lawful suprema and infima properties.
+
+## Main statements
+
+- `Preorder.toLawfulSupPreorder`: Any preorder can be made into a lawful sup preorder by defining
+  `sSup s` to be any LUB of `s` when one exists.
+- `Preorder.toLawfulInfPreorder`: Any preorder can be made into a lawful inf preorder by defining
+  `sInf s` to be any GLB of `s` when one exists.
+- `Preorder.toLawfulPreorder`: Any preorder can therefore be made into a lawful preorder.
+-/
+
+variable {α : Type*}
+
+/--
+A preorder with lawful suprema: whenever a set has a least upper bound, `sSup` returns a least upper
+bound for that set.
+
+This ensures that the supremum operation `sSup` behaves correctly by returning actual least upper
+bounds rather than arbitrary elements when a least upper bounds exists.
+-/
 class LawfulSupPreorder (α) extends Preorder α, SupSet α where
   isLUB_sSup_of_exists_isLUB (s : Set α) : (∃ x, IsLUB s x) → IsLUB s (sSup s)
 
@@ -21,6 +53,13 @@ noncomputable instance Preorder.toLawfulSupPreorder [Preorder α] [Inhabited α]
     rw [dif_pos]
     exact Classical.choose_spec ⟨x, hs⟩
 
+/--
+A preorder with lawful infima: whenever a set has a greatest lower bound, `sInf` returns a greastest
+lower bound for that set.
+
+This ensures that the infimum operation `sInf` behaves correctly by returning actual greatest lower
+bounds rather than arbitrary elements when a greatest lower bounds exists.
+-/
 class LawfulInfPreorder (α) extends Preorder α, InfSet α where
   isGLB_sInf_of_exists_isGLB (s : Set α) : (∃ x, IsGLB s x) → IsGLB s (sInf s)
 
@@ -33,6 +72,9 @@ noncomputable instance Preorder.toLawfulInfPreorder [Preorder α] [Inhabited α]
     rw [dif_pos]
     exact Classical.choose_spec ⟨x, hs⟩
 
+/--
+A preorder with both lawful suprema and lawful infima.
+-/
 class LawfulPreorder (α) extends LawfulSupPreorder α, LawfulInfPreorder α
 
 open Classical in
