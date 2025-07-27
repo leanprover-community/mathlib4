@@ -683,12 +683,7 @@ variable (s) in
 def reindex (e : ι ≃ ι₂) : (⨂[R] i : ι, s i) ≃ₗ[R] ⨂[R] i : ι₂, s (e.symm i) :=
   let f := domDomCongrLinearEquiv' R R s (⨂[R] (i : ι₂), s (e.symm i)) e
   let g := domDomCongrLinearEquiv' R R s (⨂[R] (i : ι), s i) e
-  #adaptation_note /-- v4.7.0-rc1
-  An alternative to the last two proofs would be `aesop (simp_config := {zetaDelta := true})`
-  or a wrapper macro to that effect. -/
-  LinearEquiv.ofLinear (lift <| f.symm <| tprod R) (lift <| g <| tprod R)
-    (by aesop (add norm simp [f, g]))
-    (by aesop (add norm simp [f, g]))
+  LinearEquiv.ofLinear (lift <| f.symm <| tprod R) (lift <| g <| tprod R) (by aesop) (by aesop)
 
 end
 

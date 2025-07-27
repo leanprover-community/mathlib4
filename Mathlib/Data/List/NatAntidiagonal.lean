@@ -18,8 +18,7 @@ Files `Data.Multiset.NatAntidiagonal` and `Data.Finset.NatAntidiagonal` successi
 `List` definition we have here into `Multiset` and `Finset`.
 -/
 
-
-open List Function Nat
+open Function
 
 namespace List
 

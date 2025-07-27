@@ -348,10 +348,10 @@ def toHomeomorph (e : X ≃ Y) (he : ∀ s, IsOpen (e ⁻¹' s) ↔ IsOpen s) : 
 lemma toHomeomorph_apply (e : X ≃ Y) (he) (x : X) : e.toHomeomorph he x = e x := rfl
 
 @[simp] lemma toHomeomorph_refl :
-  (Equiv.refl X).toHomeomorph (fun _s ↦ Iff.rfl) = Homeomorph.refl _ := rfl
+    (Equiv.refl X).toHomeomorph (fun _s ↦ Iff.rfl) = Homeomorph.refl _ := rfl
 
 @[simp] lemma toHomeomorph_symm (e : X ≃ Y) (he) :
-  (e.toHomeomorph he).symm = e.symm.toHomeomorph fun s ↦ by convert (he _).symm; simp := rfl
+    (e.toHomeomorph he).symm = e.symm.toHomeomorph fun s ↦ by convert (he _).symm; simp := rfl
 
 lemma toHomeomorph_trans (e : X ≃ Y) (f : Y ≃ Z) (he hf) :
     (e.trans f).toHomeomorph (fun _s ↦ (he _).trans (hf _)) =

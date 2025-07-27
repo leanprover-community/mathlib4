@@ -12,7 +12,7 @@ import Mathlib.Topology.MetricSpace.Lipschitz
 This file develops Lipschitz continuous functions further with some results that depend on algebra.
 -/
 
-assert_not_exists Basis Ideal
+assert_not_exists Module.Basis Ideal
 
 open Filter Set NNReal Metric
 

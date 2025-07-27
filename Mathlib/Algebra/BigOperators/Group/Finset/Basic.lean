@@ -827,7 +827,7 @@ lemma prod_image_of_disjoint [DecidableEq ι] [PartialOrder ι] [OrderBot ι] {f
 
 @[to_additive]
 theorem prod_unique_nonempty [Unique ι] (s : Finset ι) (f : ι → M) (h : s.Nonempty) :
-   ∏ x ∈ s, f x = f default := by
+    ∏ x ∈ s, f x = f default := by
   rw [h.eq_singleton_default, Finset.prod_singleton]
 
 lemma prod_dvd_prod_of_dvd (f g : ι → M) (h : ∀ i ∈ s, f i ∣ g i) :

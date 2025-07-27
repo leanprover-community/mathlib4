@@ -80,7 +80,7 @@ lemma hom_ext {X Y : NonemptyFinLinOrd} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f
 @[simp]
 lemma hom_ofHom {X Y : Type u} [Nonempty X] [LinearOrder X] [Fintype X] [Nonempty Y]
     [LinearOrder Y] [Fintype Y] (f : X →o Y) :
-  (ofHom f).hom = f := rfl
+    (ofHom f).hom = f := rfl
 
 @[simp]
 lemma ofHom_hom {X Y : NonemptyFinLinOrd} (f : X ⟶ Y) :

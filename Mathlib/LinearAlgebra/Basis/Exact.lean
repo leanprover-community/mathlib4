@@ -84,10 +84,10 @@ if `s vᵢ = 0` for `i : κ` and `(s vⱼ)ⱼ` is linear independent for `j : σ
 the images of `vᵢ` for `i : κ` form a basis of `P`.
 
 For convenience this is stated for an arbitrary type `ι` with two maps `κ → ι` and `σ → ι`. -/
-noncomputable def Basis.ofSplitExact (hg : Function.Surjective g) (v : Basis ι R M)
+noncomputable def Module.Basis.ofSplitExact (hg : Function.Surjective g) (v : Basis ι R M)
     (hainj : Function.Injective a) (hsa : ∀ i, s (v (a i)) = 0)
     (hlib : LinearIndependent R (s ∘ v ∘ b))
     (hab : Codisjoint (Set.range a) (Set.range b)) :
     Basis κ R P :=
-  Basis.mk (v.linearIndependent.linearIndependent_of_exact_of_retraction hs hfg hainj hsa)
+  .mk (v.linearIndependent.linearIndependent_of_exact_of_retraction hs hfg hainj hsa)
     (Submodule.top_le_span_of_exact_of_retraction hs hfg hg hsa hlib hab (by rw [v.span_eq]))

@@ -47,8 +47,8 @@ noncomputable def norm [Algebra.IsSeparable K L] : 𝓞 L →* 𝓞 K :=
     ((Algebra.norm K).comp (algebraMap (𝓞 L) L : (𝓞 L) →* L))
     fun x => isIntegral_norm K x.2
 
-@[simp] lemma coe_norm [Algebra.IsSeparable K L] (x : 𝓞 L) :
-  norm K x = Algebra.norm K (x : L) := rfl
+@[simp] lemma coe_norm [Algebra.IsSeparable K L] (x : 𝓞 L) : norm K x = Algebra.norm K (x : L) :=
+  rfl
 
 theorem coe_algebraMap_norm [Algebra.IsSeparable K L] (x : 𝓞 L) :
     (algebraMap (𝓞 K) (𝓞 L) (norm K x) : L) = algebraMap K L (Algebra.norm K (x : L)) :=

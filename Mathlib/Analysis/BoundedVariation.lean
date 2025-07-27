@@ -62,7 +62,7 @@ theorem ae_differentiableWithinAt_of_mem_pi {ι : Type*} [Fintype ι] {f : ℝ �
 is differentiable almost everywhere in this set. -/
 theorem ae_differentiableWithinAt_of_mem {f : ℝ → V} {s : Set ℝ}
     (h : LocallyBoundedVariationOn f s) : ∀ᵐ x, x ∈ s → DifferentiableWithinAt ℝ f s x := by
-  let A := (Basis.ofVectorSpace ℝ V).equivFun.toContinuousLinearEquiv
+  let A := (Module.Basis.ofVectorSpace ℝ V).equivFun.toContinuousLinearEquiv
   suffices H : ∀ᵐ x, x ∈ s → DifferentiableWithinAt ℝ (A ∘ f) s x by
     filter_upwards [H] with x hx xs
     have : f = (A.symm ∘ A) ∘ f := by

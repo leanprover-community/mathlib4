@@ -16,7 +16,7 @@ replaced by `$(?m)`.
 -/
 
 namespace Mathlib.Tactic
-open Lean Parser Tactic Elab Tactic Meta
+open Lean Parser Elab Tactic Meta
 
 initialize registerTraceClass `Tactic.congrm
 

@@ -89,16 +89,14 @@ abbrev ofHom {X Y : Type v}
     [AddCommGroup X] [Module R X] [TopologicalSpace X] [ContinuousAdd X] [ContinuousSMul R X]
     [AddCommGroup Y] [Module R Y] [TopologicalSpace Y] [ContinuousAdd Y] [ContinuousSMul R Y]
     (f : X →L[R] Y) :
-  (ofHom f).hom = f := rfl
+    (ofHom f).hom = f := rfl
 
-@[simp] lemma ofHom_hom {X Y : TopModuleCat R} (f : X.Hom Y) :
-  ofHom f.hom = f := rfl
+@[simp] lemma ofHom_hom {X Y : TopModuleCat R} (f : X.Hom Y) : ofHom f.hom = f := rfl
 
 @[simp] lemma hom_comp {X Y Z : TopModuleCat R} (f : X ⟶ Y) (g : Y ⟶ Z) :
-  (f ≫ g).hom = g.hom.comp f.hom := rfl
+    (f ≫ g).hom = g.hom.comp f.hom := rfl
 
-@[simp] lemma hom_id (X : TopModuleCat R) :
-  hom (𝟙 X) = .id _ _ := rfl
+@[simp] lemma hom_id (X : TopModuleCat R) : hom (𝟙 X) = .id _ _ := rfl
 
 /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
 def Hom.Simps.hom (A B : TopModuleCat.{v} R) (f : A.Hom B) :=
@@ -157,8 +155,7 @@ instance [CommRing S] : Linear S (TopModuleCat S) where
   comp_smul _ _ _ _ _ _ := ConcreteCategory.ext (ContinuousLinearMap.smul_comp _ _ _)
 
 @[simp]
-lemma hom_smul {M₁ M₂ : TopModuleCat S} (s : S) (φ : M₁ ⟶ M₂) :
-  (s • φ).hom = s • φ.hom := rfl
+lemma hom_smul {M₁ M₂ : TopModuleCat S} (s : S) (φ : M₁ ⟶ M₂) : (s • φ).hom = s • φ.hom := rfl
 
 end CommRing
 
@@ -184,7 +181,7 @@ instance : (forget₂ (TopModuleCat R) TopCat).ReflectsIsomorphisms where
 
 @[simp]
 lemma hom_forget₂_TopCat_map {X Y : TopModuleCat R} (f : X ⟶ Y) :
-  ((forget₂ _ TopCat).map f).hom = f.hom := rfl
+    ((forget₂ _ TopCat).map f).hom = f.hom := rfl
 
 @[simp]
 lemma forget₂_TopCat_obj {X : TopModuleCat R} : ((forget₂ _ TopCat).obj X : Type _) = X := rfl

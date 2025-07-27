@@ -38,8 +38,8 @@ instance [BEq α] : BEq (ULift.{v} α) where beq x y := x.down == y.down
 instance [Ord α] : Ord (ULift.{v} α) where compare x y := compare x.down y.down
 
 @[simp] theorem up_compare [Ord α] (a b : α) : compare (up a) (up b) = compare a b := rfl
-@[simp] theorem down_compare [Ord α] (a b : ULift α) :
-  compare (down a) (down b) = compare a b := rfl
+@[simp] theorem down_compare [Ord α] (a b : ULift α) : compare (down a) (down b) = compare a b :=
+  rfl
 
 instance [Max α] : Max (ULift.{v} α) where max x y := up <| x.down ⊔ y.down
 

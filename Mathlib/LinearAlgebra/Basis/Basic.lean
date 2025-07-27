@@ -33,13 +33,10 @@ open Function Set Submodule Finsupp
 
 variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {M : Type*} {M' : Type*}
 
-section Module
+namespace Module.Basis
 
 variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
-
-namespace Basis
-
-variable (b : Basis ι R M)
+  (b : Basis ι R M)
 
 section Properties
 
@@ -282,7 +279,4 @@ theorem basis_singleton_iff {R M : Type*} [Ring R] [Nontrivial R] [AddCommGroup 
       exact (w y).choose_spec
 
 end Singleton
-
-end Basis
-
-end Module
+end Module.Basis

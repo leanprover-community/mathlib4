@@ -126,7 +126,7 @@ lemma ranges_flatten : ∀ (l : List ℕ), l.ranges.flatten = range l.sum
   | [] => rfl
   | a :: l => by simp [ranges, ← map_flatten, ranges_flatten, range_add]
 
-/-- The members of `l.ranges` have no duplicate -/
+/-- The members of `l.ranges` have no duplicates -/
 theorem ranges_nodup {l s : List ℕ} (hs : s ∈ ranges l) : s.Nodup :=
   (List.pairwise_flatten.mp <| by rw [ranges_flatten]; exact nodup_range).1 s hs
 

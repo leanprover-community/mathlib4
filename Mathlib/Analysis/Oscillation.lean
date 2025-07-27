@@ -36,7 +36,8 @@ noncomputable def oscillation [TopologicalSpace E] (f : E → F) (x : E) : ENNRe
 
 /-- The oscillation of `f : E → F` within `D` at `x`. -/
 noncomputable def oscillationWithin [TopologicalSpace E] (f : E → F) (D : Set E) (x : E) :
-  ENNReal := ⨅ S ∈ (𝓝[D] x).map f, diam S
+    ENNReal :=
+  ⨅ S ∈ (𝓝[D] x).map f, diam S
 
 /-- The oscillation of `f` at `x` within a neighborhood `D` of `x` is equal to `oscillation f x` -/
 theorem oscillationWithin_nhds_eq_oscillation [TopologicalSpace E] (f : E → F) (D : Set E) (x : E)

@@ -192,8 +192,8 @@ lemma comm : m ≫ χ m = Classifier.χ₀ _ U ≫ truth C := (isPullback_χ m).
 /-- `χ m` is the only map for which the associated square
 is a pullback square.
 -/
-lemma unique (χ' : X ⟶ Ω C) (hχ' : IsPullback m (Classifier.χ₀ _ U) χ' (truth C)) :
-  χ' = χ m := Classifier.uniq _ m hχ'
+lemma unique (χ' : X ⟶ Ω C) (hχ' : IsPullback m (Classifier.χ₀ _ U) χ' (truth C)) : χ' = χ m :=
+  Classifier.uniq _ m hχ'
 
 instance truthIsSplitMono : IsSplitMono (truth C) :=
   Classifier.isTerminalΩ₀.isSplitMono_from _

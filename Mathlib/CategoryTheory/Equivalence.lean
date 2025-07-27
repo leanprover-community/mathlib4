@@ -62,32 +62,40 @@ open CategoryTheory.Functor NatIso Category
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
-/-- We define an equivalence as a (half)-adjoint equivalence, a pair of functors with
-  a unit and counit which are natural isomorphisms and the triangle law `Fη ≫ εF = 1`, or in other
-  words the composite `F ⟶ FGF ⟶ F` is the identity.
+/-- An equivalence of categories.
 
-  In `unit_inverse_comp`, we show that this is actually an adjoint equivalence, i.e., that the
-  composite `G ⟶ GFG ⟶ G` is also the identity.
+We define an equivalence between `C` and `D`, with notation `C ≌ D`, as a half-adjoint equivalence:
+a pair of functors `F : C ⥤ D` and `G : D ⥤ C` with a unit `η : 𝟭 C ≅ F ⋙ G` and counit
+`ε : G ⋙ F ≅ 𝟭 D`, such that the natural isomorphisms `η` and `ε` satisfy the triangle law for
+`F`: namely, `Fη ≫ εF = 𝟙 F`. Or, in other words, the composite `F` ⟶ `F ⋙ G ⋙ F` ⟶ `F` is the
+identity.
 
-  The triangle equation is written as a family of equalities between morphisms, it is more
-  complicated if we write it as an equality of natural transformations, because then we would have
-  to insert natural transformations like `F ⟶ F1`. -/
+In `unit_inverse_comp`, we show that this is sufficient to establish a full adjoint
+equivalence. I.e., the composite `G` ⟶ `G ⋙ F ⋙ G` ⟶ `G` is also the identity.
+
+The triangle equation `functor_unitIso_comp` is written as a family of equalities between
+morphisms. It is more complicated if we write it as an equality of natural transformations, because
+then we would either have to insert natural transformations like `F ⟶ F𝟭` or abuse defeq. -/
 @[ext, stacks 001J]
 structure Equivalence (C : Type u₁) (D : Type u₂) [Category.{v₁} C] [Category.{v₂} D] where mk' ::
-  /-- A functor in one direction -/
+  /-- The forwards direction of an equivalence. -/
   functor : C ⥤ D
-  /-- A functor in the other direction -/
+  /-- The backwards direction of an equivalence. -/
   inverse : D ⥤ C
-  /-- The composition `functor ⋙ inverse` is isomorphic to the identity -/
+  /-- The composition `functor ⋙ inverse` is isomorphic to the identity. -/
   unitIso : 𝟭 C ≅ functor ⋙ inverse
-  /-- The composition `inverse ⋙ functor` is also isomorphic to the identity -/
+  /-- The composition `inverse ⋙ functor` is isomorphic to the identity. -/
   counitIso : inverse ⋙ functor ≅ 𝟭 D
-  /-- The natural isomorphisms compose to the identity. -/
+  /-- The triangle law for the forwards direction of an equivalence: the unit and counit compose
+  to the identity when whiskered along the forwards direction.
+
+  We state this as a family of equalities among morphisms instead of an equality of natural
+  transformations to avoid abusing defeq or inserting natural transformations like `F ⟶ F𝟭`. -/
   functor_unitIso_comp :
     ∀ X : C, functor.map (unitIso.hom.app X) ≫ counitIso.hom.app (functor.obj X) =
       𝟙 (functor.obj X) := by aesop_cat
 
-/-- We infix the usual notation for an equivalence -/
+@[inherit_doc Equivalence]
 infixr:10 " ≌ " => Equivalence
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]

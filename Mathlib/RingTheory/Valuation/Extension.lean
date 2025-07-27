@@ -179,7 +179,7 @@ instance instAlgebra_valuationSubring : Algebra K₀ L₀ :=
 
 @[simp]
 lemma coe_algebraMap_valuationSubring_eq (x : K₀) :
-  (algebraMap K₀ L₀ x : L) = algebraMap K L (x : K) := rfl
+    (algebraMap K₀ L₀ x : L) = algebraMap K L (x : K) := rfl
 
 instance instIsScalarTower_valuationSubring : IsScalarTower K₀ K L :=
   inferInstanceAs (IsScalarTower vK.integer K L)

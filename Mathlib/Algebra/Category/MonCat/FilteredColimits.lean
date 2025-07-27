@@ -75,8 +75,8 @@ variable [IsFiltered J]
 @[to_additive
   "As `J` is nonempty, we can pick an arbitrary object `j₀ : J`. We use this object to
   define the \"zero\" in the colimit as the equivalence class of `⟨j₀, 0 : F.obj j₀⟩`."]
-noncomputable instance colimitOne :
-  One (M.{v, u} F) where one := M.mk F ⟨IsFiltered.nonempty.some,1⟩
+noncomputable instance colimitOne : One (M.{v, u} F) where
+  one := M.mk F ⟨IsFiltered.nonempty.some,1⟩
 
 /-- The definition of the "one" in the colimit is independent of the chosen object of `J`.
 In particular, this lemma allows us to "unfold" the definition of `colimit_one` at a custom chosen

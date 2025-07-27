@@ -79,13 +79,13 @@ variable {F G}
 /-- Composition of `CatCospanTransforms` is defined "componentwise". -/
 @[simps]
 def comp
-  {A' : Type u₄} {B' : Type u₅} {C' : Type u₆}
-  [Category.{v₄} A'] [Category.{v₅} B'] [Category.{v₆} C']
-  {F' : A' ⥤ B'} {G' : C' ⥤ B'}
-  {A'' : Type u₇} {B'' : Type u₈} {C'' : Type u₉}
-  [Category.{v₇} A''] [Category.{v₈} B''] [Category.{v₉} C'']
-  {F'' : A'' ⥤ B''} {G'' : C'' ⥤ B''}
-  (ψ : CatCospanTransform F G F' G') (ψ' : CatCospanTransform F' G' F'' G'') :
+    {A' : Type u₄} {B' : Type u₅} {C' : Type u₆}
+    [Category.{v₄} A'] [Category.{v₅} B'] [Category.{v₆} C']
+    {F' : A' ⥤ B'} {G' : C' ⥤ B'}
+    {A'' : Type u₇} {B'' : Type u₈} {C'' : Type u₉}
+    [Category.{v₇} A''] [Category.{v₈} B''] [Category.{v₉} C'']
+    {F'' : A'' ⥤ B''} {G'' : C'' ⥤ B''}
+    (ψ : CatCospanTransform F G F' G') (ψ' : CatCospanTransform F' G' F'' G'') :
     CatCospanTransform F G F'' G'' where
   left := ψ.left ⋙ ψ'.left
   base := ψ.base ⋙ ψ'.base

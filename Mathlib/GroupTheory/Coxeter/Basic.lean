@@ -295,7 +295,7 @@ def _root_.CoxeterMatrix.IsLiftable {G : Type*} [Monoid G] (M : CoxeterMatrix B)
 private theorem relations_liftable {G : Type*} [Group G] {f : B → G} (hf : IsLiftable M f)
     (r : FreeGroup B) (hr : r ∈ M.relationsSet) : (FreeGroup.lift f) r = 1 := by
   rcases hr with ⟨⟨i, i'⟩, rfl⟩
-  rw [uncurry, relation, map_pow, map_mul, FreeGroup.lift.of, FreeGroup.lift.of]
+  rw [uncurry, relation, map_pow, map_mul, FreeGroup.lift_apply_of, FreeGroup.lift_apply_of]
   exact hf i i'
 
 private def groupLift {G : Type*} [Group G] {f : B → G} (hf : IsLiftable M f) : W →* G :=
@@ -444,8 +444,8 @@ lemma getElem_alternatingWord (i j : B) (p k : ℕ) (hk : k < p) :
         rw [if_neg h_even]
 
 lemma getElem_alternatingWord_swapIndices (i j : B) (p k : ℕ) (h : k + 1 < p) :
-   (alternatingWord i j p)[k+1]'(by simp [h]) =
-   (alternatingWord j i p)[k]'(by simp; omega) := by
+     (alternatingWord i j p)[k+1]'(by simp [h]) =
+     (alternatingWord j i p)[k]'(by simp; omega) := by
   rw [getElem_alternatingWord i j p (k+1) (by omega), getElem_alternatingWord j i p k (by omega)]
   by_cases h_even : Even (p + k)
   · rw [if_pos h_even, ← add_assoc]

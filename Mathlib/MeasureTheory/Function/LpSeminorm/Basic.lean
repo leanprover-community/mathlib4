@@ -816,7 +816,7 @@ lemma eLpNorm_top_piecewise (f g : α → ε) [DecidablePred (· ∈ s)] (hs : M
   eLpNormEssSup_piecewise f g hs
 
 protected lemma MemLp.piecewise {f : α → ε} [DecidablePred (· ∈ s)] {g} (hs : MeasurableSet s)
-   (hf : MemLp f p (μ.restrict s)) (hg : MemLp g p (μ.restrict sᶜ)) :
+    (hf : MemLp f p (μ.restrict s)) (hg : MemLp g p (μ.restrict sᶜ)) :
     MemLp (s.piecewise f g) p μ := by
   by_cases hp_zero : p = 0
   · simp only [hp_zero, memLp_zero_iff_aestronglyMeasurable]
@@ -1377,8 +1377,7 @@ In this section we show inequalities on the norm.
 
 section IsBoundedSMul
 
-variable {𝕜 : Type*} [NormedRing 𝕜] [MulActionWithZero 𝕜 E] [MulActionWithZero 𝕜 F]
-variable [IsBoundedSMul 𝕜 E] [IsBoundedSMul 𝕜 F] {c : 𝕜} {f : α → F}
+variable {𝕜 : Type*} [NormedRing 𝕜] [MulActionWithZero 𝕜 F] [IsBoundedSMul 𝕜 F] {c : 𝕜} {f : α → F}
 
 theorem eLpNorm'_const_smul_le (hq : 0 < q) : eLpNorm' (c • f) q μ ≤ ‖c‖ₑ * eLpNorm' f q μ :=
   eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul (Eventually.of_forall fun _ => nnnorm_smul_le ..) hq
@@ -1392,8 +1391,7 @@ theorem eLpNorm_const_smul_le : eLpNorm (c • f) p μ ≤ ‖c‖ₑ * eLpNorm 
     (Eventually.of_forall fun _ => by simp [nnnorm_smul_le]) _
 
 theorem MemLp.const_smul (hf : MemLp f p μ) (c : 𝕜) : MemLp (c • f) p μ :=
-  ⟨AEStronglyMeasurable.const_smul hf.1 c,
-    eLpNorm_const_smul_le.trans_lt (ENNReal.mul_lt_top ENNReal.coe_lt_top hf.2)⟩
+  ⟨hf.1.const_smul c, eLpNorm_const_smul_le.trans_lt (ENNReal.mul_lt_top ENNReal.coe_lt_top hf.2)⟩
 
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.const_smul := MemLp.const_smul
@@ -1406,6 +1404,33 @@ alias Memℒp.const_mul := MemLp.const_mul
 
 end IsBoundedSMul
 
+section ENormSMulClass
+
+variable {𝕜 : Type*} [NormedRing 𝕜]
+  {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε] [SMul 𝕜 ε] [ENormSMulClass 𝕜 ε]
+  {c : 𝕜} {f : α → ε}
+
+theorem eLpNorm'_const_smul_le' (hq : 0 < q) : eLpNorm' (c • f) q μ ≤ ‖c‖ₑ * eLpNorm' f q μ :=
+  eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul'
+    (Eventually.of_forall fun _ ↦ le_of_eq (enorm_smul ..)) hq
+
+theorem eLpNormEssSup_const_smul_le' : eLpNormEssSup (c • f) μ ≤ ‖c‖ₑ * eLpNormEssSup f μ :=
+  eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul'
+    (Eventually.of_forall fun _ => by simp [enorm_smul])
+
+theorem eLpNorm_const_smul_le' : eLpNorm (c • f) p μ ≤ ‖c‖ₑ * eLpNorm f p μ :=
+  eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul'
+    (Eventually.of_forall fun _ => le_of_eq (enorm_smul ..)) _
+
+theorem MemLp.const_smul' [ContinuousConstSMul 𝕜 ε] (hf : MemLp f p μ) (c : 𝕜) :
+    MemLp (c • f) p μ :=
+  ⟨hf.1.const_smul c, eLpNorm_const_smul_le'.trans_lt (ENNReal.mul_lt_top ENNReal.coe_lt_top hf.2)⟩
+
+theorem MemLp.const_mul' {f : α → 𝕜} (hf : MemLp f p μ) (c : 𝕜) : MemLp (fun x => c * f x) p μ :=
+  hf.const_smul c
+
+end ENormSMulClass
+
 /-!
 ### Bounded actions by normed division rings
 The inequalities in the previous section are now tight.
@@ -1415,8 +1440,7 @@ TODO: do these results hold for any `NormedRing` assuming `NormSMulClass`?
 
 section NormedSpace
 
-variable {𝕜 : Type*} [NormedDivisionRing 𝕜] [MulActionWithZero 𝕜 E] [Module 𝕜 F]
-variable [NormSMulClass 𝕜 E] [NormSMulClass 𝕜 F]
+variable {𝕜 : Type*} [NormedDivisionRing 𝕜] [Module 𝕜 F] [NormSMulClass 𝕜 F]
 
 theorem eLpNorm'_const_smul {f : α → F} (c : 𝕜) (hq_pos : 0 < q) :
     eLpNorm' (c • f) q μ = ‖c‖ₑ * eLpNorm' f q μ := by

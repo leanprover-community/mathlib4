@@ -79,12 +79,10 @@ abbrev obj' (i : ℕ) (hi : i ≤ n := by valid) : C := F.obj ⟨i, by omega⟩
 are natural numbers such that `i ≤ j ≤ n`. -/
 @[simp]
 abbrev map' (i j : ℕ) (hij : i ≤ j := by valid) (hjn : j ≤ n := by valid) :
-  F.obj ⟨i, by omega⟩ ⟶ F.obj ⟨j, by omega⟩ := F.map (homOfLE (by
-    simp only [Fin.mk_le_mk]
-    valid))
+    F.obj ⟨i, by omega⟩ ⟶ F.obj ⟨j, by omega⟩ :=
+  F.map (homOfLE (by simp only [Fin.mk_le_mk]; valid))
 
-lemma map'_self (i : ℕ) (hi : i ≤ n := by valid) :
-    F.map' i i = 𝟙 _ := F.map_id _
+lemma map'_self (i : ℕ) (hi : i ≤ n := by valid) : F.map' i i = 𝟙 _ := F.map_id _
 
 lemma map'_comp (i j k : ℕ) (hij : i ≤ j := by valid)
     (hjk : j ≤ k := by valid) (hk : k ≤ n := by valid) :

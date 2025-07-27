@@ -23,7 +23,9 @@ This file defines the discriminant of a number field.
 number field, discriminant
 -/
 
--- TODO. Rewrite some of the FLT results on the disciminant using the definitions and results of
+open Module
+
+-- TODO: Rewrite some of the FLT results on the discriminant using the definitions and results of
 -- this file
 
 namespace NumberField

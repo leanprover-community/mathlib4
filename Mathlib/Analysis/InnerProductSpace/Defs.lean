@@ -161,7 +161,7 @@ local to this proof. -/
 attribute [class] InnerProductSpace.Core
 
 instance (𝕜 : Type*) (F : Type*) [RCLike 𝕜] [AddCommGroup F]
-  [Module 𝕜 F] [cd : InnerProductSpace.Core 𝕜 F] : PreInnerProductSpace.Core 𝕜 F where
+    [Module 𝕜 F] [cd : InnerProductSpace.Core 𝕜 F] : PreInnerProductSpace.Core 𝕜 F where
   inner := cd.inner
   conj_inner_symm := cd.conj_inner_symm
   re_inner_nonneg := cd.re_inner_nonneg

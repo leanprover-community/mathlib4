@@ -85,8 +85,8 @@ lemma hom_ext {X Y : FinPartOrd} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
 
 @[simp]
 lemma hom_ofHom {X Y : Type u} [PartialOrder X] [Fintype X] [PartialOrder Y] [Fintype Y]
-    (f : X →o Y) :
-  (ofHom f).hom = f := rfl
+    (f : X →o Y) : (ofHom f).hom = f :=
+  rfl
 
 @[simp]
 lemma ofHom_hom {X Y : FinPartOrd} (f : X ⟶ Y) :

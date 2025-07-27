@@ -15,7 +15,7 @@ This file contains the basic results on `Submodule.FG` and `Module.Finite` that 
 further imports.
 -/
 
-assert_not_exists Basis Ideal.radical Matrix Subalgebra
+assert_not_exists Module.Basis Ideal.radical Matrix Subalgebra
 
 open Function (Surjective)
 open Finsupp

@@ -51,7 +51,7 @@ of that file.
 ## Dependent graded products
 
 This also introduces `List.dProd`, which takes the (possibly non-commutative) product of a list
-of graded elements of type `A i`. This definition primarily exist to allow `GradedMonoid.mk`
+of graded elements of type `A i`. This definition primarily exists to allow `GradedMonoid.mk`
 and `DirectSum.of` to be pulled outside a product, such as in `GradedMonoid.mk_list_dProd` and
 `DirectSum.of_list_dProd`.
 

@@ -373,7 +373,7 @@ abbrev prodPseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
         exact le_sup_right
       · refine ENNReal.toReal_le_of_le_ofReal ?_ ?_
         · simp only [le_sup_iff, dist_nonneg, or_self]
-        · simp [edist, PseudoMetricSpace.edist_dist, ENNReal.ofReal_le_ofReal]
+        · simp
     · have h1 : edist f.fst g.fst ^ p.toReal ≠ ⊤ := by finiteness
       have h2 : edist f.snd g.snd ^ p.toReal ≠ ⊤ := by finiteness
       simp only [prod_edist_eq_add (zero_lt_one.trans_le h), dist_edist, ENNReal.toReal_rpow,

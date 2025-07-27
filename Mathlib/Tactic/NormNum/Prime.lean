@@ -117,8 +117,7 @@ theorem isNat_minFac_4 : {n n' k : ℕ} →
       _ ≤ m        := Nat.minFac_le_of_dvd hm h2mn
 
 /-- The `norm_num` extension which identifies expressions of the form `minFac n`. -/
-@[norm_num Nat.minFac _] partial def evalMinFac :
-  NormNumExt where eval {_ _} e := do
+@[norm_num Nat.minFac _] partial def evalMinFac : NormNumExt where eval {_ _} e := do
   let .app (.const ``Nat.minFac _) (n : Q(ℕ)) ← whnfR e | failure
   let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
   let ⟨nn, pn⟩ ← deriveNat n sℕ

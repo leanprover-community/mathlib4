@@ -246,12 +246,7 @@ lemma setIntegral_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
   simp_rw [sUnion_eq_iUnion]
   have h_disj : Pairwise (Disjoint on fun i : S ↦ (i : Set γ)) := by
     intro u v huv
-    #adaptation_note /-- nightly-2024-03-16
-    Previously `Function.onFun` unfolded in the following `simp only`,
-    but now needs a `rw`.
-    This may be a bug: a no import minimization may be required.
-    simp only [Finset.coe_sort_coe, Function.onFun] -/
-    rw [Function.onFun]
+    simp only [Function.onFun]
     refine disjoint_countablePartition (hS_subset (by simp)) (hS_subset (by simp)) ?_
     rwa [ne_eq, ← Subtype.ext_iff]
   rw [integral_iUnion, iUnion_prod_const, measureReal_def, measure_iUnion,

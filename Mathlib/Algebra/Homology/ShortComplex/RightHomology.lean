@@ -178,7 +178,7 @@ def ofIsColimitCokernelCofork (hg : S.g = 0) (c : CokernelCofork S.f) (hc : IsCo
   hι := KernelFork.IsLimit.ofId _ (Cofork.IsColimit.hom_ext hc (by simp [hg]))
 
 @[simp] lemma ofIsColimitCokernelCofork_g' (hg : S.g = 0) (c : CokernelCofork S.f)
-  (hc : IsColimit c) : (ofIsColimitCokernelCofork S hg c hc).g' = 0 := by
+    (hc : IsColimit c) : (ofIsColimitCokernelCofork S hg c hc).g' = 0 := by
   rw [← cancel_epi (ofIsColimitCokernelCofork S hg c hc).p, p_g', hg, comp_zero]
 
 /-- When the second map `S.g` is zero, this is the right homology data on `S` given
@@ -229,8 +229,8 @@ class HasRightHomology : Prop where
   condition : Nonempty S.RightHomologyData
 
 /-- A chosen `S.RightHomologyData` for a short complex `S` that has right homology -/
-noncomputable def rightHomologyData [HasRightHomology S] :
-  S.RightHomologyData := HasRightHomology.condition.some
+noncomputable def rightHomologyData [HasRightHomology S] : S.RightHomologyData :=
+  HasRightHomology.condition.some
 
 variable {S}
 
@@ -238,9 +238,9 @@ namespace HasRightHomology
 
 lemma mk' (h : S.RightHomologyData) : HasRightHomology S := ⟨Nonempty.intro h⟩
 
-instance of_hasCokernel_of_hasKernel
-    [HasCokernel S.f] [HasKernel (cokernel.desc S.f S.g S.zero)] :
-  S.HasRightHomology := HasRightHomology.mk' (RightHomologyData.ofHasCokernelOfHasKernel S)
+instance of_hasCokernel_of_hasKernel [HasCokernel S.f] [HasKernel (cokernel.desc S.f S.g S.zero)] :
+    S.HasRightHomology :=
+  HasRightHomology.mk' (RightHomologyData.ofHasCokernelOfHasKernel S)
 
 instance of_hasKernel {Y Z : C} (g : Y ⟶ Z) (X : C) [HasKernel g] :
     (ShortComplex.mk (0 : X ⟶ Y) g zero_comp).HasRightHomology :=

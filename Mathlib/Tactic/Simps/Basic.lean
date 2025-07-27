@@ -794,8 +794,8 @@ Optionally, this command accepts three optional arguments:
   `set_option trace.simps.verbose true` was set.
 -/
 def getRawProjections (stx : Syntax) (str : Name) (traceIfExists : Bool := false)
-  (rules : Array ProjectionRule := #[]) (trc := false) :
-  CoreM (List Name × Array ProjectionData) := do
+    (rules : Array ProjectionRule := #[]) (trc := false) :
+    CoreM (List Name × Array ProjectionData) := do
   withOptions (· |>.updateBool `trace.simps.verbose (trc || ·)) <| do
   let env ← getEnv
   if let some data := (structureExt.getState env).find? str then
@@ -1053,8 +1053,8 @@ was just used. In that case we need to apply these projections before we continu
 `simpLemmas`: names of the simp lemmas added so far.(simpLemmas : Array Name)
 -/
 partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
-  (args : Array Expr) (mustBeStr : Bool) (cfg : Config)
-  (todo : List (String × Syntax)) (toApply : List Nat) : MetaM (Array Name) := do
+    (args : Array Expr) (mustBeStr : Bool) (cfg : Config)
+    (todo : List (String × Syntax)) (toApply : List Nat) : MetaM (Array Name) := do
   -- we don't want to unfold non-reducible definitions (like `Set`) to apply more arguments
   trace[simps.debug] "Type of the Expression before normalizing: {type}"
   withTransparency cfg.typeMd <| forallTelescopeReducing type fun typeArgs tgt ↦ withDefault do

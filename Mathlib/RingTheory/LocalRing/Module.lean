@@ -30,13 +30,14 @@ This file gathers various results about finite modules over a local ring `(R, �
   `l` is a split injection if and only if `k ⊗ l` is a (split) injection.
 -/
 
-universe u
+open Module
 
-variable {R} [CommRing R]
+universe u
+variable {R M N P : Type*} [CommRing R]
 
 section
 
-variable {M N} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+variable [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
 
 open Function (Injective Surjective Exact)
 open IsLocalRing TensorProduct
@@ -44,7 +45,7 @@ open IsLocalRing TensorProduct
 local notation "k" => ResidueField R
 local notation "𝔪" => maximalIdeal R
 
-variable {P} [AddCommGroup P] [Module R P] (f : M →ₗ[R] N) (g : N →ₗ[R] P)
+variable [AddCommGroup P] [Module R P] (f : M →ₗ[R] N) (g : N →ₗ[R] P)
 
 namespace IsLocalRing
 
@@ -171,7 +172,7 @@ variable [IsLocalRing R]
 `𝔪 ⊗ M → M` is injective, then every family of elements that is a `k`-basis of
 `k ⊗ M` is an `R`-basis of `M`. -/
 lemma exists_basis_of_basis_baseChange [Module.FinitePresentation R M]
-    {ι : Type u} (v : ι → M) (hli : LinearIndependent k (TensorProduct.mk R k M 1 ∘ v))
+    {ι : Type*} (v : ι → M) (hli : LinearIndependent k (TensorProduct.mk R k M 1 ∘ v))
     (hsp : Submodule.span k (Set.range (TensorProduct.mk R k M 1 ∘ v)) = ⊤)
     (H : Function.Injective ((𝔪).subtype.rTensor M)) :
     ∃ (b : Basis ι R M), ∀ i, b i = v i := by

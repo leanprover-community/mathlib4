@@ -69,15 +69,12 @@ open Function Set Submodule Finsupp
 variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {K : Type*}
 variable {M : Type*} {M' M'' : Type*} {V : Type u} {V' : Type*}
 
-section Module
+namespace Module
 
 variable [Semiring R]
 variable [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
 
-section
-
-variable (ι R M)
-
+variable (ι R M) in
 /-- A `Basis ι R M` for a module `M` is the type of `ι`-indexed `R`-bases of `M`.
 
 The basis vectors are available as `DFunLike.coe (b : Basis ι R M) : ι → M`.
@@ -91,8 +88,6 @@ structure Basis where
     /-- `repr` is the linear equivalence sending a vector `x` to its coordinates:
     the `c`s such that `x = ∑ i, c i`. -/
     repr : M ≃ₗ[R] ι →₀ R
-
-end
 
 namespace Basis
 
@@ -231,11 +226,11 @@ def Basis.equivFun [Finite ι] (b : Basis ι R M) : M ≃ₗ[R] ι → R :=
       (ι →₀ R) ≃ₗ[R] ι → R)
 
 /-- A module over a finite ring that admits a finite basis is finite. -/
-def Module.fintypeOfFintype [Fintype ι] (b : Basis ι R M) [Fintype R] : Fintype M :=
+def fintypeOfFintype [Fintype ι] (b : Basis ι R M) [Fintype R] : Fintype M :=
   haveI := Classical.decEq ι
   Fintype.ofEquiv _ b.equivFun.toEquiv.symm
 
-theorem Module.card_fintype [Fintype ι] (b : Basis ι R M) [Fintype R] [Fintype M] :
+theorem card_fintype [Fintype ι] (b : Basis ι R M) [Fintype R] [Fintype M] :
     card M = card R ^ card ι := by
   classical
     calc
@@ -334,7 +329,7 @@ theorem ext' {f₁ f₂ : M ≃ₛₗ[σ] M₁} (h : ∀ i, f₁ (b i) = f₂ (b
 theorem ext_elem_iff {x y : M} : x = y ↔ ∀ i, b.repr x i = b.repr y i := by
   simp only [← DFunLike.ext_iff, EmbeddingLike.apply_eq_iff_eq]
 
-alias ⟨_, _root_.Basis.ext_elem⟩ := ext_elem_iff
+alias ⟨_, ext_elem⟩ := ext_elem_iff
 
 theorem repr_eq_iff {b : Basis ι R M} {f : M →ₗ[R] ι →₀ R} :
     ↑b.repr = f ↔ ∀ i, f (b i) = Finsupp.single i 1 :=

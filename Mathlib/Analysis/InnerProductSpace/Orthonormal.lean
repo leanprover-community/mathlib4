@@ -27,9 +27,7 @@ For the existence of orthonormal bases, Hilbert bases, etc., see the file
 
 noncomputable section
 
-open RCLike Real Filter
-
-open Topology ComplexConjugate Finsupp
+open RCLike Real Filter Module Topology ComplexConjugate Finsupp
 
 open LinearMap (BilinForm)
 

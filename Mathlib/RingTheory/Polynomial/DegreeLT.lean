@@ -34,6 +34,8 @@ This file contains the properties of the submodule of polynomials of degree less
 
 -/
 
+open Module
+
 namespace Polynomial
 
 @[inherit_doc] scoped notation:9000 R "[X]_" n:arg => Polynomial.degreeLT R n

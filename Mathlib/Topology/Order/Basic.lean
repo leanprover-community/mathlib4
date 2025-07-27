@@ -243,6 +243,13 @@ theorem StrictMono.isEmbedding_of_ordConnected {α β : Type*} [LinearOrder α] 
 @[deprecated (since := "2024-10-26")]
 alias StrictMono.embedding_of_ordConnected := StrictMono.isEmbedding_of_ordConnected
 
+/-- An `OrderEmbedding` is a topological embedding provided that the range of `f` is
+order-connected -/
+lemma OrderEmbedding.isEmbedding_of_ordConnected {α β : Type*} [LinearOrder α] [LinearOrder β]
+    [TopologicalSpace α] [OrderTopology α] [TopologicalSpace β] [OrderTopology β]
+    (f : α ↪o β) (hc : OrdConnected (range f)) : Topology.IsEmbedding f :=
+  f.strictMono.isEmbedding_of_ordConnected hc
+
 /-- On a `Set.OrdConnected` subset of a linear order, the order topology for the restriction of the
 order is the same as the restriction to the subset of the order topology. -/
 instance orderTopology_of_ordConnected {α : Type u} [TopologicalSpace α] [LinearOrder α]

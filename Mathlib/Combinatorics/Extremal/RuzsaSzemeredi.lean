@@ -239,7 +239,7 @@ open Asymptotics Filter
 There exists a graph with `n` vertices and `Ω((n ^ 2 * exp (-4 * √(log n))))` edges such that
 each edge belongs to exactly one triangle. -/
 theorem ruzsaSzemerediNumberNat_asymptotic_lower_bound :
-   (fun n ↦ n ^ 2 * exp (-4 * √(log n)) : ℕ → ℝ) =O[atTop]
+    (fun n ↦ n ^ 2 * exp (-4 * √(log n)) : ℕ → ℝ) =O[atTop]
      fun n ↦ (ruzsaSzemerediNumberNat n : ℝ) := by
   trans fun n ↦ (n / 3 - 2) * ↑((n - 3) / 6) * exp (-4 * √(log ↑((n - 3) / 6)))
   · simp_rw [sq]

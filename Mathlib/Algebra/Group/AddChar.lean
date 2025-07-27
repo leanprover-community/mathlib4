@@ -116,7 +116,7 @@ def toMonoidHom (φ : AddChar A M) : Multiplicative A →* M where
 -- this instance was a bad idea and conflicted with `instFunLike` above
 
 @[simp] lemma toMonoidHom_apply (ψ : AddChar A M) (a : Multiplicative A) :
-  ψ.toMonoidHom a = ψ a.toAdd :=
+    ψ.toMonoidHom a = ψ a.toAdd :=
   rfl
 
 /-- An additive character maps multiples by natural numbers to powers. -/

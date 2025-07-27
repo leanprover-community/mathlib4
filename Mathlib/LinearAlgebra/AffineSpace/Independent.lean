@@ -5,7 +5,7 @@ Authors: Joseph Myers
 -/
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Sign
+import Mathlib.Data.Sign.Basic
 import Mathlib.LinearAlgebra.AffineSpace.Combination
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 import Mathlib.LinearAlgebra.AffineSpace.Restrict
@@ -36,7 +36,7 @@ This file defines affinely independent families of points.
 
 noncomputable section
 
-open Finset Function
+open Finset Function Module
 open scoped Affine
 
 section AffineIndependent

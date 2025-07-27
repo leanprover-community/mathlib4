@@ -270,7 +270,7 @@ def natTransLift {F G : Quotient r ⥤ D} (τ : Quotient.functor r ⋙ F ⟶ Quo
 @[simp]
 lemma natTransLift_app (F G : Quotient r ⥤ D)
     (τ : Quotient.functor r ⋙ F ⟶ Quotient.functor r ⋙ G) (X : C) :
-  (natTransLift r τ).app ((Quotient.functor r).obj X) = τ.app X := rfl
+    (natTransLift r τ).app ((Quotient.functor r).obj X) = τ.app X := rfl
 
 @[reassoc]
 lemma comp_natTransLift {F G H : Quotient r ⥤ D}

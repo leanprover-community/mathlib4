@@ -151,10 +151,12 @@ theorem derivFamily_limit (f : ι → Ordinal → Ordinal) {o} :
 
 theorem isNormal_derivFamily [Small.{u} ι] (f : ι → Ordinal.{u} → Ordinal.{u}) :
     IsNormal (derivFamily f) := by
-  refine ⟨fun o ↦ ?_, fun o h a ↦ ?_⟩
+  refine IsNormal.of_succ_lt (fun o ↦ ?_) @fun o h ↦ ?_
   · rw [derivFamily_succ, ← succ_le_iff]
     exact le_nfpFamily _ _
-  · simp_rw [derivFamily_limit _ h, Ordinal.iSup_le_iff, Subtype.forall, Set.mem_Iio]
+  · rw [derivFamily_limit _ h, Set.image_eq_range]
+    have : Nonempty (Set.Iio o) := ⟨0, h.bot_lt⟩
+    exact isLUB_ciSup (bddAbove_of_small _)
 
 theorem derivFamily_strictMono [Small.{u} ι] (f : ι → Ordinal.{u} → Ordinal.{u}) :
     StrictMono (derivFamily f) :=

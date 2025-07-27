@@ -114,7 +114,7 @@ lemma ext {X Y : TopCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
 
 @[simp]
 lemma hom_ofHom {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y] (f : C(X, Y)) :
-  (ofHom f).hom = f := rfl
+    (ofHom f).hom = f := rfl
 
 @[simp]
 lemma ofHom_hom {X Y : TopCat} (f : X ⟶ Y) :

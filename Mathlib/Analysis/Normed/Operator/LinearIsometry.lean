@@ -1022,12 +1022,12 @@ theorem ofEq_rfl : ofEq p p rfl = LinearIsometryEquiv.refl R' p := rfl
 end LinearIsometryEquiv
 
 /-- Two linear isometries are equal if they are equal on basis vectors. -/
-theorem Basis.ext_linearIsometry {ι : Type*} (b : Basis ι R E) {f₁ f₂ : E →ₛₗᵢ[σ₁₂] E₂}
+theorem Module.Basis.ext_linearIsometry {ι : Type*} (b : Basis ι R E) {f₁ f₂ : E →ₛₗᵢ[σ₁₂] E₂}
     (h : ∀ i, f₁ (b i) = f₂ (b i)) : f₁ = f₂ :=
   LinearIsometry.toLinearMap_injective <| b.ext h
 
 /-- Two linear isometric equivalences are equal if they are equal on basis vectors. -/
-theorem Basis.ext_linearIsometryEquiv {ι : Type*} (b : Basis ι R E) {f₁ f₂ : E ≃ₛₗᵢ[σ₁₂] E₂}
+theorem Module.Basis.ext_linearIsometryEquiv {ι : Type*} (b : Basis ι R E) {f₁ f₂ : E ≃ₛₗᵢ[σ₁₂] E₂}
     (h : ∀ i, f₁ (b i) = f₂ (b i)) : f₁ = f₂ :=
   LinearIsometryEquiv.toLinearEquiv_injective <| b.ext' h
 

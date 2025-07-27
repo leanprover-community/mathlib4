@@ -599,10 +599,10 @@ private noncomputable def Cₐ (R : Type u) (S : Type v)
   { Polynomial.C with commutes' := fun r => by rfl }
 
 private lemma aux_IH {R : Type u} {S : Type v} {T : Type w}
-  [CommRing R] [CommRing S] [CommRing T] [IsJacobsonRing S] [Algebra R S] [Algebra R T]
-  (IH : ∀ (Q : Ideal S), (IsMaximal Q) → RingHom.IsIntegral (algebraMap R (S ⧸ Q)))
-  (v : S[X] ≃ₐ[R] T) (P : Ideal T) (hP : P.IsMaximal) :
-  RingHom.IsIntegral (algebraMap R (T ⧸ P)) := by
+    [CommRing R] [CommRing S] [CommRing T] [IsJacobsonRing S] [Algebra R S] [Algebra R T]
+    (IH : ∀ (Q : Ideal S), (IsMaximal Q) → RingHom.IsIntegral (algebraMap R (S ⧸ Q)))
+    (v : S[X] ≃ₐ[R] T) (P : Ideal T) (hP : P.IsMaximal) :
+    RingHom.IsIntegral (algebraMap R (T ⧸ P)) := by
   let Q := P.comap v.toAlgHom.toRingHom
   have hw : Ideal.map v Q = P := map_comap_of_surjective v v.surjective P
   have hQ : IsMaximal Q := comap_isMaximal_of_surjective _ v.surjective

@@ -378,8 +378,7 @@ lemma hom_ext {X Y : CommGrp} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
 @[to_additive (attr := simp)]
-lemma hom_ofHom {X Y : Type u} [CommGroup X] [CommGroup Y] (f : X →* Y) :
-  (ofHom f).hom = f := rfl
+lemma hom_ofHom {X Y : Type u} [CommGroup X] [CommGroup Y] (f : X →* Y) : (ofHom f).hom = f := rfl
 
 @[to_additive (attr := simp)]
 lemma ofHom_hom {X Y : CommGrp} (f : X ⟶ Y) :
@@ -652,3 +651,4 @@ theorem MonoidHom.comp_id_commGrp {G : CommGrp.{u}} {H : Type u} [Monoid H] (f :
 theorem MonoidHom.id_commGrp_comp {G : Type u} [Monoid G] {H : CommGrp.{u}} (f : G →* H) :
     MonoidHom.comp (CommGrp.Hom.hom (𝟙 H)) f = f := by
   simp
+

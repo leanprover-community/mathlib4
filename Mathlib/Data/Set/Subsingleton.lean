@@ -113,6 +113,11 @@ instance subsingleton_coe_of_subsingleton [Subsingleton α] {s : Set α} : Subsi
   rw [s.subsingleton_coe]
   exact subsingleton_of_subsingleton
 
+lemma Subsingleton.denselyOrdered {s : Set α} [LT α] (hs : s.Subsingleton) :
+    DenselyOrdered s :=
+  have := (subsingleton_coe _).mpr hs
+  ⟨fun _ _ h ↦ ⟨_, h.trans_eq (Subsingleton.elim _ _), h⟩⟩
+
 end Subsingleton
 
 /-! ### Nontrivial -/

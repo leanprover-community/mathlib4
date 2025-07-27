@@ -36,10 +36,10 @@ to add a `(h : ¬IsField A)` assumption whenever this is explicitly needed.
 dedekind domain, dedekind ring
 -/
 
+open Algebra Module
+open scoped nonZeroDivisors Polynomial
 
 variable (A K : Type*) [CommRing A] [Field K]
-
-open scoped nonZeroDivisors Polynomial
 
 section IsIntegralClosure
 
@@ -49,8 +49,6 @@ We show that an integral closure of a Dedekind domain in a finite separable
 field extension is again a Dedekind domain. This implies the ring of integers
 of a number field is a Dedekind domain. -/
 
-
-open Algebra
 
 variable [Algebra A K] [IsFractionRing A K]
 variable (L : Type*) [Field L] (C : Type*) [CommRing C]
