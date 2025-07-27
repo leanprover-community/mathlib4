@@ -153,11 +153,22 @@ theorem mkRat_nonneg_iff (a : ℤ) {b : ℕ} (hb : b ≠ 0) : 0 ≤ mkRat a b �
 theorem mkRat_pos_iff (a : ℤ) {b : ℕ} (hb : b ≠ 0) : 0 < mkRat a b ↔ 0 < a := by
   grind [lt_iff_le_and_ne, mkRat_nonneg_iff, Rat.mkRat_eq_zero]
 
+theorem mkRat_pos {a : ℤ} (ha : 0 < a) {b : ℕ} (hb : b ≠ 0) : 0 < mkRat a b :=
+  (mkRat_pos_iff a hb).mpr ha
+
 theorem mkRat_nonpos_iff (a : ℤ) {b : ℕ} (hb : b ≠ 0) : mkRat a b ≤ 0 ↔ a ≤ 0 := by
   grind [lt_iff_not_ge, mkRat_pos_iff]
 
+theorem mkRat_nonpos {a : ℤ} (ha : a ≤ 0) (b : ℕ) : mkRat a b ≤ 0 := by
+  obtain rfl | hb := eq_or_ne b 0
+  · simp
+  · exact (mkRat_nonpos_iff a hb).mpr ha
+
 theorem mkRat_neg_iff (a : ℤ) {b : ℕ} (hb : b ≠ 0) : mkRat a b < 0 ↔ a < 0 := by
   grind [lt_iff_not_ge, mkRat_nonneg_iff]
+
+theorem mkRat_neg {a : ℤ} (ha : a < 0) {b : ℕ} (hb : b ≠ 0) : mkRat a b < 0 :=
+  (mkRat_neg_iff a hb).mpr ha
 
 /-!
 ### Extra instances to short-circuit type class resolution
