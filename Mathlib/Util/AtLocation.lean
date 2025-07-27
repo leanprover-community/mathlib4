@@ -36,7 +36,7 @@ def atTarget (proc : String) (failIfUnchanged : Bool) : TacticM Unit := withMain
     replaceMainGoal [newGoal]
 
 /-- Use the procedure `m` to rewrite hypothesis `h`. -/
-def atLocationalDecl (proc : String) (failIfUnchanged : Bool) (mayCloseGoal : Bool) (fvarId : FVarId) :
+def atLocalDecl (proc : String) (failIfUnchanged : Bool) (mayCloseGoal : Bool) (fvarId : FVarId) :
     TacticM Unit := withMainContext do
   let tgt ← instantiateMVars (← fvarId.getType)
   let goal ← getMainGoal
@@ -49,9 +49,9 @@ def atLocationalDecl (proc : String) (failIfUnchanged : Bool) (mayCloseGoal : Bo
     replaceMainGoal [newGoal]
 
 /-- Use the procedure `m` to rewrite at specified locations. -/
-def atLocation (proc : String) (failIfUnchanged : Bool) (mayCloseGoalFromHyp : Bool) (loc : Location) :
-    TacticM Unit :=
-  withLocation loc (atLocationalDecl m proc failIfUnchanged mayCloseGoalFromHyp)
+def atLocation (proc : String) (failIfUnchanged : Bool := true)
+    (mayCloseGoalFromHyp : Bool := false) (loc : Location) : TacticM Unit :=
+  withLocation loc (atLocalDecl m proc failIfUnchanged mayCloseGoalFromHyp)
     (atTarget m proc failIfUnchanged)
     fun _ ↦ throwError "{proc} made no progress"
 
