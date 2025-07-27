@@ -5,7 +5,6 @@ Authors: Kim Morrison
 -/
 import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 import Mathlib.Analysis.Normed.Module.Dual
-import Mathlib.Algebra.Module.Submodule.Invariant
 
 /-!
 # Von Neumann algebras
