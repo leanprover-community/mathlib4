@@ -15,10 +15,6 @@ This file develops the theory of prime numbers: natural numbers `p ≥ 2` whose 
 
 -/
 
-open Bool Subtype
-
-open Nat
-
 namespace Nat
 variable {n : ℕ}
 

@@ -101,8 +101,6 @@ abbrev Function.swap₂ {ι₁ ι₂ : Sort*} {κ₁ : ι₁ → Sort*} {κ₂ :
 
 end Miscellany
 
-open Function
-
 /-!
 ### Declarations about propositional connectives
 -/

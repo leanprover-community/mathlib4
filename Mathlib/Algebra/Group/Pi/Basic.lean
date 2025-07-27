@@ -26,8 +26,6 @@ comment `--pi_instance` is inserted before all fields which were previously deri
 -- We enforce to only import `Algebra.Group.Defs` and basic logic
 assert_not_exists Set.range MonoidHom MonoidWithZero DenselyOrdered
 
-open Function
-
 universe u v₁ v₂ v₃
 
 variable {I : Type u}

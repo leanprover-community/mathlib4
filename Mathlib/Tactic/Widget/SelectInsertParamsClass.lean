@@ -28,7 +28,7 @@ class SelectInsertParamsClass (α : Type) where
   replaceRange : α → Lsp.Range
 
 namespace Lean.Elab
-open Command Meta Parser Term
+open Command Parser
 
 private def mkSelectInsertParamsInstance (declName : Name) : TermElabM Syntax.Command :=
   `(command|instance : SelectInsertParamsClass (@$(mkCIdent declName)) :=
