@@ -10,8 +10,13 @@ import Mathlib.MeasureTheory.Integral.CircleAverage
 /-!
 # Representation of `log⁺` as a Circle Average
 
-If `a` is any complex number of norm one, establish that the circle average
-`circleAverage (log ‖· - a‖) 0 1` vanishes.
+If `a` is any complex number of norm one, then `log ‖· - a‖` is circle integrable over every circle
+in the complex plane, and the circle average `circleAverage (log ‖· - a‖) 0 1` vanishes.
+
+- Integrability is recalled in `circleIntegrability_log_norm_id_sub_const`, as a consequence of the
+  general fact that functions of the form `log ‖meromorphic‖` are circle integrable.
+
+- The value of the integral is computed in `circleAverage_log_norm_id_sub_const₁`.
 
 TODO: As soon as the mean value theorem for harmonic functions becomes available, extend this result
 to arbitrary complex numbers `a`, showing that the circle average equals the positive part of the
@@ -22,6 +27,17 @@ ingredient in the proof of Jensen's formula in complex analysis.
 open Filter Interval intervalIntegral MeasureTheory Real
 
 variable {a : ℂ}
+
+/-!
+## Circle Integrability
+-/
+
+/--
+If `a` is any complex number, the function `(log ‖· - a‖)` is circle integrable over every circle.
+-/
+lemma circleIntegrability_log_norm_id_sub_const {c : ℂ} (r : ℝ) :
+    CircleIntegrable (log ‖· - a‖) c r :=
+  circleIntegrable_log_norm_meromorphicOn (fun z hz ↦ by fun_prop)
 
 /-!
 ## Computing `circleAverage (log ‖· - a‖) 0 1` in case where `‖a‖ = 1`.
