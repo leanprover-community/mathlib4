@@ -125,6 +125,13 @@ lemma Hom.continuous {X Y : Scheme} (f : X.Hom Y) : Continuous f.base := f.base.
 protected abbrev sheaf (X : Scheme) :=
   X.toSheafedSpace.sheaf
 
+/--
+We give schemes the specialization preorder by default.
+-/
+instance {X : Scheme.{u}} : Preorder X := specializationPreorder X
+
+lemma le_iff_specializes {X : Scheme.{u}} {a b : X} : a ≤ b ↔ b ⤳ a := by rfl
+
 namespace Hom
 
 variable {X Y : Scheme.{u}} (f : Hom X Y) {U U' : Y.Opens} {V V' : X.Opens}
