@@ -27,10 +27,11 @@ Create separate definitions for `sInf_mem` and `HImpClosed` (also useful for `Co
 variable {X : Type*} [Order.Frame X]
 open Set
 
-/--
-A sublocale is a subset S of a locale X, which is closed under all meets and for any
-s ∈ S and x ∈ X, we have x ⇨ s ∈ S [picado2012].
--/
+/-- A sublocale of a locale `X` is a set `S` which is closed under all meets and such that
+`x ⇨ s ∈ S` for all `x : X` and `s ∈ S`.
+
+Note that locales are the same thing as frames, but with reverse morphisms, which is why we assume
+`Frame X`. -/
 structure Sublocale (X : Type*) [Order.Frame X] where
   /-- The set corresponding to the sublocale. -/
   carrier : Set X
