@@ -154,17 +154,10 @@ theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s
       have unz : u ≠ 0 := (ne_of_lt e3).symm
       aesop
     by_contra hc
-    simp at hc
-    have hc₁ : ‖B x f₀‖ ≤ 1 := by
-      exact hc f₀ hg₃
-    have hc₂ : RCLike.re (B x f₀) ≤ ‖B x f₀‖ := by
-      exact RCLike.re_le_norm ((B x) f₀)
-    have hc₃ : RCLike.re (B x f₀) ≤ 1 := by
-      exact Preorder.le_trans (RCLike.re ((B x) f₀)) ‖(B x) f₀‖ 1 hc₂ (hc f₀ hg₃)
-    rw [lt_iff_le_not_ge] at one_lt_x_f₀
-    have hc₄ : ¬RCLike.re ((B x) f₀) ≤ 1 := by
-      exact one_lt_x_f₀.2
-    exact hc₄ hc₃
+    rw [Set.mem_compl_iff, not_not] at hc
+    exact ((lt_iff_le_not_ge.mp one_lt_x_f₀).2)
+      (Preorder.le_trans (RCLike.re ((B x) f₀)) ‖(B x) f₀‖ 1
+        (RCLike.re_le_norm ((B x) f₀)) (hc f₀ hg₃))
   · exact closedAbsConvexHull_min (subset_bipolar B s) (polar_AbsConvex _) (polar_isClosed B.flip _)
 
 
