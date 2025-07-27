@@ -36,7 +36,6 @@ a monoidal structure.
 - [nLab page: Day convolution](https://ncatlab.org/nlab/show/Day+convolution)
 
 ## TODOs (@robin-carlier)
-- Braided/symmetric case.
 - Type alias for `C ⥤ V` with a `LawfulDayConvolutionMonoidalCategoryStruct`.
 - Characterization of lax monoidal functors out of a day convolution monoidal category.
 - Case `V = Type u` and its universal property.
@@ -162,7 +161,7 @@ variable (f : F ⟶ F') (g : G ⟶ G') (x y : C)
 
 @[reassoc (attr := simp)]
 lemma unit_app_map_app :
-  (unit F G).app (x, y) ≫ (map f g).app (x ⊗ y : C) =
+    (unit F G).app (x, y) ≫ (map f g).app (x ⊗ y : C) =
     (f.app x ⊗ₘ g.app y) ≫ (unit F' G').app (x, y) := by
   simp [tensorHom_def, map]
 
