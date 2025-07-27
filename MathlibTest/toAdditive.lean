@@ -521,3 +521,12 @@ fun {α} [i : Add α] a => i.1 a
 -/
 #guard_msgs in
 #print myAdd
+
+/-! Previously, An application that isn't a constant, such as `(no_index Add) α`, would be seen as
+multiplicative, hence `α` would be set as the `to_additive_relevant_arg`. -/
+
+@[to_additive]
+def fooMul {α : Type} {β : Type} (_ : (no_index Add) α) [Mul β] (x y : (fun _ => β) α) : β := x * y
+
+@[to_additive] -- this would not translate `fooMul`
+def barMul {β : Type} [Mul β] (x y : β) : β := fooMul instAddNat x y
