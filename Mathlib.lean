@@ -1609,6 +1609,7 @@ import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Analysis.InnerProductSpace.EuclideanDist
 import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
 import Mathlib.Analysis.InnerProductSpace.Harmonic.Basic
+import Mathlib.Analysis.InnerProductSpace.Harmonic.Constructions
 import Mathlib.Analysis.InnerProductSpace.JointEigenspace
 import Mathlib.Analysis.InnerProductSpace.Laplacian
 import Mathlib.Analysis.InnerProductSpace.LaxMilgram
@@ -1654,9 +1655,9 @@ import Mathlib.Analysis.MeanInequalitiesPow
 import Mathlib.Analysis.MellinInversion
 import Mathlib.Analysis.MellinTransform
 import Mathlib.Analysis.Meromorphic.Basic
+import Mathlib.Analysis.Meromorphic.Complex
 import Mathlib.Analysis.Meromorphic.Divisor
 import Mathlib.Analysis.Meromorphic.FactorizedRational
-import Mathlib.Analysis.Meromorphic.Gamma
 import Mathlib.Analysis.Meromorphic.IsolatedZeros
 import Mathlib.Analysis.Meromorphic.NormalForm
 import Mathlib.Analysis.Meromorphic.Order
@@ -2438,6 +2439,7 @@ import Mathlib.CategoryTheory.Monoidal.CommMon_
 import Mathlib.CategoryTheory.Monoidal.Comon_
 import Mathlib.CategoryTheory.Monoidal.Conv
 import Mathlib.CategoryTheory.Monoidal.DayConvolution
+import Mathlib.CategoryTheory.Monoidal.DayConvolution.Braided
 import Mathlib.CategoryTheory.Monoidal.DayConvolution.Closed
 import Mathlib.CategoryTheory.Monoidal.Discrete
 import Mathlib.CategoryTheory.Monoidal.End
