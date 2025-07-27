@@ -299,4 +299,14 @@ theorem lid_comp_rTensor (f : N →ₗ[R] R) :
 lemma rid_comp_lTensor (f : M →ₗ[R] R) :
     (rid R N).comp (lTensor N f) = lift ((lsmul R N).flip.compl₂ f) := ext' fun _ _ ↦ rfl
 
+lemma lTensor_rTensor_comp_assoc (x : M →ₗ[R] N) :
+    (lTensor _ (rTensor _ x)) ∘ₗ (TensorProduct.assoc R _ _ _).toLinearMap
+    = (TensorProduct.assoc R P N Q).toLinearMap ∘ₗ (rTensor _ (lTensor _ x)) := by
+  simp_rw [rTensor, lTensor, map_map_comp_assoc_eq]
+
+lemma rTensor_lTensor_comp_assoc_symm (x : M →ₗ[R] N) :
+    (rTensor _ (lTensor _ x)) ∘ₗ (TensorProduct.assoc R _ _ _).symm.toLinearMap
+    = (TensorProduct.assoc R P N Q).symm.toLinearMap ∘ₗ (lTensor _ (rTensor _ x)) := by
+  simp_rw [rTensor, lTensor, map_map_comp_assoc_symm_eq]
+
 end LinearMap
