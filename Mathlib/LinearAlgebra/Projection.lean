@@ -295,14 +295,6 @@ theorem range_ofIsCompl (hpq : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[
   · apply sup_le
     all_goals rintro - ⟨x, rfl⟩; exact ⟨x, by simp⟩
 
-theorem ker_ofIsCompl_subtype_zero (hpq : IsCompl p q) :
-    ker (ofIsCompl hpq p.subtype 0) = q := by
-  ext; simp [ofIsCompl]
-
-theorem isIdempotentElem_ofIsCompl_subtype_zero (hpq : IsCompl p q) :
-    IsIdempotentElem (ofIsCompl hpq p.subtype 0) := by
-  ext; simp [ofIsCompl]
-
 theorem ofIsCompl_subtype_zero_eq (hpq : IsCompl p q) :
     ofIsCompl hpq p.subtype 0 = p.subtype ∘ₗ p.linearProjOfIsCompl q hpq := by
   simp [ofIsCompl_eq_add]

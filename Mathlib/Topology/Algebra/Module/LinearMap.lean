@@ -1185,25 +1185,18 @@ lemma IsIdempotentElem.commute_iff {f T : M →L[R] M}
     LinearMap.IsIdempotentElem.commute_iff (T := T)
     congr(LinearMapClass.linearMap $hf.eq)
 
+variable [IsTopologicalAddGroup M]
+
 /-- An idempotent operator `f` commutes with an unit operator `T` if and only if
 `T (range f) = range f` and `T (ker f) = ker f`. -/
 theorem IsIdempotentElem.commute_iff_of_isUnit {f T : M →L[R] M} (hT : IsUnit T)
     (hf : IsIdempotentElem f) :
     Commute f T ↔ (range f).map T = range f ∧ (ker f).map T = ker f := by
+  have := hT.map ContinuousLinearMap.toLinearMapRingHom
   lift T to (M →L[R] M)ˣ using hT
-  have : IsUnit (T : M →ₗ[R] M) := by
-    refine ⟨?_, ?_⟩
-    · use T, ↑T⁻¹
-      · calc _ = (((T * T⁻¹) : M →L[R] M) : M →ₗ[R] M) := rfl
-          _ = LinearMap.id := by simp; rfl
-      · calc _ = (((T⁻¹ * T) : M →L[R] M) : M →ₗ[R] M) := rfl
-          _ = LinearMap.id := by simp; rfl
-    · simp
   simpa [Commute, SemiconjBy, Module.End.mul_eq_comp, ← ContinuousLinearMap.coe_comp] using
     LinearMap.IsIdempotentElem.commute_iff_of_isUnit
-    this (congr(LinearMapClass.linearMap $hf.eq))
-
-variable [IsTopologicalAddGroup M]
+    this congr(LinearMapClass.linearMap $hf.eq)
 
 theorem IsIdempotentElem.range_eq_ker {p : M →L[R] M} (hp : IsIdempotentElem p) :
     LinearMap.range p = LinearMap.ker (1 - p) :=
