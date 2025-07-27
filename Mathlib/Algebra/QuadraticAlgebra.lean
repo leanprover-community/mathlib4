@@ -92,9 +92,9 @@ theorem coe_inj {x y : R} : (x : QuadraticAlgebra R a b) = y ↔ x = y :=
 
 instance : Zero (QuadraticAlgebra R a b) := ⟨⟨0, 0⟩⟩
 
-@[scoped simp] theorem zero_re : (0 : QuadraticAlgebra R a b).re = 0 := rfl
+@[simp] theorem zero_re : (0 : QuadraticAlgebra R a b).re = 0 := rfl
 
-@[scoped simp] theorem zero_im : (0 : QuadraticAlgebra R a b).im = 0 := rfl
+@[simp] theorem zero_im : (0 : QuadraticAlgebra R a b).im = 0 := rfl
 
 @[simp, norm_cast]
 theorem coe_zero : ((0 : R) : QuadraticAlgebra R a b) = 0 := rfl
