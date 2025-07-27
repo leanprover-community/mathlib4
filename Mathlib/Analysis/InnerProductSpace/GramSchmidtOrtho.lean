@@ -70,7 +70,7 @@ theorem gramSchmidt_bot {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [O
   rw [gramSchmidt_def, Iio_eq_Ico, Finset.Ico_self, Finset.sum_empty, sub_zero]
 
 @[simp]
-theorem gramSchmidt_zero (n : ι) : gramSchmidt 𝕜 (0 : ι → E) n = 0 := by simp [gramSchmidt_def]
+theorem gramSchmidt_zero (n : ι) : gramSchmidt 𝕜 (0 : ι → E) n = 0 := by rw [gramSchmidt_def]; simp
 
 /-- **Gram-Schmidt Orthogonalisation**:
 `gramSchmidt` produces an orthogonal system of vectors. -/
