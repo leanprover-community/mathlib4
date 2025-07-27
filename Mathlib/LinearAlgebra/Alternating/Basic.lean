@@ -888,7 +888,7 @@ variable [Module R' N₁] [Module R' N₂]
 
 /-- Two alternating maps indexed by a `Fintype` are equal if they are equal when all arguments
 are distinct basis vectors. -/
-theorem Basis.ext_alternating {f g : N₁ [⋀^ι]→ₗ[R'] N₂} (e : Basis ι₁ R' N₁)
+theorem Module.Basis.ext_alternating {f g : N₁ [⋀^ι]→ₗ[R'] N₂} (e : Basis ι₁ R' N₁)
     (h : ∀ v : ι → ι₁, Function.Injective v → (f fun i => e (v i)) = g fun i => e (v i)) :
     f = g := by
   refine AlternatingMap.coe_multilinearMap_injective (Basis.ext_multilinear (fun _ ↦ e) fun v => ?_)
