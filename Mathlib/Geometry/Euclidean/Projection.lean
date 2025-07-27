@@ -47,7 +47,7 @@ def orthogonalProjectionFn (s : AffineSubspace ℝ P) [Nonempty s]
       (mk'_nonempty p s.directionᗮ)
       (by
         rw [direction_mk' p s.directionᗮ]
-        exact Submodule.isCompl_orthogonal_of_completeSpace)
+        exact Submodule.isCompl_orthogonal_of_hasOrthogonalProjection)
 
 /-- The intersection of the subspace and the orthogonal subspace
 through the given point is the `orthogonalProjectionFn` of that
@@ -62,7 +62,7 @@ theorem inter_eq_singleton_orthogonalProjectionFn {s : AffineSubspace ℝ P} [No
       (mk'_nonempty p s.directionᗮ)
       (by
         rw [direction_mk' p s.directionᗮ]
-        exact Submodule.isCompl_orthogonal_of_completeSpace)
+        exact Submodule.isCompl_orthogonal_of_hasOrthogonalProjection)
 
 /-- The `orthogonalProjectionFn` lies in the given subspace. This
 lemma is only intended for use in setting up the bundled version and
