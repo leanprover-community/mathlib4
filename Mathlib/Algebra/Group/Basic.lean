@@ -173,12 +173,12 @@ lemma pow_eq_pow_mod (m : ℕ) (ha : a ^ n = 1) : a ^ m = a ^ (m % n) := by
 
 @[to_additive (attr := simp)]
 lemma mul_left_iterate (a : M) : ∀ n : ℕ, (a * ·)^[n] = (a ^ n * ·)
-  | 0 =>  by ext; simp
+  | 0 => by ext; simp
   | n + 1 => by ext; simp [pow_succ, mul_left_iterate]
 
 @[to_additive (attr := simp)]
 lemma mul_right_iterate (a : M) : ∀ n : ℕ, (· * a)^[n] = (· * a ^ n)
-  | 0 =>  by ext; simp
+  | 0 => by ext; simp
   | n + 1 => by ext; simp [pow_succ', mul_right_iterate]
 
 @[to_additive]
@@ -254,7 +254,7 @@ end LeftCancelMonoid
 
 section RightCancelMonoid
 
-variable [RightCancelMonoid M] {a b : M}
+variable [Monoid M] [IsRightCancelMul M] {a b : M}
 
 @[to_additive (attr := simp)]
 theorem mul_eq_right : a * b = b ↔ a = 1 := calc
@@ -444,7 +444,7 @@ lemma inv_pow (a : α) : ∀ n : ℕ, a⁻¹ ^ n = (a ^ n)⁻¹
 -- the attributes are intentionally out of order. `smul_zero` proves `zsmul_zero`.
 @[to_additive zsmul_zero, simp]
 lemma one_zpow : ∀ n : ℤ, (1 : α) ^ n = 1
-  | (n : ℕ)    => by rw [zpow_natCast, one_pow]
+  | (n : ℕ) => by rw [zpow_natCast, one_pow]
   | .negSucc n => by rw [zpow_negSucc, one_pow, inv_one]
 
 @[to_additive (attr := simp) neg_zsmul]
@@ -461,7 +461,7 @@ lemma mul_zpow_neg_one (a b : α) : (a * b) ^ (-1 : ℤ) = b ^ (-1 : ℤ) * a ^ 
 
 @[to_additive zsmul_neg]
 lemma inv_zpow (a : α) : ∀ n : ℤ, a⁻¹ ^ n = (a ^ n)⁻¹
-  | (n : ℕ)    => by rw [zpow_natCast, zpow_natCast, inv_pow]
+  | (n : ℕ) => by rw [zpow_natCast, zpow_natCast, inv_pow]
   | .negSucc n => by rw [zpow_negSucc, zpow_negSucc, inv_pow]
 
 @[to_additive (attr := simp) zsmul_neg']

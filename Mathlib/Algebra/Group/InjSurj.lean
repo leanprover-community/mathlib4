@@ -5,7 +5,6 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Logic.Function.Basic
-import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Tactic.Spread
 
 /-!
@@ -24,15 +23,9 @@ The relevant definition in this case is `Function.Surjective.group`.
 Dually, there is also `Function.Injective.group`.
 And there are versions for (additive) (commutative) semigroups/monoids.
 
-## Implementation note
-
-The `nsmul` and `zsmul` assumptions on any transfer definition for an algebraic structure involving
-both addition and multiplication (eg `AddMonoidWithOne`) is `∀ n x, f (n • x) = n • f x`, which is
-what we would expect.
-However, we cannot do the same for transfer definitions built using `to_additive` (eg `AddMonoid`)
-as we want the multiplicative versions to be `∀ x n, f (x ^ n) = f x ^ n`.
-As a result, we must use `Function.swap` when using additivised transfer definitions in
-non-additivised ones.
+Note that the `nsmul` and `zsmul` hypotheses in the declarations in this file are declared as
+`∀ x n, f (n • x) = n • f x`, with the binders in a slightly unnatural order, as they are
+`to_additive`ized from the versions for `^`.
 -/
 
 
@@ -42,7 +35,7 @@ namespace Function
 ### Injective
 -/
 
-assert_not_exists MonoidWithZero DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered AddMonoidWithOne
 
 namespace Injective
 
@@ -75,14 +68,38 @@ protected abbrev commSemigroup [CommSemigroup M₂] (f : M₁ → M₂) (hf : In
   toSemigroup := hf.semigroup f mul
   __ := hf.commMagma f mul
 
+/-- A type has left-cancellative multiplication, if it admits an injective map that
+preserves `*` to another type with left-cancellative multiplication. -/
+@[to_additive "A type has left-cancellative addition, if it admits an injective map that
+preserves `+` to another type with left-cancellative addition."]
+protected theorem isLeftCancelMul [Mul M₂] [IsLeftCancelMul M₂] (f : M₁ → M₂) (hf : Injective f)
+    (mul : ∀ x y, f (x * y) = f x * f y) : IsLeftCancelMul M₁ where
+  mul_left_cancel x y z H := hf <| mul_left_cancel <| by simpa only [mul] using congrArg f H
+
+/-- A type has right-cancellative multiplication, if it admits an injective map that
+preserves `*` to another type with right-cancellative multiplication. -/
+@[to_additive "A type has right-cancellative addition, if it admits an injective map that
+preserves `+` to another type with right-cancellative addition."]
+protected theorem isRightCancelMul [Mul M₂] [IsRightCancelMul M₂] (f : M₁ → M₂) (hf : Injective f)
+    (mul : ∀ x y, f (x * y) = f x * f y) : IsRightCancelMul M₁ where
+  mul_right_cancel x y z H := hf <| mul_right_cancel <| by simpa only [mul] using congrArg f H
+
+/-- A type has cancellative multiplication, if it admits an injective map that
+preserves `*` to another type with cancellative multiplication. -/
+@[to_additive "A type has cancellative addition, if it admits an injective map that
+preserves `+` to another type with cancellative addition."]
+protected theorem isCancelMul [Mul M₂] [IsCancelMul M₂] (f : M₁ → M₂) (hf : Injective f)
+    (mul : ∀ x y, f (x * y) = f x * f y) : IsCancelMul M₁ where
+  __ := hf.isLeftCancelMul f mul
+  __ := hf.isRightCancelMul f mul
+
 /-- A type endowed with `*` is a left cancel semigroup, if it admits an injective map that
 preserves `*` to a left cancel semigroup.  See note [reducible non-instances]. -/
 @[to_additive "A type endowed with `+` is an additive left cancel
 semigroup, if it admits an injective map that preserves `+` to an additive left cancel semigroup."]
 protected abbrev leftCancelSemigroup [LeftCancelSemigroup M₂] (f : M₁ → M₂) (hf : Injective f)
     (mul : ∀ x y, f (x * y) = f x * f y) : LeftCancelSemigroup M₁ :=
-  { hf.semigroup f mul with
-    mul_left_cancel := fun x y z H => hf <| (mul_right_inj (f x)).1 <| by rw [← mul, ← mul, H] }
+  { hf.semigroup f mul, hf.isLeftCancelMul f mul with }
 
 /-- A type endowed with `*` is a right cancel semigroup, if it admits an injective map that
 preserves `*` to a right cancel semigroup.  See note [reducible non-instances]. -/
@@ -91,8 +108,7 @@ cancel semigroup, if it admits an injective map that preserves `+` to an additiv
 semigroup."]
 protected abbrev rightCancelSemigroup [RightCancelSemigroup M₂] (f : M₁ → M₂) (hf : Injective f)
     (mul : ∀ x y, f (x * y) = f x * f y) : RightCancelSemigroup M₁ :=
-  { hf.semigroup f mul with
-    mul_right_cancel := fun x y z H => hf <| (mul_left_inj (f y)).1 <| by rw [← mul, ← mul, H] }
+  { hf.semigroup f mul, hf.isRightCancelMul f mul with }
 
 variable [One M₁]
 
@@ -121,18 +137,6 @@ protected abbrev monoid [Monoid M₂] (f : M₁ → M₂) (hf : Injective f) (on
     npow := fun n x => x ^ n,
     npow_zero := fun x => hf <| by rw [npow, one, pow_zero],
     npow_succ := fun n x => hf <| by rw [npow, pow_succ, mul, npow] }
-
-/-- A type endowed with `0`, `1` and `+` is an additive monoid with one,
-if it admits an injective map that preserves `0`, `1` and `+` to an additive monoid with one.
-See note [reducible non-instances]. -/
-protected abbrev addMonoidWithOne {M₁} [Zero M₁] [One M₁] [Add M₁] [SMul ℕ M₁] [NatCast M₁]
-    [AddMonoidWithOne M₂] (f : M₁ → M₂) (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1)
-    (add : ∀ x y, f (x + y) = f x + f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
-    (natCast : ∀ n : ℕ, f n = n) : AddMonoidWithOne M₁ :=
-  { hf.addMonoid f zero add (swap nsmul) with
-    natCast := Nat.cast,
-    natCast_zero := hf (by rw [natCast, Nat.cast_zero, zero]),
-    natCast_succ := fun n => hf (by rw [natCast, Nat.cast_succ, add, one, natCast]), one := 1 }
 
 /-- A type endowed with `1` and `*` is a left cancel monoid, if it admits an injective map that
 preserves `1` and `*` to a left cancel monoid. See note [reducible non-instances]. -/
@@ -173,16 +177,6 @@ protected abbrev commMonoid [CommMonoid M₂] (f : M₁ → M₂) (hf : Injectiv
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
     CommMonoid M₁ :=
   { hf.monoid f one mul npow, hf.commSemigroup f mul with }
-
-/-- A type endowed with `0`, `1` and `+` is an additive commutative monoid with one, if it admits an
-injective map that preserves `0`, `1` and `+` to an additive commutative monoid with one.
-See note [reducible non-instances]. -/
-protected abbrev addCommMonoidWithOne {M₁} [Zero M₁] [One M₁] [Add M₁] [SMul ℕ M₁] [NatCast M₁]
-    [AddCommMonoidWithOne M₂] (f : M₁ → M₂) (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1)
-    (add : ∀ x y, f (x + y) = f x + f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
-    (natCast : ∀ n : ℕ, f n = n) : AddCommMonoidWithOne M₁ where
-  __ := hf.addMonoidWithOne f zero one add nsmul natCast
-  __ := hf.addCommMonoid _ zero add (swap nsmul)
 
 /-- A type endowed with `1` and `*` is a cancel commutative monoid, if it admits an injective map
 that preserves `1` and `*` to a cancel commutative monoid.  See note [reducible non-instances]. -/
@@ -292,20 +286,6 @@ protected abbrev group [Group M₂] (f : M₁ → M₂) (hf : Injective f) (one 
   { hf.divInvMonoid f one mul inv div npow zpow with
     inv_mul_cancel := fun x => hf <| by rw [mul, inv, inv_mul_cancel, one] }
 
-/-- A type endowed with `0`, `1` and `+` is an additive group with one, if it admits an injective
-map that preserves `0`, `1` and `+` to an additive group with one.  See note
-[reducible non-instances]. -/
-protected abbrev addGroupWithOne {M₁} [Zero M₁] [One M₁] [Add M₁] [SMul ℕ M₁] [Neg M₁] [Sub M₁]
-    [SMul ℤ M₁] [NatCast M₁] [IntCast M₁] [AddGroupWithOne M₂] (f : M₁ → M₂) (hf : Injective f)
-    (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (neg : ∀ x, f (-x) = -f x)
-    (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
-    (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) (natCast : ∀ n : ℕ, f n = n)
-    (intCast : ∀ n : ℤ, f n = n) : AddGroupWithOne M₁ :=
-  { hf.addGroup f zero add neg sub (swap nsmul) (swap zsmul),
-    hf.addMonoidWithOne f zero one add nsmul natCast with
-    intCast := Int.cast,
-    intCast_ofNat := fun n => hf (by rw [natCast, intCast, Int.cast_natCast]),
-    intCast_negSucc := fun n => hf (by rw [intCast, neg, natCast, Int.cast_negSucc] ) }
 
 /-- A type endowed with `1`, `*` and `⁻¹` is a commutative group, if it admits an injective map that
 preserves `1`, `*` and `⁻¹` to a commutative group. See note [reducible non-instances]. -/
@@ -317,18 +297,6 @@ protected abbrev commGroup [CommGroup M₂] (f : M₁ → M₂) (hf : Injective 
     (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : CommGroup M₁ :=
   { hf.commMonoid f one mul npow, hf.group f one mul inv div npow zpow with }
-
-/-- A type endowed with `0`, `1` and `+` is an additive commutative group with one, if it admits an
-injective map that preserves `0`, `1` and `+` to an additive commutative group with one.
-See note [reducible non-instances]. -/
-protected abbrev addCommGroupWithOne {M₁} [Zero M₁] [One M₁] [Add M₁] [SMul ℕ M₁] [Neg M₁] [Sub M₁]
-    [SMul ℤ M₁] [NatCast M₁] [IntCast M₁] [AddCommGroupWithOne M₂] (f : M₁ → M₂) (hf : Injective f)
-    (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (neg : ∀ x, f (-x) = -f x)
-    (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
-    (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) (natCast : ∀ n : ℕ, f n = n)
-    (intCast : ∀ n : ℤ, f n = n) : AddCommGroupWithOne M₁ :=
-  { hf.addGroupWithOne f zero one add neg sub nsmul zsmul natCast intCast,
-    hf.addCommMonoid _ zero add (swap nsmul) with }
 
 end Injective
 
@@ -398,18 +366,6 @@ protected abbrev monoid [Monoid M₁] (f : M₁ → M₂) (hf : Surjective f) (o
     npow_succ := fun n => hf.forall.2 fun x => by
       rw [← npow, pow_succ, ← npow, ← mul] }
 
-/-- A type endowed with `0`, `1` and `+` is an additive monoid with one, if it admits a surjective
-map that preserves `0`, `1` and `*` from an additive monoid with one. See note
-[reducible non-instances]. -/
-protected abbrev addMonoidWithOne {M₂} [Zero M₂] [One M₂] [Add M₂] [SMul ℕ M₂] [NatCast M₂]
-    [AddMonoidWithOne M₁] (f : M₁ → M₂) (hf : Surjective f) (zero : f 0 = 0) (one : f 1 = 1)
-    (add : ∀ x y, f (x + y) = f x + f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
-    (natCast : ∀ n : ℕ, f n = n) : AddMonoidWithOne M₂ :=
-  { hf.addMonoid f zero add (swap nsmul) with
-    natCast := Nat.cast,
-    natCast_zero := by rw [← natCast, Nat.cast_zero, zero]
-    natCast_succ := fun n => by rw [← natCast, Nat.cast_succ, add, one, natCast]
-    one := 1 }
 
 /-- A type endowed with `1` and `*` is a commutative monoid, if it admits a surjective map that
 preserves `1` and `*` from a commutative monoid. See note [reducible non-instances]. -/
@@ -420,16 +376,6 @@ protected abbrev commMonoid [CommMonoid M₁] (f : M₁ → M₂) (hf : Surjecti
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
     CommMonoid M₂ :=
   { hf.commSemigroup f mul, hf.monoid f one mul npow with }
-
-/-- A type endowed with `0`, `1` and `+` is an additive monoid with one,
-if it admits a surjective map that preserves `0`, `1` and `*` from an additive monoid with one.
-See note [reducible non-instances]. -/
-protected abbrev addCommMonoidWithOne {M₂} [Zero M₂] [One M₂] [Add M₂] [SMul ℕ M₂] [NatCast M₂]
-    [AddCommMonoidWithOne M₁] (f : M₁ → M₂) (hf : Surjective f) (zero : f 0 = 0) (one : f 1 = 1)
-    (add : ∀ x y, f (x + y) = f x + f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
-    (natCast : ∀ n : ℕ, f n = n) : AddCommMonoidWithOne M₂ where
-  __ := hf.addMonoidWithOne f zero one add nsmul natCast
-  __ := hf.addCommMonoid _ zero add (swap nsmul)
 
 /-- A type has an involutive inversion if it admits a surjective map that preserves `⁻¹` to a type
 which has an involutive inversion. See note [reducible non-instances] -/
@@ -474,22 +420,6 @@ protected abbrev group [Group M₁] (f : M₁ → M₂) (hf : Surjective f) (one
   { hf.divInvMonoid f one mul inv div npow zpow with
     inv_mul_cancel := hf.forall.2 fun x => by rw [← inv, ← mul, inv_mul_cancel, one] }
 
-/-- A type endowed with `0`, `1`, `+` is an additive group with one,
-if it admits a surjective map that preserves `0`, `1`, and `+` to an additive group with one.
-See note [reducible non-instances]. -/
-protected abbrev addGroupWithOne {M₂} [Zero M₂] [One M₂] [Add M₂] [Neg M₂] [Sub M₂] [SMul ℕ M₂]
-    [SMul ℤ M₂] [NatCast M₂] [IntCast M₂] [AddGroupWithOne M₁] (f : M₁ → M₂) (hf : Surjective f)
-    (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (neg : ∀ x, f (-x) = -f x)
-    (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
-    (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) (natCast : ∀ n : ℕ, f n = n)
-    (intCast : ∀ n : ℤ, f n = n) : AddGroupWithOne M₂ :=
-  { hf.addMonoidWithOne f zero one add nsmul natCast,
-    hf.addGroup f zero add neg sub (swap nsmul) (swap zsmul) with
-    intCast := Int.cast,
-    intCast_ofNat := fun n => by rw [← intCast, Int.cast_natCast, natCast],
-    intCast_negSucc := fun n => by
-      rw [← intCast, Int.cast_negSucc, neg, natCast] }
-
 /-- A type endowed with `1`, `*`, `⁻¹`, and `/` is a commutative group, if it admits a surjective
 map that preserves `1`, `*`, `⁻¹`, and `/` from a commutative group. See note
 [reducible non-instances]. -/
@@ -501,18 +431,6 @@ protected abbrev commGroup [CommGroup M₁] (f : M₁ → M₂) (hf : Surjective
     (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : CommGroup M₂ :=
   { hf.commMonoid f one mul npow, hf.group f one mul inv div npow zpow with }
-
-/-- A type endowed with `0`, `1`, `+` is an additive commutative group with one, if it admits a
-surjective map that preserves `0`, `1`, and `+` to an additive commutative group with one.
-See note [reducible non-instances]. -/
-protected abbrev addCommGroupWithOne {M₂} [Zero M₂] [One M₂] [Add M₂] [Neg M₂] [Sub M₂] [SMul ℕ M₂]
-    [SMul ℤ M₂] [NatCast M₂] [IntCast M₂] [AddCommGroupWithOne M₁] (f : M₁ → M₂) (hf : Surjective f)
-    (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (neg : ∀ x, f (-x) = -f x)
-    (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
-    (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) (natCast : ∀ n : ℕ, f n = n)
-    (intCast : ∀ n : ℤ, f n = n) : AddCommGroupWithOne M₂ :=
-  { hf.addGroupWithOne f zero one add neg sub nsmul zsmul natCast intCast,
-    hf.addCommMonoid _ zero add (swap nsmul) with }
 
 end Surjective
 

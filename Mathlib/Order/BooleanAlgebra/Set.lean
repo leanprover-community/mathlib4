@@ -432,6 +432,9 @@ alias insert_diff_self_of_not_mem := insert_diff_self_of_notMem
 lemma insert_diff_self_of_mem (ha : a ∈ s) : insert a (s \ {a}) = s := by
   ext; simp +contextual [or_and_left, em, ha]
 
+lemma insert_diff_subset : insert a s \ t ⊆ insert a (s \ t) := by
+  rintro b ⟨rfl | hbs, hbt⟩ <;> simp [*]
+
 lemma insert_erase_invOn :
     InvOn (insert a) (fun s ↦ s \ {a}) {s : Set α | a ∈ s} {s : Set α | a ∉ s} :=
   ⟨fun _s ha ↦ insert_diff_self_of_mem ha, fun _s ↦ insert_diff_self_of_notMem⟩

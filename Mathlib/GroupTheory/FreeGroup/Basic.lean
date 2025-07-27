@@ -562,6 +562,27 @@ element to the equivalence class of the letter that is the element. -/
 def of (x : α) : FreeGroup α :=
   mk [(x, true)]
 
+@[to_additive (attr := elab_as_elim, induction_eliminator)]
+protected lemma induction_on {C : FreeGroup α → Prop} (z : FreeGroup α) (C1 : C 1)
+    (of : ∀ x, C <| of x) (inv_of : ∀ x, C (.of x) → C (.of x)⁻¹)
+    (mul : ∀ x y, C x → C y → C (x * y)) : C z :=
+  Quot.inductionOn z fun L ↦ L.recOn C1 fun ⟨x, b⟩ _tl ih ↦
+    b.recOn (mul _ _ (inv_of _ <| of x) ih) (mul _ _ (of x) ih)
+
+/-- Two homomorphisms out of a free group are equal if they are equal on generators.
+
+See note [partially-applied ext lemmas]. -/
+@[to_additive (attr := ext) "Two homomorphisms out of a free additive group are equal if they are
+  equal on generators. See note [partially-applied ext lemmas]."]
+lemma ext_hom {M : Type*} [Monoid M] (f g : FreeGroup α →* M) (h : ∀ a, f (of a) = g (of a)) :
+    f = g := by
+  ext x
+  have this (x) : f (of x)⁻¹ = g (of x)⁻¹ := by
+    trans f (of x)⁻¹ * f (of x) * g (of x)⁻¹
+    · simp_rw [mul_assoc, h, ← _root_.map_mul, mul_inv_cancel, _root_.map_one, mul_one]
+    · simp_rw [← _root_.map_mul, inv_mul_cancel, _root_.map_one, one_mul]
+  induction x <;> simp [*]
+
 @[to_additive]
 theorem Red.exact : mk L₁ = mk L₂ ↔ Join Red L₁ L₂ :=
   calc
@@ -599,70 +620,51 @@ def lift : (α → β) ≃ (FreeGroup α →* β) where
       rintro ⟨L₁⟩ ⟨L₂⟩; simp [Lift.aux]
   invFun g := g ∘ of
   left_inv f := List.prod_singleton
-  right_inv g :=
-    MonoidHom.ext <| by
-      rintro ⟨L⟩
-      exact List.recOn L
-        (g.map_one.symm)
-        (by
-        rintro ⟨x, _ | _⟩ t (ih : _ = g (mk t))
-        · change _ = g ((of x)⁻¹ * mk t)
-          simpa [Lift.aux] using ih
-        · change _ = g (of x * mk t)
-          simpa [Lift.aux] using ih)
+  right_inv g := by ext; simp [of, Lift.aux]
 
 variable {f}
 
 @[to_additive (attr := simp)]
-theorem lift.mk : lift f (mk L) = List.prod (L.map fun x => cond x.2 (f x.1) (f x.1)⁻¹) :=
+theorem lift_mk : lift f (mk L) = List.prod (L.map fun x => cond x.2 (f x.1) (f x.1)⁻¹) :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem lift.of {x} : lift f (of x) = f x :=
+theorem lift_apply_of {x} : lift f (of x) = f x :=
   List.prod_singleton
 
 @[to_additive]
-theorem lift.unique (g : FreeGroup α →* β) (hg : ∀ x, g (FreeGroup.of x) = f x) {x} :
+theorem lift_unique (g : FreeGroup α →* β) (hg : ∀ x, g (FreeGroup.of x) = f x) {x} :
     g x = FreeGroup.lift f x :=
   DFunLike.congr_fun (lift.symm_apply_eq.mp (funext hg : g ∘ FreeGroup.of = f)) x
-
-/-- Two homomorphisms out of a free group are equal if they are equal on generators.
-
-See note [partially-applied ext lemmas]. -/
-@[to_additive (attr := ext) "Two homomorphisms out of a free additive group are equal if they are
-  equal on generators. See note [partially-applied ext lemmas]."]
-theorem ext_hom {G : Type*} [Group G] (f g : FreeGroup α →* G) (h : ∀ a, f (of a) = g (of a)) :
-    f = g :=
-  lift.symm.injective <| funext h
 
 @[to_additive]
 theorem lift_of_eq_id (α) : lift of = MonoidHom.id (FreeGroup α) :=
   lift.apply_symm_apply (MonoidHom.id _)
 
 @[to_additive]
-theorem lift.of_eq (x : FreeGroup α) : lift FreeGroup.of x = x :=
+theorem lift_of_apply (x : FreeGroup α) : lift FreeGroup.of x = x :=
   DFunLike.congr_fun (lift_of_eq_id α) x
 
 @[to_additive]
-theorem lift.range_le {s : Subgroup β} (H : Set.range f ⊆ s) : (lift f).range ≤ s := by
+theorem range_lift_le {s : Subgroup β} (H : Set.range f ⊆ s) : (lift f).range ≤ s := by
   rintro _ ⟨⟨L⟩, rfl⟩
   exact List.recOn L s.one_mem fun ⟨x, b⟩ tl ih ↦
     Bool.recOn b (by simpa using s.mul_mem (s.inv_mem <| H ⟨x, rfl⟩) ih)
       (by simpa using s.mul_mem (H ⟨x, rfl⟩) ih)
 
 @[to_additive]
-theorem lift.range_eq_closure : (lift f).range = Subgroup.closure (Set.range f) := by
-  apply le_antisymm (lift.range_le Subgroup.subset_closure)
+theorem range_lift_eq_closure : (lift f).range = Subgroup.closure (Set.range f) := by
+  apply le_antisymm (range_lift_le Subgroup.subset_closure)
   rw [Subgroup.closure_le]
   rintro _ ⟨a, rfl⟩
-  exact ⟨FreeGroup.of a, by simp only [lift.of]⟩
+  exact ⟨FreeGroup.of a, by simp only [lift_apply_of]⟩
 
 /-- The generators of `FreeGroup α` generate `FreeGroup α`. That is, the subgroup closure of the
 set of generators equals `⊤`. -/
 @[to_additive (attr := simp)]
 theorem closure_range_of (α) :
     Subgroup.closure (Set.range (FreeGroup.of : α → FreeGroup α)) = ⊤ := by
-  rw [← lift.range_eq_closure, lift_of_eq_id]
+  rw [← range_lift_eq_closure, lift_of_eq_id]
   exact MonoidHom.range_eq_top.2 Function.surjective_id
 
 end lift
@@ -766,17 +768,17 @@ theorem prod_mk : prod (mk L) = List.prod (L.map fun x => cond x.2 x.1 x.1⁻¹)
 
 @[to_additive (attr := simp)]
 theorem prod.of {x : α} : prod (of x) = x :=
-  lift.of
+  lift_apply_of
 
 @[to_additive]
 theorem prod.unique (g : FreeGroup α →* α) (hg : ∀ x, g (FreeGroup.of x) = x) {x} : g x = prod x :=
-  lift.unique g hg
+  lift_unique g hg
 
 end Prod
 
 @[to_additive]
 theorem lift_eq_prod_map {β : Type v} [Group β] {f : α → β} {x} : lift f x = prod (map f x) := by
-  rw [← lift.unique (prod.comp (map f)) (by simp), MonoidHom.coe_comp, Function.comp_apply]
+  rw [← lift_unique (prod.comp (map f)) (by simp), MonoidHom.coe_comp, Function.comp_apply]
 
 section Sum
 
@@ -853,13 +855,6 @@ instance : Monad FreeGroup.{u} where
   map {_α _β f} := map f
   bind {_α _β x f} := lift f x
 
-@[to_additive (attr := elab_as_elim, induction_eliminator)]
-protected theorem induction_on {C : FreeGroup α → Prop} (z : FreeGroup α) (C1 : C 1)
-    (Cp : ∀ x, C <| pure x) (Ci : ∀ x, C (pure x) → C (pure x)⁻¹)
-    (Cm : ∀ x y, C x → C y → C (x * y)) : C z :=
-  Quot.inductionOn z fun L =>
-    List.recOn L C1 fun ⟨x, b⟩ _tl ih => Bool.recOn b (Cm _ _ (Ci _ <| Cp x) ih) (Cm _ _ (Cp x) ih)
-
 @[to_additive]
 theorem map_pure (f : α → β) (x : α) : f <$> (pure x : FreeGroup α) = pure (f x) :=
   map.of
@@ -878,7 +873,7 @@ theorem map_inv (f : α → β) (x : FreeGroup α) : f <$> x⁻¹ = (f <$> x)⁻
 
 @[to_additive]
 theorem pure_bind (f : α → FreeGroup β) (x) : pure x >>= f = f x :=
-  lift.of
+  lift_apply_of
 
 @[to_additive (attr := simp)]
 theorem one_bind (f : α → FreeGroup β) : 1 >>= f = 1 :=
@@ -898,18 +893,10 @@ instance : LawfulMonad FreeGroup.{u} := LawfulMonad.mk'
     FreeGroup.induction_on x (map_one id) (fun x => map_pure id x) (fun x ih => by rw [map_inv, ih])
       fun x y ihx ihy => by rw [map_mul, ihx, ihy])
   (pure_bind := fun x f => pure_bind f x)
-  (bind_assoc := fun x =>
-    FreeGroup.induction_on x
-      (by intros; iterate 3 rw [one_bind])
-      (fun x => by intros; iterate 2 rw [pure_bind])
-      (fun x ih => by intros; (iterate 3 rw [inv_bind]); rw [ih])
-      (fun x y ihx ihy => by intros; (iterate 3 rw [mul_bind]); rw [ihx, ihy]))
-  (bind_pure_comp := fun f x =>
-    FreeGroup.induction_on x
-      (by rw [one_bind, map_one])
-      (fun x => by rw [pure_bind, map_pure])
-      (fun x ih => by rw [inv_bind, map_inv, ih])
-      (fun x y ihx ihy => by rw [mul_bind, map_mul, ihx, ihy]))
+  (bind_assoc := fun x => by
+    refine FreeGroup.induction_on x ?_ ?_ ?_ ?_ <;> simp +contextual [instMonad])
+  (bind_pure_comp := fun f x => by
+    refine FreeGroup.induction_on x ?_ ?_ ?_ ?_ <;> simp +contextual [instMonad])
 
 end Category
 
