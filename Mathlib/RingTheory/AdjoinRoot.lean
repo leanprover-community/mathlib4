@@ -137,7 +137,7 @@ instance [CommSemiring S] [Algebra S R] : Algebra S (AdjoinRoot f) :=
 def mkₐ : R[X] →ₐ[R] AdjoinRoot f :=
   Ideal.Quotient.mkₐ R _
 
-@[simp] theorem mkₐ_toRingHom : ↑(mkₐ f) = mk f := rfl
+@[simp, norm_cast] theorem mkₐ_toRingHom : ↑(mkₐ f) = mk f := rfl
 
 @[simp] theorem coe_mkₐ : ⇑(mkₐ f) = mk f := rfl
 

@@ -223,7 +223,7 @@ variable (x) in
 /-- Lift the algebra map `R → T` to `S →ₐ[R] T` by specifying a root `x` of `f` in `T`,
 where `S` is given by adjoining a root of `f` to `R`. -/
 def liftHom : S →ₐ[R] T :=
-  { h.lift (algebraMap R T) x hx' with commutes' := fun a => h.lift_algebraMap hx' a }
+  { h.lift (algebraMap R T) x hx' with commutes' a := h.lift_algebraMap hx' a }
 
 @[simp]
 theorem coe_liftHom : (h.liftHom x hx' : S →+* T) = h.lift (algebraMap R T) x hx' := rfl
@@ -235,8 +235,7 @@ theorem liftHom_map (z : R[X]) : h.liftHom x hx' (h.map z) = aeval x z := by
   rw [← lift_algebraMap_apply, lift_map, aeval_def]
 
 @[simp]
-theorem liftHom_root : h.liftHom x hx' h.root = x := by
-  rw [← lift_algebraMap_apply, lift_root]
+theorem liftHom_root : h.liftHom x hx' h.root = x := by rw [← lift_algebraMap_apply, lift_root]
 
 /-- Unicity of `liftHom`: a map that agrees on `h.root` agrees with `liftHom` everywhere. -/
 theorem eq_liftHom (g : S →ₐ[R] T) (hroot : g h.root = x) : g = h.liftHom x hx' :=
@@ -258,12 +257,15 @@ protected def isAdjoinRoot : IsAdjoinRoot (AdjoinRoot f) f where
 
 /-- `AdjoinRoot f` is indeed given by adjoining a root of `f`. If `f` is monic this is more
 powerful than `AdjoinRoot.isAdjoinRoot`. -/
-protected abbrev isAdjoinRootMonic (hf : Monic f) : IsAdjoinRootMonic (AdjoinRoot f) f where
+protected def isAdjoinRootMonic (hf : Monic f) : IsAdjoinRootMonic (AdjoinRoot f) f where
   __ := AdjoinRoot.isAdjoinRoot f
   Monic := hf
 
-theorem isAdjoinRoot_map_eq_mkₐ : (AdjoinRoot.isAdjoinRoot f).map = AdjoinRoot.mkₐ f := rfl
+@[simp]
+lemma isAdjoinRootMonic_toAdjoinRoot (hf : Monic f) :
+    (AdjoinRoot.isAdjoinRootMonic f hf).toIsAdjoinRoot = AdjoinRoot.isAdjoinRoot f := rfl
 
+theorem isAdjoinRoot_map_eq_mkₐ : (AdjoinRoot.isAdjoinRoot f).map = AdjoinRoot.mkₐ f := rfl
 
 @[simp]
 theorem isAdjoinRoot_root_eq_root : (AdjoinRoot.isAdjoinRoot f).root = AdjoinRoot.root f := by
@@ -320,9 +322,9 @@ theorem modByMonicHom_root (hdeg : 1 < natDegree f) : h.modByMonicHom h.root = X
 Auxiliary definition for `IsAdjoinRootMonic.powerBasis`. -/
 def basis : Basis (Fin (natDegree f)) R S :=
   Basis.ofRepr
-    { toFun := fun x => (h.modByMonicHom x).toFinsupp.comapDomain _ Fin.val_injective.injOn
-      invFun := fun g => h.map (ofFinsupp (g.mapDomain Fin.val))
-      left_inv := fun x => by
+    { toFun x := (h.modByMonicHom x).toFinsupp.comapDomain _ Fin.val_injective.injOn
+      invFun g := h.map (ofFinsupp (g.mapDomain Fin.val))
+      left_inv x := by
         cases subsingleton_or_nontrivial R
         · subsingleton [h.subsingleton]
         simp only
@@ -336,7 +338,7 @@ def basis : Basis (Fin (natDegree f)) R S :=
         obtain rfl | hf := eq_or_ne f 1
         · simp
         · exact coeff_eq_zero_of_natDegree_lt <| (natDegree_modByMonic_lt _ h.Monic hf).trans_le hi
-      right_inv := fun g => by
+      right_inv g := by
         nontriviality R
         ext i
         simp only [h.modByMonicHom_map, Finsupp.comapDomain_apply, Polynomial.toFinsupp_apply]
@@ -397,8 +399,8 @@ def liftPolyₗ {T : Type*} [AddCommGroup T] [Module R T] (g : R[X] →ₗ[R] T)
 def coeff : S →ₗ[R] ℕ → R :=
   h.liftPolyₗ
     { toFun := Polynomial.coeff
-      map_add' := fun p q => funext (Polynomial.coeff_add p q)
-      map_smul' := fun c p => funext (Polynomial.coeff_smul c p) }
+      map_add' p q := funext (Polynomial.coeff_add p q)
+      map_smul' c p := funext (Polynomial.coeff_smul c p) }
 
 theorem coeff_apply_lt (z : S) (i : ℕ) (hi : i < natDegree f) :
     h.coeff z i = h.basis.repr z ⟨i, hi⟩ := by
@@ -501,8 +503,8 @@ def aequiv (h' : IsAdjoinRoot T f) : S ≃ₐ[R] T :=
   { h.liftHom h'.root h'.aeval_root_self with
     toFun := h.liftHom h'.root h'.aeval_root_self
     invFun := h'.liftHom h.root h.aeval_root_self
-    left_inv := fun x => by rw [← h.map_repr x]; simp [- map_repr]
-    right_inv := fun x => by rw [← h'.map_repr x]; simp [- map_repr] }
+    left_inv x := by rw [← h.map_repr x]; simp [- map_repr]
+    right_inv x := by rw [← h'.map_repr x]; simp [- map_repr] }
 
 @[simp]
 theorem aequiv_map (h' : IsAdjoinRoot T f) (z : R[X]) : h.aequiv h' (h.map z) = h'.map z := by
@@ -601,6 +603,7 @@ theorem Algebra.adjoin.powerBasis'_minpoly_gen [IsDomain R] [IsDomain S] [NoZero
       (ne_of_lt (degree_pos hx')).symm
   rw [← minpolyGen_eq, adjoin.powerBasis', minpolyGen_map, minpolyGen_eq,
     AdjoinRoot.powerBasis'_gen, ← isAdjoinRoot_root_eq_root _,
+    ← isAdjoinRootMonic_toAdjoinRoot,
     minpoly_eq (AdjoinRoot.isAdjoinRootMonic _ (monic hx')) (irreducible hx')]
 
 end Algebra
