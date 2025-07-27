@@ -508,9 +508,19 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
                 exact h_pairing_eq.symm
               simp only [IsKilling.corootSubmodule] at hm_h
               obtain ⟨h_elem, hh_elem, hh_eq⟩ := hm_h
-              have h_bracket_elem : ⁅x_χ, (h_elem : L)⁆ = 0 :=
-                IsKilling.zero_pairing_implies_zero_bracket H χ α.1 x_χ hx_χ h_elem hh_elem
-                  h_chi_coroot_zero
+              have h_lie_eq_smul : ⁅(h_elem : L), x_χ⁆ = (χ.toLinear) h_elem • x_χ :=
+                LieAlgebra.IsKilling.lie_eq_smul_of_mem_rootSpace hx_χ h_elem
+              have h_chi_h_zero : (χ.toLinear) h_elem = 0 := by
+                obtain ⟨c, hc⟩ := Submodule.mem_span_singleton.mp <| by
+                  rw [← LieAlgebra.IsKilling.coe_corootSpace_eq_span_singleton α.1]
+                  rw [LieSubmodule.mem_toSubmodule]
+                  exact hh_elem
+                rw [← hc, LinearMap.map_smul]
+                have h_convert : (χ.toLinear) (LieAlgebra.IsKilling.coroot α.1) =
+                    χ (LieAlgebra.IsKilling.coroot α.1) := rfl
+                rw [h_convert, h_chi_coroot_zero, smul_zero]
+              have h_bracket_elem : ⁅x_χ, (h_elem : L)⁆ = 0 := by
+                rw [← lie_skew, h_lie_eq_smul, h_chi_h_zero, zero_smul, neg_zero]
               rw [← hh_eq]
               exact h_bracket_elem
 

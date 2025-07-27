@@ -424,32 +424,6 @@ instance : (rootSystem H).IsReduced where
     · right; ext x; simpa [neg_eq_iff_eq_neg] using DFunLike.congr_fun h.symm x
     · left; ext x; simpa using DFunLike.congr_fun h.symm x
 
-lemma zero_pairing_implies_zero_bracket
-  (χ α : Weight K H L)
-  (x : L) (hx : x ∈ genWeightSpace L χ.toLinear)
-  (h : H) (hh : h ∈ corootSpace α.toLinear)
-  (h_zero : χ (coroot α) = 0) :
-  ⁅x, (h : L)⁆ = 0 := by
-  obtain ⟨c, hc⟩ := Submodule.mem_span_singleton.mp <| by
-    rw [← coe_corootSpace_eq_span_singleton α, LieSubmodule.mem_toSubmodule]
-    exact hh
-  have h_chi_h_zero : (χ.toLinear) h = 0 := by
-    rw [← hc, LinearMap.map_smul]
-    have h_convert : (χ.toLinear) (coroot α) = χ (coroot α) := rfl
-    rw [h_convert, h_zero, smul_zero]
-  rw [genWeightSpace, LieSubmodule.mem_iInf] at hx
-  have hx_eigen : x ∈ (ad K L (h : L)).eigenspace 0 := by
-    have h_semisimple := isSemisimple_ad_of_mem_isCartanSubalgebra h.property
-    rw [← h_semisimple.isFinitelySemisimple.maxGenEigenspace_eq_eigenspace]
-    have h_eq : toEnd K H L h = ad K L (h : L) := by
-      ext y
-      simp only [toEnd_apply_apply, LieSubalgebra.coe_bracket_of_module, ad_apply]
-    rw [← h_eq]
-    have := hx h
-    rwa [h_chi_h_zero, genWeightSpaceOf] at this
-  rw [Module.End.mem_eigenspace_iff, ad_apply, zero_smul, ← lie_skew] at hx_eigen
-  exact neg_eq_zero.mp hx_eigen
-
 lemma pairing_zero_of_trivial_sum_diff_spaces
   (χ α : Weight K H L) (hχ : χ.IsNonZero) (hα : α.IsNonZero)
   (w_plus : χ.toLinear + α.toLinear ≠ 0) (w_minus : χ.toLinear - α.toLinear ≠ 0)
