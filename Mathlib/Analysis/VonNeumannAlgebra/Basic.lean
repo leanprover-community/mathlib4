@@ -142,10 +142,6 @@ theorem IsIdempotentElem.mem_iff {e : H →L[ℂ] H}
     e ∈ S ↔ ∀ y ∈ S.commutant,
     LinearMap.range e ∈ Module.End.invtSubmodule y
       ∧ LinearMap.ker e ∈ Module.End.invtSubmodule y := by
-  simp_rw [← h.commute_iff]
-  refine ⟨fun he y hy => mem_commutant_iff.mp hy _ he, fun H' => ?_⟩
-  rw [← commutant_commutant S, mem_commutant_iff]
-  intro m hm
-  exact (H' _ hm).symm
+  conv_rhs => simp [← h.commute_iff, Commute.symm_iff (a := e), commute_iff_eq, ← mem_commutant_iff]
 
 end VonNeumannAlgebra
