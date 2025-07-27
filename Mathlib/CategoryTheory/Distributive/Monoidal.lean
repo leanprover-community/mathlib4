@@ -113,7 +113,7 @@ lemma IsMonoidalLeftDistrib.of_isIso_coprodComparisonTensorLeft
 /-- The forward direction of the left distributivity isomorphism is the cogap morphism
 `coprod.desc (_ ◁ coprod.inl) (_ ◁ coprod.inr) : (X ⊗ Y) ⨿ (X ⊗ Z) ⟶ X ⊗ (Y ⨿ Z)`. -/
 lemma leftDistrib_hom [IsMonoidalLeftDistrib C] {X Y Z : C} :
-  (∂L X Y Z).hom = coprod.desc (_ ◁ coprod.inl) (_ ◁ coprod.inr) := by rfl
+    (∂L X Y Z).hom = coprod.desc (_ ◁ coprod.inl) (_ ◁ coprod.inr) := by rfl
 
 @[reassoc (attr := simp)]
 lemma coprod_inl_leftDistrib_hom [IsMonoidalLeftDistrib C] {X Y Z : C} :
@@ -169,7 +169,7 @@ lemma IsMonoidalRightDistrib.of_isIso_coprodComparisonTensorRight
 /-- The forward direction of the right distributivity isomorphism is equal to the cogap morphism
 `coprod.desc (coprod.inl ▷ _) (coprod.inr ▷ _) : (Y ⊗ X) ⨿ (Z ⊗ X) ⟶ (Y ⨿ Z) ⊗ X`. -/
 lemma rightDistrib_hom [IsMonoidalRightDistrib C] {X Y Z : C} :
-  (∂R X Y Z).hom = coprod.desc (coprod.inl ▷ _) (coprod.inr ▷ _) := by rfl
+    (∂R X Y Z).hom = coprod.desc (coprod.inl ▷ _) (coprod.inr ▷ _) := by rfl
 
 @[reassoc (attr := simp)]
 lemma coprod_inl_rightDistrib_hom [IsMonoidalRightDistrib C] {X Y Z : C} :
