@@ -495,9 +495,9 @@ and a `B`-module `M`, `S`-module `P`, `R`-module `Q`, then
 -/
 def rightComm : (M ⊗[S] P) ⊗[R] Q ≃ₗ[B] (M ⊗[R] Q) ⊗[S] P :=
   LinearEquiv.ofLinear
-    (lift (lift (LinearMap.lflip ∘ₗ
+    (lift (lift (LinearMap.lflip.toLinearMap ∘ₗ
       (AlgebraTensorModule.mk _ _ _ _).compr₂ (AlgebraTensorModule.mk _ _ _ _))))
-    (lift (lift (LinearMap.lflip ∘ₗ
+    (lift (lift (LinearMap.lflip.toLinearMap ∘ₗ
       (AlgebraTensorModule.mk _ _ _ _).compr₂ (AlgebraTensorModule.mk _ _ _ _))))
     (by ext; simp) (by ext; simp)
 
