@@ -212,7 +212,7 @@ theorem map_sub_int' [AddGroupWithOne G] [AddGroup H] [AddConstMapClass F G H 1 
     (f : F) (x : G) (n : ℤ) : f (x - n) = f x - n • b := by
   rw [← map_sub_zsmul, zsmul_one]
 
-theorem map_sub_int [AddGroupWithOne G] [AddMonoidWithOne H] [AddConstMapClass F G H 1 1]
+theorem map_sub_int [AddGroupWithOne G] [AddGroupWithOne H] [AddConstMapClass F G H 1 1]
     (f : F) (x : G) (n : ℤ) : f (x - n) = f x - n := by simp
 
 @[scoped simp]

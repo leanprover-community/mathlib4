@@ -48,7 +48,7 @@ variable {ι} (R)
 `Pi.algHom g : B →ₐ[R] Π i, A i` given by `Pi.algHom g x i = g i x`. -/
 @[simps!]
 def algHom {B : Type*} [Semiring B] [Algebra R B] (g : ∀ i, B →ₐ[R] A i) : B →ₐ[R] Π i, A i where
-  toRingHom := Pi.ringHom fun i ↦ (g i).toRingHom
+  __ := Pi.ringHom fun i ↦ (g i).toRingHom
   commutes' r := by ext; simp
 
 /-- `Function.eval` as an `AlgHom`. The name matches `Pi.evalRingHom`, `Pi.evalMonoidHom`,

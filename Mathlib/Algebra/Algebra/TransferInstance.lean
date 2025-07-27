@@ -28,7 +28,7 @@ protected abbrev algebra (e : α ≃ β) [Semiring β] :
   letI : Module R α := e.module R
   fapply Algebra.ofModule
   · intro r x y
-    change e.symm (e (e.symm (r • e x)) * e y) = e.symm (r • e (x * y))
+    change e.symm (e (e.symm (r • e x)) * e y) = e.symm (r • e.ringEquiv (x * y))
     simp only [apply_symm_apply, Algebra.smul_mul_assoc, map_mul, ringEquiv_apply]
   · intro r x y
     change e.symm (e x * e (e.symm (r • e y))) = e.symm (r • e (e.symm (e x * e y)))

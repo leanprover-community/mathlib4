@@ -64,7 +64,7 @@ def mulRight (b : A) : A →ₗ[R] A where
   map_smul' _ _ := smul_mul_assoc _ _ _
 
 @[simp]
-theorem mulRight_apply (a b : A) : mulRight R a b = a * b := rfl
+theorem mulRight_apply (a b : A) : mulRight R a b = b * a := rfl
 
 @[simp]
 theorem mulRight_toAddMonoidHom (a : A) : (mulRight R a : A →+ A) = AddMonoidHom.mulRight a := rfl

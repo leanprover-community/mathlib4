@@ -88,7 +88,7 @@ namespace NonUnitalAlgHomClass
 instance (priority := 100) toNonUnitalRingHomClass
   {F R S A B : Type*} {_ : Monoid R} {_ : Monoid S} {φ : outParam (R →* S)}
     {_ : NonUnitalNonAssocSemiring A} [DistribMulAction R A]
-    {_ : NonUnitalNonAssocSemiring B] [DistribMulAction S B] [FunLike F A B]
+    {_ : NonUnitalNonAssocSemiring B} [DistribMulAction S B] [FunLike F A B]
     [NonUnitalAlgSemiHomClass F φ A B] : NonUnitalRingHomClass F A B :=
   { ‹NonUnitalAlgSemiHomClass F φ A B› with }
 
@@ -127,8 +127,8 @@ instance {F R S A B : Type*} [Monoid R] [Monoid S] {φ : R →* S}
   ⟨toNonUnitalAlgSemiHom⟩
 
 /-- Turn an element of a type `F` satisfying `NonUnitalAlgHomClass F R A B` into an actual
-`NonUnitalAlgHom`. This is declared as the default coercion from `F` to `A →ₛₙₐ[R] B`. -/
 @[coe]
+`NonUnitalAlgHom`. This is declared as the default coercion from `F` to `A →ₛₙₐ[R] B`. -/
 def toNonUnitalAlgHom {F R : Type*} [Monoid R] {A B : Type*}
     [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
     [NonUnitalNonAssocSemiring B] [DistribMulAction R B]

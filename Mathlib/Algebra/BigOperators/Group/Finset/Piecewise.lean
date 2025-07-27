@@ -236,7 +236,7 @@ theorem prod_update_of_mem [DecidableEq ι] {s : Finset ι} {i : ι} (h : i ∈ 
   rw [update_eq_piecewise, prod_piecewise]
   simp [h]
 
-/-- See also `Finset.prod_ite_one`. -/
+/-- See also `Finset.prod_ite_zero`. -/
 @[to_additive "See also `Finset.sum_boole`."]
 theorem prod_ite_one (s : Finset ι) (p : ι → Prop) [DecidablePred p]
     (h : ∀ i ∈ s, ∀ j ∈ s, p i → p j → i = j) (a : M) :
