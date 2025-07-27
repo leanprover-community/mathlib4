@@ -148,20 +148,11 @@ theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s
       suffices u⁻¹ * RCLike.re (f x) = RCLike.re ((B x) f₀) by exact lt_of_lt_of_eq hf₂ this
       rw [← RCLike.re_ofReal_mul]
       congr
-      simp
-      rw [← fg2]
-      rw [← hf₀]
-      simp [WeakBilin.eval]
-      rw [← smul_eq_mul]
-      rw [← smul_assoc]
-      suffices u • ((algebraMap ℝ 𝕜) u)⁻¹ = 1 by
-        rw [this]
-        rw [one_smul]
-        rfl
+      simp [map_inv₀, ← fg2, ← hf₀, WeakBilin.eval]
+      rw [← smul_eq_mul, ← smul_assoc]
       norm_cast
-      rw [smul_eq_mul]
-      have unz : u ≠ 0 := by exact Ne.symm (ne_of_lt e3)
-      exact CommGroupWithZero.mul_inv_cancel u unz
+      have unz : u ≠ 0 := (ne_of_lt e3).symm
+      aesop
     by_contra hc
     simp at hc
     have hc₁ : ‖B x f₀‖ ≤ 1 := by
