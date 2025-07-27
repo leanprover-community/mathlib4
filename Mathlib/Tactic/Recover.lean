@@ -16,7 +16,6 @@ that are not closed, starting from the original goal.
 
 namespace Mathlib.Tactic
 
-open Lean
 open Lean Meta Elab Tactic
 
 /--

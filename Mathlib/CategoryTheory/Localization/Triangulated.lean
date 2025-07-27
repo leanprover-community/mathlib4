@@ -69,7 +69,7 @@ lemma contractible_mem_essImageDistTriang [EssSurj L] [HasZeroObject D]
 
 lemma rotate_essImageDistTriang [Preadditive D] [L.Additive]
     [∀ (n : ℤ), (shiftFunctor D n).Additive] (T : Triangle D) :
-  T ∈ L.essImageDistTriang ↔ T.rotate ∈ L.essImageDistTriang := by
+    T ∈ L.essImageDistTriang ↔ T.rotate ∈ L.essImageDistTriang := by
   constructor
   · rintro ⟨T', e', hT'⟩
     exact ⟨T'.rotate, (rotate D).mapIso e' ≪≫ L.mapTriangleRotateIso.app T',

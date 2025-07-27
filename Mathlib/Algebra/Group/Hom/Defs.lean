@@ -507,16 +507,16 @@ attribute [coe] AddMonoidHom.toZeroHom
 
 /-- `MonoidHom` down-cast to a `OneHom`, forgetting the multiplicative property. -/
 @[to_additive "`AddMonoidHom` down-cast to a `ZeroHom`, forgetting the additive property"]
-instance MonoidHom.coeToOneHom [MulOneClass M] [MulOneClass N] :
-  Coe (M →* N) (OneHom M N) := ⟨MonoidHom.toOneHom⟩
+instance MonoidHom.coeToOneHom [MulOneClass M] [MulOneClass N] : Coe (M →* N) (OneHom M N) :=
+  ⟨MonoidHom.toOneHom⟩
 
 attribute [coe] MonoidHom.toMulHom
 attribute [coe] AddMonoidHom.toAddHom
 
 /-- `MonoidHom` down-cast to a `MulHom`, forgetting the 1-preserving property. -/
 @[to_additive "`AddMonoidHom` down-cast to an `AddHom`, forgetting the 0-preserving property."]
-instance MonoidHom.coeToMulHom [MulOneClass M] [MulOneClass N] :
-  Coe (M →* N) (M →ₙ* N) := ⟨MonoidHom.toMulHom⟩
+instance MonoidHom.coeToMulHom [MulOneClass M] [MulOneClass N] : Coe (M →* N) (M →ₙ* N) :=
+  ⟨MonoidHom.toMulHom⟩
 
 -- these must come after the coe_toFun definitions
 initialize_simps_projections ZeroHom (toFun → apply)
@@ -866,11 +866,9 @@ protected theorem MonoidHom.map_zpow' [DivInvMonoid M] [DivInvMonoid N] (f : M �
 
 /-- Makes a `OneHom` inverse from the bijective inverse of a `OneHom` -/
 @[to_additive (attr := simps)
-  "Make a `ZeroHom` inverse from the bijective inverse of a `ZeroHom`"]
-def OneHom.inverse [One M] [One N]
-    (f : OneHom M N) (g : N → M)
-    (h₁ : Function.LeftInverse g f) :
-  OneHom N M :=
+"Make a `ZeroHom` inverse from the bijective inverse of a `ZeroHom`"]
+def OneHom.inverse [One M] [One N] (f : OneHom M N) (g : N → M) (h₁ : Function.LeftInverse g f) :
+    OneHom N M :=
   { toFun := g,
     map_one' := by rw [← f.map_one, h₁] }
 

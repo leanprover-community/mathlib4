@@ -379,10 +379,10 @@ lemma Scheme.isoOfEq_inv_ι (X : Scheme.{u}) {U V : X.Opens} (e : U = V) :
   IsOpenImmersion.isoOfRangeEq_inv_fac _ _ _
 
 lemma Scheme.isoOfEq_hom (X : Scheme.{u}) {U V : X.Opens} (e : U = V) :
-  (X.isoOfEq e).hom = X.homOfLE e.le := rfl
+    (X.isoOfEq e).hom = X.homOfLE e.le := rfl
 
 lemma Scheme.isoOfEq_inv (X : Scheme.{u}) {U V : X.Opens} (e : U = V) :
-  (X.isoOfEq e).inv = X.homOfLE e.ge := rfl
+    (X.isoOfEq e).inv = X.homOfLE e.ge := rfl
 
 @[simp]
 lemma Scheme.isoOfEq_rfl (X : Scheme.{u}) (U : X.Opens) : X.isoOfEq (refl U) = Iso.refl _ := by

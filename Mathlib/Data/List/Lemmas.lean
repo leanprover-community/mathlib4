@@ -11,8 +11,6 @@ import Mathlib.Data.List.InsertIdx
 Split out from `Data.List.Basic` to reduce its dependencies.
 -/
 
-open List
-
 variable {α β γ : Type*}
 
 namespace List

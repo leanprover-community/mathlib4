@@ -180,8 +180,10 @@ theorem le_of_forall_ge (H : ∀ c, a ≤ c → b ≤ c) : b ≤ a := H _ le_rfl
 theorem forall_le_iff_le : (∀ ⦃c⦄, c ≤ a → c ≤ b) ↔ a ≤ b :=
   ⟨le_of_forall_le, fun h _ hca ↦ le_trans hca h⟩
 
-theorem forall_le_iff_ge : (∀ ⦃c⦄, a ≤ c → b ≤ c) ↔ b ≤ a :=
+theorem forall_ge_iff_le : (∀ ⦃c⦄, a ≤ c → b ≤ c) ↔ b ≤ a :=
   ⟨le_of_forall_ge, fun h _ hca ↦ le_trans h hca⟩
+
+@[deprecated (since := "2025-07-27")] alias forall_le_iff_ge := forall_ge_iff_le
 
 /-- monotonicity of `≤` with respect to `→` -/
 theorem le_implies_le_of_le_of_le (hca : c ≤ a) (hbd : b ≤ d) : a ≤ b → c ≤ d :=

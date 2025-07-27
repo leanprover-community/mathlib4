@@ -81,6 +81,12 @@ lemma map_single (i : m) (j : n) (a : α) {β : Type*} [Zero β]
 
 @[deprecated (since := "2025-05-05")] alias map_stdBasisMatrix := map_single
 
+theorem single_mem_matrix {S : Set α} (hS : 0 ∈ S) {i : m} {j : n} {a : α} :
+    Matrix.single i j a ∈ S.matrix ↔ a ∈ S := by
+  simp only [Set.mem_matrix, single, of_apply]
+  conv_lhs => intro _ _; rw[ite_mem]
+  simp [hS]
+
 end Zero
 
 theorem single_add [AddZeroClass α] (i : m) (j : n) (a b : α) :
