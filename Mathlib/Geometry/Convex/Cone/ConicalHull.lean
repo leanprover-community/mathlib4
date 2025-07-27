@@ -81,20 +81,32 @@ omit [PosMulMono R]
 theorem conical_comb_add (x₁ x₂ : E)
     (h₁ : IsConicalComb R s x₁) (h₂ : IsConicalComb R s x₂) :
     IsConicalComb R s (x₁ + x₂) := by
-  obtain ⟨n₁, c₁, v₁, h2₁, h3₁, h4₁⟩ := h₁
-  obtain ⟨n₂, c₂, v₂, h2₂, h3₂, h4₂⟩ := h₂
-  let h_mem := append_mem s v₁ v₂ h2₁ h2₂
-  let h_nonneg := append_nonneg R c₁ c₂ h3₁ h3₂
+  obtain ⟨n₁, c₁, v₁, hv₁, hc₁, hx₁⟩ := h₁
+  obtain ⟨n₂, c₂, v₂, hv₂, hc₂, hx₂⟩ := h₂
+  let h_mem := append_mem s v₁ v₂ hv₁ hv₂
+  have append_nonneg (c1 : Fin n₁ → R) (c2 : Fin n₂ → R)
+      (h1 : ∀ i, 0 ≤ c1 i) (h2 : ∀ i, 0 ≤ c2 i) :
+      (∀ i : (Fin (n₁ + n₂)), 0 ≤ (append c1 c2) i) :=
+    (append_forall_iff (0 ≤ ·) c1 c2).mpr ⟨h1, h2⟩
+  let h_nonneg := append_nonneg c₁ c₂ hc₁ hc₂
   use (n₁ + n₂ : Nat), (append c₁ c₂), (append v₁ v₂),
     (fun (i : Fin (n₁ + n₂)) => h_mem i), (fun (i : Fin (n₁ + n₂)) => h_nonneg i)
-  rw [h4₁, h4₂]
-  have h6 := sum_append (c₁ • v₁) (c₂ • v₂)
-  have h7 := smul_append_distrib R c₁ v₁ c₂ v₂
-  have h8 : ∑ i : Fin (n₁ + n₂), append c₁ c₂ i • append v₁ v₂ i
+  rw [hx₁, hx₂]
+  have sum_append (v : Fin n₁ → E) (w : Fin n₂ → E) :
+      (∑ i, append v w i) = (∑ i, v i) + (∑ i, w i) := by simp [sum_univ_add]
+  have smul_append_distrib (c1 : Fin n₁ → R) (v1 : Fin n₁ → E)
+      (c2 : Fin n₂ → R) (v2 : Fin n₂ → E) : (append c1 c2) • (append v1 v2)
+      = append (c1 • v1) (c2 • v2) := by
+    rw [append, append, append]
+    ext ⟨i, hi⟩
+    by_cases h : i < n₁
+    · simp [addCases, h]
+    · simp [addCases, h]
+  have h7 : ∑ i : Fin (n₁ + n₂), append c₁ c₂ i • append v₁ v₂ i
       = ∑ i : Fin (n₁ + n₂), (append c₁ c₂ • append v₁ v₂) i
       := rfl
-  rw [h8, h7]
-  exact id (Eq.symm h6)
+  rw [h7, smul_append_distrib c₁ v₁ c₂ v₂]
+  exact id (Eq.symm (sum_append (c₁ • v₁) (c₂ • v₂)))
 
 /-- The 'conical_hull R s' is the set of all conical combinations
 of elements of s with scalars from R. It is a pointed cone. -/
