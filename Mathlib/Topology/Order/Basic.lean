@@ -245,7 +245,7 @@ alias StrictMono.embedding_of_ordConnected := StrictMono.isEmbedding_of_ordConne
 
 /-- An `OrderEmbedding` is a topological embedding provided that the range of `f` is
 order-connected -/
-lemma OrderEmbedding.IsEmbedding {α β : Type*} [LinearOrder α] [LinearOrder β]
+lemma OrderEmbedding.isEmbedding_of_ordConnected {α β : Type*} [LinearOrder α] [LinearOrder β]
     [TopologicalSpace α] [OrderTopology α] [TopologicalSpace β] [OrderTopology β]
     (f : α ↪o β) (hc : OrdConnected (range f)) : Topology.IsEmbedding f :=
   f.strictMono.isEmbedding_of_ordConnected hc
