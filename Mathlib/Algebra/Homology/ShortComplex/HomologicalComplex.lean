@@ -236,8 +236,7 @@ lemma p_descOpcycles {A : C} (k : K.X i ⟶ A) (j : ι) (hj : c.prev i = j)
 variable (i)
 
 /-- The map `K.opcycles i ⟶ K.X j` induced by the differential `K.d i j`. -/
-noncomputable def fromOpcycles :
-  K.opcycles i ⟶ K.X j  :=
+noncomputable def fromOpcycles : K.opcycles i ⟶ K.X j  :=
   K.descOpcycles (K.d i j) (c.prev i) rfl (K.d_comp_d _ _ _)
 
 omit [K.HasHomology i] in
@@ -681,8 +680,8 @@ instance isIso_homologyι₀ :
 
 /-- The canonical isomorphism `K.homology 0 ≅ K.opcycles 0` for a chain complex `K`
 indexed by `ℕ`. -/
-noncomputable abbrev isoHomologyι₀ :
-  K.homology 0 ≅ K.opcycles 0 := K.isoHomologyι 0 _ rfl (by simp)
+noncomputable abbrev isoHomologyι₀ : K.homology 0 ≅ K.opcycles 0 :=
+  K.isoHomologyι 0 _ rfl (by simp)
 
 variable {K L}
 
@@ -707,8 +706,8 @@ instance isIso_homologyπ₀ :
 
 /-- The canonical isomorphism `K.cycles 0 ≅ K.homology 0` for a cochain complex `K`
 indexed by `ℕ`. -/
-noncomputable abbrev isoHomologyπ₀ :
-  K.cycles 0 ≅ K.homology 0 := K.isoHomologyπ _ 0 rfl (by simp)
+noncomputable abbrev isoHomologyπ₀ : K.cycles 0 ≅ K.homology 0 :=
+  K.isoHomologyπ _ 0 rfl (by simp)
 
 variable {K L}
 
