@@ -67,7 +67,6 @@ instance {n : ℕ} : CanLift ℕ (Fin n) Fin.val (· < n) where
 def rec0 {α : Fin 0 → Sort*} (i : Fin 0) : α i := absurd i.2 (Nat.not_lt_zero _)
 
 variable {n m : ℕ}
---variable {a b : Fin n} -- this *really* breaks stuff
 
 theorem val_injective : Function.Injective (@Fin.val n) :=
   @Fin.eq_of_val_eq n
@@ -111,12 +110,10 @@ theorem ne_iff_vne (a b : Fin n) : a ≠ b ↔ a.1 ≠ b.1 :=
 theorem mk_eq_mk {a h a' h'} : @mk n a h = @mk n a' h' ↔ a = a' :=
   Fin.ext_iff
 
--- syntactic tautologies now
-
 /-- Assume `k = l`. If two functions defined on `Fin k` and `Fin l` are equal on each element,
 then they coincide (in the heq sense). -/
 protected theorem heq_fun_iff {α : Sort*} {k l : ℕ} (h : k = l) {f : Fin k → α} {g : Fin l → α} :
-    HEq f g ↔ ∀ i : Fin k, f i = g ⟨(i : ℕ), h ▸ i.2⟩ := by
+    f ≍ g ↔ ∀ i : Fin k, f i = g ⟨(i : ℕ), h ▸ i.2⟩ := by
   subst h
   simp [funext_iff]
 
@@ -125,7 +122,7 @@ If two functions `Fin k → Fin k' → α` and `Fin l → Fin l' → α` are equ
 then they coincide (in the heq sense). -/
 protected theorem heq_fun₂_iff {α : Sort*} {k l k' l' : ℕ} (h : k = l) (h' : k' = l')
     {f : Fin k → Fin k' → α} {g : Fin l → Fin l' → α} :
-    HEq f g ↔ ∀ (i : Fin k) (j : Fin k'), f i j = g ⟨(i : ℕ), h ▸ i.2⟩ ⟨(j : ℕ), h' ▸ j.2⟩ := by
+    f ≍ g ↔ ∀ (i : Fin k) (j : Fin k'), f i j = g ⟨(i : ℕ), h ▸ i.2⟩ ⟨(j : ℕ), h' ▸ j.2⟩ := by
   subst h
   subst h'
   simp [funext_iff]
@@ -133,7 +130,7 @@ protected theorem heq_fun₂_iff {α : Sort*} {k l k' l' : ℕ} (h : k = l) (h' 
 /-- Two elements of `Fin k` and `Fin l` are heq iff their values in `ℕ` coincide. This requires
 `k = l`. For the left implication without this assumption, see `val_eq_val_of_heq`. -/
 protected theorem heq_ext_iff {k l : ℕ} (h : k = l) {i : Fin k} {j : Fin l} :
-    HEq i j ↔ (i : ℕ) = (j : ℕ) := by
+    i ≍ j ↔ (i : ℕ) = (j : ℕ) := by
   subst h
   simp [val_eq_val]
 
@@ -340,7 +337,7 @@ lemma intCast_val_sub_eq_sub_add_ite {n : ℕ} (a b : Fin n) :
 lemma one_le_of_ne_zero {n : ℕ} [NeZero n] {k : Fin n} (hk : k ≠ 0) : 1 ≤ k := by
   obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (NeZero.ne n)
   cases n with
-  | zero => simp only [Nat.reduceAdd, Fin.isValue, Fin.zero_le]
+  | zero => simp only [Fin.isValue, Fin.zero_le]
   | succ n => rwa [Fin.le_iff_val_le_val, Fin.val_one, Nat.one_le_iff_ne_zero, val_ne_zero_iff]
 
 lemma val_sub_one_of_ne_zero [NeZero n] {i : Fin n} (hi : i ≠ 0) : (i - 1).val = i - 1 := by
@@ -749,7 +746,7 @@ theorem castPred_eq_iff_eq_castSucc (i : Fin (n + 1)) (hi : i ≠ last _) (j : F
 @[simp]
 theorem castPred_mk (i : ℕ) (h₁ : i < n) (h₂ := h₁.trans (Nat.lt_succ_self _))
     (h₃ : ⟨i, h₂⟩ ≠ last _ := (ne_iff_vne _ _).mpr (val_last _ ▸ h₁.ne)) :
-  castPred ⟨i, h₂⟩ h₃ = ⟨i, h₁⟩ := rfl
+    castPred ⟨i, h₂⟩ h₃ = ⟨i, h₁⟩ := rfl
 
 @[simp]
 theorem castPred_le_castPred_iff {i j : Fin (n + 1)} {hi : i ≠ last n} {hj : j ≠ last n} :
@@ -805,6 +802,10 @@ alias castPred_zero' := castPred_zero
 theorem castPred_eq_zero [NeZero n] {i : Fin (n + 1)} (h : i ≠ last n) :
     Fin.castPred i h = 0 ↔ i = 0 := by
   rw [← castPred_zero, castPred_inj]
+
+theorem castPred_ne_zero [NeZero n] {i : Fin (n + 1)} (h₁ : i ≠ last n) (h₂ : i ≠ 0) :
+    castPred i h₁ ≠ 0 :=
+  (castPred_eq_zero h₁).not.mpr h₂
 
 @[simp]
 theorem castPred_one [NeZero n] :
@@ -1344,7 +1345,7 @@ theorem liftFun_iff_succ {α : Type*} (r : α → α → Prop) [IsTrans α r] {f
   · intro H i
     exact H i.castSucc_lt_succ
   · refine fun H i => Fin.induction (fun h ↦ ?_) ?_
-    · simp [le_def] at h
+    · simp at h
     · intro j ihj hij
       rw [← le_castSucc_iff] at hij
       obtain hij | hij := (le_def.1 hij).eq_or_lt
@@ -1425,15 +1426,15 @@ protected theorem mul_one' [NeZero n] (k : Fin n) : k * 1 = k := by
   · simp [eq_iff_true_of_subsingleton]
   cases n
   · simp [fin_one_eq_zero]
-  simp [Fin.ext_iff, mul_def, mod_eq_of_lt (is_lt k)]
+  simp [mul_def, mod_eq_of_lt (is_lt k)]
 
 protected theorem one_mul' [NeZero n] (k : Fin n) : (1 : Fin n) * k = k := by
   rw [Fin.mul_comm, Fin.mul_one']
 
-protected theorem mul_zero' [NeZero n] (k : Fin n) : k * 0 = 0 := by simp [Fin.ext_iff, mul_def]
+protected theorem mul_zero' [NeZero n] (k : Fin n) : k * 0 = 0 := by simp [mul_def]
 
 protected theorem zero_mul' [NeZero n] (k : Fin n) : (0 : Fin n) * k = 0 := by
-  simp [Fin.ext_iff, mul_def]
+  simp [mul_def]
 
 end Mul
 

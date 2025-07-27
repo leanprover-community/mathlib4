@@ -40,7 +40,7 @@ variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
 theorem hasFPowerSeriesOnBall_const {c : F} {e : E} :
     HasFPowerSeriesOnBall (fun _ => c) (constFormalMultilinearSeries 𝕜 E c) e ⊤ := by
   refine ⟨by simp, WithTop.top_pos, fun _ => hasSum_single 0 fun n hn => ?_⟩
-  simp [constFormalMultilinearSeries_apply hn]
+  simp [constFormalMultilinearSeries_apply_of_nonzero hn]
 
 theorem hasFPowerSeriesAt_const {c : F} {e : E} :
     HasFPowerSeriesAt (fun _ => c) (constFormalMultilinearSeries 𝕜 E c) e :=
@@ -1016,7 +1016,7 @@ lemma AnalyticWithinAt.zpow {f : E → 𝕝} {z : E} {s : Set E} {n : ℤ}
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic away from the zeros.
 -/
-lemma AnalyticAt.fun_zpow {f : E → 𝕝} {z : E} {n : ℤ}  (h₁f : AnalyticAt 𝕜 f z) (h₂f : f z ≠ 0) :
+lemma AnalyticAt.fun_zpow {f : E → 𝕝} {z : E} {n : ℤ} (h₁f : AnalyticAt 𝕜 f z) (h₂f : f z ≠ 0) :
     AnalyticAt 𝕜 (fun x ↦ f x ^ n) z := by
   by_cases hn : 0 ≤ n
   · exact zpow_nonneg h₁f hn
@@ -1039,7 +1039,7 @@ lemma AnalyticOn.fun_zpow {f : E → 𝕝} {s : Set E} {n : ℤ} (h₁f : Analyt
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic away from the zeros.
 -/
-lemma AnalyticOn.zpow {f : E → 𝕝} {s : Set E} {n : ℤ}  (h₁f : AnalyticOn 𝕜 f s)
+lemma AnalyticOn.zpow {f : E → 𝕝} {s : Set E} {n : ℤ} (h₁f : AnalyticOn 𝕜 f s)
     (h₂f : ∀ z ∈ s, f z ≠ 0) :
     AnalyticOn 𝕜 (f ^ n) s := by
   exact fun_zpow h₁f h₂f

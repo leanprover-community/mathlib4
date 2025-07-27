@@ -192,7 +192,7 @@ theorem destruct_think (s : WSeq α) : destruct (think s) = (destruct s).think :
 
 @[simp]
 theorem seq_destruct_nil : Seq.destruct (nil : WSeq α) = none :=
-  Seq.destruct_nil
+  rfl
 
 @[simp]
 theorem seq_destruct_cons (a : α) (s) : Seq.destruct (cons a s) = some (some a, s) :=
@@ -225,7 +225,7 @@ theorem flatten_pure (s : WSeq α) : flatten (Computation.pure s) = s := by
 
 @[simp]
 theorem flatten_think (c : Computation (WSeq α)) : flatten c.think = think (flatten c) :=
-  Seq.destruct_eq_cons <| by simp [flatten, think]
+  Seq.destruct_eq_cons <| by simp [flatten]
 
 @[simp]
 theorem destruct_flatten (c : Computation (WSeq α)) : destruct (flatten c) = c >>= destruct := by
@@ -291,13 +291,13 @@ theorem join_nil : join nil = (nil : WSeq α) :=
 theorem join_think (S : WSeq (WSeq α)) : join (think S) = think (join S) := by
   simp only [join, think]
   dsimp only [(· <$> ·)]
-  simp [join, Seq1.ret]
+  simp [Seq1.ret]
 
 @[simp]
 theorem join_cons (s : WSeq α) (S) : join (cons s S) = think (append s (join S)) := by
   simp only [join, think]
   dsimp only [(· <$> ·)]
-  simp [join, cons, append]
+  simp [cons, append]
 
 @[simp]
 theorem nil_append (s : WSeq α) : append nil s = s :=
@@ -326,7 +326,7 @@ def tail.aux : Option (α × WSeq α) → Computation (Option (α × WSeq α))
   | some (_, s) => destruct s
 
 theorem destruct_tail (s : WSeq α) : destruct (tail s) = destruct s >>= tail.aux := by
-  simp only [tail, destruct_flatten, tail.aux]; rw [← bind_pure_comp, LawfulMonad.bind_assoc]
+  simp only [tail, destruct_flatten]; rw [← bind_pure_comp, LawfulMonad.bind_assoc]
   apply congr_arg; ext1 (_ | ⟨a, s⟩) <;> apply (@pure_bind Computation _ _ _ _ _ _).trans _ <;> simp
 
 /-- auxiliary definition of drop over weak sequences -/
@@ -441,7 +441,7 @@ theorem eq_or_mem_iff_mem {s : WSeq α} {a a' s'} :
 
 @[simp]
 theorem mem_cons_iff (s : WSeq α) (b) {a} : a ∈ cons b s ↔ a = b ∨ a ∈ s :=
-  eq_or_mem_iff_mem <| by simp [ret_mem]
+  eq_or_mem_iff_mem <| by simp
 
 theorem mem_cons_of_mem {s : WSeq α} (b) {a} (h : a ∈ s) : a ∈ cons b s :=
   (mem_cons_iff _ _).2 (Or.inr h)
@@ -555,7 +555,7 @@ theorem toList'_cons (l : List α) (s : WSeq α) (a : α) :
         | none => Sum.inl l.reverse
         | some (none, s') => Sum.inr (l, s')
         | some (some a, s') => Sum.inr (a::l, s')) (a::l, s)).think :=
-  destruct_eq_think <| by simp [toList, cons]
+  destruct_eq_think <| by simp [cons]
 
 @[simp]
 theorem toList'_think (l : List α) (s : WSeq α) :
@@ -569,7 +569,7 @@ theorem toList'_think (l : List α) (s : WSeq α) :
         | none => Sum.inl l.reverse
         | some (none, s') => Sum.inr (l, s')
         | some (some a, s') => Sum.inr (a::l, s')) (l, s)).think :=
-  destruct_eq_think <| by simp [toList, think]
+  destruct_eq_think <| by simp [think]
 
 theorem toList'_map (l : List α) (s : WSeq α) :
     Computation.corec (fun ⟨l, s⟩ =>
@@ -593,7 +593,7 @@ theorem toList'_map (l : List α) (s : WSeq α) :
               | some (some a, s') => Sum.inr (a::l, s')) (l', s)))
       ?_ ⟨[], s, rfl, rfl⟩
   intro s1 s2 h; rcases h with ⟨l', s, h⟩; rw [h.left, h.right]
-  induction' s using WSeq.recOn with a s s <;> simp [toList, nil, cons, think, length]
+  induction' s using WSeq.recOn with a s s <;> simp [nil, cons, think]
   · refine ⟨a::l', s, ?_, ?_⟩ <;> simp
   · refine ⟨l', s, ?_, ?_⟩ <;> simp
 
@@ -612,7 +612,7 @@ theorem toList_nil : toList (nil : WSeq α) = Computation.pure [] :=
 
 theorem toList_ofList (l : List α) : l ∈ toList (ofList l) := by
   induction' l with a l IH
-  · simp [ret_mem]
+  · simp
   · simpa [ret_mem] using think_mem (Computation.mem_map _ IH)
 
 @[simp]
@@ -625,7 +625,7 @@ theorem destruct_ofSeq (s : Seq α) :
     rcases Seq.get? s 0 with - | a
     · rfl
     dsimp only [(· <$> ·)]
-    simp [destruct]
+    simp
 
 @[simp]
 theorem head_ofSeq (s : Seq α) : head (ofSeq s) = Computation.pure s.head := by
@@ -643,7 +643,7 @@ theorem tail_ofSeq (s : Seq α) : tail (ofSeq s) = ofSeq s.tail := by
 theorem dropn_ofSeq (s : Seq α) : ∀ n, drop (ofSeq s) n = ofSeq (s.drop n)
   | 0 => rfl
   | n + 1 => by
-    simp only [drop, Nat.add_eq, Nat.add_zero, Seq.drop]
+    simp only [drop, Seq.drop]
     rw [dropn_ofSeq s n, tail_ofSeq]
 
 theorem get?_ofSeq (s : Seq α) (n) : get? (ofSeq s) n = Computation.pure (Seq.get? s n) := by

@@ -118,7 +118,7 @@ instance (X : C) : PreservesFiniteBiproducts (tensorLeft X) where
         { preserves := fun {b} i => ⟨isBilimitOfTotal _ (by
             dsimp
             simp_rw [← id_tensorHom]
-            simp only [← tensor_comp, Category.comp_id, ← tensor_sum, ← tensor_id,
+            simp only [← tensor_comp, Category.comp_id, ← tensor_sum, ← id_tensorHom_id,
               IsBilimit.total i])⟩ } }
 
 instance (X : C) : PreservesFiniteBiproducts (tensorRight X) where
@@ -128,7 +128,7 @@ instance (X : C) : PreservesFiniteBiproducts (tensorRight X) where
         { preserves := fun {b} i => ⟨isBilimitOfTotal _ (by
             dsimp
             simp_rw [← tensorHom_id]
-            simp only [← tensor_comp, Category.comp_id, ← sum_tensor, ← tensor_id,
+            simp only [← tensor_comp, Category.comp_id, ← sum_tensor, ← id_tensorHom_id,
                IsBilimit.total i])⟩ } }
 
 variable [HasFiniteBiproducts C]
@@ -168,7 +168,7 @@ theorem biproduct_ι_comp_leftDistributor_hom {J : Type} [Finite J] (X : C) (f :
     (X ◁ biproduct.ι _ j) ≫ (leftDistributor X f).hom = biproduct.ι (fun j => X ⊗ f j) j := by
   classical
   cases nonempty_fintype J
-  simp [leftDistributor_hom, Preadditive.comp_sum, ← MonoidalCategory.whiskerLeft_comp_assoc,
+  simp [leftDistributor_hom, Preadditive.comp_sum, ← whiskerLeft_comp_assoc,
     biproduct.ι_π, whiskerLeft_dite, dite_comp]
 
 @[reassoc (attr := simp)]
@@ -176,7 +176,7 @@ theorem leftDistributor_inv_comp_biproduct_π {J : Type} [Finite J] (X : C) (f :
     (leftDistributor X f).inv ≫ (X ◁ biproduct.π _ j) = biproduct.π _ j := by
   classical
   cases nonempty_fintype J
-  simp [leftDistributor_inv, Preadditive.sum_comp, ← MonoidalCategory.whiskerLeft_comp,
+  simp [leftDistributor_inv, Preadditive.sum_comp, ← whiskerLeft_comp,
     biproduct.ι_π, whiskerLeft_dite, comp_dite]
 
 @[reassoc (attr := simp)]
@@ -184,7 +184,7 @@ theorem biproduct_ι_comp_leftDistributor_inv {J : Type} [Finite J] (X : C) (f :
     biproduct.ι _ j ≫ (leftDistributor X f).inv = X ◁ biproduct.ι _ j := by
   classical
   cases nonempty_fintype J
-  simp [leftDistributor_inv, Preadditive.comp_sum, ← id_tensor_comp, biproduct.ι_π_assoc, dite_comp]
+  simp [leftDistributor_inv, Preadditive.comp_sum, biproduct.ι_π_assoc, dite_comp]
 
 theorem leftDistributor_assoc {J : Type} [Finite J] (X Y : C) (f : J → C) :
     (asIso (𝟙 X) ⊗ᵢ leftDistributor Y f) ≪≫ leftDistributor X _ =
@@ -220,7 +220,7 @@ theorem rightDistributor_inv {J : Type} [Fintype J] (f : J → C) (X : C) :
   classical
   ext
   dsimp [rightDistributor, Functor.mapBiproduct, Functor.mapBicone]
-  simp only [biproduct.ι_desc, Preadditive.comp_sum, ne_eq, biproduct.ι_π_assoc, dite_comp,
+  simp only [biproduct.ι_desc, Preadditive.comp_sum, biproduct.ι_π_assoc, dite_comp,
     zero_comp, Finset.sum_dite_eq, Finset.mem_univ, eqToHom_refl, Category.id_comp, ite_true]
 
 @[reassoc (attr := simp)]
@@ -243,7 +243,7 @@ theorem rightDistributor_inv_comp_biproduct_π {J : Type} [Finite J] (f : J → 
     (rightDistributor f X).inv ≫ (biproduct.π _ j ▷ X) = biproduct.π _ j := by
   classical
   cases nonempty_fintype J
-  simp [rightDistributor_inv, Preadditive.sum_comp, ← MonoidalCategory.comp_whiskerRight,
+  simp [rightDistributor_inv, Preadditive.sum_comp, ← comp_whiskerRight,
     biproduct.ι_π, dite_whiskerRight, comp_dite]
 
 @[reassoc (attr := simp)]
@@ -251,7 +251,7 @@ theorem biproduct_ι_comp_rightDistributor_inv {J : Type} [Finite J] (f : J → 
     biproduct.ι _ j ≫ (rightDistributor f X).inv = biproduct.ι _ j ▷ X := by
   classical
   cases nonempty_fintype J
-  simp [rightDistributor_inv, Preadditive.comp_sum, ← id_tensor_comp, biproduct.ι_π_assoc,
+  simp [rightDistributor_inv, Preadditive.comp_sum, biproduct.ι_π_assoc,
     dite_comp]
 
 theorem rightDistributor_assoc {J : Type} [Finite J] (f : J → C) (X Y : C) :

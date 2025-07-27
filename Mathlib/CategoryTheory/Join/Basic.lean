@@ -37,6 +37,8 @@ universe v₁ v₂ v₃ v₄ v₅ v₆ u₁ u₂ u₃ u₄ u₅ u₆
 
 namespace CategoryTheory
 
+open Functor
+
 /-- Elements of `Join C D` are either elements of `C` or elements of `D`. -/
 -- Impl. : We are not defining it as a type alias for `C ⊕ D` so that we can have
 -- aesop to call cases on `Join C D`
@@ -85,7 +87,7 @@ instance : Category.{max v₁ v₂} (C ⋆ D) where
     cases b <;>
     cases c <;>
     cases d <;>
-    simp only [Hom, id, comp, Category.assoc] <;>
+    simp only [Hom, comp, Category.assoc] <;>
     tauto
   id_comp {x y} f := by
     cases x <;> cases y <;> simp only [Hom, id, comp, Category.id_comp] <;> tauto
@@ -164,20 +166,20 @@ lemma homInduction_edge {P : {x y : C ⋆ D} → (x ⟶ y) → Sort*}
 variable (C D)
 
 /-- The left inclusion is fully faithful. -/
-def inclLeftFullyFaithful: (inclLeft C D).FullyFaithful where
+def inclLeftFullyFaithful : (inclLeft C D).FullyFaithful where
   preimage f := f.down
 
 /-- The right inclusion is fully faithful. -/
-def inclRightFullyFaithful: (inclRight C D).FullyFaithful where
+def inclRightFullyFaithful : (inclRight C D).FullyFaithful where
   preimage f := f.down
 
-instance inclLeftFull: (inclLeft C D).Full := inclLeftFullyFaithful C D |>.full
+instance inclLeftFull : (inclLeft C D).Full := inclLeftFullyFaithful C D |>.full
 
-instance inclRightFull: (inclRight C D).Full := inclRightFullyFaithful C D |>.full
+instance inclRightFull : (inclRight C D).Full := inclRightFullyFaithful C D |>.full
 
-instance inclLeftFaithFull: (inclLeft C D).Faithful := inclLeftFullyFaithful C D |>.faithful
+instance inclLeftFaithFull : (inclLeft C D).Faithful := inclLeftFullyFaithful C D |>.faithful
 
-instance inclRightFaithfull: (inclRight C D).Faithful := inclRightFullyFaithful C D |>.faithful
+instance inclRightFaithfull : (inclRight C D).Faithful := inclRightFullyFaithful C D |>.faithful
 
 variable {C} in
 /-- A situational lemma to help putting identities in the form `(inclLeft _ _).map _` when using
@@ -503,7 +505,7 @@ lemma mapWhiskerLeft_comp {Fᵣ : D ⥤ E'} {Gᵣ : D ⥤ E'} {Hᵣ : D ⥤ E'}
   aesop_cat
 
 @[simp]
-lemma mapWhiskerLeft_id  (H : C ⥤ E) (Fᵣ : D ⥤ E') :
+lemma mapWhiskerLeft_id (H : C ⥤ E) (Fᵣ : D ⥤ E') :
     mapWhiskerLeft H (𝟙 Fᵣ) = 𝟙 _ := by
   aesop_cat
 

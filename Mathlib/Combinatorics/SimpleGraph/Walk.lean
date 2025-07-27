@@ -330,7 +330,7 @@ theorem length_append {u v w : V} (p : G.Walk u v) (q : G.Walk v w) :
     (p.append q).length = p.length + q.length := by
   induction p with
   | nil => simp
-  | cons _ _ ih => simp [ih, add_comm, add_left_comm, add_assoc]
+  | cons _ _ ih => simp [ih, add_comm, add_assoc]
 
 @[simp]
 theorem length_concat {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
@@ -390,8 +390,8 @@ theorem getVert_reverse {u v : V} (p : G.Walk u v) (i : ℕ) :
       rw [Nat.succ_sub hi.le]
       simp [getVert]
     next hi =>
-      obtain rfl | hi' := eq_or_lt_of_not_gt hi
-      · simp [getVert]
+      obtain rfl | hi' := eq_or_gt_of_not_lt hi
+      · simp
       · rw [Nat.eq_add_of_sub_eq (Nat.sub_pos_of_lt hi') rfl, Nat.sub_eq_zero_of_le hi']
         simp [getVert]
 
@@ -428,7 +428,7 @@ theorem concatRec_concat {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
   · congr
     simp
   · rw [concatRecAux, rec_heq_iff_heq]
-    congr <;> simp [heq_rec_iff_heq]
+    congr <;> simp
 
 end ConcatRec
 
@@ -646,7 +646,7 @@ theorem darts_append {u v w : V} (p : G.Walk u v) (p' : G.Walk v w) :
 @[simp]
 theorem darts_reverse {u v : V} (p : G.Walk u v) :
     p.reverse.darts = (p.darts.map Dart.symm).reverse := by
-  induction p <;> simp [*, Sym2.eq_swap]
+  induction p <;> simp [*]
 
 theorem mem_darts_reverse {u v : V} {d : G.Dart} {p : G.Walk u v} :
     d ∈ p.reverse.darts ↔ d.symm ∈ p.darts := by simp
@@ -901,6 +901,18 @@ def drop {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk (p.getVert n) v :=
   | p, 0 => p.copy (getVert_zero p).symm rfl
   | .cons _ q, (n + 1) => q.drop n
 
+@[simp]
+lemma drop_length (p : G.Walk u v) (n : ℕ) : (p.drop n).length = p.length - n := by
+  induction p generalizing n with
+  | nil => simp [drop]
+  | cons => cases n <;> simp_all [drop]
+
+@[simp]
+lemma drop_getVert (p : G.Walk u v) (n m : ℕ) : (p.drop n).getVert m = p.getVert (n + m) := by
+  induction p generalizing n with
+  | nil => simp [drop]
+  | cons => cases n <;> simp_all [drop, Nat.add_right_comm]
+
 /-- The second vertex of a walk, or the only vertex in a nil walk. -/
 abbrev snd (p : G.Walk u v) : V := p.getVert 1
 
@@ -917,6 +929,18 @@ def take {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk u (p.getVert n) :=
   | .nil, _ => .nil
   | p, 0 => nil.copy rfl (getVert_zero p).symm
   | .cons h q, (n + 1) => .cons h (q.take n)
+
+@[simp]
+lemma take_length (p : G.Walk u v) (n : ℕ) : (p.take n).length = n ⊓ p.length := by
+  induction p generalizing n with
+  | nil => simp [take]
+  | cons => cases n <;> simp_all [take]
+
+@[simp]
+lemma take_getVert (p : G.Walk u v) (n m : ℕ) : (p.take n).getVert m = p.getVert (n ⊓ m) := by
+  induction p generalizing n m with
+  | nil => simp [take]
+  | cons => cases n <;> cases m <;> simp_all [take]
 
 /-- The penultimate vertex of a walk, or the only vertex in a nil walk. -/
 abbrev penultimate (p : G.Walk u v) : V := p.getVert (p.length - 1)
@@ -1092,7 +1116,7 @@ theorem exists_boundary_dart {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ 
   match p with
   | .nil => rfl
   | .cons h q =>
-    simp only [getVert_cons_succ, tail_cons_eq, getVert_cons]
+    simp only [getVert_cons_succ, tail_cons_eq]
     exact getVert_copy q n (getVert_zero q).symm rfl
 
 lemma ext_support {u v} {p q : G.Walk u v} (h : p.support = q.support) :
@@ -1206,8 +1230,8 @@ theorem edges_map : (p.map f).edges = p.edges.map (Sym2.map f) := by
   induction p with
   | nil => rfl
   | cons _ _ ih =>
-    simp only [Walk.map_cons, edges_cons, List.map_cons, Sym2.map_pair_eq, List.cons.injEq,
-      true_and, ih]
+    simp only [Walk.map_cons, edges_cons, List.map_cons, Sym2.map_pair_eq,
+      ih]
 
 @[simp]
 theorem edgeSet_map : (p.map f).edgeSet = Sym2.map f '' p.edgeSet := by ext; simp
@@ -1288,7 +1312,7 @@ theorem transfer_append {w : V} (q : G.Walk v w) (hpq) :
         (q.transfer H fun e he => hpq _ (by simp [he])) := by
   induction p with
   | nil => simp
-  | cons _ _ ih => simp only [Walk.transfer, cons_append, cons.injEq, heq_eq_eq, true_and, ih]
+  | cons _ _ ih => simp only [Walk.transfer, cons_append, ih]
 
 @[simp]
 theorem reverse_transfer (hp) :
@@ -1296,7 +1320,7 @@ theorem reverse_transfer (hp) :
       p.reverse.transfer H (by simp only [edges_reverse, List.mem_reverse]; exact hp) := by
   induction p with
   | nil => simp
-  | cons _ _ ih => simp only [transfer_append, Walk.transfer, reverse_nil, reverse_cons, ih]
+  | cons _ _ ih => simp only [transfer_append, Walk.transfer, reverse_cons, ih]
 
 end Walk
 

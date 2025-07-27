@@ -27,7 +27,6 @@ noncomputable section
 
 open Set Fin Topology
 
--- Porting note: added explicit universes to fix compile
 universe u u' v w x y
 variable {𝕜 : Type u} {𝕜' : Type u'} {E : Type v} {F : Type w} {G : Type x} {H : Type y}
 
@@ -365,13 +364,27 @@ def constFormalMultilinearSeries (𝕜 : Type*) [NontriviallyNormedField 𝕜] (
   | _ => 0
 
 @[simp]
-theorem constFormalMultilinearSeries_apply [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
-    [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] {c : F} {n : ℕ} (hn : n ≠ 0) :
-    constFormalMultilinearSeries 𝕜 E c n = 0 :=
-  Nat.casesOn n (fun hn => (hn rfl).elim) (fun _ _ => rfl) hn
+theorem constFormalMultilinearSeries_apply_zero [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
+    [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] {c : F} :
+    constFormalMultilinearSeries 𝕜 E c 0 = ContinuousMultilinearMap.uncurry0 _ _ c :=
+  rfl
 
 @[simp]
-lemma constFormalMultilinearSeries_zero [NontriviallyNormedField 𝕜] [NormedAddCommGroup E ]
+theorem constFormalMultilinearSeries_apply_succ [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
+    [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] {c : F} {n : ℕ} :
+    constFormalMultilinearSeries 𝕜 E c (n + 1) = 0 :=
+  rfl
+
+theorem constFormalMultilinearSeries_apply_of_nonzero [NontriviallyNormedField 𝕜]
+    [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] {c : F}
+    {n : ℕ} (hn : n ≠ 0) : constFormalMultilinearSeries 𝕜 E c n = 0 :=
+  Nat.casesOn n (fun hn => (hn rfl).elim) (fun _ _ => rfl) hn
+
+@[deprecated (since := "2025-06-23")]
+alias constFormalMultilinearSeries_apply := constFormalMultilinearSeries_apply_of_nonzero
+
+@[simp]
+lemma constFormalMultilinearSeries_zero [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
     [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] :
     constFormalMultilinearSeries 𝕜 E (0 : F) = 0 := by
   ext n x
@@ -380,6 +393,23 @@ lemma constFormalMultilinearSeries_zero [NontriviallyNormedField 𝕜] [NormedAd
   induction n
   · simp only [ContinuousMultilinearMap.uncurry0_apply]
   · simp only [constFormalMultilinearSeries.match_1.eq_2, ContinuousMultilinearMap.zero_apply]
+
+@[simp]
+lemma compContinuousLinearMap_zero [NontriviallyNormedField 𝕜]
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+    [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+    (p : FormalMultilinearSeries 𝕜 F G) :
+    p.compContinuousLinearMap (0 : E →L[𝕜] F) = constFormalMultilinearSeries 𝕜 E (p 0 0) := by
+  ext n v
+  cases n with
+  | zero =>
+    simp only [FormalMultilinearSeries.compContinuousLinearMap_apply, Matrix.zero_empty,
+      constFormalMultilinearSeries_apply_zero, ContinuousMultilinearMap.uncurry0_apply]
+    congr
+    apply Subsingleton.allEq
+  | succ =>
+    simp [ContinuousLinearMap.coe_zero']
 
 end Const
 
