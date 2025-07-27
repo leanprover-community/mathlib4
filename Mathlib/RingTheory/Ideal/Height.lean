@@ -130,7 +130,7 @@ lemma Ideal.height_le_ringKrullDim_of_ne_top {I : Ideal R} (h : I ≠ ⊤) :
   simpa using iInf₂_le _ hP
 
 /-- If `R` has finite Krull dimension, there exists a maximal ideal `m` with `ht m = dim R`. -/
-lemma Ideal.exists_isMaximal_height_eq_of_nontrivial [FiniteRingKrullDim R] :
+lemma Ideal.exists_isMaximal_height_eq [FiniteRingKrullDim R] :
     ∃ (p : Ideal R) (_ : p.IsMaximal), p.height = ringKrullDim R := by
   let l := (LTSeries.longestOf (PrimeSpectrum R))
   obtain ⟨m, hm, hle⟩ := l.last.asIdeal.exists_le_maximal IsPrime.ne_top'
