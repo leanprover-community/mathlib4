@@ -9,6 +9,7 @@ import Mathlib.Data.Set.Defs
 import Mathlib.Logic.Basic
 import Mathlib.Order.Defs.LinearOrder
 import Mathlib.Tactic.Conv
+import Mathlib.Util.AtLocation
 
 /-!
 # The `push_neg` tactic
@@ -184,26 +185,6 @@ which will print the `push_neg` form of `e`.
 -/
 macro (name := pushNeg) tk:"#push_neg " e:term : command => `(command| #conv%$tk push_neg => $e)
 
-/-- Execute main loop of `push_neg` at the main goal. -/
-def pushNegTarget : TacticM Unit := withMainContext do
-  let goal ← getMainGoal
-  let tgt ← instantiateMVars (← goal.getType)
-  let newGoal ← applySimpResultToTarget goal tgt (← pushNegCore tgt)
-  if newGoal == goal then throwError "push_neg made no progress"
-  replaceMainGoal [newGoal]
-
-
-/-- Execute main loop of `push_neg` at a local hypothesis. -/
-def pushNegLocalDecl (fvarId : FVarId) : TacticM Unit := withMainContext do
-  let ldecl ← fvarId.getDecl
-  if ldecl.isAuxDecl then return
-  let tgt ← instantiateMVars ldecl.type
-  let goal ← getMainGoal
-  let myres ← pushNegCore tgt
-  let some (_, newGoal) ← applySimpResultToLocalDecl goal fvarId myres False | failure
-  if newGoal == goal then throwError "push_neg made no progress"
-  replaceMainGoal [newGoal]
-
 /--
 Push negations into the conclusion of a hypothesis.
 For instance, a hypothesis `h : ¬ ∀ x, ∃ y, x ≤ y` will be transformed by `push_neg at h` into
@@ -229,9 +210,6 @@ distrib mode it produces `¬p ∨ ¬q`. To use distrib mode, use `set_option pus
 -/
 elab "push_neg" loc:(location)? : tactic =>
   let loc := (loc.map expandLocation).getD (.targets #[] true)
-  withLocation loc
-    pushNegLocalDecl
-    pushNegTarget
-    (fun _ ↦ logInfo "push_neg couldn't find a negation to push")
+  atLocation pushNegCore "push_neg" (failIfUnchanged := true) false loc
 
 end Mathlib.Tactic.PushNeg

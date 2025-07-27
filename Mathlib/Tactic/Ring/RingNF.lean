@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Anne Baanen
 import Mathlib.Tactic.Ring.Basic
 import Mathlib.Tactic.TryThis
 import Mathlib.Tactic.Conv
+import Mathlib.Util.AtLocation
 import Mathlib.Util.Qq
 
 /-!
@@ -170,32 +171,6 @@ initialize ringCleanupRef.set fun e => do
     return (← nctx.simp { expr := e }).expr
 
 open Elab.Tactic Parser.Tactic
-/-- Use `ring_nf` to rewrite the main goal. -/
-def ringNFTarget (s : IO.Ref AtomM.State) (cfg : Config) : TacticM Unit := withMainContext do
-  let goal ← getMainGoal
-  let tgt ← instantiateMVars (← goal.getType)
-  let r ← M.run s cfg <| rewrite tgt
-  if r.expr.consumeMData.isConstOf ``True then
-    goal.assign (← mkOfEqTrue (← r.getProof))
-    replaceMainGoal []
-  else
-    let newGoal ← applySimpResultToTarget goal tgt r
-    if cfg.failIfUnchanged && goal == newGoal then
-      throwError "ring_nf made no progress"
-    replaceMainGoal [newGoal]
-
-/-- Use `ring_nf` to rewrite hypothesis `h`. -/
-def ringNFLocalDecl (s : IO.Ref AtomM.State) (cfg : Config) (fvarId : FVarId) :
-    TacticM Unit := withMainContext do
-  let tgt ← instantiateMVars (← fvarId.getType)
-  let goal ← getMainGoal
-  let myres ← M.run s cfg <| rewrite tgt
-  match ← applySimpResultToLocalDecl goal fvarId myres false with
-  | none => replaceMainGoal []
-  | some (_, newGoal) =>
-    if cfg.failIfUnchanged && goal == newGoal then
-      throwError "ring_nf made no progress"
-    replaceMainGoal [newGoal]
 
 /--
 Simplification tactic for expressions in the language of commutative (semi)rings,
@@ -218,8 +193,8 @@ elab (name := ringNF) "ring_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic =
   if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
-  withLocation loc (ringNFLocalDecl s cfg) (ringNFTarget s cfg)
-    fun _ ↦ throwError "ring_nf failed"
+  let m e : MetaM Simp.Result := M.run s cfg <| rewrite e
+  atLocation m "ring_nf" cfg.failIfUnchanged false loc
 
 @[inherit_doc ringNF] macro "ring_nf!" cfg:optConfig loc:(location)? : tactic =>
   `(tactic| ring_nf ! $cfg:optConfig $(loc)?)

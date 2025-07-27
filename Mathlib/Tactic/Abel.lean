@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Kim Morrison
 -/
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.TryThis
+import Mathlib.Util.AtLocation
 import Mathlib.Util.AtomM
 
 /-!
@@ -497,28 +498,6 @@ partial def abelNFCore
   withConfig ({ · with zetaDelta := cfg.zetaDelta }) <| go true e
 
 open Parser.Tactic
-/-- Use `abel_nf` to rewrite the main goal. -/
-def abelNFTarget (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) : TacticM Unit := withMainContext do
-  let goal ← getMainGoal
-  let tgt ← withReducible goal.getType'
-  let r ← abelNFCore s cfg tgt
-  if r.expr.isConstOf ``True then
-    goal.assign (← mkOfEqTrue (← r.getProof))
-    replaceMainGoal []
-  else
-    if r.expr == tgt then throwError "abel_nf made no progress"
-    replaceMainGoal [← applySimpResultToTarget goal tgt r]
-
-/-- Use `abel_nf` to rewrite hypothesis `h`. -/
-def abelNFLocalDecl (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) (fvarId : FVarId) :
-    TacticM Unit := withMainContext do
-  let tgt ← instantiateMVars (← fvarId.getType)
-  let goal ← getMainGoal
-  let myres ← abelNFCore s cfg tgt
-  if myres.expr == tgt then throwError "abel_nf made no progress"
-  match ← applySimpResultToLocalDecl goal fvarId myres false with
-  | none => replaceMainGoal []
-  | some (_, newGoal) => replaceMainGoal [newGoal]
 
 @[tactic_alt abel]
 elab (name := abelNF) "abel_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic => do
@@ -526,8 +505,7 @@ elab (name := abelNF) "abel_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic =
   if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
-  withLocation loc (abelNFLocalDecl s cfg) (abelNFTarget s cfg)
-    fun _ ↦ throwError "abel_nf made no progress"
+  atLocation (abelNFCore s cfg) "abel_nf" (failIfUnchanged := true) false loc
 
 @[tactic_alt abel]
 macro "abel_nf!" cfg:optConfig loc:(location)? : tactic =>
