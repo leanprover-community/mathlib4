@@ -170,8 +170,7 @@ instance forget₂Mon_preservesLimitsOfSize [UnivLE.{v, u}] :
   preservesLimitsOfShape {J _} := { }
 
 @[to_additive]
-instance forget₂Mon_preservesLimits :
-  PreservesLimits (forget₂ Grp.{u} MonCat.{u}) :=
+instance forget₂Mon_preservesLimits : PreservesLimits (forget₂ Grp.{u} MonCat.{u}) :=
   Grp.forget₂Mon_preservesLimitsOfSize.{u, u}
 
 /-- If `J` is `u`-small, the forgetful functor from `Grp.{u}` preserves limits of shape `J`. -/
