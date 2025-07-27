@@ -551,7 +551,8 @@ end Domain
 
 /-- `HahnSeries.truncate` as a linear map. -/
 @[simps]
-def truncateLinearMap [PartialOrder Γ] (c : Γ) : HahnSeries Γ V →ₗ[R] HahnSeries Γ V where
+def truncateLinearMap [PartialOrder Γ] [DecidableLE Γ] (c : Γ) :
+    HahnSeries Γ V →ₗ[R] HahnSeries Γ V where
   toFun := truncate c
   map_add' x y := by
     ext i
