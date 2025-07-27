@@ -42,21 +42,10 @@ deriving DecidableEq
 namespace QuadraticAlgebra
 
 /-- The equivalence between quadratic algebra over `R` and `R × R`. -/
-@[simps]
+@[simps symm_apply]
 def equivProd {R : Type*} (a b : R) : QuadraticAlgebra R a b ≃ R × R where
   toFun z := (z.re, z.im)
   invFun p := ⟨p.1, p.2⟩
-
-/-- The equivalence between quadratic algebra over `R` and `Fin 2 → R`. -/
-@[simps symm_apply]
-def equivTuple {R : Type*} (a b : R) : QuadraticAlgebra R a b ≃ (Fin 2 → R) where
-  toFun a := ![a.1, a.2]
-  invFun f := ⟨f 0, f 1⟩
-  right_inv _ := funext fun i ↦ by fin_cases i <;> simp
-
-@[simp]
-theorem equivTuple_apply {R : Type*} (a b : R) (z : QuadraticAlgebra R a b) :
-    equivTuple a b z = ![z.re, z.im] := rfl
 
 @[simp]
 theorem mk_eta {R : Type*} {a b} (z : QuadraticAlgebra R a b) :
@@ -64,9 +53,9 @@ theorem mk_eta {R : Type*} {a b} (z : QuadraticAlgebra R a b) :
 
 variable {S T R : Type*} {a b} (r : R) (x y : QuadraticAlgebra R a b)
 
-instance [Subsingleton R] : Subsingleton (QuadraticAlgebra R a b) := (equivTuple a b).subsingleton
+instance [Subsingleton R] : Subsingleton (QuadraticAlgebra R a b) := (equivProd a b).subsingleton
 
-instance [Nontrivial R] : Nontrivial (QuadraticAlgebra R a b) := (equivTuple a b).nontrivial
+instance [Nontrivial R] : Nontrivial (QuadraticAlgebra R a b) := (equivProd a b).nontrivial
 
 section Zero
 
@@ -370,17 +359,17 @@ def imₗ : QuadraticAlgebra R a b →ₗ[R] R where
 
 /-- `QuadraticAlgebra.equivTuple` as a `LinearEquiv` -/
 def linearEquivTuple : QuadraticAlgebra R a b ≃ₗ[R] (Fin 2 → R) where
-  __ := equivTuple a b
+  __ := equivProd a b |>.trans <| finTwoArrowEquiv _ |>.symm
   map_add' _ _ := funext <| Fin.forall_fin_two.2 ⟨rfl, rfl⟩
   map_smul' _ _ := funext <| Fin.forall_fin_two.2 ⟨rfl, rfl⟩
 
 @[simp]
-lemma coe_linearEquivTuple :
-    ⇑(linearEquivTuple a b) = equivTuple a b := rfl
+lemma linearEquivTuple_apply (z : QuadraticAlgebra R a b) :
+    (linearEquivTuple a b) z = ![z.re, z.im] := rfl
 
 @[simp]
-lemma coe_linearEquivTuple_symm :
-    ⇑(linearEquivTuple a b).symm = (equivTuple a b).symm := rfl
+lemma linearEquivTuple_symm_apply (x : Fin 2 → R) :
+    (linearEquivTuple a b).symm x = ⟨x 0, x 1⟩ := rfl
 
 /-- `QuadraticAlgebra R a b` has a basis over `R` given by `1` and `i` -/
 noncomputable def basis : Module.Basis (Fin 2) R (QuadraticAlgebra R a b) :=
