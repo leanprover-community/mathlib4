@@ -7,7 +7,6 @@ import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.Tactic.Bound.Attribute
-import Mathlib.Tactic.MoveAdd
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 /-!

@@ -496,7 +496,6 @@
   ["Mathlib.Algebra.Order.BigOperators.Ring.Finset"],
   "Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital":
   ["Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital"],
-  "Mathlib.Analysis.Analytic.Basic": ["Mathlib.Tactic.MoveAdd"],
   "Mathlib.AlgebraicTopology.SimplexCategory.Defs":
   ["Mathlib.Util.Superscript"],
   "Mathlib.AlgebraicTopology.DoldKan.Notations":
