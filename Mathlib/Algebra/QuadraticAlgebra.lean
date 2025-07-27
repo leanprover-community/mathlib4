@@ -302,7 +302,7 @@ end AddCommGroupWithOne
 
 section CommRing
 
-instance instSemiring [CommSemiring R] : Semiring (QuadraticAlgebra R a b) where
+instance instCommSemiring [CommSemiring R] : CommSemiring (QuadraticAlgebra R a b) where
   __ := inferInstanceAs (AddCommMonoidWithOne (QuadraticAlgebra R a b))
   left_distrib _ _ _ := by ext <;> simpa using by ring
   right_distrib _ _ _ := by ext <;> simpa using by ring
@@ -311,14 +311,11 @@ instance instSemiring [CommSemiring R] : Semiring (QuadraticAlgebra R a b) where
   mul_assoc _ _ _ := by ext <;> simpa using by ring
   one_mul _ := by ext <;> simp
   mul_one _ := by ext <;> simp
+  mul_comm _ _ := by ext <;> simpa using by ring
 
-instance instCommSemiring [CommSemiring R] : CommSemiring (QuadraticAlgebra R a b) where
-  __ := inferInstanceAs (Semiring (QuadraticAlgebra R a b))
-  mul_comm z w := by ext <;> simpa using by ring
-
-instance instRing [CommRing R] : Ring (QuadraticAlgebra R a b) where
+instance instCommRing [CommRing R] : CommRing (QuadraticAlgebra R a b) where
   __ := inferInstanceAs (AddCommGroupWithOne (QuadraticAlgebra R a b))
-  __ := inferInstanceAs (Semiring (QuadraticAlgebra R a b))
+  __ := inferInstanceAs (CommSemiring (QuadraticAlgebra R a b))
 
 @[simp, norm_cast]
 theorem coe_mul (x y : R) [Semiring R] :
