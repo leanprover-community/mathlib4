@@ -91,11 +91,13 @@ theorem mul_den (q₁ q₂ : ℚ) :
       q₁.den * q₂.den / Nat.gcd (q₁.num * q₂.num).natAbs (q₁.den * q₂.den) := by
   rw [mul_def, normalize_eq]
 
+/-- A version of `Rat.mul_den` without division. -/
 theorem den_mul_den_eq_den_mul_gcd (q₁ q₂ : ℚ) :
     q₁.den * q₂.den = (q₁ * q₂).den * ((q₁.num * q₂.num).natAbs.gcd (q₁.den * q₂.den)) := by
   rw [mul_den]
   exact ((Nat.dvd_iff_div_mul_eq _ _).mp (Nat.gcd_dvd_right _ _)).symm
 
+/-- A version of `Rat.mul_num` without division. -/
 theorem num_mul_num_eq_num_mul_gcd (q₁ q₂ : ℚ) :
     q₁.num * q₂.num = (q₁ * q₂).num * ((q₁.num * q₂.num).natAbs.gcd (q₁.den * q₂.den)) := by
   rw [mul_num]
@@ -140,6 +142,10 @@ theorem isSquare_intCast_iff {z : ℤ} : IsSquare (z : ℚ) ↔ IsSquare z := by
 theorem isSquare_ofNat_iff {n : ℕ} :
     IsSquare (ofNat(n) : ℚ) ↔ IsSquare (OfNat.ofNat n : ℕ) :=
   isSquare_natCast_iff
+
+theorem mkRat_add_mkRat_of_den (n₁ n₂ : Int) {d : Nat} (h : d ≠ 0) :
+    mkRat n₁ d + mkRat n₂ d = mkRat (n₁ + n₂) d := by
+  rw [mkRat_add_mkRat _ _ h h, ← add_mul, mkRat_mul_right h]
 
 section Casts
 

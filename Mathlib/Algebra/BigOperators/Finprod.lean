@@ -951,7 +951,7 @@ lemma finprod_option {f : Option α → M} (hf : (mulSupport (f ∘ some)).Finit
   replace hf : (mulSupport f).Finite := by simpa [finite_option]
   convert finprod_mem_insert' f (show none ∉ Set.range Option.some by aesop)
     (hf.subset inter_subset_right)
-  · aesop
+  · simp
   · rw [finprod_mem_range]
     exact Option.some_injective _
 

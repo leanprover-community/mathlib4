@@ -3,8 +3,9 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.GroupTheory.Torsion
+import Mathlib.Algebra.Group.Torsion
 import Mathlib.Data.ENat.Lattice
+import Mathlib.Data.ZMod.QuotientGroup
 
 /-!
 # Minimum order of an element
@@ -20,7 +21,7 @@ This file defines the minimum order of an element of a monoid.
 
 open Subgroup
 
-variable {α : Type*}
+variable {G α : Type*}
 
 namespace Monoid
 section Monoid
@@ -36,11 +37,6 @@ noncomputable def minOrder : ℕ∞ := ⨅ (a : α) (_ha : a ≠ 1) (_ha' : IsOf
 variable {α} {a : α}
 
 @[to_additive (attr := simp)]
-lemma minOrder_eq_top : minOrder α = ⊤ ↔ IsTorsionFree α := by simp [minOrder, IsTorsionFree]
-
-@[to_additive (attr := simp)] protected alias ⟨_, IsTorsionFree.minOrder⟩ := minOrder_eq_top
-
-@[to_additive (attr := simp)]
 lemma le_minOrder {n : ℕ∞} :
     n ≤ minOrder α ↔ ∀ ⦃a : α⦄, a ≠ 1 → IsOfFinOrder a → n ≤ orderOf a := by simp [minOrder]
 
@@ -50,11 +46,12 @@ lemma minOrder_le_orderOf (ha : a ≠ 1) (ha' : IsOfFinOrder a) : minOrder α �
 
 end Monoid
 
-variable [Group α] {s : Subgroup α}
+section Group
+variable [Group G] {s : Subgroup G}
 
 @[to_additive]
 lemma le_minOrder_iff_forall_subgroup {n : ℕ∞} :
-    n ≤ minOrder α ↔ ∀ ⦃s : Subgroup α⦄, s ≠ ⊥ → (s : Set α).Finite → n ≤ Nat.card s := by
+    n ≤ minOrder G ↔ ∀ ⦃s : Subgroup G⦄, s ≠ ⊥ → (s : Set G).Finite → n ≤ Nat.card s := by
   rw [le_minOrder]
   refine ⟨fun h s hs hs' ↦ ?_, fun h a ha ha' ↦ ?_⟩
   · obtain ⟨a, has, ha⟩ := s.bot_or_exists_ne_one.resolve_left hs
@@ -64,9 +61,23 @@ lemma le_minOrder_iff_forall_subgroup {n : ℕ∞} :
   · simpa using h (zpowers_ne_bot.2 ha) ha'.finite_zpowers
 
 @[to_additive]
-lemma minOrder_le_natCard (hs : s ≠ ⊥) (hs' : (s : Set α).Finite) : minOrder α ≤ Nat.card s :=
+lemma minOrder_le_natCard (hs : s ≠ ⊥) (hs' : (s : Set G).Finite) : minOrder G ≤ Nat.card s :=
   le_minOrder_iff_forall_subgroup.1 le_rfl hs hs'
 
+@[to_additive (attr := simp)]
+lemma minOrder_eq_top [IsMulTorsionFree G] : minOrder G = ⊤ := by
+  simpa [minOrder] using fun _ ↦ not_isOfFinOrder_of_isMulTorsionFree
+
+end Group
+
+section CommGroup
+variable [CommGroup G] {s : Subgroup G}
+
+@[to_additive (attr := simp)]
+lemma minOrder_eq_top_iff : minOrder G = ⊤ ↔ IsMulTorsionFree G := by
+  simp [minOrder, isMulTorsionFree_iff_not_isOfFinOrder]
+
+end CommGroup
 end Monoid
 
 open AddMonoid AddSubgroup Nat Set
