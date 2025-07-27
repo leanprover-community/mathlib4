@@ -34,6 +34,8 @@ theorem HarmonicAt.differentiableAt_complex_partial (hf : HarmonicAt f x) :
   · repeat rw [fderiv_sub]
     repeat rw [fderiv_const_smul]
     repeat rw [fderiv_comp]
+    all_goals
+      try fun_prop
     simp only [ContinuousLinearMap.fderiv, ContinuousLinearMap.coe_sub',
       ContinuousLinearMap.coe_comp', ContinuousLinearMap.coe_smul', Pi.sub_apply,
       Function.comp_apply, ofRealCLM_apply, Pi.smul_apply, smul_eq_mul]
