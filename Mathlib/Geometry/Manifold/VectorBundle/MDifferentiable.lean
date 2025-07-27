@@ -133,6 +133,84 @@ section coordChange
 
 variable [(x : B) → AddCommMonoid (E x)] [(x : B) → Module 𝕜 (E x)]
 variable (e e' : Trivialization F (π F E)) [MemTrivializationAtlas e] [MemTrivializationAtlas e']
+  [VectorBundle 𝕜 F E] [ContMDiffVectorBundle 1 F E IB]
+variable {IB}
+
+theorem mdifferentiableOn_coordChangeL :
+    MDifferentiableOn IB 𝓘(𝕜, F →L[𝕜] F) (fun b : B ↦ (e.coordChangeL 𝕜 e' b : F →L[𝕜] F))
+      (e.baseSet ∩ e'.baseSet) :=
+  (contMDiffOn_coordChangeL e e').mdifferentiableOn le_rfl
+
+theorem mdifferentiableOn_symm_coordChangeL :
+    MDifferentiableOn IB 𝓘(𝕜, F →L[𝕜] F) (fun b : B ↦ ((e.coordChangeL 𝕜 e' b).symm : F →L[𝕜] F))
+      (e.baseSet ∩ e'.baseSet) :=
+  (contMDiffOn_symm_coordChangeL e e').mdifferentiableOn le_rfl
+
+variable {e e'}
+
+theorem mdifferentiableAt_coordChangeL {x : B}
+    (h : x ∈ e.baseSet) (h' : x ∈ e'.baseSet) :
+    MDifferentiableAt IB 𝓘(𝕜, F →L[𝕜] F) (fun b : B ↦ (e.coordChangeL 𝕜 e' b : F →L[𝕜] F)) x :=
+  (contMDiffAt_coordChangeL h h').mdifferentiableAt le_rfl
+
+variable {s : Set M} {f : M → B} {g : M → F} {x : M}
+
+protected theorem MDifferentiableWithinAt.coordChangeL (hf : MDifferentiableWithinAt IM IB f s x)
+    (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
+    MDifferentiableWithinAt IM 𝓘(𝕜, F →L[𝕜] F)
+      (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) s x :=
+  (mdifferentiableAt_coordChangeL he he').comp_mdifferentiableWithinAt _ hf
+
+protected theorem MDifferentiableAt.coordChangeL
+    (hf : MDifferentiableAt IM IB f x) (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
+    MDifferentiableAt IM 𝓘(𝕜, F →L[𝕜] F) (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) x :=
+  MDifferentiableWithinAt.coordChangeL hf he he'
+
+protected theorem MDifferentiableOn.coordChangeL
+    (hf : MDifferentiableOn IM IB f s) (he : MapsTo f s e.baseSet) (he' : MapsTo f s e'.baseSet) :
+    MDifferentiableOn IM 𝓘(𝕜, F →L[𝕜] F) (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) s :=
+  fun x hx ↦ (hf x hx).coordChangeL (he hx) (he' hx)
+
+protected theorem MDifferentiable.coordChangeL
+    (hf : MDifferentiable IM IB f) (he : ∀ x, f x ∈ e.baseSet) (he' : ∀ x, f x ∈ e'.baseSet) :
+    MDifferentiable IM 𝓘(𝕜, F →L[𝕜] F) (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) := fun x ↦
+  (hf x).coordChangeL (he x) (he' x)
+
+protected theorem MDifferentiableWithinAt.coordChange
+    (hf : MDifferentiableWithinAt IM IB f s x) (hg : MDifferentiableWithinAt IM 𝓘(𝕜, F) g s x)
+    (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
+    MDifferentiableWithinAt IM 𝓘(𝕜, F) (fun y ↦ e.coordChange e' (f y) (g y)) s x := by
+  refine ((hf.coordChangeL he he').clm_apply hg).congr_of_eventuallyEq ?_ ?_
+  · have : e.baseSet ∩ e'.baseSet ∈ 𝓝 (f x) :=
+     (e.open_baseSet.inter e'.open_baseSet).mem_nhds ⟨he, he'⟩
+    filter_upwards [hf.continuousWithinAt this] with y hy
+    exact (Trivialization.coordChangeL_apply' e e' hy (g y)).symm
+  · exact (Trivialization.coordChangeL_apply' e e' ⟨he, he'⟩ (g x)).symm
+
+protected theorem MDifferentiableAt.coordChange
+    (hf : MDifferentiableAt IM IB f x) (hg : MDifferentiableAt IM 𝓘(𝕜, F) g x)
+    (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
+    MDifferentiableAt IM 𝓘(𝕜, F) (fun y ↦ e.coordChange e' (f y) (g y)) x :=
+  MDifferentiableWithinAt.coordChange hf hg he he'
+
+protected theorem MDifferentiableOn.coordChange
+    (hf : MDifferentiableOn IM IB f s) (hg : MDifferentiableOn IM 𝓘(𝕜, F) g s)
+    (he : MapsTo f s e.baseSet) (he' : MapsTo f s e'.baseSet) :
+    MDifferentiableOn IM 𝓘(𝕜, F) (fun y ↦ e.coordChange e' (f y) (g y)) s := fun x hx ↦
+  (hf x hx).coordChange (hg x hx) (he hx) (he' hx)
+
+protected theorem MDifferentiable.coordChange
+    (hf : MDifferentiable IM IB f) (hg : MDifferentiable IM 𝓘(𝕜, F) g)
+    (he : ∀ x, f x ∈ e.baseSet) (he' : ∀ x, f x ∈ e'.baseSet) :
+    MDifferentiable IM 𝓘(𝕜, F) (fun y ↦ e.coordChange e' (f y) (g y)) := fun x ↦
+  (hf x).coordChange (hg x) (he x) (he' x)
+
+end coordChange
+
+section coordChange
+
+variable [(x : B) → AddCommMonoid (E x)] [(x : B) → Module 𝕜 (E x)]
+variable (e e' : Trivialization F (π F E)) [MemTrivializationAtlas e] [MemTrivializationAtlas e']
   [VectorBundle 𝕜 F E] [ContMDiffVectorBundle n F E IB] (hn : 1 ≤ n)
 variable {IB}
 

@@ -29,13 +29,12 @@ Let `K` be a field, `A` be a `K`-algebra and `L` be a field extension of `K`.
 
 -/
 
+open Algebra Module Polynomial
+open scoped TensorProduct
+
 universe u
 
 variable (K A L : Type*) [Field K] [Field L] [CommRing A] [Algebra K A] [Algebra K L]
-
-open Algebra Polynomial
-
-open scoped TensorProduct
 
 namespace Algebra.FormallyUnramified
 
