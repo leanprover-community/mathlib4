@@ -88,7 +88,7 @@ class CategoryStruct (obj : Type u) : Type max u (v + 1) extends Quiver.{v + 1} 
   /-- Composition of morphisms in a category, written `f ≫ g`. -/
   comp : ∀ {X Y Z : obj}, (X ⟶ Y) → (Y ⟶ Z) → (X ⟶ Z)
 
-attribute [to_dual self (reorder := 3 5, 6 7)] CategoryStruct.comp
+attribute [trans, to_dual self (reorder := 3 5, 6 7)] CategoryStruct.comp
 
 initialize_simps_projections CategoryStruct (-toQuiver_Hom)
 
@@ -175,9 +175,8 @@ class Category (obj : Type u) : Type max u (v + 1) extends CategoryStruct.{v} ob
   assoc : ∀ {W X Y Z : obj} (f : W ⟶ X) (g : X ⟶ Y) (h : Y ⟶ Z), (f ≫ g) ≫ h = f ≫ g ≫ h := by
     aesop_cat
 
-attribute [simp] Category.id_comp Category.comp_id Category.assoc
-attribute [trans] CategoryStruct.comp
-attribute [to_dual existing (reorder := 3 4) comp_id] Category.id_comp
+attribute [to_dual existing (attr := simp) (reorder := 3 4) comp_id] Category.id_comp
+attribute [simp] Category.assoc
 
 example {C} [Category C] {X Y : C} (f : X ⟶ Y) : 𝟙 X ≫ f = f := by simp
 example {C} [Category C] {X Y : C} (f : X ⟶ Y) : f ≫ 𝟙 Y = f := by simp
@@ -198,8 +197,8 @@ variable {C : Type u} [Category.{v} C] {X Y Z : C}
 
 initialize_simps_projections Category (-Hom)
 
-@[to_dual existing Category.assoc]
-theorem assoc_rev {W X Y Z : C} (f : X ⟶ W) (g : Y ⟶ X) (h : Z ⟶ Y) :
+@[to_dual existing assoc]
+theorem Category.assoc_rev {W X Y Z : C} (f : X ⟶ W) (g : Y ⟶ X) (h : Z ⟶ Y) :
     h ≫ g ≫ f = (h ≫ g) ≫ f :=
   (Category.assoc h g f).symm
 
