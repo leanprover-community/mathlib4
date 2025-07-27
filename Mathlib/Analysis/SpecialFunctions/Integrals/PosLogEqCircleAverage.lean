@@ -52,7 +52,7 @@ theorem circleAverage_log_norm_id_sub_const₁ (h : ‖a‖ = 1) :
   simp only [circleAverage, mul_inv_rev, smul_eq_mul, mul_eq_zero, inv_eq_zero, OfNat.ofNat_ne_zero,
     or_false]
   right
-  obtain ⟨ζ, hζ⟩ := (by simp [Set.exists_range_iff.1, h] : ∃ ζ, a⁻¹ = circleMap 0 1 ζ)
+  obtain ⟨ζ, hζ⟩ : ∃ ζ, a⁻¹ = circleMap 0 1 ζ := by simp [Set.exists_range_iff.1, h]
   calc ∫ x in 0..(2 * π), log ‖circleMap 0 1 x - a‖
   _ = ∫ x in 0..(2 * π), log ‖(circleMap 0 1 ζ) * (circleMap 0 1 x - a)‖ := by
     simp
