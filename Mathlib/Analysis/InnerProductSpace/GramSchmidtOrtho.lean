@@ -62,8 +62,7 @@ theorem gramSchmidt_def' (f : ι → E) (n : ι) :
 theorem gramSchmidt_def'' (f : ι → E) (n : ι) :
     f n = gramSchmidt 𝕜 f n + ∑ i ∈ Iio n,
       (⟪gramSchmidt 𝕜 f i, f n⟫ / (‖gramSchmidt 𝕜 f i‖ : 𝕜) ^ 2) • gramSchmidt 𝕜 f i := by
-  nth_rw 1 [gramSchmidt_def' 𝕜 f n]
-  simp only [starProjection_singleton, map_pow]
+  simp only [← map_pow, ← starProjection_singleton, ← gramSchmidt_def' 𝕜 f n]
 
 @[simp]
 theorem gramSchmidt_zero {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [OrderBot ι]
