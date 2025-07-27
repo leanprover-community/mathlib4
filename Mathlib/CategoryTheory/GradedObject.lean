@@ -210,8 +210,8 @@ theorem shiftFunctor_map_apply {β : Type*} [AddCommGroup β] (s : β)
     (shiftFunctor (GradedObjectWithShift s C) n).map f t = f (t + n • s) :=
   rfl
 
-instance [HasZeroMorphisms C] (β : Type w) (X Y : GradedObject β C) :
-  Zero (X ⟶ Y) := ⟨fun _ => 0⟩
+instance [HasZeroMorphisms C] (β : Type w) (X Y : GradedObject β C) : Zero (X ⟶ Y) :=
+  ⟨fun _ => 0⟩
 
 @[simp]
 theorem zero_apply [HasZeroMorphisms C] (β : Type w) (X Y : GradedObject β C) (b : β) :
