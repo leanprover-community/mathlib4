@@ -267,8 +267,9 @@ variable [Module ℝ E]
 variable [IsScalarTower ℝ 𝕜 E]
 
 -- Conway p127
-open scoped ComplexOrder
-theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s] (h : B.Nondegenerate) :
+-- open scoped ComplexOrder
+open scoped ComplexConjugate
+theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s] :
     B.flip.polar (B.polar s) = closedAbsConvexHull (E := WeakBilin B) 𝕜 s := by
   apply le_antisymm
   · simp only [Set.le_eq_subset]
@@ -297,9 +298,32 @@ theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s
       rw [← hf₀] at hg₁
       simp [WeakBilin.eval] at hg₁
       rw [polar_mem_iff]
-      intro x hx
-      sorry
-      --simp_rw [flip_apply] at hg₁
+      intro x₂ hx₂
+      let l := conj (B x₂ f₀) / ‖B x₂ f₀‖
+      have lnorm : ‖l‖ ≤ 1 := by
+        unfold l
+        rw [norm_div]
+        rw [RCLike.norm_conj]
+        simp only [norm_algebraMap', norm_norm]
+        exact div_self_le_one _
+      have i1 : RCLike.re ((B.flip f₀) (l • x₂)) < 1 := by
+        apply hg₁
+        apply balanced_iff_smul_mem.mp
+        have s1 : AbsConvex 𝕜 ((closedAbsConvexHull (E := WeakBilin B) 𝕜) s) := by exact
+          absConvex_convexClosedHull
+        apply s1.1
+        exact lnorm
+        apply subset_closedAbsConvexHull hx₂
+      rw [CompatibleSMul.map_smul] at i1
+      rw [smul_eq_mul] at i1
+      simp only [l] at i1
+      rw [mul_comm] at i1
+      rw [← mul_div_assoc] at i1
+      rw [LinearMap.flip_apply] at i1
+      rw [RCLike.mul_conj] at i1
+      rw [sq] at i1
+      simp at i1
+      exact le_of_lt i1
     have fg2 : u • g = f := by
       rw [fg]
       simp only [one_div]
