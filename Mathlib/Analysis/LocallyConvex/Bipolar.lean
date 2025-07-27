@@ -16,6 +16,11 @@ import Mathlib.Topology.Algebra.Module.StrongTopology
 
 # Bipolar Theorem
 
+
+## References
+
+* [Conway, *A course in functional analysis*][conway1990]
+
 -/
 
 variable {𝕜 E F : Type*}
