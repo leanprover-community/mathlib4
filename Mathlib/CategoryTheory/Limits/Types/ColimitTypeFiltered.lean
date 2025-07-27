@@ -79,7 +79,7 @@ namespace CoconeTypes
 
 variable {F} (c : CoconeTypes.{w₁} F)
 
-lemma injective_descColimitType_iff_of_isFiltered :
+lemma descColimitType_injective_iff_of_isFiltered :
     Function.Injective (F.descColimitType c) ↔
       ∀ (j j' : J) (x : F.obj j) (x' : F.obj j'), c.ι j x = c.ι j' x' →
         ∃ (k : J) (f : j ⟶ k) (f' : j' ⟶ k), F.map f x = F.map f' x' := by
