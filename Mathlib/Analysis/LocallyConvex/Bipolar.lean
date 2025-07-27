@@ -247,11 +247,15 @@ lemma dualEmbedding_isInjective_of_separatingRight (hr : B.SeparatingRight) :
   exact hr f hf
 
 
+/-- When `B` is right-separating, `F` is linearly equivalent to the topological dual of `E` with the
+weak topology. -/
+noncomputable
+def dualEquiv (hr : B.SeparatingRight) : F ≃ₗ[𝕜] (WeakBilin B) →L[𝕜] 𝕜 :=
+  LinearEquiv.ofBijective (WeakBilin.eval B)
+    ⟨dualEmbedding_isInjective_of_separatingRight B hr, dualEmbedding_isSurjective B⟩
+
+
 /-
-def dualEquiv : F ≃ₗ[𝕜] (WeakBilin B) →L[𝕜] 𝕜 where
-  toLinearMap := WeakBilin.eval B
-
-
 def strictEquiv2 : E ≃ₗ[𝕜] (WeakBilin B.flip) →L[𝕜] 𝕜 where
   toLinearMap := B
 -/
