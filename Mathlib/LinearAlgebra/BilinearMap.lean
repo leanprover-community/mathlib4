@@ -343,7 +343,6 @@ theorem compl₁₂_inj [SMulCommClass R₂ R₁ Pₗ]
   · -- B₁ = B₂ → B₁.comp l r = B₂.comp l r
     subst h; rfl
 
-
 omit [Module R M] in
 /-- Composing a linear map `P → Q` and a bilinear map `M → N → P` to
 form a bilinear map `M → N → Q`. -/
@@ -385,16 +384,9 @@ theorem bijective_compr₂_of_equiv (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : P
 section CommSemiringSemilinear
 variable {R R₁ R₂ R₃ R₄ : Type*} [CommSemiring R] [Semiring R₁] [CommSemiring R₂]
   [CommSemiring R₃] [CommSemiring R₄]
-variable {A : Type*} [Semiring A] {B : Type*} [Semiring B]
 variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*}
-variable {Mₗ : Type*} {Nₗ : Type*} {Pₗ : Type*} {Qₗ Qₗ' : Type*}
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
-variable [AddCommMonoid Mₗ] [AddCommMonoid Nₗ] [AddCommMonoid Pₗ]
-variable [AddCommMonoid Qₗ] [AddCommMonoid Qₗ']
 variable [Module R M] [Module R₂ N] [Module R₃ P] [Module R₄ Q]
-variable [Module R Mₗ] [Module R Nₗ] [Module R Pₗ] [Module R Qₗ] [Module R Qₗ']
-variable [Module R₁ Mₗ] [Module R₁ Pₗ] [Module R₁ Qₗ]
-variable [Module R₂ Pₗ] [Module R₂ Qₗ']
 variable {σ₁₂ : R →+* R₂} {σ₁₃ : R →+* R₃} {σ₁₄ : R →+* R₄}
 variable {σ₂₃ : R₂ →+* R₃} {σ₂₄ : R₂ →+* R₄}
 variable {σ₃₄ : R₃ →+* R₄}
@@ -404,7 +396,6 @@ variable [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄] [RingHomCompTriple σ₁
 variable [RingHomCompTriple σ₂₄ σ₄₃ σ₂₃]
 
 variable (M N P)
-variable [Module A Pₗ] [SMulCommClass R A Pₗ]
 
 variable (R₃) in
 /-- Composing linear maps as a bilinear map from `(M →ₛₗ[σ₁₂] N) × (N →ₛₗ[σ₂₃] P)`
