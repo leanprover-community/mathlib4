@@ -64,10 +64,6 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
           have hm_α_decomp : m_α = m_pos + m_neg + m_h := by
             rw [← hm_eq, ← hm_αneg_eq]
 
-          have hm_pos_weight : m_pos ∈ genWeightSpace L α.1.toLinear := hm_pos
-          have hm_neg_weight : m_neg ∈ genWeightSpace L (-α.1).toLinear := hm_neg
-          have hm_h_coroot : m_h ∈ IsKilling.corootSubmodule α.1 := hm_h
-
           have h_bracket_sum : ⁅x_χ, m_α⁆ = ⁅x_χ, m_pos⁆ + ⁅x_χ, m_neg⁆ + ⁅x_χ, m_h⁆ := by
             rw [hm_α_decomp, lie_add, lie_add]
 
@@ -75,39 +71,26 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
             exact LieAlgebra.lie_mem_genWeightSpace_of_mem_genWeightSpace hx_χ hm_pos
 
           have h_neg_containment : ⁅x_χ, m_neg⁆ ∈ genWeightSpace L (χ.toLinear - α.1.toLinear) := by
-            have h_neg : ⁅x_χ, m_neg⁆ ∈ genWeightSpace L (χ.toLinear + (-α.1).toLinear) := by
-              exact LieAlgebra.lie_mem_genWeightSpace_of_mem_genWeightSpace hx_χ hm_neg
-            have h_eq : χ.toLinear + (-α.1).toLinear = χ.toLinear - α.1.toLinear := by
-              simp [sub_eq_add_neg]
-            rw [← h_eq]
-            exact h_neg
+            rw [sub_eq_add_neg]
+            exact LieAlgebra.lie_mem_genWeightSpace_of_mem_genWeightSpace hx_χ hm_neg
 
           have h_h_containment : ⁅x_χ, m_h⁆ ∈ genWeightSpace L χ := by
             obtain ⟨y, hy, rfl⟩ := hm_h
-            have h_in_zero : H.toLieSubmodule.incl y ∈ rootSpace H 0 := by
+            have h_zero_weight : H.toLieSubmodule.incl y ∈ genWeightSpace L (0 : H → K) := by
               apply LieAlgebra.toLieSubmodule_le_rootSpace_zero
               exact y.property
-            have h_zero_weight : H.toLieSubmodule.incl y ∈ genWeightSpace L (0 : H → K) :=
-              h_in_zero
             convert LieAlgebra.lie_mem_genWeightSpace_of_mem_genWeightSpace hx_χ h_zero_weight
-            ext h
-            simp
+            ext h; simp
 
           have h_bracket_decomp : ⁅x_χ, m_α⁆ ∈
-              genWeightSpace L (χ.toLinear + α.1.toLinear) ⊔
-              genWeightSpace L (χ.toLinear - α.1.toLinear) ⊔
-              genWeightSpace L χ := by
+            genWeightSpace L (χ.toLinear + α.1.toLinear) ⊔
+            genWeightSpace L (χ.toLinear - α.1.toLinear) ⊔
+            genWeightSpace L χ := by
             rw [h_bracket_sum]
-            apply add_mem
-            · apply add_mem
-              · apply Submodule.mem_sup_left
-                apply Submodule.mem_sup_left
-                exact h_pos_containment
-              · apply Submodule.mem_sup_left
-                apply Submodule.mem_sup_right
-                exact h_neg_containment
-            · apply Submodule.mem_sup_right
-              exact h_h_containment
+            exact add_mem (add_mem
+              (Submodule.mem_sup_left (Submodule.mem_sup_left h_pos_containment))
+              (Submodule.mem_sup_left (Submodule.mem_sup_right h_neg_containment)))
+              (Submodule.mem_sup_right h_h_containment)
 
           by_cases w_plus : χ.toLinear + α.1.toLinear = 0
           · apply LieSubmodule.mem_iSup_of_mem α
