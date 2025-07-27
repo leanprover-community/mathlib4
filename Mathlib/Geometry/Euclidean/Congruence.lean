@@ -87,21 +87,25 @@ theorem angle_side_angle (h : ¬Collinear ℝ {a, b, c}) (ha₁ : ∠ a b c = �
       angle_comm, ha₂, angle_comm b' c' a', angle_comm b a c, ha₃, angle_comm b' a' c']
   exact side_angle_side ha₁ dist_ab_eq hd
 
-/-- **Angle–Angle–Side (AAS) congruence**
-If two triangles have two equal angles and a non-included side equal, then the triangles are
-congruent. We require that one of the triangles is non-degenerate, the non-collinearity of the
-other is then implied by the given equalities. -/
-theorem angle_angle_side (h : ¬Collinear ℝ {a, b, c}) (ha₁ : ∠ a b c = ∠ a' b' c')
-    (ha₂ : ∠ b c a = ∠ b' c' a') (hd : dist c a = dist c' a') : ![a, b, c] ≅ ![a', b', c'] := by
-  have ha₃ := angle_add_angle_add_angle_eq_pi b (ne₁₃_of_not_collinear h)
-  have h' : ¬Collinear ℝ {a', b', c'} := by
-    grind only [collinear_iff_eq_or_eq_or_angle_eq_zero_or_angle_eq_pi, angle_self_right,
-      angle_self_left, dist_eq_zero, Set.insert_comm, Set.pair_comm]
-  have ha₃' := angle_add_angle_add_angle_eq_pi b' (ne₁₃_of_not_collinear h')
-  simp only [← ha₃', ha₁, ha₂, angle_comm b' c' a', add_right_cancel_iff] at ha₃
-  have h_bca : ¬Collinear ℝ {b, c, a} := by rwa [Set.insert_comm, Set.pair_comm] at h
-  have h1 := angle_side_angle h_bca ha₂ hd ha₃
-  exact angle_side_angle h ha₁ (h1.dist_eq 0 1) ha₂
+#adaptation_note
+/--
+Broken on nightly-2025-07-26, reported as https://github.com/leanprover/lean4/issues/9562
+-/
+-- /-- **Angle–Angle–Side (AAS) congruence**
+-- If two triangles have two equal angles and a non-included side equal, then the triangles are
+-- congruent. We require that one of the triangles is non-degenerate, the non-collinearity of the
+-- other is then implied by the given equalities. -/
+-- theorem angle_angle_side (h : ¬Collinear ℝ {a, b, c}) (ha₁ : ∠ a b c = ∠ a' b' c')
+--     (ha₂ : ∠ b c a = ∠ b' c' a') (hd : dist c a = dist c' a') : ![a, b, c] ≅ ![a', b', c'] := by
+--   have ha₃ := angle_add_angle_add_angle_eq_pi b (ne₁₃_of_not_collinear h)
+--   have h' : ¬Collinear ℝ {a', b', c'} := by
+--     grind only [collinear_iff_eq_or_eq_or_angle_eq_zero_or_angle_eq_pi, angle_self_right,
+--       angle_self_left, dist_eq_zero, Set.insert_comm, Set.pair_comm]
+--   have ha₃' := angle_add_angle_add_angle_eq_pi b' (ne₁₃_of_not_collinear h')
+--   simp only [← ha₃', ha₁, ha₂, angle_comm b' c' a', add_right_cancel_iff] at ha₃
+--   have h_bca : ¬Collinear ℝ {b, c, a} := by rwa [Set.insert_comm, Set.pair_comm] at h
+--   have h1 := angle_side_angle h_bca ha₂ hd ha₃
+--   exact angle_side_angle h ha₁ (h1.dist_eq 0 1) ha₂
 
 include V₁ V₂
 
