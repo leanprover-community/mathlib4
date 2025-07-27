@@ -129,25 +129,15 @@ theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s
       exact mul_lt_mul_of_pos_left ((hf₁ _) ha) (inv_pos_of_pos e3)
     obtain ⟨f₀, hf₀⟩ := B.dualEmbedding_isSurjective g
     have hg₃ : f₀ ∈ (B.polar (E := WeakBilin B) s) := by
-      rw [← hf₀] at hg₁
-      simp [WeakBilin.eval] at hg₁
-      rw [polar_mem_iff]
+      simp [← hf₀, WeakBilin.eval] at hg₁
       intro x₂ hx₂
       let l := conj (B x₂ f₀) / ‖B x₂ f₀‖
       have lnorm : ‖l‖ ≤ 1 := by
-        unfold l
-        rw [norm_div]
-        rw [RCLike.norm_conj]
-        simp only [norm_algebraMap', norm_norm]
+        rw [norm_div, RCLike.norm_conj, norm_algebraMap', norm_norm]
         exact div_self_le_one _
-      have i1 : RCLike.re ((B.flip f₀) (l • x₂)) < 1 := by
-        apply hg₁
-        apply balanced_iff_smul_mem.mp
-        have s1 : AbsConvex 𝕜 ((closedAbsConvexHull (E := WeakBilin B) 𝕜) s) := by exact
-          absConvex_convexClosedHull
-        apply s1.1
-        exact lnorm
-        apply subset_closedAbsConvexHull hx₂
+      have i1 : RCLike.re ((B.flip f₀) (l • x₂)) < 1 := hg₁ _
+        (balanced_iff_smul_mem.mp absConvex_convexClosedHull.1 lnorm
+          (subset_closedAbsConvexHull hx₂))
       rw [CompatibleSMul.map_smul] at i1
       rw [smul_eq_mul] at i1
       simp only [l] at i1
