@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jingting Wang
 -/
 import Mathlib.Algebra.Polynomial.FieldDivision
+import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 import Mathlib.RingTheory.KrullDimension.PID
 import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
-import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 
 /-!
 # Krull dimension of polynomial ring
