@@ -299,33 +299,32 @@ theorem lid_comp_rTensor (f : N →ₗ[R] R) :
 lemma rid_comp_lTensor (f : M →ₗ[R] R) :
     (rid R N).comp (lTensor N f) = lift ((lsmul R N).flip.compl₂ f) := ext' fun _ _ ↦ rfl
 
-end LinearMap
-
-open LinearMap
-
-variable {A B C D : Type*}
-  [AddCommMonoid A] [AddCommMonoid B] [AddCommMonoid C] [AddCommMonoid D]
-  [Module R A] [Module R B] [Module R C] [Module R D]
-
-lemma TensorProduct.rTensor_comp_assoc (x : A →ₗ[R] D) :
+lemma rTensor_comp_assoc (x : M →ₗ[R] N) :
     (rTensor _ x) ∘ₗ (TensorProduct.assoc R _ _ _).toLinearMap
-      = (TensorProduct.assoc R D B C).toLinearMap ∘ₗ (rTensor _ (rTensor _ x)) := by
+      = (TensorProduct.assoc R N P Q).toLinearMap ∘ₗ (rTensor _ (rTensor _ x)) := by
   apply ext_threefold
   simp
 
-lemma TensorProduct.assoc_symm_comp_rTensor (x : A →ₗ[R] D) :
-    (TensorProduct.assoc R D B C).symm.toLinearMap ∘ₗ (rTensor _ x) =
-    (rTensor _ (rTensor _ x)) ∘ₗ (TensorProduct.assoc R A B C).symm.toLinearMap := by
+lemma assoc_symm_comp_rTensor (x : M →ₗ[R] N) :
+    (TensorProduct.assoc R N P Q).symm.toLinearMap ∘ₗ (rTensor _ x) =
+    (rTensor _ (rTensor _ x)) ∘ₗ (TensorProduct.assoc R M N P).symm.toLinearMap := by
   apply ext_threefold'
   simp
 
-lemma TensorProduct.lTensor_comp_assoc_symm (x : A →ₗ[R] D) :
-    (lTensor _ x) ∘ₗ (TensorProduct.assoc R B C A).symm.toLinearMap
-      = (TensorProduct.assoc R B C D).symm.toLinearMap ∘ₗ (lTensor _ (lTensor _ x)) := by
+lemma lTensor_comp_assoc_symm (x : M →ₗ[R] N) :
+    (lTensor _ x) ∘ₗ (TensorProduct.assoc R P Q M).symm.toLinearMap
+      = (TensorProduct.assoc R P Q N).symm.toLinearMap ∘ₗ (lTensor _ (lTensor _ x)) := by
   apply ext_threefold'
   simp
 
-lemma TensorProduct.rTensor_lTensor_comp_assoc_symm (x : A →ₗ[R] D) :
+lemma lTensor_rTensor_comp_assoc (x : M →ₗ[R] N) :
+    (lTensor _ (rTensor _ x)) ∘ₗ (TensorProduct.assoc R _ _ _).toLinearMap
+    = (TensorProduct.assoc R P N Q).toLinearMap ∘ₗ (rTensor _ (lTensor _ x)) := by
+  simp_rw [rTensor, lTensor, map_map_comp_assoc_eq]
+
+lemma rTensor_lTensor_comp_assoc_symm (x : M →ₗ[R] N) :
     (rTensor _ (lTensor _ x)) ∘ₗ (TensorProduct.assoc R _ _ _).symm.toLinearMap
-    = (TensorProduct.assoc R B D C).symm.toLinearMap ∘ₗ (lTensor _ (rTensor _ x)) := by
+    = (TensorProduct.assoc R P N Q).symm.toLinearMap ∘ₗ (lTensor _ (rTensor _ x)) := by
   simp_rw [rTensor, lTensor, map_map_comp_assoc_symm_eq]
+
+end LinearMap
