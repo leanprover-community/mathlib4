@@ -450,6 +450,16 @@ protected alias ⟨_, IsMax.coheight_eq_zero⟩ := coheight_eq_zero
 
 @[simp] lemma coheight_top (α : Type*) [Preorder α] [OrderTop α] : coheight (⊤ : α) = 0 := by simp
 
+lemma zero_lt_height {x : α} [OrderBot α] (h : ⊥ < x) : 0 < height x := by
+  rw [← Order.height_bot (α := α)]
+  apply Order.height_strictMono h
+  simp [ENat.top_pos]
+
+lemma zero_lt_coheight {x : α} [OrderTop α] (h : x < ⊤) : 0 < coheight x := by
+  rw [← Order.coheight_top (α := α)]
+  apply Order.coheight_strictAnti h
+  simp [ENat.top_pos]
+
 lemma coe_lt_height_iff {x : α} {n : ℕ} (hfin : height x < ⊤) :
     n < height x ↔ ∃ y < x, height y = n where
   mp h := by
@@ -527,6 +537,16 @@ lemma height_eq_coe_iff_minimal_le_height {a : α} {n : ℕ} :
 lemma coheight_eq_coe_iff_maximal_le_coheight {a : α} {n : ℕ} :
     coheight a = n ↔ Maximal (fun y => n ≤ coheight y) a :=
   height_eq_coe_iff_minimal_le_height (α := αᵒᵈ)
+
+lemma one_lt_height_iff {x : α} : 1 < Order.height x ↔ ∃ y z, z < y ∧ y < x := by
+  rw [← ENat.add_one_le_iff ENat.one_ne_top, show 1 + 1 = (2 : ℕ∞) from rfl]
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · obtain ⟨p, hp, hlen⟩ := Order.exists_series_of_le_height x (n := 2) h
+    refine ⟨p 1, p 0, p.rel_of_lt ?_, hp ▸ p.rel_of_lt ?_⟩ <;> simp [Fin.lt_def, hlen]
+  · rintro ⟨y, z, hzy, hyx⟩
+    let p : LTSeries α := RelSeries.fromListChain' [z, y, x] (List.cons_ne_nil z [y, x])
+      (List.Chain'.cons hzy <| List.chain'_pair.mpr hyx)
+    exact Order.length_le_height (p := p) (by rfl)
 
 end height
 
@@ -727,6 +747,14 @@ lemma height_le_krullDim (a : α) : height a ≤ krullDim α := by
 
 lemma coheight_le_krullDim (a : α) : coheight a ≤ krullDim α := by
   simpa using height_le_krullDim (α := αᵒᵈ) a
+
+@[simp]
+lemma _root_.LTSeries.height_last_longestOf [FiniteDimensionalOrder α] :
+    height (LTSeries.longestOf α).last = krullDim α := by
+  refine le_antisymm (height_le_krullDim _) ?_
+  rw [krullDim_eq_length_of_finiteDimensionalOrder, height]
+  norm_cast
+  exact le_iSup_iff.mpr <| fun _ h ↦ iSup_le_iff.mp (h _) le_rfl
 
 /--
 The Krull dimension is the supremum of the elements' heights.
