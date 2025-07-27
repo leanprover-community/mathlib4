@@ -404,37 +404,27 @@ end
 
 section
 
-variable [CommRing R]
-
 @[norm_cast, simp]
-theorem coe_sub (r1 r2 : R) : ((r1 - r2 : R) : QuadraticAlgebra R a b) = r1 - r2 :=
+theorem coe_sub (r1 r2 : R) [CommRing R] : ((r1 - r2 : R) : QuadraticAlgebra R a b) = r1 - r2 :=
   (algebraMap R (QuadraticAlgebra R a b)).map_sub r1 r2
 
 @[norm_cast, simp]
-theorem coe_pow (n : ℕ) (r : R) : ((r ^ n : R) : QuadraticAlgebra R a b) =
+theorem coe_pow (n : ℕ) (r : R) [CommSemiring R] : ((r ^ n : R) : QuadraticAlgebra R a b) =
     (r : QuadraticAlgebra R a b) ^ n :=
   (algebraMap R (QuadraticAlgebra R a b)).map_pow r n
 
-theorem coe_commutes (r : R) (x : QuadraticAlgebra R a b) :
-    (r : QuadraticAlgebra R a b) * x = x * (r : QuadraticAlgebra R a b) :=
-  Algebra.commutes r x
-
-theorem coe_commute (r : R) (x : QuadraticAlgebra R a b) :
-    Commute (r : QuadraticAlgebra R a b) x :=
-  coe_commutes r x
-
-theorem coe_mul_eq_smul (r : R) (x : QuadraticAlgebra R a b) :
+theorem coe_mul_eq_smul (r : R) (x : QuadraticAlgebra R a b) [CommSemiring R] :
     (r * x : QuadraticAlgebra R a b) = r • x := Algebra.smul_def r x |>.symm
 
-theorem mul_coe_eq_smul (r : R) (x : QuadraticAlgebra R a b) :
+theorem mul_coe_eq_smul (r : R) (x : QuadraticAlgebra R a b) [CommSemiring R] :
     (x * r : QuadraticAlgebra R a b) = r • x := by
   rw [mul_comm, coe_mul_eq_smul r x]
 
 @[norm_cast, simp]
-theorem coe_algebraMap : ⇑(algebraMap R (QuadraticAlgebra R a b)) = coe := rfl
+theorem coe_algebraMap [CommSemiring R] : ⇑(algebraMap R (QuadraticAlgebra R a b)) = coe := rfl
 
-theorem smul_coe (r1 r2 : R) : r1 • (r2 : QuadraticAlgebra R a b) = ↑(r1 * r2) := by
-  rw [coe_mul, coe_mul_eq_smul]
+theorem smul_coe (r1 r2 : R) [CommSemiring R] :
+    r1 • (r2 : QuadraticAlgebra R a b) = ↑(r1 * r2) := by rw [coe_mul, coe_mul_eq_smul]
 
 end
 
