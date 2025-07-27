@@ -25,7 +25,7 @@ a type `I` to the coproduct of copies indexed by `I` of `unit R`.
 universe u v' u'
 open CategoryTheory Limits
 
-variable {C : Type u'} [Category.{v'} C] {J : GrothendieckTopology C} {R : Sheaf J RingCat.{u}}
+variable {C : Type u'} [Category.{v'} C] {J : GrothendieckTopology C} {R : Sheaf J RingCat.{u}]
   [HasWeakSheafify J AddCommGrp.{u}] [J.WEqualsLocallyBijective AddCommGrp.{u}]
   [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrp.{u})]
 
@@ -78,7 +78,7 @@ lemma sectionMap_freeMap_freeSection (i : I) :
 end
 
 /-- The functor `Type u ⥤ SheafOfModules.{u} R` which sends a type `I` to
-`free I` which is a coproduct indexed by `I` of copies of `R` (thought as a
+`free I` which is a coproduct indexed by `I` of copies of `R` (thought of as a
 presheaf of modules over itself). -/
 noncomputable def freeFunctor : Type u ⥤ SheafOfModules.{u} R where
   obj := free

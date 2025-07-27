@@ -135,11 +135,11 @@ section coe
 
 variable [Semiring R] [SetLike σ R] [AddSubmonoidClass σ R] (A : ι → σ)
 
-/-- The canonical ring isomorphism between `⨁ i, A i` and `R` -/
+/-- The canonical ring homomorphism between `⨁ i, A i` and `R` -/
 def coeRingHom [AddMonoid ι] [SetLike.GradedMonoid A] : (⨁ i, A i) →+* R :=
   DirectSum.toSemiring (fun i => AddSubmonoidClass.subtype (A i)) rfl fun _ _ => rfl
 
-/-- The canonical ring isomorphism between `⨁ i, A i` and `R` -/
+/-- The canonical ring homomorphism between `⨁ i, A i` and `R` -/
 @[simp]
 theorem coeRingHom_of [AddMonoid ι] [SetLike.GradedMonoid A] (i : ι) (x : A i) :
     (coeRingHom A : _ →+* R) (of (fun i => A i) i x) = x :=
@@ -309,7 +309,7 @@ instance nat_power_gradedMonoid [CommSemiring S] [Semiring R] [Algebra S R] (p :
 
 end Submodule
 
-/-- The canonical algebra isomorphism between `⨁ i, A i` and `R`. -/
+/-- The canonical algebra homomorphism between `⨁ i, A i` and `R`. -/
 def DirectSum.coeAlgHom [AddMonoid ι] [CommSemiring S] [Semiring R] [Algebra S R]
     (A : ι → Submodule S R) [SetLike.GradedMonoid A] : (⨁ i, A i) →ₐ[S] R :=
   DirectSum.toAlgebra S _ (fun i => (A i).subtype) rfl (fun _ _ => rfl)

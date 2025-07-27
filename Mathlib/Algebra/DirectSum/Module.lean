@@ -86,7 +86,7 @@ theorem mk_smul (s : Finset ι) (c : R) (x) : mk M s (c • x) = c • mk M s x 
   (lmk R ι M s).map_smul c x
 
 /-- Scalar multiplication commutes with the inclusion of each component into the direct sum. -/
-theorem of_smul (i : ι) (c : R) (x) : of M i (c • x) = c • of M i x :=
+theorem of_smul (i : ι) (c : R) (x : M i) : of M i (c • x) = c • of M i x :=
   (lof R ι M i).map_smul c x
 
 variable {R}
@@ -520,7 +520,7 @@ theorem isInternal_submodule_iff_isCompl (A : ι → Submodule R M) {i j : ι} (
     (h : (Set.univ : Set ι) = {i, j}) : IsInternal A ↔ IsCompl (A i) (A j) := by
   have : ∀ k, k = i ∨ k = j := fun k ↦ by simpa using Set.ext_iff.mp h k
   rw [isInternal_submodule_iff_iSupIndep_and_iSup_eq_top, iSup, ← Set.image_univ, h,
-    Set.image_insert_eq, Set.image_singleton, sSup_pair, iSupIndep_pair hij this]
+    Set.image_insert_eq, Set.image_singleton, sSup_pair hij this]
   exact ⟨fun ⟨hd, ht⟩ ↦ ⟨hd, codisjoint_iff.mpr ht⟩, fun ⟨hd, ht⟩ ↦ ⟨hd, ht.eq_top⟩⟩
 
 @[simp]

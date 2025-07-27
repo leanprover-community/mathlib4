@@ -82,7 +82,7 @@ section NonAssocSemiring
 
 variable {R} [NonAssocSemiring R]
 
-variable (R) in
+variable (R)
 /-- If a ring `R` is of characteristic `p`, then for any prime number `q` different from `p`,
 it is not zero in `R`. -/
 lemma cast_ne_zero_of_ne_of_prime [Nontrivial R]
