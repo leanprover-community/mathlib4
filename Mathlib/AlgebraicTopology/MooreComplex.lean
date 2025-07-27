@@ -37,7 +37,7 @@ open CategoryTheory CategoryTheory.Limits
 
 open Opposite
 
-open Simplicial
+open scoped Simplicial
 
 namespace AlgebraicTopology
 
