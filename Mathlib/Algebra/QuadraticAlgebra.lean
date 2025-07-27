@@ -75,7 +75,7 @@ variable [Zero R]
 /-- Coercion `R → QuadraticAlgebra R a b`. -/
 @[coe] def coe (x : R) : QuadraticAlgebra R a b := ⟨x, 0⟩
 
-instance : CoeTC R (QuadraticAlgebra R a b) := ⟨coe⟩
+instance : Coe R (QuadraticAlgebra R a b) := ⟨coe⟩
 
 @[simp, norm_cast]
 theorem coe_re : (r : QuadraticAlgebra R a b).re = r := rfl
