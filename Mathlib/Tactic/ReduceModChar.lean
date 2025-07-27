@@ -293,8 +293,8 @@ elab_rules : tactic
   Mathlib.Tactic.atLocation derive "reduce_mod_char" (failIfUnchanged := false) false loc
 | `(tactic| reduce_mod_char! $[$loc]?) => unsafe do
   let loc := (loc.map expandLocation).getD (.targets #[] true)
-  Mathlib.Tactic.atLocation (derive (expensive := true)) "reduce_mod_char" (failIfUnchanged := false)
-    false loc
+  Mathlib.Tactic.atLocation (derive (expensive := true)) "reduce_mod_char"
+    (failIfUnchanged := false) false loc
 
 end ReduceModChar
 
