@@ -151,6 +151,9 @@ theorem preservesEpimorphisms_of_adjunction {F : C ⥤ D} {G : D ⥤ C} (adj : F
         rwa [adj.homEquiv_naturality_left, adj.homEquiv_naturality_left, cancel_epi,
           Equiv.apply_eq_iff_eq] at H⟩ }
 
+@[deprecated (since := "2025-07-27")]
+alias preservesEpimorphsisms_of_adjunction := preservesEpimorphisms_of_adjunction
+
 instance (priority := 100) preservesEpimorphisms_of_isLeftAdjoint (F : C ⥤ D) [IsLeftAdjoint F] :
     PreservesEpimorphisms F :=
   preservesEpimorphisms_of_adjunction (Adjunction.ofIsLeftAdjoint F)

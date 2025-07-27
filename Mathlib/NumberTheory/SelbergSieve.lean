@@ -211,6 +211,9 @@ theorem siftedSum_eq_sum_support_mul_ite :
   dsimp only [siftedSum]
   simp_rw [mul_ite, mul_one, mul_zero]
 
+@[deprecated (since := "2025-07-27")]
+alias siftedsum_eq_sum_support_mul_ite := siftedSum_eq_sum_support_mul_ite
+
 omit s in
 /-- A sequence of coefficients $\mu^{+}$ is upper Moebius if $\mu * \zeta ≤ \mu^{+} * \zeta$. These
   coefficients then yield an upper bound on the sifted sum. -/

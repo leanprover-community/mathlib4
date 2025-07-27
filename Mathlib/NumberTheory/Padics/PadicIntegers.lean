@@ -433,6 +433,8 @@ theorem p_nonunit : (p : ℤ_[p]) ∈ nonunits ℤ_[p] := by
   have : (p : ℝ)⁻¹ < 1 := inv_lt_one_of_one_lt₀ <| mod_cast hp.out.one_lt
   rwa [← norm_p, ← mem_nonunits] at this
 
+@[deprecated (since := "2025-07-27")] alias p_nonnunit := p_nonunit
+
 theorem maximalIdeal_eq_span_p : maximalIdeal ℤ_[p] = Ideal.span {(p : ℤ_[p])} := by
   apply le_antisymm
   · intro x hx

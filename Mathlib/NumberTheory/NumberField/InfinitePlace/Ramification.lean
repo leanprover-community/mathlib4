@@ -286,6 +286,10 @@ lemma _root_.NumberField.ComplexEmbedding.IsConj.coe_stabilizer_mk
 alias _root_.NumberField.ComplexEmbedding.IsConj.coe_stabilizer_mk :=
 NumberField.ComplexEmbedding.IsConj.coe_stabilizer_mk
 
+@[deprecated (since := "2025-07-27")]
+alias _root_.NumberField.ComplexEmbedding.IsConj.coe_stabilzer_mk :=
+  _root_.NumberField.ComplexEmbedding.IsConj.coe_stabilizer_mk
+
 variable (k w)
 
 lemma nat_card_stabilizer_eq_one_or_two :
