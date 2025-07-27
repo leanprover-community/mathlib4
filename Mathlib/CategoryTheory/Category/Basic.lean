@@ -177,9 +177,7 @@ class Category (obj : Type u) : Type max u (v + 1) extends CategoryStruct.{v} ob
 
 attribute [simp] Category.id_comp Category.comp_id Category.assoc
 attribute [trans] CategoryStruct.comp
-set_option linter.existingAttributeWarning false in
-attribute [to_dual existing (reorder := 3 4) Category.comp_id] Category.id_comp
--- attribute [to_dual self (reorder := 3)] Category.assoc
+attribute [to_dual existing (reorder := 3 4) comp_id] Category.id_comp
 
 example {C} [Category C] {X Y : C} (f : X ⟶ Y) : 𝟙 X ≫ f = f := by simp
 example {C} [Category C] {X Y : C} (f : X ⟶ Y) : f ≫ 𝟙 Y = f := by simp
@@ -200,14 +198,14 @@ variable {C : Type u} [Category.{v} C] {X Y Z : C}
 
 initialize_simps_projections Category (-Hom)
 
-@[to_dual existing CategoryTheory.Category.assoc]
+@[to_dual existing Category.assoc]
 theorem assoc_rev {W X Y Z : C} (f : X ⟶ W) (g : Y ⟶ X) (h : Z ⟶ Y) :
     h ≫ g ≫ f = (h ≫ g) ≫ f :=
   (Category.assoc h g f).symm
 
 /-- postcompose an equation between morphisms by another morphism -/
 @[to_dual (reorder := 8 9) whisker_eq
-  "precompose an equation between morphisms by another morphism"]
+"precompose an equation between morphisms by another morphism"]
 theorem eq_whisker {f g : X ⟶ Y} (w : f = g) (h : Y ⟶ Z) : f ≫ h = g ≫ h := by rw [w]
 
 /--
@@ -222,17 +220,17 @@ If `g h : Y ⟶ Z` and `w : g = h` and `f : X ⟶ Y`, then `f ≫= w : f ≫ g =
 -/
 scoped infixr:80 " ≫= " => whisker_eq
 
-@[to_dual]
+@[to_dual eq_of_comp_right_eq]
 theorem eq_of_comp_left_eq {f g : X ⟶ Y} (w : ∀ {Z : C} (h : Y ⟶ Z), f ≫ h = g ≫ h) :
     f = g := by
   convert w (𝟙 Y) <;> simp
 
-@[to_dual]
+@[to_dual eq_of_comp_right_eq']
 theorem eq_of_comp_left_eq' (f g : X ⟶ Y)
     (w : (fun {Z} (h : Y ⟶ Z) => f ≫ h) = fun {Z} (h : Y ⟶ Z) => g ≫ h) : f = g :=
   eq_of_comp_left_eq @fun Z h => by convert congr_fun (congr_fun w Z) h
 
-@[to_dual]
+@[to_dual id_of_comp_right_id]
 theorem id_of_comp_left_id (f : X ⟶ X) (w : ∀ {Y : C} (g : X ⟶ Y), f ≫ g = g) : f = 𝟙 X := by
   convert w (𝟙 X)
   simp
@@ -255,12 +253,13 @@ class Epi (f : X ⟶ Y) : Prop where
 
 /-- A morphism `f` is a monomorphism if it can be cancelled when postcomposed:
 `g ≫ f = h ≫ f` implies `g = h`. -/
-@[stacks 003B, to_dual existing (reorder := 3 4)] -- TODO: generate name
+@[stacks 003B, to_dual existing (reorder := 3 4)]
 class Mono (f : X ⟶ Y) : Prop where
   /-- A morphism `f` is a monomorphism if it can be cancelled when postcomposed. -/
   right_cancellation : ∀ {Z : C} (g h : Z ⟶ X), g ≫ f = h ≫ f → g = h
 
-attribute [to_dual existing (reorder := 3 4)] Mono.right_cancellation Mono.mk
+attribute [to_dual existing (reorder := 3 4)] Mono.mk
+attribute [to_dual existing (reorder := 3 4) left_cancellation] Mono.right_cancellation
 
 @[to_dual]
 instance (X : C) : Epi (𝟙 X) :=

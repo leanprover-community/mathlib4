@@ -60,8 +60,7 @@ attribute [to_dual self (reorder := 3 4, 7 8)] Iso.mk
 attribute [to_dual self (reorder := 3 4)] Iso.hom Iso.inv
 attribute [to_dual existing (reorder := 3 4) inv_hom_id] Iso.hom_inv_id
 
--- TODO: deal with projections in `to_dual`
--- attribute [to_dual bla] Iso.hom_inv_id_assoc
+-- TODO: combine `reassoc` with `to_dual`
 
 /-- Notation for an isomorphism in a category. -/
 infixr:10 " ≅ " => Iso -- type as \cong or \iso

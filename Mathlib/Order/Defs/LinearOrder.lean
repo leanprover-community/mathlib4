@@ -28,7 +28,7 @@ section LinearOrder
 
 -- defined in core
 attribute [to_dual existing] Min
-attribute [to_dual existing Ordering.gt] Ordering.lt
+attribute [to_dual existing gt] Ordering.lt
 
 /-- Default definition of `max`. -/
 def maxDefault [LE α] [DecidableLE α] (a b : α) :=

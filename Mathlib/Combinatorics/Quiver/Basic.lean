@@ -102,8 +102,8 @@ lemma homOfEq_trans {X Y : V} (f : X ⟶ Y) {X' Y' : V} (hX : X = X') (hY : Y = 
   subst hX hY hX' hY'
   rfl
 
-@[to_dual self (reorder := 3 4, 5 6, 7 8)]
-lemma homOfEq_injective {X Y X' Y' : V} (hX : X = X') (hY : Y = Y')
+@[to_dual self (reorder := 3 5, 4 6, 7 8)]
+lemma homOfEq_injective {X X' Y Y' : V} (hX : X = X') (hY : Y = Y')
     {f g : X ⟶ Y} (h : Quiver.homOfEq f hX hY = Quiver.homOfEq g hX hY) : f = g := by
   subst hX hY
   exact h
