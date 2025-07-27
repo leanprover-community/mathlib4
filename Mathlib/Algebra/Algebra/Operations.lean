@@ -362,6 +362,9 @@ theorem algebraMap_mem (r : R) : algebraMap R A r ∈ (1 : Submodule R A) := by
 theorem mem_one {x : A} : x ∈ (1 : Submodule R A) ↔ ∃ y, algebraMap R A y = x := by
   simp [one_eq_range]
 
+theorem smul_one_eq_span (x : R) : x • (1 : Submodule R R) = span R {x} := by
+  rw [one_eq_span, smul_span, smul_set_singleton, smul_eq_mul, mul_one]
+
 protected theorem map_one {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A') :
     map f.toLinearMap (1 : Submodule R A) = 1 := by
   ext
