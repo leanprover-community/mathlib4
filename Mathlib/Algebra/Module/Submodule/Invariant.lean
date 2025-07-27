@@ -54,7 +54,7 @@ theorem mem_invtSubmodule_iff_forall_mem_of_mem {p : Submodule R M} :
     p ∈ f.invtSubmodule ↔ ∀ x ∈ p, f x ∈ p :=
   Iff.rfl
 
-/-- `p` is `f.symm` invariant if and only if `p ⊆ f(p)`. -/
+/-- `p` is `f.symm` invariant if and only if `p ≤ p.map f`. -/
 lemma mem_invtSubmodule_symm_iff_le_map {f : M ≃ₗ[R] M} {p : Submodule R M} :
     p ∈ invtSubmodule f.symm ↔ p ≤ p.map f :=
   (mem_invtSubmodule_iff_map_le _).trans (f.toEquiv.symm.subset_symm_image _ _).symm

@@ -554,8 +554,7 @@ theorem IsIdempotentElem.ker_eq_range {E : Type*} [AddCommGroup E] [Module S E]
   simpa using hp.one_sub.range_eq_ker.symm
 
 open LinearMap in
-theorem IsIdempotentElem.comp_eq_left_iff
-    {M : Type*} [AddCommGroup M] [Module S M] {q : M →ₗ[S] M}
+theorem IsIdempotentElem.comp_eq_left_iff {M : Type*} [AddCommGroup M] [Module S M] {q : M →ₗ[S] M}
     (hq : IsIdempotentElem q) {E : Type*} [AddCommGroup E] [Module S E] (p : M →ₗ[S] E) :
     p ∘ₗ q = p ↔ ker q ≤ ker p := by
   simp [hq.ker_eq_range, range_le_ker_iff, comp_sub, Module.End.one_eq_id, sub_eq_zero,
