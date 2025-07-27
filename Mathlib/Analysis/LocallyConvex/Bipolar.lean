@@ -238,6 +238,13 @@ lemma dualEmbedding_isSurjective : Function.Surjective (WeakBilin.eval B) := by
   rw [map_finsuppSum]
   aesop
 
+lemma dualEmbedding_isInjective_of_separatingRight (hr : B.SeparatingRight) :
+    Function.Injective (WeakBilin.eval B) := by
+  rw [injective_iff_map_eq_zero]
+  intro f hf
+  simp [← ContinuousLinearMap.coe_inj, WeakBilin.eval] at hf
+  rw [separatingRight_iff_linear_flip_nontrivial] at hr
+  exact hr f hf
 
 
 /-
