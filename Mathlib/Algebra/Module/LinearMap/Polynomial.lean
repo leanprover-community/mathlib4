@@ -62,14 +62,13 @@ The proof concludes because characteristic polynomials are independent of the ch
 
 -/
 
+open Module MvPolynomial
 open scoped Matrix
 
 namespace Matrix
 
 variable {m n o R S : Type*}
 variable [Fintype n] [Fintype o] [CommSemiring R] [CommSemiring S]
-
-open MvPolynomial
 
 /-- Let `M` be an `(m × n)`-matrix over `R`.
 Then `Matrix.toMvPolynomial M` is the family (indexed by `i : m`)
