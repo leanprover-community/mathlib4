@@ -7,7 +7,6 @@ import Mathlib.Analysis.SpecialFunctions.OrdinaryHypergeometric
 import Mathlib.RingTheory.Binomial
 
 /-!
-
 # Binomial Series
 
 This file introduces the binomial series:
@@ -21,7 +20,6 @@ and $x$ is an element of a normed algebra over $\mathbb{K}$.
 ## Main Statements
 
 * `binomialSeries_radius_eq_one`: The radius of convergence of the binomial series is `1`.
-
 -/
 
 open scoped Nat
@@ -43,55 +41,29 @@ theorem binomialSeries_eq_ordinaryHypergeometricSeries {𝕂 : Type u} [Field �
     (h : ∀ (k : ℕ), (k : 𝕂) ≠ -b) :
     binomialSeries 𝔸 a =
     (ordinaryHypergeometricSeries 𝔸 (-a) b b).compContinuousLinearMap (-(.id _ _)) := by
-  simp [binomialSeries, ordinaryHypergeometricSeries]
+  simp only [binomialSeries, ordinaryHypergeometricSeries]
   ext n v
-  simp [FormalMultilinearSeries.ofScalars, ordinaryHypergeometricCoefficient]
-  rw [mul_inv_cancel_right₀]
-  swap
-  · intro h_zero
-    rw [ascPochhammer_eval_eq_zero_iff] at h_zero
-    tauto
-  have : ((-ContinuousLinearMap.id 𝕂 𝔸 : _) : 𝔸 → 𝔸) = Neg.neg := by
-    ext
-    simp
-  rw [ascPochhammer_eval_neg_eq_descPochhammer, Ring.choose_eq_smul, ← List.map_ofFn, this,
-    List.prod_map_neg (List.ofFn v), Polynomial.descPochhammer_smeval_eq_ascPochhammer,
-    Polynomial.ascPochhammer_smeval_eq_eval, descPochhammer_eval_eq_ascPochhammer]
-  simp
-  -- hack
-  by_cases h : (Even n)
-  · rw [Even.neg_one_pow h, Even.neg_one_pow h]
-    simp
-  · rw [Nat.not_even_iff_odd] at h
-    rw [Odd.neg_one_pow h, Odd.neg_one_pow h]
-    simp
+  simp only [FormalMultilinearSeries.ofScalars, ContinuousMultilinearMap.smul_apply,
+    ContinuousMultilinearMap.mkPiAlgebraFin_apply,
+    FormalMultilinearSeries.compContinuousLinearMap_apply, ordinaryHypergeometricCoefficient]
+  rw [mul_inv_cancel_right₀ (by simp [ascPochhammer_eval_eq_zero_iff]; grind)]
+  have : ((-ContinuousLinearMap.id 𝕂 𝔸 : _) : 𝔸 → 𝔸) = Neg.neg := by ext; simp
+  simp only [Ring.choose_eq_smul, Polynomial.descPochhammer_smeval_eq_ascPochhammer,
+    Polynomial.ascPochhammer_smeval_cast, Polynomial.ascPochhammer_smeval_eq_eval, smul_eq_mul,
+    ascPochhammer_eval_neg_eq_descPochhammer, descPochhammer_eval_eq_ascPochhammer, this, ←
+    List.map_ofFn, List.prod_map_neg (List.ofFn v), List.length_ofFn]
+  rcases n.even_or_odd with (h | h) <;> simp [h.neg_one_pow]
 
 /-- The radius of convergence of `binomialSeries 𝔸 a` is `⊤` for natural `a`. -/
 theorem binomialSeries_radius_eq_top_of_nat {𝕂 : Type v} [RCLike 𝕂] {𝔸 : Type u}
     [NormedDivisionRing 𝔸] [NormedAlgebra 𝕂 𝔸] {a : ℕ} :
     (binomialSeries 𝔸 (a : 𝕂)).radius = ⊤ := by
-  have : ∀ (k : ℕ), (k : 𝕂) ≠ -1 := by
-    -- TODO: golf
-    intro k h
-    replace h : (k : ℝ) = -1 := by
-      rwa [← RCLike.ofReal_natCast, ← RCLike.ofReal_one, ← RCLike.ofReal_neg,
-        RCLike.ofReal_inj] at h
-    linarith
-  simp [binomialSeries_eq_ordinaryHypergeometricSeries this,
+  simp [binomialSeries_eq_ordinaryHypergeometricSeries (b := (1 : 𝕂)) (by norm_cast; simp),
     ordinaryHypergeometric_radius_top_of_neg_nat₁]
 
 /-- The radius of convergence of `binomialSeries 𝔸 a` is `1`, when `a` is not natural. -/
 theorem binomialSeries_radius_eq_one {𝕂 : Type v} [RCLike 𝕂] {𝔸 : Type u} [NormedDivisionRing 𝔸]
     [NormedAlgebra 𝕂 𝔸] {a : 𝕂} (ha : ∀ (k : ℕ), a ≠ k) : (binomialSeries 𝔸 a).radius = 1 := by
-  have : ∀ (k : ℕ), (k : 𝕂) ≠ -1 := by
-  -- TODO: golf
-    intro k h
-    replace h : (k : ℝ) = -1 := by
-      rwa [← RCLike.ofReal_natCast, ← RCLike.ofReal_one, ← RCLike.ofReal_neg,
-        RCLike.ofReal_inj] at h
-    linarith
-  simp [binomialSeries_eq_ordinaryHypergeometricSeries this]
-  rw [ordinaryHypergeometricSeries_radius_eq_one]
-  intro k
-  simp only [neg_neg, ne_eq, one_div, and_self]
-  exact ⟨(ha k).symm, this k⟩
+  simp [binomialSeries_eq_ordinaryHypergeometricSeries (b := (1 : 𝕂)) (by norm_cast; simp)]
+  conv at ha => ext; rw [ne_comm]
+  exact ordinaryHypergeometricSeries_radius_eq_one _ _ _ _ (by norm_cast; simp [ha])
