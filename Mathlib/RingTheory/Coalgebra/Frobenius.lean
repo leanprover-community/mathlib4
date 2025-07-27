@@ -36,7 +36,7 @@ local notation "τ" => TensorProduct.lid R
 then `(id ⊗ mul) ∘ assoc ∘ (comul ⊗ id) = comul ∘ mul`.
 
 This is sometimes referred to as the **Frobenius equation**. -/
-theorem lTensor_mul'_comp_assoc_comp_rTensor_comul_of
+theorem LinearMap.lTensor_mul'_comp_assoc_comp_rTensor_comul_of
     (h : (lTensor A (mul' R A)) ∘ₗ (ϰ A A A) ∘ₗ (rTensor A comul)
       = (rTensor A (mul' R A)) ∘ₗ (ϰ A A A).symm ∘ₗ (lTensor A comul)) :
     (lTensor A (mul' R A)) ∘ₗ (ϰ A A A) ∘ₗ (rTensor A comul) = comul ∘ₗ (mul' R A) := by
