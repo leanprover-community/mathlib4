@@ -1332,20 +1332,20 @@ theorem HasFPowerSeriesWithinOnBall.compContinuousLinearMap
       exact lt_of_le_of_lt (ContinuousLinearMap.le_opNorm_enorm _ _) (mul_lt_of_lt_div' hy2)
 
 theorem HasFPowerSeriesOnBall.compContinuousLinearMap (hf : HasFPowerSeriesOnBall f pf (u x) r) :
-    HasFPowerSeriesOnBall (f ∘ u) (pf.compContinuousLinearMap u) x (r / ‖u‖₊) := by
+    HasFPowerSeriesOnBall (f ∘ u) (pf.compContinuousLinearMap u) x (r / ‖u‖ₑ) := by
   rw [← hasFPowerSeriesWithinOnBall_univ] at hf ⊢
   exact hf.compContinuousLinearMap
 
 theorem HasFPowerSeriesAt.compContinuousLinearMap (hf : HasFPowerSeriesAt f pf (u x)) :
     HasFPowerSeriesAt (f ∘ u) (pf.compContinuousLinearMap u) x :=
   let ⟨r, hr⟩ := hf
-  ⟨r / ‖u‖₊, hr.compContinuousLinearMap⟩
+  ⟨r / ‖u‖ₑ, hr.compContinuousLinearMap⟩
 
 theorem HasFPowerSeriesWithinAt.compContinuousLinearMap
     (hf : HasFPowerSeriesWithinAt f pf s (u x)) :
     HasFPowerSeriesWithinAt (f ∘ u) (pf.compContinuousLinearMap u) (u ⁻¹' s) x :=
   let ⟨r, hr⟩ := hf
-  ⟨r / ‖u‖₊, hr.compContinuousLinearMap⟩
+  ⟨r / ‖u‖ₑ, hr.compContinuousLinearMap⟩
 
 theorem AnalyticAt.compContinuousLinearMap (hf : AnalyticAt 𝕜 f (u x)) :
     AnalyticAt 𝕜 (f ∘ u) x :=
