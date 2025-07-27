@@ -752,6 +752,6 @@ lemma TensorProduct.assoc_tensor :
 
 lemma TensorProduct.lid_tensor :
     (TensorProduct.lid R (A ⊗[R] B)).toLinearMap
-      = rTensor _ (TensorProduct.lid R _).toLinearMap
-      ∘ₗ (TensorProduct.assoc R _ _ _).symm.toLinearMap := by
+    = rTensor _ (TensorProduct.lid R _).toLinearMap
+    ∘ₗ (TensorProduct.assoc R _ _ _).symm.toLinearMap := by
   ext; simp
