@@ -63,6 +63,8 @@ lemma ιColimitType_eq_iff_of_isFiltered {j j' : J} (x : F.obj j) (y : F.obj j')
       ∃ (k : J) (f : j ⟶ k) (f' : j' ⟶ k), F.map f x = F.map f' y := by
   rw [ιColimitType_eq_iff, eqvGen_colimitTypeRel_iff_of_isFiltered]
 
+/-- More precise variant of the lemma `ιColimitType_eq_iff_of_isFiltered`
+in the case both `x` and `y` and in the same type `F.obj j`. -/
 lemma ιColimitType_eq_iff_of_isFiltered' {j : J} (x y : F.obj j) :
     F.ιColimitType j x = F.ιColimitType j y ↔
       ∃ (k : J) (f : j ⟶ k), F.map f x = F.map f y := by
@@ -94,11 +96,13 @@ lemma descColimitType_injective_iff_of_isFiltered :
     obtain ⟨k, f, f', eq⟩ := h _ _ _ _ eq
     rw [← F.ιColimitType_map f x, eq, F.ιColimitType_map]
 
+/-- Variant of `descColimitType_injective_iff_of_isFiltered` where we
+assume both elements `x` and `x'` are in the same type `F.obj j`. -/
 lemma descColimitType_injective_iff_of_isFiltered' :
     Function.Injective (F.descColimitType c) ↔
       ∀ (j : J) (x x' : F.obj j), c.ι j x = c.ι j x' →
         ∃ (k : J) (f : j ⟶ k), F.map f x = F.map f x' := by
-  rw [injective_descColimitType_iff_of_isFiltered]
+  rw [descColimitType_injective_iff_of_isFiltered]
   constructor
   · intro h j x x' eq
     obtain ⟨k, f, f', eq⟩ := h _ _ _ _ eq
