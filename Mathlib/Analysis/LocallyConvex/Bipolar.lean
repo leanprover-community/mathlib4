@@ -28,37 +28,6 @@ variable {𝕜 E F : Type*}
 
 namespace LinearMap
 
-section
-
-variable {𝕜 E F : Type*}
-variable [NormedField 𝕜] [AddCommMonoid E] [AddCommMonoid F]
-variable [Module 𝕜 E] [Module 𝕜 F]
-
-variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜}
-
--- #check (WeakBilin.eval B : F →ₗ[𝕜] WeakBilin B →L[𝕜] 𝕜)
-
--- TODO unify this and NormedAddGroupHom.coe_ker
-theorem coe_ker (f : E →ₗ[𝕜] 𝕜) :
-    (ker f : Set E) = (f : E → 𝕜) ⁻¹' {0} :=
-  rfl
-
--- Let f be in the topological dual of `E` equipped with the weak topology induced by `B`. Then the
--- kernel of `f` is closed.
--- c.f. Mathlib/Analysis/Normed/Group/Hom.lean:theorem isClosed_ker
-theorem isClosed_ker (f : WeakBilin B →L[𝕜] 𝕜) :
-    IsClosed (ker f : Set (WeakBilin B)) :=
-  f.coe_ker ▸ IsClosed.preimage f.continuous (T1Space.t1 0)
-
--- Kreyszig  2.7-9 continuous iff bounded, continuous iff continuous at a point
-
--- Conway Theorem V1.3 p125 dual of dual - if `e` is in the topological dual of the topological dual
--- of `E` then `e` is in `E`. Uses A 1.4 (intersection of kernels)
--- I think A 1.4 is mem_span_of_iInf_ker_le_ker
-
-end
-
-
 section NormedField
 
 variable {𝕜 E F : Type*}
