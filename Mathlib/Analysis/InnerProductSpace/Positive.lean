@@ -206,7 +206,7 @@ lemma isPositive_toLinearMap_iff (T : E →L[𝕜] E) :
   rw [LinearMap.IsPositive, coe_coe, IsPositive, ← isSelfAdjoint_iff_isSymmetric]
   rfl
 
-alias ⟨_, IsPositive.isPositive_toLinearMap⟩ := isPositive_toLinearMap_iff
+alias ⟨_, IsPositive.toLinearMap⟩ := isPositive_toLinearMap_iff
 
 open ComplexOrder in
 theorem isPositive_iff (T : E →L[𝕜] E) :
@@ -243,13 +243,13 @@ theorem isPositive_ofNat {n : ℕ} [n.AtLeastTwo] : IsPositive (ofNat(n) : E →
 @[aesop safe apply]
 theorem IsPositive.add {T S : E →L[𝕜] E} (hT : T.IsPositive) (hS : S.IsPositive) :
     (T + S).IsPositive :=
-  (isPositive_toLinearMap_iff _).mp (hT.isPositive_toLinearMap.add hS.isPositive_toLinearMap)
+  (isPositive_toLinearMap_iff _).mp (hT.toLinearMap.add hS.toLinearMap)
 
 open ComplexOrder in
 @[aesop safe apply]
 theorem IsPositive.smul_of_nonneg {T : E →L[𝕜] E} (hT : T.IsPositive) {c : 𝕜} (hc : 0 ≤ c) :
     (c • T).IsPositive :=
-  (isPositive_toLinearMap_iff _).mp (hT.isPositive_toLinearMap.smul_of_nonneg hc)
+  (isPositive_toLinearMap_iff _).mp (hT.toLinearMap.smul_of_nonneg hc)
 
 @[aesop safe apply]
 theorem IsPositive.conj_adjoint {T : E →L[𝕜] E} (hT : T.IsPositive) (S : E →L[𝕜] F) :
@@ -342,8 +342,7 @@ instance instLoewnerPartialOrder : PartialOrder (E →L[𝕜] E) where
   le f g := (g - f).IsPositive
   le_refl _ := by simp
   le_trans _ _ _ h₁ h₂ := by simpa using h₁.add h₂
-  le_antisymm _ _ h₁ h₂ := coe_inj.mp
-    (le_antisymm h₁.isPositive_toLinearMap h₂.isPositive_toLinearMap)
+  le_antisymm _ _ h₁ h₂ := coe_inj.mp (le_antisymm h₁.toLinearMap h₂.toLinearMap)
 
 lemma le_def (f g : E →L[𝕜] E) : f ≤ g ↔ (g - f).IsPositive := Iff.rfl
 
