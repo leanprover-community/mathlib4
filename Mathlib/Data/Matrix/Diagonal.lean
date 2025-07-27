@@ -3,6 +3,7 @@ Copyright (c) 2018 Ellen Arlt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu-Ming Zhang
 -/
+import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Data.Int.Cast.Pi
 import Mathlib.Data.Matrix.Defs
 import Mathlib.Data.Nat.Cast.Basic
@@ -106,6 +107,12 @@ theorem diagonal_sub [SubNegZeroMonoid α] (d₁ d₂ : n → α) :
   ext i j
   by_cases h : i = j <;>
   simp [h]
+
+theorem diagonal_mem_matrix_iff [Zero α] {S : Set α} (hS : 0 ∈ S) {d : n → α} :
+    Matrix.diagonal d ∈ S.matrix ↔ ∀ i, d i ∈ S := by
+  simp only [Set.mem_matrix, diagonal, of_apply]
+  conv_lhs => intro _ _; rw[ite_mem]
+  simp [hS]
 
 instance [Zero α] [NatCast α] : NatCast (Matrix n n α) where
   natCast m := diagonal fun _ => m

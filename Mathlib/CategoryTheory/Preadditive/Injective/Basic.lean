@@ -296,6 +296,18 @@ def injectivePresentationOfMap (adj : F ⊣ G)
 
 end Adjunction
 
+namespace Functor
+
+variable {D : Type*} [Category D] (F : C ⥤ D)
+
+theorem injective_of_map_injective [F.Full] [F.Faithful]
+    [F.PreservesMonomorphisms] {I : C} (hI : Injective (F.obj I)) : Injective I where
+  factors g f _ := by
+    obtain ⟨h, fac⟩ := hI.factors (F.map g) (F.map f)
+    exact ⟨F.preimage h, F.map_injective (by simp [fac])⟩
+
+end Functor
+
 /--
 [Lemma 3.8](https://ncatlab.org/nlab/show/injective+object#preservation_of_injective_objects)
 -/
