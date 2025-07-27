@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.Limits.HasLimits
 
 This file uses a "pre-automated" approach, just as for
 `Mathlib/Algebra/Category/MonCat/Colimits.lean`.
-It is a very uniform approach, that conceivably could be synthesized directly
+It is a very uniform approach, that conceivably could be synthesised directly
 by a tactic that analyses the shape of `CommRing` and `RingHom`.
 -/
 

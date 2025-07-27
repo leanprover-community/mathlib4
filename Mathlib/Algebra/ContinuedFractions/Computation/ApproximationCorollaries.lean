@@ -59,7 +59,7 @@ section Convergence
 /-!
 ### Convergence
 
-We next show that `(GenContFract.of v).convs` converges to `v`.
+We next show that `(GenContFract.of v).convs n` converges to `v`.
 -/
 
 

@@ -218,7 +218,7 @@ def ofCocone {J : Type*} [Category J] {F : J ⥤ TopModuleCat R}
   pt := coinduced c.ι.app
   ι :=
   { app := toCoinduced c.ι.app,
-    naturality {X Y} f := by ext x; exact congr ($(c.ι.naturality f).hom x) }
+    naturality {X Y} f := by ext x; exact congr($(c.ι.naturality f).hom x) }
 
 /-- Given a colimit cocone over the underlying modules, equipping the cocone point with
 the coinduced topology gives a colimit cocone in `TopModuleCat R`. -/
@@ -234,12 +234,12 @@ def isColimit {J : Type*} [Category J] {F : J ⥤ TopModuleCat R}
       (c.ι.app i ≫ hc.desc ((forget₂ _ (ModuleCat R)).mapCocone s)).hom
     rw [hc.fac]
     exact (s.ι.app i).hom.2]⟩
-  fac s i := by ext x; exact congr ($(hc.fac ((forget₂ _ _).mapCocone s) i).hom x)
+  fac s i := by ext x; exact congr($(hc.fac ((forget₂ _ _).mapCocone s) i).hom x)
   uniq s m H := by
     ext x
-    refine congr ($(hc.uniq ((forget₂ _ _).mapCocone s) ((forget₂ _ _).map m) fun j ↦ ?_).hom x)
+    refine congr($(hc.uniq ((forget₂ _ _).mapCocone s) ((forget₂ _ _).map m) fun j ↦ ?_).hom x)
     ext y
-    exact congr ($(H j).hom y)
+    exact congr($(H j).hom y)
 
 instance {J : Type*} [Category J] {F : J ⥤ TopModuleCat R}
     [HasColimit (F ⋙ forget₂ _ (ModuleCat R))] : HasColimit F :=
@@ -279,7 +279,7 @@ def ofCone {J : Type*} [Category J] {F : J ⥤ TopModuleCat R}
   pt := induced c.π.app
   π :=
   { app := fromInduced c.π.app,
-    naturality {X Y} f := by ext x; exact congr ($(c.π.naturality f).hom x) }
+    naturality {X Y} f := by ext x; exact congr($(c.π.naturality f).hom x) }
 
 /-- Given a limit cone over the underlying modules, equipping the cone point with
 the induced topology gives a limit cone in `TopModuleCat R`. -/
@@ -294,12 +294,12 @@ def isLimit {J : Type*} [Category J] {F : J ⥤ TopModuleCat R}
       (hc.lift ((forget₂ _ (ModuleCat R)).mapCone s) ≫ c.π.app i).hom
     rw [hc.fac]
     exact (s.π.app i).hom.2]⟩
-  fac s i := by ext x; exact congr ($(hc.fac ((forget₂ _ _).mapCone s) i).hom x)
+  fac s i := by ext x; exact congr($(hc.fac ((forget₂ _ _).mapCone s) i).hom x)
   uniq s m H := by
     ext x
-    refine congr ($(hc.uniq ((forget₂ _ _).mapCone s) ((forget₂ _ _).map m) fun j ↦ ?_).hom x)
+    refine congr($(hc.uniq ((forget₂ _ _).mapCone s) ((forget₂ _ _).map m) fun j ↦ ?_).hom x)
     ext y
-    exact congr ($(H j).hom y)
+    exact congr($(H j).hom y)
 
 instance hasLimit_of_hasLimit_forget₂ {J : Type*} [Category J] {F : J ⥤ TopModuleCat.{v} R}
     [HasLimit (F ⋙ forget₂ _ (ModuleCat.{v} R))] : HasLimit F :=

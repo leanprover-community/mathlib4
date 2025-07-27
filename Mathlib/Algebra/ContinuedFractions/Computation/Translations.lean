@@ -273,7 +273,7 @@ theorem of_s_of_int (a : ℤ) : (of (a : K)).s = Stream'.Seq.nil :=
     | succ n ih => exact (of (a : K)).s.prop ih
   Stream'.Seq.ext fun n => (h n).trans (Stream'.Seq.get?_nil n).symm
 
-variable {K}
+variable {K} (v)
 
 /-- Recurrence for the `GenContFract.of` an element `v` of `K` in terms of that of the inverse of
 the fractional part of `v`.

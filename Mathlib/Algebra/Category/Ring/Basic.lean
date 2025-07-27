@@ -320,7 +320,7 @@ instance hasForgetToAddCommGrp : HasForget₂ RingCat AddCommGrp where
     { obj := fun R ↦ AddCommGrp.of R
       map := fun f ↦ AddCommGrp.ofHom f.hom.toAddMonoidHom }
 
-/-- Ring equivalences are isomorphisms in category of semirings -/
+/-- Ring equivalences are isomorphisms in category of rings -/
 @[simps]
 def _root_.RingEquiv.toRingCatIso {R S : Type u} [Ring R] [Ring S] (e : R ≃+* S) :
     of R ≅ of S where
@@ -480,7 +480,7 @@ instance hasForgetToCommMonCat : HasForget₂ CommSemiRingCat CommMonCat where
     { obj := fun R ↦ CommMonCat.of R
       map := fun f ↦ CommMonCat.ofHom f.hom.toMonoidHom }
 
-/-- Ring equivalences are isomorphisms in category of semirings -/
+/-- Ring equivalences are isomorphisms in category of commutative semirings -/
 @[simps]
 def _root_.RingEquiv.toCommSemiRingCatIso
     {R S : Type u} [CommSemiring R] [CommSemiring S] (e : R ≃+* S) :
@@ -656,7 +656,7 @@ instance : HasForget₂ CommRingCat CommMonCat where
   forget₂ := { obj M := .of M, map f := CommMonCat.ofHom f.hom }
   forget_comp := rfl
 
-/-- Ring equivalences are isomorphisms in category of semirings -/
+/-- Ring equivalences are isomorphisms in category of commutative rings -/
 @[simps]
 def _root_.RingEquiv.toCommRingCatIso
     {R S : Type u} [CommRing R] [CommRing S] (e : R ≃+* S) :
