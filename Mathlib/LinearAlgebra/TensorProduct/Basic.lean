@@ -49,7 +49,6 @@ variable [AddCommMonoid Q] [AddCommMonoid S] [AddCommMonoid T]
 variable [Module R M] [Module R N] [Module R Q] [Module R S] [Module R T]
 variable [DistribMulAction R' M]
 variable [Module R'' M]
-
 variable {R₂ M₂ N₂ P₂ : Type*} [CommSemiring R₂]
   [AddCommMonoid M₂] [AddCommMonoid N₂] [AddCommMonoid P₂]
   [Module R₂ M₂] [Module R₂ N₂] [Module R₂ P₂]
