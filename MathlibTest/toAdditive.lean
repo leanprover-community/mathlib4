@@ -540,7 +540,7 @@ theorem test2 : 5 = 5 := rfl
 multiplicative, hence `α` would be set as the `to_additive_relevant_arg`. -/
 
 @[to_additive]
-def fooMul {α : Type} {β : Type} (_ : (no_index Add) α) [Mul β] (x y : (fun _ => β) α) : β := x * y
+def fooMul {α β : Type} (_ : (no_index Add) α) [Mul β] (x y : β) : β := x * y
 
 @[to_additive] -- this would not translate `fooMul`
 def barMul {β : Type} [Mul β] (x y : β) : β := fooMul instAddNat x y
