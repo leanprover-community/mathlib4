@@ -12,7 +12,7 @@ import Mathlib.SetTheory.Cardinal.Arithmetic
 # Results using cardinal arithmetic
 
 This file contains results using cardinal arithmetic that are not in the main cardinal theory files.
-It has been separated out to not burden `Matlib.Data.Set.Card` with extra imports.
+It has been separated out to not burden `Mathlib.Data.Set.Card` with extra imports.
 
 ## Main results
 

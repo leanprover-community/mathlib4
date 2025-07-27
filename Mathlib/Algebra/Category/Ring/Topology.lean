@@ -60,7 +60,7 @@ lemma continuous_precomp (f : A ⟶ B) :
     Continuous ((f ≫ ·) : (B ⟶ R) → (A ⟶ R)) :=
   continuous_induced_rng.mpr ((Pi.continuous_precomp f.hom).comp continuous_induced_dom)
 
-/-- If `A ≅ B`, then `Hom(A, R)` is homeomorphc to `Hom(B, R)`. -/
+/-- If `A ≅ B`, then `Hom(A, R)` is homeomorphic to `Hom(B, R)`. -/
 @[simps]
 def precompHomeomorph (f : A ≅ B) :
     (B ⟶ R) ≃ₜ (A ⟶ R) where

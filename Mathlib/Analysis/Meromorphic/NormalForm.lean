@@ -284,7 +284,7 @@ noncomputable def toMeromorphicNFAt :
   · exact 0
 
 /-- Conversion to normal form at `x` changes the value only at x. -/
-lemma MeromorphicAt.eqOn_compl_singleton_toMermomorphicNFAt (hf : MeromorphicAt f x) :
+lemma MeromorphicAt.eqOn_compl_singleton_toMeromorphicNFAt (hf : MeromorphicAt f x) :
     Set.EqOn f (toMeromorphicNFAt f x) {x}ᶜ :=
   fun _ _ ↦ by simp_all [toMeromorphicNFAt]
 
@@ -296,7 +296,7 @@ lemma MeromorphicAt.eqOn_compl_singleton_toMermomorphicNFAt (hf : MeromorphicAt 
 /-- Conversion to normal form at `x` changes the value only at x. -/
 lemma MeromorphicAt.eq_nhdsNE_toMeromorphicNFAt (hf : MeromorphicAt f x) :
     f =ᶠ[𝓝[≠] x] toMeromorphicNFAt f x :=
-  eventually_nhdsWithin_of_forall (fun _ hz ↦ hf.eqOn_compl_singleton_toMermomorphicNFAt hz)
+  eventually_nhdsWithin_of_forall (fun _ hz ↦ hf.eqOn_compl_singleton_toMeromorphicNFAt hz)
 
 @[deprecated (since := "2025-05-22")]
 alias MeromorphicAt.eq_nhdNE_toMeromorphicNFAt := MeromorphicAt.eq_nhdsNE_toMeromorphicNFAt
@@ -377,7 +377,7 @@ theorem meromorphicNFAt_toMeromorphicNFAt :
           by_contra hn
           rw [hn] at this
           tauto
-    · exact (hf.meromorphicAt.eqOn_compl_singleton_toMermomorphicNFAt hz).symm
+    · exact (hf.meromorphicAt.eqOn_compl_singleton_toMeromorphicNFAt hz).symm
 
 /--
 If `f` is meromorphic in normal form, then so is its inverse.

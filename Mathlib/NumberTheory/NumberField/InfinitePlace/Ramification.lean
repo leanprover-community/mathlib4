@@ -283,7 +283,7 @@ lemma _root_.NumberField.ComplexEmbedding.IsConj.coe_stabilizer_mk
     ← h.ext_iff, eq_comm (a := σ)]
 
 @[deprecated (since := "2025-07-08")]
-alias _root_.NumberField.ComplexEmbedding.IsConj.coe_stabilzer_mk :=
+alias _root_.NumberField.ComplexEmbedding.IsConj.coe_stabilizer_mk :=
 NumberField.ComplexEmbedding.IsConj.coe_stabilizer_mk
 
 variable (k w)

@@ -38,7 +38,7 @@ lemma W_eq_W_range_sheafToPresheaf_obj :
   · rintro ⟨F, rfl⟩
     exact F.cond
 
-lemma W_sheafToPreheaf_map_iff_isIso {F₁ F₂ : Sheaf J A} (φ : F₁ ⟶ F₂) :
+lemma W_sheafToPresheaf_map_iff_isIso {F₁ F₂ : Sheaf J A} (φ : F₁ ⟶ F₂) :
     J.W ((sheafToPresheaf J A).map φ) ↔ IsIso φ := by
   rw [W_eq_W_range_sheafToPresheaf_obj, LeftBousfield.W_iff_isIso _ _ ⟨_, rfl⟩ ⟨_, rfl⟩,
     isIso_iff_of_reflects_iso]

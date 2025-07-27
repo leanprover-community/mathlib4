@@ -60,7 +60,7 @@ section ConnectedSpace
 variable [ConnectedSpace X]
 
 /-- Every continuous map from a connected topological space to the disjoint union of a family of
-topological spaces is a composition of the embedding `ContinuousMap.sigmMk i : C(Y i, Σ i, Y i)` for
+topological spaces is a composition of the embedding `ContinuousMap.sigmaMk i : C(Y i, Σ i, Y i)` for
 some `i` and a continuous map `g : C(X, Y i)`. See also `Continuous.exists_lift_sigma` for a version
 with unbundled functions and `ContinuousMap.sigmaCodHomeomorph` for a homeomorphism defined using
 this fact. -/
