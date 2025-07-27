@@ -35,7 +35,7 @@ variable {a : ℂ}
 /--
 If `a` is any complex number, the function `(log ‖· - a‖)` is circle integrable over every circle.
 -/
-lemma circleIntegrability_log_norm_id_sub_const {c : ℂ} (r : ℝ) :
+lemma circleIntegrable_log_norm_sub_const {c : ℂ} (r : ℝ) :
     CircleIntegrable (log ‖· - a‖) c r :=
   circleIntegrable_log_norm_meromorphicOn (fun z hz ↦ by fun_prop)
 
@@ -44,7 +44,7 @@ lemma circleIntegrability_log_norm_id_sub_const {c : ℂ} (r : ℝ) :
 -/
 
 -- Integral computation used in `circleAverage_log_norm_id_sub_const₁`
-private lemma circleAverage_log_norm_id_sub_const₁_integral :
+private lemma circleAverage_log_norm_sub_const₁_integral :
     ∫ x in 0..(2 * π), log (4 * sin (x / 2) ^ 2) / 2 = 0 := by
   calc ∫ x in 0..(2 * π), log (4 * sin (x / 2) ^ 2) / 2
   _ = ∫ (x : ℝ) in 0..π, log (4 * sin x ^ 2) := by
@@ -75,7 +75,7 @@ private lemma circleAverage_log_norm_id_sub_const₁_integral :
 If `a : ℂ` has norm one, then the circle average `circleAverage (log ‖· - a‖) 0 1` vanishes.
 -/
 @[simp]
-theorem circleAverage_log_norm_id_sub_const₁ (h : ‖a‖ = 1) :
+theorem circleAverage_log_norm_sub_const₁ (h : ‖a‖ = 1) :
     circleAverage (log ‖· - a‖) 0 1 = 0 := by
   -- Observing that the problem is rotation invariant, we rotate by an angle of `ζ = - arg a` and
   -- reduce the problem to the case where `a = 1`. The integral can then be evalutated by a direct
