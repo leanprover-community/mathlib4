@@ -11,6 +11,7 @@ import Mathlib.RingTheory.Nakayama
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
+import Mathlib.RingTheory.KrullDimension.PID
 
 /-!
 # Krull's Height Theorem
@@ -40,6 +41,197 @@ In this file, we prove **Krull's principal ideal theorem** (also known as
   `p` has height no greater than `n` if and only if it is a minimal ideal over some ideal generated
   by no more than `n` elements.
 -/
+
+section
+
+open Polynomial in
+instance {R : Type*} [CommRing R] (p : Ideal R) [p.IsPrime] : (p.map C).IsPrime :=
+  Ideal.isPrime_map_C_of_isPrime ‹_›
+
+lemma Ideal.IsMaximal.map_of_surjective_of_ker_le {R S F : Type*} [Ring R] [Ring S] [FunLike F R S]
+    [RingHomClass F R S] {f : F} (hf : Function.Surjective ⇑f) {m : Ideal R} [m.IsMaximal]
+    (hk : RingHom.ker f ≤ m) : (m.map f).IsMaximal := by
+  obtain h | h := m.map_eq_top_or_isMaximal_of_surjective f hf ‹_›
+  · apply congr_arg (comap f) at h
+    rw [comap_map_of_surjective _ hf, comap_top] at h
+    exact (IsMaximal.ne_top ‹_› (eq_top_iff.mpr <| h ▸ sup_le (le_of_eq rfl) hk)).elim
+  · exact h
+
+lemma Order.zero_lt_height {α : Type*} [Preorder α] {x : α} [OrderBot α] (h : ⊥ < x) :
+    0 < height x := by
+  rw [← Order.height_bot (α := α)]
+  apply Order.height_strictMono h
+  simp [Order.height_bot, ENat.top_pos]
+
+lemma Order.one_lt_height_iff {α : Type*} [Preorder α] {x : α} :
+    1 < Order.height x ↔ ∃ y z, z < y ∧ y < x := by
+  rw [← ENat.add_one_le_iff ENat.one_ne_top, show 1 + 1 = (2 : ℕ∞) from rfl]
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · obtain ⟨p, hp, hlen⟩ := Order.exists_series_of_le_height x (n := 2) h
+    refine ⟨p 1, p 0, p.rel_of_lt ?_, hp ▸ p.rel_of_lt ?_⟩ <;> simp [Fin.lt_def, hlen]
+  · rintro ⟨y, z, hzy, hyx⟩
+    let p : LTSeries α := RelSeries.fromListChain' [z, y, x] (List.cons_ne_nil z [y, x])
+      (List.Chain'.cons hzy <| List.chain'_pair.mpr hyx)
+    exact Order.length_le_height (p := p) (by rfl)
+
+/-- In a PID that is not a field, every maximal ideal has height one. -/
+lemma IsPrincipalIdealRing.height_eq_one_of_isMaximal {R : Type*} [CommRing R] [IsDomain R]
+    [IsPrincipalIdealRing R] (m : Ideal R) [m.IsMaximal] (h : ¬ IsField R) :
+    m.height = 1 := by
+  refine le_antisymm ?_ ?_
+  · suffices h : (m.height : WithBot ℕ∞) ≤ 1 by norm_cast at h
+    rw [← IsPrincipalIdealRing.ringKrullDim_eq_one _ h]
+    exact Ideal.height_le_ringKrullDim_of_ne_top Ideal.IsPrime.ne_top'
+  · rw [Order.one_le_iff_pos, Ideal.height_eq_primeHeight]
+    exact Order.zero_lt_height (Ideal.bot_lt_of_maximal m h)
+
+lemma Ideal.height_comap_of_ringEquiv_of_isPrime {R S : Type*} [CommRing R] [CommRing S]
+    (e : R ≃+* S) (p : Ideal S) [p.IsPrime] :
+    (p.comap e).height = p.height := by
+  rw [height_eq_primeHeight, height_eq_primeHeight, primeHeight, primeHeight,
+    ← Order.height_orderIso (PrimeSpectrum.comapEquiv e.symm) ⟨p, ‹_›⟩]
+  have := p.map_comap_of_equiv e.symm
+  congr
+
+@[simps apply]
+def RingEquiv.idealComapEquiv {R S : Type*} [Semiring R] [Semiring S] (e : R ≃+* S) :
+    Ideal S ≃o Ideal R where
+  toFun I := I.comap e
+  invFun I := I.map e
+  left_inv I := I.map_comap_of_surjective _ e.surjective
+  right_inv I := I.comap_map_of_bijective _ e.bijective
+  map_rel_iff' := by
+    simp [← Ideal.map_le_iff_le_comap, Ideal.map_comap_of_surjective _ e.surjective]
+
+@[simp]
+lemma RingEquiv.idealComapEquiv_symm_apply
+    {R S : Type*} [Semiring R] [Semiring S] (e : R ≃+* S) (I : Ideal R) :
+    e.idealComapEquiv.symm I = I.map e :=
+  rfl
+
+lemma RingEquiv.height_comap {R S : Type*} [CommRing R] [CommRing S]
+    (e : R ≃+* S) (I : Ideal S) :
+    (I.comap e).height = I.height := by
+  refine (Equiv.iInf_congr e.idealComapEquiv fun J ↦ (Equiv.iInf_congr ?_ fun h ↦ ?_).symm).symm
+  · refine .ofIff ?_
+    rw [← Ideal.comap_coe,
+      Ideal.comap_minimalPrimes_eq_of_surjective (f := (↑e : R →+* S)) e.surjective]
+    exact e.idealComapEquiv.injective.mem_set_image.symm
+  · have : J.IsPrime := h.1.1
+    simp only [EquivLike.coe_coe, RingEquiv.idealComapEquiv_apply,
+      ← Ideal.height_eq_primeHeight, Ideal.height_comap_of_ringEquiv_of_isPrime]
+
+lemma RingEquiv.height_map {R S : Type*} [CommRing R] [CommRing S] (e : R ≃+* S) (I : Ideal R) :
+    (I.map e).height = I.height := by
+  rw [← Ideal.comap_symm e, height_comap]
+
+/-- `dim A ≤ n` if and only if the height of all prime ideals is less than `n`. -/
+lemma ringKrullDim_le_iff_height_le {R : Type*} [CommRing R] (n : WithBot ℕ∞) :
+    ringKrullDim R ≤ n ↔ ∀ (p : Ideal R), (hp : p.IsPrime) → p.height ≤ n := by
+  rw [ringKrullDim, Order.krullDim_eq_iSup_height, iSup_le_iff]
+  refine ⟨fun h p hp ↦ ?_, fun h p ↦ ?_⟩
+  · rw [Ideal.height_eq_primeHeight]
+    exact h ⟨p, hp⟩
+  · specialize h p.1 p.2
+    rwa [Ideal.height_eq_primeHeight] at h
+
+/-- `dim A ≤ n` if and only if the height of all maximal ideals is less than `n`. -/
+lemma ringKrullDim_le_iff_isMaximal_height_le {R : Type*} [CommRing R] (n : WithBot ℕ∞) :
+    ringKrullDim R ≤ n ↔ ∀ (m : Ideal R), (hm : m.IsMaximal) → m.height ≤ n := by
+  rw [ringKrullDim_le_iff_height_le]
+  refine ⟨fun h m hm ↦ h m hm.isPrime, fun h p hp ↦ ?_⟩
+  obtain ⟨m, hm, hle⟩ := p.exists_le_maximal hp.ne_top
+  refine le_trans ?_ (h m hm)
+  norm_cast
+  exact Ideal.height_mono hle
+
+@[simp]
+lemma LTSeries.height_last_longestOf (α : Type*) [Preorder α] [FiniteDimensionalOrder α] :
+    Order.height (LTSeries.longestOf α).last = Order.krullDim α := by
+  refine le_antisymm (Order.height_le_krullDim _) ?_
+  rw [Order.krullDim_eq_length_of_finiteDimensionalOrder, Order.height]
+  norm_cast
+  exact le_iSup_iff.mpr <| fun _ h ↦ iSup_le_iff.mp (h _) le_rfl
+
+lemma Ideal.exists_isMaximal_height_eq_of_nontrivial {R : Type*} [CommRing R] [Nontrivial R]
+    [FiniteRingKrullDim R] : ∃ (p : Ideal R) (_ : p.IsMaximal), p.height = ringKrullDim R := by
+  let l := (LTSeries.longestOf (PrimeSpectrum R))
+  obtain ⟨m, hm, hle⟩ := l.last.asIdeal.exists_le_maximal IsPrime.ne_top'
+  refine ⟨m, hm, le_antisymm (height_le_ringKrullDim_of_ne_top IsPrime.ne_top') ?_⟩
+  trans (l.last.asIdeal.height : WithBot ℕ∞)
+  · rw [Ideal.height_eq_primeHeight]
+    exact (LTSeries.height_last_longestOf _).symm.le
+  · norm_cast
+    exact height_mono hle
+
+@[simp]
+lemma Ideal.height_bot {R : Type*} [CommRing R] [Nontrivial R] : (⊥ : Ideal R).height = 0 := by
+  obtain ⟨p, hp⟩ := Ideal.nonempty_minimalPrimes (R := R) (I := ⊥) top_ne_bot.symm
+  simp only [Ideal.height, ENat.iInf_eq_zero]
+  exact ⟨p, hp, haveI := hp.1.1; primeHeight_eq_zero_iff.mpr hp⟩
+
+lemma ringKrullDim_ne_bot {R : Type*} [CommSemiring R] [FiniteRingKrullDim R] :
+    ringKrullDim R ≠ ⊥ :=
+  (finiteRingKrullDim_iff_ne_bot_and_top.mp ‹_›).1
+
+lemma Nontrivial.of_finiteRingKrullDim (R : Type*) [CommSemiring R] [FiniteRingKrullDim R] :
+    Nontrivial R := by
+  by_contra!
+  rw [not_nontrivial_iff_subsingleton] at this
+  exact ringKrullDim_ne_bot (R := R) ringKrullDim_eq_bot_of_subsingleton
+
+@[simp]
+lemma Submodule.spanFinrank_bot {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
+    (⊥ : Submodule R M).spanFinrank = 0 := by
+   simp [spanFinrank]
+
+lemma Submodule.spanFinrank_eq_zero_iff_eq_bot {R M : Type*} [Semiring R] [AddCommMonoid M]
+    [Module R M] {p : Submodule R M} (h : p.FG) :
+    p.spanFinrank = 0 ↔ p = ⊥ := by
+  refine ⟨fun heq ↦ ?_, fun h ↦ h ▸ by simp⟩
+  rw [← Submodule.FG.generators_ncard h, Set.ncard_eq_zero h.finite_generators] at heq
+  rw [← p.span_generators, heq, span_empty]
+
+lemma Submodule.spanFinrank_singleton {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    {m : M} (hm : m ≠ 0) : (span R {m}).spanFinrank = 1 := by
+  apply le_antisymm ?_ ?_
+  · exact le_trans (Submodule.spanFinrank_span_le_ncard_of_finite (by simp)) (by simp)
+  · by_contra!
+    simp [Submodule.spanFinrank_eq_zero_iff_eq_bot (fg_span_singleton m), hm] at this
+
+lemma Submodule.spanFinrank_span_le_encard {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    (s : Set M) : (span R s).spanFinrank ≤ s.encard := by
+  obtain h | h := s.finite_or_infinite
+  · refine le_trans ?_ s.ncard_le_encard
+    norm_cast
+    exact spanFinrank_span_le_ncard_of_finite h
+  · simp [h]
+
+lemma IsLocalization.height_map_of_disjoint {R S : Type*} [CommRing R] [CommRing S]
+    [Algebra R S] (M : Submonoid R)
+    [IsLocalization M S] (p : Ideal R) [p.IsPrime] (h : Disjoint (M : Set R) (p : Set R)) :
+    (p.map <| algebraMap R S).height = p.height := by
+  let P := p.map (algebraMap R S)
+  have : P.IsPrime := isPrime_of_isPrime_disjoint M S p ‹_› h
+  have := isLocalization_isLocalization_atPrime_isLocalization (M := M) (Localization.AtPrime P) P
+  simp_rw [P, comap_map_of_isPrime_disjoint M S p _ h] at this
+  have := ringKrullDim_eq_of_ringEquiv (IsLocalization.algEquiv p.primeCompl
+    (Localization.AtPrime P) (Localization.AtPrime p)).toRingEquiv
+  rw [AtPrime.ringKrullDim_eq_height P, AtPrime.ringKrullDim_eq_height p] at this
+  exact WithBot.coe_eq_coe.mp this
+
+lemma Ideal.IsMaximal.of_isLocalization_of_disjoint {R : Type*} [CommSemiring R] {M : Submonoid R}
+    {S : Type*} [CommSemiring S] [Algebra R S] [IsLocalization M S] {J : Ideal S}
+    [(Ideal.comap (algebraMap R S) J).IsMaximal]
+    (disj : Disjoint (M : Set R) (Ideal.comap (algebraMap R S) J)) :
+    J.IsMaximal := by
+  obtain ⟨m, maxm, hm⟩ := exists_le_maximal J <|
+    (IsLocalization.isPrime_iff_isPrime_disjoint M S J).mpr ⟨‹IsMaximal _›.isPrime, disj⟩ |>.ne_top
+  apply comap_mono (f := algebraMap R S) at hm
+  rwa [← IsLocalization.map_comap M S J, IsMaximal.eq_of_le ‹_› (IsPrime.under R m).ne_top hm,
+    Ideal.under_def, IsLocalization.map_comap M S m]
+
+end
 
 variable {R : Type*} [CommRing R] [IsNoetherianRing R]
 
@@ -374,209 +566,31 @@ lemma Ideal.height_eq_height_add_of_liesOver_of_hasGoingDown [IsNoetherianRing S
 
 open Polynomial
 
-lemma Ideal.map_isMaximal_of_surjective {R S F : Type*} [Ring R] [Ring S] [FunLike F R S]
-    [rc : RingHomClass F R S] {f : F}
-    (hf : Function.Surjective ⇑f) {I : Ideal R} [H : I.IsMaximal]
-    (hk : RingHom.ker f ≤ I) : (Ideal.map f I).IsMaximal := by
-  have := Ideal.map_eq_top_or_isMaximal_of_surjective f hf H
-  rw [or_iff_not_imp_left] at this
-  apply this
-  by_contra h
-  replace h := congr_arg (comap f) h
-  rw [comap_map_of_surjective _ hf, comap_top] at h
-  have := eq_top_iff.mpr <| h ▸ sup_le (le_of_eq rfl) hk
-  exact H.ne_top this
-
-section
-variable {α : Type*} [Preorder α] {x : α}
-lemma Order.zero_lt_height [OrderBot α] (h : ⊥ < x) : 0 < Order.height x := by
-  rw [← Order.height_bot (α := α)]
-  apply Order.height_strictMono
-  · exact h
-  · rw [Order.height_bot]
-    exact ENat.top_pos
-
-lemma Order.one_lt_height_iff : 1 < Order.height x ↔ ∃ y z, z < y ∧ y < x := by
-  rw [← not_iff_not, not_lt, Order.height_le_iff']
-  constructor
-  all_goals intro h
-  · by_contra hexist
-    rcases hexist with ⟨y,z,hzlty, hyltx⟩
-    let p : LTSeries α := RelSeries.fromListChain' [z, y, x] (List.cons_ne_nil z [y, x])
-      (List.Chain'.cons hzlty <| List.chain'_pair.mpr hyltx)
-    have : RelSeries.last p = x := rfl
-    have hle1 : p.length ≤ 1 := ENat.coe_le_coe.mp (h this)
-    have hgt1 : p.length > 1 := Nat.one_lt_succ_succ [].length
-    linarith
-  · intro p hlast
-    contrapose! h
-    rw [Nat.one_lt_cast] at h
-    use p ⟨1, Nat.lt_add_right 1 h⟩, p ⟨0, Nat.zero_lt_succ p.length⟩
-    constructor
-    · exact LTSeries.strictMono p <| Batteries.compareOfLessAndEq_eq_lt.mp rfl
-    · rw [← hlast]
-      apply LTSeries.strictMono p
-      rw [Fin.mk_lt_mk, Fin.val_last]
-      exact h
-
-end
-
-lemma IsMaximal.height_eq_one {R : Type*} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
-    (m : Ideal R) [hm : m.IsMaximal] (h : ¬ IsField R) :
-    m.height = 1 := by
-  rw [Ideal.height_eq_primeHeight]
-  unfold Ideal.primeHeight
-  apply le_antisymm
-  · by_contra! hlen
-    rw [Order.one_lt_height_iff] at hlen
-    rcases hlen with ⟨y, z, hzlty, hyltm⟩
-    have hyltm' : y.asIdeal < m := hyltm
-    have : y.asIdeal.IsMaximal := IsPrime.to_maximal_ideal <| LT.lt.ne_bot hzlty
-    have : y.asIdeal = m := by
-      apply Ideal.IsMaximal.eq_of_le this
-      exact Ideal.IsPrime.ne_top'
-      apply le_of_lt hyltm
-    exact (Eq.not_gt this.symm) hyltm
-  · have : 0 < Order.height (⟨m, hm.isPrime⟩ : PrimeSpectrum R) ↔
-      1 ≤ Order.height (⟨m, hm.isPrime⟩ : PrimeSpectrum R) := by
-      exact Iff.symm Order.one_le_iff_pos
-    rw [← this]
-    apply Order.zero_lt_height
-    exact Ideal.bot_lt_of_maximal m h
-
-omit [IsNoetherianRing R] [Algebra R S] in
-lemma height_eq_of_ringEquiv (e : R ≃+* S) (p : Ideal R) [hp : p.IsPrime] :
-    (p.map e).height = p.height := by
-  set g := PrimeSpectrum.comapEquiv e
-  have eq : Ideal.map e p = Ideal.comap e.symm p := Ideal.map_comap_of_equiv e
-  set f : PrimeSpectrum R ≃o PrimeSpectrum S := { g with
-    map_rel_iff' := by
-      intro a b
-      unfold g PrimeSpectrum.comapEquiv RingHom.specComap
-      simp only [RingEquiv.toRingHom_eq_coe, Equiv.coe_fn_mk, ← PrimeSpectrum.asIdeal_le_asIdeal,
-        ← Ideal.map_le_iff_le_comap, Ideal.map_comap_of_equiv, RingEquiv.symm_symm]
-      apply Iff.of_eq
-      congr
-      calc
-        _ = Ideal.comap e.toRingHom (Ideal.comap (e.symm.toRingHom) a.asIdeal) := by rfl
-        _ = _ := by simp }
-  rw [Ideal.height_eq_primeHeight, Ideal.height_eq_primeHeight]
-  unfold Ideal.primeHeight
-  rw [← Order.height_orderIso f ⟨p, hp⟩]
-  congr
-
-/-- Let `p` be a prime ideal of `A`. If `P` is a prime ideal of `A[X]` maximal
-among the prime ideals lying over `p`, `ht(P) = ht(p) + 1`. -/
-lemma Ideal.primeHeight_polynomial_of_isMaximal (p : Ideal R)
-    [p.IsMaximal] (P : Ideal R[X]) [P.IsMaximal] [P.LiesOver p] :
-    P.height = p.height + 1 := by
-  letI : Field (R ⧸ p) := Quotient.field p
-  have : (P.map (Ideal.Quotient.mk (Ideal.map (algebraMap R R[X]) p))).height = 1 := by
-    let e : (R[X] ⧸ (Ideal.map C p)) ≃+* (R ⧸ p)[X] :=
-      (Ideal.polynomialQuotientEquivQuotientPolynomial p).symm
-    let P' : Ideal (R ⧸ p)[X] :=
-      Ideal.map e <| Ideal.map (Ideal.Quotient.mk <| Ideal.map (algebraMap R R[X]) p) P
-    -- use that `P'` is a maximal ideal of `(A ⧸ p)[X]`
-    have : (P.map (Ideal.Quotient.mk <| map (algebraMap R R[X]) p)).IsMaximal := by
-      apply Ideal.map_isMaximal_of_surjective
-      · exact Quotient.mk_surjective
-      rw [mk_ker]
-      have : Ideal.comap (algebraMap R R[X]) P = p := by
-        exact Eq.symm LiesOver.over
-      rw [← this]
-      exact map_comap_le
-    letI : P'.IsMaximal := map_isMaximal_of_equiv e
-    have : P'.height = 1 := IsMaximal.height_eq_one P' polynomial_not_isField
-    simp only [P'] at this
-    rwa [← height_eq_of_ringEquiv e <|
-      P.map (Ideal.Quotient.mk <| p.map (algebraMap R R[X]))]
-  rw [height_eq_height_add_of_liesOver_of_hasGoingDown p, this]
-
-omit [IsNoetherianRing R] in
-@[simp]
-lemma Ideal.height_bot [Nontrivial R] : (⊥ : Ideal R).height = 0 := by
-  obtain ⟨p, hp⟩ := Ideal.nonempty_minimalPrimes (R := R) (I := ⊥) top_ne_bot.symm
-  simp only [Ideal.height, ENat.iInf_eq_zero]
-  exact ⟨p, hp, haveI := hp.1.1; primeHeight_eq_zero_iff.mpr hp⟩
-
-instance (p : Ideal R) [p.IsPrime] : (p.map C).IsPrime :=
-  Ideal.isPrime_map_C_of_isPrime ‹_›
+/--
+Let `p` be a maximal ideal of `A`. If `P` is a maximal ideal of `A[X]` lying above `p`,
+then `ht(P) = ht(p) + 1`.
+See `Ideal.height_polynomial` for the more general version that does not assume `p` is maximal.
+-/
+lemma Ideal.height_polynomial_of_isMaximal (p : Ideal R) [p.IsMaximal] (P : Ideal R[X])
+    [P.IsMaximal] [P.LiesOver p] : P.height = p.height + 1 := by
+  let _ : Field (R ⧸ p) := Quotient.field p
+  suffices h : (P.map (Ideal.Quotient.mk (Ideal.map (algebraMap R R[X]) p))).height = 1 by
+    rw [height_eq_height_add_of_liesOver_of_hasGoingDown p, h]
+  let e : (R[X] ⧸ (map C p)) ≃+* (R ⧸ p)[X] := (polynomialQuotientEquivQuotientPolynomial p).symm
+  let P' : Ideal (R ⧸ p)[X] := map e <| map (Quotient.mk <| map (algebraMap R R[X]) p) P
+  have : (P.map (Quotient.mk <| map (algebraMap R R[X]) p)).IsMaximal := by
+    refine .map_of_surjective_of_ker_le Quotient.mk_surjective ?_
+    rw [mk_ker, LiesOver.over (P := P) (p := p)]
+    exact map_comap_le
+  have : P'.IsMaximal := map_isMaximal_of_equiv e
+  have : P'.height = 1 := IsPrincipalIdealRing.height_eq_one_of_isMaximal P' polynomial_not_isField
+  rwa [← e.height_map <| P.map (Ideal.Quotient.mk <| p.map (algebraMap R R[X]))]
 
 open Ideal in
+/-- Let `p` be a maximal ideal of `R`. Then the height of `p[X]` equals the height of `p`. -/
 lemma Polynomial.height_map_C (p : Ideal R) [p.IsMaximal] : (p.map C).height = p.height := by
   have : (p.map C).LiesOver p := ⟨IsMaximal.eq_of_le inferInstance IsPrime.ne_top' le_comap_map⟩
   simp [height_eq_height_add_of_liesOver_of_hasGoingDown p]
-
-omit [IsNoetherianRing R] in
-/-- `dim A ≤ n` if and only if the height of all prime ideals is less than `n`. -/
-lemma ringKrullDim_le_of_height_le [Nontrivial R] (n : WithBot ℕ∞) :
-    ringKrullDim R ≤ n ↔ ∀ (p : Ideal R), (hp : p.IsPrime) → p.height ≤ n := by
-  rw [ringKrullDim, Order.krullDim_eq_iSup_height]
-  simp only [iSup_le_iff]
-  refine ⟨fun h p hp ↦ ?_, fun h p ↦ ?_⟩
-  · rw [Ideal.height_eq_primeHeight]
-    exact h ⟨p, hp⟩
-  · specialize h p.1 p.2
-    rwa [Ideal.height_eq_primeHeight] at h
-
-omit [IsNoetherianRing R] in
-/-- `dim A ≤ n` if and only if the height of all maximal ideals is less than `n`. -/
-lemma ringKrullDim_le_of_isMaximal_height_le [Nontrivial R] (n : WithBot ℕ∞) :
-    ringKrullDim R ≤ n ↔ ∀ (m : Ideal R), (hm : m.IsMaximal) → m.height ≤ n := by
-  rw [ringKrullDim_le_of_height_le]
-  refine ⟨fun h m hm ↦ h m hm.isPrime, fun h p hp ↦ ?_⟩
-  obtain ⟨m, hm, hle⟩ := p.exists_le_maximal hp.ne_top
-  refine le_trans ?_ (h m hm)
-  norm_cast
-  exact Ideal.height_mono hle
-
-@[simp]
-lemma LTSeries.height_head_longestOf (α : Type*) [Preorder α] [FiniteDimensionalOrder α] :
-    Order.height (LTSeries.longestOf α).last = Order.krullDim α := by
-  refine le_antisymm (Order.height_le_krullDim _) ?_
-  rw [Order.krullDim_eq_length_of_finiteDimensionalOrder, Order.height]
-  norm_cast
-  exact le_iSup_iff.mpr <| fun _ h ↦ iSup_le_iff.mp (h _) le_rfl
-
-lemma Ideal.exists_isMaximal_height_eq_of_nontrivial {R : Type*} [CommRing R]
-    [Nontrivial R] [FiniteRingKrullDim R] :
-    ∃ (p : Ideal R) (_ : p.IsMaximal), p.height = ringKrullDim R := by
-  let l := (LTSeries.longestOf (PrimeSpectrum R))
-  obtain ⟨m, hm, hle⟩ := l.last.asIdeal.exists_le_maximal IsPrime.ne_top'
-  use m, hm
-  refine le_antisymm (height_le_ringKrullDim_of_ne_top IsPrime.ne_top') ?_
-  trans (l.last.asIdeal.height : WithBot ℕ∞)
-  · rw [Ideal.height_eq_primeHeight]
-    exact ((LTSeries.height_head_longestOf _).symm).le
-  · norm_cast
-    exact height_mono hle
-
-omit [IsNoetherianRing R] [Algebra R S] in
-lemma IsLocalization.height_eq_of_disjoint [Algebra R S] (M : Submonoid R)
-    [IsLocalization M S] (p : Ideal R) [p.IsPrime] (h : Disjoint (M : Set R) (p : Set R)) :
-    (p.map <| algebraMap R S).height = p.height := by
-  set P := p.map (algebraMap R S)
-  have : P.IsPrime := IsLocalization.isPrime_of_isPrime_disjoint M S p ‹_› h
-  have := isLocalization_isLocalization_atPrime_isLocalization (M := M) (Localization.AtPrime P) P
-  simp_rw [P, comap_map_of_isPrime_disjoint M S p _ h] at this
-  have := ringKrullDim_eq_of_ringEquiv (IsLocalization.algEquiv p.primeCompl
-    (Localization.AtPrime P) (Localization.AtPrime p)).toRingEquiv
-  rw [AtPrime.ringKrullDim_eq_height P, AtPrime.ringKrullDim_eq_height p] at this
-  exact WithBot.coe_eq_coe.mp this
-
-lemma IsLocalization.IsMaximal_of_IsMaximal_disjoint {R : Type*} [CommSemiring R] (M : Submonoid R)
-    (S : Type*) [CommSemiring S] [Algebra R S] [IsLocalization M S] (J : Ideal S)
-    (h : (Ideal.comap (algebraMap R S) J).IsMaximal)
-    (disj : Disjoint (M : Set R) (Ideal.comap (algebraMap R S) J)) :
-    J.IsMaximal := by
-  obtain ⟨m, maxm, hm⟩ := Ideal.exists_le_maximal J <| Ideal.IsPrime.ne_top <|
-    (IsLocalization.isPrime_iff_isPrime_disjoint M S J).mpr ⟨h.isPrime, disj⟩
-  have : (Ideal.comap (algebraMap R S) J) ≤ (Ideal.comap (algebraMap R S) m) := fun x h ↦ by
-    rw [Ideal.mem_comap] at h ⊢
-    exact (hm h)
-  have := Ideal.IsMaximal.eq_of_le h (Ideal.IsPrime.ne_top <| Ideal.IsPrime.under R m) this
-  have : J = m := by rw [← IsLocalization.map_comap M S J, ← IsLocalization.map_comap M S m, this]
-  exact this ▸ maxm
 
 section
 
@@ -595,57 +609,56 @@ end
 
 attribute [local instance] Polynomial.isLocalization
 
-/-- Let `p` be a prime ideal of `A`. If `P` is a prime ideal of `A[X]` maximal
-among the prime ideals lying over `p`, `ht(P) = ht(p) + 1`. -/
-lemma Ideal.primeHeight_polynomial (p : Ideal R)
-    [hp : p.IsPrime] (P : Ideal R[X]) [hP : P.IsMaximal] [plo : P.LiesOver p] :
+open Ideal in
+/-- If `R'` (resp. `S'`) is the localization of `R` (resp. `S`) and
+`P` lies over `p` then the image of `P` in `S'` lies over the image of `p` in `R'`. -/
+lemma IsLocalization.liesOver_of_isPrime_of_disjoint {R S R' S' : Type*} [CommSemiring R]
+    [CommSemiring S] (M : Submonoid R) (T : Submonoid S)
+    [CommSemiring R'] [CommSemiring S'] [Algebra R S] [Algebra R R'] [Algebra S S'] [Algebra R' S']
+    [Algebra R S'] [IsScalarTower R S S'] [IsScalarTower R R' S']
+    [IsLocalization M R'] [IsLocalization T S']
+    (p : Ideal R) {P : Ideal S} [P.IsPrime] [P.LiesOver p]
+    (disj : Disjoint (T : Set S) (P : Set S)) :
+    (P.map (algebraMap S S')).LiesOver (p.map (algebraMap R R')) := by
+  suffices h : Ideal.map (algebraMap R R') (under R (under R' (P.map (algebraMap S S')))) =
+      Ideal.map (algebraMap R R') p by exact ⟨by rw [← h, IsLocalization.map_comap (M := M)]⟩
+  rw [under_under, ← under_under (B := S), under_def, under_def,
+    IsLocalization.comap_map_of_isPrime_disjoint (M := T) _ _ ‹_› disj,
+    LiesOver.over (P := P) (p := p)]
+
+open IsLocalization in
+/-- Let `p` be a prime ideal of `A`. If `P` is a maximal ideal of `A[X]` lying over `p`,
+`ht(P) = ht(p) + 1`. -/
+lemma Ideal.height_polynomial (p : Ideal R)
+    [p.IsPrime] (P : Ideal R[X]) [P.IsMaximal] [P.LiesOver p] :
     P.height = p.height + 1 := by
   let Rₚ := Localization.AtPrime p
-  have disj : Disjoint (Submonoid.map C p.primeCompl : Set R[X]) P := by
-    apply Set.disjoint_left.mpr
-    intro a ha1 ha2
-    simp only [Submonoid.coe_map, Set.mem_image, SetLike.mem_coe] at ha1
-    obtain ⟨b, hb⟩ := ha1
-    have : b ∈ p := by
-      rw [plo.over, mem_comap, algebraMap_eq]
-      exact hb.2 ▸ ha2
-    exact hb.1 this
-  have eq : (comap (algebraMap R[X] Rₚ[X]) (map (algebraMap R[X] Rₚ[X]) P)) = P :=
-      IsLocalization.comap_map_of_isPrime_disjoint _ _ P hP.isPrime disj
-  set p' := p.map (algebraMap R Rₚ)
-  letI : p'.IsMaximal := by
-    have : p' = IsLocalRing.maximalIdeal Rₚ := Localization.AtPrime.map_eq_maximalIdeal
-    exact this ▸ IsLocalRing.maximalIdeal.isMaximal Rₚ
+  set p' : Ideal Rₚ := p.map (algebraMap R Rₚ) with p'_def
+  have : p'.IsMaximal := by
+    rw [p'_def, Localization.AtPrime.map_eq_maximalIdeal]
+    exact IsLocalRing.maximalIdeal.isMaximal Rₚ
+  let P' : Ideal Rₚ[X] := P.map (algebraMap R[X] Rₚ[X])
+  have disj : Disjoint (p.primeCompl.map C : Set R[X]) P := by
+    refine Set.disjoint_left.mpr fun a ⟨b, hb⟩ ha ↦ hb.1 ?_
+    rwa [SetLike.mem_coe, LiesOver.over (P := P) (p := p), mem_comap, algebraMap_eq, hb.2]
+  have eq := comap_map_of_isPrime_disjoint _ Rₚ[X] P ‹P.IsMaximal›.isPrime disj
+  have : (comap (algebraMap R[X] Rₚ[X]) P').IsMaximal := eq.symm ▸ ‹P.IsMaximal›
+  have : P'.IsMaximal := .of_isLocalization_of_disjoint (eq.symm ▸ disj)
+  have : P'.LiesOver p' := liesOver_of_isPrime_of_disjoint p.primeCompl _ _ disj
   have eq1 : p.height = p'.height := by
-    rw [IsLocalization.height_eq_of_disjoint p.primeCompl]
+    rw [height_map_of_disjoint p.primeCompl]
     exact Disjoint.symm <| Set.disjoint_left.mpr fun _ a b ↦ b a
-  set P' : Ideal Rₚ[X] := P.map (algebraMap R[X] Rₚ[X])
-  have mp : P'.IsMaximal :=
-    IsLocalization.IsMaximal_of_IsMaximal_disjoint _ _ _ (eq.symm ▸ hP) (eq.symm ▸ disj)
-  have lo : P'.LiesOver p' := by
-    constructor
-    have h1 : p'.under R = p := IsLocalization.comap_map_of_isPrime_disjoint p.primeCompl
-        _ p hp <| Disjoint.symm <| Set.disjoint_left.mpr fun _ a b ↦ b a
-    have h2 : P'.under R[X] = P := IsLocalization.comap_map_of_isPrime_disjoint
-      (Submonoid.map C <| p.primeCompl) Rₚ[X] P hP.isPrime disj
-    have := plo.over
-    rw [← h2, Ideal.under_under, ← Ideal.under_under P' (B := Rₚ)] at this
-    simp only [p', this]
-    nth_rw 1 [Ideal.under_def]
-    exact IsLocalization.map_comap p.primeCompl Rₚ (P'.under Rₚ)
   have eq2 : P.height = P'.height := by
-    rw [IsLocalization.height_eq_of_disjoint
-      (Submonoid.map C <| p.primeCompl) _ disj]
+    rw [height_map_of_disjoint (Submonoid.map C <| p.primeCompl) _ disj]
   rw [eq1, eq2]
-  apply Ideal.primeHeight_polynomial_of_isMaximal p' P'
+  apply Ideal.height_polynomial_of_isMaximal p' P'
 
+/-- If `R` is Noetherian, `dim R[X] = dim R + 1`. -/
 lemma ringKrullDim_polynomial : ringKrullDim R[X] = ringKrullDim R + 1 := by
   refine le_antisymm ?_ ?_
   · nontriviality R[X]
-    apply (ringKrullDim_le_of_isMaximal_height_le (ringKrullDim R + 1)).mpr
-    intro P hP
-    let p : Ideal R := P.comap (algebraMap R R[X])
-    rw [Ideal.primeHeight_polynomial p P, WithBot.coe_add, WithBot.coe_one]
+    refine (ringKrullDim_le_iff_isMaximal_height_le (ringKrullDim R + 1)).mpr fun M hM ↦ ?_
+    rw [Ideal.height_polynomial (M.under R) M, WithBot.coe_add, WithBot.coe_one]
     gcongr
     exact Ideal.height_le_ringKrullDim_of_ne_top Ideal.IsPrime.ne_top'
   · exact ringKrullDim_succ_le_ringKrullDim_polynomial
@@ -659,7 +672,7 @@ lemma Ideal.height_le_height_add_spanFinrank_of_le {I m : Ideal R} [m.IsMaximal]
   classical
   let R' := R ⧸ I
   let m' := m.map (algebraMap R R')
-  have : m'.IsMaximal := Ideal.map_isMaximal_of_surjective Ideal.Quotient.mk_surjective <| by
+  have : m'.IsMaximal := .map_of_surjective_of_ker_le Quotient.mk_surjective <| by
     simpa [span_le]
   have : m'.LiesOver m := by
     constructor
@@ -724,33 +737,6 @@ lemma Ideal.height_le_height_add_spanFinrank_of_le {I m : Ideal R} [m.IsMaximal]
     simp only [comap_map_quotientMk, this, sup_of_le_right, m'] at h2
     exact le_trans le_comap_map h2
 
-@[simp]
-lemma Submodule.spanFinrank_bot {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
-    (⊥ : Submodule R M).spanFinrank = 0 := by
-   simp [spanFinrank]
-
-lemma Submodule.spanFinrank_eq_zero_iff_eq_bot {R M : Type*} [Semiring R] [AddCommMonoid M]
-    [Module R M] {p : Submodule R M} (h : p.FG) :
-    p.spanFinrank = 0 ↔ p = ⊥ := by
-  refine ⟨fun heq ↦ ?_, fun h ↦ h ▸ by simp⟩
-  rw [← Submodule.FG.generators_ncard h, Set.ncard_eq_zero h.finite_generators] at heq
-  rw [← p.span_generators, heq, span_empty]
-
-lemma Submodule.spanFinrank_singleton {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
-    {m : M} (hm : m ≠ 0) : (span R {m}).spanFinrank = 1 := by
-  apply le_antisymm ?_ ?_
-  · exact le_trans (Submodule.spanFinrank_span_le_ncard_of_finite (by simp)) (by simp)
-  · by_contra!
-    simp [Submodule.spanFinrank_eq_zero_iff_eq_bot (fg_span_singleton m), hm] at this
-
-lemma Submodule.spanFinrank_span_le_encard {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
-    (s : Set M) : (span R s).spanFinrank ≤ s.encard := by
-  obtain h | h := s.finite_or_infinite
-  · refine le_trans ?_ s.ncard_le_encard
-    norm_cast
-    exact spanFinrank_span_le_ncard_of_finite h
-  · simp [h]
-
 lemma Ideal.height_le_height_add_encard_of_subset (s : Set R) {m : Ideal R} [m.IsMaximal]
     (hrm : s ⊆ m) : m.height ≤ (m.map (algebraMap R (R ⧸ span s))).height + s.encard := by
   apply le_trans (Ideal.height_le_height_add_spanFinrank_of_le (I := span s) (m := m) ?_) ?_
@@ -776,27 +762,17 @@ lemma ringKrullDim_quotient_succ_of_mem_nonZeroDivisors {r : R}
   · gcongr
     apply Ideal.height_le_ringKrullDim_of_ne_top
     have : (Ideal.map (algebraMap R (R ⧸ span {r})) m).IsMaximal := by
-      apply Ideal.map_isMaximal_of_surjective
+      apply Ideal.IsMaximal.map_of_surjective_of_ker_le
       apply Ideal.Quotient.mk_surjective
       simp [span_le, hm]
     exact IsPrime.ne_top'
-
-lemma ringKrullDim_ne_bot {R : Type*} [CommSemiring R] [FiniteRingKrullDim R] :
-    ringKrullDim R ≠ ⊥ :=
-  (finiteRingKrullDim_iff_ne_bot_and_top.mp ‹_›).1
-
-lemma Nontrivial.of_finiteRingKrullDim (R : Type*) [CommSemiring R] [FiniteRingKrullDim R] :
-    Nontrivial R := by
-  by_contra!
-  rw [not_nontrivial_iff_subsingleton] at this
-  exact ringKrullDim_ne_bot (R := R) ringKrullDim_eq_bot_of_subsingleton
 
 lemma ringKrullDim_quotient_succ_of_mem_nonZeroDivisors_of_mem_jacobson
     {r : R} (hr₁ : r ∈ nonZeroDivisors R) (hr₂ : r ∈ Ring.jacobson R) :
     ringKrullDim (R ⧸ span {r}) + 1 = ringKrullDim R := by
   refine le_antisymm (ringKrullDim_quotient_succ_le_of_nonZeroDivisor hr₁) ?_
   nontriviality R
-  rw [ringKrullDim_le_of_isMaximal_height_le]
+  rw [ringKrullDim_le_iff_isMaximal_height_le]
   intro m hm
   have hrm : r ∈ m := by
     simp only [Ring.jacobson_eq_sInf_isMaximal, Submodule.mem_sInf, Set.mem_setOf_eq] at hr₂
@@ -807,7 +783,7 @@ lemma ringKrullDim_quotient_succ_of_mem_nonZeroDivisors_of_mem_jacobson
   · gcongr
     apply Ideal.height_le_ringKrullDim_of_ne_top
     have : (Ideal.map (algebraMap R (R ⧸ span {r})) m).IsMaximal := by
-      apply Ideal.map_isMaximal_of_surjective
+      apply Ideal.IsMaximal.map_of_surjective_of_ker_le
       apply Ideal.Quotient.mk_surjective
       simp [span_le, hrm]
     exact IsPrime.ne_top'
