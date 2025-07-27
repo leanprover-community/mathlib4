@@ -107,7 +107,6 @@ variable [Module ℝ E]
 variable [IsScalarTower ℝ 𝕜 E]
 
 -- Conway p127
--- open scoped ComplexOrder
 open scoped ComplexConjugate
 theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s] :
     B.flip.polar (B.polar s) = closedAbsConvexHull (E := WeakBilin B) 𝕜 s := by
@@ -115,8 +114,7 @@ theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s
   · simp only [Set.le_eq_subset]
     rw [← Set.compl_subset_compl]
     intro x hx
-    rw [Set.mem_compl_iff] at hx
-    obtain ⟨f,⟨u,⟨hf₁,hf₂⟩⟩⟩ :=
+    obtain ⟨f, ⟨u, ⟨hf₁, hf₂⟩⟩⟩ :=
       RCLike.geometric_hahn_banach_closed_point (𝕜 := 𝕜) (E := WeakBilin B)
         absConvex_convexClosedHull.2 isClosed_closedAbsConvexHull hx
     have e3 : RCLike.re (f 0) < u :=
@@ -124,16 +122,12 @@ theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s
     rw [map_zero, map_zero] at e3
     let g := (1/u : ℝ) • f
     have fg : g = (1/u : ℝ) • f := rfl
-    have hg₁ : ∀ a ∈ (closedAbsConvexHull (E := WeakBilin B) 𝕜) s, RCLike.re (g a) < 1 := by
-      intro a ha
-      rw [fg]
-      simp only [ ContinuousLinearMap.coe_smul', Pi.smul_apply]
-      rw [RCLike.smul_re]
-      --have t1 : RCLike.re (f a) < u := hf₁ a ha
-      simp
-      rw [← (inv_mul_cancel₀ (lt_iff_le_and_ne.mp e3).2.symm)]
-      exact mul_lt_mul_of_pos_left ((hf₁ a) ha) (inv_pos_of_pos e3)
-    obtain ⟨f₀,hf₀⟩ := B.dualEmbedding_isSurjective g
+    have hg₁ : ∀ a ∈ (closedAbsConvexHull (E := WeakBilin B) 𝕜) s, RCLike.re (g a) < 1 :=
+        fun _ ha => by
+      rw [fg, ContinuousLinearMap.coe_smul', Pi.smul_apply, RCLike.smul_re, one_div,
+        ← (inv_mul_cancel₀ (lt_iff_le_and_ne.mp e3).2.symm)]
+      exact mul_lt_mul_of_pos_left ((hf₁ _) ha) (inv_pos_of_pos e3)
+    obtain ⟨f₀, hf₀⟩ := B.dualEmbedding_isSurjective g
     have hg₃ : f₀ ∈ (B.polar (E := WeakBilin B) s) := by
       rw [← hf₀] at hg₁
       simp [WeakBilin.eval] at hg₁
