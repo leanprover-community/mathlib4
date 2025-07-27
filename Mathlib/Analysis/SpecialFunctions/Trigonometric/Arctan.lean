@@ -40,6 +40,19 @@ theorem tan_add' {x y : ℝ}
     tan (x + y) = (tan x + tan y) / (1 - tan x * tan y) :=
   tan_add (Or.inl h)
 
+theorem tan_sub {x y : ℝ}
+    (h : ((∀ k : ℤ, x ≠ (2 * k + 1) * π / 2) ∧ ∀ l : ℤ, y ≠ (2 * l + 1) * π / 2) ∨
+      (∃ k : ℤ, x = (2 * k + 1) * π / 2) ∧ ∃ l : ℤ, y = (2 * l + 1) * π / 2) :
+    tan (x - y) = (tan x - tan y) / (1 + tan x * tan y) := by
+  simpa only [← Complex.ofReal_inj, Complex.ofReal_sub, Complex.ofReal_add, Complex.ofReal_div,
+    Complex.ofReal_mul, Complex.ofReal_tan] using
+    @Complex.tan_sub (x : ℂ) (y : ℂ) (by convert h <;> norm_cast)
+
+theorem tan_sub' {x y : ℝ}
+    (h : (∀ k : ℤ, x ≠ (2 * k + 1) * π / 2) ∧ ∀ l : ℤ, y ≠ (2 * l + 1) * π / 2) :
+    tan (x - y) = (tan x - tan y) / (1 + tan x * tan y) :=
+  tan_sub (Or.inl h)
+
 theorem tan_two_mul {x : ℝ} : tan (2 * x) = 2 * tan x / (1 - tan x ^ 2) := by
   have := @Complex.tan_two_mul x
   norm_cast at *
