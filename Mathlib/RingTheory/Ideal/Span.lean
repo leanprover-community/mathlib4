@@ -106,9 +106,8 @@ theorem span_singleton_le_iff_mem {x : α} : span {x} ≤ I ↔ x ∈ I :=
   Submodule.span_singleton_le_iff_mem _ _
 
 theorem span_singleton_mul_left_unit {a : α} (h2 : IsUnit a) (x : α) :
-    span ({a * x} : Set α) = span {x} := by
-  apply le_antisymm <;> rw [span_singleton_le_iff_mem, mem_span_singleton']
-  exacts [⟨a, rfl⟩, ⟨_, h2.unit.inv_mul_cancel_left x⟩]
+    span ({a * x} : Set α) = span {x} :=
+  Submodule.span_singleton_smul_eq h2 x
 
 theorem span_insert (x) (s : Set α) : span (insert x s) = span ({x} : Set α) ⊔ span s :=
   Submodule.span_insert x s
