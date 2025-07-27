@@ -1218,6 +1218,10 @@ def elabToAdditive : Syntax → CoreM Config
       | `(toAdditiveNameHint| existing) => (true, false)
       | `(toAdditiveNameHint| self) => (true, true)
       | _ => (false, false)
+    if self && !attrs.isEmpty then
+      throwError "invalid `(attr := ...)` after `self`, \
+        as there is only one declaration for the attributes.\n\
+        Instead, you can write the attributes in the usual way."
     trace[to_additive_detail] "attributes: {attrs}; reorder arguments: {reorder}"
     return {
       trace := trace.isSome
@@ -1235,7 +1239,7 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
   -- we only copy the `instance` attribute, since `@[to_additive] instance` is nice to allow
   copyInstanceAttribute src tgt
   -- Warn users if the multiplicative version has an attribute
-  if linter.existingAttributeWarning.get (← getOptions) then
+  if src != tgt && linter.existingAttributeWarning.get (← getOptions) then
     let appliedAttrs ← getAllSimpAttrs src
     if appliedAttrs.size > 0 then
       let appliedAttrs := ", ".intercalate (appliedAttrs.toList.map toString)

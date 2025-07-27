@@ -294,8 +294,6 @@ theorem nodup_flatten {L : List (List α)} :
     Nodup (flatten L) ↔ (∀ l ∈ L, Nodup l) ∧ Pairwise Disjoint L := by
   simp only [Nodup, pairwise_flatten, disjoint_left.symm, forall_mem_ne]
 
-@[deprecated (since := "2025-10-15")] alias nodup_join := nodup_flatten
-
 theorem nodup_flatMap {l₁ : List α} {f : α → List β} :
     Nodup (l₁.flatMap f) ↔
       (∀ x ∈ l₁, Nodup (f x)) ∧ Pairwise (Disjoint on f) l₁ := by
@@ -303,8 +301,6 @@ theorem nodup_flatMap {l₁ : List α} {f : α → List β} :
     exists_imp, and_imp]
   rw [show (∀ (l : List β) (x : α), f x = l → x ∈ l₁ → Nodup l) ↔ ∀ x : α, x ∈ l₁ → Nodup (f x)
       from forall_swap.trans <| forall_congr' fun _ => forall_eq']
-
-@[deprecated (since := "2025-10-16")] alias nodup_bind := nodup_flatMap
 
 protected theorem Nodup.product {l₂ : List β} (d₁ : l₁.Nodup) (d₂ : l₂.Nodup) :
     (l₁ ×ˢ l₂).Nodup :=
