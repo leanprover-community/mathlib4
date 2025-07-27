@@ -331,26 +331,25 @@ theorem isStarNormal_iff_norm_eq_adjoint :
 see (Analysis/CStarAlgebra/Projection), we will want to simplify the proof
 by using the complexification of an inner product space over `𝕜`. -/
 /-- An idempotent operator is self-adjoint iff it is normal. -/
-theorem IsIdempotentElem.isSelfAdjoint_iff_isStarNormal
-    {A : E →L[𝕜] E} (hA : IsIdempotentElem A) :
-    IsSelfAdjoint A ↔ IsStarNormal A := by
+theorem IsIdempotentElem.isSelfAdjoint_iff_isStarNormal (hT : IsIdempotentElem T) :
+    IsSelfAdjoint T ↔ IsStarNormal T := by
   refine ⟨fun h => by rw [isStarNormal_iff, h], fun h => ?_⟩
-  suffices A = star A * A from this ▸ IsSelfAdjoint.star_mul_self _
+  suffices T = star T * T from this ▸ IsSelfAdjoint.star_mul_self _
   rw [← sub_eq_zero, ContinuousLinearMap.ext_iff]
   simp_rw [zero_apply, ← norm_eq_zero (E := E)]
   have :=
-    calc (∀ x : E, ‖(A - star A * A) x‖ = 0) ↔ ∀ x, ‖(adjoint (1 - A)) (A x)‖ = 0 := by
+    calc (∀ x : E, ‖(T - star T * T) x‖ = 0) ↔ ∀ x, ‖(adjoint (1 - T)) (T x)‖ = 0 := by
           simp only [← star_eq_adjoint, star_sub, star_one, sub_apply, mul_apply]; rfl
-      _ ↔ ∀ x, ‖(1 - A) (A x)‖ = 0 := by
+      _ ↔ ∀ x, ‖(1 - T) (T x)‖ = 0 := by
           simp only [isStarNormal_iff_norm_eq_adjoint.mp h.one_sub]
-      _ ↔ ∀ x, ‖(A - A * A) x‖ = 0 := by simp
-      _ ↔ A - A * A = 0 := by simp only [norm_eq_zero, ContinuousLinearMap.ext_iff, zero_apply]
-      _ ↔ IsIdempotentElem A := by simp only [sub_eq_zero, IsIdempotentElem, eq_comm]
-  exact this.mpr hA
+      _ ↔ ∀ x, ‖(T - T * T) x‖ = 0 := by simp
+      _ ↔ T - T * T = 0 := by simp only [norm_eq_zero, ContinuousLinearMap.ext_iff, zero_apply]
+      _ ↔ IsIdempotentElem T := by simp only [sub_eq_zero, IsIdempotentElem, eq_comm]
+  exact this.mpr hT
 
 /-- A continuous linear map is a star projection iff it is idempotent and normal. -/
-theorem isStarProjection_iff_isIdempotentElem_and_isStarNormal {A : E →L[𝕜] E} :
-    IsStarProjection A ↔ IsIdempotentElem A ∧ IsStarNormal A := by
+theorem isStarProjection_iff_isIdempotentElem_and_isStarNormal :
+    IsStarProjection T ↔ IsIdempotentElem T ∧ IsStarNormal T := by
   rw [isStarProjection_iff, and_congr_right_iff]
   exact fun h => IsIdempotentElem.isSelfAdjoint_iff_isStarNormal h
 
