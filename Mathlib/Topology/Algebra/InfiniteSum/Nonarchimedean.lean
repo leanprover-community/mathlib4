@@ -28,7 +28,7 @@ open Filter Topology
 namespace NonarchimedeanGroup
 
 variable {α G : Type*}
-variable [CommGroup G] [UniformSpace G] [UniformGroup G] [NonarchimedeanGroup G]
+variable [CommGroup G] [UniformSpace G] [IsUniformGroup G] [NonarchimedeanGroup G]
 
 /-- Let `G` be a nonarchimedean multiplicative abelian group, and let `f : α → G` be a function that
 tends to one on the filter of cofinite sets. For each finite subset of `α`, consider the partial
@@ -78,7 +78,7 @@ lemma cauchySeq_of_tendsto_div_nhds_one {f : ℕ → G}
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h
   clear h hMN'
   induction k with
-  | zero => simpa using one_mem t
+  | zero => simp
   | succ k ih => simpa using t.mul_mem (hN _ (by omega : N ≤ M + k)) ih
 
 /-- Let `G` be a complete nonarchimedean multiplicative abelian group, and let `f : α → G` be a
@@ -104,7 +104,7 @@ end NonarchimedeanGroup
 section NonarchimedeanRing
 
 variable {α β R : Type*}
-variable [Ring R] [UniformSpace R] [UniformAddGroup R] [NonarchimedeanRing R]
+variable [Ring R] [UniformSpace R] [IsUniformAddGroup R] [NonarchimedeanRing R]
 
 /- Let `R` be a complete nonarchimedean ring. If functions `f : α → R` and `g : β → R` are summable,
 then so is `fun i : α × β ↦ f i.1 * g i.2`. We will prove later that the assumption that `R`

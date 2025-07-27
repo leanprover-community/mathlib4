@@ -21,8 +21,8 @@ This is an abbreviation for `M✶.Indep X`, but has its own name for the sake of
 
 ## Main Definitions
 
-* `M.Dual`, written `M✶`, is the matroid in which a set `B` is a base if and only if `B ⊆ M.E`
-  and `M.E \ B` is a base for `M`.
+* `M.Dual`, written `M✶`, is the matroid on `M.E` which a set `B ⊆ M.E` is a base if and only if
+  `M.E \ B` is a base for `M`.
 
 * `M.Coindep X` means `M✶.Indep X`, or equivalently that `X` is contained in `M.E \ B` for some
   base `B` of `M`.
@@ -51,16 +51,13 @@ section dual
     rintro I X ⟨hIE, B, hB, hIB⟩ hI_not_max hX_max
     have hXE := hX_max.1.1
     have hB' := (isBase_compl_iff_maximal_disjoint_isBase hXE).mpr hX_max
-
     set B' := M.E \ X with hX
     have hI := (not_iff_not.mpr (isBase_compl_iff_maximal_disjoint_isBase)).mpr hI_not_max
     obtain ⟨B'', hB'', hB''₁, hB''₂⟩ := (hB'.indep.diff I).exists_isBase_subset_union_isBase hB
     rw [← compl_subset_compl, ← hIB.sdiff_eq_right, ← union_diff_distrib, diff_eq, compl_inter,
       compl_compl, union_subset_iff, compl_subset_compl] at hB''₂
-
     have hssu := (subset_inter (hB''₂.2) hIE).ssubset_of_ne
       (by { rintro rfl; apply hI; convert hB''; simp [hB''.subset_ground] })
-
     obtain ⟨e, ⟨(heB'' : e ∉ _), heE⟩, heI⟩ := exists_of_ssubset hssu
     use e
     simp_rw [mem_diff, insert_subset_iff, and_iff_left heI, and_iff_right heE, and_iff_right hIE]
@@ -72,7 +69,6 @@ section dual
     rintro X - I' ⟨hI'E, B, hB, hI'B⟩ hI'X
     obtain ⟨I, hI⟩ := M.exists_isBasis (M.E \ X)
     obtain ⟨B', hB', hIB', hB'IB⟩ := hI.indep.exists_isBase_subset_union_isBase hB
-
     obtain rfl : I = B' \ X := hI.eq_of_subset_indep (hB'.indep.diff _)
       (subset_diff.2 ⟨hIB', (subset_diff.1 hI.subset).2⟩)
       (diff_subset_diff_left hB'.subset_ground)
@@ -85,16 +81,13 @@ section dual
     · exact inter_subset_left.trans diff_subset
     simp only [subset_inter_iff, subset_diff, and_imp, forall_exists_index]
     refine fun J hJE B'' hB'' hdj hJX hXJ ↦ ⟨⟨hJX, ?_⟩, hJE⟩
-
     have hI' : (B'' ∩ X) ∪ (B' \ X) ⊆ B' := by
       rw [union_subset_iff, and_iff_left diff_subset, ← union_diff_cancel hJX,
         inter_union_distrib_left, hdj.symm.inter_eq, empty_union, diff_eq, ← inter_assoc,
         ← diff_eq, diff_subset_comm, diff_eq, inter_assoc, ← diff_eq, inter_comm]
       exact subset_trans (inter_subset_inter_right _ hB''.subset_ground) hXJ
-
     obtain ⟨B₁,hB₁,hI'B₁,hB₁I⟩ := (hB'.indep.subset hI').exists_isBase_subset_union_isBase hB''
     rw [union_comm, ← union_assoc, union_eq_self_of_subset_right inter_subset_left] at hB₁I
-
     obtain rfl : B₁ = B' := by
       refine hB₁.eq_of_subset_indep hB'.indep (fun e he ↦ ?_)
       refine (hB₁I he).elim (fun heB'' ↦ ?_) (fun h ↦ h.1)
@@ -190,7 +183,6 @@ theorem IsBase.compl_inter_isBasis_of_inter_isBasis (hB : M.IsBase B) (hBX : M.I
    inter_right_comm, inter_eq_self_of_subset_right hB'.subset_ground, ← diff_eq,
    diff_eq_empty] at hem
   obtain ⟨f, hfb, hBf⟩ := hB.exchange hB' ⟨he.2, hem.2⟩
-
   have hi : M.Indep (insert f (B ∩ X)) := by
     refine hBf.indep.subset (insert_subset_insert ?_)
     simp_rw [subset_diff, and_iff_right inter_subset_left, disjoint_singleton_right,
@@ -244,7 +236,7 @@ theorem coindep_iff_exists (hX : X ⊆ M.E := by aesop_mat) :
 theorem coindep_iff_subset_compl_isBase : M.Coindep X ↔ ∃ B, M.IsBase B ∧ X ⊆ M.E \ B := by
   simp_rw [coindep_iff_exists', subset_diff]
   exact ⟨fun ⟨⟨B, hB, _, hBX⟩, hX⟩ ↦ ⟨B, hB, hX, hBX.symm⟩,
-    fun ⟨B, hB, hXE, hXB⟩ ↦ ⟨⟨B, hB, hB.subset_ground,  hXB.symm⟩, hXE⟩⟩
+    fun ⟨B, hB, hXE, hXB⟩ ↦ ⟨⟨B, hB, hB.subset_ground, hXB.symm⟩, hXE⟩⟩
 
 @[aesop unsafe 10% (rule_sets := [Matroid])]
 theorem Coindep.subset_ground (hX : M.Coindep X) : X ⊆ M.E :=

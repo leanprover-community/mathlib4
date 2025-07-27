@@ -18,7 +18,6 @@ universe u₁ u₂ u₃ u₄ u₅
 
 namespace Function
 
--- Porting note: fix the universe of `ζ`, it used to be `u₁`
 variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ : Sort u₅}
 
 lemma flip_def {f : α → β → φ} : flip f = fun b a => f a b := rfl
@@ -47,20 +46,15 @@ abbrev onFun (f : β → β → φ) (g : α → β) : α → α → φ := fun x 
 scoped infixl:2 " on " => onFun
 
 /-- For a two-argument function `f`, `swap f` is the same function but taking the arguments
-in the reverse order. `swap f y x = f x y`.-/
+in the reverse order. `swap f y x = f x y`. -/
 abbrev swap {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x y := fun y x => f x y
 
 theorem swap_def {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : swap f = fun y x => f x y := rfl
 
-@[simp, mfld_simps]
-theorem id_comp (f : α → β) : id ∘ f = f := rfl
-
-@[simp, mfld_simps]
-theorem comp_id (f : α → β) : f ∘ id = f := rfl
+attribute [mfld_simps] id_comp comp_id
 
 theorem comp_assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) ∘ h = f ∘ g ∘ h :=
   rfl
-@[deprecated (since := "2024-09-24")] alias comp.assoc := comp_assoc
 
 /-- A function `f : α → β` is called injective if `f x = f y` implies `x = y`. -/
 def Injective (f : α → β) : Prop :=
@@ -88,6 +82,7 @@ theorem Bijective.comp {g : β → φ} {f : α → β} : Bijective g → Bijecti
   | ⟨h_ginj, h_gsurj⟩, ⟨h_finj, h_fsurj⟩ => ⟨h_ginj.comp h_finj, h_gsurj.comp h_fsurj⟩
 
 /-- `LeftInverse g f` means that `g` is a left inverse to `f`. That is, `g ∘ f = id`. -/
+@[grind]
 def LeftInverse (g : β → α) (f : α → β) : Prop :=
   ∀ x, g (f x) = x
 
@@ -96,6 +91,7 @@ def HasLeftInverse (f : α → β) : Prop :=
   ∃ finv : β → α, LeftInverse finv f
 
 /-- `RightInverse g f` means that `g` is a right inverse to `f`. That is, `f ∘ g = id`. -/
+@[grind]
 def RightInverse (g : β → α) (f : α → β) : Prop :=
   LeftInverse f g
 

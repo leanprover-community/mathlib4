@@ -7,7 +7,6 @@ import Mathlib.Algebra.Group.Action.End
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Algebra.GroupWithZero.Prod
-import Mathlib.Algebra.SMulWithZero
 
 /-!
 # Definitions of group actions
@@ -72,7 +71,7 @@ variable (A)
 /-- Each element of the group defines an additive monoid isomorphism.
 
 This is a stronger version of `MulAction.toPerm`. -/
-@[simps (config := { simpRhs := true })]
+@[simps +simpRhs]
 def DistribMulAction.toAddEquiv [DistribMulAction G A] (x : G) : A ≃+ A where
   __ := toAddMonoidHom A x
   __ := MulAction.toPermHom G A x

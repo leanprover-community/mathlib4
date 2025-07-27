@@ -148,8 +148,7 @@ theorem restrictNormalHom_continuous (L : IntermediateField k K) [Normal k L] :
   intro N hN
   rw [map_one, krullTopology_mem_nhds_one_iff] at hN
   obtain ⟨L', _, hO⟩ := hN
-  let _ : FiniteDimensional k L' :=
-    Module.Finite.equiv <| AlgEquiv.toLinearEquiv <| IntermediateField.liftAlgEquiv L'
+  have := Module.Finite.equiv <| AlgEquiv.toLinearEquiv <| IntermediateField.liftAlgEquiv L'
   apply mem_nhds_iff.mpr
   use (IntermediateField.lift L').fixingSubgroup
   constructor
@@ -190,7 +189,7 @@ lemma proj_of_le (L : FiniteGaloisIntermediateField k K)
   letI : Algebra L L' := RingHom.toAlgebra (Subsemiring.inclusion h)
   letI : IsScalarTower k L L' := IsScalarTower.of_algebraMap_eq (congrFun rfl)
   rw [← finGaloisGroupFunctor_map_proj_eq_proj g h.hom]
-  show (algebraMap L' K (algebraMap L L' (AlgEquiv.restrictNormal (proj (mk L') g) L x))) = _
+  change (algebraMap L' K (algebraMap L L' (AlgEquiv.restrictNormal (proj (mk L') g) L x))) = _
   rw [AlgEquiv.restrictNormal_commutes (proj (mk L') g) L]
   rfl
 
@@ -243,7 +242,6 @@ noncomputable def limitToAlgEquiv [IsGalois k K]
     simp only [toAlgEquivAux_eq_proj_of_mem _ _ L hx', mk_toAlgEquivAux g⁻¹ x L hx' hx, map_inv,
       AlgEquiv.aut_inv, AlgEquiv.apply_symm_apply]
   map_mul' x y := by
-    dsimp
     have hx : x ∈ (adjoin k {x, y}).1 := subset_adjoin _ _ (Set.mem_insert x {y})
     have hy : y ∈ (adjoin k {x, y}).1 := subset_adjoin _ _ (Set.mem_insert_of_mem x rfl)
     rw [toAlgEquivAux_eq_liftNormal g x (adjoin k {x, y}) hx,
@@ -270,7 +268,7 @@ noncomputable def mulEquivToLimit [IsGalois k K] :
   right_inv := fun g ↦ by
     apply Subtype.val_injective
     ext L
-    show (limitToAlgEquiv g).restrictNormal _ = _
+    change (limitToAlgEquiv g).restrictNormal _ = _
     ext x
     have : ((limitToAlgEquiv g).restrictNormal L.unop) x = (limitToAlgEquiv g) x.1 := by
       exact AlgEquiv.restrictNormal_commutes (limitToAlgEquiv g) L.unop x

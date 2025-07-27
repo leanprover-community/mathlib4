@@ -5,6 +5,7 @@ Authors: Riccardo Brasca
 -/
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
+import Mathlib.LinearAlgebra.Determinant
 import Mathlib.FieldTheory.Minpoly.Field
 
 /-!
@@ -43,6 +44,20 @@ def charpoly : R[X] :=
 
 theorem charpoly_def : f.charpoly = (toMatrix (chooseBasis R M) (chooseBasis R M) f).charpoly :=
   rfl
+
+theorem eval_charpoly (t : R) :
+    f.charpoly.eval t = (algebraMap _ _ t - f).det := by
+  rw [charpoly, Matrix.eval_charpoly, ← LinearMap.det_toMatrix (chooseBasis R M), map_sub,
+    scalar_apply, toMatrix_algebraMap, scalar_apply]
+
+@[simp]
+theorem charpoly_zero [StrongRankCondition R] :
+    (0 : M →ₗ[R] M).charpoly = X ^ Module.finrank R M := by
+  simp [charpoly, Module.finrank_eq_card_chooseBasisIndex]
+
+theorem charpoly_one [StrongRankCondition R] :
+    (1 : M →ₗ[R] M).charpoly = (X - 1) ^ Module.finrank R M := by
+  simp [charpoly, Module.finrank_eq_card_chooseBasisIndex, Matrix.charpoly_one]
 
 end Basic
 
@@ -103,8 +118,8 @@ theorem minpoly_coeff_zero_of_injective [Nontrivial R] (hf : Function.Injective 
       rwa [Monic.def, hP, mul_comm, leadingCoeff_mul_X, ← Monic.def] at this
     exact minpoly.monic (isIntegral f)
   have hzero : aeval f (minpoly R f) = 0 := minpoly.aeval _ _
-  simp only [hP, mul_eq_comp, LinearMap.ext_iff, hf, aeval_X, map_eq_zero_iff, coe_comp,
-    _root_.map_mul, zero_apply, Function.comp_apply] at hzero
+  simp only [hP, Module.End.mul_eq_comp, LinearMap.ext_iff, hf, aeval_X, map_eq_zero_iff, coe_comp,
+    map_mul, zero_apply, Function.comp_apply] at hzero
   exact not_le.2 hdegP (minpoly.min _ _ hPmonic (LinearMap.ext hzero))
 
 end CayleyHamilton

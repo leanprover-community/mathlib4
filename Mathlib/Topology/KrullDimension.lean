@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Fangming Li
 -/
 import Mathlib.Order.KrullDimension
+import Mathlib.Topology.Homeomorph.Lemmas
 import Mathlib.Topology.Sets.Closeds
 
 /-!
@@ -51,9 +52,6 @@ to the Krull dimension of `Y`.
 theorem IsClosedEmbedding.topologicalKrullDim_le (f : X → Y) (hf : IsClosedEmbedding f) :
     topologicalKrullDim X ≤ topologicalKrullDim Y :=
   krullDim_le_of_strictMono _ (IrreducibleCloseds.map_strictMono hf)
-
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.topologicalKrullDim_le := IsClosedEmbedding.topologicalKrullDim_le
 
 /-- The topological Krull dimension is invariant under homeomorphisms -/
 theorem IsHomeomorph.topologicalKrullDim_eq (f : X → Y) (h : IsHomeomorph f) :

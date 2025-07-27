@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.PiTensorProduct
-import Mathlib.Logic.Equiv.Fin
+import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.Algebra.DirectSum.Algebra
 
 /-!
@@ -26,8 +26,6 @@ abbreviation for `⨂[R] i : Fin n, M`.
 In this file we use `ₜ1` and `ₜ*` as local notation for the graded multiplicative structure on
 tensor powers. Elsewhere, using `1` and `*` on `GradedMonoid` should be preferred.
 -/
-
-suppress_compilation
 
 open scoped TensorProduct
 

@@ -97,8 +97,10 @@ instance : Inhabited (AList β) :=
   ⟨∅⟩
 
 @[simp]
-theorem not_mem_empty (a : α) : a ∉ (∅ : AList β) :=
-  not_mem_nil a
+theorem notMem_empty (a : α) : a ∉ (∅ : AList β) :=
+  not_mem_nil
+
+@[deprecated (since := "2025-05-23")] alias not_mem_empty := notMem_empty
 
 @[simp]
 theorem empty_entries : (∅ : AList β).entries = [] :=
@@ -243,15 +245,19 @@ theorem entries_insert {a} {b : β a} {s : AList β} :
 
 @[deprecated (since := "2024-12-17")] alias insert_entries := entries_insert
 
-theorem entries_insert_of_not_mem {a} {b : β a} {s : AList β} (h : a ∉ s) :
-    (insert a b s).entries = ⟨a, b⟩ :: s.entries := by rw [entries_insert, kerase_of_not_mem_keys h]
+theorem entries_insert_of_notMem {a} {b : β a} {s : AList β} (h : a ∉ s) :
+    (insert a b s).entries = ⟨a, b⟩ :: s.entries := by rw [entries_insert, kerase_of_notMem_keys h]
 
-theorem insert_of_not_mem {a} {b : β a} {s : AList β} (h : a ∉ s) :
+@[deprecated (since := "2025-05-23")] alias entries_insert_of_not_mem := entries_insert_of_notMem
+
+theorem insert_of_notMem {a} {b : β a} {s : AList β} (h : a ∉ s) :
     insert a b s = ⟨⟨a, b⟩ :: s.entries, nodupKeys_cons.2 ⟨h, s.2⟩⟩ :=
-  ext <| entries_insert_of_not_mem h
+  ext <| entries_insert_of_notMem h
 
-@[deprecated (since := "2024-12-14")] alias insert_entries_of_neg := entries_insert_of_not_mem
-@[deprecated (since := "2024-12-14")] alias insert_of_neg := insert_of_not_mem
+@[deprecated (since := "2025-05-23")] alias insert_of_not_mem := insert_of_notMem
+
+@[deprecated (since := "2024-12-14")] alias insert_entries_of_neg := entries_insert_of_notMem
+@[deprecated (since := "2024-12-14")] alias insert_of_neg := insert_of_notMem
 
 @[simp]
 theorem insert_empty (a) (b : β a) : insert a b ∅ = singleton a b :=
@@ -301,8 +307,7 @@ theorem insert_insert_of_ne {a a'} {b : β a} {b' : β a'} (s : AList β) (h : a
 @[simp]
 theorem insert_singleton_eq {a : α} {b b' : β a} : insert a b (singleton a b') = singleton a b :=
   ext <| by
-    simp only [AList.entries_insert, List.kerase_cons_eq, and_self_iff, AList.singleton_entries,
-      heq_iff_eq, eq_self_iff_true]
+    simp only [AList.entries_insert, List.kerase_cons_eq, AList.singleton_entries]
 
 @[simp]
 theorem entries_toAList (xs : List (Sigma β)) : (List.toAList xs).entries = dedupKeys xs :=
@@ -314,7 +319,7 @@ theorem toAList_cons (a : α) (b : β a) (xs : List (Sigma β)) :
 
 theorem mk_cons_eq_insert (c : Sigma β) (l : List (Sigma β)) (h : (c :: l).NodupKeys) :
     (⟨c :: l, h⟩ : AList β) = insert c.1 c.2 ⟨l, nodupKeys_of_nodupKeys_cons h⟩ := by
-  simpa [insert] using (kerase_of_not_mem_keys <| not_mem_keys_of_nodupKeys_cons h).symm
+  simpa [insert] using (kerase_of_notMem_keys <| notMem_keys_of_nodupKeys_cons h).symm
 
 /-- Recursion on an `AList`, using `insert`. Use as `induction l`. -/
 @[elab_as_elim, induction_eliminator]
@@ -325,7 +330,7 @@ def insertRec {C : AList β → Sort*} (H0 : C ∅)
   | ⟨c :: l, h⟩ => by
     rw [mk_cons_eq_insert]
     refine IH _ _ _ ?_ (insertRec H0 IH _)
-    exact not_mem_keys_of_nodupKeys_cons h
+    exact notMem_keys_of_nodupKeys_cons h
 
 -- Test that the `induction` tactic works on `insertRec`.
 example (l : AList β) : True := by induction l <;> trivial
@@ -342,11 +347,11 @@ theorem insertRec_insert {C : AList β → Sort*} (H0 : C ∅)
     {l : AList β} (h : c.1 ∉ l) :
     @insertRec α β _ C H0 IH (l.insert c.1 c.2) = IH c.1 c.2 l h (@insertRec α β _ C H0 IH l) := by
   obtain ⟨l, hl⟩ := l
-  suffices HEq (@insertRec α β _ C H0 IH ⟨c :: l, nodupKeys_cons.2 ⟨h, hl⟩⟩)
-      (IH c.1 c.2 ⟨l, hl⟩ h (@insertRec α β _ C H0 IH ⟨l, hl⟩)) by
+  suffices @insertRec α β _ C H0 IH ⟨c :: l, nodupKeys_cons.2 ⟨h, hl⟩⟩ ≍
+      IH c.1 c.2 ⟨l, hl⟩ h (@insertRec α β _ C H0 IH ⟨l, hl⟩) by
     cases c
     apply eq_of_heq
-    convert this <;> rw [insert_of_not_mem h]
+    convert this <;> rw [insert_of_notMem h]
   rw [insertRec]
   apply cast_heq
 
@@ -413,7 +418,7 @@ theorem lookup_union_left {a} {s₁ s₂ : AList β} : a ∈ s₁ → lookup a (
 theorem lookup_union_right {a} {s₁ s₂ : AList β} : a ∉ s₁ → lookup a (s₁ ∪ s₂) = lookup a s₂ :=
   dlookup_kunion_right
 
--- Porting note: removing simp, LHS not in SNF, new theorem added instead.
+-- The corresponding lemma in `simp`-normal form is `lookup_union_eq_some`.
 theorem mem_lookup_union {a} {b : β a} {s₁ s₂ : AList β} :
     b ∈ lookup a (s₁ ∪ s₂) ↔ b ∈ lookup a s₁ ∨ a ∉ s₁ ∧ b ∈ lookup a s₂ :=
   mem_dlookup_kunion
@@ -441,7 +446,7 @@ end
 
 /-- Two associative lists are disjoint if they have no common keys. -/
 def Disjoint (s₁ s₂ : AList β) : Prop :=
-  ∀ k ∈ s₁.keys, ¬k ∈ s₂.keys
+  ∀ k ∈ s₁.keys, k ∉ s₂.keys
 
 variable [DecidableEq α]
 

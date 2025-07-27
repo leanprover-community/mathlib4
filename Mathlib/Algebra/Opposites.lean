@@ -100,7 +100,7 @@ theorem unop_comp_op : (unop : αᵐᵒᵖ → α) ∘ op = id :=
 protected def rec' {F : αᵐᵒᵖ → Sort*} (h : ∀ X, F (op X)) : ∀ X, F X := fun X ↦ h (unop X)
 
 /-- The canonical bijection between `α` and `αᵐᵒᵖ`. -/
-@[to_additive (attr := simps (config := .asFn) apply symm_apply)
+@[to_additive (attr := simps -fullyApplied apply symm_apply)
   "The canonical bijection between `α` and `αᵃᵒᵖ`."]
 def opEquiv : α ≃ αᵐᵒᵖ :=
   ⟨op, unop, unop_op, op_unop⟩
@@ -175,6 +175,14 @@ instance instInvolutiveNeg [InvolutiveNeg α] : InvolutiveNeg αᵐᵒᵖ where
 @[to_additive]
 instance instInvolutiveInv [InvolutiveInv α] : InvolutiveInv αᵐᵒᵖ where
   inv_inv _ := unop_injective <| inv_inv _
+
+instance [Add α] [IsLeftCancelAdd α] : IsLeftCancelAdd αᵐᵒᵖ where
+  add_left_cancel _ _ _ eq := unop_injective <| add_left_cancel (congr_arg unop eq)
+
+instance [Add α] [IsRightCancelAdd α] : IsRightCancelAdd αᵐᵒᵖ where
+  add_right_cancel _ _ _ eq := unop_injective <| add_right_cancel (congr_arg unop eq)
+
+instance [Add α] [IsCancelAdd α] : IsCancelAdd αᵐᵒᵖ where
 
 @[to_additive] instance instSMul [SMul α β] : SMul α βᵐᵒᵖ where smul c x := op (c • unop x)
 

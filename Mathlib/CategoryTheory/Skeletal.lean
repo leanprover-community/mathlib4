@@ -68,11 +68,12 @@ variable (C D)
 its category structure.
 -/
 def Skeleton : Type u₁ := InducedCategory (C := Quotient (isIsomorphicSetoid C)) C Quotient.out
+-- The `Category` instance should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
 instance [Inhabited C] : Inhabited (Skeleton C) :=
   ⟨⟦default⟧⟩
 
--- Porting note: previously `Skeleton` used `deriving Category`
 noncomputable instance : Category (Skeleton C) := by
   apply InducedCategory.category
 
@@ -83,8 +84,9 @@ noncomputable instance {α} [CoeSort C α] : CoeSort (Skeleton C) α :=
 @[simps!]
 noncomputable def fromSkeleton : Skeleton C ⥤ C :=
   inducedFunctor _
+-- The `Full, Faithful` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting note: previously `fromSkeleton` used `deriving Faithful, Full`
 noncomputable instance : (fromSkeleton C).Full := by
   apply InducedCategory.full
 noncomputable instance : (fromSkeleton C).Faithful := by
@@ -92,7 +94,6 @@ noncomputable instance : (fromSkeleton C).Faithful := by
 
 instance : (fromSkeleton C).EssSurj where mem_essImage X := ⟨Quotient.mk' X, Quotient.mk_out X⟩
 
--- Porting note: named this instance
 noncomputable instance fromSkeleton.isEquivalence : (fromSkeleton C).IsEquivalence where
 
 variable {C}
@@ -103,6 +104,8 @@ abbrev toSkeleton (X : C) : Skeleton C := ⟦X⟧
 /-- The isomorphism between `⟦X⟧.out` and `X`. -/
 noncomputable def preCounitIso (X : C) : (fromSkeleton C).obj (toSkeleton X) ≅ X :=
   Nonempty.some (Quotient.mk_out X)
+
+alias fromSkeletonToSkeletonIso := preCounitIso
 
 variable (C)
 
@@ -133,9 +136,59 @@ lemma skeleton_isSkeleton : IsSkeletonOf C (Skeleton C) (fromSkeleton C) where
   skel := skeleton_skeletal C
   eqv := fromSkeleton.isEquivalence C
 
-section
-
 variable {C D}
+
+lemma toSkeleton_fromSkeleton_obj (X : Skeleton C) : toSkeleton ((fromSkeleton C).obj X) = X :=
+  Quotient.out_eq _
+
+lemma toSkeleton_eq_toSkeleton_iff {X Y : C} : toSkeleton X = toSkeleton Y ↔ Nonempty (X ≅ Y) :=
+  Quotient.eq
+
+lemma congr_toSkeleton_of_iso {X Y : C} (e : X ≅ Y) : toSkeleton X = toSkeleton Y :=
+  Quotient.sound ⟨e⟩
+
+/-- Provides a (noncomputable) isomorphism `X ≅ Y` given that `toSkeleton X = toSkeleton Y`. -/
+noncomputable def Skeleton.isoOfEq {X Y : C} (h : toSkeleton X = toSkeleton Y) :
+    X ≅ Y :=
+  Quotient.exact h |>.some
+
+lemma toSkeleton_eq_iff {X : C} {Y : Skeleton C} :
+    toSkeleton X = Y ↔ Nonempty (X ≅ (fromSkeleton C).obj Y) :=
+  Quotient.mk_eq_iff_out
+
+namespace Functor
+
+/-- From a functor `C ⥤ D`, construct a map of skeletons `Skeleton C → Skeleton D`. -/
+noncomputable def mapSkeleton (F : C ⥤ D) : Skeleton C ⥤ Skeleton D :=
+  (skeletonEquivalence C).functor ⋙ F ⋙ (skeletonEquivalence D).inverse
+
+variable (F : C ⥤ D)
+
+lemma mapSkeleton_obj_toSkeleton (X : C) :
+    F.mapSkeleton.obj (toSkeleton X) = toSkeleton (F.obj X) :=
+  congr_toSkeleton_of_iso <| F.mapIso <| preCounitIso X
+
+instance [F.Full] : F.mapSkeleton.Full := by unfold mapSkeleton; infer_instance
+
+instance [F.Faithful] : F.mapSkeleton.Faithful := by unfold mapSkeleton; infer_instance
+
+instance [F.EssSurj] : F.mapSkeleton.EssSurj := by unfold mapSkeleton; infer_instance
+
+/-- A natural isomorphism between `X ↦ ⟦X⟧ ↦ ⟦FX⟧` and `X ↦ FX ↦ ⟦FX⟧`. On the level of
+categories, these are `C ⥤ Skeleton C ⥤ Skeleton D` and `C ⥤ D ⥤ Skeleton D`. So this says that
+the square formed by these 4 objects and 4 functors commutes. -/
+noncomputable def toSkeletonFunctorCompMapSkeletonIso :
+    toSkeletonFunctor C ⋙ F.mapSkeleton ≅ F ⋙ toSkeletonFunctor D :=
+  NatIso.ofComponents (fun X ↦ (toSkeletonFunctor D).mapIso <| F.mapIso <| preCounitIso X)
+    (fun {X Y} f ↦ show (_ ≫ _) ≫ _ = _ ≫ _ by simp [assoc])
+
+lemma mapSkeleton_injective [F.Full] [F.Faithful] : Function.Injective F.mapSkeleton.obj :=
+  fun _ _ h ↦ skeleton_skeletal C ⟨F.mapSkeleton.preimageIso <| eqToIso h⟩
+
+lemma mapSkeleton_surjective [F.EssSurj] : Function.Surjective F.mapSkeleton.obj :=
+  fun Y ↦ let ⟨X, h⟩ := EssSurj.mem_essImage Y; ⟨X, skeleton_skeletal D h⟩
+
+end Functor
 
 /-- Two categories which are categorically equivalent have skeletons with equivalent objects.
 -/
@@ -146,7 +199,7 @@ noncomputable def Equivalence.skeletonEquiv (e : C ≌ D) : Skeleton C ≃ Skele
     left_inv := fun X => skeleton_skeletal C ⟨(f.unitIso.app X).symm⟩
     right_inv := fun Y => skeleton_skeletal D ⟨f.counitIso.app Y⟩ }
 
-end
+variable (C D)
 
 /-- Construct the skeleton category by taking the quotient of objects. This construction gives a
 preorder with nice definitional properties, but is only really appropriate for thin categories.

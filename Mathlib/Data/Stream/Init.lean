@@ -5,16 +5,12 @@ Authors: Leonardo de Moura
 -/
 import Mathlib.Data.Stream.Defs
 import Mathlib.Logic.Function.Basic
-import Mathlib.Data.List.Defs
 import Mathlib.Data.Nat.Basic
 import Mathlib.Tactic.Common
 
 /-!
 # Streams a.k.a. infinite lists a.k.a. infinite sequences
-
-Porting note:
-This file used to be in the core library. It was moved to `mathlib` and renamed to `init` to avoid
-name clashes. -/
+-/
 
 open Nat Function Option
 
@@ -64,7 +60,7 @@ theorem drop_drop (n m : ℕ) (s : Stream' α) : drop n (drop m s) = drop (m + n
 @[simp] theorem get_tail {n : ℕ} {s : Stream' α} : s.tail.get n = s.get (n + 1) := rfl
 
 @[simp] theorem tail_drop' {i : ℕ} {s : Stream' α} : tail (drop i s) = s.drop (i + 1) := by
-  ext; simp [Nat.add_comm, Nat.add_assoc, Nat.add_left_comm]
+  ext; simp [Nat.add_comm, Nat.add_left_comm]
 
 @[simp] theorem drop_tail' {i : ℕ} {s : Stream' α} : drop i (tail s) = s.drop (i + 1) := rfl
 
@@ -78,9 +74,9 @@ theorem get_succ_cons (n : ℕ) (s : Stream' α) (x : α) : get (x :: s) n.succ 
   rfl
 
 @[simp] lemma get_cons_append_zero {a : α} {x : List α} {s : Stream' α} :
-  (a :: x ++ₛ s).get 0 = a := rfl
+    (a :: x ++ₛ s).get 0 = a := rfl
 
-@[simp] lemma append_eq_cons {a : α} {as : Stream' α} : [a] ++ₛ as = a :: as := by rfl
+@[simp] lemma append_eq_cons {a : α} {as : Stream' α} : [a] ++ₛ as = a :: as := rfl
 
 @[simp] theorem drop_zero {s : Stream' α} : s.drop 0 = s := rfl
 
@@ -357,7 +353,7 @@ theorem unfolds_head_eq : ∀ s : Stream' α, unfolds head tail s = s := fun s =
 
 theorem interleave_eq (s₁ s₂ : Stream' α) : s₁ ⋈ s₂ = head s₁::head s₂::(tail s₁ ⋈ tail s₂) := by
   let t := tail s₁ ⋈ tail s₂
-  show s₁ ⋈ s₂ = head s₁::head s₂::t
+  change s₁ ⋈ s₂ = head s₁::head s₂::t
   unfold interleave; unfold corecOn; rw [corec_eq]; dsimp; rw [corec_eq]; rfl
 
 theorem tail_interleave (s₁ s₂ : Stream' α) : tail (s₁ ⋈ s₂) = s₂ ⋈ tail s₁ := by
@@ -470,7 +466,7 @@ lemma append_right_injective (h : x ++ₛ a = x ++ₛ b) : a = b := by
   ext n; replace h := congr_arg (fun a ↦ a.get (x.length + n)) h; simpa using h
 
 @[simp] lemma append_right_inj : x ++ₛ a = x ++ₛ b ↔ a = b :=
-  ⟨append_right_injective x a b, by simp (config := {contextual := true})⟩
+  ⟨append_right_injective x a b, by simp +contextual⟩
 
 lemma append_left_injective (h : x ++ₛ a = y ++ₛ b) (hl : x.length = y.length) : x = y := by
   apply List.ext_getElem hl
@@ -484,7 +480,7 @@ theorem map_append_stream (f : α → β) :
     rw [cons_append_stream, List.map_cons, map_cons, cons_append_stream, map_append_stream f l]
 
 theorem drop_append_stream : ∀ (l : List α) (s : Stream' α), drop l.length (l ++ₛ s) = s
-  | [], s => by rfl
+  | [], s => rfl
   | List.cons a l, s => by
     rw [List.length_cons, drop_succ, cons_append_stream, tail_cons, drop_append_stream l s]
 
@@ -498,7 +494,7 @@ theorem mem_append_stream_right : ∀ {a : α} (l : List α) {s : Stream' α}, a
     mem_cons_of_mem _ ih
 
 theorem mem_append_stream_left : ∀ {a : α} {l : List α} (s : Stream' α), a ∈ l → a ∈ l ++ₛ s
-  | _, [], _, h => absurd h (List.not_mem_nil _)
+  | _, [], _, h => absurd h List.not_mem_nil
   | a, List.cons b l, s, h =>
     Or.elim (List.eq_or_mem_of_mem_cons h) (fun aeqb : a = b => Exists.intro 0 aeqb)
       fun ainl : a ∈ l => mem_cons_of_mem b (mem_append_stream_left s ainl)

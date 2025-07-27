@@ -3,6 +3,7 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
@@ -14,7 +15,7 @@ limits for `K`.
 -/
 
 
-open CategoryTheory CategoryTheory.Limits
+open CategoryTheory CategoryTheory.Limits CategoryTheory.Functor
 
 noncomputable section
 
@@ -308,7 +309,6 @@ def createsLimitOfFullyFaithfulOfIso' {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Fa
         { app := fun j => F.preimage (i.hom ≫ l.π.app j)
           naturality := fun Y Z f =>
             F.map_injective <| by
-              dsimp
               simpa using (l.w f).symm } }
     (Cones.ext i fun j => by simp only [Functor.map_preimage, Functor.mapCone_π_app])
 
@@ -445,7 +445,6 @@ def createsColimitOfFullyFaithfulOfIso' {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.
         { app := fun j => F.preimage (l.ι.app j ≫ i.inv)
           naturality := fun Y Z f =>
             F.map_injective <| by
-              dsimp
               simpa [← cancel_mono i.hom] using l.w f } }
     (Cocones.ext i fun j => by simp)
 

@@ -210,6 +210,21 @@ def ofZeros (hf : S.f = 0) (hg : S.g = 0) : S.LeftHomologyData where
     (ofZeros S hf hg).f' = 0 := by
   rw [← cancel_mono ((ofZeros S hf hg).i), zero_comp, f'_i, hf]
 
+variable {S} in
+/-- Given a left homology data `h` of a short complex `S`, we can construct another left homology
+data by choosing another kernel and cokernel that are isomorphic to the ones in `h`. -/
+@[simps] def copy {K' H' : C} (eK : K' ≅ h.K) (eH : H' ≅ h.H) : S.LeftHomologyData where
+  K := K'
+  H := H'
+  i := eK.hom ≫ h.i
+  π := eK.hom ≫ h.π ≫ eH.inv
+  wi := by rw [assoc, h.wi, comp_zero]
+  hi := IsKernel.isoKernel _ _ h.hi eK (by simp)
+  wπ := by simp [IsKernel.isoKernel]
+  hπ := IsColimit.equivOfNatIsoOfIso
+    (parallelPair.ext (Iso.refl S.X₁) eK.symm (by simp [IsKernel.isoKernel]) (by simp)) _ _
+    (Cocones.ext (by exact eH.symm) (by rintro (_ | _) <;> simp [IsKernel.isoKernel])) h.hπ
+
 end LeftHomologyData
 
 /-- A short complex `S` has left homology when there exists a `S.LeftHomologyData` -/
@@ -217,8 +232,8 @@ class HasLeftHomology : Prop where
   condition : Nonempty S.LeftHomologyData
 
 /-- A chosen `S.LeftHomologyData` for a short complex `S` that has left homology -/
-noncomputable def leftHomologyData [S.HasLeftHomology] :
-  S.LeftHomologyData := HasLeftHomology.condition.some
+noncomputable def leftHomologyData [S.HasLeftHomology] : S.LeftHomologyData :=
+  HasLeftHomology.condition.some
 
 variable {S}
 
@@ -227,7 +242,7 @@ namespace HasLeftHomology
 lemma mk' (h : S.LeftHomologyData) : HasLeftHomology S := ⟨Nonempty.intro h⟩
 
 instance of_hasKernel_of_hasCokernel [HasKernel S.g] [HasCokernel (kernel.lift S.g S.f S.zero)] :
-  S.HasLeftHomology := HasLeftHomology.mk' (LeftHomologyData.ofHasKernelOfHasCokernel S)
+    S.HasLeftHomology := HasLeftHomology.mk' (LeftHomologyData.ofHasKernelOfHasCokernel S)
 
 instance of_hasCokernel {X Y : C} (f : X ⟶ Y) (Z : C) [HasCokernel f] :
     (ShortComplex.mk f (0 : Y ⟶ Z) comp_zero).HasLeftHomology :=
@@ -389,6 +404,9 @@ variable [S.HasLeftHomology]
 
 /-- The left homology of a short complex, given by the `H` field of a chosen left homology data. -/
 noncomputable def leftHomology : C := S.leftHomologyData.H
+
+-- `S.leftHomology` is the simp normal form.
+@[simp] lemma leftHomologyData_H : S.leftHomologyData.H = S.leftHomology := rfl
 
 /-- The cycles of a short complex, given by the `K` field of a chosen left homology data. -/
 noncomputable def cycles : C := S.leftHomologyData.K
@@ -887,7 +905,7 @@ namespace LeftHomologyMapData
 /-- This left homology map data expresses compatibilities of the left homology data
 constructed by `LeftHomologyData.ofEpiOfIsIsoOfMono` -/
 @[simps]
-def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : LeftHomologyData S₁)
+noncomputable def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : LeftHomologyData S₁)
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
     LeftHomologyMapData φ h (LeftHomologyData.ofEpiOfIsIsoOfMono φ h) where
   φK := 𝟙 _

@@ -7,7 +7,7 @@ import Mathlib.Analysis.Normed.Group.Uniform
 import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 import Mathlib.Topology.MetricSpace.Ultra.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Group
-import Mathlib.Topology.Algebra.Order.LiminfLimsup
+import Mathlib.Topology.Order.LiminfLimsup
 
 /-!
 # Ultrametric norms
@@ -77,7 +77,7 @@ lemma isUltrametricDist_of_forall_nnnorm_mul_le_max_nnnorm
   isUltrametricDist_of_forall_norm_mul_le_max_norm h
 
 lemma isUltrametricDist_of_isNonarchimedean_nnnorm {S' : Type*} [SeminormedAddGroup S']
-    (h : IsNonarchimedean ((↑) ∘ (nnnorm : S' → ℝ≥0))) : IsUltrametricDist S' :=
+    (h : IsNonarchimedean (nnnorm : S' → ℝ≥0)) : IsUltrametricDist S' :=
   isUltrametricDist_of_forall_nnnorm_add_le_max_nnnorm h
 
 lemma isNonarchimedean_nnnorm {R} [SeminormedAddCommGroup R] [IsUltrametricDist R] :
@@ -293,7 +293,7 @@ theorem exists_norm_multiset_prod_le (s : Multiset ι) [Nonempty ι] {f : ι →
   inhabit ι
   induction s using Multiset.induction_on with
   | empty => simp
-  | @cons a t hM =>
+  | cons a t hM =>
       obtain ⟨M, hMs, hM⟩ := hM
       by_cases hMa : ‖f M‖ ≤ ‖f a‖
       · refine ⟨a, by simp, ?_⟩

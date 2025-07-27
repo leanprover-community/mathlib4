@@ -30,7 +30,6 @@ The type synonym `Lex (α →₀ N)` has an order given by `Finsupp.Lex (· < ·
 protected def Lex (r : α → α → Prop) (s : N → N → Prop) (x y : α →₀ N) : Prop :=
   Pi.Lex r s x y
 
--- Porting note: Added `_root_` to better align with Lean 3.
 theorem _root_.Pi.lex_eq_finsupp_lex {r : α → α → Prop} {s : N → N → Prop} (a b : α →₀ N) :
     Pi.Lex r s a b = Finsupp.Lex r s a b :=
   rfl
@@ -93,7 +92,7 @@ theorem Lex.single_strictAnti : StrictAnti (fun (a : α) ↦ toLex (single a 1))
   constructor
   · intro d hd
     simp only [Finsupp.single_eq_of_ne hd.ne', Finsupp.single_eq_of_ne (hd.trans h).ne']
-  · simp only [single_eq_same, single_eq_of_ne (ne_of_lt h).symm, zero_lt_one]
+  · simp [h.ne']
 
 theorem Lex.single_lt_iff {a b : α} : toLex (single b 1) < toLex (single a 1) ↔ a < b :=
   Lex.single_strictAnti.lt_iff_lt
@@ -115,7 +114,7 @@ theorem lt_of_forall_lt_of_lt (a b : Lex (α →₀ N)) (i : α) :
 
 theorem lex_le_iff_of_unique [Unique α] {a b : Lex (α →₀ N)} :
     a ≤ b ↔ ofLex a default ≤ ofLex b default := by
-  simp only [le_iff_eq_or_lt, EmbeddingLike.apply_eq_iff_eq]
+  simp only [le_iff_eq_or_lt]
   apply or_congr _ lex_lt_iff_of_unique
   conv_lhs => rw [← toLex_ofLex a, ← toLex_ofLex b, toLex_inj]
   simp only [Finsupp.ext_iff, Unique.forall_iff]
@@ -170,24 +169,11 @@ instance Lex.orderBot [AddCommMonoid N] [PartialOrder N] [CanonicallyOrderedAdd 
   bot := 0
   bot_le _ := Finsupp.toLex_monotone bot_le
 
-noncomputable instance Lex.orderedAddCancelCommMonoid [OrderedCancelAddCommMonoid N] :
-    OrderedCancelAddCommMonoid (Lex (α →₀ N)) where
+instance Lex.isOrderedCancelAddMonoid
+    [AddCommMonoid N] [PartialOrder N] [IsOrderedCancelAddMonoid N] :
+    IsOrderedCancelAddMonoid (Lex (α →₀ N)) where
   add_le_add_left _ _ h _ := add_le_add_left (α := Lex (α → N)) h _
   le_of_add_le_add_left _ _ _ := le_of_add_le_add_left (α := Lex (α → N))
-
-noncomputable instance Lex.orderedAddCommGroup [OrderedAddCommGroup N] :
-    OrderedAddCommGroup (Lex (α →₀ N)) where
-  add_le_add_left _ _ := add_le_add_left
-
-noncomputable instance Lex.linearOrderedCancelAddCommMonoid [LinearOrderedCancelAddCommMonoid N] :
-    LinearOrderedCancelAddCommMonoid (Lex (α →₀ N)) where
-  __ : LinearOrder (Lex (α →₀ N)) := inferInstance
-  __ : OrderedCancelAddCommMonoid (Lex (α →₀ N)) := inferInstance
-
-noncomputable instance Lex.linearOrderedAddCommGroup [LinearOrderedAddCommGroup N] :
-    LinearOrderedAddCommGroup (Lex (α →₀ N)) where
-  __ : LinearOrder (Lex (α →₀ N)) := inferInstance
-  add_le_add_left _ _ := add_le_add_left
 
 end OrderedAddMonoid
 

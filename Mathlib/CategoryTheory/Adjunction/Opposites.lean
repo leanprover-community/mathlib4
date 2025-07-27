@@ -55,6 +55,30 @@ def op {F : C ⥤ D} {G : D ⥤ C} (h : G ⊣ F) : F.op ⊣ G.op where
 @[deprecated (since := "2025-01-01")] alias opAdjointOfUnopAdjoint := op
 @[deprecated (since := "2025-01-01")] alias adjointOfUnopAdjointUnop := op
 
+/-- If `F` is adjoint to `G.leftOp` then `G` is adjoint to `F.leftOp`. -/
+@[simps]
+def leftOp {F : C ⥤ Dᵒᵖ} {G : D ⥤ Cᵒᵖ} (a : F ⊣ G.leftOp) : G ⊣ F.leftOp where
+  unit := NatTrans.unop a.counit
+  counit := NatTrans.op a.unit
+  left_triangle_components X := congr($(a.right_triangle_components (.op X)).op)
+  right_triangle_components X := congr($(a.left_triangle_components X.unop).unop)
+
+/-- If `F.rightOp` is adjoint to `G` then `G.rightOp` is adjoint to `F`. -/
+@[simps]
+def rightOp {F : Cᵒᵖ ⥤ D} {G : Dᵒᵖ ⥤ C} (a : F.rightOp ⊣ G) : G.rightOp ⊣ F where
+  unit := NatTrans.unop a.counit
+  counit := NatTrans.op a.unit
+  left_triangle_components X := congr($(a.right_triangle_components (.op X)).op)
+  right_triangle_components X := congr($(a.left_triangle_components X.unop).unop)
+
+lemma leftOp_eq {F : C ⥤ Dᵒᵖ} {G : D ⥤ Cᵒᵖ} (a : F ⊣ G.leftOp) :
+    a.leftOp = (opOpEquivalence D).symm.toAdjunction.comp a.op := by
+  ext X; simp [Equivalence.unit]
+
+lemma rightOp_eq {F : Cᵒᵖ ⥤ D} {G : Dᵒᵖ ⥤ C} (a : F.rightOp ⊣ G) :
+    a.rightOp = (opOpEquivalence D).symm.toAdjunction.comp a.op := by
+  ext X; simp [Equivalence.unit]
+
 /-- If `F` and `F'` are both adjoint to `G`, there is a natural isomorphism
 `F.op ⋙ coyoneda ≅ F'.op ⋙ coyoneda`.
 We use this in combination with `fullyFaithfulCancelRight` to show left adjoints are unique.
@@ -86,4 +110,29 @@ def natIsoOfLeftAdjointNatIso {F F' : C ⥤ D} {G G' : D ⥤ C}
     (adj1 : F ⊣ G) (adj2 : F' ⊣ G') (l : F ≅ F') : G ≅ G' :=
   NatIso.removeOp (natIsoOfRightAdjointNatIso (op adj2) (op adj1) (NatIso.op l))
 
-end CategoryTheory.Adjunction
+end Adjunction
+
+namespace Functor
+
+instance IsLeftAdjoint.op {F : C ⥤ D} [F.IsLeftAdjoint] : F.op.IsRightAdjoint :=
+  ⟨F.rightAdjoint.op, ⟨.op <| .ofIsLeftAdjoint _⟩⟩
+
+instance IsRightAdjoint.op {F : C ⥤ D} [F.IsRightAdjoint] : F.op.IsLeftAdjoint :=
+  ⟨F.leftAdjoint.op, ⟨.op <| .ofIsRightAdjoint _⟩⟩
+
+instance IsLeftAdjoint.leftOp {F : C ⥤ Dᵒᵖ} [F.IsLeftAdjoint] : F.leftOp.IsRightAdjoint :=
+  ⟨F.rightAdjoint.rightOp, ⟨.leftOp <| .ofIsLeftAdjoint _⟩⟩
+
+-- TODO: Do we need to introduce `Adjunction.leftUnop`?
+instance IsRightAdjoint.leftOp {F : C ⥤ Dᵒᵖ} [F.IsRightAdjoint] : F.leftOp.IsLeftAdjoint :=
+  inferInstanceAs (F.op ⋙ (opOpEquivalence D).functor).IsLeftAdjoint
+
+-- TODO: Do we need to introduce `Adjunction.rightUnop`?
+instance IsLeftAdjoint.rightOp {F : Cᵒᵖ ⥤ D} [F.IsLeftAdjoint] : F.rightOp.IsRightAdjoint :=
+  inferInstanceAs ((opOpEquivalence C).inverse ⋙ F.op).IsRightAdjoint
+
+instance IsRightAdjoint.rightOp {F : Cᵒᵖ ⥤ D} [F.IsRightAdjoint] : F.rightOp.IsLeftAdjoint :=
+  ⟨F.leftAdjoint.leftOp, ⟨.rightOp <| .ofIsRightAdjoint _⟩⟩
+
+end Functor
+end CategoryTheory

@@ -17,11 +17,11 @@ The lexicographic order on `List α` is defined by `L < M` iff
 ## See also
 
 Related files are:
-* `Mathlib.Data.Finset.Colex`: Colexicographic order on finite sets.
-* `Mathlib.Data.PSigma.Order`: Lexicographic order on `Σ' i, α i`.
-* `Mathlib.Data.Pi.Lex`: Lexicographic order on `Πₗ i, α i`.
-* `Mathlib.Data.Sigma.Order`: Lexicographic order on `Σ i, α i`.
-* `Mathlib.Data.Prod.Lex`: Lexicographic order on `α × β`.
+* `Mathlib/Data/Finset/Colex.lean`: Colexicographic order on finite sets.
+* `Mathlib/Data/PSigma/Order.lean`: Lexicographic order on `Σ' i, α i`.
+* `Mathlib/Data/Pi/Lex.lean`: Lexicographic order on `Πₗ i, α i`.
+* `Mathlib/Data/Sigma/Order.lean`: Lexicographic order on `Σ i, α i`.
+* `Mathlib/Data/Prod/Lex.lean`: Lexicographic order on `α × β`.
 -/
 
 
@@ -35,22 +35,26 @@ variable {α : Type u}
 
 /-! ### lexicographic ordering -/
 
-namespace Lex
-
-theorem cons_iff {r : α → α → Prop} [IsIrrefl α r] {a l₁ l₂} :
+theorem lex_cons_iff {r : α → α → Prop} [IsIrrefl α r] {a l₁ l₂} :
     Lex r (a :: l₁) (a :: l₂) ↔ Lex r l₁ l₂ :=
-  ⟨fun h => by obtain - | h | h := h; exacts [h, (irrefl_of r a h).elim], Lex.cons⟩
+  ⟨fun h => by obtain - | h | h := h; exacts [(irrefl_of r a h).elim, h], Lex.cons⟩
 
 @[deprecated (since := "2024-12-21")] alias not_nil_right := not_lex_nil
 
-theorem nil_left_or_eq_nil {r : α → α → Prop} (l : List α) : List.Lex r [] l ∨ l = [] :=
+theorem lex_nil_or_eq_nil {r : α → α → Prop} (l : List α) : List.Lex r [] l ∨ l = [] :=
   match l with
   | [] => Or.inr rfl
-  | (_ :: _) => Or.inl nil
+  | _ :: _ => .inl .nil
+
+@[deprecated (since := "2025-03-14")] alias Lex.nil_left_or_eq_nil := lex_nil_or_eq_nil
 
 @[simp]
-theorem singleton_iff {r : α → α → Prop} (a b : α) : List.Lex r [a] [b] ↔ r a b :=
-  ⟨fun | rel h => h, List.Lex.rel⟩
+theorem lex_singleton_iff {r : α → α → Prop} (a b : α) : List.Lex r [a] [b] ↔ r a b :=
+  ⟨fun | .rel h => h, .rel⟩
+
+@[deprecated (since := "2025-03-14")] alias Lex.singleton_iff := lex_singleton_iff
+
+namespace Lex
 
 instance isOrderConnected (r : α → α → Prop) [IsOrderConnected α r] [IsTrichotomous α r] :
     IsOrderConnected (List α) (Lex r) where
@@ -98,8 +102,8 @@ instance decidableRel [DecidableEq α] (r : α → α → Prop) [DecidableRel r]
       · exact Lex.rel h
       · exact Lex.cons h
     · rcases h with (_ | h | h)
-      · exact Or.inr ⟨rfl, h⟩
       · exact Or.inl h
+      · exact Or.inr ⟨rfl, h⟩
 
 theorem append_right (r : α → α → Prop) : ∀ {s₁ s₂} (t), Lex r s₁ s₂ → Lex r s₁ (s₂ ++ t)
   | _, _, _, nil => nil
@@ -128,9 +132,8 @@ theorem _root_.Decidable.List.Lex.ne_iff [DecidableEq α] {l₁ l₂ : List α}
     · exact (not_lt_of_ge H).elim (succ_pos _)
     · by_cases ab : a = b
       · subst b
-        apply cons
-        exact IH (le_of_succ_le_succ H) (mt (congr_arg _) h)
-      · exact rel ab ⟩
+        exact .cons <| IH (le_of_succ_le_succ H) (mt (congr_arg _) h)
+      · exact .rel ab ⟩
 
 theorem ne_iff {l₁ l₂ : List α} (H : length l₁ ≤ length l₂) : Lex (· ≠ ·) l₁ l₂ ↔ l₁ ≠ l₂ := by
   classical
@@ -147,7 +150,7 @@ instance [LinearOrder α] : LinearOrder (List α) :=
 instance LE' [LinearOrder α] : LE (List α) :=
   Preorder.toLE
 
-theorem lt_iff_lex_lt [LinearOrder α] (l l' : List α) : List.lt l l' ↔ Lex (· < ·) l l' := by
+theorem lt_iff_lex_lt [LT α] (l l' : List α) : List.lt l l' ↔ Lex (· < ·) l l' := by
   rw [List.lt]
 
 theorem head_le_of_lt [Preorder α] {a a' : α} {l l' : List α} (h : (a' :: l') < (a :: l)) :

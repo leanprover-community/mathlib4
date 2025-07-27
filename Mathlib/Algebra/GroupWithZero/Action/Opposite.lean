@@ -5,8 +5,8 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Group.Action.Faithful
 import Mathlib.Algebra.Group.Action.Opposite
+import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.GroupWithZero.NeZero
-import Mathlib.Algebra.SMulWithZero
 
 /-!
 # Scalar actions on and by `Mᵐᵒᵖ`
@@ -26,6 +26,8 @@ With `open scoped RightActions`, this provides:
 * `v +ᵥ> p` as an alias for `v +ᵥ p`
 * `p <+ᵥ v` as an alias for `AddOpposite.op v +ᵥ p`
 -/
+
+assert_not_exists Ring
 
 variable {M α : Type*}
 

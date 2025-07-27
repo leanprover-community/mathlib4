@@ -22,7 +22,7 @@ section SpectrumDiagonal
 
 variable {R n M : Type*} [DecidableEq n] [Fintype n]
 
-open Matrix Module.End
+open Matrix Module End
 
 section NontrivialCommRing
 
@@ -54,8 +54,8 @@ lemma hasEigenvalue_toLin_diagonal_iff (d : n → R) {μ : R} [NoZeroSMulDivisor
       apply Submodule.mem_iSup_of_mem ⟨i, rfl⟩
       rw [mem_eigenspace_iff]
       exact (hasEigenvector_toLin_diagonal d i b).apply_eq_smul
-    have hμ_not_mem : μ ∉ Set.range d := by simpa using fun i ↦ (hμ i)
-    have := eigenspaces_iSupIndep (toLin b b (diagonal d)) |>.disjoint_biSup hμ_not_mem
+    have hμ_notMem : μ ∉ Set.range d := by simpa using fun i ↦ (hμ i)
+    have := eigenspaces_iSupIndep (toLin b b (diagonal d)) |>.disjoint_biSup hμ_notMem
     rw [h_iSup, disjoint_top] at this
     exact h_eig this
   · rintro ⟨i, rfl⟩

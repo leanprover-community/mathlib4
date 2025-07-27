@@ -113,7 +113,8 @@ lemma hom_ext {X Y : BoolAlg} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
 
 @[simp]
 lemma hom_ofHom {X Y : Type u} [BooleanAlgebra X] [BooleanAlgebra Y] (f : BoundedLatticeHom X Y) :
-  (ofHom f).hom = f := rfl
+    (ofHom f).hom = f :=
+  rfl
 
 @[simp]
 lemma ofHom_hom {X Y : BoolAlg} (f : X ⟶ Y) :
@@ -176,9 +177,6 @@ def dual : BoolAlg ⥤ BoolAlg where
   obj X := of Xᵒᵈ
   map f := ofHom f.hom.dual
 
-#adaptation_note /-- nightly-2025-02-12
-This apparently became slower. (Possibly due to changes in `simp +arith`?) -/
-set_option maxHeartbeats 400000 in
 /-- The equivalence between `BoolAlg` and itself induced by `OrderDual` both ways. -/
 @[simps functor inverse]
 def dualEquiv : BoolAlg ≌ BoolAlg where

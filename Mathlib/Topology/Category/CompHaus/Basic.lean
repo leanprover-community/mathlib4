@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Bhavik Mehta, Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Monad.Limits
-import Mathlib.Topology.StoneCech
+import Mathlib.Topology.Compactification.StoneCech
 import Mathlib.Topology.UrysohnsLemma
 import Mathlib.Topology.Category.CompHausLike.Basic
 import Mathlib.Topology.Category.TopCat.Limits.Basic
@@ -65,10 +65,8 @@ abbrev of : CompHaus := CompHausLike.of _ X
 end CompHaus
 
 /-- The fully faithful embedding of `CompHaus` in `TopCat`. -/
--- Porting note: `semireducible` -> `.default`.
 abbrev compHausToTop : CompHaus.{u} ⥤ TopCat.{u} :=
   CompHausLike.compHausLikeToTop _
-  -- deriving Full, Faithful -- Porting note: deriving fails, adding manually.
 
 /-- (Implementation) The object part of the compactification functor from topological spaces to
 compact Hausdorff spaces.
@@ -134,7 +132,7 @@ def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Li
   { pt := {
       toTop := (TopCat.limitCone FF).pt
       is_compact := by
-        show CompactSpace { u : ∀ j, F.obj j | ∀ {i j : J} (f : i ⟶ j), (F.map f) (u i) = u j }
+        change CompactSpace { u : ∀ j, F.obj j | ∀ {i j : J} (f : i ⟶ j), (F.map f) (u i) = u j }
         rw [← isCompact_iff_compactSpace]
         apply IsClosed.isCompact
         have :
@@ -161,7 +159,7 @@ def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Li
       naturality := by
         intro _ _ f
         ext ⟨x, hx⟩
-        simp only [CategoryTheory.comp_apply, Functor.const_obj_map, CategoryTheory.id_apply]
+        simp only [Functor.const_obj_map]
         exact (hx f).symm } }
 
 /-- The limit cone `CompHaus.limitCone F` is indeed a limit cone. -/

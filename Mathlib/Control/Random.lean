@@ -95,10 +95,10 @@ def randBound (α : Type u)
   (BoundedRandom.randomR lo hi h : RandGT g _ _)
 
 /-- Generate a random `Fin`. -/
-def randFin {n : Nat} [RandomGen g] : RandGT g m (Fin n.succ) :=
-  fun ⟨g⟩ ↦ pure <| randNat g 0 n |>.map (Fin.ofNat' _) ULift.up
+def randFin {n : Nat} [NeZero n] [RandomGen g] : RandGT g m (Fin n) :=
+  fun ⟨g⟩ ↦ pure <| randNat g 0 (n - 1) |>.map (Fin.ofNat n) ULift.up
 
-instance {n : Nat} : Random m (Fin n.succ) where
+instance {n : Nat} [NeZero n] : Random m (Fin n) where
   random := randFin
 
 /-- Generate a random `Bool`. -/
@@ -113,10 +113,10 @@ instance {α : Type u} [ULiftable m m'] [Random m α] : Random m' (ULift.{v} α)
 
 instance : BoundedRandom m Nat where
   randomR lo hi h _ := do
-    let z ← rand (Fin (hi - lo).succ)
+    let z ← rand (Fin (hi - lo + 1))
     pure ⟨
       lo + z.val, Nat.le_add_right _ _,
-      Nat.add_le_of_le_sub' h (Nat.le_of_succ_le_succ z.isLt)
+      Nat.add_le_of_le_sub' h (Nat.le_of_lt_add_one z.isLt)
     ⟩
 
 instance : BoundedRandom m Int where

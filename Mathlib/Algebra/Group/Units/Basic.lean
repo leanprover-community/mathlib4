@@ -115,6 +115,20 @@ theorem inv_unique {u₁ u₂ : αˣ} (h : (↑u₁ : α) = ↑u₂) : (↑u₁�
 
 end Monoid
 
+section CommMonoid
+
+variable [CommMonoid α] (a c : α) (b d : αˣ)
+
+@[to_additive]
+theorem mul_inv_eq_mul_inv_iff : a * b⁻¹ = c * d⁻¹ ↔ a * d = c * b := by
+  rw [mul_comm c, Units.mul_inv_eq_iff_eq_mul, mul_assoc, Units.eq_inv_mul_iff_mul_eq, mul_comm]
+
+@[to_additive]
+theorem inv_mul_eq_inv_mul_iff : b⁻¹ * a = d⁻¹ * c ↔ a * d = c * b := by
+  rw [mul_comm, mul_comm _ c, mul_inv_eq_mul_inv_iff]
+
+end CommMonoid
+
 end Units
 
 section Monoid
@@ -305,6 +319,16 @@ protected theorem mul_right_cancel (h : IsUnit b) : a * b = c * b → a = c :=
   h.mul_left_inj.1
 
 @[to_additive]
+theorem mul_eq_right (h : IsUnit b) : a * b = b ↔ a = 1 := calc
+  a * b = b ↔ a * b = 1 * b := by rw [one_mul]
+    _ ↔ a = 1 := by rw [h.mul_left_inj]
+
+@[to_additive]
+theorem mul_eq_left (h : IsUnit a) : a * b = a ↔ b = 1 := calc
+  a * b = a ↔ a * b = a * 1 := by rw [mul_one]
+    _ ↔ b = 1 := by rw [h.mul_right_inj]
+
+@[to_additive]
 protected theorem mul_right_injective (h : IsUnit a) : Injective (a * ·) :=
   fun _ _ => h.mul_left_cancel
 
@@ -444,6 +468,16 @@ protected lemma div_eq_div_iff (hb : IsUnit b) (hd : IsUnit d) :
     a / b = c / d ↔ a * d = c * b := by
   rw [← (hb.mul hd).mul_left_inj, ← mul_assoc, hb.div_mul_cancel, ← mul_assoc, mul_right_comm,
     hd.div_mul_cancel]
+
+@[to_additive]
+protected lemma mul_inv_eq_mul_inv_iff (hb : IsUnit b) (hd : IsUnit d) :
+    a * b⁻¹ = c * d⁻¹ ↔ a * d = c * b := by
+  rw [← div_eq_mul_inv, ← div_eq_mul_inv, hb.div_eq_div_iff hd]
+
+@[to_additive]
+protected lemma inv_mul_eq_inv_mul_iff (hb : IsUnit b) (hd : IsUnit d) :
+    b⁻¹ * a = d⁻¹ * c ↔ a * d = c * b := by
+  rw [← div_eq_inv_mul, ← div_eq_inv_mul, hb.div_eq_div_iff hd]
 
 @[to_additive]
 protected lemma div_div_cancel (h : IsUnit a) : a / (a / b) = b := by

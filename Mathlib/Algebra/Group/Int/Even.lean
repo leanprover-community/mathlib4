@@ -5,8 +5,6 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Algebra.Group.Int.Defs
 import Mathlib.Algebra.Group.Nat.Even
-import Mathlib.Algebra.Group.Nat.Units
-import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Data.Int.Sqrt
 
 /-!
@@ -51,9 +49,9 @@ instance : DecidablePred (IsSquare : ℤ → Prop) :=
 @[parity_simps] lemma even_add : Even (m + n) ↔ (Even m ↔ Even n) := by
   rcases emod_two_eq_zero_or_one m with h₁ | h₁ <;>
   rcases emod_two_eq_zero_or_one n with h₂ | h₂ <;>
-  simp [even_iff, h₁, h₂, Int.add_emod, one_add_one_eq_two, emod_self]
+  simp [even_iff, h₁, h₂, Int.add_emod, emod_self]
 
-lemma two_not_dvd_two_mul_add_one (n : ℤ) : ¬2 ∣ 2 * n + 1 := by simp [add_emod]
+lemma two_not_dvd_two_mul_add_one (n : ℤ) : ¬2 ∣ 2 * n + 1 := by simp
 
 @[parity_simps]
 lemma even_sub : Even (m - n) ↔ (Even m ↔ Even n) := by simp [sub_eq_add_neg, parity_simps]
@@ -83,8 +81,19 @@ lemma ediv_two_mul_two_of_even : Even n → n / 2 * 2 = n :=
 
 -- Here are examples of how `parity_simps` can be used with `Int`.
 example (m n : ℤ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by
-  simp +decide [*, (by decide : ¬2 = 0), parity_simps]
+  simp +decide [*, parity_simps]
 
 example : ¬Even (25394535 : ℤ) := by decide
+
+@[simp]
+theorem isSquare_sign_iff {z : ℤ} : IsSquare z.sign ↔ 0 ≤ z := by
+  induction z using Int.induction_on with
+  | zero => simpa using ⟨0, by simp⟩
+  | succ => norm_cast; simp
+  | pred =>
+    rw [sign_eq_neg_one_of_neg (by omega), ← neg_add', Int.neg_nonneg]
+    norm_cast
+    simp only [reduceNeg, le_zero_eq, Nat.add_eq_zero, succ_ne_self, and_false, iff_false]
+    rintro ⟨a | a, ⟨⟩⟩
 
 end Int

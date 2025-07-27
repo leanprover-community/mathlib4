@@ -3,13 +3,17 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
 -/
-import Mathlib.Algebra.Group.Prod
 import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Algebra.Group.InjSurj
+import Mathlib.Algebra.Group.Equiv.Defs
+import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.Notation.Prod
+import Mathlib.Algebra.Group.Basic
 
 /-!
 # Dependent functions with finite support
 
-For a non-dependent version see `Mathlib.Data.Finsupp.Defs`.
+For a non-dependent version see `Mathlib/Data/Finsupp/Defs.lean`.
 
 ## Notation
 
@@ -169,12 +173,11 @@ def piecewise : Π₀ i, β i :=
   zipWith (fun i x y => if i ∈ s then x else y) (fun _ => ite_self 0) x y
 
 theorem piecewise_apply (i : ι) : x.piecewise y s i = if i ∈ s then x i else y i :=
-  zipWith_apply _ _ x y i
+  rfl
 
 @[simp, norm_cast]
-theorem coe_piecewise : ⇑(x.piecewise y s) = s.piecewise x y := by
-  ext
-  apply piecewise_apply
+theorem coe_piecewise : ⇑(x.piecewise y s) = s.piecewise x y :=
+  rfl
 
 end Piecewise
 
@@ -227,6 +230,10 @@ def coeFnAddMonoidHom [∀ i, AddZeroClass (β i)] : (Π₀ i, β i) →+ ∀ i,
   toFun := (⇑)
   map_zero' := coe_zero
   map_add' := coe_add
+
+@[simp]
+lemma coeFnAddMonoidHom_apply [∀ i, AddZeroClass (β i)] (v : Π₀ i, β i) : coeFnAddMonoidHom v = v :=
+  rfl
 
 instance addCommMonoid [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Π₀ i, β i) :=
   DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => coe_nsmul _ _
@@ -405,8 +412,10 @@ theorem mk_apply : (mk s x : ∀ i, β i) i = if H : i ∈ s then x ⟨i, H⟩ e
 theorem mk_of_mem (hi : i ∈ s) : (mk s x : ∀ i, β i) i = x ⟨i, hi⟩ :=
   dif_pos hi
 
-theorem mk_of_not_mem (hi : i ∉ s) : (mk s x : ∀ i, β i) i = 0 :=
+theorem mk_of_notMem (hi : i ∉ s) : (mk s x : ∀ i, β i) i = 0 :=
   dif_neg hi
+
+@[deprecated (since := "2025-05-23")] alias mk_of_not_mem := mk_of_notMem
 
 theorem mk_injective (s : Finset ι) : Function.Injective (@mk ι β _ _ s) := by
   intro x y H
@@ -431,7 +440,6 @@ def equivFunOnFintype [Fintype ι] : (Π₀ i, β i) ≃ ∀ i, β i where
   toFun := (⇑)
   invFun f := ⟨f, Trunc.mk ⟨Finset.univ.1, fun _ => Or.inl <| Finset.mem_univ_val _⟩⟩
   left_inv _ := DFunLike.coe_injective rfl
-  right_inv _ := rfl
 
 @[simp]
 theorem equivFunOnFintype_symm_coe [Fintype ι] (f : Π₀ i, β i) : equivFunOnFintype.symm f = f :=
@@ -465,11 +473,11 @@ theorem single_eq_of_ne {i i' b} (h : i ≠ i') : (single i b : Π₀ i, β i) i
   simp only [single_apply, dif_neg h]
 
 theorem single_injective {i} : Function.Injective (single i : β i → Π₀ i, β i) := fun _ _ H =>
-  Pi.single_injective β i <| DFunLike.coe_injective.eq_iff.mpr H
+  Pi.single_injective i <| DFunLike.coe_injective.eq_iff.mpr H
 
 /-- Like `Finsupp.single_eq_single_iff`, but with a `HEq` due to dependent types -/
 theorem single_eq_single_iff (i j : ι) (xi : β i) (xj : β j) :
-    DFinsupp.single i xi = DFinsupp.single j xj ↔ i = j ∧ HEq xi xj ∨ xi = 0 ∧ xj = 0 := by
+    DFinsupp.single i xi = DFinsupp.single j xj ↔ i = j ∧ xi ≍ xj ∨ xi = 0 ∧ xj = 0 := by
   constructor
   · intro h
     by_cases hij : i = j
@@ -496,6 +504,9 @@ theorem single_left_injective {b : ∀ i : ι, β i} (h : ∀ i, b i ≠ 0) :
 theorem single_eq_zero {i : ι} {xi : β i} : single i xi = 0 ↔ xi = 0 := by
   rw [← single_zero i, single_eq_single_iff]
   simp
+
+theorem single_ne_zero {i : ι} {xi : β i} : single i xi ≠ 0 ↔ xi ≠ 0 :=
+  single_eq_zero.not
 
 theorem filter_single (p : ι → Prop) [DecidablePred p] (i : ι) (x : β i) :
     (single i x).filter p = if p i then single i x else 0 := by
@@ -526,7 +537,7 @@ theorem equivFunOnFintype_single [Fintype ι] (i : ι) (m : β i) :
     (@DFinsupp.equivFunOnFintype ι β _ _) (DFinsupp.single i m) = Pi.single i m := by
   ext x
   dsimp [Pi.single, Function.update]
-  simp [DFinsupp.single_eq_pi_single, @eq_comm _ i]
+  simp [@eq_comm _ i]
 
 @[simp]
 theorem equivFunOnFintype_symm_single [Fintype ι] (i : ι) (m : β i) :
@@ -562,8 +573,7 @@ theorem erase_same {i : ι} {f : Π₀ i, β i} : (f.erase i) i = 0 := by simp
 
 theorem erase_ne {i i' : ι} {f : Π₀ i, β i} (h : i' ≠ i) : (f.erase i) i' = f i' := by simp [h]
 
-theorem piecewise_single_erase (x : Π₀ i, β i) (i : ι)
-    [∀ i' : ι, Decidable <| (i' ∈ ({i} : Set ι))] : -- Porting note: added Decidable hypothesis
+theorem piecewise_single_erase (x : Π₀ i, β i) (i : ι) :
     (single i (x i)).piecewise (x.erase i) {i} = x := by
   ext j; rw [piecewise_apply]; split_ifs with h
   · rw [(id h : j = i), single_eq_same]
@@ -574,7 +584,7 @@ theorem erase_eq_sub_single {β : ι → Type*} [∀ i, AddGroup (β i)] (f : Π
   ext j
   rcases eq_or_ne i j with (rfl | h)
   · simp
-  · simp [erase_ne h.symm, single_eq_of_ne h, @eq_comm _ j, h]
+  · simp [erase_ne h.symm, single_eq_of_ne h]
 
 @[simp]
 theorem erase_zero (i : ι) : erase i (0 : Π₀ i, β i) = 0 :=
@@ -643,14 +653,14 @@ theorem update_eq_single_add_erase {β : ι → Type*} [∀ i, AddZeroClass (β 
   ext j
   rcases eq_or_ne i j with (rfl | h)
   · simp
-  · simp [Function.update_of_ne h.symm, h, erase_ne, h.symm]
+  · simp [h, h.symm]
 
 theorem update_eq_erase_add_single {β : ι → Type*} [∀ i, AddZeroClass (β i)] (f : Π₀ i, β i)
     (i : ι) (b : β i) : f.update i b = f.erase i + single i b := by
   ext j
   rcases eq_or_ne i j with (rfl | h)
   · simp
-  · simp [Function.update_of_ne h.symm, h, erase_ne, h.symm]
+  · simp [h, h.symm]
 
 theorem update_eq_sub_add_single {β : ι → Type*} [∀ i, AddGroup (β i)] (f : Π₀ i, β i) (i : ι)
     (b : β i) : f.update i b = f - single i (f i) + single i b := by
@@ -733,7 +743,7 @@ protected theorem induction {p : (Π₀ i, β i) → Prop} (f : Π₀ i, β i) (
   induction' s using Trunc.induction_on with s
   obtain ⟨s, H⟩ := s
   induction' s using Multiset.induction_on with i s ih generalizing f
-  · have : f = 0 := funext fun i => (H i).resolve_left (Multiset.not_mem_zero _)
+  · have : f = 0 := funext fun i => (H i).resolve_left (Multiset.notMem_zero _)
     subst this
     exact h0
   have H2 : p (erase i ⟨f, Trunc.mk ⟨i ::ₘ s, H⟩⟩) := by
@@ -854,7 +864,7 @@ def subtypeSupportEqEquiv (s : Finset ι) :
     simpa using Eq.symm
   right_inv f := by
     ext1
-    simp [Subtype.eta]; rfl
+    simp; rfl
 
 /-- Equivalence between all dependent finitely supported functions `f : Π₀ i, β i` and type
 of pairs `⟨s : Finset ι, f : ∀ i : s, {x : β i // x ≠ 0}⟩`. -/
@@ -869,8 +879,10 @@ theorem support_zero : (0 : Π₀ i, β i).support = ∅ :=
 theorem mem_support_iff {f : Π₀ i, β i} {i : ι} : i ∈ f.support ↔ f i ≠ 0 :=
   f.mem_support_toFun _
 
-theorem not_mem_support_iff {f : Π₀ i, β i} {i : ι} : i ∉ f.support ↔ f i = 0 :=
+theorem notMem_support_iff {f : Π₀ i, β i} {i : ι} : i ∉ f.support ↔ f i = 0 :=
   not_iff_comm.1 mem_support_iff.symm
+
+@[deprecated (since := "2025-05-23")] alias not_mem_support_iff := notMem_support_iff
 
 @[simp]
 theorem support_eq_empty {f : Π₀ i, β i} : f.support = ∅ ↔ f = 0 :=
@@ -920,10 +932,30 @@ theorem mapRange_single {f : ∀ i, β₁ i → β₂ i} {hf : ∀ i, f i 0 = 0}
       simp
     · simp [h, hf]
 
+omit [DecidableEq ι] in
 theorem mapRange_injective (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0) :
-    Function.Injective (mapRange f hf) ↔ ∀ i, Function.Injective (f i) :=
-  ⟨fun h i x y eq ↦ single_injective (@h (single i x) (single i y) <| by
+    Function.Injective (mapRange f hf) ↔ ∀ i, Function.Injective (f i) := by
+  classical exact ⟨fun h i x y eq ↦ single_injective (@h (single i x) (single i y) <| by
     simpa using congr_arg _ eq), fun h _ _ eq ↦ DFinsupp.ext fun i ↦ h i congr($eq i)⟩
+
+omit [DecidableEq ι] in
+theorem mapRange_surjective (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0) :
+    Function.Surjective (mapRange f hf) ↔ ∀ i, Function.Surjective (f i) := by
+  classical
+  refine ⟨fun h i u ↦ ?_, fun h x ↦ ?_⟩
+  · obtain ⟨x, hx⟩ := h (single i u)
+    exact ⟨x i, by simpa using congr($hx i)⟩
+  · obtain ⟨x, s, hs⟩ := x
+    have (i : ι) : ∃ u : β₁ i, f i u = x i ∧ (x i = 0 → u = 0) :=
+      (eq_or_ne (x i) 0).elim
+        (fun h ↦ ⟨0, (hf i).trans h.symm, fun _ ↦ rfl⟩)
+        (fun h' ↦ by
+          obtain ⟨u, hu⟩ := h i (x i)
+          exact ⟨u, hu, fun h'' ↦ (h' h'').elim⟩)
+    choose y hy using this
+    refine ⟨⟨y, Trunc.mk ⟨s, fun i ↦ ?_⟩⟩, ext fun i ↦ ?_⟩
+    · exact (hs i).imp_right (hy i).2
+    · simp [(hy i).1]
 
 variable [∀ (i) (x : β₁ i), Decidable (x ≠ 0)] [∀ (i) (x : β₂ i), Decidable (x ≠ 0)]
 
@@ -953,7 +985,7 @@ theorem erase_def (i : ι) (f : Π₀ i, β i) : f.erase i = mk (f.support.erase
 theorem support_erase (i : ι) (f : Π₀ i, β i) : (f.erase i).support = f.support.erase i := by
   ext j
   by_cases h1 : j = i
-  · simp only [h1, mem_support_toFun, erase_apply, ite_true, ne_eq, not_true, not_not,
+  · simp only [h1, mem_support_toFun, erase_apply, ite_true, ne_eq, not_true,
       Finset.mem_erase, false_and]
   by_cases h2 : f j ≠ 0 <;> simp at h2 <;> simp [h1, h2]
 
@@ -985,7 +1017,7 @@ theorem support_filter (f : Π₀ i, β i) : (f.filter p).support = {x ∈ f.sup
 
 theorem subtypeDomain_def (f : Π₀ i, β i) :
     f.subtypeDomain p = mk (f.support.subtype p) fun i => f i := by
-  ext i; by_cases h2 : f i ≠ 0 <;> try simp at h2; dsimp; simp [h2]
+  ext i; by_cases h2 : f i ≠ 0 <;> try simp at h2; simp [h2]
 
 @[simp]
 theorem support_subtypeDomain {f : Π₀ i, β i} :
@@ -1117,18 +1149,14 @@ section SigmaCurry
 
 variable {α : ι → Type*} {δ : ∀ i, α i → Type v}
 
--- lean can't find these instances -- Porting note: but Lean 4 can!!!
 instance hasAdd₂ [∀ i j, AddZeroClass (δ i j)] : Add (Π₀ (i : ι) (j : α i), δ i j) :=
   inferInstance
-  -- @DFinsupp.hasAdd ι (fun i => Π₀ j, δ i j) _
 
 instance addZeroClass₂ [∀ i j, AddZeroClass (δ i j)] : AddZeroClass (Π₀ (i : ι) (j : α i), δ i j) :=
   inferInstance
-  -- @DFinsupp.addZeroClass ι (fun i => Π₀ j, δ i j) _
 
 instance addMonoid₂ [∀ i j, AddMonoid (δ i j)] : AddMonoid (Π₀ (i : ι) (j : α i), δ i j) :=
   inferInstance
-  -- @DFinsupp.addMonoid ι (fun i => Π₀ j, δ i j) _
 
 end SigmaCurry
 

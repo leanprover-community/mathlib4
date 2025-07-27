@@ -39,7 +39,7 @@ is proved in `RingTheory.Polynomial`.
 ## References
 
 * [M. F. Atiyah and I. G. Macdonald, *Introduction to commutative algebra*][atiyah-macdonald]
-* [samuel1967]
+* [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
 
 ## Tags
 
@@ -167,14 +167,14 @@ variable [IsNoetherian R M]
 open Filter
 /-- For an endomorphism of a Noetherian module, any sufficiently large iterate has disjoint kernel
 and range. -/
-theorem LinearMap.eventually_disjoint_ker_pow_range_pow (f : M →ₗ[R] M) :
+theorem Module.End.eventually_disjoint_ker_pow_range_pow (f : End R M) :
     ∀ᶠ n in atTop, Disjoint (LinearMap.ker (f ^ n)) (LinearMap.range (f ^ n)) := by
   obtain ⟨n, hn : ∀ m, n ≤ m → LinearMap.ker (f ^ n) = LinearMap.ker (f ^ m)⟩ :=
     monotone_stabilizes_iff_noetherian.mpr inferInstance f.iterateKer
   refine eventually_atTop.mpr ⟨n, fun m hm ↦ disjoint_iff.mpr ?_⟩
   rw [← hn _ hm, Submodule.eq_bot_iff]
   rintro - ⟨hx, ⟨x, rfl⟩⟩
-  apply LinearMap.pow_map_zero_of_le hm
+  apply pow_map_zero_of_le hm
   replace hx : x ∈ LinearMap.ker (f ^ (n + m)) := by
     simpa [f.pow_apply n, f.pow_apply m, ← f.pow_apply (n + m), ← iterate_add_apply] using hx
   rwa [← hn _ (n.le_add_right m)] at hx
@@ -185,7 +185,7 @@ lemma LinearMap.eventually_iSup_ker_pow_eq (f : M →ₗ[R] M) :
     monotone_stabilizes_iff_noetherian.mpr inferInstance f.iterateKer
   refine eventually_atTop.mpr ⟨n, fun m hm ↦ ?_⟩
   refine le_antisymm (iSup_le fun l ↦ ?_) (le_iSup (fun i ↦ LinearMap.ker (f ^ i)) m)
-  rcases le_or_lt m l with h | h
+  rcases le_or_gt m l with h | h
   · rw [← hn _ (hm.trans h), hn _ hm]
   · exact f.iterateKer.monotone h.le
 

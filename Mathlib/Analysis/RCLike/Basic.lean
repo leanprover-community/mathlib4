@@ -138,8 +138,15 @@ theorem ofReal_zero : ((0 : ℝ) : K) = 0 :=
   algebraMap.coe_zero
 
 @[rclike_simps]
-theorem zero_re' : re (0 : K) = (0 : ℝ) :=
+theorem zero_re : re (0 : K) = (0 : ℝ) :=
   map_zero re
+
+@[deprecated (since := "2025-05-29")]
+alias zero_re' := zero_re
+
+@[rclike_simps]
+theorem zero_im : im (0 : K) = (0 : ℝ) :=
+  map_zero im
 
 @[norm_cast]
 theorem ofReal_one : ((1 : ℝ) : K) = 1 :=
@@ -158,9 +165,6 @@ theorem ofReal_injective : Function.Injective ((↑) : ℝ → K) :=
 theorem ofReal_inj {z w : ℝ} : (z : K) = (w : K) ↔ z = w :=
   algebraMap.coe_inj
 
--- replaced by `RCLike.ofNat_re`
--- replaced by `RCLike.ofNat_im`
-
 theorem ofReal_eq_zero {x : ℝ} : (x : K) = 0 ↔ x = 0 :=
   algebraMap.lift_map_eq_zero_iff x
 
@@ -170,8 +174,6 @@ theorem ofReal_ne_zero {x : ℝ} : (x : K) ≠ 0 ↔ x ≠ 0 :=
 @[rclike_simps, norm_cast]
 theorem ofReal_add (r s : ℝ) : ((r + s : ℝ) : K) = r + s :=
   algebraMap.coe_add _ _
-
--- replaced by `RCLike.ofReal_ofNat`
 
 @[rclike_simps, norm_cast]
 theorem ofReal_neg (r : ℝ) : ((-r : ℝ) : K) = -r :=
@@ -189,7 +191,7 @@ theorem ofReal_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
 @[simp, rclike_simps, norm_cast]
 theorem ofReal_finsupp_sum {α M : Type*} [Zero M] (f : α →₀ M) (g : α → M → ℝ) :
     ((f.sum fun a b => g a b : ℝ) : K) = f.sum fun a b => (g a b : K) :=
-  map_finsupp_sum (algebraMap ℝ K) f g
+  map_finsuppSum (algebraMap ℝ K) f g
 
 @[rclike_simps, norm_cast]
 theorem ofReal_mul (r s : ℝ) : ((r * s : ℝ) : K) = r * s :=
@@ -205,9 +207,11 @@ theorem ofReal_prod {α : Type*} (s : Finset α) (f : α → ℝ) :
   map_prod (algebraMap ℝ K) _ _
 
 @[simp, rclike_simps, norm_cast]
-theorem ofReal_finsupp_prod {α M : Type*} [Zero M] (f : α →₀ M) (g : α → M → ℝ) :
+theorem ofReal_finsuppProd {α M : Type*} [Zero M] (f : α →₀ M) (g : α → M → ℝ) :
     ((f.prod fun a b => g a b : ℝ) : K) = f.prod fun a b => (g a b : K) :=
-  map_finsupp_prod _ f g
+  map_finsuppProd _ f g
+
+@[deprecated (since := "2025-04-06")] alias ofReal_finsupp_prod := ofReal_finsuppProd
 
 @[simp, norm_cast, rclike_simps]
 theorem real_smul_ofReal (r x : ℝ) : r • (x : K) = (r : K) * (x : K) :=
@@ -291,9 +295,7 @@ theorem conj_I : conj (I : K) = -I :=
 @[simp, rclike_simps]
 theorem conj_ofReal (r : ℝ) : conj (r : K) = (r : K) := by
   rw [ext_iff]
-  simp only [ofReal_im, conj_im, eq_self_iff_true, conj_re, and_self_iff, neg_zero]
-
--- replaced by `RCLike.conj_ofNat`
+  simp only [ofReal_im, conj_im, conj_re, and_self_iff, neg_zero]
 
 theorem conj_nat_cast (n : ℕ) : conj (n : K) = n := map_natCast _ _
 
@@ -331,7 +333,8 @@ theorem im_eq_conj_sub (z : K) : ↑(im z) = I * (conj z - z) / 2 := by
 
 open List in
 /-- There are several equivalent ways to say that a number `z` is in fact a real number. -/
-theorem is_real_TFAE (z : K) : TFAE [conj z = z, ∃ r : ℝ, (r : K) = z, ↑(re z) = z, im z = 0] := by
+theorem is_real_TFAE (z : K) :
+    TFAE [conj z = z, ∃ r : ℝ, (r : K) = z, ↑(re z) = z, im z = 0, IsSelfAdjoint z] := by
   tfae_have 1 → 4
   | h => by
     rw [← @ofReal_inj K, im_eq_conj_sub, h, sub_self, mul_zero, zero_div,
@@ -341,6 +344,8 @@ theorem is_real_TFAE (z : K) : TFAE [conj z = z, ∃ r : ℝ, (r : K) = z, ↑(r
     conv_rhs => rw [← re_add_im z, h, ofReal_zero, zero_mul, add_zero]
   tfae_have 3 → 2 := fun h => ⟨_, h⟩
   tfae_have 2 → 1 := fun ⟨r, hr⟩ => hr ▸ conj_ofReal _
+  tfae_have 1 → 5 := fun _ => by rwa [isSelfAdjoint_iff]
+  tfae_have 5 → 1 := fun hz => by rwa [isSelfAdjoint_iff] at hz
   tfae_finish
 
 theorem conj_eq_iff_real {z : K} : conj z = z ↔ ∃ r : ℝ, z = (r : K) :=
@@ -357,6 +362,17 @@ theorem conj_eq_iff_im {z : K} : conj z = z ↔ im z = 0 :=
 @[simp]
 theorem star_def : (Star.star : K → K) = conj :=
   rfl
+
+lemma im_eq_zero_iff_isSelfAdjoint {x : K} : im x = 0 ↔ IsSelfAdjoint x :=
+  is_real_TFAE x |>.out 3 4
+
+lemma re_eq_ofReal_of_isSelfAdjoint {x : K} {y : ℝ} (hx : IsSelfAdjoint x) :
+    re x = y ↔ x = y := by
+  simp [RCLike.ext_iff (K := K), hx, im_eq_zero_iff_isSelfAdjoint]
+
+lemma ofReal_eq_re_of_isSelfAdjoint {x : K} {y : ℝ} (hx : IsSelfAdjoint x) :
+    y = re x ↔ y = x := by
+  simpa [eq_comm] using re_eq_ofReal_of_isSelfAdjoint hx
 
 variable (K)
 
@@ -461,11 +477,11 @@ theorem inv_im (z : K) : im z⁻¹ = -im z / normSq z := by
   rw [inv_def, normSq_eq_def', mul_comm, im_ofReal_mul, conj_im, div_eq_inv_mul]
 
 theorem div_re (z w : K) : re (z / w) = re z * re w / normSq w + im z * im w / normSq w := by
-  simp only [div_eq_mul_inv, mul_assoc, sub_eq_add_neg, neg_mul, mul_neg, neg_neg, map_neg,
+  simp only [div_eq_mul_inv, mul_assoc, sub_eq_add_neg, neg_mul, mul_neg, neg_neg,
     rclike_simps]
 
 theorem div_im (z w : K) : im (z / w) = im z * re w / normSq w - re z * im w / normSq w := by
-  simp only [div_eq_mul_inv, mul_assoc, sub_eq_add_neg, add_comm, neg_mul, mul_neg, map_neg,
+  simp only [div_eq_mul_inv, mul_assoc, sub_eq_add_neg, add_comm, neg_mul, mul_neg,
     rclike_simps]
 
 @[rclike_simps] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): was `simp`
@@ -521,8 +537,14 @@ theorem norm_conj (z : K) : ‖conj z‖ = ‖z‖ := by simp only [← sqrt_nor
 
 @[simp, rclike_simps] lemma nnnorm_conj (z : K) : ‖conj z‖₊ = ‖z‖₊ := by simp [nnnorm]
 
+@[simp, rclike_simps] lemma enorm_conj (z : K) : ‖conj z‖ₑ = ‖z‖ₑ := by simp [enorm]
+
 instance (priority := 100) : CStarRing K where
   norm_mul_self_le x := le_of_eq <| ((norm_mul _ _).trans <| congr_arg (· * ‖x‖) (norm_conj _)).symm
+
+instance : StarModule ℝ K where
+  star_smul r a := by
+    apply RCLike.ext <;> simp [RCLike.smul_re, RCLike.smul_im]
 
 /-! ### Cast lemmas -/
 
@@ -658,7 +680,7 @@ theorem im_le_norm (z : K) : im z ≤ ‖z‖ :=
   (abs_le.1 (abs_im_le_norm _)).2
 
 theorem im_eq_zero_of_le {a : K} (h : ‖a‖ ≤ re a) : im a = 0 := by
-  simpa only [mul_self_norm a, normSq_apply, self_eq_add_right, mul_self_eq_zero]
+  simpa only [mul_self_norm a, normSq_apply, left_eq_add, mul_self_eq_zero]
     using congr_arg (fun z => z * z) ((re_le_norm a).antisymm h)
 
 theorem re_eq_self_of_le {a : K} (h : ‖a‖ ≤ re a) : (re a : K) = a := by
@@ -686,6 +708,10 @@ theorem norm_sq_re_add_conj (x : K) : ‖x + conj x‖ ^ 2 = re (x + conj x) ^ 2
 
 theorem norm_sq_re_conj_add (x : K) : ‖conj x + x‖ ^ 2 = re (conj x + x) ^ 2 := by
   rw [add_comm, norm_sq_re_add_conj]
+
+instance : NormSMulClass ℤ K where
+  norm_smul r x := by
+    rw [zsmul_eq_mul, norm_mul, ← ofReal_intCast, norm_ofReal, Int.norm_eq_abs]
 
 /-! ### Cauchy sequences -/
 
@@ -720,7 +746,7 @@ noncomputable instance Real.instRCLike : RCLike ℝ where
   I_re_ax := by simp only [AddMonoidHom.map_zero]
   I_mul_I_ax := Or.intro_left _ rfl
   re_add_im_ax z := by
-    simp only [add_zero, mul_zero, Algebra.id.map_eq_id, RingHom.id_apply, AddMonoidHom.id_apply]
+    simp only [add_zero, mul_zero, Algebra.algebraMap_self, RingHom.id_apply, AddMonoidHom.id_apply]
   ofReal_re_ax _ := rfl
   ofReal_im_ax _ := rfl
   mul_re_ax z w := by simp only [sub_zero, mul_zero, AddMonoidHom.zero_apply, AddMonoidHom.id_apply]
@@ -800,6 +826,33 @@ lemma ofReal_pos {x : ℝ} : 0 < (x : K) ↔ 0 < x := by
 lemma ofReal_lt_zero {x : ℝ} : (x : K) < 0 ↔ x < 0 := by
   rw [← ofReal_zero, ofReal_lt_ofReal]
 
+lemma norm_le_re_iff_eq_norm {z : K} :
+    ‖z‖ ≤ re z ↔ z = ‖z‖ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · have h' : ‖z‖ = re z := (le_antisymm (re_le_norm z) h).symm
+    rw [h', re_eq_self_of_le h]
+  · rw [h]
+    simp
+
+lemma re_le_neg_norm_iff_eq_neg_norm {z : K} :
+    re z ≤ -‖z‖ ↔ z = -‖z‖ := by
+  simpa [neg_eq_iff_eq_neg, le_neg] using norm_le_re_iff_eq_norm (z := -z)
+
+lemma norm_of_nonneg' {x : K} (hx : 0 ≤ x) : ‖x‖ = x := by
+  rw [eq_comm, ← norm_le_re_iff_eq_norm, ← sqrt_normSq_eq_norm, normSq_apply]
+  simp [nonneg_iff.mp hx]
+
+lemma re_nonneg_of_nonneg {x : K} (hx : IsSelfAdjoint x) : 0 ≤ re x ↔ 0 ≤ x := by
+  simp [nonneg_iff (K := K), conj_eq_iff_im.mp hx]
+
+@[gcongr]
+lemma re_le_re {x y : K} (h : x ≤ y) : re x ≤ re y := by
+  rw [RCLike.le_iff_re_im] at h
+  exact h.1
+
+lemma re_monotone : Monotone (re : K → ℝ) :=
+  fun _ _ => re_le_re
+
 protected lemma inv_pos_of_pos (hz : 0 < z) : 0 < z⁻¹ := by
   rw [pos_iff_exists_ofReal] at hz
   obtain ⟨x, hx, hx'⟩ := hz
@@ -828,18 +881,25 @@ lemma toStarOrderedRing : StarOrderedRing K :=
 
 scoped[ComplexOrder] attribute [instance] RCLike.toStarOrderedRing
 
+lemma toZeroLEOneClass : ZeroLEOneClass K where
+  zero_le_one := by simp [@RCLike.le_iff_re_im K]
+
+scoped[ComplexOrder] attribute [instance] RCLike.toZeroLEOneClass
+
+lemma toIsOrderedAddMonoid : IsOrderedAddMonoid K where
+  add_le_add_left _ _ := add_le_add_left
+
+scoped[ComplexOrder] attribute [instance] RCLike.toIsOrderedAddMonoid
+
 /-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℝ` and `ℂ` are strictly ordered rings.
 
 Note this is only an instance with `open scoped ComplexOrder`. -/
-def toStrictOrderedCommRing : StrictOrderedCommRing K where
-  zero_le_one := by simp [@RCLike.le_iff_re_im K]
-  add_le_add_left _ _ := add_le_add_left
-  mul_pos z w hz hw := by
+lemma toIsStrictOrderedRing : IsStrictOrderedRing K :=
+  .of_mul_pos fun z w hz hw ↦ by
     rw [lt_iff_re_im, map_zero] at hz hw ⊢
     simp [mul_re, mul_im, ← hz.2, ← hw.2, mul_pos hz.1 hw.1]
-  mul_comm := by intros; apply ext <;> ring_nf
 
-scoped[ComplexOrder] attribute [instance] RCLike.toStrictOrderedCommRing
+scoped[ComplexOrder] attribute [instance] RCLike.toIsStrictOrderedRing
 
 theorem toOrderedSMul : OrderedSMul ℝ K :=
   OrderedSMul.mk' fun a b r hab hr => by
@@ -885,6 +945,8 @@ lemma instPosMulReflectLE : PosMulReflectLE K where
   elim a b c h := by
     obtain ⟨a', ha1, ha2⟩ := pos_iff_exists_ofReal.mp a.2
     rw [← sub_nonneg]
+    #adaptation_note /-- 2025-03-29 need beta reduce for lean4#7717 -/
+    beta_reduce at h
     rw [← ha2, ← sub_nonneg, ← mul_sub, le_iff_lt_or_eq] at h
     rcases h with h | h
     · rw [ofReal_mul_pos_iff] at h
@@ -1057,6 +1119,23 @@ theorem continuous_ofReal : Continuous (ofReal : ℝ → K) :=
 theorem continuous_normSq : Continuous (normSq : K → ℝ) :=
   (continuous_re.mul continuous_re).add (continuous_im.mul continuous_im)
 
+theorem lipschitzWith_ofReal : LipschitzWith 1 (ofReal : ℝ → K) :=
+  ofRealLI.lipschitz
+
+lemma lipschitzWith_re : LipschitzWith 1 (re (K := K)) := by
+  intro x y
+  simp only [ENNReal.coe_one, one_mul, edist_eq_enorm_sub]
+  calc ‖re x - re y‖ₑ
+  _ = ‖re (x - y)‖ₑ := by rw [ AddMonoidHom.map_sub re x y]
+  _ ≤ ‖x - y‖ₑ := by rw [enorm_le_iff_norm_le]; exact norm_re_le_norm (x - y)
+
+lemma lipschitzWith_im : LipschitzWith 1 (im (K := K)) := by
+  intro x y
+  simp only [ENNReal.coe_one, one_mul, edist_eq_enorm_sub]
+  calc ‖im x - im y‖ₑ
+  _ = ‖im (x - y)‖ₑ := by rw [ AddMonoidHom.map_sub im x y]
+  _ ≤ ‖x - y‖ₑ := by rw [enorm_le_iff_norm_le]; exact norm_im_le_norm (x - y)
+
 end LinearMaps
 
 /-!
@@ -1089,6 +1168,19 @@ noncomputable def realLinearIsometryEquiv (h : I = (0 : K)) : K ≃ₗᵢ[ℝ] �
   __ := realRingEquiv h
 
 end CaseSpecific
+
+lemma norm_le_im_iff_eq_I_mul_norm {z : K} :
+    ‖z‖ ≤ im z ↔ z = I * ‖z‖ := by
+  obtain (h | h) := I_eq_zero_or_im_I_eq_one (K := K)
+  · simp [h, im_eq_zero]
+  · have : (I : K) ≠ 0 := fun _ ↦ by simp_all
+    rw [← mul_right_inj' (neg_ne_zero.mpr this)]
+    convert norm_le_re_iff_eq_norm (z := -I * z) using 2
+    all_goals simp [neg_mul, ← mul_assoc, I_mul_I_of_nonzero this, norm_I_of_ne_zero this]
+
+lemma im_le_neg_norm_iff_eq_neg_I_mul_norm {z : K} :
+    im z ≤ -‖z‖ ↔ z = -(I * ‖z‖) := by
+  simpa [neg_eq_iff_eq_neg, le_neg] using norm_le_im_iff_eq_I_mul_norm (z := -z)
 
 end RCLike
 

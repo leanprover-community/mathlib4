@@ -70,7 +70,11 @@ def funPropTac : Tactic
         { config := cfg,
           disch := disch
           constToUnfold := .ofArray namesToUnfold _}
-      let (r?, s) ← funProp goalType ctx |>.run {}
+      let env ← getEnv
+      let s := {
+        morTheorems        := morTheoremsExt.getState env
+        transitionTheorems := transitionTheoremsExt.getState env }
+      let (r?, s) ← funProp goalType ctx |>.run s
       if let .some r := r? then
         goal.assign r.proof
       else
@@ -116,7 +120,7 @@ elab "#print_fun_prop_theorems " funIdent:ident funProp:(ident)? : command => do
   let funProp? ← funProp.mapM (fun stx => do
     ensureNonAmbiguous stx (← resolveGlobalConst stx))
 
-  let theorems := (functionTheoremsExt.getState (← getEnv)).theorems.findD funName {}
+  let theorems := (functionTheoremsExt.getState (← getEnv)).theorems.getD funName {}
 
   let logTheorems (funProp : Name) (thms : Array FunctionTheorem) : Command.CommandElabM Unit := do
     let mut msg : MessageData := ""
@@ -133,7 +137,7 @@ elab "#print_fun_prop_theorems " funIdent:ident funProp:(ident)? : command => do
     for (funProp,thms) in theorems do
       logTheorems funProp thms
   | some funProp =>
-    logTheorems funProp (theorems.findD funProp #[])
+    logTheorems funProp (theorems.getD funProp #[])
 
 
 end Meta.FunProp

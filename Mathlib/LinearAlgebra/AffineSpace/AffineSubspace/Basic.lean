@@ -291,8 +291,7 @@ theorem vectorSpan_range_eq_span_range_vsub_left_ne (p : ι → P) (i₀ : ι) :
       Submodule.span k (Set.range fun i : { x // x ≠ i₀ } => p i₀ -ᵥ p i) := by
   rw [← Set.image_univ, vectorSpan_image_eq_span_vsub_set_left_ne k _ (Set.mem_univ i₀)]
   congr with v
-  simp only [Set.mem_range, Set.mem_image, Set.mem_diff, Set.mem_singleton_iff, Subtype.exists,
-    Subtype.coe_mk]
+  simp only [Set.mem_range, Set.mem_image, Set.mem_diff, Set.mem_singleton_iff, Subtype.exists]
   constructor
   · rintro ⟨x, ⟨i₁, ⟨⟨_, hi₁⟩, rfl⟩⟩, hv⟩
     exact ⟨i₁, hi₁, hv⟩
@@ -305,8 +304,7 @@ theorem vectorSpan_range_eq_span_range_vsub_right_ne (p : ι → P) (i₀ : ι) 
       Submodule.span k (Set.range fun i : { x // x ≠ i₀ } => p i -ᵥ p i₀) := by
   rw [← Set.image_univ, vectorSpan_image_eq_span_vsub_set_right_ne k _ (Set.mem_univ i₀)]
   congr with v
-  simp only [Set.mem_range, Set.mem_image, Set.mem_diff, Set.mem_singleton_iff, Subtype.exists,
-    Subtype.coe_mk]
+  simp only [Set.mem_range, Set.mem_image, Set.mem_diff, Set.mem_singleton_iff, Subtype.exists]
   constructor
   · rintro ⟨x, ⟨i₁, ⟨⟨_, hi₁⟩, rfl⟩⟩, hv⟩
     exact ⟨i₁, hi₁, hv⟩
@@ -441,9 +439,16 @@ theorem direction_sup {s₁ s₂ : AffineSubspace k P} {p₁ p₂ : P} (hp₁ : 
       sInf_le_sInf fun p hp =>
         Set.Subset.trans
           (Set.singleton_subset_iff.2
-            (vsub_mem_vsub (mem_spanPoints k p₂ _ (Set.mem_union_right _ hp₂))
-              (mem_spanPoints k p₁ _ (Set.mem_union_left _ hp₁))))
+            (vsub_mem_vsub (mem_affineSpan k (Set.mem_union_right _ hp₂))
+              (mem_affineSpan k (Set.mem_union_left _ hp₁))))
           hp
+
+/-- The direction of the sup of two affine subspaces with a common point is the sup of the two
+directions. -/
+lemma direction_sup_eq_sup_direction {s₁ s₂ : AffineSubspace k P} {p : P} (hp₁ : p ∈ s₁)
+    (hp₂ : p ∈ s₂) : (s₁ ⊔ s₂).direction = s₁.direction ⊔ s₂.direction := by
+  rw [direction_sup hp₁ hp₂]
+  simp
 
 /-- The direction of the span of the result of adding a point to a nonempty affine subspace is the
 sup of the direction of that subspace and of any one difference between that point and a point in
@@ -477,6 +482,13 @@ theorem mem_affineSpan_insert_iff {s : AffineSubspace k P} {p₁ : P} (hp₁ : p
       vsub_mem_direction hp₃ hp₁
     rw [vadd_vsub_assoc]
 
+variable (k) in
+/-- The vector span of a union of sets with a common point is the sup of their vector spans. -/
+lemma vectorSpan_union_of_mem_of_mem {s₁ s₂ : Set P} {p : P} (hp₁ : p ∈ s₁) (hp₂ : p ∈ s₂) :
+    vectorSpan k (s₁ ∪ s₂) = vectorSpan k s₁ ⊔ vectorSpan k s₂ := by
+  simp_rw [← direction_affineSpan, span_union,
+    direction_sup_eq_sup_direction (mem_affineSpan k hp₁) (mem_affineSpan k hp₂)]
+
 end AffineSubspace
 
 section MapComap
@@ -493,8 +505,7 @@ variable (f : P₁ →ᵃ[k] P₂)
 @[simp]
 theorem AffineMap.vectorSpan_image_eq_submodule_map {s : Set P₁} :
     Submodule.map f.linear (vectorSpan k s) = vectorSpan k (f '' s) := by
-  rw [vectorSpan_def, vectorSpan_def, f.image_vsub_image, Submodule.span_image]
-  -- Porting note: Lean unfolds things too far with `simp` here.
+  simp [vectorSpan_def, f.image_vsub_image]
 
 namespace AffineSubspace
 
@@ -521,10 +532,7 @@ theorem mem_map {f : P₁ →ᵃ[k] P₂} {x : P₂} {s : AffineSubspace k P₁}
 theorem mem_map_of_mem {x : P₁} {s : AffineSubspace k P₁} (h : x ∈ s) : f x ∈ s.map f :=
   Set.mem_image_of_mem _ h
 
--- The simpNF linter says that the LHS can be simplified via `AffineSubspace.mem_map`.
--- However this is a higher priority lemma.
--- https://github.com/leanprover/std4/issues/207
-@[simp 1100, nolint simpNF]
+@[simp 1100]
 theorem mem_map_iff_mem_of_injective {f : P₁ →ᵃ[k] P₂} {x : P₁} {s : AffineSubspace k P₁}
     (hf : Function.Injective f) : f x ∈ s.map f ↔ x ∈ s :=
   hf.mem_set_image
@@ -550,22 +558,22 @@ theorem map_map (s : AffineSubspace k P₁) (f : P₁ →ᵃ[k] P₂) (g : P₂ 
 @[simp]
 theorem map_direction (s : AffineSubspace k P₁) :
     (s.map f).direction = s.direction.map f.linear := by
-  rw [direction_eq_vectorSpan, direction_eq_vectorSpan, coe_map,
-    AffineMap.vectorSpan_image_eq_submodule_map]
-  -- Porting note: again, Lean unfolds too aggressively with `simp`
+  simp [direction_eq_vectorSpan, AffineMap.vectorSpan_image_eq_submodule_map]
 
 theorem map_span (s : Set P₁) : (affineSpan k s).map f = affineSpan k (f '' s) := by
   rcases s.eq_empty_or_nonempty with (rfl | ⟨p, hp⟩)
-  · rw [image_empty, span_empty, span_empty, map_bot]
-    -- Porting note: I don't know exactly why this `simp` was broken.
+  · simp
   apply ext_of_direction_eq
   · simp [direction_affineSpan]
-  · exact
-      ⟨f p, mem_image_of_mem f (subset_affineSpan k _ hp),
-        subset_affineSpan k _ (mem_image_of_mem f hp)⟩
+  · exact ⟨f p, mem_image_of_mem f (subset_affineSpan k _ hp),
+          subset_affineSpan k _ (mem_image_of_mem f hp)⟩
+
+@[gcongr]
+theorem map_mono {s₁ s₂ : AffineSubspace k P₁} (h : s₁ ≤ s₂) : s₁.map f ≤ s₂.map f :=
+  Set.image_mono h
 
 section inclusion
-variable {S₁ S₂ : AffineSubspace k P₁} [Nonempty S₁] [Nonempty S₂]
+variable {S₁ S₂ : AffineSubspace k P₁} [Nonempty S₁]
 
 attribute [local instance] AffineSubspace.toAddTorsor
 
@@ -573,10 +581,13 @@ attribute [local instance] AffineSubspace.toAddTorsor
 
 This is the affine version of `Submodule.inclusion`. -/
 @[simps linear]
-def inclusion (h : S₁ ≤ S₂) : S₁ →ᵃ[k] S₂ where
-  toFun := Set.inclusion h
-  linear := Submodule.inclusion <| AffineSubspace.direction_le h
-  map_vadd' := fun ⟨_,_⟩ ⟨_,_⟩ => rfl
+def inclusion (h : S₁ ≤ S₂) :
+    letI := Nonempty.map (Set.inclusion h) ‹_›
+    S₁ →ᵃ[k] S₂ :=
+  letI := Nonempty.map (Set.inclusion h) ‹_›
+  { toFun := Set.inclusion h
+    linear := Submodule.inclusion <| AffineSubspace.direction_le h
+    map_vadd' := fun ⟨_,_⟩ ⟨_,_⟩ => rfl }
 
 @[simp]
 theorem coe_inclusion_apply (h : S₁ ≤ S₂) (x : S₁) : (inclusion h x : P₁) = x :=
@@ -614,7 +625,7 @@ attribute [local instance] AffineSubspace.toAddTorsor
 This is the affine version of `LinearEquiv.ofEq`. -/
 @[simps linear]
 def ofEq (h : S₁ = S₂) : S₁ ≃ᵃ[k] S₂ where
-  toEquiv := Equiv.Set.ofEq <| congr_arg _ h
+  toEquiv := Equiv.setCongr <| congr_arg _ h
   linear := .ofEq _ _ <| congr_arg _ h
   map_vadd' := fun ⟨_,_⟩ ⟨_,_⟩ => rfl
 
@@ -807,7 +818,6 @@ theorem Parallel.vectorSpan_eq {s₁ s₂ : Set P} (h : affineSpan k s₁ ∥ af
 theorem affineSpan_parallel_iff_vectorSpan_eq_and_eq_empty_iff_eq_empty {s₁ s₂ : Set P} :
     affineSpan k s₁ ∥ affineSpan k s₂ ↔ vectorSpan k s₁ = vectorSpan k s₂ ∧ (s₁ = ∅ ↔ s₂ = ∅) := by
   repeat rw [← direction_affineSpan, ← affineSpan_eq_bot k]
-  -- Porting note: more issues with `simp`
   exact parallel_iff_direction_eq_and_eq_bot_iff_eq_bot
 
 theorem affineSpan_pair_parallel_iff_vectorSpan_eq {p₁ p₂ p₃ p₄ : P} :

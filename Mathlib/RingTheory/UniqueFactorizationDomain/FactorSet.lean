@@ -88,7 +88,7 @@ theorem prod_mono : ∀ {a b : FactorSet α}, a ≤ b → a.prod ≤ b.prod
 theorem FactorSet.prod_eq_zero_iff [Nontrivial α] (p : FactorSet α) : p.prod = 0 ↔ p = ⊤ := by
   unfold FactorSet at p
   induction p  -- TODO: `induction_eliminator` doesn't work with `abbrev`
-  · simp only [eq_self_iff_true, Associates.prod_top]
+  · simp only [Associates.prod_top]
   · rw [prod_coe, Multiset.prod_eq_zero_iff, Multiset.mem_map, eq_false WithTop.coe_ne_top,
       iff_false, not_exists]
     exact fun a => not_and_of_not_right _ a.prop.ne_zero
@@ -154,13 +154,16 @@ theorem mem_factorSet_some {p : Associates α} {hp : Irreducible p}
     p ∈ (l : FactorSet α) ↔ Subtype.mk p hp ∈ l := by
   dsimp only [Membership.mem]; dsimp only [FactorSetMem]; split_ifs; rfl
 
-theorem reducible_not_mem_factorSet {p : Associates α} (hp : ¬Irreducible p) (s : FactorSet α) :
-    ¬p ∈ s := fun h ↦ by
+theorem reducible_notMem_factorSet {p : Associates α} (hp : ¬Irreducible p) (s : FactorSet α) :
+    p ∉ s := fun h ↦ by
   rwa [← factorSetMem_eq_mem, FactorSetMem, dif_neg hp] at h
+
+@[deprecated (since := "2025-05-23")]
+alias reducible_not_mem_factorSet := reducible_notMem_factorSet
 
 theorem irreducible_of_mem_factorSet {p : Associates α} {s : FactorSet α} (h : p ∈ s) :
     Irreducible p :=
-  by_contra fun hp ↦ reducible_not_mem_factorSet hp s h
+  by_contra fun hp ↦ reducible_notMem_factorSet hp s h
 
 end Mem
 

@@ -30,16 +30,10 @@ open Real Filter
 
 /-- The function `x ^ y` tends to `+∞` at `+∞` for any positive real `y`. -/
 theorem tendsto_rpow_atTop {y : ℝ} (hy : 0 < y) : Tendsto (fun x : ℝ => x ^ y) atTop atTop := by
-  rw [tendsto_atTop_atTop]
-  intro b
-  use max b 0 ^ (1 / y)
-  intro x hx
-  exact
-    le_of_max_le_left
-      (by
-        convert rpow_le_rpow (rpow_nonneg (le_max_right b 0) (1 / y)) hx (le_of_lt hy)
-          using 1
-        rw [← rpow_mul (le_max_right b 0), (eq_div_iff (ne_of_gt hy)).mp rfl, Real.rpow_one])
+  rw [(atTop_basis' 0).tendsto_right_iff]
+  intro b hb
+  filter_upwards [eventually_ge_atTop 0, eventually_ge_atTop (b ^ (1 / y))] with x hx₀ hx
+  simpa (disch := positivity) [Real.rpow_inv_le_iff_of_pos] using hx
 
 /-- The function `x ^ (-y)` tends to `0` at `+∞` for any positive real `y`. -/
 theorem tendsto_rpow_neg_atTop {y : ℝ} (hy : 0 < y) : Tendsto (fun x : ℝ => x ^ (-y)) atTop (𝓝 0) :=
@@ -161,7 +155,6 @@ theorem ENNReal.tendsto_rpow_at_top {y : ℝ} (hy : 0 < y) :
   by_cases ha' : a = ⊤
   · simp [ha', hy]
   lift a to ℝ≥0 using ha'
-  -- Porting note: reduced defeq abuse
   simp only [Set.mem_Ioi, coe_lt_coe] at ha hc
   rw [← ENNReal.coe_rpow_of_nonneg _ hy.le]
   exact mod_cast hc a ha
@@ -199,7 +192,7 @@ theorem isBigO_cpow_rpow (hl : IsBoundedUnder (· ≤ ·) l fun x => |(g x).im|)
     _ =Θ[l] (show α → ℝ from fun x => ‖f x‖ ^ (g x).re / (1 : ℝ)) :=
       ((isTheta_refl _ _).div (isTheta_exp_arg_mul_im hl))
     _ =ᶠ[l] (show α → ℝ from fun x => ‖f x‖ ^ (g x).re) := by
-      simp only [ofReal_one, div_one, EventuallyEq.rfl]
+      simp only [div_one, EventuallyEq.rfl]
 
 theorem isTheta_cpow_rpow (hl_im : IsBoundedUnder (· ≤ ·) l fun x => |(g x).im|)
     (hl : ∀ᶠ x in l, f x = 0 → re (g x) = 0 → g x = 0) :
@@ -211,7 +204,7 @@ theorem isTheta_cpow_rpow (hl_im : IsBoundedUnder (· ≤ ·) l fun x => |(g x).
     _ =Θ[l] fun x => ‖f x‖ ^ (g x).re / (1 : ℝ) :=
       (isTheta_refl _ _).div (isTheta_exp_arg_mul_im hl_im)
     _ =ᶠ[l] (fun x => ‖f x‖ ^ (g x).re) := by
-      simp only [ofReal_one, div_one, EventuallyEq.rfl]
+      simp only [div_one, EventuallyEq.rfl]
 
 theorem isTheta_cpow_const_rpow {b : ℂ} (hl : b.re = 0 → b ≠ 0 → ∀ᶠ x in l, f x ≠ 0) :
     (fun x => f x ^ b) =Θ[l] fun x => ‖f x‖ ^ b.re :=
@@ -253,11 +246,11 @@ theorem IsLittleO.rpow (hr : 0 < r) (hg : 0 ≤ᶠ[l] g) (h : f =o[l] g) :
   refine (h.forall_isBigOWith ?_).rpow ?_ ?_ hg <;> positivity
 
 protected lemma IsBigO.sqrt (hfg : f =O[l] g) (hg : 0 ≤ᶠ[l] g) :
-    (Real.sqrt <| f ·) =O[l] (Real.sqrt <| g ·) := by
+    (fun x ↦ √(f x)) =O[l] (fun x ↦ √(g x)) := by
   simpa [Real.sqrt_eq_rpow] using hfg.rpow one_half_pos.le hg
 
 protected lemma IsLittleO.sqrt (hfg : f =o[l] g) (hg : 0 ≤ᶠ[l] g) :
-    (Real.sqrt <| f ·) =o[l] (Real.sqrt <| g ·) := by
+    (fun x ↦ √(f x)) =o[l] (fun x ↦ √(g x)) := by
   simpa [Real.sqrt_eq_rpow] using hfg.rpow one_half_pos hg
 
 protected lemma IsTheta.sqrt (hfg : f =Θ[l] g) (hf : 0 ≤ᶠ[l] f) (hg : 0 ≤ᶠ[l] g) :
@@ -333,7 +326,7 @@ theorem isLittleO_exp_neg_mul_rpow_atTop {a : ℝ} (ha : 0 < a) (b : ℝ) :
 
 theorem isLittleO_log_rpow_atTop {r : ℝ} (hr : 0 < r) : log =o[atTop] fun x => x ^ r :=
   calc
-    log =O[atTop] fun x => r * log x := isBigO_self_const_mul _ hr.ne' _ _
+    log =O[atTop] fun x => r * log x := isBigO_self_const_mul hr.ne' _ _
     _ =ᶠ[atTop] fun x => log (x ^ r) :=
       ((eventually_gt_atTop 0).mono fun _ hx => (log_rpow hx _).symm)
     _ =o[atTop] fun x => x ^ r := isLittleO_log_id_atTop.comp_tendsto (tendsto_rpow_atTop hr)
@@ -400,7 +393,7 @@ lemma tendsto_log_mul_self_nhdsLT_zero : Filter.Tendsto (fun x ↦ log x * x) (�
     simp only [abs_of_nonpos hx.le, mul_neg, neg_neg]
   refine tendsto_nhdsWithin_congr h_eq ?_
   nth_rewrite 3 [← neg_zero]
-  refine (h.comp (tendsto_abs_nhdsWithin_zero.mono_left ?_)).neg
+  refine (h.comp (tendsto_abs_nhdsNE_zero.mono_left ?_)).neg
   refine nhdsWithin_mono 0 (fun x hx ↦ ?_)
   simp only [Set.mem_Iio] at hx
   simp only [Set.mem_compl_iff, Set.mem_singleton_iff, hx.ne, not_false_eq_true]

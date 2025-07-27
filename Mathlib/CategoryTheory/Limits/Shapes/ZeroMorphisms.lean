@@ -337,7 +337,7 @@ theorem zero_of_target_iso_zero {X Y : C} (f : X ⟶ Y) (i : Y ≅ 0) : f = 0 :=
 theorem zero_of_from_zero {X : C} (f : 0 ⟶ X) : f = 0 := by ext
 
 theorem zero_of_source_iso_zero {X Y : C} (f : X ⟶ Y) (i : X ≅ 0) : f = 0 := by
-  have h : f = i.hom ≫ 𝟙 0 ≫ i.inv ≫ f := by simp only [Iso.hom_inv_id_assoc, id_comp, comp_id]
+  have h : f = i.hom ≫ 𝟙 0 ≫ i.inv ≫ f := by simp only [Iso.hom_inv_id_assoc, id_comp]
   simpa using h
 
 theorem zero_of_source_iso_zero' {X Y : C} (f : X ⟶ Y) (i : IsIsomorphic X 0) : f = 0 :=
@@ -423,7 +423,7 @@ def isIsoZeroEquiv (X Y : C) : IsIso (0 : X ⟶ Y) ≃ 𝟙 X = 0 ∧ 𝟙 Y = 0
     intro i
     rw [← IsIso.hom_inv_id (0 : X ⟶ Y)]
     rw [← IsIso.inv_hom_id (0 : X ⟶ Y)]
-    simp only [eq_self_iff_true,comp_zero,and_self,zero_comp]
+    simp only [comp_zero,and_self,zero_comp]
   invFun h := ⟨⟨(0 : Y ⟶ X), by aesop_cat⟩⟩
   left_inv := by aesop_cat
   right_inv := by aesop_cat
@@ -628,6 +628,7 @@ def Pi.ι (b : β) : f b ⟶ ∏ᶜ f :=
 lemma Pi.ι_π_eq_id (b : β) : Pi.ι f b ≫ Pi.π f b = 𝟙 _ := by
   simp [Pi.ι]
 
+@[reassoc]
 lemma Pi.ι_π_of_ne {b c : β} (h : b ≠ c) : Pi.ι f b ≫ Pi.π f c = 0 := by
   simp [Pi.ι, Function.update_of_ne h.symm]
 
@@ -655,6 +656,7 @@ def Sigma.π (b : β) : ∐ f ⟶ f b :=
 lemma Sigma.ι_π_eq_id (b : β) : Sigma.ι f b ≫ Sigma.π f b = 𝟙 _ := by
   simp [Sigma.π]
 
+@[reassoc]
 lemma Sigma.ι_π_of_ne {b c : β} (h : b ≠ c) : Sigma.ι f b ≫ Sigma.π f c = 0 := by
   simp [Sigma.π, Function.update_of_ne h]
 

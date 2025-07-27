@@ -3,8 +3,10 @@ Copyright (c) 2019 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Module.Submodule.Equiv
 import Mathlib.Algebra.Module.Equiv.Basic
+import Mathlib.Algebra.Module.Rat
 import Mathlib.Data.Bracket
 import Mathlib.Tactic.Abel
 
@@ -28,10 +30,10 @@ modules, morphisms and equivalences, as well as various lemmas to make these def
 ## Notation
 
 Working over a fixed commutative ring `R`, we introduce the notations:
- * `L →ₗ⁅R⁆ L'` for a morphism of Lie algebras,
- * `L ≃ₗ⁅R⁆ L'` for an equivalence of Lie algebras,
- * `M →ₗ⁅R,L⁆ N` for a morphism of Lie algebra modules `M`, `N` over a Lie algebra `L`,
- * `M ≃ₗ⁅R,L⁆ N` for an equivalence of Lie algebra modules `M`, `N` over a Lie algebra `L`.
+* `L →ₗ⁅R⁆ L'` for a morphism of Lie algebras,
+* `L ≃ₗ⁅R⁆ L'` for an equivalence of Lie algebras,
+* `M →ₗ⁅R,L⁆ N` for a morphism of Lie algebra modules `M`, `N` over a Lie algebra `L`,
+* `M ≃ₗ⁅R,L⁆ N` for an equivalence of Lie algebra modules `M`, `N` over a Lie algebra `L`.
 
 ## Implementation notes
 
@@ -65,7 +67,7 @@ class LieRing (L : Type v) extends AddCommGroup L, Bracket L L where
 
 /-- A Lie algebra is a module with compatible product, known as the bracket, satisfying the Jacobi
 identity. Forgetting the scalar multiplication, every Lie algebra is a Lie ring. -/
-class LieAlgebra (R : Type u) (L : Type v) [CommRing R] [LieRing L] extends Module R L where
+@[ext] class LieAlgebra (R : Type u) (L : Type v) [CommRing R] [LieRing L] extends Module R L where
   /-- A Lie algebra bracket is compatible with scalar multiplication in its second argument.
 
   The compatibility in the first argument is not a class property, but follows since every
@@ -121,6 +123,14 @@ lemma lie_swap_lie [Bracket L₂ L₁] [AddCommGroup M] [IsLieTower L₁ L₂ M]
 end IsLieTower
 
 section BasicProperties
+
+theorem LieAlgebra.toModule_injective (L : Type*) [LieRing L] :
+    Function.Injective (@LieAlgebra.toModule _ _ _ _ : LieAlgebra ℚ L → Module ℚ L) := by
+  rintro ⟨h₁⟩ ⟨h₂⟩ heq
+  congr
+
+instance (L : Type*) [LieRing L] : Subsingleton (LieAlgebra ℚ L) :=
+  LieAlgebra.toModule_injective L |>.subsingleton
 
 variable {R : Type u} {L : Type v} {M : Type w} {N : Type w₁}
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
@@ -274,6 +284,30 @@ instance Module.Dual.instLieRingModule : LieRingModule L (M →ₗ[R] R) where
 instance Module.Dual.instLieModule : LieModule R L (M →ₗ[R] R) where
   smul_lie := fun t x m ↦ by ext n; simp
   lie_smul := fun t x m ↦ by ext n; simp
+
+variable (L) in
+/-- It is sometimes useful to regard a `LieRing` as a `NonUnitalNonAssocRing`. -/
+def LieRing.toNonUnitalNonAssocRing : NonUnitalNonAssocRing L :=
+  { mul := Bracket.bracket
+    left_distrib := lie_add
+    right_distrib := add_lie
+    zero_mul := zero_lie
+    mul_zero := lie_zero }
+
+variable {ι κ : Type*}
+
+theorem sum_lie (s : Finset ι) (f : ι → L) (a : L) : ⁅∑ i ∈ s, f i, a⁆ = ∑ i ∈ s, ⁅f i, a⁆ :=
+  let _i := LieRing.toNonUnitalNonAssocRing L
+  s.sum_mul f a
+
+theorem lie_sum (s : Finset ι) (f : ι → L) (a : L) : ⁅a, ∑ i ∈ s, f i⁆ = ∑ i ∈ s, ⁅a, f i⁆ :=
+  let _i := LieRing.toNonUnitalNonAssocRing L
+  s.mul_sum f a
+
+theorem sum_lie_sum {κ : Type*} (s : Finset ι) (t : Finset κ) (f : ι → L) (g : κ → L) :
+    ⁅(∑ i ∈ s, f i), ∑ j ∈ t, g j⁆ = ∑ i ∈ s, ∑ j ∈ t, ⁅f i, g j⁆ :=
+  let _i := LieRing.toNonUnitalNonAssocRing L
+  s.sum_mul_sum t f g
 
 end BasicProperties
 
@@ -480,10 +514,10 @@ structure LieEquiv (R : Type u) (L : Type v) (L' : Type w) [CommRing R] [LieRing
   invFun : L' → L
   /-- The inverse function of an equivalence of Lie algebras is a left inverse of the underlying
   function. -/
-  left_inv : Function.LeftInverse invFun toLieHom.toFun
+  left_inv : Function.LeftInverse invFun toLieHom.toFun := by intro; first | rfl | ext <;> rfl
   /-- The inverse function of an equivalence of Lie algebras is a right inverse of the underlying
   function. -/
-  right_inv : Function.RightInverse invFun toLieHom.toFun
+  right_inv : Function.RightInverse invFun toLieHom.toFun := by intro; first | rfl | ext <;> rfl
 
 @[inherit_doc]
 notation:50 L " ≃ₗ⁅" R "⁆ " L' => LieEquiv R L L'
@@ -520,6 +554,8 @@ theorem coe_toLieHom (e : L₁ ≃ₗ⁅R⁆ L₂) : ⇑(e : L₁ →ₗ⁅R⁆ 
 theorem coe_toLinearEquiv (e : L₁ ≃ₗ⁅R⁆ L₂) : ⇑(e : L₁ ≃ₗ[R] L₂) = e :=
   rfl
 
+@[simp] theorem coe_coe (e : L₁ ≃ₗ⁅R⁆ L₂) : ⇑e.toLieHom = e := rfl
+
 @[deprecated (since := "2024-12-30")] alias coe_to_linearEquiv := coe_toLinearEquiv
 
 @[simp]
@@ -535,10 +571,7 @@ theorem toLinearEquiv_mk (f : L₁ →ₗ⁅R⁆ L₂) (g h₁ h₂) :
 
 theorem toLinearEquiv_injective : Injective ((↑) : (L₁ ≃ₗ⁅R⁆ L₂) → L₁ ≃ₗ[R] L₂) := by
   rintro ⟨⟨⟨⟨f, -⟩, -⟩, -⟩, f_inv⟩ ⟨⟨⟨⟨g, -⟩, -⟩, -⟩, g_inv⟩
-  intro h
-  simp only [toLinearEquiv_mk, LinearEquiv.mk.injEq, LinearMap.mk.injEq, AddHom.mk.injEq] at h
-  congr
-  exacts [h.1, h.2]
+  simp
 
 @[deprecated (since := "2024-12-30")] alias coe_linearEquiv_injective := toLinearEquiv_injective
 
@@ -933,10 +966,7 @@ theorem coe_toLinearEquiv (e : M ≃ₗ⁅R,L⁆ N) : ((e : M ≃ₗ[R] N) : M �
 
 theorem toEquiv_injective : Function.Injective (toEquiv : (M ≃ₗ⁅R,L⁆ N) → M ≃ N) := by
   rintro ⟨⟨⟨⟨f, -⟩, -⟩, -⟩, f_inv⟩ ⟨⟨⟨⟨g, -⟩, -⟩, -⟩, g_inv⟩
-  intro h
-  simp only [toEquiv_mk, LieModuleHom.coe_mk, LinearMap.coe_mk, AddHom.coe_mk, Equiv.mk.injEq] at h
-  congr
-  exacts [h.1, h.2]
+  simp
 
 @[ext]
 theorem ext (e₁ e₂ : M ≃ₗ⁅R,L⁆ N) (h : ∀ m, e₁ m = e₂ m) : e₁ = e₂ :=
