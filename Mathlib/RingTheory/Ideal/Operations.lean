@@ -15,7 +15,7 @@ import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 # More operations on modules and ideals
 -/
 
-assert_not_exists Basis -- See `RingTheory.Ideal.Basis`
+assert_not_exists Module.Basis -- See `RingTheory.Ideal.Basis`
   Submodule.hasQuotient -- See `RingTheory.Ideal.Quotient.Operations`
 
 universe u v w x
@@ -48,7 +48,7 @@ lemma span_singleton_toAddSubgroup_eq_zmultiples (a : ℤ) :
   simp [Ideal.mem_span_singleton', AddSubgroup.mem_zmultiples_iff]
 
 @[simp] lemma _root_.Ideal.span_singleton_toAddSubgroup_eq_zmultiples (a : ℤ) :
-   (Ideal.span {a}).toAddSubgroup = AddSubgroup.zmultiples a :=
+    (Ideal.span {a}).toAddSubgroup = AddSubgroup.zmultiples a :=
   Submodule.span_singleton_toAddSubgroup_eq_zmultiples _
 
 variable {R : Type u} {M : Type v} {M' F G : Type*}
