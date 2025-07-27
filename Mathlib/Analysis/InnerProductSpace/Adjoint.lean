@@ -311,6 +311,7 @@ theorem conj_starProjection {T : E →L[𝕜] E} (hT : IsSelfAdjoint T)
 end IsSelfAdjoint
 
 namespace ContinuousLinearMap
+
 variable {T : E →L[𝕜] E} [CompleteSpace E]
 
 /-- An operator `T` is normal iff `‖T v‖ = ‖(adjoint T) v‖` for all `v`. -/
