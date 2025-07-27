@@ -32,7 +32,7 @@ object, when `C` has finite products. We call this `cechNerveTerminalFrom`. When
 
 open CategoryTheory Limits
 
-open Simplicial
+open scoped Simplicial
 
 noncomputable section
 
