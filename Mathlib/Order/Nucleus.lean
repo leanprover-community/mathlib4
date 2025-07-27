@@ -94,6 +94,9 @@ instance : PartialOrder (Nucleus X) := .lift (⇑) DFunLike.coe_injective
     mk toInfHom₁ le_apply₁ idempotent₁ ≤ mk toInfHom₂ le_apply₂ idempotent₂ ↔
       toInfHom₁ ≤ toInfHom₂ := .rfl
 
+@[gcongr]
+alias ⟨_, _root_.GCongr.Nucleus.mk_le_mk⟩ := mk_le_mk
+
 instance : Min (Nucleus X) where
   min m n := {
     toFun := m ⊓ n
@@ -122,7 +125,7 @@ instance instBot : OrderBot (Nucleus X) where
 
 variable [OrderTop X]
 
-/-- A nucleus preserves ⊤. -/
+/-- A nucleus preserves `⊤`. -/
 instance : TopHomClass (Nucleus X) X X where
   map_top _ := eq_top_iff.mpr le_apply
 

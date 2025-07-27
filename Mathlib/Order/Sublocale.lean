@@ -60,6 +60,9 @@ instance instSetLike : SetLike (Sublocale X) X where
     mk carrier₁ sInf_mem'₁ himp_mem'₁ ≤ mk carrier₂ sInf_mem'₂ himp_mem'₂ ↔ carrier₁ ⊆ carrier₂ :=
   .rfl
 
+@[gcongr]
+alias ⟨_, _root_.GCongr.Sublocale.mk_le_mk⟩ := mk_le_mk
+
 initialize_simps_projections Sublocale (carrier → coe, as_prefix coe)
 
 @[ext] lemma ext (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T := SetLike.ext h
@@ -149,7 +152,7 @@ def restrict (S : Sublocale X) : FrameHom X S where
     simp [restrictAux, sInf]
 
 /-- The restriction corresponding to a sublocale forms a Galois insertion with the forgetful map
-from the sublcoale to the original locale. -/
+from the sublocale to the original locale. -/
 def giRestrict (S : Sublocale X) : GaloisInsertion S.restrict Subtype.val := S.giAux
 
 @[simp] lemma restrict_of_mem (ha : a ∈ S) : S.restrict a = ⟨a, ha⟩ := S.giRestrict.l_u_eq ⟨a, ha⟩
@@ -193,6 +196,9 @@ lemma mem_toSublocale {n : Nucleus X} {x : X} : x ∈ n.toSublocale ↔ ∃ y, n
 
 @[simp] lemma toSublocale_le_toSublocale {m n : Nucleus X} :
     m.toSublocale ≤ n.toSublocale ↔ n ≤ m := by simp [← SetLike.coe_subset_coe]
+
+@[gcongr]
+alias ⟨_, _root_.GCongr.Nucleus.toSublocale_le_toSublocale⟩ := toSublocale_le_toSublocale
 
 @[simp] lemma restrict_toSublocale (n : Nucleus X) (x : X) :
     n.toSublocale.restrict x = ⟨n x, x, rfl⟩ := by
