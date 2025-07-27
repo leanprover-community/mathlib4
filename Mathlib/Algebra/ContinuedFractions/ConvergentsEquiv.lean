@@ -181,7 +181,7 @@ def squashGCF (g : GenContFract K) : ℕ → GenContFract K
   | 0 =>
     match g.s.get? 0 with
     | none => g
-    | some gp => ⟨g.h + gp.a / gp.b, g.s.tail⟩
+    | some gp => ⟨g.h + gp.a / gp.b, g.s⟩
   | n + 1 => ⟨g.h, squashSeq g.s n⟩
 
 /-! Again, we derive some simple lemmas that are not really of interest. This time for the
