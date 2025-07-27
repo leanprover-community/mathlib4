@@ -97,7 +97,7 @@ surjective and the second is fully faithful.
 def toEssImageCompι (F : C ⥤ D) : F.toEssImage ⋙ F.essImage.ι ≅ F :=
   ObjectProperty.liftCompιIso _ _ _
 
-@[deprecated (since := "2025-03-04")] alias toEssImageCompEssentialImageInclusion :=
+@[deprecated (since := "2025-03-04")] alias toEssImageCompEssentialImageInclusio :=
   toEssImageCompι
 
 /-- A functor `F : C ⥤ D` is essentially surjective if every object of `D` is in the essential
