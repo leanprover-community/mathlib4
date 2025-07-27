@@ -209,18 +209,8 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
   have hs : b' ^ 2 = m * (r * s) := by
     apply (mul_right_inj' (by norm_num : (4 : ℤ) ≠ 0)).mp
     linear_combination (-b - 2 * b') * hb2' + ht2 + 2 * m * htt2
-  have hrsz : r * s ≠ 0 := by
-    -- because b ^ 2 is not zero and (b / 2) ^ 2 = m * (r * s)
-    by_contra hrsz
-    revert hb20
-    rw [ht2, htt2, mul_assoc, @mul_assoc _ _ _ r s, hrsz]
-    simp
-  have h2b0 : b' ≠ 0 := by
-    apply ne_zero_pow two_ne_zero
-    rw [hs]
-    apply mul_ne_zero
-    · exact ne_of_gt h4
-    · exact hrsz
+  have hrsz : r * s ≠ 0 := by grind
+  have h2b0 : b' ≠ 0 := by grind
   obtain ⟨i, hi⟩ := Int.sq_of_gcd_eq_one hcp hs.symm
   -- use m is positive to exclude m = - i ^ 2
   have hi' : ¬m = -i ^ 2 := by
@@ -245,31 +235,17 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
   replace hd : r * s = d ^ 2 := Or.resolve_right hd hd'
   -- r = +/- j ^ 2
   obtain ⟨j, hj⟩ := Int.sq_of_gcd_eq_one htt4 hd
-  have hj0 : j ≠ 0 := by
-    intro h0
-    rw [h0, zero_pow two_ne_zero, neg_zero, or_self_iff] at hj
-    apply left_ne_zero_of_mul hrsz hj
+  have hj0 : j ≠ 0 := by grind
   rw [mul_comm] at hd
   rw [Int.gcd_comm] at htt4
   -- s = +/- k ^ 2
   obtain ⟨k, hk⟩ := Int.sq_of_gcd_eq_one htt4 hd
-  have hk0 : k ≠ 0 := by
-    intro h0
-    rw [h0, zero_pow two_ne_zero, neg_zero, or_self_iff] at hk
-    apply right_ne_zero_of_mul hrsz hk
-  have hj2 : r ^ 2 = j ^ 4 := by
-    rcases hj with hjp | hjp <;>
-      · rw [hjp]
-        ring
-  have hk2 : s ^ 2 = k ^ 4 := by
-    rcases hk with hkp | hkp <;>
-      · rw [hkp]
-        ring
+  have hk0 : k ≠ 0 := by grind
+  have hj2 : r ^ 2 = j ^ 4 := by grind
+  have hk2 : s ^ 2 = k ^ 4 := by grind
   -- from m = r ^ 2 + s ^ 2 we now get a new solution to a ^ 4 + b ^ 4 = c ^ 2:
-  have hh : i ^ 2 = j ^ 4 + k ^ 4 := by rw [← hi, htt3, hj2, hk2]
-  have hn : n ≠ 0 := by
-    rw [ht2] at hb20
-    apply right_ne_zero_of_mul hb20
+  have hh : i ^ 2 = j ^ 4 + k ^ 4 := by grind
+  have hn : n ≠ 0 := by grind
   -- and it has a smaller c: from c = m ^ 2 + n ^ 2 we see that m is smaller than c, and i ^ 2 = m.
   have hic : Int.natAbs i < Int.natAbs c := by
     apply Int.ofNat_lt.mp
