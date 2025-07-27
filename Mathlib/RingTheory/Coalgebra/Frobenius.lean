@@ -138,7 +138,8 @@ theorem lTensor_mul'_comp_assoc_comp_rTensor_comul_of
         simp only [← comp_assoc _ _ (ϰ _ _ _).symm.toLinearMap, LinearEquiv.symm_comp, id_comp]
     _ = (τ (A ⊗[R] A)).toLinearMap ∘ₗ (lTensor _ (comul ∘ₗ (mul' R A))) ∘ₗ (ϰ _ _ _).toLinearMap
       ∘ₗ (rTensor _ (τ A).symm.toLinearMap) := by
-        rw [← rTensor_counit_comp_comul', rTensor_comp]
+        rw [(by rfl : (τ A).symm.toLinearMap = (TensorProduct.mk R R A) 1),
+          ← rTensor_counit_comp_comul, rTensor_comp]
         simp_rw [comp_assoc]
     _ = comul ∘ₗ (mul' R A) := by
         apply ext'

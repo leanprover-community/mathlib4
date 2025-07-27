@@ -106,10 +106,6 @@ theorem rTensor_counit_comul (a : A) : counit.rTensor A (comul a) = 1 ⊗ₜ[R] 
 theorem lTensor_counit_comul (a : A) : counit.lTensor A (comul a) = a ⊗ₜ[R] 1 :=
   LinearMap.congr_fun lTensor_counit_comp_comul a
 
-lemma rTensor_counit_comp_comul' :
-    (LinearMap.rTensor _ counit) ∘ₗ comul = (TensorProduct.lid R A).symm.toLinearMap :=
-  rTensor_counit_comp_comul
-
 @[simp]
 lemma sum_counit_tmul_eq {a : A} (repr : Coalgebra.Repr R a) :
     ∑ i ∈ repr.index, counit (R := R) (repr.left i) ⊗ₜ (repr.right i) = 1 ⊗ₜ[R] a := by
