@@ -312,6 +312,8 @@ private theorem span_extendedPeriods :
   ext j
   simp [toRatVec, Pi.basisFun_apply, Pi.single_apply]
 
+open Module
+
 private noncomputable def basis : Basis hs.extendedPeriods ℚ (α → ℚ) :=
   Basis.mk hs.linearIndepOn_extendedPeriods
     (image_eq_range _ _ ▸ top_le_iff.2 hs.span_extendedPeriods)
