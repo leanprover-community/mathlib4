@@ -300,13 +300,13 @@ lemma rid_comp_lTensor (f : M →ₗ[R] R) :
     (rid R N).comp (lTensor N f) = lift ((lsmul R N).flip.compl₂ f) := ext' fun _ _ ↦ rfl
 
 lemma lTensor_rTensor_comp_assoc (x : M →ₗ[R] N) :
-    (lTensor P (rTensor Q x)) ∘ₗ (TensorProduct.assoc R P M Q)
-    = (TensorProduct.assoc R P N Q) ∘ₗ (rTensor Q (lTensor P x)) := by
+    lTensor P (rTensor Q x) ∘ₗ TensorProduct.assoc R P M Q
+    = TensorProduct.assoc R P N Q ∘ₗ rTensor Q (lTensor P x) := by
   simp_rw [rTensor, lTensor, map_map_comp_assoc_eq]
 
 lemma rTensor_lTensor_comp_assoc_symm (x : M →ₗ[R] N) :
-    (rTensor Q (lTensor P x)) ∘ₗ (TensorProduct.assoc R P M Q).symm
-    = (TensorProduct.assoc R P N Q).symm ∘ₗ (lTensor P (rTensor Q x)) := by
+    rTensor Q (lTensor P x) ∘ₗ (TensorProduct.assoc R P M Q).symm
+    = (TensorProduct.assoc R P N Q).symm ∘ₗ lTensor P (rTensor Q x) := by
   simp_rw [rTensor, lTensor, map_map_comp_assoc_symm_eq]
 
 end LinearMap
