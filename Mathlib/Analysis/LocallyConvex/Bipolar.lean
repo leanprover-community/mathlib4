@@ -89,27 +89,19 @@ lemma dualEmbedding_isSurjective : Function.Surjective (WeakBilin.eval B) := by
   simp
 
 lemma dualEmbedding_isInjective_of_separatingRight (hr : B.SeparatingRight) :
-    Function.Injective (WeakBilin.eval B) := by
-  rw [injective_iff_map_eq_zero]
-  intro f hf
-  simp [← ContinuousLinearMap.coe_inj, WeakBilin.eval] at hf
-  rw [separatingRight_iff_linear_flip_nontrivial] at hr
-  exact hr f hf
+    Function.Injective (WeakBilin.eval B) := (injective_iff_map_eq_zero _).mpr (fun f hf =>
+    (separatingRight_iff_linear_flip_nontrivial.mp hr) f (ContinuousLinearMap.coe_inj.mpr hf))
 
 /-- When `B` is right-separating, `F` is linearly equivalent to the topological dual of `E` with the
 weak topology. -/
-noncomputable
-def dualEquiv (hr : B.SeparatingRight) : F ≃ₗ[𝕜] (WeakBilin B) →L[𝕜] 𝕜 :=
+noncomputable def dualEquiv (hr : B.SeparatingRight) : F ≃ₗ[𝕜] (WeakBilin B) →L[𝕜] 𝕜 :=
   LinearEquiv.ofBijective (WeakBilin.eval B)
     ⟨dualEmbedding_isInjective_of_separatingRight B hr, dualEmbedding_isSurjective B⟩
 
 /-- When `B` is left-separating, `E` is linearly equivalent to the topological dual of `F` with the
 weak topology. -/
-noncomputable
-def strictEquiv2 (hl : B.SeparatingLeft) : E ≃ₗ[𝕜] (WeakBilin B.flip) →L[𝕜] 𝕜 := by
-  rw [← LinearMap.flip_separatingRight] at hl
-  apply dualEquiv _ hl
-
+noncomputable def strictEquiv2 (hl : B.SeparatingLeft) : E ≃ₗ[𝕜] (WeakBilin B.flip) →L[𝕜] 𝕜 :=
+  dualEquiv _ (LinearMap.flip_separatingRight.mpr hl)
 
 variable [Module ℝ E]
 variable [IsScalarTower ℝ 𝕜 E]
