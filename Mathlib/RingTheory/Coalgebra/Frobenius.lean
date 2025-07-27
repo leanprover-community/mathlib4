@@ -159,7 +159,6 @@ class FrobeniusAlgebra (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
     = rTensor A (mul' R A) ∘ₗ (TensorProduct.assoc _ _ _ _).symm.toLinearMap ∘ₗ lTensor A comul
 
 namespace FrobeniusAlgebra
-
 variable [FrobeniusAlgebra R A]
 
 theorem lTensor_mul'_comp_assoc_comp_rTensor_comul_eq_comul_comp_mul' :
