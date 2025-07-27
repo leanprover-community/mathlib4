@@ -1313,7 +1313,7 @@ lemma r_inf_sup_iff_r [Lattice α] (c : LatticeCon α) {x y : α} :
         conv_lhs => rw [← sup_idem y]
         exact c.sup (c.symm h) (c.refl y))
 
-lemma closed_interval [Lattice α] {r : α → α → Prop}
+private lemma closed_interval [Lattice α] {r : α → α → Prop}
     (h₂ : ∀ ⦃x y : α⦄, r x y ↔ r (x ⊓ y) (x ⊔ y))
     (h₄ : ∀ ⦃x y t : α⦄, x ≤ y → r x y → r (x ⊓ t) (y ⊓ t) ∧ r (x ⊔ t) (y ⊔ t))
     (a b c d : α) (hab : a ≤ b) (hbd : b ≤ d) (hac : a ≤ c) (hcd : c ≤ d) (had : r a d) :
@@ -1325,7 +1325,7 @@ lemma closed_interval [Lattice α] {r : α → α → Prop}
   rw [← sup_eq_right.mpr (le_inf hab hac), ← sup_eq_left.mpr (inf_le_of_left_le hbd)]
   exact (h₄ (le_trans hab hbd) had).2
 
-lemma transitive [Lattice α] {r : α → α → Prop}
+private lemma transitive [Lattice α] {r : α → α → Prop}
     (h₂ : ∀ ⦃x y : α⦄, r x y ↔ r (x ⊓ y) (x ⊔ y))
     (h₃ : ∀ ⦃x y z : α⦄, x ≤ y → y ≤ z → r x y → r y z → r x z)
     (h₄ : ∀ ⦃x y t : α⦄, x ≤ y → r x y → r (x ⊓ t) (y ⊓ t) ∧ r (x ⊔ t) (y ⊔ t)) :
