@@ -10,7 +10,7 @@ import Mathlib.Algebra.Module.Defs
 # Symmetrized algebra
 
 A commutative multiplication on a real or complex space can be constructed from any multiplication
-by "symmetrization" i.e
+by "symmetrization" i.e.
 $$
 a \circ b = \frac{1}{2}(ab + ba)
 $$
@@ -51,7 +51,7 @@ def sym : α ≃ αˢʸᵐ :=
   Equiv.refl _
 
 /-- The element of `α` represented by `x : αˢʸᵐ`. -/
--- Porting note (kmill): `pp_nodot` has no affect here
+-- Porting note (kmill): `pp_nodot` has no effect here
 -- unless RFC https://github.com/leanprover/lean4/issues/6178 leads to dot notation pp for CoeFun
 @[pp_nodot]
 def unsym : αˢʸᵐ ≃ α :=

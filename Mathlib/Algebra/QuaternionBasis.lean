@@ -19,7 +19,7 @@ import Mathlib.Tactic.Ring
 * `QuaternionAlgebra.lift`: Define an `AlgHom` out of `ℍ[R,c₁,c₂,c₃]` by its action on the basis
   elements `i`, `j`, and `k`. In essence, this is a universal property. Analogous to `Complex.lift`,
   but takes a bundled `QuaternionAlgebra.Basis` instead of just a `Subtype` as the amount of
-  data / proves is non-negligible.
+  data / proofs is non-negligible.
 -/
 
 
