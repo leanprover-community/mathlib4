@@ -382,8 +382,7 @@ theorem bijective_compr₂_of_equiv (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : P
   surjective_compr₂_of_equiv f g hf.2⟩
 
 section CommSemiringSemilinear
-variable {R R₁ R₂ R₃ R₄ : Type*} [CommSemiring R] [Semiring R₁] [CommSemiring R₂]
-  [CommSemiring R₃] [CommSemiring R₄]
+variable {R₂ R₃ R₄ : Type*} [CommSemiring R₂] [CommSemiring R₃] [CommSemiring R₄]
 variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*}
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
 variable [Module R M] [Module R₂ N] [Module R₃ P] [Module R₄ Q]
