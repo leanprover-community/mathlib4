@@ -95,7 +95,7 @@ noncomputable def unitIso : 𝟭 (C ⥤ₗ AddCommGrp) ≅
       (CommGrp.toAddCommGrp.mapIso (commGrpTypeEquivalenceCommGrp.counitIso.app
         (AddCommGrp.toCommGrp.obj (F.obj.obj X)))).symm ≪≫
       CommGrp.toAddCommGrp.mapIso
-        (commGrpTypeEquivalenceCommGrp.functor.mapIso (unitIsoAux F.obj X)))))
+        (CommGrpTypeEquivalenceCommGrp.functor.mapIso (unitIsoAux F.obj X)))))
 
 end leftExactFunctorForgetEquivalence
 

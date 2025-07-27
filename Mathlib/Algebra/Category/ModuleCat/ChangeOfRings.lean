@@ -828,7 +828,7 @@ def extendRestrictScalarsAdj {R : Type u₁} {S : Type u₂} [CommRing R] [CommR
         | tmul =>
           rw [ExtendRestrictScalarsAdj.homEquiv_symm_apply]
           dsimp
-          -- This used to be `rw`, but we need `erw` after https://github.com/leanprover-community/mathlib4/pull/2644
+          -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
           erw [ExtendRestrictScalarsAdj.Counit.map_hom_apply,
               ExtendRestrictScalarsAdj.HomEquiv.fromExtendScalars_hom_apply]
         | add => rw [map_add, map_add]; congr 1 }
@@ -837,7 +837,7 @@ lemma extendRestrictScalarsAdj_homEquiv_apply
     {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S]
     {f : R →+* S} {M : ModuleCat.{max v u₂} R} {N : ModuleCat S}
     (φ : (extendScalars f).obj M ⟶ N) (m : M) :
-    (extendRestrictScalarsAdj f).homEquiv _ _ φ m = φ ((1 : S) ⊗ₜ[R,f] m) :=
+    (extendRestrictScalarsAdj f).homEquiv _ _ φ m = φ ((1 : S) ⊗ₜ m) :=
   rfl
 
 lemma extendRestrictScalarsAdj_unit_app_apply

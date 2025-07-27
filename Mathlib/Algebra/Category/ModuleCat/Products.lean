@@ -87,7 +87,7 @@ def coproductCoconeIsColimit : IsColimit (coproductCocone Z) where
     refine DirectSum.linearMap_ext _ fun i ↦ ?_
     ext x
     simpa only [LinearMap.coe_comp, Function.comp_apply, hom_ofHom, toModule_lof] using
-      congr (h ⟨i⟩) x
+      congr($(h ⟨i⟩) x)
 
 variable [HasCoproduct Z]
 
