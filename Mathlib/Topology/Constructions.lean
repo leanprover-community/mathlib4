@@ -371,6 +371,10 @@ theorem IsClosed.isClosedMap_subtype_val {s : Set X} (hs : IsClosed s) :
     IsClosedMap ((↑) : s → X) :=
   hs.isClosedEmbedding_subtypeVal.isClosedMap
 
+theorem IsClosedMap.restrict {f : X → Y} (hf : IsClosedMap f) {s : Set X} (hs : IsClosed s) :
+    IsClosedMap (s.restrict f) :=
+  hf.comp hs.isClosedMap_subtype_val
+
 @[continuity, fun_prop]
 theorem Continuous.subtype_mk {f : Y → X} (h : Continuous f) (hp : ∀ x, p (f x)) :
     Continuous fun x => (⟨f x, hp x⟩ : Subtype p) :=
@@ -378,6 +382,11 @@ theorem Continuous.subtype_mk {f : Y → X} (h : Continuous f) (hp : ∀ x, p (f
 
 theorem IsOpenMap.subtype_mk {f : Y → X} (hf : IsOpenMap f) {s : Set X} (hfs : ∀ x, f x ∈ s) :
     IsOpenMap fun x ↦ (⟨f x, hfs x⟩ : Subtype s) := fun u hu ↦ by
+  convert (hf u hu).preimage continuous_subtype_val
+  exact Set.ext fun _ ↦ exists_congr fun _ ↦ and_congr_right' Subtype.ext_iff
+
+theorem IsClosedMap.subtype_mk {f : Y → X} (hf : IsClosedMap f) {s : Set X} (hfs : ∀ x, f x ∈ s) :
+    IsClosedMap fun x ↦ (⟨f x, hfs x⟩ : Subtype s) := fun u hu ↦ by
   convert (hf u hu).preimage continuous_subtype_val
   exact Set.ext fun _ ↦ exists_congr fun _ ↦ and_congr_right' Subtype.ext_iff
 
@@ -389,12 +398,20 @@ theorem IsOpenMap.subtype_map {f : X → Y} (hf : IsOpenMap f) {s : Set X} {t : 
     (hst : ∀ x, s x → t (f x)) : IsOpenMap (Subtype.map f hst) :=
   (hf.comp hs.isOpenMap_subtype_val).subtype_mk _
 
+theorem IsClosedMap.subtype_map {f : X → Y} (hf : IsClosedMap f) {s : Set X} {t : Set Y}
+    (hs : IsClosed s) (hst : ∀ x, s x → t (f x)) : IsClosedMap (Subtype.map f hst) :=
+  (hf.comp hs.isClosedMap_subtype_val).subtype_mk _
+
 theorem continuous_inclusion {s t : Set X} (h : s ⊆ t) : Continuous (inclusion h) :=
   continuous_id.subtype_map h
 
 theorem IsOpen.isOpenMap_inclusion {s t : Set X} (hs : IsOpen s) (h : s ⊆ t) :
     IsOpenMap (inclusion h) :=
   IsOpenMap.id.subtype_map hs h
+
+theorem IsClosed.isClosedMap_inclusion {s t : Set X} (hs : IsClosed s) (h : s ⊆ t) :
+    IsClosedMap (inclusion h) :=
+  IsClosedMap.id.subtype_map hs h
 
 theorem continuousAt_subtype_val {p : X → Prop} {x : Subtype p} :
     ContinuousAt ((↑) : Subtype p → X) x :=
@@ -446,6 +463,10 @@ theorem IsOpenMap.codRestrict {f : X → Y} (hf : IsOpenMap f) {s : Set Y} (hs :
     IsOpenMap (s.codRestrict f hs) :=
   hf.subtype_mk hs
 
+theorem IsClosedMap.codRestrict {f : X → Y} (hf : IsClosedMap f) {s : Set Y} (hs : ∀ a, f a ∈ s) :
+    IsClosedMap (s.codRestrict f hs) :=
+  hf.subtype_mk hs
+
 @[continuity, fun_prop]
 theorem Continuous.restrict {f : X → Y} {s : Set X} {t : Set Y} (h1 : MapsTo f s t)
     (h2 : Continuous f) : Continuous (h1.restrict f s t) :=
@@ -453,6 +474,10 @@ theorem Continuous.restrict {f : X → Y} {s : Set X} {t : Set Y} (h1 : MapsTo f
 
 lemma IsOpenMap.restrict_mapsTo {f : X → Y} (hf : IsOpenMap f) {s : Set X} {t : Set Y}
     (hs : IsOpen s) (ht : MapsTo f s t) : IsOpenMap ht.restrict :=
+  (hf.restrict hs).codRestrict _
+
+lemma IsClosedMap.restrict_mapsTo {f : X → Y} (hf : IsClosedMap f) {s : Set X} {t : Set Y}
+    (hs : IsClosed s) (ht : MapsTo f s t) : IsClosedMap ht.restrict :=
   (hf.restrict hs).codRestrict _
 
 @[continuity, fun_prop]
