@@ -5,6 +5,7 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 -/
 import Batteries.Tactic.Alias
 import Batteries.Data.List.Basic
+import Batteries.Tactic.Alias
 import Mathlib.Tactic.TypeStar
 
 /-! ### List.modifyLast -/
