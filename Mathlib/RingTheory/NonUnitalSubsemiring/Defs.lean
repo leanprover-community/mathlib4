@@ -100,7 +100,7 @@ theorem mul_neg_mem [HasDistribNeg R] {x y : R} (hx : x ∈ s) (hy : -y ∈ s) :
   simpa using mul_mem hx hy
 
 example [HasDistribNeg R] {x y z : R} (hx : x ∈ s) (hy : -y ∈ s) (hz : z ∈ s) :
-    x * -y * z ∈ s := by aesop
+    x * (-y) * z ∈ s := by aesop
 
 end NonUnitalSubsemiringClass
 
