@@ -62,6 +62,14 @@ lemma volume_Icc : volume (Icc x y) = .ofReal (y - x) := by
   simp only [← volume_image_subtype_coe measurableSet_Icc, image_subtype_val_Icc, Real.volume_Icc]
 
 @[simp]
+lemma volume_uIcc (h : x ≤ y) : volume (uIcc x y) = .ofReal (y - x) := by
+  simp only [uIcc_of_le h, volume_Icc]
+
+@[simp]
+lemma volume_uIcc' (h : y ≤ x) : volume (uIcc x y) = .ofReal (x - y) := by
+  simp only [uIcc_of_ge h, volume_Icc]
+
+@[simp]
 lemma volume_Ico : volume (Ico x y) = .ofReal (y - x) := by
   by_cases hx : x < y
   · suffices volume (Ico x y) = volume (Icc x y) by
@@ -90,6 +98,14 @@ lemma volume_Ioc : volume (Ioc x y) = .ofReal (y - x) := by
     exact tsub_nonpos.mpr (not_lt.mp hx)
 
 @[simp]
+lemma volume_uIoc (h : x ≤ y) : volume (uIoc x y) = .ofReal (y - x) := by
+  simp only [uIoc_of_le h, volume_Ioc]
+
+@[simp]
+lemma volume_uIoc' (h : y ≤ x) : volume (uIoc x y) = .ofReal (x - y) := by
+  simp only [uIoc_of_ge h, volume_Ioc]
+
+@[simp]
 lemma volume_Ioo : volume (Ioo x y) = .ofReal (y - x) := by
   by_cases hx : x < y
   · suffices volume (Ioo x y) = volume (Ico x y) by
@@ -103,5 +119,12 @@ lemma volume_Ioo : volume (Ioo x y) = .ofReal (y - x) := by
     rw [ENNReal.ofReal_eq_zero]
     exact tsub_nonpos.mpr (not_lt.mp hx)
 
+@[simp]
+lemma volume_uIoo (h : x ≤ y) : volume (uIoo x y) = .ofReal (y - x) := by
+  simp only [uIoo_of_le h, volume_Ioo]
+
+@[simp]
+lemma volume_uIoo' (h : y ≤ x) : volume (uIoo x y) = .ofReal (x - y) := by
+  simp only [uIoo_of_ge h, volume_Ioo]
 
 end unitInterval
