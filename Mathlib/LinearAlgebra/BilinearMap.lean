@@ -257,7 +257,7 @@ def compl₂ (h : M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) (g : Q →ₛ�
 
 @[simp]
 theorem compl₂_apply (h : M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) (g : Q →ₛₗ[σ₄₂] N) (m : M) (q : Q) :
-  h.compl₂ g m q = h m (g q) := rfl
+    h.compl₂ g m q = h m (g q) := rfl
 
 @[simp]
 theorem compl₂_id (h : M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) : h.compl₂ LinearMap.id = h := by

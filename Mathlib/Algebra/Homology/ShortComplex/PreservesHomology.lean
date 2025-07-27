@@ -55,8 +55,7 @@ lemma PreservesHomology.preservesCokernel [F.PreservesHomology] {X Y : C} (f : X
   PreservesHomology.preservesCokernels _
 
 noncomputable instance preservesHomologyOfExact
-    [PreservesFiniteLimits F] [PreservesFiniteColimits F] :
-  F.PreservesHomology where
+    [PreservesFiniteLimits F] [PreservesFiniteColimits F] : F.PreservesHomology where
 
 end Functor
 
