@@ -51,10 +51,10 @@ theorem isTransitive_vonNeumann (o : Ordinal) : IsTransitive (V_ o) := by
   exact (isTransitive_vonNeumann a).powerset
 termination_by o
 
-theorem vonNeumann_mem_of_lt (h : a < b) : V_ a ∈ V_ b := by
+@[gcongr] theorem vonNeumann_mem_of_lt (h : a < b) : V_ a ∈ V_ b := by
   rw [vonNeumann]; aesop
 
-theorem vonNeumann_subset_of_le (h : a ≤ b) : V_ a ⊆ V_ b :=
+@[gcongr] theorem vonNeumann_subset_of_le (h : a ≤ b) : V_ a ⊆ V_ b :=
   h.eq_or_lt.rec (by simp_all) fun h ↦ isTransitive_vonNeumann _ _ <| vonNeumann_mem_of_lt h
 
 theorem subset_vonNeumann {o : Ordinal} {x : ZFSet} : x ⊆ V_ o ↔ rank x ≤ o := by
@@ -110,6 +110,9 @@ theorem vonNeumann_injective : Function.Injective vonNeumann :=
 @[simp]
 theorem vonNeumann_inj : V_ a = V_ b ↔ a = b :=
   vonNeumann_injective.eq_iff
+
+@[gcongr]
+alias ⟨_, _root_.GCongr.ZFSet.vonNeumann_inj⟩ := vonNeumann_inj
 
 @[simp]
 theorem vonNeumann_zero : V_ 0 = ∅ :=
