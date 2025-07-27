@@ -413,8 +413,8 @@ theorem llcomp_apply (f : N →ₛₗ[σ₂₃] P) (g : M →ₛₗ[σ₁₂] N)
 theorem llcomp_apply' (f : N →ₛₗ[σ₂₃] P) (g : M →ₛₗ[σ₁₂] N) : llcomp _ M N P f g = f ∘ₛₗ g := rfl
 
 omit [Module R M] in
-/-- Composing a linear map `P → Q` and a bilinear map `M → N → P` to
-form a bilinear map `M → N → Q`. -/
+/-- Composing a linear map `P →ₛₗ[σ₃₄] Q` and a bilinear map `M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P` to
+form a bilinear map `M →ₛₗ[σ₁₄] N →ₛₗ[σ₂₄] Q`. -/
 def compr₂ₛₗ (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P →ₛₗ[σ₃₄] Q) : M →ₛₗ[σ₁₄] N →ₛₗ[σ₂₄] Q :=
   llcomp _ N P Q g ∘ₛₗ f
 
