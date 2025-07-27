@@ -53,12 +53,6 @@ variable [Module 𝕜 E] [Module 𝕜 F]
 
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
--- See `LinearMap.dualPairing_nondegenerate` in Mathlib/LinearAlgebra/Dual
--- `WeakBilin B` is `E` with the σ(E,F)-topology`
--- `((WeakBilin B) →L[𝕜] 𝕜)` is the topological dual of `E` with the σ(E,F)-topology, from
---   Topology/Algebra/Module/WeadDual
--- `WeakBilin.isEmbedding` - topological
-
 variable (f : WeakBilin B →L[𝕜] 𝕜)
 
 lemma test4 :
@@ -76,87 +70,7 @@ lemma test4 :
   obtain ⟨w, h1, h2⟩ := hsE2
   exact ⟨w, h1, h2.symm.trans_subset hV2⟩
 
---def mL (s : Finset F) : s → WeakBilin B →ₗ[𝕜] 𝕜 := fun (f : s) => (WeakBilin.eval B) f.val
-
--- Try to rephrase this in terms of `Analysis/LocallyConvex/WithSeminorms`
-
---#check Seminorm.IsBounded
--- def IsBounded (p : ι → Seminorm 𝕜 E) (q : ι' → Seminorm 𝕜₂ F) (f : E →ₛₗ[σ₁₂] F) : Prop :=
---  ∀ i, ∃ s : Finset ι, ∃ C : ℝ≥0, (q i).comp f ≤ C • s.sup p
-
-
-
--- ι = F
--- E = WeakBilin B
--- F = 𝕜
--- (f : WeakBilin B →L[𝕜] 𝕜)
--- p : B.toSeminormFamily
--- q : Fin 1 => normSeminorm 𝕜 𝕜
-
--- A linear map between two bornological spaces is continuous if and only if it is bounded
--- (with respect to the usual bornologies).
--- https://en.wikipedia.org/wiki/Bornology#Bornology_of_a_topological_vector_space
-
--- Bourbaki TVS III.12 Proposition 1(iii') Let E be a LCS with its canonical Bornology and let F be
--- a LCS a linear mapping u:E->F is continuous iff u(X) is bounded in F for every X bounded in E.
--- (Here I think E and F over ℝ or ℂ)
--- Continuous implies bounded is III.4 Corol 1
--- We have LinearMap.continuous_of_locally_bounded for `E` is first countable
-
-/-
-#check WithSeminorms.isVonNBounded_iff_finset_seminorm_bounded
-#check WithSeminorms.image_isVonNBounded_iff_finset_seminorm_bounded
-
-#check NormedSpace.isVonNBounded_ball
-
-#check Metric.isBounded_ball
-
-#check LinearMap.continuous_of_locally_bounded
--/
-
-open Bornology in
-lemma cont_maps_bd : ∀ s, IsVonNBounded 𝕜 s → IsVonNBounded 𝕜 (f '' s) := by
-  exact fun s a ↦ IsVonNBounded.image a f
-
-open Bornology in
-lemma test {s : Set (WeakBilin B)} (h : IsVonNBounded 𝕜 s) : IsVonNBounded 𝕜 (f '' s) := by
-  apply IsVonNBounded.image h
-
-open Bornology in
-lemma testb2 {s : Set (WeakBilin B)} (h : IsVonNBounded 𝕜 s) : IsVonNBounded 𝕜 (f '' s) := by
-  apply IsVonNBounded.image h
-
---#check Seminorm.absorbent_ball_zero
-
-variable {s : Finset F} (r : ℝ)
-
---#check ((s.sup B.toSeminormFamily).ball 0 r)
-
-
---#check PseudoMetricSpace.toBornology
-
---#check Set.Ioi
-
---#check Pointwise
-
 open Pointwise
-
-variable (t : Set E) (a : 𝕜) (c : ℝ)
-
-/-
-#check a • t
-
-#check (c :𝕜) • t
-
-#check PseudoMetricSpace.cobounded_sets
-
-#check Balanced
--/
-
-lemma bal {s : Finset F} : Balanced 𝕜 ((s.sup B.toSeminormFamily).ball 0 r) := by
-  exact Seminorm.balanced_ball_zero (s.sup B.toSeminormFamily) r
-
-
 
 -- c.f. LinearMap.continuous_of_locally_bounded
 lemma isBounded_of_Continuous :
@@ -186,8 +100,6 @@ See
 lemma dualEmbedding_isSurjective : Function.Surjective (WeakBilin.eval B) := by
   rw [Function.Surjective]
   intro f₁
-  --obtain ⟨s, hS⟩ := isBounded_of_Continuous B f₁ (Fin.last 0)
-  --let hs := functional_mem_span_iff'.mpr hS
   obtain ⟨s, hs⟩ := test5 B f₁
   rw [← Set.image_univ, Finsupp.mem_span_image_iff_linearCombination] at hs
   obtain ⟨l, hl1, hl2⟩ := hs
@@ -331,7 +243,6 @@ theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s
     have hc₄ : ¬RCLike.re ((B x) f₀) ≤ 1 := by
       exact one_lt_x_f₀.2
     exact hc₄ hc₃
-
   · exact closedAbsConvexHull_min (subset_bipolar B s) (polar_AbsConvex _) (polar_isClosed B.flip _)
 
 
