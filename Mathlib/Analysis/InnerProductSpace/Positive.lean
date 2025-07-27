@@ -235,7 +235,7 @@ theorem IsIdempotentElem.isPositive_iff_isSelfAdjoint
     {p : E →L[𝕜] E} (hp : IsIdempotentElem p) : p.IsPositive ↔ IsSelfAdjoint p :=
   ⟨fun h => h.isSelfAdjoint, fun h => IsPositive.of_isStarProjection ⟨hp, h⟩⟩
 
-/-- For idempotent operator `p`, TFAE:
+/-- For an idempotent operator `p`, TFAE:
 * `p` is normal
 * `p` is self-adjoint
 * `p` is positive
