@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Solheim
 -/
 import Mathlib.Geometry.Convex.Cone.ConicalHull
+import Mathlib.Geometry.Convex.Cone.Dual
 import Mathlib.LinearAlgebra.TensorProduct.Basic
 import Mathlib.LinearAlgebra.Dual.Lemmas
 
@@ -59,25 +60,10 @@ namespace PointedCone
 /-- The algebraic dual of a pointed cone C (as opposed to "the inner product dual")
 are the elements of the dual module that are non-negative on all of C,
 i.e., linear maps φ: C → K, such that 0 ≤ φ(x) for all x in C.
-The algebraic dual is a pointed cone. -/
-def algebraicDual (C : PointedCone K G) : PointedCone K (Dual K G) where
-  carrier := {φ : Dual K G | ∀ x ∈ C, 0 ≤ φ x}
-  zero_mem' := by
-    intro x hx
-    rw [zero_apply]
-  smul_mem' := by
-    intro c x hx g hg
-    rw [← Nonneg.coe_smul, smul_apply]
-    simp only [smul_eq_mul]
-    rw [mul_nonneg_iff]
-    left
-    constructor
-    · exact c.property
-    · exact hx g hg
-  add_mem' := by
-    intro φ₁ φ₂ hφ₁ hφ₂ x hx
-    rw [add_apply]
-    exact add_nonneg (hφ₁ x hx) (hφ₂ x hx)
+The algebraic dual is a pointed cone.
+This is a concrete instance based on the more general PointedCone.dual -/
+abbrev algebraicDual (C : PointedCone K G) : PointedCone K (Dual K G) :=
+      PointedCone.dual (Module.dualPairing K G).flip C.carrier
 
 /-- The minimal tensor product of two cones is given by
 all conical combinations of elementary tensor products x ⊗ₜ y
@@ -111,7 +97,7 @@ noncomputable def maxTensorProduct (C₁ : PointedCone K G) (C₂ : PointedCone 
 
 /-- The minimal tensor product is less than or equal to the maximal tensor product. -/
 theorem minTensorProduct_le_maxTensorProduct (C₁ : PointedCone K G) (C₂ : PointedCone K H)
-    : (minTensorProduct C₁ C₂) ≤ (maxTensorProduct C₁ C₂)
+    : minTensorProduct C₁ C₂ ≤ maxTensorProduct C₁ C₂
     := by
   intro z h
   obtain ⟨n, c, v, hv, hc, hz⟩ := h
@@ -124,6 +110,6 @@ theorem minTensorProduct_le_maxTensorProduct (C₁ : PointedCone K G) (C₂ : Po
   have hxy : ∃ x y, x ∈ C₁ ∧ y ∈ C₂ ∧ v i = x ⊗ₜ[K] y := hv i
   obtain ⟨x, y, hx, hy, hvi⟩ := hxy
   rw [hvi, dualDistrib_apply]
-  exact mul_nonneg (hc i) (mul_nonneg (hφ₁ x hx) (hφ₂ y hy))
+  exact mul_nonneg (hc i) (mul_nonneg (hφ₁ hx) (hφ₂ hy))
 
 end PointedCone
