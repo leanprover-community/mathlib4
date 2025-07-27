@@ -8,6 +8,7 @@ import Mathlib.Analysis.LocallyConvex.Polar
 import Mathlib.Analysis.LocallyConvex.AbsConvex
 import Mathlib.Analysis.LocallyConvex.WeakDual
 import Mathlib.Analysis.Normed.Module.Convex
+import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
 import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Topology.Algebra.Module.StrongTopology
@@ -262,14 +263,17 @@ def strictEquiv2 (hl : B.SeparatingLeft) : E ≃ₗ[𝕜] (WeakBilin B.flip) →
   apply dualEquiv _ hl
 
 
+lemma testcontr (a b : ℝ) (h₁ : a ≤ b) : ¬ (b < a)  := by
+  exact LE.le.not_gt h₁
 
 
-/-
+
 variable [Module ℝ E]
 variable [IsScalarTower ℝ 𝕜 E]
 
+-- Conway p127
 open scoped ComplexOrder
-theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s] (h : B.Nondegenerate):
+theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s] (h : B.Nondegenerate) :
     B.flip.polar (B.polar s) = closedAbsConvexHull (E := WeakBilin B) 𝕜 s := by
   apply le_antisymm
   · simp only [Set.le_eq_subset]
@@ -293,10 +297,23 @@ theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s
       simp [t1]
       rw [← (inv_mul_cancel₀ (lt_iff_le_and_ne.mp e3).2.symm)]
       exact mul_lt_mul_of_pos_left ((hf₁ a) ha) (inv_pos_of_pos e3)
-    --have hg₃ : g ∈ B.polar (E := WeakBilin B) s := sorry
-    sorry
+    obtain ⟨f₀,hf₀⟩ := B.dualEmbedding_isSurjective g
+    have hg₃ : f₀ ∈ (B.polar (E := WeakBilin B) s) := sorry
+    have todo : 1 < RCLike.re (B x f₀) := sorry
+    by_contra hc
+    simp at hc
+    have hc₁ : ‖B x f₀‖ ≤ 1 := by
+      exact hc f₀ hg₃
+    have hc₂ : RCLike.re (B x f₀) ≤ ‖B x f₀‖ := by
+      exact RCLike.re_le_norm ((B x) f₀)
+    have hc₃ : RCLike.re (B x f₀) ≤ 1 := by
+      exact Preorder.le_trans (RCLike.re ((B x) f₀)) ‖(B x) f₀‖ 1 hc₂ (hc f₀ hg₃)
+    rw [lt_iff_le_not_ge] at todo
+    have hc₄ : ¬RCLike.re ((B x) f₀) ≤ 1 := by
+      exact todo.2
+    exact hc₄ hc₃
 
   · exact closedAbsConvexHull_min (subset_bipolar B s) (polar_AbsConvex _) (polar_isClosed B.flip _)
--/
+
 
 end LinearMap
