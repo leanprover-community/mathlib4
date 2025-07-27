@@ -39,7 +39,7 @@ This is sometimes referred to as the **Frobenius equation**. -/
 theorem LinearMap.lTensor_mul'_comp_assoc_comp_rTensor_comul_of
     (h : (lTensor A (mul' R A)) ∘ₗ (ϰ A A A) ∘ₗ (rTensor A comul)
       = (rTensor A (mul' R A)) ∘ₗ (ϰ A A A).symm ∘ₗ (lTensor A comul)) :
-    (lTensor A (mul' R A)) ∘ₗ (ϰ A A A) ∘ₗ (rTensor A comul) = comul ∘ₗ (mul' R A) := by
+    (lTensor A (mul' R A)) ∘ₗ (ϰ A A A) ∘ₗ (rTensor A comul) = comul ∘ₗ (mul' R A) :=
   calc _ = (rTensor A (mul' R A)) ∘ₗ (ϰ A A A).symm ∘ₗ (lTensor A comul) := h
     _ = (rTensor _ (mul' R A)) ∘ₗ (ϰ _ _ _).symm.toLinearMap
       ∘ₗ (map (((τ _).toLinearMap ∘ₗ ((rTensor _ counit) ∘ₗ comul))) comul) := by ext; simp
