@@ -9,9 +9,9 @@ import Mathlib.CategoryTheory.Monoidal.DayConvolution
 # Braidings for Day convolution
 
 In this file, we show that if `C` is a braided monoidal category and
-`V` also a braided monoidal category, then the day convolution monoidal structure
+`V` also a braided monoidal category, then the Day convolution monoidal structure
 on `C ⥤ V` is also braided monoidal. We prove it by constructing an explicit
-braiding isomorphism whenever sufficient day convolutions exist, and we
+braiding isomorphism whenever sufficient Day convolutions exist, and we
 prove that it satisfies the forward and reverse hexagon identities.
 
 Furthermore, we show that when both `C` and `V` are symmetric monoidal
