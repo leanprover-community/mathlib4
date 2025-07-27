@@ -134,7 +134,7 @@ end Partrec
 
 /-- A computable predicate is one whose indicator function is computable. -/
 def ComputablePred {α} [Primcodable α] (p : α → Prop) :=
-  open scoped Classical in Computable fun a => decide (p a)
+  ∃ (_ : DecidablePred p), Computable fun a => decide (p a)
 
 section decide
 
@@ -142,20 +142,20 @@ variable {α} [Primcodable α]
 
 protected lemma ComputablePred.decide {p : α → Prop} [DecidablePred p] (hp : ComputablePred p) :
     Computable (fun a => decide (p a)) := by
-  convert (config := {transparency := .default}) hp
+  convert hp.choose_spec
 
 lemma Computable.computablePred {p : α → Prop} [DecidablePred p]
-    (hp : Computable (fun a => decide (p a))) : ComputablePred p := by
-  convert (config := {transparency := .default}) hp
+    (hp : Computable (fun a => decide (p a))) : ComputablePred p :=
+  ⟨inferInstance, hp⟩
 
 lemma computablePred_iff_computable_decide {p : α → Prop} [DecidablePred p] :
     ComputablePred p ↔ Computable (fun a => decide (p a)) where
   mp := ComputablePred.decide
   mpr := Computable.computablePred
 
-lemma PrimrecPred.to_comp {α} [Primcodable α] {p : α → Prop}
-    (hp : PrimrecPred p) : ComputablePred p :=
-  Primrec.to_comp hp
+lemma PrimrecPred.to_comp {α} [Primcodable α] {p : α → Prop} :
+    (hp : PrimrecPred p) → ComputablePred p
+  | ⟨_, hp⟩ => hp.to_comp.computablePred
 
 end decide
 
@@ -190,23 +190,19 @@ open Nat.Partrec.Code Computable
 
 theorem computable_iff {p : α → Prop} :
     ComputablePred p ↔ ∃ f : α → Bool, Computable f ∧ p = fun a => (f a : Prop) :=
-  ⟨fun h => ⟨_, h, by classical simp only [Bool.decide_iff]⟩, by
-    rintro ⟨f, h, rfl⟩; simpa [ComputablePred] using h⟩
+  ⟨fun ⟨_, h⟩ => ⟨_, h, funext fun _ => propext (Bool.decide_iff _).symm⟩, by
+    rintro ⟨f, h, rfl⟩; exact ⟨by infer_instance, by simpa using h⟩⟩
 
-protected theorem not {p : α → Prop} (hp : ComputablePred p) : ComputablePred fun a => ¬p a := by
-  obtain ⟨f, hf, rfl⟩ := computable_iff.1 hp
-  exact
-    (cond hf (const false) (const true)).of_eq fun n => by
-      simp only [Bool.not_eq_true]
-      cases f n <;> rfl
+protected theorem not {p : α → Prop} :
+    (hp : ComputablePred p) → ComputablePred fun a => ¬p a
+  | ⟨_, hp⟩ => Computable.computablePred <| Primrec.not.to_comp.comp hp |>.of_eq <| by simp
 
 /-- The computable functions are closed under if-then-else definitions
 with computable predicates. -/
 theorem ite {f₁ f₂ : ℕ → ℕ} (hf₁ : Computable f₁) (hf₂ : Computable f₂)
     {c : ℕ → Prop} [DecidablePred c] (hc : ComputablePred c) :
     Computable fun k ↦ if c k then f₁ k else f₂ k := by
-  simp_rw [← Bool.cond_decide]
-  convert Computable.cond hc hf₁ hf₂
+  simpa [Bool.cond_decide] using hc.decide.cond hf₁ hf₂
 
 theorem to_re {p : α → Prop} (hp : ComputablePred p) : REPred p := by
   obtain ⟨f, hf, rfl⟩ := computable_iff.1 hp
@@ -220,6 +216,7 @@ theorem to_re {p : α → Prop} (hp : ComputablePred p) : REPred p := by
 /-- **Rice's Theorem** -/
 theorem rice (C : Set (ℕ →. ℕ)) (h : ComputablePred fun c => eval c ∈ C) {f g} (hf : Nat.Partrec f)
     (hg : Nat.Partrec g) (fC : f ∈ C) : g ∈ C := by
+  obtain ⟨_, h⟩ := h
   obtain ⟨c, e⟩ :=
     fixed_point₂
       (Partrec.cond (h.comp fst) ((Partrec.nat_iff.2 hg).comp snd).to₂
@@ -264,19 +261,20 @@ theorem halting_problem (n) : ¬ComputablePred fun c => (eval c n).Dom
 -- @[nolint decidable_classical]
 theorem computable_iff_re_compl_re {p : α → Prop} [DecidablePred p] :
     ComputablePred p ↔ REPred p ∧ REPred fun a => ¬p a :=
-  ⟨fun h => ⟨h.to_re, h.not.to_re⟩, fun ⟨h₁, h₂⟩ =>by
-    obtain ⟨k, pk, hk⟩ :=
-      Partrec.merge (h₁.map (Computable.const true).to₂) (h₂.map (Computable.const false).to₂)
-      (by
-        intro a x hx y hy
-        simp only [Part.mem_map_iff, Part.mem_assert_iff, Part.mem_some_iff, exists_prop,
-          and_true, exists_const] at hx hy
-        cases hy.1 hx.1)
-    refine Partrec.of_eq pk fun n => Part.eq_some_iff.2 ?_
-    rw [hk]
-    simp only [Part.mem_map_iff, Part.mem_assert_iff, Part.mem_some_iff, exists_prop, and_true,
-      true_eq_decide_iff, and_self, exists_const, false_eq_decide_iff]
-    apply Decidable.em⟩
+  ⟨fun h => ⟨h.to_re, h.not.to_re⟩, fun ⟨h₁, h₂⟩ =>
+    ⟨‹_›, by
+      obtain ⟨k, pk, hk⟩ :=
+        Partrec.merge (h₁.map (Computable.const true).to₂) (h₂.map (Computable.const false).to₂)
+        (by
+          intro a x hx y hy
+          simp only [Part.mem_map_iff, Part.mem_assert_iff, Part.mem_some_iff, exists_prop,
+            and_true, exists_const] at hx hy
+          cases hy.1 hx.1)
+      refine Partrec.of_eq pk fun n => Part.eq_some_iff.2 ?_
+      rw [hk]
+      simp only [Part.mem_map_iff, Part.mem_assert_iff, Part.mem_some_iff, exists_prop, and_true,
+        true_eq_decide_iff, and_self, exists_const, false_eq_decide_iff]
+      apply Decidable.em⟩⟩
 
 theorem computable_iff_re_compl_re' {p : α → Prop} :
     ComputablePred p ↔ REPred p ∧ REPred fun a => ¬p a := by
