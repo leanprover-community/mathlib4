@@ -19,8 +19,8 @@ open Polynomial UniqueFactorizationMonoid UniqueFactorizationDomain EuclideanDom
 
 variable {k : Type*} [Field k] [DecidableEq k]
 
-theorem degree_radical_le {a : k[X]} (h : a ≠ 0) :
-  (radical a).degree ≤ a.degree := degree_le_of_dvd radical_dvd_self h
+theorem degree_radical_le {a : k[X]} (h : a ≠ 0) : (radical a).degree ≤ a.degree :=
+  degree_le_of_dvd radical_dvd_self h
 
 theorem natDegree_radical_le {a : k[X]} :
     (radical a).natDegree ≤ a.natDegree := by

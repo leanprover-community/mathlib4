@@ -180,7 +180,7 @@ theorem inf_iSup_genEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈
   have hg₁ : MapsTo g p p := Finset.noncommProd_induction _ _ _ (fun g' : End K V ↦ MapsTo g' p p)
       (fun f₁ f₂ ↦ MapsTo.comp) (mapsTo_id _) fun μ' _ ↦ by
     suffices MapsTo (f - algebraMap K (End K V) μ') p p by
-      simp only [Module.End.coe_pow]; exact this.iterate l₀
+      simp only [Module.End.coe_pow, this.iterate l₀]
     intro x hx
     rw [LinearMap.sub_apply, algebraMap_end_apply]
     exact p.sub_mem (h _ hx) (smul_mem p μ' hx)

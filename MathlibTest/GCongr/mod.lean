@@ -43,3 +43,7 @@ example (h1 : 0 ≡ a [ZMOD 7]) (_h2 : 0 ≡ b [ZMOD 7]) : b ≡ a + 1 [ZMOD 7] 
   gcongr
 example (_h1 : 0 ≡ a [ZMOD 7]) (h2 : 0 ≡ b [ZMOD 7]) : b ≡ a + 1 [ZMOD 7] → 0 ≡ a + 1 [ZMOD 7] := by
   gcongr
+
+example (h : True → a ^ 2 ≡ b ^ 2 [ZMOD 5]) : a ^ 2 * n + x ≡ b ^2 * n + x [ZMOD 5] := by
+  gcongr 2
+  exact h trivial

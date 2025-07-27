@@ -54,7 +54,7 @@ theorem discr_odd_prime' [IsCyclotomicExtension {p} ℚ K] (hζ : IsPrimitiveRoo
 result. See also `IsCyclotomicExtension.Rat.discr_prime_pow_eq_unit_mul_pow'`. -/
 theorem discr_prime_pow' [IsCyclotomicExtension {p ^ k} ℚ K] (hζ : IsPrimitiveRoot ζ (p ^ k)) :
     discr ℚ (hζ.subOnePowerBasis ℚ).basis =
-      (-1) ^ ((p ^ k).totient / 2) * p ^ (p^ (k - 1) * ((p - 1) * k - 1)) := by
+      (-1) ^ ((p ^ k).totient / 2) * p ^ (p ^ (k - 1) * ((p - 1) * k - 1)) := by
   rw [← discr_prime_pow hζ (cyclotomic.irreducible_rat (NeZero.pos _))]
   exact hζ.discr_zeta_eq_discr_zeta_sub_one.symm
 
@@ -212,10 +212,8 @@ theorem integralPowerBasis_gen [hcycl : IsCyclotomicExtension {p ^ k} ℚ K]
     simp only [adjoinEquivRingOfIntegers_apply, IsIntegralClosure.algebraMap_lift]
     rfl
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/5338
-We name `hcycl` so it can be used as a named argument,
-but since https://github.com/leanprover/lean4/pull/5338, this is considered unused,
-so we need to disable the linter. -/
+/- We name `hcycl` so it can be used as a named argument, but this is unused in the declaration
+otherwise, so we need to disable the linter. -/
 set_option linter.unusedVariables false in
 @[simp]
 theorem integralPowerBasis_dim [hcycl : IsCyclotomicExtension {p ^ k} ℚ K]
@@ -511,7 +509,7 @@ theorem not_exists_int_prime_dvd_sub_of_prime_ne_two
     (hζ : IsPrimitiveRoot ζ (p ^ (k + 1))) (hodd : p ≠ 2) :
     ¬(∃ n : ℤ, (p : 𝓞 K) ∣ (hζ.toInteger - n : 𝓞 K)) := by
   refine not_exists_int_prime_dvd_sub_of_prime_pow_ne_two hζ (fun h ↦ ?_)
-  simp_all only [(@Nat.Prime.pow_eq_iff 2 p (k+1) Nat.prime_two).mp (by assumption_mod_cast),
+  simp_all only [(@Nat.Prime.pow_eq_iff 2 p (k + 1) Nat.prime_two).mp (by assumption_mod_cast),
     pow_one, ne_eq]
 
 /-- In a `p`-th cyclotomic extension of `ℚ `, we have that `ζ` is not congruent to an
@@ -602,7 +600,7 @@ theorem prime_dvd_of_dvd_norm_sub_one {n : ℕ} (hn : 2 ≤ n) {K : Type*}
     rw [norm_eq_iff ℤ (Sₘ := K) (Rₘ := ℚ) rfl.le, map_sub, map_one, RingOfIntegers.map_mk,
       show ζ - 1 = algebraMap ℚ⟮ζ⟯ K (IntermediateField.AdjoinSimple.gen ℚ ζ - 1) by rfl,
       ← norm_norm (S := ℚ⟮ζ⟯), Algebra.norm_algebraMap, map_pow, map_pow, ← norm_localization ℤ
-      (nonZeroDivisors ℤ) (Sₘ :=  ℚ⟮ζ⟯), map_sub (algebraMap _ _), RingOfIntegers.map_mk, map_one]
+      (nonZeroDivisors ℤ) (Sₘ := ℚ⟮ζ⟯), map_sub (algebraMap _ _), RingOfIntegers.map_mk, map_one]
   dsimp only at hp
   rw [h] at hp
   rsuffices ⟨q, hq, t, s, ht₁, ht₂, hs⟩ :
@@ -671,7 +669,7 @@ theorem absdiscr_prime_pow [IsCyclotomicExtension {p ^ k} ℚ K] :
     rw [← Algebra.discr_reindex _ _ (finCongr this)]
     congr 1
     ext i
-    simp_rw [Function.comp_apply, Basis.localizationLocalization_apply, powerBasis_dim,
+    simp_rw [Function.comp_apply, Module.Basis.localizationLocalization_apply, powerBasis_dim,
       PowerBasis.coe_basis, pB₁, integralPowerBasis_gen]
     convert ← ((IsPrimitiveRoot.powerBasis ℚ hζ).basis_eq_pow i).symm using 1
   · simp_rw [algebraMap_int_eq, map_mul, map_pow, map_neg, map_one, map_natCast]

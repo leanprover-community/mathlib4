@@ -133,11 +133,11 @@ def mkOfSucc {n} (i : Fin n) : ⦋1⦌ ⟶ ⦋n⦌ :=
 
 @[simp]
 lemma mkOfSucc_homToOrderHom_zero {n} (i : Fin n) :
-    DFunLike.coe (F := Fin 2 →o Fin (n+1)) (Hom.toOrderHom (mkOfSucc i)) 0 = i.castSucc := rfl
+    DFunLike.coe (F := Fin 2 →o Fin (n + 1)) (Hom.toOrderHom (mkOfSucc i)) 0 = i.castSucc := rfl
 
 @[simp]
 lemma mkOfSucc_homToOrderHom_one {n} (i : Fin n) :
-    DFunLike.coe (F := Fin 2 →o Fin (n+1)) (Hom.toOrderHom (mkOfSucc i)) 1 = i.succ := rfl
+    DFunLike.coe (F := Fin 2 →o Fin (n + 1)) (Hom.toOrderHom (mkOfSucc i)) 1 = i.succ := rfl
 
 
 /-- The morphism `⦋2⦌ ⟶ ⦋n⦌` that picks out a specified composite of morphisms in `Fin (n+1)`. -/
@@ -810,9 +810,7 @@ theorem eq_id_of_mono {x : SimplexCategory} (i : x ⟶ x) [Mono i] : i = 𝟙 _ 
   infer_instance
 
 theorem eq_id_of_epi {x : SimplexCategory} (i : x ⟶ x) [Epi i] : i = 𝟙 _ := by
-  suffices IsIso i by
-    haveI := this
-    apply eq_id_of_isIso
+  suffices IsIso i from eq_id_of_isIso _
   apply isIso_of_bijective
   dsimp
   rw [Fintype.bijective_iff_surjective_and_card i.toOrderHom, ← epi_iff_surjective,
@@ -889,5 +887,22 @@ def toCat : SimplexCategory ⥤ Cat.{0} :=
   SimplexCategory.skeletalFunctor ⋙ forget₂ NonemptyFinLinOrd LinOrd ⋙
       forget₂ LinOrd Lat ⋙ forget₂ Lat PartOrd ⋙
       forget₂ PartOrd Preord ⋙ preordToCat
+
+theorem toCat.obj_eq_Fin (n : ℕ) : toCat.obj ⦋n⦌ = Fin (n + 1) := rfl
+
+instance uniqueHomToZero {Δ : SimplexCategory} : Unique (Δ ⟶ ⦋0⦌) where
+  default := Δ.const _ 0
+  uniq := eq_const_to_zero
+
+/-- The object `⦋0⦌` is terminal in `SimplexCategory`. -/
+def isTerminalZero : IsTerminal (⦋0⦌ : SimplexCategory) :=
+  IsTerminal.ofUnique ⦋0⦌
+
+instance : HasTerminal SimplexCategory :=
+  IsTerminal.hasTerminal isTerminalZero
+
+/-- The isomorphism between the terminal object in `SimplexCategory` and `⦋0⦌`. -/
+noncomputable def topIsoZero : ⊤_ SimplexCategory ≅ ⦋0⦌ :=
+  terminalIsoIsTerminal isTerminalZero
 
 end SimplexCategory
