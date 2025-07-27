@@ -20,13 +20,9 @@ as in `QuadraticForm.equivalent_one_zero_neg_one_weighted_sum_squared`.
 
 -/
 
+open Finset Module QuadraticMap SignType
 
 namespace QuadraticForm
-
-open Finset SignType
-
-open QuadraticMap
-
 variable {ι : Type*} [Fintype ι]
 
 /-- The isometry between a weighted sum of squares with weights `u` on the
