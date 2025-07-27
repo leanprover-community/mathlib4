@@ -696,12 +696,7 @@ def pairSep (p : ZFSet.{u} → ZFSet.{u} → Prop) (x y : ZFSet.{u}) : ZFSet.{u}
 theorem mem_pairSep {p} {x y z : ZFSet.{u}} :
     z ∈ pairSep p x y ↔ ∃ a ∈ x, ∃ b ∈ y, z = pair a b ∧ p a b := by
   refine mem_sep.trans ⟨And.right, fun e => ⟨?_, e⟩⟩
-  rcases e with ⟨a, ax, b, bY, rfl, pab⟩
-  simp only [mem_powerset, subset_def, mem_union, pair, mem_pair]
-  rintro u (rfl | rfl) v <;> simp only [mem_singleton, mem_pair]
-  · rintro rfl
-    exact Or.inl ax
-  · rintro (rfl | rfl) <;> [left; right] <;> assumption
+  grind [mem_pair, mem_powerset, mem_singleton, mem_union, pair, subset_def]
 
 theorem pair_injective : Function.Injective2 pair := by
   intro x x' y y' H
