@@ -138,7 +138,7 @@ namespace CoconeTypes
 
 variable {F} (c : CoconeTypes.{w₁} F)
 
-lemma surjective_descColimitType_iff :
+lemma descColimitType_surjective_iff :
     Function.Surjective (F.descColimitType c) ↔
       ∀ (z : c.pt), ∃ (i : J) (x : F.obj i), c.ι i x = z := by
   constructor
