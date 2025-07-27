@@ -87,15 +87,20 @@ instance toNonUnitalCommSemiring {R} [NonUnitalCommSemiring R] [SetLike S R]
 
 variable {s} in
 @[aesop unsafe 80% (rule_sets := [SetLike])]
-/- The Aesop rule `mul_mem` doesn't work in the absense of `neg_mem` because `-x * y` simplifies to `-(x * y)`. -/
+/- The Aesop rule `mul_mem` doesn't work in the absense of `neg_mem`
+because `-x * y` simplifies to `-(x * y)`. -/
 theorem neg_mul_mem [HasDistribNeg R] {x y : R} (hx : -x ∈ s) (hy : y ∈ s) : -(x * y) ∈ s := by
   simpa using mul_mem hx hy
 
 variable {s} in
 @[aesop unsafe 80% (rule_sets := [SetLike])]
-/- The Aesop rule `mul_mem` doesn't work in the absense of `neg_mem` because `x * -y` simplifies to `-(x * y)`. -/
+/- The Aesop rule `mul_mem` doesn't work in the absense of `neg_mem`
+because `x * -y` simplifies to `-(x * y)`. -/
 theorem mul_neg_mem [HasDistribNeg R] {x y : R} (hx : x ∈ s) (hy : -y ∈ s) : -(x * y) ∈ s := by
   simpa using mul_mem hx hy
+
+example [HasDistribNeg R] {x y z : R} (hx : x ∈ s) (hy : -y ∈ s) (hz : z ∈ s) :
+    x * -y * z ∈ s := by aesop
 
 end NonUnitalSubsemiringClass
 
