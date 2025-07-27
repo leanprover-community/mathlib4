@@ -72,7 +72,7 @@ section Zero
 
 variable [Zero R]
 
-/-- Coercion `R → ℍ[R,c₁,c₂,c₃]`. -/
+/-- Coercion `R → QuadraticAlgebra R a b`. -/
 @[coe] def coe (x : R) : QuadraticAlgebra R a b := ⟨x, 0⟩
 
 instance : CoeTC R (QuadraticAlgebra R a b) := ⟨coe⟩
