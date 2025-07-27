@@ -276,26 +276,17 @@ end
 
 section
 
-variable {γ : Type*}
-
-private theorem order_aux [LinearOrder γ] {x y : γ} (h : x < y) :
-    ∃ x' y', x' < y ∧ x < y' ∧ ∀ z, x' < z → y' ≤ z := by
-  by_cases hz : ∃ z, x < z ∧ z < y
-  · have ⟨z, hxz, hzy⟩ := hz
-    exact ⟨z, z, hzy, hxz, fun _ => le_of_lt⟩
-  · push_neg at hz
-    exact ⟨x, y, h, h, hz⟩
-
-variable [CompleteLinearOrder γ]
+variable {γ : Type*} [CompleteLinearOrder γ]
 
 theorem lowerSemicontinuousWithinAt_iff_le_liminf {f : α → γ} :
     LowerSemicontinuousWithinAt f s x ↔ f x ≤ liminf f (𝓝[s] x) := by
   constructor
   · intro hf; unfold LowerSemicontinuousWithinAt at hf
     contrapose! hf
-    obtain ⟨y, z, ylt, h₁, h₂⟩ := order_aux hf; use y
-    exact ⟨ylt, fun h => h₁.not_ge
-      (le_liminf_of_le (by isBoundedDefault) (h.mono fun _ => h₂ _))⟩
+    obtain ⟨z, ltz, y, ylt, h₁⟩ := hf.exists_disjoint_Iio_Ioi; use y
+    exact ⟨ylt, fun h => ltz.not_ge
+      (le_liminf_of_le (by isBoundedDefault) (h.mono fun _ h₂ =>
+        le_of_not_gt fun h₃ => (h₁ _ h₃ _ h₂).false))⟩
   exact fun hf y ylt => eventually_lt_of_lt_liminf (ylt.trans_le hf)
 
 alias ⟨LowerSemicontinuousWithinAt.le_liminf, _⟩ := lowerSemicontinuousWithinAt_iff_le_liminf
@@ -332,9 +323,9 @@ theorem lowerSemicontinuousOn_iff_isClosed_epigraph {f : α → γ} {s : Set α}
   constructor
   · intro hf ⟨x, y⟩ h
     by_cases hx : x ∈ s
-    · have ⟨x', y', hx', hy', h₁⟩ := order_aux (h hx)
-      filter_upwards [(hf x hx x' hx').prodMk_nhds (eventually_lt_nhds hy')]
-        with _ ⟨h₂, h₃⟩ h₄ using h₃.trans_le <| h₁ _ <| h₂ h₄
+    · have ⟨y', hy', z, hz, h₁⟩ := (h hx).exists_disjoint_Iio_Ioi
+      filter_upwards [(hf x hx z hz).prodMk_nhds (eventually_lt_nhds hy')]
+        with _ ⟨h₂, h₃⟩ h₄ using h₁ _ h₃ _ <| h₂ h₄
     · filter_upwards [(continuous_fst.tendsto _).eventually (hs.isOpen_compl.eventually_mem hx)]
         with _ h₁ h₂ using (h₁ h₂).elim
   · intro hf x _ y hy
