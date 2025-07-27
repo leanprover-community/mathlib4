@@ -68,11 +68,11 @@ open DirectSum
 
 variable [DecidableEq ι]
 
-/-- The coproduct cone induced by the concrete product. -/
+/-- The coproduct cone induced by the concrete coproduct. -/
 def coproductCocone : Cofan Z :=
   Cofan.mk (ModuleCat.of R (⨁ i : ι, Z i)) fun i => ofHom (DirectSum.lof R ι (fun i ↦ Z i) i)
 
-/-- The concrete coproduct cone is limiting. -/
+/-- The concrete coproduct cone is colimiting. -/
 def coproductCoconeIsColimit : IsColimit (coproductCocone Z) where
   desc s := ofHom <| DirectSum.toModule R ι _ fun i ↦ (s.ι.app ⟨i⟩).hom
   fac := by
@@ -87,7 +87,7 @@ def coproductCoconeIsColimit : IsColimit (coproductCocone Z) where
     refine DirectSum.linearMap_ext _ fun i ↦ ?_
     ext x
     simpa only [LinearMap.coe_comp, Function.comp_apply, hom_ofHom, toModule_lof] using
-      congr($(h ⟨i⟩) x)
+      congr (h ⟨i⟩) x
 
 variable [HasCoproduct Z]
 

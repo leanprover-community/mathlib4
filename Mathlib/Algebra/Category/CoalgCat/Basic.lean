@@ -83,7 +83,7 @@ abbrev ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Modu
   ConcreteCategory.ofHom f
 
 lemma Hom.toCoalgHom_injective (V W : CoalgCat.{v} R) :
-    Function.Injective (Hom.toCoalgHom' : Hom V W → _) :=
+    Function.Injective (toCoalgHom' : Hom V W → _) :=
   fun ⟨f⟩ ⟨g⟩ _ => by congr
 
 @[ext]

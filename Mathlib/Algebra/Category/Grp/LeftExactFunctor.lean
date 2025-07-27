@@ -19,7 +19,7 @@ Here, `C ⥤ₗ D` is the category of finite-limits-preserving functors from `C`
 To construct a functor from `C ⥤ₗ Type v` to `C ⥤ₗ AddCommGrp.{v}`, notice that a left-exact
 functor `F : C ⥤ Type v` induces a functor `CommGrp_ C ⥤ CommGrp_ (Type v)`. But `CommGrp_ C` is
 equivalent to `C`, and `CommGrp_ (Type v)` is equivalent to `AddCommGrp.{v}`, so we turn this
-into a functor `C ⥤ AddCommGrp.{v}`. By construction, composing with with the forgetful
+into a functor `C ⥤ AddCommGrp.{v}`. By construction, composing with the forgetful
 functor recovers the functor we started with, so since the forgetful functor reflects finite
 limits and `F` preserves finite limits, our constructed functor also preserves finite limits. It
 can be shown that this construction gives a quasi-inverse to the whiskering operation
@@ -95,7 +95,7 @@ noncomputable def unitIso : 𝟭 (C ⥤ₗ AddCommGrp) ≅
       (CommGrp.toAddCommGrp.mapIso (commGrpTypeEquivalenceCommGrp.counitIso.app
         (AddCommGrp.toCommGrp.obj (F.obj.obj X)))).symm ≪≫
       CommGrp.toAddCommGrp.mapIso
-        (CommGrpTypeEquivalenceCommGrp.functor.mapIso (unitIsoAux F.obj X)))))
+        (commGrpTypeEquivalenceCommGrp.functor.mapIso (unitIsoAux F.obj X)))))
 
 end leftExactFunctorForgetEquivalence
 

@@ -217,7 +217,7 @@ lemma ofHom_injective {X Y : Type u} [Group X] [Group Y] :
   apply ConcreteCategory.congr_hom h
 
 /-- The forgetful functor from groups to monoids is fully faithful. -/
-@[to_additive fullyFaihtfulForget₂ToAddMonCat
+@[to_additive fullyFaithfulForget₂ToAddMonCat
   "The forgetful functor from additive groups to additive monoids is fully faithful."]
 def fullyFaithfulForget₂ToMonCat : (forget₂ Grp.{u} MonCat).FullyFaithful where
   preimage f := ofHom f.hom
@@ -427,7 +427,7 @@ instance hasForgetToGroup : HasForget₂ CommGrp Grp where
 instance : Coe CommGrp.{u} Grp.{u} where coe := (forget₂ CommGrp Grp).obj
 
 /-- The forgetful functor from commutative groups to groups is fully faithful. -/
-@[to_additive fullyFaihtfulForget₂ToAddGrp
+@[to_additive fullyFaithfulForget₂ToAddGrp
   "The forgetful functor from additive commutative groups to additive groups is fully faithful."]
 def fullyFaithfulForget₂ToGrp : (forget₂ CommGrp.{u} Grp).FullyFaithful where
   preimage f := ofHom f.hom
@@ -652,3 +652,4 @@ theorem MonoidHom.comp_id_commGrp {G : CommGrp.{u}} {H : Type u} [Monoid H] (f :
 theorem MonoidHom.id_commGrp_comp {G : Type u} [Monoid G] {H : CommGrp.{u}} (f : G →* H) :
     MonoidHom.comp (CommGrp.Hom.hom (𝟙 H)) f = f := by
   simp
+

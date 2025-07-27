@@ -50,7 +50,7 @@ instance : Sub (M ⟶ N) where
 instance : SMul ℤ (M ⟶ N) where
   smul n f := ofHom (n • f.hom)
 
-@[simp] lemma hom_zsmul (n : ℕ) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
+@[simp] lemma hom_zsmul (n : ℤ) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
 
 instance (P Q : AddCommGrp) : AddCommGroup (P ⟶ Q) :=
   Function.Injective.addCommGroup (Hom.hom) ConcreteCategory.hom_injective

@@ -73,7 +73,7 @@ instance symmetricCategory : SymmetricCategory (ModuleCat.{u} R) where
   hexagon_forward := hexagon_forward
   hexagon_reverse := hexagon_reverse
   -- Porting note: this proof was automatic in Lean3
-  -- now `aesop` is applying `ModuleCat.ext` in favour of `TensorProduct.ext`.
+  -- now `aesop` is applying `ModuleCat.ext` in favor of `TensorProduct.ext`.
   symmetry _ _ := by
     ext : 1
     apply TensorProduct.ext'
