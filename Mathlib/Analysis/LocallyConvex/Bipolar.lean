@@ -122,6 +122,8 @@ theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s
     rw [map_zero, map_zero] at e3
     let g := (1/u : ℝ) • f
     have fg : g = (1/u : ℝ) • f := rfl
+    have fg2 : u • g = f := by
+      rw [fg, one_div, ← smul_assoc, smul_eq_mul, mul_inv_cancel₀ (ne_of_lt e3).symm, one_smul]
     have hg₁ : ∀ a ∈ (closedAbsConvexHull (E := WeakBilin B) 𝕜) s, RCLike.re (g a) < 1 :=
         fun _ ha => by
       rw [fg, ContinuousLinearMap.coe_smul', Pi.smul_apply, RCLike.smul_re, one_div,
@@ -138,23 +140,9 @@ theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s
       have i1 : RCLike.re ((B.flip f₀) (l • x₂)) < 1 := hg₁ _
         (balanced_iff_smul_mem.mp absConvex_convexClosedHull.1 lnorm
           (subset_closedAbsConvexHull hx₂))
-      rw [CompatibleSMul.map_smul] at i1
-      rw [smul_eq_mul] at i1
-      simp only [l] at i1
-      rw [mul_comm] at i1
-      rw [← mul_div_assoc] at i1
-      rw [LinearMap.flip_apply] at i1
-      rw [RCLike.mul_conj] at i1
-      rw [sq] at i1
-      simp at i1
+      rw [CompatibleSMul.map_smul, smul_eq_mul, mul_comm, ← mul_div_assoc, LinearMap.flip_apply,
+        RCLike.mul_conj, sq, mul_self_div_self, RCLike.ofReal_re] at i1
       exact le_of_lt i1
-    have fg2 : u • g = f := by
-      rw [fg]
-      simp only [one_div]
-      rw [← smul_assoc]
-      rw [smul_eq_mul]
-      rw [mul_inv_cancel₀, one_smul]
-      exact Ne.symm (ne_of_lt e3)
     have one_lt_x_f₀ : 1 < RCLike.re (B x f₀) := by
       rw [← one_lt_inv_mul₀ e3] at hf₂
       suffices u⁻¹ * RCLike.re (f x) = RCLike.re ((B x) f₀) by exact lt_of_lt_of_eq hf₂ this
