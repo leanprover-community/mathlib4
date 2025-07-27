@@ -17,7 +17,7 @@ This introduces `FGModuleCat R`, the category of finitely generated modules over
 It is implemented as a full subcategory on a subtype of `ModuleCat R`.
 
 When `K` is a field,
-`FGModuleCatCat K` is the category of finite dimensional vector spaces over `K`.
+`FGModuleCat K` is the category of finite dimensional vector spaces over `K`.
 
 We first create the instance as a preadditive category.
 When `R` is commutative we then give the structure as an `R`-linear monoidal category.
@@ -120,7 +120,7 @@ instance : (forget₂ (FGModuleCat.{v} R) (ModuleCat.{v} R)).Full where
   map_surjective f := ⟨f, rfl⟩
 
 variable {R} in
-/-- Converts and isomorphism in the category `FGModuleCat R` to
+/-- Converts an isomorphism in the category `FGModuleCat R` to
 a `LinearEquiv` between the underlying modules. -/
 def isoToLinearEquiv {V W : FGModuleCat.{v} R} (i : V ≅ W) : V ≃ₗ[R] W :=
   ((forget₂ (FGModuleCat.{v} R) (ModuleCat.{v} R)).mapIso i).toLinearEquiv
