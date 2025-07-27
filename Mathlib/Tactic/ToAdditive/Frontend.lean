@@ -804,7 +804,7 @@ def expand (b : BundledExtensions) (e : Expr) : MetaM Expr := do
       let some projName := info.getProjFn? i | unreachable!
       -- if `projName` requires reordering, replace `f` with the application `projName s`
       -- and then visit `projName s args` again.
-      if (reorderFn projName).isEmpty then
+      if findTranslation? env b projName |>.isNone then
         return .continue
       return .visit <| (← whnfD (← inferType s)).withApp fun sf sargs ↦
         mkAppN (mkApp (mkAppN (.const projName sf.constLevels!) sargs) s) args
