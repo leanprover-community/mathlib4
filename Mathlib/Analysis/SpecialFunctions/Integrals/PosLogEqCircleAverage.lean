@@ -119,4 +119,4 @@ theorem circleAverage_log_norm_sub_const₁ (h : ‖a‖ = 1) :
     _ = 4 * sin (x / 2) ^ 2 := by
       nth_rw 1 [← mul_one 4, ← sin_sq_add_cos_sq (x / 2)]
       ring
-  _ = 0 := circleAverage_log_norm_id_sub_const₁_integral
+  _ = 0 := circleAverage_log_norm_sub_const₁_integral
