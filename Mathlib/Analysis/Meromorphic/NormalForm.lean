@@ -288,6 +288,10 @@ lemma MeromorphicAt.eqOn_compl_singleton_toMeromorphicNFAt (hf : MeromorphicAt f
     Set.EqOn f (toMeromorphicNFAt f x) {x}ᶜ :=
   fun _ _ ↦ by simp_all [toMeromorphicNFAt]
 
+@[deprecated (since := "2025-07-27")]
+alias MeromorphicAt.eqOn_compl_singleton_toMermomorphicNFAt :=
+  MeromorphicAt.eqOn_compl_singleton_toMeromorphicNFAt
+
 /-- If `f` is not meromorphic, conversion to normal form at `x` maps the function to `0`. -/
 @[simp] lemma toMeromorphicNFAt_of_not_meromorphicAt (hf : ¬MeromorphicAt f x) :
     toMeromorphicNFAt f x = 0 := by
