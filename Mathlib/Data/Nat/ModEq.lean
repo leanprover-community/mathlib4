@@ -153,6 +153,31 @@ protected theorem add_right_cancel (h₁ : c ≡ d [MOD n]) (h₂ : a + c ≡ b 
 protected theorem add_right_cancel' (c : ℕ) (h : a + c ≡ b + c [MOD n]) : a ≡ b [MOD n] :=
   ModEq.rfl.add_right_cancel h
 
+protected lemma sub' (h : c ≤ a ↔ d ≤ b) (hab : a ≡ b [MOD n]) (hcd : c ≡ d [MOD n]) :
+    a - c ≡ b - d [MOD n] := by
+  obtain hac | hca := lt_or_ge a c
+  · rw [Nat.sub_eq_zero_of_le hac.le, Nat.sub_eq_zero_of_le ((lt_iff_lt_of_le_iff_le h).1 hac).le]
+  rw [modEq_iff_dvd, Int.natCast_sub hca, Int.natCast_sub <| h.1 hca, sub_sub_sub_comm]
+  exact Int.dvd_sub hab.dvd hcd.dvd
+
+protected lemma sub_left' (h : b ≤ a ↔ c ≤ a) (hbc : b ≡ c [MOD n]) : a - b ≡ a - c [MOD n] :=
+  .sub' h .rfl hbc
+
+protected lemma sub_right' (h : a ≤ b ↔ a ≤ c) (hbc : b ≡ c [MOD n]) : b - a ≡ c - a [MOD n] :=
+  .sub' h hbc .rfl
+
+@[gcongr]
+protected lemma sub (hca : c ≤ a) (hdb : d ≤ b) (hab : a ≡ b [MOD n]) (hcd : c ≡ d [MOD n]) :
+    a - c ≡ b - d [MOD n] := .sub' (iff_of_true hca hdb) hab hcd
+
+@[gcongr]
+protected lemma sub_left (hba : b ≤ a) (hca : c ≤ a) (hbc : b ≡ c [MOD n]) :
+    a - b ≡ a - c [MOD n] := .sub hba hca .rfl hbc
+
+@[gcongr]
+protected lemma sub_right (hab : a ≤ b) (hac : a ≤ c) (hbc : b ≡ c [MOD n]) :
+    b - a ≡ c - a [MOD n] := .sub hab hac hbc .rfl
+
 /-- Cancel left multiplication on both sides of the `≡` and in the modulus.
 
 For cancelling left multiplication in the modulus, see `Nat.ModEq.of_mul_left`. -/
