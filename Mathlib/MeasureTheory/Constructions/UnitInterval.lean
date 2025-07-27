@@ -57,15 +57,27 @@ lemma volume_Iio : volume (Iio x) = .ofReal x := by
 
 variable (y : I)
 
+example (a b : ℝ) : edist a b = .ofReal (|a - b|) := by
+  exact edist_dist a b
+
 @[simp]
 lemma volume_Icc : volume (Icc x y) = .ofReal (y - x) := by
   simp only [← volume_image_subtype_coe measurableSet_Icc, image_subtype_val_Icc, Real.volume_Icc]
 
-lemma volume_uIcc (h : x ≤ y) : volume (uIcc x y) = .ofReal (y - x) := by
-  simp only [uIcc_of_le h, volume_Icc]
-
-lemma volume_uIcc' (h : y ≤ x) : volume (uIcc x y) = .ofReal (x - y) := by
-  simp only [uIcc_of_ge h, volume_Icc]
+@[simp]
+lemma volume_uIcc : volume (uIcc x y) = edist y x := by
+  by_cases h : x ≤ y
+  · simp only [uIcc_of_le h, volume_Icc]
+    suffices |y.1 - x| = y - x by
+      rw [←this]
+      exact (edist_dist y x).symm
+    exact abs_of_nonneg <| sub_nonneg_of_le h
+  · simp only [uIcc_of_gt (not_le.mp h), volume_Icc]
+    rw [edist_comm]
+    suffices |x - y.1| = x - y by
+      rw [←this]
+      exact (edist_dist x y).symm
+    exact abs_of_pos <| sub_pos.mpr (not_le.mp h)
 
 @[simp]
 lemma volume_Ico : volume (Ico x y) = .ofReal (y - x) := by
@@ -95,11 +107,20 @@ lemma volume_Ioc : volume (Ioc x y) = .ofReal (y - x) := by
     rw [ENNReal.ofReal_eq_zero]
     exact tsub_nonpos.mpr (not_lt.mp hx)
 
-lemma volume_uIoc (h : x ≤ y) : volume (uIoc x y) = .ofReal (y - x) := by
-  simp only [uIoc_of_le h, volume_Ioc]
-
-lemma volume_uIoc' (h : y ≤ x) : volume (uIoc x y) = .ofReal (x - y) := by
-  simp only [uIoc_of_ge h, volume_Ioc]
+@[simp]
+lemma volume_uIoc : volume (uIoc x y) = edist y x := by
+  by_cases h : x ≤ y
+  · simp only [uIoc_of_le h, volume_Ioc]
+    suffices |y.1 - x| = y - x by
+      rw [←this]
+      exact (edist_dist y x).symm
+    exact abs_of_nonneg <| sub_nonneg_of_le h
+  · simp only [uIoc_of_ge (not_le.mp h).le, volume_Ioc]
+    rw [edist_comm]
+    suffices |x - y.1| = x - y by
+      rw [←this]
+      exact (edist_dist x y).symm
+    exact abs_of_pos <| sub_pos.mpr (not_le.mp h)
 
 @[simp]
 lemma volume_Ioo : volume (Ioo x y) = .ofReal (y - x) := by
@@ -115,10 +136,19 @@ lemma volume_Ioo : volume (Ioo x y) = .ofReal (y - x) := by
     rw [ENNReal.ofReal_eq_zero]
     exact tsub_nonpos.mpr (not_lt.mp hx)
 
-lemma volume_uIoo (h : x ≤ y) : volume (uIoo x y) = .ofReal (y - x) := by
-  simp only [uIoo_of_le h, volume_Ioo]
-
-lemma volume_uIoo' (h : y ≤ x) : volume (uIoo x y) = .ofReal (x - y) := by
-  simp only [uIoo_of_ge h, volume_Ioo]
+@[simp]
+lemma volume_uIoo : volume (uIoo x y) = edist y x := by
+  by_cases h : x ≤ y
+  · simp only [uIoo_of_le h, volume_Ioo]
+    suffices |y.1 - x| = y - x by
+      rw [←this]
+      exact (edist_dist y x).symm
+    exact abs_of_nonneg <| sub_nonneg_of_le h
+  · simp only [uIoo_of_ge (not_le.mp h).le, volume_Ioo]
+    rw [edist_comm]
+    suffices |x - y.1| = x - y by
+      rw [←this]
+      exact (edist_dist x y).symm
+    exact abs_of_pos <| sub_pos.mpr (not_le.mp h)
 
 end unitInterval
