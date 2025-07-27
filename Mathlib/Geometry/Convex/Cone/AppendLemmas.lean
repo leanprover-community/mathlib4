@@ -3,15 +3,13 @@ Copyright (c) 2025 Bjørn Solheim. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Solheim
 -/
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Data.Fin.Tuple.Basic
 
 /-!
 # Appending finite sequences
 
-We give various basic results regarding multiplying, appending,
-and splitting finite sequences.
+We give simple lemmas regarding multiplying, appending,
+and de-appending finite sequences.
 
 ## Main results
 
@@ -40,17 +38,9 @@ In this file finite sequences are represented by
 -/
 
 variable {α : Type*}
-variable {E : Type*} [AddCommMonoid E]
 variable {m n : ℕ}
-variable (R : Type*) [Semiring R] [PartialOrder R]
 
 namespace Fin
-
-/-- Summing over appended v and w, and then extracting
-the less than part, gives back the original first sequence v. -/
-theorem sum_append (v : Fin m → E) (w : Fin n → E) :
-    (∑ i, append v w i) = (∑ i, v i) + (∑ i, w i) := by
-  simp [sum_univ_add]
 
 /-- Appending two sequences v and w, and then extracting
 the less than part, gives back the original first sequence v. -/
@@ -99,26 +89,5 @@ theorem append_mem (s : Set α) (v1 : Fin m → α) (v2 : Fin n → α)
     (h1 : ∀ i, v1 i ∈ s) (h2 : ∀ i, v2 i ∈ s) :
     (∀ i, (append v1 v2) i ∈ s) :=
   (append_forall_iff (· ∈ s) v1 v2).mpr ⟨h1, h2⟩
-
-/-- Appending two nonnegative sequences produces a nonnegative sequence -/
-theorem append_nonneg (c1 : Fin m → R) (c2 : Fin n → R)
-    (h1 : ∀ i, 0 ≤ c1 i) (h2 : ∀ i, 0 ≤ c2 i) :
-    (∀ i : (Fin (m + n)), 0 ≤ (append c1 c2) i) :=
-  (append_forall_iff (0 ≤ ·) c1 c2).mpr ⟨h1, h2⟩
-
-variable (R : Type*) [Semiring R] [Module R E]
-
-/-- Appending two scalar coefficient sequences
-and two vector sequences by themselves, and then multiplying the appended sequences,
-is equivalent to first multiplying the appropriate coefficients and vectors and then appending -/
-theorem smul_append_distrib (c1 : Fin m → R) (v1 : Fin m → E)
-    (c2 : Fin n → R) (v2 : Fin n → E) :
-    (append c1 c2) • (append v1 v2) = append (c1 • v1) (c2 • v2) := by
-  rw [append, append, append]
-  ext ⟨i, hi⟩
-  by_cases h : i < m
-  · simp [addCases, h]
-  · simp [addCases, h]
-
 
 end Fin
