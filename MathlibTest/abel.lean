@@ -108,6 +108,17 @@ example [AddCommGroup α] (x y z : α) (h : False) (w : x - x = y + z) : False :
   guard_hyp w : 0 = y + z
   assumption
 
+/-
+Test that when `abel_nf` is run at multiple locations, it uses the same atom ordering in each
+location.
+-/
+example [AddCommGroup α] {a b c : α} (h1 : a + b + c = 0) (h2 : b + a + c = 0) : c + a + b = 0 := by
+  abel_nf at *
+  guard_hyp h1 : c + (a + b) = 0
+  guard_hyp h2 : c + (a + b) = 0
+  guard_target = c + (a + b) = 0
+  exact h1
+
 /--
 error: abel_nf made no progress
 -/
