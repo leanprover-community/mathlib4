@@ -94,7 +94,7 @@ lemma injective_descColimitType_iff_of_isFiltered :
     obtain ⟨k, f, f', eq⟩ := h _ _ _ _ eq
     rw [← F.ιColimitType_map f x, eq, F.ιColimitType_map]
 
-lemma injective_descColimitType_iff_of_isFiltered' :
+lemma descColimitType_injective_iff_of_isFiltered' :
     Function.Injective (F.descColimitType c) ↔
       ∀ (j : J) (x x' : F.obj j), c.ι j x = c.ι j x' →
         ∃ (k : J) (f : j ⟶ k), F.map f x = F.map f x' := by
