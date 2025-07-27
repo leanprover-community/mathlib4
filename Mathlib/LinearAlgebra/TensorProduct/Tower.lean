@@ -734,3 +734,24 @@ lemma baseChange_span (s : Set M) :
   rw [baseChange_eq_span, map_span, span_span_of_tower]
 
 end Submodule
+
+variable {R A B C D : Type*} [CommSemiring R] [AddCommMonoid A]
+  [AddCommMonoid B] [AddCommMonoid C] [AddCommMonoid D]
+  [Module R A] [Module R B] [Module R C] [Module R D]
+
+open LinearMap
+open scoped TensorProduct
+
+lemma TensorProduct.assoc_tensor :
+    (TensorProduct.assoc R A B (C ⊗[R] D)).symm.toLinearMap
+    = (TensorProduct.assoc R _ _ _).toLinearMap
+    ∘ₗ (rTensor _ (TensorProduct.assoc R _ _ _).symm.toLinearMap)
+    ∘ₗ (TensorProduct.assoc R _ _ _).symm.toLinearMap
+    ∘ₗ (lTensor _ (TensorProduct.assoc R _ _ _).symm.toLinearMap) := by
+  ext; simp
+
+lemma TensorProduct.lid_tensor :
+    (TensorProduct.lid R (A ⊗[R] B)).toLinearMap
+      = rTensor _ (TensorProduct.lid R _).toLinearMap
+      ∘ₗ (TensorProduct.assoc R _ _ _).symm.toLinearMap := by
+  ext; simp
