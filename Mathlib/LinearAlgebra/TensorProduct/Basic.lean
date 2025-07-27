@@ -515,31 +515,19 @@ theorem liftAux.smulₛₗ (r : R) (x) : liftAux f' (r • x) = σ₁₂ r • l
 theorem liftAux.smul (r : R) (x) : liftAux f (r • x) = r • liftAux f x :=
   liftAux.smulₛₗ _ _ _
 
-/-- semilinear version of `lift` -/
-def liftₛₗ : M ⊗[R] N →ₛₗ[σ₁₂] P₂ :=
-  { liftAux f' with map_smul' := liftAux.smulₛₗ f' }
-
-@[simp]
-theorem liftₛₗ.tmul (x y) : liftₛₗ f' (x ⊗ₜ y) = f' x y :=
-  rfl
-
-@[simp]
-theorem liftₛₗ.tmul' (x y) : (liftₛₗ f').1 (x ⊗ₜ y) = f' x y :=
-  rfl
-
-variable (f) in
+variable (f') in
 /-- Constructing a linear map `M ⊗ N → P` given a bilinear map `M → N → P` with the property that
 its composition with the canonical bilinear map `M → N → M ⊗ N` is
 the given bilinear map `M → N → P`. -/
-def lift : M ⊗[R] N →ₗ[R] P :=
-  liftₛₗ f
+def lift : M ⊗[R] N →ₛₗ[σ₁₂] P₂ :=
+  { liftAux f' with map_smul' := liftAux.smulₛₗ f' }
 
 @[simp]
-theorem lift.tmul (x y) : lift f (x ⊗ₜ y) = f x y :=
+theorem lift.tmul (x y) : lift f' (x ⊗ₜ y) = f' x y :=
   rfl
 
 @[simp]
-theorem lift.tmul' (x y) : (lift f).1 (x ⊗ₜ y) = f x y :=
+theorem lift.tmul' (x y) : (lift f').1 (x ⊗ₜ y) = f' x y :=
   rfl
 
 theorem ext' {g h : M ⊗[R] N →ₛₗ[σ₁₂] P₂} (H : ∀ x y, g (x ⊗ₜ y) = h (x ⊗ₜ y)) : g = h :=
@@ -723,21 +711,13 @@ end CompatibleSMul
 
 open LinearMap
 
-/-- semilinear version of `map` -/
-def mapₛₗ (f : M →ₛₗ[σ₁₂] M₂) (g : N →ₛₗ[σ₁₂] N₂) : M ⊗[R] N →ₛₗ[σ₁₂] M₂ ⊗[R₂] N₂ :=
+/-- The tensor product of a pair of linear maps between modules. -/
+def map (f : M →ₛₗ[σ₁₂] M₂) (g : N →ₛₗ[σ₁₂] N₂) : M ⊗[R] N →ₛₗ[σ₁₂] M₂ ⊗[R₂] N₂ :=
   liftₛₗ <| comp (compl₂ (mk _ _ _) g) f
 
 @[simp]
-theorem mapₛₗ_tmul (f : M →ₛₗ[σ₁₂] M₂) (g : N →ₛₗ[σ₁₂] N₂) (m : M) (n : N) :
-    mapₛₗ f g (m ⊗ₜ n) = f m ⊗ₜ g n :=
-  rfl
-
-/-- The tensor product of a pair of linear maps between modules. -/
-def map (f : M →ₗ[R] P) (g : N →ₗ[R] Q) : M ⊗[R] N →ₗ[R] P ⊗[R] Q :=
-  mapₛₗ f g
-
-@[simp]
-theorem map_tmul (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (m : M) (n : N) : map f g (m ⊗ₜ n) = f m ⊗ₜ g n :=
+theorem map_tmul (f : M →ₛₗ[σ₁₂] M₂) (g : N →ₛₗ[σ₁₂] N₂) (m : M) (n : N) :
+    map f g (m ⊗ₜ n) = f m ⊗ₜ g n :=
   rfl
 
 /-- Given linear maps `f : M → P`, `g : N → Q`, if we identify `M ⊗ N` with `N ⊗ M` and `P ⊗ Q`
