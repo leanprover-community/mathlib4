@@ -31,7 +31,7 @@ open Set
 `x ⇨ s ∈ S` for all `x : X` and `s ∈ S`.
 
 Note that locales are the same thing as frames, but with reverse morphisms, which is why we assume
-`Frame X`. -/
+`Frame X`. We only need to define locales categorically. See `Locale`. -/
 structure Sublocale (X : Type*) [Order.Frame X] where
   /-- The set corresponding to the sublocale. -/
   carrier : Set X
