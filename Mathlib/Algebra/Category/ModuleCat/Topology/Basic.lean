@@ -197,7 +197,7 @@ variable {R}
 
 variable {M : ModuleCat R} {I : Type*} {X : I → TopModuleCat R} (f : ∀ i, (X i).toModuleCat ⟶ M)
 
-/-- The coinduced topology on `M` from a family of continuous linear map into `M`, which is the
+/-- The coinduced topology on `M` from a family of continuous linear maps into `M`, which is the
 finest topology that makes it into a topological module and makes every map continuous. -/
 def coinduced : TopModuleCat R :=
   letI : TopologicalSpace M := sInf { t | @ContinuousSMul R M _ _ t ∧ @ContinuousAdd M t _ ∧
@@ -233,7 +233,7 @@ def isColimit {J : Type*} [Category J] {F : J ⥤ TopModuleCat R}
     change Continuous (X := F.obj i) (Y := s.pt)
       (c.ι.app i ≫ hc.desc ((forget₂ _ (ModuleCat R)).mapCocone s)).hom
     rw [hc.fac]
-    exact (s.ι.app i).hom.2⟩
+    exact (s.ι.app i).hom.2]⟩
   fac s i := by ext x; exact congr($(hc.fac ((forget₂ _ _).mapCocone s) i).hom x)
   uniq s m H := by
     ext x
@@ -258,7 +258,7 @@ variable {R}
 
 variable {M : ModuleCat R} {I : Type*} {X : I → TopModuleCat R} (f : ∀ i, M ⟶ (X i).toModuleCat)
 
-/-- The induced topology on `M` from a family of continuous linear map from `M`, which is the
+/-- The induced topology on `M` from a family of continuous linear maps from `M`, which is the
 coarsest topology that makes every map continuous. -/
 def induced : TopModuleCat R :=
   letI : TopologicalSpace M := ⨅ i, (X i).topologicalSpace.induced (f i)
@@ -293,7 +293,7 @@ def isLimit {J : Type*} [Category J] {F : J ⥤ TopModuleCat R}
     change Continuous (X := s.pt) (Y := F.obj i)
       (hc.lift ((forget₂ _ (ModuleCat R)).mapCone s) ≫ c.π.app i).hom
     rw [hc.fac]
-    exact (s.π.app i).hom.2⟩
+    exact (s.π.app i).hom.2]⟩
   fac s i := by ext x; exact congr($(hc.fac ((forget₂ _ _).mapCone s) i).hom x)
   uniq s m H := by
     ext x
