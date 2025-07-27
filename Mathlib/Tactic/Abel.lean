@@ -505,7 +505,7 @@ elab (name := abelNF) "abel_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic =
   if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
-  atLocation (abelNFCore s cfg) "abel_nf" (failIfUnchanged := true) false loc
+  atLocation (.noContext (abelNFCore s cfg)) "abel_nf" loc (failIfUnchanged := true) false
 
 @[tactic_alt abel]
 macro "abel_nf!" cfg:optConfig loc:(location)? : tactic =>

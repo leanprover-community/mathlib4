@@ -19,12 +19,28 @@ combination of these.
 
 namespace Mathlib.Tactic
 open Lean Meta Elab.Tactic
-variable (m : Expr → MetaM Simp.Result)
+
+/-- A metaprogram whose input is an expression `e` and whose output is a new expression `e'`,
+together with a proof that `e = e'`.
+
+The metaprogram may optionally depend on `ctx`, a `Simp.Context`; if it does, then when the
+metaprogram is run on a local hypothesis `h`, the context `ctx` will be modified to forget `h`. -/
+inductive SimprocLike
+  /-- Default case: a metaprogram which does not depend on a `Simp.Context`. -/
+  | noContext (m : Expr → MetaM Simp.Result)
+  /-- A metaprogram which depends on a `Simp.Context`. In this case we must also provide the
+  `Simp.Context` to use it with; this will be modified at each hypothesis `h` to forget `h`. -/
+  | withContext (ctx : Simp.Context) (m : Simp.Context → Expr → MetaM Simp.Result)
+
+variable (m : SimprocLike)
 
 /-- Use the procedure `m` to rewrite the main goal. -/
 def atTarget (proc : String) (failIfUnchanged : Bool) : TacticM Unit := withMainContext do
   let goal ← getMainGoal
   let tgt ← instantiateMVars (← goal.getType)
+  let m := match m with
+  | .noContext m => m
+  | .withContext ctx m => m ctx
   let r ← m tgt
   if r.expr.consumeMData.isConstOf ``True then
     goal.assign (← mkOfEqTrue (← r.getProof))
@@ -40,6 +56,9 @@ def atLocalDecl (proc : String) (failIfUnchanged : Bool) (mayCloseGoal : Bool) (
     TacticM Unit := withMainContext do
   let tgt ← instantiateMVars (← fvarId.getType)
   let goal ← getMainGoal
+  let m := match m with
+  | .noContext m => m
+  | .withContext ctx m => m <| ctx.setSimpTheorems <| ctx.simpTheorems.eraseTheorem (.fvar fvarId)
   let myres ← m tgt
   match ← applySimpResultToLocalDecl goal fvarId myres mayCloseGoal with
   | none => replaceMainGoal []
@@ -49,8 +68,9 @@ def atLocalDecl (proc : String) (failIfUnchanged : Bool) (mayCloseGoal : Bool) (
     replaceMainGoal [newGoal]
 
 /-- Use the procedure `m` to rewrite at specified locations. -/
-def atLocation (proc : String) (failIfUnchanged : Bool := true)
-    (mayCloseGoalFromHyp : Bool := false) (loc : Location) : TacticM Unit :=
+def atLocation (proc : String) (loc : Location) (failIfUnchanged : Bool := true)
+    (mayCloseGoalFromHyp : Bool := false) :
+    TacticM Unit :=
   withLocation loc (atLocalDecl m proc failIfUnchanged mayCloseGoalFromHyp)
     (atTarget m proc failIfUnchanged)
     fun _ ↦ throwError "{proc} made no progress"

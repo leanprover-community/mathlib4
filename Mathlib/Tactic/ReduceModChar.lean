@@ -290,11 +290,12 @@ syntax (name := reduce_mod_char!) "reduce_mod_char!" (location)? : tactic
 elab_rules : tactic
 | `(tactic| reduce_mod_char $[$loc]?) => unsafe do
   let loc := (loc.map expandLocation).getD (.targets #[] true)
-  Mathlib.Tactic.atLocation derive "reduce_mod_char" (failIfUnchanged := false) false loc
+  Mathlib.Tactic.atLocation (.noContext derive) "reduce_mod_char" loc (failIfUnchanged := false)
+    false
 | `(tactic| reduce_mod_char! $[$loc]?) => unsafe do
   let loc := (loc.map expandLocation).getD (.targets #[] true)
-  Mathlib.Tactic.atLocation (derive (expensive := true)) "reduce_mod_char"
-    (failIfUnchanged := false) false loc
+  Mathlib.Tactic.atLocation (.noContext (derive (expensive := true))) "reduce_mod_char" loc
+    (failIfUnchanged := false) false
 
 end ReduceModChar
 

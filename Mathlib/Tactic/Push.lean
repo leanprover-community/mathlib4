@@ -210,6 +210,6 @@ distrib mode it produces `¬p ∨ ¬q`. To use distrib mode, use `set_option pus
 -/
 elab "push_neg" loc:(location)? : tactic =>
   let loc := (loc.map expandLocation).getD (.targets #[] true)
-  atLocation pushNegCore "push_neg" (failIfUnchanged := true) false loc
+  atLocation (.noContext pushNegCore) "push_neg" loc (failIfUnchanged := true) false
 
 end Mathlib.Tactic.PushNeg

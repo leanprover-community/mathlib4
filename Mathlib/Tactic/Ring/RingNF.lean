@@ -194,7 +194,7 @@ elab (name := ringNF) "ring_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic =
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
   let m e : MetaM Simp.Result := M.run s cfg <| rewrite e
-  atLocation m "ring_nf" cfg.failIfUnchanged false loc
+  atLocation (.noContext m) "ring_nf" loc cfg.failIfUnchanged false
 
 @[inherit_doc ringNF] macro "ring_nf!" cfg:optConfig loc:(location)? : tactic =>
   `(tactic| ring_nf ! $cfg:optConfig $(loc)?)
