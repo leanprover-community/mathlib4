@@ -53,40 +53,14 @@ variable [Module 𝕜 E] [Module 𝕜 F]
 
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
-variable (f : WeakBilin B →L[𝕜] 𝕜)
-
-lemma test4 :
-    ∃ (s : Finset F) (r : ℝ) (_ : 0 < r),
-    Seminorm.ball (s.sup (B.toSeminormFamily)) (0 : E) r ⊆ (f ⁻¹' (Metric.ball 0 1)) := by
-  obtain ⟨V, hV1 , hV2⟩ := (Filter.HasBasis.mem_iff (LinearMap.hasBasis_weakBilin B)).mp
-    (mem_nhds_iff.mpr ⟨f ⁻¹' (Metric.ball 0 1), ⟨subset_refl _,
-    ⟨IsOpen.preimage (ContinuousLinearMap.continuous f) Metric.isOpen_ball, by
-      rw [Set.mem_preimage, map_zero]
-      exact Metric.mem_ball_self Real.zero_lt_one⟩⟩⟩)
-  obtain ⟨sE, hsE1, hsE2⟩ := hV1
-  obtain ⟨F, hF⟩ := Set.mem_range.mp hsE1
-  use F
-  simp_rw [← hF, Set.mem_iUnion, Set.mem_singleton_iff, exists_prop] at hsE2
-  obtain ⟨w, h1, h2⟩ := hsE2
-  exact ⟨w, h1, h2.symm.trans_subset hV2⟩
-
-open Pointwise
-
 -- c.f. LinearMap.continuous_of_locally_bounded
-lemma isBounded_of_Continuous :
+lemma isBounded_of_Continuous (f : WeakBilin B →L[𝕜] 𝕜) :
     Seminorm.IsBounded B.toSeminormFamily (fun _ : Fin 1 => normSeminorm 𝕜 𝕜) f.toLinearMap := by
   obtain ⟨s,C, hC1, hC2⟩ :=
     Seminorm.bound_of_continuous B.weakBilin_withSeminorms
       f.toSeminorm (continuous_norm.comp f.continuous)
   rw [Seminorm.IsBounded, forall_const]
   exact ⟨s, ⟨C, hC2⟩⟩
-
-lemma test5 : ∃ (s₁ : Finset F),
-    ↑f ∈ Submodule.span 𝕜 (Set.range (ContinuousLinearMap.toLinearMap₁₂
-      (WeakBilin.eval B) ∘ Subtype.val : s₁ → WeakBilin B →ₗ[𝕜] 𝕜)) := by
-  obtain ⟨s,hS⟩ := isBounded_of_Continuous B f (Fin.last 0)
-  --simp at hs
-  exact ⟨s, functional_mem_span_iff.mpr hS⟩
 
 /-
 See
@@ -100,7 +74,12 @@ See
 lemma dualEmbedding_isSurjective : Function.Surjective (WeakBilin.eval B) := by
   rw [Function.Surjective]
   intro f₁
-  obtain ⟨s, hs⟩ := test5 B f₁
+  have test5 : ∃ (s₁ : Finset F),
+    ↑f₁ ∈ Submodule.span 𝕜 (Set.range (ContinuousLinearMap.toLinearMap₁₂
+      (WeakBilin.eval B) ∘ Subtype.val : s₁ → WeakBilin B →ₗ[𝕜] 𝕜)) := by
+    obtain ⟨s,hS⟩ := isBounded_of_Continuous B f₁ (Fin.last 0)
+    exact ⟨s, functional_mem_span_iff.mpr hS⟩
+  obtain ⟨s, hs⟩ := test5
   rw [← Set.image_univ, Finsupp.mem_span_image_iff_linearCombination] at hs
   obtain ⟨l, hl1, hl2⟩ := hs
   let f := Finsupp.linearCombination 𝕜 Subtype.val l
