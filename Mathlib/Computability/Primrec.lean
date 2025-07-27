@@ -633,15 +633,15 @@ protected theorem and : Primrec₂ and :=
 protected theorem or : Primrec₂ or :=
   dom_bool₂ _
 
-theorem _root_.PrimrecPred.not {p : α → Prop}
+protected theorem _root_.PrimrecPred.not {p : α → Prop}
     (hp : PrimrecPred p) : PrimrecPred fun a => ¬p a :=
   (Primrec.not.comp hp).of_eq fun n => by simp
 
-theorem _root_.PrimrecPred.and {p q : α → Prop}
+protected theorem _root_.PrimrecPred.and {p q : α → Prop}
     (hp : PrimrecPred p) (hq : PrimrecPred q) : PrimrecPred fun a => p a ∧ q a :=
   (Primrec.and.comp hp hq).of_eq fun n => by classical simp
 
-theorem _root_.PrimrecPred.or {p q : α → Prop}
+protected theorem _root_.PrimrecPred.or {p q : α → Prop}
     (hp : PrimrecPred p) (hq : PrimrecPred q) : PrimrecPred fun a => p a ∨ q a :=
   (Primrec.or.comp hp hq).of_eq fun n => by classical simp
 
