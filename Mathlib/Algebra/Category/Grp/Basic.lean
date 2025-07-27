@@ -652,3 +652,4 @@ theorem MonoidHom.comp_id_commGrp {G : CommGrp.{u}} {H : Type u} [Monoid H] (f :
 theorem MonoidHom.id_commGrp_comp {G : Type u} [Monoid G] {H : CommGrp.{u}} (f : G →* H) :
     MonoidHom.comp (CommGrp.Hom.hom (𝟙 H)) f = f := by
   simp
+
