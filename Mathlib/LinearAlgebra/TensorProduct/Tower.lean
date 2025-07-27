@@ -742,7 +742,7 @@ variable {R A B C D : Type*} [CommSemiring R] [AddCommMonoid A]
 open LinearMap
 open scoped TensorProduct
 
-lemma TensorProduct.assoc_symm_tensor :
+lemma TensorProduct.assoc_tensor_symm :
     (TensorProduct.assoc R A B (C ⊗[R] D)).symm.toLinearMap
     = (TensorProduct.assoc R _ _ _).toLinearMap
     ∘ₗ (rTensor _ (TensorProduct.assoc R _ _ _).symm.toLinearMap)
