@@ -43,19 +43,7 @@ lemma Kernel.comp_discard' {α β : Type*} {_ : MeasurableSpace α} {_ : Measura
 
 instance {α : Type*} [MeasurableSpace α] [Countable α] [DiscreteMeasurableSpace α]
     {μ : Measure α} : SFinite μ := by
-  have : μ = Measure.sum (fun a ↦ μ {a} • Measure.dirac a) := by
-    ext s hs
-    simp only [Measure.sum_apply _ hs, Measure.smul_apply, smul_eq_mul, Measure.dirac_apply]
-    rw [← biUnion_of_singleton s, measure_biUnion]
-    · rw [tsum_subtype s (fun a ↦ μ {a})]
-      congr with a
-      classical
-      simp [indicator_apply]
-    · exact to_countable s
-    · intro i j hij
-      simp
-    · exact fun _ _ ↦ measurableSet_singleton _
-  rw [this]
+  rw [← Measure.sum_smul_dirac μ]
   infer_instance
 
 variable {Θ 𝓧 𝓨 : Type*} {mΘ : MeasurableSpace Θ} {m𝓧 : MeasurableSpace 𝓧} [MeasurableSpace 𝓨]
