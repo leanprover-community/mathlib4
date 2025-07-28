@@ -39,7 +39,7 @@ A preorder with lawful suprema: whenever a set has a least upper bound, `sSup` r
 bound for that set.
 
 This ensures that the supremum operation `sSup` behaves correctly by returning actual least upper
-bounds rather than arbitrary elements when a least upper bounds exists.
+bounds rather than arbitrary elements when a least upper bound exists.
 -/
 class LawfulSupPreorder (α) extends Preorder α, SupSet α where
   isLUB_sSup_of_exists_isLUB (s : Set α) : (∃ x, IsLUB s x) → IsLUB s (sSup s)
