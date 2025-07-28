@@ -30,12 +30,13 @@ def runCoreM' (info : ContextInfo) (x : CoreM α) : CommandElabM α := do
   /-
     We must execute `x` using the `ngen` stored in `info`. Otherwise, we may create `MVarId`s and `FVarId`s that
     have been used in `lctx` and `info.mctx`.
+    Similarly, we need to pass in a `namePrefix` because otherwise we can't create auxiliary definitions.
   -/
   let (x, newState) ←
     (withOptions (fun _ => info.options) x).toIO
       { currNamespace := info.currNamespace, openDecls := info.openDecls
         fileName := ctx.fileName, fileMap := ctx.fileMap }
-      { env, ngen := info.ngen }
+      { env, ngen := info.ngen, auxDeclNGen := { namePrefix := info.parentDecl?.getD .anonymous } }
   -- Migrate logs back to the main context.
   modify fun state => { state with
     messages := state.messages ++ newState.messages,
