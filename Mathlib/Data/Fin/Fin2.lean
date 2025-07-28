@@ -152,6 +152,7 @@ instance instFintype : ∀ n, Fintype (Fin2 n)
     { elems    := elems.map ⟨Fin2.fs, @fs.inj _⟩ |>.cons .fz (by simp)
       complete := by rintro (_|i) <;> simp [compl] }
 
+/-- Converts a `Fin2` into a `Fin`. -/
 def toFin {n : Nat} (i : Fin2 n) : Fin n :=
   match i with
   | fz => 0
@@ -163,6 +164,7 @@ theorem toFin_fz (n : Nat) : toFin (@fz n) = 0 := rfl
 @[simp]
 theorem toFin_fs {n : Nat} (i : Fin2 n) : toFin (fs i) = (toFin i).succ := rfl
 
+/-- Converts a `Fin` into a `Fin2`. -/
 def ofFin {n : Nat} (i : Fin n) : Fin2 n :=
   i.succRec (fun _ => fz) (fun _ _ => fs)
 
@@ -182,6 +184,7 @@ theorem ofFin_toFin {n : Nat} (i : Fin2 n) : ofFin (toFin i) = i := by
   | fz => rfl
   | fs _ ih => exact congrArg fs ih
 
+/-- `Fin2` is equivalent to the usual encoding of `Fin` as a subtype of `ℕ`. -/
 @[simps]
 def equivFin (n : Nat) : Fin2 n ≃ Fin n where
   toFun := toFin
