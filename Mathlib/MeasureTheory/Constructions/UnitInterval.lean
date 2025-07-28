@@ -49,11 +49,8 @@ lemma volume_Iic : volume (Iic x) = .ofReal x := by
 
 @[simp]
 lemma volume_Iio : volume (Iio x) = .ofReal x := by
-  suffices volume (Iio x) = volume (Iic x) by
-    rw [this]
-    exact volume_Iic x
-  refine measure_eq_measure_of_null_diff (Iio_subset_Iic_self) ?_
-  rw [Iic_diff_Iio_same, measure_singleton x]
+  simp only [← volume_image_subtype_coe measurableSet_Icc, image_subtype_val_Icc_Iio,
+    Real.volume_Ico, sub_zero]
 
 variable (y : I)
 
@@ -67,88 +64,43 @@ lemma volume_Icc : volume (Icc x y) = .ofReal (y - x) := by
 @[simp]
 lemma volume_uIcc : volume (uIcc x y) = edist y x := by
   by_cases h : x ≤ y
-  · simp only [uIcc_of_le h, volume_Icc]
-    suffices |y.1 - x| = y - x by
-      rw [←this]
-      exact (edist_dist y x).symm
-    exact abs_of_nonneg <| sub_nonneg_of_le h
-  · simp only [uIcc_of_gt (not_le.mp h), volume_Icc]
-    rw [edist_comm]
-    suffices |x - y.1| = x - y by
-      rw [←this]
-      exact (edist_dist x y).symm
-    exact abs_of_pos <| sub_pos.mpr (not_le.mp h)
+  · rw [uIcc_of_le h, edist_dist y x, show dist y x = |y.1 - x| by rfl]
+    replace h : x.1 ≤ y.1 := h
+    simp only [volume_Icc, abs_of_nonneg <| sub_nonneg_of_le h]
+  · rw [uIcc_of_gt (not_le.mp h), edist_comm, edist_dist x y, show dist x y = |x.1 - y| by rfl]
+    replace h : y.1 < x.1 := not_le.mp h
+    simp only [volume_Icc, abs_of_pos <| sub_pos.mpr h]
 
 @[simp]
 lemma volume_Ico : volume (Ico x y) = .ofReal (y - x) := by
-  by_cases hx : x < y
-  · suffices volume (Ico x y) = volume (Icc x y) by
-      rw [this]
-      exact volume_Icc x y
-    refine measure_eq_measure_of_null_diff Ico_subset_Icc_self ?_
-    rw [Icc_diff_Ico_same hx.le]
-    exact measure_singleton y
-  · rw [Ico_eq_empty hx, measure_empty]
-    apply Eq.symm
-    rw [ENNReal.ofReal_eq_zero]
-    exact tsub_nonpos.mpr (not_lt.mp hx)
+  simp only [← volume_image_subtype_coe measurableSet_Icc, image_subtype_val_Ico, Real.volume_Ico]
 
 @[simp]
 lemma volume_Ioc : volume (Ioc x y) = .ofReal (y - x) := by
-  by_cases hx : x < y
-  · suffices volume (Ioc x y) = volume (Icc x y) by
-      rw [this]
-      exact volume_Icc x y
-    refine measure_eq_measure_of_null_diff Ioc_subset_Icc_self ?_
-    rw [Icc_diff_Ioc_same hx.le]
-    exact measure_singleton x
-  · rw [Ioc_eq_empty hx, measure_empty]
-    apply Eq.symm
-    rw [ENNReal.ofReal_eq_zero]
-    exact tsub_nonpos.mpr (not_lt.mp hx)
+  simp only [← volume_image_subtype_coe measurableSet_Icc, image_subtype_val_Ioc, Real.volume_Ioc]
 
 @[simp]
 lemma volume_uIoc : volume (uIoc x y) = edist y x := by
   by_cases h : x ≤ y
-  · simp only [uIoc_of_le h, volume_Ioc]
-    suffices |y.1 - x| = y - x by
-      rw [←this]
-      exact (edist_dist y x).symm
-    exact abs_of_nonneg <| sub_nonneg_of_le h
-  · simp only [uIoc_of_ge (not_le.mp h).le, volume_Ioc]
-    rw [edist_comm]
-    suffices |x - y.1| = x - y by
-      rw [←this]
-      exact (edist_dist x y).symm
-    exact abs_of_pos <| sub_pos.mpr (not_le.mp h)
+  · rw [uIoc_of_le h, edist_dist y x, show dist y x = |y.1 - x| by rfl]
+    replace h : x.1 ≤ y.1 := h
+    simp only [volume_Ioc, abs_of_nonneg <| sub_nonneg_of_le h]
+  · rw [uIoc_of_ge (not_le.mp h).le, edist_comm, edist_dist x y, show dist x y = |x.1 - y| by rfl]
+    replace h : y.1 < x.1 := not_le.mp h
+    simp only [volume_Ioc, abs_of_pos <| sub_pos.mpr h]
 
 @[simp]
 lemma volume_Ioo : volume (Ioo x y) = .ofReal (y - x) := by
-  by_cases hx : x < y
-  · suffices volume (Ioo x y) = volume (Ico x y) by
-      rw [this]
-      exact volume_Ico x y
-    refine measure_eq_measure_of_null_diff Ioo_subset_Ico_self ?_
-    rw [Ico_diff_Ioo_same hx]
-    exact measure_singleton x
-  · rw [Ioo_eq_empty hx, measure_empty]
-    apply Eq.symm
-    rw [ENNReal.ofReal_eq_zero]
-    exact tsub_nonpos.mpr (not_lt.mp hx)
+  simp only [← volume_image_subtype_coe measurableSet_Icc, image_subtype_val_Ioo, Real.volume_Ioo]
 
 @[simp]
 lemma volume_uIoo : volume (uIoo x y) = edist y x := by
   by_cases h : x ≤ y
-  · simp only [uIoo_of_le h, volume_Ioo]
-    suffices |y.1 - x| = y - x by
-      rw [←this]
-      exact (edist_dist y x).symm
-    exact abs_of_nonneg <| sub_nonneg_of_le h
-  · simp only [uIoo_of_ge (not_le.mp h).le, volume_Ioo]
-    rw [edist_comm]
-    suffices |x - y.1| = x - y by
-      rw [←this]
-      exact (edist_dist x y).symm
-    exact abs_of_pos <| sub_pos.mpr (not_le.mp h)
+  · rw [uIoo_of_le h, edist_dist y x, show dist y x = |y.1 - x| by rfl]
+    replace h : x.1 ≤ y.1 := h
+    simp only [volume_Ioo, abs_of_nonneg <| sub_nonneg_of_le h]
+  · rw [uIoo_of_ge (not_le.mp h).le, edist_comm, edist_dist x y, show dist x y = |x.1 - y| by rfl]
+    replace h : y.1 < x.1 := not_le.mp h
+    simp only [volume_Ioo, abs_of_pos <| sub_pos.mpr h]
 
 end unitInterval
