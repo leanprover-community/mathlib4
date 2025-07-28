@@ -338,7 +338,7 @@ noncomputable def Config.symm {n k : ℕ} (c : Config n k) : Config n k where
     sorry
 
 /-- Extend a valid configuration without changing the number of sunny lines. -/
-noncomputable def Config.extend {n k : ℕ} (hn : 3 < n) (c : Config n k) : Config (n + 1) k where
+noncomputable def Config.extend {n k : ℕ} (hn : 3 ≤ n) (c : Config n k) : Config (n + 1) k where
   ls := c.ls.cons line[ℝ, !₂[(n : ℝ), 1], !₁[1, n]] sorry
   card := by rw [Finset.card_cons, c.card]
   rank l hl := by
@@ -564,11 +564,15 @@ theorem result (n : Set.Ici 3) :
       · apply one_mem3
       · apply three_mem3
   · simp [answer] at ih ⊢
-    ext
+    ext k
     constructor
     · intro h
       sorry
     · intro h
-      sorry
+      rw [← ih] at h
+      simp at h ⊢
+      obtain ⟨ls, card, rank, cover, sunny⟩ := h
+      let c := Config.extend hn ⟨ls, card, rank, cover, sunny⟩
+      exact ⟨c.ls, c.card, c.rank, @c.cover, c.sunny⟩
 
 end IMO2025P1
