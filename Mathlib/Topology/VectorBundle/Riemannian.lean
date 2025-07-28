@@ -426,7 +426,8 @@ a `NormedAddCommGroup` structure.
 
 The normal priority for an instance which always applies like this one should be 100.
 We use 80 as this is rather specialized, so we want other paths to be tried first typically.
-As this instance is costly and quite specific, we also scope it to the `Bundle` namespace. -/
+As this instance is quite specific and very costly because of higher order unification, we
+also scope it to the `Bundle` namespace. -/
 noncomputable scoped instance (priority := 80) [h : RiemannianBundle E] (b : B) :
     NormedAddCommGroup (E b) :=
   (h.g.toCore b).toNormedAddCommGroupOfTopology (h.g.continuousAt b) (h.g.isVonNBounded b)
@@ -436,7 +437,8 @@ an `InnerProductSpace ℝ` structure.
 
 The normal priority for an instance which always applies like this one should be 100.
 We use 80 as this is rather specialized, so we want other paths to be tried first typically.
-As this instance is costly and quite specific, we also scope it to the `Bundle` namespace. -/
+As this instance is quite specific and very costly because of higher order unification, we
+also scope it to the `Bundle` namespace. -/
 noncomputable scoped instance (priority := 80) [h : RiemannianBundle E] (b : B) :
     InnerProductSpace ℝ (E b) :=
   .ofCoreOfTopology (h.g.toCore b) (h.g.continuousAt b) (h.g.isVonNBounded b)
