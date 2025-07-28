@@ -140,19 +140,19 @@ theorem forget₂CommMon_comp_forget : forget₂CommMon_ C ⋙ CommMon_.forget C
 
 end
 
-section
+/-- Construct an isomorphism of commutative group objects by giving a monoid isomorphism between the
+underlying objects. -/
+@[simps!]
+def mkIso' {G H : C} (e : G ≅ H) [Grp_Class G] [IsCommMon G] [Grp_Class H] [IsCommMon H]
+    [IsMon_Hom e.hom] : mk G ≅ mk H :=
+  (fullyFaithfulForget₂Grp_ C).preimageIso (Grp_.mkIso' e)
 
-variable {M N : CommGrp_ C} (f : M.X ≅ N.X) (one_f : η ≫ f.hom = η := by aesop_cat)
-  (mul_f : μ ≫ f.hom = (f.hom ⊗ₘ f.hom) ≫ μ := by aesop_cat)
-
-/-- Constructor for isomorphisms in the category `Grp_ C`. -/
-def mkIso : M ≅ N :=
-  (fullyFaithfulForget₂Grp_ C).preimageIso (Grp_.mkIso f one_f mul_f)
-
-@[simp] lemma mkIso_hom_hom : (mkIso f one_f mul_f).hom.hom = f.hom := rfl
-@[simp] lemma mkIso_inv_hom : (mkIso f one_f mul_f).inv.hom = f.inv := rfl
-
-end
+/-- Construct an isomorphism of group objects by giving an isomorphism between the underlying
+objects and checking compatibility with unit and multiplication only in the forward direction. -/
+abbrev mkIso {G H : CommGrp_ C} (e : G.X ≅ H.X) (one_f : η[G.X] ≫ e.hom = η[H.X] := by aesop_cat)
+    (mul_f : μ[G.X] ≫ e.hom = (e.hom ⊗ₘ e.hom) ≫ μ[H.X] := by aesop_cat) : G ≅ H :=
+  have : IsMon_Hom e.hom := ⟨one_f, mul_f⟩
+  mkIso' e
 
 instance uniqueHomFromTrivial (A : CommGrp_ C) : Unique (trivial C ⟶ A) :=
   Mon_.uniqueHomFromTrivial A.toMon_
