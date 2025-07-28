@@ -146,23 +146,12 @@ theorem IsIdempotentElem.mem_iff {e : H →L[ℂ] H} (h : IsIdempotentElem e)
 open VonNeumannAlgebra ContinuousLinearMap in
 /-- A star projection is an element in a von Neumann algebra if and only if
 its range is invariant under the commutant. -/
-theorem IsStarProjection.mem_iff {e : H →L[ℂ] H} (h : IsStarProjection e)
+theorem IsStarProjection.mem_iff {e : H →L[ℂ] H} (he : IsStarProjection e)
     (S : VonNeumannAlgebra H) :
     e ∈ S ↔ ∀ y ∈ S.commutant, LinearMap.range e ∈ Module.End.invtSubmodule y := by
-  simp_rw [h.isIdempotentElem.mem_iff, h.isIdempotentElem.range_mem_invtSubmodule_iff,
-    h.isIdempotentElem.ker_mem_invtSubmodule_iff]
-  refine ⟨fun hh y hy => (hh y hy).1, fun hh y hy => ?_⟩
-  simp [hh y hy]
-  have hsa {a : selfAdjoint (H →L[ℂ] H)} (ha : ↑a ∈ S.commutant) : a ∘L e = e ∘L a := by
-    rw [← hh _ ha, ← star_inj]
-    simp_rw [star_eq_adjoint, adjoint_comp, ← star_eq_adjoint, selfAdjoint.star_val_eq,
-      h.isSelfAdjoint.star_eq, comp_assoc, hh _ ha]
-  have {a : H →L[ℂ] H} (ha : a ∈ S.commutant) :
-      ↑(realPart a) ∈ S.commutant ∧ ↑(imaginaryPart a) ∈ S.commutant :=
-    ⟨StarSubalgebra.smul_mem _ (add_mem ha (star_mem ha)) _,
-      StarSubalgebra.smul_mem _ (StarSubalgebra.smul_mem _ (sub_mem ha (star_mem ha)) _) _⟩
-  nth_rw 1 [← realPart_add_I_smul_imaginaryPart y]
-  simp_rw [add_comp, smul_comp, hsa (this hy).1, hsa (this hy).2,
-    ← comp_smul, ← comp_add, realPart_add_I_smul_imaginaryPart]
+  simp_rw [he.isIdempotentElem.mem_iff, he.isIdempotentElem.range_mem_invtSubmodule_iff,
+    he.isIdempotentElem.ker_mem_invtSubmodule_iff, forall_and, and_iff_left_iff_imp, ← mul_def]
+  intro h x hx
+  simpa [he.isSelfAdjoint.star_eq] using congr(star $(h _ (star_mem hx)))
 
 end VonNeumannAlgebra
