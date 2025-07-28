@@ -330,9 +330,8 @@ theorem isStarNormal_iff_norm_eq_adjoint :
 omit [CompleteSpace E] in
 /-- An idempotent operator `T` is self-adjoint iff `(range T)ᗮ = ker T`. -/
 theorem IsIdempotentElem.isSymmetric_iff_orthogonal_range (h : IsIdempotentElem T) :
-    LinearMap.IsSymmetric T ↔ (LinearMap.range T)ᗮ = LinearMap.ker T :=
-  LinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range
-    congr(LinearMapClass.linearMap $h.eq)
+    T.IsSymmetric ↔ (LinearMap.range T)ᗮ = LinearMap.ker T :=
+  LinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range congr(LinearMapClass.linearMap $h.eq)
 
 open ContinuousLinearMap in
 /-- Star projection operators are equal iff their range are. -/
@@ -341,8 +340,8 @@ theorem IsStarProjection.ext_iff {S T : E →L[𝕜] E}
     S = T ↔ LinearMap.range S = LinearMap.range T := by
   refine ⟨fun h => h ▸ rfl, fun h => ?_⟩
   rw [hS.isIdempotentElem.ext_iff hT.isIdempotentElem,
-    ← hT.isIdempotentElem.isSelfAdjoint_iff_orthogonal_range.mp hT.isSelfAdjoint,
-    ← hS.isIdempotentElem.isSelfAdjoint_iff_orthogonal_range.mp hS.isSelfAdjoint]
+    ← hT.isIdempotentElem.isSymmetric_iff_orthogonal_range.mp hT.isSelfAdjoint.isSymmetric,
+    ← hS.isIdempotentElem.isSymmetric_iff_orthogonal_range.mp hS.isSelfAdjoint.isSymmetric]
   simp [h]
 
 alias ⟨_, IsStarProjection.ext⟩ := IsStarProjection.ext_iff
