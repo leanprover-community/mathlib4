@@ -28,7 +28,8 @@ We define the covariance of two real-valued random variables.
 
 -/
 
-open MeasureTheory
+open MeasureTheory NormedSpace
+open scoped ENNReal
 
 namespace ProbabilityTheory
 
@@ -364,5 +365,42 @@ lemma variance_add_prod (hfμ : MemLp X 2 μ) (hgν : MemLp Y 2 ν) :
     exact hfμ.aestronglyMeasurable.aemeasurable
 
 end Prod
+
+section NormedSpace
+
+variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E]
+  [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F]
+  {μ : Measure E} [IsProbabilityMeasure μ] {ν : Measure F} [IsProbabilityMeasure ν] {p : ℝ≥0∞}
+  {L : Dual ℝ (E × F)}
+
+lemma integral_dual_prod'
+    (hLμ : MemLp (L.comp (.inl ℝ E F)) 1 μ) (hLν : MemLp (L.comp (.inr ℝ E F)) 1 ν) :
+    (μ.prod ν)[L] = μ[L.comp (.inl ℝ E F)] + ν[L.comp (.inr ℝ E F)] := by
+  simp_rw [← L.comp_inl_add_comp_inr]
+  rw [integral_add, integral_prod, integral_prod]
+  · simp
+  · exact (hLν.comp_snd μ).integrable le_rfl
+  · exact (hLμ.comp_fst ν).integrable le_rfl
+  · exact (hLμ.comp_fst ν).integrable le_rfl
+  · exact (hLν.comp_snd μ).integrable le_rfl
+
+lemma integral_dual_prod (hμ : MemLp id 1 μ) (hν : MemLp id 1 ν) :
+    (μ.prod ν)[L] = μ[L.comp (.inl ℝ E F)] + ν[L.comp (.inr ℝ E F)] :=
+  integral_dual_prod' (ContinuousLinearMap.comp_memLp' _ hμ) (ContinuousLinearMap.comp_memLp' _ hν)
+
+lemma variance_dual_prod'
+    (hLμ : MemLp (L.comp (.inl ℝ E F)) 2 μ) (hLν : MemLp (L.comp (.inr ℝ E F)) 2 ν) :
+    Var[L; μ.prod ν] = Var[L.comp (.inl ℝ E F); μ] + Var[L.comp (.inr ℝ E F); ν] := by
+  have : L = fun x : E × F ↦ L.comp (.inl ℝ E F) x.1 + L.comp (.inr ℝ E F) x.2 := by
+    ext; rw [L.comp_inl_add_comp_inr]
+  conv_lhs => rw [this]
+  rw [variance_add_prod hLμ hLν]
+
+lemma variance_dual_prod (hLμ : MemLp id 2 μ) (hLν : MemLp id 2 ν) :
+    Var[L; μ.prod ν] = Var[L.comp (.inl ℝ E F); μ] + Var[L.comp (.inr ℝ E F); ν] :=
+  variance_dual_prod' (ContinuousLinearMap.comp_memLp' _ hLμ)
+    (ContinuousLinearMap.comp_memLp' _ hLν)
+
+end NormedSpace
 
 end ProbabilityTheory
