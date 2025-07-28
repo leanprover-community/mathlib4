@@ -159,9 +159,9 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
             have h_chi_contain : genWeightSpace L χ.toLinear ≤ I :=
               genWeightSpace_le_I _ h_chi_in_q (fun h_eq => (w_chi h_eq).elim)
             exact sup_le (sup_le h_plus_contain h_minus_contain) h_chi_contain h_bracket_decomp
-          · have h_plus_bot : genWeightSpace L (χ.toLinear + α.1.toLinear) = ⊥ := by
+          · let S := LieAlgebra.IsKilling.rootSystem H
+            have h_plus_bot : genWeightSpace L (χ.toLinear + α.1.toLinear) = ⊥ := by
               by_contra h_plus_ne_bot
-              let S := LieAlgebra.IsKilling.rootSystem H
               let γ : Weight K H L := ⟨χ.toLinear + α.1.toLinear, h_plus_ne_bot⟩
               have hγ_nonzero : γ.IsNonZero := by
                 intro h_zero; apply w_plus
@@ -180,7 +180,6 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
 
             have h_minus_bot : genWeightSpace L (χ.toLinear - α.1.toLinear) = ⊥ := by
               by_contra h_minus_ne_bot
-              let S := LieAlgebra.IsKilling.rootSystem H
               let γ : Weight K H L := ⟨χ.toLinear - α.1.toLinear, h_minus_ne_bot⟩
               have hγ_nonzero : γ.IsNonZero := by
                 intro h_zero; apply w_minus
@@ -200,23 +199,6 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
                 convert q.smul_mem (-1) α.2.1 using 1
                 rw [neg_smul, one_smul]))
 
-            have h_pos_zero : ⁅x_χ, m_pos⁆ = 0 := by
-              have h_in_bot : ⁅x_χ, m_pos⁆ ∈ (⊥ : LieSubmodule K H L) := by
-                rw [← h_plus_bot]
-                exact h_pos_containment
-              rwa [LieSubmodule.mem_bot] at h_in_bot
-
-            have h_neg_zero : ⁅x_χ, m_neg⁆ = 0 := by
-              have h_in_bot : ⁅x_χ, m_neg⁆ ∈ (⊥ : LieSubmodule K H L) := by
-                rw [← h_minus_bot]
-                exact h_neg_containment
-              rwa [LieSubmodule.mem_bot] at h_in_bot
-
-            have h_simplified : ⁅x_χ, m_α⁆ = ⁅x_χ, m_h⁆ := by
-              rw [h_bracket_sum, h_pos_zero, h_neg_zero]
-              simp
-
-            let S := LieAlgebra.IsKilling.rootSystem H
             obtain ⟨i, hi⟩ := exists_root_index χ hχ_nonzero
             obtain ⟨j, hj⟩ := exists_root_index α.1 α.2.2
             have h_pairing_zero : S.pairing i j = 0 := by
@@ -233,6 +215,18 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
                 exact Function.Embedding.injective S.root h_root_eq
               rw [h_i_eq, h_j_eq]
               exact h_zero
+
+            have h_pos_zero : ⁅x_χ, m_pos⁆ = 0 := by
+              have h_in_bot : ⁅x_χ, m_pos⁆ ∈ (⊥ : LieSubmodule K H L) := by
+                rw [← h_plus_bot]
+                exact h_pos_containment
+              rwa [LieSubmodule.mem_bot] at h_in_bot
+
+            have h_neg_zero : ⁅x_χ, m_neg⁆ = 0 := by
+              have h_in_bot : ⁅x_χ, m_neg⁆ ∈ (⊥ : LieSubmodule K H L) := by
+                rw [← h_minus_bot]
+                exact h_neg_containment
+              rwa [LieSubmodule.mem_bot] at h_in_bot
 
             have h_bracket_zero : ⁅x_χ, m_h⁆ = 0 := by
               have h_chi_coroot_zero : χ (LieAlgebra.IsKilling.coroot α.1) = 0 := by
@@ -273,22 +267,15 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
                 rw [← lie_skew, h_lie_eq_smul, h_chi_h_zero, zero_smul, neg_zero]
               rw [← hh_eq]
               exact h_bracket_elem
-
-            rw [h_simplified, h_bracket_zero]
-            simp
-
+            rw [h_bracket_sum, h_pos_zero, h_neg_zero, h_bracket_zero]
+            simp only [Submodule.carrier_eq_coe, add_zero, SetLike.mem_coe, zero_mem]
         | zero =>
-          simp only [LieSubmodule.iSup_toSubmodule, Submodule.carrier_eq_coe, lie_zero,
-            SetLike.mem_coe, Submodule.zero_mem]
+          simp only [ Submodule.carrier_eq_coe, lie_zero, SetLike.mem_coe, zero_mem]
         | add m₁ m₂ _ _ ih₁ ih₂ =>
-          rw [lie_add]
-          simp only [LieSubmodule.iSup_toSubmodule, Submodule.carrier_eq_coe, SetLike.mem_coe]
-            at ih₁ ih₂ ⊢
+          simp only [lie_add, Submodule.carrier_eq_coe, SetLike.mem_coe] at ih₁ ih₂ ⊢
           exact add_mem ih₁ ih₂
       | zero =>
-        simp [zero_lie]
+        simp only [Submodule.carrier_eq_coe, zero_lie, SetLike.mem_coe, zero_mem]
       | add x₁ x₂ _ _ ih₁ ih₂ =>
-        rw [add_lie]
-        simp only [LieSubmodule.iSup_toSubmodule, Submodule.carrier_eq_coe, SetLike.mem_coe]
-          at ih₁ ih₂ ⊢
+        simp only [add_lie, Submodule.carrier_eq_coe, SetLike.mem_coe] at ih₁ ih₂ ⊢
         exact add_mem ih₁ ih₂
