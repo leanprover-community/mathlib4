@@ -299,6 +299,6 @@ theorem map_injective_of_isIntegral [IsIntegral X] {U V : X.Opens} (i : U ⟶ V)
 noncomputable
 instance [IsIntegral X] : OrderTop X where
   top := genericPoint X
-  le_top := fun a ↦ genericPoint_specializes a
+  le_top a := genericPoint_specializes a
 
 end AlgebraicGeometry
