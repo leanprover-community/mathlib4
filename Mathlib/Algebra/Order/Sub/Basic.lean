@@ -213,7 +213,7 @@ noncomputable def toSub : Sub α where
 attribute [local instance] toSub
 
 /-- The `Sub` instance using choice satisfies `OrderedSub`. -/
-instance [AddRightReflectLE α] : OrderedSub α where
+theorem toSub.orderedSub [AddRightReflectLE α] : OrderedSub α where
   tsub_le_iff_right a b c := by
     change dite _ _ _ ≤ c ↔ _
     split_ifs with h
