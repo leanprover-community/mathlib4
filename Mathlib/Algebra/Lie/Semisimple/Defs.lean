@@ -29,6 +29,15 @@ variable [CommRing R] [LieRing L] [AddCommGroup M] [Module R M] [LieRingModule L
 abbrev LieModule.IsIrreducible : Prop :=
   IsSimpleOrder (LieSubmodule R L M)
 
+variable {R L M} in
+lemma LieModule.IsIrreducible.mk [Nontrivial M] (h : ∀ N : LieSubmodule R L M, N ≠ ⊥ → N = ⊤) :
+    IsIrreducible R L M where
+  exists_pair_ne := ⟨⊥, ⊤, by simp⟩
+  eq_bot_or_eq_top N := by
+    rcases eq_or_ne N ⊥ with rfl | hN
+    · tauto
+    · exact Or.inr <| h N hN
+
 lemma LieSubmodule.eq_top_of_isIrreducible [LieModule.IsIrreducible R L M]
     (N : LieSubmodule R L M) [Nontrivial N] :
     N = ⊤ :=

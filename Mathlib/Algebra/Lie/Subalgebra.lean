@@ -143,13 +143,17 @@ theorem lie_mem {x y : L} (hx : x ∈ L') (hy : y ∈ L') : (⁅x, y⁆ : L) ∈
 theorem mem_carrier {x : L} : x ∈ L'.carrier ↔ x ∈ (L' : Set L) :=
   Iff.rfl
 
-@[simp]
 theorem mem_mk_iff (S : Set L) (h₁ h₂ h₃ h₄) {x : L} :
     x ∈ (⟨⟨⟨⟨S, h₁⟩, h₂⟩, h₃⟩, h₄⟩ : LieSubalgebra R L) ↔ x ∈ S :=
   Iff.rfl
 
 @[simp]
 theorem mem_toSubmodule {x : L} : x ∈ (L' : Submodule R L) ↔ x ∈ L' :=
+  Iff.rfl
+
+@[simp]
+theorem mem_mk_iff' (p : Submodule R L) (h) {x : L} :
+    x ∈ (⟨p, h⟩ : LieSubalgebra R L) ↔ x ∈ p :=
   Iff.rfl
 
 @[deprecated (since := "2024-12-30")] alias mem_coe_submodule := mem_toSubmodule
@@ -375,6 +379,8 @@ def comap : LieSubalgebra R L :=
     lie_mem' := @fun x y hx hy ↦ by
       suffices ⁅f x, f y⁆ ∈ K₂ by simp [this]
       exact K₂.lie_mem hx hy }
+
+@[simp] lemma mem_comap {x : L} : x ∈ K₂.comap f ↔ f x ∈ K₂ := Iff.rfl
 
 section LatticeStructure
 
@@ -649,6 +655,25 @@ theorem coe_lieSpan_submodule_eq_iff {p : Submodule R L} :
     rw [← h, mem_toSubmodule]
     exact lie_mem _ (subset_lieSpan hm)
   · rw [← toSubmodule_mk p @h, coe_toSubmodule, toSubmodule_inj, lieSpan_eq]
+
+open Submodule in
+theorem coe_lieSpan_eq_span_of_forall_lie_eq_zero
+    {s : Set L} (hs : ∀ᵉ (x ∈ s) (y ∈ s), ⁅x, y⁆ = 0) :
+    lieSpan R L s = span R s := by
+  suffices ∀ {x y}, x ∈ span R s → y ∈ span R s → ⁅x, y⁆ ∈ span R s by
+    refine le_antisymm ?_ submodule_span_le_lieSpan
+    change _ ≤ ({ span R s with lie_mem' := this } : LieSubalgebra R L)
+    rw [lieSpan_le]
+    exact subset_span
+  intro x y hx hy
+  induction hx, hy using span_induction₂ with
+  | mem_mem x y hx hy => simp [hs x hx y hy]
+  | zero_left y hy => simp
+  | zero_right x hx => simp
+  | add_left x y z _ _ _ hx hy => simp [add_mem hx hy]
+  | add_right x y z _ _ _ hx hy => simp [add_mem hx hy]
+  | smul_left r x y _ _ h => simp [smul_mem _ r h]
+  | smul_right r x y _ _ h => simp [smul_mem _ r h]
 
 variable (R L)
 
