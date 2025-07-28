@@ -146,7 +146,7 @@ section
 
 variable {R : Type u₁} [Ring R] (f : R →+* R)
 
-/-- For a `R`-module `M`, the restriction of scalars of `M` by the identity morphisms identifies
+/-- For a `R`-module `M`, the restriction of scalars of `M` by the identity morphism identifies
 to `M`. -/
 def restrictScalarsId'App (hf : f = RingHom.id R) (M : ModuleCat R) :
     (restrictScalars f).obj M ≅ M :=
@@ -164,7 +164,7 @@ variable (hf : f = RingHom.id R)
     (restrictScalarsId'App f hf M).inv x = x :=
   rfl
 
-/-- The restriction of scalars by a ring morphism that is the identity identify to the
+/-- The restriction of scalars by a ring morphism that is the identity identifies to the
 identity functor. -/
 @[simps! hom_app inv_app]
 def restrictScalarsId' : ModuleCat.restrictScalars.{v} f ≅ 𝟭 _ :=
@@ -184,7 +184,7 @@ lemma restrictScalarsId'App_inv_naturality {M N : ModuleCat R} (φ : M ⟶ N) :
 
 variable (R)
 
-/-- The restriction of scalars by the identity morphisms identify to the
+/-- The restriction of scalars by the identity morphism identifies to the
 identity functor. -/
 abbrev restrictScalarsId := restrictScalarsId'.{v} (RingHom.id R) rfl
 
@@ -215,7 +215,7 @@ variable (hgf : gf = g.comp f)
     (restrictScalarsComp'App f g gf hgf M).inv x = x :=
   rfl
 
-/-- The restriction of scalars by a composition of ring morphisms identify to the
+/-- The restriction of scalars by a composition of ring morphisms identifies to the
 composition of the restriction of scalars functors. -/
 @[simps! hom_app inv_app]
 def restrictScalarsComp' :
@@ -237,7 +237,7 @@ lemma restrictScalarsComp'App_inv_naturality {M N : ModuleCat R₃} (φ : M ⟶ 
       (restrictScalarsComp'App f g gf hgf M).inv ≫ (restrictScalars gf).map φ :=
   (restrictScalarsComp' f g gf hgf).inv.naturality φ
 
-/-- The restriction of scalars by a composition of ring morphisms identify to the
+/-- The restriction of scalars by a composition of ring morphisms identifies to the
 composition of the restriction of scalars functors. -/
 abbrev restrictScalarsComp := restrictScalarsComp'.{v} f g _ rfl
 
@@ -291,7 +291,7 @@ section ModuleCat.Unbundled
 variable (M : Type v) [AddCommMonoid M] [Module R M]
 
 -- This notation is necessary because we need to reason about `s ⊗ₜ m` where `s : S` and `m : M`;
--- without this notation, one need to work with `s : (restrictScalars f).obj ⟨S⟩`.
+-- without this notation, one needs to work with `s : (restrictScalars f).obj ⟨S⟩`.
 scoped[ChangeOfRings] notation:100 s:101 "⊗ₜ[" R "," f "]" m:100 =>
   @TensorProduct.tmul R _ _ _ _ _ (Module.compHom _ f) _ s m
 
@@ -303,7 +303,7 @@ namespace ExtendScalars
 
 variable (M : ModuleCat.{v} R)
 
-/-- Extension of scalars turn an `R`-module into `S`-module by M ↦ S ⨂ M
+/-- Extension of scalars turns an `R`-module into an `S`-module by M ↦ S ⨂ M
 -/
 def obj' : ModuleCat S :=
   of _ (TensorProduct R ((restrictScalars f).obj (of _ S)) M)
@@ -902,7 +902,7 @@ variable {R₁ R₂ R₃ R₄ : Type u₁} [CommRing R₁] [CommRing R₂] [Comm
   (f₁₂ : R₁ →+* R₂) (f₂₃ : R₂ →+* R₃) (f₃₄ : R₃ →+* R₄)
 
 /-- The extension of scalars by a composition of commutative ring morphisms
-identify to the composition of the extension of scalars functors. -/
+identifies to the composition of the extension of scalars functors. -/
 noncomputable def extendScalarsComp :
     extendScalars (f₂₃.comp f₁₂) ≅ extendScalars f₁₂ ⋙ extendScalars f₂₃ :=
   (conjugateIsoEquiv
