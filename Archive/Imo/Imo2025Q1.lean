@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joseph Myers
+Authors: Joseph Myers, Jakob von Raumer
 -/
 import Mathlib
 
@@ -338,7 +338,7 @@ noncomputable def Config.symm {n k : ℕ} (c : Config n k) : Config n k where
     sorry
 
 /-- Extend a valid configuration without changing the number of sunny lines. -/
-noncomputable def Config.extend {n k : ℕ} (hn : 3 ≤ n) (c : Config n k) : Config (n + 1) k where
+def Config.extend {n k : ℕ} (hn : 3 ≤ n) (c : Config n k) : Config (n + 1) k where
   ls := c.ls.cons line[ℝ, !₂[(n : ℝ), 1], !₁[1, n]] sorry
   card := by rw [Finset.card_cons, c.card]
   rank l hl := by
@@ -368,6 +368,39 @@ noncomputable def Config.extend {n k : ℕ} (hn : 3 ≤ n) (c : Config n k) : Co
     have h₂ : !₂[1, ↑n] ∈ affineSpan ℝ {!₂[(n : ℝ), 1], !₁[1, (n : ℝ)]} := sorry
     rw [Finset.filter_cons_of_neg _ _ _ _ (notSunny_of_diag h₁ h₂ rfl (by norm_cast; omega))]
     exact c.sunny-/
+
+/-- Restrict a configuration for `n + 1` points to a configuration for `n` points by discarding
+a vertical line. -/
+noncomputable def Config.restrict_vert {n k : ℕ} (c : Config (n + 1) k)
+    (h : line[ℝ, !₂[1, 0], !₂[1, 1]] ∈ c.ls) : Config n k where
+  ls := (c.ls.erase line[ℝ, !₂[1, 0], !₂[1, 1]]).image <| fun l =>
+    l.map (AffineEquiv.constVAdd ℝ _ !₂[-1, 0]).toAffineMap
+  card := by
+    have : Function.Injective <| fun (l : AffineSubspace ℝ (WithLp 2 (Fin 2 → ℝ))) =>
+      l.map (AffineEquiv.constVAdd ℝ _ !₂[-1, 0]).toAffineMap := sorry
+    simp [h, c.card, Finset.card_image_of_injective _ this]
+  rank l hl := by
+    obtain ⟨l', hl', rfl⟩ := Finset.mem_image.mp hl
+    rw [AffineSubspace.map_direction, AffineEquiv.linear_toAffineMap, AffineEquiv.linear_constVAdd,
+      LinearEquiv.refl_toLinearMap, Submodule.map_id]
+    apply c.rank l' <| Finset.mem_of_mem_erase hl'
+  cover a b ha hb hab := by
+    obtain ⟨l, hl, meml⟩ := c.cover (a + 1) b
+    refine ⟨l.map (AffineEquiv.constVAdd ℝ _ !₂[-1, 0]).toAffineMap, ?_, ?_⟩
+    · simp
+      refine ⟨l, ⟨?_, hl⟩, rfl⟩
+      rintro rfl
+      rw [mem_line_iff] at meml
+      simp only [Nat.cast_add, Nat.cast_one, Fin.isValue, PiLp.toLp_apply, Matrix.cons_val_zero,
+        add_sub_cancel_right, sub_zero, mul_one, Matrix.cons_val_one, Matrix.cons_val_fin_one,
+        sub_self, mul_zero, Nat.cast_eq_zero] at meml
+      omega
+    · simp only [AffineSubspace.mem_map, AffineEquiv.coe_toAffineMap, AffineEquiv.constVAdd_apply,
+        vadd_eq_add]
+      exact ⟨_, meml, by simp⟩
+  sunny := by
+    -- TODO show translation invariance of sunniness
+    sorry
 
 lemma no_config_3_2_no_vert (c : Config 3 2) (h_no_vert : ∀ l ∈ c.ls, ¬ l ∥ yAxis) : False := by
   obtain ⟨l₁, hl₁, meml₁⟩ := c.cover 1 1 (by norm_num) (by norm_num) (by norm_num)
@@ -567,10 +600,17 @@ theorem result (n : Set.Ici 3) :
     ext k
     constructor
     · intro h
-      sorry
+      simp only [Set.mem_setOf_eq] at h
+      rcases h with ⟨ls, card, rank, cover, sunny⟩
+      let c : Config (n + 1) k := ⟨ls, card, rank, cover, sunny⟩
+      by_cases hvert : line[ℝ, !₂[1, 0], !₂[1, 1]] ∈ c.ls
+      · have c := Config.restrict_vert c hvert
+        simp only [← ih, Set.mem_setOf_eq]
+        exact ⟨c.ls, c.card, c.rank, @c.cover, c.sunny⟩
+      · sorry
     · intro h
       rw [← ih] at h
-      simp at h ⊢
+      simp only [Set.mem_setOf_eq] at h ⊢
       obtain ⟨ls, card, rank, cover, sunny⟩ := h
       let c := Config.extend hn ⟨ls, card, rank, cover, sunny⟩
       exact ⟨c.ls, c.card, c.rank, @c.cover, c.sunny⟩
