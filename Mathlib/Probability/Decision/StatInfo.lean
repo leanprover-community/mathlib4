@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
 import Mathlib.Probability.Decision.Binary
+import Mathlib.Probability.Decision.BoolMeasure
+import Mathlib.Probability.Decision.RiskIncrease
 
 /-!
 # Statistical information
@@ -37,6 +39,17 @@ This is the difference of the Bayes risks between estimation without seeing the 
 noncomputable
 def statInfo (μ ν : Measure 𝓧) (π : Measure Bool) : ℝ≥0∞ :=
   bayesBinaryRisk (Kernel.discard 𝓧 ∘ₘ μ) (Kernel.discard 𝓧 ∘ₘ ν) π - bayesBinaryRisk μ ν π
+
+lemma statInfo_eq_riskIncrease :
+  statInfo μ ν π = riskIncrease binaryLoss (boolKernel μ ν) π := by
+  simp only [statInfo, Measure.discard_comp, riskIncrease, Kernel.comp_discard', boolKernel_apply,
+    bayesBinaryRisk]
+  congr
+  ext a : 1
+  have  h_meas :
+      Measurable (Function.uncurry fun a (x : Unit) ↦ (if a = true then ν else μ) univ) := by
+    sorry
+  cases a <;> simp [Kernel.withDensity_apply _ h_meas]
 
 lemma statInfo_eq_min_sub (μ ν : Measure 𝓧) (π : Measure Bool) :
     statInfo μ ν π = min (π {false} * μ univ) (π {true} * ν univ) - bayesBinaryRisk μ ν π := by
