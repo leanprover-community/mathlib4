@@ -572,7 +572,7 @@ lemma integral_integral_swap_of_hasCompactSupport
     apply (integrableOn_iff_integrable_of_support_subset (subset_tsupport f.uncurry)).mp
     refine ⟨(h'f.stronglyMeasurable_of_prod hf).aestronglyMeasurable, ?_⟩
     obtain ⟨C, hC⟩ : ∃ C, ∀ p, ‖f.uncurry p‖ ≤ C := hf.bounded_above_of_compact_support h'f
-    exact hasFiniteIntegral_of_bounded (C := C) (Eventually.of_forall hC)
+    exact .of_bounded (C := C) (.of_forall hC)
   _ = ∫ y, (∫ x in U, f x y ∂μ) ∂ν := by
     apply setIntegral_eq_integral_of_forall_compl_eq_zero (fun y hy ↦ ?_)
     have : ∀ x, f x y = 0 := by

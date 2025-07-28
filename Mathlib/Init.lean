@@ -23,14 +23,14 @@ import Mathlib.Tactic.MinImports
 
 /-!
 This is the root file in Mathlib: it is imported by virtually *all* Mathlib files.
-For this reason, the imports of this files are carefully curated.
+For this reason, the imports of this file are carefully curated.
 Any modification involving a change in the imports of this file should be discussed beforehand.
 
 Here are some general guidelines:
 * no bucket imports (e.g. `Batteries`/`Lean`/etc);
 * every import needs to have a comment explaining why the import is there;
 * strong preference for avoiding files that themselves have imports beyond `Lean`, and
-  any exception to this rule should by accompanied by a comment explaining the transitive imports.
+  any exception to this rule should be accompanied by a comment explaining the transitive imports.
 
 A linter verifies that every file in Mathlib imports `Mathlib.Init`
 (perhaps indirectly) --- except for the imports in this file, of course.
@@ -45,7 +45,7 @@ All linters imported here have no bulk imports;
 **Not** imported in this file are
 - the text-based linters in `Linters/TextBased.lean`, as they can be imported later
 - the `haveLet` linter, as it is currently disabled by default due to crashes
-- the `ppRoundTrip` linter, which is current disabled (as this is not mature enough)
+- the `ppRoundTrip` linter, which is currently disabled (as this is not mature enough)
 - the `minImports` linter, as that linter is disabled by default (and has an informational function;
   it is useful for debugging, but not as a permanently enabled lint)
 - the `upstreamableDecls` linter, as it is also mostly informational

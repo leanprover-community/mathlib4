@@ -40,7 +40,7 @@ adjoint
 
 noncomputable section
 
-open RCLike
+open Module RCLike
 
 open scoped ComplexConjugate
 
@@ -302,9 +302,9 @@ theorem _root_.isSelfAdjoint_starProjection
 
 theorem conj_starProjection {T : E →L[𝕜] E} (hT : IsSelfAdjoint T)
     (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
-    IsSelfAdjoint (U.starProjection ∘L T ∘L U.starProjection) :=
-  show IsSelfAdjoint (U.starProjection * T * U.starProjection)
-    from hT.conjugate_self <| isSelfAdjoint_starProjection U
+    IsSelfAdjoint (U.starProjection ∘L T ∘L U.starProjection) := by
+  rw [← mul_def, ← mul_def, ← mul_assoc]
+  exact hT.conjugate_self <| isSelfAdjoint_starProjection U
 
 @[deprecated (since := "2025-07-05")] alias conj_orthogonalProjection := conj_starProjection
 
@@ -313,6 +313,45 @@ end IsSelfAdjoint
 namespace ContinuousLinearMap
 
 variable {T : E →L[𝕜] E} [CompleteSpace E]
+
+/-- An operator `T` is normal iff `‖T v‖ = ‖(adjoint T) v‖` for all `v`. -/
+theorem isStarNormal_iff_norm_eq_adjoint :
+    IsStarNormal T ↔ ∀ v : E, ‖T v‖ = ‖adjoint T v‖ := by
+  rw [isStarNormal_iff, Commute, SemiconjBy, ← sub_eq_zero]
+  simp_rw [ContinuousLinearMap.ext_iff, ← coe_coe, coe_sub, ← LinearMap.ext_iff, coe_zero]
+  have := star_eq_adjoint T ▸ coe_sub (star _ * T) _ ▸
+    ((IsSelfAdjoint.star_mul_self T).sub (IsSelfAdjoint.mul_star_self T)).isSymmetric
+  simp_rw [star_eq_adjoint, ← LinearMap.IsSymmetric.inner_map_self_eq_zero this,
+    LinearMap.sub_apply, inner_sub_left, coe_coe, mul_apply, adjoint_inner_left,
+    inner_self_eq_norm_sq_to_K, ← adjoint_inner_right T, inner_self_eq_norm_sq_to_K,
+    sub_eq_zero, ← sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _)]
+  norm_cast
+
+/- TODO: As we have a more general result of this for elements in non-unital C⋆-algebras
+see (Analysis/CStarAlgebra/Projection), we will want to simplify the proof
+by using the complexification of an inner product space over `𝕜`. -/
+/-- An idempotent operator is self-adjoint iff it is normal. -/
+theorem IsIdempotentElem.isSelfAdjoint_iff_isStarNormal (hT : IsIdempotentElem T) :
+    IsSelfAdjoint T ↔ IsStarNormal T := by
+  refine ⟨fun h => by rw [isStarNormal_iff, h], fun h => ?_⟩
+  suffices T = star T * T from this ▸ IsSelfAdjoint.star_mul_self _
+  rw [← sub_eq_zero, ContinuousLinearMap.ext_iff]
+  simp_rw [zero_apply, ← norm_eq_zero (E := E)]
+  have :=
+    calc (∀ x : E, ‖(T - star T * T) x‖ = 0) ↔ ∀ x, ‖(adjoint (1 - T)) (T x)‖ = 0 := by
+          simp only [← star_eq_adjoint, star_sub, star_one, sub_apply, mul_apply]; rfl
+      _ ↔ ∀ x, ‖(1 - T) (T x)‖ = 0 := by
+          simp only [isStarNormal_iff_norm_eq_adjoint.mp h.one_sub]
+      _ ↔ ∀ x, ‖(T - T * T) x‖ = 0 := by simp
+      _ ↔ T - T * T = 0 := by simp only [norm_eq_zero, ContinuousLinearMap.ext_iff, zero_apply]
+      _ ↔ IsIdempotentElem T := by simp only [sub_eq_zero, IsIdempotentElem, eq_comm]
+  exact this.mpr hT
+
+/-- A continuous linear map is a star projection iff it is idempotent and normal. -/
+theorem isStarProjection_iff_isIdempotentElem_and_isStarNormal :
+    IsStarProjection T ↔ IsIdempotentElem T ∧ IsStarNormal T := by
+  rw [isStarProjection_iff, and_congr_right_iff]
+  exact fun h => IsIdempotentElem.isSelfAdjoint_iff_isStarNormal h
 
 open ContinuousLinearMap in
 /-- An idempotent operator `T` is self-adjoint iff `(range T)ᗮ = ker T`. -/
@@ -328,7 +367,7 @@ theorem IsIdempotentElem.isSelfAdjoint_iff_orthogonal_range (h : IsIdempotentEle
 
 open ContinuousLinearMap in
 /-- Star projection operators are equal iff their range are. -/
-theorem IsStarProjection.ext_iff {S T : E →L[𝕜] E}
+theorem IsStarProjection.ext_iff {S : E →L[𝕜] E}
     (hS : IsStarProjection S) (hT : IsStarProjection T) :
     S = T ↔ LinearMap.range S = LinearMap.range T := by
   refine ⟨fun h => h ▸ rfl, fun h => ?_⟩

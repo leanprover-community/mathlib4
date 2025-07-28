@@ -32,4 +32,4 @@ theorem iteratedDerivWithin_one_div (k : ℕ) (hs : IsOpen s) :
     (fun y ↦ (-1) ^ k * (k !) * (y ^ (-1 - k : ℤ))) := by
   apply Set.EqOn.trans (iteratedDerivWithin_of_isOpen_eq_iterate hs)
   intro t ht
-  simp only [one_div, iter_deriv_inv', Int.reduceNeg]
+  simp
