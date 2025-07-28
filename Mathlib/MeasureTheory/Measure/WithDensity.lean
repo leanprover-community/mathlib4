@@ -642,6 +642,10 @@ theorem sFinite_of_absolutelyContinuous {ν : Measure α} [SFinite ν] (hμν : 
     restrict_compl_sigmaFiniteSetWRT hμν]
   infer_instance
 
+instance [Countable α] [MeasurableSingletonClass α] : SFinite μ := by
+  rw [← sum_smul_dirac μ]
+  infer_instance
+
 end SFinite
 
 section Prod
