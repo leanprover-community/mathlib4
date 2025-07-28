@@ -8,10 +8,22 @@ import Mathlib.Order.Lattice
 /-!
 # Lattice Congruences
 
+## Main definitions
+
+- `LatticeCon`: An equivalence relation is a congruence relation for the latice structure if it is
+  compatible with the `inf` and `sup` operations.
+
+## Main statements
+
+- `LatticeCon.mk3`: Alternative conditions for a relation to be a lattice congruence.
 
 ## References
 
 * [Grätzer et al, *General lattice theory*][Grätzer2003]
+
+## Tags
+
+Lattice, Congruence
 -/
 
 variable {α : Type*}
