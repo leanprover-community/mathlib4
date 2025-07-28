@@ -385,44 +385,7 @@ theorem IsIdempotentElem.TFAE {p : E →L[𝕜] E} (hp : IsIdempotentElem p) :
   tfae_have 2 ↔ 4 := hp.isSelfAdjoint_iff_orthogonal_range
   tfae_finish
 
---move to `Projection`
-theorem IsStarProjection.norm_apply_le {T : E →L[𝕜] E} (hT : IsStarProjection T) (v : E) :
-    ‖T v‖ ≤ ‖v‖ := by
-  obtain ⟨h, hht⟩ := isStarProjection_iff_eq_starProjection_range.mp hT
-  exact hht ▸ Submodule.norm_starProjection_apply_le _ _
-
-open RCLike
---move to `Projection`
-theorem IsStarProjection.reApplyInnerSelf_eq {T : E →L[𝕜] E} (hT : IsStarProjection T) (v : E) :
-    T.reApplyInnerSelf v = ‖T v‖ ^ 2 := by
-  obtain ⟨h, hht⟩ := isStarProjection_iff_eq_starProjection_range.mp hT
-  calc T.reApplyInnerSelf v = re (inner 𝕜 (T v) v) := rfl
-    _ = re (inner 𝕜 (T v) (T v)) + re (inner 𝕜 (T v) ((1 - T) v)) := by
-      simp [← map_add, ← inner_add_right]
-    _ = re (inner 𝕜 (T v) (T v)) + 0 := ?_
-    _ = ‖T v‖ ^ 2 := by simp; exact inner_self_eq_norm_sq _
-  congr
-  rw [hht, ← Submodule.starProjection_orthogonal',
-    Submodule.inner_starProjection_left_eq_right,
-    (Submodule.starProjection_apply_eq_zero_iff _).mpr (by simp)]
-  simp
-
 open ContinuousLinearMap
--- move to `Projection`
-theorem IsStarProjection.apply_norm_eq_iff {T : E →L[𝕜] E} (hT : IsStarProjection T) {v : E} :
-    ‖T v‖ = ‖v‖ ↔ v ∈ LinearMap.range T := by
-  refine ⟨fun h => ?_, fun h => congr(‖$((LinearMap.IsIdempotentElem.mem_range_iff
-    congr(LinearMapClass.linearMap $hT.isIdempotentElem.eq)).mp h)‖)⟩
-  have := calc 0 = ‖v‖ ^ 2 - ‖T v‖ ^ 2 := by simp [h]
-    _ = ‖T v + (1 - T) v‖ ^ 2 - ‖T v‖ ^ 2 := by simp
-    _ = ‖T v‖ ^ 2 + ‖(1 - T) v‖ ^ 2 - ‖T v‖ ^ 2 := by
-      congr
-      rw [norm_add_sq (𝕜 := 𝕜), ← adjoint_inner_right, hT.isSelfAdjoint.adjoint_eq]
-      simp [← mul_apply, hT.isIdempotentElem.eq]
-    _ = ‖(1 - T) v‖ ^ 2 := by simp
-  rw [eq_comm, sq_eq_zero_iff, norm_eq_zero, sub_apply, one_apply, sub_eq_zero, eq_comm] at this
-  exact (LinearMap.IsIdempotentElem.mem_range_iff
-    congr(LinearMapClass.linearMap $hT.isIdempotentElem.eq)).mpr this
 
 /-- For star projection operators `p,q`, we have `p ≤ q` iff `p ∘ q = p`. -/
 theorem IsStarProjection.le_iff_comp_eq_left {p q : E →L[𝕜] E}
