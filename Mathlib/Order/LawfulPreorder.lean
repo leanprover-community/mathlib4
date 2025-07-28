@@ -29,6 +29,10 @@ whenever they exist.
 - `Preorder.toLawfulInfPreorder`: Any preorder can be made into a lawful inf preorder by defining
   `sInf s` to be any GLB of `s` when one exists.
 - `Preorder.toLawfulPreorder`: Any preorder can therefore be made into a lawful preorder.
+
+## Todo
+
+Redefine the lattice classes `CompleteLattice`, `ConditionallyCompleteLattice`, and `OmegaCompleteLattice` so as to extend the `LawfulPreorder` typeclass.
 -/
 
 variable {α : Type*}
