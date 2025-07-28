@@ -14,6 +14,7 @@ import Mathlib.Order.Hom.Lattice
 
 - `LatticeCon`: An equivalence relation is a congruence relation for the latice structure if it is
   compatible with the `inf` and `sup` operations.
+- `LatticeCon.ker`: The kernel of a lattice homomorphism as a lattice congruence.
 
 ## Main statements
 
@@ -99,7 +100,7 @@ def LatticeCon.mk3 [Lattice α] (r : α → α → Prop) (h₁ : IsRefl α r)
           conv_rhs => rw [sup_comm]
           exact compatible_left_sup h2) (compatible_left_sup h1))
 
-/-- The kernel of a lattice homomorphism as a lattice congruence -/
+/-- The kernel of a lattice homomorphism as a lattice congruence. -/
 @[simps!]
 def LatticeCon.ker [Lattice α] [Lattice β] [LatticeHomClass F α β] (f : F) : LatticeCon α where
   toSetoid := Setoid.ker f
