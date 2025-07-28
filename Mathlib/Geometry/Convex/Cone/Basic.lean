@@ -422,6 +422,10 @@ lemma mem_hull_of_convex (hs : Convex 𝕜 s) : x ∈ hull 𝕜 s ↔ ∃ r : �
             }) (fun y hy ↦ ⟨1, by simpa⟩) hx
   mpr := by rintro ⟨r, hr, y, hy, rfl⟩; exact (hull 𝕜 s).smul_mem hr <| subset_hull hy
 
+/-- The cone hull of a convex set is simply the union of the open halflines through that set. -/
+lemma coe_hull_of_convex (hs : Convex 𝕜 s) : hull 𝕜 s = {x | ∃ r : 𝕜, 0 < r ∧ x ∈ r • s} := by
+  ext; exact mem_hull_of_convex hs
+
 lemma disjoint_hull_left_of_convex (hs : Convex 𝕜 s) : Disjoint (hull 𝕜 s) C ↔ Disjoint s C where
   mp := by rw [← disjoint_coe]; exact .mono_left subset_hull
   mpr := by
