@@ -176,7 +176,7 @@ variable (F) in
 /-- A finite-product-preserving functor takes commutative group objects to commutative group
 objects. -/
 @[simps!]
-noncomputable def mapCommGrp : CommGrp_ C ⥤ CommGrp_ D where
+def mapCommGrp : CommGrp_ C ⥤ CommGrp_ D where
   obj A :=
     { F.mapGrp.obj A.toGrp_ with
       comm :=
@@ -194,8 +194,8 @@ protected instance Full.mapCommGrp [F.Full] [F.Faithful] : F.mapCommGrp.Full whe
 
 /-- If `F : C ⥤ D` is a fully faithful monoidal functor, then `Grp(F) : Grp C ⥤ Grp D` is fully
 faithful too. -/
-protected noncomputable def FullyFaithful.mapCommGrp (hF : F.FullyFaithful) :
-    F.mapGrp.FullyFaithful where
+@[simps]
+protected def FullyFaithful.mapCommGrp (hF : F.FullyFaithful) : F.mapGrp.FullyFaithful where
   preimage f := .mk <| hF.preimage f.hom
 
 @[simp]
@@ -220,24 +220,23 @@ theorem comp_mapCommGrp_mul (A : CommGrp_ C) :
 
 /-- The identity functor is also the identity on commutative group objects. -/
 @[simps!]
-noncomputable def mapCommGrpIdIso : mapCommGrp (𝟭 C) ≅ 𝟭 (CommGrp_ C) :=
+def mapCommGrpIdIso : mapCommGrp (𝟭 C) ≅ 𝟭 (CommGrp_ C) :=
   NatIso.ofComponents (fun X ↦ CommGrp_.mkIso (.refl _) (by simp)
     (by simp))
 
 /-- The composition functor is also the composition on commutative group objects. -/
 @[simps!]
-noncomputable def mapCommGrpCompIso : (F ⋙ G).mapCommGrp ≅ F.mapCommGrp ⋙ G.mapCommGrp :=
-  NatIso.ofComponents (fun X ↦ CommGrp_.mkIso (.refl _) (by simp [ε_of_cartesianMonoidalCategory])
-    (by simp [μ_of_cartesianMonoidalCategory]))
+def mapCommGrpCompIso : (F ⋙ G).mapCommGrp ≅ F.mapCommGrp ⋙ G.mapCommGrp :=
+  NatIso.ofComponents fun X ↦ CommGrp_.mkIso (.refl _)
 
 /-- Natural transformations between functors lift to commutative group objects. -/
 @[simps!]
-noncomputable def mapCommGrpNatTrans (f : F ⟶ F') : F.mapCommGrp ⟶ F'.mapCommGrp where
+def mapCommGrpNatTrans (f : F ⟶ F') : F.mapCommGrp ⟶ F'.mapCommGrp where
   app X := .mk' (f.app _)
 
 /-- Natural isomorphisms between functors lift to commutative group objects. -/
 @[simps!]
-noncomputable def mapCommGrpNatIso (e : F ≅ F') : F.mapCommGrp ≅ F'.mapCommGrp :=
+def mapCommGrpNatIso (e : F ≅ F') : F.mapCommGrp ≅ F'.mapCommGrp :=
   NatIso.ofComponents fun X ↦ CommGrp_.mkIso (e.app _)
 
 attribute [local instance] Functor.Braided.ofChosenFiniteProducts in

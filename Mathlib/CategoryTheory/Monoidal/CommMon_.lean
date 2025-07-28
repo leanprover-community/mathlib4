@@ -194,12 +194,12 @@ theorem comp_mapCommMon_mul (A : CommMon_ C) :
 
 /-- The identity functor is also the identity on commutative monoid objects. -/
 @[simps!]
-noncomputable def mapCommMonIdIso : mapCommMon (𝟭 C) ≅ 𝟭 (CommMon_ C) :=
+def mapCommMonIdIso : mapCommMon (𝟭 C) ≅ 𝟭 (CommMon_ C) :=
   NatIso.ofComponents fun X ↦ CommMon_.mkIso (.refl _)
 
 /-- The composition functor is also the composition on commutative monoid objects. -/
 @[simps!]
-noncomputable def mapCommMonCompIso : (F ⋙ G).mapCommMon ≅ F.mapCommMon ⋙ G.mapCommMon :=
+def mapCommMonCompIso : (F ⋙ G).mapCommMon ≅ F.mapCommMon ⋙ G.mapCommMon :=
   NatIso.ofComponents fun X ↦ CommMon_.mkIso (.refl _)
 
 variable (C D) in
@@ -215,14 +215,12 @@ protected instance Faithful.mapCommMon [F.Faithful] : F.mapCommMon.Faithful wher
 
 /-- Natural transformations between functors lift to monoid objects. -/
 @[simps!]
-noncomputable def mapCommMonNatTrans (f : F ⟶ F') [NatTrans.IsMonoidal f] :
-    F.mapCommMon ⟶ F'.mapCommMon where
+def mapCommMonNatTrans (f : F ⟶ F') [NatTrans.IsMonoidal f] : F.mapCommMon ⟶ F'.mapCommMon where
   app X := .mk' (f.app _)
 
 /-- Natural isomorphisms between functors lift to monoid objects. -/
 @[simps!]
-noncomputable def mapCommMonNatIso (e : F ≅ F') [NatTrans.IsMonoidal e.hom] :
-    F.mapCommMon ≅ F'.mapCommMon :=
+def mapCommMonNatIso (e : F ≅ F') [NatTrans.IsMonoidal e.hom] : F.mapCommMon ≅ F'.mapCommMon :=
   NatIso.ofComponents fun X ↦ CommMon_.mkIso (e.app _)
 
 end LaxBraided
@@ -235,8 +233,8 @@ protected instance Full.mapCommMon [F.Full] [F.Faithful] : F.mapCommMon.Full whe
 
 /-- If `F : C ⥤ D` is a fully faithful monoidal functor, then `Grp(F) : Grp C ⥤ Grp D` is fully
 faithful too. -/
-protected noncomputable def FullyFaithful.mapCommMon (hF : F.FullyFaithful) :
-    F.mapCommMon.FullyFaithful where
+@[simps]
+protected def FullyFaithful.mapCommMon (hF : F.FullyFaithful) : F.mapCommMon.FullyFaithful where
   preimage f := .mk <| hF.preimage f.hom
 
 end Braided
@@ -250,7 +248,7 @@ variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Braided] [G.LaxBraided] [a
 
 /-- An adjunction of braided functors lifts to an adjunction of their lifts to commutative monoid
 objects. -/
-@[simps] noncomputable def mapCommMon : F.mapCommMon ⊣ G.mapCommMon where
+@[simps] def mapCommMon : F.mapCommMon ⊣ G.mapCommMon where
   unit := mapCommMonIdIso.inv ≫ mapCommMonNatTrans a.unit ≫ mapCommMonCompIso.hom
   counit := mapCommMonCompIso.inv ≫ mapCommMonNatTrans a.counit ≫ mapCommMonIdIso.hom
 
@@ -260,7 +258,7 @@ namespace Equivalence
 
 /-- An equivalence of categories lifts to an equivalence of their commutative monoid objects. -/
 @[simps]
-noncomputable def mapCommMon (e : C ≌ D) [e.functor.Braided] [e.inverse.Braided] [e.IsMonoidal] :
+def mapCommMon (e : C ≌ D) [e.functor.Braided] [e.inverse.Braided] [e.IsMonoidal] :
     CommMon_ C ≌ CommMon_ D where
   functor := e.functor.mapCommMon
   inverse := e.inverse.mapCommMon
