@@ -382,14 +382,15 @@ def modulesNotUpperCamelCase (opts : LinterOptions) (modules : Array Lean.Name) 
       s!"error: module name '{bad}' is not in 'UpperCamelCase': it should be '{good}' instead"
   return badNames.size
 
-/-- Verify that no module is forbidden according to Windows filename rules. -/
+/-- Verify that no module name is forbidden according to Windows' filename rules. -/
 register_option linter.modulesForbiddenWindows : Bool := { defValue := true }
 
 /-- Verifies that no module in `modules` contains CON, PRN, AUX, NUL, COM1, COM2, COM3, COM4, COM5,
 COM6, COM7, COM8, COM9, COM¹, COM², COM³, LPT1, LPT2, LPT3, LPT4, LPT5, LPT6, LPT7, LPT8, LPT9,
 LPT¹, LPT² or LPT³ in its filename, as these are forbidden on Windows.
 
-Source: https://learn.microsoft.com/en-gb/windows/win32/fileio/naming-a-file. -/
+Source: https://learn.microsoft.com/en-gb/windows/win32/fileio/naming-a-file.
+Return the number of module names violating this rule. -/
 def modulesForbiddenWindows (opts : LinterOptions) (modules : Array Lean.Name) : IO Nat := do
   unless getLinterValue linter.modulesUpperCamelCase opts do return 0
   let forbiddenNames := ["CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6",
@@ -403,9 +404,10 @@ def modulesForbiddenWindows (opts : LinterOptions) (modules : Array Lean.Name) :
       if forbiddenNames.contains s.toUpper then
         badComps := s :: badComps
     if badComps ≠ [] then
+      badNamesNum := badNamesNum + 1
       IO.eprintln
         s!"error: module name '{name}' contains components '{badComps}',
-        which are forbidden in Windows filenames."
+which are forbidden in Windows filenames."
   return badNamesNum
 
 end Mathlib.Linter.TextBased
