@@ -186,15 +186,15 @@ noncomputable def mapCommGrp : CommGrp_ C ⥤ CommGrp_ D where
   map f := F.mapMon.map f
   map_id X := show F.mapMon.map (𝟙 X.toGrp_.toMon_) = _ by aesop_cat
 
-protected instance Faithful.mapGrp [F.Faithful] : F.mapGrp.Faithful where
+protected instance Faithful.mapCommGrp [F.Faithful] : F.mapCommGrp.Faithful where
   map_injective hfg := F.mapMon.map_injective hfg
 
-protected instance Full.mapGrp [F.Full] [F.Faithful] : F.mapGrp.Full where
+protected instance Full.mapCommGrp [F.Full] [F.Faithful] : F.mapCommGrp.Full where
   map_surjective := F.mapMon.map_surjective
 
 /-- If `F : C ⥤ D` is a fully faithful monoidal functor, then `Grp(F) : Grp C ⥤ Grp D` is fully
 faithful too. -/
-protected noncomputable def FullyFaithful.mapGrp (hF : F.FullyFaithful) :
+protected noncomputable def FullyFaithful.mapCommGrp (hF : F.FullyFaithful) :
     F.mapGrp.FullyFaithful where
   preimage f := .mk <| hF.preimage f.hom
 
