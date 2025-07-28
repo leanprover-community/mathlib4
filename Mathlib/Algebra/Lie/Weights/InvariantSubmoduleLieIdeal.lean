@@ -33,10 +33,6 @@ open IsKilling (sl2SubalgebraOfRoot rootSystem)
 
 variable {H : LieSubalgebra K L} [H.IsCartanSubalgebra] [IsTriangularizable K H L]
 
-lemma exists_root_index (γ : Weight K H L) (hγ : γ.IsNonZero) :
-    ∃ i, (LieAlgebra.IsKilling.rootSystem H).root i = γ.toLinear :=
-  ⟨⟨γ, by simp [LieSubalgebra.root]; exact hγ⟩, rfl⟩
-
 set_option maxHeartbeats 1000000 in
 -- The proof involves extensive case analysis.
 /-- Constructs a Lie ideal from an invariant submodule of the dual space of a Cartan subalgebra.
@@ -160,6 +156,8 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
               genWeightSpace_le_I _ h_chi_in_q (fun h_eq => (w_chi h_eq).elim)
             exact sup_le (sup_le h_plus_contain h_minus_contain) h_chi_contain h_bracket_decomp
           · let S := LieAlgebra.IsKilling.rootSystem H
+            have exists_root_index (γ : Weight K H L) (hγ : γ.IsNonZero) :
+              ∃ i, S.root i = γ.toLinear := ⟨⟨γ, by simp [LieSubalgebra.root]; exact hγ⟩, rfl⟩
             have h_plus_bot : genWeightSpace L (χ.toLinear + α.1.toLinear) = ⊥ := by
               by_contra h_plus_ne_bot
               let γ : Weight K H L := ⟨χ.toLinear + α.1.toLinear, h_plus_ne_bot⟩
