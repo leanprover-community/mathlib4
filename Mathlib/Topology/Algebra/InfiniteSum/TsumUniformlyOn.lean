@@ -8,6 +8,7 @@ import Mathlib.Analysis.Calculus.UniformLimitsDeriv
 import Mathlib.Analysis.NormedSpace.FunctionSeries
 import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 
+
 /-!
 # Differentiability of sum of functions
 
@@ -20,9 +21,9 @@ version.
 
 -/
 
-open Set Metric TopologicalSpace Function Filter
+open Set Metric TopologicalSpace Function Filter Complex
 
-open scoped Topology NNReal
+open scoped Topology NNReal Complex
 
 section UniformlyOn
 
