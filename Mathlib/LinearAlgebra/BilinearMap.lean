@@ -345,7 +345,9 @@ theorem compl₁₂_inj [SMulCommClass R₂ R₁ Pₗ]
 
 omit [Module R M] in
 /-- Composing a linear map `P → Q` and a bilinear map `M → N → P` to
-form a bilinear map `M → N → Q`. -/
+form a bilinear map `M → N → Q`.
+
+See `LinearMap.compr₂ₛₗ` for a semi-linear version of this. -/
 def compr₂ [Module R A] [Module A M] [Module A Qₗ]
     [SMulCommClass R A Qₗ] [IsScalarTower R A Qₗ] [IsScalarTower R A Pₗ]
     (f : M →ₗ[A] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[A] Qₗ) : M →ₗ[A] Nₗ →ₗ[R] Qₗ where
@@ -415,7 +417,9 @@ theorem llcomp_apply' (f : N →ₛₗ[σ₂₃] P) (g : M →ₛₗ[σ₁₂] N
 omit [Module R M] in
 /-- Composing a linear map `P →ₛₗ[σ₃₄] Q` and a bilinear map `M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P` to
 form a bilinear map `M →ₛₗ[σ₁₄] N →ₛₗ[σ₂₄] Q`.
-This is the semi-linear version of `LinearMap.compr₂`. -/
+
+See `LinearMap.compr₂` for the linear version, where it's composing a linear map `Pₗ →ₗ[A] Qₗ`
+and a bilinear map `M →ₗ[A] Nₗ →ₗ[R] Pₗ` to form a bilinear map `M →ₗ[A] Nₗ →ₗ[R] Qₗ`. -/
 def compr₂ₛₗ (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P →ₛₗ[σ₃₄] Q) : M →ₛₗ[σ₁₄] N →ₛₗ[σ₂₄] Q :=
   llcomp _ N P Q g ∘ₛₗ f
 
