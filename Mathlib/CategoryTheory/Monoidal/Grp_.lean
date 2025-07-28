@@ -338,7 +338,7 @@ open Monoidal
 variable (F) in
 /-- A finite-product-preserving functor takes group objects to group objects. -/
 @[simps!]
-noncomputable def mapGrp : Grp_ C ⥤ Grp_ D where
+def mapGrp : Grp_ C ⥤ Grp_ D where
   obj A :=
     { F.mapMon.obj A.toMon_ with
       grp :=
@@ -350,6 +350,18 @@ noncomputable def mapGrp : Grp_ C ⥤ Grp_ D where
           simp [← Functor.map_id, Functor.Monoidal.lift_μ_assoc,
             Functor.Monoidal.toUnit_ε_assoc, ← Functor.map_comp] } }
   map f := F.mapMon.map f
+
+protected instance Faithful.mapGrp [F.Faithful] : F.mapGrp.Faithful where
+  map_injective hfg := F.mapMon.map_injective hfg
+
+protected instance Full.mapGrp [F.Full] [F.Faithful] : F.mapGrp.Full where
+  map_surjective := F.mapMon.map_surjective
+
+/-- If `F : C ⥤ D` is a fully faithful monoidal functor, then `Grp(F) : Grp C ⥤ Grp D` is fully
+faithful too. -/
+@[simps]
+protected def FullyFaithful.mapGrp (hF : F.FullyFaithful) : F.mapGrp.FullyFaithful where
+  preimage f := .mk <| hF.preimage f.hom
 
 @[simp]
 theorem mapGrp_id_one (A : Grp_ C) :
@@ -373,24 +385,22 @@ theorem comp_mapGrp_mul (A : Grp_ C) :
 
 /-- The identity functor is also the identity on group objects. -/
 @[simps!]
-noncomputable def mapGrpIdIso : mapGrp (𝟭 C) ≅ 𝟭 (Grp_ C) :=
-  NatIso.ofComponents (fun X ↦ Grp_.mkIso (.refl _) (by simp)
-    (by simp))
+def mapGrpIdIso : mapGrp (𝟭 C) ≅ 𝟭 (Grp_ C) :=
+  NatIso.ofComponents fun X ↦ Grp_.mkIso (.refl _)
 
 /-- The composition functor is also the composition on group objects. -/
 @[simps!]
-noncomputable def mapGrpCompIso : (F ⋙ G).mapGrp ≅ F.mapGrp ⋙ G.mapGrp :=
-  NatIso.ofComponents (fun X ↦ Grp_.mkIso (.refl _) (by simp [ε_of_cartesianMonoidalCategory])
-    (by simp [μ_of_cartesianMonoidalCategory]))
+def mapGrpCompIso : (F ⋙ G).mapGrp ≅ F.mapGrp ⋙ G.mapGrp :=
+  NatIso.ofComponents fun X ↦ Grp_.mkIso (.refl _)
 
 /-- Natural transformations between functors lift to group objects. -/
 @[simps!]
-noncomputable def mapGrpNatTrans (f : F ⟶ F') : F.mapGrp ⟶ F'.mapGrp where
+def mapGrpNatTrans (f : F ⟶ F') : F.mapGrp ⟶ F'.mapGrp where
   app X := .mk' (f.app _)
 
 /-- Natural isomorphisms between functors lift to group objects. -/
 @[simps!]
-noncomputable def mapGrpNatIso (e : F ≅ F') : F.mapGrp ≅ F'.mapGrp :=
+def mapGrpNatIso (e : F ≅ F') : F.mapGrp ≅ F'.mapGrp :=
   NatIso.ofComponents fun X ↦ Grp_.mkIso (e.app _)
 
 attribute [local instance] Monoidal.ofChosenFiniteProducts in
@@ -408,7 +418,7 @@ namespace Adjunction
 variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Monoidal] [G.Monoidal]
 
 /-- An adjunction of monoidal functors lifts to an adjunction of their lifts to group objects. -/
-@[simps] noncomputable def mapGrp : F.mapGrp ⊣ G.mapGrp where
+@[simps] def mapGrp : F.mapGrp ⊣ G.mapGrp where
   unit := mapGrpIdIso.inv ≫ mapGrpNatTrans a.unit ≫ mapGrpCompIso.hom
   counit := mapGrpCompIso.inv ≫ mapGrpNatTrans a.counit ≫ mapGrpIdIso.hom
 
@@ -418,7 +428,7 @@ namespace Equivalence
 variable (e : C ≌ D) [e.functor.Monoidal] [e.inverse.Monoidal]
 
 /-- An equivalence of categories lifts to an equivalence of their group objects. -/
-@[simps] noncomputable def mapGrp : Grp_ C ≌ Grp_ D where
+@[simps] def mapGrp : Grp_ C ≌ Grp_ D where
   functor := e.functor.mapGrp
   inverse := e.inverse.mapGrp
   unitIso := mapGrpIdIso.symm ≪≫ mapGrpNatIso e.unitIso ≪≫ mapGrpCompIso
