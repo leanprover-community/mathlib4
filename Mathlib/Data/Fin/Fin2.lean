@@ -152,4 +152,41 @@ instance instFintype : ∀ n, Fintype (Fin2 n)
     { elems    := elems.map ⟨Fin2.fs, @fs.inj _⟩ |>.cons .fz (by simp)
       complete := by rintro (_|i) <;> simp [compl] }
 
+def toFin {n : Nat} (i : Fin2 n) : Fin n :=
+  match i with
+  | fz => 0
+  | fs i => i.toFin.succ
+
+@[simp]
+theorem toFin_fz (n : Nat) : toFin (@fz n) = 0 := rfl
+
+@[simp]
+theorem toFin_fs {n : Nat} (i : Fin2 n) : toFin (fs i) = (toFin i).succ := rfl
+
+def ofFin {n : Nat} (i : Fin n) : Fin2 n :=
+  i.succRec (fun _ => fz) (fun _ _ => fs)
+
+@[simp]
+theorem ofFin_zero (n : Nat) : ofFin 0 = @fz n := rfl
+
+@[simp]
+theorem ofFin_succ {n : Nat} (i : Fin n) : ofFin i.succ = fs (ofFin i) := rfl
+
+@[simp]
+theorem toFin_ofFin {n : Nat} (i : Fin n) : toFin (ofFin i) = i :=
+  i.succRec (fun _ => rfl) (fun _ _ ih => congrArg Fin.succ ih)
+
+@[simp]
+theorem ofFin_toFin {n : Nat} (i : Fin2 n) : ofFin (toFin i) = i := by
+  induction i with
+  | fz => rfl
+  | fs _ ih => exact congrArg fs ih
+
+@[simps]
+def equivFin (n : Nat) : Fin2 n ≃ Fin n where
+  toFun := toFin
+  invFun := ofFin
+  left_inv := ofFin_toFin
+  right_inv := toFin_ofFin
+
 end Fin2
