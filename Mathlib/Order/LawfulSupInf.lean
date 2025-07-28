@@ -48,9 +48,9 @@ bounds rather than arbitrary elements when a least upper bound exists.
 class LawfulSup (α) extends Preorder α, SupSet α where
   isLUB_sSup_of_exists_isLUB (s : Set α) : (∃ x, IsLUB s x) → IsLUB s (sSup s)
 
+open Classical in
 /-- Defines `sSup` so as to return an arbitrary LUB when it exists, and a default element otherwise.
 -/
-open Classical in
 noncomputable def Preorder.toLawfulSup [Preorder α] [Inhabited α] :
     LawfulSup α where
   sSup s := if hs : ∃ x, IsLUB s x then Classical.choose hs else default
@@ -69,9 +69,9 @@ bounds rather than arbitrary elements when a greatest lower bounds exists.
 class LawfulInf (α) extends Preorder α, InfSet α where
   isGLB_sInf_of_exists_isGLB (s : Set α) : (∃ x, IsGLB s x) → IsGLB s (sInf s)
 
+open Classical in
 /-- Defines `sInf` so as to return an arbitrary GLB when it exists, and a default element otherwise.
 -/
-open Classical in
 noncomputable def Preorder.toLawfulInf [Preorder α] [Inhabited α] :
     LawfulInf α where
   sInf s := if hs : ∃ x, IsGLB s x then Classical.choose hs else default
@@ -85,10 +85,10 @@ A preorder with both lawful suprema and lawful infima.
 -/
 class LawfulSupInf (α) extends LawfulSup α, LawfulInf α
 
+open Classical in
 /-- Defines `sSup` and `sInf` so as to return an arbitrary LUB and GLB when they exist, and a
 default element otherwise.
 -/
-open Classical in
 noncomputable def Preorder.toLawfulSupInf [Preorder α] [Inhabited α] :
     LawfulSupInf α where
   sInf := Preorder.toLawfulInf.sInf
