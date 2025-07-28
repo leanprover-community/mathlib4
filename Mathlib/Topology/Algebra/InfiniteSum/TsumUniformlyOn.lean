@@ -28,11 +28,11 @@ section UniformlyOn
 
 variable {α β F : Type*} [NormedAddCommGroup F] [CompleteSpace F] {u : α → ℝ}
 
-theorem HasSumUniformlyOn_of_bounded {f : α → β → F} (hu : Summable u) {s : Set β}
+theorem HasSumUniformlyOn_of_norm_le_summable {f : α → β → F} (hu : Summable u) {s : Set β}
     (hfu : ∀ n x, x ∈ s → ‖f n x‖ ≤ u n) : HasSumUniformlyOn f (fun x ↦ ∑' n, f n x) {s} :=  by
   simp [hasSumUniformlyOn_iff_tendstoUniformlyOn, tendstoUniformlyOn_tsum hu hfu]
 
-theorem HasSumUniformlyOn_of_cofinite_eventually {ι : Type*} {f : ι → β → F} {u : ι → ℝ}
+theorem HasSumUniformlyOn_of_norm_le_summable_eventually {ι : Type*} {f : ι → β → F} {u : ι → ℝ}
     (hu : Summable u) {s : Set β} (hfu : ∀ᶠ n in cofinite, ∀ x ∈ s, ‖f n x‖ ≤ u n) :
     HasSumUniformlyOn f (fun x ↦ ∑' n, f n x) {s} := by
   simp [hasSumUniformlyOn_iff_tendstoUniformlyOn,
@@ -61,10 +61,10 @@ lemma SummableLocallyUniformlyOn_of_locally_bounded [TopologicalSpace β] [Local
 end UniformlyOn
 
 variable {ι F E : Type*} [NontriviallyNormedField E] [IsRCLikeNormedField E]
-    [NormedField F] [NormedSpace E F] {s : Set E}
+    [NormedAddCommGroup F] [NormedSpace E F] {s : Set E}
 
-/-- The `derivWithin` of a absolutely and uniformly converget sum on an open set `s` is the sum
-of the derivatives of squence of functions on the open set `s` -/
+/-- The `derivWithin` of a sum whose derivative is absolutely and uniformly convergent sum on an
+open set `s` is the sum of the derivatives of sequence of functions on the open set `s` -/
 theorem derivWithin_tsum {f : ι → E → F} (hs : IsOpen s) {x : E} (hx : x ∈ s)
     (hf : ∀ y ∈ s, Summable fun n ↦ f n y)
     (h : SummableLocallyUniformlyOn (fun n ↦ (derivWithin (fun z ↦ f n z) s)) s)
@@ -81,10 +81,11 @@ theorem derivWithin_tsum {f : ι → E → F} (hs : IsOpen s) {x : E} (hx : x �
       (fun q hq ↦ ((hf2 q r hr).differentiableWithinAt.hasDerivWithinAt.hasDerivAt)
       (hs.mem_nhds hr))
 
-/-- If a sum of functions `∑ fₙ (z)` is summable for each `z` in an open set `s`, and
-the `k`-th iterated derivatives of `fₙ` are summable locally uniformly on `s` for `1 ≤ k ≤ m`,
-and each `fₙ` is `m`-times differentiable, then the `m`-th iterated derivative of the sum
-is the sum of the `m`-th iterated derivatives. -/
+/-- If a sequence of functions `fₙ` is such that `∑ fₙ (z)` is summable for each `z` in an
+open set `s`, and for each `1 ≤ k ≤ m`, the series of `k`-th iterated derivatives
+`∑ (iteratedDerivWithin k fₙ s) (z)`
+is summable locally uniformly on `s`, and each `fₙ` is `m`-times differentiable, then the `m`-th
+iterated derivative of the sum is the sum of the `m`-th iterated derivatives. -/
 theorem iteratedDerivWithin_tsum {f : ι → E → F} (m : ℕ) (hs : IsOpen s)
     {x : E} (hx : x ∈ s) (hsum : ∀ t ∈ s, Summable (fun n : ι ↦ f n t))
     (h : ∀ k, 1 ≤ k → k ≤ m → SummableLocallyUniformlyOn
