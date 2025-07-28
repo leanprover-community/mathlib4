@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
-import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Module.Submodule.Equiv
 import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.Algebra.Module.Rat
