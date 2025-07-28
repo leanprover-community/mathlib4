@@ -358,6 +358,13 @@ theorem Matrix.toLin'_mul [Fintype m] [DecidableEq m] (M : Matrix l m R) (N : Ma
   Matrix.mulVecLin_mul _ _
 
 @[simp]
+theorem Matrix.toLin'_pow (M : Matrix n n R) (k : ℕ) :
+    (M ^ k).toLin' = M.toLin' ^ k := by
+  induction k with
+  | zero => rw [pow_zero, toLin'_one]; exact rfl
+  | succ n ih => rw [pow_succ, pow_succ, toLin'_mul, ih, Module.End.mul_eq_comp]
+
+@[simp]
 theorem Matrix.toLin'_submatrix [Fintype l] [DecidableEq l] (f₁ : m → k) (e₂ : n ≃ l)
     (M : Matrix k l R) :
     Matrix.toLin' (M.submatrix f₁ e₂) =

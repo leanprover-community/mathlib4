@@ -411,6 +411,11 @@ theorem diagonal_mul_diagonal' [Fintype n] [DecidableEq n] (d₁ d₂ : n → α
     diagonal d₁ * diagonal d₂ = diagonal fun i => d₁ i * d₂ i :=
   diagonal_mul_diagonal _ _
 
+theorem commute_diagonal {α : Type*} [NonUnitalNonAssocCommRing α]
+    [Fintype n] [DecidableEq n] (d₁ d₂ : n → α) :
+    Commute (diagonal d₁) (diagonal d₂) := by
+  simp_rw [commute_iff_eq, diagonal_mul_diagonal, mul_comm]
+
 theorem smul_eq_diagonal_mul [Fintype m] [DecidableEq m] (M : Matrix m n α) (a : α) :
     a • M = (diagonal fun _ => a) * M := by
   ext

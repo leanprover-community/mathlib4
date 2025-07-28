@@ -69,6 +69,50 @@ lemma hasEigenvalue_toLin'_diagonal_iff [NoZeroDivisors R] (d : n → R) {μ : R
 
 end NontrivialCommRing
 
+namespace Matrix
+
+variable [CommRing R] [IsDomain R] {d : n → R}
+
+@[simp]
+lemma maxGenEigenspace_diagonal_eq_bot_iff {μ : R} :
+    maxGenEigenspace (diagonal d).toLin' μ = ⊥ ↔ μ ∉ Set.range d := by
+  rw [← not_iff_not]
+  simp only [Set.mem_range, not_exists, not_forall, not_not, ← ne_eq, Submodule.ne_bot_iff]
+  refine ⟨fun ⟨x, hx, hx₀⟩ ↦ ?_, ?_⟩
+  · obtain ⟨i, hi⟩ : ∃ i, x i ≠ 0 := Function.ne_iff.mp hx₀
+    use i
+    have : (diagonal d).toLin' - μ • 1 = (diagonal (d - μ • 1)).toLin' := by
+      aesop (add simp Pi.single_apply)
+    obtain ⟨k, hk⟩ : ∃ k, diagonal ((d - μ • 1) ^ k) *ᵥ x = 0 := by
+      simpa only [mem_maxGenEigenspace, this, ← toLin'_pow, toLin'_apply, diagonal_pow] using hx
+    replace hk : x i * (d i - μ) ^ k = 0 := by
+      simpa [mulVec_eq_sum, diagonal_apply] using congr_fun hk i
+    simp only [mul_eq_zero, hi, pow_eq_zero_iff', ne_eq, false_or, sub_eq_zero] at hk
+    exact hk.1
+  · rintro ⟨i, rfl⟩
+    refine ⟨Pi.single i 1, (mem_maxGenEigenspace _ _ _).mpr ⟨1, ?_⟩, by simp⟩
+    ext j
+    simp [Pi.single_apply]
+
+@[simp]
+lemma iSup_maxGenEigenspace_diagonal_eq_top :
+    ⨆ μ, maxGenEigenspace (diagonal d).toLin' μ = ⊤ := by
+  refine Submodule.eq_top_iff'.mpr fun v ↦ ?_
+  suffices ⨆ μ, maxGenEigenspace (Matrix.diagonal d).toLin' μ =
+      ⨆ i ∈ Finset.univ, maxGenEigenspace (Matrix.diagonal d).toLin' (d i) by
+    rw [this, Submodule.mem_iSup_finset_iff_exists_sum]
+    let μ (i : n) : maxGenEigenspace (diagonal d).toLin' (d i) := ⟨Pi.single i (v i),
+      (mem_maxGenEigenspace _ _ _).mpr ⟨1, by ext j; simp [Pi.single_apply, mul_comm (v i)]⟩⟩
+    exact ⟨μ, Finset.univ_sum_single v⟩
+  let p (μ : R) : Prop := maxGenEigenspace (diagonal d).toLin' μ = ⊥
+  have hp_neg (μ : R) : ¬ p μ ↔ μ ∈ Set.range d := by simp [p]
+  have hp_pos (μ : R) (hμ : p μ) : maxGenEigenspace (diagonal d).toLin' μ = ⊥ := hμ
+  simp only [Finset.mem_univ, iSup_pos]
+  rw [iSup_split _ p]
+  simp only [biSup_congr hp_pos, hp_neg, iSup_bot, bot_sup_eq, iSup_range]
+
+end Matrix
+
 /-- The spectrum of the diagonal operator is the range of the diagonal viewed as a function. -/
 lemma spectrum_diagonal [Field R] (d : n → R) :
     spectrum R (diagonal d) = Set.range d := by
