@@ -231,12 +231,6 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace
 instance [SecondCountableTopology E] [IsGaussian μ] : HasTwoMoments μ where
   memLp_two := IsGaussian.memLp_id μ 2 (by simp)
 
--- todo: modify IsGaussian.memLp_dual to use this
-lemma _root_.ContinuousLinearMap.memLp {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace ℝ E] {_ : MeasurableSpace E}
-    {p : ℝ≥0∞} {μ : Measure E} (h : MemLp id p μ) (L : Dual ℝ E) :
-    MemLp L p μ := L.comp_memLp' h
-
 lemma _root_.ContinuousLinearMap.memLp_two {E : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E] {_ : MeasurableSpace E}
     {μ : Measure E} [HasTwoMoments μ] (L : Dual ℝ E) :

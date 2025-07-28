@@ -43,82 +43,45 @@ end Aux
 
 namespace ProbabilityTheory
 
-variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F] [BorelSpace F]
-  {μ : Measure E} [IsGaussian μ] {ν : Measure F} [IsGaussian ν]
+variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E]
+  [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F]
+  {μ : Measure E} {ν : Measure F} {p : ℝ≥0∞}
 
-section Prod
+lemma _root_.ContinuousLinearMap.memLp {E : Type*}
+    [NormedAddCommGroup E] [NormedSpace ℝ E] {_ : MeasurableSpace E}
+    {p : ℝ≥0∞} {μ : Measure E} (h : MemLp id p μ) (L : Dual ℝ E) :
+    MemLp L p μ := L.comp_memLp' h
 
-omit [BorelSpace F] in
-lemma memLp_comp_inl_prod (L : Dual ℝ (E × F)) {p : ℝ≥0∞} (hp : p ≠ ∞) :
-    MemLp (fun x ↦ (L.comp (.inl ℝ E F) x.1)) p (μ.prod ν) :=
-  (IsGaussian.memLp_dual μ (L.comp (.inl ℝ E F)) p hp).comp_fst ν
-
-omit [BorelSpace E] in
-lemma memLp_comp_inr_prod (L : Dual ℝ (E × F)) {p : ℝ≥0∞} (hp : p ≠ ∞) :
-    MemLp (fun x ↦ (L.comp (.inr ℝ E F) x.2)) p (μ.prod ν) :=
-  (IsGaussian.memLp_dual ν (L.comp (.inr ℝ E F)) p hp).comp_snd μ
-
-lemma memLp_dual_prod (L : Dual ℝ (E × F)) {p : ℝ≥0∞} (hp : p ≠ ∞) :
-    MemLp L p (μ.prod ν) := by
-  suffices MemLp (fun v ↦ L.comp (.inl ℝ E F) v.1 + L.comp (.inr ℝ E F) v.2) p (μ.prod ν) by
-    simp_rw [L.comp_inl_add_comp_inr] at this
-    exact this
-  exact (memLp_comp_inl_prod L hp).add (memLp_comp_inr_prod L hp)
-
-omit [BorelSpace F] in
-lemma integrable_comp_inl_prod (L : Dual ℝ (E × F)) :
-    Integrable (fun x ↦ (L.comp (.inl ℝ E F) x.1)) (μ.prod ν) :=
-  memLp_one_iff_integrable.mp (memLp_comp_inl_prod L (by simp))
-
-omit [BorelSpace E] in
-lemma integrable_comp_inr_prod (L : Dual ℝ (E × F)) :
-    Integrable (fun x ↦ (L.comp (.inr ℝ E F) x.2)) (μ.prod ν) :=
-  memLp_one_iff_integrable.mp (memLp_comp_inr_prod L (by simp))
-
-lemma integral_dual_prod (L : Dual ℝ (E × F)) :
+lemma integral_dual_prod' [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] {L : Dual ℝ (E × F)}
+    (hLμ : MemLp (L.comp (.inl ℝ E F)) 1 μ) (hLν : MemLp (L.comp (.inr ℝ E F)) 1 ν) :
     (μ.prod ν)[L] = μ[L.comp (.inl ℝ E F)] + ν[L.comp (.inr ℝ E F)] := by
   simp_rw [← L.comp_inl_add_comp_inr]
-  rw [integral_add (integrable_comp_inl_prod L) (integrable_comp_inr_prod L),
-    integral_prod _ (integrable_comp_inl_prod L), integral_prod _ (integrable_comp_inr_prod L)]
-  simp
+  rw [integral_add, integral_prod, integral_prod]
+  · simp
+  · exact (hLν.comp_snd μ).integrable le_rfl
+  · exact (hLμ.comp_fst ν).integrable le_rfl
+  · exact (hLμ.comp_fst ν).integrable le_rfl
+  · exact (hLν.comp_snd μ).integrable le_rfl
 
-lemma variance_dual_prod (L : Dual ℝ (E × F)) :
+lemma integral_dual_prod [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] {L : Dual ℝ (E × F)}
+    (hμ : MemLp id 1 μ) (hν : MemLp id 1 ν) :
+    (μ.prod ν)[L] = μ[L.comp (.inl ℝ E F)] + ν[L.comp (.inr ℝ E F)] :=
+  integral_dual_prod' (ContinuousLinearMap.memLp hμ _) (ContinuousLinearMap.memLp hν _)
+
+lemma variance_dual_prod' [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] {L : Dual ℝ (E × F)}
+    (hLμ : MemLp (L.comp (.inl ℝ E F)) 2 μ) (hLν : MemLp (L.comp (.inr ℝ E F)) 2 ν) :
     Var[L; μ.prod ν] = Var[L.comp (.inl ℝ E F); μ] + Var[L.comp (.inr ℝ E F); ν] := by
-  rw [variance_def' (memLp_dual_prod L (by simp)), integral_dual_prod L,
-    variance_def' (IsGaussian.memLp_dual _ _ _ (by simp)),
-    variance_def' (IsGaussian.memLp_dual _ _ _ (by simp))]
-  let L₁ := L.comp (.inl ℝ E F)
-  let L₂ := L.comp (.inr ℝ E F)
-  simp only [Pi.pow_apply]
-  suffices h_sq : ∫ v, L v ^ 2 ∂(μ.prod ν)
-      = ∫ x, L₁ x ^ 2 ∂μ + ∫ x, L₂ x ^ 2 ∂ν + 2 * μ[L₁] * ν[L₂] by rw [h_sq]; ring
-  calc ∫ v, L v ^ 2 ∂μ.prod ν
-  _ = ∫ v, (L₁ v.1 + L₂ v.2) ^ 2 ∂μ.prod ν := by simp_rw [← L.comp_inl_add_comp_inr]; simp [L₁, L₂]
-  _ = ∫ v, L₁ v.1 ^ 2 + L₂ v.2 ^ 2 + 2 * L₁ v.1 * L₂ v.2 ∂μ.prod ν := by congr with v; ring
-  _ = ∫ v, L₁ v.1 ^ 2 ∂μ.prod ν + ∫ v, L₂ v.2 ^ 2 ∂μ.prod ν
-      + 2 * ∫ v, L₁ v.1 * L₂ v.2 ∂μ.prod ν := by
-    have h_int1 : Integrable (fun a ↦ L₁ a.1 ^ 2) (μ.prod ν) :=
-      (memLp_comp_inl_prod L (by simp)).integrable_sq
-    have h_int2 : Integrable (fun a ↦ L₂ a.2 ^ 2) (μ.prod ν) :=
-      (memLp_comp_inr_prod L (by simp)).integrable_sq
-    rw [integral_add (h_int1.add'' h_int2), integral_add h_int1 h_int2]
-    · simp_rw [mul_assoc]
-      rw [integral_const_mul]
-    · simp_rw [mul_assoc]
-      refine Integrable.const_mul ?_ _
-      exact (memLp_comp_inl_prod L (by simp)).integrable_mul (memLp_comp_inr_prod L (by simp))
-        (p := 2) (q := 2)
-  _ = ∫ x, L₁ x ^ 2 ∂μ + ∫ x, L₂ x ^ 2 ∂ν + 2 * μ[L₁] * ν[L₂] := by
-    simp_rw [mul_assoc]
-    congr
-    · have : μ = (μ.prod ν).map (fun p ↦ p.1) := by simp
-      conv_rhs => rw [this]
-      rw [integral_map (by fun_prop) (by fun_prop)]
-    · have : ν = (μ.prod ν).map (fun p ↦ p.2) := by simp
-      conv_rhs => rw [this]
-      rw [integral_map (by fun_prop) (by fun_prop)]
-    · rw [integral_prod_mul]
+  have : L = fun x : E × F ↦ L.comp (.inl ℝ E F) x.1 + L.comp (.inr ℝ E F) x.2 := by
+    ext; rw [L.comp_inl_add_comp_inr]
+  conv_lhs => rw [this]
+  rw [variance_add_prod hLμ hLν]
+
+lemma variance_dual_prod [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] {L : Dual ℝ (E × F)}
+    (hLμ : MemLp id 2 μ) (hLν : MemLp id 2 ν) :
+    Var[L; μ.prod ν] = Var[L.comp (.inl ℝ E F); μ] + Var[L.comp (.inr ℝ E F); ν] :=
+  variance_dual_prod' (ContinuousLinearMap.memLp hLμ _) (ContinuousLinearMap.memLp hLν _)
+
+variable [IsGaussian μ] [IsGaussian ν] [BorelSpace E] [BorelSpace F]
 
 /-- A product of Gaussian distributions is Gaussian. -/
 instance [SecondCountableTopologyEither E F] : IsGaussian (μ.prod ν) := by
@@ -132,13 +95,13 @@ instance [SecondCountableTopologyEither E F] : IsGaussian (μ.prod ν) := by
   rw [sub_add_sub_comm, ← add_mul]
   congr
   · simp_rw [integral_complex_ofReal]
-    rw [integral_dual_prod L]
+    rw [integral_dual_prod' (IsGaussian.memLp_dual μ (L.comp (.inl ℝ E F)) 1 (by simp))
+      (IsGaussian.memLp_dual ν (L.comp (.inr ℝ E F)) 1 (by simp))]
     norm_cast
   · field_simp
-    rw [variance_dual_prod]
+    rw [variance_dual_prod' (IsGaussian.memLp_dual μ (L.comp (.inl ℝ E F)) 2 (by simp))
+      (IsGaussian.memLp_dual ν (L.comp (.inr ℝ E F)) 2 (by simp))]
     norm_cast
-
-end Prod
 
 section Rotation
 
