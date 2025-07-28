@@ -372,7 +372,6 @@ theorem IsPositive.of_isStarProjection {p : E →L[𝕜] E}
     (hp : IsStarProjection p) : p.IsPositive :=
   hp.isIdempotentElem.isPositive_iff_isSelfAdjoint.mpr hp.isSelfAdjoint
 
-open ContinuousLinearMap in
 /-- For an idempotent operator `p`, TFAE:
 * `p` is normal
 * `p` is self-adjoint
@@ -383,7 +382,8 @@ theorem IsIdempotentElem.TFAE {p : E →L[𝕜] E} (hp : IsIdempotentElem p) :
       (LinearMap.range p)ᗮ = LinearMap.ker p].TFAE := by
   tfae_have 1 ↔ 2 := hp.isSelfAdjoint_iff_isStarNormal.symm
   tfae_have 2 ↔ 3 := hp.isPositive_iff_isSelfAdjoint.symm
-  tfae_have 2 ↔ 4 := p.isSelfAdjoint_iff_isSymmetric.eq ▸ hp.isSymmetric_iff_orthogonal_range
+  tfae_have 2 ↔ 4 := p.isSelfAdjoint_iff_isSymmetric.eq ▸
+    (ContinuousLinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range hp)
   tfae_finish
 
 end ContinuousLinearMap
