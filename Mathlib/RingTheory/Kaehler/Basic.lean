@@ -155,7 +155,7 @@ instance KaehlerDifferential.module : Module (S ⊗[R] S) (KaehlerDifferential R
   Ideal.Cotangent.moduleOfTower _
 
 @[inherit_doc KaehlerDifferential]
-notation:100 "Ω[" S "⁄" R "]" => KaehlerDifferential R S
+notation "Ω[" S "⁄" R "]" => KaehlerDifferential R S
 
 instance : Nonempty (Ω[S⁄R]) := ⟨0⟩
 
