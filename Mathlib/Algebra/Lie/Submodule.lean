@@ -886,10 +886,10 @@ lemma map_injective_of_injective (hf : Function.Injective f) :
 /-- An injective morphism of Lie modules embeds the lattice of submodules of the domain into that
 of the target. -/
 @[simps] def mapOrderEmbedding {f : M →ₗ⁅R,L⁆ M'} (hf : Function.Injective f) :
-  LieSubmodule R L M ↪o LieSubmodule R L M' where
-    toFun := LieSubmodule.map f
-    inj' := map_injective_of_injective hf
-    map_rel_iff' := Set.image_subset_image_iff hf
+    LieSubmodule R L M ↪o LieSubmodule R L M' where
+  toFun := LieSubmodule.map f
+  inj' := map_injective_of_injective hf
+  map_rel_iff' := Set.image_subset_image_iff hf
 
 variable (N) in
 /-- For an injective morphism of Lie modules, any Lie submodule is equivalent to its image. -/
