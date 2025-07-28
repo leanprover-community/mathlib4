@@ -320,7 +320,7 @@ structure Config (n k : Nat) where
 noncomputable def Config.symm {n k : ℕ} (c : Config n k) : Config n k where
   ls := c.ls.map
     ⟨fun l => l.map (EuclideanGeometry.reflection line[ℝ, !₂[(0 : ℝ), 0], !₂[1, 1]]).toAffineMap,
-    by { sorry }⟩
+    fun x y => by { simp;  sorry }⟩
   card := by simp [c.card]
   rank l hl := by
     simp
@@ -446,7 +446,7 @@ lemma no_config_3_2_no_vert (c : Config 3 2) (h_no_vert : ∀ l ∈ c.ls, ¬ l �
       rcases hl₆ with (rfl | rfl | rfl)
       · -- l₆ = l₁, only one sunny line
         have : ¬ Sunny l₆ := notSunny_of_horiz meml₁ meml₆ (by norm_num)
-        split_ifs at hsunny <;> simp at hsunny
+        split_ifs at hsunny; simp at hsunny
       · -- l₆ = l₅, finrank violated
         suffices h : finrank ℝ l₆.direction = 2
         · have := c.rank l₆ hl₂
@@ -463,6 +463,51 @@ lemma no_config_3_2_no_vert (c : Config 3 2) (h_no_vert : ∀ l ∈ c.ls, ¬ l �
         omega
       apply l₅.finrank_eq_two_of_ne meml₅ meml₃ meml₄ (by norm_num)
 
+lemma no_config_3_2 (c : Config 3 2) : False := by
+  by_cases h : ∀ l ∈ c.ls, ¬ l ∥ yAxis
+  · apply no_config_3_2_no_vert c h
+  · let c' := c.symm
+    by_cases h' : ∀ l ∈ c'.ls, ¬ l ∥ yAxis
+    · apply no_config_3_2_no_vert c' h'
+    · simp at h h'
+      obtain ⟨l₁, hl₁, yl₁⟩ := h
+      obtain ⟨l₂, hl₂, xl₂⟩ := h'
+      let l₂' := l₂.map (EuclideanGeometry.reflection line[ℝ, !₂[(0 : ℝ), 0], !₂[1, 1]]).toAffineMap
+      have hl₂' : l₂' ∈ c.ls := by
+        simp [l₂']
+        simp [c', Config.symm] at hl₂
+        obtain ⟨l₂'', hl₂'', rfl⟩ := hl₂
+        convert hl₂''
+        ext
+        simp
+      obtain ⟨l₃, hl₃, meml₃⟩ := c.cover 2 2
+      -- `c.ls` contains two distinct non-sunny lines
+      have nsunnyl₁ : ¬ Sunny l₁ := fun h => by simp [Sunny, yl₁] at h
+      have yl₂' : l₂' ∥ xAxis := sorry
+      have nsunnyl₂' : ¬ Sunny l₂' := fun h => by simp [Sunny, yl₂'] at h
+      -- `l₁` and `l₂'` are distinct because they have different directions
+      have : l₁ ≠ l₂' := fun h => by
+        subst h
+        have := yl₂'.symm.trans yl₁
+        simp [xAxis, yAxis] at this
+        have := AffineSubspace.Parallel.vectorSpan_eq this
+        sorry
+      have hsunny := c.sunny
+      rw [← Finset.union_sdiff_of_subset (Finset.insert_subset hl₁
+        (Finset.singleton_subset_iff.mpr hl₂')),
+        Finset.filter_union, Finset.card_union_of_disjoint
+        (Finset.disjoint_filter_filter Finset.sdiff_disjoint.symm),
+        Finset.filter_insert, Finset.filter_singleton] at hsunny
+      simp [nsunnyl₁, nsunnyl₂'] at hsunny
+      have : #({l ∈ c.ls \ {l₁, l₂'} | Sunny l}) ≤ 1 :=
+      calc
+        _ ≤ #(c.ls \ {l₁, l₂'}) := Finset.card_filter_le _ Sunny
+        _ = #(c.ls \ {l₂'}) - 1 := by rw [Finset.sdiff_insert,
+              Finset.card_erase_of_mem (by simp [this, hl₁])]
+        _ = #c.ls - 1 - 1 := by rw [Finset.sdiff_singleton_eq_erase, Finset.card_erase_of_mem hl₂']
+        _ = 1 := by rw [c.card]
+      omega
+
 theorem result (n : Set.Ici 3) :
     {k | ∃ lines : Finset (AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2))),
       have : DecidablePred Sunny := Classical.decPred _;
@@ -477,8 +522,7 @@ theorem result (n : Set.Ici 3) :
         apply lt_of_le_of_lt (Finset.card_filter_le ls Sunny)
         rw [cardls]
         norm_num
-      have hk' : #({l ∈ ls | Sunny l}) ≠ 2 := fun h => by
-        sorry
+      have hk' := fun h => no_config_3_2 ⟨ls, cardls, rankls, linesls, h⟩
       interval_cases #({l ∈ ls | Sunny l}) <;> first | contradiction | decide
     · intro h
       rcases n with ⟨n, hn⟩; simp at hn
