@@ -16,7 +16,6 @@ whenever they exist.
 
 ## Main declarations
 
-
 - `LawfulSupPreorder`: Typeclass ensuring that whenever a set `s` has a least upper bound, `sSup s`
   returns a least upper bound.
 - `LawfulInfPreorder`: Typeclass ensuring that whenever a set `s` has a greatest lower bound,
