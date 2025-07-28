@@ -385,8 +385,6 @@ theorem IsIdempotentElem.TFAE {p : E →L[𝕜] E} (hp : IsIdempotentElem p) :
   tfae_have 2 ↔ 4 := hp.isSelfAdjoint_iff_orthogonal_range
   tfae_finish
 
-open ContinuousLinearMap
-
 /-- For star projection operators `p,q`, we have `p ≤ q` iff `p ∘ q = p`. -/
 theorem IsStarProjection.le_iff_comp_eq_left {p q : E →L[𝕜] E}
     (hp : IsStarProjection p) (hq : IsStarProjection q) : p ≤ q ↔ p ∘L q = p := by
