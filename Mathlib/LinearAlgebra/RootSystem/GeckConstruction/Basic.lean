@@ -4,15 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Algebra.CharZero.Infinite
-import Mathlib.Algebra.Lie.CartanSubalgebra
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Lie.Matrix
-import Mathlib.Algebra.Lie.Semisimple.Lemmas
 import Mathlib.Algebra.Lie.Sl2
 import Mathlib.Algebra.Lie.Weights.Linear
 import Mathlib.LinearAlgebra.Eigenspace.Matrix
 import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
 import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Lemmas
+import Mathlib.Algebra.Lie.Semisimple.Defs
 
 /-!
 # Geck's construction of a Lie algebra associated to a root system
@@ -54,9 +53,6 @@ a base: https://mathoverflow.net/questions/495434/
 
 ## TODO
 * Lemma stating `LinearIndependent R h` (easy using `RootPairing.Base.cartanMatrix_nondegenerate`).
-* Instance stating `LieModule.IsIrreducible R (lieAlgebra b) (b.support ⊕ ι → R)`
-  (Lemma 4.2 from [Geck](Geck2017)). This will immediately yield that the Geck construction is
-  semisimple via `LieAlgebra.hasTrivialRadical_of_isIrreducible_of_isFaithful`.
 * Instance stating `(cartanSubalgebra' b).IsCartanSubalgebra`
   (included in Lemma 4.6 from [Geck](Geck2017)).
 
@@ -834,7 +830,7 @@ end ωConjLieSubmodule
 
 omit [Finite ι] [IsDomain R] [CharZero R] [Fintype ι] [P.IsReduced] in
 open Matrix Submodule in
-@[simp] lemma diagonal_elim_mem_span_h_iff [DecidableEq ι] [Fintype ι] {d : ι → R} :
+@[simp] lemma diagonal_elim_mem_span_h_iff [DecidableEq ι] {d : ι → R} :
     diagonal (Sum.elim 0 d) ∈ span R (range <| h (b := b)) ↔
       d ∈ span R (range <| fun (i : b.support) j ↦ (P.pairingIn ℤ j i : R)) := by
   let f : Matrix ι ι R →ₗ[R] Matrix (b.support ⊕ ι) (b.support ⊕ ι) R :=
@@ -1026,7 +1022,7 @@ lemma baz :
     | add u v _ _ hu hv => simp [hu, hv]
     | smul t u _ hu => simp [hu]
 
-/-- An auxiliary lemma en route to `RootPairing.GeckConstruction.instIsIrreducible` (where the same
+/-- An auxiliary lemma en route to `RootPairing.GeckConstruction.isIrreducible` (where the same
 conclusion is proved with the hypothesis `hi` weakened to just `U ≠ ⊥`). -/
 private lemma instIsIrreducible_aux₀ [P.IsIrreducible]
     {U : LieSubmodule K (lieAlgebra b) (b.support ⊕ ι → K)} {i : ι}
@@ -1138,7 +1134,6 @@ lemma bar' (U : LieSubmodule K (cartanSubalgebra' b) (b.support ⊕ ι → K))
 
 open LieModule Submodule in
 lemma foo (hCM : (4 - b.cartanMatrix).det ≠ 0)
-    [Nonempty ι]
     (U : LieSubmodule K (lieAlgebra b) (b.support ⊕ ι → K)) (hU : U ≠ ⊥) :
     ∃ i, Pi.single (Sum.inr i) 1 ∈ U := by
   let u (i : b.support) : b.support ⊕ ι → K := Pi.single (Sum.inl i) 1
@@ -1185,8 +1180,8 @@ lemma foo (hCM : (4 - b.cartanMatrix).det ≠ 0)
 /-- Lemma 4.2 from [Geck](Geck2017).
 
 TODO Drop the redundant assumption about the Cartan matrix not having eigenvalue 4 by proving
-elsewhere that this is always true. -/
-instance instIsIrreducible [P.IsIrreducible] [Nonempty ι] (hCM : (4 - b.cartanMatrix).det ≠ 0) :
+elsewhere that this is always true, and then promote this to an `instance` -/
+lemma isIrreducible [P.IsIrreducible] [Nonempty ι] (hCM : (4 - b.cartanMatrix).det ≠ 0) :
     LieModule.IsIrreducible K (lieAlgebra b) (b.support ⊕ ι → K) := by
   refine LieModule.IsIrreducible.mk fun U hU ↦ ?_
   let v (i : ι) : b.support ⊕ ι → K := Pi.single (Sum.inr i) 1
