@@ -15,6 +15,4 @@ variable {α ι : Type*}
 lemma partialSups_const_add [Preorder ι] [LocallyFiniteOrderBot ι] [Lattice α] [AddGroup α]
     [CovariantClass α α (· + ·) (· ≤ ·)] (f : ι → α) (c : α) (i : ι) :
     partialSups (c + f ·) i = c + partialSups f i := by
-  change (partialSups (OrderIso.addLeft c ∘ f)) i = _
-  rw [comp_partialSups f (OrderIso.addLeft c)]
-  rfl
+  simp_rw [← OrderIso.addLeft_apply, ← Function.comp_def, comp_partialSups, Function.comp_apply]
