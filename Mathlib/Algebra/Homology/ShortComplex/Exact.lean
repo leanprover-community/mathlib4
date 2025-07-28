@@ -520,20 +520,14 @@ lemma ext_r (s s' : S.Splitting) (h : s.r = s'.r) : s = s' := by
   have eq := s.id
   rw [← s'.id, h, add_right_inj, cancel_epi S.g] at eq
   cases s
-  cases s'
-  obtain rfl := eq
-  obtain rfl := h
-  rfl
+  congr
 
 lemma ext_s (s s' : S.Splitting) (h : s.s = s'.s) : s = s' := by
   have := s.mono_f
   have eq := s.id
   rw [← s'.id, h, add_left_inj, cancel_mono S.f] at eq
   cases s
-  cases s'
-  obtain rfl := eq
-  obtain rfl := h
-  rfl
+  congr
 
 /-- The left homology data on a short complex equipped with a splitting. -/
 @[simps]

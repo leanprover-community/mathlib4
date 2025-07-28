@@ -161,7 +161,7 @@ theorem symm_apply_mk_proj {x : Z} (ex : x ∈ e.source) :
 theorem preimage_symm_proj_baseSet :
     e.toPartialEquiv.symm ⁻¹' (proj ⁻¹' e.baseSet) ∩ e.target = e.target := by
   refine inter_eq_right.mpr fun x hx => ?_
-  simp only [mem_preimage, PartialEquiv.invFun_as_coe, e.proj_symm_apply hx]
+  simp only [mem_preimage, e.proj_symm_apply hx]
   exact e.mem_target.mp hx
 
 @[simp, mfld_simps]
@@ -659,7 +659,7 @@ theorem coordChangeHomeomorph_coe (e₁ e₂ : Trivialization F proj) {b : B} (h
   rfl
 
 theorem isImage_preimage_prod (e : Trivialization F proj) (s : Set B) :
-    e.toPartialHomeomorph.IsImage (proj ⁻¹' s) (s ×ˢ univ) := fun x hx => by simp [e.coe_fst', hx]
+    e.toPartialHomeomorph.IsImage (proj ⁻¹' s) (s ×ˢ univ) := fun x hx => by simp [hx]
 
 /-- Restrict a `Trivialization` to an open set in the base. -/
 protected def restrOpen (e : Trivialization F proj) (s : Set B) (hs : IsOpen s) :
@@ -748,9 +748,9 @@ noncomputable def disjointUnion (e e' : Trivialization F proj) (H : Disjoint e.b
   target_eq := (congr_arg₂ (· ∪ ·) e.target_eq e'.target_eq).trans union_prod.symm
   proj_toFun := by
     rintro p (hp | hp')
-    · show (e.source.piecewise e e' p).1 = proj p
+    · change (e.source.piecewise e e' p).1 = proj p
       rw [piecewise_eq_of_mem, e.coe_fst] <;> exact hp
-    · show (e.source.piecewise e e' p).1 = proj p
+    · change (e.source.piecewise e e' p).1 = proj p
       rw [piecewise_eq_of_notMem, e'.coe_fst hp']
       simp only [source_eq] at hp' ⊢
       exact fun h => H.le_bot ⟨h, hp'⟩

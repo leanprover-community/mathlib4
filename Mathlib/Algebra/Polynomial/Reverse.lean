@@ -35,12 +35,7 @@ def revAtFun (N i : ℕ) : ℕ :=
 
 theorem revAtFun_invol {N i : ℕ} : revAtFun N (revAtFun N i) = i := by
   unfold revAtFun
-  split_ifs with h j
-  · exact tsub_tsub_cancel_of_le h
-  · exfalso
-    apply j
-    exact Nat.sub_le N i
-  · rfl
+  grind
 
 theorem revAtFun_inj {N : ℕ} : Function.Injective (revAtFun N) := by
   intro a b hab

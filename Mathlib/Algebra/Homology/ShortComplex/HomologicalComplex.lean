@@ -234,6 +234,7 @@ noncomputable def fromOpcycles :
   K.opcycles i ⟶ K.X j  :=
   K.descOpcycles (K.d i j) (c.prev i) rfl (K.d_comp_d _ _ _)
 
+omit [K.HasHomology i] in
 @[reassoc (attr := simp)]
 lemma d_pOpcycles [K.HasHomology j] : K.d i j ≫ K.pOpcycles j = 0 := by
   by_cases hij : c.Rel i j
@@ -469,7 +470,7 @@ noncomputable def homologyFunctorIso' [CategoryWithHomology C]
     (hi : c.prev j = i) (hk : c.next j = k) :
     homologyFunctor C c j ≅
       shortComplexFunctor' C c i j k ⋙ ShortComplex.homologyFunctor C :=
-  homologyFunctorIso C c j ≪≫ isoWhiskerRight (natIsoSc' C c i j k hi hk) _
+  homologyFunctorIso C c j ≪≫ Functor.isoWhiskerRight (natIsoSc' C c i j k hi hk) _
 
 instance [CategoryWithHomology C] : (homologyFunctor C c i).PreservesZeroMorphisms where
 instance [CategoryWithHomology C] : (opcyclesFunctor C c i).PreservesZeroMorphisms where

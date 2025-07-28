@@ -76,7 +76,7 @@ lemma coeff_preHilbertPoly_self [CharZero F] (d k : ℕ) :
     simp only [sub_add, ← C_1, ← map_sub, coeff_smul, coeff_natDegree]
   _ = (d ! : F)⁻¹ := by
     simp only [leadingCoeff_comp (ne_of_eq_of_ne (natDegree_X_sub_C _) one_ne_zero), Monic.def.1
-      (monic_ascPochhammer _ _), one_mul, leadingCoeff_X_sub_C, one_pow, smul_eq_mul, mul_one]
+      (monic_ascPochhammer _ _), leadingCoeff_X_sub_C, one_pow, smul_eq_mul, mul_one]
 
 lemma leadingCoeff_preHilbertPoly [CharZero F] (d k : ℕ) :
     (preHilbertPoly F d k).leadingCoeff = (d ! : F)⁻¹ := by
@@ -126,7 +126,7 @@ lemma hilbertPoly_add_left (p q : F[X]) (d : ℕ) :
   induction d with
   | zero => simp only [add_zero]
   | succ d _ =>
-      simp only [← coeff_add]
+      simp only
       rw [← sum_def _ fun _ r => r • _]
       exact sum_add_index _ _ _ (fun _ => zero_smul ..) (fun _ _ _ => add_smul ..)
 

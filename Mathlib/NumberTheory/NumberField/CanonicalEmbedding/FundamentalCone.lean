@@ -321,7 +321,7 @@ theorem torsion_unitSMul_mem_integerSet {x : mixedSpace K} {ζ : (𝓞 K)ˣ} (h�
 
 /-- The action of `torsion K` on `integerSet K`. -/
 @[simps]
-instance integerSetTorsionSMul: SMul (torsion K) (integerSet K) where
+instance integerSetTorsionSMul : SMul (torsion K) (integerSet K) where
   smul := fun ⟨ζ, hζ⟩ ⟨x, hx⟩ ↦ ⟨ζ • x, torsion_unitSMul_mem_integerSet hζ hx⟩
 
 instance : MulAction (torsion K) (integerSet K) where

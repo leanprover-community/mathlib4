@@ -594,9 +594,9 @@ lemma extendCone_obj_π_app' (c : Cone (F ⋙ G)) {X : C} {Y : D} (f : F.obj X �
   apply induction (k₀ := f) (z := rfl) F fun Z g =>
     c.π.app Z ≫ G.map g = c.π.app X ≫ G.map f
   · intro _ _ _ _ _ h₁ h₂
-    simp [← h₂, ← h₁, ← Functor.comp_map, c.π.naturality]
+    simp [← h₂, ← h₁, ← Functor.comp_map]
   · intro _ _ _ _ _ h₁ h₂
-    simp [← h₁, ← Functor.comp_map, c.π.naturality, h₂]
+    simp [← h₁, ← Functor.comp_map, h₂]
 
 @[simp]
 theorem limit_cone_comp_aux (s : Cone (F ⋙ G)) (j : C) :
@@ -1108,5 +1108,22 @@ instance [F.Final] [G.Final] : (F.prod G).Final where
   out := fun ⟨d, d'⟩ => isConnected_of_equivalent (StructuredArrow.prodEquivalence d d' F G).symm
 
 end Prod
+
+namespace ObjectProperty
+
+/-- For the full subcategory induced by an object property `P` on `C`, to show initiality of
+the inclusion functor it is enough to consider arrows to objects outside of the subcategory. -/
+theorem initial_ι {C : Type u₁} [Category.{v₁} C] (P : ObjectProperty C)
+    (h : ∀ d, ¬ P d → IsConnected (CostructuredArrow P.ι d)) :
+    P.ι.Initial := .mk <| fun d => by
+  by_cases hd : P d
+  · have : Nonempty (CostructuredArrow P.ι d) := ⟨⟨d, hd⟩, ⟨⟨⟩⟩, 𝟙 _⟩
+    refine zigzag_isConnected fun ⟨c₁, ⟨⟨⟩⟩, g₁⟩ ⟨c₂, ⟨⟨⟩⟩, g₂⟩ =>
+      Zigzag.trans (j₂ := ⟨⟨d, hd⟩, ⟨⟨⟩⟩, 𝟙 _⟩) (.of_hom ?_) (.of_inv ?_)
+    · apply CostructuredArrow.homMk g₁
+    · apply CostructuredArrow.homMk g₂
+  · exact h d hd
+
+end ObjectProperty
 
 end CategoryTheory

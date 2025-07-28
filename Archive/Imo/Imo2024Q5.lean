@@ -271,7 +271,7 @@ lemma Path.one_lt_length_cells (p : Path N): 1 < p.cells.length := by
     have h1 := p.head_first_row
     simp_rw [hc, List.head_cons] at h1
     have h2 := p.last_last_row
-    simp [hc, List.getLast_singleton, h1, Fin.add_def] at h2
+    simp [hc, List.getLast_singleton, h1] at h2
 
 /-- Remove the first cell from a path, if the second cell is also on the first row. -/
 def Path.tail (p : Path N) : Path N where
@@ -330,8 +330,7 @@ lemma Path.tail_firstMonster (p : Path N) (m : MonsterData N) :
     rcases cells with ⟨⟩ | ⟨head, tail⟩
     · simp at nonempty
     · simp only [List.head_cons] at head_first_row
-      simp [List.find?_cons, head_first_row, m.notMem_monsterCells_of_fst_eq_zero head_first_row,
-        firstMonster]
+      simp [m.notMem_monsterCells_of_fst_eq_zero head_first_row, firstMonster]
   · simp_rw [Path.tail, if_neg h]
 
 lemma Path.firstMonster_eq_of_findFstEq_mem {p : Path N} {m : MonsterData N}
@@ -491,7 +490,7 @@ lemma Strategy.play_one (s : Strategy N) (m : MonsterData N) {k : ℕ} (hk : 1 <
     s.play m k ⟨1, hk⟩ = (s ![(s Fin.elim0).firstMonster m]).firstMonster m := by
   have hk' : 2 ≤ k := by omega
   rw [s.play_apply_of_le m one_lt_two hk']
-  simp only [play, Fin.snoc, lt_self_iff_false, ↓reduceDIte, Nat.reduceAdd, Nat.zero_eq,
+  simp only [play, Fin.snoc, lt_self_iff_false, ↓reduceDIte, Nat.reduceAdd,
     Fin.mk_one, Fin.isValue, cast_eq, Nat.succ_eq_add_one]
   congr
   refine funext fun i ↦ ?_
@@ -503,14 +502,14 @@ lemma Strategy.play_two (s : Strategy N) (m : MonsterData N) {k : ℕ} (hk : 2 <
       (s ![(s Fin.elim0).firstMonster m]).firstMonster m]).firstMonster m := by
   have hk' : 3 ≤ k := by omega
   rw [s.play_apply_of_le m (by norm_num : 2 < 3) hk']
-  simp only [play, Fin.snoc, lt_self_iff_false, ↓reduceDIte, Nat.reduceAdd, Nat.zero_eq,
-    Fin.mk_one, Fin.isValue, cast_eq, Nat.succ_eq_add_one]
+  simp only [play, Fin.snoc, lt_self_iff_false, ↓reduceDIte, Nat.reduceAdd, cast_eq,
+    Nat.succ_eq_add_one]
   congr
   refine funext fun i ↦ ?_
   fin_cases i
   · rfl
   · have h : (1 : Fin 2) = Fin.last 1 := rfl
-    simp only [Fin.snoc_zero, Nat.reduceAdd, Fin.mk_one, Fin.isValue, id_eq, Matrix.cons_val]
+    simp only [Fin.snoc_zero, Nat.reduceAdd, Fin.mk_one, Fin.isValue, Matrix.cons_val]
     simp only [h, Fin.snoc_last]
     convert rfl
     simp_rw [Fin.fin_one_eq_zero, Matrix.cons_val]

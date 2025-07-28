@@ -383,6 +383,39 @@ def prodComm [Module R₁ M₂] : (M₁ × M₂) ≃L[R₁] M₂ × M₁ :=
 
 @[simp] lemma prodComm_symm [Module R₁ M₂] : (prodComm R₁ M₁ M₂).symm = prodComm R₁ M₂ M₁ := rfl
 
+section prodAssoc
+
+variable (R M₁ M₂ M₃ : Type*) [Semiring R]
+  [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃] [Module R M₁] [Module R M₂] [Module R M₃]
+  [TopologicalSpace M₁] [TopologicalSpace M₂] [TopologicalSpace M₃]
+
+/-- The product of topological modules is associative up to continuous linear isomorphism.
+This is `LinearEquiv.prodAssoc` prodAssoc as a continuous linear equivalence. -/
+def prodAssoc : ((M₁ × M₂) × M₃) ≃L[R] M₁ × M₂ × M₃ where
+  toLinearEquiv := LinearEquiv.prodAssoc R M₁ M₂ M₃
+  continuous_toFun := (continuous_fst.comp continuous_fst).prodMk
+    ((continuous_snd.comp continuous_fst).prodMk continuous_snd)
+  continuous_invFun := (continuous_fst.prodMk (continuous_fst.comp continuous_snd)).prodMk
+    (continuous_snd.comp continuous_snd)
+
+@[simp]
+lemma prodAssoc_toLinearEquiv :
+  (prodAssoc R M₁ M₂ M₃).toLinearEquiv = LinearEquiv.prodAssoc R M₁ M₂ M₃ := rfl
+
+@[simp]
+lemma coe_prodAssoc :
+  (prodAssoc R M₁ M₂ M₃ : (M₁ × M₂) × M₃ → M₁ × M₂ × M₃) = Equiv.prodAssoc M₁ M₂ M₃ := rfl
+
+@[simp]
+lemma prodAssoc_apply (p₁ : M₁) (p₂ : M₂) (p₃ : M₃) :
+  prodAssoc R M₁ M₂ M₃ ((p₁, p₂), p₃) = (p₁, (p₂, p₃)) := rfl
+
+@[simp]
+lemma prodAssoc_symm_apply (p₁ : M₁) (p₂ : M₂) (p₃ : M₃) :
+  (prodAssoc R M₁ M₂ M₃).symm (p₁, (p₂, p₃)) = ((p₁, p₂), p₃) := rfl
+
+end prodAssoc
+
 section prodUnique
 
 variable (R M N : Type*) [Semiring R]
@@ -394,10 +427,10 @@ This is `Equiv.prodUnique` as a continuous linear equivalence. -/
 def prodUnique : (M × N) ≃L[R] M where
   toLinearEquiv := LinearEquiv.prodUnique
   continuous_toFun := by
-    show Continuous (Equiv.prodUnique M N)
+    change Continuous (Equiv.prodUnique M N)
     dsimp; fun_prop
   continuous_invFun := by
-    show Continuous fun x ↦ (x, default)
+    change Continuous fun x ↦ (x, default)
     fun_prop
 
 @[simp]
@@ -414,10 +447,10 @@ This is `Equiv.uniqueProd` as a continuous linear equivalence. -/
 def uniqueProd : (N × M) ≃L[R] M where
   toLinearEquiv := LinearEquiv.uniqueProd
   continuous_toFun := by
-    show Continuous (Equiv.uniqueProd M N)
+    change Continuous (Equiv.uniqueProd M N)
     dsimp; fun_prop
   continuous_invFun := by
-    show Continuous fun x ↦ (default, x)
+    change Continuous fun x ↦ (default, x)
     fun_prop
 
 @[simp]
@@ -1165,7 +1198,7 @@ lemma ClosedComplemented.exists_submodule_equiv_prod [IsTopologicalAddGroup M]
       (∀ x : p, e x = (x, 0)) ∧ (∀ y : q, e y = (0, y)) ∧ (∀ x, e.symm x = x.1 + x.2) :=
   let ⟨f, hf⟩ := hp
   ⟨LinearMap.ker f, .equivOfRightInverse _ p.subtypeL hf,
-    fun _ ↦ by ext <;> simp [hf], fun _ ↦ by ext <;> simp [hf], fun _ ↦ rfl⟩
+    fun _ ↦ by ext <;> simp [hf], fun _ ↦ by ext <;> simp, fun _ ↦ rfl⟩
 
 end Submodule
 

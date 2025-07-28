@@ -64,8 +64,8 @@ to `⟦h₁h⁻¹ ⊗ₜ a⟧`. -/
 noncomputable def ind : Representation k H (IndV φ ρ) where
   toFun h := Coinvariants.map _ _ ((lmapDomain k k fun x => x * h⁻¹).rTensor _)
     fun _ => by ext; simp [mul_assoc]
-  map_one' := by ext; simp [IndV, IndV.mk]
-  map_mul' _ _ := by ext; simp [IndV, IndV.mk, mul_assoc]
+  map_one' := by ext; simp
+  map_mul' _ _ := by ext; simp [IndV, mul_assoc]
 
 lemma ind_mk (h₁ h₂ : H) (a : A) :
     ind φ ρ h₁ (IndV.mk _ _ h₂ a) = IndV.mk _ _ (h₂ * h₁⁻¹) a := by
@@ -149,11 +149,11 @@ noncomputable def indResAdjunction : indFunctor k φ ⊣ Action.res _ φ :=
 
 open Finsupp
 
-noncomputable instance : Limits.PreservesColimits (indFunctor k φ) :=
-  (indResAdjunction k φ).leftAdjoint_preservesColimits
+noncomputable instance : (indFunctor k φ).IsLeftAdjoint :=
+  (indResAdjunction k φ).isLeftAdjoint
 
-noncomputable instance : Limits.PreservesLimits (Action.res (ModuleCat.{u} k) φ) :=
-  (indResAdjunction k φ).rightAdjoint_preservesLimits
+noncomputable instance : (Action.res (ModuleCat.{u} k) φ).IsRightAdjoint :=
+  (indResAdjunction k φ).isRightAdjoint
 
 end Adjunction
 end Rep

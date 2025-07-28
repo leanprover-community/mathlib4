@@ -302,7 +302,7 @@ section absNorm
 /-- The absolute norm of an ideal `P` above a rational prime `p` is
 `|p| ^ ((span {p}).inertiaDeg P)`. -/
 lemma absNorm_eq_pow_inertiaDeg [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] {p : ℤ}
-    (P : Ideal R) [P.LiesOver (span {p})] (hp: Prime p) :
+    (P : Ideal R) [P.LiesOver (span {p})] (hp : Prime p) :
     absNorm P = p.natAbs ^ ((span {p}).inertiaDeg P) := by
   have : (span {p}).IsMaximal :=
     (isPrime_of_prime (prime_span_singleton_iff.mpr hp)).isMaximal (by simp [hp.ne_zero])
@@ -372,7 +372,7 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
   let B := A.adjugate
   have A_smul : ∀ i, ∑ j, A i j • a j = 0 := by
     intros
-    simp [A, Matrix.sub_apply, Matrix.of_apply, ne_eq, Matrix.one_apply, sub_smul,
+    simp [A, Matrix.sub_apply, Matrix.of_apply, Matrix.one_apply, sub_smul,
       Finset.sum_sub_distrib, hA', sub_self]
   -- since `span S {det A} / M = 0`.
   have d_smul : ∀ i, A.det • a i = 0 := by
@@ -609,7 +609,7 @@ noncomputable def quotientToQuotientRangePowQuotSucc
       quotientToQuotientRangePowQuotSuccAux_mk]
     refine congr_arg Submodule.Quotient.mk ?_
     ext
-    simp only [mul_assoc, map_mul, Quotient.mk_eq_mk, Submodule.coe_smul_of_tower,
+    simp only [map_mul, Quotient.mk_eq_mk, Submodule.coe_smul_of_tower,
       Algebra.smul_def, Quotient.algebraMap_quotient_pow_ramificationIdx]
     ring
 
@@ -625,7 +625,7 @@ theorem quotientToQuotientRangePowQuotSucc_injective [IsDedekindDomain S] [P.IsP
     Quotient.inductionOn' y fun y h => by
       have Pe_le_Pi1 : P ^ e ≤ P ^ (i + 1) := Ideal.pow_le_pow_right hi
       simp only [Submodule.Quotient.mk''_eq_mk, quotientToQuotientRangePowQuotSucc_mk,
-        Submodule.Quotient.eq, LinearMap.mem_range, Subtype.ext_iff, Subtype.coe_mk,
+        Submodule.Quotient.eq, LinearMap.mem_range, Subtype.ext_iff,
         Submodule.coe_sub] at h ⊢
       rcases h with ⟨⟨⟨z⟩, hz⟩, h⟩
       rw [Submodule.Quotient.quot_mk_eq_mk, Ideal.Quotient.mk_eq_mk, Ideal.mem_quotient_iff_mem_sup,
@@ -650,7 +650,7 @@ theorem quotientToQuotientRangePowQuotSucc_surjective [IsDedekindDomain S]
     obtain ⟨y, rfl⟩ := Ideal.mem_span_singleton.mp hy'
     refine ⟨Submodule.Quotient.mk y, ?_⟩
     simp only [Submodule.Quotient.quot_mk_eq_mk, quotientToQuotientRangePowQuotSucc_mk,
-      Submodule.Quotient.eq, LinearMap.mem_range, Subtype.ext_iff, Subtype.coe_mk,
+      Submodule.Quotient.eq, LinearMap.mem_range, Subtype.ext_iff,
       Submodule.coe_sub]
     refine ⟨⟨_, Ideal.mem_map_of_mem _ (Submodule.neg_mem _ hz)⟩, ?_⟩
     rw [powQuotSuccInclusion_apply_coe, Subtype.coe_mk, Ideal.Quotient.mk_eq_mk, map_add,

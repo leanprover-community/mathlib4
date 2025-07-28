@@ -215,7 +215,7 @@ private theorem smul'_char (r₁ : R) (r₂ : X) (s₁ s₂ : S) (u : S) (v : R)
   symm; rw [oreDiv_eq_iff]
   use s₄ * s₃
   use s₄ * r₃
-  simp only [Submonoid.coe_mul, Submonoid.smul_def, smul_eq_mul]
+  simp only [Submonoid.coe_mul, Submonoid.smul_def]
   constructor
   · rw [smul_smul, mul_assoc (c := v₀), ← hs₄]
     simp only [smul_smul, mul_assoc]
@@ -251,7 +251,7 @@ protected def smul : R[S⁻¹] → X[S⁻¹] → X[S⁻¹] :=
   liftExpand smul'' fun r₁ r₂ s hs => by
     ext x
     cases x with | _ x s₂
-    show OreLocalization.smul' r₁ s x s₂ = OreLocalization.smul' (r₂ * r₁) ⟨_, hs⟩ x s₂
+    change OreLocalization.smul' r₁ s x s₂ = OreLocalization.smul' (r₂ * r₁) ⟨_, hs⟩ x s₂
     rcases oreCondition r₁ s₂ with ⟨r₁', s₁', h₁⟩
     rw [smul'_char _ _ _ _ _ _ h₁]
     rcases oreCondition (r₂ * r₁) s₂ with ⟨r₂', s₂', h₂⟩
@@ -559,7 +559,7 @@ instance : IsScalarTower R R' X[S⁻¹] where
   smul_assoc r m x := by
     rw [← smul_one_oreDiv_one_smul, ← smul_one_oreDiv_one_smul, ← smul_one_oreDiv_one_smul,
       ← mul_smul, mul_div_one]
-    simp only [smul_eq_mul, mul_one, smul_mul_assoc, smul_assoc, one_mul]
+    simp only [smul_mul_assoc, smul_assoc, one_mul]
 
 @[to_additive]
 instance [SMulCommClass R R' M] : SMulCommClass R R' X[S⁻¹] where

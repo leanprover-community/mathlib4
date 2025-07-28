@@ -79,7 +79,7 @@ theorem iterate_one : f^[1] = f :=
 
 theorem iterate_mul (m : ℕ) : ∀ n, f^[m * n] = f^[m]^[n]
   | 0 => by simp only [Nat.mul_zero, iterate_zero]
-  | n + 1 => by simp only [Nat.mul_succ, Nat.mul_one, iterate_one, iterate_add, iterate_mul m n]
+  | n + 1 => by simp only [Nat.mul_succ, iterate_one, iterate_add, iterate_mul m n]
 
 variable {f}
 

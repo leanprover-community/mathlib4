@@ -140,7 +140,7 @@ theorem diam_pos_iff : 0 < diam s ↔ s.Nontrivial := by
   simp only [pos_iff_ne_zero, Ne, diam_eq_zero_iff, Set.not_subsingleton_iff]
 
 theorem diam_pos_iff' : 0 < diam s ↔ ∃ x ∈ s, ∃ y ∈ s, x ≠ y := by
-  simp only [diam_pos_iff, Set.Nontrivial, exists_prop]
+  simp only [diam_pos_iff, Set.Nontrivial]
 
 end
 

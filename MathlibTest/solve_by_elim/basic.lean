@@ -122,7 +122,7 @@ example (f g : Nat → Prop) : (∃ k : Nat, f k) ∨ (∃ k : Nat, g k) ↔ ∃
   rintro (⟨n, fn⟩ | ⟨n, gn⟩)
   pick_goal 3
   rintro ⟨n, hf | hg⟩
-  solve_by_elim* (config := {maxDepth := 13}) [Or.inl, Or.inr, Exists.intro]
+  solve_by_elim* (maxDepth := 13) [Or.inl, Or.inr, Exists.intro]
 
 -- Test that we can disable the `intro` discharger.
 example (P : Prop) : P → P := by

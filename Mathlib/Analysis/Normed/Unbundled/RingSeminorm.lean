@@ -389,7 +389,7 @@ def mulRingNormEquivAbsoluteValue : MulRingNorm R ≃ AbsoluteValue R ℝ where
     map_mul' := v.map_mul'
     eq_zero_of_map_eq_zero' x := (v.eq_zero' x).mp
   }
-  left_inv N := by ext1 x; simp only [MulRingSeminorm.toFun_eq_coe] -- `simp` does not work
+  left_inv N := by constructor
   right_inv v := by ext1 x; simp
 
 lemma mulRingNormEquivAbsoluteValue_apply (N : MulRingNorm R) (x : R) :

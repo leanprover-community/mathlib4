@@ -334,7 +334,7 @@ def recENNReal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
 @[simp]
 theorem recENNReal_coe_ennreal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
     (neg_coe : ∀ x : ℝ≥0∞, 0 < x → motive (-x)) (x : ℝ≥0∞) : recENNReal coe neg_coe x = coe x := by
-  suffices ∀ y : EReal, x = y → HEq (recENNReal coe neg_coe y : motive y) (coe x) from
+  suffices ∀ y : EReal, x = y → (recENNReal coe neg_coe y : motive y) ≍ coe x from
     heq_iff_eq.mp (this x rfl)
   intro y hy
   have H₁ : 0 ≤ y := hy ▸ coe_ennreal_nonneg x

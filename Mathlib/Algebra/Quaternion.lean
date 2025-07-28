@@ -477,7 +477,7 @@ theorem coe_mul : ((x * y : R) : ℍ[R,c₁,c₂,c₃]) = x * y := by ext <;> si
 
 @[norm_cast, simp]
 lemma coe_ofNat {n : ℕ} [n.AtLeastTwo]:
-    ((ofNat(n) : R) : ℍ[R,c₁,c₂,c₃]) = (ofNat(n) : ℍ[R,c₁,c₂,c₃]) := by
+    ((ofNat(n) : R) : ℍ[R,c₁,c₂,c₃]) = (ofNat(n) : ℍ[R,c₁,c₂,c₃]) :=
   rfl
 
 -- TODO: add weaker `MulAction`, `DistribMulAction`, and `Module` instances (and repeat them
@@ -655,7 +655,7 @@ theorem star_add_self : star a + a = 2 * a.re + c₂ * a.imI := by rw [add_comm,
 theorem star_eq_two_re_sub : star a = ↑(2 * a.re + c₂ * a.imI) - a :=
   eq_sub_iff_add_eq.2 a.star_add_self'
 
-lemma comm (r : R) (x : ℍ[R, c₁, c₂, c₃]) : r * x = x * r := by
+lemma comm (r : R) (x : ℍ[R,c₁,c₂,c₃]) : r * x = x * r := by
   ext <;> simp [mul_comm]
 
 instance : IsStarNormal a :=

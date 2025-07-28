@@ -172,7 +172,7 @@ instance : LieRingModule L (shiftedGenWeightSpace R L M χ) where
     abel
   lie_add x m n := by
     nontriviality shiftedGenWeightSpace R L M χ
-    simp only [lie_add, LinearWeights.map_add χ (aux R L M χ), smul_add]
+    simp only [lie_add, smul_add]
     abel
   leibniz_lie x y m := by
     nontriviality shiftedGenWeightSpace R L M χ
@@ -208,14 +208,7 @@ the spaces `genWeightSpace M χ` and `shiftedGenWeightSpace R L M χ` are equiva
 lemma toEnd_eq (x : L) :
     toEnd R L (shiftedGenWeightSpace R L M χ) x =
     (shift R L M χ).conj (toEnd R L (genWeightSpace M χ) x - χ x • LinearMap.id) := by
-  ext
-  simp only [toEnd_apply_apply, map_sub, LinearEquiv.conj_apply, map_smul, LinearMap.comp_id,
-    LinearEquiv.comp_coe, LinearEquiv.symm_trans_self, LinearEquiv.refl_toLinearMap,
-    LinearMap.sub_apply, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-    shift_symm_apply, shift_apply, LinearMap.smul_apply, LinearMap.id_coe, id_eq,
-    AddSubgroupClass.coe_sub, SetLike.val_smul]
-  rw [LieSubmodule.coe_bracket]
-  rfl
+  tauto
 
 /-- By Engel's theorem, if `M` is Noetherian, the shifted action `⁅x, m⁆ - χ x • m` makes the
 `χ`-weight space into a nilpotent Lie module. -/
@@ -252,8 +245,7 @@ lemma exists_nontrivial_weightSpace_of_isNilpotent [Field k] [LieAlgebra k L] [M
     rw [not_nonempty_iff] at contra
     simpa only [iSup_of_empty, bot_ne_top] using LieModule.iSup_genWeightSpace_eq_top' k L M
   obtain ⟨m, hm₀, hm⟩ := exists_forall_lie_eq_smul k L M χ
-  simp only [LieSubmodule.nontrivial_iff_ne_bot, LieSubmodule.eq_bot_iff, Weight.coe_coe, ne_eq,
-    not_forall, Classical.not_imp]
+  simp only [LieSubmodule.nontrivial_iff_ne_bot, LieSubmodule.eq_bot_iff, ne_eq, not_forall]
   exact ⟨χ.toLinear, m, by simpa [mem_weightSpace], hm₀⟩
 
 end LieModule

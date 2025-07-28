@@ -188,7 +188,7 @@ In `isColimitSheafifyCocone`, we show that this is a colimit cocone when `E` is 
 noncomputable def sheafifyCocone {F : K ⥤ Sheaf J D}
     (E : Cocone (F ⋙ sheafToPresheaf J D)) : Cocone F :=
   (Cocones.precompose
-    (isoWhiskerLeft F (asIso (sheafificationAdjunction J D).counit).symm).hom).obj
+    (Functor.isoWhiskerLeft F (asIso (sheafificationAdjunction J D).counit).symm).hom).obj
     ((presheafToSheaf J D).mapCocone E)
 
 /-- If `E` is a colimit cocone of presheaves, over a diagram factoring through sheaves,

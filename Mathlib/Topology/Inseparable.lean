@@ -710,7 +710,7 @@ theorem continuousOn_lift {hf : ∀ x y, (x ~ᵢ y) → f x = f y} {s : Set (Sep
 @[simp]
 theorem continuous_lift {hf : ∀ x y, (x ~ᵢ y) → f x = f y} :
     Continuous (lift f hf) ↔ Continuous f := by
-  simp only [continuous_iff_continuousOn_univ, continuousOn_lift, preimage_univ]
+  simp only [← continuousOn_univ, continuousOn_lift, preimage_univ]
 
 /-- Lift a map `f : X → Y → α` such that `Inseparable a b → Inseparable c d → f a c = f b d` to a
 map `SeparationQuotient X → SeparationQuotient Y → α`. -/
@@ -761,7 +761,7 @@ theorem continuousOn_lift₂ {f : X → Y → Z} {hf : ∀ a b c d, (a ~ᵢ c) �
 @[simp]
 theorem continuous_lift₂ {f : X → Y → Z} {hf : ∀ a b c d, (a ~ᵢ c) → (b ~ᵢ d) → f a b = f c d} :
     Continuous (uncurry <| lift₂ f hf) ↔ Continuous (uncurry f) := by
-  simp only [continuous_iff_continuousOn_univ, continuousOn_lift₂, preimage_univ]
+  simp only [← continuousOn_univ, continuousOn_lift₂, preimage_univ]
 
 end SeparationQuotient
 

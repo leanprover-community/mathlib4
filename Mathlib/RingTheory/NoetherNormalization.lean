@@ -118,7 +118,7 @@ private lemma degreeOf_t_neq_of_neq (hv : v ∈ f.support) (hw : w ∈ f.support
   refine sum_r_mul_neq f v w (fun i ↦ ?_) (fun i ↦ ?_) neq <;>
   exact lt_of_le_of_lt ((monomial_le_degreeOf i ‹_›).trans (degreeOf_le_totalDegree f i)) (by omega)
 
-private lemma leadingCoeff_finSuccEquiv_t  :
+private lemma leadingCoeff_finSuccEquiv_t :
     (finSuccEquiv k n ((T f) ((monomial v) (coeff v f)))).leadingCoeff =
     algebraMap k _ (coeff v f) := by
   rw [monomial_eq, Finsupp.prod_fintype]

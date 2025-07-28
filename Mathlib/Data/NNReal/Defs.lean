@@ -511,7 +511,7 @@ theorem toNNReal_one : Real.toNNReal 1 = 1 := NNReal.eq <| coe_toNNReal _ zero_l
 
 @[simp]
 theorem toNNReal_pos {r : ℝ} : 0 < Real.toNNReal r ↔ 0 < r := by
-  simp [← NNReal.coe_lt_coe, lt_irrefl]
+  simp [← NNReal.coe_lt_coe]
 
 @[simp]
 theorem toNNReal_eq_zero {r : ℝ} : Real.toNNReal r = 0 ↔ r ≤ 0 := by
@@ -568,7 +568,7 @@ lemma ofNat_lt_toNNReal {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
 
 @[simp]
 theorem toNNReal_eq_toNNReal_iff {r p : ℝ} (hr : 0 ≤ r) (hp : 0 ≤ p) :
-    toNNReal r = toNNReal p ↔ r = p := by simp [← coe_inj, coe_toNNReal, hr, hp]
+    toNNReal r = toNNReal p ↔ r = p := by simp [← coe_inj, hr, hp]
 
 @[simp]
 theorem toNNReal_lt_toNNReal_iff' {r p : ℝ} : Real.toNNReal r < Real.toNNReal p ↔ r < p ∧ 0 < p :=

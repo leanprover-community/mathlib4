@@ -212,7 +212,7 @@ variable {s : Finset ι} {t : Finset κ} {f : ι → M} {g : κ → M}
 
 @[to_additive]
 lemma prod_of_injOn (e : ι → κ) (he : Set.InjOn e s) (hest : Set.MapsTo e s t)
-    (h' : ∀ i ∈ t, i ∉ e '' s → g i = 1) (h : ∀ i ∈ s, f i = g (e i))  :
+    (h' : ∀ i ∈ t, i ∉ e '' s → g i = 1) (h : ∀ i ∈ s, f i = g (e i)) :
     ∏ i ∈ s, f i = ∏ j ∈ t, g j := by
   classical
   exact (prod_nbij e (fun a ↦ mem_image_of_mem e) he (by simp [Set.surjOn_image]) h).trans <|
@@ -497,16 +497,12 @@ theorem prod_bij_ne_one {s : Finset ι} {t : Finset κ} {f : ι → M} {g : κ �
     refine (mem_filter.mpr ⟨hi a h₁ _, ?_⟩)
     specialize h a h₁ fun H ↦ by rw [H] at h₂; simp at h₂
     rwa [← h]
-  · intros a₁ ha₁ a₂ ha₂
-    refine (mem_filter.mp ha₁).elim fun _ha₁₁ _ha₁₂ ↦ ?_
-    refine (mem_filter.mp ha₂).elim fun _ha₂₁ _ha₂₂ ↦ ?_
-    apply i_inj
+  · solve_by_elim
   · intros b hb
     refine (mem_filter.mp hb).elim fun h₁ h₂ ↦ ?_
     obtain ⟨a, ha₁, ha₂, eq⟩ := i_surj b h₁ fun H ↦ by rw [H] at h₂; simp at h₂
     exact ⟨a, mem_filter.mpr ⟨ha₁, ha₂⟩, eq⟩
-  · refine (fun a ha => (mem_filter.mp ha).elim fun h₁ h₂ ↦ ?_)
-    exact h a h₁ fun H ↦ by rw [H] at h₂; simp at h₂
+  · solve_by_elim
 
 @[to_additive]
 theorem exists_ne_one_of_prod_ne_one (h : ∏ x ∈ s, f x ≠ 1) : ∃ a ∈ s, f a ≠ 1 := by
@@ -608,19 +604,22 @@ theorem prod_multiset_count_of_subset [DecidableEq M] (m : Multiset M) (s : Fins
   apply prod_list_count_of_subset l s
 
 /-- For any product along `{0, ..., n - 1}` of a commutative-monoid-valued function, we can verify
-that it's equal to a different function just by checking ratios of adjacent terms.
+that it's equal to a different function just by checking ratios of adjacent terms up to `n`.
 
 This is a multiplicative discrete analogue of the fundamental theorem of calculus. -/
 @[to_additive "For any sum along `{0, ..., n - 1}` of a commutative-monoid-valued function, we can
-verify that it's equal to a different function just by checking differences of adjacent terms.
+verify that it's equal to a different function just by checking differences of adjacent terms up to
+`n`.
 
 This is a discrete analogue of the fundamental theorem of calculus."]
 theorem prod_range_induction (f s : ℕ → M) (base : s 0 = 1)
-    (step : ∀ n, s (n + 1) = s n * f n) (n : ℕ) :
+    (n : ℕ) (step : ∀ k < n, s (k + 1) = s k * f k) :
     ∏ k ∈ Finset.range n, f k = s n := by
   induction n with
   | zero => rw [Finset.prod_range_zero, base]
-  | succ k hk => simp only [hk, Finset.prod_range_succ, step, mul_comm]
+  | succ k hk =>
+    rw [Finset.prod_range_succ, step _ (Nat.lt_succ_self _), hk]
+    exact fun _ hl ↦ step _ (Nat.lt_succ_of_lt hl)
 
 @[to_additive (attr := simp)]
 theorem prod_const (b : M) : ∏ _x ∈ s, b = b ^ #s :=
@@ -925,7 +924,7 @@ lemma sum_range_tsub {f : ℕ → M} (h : Monotone f) (n : ℕ) :
   apply sum_range_induction
   case base => apply tsub_eq_of_eq_add; rw [zero_add]
   case step =>
-    intro n
+    intro n _
     have h₁ : f n ≤ f (n + 1) := h (Nat.le_succ _)
     have h₂ : f 0 ≤ f n := h (Nat.zero_le _)
     rw [tsub_add_eq_add_tsub h₂, add_tsub_cancel_of_le h₁]
@@ -1111,5 +1110,5 @@ theorem nat_abs_sum_le (s : Finset ι) (f : ι → ℤ) :
   induction s using Finset.cons_induction with
   | empty => simp only [Finset.sum_empty, Int.natAbs_zero, le_refl]
   | cons i s his IH =>
-    simp only [Finset.sum_cons, not_false_iff]
+    simp only [Finset.sum_cons]
     exact (Int.natAbs_add_le _ _).trans (Nat.add_le_add_left IH _)

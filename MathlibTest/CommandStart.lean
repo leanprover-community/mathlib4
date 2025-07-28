@@ -30,7 +30,8 @@ This part of the code
 should be written as
   'field1 : Nat'
 
-note: this linter can be disabled with `set_option linter.style.commandStart false`
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
 #guard_msgs in
 structure A where
@@ -57,7 +58,8 @@ This part of the code
 should be written as
   'field1 : Nat'
 
-note: this linter can be disabled with `set_option linter.style.commandStart false`
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
 #guard_msgs in
 structure D where
@@ -75,7 +77,8 @@ This part of the code
 should be written as
   'instance {R} :'
 
-note: this linter can be disabled with `set_option linter.style.commandStart false`
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
 #guard_msgs in
 instance   {R} : Add R := sorry
@@ -89,7 +92,8 @@ This part of the code
 should be written as
   'instance {R} :'
 
-note: this linter can be disabled with `set_option linter.style.commandStart false`
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
 #guard_msgs in
 instance   {R} : Add R := sorry
@@ -163,7 +167,8 @@ local infixl:50 " ≼ " => s
 
 /--
 warning: The `commandStart` linter had some parsing issues: feel free to silence it and report this error!
-note: this linter can be disabled with `set_option linter.style.commandStart.verbose false`
+
+Note: This linter can be disabled with `set_option linter.style.commandStart.verbose false`
 -/
 #guard_msgs in
 set_option linter.style.commandStart.verbose true in
@@ -186,7 +191,8 @@ This part of the code
 should be written as
   'variable [h :'
 
-note: this linter can be disabled with `set_option linter.style.commandStart false`
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
 ---
 warning: extra space in the source
 
@@ -195,7 +201,8 @@ This part of the code
 should be written as
   '[h : Add'
 
-note: this linter can be disabled with `set_option linter.style.commandStart false`
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
 ---
 warning: extra space in the source
 
@@ -204,7 +211,8 @@ This part of the code
 should be written as
   '[h : Add'
 
-note: this linter can be disabled with `set_option linter.style.commandStart false`
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
 ---
 warning: extra space in the source
 
@@ -213,7 +221,8 @@ This part of the code
 should be written as
   'Nat] [Add'
 
-note: this linter can be disabled with `set_option linter.style.commandStart false`
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
 ---
 warning: extra space in the source
 
@@ -222,7 +231,8 @@ This part of the code
 should be written as
   '[Add Nat]'
 
-note: this linter can be disabled with `set_option linter.style.commandStart false`
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
 #guard_msgs in
 variable    [ h    : Add Nat   ] [ Add Nat]
@@ -235,7 +245,8 @@ This part of the code
 should be written as
   'omit [h :'
 
-note: this linter can be disabled with `set_option linter.style.commandStart false`
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
 ---
 warning: extra space in the source
 
@@ -244,7 +255,8 @@ This part of the code
 should be written as
   ' [Add'
 
-note: this linter can be disabled with `set_option linter.style.commandStart false`
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
 #guard_msgs in
 omit  [h : Add Nat]  [Add Nat]
@@ -260,7 +272,8 @@ This part of the code
 should be written as
   '@[aesop (rule_sets'
 
-note: this linter can be disabled with `set_option linter.style.commandStart false`
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
 #guard_msgs in
 @[aesop  (rule_sets := [builtin]) safe apply] example : True := trivial
@@ -269,7 +282,8 @@ end misc
 
 /--
 warning: 'section' starts on column 1, but all commands should start at the beginning of the line.
-note: this linter can be disabled with `set_option linter.style.commandStart false`
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
 #guard_msgs in
  section
@@ -282,7 +296,8 @@ This part of the code
 should be written as
   'example : True'
 
-note: this linter can be disabled with `set_option linter.style.commandStart false`
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
 #guard_msgs in
 example    : True := trivial
@@ -299,7 +314,8 @@ This part of the code
 should be written as
   'example : True'
 
-note: this linter can be disabled with `set_option linter.style.commandStart false`
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
 #guard_msgs in
 example  :  True :=trivial
@@ -312,7 +328,8 @@ This part of the code
 should be written as
   '(a : Nat)'
 
-note: this linter can be disabled with `set_option linter.style.commandStart false`
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
 #guard_msgs in
 variable (a: Nat)
@@ -325,7 +342,8 @@ This part of the code
 should be written as
   '(_a : Nat)'
 
-note: this linter can be disabled with `set_option linter.style.commandStart false`
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
 #guard_msgs in
 example (_a: Nat) : True := trivial
@@ -338,7 +356,8 @@ This part of the code
 should be written as
   '{a : Nat}'
 
-note: this linter can be disabled with `set_option linter.style.commandStart false`
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
 #guard_msgs in
 example {a: Nat} : a = a := rfl
@@ -358,7 +377,8 @@ This part of the code
 should be written as
   ': Nat}'
 
-note: this linter can be disabled with `set_option linter.style.commandStart false`
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
 #guard_msgs in
 example {a :Nat} : a = a := rfl
@@ -371,7 +391,8 @@ This part of the code
 should be written as
   'example {a :'
 
-note: this linter can be disabled with `set_option linter.style.commandStart false`
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
 ---
 warning: missing space in the source
 
@@ -380,14 +401,16 @@ This part of the code
 should be written as
   ': Nat}'
 
-note: this linter can be disabled with `set_option linter.style.commandStart false`
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
 #guard_msgs in
 example  {a :Nat} : a = a := rfl
 
 /--
 warning: unused variable `b`
-note: this linter can be disabled with `set_option linter.unusedVariables false`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
 ---
 warning: missing space in the source
 
@@ -396,7 +419,8 @@ This part of the code
 should be written as
   'Nat} {b :'
 
-note: this linter can be disabled with `set_option linter.style.commandStart false`
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
 #guard_msgs in
 example {a : Nat}{b : Nat} : a = a := rfl
@@ -409,7 +433,8 @@ This part of the code
 should be written as
   'Nat} : a ='
 
-note: this linter can be disabled with `set_option linter.style.commandStart false`
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
 #guard_msgs in
 example {a : Nat}  : a = a := rfl
@@ -422,7 +447,8 @@ This part of the code
 should be written as
   'alpha] {a'
 
-note: this linter can be disabled with `set_option linter.style.commandStart false`
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
 #guard_msgs in
 example {alpha} [Neg alpha   ] {a : Nat} : a = a := rfl
@@ -435,7 +461,8 @@ This part of the code
 should be written as
   'example : True'
 
-note: this linter can be disabled with `set_option linter.style.commandStart false`
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
 #guard_msgs in
 /-- Check that doc/strings do not get removed as comments. -/

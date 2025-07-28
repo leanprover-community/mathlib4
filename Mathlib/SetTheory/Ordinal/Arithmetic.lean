@@ -126,71 +126,7 @@ theorem left_eq_zero_of_add_eq_zero {a b : Ordinal} (h : a + b = 0) : a = 0 :=
 theorem right_eq_zero_of_add_eq_zero {a b : Ordinal} (h : a + b = 0) : b = 0 :=
   (add_eq_zero_iff.1 h).2
 
-/-! ### The predecessor of an ordinal -/
-
-open Classical in
-/-- The ordinal predecessor of `o` is `o'` if `o = succ o'`,
-  and `o` otherwise. -/
-def pred (o : Ordinal) : Ordinal :=
-  if h : ∃ a, o = succ a then Classical.choose h else o
-
-@[simp]
-theorem pred_succ (o) : pred (succ o) = o := by
-  have h : ∃ a, succ o = succ a := ⟨_, rfl⟩
-  simpa only [pred, dif_pos h] using (succ_injective <| Classical.choose_spec h).symm
-
-theorem pred_le_self (o) : pred o ≤ o := by
-  classical
-  exact if h : ∃ a, o = succ a then by
-    let ⟨a, e⟩ := h
-    rw [e, pred_succ]; exact le_succ a
-  else by rw [pred, dif_neg h]
-
-theorem pred_eq_iff_not_succ {o} : pred o = o ↔ ¬∃ a, o = succ a :=
-  ⟨fun e ⟨a, e'⟩ => by rw [e', pred_succ] at e; exact (lt_succ a).ne e, fun h => dif_neg h⟩
-
-theorem pred_eq_iff_not_succ' {o} : pred o = o ↔ ∀ a, o ≠ succ a := by
-  simpa using pred_eq_iff_not_succ
-
-theorem pred_lt_iff_is_succ {o} : pred o < o ↔ ∃ a, o = succ a :=
-  Iff.trans (by simp only [le_antisymm_iff, pred_le_self, true_and, not_le])
-    (iff_not_comm.1 pred_eq_iff_not_succ).symm
-
-@[simp]
-theorem pred_zero : pred 0 = 0 :=
-  pred_eq_iff_not_succ'.2 fun a => (succ_ne_zero a).symm
-
-theorem succ_pred_iff_is_succ {o} : succ (pred o) = o ↔ ∃ a, o = succ a :=
-  ⟨fun e => ⟨_, e.symm⟩, fun ⟨a, e⟩ => by simp only [e, pred_succ]⟩
-
-theorem succ_lt_of_not_succ {o b : Ordinal} (h : ¬∃ a, o = succ a) : succ b < o ↔ b < o :=
-  ⟨(lt_succ b).trans, fun l => lt_of_le_of_ne (succ_le_of_lt l) fun e => h ⟨_, e.symm⟩⟩
-
-theorem lt_pred {a b} : a < pred b ↔ succ a < b := by
-  classical
-  exact if h : ∃ a, b = succ a then by
-    let ⟨c, e⟩ := h
-    rw [e, pred_succ, succ_lt_succ_iff]
-  else by simp only [pred, dif_neg h, succ_lt_of_not_succ h]
-
-theorem pred_le {a b} : pred a ≤ b ↔ a ≤ succ b :=
-  le_iff_le_iff_lt_iff_lt.2 lt_pred
-
-@[simp]
-theorem lift_is_succ {o : Ordinal.{v}} : (∃ a, lift.{u} o = succ a) ↔ ∃ a, o = succ a :=
-  ⟨fun ⟨a, h⟩ =>
-    let ⟨b, e⟩ := mem_range_lift_of_le <| show a ≤ lift.{u} o from le_of_lt <| h.symm ▸ lt_succ a
-    ⟨b, (lift_inj.{u,v}).1 <| by rw [h, ← e, lift_succ]⟩,
-    fun ⟨a, h⟩ => ⟨lift.{u} a, by simp only [h, lift_succ]⟩⟩
-
-@[simp]
-theorem lift_pred (o : Ordinal.{v}) : lift.{u} (pred o) = pred (lift.{u} o) := by
-  classical
-  exact if h : ∃ a, o = succ a then by obtain ⟨a, e⟩ := h; simp only [e, pred_succ, lift_succ]
-  else by rw [pred_eq_iff_not_succ.2 h, pred_eq_iff_not_succ.2 (mt lift_is_succ.1 h)]
-
 /-! ### Limit ordinals -/
-
 
 /-- A limit ordinal is an ordinal which is not zero and not a successor.
 
@@ -235,6 +171,11 @@ theorem lt_limit {o} (h : IsLimit o) {a} : a < o ↔ ∃ x < o, a < x := by
 @[simp]
 theorem lift_isLimit (o : Ordinal.{v}) : IsLimit (lift.{u,v} o) ↔ IsLimit o :=
   liftInitialSeg.isSuccLimit_apply_iff
+
+@[simp]
+theorem isSuccPrelimit_lift {o : Ordinal.{v}} :
+    IsSuccPrelimit (lift.{u} o) ↔ IsSuccPrelimit o :=
+  liftInitialSeg.isSuccPrelimit_apply_iff
 
 theorem IsLimit.pos {o : Ordinal} (h : IsLimit o) : 0 < o :=
   IsSuccLimit.bot_lt h
@@ -356,8 +297,102 @@ theorem mk_Iio_ordinal (o : Ordinal.{u}) :
   rw [lift_card, ← typein_ordinal]
   rfl
 
-/-! ### Normal ordinal functions -/
+/-! ### The predecessor of an ordinal -/
 
+/-- The ordinal predecessor of `o` is `o'` if `o = succ o'`, and `o` otherwise. -/
+def pred (o : Ordinal) : Ordinal :=
+  isSuccPrelimitRecOn o (fun a _ ↦ a) (fun a _ ↦ a)
+
+@[simp]
+theorem pred_succ (o) : pred (succ o) = o :=
+  isSuccPrelimitRecOn_succ ..
+
+theorem pred_eq_of_isSuccPrelimit {o} : IsSuccPrelimit o → pred o = o :=
+  isSuccPrelimitRecOn_of_isSuccPrelimit _ _
+
+alias _root_.Order.IsSuccPrelimit.ordinalPred_eq := pred_eq_of_isSuccPrelimit
+
+theorem _root_.Order.IsSuccLimit.ordinalPred_eq {o} (ho : IsSuccLimit o) : pred o = o :=
+  ho.isSuccPrelimit.ordinalPred_eq
+
+@[simp]
+theorem pred_zero : pred 0 = 0 :=
+  isSuccPrelimit_zero.ordinalPred_eq
+
+@[simp]
+theorem pred_le_iff_le_succ {a b} : pred a ≤ b ↔ a ≤ succ b := by
+  obtain ⟨a, rfl⟩ | ha := mem_range_succ_or_isSuccPrelimit a
+  · simp
+  · rw [ha.ordinalPred_eq, ha.le_succ_iff]
+
+@[deprecated pred_le_iff_le_succ (since := "2025-02-11")]
+alias pred_le := pred_le_iff_le_succ
+
+@[simp]
+theorem lt_pred_iff_succ_lt {a b} : a < pred b ↔ succ a < b :=
+  le_iff_le_iff_lt_iff_lt.1 pred_le_iff_le_succ
+
+@[deprecated lt_pred_iff_succ_lt (since := "2025-02-11")]
+alias lt_pred := lt_pred_iff_succ_lt
+
+theorem pred_le_self (o) : pred o ≤ o := by
+  simpa using le_succ o
+
+/-- `Ordinal.pred` and `Order.succ` form a Galois insertion. -/
+def pred_succ_gi : GaloisInsertion pred succ :=
+  GaloisConnection.toGaloisInsertion @pred_le_iff_le_succ (by simp)
+
+theorem pred_surjective : Function.Surjective pred :=
+  pred_succ_gi.l_surjective
+
+theorem self_le_succ_pred (o) : o ≤ succ (pred o) :=
+  pred_succ_gi.gc.le_u_l o
+
+theorem pred_eq_iff_isSuccPrelimit {o} : pred o = o ↔ IsSuccPrelimit o := by
+  obtain ⟨a, rfl⟩ | ho := mem_range_succ_or_isSuccPrelimit o
+  · simpa using (lt_succ a).ne
+  · simp_rw [ho.ordinalPred_eq, ho]
+
+@[deprecated pred_eq_iff_isSuccPrelimit (since := "2025-02-11")]
+theorem pred_eq_iff_not_succ {o} : pred o = o ↔ ¬∃ a, o = succ a := by
+  simpa [eq_comm, isSuccPrelimit_iff_succ_ne] using pred_eq_iff_isSuccPrelimit
+
+@[deprecated pred_eq_iff_isSuccPrelimit (since := "2025-02-11")]
+theorem pred_eq_iff_not_succ' {o} : pred o = o ↔ ∀ a, o ≠ succ a := by
+  simpa [eq_comm, isSuccPrelimit_iff_succ_ne] using pred_eq_iff_isSuccPrelimit
+
+theorem pred_lt_iff_not_isSuccPrelimit {o} : pred o < o ↔ ¬ IsSuccPrelimit o := by
+  rw [(pred_le_self o).lt_iff_ne]
+  exact pred_eq_iff_isSuccPrelimit.not
+
+@[deprecated pred_lt_iff_not_isSuccPrelimit (since := "2025-02-11")]
+theorem pred_lt_iff_is_succ {o} : pred o < o ↔ ∃ a, o = succ a := by
+  simpa [eq_comm, isSuccPrelimit_iff_succ_ne] using pred_lt_iff_not_isSuccPrelimit
+
+theorem succ_pred_eq_iff_not_isSuccPrelimit {o} : succ (pred o) = o ↔ ¬ IsSuccPrelimit o := by
+  rw [← (self_le_succ_pred o).le_iff_eq, succ_le_iff, pred_lt_iff_not_isSuccPrelimit]
+
+@[deprecated succ_pred_iff_is_succ (since := "2025-02-11")]
+theorem succ_pred_iff_is_succ {o} : succ (pred o) = o ↔ ∃ a, o = succ a := by
+  simpa [eq_comm, isSuccPrelimit_iff_succ_ne] using succ_pred_eq_iff_not_isSuccPrelimit
+
+@[deprecated IsSuccPrelimit.succ_lt_iff (since := "2025-02-11")]
+theorem succ_lt_of_not_succ {o b : Ordinal} (h : ¬∃ a, o = succ a) : succ b < o ↔ b < o := by
+  apply (isSuccPrelimit_of_succ_ne _).succ_lt_iff
+  simpa [eq_comm] using h
+
+@[deprecated isSuccPrelimit_lift (since := "2025-02-11")]
+theorem lift_is_succ {o : Ordinal.{v}} : (∃ a, lift.{u} o = succ a) ↔ ∃ a, o = succ a := by
+  simpa [eq_comm, not_isSuccPrelimit_iff', - isSuccPrelimit_lift] using
+    isSuccPrelimit_lift.not
+
+@[simp]
+theorem lift_pred (o : Ordinal.{v}) : lift.{u} (pred o) = pred (lift.{u} o) := by
+  obtain ⟨a, rfl⟩ | ho := mem_range_succ_or_isSuccPrelimit o
+  · simp
+  · rwa [ho.ordinalPred_eq, eq_comm, pred_eq_iff_isSuccPrelimit, isSuccPrelimit_lift]
+
+/-! ### Normal ordinal functions -/
 
 /-- A normal ordinal function is a strictly increasing function which is
   order-continuous, i.e., the image `f o` of a limit ordinal `o` is the sup of `f a` for
@@ -604,7 +639,7 @@ instance monoid : Monoid Ordinal.{u} where
         ⟨⟨punitProd _, @fun a b => by
             rcases a with ⟨⟨⟨⟩⟩, a⟩; rcases b with ⟨⟨⟨⟩⟩, b⟩
             simp only [Prod.lex_def, EmptyRelation, false_or]
-            simp only [eq_self_iff_true, true_and]
+            simp only [true_and]
             rfl⟩⟩
   one_mul a :=
     inductionOn a fun α r _ =>
@@ -718,10 +753,10 @@ private theorem mul_le_of_limit_aux {α β r s} [IsWellOrder α r] [IsWellOrder 
       simpa only [subrel_val, Prod.lex_def, @irrefl _ s _ b, true_and, false_or,
         eq_self_iff_true, dif_pos, Sum.lex_inr_inr] using h
     · subst b₁
-      simp only [subrel_val, Prod.lex_def, e₂, Prod.lex_def, dif_pos, subrel_val, eq_self_iff_true,
+      simp only [subrel_val, Prod.lex_def, e₂, Prod.lex_def, dif_pos, subrel_val,
         or_false, dif_neg, not_false_iff, Sum.lex_inr_inl, false_and] at h ⊢
       obtain ⟨-, -, h₂_h⟩ | e₂ := h₂ <;> [exact asymm h h₂_h; exact e₂ rfl]
-    · simp [e₂, dif_neg e₁, show b₂ ≠ b₁ from e₂ ▸ e₁]
+    · simp [e₂, show b₂ ≠ b₁ from e₂ ▸ e₁]
     · simpa only [dif_neg e₁, dif_neg e₂, Prod.lex_def, subrel_val, Subtype.mk_eq_mk,
         Sum.lex_inl_inl] using h
 

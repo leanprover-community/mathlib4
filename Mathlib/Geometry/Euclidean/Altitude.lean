@@ -220,7 +220,7 @@ lemma abs_inner_vsub_altitudeFoot_lt_mul {i j : Fin (n + 1)} (hij : i ≠ j) (hn
       < s.height i * s.height j := by
   apply LE.le.lt_of_ne
   · convert abs_real_inner_le_norm _ _ using 1
-    simp only [dist_eq_norm_vsub, abs_eq_self, height]
+    simp only [dist_eq_norm_vsub, height]
   · simp_rw [height, dist_eq_norm_vsub]
     rw [← Real.norm_eq_abs, ne_eq, norm_inner_eq_norm_iff (by simp) (by simp)]
     rintro ⟨r, hr, h⟩

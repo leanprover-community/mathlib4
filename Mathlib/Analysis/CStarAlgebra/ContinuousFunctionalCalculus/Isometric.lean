@@ -610,11 +610,10 @@ instance toNonUnital : NonUnitalIsometricContinuousFunctionalCalculus 𝕜 A p w
       exact h_cpct |>.union isCompact_singleton
     rw [cfcₙHom_eq_cfcₙHom_of_cfcHom, cfcₙHom_of_cfcHom]
     refine isometry_cfcHom a |>.comp ?_
-    simp only [MulHom.coe_coe, NonUnitalStarAlgHom.coe_toNonUnitalAlgHom,
-      NonUnitalStarAlgHom.coe_coe]
+    simp only [MulHom.coe_coe, NonUnitalStarAlgHom.coe_toNonUnitalAlgHom]
     refine AddMonoidHomClass.isometry_of_norm _ fun f ↦ ?_
     let ι : C(σ 𝕜 a, σₙ 𝕜 a) := ⟨_, continuous_inclusion <| spectrum_subset_quasispectrum 𝕜 a⟩
-    show ‖(f : C(σₙ 𝕜 a, 𝕜)).comp ι‖ = ‖(f : C(σₙ 𝕜 a, 𝕜))‖
+    change ‖(f : C(σₙ 𝕜 a, 𝕜)).comp ι‖ = ‖(f : C(σₙ 𝕜 a, 𝕜))‖
     apply le_antisymm (ContinuousMap.norm_le _ (by positivity) |>.mpr ?_)
       (ContinuousMap.norm_le _ (by positivity) |>.mpr ?_)
     · rintro ⟨x, hx⟩
@@ -622,7 +621,7 @@ instance toNonUnital : NonUnitalIsometricContinuousFunctionalCalculus 𝕜 A p w
     · rintro ⟨x, hx⟩
       obtain (rfl | hx') : x = 0 ∨ x ∈ σ 𝕜 a := by
         simpa [quasispectrum_eq_spectrum_union_zero] using hx
-      · show ‖f 0‖ ≤ _
+      · change ‖f 0‖ ≤ _
         simp
       · exact (f : C(σₙ 𝕜 a, 𝕜)).comp ι |>.norm_coe_le_norm ⟨x, hx'⟩
 

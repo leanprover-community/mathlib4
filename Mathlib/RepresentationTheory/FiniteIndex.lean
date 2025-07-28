@@ -3,6 +3,8 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
+import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
+import Mathlib.GroupTheory.Index
 import Mathlib.RepresentationTheory.Coinduced
 import Mathlib.RepresentationTheory.Induced
 
@@ -20,10 +22,6 @@ and which is 0 elsewhere. Meanwhile, the inverse sends `f : G → A` to `∑ᵢ 
 * `Rep.indCoindIso A`: An isomorphism `Ind_S^G(A) ≅ Coind_S^G(A)` for a finite index subgroup
   `S ≤ G` and a `k`-linear `S`-representation `A`.
 * `Rep.indCoindNatIso k S`: A natural isomorphism between the functors `Ind_S^G` and `Coind_S^G`.
-
-## TODO
-
-* Add Shapiro's lemma, using this isomorphism.
 
 -/
 
@@ -105,7 +103,9 @@ noncomputable abbrev indToCoind :
   Representation.Coinvariants.lift _ (TensorProduct.lift <| linearCombination _ fun g =>
     LinearMap.codRestrict _ (indToCoindAux A g) fun _ _ _ => by simp) fun _ => by ext; simp
 
-variable [Fintype (G ⧸ S)]
+variable [S.FiniteIndex]
+
+attribute [local instance] Subgroup.fintypeQuotientOfFiniteIndex
 
 variable (A) in
 /-- Let `S ≤ G` be a finite index subgroup, `g₁, ..., gₙ` a set of right coset representatives of
@@ -254,5 +254,9 @@ lemma coindResAdjunction_homEquiv_symm_apply
   simp only [coindResAdjunction, Adjunction.ofNatIsoLeft, indResAdjunction,
     Adjunction.mkOfHomEquiv_homEquiv]
   rfl
+
+instance : (Action.res (ModuleCat.{u} k) S.subtype).PreservesProjectiveObjects :=
+  (Action.res _ S.subtype).preservesProjectiveObjects_of_adjunction_of_preservesEpimorphisms
+    (resIndAdjunction k S)
 
 end Rep

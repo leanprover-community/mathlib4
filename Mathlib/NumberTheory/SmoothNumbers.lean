@@ -176,7 +176,7 @@ lemma factoredNumbers_compl {N : ℕ} {s : Finset ℕ} (h : primesBelow N ≤ s)
     (factoredNumbers s)ᶜ \ {0} ⊆ {n | N ≤ n} := by
   intro n hn
   simp only [Set.mem_compl_iff, mem_factoredNumbers, Set.mem_diff, ne_eq, not_and, not_forall,
-    not_lt, exists_prop, Set.mem_singleton_iff] at hn
+    exists_prop, Set.mem_singleton_iff] at hn
   simp only [Set.mem_setOf_eq]
   obtain ⟨p, hp₁, hp₂⟩ := hn.1 hn.2
   have : N ≤ p := by
@@ -223,8 +223,7 @@ def equivProdNatFactoredNumbers {s : Finset ℕ} {p : ℕ} (hp : p.Prime) (hs : 
                             ⟨(m.primeFactorsList.filter (· ∈ s)).prod, prod_mem_factoredNumbers ..⟩)
   left_inv := by
     rintro ⟨e, m, hm₀, hm⟩
-    simp (config := { etaStruct := .all }) only
-      [Set.coe_setOf, Set.mem_setOf_eq, Prod.mk.injEq, Subtype.mk.injEq]
+    simp (etaStruct := .all) only [Prod.mk.injEq, Subtype.mk.injEq]
     constructor
     · rw [factorization_mul (pos_iff_ne_zero.mp <| Nat.pow_pos hp.pos) hm₀]
       simp only [factorization_pow, Finsupp.coe_add, Finsupp.coe_smul, nsmul_eq_mul,
@@ -240,12 +239,12 @@ def equivProdNatFactoredNumbers {s : Finset ℕ} {p : ℕ} (hp : p.Prime) (hs : 
           nil_append, filter_eq_self.mpr fun q hq ↦ by simp only [hm q hq, decide_true]]
   right_inv := by
     rintro ⟨m, hm₀, hm⟩
-    simp only [Set.coe_setOf, Set.mem_setOf_eq, Subtype.mk.injEq]
+    simp only [Subtype.mk.injEq]
     rw [← primeFactorsList_count_eq, ← prod_replicate, ← prod_append]
     nth_rewrite 3 [← prod_primeFactorsList hm₀]
     have : m.primeFactorsList.filter (· = p) = m.primeFactorsList.filter (· ∉ s) := by
       refine (filter_congr fun q hq ↦ ?_).symm
-      simp only [decide_not, Bool.not_eq_true', decide_eq_false_iff_not, decide_eq_true_eq]
+      simp only [decide_not]
       rcases Finset.mem_insert.mp <| hm _ hq with h | h
       · simp only [h, hs, decide_false, Bool.not_false, decide_true]
       · simp only [h, decide_true, Bool.not_true, false_eq_decide_iff]
@@ -469,7 +468,7 @@ lemma smoothNumbersUpTo_subset_image (N k : ℕ) :
   intro n hn
   obtain ⟨hn₁, hn₂⟩ := mem_smoothNumbersUpTo.mp hn
   obtain ⟨s, hs, m, hm⟩ := eq_prod_primes_mul_sq_of_mem_smoothNumbers hn₂
-  simp only [id_eq, Finset.mem_range, zero_lt_succ, not_true_eq_false, Finset.mem_image,
+  simp only [id_eq, Finset.mem_range, Finset.mem_image,
     Finset.mem_product, Finset.mem_powerset, Finset.mem_erase, Prod.exists]
   refine ⟨s, m, ⟨Finset.mem_powerset.mp hs, ?_, ?_⟩, hm.symm⟩
   · have := hm ▸ ne_zero_of_mem_smoothNumbers hn₂
@@ -497,8 +496,8 @@ lemma roughNumbersUpTo_eq_biUnion (N k) :
         fun p ↦ {m ∈ Finset.range (N + 1) | m ≠ 0 ∧ p ∣ m} := by
   ext m
   simp only [roughNumbersUpTo, mem_smoothNumbers_iff_forall_le, not_and, not_forall,
-    not_lt, exists_prop, exists_and_left, Finset.mem_range, not_le, Finset.mem_filter,
-    Finset.filter_congr_decidable, Finset.mem_biUnion, Finset.mem_sdiff, mem_primesBelow,
+    not_lt, exists_prop, Finset.mem_range, Finset.mem_filter,
+    Finset.mem_biUnion, Finset.mem_sdiff, mem_primesBelow,
     show ∀ P Q : Prop, P ∧ (P → Q) ↔ P ∧ Q by tauto]
   simp_rw [← exists_and_left, ← not_lt]
   refine exists_congr fun p ↦ ?_
@@ -506,11 +505,7 @@ lemma roughNumbersUpTo_eq_biUnion (N k) :
     fun h₁ h₂ h₃ ↦ (le_of_dvd (Nat.pos_of_ne_zero h₁) h₂).trans_lt h₃
   have H₂ : m ≠ 0 → p ∣ m → ¬ m < p :=
     fun h₁ h₂ ↦ not_lt.mpr <| le_of_dvd (Nat.pos_of_ne_zero h₁) h₂
-  constructor
-  · rintro ⟨h₁, h₂, _, h₄, h₅, h₆⟩
-    exact ⟨⟨⟨H₁ h₂ h₅ h₁, h₄⟩, fun h _ ↦ h₆ h⟩, h₁, h₂, h₅⟩
-  · rintro ⟨⟨⟨_, h₂⟩, h₃⟩, h₄, h₅, h₆⟩
-    exact ⟨h₄, h₅, H₂ h₅ h₆, h₂, h₆, fun h ↦ h₃ h h₂⟩
+  grind
 
 /-- The cardinality of the set of `k`-rough numbers `≤ N` is bounded by the sum of `⌊N/p⌋`
 over the primes `k ≤ p ≤ N`. -/

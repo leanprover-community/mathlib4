@@ -37,7 +37,7 @@ namespace IsNormal
 section LinearOrder
 variable [LinearOrder α] [LinearOrder β] [LinearOrder γ]
 
-/-- This condition is the LHS of the `IsLUB (f '' Iio a) (f a)` predicate. -/
+/-- This condition is the RHS of the `IsLUB (f '' Iio a) (f a)` predicate. -/
 theorem of_mem_lowerBounds_upperBounds {f : α → β} (hf : StrictMono f)
     (hl : ∀ {a}, IsSuccLimit a → f a ∈ lowerBounds (upperBounds (f '' Iio a))) : IsNormal f := by
   refine ⟨hf, fun {a} ha ↦ ⟨?_, hl ha⟩⟩

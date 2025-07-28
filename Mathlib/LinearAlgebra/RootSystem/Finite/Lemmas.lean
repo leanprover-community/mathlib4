@@ -83,7 +83,7 @@ lemma coxeterWeightIn_mem_set_of_isCrystallographic :
     have : 0 ≤ P.coxeterWeightIn ℤ i j := by
       simpa only [P.algebraMap_coxeterWeightIn] using P.coxeterWeight_nonneg (P.posRootForm ℤ) i j
     obtain ⟨n, hn⟩ := Int.eq_ofNat_of_zero_le this
-    exact ⟨n, by simp [← P.algebraMap_coxeterWeightIn ℤ, hn]⟩
+    exact ⟨n, by simp [hn]⟩
   have : P.coxeterWeightIn ℤ i j ≤ 4 := P.coxeterWeightIn_le_four ℤ i j
   simp only [hcn, mem_insert_iff, mem_singleton_iff] at this ⊢
   norm_cast at this ⊢
@@ -111,7 +111,7 @@ lemma pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed [P.IsReduced] :
   aesop -- #24551 (this should be faster)
 
 lemma pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' [P.IsReduced]
-    (hij : α i ≠ α j) (hij' : α i ≠ - α j) :
+    (hij : α i ≠ α j) (hij' : α i ≠ -α j) :
     (P.pairingIn ℤ i j, P.pairingIn ℤ j i) ∈
       ({(0, 0), (1, 1), (-1, -1), (1, 2), (2, 1), (-1, -2), (-2, -1), (1, 3), (3, 1), (-1, -3),
         (-3, -1)} : Set (ℤ × ℤ)) := by
@@ -136,7 +136,7 @@ lemma RootPositiveForm.rootLength_le_of_pairingIn_eq (B : P.RootPositiveForm ℤ
 variable {P} in
 lemma RootPositiveForm.rootLength_lt_of_pairingIn_notMem
     (B : P.RootPositiveForm ℤ) {i j : ι}
-    (hne : α i ≠ α j) (hne' : α i ≠ - α j)
+    (hne : α i ≠ α j) (hne' : α i ≠ -α j)
     (hij : P.pairingIn ℤ i j ∉ ({-1, 0, 1} : Set ℤ)) :
     B.rootLength j < B.rootLength i := by
   have hij' : P.pairingIn ℤ i j = -3 ∨ P.pairingIn ℤ i j = -2 ∨ P.pairingIn ℤ i j = 2 ∨
@@ -228,7 +228,7 @@ lemma root_sub_root_mem_of_pairingIn_pos (h : 0 < P.pairingIn ℤ i j) (h' : i �
 /-- If two roots make an obtuse angle then their sum is a root (provided it is not zero).
 
 See `RootPairing.pairingIn_le_zero_of_root_add_mem` for a partial converse. -/
-lemma root_add_root_mem_of_pairingIn_neg (h : P.pairingIn ℤ i j < 0) (h' : α i ≠ - α j) :
+lemma root_add_root_mem_of_pairingIn_neg (h : P.pairingIn ℤ i j < 0) (h' : α i ≠ -α j) :
     α i + α j ∈ Φ := by
   let _i := P.indexNeg
   replace h : 0 < P.pairingIn ℤ i (-j) := by simpa
@@ -441,15 +441,15 @@ lemma root_sub_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
     apply algebraMap_injective ℤ R
     simp only [algebraMap_pairingIn, map_sub, map_one, algebraMap_pairingIn]
     convert (P.coroot' i : M →ₗ[R] R).congr_arg hl using 1
-    simp only [PerfectPairing.flip_apply_apply, map_sub, map_add, LinearMap.sub_apply,
-      LinearMap.add_apply, root_coroot_eq_pairing, hki, pairing_same]
+    simp only [PerfectPairing.flip_apply_apply, map_sub, map_add,
+      root_coroot_eq_pairing, hki, pairing_same]
     ring
   replace hij := pairingIn_le_zero_of_ne b hij.symm hj hi
   omega
 
 /-- This is Lemma 2.5 (b) from [Geck](Geck2017). -/
 lemma root_add_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
-    (hkj : α k ≠ - α i) (hk' : α k - α j ∈ Φ) :
+    (hkj : α k ≠ -α i) (hk' : α k - α j ∈ Φ) :
     α k + α i ∈ Φ := by
   let _i := P.indexNeg
   replace hk : α (-k) + α j - α i ∈ Φ := by

@@ -49,7 +49,7 @@ open CategoryTheory
 
 open TopCat
 
-open CategoryTheory.Limits
+open CategoryTheory.Limits CategoryTheory.Functor
 
 open TopologicalSpace Topology
 

@@ -76,7 +76,7 @@ theorem AtPrime.isLocalRing [IsLocalization.AtPrime S P] : IsLocalRing S :=
       rw [← hrx] at hx
       rw [← hry] at hy
       obtain ⟨t, ht⟩ := IsLocalization.eq.1 hxyz
-      simp only [mul_one, one_mul, Submonoid.coe_mul, Subtype.coe_mk] at ht
+      simp only [mul_one, one_mul, Submonoid.coe_mul] at ht
       suffices (t : R) * (sx * sy * sz) ∈ P from
         not_or_intro (mt hp.mem_or_mem <| not_or_intro sx.2 sy.2) sz.2
           (hp.mem_or_mem <| (hp.mem_or_mem this).resolve_left t.2)

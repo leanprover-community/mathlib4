@@ -26,7 +26,7 @@ universe v u
 
 namespace CategoryTheory
 
-open Bicategory
+open Bicategory Functor
 
 -- intended to be used with explicit universe parameters
 /-- Category of categories. -/
@@ -203,7 +203,7 @@ def typeToCat : Type u ⥤ Cat where
     apply Functor.ext
     · intro X Y f
       cases f
-      simp only [id_eq, eqToHom_refl, Cat.id_map, Category.comp_id, Category.id_comp]
+      simp only [eqToHom_refl, Cat.id_map, Category.comp_id, Category.id_comp]
       apply ULift.ext
       aesop_cat
     · simp

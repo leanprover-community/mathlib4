@@ -127,7 +127,7 @@ theorem of_one_lt_codim [IsTopologicalAddGroup F] [ContinuousSMul ℝ F] {E : Su
   · obtain ⟨z, hz⟩ : ∃ z, z ∉ E := by
       rw [← not_forall, ← Submodule.eq_top_iff']
       rintro rfl
-      simp [rank_zero_iff.2 inferInstance] at hcodim
+      simp at hcodim
     refine segment_subset_convexHull ?_ ?_ (mem_segment_sub_add y z) <;>
       simpa [sub_eq_add_neg, Submodule.add_mem_iff_right _ h]
   · exact subset_convexHull ℝ (Eᶜ : Set F) h

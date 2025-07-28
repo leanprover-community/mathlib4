@@ -139,7 +139,7 @@ theorem leibniz_pow (n : ℕ) : D (a ^ n) = n • a ^ (n - 1) • D a := by
     · simp
     · have : a * a ^ (n - 1) = a ^ n := by rw [← pow_succ', Nat.sub_add_cancel hpos]
       simp only [pow_succ', leibniz, ihn, smul_comm a n (_ : M), smul_smul a, add_smul, this,
-        Nat.succ_eq_add_one, Nat.add_succ_sub_one, add_zero, one_nsmul]
+        Nat.add_succ_sub_one, add_zero, one_nsmul]
 
 open Polynomial in
 @[simp]

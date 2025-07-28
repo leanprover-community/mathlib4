@@ -61,7 +61,7 @@ theorem toLeftMovesToPGame_symm_lt {o : Ordinal} (i : o.toPGame.LeftMoves) :
 
 @[nolint unusedHavesSuffices]
 theorem toPGame_moveLeft_hEq {o : Ordinal} :
-    HEq o.toPGame.moveLeft fun x : o.toType => ((enumIsoToType o).symm x).val.toPGame := by
+    o.toPGame.moveLeft ≍ fun x : o.toType => ((enumIsoToType o).symm x).val.toPGame := by
   rw [toPGame]
   rfl
 

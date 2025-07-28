@@ -594,7 +594,7 @@ theorem dropFun_toSubtype {α} (p : α ⟹ «repeat» (n + 1) Prop) :
 theorem lastFun_toSubtype {α} (p : α ⟹ «repeat» (n + 1) Prop) :
     lastFun (toSubtype p) = _root_.id := by
   ext i : 2
-  induction i; simp [dropFun, *]; rfl
+  induction i; simp [*]; rfl
 
 @[simp]
 theorem dropFun_of_subtype {α} (p : α ⟹ «repeat» (n + 1) Prop) :
@@ -682,12 +682,12 @@ theorem toSubtype'_of_subtype' {α : TypeVec n} (r : α ⊗ α ⟹ «repeat» n 
   ext i x
   induction i
   <;> dsimp only [id, toSubtype', comp, ofSubtype'] at *
-  <;> simp [Subtype.eta, *]
+  <;> simp [*]
 
 theorem subtypeVal_toSubtype' {α : TypeVec n} (r : α ⊗ α ⟹ «repeat» n Prop) :
     subtypeVal r ⊚ toSubtype' r = fun i x => prod.mk i x.1.fst x.1.snd := by
   ext i x
-  induction i <;> simp only [id, toSubtype', comp, subtypeVal, prod.mk] at *
+  induction i <;> simp only [toSubtype', comp, subtypeVal, prod.mk] at *
   simp [*]
 
 end TypeVec

@@ -115,7 +115,7 @@ variable [DecidableEq α] [DecidableEq ι]
 
 /-- The cardinality of the type of permutations preserving a function
   (without the finiteness assumption on target) -/
-theorem stabilizer_card':
+theorem stabilizer_card' :
     Fintype.card {g : Perm α // f ∘ g = f} =
       ∏ i ∈ Finset.univ.image f, (Fintype.card ({a // f a = i}))! := by
   set φ : α → Finset.univ.image f :=

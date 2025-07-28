@@ -288,7 +288,7 @@ def CongrResult.eq (res : CongrResult) : MetaM Expr := do
   | some pf => pf .eq
   | none => mkEqRefl res.lhs
 
-/-- Returns the proof that `HEq lhs rhs`. Fails if the `CongrResult` is inapplicable.
+/-- Returns the proof that `lhs ≍ rhs`. Fails if the `CongrResult` is inapplicable.
 If `pf? = none`, this returns the `rfl` proof. -/
 def CongrResult.heq (res : CongrResult) : MetaM Expr := do
   match res.pf? with

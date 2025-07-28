@@ -520,10 +520,9 @@ theorem WithSeminorms.isVonNBounded_iff_seminorm_bounded {s : Set E} (hp : WithS
       exact lt_of_lt_of_le (hr i) (Finset.le_sup' r hi)
     refine ⟨I.sup' hI r, h', fun x hx => finset_sup_apply_lt h' fun i hi => ?_⟩
     refine lt_of_lt_of_le (h i x hx) ?_
-    simp only [Finset.le_sup'_iff, exists_prop]
+    simp only [Finset.le_sup'_iff]
     exact ⟨i, hi, (Eq.refl _).le⟩
-  simp only [Finset.not_nonempty_iff_eq_empty.mp hI, Finset.sup_empty, coe_bot, Pi.zero_apply,
-    exists_prop]
+  simp only [Finset.not_nonempty_iff_eq_empty.mp hI, Finset.sup_empty, coe_bot, Pi.zero_apply]
   exact ⟨1, zero_lt_one, fun _ _ => zero_lt_one⟩
 
 theorem WithSeminorms.image_isVonNBounded_iff_seminorm_bounded (f : G → E) {s : Set G}

@@ -100,11 +100,11 @@ variable [Monoid α] (s : Set α)
 
 @[to_additive zero_leftAddCoset]
 theorem one_leftCoset : (1 : α) • s = s :=
-  Set.ext <| by simp [← image_smul]
+  Set.ext <| by simp
 
 @[to_additive rightAddCoset_zero]
 theorem rightCoset_one : op (1 : α) • s = s :=
-  Set.ext <| by simp [← image_smul]
+  Set.ext <| by simp
 
 end CosetMonoid
 
@@ -353,7 +353,7 @@ noncomputable def groupEquivQuotientProdSubgroup : α ≃ (α ⧸ s) × s :=
     _ ≃ ΣL : α ⧸ s, (Quotient.out L • s : Set α) :=
       Equiv.sigmaCongrRight fun L => by
         rw [← eq_class_eq_leftCoset]
-        show
+        change
           (_root_.Subtype fun x : α => Quotient.mk'' x = L) ≃
             _root_.Subtype fun x : α => Quotient.mk'' x = Quotient.mk'' _
         simp

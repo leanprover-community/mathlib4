@@ -316,7 +316,7 @@ instance lowerCentralSeries_normal (n : ℕ) : Normal (lowerCentralSeries G n) :
 
 theorem lowerCentralSeries_antitone : Antitone (lowerCentralSeries G) := by
   refine antitone_nat_of_succ_le fun n x hx => ?_
-  simp only [mem_lowerCentralSeries_succ_iff, exists_prop, mem_top, exists_true_left,
+  simp only [mem_lowerCentralSeries_succ_iff, mem_top,
     true_and] at hx
   refine
     closure_induction ?_ (Subgroup.one_mem _) (fun _ _ _ _ ↦ mul_mem) (fun _ _ ↦ inv_mem) hx
@@ -457,7 +457,7 @@ instance Subgroup.isNilpotent (H : Subgroup G) [hG : IsNilpotent G] : IsNilpoten
   rcases hG with ⟨n, hG⟩
   use n
   have := lowerCentralSeries_map_subtype_le H n
-  simp only [hG, SetLike.le_def, mem_map, forall_apply_eq_imp_iff₂, exists_imp] at this
+  simp only [hG, SetLike.le_def, mem_map, exists_imp] at this
   exact eq_bot_iff.mpr fun x hx => Subtype.ext (this x ⟨hx, rfl⟩)
 
 /-- The nilpotency class of a subgroup is less or equal to the nilpotency class of the group -/
@@ -467,7 +467,7 @@ theorem Subgroup.nilpotencyClass_le (H : Subgroup G) [hG : IsNilpotent G] :
   classical apply Nat.find_mono
   intro n hG
   have := lowerCentralSeries_map_subtype_le H n
-  simp only [hG, SetLike.le_def, mem_map, forall_apply_eq_imp_iff₂, exists_imp] at this
+  simp only [hG, SetLike.le_def, mem_map, exists_imp] at this
   exact eq_bot_iff.mpr fun x hx => Subtype.ext (this x ⟨hx, rfl⟩)
 
 instance (priority := 100) Group.isNilpotent_of_subsingleton [Subsingleton G] : IsNilpotent G :=

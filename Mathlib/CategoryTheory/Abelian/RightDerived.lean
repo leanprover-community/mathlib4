@@ -170,7 +170,7 @@ a natural transformation `F ⟶ G` between additive functors. -/
 noncomputable def NatTrans.rightDerivedToHomotopyCategory
     {F G : C ⥤ D} [F.Additive] [G.Additive] (α : F ⟶ G) :
     F.rightDerivedToHomotopyCategory ⟶ G.rightDerivedToHomotopyCategory :=
-  whiskerLeft _ (NatTrans.mapHomotopyCategory α (ComplexShape.up ℕ))
+  Functor.whiskerLeft _ (NatTrans.mapHomotopyCategory α (ComplexShape.up ℕ))
 
 lemma InjectiveResolution.rightDerivedToHomotopyCategory_app_eq
     {F G : C ⥤ D} [F.Additive] [G.Additive] (α : F ⟶ G) {X : C} (P : InjectiveResolution X) :
@@ -207,13 +207,13 @@ induced by a natural transformation. -/
 noncomputable def NatTrans.rightDerived
     {F G : C ⥤ D} [F.Additive] [G.Additive] (α : F ⟶ G) (n : ℕ) :
     F.rightDerived n ⟶ G.rightDerived n :=
-  whiskerRight (NatTrans.rightDerivedToHomotopyCategory α) _
+  Functor.whiskerRight (NatTrans.rightDerivedToHomotopyCategory α) _
 
 @[simp]
 theorem NatTrans.rightDerived_id (F : C ⥤ D) [F.Additive] (n : ℕ) :
     NatTrans.rightDerived (𝟙 F) n = 𝟙 (F.rightDerived n) := by
   dsimp only [rightDerived]
-  simp only [rightDerivedToHomotopyCategory_id, whiskerRight_id']
+  simp only [rightDerivedToHomotopyCategory_id, Functor.whiskerRight_id']
   rfl
 
 @[simp, reassoc]

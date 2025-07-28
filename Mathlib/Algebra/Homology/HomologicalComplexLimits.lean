@@ -115,7 +115,7 @@ def isColimitOfEval (s : Cocone F)
         intro j
         have eq := fun k => (hs k).fac ((eval C c k).mapCocone t)
         simp only [Functor.mapCocone_ι_app, eval_map] at eq
-        simp only [Functor.mapCocone_ι_app, eval_map, assoc]
+        simp only [Functor.mapCocone_ι_app, eval_map]
         rw [reassoc_of% (eq i), Hom.comm_assoc, eq i', Hom.comm] }
   fac t j := by
     ext i

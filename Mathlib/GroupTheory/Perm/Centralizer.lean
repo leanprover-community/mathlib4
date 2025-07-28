@@ -115,7 +115,7 @@ lemma Subgroup.Centralizer.toConjAct_smul_mem_cycleFactorsFinset {k c : Perm α}
   suffices (g.cycleFactorsFinset : Set (Perm α)) =
     (ConjAct.toConjAct k) • g.cycleFactorsFinset by
     rw [← Finset.mem_coe, this]
-    simp only [Set.smul_mem_smul_set_iff, Finset.mem_coe, Finset.coe_mem, c_mem]
+    simp only [Set.smul_mem_smul_set_iff, Finset.mem_coe, c_mem]
   have this := cycleFactorsFinset_conj_eq (ConjAct.toConjAct (k : Perm α)) g
   rw [ConjAct.toConjAct_smul, mem_centralizer_singleton_iff.mp k_mem, mul_assoc] at this
   simp only [mul_inv_cancel, mul_one] at this
@@ -168,7 +168,7 @@ The equality is proved by `Equiv.Perm.OnCycleFactors.range_toPermHom_eq_range_to
 def range_toPermHom' : Subgroup (Perm g.cycleFactorsFinset) where
   carrier := {τ | ∀ c, #(τ c).val.support = #c.val.support}
   one_mem' := by
-    simp only [Set.mem_setOf_eq, coe_one, id_eq, eq_self_iff_true, imp_true_iff]
+    simp only [Set.mem_setOf_eq, coe_one, id_eq, imp_true_iff]
   mul_mem' hσ hτ := by
     simp only [Subtype.forall, Set.mem_setOf_eq, coe_mul, Function.comp_apply]
     simp only [Subtype.forall, Set.mem_setOf_eq] at hσ hτ
@@ -303,7 +303,7 @@ theorem ofPermHomFun_apply_mem_support_cycle_iff {x : α} {c : g.cycleFactorsFin
   · rw [ofPermHomFun_apply_of_cycleOf_mem a τ hd hm] --
     rw [zpow_apply_mem_support_of_mem_cycleFactorsFinset_iff]
     by_cases h : c = d
-    · simp only [h, hd, iff_true, mem_support_self]
+    · simp only [h, hd, mem_support_self]
     · have H : Disjoint c.val d.val :=
         cycleFactorsFinset_pairwise_disjoint g c.prop d.prop (Subtype.coe_ne_coe.mpr h)
       have H' : Disjoint ((τ : Perm g.cycleFactorsFinset) c : Perm α)
@@ -448,7 +448,7 @@ theorem mem_range_toPermHom_iff' {τ} : τ ∈ (toPermHom g).range ↔
     (fun (c : g.cycleFactorsFinset) ↦ #c.val.support) ∘ τ =
       fun (c : g.cycleFactorsFinset) ↦ #c.val.support := by
   rw [mem_range_toPermHom_iff, funext_iff]
-  simp only [Finset.coe_sort_coe, Subtype.forall, Function.comp_apply]
+  simp only [Subtype.forall, Function.comp_apply]
 
 /-- Computes the range of `Equiv.Perm.toPermHom g` -/
 theorem range_toPermHom_eq_range_toPermHom' :
@@ -468,8 +468,8 @@ theorem nat_card_range_toPermHom :
     simp_rw [← CycleType.count_def]
     apply Finset.prod_congr _ (fun _ _ => rfl)
     ext n
-    simp only [Finset.univ_eq_attach, Finset.mem_image, Finset.mem_attach,
-        hsc, true_and, Subtype.exists, exists_prop, Multiset.mem_toFinset]
+    simp only [Finset.mem_image, Finset.mem_attach,
+        true_and, Subtype.exists, exists_prop, Multiset.mem_toFinset]
     simp only [cycleType_def, Function.comp_apply, Multiset.mem_map, Finset.mem_val]
   simp only [← SetLike.coe_sort_coe, Fintype.card_eq_nat_card]
   congr
