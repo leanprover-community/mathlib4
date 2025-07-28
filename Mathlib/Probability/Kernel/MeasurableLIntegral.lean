@@ -77,7 +77,7 @@ alias measurable_kernel_prod_mk_left_of_finite := measurable_kernel_prodMk_left_
 theorem measurable_kernel_prodMk_left [IsSFiniteKernel κ] {t : Set (α × β)}
     (ht : MeasurableSet t) : Measurable fun a => κ a (Prod.mk a ⁻¹' t) := by
   rw [← Kernel.kernel_sum_seq κ]
-  have (a) : Kernel.sum (Kernel.seq κ) a (Prod.mk a ⁻¹' t) =
+  have (a : _) : Kernel.sum (Kernel.seq κ) a (Prod.mk a ⁻¹' t) =
       ∑' n, Kernel.seq κ n a (Prod.mk a ⁻¹' t) :=
     Kernel.sum_apply' _ _ (measurable_prodMk_left ht)
   simp_rw [this]
@@ -89,7 +89,7 @@ alias measurable_kernel_prod_mk_left := measurable_kernel_prodMk_left
 
 theorem measurable_kernel_prodMk_left' [IsSFiniteKernel η] {s : Set (β × γ)} (hs : MeasurableSet s)
     (a : α) : Measurable fun b => η (a, b) (Prod.mk b ⁻¹' s) := by
-  have (b) : Prod.mk b ⁻¹' s = {c | ((a, b), c) ∈ {p : (α × β) × γ | (p.1.2, p.2) ∈ s}} := rfl
+  have (b : _) : Prod.mk b ⁻¹' s = {c | ((a, b), c) ∈ {p : (α × β) × γ | (p.1.2, p.2) ∈ s}} := rfl
   simp_rw [this]
   refine (measurable_kernel_prodMk_left ?_).comp measurable_prodMk_left
   exact (measurable_fst.snd.prodMk measurable_snd) hs

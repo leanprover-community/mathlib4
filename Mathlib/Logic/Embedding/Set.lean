@@ -46,8 +46,8 @@ def optionElim {α β} (f : α ↪ β) (x : β) (h : x ∉ Set.range f) : Option
 def optionEmbeddingEquiv (α β) : (Option α ↪ β) ≃ Σ f : α ↪ β, ↥(Set.range f)ᶜ where
   toFun f := ⟨Embedding.some.trans f, f none, fun ⟨x, hx⟩ ↦ Option.some_ne_none x <| f.injective hx⟩
   invFun f := f.1.optionElim f.2 f.2.2
-  left_inv f := ext <| by rintro (_ | _) <;> simp [Option.coe_def]
-  right_inv := fun ⟨f, y, hy⟩ ↦ by ext <;> simp [Option.coe_def]
+  left_inv f := ext <| by rintro (_ | _) <;> simp
+  right_inv := fun ⟨f, y, hy⟩ ↦ by ext <;> simp
 
 /-- Restrict the codomain of an embedding. -/
 def codRestrict {α β} (p : Set β) (f : α ↪ β) (H : ∀ a, f a ∈ p) : α ↪ p :=
@@ -56,8 +56,6 @@ def codRestrict {α β} (p : Set β) (f : α ↪ β) (H : ∀ a, f a ∈ p) : α
 @[simp]
 theorem codRestrict_apply {α β} (p) (f : α ↪ β) (H a) : codRestrict p f H a = ⟨f a, H a⟩ :=
   rfl
-
-open Set
 
 /-- `Set.image` as an embedding `Set α ↪ Set β`. -/
 @[simps apply]
@@ -137,10 +135,10 @@ variable {α ι : Type*} {s t r : Set α}
   toFun := Sum.elim (↑) (↑)
   inj' := by
     rintro (⟨a, ha⟩ | ⟨a, ha⟩) (⟨b, hb⟩ | ⟨b, hb⟩)
-    · simp [Subtype.val_inj]
+    · simp
     · simpa using h.ne_of_mem ha hb
     · simpa using h.symm.ne_of_mem ha hb
-    simp [Subtype.val_inj]
+    simp
 
 @[norm_cast] lemma Function.Embedding.coe_sumSet (h : Disjoint s t) :
     (Function.Embedding.sumSet h : s ⊕ t → α) = Sum.elim (↑) (↑) := rfl

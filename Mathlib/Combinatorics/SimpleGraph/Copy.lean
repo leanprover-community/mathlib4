@@ -152,7 +152,7 @@ theorem coe_comp (g : Copy B C) (f : Copy A B) : ⇑(g.comp f) = g ∘ f := by e
 
 @[simp]
 theorem ofLE_comp (h₁₂ : G₁ ≤ G₂) (h₂₃ : G₂ ≤ G₃) :
-  (ofLE _ _ h₂₃).comp (ofLE _ _ h₁₂) = ofLE _ _ (h₁₂.trans h₂₃) := by ext; simp
+    (ofLE _ _ h₂₃).comp (ofLE _ _ h₁₂) = ofLE _ _ (h₁₂.trans h₂₃) := by ext; simp
 
 /-- The copy from an induced subgraph to the initial simple graph. -/
 def induce (G : SimpleGraph V) (s : Set V) : Copy (G.induce s) G := (Embedding.induce s).toCopy
@@ -194,8 +194,6 @@ instance [Fintype {f : G →g H // Injective f}] : Fintype (G.Copy H) :=
   .ofEquiv {f : G →g H // Injective f} {
     toFun f := ⟨f.1, f.2⟩
     invFun f := ⟨f.1, f.2⟩
-    left_inv _ := rfl
-    right_inv _ := rfl
   }
 
 end Copy
@@ -408,7 +406,7 @@ noncomputable def labelledCopyCount (G : SimpleGraph V) (H : SimpleGraph W) : �
   exact { default := ⟨default, isEmptyElim⟩, uniq := fun _ ↦ Subsingleton.elim _ _ }
 
 @[simp] lemma labelledCopyCount_eq_zero : G.labelledCopyCount H = 0 ↔ H.Free G := by
-  simp [labelledCopyCount, IsContained, Fintype.card_eq_zero_iff, isEmpty_subtype]
+  simp [labelledCopyCount, Fintype.card_eq_zero_iff]
 
 @[simp] lemma labelledCopyCount_pos : 0 < G.labelledCopyCount H ↔ H ⊑ G := by
   simp [labelledCopyCount, IsContained, Fintype.card_pos_iff]
@@ -432,7 +430,7 @@ lemma copyCount_eq_card_image_copyToSubgraph [Fintype {f : H →g G // Injective
   simpa [-Copy.range_toSubgraph] using Copy.range_toSubgraph.symm
 
 @[simp] lemma copyCount_eq_zero : G.copyCount H = 0 ↔ H.Free G := by
-  simp [copyCount, Free, -nonempty_subtype, isContained_iff_exists_iso_subgraph, card_pos,
+  simp [copyCount, Free, -nonempty_subtype, isContained_iff_exists_iso_subgraph,
     filter_eq_empty_iff]
 
 @[simp] lemma copyCount_pos : 0 < G.copyCount H ↔ H ⊑ G := by
@@ -451,8 +449,7 @@ lemma copyCount_le_labelledCopyCount [Fintype W] : G.copyCount H ≤ G.labelledC
       Adj := ⊥
       adj_sub := False.elim
       edge_vert := False.elim }
-  simp only [eq_singleton_iff_unique_mem, mem_filter, mem_univ, Subgraph.coe_bot, true_and,
-    Nonempty.forall]
+  simp only [eq_singleton_iff_unique_mem, mem_filter_univ, Nonempty.forall]
   refine ⟨⟨⟨(Equiv.Set.univ _).symm, by simp⟩⟩, fun H' e ↦
     Subgraph.ext ((set_fintype_card_eq_univ_iff _).1 <| Fintype.card_congr e.toEquiv.symm) ?_⟩
   ext a b
@@ -516,8 +513,8 @@ private lemma killCopies_of_ne_bot (hH : H ≠ ⊥) (G : SimpleGraph V) :
 `Free.killCopies_eq_left` for the reverse implication with no assumption on `H`. -/
 lemma killCopies_eq_left (hH : H ≠ ⊥) : G.killCopies H = G ↔ H.Free G := by
   simp only [killCopies_of_ne_bot hH, Set.disjoint_left, isContained_iff_exists_iso_subgraph,
-    @forall_swap _ G.Subgraph, Set.iUnion_singleton_eq_range, deleteEdges_eq_self, Set.mem_iUnion,
-    Set.mem_range, not_exists, not_nonempty_iff, Nonempty.forall, Free]
+    @forall_swap _ G.Subgraph, deleteEdges_eq_self, Set.mem_iUnion,
+    not_exists, not_nonempty_iff, Nonempty.forall, Free]
   exact forall_congr' fun G' ↦ ⟨fun h ↦ ⟨fun f ↦ h _
     (Subgraph.edgeSet_subset _ <| (aux hH ⟨f⟩).choose_spec) f rfl⟩, fun h _ _ ↦ h.elim⟩
 
@@ -572,10 +569,10 @@ lemma le_card_edgeFinset_killCopies [Fintype V] :
     _ = #(G.killCopies H).edgeFinset := ?_
   · simp only [Set.toFinset_card]
     rw [← Set.toFinset_card, ← edgeFinset, copyCount, ← card_subtype, subtype_univ, card_univ]
-  simp only [killCopies_of_ne_bot, hH, Ne, not_false_iff, Set.iUnion_singleton_eq_range,
-    Set.toFinset_card, Fintype.card_ofFinset, edgeSet_deleteEdges]
-  simp only [Finset.sdiff_eq_inter_compl, Set.diff_eq, ← Set.iUnion_singleton_eq_range, coe_sdiff,
-    Set.coe_toFinset, coe_filter, Set.sep_mem_eq, Set.iUnion_subtype, ← Fintype.card_coe,
+  simp only [killCopies_of_ne_bot, hH, Ne, not_false_iff,
+    Set.toFinset_card, edgeSet_deleteEdges]
+  simp only [Finset.sdiff_eq_inter_compl, Set.diff_eq, ← Set.iUnion_singleton_eq_range,
+    Set.coe_toFinset, coe_filter, Set.iUnion_subtype, ← Fintype.card_coe,
     ← Finset.coe_sort_coe, coe_inter, coe_compl, Set.coe_toFinset, Set.compl_iUnion,
     Fintype.card_ofFinset, f]
 

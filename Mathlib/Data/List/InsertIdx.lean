@@ -29,7 +29,7 @@ variable {a : α}
 
 @[simp]
 theorem sublist_insertIdx (l : List α) (n : ℕ) (a : α) : l <+ (l.insertIdx n a) := by
-  simpa only [eraseIdx_insertIdx] using eraseIdx_sublist (l.insertIdx n a) n
+  simpa only [eraseIdx_insertIdx_self] using eraseIdx_sublist (l.insertIdx n a) n
 
 @[simp]
 theorem subset_insertIdx (l : List α) (n : ℕ) (a : α) : l ⊆ l.insertIdx n a :=
@@ -40,7 +40,7 @@ is the same as setting `n`th element to `a`.
 
 We assume that `n ≠ length l`, because otherwise LHS equals `l ++ [a]` while RHS equals `l`. -/
 @[simp]
-theorem insertIdx_eraseIdx {l : List α} {n : ℕ} (hn : n ≠ length l) (a : α) :
+theorem insertIdx_eraseIdx_self {l : List α} {n : ℕ} (hn : n ≠ length l) (a : α) :
     (l.eraseIdx n).insertIdx n a = l.set n a := by
   induction n generalizing l <;> cases l <;> simp_all
 
@@ -94,7 +94,7 @@ theorem get_insertIdx_self (l : List α) (x : α) (n : ℕ) (hn : n ≤ l.length
     (hn' : n < (l.insertIdx n x).length :=
       (by rwa [length_insertIdx_of_le_length hn, Nat.lt_succ_iff])) :
     (l.insertIdx n x).get ⟨n, hn'⟩ = x := by
-  simp [hn, hn']
+  simp
 
 theorem getElem_insertIdx_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n + k < l.length)
     (hk : n + k + 1 < (l.insertIdx n x).length := (by
@@ -107,7 +107,7 @@ theorem get_insertIdx_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n + k <
     (hk : n + k + 1 < (l.insertIdx n x).length := (by
       rwa [length_insertIdx_of_le_length (by omega), Nat.succ_lt_succ_iff])) :
     (l.insertIdx n x).get ⟨n + k + 1, hk⟩ = get l ⟨n + k, hk'⟩ := by
-  simp [getElem_insertIdx_add_succ, hk, hk']
+  simp [getElem_insertIdx_add_succ, hk']
 
 set_option linter.unnecessarySimpa false in
 theorem insertIdx_injective (n : ℕ) (x : α) :

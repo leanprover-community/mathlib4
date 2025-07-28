@@ -264,6 +264,12 @@ lemma IsSymmetricRel.sInter {s : Set (Set (α × α))} (h : ∀ i ∈ s, IsSymme
   rw [sInter_eq_iInter]
   exact IsSymmetricRel.iInter (by simpa)
 
+lemma isSymmetricRel_idRel : IsSymmetricRel (idRel : Set (α × α)) := by
+  simp [IsSymmetricRel, idRel, eq_comm]
+
+lemma isSymmetricRel_univ : IsSymmetricRel (Set.univ : Set (α × α)) := by
+  simp [IsSymmetricRel]
+
 lemma IsSymmetricRel.preimage_prodMap {U : Set (β × β)} (ht : IsSymmetricRel U) (f : α → β) :
     IsSymmetricRel (Prod.map f f ⁻¹' U) :=
   Set.ext fun _ ↦ ht.mk_mem_comm
@@ -779,7 +785,7 @@ theorem uniformContinuous_of_const [UniformSpace β] {c : α → β} (h : ∀ a 
     UniformContinuous c :=
   have : (fun x : α × α => (c x.fst, c x.snd)) ⁻¹' idRel = univ :=
     eq_univ_iff_forall.2 fun ⟨a, b⟩ => h a b
-  le_trans (map_le_iff_le_comap.2 <| by simp [comap_principal, this, univ_mem]) refl_le_uniformity
+  le_trans (map_le_iff_le_comap.2 <| by simp [comap_principal, this]) refl_le_uniformity
 
 theorem uniformContinuous_id : UniformContinuous (@id α) := tendsto_id
 

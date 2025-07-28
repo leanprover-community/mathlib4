@@ -5,6 +5,7 @@ Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Group.ULift
 import Mathlib.Algebra.Ring.Equiv
+import Mathlib.Data.Int.Cast.Basic
 
 /-!
 # `ULift` instances for ring
@@ -30,6 +31,53 @@ instance distrib [Distrib R] : Distrib (ULift R) :=
   { add := (· + ·), mul := (· * ·),
     left_distrib := fun _ _ _ => (Equiv.ulift).injective (by simp [left_distrib]),
     right_distrib := fun _ _ _ => (Equiv.ulift).injective (by simp [right_distrib]) }
+
+instance instNatCast [NatCast R] : NatCast (ULift R) := ⟨(up ·)⟩
+instance instIntCast [IntCast R] : IntCast (ULift R) := ⟨(up ·)⟩
+
+@[simp, norm_cast]
+theorem up_natCast [NatCast R] (n : ℕ) : up (n : R) = n :=
+  rfl
+
+@[simp]
+theorem up_ofNat [NatCast R] (n : ℕ) [n.AtLeastTwo] :
+    up (ofNat(n) : R) = ofNat(n) :=
+  rfl
+
+@[simp, norm_cast]
+theorem up_intCast [IntCast R] (n : ℤ) : up (n : R) = n :=
+  rfl
+
+@[simp, norm_cast]
+theorem down_natCast [NatCast R] (n : ℕ) : down (n : ULift R) = n :=
+  rfl
+
+@[simp]
+theorem down_ofNat [NatCast R] (n : ℕ) [n.AtLeastTwo] :
+    down (ofNat(n) : ULift R) = ofNat(n) :=
+  rfl
+
+@[simp, norm_cast]
+theorem down_intCast [IntCast R] (n : ℤ) : down (n : ULift R) = n :=
+  rfl
+
+instance addMonoidWithOne [AddMonoidWithOne R] : AddMonoidWithOne (ULift R) :=
+  { ULift.one, ULift.addMonoid with
+      natCast := (⟨·⟩)
+      natCast_zero := congr_arg ULift.up Nat.cast_zero,
+      natCast_succ := fun _ => congr_arg ULift.up (Nat.cast_succ _) }
+
+instance addCommMonoidWithOne [AddCommMonoidWithOne R] : AddCommMonoidWithOne (ULift R) :=
+  { ULift.addMonoidWithOne, ULift.addCommMonoid with }
+
+instance addGroupWithOne [AddGroupWithOne R] : AddGroupWithOne (ULift R) :=
+  { ULift.addMonoidWithOne, ULift.addGroup with
+      intCast := (⟨·⟩),
+      intCast_ofNat := fun _ => congr_arg ULift.up (Int.cast_natCast _),
+      intCast_negSucc := fun _ => congr_arg ULift.up (Int.cast_negSucc _) }
+
+instance addCommGroupWithOne [AddCommGroupWithOne R] : AddCommGroupWithOne (ULift R) :=
+  { ULift.addGroupWithOne, ULift.addCommGroup with }
 
 instance nonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring R] :
     NonUnitalNonAssocSemiring (ULift R) :=

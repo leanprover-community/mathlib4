@@ -236,7 +236,7 @@ protected theorem defn (p : ℕ) [hp : Fact p.Prime] {q : ℚ} {n d : ℤ} (hqz 
   have hd : d ≠ 0 := Rat.mk_denom_ne_zero_of_ne_zero hqz qdf
   let ⟨c, hc1, hc2⟩ := Rat.num_den_mk hd qdf
   rw [padicValRat.multiplicity_sub_multiplicity hp.1.ne_one hqz]
-  simp only [Nat.isUnit_iff, hc1, hc2]
+  simp only [hc1, hc2]
   rw [multiplicity_mul (Nat.prime_iff_prime_int.1 hp.1),
     multiplicity_mul (Nat.prime_iff_prime_int.1 hp.1)]
   · rw [Nat.cast_add, Nat.cast_add]
@@ -523,7 +523,7 @@ lemma Nat.max_log_padicValNat_succ_eq_log_succ (n : ℕ) [hp : Fact p.Prime] :
 theorem range_pow_padicValNat_subset_divisors {n : ℕ} (hn : n ≠ 0) :
     (Finset.range (padicValNat p n + 1)).image (p ^ ·) ⊆ n.divisors := by
   intro t ht
-  simp only [exists_prop, Finset.mem_image, Finset.mem_range] at ht
+  simp only [Finset.mem_image, Finset.mem_range] at ht
   obtain ⟨k, hk, rfl⟩ := ht
   rw [Nat.mem_divisors]
   exact ⟨(pow_dvd_pow p <| by omega).trans pow_padicValNat_dvd, hn⟩
@@ -533,7 +533,7 @@ theorem range_pow_padicValNat_subset_divisors' {n : ℕ} [hp : Fact p.Prime] :
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp
   intro t ht
-  simp only [exists_prop, Finset.mem_image, Finset.mem_range] at ht
+  simp only [Finset.mem_image, Finset.mem_range] at ht
   obtain ⟨k, hk, rfl⟩ := ht
   rw [Finset.mem_erase, Nat.mem_divisors]
   refine ⟨?_, (pow_dvd_pow p <| succ_le_iff.2 hk).trans pow_padicValNat_dvd, hn⟩
@@ -663,6 +663,6 @@ theorem padicValInt.mul {a b : ℤ} (ha : a ≠ 0) (hb : b ≠ 0) :
 theorem padicValInt_mul_eq_succ (a : ℤ) (ha : a ≠ 0) :
     padicValInt p (a * p) = padicValInt p a + 1 := by
   rw [padicValInt.mul ha (Int.natCast_ne_zero.mpr hp.out.ne_zero)]
-  simp only [eq_self_iff_true, padicValInt.of_nat, padicValNat_self]
+  simp only [padicValInt.of_nat, padicValNat_self]
 
 end padicValInt
