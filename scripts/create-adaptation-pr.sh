@@ -127,14 +127,20 @@ echo
 echo "### [auto] checkout master and pull the latest changes"
 
 git fetch $MAIN_REMOTE master
-git checkout master
-git pull $MAIN_REMOTE master
+
+# Ensure local master branch exists and tracks $MAIN_REMOTE/master
+if git show-ref --verify --quiet refs/heads/master; then
+  git checkout master
+  git pull $MAIN_REMOTE master
+else
+  git checkout -b master $MAIN_REMOTE/master
+fi
 
 echo
 echo "### [auto] checkout 'bump/$BUMPVERSION' and merge the latest changes from '$MAIN_REMOTE/master'"
 
 git checkout "bump/$BUMPVERSION"
-git pull $MAIN_REMOTE "bump/$BUMPVERSION"
+git pull --no-rebase $MAIN_REMOTE "bump/$BUMPVERSION"
 git merge --no-edit $MAIN_REMOTE/master || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
@@ -275,7 +281,7 @@ echo
 echo "### [auto] checkout the 'nightly-testing' branch and merge the new branch into it"
 
 git checkout nightly-testing
-git pull $NIGHTLY_REMOTE nightly-testing
+git pull --no-rebase $NIGHTLY_REMOTE nightly-testing
 git merge --no-edit "bump/nightly-$NIGHTLYDATE" || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts

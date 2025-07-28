@@ -26,7 +26,8 @@ variable {f g : E → F} {p pf pg : FormalMultilinearSeries 𝕜 E F} {x : E} {r
 
 theorem hasFiniteFPowerSeriesOnBall_const {c : F} {e : E} :
     HasFiniteFPowerSeriesOnBall (fun _ => c) (constFormalMultilinearSeries 𝕜 E c) e 1 ⊤ :=
-  ⟨hasFPowerSeriesOnBall_const, fun n hn ↦ constFormalMultilinearSeries_apply (id hn : 0 < n).ne'⟩
+  ⟨hasFPowerSeriesOnBall_const,
+    fun _ hn ↦ constFormalMultilinearSeries_apply_of_nonzero (Nat.ne_zero_of_lt hn)⟩
 
 theorem hasFiniteFPowerSeriesAt_const {c : F} {e : E} :
     HasFiniteFPowerSeriesAt (fun _ => c) (constFormalMultilinearSeries 𝕜 E c) e 1 :=
