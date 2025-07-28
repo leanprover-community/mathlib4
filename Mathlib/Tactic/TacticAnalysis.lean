@@ -78,37 +78,83 @@ structure Config (α) where
   /-- Decides what to report to the user. -/
   tell (stx : Syntax) (original : List MVarId × Nat) (new : α × Nat) : Option MessageData
 
-def filterTactics {α} (config : Config α) (_stx : Syntax) (tree : InfoTree) : CommandElabM Unit := do
+def findTacticSeqs (stx : Syntax) (tree : InfoTree) : CommandElabM (Array (Array (ContextInfo × TacticInfo))) := do
+  let some enclosingRange := stx.getRange? | throw (Exception.error stx m!"operating on syntax without range")
   -- Turn the CommandElabM into a surrounding context for traversing the tree.
   let ctx ← read
   let state ← get
   let ctxInfo := { env := state.env, fileMap := ctx.fileMap, ngen := state.ngen }
-  let _ ← tree.visitM (ctx? := some ctxInfo)
-    (fun _ _ _ => pure true) -- TODO: skip if it doesn't match the range of `stx`.
-    (fun ctx i _c _cs => do
-      -- Should we add the current piece of syntax?
-      if let .ofTacticInfo i := i then
-        let stx := i.stx
-        -- This only works for 1 tactic, not a sequence.
-        let condition := config.trigger #[] stx
-        if condition == .accept then
-          if let [goal] := i.goalsBefore then -- TODO: support more than 1 goal. Probably by requiring all tests to succeed in a row
-            let old ← withHeartbeats <| ctx.runTactic i goal fun goal => do
-              try
-                Lean.Elab.runTactic goal stx
-              catch e =>
-                logWarningAt stx m!"original tactic '{stx}' failed: {e.toMessageData}"
-                return ([goal], {})
-            let new ← withHeartbeats <| ctx.runTactic i goal config.test
-            if let some msg := config.tell stx (old.1.1, old.2) new then
-              Linter.logLint linter.tactic_analysis stx msg)
+  let out ← tree.visitM (m := CommandElabM) (ctx? := some ctxInfo)
+    (fun _ i _ => do
+      if let some range := i.stx.getRange? then
+        pure <| enclosingRange.start <= range.start && range.stop <= enclosingRange.stop
+      else pure false)
+    (fun ctx i _c cs => do
+      let relevantChildren := (cs.filterMap id).toArray
+      let childTactics := relevantChildren.filterMap Prod.fst
+      let childSequences := (relevantChildren.map Prod.snd).flatten
+      let stx := i.stx
+      if let some (.original _ _ _ _) := stx.getHeadInfo? then
+        -- Punctuation: skip this.
+        if stx.getKind ∈ [`«;», `Lean.cdotTk, `«]», nullKind] then
+          return (none, childSequences)
+        -- Tactic modifiers: return the children unmodified.
+        if stx.getKind ∈ [``Lean.Parser.Tactic.withAnnotateState] then
+          return (childTactics[0]?, childSequences)
+        -- Tactic sequencing operators: collect all the child tactics into a new sequence.
+        if stx.getKind ∈ [``Lean.Parser.Tactic.tacticSeq, ``Lean.Parser.Tactic.tacticSeq1Indented, ``Lean.Parser.Term.byTactic] then
+          return (none, if childTactics.isEmpty then childSequences else childSequences.push childTactics)
+        if let .ofTacticInfo i := i then
+          /-
+          if !childTactics.isEmpty then
+            logInfoAt stx m!"at {i.stx.getKind}: discarding child tactics {childTactics.map fun i => i.2.stx.getKind}"
+          -/
+          return ((ctx, i), childSequences)
+        /-
+        if !childTactics.isEmpty then
+          logInfoAt stx m!"at {i.stx.getKind}: discarding child tactics {childTactics.map fun i => i.2.stx.getKind}"
+        -/
+        return (none, childSequences)
+      else
+        return (none, childSequences))
+  return (out.map Prod.snd).getD #[]
+
+def filterTactics {α} (config : Config α) (seq : Array (ContextInfo × TacticInfo)) : CommandElabM Unit := do
+  let mut acc := #[]
+  for (ctx, i) in seq do
+    acc := acc.push (ctx, i)
+    let stx := i.stx
+    match config.trigger #[] stx with
+    | .continue => pure ()
+    | .skip => acc := #[]
+    | .accept => do
+      if let some (ctx, i) := acc[0]? then
+        if let [goal] := i.goalsBefore then -- TODO: support more than 1 goal. Probably by requiring all tests to succeed in a row
+          let old ← withHeartbeats <| ctx.runTactic i goal fun goal => do
+            try
+              Lean.Elab.runTactic goal stx
+            catch e =>
+              logWarningAt stx m!"original tactic '{stx}' failed: {e.toMessageData}"
+              return ([goal], {})
+          let new ← withHeartbeats <| ctx.runTactic i goal config.test
+          if let some msg := config.tell stx (old.1.1, old.2) new then
+            Linter.logLint linter.tactic_analysis stx msg
+      else
+        logWarningAt stx m!"internal error in tactic analysis: accepted an empty sequence."
 
 def filterTacticsList {α} (config : Config α) (stx : Syntax)
     (trees : PersistentArray InfoTree) : CommandElabM Unit :=
-  trees.forM (filterTactics config stx)
+  for i in trees do
+    let seqs ← findTacticSeqs stx i
+    -- logInfoAt stx m!"Sequences: {seqs.map (· |>.map (· |>.2.stx.getKind))}"
+    for seq in seqs do
+      filterTactics config seq
 
-def linarithToGrindConfig : Config (List MVarId × Term.State) where
-  trigger _ stx := if stx.getKind == `Mathlib.Tactic.linarith then .accept else .skip
+def grindReplacement : Config (List MVarId × Term.State) where
+  trigger _ stx := if
+      stx.getKind ∈
+        [`Mathlib.Tactic.linarith, `Lean.Parser.Tactic.omega, `Mathlib.Tactic.RingNF.ring]
+    then .accept else .skip
   test goal := withOptions (fun opts => opts.set `grind.warning false) do
     let tac ← `(tactic| grind)
     try
@@ -116,11 +162,13 @@ def linarithToGrindConfig : Config (List MVarId × Term.State) where
     catch _ =>
       return ([goal], {}) -- Failure is not an issue here.
   tell stx old new :=
-    if new.1.1 == [] then
-      if old.2 * 2 > new.2 then
-        m!"'{stx}' can be replaced with 'grind'"
-      else
+    if new.1.1 != [] then
+      m!"'grind' failed where '{stx}' succeeded"
+    /-
+    else
+      if old.2 * 2 < new.2 then
         m!"'grind' is slower than '{stx}': {new.2 / 1000} versus {old.2 / 1000} heartbeats"
+    -/
     else none
 
 /-- A tactic analysis framework.
@@ -150,7 +198,7 @@ def tactic_analysis : Linter where run := withSetOptionIn fun stx => do
     | return
   -/
   let trees ← getInfoTrees
-  filterTacticsList linarithToGrindConfig stx trees
+  filterTacticsList grindReplacement stx trees
 
 initialize addLinter tactic_analysis
 
