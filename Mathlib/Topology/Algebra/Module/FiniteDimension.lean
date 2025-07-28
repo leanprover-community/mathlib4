@@ -9,6 +9,7 @@ import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 import Mathlib.RingTheory.LocalRing.Basic
 import Mathlib.Topology.Algebra.Module.Determinant
 import Mathlib.Topology.Algebra.Module.Simple
+import Mathlib.Topology.Algebra.SeparationQuotient.FiniteDimensional
 
 /-!
 # Finite dimensional topological vector spaces over complete fields
@@ -555,9 +556,13 @@ locally compact, then `L` is locally compact.
 This is not an instance because `K` cannot be inferred. -/
 theorem LocallyCompactSpace.of_finiteDimensional_of_complete (K L : Type*)
     [NontriviallyNormedField K] [CompleteSpace K] [LocallyCompactSpace K]
-    [AddCommGroup L] [TopologicalSpace L] [IsTopologicalAddGroup L] [T2Space L]
+    [AddCommGroup L] [TopologicalSpace L] [IsTopologicalAddGroup L]
     [Module K L] [ContinuousSMul K L] [FiniteDimensional K L] :
-    LocallyCompactSpace L := by
-  obtain ⟨s, ⟨b⟩⟩ := Basis.exists_basis K L
-  haveI := FiniteDimensional.fintypeBasisIndex b
-  exact b.equivFun.toContinuousLinearEquiv.toHomeomorph.isOpenEmbedding.locallyCompactSpace
+    LocallyCompactSpace L :=
+  -- Reduce to `SeparationQuotient L`, which is a `T2Space`.
+  suffices LocallyCompactSpace (SeparationQuotient L) from
+    SeparationQuotient.isInducing_mk.locallyCompactSpace <|
+      SeparationQuotient.range_mk (X := L) ▸ isClosed_univ.isLocallyClosed
+  let ⟨_, ⟨b⟩⟩ := Basis.exists_basis K (SeparationQuotient L)
+  have := FiniteDimensional.fintypeBasisIndex b
+  b.equivFun.toContinuousLinearEquiv.toHomeomorph.isOpenEmbedding.locallyCompactSpace
