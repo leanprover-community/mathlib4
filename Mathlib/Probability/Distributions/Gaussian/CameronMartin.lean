@@ -242,13 +242,6 @@ lemma _root_.ContinuousLinearMap.memLp_two {E : Type*}
     {μ : Measure E} [HasTwoMoments μ] (L : Dual ℝ E) :
     MemLp L 2 μ := L.memLp memLp_two_id
 
--- added in another PR
-lemma covarianceBilin_apply' [IsFiniteMeasure μ] (h : MemLp id 2 μ) (L₁ L₂ : Dual ℝ E) :
-    covarianceBilin μ L₁ L₂ = ∫ x, L₁ (x - μ[id]) * L₂ (x - μ[id]) ∂μ := by
-  rw [covarianceBilin_apply h]
-  have hL (L : Dual ℝ E) : μ[L] = L (∫ x, x ∂μ) := L.integral_comp_comm (h.integrable (by simp))
-  simp [← hL]
-
 section centeredToLp
 
 /-- The Bochner integral as a continuous linear map from the dual to `ℝ`.

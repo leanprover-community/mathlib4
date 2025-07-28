@@ -89,23 +89,6 @@ lemma StrictMono.exists_between_of_tendsto_atTop {β : Type*} [LinearOrder β] {
   simp only [not_le] at h' hx
   exact ⟨Nat.find h - 1, h' _ (by simp [hx]), by simp [Nat.find_spec h, hx]⟩
 
-lemma Summable.tsum_ofReal_lt_top {ι : Type*} {f : ι → ℝ} (hf : Summable f) :
-    ∑' i, .ofReal (f i) < ∞ := by
-  unfold ENNReal.ofReal
-  rw [lt_top_iff_ne_top, ENNReal.tsum_coe_ne_top_iff_summable]
-  exact hf.toNNReal
-
-lemma Summable.tsum_ofReal_ne_top {ι : Type*} {f : ι → ℝ} (hf : Summable f) :
-    ∑' i, .ofReal (f i) ≠ ∞ := hf.tsum_ofReal_lt_top.ne
-
-lemma Real.summable_exp_nat_mul_of_ge {c : ℝ} (hc : c < 0) {f : ℕ → ℝ} (hf : ∀ i, i ≤ f i) :
-    Summable fun i : ℕ ↦ rexp (c * f i) := by
-  refine Summable.of_nonneg_of_le (fun _ ↦ by positivity) ?_ (Real.summable_exp_nat_mul_iff.mpr hc)
-  intro i
-  refine Real.exp_monotone ?_
-  conv_rhs => rw [mul_comm]
-  exact mul_le_mul_of_nonpos_left (hf i) hc.le
-
 lemma inv_sqrt_two_sub_one : (√2 - 1)⁻¹ = √2 + 1 := by
   rw [← one_div, div_eq_iff (sub_ne_zero_of_ne (by simp))]
   ring_nf
