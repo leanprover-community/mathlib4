@@ -167,12 +167,7 @@ theorem exists_disjoint_subfamily_covering_enlargement_closedBall
   · exact ⟨∅, Subset.refl _, pairwiseDisjoint_empty, by simp⟩
   by_cases ht : ∀ a ∈ t, r a < 0
   · exact ⟨t, Subset.rfl, fun a ha b _ _ => by
-      #adaptation_note /-- nightly-2024-03-16
-      Previously `Function.onFun` unfolded in the following `simp only`,
-      but now needs a separate `rw`.
-      This may be a bug: a no import minimization may be required. -/
-      rw [Function.onFun]
-      simp only [closedBall_eq_empty.2 (ht a ha), empty_disjoint],
+      simp only [closedBall_eq_empty.2 (ht a ha), empty_disjoint, Function.onFun],
       fun a ha => ⟨a, ha, by simp only [closedBall_eq_empty.2 (ht a ha), empty_subset]⟩⟩
   push_neg at ht
   let t' := { a ∈ t | 0 ≤ r a }

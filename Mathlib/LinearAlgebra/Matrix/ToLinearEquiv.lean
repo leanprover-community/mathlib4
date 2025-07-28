@@ -30,6 +30,8 @@ matrix, linear_equiv, determinant, inverse
 
 -/
 
+open Module
+
 variable {n : Type*} [Fintype n]
 
 namespace Matrix

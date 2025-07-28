@@ -68,7 +68,7 @@ linear_map, matrix, linear_equiv, diagonal, det, trace
 
 noncomputable section
 
-open LinearMap Matrix Set Submodule
+open LinearMap Matrix Module Set Submodule
 
 section ToMatrixRight
 
@@ -938,7 +938,7 @@ def algEquivMatrix [Fintype n] (h : Basis n R M) : Module.End R M ≃ₐ[R] Matr
 
 end
 
-namespace Basis
+namespace Module.Basis
 
 variable {R M M₁ M₂ ι ι₁ ι₂ : Type*} [CommSemiring R]
 variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
@@ -983,7 +983,7 @@ where `(i, j)` indexes the linear map that sends `b j` to `b i`
 and sends all other basis vectors to `0`. -/
 @[simps! -isSimp repr_apply repr_symm_apply]
 noncomputable
-abbrev _root_.Basis.end (b : Basis ι R M) : Basis (ι × ι) R (Module.End R M) :=
+abbrev «end» (b : Basis ι R M) : Basis (ι × ι) R (Module.End R M) :=
   b.linearMap b
 
 attribute [simp] end_repr_apply
@@ -994,7 +994,7 @@ lemma end_apply (ij : ι × ι) : (b.end ij) = (Matrix.toLin b b) (Matrix.stdBas
 lemma end_apply_apply (ij : ι × ι) (k : ι) : (b.end ij) (b k) = if ij.2 = k then b ij.1 else 0 :=
   linearMap_apply_apply b b ij k
 
-end Basis
+end Module.Basis
 
 section
 

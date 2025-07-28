@@ -12,11 +12,11 @@ This file defines the basis of an opposite space and shows
 that the opposite space is finite-dimensional and free when the original space is.
 -/
 
+open Module MulOpposite
+
 variable {R H : Type*}
 
-namespace Basis
-
-open MulOpposite
+namespace Module.Basis
 
 variable {ι : Type*} [Semiring R] [AddCommMonoid H] [Module R H]
 
@@ -39,7 +39,7 @@ theorem repr_unop_eq_mulOpposite_repr (b : Basis ι R H) (x : Hᵐᵒᵖ) :
 theorem mulOpposite_repr_op (b : Basis ι R H) (x : H) :
     b.mulOpposite.repr (op x) = b.repr x := rfl
 
-end Basis
+end Module.Basis
 
 namespace MulOpposite
 

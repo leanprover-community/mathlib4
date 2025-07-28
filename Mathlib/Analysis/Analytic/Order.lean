@@ -242,7 +242,7 @@ lemma analyticOrderAt_add_of_ne (hfg : analyticOrderAt f z₀ ≠ analyticOrderA
 alias AnalyticAt.order_add_of_order_ne_order := analyticOrderAt_add_of_ne
 
 lemma analyticOrderAt_smul_eq_top_of_left {f : 𝕜 → 𝕜} (hf : analyticOrderAt f z₀ = ⊤) :
-   analyticOrderAt (f • g) z₀ = ⊤ := by
+     analyticOrderAt (f • g) z₀ = ⊤ := by
   rw [analyticOrderAt_eq_top, eventually_nhds_iff] at *
   obtain ⟨t, h₁t, h₂t, h₃t⟩ := hf
   exact ⟨t, fun y hy ↦ by simp [h₁t y hy], h₂t, h₃t⟩

@@ -17,7 +17,7 @@ import Mathlib.Order.Defs.Unbundled
 
 open Function
 
-universe u v w
+universe u v w x
 
 namespace Function
 
@@ -716,6 +716,27 @@ theorem extend_apply' (g : α → γ) (e' : β → γ) (b : β) (hb : ¬∃ a, f
   classical
   simp [Function.extend_def, hb]
 
+@[simp]
+theorem extend_id (g : α → γ) (e' : α → γ) :
+    extend id g e' = g :=
+  funext <| injective_id.extend_apply g _
+
+theorem Injective.extend_comp {α₁ α₂ α₃ : Sort*} {f₁₂ : α₁ → α₂} (h₁₂ : Function.Injective f₁₂)
+    {f₂₃ : α₂ → α₃} (h₂₃ : Function.Injective f₂₃) (g : α₁ → γ) (e' : α₃ → γ) :
+    extend (f₂₃ ∘ f₁₂) g e' = extend f₂₃ (extend f₁₂ g (e' ∘ f₂₃)) e' := by
+  ext a
+  by_cases h₃ : ∃ b, f₂₃ b = a
+  · obtain ⟨b, rfl⟩ := h₃
+    rw [Injective.extend_apply h₂₃]
+    by_cases h₂ : ∃ c, f₁₂ c = b
+    · obtain ⟨c, rfl⟩ := h₂
+      rw [h₁₂.extend_apply]
+      exact (h₂₃.comp h₁₂).extend_apply _ _ _
+    · rw [extend_apply' _ _ _ h₂, extend_apply', comp_apply]
+      exact fun h ↦ h₂ (Exists.casesOn h fun c hc ↦ Exists.intro c (h₂₃ hc))
+  · rw [extend_apply' _ _ _ h₃, extend_apply']
+    exact fun h ↦ h₃ (Exists.casesOn h fun c hc ↦ Exists.intro (f₁₂ c) (hc))
+
 lemma factorsThrough_iff (g : α → γ) [Nonempty γ] : g.FactorsThrough f ↔ ∃ (e : β → γ), g = e ∘ f :=
   ⟨fun hf => ⟨extend f g (const β (Classical.arbitrary γ)),
       funext (fun x => by simp only [comp_apply, hf.extend_apply])⟩,
@@ -746,7 +767,7 @@ theorem extend_comp (hf : Injective f) (g : α → γ) (e' : β → γ) : extend
 
 theorem Injective.surjective_comp_right' (hf : Injective f) (g₀ : β → γ) :
     Surjective fun g : β → γ ↦ g ∘ f :=
-  fun g ↦ ⟨extend f g g₀, extend_comp hf _ _⟩
+  fun g ↦ ⟨extend f g g₀, Function.extend_comp hf _ _⟩
 
 theorem Injective.surjective_comp_right [Nonempty γ] (hf : Injective f) :
     Surjective fun g : β → γ ↦ g ∘ f :=
@@ -1046,9 +1067,9 @@ theorem InvImage.equivalence {α : Sort u} {β : Sort v} (r : β → β → Prop
   ⟨fun _ ↦ h.1 _, h.symm, h.trans⟩
 
 instance {α β : Type*} {r : α → β → Prop} {x : α × β} [Decidable (r x.1 x.2)] :
-  Decidable (uncurry r x) :=
-‹Decidable _›
+    Decidable (uncurry r x) :=
+  ‹Decidable _›
 
 instance {α β : Type*} {r : α × β → Prop} {a : α} {b : β} [Decidable (r (a, b))] :
-  Decidable (curry r a b) :=
-‹Decidable _›
+    Decidable (curry r a b) :=
+  ‹Decidable _›
