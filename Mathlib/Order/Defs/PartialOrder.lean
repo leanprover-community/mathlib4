@@ -8,7 +8,7 @@ import Mathlib.Tactic.ExtendDoc
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.TypeStar
-import Mathlib.Tactic.ToAdditive
+import Mathlib.Tactic.ToDual
 
 /-!
 # Orders
@@ -35,27 +35,6 @@ section Preorder
 /-!
 ### Definition of `Preorder` and lemmas about types with a `Preorder`
 -/
-
-attribute [to_dual self (reorder := 3 4)] LE.le
-attribute [to_dual self (reorder := 3 4)] LT.lt
-attribute [to_dual self (reorder := 3 4)] GE.ge
-attribute [to_dual self (reorder := 3 4)] GT.gt
-
-attribute [to_dual DecidableGT "`DecidableGT` is equivalent to `DecidableLT`."] DecidableLT
-attribute [to_dual DecidableGE "`DecidableGE` is equivalent to `DecidableLE`."] DecidableLE
-
--- Core lemmas that need to_dual tags
-
-set_option linter.existingAttributeWarning false in
-attribute [to_dual self (reorder := 3 4)] ge_iff_le
-
-set_option linter.existingAttributeWarning false in
-attribute [to_dual self (reorder := 3 4)] gt_iff_lt
-
-attribute [to_dual le_of_eq_of_le''] le_of_eq_of_le
-attribute [to_dual le_of_le_of_eq''] le_of_le_of_eq
-attribute [to_dual lt_of_eq_of_lt''] lt_of_eq_of_lt
-attribute [to_dual lt_of_lt_of_eq''] lt_of_lt_of_eq
 
 /-- A preorder is a reflexive, transitive relation `≤` with `a < b` defined in the obvious way. -/
 class Preorder (α : Type*) extends LE α, LT α where

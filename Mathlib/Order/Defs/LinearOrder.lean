@@ -26,17 +26,12 @@ section LinearOrder
 ### Definition of `LinearOrder` and lemmas about types with a linear order
 -/
 
--- defined in core
-attribute [to_dual existing] Min
-attribute [to_dual existing gt] Ordering.lt
-
 /-- Default definition of `max`. -/
 def maxDefault [LE α] [DecidableLE α] (a b : α) :=
   if a ≤ b then b else a
 
 /-- Default definition of `min`. -/
-@[to_dual existing]
-def minDefault [LE α] [DecidableGE α] (a b : α) :=
+def minDefault [LE α] [DecidableLE α] (a b : α) :=
   if a ≤ b then a else b
 
 /-- This attempts to prove that a given instance of `compare` is equal to `compareOfLessAndEq` by
@@ -243,7 +238,6 @@ lemma compare_lt_iff_lt : compare a b = .lt ↔ a < b := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
   split_ifs <;> simp only [*, lt_irrefl]
 
-@[to_dual existing compare_lt_iff_lt]
 lemma compare_gt_iff_gt : compare a b = .gt ↔ b < a := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
   split_ifs <;> simp only [*, lt_irrefl, not_lt_of_gt]
@@ -264,7 +258,6 @@ lemma compare_le_iff_le : compare a b ≠ .gt ↔ a ≤ b := by
   · exact le_of_eq <| compare_eq_iff_eq.1 h
   · exact compare_gt_iff_gt.1 h
 
-@[to_dual existing compare_le_iff_le]
 lemma compare_ge_iff_ge : compare a b ≠ .lt ↔ b ≤ a := by
   cases h : compare a b <;> simp
   · exact compare_lt_iff_lt.1 h

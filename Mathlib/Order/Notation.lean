@@ -7,7 +7,7 @@ import Qq
 import Mathlib.Lean.PrettyPrinter.Delaborator
 import Mathlib.Tactic.TypeStar
 import Mathlib.Tactic.Simps.NotationClass
-import Mathlib.Tactic.ToAdditive
+import Mathlib.Tactic.ToDual
 
 /-!
 # Notation classes for lattice operations
@@ -173,7 +173,7 @@ class Top (α : Type*) where
   top : α
 
 /-- Typeclass for the `⊥` (`\bot`) notation -/
-@[notation_class, ext, to_dual existing]
+@[notation_class, ext, to_dual]
 class Bot (α : Type*) where
   /-- The bot (`⊥`, `\bot`) element -/
   bot : α
