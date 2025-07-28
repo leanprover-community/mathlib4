@@ -3,6 +3,8 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Etienne Marion
 -/
+import Mathlib.MeasureTheory.Function.LpSeminorm.Prod
+import Mathlib.MeasureTheory.Integral.Prod
 import Mathlib.Probability.Moments.Variance
 
 /-!
@@ -113,6 +115,19 @@ lemma covariance_add_right [IsFiniteMeasure μ]
     cov[X, Y + Z; μ] = cov[X, Y; μ] + cov[X, Z; μ] := by
   rw [covariance_comm, covariance_add_left hY hZ hX, covariance_comm X, covariance_comm Z]
 
+lemma variance_add [IsFiniteMeasure μ] (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
+    Var[X + Y; μ] = Var[X; μ] + 2 * cov[X, Y; μ] + Var[Y; μ] := by
+  rw [← covariance_self, covariance_add_left hX hY (hX.add hY), covariance_add_right hX hX hY,
+    covariance_add_right hY hX hY, covariance_self, covariance_self, covariance_comm]
+  · ring
+  · exact hY.aemeasurable
+  · exact hX.aemeasurable
+  · exact hX.aemeasurable.add hY.aemeasurable
+
+lemma variance_fun_add [IsFiniteMeasure μ] (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
+    Var[fun ω ↦ X ω + Y ω; μ] = Var[X; μ] + 2 * cov[X, Y; μ] + Var[Y; μ] :=
+  variance_add hX hY
+
 lemma covariance_smul_left (c : ℝ) : cov[c • X, Y; μ] = c * cov[X, Y; μ] := by
   simp_rw [covariance, Pi.smul_apply, smul_eq_mul, ← integral_const_mul, ← mul_assoc, mul_sub,
     integral_const_mul]
@@ -178,12 +193,8 @@ lemma covariance_const_sub_right [IsProbabilityMeasure μ] (hY : Integrable Y μ
 
 lemma variance_sub [IsFiniteMeasure μ] (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
     Var[X - Y; μ] = Var[X; μ] - 2 * cov[X, Y; μ] + Var[Y; μ] := by
-  rw [← covariance_self, covariance_sub_left hX hY (hX.sub hY), covariance_sub_right hX hX hY,
-    covariance_sub_right hY hX hY, covariance_self, covariance_self, covariance_comm]
-  · ring
-  · exact hY.aemeasurable
-  · exact hX.aemeasurable
-  · exact hX.aemeasurable.sub hY.aemeasurable
+  rw [sub_eq_add_neg, variance_add hX hY.neg, variance_neg, covariance_neg_right]
+  ring
 
 lemma variance_fun_sub [IsFiniteMeasure μ] (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
     Var[fun ω ↦ X ω - Y ω; μ] = Var[X; μ] - 2 * cov[X, Y; μ] + Var[Y; μ] :=
@@ -311,5 +322,47 @@ lemma covariance_map_fun {Z : Ω' → Ω} (hX : AEStronglyMeasurable X (μ.map Z
   covariance_map hX hY hZ
 
 end Map
+
+section Prod
+
+variable {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {ν : Measure Ω'}
+  [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
+  {X : Ω → ℝ} {Y : Ω' → ℝ}
+
+lemma covariance_fst_snd_prod (hfμ : MemLp X 2 μ) (hgν : MemLp Y 2 ν) :
+    cov[fun x ↦ X x.1, fun x ↦ Y x.2; μ.prod ν] = 0 := by
+  have h_map1 : (μ.prod ν).map (fun x ↦ x.1) = μ := by simp
+  rw [covariance, integral_prod]
+  swap
+  · exact MemLp.integrable_mul ((hfμ.comp_fst _).sub (memLp_const _))
+      ((hgν.comp_snd _).sub (memLp_const _))
+  simp only
+  simp_rw [integral_const_mul, integral_mul_const]
+  suffices ∫ a, X a - ∫ x, X x.1 ∂μ.prod ν ∂μ = 0 by simp [this]
+  rw [integral_sub (hfμ.integrable (by simp)) (integrable_const _)]
+  simp only [integral_const, measureReal_univ_eq_one, smul_eq_mul, one_mul]
+  nth_rw 1 [← h_map1]
+  rw [integral_map (by fun_prop)]
+  · ring
+  · simp only [Measure.map_fst_prod, measure_univ, one_smul]
+    exact hfμ.aestronglyMeasurable
+
+lemma variance_add_prod (hfμ : MemLp X 2 μ) (hgν : MemLp Y 2 ν) :
+    Var[fun x ↦ X x.1 + Y x.2; μ.prod ν] = Var[X; μ] + Var[Y; ν] := by
+  rw [variance_fun_add (hfμ.comp_fst ν) (hgν.comp_snd μ)]
+  simp only [covariance_fst_snd_prod hfμ hgν, mul_zero, add_zero]
+  have h_map1 : (μ.prod ν).map (fun x ↦ x.1) = μ := by simp
+  have h_map2 : (μ.prod ν).map (fun x ↦ x.2) = ν := by simp
+  conv_rhs => rw [← h_map1]
+              rhs
+              rw [← h_map2]
+  rw [variance_map _ (by fun_prop), variance_map _ (by fun_prop)]
+  · rfl
+  · simp only [Measure.map_snd_prod, measure_univ, one_smul]
+    exact hgν.aestronglyMeasurable.aemeasurable
+  · simp only [Measure.map_fst_prod, measure_univ, one_smul]
+    exact hfμ.aestronglyMeasurable.aemeasurable
+
+end Prod
 
 end ProbabilityTheory
