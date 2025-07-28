@@ -310,7 +310,7 @@ instance {R : CommRingCat} [IsNoetherianRing R] :
     IsNoetherian (Spec R) where
 
 instance {R} [CommRing R] [IsNoetherianRing R] :
-    IsNoetherian (Spec (.of R)) := by
+    IsNoetherian Spec(R) := by
   suffices IsNoetherianRing (CommRingCat.of R) by infer_instance
   assumption
 

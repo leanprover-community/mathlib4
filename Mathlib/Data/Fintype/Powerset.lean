@@ -40,7 +40,7 @@ lemma mem_powersetCard_univ : s ∈ powersetCard k (univ : Finset α) ↔ #s = k
 variable (α)
 
 @[simp] lemma univ_filter_card_eq (k : ℕ) :
-   ({s | #s = k} : Finset (Finset α)) = univ.powersetCard k := by ext; simp
+    ({s | #s = k} : Finset (Finset α)) = univ.powersetCard k := by ext; simp
 
 end Finset
 

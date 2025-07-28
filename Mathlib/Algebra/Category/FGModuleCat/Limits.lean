@@ -4,11 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.FGModuleCat.Basic
+import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.Algebra.Category.ModuleCat.Limits
 import Mathlib.Algebra.Category.ModuleCat.Products
-import Mathlib.Algebra.Category.ModuleCat.EpiMono
-import Mathlib.CategoryTheory.Limits.Creates
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 
 /-!
@@ -33,21 +31,22 @@ open CategoryTheory Limits
 namespace FGModuleCat
 
 variable {J : Type} [SmallCategory J] [FinCategory J]
-variable {k : Type u} [Field k]
+variable {k : Type u} [Ring k]
 
-instance {J : Type} [Finite J] (Z : J → ModuleCat.{v} k) [∀ j, FiniteDimensional k (Z j)] :
-    FiniteDimensional k (∏ᶜ fun j => Z j : ModuleCat.{v} k) :=
-  haveI : FiniteDimensional k (ModuleCat.of k (∀ j, Z j)) := by unfold ModuleCat.of; infer_instance
-  FiniteDimensional.of_injective (ModuleCat.piIsoPi _).hom.hom
-    ((ModuleCat.mono_iff_injective _).1 (by infer_instance))
+instance {J : Type} [Finite J] (Z : J → ModuleCat.{v} k) [∀ j, Module.Finite k (Z j)] :
+    Module.Finite k (∏ᶜ fun j => Z j : ModuleCat.{v} k) :=
+  haveI : Module.Finite k (ModuleCat.of k (∀ j, Z j)) := by unfold ModuleCat.of; infer_instance
+  (Module.Finite.equiv_iff (ModuleCat.piIsoPi Z).toLinearEquiv).mpr inferInstance
 
-/-- Finite limits of finite dimensional vectors spaces are finite dimensional,
+variable [IsNoetherianRing k]
+
+/-- Finite limits of finite dimensional vector spaces are finite dimensional,
 because we can realise them as subobjects of a finite product. -/
 instance (F : J ⥤ FGModuleCat k) :
-    FiniteDimensional k (limit (F ⋙ forget₂ (FGModuleCat k) (ModuleCat.{v} k)) : ModuleCat.{v} k) :=
-  haveI : ∀ j, FiniteDimensional k ((F ⋙ forget₂ (FGModuleCat k) (ModuleCat.{v} k)).obj j) := by
-    intro j; change FiniteDimensional k (F.obj j); infer_instance
-  FiniteDimensional.of_injective
+    Module.Finite k (limit (F ⋙ forget₂ (FGModuleCat k) (ModuleCat.{v} k)) : ModuleCat.{v} k) :=
+  haveI : ∀ j, Module.Finite k ((F ⋙ forget₂ (FGModuleCat k) (ModuleCat.{v} k)).obj j) := by
+    intro j; change Module.Finite k (F.obj j); infer_instance
+  Module.Finite.of_injective
     (limitSubobjectProduct (F ⋙ forget₂ (FGModuleCat k) (ModuleCat.{v} k))).hom
     ((ModuleCat.mono_iff_injective _).1 inferInstance)
 
