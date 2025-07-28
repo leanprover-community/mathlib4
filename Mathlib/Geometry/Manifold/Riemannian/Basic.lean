@@ -28,6 +28,7 @@ By definition, it then satisfies the predicate `IsRiemannianManifold I M`.
 
 The following code block is the standard way to say "Let `M` be a `C^∞` Riemannian manifold".
 ```
+open scoped Bundle
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
