@@ -563,7 +563,7 @@ theorem IsIdempotentElem.mem_range_iff {p : M →ₗ[S] M} (hp : IsIdempotentEle
     x ∈ range p ↔ p x = x := hp.isProj_range.mem_iff_map_id
 
 open LinearMap in
-/-- Any idempotent linear operator is equal to the linear projection onto
+/-- An idempotent linear operator is equal to the linear projection onto
 its range along its kernel. -/
 theorem IsIdempotentElem.eq_isCompl_projection {T : E →ₗ[R] E} (hT : IsIdempotentElem T) :
     T = hT.isCompl.projection := by
