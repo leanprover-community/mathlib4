@@ -232,6 +232,22 @@ theorem ext_fun (h : ∀ a f, Measurable f → ∫⁻ b, f b ∂κ a = ∫⁻ b,
 theorem ext_fun_iff : κ = η ↔ ∀ a f, Measurable f → ∫⁻ b, f b ∂κ a = ∫⁻ b, f b ∂η a :=
   ⟨fun h a f _ => by rw [h], ext_fun⟩
 
+section IsEmptyNonempty
+
+instance [IsEmpty β] : Subsingleton (Kernel α β) where
+  allEq κ η := by ext a s; simp [Set.eq_empty_of_isEmpty s]
+
+instance [IsEmpty α] (κ : Kernel α β) : IsMarkovKernel κ where
+  isProbabilityMeasure := by simp
+
+lemma not_isMarkovKernel_zero [Nonempty α] : ¬ IsMarkovKernel (0 : Kernel α β) := by
+  by_contra h
+  let x : α := Nonempty.some inferInstance
+  have h1 : (0 : Measure β) .univ = 1 := (h.isProbabilityMeasure x).measure_univ
+  simp only [Measure.coe_zero, Pi.zero_apply, zero_ne_one] at h1
+
+end IsEmptyNonempty
+
 protected theorem measurable_coe (κ : Kernel α β) {s : Set β} (hs : MeasurableSet s) :
     Measurable fun a => κ a s :=
   (Measure.measurable_coe hs).comp κ.measurable

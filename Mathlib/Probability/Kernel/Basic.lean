@@ -213,6 +213,10 @@ lemma isSFiniteKernel_const [Nonempty α] {μβ : Measure β} :
     IsSFiniteKernel (const α μβ) ↔ SFinite μβ :=
   ⟨fun h ↦ h.sFinite (Classical.arbitrary α), fun _ ↦ inferInstance⟩
 
+instance [Nonempty β] : Nonempty {κ : Kernel α β // IsMarkovKernel κ} := by
+  simp only [nonempty_subtype]
+  exact ⟨Kernel.const _ (Measure.dirac Classical.ofNonempty), inferInstance⟩
+
 @[simp]
 theorem lintegral_const {f : β → ℝ≥0∞} {μ : Measure β} {a : α} :
     ∫⁻ x, f x ∂const α μ a = ∫⁻ x, f x ∂μ := by rw [const_apply]
