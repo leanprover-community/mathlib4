@@ -380,7 +380,7 @@ lemma functorEquiv_counitInv_functor_comp_snd_app (F : X ⥤ C₁) (x : X) :
 @[simps!]
 def functorEquivInverseWhiskeringIsoFst :
     (functorEquiv T L R B X).inverse ⋙
-      (Functor.whiskeringRight X _ _|>.obj <| T) ≅
+      (Functor.whiskeringRight X _ _|>.obj T) ≅
     CatCommSqOver.fstFunctor R B X :=
   Iso.inverseCompIso (.refl _)
 
@@ -390,7 +390,7 @@ def functorEquivInverseWhiskeringIsoFst :
 @[simps!]
 def functorEquivInverseWhiskeringIsoSnd :
     (functorEquiv T L R B X).inverse ⋙
-      (Functor.whiskeringRight X _ _|>.obj <| L) ≅
+      (Functor.whiskeringRight X _ _|>.obj L) ≅
     CatCommSqOver.sndFunctor R B X :=
   Iso.inverseCompIso (.refl _)
 
