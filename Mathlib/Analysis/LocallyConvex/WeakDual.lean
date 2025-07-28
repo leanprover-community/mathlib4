@@ -80,64 +80,95 @@ def toSeminormFamily (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : SeminormFamily �
 theorem toSeminormFamily_apply {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {x y} : (B.toSeminormFamily y) x = ‖B x y‖ :=
   rfl
 
-variable {ι : Type*}
+variable {ι 𝕜 E F : Type*}
 
-theorem functional_mem_span_iff {pl : ι → E →ₗ[𝕜] 𝕜} {s : Finset ι} {f : E →ₗ[𝕜] 𝕜} :
-    f ∈ Submodule.span 𝕜 (Set.range (pl ∘ Subtype.val : s → E →ₗ[𝕜] 𝕜)) ↔
-    ∃ (γ : NNReal), f.toSeminorm ≤ γ • (s.sup (LinearMap.toSeminorm ∘ pl)) := by
-  suffices f ∈ Submodule.span 𝕜 (Set.range (pl ∘ Subtype.val : s → E →ₗ[𝕜] 𝕜)) ↔
-    ∃ (γ : NNReal), ∀ (x : E), ‖f x‖ ≤ γ * ((s.sup (LinearMap.toSeminorm ∘ pl)) x) by exact
-      this
+open Topology TopologicalSpace
+open scoped NNReal
+
+section
+
+section TopologicalRing
+
+variable [Finite ι] [Field 𝕜] [t𝕜 : TopologicalSpace 𝕜] [IsTopologicalRing 𝕜]
+  [AddCommGroup E] [Module 𝕜 E] [T0Space 𝕜]
+
+theorem mem_span_iff_continuous_of_finite {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[𝕜] 𝕜) :
+    φ ∈ Submodule.span 𝕜 (Set.range f) ↔
+    Continuous[⨅ i, induced (f i) t𝕜, t𝕜] φ := by
+  let _ := ⨅ i, induced (f i) t𝕜
   constructor
-  · intro h
-    rw [← Set.image_univ, Finsupp.mem_span_image_iff_linearCombination] at h
-    obtain ⟨l, hl1, hl2⟩ := h
-    let γ := (l.sum fun i d ↦ (⟨‖d‖, norm_nonneg d⟩  : NNReal))
-    have ex : γ = (l.sum fun i d ↦ ‖d‖ ).toNNReal := by
-      rw [Finsupp.sum]
-      rw [Real.toNNReal_sum_of_nonneg]
-      aesop
-      exact fun i a ↦ norm_nonneg (l i)
-    use γ
-    intro x
-    rw [← hl2, Finsupp.linearCombination_apply, finsupp_sum_apply]
-    rw [ex]
-    simp only [Function.comp_apply, smul_apply, smul_eq_mul, Real.coe_toNNReal']
-    have eg : max (l.sum fun i d ↦ ‖d‖) 0 = l.sum fun i d ↦ ‖d‖ :=
-      max_eq_left (Finset.sum_nonneg (fun i a ↦ norm_nonneg (l i)))
-    rw [eg]
-    rw [(Finsupp.sum_mul ((s.sup (LinearMap.toSeminorm ∘ pl)) x) l)]
-    have e4' (i : s) : ((LinearMap.toSeminorm ∘ pl) i) x ≤ (s.sup (LinearMap.toSeminorm ∘ pl)) x :=
-      Seminorm.le_finset_sup_apply (Finset.coe_mem i)
-    have e4 (d : 𝕜) (i : s) :
-        ‖d * (pl i) x‖ ≤ ‖d‖ * ((s.sup (LinearMap.toSeminorm ∘ pl)) x) := by
-      rw [norm_mul]
-      exact mul_le_mul_of_nonneg_left (e4' i) (norm_nonneg d)
-    have e6 : (l.sum fun i d ↦ ‖d * (pl i) x‖) ≤
-        (l.sum fun i d ↦ (‖d‖ * ((s.sup (LinearMap.toSeminorm ∘ pl)) x))) :=
-      Finsupp.sum_le_sum (α := 𝕜) (β := ℝ) (fun i _ => e4 (l i) i)
-    apply le_trans (norm_sum_le _ _)
-    exact (le_trans e6
-      (Preorder.le_refl (l.sum fun i d ↦ ‖d‖ * (s.sup (LinearMap.toSeminorm ∘ pl)) x)))
-  · intro ⟨γ, hγ⟩
-    apply mem_span_of_iInf_ker_le_ker
-    intro x hx
-    rw [mem_ker, ← norm_le_zero_iff]
-    convert (hγ x)
-    rw [Submodule.mem_iInf, Subtype.forall] at hx
-    have e1 : (s.sup (LinearMap.toSeminorm ∘ pl)) x = 0 := by
-      rw [le_antisymm_iff]
-      constructor
-      · apply Seminorm.finset_sup_apply_le (Preorder.le_refl 0)
-        intro i his
-        rw [Function.comp_apply, toSeminorm_apply, norm_le_zero_iff]
-        exact hx _ his
-      · exact apply_nonneg (s.sup (LinearMap.toSeminorm ∘ pl)) x
-    simp_all only [mul_zero]
+  · exact Submodule.span_induction
+      (Set.forall_mem_range.mpr fun i ↦ continuous_iInf_dom continuous_induced_dom) continuous_zero
+      (fun _ _ _ _ ↦ .add) (fun c _ _ h ↦ h.const_smul c)
+  · intro φ_cont
+    refine mem_span_of_iInf_ker_le_ker fun x hx ↦ ?_
+    simp_rw [Submodule.mem_iInf, LinearMap.mem_ker] at hx ⊢
+    have : Inseparable x 0 := by
+      -- Maybe missing lemmas about `Inseparable`?
+      simp_rw [Inseparable, nhds_iInf, nhds_induced, hx, map_zero]
+    simpa only [map_zero] using (this.map φ_cont).eq
 
-example {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (s : Finset F) (f : E →ₗ[𝕜] 𝕜) :
-    f ∈ Submodule.span 𝕜 (Set.range (B.flip ∘ Subtype.val : s → E →ₗ[𝕜] 𝕜)) ↔
-    ∃ (γ : NNReal), f.toSeminorm ≤ γ • (s.sup B.toSeminormFamily) := functional_mem_span_iff
+end TopologicalRing
+
+section NontriviallyNormedField
+
+variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+
+theorem mem_span_iff_continuous {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[𝕜] 𝕜) :
+    φ ∈ Submodule.span 𝕜 (Set.range f) ↔
+    Continuous[⨅ i, induced (f i) inferInstance, inferInstance] φ := by
+  letI t𝕜 : TopologicalSpace 𝕜 := inferInstance
+  let t := ⨅ i, induced (f i) t𝕜
+  constructor
+  -- TODO: is it worth factoring the first implication with `mem_span_iff_continuous_of_finite`?
+  · exact Submodule.span_induction
+      (Set.forall_mem_range.mpr fun i ↦ continuous_iInf_dom continuous_induced_dom) continuous_zero
+      (fun _ _ _ _ ↦ .add) (fun c _ _ h ↦ h.const_smul c)
+  · intro φ_cont
+    obtain ⟨s, hs⟩ : ∃ s : Finset ι, Continuous[⨅ i : s, induced (f i) t𝕜, t𝕜] φ := by
+      -- The following should be golfable by using/developping better API
+      have : φ ⁻¹' (Metric.ball 0 1) ∈ 𝓝 0 :=
+        φ_cont.continuousAt.tendsto (map_zero φ ▸ Metric.ball_mem_nhds (0 : 𝕜) one_pos)
+      rw [nhds_iInf, Filter.mem_iInf_finite] at this
+      rcases this with ⟨s, hs⟩
+      use s
+      let t' := ⨅ i : s, induced (f i) t𝕜
+      have : IsTopologicalAddGroup E :=
+        topologicalAddGroup_iInf fun _ ↦ topologicalAddGroup_induced _
+      have : ContinuousSMul 𝕜 E :=
+        continuousSMul_iInf fun _ ↦ continuousSMul_induced _
+      rw [Seminorm.continuous_iff_continuous_comp (norm_withSeminorms 𝕜 𝕜), forall_const]
+      refine Seminorm.continuous (r := 1) ?_
+      rwa [nhds_iInf, Seminorm.ball_comp, ball_normSeminorm, iInf_subtype, map_zero]
+    rw [← LinearMap.mem_span_iff_continuous_of_finite] at hs
+    exact Submodule.span_mono (Set.range_comp_subset_range _ _) hs
+
+theorem mem_span_iff_bound [Nonempty ι] {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[𝕜] 𝕜) :
+    φ ∈ Submodule.span 𝕜 (Set.range f) ↔
+    ∃ s : Finset ι, ∃ c : ℝ≥0, (normSeminorm 𝕜 𝕜).comp φ ≤
+      c • (s.sup fun i ↦ (normSeminorm 𝕜 𝕜).comp (f i)) := by
+  letI t𝕜 : TopologicalSpace 𝕜 := inferInstance
+  let t := ⨅ i, induced (f i) t𝕜
+  have : IsTopologicalAddGroup E := topologicalAddGroup_iInf fun _ ↦ topologicalAddGroup_induced _
+  have : WithSeminorms (fun i ↦ (normSeminorm 𝕜 𝕜).comp (f i)) := by
+    simp_rw [SeminormFamily.withSeminorms_iff_nhds_eq_iInf, nhds_iInf, nhds_induced, map_zero,
+      ← comap_norm_nhds_zero (E := 𝕜), Filter.comap_comap]
+    rfl
+  rw [LinearMap.mem_span_iff_continuous]
+  constructor <;> intro H
+  · rw [Seminorm.continuous_iff_continuous_comp (norm_withSeminorms 𝕜 𝕜), forall_const] at H
+    rcases Seminorm.bound_of_continuous this _ H with ⟨s, C, -, hC⟩
+    exact ⟨s, C, hC⟩
+  · exact Seminorm.cont_withSeminorms_normedSpace _ this _ H
+
+example [AddCommGroup F] [Module 𝕜 F] {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (f : E →ₗ[𝕜] 𝕜) :
+    f ∈ Submodule.span 𝕜 (Set.range (B.flip)) ↔
+    ∃ s : Finset F, ∃ (γ : NNReal), f.toSeminorm ≤ γ • (s.sup B.toSeminormFamily) := by
+  apply mem_span_iff_bound f
+
+end NontriviallyNormedField
+
+end
 
 end LinearMap
 
