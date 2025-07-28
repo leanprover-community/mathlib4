@@ -57,8 +57,7 @@ section
 /-- Extensionality for arrows -/
 @[ext]
 theorem Arrow.ext (f g : α ⟹ β) :
-    (∀ i, f i = g i) → f = g := by
-  intro h; funext i; apply h
+    (∀ i, f i = g i) → f = g := funext
 
 instance Arrow.inhabited (α β : TypeVec n) [∀ i, Inhabited (β i)] : Inhabited (α ⟹ β) :=
   ⟨fun _ _ => default⟩
@@ -266,7 +265,7 @@ protected def casesNil {β : TypeVec 0 → Sort*} (f : β Fin2.elim0) : ∀ v, �
 protected def casesCons (n : ℕ) {β : TypeVec (n + 1) → Sort*}
     (f : ∀ (t) (v : TypeVec n), β (v ::: t)) :
     ∀ v, β v :=
-  fun v : TypeVec (n + 1) => cast (by simp) (f v.last v.drop)
+  fun v : TypeVec (n + 1) => cast (congr rfl <| append1_drop_last _) (f v.last v.drop)
 
 protected theorem casesNil_append1 {β : TypeVec 0 → Sort*} (f : β Fin2.elim0) :
     TypeVec.casesNil f Fin2.elim0 = f :=
@@ -574,6 +573,49 @@ theorem append_prod_appendFun {n} {α α' β β' : TypeVec.{u} n} {φ φ' ψ ψ'
   · rfl
 
 end Liftp'
+
+section ULift
+
+@[pp_with_univ]
+def uLift (α : TypeVec.{u} n) : TypeVec.{max u v} n :=
+  (_root_.ULift <| α ·)
+
+@[simp]
+theorem uLift_drop_comm
+    {α : TypeVec.{u} n.succ}
+    : α.uLift.drop = α.drop.uLift :=
+  funext (match n, · with | 0, _ | _+1, .fz | _+1, .fs _ => rfl)
+
+@[simp]
+theorem uLift_append1_ULift_uLift
+    {β : Type u}
+    {α : TypeVec.{u} n}
+    : (TypeVec.uLift.{u, v} α ::: ULift.{v, u} β) = (α ::: β).uLift :=
+  funext fun | .fz | .fs _ => rfl
+
+def Arrow.uLift_up {α : TypeVec.{u} n} : α ⟹ α.uLift := fun _ => ULift.up
+def Arrow.uLift_down {α : TypeVec.{u} n} : α.uLift ⟹ α := fun _ => ULift.down
+
+@[simp]
+theorem Arrow.uLift_up_down {α : TypeVec.{u} n}
+    : Arrow.uLift_up ⊚ (Arrow.uLift_down (α := α)) = id := Arrow.ext _ _ (fun _ => rfl)
+
+@[simp]
+theorem Arrow.uLift_down_up {α : TypeVec.{u} n}
+    : Arrow.uLift_down ⊚ (Arrow.uLift_up (α := α)) = id := Arrow.ext _ _ (fun _ => rfl)
+
+def Arrow.uLift_arrow
+    {α β : TypeVec n}
+    (h : TypeVec.uLift.{u, v} α ⟹ TypeVec.uLift.{w, x} β)
+    : α ⟹ β := fun i => (.up · |> h i |>.down)
+
+def Arrow.arrow_uLift
+    {α β : TypeVec n}
+    (h : α ⟹ β)
+    : TypeVec.uLift.{u, v} α ⟹ TypeVec.uLift.{w, x} β :=
+  fun | i, ⟨v⟩ => .up (h i v)
+
+end ULift
 
 @[simp]
 theorem dropFun_diag {α} : dropFun (@prod.diag (n + 1) α) = prod.diag := by
