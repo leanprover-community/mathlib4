@@ -91,7 +91,7 @@ the desending pochhammer function evaluated at the average divided by `(card α)
 
 This is an auxiliary definition for the **Kővári–Sós–Turán theorem**. -/
 private lemma le_card_aux [Nonempty V] [Nonempty α]
-    (h_avg : card α-1 ≤ (∑ v : V, G.degree v : ℝ)/card V) :
+    (h_avg : card α - 1 ≤ (∑ v : V, G.degree v : ℝ) / card V) :
     ((card V)*((descPochhammer ℝ (card α)).eval
         ((∑ v, G.degree v : ℝ)/card V)/(card α).factorial) : ℝ) ≤ #X := by
   simp_rw [card_filter _, sum_product_right, ← card_filter, powersetCard_eq_filter,
@@ -107,7 +107,7 @@ private lemma le_card_aux [Nonempty V] [Nonempty α]
 
 This is an auxiliary definition for the **Kővári–Sós–Turán theorem**. -/
 private lemma card_edgeFinset_le_bound [Nonempty V] [Nonempty α] [Nonempty β]
-    (h_avg : card α-1 ≤ (∑ v : V, G.degree v : ℝ) / card V)
+    (h_avg : card α - 1 ≤ (∑ v : V, G.degree v : ℝ) / card V)
     (h_free : (completeBipartiteGraph α β).Free G) :
     #G.edgeFinset ≤ bound (card V) (card α) (card β) := by
   have h_avg_sub_nonneg : 0 ≤ (2*#G.edgeFinset/card V-card α+1 : ℝ) := by
