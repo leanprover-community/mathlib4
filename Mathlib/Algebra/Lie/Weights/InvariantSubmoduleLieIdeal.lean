@@ -33,8 +33,6 @@ open IsKilling (sl2SubalgebraOfRoot rootSystem)
 
 variable {H : LieSubalgebra K L} [H.IsCartanSubalgebra] [IsTriangularizable K H L]
 
-set_option maxHeartbeats 1000000 in
--- The proof involves extensive case analysis.
 /-- Constructs a Lie ideal from an invariant submodule of the dual space of a Cartan subalgebra.
 Given a submodule `q` of the dual space `Dual K H` that is invariant under all root reflections,
 this produces a Lie ideal by taking the supremum of all `sl₂` subalgebras corresponding to
@@ -94,7 +92,8 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
               obtain ⟨h, e, f, ht, he, hf⟩ := IsKilling.exists_isSl2Triple_of_weight_isNonZero α.2.2
               rw [LieAlgebra.IsKilling.mem_sl2SubalgebraOfRoot_iff α.2.2 ht he hf]
               have hx_χ_neg : x_χ ∈ genWeightSpace L (-α.1.toLinear) := by
-                rwa [← (add_eq_zero_iff_eq_neg.mp w_plus)]
+                rw [← (add_eq_zero_iff_eq_neg.mp w_plus)]
+                exact hx_χ
               obtain ⟨c, hc⟩ := (finrank_eq_one_iff_of_nonzero' ⟨f, hf⟩ (by simp [ht.f_ne_zero])).mp
                 (IsKilling.finrank_rootSpace_eq_one (-α.1) (by simpa using α.2.2)) ⟨x_χ, hx_χ_neg⟩
               exact ⟨0, c, 0, by simpa using hc.symm⟩
@@ -105,7 +104,8 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
               obtain ⟨h, e, f, ht, he, hf⟩ := IsKilling.exists_isSl2Triple_of_weight_isNonZero α.2.2
               rw [IsKilling.mem_sl2SubalgebraOfRoot_iff α.2.2 ht he hf]
               have hx_χ_pos : x_χ ∈ genWeightSpace L α.1.toLinear := by
-                rwa [← (sub_eq_zero.mp w_minus)]
+                rw [← (sub_eq_zero.mp w_minus)]
+                exact hx_χ
               obtain ⟨c, hc⟩ := (finrank_eq_one_iff_of_nonzero' ⟨e, he⟩ (by simp [ht.e_ne_zero])).mp
                 (IsKilling.finrank_rootSpace_eq_one α.1 α.2.2) ⟨x_χ, hx_χ_pos⟩
               exact ⟨c, 0, 0, by simpa using hc.symm⟩
