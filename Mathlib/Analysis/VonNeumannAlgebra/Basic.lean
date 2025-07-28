@@ -136,11 +136,31 @@ theorem commutant_commutant (S : VonNeumannAlgebra H) : S.commutant.commutant = 
 open ContinuousLinearMap in
 /-- An idempotent operator `e` is an element in the von Neumann algebra `S`
 if and only if `range e` and `ker e` are `S.commutant` invariant subspaces. -/
-theorem IsIdempotentElem.mem_iff {e : H →L[ℂ] H}
-    (h : IsIdempotentElem e) (S : VonNeumannAlgebra H) :
+theorem IsIdempotentElem.mem_iff {e : H →L[ℂ] H} (h : IsIdempotentElem e)
+    (S : VonNeumannAlgebra H) :
     e ∈ S ↔ ∀ y ∈ S.commutant,
     LinearMap.range e ∈ Module.End.invtSubmodule y
       ∧ LinearMap.ker e ∈ Module.End.invtSubmodule y := by
   conv_rhs => simp [← h.commute_iff, Commute.symm_iff (a := e), commute_iff_eq, ← mem_commutant_iff]
+
+open VonNeumannAlgebra ContinuousLinearMap in
+theorem IsStarProjection.mem_iff {e : H →L[ℂ] H} (h : IsStarProjection e)
+    (S : VonNeumannAlgebra H) :
+    e ∈ S ↔ ∀ y ∈ S.commutant, LinearMap.range e ∈ Module.End.invtSubmodule y := by
+  simp_rw [h.isIdempotentElem.mem_iff, h.isIdempotentElem.range_mem_invtSubmodule_iff,
+    h.isIdempotentElem.ker_mem_invtSubmodule_iff]
+  refine ⟨fun hh y hy => (hh y hy).1, fun hh y hy => ?_⟩
+  simp [hh y hy]
+  have hsa {a : selfAdjoint (H →L[ℂ] H)} (ha : ↑a ∈ S.commutant) : a ∘L e = e ∘L a := by
+    rw [← hh _ ha, ← star_inj]
+    simp_rw [star_eq_adjoint, adjoint_comp, ← star_eq_adjoint, selfAdjoint.star_val_eq,
+      h.isSelfAdjoint.star_eq, comp_assoc, hh _ ha]
+  have {a : H →L[ℂ] H} (ha : a ∈ S.commutant) :
+      ↑(realPart a) ∈ S.commutant ∧ ↑(imaginaryPart a) ∈ S.commutant :=
+    ⟨StarSubalgebra.smul_mem _ (add_mem ha (star_mem ha)) _,
+      StarSubalgebra.smul_mem _ (StarSubalgebra.smul_mem _ (sub_mem ha (star_mem ha)) _) _⟩
+  nth_rw 1 [← realPart_add_I_smul_imaginaryPart y]
+  simp_rw [add_comp, smul_comp, hsa (this hy).1, hsa (this hy).2,
+    ← comp_smul, ← comp_add, realPart_add_I_smul_imaginaryPart]
 
 end VonNeumannAlgebra
