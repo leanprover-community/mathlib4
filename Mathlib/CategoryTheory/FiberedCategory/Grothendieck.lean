@@ -22,7 +22,7 @@ Angelo Vistoli
 
 -/
 
-namespace CategoryTheory.Pseudofunctor.coGrothendieck
+namespace CategoryTheory.Pseudofunctor.CoGrothendieck
 
 open Functor Opposite Bicategory Fiber
 
@@ -121,4 +121,4 @@ noncomputable instance : HasFibers (forget F) where
   ι := ι F
   comp_const := comp_const F
 
-end CategoryTheory.Pseudofunctor.coGrothendieck
+end CategoryTheory.Pseudofunctor.CoGrothendieck
