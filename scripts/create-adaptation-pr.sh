@@ -140,8 +140,8 @@ echo
 echo "### [auto] checkout 'bump/$BUMPVERSION' and merge the latest changes from '$MAIN_REMOTE/master'"
 
 git checkout "bump/$BUMPVERSION"
-git pull $MAIN_REMOTE "bump/$BUMPVERSION"
-git merge --no-rebase --no-edit $MAIN_REMOTE/master || true # ignore error if there are conflicts
+git pull --no-rebase $MAIN_REMOTE "bump/$BUMPVERSION"
+git merge --no-edit $MAIN_REMOTE/master || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
@@ -186,7 +186,7 @@ echo
 echo "### [auto] create a new branch 'bump/nightly-$NIGHTLYDATE' and merge the latest changes from nightly-testing"
 
 git checkout -b "bump/nightly-$NIGHTLYDATE" || git checkout "bump/nightly-$NIGHTLYDATE"
-git merge --no-rebase --no-edit $NIGHTLYSHA || true # ignore error if there are conflicts
+git merge --no-edit $NIGHTLYSHA || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
@@ -281,8 +281,8 @@ echo
 echo "### [auto] checkout the 'nightly-testing' branch and merge the new branch into it"
 
 git checkout nightly-testing
-git pull $NIGHTLY_REMOTE nightly-testing
-git merge --no-rebase --no-edit "bump/nightly-$NIGHTLYDATE" || true # ignore error if there are conflicts
+git pull --no-rebase $NIGHTLY_REMOTE nightly-testing
+git merge --no-edit "bump/nightly-$NIGHTLYDATE" || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
