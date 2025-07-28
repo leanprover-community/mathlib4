@@ -32,7 +32,8 @@ whenever they exist.
 
 ## Todo
 
-Redefine the lattice classes `CompleteLattice`, `ConditionallyCompleteLattice`, and `OmegaCompleteLattice` so as to extend the `LawfulPreorder` typeclass.
+Redefine the lattice classes `CompleteLattice`, `ConditionallyCompleteLattice`, and
+`OmegaCompleteLattice` so as to extend the `LawfulPreorder` typeclass.
 -/
 
 variable {α : Type*}
@@ -47,7 +48,8 @@ bounds rather than arbitrary elements when a least upper bound exists.
 class LawfulSupPreorder (α) extends Preorder α, SupSet α where
   isLUB_sSup_of_exists_isLUB (s : Set α) : (∃ x, IsLUB s x) → IsLUB s (sSup s)
 
-/-- Defines `sSup` so as to return an arbitrary LUB when it exists, and a default element otherwise. -/
+/-- Defines `sSup` so as to return an arbitrary LUB when it exists, and a default element otherwise.
+-/
 open Classical in
 noncomputable def Preorder.toLawfulSupPreorder [Preorder α] [Inhabited α] :
     LawfulSupPreorder α where
@@ -67,8 +69,10 @@ bounds rather than arbitrary elements when a greatest lower bounds exists.
 class LawfulInfPreorder (α) extends Preorder α, InfSet α where
   isGLB_sInf_of_exists_isGLB (s : Set α) : (∃ x, IsGLB s x) → IsGLB s (sInf s)
 
+/-- Defines `sInf` so as to return an arbitrary GLB when it exists, and a default element otherwise.
+-/
 open Classical in
-noncomputable instance Preorder.toLawfulInfPreorder [Preorder α] [Inhabited α] :
+noncomputable def Preorder.toLawfulInfPreorder [Preorder α] [Inhabited α] :
     LawfulInfPreorder α where
   sInf s := if hs : ∃ x, IsGLB s x then Classical.choose hs else default
   isGLB_sInf_of_exists_isGLB s := by
@@ -81,6 +85,13 @@ A preorder with both lawful suprema and lawful infima.
 -/
 class LawfulPreorder (α) extends LawfulSupPreorder α, LawfulInfPreorder α
 
+/-- Defines `sSup` and `sInf` so as to return an arbitrary LUB and GLB when they exist, and a
+default element otherwise.
+-/
 open Classical in
-noncomputable instance Preorder.toLawfulPreorder [Preorder α] [Inhabited α] :
+noncomputable def Preorder.toLawfulPreorder [Preorder α] [Inhabited α] :
     LawfulPreorder α where
+  sInf := Preorder.toLawfulInfPreorder.sInf
+  sSup := Preorder.toLawfulSupPreorder.sSup
+  isGLB_sInf_of_exists_isGLB := Preorder.toLawfulInfPreorder.isGLB_sInf_of_exists_isGLB
+  isLUB_sSup_of_exists_isLUB := Preorder.toLawfulSupPreorder.isLUB_sSup_of_exists_isLUB
