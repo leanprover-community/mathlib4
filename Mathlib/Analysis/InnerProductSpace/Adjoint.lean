@@ -238,7 +238,7 @@ theorem norm_adjoint_comp_self (A : E →L[𝕜] F) :
           Real.sqrt_mul_self (norm_nonneg x)]
 
 /-- The C⋆-algebra instance when `𝕜 := ℂ` can be found in
-`Analysis.CStarAlgebra.ContinuousLinearMap`. -/
+`Analysis/CStarAlgebra/ContinuousLinearMap`. -/
 instance : CStarRing (E →L[𝕜] E) where
   norm_mul_self_le x := le_of_eq <| Eq.symm <| norm_adjoint_comp_self x
 
@@ -327,6 +327,32 @@ theorem isStarNormal_iff_norm_eq_adjoint :
     sub_eq_zero, ← sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _)]
   norm_cast
 
+/- TODO: As we have a more general result of this for elements in non-unital C⋆-algebras
+see (Analysis/CStarAlgebra/Projection), we will want to simplify the proof
+by using the complexification of an inner product space over `𝕜`. -/
+/-- An idempotent operator is self-adjoint iff it is normal. -/
+theorem IsIdempotentElem.isSelfAdjoint_iff_isStarNormal (hT : IsIdempotentElem T) :
+    IsSelfAdjoint T ↔ IsStarNormal T := by
+  refine ⟨fun h => by rw [isStarNormal_iff, h], fun h => ?_⟩
+  suffices T = star T * T from this ▸ IsSelfAdjoint.star_mul_self _
+  rw [← sub_eq_zero, ContinuousLinearMap.ext_iff]
+  simp_rw [zero_apply, ← norm_eq_zero (E := E)]
+  have :=
+    calc (∀ x : E, ‖(T - star T * T) x‖ = 0) ↔ ∀ x, ‖(adjoint (1 - T)) (T x)‖ = 0 := by
+          simp only [← star_eq_adjoint, star_sub, star_one, sub_apply, mul_apply]; rfl
+      _ ↔ ∀ x, ‖(1 - T) (T x)‖ = 0 := by
+          simp only [isStarNormal_iff_norm_eq_adjoint.mp h.one_sub]
+      _ ↔ ∀ x, ‖(T - T * T) x‖ = 0 := by simp
+      _ ↔ T - T * T = 0 := by simp only [norm_eq_zero, ContinuousLinearMap.ext_iff, zero_apply]
+      _ ↔ IsIdempotentElem T := by simp only [sub_eq_zero, IsIdempotentElem, eq_comm]
+  exact this.mpr hT
+
+/-- A continuous linear map is a star projection iff it is idempotent and normal. -/
+theorem isStarProjection_iff_isIdempotentElem_and_isStarNormal :
+    IsStarProjection T ↔ IsIdempotentElem T ∧ IsStarNormal T := by
+  rw [isStarProjection_iff, and_congr_right_iff]
+  exact fun h => IsIdempotentElem.isSelfAdjoint_iff_isStarNormal h
+
 open ContinuousLinearMap in
 /-- An idempotent operator `T` is self-adjoint iff `(range T)ᗮ = ker T`. -/
 theorem IsIdempotentElem.isSelfAdjoint_iff_orthogonal_range (h : IsIdempotentElem T) :
@@ -341,7 +367,7 @@ theorem IsIdempotentElem.isSelfAdjoint_iff_orthogonal_range (h : IsIdempotentEle
 
 open ContinuousLinearMap in
 /-- Star projection operators are equal iff their range are. -/
-theorem IsStarProjection.ext_iff {S T : E →L[𝕜] E}
+theorem IsStarProjection.ext_iff {S : E →L[𝕜] E}
     (hS : IsStarProjection S) (hT : IsStarProjection T) :
     S = T ↔ LinearMap.range S = LinearMap.range T := by
   refine ⟨fun h => h ▸ rfl, fun h => ?_⟩
@@ -561,18 +587,21 @@ theorem _root_.ContinuousLinearMap.isSelfAdjoint_toLinearMap_iff (T : E →L[�
     ContinuousLinearMap.toLinearMap_eq_iff_eq_toContinuousLinearMap]
   rfl
 
+theorem isStarProjection_toContinuousLinearMap_iff {T : E →ₗ[𝕜] E} :
+    have := FiniteDimensional.complete 𝕜 E
+    IsStarProjection (toContinuousLinearMap T) ↔ IsStarProjection T := by
+  simp [isStarProjection_iff, isSelfAdjoint_toContinuousLinearMap_iff, IsIdempotentElem,
+    ContinuousLinearMap.ext_iff, LinearMap.ext_iff, ← Module.End.mul_apply]
+
 open LinearMap in
 /-- Star projection operators are equal iff their range are. -/
 theorem IsStarProjection.ext_iff {S T : E →ₗ[𝕜] E}
     (hS : IsStarProjection S) (hT : IsStarProjection T) :
     S = T ↔ LinearMap.range S = LinearMap.range T := by
   have := FiniteDimensional.complete 𝕜 E
-  rw [← coe_toContinuousLinearMap S, ← coe_toContinuousLinearMap T,
-    ContinuousLinearMap.coe_inj]
-  refine ContinuousLinearMap.IsStarProjection.ext_iff ?_ ?_
-  all_goals
-    simp [isStarProjection_iff, ← ContinuousLinearMap.isSelfAdjoint_toLinearMap_iff, hS.1.eq, hS.2,
-      hT.1.eq, hT.2, IsIdempotentElem, ContinuousLinearMap.ext_iff, ← Module.End.mul_apply]
+  simpa using ContinuousLinearMap.IsStarProjection.ext_iff
+    (S.isStarProjection_toContinuousLinearMap_iff.mpr hS)
+    (T.isStarProjection_toContinuousLinearMap_iff.mpr hT)
 
 alias ⟨_, IsStarProjection.ext⟩ := IsStarProjection.ext_iff
 

@@ -173,9 +173,11 @@ theorem le_of_forall_le (H : ∀ c, c ≤ a → c ≤ b) : a ≤ b := H _ le_rfl
 
 @[deprecated (since := "2025-01-30")] alias le_of_forall_le' := le_of_forall_ge
 
-@[to_dual forall_le_iff_ge] -- TODO: name should be `forall_ge_iff_le`
+@[to_dual forall_ge_iff_le]
 theorem forall_le_iff_le : (∀ ⦃c⦄, c ≤ a → c ≤ b) ↔ a ≤ b :=
   ⟨le_of_forall_le, fun h _ hca ↦ le_trans hca h⟩
+
+@[deprecated (since := "2025-07-27")] alias forall_le_iff_ge := forall_ge_iff_le
 
 /-- monotonicity of `≤` with respect to `→` -/
 @[to_dual self (reorder := 3 4, 5 6, 7 8)]

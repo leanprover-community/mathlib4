@@ -143,11 +143,11 @@ lemma not_lt : ¬a < b ↔ b ≤ a := ⟨le_of_not_gt, not_lt_of_ge⟩
 @[to_dual self (reorder := 3 4), simp]
 lemma not_le : ¬a ≤ b ↔ b < a := lt_iff_not_ge.symm
 
-@[to_dual eq_or_lt_of_not_gt'] -- TODO: lemma name is wrong
-lemma eq_or_lt_of_not_gt (h : ¬a < b) : a = b ∨ b < a :=
+@[to_dual eq_or_lt_of_not_gt]
+lemma eq_or_gt_of_not_lt (h : ¬a < b) : a = b ∨ b < a :=
   if h₁ : a = b then Or.inl h₁ else Or.inr (lt_of_not_ge fun hge => h (lt_of_le_of_ne hge h₁))
 
-@[deprecated (since := "2025-05-11")] alias eq_or_lt_of_not_lt := eq_or_lt_of_not_gt
+@[deprecated (since := "2025-05-11")] alias eq_or_lt_of_not_lt := eq_or_gt_of_not_lt
 
 /-- Perform a case-split on the ordering of `x` and `y` in a decidable linear order. -/
 @[deprecated lt_trichotomy (since := "2025-04-21")]
