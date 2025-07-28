@@ -20,7 +20,7 @@ def testModulesForbiddenWindows : IO Unit := do
   assert!((← modulesForbiddenWindows opts #[`Com1.prn.Aux, `LPT.Aux]) == 2)
 
 /--
-error: module name 'Mathlib.Aux.Foo' contains component 'Aux', which is forbidden in Windows filenames.
+info: error: module name 'Mathlib.Aux.Foo' contains component 'Aux', which is forbidden in Windows filenames.
 error: module name 'Mathlib.Algebra.Con' contains component 'Con', which is forbidden in Windows filenames.
 error: module name 'Aux.Algebra.Con.Bar' contains components '[Aux, Con]', which is forbidden in Windows filenames.
 error: module name 'Com1.prn.Aux' contains components '[Com1, prn, Aux]', which is forbidden in Windows filenames.
