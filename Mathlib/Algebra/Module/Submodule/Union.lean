@@ -26,7 +26,7 @@ variable {ι K M : Type*} [Field K] [AddCommGroup M] [Module K M]
 lemma Submodule.iUnion_ssubset_of_forall_ne_top_of_card_lt (s : Finset ι) (p : ι → Submodule K M)
     (h₁ : ∀ i, p i ≠ ⊤) (h₂ : s.card < ENat.card K) :
     ⋃ i ∈ s, (p i : Set M) ⊂ univ := by
-  -- Following https://mathoverflow.net/a/14241/6801
+  -- Following https://mathoverflow.net/a/14241
   classical
   induction s using Finset.induction_on with
   | empty => simp
