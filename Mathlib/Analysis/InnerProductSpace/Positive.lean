@@ -386,3 +386,15 @@ theorem IsIdempotentElem.TFAE {p : E →L[𝕜] E} (hp : IsIdempotentElem p) :
   tfae_finish
 
 end ContinuousLinearMap
+
+namespace LinearMap
+
+/-- A star projection operator is positive. -/
+@[aesop 10% apply, grind →]
+theorem IsPositive.of_isStarProjection [FiniteDimensional 𝕜 E] {T : E →ₗ[𝕜] E}
+    (hT : IsStarProjection T) : T.IsPositive :=
+  have := FiniteDimensional.complete 𝕜 E
+  T.isPositive_toContinuousLinearMap_iff.mp (ContinuousLinearMap.IsPositive.of_isStarProjection
+    (isStarProjection_toContinuousLinearMap_iff.mpr hT))
+
+end LinearMap
