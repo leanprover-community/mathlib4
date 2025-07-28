@@ -496,7 +496,7 @@ theorem restrict_iUnion_le [Countable ι] {s : ι → Set α} :
     μ.restrict (⋃ i, s i) ≤ sum fun i => μ.restrict (s i) :=
   le_iff.2 fun t ht ↦ by simpa [ht, inter_iUnion] using measure_iUnion_le (t ∩ s ·)
 
-theorem restrict_biUnion_le {μ : Measure α} {s : ι → Set α} (T : Set ι) [hT : Countable T] :
+theorem restrict_biUnion_le {s : ι → Set α} (T : Set ι) [hT : Countable T] :
     μ.restrict (⋃ i ∈ T, s i) ≤ sum fun (i : T) => μ.restrict (s i) :=
   le_iff.2 fun t ht ↦ by simpa [ht, inter_iUnion] using measure_biUnion_le μ hT (t ∩ s ·)
 
