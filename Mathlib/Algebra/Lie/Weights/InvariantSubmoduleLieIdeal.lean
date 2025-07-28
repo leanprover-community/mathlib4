@@ -257,7 +257,6 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
                   exact this
                 rw [hi_val, hj_val] at h_pairing_eq
                 exact h_pairing_eq.symm
-              simp only [IsKilling.corootSubmodule] at hm_h
               obtain ⟨h_elem, hh_elem, hh_eq⟩ := hm_h
               have h_lie_eq_smul : ⁅(h_elem : L), x_χ⁆ = (χ.toLinear) h_elem • x_χ :=
                 LieAlgebra.IsKilling.lie_eq_smul_of_mem_rootSpace hx_χ h_elem
