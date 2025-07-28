@@ -43,9 +43,6 @@ open MulOpposite
 class Star (R : Type u) where
   star : R → R
 
--- https://github.com/leanprover/lean4/issues/2096
-compile_def% Star.star
-
 variable {R : Type u}
 
 export Star (star)
@@ -61,7 +58,7 @@ class StarMemClass (S R : Type*) [Star R] [SetLike S R] : Prop where
 
 export StarMemClass (star_mem)
 
-attribute [aesop safe apply (rule_sets := [SetLike])] star_mem
+attribute [aesop 90% (rule_sets := [SetLike])] star_mem
 
 namespace StarMemClass
 
@@ -92,6 +89,10 @@ lemma star_mem_iff {S : Type*} [SetLike S R] [InvolutiveStar R] [StarMemClass S 
 
 theorem star_injective [InvolutiveStar R] : Function.Injective (star : R → R) :=
   Function.Involutive.injective star_involutive
+
+@[aesop 5% (rule_sets := [SetLike!])]
+theorem mem_of_star_mem {S R : Type*} [InvolutiveStar R] [SetLike S R] [StarMemClass S R]
+    {s : S} {r : R} (hr : star r ∈ s) : r ∈ s := by rw [← star_star r]; exact star_mem hr
 
 @[simp]
 theorem star_inj [InvolutiveStar R] {x y : R} : star x = star y ↔ x = y :=

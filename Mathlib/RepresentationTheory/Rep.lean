@@ -197,12 +197,22 @@ theorem mono_iff_injective {A B : Rep k G} (f : A ⟶ B) : Mono f ↔ Function.I
   fun h => (forget₂ _ _).mono_of_mono_map ((ModuleCat.mono_iff_injective <|
     (forget₂ _ _).map f).2 h)⟩
 
+instance {A B : Rep k G} (f : A ⟶ B) [Mono f] : Mono f.hom :=
+  inferInstanceAs <| Mono ((forget₂ _ _).map f)
+
+instance {A B : Rep k G} (f : A ⟶ B) [Epi f] : Epi f.hom :=
+  inferInstanceAs <| Epi ((forget₂ _ _).map f)
+
 open MonoidalCategory in
 @[simp]
 theorem tensor_ρ {A B : Rep k G} : (A ⊗ B).ρ = A.ρ.tprod B.ρ := rfl
 
 @[simp]
-lemma res_obj_ρ {H : Type u} [Monoid H] (f : G →* H) (A : Rep k H) (g : G) :
+lemma res_obj_ρ {H : Type u} [Monoid H] (f : G →* H) (A : Rep k H) :
+    ρ ((Action.res _ f).obj A) = A.ρ.comp f := rfl
+
+@[simp]
+lemma coe_res_obj_ρ {H : Type u} [Monoid H] (f : G →* H) (A : Rep k H) (g : G) :
     DFunLike.coe (F := G →* (A →ₗ[k] A)) (ρ ((Action.res _ f).obj A)) g = A.ρ (f g) := rfl
 
 section Linearization
