@@ -28,7 +28,8 @@ Basic API for `orthogonalProjection` and `reflection` is developed.
 Next, the orthogonal projection is used to prove a series of more subtle lemmas about the
 orthogonal complement of complete subspaces of `E` (the orthogonal complement itself was
 defined in `Analysis.InnerProductSpace.Orthogonal`); the lemma
-`Submodule.sup_orthogonal_of_completeSpace`, stating that for a complete subspace `K` of `E` we have
+`Submodule.sup_orthogonal_of_hasOrthogonalProjection`,
+stating that for a subspace `K` of `E` such that `K` admits an orthogonal projection we have
 `K ⊔ Kᗮ = ⊤`, is a typical example.
 
 ## References
@@ -885,8 +886,9 @@ section Orthogonal
 
 namespace Submodule
 
-/-- If `K₁` is complete and contained in `K₂`, `K₁` and `K₁ᗮ ⊓ K₂` span `K₂`. -/
-theorem sup_orthogonal_inf_of_completeSpace {K₁ K₂ : Submodule 𝕜 E} (h : K₁ ≤ K₂)
+/-- If `K₁` admits an orthogonal projection and is contained in `K₂`,
+then `K₁` and `K₁ᗮ ⊓ K₂` span `K₂`. -/
+theorem sup_orthogonal_inf_of_hasOrthogonalProjection {K₁ K₂ : Submodule 𝕜 E} (h : K₁ ≤ K₂)
     [K₁.HasOrthogonalProjection] : K₁ ⊔ K₁ᗮ ⊓ K₂ = K₂ := by
   ext x
   rw [Submodule.mem_sup]
@@ -897,11 +899,17 @@ theorem sup_orthogonal_inf_of_completeSpace {K₁ K₂ : Submodule 𝕜 E} (h : 
     exact K₂.add_mem (h hy) hz.2
   · exact fun hx => ⟨v, v.prop, x - v, ⟨hvm, K₂.sub_mem hx (h v.prop)⟩, add_sub_cancel _ _⟩
 
+@[deprecated (since := "2025-07-27")] alias sup_orthogonal_inf_of_completeSpace :=
+  sup_orthogonal_inf_of_hasOrthogonalProjection
+
 variable {K} in
-/-- If `K` is complete, `K` and `Kᗮ` span the whole space. -/
-theorem sup_orthogonal_of_completeSpace [K.HasOrthogonalProjection] : K ⊔ Kᗮ = ⊤ := by
-  convert Submodule.sup_orthogonal_inf_of_completeSpace (le_top : K ≤ ⊤) using 2
+/-- If `K` admits an orthogonal projection, then `K` and `Kᗮ` span the whole space. -/
+theorem sup_orthogonal_of_hasOrthogonalProjection [K.HasOrthogonalProjection] : K ⊔ Kᗮ = ⊤ := by
+  convert Submodule.sup_orthogonal_inf_of_hasOrthogonalProjection (le_top : K ≤ ⊤) using 2
   simp
+
+@[deprecated (since := "2025-07-27")] alias sup_orthogonal_of_completeSpace :=
+  sup_orthogonal_of_hasOrthogonalProjection
 
 /-- If `K` is complete, any `v` in `E` can be expressed as a sum of elements of `K` and `Kᗮ`. -/
 theorem exists_add_mem_mem_orthogonal [K.HasOrthogonalProjection] (v : E) :
@@ -953,8 +961,11 @@ theorem orthogonal_orthogonal_eq_closure [CompleteSpace E] :
 variable {K}
 
 /-- If `K` admits an orthogonal projection, `K` and `Kᗮ` are complements of each other. -/
-theorem isCompl_orthogonal_of_completeSpace [K.HasOrthogonalProjection] : IsCompl K Kᗮ :=
-  ⟨K.orthogonal_disjoint, codisjoint_iff.2 Submodule.sup_orthogonal_of_completeSpace⟩
+theorem isCompl_orthogonal_of_hasOrthogonalProjection [K.HasOrthogonalProjection] : IsCompl K Kᗮ :=
+  ⟨K.orthogonal_disjoint, codisjoint_iff.2 Submodule.sup_orthogonal_of_hasOrthogonalProjection⟩
+
+@[deprecated (since := "2025-07-27")] alias isCompl_orthogonal_of_completeSpace :=
+  isCompl_orthogonal_of_hasOrthogonalProjection
 
 @[simp]
 theorem orthogonalComplement_eq_orthogonalComplement {L : Submodule 𝕜 E} [K.HasOrthogonalProjection]
@@ -966,7 +977,7 @@ theorem orthogonalComplement_eq_orthogonalComplement {L : Submodule 𝕜 E} [K.H
 theorem orthogonal_eq_bot_iff [K.HasOrthogonalProjection] : Kᗮ = ⊥ ↔ K = ⊤ := by
   refine ⟨?_, fun h => by rw [h, Submodule.top_orthogonal_eq_bot]⟩
   intro h
-  have : K ⊔ Kᗮ = ⊤ := Submodule.sup_orthogonal_of_completeSpace
+  have : K ⊔ Kᗮ = ⊤ := Submodule.sup_orthogonal_of_hasOrthogonalProjection
   rwa [h, sup_comm, bot_sup_eq] at this
 
 /-- The orthogonal projection onto `K` of an element of `Kᗮ` is zero. -/
@@ -1010,8 +1021,8 @@ theorem starProjection_comp_starProjection_eq_zero_iff {U V : Submodule 𝕜 E}
 
 theorem orthogonalProjection_eq_linearProjOfIsCompl [K.HasOrthogonalProjection] (x : E) :
     K.orthogonalProjection x =
-      K.linearProjOfIsCompl _ Submodule.isCompl_orthogonal_of_completeSpace x := by
-  have : IsCompl K Kᗮ := Submodule.isCompl_orthogonal_of_completeSpace
+      K.linearProjOfIsCompl _ Submodule.isCompl_orthogonal_of_hasOrthogonalProjection x := by
+  have : IsCompl K Kᗮ := Submodule.isCompl_orthogonal_of_hasOrthogonalProjection
   conv_lhs => rw [← Submodule.linearProjOfIsCompl_add_linearProjOfIsCompl_eq_self this x]
   rw [map_add, orthogonalProjection_mem_subspace_eq_self,
     orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero (Submodule.coe_mem _), add_zero]
@@ -1021,7 +1032,7 @@ theorem orthogonalProjection_eq_linearProjOfIsCompl [K.HasOrthogonalProjection] 
 
 theorem orthogonalProjection_coe_eq_linearProjOfIsCompl [K.HasOrthogonalProjection] :
     (K.orthogonalProjection : E →ₗ[𝕜] K) =
-      K.linearProjOfIsCompl _ Submodule.isCompl_orthogonal_of_completeSpace :=
+      K.linearProjOfIsCompl _ Submodule.isCompl_orthogonal_of_hasOrthogonalProjection :=
   LinearMap.ext <| orthogonalProjection_eq_linearProjOfIsCompl
 
 @[deprecated (since := "2025-07-11")] alias orthogonalProjection_coe_linearMap_eq_linearProj :=
@@ -1228,7 +1239,7 @@ theorem det_reflection : LinearMap.det K.reflection.toLinearMap = (-1) ^ finrank
   swap
   · rw [finrank_of_infinite_dimensional hK, pow_zero, LinearMap.det_eq_one_of_finrank_eq_zero]
     exact finrank_of_infinite_dimensional fun h ↦ hK (h.finiteDimensional_submodule _)
-  let e := K.prodEquivOfIsCompl _ K.isCompl_orthogonal_of_completeSpace
+  let e := K.prodEquivOfIsCompl _ K.isCompl_orthogonal_of_hasOrthogonalProjection
   let b := (finBasis 𝕜 K).prod (finBasis 𝕜 Kᗮ)
   have : LinearMap.toMatrix b b (e.symm ∘ₗ K.reflection.toLinearMap ∘ₗ e.symm.symm) =
       Matrix.fromBlocks 1 0 0 (-1) := by
@@ -1355,7 +1366,7 @@ theorem finrank_add_inf_finrank_orthogonal {K₁ K₂ : Submodule 𝕜 E}
   haveI := FiniteDimensional.proper_rclike 𝕜 K₁
   have hd := Submodule.finrank_sup_add_finrank_inf_eq K₁ (K₁ᗮ ⊓ K₂)
   rw [← inf_assoc, (Submodule.orthogonal_disjoint K₁).eq_bot, bot_inf_eq, finrank_bot,
-    Submodule.sup_orthogonal_inf_of_completeSpace h] at hd
+    Submodule.sup_orthogonal_inf_of_hasOrthogonalProjection h] at hd
   rw [add_zero] at hd
   exact hd.symm
 
