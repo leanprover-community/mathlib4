@@ -119,7 +119,7 @@ noncomputable instance [Fintype V] [Fintype α] : Fintype (Coloring G α) := by
   change Fintype (RelHom G.Adj (completeGraph α).Adj)
   apply Fintype.ofInjective _ RelHom.coe_fn_injective
 
-instance [DecidableEq α] [Fintype α] {c : α} :
+instance [DecidableEq α] {c : α} :
     DecidablePred (· ∈ C.colorClass c) :=
   inferInstanceAs <| DecidablePred (· ∈ { v | C v = c })
 
