@@ -211,9 +211,8 @@ section EqOn
 @[to_additive]
 theorem eqOn_finsetProd {ι α β : Type*} [CommMonoid α]
     {s : Set β} {f f' : ι → β → α} (h : ∀ (i : ι), Set.EqOn (f i) (f' i) s) (v : Finset ι) :
-    Set.EqOn (∏ i ∈ v, f i) (∏ i ∈ v, f' i) s := by
-  intro t ht
-  simp [funext fun i ↦ h i ht]
+    Set.EqOn (∏ i ∈ v, f i) (∏ i ∈ v, f' i) s :=
+  fun t ht => by simp [funext fun i ↦ h i ht]
 
 @[to_additive]
 theorem eqOn_fun_finsetProd {ι α β : Type*} [CommMonoid α]
