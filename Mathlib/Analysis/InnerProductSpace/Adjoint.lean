@@ -590,7 +590,6 @@ theorem _root_.ContinuousLinearMap.isSelfAdjoint_toLinearMap_iff (T : E →L[�
 theorem isStarProjection_toContinuousLinearMap_iff {T : E →ₗ[𝕜] E} :
     have := FiniteDimensional.complete 𝕜 E
     IsStarProjection (toContinuousLinearMap T) ↔ IsStarProjection T := by
-  intro
   simp [isStarProjection_iff, isSelfAdjoint_toContinuousLinearMap_iff, IsIdempotentElem,
     ContinuousLinearMap.ext_iff, LinearMap.ext_iff, ← Module.End.mul_apply]
 
