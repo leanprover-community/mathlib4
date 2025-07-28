@@ -12,6 +12,11 @@ notation "ℝ" => Real
 @[instance] axiom Real.linearOrder : LinearOrder ℝ
 @[instance] axiom Real.isStrictOrderedRing : IsStrictOrderedRing ℝ
 
+example {a b c : ℝ} {f : ℝ → ℝ} (h : f (a * c * b) * f (c + b + a) = 1) :
+    f (a + b + c) * f (b * a * c) = 1 := by
+  ring_nf at *
+  exact h
+
 example (x y : ℕ) : x + y = y + x := by ring
 example (x y : ℕ) : x + y + y = 2 * y + x := by ring
 example (x y : ℕ) : x + id y = y + id x := by ring!
