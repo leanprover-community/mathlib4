@@ -44,8 +44,9 @@ bounds rather than arbitrary elements when a least upper bound exists.
 class LawfulSupPreorder (α) extends Preorder α, SupSet α where
   isLUB_sSup_of_exists_isLUB (s : Set α) : (∃ x, IsLUB s x) → IsLUB s (sSup s)
 
+/-- Defines `sSup` so as to return an arbitrary LUB when it exists, and a default element otherwise. -/
 open Classical in
-noncomputable instance Preorder.toLawfulSupPreorder [Preorder α] [Inhabited α] :
+noncomputable def Preorder.toLawfulSupPreorder [Preorder α] [Inhabited α] :
     LawfulSupPreorder α where
   sSup s := if hs : ∃ x, IsLUB s x then Classical.choose hs else default
   isLUB_sSup_of_exists_isLUB s := by
