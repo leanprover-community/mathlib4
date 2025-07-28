@@ -385,33 +385,76 @@ theorem IsIdempotentElem.TFAE {p : E →L[𝕜] E} (hp : IsIdempotentElem p) :
   tfae_have 2 ↔ 4 := hp.isSelfAdjoint_iff_orthogonal_range
   tfae_finish
 
-/-- For star projection operators `p,q` in a complex-Hilbert space,
-we have `p ≤ q` iff `p ∘ q = p`. -/
-theorem IsStarProjection.le_iff_comp_eq_self [InnerProductSpace ℂ E] {p q : E →L[ℂ] E}
+--move to `Projection`
+theorem IsStarProjection.norm_apply_le {T : E →L[𝕜] E} (hT : IsStarProjection T) (v : E) :
+    ‖T v‖ ≤ ‖v‖ := by
+  obtain ⟨h, hht⟩ := isStarProjection_iff_eq_starProjection_range.mp hT
+  exact hht ▸ Submodule.norm_starProjection_apply_le _ _
+
+open RCLike
+--move to `Projection`
+theorem IsStarProjection.reApplyInnerSelf_eq {T : E →L[𝕜] E} (hT : IsStarProjection T) (v : E) :
+    T.reApplyInnerSelf v = ‖T v‖ ^ 2 := by
+  obtain ⟨h, hht⟩ := isStarProjection_iff_eq_starProjection_range.mp hT
+  calc T.reApplyInnerSelf v = re (inner 𝕜 (T v) v) := rfl
+    _ = re (inner 𝕜 (T v) (T v)) + re (inner 𝕜 (T v) ((1 - T) v)) := by
+      simp [← map_add, ← inner_add_right]
+    _ = re (inner 𝕜 (T v) (T v)) + 0 := ?_
+    _ = ‖T v‖ ^ 2 := by simp; exact inner_self_eq_norm_sq _
+  congr
+  rw [hht, ← Submodule.starProjection_orthogonal',
+    Submodule.inner_starProjection_left_eq_right,
+    (Submodule.starProjection_apply_eq_zero_iff _).mpr (by simp)]
+  simp
+
+open ContinuousLinearMap
+-- move to `Projection`
+theorem IsStarProjection.apply_norm_eq_iff {T : E →L[𝕜] E} (hT : IsStarProjection T) {v : E} :
+    ‖T v‖ = ‖v‖ ↔ v ∈ LinearMap.range T := by
+  refine ⟨fun h => ?_, fun h => congr(‖$((LinearMap.IsIdempotentElem.mem_range_iff
+    congr(LinearMapClass.linearMap $hT.isIdempotentElem.eq)).mp h)‖)⟩
+  have := calc 0 = ‖v‖ ^ 2 - ‖T v‖ ^ 2 := by simp [h]
+    _ = ‖T v + (1 - T) v‖ ^ 2 - ‖T v‖ ^ 2 := by simp
+    _ = ‖T v‖ ^ 2 + ‖(1 - T) v‖ ^ 2 - ‖T v‖ ^ 2 := by
+      congr
+      rw [norm_add_sq (𝕜 := 𝕜), ← adjoint_inner_right, hT.isSelfAdjoint.adjoint_eq]
+      simp [← mul_apply, hT.isIdempotentElem.eq]
+    _ = ‖(1 - T) v‖ ^ 2 := by simp
+  rw [eq_comm, sq_eq_zero_iff, norm_eq_zero, sub_apply, one_apply, sub_eq_zero, eq_comm] at this
+  exact (LinearMap.IsIdempotentElem.mem_range_iff
+    congr(LinearMapClass.linearMap $hT.isIdempotentElem.eq)).mpr this
+
+/-- For star projection operators `p,q`, we have `p ≤ q` iff `p ∘ q = p`. -/
+theorem IsStarProjection.le_iff_comp_eq_left {p q : E →L[𝕜] E}
     (hp : IsStarProjection p) (hq : IsStarProjection q) : p ≤ q ↔ p ∘L q = p := by
   refine ⟨fun ⟨h1, h2⟩ => ?_, fun hpq ↦
     IsPositive.of_isStarProjection (hp.sub_of_mul_eq_left hq hpq)⟩
-  rw [← sub_eq_zero, ← coe_inj, coe_zero, ← inner_map_self_eq_zero]
-  intro x
-  specialize h2 ((1 - q) x)
-  simp [reApplyInnerSelf_apply] at h2
-  simp_rw [← ContinuousLinearMap.mul_apply, hq.1.eq, sub_self, zero_sub, mul_apply,
-    ← map_sub, inner_neg_left, Complex.neg_re, le_neg, neg_zero] at h2
-  rw [← hp.1.eq, ContinuousLinearMap.mul_apply, ← adjoint_inner_right,
-    isSelfAdjoint_iff'.mp hp.2, ← RCLike.re_eq_complex_re, re_inner_self_nonpos] at h2
-  simp [sub_eq_zero] at h2
-  simp [h2]
+  rw [← star_inj]
+  simp_rw [star_eq_adjoint, adjoint_comp, hp.isSelfAdjoint.adjoint_eq, hq.isSelfAdjoint.adjoint_eq]
+  have : q.comp p = p ↔ LinearMap.range p ≤ LinearMap.range q := by
+    simpa [coe_comp, ← coe_inj] using LinearMap.IsIdempotentElem.comp_eq_right_iff
+      congr(LinearMapClass.linearMap $hq.isIdempotentElem.eq) p.toLinearMap
+  rw [this]
+  intro a ha
+  specialize h2 a
+  have {T : E →L[𝕜] E} (hT : IsStarProjection T) : a ∈ LinearMap.range T ↔ T a = a :=
+    (LinearMap.IsIdempotentElem.mem_range_iff
+      congr(LinearMapClass.linearMap $hT.isIdempotentElem.eq))
+  simp_rw [reApplyInnerSelf, sub_apply, inner_sub_left, map_sub,
+    ← reApplyInnerSelf_apply, hq.reApplyInnerSelf_eq, hp.reApplyInnerSelf_eq, (this hp).mp ha,
+    sub_nonneg, sq_le_sq, abs_norm] at h2
+  exact hq.apply_norm_eq_iff.mp (le_antisymm (hq.norm_apply_le a) h2)
 
-/-- In a complex-Hilbert space, `U.starProjection ≤ V.starProjection` iff `U ≤ V`. -/
-theorem starProjection_le_starProjection_iff [InnerProductSpace ℂ E]
-    (U V : Submodule ℂ E) [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] :
+/-- `U.starProjection ≤ V.starProjection` iff `U ≤ V`. -/
+theorem starProjection_le_starProjection_iff (U V : Submodule 𝕜 E)
+    [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] :
     U.starProjection ≤ V.starProjection ↔ U ≤ V := by
-  rw [IsStarProjection.le_iff_comp_eq_self (isStarProjection_starProjection _)
+  rw [IsStarProjection.le_iff_comp_eq_left (isStarProjection_starProjection _)
       (isStarProjection_starProjection _), ← star_inj,
     (isStarProjection_starProjection _).isSelfAdjoint, star_eq_adjoint, adjoint_comp]
   simp_rw [← star_eq_adjoint, (isStarProjection_starProjection _).isSelfAdjoint.star_eq]
   rw [← coe_inj, coe_comp, LinearMap.IsIdempotentElem.comp_eq_right_iff]
-  · have : ∀ p : E →L[ℂ] E, LinearMap.range p.toLinearMap = LinearMap.range p := fun p => rfl
+  · have {p : E →L[𝕜] E} : LinearMap.range p.toLinearMap = LinearMap.range p := rfl
     simp_rw [this, Submodule.range_starProjection]
   · exact congr(LinearMapClass.linearMap $((isStarProjection_starProjection V).isIdempotentElem.eq))
 
