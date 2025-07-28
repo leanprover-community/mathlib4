@@ -1040,7 +1040,7 @@ theorem orthogonalProjection_coe_eq_linearProjOfIsCompl [K.HasOrthogonalProjecti
 
 open Submodule in
 theorem starProjection_coe_eq_isCompl_projection [K.HasOrthogonalProjection] :
-    K.starProjection.toLinearMap = K.isCompl_orthogonal_of_completeSpace.projection := by
+    K.starProjection.toLinearMap = K.isCompl_orthogonal_of_hasOrthogonalProjection.projection := by
   simp [starProjection, orthogonalProjection_coe_eq_linearProjOfIsCompl, IsCompl.projection]
 
 /-- The reflection in `K` of an element of `Kᗮ` is its negation. -/
