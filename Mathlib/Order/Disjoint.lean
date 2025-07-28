@@ -598,7 +598,9 @@ lemma complementedLattice_iff (α) [Lattice α] [BoundedOrder α] :
 
 export ComplementedLattice (exists_isCompl)
 
-instance Subsingleton.instComplementedLattice
+-- This was previously a global instance,
+-- but it doesn't appear to be used and has been implicated in slow typeclass resolutions.
+def Subsingleton.instComplementedLattice
     [Lattice α] [BoundedOrder α] [Subsingleton α] : ComplementedLattice α := by
   refine ⟨fun a ↦ ⟨⊥, disjoint_bot_right, ?_⟩⟩
   rw [Subsingleton.elim ⊥ ⊤]
