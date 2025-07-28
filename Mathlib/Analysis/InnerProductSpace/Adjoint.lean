@@ -405,21 +405,6 @@ theorem ContinuousLinearMap.IsStarProjection.norm_apply_le {T : E →L[𝕜] E} 
   obtain ⟨h, hht⟩ := isStarProjection_iff_eq_starProjection_range.mp hT
   exact hht ▸ Submodule.norm_starProjection_apply_le _ _
 
-theorem ContinuousLinearMap.IsStarProjection.reApplyInnerSelf_eq {T : E →L[𝕜] E} [CompleteSpace E]
-    (hT : IsStarProjection T) (v : E) :
-    T.reApplyInnerSelf v = ‖T v‖ ^ 2 := by
-  obtain ⟨h, hht⟩ := isStarProjection_iff_eq_starProjection_range.mp hT
-  calc T.reApplyInnerSelf v = re (inner 𝕜 (T v) v) := rfl
-    _ = re (inner 𝕜 (T v) (T v)) + re (inner 𝕜 (T v) ((1 - T) v)) := by
-      simp [← map_add, ← inner_add_right]
-    _ = re (inner 𝕜 (T v) (T v)) + 0 := ?_
-    _ = ‖T v‖ ^ 2 := by simp; exact inner_self_eq_norm_sq _
-  congr
-  rw [hht, ← Submodule.starProjection_orthogonal',
-    Submodule.inner_starProjection_left_eq_right,
-    (Submodule.starProjection_apply_eq_zero_iff _).mpr (by simp)]
-  simp
-
 open ContinuousLinearMap in
 theorem ContinuousLinearMap.IsStarProjection.apply_norm_eq_iff {T : E →L[𝕜] E} [CompleteSpace E]
     (hT : IsStarProjection T) {v : E} :

@@ -401,8 +401,14 @@ theorem IsStarProjection.le_iff_comp_eq_left {p q : E →L[𝕜] E}
   have {T : E →L[𝕜] E} (hT : IsStarProjection T) : a ∈ LinearMap.range T ↔ T a = a :=
     (LinearMap.IsIdempotentElem.mem_range_iff
       congr(LinearMapClass.linearMap $hT.isIdempotentElem.eq))
+  have hh {T : E →L[𝕜] E} (hT : IsStarProjection T) :
+      T.reApplyInnerSelf a = ‖T a‖ ^ 2 := by
+    rw [reApplyInnerSelf_apply]
+    nth_rw 1 [← hT.isIdempotentElem]
+    rw [mul_apply, ← adjoint_inner_right, hT.isSelfAdjoint.adjoint_eq]
+    exact inner_self_eq_norm_sq _
   simp_rw [reApplyInnerSelf, sub_apply, inner_sub_left, map_sub,
-    ← reApplyInnerSelf_apply, hq.reApplyInnerSelf_eq, hp.reApplyInnerSelf_eq, (this hp).mp ha,
+    ← reApplyInnerSelf_apply, hh hq, hh hp, (this hp).mp ha,
     sub_nonneg, sq_le_sq, abs_norm] at h2
   exact hq.apply_norm_eq_iff.mp (le_antisymm (hq.norm_apply_le a) h2)
 
