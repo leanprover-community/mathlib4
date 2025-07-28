@@ -9,8 +9,8 @@ import Mathlib.FieldTheory.Finite.Basic
 # Modular exponentiation with the totient function
 
 This file contains lemmas about modular exponentiation.
-In particular, it contains lemmas about an exponent can be reduced modulo the totient function
-when the base is coprime to the modulus.
+In particular, it contains lemmas showing that an exponent can be reduced modulo the totient
+function when the base is coprime to the modulus.
 
 ## Main Results
 
