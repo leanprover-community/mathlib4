@@ -402,7 +402,7 @@ theorem eval_eq_prod_roots_sub_of_splits_id {p : K[X]}
     (hsplit : Splits (RingHom.id K) p) (v : K) :
     eval v p = p.leadingCoeff * (p.roots.map fun a ↦ v - a).prod := by
   convert aeval_eq_prod_aroots_sub_of_splits hsplit v
-  rw [Algebra.id.map_eq_id, map_id]
+  rw [Algebra.algebraMap_self, map_id]
 
 theorem eq_prod_roots_of_monic_of_splits_id {p : K[X]} (m : Monic p)
     (hsplit : Splits (RingHom.id K) p) : p = (p.roots.map fun a => X - C a).prod := by
