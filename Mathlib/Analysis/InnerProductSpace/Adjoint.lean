@@ -399,12 +399,6 @@ theorem isStarProjection_iff_eq_starProjection_range [CompleteSpace E] {p : E �
   simpa [p.orthogonal_range, hp.isSelfAdjoint.isSymmetric]
     using congr($(hp.isIdempotentElem.mul_one_sub_self) x)
 
-theorem ContinuousLinearMap.IsStarProjection.norm_apply_le {T : E →L[𝕜] E} [CompleteSpace E]
-    (hT : IsStarProjection T) (v : E) :
-    ‖T v‖ ≤ ‖v‖ := by
-  obtain ⟨h, hht⟩ := isStarProjection_iff_eq_starProjection_range.mp hT
-  exact hht ▸ Submodule.norm_starProjection_apply_le _ _
-
 theorem ContinuousLinearMap.IsStarProjection.mem_range_iff_norm {T : E →L[𝕜] E} [CompleteSpace E]
     (hT : IsStarProjection T) {v : E} :
     v ∈ LinearMap.range T ↔ ‖T v‖ = ‖v‖ := by
