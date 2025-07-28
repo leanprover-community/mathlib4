@@ -627,14 +627,15 @@ If the semiring `R` is linearly and canonically ordered and admits ordered subtr
 
 section LinearlyCanonicallyOrdered
 
-variable [LinearOrder R] [CanonicallyOrderedAdd R] [AddLeftMono R] [Sub R] [OrderedSub R]
-variable [IsCancelAdd M]
+variable [LinearOrder R] [CanonicallyOrderedAdd R] [AddRightReflectLE R] [IsCancelAdd M]
 
 theorem linearIndependent_iffₒ :
     LinearIndependent R v ↔
       ∀ (s t : Finset ι) (f g : ι → R), Disjoint s t →
         ∑ i ∈ s, f i • v i = ∑ i ∈ t, g i • v i → (∀ i ∈ s, f i = 0) ∧ ∀ i ∈ t, g i = 0 := by
   classical
+  letI : Sub R := CanonicallyOrderedAdd.toSub
+  haveI : OrderedSub R := CanonicallyOrderedAdd.toSub.orderedSub
   rw [linearIndependent_iff'ₛ]
   refine ⟨fun h s t f g hst heq => ?_, fun h s f g heq => ?_⟩
   · specialize h (s ∪ t) (fun i => if i ∈ s then f i else 0) (fun i => if i ∈ t then g i else 0) ?_
