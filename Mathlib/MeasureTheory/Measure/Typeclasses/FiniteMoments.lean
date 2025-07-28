@@ -71,11 +71,11 @@ variable {E F 𝕜 : Type*} [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 lemma memLp_one [HasFiniteMean μ] (L : E →L[𝕜] F) :
-    MemLp L 1 μ := L.memLp memLp_one_id
+    MemLp L 1 μ := L.comp_memLp' memLp_one_id
 
 protected lemma integrable [HasFiniteMean μ] (L : E →L[𝕜] F) :
     Integrable L μ := L.memLp_one.integrable le_rfl
 
-lemma memLp_two [HasFiniteVar μ] (L : E →L[𝕜] F) : MemLp L 2 μ := L.memLp memLp_two_id
+lemma memLp_two [HasFiniteVar μ] (L : E →L[𝕜] F) : MemLp L 2 μ := L.comp_memLp' memLp_two_id
 
 end ContinuousLinearMap

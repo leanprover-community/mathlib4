@@ -743,9 +743,6 @@ theorem comp_memLp' (L : E →L[𝕜] F) {f : α → E} (hf : MemLp f p μ) : Me
 @[deprecated (since := "2025-02-21")]
 alias comp_memℒp' := comp_memLp'
 
-lemma memLp {_ : MeasurableSpace E} {μ : Measure E} (h : MemLp _root_.id p μ) (L : E →L[𝕜] F) :
-    MemLp L p μ := L.comp_memLp' h
-
 section RCLike
 
 variable {K : Type*} [RCLike K]
