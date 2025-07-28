@@ -1071,6 +1071,16 @@ lemma functorOfTransform_obj_obj_snd (ψ : CatCospanTransform R B R' B')
   rfl
 
 @[simp]
+lemma functorOfTransform_obj_obj_iso_hom (ψ : CatCospanTransform R B R' B')
+    (x : C₁) :
+    (functorOfTransform T L (π₁ R' B') (π₂ R' B')|>.obj ψ|>.obj x).iso =
+    ((ψ.squareLeft.iso.app (T.obj x)).symm ≪≫
+      ψ.base.mapIso ((CatCommSq.iso T L R B).app x) ≪≫
+      (ψ.squareRight.iso.app (L.obj x))) := by
+  ext
+  simp [functorOfTransform]
+
+@[simp]
 lemma functorOfTransform_map_app_fst {ψ ψ' : CatCospanTransform R B R' B'}
     (α : ψ ⟶ ψ') (x : C₁) :
     (functorOfTransform T L (π₁ R' B') (π₂ R' B')|>.map α|>.app x).fst =
