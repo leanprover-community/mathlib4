@@ -6,6 +6,7 @@ Authors: Mitchell Horner
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Combinatorics.SimpleGraph.Coloring
+import Mathlib.Combinatorics.SimpleGraph.Copy
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 
 /-!
@@ -273,5 +274,92 @@ theorem isBipartite_iff_exists_isBipartiteWith :
   ⟨IsBipartite.exists_isBipartiteWith, fun ⟨_, _, h⟩ ↦ h.isBipartite⟩
 
 end IsBipartite
+
+section CompleteBipartiteSubgraph
+
+variable [Fintype V] {α β γ δ : Type*} [Fintype α] [Fintype β]
+
+/-- A complete bipartite subgraph of `s` and `t` parts is a "left" subset of `s` vertices and a
+"right" subset of `t` vertices such that every vertex in the "left" subset is adjacent to every
+vertex in the "right" subset. -/
+structure completeBipartiteSubgraph (G : SimpleGraph V) (s t : ℕ) where
+  /-- The "left" subset of size `s`. -/
+  left : @univ.powersetCard V s
+  /-- The "right" subset of size `t`. -/
+  right : @univ.powersetCard V t
+  Adj : ∀ v₁ ∈ left.val, ∀ v₂ ∈ right.val, G.Adj v₁ v₂
+
+namespace completeBipartiteSubgraph
+
+variable {s t : ℕ} (B : G.completeBipartiteSubgraph s t)
+
+/-- The size of the left part of a `G.completeBipartiteSubgraph s t` is `s`. -/
+theorem card_left : #B.left.val = s := by
+  have h := B.left.prop
+  rwa [mem_powersetCard_univ] at h
+
+/-- The size of the right part of a `G.completeBipartiteSubgraph s t` is `t`. -/
+theorem card_right : #B.right.val = t := by
+  have h := B.right.prop
+  rwa [mem_powersetCard_univ] at h
+
+/-- A complete bipartite subgraph gives rise to a copy of a complete bipartite graph. -/
+noncomputable def toCopy : Copy (completeBipartiteGraph (Fin s) (Fin t)) G := by
+  haveI : Nonempty (Fin s ↪ B.left) := by
+    apply Function.Embedding.nonempty_of_card_le
+    rw [Fintype.card_fin, card_coe, card_left]
+  let fs : Fin s ↪ B.left := Classical.arbitrary (Fin s ↪ B.left)
+  haveI : Nonempty (Fin t ↪ B.right) := by
+    apply Function.Embedding.nonempty_of_card_le
+    rw [Fintype.card_fin, card_coe, card_right]
+  let ft : Fin t ↪ B.right := Classical.arbitrary (Fin t ↪ B.right)
+  let f : Fin s ⊕ Fin t ↪ V := by
+    use Sum.elim (Subtype.val ∘ fs) (Subtype.val ∘ ft)
+    intro st₁ st₂
+    match st₁, st₂ with
+    | Sum.inl s₁, Sum.inl s₂ => simp [← Subtype.ext_iff_val]
+    | Sum.inr t₁, Sum.inl s₂ =>
+      simpa using (B.Adj (fs s₂) (fs s₂).prop (ft t₁) (ft t₁).prop).ne'
+    | Sum.inl s₁, Sum.inr t₂ =>
+      simpa using (B.Adj (fs s₁) (fs s₁).prop (ft t₂) (ft t₂).prop).symm.ne'
+    | Sum.inr t₁, Sum.inr t₂ => simp [← Subtype.ext_iff_val]
+  use ⟨f.toFun, ?_⟩, f.injective
+  intro st₁ st₂ hadj
+  rcases hadj with ⟨hst₁, hst₂⟩ | ⟨hst₁, hst₂⟩
+  all_goals dsimp [f]
+  · rw [← Sum.inl_getLeft st₁ hst₁, ← Sum.inr_getRight st₂ hst₂,
+      Sum.elim_inl, Sum.elim_inr]
+    exact B.Adj (fs _) (by simp) (ft _) (by simp)
+  · rw [← Sum.inr_getRight st₁ hst₁, ← Sum.inl_getLeft st₂ hst₂,
+      Sum.elim_inl, Sum.elim_inr, adj_comm]
+    exact B.Adj (fs _) (by simp) (ft _) (by simp)
+
+/-- A copy of a complete bipartite graph identifies a complete bipartite subgraph. -/
+def ofCopy (f : Copy (completeBipartiteGraph α β) G) :
+    G.completeBipartiteSubgraph (card α) (card β) where
+  left := by
+    use univ.map ⟨f ∘ Sum.inl, f.injective.comp Sum.inl_injective⟩
+    rw [mem_powersetCard_univ, card_map, card_univ]
+  right := by
+    use univ.map ⟨f ∘ Sum.inr, f.injective.comp Sum.inr_injective⟩
+    rw [mem_powersetCard_univ, card_map, card_univ]
+  Adj := by
+    intro v₁ hv₁ v₂ hv₂
+    rw [mem_map] at hv₁ hv₂
+    obtain ⟨a, _, ha⟩ := hv₁
+    obtain ⟨b, _, hb⟩ := hv₂
+    rw [← ha, ← hb]
+    exact f.toHom.map_adj (by simp)
+
+end completeBipartiteSubgraph
+
+/-- Simple graphs contain a copy of a `completeBipartiteGraph α β` iff
+`G.completeBipartiteSubgraph (card α) (card β)` is nonempty. -/
+theorem completeBipartiteGraph_isContained_iff :
+    completeBipartiteGraph α β ⊑ G ↔ Nonempty (G.completeBipartiteSubgraph (card α) (card β)) :=
+  ⟨fun ⟨f⟩ ↦ ⟨completeBipartiteSubgraph.ofCopy f⟩,
+    fun ⟨B⟩ ↦ ⟨B.toCopy.comp <| Iso.toCopy ⟨(equivFin α).sumCongr (equivFin β), by simp⟩⟩⟩
+
+end CompleteBipartiteSubgraph
 
 end SimpleGraph
