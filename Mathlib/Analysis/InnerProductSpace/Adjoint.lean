@@ -405,12 +405,11 @@ theorem ContinuousLinearMap.IsStarProjection.norm_apply_le {T : E →L[𝕜] E} 
   obtain ⟨h, hht⟩ := isStarProjection_iff_eq_starProjection_range.mp hT
   exact hht ▸ Submodule.norm_starProjection_apply_le _ _
 
-open ContinuousLinearMap in
-theorem ContinuousLinearMap.IsStarProjection.apply_norm_eq_iff {T : E →L[𝕜] E} [CompleteSpace E]
+theorem ContinuousLinearMap.IsStarProjection.mem_range_iff_norm {T : E →L[𝕜] E} [CompleteSpace E]
     (hT : IsStarProjection T) {v : E} :
-    ‖T v‖ = ‖v‖ ↔ v ∈ LinearMap.range T := by
-  refine ⟨fun h => ?_, fun h => congr(‖$((LinearMap.IsIdempotentElem.mem_range_iff
-    congr(LinearMapClass.linearMap $hT.isIdempotentElem.eq)).mp h)‖)⟩
+    v ∈ LinearMap.range T ↔ ‖T v‖ = ‖v‖ := by
+  refine ⟨fun h => congr(‖$(LinearMap.IsIdempotentElem.mem_range_iff
+    congr(LinearMapClass.linearMap $hT.isIdempotentElem.eq) |>.mp h)‖), fun h => ?_⟩
   have := calc 0 = ‖v‖ ^ 2 - ‖T v‖ ^ 2 := by simp [h]
     _ = ‖T v + (1 - T) v‖ ^ 2 - ‖T v‖ ^ 2 := by simp
     _ = ‖T v‖ ^ 2 + ‖(1 - T) v‖ ^ 2 - ‖T v‖ ^ 2 := by
@@ -419,8 +418,8 @@ theorem ContinuousLinearMap.IsStarProjection.apply_norm_eq_iff {T : E →L[𝕜]
       simp [← mul_apply, hT.isIdempotentElem.eq]
     _ = ‖(1 - T) v‖ ^ 2 := by simp
   rw [eq_comm, sq_eq_zero_iff, norm_eq_zero, sub_apply, one_apply, sub_eq_zero, eq_comm] at this
-  exact (LinearMap.IsIdempotentElem.mem_range_iff
-    congr(LinearMapClass.linearMap $hT.isIdempotentElem.eq)).mpr this
+  exact LinearMap.IsIdempotentElem.mem_range_iff
+    congr(LinearMapClass.linearMap $hT.isIdempotentElem.eq) |>.mpr this
 
 namespace LinearMap
 
