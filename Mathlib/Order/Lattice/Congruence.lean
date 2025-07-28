@@ -5,9 +5,6 @@ Authors: Christopher Hoskin
 -/
 import Mathlib.Order.Lattice
 
-
-variable {α : Type*}
-
 /-!
 # Lattice Congruences
 
@@ -16,6 +13,8 @@ variable {α : Type*}
 
 * [Grätzer et al, *General lattice theory*][Grätzer2003]
 -/
+
+variable {α : Type*}
 
 /-- An equivalence relation is a congruence relation for the latice structure if it is compatible
 with the `inf` and `sup` operations. -/
