@@ -5,6 +5,7 @@ Authors: Robert Y. Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Tactic.Common
+import Mathlib.Algebra.Ring.Equiv
 
 /-!
 # `IsField` predicate
@@ -87,3 +88,23 @@ theorem uniq_inv_of_isField (R : Type u) [Ring R] (hf : IsField R) :
       _ = z := by rw [hxy, one_mul]
 
 end IsField
+
+namespace RingEquiv
+
+/-- For a semiring isomorphism `A ≃+* B`, if `A` is a field, then `B` is a field as well. -/
+protected theorem isField {A B : Type*} [Semiring A] [Semiring B]
+    (h : IsField A) (e : A ≃+* B) : IsField B := by
+  constructor
+  · obtain ⟨x, y, hxy⟩ := h.exists_pair_ne
+    exact ⟨e x, e y, fun h => hxy (e.injective (by simp [h]))⟩
+  · intro x y
+    obtain ⟨a, ha⟩ := e.surjective x
+    obtain ⟨b, hb⟩ := e.surjective y
+    rw [← ha, ← hb, ← map_mul, ← map_mul, h.mul_comm]
+  · intro x hx
+    obtain ⟨a, rfl⟩ := e.surjective x
+    have ha : a ≠ 0 := fun h => hx (h ▸ e.map_zero)
+    obtain ⟨b, hb⟩ := h.mul_inv_cancel ha
+    exact ⟨e b, by rw [← map_mul, hb, map_one]⟩
+
+end RingEquiv
