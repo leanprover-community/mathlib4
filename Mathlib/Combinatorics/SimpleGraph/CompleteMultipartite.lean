@@ -193,7 +193,6 @@ def completeEquipartiteGraph.completeMultipartiteGraph :
   right_inv v := by simp
   map_rel_iff' := by simp
 
-@[simp]
 lemma completeEquipartiteGraph_adj {v w} :
   (completeEquipartiteGraph r t).Adj v w ↔ v.1 ≠ w.1 := by rfl
 
