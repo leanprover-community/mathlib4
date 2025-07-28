@@ -32,8 +32,7 @@ instance : NoAtoms (volume : Measure I) where
   measure_singleton x := by
     rw [volume_def, Measure.comap_apply _ Subtype.val_injective ?_ _ (measurableSet_singleton x)]
     · simp only [Set.image_singleton, measure_singleton]
-    · intro s hs
-      exact measurableSet_Icc.subtype_image hs
+    · exact fun _ hs ↦ measurableSet_Icc.subtype_image hs
 
 @[measurability]
 theorem measurable_symm : Measurable symm := continuous_symm.measurable
@@ -52,10 +51,17 @@ lemma volume_Iio : volume (Iio x) = .ofReal x := by
   simp only [← volume_image_subtype_coe measurableSet_Icc, image_subtype_val_Icc_Iio,
     Real.volume_Ico, sub_zero]
 
-variable (y : I)
+@[simp]
+lemma volume_Ici : volume (Ici x) = .ofReal (1 - x) := by
+  simp only [← volume_image_subtype_coe measurableSet_Icc, image_subtype_val_Icc_Ici,
+    Real.volume_Icc]
 
-example (a b : ℝ) : edist a b = .ofReal (|a - b|) := by
-  exact edist_dist a b
+@[simp]
+lemma volume_Ioi : volume (Ioi x) = .ofReal (1 - x) := by
+  simp only [← volume_image_subtype_coe measurableSet_Icc, image_subtype_val_Icc_Ioi,
+    Real.volume_Ioc]
+
+variable (y : I)
 
 @[simp]
 lemma volume_Icc : volume (Icc x y) = .ofReal (y - x) := by
