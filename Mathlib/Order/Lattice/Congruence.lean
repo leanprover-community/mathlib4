@@ -9,7 +9,12 @@ import Mathlib.Order.Lattice
 variable {α : Type*}
 
 /-!
-### Lattice Congruences
+# Lattice Congruences
+
+
+## References
+
+* [Grätzer et al, *General lattice theory*][Grätzer2003]
 -/
 
 /-- An equivalence relation is a congruence relation for the latice structure if it is compatible

@@ -42,10 +42,6 @@ of `sup` over `inf`, on the left or on the right.
 * (Semi-)lattice homomorphisms
 * Alternative constructors for distributive lattices from the other distributive properties
 
-## References
-
-* [Grätzer et al, *General lattice theory*][Grätzer2003]
-
 ## Tags
 
 semilattice, lattice
