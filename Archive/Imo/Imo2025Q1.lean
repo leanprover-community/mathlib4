@@ -313,10 +313,11 @@ structure Config (n k : Nat) where
   card : #ls = n
   rank : ∀ l ∈ ls, finrank ℝ ↥l.direction = 1
   cover : ∀ (a b : ℕ)
-    (_ : 0 < a := by simp_all) (_ : 0 < b := by simp_all) (_ : a + b ≤ 4 := by simp_all),
+    (_ : 0 < a := by omega) (_ : 0 < b := by omega) (_ : a + b ≤ n + 1 := by omega),
     ∃ l ∈ ls, !₂[↑a, ↑b] ∈ l
   sunny : #{l ∈ ls | Sunny l} = k
 
+/-- Reflect a valid configuration along the diagonal. -/
 noncomputable def Config.symm {n k : ℕ} (c : Config n k) : Config n k where
   ls := c.ls.map
     ⟨fun l => l.map (EuclideanGeometry.reflection line[ℝ, !₂[(0 : ℝ), 0], !₂[1, 1]]).toAffineMap,
@@ -328,7 +329,7 @@ noncomputable def Config.symm {n k : ℕ} (c : Config n k) : Config n k where
   cover a b ha hb hab := by
     simp at *
     rw [add_comm] at hab
-    obtain ⟨l, hl, hbal⟩ := c.cover b a
+    obtain ⟨l, hl, hbal⟩ := c.cover b a hb ha hab
     refine ⟨l, hl, !₂[b, a], hbal, ?_⟩
     rw [EuclideanGeometry.reflection_apply]
     simp
@@ -336,10 +337,42 @@ noncomputable def Config.symm {n k : ℕ} (c : Config n k) : Config n k where
   sunny := by
     sorry
 
+/-- Extend a valid configuration without changing the number of sunny lines. -/
+noncomputable def Config.extend {n k : ℕ} (hn : 3 < n) (c : Config n k) : Config (n + 1) k where
+  ls := c.ls.cons line[ℝ, !₂[(n : ℝ), 1], !₁[1, n]] sorry
+  card := by rw [Finset.card_cons, c.card]
+  rank l hl := by
+    simp only [Finset.cons_eq_insert, Finset.mem_insert] at hl
+    rcases hl with (rfl | hl)
+    · apply line_rank
+      intro h
+      have := congr_fun h 0
+      simp only [Fin.isValue, PiLp.toLp_apply, Matrix.cons_val_zero, Nat.cast_eq_one] at this
+      omega
+    · exact c.rank l hl
+  cover a b ha hb hab := by
+    simp at ha hb hab
+    by_cases hab' : a + b < n + 2
+    · obtain ⟨l, hl, meml⟩ := c.cover a b
+      exact ⟨l, Finset.subset_cons _ hl, meml⟩
+    · have : a + b = n + 2 := by omega
+      use affineSpan ℝ {!₂[↑n, 1], !₁[1, ↑n]}
+      refine ⟨Finset.mem_cons_self _ _, ?_⟩
+      erw [mem_line_iff (by left; norm_cast; omega)]
+      simp
+      sorry
+  sunny := by
+    sorry
+    /-have h₁ : !₂[↑n, 1] ∈ affineSpan ℝ {!₂[(n : ℝ), 1], !₁[1, (n : ℝ)]} := by
+      sorry
+    have h₂ : !₂[1, ↑n] ∈ affineSpan ℝ {!₂[(n : ℝ), 1], !₁[1, (n : ℝ)]} := sorry
+    rw [Finset.filter_cons_of_neg _ _ _ _ (notSunny_of_diag h₁ h₂ rfl (by norm_cast; omega))]
+    exact c.sunny-/
+
 lemma no_config_3_2_no_vert (c : Config 3 2) (h_no_vert : ∀ l ∈ c.ls, ¬ l ∥ yAxis) : False := by
-  obtain ⟨l₁, hl₁, meml₁⟩ := c.cover 1 1
-  obtain ⟨l₂, hl₂, meml₂⟩ := c.cover 1 2
-  obtain ⟨l₃, hl₃, meml₃⟩ := c.cover 1 3
+  obtain ⟨l₁, hl₁, meml₁⟩ := c.cover 1 1 (by norm_num) (by norm_num) (by norm_num)
+  obtain ⟨l₂, hl₂, meml₂⟩ := c.cover 1 2 (by norm_num) (by norm_num) (by norm_num)
+  obtain ⟨l₃, hl₃, meml₃⟩ := c.cover 1 3 (by norm_num) (by norm_num) (by norm_num)
   have hcard : #{l₁, l₂, l₃} = 3 := by
     refine Finset.card_eq_three.mpr ⟨l₁, l₂, l₃, fun h => ?_, fun h => ?_, fun h => ?_, rfl⟩
     <;> subst h
@@ -531,6 +564,11 @@ theorem result (n : Set.Ici 3) :
       · apply one_mem3
       · apply three_mem3
   · simp [answer] at ih ⊢
-    sorry
+    ext
+    constructor
+    · intro h
+      sorry
+    · intro h
+      sorry
 
 end IMO2025P1
