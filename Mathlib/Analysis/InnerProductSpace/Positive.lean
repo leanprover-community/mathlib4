@@ -449,13 +449,13 @@ theorem IsStarProjection.le_iff_comp_eq_left {p q : E →L[𝕜] E}
 theorem starProjection_le_starProjection_iff (U V : Submodule 𝕜 E)
     [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] :
     U.starProjection ≤ V.starProjection ↔ U ≤ V := by
-  rw [IsStarProjection.le_iff_comp_eq_left (isStarProjection_starProjection _)
-      (isStarProjection_starProjection _), ← star_inj,
-    (isStarProjection_starProjection _).isSelfAdjoint, star_eq_adjoint, adjoint_comp]
-  simp_rw [← star_eq_adjoint, (isStarProjection_starProjection _).isSelfAdjoint.star_eq]
+  rw [isStarProjection_starProjection.le_iff_comp_eq_left
+      isStarProjection_starProjection, ← star_inj,
+    isStarProjection_starProjection.isSelfAdjoint, star_eq_adjoint, adjoint_comp]
+  simp_rw [← star_eq_adjoint, isStarProjection_starProjection.isSelfAdjoint.star_eq]
   rw [← coe_inj, coe_comp, LinearMap.IsIdempotentElem.comp_eq_right_iff]
   · have {p : E →L[𝕜] E} : LinearMap.range p.toLinearMap = LinearMap.range p := rfl
     simp_rw [this, Submodule.range_starProjection]
-  · exact congr(LinearMapClass.linearMap $((isStarProjection_starProjection V).isIdempotentElem.eq))
+  · exact congr(LinearMapClass.linearMap $(isStarProjection_starProjection.isIdempotentElem.eq))
 
 end ContinuousLinearMap
