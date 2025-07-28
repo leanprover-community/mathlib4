@@ -145,9 +145,11 @@ namespace CategoryTheory
 variable
   {D : Type u₂} [Category.{v₂} D] [MonoidalCategory D] [BraidedCategory D]
   {E : Type u₃} [Category.{v₃} E] [MonoidalCategory E] [BraidedCategory E]
-  {F F' : C ⥤ D} [F.LaxBraided] [F'.LaxBraided] {G : D ⥤ E} [G.LaxBraided]
+  {F F' : C ⥤ D} {G : D ⥤ E}
 
 namespace Functor
+section LaxBraided
+variable [F.LaxBraided] [F'.LaxBraided] [G.LaxBraided]
 
 open scoped Obj
 
@@ -208,6 +210,9 @@ def mapCommMonFunctor : LaxBraidedFunctor C D ⥤ CommMon_ C ⥤ CommMon_ D wher
   map α := { app A := .mk' (α.hom.app A.X) }
   map_comp _ _ := rfl
 
+protected instance Faithful.mapCommMon [F.Faithful] : F.mapCommMon.Faithful where
+  map_injective hfg := F.mapMon.map_injective hfg
+
 /-- Natural transformations between functors lift to monoid objects. -/
 @[simps!]
 noncomputable def mapCommMonNatTrans (f : F ⟶ F') [NatTrans.IsMonoidal f] :
@@ -219,6 +224,22 @@ noncomputable def mapCommMonNatTrans (f : F ⟶ F') [NatTrans.IsMonoidal f] :
 noncomputable def mapCommMonNatIso (e : F ≅ F') [NatTrans.IsMonoidal e.hom] :
     F.mapCommMon ≅ F'.mapCommMon :=
   NatIso.ofComponents fun X ↦ CommMon_.mkIso (e.app _)
+
+end LaxBraided
+
+section Braided
+variable [F.Braided]
+
+protected instance Full.mapCommMon [F.Full] [F.Faithful] : F.mapCommMon.Full where
+  map_surjective := F.mapMon.map_surjective
+
+/-- If `F : C ⥤ D` is a fully faithful monoidal functor, then `Grp(F) : Grp C ⥤ Grp D` is fully
+faithful too. -/
+protected noncomputable def FullyFaithful.mapCommMon (hF : F.FullyFaithful) :
+    F.mapCommMon.FullyFaithful where
+  preimage f := .mk <| hF.preimage f.hom
+
+end Braided
 
 end Functor
 

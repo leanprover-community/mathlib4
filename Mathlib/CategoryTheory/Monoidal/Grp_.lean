@@ -351,6 +351,18 @@ noncomputable def mapGrp : Grp_ C ⥤ Grp_ D where
             Functor.Monoidal.toUnit_ε_assoc, ← Functor.map_comp] } }
   map f := F.mapMon.map f
 
+protected instance Faithful.mapGrp [F.Faithful] : F.mapGrp.Faithful where
+  map_injective hfg := F.mapMon.map_injective hfg
+
+protected instance Full.mapGrp [F.Full] [F.Faithful] : F.mapGrp.Full where
+  map_surjective := F.mapMon.map_surjective
+
+/-- If `F : C ⥤ D` is a fully faithful monoidal functor, then `Grp(F) : Grp C ⥤ Grp D` is fully
+faithful too. -/
+protected noncomputable def FullyFaithful.mapGrp (hF : F.FullyFaithful) :
+    F.mapGrp.FullyFaithful where
+  preimage f := .mk <| hF.preimage f.hom
+
 @[simp]
 theorem mapGrp_id_one (A : Grp_ C) :
     η[((𝟭 C).mapGrp.obj A).X] = 𝟙 _ ≫ η[A.X] :=
