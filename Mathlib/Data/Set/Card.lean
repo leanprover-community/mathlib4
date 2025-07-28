@@ -118,6 +118,13 @@ theorem encard_union_eq (h : Disjoint s t) : (s ∪ t).encard = s.encard + t.enc
   classical
   simp [encard, ENat.card_congr (Equiv.Set.union h)]
 
+theorem encard_ne_add_one (a : α) :
+    ({x | x ≠ a}).encard + 1 = ENat.card α := by
+  have : Disjoint {x | x ≠ a} {a} := disjoint_singleton_right.mpr <| by simp
+  replace this := (Set.encard_union_eq this).symm
+  have aux : {x | x ≠ a} ∪ {a} = univ := by ext x; simp [eq_or_ne x a]
+  rwa [encard_singleton, aux, encard_univ] at this
+
 theorem encard_insert_of_notMem {a : α} (has : a ∉ s) : (insert a s).encard = s.encard + 1 := by
   rw [← union_singleton, encard_union_eq (by simpa), encard_singleton]
 
@@ -411,6 +418,10 @@ theorem _root_.Function.Injective.encard_image (hf : f.Injective) (s : Set α) :
     (f '' s).encard = s.encard :=
   hf.injOn.encard_image
 
+theorem _root_.Function.Injective.encard_range (hf : f.Injective) :
+    ENat.card α ≤ (range f).encard := by
+  rw [← image_univ, hf.encard_image, encard_univ]
+
 theorem _root_.Function.Embedding.encard_le (e : s ↪ t) : s.encard ≤ t.encard := by
   rw [← encard_univ_coe, ← e.injective.encard_image, ← Subtype.coe_injective.encard_image]
   exact encard_mono (by simp)
@@ -480,6 +491,29 @@ theorem Finite.exists_bijOn_of_encard_eq [Nonempty β] (hs : s.Finite) (h : s.en
   convert hinj.bijOn_image
   rw [(hs.image f).eq_of_subset_of_encard_le (image_subset_iff.mpr hf)
     (h.symm.trans hinj.encard_image.symm).le]
+
+/-- A version of the pigeonhole principle for `Set`s rather than `Finset`s.
+
+See also `Finset.exists_ne_map_eq_of_card_lt_of_maps_to`. -/
+lemma exists_ne_map_eq_of_encard_lt_of_maps_to (hc : t.encard < s.encard) (hf : MapsTo f s t) :
+    ∃ a₁ a₂, a₁ ≠ a₂ ∧ f a₁ = f a₂ := by
+  let f' (a : s) : t := ⟨f a, by apply hf a.property⟩
+  suffices ∃ a₁ a₂, a₁ ≠ a₂ ∧ f' a₁ = f' a₂ by
+    obtain ⟨a₁, a₂, hne, heq⟩ := this
+    exact ⟨a₁, a₂, by rwa [Subtype.coe_ne_coe], by simpa [f'] using heq⟩
+  have ht : t.Finite := by
+    obtain ⟨k, hk⟩ := ENat.ne_top_iff_exists.mp (lt_top_of_lt hc).ne
+    exact finite_of_encard_eq_coe hk.symm
+  cases finite_or_infinite s
+  · let _i : Fintype s := Fintype.ofFinite s
+    let _i : Fintype t := ht.fintype
+    replace hcard : Fintype.card t < Fintype.card s := by
+      rwa [← coe_fintypeCard, ← coe_fintypeCard, Nat.cast_lt] at hc
+    obtain ⟨a₁, -, a₂, -, h⟩ :=
+      Finset.exists_ne_map_eq_of_card_lt_of_maps_to hcard (f := f') (by simp)
+    exact ⟨a₁, a₂, h⟩
+  · have : Finite t := ht
+    simpa [Function.Injective, and_comm] using not_injective_infinite_finite f'
 
 end Function
 
