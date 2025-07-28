@@ -1038,6 +1038,11 @@ theorem orthogonalProjection_coe_eq_linearProjOfIsCompl [K.HasOrthogonalProjecti
 @[deprecated (since := "2025-07-11")] alias orthogonalProjection_coe_linearMap_eq_linearProj :=
   orthogonalProjection_coe_eq_linearProjOfIsCompl
 
+open Submodule in
+theorem starProjection_coe_eq_isCompl_projection [K.HasOrthogonalProjection] :
+    K.starProjection.toLinearMap = K.isCompl_orthogonal_of_hasOrthogonalProjection.projection := by
+  simp [starProjection, orthogonalProjection_coe_eq_linearProjOfIsCompl, IsCompl.projection]
+
 /-- The reflection in `K` of an element of `Kᗮ` is its negation. -/
 theorem reflection_mem_subspace_orthogonalComplement_eq_neg [K.HasOrthogonalProjection] {v : E}
     (hv : v ∈ Kᗮ) : K.reflection v = -v := by
