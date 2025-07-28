@@ -200,19 +200,11 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
             obtain ⟨i, hi⟩ := exists_root_index χ hχ_nonzero
             obtain ⟨j, hj⟩ := exists_root_index α.1 α.2.2
             have h_pairing_zero : S.pairing i j = 0 := by
-              obtain ⟨i', j', hi', hj', h_zero⟩ :=
-                IsKilling.pairing_zero_of_trivial_sum_diff_spaces H χ α.1 hχ_nonzero α.2.2 w_plus
-                  w_minus h_plus_bot h_minus_bot
-              have h_i_eq : i = i' := by
-                have h_root_eq : S.root i = S.root i' := by
-                  rw [hi, hi']
-                exact Function.Embedding.injective S.root h_root_eq
-              have h_j_eq : j = j' := by
-                have h_root_eq : S.root j = S.root j' := by
-                  rw [hj, hj']
-                exact Function.Embedding.injective S.root h_root_eq
-              rw [h_i_eq, h_j_eq]
-              exact h_zero
+              obtain ⟨i', j', hi', hj', h_zero⟩ := IsKilling.pairing_zero_of_trivial_sum_diff_spaces
+                H χ α.1 hχ_nonzero α.2.2 w_plus w_minus h_plus_bot h_minus_bot
+              have h_i_eq : i = i' := Function.Embedding.injective S.root (by rw [hi, hi'])
+              have h_j_eq : j = j' := Function.Embedding.injective S.root (by rw [hj, hj'])
+              rwa [h_i_eq, h_j_eq]
 
             have h_pos_zero : ⁅x_χ, m_pos⁆ = 0 := by
               have h_in_bot : ⁅x_χ, m_pos⁆ ∈ (⊥ : LieSubmodule K H L) := by
@@ -231,22 +223,10 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
                 have h_pairing_eq : S.pairing i j = i.1 (LieAlgebra.IsKilling.coroot j.1) := by
                   rw [LieAlgebra.IsKilling.rootSystem_pairing_apply]
                 rw [h_pairing_zero] at h_pairing_eq
-                have hi_val : i.1 = χ := by
-                  have h_eq : i.1.toLinear = χ.toLinear := by
-                    rw [← hi]
-                    rfl
-                  apply Weight.ext
-                  intro x
-                  have := LinearMap.ext_iff.mp h_eq x
-                  exact this
-                have hj_val : j.1 = α.1 := by
-                  have h_eq : j.1.toLinear = α.1.toLinear := by
-                    rw [← hj]
-                    rfl
-                  apply Weight.ext
-                  intro x
-                  have := LinearMap.ext_iff.mp h_eq x
-                  exact this
+                have w_eq {w₁ w₂ : Weight K H L} (h : w₁.toLinear = w₂.toLinear) : w₁ = w₂ := by
+                  apply Weight.ext; intro x; exact LinearMap.ext_iff.mp h x
+                have hi_val : i.1 = χ := w_eq (by rw [← hi]; rfl)
+                have hj_val : j.1 = α.1 := w_eq (by rw [← hj]; rfl)
                 rw [hi_val, hj_val] at h_pairing_eq
                 exact h_pairing_eq.symm
               obtain ⟨h_elem, hh_elem, hh_eq⟩ := hm_h
