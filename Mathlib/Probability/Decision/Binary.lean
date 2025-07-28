@@ -191,7 +191,7 @@ lemma bayesBinaryRisk_of_measure_false_eq_zero (μ ν : Measure 𝓧) (hπ : π 
     bayesBinaryRisk μ ν π = 0 :=
   le_antisymm ((bayesBinaryRisk_le_min μ ν π).trans (by simp [hπ])) zero_le'
 
-lemma bayesBinaryRisk_symm (μ ν : Measure 𝓧) (π : Measure Bool) :
+lemma bayesBinaryRisk_comm (μ ν : Measure 𝓧) (π : Measure Bool) :
     bayesBinaryRisk μ ν π = bayesBinaryRisk ν μ (π.map Bool.not) := by
   have : (Bool.not ⁻¹' {true}) = {false} := by ext x; simp
   have h1 : (π.map Bool.not) {true} = π {false} := by

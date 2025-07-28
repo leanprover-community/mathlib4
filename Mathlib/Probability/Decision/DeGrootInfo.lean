@@ -48,7 +48,7 @@ lemma deGrootInfo_eq_riskIncrease :
   ext a : 1
   have  h_meas :
       Measurable (Function.uncurry fun a (x : Unit) ↦ (if a = true then ν else μ) univ) := by
-    sorry
+    fun_prop
   cases a <;> simp [Kernel.withDensity_apply _ h_meas]
 
 lemma deGrootInfo_eq_min_sub (μ ν : Measure 𝓧) (π : Measure Bool) :
@@ -66,13 +66,12 @@ lemma deGrootInfo_eq_min_sub (μ ν : Measure 𝓧) (π : Measure Bool) :
 lemma deGrootInfo_le_min : deGrootInfo μ ν π ≤ min (π {false} * μ univ) (π {true} * ν univ) :=
   deGrootInfo_eq_min_sub μ ν π ▸ tsub_le_self
 
-lemma deGrootInfo_ne_top [IsFiniteMeasure μ] [IsFiniteMeasure π] :
-    deGrootInfo μ ν π ≠ ⊤ :=
+lemma deGrootInfo_ne_top [IsFiniteMeasure μ] [IsFiniteMeasure π] : deGrootInfo μ ν π ≠ ⊤ :=
   (deGrootInfo_le_min.trans_lt <| min_lt_iff.mpr <| Or.inl
     <| ENNReal.mul_lt_top (measure_lt_top π _) (measure_lt_top μ _)).ne
 
-lemma deGrootInfo_symm : deGrootInfo μ ν π = deGrootInfo ν μ (π.map Bool.not) := by
-  simp_rw [deGrootInfo, bayesBinaryRisk_symm _ _ π]
+lemma deGrootInfo_comm : deGrootInfo μ ν π = deGrootInfo ν μ (π.map Bool.not) := by
+  simp_rw [deGrootInfo, bayesBinaryRisk_comm _ _ π]
 
 lemma deGrootInfo_of_measure_true_eq_zero (μ ν : Measure 𝓧) (hπ : π {true} = 0) :
     deGrootInfo μ ν π = 0 :=
