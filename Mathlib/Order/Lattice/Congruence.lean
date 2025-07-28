@@ -5,6 +5,9 @@ Authors: Christopher Hoskin
 -/
 import Mathlib.Order.Lattice
 
+
+variable {α : Type*}
+
 /-!
 ### Lattice Congruences
 -/
