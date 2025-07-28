@@ -3,7 +3,7 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Decision.StatInfo
+import Mathlib.Probability.Decision.DeGrootInfo
 
 /-!
 # Total variation distance
@@ -43,38 +43,38 @@ variable {𝓧 𝓨 : Type*} {m𝓧 : MeasurableSpace 𝓧} {m𝓨 : MeasurableS
   {μ ν : Measure 𝓧}
 
 /-- Total variation distance between two measures. -/
-noncomputable def tv (μ ν : Measure 𝓧) : ℝ := (statInfo μ ν (boolMeasure 1 1)).toReal
+noncomputable def tvDist (μ ν : Measure 𝓧) : ℝ := (deGrootInfo μ ν (boolMeasure 1 1)).toReal
 
 instance : IsFiniteMeasure (boolMeasure 1 1) := by constructor; simp
 
-@[simp] lemma tv_zero_left : tv (0 : Measure 𝓧) ν = 0 := by simp [tv]
+@[simp] lemma tvDist_zero_left : tvDist (0 : Measure 𝓧) ν = 0 := by simp [tvDist]
 
-@[simp] lemma tv_zero_right : tv μ (0 : Measure 𝓧) = 0 := by simp [tv]
+@[simp] lemma tvDist_zero_right : tvDist μ (0 : Measure 𝓧) = 0 := by simp [tvDist]
 
-@[simp] lemma tv_self : tv μ μ = 0 := by simp [tv]
+@[simp] lemma tvDist_self : tvDist μ μ = 0 := by simp [tvDist]
 
-lemma tv_nonneg : 0 ≤ tv μ ν := ENNReal.toReal_nonneg
+lemma tvDist_nonneg : 0 ≤ tvDist μ ν := ENNReal.toReal_nonneg
 
-lemma tv_le [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
-    tv μ ν ≤ min (μ.real .univ) (ν.real .univ) := by
+lemma tvDist_le [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
+    tvDist μ ν ≤ min (μ.real .univ) (ν.real .univ) := by
   rw [Measure.real, Measure.real, ← ENNReal.toReal_min (measure_ne_top _ _) (measure_ne_top _ _)]
   refine ENNReal.toReal_mono ?_ ?_
   · simp
-  · have h := statInfo_le_min (μ := μ) (ν := ν) (π := boolMeasure 1 1)
+  · have h := deGrootInfo_le_min (μ := μ) (ν := ν) (π := boolMeasure 1 1)
     simpa only [boolMeasure_apply_false, one_mul, boolMeasure_apply_true] using h
 
 /-- **Data processing inequality** for the total variation distance. -/
-lemma tv_comp_le (μ ν : Measure 𝓧) [IsFiniteMeasure μ] (κ : Kernel 𝓧 𝓨) [IsMarkovKernel κ] :
-    tv (κ ∘ₘ μ) (κ ∘ₘ ν) ≤ tv μ ν :=
-  ENNReal.toReal_mono statInfo_ne_top (statInfo_comp_le _ _ _ _)
+lemma tvDist_comp_le (μ ν : Measure 𝓧) [IsFiniteMeasure μ] (κ : Kernel 𝓧 𝓨) [IsMarkovKernel κ] :
+    tvDist (κ ∘ₘ μ) (κ ∘ₘ ν) ≤ tvDist μ ν :=
+  ENNReal.toReal_mono deGrootInfo_ne_top (deGrootInfo_comp_le _ _ _ _)
 
-lemma tv_eq_min_sub_lintegral {ζ : Measure 𝓧} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+lemma tvDist_eq_min_sub_lintegral {ζ : Measure 𝓧} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     [SigmaFinite ζ] (hμζ : μ ≪ ζ) (hνζ : ν ≪ ζ) :
-    tv μ ν = min (μ.real .univ) (ν.real .univ)
+    tvDist μ ν = min (μ.real .univ) (ν.real .univ)
       - (∫⁻ x, min ((∂μ/∂ζ) x) ((∂ν/∂ζ) x) ∂ζ).toReal := by
-  have h := statInfo_eq_min_sub_lintegral' (boolMeasure 1 1) hμζ hνζ
+  have h := deGrootInfo_eq_min_sub_lintegral' (boolMeasure 1 1) hμζ hνζ
   simp only [boolMeasure_apply_false, one_mul, boolMeasure_apply_true] at h
-  rw [tv, h, Measure.real, Measure.real,
+  rw [tvDist, h, Measure.real, Measure.real,
     ← ENNReal.toReal_min (measure_ne_top _ _) (measure_ne_top _ _),
     ENNReal.toReal_sub_of_le _ (by simp)]
   calc ∫⁻ x, min ((∂μ/∂ζ) x) ((∂ν/∂ζ) x) ∂ζ
@@ -85,17 +85,18 @@ lemma tv_eq_min_sub_lintegral {ζ : Measure 𝓧} [IsFiniteMeasure μ] [IsFinite
   _ = min (μ .univ) (ν .univ) := by
     rw [Measure.lintegral_rnDeriv hμζ, Measure.lintegral_rnDeriv hνζ]
 
-lemma tv_eq_one_sub_lintegral {ζ : Measure 𝓧} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
+lemma tvDist_eq_one_sub_lintegral {ζ : Measure 𝓧} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
     [SigmaFinite ζ] (hμζ : μ ≪ ζ) (hνζ : ν ≪ ζ) :
-    tv μ ν = 1 - (∫⁻ x, min ((∂μ/∂ζ) x) ((∂ν/∂ζ) x) ∂ζ).toReal := by
-  simp [tv_eq_min_sub_lintegral hμζ hνζ]
+    tvDist μ ν = 1 - (∫⁻ x, min ((∂μ/∂ζ) x) ((∂ν/∂ζ) x) ∂ζ).toReal := by
+  simp [tvDist_eq_min_sub_lintegral hμζ hνζ]
 
-lemma tv_eq_min_sub_iInf_measurableSet (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
-    tv μ ν = min (μ.real .univ) (ν.real .univ)
+lemma tvDist_eq_min_sub_iInf_measurableSet (μ ν : Measure 𝓧) [IsFiniteMeasure μ]
+    [IsFiniteMeasure ν] :
+    tvDist μ ν = min (μ.real .univ) (ν.real .univ)
       - ⨅ (E : {E // MeasurableSet E}), μ.real E + ν.real E.1ᶜ := by
-  have h := statInfo_eq_min_sub_iInf_measurableSet μ ν (boolMeasure 1 1)
+  have h := deGrootInfo_eq_min_sub_iInf_measurableSet μ ν (boolMeasure 1 1)
   simp only [boolMeasure_apply_false, one_mul, boolMeasure_apply_true] at h
-  rw [tv, h, Measure.real, Measure.real,
+  rw [tvDist, h, Measure.real, Measure.real,
     ← ENNReal.toReal_min (measure_ne_top _ _) (measure_ne_top _ _),
     ENNReal.toReal_sub_of_le _ (by simp)]
   · congr
@@ -111,9 +112,9 @@ lemma tv_eq_min_sub_iInf_measurableSet (μ ν : Measure 𝓧) [IsFiniteMeasure �
     · exact (iInf_le _ .univ).trans (by simp)
     · exact (iInf_le _ ∅).trans (by simp)
 
-lemma tv_eq_one_sub_iInf_measurableSet (μ ν : Measure 𝓧) [IsProbabilityMeasure μ]
+lemma tvDist_eq_one_sub_iInf_measurableSet (μ ν : Measure 𝓧) [IsProbabilityMeasure μ]
     [IsProbabilityMeasure ν] :
-    tv μ ν = 1 - ⨅ (E : {E // MeasurableSet E}), μ.real E + ν.real E.1ᶜ := by
-  simp [tv_eq_min_sub_iInf_measurableSet]
+    tvDist μ ν = 1 - ⨅ (E : {E // MeasurableSet E}), μ.real E + ν.real E.1ᶜ := by
+  simp [tvDist_eq_min_sub_iInf_measurableSet]
 
 end ProbabilityTheory

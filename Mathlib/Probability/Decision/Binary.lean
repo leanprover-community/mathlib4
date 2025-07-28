@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
 import Mathlib.Probability.Decision.BayesEstimator
-import Mathlib.Probability.Decision.BoolKernel
 import Mathlib.Probability.Decision.BoolMeasure
+import Mathlib.Probability.Kernel.Bool
 
 /-!
 # Simple Bayesian binary hypothesis testing

@@ -12,11 +12,11 @@ import Mathlib.Probability.Decision.RiskIncrease
 
 ## Main definitions
 
-* `statInfo`
+* `deGrootInfo`
 
 ## Main statements
 
-* `statInfo_comp_le`: data-processing inequality
+* `deGrootInfo_comp_le`: data-processing inequality
 
 ## Notation
 
@@ -37,13 +37,13 @@ variable {𝓧 𝓨 : Type*} {m𝓧 : MeasurableSpace 𝓧} {m𝓨 : MeasurableS
 the prior `π` on `Bool`.
 This is the difference of the Bayes risks between estimation without seeing the data and with it. -/
 noncomputable
-def statInfo (μ ν : Measure 𝓧) (π : Measure Bool) : ℝ≥0∞ :=
+def deGrootInfo (μ ν : Measure 𝓧) (π : Measure Bool) : ℝ≥0∞ :=
   bayesBinaryRisk (Kernel.discard 𝓧 ∘ₘ μ) (Kernel.discard 𝓧 ∘ₘ ν) π - bayesBinaryRisk μ ν π
 
-lemma statInfo_eq_riskIncrease :
-  statInfo μ ν π = riskIncrease binaryLoss (boolKernel μ ν) π := by
-  simp only [statInfo, Measure.discard_comp, riskIncrease, Kernel.comp_discard', boolKernel_apply,
-    bayesBinaryRisk]
+lemma deGrootInfo_eq_riskIncrease :
+  deGrootInfo μ ν π = riskIncrease binaryLoss (boolKernel μ ν) π := by
+  simp only [deGrootInfo, Measure.discard_comp, riskIncrease, Kernel.comp_discard',
+    boolKernel_apply, bayesBinaryRisk]
   congr
   ext a : 1
   have  h_meas :
@@ -51,46 +51,46 @@ lemma statInfo_eq_riskIncrease :
     sorry
   cases a <;> simp [Kernel.withDensity_apply _ h_meas]
 
-lemma statInfo_eq_min_sub (μ ν : Measure 𝓧) (π : Measure Bool) :
-    statInfo μ ν π = min (π {false} * μ univ) (π {true} * ν univ) - bayesBinaryRisk μ ν π := by
-  simp_rw [statInfo, Measure.discard_comp, bayesBinaryRisk_dirac]
+lemma deGrootInfo_eq_min_sub (μ ν : Measure 𝓧) (π : Measure Bool) :
+    deGrootInfo μ ν π = min (π {false} * μ univ) (π {true} * ν univ) - bayesBinaryRisk μ ν π := by
+  simp_rw [deGrootInfo, Measure.discard_comp, bayesBinaryRisk_dirac]
 
-@[simp] lemma statInfo_zero_left : statInfo 0 ν π = 0 := by simp [statInfo]
+@[simp] lemma deGrootInfo_zero_left : deGrootInfo 0 ν π = 0 := by simp [deGrootInfo]
 
-@[simp] lemma statInfo_zero_right : statInfo μ 0 π = 0 := by simp [statInfo]
+@[simp] lemma deGrootInfo_zero_right : deGrootInfo μ 0 π = 0 := by simp [deGrootInfo]
 
-@[simp] lemma statInfo_zero_prior : statInfo μ ν 0 = 0 := by simp [statInfo]
+@[simp] lemma deGrootInfo_zero_prior : deGrootInfo μ ν 0 = 0 := by simp [deGrootInfo]
 
-@[simp] lemma statInfo_self : statInfo μ μ π = 0 := by simp [statInfo]
+@[simp] lemma deGrootInfo_self : deGrootInfo μ μ π = 0 := by simp [deGrootInfo]
 
-lemma statInfo_le_min : statInfo μ ν π ≤ min (π {false} * μ univ) (π {true} * ν univ) :=
-  statInfo_eq_min_sub μ ν π ▸ tsub_le_self
+lemma deGrootInfo_le_min : deGrootInfo μ ν π ≤ min (π {false} * μ univ) (π {true} * ν univ) :=
+  deGrootInfo_eq_min_sub μ ν π ▸ tsub_le_self
 
-lemma statInfo_ne_top [IsFiniteMeasure μ] [IsFiniteMeasure π] :
-    statInfo μ ν π ≠ ⊤ :=
-  (statInfo_le_min.trans_lt <| min_lt_iff.mpr <| Or.inl
+lemma deGrootInfo_ne_top [IsFiniteMeasure μ] [IsFiniteMeasure π] :
+    deGrootInfo μ ν π ≠ ⊤ :=
+  (deGrootInfo_le_min.trans_lt <| min_lt_iff.mpr <| Or.inl
     <| ENNReal.mul_lt_top (measure_lt_top π _) (measure_lt_top μ _)).ne
 
-lemma statInfo_symm : statInfo μ ν π = statInfo ν μ (π.map Bool.not) := by
-  simp_rw [statInfo, bayesBinaryRisk_symm _ _ π]
+lemma deGrootInfo_symm : deGrootInfo μ ν π = deGrootInfo ν μ (π.map Bool.not) := by
+  simp_rw [deGrootInfo, bayesBinaryRisk_symm _ _ π]
 
-lemma statInfo_of_measure_true_eq_zero (μ ν : Measure 𝓧) (hπ : π {true} = 0) :
-    statInfo μ ν π = 0 :=
-  le_antisymm (statInfo_le_min.trans (by simp [hπ])) zero_le'
+lemma deGrootInfo_of_measure_true_eq_zero (μ ν : Measure 𝓧) (hπ : π {true} = 0) :
+    deGrootInfo μ ν π = 0 :=
+  le_antisymm (deGrootInfo_le_min.trans (by simp [hπ])) zero_le'
 
-lemma statInfo_of_measure_false_eq_zero (μ ν : Measure 𝓧) (hπ : π {false} = 0) :
-    statInfo μ ν π = 0 :=
-  le_antisymm (statInfo_le_min.trans (by simp [hπ])) zero_le'
+lemma deGrootInfo_of_measure_false_eq_zero (μ ν : Measure 𝓧) (hπ : π {false} = 0) :
+    deGrootInfo μ ν π = 0 :=
+  le_antisymm (deGrootInfo_le_min.trans (by simp [hπ])) zero_le'
 
 /-- **Data processing inequality** for the statistical information. -/
-lemma statInfo_comp_le (μ ν : Measure 𝓧) (π : Measure Bool) (η : Kernel 𝓧 𝓨) [IsMarkovKernel η] :
-    statInfo (η ∘ₘ μ) (η ∘ₘ ν) π ≤ statInfo μ ν π := by
+lemma deGrootInfo_comp_le (μ ν : Measure 𝓧) (π : Measure Bool) (η : Kernel 𝓧 𝓨) [IsMarkovKernel η] :
+    deGrootInfo (η ∘ₘ μ) (η ∘ₘ ν) π ≤ deGrootInfo μ ν π := by
   refine tsub_le_tsub ?_ (bayesBinaryRisk_le_bayesBinaryRisk_comp _ _ _ _)
   simp [Measure.bind_apply .univ (Kernel.aemeasurable _)]
 
-lemma statInfo_boolMeasure_le_statInfo {E : Set 𝓧} (hE : MeasurableSet E) :
-    statInfo (Bool.boolMeasure (μ Eᶜ) (μ E)) (Bool.boolMeasure (ν Eᶜ) (ν E)) π
-      ≤ statInfo μ ν π := by
+lemma deGrootInfo_boolMeasure_le_deGrootInfo {E : Set 𝓧} (hE : MeasurableSet E) :
+    deGrootInfo (Bool.boolMeasure (μ Eᶜ) (μ E)) (Bool.boolMeasure (ν Eᶜ) (ν E)) π
+      ≤ deGrootInfo μ ν π := by
   have h_meas : Measurable fun x ↦ Bool.ofNat (E.indicator 1 x) :=
     (Measurable.of_discrete.comp' (measurable_one.indicator hE))
   let η : Kernel 𝓧 Bool := Kernel.deterministic (fun x ↦ Bool.ofNat (E.indicator 1 x)) h_meas
@@ -98,47 +98,47 @@ lemma statInfo_boolMeasure_le_statInfo {E : Set 𝓧} (hE : MeasurableSet E) :
     ext x; simp [Bool.ofNat]
   have h_true : (fun x ↦ Bool.ofNat (E.indicator 1 x)) ⁻¹' {true} = E := by
     ext x; simp [Bool.ofNat]
-  convert statInfo_comp_le μ ν π η <;>
+  convert deGrootInfo_comp_le μ ν π η <;>
   · ext
     · rw [Measure.deterministic_comp_eq_map, Measure.map_apply h_meas (by trivial), h_false,
         Bool.boolMeasure_apply_false]
     · rw [Measure.deterministic_comp_eq_map, Measure.map_apply h_meas (by trivial), h_true,
         Bool.boolMeasure_apply_true]
 
-lemma statInfo_eq_min_sub_lintegral (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+lemma deGrootInfo_eq_min_sub_lintegral (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (π : Measure Bool) [IsFiniteMeasure π] :
-    statInfo μ ν π = min (π {false} * μ univ) (π {true} * ν univ)
+    deGrootInfo μ ν π = min (π {false} * μ univ) (π {true} * ν univ)
       - ∫⁻ x, min (π {false} * μ.rnDeriv (boolKernel μ ν ∘ₘ π) x)
       (π {true} * ν.rnDeriv (boolKernel μ ν ∘ₘ π) x) ∂(boolKernel μ ν ∘ₘ π) := by
-  rw [statInfo_eq_min_sub, bayesBinaryRisk_eq_lintegral_min]
+  rw [deGrootInfo_eq_min_sub, bayesBinaryRisk_eq_lintegral_min]
 
 lemma ENNReal.mul_min (a b c : ℝ≥0∞) : a * min b c = min (a * b) (a * c) := mul_left_mono.map_min
 
-lemma statInfo_eq_min_sub_lintegral' {ζ : Measure 𝓧} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+lemma deGrootInfo_eq_min_sub_lintegral' {ζ : Measure 𝓧} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     [SigmaFinite ζ] (π : Measure Bool) [IsFiniteMeasure π] (hμζ : μ ≪ ζ) (hνζ : ν ≪ ζ) :
-    statInfo μ ν π = min (π {false} * μ univ) (π {true} * ν univ)
+    deGrootInfo μ ν π = min (π {false} * μ univ) (π {true} * ν univ)
       - ∫⁻ x, min (π {false} * (∂μ/∂ζ) x) (π {true} * (∂ν/∂ζ) x) ∂ζ := by
   by_cases h_false : π {false} = 0
-  · simp [statInfo, h_false, bayesBinaryRisk_of_measure_false_eq_zero]
+  · simp [deGrootInfo, h_false, bayesBinaryRisk_of_measure_false_eq_zero]
   by_cases h_true : π {true} = 0
-  · simp [statInfo, h_true, bayesBinaryRisk_of_measure_true_eq_zero]
+  · simp [deGrootInfo, h_true, bayesBinaryRisk_of_measure_true_eq_zero]
   have hμac : μ ≪ (boolKernel μ ν ∘ₘ π) :=
     absolutelyContinuous_boolKernel_comp_measure_left μ ν h_false
   have hνac : ν ≪ (boolKernel μ ν ∘ₘ π) :=
     absolutelyContinuous_boolKernel_comp_measure_right μ ν h_true
   have hacζ : (boolKernel μ ν ∘ₘ π) ≪ ζ :=
     boolKernel_comp_measure μ ν π ▸ (hνζ.smul_left _).add_left (hμζ.smul_left _)
-  rw [statInfo_eq_min_sub_lintegral, ← lintegral_rnDeriv_mul hacζ (by fun_prop)]
+  rw [deGrootInfo_eq_min_sub_lintegral, ← lintegral_rnDeriv_mul hacζ (by fun_prop)]
   congr 1
   apply lintegral_congr_ae
   filter_upwards [Measure.rnDeriv_mul_rnDeriv hμac, Measure.rnDeriv_mul_rnDeriv hνac] with x hxμ hxν
   rw [ENNReal.mul_min, mul_comm, mul_comm _ (π _ * _), mul_assoc, mul_assoc]
   congr
 
-lemma statInfo_eq_min_sub_iInf_measurableSet (μ ν : Measure 𝓧) [IsFiniteMeasure μ]
+lemma deGrootInfo_eq_min_sub_iInf_measurableSet (μ ν : Measure 𝓧) [IsFiniteMeasure μ]
     [IsFiniteMeasure ν] (π : Measure Bool) [IsFiniteMeasure π] :
-    statInfo μ ν π = min (π {false} * μ univ) (π {true} * ν univ)
+    deGrootInfo μ ν π = min (π {false} * μ univ) (π {true} * ν univ)
       - ⨅ E, ⨅ (_ : MeasurableSet E), π {false} * μ E + π {true} * ν Eᶜ := by
-  rw [statInfo_eq_min_sub, bayesBinaryRisk_eq_iInf_measurableSet]
+  rw [deGrootInfo_eq_min_sub, bayesBinaryRisk_eq_iInf_measurableSet]
 
 end ProbabilityTheory
