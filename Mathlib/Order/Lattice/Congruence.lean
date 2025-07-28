@@ -3,7 +3,9 @@ Copyright (c) 2025 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
+import Mathlib.Data.Setoid.Basic
 import Mathlib.Order.Lattice
+import Mathlib.Order.Hom.Lattice
 
 /-!
 # Lattice Congruences
@@ -96,3 +98,10 @@ def LatticeCon.mk3 [Lattice α] (r : α → α → Prop) (h₁ : IsRefl α r)
           conv_lhs => rw [sup_comm]
           conv_rhs => rw [sup_comm]
           exact compatible_left_sup h2) (compatible_left_sup h1))
+
+/-- The kernel of a lattice homomorphism as a lattice congruence -/
+@[simps!]
+def LatticeCon.ker [Lattice α] [Lattice β] [LatticeHomClass F α β] (f : F) : LatticeCon α where
+  toSetoid := Setoid.ker f
+  inf _ _ := by simp_all only [Setoid.ker, onFun, map_inf]
+  sup _ _ := by simp_all only [Setoid.ker, onFun, map_sup]
