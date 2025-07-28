@@ -118,7 +118,7 @@ theorem inter_eq_singleton_orthogonalProjection {s : AffineSubspace 𝕜 P} [Non
     (mk'_nonempty p s.directionᗮ)
     (by
       rw [direction_mk' p s.directionᗮ]
-      exact Submodule.isCompl_orthogonal_of_completeSpace)
+      exact Submodule.isCompl_orthogonal_of_hasOrthogonalProjection)
   rwa [Set.eq_singleton_iff_nonempty_unique_mem.1 hq |>.2 _
     ⟨orthogonalProjection_mem _, orthogonalProjection_mem_orthogonal _ _⟩]
 
