@@ -60,6 +60,14 @@ instance instMeasurableAdd₂ {α : Type*} {m : MeasurableSpace α} : Measurable
   · exact (Measure.measurable_coe hs).comp measurable_fst
   · exact (Measure.measurable_coe hs).comp measurable_snd
 
+-- todo: there is no typeclass for measurability of `SMul` only on that side, otherwise we could
+-- turn that into an instance.
+lemma _root_.Measurable.smul_measure {f : α → ℝ≥0∞} (hf : Measurable f) (μ : Measure β) :
+    Measurable (fun x ↦ f x • μ) := by
+  refine Measure.measurable_of_measurable_coe _ fun s hs ↦ ?_
+  simp only [Measure.smul_apply, smul_eq_mul]
+  fun_prop
+
 theorem measurable_measure {μ : α → Measure β} :
     Measurable μ ↔ ∀ (s : Set β), MeasurableSet s → Measurable fun b => μ b s :=
   ⟨fun hμ _s hs => (measurable_coe hs).comp hμ, measurable_of_measurable_coe μ⟩
