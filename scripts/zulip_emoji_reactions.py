@@ -115,8 +115,8 @@ for message in messages:
 
         def remove_reaction(name: str, emoji_name: str, label_name: str, **kwargs) -> None:
             # We do not remove an emoji if the corresponding label is still present.
-            print(f'Removing {name}')
             if label_name not in PR_LABELS:
+                print(f'Removing {name}')
                 result = client.remove_reaction({
                     "message_id": message['id'],
                     "emoji_name": emoji_name,
@@ -143,7 +143,11 @@ for message in messages:
 
         # We should never remove any "this PR was migrated from a fork" reaction.
 
-        # Otherwise, remove all previous mutually exclusive emoji reactions.
+        # Otherwise, remove all previous mutually exclusive emoji reactions (unless
+        # PR_LABELS contains the corresponding label).
+        # Note that the 'merge' and 'closed-pr' reactions do not have a corresponding label,
+        # so we pass the empty string (which should never be in PR_LABELS) so that they are
+        # always removed.
         # If the emoji is a custom emoji, add the fields `emoji_code` and `reaction_type` as well.
         print("Removing previous reactions, if present.")
         if has_peace_sign:
