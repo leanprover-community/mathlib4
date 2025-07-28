@@ -47,11 +47,6 @@ variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpa
   [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F]
   {μ : Measure E} {ν : Measure F} {p : ℝ≥0∞}
 
-lemma _root_.ContinuousLinearMap.memLp {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace ℝ E] {_ : MeasurableSpace E}
-    {p : ℝ≥0∞} {μ : Measure E} (h : MemLp id p μ) (L : Dual ℝ E) :
-    MemLp L p μ := L.comp_memLp' h
-
 lemma integral_dual_prod' [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] {L : Dual ℝ (E × F)}
     (hLμ : MemLp (L.comp (.inl ℝ E F)) 1 μ) (hLν : MemLp (L.comp (.inr ℝ E F)) 1 ν) :
     (μ.prod ν)[L] = μ[L.comp (.inl ℝ E F)] + ν[L.comp (.inr ℝ E F)] := by
@@ -66,7 +61,7 @@ lemma integral_dual_prod' [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] {L
 lemma integral_dual_prod [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] {L : Dual ℝ (E × F)}
     (hμ : MemLp id 1 μ) (hν : MemLp id 1 ν) :
     (μ.prod ν)[L] = μ[L.comp (.inl ℝ E F)] + ν[L.comp (.inr ℝ E F)] :=
-  integral_dual_prod' (ContinuousLinearMap.memLp hμ _) (ContinuousLinearMap.memLp hν _)
+  integral_dual_prod' (ContinuousLinearMap.comp_memLp' _ hμ) (ContinuousLinearMap.comp_memLp' _ hν)
 
 lemma variance_dual_prod' [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] {L : Dual ℝ (E × F)}
     (hLμ : MemLp (L.comp (.inl ℝ E F)) 2 μ) (hLν : MemLp (L.comp (.inr ℝ E F)) 2 ν) :
@@ -79,7 +74,8 @@ lemma variance_dual_prod' [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] {L
 lemma variance_dual_prod [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] {L : Dual ℝ (E × F)}
     (hLμ : MemLp id 2 μ) (hLν : MemLp id 2 ν) :
     Var[L; μ.prod ν] = Var[L.comp (.inl ℝ E F); μ] + Var[L.comp (.inr ℝ E F); ν] :=
-  variance_dual_prod' (ContinuousLinearMap.memLp hLμ _) (ContinuousLinearMap.memLp hLν _)
+  variance_dual_prod' (ContinuousLinearMap.comp_memLp' _ hLμ)
+    (ContinuousLinearMap.comp_memLp' _ hLν)
 
 variable [IsGaussian μ] [IsGaussian ν] [BorelSpace E] [BorelSpace F]
 
@@ -124,9 +120,6 @@ lemma IsGaussian.map_rotation_eq_self [SecondCountableTopology E] [CompleteSpace
   rw [← add_div, ← add_div, ← neg_add, ← neg_add]
   congr 3
   norm_cast
-  change Var[(L.comp (.rotation θ)).comp (.inl ℝ E E); μ]
-        + Var[(L.comp (.rotation θ)).comp (.inr ℝ E E); μ]
-      = Var[L.comp (.inl ℝ E E); μ] + Var[L.comp (.inr ℝ E E); μ]
   have h1 : (L.comp (.rotation θ)).comp (.inl ℝ E E)
       = Real.cos θ • L.comp (.inl ℝ E E) - Real.sin θ • L.comp (.inr ℝ E E) := by
     ext x
@@ -142,34 +135,15 @@ lemma IsGaussian.map_rotation_eq_self [SecondCountableTopology E] [CompleteSpace
       ContinuousLinearMap.coe_smul', Pi.smul_apply, ContinuousLinearMap.inl_apply, smul_eq_mul]
     rw [← L.comp_inl_add_comp_inr]
     simp
-  rw [h1, h2, ← covariance_self (by fun_prop), ← covariance_self (by fun_prop),
-    ← covariance_self (by fun_prop), ← covariance_self (by fun_prop)]
-  simp only [ContinuousLinearMap.coe_sub', ContinuousLinearMap.coe_add']
-  rw [covariance_sub_left, covariance_sub_right, covariance_sub_right,
-    covariance_add_left, covariance_add_right, covariance_add_right]
-  rotate_left
-  · exact IsGaussian.memLp_dual _ _ _ (by simp)
-  · exact IsGaussian.memLp_dual _ _ _ (by simp)
-  · exact IsGaussian.memLp_dual _ _ _ (by simp)
-  · exact IsGaussian.memLp_dual _ _ _ (by simp)
-  · exact IsGaussian.memLp_dual _ _ _ (by simp)
-  · exact IsGaussian.memLp_dual _ _ _ (by simp)
-  · exact IsGaussian.memLp_dual _ _ _ (by simp)
-  · exact IsGaussian.memLp_dual _ _ _ (by simp)
-  · exact (IsGaussian.memLp_dual _ _ _ (by simp)).add (IsGaussian.memLp_dual _ _ _ (by simp))
-  · exact IsGaussian.memLp_dual _ _ _ (by simp)
-  · exact IsGaussian.memLp_dual _ _ _ (by simp)
-  · exact IsGaussian.memLp_dual _ _ _ (by simp)
-  · exact IsGaussian.memLp_dual _ _ _ (by simp)
-  · exact IsGaussian.memLp_dual _ _ _ (by simp)
-  · exact IsGaussian.memLp_dual _ _ _ (by simp)
-  · exact IsGaussian.memLp_dual _ _ _ (by simp)
-  · exact IsGaussian.memLp_dual _ _ _ (by simp)
-  · exact (IsGaussian.memLp_dual _ _ _ (by simp)).sub (IsGaussian.memLp_dual _ _ _ (by simp))
-  simp only [ContinuousLinearMap.coe_smul', ContinuousLinearMap.coe_comp', covariance_smul_right,
-    covariance_smul_left]
-  have h := Real.cos_sq_add_sin_sq θ
-  grind
+  rw [h1, h2]
+  simp only [ContinuousLinearMap.coe_sub', ContinuousLinearMap.coe_smul',
+    ContinuousLinearMap.coe_add']
+  rw [variance_sub, variance_smul, variance_add, variance_smul, variance_smul, covariance_smul_left,
+    covariance_smul_right, variance_smul, covariance_smul_left, covariance_smul_right]
+  · have h := Real.cos_sq_add_sin_sq θ
+    simp only [ContinuousLinearMap.coe_comp']
+    grind
+  all_goals exact (IsGaussian.memLp_dual _ _ _ (by simp)).const_smul _
 
 end Rotation
 

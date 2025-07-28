@@ -234,7 +234,7 @@ instance [SecondCountableTopology E] [IsGaussian μ] : HasTwoMoments μ where
 lemma _root_.ContinuousLinearMap.memLp_two {E : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E] {_ : MeasurableSpace E}
     {μ : Measure E} [HasTwoMoments μ] (L : Dual ℝ E) :
-    MemLp L 2 μ := L.memLp memLp_two_id
+    MemLp L 2 μ := L.comp_memLp' memLp_two_id
 
 section centeredToLp
 
