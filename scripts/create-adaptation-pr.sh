@@ -140,7 +140,7 @@ echo
 echo "### [auto] checkout 'bump/$BUMPVERSION' and merge the latest changes from '$MAIN_REMOTE/master'"
 
 git checkout "bump/$BUMPVERSION"
-git pull $MAIN_REMOTE "bump/$BUMPVERSION"
+git pull $NIGHTLY_REMOTE "bump/$BUMPVERSION"
 git merge --no-edit $MAIN_REMOTE/master || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts

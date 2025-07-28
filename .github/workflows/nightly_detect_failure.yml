@@ -133,10 +133,10 @@ jobs:
           const branchName = `bump/nightly-${process.env.NIGHTLY}`;
           console.log(`Looking for branch: ${branchName}`);
 
-          // Use paginate to get all branches
+          // Use paginate to get all branches from nightly-testing repository
           const branches = await github.paginate(github.rest.repos.listBranches, {
-            owner: context.repo.owner,
-            repo: context.repo.repo
+            owner: 'leanprover-community',
+            repo: 'mathlib4-nightly-testing'
           });
 
           const exists = branches.some(branch => branch.name === branchName);
@@ -162,8 +162,8 @@ jobs:
         result-encoding: string
         script: |
           const branches = await github.paginate(github.rest.repos.listBranches, {
-            owner: context.repo.owner,
-            repo: context.repo.repo
+            owner: 'leanprover-community',
+            repo: 'mathlib4-nightly-testing'
           });
           const bumpBranches = branches
             .map(branch => branch.name)
