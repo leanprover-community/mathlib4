@@ -100,6 +100,10 @@ def LatticeCon.mk3 [Lattice α] (r : α → α → Prop) (h₁ : IsRefl α r)
           conv_rhs => rw [sup_comm]
           exact compatible_left_sup h2) (compatible_left_sup h1))
 
+variable {β F : Type*} [FunLike F α β]
+
+open Function
+
 /-- The kernel of a lattice homomorphism as a lattice congruence. -/
 @[simps!]
 def LatticeCon.ker [Lattice α] [Lattice β] [LatticeHomClass F α β] (f : F) : LatticeCon α where
