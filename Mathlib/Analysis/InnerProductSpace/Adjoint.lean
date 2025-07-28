@@ -327,11 +327,11 @@ theorem isStarNormal_iff_norm_eq_adjoint :
     sub_eq_zero, ← sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _)]
   norm_cast
 
-open ContinuousLinearMap in
+omit [CompleteSpace E] in
 /-- An idempotent operator `T` is self-adjoint iff `(range T)ᗮ = ker T`. -/
-theorem IsIdempotentElem.isSelfAdjoint_iff_orthogonal_range (h : IsIdempotentElem T) :
-    IsSelfAdjoint T ↔ (LinearMap.range T)ᗮ = LinearMap.ker T :=
-  T.isSelfAdjoint_iff_isSymmetric.eq ▸ LinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range
+theorem IsIdempotentElem.isSymmetric_iff_orthogonal_range (h : IsIdempotentElem T) :
+    LinearMap.IsSymmetric T ↔ (LinearMap.range T)ᗮ = LinearMap.ker T :=
+  LinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range
     congr(LinearMapClass.linearMap $h.eq)
 
 open ContinuousLinearMap in
