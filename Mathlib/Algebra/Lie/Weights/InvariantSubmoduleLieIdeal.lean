@@ -235,8 +235,6 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
               exact h_zero
 
             have h_bracket_zero : ⁅x_χ, m_h⁆ = 0 := by
-              have hχ_nonzero : χ.IsNonZero := hχ_nonzero
-              have hα_nonzero : α.1.IsNonZero := α.2.2
               have h_chi_coroot_zero : χ (LieAlgebra.IsKilling.coroot α.1) = 0 := by
                 have h_pairing_eq : S.pairing i j = i.1 (LieAlgebra.IsKilling.coroot j.1) := by
                   rw [LieAlgebra.IsKilling.rootSystem_pairing_apply]
