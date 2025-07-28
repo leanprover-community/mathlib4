@@ -63,13 +63,13 @@ theorem map_eq_traverse_id : map (f := t) f = Id.run ∘ traverse (pure ∘ f) :
 theorem map_traverse (x : t α) : map f <$> traverse g x = traverse (map f ∘ g) x := by
   rw [map_eq_traverse_id f]
   refine (comp_traverse (pure ∘ f) g x).symm.trans ?_
-  congr; apply Comp.applicative_comp_id
+  congr 1; apply Comp.applicative_comp_id
 
 theorem traverse_map (f : β → F γ) (g : α → β) (x : t α) :
     traverse f (g <$> x) = traverse (f ∘ g) x := by
   rw [@map_eq_traverse_id t _ _ _ _ g]
   refine (comp_traverse (G := Id) f (pure ∘ g) x).symm.trans ?_
-  congr; apply Comp.applicative_id_comp
+  congr 1; apply Comp.applicative_id_comp
 
 theorem pure_traverse (x : t α) : traverse pure x = (pure x : F (t α)) := by
   have : traverse pure x = pure (traverse (m := Id) pure x) :=
