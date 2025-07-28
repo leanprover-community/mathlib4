@@ -105,7 +105,7 @@ theorem spectrum_eq_preimage_range (f : C(X, R)) :
     smul_apply, one_apply]
 
 theorem spectrum_eq_range [CompleteSpace 𝕜] (f : C(X, 𝕜)) : spectrum 𝕜 f = Set.range f := by
-  rw [spectrum_eq_preimage_range, Algebra.id.map_eq_id]
+  rw [spectrum_eq_preimage_range, Algebra.algebraMap_self]
   exact Set.preimage_id
 
 end NormedField

@@ -1334,6 +1334,19 @@ noncomputable def unionEqSigmaOfDisjoint {t : α → Set β}
     (⋃ i, t i) ≃ Σ i, t i :=
   (Equiv.ofBijective _ <| sigmaToiUnion_bijective t h).symm
 
+@[simp]
+lemma coe_unionEqSigmaOfDisjoint_symm_apply {α β : Type*} {t : α → Set β}
+    (h : Pairwise (Disjoint on t)) (x : (i : α) × t i) :
+    ((Set.unionEqSigmaOfDisjoint h).symm x : β) = x.2 := by
+  rfl
+
+@[simp]
+lemma coe_snd_unionEqSigmaOfDisjoint {α β : Type*} {t : α → Set β}
+    (h : Pairwise (Disjoint on t)) (x : ⋃ (i : α), t i) :
+    ((Set.unionEqSigmaOfDisjoint h x).snd : β) = x := by
+  conv => right; rw [← unionEqSigmaOfDisjoint h |>.symm_apply_apply x]
+  rfl
+
 theorem iUnion_ge_eq_iUnion_nat_add (u : ℕ → Set α) (n : ℕ) : ⋃ i ≥ n, u i = ⋃ i, u (i + n) :=
   iSup_ge_eq_iSup_nat_add u n
 

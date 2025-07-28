@@ -125,7 +125,7 @@ lemma _root_.Submodule.map_comap_eq_of_le [RingHomSurjective τ₁₂] {f : F} {
 
 lemma range_restrictScalars [SMul R R₂] [Module R₂ M] [Module R M₂] [CompatibleSMul M M₂ R R₂]
     [IsScalarTower R R₂ M₂] (f : M →ₗ[R₂] M₂) :
-  LinearMap.range (f.restrictScalars R) = (LinearMap.range f).restrictScalars R := rfl
+    LinearMap.range (f.restrictScalars R) = (LinearMap.range f).restrictScalars R := rfl
 
 end
 
@@ -299,7 +299,7 @@ theorem submoduleOf_sup_of_le {N₁ N₂ N : Submodule R M} (h₁ : N₁ ≤ N) 
     (N₁ ⊔ N₂).submoduleOf N = N₁.submoduleOf N ⊔ N₂.submoduleOf N := by
   apply Submodule.map_injective_of_injective N.subtype_injective
   simp only [submoduleOf, map_comap_eq]
-  aesop
+  simp_all
 
 @[simp]
 lemma comap_subtype_le_iff {p q r : Submodule R M} :
@@ -317,7 +317,7 @@ theorem map_subtype_range_inclusion {p p' : Submodule R M} (h : p ≤ p') :
 
 lemma restrictScalars_map [SMul R R₂] [Module R₂ M] [Module R M₂] [IsScalarTower R R₂ M]
     [IsScalarTower R R₂ M₂] (f : M →ₗ[R₂] M₂) (M' : Submodule R₂ M) :
-  (M'.map f).restrictScalars R = (M'.restrictScalars R).map (f.restrictScalars R) := rfl
+    (M'.map f).restrictScalars R = (M'.restrictScalars R).map (f.restrictScalars R) := rfl
 
 /-- If `N ⊆ M` then submodules of `N` are the same as submodules of `M` contained in `N`.
 
