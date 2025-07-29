@@ -46,10 +46,15 @@ instance inhabited : Inhabited (WithBot α) :=
   ⟨⊥⟩
 
 /-- Recursor for `WithBot` using the preferred forms `⊥` and `↑a`. -/
-@[to_dual (attr := elab_as_elim, induction_eliminator, cases_eliminator)
-"Recursor for `WithTop` using the preferred forms `⊤` and `↑a`."]
 def recBotCoe {C : WithBot α → Sort*} (bot : C ⊥) (coe : ∀ a : α, C a) : ∀ n : WithBot α, C n
   | ⊥ => bot
+  | (a : α) => coe a
+
+/-- Recursor for `WithTop` using the preferred forms `⊤` and `↑a`. -/
+@[to_dual existing (attr := elab_as_elim, induction_eliminator, cases_eliminator)]
+def _root_.WithTop.recTopCoe {C : WithTop α → Sort*} (top : C ⊤) (coe : ∀ a : α, C a) :
+    ∀ n : WithTop α, C n
+  | ⊤ => top
   | (a : α) => coe a
 
 @[to_dual (attr := simp)]
