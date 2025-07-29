@@ -73,22 +73,35 @@ lemma isBounded_of_Continuous (f : WeakBilin B →L[𝕜] 𝕜) :
   rw [Seminorm.IsBounded, forall_const]
   exact ⟨s, ⟨C, hC2⟩⟩
 
+open TopologicalSpace in
+lemma top_eq : induced (fun x y => B x y) Pi.topologicalSpace =
+  ⨅ i, induced (B.flip i) inferInstance := induced_to_pi fun x y ↦ (B x) y
+
+open TopologicalSpace in
+open Topology in
 lemma dualEmbedding_isSurjective : Function.Surjective (WeakBilin.eval B) := by
   intro f₁
-  have test5 : ∃ (s₁ : Finset F),
+  have c1 : Continuous[⨅ i, induced (B.flip i) inferInstance, inferInstance] f₁ := by
+    convert f₁.2
+    rw [← top_eq]
+    rfl
+  have test5 :
     ↑f₁ ∈ Submodule.span 𝕜 (Set.range (ContinuousLinearMap.toLinearMap₁₂
-      (WeakBilin.eval B) ∘ Subtype.val : s₁ → WeakBilin B →ₗ[𝕜] 𝕜)) := by
-    obtain ⟨s,hS⟩ := isBounded_of_Continuous B f₁ (Fin.last 0)
-    exact ⟨s, functional_mem_span_iff.mpr hS⟩
-  obtain ⟨s, hs⟩ := test5
-  rw [← Set.image_univ, Finsupp.mem_span_image_iff_linearCombination] at hs
-  obtain ⟨l, _, hl2⟩ := hs
-  use Finsupp.linearCombination 𝕜 Subtype.val l
+        (WeakBilin.eval B))) := by
+      rw [LinearMap.mem_span_iff_continuous _]
+      exact c1
+  --obtain ⟨s, hs⟩ := test5
+  rw [← Set.image_univ, Finsupp.mem_span_image_iff_linearCombination] at test5
+  obtain ⟨l, _, hl2⟩ := test5
+  use Finsupp.linearCombination 𝕜 (id (M :=F) (R := 𝕜)) l
   rw [←ContinuousLinearMap.coe_inj, ← hl2, WeakBilin.eval, coe_mk, AddHom.coe_mk]
   simp only
   rw [ContinuousLinearMap.toLinearMap₁₂, ContinuousLinearMap.coeLMₛₗ,
-    Finsupp.linearCombination_apply, Finsupp.linearCombination_apply, map_finsuppSum]
+    Finsupp.linearCombination_apply]
+    --, Finsupp.linearCombination_apply,
+  rw [map_finsuppSum]
   simp
+  aesop
 
 lemma dualEmbedding_isInjective_of_separatingRight (hr : B.SeparatingRight) :
     Function.Injective (WeakBilin.eval B) := (injective_iff_map_eq_zero _).mpr (fun f hf =>
