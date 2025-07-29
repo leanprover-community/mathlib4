@@ -91,6 +91,6 @@ theorem birkhoffAverage_of_invariant {α M : Type*} (R : Type*) [DivisionRing R]
     [Module R M] [CharZero R] {f : α → α} {g : α → M} (h : g ∘ f = g) {n : ℕ} (hn : 0 < n) :
     birkhoffAverage R f g n = g := by
   funext x
-  suffices (n : R)⁻¹ • n • g x = g x by simpa [birkhoffAverage, birkhoffSum_of_invariant h]
+  suffices (n : R)⁻¹ • n • g x = g x by simpa [birkhoffAverage, birkhoffSum_of_comp_eq h]
   refine (inv_smul_eq_iff₀ ?_).mpr (by norm_cast)
   exact Nat.cast_ne_zero.mpr <| Nat.ne_zero_of_lt hn

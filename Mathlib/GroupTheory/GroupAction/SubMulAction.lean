@@ -411,8 +411,7 @@ instance : HasCompl (SubMulAction R M) where
   compl s := ⟨sᶜ, by simp⟩
 
 @[to_additive]
-theorem compl_def (s : SubMulAction R M) :
-  sᶜ.carrier = (s : Set M)ᶜ := rfl
+theorem compl_def (s : SubMulAction R M) : sᶜ.carrier = (s : Set M)ᶜ := rfl
 
 end MulActionGroup
 
