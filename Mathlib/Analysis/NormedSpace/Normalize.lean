@@ -64,5 +64,4 @@ theorem normalize_smul_of_pos {r : ℝ} (hr : 0 < r) (x : V) :
 
 theorem normalize_smul_of_neg {r : ℝ} (hr : r < 0) (x : V) :
     normalize ℝ (r • x) = - normalize ℝ x := by
-  rw [← normalize_neg, ← normalize_smul_of_pos (r := - r) (by linarith) (- x)]
-  field_simp
+  simpa using normalize_smul_of_pos (show 0 < -r by linarith) (-x)
