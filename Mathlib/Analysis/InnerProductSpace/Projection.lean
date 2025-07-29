@@ -1023,9 +1023,10 @@ theorem orthogonalProjection_eq_linearProjOfIsCompl [K.HasOrthogonalProjection] 
     K.orthogonalProjection x =
       K.linearProjOfIsCompl _ Submodule.isCompl_orthogonal_of_hasOrthogonalProjection x := by
   have : IsCompl K Kᗮ := Submodule.isCompl_orthogonal_of_hasOrthogonalProjection
-  conv_lhs => rw [← Submodule.linearProjOfIsCompl_add_linearProjOfIsCompl_eq_self this x]
-  rw [map_add, orthogonalProjection_mem_subspace_eq_self,
-    orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero (Submodule.coe_mem _), add_zero]
+  conv_lhs => rw [← IsCompl.projection_add_projection_eq_self this x]
+  simp_rw [map_add, IsCompl.projection_apply, orthogonalProjection_mem_subspace_eq_self]
+  rw [orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero (Submodule.coe_mem _),
+    add_zero]
 
 @[deprecated (since := "2025-07-11")] alias orthogonalProjection_eq_linear_proj :=
   orthogonalProjection_eq_linearProjOfIsCompl
