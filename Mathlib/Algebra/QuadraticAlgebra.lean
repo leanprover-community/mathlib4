@@ -340,7 +340,7 @@ end CommRing
 
 section
 
-variable (a b) [CommRing R]
+variable (a b) [Semiring R]
 
 /-- `QuadraticAlgebra.re` as a `LinearMap` -/
 @[simps]
