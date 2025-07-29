@@ -85,20 +85,18 @@ abbrev ofHom {X Y : Type v}
     (f : X →L[R] Y) : of R X ⟶ of R Y :=
   ConcreteCategory.ofHom f
 
-@[simp] lemma hom_ofHom  {X Y : Type v}
+@[simp] lemma hom_ofHom {X Y : Type v}
     [AddCommGroup X] [Module R X] [TopologicalSpace X] [ContinuousAdd X] [ContinuousSMul R X]
     [AddCommGroup Y] [Module R Y] [TopologicalSpace Y] [ContinuousAdd Y] [ContinuousSMul R Y]
     (f : X →L[R] Y) :
-  (ofHom f).hom = f := rfl
+    (ofHom f).hom = f := rfl
 
-@[simp] lemma ofHom_hom {X Y : TopModuleCat R} (f : X.Hom Y) :
-  ofHom f.hom = f := rfl
+@[simp] lemma ofHom_hom {X Y : TopModuleCat R} (f : X.Hom Y) : ofHom f.hom = f := rfl
 
 @[simp] lemma hom_comp {X Y Z : TopModuleCat R} (f : X ⟶ Y) (g : Y ⟶ Z) :
-  (f ≫ g).hom = g.hom.comp f.hom := rfl
+    (f ≫ g).hom = g.hom.comp f.hom := rfl
 
-@[simp] lemma hom_id (X : TopModuleCat R) :
-  hom (𝟙 X) = .id _ _ := rfl
+@[simp] lemma hom_id (X : TopModuleCat R) : hom (𝟙 X) = .id _ _ := rfl
 
 /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
 def Hom.Simps.hom (A B : TopModuleCat.{v} R) (f : A.Hom B) :=
@@ -157,8 +155,7 @@ instance [CommRing S] : Linear S (TopModuleCat S) where
   comp_smul _ _ _ _ _ _ := ConcreteCategory.ext (ContinuousLinearMap.smul_comp _ _ _)
 
 @[simp]
-lemma hom_smul {M₁ M₂ : TopModuleCat S} (s : S) (φ : M₁ ⟶ M₂) :
-  (s • φ).hom = s • φ.hom := rfl
+lemma hom_smul {M₁ M₂ : TopModuleCat S} (s : S) (φ : M₁ ⟶ M₂) : (s • φ).hom = s • φ.hom := rfl
 
 end CommRing
 
@@ -179,12 +176,12 @@ instance : (forget₂ (TopModuleCat R) TopCat).ReflectsIsomorphisms where
   reflects {X Y} f hf := by
     let e : X ≃L[R] Y :=
       { __ := f.hom, __ := TopCat.homeoOfIso (asIso ((forget₂ (TopModuleCat R) TopCat).map f)) }
-    show IsIso (ofIso e).hom
+    change IsIso (ofIso e).hom
     infer_instance
 
 @[simp]
 lemma hom_forget₂_TopCat_map {X Y : TopModuleCat R} (f : X ⟶ Y) :
-  ((forget₂ _ TopCat).map f).hom = f.hom := rfl
+    ((forget₂ _ TopCat).map f).hom = f.hom := rfl
 
 @[simp]
 lemma forget₂_TopCat_obj {X : TopModuleCat R} : ((forget₂ _ TopCat).obj X : Type _) = X := rfl
@@ -230,7 +227,7 @@ def isColimit {J : Type*} [Category J] {F : J ⥤ TopModuleCat R}
     refine sInf_le ⟨continuousSMul_induced (M₂ := s.pt) (hc.desc ((forget₂ _ _).mapCocone s)).hom,
       continuousAdd_induced (N := s.pt) (hc.desc ((forget₂ _ _).mapCocone s)).hom, fun i ↦ ?_⟩
     rw [coinduced_le_iff_le_induced, induced_compose, ← continuous_iff_le_induced]
-    show Continuous (X := F.obj i) (Y := s.pt)
+    change Continuous (X := F.obj i) (Y := s.pt)
       (c.ι.app i ≫ hc.desc ((forget₂ _ (ModuleCat R)).mapCocone s)).hom
     rw [hc.fac]
     exact (s.ι.app i).hom.2⟩
@@ -290,7 +287,7 @@ def isLimit {J : Type*} [Category J] {F : J ⥤ TopModuleCat R}
     rw [continuous_iff_coinduced_le]
     refine le_iInf fun i ↦ ?_
     rw [coinduced_le_iff_le_induced, induced_compose, ← continuous_iff_le_induced]
-    show Continuous (X := s.pt) (Y := F.obj i)
+    change Continuous (X := s.pt) (Y := F.obj i)
       (hc.lift ((forget₂ _ (ModuleCat R)).mapCone s) ≫ c.π.app i).hom
     rw [hc.fac]
     exact (s.π.app i).hom.2⟩

@@ -113,5 +113,5 @@ instance (priority := 100) BaireSpace.of_pseudoEMetricSpace_completeSpace : Bair
     have : closedBall (c (n + 1)) (r (n + 1)) ⊆ f n :=
       Subset.trans (incl n) inter_subset_right
     exact this (yball (n + 1))
-  show edist y x ≤ ε
+  change edist y x ≤ ε
   exact le_trans (yball 0) (min_le_left _ _)

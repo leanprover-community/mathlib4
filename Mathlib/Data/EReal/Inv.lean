@@ -5,7 +5,8 @@ Authors: Kevin Buzzard
 -/
 import Mathlib.Data.ENNReal.Inv
 import Mathlib.Data.EReal.Operations
-import Mathlib.Data.Sign
+import Mathlib.Data.Sign.Basic
+import Mathlib.Data.Nat.Cast.Order.Field
 
 /-!
 # Absolute value, sign, inversion and division on extended real numbers

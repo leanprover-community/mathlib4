@@ -138,7 +138,7 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
   refine (norm_sum_le_of_le _ this).trans ?_; clear this
   rw [← sum_mul, ← Prepartition.measure_iUnion_toReal]
   let m := μ (π.filter fun J => N (π.tag J) = n).iUnion
-  show m.toReal * ↑n ≤ ↑(δ n)
+  change m.toReal * ↑n ≤ ↑(δ n)
   have : m < δ n / n := by
     simp only [Measure.restrict_apply (hUo _).measurableSet] at hμU
     refine (measure_mono ?_).trans_lt (hμU _)
@@ -336,7 +336,7 @@ theorem AEContinuous.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} (
       isFiniteMeasure_of_le (μ.restrict (Box.Icc I))
                             (μ.restrict_mono Box.coe_subset_Icc (le_refl μ))
     obtain ⟨C, hC⟩ := hb
-    refine hasFiniteIntegral_of_bounded (C := C) (Filter.eventually_iff_exists_mem.2 ?_)
+    refine .of_bounded (C := C) (Filter.eventually_iff_exists_mem.2 ?_)
     use I, self_mem_ae_restrict I.measurableSet_coe, fun y hy ↦ hC y (I.coe_subset_Icc hy)
 
 end MeasureTheory

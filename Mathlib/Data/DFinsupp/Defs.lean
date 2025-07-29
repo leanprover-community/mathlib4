@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Notation.Prod
+import Mathlib.Algebra.Group.Basic
 
 /-!
 # Dependent functions with finite support
@@ -172,12 +173,11 @@ def piecewise : Π₀ i, β i :=
   zipWith (fun i x y => if i ∈ s then x else y) (fun _ => ite_self 0) x y
 
 theorem piecewise_apply (i : ι) : x.piecewise y s i = if i ∈ s then x i else y i :=
-  zipWith_apply _ _ x y i
+  rfl
 
 @[simp, norm_cast]
-theorem coe_piecewise : ⇑(x.piecewise y s) = s.piecewise x y := by
-  ext
-  apply piecewise_apply
+theorem coe_piecewise : ⇑(x.piecewise y s) = s.piecewise x y :=
+  rfl
 
 end Piecewise
 
@@ -477,7 +477,7 @@ theorem single_injective {i} : Function.Injective (single i : β i → Π₀ i, 
 
 /-- Like `Finsupp.single_eq_single_iff`, but with a `HEq` due to dependent types -/
 theorem single_eq_single_iff (i j : ι) (xi : β i) (xj : β j) :
-    DFinsupp.single i xi = DFinsupp.single j xj ↔ i = j ∧ HEq xi xj ∨ xi = 0 ∧ xj = 0 := by
+    DFinsupp.single i xi = DFinsupp.single j xj ↔ i = j ∧ xi ≍ xj ∨ xi = 0 ∧ xj = 0 := by
   constructor
   · intro h
     by_cases hij : i = j

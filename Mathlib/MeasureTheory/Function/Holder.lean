@@ -126,7 +126,7 @@ def lpPairing (B : E →L[𝕜] F →L[𝕜] G) : Lp E p μ →L[𝕜] Lp F q μ
 
 lemma lpPairing_eq_integral (f : Lp E p μ) (g : Lp F q μ) :
     B.lpPairing μ p q f g = ∫ x, B (f x) (g x) ∂μ := by
-  show L1.integralCLM _ = _
+  change L1.integralCLM _ = _
   rw [← L1.integral_def, L1.integral_eq_integral]
   exact integral_congr_ae <| B.coeFn_holder _ _
 
@@ -188,7 +188,7 @@ protected lemma smul_add (f₁ f₂ : Lp 𝕜 p μ) (g : Lp E q μ) :
   filter_upwards [AEEqFun.coeFn_add f₁.val f₂.val] with x hx
   simp [hx, add_smul]
 
-protected lemma add_smul (f : Lp 𝕜 p μ) (g₁ g₂  : Lp E q μ) :
+protected lemma add_smul (f : Lp 𝕜 p μ) (g₁ g₂ : Lp E q μ) :
     f • (g₁ + g₂) = f • g₁ + f • g₂ := by
   simp only [smul_def, ← MemLp.toLp_add]
   apply MemLp.toLp_congr _ _ ?_

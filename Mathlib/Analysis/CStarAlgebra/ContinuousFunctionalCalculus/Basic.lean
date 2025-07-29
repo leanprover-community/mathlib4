@@ -64,10 +64,7 @@ instance {R A : Type*} [CommRing R] [StarRing R] [NormedRing A] [Algebra R A] [S
   { SubringClass.toNormedRing (elemental R a) with
     mul_comm := mul_comm }
 
-#adaptation_note /-- 2025-03-29 for lean4#7717 had to add `norm_mul_self_le` field. -/
 noncomputable instance (a : A) [IsStarNormal a] : CommCStarAlgebra (elemental ℂ a) where
-  mul_comm := mul_comm
-  norm_mul_self_le := CStarRing.norm_mul_self_le
 
 variable (a : A) [IsStarNormal a]
 
@@ -190,7 +187,7 @@ lemma inr_comp_cfcₙHom_eq_cfcₙAux {A : Type*} [NonUnitalCStarAlgebra A] (a :
   have h (a : A) := isStarNormal_inr (R := ℂ) (A := A) (a := a)
   refine @ContinuousMapZero.UniqueHom.eq_of_continuous_of_map_id
     _ _ _ _ _ _ _ _ _ _ _ inferInstance inferInstance _ (σₙ ℂ a) _ _ rfl _ _ ?_ ?_ ?_
-  · show Continuous (fun f ↦ (cfcₙHom ha f : A⁺¹)); fun_prop
+  · change Continuous (fun f ↦ (cfcₙHom ha f : A⁺¹)); fun_prop
   · exact isClosedEmbedding_cfcₙAux @(h) a ha |>.continuous
   · trans (a : A⁺¹)
     · congrm(inr $(cfcₙHom_id ha))

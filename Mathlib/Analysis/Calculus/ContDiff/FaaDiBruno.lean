@@ -720,7 +720,7 @@ def applyOrderedFinpartition (p : ∀ (i : Fin c.length), E [×c.partSize i]→L
 
 lemma applyOrderedFinpartition_apply (p : ∀ (i : Fin c.length), E [×c.partSize i]→L[𝕜] F)
     (v : Fin n → E) :
-  c.applyOrderedFinpartition p v = (fun m ↦ p m (v ∘ c.emb m)) := rfl
+    c.applyOrderedFinpartition p v = (fun m ↦ p m (v ∘ c.emb m)) := rfl
 
 theorem norm_applyOrderedFinpartition_le (p : ∀ (i : Fin c.length), E [×c.partSize i]→L[𝕜] F)
     (v : Fin n → E) (m : Fin c.length) :
@@ -785,7 +785,7 @@ def compAlongOrderedFinpartition (f : F [×c.length]→L[𝕜] G) (p : ∀ i, E 
     fun_prop
 
 @[simp] lemma compAlongOrderFinpartition_apply (f : F [×c.length]→L[𝕜] G)
-    (p : ∀ i, E[×c.partSize i]→L[𝕜] F) (v : Fin n → E) :
+    (p : ∀ i, E [×c.partSize i]→L[𝕜] F) (v : Fin n → E) :
     c.compAlongOrderedFinpartition f p v = f (c.applyOrderedFinpartition p v) := rfl
 
 theorem norm_compAlongOrderedFinpartition_le (f : F [×c.length]→L[𝕜] G)
@@ -824,7 +824,7 @@ noncomputable def compAlongOrderedFinpartitionL :
   apply norm_compAlongOrderedFinpartition_le
 
 @[simp] lemma compAlongOrderedFinpartitionL_apply (f : F [×c.length]→L[𝕜] G)
-    (p : ∀ (i : Fin c.length), E[×c.partSize i]→L[𝕜] F) :
+    (p : ∀ (i : Fin c.length), E [×c.partSize i]→L[𝕜] F) :
     c.compAlongOrderedFinpartitionL 𝕜 E F G f p = c.compAlongOrderedFinpartition f p := rfl
 
 theorem norm_compAlongOrderedFinpartitionL_le :

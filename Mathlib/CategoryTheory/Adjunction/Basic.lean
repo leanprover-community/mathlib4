@@ -75,7 +75,7 @@ Conversely `Equivalence.toAdjunction` recovers the underlying adjunction from an
 
 namespace CategoryTheory
 
-open Category
+open Category Functor
 
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
 universe v₁ v₂ v₃ u₁ u₂ u₃
@@ -134,12 +134,12 @@ end Functor
 /-- The adjunction associated to a functor known to be a left adjoint. -/
 noncomputable def Adjunction.ofIsLeftAdjoint (left : C ⥤ D) [left.IsLeftAdjoint] :
     left ⊣ left.rightAdjoint :=
-  Functor.IsLeftAdjoint.exists_rightAdjoint.choose_spec.some
+  IsLeftAdjoint.exists_rightAdjoint.choose_spec.some
 
 /-- The adjunction associated to a functor known to be a right adjoint. -/
 noncomputable def Adjunction.ofIsRightAdjoint (right : C ⥤ D) [right.IsRightAdjoint] :
     right.leftAdjoint ⊣ right :=
-  Functor.IsRightAdjoint.exists_leftAdjoint.choose_spec.some
+  IsRightAdjoint.exists_leftAdjoint.choose_spec.some
 
 namespace Adjunction
 
@@ -365,13 +365,13 @@ structure CoreUnitCounit (F : C ⥤ D) (G : D ⥤ C) where
   /-- Equality of the composition of the unit, associator, and counit with the identity
   `F ⟶ (F G) F ⟶ F (G F) ⟶ F = NatTrans.id F` -/
   left_triangle :
-    whiskerRight unit F ≫ (Functor.associator F G F).hom ≫ whiskerLeft F counit =
+    whiskerRight unit F ≫ (associator F G F).hom ≫ whiskerLeft F counit =
       NatTrans.id (𝟭 C ⋙ F) := by
     aesop_cat
   /-- Equality of the composition of the unit, associator, and counit with the identity
   `G ⟶ G (F G) ⟶ (F G) F ⟶ G = NatTrans.id G` -/
   right_triangle :
-    whiskerLeft G unit ≫ (Functor.associator G F G).inv ≫ whiskerRight counit G =
+    whiskerLeft G unit ≫ (associator G F G).inv ≫ whiskerRight counit G =
       NatTrans.id (G ⋙ 𝟭 C) := by
     aesop_cat
 
@@ -509,8 +509,8 @@ def comp : F ⋙ H ⊣ I ⋙ G :=
   mk' {
     homEquiv := fun _ _ ↦ Equiv.trans (adj₂.homEquiv _ _) (adj₁.homEquiv _ _)
     unit := adj₁.unit ≫ whiskerRight (F.rightUnitor.inv ≫ whiskerLeft F adj₂.unit ≫
-      (Functor.associator _ _ _ ).inv) G ≫ (Functor.associator _ _ _).hom
-    counit := (Functor.associator _ _ _ ).inv ≫ whiskerRight ((Functor.associator _ _ _ ).hom ≫
+      (associator _ _ _ ).inv) G ≫ (associator _ _ _).hom
+    counit := (associator _ _ _ ).inv ≫ whiskerRight ((associator _ _ _ ).hom ≫
       whiskerLeft _ adj₁.counit ≫ I.rightUnitor.hom) _ ≫ adj₂.counit }
 
 @[simp, reassoc]
