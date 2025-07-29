@@ -96,6 +96,11 @@ lemma _root_.AffineSubspace.finrank_eq_two_of_ne
     finrank ℝ l.direction = 2 :=
   sorry
 
+lemma _root_.EuclideanGeometry.reflection_line_apply {p q : WithLp 2 (Fin 2 → ℝ)}
+    (h : p ≠ q) (r : WithLp 2 (Fin 2 → ℝ)) :
+    EuclideanGeometry.reflection line[ℝ, p, q] r = !₂[_, _] :=
+  sorry
+
 /-- This is still missing non-degeneracy conditions -/
 lemma line_eq_iff {a₀ b₀ c₀ d₀ a₁ b₁ c₁ d₁ : ℝ} :
     line[ℝ, !₂[a₀, b₀], !₂[c₀, d₀]] = line[ℝ, !₂[a₁, b₁], !₂[c₁, d₁]] ↔
@@ -144,6 +149,10 @@ lemma not_sunny_vert {x : ℝ} : ¬Sunny line[ℝ, !₂[x, 0], !₂[x, 1]] := by
   congr 1
   simp [Set.vsub, Set.image_insert_eq]
 
+@[simp]
+lemma not_sunny_diag (x : ℝ) : ¬ Sunny line[ℝ, !₂[x, 1], !₂[1, x]] := by
+  sorry
+
 /- Lines we'll use -/
 
 def l1 : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2)) := line[ℝ, !₂[1, 0], !₂[1, 1]]
@@ -176,6 +185,8 @@ def l7 : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2)) := line[ℝ, !₂[3, 1]
 lemma sunny_l7 : Sunny l7 := by
   sorry
 
+/- General helper lemmas -/
+
 noncomputable instance : DecidablePred Sunny := Classical.decPred _
 
 lemma notSunny_of_horiz {l : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2))}
@@ -198,6 +209,15 @@ lemma sunny_of_ne {l : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2))}
     {x₁ x₂ y₁ y₂} (h₁ : !₂[x₁, y₁] ∈ l) (h₂ : !₂[x₂, y₂] ∈ l)
     (h₃ : y₂ - y₁ ≠ x₁ - x₂) (h₄ : x₁ ≠ x₂ := by simp) (h₅ : y₁ ≠ y₂ := by simp) : Sunny l :=
   sorry
+
+lemma reflection_inj : Function.Injective fun (l : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2))) =>
+    l.map (EuclideanGeometry.reflection line[ℝ, !₂[(0 : ℝ), 0], !₂[1, 1]]).toAffineMap := by
+  intro l₁ l₂ h
+  have := congr_arg
+   (·.map (EuclideanGeometry.reflection line[ℝ, !₂[(0 : ℝ), 0], !₂[1, 1]]).toAffineMap) h
+  convert this <;> ext <;> simp
+
+/- Lemmas for the case `n = 3` -/
 
 lemma zero_mem3 : 0 ∈ {k | ∃ lines : Finset (AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2))),
       have : DecidablePred Sunny := Classical.decPred _;
@@ -319,27 +339,26 @@ structure Config (n k : Nat) where
 
 /-- Reflect a valid configuration along the diagonal. -/
 noncomputable def Config.symm {n k : ℕ} (c : Config n k) : Config n k where
-  ls := c.ls.map
-    ⟨fun l => l.map (EuclideanGeometry.reflection line[ℝ, !₂[(0 : ℝ), 0], !₂[1, 1]]).toAffineMap,
-    fun x y => by { simp;  sorry }⟩
+  ls := c.ls.map ⟨fun l => _, reflection_inj⟩
   card := by simp [c.card]
   rank l hl := by
-    simp
-    sorry
+    simp only [Finset.mem_map, Function.Embedding.coeFn_mk] at hl
+    obtain ⟨l',hl', rfl⟩ := hl
+    rw [AffineSubspace.map_direction, AffineEquiv.linear_toAffineMap,
+      LinearEquiv.finrank_map_eq, c.rank l' hl']
   cover a b ha hb hab := by
     simp at *
     rw [add_comm] at hab
     obtain ⟨l, hl, hbal⟩ := c.cover b a hb ha hab
     refine ⟨l, hl, !₂[b, a], hbal, ?_⟩
-    rw [EuclideanGeometry.reflection_apply]
-    simp
     sorry
   sunny := by
     sorry
 
 /-- Extend a valid configuration without changing the number of sunny lines. -/
 def Config.extend {n k : ℕ} (hn : 3 ≤ n) (c : Config n k) : Config (n + 1) k where
-  ls := c.ls.cons line[ℝ, !₂[(n : ℝ), 1], !₁[1, n]] sorry
+  ls := c.ls.cons line[ℝ, !₂[(n : ℝ) + 1, 1], !₁[1, n + 1]] <| fun h => by
+    sorry
   card := by rw [Finset.card_cons, c.card]
   rank l hl := by
     simp only [Finset.cons_eq_insert, Finset.mem_insert] at hl
@@ -347,8 +366,9 @@ def Config.extend {n k : ℕ} (hn : 3 ≤ n) (c : Config n k) : Config (n + 1) k
     · apply line_rank
       intro h
       have := congr_fun h 0
-      simp only [Fin.isValue, PiLp.toLp_apply, Matrix.cons_val_zero, Nat.cast_eq_one] at this
-      omega
+      simp only [Fin.isValue, PiLp.toLp_apply, Matrix.cons_val_zero, add_eq_right,
+        Nat.cast_eq_zero] at this
+      grind
     · exact c.rank l hl
   cover a b ha hb hab := by
     simp at ha hb hab
@@ -356,18 +376,25 @@ def Config.extend {n k : ℕ} (hn : 3 ≤ n) (c : Config n k) : Config (n + 1) k
     · obtain ⟨l, hl, meml⟩ := c.cover a b
       exact ⟨l, Finset.subset_cons _ hl, meml⟩
     · have : a + b = n + 2 := by omega
-      use affineSpan ℝ {!₂[↑n, 1], !₁[1, ↑n]}
-      refine ⟨Finset.mem_cons_self _ _, ?_⟩
+      refine ⟨line[ℝ, !₂[(n : ℝ) + 1, 1], !₁[1, n + 1]], Finset.mem_cons_self _ _, ?_⟩
       erw [mem_line_iff (by left; norm_cast; omega)]
-      simp
-      sorry
+      simp only [Fin.isValue, PiLp.toLp_apply, Matrix.cons_val_zero, add_sub_cancel_right,
+        Matrix.cons_val_one, Matrix.cons_val_fin_one, sub_add_cancel_right, mul_neg]
+      rw [Nat.eq_sub_of_add_eq this, Nat.cast_sub (by omega), Nat.cast_add]
+      ring
   sunny := by
-    sorry
-    /-have h₁ : !₂[↑n, 1] ∈ affineSpan ℝ {!₂[(n : ℝ), 1], !₁[1, (n : ℝ)]} := by
-      sorry
-    have h₂ : !₂[1, ↑n] ∈ affineSpan ℝ {!₂[(n : ℝ), 1], !₁[1, (n : ℝ)]} := sorry
-    rw [Finset.filter_cons_of_neg _ _ _ _ (notSunny_of_diag h₁ h₂ rfl (by norm_cast; omega))]
-    exact c.sunny-/
+    conv_rhs => rw [← c.sunny]
+    congr 1
+    rw [Finset.filter_inj]
+    intro l hl
+    simp only [Finset.cons_eq_insert, Finset.mem_insert, or_iff_right_iff_imp]
+    rintro rfl
+    absurd hl
+    exact not_sunny_diag (n + 1)
+
+example (a b c : ℝ) : a - b - c = a - c - b := by exact sub_right_comm a b c
+
+#exit
 
 /-- Restrict a configuration for `n + 1` points to a configuration for `n` points by discarding
 a vertical line. -/
