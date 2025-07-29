@@ -3,7 +3,6 @@ Copyright (c) 2025 Tommy Löfgren. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tommy Löfgren
 -/
-import Mathlib.Probability.CDF
 import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 
 /-! # Beta distributions over ℝ
@@ -11,14 +10,11 @@ import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 Define the beta distribution over the reals.
 
 ## Main definitions
-* `betaPDFReal`: the function `α β x ↦ (1 / beta α β) * x^(α - 1) * (1 - x) ^ (β - 1)`
+* `betaPDFReal`: the function `α β x ↦ (1 / beta α β) * x ^ (α - 1) * (1 - x) ^ (β - 1)`
   for `0 < x ∧ x < 1` or `0` else, which is the probability density function of a beta distribution
   with shape parameters `α` and `β` (when `hα : 0 < α ` and `hβ : 0 < β`).
 * `betaPDF`: `ℝ≥0∞`-valued pdf,
   `betaPDF α β = ENNReal.ofReal (betaPDFReal α β)`.
-* `betaPDFReal`: the function `α β x ↦ (1 / beta α β) * x ^ (α - 1) * (1 - x) ^ (β - 1)`
-* `betaCDFReal`: the CDF given by the definition of CDF in `ProbabilityTheory.CDF` applied to the
-  beta measure.
 -/
 
 open scoped ENNReal NNReal
@@ -48,8 +44,7 @@ lemma beta_pos {α β : ℝ} (hα : 0 < α) (hβ : 0 < β) : 0 < beta α β := b
 
 /-- Relation between the beta function and the gamma function over the reals. -/
 theorem beta_eq_betaIntegralReal (α β : ℝ) (hα : 0 < α) (hβ : 0 < β) :
-    beta α β = Real.betaIntegralReal α β := by
-  unfold Real.betaIntegralReal
+    beta α β = (betaIntegral α β).re := by
   rw [beta_eq]
   let α' : ℂ := ↑α
   let β' : ℂ := ↑β
@@ -59,13 +54,13 @@ theorem beta_eq_betaIntegralReal (α β : ℝ) (hα : 0 < α) (hβ : 0 < β) :
   have hβ' : 0 < β'.re := by
     simp only [β']
     exact hβ
-  rw [betaIntegral_eq α' β' hα' hβ']
+  rw [betaIntegral_eq_Gamma_mul_div α' β' hα' hβ']
 
 lemma betaIntegralReal_eq (α β : ℝ) (hα : 0 < α) (hβ : 0 < β) :
-    Real.betaIntegralReal α β = betaIntegral α β := by
+    (betaIntegral α β).re = betaIntegral α β := by
   rw [<-beta_eq_betaIntegralReal α β hα hβ, Complex.ext_iff]
   constructor
-  · rw [betaIntegral_eq α β hα hβ, <-beta_eq]
+  · rw [betaIntegral_eq_Gamma_mul_div α β hα hβ, <-beta_eq]
     simp only [ofReal_re]
   have : (Gamma α * Gamma β / Gamma (α + β)).im = 0 := by
     rw [← Complex.ofReal_add α β]
@@ -73,7 +68,7 @@ lemma betaIntegralReal_eq (α β : ℝ) (hα : 0 < α) (hβ : 0 < β) :
     unfold Real.Gamma
     simp only [ofReal_add, div_ofReal_im, mul_im, ofReal_re,
       ofReal_im, mul_zero, zero_mul, add_zero, zero_div]
-  rw [betaIntegral_eq α β hα hβ, this]
+  rw [betaIntegral_eq_Gamma_mul_div α β hα hβ, this]
   simp only [ofReal_im]
 
 /-- The probability density function of the beta distribution with shape parameters `α` and `β`.
@@ -92,57 +87,64 @@ noncomputable def betaPDF (α β x : ℝ) : ℝ≥0∞ :=
 lemma betaPDF_eq (α β x : ℝ) :
     betaPDF α β x =
         ENNReal.ofReal (if 0 < x ∧ x < 1 then
-            (1 / beta α β) * x ^ (α - 1) * (1 - x) ^ (β - 1) else 0) := by
-  rfl
+            (1 / beta α β) * x ^ (α - 1) * (1 - x) ^ (β - 1) else 0) := rfl
 
-lemma betaPDF_eq_zero_of_le_zero {α β x : ℝ} (hx : x ≤ 0) :
+lemma betaPDF_eq_zero_of_nonpos {α β x : ℝ} (hx : x ≤ 0) :
     betaPDF α β x = 0 := by
-  rw [betaPDF_eq]
-  have : ¬ (0 < x ∧ x < 1) := by
-    intro h
-    exact lt_irrefl 0 (lt_of_lt_of_le h.1 hx)
-  rw [if_neg this, ENNReal.ofReal_zero]
+  simp only [betaPDF_eq, hx.not_gt, false_and, ↓reduceIte, ENNReal.ofReal_zero]
 
 lemma betaPDF_eq_zero_of_one_le {α β x : ℝ} (hx : 1 ≤ x) :
     betaPDF α β x = 0 := by
-  rw [betaPDF_eq]
-  have : ¬ (0 < x ∧ x < 1) := by
-    intro h
-    exact lt_irrefl 1 (lt_of_le_of_lt hx h.2)
-  rw [if_neg this, ENNReal.ofReal_zero]
+  simp only [betaPDF_eq, hx.not_gt, and_false, ↓reduceIte, ENNReal.ofReal_zero]
 
-lemma betaPDF_eq_of_ge_zero_le_one {α β x : ℝ} (hx : 0 < x ∧ x < 1) :
+lemma betaPDF_of_pos_lt_one {α β x : ℝ} (hx_pos : 0 < x) (hx_lt : x < 1) :
     betaPDF α β x =
         ENNReal.ofReal ((1 / beta α β) * x ^ (α - 1) * (1 - x) ^ (β - 1)) := by
   rw [betaPDF_eq]
-  have h : 0 < x ∧ x < 1 := ⟨hx.1, hx.2⟩
+  have h : 0 < x ∧ x < 1 := ⟨hx_pos, hx_lt⟩
   rw [if_pos h]
 
-lemma lintegral_betaPDF_eq {α β : ℝ} : ∫⁻ x, betaPDF α β x
-    = ∫⁻ (x : ℝ) in Set.Ioo 0 1, ENNReal.ofReal
-        (1 / beta α β * x ^ (α - 1) * (1 - x) ^ (β - 1)) := by
-  have left_zero : ∫⁻ x in Iic 0, betaPDF α β x = 0 := by
-    rw [setLIntegral_congr_fun measurableSet_Iic
-    fun x (hx : x ≤ 0) ↦ betaPDF_eq_zero_of_le_zero hx,
+lemma lintegral_betaPDF_left_zero {α β : ℝ} :
+    ∫⁻ x in Iic 0, betaPDF α β x = 0 := by
+  rw [setLIntegral_congr_fun measurableSet_Iic
+        (fun x (hx : x ≤ 0) =>
+          betaPDF_eq_zero_of_nonpos hx),
       lintegral_zero]
-  have right_zero : ∫⁻ x in Ici 1, betaPDF α β x ∂volume.restrict (Ioi 0) = 0 := by
-    rw [setLIntegral_congr_fun measurableSet_Ici
-    fun x (hx : 1 ≤ x) ↦ betaPDF_eq_zero_of_one_le hx,
+
+lemma lintegral_betaPDF_right_zero {α β : ℝ} :
+    ∫⁻ x in Ici 1, betaPDF α β x ∂volume.restrict (Ioi 0) = 0 := by
+  rw [setLIntegral_congr_fun measurableSet_Ici
+        (fun x (hx : 1 ≤ x) =>
+          betaPDF_eq_zero_of_one_le hx),
       lintegral_zero]
-  have middle : ∫⁻ x in Ioo 0 1, betaPDF α β x =
-    ∫⁻ x in Ioo 0 1, ENNReal.ofReal ((1 / beta α β) * x ^ (α - 1) * (1 - x) ^ (β - 1)) := by
-    rw [setLIntegral_congr_fun measurableSet_Ioo
-    fun x (hx : 0 < x ∧ x < 1) ↦ betaPDF_eq_of_ge_zero_le_one hx]
-  have : ∫⁻ x, betaPDF α β x = ∫⁻ x in Ioo 0 1, betaPDF α β x := by
-    rw [← lintegral_add_compl _ measurableSet_Iic, left_zero]
-    simp only [compl_Iic, zero_add]
-    rw [← lintegral_add_compl _ measurableSet_Ici, right_zero]
-    simp only [compl_Ici, measurableSet_Iio, Measure.restrict_restrict, zero_add]
-    convert rfl
-    ext x
-    simp only [mem_Ioo, mem_inter_iff, mem_Iio, mem_Ioi]
-    tauto
-  rw [this, middle]
+
+
+lemma lintegral_betaPDF_middle {α β : ℝ} :
+    ∫⁻ x in Ioo 0 1, betaPDF α β x =
+      ∫⁻ x in Ioo 0 1,
+        ENNReal.ofReal
+          ((1 / beta α β) * x ^ (α - 1) * (1 - x) ^ (β - 1)) := by
+  rw [setLIntegral_congr_fun measurableSet_Ioo
+        (fun x ⟨hx_pos, hx_lt⟩ =>
+          betaPDF_of_pos_lt_one hx_pos hx_lt)]
+
+lemma lintegral_betaPDF_support {α β : ℝ} :
+    ∫⁻ x, betaPDF α β x = ∫⁻ x in Ioo 0 1, betaPDF α β x := by
+  rw [← lintegral_add_compl _ measurableSet_Iic, lintegral_betaPDF_left_zero]
+  simp only [compl_Iic, zero_add]
+  rw [← lintegral_add_compl _ measurableSet_Ici, lintegral_betaPDF_right_zero]
+  simp only [compl_Ici, measurableSet_Iio, Measure.restrict_restrict, zero_add]
+  convert rfl
+  ext x
+  simp only [mem_Ioo, mem_inter_iff, mem_Iio, mem_Ioi]
+  tauto
+
+lemma lintegral_betaPDF {α β : ℝ} :
+    ∫⁻ x, betaPDF α β x =
+      ∫⁻ (x : ℝ) in Ioo 0 1,
+        ENNReal.ofReal
+          (1 / beta α β * x ^ (α - 1) * (1 - x) ^ (β - 1)) := by
+  rw [lintegral_betaPDF_support, lintegral_betaPDF_middle]
 
 /-- The beta pdf is positive for all positive reals with positive parameters -/
 lemma betaPDFReal_pos {α β x : ℝ} (hx : 0 < x ∧ x < 1) (hα : 0 < α) (hβ : 0 < β) :
@@ -159,21 +161,10 @@ lemma betaPDFReal_pos {α β x : ℝ} (hx : 0 < x ∧ x < 1) (hα : 0 < α) (hβ
   have : 0 < (1 - x) := sub_pos.mpr hx.2
   exact Real.rpow_pos_of_pos this (β - 1)
 
-lemma betaPDFReal_pos_Ioo {α β : ℝ} (hα : 0 < α) (hβ : 0 < β) :
-    ∀ z ∈ Set.Ioo 0 1, 0 < betaPDFReal α β z := by
-  intros z hz
-  exact betaPDFReal_pos ⟨hz.1, hz.2⟩ hα hβ
-
 /-- The beta pdf is measurable. -/
 @[fun_prop, measurability]
-lemma measurable_betaPDFReal (α β : ℝ) : Measurable (betaPDFReal α β) := by
-  apply Measurable.ite measurableSet_Ioo
-  · repeat apply Measurable.mul
-    repeat apply measurable_const
-    · apply measurable_id'.pow_const (α - 1)
-    apply Measurable.pow_const
-    exact Measurable.const_sub measurable_id (1 : ℝ)
-  exact measurable_const
+lemma measurable_betaPDFReal (α β : ℝ) : Measurable (betaPDFReal α β) :=
+  Measurable.ite measurableSet_Ioo (by fun_prop) (by fun_prop)
 
 /-- The beta pdf is strongly measurable -/
 lemma stronglyMeasurable_betaPDFReal (α β : ℝ) :
@@ -184,7 +175,7 @@ lemma stronglyMeasurable_betaPDFReal (α β : ℝ) :
 @[simp]
 lemma lintegral_betaPDF_eq_one {α β : ℝ} (hα : 0 < α) (hβ : 0 < β) :
     ∫⁻ x, betaPDF α β x = 1 := by
-  rw [lintegral_betaPDF_eq, <-ENNReal.toReal_eq_one_iff,
+  rw [lintegral_betaPDF, <-ENNReal.toReal_eq_one_iff,
     <-integral_eq_lintegral_of_nonneg_ae]
   · conv => lhs
             congr
@@ -193,16 +184,15 @@ lemma lintegral_betaPDF_eq_one {α β : ℝ} (hα : 0 < α) (hβ : 0 < β) :
             rw [mul_assoc]
     rw [integral_const_mul]
     field_simp
-    rw [div_eq_one_iff_eq (ne_of_gt (beta_pos hα hβ))]
-    rw [beta_eq_betaIntegralReal α β hα hβ]
-    unfold Real.betaIntegralReal betaIntegral
+    rw [div_eq_one_iff_eq (ne_of_gt (beta_pos hα hβ)),
+      beta_eq_betaIntegralReal α β hα hβ]
+    unfold betaIntegral
     rw [intervalIntegral.integral_of_le (by norm_num), <-integral_Ioc_eq_integral_Ioo]
     have (a : ℝ) (b : ℂ) : (a : ℂ) = b → a = b.re := by
       intro h
       simp only [← h, ofReal_re]
     apply this
-    rw [← integral_complex_ofReal]
-    rw [setIntegral_congr_ae measurableSet_Ioc]
+    rw [← integral_complex_ofReal, setIntegral_congr_ae measurableSet_Ioc]
     simp only [mem_Ioc, ofReal_mul, and_imp]
     apply ae_of_all
     intro x hx0 hx1
@@ -252,14 +242,5 @@ lemma isProbabilityMeasureBeta {α β : ℝ} (hα : 0 < α) (hβ : 0 < β) :
     IsProbabilityMeasure (betaMeasure α β) where
   measure_univ := by simp only [betaMeasure, MeasurableSet.univ,
     withDensity_apply, Measure.restrict_univ, lintegral_betaPDF_eq_one hα hβ]
-
-section BetaCDF
-
-/-- CDF of the beta distribution -/
-noncomputable
-def betaCDFReal (α β : ℝ) : StieltjesFunction :=
-  cdf (betaMeasure α β)
-
-end BetaCDF
 
 end ProbabilityTheory
