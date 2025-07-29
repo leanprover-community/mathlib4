@@ -98,9 +98,7 @@ structure Context where
   /-- The array of free variables corresponding to opened binders,
   along with a motive to cast back. -/
   Δ : Array (FVarId × Expr)
-  /-- The array of let variables corresponding to opened binders,
-  along with their abstracted values. -/
-  δ : Array (FVarId × Expr)
+  δ : Std.HashSet FVarId
   -- TODO: use `@[computed_field]`s below when `structure` supports that
   /-- Cached `p.toHeadIndex`. -/
   pHeadIdx : HeadIndex := p.toHeadIndex
@@ -153,40 +151,59 @@ def checkCastAllowed (e t : Expr) (castMode : CastMode) : MetaM Unit := do
     if !(← isProp t) then
       throwMismatch ()
 
+/-- Inline the values of `ldecl`s present in `fvars`. -/
+def zetaDelta (e : Expr) (fvars : Std.HashSet FVarId) : MetaM Expr :=
+  let unfold? (fvarId : FVarId) : MetaM (Option Expr) := do
+    if fvars.contains fvarId then
+      fvarId.getValue?
+    else
+      return none
+  let pre (e : Expr) : MetaM TransformStep := do
+    let .fvar fvarId := e | return .continue
+    let some val ← unfold? fvarId | return .continue
+    return .visit val
+  transform e (pre := pre)
+
 /-- If `e : te` is a term whose type mentions `x` or `h` (the generalization variables),
 return `⋯ ▸ e : te[p/x,rfl/h]`.
 Otherwise return `none`. -/
-def castBack? (e te x h : Expr) (Δ δ : Array (FVarId × Expr)) : MetaM (Option Expr) := do
+def castBack? (e te x h : Expr) (Δ : Array (FVarId × Expr)) (δ : Std.HashSet FVarId) :
+    MetaM (Option Expr) := do
   if !te.hasAnyFVar (fun f => f == x.fvarId! || f == h.fvarId! ||
-      Δ.any (·.1 == f) || δ.any (·.1 == f)) then
+      Δ.any (·.1 == f) || δ.contains f) then
     return none
-  let rec motive : MetaM Expr := do
-    withLocalDeclD `x' (← inferType x) fun x' => do
-    withLocalDeclD `h' (← mkEq x x') fun h' => do
-      let mut te := te
-      for i in δ do te := te.replaceFVar (.fvar i.1) i.2
-      te := te.replaceFVars #[x, h] #[x', ← mkEqTrans h h']
-      for i in Δ do
-        te := te.replaceFVar (.fvar i.1) (← mkEqRec i.2 (.fvar i.1) h')
-      mkLambdaFVars #[x', h'] te
   let e' ← mkEqRec (← motive) e (← mkEqSymm h)
   trace[Tactic.depRewrite.cast] "casting (x ↦ p):{indentExpr e'}"
   return some e'
+where
+  motive : MetaM Expr := do
+    withLocalDeclD `x' (← inferType x) fun x' => do
+    withLocalDeclD `h' (← mkEq x x') fun h' => do
+      let te ← zetaDelta te δ
+      let mut fs := #[x, h]
+      let mut es := #[x', ← mkEqTrans h h']
+      for (f, M) in Δ do
+        fs := fs.push (.fvar f)
+        es := es.push (← mkEqRec M (.fvar f) h')
+      let te := te.replaceFVars fs es
+      mkLambdaFVars #[x', h'] te
 
 /-- Cast `e : te[p/x,rfl/h]` to `h ▸ e : te`. -/
-def castFwd (e te p x h : Expr) (Δ δ : Array (FVarId × Expr)) : MetaM Expr := do
+def castFwd (e te p x h : Expr) (Δ : Array (FVarId × Expr)) (δ : Std.HashSet FVarId) :
+    MetaM Expr := do
   if !te.hasAnyFVar (fun f => f == x.fvarId! || f == h.fvarId! ||
-      Δ.any (·.1 == f) || δ.any (·.1 == f)) then
+      Δ.any (·.1 == f) || δ.contains f) then
     return e
   let motive ← do
     withLocalDeclD `x' (← inferType x) fun x' => do
     withLocalDeclD `h' (← mkEq p x') fun h' => do
-      let mut te := te
-      for i in δ do te := te.replaceFVar (.fvar i.1) i.2
-      te := te.replaceFVars #[x, h] #[x', h']
-      for i in Δ do
-        te := te.replaceFVar (.fvar i.1)
-          (← mkEqRec i.2 (.fvar i.1) (← mkEqTrans (← mkEqSymm h) h'))
+      let te ← zetaDelta te δ
+      let mut fs := #[x, h]
+      let mut es := #[x', h']
+      for (f, M) in Δ do
+        fs := fs.push (.fvar f)
+        es := es.push (← mkEqRec M (.fvar f) (← mkEqTrans (← mkEqSymm h) h'))
+      let te := te.replaceFVars fs es
       mkLambdaFVars #[x', h'] te
   let e' ← mkEqRec motive e h
   trace[Tactic.depRewrite.cast] "casting (p ↦ x):{indentExpr e'}"
@@ -295,7 +312,8 @@ partial def visitInner (e : Expr) (et? : Option Expr) : M Expr := do
   | .letE n t v b nondep =>
     let tup ← visit t none
     let vup ← visitAndCast v tup
-    if nondep || !vup.hasAnyFVar (fun f => f == ctx.x.fvarId! || f == ctx.h.fvarId!) then
+    if nondep || !vup.hasAnyFVar (fun f => f == ctx.x.fvarId! || f == ctx.h.fvarId! ||
+        ctx.Δ.any (·.1 == f) || ctx.δ.contains f) then
       return ← withLetDecl n tup vup (nondep := nondep) fun r => do
         let motive ← castBack?.motive tup ctx.x ctx.h ctx.Δ ctx.δ
         let bup ← withReader (fun ctx => { ctx with Δ := ctx.Δ.push (r.fvarId!, motive) })
@@ -303,7 +321,7 @@ partial def visitInner (e : Expr) (et? : Option Expr) : M Expr := do
         return .letE n tup vup (bup.abstract #[r]) nondep
 
     withLetDecl n tup vup (nondep := nondep) fun r => do
-      let bup ← withReader (fun ctx => { ctx with δ := ctx.δ.push (r.fvarId!, vup) })
+      let bup ← withReader (fun ctx => { ctx with δ := ctx.δ.insert r.fvarId! })
         (visitAndCast (b.instantiate1 r) et?)
       return .letE n tup vup (bup.abstract #[r]) nondep
   | .lam n t b bi =>
@@ -336,7 +354,7 @@ def dabstract (e : Expr) (p : Expr) (cfg : DepRewrite.Config) : MetaM Expr := do
     | .error (err : Lean.Exception) => pure m!"{e} =[x/{p}]=> 💥️{indentD err.toMessageData}") do
   withLocalDeclD `x tp fun x => do
   withLocalDeclD `h (← mkEq p x) fun h => do
-    let e' ← visit e none |>.run { cfg, p, x, h, Δ := #[], δ := #[] } |>.run.run' 1
+    let e' ← visit e none |>.run { cfg, p, x, h, Δ := ∅, δ := ∅ } |>.run.run' 1
     mkLambdaFVars #[x, h] e'
 
 /-- Analogue of `Lean.MVarId.rewrite` with support for inserting casts. -/
@@ -393,7 +411,8 @@ def _root_.Lean.MVarId.depRewrite (mvarId : MVarId) (e : Expr) (heq : Expr)
                   "internal error: expected 2 arguments in{indentExpr eAbst}"
                 let eBodyTp ← inferType eBody
                 checkCastAllowed eBody eBodyTp config.castMode
-                let eBody := (← castBack? eBody eBodyTp x h #[] #[]).getD eBody
+                let some eBody ← castBack? eBody eBodyTp x h ∅ ∅ | throwError
+                  "internal error: body{indentExpr eBody}\nshould mention '{x}' or '{h}'"
                 let motive ← mkLambdaFVars xs eBodyTp
                 pure (
                   eBody.replaceFVars #[x, h] #[rhs, heq],
