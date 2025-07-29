@@ -754,17 +754,17 @@ attribute [local instance] Polynomial.algebra
 
 variable (k K : Type*) [Field k] [Field K] [Algebra k K] [Algebra.IsAlgebraic k K]
 
-theorem ratFunc_rank_eq : Module.rank (RatFunc k) (RatFunc K) = Module.rank k K := by
+theorem rank_ratFunc_ratFunc : Module.rank (RatFunc k) (RatFunc K) = Module.rank k K := by
   rw [Algebra.IsAlgebraic.rank_of_isFractionRing k[X] (RatFunc k) K[X] (RatFunc K),
     rank_polynomial_polynomial]
 
-theorem ratFunc_finrank_eq : Module.finrank (RatFunc k) (RatFunc K) = Module.finrank k K := by
+theorem finrank_ratFunc_ratFunc : Module.finrank (RatFunc k) (RatFunc K) = Module.finrank k K := by
   by_cases hf : Module.Finite (RatFunc k) (RatFunc K)
-  · have hrank := ratFunc_rank_eq k K
+  · have hrank := rank_ratFunc_ratFunc k K
     rw [← Module.finrank_eq_rank] at hrank
     exact (Module.finrank_eq_of_rank_eq hrank.symm).symm
   · have hf' : ¬ Module.Finite k K := by
-      rwa [← Module.rank_lt_aleph0_iff, ← ratFunc_rank_eq, Module.rank_lt_aleph0_iff]
+      rwa [← Module.rank_lt_aleph0_iff, ← rank_ratFunc_ratFunc, Module.rank_lt_aleph0_iff]
     rw [Module.finrank_of_not_finite hf, Module.finrank_of_not_finite hf']
 
 end rank
