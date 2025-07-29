@@ -62,10 +62,10 @@ private lemma transitive [Lattice α] {r : α → α → Prop}
     (h₄ : ∀ ⦃x y t : α⦄, x ≤ y → r x y → r (x ⊓ t) (y ⊓ t) ∧ r (x ⊔ t) (y ⊔ t)) :
     ∀ {x y z : α}, r x y → r y z → r x z := by
   intro x y z hxy hyz
-  exact closed_interval h₂ h₄ (x ⊓ y ⊓ z) _ _ (x ⊔ y ⊔ z) (by rw [inf_assoc]; exact inf_le_left)
-    (by rw [sup_assoc]; exact le_sup_left) inf_le_right le_sup_right
-    (h₃ (by rw [inf_assoc]; exact inf_le_of_right_le inf_le_sup)
-    (by rw [sup_assoc]; exact le_sup_right) (h₃
+  exact closed_interval h₂ h₄ (x ⊓ y ⊓ z) _ _ (x ⊔ y ⊔ z) (by simp [inf_assoc, inf_le_left])
+    (by simp [sup_assoc, le_sup_left]) inf_le_right le_sup_right
+    (h₃ (by simpa [inf_assoc] using inf_le_of_right_le inf_le_sup)
+    (by simp [sup_assoc, le_sup_right]) (h₃
     (by rw [inf_assoc]; exact inf_le_right) inf_le_sup (by
       conv_lhs => rw [inf_comm x, inf_assoc, inf_inf_distrib_left, inf_comm _ x]
       conv_rhs => rw [← inf_eq_right.mpr (le_trans inf_le_left le_sup_right)]
