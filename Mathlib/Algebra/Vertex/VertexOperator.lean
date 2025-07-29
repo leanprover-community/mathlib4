@@ -655,7 +655,7 @@ lemma resProdRight_hasseDeriv_left (m : ℕ) (k : ℤ) (A B : VertexOperator R V
     simp only [Module.End.smul_def, map_zsmul_unit, LinearMap.map_smul_of_tower,
       zsmul_eq_mul, Pi.smul_apply, Pi.mul_apply, Pi.intCast_apply, LinearMap.smul_apply,
       Module.End.mul_apply, resProdRight_apply_ncoeff, Module.End.intCast_apply]
-    rw [← smul_assoc _ (k - m).negOnePow, Int.negOnePow_smul, ← Int.negOnePow_add, add_sub_cancel]
+    rw [← smul_assoc _ (k - m).negOnePow, Units.smul_eq_mul, ← Int.negOnePow_add, add_sub_cancel]
     congr 1
     rw [smul_finsum' _ (finite_supp_ncoeff_ncoeff_right n (k - m) A B v), finsum_congr]
     intro i
@@ -664,7 +664,7 @@ lemma resProdRight_hasseDeriv_left (m : ℕ) (k : ℤ) (A B : VertexOperator R V
     rw [show -(i + m : ℕ) - 1 + (m : ℤ) = - (i + 1) by omega, Ring.choose_neg, show
       (i : ℤ) + 1 + m - 1 = (m + i : ℕ) by omega, smul_comm (Ring.choose k (i + m)), smul_assoc,
       ← smul_assoc (Ring.choose _ m), Ring.choose_eq_nat_choose, add_comm m i, natCast_zsmul,
-      Ring.choose_add_smul_choose, smul_comm (Ring.choose k m), ← smul_assoc, Int.negOnePow_smul,
+      Ring.choose_add_smul_choose, smul_comm (Ring.choose k m), ← smul_assoc, Units.smul_eq_mul,
       ← Int.negOnePow_sub, Nat.cast_add, Int.add_sub_cancel, ← smul_assoc (Ring.choose k m)]
     congr 2
     abel_nf
