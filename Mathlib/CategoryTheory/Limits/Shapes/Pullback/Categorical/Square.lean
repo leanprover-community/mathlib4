@@ -1213,6 +1213,48 @@ lemma functorOfTransform_map_app_snd {ψ ψ' : CatCospanTransform R B R' B'}
 
 end
 
+section mkNatIso
+
+open Functor
+
+variable {J K : X ⥤ R ⊡ B}
+    (e₁ : J ⋙ (π₁ R B) ≅ K ⋙ (π₁ R B))
+    (e₂ : J ⋙ (π₂ R B) ≅ K ⋙ (π₂ R B))
+    (coh :
+      whiskerRight e₁.hom R ≫ (associator _ _ _).hom ≫
+        whiskerLeft K (CatCommSq.iso (π₁ R B) (π₂ R B) R B).hom ≫
+        (associator _ _ _).inv =
+      (associator _ _ _).hom ≫
+        whiskerLeft J (CatCommSq.iso (π₁ R B) (π₂ R B) R B).hom ≫
+        (associator _ _ _).inv ≫
+        whiskerRight e₂.hom B := by aesop_cat)
+
+@[simp]
+lemma mkNatIso_hom_app_fst (x : X) :
+    ((mkNatIso (π₁ R B) (π₂ R B) R B X e₁ e₂ coh).hom.app x).fst =
+    e₁.hom.app x := by
+  simp [mkNatIso, Equivalence.fullyFaithfulFunctor]
+
+@[simp]
+lemma mkNatIso_inv_app_fst (x : X) :
+    ((mkNatIso (π₁ R B) (π₂ R B) R B X e₁ e₂ coh).inv.app x).fst =
+    e₁.inv.app x := by
+  simp [mkNatIso, Equivalence.fullyFaithfulFunctor]
+
+@[simp]
+lemma mkNatIso_hom_app_snd (x : X) :
+    ((mkNatIso (π₁ R B) (π₂ R B) R B X e₁ e₂ coh).hom.app x).snd =
+    e₂.hom.app x := by
+  simp [mkNatIso, Equivalence.fullyFaithfulFunctor]
+
+@[simp]
+lemma mkNatIso_inv_app_snd (x : X) :
+    ((mkNatIso (π₁ R B) (π₂ R B) R B X e₁ e₂ coh).inv.app x).snd =
+    e₂.inv.app x := by
+  simp [mkNatIso, Equivalence.fullyFaithfulFunctor]
+
+end mkNatIso
+
 end CategoricalPullback
 
 end CatPullbackSquare
