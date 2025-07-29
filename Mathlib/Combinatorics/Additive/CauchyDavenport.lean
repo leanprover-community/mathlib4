@@ -220,4 +220,4 @@ lemma cauchy_davenport_mul_of_linearOrder_isCancelMul [LinearOrder α] [Mul α] 
   simp only [mem_inter, and_imp, mem_mul, mem_singleton, exists_eq_left,
     forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, mul_left_inj]
   exact fun a' ha' b' hb' h ↦ (le_max' _ _ ha').eq_of_not_lt fun ha ↦
-    ((mul_lt_mul_right' ha _).trans_eq h).not_ge <| mul_le_mul_left' (min'_le _ _ hb') _
+    ((mul_lt_mul_right' ha _).trans_eq' h).not_ge <| mul_le_mul_left' (min'_le _ _ hb') _

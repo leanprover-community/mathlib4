@@ -84,8 +84,10 @@ alias LE.le.trans_eq := le_of_le_of_eq
 @[to_dual LE.le.trans_eq''']
 alias LE.le.trans_eq' := le_of_le_of_eq'
 
-@[to_dual Eq.trans_ge]
+@[to_dual Eq.trans_ge']
 alias Eq.trans_le := le_of_eq_of_le
+@[to_dual Eq.trans_le']
+alias Eq.trans_ge := le_of_eq_of_le'
 
 end LE
 
@@ -96,9 +98,18 @@ variable [LT α] {a b c : α}
 protected lemma LT.lt.gt (h : a < b) : b > a := h
 protected lemma GT.gt.lt (h : a > b) : b < a := h
 
-@[to_dual LT.lt.trans_eq']
+@[to_dual gt_of_gt_of_eq]
+theorem lt_of_lt_of_eq' : b < c → a = b → a < c := flip lt_of_eq_of_lt
+@[to_dual gt_of_eq_of_gt]
+theorem lt_of_eq_of_lt' : b = c → a < b → a < c := flip lt_of_lt_of_eq
+@[to_dual GT.gt.trans_eq'']
+alias LT.lt.trans_eq' := lt_of_lt_of_eq'
+@[to_dual Eq.trans_lt']
+alias Eq.trans_gt := lt_of_eq_of_lt'
+
+@[to_dual GT.gt.trans_eq]
 alias LT.lt.trans_eq := lt_of_lt_of_eq
-@[to_dual Eq.trans_gt]
+@[to_dual Eq.trans_gt']
 alias Eq.trans_lt := lt_of_eq_of_lt
 
 end LT
