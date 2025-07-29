@@ -54,18 +54,6 @@ variable {Γ Γ' Γ₁ Γ₂ F R S U V : Type*}
 
 namespace HahnSeries
 
-section ofFinsupp
-
-variable [PartialOrder Γ] [Zero R]
-
-/-- Makes a Hahn series out of a finitely supported function. -/
-@[simps]
-def ofFinsupp (x : Γ →₀ R) : HahnSeries Γ R where
-  coeff g := x g
-  isPWO_support' := (Finsupp.finite_support x).isPWO
-
-end ofFinsupp
-
 variable [PartialOrder Γ] [Zero Γ]
 
 instance [Zero R] [One R] : One (HahnSeries Γ R) where one := single 0 1

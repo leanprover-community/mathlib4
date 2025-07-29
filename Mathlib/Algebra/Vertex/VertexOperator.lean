@@ -227,11 +227,18 @@ def unitSub {σ : Type*} [LinearOrder σ] {i j : σ} : HahnSeries (σ → ℤ) R
 
 
 /-!
+(2025-7-29) Use Finsupp.
+For weak associativity, use Y(Y(a,x)b,y)c, multiply by a suitable power of xy(x-y), compare
+to Y(a,x)Y(b,y)c, after multiplying by a suitable power of xy(x-y) and a substitution.
+
+
+(old)
 Given a totally ordered fintype `σ`, we consider binomials in `HahnSeries (PiLex σ Z) R`.
 Define binomials `X i - X j` as `varMinus hij` for `hij : i < j`.
 Need to add API for comparing `varMinus i j` with `varMinus j i`(and their ℕ-powers) under permuted
 order and associativity equivalences. Binomials are also Finsupps, so we can make a
 function to MvPolynomial, and compare them that way.
+
 
 -/
 

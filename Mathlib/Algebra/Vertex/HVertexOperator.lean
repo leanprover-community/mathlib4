@@ -5,6 +5,7 @@ Authors: Scott Carnahan
 -/
 import Mathlib.Algebra.Order.Monoid.Prod
 import Mathlib.RingTheory.HahnSeries.Binomial
+import Mathlib.RingTheory.HahnSeries.Finsupp
 
 /-!
 # Heterogeneous vertex operators
@@ -140,7 +141,7 @@ section arrowCongrLeft
 
 theorem arrowCongrLeft_coeff_apply {f : Γ₁ ↪ Γ₂} {A : HVertexOperator Γ₁ R V W} {a : Γ₁} :
     (f.arrowCongrLeft A.coeff) (f a) = A.coeff a := by
-  simp
+  simp [f.injective.extend_apply]
 
 theorem arrowCongrLeft_coeff_notin_range {f : Γ₁ ↪ Γ₂} {A : HVertexOperator Γ₁ R V W}
     {b : Γ₂} (hb : b ∉ Set.range f) :
@@ -151,7 +152,7 @@ theorem support_arrowCongrLeft_subset {f : Γ₁ ↪ Γ₂} {A : HVertexOperator
     (f.arrowCongrLeft A.coeff).support ⊆ Set.range f := by
   intro g hg
   contrapose! hg
-  simp [arrowCongrLeft_coeff_notin_range hg]
+  simp [Function.extend_apply' _ _ _ hg]
 
 omit [PartialOrder Γ₁] in
 @[simp]
@@ -166,13 +167,16 @@ theorem support_arrowCongrLeft_coeff_injective {f : Γ₁ ↪ Γ₂} :
   ext v g
   simp only [funext_iff] at h
   have h₁ := h (f g)
-  simp only [Function.Embedding.arrowCongrLeft_apply] at h₁
+  simp only [arrowCongrLeft_coeff_apply] at h₁
   rw [← coeff_apply_apply, h₁, coeff_apply_apply]
 
 theorem arrowCongrLeft_comp {Γ₃ : Type*} {f : Γ₁ ↪ Γ₂} {f' : Γ₂ ↪ Γ₃}
     (A : HVertexOperator Γ₁ R V W) :
     (f'.arrowCongrLeft) (f.arrowCongrLeft A.coeff) = (f.trans f').arrowCongrLeft A.coeff := by
-  simp
+  ext
+  have : (default : Γ₃ → V →ₗ[R] W) ∘ f' = default := rfl
+  simp only [Function.Embedding.arrowCongrLeft_apply, Function.Embedding.coe_trans]
+  rw [Function.Injective.extend_comp f.injective f'.injective, this]
 
 /-!
 Need:
@@ -460,6 +464,10 @@ should allow me to commute in all domains with a fixed embedding of `ℤ × ℤ`
  * Translation from embedded positive `binomialPow` to `Finsupp`.
  * Comparison of commutator with usual composition
 How do I express weak associativity in terms of power series? This seems to require a substitution.
+To compare `Y(Y(a,x-y)b,y)c` with `Y(a,x)Y(b,y)c`, first multiply `Y(Y(a,x-y)b,y)c` by a suitably
+high power of `xy(x-y)`, but with different choice of variable: multiply `Y(Y(a,x)b,y)c` by
+`xy(x+y)`. Then, multiply `Y(a,x)Y(b,y)c` by the same power of `xy(x-y)`. Both give
+
 
 One way: use `embCoeff f A = f.arrowCongrLeft A.coeff`.
 -/
