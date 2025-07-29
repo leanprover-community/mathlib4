@@ -95,14 +95,74 @@ lemma bayesRiskPrior_eq_of_hasGenBayesEstimator
   rw [← h.isGenBayesEstimator.isBayesEstimator hl,
     h.isGenBayesEstimator.bayesianRisk_eq_lintegral_iInf hl]
 
-noncomputable instance [Nonempty 𝓨] [Finite 𝓨] : HasGenBayesEstimator ℓ P π where
-  estimator x := (Finite.exists_min (fun y ↦ ∫⁻ θ, ℓ θ y ∂(P†π) x)).choose
+lemma measurableSet_isMin {α : Type*} {_ : MeasurableSpace α} [TopologicalSpace α] [PartialOrder α]
+    [OpensMeasurableSpace α] [OrderClosedTopology α] [SecondCountableTopology α]
+    [Countable 𝓨]
+    {f : 𝓧 → 𝓨 → α} (hf : ∀ y, Measurable (fun x ↦ f x y)) (y : 𝓨) :
+    MeasurableSet {x | IsMinOn (f x) .univ y} := by
+  simp only [isMinOn_univ_iff]
+  rw [show {x | ∀ y', f x y ≤ f x y'} = ⋂ y', {x | f x y ≤ f x y'} by ext; simp]
+  exact MeasurableSet.iInter fun z ↦ measurableSet_le (by fun_prop) (by fun_prop)
+
+lemma exists_isMinOn {α : Type*} {_ : MeasurableSpace α} [TopologicalSpace α] [LinearOrder α]
+    [OpensMeasurableSpace α] [OrderClosedTopology α] [SecondCountableTopology α]
+    [Nonempty 𝓨] [Finite 𝓨] (f : 𝓧 → 𝓨 → α) (x : 𝓧) :
+    ∃ y, IsMinOn (f x) .univ y := by
+  simpa only [isMinOn_univ_iff] using Finite.exists_min (f x)
+
+lemma exists_isMinOn' {α : Type*} {_ : MeasurableSpace α} [TopologicalSpace α] [LinearOrder α]
+    [OpensMeasurableSpace α] [OrderClosedTopology α] [SecondCountableTopology α]
+    [Nonempty 𝓨] [Finite 𝓨] (f : 𝓧 → 𝓨 → α) (x : 𝓧) :
+    ∃ n : ℕ, ∃ y, n = (Encodable.ofCountable 𝓨).encode y ∧ IsMinOn (f x) .univ y := by
+  obtain ⟨y, h⟩ := exists_isMinOn f x
+  exact ⟨(Encodable.ofCountable 𝓨).encode y, y, rfl, h⟩
+
+open Classical in
+noncomputable
+def measurableArgmin {α : Type*} {_ : MeasurableSpace α} [TopologicalSpace α] [LinearOrder α]
+    [OpensMeasurableSpace α] [OrderClosedTopology α] [SecondCountableTopology α]
+    [Nonempty 𝓨] [Finite 𝓨]
+    (f : 𝓧 → 𝓨 → α) (x : 𝓧) :
+    𝓨 :=
+  sorry
+
+lemma measurable_measurableArgmin {α : Type*} {_ : MeasurableSpace α}
+    [TopologicalSpace α] [LinearOrder α]
+    [OpensMeasurableSpace α] [OrderClosedTopology α] [SecondCountableTopology α]
+    [Nonempty 𝓨] [Finite 𝓨]
+    {f : 𝓧 → 𝓨 → α} (hf : ∀ y, Measurable (fun x ↦ f x y))
+    (h_exists : ∀ x, ∃ y, IsMinOn (f x) .univ y) :
+    Measurable (measurableArgmin f) := by
+  unfold measurableArgmin
+  sorry
+
+lemma isMinOn_measurableArgmin {α : Type*} {_ : MeasurableSpace α}
+    [TopologicalSpace α] [LinearOrder α]
+    [OpensMeasurableSpace α] [OrderClosedTopology α] [SecondCountableTopology α]
+    [Nonempty 𝓨] [Finite 𝓨]
+    {f : 𝓧 → 𝓨 → α} (hf : ∀ y, Measurable (fun x ↦ f x y))
+    (h_exists : ∀ x, ∃ y, IsMinOn (f x) .univ y) (x : 𝓧) :
+    IsMinOn (f x) .univ (measurableArgmin f x) := by
+  sorry
+
+lemma todo [Nonempty 𝓨] [Finite 𝓨] (hl : Measurable (Function.uncurry ℓ)) (y : 𝓨) :
+    Measurable (fun x ↦ ∫⁻ θ, ℓ θ y ∂(P†π) x) :=
+  (Measure.measurable_lintegral (by fun_prop)).comp (by fun_prop)
+
+lemma todo' [Nonempty 𝓨] [Finite 𝓨] (x : 𝓧) :
+    ∃ y, IsMinOn ((fun x y ↦ ∫⁻ (θ : Θ), ℓ θ y ∂(P†π) x) x) Set.univ y := by
+  simp only [isMinOn_univ_iff]
+  exact Finite.exists_min _
+
+noncomputable instance [Nonempty 𝓨] [Finite 𝓨] (hl : Measurable (Function.uncurry ℓ)) :
+    HasGenBayesEstimator ℓ P π where
+  estimator x := measurableArgmin (fun x y ↦ ∫⁻ θ, ℓ θ y ∂(P†π) x) x
   isGenBayesEstimator :=
-    { measurable := by
-        sorry
+    { measurable := measurable_measurableArgmin (todo hl) todo'
       property := by
         refine ae_of_all _ fun x ↦ ?_
-        have h := (Finite.exists_min (fun y ↦ ∫⁻ θ, ℓ θ y ∂(P†π) x)).choose_spec
-        exact le_antisymm (by simpa using h) (iInf_le _ _) }
+        have h := isMinOn_measurableArgmin (f := fun x y ↦ ∫⁻ θ, ℓ θ y ∂(P†π) x) (todo hl)
+         todo' x
+        exact le_antisymm (by simpa [isMinOn_univ_iff] using h) (iInf_le _ _) }
 
 end ProbabilityTheory
