@@ -160,7 +160,7 @@ else
   # Use --track to explicitly specify which remote branch to track
   git checkout --track "$NIGHTLY_REMOTE/bump/$BUMPVERSION"
 fi
-git pull --no-rebase $MAIN_REMOTE "bump/$BUMPVERSION"
+git pull --no-rebase $NIGHTLY_REMOTE "bump/$BUMPVERSION"
 git merge --no-edit $MAIN_REMOTE/master || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
