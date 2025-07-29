@@ -86,7 +86,7 @@ lemma add_sub_mul (hp : IsIdempotentElem a) (hq : IsIdempotentElem b) :
 end CommRing
 
 /-- `b - a` is idempotent when `a * b = a` and `b * a = a`. -/
-lemma sub [NonAssocRing R] {a b : R} (ha : IsIdempotentElem a)
+lemma sub [NonUnitalNonAssocRing R] {a b : R} (ha : IsIdempotentElem a)
     (hb : IsIdempotentElem b) (hab : a * b = a) (hba : b * a = a) : IsIdempotentElem (b - a) := by
   simp_rw [IsIdempotentElem, sub_mul, mul_sub, hab, hba, ha.eq, hb.eq, sub_self, sub_zero]
 
