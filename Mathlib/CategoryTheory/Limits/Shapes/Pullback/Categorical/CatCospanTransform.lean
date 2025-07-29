@@ -651,6 +651,46 @@ def counitIso : 𝔈.inverse.comp 𝔈.transform ≅ CatCospanTransform.id F' G'
   hom := 𝔈.counit
   inv := 𝔈.counitInv
 
+instance : IsIso 𝔈.counit := inferInstanceAs (IsIso 𝔈.counitIso.hom)
+instance : IsIso 𝔈.counitInv := inferInstanceAs (IsIso 𝔈.counitIso.inv)
+instance : IsIso 𝔈.unit := inferInstanceAs (IsIso 𝔈.unitIso.hom)
+instance : IsIso 𝔈.unitInv := inferInstanceAs (IsIso 𝔈.unitIso.inv)
+
+@[simp]
+lemma inv_counit : inv (𝔈.counit) = 𝔈.counitInv :=
+  IsIso.inv_eq_of_hom_inv_id <| by simp
+
+@[simp]
+lemma inv_unit : inv (𝔈.unit) = 𝔈.unitInv :=
+  IsIso.inv_eq_of_hom_inv_id <| by simp
+
+@[simp]
+lemma inv_counitInv : inv (𝔈.counitInv) = 𝔈.counit :=
+  IsIso.inv_eq_of_hom_inv_id <| by simp
+
+@[simp]
+lemma inv_unitInv : inv (𝔈.unitInv) = 𝔈.unit :=
+  IsIso.inv_eq_of_hom_inv_id <| by simp
+
+@[simps!]
+def symm (e : CatCospanEquivalence F G F' G') : CatCospanEquivalence F' G' F G where
+  leftAdjoint := e.rightAdjoint
+  rightAdjoint := e.leftAdjoint
+  counit := e.unitInv
+  unit := e.counitInv
+  unitInv := e.counit
+  counitInv := e.unit
+  left_triangle := by
+    haveI := IsIso.inv_eq_inv.mpr <| e.right_triangle
+    simpa [IsIso.inv_comp, Category.assoc, IsIso.Iso.inv_hom,
+      -IsIso.inv_comp_eq, -IsIso.comp_inv_eq, CatCospanTransform.inv_whiskerRight,
+      CatCospanTransform.inv_whiskerLeft] using this
+  right_triangle := by
+    haveI := IsIso.inv_eq_inv.mpr <| e.left_triangle
+    simpa [IsIso.inv_comp, Category.assoc, IsIso.Iso.inv_hom,
+      -IsIso.inv_comp_eq, -IsIso.comp_inv_eq, CatCospanTransform.inv_whiskerRight,
+      CatCospanTransform.inv_whiskerLeft] using this
+
 /-- Extract an equivalence of categories `A ≌ A'` as the left component of a
 `CatCospanEquivalence F _ F' _` for `F : A ⥤ _` and `A' : A' ⥤ _`. -/
 @[simps]

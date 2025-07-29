@@ -112,6 +112,7 @@ to exhibit a square as a `CatPullbackSquare`, it suffices to provide an
 equivalence with the default categorical pullback, as well as a
 natural isomorphism between the forward direction of the equivalence and
 the canonical functor. -/
+@[simps]
 def mkOfEquivalence
     {D₁ : Type u₅} {D₂ : Type u₆} {D₃ : Type u₇} {D₄ : Type u₈}
     [Category.{v₅} D₁] [Category.{v₆} D₂] [Category.{v₇} D₃] [Category.{v₈} D₄]
@@ -1084,9 +1085,49 @@ lemma functorOfTransform_map_app_snd {ψ ψ' : CatCospanTransform R B R' B'}
     α.right.app (L.obj x) :=
   rfl
 
+@[simp]
+lemma functorOfTransform_obj_obj_iso_hom (ψ : CatCospanTransform R B R' B')
+    (x : C₁) :
+    (functorOfTransform T L (π₁ R' B') (π₂ R' B')|>.obj ψ|>.obj x).iso =
+    ((ψ.squareLeft.iso.app (T.obj x)).symm ≪≫
+      ψ.base.mapIso ((CatCommSq.iso T L R B).app x) ≪≫
+      (ψ.squareRight.iso.app (L.obj x))) := by
+  ext
+  simp [functorOfTransform]
+
 end
 
 end CategoricalPullback
+
+omit [CatPullbackSquare T L R B] in
+/-- A constructor for categorical pullback squares: given a
+- a `CatCommSq (T : C₁ ⥤ _) L R B`
+- a `CatPullbackSquare (T' : D₁ ⥤ _) L' R' B'`
+- Some `ψ : CatCospanEquivalence R B R' B'`
+- an equivalence `e : C₁ ≌ D₁` with a natural isomorphism
+`e.functor ≅ functorOfTransform T L T' L' ψ.transform`
+Construct a `CatPullbackSquare` structure on the `CatCommSq T L R B`.
+
+This structure will be characterized (TODO) by the fact that the induced
+equivalence `C₁ ≌ D₁` that comes from the unicity up to equivalence of
+categorical pullback squares is precisely the given equivalence `e`. -/
+def ofEquivCatPullbackSquare
+    {D₁ : Type u₅} {D₂ : Type u₆} {D₃ : Type u₇} {D₄ : Type u₈}
+    [Category.{v₅} D₁] [Category.{v₆} D₂] [Category.{v₇} D₃] [Category.{v₈} D₄]
+    (T' : D₁ ⥤ D₂) (L' : D₁ ⥤ D₃) {R' : D₂ ⥤ D₄} {B' : D₃ ⥤ D₄}
+    [CatCommSq T' L' R' B'] [CatPullbackSquare T' L' R' B']
+    (ψ : CatCospanEquivalence R B R' B') (e : C₁ ≌ D₁)
+    (h : e.functor ≅ (functorOfTransform T L T' L').obj ψ.transform) :
+    CatPullbackSquare T L R B :=
+  .mkOfEquivalence T L R B
+    (e.trans <|
+      equivalenceOfCatCospanEquivalence T' L' (π₁ R B) (π₂ R B) ψ.symm)
+    (Functor.isoWhiskerRight h _ ≪≫
+      (functorOfTransformObjComp T L T' L' (π₁ R B) (π₂ R B)
+          ψ.transform ψ.inverse).symm ≪≫
+      (functorOfTransform T L (π₁ R B) (π₂ R B)).mapIso ψ.unitIso.symm ≪≫
+      (functorEquiv (π₁ R B) (π₂ R B) R B C₁|>.inverse.mapIso <|
+        CatCommSqOver.transformObjId C₁ R B|>.app <| .ofSquare T L R B))
 
 end CatPullbackSquare
 
