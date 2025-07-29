@@ -65,14 +65,6 @@ variable [Module 𝕜 E] [Module 𝕜 F]
 
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
-lemma isBounded_of_Continuous (f : WeakBilin B →L[𝕜] 𝕜) :
-    Seminorm.IsBounded B.toSeminormFamily (fun _ : Fin 1 => normSeminorm 𝕜 𝕜) f.toLinearMap := by
-  obtain ⟨s,C, hC1, hC2⟩ :=
-    Seminorm.bound_of_continuous B.weakBilin_withSeminorms
-      f.toSeminorm (continuous_norm.comp f.continuous)
-  rw [Seminorm.IsBounded, forall_const]
-  exact ⟨s, ⟨C, hC2⟩⟩
-
 open TopologicalSpace in
 lemma top_eq : induced (fun x y => B x y) Pi.topologicalSpace =
   ⨅ i, induced (B.flip i) inferInstance := induced_to_pi fun x y ↦ (B x) y
