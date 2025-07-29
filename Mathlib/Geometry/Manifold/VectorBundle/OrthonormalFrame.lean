@@ -182,7 +182,7 @@ end IsOrthonormalFrameOn
 
 end smoothness
 
-namespace Basis
+namespace Module.Basis
 
 variable {b : Basis ι ℝ F}
     {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B)}
@@ -227,4 +227,4 @@ lemma orthonormalFrame_apply_of_notMem {i : ι} (hx : x ∉ e.baseSet) :
   convert InnerProductSpace.gramSchmidt_zero ℝ i
   apply localFrame_apply_of_notMem e b hx
 
-end Basis
+end Module.Basis

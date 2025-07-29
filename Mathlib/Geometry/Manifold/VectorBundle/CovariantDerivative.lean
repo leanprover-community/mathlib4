@@ -21,7 +21,7 @@ TODO: add a more complete doc-string
 
 -/
 
-open Bundle Filter Topology Set
+open Bundle Filter Module Topology Set
 
 open scoped Bundle Manifold ContDiff
 

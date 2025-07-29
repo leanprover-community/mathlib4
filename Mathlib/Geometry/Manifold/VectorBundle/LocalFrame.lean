@@ -61,7 +61,7 @@ TODO add a more complete doc-string!
 vector bundle, local frame, smoothness
 
 -/
-open Bundle Filter Function Topology
+open Bundle Filter Function Topology Module
 
 open scoped Bundle Manifold ContDiff
 
@@ -301,7 +301,7 @@ end IsLocalFrameOn
 
 end IsLocalFrame
 
-namespace Basis
+namespace Module.Basis
 
 variable {ι : Type*}
 
@@ -466,7 +466,7 @@ lemma localFrame_repr_eq_repr (hxe : x ∈ e.baseSet) (b : Basis ι 𝕜 F) {i :
   --simp only [localFrame_repr]
   simp [b.localFrame_repr_apply_of_mem_baseSet e hxe, Basis.localFrame_toBasis_at]
 
-end Basis
+end Module.Basis
 
 /-! # Determining smoothness of a section via its local frame coefficients
 We show that for finite rank bundles over a complete field, a section is smooth iff its coefficients

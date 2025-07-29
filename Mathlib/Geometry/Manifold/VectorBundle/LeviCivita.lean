@@ -22,7 +22,7 @@ is an isometry) and prove the Levi-Civita connection is a metric connection
 
 -/
 
-open Bundle Filter Function Topology
+open Bundle Filter Function Module Topology
 
 open scoped Bundle Manifold ContDiff
 
@@ -32,7 +32,7 @@ variable {n : WithTop ℕ∞}
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
   {M : Type*} [EMetricSpace M] [ChartedSpace H M] [IsManifold I ∞ M]
   [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
-  -- comes in a future PR by sgouezel; don't need this part yet
+  -- don't need this assumption (yet?)
   -- [IsRiemannianManifold I M]
 
 variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace ℝ E']

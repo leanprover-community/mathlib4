@@ -13,7 +13,7 @@ import Mathlib.Geometry.Manifold.Elaborators
 # The tensoriality criterion
 
 -/
-open Bundle Filter Function Topology
+open Bundle Filter Function Topology Module
 
 open scoped Bundle Manifold ContDiff
 
