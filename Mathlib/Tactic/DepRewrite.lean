@@ -107,11 +107,38 @@ structure Context where
   /-- Cached `p.toNumArgs`. -/
   pNumArgs : Nat := p.headNumArgs
 
+/-- `true` iff `occs` intersects `[s, s+d)`. -/
+def _root_.Lean.Meta.Occurrences.anyIn (s d : Nat) : Occurrences → Bool
+  | .all => d != 0
+  | .pos l => l.any fun p => s ≤ p && p < s+d
+  | .neg l => Id.run do
+    for i in [s:s+d] do
+      if l.all (· != i) then return true
+    return false
+
+/-- `true` iff `[s, s+d) ⊆ occs`. -/
+def _root_.Lean.Meta.Occurrences.allIn (s d : Nat) : Occurrences → Bool
+  | .all => true
+  | .pos l => Id.run do
+    for i in [s:s+d] do
+      if l.all (· != i) then return false
+    return true
+  | .neg l => l.all fun p => p < s || s+d ≤ p
+
+def canUseCache (cacheOcc dCacheOcc currOcc : Nat) (occs : Occurrences) : Bool :=
+  if occs.allIn currOcc dCacheOcc then -- all occurrences hit
+    occs.allIn cacheOcc dCacheOcc
+  else if !occs.anyIn currOcc dCacheOcc then -- no occurrences hit
+    !occs.anyIn cacheOcc dCacheOcc
+  else
+    false
+
 /-- Monad for computing `dabstract`.
 The cache is for `visit` (not `visitAndCast`, which has two arguments),
-and the `Nat` tracks which occurrence of the pattern we are currently seeing. -/
-abbrev M := ReaderT Context <|
-  -- MonadCacheT ExprStructEq Expr <|
+and the `Nat` tracks which occurrence of the pattern we are currently seeing.
+We must also cache the _number of occurrences in a subterm_
+because even if the cache hits, we should bump our state by this number. -/
+abbrev M := ReaderT Context <| MonadCacheT ExprStructEq (Expr × Nat × Nat) <|
   StateRefT Nat MetaM
 
 /-- Check that casting `e : t` is allowed in the current mode.
@@ -206,15 +233,31 @@ partial def visitAndCast (e : Expr) (et? : Option Expr) : M Expr := do
 
 /-- Like `visitAndCast`, but does not insert casts at the top level.
 The expected types of certain subterms are computed from `et?`. -/
--- TODO(WN): further speedup might come from returning whether anything
--- was rewritten inside a `visit`,
--- and then skipping the type correctness check if it wasn't.
 partial def visit (e : Expr) (et? : Option Expr) : M Expr :=
   withTraceNode traceClsVisit (fun
     | .ok e' => pure m!"{e} => {e'} (et: {et?})"
-    | .error _ => pure m!"{e} => 💥️") do
-  -- checkCache { val := e : ExprStructEq } fun _ =>
-  Meta.withIncRecDepth do
+    | .error _ => pure m!"{e} => 💥️") <| Meta.withIncRecDepth do
+  let ctx ← read
+  match (← MonadCache.findCached? { val := e : ExprStructEq }) with
+  | some (eup, cacheOcc, dCacheOcc) =>
+    if canUseCache cacheOcc dCacheOcc (← get) ctx.cfg.occs then
+      modify (· + dCacheOcc)
+      return eup
+    else
+      let initOccs ← get
+      let eup ← visitInner e et?
+      MonadCache.cache { val := e : ExprStructEq } (eup, initOccs, (← get) - initOccs)
+      return eup
+  | none => do
+    let initOccs ← get
+    let eup ← visitInner e et?
+    MonadCache.cache { val := e : ExprStructEq } (eup, initOccs, (← get) - initOccs)
+    return eup
+
+-- TODO(WN): further speedup might come from returning whether anything
+-- was rewritten inside a `visit`,
+-- and then skipping the type correctness check if it wasn't.
+partial def visitInner (e : Expr) (et? : Option Expr) : M Expr := do
   let ctx ← read
   if e.hasLooseBVars then
     throwError "internal error: forgot to instantiate"
@@ -293,8 +336,7 @@ def dabstract (e : Expr) (p : Expr) (cfg : DepRewrite.Config) : MetaM Expr := do
     | .error (err : Lean.Exception) => pure m!"{e} =[x/{p}]=> 💥️{indentD err.toMessageData}") do
   withLocalDeclD `x tp fun x => do
   withLocalDeclD `h (← mkEq p x) fun h => do
-    let e' ← visit e none |>.run { cfg, p, x, h, Δ := #[], δ := #[] } -- |>.run
-      |>.run' 1
+    let e' ← visit e none |>.run { cfg, p, x, h, Δ := #[], δ := #[] } |>.run.run' 1
     mkLambdaFVars #[x, h] e'
 
 /-- Analogue of `Lean.MVarId.rewrite` with support for inserting casts. -/
