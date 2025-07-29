@@ -68,6 +68,16 @@ Defined as in [MM92], Chapter I, Section 5, Theorem 2.
 def restrictedULiftYoneda : ℰ ⥤ Cᵒᵖ ⥤ Type (max w v₂) :=
     uliftYoneda.{w} ⋙ (Functor.whiskeringLeft _ _ _).obj A.op
 
+@[reassoc]
+lemma map_comp_uliftYonedaEquiv_down (E : ℰ) {X Y : C} (f : X ⟶ Y)
+    (g : uliftYoneda.{max w v₂}.obj Y ⟶ (restrictedULiftYoneda.{max w v₁} A).obj E) :
+    A.map f ≫ (uliftYonedaEquiv g).down =
+      (uliftYonedaEquiv (uliftYoneda.map f ≫ g)).down := by
+  have this := congr_fun (g.naturality f.op) (ULift.up (𝟙 Y))
+  dsimp [uliftYonedaEquiv, uliftYoneda] at this ⊢
+  simp only [comp_id] at this
+  simp only [id_comp, this]
+
 /-- Auxiliary definition for `restrictedULiftYonedaHomEquiv`. -/
 def restrictedULiftYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type (max w v₁ v₂)) (E : ℰ) :
     (CostructuredArrow.proj uliftYoneda.{max w v₂} P ⋙ A ⟶
@@ -87,8 +97,9 @@ def restrictedULiftYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type (max w v₁ v₂)) (E :
         simpa using (f.naturality φ).symm }
   invFun g :=
     { app y := (uliftYonedaEquiv.{max w v₂} (y.hom ≫ g)).down
-      naturality := by
-        sorry }
+      naturality y y' f := by
+        dsimp
+        rw [comp_id, ← CostructuredArrow.w f, assoc, map_comp_uliftYonedaEquiv_down] }
   left_inv f := by
     ext X
     let e : CostructuredArrow.mk
@@ -149,7 +160,7 @@ then `L` is a left adjoint of `restrictedYoneda A : ℰ ⥤ Cᵒᵖ ⥤ Type v�
 noncomputable def uliftYonedaAdjunction : L ⊣ restrictedULiftYoneda.{max w v₁} A :=
   Adjunction.mkOfHomEquiv
     { homEquiv := restrictedULiftYonedaHomEquiv L α
-      homEquiv_naturality_left_symm := fun {P Q X} f g => by
+      homEquiv_naturality_left_symm {P Q X} f g := by
         apply (Functor.isPointwiseLeftKanExtensionOfIsLeftKanExtension L α P).hom_ext
         intro p
         have hfg := (Functor.isPointwiseLeftKanExtensionOfIsLeftKanExtension
@@ -161,7 +172,7 @@ noncomputable def uliftYonedaAdjunction : L ⊣ restrictedULiftYoneda.{max w v�
         dsimp [restrictedULiftYonedaHomEquiv]
         simp only [assoc, hfg, ← L.map_comp_assoc, hg,
           restrictedULiftYonedaHomEquiv'_symm_app_naturality_left]
-      homEquiv_naturality_right := fun {P X Y} f g => by
+      homEquiv_naturality_right {P X Y} f g := by
         have := @IsColimit.homEquiv_symm_naturality (h :=
           Functor.isPointwiseLeftKanExtensionOfIsLeftKanExtension L α P)
         dsimp at this
@@ -218,7 +229,7 @@ noncomputable def coconeOfRepresentable (P : Cᵒᵖ ⥤ Type max w v₁) :
   pt := P
   ι :=
     { app x := uliftYonedaEquiv.symm x.unop.2
-      naturality := fun {x₁ x₂} f => by
+      naturality {x₁ x₂} f := by
         dsimp
         rw [comp_id, ← uliftYonedaEquiv_symm_map, f.unop.2] }
 
@@ -460,7 +471,7 @@ a natural transformation `φ : F ⋙ yoneda ⟶ yoneda ⋙ G`, this is the
 determined by `φ`. -/
 noncomputable def presheafHom (P : Cᵒᵖ ⥤ Type v₁) : P ⟶ F.op ⋙ G.obj P :=
   (colimitOfRepresentable P).desc
-    (Cocone.mk _ { app := fun x => coconeApp φ x.unop })
+    (Cocone.mk _ { app x := coconeApp φ x.unop })
 
 lemma yonedaEquiv_ι_presheafHom (P : Cᵒᵖ ⥤ Type v₁) {X : C} (f : yoneda.obj X ⟶ P) :
     yonedaEquiv (f ≫ presheafHom φ P) =
@@ -575,14 +586,14 @@ variable {C : Type u₁} [Category.{v₁} C] (P : Cᵒᵖ ⥤ Type v₁)
 @[simps]
 def tautologicalCocone : Cocone (CostructuredArrow.proj yoneda P ⋙ yoneda) where
   pt := P
-  ι := { app := fun X => X.hom }
+  ι := { app X := X.hom }
 
 /-- The tautological cocone with point `P` is a colimit cocone, exhibiting `P` as a colimit of
     representables.
 
     Proposition 2.6.3(i) in [Kashiwara2006] -/
 def isColimitTautologicalCocone : IsColimit (tautologicalCocone P) where
-  desc := fun s => by
+  desc s := by
     refine ⟨fun X t => yonedaEquiv (s.ι.app (CostructuredArrow.mk (yonedaEquiv.symm t))), ?_⟩
     intros X Y f
     ext t
