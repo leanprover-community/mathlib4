@@ -380,7 +380,7 @@ theorem eqvGen_step_iff_join_red : EqvGen Red.Step L₁ L₂ ↔ Join Red L₁ L
 elements of the word cancel. -/
 @[to_additive FreeAddGroup.IsReduced "Predicate asserting the word `L` admits no reduction steps,
 i.e., no two neighboring elements of the word cancel."]
-def IsReduced (L : List (α × Bool)) : Prop := L.Chain' (fun a b ↦ ¬(a.1 = b.1 ∧ (!a.2) = b.2))
+def IsReduced (L : List (α × Bool)) : Prop := L.Chain' (fun a b ↦ a.1 = b.1 → a.2 = b.2)
 
 namespace IsReduced
 
@@ -394,7 +394,7 @@ theorem singleton {a : α × Bool} : IsReduced [a] := chain'_singleton a
 
 @[to_additive (attr := simp)]
 theorem cons {a b : (α × Bool)} :
-    IsReduced (a :: b :: L) ↔ ¬(a.1 = b.1 ∧ (!a.2) = b.2) ∧ IsReduced (b :: L) := chain'_cons
+    IsReduced (a :: b :: L) ↔ (a.1 = b.1 → a.2 = b.2) ∧ IsReduced (b :: L) := chain'_cons
 
 @[to_additive]
 theorem not_step (h : IsReduced L₁) : ¬ Red.Step L₁ L₂ := fun step ↦ by
@@ -409,7 +409,10 @@ lemma of_forall_not_step :
   | (a₁, b₁) :: (a₂, b₂) :: L₁, hL₁ => by
     rw [IsReduced.cons]
     refine ⟨?_, .of_forall_not_step fun L₂ step ↦ hL₁ _ step.cons⟩
-    rintro ⟨rfl, rfl⟩
+    rintro rfl
+    symm
+    rw [← Bool.ne_not]
+    rintro rfl
     exact hL₁ L₁ <| .not (L₁ := [])
 
 @[to_additive]
