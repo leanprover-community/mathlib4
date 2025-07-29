@@ -843,7 +843,7 @@ theorem injective_zpow_iff_not_isOfFinOrder : (Injective fun n : ℤ => x ^ n) �
 @[to_additive]
 lemma Subgroup.zpowers_eq_zpowers_iff {x y : G} (hx : ¬IsOfFinOrder x) :
     zpowers x = zpowers y ↔ x = y ∨ x⁻¹ = y := by
-  refine ⟨fun h ↦ ?_, by rintro (rfl|rfl) <;> simp⟩
+  refine ⟨fun h ↦ ?_, by rintro (rfl | rfl) <;> simp⟩
   have hx_mem : x ∈ zpowers y := by simp [← h]
   have hy_mem : y ∈ zpowers x := by simp [h]
   obtain ⟨k, rfl⟩ := mem_zpowers_iff.mp hy_mem

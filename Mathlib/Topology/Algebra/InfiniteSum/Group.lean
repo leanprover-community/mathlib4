@@ -419,7 +419,7 @@ theorem tprod_const [T2Space G] (a : G) : ∏' _ : β, a = a ^ (Nat.card β) := 
     rw [tprod_eq_prod (s := univ) (fun x hx ↦ (hx (mem_univ x)).elim)]
     simp only [prod_const, Nat.card_eq_fintype_card, Fintype.card]
   · simp only [Nat.card_eq_zero_of_infinite, pow_zero]
-    rcases eq_or_ne a 1 with rfl|ha
+    rcases eq_or_ne a 1 with rfl | ha
     · simp
     · apply tprod_eq_one_of_not_multipliable
       simpa [multipliable_const_iff] using ha

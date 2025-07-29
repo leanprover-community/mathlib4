@@ -208,7 +208,7 @@ theorem exists_le_prime_notMem_of_isIdempotentElem (a : α) (ha : IsIdempotentEl
     ∃ p : Ideal α, p.IsPrime ∧ I ≤ p ∧ a ∉ p :=
   have : Disjoint (I : Set α) (Submonoid.powers a) := Set.disjoint_right.mpr <| by
     rw [ha.coe_powers]
-    rintro _ (rfl|rfl)
+    rintro _ (rfl | rfl)
     exacts [I.ne_top_iff_one.mp (ne_of_mem_of_not_mem' Submodule.mem_top haI).symm, haI]
   have ⟨p, h1, h2, h3⟩ := exists_le_prime_disjoint _ _ this
   ⟨p, h1, h2, Set.disjoint_right.mp h3 (Submonoid.mem_powers a)⟩

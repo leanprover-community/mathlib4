@@ -543,7 +543,7 @@ lemma _root_.Function.HasTemperateGrowth.of_fderiv {f : E → F}
     (h : ∀ x, ‖f x‖ ≤ C * (1 + ‖x‖) ^ k) :
     Function.HasTemperateGrowth f := by
   refine ⟨contDiff_succ_iff_fderiv.2 ⟨hf, by simp, h'f.1⟩, fun n ↦ ?_⟩
-  rcases n with rfl|m
+  rcases n with rfl | m
   · exact ⟨k, C, fun x ↦ by simpa using h x⟩
   · rcases h'f.2 m with ⟨k', C', h'⟩
     refine ⟨k', C', ?_⟩

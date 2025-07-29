@@ -599,7 +599,7 @@ theorem _root_.isLocallyConstant_of_fderiv_eq_zero (h₁ : Differentiable 𝕜 f
 theorem _root_.IsOpen.exists_is_const_of_fderiv_eq_zero
     (hs : IsOpen s) (hs' : IsPreconnected s) (hf : DifferentiableOn 𝕜 f s)
     (hf' : s.EqOn (fderiv 𝕜 f) 0) : ∃ a, ∀ x ∈ s, f x = a := by
-  obtain (rfl|⟨y, hy⟩) := s.eq_empty_or_nonempty
+  obtain (rfl | ⟨y, hy⟩) := s.eq_empty_or_nonempty
   · exact ⟨0, by simp⟩
   · refine ⟨f y, fun x hx ↦ ?_⟩
     have h₁ := hs.isOpen_inter_preimage_of_fderiv_eq_zero hf hf' {f y}

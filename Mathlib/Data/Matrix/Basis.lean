@@ -102,7 +102,7 @@ theorem single_mulVec [NonUnitalNonAssocSemiring α] [Fintype m]
     mulVec (single i j c) x = Function.update (0 : n → α) i (c * x j) := by
   ext i'
   simp [single, mulVec, dotProduct]
-  rcases eq_or_ne i i' with rfl|h
+  rcases eq_or_ne i i' with rfl | h
   · simp
   simp [h, h.symm]
 
