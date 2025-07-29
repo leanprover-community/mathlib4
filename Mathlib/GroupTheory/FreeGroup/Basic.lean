@@ -403,8 +403,8 @@ theorem IsReduced.not_step (h : IsReduced L₁) : ¬ Red.Step L₁ L₂ := fun s
 @[to_additive]
 lemma IsReduced.of_forall_not_step :
     ∀ {L₁ : List (α × Bool)}, (∀ L₂, ¬ Red.Step L₁ L₂) → IsReduced L₁
-  | [], _ => IsReduced.nil
-  | [a], _ => IsReduced.singleton
+  | [], _ => .nil
+  | [a], _ => .singleton
   | (a₁, b₁) :: (a₂, b₂) :: L₁, hL₁ => by
     rw [isReduced_cons]
     refine ⟨?_, .of_forall_not_step fun L₂ step ↦ hL₁ _ step.cons⟩
