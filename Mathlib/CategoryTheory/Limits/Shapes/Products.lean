@@ -773,8 +773,7 @@ def colimitCoconeOfUnique [Unique β] (f : β → C) : ColimitCocone (Discrete.f
         apply Category.id_comp
       uniq := fun s m w => by
         specialize w default
-        erw [Category.id_comp] at w
-        exact w }
+        simp_all }
 
 instance (priority := 100) hasCoproduct_unique [Nonempty β] [Subsingleton β] (f : β → C) :
     HasCoproduct f :=

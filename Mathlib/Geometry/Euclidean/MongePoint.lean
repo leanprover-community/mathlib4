@@ -88,8 +88,8 @@ theorem smul_mongePoint_vsub_circumcenter_eq_sum_vsub {n : ℕ} (s : Simplex ℝ
     (n + 1) • (s.mongePoint -ᵥ s.circumcenter) = ∑ i, (s.points i -ᵥ s.circumcenter) := by
   rw [mongePoint_eq_smul_vsub_vadd_circumcenter, vadd_vsub, ← smul_assoc]
   field_simp
-  have h : Invertible (↑n + (2:ℝ) + 1) := by norm_cast; apply invertibleOfPos
-  rw [@smul_eq_iff_eq_invOf_smul _ _ _ _ (↑n + (2:ℝ) + 1)  _ _ h, smul_sum]
+  have h : Invertible (n + 2 + 1 : ℝ) := by norm_cast; apply invertibleOfPos
+  rw [smul_eq_iff_eq_invOf_smul, smul_sum]
   unfold Finset.centroid
   rw [← Finset.sum_smul_vsub_const_eq_affineCombination_vsub _ _ _ _ (by simp)]
   simp only [centroidWeights_apply, card_univ, Fintype.card_fin, Nat.cast_add, Nat.cast_ofNat,
@@ -429,7 +429,7 @@ theorem dist_circumcenter_reflection_orthocenter (t : Triangle ℝ P) {i₁ i₂
 /-- The distance from the circumcenter to the reflection of the orthocenter in a side equals the
 circumradius, variant using a `Finset`. -/
 theorem dist_circumcenter_reflection_orthocenter_finset (t : Triangle ℝ P) {i₁ i₂ : Fin 3}
-  (h : i₁ ≠ i₂) :
+    (h : i₁ ≠ i₂) :
     dist t.circumcenter
       (reflection (affineSpan ℝ (t.points '' ↑({i₁, i₂} : Finset (Fin 3)))) t.orthocenter) =
       t.circumradius := by

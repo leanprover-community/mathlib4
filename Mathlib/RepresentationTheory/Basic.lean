@@ -31,10 +31,8 @@ module can be accessed via `ρ.asModule`. Conversely, given a `MonoidAlgebra k G
 `M.ofModule` is the associociated representation seen as a homomorphism.
 -/
 
-
 open MonoidAlgebra (lift of)
-
-open LinearMap
+open LinearMap Module
 
 section
 
@@ -435,11 +433,10 @@ theorem ofMulAction_self_smul_eq_mul (x : MonoidAlgebra k G) (y : (ofMulAction k
   -- Porting note: trouble figuring out the motive
   x.induction_on (p := fun z => z • y = z * y)
     (fun g => by
-      change asAlgebraHom (ofMulAction k G G) _ _ = _; ext
-      simp only [MonoidAlgebra.of_apply, asAlgebraHom_single, one_smul,
-        ofMulAction_apply, smul_eq_mul]
-      -- Porting note: single_mul_apply not firing in simp
-      rw [MonoidAlgebra.single_mul_apply, one_mul]
+      change asAlgebraHom (ofMulAction k G G) _ _ = _
+      ext
+      -- Porting note: single_mul_apply not firing in simp without parentheses
+      simp [(MonoidAlgebra.single_mul_apply)]
     )
     (fun x y hx hy => by simp only [hx, hy, add_mul, add_smul]) fun r x hx => by
     change asAlgebraHom (ofMulAction k G G) _ _ = _  -- Porting note: was simpa [← hx]

@@ -20,7 +20,7 @@ We use this to transport the notion of `support` from `Finsupp` to `FreeAbelianG
 - `FreeAbelianGroup.support`: the finset of `x : X` that occur in `a : FreeAbelianGroup X`
 -/
 
-assert_not_exists Basis
+assert_not_exists Cardinal Module.Basis
 
 noncomputable section
 
@@ -34,15 +34,19 @@ def FreeAbelianGroup.toFinsupp : FreeAbelianGroup X →+ X →₀ ℤ :=
 def Finsupp.toFreeAbelianGroup : (X →₀ ℤ) →+ FreeAbelianGroup X :=
   Finsupp.liftAddHom fun x => (smulAddHom ℤ (FreeAbelianGroup X)).flip (FreeAbelianGroup.of x)
 
+@[simp] lemma FreeAbelianGroup.toFinsupp_of (x : X) : toFinsupp (of x) = .single x 1 := by
+  simp [toFinsupp]
+
+@[simp] lemma Finsupp.toFreeAbelianGroup_single (x : X) (n : ℤ) :
+    toFreeAbelianGroup (single x n) = n • .of x := by simp [toFreeAbelianGroup]
+
 open Finsupp FreeAbelianGroup
 
 @[simp]
 theorem Finsupp.toFreeAbelianGroup_comp_singleAddHom (x : X) :
     Finsupp.toFreeAbelianGroup.comp (Finsupp.singleAddHom x) =
-      (smulAddHom ℤ (FreeAbelianGroup X)).flip (of x) := by
-  ext
-  simp only [AddMonoidHom.coe_comp, Finsupp.singleAddHom_apply, Function.comp_apply,
-    toFreeAbelianGroup, Finsupp.liftAddHom_apply_single]
+      (smulAddHom ℤ (FreeAbelianGroup X)).flip (of x) :=
+  AddMonoidHom.ext <| toFreeAbelianGroup_single _
 
 @[simp]
 theorem FreeAbelianGroup.toFinsupp_comp_toFreeAbelianGroup :
@@ -50,13 +54,13 @@ theorem FreeAbelianGroup.toFinsupp_comp_toFreeAbelianGroup :
   ext x y; simp only [AddMonoidHom.id_comp]
   rw [AddMonoidHom.comp_assoc, Finsupp.toFreeAbelianGroup_comp_singleAddHom]
   simp only [toFinsupp, AddMonoidHom.coe_comp, Finsupp.singleAddHom_apply, Function.comp_apply,
-    one_smul, lift.of, AddMonoidHom.flip_apply, smulAddHom_apply]
+    one_smul, lift_apply_of, AddMonoidHom.flip_apply, smulAddHom_apply]
 
 @[simp]
 theorem Finsupp.toFreeAbelianGroup_comp_toFinsupp :
     toFreeAbelianGroup.comp toFinsupp = AddMonoidHom.id (FreeAbelianGroup X) := by
   ext
-  rw [toFreeAbelianGroup, toFinsupp, AddMonoidHom.comp_apply, lift.of,
+  rw [toFreeAbelianGroup, toFinsupp, AddMonoidHom.comp_apply, lift_apply_of,
     liftAddHom_apply_single, AddMonoidHom.flip_apply, smulAddHom_apply, one_smul,
     AddMonoidHom.id_apply]
 
@@ -68,10 +72,6 @@ theorem Finsupp.toFreeAbelianGroup_toFinsupp {X} (x : FreeAbelianGroup X) :
 namespace FreeAbelianGroup
 
 open Finsupp
-
-@[simp]
-theorem toFinsupp_of (x : X) : toFinsupp (of x) = Finsupp.single x 1 := by
-  simp only [toFinsupp, lift.of]
 
 @[simp]
 theorem toFinsupp_toFreeAbelianGroup (f : X →₀ ℤ) :
