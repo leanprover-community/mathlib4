@@ -317,6 +317,39 @@ def functorEquivInverseWhiskeringIsoSnd :
     CatCommSqOver.sndFunctor R B X :=
   Iso.inverseCompIso (.refl _)
 
+variable {R B X}
+
+@[reassoc (attr := simp)]
+lemma counitCoherence_hom_app (S : CatCommSqOver R B X) (x : X) :
+    R.map (((functorEquiv T L R B X).counitIso.hom.app S).fst.app x) ≫
+      S.iso.hom.app x =
+    (CatCommSq.iso T L R B).hom.app
+      (((functorEquiv T L R B X).inverse.obj S).obj x) ≫
+      B.map (((functorEquiv T L R B X).counitIso.hom.app S).snd.app x) :=
+  functorEquiv.counitCoherence_hom_app' T L R B X S x
+
+@[reassoc (attr := simp)]
+lemma counitCoherence_inv_app (S : CatCommSqOver R B X) (x : X) :
+    R.map (((functorEquiv T L R B X).counitIso.inv.app S).fst.app x) ≫
+      (CatCommSq.iso T L R B).hom.app
+        (((functorEquiv T L R B X).inverse.obj S).obj x) =
+    S.iso.hom.app x ≫
+      B.map (((functorEquiv T L R B X).counitIso.inv.app S).snd.app x) := by
+  rw [← cancel_epi (R.map <|
+      functorEquiv T L R B X|>.counitIso.hom.app S|>.fst.app x),
+    ← cancel_mono (CatCommSq.iso T L R B|>.inv.app <|
+      functorEquiv T L R B X|>.inverse.obj S|>.obj x)]
+  simp only [Functor.comp_obj, functorEquiv_functor_obj_fst,
+    Functor.id_obj, Category.assoc, ← NatTrans.comp_app,
+    Iso.hom_inv_id, NatTrans.id_app, Category.comp_id,
+    ← Functor.map_comp, ← comp_fst, id_fst, Functor.map_id,
+    Functor.whiskeringRight_obj_obj, functorEquiv_functor_obj_snd,
+    CatCommSqOver.w_app_assoc, functorEquiv_functor_obj_iso, Iso.trans_hom,
+    Functor.isoWhiskerLeft_hom, Iso.symm_hom, ← comp_snd, id_snd]
+  simp
+
+variable (R B X)
+
 section Pseudofunctoriality
 
 seal functorEquiv.inverse functorEquiv.counitIsoAppFst functorEquiv.counitIsoAppSnd
@@ -446,7 +479,8 @@ instance functorEquivFunctorWhiskeringFunctorOfTransformObjSquare
           simp only [Category.comp_id, Category.id_comp, Category.assoc,
             ← Functor.map_comp_assoc, ← Functor.map_comp, ← NatTrans.comp_app,
             ← comp_fst, ← comp_snd, Iso.inv_hom_id, Iso.hom_inv_id] at this
-          simpa using this.symm ))
+          simpa [-counitCoherence_inv_app,
+            -counitCoherence_inv_app_assoc] using this.symm ))
       (fun {_ _} f ↦ by ext x <;> simp [functorOfTransform])
 
 /-- The horizontal inverse of
