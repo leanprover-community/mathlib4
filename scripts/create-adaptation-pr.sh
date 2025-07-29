@@ -139,7 +139,21 @@ fi
 echo
 echo "### [auto] checkout 'bump/$BUMPVERSION' and merge the latest changes from '$MAIN_REMOTE/master'"
 
-git checkout "bump/$BUMPVERSION"
+# Check if the local branch exists
+if git show-ref --verify --quiet refs/heads/bump/$BUMPVERSION; then
+  # Local branch exists, check what it's tracking
+  tracking_branch=$(git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null || echo "")
+  if [ -n "$tracking_branch" ] && [ "$tracking_branch" != "$NIGHTLY_REMOTE/bump/$BUMPVERSION" ]; then
+    echo "Error: Local branch 'bump/$BUMPVERSION' exists but is tracking '$tracking_branch' instead of '$NIGHTLY_REMOTE/bump/$BUMPVERSION'"
+    echo "Please delete the local branch or update its tracking configuration."
+    exit 1
+  fi
+  # Branch exists and is tracking the correct remote (or not tracking anything), checkout it
+  git checkout "bump/$BUMPVERSION"
+else
+  # Local branch doesn't exist, create it tracking the nightly-testing remote
+  git checkout -b "bump/$BUMPVERSION" "$NIGHTLY_REMOTE/bump/$BUMPVERSION"
+fi
 git pull --no-rebase $MAIN_REMOTE "bump/$BUMPVERSION"
 git merge --no-edit $MAIN_REMOTE/master || true # ignore error if there are conflicts
 
