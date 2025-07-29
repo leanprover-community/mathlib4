@@ -154,6 +154,18 @@ theorem IsSymmetric.coe_re_inner_self_apply {T : E →ₗ[𝕜] E} (hT : T.IsSym
     re ⟪x, T x⟫ = ⟪x, T x⟫ := by
   simp [← hT x x, hT]
 
+/-- A symmetric projection is a symmetric idempotent. -/
+def IsSymmetricProjection (T : E →ₗ[𝕜] E) : Prop :=
+  IsIdempotentElem T ∧ T.IsSymmetric
+
+theorem IsSymmetricProjection.isIdempotentElem {T : E →ₗ[𝕜] E} (hT : T.IsSymmetricProjection) :
+    IsIdempotentElem T :=
+  hT.1
+
+theorem IsSymmetricProjection.isSymmetric {T : E →ₗ[𝕜] E} (hT : T.IsSymmetricProjection) :
+    T.IsSymmetric :=
+  hT.2
+
 section Complex
 
 variable {V : Type*} [SeminormedAddCommGroup V] [InnerProductSpace ℂ V]
@@ -264,6 +276,15 @@ theorem _root_.Submodule.IsCompl.projection_isSymmetric_iff
     nth_rw 1 [← linearProjOfIsCompl_add_linearProjOfIsCompl_eq_self hUV y]
     rw [isOrtho_iff_inner_eq] at h
     simp [inner_add_right, inner_add_left, h, inner_eq_zero_symm]
+
+open Submodule in
+theorem _root_.Submodule.IsCompl.projection_isSymmetricProjection_iff
+    {U V : Submodule 𝕜 E} (hUV : IsCompl U V) :
+    hUV.projection.IsSymmetricProjection ↔ U ⟂ V := by
+  simp [IsSymmetricProjection, hUV.projection_isSymmetric_iff, hUV.projection_isIdempotentElem]
+
+alias ⟨_, _root_.Submodule.IsCompl.projection_isSymmetricProjection_of_isOrtho⟩ :=
+  _root_.Submodule.IsCompl.projection_isSymmetricProjection_iff
 
 open Submodule LinearMap in
 /-- An idempotent operator is symmetric if and only if its range is
