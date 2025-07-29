@@ -66,7 +66,7 @@ Defined as in [MM92], Chapter I, Section 5, Theorem 2.
 -/
 @[simps! obj_map map_app]
 def restrictedULiftYoneda : ℰ ⥤ Cᵒᵖ ⥤ Type (max w v₂) :=
-    uliftYoneda.{w} ⋙ (whiskeringLeft _ _ _).obj A.op
+    uliftYoneda.{w} ⋙ (Functor.whiskeringLeft _ _ _).obj A.op
 
 /-- Auxiliary definition for `restrictedULiftYonedaHomEquiv`. -/
 def restrictedULiftYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type (max w v₁ v₂)) (E : ℰ) :
@@ -106,6 +106,23 @@ def restrictedULiftYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type (max w v₁ v₂)) (E :
     dsimp
     rw [uliftYonedaEquiv_comp, Equiv.apply_symm_apply]
 
+@[reassoc]
+lemma restrictedULiftYonedaHomEquiv'_symm_naturality_right (P : Cᵒᵖ ⥤ Type (max w v₁ v₂)) {E E' : ℰ}
+    (g : E ⟶ E') (f : (P ⟶ (restrictedULiftYoneda.{max w v₁} A).obj E)) :
+    (restrictedULiftYonedaHomEquiv' A P E').symm (f ≫ (restrictedULiftYoneda A).map g) =
+      (restrictedULiftYonedaHomEquiv' A P E).symm f ≫ (Functor.const _ ).map g := by
+  rfl
+
+@[reassoc]
+lemma restrictedULiftYonedaHomEquiv'_symm_app_naturality_left
+    {P Q : Cᵒᵖ ⥤ Type (max w v₁ v₂)} (f : P ⟶ Q) (E : ℰ)
+    (g : (Q ⟶ (restrictedULiftYoneda.{max w v₁} A).obj E))
+    (p : CostructuredArrow uliftYoneda.{max w v₂} P) :
+    ((restrictedULiftYonedaHomEquiv' A P E).symm (f ≫ g)).app p =
+      ((restrictedULiftYonedaHomEquiv' A Q E).symm g).app
+        ((CostructuredArrow.map f).obj p) :=
+  rfl
+
 section
 
 variable (P : ℰᵒᵖ ⥤ Type (max w v₁ v₂))
@@ -133,29 +150,26 @@ noncomputable def uliftYonedaAdjunction : L ⊣ restrictedULiftYoneda.{max w v�
   Adjunction.mkOfHomEquiv
     { homEquiv := restrictedULiftYonedaHomEquiv L α
       homEquiv_naturality_left_symm := fun {P Q X} f g => by
-        obtain ⟨g, rfl⟩ := (restrictedULiftYonedaHomEquiv L α Q X).surjective g
-        sorry
-        --apply (restrictedYonedaHomEquiv L α P X).injective
-        --simp only [Equiv.apply_symm_apply, Equiv.symm_apply_apply]
-        --ext Y y
-        --dsimp [restrictedYonedaHomEquiv, restrictedYonedaHomEquiv', IsColimit.homEquiv]
-        --rw [assoc, assoc, ← L.map_comp_assoc]
-        --congr 3
-        --apply yonedaEquiv.injective
-        --simp [yonedaEquiv]
+        apply (Functor.isPointwiseLeftKanExtensionOfIsLeftKanExtension L α P).hom_ext
+        intro p
+        have hfg := (Functor.isPointwiseLeftKanExtensionOfIsLeftKanExtension
+          L α P).comp_homEquiv_symm ((restrictedULiftYonedaHomEquiv' A P X).symm (f ≫ g)) p
+        have hg := (Functor.isPointwiseLeftKanExtensionOfIsLeftKanExtension
+          L α Q).comp_homEquiv_symm ((restrictedULiftYonedaHomEquiv' A Q X).symm g)
+            ((CostructuredArrow.map f).obj p)
+        dsimp at hfg hg
+        dsimp [restrictedULiftYonedaHomEquiv]
+        simp only [assoc, hfg, ← L.map_comp_assoc, hg,
+          restrictedULiftYonedaHomEquiv'_symm_app_naturality_left]
       homEquiv_naturality_right := fun {P X Y} f g => by
+        have := @IsColimit.homEquiv_symm_naturality (h :=
+          Functor.isPointwiseLeftKanExtensionOfIsLeftKanExtension L α P)
+        dsimp at this
         apply (restrictedULiftYonedaHomEquiv L α P Y).symm.injective
-        sorry }
-        --simp only [Equiv.symm_apply_apply]
-        --dsimp [restrictedYonedaHomEquiv, restrictedYonedaHomEquiv', IsColimit.homEquiv]
-        --apply (Functor.isPointwiseLeftKanExtensionOfIsLeftKanExtension L α P).hom_ext
-        --intro p
-        --rw [IsColimit.fac]
-        --dsimp [restrictedYoneda, yonedaEquiv]
-        --simp only [assoc]
-        --congr 3
-        --apply yonedaEquiv.injective
-        --simp [yonedaEquiv] }
+        apply (Functor.isPointwiseLeftKanExtensionOfIsLeftKanExtension L α P).hom_ext
+        intro
+        simp [restrictedULiftYonedaHomEquiv,
+          restrictedULiftYonedaHomEquiv'_symm_naturality_right, this] }
 
 include α in
 /-- Any left Kan extension along the Yoneda embedding preserves colimits. -/
@@ -281,10 +295,10 @@ lemma isLeftKanExtension_along_uliftYoneda_iff :
     let e : (CategoryOfElements.costructuredArrowULiftYonedaEquivalence P).functor ⋙
       CostructuredArrow.proj uliftYoneda.{max w v₂} P ⋙ A ≅
         functorToRepresentables.{max w v₂} P ⋙ L :=
-      isoWhiskerLeft _ (isoWhiskerLeft _ (asIso α)) ≪≫
-        isoWhiskerLeft _ (Functor.associator _ _ _).symm ≪≫
-        (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight (Iso.refl _) L
-    apply (IsColimit.precomposeHomEquiv e.symm _).1
+      Functor.isoWhiskerLeft _ (Functor.isoWhiskerLeft _ (asIso α)) ≪≫
+        Functor.isoWhiskerLeft _ (Functor.associator _ _ _).symm ≪≫
+        (Functor.associator _ _ _).symm ≪≫ Functor.isoWhiskerRight (Iso.refl _) L
+    refine (IsColimit.precomposeHomEquiv e.symm _).1 ?_
     exact IsColimit.ofIsoColimit (isColimitOfPreserves L (colimitOfRepresentable.{max w v₂} P))
       (Cocones.ext (Iso.refl _))
 
@@ -340,10 +354,7 @@ instance (X : C) (Y : F.op.LeftExtension (yoneda.obj X)) :
   uniq φ := by
     ext1
     apply yonedaEquiv.injective
-    dsimp
-    simp only [Equiv.apply_symm_apply, ← StructuredArrow.w φ]
-    dsimp [yonedaEquiv]
-    simp only [yonedaMap_app_apply, Functor.map_id]
+    simp [← StructuredArrow.w φ, yonedaEquiv]
 
 /-- Given `F : C ⥤ D` and `X : C`, `yoneda.obj (F.obj X) : Dᵒᵖ ⥤ Type _` is the
 left Kan extension of `yoneda.obj X : Cᵒᵖ ⥤ Type _` along `F.op`. -/
@@ -406,18 +417,13 @@ noncomputable def compULiftYonedaIsoULiftYonedaCompLan :
 lemma compULiftYonedaIsoULiftYonedaCompLan_inv_app_app_apply_eq_id (X : C) :
     ((compULiftYonedaIsoULiftYonedaCompLan.{w} F).inv.app X).app (op (F.obj X))
           ((F.op.lanUnit.app ((uliftYoneda.{max w v₂}).obj X)).app (op X)
-        (ULift.up (𝟙 X))) = ULift.up (𝟙 (F.obj X)) := by
-  sorry
-
-/-@[simp]
-lemma compYonedaIsoYonedaCompLan_inv_app_app_apply_eq_id (X : C) :
-    ((compYonedaIsoYonedaCompLan F).inv.app X).app (Opposite.op (F.obj X))
-      ((F.op.lanUnit.app (yoneda.obj X)).app _ (𝟙 X)) = 𝟙 _ :=
+        (ULift.up (𝟙 X))) = ULift.up (𝟙 (F.obj X)) :=
   (congr_fun (Functor.descOfIsLeftKanExtension_fac_app _
-    (F.op.lanUnit.app (yoneda.obj X)) _ (yonedaMap F X) (Opposite.op X)) (𝟙 _)).trans (by simp)-/
+    (F.op.lanUnit.app ((uliftYoneda.{max w v₂}).obj X)) _
+    (uliftYonedaMap.{w} F X) (op X)) (ULift.up (𝟙 X))).trans (by simp [uliftYonedaMap])
 
-#exit
 end
+#exit
 
 namespace compYonedaIsoYonedaCompLan
 
