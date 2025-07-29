@@ -69,7 +69,8 @@ lemma Submodule.iUnion_ssubset_of_forall_ne_top_of_card_lt (s : Finset ι) (p : 
           fun t₁ t₂ ht ↦ smul_left_injective K hy₀ <| by simpa using ht
         have aux : sxy = ((fun t : K ↦ x + t • y) '' {t | t ≠ 0}) := by ext; simp [sxy]
         rw [aux, this.encard_image, encard_ne_add_one]
-      exact exists_ne_map_eq_of_encard_lt_of_maps_to (by simpa) hf'
+      obtain ⟨z₁, -, z₂, -, h⟩ := exists_ne_map_eq_of_encard_lt_of_maps_to (by simpa) hf'
+      exact ⟨z₁, z₂, h⟩
     replace ht : y ∈ p k := by
       have : (t₁ - t₂) • y ∈ p k := by convert sub_mem ht₁ ht₂ using 1; module
       refine ((p k).smul_mem_iff ?_).mp this

@@ -496,24 +496,12 @@ theorem Finite.exists_bijOn_of_encard_eq [Nonempty β] (hs : s.Finite) (h : s.en
 
 See also `Finset.exists_ne_map_eq_of_card_lt_of_maps_to`. -/
 lemma exists_ne_map_eq_of_encard_lt_of_maps_to (hc : t.encard < s.encard) (hf : MapsTo f s t) :
-    ∃ a₁ a₂, a₁ ≠ a₂ ∧ f a₁ = f a₂ := by
-  let f' (a : s) : t := ⟨f a, by apply hf a.property⟩
-  suffices ∃ a₁ a₂, a₁ ≠ a₂ ∧ f' a₁ = f' a₂ by
-    obtain ⟨a₁, a₂, hne, heq⟩ := this
-    exact ⟨a₁, a₂, by rwa [Subtype.coe_ne_coe], by simpa [f'] using heq⟩
-  have ht : t.Finite := by
-    obtain ⟨k, hk⟩ := ENat.ne_top_iff_exists.mp (lt_top_of_lt hc).ne
-    exact finite_of_encard_eq_coe hk.symm
-  cases finite_or_infinite s
-  · let _i : Fintype s := Fintype.ofFinite s
-    let _i : Fintype t := ht.fintype
-    replace hcard : Fintype.card t < Fintype.card s := by
-      rwa [← coe_fintypeCard, ← coe_fintypeCard, Nat.cast_lt] at hc
-    obtain ⟨a₁, -, a₂, -, h⟩ :=
-      Finset.exists_ne_map_eq_of_card_lt_of_maps_to hcard (f := f') (by simp)
-    exact ⟨a₁, a₂, h⟩
-  · have : Finite t := ht
-    simpa [Function.Injective, and_comm] using not_injective_infinite_finite f'
+    ∃ᵉ (a₁ ∈ s) (a₂ ∈ s), a₁ ≠ a₂ ∧ f a₁ = f a₂ := by
+  contrapose! hc
+  suffices Function.Injective (hf.restrict f) by
+    let f' : s ↪ t := ⟨hf.restrict, this⟩
+    exact f'.encard_le
+  simpa only [hf.restrict_inj, not_imp_not] using hc
 
 end Function
 
