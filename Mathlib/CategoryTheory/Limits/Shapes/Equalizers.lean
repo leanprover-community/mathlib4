@@ -452,8 +452,7 @@ def Cofork.IsColimit.mk (t : Cofork f g) (desc : ∀ s : Cofork f g, t.pt ⟶ s.
     (uniq : ∀ (s : Cofork f g) (m : t.pt ⟶ s.pt) (_ : t.π ≫ m = s.π), m = desc s) : IsColimit t :=
   { desc
     fac := fun s j =>
-      WalkingParallelPair.casesOn j (by erw [← s.w left, ← t.w left, Category.assoc, fac]; rfl)
-        (fac s)
+      WalkingParallelPair.casesOn j (by simp_all) (fac s)
     uniq := by aesop }
 
 /-- This is another convenient method to verify that a fork is a limit cone. It

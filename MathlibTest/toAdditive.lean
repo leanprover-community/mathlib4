@@ -517,7 +517,7 @@ fun {α} [i : Mul α] a => i.1 a
 #print myMul
 /--
 info: def myAdd : {α : Type} → [i : Add α] → α → α → α :=
-fun {α} [i : Add α] a => i.1 a
+fun {α} [Add α] a => Add.add a
 -/
 #guard_msgs in
 #print myAdd
@@ -535,3 +535,12 @@ Instead, you can write the attributes in the usual way.
 #guard_msgs in
 @[to_additive self (attr := simp)]
 theorem test2 : 5 = 5 := rfl
+
+/-! Previously, An application that isn't a constant, such as `(no_index Add) α`, would be seen as
+multiplicative, hence `α` would be set as the `to_additive_relevant_arg`. -/
+
+@[to_additive]
+def fooMul {α β : Type} (_ : (no_index Add) α) [Mul β] (x y : β) : β := x * y
+
+@[to_additive] -- this would not translate `fooMul`
+def barMul {β : Type} [Mul β] (x y : β) : β := fooMul instAddNat x y
