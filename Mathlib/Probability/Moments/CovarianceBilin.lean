@@ -271,6 +271,14 @@ lemma covarianceBilin_self_eq_variance (h : MemLp id 2 μ) (L : Dual ℝ E) :
     covarianceBilin μ L L = Var[L; μ] := by
   rw [covarianceBilin_eq_covariance h, covariance_self (by fun_prop)]
 
+@[simp]
+lemma covarianceBilin_self_nonneg (L : Dual ℝ E) :
+    0 ≤ covarianceBilin μ L L := by
+  by_cases h : MemLp id 2 μ
+  · rw [covarianceBilin_self_eq_variance h]
+    exact variance_nonneg ..
+  · simp [h]
+
 @[deprecated (since := "2025-07-16")] alias covarianceBilin_same_eq_variance :=
   covarianceBilin_self_eq_variance
 
