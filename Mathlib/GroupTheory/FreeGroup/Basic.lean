@@ -5,6 +5,8 @@ Authors: Kenny Lau
 -/
 import Mathlib.Algebra.Group.Subgroup.Ker
 import Mathlib.Algebra.BigOperators.Group.List.Basic
+import Mathlib.Data.List.Chain
+
 
 /-!
 # Free groups
@@ -371,6 +373,65 @@ theorem eqvGen_step_iff_join_red : EqvGen Red.Step L₁ L₂ ↔ Join Red L₁ L
       equivalence_join_red.eqvGen_iff.1 this)
     (join_of_equivalence (Relation.EqvGen.is_equivalence _) fun _ _ =>
       reflTransGen_of_equivalence (Relation.EqvGen.is_equivalence _) EqvGen.rel)
+
+/-! ### Reduced words -/
+
+/-- Predicate asserting that the word `L` admits no reduction steps, i.e., no two neighboring
+elements of the word cancel. -/
+@[to_additive FreeAddGroup.IsReduced "Predicate asserting the word `L` admits no reduction steps,
+i.e., no two neighboring elements of the word cancel."]
+def IsReduced (L : List (α × Bool)) : Prop := L.Chain' (fun a b ↦ ¬(a.1 = b.1 ∧ (!a.2) = b.2))
+
+namespace IsReduced
+
+open List
+
+@[to_additive (attr := simp)]
+theorem nil : IsReduced ([] : List (α × Bool)) := chain'_nil
+
+@[to_additive (attr := simp)]
+theorem singleton {a : α × Bool} : IsReduced [a] := chain'_singleton a
+
+@[to_additive (attr := simp)]
+theorem cons {a b : (α × Bool)} :
+    IsReduced (a :: b :: L) ↔ ¬(a.1 = b.1 ∧ (!a.2) = b.2) ∧ IsReduced (b :: L) := chain'_cons
+
+@[to_additive]
+theorem not_step (h : IsReduced L₁) : ¬ Red.Step L₁ L₂ := fun step ↦ by
+  induction step
+  simp [IsReduced] at h
+
+@[to_additive]
+lemma of_forall_not_step :
+    ∀ {L₁ : List (α × Bool)}, (∀ L₂, ¬ Red.Step L₁ L₂) → IsReduced L₁
+  | [], _ => IsReduced.nil
+  | [a], _ => IsReduced.singleton
+  | (a₁, b₁) :: (a₂, b₂) :: L₁, hL₁ => by
+    rw [IsReduced.cons]
+    refine ⟨?_, .of_forall_not_step fun L₂ step ↦ hL₁ _ step.cons⟩
+    rintro ⟨rfl, rfl⟩
+    exact hL₁ L₁ <| .not (L₁ := [])
+
+@[to_additive]
+theorem iff_not_step : IsReduced L₁ ↔ ∀ L₂, ¬ Red.Step L₁ L₂ where
+  mp h _ := h.not_step
+  mpr := .of_forall_not_step
+
+@[to_additive]
+theorem red_iff_eq (h : IsReduced L₁) : Red L₁ L₂ ↔ L₂ = L₁ :=
+  Relation.reflTransGen_iff_eq fun _ => h.not_step
+
+@[to_additive]
+theorem append_overlap {L₁ L₂ L₃ : List (α × Bool)} (h₁ : IsReduced (L₁ ++ L₂))
+    (h₂ : IsReduced (L₂ ++ L₃)) (hn : L₂ ≠ []) : IsReduced (L₁ ++ L₂ ++ L₃) :=
+  Chain'.append_overlap h₁ h₂ hn
+
+end IsReduced
+
+@[to_additive]
+theorem IsReduced.infix (h : IsReduced L₂) (h' : L₁ <:+: L₂) : IsReduced L₁ :=
+  List.Chain'.infix h h'
+
 
 end FreeGroup
 
