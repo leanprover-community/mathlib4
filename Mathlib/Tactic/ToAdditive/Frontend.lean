@@ -1219,7 +1219,7 @@ def proceedFields (b : BundledExtensions) (src tgt : Name) : CoreM Unit := do
     | _ => pure #[]
 
 /-- Elaboration of the configuration options for `to_additive`.
-This function also works for e.g. `to_dual`. -/
+This function also works for other tranlation attributes like `to_dual`. -/
 def elabToAdditive (stx : Syntax) : CoreM Config :=
   match stx[2] with
   | `(toAdditiveRest| $existing? $[$opts:toAdditiveOption]* $[$tgt]? $[$doc]?) => do
@@ -1402,7 +1402,7 @@ partial def addToAdditiveAttr (b : BundledExtensions)
       {cfg.reorder}."
     b.reorderAttr.add src cfg.reorder
     if b.isDual && src != tgt then
-      let reorderRev := cfg.reorder.map .reverse
+      let reorderRev := cfg.reorder.map List.reverse
       trace[to_additive] "@[to_additive] will also reorder the arguments of {src} according to \
         {reorderRev}."
       b.reorderAttr.add tgt reorderRev
