@@ -398,8 +398,80 @@ def functorEquivInverseWhiskeringIsoSnd :
 `CatCommSqOver R B (R ⊡ B)` (definitionally) gives back the inverse of the
 structural equivalence `C₁ ≌ R ⊡ B`. -/
 def functorEquivInverseDefault :
-    (functorEquiv T L R B (R ⊡ B)).inverse.obj default ≅ inverse T L R B :=
+    (functorEquiv T L R B (R ⊡ B)).inverse.obj default ≅
+    (equivalence T L R B).inverse :=
   .refl _
+
+open Functor in
+/-- A constructor for natural isomorphisms of functors `X ⥤ C₁` derived from
+the universal property: to produce such a natural isomorphism, it suffices to
+construct isomorphisms between the postcompositions with the projections in
+a way that is compatible with the structural `CatCommSq`. -/
+def mkNatIso {J K : X ⥤ C₁} (e₁ : J ⋙ T ≅ K ⋙ T) (e₂ : J ⋙ L ≅ K ⋙ L)
+    (coh :
+      whiskerRight e₁.hom R ≫ (associator _ _ _).hom ≫
+        whiskerLeft K (CatCommSq.iso T L R B).hom ≫
+        (associator _ _ _).inv =
+      (associator _ _ _).hom ≫
+        whiskerLeft J (CatCommSq.iso T L R B).hom ≫
+        (associator _ _ _).inv ≫
+        whiskerRight e₂.hom B := by aesop_cat) :
+    J ≅ K :=
+  (functorEquiv T L R B X).fullyFaithfulFunctor.preimageIso
+    (CategoricalPullback.mkIso e₁ e₂
+      (by simpa [functorEquiv, toCatCommSqOver] using coh))
+
+
+@[deprecated (since := "2025-07-29")] alias
+  __root__.CategoryTheory.Limits.CategoricalPullback.mkNatIso := mkNatIso
+
+section mkNatIso
+open Functor
+
+variable {J K : X ⥤ C₁} (e₁ : J ⋙ T ≅ K ⋙ T) (e₂ : J ⋙ L ≅ K ⋙ L)
+    (coh :
+      whiskerRight e₁.hom R ≫ (associator _ _ _).hom ≫
+        whiskerLeft K (CatCommSq.iso T L R B).hom ≫
+        (associator _ _ _).inv =
+      (associator _ _ _).hom ≫
+        whiskerLeft J (CatCommSq.iso T L R B).hom ≫
+        (associator _ _ _).inv ≫
+        whiskerRight e₂.hom B := by aesop_cat)
+
+@[simp]
+lemma mkNatIso_hom_app_fst (x : X) :
+    T.map ((mkNatIso T L R B X e₁ e₂ coh).hom.app x) = e₁.hom.app x := by
+  simp [mkNatIso, Equivalence.fullyFaithfulFunctor]
+
+@[simp]
+lemma mkNatIso_inv_app_fst (x : X) :
+    T.map ((mkNatIso T L R B X e₁ e₂ coh).inv.app x) = e₁.inv.app x := by
+  simp [mkNatIso, Equivalence.fullyFaithfulFunctor]
+
+@[simp]
+lemma mkNatIso_hom_app_snd (x : X) :
+    L.map ((mkNatIso T L R B X e₁ e₂ coh).hom.app x) = e₂.hom.app x := by
+  simp [mkNatIso, Equivalence.fullyFaithfulFunctor]
+
+@[simp]
+lemma mkNatIso_inv_app_snd (x : X) :
+    L.map ((mkNatIso T L R B X e₁ e₂ coh).inv.app x) = e₂.inv.app x := by
+  simp [mkNatIso, Equivalence.fullyFaithfulFunctor]
+
+@[deprecated (since := "2025-07-29")]
+alias __root__.CategoryTheory.Limits.CategoricalPullback.mkNatIso_hom_app_fst :=
+  mkNatIso_hom_app_fst
+@[deprecated (since := "2025-07-29")]
+alias __root__.CategoryTheory.Limits.CategoricalPullback.mkNatIso_inv_app_fst :=
+  mkNatIso_inv_app_fst
+@[deprecated (since := "2025-07-29")]
+alias __root__.CategoryTheory.Limits.CategoricalPullback.mkNatIso_hom_app_snd :=
+  mkNatIso_hom_app_snd
+@[deprecated (since := "2025-07-29")]
+alias __root__.CategoryTheory.Limits.CategoricalPullback.mkNatIso_inv_app_snd :=
+  mkNatIso_inv_app_snd
+
+end mkNatIso
 
 section Pseudofunctoriality
 
@@ -1034,6 +1106,18 @@ lemma functorEquivUnitIso_hom_app_app_snd (F : X ⥤ R ⊡ B) (x : X) :
   simp [functorEquiv, functorEquiv.unitIso, equivalence, functorEquiv.inverse]
 
 @[simp]
+lemma functorEquivUnitIso_inv_app_app_fst (F : X ⥤ R ⊡ B) (x : X) :
+    (((functorEquiv (π₁ R B) (π₂ R B) R B X).unitIso.inv.app F).app x).fst =
+    𝟙 _ := by
+  simp [functorEquiv, functorEquiv.unitIso, equivalence, functorEquiv.inverse]
+
+@[simp]
+lemma functorEquivUnitIso_inv_app_app_snd (F : X ⥤ R ⊡ B) (x : X) :
+    (((functorEquiv (π₁ R B) (π₂ R B) R B X).unitIso.inv.app F).app x).snd =
+    𝟙 _ := by
+  simp [functorEquiv, functorEquiv.unitIso, equivalence, functorEquiv.inverse]
+
+@[simp]
 lemma functorEquivInverse_map_app_fst
     {S₁ S₂ : CatCommSqOver R B X} (f : S₁ ⟶ S₂) (x : X) :
     (((functorEquiv (π₁ R B) (π₂ R B) R B X).inverse.map f).app x).fst =
@@ -1134,6 +1218,10 @@ lemma isCatPullbackSquare_iff_isEquivalence_toFunctorToCategoricalPullback
             ((toFunctorToCategoricalPullback R B C₁).obj
               (ofSquare T L R B)).asEquivalence.functor_unitIso_comp }⟩⟩
 
+instance [CatCommSq T L R B] [CatPullbackSquare T L R B] :
+    IsCatPullbackSquare T L R B :=
+  ⟨⟨inferInstance⟩⟩
+
 namespace IsCatPullbackSquare
 
 variable [CatCommSq T L R B]
@@ -1143,6 +1231,27 @@ with an `IsCatPullbackSquare` instance. -/
 noncomputable def catPullbackSquare [IsCatPullbackSquare T L R B] :
     CatPullbackSquare T L R B :=
   nonempty_catPullbackSquare T L R B|>.some
+
+open CatPullbackSquare in
+/-- To check equality of two natural transformations of functors to the top
+left corner of a `CatCommSq T L R B` such that `IsCatPullbackSquare T L R B`,
+it suffices to do so after whiskering with the projections. -/
+@[ext (iff := false)]
+lemma natTrans_ext {X : Type u₅} [Category.{v₅} X] [IsCatPullbackSquare T L R B]
+    {J K : X ⥤ C₁} {α β : J ⟶ K}
+    (e₁ : Functor.whiskerRight α T = Functor.whiskerRight β T)
+    (e₂ : Functor.whiskerRight α L = Functor.whiskerRight β L) :
+    α = β := by
+  ext x
+  letI : CatPullbackSquare T L R B := catPullbackSquare T L R B
+  apply (equivalence T L R B).fullyFaithfulFunctor.map_injective
+  ext
+  · simpa using congrArg (fun t ↦ t.app x) e₁
+  · simpa using congrArg (fun t ↦ t.app x) e₂
+
+@[deprecated (since := "2025-07-29")]
+alias __root__.CategoryTheory.Limits.CategoricalPullback.natTrans_ext :=
+  natTrans_ext
 
 end IsCatPullbackSquare
 
