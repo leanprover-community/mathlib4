@@ -68,6 +68,7 @@ lemma hasEigenvalue_toLin'_diagonal_iff [NoZeroDivisors R] (d : n → R) {μ : R
   hasEigenvalue_toLin_diagonal_iff _ <| Pi.basisFun R n
 
 end NontrivialCommRing
+
 namespace Matrix
 
 variable [CommRing R] [AddCommGroup M] [Module R M] (d : n → R) {μ : R} (b : Basis n R M)
