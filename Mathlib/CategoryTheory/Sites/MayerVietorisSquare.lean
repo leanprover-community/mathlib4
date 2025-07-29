@@ -126,7 +126,7 @@ noncomputable def mk_of_isPullback (sq : Square C) [Mono sq.f₂₄] [Mono sq.f�
       (fun s ↦ F.2.amalgamateOfArrows _ h₂
         (fun j ↦ WalkingPair.casesOn j s.fst s.snd)
         (fun W ↦ by
-          rintro (_|_) (_|_) a b fac
+          rintro (_ | _) (_ | _) a b fac
           · obtain rfl : a = b := by simpa only [← cancel_mono sq.f₂₄] using fac
             rfl
           · obtain ⟨φ, rfl, rfl⟩ := PullbackCone.IsLimit.lift' h₁.isLimit _ _ fac
@@ -138,7 +138,7 @@ noncomputable def mk_of_isPullback (sq : Square C) [Mono sq.f₂₄] [Mono sq.f�
     · exact F.2.amalgamateOfArrows_map _ _ _ _ WalkingPair.left
     · exact F.2.amalgamateOfArrows_map _ _ _ _ WalkingPair.right
     · apply F.2.hom_ext_ofArrows _ h₂
-      rintro (_|_)
+      rintro (_ | _)
       · rw [F.2.amalgamateOfArrows_map _ _ _ _ WalkingPair.left]
         exact hm₁
       · rw [F.2.amalgamateOfArrows_map _ _ _ _ WalkingPair.right]

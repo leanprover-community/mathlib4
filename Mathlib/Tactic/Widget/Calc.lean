@@ -58,8 +58,6 @@ structure CalcParams extends SelectInsertParams where
   indent : Nat
   deriving SelectInsertParamsClass, RpcEncodable
 
-open Lean Meta
-
 /-- Return the link text and inserted text above and below of the calc widget. -/
 def suggestSteps (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) (params : CalcParams) :
     MetaM (String × String × Option (String.Pos × String.Pos)) := do
