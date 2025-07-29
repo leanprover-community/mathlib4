@@ -514,13 +514,7 @@ lemma mem_range_map_iff_coeffs_subset {f : R →+* S₁} {x : MvPolynomial σ S�
 def mapAlgHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
     MvPolynomial σ S₁ →ₐ[R] MvPolynomial σ S₂ :=
   { map (↑f : S₁ →+* S₂) with
-    commutes' := fun r => by
-      have h₁ : algebraMap R (MvPolynomial σ S₁) r = C (algebraMap R S₁ r) := rfl
-      have h₂ : algebraMap R (MvPolynomial σ S₂) r = C (algebraMap R S₂ r) := rfl
-      simp_rw [OneHom.toFun_eq_coe]
-      -- Porting note: we're missing some `simp` lemmas like `MonoidHom.coe_toOneHom`
-      change @DFunLike.coe (_ →+* _) _ _ _ _ _ = _
-      rw [h₁, h₂, map, eval₂Hom_C, RingHom.comp_apply, AlgHom.coe_toRingHom, AlgHom.commutes] }
+    commutes' r := by simp }
 
 @[simp]
 theorem mapAlgHom_id [Algebra R S₁] :
@@ -549,9 +543,6 @@ section Aeval
 
 variable [Algebra R S₁] [CommSemiring S₂]
 variable (f : σ → S₁)
-
-@[simp]
-theorem algebraMap_apply (r : R) : algebraMap R (MvPolynomial σ S₁) r = C (algebraMap R S₁ r) := rfl
 
 /-- A map `σ → S₁` where `S₁` is an algebra over `R` generates an `R`-algebra homomorphism
 from multivariate polynomials over `σ` to `S₁`. -/

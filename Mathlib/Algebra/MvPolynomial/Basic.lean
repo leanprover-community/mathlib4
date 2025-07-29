@@ -164,6 +164,11 @@ theorem algebraMap_eq : algebraMap R (MvPolynomial σ R) = C :=
 
 variable {R σ}
 
+@[simp]
+theorem algebraMap_apply [Algebra R S₁] (r : R) :
+    algebraMap R (MvPolynomial σ S₁) r = C (algebraMap R S₁ r) :=
+  rfl
+
 /-- `X n` is the degree `1` monomial $X_n$. -/
 def X (n : σ) : MvPolynomial σ R :=
   monomial (Finsupp.single n 1) 1
