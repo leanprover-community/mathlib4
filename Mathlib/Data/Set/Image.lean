@@ -336,15 +336,15 @@ theorem preimage_subset_image_of_inverse {f : α → β} {g : β → α} (I : Le
     f ⁻¹' s ⊆ g '' s := fun b h => ⟨f b, h, I b⟩
 
 theorem range_inter_ssubset_iff_preimage_ssubset {f : α → β} {s s' : Set β} :
-  range f ∩ s ⊂ range f ∩ s' ↔ f ⁻¹' s ⊂ f ⁻¹' s' := by
-    simp only [Set.ssubset_iff_exists]
-    apply and_congr ?_ (by aesop)
-    constructor
-    all_goals
-      intro r x hx
-      simp_all only [subset_inter_iff, inter_subset_left, true_and, mem_preimage,
-        mem_inter_iff, mem_range, true_and]
-      aesop
+    range f ∩ s ⊂ range f ∩ s' ↔ f ⁻¹' s ⊂ f ⁻¹' s' := by
+  simp only [Set.ssubset_iff_exists]
+  apply and_congr ?_ (by aesop)
+  constructor
+  all_goals
+    intro r x hx
+    simp_all only [subset_inter_iff, inter_subset_left, true_and, mem_preimage,
+      mem_inter_iff, mem_range, true_and]
+    aesop
 
 theorem image_eq_preimage_of_inverse {f : α → β} {g : β → α} (h₁ : LeftInverse g f)
     (h₂ : RightInverse g f) : image f = preimage g :=
@@ -783,8 +783,8 @@ theorem range_eval {α : ι → Sort _} [∀ i, Nonempty (α i)] (i : ι) :
     range (eval i : (∀ i, α i) → α i) = univ :=
   (surjective_eval i).range_eq
 
-theorem range_inl : range (@Sum.inl α β) = {x | Sum.isLeft x} := by ext (_|_) <;> simp
-theorem range_inr : range (@Sum.inr α β) = {x | Sum.isRight x} := by ext (_|_) <;> simp
+theorem range_inl : range (@Sum.inl α β) = {x | Sum.isLeft x} := by ext (_ | _) <;> simp
+theorem range_inr : range (@Sum.inr α β) = {x | Sum.isRight x} := by ext (_ | _) <;> simp
 
 theorem isCompl_range_inl_range_inr : IsCompl (range <| @Sum.inl α β) (range Sum.inr) :=
   IsCompl.of_le
@@ -1284,8 +1284,6 @@ end Subtype
 /-! ### Images and preimages on `Option` -/
 
 
-open Set
-
 namespace Option
 
 theorem injective_iff {α β} {f : Option α → β} :
@@ -1302,8 +1300,6 @@ theorem range_eq {α β} (f : Option α → β) : range f = insert (f none) (ran
 end Option
 
 namespace Set
-
-open Function
 
 /-! ### Injectivity and surjectivity lemmas for image and preimage -/
 

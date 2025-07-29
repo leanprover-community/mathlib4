@@ -21,7 +21,9 @@ In practice, all such linters check for code style issues.
 Currently, this file contains linters checking
 - if the string "adaptation note" is used instead of the command #adaptation_note,
 - for lines with windows line endings,
-- for lines containing trailing whitespace.
+- for lines containing trailing whitespace,
+- for module names to be in upper camel case,
+- for module names to be valid Windows filenames.
 
 For historic reasons, some further such check checks are written in a Python script `lint-style.py`:
 these are gradually being rewritten in Lean.
@@ -381,5 +383,40 @@ def modulesNotUpperCamelCase (opts : LinterOptions) (modules : Array Lean.Name) 
     IO.eprintln
       s!"error: module name '{bad}' is not in 'UpperCamelCase': it should be '{good}' instead"
   return badNames.size
+
+/-- Verify that no module name is forbidden according to Windows' filename rules. -/
+register_option linter.modulesForbiddenWindows : Bool := { defValue := true }
+
+/-- Verifies that no module in `modules` contains CON, PRN, AUX, NUL, COM1, COM2, COM3, COM4, COM5,
+COM6, COM7, COM8, COM9, COM¹, COM², COM³, LPT1, LPT2, LPT3, LPT4, LPT5, LPT6, LPT7, LPT8, LPT9,
+LPT¹, LPT² or LPT³ in its filename, as these are forbidden on Windows.
+
+Source: https://learn.microsoft.com/en-gb/windows/win32/fileio/naming-a-file.
+Return the number of module names violating this rule. -/
+def modulesForbiddenWindows (opts : LinterOptions) (modules : Array Lean.Name) : IO Nat := do
+  unless getLinterValue linter.modulesUpperCamelCase opts do return 0
+  let forbiddenNames := [
+    "CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8",
+    "COM9", "COM¹", "COM²", "COM³", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8",
+    "LPT9", "LPT¹", "LPT²", "LPT³"
+  ]
+  let mut badNamesNum := 0
+  for name in modules do
+    let mut badComps : List String := []
+    for comp in name.componentsRev do
+      let .str .anonymous s := comp | continue
+      if forbiddenNames.contains s.toUpper then
+        badComps := s :: badComps
+    match badComps with
+    | [] => continue
+    | [badComp] =>
+      badNamesNum := badNamesNum + 1
+      IO.eprintln s!"error: module name '{name}' contains component '{badComp}', \
+        which is forbidden in Windows filenames."
+    | badComps' =>
+      badNamesNum := badNamesNum + 1
+      IO.eprintln s!"error: module name '{name}' contains components '{badComps'}', \
+        which is forbidden in Windows filenames."
+  return badNamesNum
 
 end Mathlib.Linter.TextBased

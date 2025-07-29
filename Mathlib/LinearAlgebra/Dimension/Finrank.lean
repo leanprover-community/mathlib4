@@ -3,7 +3,7 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Anne Baanen
 -/
-import Mathlib.LinearAlgebra.Dimension.Basic
+import Mathlib.LinearAlgebra.Dimension.Subsingleton
 import Mathlib.SetTheory.Cardinal.ToNat
 
 /-!
@@ -57,6 +57,9 @@ Note that if `R` is not a field then there can exist modules `M` with `¬(Module
 `ℤ`-linearly independent subsets of `ℚ` are precisely the nonzero singletons. -/
 noncomputable def finrank (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] : ℕ :=
   Cardinal.toNat (Module.rank R M)
+
+@[simp] theorem finrank_subsingleton [Subsingleton R] : finrank R M = 1 := by
+  rw [finrank, rank_subsingleton, map_one]
 
 theorem finrank_eq_of_rank_eq {n : ℕ} (h : Module.rank R M = ↑n) : finrank R M = n := by
   simp [finrank, h]
