@@ -322,18 +322,18 @@ theorem mem_carrier {s : Subgroup G} {x : G} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 
 @[to_additive (attr := simp)]
-theorem mem_mk {s : Set G} {x : G} (h_one) (h_mul) (h_inv) :
-    x ∈ mk ⟨⟨s, h_one⟩, h_mul⟩ h_inv ↔ x ∈ s :=
+theorem mem_mk {s : Submonoid G} {x : G} (h_inv) :
+    x ∈ mk s h_inv ↔ x ∈ s :=
   Iff.rfl
 
-@[to_additive (attr := simp, norm_cast)]
-theorem coe_set_mk {s : Set G} (h_one) (h_mul) (h_inv) :
-    (mk ⟨⟨s, h_one⟩, h_mul⟩ h_inv : Set G) = s :=
+@[to_additive (attr := simp)]
+theorem coe_set_mk {s : Submonoid G} (h_inv) :
+    (mk s h_inv : Set G) = s :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem mk_le_mk {s t : Set G} (h_one) (h_mul) (h_inv) (h_one') (h_mul') (h_inv') :
-    mk ⟨⟨s, h_one⟩, h_mul⟩ h_inv ≤ mk ⟨⟨t, h_one'⟩, h_mul'⟩ h_inv' ↔ s ⊆ t :=
+theorem mk_le_mk {s t : Submonoid G} (h_inv) (h_inv') :
+    mk s h_inv ≤ mk t h_inv' ↔ s ≤ t :=
   Iff.rfl
 
 @[to_additive (attr := simp)]
