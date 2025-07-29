@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
 import Mathlib.Algebra.GroupWithZero.Idempotent
-import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.Ring.Commute
 import Mathlib.Order.Notation
 import Mathlib.Tactic.Convert
+import Mathlib.Tactic.NoncommRing
 import Mathlib.Algebra.Group.Torsion
 
 /-!
@@ -85,36 +86,27 @@ lemma add_sub_mul (hp : IsIdempotentElem a) (hq : IsIdempotentElem b) :
 
 end CommRing
 
-/-- `b - a` is idempotent when `a * b = a` and `b * a = a`. -/
-lemma sub [NonUnitalNonAssocRing R] {a b : R} (ha : IsIdempotentElem a)
-    (hb : IsIdempotentElem b) (hab : a * b = a) (hba : b * a = a) : IsIdempotentElem (b - a) := by
-  simp_rw [IsIdempotentElem, sub_mul, mul_sub, hab, hba, ha.eq, hb.eq, sub_self, sub_zero]
-
-lemma commutes_of_isIdempotentElem_sub [Ring R] [IsAddTorsionFree R] {p q : R}
-    (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) (hqp : IsIdempotentElem (q - p)) :
-    p * q = p ∧ q * p = p := by
-  simp_rw [IsIdempotentElem, mul_sub, sub_mul,
-    hp.eq, hq.eq, ← sub_add_eq_sub_sub, sub_right_inj, add_sub] at hqp
-  have hpq : p * q = q * p := by
-    have h1 := congr_arg (q * ·) hqp
-    have h2 := congr_arg (· * q) hqp
-    simp_rw [mul_sub, mul_add, ← mul_assoc, hq.eq, add_sub_cancel_right] at h1
-    simp_rw [sub_mul, add_mul, mul_assoc, hq.eq, add_sub_cancel_left, ← mul_assoc] at h2
-    exact h2.symm.trans h1
-  rw [hpq, sub_eq_iff_eq_add, ← two_nsmul, ← two_nsmul, nsmul_right_inj (by simp)] at hqp
-  rw [hpq, hqp, and_self]
-
-theorem sub_iff [Ring R] [IsAddTorsionFree R] {p q : R}
-    (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) :
-    IsIdempotentElem (q - p) ↔ p * q = p ∧ q * p = p :=
-  ⟨commutes_of_isIdempotentElem_sub hp hq, fun ⟨h1, h2⟩ => hp.sub hq h1 h2⟩
-
 /-- `a + b` is idempotent when `a` and `b` anti-commute. -/
 theorem add [NonUnitalNonAssocSemiring R]
     {a b : R} (ha : IsIdempotentElem a) (hb : IsIdempotentElem b)
     (hab : a * b + b * a = 0) : IsIdempotentElem (a + b) := by
   simp_rw [IsIdempotentElem, mul_add, add_mul, ha.eq, hb.eq, add_add_add_comm, ← add_assoc,
     add_assoc a, hab, zero_add]
+
+/-- `a + b` is idempotent if and only if `a` and `b` anti-commute. -/
+theorem add_iff [NonUnitalNonAssocSemiring R] [IsCancelAdd R]
+    {a b : R} (ha : IsIdempotentElem a) (hb : IsIdempotentElem b) :
+    IsIdempotentElem (a + b) ↔ a * b + b * a = 0 := by
+  refine ⟨fun h ↦ ?_, ha.add hb⟩
+  have := by simpa [add_mul, mul_add, ha.eq, hb.eq] using h.eq
+  rw [← add_right_cancel_iff (a := b), add_assoc, ← add_left_cancel_iff (a := a),
+    ← add_assoc, add_add_add_comm]
+  simpa [add_mul, mul_add, ha.eq, hb.eq] using h.eq
+
+/-- `b - a` is idempotent when `a * b = a` and `b * a = a`. -/
+lemma sub [NonUnitalNonAssocRing R] {a b : R} (ha : IsIdempotentElem a)
+    (hb : IsIdempotentElem b) (hab : a * b = a) (hba : b * a = a) : IsIdempotentElem (b - a) := by
+  simp_rw [IsIdempotentElem, sub_mul, mul_sub, hab, hba, ha.eq, hb.eq, sub_self, sub_zero]
 
 /-- If idempotent `a` and element `b` anti-commute, then their product is zero. -/
 theorem mul_eq_zero_of_anticommute {a b : R} [NonUnitalSemiring R] [IsAddTorsionFree R]
@@ -134,5 +126,16 @@ lemma commute_of_anticommute {a b : R} [NonUnitalSemiring R] [IsAddTorsionFree R
   have := mul_eq_zero_of_anticommute ha hab
   rw [this, zero_add] at hab
   rw [Commute, SemiconjBy, hab, this]
+
+theorem sub_iff [NonUnitalRing R] [IsAddTorsionFree R] {p q : R}
+    (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) :
+    IsIdempotentElem (q - p) ↔ p * q = p ∧ q * p = p := by
+  refine ⟨fun hqp ↦ ?_, fun ⟨h1, h2⟩ => hp.sub hq h1 h2⟩
+  have h := hp.add_iff hqp |>.mp ((add_sub_cancel p q).symm ▸ hq)
+  have hpq := by simpa using hp.commute_of_anticommute h |>.add_right <| .refl p
+  rw [hpq.eq, and_self, ← nsmul_right_inj two_ne_zero, ← zero_add (2 • p)]
+  convert congrArg (· + 2 • p) h using 1
+  simp [sub_mul, mul_sub, hp.eq, hpq.eq]
+  noncomm_ring
 
 end IsIdempotentElem
