@@ -96,12 +96,10 @@ theorem rat_rawCast_pos {R} [DivisionRing R] :
 theorem rat_rawCast_neg {R} [DivisionRing R] :
     (Rat.rawCast (.negOfNat n) d : R) = Int.rawCast (.negOfNat n) / Nat.rawCast d := by simp
 
--- todo: rewrite as `Simp.Result → MetaM Simp.Result`,
--- not `MetaM (Simp.Result → MetaM Simp.Result)`.
-def mkSimp (cfg : RingNF.Config) : MetaM (Simp.Result → MetaM Simp.Result) := do
+def cleanup (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
   match cfg.mode with
-  | .raw => pure pure
-  | .SOP =>
+  | .raw => pure r
+  | .SOP => do
     let thms : SimpTheorems := {}
     let thms ← [``add_zero, ``add_assoc_rev, ``_root_.mul_one, ``mul_assoc_rev,
       ``_root_.pow_one, ``mul_neg, ``add_neg].foldlM (·.addConst ·) thms
@@ -110,21 +108,19 @@ def mkSimp (cfg : RingNF.Config) : MetaM (Simp.Result → MetaM Simp.Result) := 
     let ctx ← Simp.mkContext { zetaDelta := cfg.zetaDelta }
       (simpTheorems := #[thms])
       (congrTheorems := ← getSimpCongrTheorems)
-    pure fun r' : Simp.Result ↦ do
-      r'.mkEqTrans (← Simp.main r'.expr ctx (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
+    pure <| ←
+      r.mkEqTrans (← Simp.main r.expr ctx (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
 
 /-- Overrides the default error message in `ring1` to use a prettified version of the goal. -/
 initialize ringCleanupRef.set fun e => do
-  let simp ← mkSimp {}
-  return (← simp { expr := e }).expr
+  return (← cleanup {} { expr := e }).expr
 
 open Elab.Tactic Parser.Tactic
 /-- Use `ring_nf` to rewrite the main goal. -/
 def ringNFTarget (s : IO.Ref AtomM.State) (cfg : Config) : TacticM Unit := withMainContext do
   let goal ← getMainGoal
   let tgt ← instantiateMVars (← goal.getType)
-  let simp ← mkSimp cfg
-  let r ← AtomRec.foo s cfg.toConfig simp bar tgt
+  let r ← AtomRec.foo s cfg.toConfig (cleanup cfg) bar tgt
   if r.expr.consumeMData.isConstOf ``True then
     goal.assign (← mkOfEqTrue (← r.getProof))
     replaceMainGoal []
@@ -139,8 +135,7 @@ def ringNFLocalDecl (s : IO.Ref AtomM.State) (cfg : Config) (fvarId : FVarId) :
     TacticM Unit := withMainContext do
   let tgt ← instantiateMVars (← fvarId.getType)
   let goal ← getMainGoal
-  let simp ← mkSimp cfg
-  let myres ← AtomRec.foo s cfg.toConfig simp bar tgt
+  let myres ← AtomRec.foo s cfg.toConfig (cleanup cfg) bar tgt
   match ← applySimpResultToLocalDecl goal fvarId myres false with
   | none => replaceMainGoal []
   | some (_, newGoal) =>
@@ -188,8 +183,7 @@ elab (name := ring1NF) "ring1_nf" tk:"!"? cfg:optConfig : tactic => do
   let mut cfg ← elabConfig cfg
   if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
   let s ← IO.mkRef {}
-  let simp ← mkSimp cfg
-  liftMetaMAtMain fun g ↦ AtomRec.M.run s cfg.toConfig simp bar <| proveEq g
+  liftMetaMAtMain fun g ↦ AtomRec.M.run s cfg.toConfig (cleanup cfg) bar <| proveEq g
 
 @[inherit_doc ring1NF] macro "ring1_nf!" cfg:optConfig : tactic =>
   `(tactic| ring1_nf ! $cfg:optConfig)
@@ -200,9 +194,8 @@ elab (name := ring1NF) "ring1_nf" tk:"!"? cfg:optConfig : tactic => do
     let mut cfg ← elabConfig cfg
     if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
     let s ← IO.mkRef {}
-    let simp ← mkSimp cfg
     Conv.applySimpResult
-      (← AtomRec.foo s cfg.toConfig simp bar (← instantiateMVars (← Conv.getLhs)))
+      (← AtomRec.foo s cfg.toConfig (cleanup cfg) bar (← instantiateMVars (← Conv.getLhs)))
   | _ => Elab.throwUnsupportedSyntax
 
 @[inherit_doc ringNF] macro "ring_nf!" cfg:optConfig : conv =>

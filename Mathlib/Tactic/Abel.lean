@@ -441,18 +441,16 @@ structure AbelNF.Config extends AtomRec.Config where
 /-- Function elaborating `AbelNF.Config`. -/
 declare_config_elab elabAbelNFConfig AbelNF.Config
 
--- todo: rewrite as `Simp.Result → MetaM Simp.Result`,
--- not `MetaM (Simp.Result → MetaM Simp.Result)`.
-def mkSimp (cfg : AbelNF.Config) : MetaM (Simp.Result → MetaM Simp.Result) := do
+def cleanup (cfg : AbelNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
   match cfg.mode with
-  | .raw => pure pure
+  | .raw => pure r
   | .term =>
     let thms := [``term_eq, ``termg_eq, ``add_zero, ``one_nsmul, ``one_zsmul, ``zsmul_zero]
     let ctx ← Simp.mkContext (config := { zetaDelta := cfg.zetaDelta })
       (simpTheorems := #[← thms.foldlM (·.addConst ·) {}])
       (congrTheorems := ← getSimpCongrTheorems)
-    pure fun r' : Simp.Result ↦ do
-      r'.mkEqTrans (← Simp.main r'.expr ctx (methods := ← Lean.Meta.Simp.mkDefaultMethods)).1
+    pure <| ←
+      r.mkEqTrans (← Simp.main r.expr ctx (methods := ← Lean.Meta.Simp.mkDefaultMethods)).1
 
 -- for good performance, this should fail on a term which will be interpreted as an atom
 def bar (e : Expr) : AtomM Simp.Result := do
@@ -467,8 +465,7 @@ open Parser.Tactic
 def abelNFTarget (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) : TacticM Unit := withMainContext do
   let goal ← getMainGoal
   let tgt ← withReducible goal.getType'
-  let simp ← mkSimp cfg
-  let r ← AtomRec.foo s cfg.toConfig simp bar tgt
+  let r ← AtomRec.foo s cfg.toConfig (cleanup cfg) bar tgt
   if r.expr.isConstOf ``True then
     goal.assign (← mkOfEqTrue (← r.getProof))
     replaceMainGoal []
@@ -481,8 +478,7 @@ def abelNFLocalDecl (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) (fvarId : FVa
     TacticM Unit := withMainContext do
   let tgt ← instantiateMVars (← fvarId.getType)
   let goal ← getMainGoal
-  let simp ← mkSimp cfg
-  let myres ← AtomRec.foo s cfg.toConfig simp bar tgt
+  let myres ← AtomRec.foo s cfg.toConfig (cleanup cfg) bar tgt
   if myres.expr == tgt then throwError "abel_nf made no progress"
   match ← applySimpResultToLocalDecl goal fvarId myres false with
   | none => replaceMainGoal []
@@ -511,9 +507,8 @@ def elabAbelNFConv : Tactic := fun stx ↦ match stx with
     let mut cfg ← elabAbelNFConfig cfg
     if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
     let s ← IO.mkRef {}
-    let simp ← mkSimp cfg
     Conv.applySimpResult
-      (← AtomRec.foo s cfg.toConfig simp bar (← instantiateMVars (← Conv.getLhs)))
+      (← AtomRec.foo s cfg.toConfig (cleanup cfg) bar (← instantiateMVars (← Conv.getLhs)))
   | _ => Elab.throwUnsupportedSyntax
 
 @[inherit_doc abel]
