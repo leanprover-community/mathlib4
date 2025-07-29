@@ -422,6 +422,21 @@ theorem sub_le_sub_iff_left (h : c ≤ a) (h' : a ≠ ∞) :
     (a - b ≤ a - c) ↔ c ≤ b :=
   (cancel_of_ne h').tsub_le_tsub_iff_left (cancel_of_ne (ne_top_of_le_ne_top h' h)) h
 
+lemma ENNReal_ofReal_one_sub_ENNReal_toReal_eq (x : ENNReal) (hx : x ≤ 1) :
+    ENNReal.ofReal (1 - x.toReal) = 1 - x := by
+  have : x ≠ ⊤ := by
+    intro h
+    rw [h] at hx
+    exact not_top_le_coe hx
+  lift x to ℝ≥0 using this with p
+  rw [ENNReal.ofReal]; simp; norm_cast
+
+lemma one_sub_ENNReal_toReal_eq (x : ENNReal) (hx : x ≤ 1) : 1 - x.toReal = (1 - x).toReal := by
+  refine (ofReal_eq_ofReal_iff (sub_nonneg.mpr <| toReal_le_of_le_ofReal
+    (by positivity) (by simp; exact hx)) (by positivity)).mp ?_
+  · simp only [ne_eq, sub_eq_top_iff, one_ne_top, false_and, not_false_eq_true, ofReal_toReal]
+    rw [(ENNReal_ofReal_one_sub_ENNReal_toReal_eq _ hx)]
+
 theorem le_toReal_sub {a b : ℝ≥0∞} (hb : b ≠ ∞) : a.toReal - b.toReal ≤ (a - b).toReal := by
   lift b to ℝ≥0 using hb
   induction a
