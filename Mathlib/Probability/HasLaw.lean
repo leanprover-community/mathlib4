@@ -3,8 +3,6 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: EtienneMarion
 -/
-import Mathlib.Analysis.Normed.Lp.MeasurableSpace
-import Mathlib.Probability.Distributions.Gaussian.Basic
 import Mathlib.Probability.Moments.Covariance
 
 /-!
@@ -15,7 +13,9 @@ the measure `P`. This is expressed as `P.map X = μ`. We also require `X` to be 
 measurable to avoid pathological cases.
 -/
 
-open MeasureTheory ENNReal WithLp
+open MeasureTheory
+
+open scoped ENNReal
 
 namespace ProbabilityTheory
 
