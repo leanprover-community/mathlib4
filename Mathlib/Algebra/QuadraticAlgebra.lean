@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yunzhou Xie, Kenny Lau, Jiayang Hong
 -/
 
-import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
