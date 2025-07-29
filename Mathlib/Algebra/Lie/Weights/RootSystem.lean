@@ -424,7 +424,7 @@ instance : (rootSystem H).IsReduced where
     · right; ext x; simpa [neg_eq_iff_eq_neg] using DFunLike.congr_fun h.symm x
     · left; ext x; simpa using DFunLike.congr_fun h.symm x
 
-lemma pairing_zero_of_trivial_sum_diff_spaces
+lemma pairing_zero_of_bot_sum_diff_spaces
   (χ α : Weight K H L) (hχ : χ.IsNonZero) (hα : α.IsNonZero)
   (w_plus : χ.toLinear + α.toLinear ≠ 0) (w_minus : χ.toLinear - α.toLinear ≠ 0)
   (h_plus_bot : genWeightSpace L (χ.toLinear + α.toLinear) = ⊥)

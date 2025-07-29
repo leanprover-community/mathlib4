@@ -3,14 +3,7 @@ Copyright (c) 2025 Janos Wolosz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Janos Wolosz
 -/
-import Mathlib.Algebra.Lie.Sl2
-import Mathlib.Algebra.Lie.Weights.Basic
-import Mathlib.Algebra.Lie.Weights.Cartan
-import Mathlib.Algebra.Lie.Weights.Killing
 import Mathlib.Algebra.Lie.Weights.RootSystem
-import Mathlib.Algebra.Module.Submodule.Invariant
-import Mathlib.Order.CompleteLattice.Basic
-import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 
 /-!
 # Invariant submodule to Lie ideal construction
@@ -185,7 +178,7 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
             obtain ⟨i, hi⟩ := exists_root_index χ (get_isNonZero χ w_chi)
             obtain ⟨j, hj⟩ := exists_root_index α.1 α.2.2
             have h_pairing_zero : S.pairing i j = 0 := by
-              obtain ⟨i', j', hi', hj', h_zero⟩ := IsKilling.pairing_zero_of_trivial_sum_diff_spaces
+              obtain ⟨i', j', hi', hj', h_zero⟩ := IsKilling.pairing_zero_of_bot_sum_diff_spaces
                 H χ α.1 (get_isNonZero χ w_chi) α.2.2 w_plus w_minus h_plus_bot h_minus_bot
               have h_i_eq : i = i' := Function.Embedding.injective S.root (by rw [hi, hi'])
               have h_j_eq : j = j' := Function.Embedding.injective S.root (by rw [hj, hj'])
