@@ -11,15 +11,15 @@ import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
 # The Grothendieck construction
 
 Given a category `𝒮` and any pseudofunctor `F` from `𝒮ᵒᵖ` to `Cat`, we associate to it a category
-`∫ F`, equipped with a functor `∫ F ⥤ 𝒮`.
+`∫ᶜ F`, equipped with a functor `∫ᶜ F ⥤ 𝒮`.
 
-The category `∫ F` is defined as follows:
+The category `∫ᶜ F` is defined as follows:
 * Objects: pairs `(S, a)` where `S` is an object of the base category and `a` is an object of the
   category `F(S)`.
 * Morphisms: morphisms `(R, b) ⟶ (S, a)` are defined as pairs `(f, h)` where `f : R ⟶ S` is a
   morphism in `𝒮` and `h : b ⟶ F(f)(a)`
 
-The projection functor `∫ F ⥤ 𝒮` is then given by projecting to the first factors, i.e.
+The projection functor `∫ᶜ F ⥤ 𝒮` is then given by projecting to the first factors, i.e.
 * On objects, it sends `(S, a)` to `S`
 * On morphisms, it sends `(f, h)` to `f`
 
@@ -63,19 +63,19 @@ structure CoGrothendieck (F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v�
 namespace CoGrothendieck
 
 /-- Notation for the Grothendieck category associated to a pseudofunctor `F`. -/
-scoped prefix:75 "∫ " => CoGrothendieck
+scoped prefix:75 "∫ᶜ " => CoGrothendieck
 
 /-- A morphism in the Grothendieck category consists of
 `base : X.base ⟶ Y.base` and `f.fiber : X.fiber ⟶ (F.map base.op.toLoc).obj Y.fiber`.
 -/
-structure Hom (X Y : ∫ F) where
+structure Hom (X Y : ∫ᶜ F) where
   /-- The morphism between base objects. -/
   base : X.base ⟶ Y.base
   /-- The morphism in the fiber over the domain. -/
   fiber : X.fiber ⟶ (F.map base.op.toLoc).obj Y.fiber
 
 @[simps! id_base id_fiber comp_base comp_fiber]
-instance categoryStruct : CategoryStruct (∫ F) where
+instance categoryStruct : CategoryStruct (∫ᶜ F) where
   Hom X Y := Hom X Y
   id X := {
     base := 𝟙 X.base
@@ -87,7 +87,7 @@ instance categoryStruct : CategoryStruct (∫ F) where
 
 section
 
-variable {a b : ∫ F}
+variable {a b : ∫ᶜ F}
 
 @[ext (iff := false)]
 lemma Hom.ext (f g : a ⟶ b) (hfg₁ : f.base = g.base)
@@ -103,14 +103,14 @@ lemma Hom.ext_iff (f g : a ⟶ b) :
   mp hfg := ⟨by rw [hfg], by simp [hfg]⟩
   mpr := fun ⟨hfg₁, hfg₂⟩ => Hom.ext f g hfg₁ hfg₂
 
-lemma Hom.congr {a b : ∫ F} {f g : a ⟶ b} (h : f = g) :
+lemma Hom.congr {a b : ∫ᶜ F} {f g : a ⟶ b} (h : f = g) :
     f.fiber = g.fiber ≫ eqToHom (h ▸ rfl) := by
   simp [h]
 
 end
 
-/-- The category structure on `∫ F`. -/
-instance category : Category (∫ F) where
+/-- The category structure on `∫ᶜ F`. -/
+instance category : Category (∫ᶜ F) where
   toCategoryStruct := Pseudofunctor.CoGrothendieck.categoryStruct
   id_comp {a b} f := by
     ext
@@ -127,10 +127,10 @@ instance category : Category (∫ F) where
 
 variable (F)
 
-/-- The projection `∫ F ⥤ 𝒮` given by projecting both objects and homs to the first
+/-- The projection `∫ᶜ F ⥤ 𝒮` given by projecting both objects and homs to the first
 factor. -/
 @[simps]
-def forget (F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}) : ∫ F ⥤ 𝒮 where
+def forget (F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}) : ∫ᶜ F ⥤ 𝒮 where
   obj X := X.base
   map f := f.base
 
@@ -143,10 +143,10 @@ variable {F} {G : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}}
   {H : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}}
 
 /-- The Grothendieck construction is functorial: a strong natural transformation `α : F ⟶ G`
-induces a functor `Grothendieck.map : ∫ F ⥤ ∫ G`.
+induces a functor `Grothendieck.map : ∫ᶜ F ⥤ ∫ᶜ G`.
 -/
 @[simps!]
-def map (α : F ⟶ G) : ∫ F ⥤ ∫ G where
+def map (α : F ⟶ G) : ∫ᶜ F ⥤ ∫ᶜ G where
   obj a := {
     base := a.base
     fiber := (α.app ⟨op a.base⟩).obj a.fiber }
@@ -168,7 +168,7 @@ def map (α : F ⟶ G) : ∫ F ⥤ ∫ G where
       simp [← Functor.comp_map]
 
 @[simp]
-lemma map_id_map {x y : ∫ F} (f : x ⟶ y) : (map (𝟙 F)).map f = f := by
+lemma map_id_map {x y : ∫ᶜ F} (f : x ⟶ y) : (map (𝟙 F)).map f = f := by
   ext <;> simp
 
 @[simp]
@@ -179,10 +179,10 @@ section
 variable (F)
 
 /-- The natural isomorphism witnessing the pseudo-unity constraint of `CoGrothendieck.map`. -/
-def mapIdIso : map (𝟙 F) ≅ 𝟭 (∫ F) :=
+def mapIdIso : map (𝟙 F) ≅ 𝟭 (∫ᶜ F) :=
   NatIso.ofComponents (fun _ ↦ eqToIso (by aesop_cat))
 
-lemma map_id_eq : map (𝟙 F) = 𝟭 (∫ F) :=
+lemma map_id_eq : map (𝟙 F) = 𝟭 (∫ᶜ F) :=
   Functor.ext_of_iso (mapIdIso F) (fun x ↦ by simp [map]) (fun x ↦ by simp [mapIdIso])
 
 end
