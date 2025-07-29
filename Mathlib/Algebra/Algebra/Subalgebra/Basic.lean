@@ -905,6 +905,20 @@ end Centralizer
 
 end Subalgebra
 
+section algebraMap
+
+variable {R A B : Type*} [CommRing R] [CommRing A] [CommRing B] [Algebra R A] [Algebra A B]
+
+@[simp]
+theorem Subalgebra.algebraMap_apply_mk {S : Subalgebra R A} (a : A) (ha : a ∈ S) :
+  algebraMap S B (⟨a, ha⟩ : S) = algebraMap A B a := rfl
+
+@[simp]
+theorem Subalgebra.mk_algebraMap_apply {S : Subalgebra A B} (a : A) (ha : algebraMap A B a ∈ S) :
+  ⟨(algebraMap A B) a, ha⟩ = (algebraMap A S) a := rfl
+
+end algebraMap
+
 section Nat
 
 variable {R : Type*} [Semiring R]
