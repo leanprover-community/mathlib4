@@ -841,7 +841,7 @@ end StarNormal
 lemma isIdempotentElem_inr_iff (R : Type*) {A : Type*} [MulZeroClass R]
     [AddZeroClass A] [Mul A] [SMulWithZero R A] {a : A} :
     IsIdempotentElem (a : Unitization R A) ↔ IsIdempotentElem a := by
-  simp only [IsIdempotentElem, ← inr_mul, inr_injective.eq_iff]
+  simp only [isIdempotentElem_iff, ← inr_mul, inr_injective.eq_iff]
 
 alias ⟨_, IsIdempotentElem.inr⟩ := isIdempotentElem_inr_iff
 

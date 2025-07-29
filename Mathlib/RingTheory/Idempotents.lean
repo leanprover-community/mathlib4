@@ -57,12 +57,12 @@ lemma OrthogonalIdempotents.mul_eq [DecidableEq I] (he : OrthogonalIdempotents e
 
 lemma OrthogonalIdempotents.iff_mul_eq [DecidableEq I] :
     OrthogonalIdempotents e ↔ ∀ i j, e i * e j = if i = j then e i else 0 :=
-  ⟨mul_eq, fun H ↦ ⟨fun i ↦ by simpa using H i i, fun i j e ↦ by simpa [e] using H i j⟩⟩
+  ⟨mul_eq, fun H ↦ ⟨fun i ↦ ⟨by simpa using H i i⟩, fun i j e ↦ by simpa [e] using H i j⟩⟩
 
 lemma OrthogonalIdempotents.isIdempotentElem_sum (he : OrthogonalIdempotents e) {s : Finset I} :
     IsIdempotentElem (∑ i ∈ s, e i) := by
   classical
-  simp [IsIdempotentElem, Finset.sum_mul, Finset.mul_sum, he.mul_eq]
+  simp [isIdempotentElem_iff, Finset.sum_mul, Finset.mul_sum, he.mul_eq]
 
 lemma OrthogonalIdempotents.mul_sum_of_mem (he : OrthogonalIdempotents e)
     {i : I} {s : Finset I} (h : i ∈ s) : e i * ∑ j ∈ s, e j = e i := by
@@ -132,8 +132,8 @@ lemma CompleteOrthogonalIdempotents.iff_ortho_complete :
   rw [completeOrthogonalIdempotents_iff, orthogonalIdempotents_iff, and_assoc, and_iff_right_of_imp]
   intro ⟨ortho, complete⟩ i
   apply_fun (e i * ·) at complete
-  rwa [Finset.mul_sum, Finset.sum_eq_single i (fun _ _ ne ↦ ortho ne.symm) (by simp at ·), mul_one]
-    at complete
+  rwa [Finset.mul_sum, Finset.sum_eq_single i (fun _ _ ne ↦ ortho ne.symm) (by simp at ·),
+    mul_one, ← isIdempotentElem_iff] at complete
 
 lemma CompleteOrthogonalIdempotents.pair_iff'ₛ {x y : R} :
     CompleteOrthogonalIdempotents ![x, y] ↔ x * y = 0 ∧ y * x = 0 ∧ x + y = 1 := by
@@ -147,12 +147,12 @@ lemma CompleteOrthogonalIdempotents.unique_iff [Unique I] :
     CompleteOrthogonalIdempotents e ↔ e default = 1 := by
   rw [completeOrthogonalIdempotents_iff, OrthogonalIdempotents.unique, Fintype.sum_unique,
     and_iff_right_iff_imp]
-  exact (· ▸ IsIdempotentElem.one)
+  exact (· ▸ IsIdempotentElem.one _)
 
 lemma CompleteOrthogonalIdempotents.single {I : Type*} [Fintype I] [DecidableEq I]
     (R : I → Type*) [∀ i, Semiring (R i)] :
     CompleteOrthogonalIdempotents (Pi.single (M := R) · 1) := by
-  refine ⟨⟨by simp [IsIdempotentElem, ← Pi.single_mul], ?_⟩, Finset.univ_sum_single 1⟩
+  refine ⟨⟨by simp [isIdempotentElem_iff, ← Pi.single_mul], ?_⟩, Finset.univ_sum_single 1⟩
   intros i j hij
   ext k
   by_cases hi : i = k
@@ -177,7 +177,7 @@ lemma CompleteOrthogonalIdempotents.equiv {J} [Fintype J] (i : J ≃ I) :
 @[nontriviality]
 lemma CompleteOrthogonalIdempotents.of_subsingleton [Subsingleton R] :
     CompleteOrthogonalIdempotents e :=
-  ⟨⟨fun _ ↦ Subsingleton.elim _ _, fun _ _ _ ↦ Subsingleton.elim _ _⟩, Subsingleton.elim _ _⟩
+  ⟨⟨fun _ ↦ ⟨Subsingleton.elim _ _⟩, fun _ _ _ ↦ Subsingleton.elim _ _⟩, Subsingleton.elim _ _⟩
 
 end Semiring
 
@@ -199,7 +199,7 @@ theorem isIdempotentElem_one_sub_one_sub_pow_pow
     · refine .pow_right (.sub_right (.one_right _) (.sum_left _ _ _ fun _ _ ↦ .pow_left ?_ _)) _
       simp
     · exact .sub_left (.one_left _) (.sum_right _ _ _ fun _ _ ↦ .pow_right rfl _)
-  rwa [hx, zero_dvd_iff, sub_eq_zero, eq_comm, pow_two] at this
+  rwa [hx, zero_dvd_iff, sub_eq_zero, eq_comm, pow_two, ← isIdempotentElem_iff] at this
 
 theorem exists_isIdempotentElem_mul_eq_zero_of_ker_isNilpotent_aux
     (h : ∀ x ∈ RingHom.ker f, IsNilpotent x)
@@ -208,7 +208,7 @@ theorem exists_isIdempotentElem_mul_eq_zero_of_ker_isNilpotent_aux
     ∃ e' : R, IsIdempotentElem e' ∧ f e' = e₁ ∧ e' * e₂ = 0 := by
   obtain ⟨e₁, rfl⟩ := he
   cases subsingleton_or_nontrivial R
-  · exact ⟨_, Subsingleton.elim _ _, rfl, Subsingleton.elim _ _⟩
+  · exact ⟨_, ⟨Subsingleton.elim _ _⟩, rfl, Subsingleton.elim _ _⟩
   let a := e₁ - e₁ * e₂
   have ha : f a = f e₁ := by rw [map_sub, map_mul, he₁e₂, sub_zero]
   have ha' : a * e₂ = 0 := by rw [sub_mul, mul_assoc, he₂.eq, sub_self]
@@ -237,7 +237,7 @@ theorem exists_isIdempotentElem_mul_eq_zero_of_ker_isNilpotent
   obtain ⟨e', h₁, rfl, h₂⟩ := exists_isIdempotentElem_mul_eq_zero_of_ker_isNilpotent_aux
     f h e₁ he he₁ e₂ he₂ he₁e₂
   refine ⟨(1 - e₂) * e', ?_, ?_, ?_, ?_⟩
-  · rw [IsIdempotentElem, mul_assoc, ← mul_assoc e', mul_sub, mul_one, h₂, sub_zero, h₁.eq]
+  · rw [isIdempotentElem_iff, mul_assoc, ← mul_assoc e', mul_sub, mul_one, h₂, sub_zero, h₁.eq]
   · rw [map_mul, map_sub, map_one, sub_mul, one_mul, he₂e₁, sub_zero]
   · rw [mul_assoc, h₂, mul_zero]
   · rw [← mul_assoc, mul_sub, mul_one, he₂.eq, sub_self, zero_mul]
@@ -246,7 +246,8 @@ theorem exists_isIdempotentElem_mul_eq_zero_of_ker_isNilpotent
 theorem exists_isIdempotentElem_eq_of_ker_isNilpotent (h : ∀ x ∈ RingHom.ker f, IsNilpotent x)
     (e : S) (he : e ∈ f.range) (he' : IsIdempotentElem e) :
     ∃ e' : R, IsIdempotentElem e' ∧ f e' = e := by
-  simpa using exists_isIdempotentElem_mul_eq_zero_of_ker_isNilpotent f h e he he' 0 .zero (by simp)
+  simpa using exists_isIdempotentElem_mul_eq_zero_of_ker_isNilpotent
+    f h e he he' 0 (.zero _) (by simp)
 
 lemma OrthogonalIdempotents.lift_of_isNilpotent_ker_aux
     (h : ∀ x ∈ RingHom.ker f, IsNilpotent x)
@@ -281,7 +282,7 @@ lemma CompleteOrthogonalIdempotents.pair_iff {x y : R} :
     CompleteOrthogonalIdempotents ![x, y] ↔ IsIdempotentElem x ∧ y = 1 - x := by
   rw [pair_iff'ₛ, ← eq_sub_iff_add_eq', ← and_assoc, and_congr_left_iff]
   rintro rfl
-  simp [mul_sub, sub_mul, IsIdempotentElem, sub_eq_zero, eq_comm]
+  simp [mul_sub, sub_mul, isIdempotentElem_iff, sub_eq_zero, eq_comm]
 
 lemma CompleteOrthogonalIdempotents.of_isIdempotentElem {e : R} (he : IsIdempotentElem e) :
     CompleteOrthogonalIdempotents ![e, 1 - e] :=
