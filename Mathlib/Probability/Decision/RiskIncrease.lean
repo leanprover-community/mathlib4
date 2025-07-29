@@ -70,12 +70,12 @@ lemma riskIncrease_eq_iInf_sub (hl : Measurable (uncurry ℓ)) (P : Kernel Θ �
     riskIncrease ℓ P π = (⨅ z : 𝓨, ∫⁻ θ, ℓ θ z ∂π) - bayesRiskPrior ℓ P π := by
   simp_rw [riskIncrease, Kernel.comp_discard, bayesRiskPrior_discard hl]
 
-@[simp] lemma riskIncrease_zero_left_of_isEmpty_of_isEmpty [IsEmpty 𝓧] [IsEmpty 𝓨] :
-    riskIncrease ℓ (0 : Kernel Θ 𝓧) π = ∞ := by
+@[simp] lemma riskIncrease_of_isEmpty_of_isEmpty [IsEmpty 𝓧] [IsEmpty 𝓨] :
+    riskIncrease ℓ P π = ∞ := by
   simp [riskIncrease]
 
-@[simp] lemma riskIncrease_zero_left_of_nonempty_of_isEmpty [Nonempty 𝓧] [IsEmpty 𝓨] :
-    riskIncrease ℓ (0 : Kernel Θ 𝓧) π = 0 := by
+@[simp] lemma riskIncrease_of_nonempty_of_isEmpty [Nonempty 𝓧] [IsEmpty 𝓨] :
+    riskIncrease ℓ P π = 0 := by
   simp [riskIncrease]
 
 @[simp] lemma riskIncrease_zero_left [Nonempty 𝓨] : riskIncrease ℓ (0 : Kernel Θ 𝓧) π = 0 := by
