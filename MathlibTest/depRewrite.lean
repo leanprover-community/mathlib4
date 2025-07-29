@@ -74,10 +74,10 @@ example (any : (α : Type) → α) (eq : (Nat × Nat) = Nat) :
 example (lt : 0 < n) :
     let A : Type := Fin n
     P (@id A ⟨0, lt⟩) := by
-  rewrite! +letAbs [eq]
+  rewrite! [eq]
   guard_target =ₐ
-    let A : (x : Nat) → n = x → Type := fun x _ => Fin x
-    P (@id (A m eq) ⟨0, eq ▸ lt⟩)
+    let A := Fin m
+    P (@id A ⟨0, eq ▸ lt⟩)
   exact test_sorry
 
 -- Rewrite the type of a nondependent let-binding.
@@ -231,8 +231,36 @@ theorem bool_dep_test
 -- Rewrite a `let` binding that requires generalization.
 theorem let_defeq_test (b : Nat) (eq : 1 = b) (f : (n : Nat) → n = 1 → Nat) :
     let n := 1; P (f n rfl) := by
-  rewrite! +letAbs [eq]
+  rewrite! [eq]
   guard_target =
-    let n : (x : Nat) → 1 = x → Nat := fun x _ => x
-    P (f (n b eq) _)
+    let n := b
+    P (f n _)
+  exact test_sorry
+
+example (b : Bool) (h : true = b)
+    (s : Bool → Prop)
+    (q : (c : Bool) → s c → Prop)
+    (f : (h : s (true || !false)) → q true h → Bool) :
+    ∀ (i : s (true || true)) (u : q (true || !true) i), s (f i u) := by
+  rw! [h]
+  exact test_sorry
+
+example (b : Bool) (h : true = b)
+    (s : Bool → Prop)
+    (q : (c : Bool) → s c → Prop)
+    (f : (h : s (true || !false)) → q true h → Bool)
+    (j : (h : s (true || false)) → (i : q (!false) h) → (k : f h i = true) → False) :
+    ∀ (i : s (true || true)) (u : q (true || !true) i)
+      (k : f i u = true), False.elim.{1} (j i u k) := by
+  rw! [h]
+  exact test_sorry
+
+example (b : Bool) (h : true = b)
+    (s : Bool → Prop)
+    (q : (c : Bool) → s c → Prop)
+    (f : (h : s (true || !false)) → q true h → Bool)
+    (j : (c : Bool) → (h : s (true || c)) → (i : q (!false) h) → (k : f h i = !c) → False) :
+    ∀ (i : s (true || true)) (u : q (true || !true) i)
+      (k : f i u = true), False.elim.{1} (j (!true) i u k) := by
+  rw! [h]
   exact test_sorry

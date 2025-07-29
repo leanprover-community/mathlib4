@@ -84,21 +84,6 @@ structure Config where
   where `h : P n₁` does not typecheck.
   The tactic will cast `h` to `eq ▸ h : P n₁` iff `.proofs ≤ castMode`. -/
   castMode : CastMode := .proofs
-  /-- Whether `let` bindings whose type or value contains the LHS
-  may be abstracted over the LHS.
-  This is off by default because it generalizes the types of these bindings.
-
-  For example, consider `f : (n : Nat) → n = 1 → Nat`.
-  In `let n := 1; f n (@rfl Nat n)`,
-  `@rfl Nat n : n = 1` typechecks by unfolding `n`.
-  Naïvely rewriting this by `eq : 1 = k` produces `let n := k; f n (@rfl Nat n)`
-  which is not type-correct because `n ≡ 1` is no longer definitionally true.
-  To solve this, we explicitly encode how `n` depends on the LHS:
-  replace the binding by `let n' : (x : Nat) → 1 = x → Nat := fun x _ => x`
-  and substitute `n' k eq` for `n` in the body `f n (@rfl Nat n)`.
-  This enables further rewrites that correct mismatched types. -/
-  -- TODO: Investigate other solutions to this problem.
-  letAbs : Bool := false
 
 /-- `ReaderT` context for `M`. -/
 structure Context where
@@ -110,6 +95,11 @@ structure Context where
   x : Expr
   /-- A proof of `p = x`. Must be an fvar. -/
   h : Expr
+  /-- The array of free variables corresponding to opened binders,
+    along with a motive to cast back. -/
+  Δ : Array (FVarId × Expr)
+  /-- The array of let variables corresponding to opened binders, along with their values. -/
+  δ : Array (FVarId × Expr)
   -- TODO: use `@[computed_field]`s below when `structure` supports that
   /-- Cached `p.toHeadIndex`. -/
   pHeadIdx : HeadIndex := p.toHeadIndex
@@ -119,7 +109,9 @@ structure Context where
 /-- Monad for computing `dabstract`.
 The cache is for `visit` (not `visitAndCast`, which has two arguments),
 and the `Nat` tracks which occurrence of the pattern we are currently seeing. -/
-abbrev M := ReaderT Context <| MonadCacheT ExprStructEq Expr <| StateRefT Nat MetaM
+abbrev M := ReaderT Context <|
+  -- MonadCacheT ExprStructEq Expr <|
+  StateRefT Nat MetaM
 
 /-- Check that casting `e : t` is allowed in the current mode.
 (We don't need to know what type `e` is cast to:
@@ -135,15 +127,46 @@ def checkCastAllowed (e t : Expr) (castMode : CastMode) : MetaM Unit := do
 
 /-- If `e : te` is a term whose type mentions `x` or `h` (the generalization variables),
 return `⋯ ▸ e : te[p/x,rfl/h]`.
-Otherwise return `none`. -/
-def castBack? (e te x h : Expr) : MetaM (Option Expr) := do
-  if !te.hasAnyFVar (fun f => f == x.fvarId! || f == h.fvarId!) then
-    return none
-  let motive ←
+Otherwise return `e`. -/
+def castBack (e te x h : Expr) (Δ δ : Array (FVarId × Expr)) : MetaM Expr := do
+  if !te.hasAnyFVar (fun f => f == x.fvarId! || f == h.fvarId! ||
+      Δ.any (·.1 == f) || δ.any (·.1 == f)) then
+    return e
+  let rec motive : MetaM Expr := do
     withLocalDeclD `x' (← inferType x) fun x' => do
     withLocalDeclD `h' (← mkEq x x') fun h' => do
-      mkLambdaFVars #[x', h'] <| te.replaceFVars #[x, h] #[x', ← mkEqTrans h h']
-  some <$> mkEqRec motive e (← mkEqSymm h)
+      let last := Δ.reverse.findIdx (te.containsFVar ·.1)
+      let mut te := te
+      for i in δ do te := te.replaceFVar (.fvar i.1) i.2
+      te := te.replaceFVars #[x, h] #[x', ← mkEqTrans h h']
+      for hi : i in [:Δ.size] do
+        te := te.replaceFVar (.fvar Δ[i].1) (← mkEqRec Δ[i].2 (.fvar Δ[i].1) h')
+        if i = last then break
+      mkLambdaFVars #[x', h'] te
+  let e' ← mkEqRec (← motive) e (← mkEqSymm h)
+  trace[Tactic.depRewrite.cast] "casting (x ↦ p):{indentExpr e'}"
+  return e'
+
+/-- Cast `e : te[p/x,rfl/h]` to `h ▸ e : te`. -/
+def castFwd (e te p x h : Expr) (Δ δ : Array (FVarId × Expr)) : MetaM Expr := do
+  if !te.hasAnyFVar (fun f => f == x.fvarId! || f == h.fvarId! ||
+      Δ.any (·.1 == f) || δ.any (·.1 == f)) then
+    return e
+  let motive ← do
+    withLocalDeclD `x' (← inferType x) fun x' => do
+    withLocalDeclD `h' (← mkEq p x') fun h' => do
+      let last := Δ.reverse.findIdx (te.containsFVar ·.1)
+      let mut te := te
+      for i in δ do te := te.replaceFVar (.fvar i.1) i.2
+      te := te.replaceFVars #[x, h] #[x', h']
+      for hi : i in [:Δ.size] do
+        te := te.replaceFVar (.fvar Δ[i].1)
+          (← mkEqRec Δ[i].2 (.fvar Δ[i].1) (← mkEqTrans (← mkEqSymm h) h'))
+        if i = last then break
+      mkLambdaFVars #[x', h'] te
+  let e' ← mkEqRec motive e h
+  trace[Tactic.depRewrite.cast] "casting (p ↦ x):{indentExpr e'}"
+  return e'
 
 mutual
 
@@ -167,29 +190,20 @@ partial def visitAndCast (e : Expr) (et? : Option Expr) : M Expr := do
   -- between definientia and definienda (δ reductions).
   if ← withAtLeastTransparency .default <| withNewMCtxDepth <| isDefEq te' et then
     return e'
-  trace[traceClsCast] "casting{indentExpr e'}\nto expected type{indentExpr et}"
+  trace[Tactic.depRewrite.cast] "casting{indentExpr e'}\nto expected type{indentExpr et}"
   let ctx ← read
   checkCastAllowed e' te' ctx.cfg.castMode
 
   /- Try casting from the inferred type (x ↦ p),
   and to the expected type (p ↦ x).
   In certain cases we need to cast in both directions (see `bool_dep_test`). -/
-  match ← castBack? e' te' ctx.x ctx.h with
-  | some e'' =>
-    let te'' ← inferType e''
-    if ← withAtLeastTransparency .default <| withNewMCtxDepth <| isDefEq te'' et then
-      trace[traceClsCast] "done with one cast (x ↦ p):{indentExpr e''}"
-      return e''
-
-    let motive ← mkLambdaFVars #[ctx.x, ctx.h] et
-    let e''' ← mkEqRec motive e'' ctx.h
-    trace[traceClsCast] "done with two casts (x ↦ p, p ↦ x):{indentExpr e'''}"
-    return e'''
-  | none =>
-    let motive ← mkLambdaFVars #[ctx.x, ctx.h] et
-    let e'' ← mkEqRec motive e' ctx.h
-    trace[traceClsCast] "done with one cast (x ↦ p):{indentExpr e''}"
+  let e'' ← castBack e' te' ctx.x ctx.h ctx.Δ ctx.δ
+  let te'' ← inferType e''
+  if ← withAtLeastTransparency .default <| withNewMCtxDepth <| isDefEq te'' et then
     return e''
+
+  let e''' ← castFwd e'' et ctx.p ctx.x ctx.h ctx.Δ ctx.δ
+  return e'''
 
 /-- Like `visitAndCast`, but does not insert casts at the top level.
 The expected types of certain subterms are computed from `et?`. -/
@@ -200,7 +214,8 @@ partial def visit (e : Expr) (et? : Option Expr) : M Expr :=
   withTraceNode traceClsVisit (fun
     | .ok e' => pure m!"{e} => {e'} (et: {et?})"
     | .error _ => pure m!"{e} => 💥️") do
-  checkCache { val := e : ExprStructEq } fun _ => Meta.withIncRecDepth do
+  -- checkCache { val := e : ExprStructEq } fun _ =>
+  Meta.withIncRecDepth do
   let ctx ← read
   if e.hasLooseBVars then
     throwError "internal error: forgot to instantiate"
@@ -240,38 +255,30 @@ partial def visit (e : Expr) (et? : Option Expr) : M Expr :=
     let vup ← visitAndCast v tup
     if nondep || !vup.hasAnyFVar (fun f => f == ctx.x.fvarId! || f == ctx.h.fvarId!) then
       return ← withLetDecl n tup vup (nondep := nondep) fun r => do
-        let bup ← visitAndCast (b.instantiate1 r) et?
+        let motive ← castBack.motive tup ctx.x ctx.h ctx.Δ ctx.δ
+        let bup ← withReader (fun ctx => { ctx with Δ := ctx.Δ.push (r.fvarId!, motive) })
+          (visitAndCast (b.instantiate1 r) et?)
         return .letE n tup vup (bup.abstract #[r]) nondep
 
-    /-
-    If `nondep` is `false`, the body may rely on the definitional equality `n ≡ v`.
-    If `vup` contains `x/h`, we may have broken this equality by rewriting.
-    We fix this by allowing further rewrites from `x` back to `p` in the body
-    by generalizing to `n' := fun x h => vup(x,h)` and instantiating `b[n' x h/n]`.
-    See also `Config.letAbs`.
-    -/
-    if !ctx.cfg.letAbs then
-      throwError m!"\
-        Will not rewrite the value of{indentD ""}let {n} : {t} := {v}\n\
-        Use `rw! +letAbs` if you want to rewrite in let-bound values. \
-        Note: in the generated motive, the value is{indentExpr vup}"
-    let lupTy ← mkForallFVars #[ctx.x, ctx.h] tup
-    let lup ← mkLambdaFVars #[ctx.x, ctx.h] vup
-    withLetDecl n lupTy lup (nondep := nondep) fun r => do
-      let rxh := mkAppN r #[ctx.x, ctx.h]
-      let bup ← visitAndCast (b.instantiate1 rxh) et?
-      return .letE n lupTy lup (bup.abstract #[r]) nondep
+    withLetDecl n tup vup (nondep := nondep) fun r => do
+      let bup ← withReader (fun ctx => { ctx with δ := ctx.δ.push (r.fvarId!, vup) })
+        (visitAndCast (b.instantiate1 r) et?)
+      return .letE n tup vup (bup.abstract #[r]) nondep
   | .lam n t b bi =>
     let tup ← visit t none
     withLocalDecl n bi tup fun r => do
       -- TODO(WN): there should be some way to propagate the expected type here,
       -- but it is not easy to do correctly (see `lam (as argument)` tests).
-      let bup ← visit (b.instantiate1 r) none
+      let motive ← castBack.motive tup ctx.x ctx.h ctx.Δ ctx.δ
+      let bup ← withReader (fun ctx => { ctx with Δ := ctx.Δ.push (r.fvarId!, motive) })
+        (visit (b.instantiate1 r) none)
       return .lam n tup (bup.abstract #[r]) bi
   | .forallE n t b bi =>
     let tup ← visit t none
     withLocalDecl n bi tup fun r => do
-      let bup ← visit (b.instantiate1 r) none
+      let motive ← castBack.motive tup ctx.x ctx.h ctx.Δ ctx.δ
+      let bup ← withReader (fun ctx => { ctx with Δ := ctx.Δ.push (r.fvarId!, motive) })
+        (visit (b.instantiate1 r) none)
       return .forallE n tup (bup.abstract #[r]) bi
   | _ => return e
 
@@ -287,7 +294,8 @@ def dabstract (e : Expr) (p : Expr) (cfg : DepRewrite.Config) : MetaM Expr := do
     | .error (err : Lean.Exception) => pure m!"{e} =[x/{p}]=> 💥️{indentD err.toMessageData}") do
   withLocalDeclD `x tp fun x => do
   withLocalDeclD `h (← mkEq p x) fun h => do
-    let e' ← visit e none |>.run { cfg, p, x, h } |>.run |>.run' 1
+    let e' ← visit e none |>.run { cfg, p, x, h, Δ := #[], δ := #[] } -- |>.run
+      |>.run' 1
     mkLambdaFVars #[x, h] e'
 
 /-- Analogue of `Lean.MVarId.rewrite` with support for inserting casts. -/
@@ -344,8 +352,7 @@ def _root_.Lean.MVarId.depRewrite (mvarId : MVarId) (e : Expr) (heq : Expr)
                   "internal error: expected 2 arguments in{indentExpr eAbst}"
                 let eBodyTp ← inferType eBody
                 checkCastAllowed eBody eBodyTp config.castMode
-                let some eBody ← castBack? eBody eBodyTp x h | throwError
-                  "internal error: body{indentExpr eBody}\nshould mention '{x}' or '{h}'"
+                let eBody ← castBack eBody eBodyTp x h #[] #[]
                 let motive ← mkLambdaFVars xs eBodyTp
                 pure (
                   eBody.replaceFVars #[x, h] #[rhs, heq],
