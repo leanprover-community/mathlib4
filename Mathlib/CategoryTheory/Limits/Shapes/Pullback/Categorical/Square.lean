@@ -395,6 +395,39 @@ def functorEquivInverseWhiskeringIsoSnd :
     CatCommSqOver.sndFunctor R B X :=
   Iso.inverseCompIso (.refl _)
 
+variable {R B X}
+
+@[reassoc (attr := simp)]
+lemma counitCoherence_hom_app (S : CatCommSqOver R B X) (x : X) :
+    R.map (((functorEquiv T L R B X).counitIso.hom.app S).fst.app x) ≫
+      S.iso.hom.app x =
+    (CatCommSq.iso T L R B).hom.app
+      (((functorEquiv T L R B X).inverse.obj S).obj x) ≫
+      B.map (((functorEquiv T L R B X).counitIso.hom.app S).snd.app x) :=
+  functorEquiv.counitCoherence_hom_app' T L R B X S x
+
+@[reassoc (attr := simp)]
+lemma counitCoherence_inv_app (S : CatCommSqOver R B X) (x : X) :
+    R.map (((functorEquiv T L R B X).counitIso.inv.app S).fst.app x) ≫
+      (CatCommSq.iso T L R B).hom.app
+        (((functorEquiv T L R B X).inverse.obj S).obj x) =
+    S.iso.hom.app x ≫
+      B.map (((functorEquiv T L R B X).counitIso.inv.app S).snd.app x) := by
+  rw [← cancel_epi (R.map <|
+      functorEquiv T L R B X|>.counitIso.hom.app S|>.fst.app x),
+    ← cancel_mono (CatCommSq.iso T L R B|>.inv.app <|
+      functorEquiv T L R B X|>.inverse.obj S|>.obj x)]
+  simp only [Functor.comp_obj, functorEquiv_functor_obj_fst,
+    Functor.id_obj, Category.assoc, ← NatTrans.comp_app,
+    Iso.hom_inv_id, NatTrans.id_app, Category.comp_id,
+    ← Functor.map_comp, ← comp_fst, id_fst, Functor.map_id,
+    Functor.whiskeringRight_obj_obj, functorEquiv_functor_obj_snd,
+    CatCommSqOver.w_app_assoc, functorEquiv_functor_obj_iso, Iso.trans_hom,
+    Functor.isoWhiskerLeft_hom, Iso.symm_hom, ← comp_snd, id_snd]
+  simp
+
+variable (R B X)
+
 /-- Applying the inverse of `functorEquiv` to the canonical
 `CatCommSqOver R B (R ⊡ B)` (definitionally) gives back the inverse of the
 structural equivalence `C₁ ≌ R ⊡ B`. -/
@@ -600,11 +633,11 @@ instance functorEquivFunctorWhiskeringFunctorOfTransformObjSquare
                 (transform C₁|>.obj ψ|>.obj <| ofSquare T L R B)|>.snd.app <|
                   J.obj x)
           dsimp at this
-          simp only [Category.comp_id, Category.id_comp, Category.assoc] at this
-          simp only [← Functor.map_comp_assoc, ← Functor.map_comp] at this
-          simp only [← NatTrans.comp_app, ← comp_fst, ← comp_snd,
-            Iso.inv_hom_id, Iso.hom_inv_id] at this
-          simpa using this.symm ))
+          simp only [Category.comp_id, Category.id_comp, Category.assoc,
+            ← Functor.map_comp_assoc, ← Functor.map_comp, ← NatTrans.comp_app,
+            ← comp_fst, ← comp_snd, Iso.inv_hom_id, Iso.hom_inv_id] at this
+          simpa [-counitCoherence_inv_app,
+            -counitCoherence_inv_app_assoc] using this.symm ))
       (fun {_ _} f ↦ by ext x <;> simp [functorOfTransform])
 
 /-- The horizontal inverse of
@@ -1180,6 +1213,48 @@ lemma functorOfTransform_map_app_snd {ψ ψ' : CatCospanTransform R B R' B'}
   rfl
 
 end
+
+section mkNatIso
+
+open Functor
+
+variable {J K : X ⥤ R ⊡ B}
+    (e₁ : J ⋙ (π₁ R B) ≅ K ⋙ (π₁ R B))
+    (e₂ : J ⋙ (π₂ R B) ≅ K ⋙ (π₂ R B))
+    (coh :
+      whiskerRight e₁.hom R ≫ (associator _ _ _).hom ≫
+        whiskerLeft K (CatCommSq.iso (π₁ R B) (π₂ R B) R B).hom ≫
+        (associator _ _ _).inv =
+      (associator _ _ _).hom ≫
+        whiskerLeft J (CatCommSq.iso (π₁ R B) (π₂ R B) R B).hom ≫
+        (associator _ _ _).inv ≫
+        whiskerRight e₂.hom B := by aesop_cat)
+
+@[simp]
+lemma mkNatIso_hom_app_fst (x : X) :
+    ((mkNatIso (π₁ R B) (π₂ R B) R B X e₁ e₂ coh).hom.app x).fst =
+    e₁.hom.app x := by
+  simp [mkNatIso, Equivalence.fullyFaithfulFunctor]
+
+@[simp]
+lemma mkNatIso_inv_app_fst (x : X) :
+    ((mkNatIso (π₁ R B) (π₂ R B) R B X e₁ e₂ coh).inv.app x).fst =
+    e₁.inv.app x := by
+  simp [mkNatIso, Equivalence.fullyFaithfulFunctor]
+
+@[simp]
+lemma mkNatIso_hom_app_snd (x : X) :
+    ((mkNatIso (π₁ R B) (π₂ R B) R B X e₁ e₂ coh).hom.app x).snd =
+    e₂.hom.app x := by
+  simp [mkNatIso, Equivalence.fullyFaithfulFunctor]
+
+@[simp]
+lemma mkNatIso_inv_app_snd (x : X) :
+    ((mkNatIso (π₁ R B) (π₂ R B) R B X e₁ e₂ coh).inv.app x).snd =
+    e₂.inv.app x := by
+  simp [mkNatIso, Equivalence.fullyFaithfulFunctor]
+
+end mkNatIso
 
 end CategoricalPullback
 
