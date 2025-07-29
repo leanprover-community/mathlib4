@@ -545,6 +545,10 @@ theorem eigenspace_le_genEigenspace {f : End R M} {μ : R} {k : ℕ} (hk : 0 < k
     f.eigenspace μ ≤ f.genEigenspace μ k :=
   (f.genEigenspace _).monotone <| by simpa using Nat.succ_le_of_lt hk
 
+theorem eigenspace_le_maxGenEigenspace {f : End R M} {μ : R} :
+    f.eigenspace μ ≤ f.maxGenEigenspace μ :=
+  (f.genEigenspace _).monotone <| OrderTop.le_top _
+
 /-- All eigenvalues are generalized eigenvalues. -/
 theorem hasGenEigenvalue_of_hasEigenvalue {f : End R M} {μ : R} {k : ℕ} (hk : 0 < k)
     (hμ : f.HasEigenvalue μ) : f.HasGenEigenvalue μ k :=

@@ -67,54 +67,53 @@ lemma hasEigenvalue_toLin'_diagonal_iff [NoZeroDivisors R] (d : n → R) {μ : R
     HasEigenvalue (toLin' (diagonal d)) μ ↔ (∃ i, d i = μ) :=
   hasEigenvalue_toLin_diagonal_iff _ <| Pi.basisFun R n
 
-end NontrivialCommRing
-
 namespace Matrix
 
-variable [CommRing R] [IsDomain R] {d : n → R}
+variable (d : n → R) {μ : R} (b : Basis n R M)
+omit [Nontrivial R]
 
 @[simp]
-lemma maxGenEigenspace_diagonal_eq_bot_iff {μ : R} :
-    maxGenEigenspace (diagonal d).toLin' μ = ⊥ ↔ μ ∉ Set.range d := by
-  rw [← not_iff_not]
-  simp only [Set.mem_range, not_exists, not_forall, not_not, ← ne_eq, Submodule.ne_bot_iff]
-  refine ⟨fun ⟨x, hx, hx₀⟩ ↦ ?_, ?_⟩
-  · obtain ⟨i, hi⟩ : ∃ i, x i ≠ 0 := Function.ne_iff.mp hx₀
-    use i
-    have : (diagonal d).toLin' - μ • 1 = (diagonal (d - μ • 1)).toLin' := by
-      aesop (add simp Pi.single_apply)
-    obtain ⟨k, hk⟩ : ∃ k, diagonal ((d - μ • 1) ^ k) *ᵥ x = 0 := by
-      simpa only [mem_maxGenEigenspace, this, ← toLin'_pow, toLin'_apply, diagonal_pow] using hx
-    replace hk : x i * (d i - μ) ^ k = 0 := by
-      simpa [mulVec_eq_sum, diagonal_apply] using congr_fun hk i
-    simp only [mul_eq_zero, hi, pow_eq_zero_iff', ne_eq, false_or, sub_eq_zero] at hk
-    exact hk.1
-  · rintro ⟨i, rfl⟩
-    refine ⟨Pi.single i 1, (mem_maxGenEigenspace _ _ _).mpr ⟨1, ?_⟩, by simp⟩
-    ext j
-    simp [Pi.single_apply]
+lemma iSup_eigenspace_toLin_diagonal_eq_top :
+    ⨆ μ, eigenspace ((diagonal d).toLin b b) μ = ⊤ := by
+  rw [Submodule.eq_top_iff_forall_basis_mem b]
+  intro j
+  suffices b j ∈ eigenspace ((diagonal d).toLin b b) (d j) from Submodule.mem_iSup_of_mem (d j) this
+  simp [diagonal_apply]
 
 @[simp]
-lemma iSup_maxGenEigenspace_diagonal_eq_top :
-    ⨆ μ, maxGenEigenspace (diagonal d).toLin' μ = ⊤ := by
-  refine Submodule.eq_top_iff'.mpr fun v ↦ ?_
-  suffices ⨆ μ, maxGenEigenspace (Matrix.diagonal d).toLin' μ =
-      ⨆ i ∈ Finset.univ, maxGenEigenspace (Matrix.diagonal d).toLin' (d i) by
-    rw [this, Submodule.mem_iSup_finset_iff_exists_sum]
-    let μ (i : n) : maxGenEigenspace (diagonal d).toLin' (d i) := ⟨Pi.single i (v i),
-      (mem_maxGenEigenspace _ _ _).mpr ⟨1, by ext j; simp [Pi.single_apply, mul_comm (v i)]⟩⟩
-    exact ⟨μ, Finset.univ_sum_single v⟩
-  let p (μ : R) : Prop := maxGenEigenspace (diagonal d).toLin' μ = ⊥
-  have hp_neg (μ : R) : ¬ p μ ↔ μ ∈ Set.range d := by simp [p]
-  have hp_pos (μ : R) (hμ : p μ) : maxGenEigenspace (diagonal d).toLin' μ = ⊥ := hμ
-  simp only [Finset.mem_univ, iSup_pos]
-  rw [iSup_split _ p]
-  simp only [biSup_congr hp_pos, hp_neg, iSup_bot, bot_sup_eq, iSup_range]
+lemma iSup_eigenspace_toLin'_diagonal_eq_top :
+    ⨆ μ, eigenspace (diagonal d).toLin' μ = ⊤ :=
+  iSup_eigenspace_toLin_diagonal_eq_top d <| Pi.basisFun R n
+
+variable [IsDomain R]
+
+@[simp]
+lemma maxGenEigenspace_toLin_diagonal_eq_eigenspace :
+    maxGenEigenspace ((diagonal d).toLin b b) μ = eigenspace ((diagonal d).toLin b b) μ := by
+  refine le_antisymm (fun x hx ↦ ?_) eigenspace_le_maxGenEigenspace
+  obtain ⟨k, hk⟩ := (mem_maxGenEigenspace _ _ _).mp hx
+  replace hk (j : n) : b.repr x j = 0 ∨ d j = μ ∧ k ≠ 0 := by
+    have aux : (diagonal d).toLin b b - μ • 1 = (diagonal (d - μ • 1)).toLin b b := by
+      change _ = (diagonal fun i ↦ d i - _).toLin b b; rw [← diagonal_sub]; simp [one_eq_id]
+    rw [aux, ← toLin_pow, diagonal_pow, toLin_apply_eq_zero_iff] at hk
+    simpa [mulVec_eq_sum, diagonal_apply, sub_eq_zero] using hk j
+  have aux (j : n) : (b.repr x j * d j) • b j = μ • (b.repr x j • b j) := by
+    rcases hk j with hj | hj
+    · simp [hj]
+    · rw [← hj.1, mul_comm, MulAction.mul_smul]
+  simp [toLin_apply, mulVec_eq_sum, diagonal_apply, aux, ← Finset.smul_sum]
+
+@[simp]
+lemma maxGenEigenspace_toLin'_diagonal_eq_eigenspace :
+    maxGenEigenspace (diagonal d).toLin' μ = eigenspace (diagonal d).toLin' μ :=
+  maxGenEigenspace_toLin_diagonal_eq_eigenspace d <| Pi.basisFun R n
 
 end Matrix
 
+end NontrivialCommRing
+
 /-- The spectrum of the diagonal operator is the range of the diagonal viewed as a function. -/
-lemma spectrum_diagonal [Field R] (d : n → R) :
+@[simp] lemma spectrum_diagonal [Field R] (d : n → R) :
     spectrum R (diagonal d) = Set.range d := by
   ext μ
   rw [← AlgEquiv.spectrum_eq (toLinAlgEquiv <| Pi.basisFun R n), ← hasEigenvalue_iff_mem_spectrum]

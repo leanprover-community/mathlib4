@@ -68,6 +68,12 @@ protected theorem mem_span (x : M) : x ∈ span R (range b) :=
 protected theorem span_eq : span R (range b) = ⊤ :=
   eq_top_iff.mpr fun x _ => b.mem_span x
 
+theorem _root_.Submodule.eq_top_iff_forall_basis_mem {p : Submodule R M} :
+    p = ⊤ ↔ ∀ i, b i ∈ p := by
+  refine ⟨fun h ↦ by simp [h], fun h ↦ ?_⟩
+  replace h : range b ⊆ p := by rintro - ⟨i, rfl⟩; exact h i
+  simpa using span_mono (R := R) h
+
 theorem index_nonempty (b : Basis ι R M) [Nontrivial M] : Nonempty ι := by
   obtain ⟨x, y, ne⟩ : ∃ x y : M, x ≠ y := Nontrivial.exists_pair_ne
   obtain ⟨i, _⟩ := not_forall.mp (mt b.ext_elem_iff.2 ne)
