@@ -96,9 +96,10 @@ lemma _root_.AffineSubspace.finrank_eq_two_of_ne
     finrank ℝ l.direction = 2 :=
   sorry
 
-lemma _root_.EuclideanGeometry.reflection_line_apply {p q : WithLp 2 (Fin 2 → ℝ)}
-    (h : p ≠ q) (r : WithLp 2 (Fin 2 → ℝ)) :
-    EuclideanGeometry.reflection line[ℝ, p, q] r = !₂[_, _] :=
+lemma _root_.EuclideanGeometry.orthogonalProjection_diag_apply (a b : ℝ) :
+    (EuclideanGeometry.orthogonalProjection line[ℝ, !₂[(0 : ℝ), 0], !₂[1, 1]]) !₂[↑b, ↑a]  =
+    !₂[(a + b) / 2, (a + b) / 2] := by
+
   sorry
 
 /-- This is still missing non-degeneracy conditions -/
@@ -347,12 +348,21 @@ noncomputable def Config.symm {n k : ℕ} (c : Config n k) : Config n k where
     rw [AffineSubspace.map_direction, AffineEquiv.linear_toAffineMap,
       LinearEquiv.finrank_map_eq, c.rank l' hl']
   cover a b ha hb hab := by
-    simp at *
+    simp only [gt_iff_lt, ge_iff_le, Finset.mem_map, Function.Embedding.coeFn_mk,
+      exists_exists_and_eq_and, AffineSubspace.mem_map, AffineEquiv.coe_toAffineMap,
+      AffineIsometryEquiv.coe_toAffineEquiv] at *
     rw [add_comm] at hab
     obtain ⟨l, hl, hbal⟩ := c.cover b a hb ha hab
     refine ⟨l, hl, !₂[b, a], hbal, ?_⟩
-    sorry
+    rw [EuclideanGeometry.reflection_apply]
+    simp only [vsub_eq_sub, vadd_eq_add]
+    rw [EuclideanGeometry.orthogonalProjection_diag_apply]
+    simp only [point_sub, point_add]
+    grind
   sunny := by
+    conv_rhs => rw [← c.sunny]
+    apply Finset.card_eq_of_equiv
+    simp
     sorry
 
 /-- Extend a valid configuration without changing the number of sunny lines. -/
@@ -392,10 +402,6 @@ def Config.extend {n k : ℕ} (hn : 3 ≤ n) (c : Config n k) : Config (n + 1) k
     absurd hl
     exact not_sunny_diag (n + 1)
 
-example (a b c : ℝ) : a - b - c = a - c - b := by exact sub_right_comm a b c
-
-#exit
-
 /-- Restrict a configuration for `n + 1` points to a configuration for `n` points by discarding
 a vertical line. -/
 noncomputable def Config.restrict_vert {n k : ℕ} (c : Config (n + 1) k)
@@ -428,6 +434,34 @@ noncomputable def Config.restrict_vert {n k : ℕ} (c : Config (n + 1) k)
   sunny := by
     -- TODO show translation invariance of sunniness
     sorry
+
+noncomputable def Config.restrict_horiz {n k : ℕ} (c : Config (n + 1) k)
+    (h : line[ℝ, !₂[0, 1], !₂[1, 1]] ∈ c.ls) : Config n k :=
+  Config.restrict_vert c.symm sorry
+
+noncomputable def Config.restrict_diag {n k : ℕ} (hn : 3 ≤ n) (c : Config (n + 1) k)
+    (h : line[ℝ, !₂[(n : ℝ) + 1, 1], !₂[1, (n : ℝ) + 1]] ∈ c.ls) : Config n k where
+  ls := c.ls.erase line[ℝ, !₂[(n : ℝ) + 1, 1], !₂[1, (n : ℝ) + 1]]
+  card := by simp [Finset.card_erase_of_mem h, c.card]
+  rank l hl := c.rank l (Finset.mem_of_mem_erase hl)
+  cover a b ha hb hab := by
+    obtain ⟨l, hl, meml⟩ := c.cover a b
+    refine ⟨l, Finset.mem_erase_of_ne_of_mem ?_ hl, meml⟩
+    rintro rfl
+    rw [mem_line_iff (by left; norm_cast; grind)] at meml
+    simp at *
+    rw [← neg_mul] at meml
+    have := mul_right_cancel₀ (by norm_cast; omega) meml
+    simp only [neg_sub, sub_eq_sub_iff_add_eq_add] at this
+    norm_cast at this
+    grind
+  sunny := by
+    conv_rhs => rw [← c.sunny]
+    congr 1
+    rw [Finset.filter_inj]
+    simp
+    rintro l hl - rfl
+    apply not_sunny_diag (n + 1) hl
 
 lemma no_config_3_2_no_vert (c : Config 3 2) (h_no_vert : ∀ l ∈ c.ls, ¬ l ∥ yAxis) : False := by
   obtain ⟨l₁, hl₁, meml₁⟩ := c.cover 1 1 (by norm_num) (by norm_num) (by norm_num)
