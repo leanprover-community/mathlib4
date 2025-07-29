@@ -382,7 +382,8 @@ theorem IsIdempotentElem.TFAE {p : E →L[𝕜] E} (hp : IsIdempotentElem p) :
       (LinearMap.range p)ᗮ = LinearMap.ker p].TFAE := by
   tfae_have 1 ↔ 2 := hp.isSelfAdjoint_iff_isStarNormal.symm
   tfae_have 2 ↔ 3 := hp.isPositive_iff_isSelfAdjoint.symm
-  tfae_have 2 ↔ 4 := hp.isSelfAdjoint_iff_orthogonal_range
+  tfae_have 2 ↔ 4 := p.isSelfAdjoint_iff_isSymmetric.eq ▸
+    (ContinuousLinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range hp)
   tfae_finish
 
 /-- For star projection operators `p,q`, we have `p ≤ q` iff `p ∘ q = p`. -/
@@ -428,3 +429,15 @@ theorem starProjection_le_starProjection_iff (U V : Submodule 𝕜 E)
   · exact congr(LinearMapClass.linearMap $(isStarProjection_starProjection.isIdempotentElem.eq))
 
 end ContinuousLinearMap
+
+namespace LinearMap
+
+/-- A star projection operator is positive. -/
+@[aesop 10% apply, grind →]
+theorem IsPositive.of_isStarProjection [FiniteDimensional 𝕜 E] {T : E →ₗ[𝕜] E}
+    (hT : IsStarProjection T) : T.IsPositive :=
+  have := FiniteDimensional.complete 𝕜 E
+  T.isPositive_toContinuousLinearMap_iff.mp (ContinuousLinearMap.IsPositive.of_isStarProjection
+    (isStarProjection_toContinuousLinearMap_iff.mpr hT))
+
+end LinearMap
