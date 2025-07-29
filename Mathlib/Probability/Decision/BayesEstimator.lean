@@ -14,7 +14,7 @@ import Mathlib.Probability.Decision.Risk
 * `IsBayesEstimator`: an estimator is a Bayes estimator if it attains the Bayes risk for the prior.
 * `IsGenBayesEstimator`: a measurable function `f : 𝓧 → 𝓨` is a generalized Bayes estimator
   with respect to the prior `π` if for `(P ∘ₘ π)`-almost every `x` it has
-  the form `x ↦ argmin_z P†π(x)[θ ↦ ℓ θ z]`.
+  the form `x ↦ argmin_y P†π(x)[θ ↦ ℓ θ y]`.
 * `HasGenBayesEstimator`: class that states that estimation problem admits a generalized Bayes
   estimator with respect to the prior.
 
@@ -24,7 +24,7 @@ import Mathlib.Probability.Decision.Risk
   That is, it minimizes the Bayesian risk.
 * `bayesRiskPrior_eq_of_hasGenBayesEstimator`: if the estimation problem admits a generalized Bayes
 estimator, then the Bayesian risk attains the risk lower bound
-`∫⁻ x, ⨅ z, ∫⁻ θ, ℓ θ z ∂(P†π) x ∂(P ∘ₘ π)`.
+`∫⁻ x, ⨅ y, ∫⁻ θ, ℓ θ y ∂(P†π) x ∂(P ∘ₘ π)`.
 
 ## Implementation details
 
@@ -47,12 +47,12 @@ variable [StandardBorelSpace Θ] [Nonempty Θ] {f : 𝓧 → 𝓨} [IsFiniteKern
 
 /-- We say that a measurable function `f : 𝓧 → 𝓨` is a generalized Bayes estimator
 with respect to the prior `π` if for `(P ∘ₘ π)`-almost every `x` it is of
-the form `x ↦ argmin_z P†π(x)[θ ↦ ℓ θ z]`. -/
+the form `x ↦ argmin_y P†π(x)[θ ↦ ℓ θ y]`. -/
 structure IsGenBayesEstimator {𝓨 : Type*} [MeasurableSpace 𝓨]
     (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) [IsFiniteKernel P] (f : 𝓧 → 𝓨)
     (π : Measure Θ) [IsFiniteMeasure π] : Prop where
   measurable : Measurable f
-  property : ∀ᵐ x ∂(P ∘ₘ π), ∫⁻ θ, ℓ θ (f x) ∂(P†π) x = ⨅ z, ∫⁻ θ, ℓ θ z ∂(P†π) x
+  property : ∀ᵐ x ∂(P ∘ₘ π), ∫⁻ θ, ℓ θ (f x) ∂(P†π) x = ⨅ y, ∫⁻ θ, ℓ θ y ∂(P†π) x
 
 /-- Given a generalized Bayes estimator `f`, we can define a deterministic kernel. -/
 noncomputable
@@ -63,7 +63,7 @@ abbrev IsGenBayesEstimator.kernel (h : IsGenBayesEstimator ℓ P f π) : Kernel 
 `∫⁻ x, ⨅ z, ∫⁻ θ, ℓ θ z ∂(P†π) x ∂(P ∘ₘ π)`. -/
 lemma IsGenBayesEstimator.bayesianRisk_eq_lintegral_iInf (hf : IsGenBayesEstimator ℓ P f π)
     (hl : Measurable (Function.uncurry ℓ)) :
-    bayesianRisk ℓ P hf.kernel π = ∫⁻ x, ⨅ z, ∫⁻ θ, ℓ θ z ∂(P†π) x ∂(P ∘ₘ π) := by
+    bayesianRisk ℓ P hf.kernel π = ∫⁻ x, ⨅ y, ∫⁻ θ, ℓ θ y ∂(P†π) x ∂(P ∘ₘ π) := by
   rw [bayesianRisk_eq_lintegral_lintegral_lintegral hl]
   refine lintegral_congr_ae ?_
   filter_upwards [hf.property] with x hx
@@ -88,21 +88,21 @@ class HasGenBayesEstimator {𝓨 : Type*} [MeasurableSpace 𝓨]
   isGenBayesEstimator : IsGenBayesEstimator ℓ P estimator π
 
 /-- If the estimation problem admits a generalized Bayes estimator, then the Bayesian risk
-attains the risk lower bound `∫⁻ x, ⨅ z, ∫⁻ θ, ℓ θ z ∂(P†π) x ∂(P ∘ₘ π)`. -/
+attains the risk lower bound `∫⁻ x, ⨅ y, ∫⁻ θ, ℓ θ y ∂((P†π) x) ∂(P ∘ₘ π)`. -/
 lemma bayesRiskPrior_eq_of_hasGenBayesEstimator
     (hl : Measurable (Function.uncurry ℓ)) [h : HasGenBayesEstimator ℓ P π] :
-    bayesRiskPrior ℓ P π = ∫⁻ x, ⨅ z, ∫⁻ θ, ℓ θ z ∂((P†π) x) ∂(P ∘ₘ π) := by
+    bayesRiskPrior ℓ P π = ∫⁻ x, ⨅ y, ∫⁻ θ, ℓ θ y ∂((P†π) x) ∂(P ∘ₘ π) := by
   rw [← h.isGenBayesEstimator.isBayesEstimator hl,
     h.isGenBayesEstimator.bayesianRisk_eq_lintegral_iInf hl]
 
 noncomputable instance [Nonempty 𝓨] [Finite 𝓨] : HasGenBayesEstimator ℓ P π where
-  estimator x := (Finite.exists_min (fun z ↦ ∫⁻ θ, ℓ θ z ∂(P†π) x)).choose
+  estimator x := (Finite.exists_min (fun y ↦ ∫⁻ θ, ℓ θ y ∂(P†π) x)).choose
   isGenBayesEstimator :=
     { measurable := by
         sorry
       property := by
         refine ae_of_all _ fun x ↦ ?_
-        have h := (Finite.exists_min (fun z ↦ ∫⁻ θ, ℓ θ z ∂(P†π) x)).choose_spec
+        have h := (Finite.exists_min (fun y ↦ ∫⁻ θ, ℓ θ y ∂(P†π) x)).choose_spec
         exact le_antisymm (by simpa using h) (iInf_le _ _) }
 
 end ProbabilityTheory

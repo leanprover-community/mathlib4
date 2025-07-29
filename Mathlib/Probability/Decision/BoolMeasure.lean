@@ -61,8 +61,10 @@ lemma boolMeasure_apply_false (a b : ℝ≥0∞) : boolMeasure a b {false} = a :
 lemma boolMeasure_apply_true (a b : ℝ≥0∞) : boolMeasure a b {true} = b := by simp [boolMeasure]
 
 @[simp]
-lemma boolMeasure_apply_univ (a b : ℝ≥0∞) : boolMeasure a b {false, true} = a + b := by
+lemma boolMeasure_apply_univ' (a b : ℝ≥0∞) : boolMeasure a b {false, true} = a + b := by
   simp [boolMeasure]
+
+lemma boolMeasure_apply_univ (a b : ℝ≥0∞) : boolMeasure a b Set.univ = a + b := by simp
 
 lemma measure_eq_boolMeasure (π : Measure Bool) : π = boolMeasure (π {false}) (π {true}) := by
   ext <;> simp
