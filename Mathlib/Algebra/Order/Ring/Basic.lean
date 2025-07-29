@@ -25,6 +25,12 @@ theorem IsSquare.nonneg [Semiring R] [LinearOrder R] [IsRightCancelAdd R]
   rcases h with ⟨y, rfl⟩
   exact mul_self_nonneg y
 
+@[simp]
+lemma not_isSquare_of_neg [Semiring R] [LinearOrder R] [IsRightCancelAdd R]
+    [ZeroLEOneClass R] [ExistsAddOfLE R] [PosMulMono R] [AddLeftStrictMono R]
+    {x : R} (h : x < 0) : ¬ IsSquare x :=
+  (h.not_ge ·.nonneg)
+
 namespace MonoidHom
 
 variable [Ring R] [Monoid M] [LinearOrder M] [MulLeftMono M] (f : R →* M)
@@ -70,8 +76,8 @@ theorem pow_le_pow_left {a b : R} (ha : 0 ≤ a) (hab : a ≤ b) : ∀ n, a ^ n 
 
 lemma pow_add_pow_le' (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ n + b ^ n ≤ 2 * (a + b) ^ n := by
   rw [two_mul]
-  exact add_le_add (pow_le_pow_left₀ ha (le_add_of_nonneg_right hb) _)
-    (pow_le_pow_left₀ hb (le_add_of_nonneg_left ha) _)
+  gcongr <;> try assumption
+  exacts [le_add_of_nonneg_right hb, le_add_of_nonneg_left ha]
 
 end OrderedSemiring
 
@@ -267,7 +273,7 @@ lemma Odd.strictMono_pow (hn : Odd n) : StrictMono fun a : R => a ^ n := by
   intro a b hab
   obtain ha | ha := le_total 0 a
   · exact pow_lt_pow_left₀ hab ha hn₀
-  obtain hb | hb := lt_or_le 0 b
+  obtain hb | hb := lt_or_ge 0 b
   · exact (hn.pow_nonpos ha).trans_lt (pow_pos hb _)
   obtain ⟨c, hac⟩ := exists_add_of_le ha
   obtain ⟨d, hbd⟩ := exists_add_of_le hb
@@ -281,6 +287,18 @@ lemma Odd.strictMono_pow (hn : Odd n) : StrictMono fun a : R => a ^ n := by
     _ = b ^ n + (c ^ n + d ^ n) := by rw [add_left_comm, hn.pow_add_pow_eq_zero hbd.symm, add_zero]
   refine lt_of_add_lt_add_right (a := a + b) ?_
   rwa [add_rotate', ← hbd, add_zero, add_left_comm, ← add_assoc, ← hac, zero_add]
+
+lemma Odd.pow_injective {n : ℕ} (hn : Odd n) : Injective (· ^ n : R → R) :=
+  hn.strictMono_pow.injective
+
+lemma Odd.pow_lt_pow {n : ℕ} (hn : Odd n) {a b : R} : a ^ n < b ^ n ↔ a < b :=
+  hn.strictMono_pow.lt_iff_lt
+
+lemma Odd.pow_le_pow {n : ℕ} (hn : Odd n) {a b : R} : a ^ n ≤ b ^ n ↔ a ≤ b :=
+  hn.strictMono_pow.le_iff_le
+
+lemma Odd.pow_inj {n : ℕ} (hn : Odd n) {a b : R} : a ^ n = b ^ n ↔ a = b :=
+  hn.pow_injective.eq_iff
 
 lemma sq_pos_iff {a : R} : 0 < a ^ 2 ↔ a ≠ 0 := even_two.pow_pos_iff two_ne_zero
 

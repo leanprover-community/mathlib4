@@ -29,13 +29,12 @@ Let `K` be a field, `A` be a `K`-algebra and `L` be a field extension of `K`.
 
 -/
 
+open Algebra Module Polynomial
+open scoped TensorProduct
+
 universe u
 
 variable (K A L : Type*) [Field K] [Field L] [CommRing A] [Algebra K A] [Algebra K L]
-
-open Algebra Polynomial
-
-open scoped TensorProduct
 
 namespace Algebra.FormallyUnramified
 
@@ -65,11 +64,9 @@ theorem bijective_of_isAlgClosed_of_isLocalRing
     rw [← IsLocalRing.jacobson_eq_maximalIdeal ⊥]
     · exact IsArtinianRing.isNilpotent_jacobson_bot
     · exact bot_ne_top
-  have : Function.Bijective (Algebra.ofId K (A ⧸ IsLocalRing.maximalIdeal A)) :=
-    ⟨RingHom.injective _, IsAlgClosed.algebraMap_surjective_of_isIntegral⟩
   let e : K ≃ₐ[K] A ⧸ IsLocalRing.maximalIdeal A := {
     __ := Algebra.ofId K (A ⧸ IsLocalRing.maximalIdeal A)
-    __ := Equiv.ofBijective _ this }
+    __ := Equiv.ofBijective _ IsAlgClosed.algebraMap_bijective_of_isIntegral }
   let e' : A ⊗[K] (A ⧸ IsLocalRing.maximalIdeal A) ≃ₐ[A] A :=
     (Algebra.TensorProduct.congr AlgEquiv.refl e.symm).trans (Algebra.TensorProduct.rid K A A)
   let f : A ⧸ IsLocalRing.maximalIdeal A →ₗ[A] A := e'.toLinearMap.comp (sec K A _)
@@ -113,7 +110,7 @@ theorem isField_of_isAlgClosed_of_isLocalRing
   rw [IsLocalRing.isField_iff_maximalIdeal_eq, eq_bot_iff]
   intro x hx
   obtain ⟨x, rfl⟩ := (bijective_of_isAlgClosed_of_isLocalRing K A).surjective x
-  show _ = 0
+  change _ = 0
   rw [← (algebraMap K A).map_zero]
   by_contra hx'
   exact hx ((isUnit_iff_ne_zero.mpr
@@ -209,7 +206,7 @@ theorem isSeparable : Algebra.IsSeparable K L := by
   have := of_comp K (separableClosure K L) L
   have := EssFiniteType.of_comp K (separableClosure K L) L
   ext
-  show _ ↔ _ ∈ (⊤ : Subring _)
+  change _ ↔ _ ∈ (⊤ : Subring _)
   rw [← range_eq_top_of_isPurelyInseparable (separableClosure K L) L]
   simp
 

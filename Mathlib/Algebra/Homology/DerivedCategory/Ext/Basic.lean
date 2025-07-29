@@ -3,7 +3,6 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.Basic
 import Mathlib.Algebra.Homology.DerivedCategory.FullyFaithful
 import Mathlib.CategoryTheory.Localization.SmallShiftedHom
 
@@ -17,7 +16,7 @@ the derived category of `C` are `w`-small. Under this assumption,
 we define `Ext.{w} X Y n : Type w` as shrunk versions of suitable
 types of morphisms in the derived category. In particular, when `C` has
 enough projectives or enough injectives, the property `HasExt.{v} C`
-shall hold (TODO).
+shall hold.
 
 Note: in certain situations, `w := v` shall be the preferred
 choice of universe (e.g. if `C := ModuleCat.{v} R` with `R : Type v`).
@@ -64,7 +63,7 @@ lemma hasExt_iff [HasDerivedCategory.{w'} C] :
     exact (small_congr ((shiftFunctorZero _ ℤ).app
       ((singleFunctor C 0).obj X)).homFromEquiv).1 (h X Y 0 n)
   · intro h X Y a b
-    obtain hab | hav := le_or_lt a b
+    obtain hab | hab := le_or_gt a b
     · refine (small_congr ?_).1 (h X Y (b - a) (by simpa))
       exact (Functor.FullyFaithful.ofFullyFaithful
         (shiftFunctor _ a)).homEquiv.trans
@@ -227,8 +226,8 @@ category given by `HasDerivedCategory.standard`: this definition is introduced
 only in order to prove properties of the abelian group structure on `Ext`-groups.
 Do not use this definition: use the more general `hom` instead. -/
 noncomputable abbrev hom' (α : Ext X Y n) :
-  letI := HasDerivedCategory.standard C
-  ShiftedHom ((singleFunctor C 0).obj X) ((singleFunctor C 0).obj Y) (n : ℤ) :=
+    letI := HasDerivedCategory.standard C
+    ShiftedHom ((singleFunctor C 0).obj X) ((singleFunctor C 0).obj Y) (n : ℤ) :=
   letI := HasDerivedCategory.standard C
   α.hom
 
@@ -417,10 +416,65 @@ noncomputable def extFunctor (n : ℕ) : Cᵒᵖ ⥤ C ⥤ AddCommGrp.{w} where
         all_goals omega }
   map_comp {X₁ X₂ X₃} f f' := by
     ext Y α
-    dsimp
-    rw [← Ext.mk₀_comp_mk₀]
-    apply Ext.comp_assoc
-    all_goals omega
+    simp
+
+section biproduct
+
+attribute [local simp] Ext.mk₀_add
+
+instance (X : C) (n : ℕ) : (extFunctorObj X n).Additive where
+
+instance (n : ℕ) : (extFunctor (C := C) n).Additive where
+
+lemma Ext.comp_sum {X Y Z : C} {p : ℕ} (α : Ext X Y p) {ι : Type*} [Fintype ι] {q : ℕ}
+    (β : ι → Ext Y Z q) {n : ℕ} (h : p + q = n) :
+    α.comp (∑ i, β i) h = ∑ i, α.comp (β i) h :=
+  map_sum (α.precomp Z h) _ _
+
+lemma Ext.sum_comp {X Y Z : C} {p : ℕ} {ι : Type*} [Fintype ι] (α : ι → Ext X Y p) {q : ℕ}
+    (β : Ext Y Z q) {n : ℕ} (h : p + q = n) :
+    (∑ i, α i).comp β h = ∑ i, (α i).comp β h :=
+  map_sum (β.postcomp X h) _ _
+
+lemma Ext.mk₀_sum {X Y : C} {ι : Type*} [Fintype ι] (f : ι → (X ⟶ Y)) :
+    mk₀ (∑ i, f i) = ∑ i, mk₀ (f i) :=
+  map_sum addEquiv₀.symm _ _
+
+/-- `Ext` commutes with biproducts in its first variable. -/
+noncomputable def Ext.biproductAddEquiv {J : Type*} [Fintype J] {X : J → C} {c : Bicone X}
+    (hc : c.IsBilimit) (Y : C) (n : ℕ) : Ext c.pt Y n ≃+ Π i, Ext (X i) Y n where
+  toFun e i := (Ext.mk₀ (c.ι i)).comp e (zero_add n)
+  invFun e := ∑ (i : J), (Ext.mk₀ (c.π i)).comp (e i) (zero_add n)
+  left_inv x := by
+    simp only [← comp_assoc_of_second_deg_zero, mk₀_comp_mk₀]
+    rw [← Ext.sum_comp, ← Ext.mk₀_sum, IsBilimit.total hc, mk₀_id_comp]
+  right_inv _ := by
+    ext i
+    simp only [Ext.comp_sum, ← comp_assoc_of_second_deg_zero, mk₀_comp_mk₀]
+    rw [Finset.sum_eq_single i _ (by simp), bicone_ι_π_self, mk₀_id_comp]
+    intro _ _ hij
+    rw [c.ι_π, dif_neg hij.symm, mk₀_zero, zero_comp]
+  map_add' _ _ := by
+    simp only [comp_add, Pi.add_def]
+
+/-- `Ext` commutes with biproducts in its second variable. -/
+noncomputable def Ext.addEquivBiproduct (X : C) {J : Type*} [Fintype J] {Y : J → C} {c : Bicone Y}
+    (hc : c.IsBilimit) (n : ℕ) : Ext X c.pt n ≃+ Π i, Ext X (Y i) n where
+  toFun e i := e.comp (Ext.mk₀ (c.π i)) (add_zero n)
+  invFun e := ∑ (i : J), (e i).comp (Ext.mk₀ (c.ι i)) (add_zero n)
+  left_inv _ := by
+    simp only [comp_assoc_of_second_deg_zero, mk₀_comp_mk₀, ← Ext.comp_sum,
+      ← Ext.mk₀_sum, IsBilimit.total hc, comp_mk₀_id]
+  right_inv _ := by
+    ext i
+    simp only [Ext.sum_comp, comp_assoc_of_second_deg_zero, mk₀_comp_mk₀]
+    rw [Finset.sum_eq_single i _ (by simp), bicone_ι_π_self, comp_mk₀_id]
+    intro _ _ hij
+    rw [c.ι_π, dif_neg hij, mk₀_zero, comp_zero]
+  map_add' _ _ := by
+    simp only [add_comp, Pi.add_def]
+
+end biproduct
 
 section ChangeOfUniverse
 

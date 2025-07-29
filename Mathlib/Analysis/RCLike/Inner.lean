@@ -22,7 +22,7 @@ from `RCLike.innerProductSpace`.
 -/
 
 open Finset Function Real
-open scoped BigOperators ComplexConjugate ComplexOrder ENNReal NNReal NNRat
+open scoped BigOperators ComplexConjugate ComplexOrder InnerProductSpace
 
 variable {ι κ 𝕜 : Type*} {E : ι → Type*} [Fintype ι]
 
@@ -33,7 +33,7 @@ section Pi
 variable [∀ i, SeminormedAddCommGroup (E i)] [∀ i, InnerProductSpace 𝕜 (E i)] {w : ι → ℝ}
 
 /-- Weighted inner product giving rise to the L2 norm, denoted as `⟪g, f⟫_[𝕜, w]`. -/
-def wInner (w : ι → ℝ) (f g : ∀ i, E i) : 𝕜 := ∑ i, w i • inner (f i) (g i)
+def wInner (w : ι → ℝ) (f g : ∀ i, E i) : 𝕜 := ∑ i, w i • ⟪f i, g i⟫_𝕜
 
 /-- The weight function making `wInner` into the compact inner product. -/
 noncomputable abbrev cWeight : ι → ℝ := Function.const _ (Fintype.card ι)⁻¹
@@ -96,8 +96,8 @@ lemma wInner_smul_right {𝕝 : Type*} [CommSemiring 𝕝] [StarRing 𝕝] [Alge
 lemma mul_wInner_left (c : 𝕜) (w : ι → ℝ) (f g : ∀ i, E i) :
     c * ⟪f, g⟫_[𝕜, w] = ⟪star c • f, g⟫_[𝕜, w] := by rw [wInner_smul_left, star_star, smul_eq_mul]
 
-lemma wInner_one_eq_sum (f g : ∀ i, E i) : ⟪f, g⟫_[𝕜] = ∑ i, inner (f i) (g i) := by simp [wInner]
-lemma wInner_cWeight_eq_expect (f g : ∀ i, E i) : ⟪f, g⟫ₙ_[𝕜] = 𝔼 i, inner (f i) (g i) := by
+lemma wInner_one_eq_sum (f g : ∀ i, E i) : ⟪f, g⟫_[𝕜] = ∑ i, ⟪f i, g i⟫_𝕜 := by simp [wInner]
+lemma wInner_cWeight_eq_expect (f g : ∀ i, E i) : ⟪f, g⟫ₙ_[𝕜] = 𝔼 i, ⟪f i, g i⟫_𝕜 := by
   simp [wInner, expect, smul_sum, ← NNRat.cast_smul_eq_nnqsmul ℝ]
 
 end Pi
@@ -124,11 +124,12 @@ lemma wInner_const_right (f : ι → 𝕜) (a : 𝕜) :
     ⟪f, const _ a⟫ₙ_[𝕜] = a * (𝔼 i, conj (f i)) := by simp [wInner_cWeight_eq_expect, mul_expect]
 
 lemma wInner_one_eq_inner (f g : ι → 𝕜) :
-    ⟪f, g⟫_[𝕜, 1] = inner ((WithLp.equiv 2 _).symm f) ((WithLp.equiv 2 _).symm g) := by
-  simp [wInner]
+    ⟪f, g⟫_[𝕜, 1] = ⟪WithLp.toLp 2 f, WithLp.toLp 2 g⟫_𝕜 := by
+  simp [PiLp.inner_apply, wInner]
 
 lemma inner_eq_wInner_one (f g : PiLp 2 fun _i : ι ↦ 𝕜) :
-    inner f g = ⟪WithLp.equiv 2 _ f, WithLp.equiv 2 _ g⟫_[𝕜, 1] := by simp [wInner]
+    ⟪f, g⟫_𝕜 = ⟪WithLp.ofLp f, WithLp.ofLp g⟫_[𝕜, 1] := by
+  simp [PiLp.inner_apply, wInner]
 
 lemma linearIndependent_of_ne_zero_of_wInner_one_eq_zero {f : κ → ι → 𝕜} (hf : ∀ k, f k ≠ 0)
     (hinner : Pairwise fun k₁ k₂ ↦ ⟪f k₁, f k₂⟫_[𝕜] = 0) : LinearIndependent 𝕜 f := by

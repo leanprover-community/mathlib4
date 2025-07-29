@@ -28,7 +28,7 @@ For a ring `R`:
 
 ## Notes
 
-The corresponding hom classes are defined in `Mathlib.Analysis.Order.Hom.Basic` to be used by
+The corresponding hom classes are defined in `Mathlib/Analysis/Order/Hom/Basic.lean` to be used by
 absolute values.
 
 ## References
@@ -142,7 +142,7 @@ theorem seminorm_one_eq_one_iff_ne_zero (hp : p 1 ≤ 1) : p 1 = 1 ↔ p ≠ 0 :
   refine
     ⟨fun h => ne_zero_iff.mpr ⟨1, by rw [h]; exact one_ne_zero⟩,
       fun h => ?_⟩
-  obtain hp0 | hp0 := (apply_nonneg p (1 : R)).eq_or_gt
+  obtain hp0 | hp0 := (apply_nonneg p (1 : R)).eq_or_lt'
   · exfalso
     refine h (ext fun x => (apply_nonneg _ _).antisymm' ?_)
     simpa only [hp0, mul_one, mul_zero] using map_mul_le_mul p x 1
@@ -264,7 +264,7 @@ instance [DecidableEq R] : Inhabited (RingNorm R) :=
 
 end NonUnitalRing
 
-/-- The `NormedRing` stucture on a ring `R` determined by a `RingNorm`. -/
+/-- The `NormedRing` structure on a ring `R` determined by a `RingNorm` -/
 -- See note |reducible non instances]
 abbrev toNormedRing [Ring R] (f : RingNorm R) : NormedRing R where
   __ := ‹Ring R›
@@ -389,7 +389,7 @@ def mulRingNormEquivAbsoluteValue : MulRingNorm R ≃ AbsoluteValue R ℝ where
     map_mul' := v.map_mul'
     eq_zero_of_map_eq_zero' x := (v.eq_zero' x).mp
   }
-  left_inv N := by ext1 x; simp only [MulRingSeminorm.toFun_eq_coe] -- `simp` does not work
+  left_inv N := by constructor
   right_inv v := by ext1 x; simp
 
 lemma mulRingNormEquivAbsoluteValue_apply (N : MulRingNorm R) (x : R) :
@@ -480,7 +480,7 @@ open Int
 lemma MulRingNorm.apply_natAbs_eq {R : Type*} [Ring R] (x : ℤ) (f : MulRingNorm R) : f (natAbs x) =
     f x := by
   obtain ⟨n, rfl | rfl⟩ := Int.eq_nat_or_neg x <;>
-  simp only [natAbs_neg, natAbs_ofNat, cast_neg, cast_natCast, map_neg_eq_map]
+  simp only [natAbs_neg, natAbs_natCast, cast_neg, cast_natCast, map_neg_eq_map]
 
 /-- The seminorm on a `SeminormedRing`, as a `RingSeminorm`. -/
 def SeminormedRing.toRingSeminorm (R : Type*) [SeminormedRing R] : RingSeminorm R where

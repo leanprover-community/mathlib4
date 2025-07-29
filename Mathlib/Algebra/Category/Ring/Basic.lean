@@ -307,6 +307,14 @@ instance hasForgetToSemiRingCat : HasForget₂ RingCat SemiRingCat where
     { obj := fun R ↦ SemiRingCat.of R
       map := fun f ↦ SemiRingCat.ofHom f.hom }
 
+/-- The forgetful functor from `RingCat` to `SemiRingCat` is fully faithful. -/
+def fullyFaithfulForget₂ToSemiRingCat :
+    (forget₂ RingCat SemiRingCat).FullyFaithful where
+  preimage f := ofHom f.hom
+
+instance : (forget₂ RingCat SemiRingCat).Full :=
+  fullyFaithfulForget₂ToSemiRingCat.full
+
 instance hasForgetToAddCommGrp : HasForget₂ RingCat AddCommGrp where
   forget₂ :=
     { obj := fun R ↦ AddCommGrp.of R
@@ -412,7 +420,7 @@ lemma hom_ext {R S : CommSemiRingCat} {f g : R ⟶ S} (hf : f.hom = g.hom) : f =
 
 @[simp]
 lemma hom_ofHom {R S : Type u} [CommSemiring R] [CommSemiring S] (f : R →+* S) :
-  (ofHom f).hom = f := rfl
+    (ofHom f).hom = f := rfl
 
 @[simp]
 lemma ofHom_hom {R S : CommSemiRingCat} (f : R ⟶ S) :
@@ -457,6 +465,14 @@ instance hasForgetToSemiRingCat : HasForget₂ CommSemiRingCat SemiRingCat where
   forget₂ :=
     { obj := fun R ↦ ⟨R⟩
       map := fun f ↦ ⟨f.hom⟩ }
+
+/-- The forgetful functor from `CommSemiRingCat` to `SemiRingCat` is fully faithful. -/
+def fullyFaithfulForget₂ToSemiRingCat :
+    (forget₂ CommSemiRingCat SemiRingCat).FullyFaithful where
+  preimage f := ofHom f.hom
+
+instance : (forget₂ CommSemiRingCat SemiRingCat).Full :=
+  fullyFaithfulForget₂ToSemiRingCat.full
 
 /-- The forgetful functor from commutative rings to (multiplicative) commutative monoids. -/
 instance hasForgetToCommMonCat : HasForget₂ CommSemiRingCat CommMonCat where
@@ -564,8 +580,7 @@ lemma hom_ext {R S : CommRingCat} {f g : R ⟶ S} (hf : f.hom = g.hom) : f = g :
   Hom.ext hf
 
 @[simp]
-lemma hom_ofHom {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) :
-  (ofHom f).hom = f := rfl
+lemma hom_ofHom {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : (ofHom f).hom = f := rfl
 
 @[simp]
 lemma ofHom_hom {R S : CommRingCat} (f : R ⟶ S) :
@@ -613,6 +628,14 @@ instance hasForgetToRingCat : HasForget₂ CommRingCat RingCat where
   forget₂ :=
     { obj := fun R ↦ RingCat.of R
       map := fun f ↦ RingCat.ofHom f.hom }
+
+/-- The forgetful functor from `CommRingCat` to `RingCat` is fully faithful. -/
+def fullyFaithfulForget₂ToRingCat :
+    (forget₂ CommRingCat RingCat).FullyFaithful where
+  preimage f := ofHom f.hom
+
+instance : (forget₂ CommRingCat RingCat).Full :=
+  fullyFaithfulForget₂ToRingCat.full
 
 @[simp] lemma forgetToRingCat_map_hom {R S : CommRingCat} (f : R ⟶ S) :
     ((forget₂ CommRingCat RingCat).map f).hom = f.hom :=
@@ -668,16 +691,16 @@ def commRingCatIsoToRingEquiv {R S : CommRingCat.{u}} (e : R ≅ S) : R ≃+* S 
   RingEquiv.ofHomInv e.hom.hom e.inv.hom (by ext; simp) (by ext; simp)
 
 @[simp] lemma semiRingCatIsoToRingEquiv_toRingHom {R S : SemiRingCat.{u}} (e : R ≅ S) :
-  (e.semiRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
+    (e.semiRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
 
 @[simp] lemma ringCatIsoToRingEquiv_toRingHom {R S : RingCat.{u}} (e : R ≅ S) :
-  (e.ringCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
+    (e.ringCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
 
 @[simp] lemma commSemiRingCatIsoToRingEquiv_toRingHom {R S : CommSemiRingCat.{u}} (e : R ≅ S) :
-  (e.commSemiRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
+    (e.commSemiRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
 
 @[simp] lemma commRingCatIsoToRingEquiv_toRingHom {R S : CommRingCat.{u}} (e : R ≅ S) :
-  (e.commRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
+    (e.commRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
 
 end CategoryTheory.Iso
 

@@ -24,6 +24,8 @@ admits a `MulDistribMulAction G Mˣ` structure, again with the obvious definitio
 * `Algebra.GroupWithZero.Action.Prod`
 -/
 
+assert_not_exists Ring
+
 variable {G₀ G M α β : Type*}
 
 namespace Units

@@ -197,6 +197,8 @@ noncomputable def MulAction.automorphize [Group α] [MulAction α β] (f : β �
   congr 1
   simp only [mul_smul]
 
+-- we can't use `to_additive`, because it tries to translate `•` into `+ᵥ`
+
 /-- Automorphization of a function into an `R`-`Module` distributes, that is, commutes with the
 `R`-scalar multiplication. -/
 lemma MulAction.automorphize_smul_left [Group α] [MulAction α β] (f : β → M)
@@ -218,7 +220,7 @@ lemma MulAction.automorphize_smul_left [Group α] [MulAction α β] (f : β → 
 
 /-- Automorphization of a function into an `R`-`Module` distributes, that is, commutes with the
 `R`-scalar multiplication. -/
-lemma AddAction.automorphize_smul_left [AddGroup α] [AddAction α β]  (f : β → M)
+lemma AddAction.automorphize_smul_left [AddGroup α] [AddAction α β] (f : β → M)
     (g : Quotient (AddAction.orbitRel α β) → R) :
     AddAction.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
       = g • (AddAction.automorphize f : Quotient (AddAction.orbitRel α β) → M) := by
@@ -234,8 +236,6 @@ lemma AddAction.automorphize_smul_left [AddGroup α] [AddAction α β]  (f : β 
   change ∑' a : α, g (π (a +ᵥ b)) • f (a +ᵥ b) = g (π b) • ∑' a : α, f (a +ᵥ b)
   simp_rw [H₁]
   exact tsum_const_smul'' _
-
-attribute [to_additive existing MulAction.automorphize_smul_left] AddAction.automorphize_smul_left
 
 section
 
@@ -269,8 +269,5 @@ lemma QuotientAddGroup.automorphize_smul_left (f : G → M) (g : G ⧸ Γ → R)
   AddAction.automorphize_smul_left f g
 
 end
-
-attribute [to_additive existing QuotientGroup.automorphize_smul_left]
-  QuotientAddGroup.automorphize_smul_left
 
 end automorphize

@@ -19,9 +19,9 @@ logarithm between `EReal` and `ℝ≥0∞` respect the operations. Note that the
 on `ℝ≥0∞` is enforced by measure theory. Subtraction, defined as `x - y = x + (-y)`, does not have
 nice properties but is sometimes convenient to have.
 
-There is also a `CommMonoidWithZero` structure on `EReal`, but `Mathlib.Data.EReal.Basic` only
+There is also a `CommMonoidWithZero` structure on `EReal`, but `Mathlib/Data/EReal/Basic.lean` only
 provides `MulZeroOneClass` because a proof of associativity by hand would have 125 cases.
-The `CommMonoidWithZero` instance is instead delivered in `Mathlib.Data.EReal.Inv`.
+The `CommMonoidWithZero` instance is instead delivered in `Mathlib/Data/EReal/Inv.lean`.
 
 We define `0 * x = x * 0 = 0` for any `x`, with the other cases defined non-ambiguously.
 This does not distribute with addition, as `⊥ = ⊥ + ⊤ = 1 * ⊥ + (-1) * ⊥ ≠ (1 - 1) * ⊥ = 0 * ⊥ = 0`.
@@ -93,17 +93,19 @@ theorem add_top_of_ne_bot {x : EReal} (h : x ≠ ⊥) : x + ⊤ = ⊤ := by
 if and only if `x` is not `⊥`. -/
 theorem add_top_iff_ne_bot {x : EReal} : x + ⊤ = ⊤ ↔ x ≠ ⊥ := by rw [add_comm, top_add_iff_ne_bot]
 
+protected theorem add_pos_of_nonneg_of_pos {a b : EReal} (ha : 0 ≤ a) (hb : 0 < b) : 0 < a + b := by
+  lift a to ℝ≥0∞ using ha
+  lift b to ℝ≥0∞ using hb.le
+  norm_cast at *
+  simp [hb]
+
+protected theorem add_pos_of_pos_of_nonneg {a b : EReal} (ha : 0 < a) (hb : 0 ≤ b) : 0 < a + b :=
+  add_comm a b ▸ EReal.add_pos_of_nonneg_of_pos hb ha
+
 /-- For any two extended real numbers `a` and `b`, if both `a` and `b` are greater than `0`,
 then their sum is also greater than `0`. -/
-theorem add_pos {a b : EReal} (ha : 0 < a) (hb : 0 < b) : 0 < a + b := by
-  induction a
-  · exfalso; exact not_lt_bot ha
-  · induction b
-    · exfalso; exact not_lt_bot hb
-    · norm_cast at *; exact Left.add_pos ha hb
-    · exact add_top_of_ne_bot (bot_lt_zero.trans ha).ne' ▸ hb
-  · rw [top_add_of_ne_bot (bot_lt_zero.trans hb).ne']
-    exact ha
+protected theorem add_pos {a b : EReal} (ha : 0 < a) (hb : 0 < b) : 0 < a + b :=
+  EReal.add_pos_of_nonneg_of_pos ha.le hb
 
 @[simp]
 theorem coe_add_top (x : ℝ) : (x : EReal) + ⊤ = ⊤ :=
@@ -136,7 +138,7 @@ theorem addLECancellable_coe (x : ℝ) : AddLECancellable (x : EReal)
 
 -- TODO: add `MulLECancellable.strictMono*` etc
 theorem add_lt_add_right_coe {x y : EReal} (h : x < y) (z : ℝ) : x + z < y + z :=
-  not_le.1 <| mt (addLECancellable_coe z).add_le_add_iff_right.1 h.not_le
+  not_le.1 <| mt (addLECancellable_coe z).add_le_add_iff_right.1 h.not_ge
 
 theorem add_lt_add_left_coe {x y : EReal} (h : x < y) (z : ℝ) : (z : EReal) + x < z + y := by
   simpa [add_comm] using add_lt_add_right_coe h z
@@ -270,7 +272,7 @@ theorem neg_strictAnti : StrictAnti (- · : EReal → EReal) :=
 
 /-- `-a ≤ b` if and only if `-b ≤ a` on `EReal`. -/
 protected theorem neg_le {a b : EReal} : -a ≤ b ↔ -b ≤ a := by
- rw [← neg_le_neg_iff, neg_neg]
+  rw [← neg_le_neg_iff, neg_neg]
 
 /-- If `-a ≤ b` then `-b ≤ a` on `EReal`. -/
 protected theorem neg_le_of_neg_le {a b : EReal} (h : -a ≤ b) : -b ≤ a := EReal.neg_le.mp h
@@ -294,6 +296,11 @@ protected theorem neg_lt_of_neg_lt {a b : EReal} (h : -a < b) : -b < a := neg_lt
 theorem lt_neg_comm {a b : EReal} : a < -b ↔ b < -a := by
   rw [← neg_lt_neg_iff, neg_neg]
 
+@[simp] protected theorem neg_lt_zero {a : EReal} : -a < 0 ↔ 0 < a := by rw [neg_lt_comm, neg_zero]
+@[simp] protected theorem neg_le_zero {a : EReal} : -a ≤ 0 ↔ 0 ≤ a := by rw [EReal.neg_le, neg_zero]
+@[simp] protected theorem neg_pos {a : EReal} : 0 < -a ↔ a < 0 := by rw [lt_neg_comm, neg_zero]
+@[simp] protected theorem neg_nonneg {a : EReal} : 0 ≤ -a ↔ a ≤ 0 := by rw [EReal.le_neg, neg_zero]
+
 /-- If `a < -b` then `b < -a` on `EReal`. -/
 protected theorem lt_neg_of_lt_neg {a b : EReal} (h : a < -b) : b < -a := lt_neg_comm.mp h
 
@@ -312,6 +319,31 @@ lemma neg_add {x y : EReal} (h1 : x ≠ ⊥ ∨ y ≠ ⊤) (h2 : x ≠ ⊤ ∨ y
 lemma neg_sub {x y : EReal} (h1 : x ≠ ⊥ ∨ y ≠ ⊥) (h2 : x ≠ ⊤ ∨ y ≠ ⊤) :
     - (x - y) = - x + y := by
   rw [sub_eq_add_neg, neg_add _ _, sub_eq_add_neg, neg_neg] <;> simp_all
+
+/-- Induction principle for `EReal`s splitting into cases `↑(x : ℝ≥0∞)` and `-↑(x : ℝ≥0∞)`.
+In the latter case, we additionally assume `0 < x`. -/
+@[elab_as_elim]
+def recENNReal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
+    (neg_coe : ∀ x : ℝ≥0∞, 0 < x → motive (-x)) (x : EReal) : motive x :=
+  if hx : 0 ≤ x then coe_toENNReal hx ▸ coe _
+  else
+    haveI H₁ : 0 < -x := by simpa using hx
+    haveI H₂ : x = -(-x).toENNReal := by rw [coe_toENNReal H₁.le, neg_neg]
+    H₂ ▸ neg_coe _ <| by positivity
+
+@[simp]
+theorem recENNReal_coe_ennreal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
+    (neg_coe : ∀ x : ℝ≥0∞, 0 < x → motive (-x)) (x : ℝ≥0∞) : recENNReal coe neg_coe x = coe x := by
+  suffices ∀ y : EReal, x = y → (recENNReal coe neg_coe y : motive y) ≍ coe x from
+    heq_iff_eq.mp (this x rfl)
+  intro y hy
+  have H₁ : 0 ≤ y := hy ▸ coe_ennreal_nonneg x
+  obtain rfl : y.toENNReal = x := by simp [← hy]
+  simp [recENNReal, H₁]
+
+proof_wanted recENNReal_neg_coe_ennreal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
+    (neg_coe : ∀ x : ℝ≥0∞, 0 < x → motive (-x)) {x : ℝ≥0∞} (hx : 0 < x) :
+    recENNReal coe neg_coe (-x) = neg_coe x hx
 
 /-!
 ### Subtraction
@@ -534,13 +566,13 @@ lemma coe_mul_top_of_pos {x : ℝ} (h : 0 < x) : (x : EReal) * ⊤ = ⊤ :=
   if_pos h
 
 lemma coe_mul_top_of_neg {x : ℝ} (h : x < 0) : (x : EReal) * ⊤ = ⊥ :=
-  (if_neg h.not_lt).trans (if_neg h.ne)
+  (if_neg h.not_gt).trans (if_neg h.ne)
 
 lemma top_mul_coe_of_pos {x : ℝ} (h : 0 < x) : (⊤ : EReal) * x = ⊤ :=
   if_pos h
 
 lemma top_mul_coe_of_neg {x : ℝ} (h : x < 0) : (⊤ : EReal) * x = ⊥ :=
-  (if_neg h.not_lt).trans (if_neg h.ne)
+  (if_neg h.not_gt).trans (if_neg h.ne)
 
 lemma mul_top_of_pos : ∀ {x : EReal}, 0 < x → x * ⊤ = ⊤
   | ⊥, h => absurd h not_lt_bot
@@ -570,13 +602,13 @@ lemma coe_mul_bot_of_pos {x : ℝ} (h : 0 < x) : (x : EReal) * ⊥ = ⊥ :=
   if_pos h
 
 lemma coe_mul_bot_of_neg {x : ℝ} (h : x < 0) : (x : EReal) * ⊥ = ⊤ :=
-  (if_neg h.not_lt).trans (if_neg h.ne)
+  (if_neg h.not_gt).trans (if_neg h.ne)
 
 lemma bot_mul_coe_of_pos {x : ℝ} (h : 0 < x) : (⊥ : EReal) * x = ⊥ :=
   if_pos h
 
 lemma bot_mul_coe_of_neg {x : ℝ} (h : x < 0) : (⊥ : EReal) * x = ⊤ :=
-  (if_neg h.not_lt).trans (if_neg h.ne)
+  (if_neg h.not_gt).trans (if_neg h.ne)
 
 lemma mul_bot_of_pos : ∀ {x : EReal}, 0 < x → x * ⊥ = ⊥
   | ⊥, h => absurd h not_lt_bot
@@ -639,8 +671,11 @@ lemma mul_nonneg_iff {a b : EReal} : 0 ≤ a * b ↔ 0 ≤ a ∧ 0 ≤ b ∨ a �
   rcases lt_trichotomy a 0 with (h | h | h) <;> rcases lt_trichotomy b 0 with (h' | h' | h')
     <;> simp only [h, h', true_or, true_and, or_true, and_true] <;> tauto
 
+protected lemma mul_nonneg {a b : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a * b :=
+  mul_nonneg_iff.mpr <| .inl ⟨ha, hb⟩
+
 /-- The product of two positive extended real numbers is positive. -/
-lemma mul_pos {a b : EReal} (ha : 0 < a) (hb : 0 < b) : 0 < a * b :=
+protected lemma mul_pos {a b : EReal} (ha : 0 < a) (hb : 0 < b) : 0 < a * b :=
   mul_pos_iff.mpr (Or.inl ⟨ha, hb⟩)
 
 /-- Induct on two ereals by performing case splits on the sign of one whenever the other is
@@ -772,38 +807,14 @@ lemma toENNReal_mul' {x y : EReal} (hy : 0 ≤ y) :
 
 lemma right_distrib_of_nonneg {a b c : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) :
     (a + b) * c = a * c + b * c := by
-  rcases eq_or_lt_of_le ha with (rfl | a_pos)
-  · simp
-  rcases eq_or_lt_of_le hb with (rfl | b_pos)
-  · simp
-  rcases lt_trichotomy c 0 with (c_neg | rfl | c_pos)
-  · induction c
-    · rw [mul_bot_of_pos a_pos, mul_bot_of_pos b_pos, mul_bot_of_pos (add_pos a_pos b_pos),
-        add_bot ⊥]
-    · induction a
-      · exfalso; exact not_lt_bot a_pos
-      · induction b
-        · norm_cast
-        · norm_cast; exact right_distrib _ _ _
-        · norm_cast
-          rw [add_top_of_ne_bot (coe_ne_bot _), top_mul_of_neg c_neg, add_bot]
-      · rw [top_add_of_ne_bot (ne_bot_of_gt b_pos), top_mul_of_neg c_neg, bot_add]
-    · exfalso; exact not_top_lt c_neg
-  · simp
-  · induction c
-    · exfalso; exact not_lt_bot c_pos
-    · induction a
-      · exfalso; exact not_lt_bot a_pos
-      · induction b
-        · norm_cast
-        · norm_cast; exact right_distrib _ _ _
-        · norm_cast
-          rw [add_top_of_ne_bot (coe_ne_bot _), top_mul_of_pos c_pos,
-            add_top_of_ne_bot (coe_ne_bot _)]
-      · rw [top_add_of_ne_bot (ne_bot_of_gt b_pos), top_mul_of_pos c_pos,
-          top_add_of_ne_bot (ne_bot_of_gt (mul_pos b_pos c_pos))]
-    · rw [mul_top_of_pos a_pos, mul_top_of_pos b_pos, mul_top_of_pos (add_pos a_pos b_pos),
-        top_add_top]
+  lift a to ℝ≥0∞ using ha
+  lift b to ℝ≥0∞ using hb
+  cases c using recENNReal with
+  | coe c => exact_mod_cast add_mul a b c
+  | neg_coe c hc =>
+    simp only [mul_neg, ← coe_ennreal_add, ← coe_ennreal_mul, add_mul]
+    rw [coe_ennreal_add, EReal.neg_add (.inl (coe_ennreal_ne_bot _)) (.inr (coe_ennreal_ne_bot _)),
+      sub_eq_add_neg]
 
 lemma left_distrib_of_nonneg {a b c : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) :
     c * (a + b) = c * a + c * b := by
@@ -813,7 +824,7 @@ lemma left_distrib_of_nonneg {a b c : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) :
 lemma left_distrib_of_nonneg_of_ne_top {x : EReal} (hx_nonneg : 0 ≤ x)
     (hx_ne_top : x ≠ ⊤) (y z : EReal) :
     x * (y + z) = x * y + x * z := by
-  cases hx_nonneg.eq_or_gt with
+  cases hx_nonneg.eq_or_lt' with
   | inl hx0 => simp [hx0]
   | inr hx0 =>
   lift x to ℝ using ⟨hx_ne_top, hx0.ne_bot⟩
@@ -835,3 +846,52 @@ lemma nsmul_eq_mul (n : ℕ) (x : EReal) : n • x = n * x := by
     convert (EReal.right_distrib_of_nonneg _ _).symm <;> simp
 
 end EReal
+
+namespace Mathlib.Meta.Positivity
+
+open Lean Meta Qq Function
+
+/-- Extension for the `positivity` tactic: sum of two `EReal`s. -/
+@[positivity (_ + _ : EReal)]
+def evalERealAdd : PositivityExt where eval {u α} zα pα e := do
+  match u, α, e with
+  | 0, ~q(EReal), ~q($a + $b) =>
+    assertInstancesCommute
+    match ← core zα pα a with
+    | .positive pa =>
+      match (← core zα pα b).toNonneg with
+      | some pb => pure (.positive q(EReal.add_pos_of_pos_of_nonneg $pa $pb))
+      | _ => pure .none
+    | .nonnegative pa =>
+      match ← core zα pα b with
+      | .positive pb => pure (.positive q(EReal.add_pos_of_nonneg_of_pos $pa $pb))
+      | .nonnegative pb => pure (.nonnegative q(add_nonneg $pa $pb))
+      | _ => pure .none
+    | _ => pure .none
+  | _, _, _ => throwError "not a sum of 2 `EReal`s"
+
+/-- Extension for the `positivity` tactic: product of two `EReal`s. -/
+@[positivity (_ * _ : EReal)]
+def evalERealMul : PositivityExt where eval {u α} zα pα e := do
+  match u, α, e with
+  | 0, ~q(EReal), ~q($a * $b) =>
+    assertInstancesCommute
+    match ← core zα pα a with
+    | .positive pa =>
+      match ← core zα pα b with
+      | .positive pb => pure <| .positive q(EReal.mul_pos $pa $pb)
+      | .nonnegative pb => pure <| .nonnegative q(EReal.mul_nonneg (le_of_lt $pa) $pb)
+      | .nonzero pb => pure <| .nonzero q(mul_ne_zero (ne_of_gt $pa) $pb)
+      | _ => pure .none
+    | .nonnegative pa =>
+      match (← core zα pα b).toNonneg with
+      | .some pb => pure (.nonnegative q(EReal.mul_nonneg $pa $pb))
+      | .none => pure .none
+    | .nonzero pa =>
+      match (← core zα pα b).toNonzero with
+      | .some pb => pure (.nonzero q(mul_ne_zero $pa $pb))
+      | none => pure .none
+    | _ => pure .none
+  | _, _, _ => throwError "not a product of 2 `EReal`s"
+
+end Mathlib.Meta.Positivity

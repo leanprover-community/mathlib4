@@ -3,10 +3,10 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.GroupTheory.Abelianization
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.GroupTheory.Abelianization.Defs
 import Mathlib.GroupTheory.Commutator.Finite
 import Mathlib.GroupTheory.Transfer
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Schreier's Lemma
@@ -159,7 +159,7 @@ theorem rank_le_index_mul_rank [hG : Group.FG G] [FiniteIndex H] :
   obtain ⟨S, hS₀, hS⟩ := Group.rank_spec G
   obtain ⟨T, hT₀, hT⟩ := exists_finset_card_le_mul H hS
   calc
-    Group.rank H ≤ #T := Group.rank_le H hT
+    Group.rank H ≤ #T := Group.rank_le hT
     _ ≤ H.index * #S := hT₀
     _ = H.index * Group.rank G := congr_arg (H.index * ·) hS₀
 

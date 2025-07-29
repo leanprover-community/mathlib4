@@ -130,7 +130,7 @@ lemma norm_eq_one_iff_ne_zero_of_discrete {x : 𝕜} : ‖x‖ = 1 ↔ x ≠ 0 :
 @[simp]
 lemma norm_le_one_of_discrete
     (x : 𝕜) : ‖x‖ ≤ 1 := by
-  rcases eq_or_ne x 0 with rfl|hx
+  rcases eq_or_ne x 0 with rfl | hx
   · simp
   · simp [norm_eq_one_iff_ne_zero_of_discrete.mpr hx]
 
@@ -288,7 +288,7 @@ def NontriviallyNormedField.ofNormNeOne {𝕜 : Type*} [h' : NormedField 𝕜]
   toNormedField := h'
   non_trivial := by
     rcases h with ⟨x, hx, hx1⟩
-    rcases hx1.lt_or_lt with hlt | hlt
+    rcases hx1.lt_or_gt with hlt | hlt
     · use x⁻¹
       rw [norm_inv]
       exact (one_lt_inv₀ (norm_pos_iff.2 hx)).2 hlt

@@ -15,9 +15,9 @@ a morphism of `φ : S ⟶ F.op ⋙ R` of presheaves of commutative rings
 over categories `C` and `D` that are related by a functor `F : C ⥤ D`.
 We formalize the notion of universal derivation.
 
-Geometrically, if `f : X ⟶ S` is a morphisms of schemes (or more generally
+Geometrically, if `f : X ⟶ S` is a morphism of schemes (or more generally
 a morphism of commutative ringed spaces), we would like to apply
-these definitions in the case where `F` is the pullback functors from
+these definitions in the case where `F` is the pullback functor from
 open subsets of `S` to open subsets of `X` and `φ` is the
 morphism $O_S ⟶ f_* O_X$.
 
@@ -88,7 +88,7 @@ def postcomp (f : M ⟶ N) : N.Derivation φ where
 satisfy so that the presheaf of modules `M` can be considered as the presheaf of
 (relative) differentials of a presheaf of commutative rings `φ : S ⟶ F.op ⋙ R`. -/
 structure Universal where
-  /-- An absolyte derivation of `M'` descends as a morphism `M ⟶ M'`. -/
+  /-- An absolute derivation of `M'` descends as a morphism `M ⟶ M'`. -/
   desc {M' : PresheafOfModules (R ⋙ forget₂ CommRingCat RingCat)}
     (d' : M'.Derivation φ) : M ⟶ M'
   fac {M' : PresheafOfModules (R ⋙ forget₂ CommRingCat RingCat)}
@@ -213,10 +213,7 @@ noncomputable def isUniversal' : (derivation' φ').Universal :=
           dsimp
           rw [ModuleCat.Derivation.desc_d, Derivation'.app_apply]
           erw [relativeDifferentials'_map_d φ' f]
-          rw [ModuleCat.Derivation.desc_d]
-          dsimp
-          rw [Derivation.d_map]
-          dsimp) })
+          simp) })
     (fun {M'} d' ↦ by
       ext X b
       apply ModuleCat.Derivation.desc_d)
@@ -224,7 +221,7 @@ noncomputable def isUniversal' : (derivation' φ').Universal :=
       ext1 X
       exact CommRingCat.KaehlerDifferential.ext (Derivation.congr_d h))
 
-instance : HasDifferentials (F := 𝟭 D) φ' := ⟨_, _,  ⟨isUniversal' φ'⟩⟩
+instance : HasDifferentials (F := 𝟭 D) φ' := ⟨_, _, ⟨isUniversal' φ'⟩⟩
 
 end DifferentialsConstruction
 

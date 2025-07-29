@@ -72,7 +72,7 @@ theorem HasProd.update (hf : HasProd f a₁) (b : β) [DecidableEq β] (a : α) 
   convert (hasProd_ite_eq b (a / f b)).mul hf with b'
   by_cases h : b' = b
   · rw [h, update_self]
-    simp [eq_self_iff_true, if_true, sub_add_cancel]
+    simp
   · simp only [h, update_of_ne, if_false, Ne, one_mul, not_false_iff]
 
 @[to_additive]
@@ -222,7 +222,7 @@ theorem cauchySeq_finset_iff_prod_vanishing :
     (CauchySeq fun s : Finset β ↦ ∏ b ∈ s, f b) ↔
       ∀ e ∈ 𝓝 (1 : α), ∃ s : Finset β, ∀ t, Disjoint t s → (∏ b ∈ t, f b) ∈ e := by
   classical
-  simp only [CauchySeq, cauchy_map_iff, and_iff_right atTop_neBot, prod_atTop_atTop_eq,
+  simp only [CauchySeq, cauchy_map_iff, prod_atTop_atTop_eq,
     uniformity_eq_comap_nhds_one α, tendsto_comap_iff, Function.comp_def, atTop_neBot, true_and]
   rw [tendsto_atTop']
   constructor
@@ -304,7 +304,7 @@ protected theorem Multipliable.mulIndicator (hf : Multipliable f) (s : Set β) :
 theorem Multipliable.comp_injective {i : γ → β} (hf : Multipliable f) (hi : Injective i) :
     Multipliable (f ∘ i) := by
   simpa only [Set.mulIndicator_range_comp] using
-    (hi.multipliable_iff (fun x hx ↦ Set.mulIndicator_of_not_mem hx _)).2
+    (hi.multipliable_iff (fun x hx ↦ Set.mulIndicator_of_notMem hx _)).2
     (hf.mulIndicator (Set.range i))
 
 @[to_additive]
@@ -385,7 +385,7 @@ theorem Multipliable.tendsto_cofinite_one (hf : Multipliable f) : Tendsto f cofi
   intro e he
   rw [Filter.mem_map]
   rcases hf.vanishing he with ⟨s, hs⟩
-  refine s.eventually_cofinite_nmem.mono fun x hx ↦ ?_
+  refine s.eventually_cofinite_notMem.mono fun x hx ↦ ?_
   · simpa using hs {x} (disjoint_singleton_left.2 hx)
 
 @[to_additive]
@@ -419,7 +419,7 @@ theorem tprod_const [T2Space G] (a : G) : ∏' _ : β, a = a ^ (Nat.card β) := 
     rw [tprod_eq_prod (s := univ) (fun x hx ↦ (hx (mem_univ x)).elim)]
     simp only [prod_const, Nat.card_eq_fintype_card, Fintype.card]
   · simp only [Nat.card_eq_zero_of_infinite, pow_zero]
-    rcases eq_or_ne a 1 with rfl|ha
+    rcases eq_or_ne a 1 with rfl | ha
     · simp
     · apply tprod_eq_one_of_not_multipliable
       simpa [multipliable_const_iff] using ha

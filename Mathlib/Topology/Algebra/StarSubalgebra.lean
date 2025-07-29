@@ -53,9 +53,6 @@ theorem isClosedEmbedding_inclusion {S₁ S₂ : StarSubalgebra R A} (h : S₁ �
           · intro _ h'
             apply h h' ⟩ }
 
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_inclusion := isClosedEmbedding_inclusion
-
 variable [IsTopologicalSemiring A] [ContinuousStar A]
 variable [TopologicalSpace B] [Semiring B] [Algebra R B] [StarRing B]
 
@@ -187,12 +184,13 @@ def elemental (x : A) : StarSubalgebra R A :=
 
 namespace elemental
 
-@[aesop safe apply (rule_sets := [SetLike])]
+@[simp, aesop safe (rule_sets := [SetLike])]
 theorem self_mem (x : A) : x ∈ elemental R x :=
   le_topologicalClosure _ (self_mem_adjoin_singleton R x)
 
 @[deprecated (since := "2024-11-05")] alias _root_.elementalStarAlgebra.self_mem := self_mem
 
+@[simp, aesop safe (rule_sets := [SetLike])]
 theorem star_self_mem (x : A) : star x ∈ elemental R x :=
   star_mem <| self_mem R x
 
@@ -240,9 +238,6 @@ theorem isClosedEmbedding_coe (x : A) : IsClosedEmbedding ((↑) : elemental R x
 
 @[deprecated (since := "2024-11-05")]
 alias _root_.elementalStarAlgebra.isClosedEmbedding_coe := isClosedEmbedding_coe
-@[deprecated (since := "2024-10-20")]
-alias _root_.elementalStarAlgebra.closedEmbedding_coe := isClosedEmbedding_coe
-
 @[elab_as_elim]
 theorem induction_on {x y : A}
     (hy : y ∈ elemental R x) {P : (u : A) → u ∈ elemental R x → Prop}

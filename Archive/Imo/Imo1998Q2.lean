@@ -106,10 +106,7 @@ theorem A_fibre_over_contestant (c : C) :
     (Finset.univ.filter fun p : JudgePair J => p.Agree r c ∧ p.Distinct) =
       ((A r).filter fun a : AgreedTriple C J => a.contestant = c).image Prod.snd := by
   ext p
-  simp only [A, Finset.mem_univ, Finset.mem_filter, Finset.mem_image, exists_prop]
-  constructor
-  · rintro ⟨_, h₂⟩; refine ⟨(c, p), ?_⟩; tauto
-  · intro h; aesop
+  simp [A]
 
 open scoped Classical in
 theorem A_fibre_over_contestant_card (c : C) :
@@ -174,9 +171,9 @@ theorem judge_pairs_card_lower_bound {z : ℕ} (hJ : Fintype.card J = 2 * z + 1)
   let y := (Finset.univ.filter fun j => ¬r c j).card
   have h : (Finset.univ.filter fun p : JudgePair J => p.Agree r c).card = x * x + y * y := by
     simp [x, y, ← Finset.filter_product_card]
-  rw [h]; apply Int.le_of_ofNat_le_ofNat; simp only [Int.ofNat_add, Int.ofNat_mul]
+  rw [h]; apply Int.le_of_ofNat_le_ofNat; simp only [Int.natCast_add, Int.natCast_mul]
   apply norm_bound_of_odd_sum
-  suffices x + y = 2 * z + 1 by simp [← Int.ofNat_add, this]
+  suffices x + y = 2 * z + 1 by simp [← Int.natCast_add, this]
   rw [Finset.filter_card_add_filter_neg_card_eq_card, ← hJ, Finset.card_univ]
 
 open scoped Classical in
@@ -231,7 +228,7 @@ theorem imo1998_q2 [Fintype J] [Fintype C] (a b k : ℕ) (hC : Fintype.card C = 
   -- We are now essentially done; we just need to bash `h` into exactly the right shape.
   have hl : k * ((2 * z + 1) * (2 * z + 1) - (2 * z + 1)) = k * (2 * (2 * z + 1)) * z := by
     have : 0 < 2 * z + 1 := by aesop
-    simp only [mul_comm, add_mul, one_mul, nonpos_iff_eq_zero, add_tsub_cancel_right]; ring
+    simp only [mul_comm, add_mul, one_mul, add_tsub_cancel_right]; ring
   have hr : 2 * z * z * a = 2 * z * a * z := by ring
   rw [hl, hr] at h
   rcases z with - | z
