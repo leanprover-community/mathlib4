@@ -247,7 +247,8 @@ instance infinite_of_nonempty (σ : Type*) (R : Type*) [Nonempty σ] [CommSemiri
 instance [CommSemiring R] [NoZeroDivisors R] : NoZeroDivisors (MvPolynomial σ R) :=
   inferInstanceAs (NoZeroDivisors (AddMonoidAlgebra ..))
 
-instance [CommSemiring R] [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero (MvPolynomial σ R) :=
+instance [CommSemiring R] [IsCancelAdd R] [IsCancelMulZero R] :
+    IsCancelMulZero (MvPolynomial σ R) :=
   inferInstanceAs (IsCancelMulZero (AddMonoidAlgebra ..))
 
 /-- The multivariate polynomial ring over an integral domain is an integral domain. -/
