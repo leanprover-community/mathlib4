@@ -627,13 +627,52 @@ lemma no_config_3_2 (c : Config 3 2) : False := by
         Finset.filter_insert, Finset.filter_singleton] at hsunny
       simp [nsunnyl₁, nsunnyl₂'] at hsunny
       have : #({l ∈ c.ls \ {l₁, l₂'} | Sunny l}) ≤ 1 :=
-      calc
-        _ ≤ #(c.ls \ {l₁, l₂'}) := Finset.card_filter_le _ Sunny
+      calc _ ≤ #(c.ls \ {l₁, l₂'}) := Finset.card_filter_le _ Sunny
         _ = #(c.ls \ {l₂'}) - 1 := by rw [Finset.sdiff_insert,
               Finset.card_erase_of_mem (by simp [this, hl₁])]
         _ = #c.ls - 1 - 1 := by rw [Finset.sdiff_singleton_eq_erase, Finset.card_erase_of_mem hl₂']
         _ = 1 := by rw [c.card]
       omega
+
+lemma no_config_without_vert_horiz_diag_contr_line {n k} (hn : 3 ≤ n) (c : Config (n + 1) k)
+    (hvert : line[ℝ, !₂[1, 0], !₂[1, 1]] ∉ c.ls)
+    (hhoriz : line[ℝ, !₂[0, 1], !₂[1, 1]] ∉ c.ls)
+    (hdiag : line[ℝ, !₂[(n : ℝ) + 1, 1], !₂[1, (n : ℝ) + 1]] ∉ c.ls)
+    {m : ℕ} (hm : 1 ≤ m) (hm' : m < n)
+    {l} (hl : l ∈ c.ls) (meml : !₂[1, (m : ℝ)] ∈ l) (hQ : !₂[(n : ℝ), 1] ∉ l) :
+    False := by
+  -- find point `∈ l` on bottom line
+  obtain ⟨m₂, hm₂⟩ : ∃ m₂ : ℕ, !₂[(m₂ : ℝ), 1] ∈ l := sorry
+  have : m₂ > 1 := sorry
+  -- find point `∈ l` on main diag
+  obtain ⟨m₃, hm₃⟩ : ∃ m₃ : ℕ, !₂[(m₃ : ℝ), n + 2 - m₃] ∈ l := sorry
+  have : m₃ > 1 := sorry
+  suffices h : finrank ℝ l.direction = 2
+  · have := c.rank l hl
+    omega
+  have : m₂ < n := sorry
+  have : m₃ < n := sorry
+  apply l.finrank_eq_two_of_ne hm₂ meml hm₃
+  simp
+  sorry
+
+lemma no_config_without_vert_horiz_diag {n k} (hn : 3 ≤ n) (c : Config (n + 1) k)
+    (hvert : line[ℝ, !₂[1, 0], !₂[1, 1]] ∉ c.ls)
+    (hhoriz : line[ℝ, !₂[0, 1], !₂[1, 1]] ∉ c.ls)
+    (hdiag : line[ℝ, !₂[(n : ℝ) + 1, 1], !₂[1, (n : ℝ) + 1]] ∉ c.ls) : False := by
+  have ⟨l₁, hl₁, meml₁⟩ := c.cover 1 (n - 1)
+  by_cases hQ : !₂[(n : ℝ), 1] ∈ l₁
+  · have ⟨l₂, hl₂, meml₂⟩ := c.cover 1 2
+    norm_cast at meml₂ meml₁
+    apply no_config_without_vert_horiz_diag_contr_line hn c hvert hhoriz hdiag
+      (by grind) (by grind) hl₂ meml₂
+    intro h
+    -- TODO bring to contradiction by counting argument
+    have : l₁ ≠ l₂ := sorry
+    sorry
+  · norm_cast at meml₁
+    exact no_config_without_vert_horiz_diag_contr_line hn c hvert hhoriz hdiag
+      (by grind) (by grind) hl₁ meml₁ hQ
 
 theorem result (n : Set.Ici 3) :
     {k | ∃ lines : Finset (AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2))),
@@ -664,11 +703,18 @@ theorem result (n : Set.Ici 3) :
       simp only [Set.mem_setOf_eq] at h
       rcases h with ⟨ls, card, rank, cover, sunny⟩
       let c : Config (n + 1) k := ⟨ls, card, rank, cover, sunny⟩
+      simp only [← ih, Set.mem_setOf_eq]
       by_cases hvert : line[ℝ, !₂[1, 0], !₂[1, 1]] ∈ c.ls
       · have c := Config.restrict_vert c hvert
-        simp only [← ih, Set.mem_setOf_eq]
         exact ⟨c.ls, c.card, c.rank, @c.cover, c.sunny⟩
-      · sorry
+      · by_cases hhoriz : line[ℝ, !₂[0, 1], !₂[1, 1]] ∈ c.ls
+        · have c := Config.restrict_horiz c hhoriz
+          exact ⟨c.ls, c.card, c.rank, @c.cover, c.sunny⟩
+        · by_cases hdiag : line[ℝ, !₂[(n : ℝ) + 1, 1], !₂[1, (n : ℝ) + 1]] ∈ c.ls
+          · have c := Config.restrict_diag hn c hdiag
+            exact ⟨c.ls, c.card, c.rank, @c.cover, c.sunny⟩
+          · exfalso
+            exact no_config_without_vert_horiz_diag hn c hvert hhoriz hdiag
     · intro h
       rw [← ih] at h
       simp only [Set.mem_setOf_eq] at h ⊢
