@@ -164,7 +164,7 @@ variable (A)
 def SMulWithZero.compHom (f : ZeroHom M₀' M₀) : SMulWithZero M₀' A where
   smul := (f · • ·)
   smul_zero m := smul_zero (f m)
-  zero_smul m := by show (f 0) • m = 0; rw [map_zero, zero_smul]
+  zero_smul m := by change (f 0) • m = 0; rw [map_zero, zero_smul]
 
 end Zero
 
@@ -233,7 +233,7 @@ protected abbrev Function.Injective.mulActionWithZero (f : ZeroHom A' A) (hf : I
 /-- Pushforward a `MulActionWithZero` structure along a surjective zero-preserving homomorphism. -/
 -- See note [reducible non-instances]
 protected abbrev Function.Surjective.mulActionWithZero (f : ZeroHom A A') (hf : Surjective f)
-   (smul : ∀ (a : M₀) (b), f (a • b) = a • f b) : MulActionWithZero M₀ A' :=
+    (smul : ∀ (a : M₀) (b), f (a • b) = a • f b) : MulActionWithZero M₀ A' :=
   { hf.mulAction f smul, hf.smulWithZero f smul with }
 
 variable (A)
@@ -241,8 +241,8 @@ variable (A)
 /-- Compose a `MulActionWithZero` with a `MonoidWithZeroHom`, with action `f r' • m` -/
 def MulActionWithZero.compHom (f : M₀' →*₀ M₀) : MulActionWithZero M₀' A where
   __ := SMulWithZero.compHom A f.toZeroHom
-  mul_smul r s m := by show f (r * s) • m = f r • f s • m; simp [mul_smul]
-  one_smul m := by show f 1 • m = m; simp
+  mul_smul r s m := by change f (r * s) • m = f r • f s • m; simp [mul_smul]
+  one_smul m := by change f 1 • m = m; simp
 
 end MonoidWithZero
 
@@ -275,13 +275,6 @@ variable [AddZeroClass A] [DistribSMul M A]
 
 theorem smul_add (a : M) (b₁ b₂ : A) : a • (b₁ + b₂) = a • b₁ + a • b₂ :=
   DistribSMul.smul_add _ _ _
-
-instance AddMonoidHom.smulZeroClass [AddZeroClass B] : SMulZeroClass M (B →+ A) where
-  smul r f :=
-    { toFun := fun a => r • (f a)
-      map_zero' := by simp only [map_zero, smul_zero]
-      map_add' := fun x y => by simp only [map_add, smul_add] }
-  smul_zero _ := ext fun _ => smul_zero _
 
 /-- Pullback a distributive scalar multiplication along an injective additive monoid
 homomorphism.

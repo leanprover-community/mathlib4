@@ -96,8 +96,7 @@ def PrespectralSpace.opensEquiv [PrespectralSpace X] :
   invFun I := ⨆ U ∈ I, U.toOpens
   left_inv U := by
     apply le_antisymm
-    · simp only [Set.mem_setOf_eq, LowerSet.carrier_eq_coe, LowerSet.coe_mk,
-        CompactOpens.coe_sup, id_eq, iSup_le_iff]
+    · simp only [iSup_le_iff]
       exact fun _ ↦ id
     · intro x hxU
       obtain ⟨V, ⟨h₁, h₂⟩, hxV, hVU⟩ := isTopologicalBasis.exists_subset_of_mem_open hxU U.2
@@ -106,13 +105,13 @@ def PrespectralSpace.opensEquiv [PrespectralSpace X] :
   right_inv I := by
     ext U
     dsimp
-    show U.toOpens ≤ _ ↔ _
+    change U.toOpens ≤ _ ↔ _
     refine ⟨fun H ↦ ?_, fun h ↦ le_iSup₂ (f := fun U (h : U ∈ I) ↦ U.toOpens) U h⟩
     simp only [← SetLike.coe_subset_coe, Opens.iSup_mk, Opens.carrier_eq_coe, Opens.coe_mk] at H
     obtain ⟨s, hsI, hs, hU⟩ := U.isCompact.elim_finite_subcover_image (fun U _ ↦ U.2) H
     exact I.lower (a := hs.toFinset.sup fun i ↦ i) (by simpa [← SetLike.coe_subset_coe]) (by simpa)
   map_rel_iff' {U V} := by
-    show (∀ (W : CompactOpens X), (W : Set X) ⊆ U → (W : Set X) ⊆ V) ↔ U ≤ V
+    change (∀ (W : CompactOpens X), (W : Set X) ⊆ U → (W : Set X) ⊆ V) ↔ U ≤ V
     refine ⟨?_, fun H W ↦ (le_trans · H)⟩
     intro H x hxU
     obtain ⟨W, ⟨h₁, h₂⟩, hxW, hWU⟩ := isTopologicalBasis.exists_subset_of_mem_open hxU U.2

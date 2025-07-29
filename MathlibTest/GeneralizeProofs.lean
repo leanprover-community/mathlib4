@@ -189,3 +189,27 @@ example (P : True → Sort*) (p : True → P (by decide)) : True := by
   exact h
 
 end
+
+/-!
+Extracting proofs from under let bindings
+-/
+/--
+trace: pf✝ : ∀ (n : ℕ), 0 < n + 1
+⊢ have n := 0;
+  ↑⟨0, ⋯⟩ = 0
+-/
+#guard_msgs in
+example : have n := 0; (⟨0, id (by simp)⟩ : Fin (n + 1)).val = 0 := by
+  generalize_proofs
+  trace_state
+  rfl
+/--
+trace: pf✝ : ∀ (n : ℕ), 0 < n + 1
+⊢ have n := 0;
+  ↑⟨0, ⋯⟩ = 0
+-/
+#guard_msgs in
+example : have n := 0; (⟨0, id (by simp)⟩ : Fin (n + 1)).val = 0 := by
+  generalize_proofs
+  trace_state
+  rfl

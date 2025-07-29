@@ -506,7 +506,7 @@ theorem isOpen_prod_iff' {s : Set X} {t : Set Y} :
       · simpa only [fst_image_prod _ st.2] using isOpenMap_fst _ H
       · simpa only [snd_image_prod st.1 t] using isOpenMap_snd _ H
     · intro H
-      simp only [st.1.ne_empty, st.2.ne_empty, not_false_iff, or_false] at H
+      simp only [st.1.ne_empty, st.2.ne_empty, or_false] at H
       exact H.1.prod H.2
 
 theorem isQuotientMap_fst [Nonempty Y] : IsQuotientMap (Prod.fst : X × Y → X) :=
@@ -897,7 +897,7 @@ def sumCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : X ⊕ Y ≃ₜ X' ⊕ Y
 
 @[simp]
 lemma sumCongr_symm (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') :
-  (sumCongr h₁ h₂).symm = sumCongr h₁.symm h₂.symm := rfl
+    (sumCongr h₁ h₂).symm = sumCongr h₁.symm h₂.symm := rfl
 
 @[simp]
 theorem sumCongr_refl : sumCongr (.refl X) (.refl Y) = .refl (X ⊕ Y) := by

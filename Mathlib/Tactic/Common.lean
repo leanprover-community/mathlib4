@@ -107,6 +107,7 @@ import Mathlib.Tactic.Variable
 import Mathlib.Tactic.Widget.Calc
 import Mathlib.Tactic.Widget.CongrM
 import Mathlib.Tactic.Widget.Conv
+import Mathlib.Tactic.Widget.LibraryRewrite
 import Mathlib.Tactic.WLOG
 import Mathlib.Util.AssertExists
 import Mathlib.Util.CountHeartbeats
@@ -131,6 +132,7 @@ import hierarchy.
 
 section Hint
 
+register_hint grind
 register_hint trivial
 register_hint tauto
 register_hint split

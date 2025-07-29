@@ -46,7 +46,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = #s) :
   -- Get rid of the easy case `m = 0`
   obtain rfl | m_pos := m.eq_zero_or_pos
   · refine ⟨⊥, by simp, ?_, by simpa [Finset.filter_true_of_mem] using hs.symm⟩
-    simp only [le_zero_iff, card_eq_zero, mem_biUnion, exists_prop, mem_filter, id,
+    simp only [le_zero_iff, card_eq_zero, mem_biUnion, mem_filter, id,
       and_assoc, sdiff_eq_empty_iff_subset, subset_iff]
     exact fun x hx a ha =>
       ⟨{a}, mem_map_of_mem _ (P.le hx ha), singleton_subset_iff.2 ha, mem_singleton_self _⟩
@@ -54,7 +54,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = #s) :
   induction s using Finset.strongInduction generalizing a b with | H s ih => _
   -- If `a = b = 0`, then `s = ∅` and we can partition into zero parts
   by_cases hab : a = 0 ∧ b = 0
-  · simp only [hab.1, hab.2, add_zero, zero_mul, eq_comm, card_eq_zero, Finset.bot_eq_empty] at hs
+  · simp only [hab.1, hab.2, add_zero, zero_mul, eq_comm, card_eq_zero] at hs
     subst hs
     -- Porting note: to synthesize `Finpartition ∅`, `have` is required
     have : P = Finpartition.empty _ := Unique.eq_default (α := Finpartition ⊥) P
@@ -110,9 +110,9 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = #s) :
   · simp only [mem_insert, forall_eq_or_imp, extend_parts, and_iff_left hR₁, htn, hn]
     exact ite_eq_or_eq _ _ _
   · conv in _ ∈ _ => rw [← insert_erase hu₁]
-    simp only [and_imp, mem_insert, forall_eq_or_imp, Ne, extend_parts]
+    simp only [mem_insert, forall_eq_or_imp, extend_parts]
     refine ⟨?_, fun x hx => (card_le_card ?_).trans <| hR₂ x ?_⟩
-    · simp only [filter_insert, if_pos htu, biUnion_insert, mem_erase, id]
+    · simp only [filter_insert, if_pos htu, biUnion_insert, id]
       obtain rfl | hut := eq_or_ne u t
       · rw [sdiff_eq_empty_iff_subset.2 subset_union_left]
         exact bot_le
