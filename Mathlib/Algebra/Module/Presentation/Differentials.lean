@@ -124,7 +124,7 @@ open differentials in
 equations `pres.differentialsRelations.Solution` when `pres` is a presentation
 of `S` as an `R`-algebra. -/
 noncomputable def differentialsSolution :
-    pres.differentialsRelations.Solution (Ω[S⁄R]) where
+    pres.differentialsRelations.Solution Ω[S⁄R] where
   var g := D _ _ (pres.val g)
   linearCombination_var_relation r := by
     simp only [differentialsRelations_G, LinearMap.coe_comp, LinearEquiv.coe_coe,
@@ -155,7 +155,7 @@ lemma differentialsSolution_isPresentation :
 
 /-- The presentation of the `S`-module `Ω[S⁄R]` deduced from a presentation
 of `S` as a `R`-algebra. -/
-noncomputable def differentials : Module.Presentation S (Ω[S⁄R]) where
+noncomputable def differentials : Module.Presentation S Ω[S⁄R] where
   G := ι
   R := σ
   relation := _
