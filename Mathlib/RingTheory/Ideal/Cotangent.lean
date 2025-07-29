@@ -79,12 +79,12 @@ theorem toCotangent_range : LinearMap.range I.toCotangent = ⊤ := Submodule.ran
 theorem cotangent_subsingleton_iff : Subsingleton I.Cotangent ↔ IsIdempotentElem I := by
   constructor
   · intro H
-    refine (pow_two I).symm.trans (le_antisymm (Ideal.pow_le_self two_ne_zero) ?_)
+    refine ⟨(pow_two I).symm.trans (le_antisymm (Ideal.pow_le_self two_ne_zero) ?_)⟩
     exact fun x hx => (I.toCotangent_eq_zero ⟨x, hx⟩).mp (Subsingleton.elim _ _)
   · exact fun e =>
       ⟨fun x y =>
         Quotient.inductionOn₂' x y fun x y =>
-          I.toCotangent_eq.mpr <| ((pow_two I).trans e).symm ▸ I.sub_mem x.prop y.prop⟩
+          I.toCotangent_eq.mpr <| ((pow_two I).trans e.eq).symm ▸ I.sub_mem x.prop y.prop⟩
 
 /-- The inclusion map `I ⧸ I ^ 2` to `R ⧸ I ^ 2`. -/
 def cotangentToQuotientSquare : I.Cotangent →ₗ[R] R ⧸ I ^ 2 :=

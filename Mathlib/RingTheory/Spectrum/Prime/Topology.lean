@@ -993,7 +993,7 @@ lemma basicOpen_injOn_isIdempotentElem :
     rwa [mul_comm, of_not_not ne']
   have : x ∉ Ideal.span {y} := fun mem ↦ ne' <| by
     obtain ⟨r, rfl⟩ := Ideal.mem_span_singleton'.mp mem
-    rw [mul_assoc, hy]
+    rw [mul_assoc, hy.eq]
   have ⟨p, prime, le, notMem⟩ := Ideal.exists_le_prime_notMem_of_isIdempotentElem _ x hx this
   exact ne_of_mem_of_not_mem' (a := ⟨p, prime⟩) notMem
     (not_not.mpr <| p.span_singleton_le_iff_mem.mp le) eq
@@ -1403,11 +1403,11 @@ lemma isIdempotentElemEquivClopens_symm_compl (s : Clopens (PrimeSpectrum R)) :
   map_compl ..
 
 lemma isIdempotentElemEquivClopens_symm_top :
-    isIdempotentElemEquivClopens.symm ⊤ = ⟨(1 : R), .one⟩ :=
+    isIdempotentElemEquivClopens.symm ⊤ = ⟨(1 : R), .one _⟩ :=
   map_top _
 
 lemma isIdempotentElemEquivClopens_symm_bot :
-    isIdempotentElemEquivClopens.symm ⊥ = ⟨(0 : R), .zero⟩ :=
+    isIdempotentElemEquivClopens.symm ⊥ = ⟨(0 : R), .zero _⟩ :=
   map_bot _
 
 lemma isIdempotentElemEquivClopens_symm_sup (s₁ s₂ : Clopens (PrimeSpectrum R)) :
