@@ -600,7 +600,7 @@ export ComplementedLattice (exists_isCompl)
 
 -- This was previously a global instance,
 -- but it doesn't appear to be used and has been implicated in slow typeclass resolutions.
-def Subsingleton.instComplementedLattice
+lemma Subsingleton.instComplementedLattice
     [Lattice α] [BoundedOrder α] [Subsingleton α] : ComplementedLattice α := by
   refine ⟨fun a ↦ ⟨⊥, disjoint_bot_right, ?_⟩⟩
   rw [Subsingleton.elim ⊥ ⊤]

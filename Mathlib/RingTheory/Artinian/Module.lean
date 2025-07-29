@@ -131,7 +131,7 @@ theorem LinearEquiv.isArtinian_iff (f : M ≃ₗ[R] P) : IsArtinian R M ↔ IsAr
 
 -- This was previously a global instance,
 -- but it doesn't appear to be used and has been implicated in slow typeclass resolutions.
-def isArtinian_of_finite [Finite M] : IsArtinian R M :=
+lemma isArtinian_of_finite [Finite M] : IsArtinian R M :=
   ⟨Finite.wellFounded_of_trans_of_irrefl _⟩
 
 -- Porting note: elab_as_elim can only be global and cannot be changed on an imported decl

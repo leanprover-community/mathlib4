@@ -135,7 +135,7 @@ instance Monoid.fg_of_addMonoid_fg {M : Type*} [AddMonoid M] [AddMonoid.FG M] :
 -- This was previously a global instance,
 -- but it doesn't appear to be used and has been implicated in slow typeclass resolutions.
 @[to_additive]
-def Monoid.fg_of_finite [Finite M] : Monoid.FG M := by
+lemma Monoid.fg_of_finite [Finite M] : Monoid.FG M := by
   cases nonempty_fintype M
   exact ⟨⟨Finset.univ, by rw [Finset.coe_univ]; exact Submonoid.closure_univ⟩⟩
 

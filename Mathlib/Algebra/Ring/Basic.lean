@@ -204,7 +204,7 @@ instance Subsingleton.to_isCancelMulZero [Mul α] [Zero α] [Subsingleton α] : 
 -- This was previously a global instance,
 -- but it has been implicated in slow typeclass resolutions,
 -- so we scope it to the `Subsingleton` namespace.
-def Subsingleton.to_noZeroDivisors [Mul α] [Zero α] [Subsingleton α] : NoZeroDivisors α where
+lemma Subsingleton.to_noZeroDivisors [Mul α] [Zero α] [Subsingleton α] : NoZeroDivisors α where
   eq_zero_or_eq_zero_of_mul_eq_zero _ := .inl (Subsingleton.eq_zero _)
 
 scoped[Subsingleton] attribute [instance] Subsingleton.to_noZeroDivisors

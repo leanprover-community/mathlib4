@@ -157,7 +157,7 @@ instance (priority := 100) of_subsingleton [Subsingleton N] : Module.Free R N :=
 
 -- This was previously a global instance,
 -- but it doesn't appear to be used and has been implicated in slow typeclass resolutions.
-def of_subsingleton' [Subsingleton R] : Module.Free R N :=
+lemma of_subsingleton' [Subsingleton R] : Module.Free R N :=
   letI := Module.subsingleton R N
   Module.Free.of_subsingleton R N
 
