@@ -23,6 +23,8 @@ formulas whose realization is a property of an `MvPolynomial`
 
 -/
 
+assert_not_exists Cardinal
+
 variable {ι κ R : Type*}
 
 namespace FirstOrder
@@ -78,8 +80,8 @@ theorem lift_genericPolyMap [DecidableEq κ] [CommRing R]
       MvPolynomial.eval (f ∘ Sum.inr)
         (((mvPolynomialSupportLEEquiv monoms).symm
           (f ∘ Sum.inl)).1 i) := by
-  simp only [genericPolyMap, Finsupp.prod_pow, map_sum, map_mul, lift_of, support,
-    mvPolynomialSupportLEEquiv, coeff, map_prod, Finset.sum_filter, MvPolynomial.eval_eq,
+  simp only [genericPolyMap, map_sum, map_mul, lift_of, support,
+    mvPolynomialSupportLEEquiv, coeff, Finset.sum_filter, MvPolynomial.eval_eq,
     ne_eq, Function.comp, Equiv.coe_fn_symm_mk, Finsupp.coe_mk]
   conv_rhs => rw [← Finset.sum_attach]
   refine Finset.sum_congr rfl ?_

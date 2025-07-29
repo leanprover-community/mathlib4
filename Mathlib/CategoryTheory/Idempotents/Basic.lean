@@ -75,7 +75,7 @@ theorem isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent :
               · intro m hm
                 rw [Fork.ι_ofι] at hm
                 rw [← hm]
-                simp only [← hm, assoc, h₁]
+                simp only [assoc, h₁]
                 exact (comp_id m).symm }⟩
   · intro h
     refine ⟨?_⟩
@@ -84,7 +84,7 @@ theorem isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent :
     refine ⟨equalizer (𝟙 X) p, equalizer.ι (𝟙 X) p,
       equalizer.lift p (show p ≫ 𝟙 X = p ≫ p by rw [hp, comp_id]), ?_, equalizer.lift_ι _ _⟩
     ext
-    simp only [assoc, limit.lift_π, Eq.ndrec, id_eq, eq_mpr_eq_cast, Fork.ofι_pt,
+    simp only [assoc, limit.lift_π, Fork.ofι_pt,
       Fork.ofι_π_app, id_comp]
     rw [← equalizer.condition, comp_id]
 
@@ -138,9 +138,7 @@ theorem split_iff_of_iso {X X' : C} (φ : X ≅ X') (p : X ⟶ X) (p' : X' ⟶ X
   · apply split_imp_of_iso φ.symm p' p
     rw [← comp_id p, ← φ.hom_inv_id]
     slice_rhs 2 3 => rw [hpp']
-    slice_rhs 1 2 => erw [φ.inv_hom_id]
-    simp only [id_comp]
-    rfl
+    simp
 
 theorem Equivalence.isIdempotentComplete {D : Type*} [Category D] (ε : C ≌ D)
     (h : IsIdempotentComplete C) : IsIdempotentComplete D := by

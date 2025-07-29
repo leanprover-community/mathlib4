@@ -132,7 +132,7 @@ lemma isMaximal_span_singleton_eps [DivisionRing K] :
     (Ideal.span {ε} : Ideal K[ε]).IsMaximal := by
   refine ⟨?_, fun I hI ↦ ?_⟩
   · simp [ne_eq, Ideal.eq_top_iff_one, Ideal.mem_span_singleton', TrivSqZeroExt.ext_iff]
-  · rcases ideal_trichotomy I with rfl|rfl|rfl <;>
+  · rcases ideal_trichotomy I with rfl | rfl | rfl <;>
     first | simp at hI | simp
 
 lemma maximalIdeal_eq_span_singleton_eps [Field K] :
@@ -141,7 +141,7 @@ lemma maximalIdeal_eq_span_singleton_eps [Field K] :
 
 instance [DivisionRing K] : IsPrincipalIdealRing K[ε] where
   principal I := by
-    rcases ideal_trichotomy I with rfl|rfl|rfl
+    rcases ideal_trichotomy I with rfl | rfl | rfl
     · exact bot_isPrincipal
     · exact ⟨_, rfl⟩
     · exact top_isPrincipal
@@ -163,7 +163,7 @@ lemma exists_mul_left_or_mul_right [DivisionRing K] (a b : K[ε]) :
   · refine ⟨ε, Or.inr ?_⟩
     simp [hx]
   refine ⟨inl ((fst x)⁻¹ * fst y), ?_⟩
-  simp [← inl_mul, ← mul_assoc, mul_inv_cancel₀ hx]
+  simp [← mul_assoc, mul_inv_cancel₀ hx]
 
 end Field
 

@@ -419,7 +419,7 @@ lemma linearGrowthSup_comp_le (hu : ∃ᶠ n in atTop, 0 ≤ u n)
 
 lemma _root_.Monotone.linearGrowthInf_nonneg (h : Monotone u) (h' : u ≠ ⊥) :
     0 ≤ linearGrowthInf u := by
-  simp only [ne_eq, funext_iff, Pi.zero_apply, not_forall] at h'
+  simp only [ne_eq, funext_iff, not_forall] at h'
   obtain ⟨m, hm⟩ := h'
   have m_n : ∀ᶠ n in atTop, u m ≤ u n := eventually_atTop.2 ⟨m, fun _ hb ↦ h hb⟩
   rcases eq_or_ne (u m) ⊤ with hm' | hm'
@@ -434,7 +434,7 @@ lemma _root_.Monotone.linearGrowthSup_nonneg (h : Monotone u) (h' : u ≠ ⊥) :
 
 lemma linearGrowthInf_comp_nonneg (h : Monotone u) (h' : u ≠ ⊥) (hv : Tendsto v atTop atTop) :
     0 ≤ linearGrowthInf (u ∘ v) := by
-  simp only [ne_eq, funext_iff, Pi.zero_apply, not_forall] at h'
+  simp only [ne_eq, funext_iff, not_forall] at h'
   obtain ⟨m, hum⟩ := h'
   have um_uvn : ∀ᶠ n in atTop, u m ≤ (u ∘ v) n := by
     apply (eventually_map (P := fun n : ℕ ↦ u m ≤ u n)).2

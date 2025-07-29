@@ -3,6 +3,7 @@ Copyright (c) 2020 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
+import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Data.Set.Inclusion
 import Mathlib.Tactic.Common
@@ -83,7 +84,7 @@ class AddSubgroupClass (S : Type*) (G : outParam Type*) [SubNegMonoid G] [SetLik
 
 attribute [to_additive] InvMemClass SubgroupClass
 
-attribute [aesop safe apply (rule_sets := [SetLike])] inv_mem neg_mem
+attribute [aesop 90% (rule_sets := [SetLike])] inv_mem neg_mem
 
 @[to_additive (attr := simp)]
 theorem inv_mem_iff {S G} [InvolutiveInv G] {_ : SetLike S G} [InvMemClass S G] {H : S}
@@ -93,12 +94,12 @@ theorem inv_mem_iff {S G} [InvolutiveInv G] {_ : SetLike S G} [InvMemClass S G] 
 variable {M S : Type*} [DivInvMonoid M] [SetLike S M] [hSM : SubgroupClass S M] {H K : S}
 
 /-- A subgroup is closed under division. -/
-@[to_additive (attr := aesop safe apply (rule_sets := [SetLike]))
+@[to_additive (attr := aesop 90% (rule_sets := [SetLike]))
   "An additive subgroup is closed under subtraction."]
 theorem div_mem {x y : M} (hx : x ∈ H) (hy : y ∈ H) : x / y ∈ H := by
   rw [div_eq_mul_inv]; exact mul_mem hx (inv_mem hy)
 
-@[to_additive (attr := aesop safe apply (rule_sets := [SetLike]))]
+@[to_additive (attr := aesop 90% (rule_sets := [SetLike]))]
 theorem zpow_mem {x : M} (hx : x ∈ K) : ∀ n : ℤ, x ^ n ∈ K
   | (n : ℕ) => by
     rw [zpow_natCast]
@@ -128,8 +129,7 @@ namespace InvMemClass
 
 /-- A subgroup of a group inherits an inverse. -/
 @[to_additive "An additive subgroup of an `AddGroup` inherits an inverse."]
-instance inv {G : Type u_1} {S : Type u_2} [Inv G] [SetLike S G]
-  [InvMemClass S G] {H : S} : Inv H :=
+instance inv {G S : Type*} [Inv G] [SetLike S G] [InvMemClass S G] {H : S} : Inv H :=
   ⟨fun a => ⟨a⁻¹, inv_mem a.2⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
@@ -154,8 +154,7 @@ theorem subset_union {H K L : S} : (H : Set G) ⊆ K ∪ L ↔ H ≤ K ∨ H ≤
 
 /-- A subgroup of a group inherits a division -/
 @[to_additive "An additive subgroup of an `AddGroup` inherits a subtraction."]
-instance div {G : Type u_1} {S : Type u_2} [DivInvMonoid G] [SetLike S G]
-  [SubgroupClass S G] {H : S} : Div H :=
+instance div {G S : Type*} [DivInvMonoid G] [SetLike S G] [SubgroupClass S G] {H : S} : Div H :=
   ⟨fun a b => ⟨a / b, div_mem a.2 b.2⟩⟩
 
 /-- An additive subgroup of an `AddGroup` inherits an integer scaling. -/
@@ -227,7 +226,7 @@ theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = (x : G) ^ n :=
 /-- The inclusion homomorphism from a subgroup `H` contained in `K` to `K`. -/
 @[to_additive "The inclusion homomorphism from an additive subgroup `H` contained in `K` to `K`."]
 def inclusion {H K : S} (h : H ≤ K) : H →* K :=
-  MonoidHom.mk' (fun x => ⟨x, h x.prop⟩) fun _ _=> rfl
+  MonoidHom.mk' (fun x => ⟨x, h x.prop⟩) fun _ _ => rfl
 
 @[to_additive (attr := simp)]
 theorem inclusion_self (x : H) : inclusion le_rfl x = x := by
@@ -347,7 +346,6 @@ theorem mem_toSubmonoid (K : Subgroup G) (x : G) : x ∈ K.toSubmonoid ↔ x ∈
 
 @[to_additive]
 theorem toSubmonoid_injective : Function.Injective (toSubmonoid : Subgroup G → Submonoid G) :=
-  -- fun p q h => SetLike.ext'_iff.2 (show _ from SetLike.ext'_iff.1 h)
   fun p q h => by
     have := SetLike.ext'_iff.1 h
     rw [coe_toSubmonoid, coe_toSubmonoid] at this
@@ -554,7 +552,7 @@ lemma subtype_injective (s : Subgroup G) :
   Subtype.coe_injective
 
 @[to_additive (attr := simp)]
-theorem coe_subtype : ⇑ H.subtype = ((↑) : H → G) :=
+theorem coe_subtype : ⇑H.subtype = ((↑) : H → G) :=
   rfl
 
 @[deprecated (since := "2025-02-18")]
@@ -588,9 +586,9 @@ theorem subtype_comp_inclusion {H K : Subgroup G} (hH : H ≤ K) :
 
 open Set
 
-/-- A subgroup is normal if whenever `n ∈ H`, then `g * n * g⁻¹ ∈ H` for every `g : G` -/
+/-- A subgroup `H` is normal if whenever `n ∈ H`, then `g * n * g⁻¹ ∈ H` for every `g : G` -/
 structure Normal : Prop where
-  /-- `N` is closed under conjugation -/
+  /-- `H` is closed under conjugation -/
   conj_mem : ∀ n, n ∈ H → ∀ g : G, g * n * g⁻¹ ∈ H
 
 attribute [class] Normal
@@ -599,9 +597,9 @@ end Subgroup
 
 namespace AddSubgroup
 
-/-- An AddSubgroup is normal if whenever `n ∈ H`, then `g + n - g ∈ H` for every `g : G` -/
+/-- An AddSubgroup `H` is normal if whenever `n ∈ H`, then `g + n - g ∈ H` for every `g : A` -/
 structure Normal (H : AddSubgroup A) : Prop where
-  /-- `N` is closed under additive conjugation -/
+  /-- `H` is closed under additive conjugation -/
   conj_mem : ∀ n, n ∈ H → ∀ g : A, g + n + -g ∈ H
 
 attribute [to_additive] Subgroup.Normal
@@ -616,7 +614,7 @@ variable {H : Subgroup G}
 
 @[to_additive]
 instance (priority := 100) normal_of_comm {G : Type*} [CommGroup G] (H : Subgroup G) : H.Normal :=
-  ⟨by simp [mul_comm, mul_left_comm]⟩
+  ⟨by simp [mul_comm]⟩
 
 namespace Normal
 

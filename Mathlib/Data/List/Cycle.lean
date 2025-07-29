@@ -148,15 +148,14 @@ theorem next_ne_head_ne_getLast (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : 
     (hx : x ≠ getLast (y :: l) (cons_ne_nil _ _)) :
     next (y :: l) x h = next l x (by simpa [hy] using h) := by
   rw [next, next, nextOr_cons_of_ne _ _ _ _ hy, nextOr_eq_nextOr_of_mem_of_ne]
-  · rwa [getLast_cons] at hx
-    exact ne_nil_of_mem (by assumption)
+  · assumption
   · rwa [getLast_cons] at hx
 
 theorem next_cons_concat (y : α) (hy : x ≠ y) (hx : x ∉ l)
     (h : x ∈ y :: l ++ [x] := mem_append_right _ (mem_singleton_self x)) :
     next (y :: l ++ [x]) x h = y := by
   rw [next, nextOr_concat]
-  · rfl
+  · simp
   · simp [hy, hx]
 
 theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ y)
@@ -182,7 +181,7 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
     rw [← getElem?_eq_getElem, dropLast_eq_take, getElem?_take_of_lt, getElem?_cons_succ,
       getElem?_eq_getElem, Option.some_inj] at hk'
     · rw [get_eq_getElem, hk']
-      simp only [getLast_eq_getElem, length_cons, Nat.succ_eq_add_one, Nat.succ_sub_succ_eq_sub,
+      simp only [getLast_eq_getElem, length_cons, Nat.succ_sub_succ_eq_sub,
         Nat.sub_zero, get_eq_getElem, getElem_cons_succ]
     simpa using hk
 
@@ -204,7 +203,7 @@ theorem prev_cons_cons_eq (z : α) (h : x ∈ x :: z :: l) :
 theorem prev_cons_cons_of_ne' (y z : α) (h : x ∈ y :: z :: l) (hy : x ≠ y) (hz : x = z) :
     prev (y :: z :: l) x h = y := by
   cases l
-  · simp [prev, hy, hz]
+  · simp [prev, hz]
   · rw [prev, dif_neg hy, if_pos hz]
 
 theorem prev_cons_cons_of_ne (y : α) (h : x ∈ y :: x :: l) (hy : x ≠ y) :
@@ -254,7 +253,7 @@ theorem next_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
     rcases hi'.eq_or_lt with (hi' | hi')
     · subst hi'
       rw [next_getLast_cons]
-      · simp [hi', get]
+      · simp
       · rw [getElem_cons_succ]; exact get_mem _ _
       · exact hx'
       · simp [getLast_eq_getElem]
@@ -274,10 +273,8 @@ theorem next_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
         simp at this; simp [this] at hi'
       · rw [getElem_cons_succ]; exact get_mem _ _
 
-@[deprecated (since := "2025-02-015")] alias next_get := next_getElem
+@[deprecated (since := "2025-02-15")] alias next_get := next_getElem
 
--- Unused variable linter incorrectly reports that `h` is unused here.
-set_option linter.unusedVariables false in
 theorem prev_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
     prev l l[i] (get_mem _ _) =
       (l[(i + (l.length - 1)) % l.length]'(Nat.mod_lt _ (by omega))) :=
@@ -342,7 +339,7 @@ theorem prev_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
   · have : (n + 1 + length tl) % (length tl + 1) = n := by
       rw [length_cons] at hn
       rw [add_assoc, add_comm 1, Nat.add_mod_right, Nat.mod_eq_of_lt hn]
-    simp only [length_cons, Nat.succ_sub_succ_eq_sub, Nat.sub_zero, Nat.succ_eq_add_one, this]
+    simp only [length_cons, Nat.succ_sub_succ_eq_sub, Nat.sub_zero, this]
 
 theorem next_prev (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
     next l (prev l x hx) (prev_mem _ _ _) = x := by
@@ -547,7 +544,7 @@ theorem nontrivial_coe_nodup_iff {l : List α} (hl : l.Nodup) :
   rcases l with (_ | ⟨hd, _ | ⟨hd', tl⟩⟩)
   · simp
   · simp
-  · simp only [mem_cons, exists_prop, mem_coe_iff, List.length, Ne, Nat.succ_le_succ_iff,
+  · simp only [mem_cons, mem_coe_iff, List.length, Ne, Nat.succ_le_succ_iff,
       Nat.zero_le, iff_true]
     refine ⟨hd, hd', ?_, by simp⟩
     simp only [not_or, mem_cons, nodup_cons] at hl

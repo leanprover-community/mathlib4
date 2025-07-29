@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Topology.Algebra.Constructions
 import Mathlib.Topology.Bases
 import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Topology.UniformSpace.Basic
+import Mathlib.Topology.UniformSpace.DiscreteUniformity
 
 /-!
 # Theory of Cauchy filters in uniform spaces. Complete uniform spaces. Totally bounded subsets.
@@ -43,7 +43,7 @@ theorem cauchy_iff' {f : Filter α} :
 
 theorem cauchy_iff {f : Filter α} : Cauchy f ↔ NeBot f ∧ ∀ s ∈ 𝓤 α, ∃ t ∈ f, t ×ˢ t ⊆ s :=
   cauchy_iff'.trans <| by
-    simp only [subset_def, Prod.forall, mem_prod_eq, and_imp, id, forall_mem_comm]
+    simp only [subset_def, Prod.forall, mem_prod_eq, and_imp, forall_mem_comm]
 
 lemma cauchy_iff_le {l : Filter α} [hl : l.NeBot] :
     Cauchy l ↔ l ×ˢ l ≤ 𝓤 α := by
@@ -288,8 +288,8 @@ theorem Filter.HasBasis.cauchySeq_iff {γ} [Nonempty β] [SemilatticeSup β] {u 
     CauchySeq u ↔ ∀ i, p i → ∃ N, ∀ m, N ≤ m → ∀ n, N ≤ n → (u m, u n) ∈ s i := by
   rw [cauchySeq_iff_tendsto, ← prod_atTop_atTop_eq]
   refine (atTop_basis.prod_self.tendsto_iff h).trans ?_
-  simp only [exists_prop, true_and, MapsTo, preimage, subset_def, Prod.forall, mem_prod_eq,
-    mem_setOf_eq, mem_Ici, and_imp, Prod.map, @forall_swap (_ ≤ _) β]
+  simp only [true_and, Prod.forall, mem_prod_eq,
+    mem_Ici, and_imp, Prod.map, @forall_swap (_ ≤ _) β]
 
 theorem Filter.HasBasis.cauchySeq_iff' {γ} [Nonempty β] [SemilatticeSup β] {u : β → α}
     {p : γ → Prop} {s : γ → Set (α × α)} (H : (𝓤 α).HasBasis p s) :
@@ -441,6 +441,46 @@ theorem IsClosed.isComplete [CompleteSpace α] {s : Set α} (h : IsClosed s) : I
   fun _ cf fs =>
   let ⟨x, hx⟩ := CompleteSpace.complete cf
   ⟨x, isClosed_iff_clusterPt.mp h x (cf.left.mono (le_inf hx fs)), hx⟩
+
+namespace DiscreteUniformity
+
+variable [DiscreteUniformity α]
+
+/-- A Cauchy filter in a discrete uniform space is contained in the principal filter
+of a point. -/
+theorem eq_pure_of_cauchy {f : Filter α} (hf : Cauchy f) : ∃ x : α, f = pure x := by
+  rcases hf with ⟨f_ne_bot, f_le⟩
+  simp only [DiscreteUniformity.eq_principal_idRel, le_principal_iff, mem_prod_iff] at f_le
+  obtain ⟨S, ⟨hS, ⟨T, ⟨hT, H⟩⟩⟩⟩ := f_le
+  obtain ⟨x, rfl⟩ := eq_singleton_left_of_prod_subset_idRel (f_ne_bot.nonempty_of_mem hS)
+    (Filter.nonempty_of_mem hT) H
+  exact ⟨x, f_ne_bot.le_pure_iff.mp <| le_pure_iff.mpr hS⟩
+
+@[deprecated (since := "2025-03-23")]
+alias _root_.UniformSpace.DiscreteUnif.cauchy_le_pure := eq_pure_of_cauchy
+
+/-- The discrete uniformity makes a space complete. -/
+instance : CompleteSpace α where
+  complete {f} hf := by
+    obtain ⟨x, rfl⟩ := eq_pure_of_cauchy hf
+    exact ⟨x, pure_le_nhds x⟩
+
+variable {X}
+
+/-- A constant to which a Cauchy filter in a discrete uniform space converges. -/
+noncomputable def cauchyConst {f : Filter α} (hf : Cauchy f) : α :=
+  (eq_pure_of_cauchy hf).choose
+
+@[deprecated (since := "2025-03-23")]
+alias _root_.UniformSpace.DiscreteUnif.cauchyConst := cauchyConst
+
+theorem eq_pure_cauchyConst {f : Filter α} (hf : Cauchy f) : f = pure (cauchyConst hf) :=
+  (eq_pure_of_cauchy hf).choose_spec
+
+@[deprecated (since := "2025-03-23")]
+alias _root_.UniformSpace.DiscreteUnif.eq_const_of_cauchy := eq_pure_cauchyConst
+
+end DiscreteUniformity
 
 /-- A set `s` is totally bounded if for every entourage `d` there is a finite
   set of points `t` such that every element of `s` is `d`-near to some element of `t`. -/
