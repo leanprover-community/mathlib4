@@ -1287,7 +1287,7 @@ theorem mem_iff_norm_starProjection (U : Submodule 𝕜 E)
     [U.HasOrthogonalProjection] (v : E) :
     v ∈ U ↔ ‖U.starProjection v‖ = ‖v‖ := by
   refine ⟨fun h => norm_starProjection_apply _ h, fun h => ?_⟩
-  simpa [h, sub_eq_zero, eq_comm (a := v), Submodule.starProjection_eq_self_iff] using
+  simpa [h, sub_eq_zero, eq_comm (a := v), starProjection_eq_self_iff] using
     U.norm_sq_eq_add_norm_sq_starProjection v
 
 /-- In a complete space `E`, the projection maps onto a complete subspace `K` and its orthogonal
