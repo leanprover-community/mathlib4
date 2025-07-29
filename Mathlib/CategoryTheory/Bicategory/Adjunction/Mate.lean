@@ -503,7 +503,7 @@ lemma conjugateEquiv_whiskerRight
 lemma conjugateEquiv_associator_hom
     {a b c d : B} {l₁ : a ⟶ b} {r₁ : b ⟶ a} (adj₁ : l₁ ⊣ r₁)
     {l₂ : b ⟶ c} {r₂ : c ⟶ b} (adj₂ : l₂ ⊣ r₂)
-    {l₃ : c ⟶ d} {r₃ : d ⟶ c} (adj₃ : l₃ ⊣ r₃):
+    {l₃ : c ⟶ d} {r₃ : d ⟶ c} (adj₃ : l₃ ⊣ r₃) :
     conjugateEquiv (adj₁.comp (adj₂.comp adj₃))
       ((adj₁.comp adj₂).comp adj₃) (α_ _ _ _).hom = (α_ _ _ _).hom := by
   simp [← cancel_epi (ρ_ ((r₃ ≫ r₂) ≫ r₁)).hom, ← cancel_mono (λ_ (r₃ ≫ r₂ ≫ r₁)).inv,

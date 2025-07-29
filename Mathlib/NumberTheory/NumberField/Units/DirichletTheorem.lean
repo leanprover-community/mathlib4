@@ -35,11 +35,9 @@ subgroup is a free `ℤ`-module of rank `card (InfinitePlace K) - 1`.
 number field, units, Dirichlet unit theorem
 -/
 
-open scoped NumberField
-
 noncomputable section
 
-open NumberField NumberField.InfinitePlace NumberField.Units
+open Module NumberField NumberField.InfinitePlace NumberField.Units
 
 variable (K : Type*) [Field K]
 
@@ -90,7 +88,7 @@ theorem logEmbedding_component (x : (𝓞 K)ˣ) (w : {w : InfinitePlace K // w �
 open scoped Classical in
 theorem sum_logEmbedding_component (x : (𝓞 K)ˣ) :
     ∑ w, logEmbedding K (Additive.ofMul x) w =
-      - mult (w₀ : InfinitePlace K) * Real.log (w₀ (x : K)) := by
+      -mult (w₀ : InfinitePlace K) * Real.log (w₀ (x : K)) := by
   have h := sum_mult_mul_log x
   rw [Fintype.sum_eq_add_sum_subtype_ne _ w₀, add_comm, add_eq_zero_iff_eq_neg, ← neg_mul] at h
   simpa [logEmbedding_component] using h
@@ -232,7 +230,7 @@ theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
 
 /-- An infinite sequence of nonzero algebraic integers of `K` satisfying the following properties:
 • `seq n` is nonzero;
-• for `w : InfinitePlace K`, `w ≠ w₁ → w (seq n+1) < w (seq n)`;
+• for `w : InfinitePlace K`, `w ≠ w₁ → w (seq n + 1) < w (seq n)`;
 • `∣norm (seq n)∣ ≤ B`. -/
 def seq : ℕ → { x : 𝓞 K // x ≠ 0 }
   | 0 => ⟨1, by norm_num⟩
@@ -310,9 +308,9 @@ theorem unitLattice_span_eq_top :
     logEmbedding K (Additive.ofMul (exists_unit K w).choose)
   -- To prove the result, it is enough to prove that the family `v` is linearly independent
   suffices B.det v ≠ 0 by
-    rw [← isUnit_iff_ne_zero, ← is_basis_iff_det] at this
+    rw [← isUnit_iff_ne_zero, ← Basis.is_basis_iff_det] at this
     rw [← this.2]
-    refine  Submodule.span_monotone fun _ ⟨w, hw⟩ ↦ ⟨(exists_unit K w).choose, trivial, hw⟩
+    refine Submodule.span_monotone fun _ ⟨w, hw⟩ ↦ ⟨(exists_unit K w).choose, trivial, hw⟩
   rw [Basis.det_apply]
   -- We use a specific lemma to prove that this determinant is nonzero
   refine det_ne_zero_of_sum_col_lt_diag (fun w ↦ ?_)
@@ -453,7 +451,7 @@ def basisUnitLattice : Basis (Fin (rank K)) ℤ (unitLattice K) :=
 units in `basisModTorsion`. -/
 def fundSystem : Fin (rank K) → (𝓞 K)ˣ :=
   -- `:)` prevents the `⧸` decaying to a quotient by `leftRel` when we unfold this later
-  fun i ↦ Quotient.out ((basisModTorsion K i).toMul:)
+  fun i ↦ Quotient.out ((basisModTorsion K i).toMul :)
 
 theorem fundSystem_mk (i : Fin (rank K)) :
     Additive.ofMul (QuotientGroup.mk (fundSystem K i)) = (basisModTorsion K i) := by

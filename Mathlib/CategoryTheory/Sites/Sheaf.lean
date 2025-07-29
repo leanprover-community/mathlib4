@@ -590,7 +590,7 @@ variable [HasProducts.{max u₁ v₁} A']
 diagram of the Stacks entry. -/
 @[stacks 00VM "The middle object of the fork diagram there."]
 def firstObj : A :=
-  ∏ᶜ fun f : ΣV, { f : V ⟶ U // R f } => P.obj (op f.1)
+  ∏ᶜ fun f : Σ V, { f : V ⟶ U // R f } => P.obj (op f.1)
 
 /-- The left morphism of the fork diagram given in Equation (3) of [MM92], as well as the fork
 diagram of the Stacks entry. -/
@@ -605,7 +605,7 @@ contains the data used to check a family of elements for a presieve is compatibl
 -/
 @[stacks 00VM "The rightmost object of the fork diagram there."]
 def secondObj : A :=
-  ∏ᶜ fun fg : (ΣV, { f : V ⟶ U // R f }) × ΣW, { g : W ⟶ U // R g } =>
+  ∏ᶜ fun fg : (Σ V, { f : V ⟶ U // R f }) × Σ W, { g : W ⟶ U // R g } =>
     P.obj (op (pullback fg.1.2.1 fg.2.2.1))
 
 /-- The map `pr₀*` of the Stacks entry. -/

@@ -25,9 +25,9 @@ open CategoryTheory Limits Simplicial Opposite
 
 namespace SSet
 
-/-- The functor `SimplexCategory ⥤ SSet` which sends `SimplexCategory.mk n` to
-the standard simplex `Δ[n]` is a cosimplicial object in the category of simplicial sets.
-(This functor is essentially given by the Yoneda embedding). -/
+/-- The functor `SimplexCategory ⥤ SSet` which sends `⦋n⦌` to the standard simplex `Δ[n]` is a
+cosimplicial object in the category of simplicial sets. (This functor is essentially given by the
+Yoneda embedding). -/
 def stdSimplex : CosimplicialObject SSet.{u} :=
   yoneda ⋙ uliftFunctor
 
@@ -57,7 +57,7 @@ def objEquiv {n : SimplexCategory} {m : SimplexCategoryᵒᵖ} :
   Equiv.ulift.{u, 0}
 
 /-- If `x : Δ[n] _⦋d⦌` and `i : Fin (d + 1)`, we may evaluate `x i : Fin (n + 1)`. -/
-instance (n i : ℕ) : DFunLike (Δ[n] _⦋i⦌) (Fin (i + 1)) (fun _ ↦ Fin (n + 1)) where
+instance (n i : ℕ) : FunLike (Δ[n] _⦋i⦌) (Fin (i + 1)) (Fin (n + 1)) where
   coe x j := (objEquiv x).toOrderHom j
   coe_injective' _ _ h := objEquiv.injective (by ext : 3; apply congr_fun h)
 
@@ -67,7 +67,7 @@ lemma ext {n d : ℕ} (x y : Δ[n] _⦋d⦌) (h : ∀ (i : Fin (d + 1)), x i = y
 
 @[simp]
 lemma objEquiv_toOrderHom_apply {n i : ℕ}
-    (x : (stdSimplex.{u} ^⦋n⦌).obj (op (.mk i))) (j : Fin (i + 1)) :
+    (x : (stdSimplex.{u} ^⦋n⦌).obj (op ⦋i⦌)) (j : Fin (i + 1)) :
     DFunLike.coe (F := Fin (i + 1) →o Fin (n + 1))
       ((DFunLike.coe (F := Δ[n].obj (op ⦋i⦌) ≃ (⦋i⦌ ⟶ ⦋n⦌))
         objEquiv x)).toOrderHom j = x j :=
@@ -79,8 +79,7 @@ lemma objEquiv_symm_comp {n n' : SimplexCategory} {m : SimplexCategoryᵒᵖ}
       (stdSimplex.map g).app _ (objEquiv.{u}.symm f) := rfl
 
 @[simp]
-lemma objEquiv_symm_apply {n m : ℕ}
-    (f : SimplexCategory.mk m ⟶ SimplexCategory.mk n) (i : Fin (m + 1)) :
+lemma objEquiv_symm_apply {n m : ℕ} (f : ⦋m⦌ ⟶ ⦋n⦌) (i : Fin (m + 1)) :
     (objEquiv.{u}.symm f : Δ[n] _⦋m⦌) i = f.toOrderHom i := rfl
 
 /-- Constructor for simplices of the standard simplex which takes a `OrderHom` as an input. -/
@@ -91,7 +90,7 @@ abbrev objMk {n : SimplexCategory} {m : SimplexCategoryᵒᵖ}
 
 @[simp]
 lemma objMk_apply {n m : ℕ} (f : Fin (m + 1) →o Fin (n + 1)) (i : Fin (m + 1)) :
-    objMk.{u} (n := .mk n) (m := op (.mk m)) f i = f i :=
+    objMk.{u} (n := ⦋n⦌) (m := op ⦋m⦌) f i = f i :=
   rfl
 
 /-- The `m`-simplices of the `n`-th standard simplex are
@@ -231,7 +230,7 @@ then the face `face S` of `Δ[n]` is representable by `m`,
 i.e. `face S` is isomorphic to `Δ[m]`, see `stdSimplex.isoOfRepresentableBy`. -/
 def faceRepresentableBy {n : ℕ} (S : Finset (Fin (n + 1)))
     (m : ℕ) (e : Fin (m + 1) ≃o S) :
-    (face S : SSet.{u}).RepresentableBy (.mk m) where
+    (face S : SSet.{u}).RepresentableBy ⦋m⦌ where
   homEquiv {j} :=
     { toFun f := ⟨objMk ((OrderHom.Subtype.val S.toSet).comp
           (e.toOrderEmbedding.toOrderHom.comp f.toOrderHom)), fun _ ↦ by aesop⟩
@@ -251,9 +250,9 @@ def faceRepresentableBy {n : ℕ} (S : Finset (Fin (n + 1)))
           (e.apply_symm_apply ⟨(objEquiv x).toOrderHom i, _⟩) }
   homEquiv_comp f g := by aesop
 
-/-- If a simplicial set `X` is representable by `SimplexCategory.mk m` for some `m : ℕ`,
-then this is the corresponding isomorphism `Δ[m] ≅ X`. -/
-def isoOfRepresentableBy {X : SSet.{u}} {m : ℕ} (h : X.RepresentableBy (.mk m)) :
+/-- If a simplicial set `X` is representable by `⦋m⦌` for some `m : ℕ`, then this is the
+corresponding isomorphism `Δ[m] ≅ X`. -/
+def isoOfRepresentableBy {X : SSet.{u}} {m : ℕ} (h : X.RepresentableBy ⦋m⦌) :
     Δ[m] ≅ X :=
   NatIso.ofComponents (fun n ↦ Equiv.toIso (objEquiv.trans h.homEquiv)) (by
     intros

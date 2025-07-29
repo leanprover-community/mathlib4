@@ -41,7 +41,7 @@ theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : S
         rw [← h] at h₁
         exact h₁ rfl)
   simp only [len_mk] at hk
-  rcases k with _|k
+  rcases k with _ | k
   · change n = m + 1 at hk
     subst hk
     obtain ⟨j, rfl⟩ := eq_δ_of_mono i
