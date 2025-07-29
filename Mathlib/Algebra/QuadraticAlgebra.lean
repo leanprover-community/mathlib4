@@ -180,18 +180,18 @@ section Mul
 variable [Mul R] [Add R]
 
 instance : Mul (QuadraticAlgebra R a b) :=
-  ⟨fun z w => ⟨z.1 * w.1 + b * z.2 * w.2, z.1 * w.2 + z.2 * w.1 + a * z.2 * w.2⟩⟩
+  ⟨fun z w => ⟨z.1 * w.1 + a * z.2 * w.2, z.1 * w.2 + z.2 * w.1 + b * z.2 * w.2⟩⟩
 
 @[simp] theorem mul_re (z w : QuadraticAlgebra R a b) :
-    (z * w).re = z.re * w.re + b * z.im * w.im := rfl
+    (z * w).re = z.re * w.re + a * z.im * w.im := rfl
 
 @[simp] theorem mul_im (z w : QuadraticAlgebra R a b) :
-    (z * w).im = z.re * w.im + z.im * w.re + a * z.im * w.im := rfl
+    (z * w).im = z.re * w.im + z.im * w.re + b * z.im * w.im := rfl
 
 @[simp]
 theorem mk_mul_mk (x1 y1 x2 y2 : R) :
     (mk x1 y1 : QuadraticAlgebra R a b) * mk x2 y2 =
-    mk (x1 * x2 + b * y1 * y2) (x1 * y2 + y1 * x2 + a * y1 * y2) := rfl
+    mk (x1 * x2 + a * y1 * y2) (x1 * y2 + y1 * x2 + b * y1 * y2) := rfl
 
 end Mul
 
