@@ -941,7 +941,7 @@ noncomputable def coequalizerIsCoequalizer' : IsColimit (coequalizer.cofork f g)
 
 @[simp]
 theorem coequalizer.cofork_ofπ :
-    Cofork.ofπ (coequalizer.cofork f g).π (coequalizer.condition f g) = coequalizer.cofork f g :=
+    Cofork.ofπ (coequalizer.π f g) (coequalizer.condition f g) = coequalizer.cofork f g :=
   Cofork.ofπ_eq_self (coequalizer.cofork f g)
 
 variable {f g}
