@@ -747,8 +747,7 @@ theorem reindex_refl : reindex R s (Equiv.refl ι) = LinearEquiv.refl R _ := by
   simp only [Equiv.refl_symm, Equiv.refl_apply, reindex, domDomCongrLinearEquiv',
     LinearEquiv.coe_symm_mk, LinearMap.compMultilinearMap_apply, LinearEquiv.coe_coe,
     LinearEquiv.refl_toLinearMap, LinearMap.id_coe, id_eq]
-  erw [lift.tprod]
-  congr
+  simp
 
 variable {t : ι → Type*}
 variable [∀ i, AddCommMonoid (t i)] [∀ i, Module R (t i)]
