@@ -881,7 +881,7 @@ Q848092:
 
 Q848375:
   title: Implicit function theorem
-  decl: ImplicitFunctionData.implicitFunction
+  decl: ImplicitFunData.implicitFun
 
 Q848810:
   title: Kronecker's theorem
