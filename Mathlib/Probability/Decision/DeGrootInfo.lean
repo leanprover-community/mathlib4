@@ -44,12 +44,8 @@ lemma deGrootInfo_eq_riskIncrease :
   deGrootInfo μ ν π = riskIncrease binaryLoss (boolKernel μ ν) π := by
   simp only [deGrootInfo, Measure.discard_comp, riskIncrease, Kernel.comp_discard',
     boolKernel_apply, bayesBinaryRisk]
-  congr
-  ext a : 1
-  have  h_meas :
-      Measurable (Function.uncurry fun a (x : Unit) ↦ (if a = true then ν else μ) univ) := by
-    fun_prop
-  cases a <;> simp [Kernel.withDensity_apply _ h_meas]
+  congr with a
+  cases a <;> simp
 
 lemma deGrootInfo_eq_min_sub (μ ν : Measure 𝓧) (π : Measure Bool) :
     deGrootInfo μ ν π = min (π {false} * μ univ) (π {true} * ν univ) - bayesBinaryRisk μ ν π := by

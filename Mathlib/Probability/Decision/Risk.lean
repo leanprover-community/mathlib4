@@ -133,6 +133,11 @@ instance [IsEmpty 𝓨] : Subsingleton (Kernel 𝓧 𝓨) where
     suffices s = ∅ by simp [this]
     exact Set.eq_empty_of_isEmpty s
 
+@[simp]
+lemma bayesianRisk_of_isEmpty' [IsEmpty 𝓧] : bayesianRisk ℓ P κ π = 0 := by
+  have : P = 0 := Subsingleton.elim P 0
+  simp [this]
+
 instance [IsEmpty 𝓧] (κ : Kernel 𝓧 𝓨) : IsMarkovKernel κ where
   isProbabilityMeasure := by simp
 
@@ -143,10 +148,10 @@ lemma not_isMarkovKernel_zero [Nonempty 𝓧] : ¬ IsMarkovKernel (0 : Kernel �
   simp only [Measure.coe_zero, Pi.zero_apply, zero_ne_one] at h1
 
 @[simp]
-lemma bayesRiskPrior_zero_left_of_isEmpty_of_isEmpty (ℓ : Θ → 𝓨 → ℝ≥0∞) (π : Measure Θ)
+lemma bayesRiskPrior_of_isEmpty_of_isEmpty (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) (π : Measure Θ)
     [IsEmpty 𝓧] [IsEmpty 𝓨] :
-    bayesRiskPrior ℓ (0 : Kernel Θ 𝓧) π = 0 := by
-  simp only [bayesRiskPrior, bayesianRisk_zero_left]
+    bayesRiskPrior ℓ P π = 0 := by
+  simp only [bayesRiskPrior]
   rw [iInf_subtype']
   have : Nonempty (Subtype (@IsMarkovKernel 𝓧 𝓨 m𝓧 m𝓨)) := by
     simp only [nonempty_subtype]
@@ -154,10 +159,10 @@ lemma bayesRiskPrior_zero_left_of_isEmpty_of_isEmpty (ℓ : Θ → 𝓨 → ℝ�
   simp
 
 @[simp]
-lemma bayesRiskPrior_zero_left_of_nonempty_of_isEmpty (ℓ : Θ → 𝓨 → ℝ≥0∞) (π : Measure Θ)
+lemma bayesRiskPrior_of_nonempty_of_isEmpty (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) (π : Measure Θ)
     [Nonempty 𝓧] [IsEmpty 𝓨] :
-    bayesRiskPrior ℓ (0 : Kernel Θ 𝓧) π = ∞ := by
-  simp only [bayesRiskPrior, bayesianRisk_zero_left]
+    bayesRiskPrior ℓ P π = ∞ := by
+  simp only [bayesRiskPrior]
   rw [iInf_subtype']
   have : IsEmpty (Subtype (@IsMarkovKernel 𝓧 𝓨 m𝓧 m𝓨)) := by
     simp only [isEmpty_subtype]
@@ -179,6 +184,13 @@ lemma bayesRiskPrior_zero_right (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel �
   simp only [bayesRiskPrior, bayesianRisk_zero_prior]
   rw [iInf_subtype']
   simp
+
+@[simp]
+lemma bayesRiskPrior_of_isEmpty_of_nonempty (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) (π : Measure Θ)
+    [IsEmpty 𝓧] [Nonempty 𝓨] :
+    bayesRiskPrior ℓ P π = 0 := by
+  have : P = 0 := Subsingleton.elim P 0
+  simp [this]
 
 end Zero
 
@@ -256,24 +268,42 @@ lemma bayesRiskPrior_discard (hl : Measurable (Function.uncurry ℓ)) (π : Meas
   have : Kernel.discard Θ = Kernel.const Θ (Measure.dirac ()) := by ext; simp
   rw [this, bayesRiskPrior_const hl]
 
-lemma bayesRiskPrior_of_subsingleton' [Subsingleton 𝓧] (hl : Measurable (Function.uncurry ℓ)) :
+lemma bayesRiskPrior_eq_iInf_measure_of_subsingleton [Subsingleton 𝓧] [Nonempty 𝓨] :
     bayesRiskPrior ℓ P π
-      = ⨅ (μ : Measure 𝓨) (hμ : IsProbabilityMeasure μ), bayesianRisk ℓ P (Kernel.const 𝓧 μ) π := by
-  sorry
-
-lemma bayesRiskPrior_of_subsingleton [Subsingleton 𝓧] (hl : Measurable (Function.uncurry ℓ)) :
-    bayesRiskPrior ℓ P π = bayesRiskPrior ℓ (Kernel.discard Θ) π := by
-  simp only [bayesRiskPrior]
-  let x : 𝓧 := sorry
-  have h (κ : Kernel 𝓧 𝓨) : bayesianRisk ℓ P κ π = ∫⁻ θ, P θ .univ * ∫⁻ z, ℓ θ z ∂(κ x) ∂π := by
-    have : κ = Kernel.const 𝓧 (κ x) := by
-      ext x' : 1
-      simp only [Kernel.const_apply]
-      rw [Subsingleton.allEq x x']
-    rw [this, bayesianRisk_const_right]
+      = ⨅ (μ : Measure 𝓨) (_ : IsProbabilityMeasure μ), bayesianRisk ℓ P (Kernel.const 𝓧 μ) π := by
+  rcases isEmpty_or_nonempty 𝓧 with hX | hX
+  · rw [iInf_subtype']
+    have : Nonempty {μ : Measure 𝓨 // IsProbabilityMeasure μ} := by
+      simp only [nonempty_subtype]
+      exact ⟨Measure.dirac (Nonempty.some inferInstance), inferInstance⟩
     simp
-  simp_rw [h]
-  sorry
+  obtain x := Nonempty.some hX
+  rw [bayesRiskPrior, iInf_subtype', iInf_subtype']
+  let e : {κ : Kernel 𝓧 𝓨 // IsMarkovKernel κ} ≃ {μ : Measure 𝓨 // IsProbabilityMeasure μ} :=
+    { toFun κ := ⟨κ.1 x, by have := κ.2.isProbabilityMeasure x; infer_instance⟩
+      invFun μ := ⟨Kernel.const 𝓧 μ, by have := μ.2; infer_instance⟩
+      left_inv κ := by ext y; simp only [Kernel.const_apply, Subsingleton.allEq x y]
+      right_inv μ := by simp }
+  rw [← Equiv.iInf_comp e.symm]
+  congr with μ
+
+lemma bayesRiskPrior_of_subsingleton [Subsingleton 𝓧] [Nonempty 𝓨] [SFinite π]
+    (hl : Measurable (Function.uncurry ℓ)) :
+    bayesRiskPrior ℓ P π = ⨅ z : 𝓨, ∫⁻ θ, ℓ θ z * P θ .univ ∂π := by
+  refine le_antisymm (bayesRiskPrior_le_inf' hl _ _) ?_
+  rw [bayesRiskPrior_eq_iInf_measure_of_subsingleton]
+  simp only [bayesianRisk_const_right, le_iInf_iff]
+  refine fun μ hμ ↦ (iInf_le_lintegral μ _).trans_eq ?_
+  rw [lintegral_lintegral_swap]
+  · congr with θ
+    rw [lintegral_mul_const _ (by fun_prop), mul_comm]
+  · have := P.measurable_coe .univ
+    fun_prop
+
+lemma bayesRiskPrior_eq_bayesRiskPrior_discard_of_subsingleton [Subsingleton 𝓧] [Nonempty 𝓨]
+    [IsMarkovKernel P] [SFinite π] (hl : Measurable (Function.uncurry ℓ)) :
+    bayesRiskPrior ℓ P π = bayesRiskPrior ℓ (Kernel.discard Θ) π := by
+  simp [bayesRiskPrior_of_subsingleton hl]
 
 section BayesRiskLeMinimaxRisk
 
@@ -287,14 +317,12 @@ lemma bayesianRisk_le_iSup_risk (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel �
 
 lemma bayesRiskPrior_le_bayesianRisk (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) (κ : Kernel 𝓧 𝓨)
     (π : Measure Θ) [hκ : IsMarkovKernel κ] :
-    bayesRiskPrior ℓ P π ≤ bayesianRisk ℓ P κ π := by
-  simp only [bayesRiskPrior]
-  exact iInf₂_le κ hκ
+    bayesRiskPrior ℓ P π ≤ bayesianRisk ℓ P κ π := iInf₂_le κ hκ
 
 lemma bayesRiskPrior_le_minimaxRisk (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧)
     (π : Measure Θ) [IsProbabilityMeasure π] :
     bayesRiskPrior ℓ P π ≤ minimaxRisk ℓ P :=
-  iInf_mono (fun _ ↦ iInf_mono fun _ ↦ bayesianRisk_le_iSup_risk _ _ _ _)
+  iInf₂_mono fun _ _ ↦ bayesianRisk_le_iSup_risk _ _ _ _
 
 lemma bayesRisk_le_minimaxRisk (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) :
     bayesRisk ℓ P ≤ minimaxRisk ℓ P := by
