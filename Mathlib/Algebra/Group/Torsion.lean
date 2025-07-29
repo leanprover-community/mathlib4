@@ -24,6 +24,9 @@ injective. -/
 class IsAddTorsionFree [AddMonoid M] where
   protected nsmul_right_injective ⦃n : ℕ⦄ (hn : n ≠ 0) : Injective fun a : M ↦ n • a
 
+instance [AddCommMonoid M] [IsAddTorsionFree M] : Lean.Grind.NoNatZeroDivisors M where
+  no_nat_zero_divisors _ _ _ hk habk := IsAddTorsionFree.nsmul_right_injective hk habk
+
 section Monoid
 variable [Monoid M]
 
