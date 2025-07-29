@@ -321,9 +321,7 @@ theorem ofRestrict_top_c (X : PresheafedSpace C) :
       eqToHom
         (by
           rw [restrict_top_presheaf, ← Presheaf.Pushforward.comp_eq]
-          erw [Iso.inv_hom_id]
-          rw [Presheaf.id_pushforward]
-          dsimp) := by
+          tauto) := by
   /- another approach would be to prove the left hand side
        is a natural isomorphism, but I encountered a universe
        issue when `apply NatIso.isIso_of_isIso_app`. -/
