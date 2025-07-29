@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Data.Nat.SuccPred
+import Mathlib.Order.IsNormal
 import Mathlib.Order.SuccPred.InitialSeg
 import Mathlib.SetTheory.Ordinal.Basic
 
@@ -416,32 +417,29 @@ theorem lift_pred (o : Ordinal.{v}) : lift.{u} (pred o) = pred (lift.{u} o) := b
 
 /-- A normal ordinal function is a strictly increasing function which is
   order-continuous, i.e., the image `f o` of a limit ordinal `o` is the sup of `f a` for
-  `a < o`. -/
+  `a < o`.
+
+  Todo: deprecate this in favor of `Order.IsNormal`. -/
 def IsNormal (f : Ordinal → Ordinal) : Prop :=
-  (∀ o, f o < f (succ o)) ∧ ∀ o, IsSuccLimit o → ∀ a, f o ≤ a ↔ ∀ b < o, f b ≤ a
+  Order.IsNormal f
 
 theorem IsNormal.limit_le {f} (H : IsNormal f) :
     ∀ {o}, IsSuccLimit o → ∀ {a}, f o ≤ a ↔ ∀ b < o, f b ≤ a :=
-  @H.2
+  H.le_iff_forall_le
 
 theorem IsNormal.limit_lt {f} (H : IsNormal f) {o} (h : IsSuccLimit o) {a} :
     a < f o ↔ ∃ b < o, a < f b :=
-  not_iff_not.1 <| by simpa only [exists_prop, not_exists, not_and, not_lt] using H.2 _ h a
+  H.lt_iff_exists_lt h
 
-theorem IsNormal.strictMono {f} (H : IsNormal f) : StrictMono f := fun a b =>
-  limitRecOn b (Not.elim (not_lt_of_ge <| Ordinal.zero_le _))
-    (fun _b IH h =>
-      (lt_or_eq_of_le (le_of_lt_succ h)).elim (fun h => (IH h).trans (H.1 _)) fun e => e ▸ H.1 _)
-    fun _b l _IH h => lt_of_lt_of_le (H.1 a) ((H.2 _ l _).1 le_rfl _ (l.succ_lt h))
+theorem IsNormal.strictMono {f} (H : IsNormal f) : StrictMono f :=
+  Order.IsNormal.strictMono H
 
 theorem IsNormal.monotone {f} (H : IsNormal f) : Monotone f :=
   H.strictMono.monotone
 
 theorem isNormal_iff_strictMono_limit (f : Ordinal → Ordinal) :
     IsNormal f ↔ StrictMono f ∧ ∀ o, IsSuccLimit o → ∀ a, (∀ b < o, f b ≤ a) → f o ≤ a :=
-  ⟨fun hf => ⟨hf.strictMono, fun a ha c => (hf.2 a ha c).2⟩, fun ⟨hs, hl⟩ =>
-    ⟨fun a => hs (lt_succ a), fun a ha c =>
-      ⟨fun hac _b hba => ((hs hba).trans_le hac).le, hl a ha c⟩⟩⟩
+  isNormal_iff
 
 theorem IsNormal.lt_iff {f} (H : IsNormal f) {a b} : f a < f b ↔ a < b :=
   StrictMono.lt_iff_lt <| H.strictMono
@@ -474,7 +472,7 @@ theorem IsNormal.le_set {f o} (H : IsNormal f) (p : Set Ordinal) (p0 : p.Nonempt
       rcases not_forall₂.1 (mt (H₂ S).2 <| (lt_succ S).not_ge) with ⟨a, h₁, h₂⟩
       exact (H.le_iff.2 <| succ_le_of_lt <| not_le.1 h₂).trans (h _ h₁)
     | limit S L _ =>
-      refine (H.2 _ L _).2 fun a h' => ?_
+      refine (H.le_iff_forall_le L).2 fun a h' => ?_
       rcases not_forall₂.1 (mt (H₂ a).2 h'.not_ge) with ⟨b, h₁, h₂⟩
       exact (H.le_iff.2 <| (not_le.1 h₂).le).trans (h _ h₁)⟩
 
@@ -483,88 +481,56 @@ theorem IsNormal.le_set' {f o} (H : IsNormal f) (p : Set α) (p0 : p.Nonempty) (
   simpa [H₂] using H.le_set (g '' p) (p0.image g) b
 
 theorem IsNormal.refl : IsNormal id :=
-  ⟨lt_succ, fun _o l _a => l.le_iff_forall_le⟩
+  .id
 
 theorem IsNormal.trans {f g} (H₁ : IsNormal f) (H₂ : IsNormal g) : IsNormal (f ∘ g) :=
-  ⟨fun _x => H₁.lt_iff.2 (H₂.1 _), fun o l _a =>
-    H₁.le_set' (· < o) ⟨0, l.bot_lt⟩ g _ fun _c => H₂.2 _ l _⟩
+  H₁.comp H₂
 
-theorem IsNormal.isSuccLimit {f} (H : IsNormal f) {o} (ho : IsSuccLimit o) : IsSuccLimit (f o) := by
-  rw [isSuccLimit_iff, isSuccPrelimit_iff_succ_lt]
-  use (H.lt_iff.2 ho.bot_lt).ne_bot
-  intro a ha
-  obtain ⟨b, hb, hab⟩ := (H.limit_lt ho).1 ha
-  rw [← succ_le_iff] at hab
-  apply hab.trans_lt
-  rwa [H.lt_iff]
-
-@[deprecated (since := "2025-07-09")]
-alias IsNormal.isLimit := IsNormal.isSuccLimit
-
-theorem add_le_iff_of_isSuccLimit {a b c : Ordinal} (h : IsSuccLimit b) :
-    a + b ≤ c ↔ ∀ b' < b, a + b' ≤ c :=
-  ⟨fun h _ l => (add_le_add_left l.le _).trans h, fun H =>
-    le_of_not_gt <| by
-      -- Porting note: `induction` tactics are required because of the parser bug.
-      induction a using inductionOn with
-      | H α r =>
-        induction b using inductionOn with
-        | H β s =>
-          intro l
-          suffices ∀ x : β, Sum.Lex r s (Sum.inr x) (enum _ ⟨_, l⟩) by
-            -- Porting note: `revert` & `intro` is required because `cases'` doesn't replace
-            --               `enum _ _ l` in `this`.
-            revert this; rcases enum _ ⟨_, l⟩ with x | x <;> intro this
-            · cases this (enum s ⟨0, h.bot_lt⟩)
-            · exact irrefl _ (this _)
-          intro x
-          rw [← typein_lt_typein (Sum.Lex r s), typein_enum]
-          have := H _ (h.succ_lt (typein_lt_type s x))
-          rw [add_succ, succ_le_iff] at this
-          refine
-            (RelEmbedding.ofMonotone (fun a => ?_) fun a b => ?_).ordinal_type_le.trans_lt this
-          · rcases a with ⟨a | b, h⟩
-            · exact Sum.inl a
-            · exact Sum.inr ⟨b, by cases h; assumption⟩
-          · rcases a with ⟨a | a, h₁⟩ <;> rcases b with ⟨b | b, h₂⟩ <;> cases h₁ <;> cases h₂ <;>
-              rintro ⟨⟩ <;> constructor <;> assumption⟩
-
-@[deprecated (since := "2025-07-09")]
-alias add_le_of_limit := add_le_iff_of_isSuccLimit
-
-theorem isNormal_add_right (a : Ordinal) : IsNormal (a + ·) :=
-  ⟨fun b => (add_lt_add_iff_left a).2 (lt_succ b), fun _b l _c => add_le_iff_of_isSuccLimit l⟩
-
-theorem isSuccLimit_add (a : Ordinal) {b : Ordinal} : IsSuccLimit b → IsSuccLimit (a + b) :=
-  (isNormal_add_right a).isSuccLimit
-
-@[deprecated (since := "2025-07-09")]
-alias isLimit_add := isSuccLimit_add
-
-@[deprecated (since := "2025-07-09")]
-alias isLimit.add := isSuccLimit_add
+theorem IsNormal.isSuccLimit {f} (H : IsNormal f) {o} (ho : IsSuccLimit o) : IsSuccLimit (f o) :=
+  H.map_isSuccLimit ho
 
 /-! ### Subtraction on ordinals -/
 
-/-- The set in the definition of subtraction is nonempty. -/
-private theorem sub_nonempty {a b : Ordinal} : { o | a ≤ b + o }.Nonempty :=
-  ⟨a, le_add_left _ _⟩
+instance existsAddOfLE : ExistsAddOfLE Ordinal where
+  exists_add_of_le {a b} := by
+    refine inductionOn₂ a b fun α r _ β s _ ⟨f⟩ ↦ ?_
+    obtain ⟨γ, t, _, ⟨g⟩⟩ := f.exists_sum_relIso
+    exact ⟨type t, g.ordinal_type_eq.symm⟩
+
+-- TODO: This gives us `zero_le` as an immediate consequence.
+-- Private/protect the old theorem, golf proofs.
+instance canonicallyOrderedAdd : CanonicallyOrderedAdd Ordinal where
+  le_self_add := le_add_right
 
 /-- `a - b` is the unique ordinal satisfying `b + (a - b) = a` when `b ≤ a`. -/
-instance sub : Sub Ordinal :=
-  ⟨fun a b => sInf { o | a ≤ b + o }⟩
+instance sub : Sub Ordinal where
+  sub a b := if h : b ≤ a then Classical.choose (exists_add_of_le h) else 0
 
-theorem le_add_sub (a b : Ordinal) : a ≤ b + (a - b) :=
-  csInf_mem sub_nonempty
+private theorem sub_eq_zero_of_lt {a b : Ordinal} (h : a < b) : a - b = 0 :=
+  dif_neg h.not_ge
 
-theorem sub_le {a b c : Ordinal} : a - b ≤ c ↔ a ≤ b + c :=
-  ⟨fun h => (le_add_sub a b).trans (add_le_add_left h _), fun h => csInf_le' h⟩
+protected theorem add_sub_cancel_of_le {a b : Ordinal} (h : b ≤ a) : b + (a - b) = a := by
+  change b + dite _ _ _ = a
+  rw [dif_pos h]
+  exact (Classical.choose_spec (exists_add_of_le h)).symm
+
+@[simp]
+theorem add_sub_cancel (a b : Ordinal) : a + b - a = b := by
+  simpa using Ordinal.add_sub_cancel_of_le (le_add_right a b)
+
+theorem le_add_sub (a b : Ordinal) : a ≤ b + (a - b) := by
+  obtain h | h := le_or_gt b a
+  · exact (Ordinal.add_sub_cancel_of_le h).ge
+  · simpa [sub_eq_zero_of_lt h] using h.le
+
+theorem sub_le {a b c : Ordinal} : a - b ≤ c ↔ a ≤ b + c := by
+  refine ⟨fun h ↦ (le_add_sub a b).trans (add_le_add_left h _), fun h ↦ ?_⟩
+  obtain h' | h' := le_or_gt b a
+  · rwa [← add_le_add_iff_left b, Ordinal.add_sub_cancel_of_le h']
+  · simp [sub_eq_zero_of_lt h']
 
 theorem lt_sub {a b c : Ordinal} : a < b - c ↔ c + a < b :=
   lt_iff_lt_of_le_iff_le sub_le
-
-theorem add_sub_cancel (a b : Ordinal) : a + b - a = b :=
-  le_antisymm (sub_le.2 <| le_rfl) ((add_le_add_iff_left a).1 <| le_add_sub _ _)
 
 theorem sub_eq_of_add_eq {a b c : Ordinal} (h : a + b = c) : c - a = b :=
   h ▸ add_sub_cancel _ _
@@ -572,26 +538,11 @@ theorem sub_eq_of_add_eq {a b c : Ordinal} (h : a + b = c) : c - a = b :=
 theorem sub_le_self (a b : Ordinal) : a - b ≤ a :=
   sub_le.2 <| le_add_left _ _
 
-protected theorem add_sub_cancel_of_le {a b : Ordinal} (h : b ≤ a) : b + (a - b) = a :=
-  (le_add_sub a b).antisymm'
-    (by
-      rcases zero_or_succ_or_isSuccLimit (a - b) with (e | ⟨c, e⟩ | l)
-      · simp only [e, add_zero, h]
-      · rw [← e, add_succ, succ_le_iff, ← lt_sub, ← e]
-        exact lt_succ c
-      · exact (add_le_iff_of_isSuccLimit l).2 fun c l => (lt_sub.1 l).le)
-
 theorem le_sub_of_le {a b c : Ordinal} (h : b ≤ a) : c ≤ a - b ↔ b + c ≤ a := by
   rw [← add_le_add_iff_left b, Ordinal.add_sub_cancel_of_le h]
 
 theorem sub_lt_of_le {a b c : Ordinal} (h : b ≤ a) : a - b < c ↔ a < b + c :=
   lt_iff_lt_of_le_iff_le (le_sub_of_le h)
-
-instance existsAddOfLE : ExistsAddOfLE Ordinal :=
-  ⟨fun h => ⟨_, (Ordinal.add_sub_cancel_of_le h).symm⟩⟩
-
-instance canonicallyOrderedAdd : CanonicallyOrderedAdd Ordinal where
-  le_self_add := le_add_right
 
 @[simp]
 theorem sub_zero (a : Ordinal) : a - 0 = a := by simpa only [zero_add] using add_sub_cancel 0 a
@@ -633,10 +584,36 @@ theorem lt_add_iff {a b c : Ordinal} (hc : c ≠ 0) : a < b + c ↔ ∃ d < c, a
 theorem add_le_iff {a b c : Ordinal} (hb : b ≠ 0) : a + b ≤ c ↔ ∀ d < b, a + d < c := by
   simpa using (lt_add_iff hb).not
 
-@[deprecated add_le_iff (since := "2024-12-08")]
-theorem add_le_of_forall_add_lt {a b c : Ordinal} (hb : 0 < b) (h : ∀ d < b, a + d < c) :
-    a + b ≤ c :=
-  (add_le_iff hb.ne').2 h
+theorem lt_add_iff_of_isSuccLimit {a b c : Ordinal} (hc : IsSuccLimit c) :
+    a < b + c ↔ ∃ d < c, a < b + d := by
+  rw [lt_add_iff hc.ne_bot]
+  constructor <;> rintro ⟨d, hd, ha⟩
+  · refine ⟨_, hc.succ_lt hd, ?_⟩
+    rwa [add_succ, lt_succ_iff]
+  · exact ⟨d, hd, ha.le⟩
+
+@[deprecated (since := "2025-07-08")]
+alias lt_add_of_limit := lt_add_iff_of_isSuccLimit
+
+theorem add_le_iff_of_isSuccLimit {a b c : Ordinal} (hb : IsSuccLimit b) :
+    a + b ≤ c ↔ ∀ d < b, a + d ≤ c := by
+  simpa using (lt_add_iff_of_isSuccLimit hb).not
+
+@[deprecated (since := "2025-07-08")]
+alias add_le_of_limit := add_le_iff_of_isSuccLimit
+
+theorem isNormal_add_right (a : Ordinal) : IsNormal (a + ·) := by
+  rw [isNormal_iff_strictMono_limit]
+  exact ⟨add_left_strictMono, fun _ l _ ↦ (add_le_iff_of_isSuccLimit l).2⟩
+
+theorem isSuccLimit_add (a : Ordinal) {b : Ordinal} : IsSuccLimit b → IsSuccLimit (a + b) :=
+  (isNormal_add_right a).isSuccLimit
+
+@[deprecated (since := "2025-07-09")]
+alias isLimit_add := isSuccLimit_add
+
+@[deprecated (since := "2025-07-09")]
+alias IsLimit.add := isSuccLimit_add
 
 theorem isSuccLimit_sub {a b : Ordinal} (ha : IsSuccLimit a) (h : b < a) : IsSuccLimit (a - b) := by
   rw [isSuccLimit_iff, Ordinal.sub_ne_zero_iff_lt, isSuccPrelimit_iff_succ_lt]
@@ -808,13 +785,11 @@ theorem mul_le_iff_of_isSuccLimit {a b c : Ordinal} (h : IsSuccLimit b) :
 @[deprecated (since := "2025-07-09")]
 alias mul_le_of_limit := mul_le_iff_of_isSuccLimit
 
-theorem isNormal_mul_right {a : Ordinal} (h : 0 < a) : IsNormal (a * ·) :=
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
-  ⟨fun b => by
-      beta_reduce
-      rw [mul_succ]
-      simpa only [add_zero] using (add_lt_add_iff_left (a * b)).2 h,
-    fun _ l _ => mul_le_iff_of_isSuccLimit l⟩
+theorem isNormal_mul_right {a : Ordinal} (h : 0 < a) : IsNormal (a * ·) := by
+  refine IsNormal.of_succ_lt (fun b ↦ ?_) fun hb ↦ ?_
+  · simpa [mul_succ] using (add_lt_add_iff_left (a * b)).2 h
+  · simpa [IsLUB, IsLeast, upperBounds, lowerBounds, mul_le_iff_of_isSuccLimit hb] using
+      fun c hc ↦ mul_le_mul_left' hc.le a
 
 theorem lt_mul_iff_of_isSuccLimit {a b c : Ordinal} (h : IsSuccLimit c) :
     a < b * c ↔ ∃ c' < c, a < b * c' := by

@@ -45,25 +45,23 @@ namespace InnerProductSpace
 /-- The Gram-Schmidt process takes a set of vectors as input
 and outputs a set of orthogonal vectors which have the same span. -/
 noncomputable def gramSchmidt [WellFoundedLT ι] (f : ι → E) (n : ι) : E :=
-  f n - ∑ i : Iio n, (𝕜 ∙ gramSchmidt f i).orthogonalProjection (f n)
+  f n - ∑ i : Iio n, (𝕜 ∙ gramSchmidt f i).starProjection (f n)
 termination_by n
 decreasing_by exact mem_Iio.1 i.2
 
 /-- This lemma uses `∑ i in` instead of `∑ i :`. -/
 theorem gramSchmidt_def (f : ι → E) (n : ι) :
-    gramSchmidt 𝕜 f n = f n - ∑ i ∈ Iio n, (𝕜 ∙ gramSchmidt 𝕜 f i).orthogonalProjection (f n) := by
+    gramSchmidt 𝕜 f n = f n - ∑ i ∈ Iio n, (𝕜 ∙ gramSchmidt 𝕜 f i).starProjection (f n) := by
   rw [← sum_attach, attach_eq_univ, gramSchmidt]
 
 theorem gramSchmidt_def' (f : ι → E) (n : ι) :
-    f n = gramSchmidt 𝕜 f n + ∑ i ∈ Iio n, (𝕜 ∙ gramSchmidt 𝕜 f i).orthogonalProjection (f n) := by
+    f n = gramSchmidt 𝕜 f n + ∑ i ∈ Iio n, (𝕜 ∙ gramSchmidt 𝕜 f i).starProjection (f n) := by
   rw [gramSchmidt_def, sub_add_cancel]
 
--- changing the definition to use `starProjection` makes the proof of this not work
 theorem gramSchmidt_def'' (f : ι → E) (n : ι) :
     f n = gramSchmidt 𝕜 f n + ∑ i ∈ Iio n,
       (⟪gramSchmidt 𝕜 f i, f n⟫ / (‖gramSchmidt 𝕜 f i‖ : 𝕜) ^ 2) • gramSchmidt 𝕜 f i := by
-  convert gramSchmidt_def' 𝕜 f n
-  rw [← starProjection_apply, starProjection_singleton, RCLike.ofReal_pow]
+  simp only [← map_pow, ← starProjection_singleton, ← gramSchmidt_def' 𝕜 f n]
 
 @[simp]
 theorem gramSchmidt_bot {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [OrderBot ι]
@@ -71,7 +69,7 @@ theorem gramSchmidt_bot {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [O
   rw [gramSchmidt_def, Iio_eq_Ico, Finset.Ico_self, Finset.sum_empty, sub_zero]
 
 @[simp]
-theorem gramSchmidt_zero (n : ι) : gramSchmidt 𝕜 (0 : ι → E) n = 0 := by simp [gramSchmidt_def]
+theorem gramSchmidt_zero (n : ι) : gramSchmidt 𝕜 (0 : ι → E) n = 0 := by rw [gramSchmidt_def]; simp
 
 /-- **Gram-Schmidt Orthogonalisation**:
 `gramSchmidt` produces an orthogonal system of vectors. -/
@@ -87,7 +85,7 @@ theorem gramSchmidt_orthogonal (f : ι → E) {a b : ι} (h₀ : a ≠ b) :
   revert a
   apply wellFounded_lt.induction b
   intro b ih a h₀
-  simp only [gramSchmidt_def 𝕜 f b, inner_sub_right, inner_sum, ← starProjection_apply,
+  simp only [gramSchmidt_def 𝕜 f b, inner_sub_right, inner_sum,
     starProjection_singleton, inner_smul_right]
   rw [Finset.sum_eq_single_of_mem a (Finset.mem_Iio.mpr h₀)]
   · by_cases h : gramSchmidt 𝕜 f a = 0
@@ -125,7 +123,7 @@ open Set
 theorem mem_span_gramSchmidt (f : ι → E) {i j : ι} (hij : i ≤ j) :
     f i ∈ span 𝕜 (gramSchmidt 𝕜 f '' Set.Iic j) := by
   rw [gramSchmidt_def' 𝕜 f i]
-  simp_rw [← starProjection_apply, starProjection_singleton]
+  simp_rw [starProjection_singleton]
   exact Submodule.add_mem _ (subset_span <| mem_image_of_mem _ hij)
     (Submodule.sum_mem _ fun k hk => smul_mem (span 𝕜 (gramSchmidt 𝕜 f '' Set.Iic j)) _ <|
       subset_span <| mem_image_of_mem (gramSchmidt 𝕜 f) <| (Finset.mem_Iio.1 hk).le.trans hij)
@@ -134,7 +132,7 @@ theorem gramSchmidt_mem_span (f : ι → E) :
     ∀ {j i}, i ≤ j → gramSchmidt 𝕜 f i ∈ span 𝕜 (f '' Set.Iic j) := by
   intro j i hij
   rw [gramSchmidt_def 𝕜 f i]
-  simp_rw [← starProjection_apply, starProjection_singleton]
+  simp_rw [starProjection_singleton]
   refine Submodule.sub_mem _ (subset_span (mem_image_of_mem _ hij))
     (Submodule.sum_mem _ fun k hk => ?_)
   let hkj : k < j := (Finset.mem_Iio.1 hk).trans_le hij
@@ -170,7 +168,7 @@ theorem gramSchmidt_of_orthogonal {f : ι → E} (hf : Pairwise fun i j => ⟪f 
   · congr
     apply Finset.sum_eq_zero
     intro j hj
-    rw [Submodule.coe_eq_zero]
+    rw [Submodule.starProjection_apply, Submodule.coe_eq_zero]
     suffices span 𝕜 (f '' Set.Iic j) ⟂ 𝕜 ∙ f i by
       apply orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero
       rw [mem_orthogonal_singleton_iff_inner_left, ← mem_orthogonal_singleton_iff_inner_right]
@@ -190,7 +188,7 @@ theorem gramSchmidt_ne_zero_coe {f : ι → E} (n : ι)
     rw [← span_gramSchmidt_Iio 𝕜 f n, gramSchmidt_def' 𝕜 f, h, zero_add]
     apply Submodule.sum_mem _ _
     intro a ha
-    simp only [← starProjection_apply, starProjection_singleton]
+    simp only [starProjection_singleton]
     apply Submodule.smul_mem _ _ _
     rw [Finset.mem_Iio] at ha
     exact subset_span ⟨a, ha, by rfl⟩
