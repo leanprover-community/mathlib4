@@ -88,8 +88,7 @@ theorem dense_of_mem_residual {s : Set X} (hs : s ∈ residual X) : Dense s :=
 In a Baire space, every nonempty open set is non‐meagre,
 that is, it cannot be written as a countable union of nowhere‐dense sets.
 -/
-theorem not_isMeagre_of_isOpen {s : Set X} (hs : IsOpen s) (hne : s.Nonempty) :
-    ¬ IsMeagre s := by
+theorem not_isMeagre_of_isOpen {s : Set X} (hs : IsOpen s) (hne : s.Nonempty) : ¬ IsMeagre s := by
   intro h
   obtain ⟨x, hx, hxc⟩ :=
     (dense_of_mem_residual (by rwa [IsMeagre] at h)).inter_open_nonempty s hs hne
