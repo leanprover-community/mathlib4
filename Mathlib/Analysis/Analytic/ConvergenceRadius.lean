@@ -370,6 +370,7 @@ theorem radius_compContinuousLinearMap_linearIsometryEquiv_eq [Nontrivial E]
   refine le_antisymm ?_ <| le_radius_compContinuousLinearMap _ _
   have _ : Nontrivial F := u.symm.toEquiv.nontrivial
   convert radius_compContinuousLinearMap_le p u.toContinuousLinearEquiv
+  -- TODO
   have : u.toContinuousLinearEquiv.symm.toContinuousLinearMap =
     u.symm.toLinearIsometry.toContinuousLinearMap := rfl
   simp [this]
