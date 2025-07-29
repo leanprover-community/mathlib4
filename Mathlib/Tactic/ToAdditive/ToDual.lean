@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2025 Jovan Gerbscheid. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jovan Gerbscheid, Bryan Gin-ge Chen
+-/
 import Mathlib.Tactic.ToAdditive.Frontend
 
 open Lean Meta Elab Command Std ToAdditive
@@ -168,19 +173,14 @@ def nameDict : String → List String
 
   | x             => [x]
 
-/--
-We don't have any dual abbreviations so far. So we may replace this with the identity function.
--/
-def fixAbbreviation : List String → List String
-  | x :: s                            => x :: fixAbbreviation s
-  | []                                => []
+/-- So far, we don't have any dual abbreviations that need to be fixed. -/
+def fixAbbreviation : List String → List String := id
 
 initialize registerBuiltinAttribute {
     name := `to_dual
     descr := "Transport to dual"
     add := fun src stx kind ↦ discard do
       addToAdditiveAttr toDualBundle nameDict fixAbbreviation src (← elabToAdditive stx) kind
-    -- we (presumably) need to run after compilation to properly add the `simp` attribute
     applicationTime := .afterCompilation
   }
 
