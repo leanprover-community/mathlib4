@@ -40,11 +40,11 @@ lemma one_sub_mul_self (h : IsIdempotentElem a) : (1 - a) * a = 0 := by
 
 lemma _root_.isIdempotentElem_iff_mul_one_sub_self :
     IsIdempotentElem a ↔ a * (1 - a) = 0 := by
-  rw [mul_sub, mul_one, sub_eq_zero, eq_comm, IsIdempotentElem]
+  rw [mul_sub, mul_one, sub_eq_zero, eq_comm, isIdempotentElem_iff]
 
 lemma _root_.isIdempotentElem_iff_one_sub_mul_self :
     IsIdempotentElem a ↔ (1 - a) * a = 0 := by
-  rw [sub_mul, one_mul, sub_eq_zero, eq_comm, IsIdempotentElem]
+  rw [sub_mul, one_mul, sub_eq_zero, eq_comm, isIdempotentElem_iff]
 
 instance : HasCompl {a : R // IsIdempotentElem a} where compl a := ⟨1 - a, a.prop.one_sub⟩
 
@@ -89,7 +89,7 @@ end CommRing
 theorem add [NonUnitalNonAssocSemiring R]
     {a b : R} (ha : IsIdempotentElem a) (hb : IsIdempotentElem b)
     (hab : a * b + b * a = 0) : IsIdempotentElem (a + b) := by
-  simp_rw [IsIdempotentElem, mul_add, add_mul, ha.eq, hb.eq, add_add_add_comm, ← add_assoc,
+  simp_rw [isIdempotentElem_iff, mul_add, add_mul, ha.eq, hb.eq, add_add_add_comm, ← add_assoc,
     add_assoc a, hab, zero_add]
 
 /-- If idempotent `a` and element `b` anti-commute, then their product is zero. -/
