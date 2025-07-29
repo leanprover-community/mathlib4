@@ -141,7 +141,7 @@ example {x} (h : 1 = x) : baz20 = x := by simp; guard_target = 1 = x; exact h
 @[to_additive bar21]
 def foo21 {N} {A} [Pow A N] (a : A) (n : N) : A := a ^ n
 
-run_cmd liftCoreM <| MetaM.run' <| guard <| toAdditiveRelevantArgAttr.find? (← getEnv) `Test.foo21 == some 1
+run_cmd liftCoreM <| MetaM.run' <| guard <| relevantArgAttr.find? (← getEnv) `Test.foo21 == some 1
 
 @[to_additive bar22]
 abbrev foo22 {α} [Monoid α] (a : α) : ℕ → α
@@ -165,7 +165,7 @@ run_cmd do
   let decl := c |>.updateName `Test.barr6 |>.updateType t |>.updateValue e |>.toDeclaration!
   liftCoreM <| addAndCompile decl
   -- test that we cannot transport a declaration to itself
-  successIfFail <| liftCoreM <| addToAdditiveAttr toAdditiveBundle additiveNameDict additiveFixAbbreviation `bar11_works { ref := ← getRef }
+  successIfFail <| liftCoreM <| addToAdditiveAttr toAdditiveBundle nameDict fixAbbreviation `bar11_works { ref := ← getRef }
 
 /- Test on inductive types -/
 inductive AddInd : ℕ → Prop where
@@ -216,7 +216,7 @@ def mul_foo {α} [Monoid α] (a : α) : ℕ → α
 
 -- cannot apply `@[to_additive]` to `some_def` if `some_def.in_namespace` doesn't have the attribute
 run_cmd liftCoreM <| successIfFail <|
-    transformDecl toAdditiveBundle additiveNameDict additiveFixAbbreviation { ref := ← getRef} `Test.some_def `Test.add_some_def
+    transformDecl toAdditiveBundle nameDict fixAbbreviation { ref := ← getRef} `Test.some_def `Test.add_some_def
 
 
 attribute [to_additive some_other_name] some_def.in_namespace
@@ -375,7 +375,7 @@ Some arbitrary tests to check whether additive names are guessed correctly.
 section guessName
 
 def checkGuessName (s t : String) : Elab.Command.CommandElabM Unit :=
-  unless (guessName additiveNameDict additiveFixAbbreviation s) == t do throwError "failed: {guessName additiveNameDict additiveFixAbbreviation s} != {t}"
+  unless (guessName nameDict fixAbbreviation s) == t do throwError "failed: {guessName nameDict fixAbbreviation s} != {t}"
 
 run_cmd
   checkGuessName "HMul_Eq_LEOne_Conj₂MulLT'" "HAdd_Eq_Nonpos_Conj₂AddLT'"
