@@ -3,6 +3,7 @@ Copyright (c) 2020 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
+import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Data.Set.Inclusion
 import Mathlib.Tactic.Common
@@ -128,8 +129,7 @@ namespace InvMemClass
 
 /-- A subgroup of a group inherits an inverse. -/
 @[to_additive "An additive subgroup of an `AddGroup` inherits an inverse."]
-instance inv {G : Type u_1} {S : Type u_2} [Inv G] [SetLike S G]
-  [InvMemClass S G] {H : S} : Inv H :=
+instance inv {G S : Type*} [Inv G] [SetLike S G] [InvMemClass S G] {H : S} : Inv H :=
   ⟨fun a => ⟨a⁻¹, inv_mem a.2⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
@@ -154,8 +154,7 @@ theorem subset_union {H K L : S} : (H : Set G) ⊆ K ∪ L ↔ H ≤ K ∨ H ≤
 
 /-- A subgroup of a group inherits a division -/
 @[to_additive "An additive subgroup of an `AddGroup` inherits a subtraction."]
-instance div {G : Type u_1} {S : Type u_2} [DivInvMonoid G] [SetLike S G]
-  [SubgroupClass S G] {H : S} : Div H :=
+instance div {G S : Type*} [DivInvMonoid G] [SetLike S G] [SubgroupClass S G] {H : S} : Div H :=
   ⟨fun a b => ⟨a / b, div_mem a.2 b.2⟩⟩
 
 /-- An additive subgroup of an `AddGroup` inherits an integer scaling. -/

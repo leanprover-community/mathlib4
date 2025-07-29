@@ -63,7 +63,7 @@ local notation:max R "<" x:max ">" => adjoin R ({x} : Set S)
     biggest ideal of `S` contained in `R<x>`. -/
 def conductor (x : S) : Ideal S where
   carrier := {a | ∀ b : S, a * b ∈ R<x>}
-  zero_mem' b := by simpa only [zero_mul] using Subalgebra.zero_mem _
+  zero_mem' b := by simp only [zero_mul, zero_mem]
   add_mem' ha hb c := by simpa only [add_mul] using Subalgebra.add_mem _ (ha c) (hb c)
   smul_mem' c a ha b := by simpa only [smul_eq_mul, mul_left_comm, mul_assoc] using ha (c * b)
 

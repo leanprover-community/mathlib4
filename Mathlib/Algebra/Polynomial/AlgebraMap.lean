@@ -593,6 +593,14 @@ end Ring
 section CommRing
 variable [CommRing R] {p : R[X]} {t : R}
 
+@[simp]
+theorem aeval_neg {p : R[X]} [Ring A] [Algebra R A] (x : A) :
+    aeval x (- p) = - aeval x p := map_neg ..
+
+@[simp]
+theorem aeval_sub {p q : R[X]} [Ring A] [Algebra R A] (x : A) :
+    aeval x (p - q) = aeval x p - aeval x q := map_sub ..
+
 theorem aeval_endomorphism {M : Type*} [AddCommGroup M] [Module R M] (f : M →ₗ[R] M)
     (v : M) (p : R[X]) : aeval f p v = p.sum fun n b => b • (f ^ n) v := by
   rw [aeval_def, eval₂_eq_sum]
@@ -674,7 +682,7 @@ theorem eq_zero_of_mul_eq_zero_of_smul (P : R[X]) (h : ∀ r : R, r • P = 0 �
     intro i hi
     rw [coeff_eq_zero_of_natDegree_lt hi, zero_smul]
   intro l IH
-  obtain _|hl := (natDegree_smul_le (P.coeff l) Q).lt_or_eq
+  obtain _ | hl := (natDegree_smul_le (P.coeff l) Q).lt_or_eq
   · apply eq_zero_of_mul_eq_zero_of_smul _ h (P.coeff l • Q)
     rw [smul_eq_C_mul, mul_left_comm, hQ, mul_zero]
   suffices P.coeff l * Q.leadingCoeff = 0 by
@@ -685,7 +693,7 @@ theorem eq_zero_of_mul_eq_zero_of_smul (P : R[X]) (h : ∀ r : R, r • P = 0 �
   apply Finset.sum_eq_single (l, m) _ (by simp)
   simp only [Finset.mem_antidiagonal, ne_eq, Prod.forall, Prod.mk.injEq, not_and]
   intro i j hij H
-  obtain hi|rfl|hi := lt_trichotomy i l
+  obtain hi | rfl | hi := lt_trichotomy i l
   · have hj : m < j := by omega
     rw [coeff_eq_zero_of_natDegree_lt hj, mul_zero]
   · omega
@@ -697,9 +705,9 @@ open nonZeroDivisors
 /-- *McCoy theorem*: a polynomial `P : R[X]` is a zerodivisor if and only if there is `a : R`
 such that `a ≠ 0` and `a • P = 0`. -/
 theorem notMem_nonZeroDivisors_iff {P : R[X]} : P ∉ R[X]⁰ ↔ ∃ a : R, a ≠ 0 ∧ a • P = 0 := by
-  refine ⟨fun hP ↦ ?_, fun ⟨a, ha, h⟩ h1 ↦ ha <| C_eq_zero.1 <| (h1 _) <| smul_eq_C_mul a ▸ h⟩
+  refine ⟨fun hP ↦ ?_, fun ⟨a, ha, h⟩ h1 ↦ ha <| C_eq_zero.1 <| (h1.2 _) <| smul_eq_C_mul a ▸ h⟩
   by_contra! h
-  obtain ⟨Q, hQ⟩ := _root_.notMem_nonZeroDivisors_iff.1 hP
+  obtain ⟨Q, hQ⟩ := notMem_nonZeroDivisors_iff_right.1 hP
   refine hQ.2 (eq_zero_of_mul_eq_zero_of_smul P (fun a ha ↦ ?_) Q (mul_comm P _ ▸ hQ.1))
   contrapose! ha
   exact h a ha
@@ -711,7 +719,7 @@ protected lemma mem_nonZeroDivisors_iff {P : R[X]} : P ∈ R[X]⁰ ↔ ∀ a : R
 
 lemma mem_nonzeroDivisors_of_coeff_mem {p : R[X]} (n : ℕ) (hp : p.coeff n ∈ R⁰) :
     p ∈ R[X]⁰ :=
-  Polynomial.mem_nonZeroDivisors_iff.mpr fun r hr ↦ hp _ (by simpa using congr(coeff $hr n))
+  Polynomial.mem_nonZeroDivisors_iff.mpr fun r hr ↦ hp.2 _ (by simpa using congr(coeff $hr n))
 
 lemma X_mem_nonzeroDivisors : X ∈ R[X]⁰ :=
   mem_nonzeroDivisors_of_coeff_mem 1 (by simp [one_mem])
