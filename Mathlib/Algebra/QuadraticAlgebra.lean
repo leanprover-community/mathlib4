@@ -333,9 +333,8 @@ theorem algebraMap_eq (r : R) : algebraMap R (QuadraticAlgebra R a b) r = ⟨r, 
 theorem algebraMap_injective : (algebraMap R (QuadraticAlgebra R a b) : _ → _).Injective :=
   fun _ _ ↦ by simp [algebraMap_eq]
 
-instance [NoZeroDivisors R] : NoZeroSMulDivisors R (QuadraticAlgebra R a b) := ⟨by
-  rintro t ⟨x, y⟩ h
-  exact or_iff_not_imp_left.2 <| fun ht ↦ by simpa [QuadraticAlgebra.ext_iff, ht] using h⟩
+instance [NoZeroDivisors R] : NoZeroSMulDivisors R (QuadraticAlgebra R a b) :=
+  ⟨by simp [QuadraticAlgebra.ext_iff, or_and_left]⟩
 
 end CommRing
 
