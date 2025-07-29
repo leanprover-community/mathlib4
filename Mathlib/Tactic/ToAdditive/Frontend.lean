@@ -331,7 +331,7 @@ def endCapitalNames : TreeMap String (List String) compare :=
 
 open String in
 /-- This function takes a String and splits it into separate parts based on the following
-(naming conventions)[https://github.com/leanprover-community/mathlib4/wiki#naming-convention].
+[naming conventions](https://github.com/leanprover-community/mathlib4/wiki#naming-convention).
 
 E.g. `#eval "InvHMulLEConjugate₂SMul_ne_top".splitCase` yields
 `["Inv", "HMul", "LE", "Conjugate₂", "SMul", "_", "ne", "_", "top"]`. -/
@@ -556,8 +556,16 @@ is tested, instead of the first argument.
 It will also reorder arguments of certain functions, using `reorderFn`:
 e.g. `g x₁ x₂ x₃ ... xₙ` becomes `g x₂ x₁ x₃ ... xₙ` if `reorderFn g = some [1]`.
 -/
-def applyReplacementFun (e : Expr) : MetaM Expr :=
-  return aux (← getEnv) (← getBoolOption `trace.to_additive_detail) e
+def applyReplacementFun (e : Expr) : MetaM Expr := do
+  let e' := aux (← getEnv) (← getBoolOption `trace.to_additive_detail) e
+  -- Make sure any new reserved names in the expr are realized; this needs to be done outside of
+  -- `aux` as it is monadic.
+  e'.forEach fun
+    | .const n .. => do
+      if !(← hasConst (skipRealize := false) n) && isReservedName (← getEnv) n then
+        executeReservedNameAction n
+    | _ => pure ()
+  return e'
 where /-- Implementation of `applyReplacementFun`. -/
   aux (env : Environment) (trace : Bool) : Expr → Expr :=
   let reorderFn : Name → List (List ℕ) := fun nm ↦ (reorderAttr.find? env nm |>.getD [])
@@ -651,9 +659,9 @@ def expand (e : Expr) : MetaM Expr := do
     | .proj n i s =>
       let some info := getStructureInfo? (← getEnv) n | return .continue -- e.g. if `n` is `Exists`
       let some projName := info.getProjFn? i | unreachable!
-      -- if `projName` requires reordering, replace `f` with the application `projName s`
-      -- and then visit `projName s args` again.
-      if (reorderFn projName).isEmpty then
+      -- if `projName` is explicitly tagged with `@[to_additive]`,
+      -- replace `f` with the application `projName s` and then visit `projName s args` again.
+      if findTranslation? env projName |>.isNone then
         return .continue
       return .visit <| (← whnfD (← inferType s)).withApp fun sf sargs ↦
         mkAppN (mkApp (mkAppN (.const projName sf.constLevels!) sargs) s) args
@@ -698,7 +706,7 @@ def reorderLambda (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr :=
         mkLambdaFVars (xs.permute! reorder) e
       else
         throwError "the permutation\n{reorder}\nprovided by the reorder config option is too \
-          large, the type{indentExpr src}\nhas only {xs.size} arguments"
+          large, the function{indentExpr src}\nhas only {xs.size} arguments"
   else
     return src
 
@@ -913,7 +921,7 @@ def additivizeLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT Co
 /--
 Find the first argument of `nm` that has a multiplicative type-class on it.
 Returns 1 if there are no types with a multiplicative class as arguments.
-E.g. `Prod.Group` returns 1, and `Pi.One` returns 2.
+E.g. `Prod.instGroup` returns 1, and `Pi.instOne` returns 2.
 Note: we only consider the first argument of each type-class.
 E.g. `[Pow A N]` is a multiplicative type-class on `A`, not on `N`.
 -/
@@ -922,19 +930,18 @@ def firstMultiplicativeArg (nm : Name) : MetaM Nat := do
     -- xs are the arguments to the constant
     let xs := xs.toList
     let l ← xs.filterMapM fun x ↦ do
-      -- x is an argument and i is the index
-      -- write `x : (y₀ : α₀) → ... → (yₙ : αₙ) → tgt_fn tgt_args₀ ... tgt_argsₘ`
+      -- write the type of `x` as `(y₀ : α₀) → ... → (yₙ : αₙ) → f a₀ ... aₙ`;
+      -- if `f` can be additivized, mark free variables in `a₀` as multiplicative arguments
       forallTelescopeReducing (← inferType x) fun _ys tgt ↦ do
-        let (_tgt_fn, tgt_args) := tgt.getAppFnArgs
         if let some c := tgt.getAppFn.constName? then
-          if findTranslation? (← getEnv) c |>.isNone then
-            return none
-        return tgt_args[0]?.bind fun tgtArg ↦
-          xs.findIdx? fun x ↦ Expr.containsFVar tgtArg x.fvarId!
+          if findTranslation? (← getEnv) c |>.isSome then
+            if let some arg := tgt.getArg? 0 then
+              return xs.findIdx? (arg.containsFVar ·.fvarId!)
+        return none
     trace[to_additive_detail] "firstMultiplicativeArg: {l}"
     match l with
     | [] => return 0
-    | (head :: tail) => return tail.foldr Nat.min head
+    | (head :: tail) => return tail.foldl Nat.min head
 
 /-- Helper for `capitalizeLike`. -/
 partial def capitalizeLikeAux (s : String) (i : String.Pos := 0) (p : String) : String :=

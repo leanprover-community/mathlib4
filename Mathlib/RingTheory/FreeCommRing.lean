@@ -124,9 +124,7 @@ protected theorem induction_on {motive : FreeCommRing α → Prop} (z : FreeComm
   have neg : ∀ x, motive x → motive (-x) := fun x ih => neg_one_mul x ▸ mul _ _ neg_one ih
   have one : motive 1 := neg_neg (1 : FreeCommRing α) ▸ neg _ neg_one
   FreeAbelianGroup.induction_on z (neg_add_cancel (1 : FreeCommRing α) ▸ add _ _ neg_one one)
-    (fun m => Multiset.induction_on m one fun a m ih => by
-      convert mul (FreeCommRing.of a) _ (of a) ih
-      apply of_cons)
+    (fun m => Multiset.induction_on m one fun a _ ih => mul (FreeCommRing.of a) _ (of a) ih)
     (fun _ ih => neg _ ih) add
 
 section lift

@@ -447,7 +447,7 @@ theorem Ideal.isIdempotentElem_iff_eq_bot_or_top_of_isLocalRing {R} [CommRing R]
     refine Or.inl (eq_bot_iff.mpr ?_)
     rw [← Ideal.iInf_pow_eq_bot_of_isLocalRing I ‹_›]
     apply le_iInf
-    rintro (_|n) <;> simp [H.pow_succ_eq]
+    rintro (_ | n) <;> simp [H.pow_succ_eq]
   · rintro (rfl | rfl) <;> simp [IsIdempotentElem]
 
 @[deprecated (since := "2024-11-12")]

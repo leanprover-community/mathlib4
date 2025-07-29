@@ -224,80 +224,6 @@ noncomputable def LinearOrderedCommGroup.multiplicative_int_orderMonoidIso_of_is
   let f' := LinearOrderedAddCommGroup.int_orderAddMonoidIso_of_isLeast_pos (G := Additive G) this
   exact ⟨AddEquiv.toMultiplicative' f', by simp⟩
 
-section TypeTags
-
-/-- Reinterpret `G ≃*o H` as `Additive G ≃+o Additive H`. -/
-def OrderMonoidIso.toAdditive {G H : Type*}
-    [CommMonoid G] [PartialOrder G] [CommMonoid H] [PartialOrder H] :
-    (G ≃*o H) ≃ (Additive G ≃+o Additive H) where
-  toFun e := ⟨MulEquiv.toAdditive e, by simp⟩
-  invFun e := ⟨MulEquiv.toAdditive.symm e, by simp⟩
-  left_inv e := by ext; simp
-  right_inv e := by ext; simp
-
-/-- Reinterpret `G ≃+o H` as `Multiplicative G ≃*o Multiplicative H`. -/
-def OrderAddMonoidIso.toMultiplicative {G H : Type*}
-    [AddCommMonoid G] [PartialOrder G] [AddCommMonoid H] [PartialOrder H] :
-    (G ≃+o H) ≃ (Multiplicative G ≃*o Multiplicative H) where
-  toFun e := ⟨AddEquiv.toMultiplicative e, by simp⟩
-  invFun e := ⟨AddEquiv.toMultiplicative.symm e, by simp⟩
-  left_inv e := by ext; simp
-  right_inv e := by ext; simp
-
-/-- Reinterpret `Additive G ≃+o H` as `G ≃*o Multiplicative H`. -/
-def OrderAddMonoidIso.toMultiplicative' {G H : Type*}
-    [CommMonoid G] [PartialOrder G] [AddCommMonoid H] [PartialOrder H] :
-    (Additive G ≃+o H) ≃ (G ≃*o Multiplicative H) where
-  toFun e := ⟨AddEquiv.toMultiplicative' e, by simp⟩
-  invFun e := ⟨AddEquiv.toMultiplicative'.symm e, by simp⟩
-  left_inv e := by ext; simp
-  right_inv e := by ext; simp
-
-/-- Reinterpret `G ≃* Multiplicative H` as `Additive G ≃+ H`. -/
-abbrev OrderMonoidIso.toAdditive' {G H : Type*}
-    [CommMonoid G] [PartialOrder G] [AddCommMonoid H] [PartialOrder H] :
-    (G ≃*o Multiplicative H) ≃ (Additive G ≃+o H) :=
-  OrderAddMonoidIso.toMultiplicative'.symm
-
-/-- Reinterpret `G ≃+o Additive H` as `Multiplicative G ≃*o H`. -/
-def OrderAddMonoidIso.toMultiplicative'' {G H : Type*}
-    [AddCommMonoid G] [PartialOrder G] [CommMonoid H] [PartialOrder H] :
-    (G ≃+o Additive H) ≃ (Multiplicative G ≃*o H) where
-  toFun e := ⟨AddEquiv.toMultiplicative'' e, by simp⟩
-  invFun e := ⟨AddEquiv.toMultiplicative''.symm e, by simp⟩
-  left_inv e := by ext; simp
-  right_inv e := by ext; simp
-
-/-- Reinterpret `Multiplicative G ≃*o H` as `G ≃+o Additive H` as. -/
-abbrev OrderMonoidIso.toAdditive'' {G H : Type*}
-    [AddCommMonoid G] [PartialOrder G] [CommMonoid H] [PartialOrder H] :
-    (Multiplicative G ≃*o H) ≃ (G ≃+o Additive H) :=
-  OrderAddMonoidIso.toMultiplicative''.symm
-
-/-- The multiplicative version of an additivized ordered monoid is order-mul-equivalent to itself.
--/
-def OrderMonoidIso.toMultiplicative_toAdditive {G : Type*} [CommMonoid G] [PartialOrder G] :
-    Multiplicative (Additive G) ≃*o G :=
-  OrderAddMonoidIso.toMultiplicative'' <| OrderMonoidIso.toAdditive (.refl _)
-
-/-- The additive version of an multiplicativized ordered additive monoid is
-order-add-equivalent to itself. -/
-def OrderAddMonoidIso.toAdditive_toMultiplicative {G : Type*} [AddCommMonoid G] [PartialOrder G] :
-    Additive (Multiplicative G) ≃+o G :=
-  OrderMonoidIso.toAdditive' <| OrderAddMonoidIso.toMultiplicative (.refl _)
-
-instance Additive.instUniqueOrderAddMonoidIso {G H : Type*}
-    [CommMonoid G] [PartialOrder G] [CommMonoid H] [PartialOrder H] [Unique (G ≃*o H)] :
-    Unique (Additive G ≃+o Additive H) :=
-  OrderMonoidIso.toAdditive.symm.unique
-
-instance Multiplicative.instUniqueOrderdMonoidIso {G H : Type*}
-    [AddCommMonoid G] [PartialOrder G] [AddCommMonoid H] [PartialOrder H] [Unique (G ≃+o H)] :
-    Unique (Multiplicative G ≃*o Multiplicative H) :=
-  OrderAddMonoidIso.toMultiplicative.symm.unique
-
-end TypeTags
-
 /-- Any linearly ordered archimedean additive group is either isomorphic (and order-isomorphic)
 to the integers, or is densely ordered. -/
 lemma LinearOrderedAddCommGroup.discrete_or_denselyOrdered (G : Type*)
@@ -358,7 +284,7 @@ lemma denselyOrdered_units_iff {G₀ : Type*} [LinearOrderedCommGroupWithZero G�
   constructor
   · intro H
     refine ⟨fun x y h ↦ ?_⟩
-    rcases (zero_le' (a := x)).eq_or_lt with rfl|hx
+    rcases (zero_le' (a := x)).eq_or_lt with rfl | hx
     · lift y to G₀ˣ using h.ne'.isUnit
       obtain ⟨z, hz⟩ := exists_ne (1 : G₀ˣ)
       refine ⟨(y * |z|ₘ⁻¹ : G₀ˣ), ?_, ?_⟩
@@ -372,7 +298,7 @@ lemma denselyOrdered_units_iff {G₀ : Type*} [LinearOrderedCommGroupWithZero G�
   · intro H
     refine ⟨fun x y h ↦ ?_⟩
     obtain ⟨z, hz⟩ := exists_between (Units.val_lt_val.mpr h)
-    rcases (zero_le' (a := z)).eq_or_lt with rfl|hz'
+    rcases (zero_le' (a := z)).eq_or_lt with rfl | hz'
     · simp at hz
     refine ⟨Units.mk0 z hz'.ne', ?_⟩
     simp [← Units.val_lt_val, hz]
@@ -488,9 +414,9 @@ lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_le_lt_iff_nonempty_disc
     refine Nonempty.congr (fun f ↦ ⟨?_, ?_⟩) (fun f ↦ ⟨?_, ?_⟩)
     · exact WithZero.withZeroUnitsEquiv.symm.trans f.withZero
     · intro a b
-      rcases eq_or_ne a 0 with rfl|ha
+      rcases eq_or_ne a 0 with rfl | ha
       · simp [WithZero.withZeroUnitsEquiv]
-      rcases eq_or_ne b 0 with rfl|hb
+      rcases eq_or_ne b 0 with rfl | hb
       · simp [WithZero.withZeroUnitsEquiv]
       simp [WithZero.withZeroUnitsEquiv, ha, hb, ← Units.val_le_val]
     · exact MulEquiv.withZero.symm (WithZero.withZeroUnitsEquiv.trans f)
@@ -517,7 +443,7 @@ lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_ge_gt_iff_nonempty_disc
     ← Set.wellFoundedOn_sdiff_singleton (a := 0)]
   refine ⟨fun h ↦ (h.mapsTo (·⁻¹) ?_).mono' ?_, fun h ↦ (h.mapsTo (·⁻¹) ?_).mono' ?_⟩
   · intro x
-    rcases eq_or_ne x 0 with rfl|hx
+    rcases eq_or_ne x 0 with rfl | hx
     · simp [hg]
     simp only [mem_setOf_eq, mem_diff, mem_singleton_iff, inv_eq_zero, hx, not_false_eq_true,
       and_true]

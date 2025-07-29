@@ -203,6 +203,9 @@ instance {A B : Mon_ C} (f : A ⟶ B) [e : IsIso ((forget C).map f)] : IsIso f.h
 instance : (forget C).ReflectsIsomorphisms where
   reflects f e := ⟨⟨.mk' (inv f.hom), by aesop_cat⟩⟩
 
+instance {M N : Mon_ C} {f : M ⟶ N} [IsIso f] : IsIso f.hom :=
+  inferInstanceAs <| IsIso <| (forget C).map f
+
 /-- Construct an isomorphism of monoid objects by giving a monoid isomorphism between the underlying
 objects. -/
 @[simps]
@@ -304,12 +307,12 @@ theorem comp_mapMon_mul (X : Mon_ C) :
 
 /-- The identity functor is also the identity on monoid objects. -/
 @[simps!]
-noncomputable def mapMonIdIso : mapMon (𝟭 C) ≅ 𝟭 (Mon_ C) :=
+def mapMonIdIso : mapMon (𝟭 C) ≅ 𝟭 (Mon_ C) :=
   NatIso.ofComponents fun X ↦ Mon_.mkIso (.refl _)
 
 /-- The composition functor is also the composition on monoid objects. -/
 @[simps!]
-noncomputable def mapMonCompIso : (F ⋙ G).mapMon ≅ F.mapMon ⋙ G.mapMon :=
+def mapMonCompIso : (F ⋙ G).mapMon ≅ F.mapMon ⋙ G.mapMon :=
   NatIso.ofComponents fun X ↦ Mon_.mkIso (.refl _)
 
 protected instance Faithful.mapMon [F.Faithful] : F.mapMon.Faithful where
@@ -317,12 +320,12 @@ protected instance Faithful.mapMon [F.Faithful] : F.mapMon.Faithful where
 
 /-- Natural transformations between functors lift to monoid objects. -/
 @[simps!]
-noncomputable def mapMonNatTrans (f : F ⟶ F') [NatTrans.IsMonoidal f] : F.mapMon ⟶ F'.mapMon where
+def mapMonNatTrans (f : F ⟶ F') [NatTrans.IsMonoidal f] : F.mapMon ⟶ F'.mapMon where
   app X := .mk' (f.app _)
 
 /-- Natural isomorphisms between functors lift to monoid objects. -/
 @[simps!]
-noncomputable def mapMonNatIso (e : F ≅ F') [NatTrans.IsMonoidal e.hom] : F.mapMon ≅ F'.mapMon :=
+def mapMonNatIso (e : F ≅ F') [NatTrans.IsMonoidal e.hom] : F.mapMon ≅ F'.mapMon :=
   NatIso.ofComponents fun X ↦ Mon_.mkIso (e.app _)
 
 end LaxMonoidal
@@ -351,6 +354,7 @@ instance FullyFaithful.isMon_Hom_preimage (hF : F.FullyFaithful) {X Y : C}
 
 /-- If `F : C ⥤ D` is a fully faithful monoidal functor, then `Mon(F) : Mon C ⥤ Mon D` is fully
 faithful too. -/
+@[simps]
 protected def FullyFaithful.mapMon (hF : F.FullyFaithful) : F.mapMon.FullyFaithful where
   preimage {X Y} f := .mk' <| hF.preimage f.hom
 
@@ -372,7 +376,7 @@ namespace Adjunction
 variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Monoidal] [G.LaxMonoidal] [a.IsMonoidal]
 
 /-- An adjunction of monoidal functors lifts to an adjunction of their lifts to monoid objects. -/
-@[simps] noncomputable def mapMon : F.mapMon ⊣ G.mapMon where
+@[simps] def mapMon : F.mapMon ⊣ G.mapMon where
   unit := mapMonIdIso.inv ≫ mapMonNatTrans a.unit ≫ mapMonCompIso.hom
   counit := mapMonCompIso.inv ≫ mapMonNatTrans a.counit ≫ mapMonIdIso.hom
 
@@ -382,7 +386,7 @@ namespace Equivalence
 
 /-- An equivalence of categories lifts to an equivalence of their monoid objects. -/
 @[simps]
-noncomputable def mapMon (e : C ≌ D) [e.functor.Monoidal] [e.inverse.Monoidal] [e.IsMonoidal] :
+def mapMon (e : C ≌ D) [e.functor.Monoidal] [e.inverse.Monoidal] [e.IsMonoidal] :
     Mon_ C ≌ Mon_ D where
   functor := e.functor.mapMon
   inverse := e.inverse.mapMon
