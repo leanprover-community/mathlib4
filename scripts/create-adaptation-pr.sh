@@ -142,7 +142,7 @@ echo "### [auto] checkout 'bump/$BUMPVERSION' and merge the latest changes from 
 # Check if the local branch exists
 if git show-ref --verify --quiet refs/heads/bump/$BUMPVERSION; then
   # Local branch exists, check what it's tracking
-  tracking_branch=$(git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null || echo "")
+  tracking_branch=$(git rev-parse --abbrev-ref --symbolic-full-name bump/$BUMPVERSION@{u} 2>/dev/null || echo "")
   if [ -z "$tracking_branch" ] || [ "$tracking_branch" != "$NIGHTLY_REMOTE/bump/$BUMPVERSION" ]; then
     echo "Error: Local branch 'bump/$BUMPVERSION' exists but is not properly tracking '$NIGHTLY_REMOTE/bump/$BUMPVERSION'"
     if [ -z "$tracking_branch" ]; then
