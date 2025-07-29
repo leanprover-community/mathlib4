@@ -691,7 +691,7 @@ theorem nthRoots_one_eq_biUnion_primitiveRoots [DecidableEq R] {n : ℕ} :
 
 /-- Equivalence of coprime powers of primitive roots. -/
 def equiv_primitiveRoots_of_coprimePow {e r : ℕ} [CommRing R] [IsDomain R] [NeZero r]
-  (h : e.Coprime r) : (primitiveRoots r R) ≃ (primitiveRoots r R) := by
+    (h : e.Coprime r) : (primitiveRoots r R) ≃ (primitiveRoots r R) := by
   have coprmGcdA (x y : ℤ) (hc : IsCoprime x y) : IsCoprime (x.gcdA y) y := by
     use x, x.gcdB y
     rwa [mul_comm _ y, ← Int.gcd_eq_gcd_ab, Nat.cast_eq_one, ← Int.isCoprime_iff_gcd_eq_one]
@@ -704,8 +704,8 @@ def equiv_primitiveRoots_of_coprimePow {e r : ℕ} [CommRing R] [IsDomain R] [Ne
       apply Int.mul_nonneg_of_nonpos_of_nonpos _ (Int.le_of_lt hc)
       rw [Int.add_le_zero_iff_le_neg', Int.neg_mul_eq_mul_neg]
       exact one_le_mul_of_one_le_of_one_le hr (Int.neg_pos_of_neg hc)
-  have hea (a : R) (ha: a ∈ primitiveRoots r R):
-   a ^ (e * ((r * e.gcdA r + 1) * e.gcdA r).toNat) = a :=by
+  have hea (a : R) (ha: a ∈ primitiveRoots r R) :
+      a ^ (e * ((r * e.gcdA r + 1) * e.gcdA r).toNat) = a := by
     rw [mem_primitiveRoots] at ha
     have fff := IsPrimitiveRoot.val_toRootsOfUnity_coe ha
     rw [← fff, ← Units.val_pow_eq_pow_val]
@@ -717,8 +717,8 @@ def equiv_primitiveRoots_of_coprimePow {e r : ℕ} [CommRing R] [IsDomain R] [Ne
     rw [Int.natCast_toNat_eq_self.mpr de, rweq, zpow_add, zpow_mul, IsPrimitiveRoot.zpow_eq_one,
     one_zpow, one_mul]
     have hgcd := eq_sub_of_add_eq (Nat.gcd_eq_gcd_ab e r).symm
-    rw[hgcd, zpow_sub, zpow_mul]
-    · rw[← Nat.isCoprime_iff_coprime,Int.isCoprime_iff_gcd_eq_one, Int.gcd_natCast_natCast] at h
+    rw [hgcd, zpow_sub, zpow_mul]
+    · rw [← Nat.isCoprime_iff_coprime, Int.isCoprime_iff_gcd_eq_one, Int.gcd_natCast_natCast] at h
       simp only [h, Nat.cast_one, zpow_one, zpow_natCast]
       have last : ( ( ( ha.toRootsOfUnity: Rˣ ) ^ r ) ^ e.gcdB r )⁻¹ = 1 := by
         rw [IsPrimitiveRoot.pow_eq_one]
