@@ -369,16 +369,9 @@ lemma isLeviCivitaConnection_uniqueness_aux (h : cov.IsLeviCivitaConnection) :
     (by simp [this])
   sorry -- obvious: if A + A = stuff, A = 1/2 stuff
 
--- TODO: move to Data.Fintype.EquivFin
-/-- Choose an arbitrary linear order on a `Fintype`: this is not an instance because in most
-situations, choosing a linear order extending a given preorder, or a particular linear order
-is preferred over choosing *any* linear order. -/
-noncomputable def Fintype.instLinearOrder {α : Type*} [Fintype α] : LinearOrder α :=
-  LinearOrder.lift' _ (Fintype.equivFin α).injective
-
 section
 
-attribute [local instance] Fintype.toOrderBot Fintype.toLocallyFiniteOrder Fintype.instLinearOrder
+attribute [local instance] Fintype.toOrderBot Fintype.toLocallyFiniteOrder
 
 variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)]
 
@@ -400,6 +393,9 @@ lemma congr_of_forall_product [FiniteDimensional ℝ E]
     have : Subsingleton E := by
       sorry
     apply hE this
+  have : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := by
+    choose r wo using exists_wellOrder _
+    exact r
   haveI : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := inferInstance
 
   -- Choose an orthonormal frame (s i) near x w.r.t. to this trivialisation, and the metric g
@@ -443,7 +439,9 @@ noncomputable def lcCandidate_aux [FiniteDimensional ℝ E]
   -- Case distinction: if E is trivial, there is only one choice anyway;
   -- otherwise, b must be non-trivial.
   have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := sorry
-  have : Fintype ↑(Basis.ofVectorSpaceIndex ℝ E) := by infer_instance
+  have : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := by
+    choose r wo using exists_wellOrder _
+    exact r
   haveI : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := inferInstance
   letI frame := b.orthonormalFrame e
   -- The coefficient of the desired tangent vector `∇ X Y x` w.r.t. `s i`
@@ -481,7 +479,10 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
     congr; ext i
     rw [leviCivita_rhs_addX] <;> try assumption
     · abel
-    · have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := sorry
+    · have : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := by
+        choose r wo using exists_wellOrder _
+        exact r
+      have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := sorry
       set f := ((Basis.ofVectorSpace ℝ E).orthonormalFrame e i)
       have : MDiffAt (T% f) x := -- missing API lemma!
         (contMDiffAt_orthonormalFrame_of_mem (Basis.ofVectorSpace ℝ E) e i hx)
@@ -514,7 +515,10 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
     congr; ext i
     rw [leviCivita_rhs_addY] <;> try assumption
     · abel
-    · have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := sorry
+    · have : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := by
+        choose r wo using exists_wellOrder _
+        exact r
+      have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := sorry
       set f := ((Basis.ofVectorSpace ℝ E).orthonormalFrame e i)
       have : MDiffAt (T% f) x := -- missing API lemma!
         (contMDiffAt_orthonormalFrame_of_mem (Basis.ofVectorSpace ℝ E) e i hx)
