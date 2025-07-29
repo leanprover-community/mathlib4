@@ -197,8 +197,7 @@ theorem stalkSpecializes_stalkMap {X Y : PresheafedSpace.{_, _, v} C}
     whiskerRight_app, NatTrans.id_app, colimit.ι_pre, assoc,
     colimit.pre_desc, colimit.map_desc, colimit.ι_desc, Cocones.precompose_obj_ι,
     Cocone.whisker_ι, NatTrans.comp_app]
-  erw [X.presheaf.map_id, id_comp]
-  rfl
+  tauto
 
 end stalkMap
 
