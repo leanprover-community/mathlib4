@@ -672,7 +672,7 @@ noncomputable def sl2SubmoduleOfRoot (α : Weight K H L) (hα : α.IsNonZero) :
 /-- The coroot space of `α` viewed as a submodule of the ambient Lie algebra `L`.
 This represents the image of the coroot space under the inclusion `H ↪ L`. -/
 noncomputable abbrev corootSubmodule (α : Weight K H L) : LieSubmodule K H L :=
-  LieSubmodule.map H.toLieSubmodule.incl (LieAlgebra.corootSpace α.toLinear)
+  LieSubmodule.map H.toLieSubmodule.incl (corootSpace α.toLinear)
 
 lemma sl2SubmoduleOfRoot_eq_sup (α : Weight K H L) (hα : α.IsNonZero) :
     sl2SubmoduleOfRoot α hα =
