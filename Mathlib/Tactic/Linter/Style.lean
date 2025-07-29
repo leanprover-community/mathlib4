@@ -661,23 +661,19 @@ partial def checkIndenting (src : String) (posInfo : PositionInfo)
             warn s!"too few spaces, which should be at least {atLeast}"
             if !continueWhenFailed then return
 
-  if let .some ⟨head, headTail⟩ := posInfo.headTail then
-    checkIndenting src head strictlyIncrease oldIndenting continueWhenFailed
-    if headTail.isEmpty then return
-    /- `parentIndentingOfTail` is to deal with cases like
-      example : Nat → Nat
-        | 0 => 0
-        | _ => whenNeZero
-      where
-        whenNeZero : Nat := 0
-    -/
-    let parentIndentingOfTail := match posInfo.stx with
-      | .node _ ``Term.matchAltsWhereDecls _ => oldIndenting
-      | _ =>
-        let oldIndenting := oldIndenting.getD 0
-        posInfo.pos.map (spacesBefore src · |>.getD oldIndenting) |>.getD oldIndenting
-    for child in headTail do
-      checkIndenting src child strictlyIncrease parentIndentingOfTail continueWhenFailed
+  if let .node pos children stx := posInfo then
+      let .some head := children[0]? | unreachable!
+      checkIndenting src head strictlyIncrease oldIndenting continueWhenFailed
+      let tail := children[1:]
+      if tail.size = 0 then return
+      let parentIndentationOfTail ← show CommandElabM Nat from do
+        for ⟨_, cat⟩ in (parserExtension.getState (← getEnv)).categories do
+          if cat.kinds.contains stx.getKind then
+            let oldIndenting := oldIndenting.getD 0
+            return pos.map (spacesBefore src · |>.getD oldIndenting) |>.getD oldIndenting
+        pure <| oldIndenting.getD 0
+      for child in tail do
+        checkIndenting src child strictlyIncrease parentIndentationOfTail continueWhenFailed
 
 @[inherit_doc Mathlib.Linter.linter.style.indenting]
 partial def indentingLinter : Linter where run := withSetOptionIn fun stx => do
