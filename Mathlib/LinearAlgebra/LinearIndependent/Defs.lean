@@ -619,10 +619,10 @@ theorem LinearIndependent.maximal_iff {ι : Type w} {R : Type u} [Semiring R] [N
 end Maximal
 
 /-!
-### Properties which require `LinearOrder R`, `CanonicallyOrderedAdd R` and `OrderedSub R`
+### Properties which require `LinearOrder R` and `CanonicallyOrderedAdd R`
 
-If the semiring `R` is linearly and canonically ordered and admits ordered subtraction (e.g.
-`R = ℕ`), `LinearIndependent` can be proved from linear combination over two disjoint sets.
+If the semiring `R` is linearly and canonically ordered (e.g. `R = ℕ`), `LinearIndependent` can be
+proved from linear combination over two disjoint sets.
 -/
 
 section LinearlyCanonicallyOrdered
