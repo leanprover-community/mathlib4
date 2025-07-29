@@ -59,6 +59,8 @@ inductive RingMode where
 
 /-- Configuration for `ring_nf`. -/
 structure Config extends AtomRec.Config where
+  /-- if true, then fail if no progress is made -/
+  failIfUnchanged := true
   /-- The normalization style. -/
   mode := RingMode.SOP
   deriving Inhabited, BEq, Repr
@@ -67,14 +69,14 @@ structure Config extends AtomRec.Config where
 declare_config_elab elabConfig Config
 
 -- for good performance, this should fail on a term which will be interpreted as an atom
-def bar (rctx : AtomM.Context) (s : IO.Ref AtomM.State) (e : Expr) : MetaM Simp.Result := do
+def bar (e : Expr) : AtomM Simp.Result := do
   let e ← withReducible <| whnf e
   guard e.isApp -- all interesting ring expressions are applications
   let ⟨u, α, e⟩ ← inferTypeQ' e
   let sα ← synthInstanceQ q(CommSemiring $α)
   let c ← mkCache sα
-  let ⟨a, _, pa⟩ ← match ← isAtomOrDerivable q($sα) c q($e) rctx s with
-  | none => eval sα c e rctx s -- `none` indicates that `eval` will find something algebraic.
+  let ⟨a, _, pa⟩ ← match ← isAtomOrDerivable q($sα) c q($e) with
+  | none => eval sα c e -- `none` indicates that `eval` will find something algebraic.
   | some none => failure -- No point rewriting atoms
   | some (some r) => pure r -- Nothing algebraic for `eval` to use, but `norm_num` simplifies.
   pure { expr := a, proof? := pa }

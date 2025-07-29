@@ -30,8 +30,6 @@ structure Config where
   zetaDelta := false
   /-- if true, atoms inside ring expressions will be reduced recursively -/
   recursive := true
-  /-- if true, then fail if no progress is made -/
-  failIfUnchanged := true
   deriving Inhabited, BEq, Repr
 
 /-- The read-only state of the `AtomRec` monad. -/
@@ -53,14 +51,14 @@ A tactic in the `AtomRec.M` monad which will simplify expression `parent` to a n
   `AtomRec.M.run` sets this to `false` in recursive mode.
 -/
 def rewrite
-    (bar : ∀ (rctx : AtomM.Context) (s : IO.Ref AtomM.State) (e : Expr), MetaM Simp.Result)
+    (bar : Expr → AtomM Simp.Result)
     (parent : Expr) (root := true) :
     M Simp.Result :=
   fun nctx rctx s ↦ do
     let pre : Simp.Simproc := fun e =>
       try
         guard <| root || parent != e -- recursion guard
-        let r' ← bar rctx s e
+        let r' ← (bar e) rctx s
         let r ← nctx.simp r'
         if ← withReducible <| isDefEq r.expr e then return .done { expr := r.expr }
         pure (.done r)
@@ -78,7 +76,7 @@ Runs a tactic in the `AtomRec.M` monad, given initial data:
 -/
 partial def M.run
     {α : Type} (s : IO.Ref AtomM.State) (cfg : AtomRec.Config) (nctx : AtomRec.Context)
-    (bar : ∀ (rctx : AtomM.Context) (s : IO.Ref AtomM.State) (e : Expr), MetaM Simp.Result)
+    (bar : Expr → AtomM Simp.Result)
     (x : M α) :
     MetaM α := do
   let rec
@@ -92,7 +90,7 @@ partial def M.run
   withConfig ({ · with zetaDelta := cfg.zetaDelta }) <| x nctx rctx s
 
 def foo (s : IO.Ref AtomM.State) (cfg : Config) (nctx : AtomRec.Context)
-    (bar : ∀ (rctx : AtomM.Context) (s : IO.Ref AtomM.State) (e : Expr), MetaM Simp.Result)
+    (bar : Expr → AtomM Simp.Result)
     (tgt : Expr) :
     MetaM Simp.Result := do
   M.run s cfg nctx bar <| rewrite bar tgt
