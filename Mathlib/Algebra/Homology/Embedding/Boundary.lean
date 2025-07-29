@@ -171,7 +171,7 @@ lemma boundaryGE_embeddingUpIntGE_iff (p : ℤ) (n : ℕ) :
     (embeddingUpIntGE p).BoundaryGE n ↔ n = 0 := by
   constructor
   · intro h
-    obtain _|n := n
+    obtain _ | n := n
     · rfl
     · have := h.2 n
       dsimp at this
@@ -187,7 +187,7 @@ lemma boundaryLE_embeddingUpIntLE_iff (p : ℤ) (n : ℕ) :
     (embeddingUpIntLE p).BoundaryLE n ↔ n = 0 := by
   constructor
   · intro h
-    obtain _|n := n
+    obtain _ | n := n
     · rfl
     · have := h.2 n
       dsimp at this
