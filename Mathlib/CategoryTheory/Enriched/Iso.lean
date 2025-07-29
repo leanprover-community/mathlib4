@@ -35,6 +35,10 @@ structure EnrichedIso (X Y : C) where
   hom_inv : (λ_ _).inv ≫ (hom ⊗ₘ inv) ≫ eComp V X Y X = eId V X := by aesop_cat
   inv_hom : (λ_ _).inv ≫ (inv ⊗ₘ hom) ≫ eComp V Y X Y = eId V Y := by aesop_cat
 
+attribute [reassoc (attr := simp)] EnrichedIso.hom_inv
+
+attribute [reassoc (attr := simp)] EnrichedIso.inv_hom
+
 @[inherit_doc EnrichedIso]
 notation X " ≅[" V "] " Y:10 => EnrichedIso V X Y
 
@@ -55,8 +59,6 @@ def refl (X : C) : X ≅[V] X where
 def symm {X Y : C} (I : X ≅[V] Y) : Y ≅[V] X where
   hom := I.inv
   inv := I.hom
-  hom_inv := I.inv_hom
-  inv_hom := I.hom_inv
 
 open EnrichedCategory
 

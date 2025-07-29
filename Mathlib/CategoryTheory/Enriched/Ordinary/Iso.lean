@@ -82,7 +82,7 @@ end
 /-- The type equivalence between isos in `ForgetEnrichment V C` and `V`-enriched isos in `C`. -/
 def ForgetEnrichment.enrichedIsoEquivIso {V : Type u'} [Category.{v'} V] [MonoidalCategory V]
     {C : Type u} [EnrichedCategory V C] (X Y : ForgetEnrichment V C) :
-    ((ForgetEnrichment.to V X) ≅[V] (ForgetEnrichment.to V Y)) ≃ (X ≅ Y)  :=
+    ((ForgetEnrichment.to V X) ≅[V] (ForgetEnrichment.to V Y)) ≃ (X ≅ Y) :=
   EnrichedIso.equivIso V X Y
 
 end CategoryTheory

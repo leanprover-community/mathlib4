@@ -245,16 +245,22 @@ theorem ForgetEnrichment.homTo_id (X : ForgetEnrichment W C) :
     ForgetEnrichment.homTo W (𝟙 X) = eId W (ForgetEnrichment.to W X : C) :=
   Category.id_comp _
 
+@[deprecated (since := "2025-07-29")] alias forgetEnrichment_id := ForgetEnrichment.homTo_id
+
 @[simp]
 theorem ForgetEnrichment.homOf_eid (X : C) :
     ForgetEnrichment.homOf W (eId W X) = 𝟙 (of W X : C) :=
   (homTo_id W (ForgetEnrichment.of W X)).symm
+
+@[deprecated (since := "2025-07-29")] alias forgetEnrichment_id' := ForgetEnrichment.homOf_eid
 
 /-- Composition in the "underlying" category of an enriched category. -/
 @[simp]
 theorem ForgetEnrichment.homTo_comp {X Y Z : ForgetEnrichment W C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     homTo W (f ≫ g) = ((λ_ (𝟙_ W)).inv ≫ (homTo W f ⊗ₘ homTo W g)) ≫ eComp W _ _ _ :=
   rfl
+
+@[deprecated (since := "2025-07-29")] alias forgetEnrichment_comp := ForgetEnrichment.homTo_comp
 
 theorem ForgetEnrichment.homOf_comp {X Y Z : C} (f : 𝟙_ W ⟶ (X ⟶[W] Y)) (g : 𝟙_ W ⟶ (Y ⟶[W] Z)) :
     homOf W (((λ_ _).inv ≫ (f ⊗ₘ g)) ≫ eComp W ..) = homOf W f ≫ homOf W g :=
