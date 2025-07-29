@@ -234,7 +234,7 @@ theorem quasiSober_of_open_cover (S : Set (Set α)) (hS : ∀ s : S, IsOpen (s :
 Any R1 space is a quasi-sober space because any irreducible set is
 contained in the closure of a singleton.
 -/
-instance R1Space.quasiSober [R1Space α] : QuasiSober α where
+instance (priority := 100) R1Space.quasiSober [R1Space α] : QuasiSober α where
   sober h hs := by
     obtain ⟨x, hx⟩ := h.nonempty
     use x
