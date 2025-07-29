@@ -371,7 +371,7 @@ theorem Ne.nhdsWithin_diff_singleton [T1Space X] {x y : X} (h : x ≠ y) (s : Se
   exact mem_nhdsWithin_of_mem_nhds (isOpen_ne.mem_nhds h)
 
 lemma nhdsWithin_compl_singleton_le [T1Space X] (x y : X) : 𝓝[{x}ᶜ] x ≤ 𝓝[{y}ᶜ] x := by
-  rcases eq_or_ne x y with rfl|hy
+  rcases eq_or_ne x y with rfl | hy
   · exact Eq.le rfl
   · rw [Ne.nhdsWithin_compl_singleton hy]
     exact nhdsWithin_le_nhds
