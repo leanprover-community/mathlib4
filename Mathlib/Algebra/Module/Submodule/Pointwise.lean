@@ -322,7 +322,7 @@ variable (sR : Set R) (s : Set S) (N : Submodule R M)
 
 lemma mem_set_smul_def (x : M) :
     x ∈ s • N ↔
-  x ∈ sInf { p : Submodule R M | ∀ ⦃r : S⦄ {n : M}, r ∈ s → n ∈ N → r • n ∈ p } := Iff.rfl
+    x ∈ sInf { p : Submodule R M | ∀ ⦃r : S⦄ {n : M}, r ∈ s → n ∈ N → r • n ∈ p } := Iff.rfl
 
 variable {s N} in
 @[aesop safe]
