@@ -353,12 +353,6 @@ theorem isStarProjection_iff_isIdempotentElem_and_isStarNormal :
   rw [isStarProjection_iff, and_congr_right_iff]
   exact fun h => IsIdempotentElem.isSelfAdjoint_iff_isStarNormal h
 
-omit [CompleteSpace E] in
-/-- An idempotent operator `T` is symmetric iff `(range T)ᗮ = ker T`. -/
-theorem IsIdempotentElem.isSymmetric_iff_orthogonal_range (h : IsIdempotentElem T) :
-    T.IsSymmetric ↔ (LinearMap.range T)ᗮ = LinearMap.ker T :=
-  LinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range congr(LinearMapClass.linearMap $h.eq)
-
 open ContinuousLinearMap in
 /-- Star projection operators are equal iff their range are. -/
 theorem IsStarProjection.ext_iff {S : E →L[𝕜] E}
@@ -372,6 +366,11 @@ theorem IsStarProjection.ext_iff {S : E →L[𝕜] E}
 
 alias ⟨_, IsStarProjection.ext⟩ := IsStarProjection.ext_iff
 
+theorem isStarProjection_iff_isSymmetricProjection :
+    IsStarProjection T ↔ T.IsSymmetricProjection := by
+  simp [isStarProjection_iff, LinearMap.IsSymmetricProjection,
+    isSelfAdjoint_iff_isSymmetric, IsIdempotentElem, End.mul_eq_comp, ← coe_comp, mul_def]
+
 end ContinuousLinearMap
 
 /-- `U.starProjection` is a star projection. -/
@@ -384,14 +383,9 @@ open ContinuousLinearMap in
 /-- An operator is a star projection if and only if it is an orthogonal projection. -/
 theorem isStarProjection_iff_eq_starProjection_range [CompleteSpace E] {p : E →L[𝕜] E} :
     IsStarProjection p ↔ ∃ (_ : (LinearMap.range p).HasOrthogonalProjection),
-    p = (LinearMap.range p).starProjection := by
-  refine ⟨fun hp ↦ ?_, fun ⟨h, hp⟩ ↦ hp ▸ isStarProjection_starProjection⟩
-  have := IsIdempotentElem.hasOrthogonalProjection_range hp.isIdempotentElem
-  refine ⟨this, Eq.symm ?_⟩
-  ext x
-  refine Submodule.eq_starProjection_of_mem_orthogonal (by simp) ?_
-  simpa [p.orthogonal_range, hp.isSelfAdjoint.isSymmetric]
-    using congr($(hp.isIdempotentElem.mul_one_sub_self) x)
+    p = (LinearMap.range p).starProjection :=
+  p.isStarProjection_iff_isSymmetricProjection.symm.eq ▸
+    isSymmetricProjection_iff_eq_starProjection_range
 
 namespace LinearMap
 

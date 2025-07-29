@@ -308,4 +308,10 @@ theorem IsIdempotentElem.isSymmetric_iff_orthogonal_range {T : E →ₗ[𝕜] E}
 
 end LinearMap
 
+/-- An idempotent operator `T` is symmetric iff `(range T)ᗮ = ker T`. -/
+theorem ContinuousLinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range
+    {T : E →L[𝕜] E} (h : IsIdempotentElem T) :
+    T.IsSymmetric ↔ (LinearMap.range T)ᗮ = LinearMap.ker T :=
+  LinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range congr(LinearMapClass.linearMap $h.eq)
+
 end Normed

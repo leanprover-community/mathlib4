@@ -1145,6 +1145,13 @@ theorem topologicalClosure_eq_top_iff [CompleteSpace E] :
 
 end Submodule
 
+open LinearMap in
+theorem LinearMap.IsSymmetricProjection.hasOrthogonalProjection_range
+    {p : E →ₗ[𝕜] E} (hp : p.IsSymmetricProjection) :
+    (range p).HasOrthogonalProjection := ⟨fun v => ⟨p v, by
+  simp [hp.isIdempotentElem.isSymmetric_iff_orthogonal_range.mp hp.isSymmetric,
+    ← Module.End.mul_apply, hp.isIdempotentElem.eq]⟩⟩
+
 open ContinuousLinearMap in
 theorem ContinuousLinearMap.IsIdempotentElem.hasOrthogonalProjection_range [CompleteSpace E]
     {p : E →L[𝕜] E} (hp : IsIdempotentElem p) : (LinearMap.range p).HasOrthogonalProjection :=
@@ -1327,6 +1334,28 @@ theorem starProjection_isSymmetric [K.HasOrthogonalProjection] :
 
 @[deprecated (since := "2025-07-07")] alias
   orthogonalProjection_isSymmetric := starProjection_isSymmetric
+
+open ContinuousLinearMap in
+/-- `U.starProjection` is a symmetric projection. -/
+theorem isSymmetricProjection_starProjection {U : Submodule 𝕜 E} [U.HasOrthogonalProjection] :
+    U.starProjection.IsSymmetricProjection :=
+  ⟨by simpa [IsIdempotentElem, mul_def, ← coe_comp, Module.End.mul_eq_comp]
+    using U.isIdempotentElem_starProjection, U.starProjection_isSymmetric⟩
+
+open ContinuousLinearMap in
+/-- An operator is a symmetric projection if and only if it is an orthogonal projection. -/
+theorem isSymmetricProjection_iff_eq_starProjection_range {p : E →L[𝕜] E} :
+    p.IsSymmetricProjection ↔ ∃ (_ : (LinearMap.range p).HasOrthogonalProjection),
+    p = (LinearMap.range p).starProjection := by
+  refine ⟨fun hp ↦ ?_, fun ⟨h, hp⟩ ↦ hp ▸ isSymmetricProjection_starProjection⟩
+  have : (LinearMap.range p).HasOrthogonalProjection := hp.hasOrthogonalProjection_range
+  refine ⟨this, Eq.symm ?_⟩
+  ext x
+  refine Submodule.eq_starProjection_of_mem_orthogonal (by simp) ?_
+  rw [(IsIdempotentElem.isSymmetric_iff_orthogonal_range _).mp hp.isSymmetric]
+  · simpa using congr($hp.isIdempotentElem.mul_one_sub_self x)
+  · simpa [IsIdempotentElem, mul_def, ← coe_comp, Module.End.mul_eq_comp]
+      using hp.isIdempotentElem.eq
 
 theorem starProjection_apply_eq_zero_iff [K.HasOrthogonalProjection] {v : E} :
     K.starProjection v = 0 ↔ v ∈ Kᗮ := by
