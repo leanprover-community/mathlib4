@@ -30,11 +30,11 @@ on `Set.PairwiseDisjoint`, even though the latter unfolds to something nicer.
 
 open Function Order Set
 
-variable {α β γ ι ι' : Type*} {r p q : α → α → Prop}
+variable {α β γ ι ι' : Type*} {r p : α → α → Prop}
 
 section Pairwise
 
-variable {f g : ι → α} {s t u : Set α} {a b : α}
+variable {f g : ι → α} {s t : Set α} {a b : α}
 
 theorem pairwise_on_bool (hr : Symmetric r) {a b : α} :
     Pairwise (r on fun c => cond c a b) ↔ r a b := by simpa [Pairwise, Function.onFun] using @hr a b
@@ -45,7 +45,7 @@ theorem pairwise_disjoint_on_bool [PartialOrder α] [OrderBot α] {a b : α} :
 
 theorem Symmetric.pairwise_on [LinearOrder ι] (hr : Symmetric r) (f : ι → α) :
     Pairwise (r on f) ↔ ∀ ⦃m n⦄, m < n → r (f m) (f n) :=
-  ⟨fun h _m _n hmn => h hmn.ne, fun h _m _n hmn => hmn.lt_or_lt.elim (@h _ _) fun h' => hr (h h')⟩
+  ⟨fun h _m _n hmn => h hmn.ne, fun h _m _n hmn => hmn.lt_or_gt.elim (@h _ _) fun h' => hr (h h')⟩
 
 theorem pairwise_disjoint_on [PartialOrder α] [OrderBot α] [LinearOrder ι] (f : ι → α) :
     Pairwise (Disjoint on f) ↔ ∀ ⦃m n⦄, m < n → Disjoint (f m) (f n) :=
@@ -129,9 +129,7 @@ theorem pairwise_union :
     (s ∪ t).Pairwise r ↔
     s.Pairwise r ∧ t.Pairwise r ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → r a b ∧ r b a := by
   simp only [Set.Pairwise, mem_union, or_imp, forall_and]
-  exact
-    ⟨fun H => ⟨H.1.1, H.2.2, H.1.2, fun x hx y hy hne => H.2.1 y hy x hx hne.symm⟩,
-     fun H => ⟨⟨H.1, H.2.2.1⟩, fun x hx y hy hne => H.2.2.2 y hy x hx hne.symm, H.2.1⟩⟩
+  aesop
 
 theorem pairwise_union_of_symmetric (hr : Symmetric r) :
     (s ∪ t).Pairwise r ↔ s.Pairwise r ∧ t.Pairwise r ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → r a b :=
@@ -141,34 +139,45 @@ theorem pairwise_insert :
     (insert a s).Pairwise r ↔ s.Pairwise r ∧ ∀ b ∈ s, a ≠ b → r a b ∧ r b a := by
   simp only [insert_eq, pairwise_union, pairwise_singleton, true_and, mem_singleton_iff, forall_eq]
 
-theorem pairwise_insert_of_not_mem (ha : a ∉ s) :
+theorem pairwise_insert_of_notMem (ha : a ∉ s) :
     (insert a s).Pairwise r ↔ s.Pairwise r ∧ ∀ b ∈ s, r a b ∧ r b a :=
   pairwise_insert.trans <|
     and_congr_right' <| forall₂_congr fun b hb => by simp [(ne_of_mem_of_not_mem hb ha).symm]
+
+@[deprecated (since := "2025-05-23")] alias pairwise_insert_of_not_mem := pairwise_insert_of_notMem
 
 protected theorem Pairwise.insert (hs : s.Pairwise r) (h : ∀ b ∈ s, a ≠ b → r a b ∧ r b a) :
     (insert a s).Pairwise r :=
   pairwise_insert.2 ⟨hs, h⟩
 
-theorem Pairwise.insert_of_not_mem (ha : a ∉ s) (hs : s.Pairwise r) (h : ∀ b ∈ s, r a b ∧ r b a) :
+theorem Pairwise.insert_of_notMem (ha : a ∉ s) (hs : s.Pairwise r) (h : ∀ b ∈ s, r a b ∧ r b a) :
     (insert a s).Pairwise r :=
-  (pairwise_insert_of_not_mem ha).2 ⟨hs, h⟩
+  (pairwise_insert_of_notMem ha).2 ⟨hs, h⟩
+
+@[deprecated (since := "2025-05-23")] alias Pairwise.insert_of_not_mem := Pairwise.insert_of_notMem
 
 theorem pairwise_insert_of_symmetric (hr : Symmetric r) :
     (insert a s).Pairwise r ↔ s.Pairwise r ∧ ∀ b ∈ s, a ≠ b → r a b := by
   simp only [pairwise_insert, hr.iff a, and_self_iff]
 
-theorem pairwise_insert_of_symmetric_of_not_mem (hr : Symmetric r) (ha : a ∉ s) :
+theorem pairwise_insert_of_symmetric_of_notMem (hr : Symmetric r) (ha : a ∉ s) :
     (insert a s).Pairwise r ↔ s.Pairwise r ∧ ∀ b ∈ s, r a b := by
-  simp only [pairwise_insert_of_not_mem ha, hr.iff a, and_self_iff]
+  simp only [pairwise_insert_of_notMem ha, hr.iff a, and_self_iff]
+
+@[deprecated (since := "2025-05-23")]
+alias pairwise_insert_of_symmetric_of_not_mem := pairwise_insert_of_symmetric_of_notMem
 
 theorem Pairwise.insert_of_symmetric (hs : s.Pairwise r) (hr : Symmetric r)
     (h : ∀ b ∈ s, a ≠ b → r a b) : (insert a s).Pairwise r :=
   (pairwise_insert_of_symmetric hr).2 ⟨hs, h⟩
 
-theorem Pairwise.insert_of_symmetric_of_not_mem (hs : s.Pairwise r) (hr : Symmetric r) (ha : a ∉ s)
+@[deprecated Pairwise.insert_of_symmetric (since := "2025-03-19")]
+theorem Pairwise.insert_of_symmetric_of_notMem (hs : s.Pairwise r) (hr : Symmetric r) (ha : a ∉ s)
     (h : ∀ b ∈ s, r a b) : (insert a s).Pairwise r :=
-  (pairwise_insert_of_symmetric_of_not_mem hr ha).2 ⟨hs, h⟩
+  (pairwise_insert_of_symmetric_of_notMem hr ha).2 ⟨hs, h⟩
+
+@[deprecated (since := "2025-05-23")]
+alias Pairwise.insert_of_symmetric_of_not_mem := Pairwise.insert_of_symmetric_of_notMem
 
 theorem pairwise_pair : Set.Pairwise {a, b} r ↔ a ≠ b → r a b ∧ r b a := by simp [pairwise_insert]
 
@@ -196,7 +205,7 @@ protected theorem Pairwise.image {s : Set ι} (h : s.Pairwise (r on f)) : (f '' 
 /-- See also `Set.Pairwise.image`. -/
 theorem InjOn.pairwise_image {s : Set ι} (h : s.InjOn f) :
     (f '' s).Pairwise r ↔ s.Pairwise (r on f) := by
-  simp (config := { contextual := true }) [h.eq_iff, Set.Pairwise]
+  simp +contextual [h.eq_iff, Set.Pairwise]
 
 lemma _root_.Pairwise.range_pairwise (hr : Pairwise (r on f)) : (Set.range f).Pairwise r :=
   image_univ ▸ (pairwise_univ.mpr hr).image
@@ -207,7 +216,7 @@ end Pairwise
 
 theorem pairwise_subtype_iff_pairwise_set (s : Set α) (r : α → α → Prop) :
     (Pairwise fun (x : s) (y : s) => r x y) ↔ s.Pairwise r := by
-  simp only [Pairwise, Set.Pairwise, SetCoe.forall, Ne, Subtype.ext_iff, Subtype.coe_mk]
+  simp only [Pairwise, Set.Pairwise, SetCoe.forall, Ne, Subtype.ext_iff]
 
 alias ⟨Pairwise.set_of_subtype, Set.Pairwise.subtype⟩ := pairwise_subtype_iff_pairwise_set
 
@@ -248,17 +257,23 @@ theorem pairwiseDisjoint_insert {i : ι} :
       s.PairwiseDisjoint f ∧ ∀ j ∈ s, i ≠ j → Disjoint (f i) (f j) :=
   pairwise_insert_of_symmetric <| symmetric_disjoint.comap f
 
-theorem pairwiseDisjoint_insert_of_not_mem {i : ι} (hi : i ∉ s) :
+theorem pairwiseDisjoint_insert_of_notMem {i : ι} (hi : i ∉ s) :
     (insert i s).PairwiseDisjoint f ↔ s.PairwiseDisjoint f ∧ ∀ j ∈ s, Disjoint (f i) (f j) :=
-  pairwise_insert_of_symmetric_of_not_mem (symmetric_disjoint.comap f) hi
+  pairwise_insert_of_symmetric_of_notMem (symmetric_disjoint.comap f) hi
+
+@[deprecated (since := "2025-05-23")]
+alias pairwiseDisjoint_insert_of_not_mem := pairwiseDisjoint_insert_of_notMem
 
 protected theorem PairwiseDisjoint.insert (hs : s.PairwiseDisjoint f) {i : ι}
     (h : ∀ j ∈ s, i ≠ j → Disjoint (f i) (f j)) : (insert i s).PairwiseDisjoint f :=
   pairwiseDisjoint_insert.2 ⟨hs, h⟩
 
-theorem PairwiseDisjoint.insert_of_not_mem (hs : s.PairwiseDisjoint f) {i : ι} (hi : i ∉ s)
+theorem PairwiseDisjoint.insert_of_notMem (hs : s.PairwiseDisjoint f) {i : ι} (hi : i ∉ s)
     (h : ∀ j ∈ s, Disjoint (f i) (f j)) : (insert i s).PairwiseDisjoint f :=
-  (pairwiseDisjoint_insert_of_not_mem hi).2 ⟨hs, h⟩
+  (pairwiseDisjoint_insert_of_notMem hi).2 ⟨hs, h⟩
+
+@[deprecated (since := "2025-05-23")]
+alias PairwiseDisjoint.insert_of_not_mem := PairwiseDisjoint.insert_of_notMem
 
 theorem PairwiseDisjoint.image_of_le (hs : s.PairwiseDisjoint f) {g : ι → ι} (hg : f ∘ g ≤ f) :
     (g '' s).PairwiseDisjoint f := by
@@ -296,12 +311,8 @@ lemma PairwiseDisjoint.eq_or_disjoint
   exact h.elim hi hj
 
 lemma pairwiseDisjoint_range_iff {α β : Type*} {f : α → (Set β)} :
-    (Set.range f).PairwiseDisjoint id ↔ ∀ x y, f x = f y ∨ Disjoint (f x) (f y) := by
-  constructor
-  · intro h x y
-    apply h.eq_or_disjoint (Set.mem_range_self x) (Set.mem_range_self y)
-  · rintro h _ ⟨x, rfl⟩ _ ⟨y, rfl⟩ hxy
-    exact (h x y).resolve_left hxy
+    (range f).PairwiseDisjoint id ↔ ∀ x y, f x ≠ f y → Disjoint (f x) (f y) := by
+  aesop (add simp [PairwiseDisjoint, Set.Pairwise])
 
 /-- If the range of `f` is pairwise disjoint, then the image of any set `s` under `f` is as well. -/
 lemma _root_.Pairwise.pairwiseDisjoint (h : Pairwise (Disjoint on f)) (s : Set ι) :
@@ -311,7 +322,7 @@ end PartialOrderBot
 
 section SemilatticeInfBot
 
-variable [SemilatticeInf α] [OrderBot α] {s t : Set ι} {f g : ι → α}
+variable [SemilatticeInf α] [OrderBot α] {s : Set ι} {f : ι → α}
 
 -- classical
 theorem PairwiseDisjoint.elim' (hs : s.PairwiseDisjoint f) {i j : ι} (hi : i ∈ s) (hj : j ∈ s)
@@ -399,7 +410,7 @@ lemma exists_lt_mem_inter_of_not_pairwiseDisjoint [LinearOrder ι]
     {f : ι → Set α} (h : ¬ s.PairwiseDisjoint f) :
     ∃ i ∈ s, ∃ j ∈ s, i < j ∧ ∃ x, x ∈ f i ∩ f j := by
   obtain ⟨i, hi, j, hj, hne, x, hx₁, hx₂⟩ := exists_ne_mem_inter_of_not_pairwiseDisjoint h
-  cases' lt_or_lt_iff_ne.mpr hne with h_lt h_lt
+  rcases lt_or_lt_iff_ne.mpr hne with h_lt | h_lt
   · exact ⟨i, hi, j, hj, h_lt, x, hx₁, hx₂⟩
   · exact ⟨j, hj, i, hi, h_lt, x, hx₂, hx₁⟩
 

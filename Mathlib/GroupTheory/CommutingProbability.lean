@@ -3,8 +3,8 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.GroupTheory.Abelianization
-import Mathlib.GroupTheory.GroupAction.CardCommute
+import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.GroupTheory.Abelianization.Finite
 import Mathlib.GroupTheory.SpecificGroups.Dihedral
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
@@ -21,9 +21,9 @@ This file introduces the commuting probability of finite groups.
 * Neumann's theorem.
 -/
 
-noncomputable section
+assert_not_exists Ideal TwoSidedIdeal
 
-open scoped Classical
+noncomputable section
 
 open Fintype
 
@@ -47,7 +47,7 @@ theorem commProb_prod (M' : Type*) [Mul M'] : commProb (M × M') = commProb M * 
 theorem commProb_pi {α : Type*} (i : α → Type*) [Fintype α] [∀ a, Mul (i a)] :
     commProb (∀ a, i a) = ∏ a, commProb (i a) := by
   simp_rw [commProb_def, Finset.prod_div_distrib, Finset.prod_pow, ← Nat.cast_prod,
-    ← Nat.card_pi, Commute, SemiconjBy, Function.funext_iff]
+    ← Nat.card_pi, Commute, SemiconjBy, funext_iff]
   congr 2
   exact Nat.card_congr ⟨fun x a => ⟨⟨x.1.1 a, x.1.2 a⟩, x.2 a⟩, fun x => ⟨⟨fun a => (x a).1.1,
     fun a => (x a).1.2⟩, fun a => (x a).2⟩, fun x => rfl, fun x => rfl⟩
@@ -76,6 +76,7 @@ variable {M}
 
 theorem commProb_eq_one_iff [h : Nonempty M] :
     commProb M = 1 ↔ Std.Commutative ((· * ·) : M → M → M) := by
+  classical
   haveI := Fintype.ofFinite M
   rw [commProb, ← Set.coe_setOf, Nat.card_eq_fintype_card, Nat.card_eq_fintype_card]
   rw [div_eq_one_iff_eq, ← Nat.cast_pow, Nat.cast_inj, sq, ← card_prod,
@@ -111,7 +112,7 @@ theorem Subgroup.commProb_quotient_le [H.Normal] : commProb (G ⧸ H) ≤ commPr
     H.card_mul_index, div_mul_cancel₀, Nat.cast_le]
   · apply Finite.card_le_of_surjective
     show Function.Surjective (ConjClasses.map (QuotientGroup.mk' H))
-    exact ConjClasses.map_surjective Quotient.surjective_Quotient_mk''
+    exact ConjClasses.map_surjective Quotient.mk''_surjective
   · exact Nat.cast_ne_zero.mpr Finite.card_pos.ne'
   · exact Nat.cast_pos.mpr Finite.card_pos
 
@@ -142,8 +143,8 @@ private lemma div_four_lt : {n : ℕ} → (h0 : n ≠ 0) → (h1 : n ≠ 1) → 
 
 /-- A list of Dihedral groups whose product will have commuting probability `1 / n`. -/
 def reciprocalFactors (n : ℕ) : List ℕ :=
-  if h0 : n = 0 then [0]
-  else if h1 : n = 1 then []
+  if _ : n = 0 then [0]
+  else if _ : n = 1 then []
   else if Even n then
     3 :: reciprocalFactors (n / 2)
   else
@@ -178,7 +179,8 @@ lemma commProb_nil : commProb (Product []) = 1 := by
 
 lemma commProb_cons (n : ℕ) (l : List ℕ) :
     commProb (Product (n :: l)) = commProb (DihedralGroup n) * commProb (Product l) := by
-  simp [Product, commProb_pi, Fin.prod_univ_succ]
+  simp only [commProb_pi, Fin.prod_univ_succ, Fin.getElem_fin, Fin.val_succ, Fin.val_zero,
+    List.getElem_cons_zero, List.length_cons, List.getElem_cons_succ]
 
 /-- Construction of a group with commuting probability `1 / n`. -/
 theorem commProb_reciprocal (n : ℕ) :

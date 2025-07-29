@@ -36,27 +36,31 @@ noncomputable def oscillation [TopologicalSpace E] (f : E → F) (x : E) : ENNRe
 
 /-- The oscillation of `f : E → F` within `D` at `x`. -/
 noncomputable def oscillationWithin [TopologicalSpace E] (f : E → F) (D : Set E) (x : E) :
-  ENNReal := ⨅ S ∈ (𝓝[D] x).map f, diam S
+    ENNReal :=
+  ⨅ S ∈ (𝓝[D] x).map f, diam S
 
 /-- The oscillation of `f` at `x` within a neighborhood `D` of `x` is equal to `oscillation f x` -/
-theorem oscillationWithin_nhd_eq_oscillation [TopologicalSpace E] (f : E → F) (D : Set E) (x : E)
+theorem oscillationWithin_nhds_eq_oscillation [TopologicalSpace E] (f : E → F) (D : Set E) (x : E)
     (hD : D ∈ 𝓝 x) : oscillationWithin f D x = oscillation f x := by
   rw [oscillation, oscillationWithin, nhdsWithin_eq_nhds.2 hD]
+
+@[deprecated (since := "2025-05-22")]
+alias oscillationWithin_nhd_eq_oscillation := oscillationWithin_nhds_eq_oscillation
 
 /-- The oscillation of `f` at `x` within `univ` is equal to `oscillation f x` -/
 theorem oscillationWithin_univ_eq_oscillation [TopologicalSpace E] (f : E → F) (x : E) :
     oscillationWithin f univ x = oscillation f x :=
-  oscillationWithin_nhd_eq_oscillation f univ x Filter.univ_mem
+  oscillationWithin_nhds_eq_oscillation f univ x Filter.univ_mem
 
 namespace ContinuousWithinAt
 
 theorem oscillationWithin_eq_zero [TopologicalSpace E] {f : E → F} {D : Set E}
     {x : E} (hf : ContinuousWithinAt f D x) : oscillationWithin f D x = 0 := by
-  refine le_antisymm (le_of_forall_pos_le_add fun ε hε _ ↦ ?_) (zero_le _)
+  refine le_antisymm (_root_.le_of_forall_pos_le_add fun ε hε ↦ ?_) (zero_le _)
   rw [zero_add]
   have : ball (f x) (ε / 2) ∈ (𝓝[D] x).map f := hf <| ball_mem_nhds _ (by simp [ne_of_gt hε])
   refine (biInf_le diam this).trans (le_of_le_of_eq diam_ball ?_)
-  exact (ENNReal.mul_div_cancel' (by norm_num) (by norm_num))
+  exact (ENNReal.mul_div_cancel (by norm_num) (by norm_num))
 
 end ContinuousWithinAt
 
@@ -107,7 +111,7 @@ theorem uniform_oscillationWithin (comp : IsCompact K) (hK : ∀ x ∈ K, oscill
       ⟨ENNReal.ofReal ((a - r) / 2), by simp [ar], ?_⟩
     refine fun y hy ↦ ⟨a - (a - r) / 2, by linarith,
       le_trans (diam_mono (image_mono fun z hz ↦ ?_)) ha⟩
-    refine ⟨lt_of_le_of_lt (edist_triangle z y x) (lt_of_lt_of_eq (add_lt_add hz.1 hy) ?_),
+    refine ⟨lt_of_le_of_lt (edist_triangle z y x) (lt_of_lt_of_eq (ENNReal.add_lt_add hz.1 hy) ?_),
       hz.2⟩
     rw [← ofReal_add (by linarith) (by linarith), sub_add_cancel]
   have S_cover : K ⊆ ⋃ r > 0, S r := by

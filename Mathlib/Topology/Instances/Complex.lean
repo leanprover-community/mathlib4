@@ -5,10 +5,10 @@ Authors: Xavier Roblot
 -/
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Data.Complex.FiniteDimensional
-import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.FieldTheory.IntermediateField.Basic
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.Topology.Algebra.Field
 import Mathlib.Topology.Algebra.UniformRing
-import Mathlib.FieldTheory.IntermediateField.Basic
 
 /-!
 # Some results about the topology of ℂ
@@ -23,15 +23,15 @@ open ComplexConjugate
 
 /-- The only closed subfields of `ℂ` are `ℝ` and `ℂ`. -/
 theorem Complex.subfield_eq_of_closed {K : Subfield ℂ} (hc : IsClosed (K : Set ℂ)) :
-    K = ofReal.fieldRange ∨ K = ⊤ := by
-  suffices range (ofReal' : ℝ → ℂ) ⊆ K by
+    K = ofRealHom.fieldRange ∨ K = ⊤ := by
+  suffices range (ofReal : ℝ → ℂ) ⊆ K by
     rw [range_subset_iff, ← coe_algebraMap] at this
     have :=
       (Subalgebra.isSimpleOrder_of_finrank finrank_real_complex).eq_bot_or_eq_top
         (Subfield.toIntermediateField K this).toSubalgebra
     simp_rw [← SetLike.coe_set_eq, IntermediateField.coe_toSubalgebra] at this ⊢
     exact this
-  suffices range (ofReal' : ℝ → ℂ) ⊆ closure (Set.range ((ofReal' : ℝ → ℂ) ∘ ((↑) : ℚ → ℝ))) by
+  suffices range (ofReal : ℝ → ℂ) ⊆ closure (Set.range ((ofReal : ℝ → ℂ) ∘ ((↑) : ℚ → ℝ))) by
     refine subset_trans this ?_
     rw [← IsClosed.closure_eq hc]
     apply closure_mono
@@ -48,36 +48,40 @@ continuous, then `ψ` is either the inclusion map or the composition of the incl
 complex conjugation. -/
 theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ : K →+* ℂ}
     (hc : UniformContinuous ψ) : ψ.toFun = K.subtype ∨ ψ.toFun = conj ∘ K.subtype := by
-  letI : TopologicalDivisionRing ℂ := TopologicalDivisionRing.mk
-  letI : TopologicalRing K.topologicalClosure :=
-    Subring.instTopologicalRing K.topologicalClosure.toSubring
+  letI : IsTopologicalDivisionRing ℂ := IsTopologicalDivisionRing.mk
+  letI : IsTopologicalRing K.topologicalClosure :=
+    Subring.instIsTopologicalRing K.topologicalClosure.toSubring
   set ι : K → K.topologicalClosure := ⇑(Subfield.inclusion K.le_topologicalClosure)
-  have ui : UniformInducing ι :=
+  have ui : IsUniformInducing ι :=
     ⟨by
-      erw [uniformity_subtype, uniformity_subtype, Filter.comap_comap]
+      rw [uniformity_subtype, uniformity_subtype, Filter.comap_comap]
       congr ⟩
   let di := ui.isDenseInducing (?_ : DenseRange ι)
   · -- extψ : closure(K) →+* ℂ is the extension of ψ : K →+* ℂ
     let extψ := IsDenseInducing.extendRingHom ui di.dense hc
     haveI hψ := (uniformContinuous_uniformly_extend ui di.dense hc).continuous
-    cases' Complex.subfield_eq_of_closed (Subfield.isClosed_topologicalClosure K) with h h
+    rcases Complex.subfield_eq_of_closed (Subfield.isClosed_topologicalClosure K) with h | h
     · left
       let j := RingEquiv.subfieldCongr h
       -- ψ₁ is the continuous ring hom `ℝ →+* ℂ` constructed from `j : closure (K) ≃+* ℝ`
       -- and `extψ : closure (K) →+* ℂ`
-      let ψ₁ := RingHom.comp extψ (RingHom.comp j.symm.toRingHom ofReal.rangeRestrict)
+      let ψ₁ := RingHom.comp extψ (RingHom.comp j.symm.toRingHom ofRealHom.rangeRestrict)
       -- Porting note: was `by continuity!` and was used inline
       have hψ₁ : Continuous ψ₁ := by
         simpa only [RingHom.coe_comp] using hψ.comp ((continuous_algebraMap ℝ ℂ).subtype_mk _)
       ext1 x
-      rsuffices ⟨r, hr⟩ : ∃ r : ℝ, ofReal.rangeRestrict r = j (ι x)
+      rsuffices ⟨r, hr⟩ : ∃ r : ℝ, ofRealHom.rangeRestrict r = j (ι x)
       · have :=
           RingHom.congr_fun (ringHom_eq_ofReal_of_continuous hψ₁) r
-        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-        erw [RingHom.comp_apply, RingHom.comp_apply, hr, RingEquiv.toRingHom_eq_coe] at this
+        rw [RingHom.comp_apply, RingHom.comp_apply] at this
+        -- In `this`, the `DFunLike.coe` thinks it is applying a `(ℝ →+* ↥ofRealHom.fieldRange)`,
+        -- while in `hr`, we have a `(ℝ →+* ↥ofRealHom.range)`.
+        -- We could add a `@[simp]` lemma fixing this, but it breaks later steps of the proof.
+        erw [hr] at this
+        rw [RingEquiv.toRingHom_eq_coe] at this
         convert this using 1
         · exact (IsDenseInducing.extend_eq di hc.continuous _).symm
-        · rw [← ofReal.coe_rangeRestrict, hr]
+        · rw [← ofRealHom.coe_rangeRestrict, hr]
           rfl
       obtain ⟨r, hr⟩ := SetLike.coe_mem (j (ι x))
       exact ⟨r, Subtype.ext hr⟩
@@ -90,7 +94,7 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
       -- Porting note: was `by continuity!` and was used inline
       have hψ₁ : Continuous ψ₁ := by
         simpa only [RingHom.coe_comp] using hψ.comp (continuous_id.subtype_mk _)
-      cases' ringHom_eq_id_or_conj_of_continuous hψ₁ with h h
+      rcases ringHom_eq_id_or_conj_of_continuous hψ₁ with h | h
       · left
         ext1 z
         convert RingHom.congr_fun h z using 1

@@ -1,10 +1,11 @@
 /-
 Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
+Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes, Antoine Chambert-Loir
 -/
-import Mathlib.Data.Fin.Basic
+import Mathlib.Data.Fin.Rev
 import Mathlib.Data.Nat.Find
+import Mathlib.Order.Fin.Basic
 
 /-!
 # Operation on tuples
@@ -44,7 +45,7 @@ ways to move between tuples of length `n` and of length `n + 1` by adding/removi
   functions, in which case `f : ∀ i : Fin n, α i.castSucc` and `a : α (last n)`. This is a
   special case of `Fin.lastCases`.
 * `Fin.init`: Turn a tuple `f : Fin (n + 1) → α` into a tuple `Fin.init f : Fin n → α` by forgetting
-  the start. In general, tuples can be dependent functions,
+  the end. In general, tuples can be dependent functions,
   in which case `Fin.init f : ∀ i : Fin n, α i.castSucc`.
 
 ### Adding in the middle
@@ -108,7 +109,7 @@ def cons (x : α 0) (p : ∀ i : Fin n, α i.succ) : ∀ i, α i := fun j ↦ Fi
 
 @[simp]
 theorem tail_cons : tail (cons x p) = p := by
-  simp (config := { unfoldPartialApp := true }) [tail, cons]
+  simp +unfoldPartialApp [tail, cons]
 
 @[simp]
 theorem cons_succ : cons x p i.succ = p i := by simp [cons]
@@ -121,28 +122,23 @@ theorem cons_one {α : Fin (n + 2) → Sort*} (x : α 0) (p : ∀ i : Fin n.succ
     cons x p 1 = p 0 := by
   rw [← cons_succ x p]; rfl
 
+@[simp]
+theorem cons_last {α : Fin (n + 2) → Sort*} (x : α 0) (p : ∀ i : Fin n.succ, α i.succ) :
+    cons x p (.last _) = p (.last _) := by
+  rw [← cons_succ x p]; rfl
+
 /-- Updating a tuple and adding an element at the beginning commute. -/
 @[simp]
 theorem cons_update : cons x (update p i y) = update (cons x p) i.succ y := by
   ext j
-  by_cases h : j = 0
-  · rw [h]
-    simp [Ne.symm (succ_ne_zero i)]
-  · let j' := pred j h
-    have : j'.succ = j := succ_pred j h
-    rw [← this, cons_succ]
-    by_cases h' : j' = i
-    · rw [h']
-      simp
-    · have : j'.succ ≠ i.succ := by rwa [Ne, succ_inj]
-      rw [update_noteq h', update_noteq this, cons_succ]
+  cases j using Fin.cases <;> simp [Ne.symm, update_apply_of_injective _ (succ_injective _)]
 
 /-- As a binary function, `Fin.cons` is injective. -/
 theorem cons_injective2 : Function.Injective2 (@cons n α) := fun x₀ y₀ x y h ↦
   ⟨congr_fun h 0, funext fun i ↦ by simpa using congr_fun h (Fin.succ i)⟩
 
 @[simp]
-theorem cons_eq_cons {x₀ y₀ : α 0} {x y : ∀ i : Fin n, α i.succ} :
+theorem cons_inj {x₀ y₀ : α 0} {x y : ∀ i : Fin n, α i.succ} :
     cons x₀ x = cons y₀ y ↔ x₀ = y₀ ∧ x = y :=
   cons_injective2.eq_iff
 
@@ -154,30 +150,28 @@ theorem cons_right_injective (x₀ : α 0) : Function.Injective (cons x₀) :=
 
 /-- Adding an element at the beginning of a tuple and then updating it amounts to adding it
 directly. -/
+@[simp]
 theorem update_cons_zero : update (cons x p) 0 z = cons z p := by
   ext j
-  by_cases h : j = 0
-  · rw [h]
-    simp
-  · simp only [h, update_noteq, Ne, not_false_iff]
-    let j' := pred j h
-    have : j'.succ = j := succ_pred j h
-    rw [← this, cons_succ, cons_succ]
+  cases j using Fin.cases <;> simp
 
 /-- Concatenating the first element of a tuple with its tail gives back the original tuple -/
-@[simp, nolint simpNF] -- Porting note: linter claims LHS doesn't simplify
+@[simp]
 theorem cons_self_tail : cons (q 0) (tail q) = q := by
   ext j
-  by_cases h : j = 0
-  · rw [h]
-    simp
-  · let j' := pred j h
-    have : j'.succ = j := succ_pred j h
-    rw [← this]
-    unfold tail
-    rw [cons_succ]
+  cases j using Fin.cases <;> simp [tail]
 
--- Porting note: Mathport removes `_root_`?
+/-- Equivalence between tuples of length `n + 1` and pairs of an element and a tuple of length `n`
+given by separating out the first element of the tuple.
+
+This is `Fin.cons` as an `Equiv`. -/
+@[simps]
+def consEquiv (α : Fin (n + 1) → Type*) : α 0 × (∀ i, α (succ i)) ≃ ∀ i, α i where
+  toFun f := cons f.1 f.2
+  invFun f := (f 0, tail f)
+  left_inv f := by simp
+  right_inv f := by simp
+
 /-- Recurse on an `n+1`-tuple by splitting it into a single element and an `n`-tuple. -/
 @[elab_as_elim]
 def consCases {P : (∀ i : Fin n.succ, α i) → Sort v} (h : ∀ x₀ x, P (Fin.cons x₀ x))
@@ -186,7 +180,7 @@ def consCases {P : (∀ i : Fin n.succ, α i) → Sort v} (h : ∀ x₀ x, P (Fi
 
 @[simp]
 theorem consCases_cons {P : (∀ i : Fin n.succ, α i) → Sort v} (h : ∀ x₀ x, P (Fin.cons x₀ x))
-    (x₀ : α 0) (x : ∀ i : Fin n, α i.succ) : @consCases _ _ _ h (cons x₀ x) = h x₀ x := by
+    (x₀ : α 0) (x : ∀ i : Fin n, α i.succ) : consCases h (cons x₀ x) = h x₀ x := by
   rw [consCases, cast_eq]
   congr
 
@@ -195,32 +189,19 @@ theorem consCases_cons {P : (∀ i : Fin n.succ, α i) → Sort v} (h : ∀ x₀
 def consInduction {α : Sort*} {P : ∀ {n : ℕ}, (Fin n → α) → Sort v} (h0 : P Fin.elim0)
     (h : ∀ {n} (x₀) (x : Fin n → α), P x → P (Fin.cons x₀ x)) : ∀ {n : ℕ} (x : Fin n → α), P x
   | 0, x => by convert h0
-  | n + 1, x => consCases (fun x₀ x ↦ h _ _ <| consInduction h0 h _) x
+  | _ + 1, x => consCases (fun _ _ ↦ h _ _ <| consInduction h0 h _) x
 
 theorem cons_injective_of_injective {α} {x₀ : α} {x : Fin n → α} (hx₀ : x₀ ∉ Set.range x)
     (hx : Function.Injective x) : Function.Injective (cons x₀ x : Fin n.succ → α) := by
-  refine Fin.cases ?_ ?_
-  · refine Fin.cases ?_ ?_
-    · intro
-      rfl
-    · intro j h
-      rw [cons_zero, cons_succ] at h
-      exact hx₀.elim ⟨_, h.symm⟩
-  · intro i
-    refine Fin.cases ?_ ?_
-    · intro h
-      rw [cons_zero, cons_succ] at h
-      exact hx₀.elim ⟨_, h⟩
-    · intro j h
-      rw [cons_succ, cons_succ] at h
-      exact congr_arg _ (hx h)
+  intro i j
+  cases i using Fin.cases <;> cases j using Fin.cases <;> aesop (add simp [hx.eq_iff])
 
 theorem cons_injective_iff {α} {x₀ : α} {x : Fin n → α} :
     Function.Injective (cons x₀ x : Fin n.succ → α) ↔ x₀ ∉ Set.range x ∧ Function.Injective x := by
   refine ⟨fun h ↦ ⟨?_, ?_⟩, fun h ↦ cons_injective_of_injective h.1 h.2⟩
   · rintro ⟨i, hi⟩
     replace h := @h i.succ 0
-    simp [hi, succ_ne_zero] at h
+    simp [hi] at h
   · simpa [Function.comp] using h.comp (Fin.succ_injective _)
 
 @[simp]
@@ -243,7 +224,7 @@ theorem exists_fin_succ_pi {P : (∀ i, α i) → Prop} : (∃ x, P x) ↔ ∃ a
 @[simp]
 theorem tail_update_zero : tail (update q 0 z) = tail q := by
   ext j
-  simp [tail, Fin.succ_ne_zero]
+  simp [tail]
 
 /-- Updating a nonzero element and taking the tail commute. -/
 @[simp]
@@ -308,6 +289,12 @@ def append (a : Fin m → α) (b : Fin n → α) : Fin (m + n) → α :=
 @[simp]
 theorem append_left (u : Fin m → α) (v : Fin n → α) (i : Fin m) :
     append u v (Fin.castAdd n i) = u i :=
+  addCases_left _
+
+/-- Variant of `append_left` using `Fin.castLE` instead of `Fin.castAdd`. -/
+@[simp]
+theorem append_left' (u : Fin m → α) (v : Fin n → α) (i : Fin m) :
+    append u v (Fin.castLE (by omega) i) = u i :=
   addCases_left _
 
 @[simp]
@@ -383,7 +370,7 @@ theorem cons_eq_append (x : α) (xs : Fin n → α) :
   subst h; simp
 
 lemma append_rev {m n} (xs : Fin m → α) (ys : Fin n → α) (i : Fin (m + n)) :
-    append xs ys (rev i) = append (ys ∘ rev) (xs ∘ rev) (cast (Nat.add_comm ..) i) := by
+    append xs ys (rev i) = append (ys ∘ rev) (xs ∘ rev) (i.cast (Nat.add_comm ..)) := by
   rcases rev_surjective i with ⟨i, rfl⟩
   rw [rev_rev]
   induction i using Fin.addCases
@@ -391,8 +378,30 @@ lemma append_rev {m n} (xs : Fin m → α) (ys : Fin n → α) (i : Fin (m + n))
   · simp [cast_rev, rev_addNat]
 
 lemma append_comp_rev {m n} (xs : Fin m → α) (ys : Fin n → α) :
-    append xs ys ∘ rev = append (ys ∘ rev) (xs ∘ rev) ∘ cast (Nat.add_comm ..) :=
+    append xs ys ∘ rev = append (ys ∘ rev) (xs ∘ rev) ∘ Fin.cast (Nat.add_comm ..) :=
   funext <| append_rev xs ys
+
+theorem append_castAdd_natAdd {f : Fin (m + n) → α} :
+    append (fun i ↦ f (castAdd n i)) (fun i ↦ f (natAdd m i)) = f := by
+  unfold append addCases
+  simp
+
+theorem append_comp_sumElim {xs : Fin m → α} {ys : Fin n → α} :
+    Fin.append xs ys ∘ Sum.elim (Fin.castAdd _) (Fin.natAdd _) = Sum.elim xs ys := by
+  ext (i | j) <;> simp
+
+theorem append_injective_iff {xs : Fin m → α} {ys : Fin n → α} :
+    Function.Injective (Fin.append xs ys) ↔
+      Function.Injective xs ∧ Function.Injective ys ∧ ∀ i j, xs i ≠ ys j := by
+  -- TODO: move things around so we can just import this.
+  -- We inline it because it's still shorter than proving from scratch.
+  let finSumFinEquiv : Fin m ⊕ Fin n ≃ Fin (m + n) :=
+  { toFun := Sum.elim (Fin.castAdd n) (Fin.natAdd m)
+    invFun i := @Fin.addCases m n (fun _ => Fin m ⊕ Fin n) Sum.inl Sum.inr i
+    left_inv x := by rcases x with y | y <;> simp
+    right_inv x := by refine Fin.addCases (fun i => ?_) (fun i => ?_) x <;> simp }
+  rw [← Sum.elim_injective, ← append_comp_sumElim, ← finSumFinEquiv.injective_comp,
+    Equiv.coe_fn_mk]
 
 end Append
 
@@ -401,11 +410,9 @@ section Repeat
 variable {α : Sort*}
 
 /-- Repeat `a` `m` times. For example `Fin.repeat 2 ![0, 3, 7] = ![0, 3, 7, 0, 3, 7]`. -/
--- Porting note: removed @[simp]
 def «repeat» (m : ℕ) (a : Fin n → α) : Fin (m * n) → α
   | i => a i.modNat
 
--- Porting note: added (leanprover/lean4#2042)
 @[simp]
 theorem repeat_apply (a : Fin n → α) (i : Fin (m * n)) :
     Fin.repeat m a i = a i.modNat :=
@@ -413,11 +420,11 @@ theorem repeat_apply (a : Fin n → α) (i : Fin (m * n)) :
 
 @[simp]
 theorem repeat_zero (a : Fin n → α) :
-    Fin.repeat 0 a = Fin.elim0 ∘ cast (Nat.zero_mul _) :=
-  funext fun x => (cast (Nat.zero_mul _) x).elim0
+    Fin.repeat 0 a = Fin.elim0 ∘ Fin.cast (Nat.zero_mul _) :=
+  funext fun x => (x.cast (Nat.zero_mul _)).elim0
 
 @[simp]
-theorem repeat_one (a : Fin n → α) : Fin.repeat 1 a = a ∘ cast (Nat.one_mul _) := by
+theorem repeat_one (a : Fin n → α) : Fin.repeat 1 a = a ∘ Fin.cast (Nat.one_mul _) := by
   generalize_proofs h
   apply funext
   rw [(Fin.rightInverse_cast h.symm).surjective.forall]
@@ -426,7 +433,7 @@ theorem repeat_one (a : Fin n → α) : Fin.repeat 1 a = a ∘ cast (Nat.one_mul
 
 theorem repeat_succ (a : Fin n → α) (m : ℕ) :
     Fin.repeat m.succ a =
-      append a (Fin.repeat m a) ∘ cast ((Nat.succ_mul _ _).trans (Nat.add_comm ..)) := by
+      append a (Fin.repeat m a) ∘ Fin.cast ((Nat.succ_mul _ _).trans (Nat.add_comm ..)) := by
   generalize_proofs h
   apply funext
   rw [(Fin.rightInverse_cast h.symm).surjective.forall]
@@ -436,12 +443,12 @@ theorem repeat_succ (a : Fin n → α) (m : ℕ) :
 
 @[simp]
 theorem repeat_add (a : Fin n → α) (m₁ m₂ : ℕ) : Fin.repeat (m₁ + m₂) a =
-    append (Fin.repeat m₁ a) (Fin.repeat m₂ a) ∘ cast (Nat.add_mul ..) := by
+    append (Fin.repeat m₁ a) (Fin.repeat m₂ a) ∘ Fin.cast (Nat.add_mul ..) := by
   generalize_proofs h
   apply funext
   rw [(Fin.rightInverse_cast h.symm).surjective.forall]
   refine Fin.addCases (fun l => ?_) fun r => ?_
-  · simp [modNat, Nat.mod_eq_of_lt l.is_lt]
+  · simp [modNat]
   · simp [modNat, Nat.add_mod]
 
 theorem repeat_rev (a : Fin n → α) (k : Fin (m * n)) :
@@ -464,22 +471,20 @@ inductively from `Fin n` starting from the left, not from the right. This implie
 more help to realize that elements belong to the right types, i.e., we need to insert casts at
 several places. -/
 
--- Porting note: `i.castSucc` does not work like it did in Lean 3;
--- `(castSucc i)` must be used.
 variable {α : Fin (n + 1) → Sort*} (x : α (last n)) (q : ∀ i, α i)
-  (p : ∀ i : Fin n, α (castSucc i)) (i : Fin n) (y : α (castSucc i)) (z : α (last n))
+  (p : ∀ i : Fin n, α i.castSucc) (i : Fin n) (y : α i.castSucc) (z : α (last n))
 
 /-- The beginning of an `n+1` tuple, i.e., its first `n` entries -/
-def init (q : ∀ i, α i) (i : Fin n) : α (castSucc i) :=
-  q (castSucc i)
+def init (q : ∀ i, α i) (i : Fin n) : α i.castSucc :=
+  q i.castSucc
 
 theorem init_def {q : ∀ i, α i} :
-    (init fun k : Fin (n + 1) ↦ q k) = fun k : Fin n ↦ q (castSucc k) :=
+    (init fun k : Fin (n + 1) ↦ q k) = fun k : Fin n ↦ q k.castSucc :=
   rfl
 
 /-- Adding an element at the end of an `n`-tuple, to get an `n+1`-tuple. The name `snoc` comes from
 `cons` (i.e., adding an element to the left of a tuple) read in reverse order. -/
-def snoc (p : ∀ i : Fin n, α (castSucc i)) (x : α (last n)) (i : Fin (n + 1)) : α i :=
+def snoc (p : ∀ i : Fin n, α i.castSucc) (x : α (last n)) (i : Fin (n + 1)) : α i :=
   if h : i.val < n then _root_.cast (by rw [Fin.castSucc_castLT i h]) (p (castLT i h))
   else _root_.cast (by rw [eq_last_of_not_lt h]) x
 
@@ -490,9 +495,12 @@ theorem init_snoc : init (snoc p x) = p := by
   convert cast_eq rfl (p i)
 
 @[simp]
-theorem snoc_castSucc : snoc p x (castSucc i) = p i := by
+theorem snoc_castSucc : snoc p x i.castSucc = p i := by
   simp only [snoc, coe_castSucc, is_lt, cast_eq, dite_true]
   convert cast_eq rfl (p i)
+
+@[simp]
+theorem snoc_apply_zero [NeZero n] : snoc p x 0 = p 0 := snoc_castSucc x p 0
 
 @[simp]
 theorem snoc_comp_castSucc {α : Sort*} {a : α} {f : Fin n → α} :
@@ -509,7 +517,7 @@ lemma snoc_zero {α : Sort*} (p : Fin 0 → α) (x : α) :
   simp only [Subsingleton.elim y (Fin.last 0), snoc_last]
 
 @[simp]
-theorem snoc_comp_nat_add {n m : ℕ} {α : Sort*} (f : Fin (m + n) → α) (a : α) :
+theorem snoc_comp_natAdd {n m : ℕ} {α : Sort*} (f : Fin (m + n) → α) (a : α) :
     (snoc f a : Fin _ → α) ∘ (natAdd m : Fin (n + 1) → Fin (m + n + 1)) =
       snoc (f ∘ natAdd m) a := by
   ext i
@@ -519,76 +527,72 @@ theorem snoc_comp_nat_add {n m : ℕ} {α : Sort*} (f : Fin (m + n) → α) (a :
   · simp only [comp_apply, snoc_castSucc]
     rw [natAdd_castSucc, snoc_castSucc]
 
+@[deprecated (since := "2025-07-04")] alias snoc_comp_nat_add := snoc_comp_natAdd
+
 @[simp]
-theorem snoc_cast_add {α : Fin (n + m + 1) → Sort*} (f : ∀ i : Fin (n + m), α (castSucc i))
+theorem snoc_castAdd {α : Fin (n + m + 1) → Sort*} (f : ∀ i : Fin (n + m), α i.castSucc)
     (a : α (last (n + m))) (i : Fin n) : (snoc f a) (castAdd (m + 1) i) = f (castAdd m i) :=
   dif_pos _
 
--- Porting note: Had to `unfold comp`
+@[deprecated (since := "2025-07-04")] alias snoc_cast_add := snoc_castAdd
+
 @[simp]
-theorem snoc_comp_cast_add {n m : ℕ} {α : Sort*} (f : Fin (n + m) → α) (a : α) :
+theorem snoc_comp_castAdd {n m : ℕ} {α : Sort*} (f : Fin (n + m) → α) (a : α) :
     (snoc f a : Fin _ → α) ∘ castAdd (m + 1) = f ∘ castAdd m :=
-  funext (by unfold comp; exact snoc_cast_add _ _)
+  funext (snoc_castAdd _ _)
+
+@[deprecated (since := "2025-07-04")] alias snoc_comp_cast_add := snoc_comp_castAdd
 
 /-- Updating a tuple and adding an element at the end commute. -/
 @[simp]
-theorem snoc_update : snoc (update p i y) x = update (snoc p x) (castSucc i) y := by
+theorem snoc_update : snoc (update p i y) x = update (snoc p x) i.castSucc y := by
   ext j
-  by_cases h : j.val < n
-  · rw [snoc]
-    simp only [h]
-    simp only [dif_pos]
-    by_cases h' : j = castSucc i
-    · have C1 : α (castSucc i) = α j := by rw [h']
-      have E1 : update (snoc p x) (castSucc i) y j = _root_.cast C1 y := by
-        have : update (snoc p x) j (_root_.cast C1 y) j = _root_.cast C1 y := by simp
-        convert this
-        · exact h'.symm
-        · exact heq_of_cast_eq (congr_arg α (Eq.symm h')) rfl
-      have C2 : α (castSucc i) = α (castSucc (castLT j h)) := by rw [castSucc_castLT, h']
-      have E2 : update p i y (castLT j h) = _root_.cast C2 y := by
-        have : update p (castLT j h) (_root_.cast C2 y) (castLT j h) = _root_.cast C2 y := by simp
-        convert this
-        · simp [h, h']
-        · exact heq_of_cast_eq C2 rfl
-      rw [E1, E2]
-      rfl
-    · have : ¬castLT j h = i := by
-        intro E
-        apply h'
-        rw [← E, castSucc_castLT]
-      simp [h', this, snoc, h]
-  · rw [eq_last_of_not_lt h]
-    simp [Fin.ne_of_gt i.castSucc_lt_last]
+  cases j using lastCases with
+  | cast j => rcases eq_or_ne j i with rfl | hne <;> simp [*]
+  | last => simp [Ne.symm]
 
 /-- Adding an element at the beginning of a tuple and then updating it amounts to adding it
 directly. -/
 theorem update_snoc_last : update (snoc p x) (last n) z = snoc p z := by
   ext j
-  by_cases h : j.val < n
-  · have : j ≠ last n := Fin.ne_of_lt h
-    simp [h, update_noteq, this, snoc]
-  · rw [eq_last_of_not_lt h]
-    simp
+  cases j using lastCases <;> simp
+
+@[simp]
+lemma range_snoc {α : Type*} (f : Fin n → α) (x : α) :
+    Set.range (snoc f x) = insert x (Set.range f) := by
+  ext; simp [Fin.exists_fin_succ', or_comm, eq_comm]
+
+/-- As a binary function, `Fin.snoc` is injective. -/
+theorem snoc_injective2 : Function.Injective2 (@snoc n α) := fun x y xₙ yₙ h ↦
+  ⟨funext fun i ↦ by simpa using congr_fun h (castSucc i), by simpa using congr_fun h (last n)⟩
+
+@[simp]
+theorem snoc_inj {x y : ∀ i : Fin n, α i.castSucc} {xₙ yₙ : α (last n)} :
+    snoc x xₙ = snoc y yₙ ↔ x = y ∧ xₙ = yₙ :=
+  snoc_injective2.eq_iff
+
+theorem snoc_right_injective (x : ∀ i : Fin n, α i.castSucc) :
+    Function.Injective (snoc x) :=
+  snoc_injective2.right _
+
+theorem snoc_left_injective (xₙ : α (last n)) : Function.Injective (snoc · xₙ) :=
+  snoc_injective2.left _
 
 /-- Concatenating the first element of a tuple with its tail gives back the original tuple -/
 @[simp]
 theorem snoc_init_self : snoc (init q) (q (last n)) = q := by
   ext j
-  by_cases h : j.val < n
-  · simp only [init, snoc, h, cast_eq, dite_true, castSucc_castLT]
-  · rw [eq_last_of_not_lt h]
-    simp
+  cases j using Fin.lastCases <;> simp [init]
 
 /-- Updating the last element of a tuple does not change the beginning. -/
 @[simp]
 theorem init_update_last : init (update q (last n) z) = init q := by
   ext j
-  simp [init, Fin.ne_of_lt, castSucc_lt_last]
+  simp [init, Fin.ne_of_lt]
 
 /-- Updating an element and taking the beginning commute. -/
 @[simp]
-theorem init_update_castSucc : init (update q (castSucc i) y) = update (init q) i y := by
+theorem init_update_castSucc : init (update q i.castSucc y) = update (init q) i y := by
   ext j
   by_cases h : j = i
   · rw [h]
@@ -600,27 +604,21 @@ would involve a cast to convince Lean that the two types are equal, making it ha
 theorem tail_init_eq_init_tail {β : Sort*} (q : Fin (n + 2) → β) :
     tail (init q) = init (tail q) := by
   ext i
-  simp [tail, init, castSucc_fin_succ]
+  simp [tail, init]
 
 /-- `cons` and `snoc` commute. We state this lemma in a non-dependent setting, as otherwise it
 would involve a cast to convince Lean that the two types are equal, making it harder to use. -/
 theorem cons_snoc_eq_snoc_cons {β : Sort*} (a : β) (q : Fin n → β) (b : β) :
     @cons n.succ (fun _ ↦ β) a (snoc q b) = snoc (cons a q) b := by
   ext i
-  by_cases h : i = 0
-  · rw [h]
-    -- Porting note: `refl` finished it here in Lean 3, but I had to add more.
-    simp [snoc, castLT]
-  set j := pred i h with ji
-  have : i = j.succ := by rw [ji, succ_pred]
-  rw [this, cons_succ]
-  by_cases h' : j.val < n
-  · set k := castLT j h' with jk
-    have : j = castSucc k := by rw [jk, castSucc_castLT]
-    rw [this, ← castSucc_fin_succ, snoc]
-    simp [pred, snoc, cons]
-  rw [eq_last_of_not_lt h', succ_last]
-  simp
+  cases i using Fin.cases with
+  | zero => simp
+  | succ j =>
+    cases j using Fin.lastCases with
+    | last => simp
+    | cast j =>
+      rw [cons_succ]
+      simp [← castSucc_succ]
 
 theorem comp_snoc {α : Sort*} {β : Sort*} (g : α → β) (q : Fin n → α) (y : α) :
     g ∘ snoc q y = snoc (g ∘ q) (g y) := by
@@ -662,8 +660,8 @@ theorem append_cons {α : Sort*} (a : α) (as : Fin n → α) (bs : Fin m → α
     = cons a (Fin.append as bs) ∘ (Fin.cast <| Nat.add_right_comm n 1 m) := by
   funext i
   rcases i with ⟨i, -⟩
-  simp only [append, addCases, cons, castLT, cast, comp_apply]
-  cases' i with i
+  simp only [append, addCases, cons, castLT, comp_apply]
+  rcases i with - | i
   · simp
   · split_ifs with h
     · have : i < n := Nat.lt_of_succ_lt_succ h
@@ -676,7 +674,7 @@ theorem append_snoc {α : Sort*} (as : Fin n → α) (bs : Fin m → α) (b : α
   funext i
   rcases i with ⟨i, isLt⟩
   simp only [append, addCases, castLT, cast_mk, subNat_mk, natAdd_mk, cast, snoc.eq_1,
-    cast_eq, eq_rec_constant, Nat.add_eq, Nat.add_zero, castLT_mk]
+    eq_rec_constant, Nat.add_eq, castLT_mk]
   split_ifs with lt_n lt_add sub_lt nlt_add lt_add <;> (try rfl)
   · have := Nat.lt_add_right m lt_n
     contradiction
@@ -690,6 +688,17 @@ theorem comp_init {α : Sort*} {β : Sort*} (g : α → β) (q : Fin n.succ → 
   ext j
   simp [init]
 
+/-- Equivalence between tuples of length `n + 1` and pairs of an element and a tuple of length `n`
+given by separating out the last element of the tuple.
+
+This is `Fin.snoc` as an `Equiv`. -/
+@[simps]
+def snocEquiv (α : Fin (n + 1) → Type*) : α (last n) × (∀ i, α (castSucc i)) ≃ ∀ i, α i where
+  toFun f _ := Fin.snoc f.2 f.1 _
+  invFun f := ⟨f _, Fin.init f⟩
+  left_inv f := by simp
+  right_inv f := by simp
+
 /-- Recurse on an `n+1`-tuple by splitting it its initial `n`-tuple and its last element. -/
 @[elab_as_elim, inline]
 def snocCases {P : (∀ i : Fin n.succ, α i) → Sort*}
@@ -698,7 +707,7 @@ def snocCases {P : (∀ i : Fin n.succ, α i) → Sort*}
   _root_.cast (by rw [Fin.snoc_init_self]) <| h (Fin.init x) (x <| Fin.last _)
 
 @[simp] lemma snocCases_snoc
-    {P : (∀ i : Fin (n+1), α i) → Sort*} (h : ∀ x x₀, P (Fin.snoc x x₀))
+    {P : (∀ i : Fin (n + 1), α i) → Sort*} (h : ∀ x x₀, P (Fin.snoc x x₀))
     (x : ∀ i : Fin n, (Fin.init α) i) (x₀ : α (Fin.last _)) :
     snocCases h (Fin.snoc x x₀) = h x x₀ := by
   rw [snocCases, cast_eq_iff_heq, Fin.init_snoc, Fin.snoc_last]
@@ -710,7 +719,36 @@ def snocInduction {α : Sort*}
     (h0 : P Fin.elim0)
     (h : ∀ {n} (x : Fin n → α) (x₀), P x → P (Fin.snoc x x₀)) : ∀ {n : ℕ} (x : Fin n → α), P x
   | 0, x => by convert h0
-  | n + 1, x => snocCases (fun x₀ x ↦ h _ _ <| snocInduction h0 h _) x
+  | _ + 1, x => snocCases (fun _ _ ↦ h _ _ <| snocInduction h0 h _) x
+
+theorem snoc_injective_of_injective {α} {x₀ : α} {x : Fin n → α}
+    (hx : Function.Injective x) (hx₀ : x₀ ∉ Set.range x) :
+    Function.Injective (snoc x x₀ : Fin n.succ → α) := fun i j h ↦ by
+  induction i using lastCases with
+  | cast i =>
+    induction j using lastCases with
+    | cast j =>
+      simpa only [castSucc_inj, ← Injective.eq_iff hx, snoc_castSucc] using h
+    | last =>
+      simp only [snoc_castSucc, snoc_last] at h
+      rw [← h] at hx₀
+      apply hx₀.elim (Set.mem_range_self i)
+  | last =>
+    induction j using lastCases with
+    | cast j =>
+      simp only [snoc_castSucc, snoc_last] at h
+      rw [h] at hx₀
+      apply hx₀.elim (Set.mem_range_self j)
+    | last => simp
+
+theorem snoc_injective_iff {α} {x₀ : α} {x : Fin n → α} :
+    Function.Injective (snoc x x₀ : Fin n.succ → α) ↔ Function.Injective x ∧ x₀ ∉ Set.range x := by
+  refine ⟨fun h ↦ ⟨?_, ?_⟩, fun h ↦ snoc_injective_of_injective h.1 h.2⟩
+  · simpa [Function.comp] using h.comp (Fin.castSucc_injective _)
+  · rintro ⟨i, hi⟩
+    rw [← @snoc_last n (fun i ↦ α) x₀ x, ← @snoc_castSucc n (fun i ↦ α) x₀ x i,
+      h.eq_iff] at hi
+    exact ne_last_of_lt i.castSucc_lt_last hi
 
 end TupleRight
 
@@ -740,16 +778,16 @@ alias forall_iff_succ := forall_fin_succ
 alias exists_iff_succ := exists_fin_succ
 
 lemma forall_iff_castSucc {P : Fin (n + 1) → Prop} :
-    (∀ i, P i) ↔ P (last n) ∧ ∀ i, P (castSucc i) :=
+    (∀ i, P i) ↔ P (last n) ∧ ∀ i : Fin n, P i.castSucc :=
   ⟨fun h ↦ ⟨h _, fun _ ↦ h _⟩, fun h ↦ lastCases h.1 h.2⟩
 
 lemma exists_iff_castSucc {P : Fin (n + 1) → Prop} :
-    (∃ i, P i) ↔ P (last n) ∨ ∃ i, P (castSucc i) where
+    (∃ i, P i) ↔ P (last n) ∨ ∃ i : Fin n, P i.castSucc where
   mp := by
     rintro ⟨i, hi⟩
-    induction' i using lastCases
-    · exact .inl hi
-    · exact .inr ⟨_, hi⟩
+    cases i using lastCases with
+    | last => exact .inl hi
+    | cast _ => exact .inr ⟨_, hi⟩
   mpr := by rintro (h | ⟨i, hi⟩) <;> exact ⟨_, ‹_›⟩
 
 theorem forall_iff_succAbove {P : Fin (n + 1) → Prop} (p : Fin (n + 1)) :
@@ -764,6 +802,10 @@ lemma exists_iff_succAbove {P : Fin (n + 1) → Prop} (p : Fin (n + 1)) :
     · exact .inl hi
     · exact .inr ⟨_, hi⟩
   mpr := by rintro (h | ⟨i, hi⟩) <;> exact ⟨_, ‹_›⟩
+
+/-- Analogue of `Fin.eq_zero_or_eq_succ` for `succAbove`. -/
+theorem eq_self_or_eq_succAbove (p i : Fin (n + 1)) : i = p ∨ ∃ j, i = p.succAbove j :=
+  succAboveCases p (.inl rfl) (fun j => .inr ⟨j, rfl⟩) i
 
 /-- Remove the `p`-th entry of a tuple. -/
 def removeNth (p : Fin (n + 1)) (f : ∀ i, α i) : ∀ i, α (p.succAbove i) := fun i ↦ f (p.succAbove i)
@@ -790,11 +832,15 @@ theorem insertNth_apply_succAbove (i : Fin (n + 1)) (x : α i) (p : ∀ j, α (i
     intro; rfl
   · generalize_proofs H₀ H₁ H₂; revert H₂
     generalize hk : pred (succAbove i j) H₁ = k
-    erw [pred_succAbove _ _ (Fin.not_lt.1 hlt)] at hk; cases hk
+    rw [pred_succAbove _ _ (Fin.not_lt.1 hlt)] at hk; cases hk
     intro; rfl
 
 @[simp]
 theorem succAbove_cases_eq_insertNth : @succAboveCases = @insertNth :=
+  rfl
+
+lemma removeNth_apply (p : Fin (n + 1)) (f : ∀ i, α i) (i : Fin n) :
+    p.removeNth f i = f (p.succAbove i) :=
   rfl
 
 @[simp] lemma removeNth_insertNth (p : Fin (n + 1)) (a : α p) (f : ∀ i, α (succAbove p i)) :
@@ -806,12 +852,10 @@ theorem succAbove_cases_eq_insertNth : @succAboveCases = @insertNth :=
 @[simp] lemma removeNth_last {α : Type*} (f : Fin (n + 1) → α) : removeNth (last n) f = init f := by
   ext; simp [init, removeNth]
 
-/- Porting note: Had to `unfold comp`. Sometimes, when I use a placeholder, if I try to insert
-what Lean says it synthesized, it gives me a type error anyway. In this case, it's `x` and `p`. -/
 @[simp]
 theorem insertNth_comp_succAbove (i : Fin (n + 1)) (x : β) (p : Fin n → β) :
     insertNth i x p ∘ i.succAbove = p :=
-  funext (by unfold comp; exact insertNth_apply_succAbove i _ _)
+  funext (insertNth_apply_succAbove i _ _)
 
 theorem insertNth_eq_iff {p : Fin (n + 1)} {a : α p} {f : ∀ i, α (p.succAbove i)} {g : ∀ j, α j} :
     insertNth p a f = g ↔ a = g p ∧ f = removeNth p g := by
@@ -820,6 +864,24 @@ theorem insertNth_eq_iff {p : Fin (n + 1)} {a : α p} {f : ∀ i, α (p.succAbov
 theorem eq_insertNth_iff {p : Fin (n + 1)} {a : α p} {f : ∀ i, α (p.succAbove i)} {g : ∀ j, α j} :
     g = insertNth p a f ↔ g p = a ∧ removeNth p g = f := by
   simpa [eq_comm] using insertNth_eq_iff
+
+/-- As a binary function, `Fin.insertNth` is injective. -/
+theorem insertNth_injective2 {p : Fin (n + 1)} :
+    Function.Injective2 (@insertNth n α p) := fun xₚ yₚ x y h ↦
+  ⟨by simpa using congr_fun h p, funext fun i ↦ by simpa using congr_fun h (succAbove p i)⟩
+
+@[simp]
+theorem insertNth_inj {p : Fin (n + 1)} {x y : ∀ i, α (succAbove p i)} {xₚ yₚ : α p} :
+    insertNth p xₚ x = insertNth p yₚ y ↔ xₚ = yₚ ∧ x = y :=
+  insertNth_injective2.eq_iff
+
+theorem insertNth_left_injective {p : Fin (n + 1)} (x : ∀ i, α (succAbove p i)) :
+    Function.Injective (insertNth p · x) :=
+  insertNth_injective2.left _
+
+theorem insertNth_right_injective {p : Fin (n + 1)} (x : α p) :
+    Function.Injective (insertNth p x) :=
+  insertNth_injective2.right _
 
 /- Porting note: Once again, Lean told me `(fun x x_1 ↦ α x)` was an invalid motive, but disabling
 automatic insertion and specifying that motive seems to work. -/
@@ -854,7 +916,7 @@ theorem insertNth_last (x : α (last n)) (p : ∀ j : Fin n, α ((last n).succAb
   refine insertNth_eq_iff.2 ⟨by simp, ?_⟩
   ext j
   apply eq_of_heq
-  trans snoc (fun j ↦ _root_.cast (congr_arg α (succAbove_last_apply j)) (p j)) x (castSucc j)
+  trans snoc (fun j ↦ _root_.cast (congr_arg α (succAbove_last_apply j)) (p j)) x j.castSucc
   · rw [snoc_castSucc]
     exact (cast_heq _ _).symm
   · apply congr_arg_heq
@@ -915,7 +977,14 @@ end Preorder
 open Set
 
 @[simp] lemma removeNth_update (p : Fin (n + 1)) (x) (f : ∀ j, α j) :
-    removeNth p (update f p x) = removeNth p f := by ext i; simp [removeNth, succAbove_ne]
+    removeNth p (update f p x) = removeNth p f := by ext i; simp [removeNth]
+
+@[simp]
+lemma removeNth_update_succAbove (p : Fin (n + 1)) (i : Fin n) (x : α (p.succAbove i))
+    (f : ∀ j, α j) :
+    removeNth p (update f (p.succAbove i) x) = update (removeNth p f) i x := by
+  ext j
+  rcases eq_or_ne j i with rfl | hne <;> simp [removeNth, *]
 
 @[simp] lemma insertNth_removeNth (p : Fin (n + 1)) (x) (f : ∀ j, α j) :
     insertNth p x (removeNth p f) = update f p x := by simp [Fin.insertNth_eq_iff]
@@ -923,12 +992,60 @@ open Set
 lemma insertNth_self_removeNth (p : Fin (n + 1)) (f : ∀ j, α j) :
     insertNth p (f p) (removeNth p f) = f := by simp
 
-/-- Separates an `n+1`-tuple, returning a selected index and then the rest of the tuple.
-Functional form of `Equiv.piFinSuccAbove`. -/
-@[deprecated removeNth (since := "2024-06-19")]
-def extractNth {α : Fin (n + 1) → Type*} (i : Fin (n + 1)) (f : (∀ j, α j)) :
-    α i × ∀ j, α (i.succAbove j) :=
-  (f i, removeNth i f)
+@[simp]
+theorem update_insertNth (p : Fin (n + 1)) (x y : α p) (f : ∀ i, α (p.succAbove i)) :
+    update (p.insertNth x f) p y = p.insertNth y f := by
+  simp [eq_insertNth_iff]
+
+@[simp]
+theorem insertNth_update (p : Fin (n + 1)) (x : α p) (i : Fin n) (y : α (p.succAbove i))
+    (f : ∀ j, α (p.succAbove j)) :
+    p.insertNth x (update f i y) = update (p.insertNth x f) (p.succAbove i) y := by
+  simp [insertNth_eq_iff]
+
+/-- Equivalence between tuples of length `n + 1` and pairs of an element and a tuple of length `n`
+given by separating out the `p`-th element of the tuple.
+
+This is `Fin.insertNth` as an `Equiv`. -/
+@[simps]
+def insertNthEquiv (α : Fin (n + 1) → Type u) (p : Fin (n + 1)) :
+    α p × (∀ i, α (p.succAbove i)) ≃ ∀ i, α i where
+  toFun f := insertNth p f.1 f.2
+  invFun f := (f p, removeNth p f)
+  left_inv f := by ext <;> simp
+  right_inv f := by simp
+
+@[simp] lemma insertNthEquiv_zero (α : Fin (n + 1) → Type*) : insertNthEquiv α 0 = consEquiv α :=
+  Equiv.symm_bijective.injective <| by ext <;> rfl
+
+/-- Note this lemma can only be written about non-dependent tuples as `insertNth (last n) = snoc` is
+not a definitional equality. -/
+@[simp] lemma insertNthEquiv_last (n : ℕ) (α : Type*) :
+    insertNthEquiv (fun _ ↦ α) (last n) = snocEquiv (fun _ ↦ α) := by ext; simp
+
+/-- A `HEq` version of `Fin.removeNth_removeNth_eq_swap`. -/
+theorem removeNth_removeNth_heq_swap {α : Fin (n + 2) → Sort*} (m : ∀ i, α i)
+    (i : Fin (n + 1)) (j : Fin (n + 2)) :
+    i.removeNth (j.removeNth m) ≍
+      (i.predAbove j).removeNth ((j.succAbove i).removeNth m) := by
+  apply Function.hfunext rfl
+  simp only [heq_iff_eq]
+  rintro k _ rfl
+  unfold removeNth
+  apply congr_arg_heq
+  rw [succAbove_succAbove_succAbove_predAbove]
+
+/-- Given an `(n + 2)`-tuple `m` and two indexes `i : Fin (n + 1)` and `j : Fin (n + 2)`,
+one can remove `j`th element from `m`, then remove `i`th element from the result,
+or one can remove `(j.succAbove i)`th element from `m`,
+then remove `(i.predAbove j)`th element from the result.
+
+These two operations correspond to removing the same two elements in a different order,
+so they result in the same `n`-tuple. -/
+theorem removeNth_removeNth_eq_swap {α : Sort*} (m : Fin (n + 2) → α)
+    (i : Fin (n + 1)) (j : Fin (n + 2)) :
+    i.removeNth (j.removeNth m) = (i.predAbove j).removeNth ((j.succAbove i).removeNth m) :=
+  heq_iff_eq.mp (removeNth_removeNth_heq_swap m i j)
 
 end InsertNth
 
@@ -947,10 +1064,10 @@ def find : ∀ {n : ℕ} (p : Fin n → Prop) [DecidablePred p], Option (Fin n)
 /-- If `find p = some i`, then `p i` holds -/
 theorem find_spec :
     ∀ {n : ℕ} (p : Fin n → Prop) [DecidablePred p] {i : Fin n} (_ : i ∈ Fin.find p), p i
-  | 0, p, I, i, hi => Option.noConfusion hi
+  | 0, _, _, _, hi => Option.noConfusion hi
   | n + 1, p, I, i, hi => by
     rw [find] at hi
-    cases' h : find fun i : Fin n ↦ p (i.castLT (Nat.lt_succ_of_lt i.2)) with j
+    rcases h : find fun i : Fin n ↦ p (i.castLT (Nat.lt_succ_of_lt i.2)) with - | j
     · rw [h] at hi
       dsimp at hi
       split_ifs at hi with hl
@@ -965,14 +1082,14 @@ theorem find_spec :
 /-- `find p` does not return `none` if and only if `p i` holds at some index `i`. -/
 theorem isSome_find_iff :
     ∀ {n : ℕ} {p : Fin n → Prop} [DecidablePred p], (find p).isSome ↔ ∃ i, p i
-  | 0, p, _ => iff_of_false (fun h ↦ Bool.noConfusion h) fun ⟨i, _⟩ ↦ Fin.elim0 i
+  | 0, _, _ => iff_of_false (fun h ↦ Bool.noConfusion h) fun ⟨i, _⟩ ↦ Fin.elim0 i
   | n + 1, p, _ =>
     ⟨fun h ↦ by
       rw [Option.isSome_iff_exists] at h
-      cases' h with i hi
+      obtain ⟨i, hi⟩ := h
       exact ⟨i, find_spec _ hi⟩, fun ⟨⟨i, hin⟩, hi⟩ ↦ by
       dsimp [find]
-      cases' h : find fun i : Fin n ↦ p (i.castLT (Nat.lt_succ_of_lt i.2)) with j
+      rcases h : find fun i : Fin n ↦ p (i.castLT (Nat.lt_succ_of_lt i.2)) with - | j
       · split_ifs with hl
         · exact Option.isSome_some
         · have := (@isSome_find_iff n (fun x ↦ p (x.castLT (Nat.lt_succ_of_lt x.2))) _).2
@@ -990,10 +1107,10 @@ the indices where `p` holds. -/
 theorem find_min :
     ∀ {n : ℕ} {p : Fin n → Prop} [DecidablePred p] {i : Fin n} (_ : i ∈ Fin.find p) {j : Fin n}
       (_ : j < i), ¬p j
-  | 0, p, _, i, hi, _, _, _ => Option.noConfusion hi
+  | 0, _, _, _, hi, _, _, _ => Option.noConfusion hi
   | n + 1, p, _, i, hi, ⟨j, hjn⟩, hj, hpj => by
     rw [find] at hi
-    cases' h : find fun i : Fin n ↦ p (i.castLT (Nat.lt_succ_of_lt i.2)) with k
+    rcases h : find fun i : Fin n ↦ p (i.castLT (Nat.lt_succ_of_lt i.2)) with - | k
     · simp only [h] at hi
       split_ifs at hi with hl
       · cases hi
@@ -1012,7 +1129,7 @@ theorem nat_find_mem_find {p : Fin n → Prop} [DecidablePred p]
     (h : ∃ i, ∃ hin : i < n, p ⟨i, hin⟩) :
     (⟨Nat.find h, (Nat.find_spec h).fst⟩ : Fin n) ∈ find p := by
   let ⟨i, hin, hi⟩ := h
-  cases' hf : find p with f
+  rcases hf : find p with - | f
   · rw [find_eq_none_iff] at hf
     exact (hf ⟨i, hin⟩ hi).elim
   · refine Option.some_inj.2 (Fin.le_antisymm ?_ ?_)
@@ -1069,21 +1186,38 @@ theorem contractNth_apply_of_ne (j : Fin (n + 1)) (op : α → α → α) (g : F
   · rwa [j.succAbove_of_le_castSucc, contractNth_apply_of_gt]
     · exact Fin.le_iff_val_le_val.2 (le_of_lt h)
 
+lemma comp_contractNth {β : Sort*} (opα : α → α → α) (opβ : β → β → β) {f : α → β}
+    (hf : ∀ x y, f (opα x y) = opβ (f x) (f y)) (j : Fin (n + 1)) (g : Fin (n + 1) → α) :
+    f ∘ contractNth j opα g = contractNth j opβ (f ∘ g) := by
+  ext x
+  rcases lt_trichotomy (x : ℕ) j with (h|h|h)
+  · simp only [Function.comp_apply, contractNth_apply_of_lt, h]
+  · simp only [Function.comp_apply, contractNth_apply_of_eq, h, hf]
+  · simp only [Function.comp_apply, contractNth_apply_of_gt, h]
+
 end ContractNth
 
 /-- To show two sigma pairs of tuples agree, it to show the second elements are related via
 `Fin.cast`. -/
 theorem sigma_eq_of_eq_comp_cast {α : Type*} :
-    ∀ {a b : Σii, Fin ii → α} (h : a.fst = b.fst), a.snd = b.snd ∘ Fin.cast h → a = b
+    ∀ {a b : Σ ii, Fin ii → α} (h : a.fst = b.fst), a.snd = b.snd ∘ Fin.cast h → a = b
   | ⟨ai, a⟩, ⟨bi, b⟩, hi, h => by
     dsimp only at hi
     subst hi
     simpa using h
 
 /-- `Fin.sigma_eq_of_eq_comp_cast` as an `iff`. -/
-theorem sigma_eq_iff_eq_comp_cast {α : Type*} {a b : Σii, Fin ii → α} :
+theorem sigma_eq_iff_eq_comp_cast {α : Type*} {a b : Σ ii, Fin ii → α} :
     a = b ↔ ∃ h : a.fst = b.fst, a.snd = b.snd ∘ Fin.cast h :=
   ⟨fun h ↦ h ▸ ⟨rfl, funext <| Fin.rec fun _ _ ↦ rfl⟩, fun ⟨_, h'⟩ ↦
     sigma_eq_of_eq_comp_cast _ h'⟩
 
 end Fin
+
+/-- `Π i : Fin 2, α i` is equivalent to `α 0 × α 1`. See also `finTwoArrowEquiv` for a
+non-dependent version and `prodEquivPiFinTwo` for a version with inputs `α β : Type u`. -/
+@[simps -fullyApplied]
+def piFinTwoEquiv (α : Fin 2 → Type u) : (∀ i, α i) ≃ α 0 × α 1 where
+  toFun f := (f 0, f 1)
+  invFun p := Fin.cons p.1 <| Fin.cons p.2 finZeroElim
+  left_inv _ := funext <| Fin.forall_fin_two.2 ⟨rfl, rfl⟩

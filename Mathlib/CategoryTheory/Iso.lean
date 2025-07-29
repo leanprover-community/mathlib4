@@ -42,10 +42,8 @@ open Category
 The inverse morphism is bundled.
 
 See also `CategoryTheory.Core` for the category with the same objects and isomorphisms playing
-the role of morphisms.
-
-See <https://stacks.math.columbia.edu/tag/0017>.
--/
+the role of morphisms. -/
+@[stacks 0017]
 structure Iso {C : Type u} [Category.{v} C] (X Y : C) where
   /-- The forward direction of an isomorphism. -/
   hom : X ⟶ Y
@@ -102,9 +100,12 @@ theorem symm_mk {X Y : C} (hom : X ⟶ Y) (inv : Y ⟶ X) (hom_inv_id) (inv_hom_
 @[simp]
 theorem symm_symm_eq {X Y : C} (α : X ≅ Y) : α.symm.symm = α := rfl
 
+theorem symm_bijective {X Y : C} : Function.Bijective (symm : (X ≅ Y) → _) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm_eq, symm_symm_eq⟩
+
 @[simp]
 theorem symm_eq_iff {X Y : C} {α β : X ≅ Y} : α.symm = β.symm ↔ α = β :=
-  ⟨fun h => symm_symm_eq α ▸ symm_symm_eq β ▸ congr_arg symm h, congr_arg symm⟩
+  symm_bijective.injective.eq_iff
 
 theorem nonempty_iso_symm (X Y : C) : Nonempty (X ≅ Y) ↔ Nonempty (Y ≅ X) :=
   ⟨fun h => ⟨h.some.symm⟩, fun h => ⟨h.some.symm⟩⟩
@@ -122,10 +123,8 @@ theorem nonempty_iso_refl (X : C) : Nonempty (X ≅ X) := ⟨default⟩
 @[simp]
 theorem refl_symm (X : C) : (Iso.refl X).symm = Iso.refl X := rfl
 
--- Porting note: It seems that the trans `trans` attribute isn't working properly
--- in this case, so we have to manually add a `Trans` instance (with a `simps` tag).
 /-- Composition of two isomorphisms -/
-@[trans, simps]
+@[simps]
 def trans (α : X ≅ Y) (β : Y ≅ Z) : X ≅ Z where
   hom := α.hom ≫ β.hom
   inv := β.inv ≫ α.inv
@@ -204,7 +203,7 @@ theorem comp_inv_eq_id (α : X ≅ Y) {f : X ⟶ Y} : f ≫ α.inv = 𝟙 X ↔ 
   comp_hom_eq_id α.symm
 
 theorem hom_eq_inv (α : X ≅ Y) (β : Y ≅ X) : α.hom = β.inv ↔ β.hom = α.inv := by
-  erw [inv_eq_inv α.symm β, eq_comm]
+  rw [← symm_inv, inv_eq_inv α.symm β, eq_comm]
   rfl
 
 /-- The bijection `(Z ⟶ X) ≃ (Z ⟶ Y)` induced by `α : X ≅ Y`. -/
@@ -279,14 +278,14 @@ noncomputable def asIso (f : X ⟶ Y) [IsIso f] : X ≅ Y :=
   ⟨f, inv f, hom_inv_id f, inv_hom_id f⟩
 
 -- Porting note: the `IsIso f` argument had been instance implicit,
--- but we've changed it to implicit as a `rw` in `Mathlib.CategoryTheory.Closed.Functor`
+-- but we've changed it to implicit as a `rw` in `Mathlib/CategoryTheory/Closed/Functor.lean`
 -- was failing to generate it by typeclass search.
 @[simp]
 theorem asIso_hom (f : X ⟶ Y) {_ : IsIso f} : (asIso f).hom = f :=
   rfl
 
 -- Porting note: the `IsIso f` argument had been instance implicit,
--- but we've changed it to implicit as a `rw` in `Mathlib.CategoryTheory.Closed.Functor`
+-- but we've changed it to implicit as a `rw` in `Mathlib/CategoryTheory/Closed/Functor.lean`
 -- was failing to generate it by typeclass search.
 @[simp]
 theorem asIso_inv (f : X ⟶ Y) {_ : IsIso f} : (asIso f).inv = inv f :=
@@ -305,7 +304,6 @@ instance (priority := 100) mono_of_iso (f : X ⟶ Y) [IsIso f] : Mono f where
     rw [← Category.comp_id g, ← Category.comp_id h, ← IsIso.hom_inv_id f,
       ← Category.assoc, w, ← Category.assoc]
 
--- Porting note: `@[ext]` used to accept lemmas like this. Now we add an aesop rule
 @[aesop apply safe (rule_sets := [CategoryTheory])]
 theorem inv_eq_of_hom_inv_id {f : X ⟶ Y} [IsIso f] {g : Y ⟶ X} (hom_inv_id : f ≫ g = 𝟙 X) :
     inv f = g := by
@@ -317,7 +315,6 @@ theorem inv_eq_of_inv_hom_id {f : X ⟶ Y} [IsIso f] {g : Y ⟶ X} (inv_hom_id :
   apply (cancel_mono f).mp
   simp [inv_hom_id]
 
--- Porting note: `@[ext]` used to accept lemmas like this.
 @[aesop apply safe (rule_sets := [CategoryTheory])]
 theorem eq_inv_of_hom_inv_id {f : X ⟶ Y} [IsIso f] {g : Y ⟶ X} (hom_inv_id : f ≫ g = 𝟙 X) :
     g = inv f :=
@@ -329,10 +326,7 @@ theorem eq_inv_of_inv_hom_id {f : X ⟶ Y} [IsIso f] {g : Y ⟶ X} (inv_hom_id :
 
 instance id (X : C) : IsIso (𝟙 X) := ⟨⟨𝟙 X, by simp⟩⟩
 
-@[deprecated (since := "2024-05-15")] alias of_iso := CategoryTheory.Iso.isIso_hom
-@[deprecated (since := "2024-05-15")] alias of_iso_inv := CategoryTheory.Iso.isIso_inv
-
-variable {f g : X ⟶ Y} {h : Y ⟶ Z}
+variable {f : X ⟶ Y} {h : Y ⟶ Z}
 
 instance inv_isIso [IsIso f] : IsIso (inv f) :=
   (asIso f).isIso_inv
@@ -404,22 +398,18 @@ theorem of_isIso_comp_right {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] [I
 theorem of_isIso_fac_left {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [IsIso f]
     [hh : IsIso h] (w : f ≫ g = h) : IsIso g := by
   rw [← w] at hh
-  haveI := hh
   exact of_isIso_comp_left f g
 
 theorem of_isIso_fac_right {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [IsIso g]
     [hh : IsIso h] (w : f ≫ g = h) : IsIso f := by
   rw [← w] at hh
-  haveI := hh
   exact of_isIso_comp_right f g
 
 end IsIso
 
-open IsIso
-
 theorem eq_of_inv_eq_inv {f g : X ⟶ Y} [IsIso f] [IsIso g] (p : inv f = inv g) : f = g := by
   apply (cancel_epi (inv f)).1
-  erw [inv_hom_id, p, inv_hom_id]
+  rw [inv_hom_id, p, inv_hom_id]
 
 theorem IsIso.inv_eq_inv {f g : X ⟶ Y} [IsIso f] [IsIso g] : inv f = inv g ↔ f = g :=
   Iso.inv_eq_inv (asIso f) (asIso g)
@@ -446,12 +436,10 @@ theorem isIso_of_comp_hom_eq_id (g : X ⟶ Y) [IsIso g] {f : Y ⟶ X} (h : f ≫
 
 namespace Iso
 
--- Porting note: `@[ext]` used to accept lemmas like this.
 @[aesop apply safe (rule_sets := [CategoryTheory])]
 theorem inv_ext {f : X ≅ Y} {g : Y ⟶ X} (hom_inv_id : f.hom ≫ g = 𝟙 X) : f.inv = g :=
   ((hom_comp_eq_id f).1 hom_inv_id).symm
 
--- Porting note: `@[ext]` used to accept lemmas like this.
 @[aesop apply safe (rule_sets := [CategoryTheory])]
 theorem inv_ext' {f : X ≅ Y} {g : Y ⟶ X} (hom_inv_id : f.hom ≫ g = 𝟙 X) : g = f.inv :=
   (hom_comp_eq_id f).1 hom_inv_id
@@ -509,7 +497,7 @@ theorem cancel_iso_inv_right_assoc {W X X' Y Z : C} (f : W ⟶ X) (g : X ⟶ Y) 
 
 section
 
-variable {D E : Type*} [Category D] [Category E] {X Y : C} (e : X ≅ Y)
+variable {D : Type*} [Category D] {X Y : C} (e : X ≅ Y)
 
 @[reassoc (attr := simp)]
 lemma map_hom_inv_id (F : C ⥤ D) :

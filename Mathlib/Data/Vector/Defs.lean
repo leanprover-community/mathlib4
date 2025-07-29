@@ -7,20 +7,32 @@ import Mathlib.Data.List.Defs
 import Mathlib.Tactic.Common
 
 /-!
-The type `Vector` represents lists with fixed length.
+The type `List.Vector` represents lists with fixed length.
+
+TODO: The API of `List.Vector` is quite incomplete relative to `Vector`,
+and in particular does not use `x[i]` (that is `GetElem` notation) as the preferred accessor.
+Any combination of reducing the use of `List.Vector` in Mathlib, or modernising its API,
+would be welcome.
 -/
 
 assert_not_exists Monoid
-namespace Mathlib
 
 universe u v w
-/-- `Vector α n` is the type of lists of length `n` with elements of type `α`. -/
-def Vector (α : Type u) (n : ℕ) :=
+/--
+`List.Vector α n` is the type of lists of length `n` with elements of type `α`.
+
+Note that there is also `Vector α n` in the root namespace,
+which is the type of *arrays* of length `n` with elements of type `α`.
+
+Typically, if you are doing programming or verification, you will primarily use `Vector α n`,
+and if you are doing mathematics, you may want to use `List.Vector α n` instead.
+-/
+def List.Vector (α : Type u) (n : ℕ) :=
   { l : List α // l.length = n }
 
-namespace Vector
+namespace List.Vector
 
-variable {α β σ φ : Type*} {n : ℕ}
+variable {α β σ φ : Type*} {n : ℕ} {p : α → Prop}
 
 instance [DecidableEq α] : DecidableEq (Vector α n) :=
   inferInstanceAs (DecidableEq {l : List α // l.length = n})
@@ -65,7 +77,7 @@ theorem tail_cons (a : α) : ∀ v : Vector α n, tail (cons a v) = v
 @[simp]
 theorem cons_head_tail : ∀ v : Vector α (succ n), cons (head v) (tail v) = v
   | ⟨[], h⟩ => by contradiction
-  | ⟨a :: v, h⟩ => rfl
+  | ⟨_ :: _, _⟩ => rfl
 
 /-- The list obtained from a vector. -/
 def toList (v : Vector α n) : List α :=
@@ -75,7 +87,16 @@ def toList (v : Vector α n) : List α :=
 def get (l : Vector α n) (i : Fin n) : α :=
   l.1.get <| i.cast l.2.symm
 
+instance {n m : Nat} : HAppend (Vector α n) (Vector α m) (Vector α (n + m)) where
+  hAppend | ⟨l₁, h₁⟩, ⟨l₂, h₂⟩ => ⟨l₁ ++ l₂, by simp [*]⟩
+
+lemma append_def {n m : Nat} :
+    (HAppend.hAppend : Vector α n → Vector α m → Vector α (n + m)) =
+      fun | ⟨l₁, h₁⟩, ⟨l₂, h₂⟩ => ⟨l₁ ++ l₂, by simp [*]⟩ :=
+  rfl
+
 /-- Appending a vector to another. -/
+@[deprecated "use `++` instead" (since := "2025-06-05")]
 def append {n m : Nat} : Vector α n → Vector α m → Vector α (n + m)
   | ⟨l₁, h₁⟩, ⟨l₂, h₂⟩ => ⟨l₁ ++ l₂, by simp [*]⟩
 
@@ -101,13 +122,22 @@ theorem map_nil (f : α → β) : map f nil = nil :=
 theorem map_cons (f : α → β) (a : α) : ∀ v : Vector α n, map f (cons a v) = cons (f a) (map f v)
   | ⟨_, _⟩ => rfl
 
+/-- Map a vector under a partial function. -/
+def pmap (f : (a : α) → p a → β) :
+    (v : Vector α n) → (∀ x ∈ v.toList, p x) → Vector β n
+  | ⟨l, h⟩, hp => ⟨List.pmap f l hp, by simp [h]⟩
+
+@[simp]
+theorem pmap_nil (f : (a : α) → p a → β) (hp : ∀ x ∈ nil.toList, p x) :
+    nil.pmap f hp = nil := rfl
+
 /-- Mapping two vectors under a curried function of two variables. -/
 def map₂ (f : α → β → φ) : Vector α n → Vector β n → Vector φ n
   | ⟨x, _⟩, ⟨y, _⟩ => ⟨List.zipWith f x y, by simp [*]⟩
 
 /-- Vector obtained by repeating an element. -/
 def replicate (n : ℕ) (a : α) : Vector α n :=
-  ⟨List.replicate n a, List.length_replicate n a⟩
+  ⟨List.replicate n a, List.length_replicate⟩
 
 /-- Drop `i` elements from a vector of length `n`; we can have `i > n`. -/
 def drop (i : ℕ) : Vector α n → Vector α (n - i)
@@ -120,8 +150,6 @@ def take (i : ℕ) : Vector α n → Vector α (min i n)
 /-- Remove the element at position `i` from a vector of length `n`. -/
 def eraseIdx (i : Fin n) : Vector α n → Vector α (n - 1)
   | ⟨l, p⟩ => ⟨List.eraseIdx l i.1, by rw [l.length_eraseIdx_of_lt] <;> rw [p]; exact i.2⟩
-
-@[deprecated (since := "2024-05-04")] alias removeNth := eraseIdx
 
 /-- Vector of length `n` from a function on `Fin n`. -/
 def ofFn : ∀ {n}, (Fin n → α) → Vector α n
@@ -160,13 +188,12 @@ section Shift
 /-- `shiftLeftFill v i` is the vector obtained by left-shifting `v` `i` times and padding with the
     `fill` argument. If `v.length < i` then this will return `replicate n fill`. -/
 def shiftLeftFill (v : Vector α n) (i : ℕ) (fill : α) : Vector α n :=
-  Vector.congr (by simp) <|
-    append (drop i v) (replicate (min n i) fill)
+  Vector.congr (by simp) (drop i v ++ replicate (min n i) fill)
 
 /-- `shiftRightFill v i` is the vector obtained by right-shifting `v` `i` times and padding with the
     `fill` argument. If `v.length < i` then this will return `replicate n fill`. -/
 def shiftRightFill (v : Vector α n) (i : ℕ) (fill : α) : Vector α n :=
-  Vector.congr (by omega) <| append (replicate (min n i) fill) (take (n - i) v)
+  Vector.congr (by omega) (replicate (min n i) fill ++ take (n - i) v)
 
 end Shift
 
@@ -205,7 +232,7 @@ theorem toList_cons (a : α) (v : Vector α n) : toList (cons a v) = a :: toList
 /-- Appending of vectors corresponds under `toList` to appending of lists. -/
 @[simp]
 theorem toList_append {n m : ℕ} (v : Vector α n) (w : Vector α m) :
-    toList (append v w) = toList v ++ toList w := by
+    toList (v ++ w) = toList v ++ toList w := by
   cases v
   cases w
   rfl
@@ -225,6 +252,10 @@ theorem toList_take {n m : ℕ} (v : Vector α m) : toList (take n v) = List.tak
 instance : GetElem (Vector α n) Nat α fun _ i => i < n where
   getElem := fun x i h => get x ⟨i, h⟩
 
-end Vector
+lemma getElem_def (v : Vector α n) (i : ℕ) {hi : i < n} :
+    v[i] = v.toList[i]'(by simpa) := rfl
 
-end Mathlib
+lemma toList_getElem (v : Vector α n) (i : ℕ) {hi : i < v.toList.length} :
+    v.toList[i] = v[i]'(by simp_all) := rfl
+
+end List.Vector

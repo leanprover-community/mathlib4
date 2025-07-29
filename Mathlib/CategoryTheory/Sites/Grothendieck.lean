@@ -20,6 +20,7 @@ Alternate versions of the axioms (in arrow form) are also described.
 Two explicit examples of Grothendieck topologies are given:
 * The dense topology
 * The atomic topology
+
 as well as the complete lattice structure on Grothendieck topologies (which gives two additional
 explicit topologies: the discrete and trivial topologies.)
 
@@ -53,7 +54,7 @@ universe v₁ u₁ v u
 
 namespace CategoryTheory
 
-open CategoryTheory Category
+open Category
 
 variable (C : Type u) [Category.{v} C]
 
@@ -66,9 +67,8 @@ three axioms:
 
 A sieve `S` on `X` is referred to as `J`-covering, (or just covering), if `S ∈ J X`.
 
-See <https://stacks.math.columbia.edu/tag/00Z4>, or [nlab], or [MM92][] Chapter III, Section 2,
-Definition 1.
--/
+See also [nlab] or [MM92] Chapter III, Section 2, Definition 1. -/
+@[stacks 00Z4]
 structure GrothendieckTopology where
   /-- A Grothendieck topology on `C` consists of a set of sieves for each object `X`,
     which satisfy some axioms. -/
@@ -132,9 +132,8 @@ theorem covering_of_eq_top : S = ⊤ → S ∈ J X := fun h => h.symm ▸ J.top_
 
 /-- If `S` is a subset of `R`, and `S` is covering, then `R` is covering as well.
 
-See <https://stacks.math.columbia.edu/tag/00Z5> (2), or discussion after [MM92] Chapter III,
-Section 2, Definition 1.
--/
+See also discussion after [MM92] Chapter III, Section 2, Definition 1. -/
+@[stacks 00Z5 "(2)"]
 theorem superset_covering (Hss : S ≤ R) (sjx : S ∈ J X) : R ∈ J X := by
   apply J.transitive sjx R fun Y f hf => _
   intros Y f hf
@@ -144,9 +143,8 @@ theorem superset_covering (Hss : S ≤ R) (sjx : S ∈ J X) : R ∈ J X := by
 
 /-- The intersection of two covering sieves is covering.
 
-See <https://stacks.math.columbia.edu/tag/00Z5> (1), or [MM92] Chapter III,
-Section 2, Definition 1 (iv).
--/
+See also [MM92] Chapter III, Section 2, Definition 1 (iv). -/
+@[stacks 00Z5 "(1)"]
 theorem intersection_covering (rj : R ∈ J X) (sj : S ∈ J X) : R ⊓ S ∈ J X := by
   apply J.transitive rj _ fun Y f Hf => _
   intros Y f hf
@@ -162,6 +160,12 @@ theorem bind_covering {S : Sieve X} {R : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, S f 
     (hR : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (H : S f), R H ∈ J Y) : Sieve.bind S R ∈ J X :=
   J.transitive hS _ fun _ f hf => superset_covering J (Sieve.le_pullback_bind S R f hf) (hR hf)
 
+lemma bindOfArrows {ι : Type*} {X : C} {Z : ι → C} {f : ∀ i, Z i ⟶ X} {R : ∀ i, Presieve (Z i)}
+    (h : Sieve.ofArrows Z f ∈ J X) (hR : ∀ i, Sieve.generate (R i) ∈ J _) :
+    Sieve.generate (Presieve.bindOfArrows Z f R) ∈ J X := by
+  refine J.superset_covering (Presieve.bind_ofArrows_le_bindOfArrows _ _ _) ?_
+  exact J.bind_covering h fun _ _ _ ↦ J.pullback_stable _ (hR _)
+
 /-- The sieve `S` on `X` `J`-covers an arrow `f` to `X` if `S.pullback f ∈ J Y`.
 This definition is an alternate way of presenting a Grothendieck topology.
 -/
@@ -175,7 +179,7 @@ theorem covering_iff_covers_id (S : Sieve X) : S ∈ J X ↔ J.Covers S (𝟙 X)
 
 /-- The maximality axiom in 'arrow' form: Any arrow `f` in `S` is covered by `S`. -/
 theorem arrow_max (f : Y ⟶ X) (S : Sieve X) (hf : S f) : J.Covers S f := by
-  rw [Covers, (Sieve.pullback_eq_top_iff_mem f).1 hf]
+  rw [Covers, (Sieve.mem_iff_pullback_eq_top f).1 hf]
   apply J.top_mem
 
 /-- The stability axiom in 'arrow' form: If `S` covers `f` then `S` covers `g ≫ f` for any `g`. -/
@@ -207,8 +211,8 @@ See [MM92] Chapter III, Section 2, example (a), or
 https://en.wikipedia.org/wiki/Grothendieck_topology#The_discrete_and_indiscrete_topologies
 -/
 def trivial : GrothendieckTopology C where
-  sieves X := {⊤}
-  top_mem' X := rfl
+  sieves _ := {⊤}
+  top_mem' _ := rfl
   pullback_stable' X Y S f hf := by
     rw [Set.mem_singleton_iff] at hf ⊢
     simp [hf]
@@ -221,7 +225,7 @@ def trivial : GrothendieckTopology C where
 See https://en.wikipedia.org/wiki/Grothendieck_topology#The_discrete_and_indiscrete_topologies.
 -/
 def discrete : GrothendieckTopology C where
-  sieves X := Set.univ
+  sieves _ := Set.univ
   top_mem' := by simp
   pullback_stable' X Y f := by simp
   transitive' := by simp
@@ -231,21 +235,21 @@ variable {C}
 theorem trivial_covering : S ∈ trivial C X ↔ S = ⊤ :=
   Set.mem_singleton_iff
 
-/-- See <https://stacks.math.columbia.edu/tag/00Z6> -/
+@[stacks 00Z6]
 instance instLEGrothendieckTopology : LE (GrothendieckTopology C) where
   le J₁ J₂ := (J₁ : ∀ X : C, Set (Sieve X)) ≤ (J₂ : ∀ X : C, Set (Sieve X))
 
 theorem le_def {J₁ J₂ : GrothendieckTopology C} : J₁ ≤ J₂ ↔ (J₁ : ∀ X : C, Set (Sieve X)) ≤ J₂ :=
   Iff.rfl
 
-/-- See <https://stacks.math.columbia.edu/tag/00Z6> -/
+@[stacks 00Z6]
 instance : PartialOrder (GrothendieckTopology C) :=
   { instLEGrothendieckTopology with
-    le_refl := fun J₁ => le_def.mpr le_rfl
-    le_trans := fun J₁ J₂ J₃ h₁₂ h₂₃ => le_def.mpr (le_trans h₁₂ h₂₃)
-    le_antisymm := fun J₁ J₂ h₁₂ h₂₁ => GrothendieckTopology.ext (le_antisymm h₁₂ h₂₁) }
+    le_refl := fun _ => le_def.mpr le_rfl
+    le_trans := fun _ _ _ h₁₂ h₂₃ => le_def.mpr (le_trans h₁₂ h₂₃)
+    le_antisymm := fun _ _ h₁₂ h₂₁ => GrothendieckTopology.ext (le_antisymm h₁₂ h₂₁) }
 
-/-- See <https://stacks.math.columbia.edu/tag/00Z7> -/
+@[stacks 00Z7]
 instance : InfSet (GrothendieckTopology C) where
   sInf T :=
     { sieves := sInf (sieves '' T)
@@ -260,16 +264,15 @@ instance : InfSet (GrothendieckTopology C) where
         apply
           J.transitive (hS _ ⟨⟨_, _, hJ, rfl⟩, rfl⟩) _ fun Y f hf => h hf _ ⟨⟨_, _, hJ, rfl⟩, rfl⟩ }
 
-/-- See <https://stacks.math.columbia.edu/tag/00Z7> -/
+lemma mem_sInf (s : Set (GrothendieckTopology C)) {X : C} (S : Sieve X) :
+    S ∈ sInf s X ↔ ∀ t ∈ s, S ∈ t X := by
+  change S ∈ sInf (sieves '' s) X ↔ _
+  simp
+
+@[stacks 00Z7]
 theorem isGLB_sInf (s : Set (GrothendieckTopology C)) : IsGLB s (sInf s) := by
   refine @IsGLB.of_image _ _ _ _ sieves ?_ _ _ ?_
-  · #adaptation_note
-    /--
-    This proof used to be `rfl`,
-    but has been temporarily broken by https://github.com/leanprover/lean4/pull/5329.
-    It can hopefully be restored after https://github.com/leanprover/lean4/pull/5359
-    -/
-    exact Iff.rfl
+  · rfl
   · exact _root_.isGLB_sInf _
 
 /-- Construct a complete lattice from the `Inf`, but make the trivial and discrete topologies
@@ -279,7 +282,7 @@ instance : CompleteLattice (GrothendieckTopology C) :=
   CompleteLattice.copy (completeLatticeOfInf _ isGLB_sInf) _ rfl (discrete C)
     (by
       apply le_antisymm
-      · exact @CompleteLattice.le_top _ (completeLatticeOfInf _ isGLB_sInf) (discrete C)
+      · exact (completeLatticeOfInf _ isGLB_sInf).le_top (discrete C)
       · intro X S _
         apply Set.mem_univ)
     (trivial C)
@@ -288,7 +291,7 @@ instance : CompleteLattice (GrothendieckTopology C) :=
       · intro X S hS
         rw [trivial_covering] at hS
         apply covering_of_eq_top _ hS
-      · exact @CompleteLattice.bot_le _ (completeLatticeOfInf _ isGLB_sInf) (trivial C))
+      · exact (completeLatticeOfInf _ isGLB_sInf).bot_le (trivial C))
     _ rfl _ rfl _ rfl sInf rfl
 
 instance : Inhabited (GrothendieckTopology C) :=
@@ -311,7 +314,7 @@ theorem top_covering : S ∈ (⊤ : GrothendieckTopology C) X :=
   ⟨⟩
 
 theorem bot_covers (S : Sieve X) (f : Y ⟶ X) : (⊥ : GrothendieckTopology C).Covers S f ↔ S f := by
-  rw [covers_iff, bot_covering, ← Sieve.pullback_eq_top_iff_mem]
+  rw [covers_iff, bot_covering, ← Sieve.mem_iff_pullback_eq_top]
 
 @[simp]
 theorem top_covers (S : Sieve X) (f : Y ⟶ X) : (⊤ : GrothendieckTopology C).Covers S f := by
@@ -323,7 +326,7 @@ See https://ncatlab.org/nlab/show/dense+topology, or [MM92] Chapter III, Section
 -/
 def dense : GrothendieckTopology C where
   sieves X S := ∀ {Y : C} (f : Y ⟶ X), ∃ (Z : _) (g : Z ⟶ Y), S (g ≫ f)
-  top_mem' X Y f := ⟨Y, 𝟙 Y, ⟨⟩⟩
+  top_mem' _ Y _ := ⟨Y, 𝟙 Y, ⟨⟩⟩
   pullback_stable' := by
     intro X Y S h H Z f
     rcases H (f ≫ h) with ⟨W, g, H'⟩
@@ -355,7 +358,7 @@ See https://ncatlab.org/nlab/show/atomic+site, or [MM92] Chapter III, Section 2,
 -/
 def atomic (hro : RightOreCondition C) : GrothendieckTopology C where
   sieves X S := ∃ (Y : _) (f : Y ⟶ X), S f
-  top_mem' X := ⟨_, 𝟙 _, ⟨⟩⟩
+  top_mem' _ := ⟨_, 𝟙 _, ⟨⟩⟩
   pullback_stable' := by
     rintro X Y S h ⟨Z, f, hf⟩
     rcases hro h f with ⟨W, g, k, comm⟩
@@ -371,9 +374,10 @@ def atomic (hro : RightOreCondition C) : GrothendieckTopology C where
 Grothendieck topology `J`. -/
 -- Porting note: Lean 3 inferred `Type max u v`, Lean 4 by default gives `Type (max 0 u v)`
 def Cover (X : C) : Type max u v :=
-  { S : Sieve X // S ∈ J X } -- deriving Preorder
+  { S : Sieve X // S ∈ J X }
+-- The `Preorder` instance should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting note: `deriving` didn't work above, so we add the preorder instance manually.
 instance (X : C) : Preorder (J.Cover X) :=
   show Preorder {S : Sieve X // S ∈ J X} from inferInstance
 
@@ -394,22 +398,20 @@ theorem ext (S T : J.Cover X) (h : ∀ ⦃Y⦄ (f : Y ⟶ X), S f ↔ T f) : S =
 instance : OrderTop (J.Cover X) :=
   { (inferInstance : Preorder (J.Cover X)) with
     top := ⟨⊤, J.top_mem _⟩
-    le_top := fun S Y f _ => by tauto }
+    le_top := fun _ _ _ _ => by tauto }
 
 instance : SemilatticeInf (J.Cover X) :=
   { (inferInstance : Preorder _) with
     inf := fun S T => ⟨S ⊓ T, J.intersection_covering S.condition T.condition⟩
-    le_antisymm := fun S T h1 h2 => ext _ _ fun {Y} f => ⟨by apply h1, by apply h2⟩
-    inf_le_left := fun S T Y f hf => hf.1
-    inf_le_right := fun S T Y f hf => hf.2
-    le_inf := fun S T W h1 h2 Y f h => ⟨h1 _ h, h2 _ h⟩ }
+    le_antisymm := fun _ _ h1 h2 => ext _ _ fun {Y} f => ⟨by apply h1, by apply h2⟩
+    inf_le_left := fun _ _ _ _ hf => hf.1
+    inf_le_right := fun _ _ _ _ hf => hf.2
+    le_inf := fun _ _ _ h1 h2 _ _ h => ⟨h1 _ h, h2 _ h⟩ }
 
 instance : Inhabited (J.Cover X) :=
   ⟨⊤⟩
 
 /-- An auxiliary structure, used to define `S.index`. -/
--- Porting note(#5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 @[ext]
 structure Arrow (S : J.Cover X) where
   /-- The source of the arrow. -/
@@ -445,6 +447,7 @@ from `I.precomp g` to `I`. -/
 @[simps]
 def Arrow.precompRelation {S : J.Cover X} (I : S.Arrow) {Z : C} (g : Z ⟶ I.Y) :
     (I.precomp g).Relation I where
+  Z := (I.precomp g).Y
   g₁ := 𝟙 _
   g₂ := g
 
@@ -456,8 +459,8 @@ def Arrow.map {S T : J.Cover X} (I : S.Arrow) (f : S ⟶ T) : T.Arrow :=
 /-- Map an `Arrow.Relation` along a refinement `S ⟶ T`. -/
 @[simps]
 def Arrow.Relation.map {S T : J.Cover X} {I₁ I₂ : S.Arrow}
-    (r : I₁.Relation I₂) (f : S ⟶ T) : (I₁.map f).Relation (I₂.map f) where
-  w := r.w
+    (r : I₁.Relation I₂) (f : S ⟶ T) : (I₁.map f).Relation (I₂.map f) :=
+  { r with }
 
 /-- Pull back a cover along a morphism. -/
 def pullback (S : J.Cover X) (f : Y ⟶ X) : J.Cover Y :=
@@ -471,10 +474,8 @@ def Arrow.base {f : Y ⟶ X} {S : J.Cover X} (I : (S.pullback f).Arrow) : S.Arro
 /-- A relation of `S.pullback f` gives rise to a relation of `S`. -/
 def Arrow.Relation.base
     {f : Y ⟶ X} {S : J.Cover X} {I₁ I₂ : (S.pullback f).Arrow}
-    (r : I₁.Relation I₂) : I₁.base.Relation I₂.base where
-  g₁ := r.g₁
-  g₂ := r.g₂
-  w := by simp [r.w_assoc]
+    (r : I₁.Relation I₂) : I₁.base.Relation I₂.base :=
+  { r with w := by simp [r.w_assoc] }
 
 @[simp]
 theorem coe_pullback {Z : C} (f : Y ⟶ X) (g : Z ⟶ Y) (S : J.Cover X) :
@@ -504,19 +505,19 @@ def bindToBase {X : C} (S : J.Cover X) (T : ∀ I : S.Arrow, J.Cover I.Y) : S.bi
     exact h1
 
 /-- An arrow in bind has the form `A ⟶ B ⟶ X` where `A ⟶ B` is an arrow in `T I` for some `I`.
- and `B ⟶ X` is an arrow of `S`. This is the object `B`. -/
+and `B ⟶ X` is an arrow of `S`. This is the object `B`. -/
 noncomputable def Arrow.middle {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow, J.Cover I.Y}
     (I : (S.bind T).Arrow) : C :=
   I.hf.choose
 
 /-- An arrow in bind has the form `A ⟶ B ⟶ X` where `A ⟶ B` is an arrow in `T I` for some `I`.
- and `B ⟶ X` is an arrow of `S`. This is the hom `A ⟶ B`. -/
+and `B ⟶ X` is an arrow of `S`. This is the hom `A ⟶ B`. -/
 noncomputable def Arrow.toMiddleHom {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow, J.Cover I.Y}
     (I : (S.bind T).Arrow) : I.Y ⟶ I.middle :=
   I.hf.choose_spec.choose
 
 /-- An arrow in bind has the form `A ⟶ B ⟶ X` where `A ⟶ B` is an arrow in `T I` for some `I`.
- and `B ⟶ X` is an arrow of `S`. This is the hom `B ⟶ X`. -/
+and `B ⟶ X` is an arrow of `S`. This is the hom `B ⟶ X`. -/
 noncomputable def Arrow.fromMiddleHom {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow, J.Cover I.Y}
     (I : (S.bind T).Arrow) : I.middle ⟶ X :=
   I.hf.choose_spec.choose_spec.choose
@@ -526,7 +527,7 @@ theorem Arrow.from_middle_condition {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow
   I.hf.choose_spec.choose_spec.choose_spec.choose
 
 /-- An arrow in bind has the form `A ⟶ B ⟶ X` where `A ⟶ B` is an arrow in `T I` for some `I`.
- and `B ⟶ X` is an arrow of `S`. This is the hom `B ⟶ X`, as an arrow. -/
+and `B ⟶ X` is an arrow of `S`. This is the hom `B ⟶ X`, as an arrow. -/
 noncomputable def Arrow.fromMiddle {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow, J.Cover I.Y}
     (I : (S.bind T).Arrow) : S.Arrow :=
   ⟨_, I.fromMiddleHom, I.from_middle_condition⟩
@@ -536,7 +537,7 @@ theorem Arrow.to_middle_condition {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow, 
   I.hf.choose_spec.choose_spec.choose_spec.choose_spec.1
 
 /-- An arrow in bind has the form `A ⟶ B ⟶ X` where `A ⟶ B` is an arrow in `T I` for some `I`.
- and `B ⟶ X` is an arrow of `S`. This is the hom `A ⟶ B`, as an arrow. -/
+and `B ⟶ X` is an arrow of `S`. This is the hom `A ⟶ B`, as an arrow. -/
 noncomputable def Arrow.toMiddle {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow, J.Cover I.Y}
     (I : (S.bind T).Arrow) : (T I.fromMiddle).Arrow :=
   ⟨_, I.toMiddleHom, I.to_middle_condition⟩
@@ -546,14 +547,12 @@ theorem Arrow.middle_spec {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow, J.Cover 
   I.hf.choose_spec.choose_spec.choose_spec.choose_spec.2
 
 /-- An auxiliary structure, used to define `S.index`. -/
--- Porting note(#5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance, ext]
 @[ext]
 structure Relation (S : J.Cover X) where
   /-- The first arrow. -/
-  fst : S.Arrow
+  {fst : S.Arrow}
   /-- The second arrow. -/
-  snd : S.Arrow
+  {snd : S.Arrow}
   /-- The relation between the two arrows. -/
   r : fst.Relation snd
 
@@ -562,18 +561,25 @@ structure Relation (S : J.Cover X) where
 @[simps]
 def Relation.mk' {S : J.Cover X} {fst snd : S.Arrow} (r : fst.Relation snd) :
     S.Relation where
+  fst := fst
+  snd := snd
   r := r
+
+
+/-- The shape of the multiequalizer diagrams associated to `S : J.Cover X`. -/
+@[simps]
+def shape (S : J.Cover X) : Limits.MulticospanShape where
+  L := S.Arrow
+  R := S.Relation
+  fst I := I.fst
+  snd I := I.snd
 
 -- This is used extensively in `Plus.lean`, etc.
 -- We place this definition here as it will be used in `Sheaf.lean` as well.
 /-- To every `S : J.Cover X` and presheaf `P`, associate a `MulticospanIndex`. -/
 @[simps]
 def index {D : Type u₁} [Category.{v₁} D] (S : J.Cover X) (P : Cᵒᵖ ⥤ D) :
-    Limits.MulticospanIndex D where
-  L := S.Arrow
-  R := S.Relation
-  fstTo I := I.fst
-  sndTo I := I.snd
+    Limits.MulticospanIndex S.shape D where
   left I := P.obj (Opposite.op I.Y)
   right I := P.obj (Opposite.op I.r.Z)
   fst I := P.map I.r.g₁.op
@@ -601,7 +607,7 @@ noncomputable abbrev toMultiequalizer {D : Type u₁} [Category.{v₁} D] (S : J
   Limits.Multiequalizer.lift _ _ (fun I => P.map I.f.op)
     (by
       intro I
-      dsimp only [index, Relation.fst, Relation.snd]
+      dsimp only [shape, index, Relation.fst, Relation.snd]
       simp only [← P.map_comp, ← op_comp, I.r.w])
 
 end Cover

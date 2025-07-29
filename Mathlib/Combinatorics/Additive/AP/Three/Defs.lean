@@ -3,10 +3,11 @@ Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Order.Interval.Finset
-import Mathlib.Algebra.SMulWithZero
+import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Algebra.Order.Interval.Finset.Basic
 import Mathlib.Combinatorics.Additive.FreimanHom
 import Mathlib.Order.Interval.Finset.Fin
+import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 
 /-!
 # Sets without arithmetic progressions of length three and Roth numbers
@@ -43,10 +44,12 @@ the size of the biggest 3AP-free subset of `{0, ..., n - 1}`.
 3AP-free, Salem-Spencer, Roth, arithmetic progression, average, three-free
 -/
 
+assert_not_exists Field Ideal TwoSidedIdeal
+
 open Finset Function
 open scoped Pointwise
 
-variable {F α β 𝕜 E : Type*}
+variable {F α β : Type*}
 
 section ThreeAPFree
 
@@ -101,7 +104,7 @@ theorem threeGPFree_pi {ι : Type*} {α : ι → Type*} [∀ i, Monoid (α i)] {
 end Monoid
 
 section CommMonoid
-variable [CommMonoid α] [CommMonoid β] {s A : Set α} {t B : Set β} {f : α → β} {a : α}
+variable [CommMonoid α] [CommMonoid β] {s A : Set α} {t : Set β} {f : α → β}
 
 /-- Geometric progressions of length three are reflected under `2`-Freiman homomorphisms. -/
 @[to_additive
@@ -119,7 +122,7 @@ lemma threeGPFree_image (hf : IsMulFreimanIso 2 s t f) (hAs : A ⊆ s) :
     ThreeGPFree (f '' A) ↔ ThreeGPFree A := by
   rw [ThreeGPFree, ThreeGPFree]
   have := (hf.bijOn.injOn.mono hAs).bijOn_image (f := f)
-  simp (config := { contextual := true }) only
+  simp +contextual only
     [((hf.bijOn.injOn.mono hAs).bijOn_image (f := f)).forall,
     hf.mul_eq_mul (hAs _) (hAs _) (hAs _) (hAs _), this.injOn.eq_iff]
 
@@ -151,7 +154,7 @@ end CommMonoid
 
 section CancelCommMonoid
 
-variable [CancelCommMonoid α] {s : Set α} {a : α}
+variable [CommMonoid α] [IsCancelMul α] {s : Set α} {a : α}
 
 @[to_additive] lemma ThreeGPFree.eq_right (hs : ThreeGPFree s) :
     ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → ∀ ⦃c⦄, c ∈ s → a * c = b * b → b = c := by
@@ -194,7 +197,7 @@ end CancelCommMonoid
 
 section OrderedCancelCommMonoid
 
-variable [OrderedCancelCommMonoid α] {s : Set α} {a : α}
+variable [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α] {s : Set α} {a : α}
 
 @[to_additive]
 theorem threeGPFree_insert_of_lt (hs : ∀ i ∈ s, i < a) :
@@ -253,31 +256,31 @@ subset.
 
 The usual Roth number corresponds to `addRothNumber (Finset.range n)`, see `rothNumberNat`."]
 def mulRothNumber : Finset α →o ℕ :=
-  ⟨fun s ↦ Nat.findGreatest (fun m ↦ ∃ t ⊆ s, t.card = m ∧ ThreeGPFree (t : Set α)) s.card, by
+  ⟨fun s ↦ Nat.findGreatest (fun m ↦ ∃ t ⊆ s, #t = m ∧ ThreeGPFree (t : Set α)) #s, by
     rintro t u htu
     refine Nat.findGreatest_mono (fun m => ?_) (card_le_card htu)
     rintro ⟨v, hvt, hv⟩
     exact ⟨v, hvt.trans htu, hv⟩⟩
 
 @[to_additive]
-theorem mulRothNumber_le : mulRothNumber s ≤ s.card := Nat.findGreatest_le s.card
+theorem mulRothNumber_le : mulRothNumber s ≤ #s := Nat.findGreatest_le #s
 
 @[to_additive]
 theorem mulRothNumber_spec :
-    ∃ t ⊆ s, t.card = mulRothNumber s ∧ ThreeGPFree (t : Set α) :=
-  Nat.findGreatest_spec (P := fun m ↦ ∃ t ⊆ s, t.card = m ∧ ThreeGPFree (t : Set α))
+    ∃ t ⊆ s, #t = mulRothNumber s ∧ ThreeGPFree (t : Set α) :=
+  Nat.findGreatest_spec (P := fun m ↦ ∃ t ⊆ s, #t = m ∧ ThreeGPFree (t : Set α))
     (Nat.zero_le _) ⟨∅, empty_subset _, card_empty, by norm_cast; exact threeGPFree_empty⟩
 
 variable {s t} {n : ℕ}
 
 @[to_additive]
 theorem ThreeGPFree.le_mulRothNumber (hs : ThreeGPFree (s : Set α)) (h : s ⊆ t) :
-    s.card ≤ mulRothNumber t :=
+    #s ≤ mulRothNumber t :=
   Nat.le_findGreatest (card_le_card h) ⟨s, h, rfl, hs⟩
 
 @[to_additive]
 theorem ThreeGPFree.mulRothNumber_eq (hs : ThreeGPFree (s : Set α)) :
-    mulRothNumber s = s.card :=
+    mulRothNumber s = #s :=
   (mulRothNumber_le _).antisymm <| hs.le_mulRothNumber <| Subset.refl _
 
 @[to_additive (attr := simp)]
@@ -295,9 +298,9 @@ theorem mulRothNumber_union_le (s t : Finset α) :
     mulRothNumber (s ∪ t) ≤ mulRothNumber s + mulRothNumber t :=
   let ⟨u, hus, hcard, hu⟩ := mulRothNumber_spec (s ∪ t)
   calc
-    mulRothNumber (s ∪ t) = u.card := hcard.symm
-    _ = (u ∩ s ∪ u ∩ t).card := by rw [← inter_union_distrib_left, inter_eq_left.2 hus]
-    _ ≤ (u ∩ s).card + (u ∩ t).card := card_union_le _ _
+    mulRothNumber (s ∪ t) = #u := hcard.symm
+    _ = #(u ∩ s ∪ u ∩ t) := by rw [← inter_union_distrib_left, inter_eq_left.2 hus]
+    _ ≤ #(u ∩ s) + #(u ∩ t) := card_union_le _ _
     _ ≤ mulRothNumber s + mulRothNumber t := _root_.add_le_add
       ((hu.mono inter_subset_left).le_mulRothNumber inter_subset_right)
       ((hu.mono inter_subset_left).le_mulRothNumber inter_subset_right)
@@ -338,7 +341,6 @@ lemma IsMulFreimanHom.mulRothNumber_mono (hf : IsMulFreimanHom 2 A B f) (hf' : S
   rw [← hcard, ← s.card_image_of_injOn ((invFunOn_injOn_image f _).mono hfsA)]
   refine ThreeGPFree.le_mulRothNumber ?_ (mod_cast hsA)
   rw [coe_image]
-
   simpa using (hf.subset hsA hfsA.bijOn_subset.mapsTo).threeGPFree (hf'.injOn.mono hsA) hs
 
 /-- Arithmetic progressions are preserved under 2-Freiman isos. -/
@@ -388,7 +390,7 @@ end RothNumber
 
 section rothNumberNat
 
-variable {s : Finset ℕ} {k n : ℕ}
+variable {k n : ℕ}
 
 /-- The Roth number of a natural `N` is the largest integer `m` for which there is a subset of
 `range N` of size `m` with no arithmetic progression of length 3.
@@ -407,13 +409,13 @@ theorem rothNumberNat_le (N : ℕ) : rothNumberNat N ≤ N :=
   (addRothNumber_le _).trans (card_range _).le
 
 theorem rothNumberNat_spec (n : ℕ) :
-    ∃ t ⊆ range n, t.card = rothNumberNat n ∧ ThreeAPFree (t : Set ℕ) :=
+    ∃ t ⊆ range n, #t = rothNumberNat n ∧ ThreeAPFree (t : Set ℕ) :=
   addRothNumber_spec _
 
 /-- A verbose specialization of `threeAPFree.le_addRothNumber`, sometimes convenient in
 practice. -/
 theorem ThreeAPFree.le_rothNumberNat (s : Finset ℕ) (hs : ThreeAPFree (s : Set ℕ))
-    (hsn : ∀ x ∈ s, x < n) (hsk : s.card = k) : k ≤ rothNumberNat n :=
+    (hsn : ∀ x ∈ s, x < n) (hsk : #s = k) : k ≤ rothNumberNat n :=
   hsk.ge.trans <| hs.le_addRothNumber fun x hx => mem_range.2 <| hsn x hx
 
 /-- The Roth number is a subadditive function. Note that by Fekete's lemma this shows that
@@ -431,16 +433,18 @@ theorem rothNumberNat_zero : rothNumberNat 0 = 0 :=
 
 theorem addRothNumber_Ico (a b : ℕ) : addRothNumber (Ico a b) = rothNumberNat (b - a) := by
   obtain h | h := le_total b a
-  · rw [tsub_eq_zero_of_le h, Ico_eq_empty_of_le h, rothNumberNat_zero, addRothNumber_empty]
+  · rw [Nat.sub_eq_zero_of_le h, Ico_eq_empty_of_le h, rothNumberNat_zero, addRothNumber_empty]
   convert addRothNumber_map_add_left _ a
   rw [range_eq_Ico, map_eq_image]
   convert (image_add_left_Ico 0 (b - a) _).symm
   exact (add_tsub_cancel_of_le h).symm
 
+open Fin.NatCast in -- TODO: should this be refactored to avoid needing the coercion?
 lemma Fin.addRothNumber_eq_rothNumberNat (hkn : 2 * k ≤ n) :
     addRothNumber (Iio k : Finset (Fin n.succ)) = rothNumberNat k :=
   IsAddFreimanIso.addRothNumber_congr <| mod_cast isAddFreimanIso_Iio two_ne_zero hkn
 
+open Fin.CommRing in -- TODO: should this be refactored to avoid needing the coercion?
 lemma Fin.addRothNumber_le_rothNumberNat (k n : ℕ) (hkn : k ≤ n) :
     addRothNumber (Iio k : Finset (Fin n.succ)) ≤ rothNumberNat k := by
   suffices h : Set.BijOn (Nat.cast : ℕ → Fin n.succ) (range k) (Iio k : Finset (Fin n.succ)) by

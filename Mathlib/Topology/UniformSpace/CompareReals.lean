@@ -3,9 +3,8 @@ Copyright (c) 2019 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Topology.UniformSpace.AbsoluteValue
-import Mathlib.Topology.Instances.Real
 import Mathlib.Topology.Instances.Rat
+import Mathlib.Topology.UniformSpace.AbsoluteValue
 import Mathlib.Topology.UniformSpace.Completion
 
 /-!
@@ -70,9 +69,9 @@ def rationalCauSeqPkg : @AbstractCompletion ℚ <| (@AbsoluteValue.abs ℚ _).un
     (uniformStruct := by infer_instance)
     (complete := by infer_instance)
     (separation := by infer_instance)
-    (uniformInducing := by
+    (isUniformInducing := by
       rw [Rat.uniformSpace_eq]
-      exact Rat.isUniformEmbedding_coe_real.toUniformInducing)
+      exact Rat.isUniformEmbedding_coe_real.isUniformInducing)
     (dense := Rat.isDenseEmbedding_coe_real.dense)
 
 namespace CompareReals

@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Kexing Ying, Eric Wieser
 -/
 import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
-import Mathlib.Data.Sign
+import Mathlib.Data.Sign.Basic
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Data.Complex.Abs
 
 /-!
 # Real quadratic forms
@@ -17,17 +16,13 @@ A real quadratic form is equivalent to a weighted
 sum of squares with the weights being ±1 or 0.
 
 When the real quadratic form is nondegenerate we can take the weights to be ±1,
-as in `equivalent_one_zero_neg_one_weighted_sum_squared`.
+as in `QuadraticForm.equivalent_one_zero_neg_one_weighted_sum_squared`.
 
 -/
 
+open Finset Module QuadraticMap SignType
 
 namespace QuadraticForm
-
-open Finset SignType
-
-open QuadraticMap
-
 variable {ι : Type*} [Fintype ι]
 
 /-- The isometry between a weighted sum of squares with weights `u` on the

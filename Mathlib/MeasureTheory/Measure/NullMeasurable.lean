@@ -3,8 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
+import Mathlib.MeasureTheory.MeasurableSpace.EventuallyMeasurable
+import Mathlib.MeasureTheory.MeasurableSpace.Basic
 import Mathlib.MeasureTheory.Measure.AEDisjoint
-import Mathlib.MeasureTheory.Constructions.EventuallyMeasurable
 
 /-!
 # Null measurable sets and complete measures
@@ -54,8 +55,8 @@ the output type.
 measurable, measure, null measurable, completion
 -/
 
-
 open Filter Set Encodable
+open scoped ENNReal
 
 variable {ι α β γ : Type*}
 
@@ -80,7 +81,7 @@ instance NullMeasurableSpace.instSubsingleton [h : Subsingleton α] :
   h
 
 instance NullMeasurableSpace.instMeasurableSpace : MeasurableSpace (NullMeasurableSpace α μ) :=
-  @EventuallyMeasurableSpace α inferInstance (ae μ) _
+  @eventuallyMeasurableSpace α inferInstance (ae μ) _
 
 /-- A set is called `NullMeasurableSet` if it can be approximated by a measurable set up to
 a set of null measure. -/
@@ -88,15 +89,13 @@ def NullMeasurableSet [MeasurableSpace α] (s : Set α)
     (μ : Measure α := by volume_tac) : Prop :=
   @MeasurableSet (NullMeasurableSpace α μ) _ s
 
-@[simp]
+@[simp, aesop unsafe (rule_sets := [Measurable])]
 theorem _root_.MeasurableSet.nullMeasurableSet (h : MeasurableSet s) : NullMeasurableSet s μ :=
   h.eventuallyMeasurableSet
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem nullMeasurableSet_empty : NullMeasurableSet ∅ μ :=
   MeasurableSet.empty
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem nullMeasurableSet_univ : NullMeasurableSet univ μ :=
   MeasurableSet.univ
 
@@ -169,17 +168,21 @@ protected theorem diff (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t �
   MeasurableSet.diff hs ht
 
 @[simp]
+protected theorem symmDiff {s₁ s₂ : Set α} (h₁ : NullMeasurableSet s₁ μ)
+    (h₂ : NullMeasurableSet s₂ μ) : NullMeasurableSet (symmDiff s₁ s₂) μ :=
+  (h₁.diff h₂).union (h₂.diff h₁)
+
+@[simp]
 protected theorem disjointed {f : ℕ → Set α} (h : ∀ i, NullMeasurableSet (f i) μ) (n) :
     NullMeasurableSet (disjointed f n) μ :=
   MeasurableSet.disjointed h n
 
--- @[simp] -- Porting note (#10618): simp can prove thisrove this
 protected theorem const (p : Prop) : NullMeasurableSet { _a : α | p } μ :=
   MeasurableSet.const p
 
 instance instMeasurableSingletonClass [MeasurableSingletonClass α] :
     MeasurableSingletonClass (NullMeasurableSpace α μ) :=
-  EventuallyMeasurableSpace.measurableSingleton (m := m0)
+  eventuallyMeasurableSingleton (m := m0)
 
 protected theorem insert [MeasurableSingletonClass (NullMeasurableSpace α μ)]
     (hs : NullMeasurableSet s μ) (a : α) : NullMeasurableSet (insert a s) μ :=
@@ -208,6 +211,8 @@ theorem exists_measurable_subset_ae_eq (h : NullMeasurableSet s μ) :
 end NullMeasurableSet
 
 open NullMeasurableSet
+
+open scoped Function -- required for scoped `on` notation
 
 /-- If `sᵢ` is a countable family of (null) measurable pairwise `μ`-a.e. disjoint sets, then there
 exists a subordinate family `tᵢ ⊆ sᵢ` of measurable pairwise disjoint sets such that
@@ -262,6 +267,14 @@ theorem measure_inter_add_diff₀ (s : Set α) (ht : NullMeasurableSet t μ) :
     _ = μ s' := congr_arg μ (inter_union_diff _ _)
     _ = μ s := hs'
 
+/-- If `s` and `t` are null measurable sets of equal measure
+and their intersection has finite measure,
+then `s \ t` and `t \ s` have equal measures too. -/
+theorem measure_diff_symm (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ)
+    (h : μ s = μ t) (hfin : μ (s ∩ t) ≠ ∞) : μ (s \ t) = μ (t \ s) := by
+  rw [← ENNReal.add_right_inj hfin, measure_inter_add_diff₀ _ ht, inter_comm,
+    measure_inter_add_diff₀ _ hs, h]
+
 theorem measure_union_add_inter₀ (s : Set α) (ht : NullMeasurableSet t μ) :
     μ (s ∪ t) + μ (s ∩ t) = μ s + μ t := by
   rw [← measure_inter_add_diff₀ (s ∪ t) ht, union_inter_cancel_right, union_diff_right, ←
@@ -279,6 +292,9 @@ theorem measure_union₀' (hs : NullMeasurableSet s μ) (hd : AEDisjoint μ s t)
 
 theorem measure_add_measure_compl₀ {s : Set α} (hs : NullMeasurableSet s μ) :
     μ s + μ sᶜ = μ univ := by rw [← measure_union₀' hs aedisjoint_compl_right, union_compl_self]
+
+lemma measure_of_measure_compl_eq_zero (hs : μ sᶜ = 0) : μ s = μ Set.univ := by
+  simpa [hs] using measure_add_measure_compl₀ <| .of_compl <| .of_null hs
 
 section MeasurableSingletonClass
 
@@ -329,6 +345,26 @@ theorem _root_.Set.Finite.nullMeasurableSet_sInter {s : Set (Set α)} (hs : s.Fi
 
 theorem nullMeasurableSet_toMeasurable : NullMeasurableSet (toMeasurable μ s) μ :=
   (measurableSet_toMeasurable _ _).nullMeasurableSet
+
+variable [MeasurableSingletonClass α] {mβ : MeasurableSpace β} [MeasurableSingletonClass β]
+
+lemma measure_preimage_fst_singleton_eq_tsum [Countable β] (μ : Measure (α × β)) (x : α) :
+    μ (Prod.fst ⁻¹' {x}) = ∑' y, μ {(x, y)} := by
+  rw [← measure_iUnion (by simp [Pairwise]) fun _ ↦ .singleton _, iUnion_singleton_eq_range,
+    preimage_fst_singleton_eq_range]
+
+lemma measure_preimage_snd_singleton_eq_tsum [Countable α] (μ : Measure (α × β)) (y : β) :
+    μ (Prod.snd ⁻¹' {y}) = ∑' x, μ {(x, y)} := by
+  have : Prod.snd ⁻¹' {y} = ⋃ x : α, {(x, y)} := by ext y; simp [Prod.ext_iff, eq_comm]
+  rw [this, measure_iUnion] <;> simp [Pairwise]
+
+lemma measure_preimage_fst_singleton_eq_sum [Fintype β] (μ : Measure (α × β)) (x : α) :
+    μ (Prod.fst ⁻¹' {x}) = ∑ y, μ {(x, y)} := by
+  rw [measure_preimage_fst_singleton_eq_tsum μ x, tsum_fintype]
+
+lemma measure_preimage_snd_singleton_eq_sum [Fintype α] (μ : Measure (α × β)) (y : β) :
+    μ (Prod.snd ⁻¹' {y}) = ∑ x, μ {(x, y)} := by
+  rw [measure_preimage_snd_singleton_eq_tsum μ y, tsum_fintype]
 
 end
 
@@ -398,7 +434,7 @@ namespace Measure
 def completion {_ : MeasurableSpace α} (μ : Measure α) :
     MeasureTheory.Measure (NullMeasurableSpace α μ) where
   toOuterMeasure := μ.toOuterMeasure
-  m_iUnion s hs hd := measure_iUnion₀ (hd.mono fun i j h => h.aedisjoint) hs
+  m_iUnion _ hs hd := measure_iUnion₀ (hd.mono fun _ _ h => h.aedisjoint) hs
   trim_le := by
     nth_rewrite 2 [← μ.trimmed]
     exact OuterMeasure.trim_anti_measurableSpace _ fun _ ↦ MeasurableSet.nullMeasurableSet

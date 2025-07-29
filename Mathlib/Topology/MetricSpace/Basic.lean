@@ -13,7 +13,7 @@ import Mathlib.Topology.MetricSpace.Defs
 
 -/
 
-open Set Filter Bornology
+open Set Filter Bornology Topology
 open scoped NNReal Uniformity
 
 universe u v w
@@ -32,14 +32,11 @@ instance (priority := 100) _root_.MetricSpace.instT0Space : T0Space γ where
 
 /-- A map between metric spaces is a uniform embedding if and only if the distance between `f x`
 and `f y` is controlled in terms of the distance between `x` and `y` and conversely. -/
-theorem isUniformEmbedding_iff' [MetricSpace β] {f : γ → β} :
+theorem isUniformEmbedding_iff' [PseudoMetricSpace β] {f : γ → β} :
     IsUniformEmbedding f ↔
       (∀ ε > 0, ∃ δ > 0, ∀ {a b : γ}, dist a b < δ → dist (f a) (f b) < ε) ∧
         ∀ δ > 0, ∃ ε > 0, ∀ {a b : γ}, dist (f a) (f b) < ε → dist a b < δ := by
-  rw [isUniformEmbedding_iff_uniformInducing, uniformInducing_iff, uniformContinuous_iff]
-
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_iff' := isUniformEmbedding_iff'
+  rw [isUniformEmbedding_iff_isUniformInducing, isUniformInducing_iff, uniformContinuous_iff]
 
 /-- If a `PseudoMetricSpace` is a T₀ space, then it is a `MetricSpace`. -/
 abbrev _root_.MetricSpace.ofT0PseudoMetricSpace (α : Type*) [PseudoMetricSpace α] [T0Space α] :
@@ -56,10 +53,10 @@ theorem isClosed_of_pairwise_le_dist {s : Set γ} {ε : ℝ} (hε : 0 < ε)
     (hs : s.Pairwise fun x y => ε ≤ dist x y) : IsClosed s :=
   isClosed_of_spaced_out (dist_mem_uniformity hε) <| by simpa using hs
 
-theorem closedEmbedding_of_pairwise_le_dist {α : Type*} [TopologicalSpace α] [DiscreteTopology α]
+theorem isClosedEmbedding_of_pairwise_le_dist {α : Type*} [TopologicalSpace α] [DiscreteTopology α]
     {ε : ℝ} (hε : 0 < ε) {f : α → γ} (hf : Pairwise fun x y => ε ≤ dist (f x) (f y)) :
-    ClosedEmbedding f :=
-  closedEmbedding_of_spaced_out (dist_mem_uniformity hε) <| by simpa using hf
+    IsClosedEmbedding f :=
+  isClosedEmbedding_of_spaced_out (dist_mem_uniformity hε) <| by simpa using hf
 
 /-- If `f : β → α` sends any two distinct points to points at distance at least `ε > 0`, then
 `f` is a uniform embedding with respect to the discrete uniformity on `β`. -/
@@ -67,9 +64,6 @@ theorem isUniformEmbedding_bot_of_pairwise_le_dist {β : Type*} {ε : ℝ} (hε 
     (hf : Pairwise fun x y => ε ≤ dist (f x) (f y)) :
     @IsUniformEmbedding _ _ ⊥ (by infer_instance) f :=
   isUniformEmbedding_of_spaced_out (dist_mem_uniformity hε) <| by simpa using hf
-
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_bot_of_pairwise_le_dist := isUniformEmbedding_bot_of_pairwise_le_dist
 
 end Metric
 
@@ -102,23 +96,23 @@ abbrev MetricSpace.induced {γ β} (f : γ → β) (hf : Function.Injective f) (
 `MetricSpace.induced` useful in case if the domain already has a `UniformSpace` structure. -/
 abbrev IsUniformEmbedding.comapMetricSpace {α β} [UniformSpace α] [m : MetricSpace β] (f : α → β)
     (h : IsUniformEmbedding f) : MetricSpace α :=
-  .replaceUniformity (.induced f h.inj m) h.comap_uniformity.symm
-
-@[deprecated (since := "2024-10-03")]
-alias UniformEmbedding.comapMetricSpace := IsUniformEmbedding.comapMetricSpace
+  .replaceUniformity (.induced f h.injective m) h.comap_uniformity.symm
 
 /-- Pull back a metric space structure by an embedding. This is a version of
 `MetricSpace.induced` useful in case if the domain already has a `TopologicalSpace` structure. -/
-abbrev Embedding.comapMetricSpace {α β} [TopologicalSpace α] [m : MetricSpace β] (f : α → β)
-    (h : Embedding f) : MetricSpace α :=
-  .replaceTopology (.induced f h.inj m) h.induced
+abbrev Topology.IsEmbedding.comapMetricSpace {α β} [TopologicalSpace α] [m : MetricSpace β]
+    (f : α → β) (h : IsEmbedding f) : MetricSpace α :=
+  .replaceTopology (.induced f h.injective m) h.eq_induced
+
+@[deprecated (since := "2024-10-26")]
+alias Embedding.comapMetricSpace := IsEmbedding.comapMetricSpace
 
 instance Subtype.metricSpace {α : Type*} {p : α → Prop} [MetricSpace α] :
     MetricSpace (Subtype p) :=
   .induced Subtype.val Subtype.coe_injective ‹_›
 
 @[to_additive]
-instance {α : Type*} [MetricSpace α] : MetricSpace αᵐᵒᵖ :=
+instance MulOpposite.instMetricSpace {α : Type*} [MetricSpace α] : MetricSpace αᵐᵒᵖ :=
   MetricSpace.induced MulOpposite.unop MulOpposite.unop_injective ‹_›
 
 section Real
@@ -140,7 +134,8 @@ instance [MetricSpace β] : MetricSpace (ULift β) :=
 
 section Prod
 
-instance Prod.metricSpaceMax [MetricSpace β] : MetricSpace (γ × β) := .ofT0PseudoMetricSpace _
+instance Prod.metricSpaceMax [MetricSpace β] : MetricSpace (γ × β) :=
+  .ofT0PseudoMetricSpace _
 
 end Prod
 
@@ -148,10 +143,10 @@ section Pi
 
 open Finset
 
-variable {π : β → Type*} [Fintype β] [∀ b, MetricSpace (π b)]
+variable {X : β → Type*} [Fintype β] [∀ b, MetricSpace (X b)]
 
 /-- A finite product of metric spaces is a metric space, with the sup distance. -/
-instance metricSpacePi : MetricSpace (∀ b, π b) := .ofT0PseudoMetricSpace _
+instance metricSpacePi : MetricSpace (∀ b, X b) := .ofT0PseudoMetricSpace _
 
 end Pi
 
@@ -161,10 +156,10 @@ section SecondCountable
 
 open TopologicalSpace
 
--- Porting note (#11215): TODO: use `Countable` instead of `Encodable`
+-- TODO: use `Countable` instead of `Encodable`
 /-- A metric space is second countable if one can reconstruct up to any `ε>0` any element of the
 space from countably many data. -/
-theorem secondCountable_of_countable_discretization {α : Type u} [MetricSpace α]
+theorem secondCountable_of_countable_discretization {α : Type u} [PseudoMetricSpace α]
     (H : ∀ ε > (0 : ℝ), ∃ (β : Type*) (_ : Encodable β) (F : α → β),
       ∀ x y, F x = F y → dist x y ≤ ε) :
     SecondCountableTopology α := by
@@ -198,27 +193,3 @@ instance SeparationQuotient.instMetricSpace {α : Type u} [PseudoMetricSpace α]
     surjective_mk.forall₂.2 dist_edist
 
 end EqRel
-
-/-!
-### `Additive`, `Multiplicative`
-
-The distance on those type synonyms is inherited without change.
--/
-
-open Additive Multiplicative
-
-instance [MetricSpace X] : MetricSpace (Additive X) := ‹MetricSpace X›
-instance [MetricSpace X] : MetricSpace (Multiplicative X) := ‹MetricSpace X›
-
-instance MulOpposite.instMetricSpace [MetricSpace X] : MetricSpace Xᵐᵒᵖ :=
-  MetricSpace.induced unop unop_injective ‹_›
-
-/-!
-### Order dual
-
-The distance on this type synonym is inherited without change.
--/
-
-open OrderDual
-
-instance [MetricSpace X] : MetricSpace Xᵒᵈ := ‹MetricSpace X›

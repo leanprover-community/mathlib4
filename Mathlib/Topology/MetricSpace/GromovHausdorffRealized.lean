@@ -3,9 +3,10 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Topology.ContinuousMap.Bounded.ArzelaAscoli
+import Mathlib.Topology.ContinuousMap.Bounded.Normed
 import Mathlib.Topology.MetricSpace.Gluing
 import Mathlib.Topology.MetricSpace.HausdorffDistance
-import Mathlib.Topology.ContinuousMap.Bounded
 
 /-!
 # The Gromov-Hausdorff distance is realized
@@ -220,9 +221,10 @@ private theorem closed_candidatesB : IsClosed (candidatesB X Y) := by
   rw [this]
   repeat'
     first
-      |apply IsClosed.inter _ _
-      |apply isClosed_iInter _
-      |apply I1 _ _|apply I2 _ _|apply I3 _ _|apply I4 _ _ _|apply I5 _|apply I6 _ _|intro x
+      | apply IsClosed.inter _ _
+      | apply isClosed_iInter _
+      | apply I1 _ _ | apply I2 _ _ | apply I3 _ _ | apply I4 _ _ _ | apply I5 _ | apply I6 _ _
+      | intro x
 
 /-- We will then choose the candidate minimizing the Hausdorff distance. Except that we are not
 in a metric space setting, so we need to define our custom version of Hausdorff distance,
@@ -284,7 +286,7 @@ private theorem HD_lipschitz_aux1 (f g : Cb X Y) :
     refine Monotone.map_ciInf_of_continuousAt (continuousAt_id.add continuousAt_const) ?_ ?_
     · intro x y hx
       simpa
-    · show BddBelow (range fun y : Y => g (inl x, inr y))
+    · change BddBelow (range fun y : Y => g (inl x, inr y))
       exact ⟨cg, forall_mem_range.2 fun i => Hcg _⟩
   have E2 : (⨆ x, ⨅ y, g (inl x, inr y)) + dist f g = ⨆ x, (⨅ y, g (inl x, inr y)) + dist f g := by
     refine Monotone.map_ciSup_of_continuousAt (continuousAt_id.add continuousAt_const) ?_ ?_
@@ -312,7 +314,7 @@ private theorem HD_lipschitz_aux2 (f g : Cb X Y) :
     refine Monotone.map_ciInf_of_continuousAt (continuousAt_id.add continuousAt_const) ?_ ?_
     · intro x y hx
       simpa
-    · show BddBelow (range fun x : X => g (inl x, inr y))
+    · change BddBelow (range fun x : X => g (inl x, inr y))
       exact ⟨cg, forall_mem_range.2 fun i => Hcg _⟩
   have E2 : (⨆ y, ⨅ x, g (inl x, inr y)) + dist f g = ⨆ y, (⨅ x, g (inl x, inr y)) + dist f g := by
     refine Monotone.map_ciSup_of_continuousAt (continuousAt_id.add continuousAt_const) ?_ ?_
@@ -432,20 +434,13 @@ predistance is given by the candidate. Then, we will identify points at `0` pred
 to obtain a genuine metric space. -/
 def premetricOptimalGHDist : PseudoMetricSpace (X ⊕ Y) where
   dist p q := optimalGHDist X Y (p, q)
-  dist_self x := candidates_refl (optimalGHDist_mem_candidatesB X Y)
-  dist_comm x y := candidates_symm (optimalGHDist_mem_candidatesB X Y)
-  dist_triangle x y z := candidates_triangle (optimalGHDist_mem_candidatesB X Y)
-  -- Porting note (#10888): added proof for `edist_dist`
-  edist_dist x y := by
-    simp only
-    congr
-    simp only [max, left_eq_sup]
-    exact candidates_nonneg (optimalGHDist_mem_candidatesB X Y)
+  dist_self _ := candidates_refl (optimalGHDist_mem_candidatesB X Y)
+  dist_comm _ _ := candidates_symm (optimalGHDist_mem_candidatesB X Y)
+  dist_triangle _ _ _ := candidates_triangle (optimalGHDist_mem_candidatesB X Y)
 
 attribute [local instance] premetricOptimalGHDist
 
 /-- A metric space which realizes the optimal coupling between `X` and `Y` -/
--- @[nolint has_nonempty_instance] -- Porting note(#5171): This linter does not exist yet.
 def OptimalGHCoupling : Type _ :=
   @SeparationQuotient (X ⊕ Y) (premetricOptimalGHDist X Y).toUniformSpace.toTopologicalSpace
 
@@ -481,7 +476,7 @@ the Hausdorff distance in the optimal coupling, although we only prove here the 
 we need. -/
 theorem hausdorffDist_optimal_le_HD {f} (h : f ∈ candidatesB X Y) :
     hausdorffDist (range (optimalGHInjl X Y)) (range (optimalGHInjr X Y)) ≤ HD f := by
-  refine le_trans (le_of_forall_le_of_dense fun r hr => ?_) (HD_optimalGHDist_le X Y f h)
+  refine le_trans (le_of_forall_gt_imp_ge_of_dense fun r hr => ?_) (HD_optimalGHDist_le X Y f h)
   have A : ∀ x ∈ range (optimalGHInjl X Y), ∃ y ∈ range (optimalGHInjr X Y), dist x y ≤ r := by
     rintro _ ⟨z, rfl⟩
     have I1 : (⨆ x, ⨅ y, optimalGHDist X Y (inl x, inr y)) < r :=

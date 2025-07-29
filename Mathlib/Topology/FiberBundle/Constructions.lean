@@ -25,7 +25,7 @@ fiber bundle, fibre bundle, fiberwise product, pullback
 
 -/
 
-open TopologicalSpace Filter Set Bundle
+open Bundle Filter Set TopologicalSpace Topology
 
 /-! ### The trivial bundle -/
 
@@ -35,7 +35,6 @@ namespace Trivial
 
 variable (B : Type*) (F : Type*)
 
--- Porting note (#10754): Added name for this instance.
 -- TODO: use `TotalSpace.toProd`
 instance topologicalSpace [t₁ : TopologicalSpace B]
     [t₂ : TopologicalSpace F] : TopologicalSpace (TotalSpace F (Trivial B F)) :=
@@ -43,16 +42,19 @@ instance topologicalSpace [t₁ : TopologicalSpace B]
 
 variable [TopologicalSpace B] [TopologicalSpace F]
 
-theorem inducing_toProd : Inducing (TotalSpace.toProd B F) :=
+theorem isInducing_toProd : IsInducing (TotalSpace.toProd B F) :=
   ⟨by simp only [instTopologicalSpaceProd, induced_inf, induced_compose]; rfl⟩
 
+@[deprecated (since := "2024-10-28")] alias inducing_toProd := isInducing_toProd
+
 /-- Homeomorphism between the total space of the trivial bundle and the Cartesian product. -/
+@[simps!]
 def homeomorphProd : TotalSpace F (Trivial B F) ≃ₜ B × F :=
-  (TotalSpace.toProd _ _).toHomeomorphOfInducing (inducing_toProd B F)
+  (TotalSpace.toProd _ _).toHomeomorphOfIsInducing (isInducing_toProd B F)
 
 /-- Local trivialization for trivial bundle. -/
+@[simps!]
 def trivialization : Trivialization F (π F (Bundle.Trivial B F)) where
-  -- Porting note: golfed
   toPartialHomeomorph := (homeomorphProd B F).toPartialHomeomorph
   baseSet := univ
   open_baseSet := isOpen_univ
@@ -60,20 +62,22 @@ def trivialization : Trivialization F (π F (Bundle.Trivial B F)) where
   target_eq := univ_prod_univ.symm
   proj_toFun _ _ := rfl
 
-@[simp]
-theorem trivialization_source : (trivialization B F).source = univ := rfl
+@[simp] lemma trivialization_symm_apply [Zero F] (b : B) (f : F) :
+    (trivialization B F).symm b f = f := by
+  simp [trivialization, homeomorphProd, TotalSpace.toProd, Trivialization.symm,
+    Pretrivialization.symm, Trivialization.toPretrivialization]
 
-@[simp]
-theorem trivialization_target : (trivialization B F).target = univ := rfl
+@[simp] lemma toPartialHomeomorph_trivialization_symm_apply (v : B × F) :
+    (trivialization B F).toPartialHomeomorph.symm v = ⟨v.1, v.2⟩ := rfl
 
 /-- Fiber bundle instance on the trivial bundle. -/
-instance fiberBundle : FiberBundle F (Bundle.Trivial B F) where
+@[simps] instance fiberBundle : FiberBundle F (Bundle.Trivial B F) where
   trivializationAtlas' := {trivialization B F}
   trivializationAt' _ := trivialization B F
   mem_baseSet_trivializationAt' := mem_univ
   trivialization_mem_atlas' _ := mem_singleton _
-  totalSpaceMk_inducing' _ := (homeomorphProd B F).symm.inducing.comp
-    (inducing_const_prod.2 inducing_id)
+  totalSpaceMk_isInducing' _ := (homeomorphProd B F).symm.isInducing.comp
+    (isInducing_const_prod.2 .id)
 
 theorem eq_trivialization (e : Trivialization F (π F (Bundle.Trivial B F)))
     [i : MemTrivializationAtlas e] : e = trivialization B F := i.out
@@ -102,11 +106,14 @@ instance FiberBundle.Prod.topologicalSpace : TopologicalSpace (TotalSpace (F₁ 
     inferInstance
 
 /-- The diagonal map from the total space of the fiberwise product of two fiber bundles
-`E₁`, `E₂` into `TotalSpace F₁ E₁ × TotalSpace F₂ E₂` is `Inducing`. -/
-theorem FiberBundle.Prod.inducing_diag :
-    Inducing (fun p ↦ (⟨p.1, p.2.1⟩, ⟨p.1, p.2.2⟩) :
+`E₁`, `E₂` into `TotalSpace F₁ E₁ × TotalSpace F₂ E₂` is an inducing map. -/
+theorem FiberBundle.Prod.isInducing_diag :
+    IsInducing (fun p ↦ (⟨p.1, p.2.1⟩, ⟨p.1, p.2.2⟩) :
       TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂) → TotalSpace F₁ E₁ × TotalSpace F₂ E₂) :=
   ⟨rfl⟩
+
+@[deprecated (since := "2024-10-28")]
+alias FiberBundle.Prod.inducing_diag := FiberBundle.Prod.isInducing_diag
 
 end Defs
 
@@ -135,16 +142,15 @@ theorem Prod.continuous_to_fun : ContinuousOn (Prod.toFun' e₁ e₂)
     fun p ↦ ((⟨p.1, p.2.1⟩ : TotalSpace F₁ E₁), (⟨p.1, p.2.2⟩ : TotalSpace F₂ E₂))
   let f₂ : TotalSpace F₁ E₁ × TotalSpace F₂ E₂ → (B × F₁) × B × F₂ := fun p ↦ ⟨e₁ p.1, e₂ p.2⟩
   let f₃ : (B × F₁) × B × F₂ → B × F₁ × F₂ := fun p ↦ ⟨p.1.1, p.1.2, p.2.2⟩
-  have hf₁ : Continuous f₁ := (Prod.inducing_diag F₁ E₁ F₂ E₂).continuous
+  have hf₁ : Continuous f₁ := (Prod.isInducing_diag F₁ E₁ F₂ E₂).continuous
   have hf₂ : ContinuousOn f₂ (e₁.source ×ˢ e₂.source) :=
-    e₁.toPartialHomeomorph.continuousOn.prod_map e₂.toPartialHomeomorph.continuousOn
-  have hf₃ : Continuous f₃ :=
-    (continuous_fst.comp continuous_fst).prod_mk (continuous_snd.prod_map continuous_snd)
+    e₁.toPartialHomeomorph.continuousOn.prodMap e₂.toPartialHomeomorph.continuousOn
+  have hf₃ : Continuous f₃ := by fun_prop
   refine ((hf₃.comp_continuousOn hf₂).comp hf₁.continuousOn ?_).congr ?_
   · rw [e₁.source_eq, e₂.source_eq]
     exact mapsTo_preimage _ _
   rintro ⟨b, v₁, v₂⟩ ⟨hb₁, _⟩
-  simp only [f₃, Prod.toFun', Prod.mk.inj_iff, Function.comp_apply, and_true]
+  simp only [f₁, f₂, f₃, Prod.toFun', Prod.mk_inj, Function.comp_apply, and_true]
   rw [e₁.coe_fst]
   rw [e₁.source_eq, mem_preimage]
   exact hb₁
@@ -175,10 +181,9 @@ theorem Prod.right_inv {x : B × F₁ × F₂}
 
 theorem Prod.continuous_inv_fun :
     ContinuousOn (Prod.invFun' e₁ e₂) ((e₁.baseSet ∩ e₂.baseSet) ×ˢ univ) := by
-  rw [(Prod.inducing_diag F₁ E₁ F₂ E₂).continuousOn_iff]
-  have H₁ : Continuous fun p : B × F₁ × F₂ ↦ ((p.1, p.2.1), (p.1, p.2.2)) :=
-    (continuous_id.prod_map continuous_fst).prod_mk (continuous_id.prod_map continuous_snd)
-  refine (e₁.continuousOn_symm.prod_map e₂.continuousOn_symm).comp H₁.continuousOn ?_
+  rw [(Prod.isInducing_diag F₁ E₁ F₂ E₂).continuousOn_iff]
+  have H₁ : Continuous fun p : B × F₁ × F₂ ↦ ((p.1, p.2.1), (p.1, p.2.2)) := by fun_prop
+  refine (e₁.continuousOn_symm.prodMap e₂.continuousOn_symm).comp H₁.continuousOn ?_
   exact fun x h ↦ ⟨⟨h.1.1, mem_univ _⟩, ⟨h.1.2, mem_univ _⟩⟩
 
 variable (e₁ e₂)
@@ -186,18 +191,19 @@ variable (e₁ e₂)
 /-- Given trivializations `e₁`, `e₂` for bundle types `E₁`, `E₂` over a base `B`, the induced
 trivialization for the fiberwise product of `E₁` and `E₂`, whose base set is
 `e₁.baseSet ∩ e₂.baseSet`. -/
+@[simps!]
 noncomputable def prod : Trivialization (F₁ × F₂) (π (F₁ × F₂) (E₁ ×ᵇ E₂)) where
   toFun := Prod.toFun' e₁ e₂
   invFun := Prod.invFun' e₁ e₂
   source := π (F₁ × F₂) (E₁ ×ᵇ E₂) ⁻¹' (e₁.baseSet ∩ e₂.baseSet)
   target := (e₁.baseSet ∩ e₂.baseSet) ×ˢ Set.univ
-  map_source' x h := ⟨h, Set.mem_univ _⟩
-  map_target' x h := h.1
-  left_inv' x := Prod.left_inv
-  right_inv' x := Prod.right_inv
+  map_source' _ h := ⟨h, Set.mem_univ _⟩
+  map_target' _ h := h.1
+  left_inv' _ := Prod.left_inv
+  right_inv' _ := Prod.right_inv
   open_source := by
     convert (e₁.open_source.prod e₂.open_source).preimage
-        (FiberBundle.Prod.inducing_diag F₁ E₁ F₂ E₂).continuous
+        (FiberBundle.Prod.isInducing_diag F₁ E₁ F₂ E₂).continuous
     ext x
     simp only [Trivialization.source_eq, mfld_simps]
   open_target := (e₁.open_baseSet.inter e₂.open_baseSet).prod isOpen_univ
@@ -207,10 +213,9 @@ noncomputable def prod : Trivialization (F₁ × F₂) (π (F₁ × F₂) (E₁ 
   open_baseSet := e₁.open_baseSet.inter e₂.open_baseSet
   source_eq := rfl
   target_eq := rfl
-  proj_toFun x _ := rfl
+  proj_toFun _ _ := rfl
 
-@[simp]
-theorem baseSet_prod : (prod e₁ e₂).baseSet = e₁.baseSet ∩ e₂.baseSet := rfl
+@[deprecated (since := "2025-06-19")] alias baseSet_prod := prod_baseSet
 
 theorem prod_symm_apply (x : B) (w₁ : F₁) (w₂ : F₂) :
     (prod e₁ e₂).toPartialEquiv.symm (x, w₁, w₂) = ⟨x, e₁.symm x w₁, e₂.symm x w₂⟩ := rfl
@@ -223,10 +228,10 @@ variable [∀ x, Zero (E₁ x)] [∀ x, Zero (E₂ x)] [∀ x : B, TopologicalSp
   [∀ x : B, TopologicalSpace (E₂ x)] [FiberBundle F₁ E₁] [FiberBundle F₂ E₂]
 
 /-- The product of two fiber bundles is a fiber bundle. -/
-noncomputable instance FiberBundle.prod : FiberBundle (F₁ × F₂) (E₁ ×ᵇ E₂) where
-  totalSpaceMk_inducing' b := by
-    rw [← (Prod.inducing_diag F₁ E₁ F₂ E₂).of_comp_iff]
-    exact (totalSpaceMk_inducing F₁ E₁ b).prod_map (totalSpaceMk_inducing F₂ E₂ b)
+@[simps] noncomputable instance FiberBundle.prod : FiberBundle (F₁ × F₂) (E₁ ×ᵇ E₂) where
+  totalSpaceMk_isInducing' b := by
+    rw [← (Prod.isInducing_diag F₁ E₁ F₂ E₂).of_comp_iff]
+    exact (totalSpaceMk_isInducing F₁ E₁ b).prodMap (totalSpaceMk_isInducing F₂ E₂ b)
   trivializationAtlas' := { e |
     ∃ (e₁ : Trivialization F₁ (π F₁ E₁)) (e₂ : Trivialization F₂ (π F₂ E₂))
       (_ : MemTrivializationAtlas e₁) (_ : MemTrivializationAtlas e₂),
@@ -252,11 +257,8 @@ universe u v w₁ w₂ U
 
 variable {B : Type u} (F : Type v) (E : B → Type w₁) {B' : Type w₂} (f : B' → B)
 
-instance [∀ x : B, TopologicalSpace (E x)] : ∀ x : B', TopologicalSpace ((f *ᵖ E) x) := by
-  -- Porting note: Original proof was `delta_instance Bundle.Pullback`
-  intro x
-  rw [Bundle.Pullback]
-  infer_instance
+instance [∀ x : B, TopologicalSpace (E x)] : ∀ x : B', TopologicalSpace ((f *ᵖ E) x) :=
+  inferInstanceAs (∀ x, TopologicalSpace (E (f x)))
 
 variable [TopologicalSpace B'] [TopologicalSpace (TotalSpace F E)]
 
@@ -279,7 +281,7 @@ theorem Pullback.continuous_lift (f : B' → B) : Continuous (@Pullback.lift B F
   exact inf_le_right
 
 theorem inducing_pullbackTotalSpaceEmbedding (f : B' → B) :
-    Inducing (@pullbackTotalSpaceEmbedding B F E B' f) := by
+    IsInducing (@pullbackTotalSpaceEmbedding B F E B' f) := by
   constructor
   simp_rw [instTopologicalSpaceProd, induced_inf, induced_compose,
     Pullback.TotalSpace.topologicalSpace, pullbackTopology_def]
@@ -293,13 +295,13 @@ theorem Pullback.continuous_totalSpaceMk [∀ x, TopologicalSpace (E x)] [FiberB
     {f : B' → B} {x : B'} : Continuous (@TotalSpace.mk _ F (f *ᵖ E) x) := by
   simp only [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace, induced_compose,
     induced_inf, Function.comp_def, induced_const, top_inf_eq, pullbackTopology_def]
-  exact le_of_eq (FiberBundle.totalSpaceMk_inducing F E (f x)).induced
+  exact (FiberBundle.totalSpaceMk_isInducing F E (f x)).eq_induced.le
 
 variable {E F}
 variable [∀ _b, Zero (E _b)] {K : Type U} [FunLike K B' B] [ContinuousMapClass K B' B]
 
--- Porting note: universe levels are explicitly provided
 /-- A fiber bundle trivialization can be pulled back to a trivialization on the pullback bundle. -/
+@[simps]
 noncomputable def Trivialization.pullback (e : Trivialization F (π F E)) (f : K) :
     Trivialization F (π F ((f : B' → B) *ᵖ E)) where
   toFun z := (z.proj, (e (Pullback.lift f z)).2)
@@ -309,7 +311,7 @@ noncomputable def Trivialization.pullback (e : Trivialization F (π F E)) (f : K
   target := (f ⁻¹' e.baseSet) ×ˢ univ
   map_source' x h := by
     simp_rw [e.source_eq, mem_preimage, Pullback.lift_proj] at h
-    simp_rw [prod_mk_mem_set_prod_eq, mem_univ, and_true, mem_preimage, h]
+    simp_rw [prodMk_mem_set_prod_eq, mem_univ, and_true, mem_preimage, h]
   map_target' y h := by
     rw [mem_prod, mem_preimage] at h
     simp_rw [e.source_eq, mem_preimage, Pullback.lift_proj, h.1]
@@ -325,29 +327,26 @@ noncomputable def Trivialization.pullback (e : Trivialization F (π F E)) (f : K
   open_target := ((map_continuous f).isOpen_preimage _ e.open_baseSet).prod isOpen_univ
   open_baseSet := (map_continuous f).isOpen_preimage _ e.open_baseSet
   continuousOn_toFun :=
-    (Pullback.continuous_proj F E f).continuousOn.prod
+    (Pullback.continuous_proj F E f).continuousOn.prodMk
       (continuous_snd.comp_continuousOn <|
         e.continuousOn.comp (Pullback.continuous_lift F E f).continuousOn Subset.rfl)
   continuousOn_invFun := by
-    dsimp only
     simp_rw [(inducing_pullbackTotalSpaceEmbedding F E f).continuousOn_iff, Function.comp_def,
       pullbackTotalSpaceEmbedding]
-    refine
-      continuousOn_fst.prod
-        (e.continuousOn_symm.comp ((map_continuous f).prod_map continuous_id).continuousOn
-          Subset.rfl)
+    exact continuousOn_fst.prodMk
+      (e.continuousOn_symm.comp ((map_continuous f).prodMap continuous_id).continuousOn Subset.rfl)
   source_eq := by
-    dsimp only
     rw [e.source_eq]
     rfl
   target_eq := rfl
-  proj_toFun y _ := rfl
+  proj_toFun _ _ := rfl
 
+@[simps]
 noncomputable instance FiberBundle.pullback [∀ x, TopologicalSpace (E x)] [FiberBundle F E]
     (f : K) : FiberBundle F ((f : B' → B) *ᵖ E) where
-  totalSpaceMk_inducing' x :=
-    inducing_of_inducing_compose (Pullback.continuous_totalSpaceMk F E)
-      (Pullback.continuous_lift F E f) (totalSpaceMk_inducing F E (f x))
+  totalSpaceMk_isInducing' x :=
+    (totalSpaceMk_isInducing F E (f x)).of_comp (Pullback.continuous_totalSpaceMk F E)
+      (Pullback.continuous_lift F E f)
   trivializationAtlas' :=
     { ef | ∃ (e : Trivialization F (π F E)) (_ : MemTrivializationAtlas e), ef = e.pullback f }
   trivializationAt' x := (trivializationAt F E (f x)).pullback f

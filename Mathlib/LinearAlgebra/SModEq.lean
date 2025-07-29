@@ -3,8 +3,9 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Polynomial.Eval
-import Mathlib.RingTheory.Ideal.Quotient
+import Mathlib.Algebra.Module.Submodule.Map
+import Mathlib.Algebra.Polynomial.Eval.Defs
+import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!
 # modular equivalence for submodule
@@ -25,7 +26,7 @@ variable {N : Type*} [AddCommGroup N] [Module R N] (V V₁ V₂ : Submodule R N)
 def SModEq (x y : M) : Prop :=
   (Submodule.Quotient.mk x : M ⧸ U) = Submodule.Quotient.mk y
 
-notation:50 x " ≡ " y " [SMOD " N "]" => SModEq N x y
+@[inherit_doc] notation:50 x " ≡ " y " [SMOD " N "]" => SModEq N x y
 
 variable {U U₁ U₂}
 
@@ -105,6 +106,9 @@ lemma sub (hxy₁ : x₁ ≡ y₁ [SMOD U]) (hxy₂ : x₂ ≡ y₂ [SMOD U]) : 
 
 theorem zero : x ≡ 0 [SMOD U] ↔ x ∈ U := by rw [SModEq.def, Submodule.Quotient.eq, sub_zero]
 
+theorem _root_.sub_smodEq_zero : x - y ≡ 0 [SMOD U] ↔ x ≡ y [SMOD U] := by
+  simp only [SModEq.sub_mem, sub_zero]
+
 theorem map (hxy : x ≡ y [SMOD U]) (f : M →ₗ[R] N) : f x ≡ f y [SMOD U.map f] :=
   (Submodule.Quotient.eq _).2 <| f.map_sub x y ▸ mem_map_of_mem <| (Submodule.Quotient.eq _).1 hxy
 
@@ -115,7 +119,7 @@ theorem comap {f : M →ₗ[R] N} (hxy : f x ≡ f y [SMOD V]) : x ≡ y [SMOD V
 theorem eval {R : Type*} [CommRing R] {I : Ideal R} {x y : R} (h : x ≡ y [SMOD I]) (f : R[X]) :
     f.eval x ≡ f.eval y [SMOD I] := by
   rw [SModEq.def] at h ⊢
-  show Ideal.Quotient.mk I (f.eval x) = Ideal.Quotient.mk I (f.eval y)
+  change Ideal.Quotient.mk I (f.eval x) = Ideal.Quotient.mk I (f.eval y)
   replace h : Ideal.Quotient.mk I x = Ideal.Quotient.mk I y := h
   rw [← Polynomial.eval₂_at_apply, ← Polynomial.eval₂_at_apply, h]
 

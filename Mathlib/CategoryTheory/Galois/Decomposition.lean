@@ -5,6 +5,7 @@ Authors: Christian Merten
 -/
 import Mathlib.CategoryTheory.Galois.GaloisObjects
 import Mathlib.CategoryTheory.Limits.Shapes.CombinedProducts
+import Mathlib.Data.Finite.Sum
 
 /-!
 # Decomposition of objects into connected components and applications
@@ -65,7 +66,7 @@ private lemma has_decomp_connected_components_aux_initial (X : C) (h : IsInitial
     ∃ (ι : Type) (f : ι → C) (g : (i : ι) → (f i) ⟶ X) (_ : IsColimit (Cofan.mk X g)),
     (∀ i, IsConnected (f i)) ∧ Finite ι := by
   refine ⟨Empty, fun _ ↦ X, fun _ ↦ 𝟙 X, ?_⟩
-  use mkCofanColimit _ (fun s ↦ IsInitial.to h s.pt) (fun s ↦ by aesop)
+  use mkCofanColimit _ (fun s ↦ IsInitial.to h s.pt) (fun s ↦ by simp)
     (fun s m _ ↦ IsInitial.hom_ext h m _)
   exact ⟨by simp only [IsEmpty.forall_iff], inferInstance⟩
 
@@ -153,15 +154,17 @@ lemma connected_component_unique {X A B : C} [IsConnected A] [IsConnected B] (a 
   have : IsIso v := IsConnected.noTrivialComponent Y v hn
   use (asIso u).symm ≪≫ asIso v
   have hu : G.map u y = a := by
-    simp only [y, e, ← PreservesPullback.iso_hom_fst G, fiberPullbackEquiv, Iso.toEquiv_comp,
-      Equiv.symm_trans_apply, Iso.toEquiv_symm_fun, types_comp_apply, inv_hom_id_apply]
+    simp only [u, G, y, e, ← PreservesPullback.iso_hom_fst G, fiberPullbackEquiv,
+      Iso.toEquiv_comp, Equiv.symm_trans_apply, Iso.toEquiv_symm_fun, types_comp_apply,
+      inv_hom_id_apply]
     erw [Types.pullbackIsoPullback_inv_fst_apply (F.map i) (F.map j)]
   have hv : G.map v y = b := by
-    simp only [y, e, ← PreservesPullback.iso_hom_snd G, fiberPullbackEquiv, Iso.toEquiv_comp,
-      Equiv.symm_trans_apply, Iso.toEquiv_symm_fun, types_comp_apply, inv_hom_id_apply]
+    simp only [v, G, y, e, ← PreservesPullback.iso_hom_snd G, fiberPullbackEquiv,
+      Iso.toEquiv_comp, Equiv.symm_trans_apply, Iso.toEquiv_symm_fun, types_comp_apply,
+      inv_hom_id_apply]
     erw [Types.pullbackIsoPullback_inv_snd_apply (F.map i) (F.map j)]
   rw [← hu, ← hv]
-  show (F.toPrefunctor.map u ≫ F.toPrefunctor.map _) y = F.toPrefunctor.map v y
+  change (F.toPrefunctor.map u ≫ F.toPrefunctor.map _) y = F.toPrefunctor.map v y
   simp only [← F.map_comp, Iso.trans_hom, Iso.symm_hom, asIso_inv, asIso_hom,
     IsIso.hom_inv_id_assoc]
 
@@ -231,7 +234,7 @@ private noncomputable def fiberPerm (b : F.obj A) : F.obj X ≃ F.obj X := by
   apply Equiv.ofBijective σ
   apply Finite.injective_iff_bijective.mp
   intro t s (hs : F.map (selfProdProj u t) b = F.map (selfProdProj u s) b)
-  show id t = id s
+  change id t = id s
   have h' : selfProdProj u t = selfProdProj u s := evaluation_injective_of_isConnected F A X b hs
   rw [← selfProdProj_fiber h s, ← selfProdProj_fiber h t, h']
 
@@ -278,7 +281,7 @@ lemma exists_galois_representative (X : C) : ∃ (A : C) (a : F.obj A),
     obtain ⟨fi1, hfi1⟩ := subobj_selfProd_trans h1 x
     obtain ⟨fi2, hfi2⟩ := subobj_selfProd_trans h1 y
     use fi1 ≪≫ fi2.symm
-    show F.map (fi1.hom ≫ fi2.inv) x = y
+    change F.map (fi1.hom ≫ fi2.inv) x = y
     simp only [map_comp, FintypeCat.comp_apply]
     rw [hfi1, ← hfi2]
     exact congr_fun (F.mapIso fi2).hom_inv_id y

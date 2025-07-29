@@ -3,7 +3,7 @@ Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Comma.Over
+import Mathlib.CategoryTheory.Comma.Over.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Monad.Algebra
 
@@ -41,8 +41,8 @@ variable [HasBinaryProducts C]
 @[simps!]
 def prodComonad : Comonad C where
   toFunctor := prod.functor.obj X
-  ε := { app := fun Y => Limits.prod.snd }
-  δ := { app := fun Y => prod.lift Limits.prod.fst (𝟙 _) }
+  ε := { app := fun _ => Limits.prod.snd }
+  δ := { app := fun _ => prod.lift Limits.prod.fst (𝟙 _) }
 
 /-- The forward direction of the equivalence from coalgebras for the product comonad to the over
 category.
@@ -54,7 +54,6 @@ def coalgebraToOver : Coalgebra (prodComonad X) ⥤ Over X where
     Over.homMk f.f
       (by
         rw [Over.mk_hom, ← f.h_assoc]
-        dsimp
         simp)
 
 /-- The backward direction of the equivalence from coalgebras for the product comonad to the over
@@ -73,7 +72,7 @@ def coalgebraEquivOver : Coalgebra (prodComonad X) ≌ Over X where
   functor := coalgebraToOver X
   inverse := overToCoalgebra X
   unitIso := NatIso.ofComponents fun A =>
-    Coalgebra.isoMk (Iso.refl _) (prod.hom_ext (by simp) (by simpa using A.counit))
+    Coalgebra.isoMk (Iso.refl _) (Limits.prod.hom_ext (by simp) (by simpa using A.counit))
   counitIso := NatIso.ofComponents fun f => Over.isoMk (Iso.refl _)
 
 end
@@ -88,8 +87,8 @@ variable [HasBinaryCoproducts C]
 @[simps!]
 def coprodMonad : Monad C where
   toFunctor := coprod.functor.obj X
-  η := { app := fun Y => coprod.inr }
-  μ := { app := fun Y => coprod.desc coprod.inl (𝟙 _) }
+  η := { app := fun _ => coprod.inr }
+  μ := { app := fun _ => coprod.desc coprod.inl (𝟙 _) }
 
 /-- The forward direction of the equivalence from algebras for the coproduct monad to the under
 category.
@@ -101,7 +100,6 @@ def algebraToUnder : Monad.Algebra (coprodMonad X) ⥤ Under X where
     Under.homMk f.f
       (by
         rw [Under.mk_hom, Category.assoc, ← f.h]
-        dsimp
         simp)
 
 /-- The backward direction of the equivalence from algebras for the coproduct monad to the under

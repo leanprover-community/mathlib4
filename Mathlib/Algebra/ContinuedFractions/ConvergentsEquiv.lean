@@ -194,7 +194,7 @@ theorem squashGCF_eq_self_of_terminated (terminatedAt_n : TerminatedAt g n) :
   cases n with
   | zero =>
     change g.s.get? 0 = none at terminatedAt_n
-    simp only [convs', squashGCF, convs'Aux, terminatedAt_n]
+    simp only [squashGCF, terminatedAt_n]
   | succ =>
     cases g
     simp only [squashGCF, mk.injEq, true_and]
@@ -203,7 +203,7 @@ theorem squashGCF_eq_self_of_terminated (terminatedAt_n : TerminatedAt g n) :
 /-- The values before the squashed position stay the same. -/
 theorem squashGCF_nth_of_lt {m : ℕ} (m_lt_n : m < n) :
     (squashGCF g (n + 1)).s.get? m = g.s.get? m := by
-  simp only [squashGCF, squashSeq_nth_of_lt m_lt_n, Nat.add_eq, add_zero]
+  simp only [squashGCF, squashSeq_nth_of_lt m_lt_n]
 
 /-- `convs'` returns the same value for a gcf and the corresponding squashed gcf at the
 squashed position. -/
@@ -302,7 +302,7 @@ theorem succ_nth_conv_eq_squashGCF_nth_conv [Field K]
         ((pb + a / b) * pA + pa * ppA) / ((pb + a / b) * pB + pa * ppB) =
           (b * (pb * pA + pa * ppA) + a * pA) / (b * (pb * pB + pa * ppB) + a * pB) by
         obtain ⟨eq1, eq2, eq3, eq4⟩ : pA' = pA ∧ pB' = pB ∧ ppA' = ppA ∧ ppB' = ppB := by
-          simp [*, pA', pB', ppA', ppB',
+          simp [*, g', pA, pB, ppA, ppB, pA', pB', ppA', ppB',
             (contsAux_eq_contsAux_squashGCF_of_le <| le_refl <| n' + 1).symm,
             (contsAux_eq_contsAux_squashGCF_of_le n'.le_succ).symm]
         symm
@@ -322,7 +322,7 @@ In practice, one most commonly deals with regular continued fractions, which sat
 positivity criterion required here. The analogous result for them
 (see `ContFract.convs_eq_convs`) hence follows directly from this theorem.
 -/
-theorem convs_eq_convs' [LinearOrderedField K]
+theorem convs_eq_convs' [Field K] [LinearOrder K] [IsStrictOrderedRing K]
     (s_pos : ∀ {gp : Pair K} {m : ℕ}, m < n → g.s.get? m = some gp → 0 < gp.a ∧ 0 < gp.b) :
     g.convs n = g.convs' n := by
   induction n generalizing g with
@@ -381,7 +381,8 @@ namespace ContFract
 
 /-- Shows that the recurrence relation (`convs`) and direct evaluation (`convs'`) of a
 (regular) continued fraction coincide. -/
-nonrec theorem convs_eq_convs' [LinearOrderedField K] {c : ContFract K} :
+nonrec theorem convs_eq_convs' [Field K] [LinearOrder K] [IsStrictOrderedRing K]
+    {c : ContFract K} :
     (↑c : GenContFract K).convs = (↑c : GenContFract K).convs' := by
   ext n
   apply convs_eq_convs'

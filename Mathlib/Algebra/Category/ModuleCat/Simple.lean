@@ -3,11 +3,11 @@ Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre-Alexandre Bazin, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Simple
-import Mathlib.Algebra.Category.ModuleCat.Subobject
 import Mathlib.Algebra.Category.ModuleCat.Algebra
-import Mathlib.RingTheory.SimpleModule
-import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.Algebra.Category.ModuleCat.Subobject
+import Mathlib.CategoryTheory.Simple
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Simple objects in the category of `R`-modules
@@ -24,7 +24,7 @@ theorem simple_iff_isSimpleModule : Simple (of R M) ↔ IsSimpleModule R M :=
   (simple_iff_subobject_isSimpleOrder _).trans (subobjectModule (of R M)).isSimpleOrder_iff
 
 theorem simple_iff_isSimpleModule' (M : ModuleCat R) : Simple M ↔ IsSimpleModule R M :=
-  (Simple.iff_of_iso (ofSelfIso M).symm).trans simple_iff_isSimpleModule
+  simple_iff_isSimpleModule
 
 /-- A simple module is a simple object in the category of modules. -/
 instance simple_of_isSimpleModule [IsSimpleModule R M] : Simple (of R M) :=
@@ -32,7 +32,7 @@ instance simple_of_isSimpleModule [IsSimpleModule R M] : Simple (of R M) :=
 
 /-- A simple object in the category of modules is a simple module. -/
 instance isSimpleModule_of_simple (M : ModuleCat R) [Simple M] : IsSimpleModule R M :=
-  simple_iff_isSimpleModule.mp (Simple.of_iso (ofSelfIso M))
+  simple_iff_isSimpleModule.mp ‹_›
 
 open Module
 

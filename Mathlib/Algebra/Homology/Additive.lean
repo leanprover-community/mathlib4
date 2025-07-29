@@ -23,13 +23,13 @@ variable {ι : Type*}
 variable {V : Type u} [Category.{v} V] [Preadditive V]
 variable {W : Type*} [Category W] [Preadditive W]
 variable {W₁ W₂ : Type*} [Category W₁] [Category W₂] [HasZeroMorphisms W₁] [HasZeroMorphisms W₂]
-variable {c : ComplexShape ι} {C D E : HomologicalComplex V c}
-variable (f g : C ⟶ D) (h k : D ⟶ E) (i : ι)
+variable {c : ComplexShape ι} {C D : HomologicalComplex V c}
+variable (f : C ⟶ D) (i : ι)
 
 namespace HomologicalComplex
 
 instance : Zero (C ⟶ D) :=
-  ⟨{ f := fun i => 0 }⟩
+  ⟨{ f := fun _ => 0 }⟩
 
 instance : Add (C ⟶ D) :=
   ⟨fun f g => { f := fun i => f.f i + g.f i }⟩
@@ -111,7 +111,6 @@ def Functor.mapHomologicalComplex (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms]
     { X := fun i => F.obj (C.X i)
       d := fun i j => F.map (C.d i j)
       shape := fun i j w => by
-        dsimp only
         rw [C.shape _ _ w, F.map_zero]
       d_comp_d' := fun i j k _ _ => by rw [← F.map_comp, C.d_comp_d, F.map_zero] }
   map f :=
@@ -133,7 +132,7 @@ isomorphic to the identity functor. -/
 @[simps!]
 def Functor.mapHomologicalComplexIdIso (c : ComplexShape ι) :
     (𝟭 W₁).mapHomologicalComplex c ≅ 𝟭 _ :=
-  NatIso.ofComponents fun K => Hom.isoOfComponents fun i => Iso.refl _
+  NatIso.ofComponents fun K => Hom.isoOfComponents fun _ => Iso.refl _
 
 instance Functor.mapHomologicalComplex_reflects_iso (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms]
     [ReflectsIsomorphisms F] (c : ComplexShape ι) :
@@ -155,7 +154,7 @@ between those functors applied to homological complexes.
 def NatTrans.mapHomologicalComplex {F G : W₁ ⥤ W₂}
     [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms] (α : F ⟶ G)
     (c : ComplexShape ι) : F.mapHomologicalComplex c ⟶ G.mapHomologicalComplex c where
-  app C := { f := fun i => α.app _ }
+  app C := { f := fun _ => α.app _ }
 
 @[simp]
 theorem NatTrans.mapHomologicalComplex_id
@@ -170,13 +169,13 @@ theorem NatTrans.mapHomologicalComplex_comp (c : ComplexShape ι) {F G H : W₁ 
       NatTrans.mapHomologicalComplex α c ≫ NatTrans.mapHomologicalComplex β c := by
   aesop_cat
 
-@[reassoc (attr := simp 1100)]
+@[reassoc]
 theorem NatTrans.mapHomologicalComplex_naturality {c : ComplexShape ι} {F G : W₁ ⥤ W₂}
     [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms]
     (α : F ⟶ G) {C D : HomologicalComplex W₁ c} (f : C ⟶ D) :
     (F.mapHomologicalComplex c).map f ≫ (NatTrans.mapHomologicalComplex α c).app D =
       (NatTrans.mapHomologicalComplex α c).app C ≫ (G.mapHomologicalComplex c).map f := by
-  aesop_cat
+  simp
 
 /-- A natural isomorphism between functors induces a natural isomorphism
 between those functors applied to homological complexes.
@@ -248,14 +247,14 @@ noncomputable def singleMapHomologicalComplex (j : ι) :
           ext i
           dsimp
           split_ifs with h
-          · simp [h]
+          · simp
           · rw [zero_comp, ← F.map_id,
               (isZero_single_obj_X c j X _ h).eq_of_src (𝟙 _) 0, F.map_zero]
         inv_hom_id := by
           ext i
           dsimp
           split_ifs with h
-          · simp [h]
+          · simp
           · apply (isZero_single_obj_X c j _ _ h).eq_of_src })
     fun f => by
       ext i

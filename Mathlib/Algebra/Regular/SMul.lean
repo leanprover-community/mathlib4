@@ -162,8 +162,7 @@ end MonoidSMul
 
 section MonoidWithZero
 
-variable [MonoidWithZero R] [MonoidWithZero S] [Zero M] [MulActionWithZero R M]
-  [MulActionWithZero R S] [MulActionWithZero S M] [IsScalarTower R S M]
+variable [MonoidWithZero R] [Zero M] [MulActionWithZero R M]
 
 /-- The element `0` is `M`-regular if and only if `M` is trivial. -/
 protected theorem subsingleton (h : IsSMulRegular M (0 : R)) : Subsingleton M :=
@@ -243,5 +242,5 @@ end SMulZeroClass
 lemma Equiv.isSMulRegular_congr {R S M M'} [SMul R M] [SMul S M'] {e : M ≃ M'}
     {r : R} {s : S} (h : ∀ x, e (r • x) = s • e x) :
     IsSMulRegular M r ↔ IsSMulRegular M' s :=
-  (e.comp_injective _).symm.trans  <|
+  (e.comp_injective _).symm.trans <|
     (iff_of_eq <| congrArg _ <| funext h).trans <| e.injective_comp _

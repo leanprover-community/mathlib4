@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
 import Mathlib.Data.Set.UnionLift
-import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.ContinuousMap.Defs
+import Mathlib.Topology.Homeomorph.Defs
+import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Continuous bundled maps
@@ -16,39 +18,7 @@ be satisfied by itself and all stricter types.
 -/
 
 
-open Function
-open scoped Topology
-
-/-- The type of continuous maps from `α` to `β`.
-
-When possible, instead of parametrizing results over `(f : C(α, β))`,
-you should parametrize over `{F : Type*} [ContinuousMapClass F α β] (f : F)`.
-
-When you extend this structure, make sure to extend `ContinuousMapClass`. -/
-structure ContinuousMap (α β : Type*) [TopologicalSpace α] [TopologicalSpace β] where
-  /-- The function `α → β` -/
-  protected toFun : α → β
-  /-- Proposition that `toFun` is continuous -/
-  protected continuous_toFun : Continuous toFun := by continuity
-
-/-- The type of continuous maps from `α` to `β`. -/
-notation "C(" α ", " β ")" => ContinuousMap α β
-
-section
-
-/-- `ContinuousMapClass F α β` states that `F` is a type of continuous maps.
-
-You should extend this class when you extend `ContinuousMap`. -/
-class ContinuousMapClass (F : Type*) (α β : outParam Type*)
-    [TopologicalSpace α] [TopologicalSpace β] [FunLike F α β] : Prop where
-  /-- Continuity -/
-  map_continuous (f : F) : Continuous f
-
-end
-
-export ContinuousMapClass (map_continuous)
-
-attribute [continuity, fun_prop] map_continuous
+open Function Topology
 
 section ContinuousMapClass
 
@@ -61,11 +31,6 @@ theorem map_continuousAt (f : F) (a : α) : ContinuousAt f a :=
 theorem map_continuousWithinAt (f : F) (s : Set α) (a : α) : ContinuousWithinAt f s a :=
   (map_continuous f).continuousWithinAt
 
-/-- Coerce a bundled morphism with a `ContinuousMapClass` instance to a `ContinuousMap`. -/
-@[coe] def toContinuousMap (f : F) : C(α, β) := ⟨f, map_continuous f⟩
-
-instance : CoeTC F C(α, β) := ⟨toContinuousMap⟩
-
 end ContinuousMapClass
 
 /-! ### Continuous maps -/
@@ -76,94 +41,33 @@ namespace ContinuousMap
 variable {α β γ δ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
   [TopologicalSpace δ]
 
-instance funLike : FunLike C(α, β) α β where
-  coe := ContinuousMap.toFun
-  coe_injective' f g h := by cases f; cases g; congr
-
-instance toContinuousMapClass : ContinuousMapClass C(α, β) α β where
-  map_continuous := ContinuousMap.continuous_toFun
-
-@[simp]
-theorem toFun_eq_coe {f : C(α, β)} : f.toFun = (f : α → β) :=
-  rfl
-
-instance : CanLift (α → β) C(α, β) DFunLike.coe Continuous := ⟨fun f hf ↦ ⟨⟨f, hf⟩, rfl⟩⟩
-
-/-- See note [custom simps projection]. -/
-def Simps.apply (f : C(α, β)) : α → β := f
-
--- this must come after the coe_to_fun definition
-initialize_simps_projections ContinuousMap (toFun → apply)
-
-@[simp] -- Porting note: removed `norm_cast` attribute
-protected theorem coe_coe {F : Type*} [FunLike F α β] [ContinuousMapClass F α β] (f : F) :
-    ⇑(f : C(α, β)) = f :=
-  rfl
-
-@[ext]
-theorem ext {f g : C(α, β)} (h : ∀ a, f a = g a) : f = g :=
-  DFunLike.ext _ _ h
-
-/-- Copy of a `ContinuousMap` with a new `toFun` equal to the old one. Useful to fix definitional
-equalities. -/
-protected def copy (f : C(α, β)) (f' : α → β) (h : f' = f) : C(α, β) where
-  toFun := f'
-  continuous_toFun := h.symm ▸ f.continuous_toFun
-
-@[simp]
-theorem coe_copy (f : C(α, β)) (f' : α → β) (h : f' = f) : ⇑(f.copy f' h) = f' :=
-  rfl
-
-theorem copy_eq (f : C(α, β)) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
-  DFunLike.ext' h
-
 variable {f g : C(α, β)}
-
-/-- Deprecated. Use `map_continuous` instead. -/
-protected theorem continuous (f : C(α, β)) : Continuous f :=
-  f.continuous_toFun
-
-@[continuity]
-theorem continuous_set_coe (s : Set C(α, β)) (f : s) : Continuous (f : α → β) :=
-  f.1.continuous
 
 /-- Deprecated. Use `map_continuousAt` instead. -/
 protected theorem continuousAt (f : C(α, β)) (x : α) : ContinuousAt f x :=
-  f.continuous.continuousAt
-
-/-- Deprecated. Use `DFunLike.congr_fun` instead. -/
-protected theorem congr_fun {f g : C(α, β)} (H : f = g) (x : α) : f x = g x :=
-  H ▸ rfl
-
-/-- Deprecated. Use `DFunLike.congr_arg` instead. -/
-protected theorem congr_arg (f : C(α, β)) {x y : α} (h : x = y) : f x = f y :=
-  h ▸ rfl
-
-theorem coe_injective : @Function.Injective C(α, β) (α → β) (↑) := fun f g h => by
-  cases f; cases g; congr
-
-@[simp]
-theorem coe_mk (f : α → β) (h : Continuous f) : ⇑(⟨f, h⟩ : C(α, β)) = f :=
-  rfl
+  map_continuousAt f x
 
 theorem map_specializes (f : C(α, β)) {x y : α} (h : x ⤳ y) : f x ⤳ f y :=
   h.map f.2
 
-section
-
-variable (α β)
+section DiscreteTopology
+variable [DiscreteTopology α]
 
 /--
 The continuous functions from `α` to `β` are the same as the plain functions when `α` is discrete.
 -/
 @[simps]
-def equivFnOfDiscrete [DiscreteTopology α] : C(α, β) ≃ (α → β) :=
+def equivFnOfDiscrete : C(α, β) ≃ (α → β) :=
   ⟨fun f => f,
     fun f => ⟨f, continuous_of_discreteTopology⟩,
     fun _ => by ext; rfl,
     fun _ => by ext; rfl⟩
 
-end
+@[simp] lemma coe_equivFnOfDiscrete : ⇑equivFnOfDiscrete = (DFunLike.coe : C(α, β) → α → β) := rfl
+
+@[simp] lemma equivFnOfDiscrete_symm_apply (f : α → β) : equivFnOfDiscrete.symm f = f := rfl
+
+end DiscreteTopology
 
 variable (α)
 
@@ -171,7 +75,7 @@ variable (α)
 protected def id : C(α, α) where
   toFun := id
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(ContinuousMap.id α) = id :=
   rfl
 
@@ -184,7 +88,7 @@ theorem coe_const (b : β) : ⇑(const α b) = Function.const α b :=
   rfl
 
 /-- `Function.const α b` as a bundled continuous function of `b`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def constPi : C(β, α → β) where
   toFun b := Function.const α b
 
@@ -254,12 +158,12 @@ variable {α₁ α₂ β₁ β₂ : Type*} [TopologicalSpace α₁] [Topological
   [TopologicalSpace β₂]
 
 /-- `Prod.fst : (x, y) ↦ x` as a bundled continuous map. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def fst : C(α × β, α) where
   toFun := Prod.fst
 
 /-- `Prod.snd : (x, y) ↦ y` as a bundled continuous map. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def snd : C(α × β, β) where
   toFun := Prod.snd
 
@@ -271,8 +175,6 @@ def prodMk (f : C(α, β₁)) (g : C(α, β₂)) : C(α, β₁ × β₂) where
 @[simps]
 def prodMap (f : C(α₁, α₂)) (g : C(β₁, β₂)) : C(α₁ × β₁, α₂ × β₂) where
   toFun := Prod.map f g
-  continuous_toFun := f.continuous.prod_map g.continuous
-  -- Porting note: proof was `continuity`
 
 @[simp]
 theorem prod_eval (f : C(α, β₁)) (g : C(α, β₂)) (a : α) : (prodMk f g) a = (f a, g a) :=
@@ -310,8 +212,6 @@ each term. This is a version of `Equiv.piCurry` for continuous maps.
 def sigmaEquiv : (∀ i, C(X i, A)) ≃ C((Σ i, X i), A) where
   toFun := sigma
   invFun f i := f.comp (sigmaMk i)
-  left_inv := by intro; ext; simp
-  right_inv := by intro; ext; simp
 
 end Sigma
 
@@ -329,7 +229,7 @@ theorem pi_eval (f : ∀ i, C(A, X i)) (a : A) : (pi f) a = fun i : I => (f i) a
   rfl
 
 /-- Evaluation at point as a bundled continuous map. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def eval (i : I) : C(∀ j, X j, X i) where
   toFun := Function.eval i
 
@@ -342,8 +242,6 @@ each term
 def piEquiv : (∀ i, C(A, X i)) ≃ C(A, ∀ i, X i) where
   toFun := pi
   invFun f i := (eval i).comp f
-  left_inv := by intro; ext; simp [pi]
-  right_inv := by intro; ext; simp [pi]
 
 /-- Combine a collection of bundled continuous maps `C(X i, Y i)` into a bundled continuous map
 `C(∀ i, X i, ∀ i, Y i)`. -/
@@ -380,15 +278,62 @@ theorem restrict_apply_mk (f : C(α, β)) (s : Set α) (x : α) (hx : x ∈ s) :
 
 theorem injective_restrict [T2Space β] {s : Set α} (hs : Dense s) :
     Injective (restrict s : C(α, β) → C(s, β)) := fun f g h ↦
-  DFunLike.ext' <| f.continuous.ext_on hs g.continuous <| Set.restrict_eq_restrict_iff.1 <|
-    congr_arg DFunLike.coe h
+  DFunLike.ext' <| (map_continuous f).ext_on hs (map_continuous g) <|
+    Set.restrict_eq_restrict_iff.1 <| congr_arg DFunLike.coe h
 
 /-- The restriction of a continuous map to the preimage of a set. -/
 @[simps]
 def restrictPreimage (f : C(α, β)) (s : Set β) : C(f ⁻¹' s, s) :=
-  ⟨s.restrictPreimage f, continuous_iff_continuousAt.mpr fun _ => f.2.continuousAt.restrictPreimage⟩
+  ⟨s.restrictPreimage f, continuous_iff_continuousAt.mpr fun _ ↦
+    (map_continuousAt f _).restrictPreimage⟩
 
 end Restrict
+
+section mkD
+
+/--
+Interpret `f : α → β` as an element of `C(α, β)`, falling back to the default value
+`default : C(α, β)` if `f` is not continuous.
+This is mainly intended to be used for `C(α, β)`-valued integration. For example, if a family of
+functions `f : ι → α → β` satisfies that `f i` is continuous for almost every `i`, you can write
+the `C(α, β)`-valued integral "`∫ i, f i`" as `∫ i, ContinuousMap.mkD (f i) 0`.
+-/
+noncomputable def mkD (f : α → β) (default : C(α, β)) : C(α, β) :=
+  open scoped Classical in
+  if h : Continuous f then ⟨_, h⟩ else default
+
+lemma mkD_of_continuous {f : α → β} {g : C(α, β)} (hf : Continuous f) :
+    mkD f g = ⟨f, hf⟩ := by
+  simp only [mkD, hf, ↓reduceDIte]
+
+lemma mkD_of_not_continuous {f : α → β} {g : C(α, β)} (hf : ¬ Continuous f) :
+    mkD f g = g := by
+  simp only [mkD, hf, ↓reduceDIte]
+
+lemma mkD_apply_of_continuous {f : α → β} {g : C(α, β)} {x : α} (hf : Continuous f) :
+    mkD f g x = f x := by
+  rw [mkD_of_continuous hf, coe_mk]
+
+lemma mkD_of_continuousOn {s : Set α} {f : α → β} {g : C(s, β)}
+    (hf : ContinuousOn f s) :
+    mkD (s.restrict f) g = ⟨s.restrict f, hf.restrict⟩ :=
+  mkD_of_continuous hf.restrict
+
+lemma mkD_of_not_continuousOn {s : Set α} {f : α → β} {g : C(s, β)}
+    (hf : ¬ ContinuousOn f s) :
+    mkD (s.restrict f) g = g := by
+  rw [continuousOn_iff_continuous_restrict] at hf
+  exact mkD_of_not_continuous hf
+
+lemma mkD_apply_of_continuousOn {s : Set α} {f : α → β} {g : C(s, β)} {x : s}
+    (hf : ContinuousOn f s) :
+    mkD (s.restrict f) g x = f x := by
+  rw [mkD_of_continuousOn hf, coe_mk, Set.restrict_apply]
+
+lemma mkD_eq_self {f g : C(α, β)} : mkD f g = f :=
+  mkD_of_continuous f.continuous
+
+end mkD
 
 section Gluing
 
@@ -404,8 +349,8 @@ noncomputable def liftCover : C(α, β) :=
     Set.iUnion_eq_univ_iff.2 fun x ↦ (hS x).imp fun _ ↦ mem_of_mem_nhds
   mk (Set.liftCover S (fun i ↦ φ i) hφ H) <| continuous_of_cover_nhds hS fun i ↦ by
     rw [continuousOn_iff_continuous_restrict]
-    simpa (config := { unfoldPartialApp := true }) only [Set.restrict, Set.liftCover_coe] using
-      (φ i).continuous
+    simpa +unfoldPartialApp only [Set.restrict, Set.liftCover_coe]
+      using map_continuous (φ i)
 
 variable {S φ hφ hS}
 
@@ -413,7 +358,7 @@ variable {S φ hφ hS}
 theorem liftCover_coe {i : ι} (x : S i) : liftCover S φ hφ hS x = φ i x := by
   rw [liftCover, coe_mk, Set.liftCover_coe _]
 
--- @[simp] -- Porting note: the simpNF linter complained
+@[simp]
 theorem liftCover_restrict {i : ι} : (liftCover S φ hφ hS).restrict (S i) = φ i := by
   ext
   simp only [coe_restrict, Function.comp_apply, liftCover_coe]
@@ -426,13 +371,10 @@ variable (A : Set (Set α)) (F : ∀ s ∈ A, C(s, β))
 /-- A family `F s` of continuous maps `C(s, β)`, where (1) the domains `s` are taken from a set `A`
 of sets in `α` which contain a neighbourhood of each point in `α` and (2) the functions `F s` agree
 pairwise on intersections, can be glued to construct a continuous map in `C(α, β)`. -/
-noncomputable def liftCover' : C(α, β) := by
-  let S : A → Set α := (↑)
+noncomputable def liftCover' : C(α, β) :=
   let F : ∀ i : A, C(i, β) := fun i => F i i.prop
-  refine liftCover S F (fun i j => hF i i.prop j j.prop) ?_
-  intro x
-  obtain ⟨s, hs, hsx⟩ := hA x
-  exact ⟨⟨s, hs⟩, hsx⟩
+  liftCover ((↑) : A → Set α) F (fun i j => hF i i.prop j j.prop)
+    fun x => let ⟨s, hs, hsx⟩ := hA x; ⟨⟨s, hs⟩, hsx⟩
 
 variable {A F hF hA}
 
@@ -442,14 +384,18 @@ variable {A F hF hA}
 @[simp]
 theorem liftCover_coe' {s : Set α} {hs : s ∈ A} (x : s) : liftCover' A F hF hA x = F s hs x :=
   let x' : ((↑) : A → Set α) ⟨s, hs⟩ := x
-  by delta liftCover'; exact liftCover_coe x'
+  by delta liftCover'; exact ContinuousMap.liftCover_coe x'
 
--- Porting note: porting program suggested `ext <| liftCover_coe'`
 @[simp]
 theorem liftCover_restrict' {s : Set α} {hs : s ∈ A} :
     (liftCover' A F hF hA).restrict s = F s hs := ext <| liftCover_coe' (hF := hF) (hA := hA)
 
 end Gluing
+
+/-- `Set.inclusion` as a bundled continuous map. -/
+def inclusion {s t : Set α} (h : s ⊆ t) : C(s, t) where
+  toFun := Set.inclusion h
+  continuous_toFun := continuous_inclusion h
 
 end ContinuousMap
 
@@ -463,19 +409,19 @@ variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalS
 def Function.RightInverse.homeomorph {f' : C(Y, X)} (hf : Function.RightInverse f' f) :
     Quotient (Setoid.ker f) ≃ₜ Y where
   toEquiv := Setoid.quotientKerEquivOfRightInverse _ _ hf
-  continuous_toFun := quotientMap_quot_mk.continuous_iff.mpr f.continuous
-  continuous_invFun := continuous_quotient_mk'.comp f'.continuous
+  continuous_toFun := isQuotientMap_quot_mk.continuous_iff.mpr (map_continuous f)
+  continuous_invFun := continuous_quotient_mk'.comp (map_continuous f')
 
-namespace QuotientMap
+namespace Topology.IsQuotientMap
 
 /--
 The homeomorphism from the quotient of a quotient map to its codomain. This is
 `Setoid.quotientKerEquivOfSurjective` as a homeomorphism.
 -/
 @[simps!]
-noncomputable def homeomorph (hf : QuotientMap f) : Quotient (Setoid.ker f) ≃ₜ Y where
+noncomputable def homeomorph (hf : IsQuotientMap f) : Quotient (Setoid.ker f) ≃ₜ Y where
   toEquiv := Setoid.quotientKerEquivOfSurjective _ hf.surjective
-  continuous_toFun := quotientMap_quot_mk.continuous_iff.mpr hf.continuous
+  continuous_toFun := isQuotientMap_quot_mk.continuous_iff.mpr hf.continuous
   continuous_invFun := by
     rw [hf.continuous_iff]
     convert continuous_quotient_mk'
@@ -484,7 +430,7 @@ noncomputable def homeomorph (hf : QuotientMap f) : Quotient (Setoid.ker f) ≃�
       (Setoid.quotientKerEquivOfSurjective f hf.surjective).symm_apply_eq]
     rfl
 
-variable (hf : QuotientMap f) (g : C(X, Z)) (h : Function.FactorsThrough g f)
+variable (hf : IsQuotientMap f) (g : C(X, Z)) (h : Function.FactorsThrough g f)
 
 /-- Descend a continuous map, which is constant on the fibres, along a quotient map. -/
 @[simps]
@@ -494,7 +440,7 @@ noncomputable def lift : C(Y, Z) where
   continuous_toFun := Continuous.comp (continuous_quot_lift _ g.2) (Homeomorph.continuous _)
 
 /--
-The obvious triangle induced by `QuotientMap.lift` commutes:
+The obvious triangle induced by `IsQuotientMap.lift` commutes:
 ```
      g
   X --→ Z
@@ -509,7 +455,7 @@ theorem lift_comp : (hf.lift g h).comp f = g := by
   ext
   simpa using h (Function.rightInverse_surjInv _ _)
 
-/-- `QuotientMap.lift` as an equivalence. -/
+/-- `IsQuotientMap.lift` as an equivalence. -/
 @[simps]
 noncomputable def liftEquiv : { g : C(X, Z) // Function.FactorsThrough g f} ≃ C(Y, Z) where
   toFun g := hf.lift g g.prop
@@ -520,8 +466,7 @@ noncomputable def liftEquiv : { g : C(X, Z) // Function.FactorsThrough g f} ≃ 
     ext a
     simpa using congrArg g (Function.rightInverse_surjInv hf.surjective a)
 
-end QuotientMap
-
+end Topology.IsQuotientMap
 end Lift
 
 namespace Homeomorph
@@ -529,19 +474,8 @@ namespace Homeomorph
 variable {α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 variable (f : α ≃ₜ β) (g : β ≃ₜ γ)
 
-/-- The forward direction of a homeomorphism, as a bundled continuous map. -/
-@[simps]
-def toContinuousMap (e : α ≃ₜ β) : C(α, β) :=
-  ⟨e, e.continuous_toFun⟩
-
-/-- `Homeomorph.toContinuousMap` as a coercion. -/
-instance : Coe (α ≃ₜ β) C(α, β) :=
-  ⟨Homeomorph.toContinuousMap⟩
-
--- Porting note: Syntactic tautology
-/- theorem toContinuousMap_as_coe : f.toContinuousMap = f :=
-  rfl
--/
+instance instContinuousMapClass : ContinuousMapClass (α ≃ₜ β) α β where
+  map_continuous f := f.continuous_toFun
 
 @[simp]
 theorem coe_refl : (Homeomorph.refl α : C(α, α)) = ContinuousMap.id α :=

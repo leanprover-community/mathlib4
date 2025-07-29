@@ -23,21 +23,23 @@ theorem mem_sections {L : List (List α)} {f} : f ∈ sections L ↔ Forall₂ (
   · induction L generalizing f
     · cases mem_singleton.1 h
       exact Forall₂.nil
-    simp only [sections, bind_eq_bind, mem_bind, mem_map] at h
+    simp only [sections, mem_flatMap, mem_map] at h
     rcases h with ⟨_, _, _, _, rfl⟩
     simp only [*, forall₂_cons, true_and]
-  · induction' h with a l f L al fL fs
-    · simp only [sections, mem_singleton]
-    simp only [sections, bind_eq_bind, mem_bind, mem_map]
-    exact ⟨f, fs, a, al, rfl⟩
+  · induction h with
+    | nil => simp only [sections, mem_singleton]
+    | @cons a l f L al fL fs =>
+      simp only [sections, mem_flatMap, mem_map]
+      exact ⟨f, fs, a, al, rfl⟩
 
 theorem mem_sections_length {L : List (List α)} {f} (h : f ∈ sections L) : length f = length L :=
   (mem_sections.1 h).length_eq
 
+open scoped Relator in
 theorem rel_sections {r : α → β → Prop} :
     (Forall₂ (Forall₂ r) ⇒ Forall₂ (Forall₂ r)) sections sections
   | _, _, Forall₂.nil => Forall₂.cons Forall₂.nil Forall₂.nil
   | _, _, Forall₂.cons h₀ h₁ =>
-    rel_bind (rel_sections h₁) fun _ _ hl => rel_map (fun _ _ ha => Forall₂.cons ha hl) h₀
+    rel_flatMap (rel_sections h₁) fun _ _ hl => rel_map (fun _ _ ha => Forall₂.cons ha hl) h₀
 
 end List

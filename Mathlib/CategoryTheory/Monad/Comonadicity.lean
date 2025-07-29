@@ -28,7 +28,7 @@ comonadicity theorem:
 * `C` has and `F` preserves coreflexive equalizers, and `F` reflects isomorphisms, see
   `CategoryTheory.Monad.comonadicOfHasPreservesCoreflexiveEqualizersOfReflectsIsomorphisms`
 
-This file has been adapted from `Mathlib.CategoryTheory.Monad.Monadicity`.
+This file has been adapted from `Mathlib/CategoryTheory/Monad/Monadicity.lean`.
 Please try to keep them in sync.
 
 ## Tags
@@ -91,13 +91,13 @@ def comparisonRightAdjointHomEquiv (A : adj.toComonad.Coalgebra) (B : C)
       toFun f := by
         refine equalizer.lift (adj.homEquiv _ _ f.f) ?_
         simp only [Adjunction.toComonad_coe, Functor.comp_obj, Adjunction.homEquiv_unit,
-          Functor.id_obj, Category.assoc, ← G.map_comp, ← f.h, comparison_obj_A, comparison_obj_a]
+          Category.assoc, ← G.map_comp, ← f.h, comparison_obj_A, comparison_obj_a]
         rw [Functor.comp_map, Functor.map_comp, Adjunction.unit_naturality_assoc,
           Adjunction.unit_naturality]
       invFun f := by
         refine ⟨(adj.homEquiv _ _).symm (f ≫ (equalizer.ι _ _)), (adj.homEquiv _ _).injective ?_⟩
         simp only [Adjunction.toComonad_coe, Functor.comp_obj, comparison_obj_A, comparison_obj_a,
-          Adjunction.homEquiv_counit, Functor.id_obj, Functor.map_comp, Category.assoc,
+          Adjunction.homEquiv_counit, Functor.map_comp, Category.assoc,
           Functor.comp_map, Adjunction.homEquiv_unit, Adjunction.unit_naturality_assoc,
           Adjunction.unit_naturality, Adjunction.right_triangle_components_assoc]
         congr 1
@@ -117,7 +117,7 @@ def rightAdjointComparison
   · apply comparisonRightAdjointHomEquiv
   · intro A B B' g h
     apply equalizer.hom_ext
-    simp
+    simp [Adjunction.homEquiv_unit]
 
 /-- Provided we have the appropriate equalizers, we have an adjunction to the comparison functor.
 -/
@@ -146,9 +146,7 @@ def counitFork (A : adj.toComonad.Coalgebra)
     [HasEqualizer (G.map A.a) (adj.unit.app (G.obj A.A))] :
     Fork (F.map (G.map A.a)) (F.map (adj.unit.app (G.obj A.A))) :=
   Fork.ofι (F.map (equalizer.ι (G.map A.a) (adj.unit.app (G.obj A.A))))
-    (by
-      change _ = F.map _ ≫ _
-      rw [← F.map_comp, equalizer.condition, F.map_comp])
+    (by rw [← F.map_comp, equalizer.condition, F.map_comp])
 
 @[simp]
 theorem unitFork_ι (A : adj.toComonad.Coalgebra)
@@ -161,7 +159,7 @@ theorem comparisonAdjunction_counit_f
       (adj.unit.app (G.obj A.A))]
     (A : adj.toComonad.Coalgebra) :
     ((comparisonAdjunction adj).counit.app A).f = (beckEqualizer A).lift (counitFork A) := by
-  simp
+  simp [Adjunction.homEquiv_counit]
 
 variable (adj)
 
@@ -205,7 +203,7 @@ theorem comparisonAdjunction_unit_app
   change
     equalizer.lift ((adj.homEquiv B _) (𝟙 _)) _ ≫ equalizer.ι _ _ =
       equalizer.lift _ _ ≫ equalizer.ι _ _
-  simp
+  simp [Adjunction.homEquiv_unit]
 
 end ComonadicityInternal
 
@@ -223,10 +221,8 @@ Beck's comonadicity theorem, the converse is given in `comonadicOfCreatesFSplitE
 def createsFSplitEqualizersOfComonadic [ComonadicLeftAdjoint F] ⦃A B⦄ (f g : A ⟶ B)
     [F.IsCosplitPair f g] : CreatesLimit (parallelPair f g) F := by
   apply (config := {allowSynthFailures := true}) comonadicCreatesLimitOfPreservesLimit
-  · apply @preservesLimitOfIsoDiagram _ _ _ _ _ _ _ _ _ (diagramIsoParallelPair.{v₁} _).symm ?_
-    dsimp
-    infer_instance
-  · apply @preservesLimitOfIsoDiagram _ _ _ _ _ _ _ _ _ (diagramIsoParallelPair.{v₁} _).symm ?_
+  all_goals
+    apply @preservesLimit_of_iso_diagram _ _ _ _ _ _ _ _ _ (diagramIsoParallelPair.{v₁} _).symm ?_
     dsimp
     infer_instance
 
@@ -251,8 +247,7 @@ instance {A B} (f g : A ⟶ B) [F.IsCosplitPair f g] [PreservesLimitOfIsCosplitP
     PreservesLimit (parallelPair f g) F := PreservesLimitOfIsCosplitPair.out f g
 
 instance [PreservesLimitOfIsCosplitPair F] : ∀ (A : Coalgebra adj.toComonad),
-   PreservesLimit (parallelPair (G.map A.a)
-      (NatTrans.app adj.unit (G.obj A.A))) F :=
+    PreservesLimit (parallelPair (G.map A.a) (NatTrans.app adj.unit (G.obj A.A))) F :=
   fun _ => PreservesLimitOfIsCosplitPair.out _ _
 
 /-- Dual to `Monad.ReflectsColimitOfIsSplitPair`. -/
@@ -274,6 +269,7 @@ equalizers, and `C` has them.
 def comonadicOfHasPreservesReflectsFSplitEqualizers [HasEqualizerOfIsCosplitPair F]
     [PreservesLimitOfIsCosplitPair F] [ReflectsLimitOfIsCosplitPair F] :
     ComonadicLeftAdjoint F where
+  R := G
   adj := adj
   eqv := by
     have : ∀ (X : Coalgebra adj.toComonad), IsIso ((comparisonAdjunction adj).counit.app X) := by
@@ -319,8 +315,8 @@ This is the converse of `createsFSplitEqualizersOfComonadic`.
 -/
 def comonadicOfCreatesFSplitEqualizers [CreatesLimitOfIsCosplitPair F] :
     ComonadicLeftAdjoint F := by
-  let I {A B} (f g : A ⟶ B) [F.IsCosplitPair f g] : HasLimit (parallelPair f g ⋙ F) := by
-    apply @hasLimitOfIso _ _ _ _ _ _ ?_ (diagramIsoParallelPair.{v₁} _).symm
+  have I {A B} (f g : A ⟶ B) [F.IsCosplitPair f g] : HasLimit (parallelPair f g ⋙ F) := by
+    rw [hasLimit_iff_of_iso (diagramIsoParallelPair _)]
     exact inferInstanceAs <| HasEqualizer (F.map f) (F.map g)
   have : HasEqualizerOfIsCosplitPair F := ⟨fun _ _ => hasLimit_of_created (parallelPair _ _) F⟩
   have : PreservesLimitOfIsCosplitPair F := ⟨by intros; infer_instance⟩
@@ -335,7 +331,7 @@ def comonadicOfHasPreservesFSplitEqualizersOfReflectsIsomorphisms [F.ReflectsIso
     ComonadicLeftAdjoint F := by
   have : ReflectsLimitOfIsCosplitPair F := ⟨fun f g _ => by
     have := HasEqualizerOfIsCosplitPair.out F f g
-    apply reflectsLimitOfReflectsIsomorphisms⟩
+    apply reflectsLimit_of_reflectsIsomorphisms⟩
   apply comonadicOfHasPreservesReflectsFSplitEqualizers adj
 
 end BeckComonadicity
@@ -350,12 +346,12 @@ class PreservesLimitOfIsCoreflexivePair (F : C ⥤ D) where
   out : ∀ ⦃A B⦄ (f g : A ⟶ B) [IsCoreflexivePair f g], PreservesLimit (parallelPair f g) F
 
 instance {A B} (f g : A ⟶ B) [IsCoreflexivePair f g] [PreservesLimitOfIsCoreflexivePair F] :
-  PreservesLimit (parallelPair f g) F := PreservesLimitOfIsCoreflexivePair.out f g
+    PreservesLimit (parallelPair f g) F := PreservesLimitOfIsCoreflexivePair.out f g
 
 instance [PreservesLimitOfIsCoreflexivePair F] : ∀ X : Coalgebra adj.toComonad,
     PreservesLimit (parallelPair (G.map X.a)
       (NatTrans.app adj.unit (G.obj X.A))) F :=
- fun _ => PreservesLimitOfIsCoreflexivePair.out _ _
+  fun _ => PreservesLimitOfIsCoreflexivePair.out _ _
 
 variable [PreservesLimitOfIsCoreflexivePair F]
 
@@ -364,6 +360,7 @@ coreflexive equalizers and `F` reflects isomorphisms, then `F` is comonadic.
 -/
 def comonadicOfHasPreservesCoreflexiveEqualizersOfReflectsIsomorphisms :
     ComonadicLeftAdjoint F where
+  R := G
   adj := adj
   eqv := by
     have : ∀ (X : adj.toComonad.Coalgebra), IsIso ((comparisonAdjunction adj).counit.app X) := by
@@ -387,7 +384,7 @@ def comonadicOfHasPreservesCoreflexiveEqualizersOfReflectsIsomorphisms :
         · rw [← G.map_id]
           simp
       apply @unitEqualizerOfCoreflectsEqualizer _ _ _ _ _ _ _ _ ?_
-      apply reflectsLimitOfReflectsIsomorphisms
+      apply reflectsLimit_of_reflectsIsomorphisms
     exact (comparisonAdjunction adj).toEquivalence.symm.isEquivalence_inverse
 
 end CoreflexiveComonadicity

@@ -4,14 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Closed.Ideal
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Finite
-import Mathlib.CategoryTheory.Sites.Limits
+import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
+import Mathlib.CategoryTheory.Sites.CartesianMonoidal
+import Mathlib.CategoryTheory.Sites.Sheafification
 /-!
 
 # Sheaf categories are cartesian closed
 
-...if the underlying presheaf category is cartesian closed, the target category has finite products,
-and there exists a sheafification functor.
+...if the underlying presheaf category is cartesian closed, the target category has
+(chosen) finite products, and there exists a sheafification functor.
 -/
 
 noncomputable section
@@ -20,6 +21,6 @@ open CategoryTheory Limits
 
 variable {C : Type*} [Category C] (J : GrothendieckTopology C) (A : Type*) [Category A]
 
-instance [HasSheafify J A] [HasFiniteProducts A] [CartesianClosed (Cᵒᵖ ⥤ A)] :
+instance [HasSheafify J A] [CartesianMonoidalCategory A] [CartesianClosed (Cᵒᵖ ⥤ A)] :
     CartesianClosed (Sheaf J A) :=
   cartesianClosedOfReflective (sheafToPresheaf _ _)

@@ -40,11 +40,11 @@ theorem Duplicate.duplicate_cons (h : x ∈+ l) (y : α) : x ∈+ y :: l :=
 
 theorem Duplicate.mem (h : x ∈+ l) : x ∈ l := by
   induction h with
-  | cons_mem => exact mem_cons_self _ _
+  | cons_mem => exact mem_cons_self
   | cons_duplicate _ hm => exact mem_cons_of_mem _ hm
 
 theorem Duplicate.mem_cons_self (h : x ∈+ x :: l) : x ∈ l := by
-  cases' h with _ h _ _ h
+  obtain h | h := h
   · exact h
   · exact h.mem
 
@@ -58,9 +58,9 @@ theorem Duplicate.ne_nil (h : x ∈+ l) : l ≠ [] := fun H => (mem_nil_iff x).m
 theorem not_duplicate_nil (x : α) : ¬x ∈+ [] := fun H => H.ne_nil rfl
 
 theorem Duplicate.ne_singleton (h : x ∈+ l) (y : α) : l ≠ [y] := by
-  induction' h with l' h z l' h _
-  · simp [ne_nil_of_mem h]
-  · simp [ne_nil_of_mem h.mem]
+  induction h with
+  | cons_mem h => simp [ne_nil_of_mem h]
+  | cons_duplicate h => simp [ne_nil_of_mem h.mem]
 
 @[simp]
 theorem not_duplicate_singleton (x y : α) : ¬x ∈+ [y] := fun H => H.ne_singleton _ rfl
@@ -73,7 +73,7 @@ theorem Duplicate.elim_singleton {y : α} (h : x ∈+ [y]) : False :=
 
 theorem duplicate_cons_iff {y : α} : x ∈+ y :: l ↔ y = x ∧ x ∈ l ∨ x ∈+ l := by
   refine ⟨fun h => ?_, fun h => ?_⟩
-  · cases' h with _ hm _ _ hm
+  · obtain hm | hm := h
     · exact Or.inl ⟨rfl, hm⟩
     · exact Or.inr hm
   · rcases h with (⟨rfl | h⟩ | h)
@@ -87,10 +87,11 @@ theorem duplicate_cons_iff_of_ne {y : α} (hne : x ≠ y) : x ∈+ y :: l ↔ x 
   simp [duplicate_cons_iff, hne.symm]
 
 theorem Duplicate.mono_sublist {l' : List α} (hx : x ∈+ l) (h : l <+ l') : x ∈+ l' := by
-  induction' h with l₁ l₂ y _ IH l₁ l₂ y h IH
-  · exact hx
-  · exact (IH hx).duplicate_cons _
-  · rw [duplicate_cons_iff] at hx ⊢
+  induction h with
+  | slnil => exact hx
+  | cons y _ IH => exact (IH hx).duplicate_cons _
+  | cons₂ y h IH =>
+    rw [duplicate_cons_iff] at hx ⊢
     rcases hx with (⟨rfl, hx⟩ | hx)
     · simp [h.subset hx]
     · simp [IH hx]
@@ -117,7 +118,7 @@ theorem Duplicate.not_nodup (h : x ∈+ l) : ¬Nodup l := fun H =>
   nodup_iff_forall_not_duplicate.mp H _ h
 
 theorem duplicate_iff_two_le_count [DecidableEq α] : x ∈+ l ↔ 2 ≤ count x l := by
-  simp [replicate_succ, duplicate_iff_sublist, le_count_iff_replicate_sublist]
+  simp [replicate_succ, duplicate_iff_sublist, ← replicate_sublist_iff]
 
 instance decidableDuplicate [DecidableEq α] (x : α) : ∀ l : List α, Decidable (x ∈+ l)
   | [] => isFalse (not_duplicate_nil x)

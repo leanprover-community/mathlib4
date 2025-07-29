@@ -3,10 +3,11 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.NNRat.Order
 import Mathlib.Data.Rat.Cast.CharZero
+import Mathlib.Tactic.Positivity.Basic
 
 /-!
 # Density of a finite set
@@ -73,7 +74,7 @@ lemma dens_eq_card_div_card (s : Finset α) : dens s = s.card / Fintype.card α 
   simp_rw [dens, card_disjUnion, Nat.cast_add, add_div]
 
 @[simp] lemma dens_eq_zero : dens s = 0 ↔ s = ∅ := by
-  simp (config := { contextual := true }) [dens, Fintype.card_eq_zero_iff, eq_empty_of_isEmpty]
+  simp +contextual [dens, Fintype.card_eq_zero_iff, eq_empty_of_isEmpty]
 
 lemma dens_ne_zero : dens s ≠ 0 ↔ s.Nonempty := dens_eq_zero.not.trans nonempty_iff_ne_empty.symm
 
@@ -99,7 +100,6 @@ lemma dens_map_le [Fintype β] (f : α ↪ β) : dens (s.map f) ≤ dens s := by
   · simp [Subsingleton.elim s ∅]
   simp_rw [dens, card_map]
   gcongr
-  · positivity
   · exact mod_cast Fintype.card_pos
   · exact Fintype.card_le_of_injective _ f.2
 
@@ -183,7 +183,7 @@ lemma dens_inter_add_dens_sdiff (s t : Finset α) : dens (s ∩ t) + dens (s \ t
 
 lemma dens_filter_add_dens_filter_not_eq_dens {α : Type*} [Fintype α] {s : Finset α}
     (p : α → Prop) [DecidablePred p] [∀ x, Decidable (¬p x)] :
-    dens (s.filter p) + dens (s.filter fun a ↦ ¬ p a) = dens s := by
+    dens {a ∈ s | p a} + dens {a ∈ s | ¬ p a} = dens s := by
   classical
   rw [← dens_union_of_disjoint (disjoint_filter_filter_neg ..), filter_union_filter_neg_eq]
 

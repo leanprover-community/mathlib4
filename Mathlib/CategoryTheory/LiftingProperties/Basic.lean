@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Scholbach, Joël Riou
 -/
 import Mathlib.CategoryTheory.CommSq
+import Mathlib.CategoryTheory.Retract
 
 /-!
 # Lifting properties
@@ -18,8 +19,7 @@ shows basic properties of this notion.
 lifting property
 
 @TODO :
-1) define llp/rlp with respect to a `morphism_property`
-2) retracts, direct/inverse images, (co)products, adjunctions
+1) direct/inverse images, adjunctions
 
 -/
 
@@ -128,5 +128,44 @@ theorem iff_of_arrow_iso_right {A B X Y X' Y' : C} (i : A ⟶ B) {p : X ⟶ Y} {
   exacts [of_arrow_iso_right i e, of_arrow_iso_right i e.symm]
 
 end HasLiftingProperty
+
+lemma RetractArrow.leftLiftingProperty
+    {X Y Z W Z' W' : C} {g : Z ⟶ W} {g' : Z' ⟶ W'}
+    (h : RetractArrow g' g) (f : X ⟶ Y) [HasLiftingProperty g f] : HasLiftingProperty g' f where
+  sq_hasLift := fun {u v} sq ↦ by
+    have sq' : CommSq (h.r.left ≫ u) g f (h.r.right ≫ v) := by simp only [Arrow.mk_left,
+      Arrow.mk_right, Category.assoc, sq.w, Arrow.w_mk_right_assoc, Arrow.mk_hom, CommSq.mk]
+    exact
+      ⟨⟨{ l := h.i.right ≫ sq'.lift
+          fac_left := by
+            simp only [← h.i_w_assoc, sq'.fac_left, h.retract_left_assoc,
+              Arrow.mk_left, Category.id_comp]}⟩⟩
+
+lemma RetractArrow.rightLiftingProperty
+    {X Y Z W X' Y' : C} {f : X ⟶ Y} {f' : X' ⟶ Y'}
+    (h : RetractArrow f' f) (g : Z ⟶ W) [HasLiftingProperty g f] : HasLiftingProperty g f' where
+  sq_hasLift := fun {u v} sq ↦
+    have sq' : CommSq (u ≫ h.i.left) g f (v ≫ h.i.right) :=
+      ⟨by rw [← Category.assoc, ← sq.w, Category.assoc, RetractArrow.i_w, Category.assoc]⟩
+    ⟨⟨{ l := sq'.lift ≫ h.r.left}⟩⟩
+
+namespace Arrow
+
+/-- Given a morphism `φ : f ⟶ g` in the category `Arrow C`, this is an
+abbreviation for the `CommSq.LiftStruct` structure for
+the square corresponding to `φ`. -/
+abbrev LiftStruct {f g : Arrow C} (φ : f ⟶ g) := (CommSq.mk φ.w).LiftStruct
+
+lemma hasLiftingProperty_iff {A B X Y : C} (i : A ⟶ B) (p : X ⟶ Y) :
+    HasLiftingProperty i p ↔
+      ∀ (φ : Arrow.mk i ⟶ Arrow.mk p), Nonempty (LiftStruct φ) := by
+  constructor
+  · intro _ φ
+    have sq : CommSq φ.left i p φ.right := CommSq.mk φ.w
+    exact ⟨{ l := sq.lift }⟩
+  · intro h
+    exact ⟨fun {f g} sq ↦ ⟨h (Arrow.homMk f g sq.w)⟩⟩
+
+end Arrow
 
 end CategoryTheory

@@ -3,12 +3,11 @@ Copyright (c) 2014 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.CharZero.Lemmas
-import Mathlib.Algebra.Order.Field.Defs
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Lemmas
+import Mathlib.Algebra.Field.Basic
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Data.Set.Monotone
 import Mathlib.Order.Bounds.OrderIso
-import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Tactic.Positivity.Core
 
 /-!
@@ -22,223 +21,45 @@ variable {ι α β : Type*}
 
 section LinearOrderedSemifield
 
-variable [LinearOrderedSemifield α] {a b c d e : α} {m n : ℤ}
-
-/-!
-### Relating one division with another term.
--/
-
-@[deprecated lt_div_iff₀ (since := "2024-10-02")]
-theorem lt_div_iff (hc : 0 < c) : a < b / c ↔ a * c < b := lt_div_iff₀ hc
-
-@[deprecated lt_div_iff₀' (since := "2024-10-02")]
-theorem lt_div_iff' (hc : 0 < c) : a < b / c ↔ c * a < b := lt_div_iff₀' hc
-
-@[deprecated div_lt_iff₀ (since := "2024-10-02")]
-theorem div_lt_iff (hc : 0 < c) : b / c < a ↔ b < a * c := div_lt_iff₀ hc
-
-@[deprecated div_lt_iff₀' (since := "2024-10-02")]
-theorem div_lt_iff' (hc : 0 < c) : b / c < a ↔ b < c * a := div_lt_iff₀' hc
-
-@[deprecated inv_mul_le_iff₀ (since := "2024-10-02")]
-theorem inv_mul_le_iff (h : 0 < b) : b⁻¹ * a ≤ c ↔ a ≤ b * c := inv_mul_le_iff₀ h
-
-@[deprecated inv_mul_le_iff₀' (since := "2024-10-02")]
-theorem inv_mul_le_iff' (h : 0 < b) : b⁻¹ * a ≤ c ↔ a ≤ c * b := inv_mul_le_iff₀' h
-
-@[deprecated mul_inv_le_iff₀' (since := "2024-10-02")]
-theorem mul_inv_le_iff (h : 0 < b) : a * b⁻¹ ≤ c ↔ a ≤ b * c := mul_inv_le_iff₀' h
-
-@[deprecated mul_inv_le_iff₀ (since := "2024-10-02")]
-theorem mul_inv_le_iff' (h : 0 < b) : a * b⁻¹ ≤ c ↔ a ≤ c * b := mul_inv_le_iff₀ h
-
-@[deprecated inv_mul_lt_iff₀ (since := "2024-10-02")]
-theorem inv_mul_lt_iff (h : 0 < b) : b⁻¹ * a < c ↔ a < b * c := inv_mul_lt_iff₀ h
-
-@[deprecated inv_mul_lt_iff₀' (since := "2024-10-02")]
-theorem inv_mul_lt_iff' (h : 0 < b) : b⁻¹ * a < c ↔ a < c * b := inv_mul_lt_iff₀' h
-
-@[deprecated mul_inv_lt_iff₀' (since := "2024-10-02")]
-theorem mul_inv_lt_iff (h : 0 < b) : a * b⁻¹ < c ↔ a < b * c := mul_inv_lt_iff₀' h
-
-@[deprecated mul_inv_lt_iff₀ (since := "2024-10-02")]
-theorem mul_inv_lt_iff' (h : 0 < b) : a * b⁻¹ < c ↔ a < c * b := mul_inv_lt_iff₀ h
-
-@[deprecated inv_le_iff_one_le_mul₀ (since := "2024-10-03")]
-theorem inv_pos_le_iff_one_le_mul (ha : 0 < a) : a⁻¹ ≤ b ↔ 1 ≤ b * a := inv_le_iff_one_le_mul₀ ha
-
-@[deprecated inv_le_iff_one_le_mul₀' (since := "2024-10-03")]
-theorem inv_pos_le_iff_one_le_mul' (ha : 0 < a) : a⁻¹ ≤ b ↔ 1 ≤ a * b := inv_le_iff_one_le_mul₀' ha
-
-@[deprecated inv_lt_iff_one_lt_mul₀ (since := "2024-10-03")]
-theorem inv_pos_lt_iff_one_lt_mul (ha : 0 < a) : a⁻¹ < b ↔ 1 < b * a := inv_lt_iff_one_lt_mul₀ ha
-
-@[deprecated inv_lt_iff_one_lt_mul₀' (since := "2024-10-03")]
-theorem inv_pos_lt_iff_one_lt_mul' (ha : 0 < a) : a⁻¹ < b ↔ 1 < a * b := inv_lt_iff_one_lt_mul₀' ha
-
-/-- One direction of `div_le_iff` where `b` is allowed to be `0` (but `c` must be nonnegative) -/
-@[deprecated div_le_of_le_mul₀ (since := "2024-10-03")]
-theorem div_le_of_nonneg_of_le_mul (hb : 0 ≤ b) (hc : 0 ≤ c) (h : a ≤ c * b) : a / b ≤ c :=
-  div_le_of_le_mul₀ hb hc h
-
-/-- One direction of `div_le_iff` where `c` is allowed to be `0` (but `b` must be nonnegative) -/
-@[deprecated mul_le_of_le_div₀ (since := "2024-10-03")]
-lemma mul_le_of_nonneg_of_le_div (hb : 0 ≤ b) (hc : 0 ≤ c) (h : a ≤ b / c) : a * c ≤ b :=
-  mul_le_of_le_div₀ hb hc h
-
-attribute [bound] div_le_one_of_le₀
-attribute [bound] mul_inv_le_one_of_le₀
-attribute [bound] inv_mul_le_one_of_le₀
-
-@[deprecated div_le_one_of_le₀ (since := "2024-10-03")]
-theorem div_le_one_of_le (h : a ≤ b) (hb : 0 ≤ b) : a / b ≤ 1 := div_le_one_of_le₀ h hb
-
-@[deprecated mul_inv_le_one_of_le₀ (since := "2024-10-03")]
-lemma mul_inv_le_one_of_le (h : a ≤ b) (hb : 0 ≤ b) : a * b⁻¹ ≤ 1 := mul_inv_le_one_of_le₀ h hb
-
-@[deprecated inv_mul_le_one_of_le₀ (since := "2024-10-03")]
-lemma inv_mul_le_one_of_le (h : a ≤ b) (hb : 0 ≤ b) : b⁻¹ * a ≤ 1 := inv_mul_le_one_of_le₀ h hb
-
-/-!
-### Bi-implications of inequalities using inversions
--/
-
-@[gcongr, bound]
-theorem inv_le_inv_of_le (ha : 0 < a) (h : a ≤ b) : b⁻¹ ≤ a⁻¹ := by
-  rwa [← one_div a, le_div_iff₀' ha, ← div_eq_mul_inv, div_le_iff₀ (ha.trans_le h), one_mul]
-
-/-- See `inv_le_inv_of_le` for the implication from right-to-left with one fewer assumption. -/
-theorem inv_le_inv (ha : 0 < a) (hb : 0 < b) : a⁻¹ ≤ b⁻¹ ↔ b ≤ a := by
-  rw [← one_div, div_le_iff₀ ha, ← div_eq_inv_mul, le_div_iff₀ hb, one_mul]
-
-/-- In a linear ordered field, for positive `a` and `b` we have `a⁻¹ ≤ b ↔ b⁻¹ ≤ a`.
-See also `inv_le_of_inv_le` for a one-sided implication with one fewer assumption. -/
-theorem inv_le (ha : 0 < a) (hb : 0 < b) : a⁻¹ ≤ b ↔ b⁻¹ ≤ a := by
-  rw [← inv_le_inv hb (inv_pos.2 ha), inv_inv]
-
-theorem inv_le_of_inv_le (ha : 0 < a) (h : a⁻¹ ≤ b) : b⁻¹ ≤ a :=
-  (inv_le ha ((inv_pos.2 ha).trans_le h)).1 h
-
-theorem le_inv (ha : 0 < a) (hb : 0 < b) : a ≤ b⁻¹ ↔ b ≤ a⁻¹ := by
-  rw [← inv_le_inv (inv_pos.2 hb) ha, inv_inv]
-
-/-- See `inv_lt_inv_of_lt` for the implication from right-to-left with one fewer assumption. -/
-theorem inv_lt_inv (ha : 0 < a) (hb : 0 < b) : a⁻¹ < b⁻¹ ↔ b < a :=
-  lt_iff_lt_of_le_iff_le (inv_le_inv hb ha)
-
-@[gcongr]
-theorem inv_lt_inv_of_lt (hb : 0 < b) (h : b < a) : a⁻¹ < b⁻¹ :=
-  (inv_lt_inv (hb.trans h) hb).2 h
-
-/-- In a linear ordered field, for positive `a` and `b` we have `a⁻¹ < b ↔ b⁻¹ < a`.
-See also `inv_lt_of_inv_lt` for a one-sided implication with one fewer assumption. -/
-theorem inv_lt (ha : 0 < a) (hb : 0 < b) : a⁻¹ < b ↔ b⁻¹ < a :=
-  lt_iff_lt_of_le_iff_le (le_inv hb ha)
-
-theorem inv_lt_of_inv_lt (ha : 0 < a) (h : a⁻¹ < b) : b⁻¹ < a :=
-  (inv_lt ha ((inv_pos.2 ha).trans h)).1 h
-
-theorem lt_inv (ha : 0 < a) (hb : 0 < b) : a < b⁻¹ ↔ b < a⁻¹ :=
-  lt_iff_lt_of_le_iff_le (inv_le hb ha)
-
-theorem inv_lt_one (ha : 1 < a) : a⁻¹ < 1 := by
-  rwa [inv_lt (zero_lt_one.trans ha) zero_lt_one, inv_one]
-
-theorem one_lt_inv (h₁ : 0 < a) (h₂ : a < 1) : 1 < a⁻¹ := by
-  rwa [lt_inv (@zero_lt_one α _ _ _ _ _) h₁, inv_one]
-
-@[bound]
-theorem inv_le_one (ha : 1 ≤ a) : a⁻¹ ≤ 1 := by
-  rwa [inv_le (zero_lt_one.trans_le ha) zero_lt_one, inv_one]
-
-theorem one_le_inv (h₁ : 0 < a) (h₂ : a ≤ 1) : 1 ≤ a⁻¹ := by
-  rwa [le_inv (@zero_lt_one α _ _ _ _ _) h₁, inv_one]
-
-theorem inv_lt_one_iff_of_pos (h₀ : 0 < a) : a⁻¹ < 1 ↔ 1 < a :=
-  ⟨fun h₁ => inv_inv a ▸ one_lt_inv (inv_pos.2 h₀) h₁, inv_lt_one⟩
-
-theorem inv_lt_one_iff : a⁻¹ < 1 ↔ a ≤ 0 ∨ 1 < a := by
-  rcases le_or_lt a 0 with ha | ha
-  · simp [ha, (inv_nonpos.2 ha).trans_lt zero_lt_one]
-  · simp only [ha.not_le, false_or, inv_lt_one_iff_of_pos ha]
-
-theorem one_lt_inv_iff : 1 < a⁻¹ ↔ 0 < a ∧ a < 1 :=
-  ⟨fun h => ⟨inv_pos.1 (zero_lt_one.trans h),
-    inv_inv a ▸ inv_lt_one h⟩, and_imp.2 one_lt_inv⟩
-
-theorem inv_le_one_iff : a⁻¹ ≤ 1 ↔ a ≤ 0 ∨ 1 ≤ a := by
-  rcases em (a = 1) with (rfl | ha)
-  · simp [le_rfl]
-  · simp only [Ne.le_iff_lt (Ne.symm ha), Ne.le_iff_lt (mt inv_eq_one.1 ha), inv_lt_one_iff]
-
-theorem one_le_inv_iff : 1 ≤ a⁻¹ ↔ 0 < a ∧ a ≤ 1 :=
-  ⟨fun h => ⟨inv_pos.1 (zero_lt_one.trans_le h),
-    inv_inv a ▸ inv_le_one h⟩, and_imp.2 one_le_inv⟩
+variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] {a b c d e : α} {m n : ℤ}
 
 /-!
 ### Relating two divisions.
 -/
 
+@[deprecated div_le_div_iff_of_pos_right (since := "2024-11-12")]
+theorem div_le_div_right (hc : 0 < c) : a / c ≤ b / c ↔ a ≤ b := div_le_div_iff_of_pos_right hc
 
-@[mono, gcongr, bound]
-lemma div_le_div_of_nonneg_right (hab : a ≤ b) (hc : 0 ≤ c) : a / c ≤ b / c := by
-  rw [div_eq_mul_one_div a c, div_eq_mul_one_div b c]
-  exact mul_le_mul_of_nonneg_right hab (one_div_nonneg.2 hc)
+@[deprecated div_lt_div_iff_of_pos_right (since := "2024-11-12")]
+theorem div_lt_div_right (hc : 0 < c) : a / c < b / c ↔ a < b := div_lt_div_iff_of_pos_right hc
 
-@[gcongr, bound]
-lemma div_lt_div_of_pos_right (h : a < b) (hc : 0 < c) : a / c < b / c := by
-  rw [div_eq_mul_one_div a c, div_eq_mul_one_div b c]
-  exact mul_lt_mul_of_pos_right h (one_div_pos.2 hc)
+@[deprecated div_lt_div_iff_of_pos_left (since := "2024-11-13")]
+theorem div_lt_div_left (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) : a / b < a / c ↔ c < b :=
+  div_lt_div_iff_of_pos_left ha hb hc
 
--- Not a `mono` lemma b/c `div_le_div` is strictly more general
-@[gcongr]
-lemma div_le_div_of_nonneg_left (ha : 0 ≤ a) (hc : 0 < c) (h : c ≤ b) : a / b ≤ a / c := by
-  rw [div_eq_mul_inv, div_eq_mul_inv]
-  exact mul_le_mul_of_nonneg_left ((inv_le_inv (hc.trans_le h) hc).mpr h) ha
-
-@[gcongr, bound]
-lemma div_lt_div_of_pos_left (ha : 0 < a) (hc : 0 < c) (h : c < b) : a / b < a / c := by
-  simpa only [div_eq_mul_inv, mul_lt_mul_left ha, inv_lt_inv (hc.trans h) hc]
-
-@[deprecated (since := "2024-02-16")] alias div_le_div_of_le_of_nonneg := div_le_div_of_nonneg_right
-@[deprecated (since := "2024-02-16")] alias div_lt_div_of_lt := div_lt_div_of_pos_right
-@[deprecated (since := "2024-02-16")] alias div_le_div_of_le_left := div_le_div_of_nonneg_left
-@[deprecated (since := "2024-02-16")] alias div_lt_div_of_lt_left := div_lt_div_of_pos_left
-
-@[deprecated div_le_div_of_nonneg_right (since := "2024-02-16")]
-lemma div_le_div_of_le (hc : 0 ≤ c) (hab : a ≤ b) : a / c ≤ b / c :=
-  div_le_div_of_nonneg_right hab hc
-
-theorem div_le_div_right (hc : 0 < c) : a / c ≤ b / c ↔ a ≤ b :=
-  ⟨le_imp_le_of_lt_imp_lt fun hab ↦ div_lt_div_of_pos_right hab hc,
-    fun hab ↦ div_le_div_of_nonneg_right hab hc.le⟩
-
-theorem div_lt_div_right (hc : 0 < c) : a / c < b / c ↔ a < b :=
-  lt_iff_lt_of_le_iff_le <| div_le_div_right hc
-
-theorem div_lt_div_left (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) : a / b < a / c ↔ c < b := by
-  simp only [div_eq_mul_inv, mul_lt_mul_left ha, inv_lt_inv hb hc]
-
+@[deprecated div_le_div_iff_of_pos_left (since := "2024-11-12")]
 theorem div_le_div_left (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) : a / b ≤ a / c ↔ c ≤ b :=
-  le_iff_le_iff_lt_iff_lt.2 (div_lt_div_left ha hc hb)
+  div_le_div_iff_of_pos_left ha hb hc
 
-theorem div_lt_div_iff (b0 : 0 < b) (d0 : 0 < d) : a / b < c / d ↔ a * d < c * b := by
-  rw [lt_div_iff₀ d0, div_mul_eq_mul_div, div_lt_iff₀ b0]
+@[deprecated div_lt_div_iff₀ (since := "2024-11-12")]
+theorem div_lt_div_iff (b0 : 0 < b) (d0 : 0 < d) : a / b < c / d ↔ a * d < c * b :=
+  div_lt_div_iff₀ b0 d0
 
-theorem div_le_div_iff (b0 : 0 < b) (d0 : 0 < d) : a / b ≤ c / d ↔ a * d ≤ c * b := by
-  rw [le_div_iff₀ d0, div_mul_eq_mul_div, div_le_iff₀ b0]
+@[deprecated div_le_div_iff₀ (since := "2024-11-12")]
+theorem div_le_div_iff (b0 : 0 < b) (d0 : 0 < d) : a / b ≤ c / d ↔ a * d ≤ c * b :=
+  div_le_div_iff₀ b0 d0
 
-@[mono, gcongr, bound]
-theorem div_le_div (hc : 0 ≤ c) (hac : a ≤ c) (hd : 0 < d) (hbd : d ≤ b) : a / b ≤ c / d := by
-  rw [div_le_div_iff (hd.trans_le hbd) hd]
-  exact mul_le_mul hac hbd hd.le hc
+@[deprecated div_le_div₀ (since := "2024-11-12")]
+theorem div_le_div (hc : 0 ≤ c) (hac : a ≤ c) (hd : 0 < d) (hbd : d ≤ b) : a / b ≤ c / d :=
+  div_le_div₀ hc hac hd hbd
 
-@[gcongr]
+@[deprecated div_lt_div₀ (since := "2024-11-12")]
 theorem div_lt_div (hac : a < c) (hbd : d ≤ b) (c0 : 0 ≤ c) (d0 : 0 < d) : a / b < c / d :=
-  (div_lt_div_iff (d0.trans_le hbd) d0).2 (mul_lt_mul hac hbd d0 c0)
+  div_lt_div₀ hac hbd c0 d0
 
+@[deprecated div_lt_div₀' (since := "2024-11-12")]
 theorem div_lt_div' (hac : a ≤ c) (hbd : d < b) (c0 : 0 < c) (d0 : 0 < d) : a / b < c / d :=
-  (div_lt_div_iff (d0.trans hbd) d0).2 (mul_lt_mul' hac hbd d0.le c0)
+  div_lt_div₀' hac hbd c0 d0
 
 /-!
 ### Relating one division and involving `1`
@@ -265,13 +86,17 @@ theorem one_lt_div (hb : 0 < b) : 1 < a / b ↔ b < a := by rw [lt_div_iff₀ hb
 
 theorem div_lt_one (hb : 0 < b) : a / b < 1 ↔ a < b := by rw [div_lt_iff₀ hb, one_mul]
 
-theorem one_div_le (ha : 0 < a) (hb : 0 < b) : 1 / a ≤ b ↔ 1 / b ≤ a := by simpa using inv_le ha hb
+theorem one_div_le (ha : 0 < a) (hb : 0 < b) : 1 / a ≤ b ↔ 1 / b ≤ a := by
+  simpa using inv_le_comm₀ ha hb
 
-theorem one_div_lt (ha : 0 < a) (hb : 0 < b) : 1 / a < b ↔ 1 / b < a := by simpa using inv_lt ha hb
+theorem one_div_lt (ha : 0 < a) (hb : 0 < b) : 1 / a < b ↔ 1 / b < a := by
+  simpa using inv_lt_comm₀ ha hb
 
-theorem le_one_div (ha : 0 < a) (hb : 0 < b) : a ≤ 1 / b ↔ b ≤ 1 / a := by simpa using le_inv ha hb
+theorem le_one_div (ha : 0 < a) (hb : 0 < b) : a ≤ 1 / b ↔ b ≤ 1 / a := by
+  simpa using le_inv_comm₀ ha hb
 
-theorem lt_one_div (ha : 0 < a) (hb : 0 < b) : a < 1 / b ↔ b < 1 / a := by simpa using lt_inv ha hb
+theorem lt_one_div (ha : 0 < a) (hb : 0 < b) : a < 1 / b ↔ b < 1 / a := by
+  simpa using lt_inv_comm₀ ha hb
 
 @[bound] lemma Bound.one_lt_div_of_pos_of_lt (b0 : 0 < b) : b < a → 1 < a / b := (one_lt_div b0).mpr
 
@@ -283,7 +108,7 @@ theorem lt_one_div (ha : 0 < a) (hb : 0 < b) : a < 1 / b ↔ b < 1 / a := by sim
 
 
 theorem one_div_le_one_div_of_le (ha : 0 < a) (h : a ≤ b) : 1 / b ≤ 1 / a := by
-  simpa using inv_le_inv_of_le ha h
+  simpa using inv_anti₀ ha h
 
 theorem one_div_lt_one_div_of_lt (ha : 0 < a) (h : a < b) : 1 / b < 1 / a := by
   rwa [lt_div_iff₀' ha, ← div_eq_mul_one_div, div_lt_one (ha.trans h)]
@@ -297,12 +122,12 @@ theorem lt_of_one_div_lt_one_div (ha : 0 < a) (h : 1 / a < 1 / b) : b < a :=
 /-- For the single implications with fewer assumptions, see `one_div_le_one_div_of_le` and
   `le_of_one_div_le_one_div` -/
 theorem one_div_le_one_div (ha : 0 < a) (hb : 0 < b) : 1 / a ≤ 1 / b ↔ b ≤ a :=
-  div_le_div_left zero_lt_one ha hb
+  div_le_div_iff_of_pos_left zero_lt_one ha hb
 
 /-- For the single implications with fewer assumptions, see `one_div_lt_one_div_of_lt` and
   `lt_of_one_div_lt_one_div` -/
 theorem one_div_lt_one_div (ha : 0 < a) (hb : 0 < b) : 1 / a < 1 / b ↔ b < a :=
-  div_lt_div_left zero_lt_one ha hb
+  div_lt_div_iff_of_pos_left zero_lt_one ha hb
 
 theorem one_lt_one_div (h1 : 0 < a) (h2 : a < 1) : 1 < 1 / a := by
   rwa [lt_one_div (@zero_lt_one α _ _ _ _ _) h1, one_div_one]
@@ -371,7 +196,7 @@ theorem div_mul_le_div_mul_of_div_le_div (h : a / b ≤ c / d) (he : 0 ≤ e) :
 theorem exists_pos_mul_lt {a : α} (h : 0 < a) (b : α) : ∃ c : α, 0 < c ∧ b * c < a := by
   have : 0 < a / max (b + 1) 1 := div_pos h (lt_max_iff.2 (Or.inr zero_lt_one))
   refine ⟨a / max (b + 1) 1, this, ?_⟩
-  rw [← lt_div_iff₀ this, div_div_cancel' h.ne']
+  rw [← lt_div_iff₀ this, div_div_cancel₀ h.ne']
   exact lt_max_iff.2 (Or.inl <| lt_add_one _)
 
 theorem exists_pos_lt_mul {a : α} (h : 0 < a) (b : α) : ∃ c : α, 0 < c ∧ b < c * a :=
@@ -415,12 +240,12 @@ theorem one_div_strictAntiOn : StrictAntiOn (fun x : α => 1 / x) (Set.Ioi 0) :=
 
 theorem one_div_pow_le_one_div_pow_of_le (a1 : 1 ≤ a) {m n : ℕ} (mn : m ≤ n) :
     1 / a ^ n ≤ 1 / a ^ m := by
-  refine (one_div_le_one_div ?_ ?_).mpr (pow_le_pow_right a1 mn) <;>
+  refine (one_div_le_one_div ?_ ?_).mpr (pow_right_mono₀ a1 mn) <;>
     exact pow_pos (zero_lt_one.trans_le a1) _
 
 theorem one_div_pow_lt_one_div_pow_of_lt (a1 : 1 < a) {m n : ℕ} (mn : m < n) :
     1 / a ^ n < 1 / a ^ m := by
-  refine (one_div_lt_one_div ?_ ?_).2 (pow_lt_pow_right a1 mn) <;>
+  refine (one_div_lt_one_div ?_ ?_).2 (pow_lt_pow_right₀ a1 mn) <;>
     exact pow_pos (zero_lt_one.trans a1) _
 
 theorem one_div_pow_anti (a1 : 1 ≤ a) : Antitone fun n : ℕ => 1 / a ^ n := fun _ _ =>
@@ -430,7 +255,7 @@ theorem one_div_pow_strictAnti (a1 : 1 < a) : StrictAnti fun n : ℕ => 1 / a ^ 
   one_div_pow_lt_one_div_pow_of_lt a1
 
 theorem inv_strictAntiOn : StrictAntiOn (fun x : α => x⁻¹) (Set.Ioi 0) := fun _ hx _ hy xy =>
-  (inv_lt_inv hy hx).2 xy
+  (inv_lt_inv₀ hy hx).2 xy
 
 theorem inv_pow_le_inv_pow_of_le (a1 : 1 ≤ a) {m n : ℕ} (mn : m ≤ n) : (a ^ n)⁻¹ ≤ (a ^ m)⁻¹ := by
   convert one_div_pow_le_one_div_pow_of_le a1 mn using 1 <;> simp
@@ -443,6 +268,24 @@ theorem inv_pow_anti (a1 : 1 ≤ a) : Antitone fun n : ℕ => (a ^ n)⁻¹ := fu
 
 theorem inv_pow_strictAnti (a1 : 1 < a) : StrictAnti fun n : ℕ => (a ^ n)⁻¹ := fun _ _ =>
   inv_pow_lt_inv_pow_of_lt a1
+
+theorem le_iff_forall_one_lt_le_mul₀ {α : Type*}
+    [Semifield α] [LinearOrder α] [IsStrictOrderedRing α]
+    {a b : α} (hb : 0 ≤ b) : a ≤ b ↔ ∀ ε, 1 < ε → a ≤ b * ε := by
+  refine ⟨fun h _ hε ↦ h.trans <| le_mul_of_one_le_right hb hε.le, fun h ↦ ?_⟩
+  obtain rfl | hb := hb.eq_or_lt
+  · simp_rw [zero_mul] at h
+    exact h 2 one_lt_two
+  refine le_of_forall_gt_imp_ge_of_dense fun x hbx => ?_
+  convert h (x / b) ((one_lt_div hb).mpr hbx)
+  rw [mul_div_cancel₀ _ hb.ne']
+
+theorem div_nat_le_self_of_nonnneg (ha : 0 ≤ a) (n : ℕ) : a / n ≤ a :=
+  if h : n = 0 then by simpa [h] using ha
+  else div_le_self ha (n.one_le_cast_iff_ne_zero.mpr h)
+
+theorem div_nat_lt_self_of_pos_of_two_le (ha : 0 < a) {n : ℕ} (hn : 2 ≤ n) : a / n < a :=
+  div_lt_self ha (n.one_lt_cast.mpr hn)
 
 /-! ### Results about `IsGLB` -/
 
@@ -458,11 +301,30 @@ theorem IsGLB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsGLB s b) :
 theorem IsGLB.mul_right {s : Set α} (ha : 0 ≤ a) (hs : IsGLB s b) :
     IsGLB ((fun b => b * a) '' s) (b * a) := by simpa [mul_comm] using hs.mul_left ha
 
+/-! ### Results about `IsLUB` -/
+
+
+theorem IsLUB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
+    IsLUB ((fun b => a * b) '' s) (a * b) := by
+  obtain ha | rfl := ha.lt_or_eq
+  · exact (OrderIso.mulLeft₀ _ ha).isLUB_image'.2 hs
+  · simp_rw [zero_mul]
+    obtain rfl | ne := s.eq_empty_or_nonempty
+    · simp only [Set.image_empty, isLUB_empty_iff] at hs ⊢
+      have hb := hs (b + b)
+      rw [le_add_iff_nonneg_right] at hb
+      exact hs.mono hb
+    rw [ne.image_const]
+    exact isLUB_singleton
+
+theorem IsLUB.mul_right {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
+    IsLUB ((fun b => b * a) '' s) (b * a) := by simpa [mul_comm] using hs.mul_left ha
+
 end LinearOrderedSemifield
 
 section
 
-variable [LinearOrderedField α] {a b c d : α} {n : ℤ}
+variable [Field α] [LinearOrder α] [IsStrictOrderedRing α] {a b c d : α} {n : ℤ}
 
 /-! ### Lemmas about pos, nonneg, nonpos, neg -/
 
@@ -553,35 +415,35 @@ theorem lt_inv_of_neg (ha : a < 0) (hb : b < 0) : a < b⁻¹ ↔ b < a⁻¹ :=
 
 
 theorem sub_inv_antitoneOn_Ioi :
-    AntitoneOn (fun x ↦ (x-c)⁻¹) (Set.Ioi c) :=
+    AntitoneOn (fun x ↦ (x - c)⁻¹) (Set.Ioi c) :=
   antitoneOn_iff_forall_lt.mpr fun _ ha _ hb hab ↦
-    inv_le_inv (sub_pos.mpr hb) (sub_pos.mpr ha) |>.mpr <| sub_le_sub (le_of_lt hab) le_rfl
+    inv_le_inv₀ (sub_pos.mpr hb) (sub_pos.mpr ha) |>.mpr <| sub_le_sub (le_of_lt hab) le_rfl
 
 theorem sub_inv_antitoneOn_Iio :
-    AntitoneOn (fun x ↦ (x-c)⁻¹) (Set.Iio c) :=
+    AntitoneOn (fun x ↦ (x - c)⁻¹) (Set.Iio c) :=
   antitoneOn_iff_forall_lt.mpr fun _ ha _ hb hab ↦
     inv_le_inv_of_neg (sub_neg.mpr hb) (sub_neg.mpr ha) |>.mpr <| sub_le_sub (le_of_lt hab) le_rfl
 
 theorem sub_inv_antitoneOn_Icc_right (ha : c < a) :
-    AntitoneOn (fun x ↦ (x-c)⁻¹) (Set.Icc a b) := by
+    AntitoneOn (fun x ↦ (x - c)⁻¹) (Set.Icc a b) := by
   by_cases hab : a ≤ b
   · exact sub_inv_antitoneOn_Ioi.mono <| (Set.Icc_subset_Ioi_iff hab).mpr ha
   · simp [hab, Set.Subsingleton.antitoneOn]
 
 theorem sub_inv_antitoneOn_Icc_left (ha : b < c) :
-    AntitoneOn (fun x ↦ (x-c)⁻¹) (Set.Icc a b) := by
+    AntitoneOn (fun x ↦ (x - c)⁻¹) (Set.Icc a b) := by
   by_cases hab : a ≤ b
   · exact sub_inv_antitoneOn_Iio.mono <| (Set.Icc_subset_Iio_iff hab).mpr ha
   · simp [hab, Set.Subsingleton.antitoneOn]
 
 theorem inv_antitoneOn_Ioi :
     AntitoneOn (fun x : α ↦ x⁻¹) (Set.Ioi 0) := by
-  convert sub_inv_antitoneOn_Ioi
+  convert sub_inv_antitoneOn_Ioi (α := α)
   exact (sub_zero _).symm
 
 theorem inv_antitoneOn_Iio :
     AntitoneOn (fun x : α ↦ x⁻¹) (Set.Iio 0) := by
-  convert sub_inv_antitoneOn_Iio
+  convert sub_inv_antitoneOn_Iio (α := α)
   exact (sub_zero _).symm
 
 theorem inv_antitoneOn_Icc_right (ha : 0 < a) :
@@ -636,27 +498,27 @@ theorem lt_one_div_of_neg (ha : a < 0) (hb : b < 0) : a < 1 / b ↔ b < 1 / a :=
 
 theorem one_lt_div_iff : 1 < a / b ↔ 0 < b ∧ b < a ∨ b < 0 ∧ a < b := by
   rcases lt_trichotomy b 0 with (hb | rfl | hb)
-  · simp [hb, hb.not_lt, one_lt_div_of_neg]
-  · simp [lt_irrefl, zero_le_one]
-  · simp [hb, hb.not_lt, one_lt_div]
+  · simp [hb, hb.not_gt, one_lt_div_of_neg]
+  · simp [zero_le_one]
+  · simp [hb, hb.not_gt, one_lt_div]
 
 theorem one_le_div_iff : 1 ≤ a / b ↔ 0 < b ∧ b ≤ a ∨ b < 0 ∧ a ≤ b := by
   rcases lt_trichotomy b 0 with (hb | rfl | hb)
-  · simp [hb, hb.not_lt, one_le_div_of_neg]
-  · simp [lt_irrefl, zero_lt_one.not_le, zero_lt_one]
-  · simp [hb, hb.not_lt, one_le_div]
+  · simp [hb, hb.not_gt, one_le_div_of_neg]
+  · simp [zero_lt_one.not_ge]
+  · simp [hb, hb.not_gt, one_le_div]
 
 theorem div_lt_one_iff : a / b < 1 ↔ 0 < b ∧ a < b ∨ b = 0 ∨ b < 0 ∧ b < a := by
   rcases lt_trichotomy b 0 with (hb | rfl | hb)
-  · simp [hb, hb.not_lt, hb.ne, div_lt_one_of_neg]
+  · simp [hb, hb.not_gt, hb.ne, div_lt_one_of_neg]
   · simp [zero_lt_one]
-  · simp [hb, hb.not_lt, div_lt_one, hb.ne.symm]
+  · simp [hb, hb.not_gt, div_lt_one, hb.ne.symm]
 
 theorem div_le_one_iff : a / b ≤ 1 ↔ 0 < b ∧ a ≤ b ∨ b = 0 ∨ b < 0 ∧ b ≤ a := by
   rcases lt_trichotomy b 0 with (hb | rfl | hb)
-  · simp [hb, hb.not_lt, hb.ne, div_le_one_of_neg]
+  · simp [hb, hb.not_gt, hb.ne, div_le_one_of_neg]
   · simp [zero_le_one]
-  · simp [hb, hb.not_lt, div_le_one, hb.ne.symm]
+  · simp [hb, hb.not_gt, div_le_one, hb.ne.symm]
 
 /-! ### Relating two divisions, involving `1` -/
 
@@ -704,34 +566,19 @@ theorem div_two_sub_self (a : α) : a / 2 - a = -(a / 2) := by
 
 theorem add_sub_div_two_lt (h : a < b) : a + (b - a) / 2 < b := by
   rwa [← div_sub_div_same, sub_eq_add_neg, add_comm (b / 2), ← add_assoc, ← sub_eq_add_neg, ←
-    lt_sub_iff_add_lt, sub_self_div_two, sub_self_div_two, div_lt_div_right (zero_lt_two' α)]
+    lt_sub_iff_add_lt, sub_self_div_two, sub_self_div_two,
+    div_lt_div_iff_of_pos_right (zero_lt_two' α)]
 
 /-- An inequality involving `2`. -/
 theorem sub_one_div_inv_le_two (a2 : 2 ≤ a) : (1 - 1 / a)⁻¹ ≤ 2 := by
   -- Take inverses on both sides to obtain `2⁻¹ ≤ 1 - 1 / a`
-  refine (inv_le_inv_of_le (inv_pos.2 <| zero_lt_two' α) ?_).trans_eq (inv_inv (2 : α))
+  refine (inv_anti₀ (inv_pos.2 <| zero_lt_two' α) ?_).trans_eq (inv_inv (2 : α))
   -- move `1 / a` to the left and `2⁻¹` to the right.
   rw [le_sub_iff_add_le, add_comm, ← le_sub_iff_add_le]
   -- take inverses on both sides and use the assumption `2 ≤ a`.
-  convert (one_div a).le.trans (inv_le_inv_of_le zero_lt_two a2) using 1
+  convert (one_div a).le.trans (inv_anti₀ zero_lt_two a2) using 1
   -- show `1 - 1 / 2 = 1 / 2`.
   rw [sub_eq_iff_eq_add, ← two_mul, mul_inv_cancel₀ two_ne_zero]
-
-/-! ### Results about `IsLUB` -/
-
-
--- TODO: Generalize to `LinearOrderedSemifield`
-theorem IsLUB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
-    IsLUB ((fun b => a * b) '' s) (a * b) := by
-  rcases lt_or_eq_of_le ha with (ha | rfl)
-  · exact (OrderIso.mulLeft₀ _ ha).isLUB_image'.2 hs
-  · simp_rw [zero_mul]
-    rw [hs.nonempty.image_const]
-    exact isLUB_singleton
-
--- TODO: Generalize to `LinearOrderedSemifield`
-theorem IsLUB.mul_right {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
-    IsLUB ((fun b => b * a) '' s) (b * a) := by simpa [mul_comm] using hs.mul_left ha
 
 /-! ### Miscellaneous lemmas -/
 
@@ -757,6 +604,43 @@ theorem le_of_forall_sub_le (h : ∀ ε > 0, b - ε ≤ a) : b ≤ a := by
   simpa only [@and_comm ((0 : α) < _), lt_sub_iff_add_lt, gt_iff_lt] using
     exists_add_lt_and_pos_of_lt h
 
+private lemma exists_lt_mul_left_of_nonneg {a b c : α} (ha : 0 ≤ a) (hc : 0 ≤ c) (h : c < a * b) :
+    ∃ a' ∈ Set.Ico 0 a, c < a' * b := by
+  have hb : 0 < b := pos_of_mul_pos_right (hc.trans_lt h) ha
+  obtain ⟨a', ha', a_a'⟩ := exists_between ((div_lt_iff₀ hb).2 h)
+  exact ⟨a', ⟨(div_nonneg hc hb.le).trans ha'.le, a_a'⟩, (div_lt_iff₀ hb).1 ha'⟩
+
+private lemma exists_lt_mul_right_of_nonneg {a b c : α} (ha : 0 ≤ a) (hc : 0 ≤ c) (h : c < a * b) :
+    ∃ b' ∈ Set.Ico 0 b, c < a * b' := by
+  have hb : 0 < b := pos_of_mul_pos_right (hc.trans_lt h) ha
+  simp_rw [mul_comm a] at h ⊢
+  exact exists_lt_mul_left_of_nonneg hb.le hc h
+
+private lemma exists_mul_left_lt₀ {a b c : α} (hc : a * b < c) : ∃ a' > a, a' * b < c := by
+  rcases le_or_gt b 0 with hb | hb
+  · obtain ⟨a', ha'⟩ := exists_gt a
+    exact ⟨a', ha', hc.trans_le' (antitone_mul_right hb ha'.le)⟩
+  · obtain ⟨a', ha', hc'⟩ := exists_between ((lt_div_iff₀ hb).2 hc)
+    exact ⟨a', ha', (lt_div_iff₀ hb).1 hc'⟩
+
+private lemma exists_mul_right_lt₀ {a b c : α} (hc : a * b < c) : ∃ b' > b, a * b' < c := by
+  simp_rw [mul_comm a] at hc ⊢; exact exists_mul_left_lt₀ hc
+
+lemma le_mul_of_forall_lt₀ {a b c : α} (h : ∀ a' > a, ∀ b' > b, c ≤ a' * b') : c ≤ a * b := by
+  refine le_of_forall_gt_imp_ge_of_dense fun d hd ↦ ?_
+  obtain ⟨a', ha', hd⟩ := exists_mul_left_lt₀ hd
+  obtain ⟨b', hb', hd⟩ := exists_mul_right_lt₀ hd
+  exact (h a' ha' b' hb').trans hd.le
+
+lemma mul_le_of_forall_lt_of_nonneg {a b c : α} (ha : 0 ≤ a) (hc : 0 ≤ c)
+    (h : ∀ a' ≥ 0, a' < a → ∀ b' ≥ 0, b' < b → a' * b' ≤ c) : a * b ≤ c := by
+  refine le_of_forall_lt_imp_le_of_dense fun d d_ab ↦ ?_
+  rcases lt_or_ge d 0 with hd | hd
+  · exact hd.le.trans hc
+  obtain ⟨a', ha', d_ab⟩ := exists_lt_mul_left_of_nonneg ha hd d_ab
+  obtain ⟨b', hb', d_ab⟩ := exists_lt_mul_right_of_nonneg ha'.1 hd d_ab
+  exact d_ab.le.trans (h a' ha'.1 ha'.2 b' hb'.1 hb'.2)
+
 theorem mul_self_inj_of_nonneg (a0 : 0 ≤ a) (b0 : 0 ≤ b) : a * a = b * b ↔ a = b :=
   mul_self_eq_mul_self_iff.trans <|
     or_iff_left_of_imp fun h => by
@@ -778,13 +662,31 @@ theorem abs_div (a b : α) : |a / b| = |a| / |b| :=
 
 theorem abs_one_div (a : α) : |1 / a| = 1 / |a| := by rw [abs_div, abs_one]
 
+theorem uniform_continuous_npow_on_bounded (B : α) {ε : α} (hε : 0 < ε) (n : ℕ) :
+    ∃ δ > 0, ∀ q r : α, |r| ≤ B → |q - r| ≤ δ → |q ^ n - r ^ n| < ε := by
+  wlog B_pos : 0 < B generalizing B
+  · have ⟨δ, δ_pos, cont⟩ := this 1 zero_lt_one
+    exact ⟨δ, δ_pos, fun q r hr ↦ cont q r (hr.trans ((le_of_not_gt B_pos).trans zero_le_one))⟩
+  have pos : 0 < 1 + ↑n * (B + 1) ^ (n - 1) := zero_lt_one.trans_le <| le_add_of_nonneg_right <|
+    mul_nonneg n.cast_nonneg <| (pow_pos (B_pos.trans <| lt_add_of_pos_right _ zero_lt_one) _).le
+  refine ⟨min 1 (ε / (1 + n * (B + 1) ^ (n - 1))), lt_min zero_lt_one (div_pos hε pos),
+    fun q r hr hqr ↦ (abs_pow_sub_pow_le ..).trans_lt ?_⟩
+  rw [le_inf_iff, le_div_iff₀ pos, mul_one_add, ← mul_assoc] at hqr
+  obtain h | h := (abs_nonneg (q - r)).eq_or_lt
+  · simpa only [← h, zero_mul] using hε
+  refine (lt_of_le_of_lt ?_ <| lt_add_of_pos_left _ h).trans_le hqr.2
+  refine mul_le_mul_of_nonneg_left (pow_le_pow_left₀ ((abs_nonneg _).trans le_sup_left) ?_ _)
+    (mul_nonneg (abs_nonneg _) n.cast_nonneg)
+  refine max_le ?_ (hr.trans <| le_add_of_nonneg_right zero_le_one)
+  exact add_sub_cancel r q ▸ (abs_add_le ..).trans (add_le_add hr hqr.1)
+
 end
 
 namespace Mathlib.Meta.Positivity
-open Lean Meta Qq Function
+open Lean Meta Qq
 
 section LinearOrderedSemifield
-variable {α : Type*} [LinearOrderedSemifield α] {a b : α}
+variable {α : Type*} [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] {a b : α}
 
 private lemma div_nonneg_of_pos_of_nonneg (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a / b :=
   div_nonneg ha.le hb
@@ -792,9 +694,11 @@ private lemma div_nonneg_of_pos_of_nonneg (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a 
 private lemma div_nonneg_of_nonneg_of_pos (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a / b :=
   div_nonneg ha hb.le
 
+omit [IsStrictOrderedRing α] in
 private lemma div_ne_zero_of_pos_of_ne_zero (ha : 0 < a) (hb : b ≠ 0) : a / b ≠ 0 :=
   div_ne_zero ha.ne' hb
 
+omit [IsStrictOrderedRing α] in
 private lemma div_ne_zero_of_ne_zero_of_pos (ha : a ≠ 0) (hb : 0 < b) : a / b ≠ 0 :=
   div_ne_zero ha hb.ne'
 
@@ -808,9 +712,11 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← withReducible (whnf e)
     | throwError "not /"
   let _e_eq : $e =Q $f $a $b := ⟨⟩
-  let _a ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
+  let _a ← synthInstanceQ q(Semifield $α)
+  let _a ← synthInstanceQ q(LinearOrder $α)
+  let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
   assumeInstancesCommute
-  let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(HDiv.hDiv)
+  let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ q($f) q(HDiv.hDiv)
   let ra ← core zα pα a; let rb ← core zα pα b
   match ra, rb with
   | .positive pa, .positive pb => pure (.positive q(div_pos $pa $pb))
@@ -828,9 +734,11 @@ such that `positivity` successfully recognises `a`. -/
 def evalInv : PositivityExt where eval {u α} zα pα e := do
   let .app (f : Q($α → $α)) (a : Q($α)) ← withReducible (whnf e) | throwError "not ⁻¹"
   let _e_eq : $e =Q $f $a := ⟨⟩
-  let _a ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
+  let _a ← synthInstanceQ q(Semifield $α)
+  let _a ← synthInstanceQ q(LinearOrder $α)
+  let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
   assumeInstancesCommute
-  let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(Inv.inv)
+  let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ q($f) q(Inv.inv)
   let ra ← core zα pα a
   match ra with
   | .positive pa => pure (.positive q(inv_pos_of_pos $pa))
@@ -842,7 +750,11 @@ def evalInv : PositivityExt where eval {u α} zα pα e := do
 @[positivity _ ^ (0 : ℤ), Pow.pow _ (0 : ℤ)]
 def evalPowZeroInt : PositivityExt where eval {u α} _zα _pα e := do
   let .app (.app _ (a : Q($α))) _ ← withReducible (whnf e) | throwError "not ^"
-  _ ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
-  pure (.positive (q(zpow_zero_pos $a) : Expr))
+  let _a ← synthInstanceQ q(Semifield $α)
+  let _a ← synthInstanceQ q(LinearOrder $α)
+  let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
+  assumeInstancesCommute
+  let ⟨_a⟩ ← Qq.assertDefEqQ q($e) q($a ^ (0 : ℤ))
+  pure (.positive q(zpow_zero_pos $a))
 
 end Mathlib.Meta.Positivity

@@ -5,6 +5,7 @@ Authors: Kim Morrison
 -/
 import Mathlib.Analysis.SpecialFunctions.Bernstein
 import Mathlib.Topology.Algebra.Algebra
+import Mathlib.Topology.ContinuousMap.Compact
 
 /-!
 # The Weierstrass approximation theorem for continuous functions on `[a,b]`
@@ -28,18 +29,15 @@ open scoped unitInterval
 This is just a matter of unravelling definitions and using the Bernstein approximations.
 -/
 theorem polynomialFunctions_closure_eq_top' : (polynomialFunctions I).topologicalClosure = ⊤ := by
-  rw [eq_top_iff]
+  apply top_unique
   rintro f -
-  refine Filter.Frequently.mem_closure ?_
-  refine Filter.Tendsto.frequently (bernsteinApproximation_uniform f) ?_
-  apply Frequently.of_forall
-  intro n
-  simp only [SetLike.mem_coe]
+  refine mem_closure_of_tendsto (bernsteinApproximation_uniform f) <| .of_forall fun n ↦ ?_
   apply Subalgebra.sum_mem
-  rintro n -
-  apply Subalgebra.smul_mem
-  dsimp [bernstein, polynomialFunctions]
-  simp
+  rintro i -
+  rw [← SetLike.mem_coe, polynomialFunctions_coe]
+  use bernsteinPolynomial ℝ n i * .C (f (bernstein.z i))
+  ext
+  simp [bernstein]
 
 /-- The **Weierstrass Approximation Theorem**:
 polynomials functions on `[a, b] ⊆ ℝ` are dense in `C([a,b],ℝ)`
@@ -50,15 +48,15 @@ so we may as well get this done first.)
 -/
 theorem polynomialFunctions_closure_eq_top (a b : ℝ) :
     (polynomialFunctions (Set.Icc a b)).topologicalClosure = ⊤ := by
-  cases' lt_or_le a b with h h
+  rcases lt_or_ge a b with h | h
   -- (Otherwise it's easy; we'll deal with that later.)
   · -- We can pullback continuous functions on `[a,b]` to continuous functions on `[0,1]`,
     -- by precomposing with an affine map.
     let W : C(Set.Icc a b, ℝ) →ₐ[ℝ] C(I, ℝ) :=
-      compRightAlgHom ℝ ℝ (iccHomeoI a b h).symm.toContinuousMap
+      compRightAlgHom ℝ ℝ (iccHomeoI a b h).symm
     -- This operation is itself a homeomorphism
     -- (with respect to the norm topologies on continuous functions).
-    let W' : C(Set.Icc a b, ℝ) ≃ₜ C(I, ℝ) := compRightHomeomorph ℝ (iccHomeoI a b h).symm
+    let W' : C(Set.Icc a b, ℝ) ≃ₜ C(I, ℝ) := (iccHomeoI a b h).arrowCongr (.refl _)
     have w : (W : C(Set.Icc a b, ℝ) → C(I, ℝ)) = W' := rfl
     -- Thus we take the statement of the Weierstrass approximation theorem for `[0,1]`,
     have p := polynomialFunctions_closure_eq_top'

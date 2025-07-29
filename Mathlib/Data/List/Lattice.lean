@@ -29,7 +29,7 @@ open Nat
 
 namespace List
 
-variable {α : Type*} {l l₁ l₂ : List α} {p : α → Prop} {a : α}
+variable {α : Type*} {l₁ l₂ : List α} {p : α → Prop} {a : α}
 
 /-! ### `Disjoint` -/
 
@@ -55,7 +55,7 @@ theorem mem_union_right (l₁ : List α) (h : a ∈ l₂) : a ∈ l₁ ∪ l₂ 
   mem_union_iff.2 (Or.inr h)
 
 theorem sublist_suffix_of_union : ∀ l₁ l₂ : List α, ∃ t, t <+ l₁ ∧ t ++ l₂ = l₁ ∪ l₂
-  | [], l₂ => ⟨[], by rfl, rfl⟩
+  | [], _ => ⟨[], by rfl, rfl⟩
   | a :: l₁, l₂ =>
     let ⟨t, s, e⟩ := sublist_suffix_of_union l₁ l₂
     if h : a ∈ l₁ ∪ l₂ then
@@ -85,7 +85,7 @@ theorem Subset.union_eq_right {xs ys : List α} (h : xs ⊆ ys) : xs ∪ ys = ys
   induction xs with
   | nil => simp
   | cons x xs ih =>
-    rw [cons_union, insert_of_mem <| mem_union_right _ <| h <| mem_cons_self _ _,
+    rw [cons_union, insert_of_mem <| mem_union_right _ <| h mem_cons_self,
       ih <| subset_of_cons_subset h]
 
 end Union
@@ -104,8 +104,10 @@ theorem inter_cons_of_mem (l₁ : List α) (h : a ∈ l₂) : (a :: l₁) ∩ l�
   simp [Inter.inter, List.inter, h]
 
 @[simp]
-theorem inter_cons_of_not_mem (l₁ : List α) (h : a ∉ l₂) : (a :: l₁) ∩ l₂ = l₁ ∩ l₂ := by
+theorem inter_cons_of_notMem (l₁ : List α) (h : a ∉ l₂) : (a :: l₁) ∩ l₂ = l₁ ∩ l₂ := by
   simp [Inter.inter, List.inter, h]
+
+@[deprecated (since := "2025-05-23")] alias inter_cons_of_not_mem := inter_cons_of_notMem
 
 @[simp]
 theorem inter_nil' (l : List α) : l ∩ [] = [] := by
@@ -183,7 +185,7 @@ theorem mem_bagInter {a : α} : ∀ {l₁ l₂ : List α}, a ∈ l₁.bagInter l
     by_cases h : b ∈ l₂
     · rw [cons_bagInter_of_pos _ h, mem_cons, mem_cons, mem_bagInter]
       by_cases ba : a = b
-      · simp only [ba, h, eq_self_iff_true, true_or, true_and]
+      · simp only [ba, h, true_or, true_and]
       · simp only [mem_erase_of_ne ba, ba, false_or]
     · rw [cons_bagInter_of_neg _ h, mem_bagInter, mem_cons, or_and_right]
       symm
@@ -210,7 +212,7 @@ theorem count_bagInter {a : α} :
       by_cases ab : a = b
       · rw [← ab] at hb
         rw [count_eq_zero.2 hb, Nat.min_zero, Nat.min_zero]
-      · rw [count_cons_of_ne ab]
+      · rw [count_cons_of_ne (Ne.symm ab)]
 
 theorem bagInter_sublist_left : ∀ l₁ l₂ : List α, l₁.bagInter l₂ <+ l₁
   | [], l₂ => by simp

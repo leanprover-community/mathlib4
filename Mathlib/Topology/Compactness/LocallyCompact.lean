@@ -7,10 +7,7 @@ import Mathlib.Topology.Compactness.Compact
 /-!
 # Locally compact spaces
 
-We define the following classes of topological spaces:
-* `WeaklyLocallyCompactSpace`: every point `x` has a compact neighborhood.
-* `LocallyCompactSpace`: for every point `x`, every open neighborhood of `x` contains a compact
-  neighborhood of `x`. The definition is formulated in terms of the neighborhood filter.
+This file contains basic results about locally compact spaces.
 -/
 
 open Set Filter Topology TopologicalSpace
@@ -35,15 +32,22 @@ instance {ι : Type*} [Finite ι] {X : ι → Type*} [(i : ι) → TopologicalSp
 instance (priority := 100) [CompactSpace X] : WeaklyLocallyCompactSpace X where
   exists_compact_mem_nhds _ := ⟨univ, isCompact_univ, univ_mem⟩
 
-protected theorem ClosedEmbedding.weaklyLocallyCompactSpace [WeaklyLocallyCompactSpace Y]
-    {f : X → Y} (hf : ClosedEmbedding f) : WeaklyLocallyCompactSpace X where
+protected theorem Topology.IsClosedEmbedding.weaklyLocallyCompactSpace [WeaklyLocallyCompactSpace Y]
+    {f : X → Y} (hf : IsClosedEmbedding f) : WeaklyLocallyCompactSpace X where
   exists_compact_mem_nhds x :=
     let ⟨K, hK, hKx⟩ := exists_compact_mem_nhds (f x)
     ⟨f ⁻¹' K, hf.isCompact_preimage hK, hf.continuous.continuousAt hKx⟩
 
 protected theorem IsClosed.weaklyLocallyCompactSpace [WeaklyLocallyCompactSpace X]
     {s : Set X} (hs : IsClosed s) : WeaklyLocallyCompactSpace s :=
-  (closedEmbedding_subtype_val hs).weaklyLocallyCompactSpace
+  hs.isClosedEmbedding_subtypeVal.weaklyLocallyCompactSpace
+
+theorem IsOpenQuotientMap.weaklyLocallyCompactSpace [WeaklyLocallyCompactSpace X]
+    {f : X → Y} (hf : IsOpenQuotientMap f) : WeaklyLocallyCompactSpace Y where
+  exists_compact_mem_nhds := by
+    refine hf.surjective.forall.2 fun x ↦ ?_
+    rcases exists_compact_mem_nhds x with ⟨K, hKc, hKx⟩
+    exact ⟨f '' K, hKc.image hf.continuous, hf.isOpenMap.image_mem_nhds hKx⟩
 
 /-- In a weakly locally compact space,
 every compact set is contained in the interior of a compact set. -/
@@ -80,7 +84,7 @@ instance Prod.locallyCompactSpace (X : Type*) (Y : Type*) [TopologicalSpace X]
     [TopologicalSpace Y] [LocallyCompactSpace X] [LocallyCompactSpace Y] :
     LocallyCompactSpace (X × Y) :=
   have := fun x : X × Y => (compact_basis_nhds x.1).prod_nhds' (compact_basis_nhds x.2)
- .of_hasBasis this fun _ _ ⟨⟨_, h₁⟩, _, h₂⟩ => h₁.prod h₂
+  .of_hasBasis this fun _ _ ⟨⟨_, h₁⟩, _, h₂⟩ => h₁.prod h₂
 
 section Pi
 
@@ -166,10 +170,17 @@ theorem exists_compact_between [LocallyCompactSpace X] {K U : Set X} (hK : IsCom
   let ⟨L, hKL, hL, hLU⟩ := exists_mem_nhdsSet_isCompact_mapsTo continuous_id hK hU h_KU
   ⟨L, hL, subset_interior_iff_mem_nhdsSet.2 hKL, hLU⟩
 
+theorem IsOpenQuotientMap.locallyCompactSpace [LocallyCompactSpace X] {f : X → Y}
+    (hf : IsOpenQuotientMap f) : LocallyCompactSpace Y where
+  local_compact_nhds := by
+    refine hf.surjective.forall.2 fun x U hU ↦ ?_
+    rcases local_compact_nhds (hf.continuous.continuousAt hU) with ⟨K, hKx, hKU, hKc⟩
+    exact ⟨f '' K, hf.isOpenMap.image_mem_nhds hKx, image_subset_iff.2 hKU, hKc.image hf.continuous⟩
+
 /-- If `f` is a topology inducing map with a locally compact codomain and a locally closed range,
 then the domain of `f` is a locally compact space. -/
-theorem Inducing.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y} (hf : Inducing f)
-    (h : IsLocallyClosed (range f)) : LocallyCompactSpace X := by
+theorem Topology.IsInducing.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
+    (hf : IsInducing f) (h : IsLocallyClosed (range f)) : LocallyCompactSpace X := by
   rcases h with ⟨U, Z, hU, hZ, hUZ⟩
   have (x : X) : (𝓝 x).HasBasis (fun s ↦ (s ∈ 𝓝 (f x) ∧ IsCompact s) ∧ s ⊆ U)
       (fun s ↦ f ⁻¹' (s ∩ Z)) := by
@@ -181,17 +192,20 @@ theorem Inducing.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y} (hf :
   rw [hf.isCompact_preimage_iff]
   exacts [hs.inter_right hZ, hUZ ▸ by gcongr]
 
-protected theorem ClosedEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
-    (hf : ClosedEmbedding f) : LocallyCompactSpace X :=
-  hf.toInducing.locallyCompactSpace hf.isClosed_range.isLocallyClosed
+@[deprecated (since := "2024-10-28")]
+alias Inducing.locallyCompactSpace := IsInducing.locallyCompactSpace
 
-protected theorem OpenEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
-    (hf : OpenEmbedding f) : LocallyCompactSpace X :=
-  hf.toInducing.locallyCompactSpace hf.isOpen_range.isLocallyClosed
+protected theorem Topology.IsClosedEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
+    (hf : IsClosedEmbedding f) : LocallyCompactSpace X :=
+  hf.isInducing.locallyCompactSpace hf.isClosed_range.isLocallyClosed
+
+protected theorem Topology.IsOpenEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
+    (hf : IsOpenEmbedding f) : LocallyCompactSpace X :=
+  hf.isInducing.locallyCompactSpace hf.isOpen_range.isLocallyClosed
 
 protected theorem IsLocallyClosed.locallyCompactSpace [LocallyCompactSpace X] {s : Set X}
     (hs : IsLocallyClosed s) : LocallyCompactSpace s :=
-  embedding_subtype_val.locallyCompactSpace <| by rwa [Subtype.range_val]
+  IsEmbedding.subtypeVal.locallyCompactSpace <| by rwa [Subtype.range_val]
 
 protected theorem IsClosed.locallyCompactSpace [LocallyCompactSpace X] {s : Set X}
     (hs : IsClosed s) : LocallyCompactSpace s :=

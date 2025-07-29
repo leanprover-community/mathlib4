@@ -44,7 +44,7 @@ TODO: prove similar theorems assuming that the functions tend to zero at infinit
 integrable derivatives.
 -/
 
-open MeasureTheory Measure Module
+open MeasureTheory Measure Module Topology
 
 variable {E F G W : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F]
   [NormedSpace ℝ F] [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedAddCommGroup W]
@@ -108,7 +108,7 @@ theorem integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable
     ∫ x, B (f x) (g' x) ∂μ = - ∫ x, B (f' x) (g x) ∂μ := by
   by_cases hW : CompleteSpace W; swap
   · simp [integral, hW]
-  rcases eq_or_ne v 0 with rfl|hv
+  rcases eq_or_ne v 0 with rfl | hv
   · have Hf' x : f' x = 0 := by
       simpa [(hasLineDerivAt_zero (f := f) (x := x)).lineDeriv] using (hf x).lineDeriv.symm
     have Hg' x : g' x = 0 := by
@@ -129,14 +129,14 @@ theorem integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable
   suffices H : ∫ (x : E' × ℝ), (B (f (L.symm x))) (g' (L.symm x)) ∂ν =
       -∫ (x : E' × ℝ), (B (f' (L.symm x))) (g (L.symm x)) ∂ν by
     have : μ = Measure.map L.symm ν := by
-      simp [Measure.map_map L.symm.continuous.measurable L.continuous.measurable]
-    have hL : ClosedEmbedding L.symm := L.symm.toHomeomorph.closedEmbedding
+      simp [ν, Measure.map_map L.symm.continuous.measurable L.continuous.measurable]
+    have hL : IsClosedEmbedding L.symm := L.symm.toHomeomorph.isClosedEmbedding
     simpa [this, hL.integral_map] using H
   have L_emb : MeasurableEmbedding L := L.toHomeomorph.measurableEmbedding
   apply integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable_aux2
-  · simpa [L_emb.integrable_map_iff, Function.comp_def] using hf'g
-  · simpa [L_emb.integrable_map_iff, Function.comp_def] using hfg'
-  · simpa [L_emb.integrable_map_iff, Function.comp_def] using hfg
+  · simpa [ν, L_emb.integrable_map_iff, Function.comp_def] using hf'g
+  · simpa [ν, L_emb.integrable_map_iff, Function.comp_def] using hfg'
+  · simpa [ν, L_emb.integrable_map_iff, Function.comp_def] using hfg
   · intro x
     have : f = (f ∘ L.symm) ∘ (L : E →ₗ[ℝ] (E' × ℝ)) := by ext y; simp
     specialize hf (L.symm x)

@@ -3,6 +3,7 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
+import Lean.Meta.Tactic.Apply
 import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
 
 /-!
@@ -19,8 +20,8 @@ in the following files:
 See these files for a mathematical explanation of the proof of the coherence theorem.
 
 The actual tactics that users will use are given in
-- `Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence`
-- `Mathlib.Tactic.CategoryTheory.Bicategory.PureCoherence`
+- `Mathlib/Tactic/CategoryTheory/Monoidal/PureCoherence.lean`
+- `Mathlib/Tactic/CategoryTheory/Bicategory/PureCoherence.lean`
 
 -/
 
@@ -43,7 +44,7 @@ open Mor₂Iso MonadMor₂Iso
 variable {ρ : Type} [Context ρ] [MonadMor₁ (CoherenceM ρ)] [MonadMor₂Iso (CoherenceM ρ)]
 
 /-- Meta version of `CategoryTheory.FreeBicategory.normalizeIso`. -/
-def normalize  (p : NormalizedHom) (f : Mor₁) :
+def normalize (p : NormalizedHom) (f : Mor₁) :
     CoherenceM ρ Normalize.Result := do
   match f with
   | .id _ _ =>

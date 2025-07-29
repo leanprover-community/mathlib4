@@ -12,18 +12,18 @@ import Mathlib.Data.Bracket
 # Semirings and rings
 
 This file gives lemmas about semirings, rings and domains.
-This is analogous to `Mathlib.Algebra.Group.Basic`,
+This is analogous to `Mathlib/Algebra/Group/Basic.lean`,
 the difference being that the former is about `+` and `*` separately, while
 the present file is about their interaction.
 
-For the definitions of semirings and rings see `Mathlib.Algebra.Ring.Defs`.
+For the definitions of semirings and rings see `Mathlib/Algebra/Ring/Defs.lean`.
 
 -/
 
 
-universe u v w x
+universe u
 
-variable {α : Type u} {β : Type v} {γ : Type w} {R : Type x}
+variable {R : Type u}
 
 open Function
 
@@ -77,13 +77,9 @@ section
 
 variable [MulOneClass R] [HasDistribNeg R]
 
--- Porting note (#10618): no longer needs to be `@[simp]` since `simp` can prove it.
--- @[simp]
 theorem neg_one_right (a : R) : Commute a (-1) :=
   SemiconjBy.neg_one_right a
 
--- Porting note (#10618): no longer needs to be `@[simp]` since `simp` can prove it.
--- @[simp]
 theorem neg_one_left (a : R) : Commute (-1) a :=
   SemiconjBy.neg_one_left a
 
@@ -137,7 +133,6 @@ lemma neg_pow' (a : R) (n : ℕ) : (-a) ^ n = a ^ n * (-1) ^ n :=
 
 lemma neg_sq (a : R) : (-a) ^ 2 = a ^ 2 := by simp [sq]
 
--- Porting note: removed the simp attribute to please the simpNF linter
 lemma neg_one_sq : (-1 : R) ^ 2 = 1 := by simp [neg_sq, one_pow]
 
 alias neg_pow_two := neg_sq
@@ -168,13 +163,14 @@ lemma sq_ne_one_iff : a ^ 2 ≠ 1 ↔ a ≠ 1 ∧ a ≠ -1 := sq_eq_one_iff.not.
 end Ring
 
 /-- Representation of a difference of two squares in a commutative ring as a product. -/
-theorem mul_self_sub_mul_self [CommRing R] (a b : R) : a * a - b * b = (a + b) * (a - b) :=
+theorem mul_self_sub_mul_self [NonUnitalNonAssocCommRing R] (a b : R) :
+    a * a - b * b = (a + b) * (a - b) :=
   (Commute.all a b).mul_self_sub_mul_self_eq
 
 theorem mul_self_sub_one [NonAssocRing R] (a : R) : a * a - 1 = (a + 1) * (a - 1) := by
   rw [← (Commute.one_right a).mul_self_sub_mul_self_eq, mul_one]
 
-theorem mul_self_eq_mul_self_iff [CommRing R] [NoZeroDivisors R] {a b : R} :
+theorem mul_self_eq_mul_self_iff [NonUnitalNonAssocCommRing R] [NoZeroDivisors R] {a b : R} :
     a * a = b * b ↔ a = b ∨ a = -b :=
   (Commute.all a b).mul_self_eq_mul_self_iff
 
@@ -196,6 +192,9 @@ alias sub_pow_two := sub_sq
 
 lemma sub_sq' (a b : R) : (a - b) ^ 2 = a ^ 2 + b ^ 2 - 2 * a * b := by
   rw [sub_eq_add_neg, add_sq', neg_sq, mul_neg, ← sub_eq_add_neg]
+
+lemma sub_sq_comm (a b : R) : (a - b) ^ 2 = (b - a) ^ 2 := by
+  rw [sub_sq', mul_right_comm, add_comm, sub_sq']
 
 variable [NoZeroDivisors R] {a b : R}
 

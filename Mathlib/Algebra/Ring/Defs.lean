@@ -8,6 +8,7 @@ import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Tactic.Spread
 import Mathlib.Util.AssertExists
+import Mathlib.Tactic.StacksAttribute
 
 /-!
 # Semirings and rings
@@ -35,19 +36,18 @@ the present file is about their interaction.
 
 
 /-!
-Previously an import dependency on `Mathlib.Algebra.Group.Basic` had crept in.
+Previously an import dependency on `Mathlib/Algebra/Group/Basic.lean` had crept in.
 In general, the `.Defs` files in the basic algebraic hierarchy should only depend on earlier `.Defs`
 files, without importing `.Basic` theory development.
 
 These `assert_not_exists` statements guard against this returning.
 -/
-assert_not_exists DivisionMonoid.toDivInvOneMonoid
-assert_not_exists mul_rotate
+assert_not_exists DivisionMonoid.toDivInvOneMonoid mul_rotate
 
 
-universe u v w x
+universe u v
 
-variable {α : Type u} {β : Type v} {γ : Type w} {R : Type x}
+variable {α : Type u} {R : Type v}
 
 open Function
 
@@ -106,10 +106,10 @@ as this is a path which is followed all the time in linear algebra where the def
 `σ : R →+* S` depends on the `NonAssocSemiring` structure of `R` and `S` while the module
 definition depends on the `Semiring` structure.
 
-It is not currently possible to adjust priorities by hand (see lean4#2115). Instead, the last
+It is not currently possible to adjust priorities by hand (see https://github.com/leanprover/lean4/issues/2115). Instead, the last
 declared instance is used, so we make sure that `Semiring` is declared after `NonAssocRing`, so
 that `Semiring -> NonAssocSemiring` is tried before `NonAssocRing -> NonAssocSemiring`.
-TODO: clean this once lean4#2115 is fixed
+TODO: clean this once https://github.com/leanprover/lean4/issues/2115 is fixed
 -/
 
 /-- A not-necessarily-unital, not-necessarily-associative semiring. See `CommutatorRing` and the
@@ -176,35 +176,12 @@ theorem two_mul (n : α) : 2 * n = n + n :=
 theorem mul_two (n : α) : n * 2 = n + n :=
   (congrArg₂ _ rfl one_add_one_eq_two.symm).trans <| (left_distrib n 1 1).trans (by rw [mul_one])
 
+@[simp] lemma nsmul_eq_mul (n : ℕ) (a : α) : n • a = n * a := by
+  induction n with
+  | zero => rw [zero_nsmul, Nat.cast_zero, zero_mul]
+  | succ n ih => rw [succ_nsmul, ih, Nat.cast_succ, add_mul, one_mul]
+
 end NonAssocSemiring
-
-@[to_additive]
-theorem mul_ite {α} [Mul α] (P : Prop) [Decidable P] (a b c : α) :
-    (a * if P then b else c) = if P then a * b else a * c := by split_ifs <;> rfl
-
-@[to_additive]
-theorem ite_mul {α} [Mul α] (P : Prop) [Decidable P] (a b c : α) :
-    (if P then a else b) * c = if P then a * c else b * c := by split_ifs <;> rfl
-
--- We make `mul_ite` and `ite_mul` simp lemmas,
--- but not `add_ite` or `ite_add`.
--- The problem we're trying to avoid is dealing with
--- summations of the form `∑ x ∈ s, (f x + ite P 1 0)`,
--- in which `add_ite` followed by `sum_ite` would needlessly slice up
--- the `f x` terms according to whether `P` holds at `x`.
--- There doesn't appear to be a corresponding difficulty so far with
--- `mul_ite` and `ite_mul`.
-attribute [simp] mul_ite ite_mul
-
-theorem ite_sub_ite {α} [Sub α] (P : Prop) [Decidable P] (a b c d : α) :
-    ((if P then a else b) - if P then c else d) = if P then a - c else b - d := by
-  split
-  repeat rfl
-
-theorem ite_add_ite {α} [Add α] (P : Prop) [Decidable P] (a b c d : α) :
-    ((if P then a else b) + if P then c else d) = if P then a + c else b + d := by
-  split
-  repeat rfl
 
 section MulZeroClass
 variable [MulZeroClass α] (P Q : Prop) [Decidable P] [Decidable Q] (a b : α)
@@ -218,11 +195,9 @@ lemma ite_zero_mul_ite_zero : ite P a 0 * ite Q b 0 = ite (P ∧ Q) (a * b) 0 :=
 
 end MulZeroClass
 
--- Porting note: no @[simp] because simp proves it
 theorem mul_boole {α} [MulZeroOneClass α] (P : Prop) [Decidable P] (a : α) :
     (a * if P then 1 else 0) = if P then a else 0 := by simp
 
--- Porting note: no @[simp] because simp proves it
 theorem boole_mul {α} [MulZeroOneClass α] (P : Prop) [Decidable P] (a : α) :
     (if P then 1 else 0) * a = if P then a else 0 := by simp
 
@@ -383,13 +358,6 @@ instance (priority := 100) Ring.toNonUnitalRing : NonUnitalRing α :=
 instance (priority := 100) Ring.toNonAssocRing : NonAssocRing α :=
   { ‹Ring α› with }
 
-/-- The instance from `Ring` to `Semiring` happens often in linear algebra, for which all the basic
-definitions are given in terms of semirings, but many applications use rings or fields. We increase
-a little bit its priority above 100 to try it quickly, but remaining below the default 1000 so that
-more specific instances are tried first. -/
-instance (priority := 200) : Semiring α :=
-  { ‹Ring α› with }
-
 end Ring
 
 /-- A non-unital non-associative commutative ring is a `NonUnitalNonAssocRing` with commutative
@@ -427,4 +395,5 @@ is cancellative on both sides. In other words, a nontrivial semiring `R` satisfy
 
 This is implemented as a mixin for `Semiring α`.
 To obtain an integral domain use `[CommRing α] [IsDomain α]`. -/
-class IsDomain (α : Type u) [Semiring α] extends IsCancelMulZero α, Nontrivial α : Prop
+@[stacks 09FE]
+class IsDomain (α : Type u) [Semiring α] : Prop extends IsCancelMulZero α, Nontrivial α

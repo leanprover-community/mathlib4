@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Reid Barton,
 Anatole Dedecker
 -/
-import Mathlib.Topology.Homeomorph
+import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.Topology.UniformSpace.UniformEmbedding
 import Mathlib.Topology.UniformSpace.Pi
 
@@ -30,7 +30,6 @@ variable {α : Type u} {β : Type*} {γ : Type*} {δ : Type*}
 
 -- not all spaces are homeomorphic to each other
 /-- Uniform isomorphism between `α` and `β` -/
---@[nolint has_nonempty_instance] -- Porting note(#5171): linter not yet ported
 structure UniformEquiv (α : Type*) (β : Type*) [UniformSpace α] [UniformSpace β] extends
   α ≃ β where
   /-- Uniform continuity of the function -/
@@ -89,7 +88,7 @@ theorem ext {h h' : α ≃ᵤ β} (H : ∀ x, h x = h' x) : h = h' :=
   toEquiv_injective <| Equiv.ext H
 
 /-- Identity map as a uniform isomorphism. -/
-@[simps! (config := .asFn) apply]
+@[simps! -fullyApplied apply]
 protected def refl (α : Type*) [UniformSpace α] : α ≃ᵤ α where
   uniformContinuous_toFun := uniformContinuous_id
   uniformContinuous_invFun := uniformContinuous_id
@@ -130,7 +129,6 @@ protected theorem continuous_symm (h : α ≃ᵤ β) : Continuous h.symm :=
   h.uniformContinuous_symm.continuous
 
 /-- A uniform isomorphism as a homeomorphism. -/
--- @[simps] -- Porting note: removed, `simps?` produced no `simp` lemmas
 protected def toHomeomorph (e : α ≃ᵤ β) : α ≃ₜ β :=
   { e.toEquiv with
     continuous_toFun := e.continuous
@@ -178,9 +176,7 @@ theorem symm_comp_self (h : α ≃ᵤ β) : (h.symm : β → α) ∘ h = id :=
 theorem self_comp_symm (h : α ≃ᵤ β) : (h : α → β) ∘ h.symm = id :=
   funext h.apply_symm_apply
 
--- @[simp] -- Porting note (#10618): `simp` can prove this `simp only [Equiv.range_eq_univ]`
-theorem range_coe (h : α ≃ᵤ β) : range h = univ :=
-  h.surjective.range_eq
+theorem range_coe (h : α ≃ᵤ β) : range h = univ := by simp
 
 theorem image_symm (h : α ≃ᵤ β) : image h.symm = preimage h :=
   funext h.symm.toEquiv.image_eq_preimage
@@ -188,24 +184,22 @@ theorem image_symm (h : α ≃ᵤ β) : image h.symm = preimage h :=
 theorem preimage_symm (h : α ≃ᵤ β) : preimage h.symm = image h :=
   (funext h.toEquiv.image_eq_preimage).symm
 
--- @[simp] -- Porting note (#10618): `simp` can prove this `simp only [Equiv.image_preimage]`
+@[simp]
 theorem image_preimage (h : α ≃ᵤ β) (s : Set β) : h '' (h ⁻¹' s) = s :=
   h.toEquiv.image_preimage s
 
---@[simp] -- Porting note (#10618): `simp` can prove this `simp only [Equiv.preimage_image]`
+@[simp]
 theorem preimage_image (h : α ≃ᵤ β) (s : Set α) : h ⁻¹' (h '' s) = s :=
   h.toEquiv.preimage_image s
 
-protected theorem uniformInducing (h : α ≃ᵤ β) : UniformInducing h :=
-  uniformInducing_of_compose h.uniformContinuous h.symm.uniformContinuous <| by
-    simp only [symm_comp_self, uniformInducing_id]
+theorem isUniformInducing (h : α ≃ᵤ β) : IsUniformInducing h :=
+  IsUniformInducing.of_comp h.uniformContinuous h.symm.uniformContinuous <| by
+    simp only [symm_comp_self, IsUniformInducing.id]
 
 theorem comap_eq (h : α ≃ᵤ β) : UniformSpace.comap h ‹_› = ‹_› :=
-  h.uniformInducing.comap_uniformSpace
+  h.isUniformInducing.comap_uniformSpace
 
-theorem isUniformEmbedding (h : α ≃ᵤ β) : IsUniformEmbedding h := ⟨h.uniformInducing, h.injective⟩
-
-@[deprecated (since := "2024-10-01")] alias uniformEmbedding := isUniformEmbedding
+lemma isUniformEmbedding (h : α ≃ᵤ β) : IsUniformEmbedding h := ⟨h.isUniformInducing, h.injective⟩
 
 theorem completeSpace_iff (h : α ≃ᵤ β) : CompleteSpace α ↔ CompleteSpace β :=
   completeSpace_congr h.isUniformEmbedding
@@ -213,14 +207,12 @@ theorem completeSpace_iff (h : α ≃ᵤ β) : CompleteSpace α ↔ CompleteSpac
 /-- Uniform equiv given a uniform embedding. -/
 noncomputable def ofIsUniformEmbedding (f : α → β) (hf : IsUniformEmbedding f) :
     α ≃ᵤ Set.range f where
-  uniformContinuous_toFun := hf.toUniformInducing.uniformContinuous.subtype_mk _
+  uniformContinuous_toFun := hf.isUniformInducing.uniformContinuous.subtype_mk _
   uniformContinuous_invFun := by
-    rw [hf.toUniformInducing.uniformContinuous_iff, Equiv.invFun_as_coe,
+    rw [hf.isUniformInducing.uniformContinuous_iff, Equiv.invFun_as_coe,
       Equiv.self_comp_ofInjective_symm]
     exact uniformContinuous_subtype_val
-  toEquiv := Equiv.ofInjective f hf.inj
-
-@[deprecated (since := "2024-10-03")] alias ofUniformEmbedding := ofIsUniformEmbedding
+  toEquiv := Equiv.ofInjective f hf.injective
 
 /-- If two sets are equal, then they are uniformly equivalent. -/
 def setCongr {s t : Set α} (h : s = t) : s ≃ᵤ t where
@@ -231,10 +223,10 @@ def setCongr {s t : Set α} (h : s = t) : s ≃ᵤ t where
 /-- Product of two uniform isomorphisms. -/
 def prodCongr (h₁ : α ≃ᵤ β) (h₂ : γ ≃ᵤ δ) : α × γ ≃ᵤ β × δ where
   uniformContinuous_toFun :=
-    (h₁.uniformContinuous.comp uniformContinuous_fst).prod_mk
+    (h₁.uniformContinuous.comp uniformContinuous_fst).prodMk
       (h₂.uniformContinuous.comp uniformContinuous_snd)
   uniformContinuous_invFun :=
-    (h₁.symm.uniformContinuous.comp uniformContinuous_fst).prod_mk
+    (h₁.symm.uniformContinuous.comp uniformContinuous_fst).prodMk
       (h₂.symm.uniformContinuous.comp uniformContinuous_snd)
   toEquiv := h₁.toEquiv.prodCongr h₂.toEquiv
 
@@ -253,8 +245,8 @@ variable (α β γ)
 
 /-- `α × β` is uniformly isomorphic to `β × α`. -/
 def prodComm : α × β ≃ᵤ β × α where
-  uniformContinuous_toFun := uniformContinuous_snd.prod_mk uniformContinuous_fst
-  uniformContinuous_invFun := uniformContinuous_snd.prod_mk uniformContinuous_fst
+  uniformContinuous_toFun := uniformContinuous_snd.prodMk uniformContinuous_fst
+  uniformContinuous_invFun := uniformContinuous_snd.prodMk uniformContinuous_fst
   toEquiv := Equiv.prodComm α β
 
 @[simp]
@@ -268,20 +260,19 @@ theorem coe_prodComm : ⇑(prodComm α β) = Prod.swap :=
 /-- `(α × β) × γ` is uniformly isomorphic to `α × (β × γ)`. -/
 def prodAssoc : (α × β) × γ ≃ᵤ α × β × γ where
   uniformContinuous_toFun :=
-    (uniformContinuous_fst.comp uniformContinuous_fst).prod_mk
-      ((uniformContinuous_snd.comp uniformContinuous_fst).prod_mk uniformContinuous_snd)
-  uniformContinuous_invFun := by -- Porting note: the `rw` was not necessary in Lean 3
-    rw [Equiv.invFun, Equiv.prodAssoc]
-    exact (uniformContinuous_fst.prod_mk (uniformContinuous_fst.comp
-    uniformContinuous_snd)).prod_mk (uniformContinuous_snd.comp uniformContinuous_snd)
+    (uniformContinuous_fst.comp uniformContinuous_fst).prodMk
+      ((uniformContinuous_snd.comp uniformContinuous_fst).prodMk uniformContinuous_snd)
+  uniformContinuous_invFun :=
+    (uniformContinuous_fst.prodMk (uniformContinuous_fst.comp
+      uniformContinuous_snd)).prodMk (uniformContinuous_snd.comp uniformContinuous_snd)
   toEquiv := Equiv.prodAssoc α β γ
 
 /-- `α × {*}` is uniformly isomorphic to `α`. -/
-@[simps! (config := .asFn) apply]
+@[simps! -fullyApplied apply]
 def prodPunit : α × PUnit ≃ᵤ α where
   toEquiv := Equiv.prodPUnit α
   uniformContinuous_toFun := uniformContinuous_fst
-  uniformContinuous_invFun := uniformContinuous_id.prod_mk uniformContinuous_const
+  uniformContinuous_invFun := uniformContinuous_id.prodMk uniformContinuous_const
 
 /-- `{*} × α` is uniformly isomorphic to `α`. -/
 def punitProd : PUnit × α ≃ᵤ α :=
@@ -293,7 +284,7 @@ theorem coe_punitProd : ⇑(punitProd α) = Prod.snd :=
 
 /-- `Equiv.piCongrLeft` as a uniform isomorphism: this is the natural isomorphism
 `Π i, β (e i) ≃ᵤ Π j, β j` obtained from a bijection `ι ≃ ι'`. -/
-@[simps! apply toEquiv]
+@[simps toEquiv, simps! -isSimp apply]
 def piCongrLeft {ι ι' : Type*} {β : ι' → Type*} [∀ j, UniformSpace (β j)]
     (e : ι ≃ ι') : (∀ i, β (e i)) ≃ᵤ ∀ j, β j where
   uniformContinuous_toFun := uniformContinuous_pi.mpr <| e.forall_congr_right.mp fun i ↦ by
@@ -301,6 +292,21 @@ def piCongrLeft {ι ι' : Type*} {β : ι' → Type*} [∀ j, UniformSpace (β j
       Pi.uniformContinuous_proj _ i
   uniformContinuous_invFun := Pi.uniformContinuous_precomp' _ e
   toEquiv := Equiv.piCongrLeft _ e
+
+@[simp]
+lemma piCongrLeft_refl {ι : Type*} {X : ι → Type*} [∀ i, UniformSpace (X i)] :
+    piCongrLeft (.refl ι) = .refl (∀ i, X i) :=
+  rfl
+
+@[simp]
+lemma piCongrLeft_symm_apply {ι ι' : Type*} {X : ι' → Type*} [∀ j, UniformSpace (X j)]
+    (e : ι ≃ ι') : ⇑(piCongrLeft (β := X) e).symm = (· <| e ·) :=
+  rfl
+
+@[simp]
+lemma piCongrLeft_apply_apply {ι ι' : Type*} {X : ι' → Type*} [∀ j, UniformSpace (X j)]
+    (e : ι ≃ ι') (x : ∀ i, X (e i)) i : piCongrLeft e x (e i) = x i :=
+  Equiv.piCongrLeft_apply_apply ..
 
 /-- `Equiv.piCongrRight` as a uniform isomorphism: this is the natural isomorphism
 `Π i, β₁ i ≃ᵤ Π j, β₂ i` obtained from uniform isomorphisms `β₁ i ≃ᵤ β₂ i` for each `i`. -/
@@ -317,6 +323,11 @@ theorem piCongrRight_symm {ι : Type*} {β₁ β₂ : ι → Type*} [∀ i, Unif
     (piCongrRight F).symm = piCongrRight fun i => (F i).symm :=
   rfl
 
+@[simp]
+theorem piCongrRight_refl {ι : Type*} {X : ι → Type*} [∀ i, UniformSpace (X i)] :
+    piCongrRight (fun i ↦ .refl (X i)) = .refl (∀ i, X i) :=
+  rfl
+
 /-- `Equiv.piCongr` as a uniform isomorphism: this is the natural isomorphism
 `Π i₁, β₁ i ≃ᵤ Π i₂, β₂ i₂` obtained from a bijection `ι₁ ≃ ι₂` and isomorphisms
 `β₁ i₁ ≃ᵤ β₂ (e i₁)` for each `i₁ : ι₁`. -/
@@ -331,30 +342,29 @@ def ulift : ULift.{v, u} α ≃ᵤ α :=
   { Equiv.ulift with
     uniformContinuous_toFun := uniformContinuous_comap
     uniformContinuous_invFun := by
-      have hf : UniformInducing (@Equiv.ulift.{v, u} α).toFun := ⟨rfl⟩
+      have hf : IsUniformInducing (@Equiv.ulift.{v, u} α).toFun := ⟨rfl⟩
       simp_rw [hf.uniformContinuous_iff]
       exact uniformContinuous_id }
 
 end
 
 /-- If `ι` has a unique element, then `ι → α` is uniformly isomorphic to `α`. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def funUnique (ι α : Type*) [Unique ι] [UniformSpace α] : (ι → α) ≃ᵤ α where
   toEquiv := Equiv.funUnique ι α
   uniformContinuous_toFun := Pi.uniformContinuous_proj _ _
   uniformContinuous_invFun := uniformContinuous_pi.mpr fun _ => uniformContinuous_id
 
 /-- Uniform isomorphism between dependent functions `Π i : Fin 2, α i` and `α 0 × α 1`. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def piFinTwo (α : Fin 2 → Type u) [∀ i, UniformSpace (α i)] : (∀ i, α i) ≃ᵤ α 0 × α 1 where
   toEquiv := piFinTwoEquiv α
-  uniformContinuous_toFun := (Pi.uniformContinuous_proj _ 0).prod_mk (Pi.uniformContinuous_proj _ 1)
+  uniformContinuous_toFun := (Pi.uniformContinuous_proj _ 0).prodMk (Pi.uniformContinuous_proj _ 1)
   uniformContinuous_invFun :=
     uniformContinuous_pi.mpr <| Fin.forall_fin_two.2 ⟨uniformContinuous_fst, uniformContinuous_snd⟩
 
 /-- Uniform isomorphism between `α² = Fin 2 → α` and `α × α`. -/
--- Porting note: made `α` explicit
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def finTwoArrow (α : Type*) [UniformSpace α] : (Fin 2 → α) ≃ᵤ α × α :=
   { piFinTwo fun _ => α with toEquiv := finTwoArrowEquiv α }
 
@@ -369,9 +379,8 @@ def image (e : α ≃ᵤ β) (s : Set α) : s ≃ᵤ e '' s where
 end UniformEquiv
 
 /-- A uniform inducing equiv between uniform spaces is a uniform isomorphism. -/
--- @[simps] -- Porting note: removed, `simps?` produced no `simp` lemmas
-def Equiv.toUniformEquivOfUniformInducing [UniformSpace α] [UniformSpace β] (f : α ≃ β)
-    (hf : UniformInducing f) : α ≃ᵤ β :=
+def Equiv.toUniformEquivOfIsUniformInducing [UniformSpace α] [UniformSpace β] (f : α ≃ β)
+    (hf : IsUniformInducing f) : α ≃ᵤ β :=
   { f with
     uniformContinuous_toFun := hf.uniformContinuous
     uniformContinuous_invFun := hf.uniformContinuous_iff.2 <| by simpa using uniformContinuous_id }

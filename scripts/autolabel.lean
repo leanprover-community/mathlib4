@@ -24,12 +24,12 @@ needs to be updated here if necessary:
 ## lake exe autolabel
 
 `lake exe autolabel` uses `git diff --name-only origin/master...HEAD` to determine which
-files have been modifed and then finds all labels which should be added based on these changes.
+files have been modified and then finds all labels which should be added based on these changes.
 These are printed for testing purposes.
 
 `lake exe autolabel [NUMBER]` will further try to add the applicable labels
 to the PR specified. This requires the **GitHub CLI** `gh` to be installed!
-Example: `lake exe autolabel 10402` for PR #10402.
+Example: `lake exe autolabel 10402` for PR https://github.com/leanprover-community/mathlib4/pull/10402.
 
 For the time being, the script only adds a label if it finds a **single unique label**
 which would apply. If multiple labels are found, nothing happens.
@@ -99,12 +99,19 @@ def mathlibLabels : Array Label := #[
   { label := "t-combinatorics" },
   { label := "t-computability" },
   { label := "t-condensed" },
-  { label := "t-data" },
+  { label := "t-convex-geometry",
+    dirs := #["Mathlib" / "Geometry" / "Convex"] },
+  { label := "t-data"
+    dirs := #[
+      "Mathlib" / "Control",
+      "Mathlib" / "Data",] },
   { label := "t-differential-geometry",
     dirs := #["Mathlib" / "Geometry" / "Manifold"] },
   { label := "t-dynamics" },
   { label := "t-euclidean-geometry",
     dirs := #["Mathlib" / "Geometry" / "Euclidean"] },
+  { label := "t-geometric-group-theory",
+    dirs := #["Mathlib" / "Geometry" / "Group"] },
   { label := "t-linter",
     dirs := #["Mathlib" / "Tactic" / "Linter"] },
   { label := "t-logic",
@@ -118,7 +125,6 @@ def mathlibLabels : Array Label := #[
       "Mathlib" / "InformationTheory"] },
   { label := "t-meta",
     dirs := #[
-      "Mathlib" / "Control",
       "Mathlib" / "Lean",
       "Mathlib" / "Mathport",
       "Mathlib" / "Tactic",
@@ -134,7 +140,9 @@ def mathlibLabels : Array Label := #[
   { label := "CI",
     dirs := #[".github"] },
   { label := "IMO",
-    dirs := #["Archive" / "Imo"] } ]
+    dirs := #["Archive" / "Imo"] },
+  { label := "dependency-bump",
+    dirs := #["lake-manifest.json"] } ]
 
 /-- Exceptions inside `Mathlib/` which are not covered by any label. -/
 def mathlibUnlabelled : Array FilePath := #[
@@ -184,6 +192,9 @@ section Tests
 #guard getMatchingLabels #[
   "Mathlib" / "Tactic"/ "Linter" / "Lint.lean",
   "Mathlib" / "Tactic" / "Abel.lean" ] == #["t-linter", "t-meta"]
+
+-- Test targeting a file instead of a directory
+#guard getMatchingLabels #["lake-manifest.json"] == #["dependency-bump"]
 
 /-- Testing function to ensure the labels defined in `mathlibLabels` cover all
 subfolders of `Mathlib/`. -/
@@ -282,9 +293,11 @@ unsafe def main (args : List String): IO UInt32 := do
     -- return 3
 
   -- get the modified files
+  println "Computing 'git diff --name-only origin/master...HEAD'"
   let gitDiff ← IO.Process.run {
     cmd := "git",
     args := #["diff", "--name-only", "origin/master...HEAD"] }
+  println s!"---\n{gitDiff}\n---"
   let modifiedFiles : Array FilePath := (gitDiff.splitOn "\n").toArray.map (⟨·⟩)
 
   -- find labels covering the modified files
@@ -298,10 +311,20 @@ unsafe def main (args : List String): IO UInt32 := do
   | #[label] =>
     match prNumber? with
     | some n =>
-      let _ ← IO.Process.run {
-        cmd := "gh",
-        args := #["pr", "edit", n, "--add-label", label] }
-      println s!"::notice::added label: {label}"
+      let labelsPresent ← IO.Process.run {
+        cmd := "gh"
+        args := #["pr", "view", n, "--json", "labels", "--jq", ".labels .[] .name"]}
+      let labels := labelsPresent.split (· == '\n')
+      let autoLabels := mathlibLabels.map (·.label)
+      match labels.filter autoLabels.contains with
+      | [] => -- if the PR does not have a label that this script could add, then we add a label
+        let _ ← IO.Process.run {
+          cmd := "gh",
+          args := #["pr", "edit", n, "--add-label", label] }
+        println s!"::notice::added label: {label}"
+      | t_labels_already_present =>
+        println s!"::notice::Did not add label '{label}', since {t_labels_already_present} \
+                  were already present"
     | none =>
       println s!"::warning::no PR-number provided, not adding labels. \
       (call `lake exe autolabel 150602` to add the labels to PR `150602`)"

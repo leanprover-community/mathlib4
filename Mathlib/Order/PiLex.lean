@@ -54,10 +54,10 @@ theorem lex_lt_of_lt_of_preorder [∀ i, Preorder (β i)] {r} (hwf : WellFounded
     (hlt : x < y) : ∃ i, (∀ j, r j i → x j ≤ y j ∧ y j ≤ x j) ∧ x i < y i :=
   let h' := Pi.lt_def.1 hlt
   let ⟨i, hi, hl⟩ := hwf.has_min _ h'.2
-  ⟨i, fun j hj => ⟨h'.1 j, not_not.1 fun h => hl j (lt_of_le_not_le (h'.1 j) h) hj⟩, hi⟩
+  ⟨i, fun j hj => ⟨h'.1 j, not_not.1 fun h => hl j (lt_of_le_not_ge (h'.1 j) h) hj⟩, hi⟩
 
 theorem lex_lt_of_lt [∀ i, PartialOrder (β i)] {r} (hwf : WellFounded r) {x y : ∀ i, β i}
-    (hlt : x < y) : Pi.Lex r (@fun i => (· < ·)) x y := by
+    (hlt : x < y) : Pi.Lex r (@fun _ => (· < ·)) x y := by
   simp_rw [Pi.Lex, le_antisymm_iff]
   exact lex_lt_of_lt_of_preorder hwf hlt
 
@@ -73,7 +73,7 @@ theorem isTrichotomous_lex [∀ i, IsTrichotomous (β i) s] (wf : WellFounded r)
           rw [← not_imp_not]
           exact fun h' => wf.not_lt_min _ _ h'
         have hne : a i ≠ b i := wf.min_mem _ hab
-        cases' trichotomous_of s (a i) (b i) with hi hi
+        rcases trichotomous_of s (a i) (b i) with hi | hi
         exacts [Or.inl ⟨i, hri, hi⟩,
           Or.inr <| Or.inr <| ⟨i, fun j hj => (hri j hj).symm, hi.resolve_left hne⟩] }
 
@@ -94,14 +94,14 @@ instance [LinearOrder ι] [∀ a, PartialOrder (β a)] : PartialOrder (Lex (∀ 
   partialOrderOfSO (· < ·)
 
 /-- `Πₗ i, α i` is a linear order if the original order is well-founded. -/
-noncomputable instance [LinearOrder ι] [IsWellOrder ι (· < ·)] [∀ a, LinearOrder (β a)] :
+noncomputable instance [LinearOrder ι] [WellFoundedLT ι] [∀ a, LinearOrder (β a)] :
     LinearOrder (Lex (∀ i, β i)) :=
   @linearOrderOfSTO (Πₗ i, β i) (· < ·)
     { trichotomous := (isTrichotomous_lex _ _ IsWellFounded.wf).1 } (Classical.decRel _)
 
 section PartialOrder
 
-variable [LinearOrder ι] [IsWellOrder ι (· < ·)] [∀ i, PartialOrder (β i)] {x y : ∀ i, β i} {i : ι}
+variable [LinearOrder ι] [WellFoundedLT ι] [∀ i, PartialOrder (β i)] {x : ∀ i, β i} {i : ι}
   {a : β i}
 
 open Function
@@ -128,9 +128,9 @@ theorem lt_toLex_update_self_iff : toLex x < toLex (update x i a) ↔ x i < a :=
   dsimp at h
   obtain rfl : j = i := by
     by_contra H
-    rw [update_noteq H] at h
+    rw [update_of_ne H] at h
     exact h.false
-  rwa [update_same] at h
+  rwa [update_self] at h
 
 @[simp]
 theorem toLex_update_lt_self_iff : toLex (update x i a) < toLex x ↔ a < x i := by
@@ -139,9 +139,9 @@ theorem toLex_update_lt_self_iff : toLex (update x i a) < toLex x ↔ a < x i :=
   dsimp at h
   obtain rfl : j = i := by
     by_contra H
-    rw [update_noteq H] at h
+    rw [update_of_ne H] at h
     exact h.false
-  rwa [update_same] at h
+  rwa [update_self] at h
 
 @[simp]
 theorem le_toLex_update_self_iff : toLex x ≤ toLex (update x i a) ↔ x i ≤ a := by
@@ -153,17 +153,17 @@ theorem toLex_update_le_self_iff : toLex (update x i a) ≤ toLex x ↔ a ≤ x 
 
 end PartialOrder
 
-instance [LinearOrder ι] [IsWellOrder ι (· < ·)] [∀ a, PartialOrder (β a)] [∀ a, OrderBot (β a)] :
+instance [LinearOrder ι] [WellFoundedLT ι] [∀ a, PartialOrder (β a)] [∀ a, OrderBot (β a)] :
     OrderBot (Lex (∀ a, β a)) where
   bot := toLex ⊥
   bot_le _ := toLex_monotone bot_le
 
-instance [LinearOrder ι] [IsWellOrder ι (· < ·)] [∀ a, PartialOrder (β a)] [∀ a, OrderTop (β a)] :
+instance [LinearOrder ι] [WellFoundedLT ι] [∀ a, PartialOrder (β a)] [∀ a, OrderTop (β a)] :
     OrderTop (Lex (∀ a, β a)) where
   top := toLex ⊤
   le_top _ := toLex_monotone le_top
 
-instance [LinearOrder ι] [IsWellOrder ι (· < ·)] [∀ a, PartialOrder (β a)]
+instance [LinearOrder ι] [WellFoundedLT ι] [∀ a, PartialOrder (β a)]
     [∀ a, BoundedOrder (β a)] : BoundedOrder (Lex (∀ a, β a)) :=
   { }
 
@@ -176,10 +176,10 @@ instance [Preorder ι] [∀ i, LT (β i)] [∀ i, DenselyOrdered (β i)] :
       refine ⟨Function.update a₂ _ a, ⟨i, fun j hj => ?_, ?_⟩, i, fun j hj => ?_, ?_⟩
       · rw [h j hj]
         dsimp only at hj
-        rw [Function.update_noteq hj.ne a]
-      · rwa [Function.update_same i a]
-      · rw [Function.update_noteq hj.ne a]
-      · rwa [Function.update_same i a]⟩
+        rw [Function.update_of_ne hj.ne a]
+      · rwa [Function.update_self i a]
+      · rw [Function.update_of_ne hj.ne a]
+      · rwa [Function.update_self i a]⟩
 
 theorem Lex.noMaxOrder' [Preorder ι] [∀ i, LT (β i)] (i : ι) [NoMaxOrder (β i)] :
     NoMaxOrder (Lex (∀ i, β i)) :=
@@ -187,15 +187,15 @@ theorem Lex.noMaxOrder' [Preorder ι] [∀ i, LT (β i)] (i : ι) [NoMaxOrder (�
     let ⟨b, hb⟩ := exists_gt (a i)
     classical
     exact ⟨Function.update a i b, i, fun j hj =>
-      (Function.update_noteq hj.ne b a).symm, by rwa [Function.update_same i b]⟩⟩
+      (Function.update_of_ne hj.ne b a).symm, by rwa [Function.update_self i b]⟩⟩
 
-instance [LinearOrder ι] [IsWellOrder ι (· < ·)] [Nonempty ι] [∀ i, PartialOrder (β i)]
+instance [LinearOrder ι] [WellFoundedLT ι] [Nonempty ι] [∀ i, PartialOrder (β i)]
     [∀ i, NoMaxOrder (β i)] : NoMaxOrder (Lex (∀ i, β i)) :=
   ⟨fun a =>
     let ⟨_, hb⟩ := exists_gt (ofLex a)
     ⟨_, toLex_strictMono hb⟩⟩
 
-instance [LinearOrder ι] [IsWellOrder ι (· < ·)] [Nonempty ι] [∀ i, PartialOrder (β i)]
+instance [LinearOrder ι] [WellFoundedLT ι] [Nonempty ι] [∀ i, PartialOrder (β i)]
     [∀ i, NoMinOrder (β i)] : NoMinOrder (Lex (∀ i, β i)) :=
   ⟨fun a =>
     let ⟨_, hb⟩ := exists_lt (ofLex a)
@@ -203,9 +203,9 @@ instance [LinearOrder ι] [IsWellOrder ι (· < ·)] [Nonempty ι] [∀ i, Parti
 
 /-- If we swap two strictly decreasing values in a function, then the result is lexicographically
 smaller than the original function. -/
-theorem lex_desc {α} [Preorder ι] [DecidableEq ι] [Preorder α] {f : ι → α} {i j : ι} (h₁ : i ≤ j)
+theorem lex_desc {α} [Preorder ι] [DecidableEq ι] [LT α] {f : ι → α} {i j : ι} (h₁ : i ≤ j)
     (h₂ : f j < f i) : toLex (f ∘ Equiv.swap i j) < toLex f :=
-  ⟨i, fun k hik => congr_arg f (Equiv.swap_apply_of_ne_of_ne hik.ne (hik.trans_le h₁).ne), by
+  ⟨i, fun _ hik => congr_arg f (Equiv.swap_apply_of_ne_of_ne hik.ne (hik.trans_le h₁).ne), by
     simpa only [Pi.toLex_apply, Function.comp_apply, Equiv.swap_apply_left] using h₂⟩
 
 end Pi

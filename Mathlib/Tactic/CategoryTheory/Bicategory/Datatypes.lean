@@ -103,7 +103,7 @@ instance : MonadMor₁ BicategoryM where
 section
 
 universe w v u
-variable {B : Type u} [Bicategory.{w, v} B] {a b c d e : B}
+variable {B : Type u} [Bicategory.{w, v} B] {a b c : B}
 
 theorem structuralIso_inv {f g : a ⟶ b} (η : f ≅ g) :
     η.symm.hom = η.inv := by
@@ -116,12 +116,12 @@ theorem structuralIsoOfExpr_comp {f g h : a ⟶ b}
   simp [ih_η, ih_θ]
 
 theorem structuralIsoOfExpr_whiskerLeft (f : a ⟶ b) {g h : b ⟶ c}
-    (η : g ⟶ h) (η' : g ≅ h) (ih_η : η'.hom = η)  :
+    (η : g ⟶ h) (η' : g ≅ h) (ih_η : η'.hom = η) :
     (whiskerLeftIso f η').hom = f ◁ η := by
   simp [ih_η]
 
 theorem structuralIsoOfExpr_whiskerRight {f g : a ⟶ b} (h : b ⟶ c)
-    (η : f ⟶ g) (η' : f ≅ g) (ih_η : η'.hom = η)  :
+    (η : f ⟶ g) (η' : f ≅ g) (ih_η : η'.hom = η) :
     (whiskerRightIso η' h).hom = η ▷ h := by
   simp [ih_η]
 

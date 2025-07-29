@@ -3,8 +3,8 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Finset.Prod
+import Mathlib.Data.Fintype.EquivFin
 
 /-!
 # fintype instance for the product of two fintypes.
@@ -18,7 +18,7 @@ universe u v
 
 variable {α β γ : Type*}
 
-open Finset Function
+open Finset
 
 namespace Set
 
@@ -55,8 +55,6 @@ theorem Fintype.card_prod (α β : Type*) [Fintype α] [Fintype β] :
 
 section
 
-open scoped Classical
-
 @[simp]
 theorem infinite_prod : Infinite (α × β) ↔ Infinite α ∧ Nonempty β ∨ Nonempty α ∧ Infinite β := by
   refine
@@ -69,16 +67,18 @@ theorem infinite_prod : Infinite (α × β) ↔ Infinite α ∧ Nonempty β ∨ 
 
 instance Pi.infinite_of_left {ι : Sort*} {π : ι → Type*} [∀ i, Nontrivial <| π i] [Infinite ι] :
     Infinite (∀ i : ι, π i) := by
+  classical
   choose m n hm using fun i => exists_pair_ne (π i)
   refine Infinite.of_injective (fun i => update m i (n i)) fun x y h => of_not_not fun hne => ?_
-  simp_rw [update_eq_iff, update_noteq hne] at h
+  simp_rw [update_eq_iff, update_of_ne hne] at h
   exact (hm x h.1.symm).elim
 
 /-- If at least one `π i` is infinite and the rest nonempty, the pi type of all `π` is infinite. -/
 theorem Pi.infinite_of_exists_right {ι : Sort*} {π : ι → Sort*} (i : ι) [Infinite <| π i]
-    [∀ i, Nonempty <| π i] : Infinite (∀ i : ι, π i) :=
+    [∀ i, Nonempty <| π i] : Infinite (∀ i : ι, π i) := by
+  classical
   let ⟨m⟩ := @Pi.instNonempty ι π _
-  Infinite.of_injective _ (update_injective m i)
+  exact Infinite.of_injective _ (update_injective m i)
 
 /-- See `Pi.infinite_of_exists_right` for the case that only one `π i` is infinite. -/
 instance Pi.infinite_of_right {ι : Sort*} {π : ι → Type*} [∀ i, Infinite <| π i] [Nonempty ι] :

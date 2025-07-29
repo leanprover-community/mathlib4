@@ -3,12 +3,13 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.Order.BigOperators.Group.List
-import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Order.WellFoundedSet
 
-/-! # Pointwise instances on `Submonoid`s and `AddSubmonoid`s
+/-!
+# Pointwise instances on `Submonoid`s and `AddSubmonoid`s
 
 This file provides:
 
@@ -18,34 +19,36 @@ This file provides:
 and the actions
 
 * `Submonoid.pointwiseMulAction`
-* `AddSubmonoid.pointwiseMulAction`
+* `AddSubmonoid.pointwiseAddAction`
 
 which matches the action of `Set.mulActionSet`.
 
-These are all available in the `Pointwise` locale.
-
-Additionally, it provides various degrees of monoid structure:
-* `AddSubmonoid.one`
-* `AddSubmonoid.mul`
-* `AddSubmonoid.mulOneClass`
-* `AddSubmonoid.semigroup`
-* `AddSubmonoid.monoid`
-which is available globally to match the monoid structure implied by `Submodule.idemSemiring`.
-
 ## Implementation notes
 
-Most of the lemmas in this file are direct copies of lemmas from `Algebra/Pointwise.lean`.
+Most of the lemmas in this file are direct copies of lemmas from
+`Mathlib/Algebra/Group/Pointwise/Set/Basic.lean` and
+`Mathlib/Algebra/Group/Action/Pointwise/Set/Basic.lean`.
 While the statements of these lemmas are defeq, we repeat them here due to them not being
 syntactically equal. Before adding new lemmas here, consider if they would also apply to the action
 on `Set`s.
-
 -/
 
+assert_not_exists GroupWithZero
 
 open Set Pointwise
 
-variable {α : Type*} {G : Type*} {M : Type*} {R : Type*} {A : Type*}
+variable {α G M R A S : Type*}
 variable [Monoid M] [AddMonoid A]
+
+@[to_additive (attr := simp, norm_cast)]
+lemma coe_mul_coe [SetLike S M] [SubmonoidClass S M] (H : S) : H * H = (H : Set M) := by
+  aesop (add simp mem_mul)
+
+@[to_additive (attr := simp)]
+lemma coe_set_pow [SetLike S M] [SubmonoidClass S M] :
+    ∀ {n} (_ : n ≠ 0) (H : S), (H ^ n : Set M) = H
+  | 1, _, H => by simp
+  | n + 2, _, H => by rw [pow_succ, coe_set_pow n.succ_ne_zero, coe_mul_coe]
 
 /-! Some lemmas about pointwise multiplication and submonoids. Ideally we put these in
   `GroupTheory.Submonoid.Basic`, but currently we cannot because that file is imported by this. -/
@@ -64,16 +67,28 @@ theorem mul_subset_closure (hs : s ⊆ u) (ht : t ⊆ u) : s * t ⊆ Submonoid.c
 
 @[to_additive]
 theorem coe_mul_self_eq (s : Submonoid M) : (s : Set M) * s = s := by
-  ext x
-  refine ⟨?_, fun h => ⟨x, h, 1, s.one_mem, mul_one x⟩⟩
-  rintro ⟨a, ha, b, hb, rfl⟩
-  exact s.mul_mem ha hb
+  simp
 
 @[to_additive]
 theorem closure_mul_le (S T : Set M) : closure (S * T) ≤ closure S ⊔ closure T :=
   sInf_le fun _x ⟨_s, hs, _t, ht, hx⟩ => hx ▸
     (closure S ⊔ closure T).mul_mem (SetLike.le_def.mp le_sup_left <| subset_closure hs)
       (SetLike.le_def.mp le_sup_right <| subset_closure ht)
+
+@[to_additive]
+lemma closure_pow_le : ∀ {n}, n ≠ 0 → closure (s ^ n) ≤ closure s
+  | 1, _ => by simp
+  | n + 2, _ =>
+    calc
+      closure (s ^ (n + 2))
+      _ = closure (s ^ (n + 1) * s) := by rw [pow_succ]
+      _ ≤ closure (s ^ (n + 1)) ⊔ closure s := closure_mul_le ..
+      _ ≤ closure s ⊔ closure s := by gcongr ?_ ⊔ _; exact closure_pow_le n.succ_ne_zero
+      _ = closure s := sup_idem _
+
+@[to_additive]
+lemma closure_pow {n : ℕ} (hs : 1 ∈ s) (hn : n ≠ 0) : closure (s ^ n) = closure s :=
+  (closure_pow_le hn).antisymm <| by gcongr; exact subset_pow hs hn
 
 @[to_additive]
 theorem sup_eq_closure_mul (H K : Submonoid M) : H ⊔ K = closure ((H : Set M) * (K : Set M)) :=
@@ -83,13 +98,19 @@ theorem sup_eq_closure_mul (H K : Submonoid M) : H ⊔ K = closure ((H : Set M) 
     ((closure_mul_le _ _).trans <| by rw [closure_eq, closure_eq])
 
 @[to_additive]
+theorem coe_sup {N : Type*} [CommMonoid N] (H K : Submonoid N) :
+    ↑(H ⊔ K) = (H * K : Set N) := by
+  ext x
+  simp [mem_sup, Set.mem_mul]
+
+@[to_additive]
 theorem pow_smul_mem_closure_smul {N : Type*} [CommMonoid N] [MulAction M N] [IsScalarTower M N N]
     (r : M) (s : Set N) {x : N} (hx : x ∈ closure s) : ∃ n : ℕ, r ^ n • x ∈ closure (r • s) := by
-  refine @closure_induction N _ s (fun x : N => ∃ n : ℕ, r ^ n • x ∈ closure (r • s)) _ hx ?_ ?_ ?_
-  · intro x hx
-    exact ⟨1, subset_closure ⟨_, hx, by rw [pow_one]⟩⟩
-  · exact ⟨0, by simpa using one_mem _⟩
-  · rintro x y ⟨nx, hx⟩ ⟨ny, hy⟩
+  induction hx using closure_induction with
+  | mem x hx => exact ⟨1, subset_closure ⟨_, hx, by rw [pow_one]⟩⟩
+  | one => exact ⟨0, by simp⟩
+  | mul x y _ _ hx hy =>
+    obtain ⟨⟨nx, hx⟩, ⟨ny, hy⟩⟩ := And.intro hx hy
     use ny + nx
     rw [pow_add, mul_smul, ← smul_mul_assoc, mul_comm, ← smul_mul_assoc]
     exact mul_mem hy hx
@@ -97,7 +118,7 @@ theorem pow_smul_mem_closure_smul {N : Type*} [CommMonoid N] [MulAction M N] [Is
 variable [Group G]
 
 /-- The submonoid with every element inverted. -/
-@[to_additive " The additive submonoid with every element negated. "]
+@[to_additive "The additive submonoid with every element negated."]
 protected def inv : Inv (Submonoid G) where
   inv S :=
     { carrier := (S : Set G)⁻¹
@@ -143,6 +164,10 @@ theorem closure_inv (s : Set G) : closure s⁻¹ = (closure s)⁻¹ := by
   · rw [inv_le, closure_le, coe_inv, ← Set.inv_subset]
     exact subset_closure
 
+@[to_additive]
+lemma mem_closure_inv (s : Set G) (x : G) : x ∈ closure s⁻¹ ↔ x⁻¹ ∈ closure s := by
+  rw [closure_inv, mem_inv]
+
 @[to_additive (attr := simp)]
 theorem inv_inf (S T : Submonoid G) : (S ⊓ T)⁻¹ = S⁻¹ ⊓ T⁻¹ :=
   SetLike.coe_injective Set.inter_inv
@@ -184,7 +209,7 @@ protected def pointwiseMulAction : MulAction α (Submonoid M) where
   one_smul S := by
     change S.map _ = S
     simpa only [map_one] using S.map_id
-  mul_smul a₁ a₂ S :=
+  mul_smul _ _ S :=
     (congr_arg (fun f : Monoid.End M => S.map f) (MonoidHom.map_mul _ _ _)).trans
       (S.map_map _ _).symm
 
@@ -239,360 +264,20 @@ theorem mem_inv_pointwise_smul_iff {a : α} {S : Submonoid M} {x : M} : x ∈ a�
 
 @[simp]
 theorem pointwise_smul_le_pointwise_smul_iff {a : α} {S T : Submonoid M} : a • S ≤ a • T ↔ S ≤ T :=
-  set_smul_subset_set_smul_iff
+  smul_set_subset_smul_set_iff
 
 theorem pointwise_smul_subset_iff {a : α} {S T : Submonoid M} : a • S ≤ T ↔ S ≤ a⁻¹ • T :=
-  set_smul_subset_iff
+  smul_set_subset_iff_subset_inv_smul_set
 
 theorem subset_pointwise_smul_iff {a : α} {S T : Submonoid M} : S ≤ a • T ↔ a⁻¹ • S ≤ T :=
-  subset_set_smul_iff
+  subset_smul_set_iff
 
 end Group
-
-section GroupWithZero
-
-variable [GroupWithZero α] [MulDistribMulAction α M]
-
-@[simp]
-theorem smul_mem_pointwise_smul_iff₀ {a : α} (ha : a ≠ 0) (S : Submonoid M) (x : M) :
-    a • x ∈ a • S ↔ x ∈ S :=
-  smul_mem_smul_set_iff₀ ha (S : Set M) x
-
-theorem mem_pointwise_smul_iff_inv_smul_mem₀ {a : α} (ha : a ≠ 0) (S : Submonoid M) (x : M) :
-    x ∈ a • S ↔ a⁻¹ • x ∈ S :=
-  mem_smul_set_iff_inv_smul_mem₀ ha (S : Set M) x
-
-theorem mem_inv_pointwise_smul_iff₀ {a : α} (ha : a ≠ 0) (S : Submonoid M) (x : M) :
-    x ∈ a⁻¹ • S ↔ a • x ∈ S :=
-  mem_inv_smul_set_iff₀ ha (S : Set M) x
-
-@[simp]
-theorem pointwise_smul_le_pointwise_smul_iff₀ {a : α} (ha : a ≠ 0) {S T : Submonoid M} :
-    a • S ≤ a • T ↔ S ≤ T :=
-  set_smul_subset_set_smul_iff₀ ha
-
-theorem pointwise_smul_le_iff₀ {a : α} (ha : a ≠ 0) {S T : Submonoid M} : a • S ≤ T ↔ S ≤ a⁻¹ • T :=
-  set_smul_subset_iff₀ ha
-
-theorem le_pointwise_smul_iff₀ {a : α} (ha : a ≠ 0) {S T : Submonoid M} : S ≤ a • T ↔ a⁻¹ • S ≤ T :=
-  subset_set_smul_iff₀ ha
-
-end GroupWithZero
-
-@[to_additive]
-theorem mem_closure_inv {G : Type*} [Group G] (S : Set G) (x : G) :
-    x ∈ Submonoid.closure S⁻¹ ↔ x⁻¹ ∈ Submonoid.closure S := by rw [closure_inv, mem_inv]
-
 end Submonoid
-
-namespace AddSubmonoid
-
-section Monoid
-
-variable [Monoid α] [DistribMulAction α A]
-
-/-- The action on an additive submonoid corresponding to applying the action to every element.
-
-This is available as an instance in the `Pointwise` locale. -/
-protected def pointwiseMulAction : MulAction α (AddSubmonoid A) where
-  smul a S := S.map (DistribMulAction.toAddMonoidEnd _ A a)
-  one_smul S :=
-    (congr_arg (fun f : AddMonoid.End A => S.map f) (MonoidHom.map_one _)).trans S.map_id
-  mul_smul _ _ S :=
-    (congr_arg (fun f : AddMonoid.End A => S.map f) (MonoidHom.map_mul _ _ _)).trans
-      (S.map_map _ _).symm
-
-scoped[Pointwise] attribute [instance] AddSubmonoid.pointwiseMulAction
-
-@[simp]
-theorem coe_pointwise_smul (a : α) (S : AddSubmonoid A) : ↑(a • S) = a • (S : Set A) :=
-  rfl
-
-theorem smul_mem_pointwise_smul (m : A) (a : α) (S : AddSubmonoid A) : m ∈ S → a • m ∈ a • S :=
-  (Set.smul_mem_smul_set : _ → _ ∈ a • (S : Set A))
-
-theorem mem_smul_pointwise_iff_exists (m : A) (a : α) (S : AddSubmonoid A) :
-    m ∈ a • S ↔ ∃ s : A, s ∈ S ∧ a • s = m :=
-  (Set.mem_smul_set : m ∈ a • (S : Set A) ↔ _)
-
-@[simp]
-theorem smul_bot (a : α) : a • (⊥ : AddSubmonoid A) = ⊥ :=
-  map_bot _
-
-theorem smul_sup (a : α) (S T : AddSubmonoid A) : a • (S ⊔ T) = a • S ⊔ a • T :=
-  map_sup _ _ _
-
-@[simp]
-theorem smul_closure (a : α) (s : Set A) : a • closure s = closure (a • s) :=
-  AddMonoidHom.map_mclosure _ _
-
-lemma pointwise_isCentralScalar [DistribMulAction αᵐᵒᵖ A] [IsCentralScalar α A] :
-    IsCentralScalar α (AddSubmonoid A) :=
-  ⟨fun _ S =>
-    (congr_arg fun f : AddMonoid.End A => S.map f) <| AddMonoidHom.ext <| op_smul_eq_smul _⟩
-
-scoped[Pointwise] attribute [instance] AddSubmonoid.pointwise_isCentralScalar
-
-end Monoid
-
-section Group
-
-variable [Group α] [DistribMulAction α A]
-
-@[simp]
-theorem smul_mem_pointwise_smul_iff {a : α} {S : AddSubmonoid A} {x : A} : a • x ∈ a • S ↔ x ∈ S :=
-  smul_mem_smul_set_iff
-
-theorem mem_pointwise_smul_iff_inv_smul_mem {a : α} {S : AddSubmonoid A} {x : A} :
-    x ∈ a • S ↔ a⁻¹ • x ∈ S :=
-  mem_smul_set_iff_inv_smul_mem
-
-theorem mem_inv_pointwise_smul_iff {a : α} {S : AddSubmonoid A} {x : A} : x ∈ a⁻¹ • S ↔ a • x ∈ S :=
-  mem_inv_smul_set_iff
-
-@[simp]
-theorem pointwise_smul_le_pointwise_smul_iff {a : α} {S T : AddSubmonoid A} :
-    a • S ≤ a • T ↔ S ≤ T :=
-  set_smul_subset_set_smul_iff
-
-theorem pointwise_smul_le_iff {a : α} {S T : AddSubmonoid A} : a • S ≤ T ↔ S ≤ a⁻¹ • T :=
-  set_smul_subset_iff
-
-theorem le_pointwise_smul_iff {a : α} {S T : AddSubmonoid A} : S ≤ a • T ↔ a⁻¹ • S ≤ T :=
-  subset_set_smul_iff
-
-end Group
-
-section GroupWithZero
-
-variable [GroupWithZero α] [DistribMulAction α A]
-
-@[simp]
-theorem smul_mem_pointwise_smul_iff₀ {a : α} (ha : a ≠ 0) (S : AddSubmonoid A) (x : A) :
-    a • x ∈ a • S ↔ x ∈ S :=
-  smul_mem_smul_set_iff₀ ha (S : Set A) x
-
-theorem mem_pointwise_smul_iff_inv_smul_mem₀ {a : α} (ha : a ≠ 0) (S : AddSubmonoid A) (x : A) :
-    x ∈ a • S ↔ a⁻¹ • x ∈ S :=
-  mem_smul_set_iff_inv_smul_mem₀ ha (S : Set A) x
-
-theorem mem_inv_pointwise_smul_iff₀ {a : α} (ha : a ≠ 0) (S : AddSubmonoid A) (x : A) :
-    x ∈ a⁻¹ • S ↔ a • x ∈ S :=
-  mem_inv_smul_set_iff₀ ha (S : Set A) x
-
-@[simp]
-theorem pointwise_smul_le_pointwise_smul_iff₀ {a : α} (ha : a ≠ 0) {S T : AddSubmonoid A} :
-    a • S ≤ a • T ↔ S ≤ T :=
-  set_smul_subset_set_smul_iff₀ ha
-
-theorem pointwise_smul_le_iff₀ {a : α} (ha : a ≠ 0) {S T : AddSubmonoid A} :
-    a • S ≤ T ↔ S ≤ a⁻¹ • T :=
-  set_smul_subset_iff₀ ha
-
-theorem le_pointwise_smul_iff₀ {a : α} (ha : a ≠ 0) {S T : AddSubmonoid A} :
-    S ≤ a • T ↔ a⁻¹ • S ≤ T :=
-  subset_set_smul_iff₀ ha
-
-end GroupWithZero
-
-end AddSubmonoid
-
-/-! ### Elementwise monoid structure of additive submonoids
-
-These definitions are a cut-down versions of the ones around `Submodule.mul`, as that API is
-usually more useful. -/
-
-namespace AddSubmonoid
-
-section AddMonoidWithOne
-
-variable [AddMonoidWithOne R]
-
-/-- If `R` is an additive monoid with one (e.g., a semiring), then `1 : AddSubmonoid R` is the range
-of `Nat.cast : ℕ → R`. -/
-protected def one : One (AddSubmonoid R) :=
-  ⟨AddMonoidHom.mrange (Nat.castAddMonoidHom R)⟩
-scoped[Pointwise] attribute [instance] AddSubmonoid.one
-
-theorem one_eq_mrange : (1 : AddSubmonoid R) = AddMonoidHom.mrange (Nat.castAddMonoidHom R) :=
-  rfl
-
-theorem natCast_mem_one (n : ℕ) : (n : R) ∈ (1 : AddSubmonoid R) :=
-  ⟨_, rfl⟩
-
-@[simp]
-theorem mem_one {x : R} : x ∈ (1 : AddSubmonoid R) ↔ ∃ n : ℕ, ↑n = x :=
-  Iff.rfl
-
-theorem one_eq_closure : (1 : AddSubmonoid R) = closure {1} := by
-  rw [closure_singleton_eq, one_eq_mrange]
-  congr 1
-  ext
-  simp
-
-theorem one_eq_closure_one_set : (1 : AddSubmonoid R) = closure 1 :=
-  one_eq_closure
-
-end AddMonoidWithOne
-
-section NonUnitalNonAssocSemiring
-
-variable [NonUnitalNonAssocSemiring R]
-
-/-- Multiplication of additive submonoids of a semiring R. The additive submonoid `S * T` is the
-smallest R-submodule of `R` containing the elements `s * t` for `s ∈ S` and `t ∈ T`. -/
-protected def mul : Mul (AddSubmonoid R) :=
-  ⟨fun M N => ⨆ s : M, N.map (AddMonoidHom.mul s.1)⟩
-scoped[Pointwise] attribute [instance] AddSubmonoid.mul
-
-theorem mul_mem_mul {M N : AddSubmonoid R} {m n : R} (hm : m ∈ M) (hn : n ∈ N) : m * n ∈ M * N :=
-  (le_iSup _ ⟨m, hm⟩ : _ ≤ M * N) ⟨n, hn, by rfl⟩
-
-theorem mul_le {M N P : AddSubmonoid R} : M * N ≤ P ↔ ∀ m ∈ M, ∀ n ∈ N, m * n ∈ P :=
-  ⟨fun H _m hm _n hn => H <| mul_mem_mul hm hn, fun H =>
-    iSup_le fun ⟨m, hm⟩ => map_le_iff_le_comap.2 fun n hn => H m hm n hn⟩
-
-@[elab_as_elim]
-protected theorem mul_induction_on {M N : AddSubmonoid R} {C : R → Prop} {r : R} (hr : r ∈ M * N)
-    (hm : ∀ m ∈ M, ∀ n ∈ N, C (m * n)) (ha : ∀ x y, C x → C y → C (x + y)) : C r :=
-  (@mul_le _ _ _ _ ⟨⟨setOf C, ha _ _⟩, by
-    simpa only [zero_mul] using hm _ (zero_mem _) _ (zero_mem _)⟩).2 hm hr
-
--- this proof is copied directly from `Submodule.span_mul_span`
--- Porting note: proof rewritten
-theorem closure_mul_closure (S T : Set R) : closure S * closure T = closure (S * T) := by
-  apply le_antisymm
-  · refine mul_le.2 fun a ha b hb => ?_
-    rw [← AddMonoidHom.mulRight_apply, ← AddSubmonoid.mem_comap]
-    refine (closure_le.2 fun a' ha' => ?_) ha
-    change b ∈ (closure (S * T)).comap (AddMonoidHom.mulLeft a')
-    refine (closure_le.2 fun b' hb' => ?_) hb
-    change a' * b' ∈ closure (S * T)
-    exact subset_closure (Set.mul_mem_mul ha' hb')
-  · rw [closure_le]
-    rintro _ ⟨a, ha, b, hb, rfl⟩
-    exact mul_mem_mul (subset_closure ha) (subset_closure hb)
-
-theorem mul_eq_closure_mul_set (M N : AddSubmonoid R) :
-    M * N = closure ((M : Set R) * (N : Set R)) := by
-  rw [← closure_mul_closure, closure_eq, closure_eq]
-
-@[simp]
-theorem mul_bot (S : AddSubmonoid R) : S * ⊥ = ⊥ :=
-  eq_bot_iff.2 <| mul_le.2 fun m _ n hn => by
-    rw [AddSubmonoid.mem_bot] at hn ⊢; rw [hn, mul_zero]
-
-@[simp]
-theorem bot_mul (S : AddSubmonoid R) : ⊥ * S = ⊥ :=
-  eq_bot_iff.2 <| mul_le.2 fun m hm n hn => by
-    rw [AddSubmonoid.mem_bot] at hm ⊢; rw [hm, zero_mul]
-
-@[mono]
-theorem mul_le_mul {M N P Q : AddSubmonoid R} (hmp : M ≤ P) (hnq : N ≤ Q) : M * N ≤ P * Q :=
-  mul_le.2 fun _m hm _n hn => mul_mem_mul (hmp hm) (hnq hn)
-
-theorem mul_le_mul_left {M N P : AddSubmonoid R} (h : M ≤ N) : M * P ≤ N * P :=
-  mul_le_mul h (le_refl P)
-
-theorem mul_le_mul_right {M N P : AddSubmonoid R} (h : N ≤ P) : M * N ≤ M * P :=
-  mul_le_mul (le_refl M) h
-
-theorem mul_subset_mul {M N : AddSubmonoid R} :
-    (↑M : Set R) * (↑N : Set R) ⊆ (↑(M * N) : Set R) :=
-  mul_subset_iff.2 fun _i hi _j hj ↦ mul_mem_mul hi hj
-
-end NonUnitalNonAssocSemiring
-
-section NonUnitalNonAssocRing
-
-variable [NonUnitalNonAssocRing R]
-
-/-- `AddSubmonoid.neg` distributes over multiplication.
-
-This is available as an instance in the `Pointwise` locale. -/
-protected def hasDistribNeg : HasDistribNeg (AddSubmonoid R) :=
-  { AddSubmonoid.involutiveNeg with
-    neg_mul := fun x y => by
-      refine
-          le_antisymm (mul_le.2 fun m hm n hn => ?_)
-            ((AddSubmonoid.neg_le _ _).2 <| mul_le.2 fun m hm n hn => ?_) <;>
-        simp only [AddSubmonoid.mem_neg, ← neg_mul] at *
-      · exact mul_mem_mul hm hn
-      · exact mul_mem_mul (neg_mem_neg.2 hm) hn
-    mul_neg := fun x y => by
-      refine
-          le_antisymm (mul_le.2 fun m hm n hn => ?_)
-            ((AddSubmonoid.neg_le _ _).2 <| mul_le.2 fun m hm n hn => ?_) <;>
-        simp only [AddSubmonoid.mem_neg, ← mul_neg] at *
-      · exact mul_mem_mul hm hn
-      · exact mul_mem_mul hm (neg_mem_neg.2 hn) }
-
-scoped[Pointwise] attribute [instance] AddSubmonoid.hasDistribNeg
-
-end NonUnitalNonAssocRing
-
-section NonAssocSemiring
-
-variable [NonAssocSemiring R]
-
-/-- A `MulOneClass` structure on additive submonoids of a (possibly, non-associative) semiring. -/
-protected def mulOneClass : MulOneClass (AddSubmonoid R) where
-  one := 1
-  mul := (· * ·)
-  one_mul M := by rw [one_eq_closure_one_set, ← closure_eq M, closure_mul_closure, one_mul]
-  mul_one M := by rw [one_eq_closure_one_set, ← closure_eq M, closure_mul_closure, mul_one]
-scoped[Pointwise] attribute [instance] AddSubmonoid.mulOneClass
-
-end NonAssocSemiring
-
-section NonUnitalSemiring
-
-variable [NonUnitalSemiring R]
-
-/-- Semigroup structure on additive submonoids of a (possibly, non-unital) semiring. -/
-protected def semigroup : Semigroup (AddSubmonoid R) where
-  mul := (· * ·)
-  mul_assoc M N P :=
-    le_antisymm
-      (mul_le.2 fun _mn hmn p hp =>
-        suffices M * N ≤ (M * (N * P)).comap (AddMonoidHom.mulRight p) from this hmn
-        mul_le.2 fun m hm n hn =>
-          show m * n * p ∈ M * (N * P) from
-            (mul_assoc m n p).symm ▸ mul_mem_mul hm (mul_mem_mul hn hp))
-      (mul_le.2 fun m hm _np hnp =>
-        suffices N * P ≤ (M * N * P).comap (AddMonoidHom.mulLeft m) from this hnp
-        mul_le.2 fun n hn p hp =>
-          show m * (n * p) ∈ M * N * P from mul_assoc m n p ▸ mul_mem_mul (mul_mem_mul hm hn) hp)
-scoped[Pointwise] attribute [instance] AddSubmonoid.semigroup
-end NonUnitalSemiring
-
-section Semiring
-
-variable [Semiring R]
-
-/-- Monoid structure on additive submonoids of a semiring. -/
-protected def monoid : Monoid (AddSubmonoid R) :=
-  { AddSubmonoid.semigroup, AddSubmonoid.mulOneClass with }
-scoped[Pointwise] attribute [instance] AddSubmonoid.monoid
-
-theorem closure_pow (s : Set R) : ∀ n : ℕ, closure s ^ n = closure (s ^ n)
-  | 0 => by rw [pow_zero, pow_zero, one_eq_closure_one_set]
-  | n + 1 => by rw [pow_succ, pow_succ, closure_pow s n, closure_mul_closure]
-
-theorem pow_eq_closure_pow_set (s : AddSubmonoid R) (n : ℕ) :
-    s ^ n = closure ((s : Set R) ^ n) := by
-  rw [← closure_pow, closure_eq]
-
-theorem pow_subset_pow {s : AddSubmonoid R} {n : ℕ} : (↑s : Set R) ^ n ⊆ ↑(s ^ n) :=
-  (pow_eq_closure_pow_set s n).symm ▸ subset_closure
-
-end Semiring
-
-end AddSubmonoid
 
 namespace Set.IsPWO
 
-variable [OrderedCancelCommMonoid α] {s : Set α}
+variable [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α] {s : Set α}
 
 @[to_additive]
 theorem submonoid_closure (hpos : ∀ x : α, x ∈ s → 1 ≤ x) (h : s.IsPWO) :

@@ -5,6 +5,7 @@ Authors: Yourong Zang
 -/
 import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Analysis.Normed.Operator.LinearIsometry
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
 # Conformal Linear Maps

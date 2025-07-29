@@ -3,10 +3,11 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Int.ModEq
 import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Order.Ring.Int
-import Mathlib.GroupTheory.QuotientGroup.Basic
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+import Mathlib.Data.Int.ModEq
+import Mathlib.GroupTheory.QuotientGroup.Defs
+import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 
 /-!
 # Equality modulo an element
@@ -100,13 +101,13 @@ theorem add_zsmul_modEq (z : ℤ) : a + z • p ≡ a [PMOD p] :=
   ⟨-z, by simp⟩
 
 theorem zsmul_add_modEq (z : ℤ) : z • p + a ≡ a [PMOD p] :=
-  ⟨-z, by simp [← sub_sub]⟩
+  ⟨-z, by simp⟩
 
 theorem add_nsmul_modEq (n : ℕ) : a + n • p ≡ a [PMOD p] :=
   ⟨-n, by simp⟩
 
 theorem nsmul_add_modEq (n : ℕ) : n • p + a ≡ a [PMOD p] :=
-  ⟨-n, by simp [← sub_sub]⟩
+  ⟨-n, by simp⟩
 
 namespace ModEq
 
@@ -172,16 +173,13 @@ protected theorem sub_iff_right :
     a₂ ≡ b₂ [PMOD p] → (a₁ - a₂ ≡ b₁ - b₂ [PMOD p] ↔ a₁ ≡ b₁ [PMOD p]) := fun ⟨m, hm⟩ =>
   (Equiv.subRight m).symm.exists_congr_left.trans <| by simp [sub_sub_sub_comm, hm, sub_smul, ModEq]
 
-alias ⟨add_left_cancel, add⟩ := ModEq.add_iff_left
+protected alias ⟨add_left_cancel, add⟩ := ModEq.add_iff_left
 
-alias ⟨add_right_cancel, _⟩ := ModEq.add_iff_right
+protected alias ⟨add_right_cancel, _⟩ := ModEq.add_iff_right
 
-alias ⟨sub_left_cancel, sub⟩ := ModEq.sub_iff_left
+protected alias ⟨sub_left_cancel, sub⟩ := ModEq.sub_iff_left
 
-alias ⟨sub_right_cancel, _⟩ := ModEq.sub_iff_right
-
--- Porting note: doesn't work
--- attribute [protected] add_left_cancel add_right_cancel add sub_left_cancel sub_right_cancel sub
+protected alias ⟨sub_right_cancel, _⟩ := ModEq.sub_iff_right
 
 protected theorem add_left (c : α) (h : a ≡ b [PMOD p]) : c + a ≡ c + b [PMOD p] :=
   modEq_rfl.add h
@@ -230,18 +228,25 @@ theorem add_modEq_left : a + b ≡ a [PMOD p] ↔ b ≡ 0 [PMOD p] := by simp [�
 @[simp]
 theorem add_modEq_right : a + b ≡ b [PMOD p] ↔ a ≡ 0 [PMOD p] := by simp [← modEq_sub_iff_add_modEq]
 
+-- this matches `Int.modEq_iff_add_fac`
 theorem modEq_iff_eq_add_zsmul : a ≡ b [PMOD p] ↔ ∃ z : ℤ, b = a + z • p := by
   simp_rw [ModEq, sub_eq_iff_eq_add']
+
+-- this roughly matches `Int.modEq_zero_iff_dvd`
+theorem modEq_zero_iff_eq_zsmul : a ≡ 0 [PMOD p] ↔ ∃ z : ℤ, a = z • p := by
+  rw [modEq_comm, modEq_iff_eq_add_zsmul]
+  simp_rw [zero_add]
 
 theorem not_modEq_iff_ne_add_zsmul : ¬a ≡ b [PMOD p] ↔ ∀ z : ℤ, b ≠ a + z • p := by
   rw [modEq_iff_eq_add_zsmul, not_exists]
 
-theorem modEq_iff_eq_mod_zmultiples : a ≡ b [PMOD p] ↔ (b : α ⧸ AddSubgroup.zmultiples p) = a := by
+theorem modEq_iff_eq_mod_zmultiples : a ≡ b [PMOD p] ↔ (a : α ⧸ AddSubgroup.zmultiples p) = b := by
+  rw [modEq_comm]
   simp_rw [modEq_iff_eq_add_zsmul, QuotientAddGroup.eq_iff_sub_mem, AddSubgroup.mem_zmultiples_iff,
     eq_sub_iff_add_eq', eq_comm]
 
 theorem not_modEq_iff_ne_mod_zmultiples :
-    ¬a ≡ b [PMOD p] ↔ (b : α ⧸ AddSubgroup.zmultiples p) ≠ a :=
+    ¬a ≡ b [PMOD p] ↔ (a : α ⧸ AddSubgroup.zmultiples p) ≠ b :=
   modEq_iff_eq_mod_zmultiples.not
 
 end AddCommGroup
@@ -280,5 +285,16 @@ variable [DivisionRing α] {a b c p : α}
 @[simp] lemma div_modEq_div (hc : c ≠ 0) : a / c ≡ b / c [PMOD p] ↔ a ≡ b [PMOD (p * c)] := by
   simp [ModEq, ← sub_div, div_eq_iff hc, mul_assoc]
 
+@[simp] lemma mul_modEq_mul_right (hc : c ≠ 0) : a * c ≡ b * c [PMOD p] ↔ a ≡ b [PMOD (p / c)] := by
+  rw [div_eq_mul_inv, ← div_modEq_div (inv_ne_zero hc), div_inv_eq_mul, div_inv_eq_mul]
+
 end DivisionRing
+
+section Field
+variable [Field α] {a b c p : α}
+
+@[simp] lemma mul_modEq_mul_left (hc : c ≠ 0) : c * a ≡ c * b [PMOD p] ↔ a ≡ b [PMOD (p / c)] := by
+  simp [mul_comm c, hc]
+
+end Field
 end AddCommGroup

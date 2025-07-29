@@ -14,7 +14,9 @@ import Mathlib.CategoryTheory.Yoneda
 
 We provide various useful constructors:
 * `mkOfHomEquiv`
-* `mkOfUnitCounit`
+* `mk'`: construct an adjunction from the data of a hom set equivalence, unit and counit natural
+  transformations together with proofs of the equalities `homEquiv_unit` and `homEquiv_counit`
+  relating them to each other.
 * `leftAdjointOfEquiv` / `rightAdjointOfEquiv`
   construct a left/right adjoint of a given functor given the action on objects and
   the relevant equivalence of morphism spaces.
@@ -30,18 +32,53 @@ adjoint can be obtained as `F.rightAdjoint`.
 `toEquivalence` upgrades an adjunction to an equivalence,
 given witnesses that the unit and counit are pointwise isomorphisms.
 Conversely `Equivalence.toAdjunction` recovers the underlying adjunction from an equivalence.
+
+## Overview of the directory `CategoryTheory.Adjunction`
+
+* Adjoint lifting theorems are in the directory `Lifting`.
+* The file `AdjointFunctorTheorems` proves the adjoint functor theorems.
+* The file `Comma` shows that for a functor `G : D ⥤ C` the data of an initial object in each
+  `StructuredArrow` category on `G` is equivalent to a left adjoint to `G`, as well as the dual.
+* The file `Evaluation` shows that products and coproducts are adjoint to evaluation of functors.
+* The file `FullyFaithful` characterizes when adjoints are full or faithful in terms of the unit
+  and counit.
+* The file `Limits` proves that left adjoints preserve colimits and right adjoints preserve limits.
+* The file `Mates` establishes the bijection between the 2-cells
+  ```
+          L₁                  R₁
+        C --→ D             C ←-- D
+      G ↓  ↗  ↓ H         G ↓  ↘  ↓ H
+        E --→ F             E ←-- F
+          L₂                  R₂
+  ```
+  where `L₁ ⊣ R₁` and `L₂ ⊣ R₂`. Specializing to a pair of adjoints `L₁ L₂ : C ⥤ D`,
+  `R₁ R₂ : D ⥤ C`, it provides equivalences `(L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂)` and `(L₂ ≅ L₁) ≃ (R₁ ≅ R₂)`.
+* The file `Opposites` contains constructions to relate adjunctions of functors to adjunctions of
+  their opposites.
+* The file `Reflective` defines reflective functors, i.e. fully faithful right adjoints. Note that
+  many facts about reflective functors are proved in the earlier file `FullyFaithful`.
+* The file `Restrict` defines the restriction of an adjunction along fully faithful functors.
+* The file `Triple` proves that in an adjoint triple, the left adjoint is fully faithful if and
+  only if the right adjoint is.
+* The file `Unique` proves uniqueness of adjoints.
+* The file `Whiskering` proves that functors `F : D ⥤ E` and `G : E ⥤ D` with an adjunction
+  `F ⊣ G`, induce adjunctions between the functor categories `C ⥤ D` and `C ⥤ E`,
+  and the functor categories `E ⥤ C` and `D ⥤ C`.
+
+## Other files related to adjunctions
+
+* The file `CategoryTheory.Monad.Adjunction` develops the basic relationship between adjunctions
+  and (co)monads. There it is also shown that given an adjunction `L ⊣ R` and an isomorphism
+  `L ⋙ R ≅ 𝟭 C`, the unit is an isomorphism, and similarly for the counit.
 -/
 
 
 namespace CategoryTheory
 
-open Category
+open Category Functor
 
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
 universe v₁ v₂ v₃ u₁ u₂ u₃
-
--- Porting Note: `elab_without_expected_type` cannot be a local attribute
--- attribute [local elab_without_expected_type] whiskerLeft whiskerRight
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
@@ -57,12 +94,8 @@ There is also a constructor `Adjunction.mkOfHomEquiv` which constructs an adjunc
 hom set equivalence.
 
 To construct adjoints to a given functor, there are constructors `leftAdjointOfEquiv` and
-`adjunctionOfEquivLeft` (as well as their duals).
-
-Uniqueness of adjoints is shown in `CategoryTheory.Adjunction.Unique`.
-
-See <https://stacks.math.columbia.edu/tag/0037>.
--/
+`adjunctionOfEquivLeft` (as well as their duals). -/
+@[stacks 0037]
 structure Adjunction (F : C ⥤ D) (G : D ⥤ C) where
   /-- The unit of an adjunction -/
   unit : 𝟭 C ⟶ F.comp G
@@ -101,19 +134,19 @@ end Functor
 /-- The adjunction associated to a functor known to be a left adjoint. -/
 noncomputable def Adjunction.ofIsLeftAdjoint (left : C ⥤ D) [left.IsLeftAdjoint] :
     left ⊣ left.rightAdjoint :=
-  Functor.IsLeftAdjoint.exists_rightAdjoint.choose_spec.some
+  IsLeftAdjoint.exists_rightAdjoint.choose_spec.some
 
 /-- The adjunction associated to a functor known to be a right adjoint. -/
 noncomputable def Adjunction.ofIsRightAdjoint (right : C ⥤ D) [right.IsRightAdjoint] :
     right.leftAdjoint ⊣ right :=
-  Functor.IsRightAdjoint.exists_leftAdjoint.choose_spec.some
+  IsRightAdjoint.exists_leftAdjoint.choose_spec.some
 
 namespace Adjunction
 
 attribute [reassoc (attr := simp)] left_triangle_components right_triangle_components
 
 /-- The hom set equivalence associated to an adjunction. -/
-@[simps]
+@[simps -isSimp]
 def homEquiv {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) (X : C) (Y : D) :
     (F.obj X ⟶ Y) ≃ (X ⟶ G.obj Y) where
   toFun := fun f => adj.unit.app X ≫ G.map f
@@ -123,11 +156,32 @@ def homEquiv {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) (X : C) (Y : D) :
     rw [F.map_comp, assoc, ← Functor.comp_map, adj.counit.naturality, ← assoc]
     simp
   right_inv := fun g => by
-    simp [← assoc, ← Functor.comp_map, ← adj.unit.naturality, assoc]
+    simp only [Functor.comp_obj, Functor.map_comp]
+    rw [← assoc, ← Functor.comp_map, ← adj.unit.naturality]
+    simp
 
 alias homEquiv_unit := homEquiv_apply
 alias homEquiv_counit := homEquiv_symm_apply
-attribute [simp] homEquiv_unit homEquiv_counit
+
+end Adjunction
+
+-- These lemmas are not global simp lemmas because certain adjunctions
+-- are constructed using `Adjunction.mkOfHomEquiv`, and we certainly
+-- do not want `dsimp` to apply `homEquiv_unit` or `homEquiv_counit`
+-- in that case. However, when proving general API results about adjunctions,
+-- it may be advisable to add a local simp attribute to these lemmas.
+attribute [local simp] Adjunction.homEquiv_unit Adjunction.homEquiv_counit
+
+namespace Adjunction
+
+@[ext]
+lemma ext {F : C ⥤ D} {G : D ⥤ C} {adj adj' : F ⊣ G}
+    (h : adj.unit = adj'.unit) : adj = adj' := by
+  suffices h' : adj.counit = adj'.counit by cases adj; cases adj'; aesop
+  ext X
+  apply (adj.homEquiv _ _).injective
+  rw [Adjunction.homEquiv_unit, Adjunction.homEquiv_unit,
+    Adjunction.right_triangle_components, h, Adjunction.right_triangle_components]
 
 section
 
@@ -156,7 +210,7 @@ theorem homEquiv_naturality_left_symm (f : X' ⟶ X) (g : X ⟶ G.obj Y) :
 theorem homEquiv_naturality_left (f : X' ⟶ X) (g : F.obj X ⟶ Y) :
     (adj.homEquiv X' Y) (F.map f ≫ g) = f ≫ (adj.homEquiv X Y) g := by
   rw [← Equiv.eq_symm_apply]
-  simp only [Equiv.symm_apply_apply, eq_self_iff_true, homEquiv_naturality_left_symm]
+  simp only [Equiv.symm_apply_apply, homEquiv_naturality_left_symm]
 
 theorem homEquiv_naturality_right (f : F.obj X ⟶ Y) (g : Y ⟶ Y') :
     (adj.homEquiv X Y') (f ≫ g) = (adj.homEquiv X Y) f ≫ G.map g := by
@@ -165,7 +219,7 @@ theorem homEquiv_naturality_right (f : F.obj X ⟶ Y) (g : Y ⟶ Y') :
 theorem homEquiv_naturality_right_symm (f : X ⟶ G.obj Y) (g : Y ⟶ Y') :
     (adj.homEquiv X Y').symm (f ≫ G.map g) = (adj.homEquiv X Y).symm f ≫ g := by
   rw [Equiv.symm_apply_eq]
-  simp only [homEquiv_naturality_right, eq_self_iff_true, Equiv.apply_symm_apply]
+  simp only [homEquiv_naturality_right, Equiv.apply_symm_apply]
 
 @[reassoc]
 theorem homEquiv_naturality_left_square (f : X' ⟶ X) (g : F.obj X ⟶ Y')
@@ -229,6 +283,20 @@ theorem eq_homEquiv_apply {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj B
     g = adj.homEquiv A B f ↔ (adj.homEquiv A B).symm g = f :=
   eq_unit_comp_map_iff adj f g
 
+/-- If `adj : F ⊣ G`, and `X : C`, then `F.obj X` corepresents `Y ↦ (X ⟶ G.obj Y)`. -/
+@[simps]
+def corepresentableBy (X : C) :
+    (G ⋙ coyoneda.obj (Opposite.op X)).CorepresentableBy (F.obj X) where
+  homEquiv := adj.homEquiv _ _
+  homEquiv_comp := by simp
+
+/-- If `adj : F ⊣ G`, and `Y : D`, then `G.obj Y` represents `X ↦ (F.obj X ⟶ Y)`. -/
+@[simps]
+def representableBy (Y : D) :
+    (F.op ⋙ yoneda.obj Y).RepresentableBy (G.obj Y) where
+  homEquiv := (adj.homEquiv _ _).symm
+  homEquiv_comp := by simp
+
 end
 
 end Adjunction
@@ -251,18 +319,10 @@ structure CoreHomEquivUnitCounit (F : C ⥤ D) (G : D ⥤ C) where
   /-- The relationship between the counit and hom set equivalence of an adjunction -/
   homEquiv_counit : ∀ {X Y g}, (homEquiv X Y).symm g = F.map g ≫ counit.app Y := by aesop_cat
 
-namespace CoreHomEquivUnitCounit
-
-attribute [simp] homEquiv_unit homEquiv_counit
-
-end CoreHomEquivUnitCounit
-
 /-- This is an auxiliary data structure useful for constructing adjunctions.
 See `Adjunction.mkOfHomEquiv`.
 This structure won't typically be used anywhere else.
 -/
--- Porting note(#5171): `has_nonempty_instance` linter not ported yet
--- @[nolint has_nonempty_instance]
 structure CoreHomEquiv (F : C ⥤ D) (G : D ⥤ C) where
   /-- The equivalence between `Hom (F X) Y` and `Hom X (G Y)` -/
   homEquiv : ∀ X Y, (F.obj X ⟶ Y) ≃ (X ⟶ G.obj Y)
@@ -297,8 +357,6 @@ end CoreHomEquiv
 See `Adjunction.mkOfUnitCounit`.
 This structure won't typically be used anywhere else.
 -/
--- Porting note(#5171): `has_nonempty_instance` linter not ported yet
--- @[nolint has_nonempty_instance]
 structure CoreUnitCounit (F : C ⥤ D) (G : D ⥤ C) where
   /-- The unit of an adjunction between `F` and `G` -/
   unit : 𝟭 C ⟶ F.comp G
@@ -307,13 +365,13 @@ structure CoreUnitCounit (F : C ⥤ D) (G : D ⥤ C) where
   /-- Equality of the composition of the unit, associator, and counit with the identity
   `F ⟶ (F G) F ⟶ F (G F) ⟶ F = NatTrans.id F` -/
   left_triangle :
-    whiskerRight unit F ≫ (Functor.associator F G F).hom ≫ whiskerLeft F counit =
+    whiskerRight unit F ≫ (associator F G F).hom ≫ whiskerLeft F counit =
       NatTrans.id (𝟭 C ⋙ F) := by
     aesop_cat
   /-- Equality of the composition of the unit, associator, and counit with the identity
   `G ⟶ G (F G) ⟶ (F G) F ⟶ G = NatTrans.id G` -/
   right_triangle :
-    whiskerLeft G unit ≫ (Functor.associator G F G).inv ≫ whiskerRight counit G =
+    whiskerLeft G unit ≫ (associator G F G).inv ≫ whiskerRight counit G =
       NatTrans.id (G ⋙ 𝟭 C) := by
     aesop_cat
 
@@ -325,6 +383,8 @@ end CoreUnitCounit
 
 variable {F : C ⥤ D} {G : D ⥤ C}
 
+attribute [local simp] CoreHomEquivUnitCounit.homEquiv_unit CoreHomEquivUnitCounit.homEquiv_counit
+
 /--
 Construct an adjunction from the data of a `CoreHomEquivUnitCounit`, i.e. a hom set
 equivalence, unit and counit natural transformations together with proofs of the equalities
@@ -335,14 +395,15 @@ def mk' (adj : CoreHomEquivUnitCounit F G) : F ⊣ G where
   unit := adj.unit
   counit := adj.counit
   left_triangle_components X := by
-    rw [← adj.homEquiv_counit, (adj.homEquiv _ _).symm_apply_eq]
+    rw [← adj.homEquiv_counit, (adj.homEquiv _ _).symm_apply_eq, adj.homEquiv_unit]
     simp
   right_triangle_components Y := by
-    rw [← adj.homEquiv_unit, ← (adj.homEquiv _ _).eq_symm_apply]
+    rw [← adj.homEquiv_unit, ← (adj.homEquiv _ _).eq_symm_apply, adj.homEquiv_counit]
     simp
 
 lemma mk'_homEquiv (adj : CoreHomEquivUnitCounit F G) : (mk' adj).homEquiv = adj.homEquiv := by
-  ext; simp
+  ext
+  rw [homEquiv_unit, adj.homEquiv_unit, mk'_unit]
 
 /-- Construct an adjunction between `F` and `G` out of a natural bijection between each
 `F.obj X ⟶ Y` and `X ⟶ G.obj Y`. -/
@@ -363,6 +424,7 @@ def mkOfHomEquiv (adj : CoreHomEquiv F G) : F ⊣ G :=
     homEquiv_unit := fun {X Y f} => by simp [← adj.homEquiv_naturality_right]
     homEquiv_counit := fun {X Y f} => by simp [← adj.homEquiv_naturality_left_symm] }
 
+@[simp]
 lemma mkOfHomEquiv_homEquiv (adj : CoreHomEquiv F G) :
     (mkOfHomEquiv adj).homEquiv = adj.homEquiv := by
   ext X Y g
@@ -441,16 +503,15 @@ section
 variable {E : Type u₃} [ℰ : Category.{v₃} E] {H : D ⥤ E} {I : E ⥤ D}
   (adj₁ : F ⊣ G) (adj₂ : H ⊣ I)
 
-/-- Composition of adjunctions.
-
-See <https://stacks.math.columbia.edu/tag/0DV0>.
--/
+/-- Composition of adjunctions. -/
+@[simps! -isSimp unit counit, stacks 0DV0]
 def comp : F ⋙ H ⊣ I ⋙ G :=
   mk' {
     homEquiv := fun _ _ ↦ Equiv.trans (adj₂.homEquiv _ _) (adj₁.homEquiv _ _)
-    unit := adj₁.unit ≫ (whiskerLeft F <| whiskerRight adj₂.unit G) ≫ (Functor.associator _ _ _).inv
-    counit :=
-      (Functor.associator _ _ _).hom ≫ (whiskerLeft I <| whiskerRight adj₁.counit H) ≫ adj₂.counit }
+    unit := adj₁.unit ≫ whiskerRight (F.rightUnitor.inv ≫ whiskerLeft F adj₂.unit ≫
+      (associator _ _ _ ).inv) G ≫ (associator _ _ _).hom
+    counit := (associator _ _ _ ).inv ≫ whiskerRight ((associator _ _ _ ).hom ≫
+      whiskerLeft _ adj₁.counit ≫ I.rightUnitor.hom) _ ≫ adj₂.counit }
 
 @[simp, reassoc]
 lemma comp_unit_app (X : C) :
@@ -505,7 +566,7 @@ def adjunctionOfEquivLeft : leftAdjointOfEquiv e he ⊣ G :=
         have {X : C} {Y Y' : D} (f : X ⟶ G.obj Y) (g : Y ⟶ Y') :
             (e X Y').symm (f ≫ G.map g) = (e X Y).symm f ≫ g := by
           rw [Equiv.symm_apply_eq, he]; simp
-        simp [← this, ← Equiv.apply_eq_iff_eq (e X' Y), ← he] }
+        simp [← this, ← he] }
 
 end ConstructLeft
 
@@ -596,6 +657,11 @@ lemma isLeftAdjoint_inverse : e.inverse.IsLeftAdjoint :=
 
 lemma isRightAdjoint_functor : e.functor.IsRightAdjoint :=
   e.symm.isRightAdjoint_inverse
+
+lemma refl_toAdjunction : (refl (C := C)).toAdjunction = Adjunction.id := rfl
+
+lemma trans_toAdjunction {E : Type*} [Category E] (e' : D ≌ E) :
+    (e.trans e').toAdjunction = e.toAdjunction.comp e'.toAdjunction := rfl
 
 end Equivalence
 

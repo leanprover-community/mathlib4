@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.LocalProperties.Basic
+import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
 # `IsReduced` is a local property
@@ -20,7 +21,7 @@ Let `R` be a commutative ring, `M` be a submonoid of `R`.
 -/
 
 /-- `M⁻¹R` is reduced if `R` is reduced. -/
-theorem isReduced_localizationPreserves : LocalizationPreserves fun R hR => IsReduced R := by
+theorem isReduced_localizationPreserves : LocalizationPreserves fun R _ => IsReduced R := by
   introv R _ _
   constructor
   rintro x ⟨_ | n, e⟩
@@ -43,7 +44,7 @@ instance {R : Type*} [CommRing R] (M : Submonoid R) [IsReduced R] : IsReduced (L
   isReduced_localizationPreserves M _ inferInstance
 
 /-- `R` is reduced if `Rₘ` is reduced for all maximal ideal `m`. -/
-theorem isReduced_ofLocalizationMaximal : OfLocalizationMaximal fun R hR => IsReduced R := by
+theorem isReduced_ofLocalizationMaximal : OfLocalizationMaximal fun R _ => IsReduced R := by
   introv R h
   constructor
   intro x hx

@@ -54,7 +54,7 @@ namespace Topology
 /-- Topology whose open sets are upper sets.
 
 Note: In general the upper set topology does not coincide with the upper topology. -/
-def upperSet (α :  Type*) [Preorder α] : TopologicalSpace α where
+def upperSet (α : Type*) [Preorder α] : TopologicalSpace α where
   IsOpen := IsUpperSet
   isOpen_univ := isUpperSet_univ
   isOpen_inter _ _ := IsUpperSet.inter
@@ -63,7 +63,7 @@ def upperSet (α :  Type*) [Preorder α] : TopologicalSpace α where
 /-- Topology whose open sets are lower sets.
 
 Note: In general the lower set topology does not coincide with the lower topology. -/
-def lowerSet (α :  Type*) [Preorder α] : TopologicalSpace α where
+def lowerSet (α : Type*) [Preorder α] : TopologicalSpace α where
   IsOpen := IsLowerSet
   isOpen_univ := isLowerSet_univ
   isOpen_inter _ _ := IsLowerSet.inter
@@ -80,8 +80,8 @@ namespace WithUpperSet
 /-- `ofUpperSet` is the identity function from the `WithUpperSet` of a type. -/
 @[match_pattern] def ofUpperSet : WithUpperSet α ≃ α := Equiv.refl _
 
-@[simp] lemma to_WithUpperSet_symm_eq : (@toUpperSet α).symm = ofUpperSet := rfl
-@[simp] lemma of_WithUpperSet_symm_eq : (@ofUpperSet α).symm = toUpperSet := rfl
+@[simp] lemma toUpperSet_symm : (@toUpperSet α).symm = ofUpperSet := rfl
+@[simp] lemma ofUpperSet_symm : (@ofUpperSet α).symm = toUpperSet := rfl
 @[simp] lemma toUpperSet_ofUpperSet (a : WithUpperSet α) : toUpperSet (ofUpperSet a) = a := rfl
 @[simp] lemma ofUpperSet_toUpperSet (a : α) : ofUpperSet (toUpperSet a) = a := rfl
 lemma toUpperSet_inj {a b : α} : toUpperSet a = toUpperSet b ↔ a = b := Iff.rfl
@@ -95,7 +95,7 @@ protected def rec {β : WithUpperSet α → Sort*} (h : ∀ a, β (toUpperSet a)
 instance [Nonempty α] : Nonempty (WithUpperSet α) := ‹Nonempty α›
 instance [Inhabited α] : Inhabited (WithUpperSet α) := ‹Inhabited α›
 
-variable [Preorder α] [Preorder β] [Preorder γ]
+variable [Preorder α] [Preorder β]
 
 instance : Preorder (WithUpperSet α) := ‹Preorder α›
 instance : TopologicalSpace (WithUpperSet α) := upperSet α
@@ -126,8 +126,8 @@ namespace WithLowerSet
 /-- `ofLowerSet` is the identity function from the `WithLowerSet` of a type. -/
 @[match_pattern] def ofLowerSet : WithLowerSet α ≃ α := Equiv.refl _
 
-@[simp] lemma to_WithLowerSet_symm_eq : (@toLowerSet α).symm = ofLowerSet := rfl
-@[simp] lemma of_WithLowerSet_symm_eq : (@ofLowerSet α).symm = toLowerSet := rfl
+@[simp] lemma toLowerSet_symm : (@toLowerSet α).symm = ofLowerSet := rfl
+@[simp] lemma ofLowerSet_symm : (@ofLowerSet α).symm = toLowerSet := rfl
 @[simp] lemma toLowerSet_ofLowerSet (a : WithLowerSet α) : toLowerSet (ofLowerSet a) = a := rfl
 @[simp] lemma ofLowerSet_toLowerSet (a : α) : ofLowerSet (toLowerSet a) = a := rfl
 lemma toLowerSet_inj {a b : α} : toLowerSet a = toLowerSet b ↔ a = b := Iff.rfl
@@ -220,7 +220,7 @@ instance _root_.OrderDual.instIsLowerSet [Preorder α] [TopologicalSpace α] [To
 /-- If `α` is equipped with the upper set topology, then it is homeomorphic to
 `WithUpperSet α`. -/
 def WithUpperSetHomeomorph : WithUpperSet α ≃ₜ α :=
-  WithUpperSet.ofUpperSet.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
+  WithUpperSet.ofUpperSet.toHomeomorphOfIsInducing ⟨topology_eq α ▸ induced_id.symm⟩
 
 lemma isOpen_iff_isUpperSet : IsOpen s ↔ IsUpperSet s := by
   rw [topology_eq α]
@@ -248,6 +248,9 @@ interval (-∞,a].
 @[simp] lemma closure_singleton {a : α} : closure {a} = Iic a := by
   rw [closure_eq_lowerClosure, lowerClosure_singleton]
   rfl
+
+lemma specializes_iff_le {a b : α} : a ⤳ b ↔ b ≤ a := by
+  simp only [specializes_iff_closure_subset, closure_singleton, Iic_subset_Iic]
 
 end Preorder
 
@@ -302,7 +305,7 @@ instance _root_.OrderDual.instIsUpperSet [Preorder α] [TopologicalSpace α] [To
 
 /-- If `α` is equipped with the lower set topology, then it is homeomorphic to `WithLowerSet α`. -/
 def WithLowerSetHomeomorph : WithLowerSet α ≃ₜ α :=
-  WithLowerSet.ofLowerSet.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
+  WithLowerSet.ofLowerSet.toHomeomorphOfIsInducing ⟨topology_eq α ▸ induced_id.symm⟩
 
 lemma isOpen_iff_isLowerSet : IsOpen s ↔ IsLowerSet s := by rw [topology_eq α]; rfl
 
@@ -400,7 +403,7 @@ def map (f : α →o β) : C(WithLowerSet α, WithLowerSet β) where
 @[simp] lemma map_comp (g : β →o γ) (f : α →o β) : map (g.comp f) = (map g).comp (map f) := rfl
 
 @[simp] lemma toLowerSet_specializes_toLowerSet {a b : α} :
-  toLowerSet a ⤳ toLowerSet b ↔ a ≤ b := by
+    toLowerSet a ⤳ toLowerSet b ↔ a ≤ b := by
   simp_rw [specializes_iff_closure_subset, IsLowerSet.closure_singleton, Ici_subset_Ici,
     toLowerSet_le_iff]
 

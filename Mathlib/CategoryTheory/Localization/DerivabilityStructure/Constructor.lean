@@ -12,13 +12,13 @@ In this file, we provide a constructor for right derivability structures.
 Assume that `W₁` and `W₂` are classes of morphisms in categories `C₁` and `C₂`,
 and that we have a localizer morphism `Φ : LocalizerMorphism W₁ W₂` that is
 a localized equivalence, i.e. `Φ.functor` induces an equivalence of categories
-between the localized categories. Assume moreover that `W₁` is multiplicative
-and `W₂` contains identities. Then, `Φ` is a right derivability structure
+between the localized categories. Assume moreover that `W₂` contains identities.
+Then, `Φ` is a right derivability structure
 (`LocalizerMorphism.IsRightDerivabilityStructure.mk'`) if it satisfies the
 two following conditions:
 * for any `X₂ : C₂`, the category `Φ.RightResolution X₂` of resolutions of `X₂` is connected
 * any arrow in `C₂` admits a resolution (i.e. `Φ.arrow.HasRightResolutions` holds, where
-`Φ.arrow` is the induced localizer morphism on categories of arrows in `C₁` and `C₂`)
+  `Φ.arrow` is the induced localizer morphism on categories of arrows in `C₁` and `C₂`)
 
 This statement is essentially Lemme 6.5 in
 [the paper by Kahn and Maltsiniotis][KahnMaltsiniotis2008].
@@ -42,7 +42,7 @@ namespace IsRightDerivabilityStructure
 section
 
 variable (Φ : LocalizerMorphism W₁ W₂)
-  [W₁.IsMultiplicative] [∀ X₂, IsConnected (Φ.RightResolution X₂)]
+  [∀ X₂, IsConnected (Φ.RightResolution X₂)]
   [Φ.arrow.HasRightResolutions] [W₂.ContainsIdentities]
 
 namespace Constructor
@@ -90,7 +90,7 @@ lemma isConnected :
       (isPreconnected_zigzag (RightResolution.mk (𝟙 _) (W₂.id_mem _))
         (RightResolution.mk ρ.w.right ρ.hw.2))
   refine Zigzag.trans ?_ (Zigzag.trans this ?_)
-  · exact Zigzag.of_hom (eqToHom (by aesop))
+  · exact Zigzag.of_hom (eqToHom (by simp))
   · apply Zigzag.of_inv
     refine CostructuredArrow.homMk (StructuredArrow.homMk ρ.X₁.hom (by simp)) ?_
     ext

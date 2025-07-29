@@ -3,10 +3,10 @@ Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta, Huỳnh Trần Khanh, Stuart Presnell
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Fintype.Prod
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Stars and bars
@@ -54,7 +54,7 @@ stars and bars, multichoose
 
 open Finset Fintype Function Sum Nat
 
-variable {α β : Type*}
+variable {α : Type*}
 
 namespace Sym
 
@@ -87,7 +87,6 @@ protected def e2 {n k : ℕ} : { s : Sym (Fin n.succ.succ) k // ↑0 ∉ s } ≃
   right_inv s := by
     simp only [map_map, comp_apply, ← Fin.castSucc_zero, Fin.predAbove_succAbove, map_id']
 
--- Porting note: use eqn compiler instead of `pincerRecursion` to make cases more readable
 theorem card_sym_fin_eq_multichoose : ∀ n k : ℕ, card (Sym (Fin n) k) = multichoose n k
   | n, 0 => by simp
   | 0, k + 1 => by rw [multichoose_zero_succ]; exact card_eq_zero
@@ -103,9 +102,7 @@ theorem card_sym_fin_eq_multichoose : ∀ n k : ℕ, card (Sym (Fin n) k) = mult
 theorem card_sym_eq_multichoose (α : Type*) (k : ℕ) [Fintype α] [Fintype (Sym α k)] :
     card (Sym α k) = multichoose (card α) k := by
   rw [← card_sym_fin_eq_multichoose]
-  -- FIXME: Without the `Fintype` namespace, why does it complain about `Finset.card_congr` being
-  -- deprecated?
-  exact Fintype.card_congr (equivCongr (equivFin α))
+  exact card_congr (equivCongr (equivFin α))
 
 /-- The *stars and bars* lemma: the cardinality of `Sym α k` is equal to
 `Nat.choose (card α + k - 1) k`. -/
@@ -121,8 +118,8 @@ namespace Sym2
 
 variable [DecidableEq α]
 
-/-- The `diag` of `s : Finset α` is sent on a finset of `Sym2 α` of card `s.card`. -/
-theorem card_image_diag (s : Finset α) : (s.diag.image Sym2.mk).card = s.card := by
+/-- The `diag` of `s : Finset α` is sent on a finset of `Sym2 α` of card `#s`. -/
+theorem card_image_diag (s : Finset α) : #(s.diag.image Sym2.mk) = #s := by
   rw [card_image_of_injOn, diag_card]
   rintro ⟨x₀, x₁⟩ hx _ _ h
   cases Sym2.eq.1 h
@@ -130,8 +127,7 @@ theorem card_image_diag (s : Finset α) : (s.diag.image Sym2.mk).card = s.card :
   · simp only [mem_coe, mem_diag] at hx
     rw [hx.2]
 
-theorem two_mul_card_image_offDiag (s : Finset α) :
-    2 * (s.offDiag.image Sym2.mk).card = s.offDiag.card := by
+lemma two_mul_card_image_offDiag (s : Finset α) : 2 * #(s.offDiag.image Sym2.mk) = #s.offDiag := by
   rw [card_eq_sum_card_image (Sym2.mk : α × α → _), sum_const_nat (Sym2.ind _), mul_comm]
   rintro x y hxy
   simp_rw [mem_image, mem_offDiag] at hxy
@@ -140,21 +136,20 @@ theorem two_mul_card_image_offDiag (s : Finset α) :
   obtain ⟨hx, hy, hxy⟩ : x ∈ s ∧ y ∈ s ∧ x ≠ y := by
     cases h <;> refine ⟨‹_›, ‹_›, ?_⟩ <;> [exact ha; exact ha.symm]
   have hxy' : y ≠ x := hxy.symm
-  have : (s.offDiag.filter fun z => Sym2.mk z = s(x, y)) = ({(x, y), (y, x)} : Finset _) := by
+  have : {z ∈ s.offDiag | Sym2.mk z = s(x, y)} = {(x, y), (y, x)} := by
     ext ⟨x₁, y₁⟩
-    rw [mem_filter, mem_insert, mem_singleton, Sym2.eq_iff, Prod.mk.inj_iff, Prod.mk.inj_iff,
+    rw [mem_filter, mem_insert, mem_singleton, Sym2.eq_iff, Prod.mk_inj, Prod.mk_inj,
       and_iff_right_iff_imp]
     -- `hxy'` is used in `exact`
     rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩) <;> rw [mem_offDiag] <;> exact ⟨‹_›, ‹_›, ‹_›⟩
-  rw [this, card_insert_of_not_mem, card_singleton]
-  simp only [not_and, Prod.mk.inj_iff, mem_singleton]
+  rw [this, card_insert_of_notMem, card_singleton]
+  simp only [not_and, Prod.mk_inj, mem_singleton]
   exact fun _ => hxy'
 
-/-- The `offDiag` of `s : Finset α` is sent on a finset of `Sym2 α` of card `s.offDiag.card / 2`.
+/-- The `offDiag` of `s : Finset α` is sent on a finset of `Sym2 α` of card `#s.offDiag / 2`.
 This is because every element `s(x, y)` of `Sym2 α` not on the diagonal comes from exactly two
 pairs: `(x, y)` and `(y, x)`. -/
-theorem card_image_offDiag (s : Finset α) :
-    (s.offDiag.image Sym2.mk).card = s.card.choose 2 := by
+theorem card_image_offDiag (s : Finset α) : #(s.offDiag.image Sym2.mk) = (#s).choose 2 := by
   rw [Nat.choose_two_right, Nat.mul_sub_left_distrib, mul_one, ← offDiag_card,
     Nat.div_eq_of_eq_mul_right Nat.zero_lt_two (two_mul_card_image_offDiag s).symm]
 

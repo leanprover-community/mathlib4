@@ -34,25 +34,16 @@ theorem pi_gt_sqrtTwoAddSeries (n : ℕ) : 2 ^ (n + 1) * √(2 - sqrtTwoAddSerie
 theorem pi_lt_sqrtTwoAddSeries (n : ℕ) :
     π < 2 ^ (n + 1) * √(2 - sqrtTwoAddSeries 0 n) + 1 / 4 ^ n := by
   have : π < (√(2 - sqrtTwoAddSeries 0 n) / 2 + 1 / (2 ^ n) ^ 3 / 4) * (2 : ℝ) ^ (n + 2) := by
-    rw [← div_lt_iff₀ (by norm_num), ← sin_pi_over_two_pow_succ]
-    refine lt_of_lt_of_le (lt_add_of_sub_right_lt (sin_gt_sub_cube ?_ ?_)) ?_
-    · apply div_pos pi_pos; apply pow_pos; norm_num
-    · rw [div_le_iff₀']
-      · refine le_trans pi_le_four ?_
-        simp only [show (4 : ℝ) = (2 : ℝ) ^ 2 by norm_num, mul_one]
-        apply pow_le_pow_right (by norm_num)
-        apply le_add_of_nonneg_left; apply Nat.zero_le
-      · apply pow_pos; norm_num
-    apply add_le_add_left; rw [div_le_div_right (by norm_num)]
-    rw [le_div_iff₀ (by norm_num), ← mul_pow]
-    refine le_trans ?_ (le_of_eq (one_pow 3)); apply pow_le_pow_left
-    · apply le_of_lt; apply mul_pos
-      · apply div_pos pi_pos; apply pow_pos; norm_num
-      · apply pow_pos; norm_num
-    · rw [← le_div_iff₀ (by norm_num)]
-      refine le_trans ((div_le_div_right ?_).mpr pi_le_four) ?_
-      · apply pow_pos; norm_num
-      · ring_nf; rfl
+    rw [← div_lt_iff₀ (by norm_num), ← sin_pi_over_two_pow_succ, ← sub_lt_iff_lt_add']
+    calc
+      π / 2 ^ (n + 2) - sin (π / 2 ^ (n + 2)) < (π / 2 ^ (n + 2)) ^ 3 / 4 :=
+        sub_lt_comm.1 <| sin_gt_sub_cube (by positivity) <| div_le_one_of_le₀ ?_ (by positivity)
+      _ ≤ (4 / 2 ^ (n + 2)) ^ 3 / 4 := by gcongr; exact pi_le_four
+      _ = 1 / (2 ^ n) ^ 3 / 4 := by simp [add_comm n, pow_add, div_mul_eq_div_div]; norm_num
+    calc
+      π ≤ 4 := pi_le_four
+      _ = 2 ^ (0 + 2) := by norm_num
+      _ ≤ 2 ^ (n + 2) := by gcongr <;> norm_num
   refine lt_of_lt_of_le this (le_of_eq ?_); rw [add_mul]; congr 1
   · ring
   simp only [show (4 : ℝ) = 2 ^ 2 by norm_num, ← pow_mul, div_div, ← pow_add]
@@ -77,7 +68,7 @@ theorem sqrtTwoAddSeries_step_up (c d : ℕ) {a b n : ℕ} {z : ℝ} (hz : sqrtT
   have hb' : 0 < (b : ℝ) := Nat.cast_pos.2 hb
   have hd' : 0 < (d : ℝ) := Nat.cast_pos.2 hd
   rw [sqrt_le_left (div_nonneg c.cast_nonneg d.cast_nonneg), div_pow,
-    add_div_eq_mul_add_div _ _ (ne_of_gt hb'), div_le_div_iff hb' (pow_pos hd' _)]
+    add_div_eq_mul_add_div _ _ (ne_of_gt hb'), div_le_div_iff₀ hb' (pow_pos hd' _)]
   exact mod_cast h
 
 /-- From a lower bound on `sqrtTwoAddSeries 0 n = 2 cos (π / 2 ^ (n+1))` of the form
@@ -100,7 +91,7 @@ theorem sqrtTwoAddSeries_step_down (a b : ℕ) {c d n : ℕ} {z : ℝ}
   apply le_sqrt_of_sq_le
   have hb' : 0 < (b : ℝ) := Nat.cast_pos.2 hb
   have hd' : 0 < (d : ℝ) := Nat.cast_pos.2 hd
-  rw [div_pow, add_div_eq_mul_add_div _ _ (ne_of_gt hd'), div_le_div_iff (pow_pos hb' _) hd']
+  rw [div_pow, add_div_eq_mul_add_div _ _ (ne_of_gt hd'), div_le_div_iff₀ (pow_pos hb' _) hd']
   exact mod_cast h
 
 section Tactic
@@ -168,39 +159,33 @@ theorem pi_lt_four : π < 4 := by
 theorem pi_gt_d2 : 3.14 < π := by
   -- bound[314*^-2, Iters -> 4, Rounding -> 1.5, Precision -> 8]
   pi_lower_bound [338 / 239, 704 / 381, 1940 / 989, 1447 / 727]
-@[deprecated (since := "2024-09-19")] alias pi_gt_314 := pi_gt_d2
 
 theorem pi_lt_d2 : π < 3.15 := by
   -- bound[315*^-2, Iters -> 4, Rounding -> 1.4, Precision -> 7]
   pi_upper_bound [41 / 29, 109 / 59, 865 / 441, 412 / 207]
-@[deprecated (since := "2024-09-19")] alias pi_lt_315 := pi_lt_d2
 
 theorem pi_gt_d4 : 3.1415 < π := by
   -- bound[31415*^-4, Iters -> 6, Rounding -> 1.1, Precision -> 10]
   pi_lower_bound [
     1970 / 1393, 3010 / 1629, 11689 / 5959, 10127 / 5088, 33997 / 17019, 23235 / 11621]
-@[deprecated (since := "2024-09-19")] alias pi_gt_31415 := pi_gt_d4
 
 theorem pi_lt_d4 : π < 3.1416 := by
   -- bound[31416*^-4, Iters -> 9, Rounding -> .9, Precision -> 16]
   pi_upper_bound [
     4756/3363, 14965/8099, 21183/10799, 49188/24713, 2-53/22000, 2-71/117869, 2-47/312092,
     2-17/451533, 2-4/424971]
-@[deprecated (since := "2024-09-19")] alias pi_lt_31416 := pi_lt_d4
 
 theorem pi_gt_d6 : 3.141592 < π := by
   -- bound[3141592*^-6, Iters -> 10, Rounding -> .8, Precision -> 16]
   pi_lower_bound [
     11482/8119, 7792/4217, 54055/27557, 2-623/64690, 2-337/139887, 2-208/345307, 2-167/1108925,
     2-64/1699893, 2-31/3293535, 2-48/20398657]
-@[deprecated (since := "2024-09-19")] alias pi_gt_3141592 := pi_gt_d6
 
 theorem pi_lt_d6 : π < 3.141593 := by
   -- bound[3141593*^-6, Iters -> 11, Rounding -> .5, Precision -> 17]
   pi_upper_bound [
     35839/25342, 49143/26596, 145729/74292, 294095/147759, 2-137/56868, 2-471/781921, 2-153/1015961,
     2-157/4170049, 2-28/2974805, 2-9/3824747, 2-7/11899211]
-@[deprecated (since := "2024-09-19")] alias pi_lt_3141593 := pi_lt_d6
 
 theorem pi_gt_d20 : 3.14159265358979323846 < π := by
   -- bound[314159265358979323846*^-20, Iters -> 34, Rounding -> .6, Precision -> 46]

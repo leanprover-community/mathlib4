@@ -3,7 +3,8 @@ Copyright (c) 2023 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.GroupTheory.Abelianization
+import Mathlib.GroupTheory.Commutator.Basic
+import Mathlib.Tactic.Group
 import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
@@ -25,7 +26,7 @@ group, topological abelianization
 
 -/
 
-variable (G : Type*) [Group G] [TopologicalSpace G] [TopologicalGroup G]
+variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 
 instance instNormalCommutatorClosure : (commutator G).topologicalClosure.Normal :=
   Subgroup.is_normal_topologicalClosure (commutator G)

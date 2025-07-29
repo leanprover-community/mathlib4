@@ -39,7 +39,6 @@ variable [Applicative F] [LawfulApplicative F]
 variable [Applicative G] [LawfulApplicative G]
 variable {α β γ : Type u}
 variable (g : α → F β)
-variable (h : β → G γ)
 variable (f : β → γ)
 
 /-- The natural applicative transformation from the identity functor
@@ -47,7 +46,7 @@ to `F`, defined by `pure : Π {α}, α → F α`. -/
 def PureTransformation :
     ApplicativeTransformation Id F where
   app := @pure F _
-  preserves_pure' x := rfl
+  preserves_pure' _ := rfl
   preserves_seq' f x := by
     simp only [map_pure, seq_pure]
     rfl
@@ -58,8 +57,7 @@ theorem pureTransformation_apply {α} (x : id α) : PureTransformation F x = pur
 
 variable {F G}
 
--- Porting note: need to specify `m/F/G := Id` because `id` no longer has a `Monad` instance
-theorem map_eq_traverse_id : map (f := t) f = traverse (m := Id) (pure ∘ f) :=
+theorem map_eq_traverse_id : map (f := t) f = Id.run ∘ traverse (pure ∘ f) :=
   funext fun y => (traverse_eq_map_id f y).symm
 
 theorem map_traverse (x : t α) : map f <$> traverse g x = traverse (map f ∘ g) x := by

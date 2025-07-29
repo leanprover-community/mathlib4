@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 import Mathlib.Data.Set.UnionLift
 
 /-!
@@ -12,9 +12,9 @@ import Mathlib.Data.Set.UnionLift
 
 ## Main results
 
- * `Subalgebra.coe_iSup_of_directed`: a directed supremum consists of the union of the algebras
- * `Subalgebra.iSupLift`: define an algebra homomorphism on a directed supremum of subalgebras by
-   defining it on each subalgebra, and proving that it agrees on the intersection of subalgebras.
+* `Subalgebra.coe_iSup_of_directed`: a directed supremum consists of the union of the algebras
+* `Subalgebra.iSupLift`: define an algebra homomorphism on a directed supremum of subalgebras by
+  defining it on each subalgebra, and proving that it agrees on the intersection of subalgebras.
 -/
 
 namespace Subalgebra
@@ -37,21 +37,21 @@ theorem coe_iSup_of_directed (dir : Directed (· ≤ ·) K) : ↑(iSup K) = ⋃ 
 
 variable (K)
 
--- Porting note (#11215): TODO: turn `hT` into an assumption `T ≤ iSup K`.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: turn `hT` into an assumption `T ≤ iSup K`.
 -- That's what `Set.iUnionLift` needs
 -- Porting note: the proofs of `map_{zero,one,add,mul}` got a bit uglier, probably unification trbls
 /-- Define an algebra homomorphism on a directed supremum of subalgebras by defining
 it on each subalgebra, and proving that it agrees on the intersection of subalgebras. -/
 noncomputable def iSupLift (dir : Directed (· ≤ ·) K) (f : ∀ i, K i →ₐ[R] B)
     (hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h))
-    (T : Subalgebra R A) (hT : T = iSup K): ↥T →ₐ[R] B :=
+    (T : Subalgebra R A) (hT : T = iSup K) : ↥T →ₐ[R] B :=
   { toFun := Set.iUnionLift (fun i => ↑(K i)) (fun i x => f i x)
         (fun i j x hxi hxj => by
           let ⟨k, hik, hjk⟩ := dir i j
           dsimp
           rw [hf i k hik, hf j k hjk]
           rfl)
-        T (by rw [hT, coe_iSup_of_directed dir])
+        (T : Set A) (by rw [hT, coe_iSup_of_directed dir])
     map_one' := by apply Set.iUnionLift_const _ (fun _ => 1) <;> simp
     map_zero' := by dsimp; apply Set.iUnionLift_const _ (fun _ => 0) <;> simp
     map_mul' := by

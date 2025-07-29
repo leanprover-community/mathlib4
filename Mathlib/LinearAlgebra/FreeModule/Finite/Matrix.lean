@@ -3,8 +3,8 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.LinearAlgebra.Dimension.LinearMap
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+import Mathlib.LinearAlgebra.Dimension.Finite
 
 /-!
 # Finite and free modules using matrices
@@ -65,9 +65,6 @@ theorem Module.rank_linearMap_self :
 theorem Module.finrank_linearMap_self : finrank S (M →ₗ[R] S) = finrank R M := by
   rw [finrank_linearMap, finrank_self, mul_one]
 
-@[deprecated (since := "2024-01-12")]
-alias Module.finrank_linear_map' := Module.finrank_linearMap_self
-
 end Ring
 
 section AlgHom
@@ -80,14 +77,17 @@ instance Finite.algHom : Finite (M →ₐ[K] L) :=
 
 open Cardinal
 
-theorem cardinal_mk_algHom_le_rank : #(M →ₐ[K] L) ≤ lift.{v} (Module.rank K M) := by
+theorem cardinalMk_algHom_le_rank : #(M →ₐ[K] L) ≤ lift.{v} (Module.rank K M) := by
   convert (linearIndependent_algHom_toLinearMap K M L).cardinal_lift_le_rank
   · rw [lift_id]
   · have := Module.nontrivial K L
     rw [lift_id, Module.rank_linearMap_self]
 
+@[deprecated (since := "2024-11-10")] alias cardinal_mk_algHom_le_rank := cardinalMk_algHom_le_rank
+
+@[stacks 09HS]
 theorem card_algHom_le_finrank : Nat.card (M →ₐ[K] L) ≤ finrank K M := by
-  convert toNat_le_toNat (cardinal_mk_algHom_le_rank K M L) ?_
+  convert toNat_le_toNat (cardinalMk_algHom_le_rank K M L) ?_
   · rw [toNat_lift, finrank]
   · rw [lift_lt_aleph0]; have := Module.nontrivial K L; apply Module.rank_lt_aleph0
 
@@ -105,11 +105,3 @@ instance Module.Free.addMonoidHom [Module.Free ℤ N] : Module.Free ℤ (M →+ 
   Module.Free.of_equiv (addMonoidHomLequivInt ℤ).symm
 
 end Integer
-
-theorem Matrix.rank_vecMulVec {K m n : Type u} [CommRing K] [Fintype n]
-    [DecidableEq n] (w : m → K) (v : n → K) : (Matrix.vecMulVec w v).toLin'.rank ≤ 1 := by
-  nontriviality K
-  rw [Matrix.vecMulVec_eq (Fin 1), Matrix.toLin'_mul]
-  refine le_trans (LinearMap.rank_comp_le_left _ _) ?_
-  refine (LinearMap.rank_le_domain _).trans_eq ?_
-  rw [rank_fun', Fintype.card_ofSubsingleton, Nat.cast_one]

@@ -3,6 +3,7 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
+import Mathlib.Algebra.Group.TransferInstance
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 import Mathlib.CategoryTheory.Limits.FintypeCat
 import Mathlib.CategoryTheory.Limits.MonoCoprod
@@ -10,7 +11,6 @@ import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
 import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 import Mathlib.CategoryTheory.SingleObj
 import Mathlib.Data.Finite.Card
-import Mathlib.Logic.Equiv.TransferInstance
 
 /-!
 # Definition and basic properties of Galois categories
@@ -25,6 +25,9 @@ the definitions in Lenstras notes (see below for a reference).
 * `GaloisCategory`    : a `PreGaloisCategory` that admits a `FiberFunctor`
 * `IsConnected`       : an object of a category is connected if it is not initial
                         and does not have non-trivial subobjects
+
+Any fiber functor `F` induces an equivalence with the category of finite, discrete `Aut F`-types.
+This is proven in `Mathlib/CategoryTheory/Galois/Equivalence.lean`.
 
 ## Implementation details
 
@@ -131,25 +134,25 @@ attribute [instance] preservesTerminalObjects preservesPullbacks preservesEpis
   preservesFiniteCoproducts reflectsIsos preservesQuotientsByFiniteGroups
 
 noncomputable instance : ReflectsLimitsOfShape (Discrete PEmpty.{1}) F :=
-  reflectsLimitsOfShapeOfReflectsIsomorphisms
+  reflectsLimitsOfShape_of_reflectsIsomorphisms
 
 noncomputable instance : ReflectsColimitsOfShape (Discrete PEmpty.{1}) F :=
-  reflectsColimitsOfShapeOfReflectsIsomorphisms
+  reflectsColimitsOfShape_of_reflectsIsomorphisms
 
 noncomputable instance : PreservesFiniteLimits F :=
-  preservesFiniteLimitsOfPreservesTerminalAndPullbacks F
+  preservesFiniteLimits_of_preservesTerminal_and_pullbacks F
 
 /-- Fiber functors preserve quotients by finite groups in arbitrary universes. -/
-noncomputable instance {G : Type*} [Group G] [Finite G] :
+instance {G : Type*} [Group G] [Finite G] :
     PreservesColimitsOfShape (SingleObj G) F := by
   choose G' hg hf he using Finite.exists_type_univ_nonempty_mulEquiv G
-  exact Limits.preservesColimitsOfShapeOfEquiv he.some.toSingleObjEquiv.symm F
+  exact Limits.preservesColimitsOfShape_of_equiv he.some.toSingleObjEquiv.symm F
 
 /-- Fiber functors reflect monomorphisms. -/
 instance : ReflectsMonomorphisms F := ReflectsMonomorphisms.mk <| by
   intro X Y f _
   haveI : IsIso (pullback.fst (F.map f) (F.map f)) :=
-    fst_iso_of_mono_eq (F.map f)
+    isIso_fst_of_mono (F.map f)
   haveI : IsIso (F.map (pullback.fst f f)) := by
     rw [← PreservesPullback.iso_hom_fst]
     exact IsIso.comp_isIso
@@ -170,9 +173,9 @@ section
 
 /-- If `F` is a fiber functor and `E` is an equivalence between categories of finite types,
 then `F ⋙ E` is again a fiber functor. -/
-noncomputable def compRight (E : FintypeCat.{w} ⥤ FintypeCat.{t}) [E.IsEquivalence] :
+instance comp_right (E : FintypeCat.{w} ⥤ FintypeCat.{t}) [E.IsEquivalence] :
     FiberFunctor (F ⋙ E) where
-  preservesQuotientsByFiniteGroups G := compPreservesColimitsOfShape F E
+  preservesQuotientsByFiniteGroups _ := comp_preservesColimitsOfShape F E
 
 end
 
@@ -213,10 +216,10 @@ variable [PreGaloisCategory C] [FiberFunctor F]
 lemma initial_iff_fiber_empty (X : C) : Nonempty (IsInitial X) ↔ IsEmpty (F.obj X) := by
   rw [(IsInitial.isInitialIffObj F X).nonempty_congr]
   haveI : PreservesFiniteColimits (forget FintypeCat) := by
-    show PreservesFiniteColimits FintypeCat.incl
+    change PreservesFiniteColimits FintypeCat.incl
     infer_instance
   haveI : ReflectsColimit (Functor.empty.{0} _) (forget FintypeCat) := by
-    show ReflectsColimit (Functor.empty.{0} _) FintypeCat.incl
+    change ReflectsColimit (Functor.empty.{0} _) FintypeCat.incl
     infer_instance
   exact Concrete.initial_iff_empty_of_preserves_of_reflects (F.obj X)
 
@@ -309,7 +312,7 @@ lemma evaluation_injective_of_isConnected (A X : C) [IsConnected A] (a : F.obj A
 /-- The evaluation map on automorphisms is injective for connected objects. -/
 lemma evaluation_aut_injective_of_isConnected (A : C) [IsConnected A] (a : F.obj A) :
     Function.Injective (fun f : Aut A ↦ F.map (f.hom) a) := by
-  show Function.Injective ((fun f : A ⟶ A ↦ F.map f a) ∘ (fun f : Aut A ↦ f.hom))
+  change Function.Injective ((fun f : A ⟶ A ↦ F.map f a) ∘ (fun f : Aut A ↦ f.hom))
   apply Function.Injective.comp
   · exact evaluation_injective_of_isConnected F A A a
   · exact @Aut.ext _ _ A
@@ -361,7 +364,7 @@ lemma lt_card_fiber_of_mono_of_notIso {X Y : C} (f : X ⟶ Y) [Mono f]
   by_contra hlt
   apply h
   apply isIso_of_mono_of_eq_card_fiber F f
-  simp only [gt_iff_lt, not_lt] at hlt
+  simp only [not_lt] at hlt
   exact Nat.le_antisymm
     (Finite.card_le_of_injective (F.map f) (injective_of_mono_of_preservesPullback (F.map f))) hlt
 
@@ -403,8 +406,8 @@ end CardFiber
 end PreGaloisCategory
 
 /-- A `PreGaloisCategory` is a `GaloisCategory` if it admits a fiber functor. -/
-class GaloisCategory (C : Type u₁) [Category.{u₂, u₁} C]
-    extends PreGaloisCategory C : Prop where
+class GaloisCategory (C : Type u₁) [Category.{u₂, u₁} C] : Prop
+    extends PreGaloisCategory C where
   hasFiberFunctor : ∃ F : C ⥤ FintypeCat.{u₂}, Nonempty (PreGaloisCategory.FiberFunctor F)
 
 namespace PreGaloisCategory

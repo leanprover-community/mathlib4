@@ -115,7 +115,7 @@ noncomputable def inlX (i j : ι) (hij : c.Rel j i) : F.X i ⟶ X φ j :=
   biprod.inl ≫ (XIsoBiprod φ j i hij).inv
 
 @[reassoc (attr := simp)]
-lemma inlX_fstX (i j : ι ) (hij : c.Rel j i) :
+lemma inlX_fstX (i j : ι) (hij : c.Rel j i) :
     inlX φ i j hij ≫ fstX φ j i hij = 𝟙 _ := by
   simp [inlX, fstX]
 
@@ -186,8 +186,7 @@ lemma d_sndX (i j : ι) (hij : c.Rel i j) :
 lemma inlX_d (i j k : ι) (hij : c.Rel i j) (hjk : c.Rel j k) :
     inlX φ j i hij ≫ d φ i j = -F.d j k ≫ inlX φ k j hjk + φ.f j ≫ inrX φ j := by
   apply ext_to_X φ j k hjk
-  · dsimp
-    simp [d_fstX φ  _ _ _ hij hjk]
+  · simp [d_fstX φ  _ _ _ hij hjk]
   · simp [d_sndX φ _ _ hij]
 
 @[reassoc]
@@ -245,7 +244,7 @@ noncomputable def inrCompHomotopy (hc : ∀ j, ∃ i, c.Rel i j) :
     Homotopy (φ ≫ inr φ) 0 where
   hom i j :=
     if hij : c.Rel j i then inlX φ i j hij else 0
-  zero i j hij := dif_neg hij
+  zero _ _ hij := dif_neg hij
   comm j := by
     obtain ⟨i, hij⟩ := hc j
     rw [prevD_eq _ hij, dif_pos hij]
@@ -280,7 +279,6 @@ noncomputable def desc :
     else sndX φ j ≫ α.f j
   comm' j k hjk := by
     obtain rfl := c.next_eq' hjk
-    dsimp
     simp [dif_pos hjk]
     have H := hα.comm (c.next j)
     simp only [comp_f, zero_f, add_zero, prevD_eq _ hjk] at H
@@ -288,8 +286,7 @@ noncomputable def desc :
     · simp only [comp_add, d_sndX_assoc _ _ _ hjk, add_comp, assoc, H,
         d_fstX_assoc _ _ _ _ hjk, neg_comp, dNext, AddMonoidHom.mk'_apply]
       abel
-    · simp only [d_sndX_assoc _ _ _ hjk, add_comp, assoc, add_left_inj, H,
-        dNext_eq_zero _ _ hj, zero_add]
+    · simp only [d_sndX_assoc _ _ _ hjk, add_comp, assoc, H, dNext_eq_zero _ _ hj, zero_add]
 
 lemma desc_f (j k : ι) (hjk : c.Rel j k) :
     (desc φ α hα).f j = fstX φ j _ hjk ≫ hα.hom _ j + sndX φ j ≫ α.f j := by
@@ -545,7 +542,7 @@ end cylinder
 
 /-- If a functor inverts homotopy equivalences, it sends homotopic maps to the same map. -/
 lemma _root_.Homotopy.map_eq_of_inverts_homotopyEquivalences
-    {φ₀ φ₁ : F ⟶ G} (h : Homotopy φ₀ φ₁)(hc : ∀ j, ∃ i, c.Rel i j)
+    {φ₀ φ₁ : F ⟶ G} (h : Homotopy φ₀ φ₁) (hc : ∀ j, ∃ i, c.Rel i j)
     [∀ i, HasBinaryBiproduct (F.X i) (F.X i)]
     [HasHomotopyCofiber (biprod.lift (𝟙 F) (-𝟙 F))]
     {D : Type*} [Category D] (H : HomologicalComplex C c ⥤ D)

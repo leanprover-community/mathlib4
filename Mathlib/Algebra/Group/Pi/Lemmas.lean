@@ -5,7 +5,9 @@ Authors: Simon Hudon, Patrick Massot
 -/
 import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.Hom.Instances
-import Mathlib.Data.Set.Function
+import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.Group.Torsion
+import Mathlib.Data.Set.Piecewise
 import Mathlib.Logic.Pairwise
 
 /-!
@@ -15,19 +17,15 @@ This file proves lemmas about the instances defined in `Algebra.Group.Pi.Basic` 
 imports.
 -/
 
-assert_not_exists AddMonoidWithOne
-assert_not_exists MonoidWithZero
+assert_not_exists AddMonoidWithOne MonoidWithZero
 
 universe u v w
 
 variable {ι α : Type*}
 variable {I : Type u}
+variable {f : I → Type v} {M : ι → Type*}
 
--- The indexing type
-variable {f : I → Type v}
-
--- The family of types already equipped with instances
-variable (x y : ∀ i, f i) (i j : I)
+variable (i : I)
 
 @[to_additive (attr := simp)]
 theorem Set.range_one {α β : Type*} [One β] [Nonempty α] : Set.range (1 : α → β) = {1} :=
@@ -39,6 +37,10 @@ theorem Set.preimage_one {α β : Type*} [One β] (s : Set β) [Decidable ((1 : 
   Set.preimage_const 1 s
 
 namespace Pi
+
+instance instIsMulTorsionFree [∀ i, Monoid (M i)] [∀ i, IsMulTorsionFree (M i)] :
+    IsMulTorsionFree (∀ i, M i) where
+  pow_left_injective n hn a b hab := by ext i; exact pow_left_injective hn <| congr_fun hab i
 
 variable {α β : Type*} [Preorder α] [Preorder β]
 
@@ -68,9 +70,9 @@ def Pi.mulHom {γ : Type w} [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f
 
 @[to_additive]
 theorem Pi.mulHom_injective {γ : Type w} [Nonempty I] [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f i)
-    (hg : ∀ i, Function.Injective (g i)) : Function.Injective (Pi.mulHom g) := fun x y h =>
+    (hg : ∀ i, Function.Injective (g i)) : Function.Injective (Pi.mulHom g) := fun _ _ h =>
   let ⟨i⟩ := ‹Nonempty I›
-  hg i ((Function.funext_iff.mp h : _) i)
+  hg i ((funext_iff.mp h :) i)
 
 /-- A family of monoid homomorphisms `f a : γ →* β a` defines a monoid homomorphism
 `Pi.monoidHom f : γ →* Π a, β a` given by `Pi.monoidHom f x b = f b x`. -/
@@ -174,7 +176,7 @@ homomorphism `f` between `α` and `β`. -/
 protected def MonoidHom.compLeft {α β : Type*} [MulOneClass α] [MulOneClass β] (f : α →* β)
     (I : Type*) : (I → α) →* I → β where
   toFun h := f ∘ h
-  map_one' := by ext; dsimp; simp
+  map_one' := by ext; simp
   map_mul' _ _ := by ext; simp
 
 end MonoidHom
@@ -185,8 +187,7 @@ variable [DecidableEq I]
 
 open Pi
 
-variable (f)
-
+variable (f) in
 /-- The one-preserving homomorphism including a single value
 into a dependent family of values, as functions supported at a point.
 
@@ -204,6 +205,11 @@ nonrec def OneHom.mulSingle [∀ i, One <| f i] (i : I) : OneHom (f i) (∀ i, f
 theorem OneHom.mulSingle_apply [∀ i, One <| f i] (i : I) (x : f i) :
     mulSingle f i x = Pi.mulSingle i x := rfl
 
+@[to_additive (attr := simp, norm_cast)]
+theorem OneHom.coe_mulSingle [∀ i, One <| f i] (i : I) :
+    mulSingle f i = Pi.mulSingle (M := f) i := rfl
+
+variable (f) in
 /-- The monoid homomorphism including a single monoid into a dependent family of additive monoids,
 as functions supported at a point.
 
@@ -221,7 +227,9 @@ theorem MonoidHom.mulSingle_apply [∀ i, MulOneClass <| f i] (i : I) (x : f i) 
     mulSingle f i x = Pi.mulSingle i x :=
   rfl
 
-variable {f}
+@[to_additive (attr := simp, norm_cast)]
+theorem MonoidHom.coe_mulSingle [∀ i, MulOneClass <| f i] (i : I) :
+    mulSingle f i = Pi.mulSingle (M := f) i := rfl
 
 @[to_additive]
 theorem Pi.mulSingle_sup [∀ i, SemilatticeSup (f i)] [∀ i, One (f i)] (i : I) (x y : f i) :
@@ -271,10 +279,7 @@ theorem Pi.mulSingle_commute [∀ i, MulOneClass <| f i] :
   by_cases h1 : i = k
   · subst h1
     simp [hij]
-  by_cases h2 : j = k
-  · subst h2
-    simp [hij]
-  simp [h1, h2]
+  simp_all
 
 /-- The injection into a pi group with the same values commutes. -/
 @[to_additive "The injection into an additive pi group with the same values commutes."]
@@ -290,7 +295,7 @@ theorem Pi.update_eq_div_mul_mulSingle [∀ i, Group <| f i] (g : ∀ i : I, f i
   ext j
   rcases eq_or_ne i j with (rfl | h)
   · simp
-  · simp [Function.update_noteq h.symm, h]
+  · simp [Function.update_of_ne h.symm, h]
 
 @[to_additive]
 theorem Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type*} [CommMonoid M]
@@ -302,7 +307,7 @@ theorem Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type*} [CommM
     have hl := congr_fun h l
     have hm := (congr_fun h m).symm
     have hn := (congr_fun h n).symm
-    simp only [mul_apply, mulSingle_apply, if_pos rfl] at hk hl hm hn
+    simp only [mul_apply, mulSingle_apply] at hk hl hm hn
     rcases eq_or_ne k m with (rfl | hkm)
     · refine Or.inl ⟨rfl, not_ne_iff.mp fun hln => (hv ?_).elim⟩
       rcases eq_or_ne k l with (rfl | hkl)
@@ -337,10 +342,10 @@ theorem SemiconjBy.pi {x y z : ∀ i, f i} (h : ∀ i, SemiconjBy (x i) (y i) (z
 
 @[to_additive]
 theorem Pi.semiconjBy_iff {x y z : ∀ i, f i} :
-    SemiconjBy x y z ↔ ∀ i, SemiconjBy (x i) (y i) (z i) := Function.funext_iff
+    SemiconjBy x y z ↔ ∀ i, SemiconjBy (x i) (y i) (z i) := funext_iff
 
 @[to_additive]
-theorem Commute.pi {x y : ∀ i, f i} (h : ∀ i, Commute (x i) (y i)) : Commute x y := .pi h
+theorem Commute.pi {x y : ∀ i, f i} (h : ∀ i, Commute (x i) (y i)) : Commute x y := SemiconjBy.pi h
 
 @[to_additive]
 theorem Pi.commute_iff {x y : ∀ i, f i} : Commute x y ↔ ∀ i, Commute (x i) (y i) := semiconjBy_iff
@@ -426,6 +431,12 @@ theorem mulSingle_mono : Monotone (Pi.mulSingle i : f i → ∀ i, f i) :=
 @[to_additive]
 theorem mulSingle_strictMono : StrictMono (Pi.mulSingle i : f i → ∀ i, f i) :=
   Function.update_strictMono
+
+@[to_additive]
+lemma mulSingle_comp_equiv {m n : Type*} [DecidableEq n] [DecidableEq m] [One α] (σ : n ≃ m)
+    (i : m) (x : α) : Pi.mulSingle i x ∘ σ = Pi.mulSingle (σ.symm i) x := by
+  ext x
+  aesop (add simp Pi.mulSingle_apply)
 
 end Pi
 

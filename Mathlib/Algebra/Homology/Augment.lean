@@ -37,7 +37,7 @@ The components of this chain map are `C.d 1 0` in degree 0, and zero otherwise.
 -/
 def truncateTo [HasZeroObject V] [HasZeroMorphisms V] (C : ChainComplex V ℕ) :
     truncate.obj C ⟶ (single₀ V).obj (C.X 0) :=
-  (toSingle₀Equiv (truncate.obj C) (C.X 0)).symm ⟨C.d 1 0, by aesop⟩
+  (toSingle₀Equiv (truncate.obj C) (C.X 0)).symm ⟨C.d 1 0, by simp⟩
 
 -- PROJECT when `V` is abelian (but not generally?)
 -- `[∀ n, Exact (C.d (n+2) (n+1)) (C.d (n+1) n)] [Epi (C.d 1 0)]` iff `QuasiIso (C.truncate_to)`
@@ -55,7 +55,7 @@ def augment (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (w : C.d 1 0 ≫ 
     | _, _ => 0
   shape
     | 1, 0, h => absurd rfl h
-    | i + 2, 0, _ => rfl
+    | _ + 2, 0, _ => rfl
     | 0, _, _ => rfl
     | i + 1, j + 1, h => by
       simp only; exact C.shape i j (Nat.succ_ne_succ.1 h)
@@ -88,21 +88,15 @@ to the original complex.
 -/
 def truncateAugment (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (w : C.d 1 0 ≫ f = 0) :
     truncate.obj (augment C f w) ≅ C where
-  hom := { f := fun i => 𝟙 _ }
+  hom := { f := fun _ => 𝟙 _ }
   inv :=
-    { f := fun i => 𝟙 _
+    { f := fun _ => 𝟙 _
       comm' := fun i j => by
-        cases j <;>
-          · dsimp
-            simp }
+        cases j <;> simp }
   hom_inv_id := by
-    ext (_ | i) <;>
-      · dsimp
-        simp
+    ext (_ | i) <;> simp
   inv_hom_id := by
-    ext (_ | i) <;>
-      · dsimp
-        simp
+    ext (_ | i) <;> simp
 
 @[simp]
 theorem truncateAugment_hom_f (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (w : C.d 1 0 ≫ f = 0)
@@ -125,31 +119,27 @@ theorem chainComplex_d_succ_succ_zero (C : ChainComplex V ℕ) (i : ℕ) : C.d (
 def augmentTruncate (C : ChainComplex V ℕ) :
     augment (truncate.obj C) (C.d 1 0) (C.d_comp_d _ _ _) ≅ C where
   hom :=
-    { f := fun | 0 => 𝟙 _ | n+1 => 𝟙 _
+    { f := fun | 0 => 𝟙 _ | _+1 => 𝟙 _
       comm' := fun i j => by
         -- Porting note: was an rcases n with (_|_|n) but that was causing issues
         match i with
         | 0 | 1 | n+2 =>
-          cases' j with j <;> dsimp [augment, truncate] <;> simp
+          rcases j with - | j <;> dsimp [augment, truncate] <;> simp
     }
   inv :=
-    { f := fun | 0 => 𝟙 _ | n+1 => 𝟙 _
+    { f := fun | 0 => 𝟙 _ | _+1 => 𝟙 _
       comm' := fun i j => by
         -- Porting note: was an rcases n with (_|_|n) but that was causing issues
         match i with
           | 0 | 1 | n+2 =>
-          cases' j with j <;> dsimp [augment, truncate] <;> simp
+          rcases j with - | j <;> dsimp [augment, truncate] <;> simp
     }
   hom_inv_id := by
     ext i
-    cases i <;>
-      · dsimp
-        simp
+    cases i <;> simp
   inv_hom_id := by
     ext i
-    cases i <;>
-      · dsimp
-        simp
+    cases i <;> simp
 
 @[simp]
 theorem augmentTruncate_hom_f_zero (C : ChainComplex V ℕ) :
@@ -204,7 +194,7 @@ The components of this chain map are `C.d 0 1` in degree 0, and zero otherwise.
 -/
 def toTruncate [HasZeroObject V] [HasZeroMorphisms V] (C : CochainComplex V ℕ) :
     (single₀ V).obj (C.X 0) ⟶ truncate.obj C :=
-  (fromSingle₀Equiv (truncate.obj C) (C.X 0)).symm ⟨C.d 0 1, by aesop⟩
+  (fromSingle₀Equiv (truncate.obj C) (C.X 0)).symm ⟨C.d 0 1, by simp⟩
 
 variable [HasZeroMorphisms V]
 
@@ -259,23 +249,17 @@ to the original complex.
 -/
 def truncateAugment (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0) (w : f ≫ C.d 0 1 = 0) :
     truncate.obj (augment C f w) ≅ C where
-  hom := { f := fun i => 𝟙 _ }
+  hom := { f := fun _ => 𝟙 _ }
   inv :=
-    { f := fun i => 𝟙 _
+    { f := fun _ => 𝟙 _
       comm' := fun i j => by
-        cases j <;>
-          · dsimp
-            simp }
+        cases j <;> simp }
   hom_inv_id := by
     ext i
-    cases i <;>
-      · dsimp
-        simp
+    cases i <;> simp
   inv_hom_id := by
     ext i
-    cases i <;>
-      · dsimp
-        simp
+    cases i <;> simp
 
 @[simp]
 theorem truncateAugment_hom_f (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0)
@@ -300,29 +284,27 @@ theorem cochainComplex_d_succ_succ_zero (C : CochainComplex V ℕ) (i : ℕ) : C
 def augmentTruncate (C : CochainComplex V ℕ) :
     augment (truncate.obj C) (C.d 0 1) (C.d_comp_d _ _ _) ≅ C where
   hom :=
-    { f := fun | 0 => 𝟙 _ | n+1 => 𝟙 _
+    { f := fun | 0 => 𝟙 _ | _+1 => 𝟙 _
       comm' := fun i j => by
         rcases j with (_ | _ | j) <;> cases i <;>
           · dsimp
-            -- Porting note (#10959): simp can't handle this now but aesop does
+            -- Porting note https://github.com/leanprover-community/mathlib4/issues/10959
+            -- simp can't handle this now but aesop does
             aesop }
   inv :=
-    { f := fun | 0 => 𝟙 _ | n+1 => 𝟙 _
+    { f := fun | 0 => 𝟙 _ | _+1 => 𝟙 _
       comm' := fun i j => by
-        rcases j with (_ | _ | j) <;> cases' i with i <;>
+        rcases j with (_ | _ | j) <;> rcases i with - | i <;>
           · dsimp
-            -- Porting note (#10959): simp can't handle this now but aesop does
+            -- Porting note https://github.com/leanprover-community/mathlib4/issues/10959
+            -- simp can't handle this now but aesop does
             aesop }
   hom_inv_id := by
     ext i
-    cases i <;>
-      · dsimp
-        simp
+    cases i <;> simp
   inv_hom_id := by
     ext i
-    cases i <;>
-      · dsimp
-        simp
+    cases i <;> simp
 
 @[simp]
 theorem augmentTruncate_hom_f_zero (C : CochainComplex V ℕ) :

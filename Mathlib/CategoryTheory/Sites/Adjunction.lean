@@ -17,7 +17,7 @@ categories of sheaves. We also show that `G` preserves sheafification.
 
 namespace CategoryTheory
 
-open GrothendieckTopology CategoryTheory Limits Opposite
+open GrothendieckTopology Limits Opposite Functor
 
 universe v₁ v₂ u₁ u₂
 
@@ -28,9 +28,9 @@ variable {F : D ⥤ E} {G : E ⥤ D}
 
 /-- The forgetful functor from `Sheaf J D` to sheaves of types, for a concrete category `D`
 whose forgetful functor preserves the correct limits. -/
-abbrev sheafForget [ConcreteCategory D] [HasSheafCompose J (forget D)] :
-    Sheaf J D ⥤ SheafOfTypes J :=
-  sheafCompose J (forget D) ⋙ (sheafEquivSheafOfTypes J).functor
+abbrev sheafForget [HasForget D] [HasSheafCompose J (forget D)] :
+    Sheaf J D ⥤ Sheaf J (Type _) :=
+  sheafCompose J (forget D)
 
 namespace Sheaf
 
@@ -63,7 +63,7 @@ lemma adjunction_counit_app_val [HasWeakSheafify J D] [HasSheafCompose J F] (adj
   simp only [Functor.comp_obj, sheafToPresheaf_obj, sheafCompose_obj_val, whiskeringRight_obj_obj,
     adjunction, Adjunction.map_restrictFullyFaithful_counit_app, Iso.refl_inv, NatTrans.id_app,
     Functor.comp_map, whiskeringRight_obj_map, Adjunction.comp_counit_app,
-    instCategorySheaf_comp_val, instCategorySheaf_id_val, sheafificationAdjunction_counit_app_val,
+    comp_val, sheafificationAdjunction_counit_app_val,
     sheafifyMap_sheafifyLift, Functor.id_obj, whiskerRight_id', Category.comp_id, Category.id_comp]
 
 
@@ -85,7 +85,7 @@ lemma preservesSheafification_of_adjunction (adj : G ⊣ F) :
       (hf.homEquiv (R ⋙ F) ((sheafCompose J F).obj ⟨R, hR⟩).cond)).bijective
     ext g X
     -- The rest of this proof was
-    -- `dsimp [Adjunction.whiskerRight, Adjunction.mkOfUnitCounit]; simp` before #16317.
+    -- `dsimp [Adjunction.whiskerRight, Adjunction.mkOfUnitCounit]; simp` before https://github.com/leanprover-community/mathlib4/pull/16317.
     dsimp
     rw [← NatTrans.comp_app]
     congr
@@ -96,39 +96,18 @@ instance [G.IsLeftAdjoint] : J.PreservesSheafification G :=
 
 section ForgetToType
 
-variable [HasWeakSheafify J D] [ConcreteCategory D] [HasSheafCompose J (forget D)]
+variable [HasWeakSheafify J D] [HasForget D] [HasSheafCompose J (forget D)]
 
-/-- This is the functor sending a sheaf of types `X` to the sheafification of `X ⋙ G`. -/
-abbrev composeAndSheafifyFromTypes (G : Type max v₁ u₁ ⥤ D) : SheafOfTypes J ⥤ Sheaf J D :=
-  (sheafEquivSheafOfTypes J).inverse ⋙ composeAndSheafify _ G
+@[deprecated (since := "2024-11-26")] alias composeAndSheafifyFromTypes := composeAndSheafify
 
-/-- A variant of the adjunction between sheaf categories, in the case where the right adjoint
-is the forgetful functor to sheaves of types. -/
-def adjunctionToTypes {G : Type max v₁ u₁ ⥤ D} (adj : G ⊣ forget D) :
-    composeAndSheafifyFromTypes J G ⊣ sheafForget J :=
-  (sheafEquivSheafOfTypes J).symm.toAdjunction.comp (adjunction J adj)
+/-- The adjunction `composeAndSheafify J G ⊣ sheafForget J`. -/
+@[deprecated Sheaf.adjunction (since := "2024-11-26")] abbrev adjunctionToTypes
+    {G : Type max v₁ u₁ ⥤ D} (adj : G ⊣ forget D) :
+    composeAndSheafify J G ⊣ sheafForget J :=
+  adjunction _ adj
 
-@[simp]
-theorem adjunctionToTypes_unit_app_val {G : Type max v₁ u₁ ⥤ D} (adj : G ⊣ forget D)
-    (Y : SheafOfTypes J) :
-    ((adjunctionToTypes J adj).unit.app Y).val =
-      (adj.whiskerRight _).unit.app ((sheafOfTypesToPresheaf J).obj Y) ≫
-        whiskerRight (toSheafify J _) (forget D) := by
-  simp [adjunctionToTypes]
-  rfl
-
-@[simp]
-theorem adjunctionToTypes_counit_app_val {G : Type max v₁ u₁ ⥤ D} (adj : G ⊣ forget D)
-    (X : Sheaf J D) :
-    ((adjunctionToTypes J adj).counit.app X).val =
-      sheafifyLift J ((Functor.associator _ _ _).hom ≫ (adj.whiskerRight _).counit.app _) X.2 := by
-  apply sheafifyLift_unique
-  ext
-  simp [adjunctionToTypes, sheafEquivSheafOfTypes, Equivalence.symm]
-
-instance [(forget D).IsRightAdjoint] :
-    (sheafForget.{_, _, _, _, max u₁ v₁} (D := D) J).IsRightAdjoint :=
-  (adjunctionToTypes J (Adjunction.ofIsRightAdjoint (forget D))).isRightAdjoint
+example [(forget D).IsRightAdjoint] :
+    (sheafForget.{_, _, _, _, max u₁ v₁} (D := D) J).IsRightAdjoint := by infer_instance
 
 end ForgetToType
 

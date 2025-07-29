@@ -9,6 +9,7 @@ import Mathlib.LinearAlgebra.BilinearForm.DualLattice
 import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.Localization.Module
 import Mathlib.RingTheory.Trace.Basic
+import Mathlib.RingTheory.RingHom.Finite
 
 /-!
 # Integral closure of Dedekind domains
@@ -27,7 +28,7 @@ to add a `(h : ¬IsField A)` assumption whenever this is explicitly needed.
 ## References
 
 * [D. Marcus, *Number Fields*][marcus1977number]
-* [J.W.S. Cassels, A. Frölich, *Algebraic Number Theory*][cassels1967algebraic]
+* [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
 * [J. Neukirch, *Algebraic Number Theory*][Neukirch1992]
 
 ## Tags
@@ -35,10 +36,10 @@ to add a `(h : ¬IsField A)` assumption whenever this is explicitly needed.
 dedekind domain, dedekind ring
 -/
 
-
-variable (R A K : Type*) [CommRing R] [CommRing A] [Field K]
-
+open Algebra Module
 open scoped nonZeroDivisors Polynomial
+
+variable (A K : Type*) [CommRing A] [Field K]
 
 section IsIntegralClosure
 
@@ -48,8 +49,6 @@ We show that an integral closure of a Dedekind domain in a finite separable
 field extension is again a Dedekind domain. This implies the ring of integers
 of a number field is a Dedekind domain. -/
 
-
-open Algebra
 
 variable [Algebra A K] [IsFractionRing A K]
 variable (L : Type*) [Field L] (C : Type*) [CommRing C]
@@ -63,12 +62,12 @@ theorem IsIntegralClosure.isLocalization [IsDomain A] [Algebra.IsAlgebraic K L] 
     IsLocalization (Algebra.algebraMapSubmonoid C A⁰) L := by
   haveI : IsDomain C :=
     (IsIntegralClosure.equiv A C L (integralClosure A L)).toMulEquiv.isDomain (integralClosure A L)
-  haveI : NoZeroSMulDivisors A L := NoZeroSMulDivisors.trans A K L
+  haveI : NoZeroSMulDivisors A L := NoZeroSMulDivisors.trans_faithfulSMul A K L
   haveI : NoZeroSMulDivisors A C := IsIntegralClosure.noZeroSMulDivisors A L
   refine ⟨?_, fun z => ?_, fun {x y} h => ⟨1, ?_⟩⟩
   · rintro ⟨_, x, hx, rfl⟩
     rw [isUnit_iff_ne_zero, map_ne_zero_iff _ (IsIntegralClosure.algebraMap_injective C A L),
-      Subtype.coe_mk, map_ne_zero_iff _ (NoZeroSMulDivisors.algebraMap_injective A C)]
+      Subtype.coe_mk, map_ne_zero_iff _ (FaithfulSMul.algebraMap_injective A C)]
     exact mem_nonZeroDivisors_iff_ne_zero.mp hx
   · obtain ⟨m, hm⟩ :=
       IsIntegral.exists_multiple_integral_of_isLocalization A⁰ z
@@ -95,7 +94,7 @@ theorem IsIntegralClosure.range_le_span_dualBasis [Algebra.IsSeparable K L] {ι 
   rintro _ ⟨i, rfl⟩ _ ⟨y, rfl⟩
   simp only [LinearMap.coe_restrictScalars, linearMap_apply, LinearMap.BilinForm.flip_apply,
     traceForm_apply]
-  refine IsIntegrallyClosed.isIntegral_iff.mp ?_
+  refine Submodule.mem_one.mpr <| IsIntegrallyClosed.isIntegral_iff.mp ?_
   exact isIntegral_trace ((IsIntegralClosure.isIntegral A L y).algebraMap.mul (hb_int i))
 
 theorem integralClosure_le_span_dualBasis [Algebra.IsSeparable K L] {ι : Type*} [Fintype ι]
@@ -112,25 +111,10 @@ variable (A K)
 /-- Send a set of `x`s in a finite extension `L` of the fraction field of `R`
 to `(y : R) • x ∈ integralClosure R L`. -/
 theorem exists_integral_multiples (s : Finset L) :
-    ∃ y ≠ (0 : A), ∀ x ∈ s, IsIntegral A (y • x) := by
-  haveI := Classical.decEq L
-  refine s.induction ?_ ?_
-  · use 1, one_ne_zero
-    rintro x ⟨⟩
-  · rintro x s hx ⟨y, hy, hs⟩
-    have := exists_integral_multiple
-      ((IsFractionRing.isAlgebraic_iff A K L).mpr (.of_finite _ x))
-      ((injective_iff_map_eq_zero (algebraMap A L)).mp ?_)
-    · rcases this with ⟨x', y', hy', hx'⟩
-      refine ⟨y * y', mul_ne_zero hy hy', fun x'' hx'' => ?_⟩
-      rcases Finset.mem_insert.mp hx'' with (rfl | hx'')
-      · rw [mul_smul, Algebra.smul_def, Algebra.smul_def, mul_comm _ x'', hx']
-        exact isIntegral_algebraMap.mul x'.2
-      · rw [mul_comm, mul_smul, Algebra.smul_def]
-        exact isIntegral_algebraMap.mul (hs _ hx'')
-    · rw [IsScalarTower.algebraMap_eq A K L]
-      apply (algebraMap K L).injective.comp
-      exact IsFractionRing.injective _ _
+    ∃ y ≠ (0 : A), ∀ x ∈ s, IsIntegral A (y • x) :=
+  have := IsLocalization.isAlgebraic K (nonZeroDivisors A)
+  have := Algebra.IsAlgebraic.trans A K L
+  Algebra.IsAlgebraic.exists_integral_multiples ..
 
 variable (L)
 
@@ -155,7 +139,7 @@ theorem FiniteDimensional.exists_is_basis_integral :
   · intro x; simp only [inv_mul_cancel_left₀ hy']
   · intro x; simp only [mul_inv_cancel_left₀ hy']
   · rintro ⟨x', hx'⟩
-    simp only [Algebra.smul_def, Finset.mem_image, exists_prop, Finset.mem_univ,
+    simp only [Algebra.smul_def, Finset.mem_image, Finset.mem_univ,
       true_and] at his'
     simp only [Basis.map_apply, LinearEquiv.coe_mk]
     exact his' _ ⟨_, rfl⟩
@@ -184,6 +168,14 @@ Noetherian. -/
 theorem IsIntegralClosure.isNoetherianRing [IsIntegrallyClosed A] [IsNoetherianRing A] :
     IsNoetherianRing C :=
   isNoetherianRing_iff.mpr <| isNoetherian_of_tower A (IsIntegralClosure.isNoetherian A K L C)
+
+/-- If `L` is a finite separable extension of `K = Frac(A)`, where `A` is
+integrally closed and Noetherian, the integral closure `C` of `A` in `L` is
+finite over `A`. -/
+theorem IsIntegralClosure.finite [IsIntegrallyClosed A] [IsNoetherianRing A] :
+    Module.Finite A C := by
+  haveI := IsIntegralClosure.isNoetherian A K L C
+  exact Module.IsNoetherian.finite A C
 
 /-- If `L` is a finite separable extension of `K = Frac(A)`, where `A` is a principal ring
 and `L` has no zero smul divisors by `A`, the integral closure `C` of `A` in `L` is
@@ -252,5 +244,10 @@ the field of fractions yourself. -/
 instance integralClosure.isDedekindDomain_fractionRing [IsDedekindDomain A] :
     IsDedekindDomain (integralClosure A L) :=
   integralClosure.isDedekindDomain A (FractionRing A) L
+
+attribute [local instance] FractionRing.liftAlgebra in
+instance [Module.Finite A C] [NoZeroSMulDivisors A C] :
+    FiniteDimensional (FractionRing A) (FractionRing C) :=
+  .of_isLocalization A C A⁰
 
 end IsIntegralClosure

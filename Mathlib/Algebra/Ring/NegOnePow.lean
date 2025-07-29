@@ -3,7 +3,8 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Johan Commelin
 -/
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Ring.Int.Parity
+import Mathlib.Algebra.Ring.Int.Units
 import Mathlib.Data.ZMod.IntUnitsPower
 
 /-!
@@ -16,6 +17,9 @@ Johan Commelin to the Liquid Tensor Experiment.
 
 -/
 
+assert_not_exists Field
+assert_not_exists TwoSidedIdeal
+
 namespace Int
 
 /-- The map `ℤ → ℤˣ` which sends `n` to `(-1 : ℤˣ) ^ n`. -/
@@ -24,7 +28,7 @@ def negOnePow (n : ℤ) : ℤˣ := (-1 : ℤˣ) ^ n
 lemma negOnePow_def (n : ℤ) : n.negOnePow = (-1 : ℤˣ) ^ n := rfl
 
 lemma negOnePow_add (n₁ n₂ : ℤ) :
-    (n₁ + n₂).negOnePow =  n₁.negOnePow * n₂.negOnePow :=
+    (n₁ + n₂).negOnePow = n₁.negOnePow * n₂.negOnePow :=
   zpow_add _ _ _
 
 @[simp]
@@ -101,11 +105,9 @@ lemma negOnePow_eq_iff (n₁ n₂ : ℤ) :
 lemma negOnePow_mul_self (n : ℤ) : (n * n).negOnePow = n.negOnePow := by
   simpa [mul_sub, negOnePow_eq_iff] using n.even_mul_pred_self
 
-lemma coe_negOnePow (K : Type*) (n : ℤ) [Field K] : n.negOnePow = (-1 : K) ^ n := by
-  rcases even_or_odd' n with ⟨k, rfl | rfl⟩
-  · rw [zpow_mul, zpow_ofNat]
-    simp
-  · rw [zpow_add_one₀ (by norm_num), zpow_mul, zpow_ofNat]
-    simp
+lemma cast_negOnePow_natCast (R : Type*) [Ring R] (n : ℕ) : negOnePow n = (-1 : R) ^ n := by
+  obtain ⟨k, rfl | rfl⟩ := Nat.even_or_odd' n <;> simp [pow_succ, pow_mul]
+
+lemma coe_negOnePow_natCast (n : ℕ) : negOnePow n = (-1 : ℤ) ^ n := cast_negOnePow_natCast ..
 
 end Int

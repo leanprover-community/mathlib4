@@ -3,13 +3,15 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Card
 import Mathlib.Data.Finset.Pi
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Fintype instances for pi types
 -/
+
+assert_not_exists OrderedRing MonoidWithZero
 
 open Finset Function
 
@@ -25,17 +27,17 @@ analogue of `Finset.pi` where the base finset is `univ` (but formally they are n
 there is an additional condition `i ∈ Finset.univ` in the `Finset.pi` definition). -/
 def piFinset (t : ∀ a, Finset (δ a)) : Finset (∀ a, δ a) :=
   (Finset.univ.pi t).map ⟨fun f a => f a (mem_univ a), fun _ _ =>
-    by simp (config := {contextual := true}) [Function.funext_iff]⟩
+    by simp +contextual [funext_iff]⟩
 
 @[simp]
 theorem mem_piFinset {t : ∀ a, Finset (δ a)} {f : ∀ a, δ a} : f ∈ piFinset t ↔ ∀ a, f a ∈ t a := by
   constructor
-  · simp only [piFinset, mem_map, and_imp, forall_prop_of_true, exists_prop, mem_univ, exists_imp,
+  · simp only [piFinset, mem_map, and_imp, forall_prop_of_true, mem_univ, exists_imp,
       mem_pi]
     rintro g hg hgf a
     rw [← hgf]
     exact hg a
-  · simp only [piFinset, mem_map, forall_prop_of_true, exists_prop, mem_univ, mem_pi]
+  · simp only [piFinset, mem_map, forall_prop_of_true, mem_univ, mem_pi]
     exact fun hf => ⟨fun a _ => f a, hf, rfl⟩
 
 @[simp]
@@ -69,7 +71,7 @@ lemma piFinset_of_isEmpty [IsEmpty α] (s : ∀ a, Finset (γ a)) : piFinset s =
 
 @[simp]
 theorem piFinset_singleton (f : ∀ i, δ i) : piFinset (fun i => {f i} : ∀ i, Finset (δ i)) = {f} :=
-  ext fun _ => by simp only [Function.funext_iff, Fintype.mem_piFinset, mem_singleton]
+  ext fun _ => by simp only [funext_iff, Fintype.mem_piFinset, mem_singleton]
 
 theorem piFinset_subsingleton {f : ∀ i, Finset (δ i)} (hf : ∀ i, (f i : Set (δ i)).Subsingleton) :
     (Fintype.piFinset f : Set (∀ i, δ i)).Subsingleton := fun _ ha _ hb =>
@@ -83,7 +85,7 @@ theorem piFinset_disjoint_of_disjoint (t₁ t₂ : ∀ a, Finset (δ a)) {a : α
 
 lemma piFinset_image [∀ a, DecidableEq (δ a)] (f : ∀ a, γ a → δ a) (s : ∀ a, Finset (γ a)) :
     piFinset (fun a ↦ (s a).image (f a)) = (piFinset s).image fun b a ↦ f _ (b a) := by
-  ext; simp only [mem_piFinset, mem_image, Classical.skolem, forall_and, Function.funext_iff]
+  ext; simp only [mem_piFinset, mem_image, Classical.skolem, forall_and, funext_iff]
 
 lemma eval_image_piFinset_subset (t : ∀ a, Finset (δ a)) (a : α) [DecidableEq (δ a)] :
     ((piFinset t).image fun f ↦ f a) ⊆ t a := image_subset_iff.2 fun _x hx ↦ mem_piFinset.1 hx _
@@ -103,13 +105,15 @@ lemma eval_image_piFinset_const {β} [DecidableEq β] (t : Finset β) (a : α) :
 
 variable [∀ a, DecidableEq (δ a)]
 
-lemma filter_piFinset_of_not_mem (t : ∀ a, Finset (δ a)) (a : α) (x : δ a) (hx : x ∉ t a) :
-    (piFinset t).filter (· a = x) = ∅ := by
+lemma filter_piFinset_of_notMem (t : ∀ a, Finset (δ a)) (a : α) (x : δ a) (hx : x ∉ t a) :
+    {f ∈ piFinset t | f a = x} = ∅ := by
   simp only [filter_eq_empty_iff, mem_piFinset]; rintro f hf rfl; exact hx (hf _)
+
+@[deprecated (since := "2025-05-23")] alias filter_piFinset_of_not_mem := filter_piFinset_of_notMem
 
 -- TODO: This proof looks like a good example of something that `aesop` can't do but should
 lemma piFinset_update_eq_filter_piFinset_mem (s : ∀ i, Finset (δ i)) (i : α) {t : Finset (δ i)}
-    (hts : t ⊆ s i) : piFinset (Function.update s i t) = (piFinset s).filter (fun f ↦ f i ∈ t) := by
+    (hts : t ⊆ s i) : piFinset (Function.update s i t) = {f ∈ piFinset s | f i ∈ t} := by
   ext f
   simp only [mem_piFinset, mem_filter]
   refine ⟨fun h ↦ ?_, fun h j ↦ ?_⟩
@@ -124,7 +128,7 @@ lemma piFinset_update_eq_filter_piFinset_mem (s : ∀ i, Finset (δ i)) (i : α)
 
 lemma piFinset_update_singleton_eq_filter_piFinset_eq (s : ∀ i, Finset (δ i)) (i : α) {a : δ i}
     (ha : a ∈ s i) :
-    piFinset (Function.update s i {a}) = (piFinset s).filter (fun f ↦ f i = a) := by
+    piFinset (Function.update s i {a}) = {f ∈ piFinset s | f i = a} := by
   simp [piFinset_update_eq_filter_piFinset_mem, ha]
 
 end Fintype
@@ -132,7 +136,7 @@ end Fintype
 /-! ### pi -/
 
 /-- A dependent product of fintypes, indexed by a fintype, is a fintype. -/
-instance Pi.fintype {α : Type*} {β : α → Type*} [DecidableEq α] [Fintype α]
+instance Pi.instFintype {α : Type*} {β : α → Type*} [DecidableEq α] [Fintype α]
     [∀ a, Fintype (β a)] : Fintype (∀ a, β a) :=
   ⟨Fintype.piFinset fun _ => univ, by simp⟩
 
@@ -143,12 +147,13 @@ theorem Fintype.piFinset_univ {α : Type*} {β : α → Type*} [DecidableEq α] 
       (Finset.univ : Finset (∀ a, β a)) :=
   rfl
 
--- Porting note: this instance used to be computable in Lean3 and used `decidable_eq`, but
--- it makes things a lot harder to work with here. in some ways that was because in Lean3
--- we could make this instance irreducible when needed and in the worst case use `congr/convert`,
--- but those don't work with subsingletons in lean4 as-is so we cannot do this here.
+/-- There are finitely many embeddings between finite types.
+
+This instance used to be computable (using `DecidableEq` arguments), but
+it makes things a lot harder to work with here.
+-/
 noncomputable instance _root_.Function.Embedding.fintype {α β} [Fintype α] [Fintype β] :
-  Fintype (α ↪ β) := by
+    Fintype (α ↪ β) := by
   classical exact Fintype.ofEquiv _ (Equiv.subtypeInjectiveEquivEmbedding α β)
 
 instance RelHom.instFintype {α β} [Fintype α] [Fintype β] [DecidableEq α] {r : α → α → Prop}
@@ -172,9 +177,49 @@ namespace Finset
 variable {ι : Type*} [DecidableEq (ι → α)] {s : Finset α} {f : ι → α}
 
 lemma piFinset_filter_const [DecidableEq ι] [Fintype ι] :
-    (Fintype.piFinset fun _ ↦ s).filter (∃ a ∈ s, const ι a = ·) = s.piDiag ι := by aesop
+    {f ∈ Fintype.piFinset fun _ : ι ↦ s | ∃ a ∈ s, const ι a = f} = s.piDiag ι := by aesop
 
 lemma piDiag_subset_piFinset [DecidableEq ι] [Fintype ι] :
     s.piDiag ι ⊆ Fintype.piFinset fun _ ↦ s := by simp [← piFinset_filter_const]
 
 end Finset
+
+namespace Set
+
+/-! ### Constructors for `Set.Finite`
+
+Every constructor here should have a corresponding `Fintype` instance in the previous section
+(or in the `Fintype` module).
+
+The implementation of these constructors ideally should be no more than `Set.toFinite`,
+after possibly setting up some `Fintype` and classical `Decidable` instances.
+-/
+
+
+section SetFiniteConstructors
+
+section Pi
+variable {ι : Type*} [Finite ι] {κ : ι → Type*} {t : ∀ i, Set (κ i)}
+
+/-- Finite product of finite sets is finite -/
+theorem Finite.pi (ht : ∀ i, (t i).Finite) : (pi univ t).Finite := by
+  cases nonempty_fintype ι
+  lift t to ∀ d, Finset (κ d) using ht
+  classical
+    rw [← Fintype.coe_piFinset]
+    apply Finset.finite_toSet
+
+/-- Finite product of finite sets is finite. Note this is a variant of `Set.Finite.pi` without the
+extra `i ∈ univ` binder. -/
+lemma Finite.pi' (ht : ∀ i, (t i).Finite) : {f : ∀ i, κ i | ∀ i, f i ∈ t i}.Finite := by
+  simpa [Set.pi] using Finite.pi ht
+
+end Pi
+
+end SetFiniteConstructors
+
+theorem forall_finite_image_eval_iff {δ : Type*} [Finite δ] {κ : δ → Type*} {s : Set (∀ d, κ d)} :
+    (∀ d, (eval d '' s).Finite) ↔ s.Finite :=
+  ⟨fun h => (Finite.pi h).subset <| subset_pi_eval_image _ _, fun h _ => h.image _⟩
+
+end Set

@@ -21,7 +21,7 @@ noncomputable section
 universe v u v' u'
 
 open Opposite CategoryTheory CategoryTheory.Category CategoryTheory.Functor CategoryTheory.Limits
-  AlgebraicGeometry TopologicalSpace
+  AlgebraicGeometry TopologicalSpace Topology
 
 variable {C : Type u} [Category.{v} C] [HasColimits C]
 
@@ -43,16 +43,10 @@ def Hom.stalkMap {X Y : PresheafedSpace.{_, _, v} C} (α : Hom X Y) (x : X) :
 
 @[elementwise, reassoc]
 theorem stalkMap_germ {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) (U : Opens Y)
-    (x : (Opens.map α.base).obj U) :
-    Y.presheaf.germ ⟨α.base x.1, x.2⟩ ≫ α.stalkMap ↑x = α.c.app (op U) ≫ X.presheaf.germ x := by
+    (x : X) (hx : α x ∈ U) :
+    Y.presheaf.germ U (α x) hx ≫ α.stalkMap x = α.c.app (op U) ≫
+      X.presheaf.germ ((Opens.map α.base).obj U) x hx := by
   rw [Hom.stalkMap, stalkFunctor_map_germ_assoc, stalkPushforward_germ]
-
-@[simp, elementwise, reassoc]
-theorem stalkMap_germ' {X Y : PresheafedSpace.{_, _, v} C}
-    (α : X ⟶ Y) (U : Opens Y) (x : X) (hx : α.base x ∈ U) :
-    Y.presheaf.germ ⟨α.base x, hx⟩ ≫ α.stalkMap x = α.c.app (op U) ≫
-      X.presheaf.germ (U := (Opens.map α.base).obj U) ⟨x, hx⟩ :=
-  stalkMap_germ α U ⟨x, hx⟩
 
 section Restrict
 
@@ -60,19 +54,19 @@ section Restrict
 of `X` at `f x` and the stalk of the restriction of `X` along `f` at t `x`.
 -/
 def restrictStalkIso {U : TopCat} (X : PresheafedSpace.{_, _, v} C) {f : U ⟶ (X : TopCat.{v})}
-    (h : OpenEmbedding f) (x : U) : (X.restrict h).presheaf.stalk x ≅ X.presheaf.stalk (f x) :=
+    (h : IsOpenEmbedding f) (x : U) : (X.restrict h).presheaf.stalk x ≅ X.presheaf.stalk (f x) :=
   haveI := initial_of_adjunction (h.isOpenMap.adjunctionNhds x)
   Final.colimitIso (h.isOpenMap.functorNhds x).op ((OpenNhds.inclusion (f x)).op ⋙ X.presheaf)
   -- As a left adjoint, the functor `h.is_open_map.functor_nhds x` is initial.
   -- Typeclass resolution knows that the opposite of an initial functor is final. The result
   -- follows from the general fact that postcomposing with a final functor doesn't change colimits.
 
--- Porting note (#11119): removed `simp` attribute, for left hand side is not in simple normal form.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute, for left hand side is not in simple normal form.
 @[elementwise, reassoc]
 theorem restrictStalkIso_hom_eq_germ {U : TopCat} (X : PresheafedSpace.{_, _, v} C)
-    {f : U ⟶ (X : TopCat.{v})} (h : OpenEmbedding f) (V : Opens U) (x : U) (hx : x ∈ V) :
-    (X.restrict h).presheaf.germ ⟨x, hx⟩ ≫ (restrictStalkIso X h x).hom =
-    X.presheaf.germ ⟨f x, show f x ∈ h.isOpenMap.functor.obj V from ⟨x, hx, rfl⟩⟩ :=
+    {f : U ⟶ (X : TopCat.{v})} (h : IsOpenEmbedding f) (V : Opens U) (x : U) (hx : x ∈ V) :
+    (X.restrict h).presheaf.germ _ x hx ≫ (restrictStalkIso X h x).hom =
+    X.presheaf.germ (h.isOpenMap.functor.obj V) (f x) ⟨x, hx, rfl⟩ :=
   colimit.ι_pre ((OpenNhds.inclusion (f x)).op ⋙ X.presheaf) (h.isOpenMap.functorNhds x).op
     (op ⟨V, hx⟩)
 
@@ -80,18 +74,18 @@ theorem restrictStalkIso_hom_eq_germ {U : TopCat} (X : PresheafedSpace.{_, _, v}
 -- as the simpNF linter claims they never apply.
 @[simp, elementwise, reassoc]
 theorem restrictStalkIso_inv_eq_germ {U : TopCat} (X : PresheafedSpace.{_, _, v} C)
-    {f : U ⟶ (X : TopCat.{v})} (h : OpenEmbedding f) (V : Opens U) (x : U) (hx : x ∈ V) :
-    X.presheaf.germ ⟨f x, show f x ∈ h.isOpenMap.functor.obj V from ⟨x, hx, rfl⟩⟩ ≫
+    {f : U ⟶ (X : TopCat.{v})} (h : IsOpenEmbedding f) (V : Opens U) (x : U) (hx : x ∈ V) :
+    X.presheaf.germ (h.isOpenMap.functor.obj V) (f x) ⟨x, hx, rfl⟩ ≫
         (restrictStalkIso X h x).inv =
-      (X.restrict h).presheaf.germ ⟨x, hx⟩ := by
+      (X.restrict h).presheaf.germ _ x hx := by
   rw [← restrictStalkIso_hom_eq_germ, Category.assoc, Iso.hom_inv_id, Category.comp_id]
 
 theorem restrictStalkIso_inv_eq_ofRestrict {U : TopCat} (X : PresheafedSpace.{_, _, v} C)
-    {f : U ⟶ (X : TopCat.{v})} (h : OpenEmbedding f) (x : U) :
+    {f : U ⟶ (X : TopCat.{v})} (h : IsOpenEmbedding f) (x : U) :
     (X.restrictStalkIso h x).inv = (X.ofRestrict h).stalkMap x := by
   -- We can't use `ext` here due to https://github.com/leanprover/std4/pull/159
   refine colimit.hom_ext fun V => ?_
-  induction V with | h V => ?_
+  induction V with | op V => ?_
   let i : (h.isOpenMap.functorNhds x).obj ((OpenNhds.map f x).obj V) ⟶ V :=
     homOfLE (Set.image_preimage_subset f _)
   erw [Iso.comp_inv_eq, colimit.ι_map_assoc, colimit.ι_map_assoc, colimit.ι_pre]
@@ -102,7 +96,7 @@ theorem restrictStalkIso_inv_eq_ofRestrict {U : TopCat} (X : PresheafedSpace.{_,
   exact (colimit.w ((OpenNhds.inclusion (f x)).op ⋙ X.presheaf) i.op).symm
 
 instance ofRestrict_stalkMap_isIso {U : TopCat} (X : PresheafedSpace.{_, _, v} C)
-    {f : U ⟶ (X : TopCat.{v})} (h : OpenEmbedding f) (x : U) :
+    {f : U ⟶ (X : TopCat.{v})} (h : IsOpenEmbedding f) (x : U) :
     IsIso ((X.ofRestrict h).stalkMap x) := by
   rw [← restrictStalkIso_inv_eq_ofRestrict]; infer_instance
 
@@ -115,10 +109,10 @@ theorem id (X : PresheafedSpace.{_, _, v} C) (x : X) :
     (𝟙 X : X ⟶ X).stalkMap x = 𝟙 (X.presheaf.stalk x) := by
   dsimp [Hom.stalkMap]
   simp only [stalkPushforward.id]
-  erw [← map_comp]
+  rw [← map_comp]
   convert (stalkFunctor C x).map_id X.presheaf
   ext
-  simp only [id_c, id_comp, Pushforward.id_hom_app, op_obj, eqToHom_refl, map_id]
+  simp only [id_c, id_comp, Pushforward.id_hom_app]
   rfl
 
 @[simp]
@@ -172,7 +166,7 @@ instance isIso {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) [IsIso α] (x 
     -- `X.stalk x ⟶ X.stalk ((α ≫ β).base x)`.
     refine
       ⟨eqToHom (show X.presheaf.stalk x = X.presheaf.stalk ((α ≫ β).base x) by rw [h_eq]) ≫
-          (β.stalkMap (α.base x) : _),
+          (β.stalkMap (α.base x) :),
         ?_, ?_⟩
     · rw [← Category.assoc, congr_point α x ((α ≫ β).base x) h_eq.symm, Category.assoc]
       erw [← stalkMap.comp β α (α.base x)]
@@ -187,20 +181,20 @@ def stalkIso {X Y : PresheafedSpace.{_, _, v} C} (α : X ≅ Y) (x : X) :
     Y.presheaf.stalk (α.hom.base x) ≅ X.presheaf.stalk x :=
   asIso (α.hom.stalkMap x)
 
-@[reassoc, elementwise, simp, nolint simpNF] -- see std4#365 for the simpNF issue
+@[reassoc (attr := simp), elementwise (attr := simp)]
 theorem stalkSpecializes_stalkMap {X Y : PresheafedSpace.{_, _, v} C}
     (f : X ⟶ Y) {x y : X} (h : x ⤳ y) :
-    Y.presheaf.stalkSpecializes (f.base.map_specializes h) ≫ f.stalkMap x =
+    Y.presheaf.stalkSpecializes (f.base.hom.map_specializes h) ≫ f.stalkMap x =
       f.stalkMap y ≫ X.presheaf.stalkSpecializes h := by
   -- Porting note: the original one liner `dsimp [stalkMap]; simp [stalkMap]` doesn't work,
   -- I had to uglify this
   dsimp [stalkSpecializes, Hom.stalkMap, stalkFunctor, stalkPushforward]
   -- We can't use `ext` here due to https://github.com/leanprover/std4/pull/159
   refine colimit.hom_ext fun j => ?_
-  induction j with | h j => ?_
+  induction j with | op j => ?_
   dsimp
   simp only [colimit.ι_desc_assoc, ι_colimMap_assoc, whiskerLeft_app,
-    whiskerRight_app, NatTrans.id_app, map_id, colimit.ι_pre, id_comp, assoc,
+    whiskerRight_app, NatTrans.id_app, colimit.ι_pre, assoc,
     colimit.pre_desc, colimit.map_desc, colimit.ι_desc, Cocones.precompose_obj_ι,
     Cocone.whisker_ι, NatTrans.comp_app]
   erw [X.presheaf.map_id, id_comp]

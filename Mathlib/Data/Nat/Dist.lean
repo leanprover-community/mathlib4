@@ -3,7 +3,8 @@ Copyright (c) 2014 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Jeremy Avigad
 -/
-import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Ring.Canonical
 
 /-!
 #  Distance function on ℕ
@@ -88,10 +89,9 @@ theorem dist_eq_max_sub_min {i j : ℕ} : dist i j = (max i j) - min i j :=
 theorem dist_succ_succ {i j : Nat} : dist (succ i) (succ j) = dist i j := by
   simp [dist, succ_sub_succ]
 
-theorem dist_pos_of_ne {i j : Nat} : i ≠ j → 0 < dist i j := fun hne =>
-  ltByCases i j
-    (fun h : i < j => by rw [dist_eq_sub_of_le (le_of_lt h)]; apply tsub_pos_of_lt h)
-    (fun h : i = j => by contradiction) fun h : i > j => by
-    rw [dist_eq_sub_of_le_right (le_of_lt h)]; apply tsub_pos_of_lt h
+theorem dist_pos_of_ne {i j : Nat} (h : i ≠ j) : 0 < dist i j := by
+  cases h.lt_or_gt with
+  | inl h => rw [dist_eq_sub_of_le h.le]; apply tsub_pos_of_lt h
+  | inr h => rw [dist_eq_sub_of_le_right h.le]; apply tsub_pos_of_lt h
 
 end Nat

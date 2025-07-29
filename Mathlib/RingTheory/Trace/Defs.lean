@@ -3,8 +3,8 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.LinearAlgebra.Matrix.BilinearForm
-import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Trace
 
 /-!
@@ -16,14 +16,14 @@ the roots of the minimal polynomial of `s` over `R`.
 
 ## Main definitions
 
- * `Algebra.trace R S x`: the trace of an element `s` of an `R`-algebra `S`
- * `Algebra.traceForm R S`: bilinear form sending `x`, `y` to the trace of `x * y`
- * `Algebra.traceMatrix R b`: the matrix whose `(i j)`-th element is the trace of `b i * b j`.
+* `Algebra.trace R S x`: the trace of an element `s` of an `R`-algebra `S`
+* `Algebra.traceForm R S`: bilinear form sending `x`, `y` to the trace of `x * y`
+* `Algebra.traceMatrix R b`: the matrix whose `(i j)`-th element is the trace of `b i * b j`.
 
 ## Main results
 
- * `trace_algebraMap_of_basis`, `trace_algebraMap`: if `x : K`, then `Tr_{L/K} x = [L : K] x`
- * `trace_trace_of_basis`, `trace_trace`: `Tr_{L/K} (Tr_{F/L} x) = Tr_{F/K} x`
+* `trace_algebraMap_of_basis`, `trace_algebraMap`: if `x : K`, then `Tr_{L/K} x = [L : K] x`
+* `trace_trace_of_basis`, `trace_trace`: `Tr_{L/K} (Tr_{F/L} x) = Tr_{F/K} x`
 
 ## Implementation notes
 
@@ -37,16 +37,16 @@ For now, the definitions assume `S` is commutative, so the choice doesn't matter
 
 ## References
 
- * https://en.wikipedia.org/wiki/Field_trace
+* https://en.wikipedia.org/wiki/Field_trace
 
 -/
 
 
-universe u v w z
+universe w
 
 variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
 variable [Algebra R S] [Algebra R T]
-variable {ι κ : Type w} [Fintype ι]
+variable {ι : Type w} [Fintype ι]
 
 open Module
 
@@ -63,6 +63,7 @@ variable (R S)
 
 /-- The trace of an element `s` of an `R`-algebra is the trace of `(s * ·)`,
 as an `R`-linear map. -/
+@[stacks 0BIF "Trace"]
 noncomputable def trace : S →ₗ[R] R :=
   (LinearMap.trace R S).comp (lmul R S).toLinearMap
 
@@ -90,6 +91,13 @@ theorem trace_algebraMap_of_basis (b : Basis ι R S) (x : R) :
   rw [trace_apply, LinearMap.trace_eq_matrix_trace R b, Matrix.trace]
   convert Finset.sum_const x
   simp [-coe_lmul_eq_mul]
+
+
+/-- The trace map from `R` to itself is the identity map. -/
+@[simp] theorem trace_self : trace R R = LinearMap.id := by
+  ext; simpa using trace_algebraMap_of_basis (.singleton (Fin 1) R) 1
+
+theorem trace_self_apply (a) : trace R R a = a := by simp
 
 /-- If `x` is in the base field `K`, then the trace is `[L : K] * x`.
 
@@ -127,7 +135,9 @@ theorem trace_trace [Algebra S T] [IsScalarTower R S T]
     trace R S (trace S T x) = trace R T x :=
   trace_trace_of_basis (Module.Free.chooseBasis R S) (Module.Free.chooseBasis S T) x
 
-@[simp]
+/-- Let `T / S / R` be a tower of finite extensions of fields. Then
+$\text{Trace}_{T/R} = \text{Trace}_{S/R} \circ \text{Trace}_{T/S}$. -/
+@[simp, stacks 0BIJ "Trace"]
 theorem trace_comp_trace [Algebra S T] [IsScalarTower R S T]
     [Module.Free R S] [Module.Finite R S] [Module.Free S T] [Module.Finite S T] :
     (trace R S).comp ((trace S T).restrictScalars R) = trace R T :=
@@ -153,6 +163,7 @@ variable (R S)
 
 /-- The `traceForm` maps `x y : S` to the trace of `x * y`.
 It is a symmetric bilinear form and is nondegenerate if the extension is separable. -/
+@[stacks 0BIK "Trace pairing"]
 noncomputable def traceForm : BilinForm R S :=
   LinearMap.compr₂ (lmul R S).toLinearMap (trace R S)
 
@@ -163,7 +174,8 @@ variable {S}
 theorem traceForm_apply (x y : S) : traceForm R S x y = trace R S (x * y) :=
   rfl
 
-theorem traceForm_isSymm : (traceForm R S).IsSymm := fun _ _ => congr_arg (trace R S) (mul_comm _ _)
+theorem traceForm_isSymm : (traceForm R S).IsSymm :=
+  ⟨fun _ _ => congr_arg (trace R S) (mul_comm _ _)⟩
 
 theorem traceForm_toMatrix [DecidableEq ι] (b : Basis ι R S) (i j) :
     BilinForm.toMatrix b (traceForm R S) i j = trace R S (b i * b j) := by

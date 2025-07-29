@@ -53,7 +53,7 @@ and do not need to strictly preserve the identity. Instead, there are specified 
 associator, the left unitor, and the right unitor modulo some adjustments of domains and codomains
 of 2-morphisms.
 -/
-structure LaxFunctor (B: Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u₂) [Bicategory.{w₂, v₂} C]
+structure LaxFunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u₂) [Bicategory.{w₂, v₂} C]
     extends PrelaxFunctor B C where
   /-- The 2-morphism underlying the lax unity constraint. -/
   mapId (a : B) : 𝟙 (obj a) ⟶ map (𝟙 a)

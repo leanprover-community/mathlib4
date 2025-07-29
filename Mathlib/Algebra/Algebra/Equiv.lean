@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Hom
-import Mathlib.Algebra.Ring.Aut
+import Mathlib.Algebra.Ring.Action.Group
 
 /-!
 # Isomorphisms of `R`-algebras
@@ -22,7 +22,8 @@ This file defines bundled isomorphisms of `R`-algebras.
 
 universe u v w u₁ v₁
 
-/-- An equivalence of algebras is an equivalence of rings commuting with the actions of scalars. -/
+/-- An equivalence of algebras (denoted as `A ≃ₐ[R] B`)
+is an equivalence of rings commuting with the actions of scalars. -/
 structure AlgEquiv (R : Type u) (A : Type v) (B : Type w) [CommSemiring R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B] extends A ≃ B, A ≃* B, A ≃+ B, A ≃+* B where
   /-- An equivalence of algebras commutes with the action of scalars. -/
@@ -39,12 +40,10 @@ notation:50 A " ≃ₐ[" R "] " A' => AlgEquiv R A A'
 /-- `AlgEquivClass F R A B` states that `F` is a type of algebra structure preserving
   equivalences. You should extend this class when you extend `AlgEquiv`. -/
 class AlgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R] [Semiring A]
-    [Semiring B] [Algebra R A] [Algebra R B] [EquivLike F A B]
-    extends RingEquivClass F A B : Prop where
+    [Semiring B] [Algebra R A] [Algebra R B] [EquivLike F A B] : Prop
+    extends RingEquivClass F A B where
   /-- An equivalence of algebras commutes with the action of scalars. -/
   commutes : ∀ (f : F) (r : R), f (algebraMap R A r) = algebraMap R B r
-
--- Porting note: Removed nolint dangerousInstance from AlgEquivClass.toRingEquivClass
 
 namespace AlgEquivClass
 
@@ -132,7 +131,6 @@ theorem mk_coe (e : A₁ ≃ₐ[R] A₂) (e' h₁ h₂ h₃ h₄ h₅) :
 theorem toEquiv_eq_coe : e.toEquiv = e :=
   rfl
 
--- Porting note: `protected` used to be an attribute below
 @[simp]
 protected theorem coe_coe {F : Type*} [EquivLike F A₁ A₂] [AlgEquivClass F R A₁ A₂] (f : F) :
     ⇑(f : A₁ ≃ₐ[R] A₂) = f :=
@@ -141,11 +139,12 @@ protected theorem coe_coe {F : Type*} [EquivLike F A₁ A₂] [AlgEquivClass F R
 theorem coe_fun_injective : @Function.Injective (A₁ ≃ₐ[R] A₂) (A₁ → A₂) fun e => (e : A₁ → A₂) :=
   DFunLike.coe_injective
 
--- Porting note: Made to CoeOut instance from Coe, not dangerous anymore
 instance hasCoeToRingEquiv : CoeOut (A₁ ≃ₐ[R] A₂) (A₁ ≃+* A₂) :=
   ⟨AlgEquiv.toRingEquiv⟩
 
--- Porting note: `toFun_eq_coe` no longer needed in Lean4
+@[simp]
+theorem coe_toEquiv : ((e : A₁ ≃ A₂) : A₁ → A₂) = e :=
+  rfl
 
 @[simp]
 theorem toRingEquiv_eq_coe : e.toRingEquiv = e :=
@@ -165,7 +164,6 @@ theorem coe_ringEquiv' : (e.toRingEquiv : A₁ → A₂) = e :=
 theorem coe_ringEquiv_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A₂) → A₁ ≃+* A₂) :=
   fun _ _ h => ext <| RingEquiv.congr_fun h
 
--- Porting note: Added [coe] attribute
 /-- Interpret an algebra equivalence as an algebra homomorphism.
 
 This definition is included for symmetry with the other `to*Hom` projections.
@@ -201,45 +199,6 @@ theorem commutes : ∀ r : R, e (algebraMap R A₁ r) = algebraMap R A₂ r :=
 
 end coe
 
-section map
-
-@[deprecated map_add (since := "2024-06-20")]
-protected theorem map_add : ∀ x y, e (x + y) = e x + e y :=
-  map_add e
-
-@[deprecated map_zero (since := "2024-06-20")]
-protected theorem map_zero : e 0 = 0 :=
-  map_zero e
-
-@[deprecated map_mul (since := "2024-06-20")]
-protected theorem map_mul : ∀ x y, e (x * y) = e x * e y :=
-  map_mul e
-
-@[deprecated map_one (since := "2024-06-20")]
-protected theorem map_one : e 1 = 1 :=
-  map_one e
-
--- @[simp] -- Porting note (#10618): simp can prove this
-@[deprecated map_smul (since := "2024-06-20")]
-protected theorem map_smul (r : R) (x : A₁) : e (r • x) = r • e x :=
-  map_smul _ _ _
-
-@[deprecated map_pow (since := "2024-06-20")]
-protected theorem map_pow : ∀ (x : A₁) (n : ℕ), e (x ^ n) = e x ^ n :=
-  map_pow _
-
-@[deprecated map_sum (since := "2023-12-26")]
-protected theorem map_sum {ι : Type*} (f : ι → A₁) (s : Finset ι) :
-    e (∑ x ∈ s, f x) = ∑ x ∈ s, e (f x) :=
-  map_sum e f s
-
-@[deprecated map_finsupp_sum (since := "2024-06-20")]
-protected theorem map_finsupp_sum {α : Type*} [Zero α] {ι : Type*} (f : ι →₀ α) (g : ι → α → A₁) :
-    e (f.sum g) = f.sum fun i b => e (g i b) :=
-  map_finsupp_sum _ _ _
-
-end map
-
 section bijective
 
 protected theorem bijective : Function.Bijective e :=
@@ -258,7 +217,7 @@ section refl
 /-- Algebra equivalences are reflexive. -/
 @[refl]
 def refl : A₁ ≃ₐ[R] A₁ :=
-  { (1 : A₁ ≃+* A₁) with commutes' := fun _ => rfl }
+  { (.refl _ : A₁ ≃+* A₁) with commutes' := fun _ => rfl }
 
 instance : Inhabited (A₁ ≃ₐ[R] A₁) :=
   ⟨refl⟩
@@ -282,25 +241,24 @@ def symm (e : A₁ ≃ₐ[R] A₂) : A₂ ≃ₐ[R] A₁ :=
     commutes' := fun r => by
       rw [← e.toRingEquiv.symm_apply_apply (algebraMap R A₁ r)]
       congr
-      change _ = e _
-      rw [e.commutes] }
+      simp }
 
 theorem invFun_eq_symm {e : A₁ ≃ₐ[R] A₂} : e.invFun = e.symm :=
   rfl
 
---@[simp] -- Porting note (#10618): simp can prove this once symm_mk is introduced
+@[simp]
 theorem coe_apply_coe_coe_symm_apply {F : Type*} [EquivLike F A₁ A₂] [AlgEquivClass F R A₁ A₂]
     (f : F) (x : A₂) :
     f ((f : A₁ ≃ₐ[R] A₂).symm x) = x :=
   EquivLike.right_inv f x
 
---@[simp] -- Porting note (#10618): simp can prove this once symm_mk is introduced
+@[simp]
 theorem coe_coe_symm_apply_coe_apply {F : Type*} [EquivLike F A₁ A₂] [AlgEquivClass F R A₁ A₂]
     (f : F) (x : A₁) :
     (f : A₁ ≃ₐ[R] A₂).symm (f x) = x :=
   EquivLike.left_inv f x
 
--- Porting note: `simp` normal form of `invFun_eq_symm`
+/-- `simp` normal form of `invFun_eq_symm` -/
 @[simp]
 theorem symm_toEquiv_eq_symm {e : A₁ ≃ₐ[R] A₂} : (e : A₁ ≃ A₂).symm = e.symm :=
   rfl
@@ -341,6 +299,14 @@ theorem symm_toRingEquiv : (e.symm : A₂ ≃+* A₁) = (e : A₁ ≃+* A₂).sy
   rfl
 
 @[simp]
+theorem symm_toAddEquiv : (e.symm : A₂ ≃+ A₁) = (e : A₁ ≃+ A₂).symm :=
+  rfl
+
+@[simp]
+theorem symm_toMulEquiv : (e.symm : A₂ ≃* A₁) = (e : A₁ ≃* A₂).symm :=
+  rfl
+
+@[simp]
 theorem apply_symm_apply (e : A₁ ≃ₐ[R] A₂) : ∀ x, e (e.symm x) = x :=
   e.toEquiv.apply_symm_apply
 
@@ -374,12 +340,10 @@ end symm
 
 section simps
 
--- Porting note: the default simps projection was `e.toEquiv.toFun`, it should be `FunLike.coe`
 /-- See Note [custom simps projection] -/
 def Simps.apply (e : A₁ ≃ₐ[R] A₂) : A₁ → A₂ :=
   e
 
--- Porting note: the default simps projection was `e.toEquiv`, it should be `EquivLike.toEquiv`
 /-- See Note [custom simps projection] -/
 def Simps.toEquiv (e : A₁ ≃ₐ[R] A₂) : A₁ ≃ A₂ :=
   e
@@ -432,9 +396,7 @@ theorem arrowCongr_comp (e₁ : A₁ ≃ₐ[R] A₁') (e₂ : A₂ ≃ₐ[R] A�
     (e₃ : A₃ ≃ₐ[R] A₃') (f : A₁ →ₐ[R] A₂) (g : A₂ →ₐ[R] A₃) :
     arrowCongr e₁ e₃ (g.comp f) = (arrowCongr e₂ e₃ g).comp (arrowCongr e₁ e₂ f) := by
   ext
-  simp only [arrowCongr, Equiv.coe_fn_mk, AlgHom.comp_apply]
-  congr
-  exact (e₂.symm_apply_apply _).symm
+  simp
 
 @[simp]
 theorem arrowCongr_refl : arrowCongr AlgEquiv.refl AlgEquiv.refl = Equiv.refl (A₁ →ₐ[R] A₂) :=
@@ -505,19 +467,6 @@ theorem ofAlgHom_symm (f : A₁ →ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ 
     (ofAlgHom f g h₁ h₂).symm = ofAlgHom g f h₂ h₁ :=
   rfl
 
-/-- Promotes a bijective algebra homomorphism to an algebra equivalence. -/
-noncomputable def ofBijective (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) : A₁ ≃ₐ[R] A₂ :=
-  { RingEquiv.ofBijective (f : A₁ →+* A₂) hf, f with }
-
-@[simp]
-theorem coe_ofBijective {f : A₁ →ₐ[R] A₂} {hf : Function.Bijective f} :
-    (AlgEquiv.ofBijective f hf : A₁ → A₂) = f :=
-  rfl
-
-theorem ofBijective_apply {f : A₁ →ₐ[R] A₂} {hf : Function.Bijective f} (a : A₁) :
-    (AlgEquiv.ofBijective f hf) a = f a :=
-  rfl
-
 /-- Forgetting the multiplicative structures, an equivalence of algebras is a linear equivalence. -/
 @[simps apply]
 def toLinearEquiv (e : A₁ ≃ₐ[R] A₂) : A₁ ≃ₗ[R] A₂ :=
@@ -531,8 +480,14 @@ theorem toLinearEquiv_refl : (AlgEquiv.refl : A₁ ≃ₐ[R] A₁).toLinearEquiv
   rfl
 
 @[simp]
-theorem toLinearEquiv_symm (e : A₁ ≃ₐ[R] A₂) : e.toLinearEquiv.symm = e.symm.toLinearEquiv :=
+theorem toLinearEquiv_symm (e : A₁ ≃ₐ[R] A₂) : e.symm.toLinearEquiv = e.toLinearEquiv.symm :=
   rfl
+
+@[simp]
+theorem coe_toLinearEquiv (e : A₁ ≃ₐ[R] A₂) : ⇑e.toLinearEquiv = e := rfl
+
+@[simp]
+theorem coe_symm_toLinearEquiv (e : A₁ ≃ₐ[R] A₂) : ⇑e.toLinearEquiv.symm = e.symm := rfl
 
 @[simp]
 theorem toLinearEquiv_trans (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] A₃) :
@@ -569,6 +524,21 @@ theorem toLinearMap_injective : Function.Injective (toLinearMap : _ → A₁ →
 theorem trans_toLinearMap (f : A₁ ≃ₐ[R] A₂) (g : A₂ ≃ₐ[R] A₃) :
     (f.trans g).toLinearMap = g.toLinearMap.comp f.toLinearMap :=
   rfl
+
+/-- Promotes a bijective algebra homomorphism to an algebra equivalence. -/
+noncomputable def ofBijective (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) : A₁ ≃ₐ[R] A₂ :=
+  { RingEquiv.ofBijective (f : A₁ →+* A₂) hf, f with }
+
+@[simp]
+lemma coe_ofBijective (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) :
+    (ofBijective f hf : A₁ → A₂) = f := rfl
+
+lemma ofBijective_apply (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) (a : A₁) :
+    (ofBijective f hf) a = f a := rfl
+
+@[simp]
+lemma toLinearMap_ofBijective (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) :
+    (ofBijective f hf).toLinearMap = f := rfl
 
 section OfLinearEquiv
 
@@ -611,7 +581,7 @@ end OfLinearEquiv
 section OfRingEquiv
 
 /-- Promotes a linear `RingEquiv` to an `AlgEquiv`. -/
-@[simps apply symm_apply toEquiv] -- Porting note: don't want redundant `toEquiv_symm_apply` simps
+@[simps apply symm_apply toEquiv]
 def ofRingEquiv {f : A₁ ≃+* A₂} (hf : ∀ x, f (algebraMap R A₁ x) = algebraMap R A₂ x) :
     A₁ ≃ₐ[R] A₂ :=
   { f with
@@ -621,22 +591,15 @@ def ofRingEquiv {f : A₁ ≃+* A₂} (hf : ∀ x, f (algebraMap R A₁ x) = alg
 
 end OfRingEquiv
 
--- Porting note: projections mul & one not found, removed [simps] and added theorems manually
--- @[simps (config := .lemmasOnly) one]
+@[simps -isSimp one mul, stacks 09HR]
 instance aut : Group (A₁ ≃ₐ[R] A₁) where
   mul ϕ ψ := ψ.trans ϕ
-  mul_assoc ϕ ψ χ := rfl
+  mul_assoc _ _ _ := rfl
   one := refl
-  one_mul ϕ := ext fun x => rfl
-  mul_one ϕ := ext fun x => rfl
+  one_mul _ := ext fun _ => rfl
+  mul_one _ := ext fun _ => rfl
   inv := symm
   inv_mul_cancel ϕ := ext <| symm_apply_apply ϕ
-
-theorem aut_mul (ϕ ψ : A₁ ≃ₐ[R] A₁) : ϕ * ψ = ψ.trans ϕ :=
-  rfl
-
-theorem aut_one : 1 = AlgEquiv.refl (R := R) (A₁ := A₁) :=
-  rfl
 
 @[simp]
 theorem one_apply (x : A₁) : (1 : A₁ ≃ₐ[R] A₁) x = x :=
@@ -645,6 +608,11 @@ theorem one_apply (x : A₁) : (1 : A₁ ≃ₐ[R] A₁) x = x :=
 @[simp]
 theorem mul_apply (e₁ e₂ : A₁ ≃ₐ[R] A₁) (x : A₁) : (e₁ * e₂) x = e₁ (e₂ x) :=
   rfl
+
+lemma aut_inv (ϕ : A₁ ≃ₐ[R] A₁) : ϕ⁻¹ = ϕ.symm := rfl
+
+@[simp] theorem coe_pow (e : A₁ ≃ₐ[R] A₁) (n : ℕ) : ⇑(e ^ n) = e^[n] :=
+  n.rec (by ext; simp) fun _ ih ↦ by ext; simp [pow_succ, ih]
 
 /-- An algebra isomorphism induces a group isomorphism between automorphism groups.
 
@@ -709,6 +677,10 @@ theorem smul_units_def (f : A₁ ≃ₐ[R] A₁) (x : A₁ˣ) :
     f • x = Units.map f x := rfl
 
 @[simp]
+lemma _root_.MulSemiringAction.toRingEquiv_algEquiv (σ : A₁ ≃ₐ[R] A₁) :
+    MulSemiringAction.toRingEquiv _ A₁ σ = σ := rfl
+
+@[simp]
 theorem algebraMap_eq_apply (e : A₁ ≃ₐ[R] A₂) {y : R} {x : A₁} :
     algebraMap R A₂ y = e x ↔ algebraMap R A₁ y = x :=
   ⟨fun h => by simpa using e.symm.toAlgHom.algebraMap_eq_apply h, fun h =>
@@ -741,43 +713,13 @@ def algHomUnitsEquiv (R S : Type*) [CommSemiring R] [Semiring S] [Algebra R S] :
       left_inv := (fun x ↦ show (↑(f⁻¹ * f) : S →ₐ[R] S) x = x by rw [inv_mul_cancel]; rfl)
       right_inv := (fun x ↦ show (↑(f * f⁻¹) : S →ₐ[R] S) x = x by rw [mul_inv_cancel]; rfl) }
   invFun := fun f ↦ ⟨f, f.symm, f.comp_symm, f.symm_comp⟩
-  left_inv := fun _ ↦ rfl
-  right_inv := fun _ ↦ rfl
   map_mul' := fun _ _ ↦ rfl
 
+/-- See also `Finite.algHom` -/
+instance _root_.Finite.algEquiv [Finite (A₁ →ₐ[R] A₂)] : Finite (A₁ ≃ₐ[R] A₂) :=
+  Finite.of_injective _ AlgEquiv.coe_algHom_injective
+
 end Semiring
-
-section CommSemiring
-
-variable [CommSemiring R] [CommSemiring A₁] [CommSemiring A₂]
-variable [Algebra R A₁] [Algebra R A₂] (e : A₁ ≃ₐ[R] A₂)
-
-@[deprecated map_prod (since := "2024-06-20")]
-protected theorem map_prod {ι : Type*} (f : ι → A₁) (s : Finset ι) :
-    e (∏ x ∈ s, f x) = ∏ x ∈ s, e (f x) :=
-  map_prod _ f s
-
-@[deprecated map_finsupp_prod (since := "2024-06-20")]
-protected theorem map_finsupp_prod {α : Type*} [Zero α] {ι : Type*} (f : ι →₀ α) (g : ι → α → A₁) :
-    e (f.prod g) = f.prod fun i a => e (g i a) :=
-  map_finsupp_prod _ f g
-
-end CommSemiring
-
-section Ring
-
-variable [CommSemiring R] [Ring A₁] [Ring A₂]
-variable [Algebra R A₁] [Algebra R A₂] (e : A₁ ≃ₐ[R] A₂)
-
-@[deprecated map_neg (since := "2024-06-20")]
-protected theorem map_neg (x) : e (-x) = -e x :=
-  map_neg e x
-
-@[deprecated map_sub (since := "2024-06-20")]
-protected theorem map_sub (x y) : e (x - y) = e x - e y :=
-  map_sub e x y
-
-end Ring
 
 end AlgEquiv
 
@@ -793,7 +735,7 @@ variable [Group G] [MulSemiringAction G A] [SMulCommClass G R A]
 
 This is a stronger version of `MulSemiringAction.toRingEquiv` and
 `DistribMulAction.toLinearEquiv`. -/
-@[simps! apply symm_apply toEquiv] -- Porting note: don't want redundant simps lemma `toEquiv_symm`
+@[simps! apply symm_apply toEquiv]
 def toAlgEquiv (g : G) : A ≃ₐ[R] A :=
   { MulSemiringAction.toRingEquiv _ _ g, MulSemiringAction.toAlgHom R A g with }
 
@@ -801,6 +743,42 @@ theorem toAlgEquiv_injective [FaithfulSMul G A] :
     Function.Injective (MulSemiringAction.toAlgEquiv R A : G → A ≃ₐ[R] A) := fun _ _ h =>
   eq_of_smul_eq_smul fun r => AlgEquiv.ext_iff.1 h r
 
+variable (G)
+
+/-- Each element of the group defines an algebra equivalence.
+
+This is a stronger version of `MulSemiringAction.toRingAut` and
+`DistribMulAction.toModuleEnd`. -/
+@[simps]
+def toAlgAut : G →* A ≃ₐ[R] A where
+  toFun := toAlgEquiv R A
+  map_one' := AlgEquiv.ext <| one_smul _
+  map_mul' g h := AlgEquiv.ext <| mul_smul g h
+
 end
 
 end MulSemiringAction
+
+section
+
+variable {R S T : Type*} [CommSemiring R] [Semiring S] [Semiring T] [Algebra R S] [Algebra R T]
+
+instance [Subsingleton S] [Subsingleton T] : Unique (S ≃ₐ[R] T) where
+  default := AlgEquiv.ofAlgHom default default
+    (AlgHom.ext fun _ ↦ Subsingleton.elim _ _)
+    (AlgHom.ext fun _ ↦ Subsingleton.elim _ _)
+  uniq _ := AlgEquiv.ext fun _ ↦ Subsingleton.elim _ _
+
+@[simp]
+lemma AlgEquiv.default_apply [Subsingleton S] [Subsingleton T] (x : S) :
+    (default : S ≃ₐ[R] T) x = 0 :=
+  rfl
+
+end
+
+/-- The algebra equivalence between `ULift A` and `A`. -/
+@[simps! -isSimp apply]
+def ULift.algEquiv {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A] :
+    ULift.{w} A ≃ₐ[R] A where
+  __ := ULift.ringEquiv
+  commutes' _ := rfl

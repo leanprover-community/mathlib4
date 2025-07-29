@@ -3,15 +3,15 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.GeomSum
-import Mathlib.Algebra.Group.Action.Prod
+import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.SMulWithZero
+import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Lattice
 import Mathlib.RingTheory.Nilpotent.Defs
+
+import Mathlib.Algebra.BigOperators.Finprod
 
 /-!
 # Nilpotent elements
@@ -19,7 +19,7 @@ import Mathlib.RingTheory.Nilpotent.Defs
 This file develops the basic theory of nilpotent elements. In particular it shows that the
 nilpotent elements are closed under many operations.
 
-For the definition of `nilradical`, see `Mathlib.RingTheory.Nilpotent.Lemmas`.
+For the definition of `nilradical`, see `Mathlib/RingTheory/Nilpotent/Lemmas.lean`.
 
 
 ## Main definitions
@@ -82,6 +82,23 @@ theorem IsNilpotent.isUnit_add_right_of_commute [Ring R] {r u : R}
     IsUnit (r + u) :=
   add_comm r u ▸ hnil.isUnit_add_left_of_commute hu h_comm
 
+lemma IsUnit.not_isNilpotent [Ring R] [Nontrivial R] {x : R} (hx : IsUnit x) :
+    ¬ IsNilpotent x := by
+  intro H
+  simpa using H.isUnit_add_right_of_commute hx.neg (by simp)
+
+lemma IsNilpotent.not_isUnit [Ring R] [Nontrivial R] {x : R} (hx : IsNilpotent x) :
+    ¬ IsUnit x :=
+  mt IsUnit.not_isNilpotent (by simpa only [not_not] using hx)
+
+lemma IsIdempotentElem.eq_zero_of_isNilpotent [MonoidWithZero R] {e : R}
+    (idem : IsIdempotentElem e) (nilp : IsNilpotent e) : e = 0 := by
+  obtain ⟨rfl | n, hn⟩ := nilp
+  · rw [pow_zero] at hn; rw [← one_mul e, hn, zero_mul]
+  · rw [← hn, idem.pow_succ_eq]
+
+alias IsNilpotent.eq_zero_of_isIdempotentElem := IsIdempotentElem.eq_zero_of_isNilpotent
+
 instance [Zero R] [Pow R ℕ] [Zero S] [Pow S ℕ] [IsReduced R] [IsReduced S] : IsReduced (R × S) where
   eq_zero _ := fun ⟨n, hn⟩ ↦ have hn := Prod.ext_iff.1 hn
     Prod.ext (IsReduced.eq_zero _ ⟨n, hn.1⟩) (IsReduced.eq_zero _ ⟨n, hn.2⟩)
@@ -138,7 +155,7 @@ protected lemma isNilpotent_sum {ι : Type*} {s : Finset ι} {f : ι → R}
   classical
   induction s using Finset.induction with
   | empty => simp
-  | @insert j s hj ih => ?_
+  | insert j s hj ih => ?_
   rw [Finset.sum_insert hj]
   apply Commute.isNilpotent_add
   · exact Commute.sum_right _ _ _ (fun i hi ↦ h_comm _ _ (by simp) (by simp [hi]))
@@ -146,19 +163,28 @@ protected lemma isNilpotent_sum {ι : Type*} {s : Finset ι} {f : ι → R}
   · exact ih (fun i hi ↦ hnp i (by simp [hi]))
       (fun i j hi hj ↦ h_comm i j (by simp [hi]) (by simp [hj]))
 
-protected lemma isNilpotent_mul_left_iff (h_comm : Commute x y) (hy : y ∈ nonZeroDivisorsLeft R) :
-    IsNilpotent (x * y) ↔ IsNilpotent x := by
-  refine ⟨?_, h_comm.isNilpotent_mul_left⟩
-  rintro ⟨k, hk⟩
-  rw [mul_pow h_comm] at hk
-  exact ⟨k, (nonZeroDivisorsLeft R).pow_mem hy k _ hk⟩
+theorem isNilpotent_finsum {ι : Type*} {f : ι → R}
+    (hf : ∀ b, IsNilpotent (f b)) (h_comm : ∀ i j, Commute (f i) (f j)) :
+    IsNilpotent (finsum f) := by
+  classical
+  by_cases h : Set.Finite f.support
+  · rw [finsum_def, dif_pos h]
+    exact Commute.isNilpotent_sum (fun b _ ↦ hf b) (fun _ _ _ _ ↦ h_comm _ _)
+  · simp only [finsum_def, dif_neg h, IsNilpotent.zero]
 
-protected lemma isNilpotent_mul_right_iff (h_comm : Commute x y) (hx : x ∈ nonZeroDivisorsRight R) :
-    IsNilpotent (x * y) ↔ IsNilpotent y := by
+protected lemma isNilpotent_mul_right_iff (h_comm : Commute x y) (hy : y ∈ nonZeroDivisorsRight R) :
+    IsNilpotent (x * y) ↔ IsNilpotent x := by
   refine ⟨?_, h_comm.isNilpotent_mul_right⟩
   rintro ⟨k, hk⟩
   rw [mul_pow h_comm] at hk
-  exact ⟨k, (nonZeroDivisorsRight R).pow_mem hx k _ hk⟩
+  exact ⟨k, (nonZeroDivisorsRight R).pow_mem hy k _ hk⟩
+
+protected lemma isNilpotent_mul_left_iff (h_comm : Commute x y) (hx : x ∈ nonZeroDivisorsLeft R) :
+    IsNilpotent (x * y) ↔ IsNilpotent y := by
+  refine ⟨?_, h_comm.isNilpotent_mul_left⟩
+  rintro ⟨k, hk⟩
+  rw [mul_pow h_comm] at hk
+  exact ⟨k, (nonZeroDivisorsLeft R).pow_mem hx k _ hk⟩
 
 end Semiring
 
@@ -185,6 +211,11 @@ lemma isNilpotent_sum {ι : Type*} {s : Finset ι} {f : ι → R}
     (hnp : ∀ i ∈ s, IsNilpotent (f i)) :
     IsNilpotent (∑ i ∈ s, f i) :=
   Commute.isNilpotent_sum hnp fun _ _ _ _ ↦ Commute.all _ _
+
+theorem isNilpotent_finsum {ι : Type*} {f : ι → R}
+    (hf : ∀ b, IsNilpotent (f b)) :
+    IsNilpotent (finsum f) :=
+  Commute.isNilpotent_finsum hf fun _ _ ↦ Commute.all _ _
 
 end CommSemiring
 

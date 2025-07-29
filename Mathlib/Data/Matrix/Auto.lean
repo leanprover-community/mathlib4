@@ -19,6 +19,7 @@ example {α} [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁�
   rw [of_mul_of_fin]
 ```
 
-Porting note: these magic lemmas have been skipped for now, though the plumbing lemmas in
-`Mathlib.Data.Matrix.Reflection` are still available
+TODO: These magic lemmas have been skipped for now, though the plumbing lemmas in
+`Mathlib/Data/Matrix/Reflection.lean` are still available.
+They should probably be implemented as simprocs.
 -/

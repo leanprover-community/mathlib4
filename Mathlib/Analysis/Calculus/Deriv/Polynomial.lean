@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel, Eric Wieser
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Derivative
+import Mathlib.Analysis.Calculus.Deriv.Mul
 import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.Analysis.Calculus.Deriv.Add
 
@@ -28,21 +29,13 @@ derivative, polynomial
 -/
 
 
-universe u v w
+universe u
 
-open scoped Topology Filter ENNReal Polynomial
-open Set
+open scoped Polynomial
 
-open ContinuousLinearMap (smulRight smulRight_one_eq_iff)
+open ContinuousLinearMap (smulRight)
 
-variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
-variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {f f₀ f₁ g : 𝕜 → F}
-variable {f' f₀' f₁' g' : F}
-variable {x : 𝕜}
-variable {s t : Set 𝕜}
-variable {L L₁ L₂ : Filter 𝕜}
+variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {x : 𝕜} {s : Set 𝕜}
 
 namespace Polynomial
 
@@ -56,8 +49,9 @@ variable (p : 𝕜[X]) (q : R[X])
 protected theorem hasStrictDerivAt (x : 𝕜) :
     HasStrictDerivAt (fun x => p.eval x) (p.derivative.eval x) x := by
   induction p using Polynomial.induction_on' with
-  | h_add p q hp hq => simpa using hp.add hq
-  | h_monomial n a => simpa [mul_assoc] using (hasStrictDerivAt_pow n x).const_mul a
+  | add p q hp hq => simpa using hp.add hq
+  | monomial n a => simpa [mul_assoc, derivative_monomial]
+                      using (hasStrictDerivAt_pow n x).const_mul a
 
 protected theorem hasStrictDerivAt_aeval (x : 𝕜) :
     HasStrictDerivAt (fun x => aeval x q) (aeval x (derivative q)) x := by

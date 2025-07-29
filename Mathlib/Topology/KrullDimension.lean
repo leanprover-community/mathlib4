@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Fangming Li
 -/
 import Mathlib.Order.KrullDimension
+import Mathlib.Topology.Homeomorph.Lemmas
 import Mathlib.Topology.Sets.Closeds
 
 /-!
@@ -14,7 +15,7 @@ collection of all its subsets that are closed and irreducible. Unfolding this de
 the length of longest series of closed irreducible subsets ordered by inclusion.
 -/
 
-open TopologicalSpace Order
+open Order TopologicalSpace Topology
 
 /--
 The Krull dimension of a topological space is the supremum of lengths of chains of
@@ -40,15 +41,15 @@ def IrreducibleCloseds.map {f : X → Y} (hf1 : Continuous f) (hf2 : IsClosedMap
 /--
 Taking images under a closed embedding is strictly monotone on the preorder of irreducible closeds.
 -/
-lemma IrreducibleCloseds.map_strictMono {f : X → Y} (hf : ClosedEmbedding f) :
+lemma IrreducibleCloseds.map_strictMono {f : X → Y} (hf : IsClosedEmbedding f) :
     StrictMono (IrreducibleCloseds.map hf.continuous hf.isClosedMap) :=
-  fun ⦃_ _⦄ UltV ↦ hf.inj.image_strictMono UltV
+  fun ⦃_ _⦄ UltV ↦ hf.injective.image_strictMono UltV
 
 /--
 If `f : X → Y` is a closed embedding, then the Krull dimension of `X` is less than or equal
 to the Krull dimension of `Y`.
 -/
-theorem ClosedEmbedding.topologicalKrullDim_le (f : X → Y) (hf : ClosedEmbedding f) :
+theorem IsClosedEmbedding.topologicalKrullDim_le (f : X → Y) (hf : IsClosedEmbedding f) :
     topologicalKrullDim X ≤ topologicalKrullDim Y :=
   krullDim_le_of_strictMono _ (IrreducibleCloseds.map_strictMono hf)
 
@@ -56,8 +57,8 @@ theorem ClosedEmbedding.topologicalKrullDim_le (f : X → Y) (hf : ClosedEmbeddi
 theorem IsHomeomorph.topologicalKrullDim_eq (f : X → Y) (h : IsHomeomorph f) :
     topologicalKrullDim X = topologicalKrullDim Y :=
   have fwd : topologicalKrullDim X ≤ topologicalKrullDim Y :=
-    ClosedEmbedding.topologicalKrullDim_le f h.closedEmbedding
+    IsClosedEmbedding.topologicalKrullDim_le f h.isClosedEmbedding
   have bwd : topologicalKrullDim Y ≤ topologicalKrullDim X :=
-    ClosedEmbedding.topologicalKrullDim_le (h.homeomorph f).symm
-    (h.homeomorph f).symm.closedEmbedding
+    IsClosedEmbedding.topologicalKrullDim_le (h.homeomorph f).symm
+    (h.homeomorph f).symm.isClosedEmbedding
   le_antisymm fwd bwd

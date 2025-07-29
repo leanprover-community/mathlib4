@@ -31,6 +31,8 @@ of sets `yoneda.obj U` to `F`.
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 universe w' w v u
 
 namespace CategoryTheory
@@ -67,7 +69,7 @@ presheaf of sets `yoneda.obj U` to `F`. -/
 noncomputable def cohomologyPresheafFunctor (n : ℕ) :
     Sheaf J AddCommGrp.{v} ⥤ Cᵒᵖ ⥤ AddCommGrp.{w'} :=
   Functor.flip
-    (Functor.op (yoneda ⋙ (whiskeringRight _ _ _).obj
+    (Functor.op (yoneda ⋙ (Functor.whiskeringRight _ _ _).obj
       AddCommGrp.free ⋙ presheafToSheaf _ _) ⋙ extFunctor n)
 
 /-- Given an abelian sheaf `F`, this is the presheaf which sends `U`

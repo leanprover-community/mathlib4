@@ -5,9 +5,9 @@ Authors: Adam Topaz, Junyan Xu, Jack McKoen
 -/
 import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.RingTheory.Localization.AsSubring
+import Mathlib.Algebra.Algebra.Subalgebra.Tower
 import Mathlib.Algebra.Ring.Subring.Pointwise
 import Mathlib.Algebra.Ring.Action.Field
-import Mathlib.RingTheory.PrimeSpectrum
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
@@ -23,14 +23,16 @@ The order structure on `ValuationSubring K`.
 
 universe u
 
-open scoped Classical
-
 noncomputable section
 
 variable (K : Type u) [Field K]
 
 /-- A valuation subring of a field `K` is a subring `A` such that for every `x : K`,
-either `x ∈ A` or `x⁻¹ ∈ A`. -/
+either `x ∈ A` or `x⁻¹ ∈ A`.
+
+This is equivalent to being maximal in the domination order
+of local subrings (the stacks project definition). See `LocalSubring.isMax_iff`.
+-/
 structure ValuationSubring extends Subring K where
   mem_or_inv_mem' : ∀ x : K, x ∈ carrier ∨ x⁻¹ ∈ carrier
 
@@ -46,7 +48,6 @@ instance : SetLike (ValuationSubring K) K where
     replace h := SetLike.coe_injective' h
     congr
 
-@[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove that
 theorem mem_carrier (x : K) : x ∈ A.carrier ↔ x ∈ A := Iff.refl _
 
 @[simp]
@@ -109,7 +110,7 @@ instance : ValuationRing A where
     · use 0; right
       ext
       simp [h]
-    cases' A.mem_or_inv_mem (a / b) with hh hh
+    rcases A.mem_or_inv_mem (a / b) with hh | hh
     · use ⟨a / b, hh⟩
       right
       ext
@@ -124,7 +125,7 @@ instance : Algebra A K :=
   show Algebra A.toSubring K by infer_instance
 
 -- Porting note: Somehow it cannot find this instance and I'm too lazy to debug. wrong prio?
-instance localRing : LocalRing A := ValuationRing.localRing A
+instance isLocalRing : IsLocalRing A := ValuationRing.isLocalRing A
 
 @[simp]
 theorem algebraMap_apply (a : A) : algebraMap A K a = a := rfl
@@ -134,7 +135,7 @@ instance : IsFractionRing A K where
     (Units.mk0 (y : K) fun c => nonZeroDivisors.ne_zero hy <| Subtype.ext c).isUnit
   surj' z := by
     by_cases h : z = 0; · use (0, 1); simp [h]
-    cases' A.mem_or_inv_mem z with hh hh
+    rcases A.mem_or_inv_mem z with hh | hh
     · use (⟨z, hh⟩, 1); simp
     · refine ⟨⟨1, ⟨⟨_, hh⟩, ?_⟩⟩, mul_inv_cancel₀ h⟩
       exact mem_nonZeroDivisors_iff_ne_zero.2 fun c => h (inv_eq_zero.mp (congr_arg Subtype.val c))
@@ -143,9 +144,9 @@ instance : IsFractionRing A K where
 /-- The value group of the valuation associated to `A`. Note: it is actually a group with zero. -/
 def ValueGroup :=
   ValuationRing.ValueGroup A K
--- deriving LinearOrderedCommGroupWithZero
+-- The `LinearOrderedCommGroupWithZero` instance should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting note: see https://github.com/leanprover-community/mathlib4/issues/5020
 instance : LinearOrderedCommGroupWithZero (ValueGroup A) := by
   unfold ValueGroup
   infer_instance
@@ -172,7 +173,7 @@ theorem valuation_eq_iff (x y : K) : A.valuation x = A.valuation y ↔ ∃ a : A
 theorem valuation_le_iff (x y : K) : A.valuation x ≤ A.valuation y ↔ ∃ a : A, (a : K) * y = x :=
   Iff.rfl
 
-theorem valuation_surjective : Function.Surjective A.valuation := surjective_quot_mk _
+theorem valuation_surjective : Function.Surjective A.valuation := Quot.mk_surjective
 
 theorem valuation_unit (a : Aˣ) : A.valuation a = 1 := by
   rw [← A.valuation.map_one, valuation_eq_iff]; use a; simp
@@ -189,8 +190,8 @@ theorem valuation_eq_one_iff (a : A) : IsUnit a ↔ A.valuation a = 1 :=
 theorem valuation_lt_one_or_eq_one (a : A) : A.valuation a < 1 ∨ A.valuation a = 1 :=
   lt_or_eq_of_le (A.valuation_le_one a)
 
-theorem valuation_lt_one_iff (a : A) : a ∈ LocalRing.maximalIdeal A ↔ A.valuation a < 1 := by
-  rw [LocalRing.mem_maximalIdeal]
+theorem valuation_lt_one_iff (a : A) : a ∈ IsLocalRing.maximalIdeal A ↔ A.valuation a < 1 := by
+  rw [IsLocalRing.mem_maximalIdeal]
   dsimp [nonunits]; rw [valuation_eq_one_iff]
   exact (A.valuation_le_one a).lt_iff_ne.symm
 
@@ -225,9 +226,21 @@ def inclusion (R S : ValuationSubring K) (h : R ≤ S) : R →+* S :=
 def subtype (R : ValuationSubring K) : R →+* K :=
   Subring.subtype R.toSubring
 
+@[simp]
+lemma subtype_apply {R : ValuationSubring K} (x : R) :
+    R.subtype x = x := rfl
+
+lemma subtype_injective (R : ValuationSubring K) :
+    Function.Injective R.subtype :=
+  R.toSubring.subtype_injective
+
+@[simp]
+theorem coe_subtype (R : ValuationSubring K) : ⇑(subtype R) = Subtype.val :=
+  rfl
+
 /-- The canonical map on value groups induced by a coarsening of valuation rings. -/
 def mapOfLE (R S : ValuationSubring K) (h : R ≤ S) : R.ValueGroup →*₀ S.ValueGroup where
-  toFun := Quotient.map' id fun x y ⟨u, hu⟩ => ⟨Units.map (R.inclusion S h).toMonoidHom u, hu⟩
+  toFun := Quotient.map' id fun _ _ ⟨u, hu⟩ => ⟨Units.map (R.inclusion S h).toMonoidHom u, hu⟩
   map_zero' := rfl
   map_one' := rfl
   map_mul' := by rintro ⟨⟩ ⟨⟩; rfl
@@ -246,30 +259,26 @@ theorem mapOfLE_valuation_apply (R S : ValuationSubring K) (h : R ≤ S) (x : K)
 
 /-- The ideal corresponding to a coarsening of a valuation ring. -/
 def idealOfLE (R S : ValuationSubring K) (h : R ≤ S) : Ideal R :=
-  (LocalRing.maximalIdeal S).comap (R.inclusion S h)
+  (IsLocalRing.maximalIdeal S).comap (R.inclusion S h)
 
 instance prime_idealOfLE (R S : ValuationSubring K) (h : R ≤ S) : (idealOfLE R S h).IsPrime :=
-  (LocalRing.maximalIdeal S).comap_isPrime _
+  (IsLocalRing.maximalIdeal S).comap_isPrime _
 
 /-- The coarsening of a valuation ring associated to a prime ideal. -/
 def ofPrime (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] : ValuationSubring K :=
   ofLE A (Localization.subalgebra.ofField K _ P.primeCompl_le_nonZeroDivisors).toSubring
-    -- Porting note: added `Subalgebra.mem_toSubring.mpr`
     fun a ha => Subalgebra.mem_toSubring.mpr <|
       Subalgebra.algebraMap_mem
         (Localization.subalgebra.ofField K _ P.primeCompl_le_nonZeroDivisors) (⟨a, ha⟩ : A)
 
 instance ofPrimeAlgebra (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
     Algebra A (A.ofPrime P) :=
-  -- Porting note: filled in the argument
   Subalgebra.algebra (Localization.subalgebra.ofField K _ P.primeCompl_le_nonZeroDivisors)
 
 instance ofPrime_scalar_tower (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
-    -- porting note (#10754): added instance
     letI : SMul A (A.ofPrime P) := SMulZeroClass.toSMul
     IsScalarTower A (A.ofPrime P) K :=
   IsScalarTower.subalgebra' A K K
-    -- Porting note: filled in the argument
     (Localization.subalgebra.ofField K _ P.primeCompl_le_nonZeroDivisors)
 
 instance ofPrime_localization (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
@@ -279,7 +288,6 @@ instance ofPrime_localization (A : ValuationSubring K) (P : Ideal A) [P.IsPrime]
       P.primeCompl_le_nonZeroDivisors
 
 theorem le_ofPrime (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] : A ≤ ofPrime A P :=
-  -- Porting note: added `Subalgebra.mem_toSubring.mpr`
   fun a ha => Subalgebra.mem_toSubring.mpr <| Subalgebra.algebraMap_mem _ (⟨a, ha⟩ : A)
 
 theorem ofPrime_valuation_eq_one_iff_mem_primeCompl (A : ValuationSubring K) (P : Ideal A)
@@ -291,7 +299,7 @@ theorem idealOfLE_ofPrime (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
     idealOfLE A (ofPrime A P) (le_ofPrime A P) = P := by
   refine Ideal.ext (fun x => ?_)
   apply IsLocalization.AtPrime.to_map_mem_maximal_iff
-  exact localRing (ofPrime A P)
+  exact isLocalRing (ofPrime A P)
 
 @[simp]
 theorem ofPrime_idealOfLE (R S : ValuationSubring K) (h : R ≤ S) :
@@ -300,15 +308,14 @@ theorem ofPrime_idealOfLE (R S : ValuationSubring K) (h : R ≤ S) :
   · rintro ⟨a, r, hr, rfl⟩; apply mul_mem; · exact h a.2
     · rw [← valuation_le_one_iff, map_inv₀, ← inv_one, inv_le_inv₀]
       · exact not_lt.1 ((not_iff_not.2 <| valuation_lt_one_iff S _).1 hr)
-      · intro hh; erw [Valuation.zero_iff, Subring.coe_eq_zero_iff] at hh
-        apply hr; rw [hh]; apply Ideal.zero_mem (R.idealOfLE S h)
-      · exact one_ne_zero
+      · simpa [Valuation.pos_iff] using fun hr₀ ↦ hr₀ ▸ hr <| Ideal.zero_mem (R.idealOfLE S h)
+      · exact zero_lt_one
   · intro hx; by_cases hr : x ∈ R; · exact R.le_ofPrime _ hr
     have : x ≠ 0 := fun h => hr (by rw [h]; exact R.zero_mem)
     replace hr := (R.mem_or_inv_mem x).resolve_left hr
     refine ⟨1, ⟨x⁻¹, hr⟩, ?_, ?_⟩
     · simp only [Ideal.primeCompl, Submonoid.mem_mk, Subsemigroup.mem_mk, Set.mem_compl_iff,
-        SetLike.mem_coe, idealOfLE, Ideal.mem_comap, LocalRing.mem_maximalIdeal, mem_nonunits_iff,
+        SetLike.mem_coe, idealOfLE, Ideal.mem_comap, IsLocalRing.mem_maximalIdeal, mem_nonunits_iff,
         not_not]
       change IsUnit (⟨x⁻¹, h hr⟩ : S)
       apply isUnit_of_mul_eq_one _ (⟨x, hx⟩ : S)
@@ -324,10 +331,10 @@ theorem idealOfLE_le_of_le (R S : ValuationSubring K) (hR : A ≤ R) (hS : A ≤
     (by
       by_contra c; push_neg at c; replace c := monotone_mapOfLE R S h c
       rw [(mapOfLE _ _ _).map_one, mapOfLE_valuation_apply] at c
-      apply not_le_of_lt ((valuation_lt_one_iff S _).1 hx) c)
+      apply not_le_of_gt ((valuation_lt_one_iff S _).1 hx) c)
 
 /-- The equivalence between coarsenings of a valuation ring and its prime ideals. -/
-@[simps]
+@[simps apply]
 def primeSpectrumEquiv : PrimeSpectrum A ≃ {S // A ≤ S} where
   toFun P := ⟨ofPrime A P.asIdeal, le_ofPrime _ _⟩
   invFun S := ⟨idealOfLE _ S S.2, inferInstance⟩
@@ -337,22 +344,26 @@ def primeSpectrumEquiv : PrimeSpectrum A ≃ {S // A ≤ S} where
 /-- An ordered variant of `primeSpectrumEquiv`. -/
 @[simps!]
 def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
-  { primeSpectrumEquiv A with
-    map_rel_iff' :=
-      ⟨fun h => by
+  { OrderDual.ofDual.trans (primeSpectrumEquiv A) with
+    map_rel_iff' {a b} :=
+      ⟨a.rec <| fun a => b.rec <| fun b => fun h => by
+        simp only [OrderDual.toDual_le_toDual]
         dsimp at h
         have := idealOfLE_le_of_le A _ _ ?_ ?_ h
-        iterate 2 erw [idealOfLE_ofPrime] at this
-        · exact this
+        · rwa [idealOfLE_ofPrime, idealOfLE_ofPrime] at this
         all_goals exact le_ofPrime A (PrimeSpectrum.asIdeal _),
       fun h => by apply ofPrime_le_of_le; exact h⟩ }
 
-instance linearOrderOverring : LinearOrder {S // A ≤ S} :=
-  { (inferInstance : PartialOrder _) with
-    le_total :=
-      let i : IsTotal (PrimeSpectrum A) (· ≤ ·) := ⟨fun ⟨x, _⟩ ⟨y, _⟩ => LE.isTotal.total x y⟩
-      (primeSpectrumOrderEquiv A).symm.toRelEmbedding.isTotal.total
-    decidableLE := inferInstance }
+instance le_total_ideal : IsTotal {S // A ≤ S} LE.le := by
+  classical
+  let _ : IsTotal (PrimeSpectrum A) (· ≤ ·) := ⟨fun ⟨x, _⟩ ⟨y, _⟩ => LE.isTotal.total x y⟩
+  exact ⟨(primeSpectrumOrderEquiv A).symm.toRelEmbedding.isTotal.total⟩
+
+open scoped Classical in
+instance linearOrderOverring : LinearOrder {S // A ≤ S} where
+  le_total := (le_total_ideal A).1
+  max_def a b := congr_fun₂ sup_eq_maxDefault a b
+  toDecidableLE := _
 
 end Order
 
@@ -391,6 +402,9 @@ theorem isEquiv_valuation_valuationSubring : v.IsEquiv v.valuationSubring.valuat
   rw [ValuationSubring.valuation_le_one_iff]
   rfl
 
+lemma valuationSubring.integers : v.Integers v.valuationSubring :=
+  Valuation.integer.integers _
+
 end Valuation
 
 namespace ValuationSubring
@@ -421,8 +435,6 @@ def unitGroupMulEquiv : A.unitGroup ≃* Aˣ where
       -- Porting note: was `Units.inv_mul x`
       inv_val := Subtype.ext (by simp) }
   invFun x := ⟨Units.map A.subtype.toMonoidHom x, A.valuation_unit x⟩
-  left_inv a := by ext; rfl
-  right_inv a := by ext; rfl
   map_mul' a b := by ext; rfl
 
 @[simp]
@@ -440,7 +452,7 @@ theorem unitGroup_le_unitGroup {A B : ValuationSubring K} : A.unitGroup ≤ B.un
     by_cases h_1 : x = 0; · simp only [h_1, zero_mem]
     by_cases h_2 : 1 + x = 0
     · simp only [← add_eq_zero_iff_neg_eq.1 h_2, neg_mem _ _ (one_mem _)]
-    cases' hx with hx hx
+    rcases hx with hx | hx
     · have := h (show Units.mk0 _ h_2 ∈ A.unitGroup from A.valuation.map_one_add_of_lt hx)
       simpa using
         B.add_mem _ _ (show 1 + x ∈ B from SetLike.coe_mem (B.unitGroupMulEquiv ⟨_, this⟩ : B))
@@ -470,11 +482,12 @@ end UnitGroup
 
 section nonunits
 
-/-- The nonunits of a valuation subring of `K`, as a subsemigroup of `K`-/
+/-- The nonunits of a valuation subring of `K`, as a subsemigroup of `K` -/
 def nonunits : Subsemigroup K where
   carrier := {x | A.valuation x < 1}
   -- Porting note: added `Set.mem_setOf.mp`
-  mul_mem' ha hb := (mul_lt_mul₀ (Set.mem_setOf.mp ha) (Set.mem_setOf.mp hb)).trans_eq <| mul_one _
+  mul_mem' ha hb := (mul_lt_mul'' (Set.mem_setOf.mp ha) (Set.mem_setOf.mp hb)
+    zero_le' zero_le').trans_eq <| mul_one _
 
 theorem mem_nonunits_iff {x : K} : x ∈ A.nonunits ↔ A.valuation x < 1 :=
   Iff.rfl
@@ -506,8 +519,8 @@ variable {A}
 
 See also `mem_nonunits_iff_exists_mem_maximalIdeal`, which gets rid of the coercion to `K`,
 at the expense of a more complicated right hand side.
- -/
-theorem coe_mem_nonunits_iff {a : A} : (a : K) ∈ A.nonunits ↔ a ∈ LocalRing.maximalIdeal A :=
+-/
+theorem coe_mem_nonunits_iff {a : A} : (a : K) ∈ A.nonunits ↔ a ∈ IsLocalRing.maximalIdeal A :=
   (valuation_lt_one_iff _ _).symm
 
 theorem nonunits_le : A.nonunits ≤ A.toSubring.toSubmonoid.toSubsemigroup := fun _a ha =>
@@ -520,17 +533,17 @@ theorem nonunits_subset : (A.nonunits : Set K) ⊆ A :=
 
 See also `coe_mem_nonunits_iff`, which has a simpler right hand side but requires the element
 to be in `A` already.
- -/
+-/
 theorem mem_nonunits_iff_exists_mem_maximalIdeal {a : K} :
-    a ∈ A.nonunits ↔ ∃ ha, (⟨a, ha⟩ : A) ∈ LocalRing.maximalIdeal A :=
+    a ∈ A.nonunits ↔ ∃ ha, (⟨a, ha⟩ : A) ∈ IsLocalRing.maximalIdeal A :=
   ⟨fun h => ⟨nonunits_subset h, coe_mem_nonunits_iff.mp h⟩, fun ⟨_, h⟩ =>
     coe_mem_nonunits_iff.mpr h⟩
 
 /-- `A.nonunits` agrees with the maximal ideal of `A`, after taking its image in `K`. -/
-theorem image_maximalIdeal : ((↑) : A → K) '' LocalRing.maximalIdeal A = A.nonunits := by
+theorem image_maximalIdeal : ((↑) : A → K) '' IsLocalRing.maximalIdeal A = A.nonunits := by
   ext a
   simp only [Set.mem_image, SetLike.mem_coe, mem_nonunits_iff_exists_mem_maximalIdeal]
-  erw [Subtype.exists]
+  rw [Subtype.exists]
   simp_rw [exists_and_right, exists_eq_right]
 
 end nonunits
@@ -542,12 +555,10 @@ def principalUnitGroup : Subgroup Kˣ where
   carrier := {x | A.valuation (x - 1) < 1}
   mul_mem' := by
     intro a b ha hb
-    -- Porting note: added
-    rw [Set.mem_setOf] at ha hb
+    rw [Set.mem_setOf] at ha hb ⊢
     refine lt_of_le_of_lt ?_ (max_lt hb ha)
-    -- Porting note: `sub_add_sub_cancel` needed some help
     rw [← one_mul (A.valuation (b - 1)), ← A.valuation.map_one_add_of_lt ha, add_sub_cancel,
-      ← Valuation.map_mul, mul_sub_one, ← sub_add_sub_cancel (↑(a * b) : K) _ 1]
+      ← Valuation.map_mul, mul_sub_one, ← sub_add_sub_cancel]
     exact A.valuation.map_add _ _
   one_mem' := by simp
   inv_mem' := by
@@ -596,16 +607,16 @@ def principalUnitGroupOrderEmbedding : ValuationSubring K ↪o (Subgroup Kˣ)ᵒ
 
 theorem coe_mem_principalUnitGroup_iff {x : A.unitGroup} :
     (x : Kˣ) ∈ A.principalUnitGroup ↔
-      A.unitGroupMulEquiv x ∈ (Units.map (LocalRing.residue A).toMonoidHom).ker := by
+      A.unitGroupMulEquiv x ∈ (Units.map (IsLocalRing.residue A).toMonoidHom).ker := by
   rw [MonoidHom.mem_ker, Units.ext_iff]
-  let π := Ideal.Quotient.mk (LocalRing.maximalIdeal A); convert_to _ ↔ π _ = 1
+  let π := Ideal.Quotient.mk (IsLocalRing.maximalIdeal A); convert_to _ ↔ π _ = 1
   rw [← π.map_one, ← sub_eq_zero, ← π.map_sub, Ideal.Quotient.eq_zero_iff_mem, valuation_lt_one_iff]
   simp [mem_principalUnitGroup_iff]
 
 /-- The principal unit group agrees with the kernel of the canonical map from
 the units of `A` to the units of the residue field of `A`. -/
 def principalUnitGroupEquiv :
-    A.principalUnitGroup ≃* (Units.map (LocalRing.residue A).toMonoidHom).ker where
+    A.principalUnitGroup ≃* (Units.map (IsLocalRing.residue A).toMonoidHom).ker where
   toFun x :=
     ⟨A.unitGroupMulEquiv ⟨_, A.principal_units_le_units x.2⟩,
       A.coe_mem_principalUnitGroup_iff.1 x.2⟩
@@ -614,56 +625,54 @@ def principalUnitGroupEquiv :
       rw [A.coe_mem_principalUnitGroup_iff]; simp⟩
   left_inv x := by simp
   right_inv x := by simp
-  map_mul' x y := rfl
+  map_mul' _ _ := rfl
 
 theorem principalUnitGroupEquiv_apply (a : A.principalUnitGroup) :
     (((principalUnitGroupEquiv A a : Aˣ) : A) : K) = (a : Kˣ) :=
   rfl
 
-theorem principalUnitGroup_symm_apply (a : (Units.map (LocalRing.residue A).toMonoidHom).ker) :
+theorem principalUnitGroup_symm_apply (a : (Units.map (IsLocalRing.residue A).toMonoidHom).ker) :
     ((A.principalUnitGroupEquiv.symm a : Kˣ) : K) = ((a : Aˣ) : A) :=
   rfl
 
 /-- The canonical map from the unit group of `A` to the units of the residue field of `A`. -/
-def unitGroupToResidueFieldUnits : A.unitGroup →* (LocalRing.ResidueField A)ˣ :=
+def unitGroupToResidueFieldUnits : A.unitGroup →* (IsLocalRing.ResidueField A)ˣ :=
   MonoidHom.comp (Units.map <| (Ideal.Quotient.mk _).toMonoidHom) A.unitGroupMulEquiv.toMonoidHom
 
 @[simp]
 theorem coe_unitGroupToResidueFieldUnits_apply (x : A.unitGroup) :
-    (A.unitGroupToResidueFieldUnits x : LocalRing.ResidueField A) =
+    (A.unitGroupToResidueFieldUnits x : IsLocalRing.ResidueField A) =
       Ideal.Quotient.mk _ (A.unitGroupMulEquiv x : A) :=
   rfl
 
 theorem ker_unitGroupToResidueFieldUnits :
     A.unitGroupToResidueFieldUnits.ker = A.principalUnitGroup.comap A.unitGroup.subtype := by
   ext
-  -- Porting note: simp fails but rw works
-  -- See https://github.com/leanprover-community/mathlib4/issues/5026
-  -- simp [Subgroup.mem_comap, Subgroup.coeSubtype, coe_mem_principalUnitGroup_iff]
-  rw [Subgroup.mem_comap, Subgroup.coeSubtype, coe_mem_principalUnitGroup_iff]
-  rfl
-  -- simp [Subgroup.mem_comap, Subgroup.coeSubtype, coe_mem_principalUnitGroup_iff]
+  simp_rw [Subgroup.mem_comap, Subgroup.coe_subtype, coe_mem_principalUnitGroup_iff,
+    unitGroupToResidueFieldUnits, IsLocalRing.residue, RingHom.toMonoidHom_eq_coe,
+    MulEquiv.toMonoidHom_eq_coe, MonoidHom.mem_ker, MonoidHom.coe_comp, MonoidHom.coe_coe,
+    Function.comp_apply]
 
 theorem surjective_unitGroupToResidueFieldUnits :
     Function.Surjective A.unitGroupToResidueFieldUnits :=
-  (LocalRing.surjective_units_map_of_local_ringHom _ Ideal.Quotient.mk_surjective
-        LocalRing.isLocalRingHom_residue).comp
+  (IsLocalRing.surjective_units_map_of_local_ringHom _ Ideal.Quotient.mk_surjective
+        IsLocalRing.isLocalHom_residue).comp
     (MulEquiv.surjective _)
 
 /-- The quotient of the unit group of `A` by the principal unit group of `A` agrees with
 the units of the residue field of `A`. -/
 def unitsModPrincipalUnitsEquivResidueFieldUnits :
-    A.unitGroup ⧸ A.principalUnitGroup.comap A.unitGroup.subtype ≃* (LocalRing.ResidueField A)ˣ :=
+    A.unitGroup ⧸ A.principalUnitGroup.comap A.unitGroup.subtype ≃* (IsLocalRing.ResidueField A)ˣ :=
   (QuotientGroup.quotientMulEquivOfEq A.ker_unitGroupToResidueFieldUnits.symm).trans
     (QuotientGroup.quotientKerEquivOfSurjective _ A.surjective_unitGroupToResidueFieldUnits)
 
 /-- Porting note: Lean needs to be reminded of this instance -/
 local instance : MulOneClass ({ x // x ∈ unitGroup A } ⧸
-  Subgroup.comap (Subgroup.subtype (unitGroup A)) (principalUnitGroup A)) := inferInstance
+    Subgroup.comap (Subgroup.subtype (unitGroup A)) (principalUnitGroup A)) := inferInstance
 
--- @[simp] -- Porting note: not in simpNF
 theorem unitsModPrincipalUnitsEquivResidueFieldUnits_comp_quotientGroup_mk :
-    A.unitsModPrincipalUnitsEquivResidueFieldUnits.toMonoidHom.comp (QuotientGroup.mk' _) =
+    (A.unitsModPrincipalUnitsEquivResidueFieldUnits : _ ⧸ Subgroup.comap _ _ →* _).comp
+        (QuotientGroup.mk' (A.principalUnitGroup.subgroupOf A.unitGroup)) =
       A.unitGroupToResidueFieldUnits := rfl
 
 theorem unitsModPrincipalUnitsEquivResidueFieldUnits_comp_quotientGroup_mk_apply
@@ -680,8 +689,8 @@ the action is by a group. Notably this provides an instances when `G` is `K ≃+
 
 These instances are in the `Pointwise` locale.
 
-The lemmas in this section are copied from the file `Mathlib.Algebra.Ring.Subring.Pointwise`; try
-to keep these in sync.
+The lemmas in this section are copied from the file `Mathlib/Algebra/Ring/Subring/Pointwise.lean`;
+try to keep these in sync.
 -/
 
 
@@ -750,13 +759,13 @@ theorem mem_inv_pointwise_smul_iff {g : G} {S : ValuationSubring K} {x : K} :
 
 @[simp]
 theorem pointwise_smul_le_pointwise_smul_iff {g : G} {S T : ValuationSubring K} :
-    g • S ≤ g • T ↔ S ≤ T := Set.set_smul_subset_set_smul_iff
+    g • S ≤ g • T ↔ S ≤ T := Set.smul_set_subset_smul_set_iff
 
 theorem pointwise_smul_subset_iff {g : G} {S T : ValuationSubring K} : g • S ≤ T ↔ S ≤ g⁻¹ • T :=
-  Set.set_smul_subset_iff
+  Set.smul_set_subset_iff_subset_inv_smul_set
 
 theorem subset_pointwise_smul_iff {g : G} {S T : ValuationSubring K} : S ≤ g • T ↔ g⁻¹ • S ≤ T :=
-  Set.subset_set_smul_iff
+  Set.subset_smul_set_iff
 
 end PointwiseActions
 
@@ -786,8 +795,11 @@ namespace Valuation
 
 variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ] (v : Valuation K Γ) (x : Kˣ)
 
--- @[simp] -- Porting note: not in simpNF
 theorem mem_unitGroup_iff : x ∈ v.valuationSubring.unitGroup ↔ v x = 1 :=
   IsEquiv.eq_one_iff_eq_one (Valuation.isEquiv_valuation_valuationSubring _).symm
+
+theorem mem_maximalIdeal_iff {a : v.valuationSubring} :
+    a ∈ IsLocalRing.maximalIdeal (v.valuationSubring) ↔ v a < 1 :=
+  Integer.not_isUnit_iff_valuation_lt_one
 
 end Valuation

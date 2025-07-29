@@ -3,6 +3,7 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
+import Mathlib.Data.Set.Monotone
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
@@ -16,7 +17,6 @@ monotone extension to the whole space.
 open Set
 
 variable {α β : Type*} [LinearOrder α] [ConditionallyCompleteLinearOrder β] {f : α → β} {s : Set α}
-  {a b : α}
 
 /-- If a function is monotone and is bounded on a set `s`, then it admits a monotone extension to
 the whole space. -/

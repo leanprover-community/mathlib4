@@ -5,9 +5,10 @@ Authors: Eric Rodriguez
 -/
 import Mathlib.Algebra.Group.Fin.Basic
 import Mathlib.Algebra.NeZero
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Algebra.Ring.GrindInstances
 import Mathlib.Data.Nat.ModEq
-import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.EquivFin
 
 /-!
 # Definition of `ZMod n` + basic results.
@@ -16,14 +17,14 @@ This file provides the basic details of `ZMod n`, including its commutative ring
 
 ## Implementation details
 
-This used to be inlined into `Data.ZMod.Basic`. This file imports `CharP.Basic`, which is an
+This used to be inlined into `Data.ZMod.Basic`. This file imports `CharP.Lemmas`, which is an
 issue; all `CharP` instances create an `Algebra (ZMod p) R` instance; however, this instance may
 not be definitionally equal to other `Algebra` instances (for example, `GaloisField` also has an
 `Algebra` instance as it is defined as a `SplittingField`). The way to fix this is to use the
 forgetful inheritance pattern, and make `CharP` carry the data of what the `smul` should be (so
 for example, the `smul` on the `GaloisField` `CharP` instance should be equal to the `smul` from
 its `SplittingField` structure); there is only one possible `ZMod p` algebra for any `p`, so this
-is not an issue mathematically. For this to be possible, however, we need `CharP.Basic` to be
+is not an issue mathematically. For this to be possible, however, we need `CharP.Lemmas` to be
 able to import some part of `ZMod`.
 
 -/
@@ -45,7 +46,7 @@ open Nat.ModEq Int
 /-- Multiplicative commutative semigroup structure on `Fin n`. -/
 instance instCommSemigroup (n : ℕ) : CommSemigroup (Fin n) :=
   { inferInstanceAs (Mul (Fin n)) with
-    mul_assoc := fun ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩ =>
+    mul_assoc := fun ⟨a, _⟩ ⟨b, _⟩ ⟨c, _⟩ =>
       Fin.eq_of_val_eq <|
         calc
           a * b % n * c ≡ a * b * c [MOD n] := (Nat.mod_modEq _ _).mul_right _
@@ -54,39 +55,72 @@ instance instCommSemigroup (n : ℕ) : CommSemigroup (Fin n) :=
     mul_comm := Fin.mul_comm }
 
 private theorem left_distrib_aux (n : ℕ) : ∀ a b c : Fin n, a * (b + c) = a * b + a * c :=
-  fun ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩ =>
+  fun ⟨a, _⟩ ⟨b, _⟩ ⟨c, _⟩ =>
   Fin.eq_of_val_eq <|
     calc
       a * ((b + c) % n) ≡ a * (b + c) [MOD n] := (Nat.mod_modEq _ _).mul_left _
       _ ≡ a * b + a * c [MOD n] := by rw [mul_add]
       _ ≡ a * b % n + a * c % n [MOD n] := (Nat.mod_modEq _ _).symm.add (Nat.mod_modEq _ _).symm
 
-/-- Commutative ring structure on `Fin n`. -/
+/-- Distributive structure on `Fin n`. -/
 instance instDistrib (n : ℕ) : Distrib (Fin n) :=
   { Fin.addCommSemigroup n, Fin.instCommSemigroup n with
     left_distrib := left_distrib_aux n
     right_distrib := fun a b c => by
       rw [mul_comm, left_distrib_aux, mul_comm _ b, mul_comm] }
 
-/-- Commutative ring structure on `Fin n`. -/
-instance instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) :=
-  { Fin.instAddMonoidWithOne n, Fin.addCommGroup n, Fin.instCommSemigroup n, Fin.instDistrib n with
-    one_mul := Fin.one_mul'
-    mul_one := Fin.mul_one',
-    -- Porting note: new, see
-    -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/ring.20vs.20Ring/near/322876462
-    zero_mul := Fin.zero_mul'
-    mul_zero := Fin.mul_zero' }
+instance instNonUnitalCommRing (n : ℕ) [NeZero n] : NonUnitalCommRing (Fin n) where
+  __ := Fin.addCommGroup n
+  __ := Fin.instCommSemigroup n
+  __ := Fin.instDistrib n
+  zero_mul := Fin.zero_mul'
+  mul_zero := Fin.mul_zero'
+
+instance instCommMonoid (n : ℕ) [NeZero n] : CommMonoid (Fin n) where
+  one_mul := Fin.one_mul'
+  mul_one := Fin.mul_one'
 
 /-- Note this is more general than `Fin.instCommRing` as it applies (vacuously) to `Fin 0` too. -/
-instance instHasDistribNeg (n : ℕ) : HasDistribNeg (Fin n) :=
-  { toInvolutiveNeg := Fin.instInvolutiveNeg n
-    mul_neg := Nat.casesOn n finZeroElim fun _i => mul_neg
-    neg_mul := Nat.casesOn n finZeroElim fun _i => neg_mul }
+instance instHasDistribNeg (n : ℕ) : HasDistribNeg (Fin n) where
+  toInvolutiveNeg := Fin.instInvolutiveNeg n
+  mul_neg := Nat.casesOn n finZeroElim fun _i => mul_neg
+  neg_mul := Nat.casesOn n finZeroElim fun _i => neg_mul
+
+/--
+Commutative ring structure on `Fin n`.
+
+This is not a global instance, but can introduced locally using `open Fin.CommRing in ...`.
+
+This is not an instance because the `binop%` elaborator assumes that
+there are no non-trivial coercion loops,
+but this instance  would introduce a coercion from `Nat` to `Fin n` and back.
+Non-trivial loops lead to undesirable and counterintuitive elaboration behavior.
+
+For example, for `x : Fin k` and `n : Nat`,
+it causes `x < n` to be elaborated as `x < ↑n` rather than `↑x < n`,
+silently introducing wraparound arithmetic.
+-/
+def instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) where
+  __ := Fin.instAddMonoidWithOne n
+  __ := Fin.addCommGroup n
+  __ := Fin.instCommSemigroup n
+  __ := Fin.instNonUnitalCommRing n
+  __ := Fin.instCommMonoid n
+  intCast n := Fin.intCast n
+
+namespace CommRing
+
+attribute [scoped instance] Fin.instCommRing
+
+end CommRing
+
+instance (n : ℕ) [NeZero n] : NeZero (1 : Fin (n + 1)) :=
+  open Fin.CommRing in inferInstance
 
 end Fin
 
 /-- The integers modulo `n : ℕ`. -/
+@[to_additive_dont_translate]
 def ZMod : ℕ → Type
   | 0 => ℤ
   | n + 1 => Fin (n + 1)
@@ -101,7 +135,7 @@ instance ZMod.repr : ∀ n : ℕ, Repr (ZMod n)
 
 namespace ZMod
 
-instance instUnique : Unique (ZMod 1) := Fin.uniqueFinOne
+instance instUnique : Unique (ZMod 1) := Fin.instUnique
 
 instance fintype : ∀ (n : ℕ) [NeZero n], Fintype (ZMod n)
   | 0, h => (h.ne _ rfl).elim
@@ -116,6 +150,7 @@ theorem card (n : ℕ) [Fintype (ZMod n)] : Fintype.card (ZMod n) = n := by
   | zero => exact (not_finite (ZMod 0)).elim
   | succ n => convert Fintype.card_fin (n + 1) using 2
 
+open Fin.CommRing in
 /- We define each field by cases, to ensure that the eta-expanded `ZMod.commRing` is defeq to the
 original, this helps avoid diamonds with instances coming from classes extending `CommRing` such as
 field. -/
@@ -147,7 +182,6 @@ instance commRing (n : ℕ) : CommRing (ZMod n) where
   nsmul_succ := Nat.casesOn n
     (inferInstanceAs (CommRing ℤ)).nsmul_succ
     fun n => (inferInstanceAs (CommRing (Fin n.succ))).nsmul_succ
-  -- Porting note: `match` didn't work here
   neg_add_cancel := Nat.casesOn n (@neg_add_cancel Int _) fun n => @neg_add_cancel (Fin n.succ) _
   add_comm := Nat.casesOn n (@add_comm Int _) fun n => @add_comm (Fin n.succ) _
   mul := Nat.casesOn n (@Mul.mul Int _) fun n => @Mul.mul (Fin n.succ) _
@@ -166,8 +200,6 @@ instance commRing (n : ℕ) : CommRing (ZMod n) where
   right_distrib :=
     Nat.casesOn n (@right_distrib Int _ _ _) fun n => @right_distrib (Fin n.succ) _ _ _
   mul_comm := Nat.casesOn n (@mul_comm Int _) fun n => @mul_comm (Fin n.succ) _
-  -- Porting note: new, see
-  -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/ring.20vs.20Ring/near/322876462
   zero_mul := Nat.casesOn n (@zero_mul Int _) fun n => @zero_mul (Fin n.succ) _
   mul_zero := Nat.casesOn n (@mul_zero Int _) fun n => @mul_zero (Fin n.succ) _
   npow := Nat.casesOn n
@@ -181,5 +213,8 @@ instance commRing (n : ℕ) : CommRing (ZMod n) where
 
 instance inhabited (n : ℕ) : Inhabited (ZMod n) :=
   ⟨0⟩
+
+-- Verify that we can use `ZMod n` in `grind`.
+example (n : ℕ) : Lean.Grind.CommRing (ZMod n) := inferInstance
 
 end ZMod

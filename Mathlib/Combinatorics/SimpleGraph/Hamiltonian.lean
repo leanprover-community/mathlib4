@@ -3,8 +3,9 @@ Copyright (c) 2023 Bhavik Mehta, Rishi Mehta, Linus Sommer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Rishi Mehta, Linus Sommer
 -/
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Combinatorics.SimpleGraph.Path
+import Mathlib.Algebra.GroupWithZero.Nat
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 
 /-!
 # Hamiltonian Graphs
@@ -51,7 +52,7 @@ lemma IsPath.isHamiltonian_iff (hp : p.IsPath) : p.IsHamiltonian ↔ ∀ w, w �
   ⟨(·.mem_support), hp.isHamiltonian_of_mem⟩
 
 section
-variable [Fintype α] [Fintype β]
+variable [Fintype α]
 
 /-- The support of a hamiltonian walk is the entire vertex set. -/
 lemma IsHamiltonian.support_toFinset (hp : p.IsHamiltonian) : p.support.toFinset = Finset.univ := by
@@ -66,7 +67,7 @@ lemma IsHamiltonian.length_eq (hp : p.IsHamiltonian) : p.length = Fintype.card �
 end
 
 /-- A hamiltonian cycle is a cycle that visits every vertex once. -/
-structure IsHamiltonianCycle (p : G.Walk a a) extends p.IsCycle : Prop :=
+structure IsHamiltonianCycle (p : G.Walk a a) : Prop extends p.IsCycle where
   isHamiltonian_tail : p.tail.IsHamiltonian
 
 variable {p : G.Walk a a}
@@ -78,9 +79,7 @@ lemma IsHamiltonianCycle.map {H : SimpleGraph β} (f : G →g H) (hf : Bijective
     (hp : p.IsHamiltonianCycle) : (p.map f).IsHamiltonianCycle where
   toIsCycle := hp.isCycle.map hf.injective
   isHamiltonian_tail := by
-    simp only [IsHamiltonian, support_tail, support_map, ne_eq, List.map_eq_nil_iff, support_ne_nil,
-      not_false_eq_true, List.count_tail, List.head_map, beq_iff_eq, hf.surjective.forall,
-      hf.injective, List.count_map_of_injective]
+    simp only [IsHamiltonian, hf.surjective.forall]
     intro x
     rcases p with (_ | ⟨y, p⟩)
     · cases hp.ne_nil rfl
@@ -88,14 +87,14 @@ lemma IsHamiltonianCycle.map {H : SimpleGraph β} (f : G →g H) (hf : Bijective
     rw [List.count_map_of_injective _ _ hf.injective, ← support_copy, ← tail_cons_eq]
     exact hp.isHamiltonian_tail _
 
-lemma isHamiltonianCycle_isCycle_and_isHamiltonian_tail  :
+lemma isHamiltonianCycle_isCycle_and_isHamiltonian_tail :
     p.IsHamiltonianCycle ↔ p.IsCycle ∧ p.tail.IsHamiltonian :=
   ⟨fun ⟨h, h'⟩ ↦ ⟨h, h'⟩, fun ⟨h, h'⟩ ↦ ⟨h, h'⟩⟩
 
 lemma isHamiltonianCycle_iff_isCycle_and_support_count_tail_eq_one :
     p.IsHamiltonianCycle ↔ p.IsCycle ∧ ∀ a, (support p).tail.count a = 1 := by
-  simp (config := { contextual := true }) [isHamiltonianCycle_isCycle_and_isHamiltonian_tail,
-    IsHamiltonian, support_tail, IsCycle.not_nil, exists_prop]
+  simp +contextual [isHamiltonianCycle_isCycle_and_isHamiltonian_tail,
+    IsHamiltonian, support_tail, IsCycle.not_nil]
 
 /-- A hamiltonian cycle visits every vertex. -/
 lemma IsHamiltonianCycle.mem_support (hp : p.IsHamiltonianCycle) (b : α) :
@@ -115,7 +114,7 @@ lemma IsHamiltonianCycle.count_support_self (hp : p.IsHamiltonianCycle) :
 
 lemma IsHamiltonianCycle.support_count_of_ne (hp : p.IsHamiltonianCycle) (h : a ≠ b) :
     p.support.count b = 1 := by
-  rw [← cons_support_tail p hp.1.not_nil, List.count_cons_of_ne h.symm, hp.isHamiltonian_tail]
+  rw [← cons_support_tail p hp.1.not_nil, List.count_cons_of_ne h, hp.isHamiltonian_tail]
 
 end Walk
 

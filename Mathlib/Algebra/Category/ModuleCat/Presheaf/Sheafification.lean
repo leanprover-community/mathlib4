@@ -9,6 +9,7 @@ import Mathlib.Algebra.Category.ModuleCat.Presheaf.Limits
 import Mathlib.Algebra.Category.ModuleCat.Sheaf.Limits
 import Mathlib.CategoryTheory.Sites.LocallyBijective
 import Mathlib.CategoryTheory.Sites.Sheafification
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 
 /-!
 # The sheafification functor for presheaves of modules
@@ -40,7 +41,7 @@ variable [HasWeakSheafify J AddCommGrp.{v}]
 /-- Given a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a presheaf of rings
 and `R` a sheaf of rings (i.e. `R` identifies to the sheafification of `R₀`), this is
 the associated sheaf of modules functor `PresheafOfModules.{v} R₀ ⥤ SheafOfModules.{v} R`. -/
-@[simps! (config := .lemmasOnly) map]
+@[simps! -isSimp map]
 noncomputable def sheafification : PresheafOfModules.{v} R₀ ⥤ SheafOfModules.{v} R where
   obj M₀ := sheafify α (CategoryTheory.toSheafify J M₀.presheaf)
   map f := sheafifyMap _ _ _ f
@@ -124,7 +125,7 @@ noncomputable def sheafificationAdjunction :
         apply (toPresheaf _).map_injective
         erw [toPresheaf_map_sheafificationHomEquiv] }
 
-lemma sheaififcationAdjunction_homEquiv_apply {P : PresheafOfModules.{v} R₀}
+lemma sheafificationAdjunction_homEquiv_apply {P : PresheafOfModules.{v} R₀}
     {F : SheafOfModules.{v} R} (f : (sheafification α).obj P ⟶ F) :
     (sheafificationAdjunction α).homEquiv P F f = sheafificationHomEquiv α f := rfl
 
@@ -144,7 +145,7 @@ variable [HasSheafify J AddCommGrp.{v}]
 
 noncomputable instance :
     PreservesFiniteLimits (sheafification.{v} α ⋙ SheafOfModules.toSheaf.{v} R) :=
-  compPreservesFiniteLimits (toPresheaf.{v} R₀) (presheafToSheaf J AddCommGrp)
+  comp_preservesFiniteLimits (toPresheaf.{v} R₀) (presheafToSheaf J AddCommGrp)
 
 instance : (SheafOfModules.toSheaf.{v} R ⋙ sheafToPresheaf _ _).ReflectsIsomorphisms :=
   inferInstanceAs (SheafOfModules.forget.{v} R ⋙ toPresheaf _).ReflectsIsomorphisms
@@ -156,7 +157,7 @@ noncomputable instance : ReflectsFiniteLimits (SheafOfModules.toSheaf.{v} R) whe
   reflects _ _ _ := inferInstance
 
 noncomputable instance : PreservesFiniteLimits (sheafification.{v} α) :=
-  preservesFiniteLimitsOfReflectsOfPreserves
+  preservesFiniteLimits_of_reflects_of_preserves
     (sheafification.{v} α) (SheafOfModules.toSheaf.{v} R)
 
 end

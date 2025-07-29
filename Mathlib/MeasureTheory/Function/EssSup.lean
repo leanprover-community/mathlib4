@@ -6,6 +6,7 @@ Authors: Rémy Degenne
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 import Mathlib.MeasureTheory.Measure.Count
 import Mathlib.Order.Filter.ENNReal
+import Mathlib.Probability.UniformOn
 
 /-!
 # Essential supremum and infimum
@@ -14,12 +15,12 @@ We define the essential supremum and infimum of a function `f : α → β` with 
 almost everywhere.
 
 TODO: The essential supremum of functions `α → ℝ≥0∞` is used in particular to define the norm in
-the `L∞` space (see `Mathlib.MeasureTheory.Function.LpSpace`).
+the `L∞` space (see `Mathlib/MeasureTheory/Function/LpSpace.lean`).
 
 There is a different quantity which is sometimes also called essential supremum: the least
 upper-bound among measurable functions of a family of measurable functions (in an almost-everywhere
 sense). We do not define that quantity here, which is simply the supremum of a map with values in
-`α →ₘ[μ] β` (see `Mathlib.MeasureTheory.Function.AEEqFun`).
+`α →ₘ[μ] β` (see `Mathlib/MeasureTheory/Function/AEEqFun.lean`).
 
 ## Main definitions
 
@@ -28,9 +29,8 @@ sense). We do not define that quantity here, which is simply the supremum of a m
 -/
 
 
-open MeasureTheory Filter Set TopologicalSpace
-
-open ENNReal MeasureTheory NNReal
+open Filter MeasureTheory ProbabilityTheory Set TopologicalSpace
+open scoped ENNReal NNReal
 
 variable {α β : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
 
@@ -94,6 +94,14 @@ variable [MeasurableSingletonClass α]
 @[simp] lemma essInf_count_eq_ciInf (hf : BddBelow (Set.range f)) :
     essInf f .count = ⨅ a, f a := essInf_eq_ciInf (by simp) hf
 
+@[simp] lemma essSup_uniformOn_eq_ciSup [Finite α] (hf : BddAbove (Set.range f)) :
+    essSup f (uniformOn univ) = ⨆ a, f a :=
+  essSup_eq_ciSup (by simpa [uniformOn, cond_apply]) hf
+
+@[simp] lemma essInf_cond_count_eq_ciInf [Finite α] (hf : BddBelow (Set.range f)) :
+    essInf f (uniformOn univ) = ⨅ a, f a :=
+  essInf_eq_ciInf (by simpa [uniformOn, cond_apply]) hf
+
 end ConditionallyCompleteLattice
 
 section ConditionallyCompleteLinearOrder
@@ -152,7 +160,7 @@ variable [CompleteLattice β]
 
 @[simp]
 theorem essSup_measure_zero {m : MeasurableSpace α} {f : α → β} : essSup f (0 : Measure α) = ⊥ :=
-  le_bot_iff.mp (sInf_le (by simp [Set.mem_setOf_eq, EventuallyLE, ae_iff]))
+  le_bot_iff.mp (sInf_le (by simp))
 
 @[simp]
 theorem essInf_measure_zero {_ : MeasurableSpace α} {f : α → β} : essInf f (0 : Measure α) = ⊤ :=
@@ -280,7 +288,7 @@ theorem essSup_mul_le (f g : α → ℝ≥0∞) : essSup (f * g) μ ≤ essSup f
 theorem essSup_add_le (f g : α → ℝ≥0∞) : essSup (f + g) μ ≤ essSup f μ + essSup g μ :=
   limsup_add_le f g
 
-theorem essSup_liminf_le {ι} [Countable ι] [LinearOrder ι] (f : ι → α → ℝ≥0∞) :
+theorem essSup_liminf_le {ι} [Countable ι] [Preorder ι] (f : ι → α → ℝ≥0∞) :
     essSup (fun x => atTop.liminf fun n => f n x) μ ≤
       atTop.liminf fun n => essSup (fun x => f n x) μ := by
   simp_rw [essSup]
@@ -301,7 +309,7 @@ lemma essSup_restrict_eq_of_support_subset {s : Set α} {f : α → ℝ≥0∞} 
   have A : 0 < (μ.restrict t) t := by
     simp only [Measure.restrict_apply_self]
     rw [essSup_eq_sInf] at hd
-    have : d ∉ {a | μ {x | a < f x} = 0} := not_mem_of_lt_csInf hd (OrderBot.bddBelow _)
+    have : d ∉ {a | μ {x | a < f x} = 0} := notMem_of_lt_csInf hd (OrderBot.bddBelow _)
     exact bot_lt_iff_ne_bot.2 this
   have B : 0 < (μ.restrict s) t := by
     have : μ.restrict t ≤ μ.restrict s := by

@@ -5,6 +5,7 @@ Authors: Hunter Monroe, Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Dart
 import Mathlib.Data.FunLike.Fintype
+import Mathlib.Logic.Embedding.Set
 
 /-!
 # Maps between graphs
@@ -95,7 +96,7 @@ protected def comap (f : V → W) (G : SimpleGraph W) : SimpleGraph V where
 @[simp] lemma comap_id {G : SimpleGraph V} : G.comap id = G := SimpleGraph.ext rfl
 
 @[simp] lemma comap_comap {G : SimpleGraph X} (f : V → W) (g : W → X) :
-  (G.comap g).comap f = G.comap (g ∘ f) := rfl
+    (G.comap g).comap f = G.comap (g ∘ f) := rfl
 
 instance instDecidableComapAdj (f : V → W) (G : SimpleGraph W) [DecidableRel G.Adj] :
     DecidableRel (G.comap f).Adj := fun _ _ ↦ ‹DecidableRel G.Adj› _ _
@@ -129,7 +130,7 @@ theorem comap_surjective (f : V ↪ W) : Function.Surjective (SimpleGraph.comap 
 
 theorem map_le_iff_le_comap (f : V ↪ W) (G : SimpleGraph V) (G' : SimpleGraph W) :
     G.map f ≤ G' ↔ G ≤ G'.comap f :=
-  ⟨fun h u v ha => h ⟨_, _, ha, rfl, rfl⟩, by
+  ⟨fun h _ _ ha => h ⟨_, _, ha, rfl, rfl⟩, by
     rintro h _ _ ⟨u, v, ha, rfl, rfl⟩
     exact h ha⟩
 
@@ -160,7 +161,7 @@ protected def _root_.Equiv.simpleGraph (e : V ≃ W) : SimpleGraph V ≃ SimpleG
   ext; rfl
 
 @[simp] lemma _root_.Equiv.simpleGraph_trans (e₁ : V ≃ W) (e₂ : W ≃ X) :
-  (e₁.trans e₂).simpleGraph = e₁.simpleGraph.trans e₂.simpleGraph := rfl
+    (e₁.trans e₂).simpleGraph = e₁.simpleGraph.trans e₂.simpleGraph := rfl
 
 @[simp]
 lemma _root_.Equiv.symm_simpleGraph (e : V ≃ W) : e.simpleGraph.symm = e.symm.simpleGraph := rfl
@@ -202,7 +203,7 @@ abbrev Hom :=
   RelHom G.Adj G'.Adj
 
 /-- A graph embedding is an embedding `f` such that for vertices `v w : V`,
-`G.Adj (f v) (f w) ↔ G.Adj v w`. Its image is an induced subgraph of G'.
+`G'.Adj (f v) (f w) ↔ G.Adj v w`. Its image is an induced subgraph of G'.
 
 The notation `G ↪g G'` represents the type of graph embeddings. -/
 abbrev Embedding :=
@@ -265,11 +266,27 @@ def mapDart (d : G.Dart) : G'.Dart :=
 theorem mapDart_apply (d : G.Dart) : f.mapDart d = ⟨d.1.map f f, f.map_adj d.2⟩ :=
   rfl
 
+/-- The graph homomorphism from a smaller graph to a bigger one. -/
+def ofLE (h : G₁ ≤ G₂) : G₁ →g G₂ := ⟨id, @h⟩
+
+@[simp, norm_cast] lemma coe_ofLE (h : G₁ ≤ G₂) : ⇑(ofLE h) = id := rfl
+
+lemma ofLE_apply (h : G₁ ≤ G₂) (v : V) : ofLE h v = v := rfl
+
 /-- The induced map for spanning subgraphs, which is the identity on vertices. -/
-@[simps]
+@[deprecated ofLE (since := "2025-03-17")]
 def mapSpanningSubgraphs {G G' : SimpleGraph V} (h : G ≤ G') : G →g G' where
   toFun x := x
   map_rel' ha := h ha
+
+@[deprecated "This is true by simp" (since := "2025-03-17")]
+lemma mapSpanningSubgraphs_inj {G G' : SimpleGraph V} {v w : V} (h : G ≤ G') :
+    ofLE h v = ofLE h w ↔ v = w := by simp
+
+@[deprecated "This is true by simp" (since := "2025-03-17")]
+lemma mapSpanningSubgraphs_injective {G G' : SimpleGraph V} (h : G ≤ G') :
+    Injective (ofLE h) :=
+  fun v w hvw ↦ by simpa using hvw
 
 theorem mapEdgeSet.injective (hinj : Function.Injective f) : Function.Injective f.mapEdgeSet := by
   rintro ⟨e₁, h₁⟩ ⟨e₂, h₂⟩
@@ -300,11 +317,6 @@ abbrev comp (f' : G' →g G'') (f : G →g G') : G →g G'' :=
 theorem coe_comp (f' : G' →g G'') (f : G →g G') : ⇑(f'.comp f) = f' ∘ f :=
   rfl
 
-/-- The graph homomorphism from a smaller graph to a bigger one. -/
-def ofLE (h : G₁ ≤ G₂) : G₁ →g G₂ := ⟨id, @h⟩
-
-@[simp, norm_cast] lemma coe_ofLE (h : G₁ ≤ G₂) : ⇑(ofLE h) = id := rfl
-
 end Hom
 
 namespace Embedding
@@ -334,7 +346,7 @@ theorem apply_mem_neighborSet_iff {v w : V} : f w ∈ G'.neighborSet (f v) ↔ w
 @[simps]
 def mapEdgeSet : G.edgeSet ↪ G'.edgeSet where
   toFun := Hom.mapEdgeSet f
-  inj' := Hom.mapEdgeSet.injective f f.injective
+  inj' := Hom.mapEdgeSet.injective f.toRelHom f.injective
 
 /-- A graph embedding induces an embedding of neighbor sets. -/
 @[simps]
@@ -378,8 +390,7 @@ protected abbrev spanningCoe {s : Set V} (G : SimpleGraph s) : G ↪g G.spanning
   SimpleGraph.Embedding.map (Function.Embedding.subtype _) G
 
 /-- Embeddings of types induce embeddings of complete graphs on those types. -/
-protected def completeGraph {α β : Type*} (f : α ↪ β) :
-    (⊤ : SimpleGraph α) ↪g (⊤ : SimpleGraph β) :=
+protected def completeGraph {α β : Type*} (f : α ↪ β) : completeGraph α ↪g completeGraph β :=
   { f with map_rel_iff' := by simp }
 
 @[simp] lemma coe_completeGraph {α β : Type*} (f : α ↪ β) : ⇑(Embedding.completeGraph f) = f := rfl
@@ -393,6 +404,14 @@ abbrev comp (f' : G' ↪g G'') (f : G ↪g G') : G ↪g G'' :=
 @[simp]
 theorem coe_comp (f' : G' ↪g G'') (f : G ↪g G') : ⇑(f'.comp f) = f' ∘ f :=
   rfl
+
+/-- Graph embeddings from `G` to `H` are the same thing as graph embeddings from `Gᶜ` to `Hᶜ`. -/
+def complEquiv : G ↪g H ≃ Gᶜ ↪g Hᶜ where
+  toFun f := ⟨f.toEmbedding, by simp⟩
+  invFun f := ⟨f.toEmbedding, fun {v w} ↦ by
+    obtain rfl | hvw := eq_or_ne v w
+    · simp
+    · simpa [hvw, not_iff_not] using f.map_adj_iff (v := v) (w := w)⟩
 
 end Embedding
 
@@ -421,7 +440,7 @@ def induceHom : G.induce s →g G'.induce t where
 
 lemma induceHom_injective (hi : Set.InjOn φ s) :
     Function.Injective (induceHom φ φst) := by
-  erw [Set.MapsTo.restrict_inj] <;> assumption
+  simpa [Set.MapsTo.restrict_inj]
 
 end induceHom
 
@@ -470,6 +489,18 @@ theorem map_mem_edgeSet_iff {e : Sym2 V} : e.map f ∈ G'.edgeSet ↔ e ∈ G.ed
 
 theorem apply_mem_neighborSet_iff {v w : V} : f w ∈ G'.neighborSet (f v) ↔ w ∈ G.neighborSet v :=
   map_adj_iff f
+
+@[simp]
+theorem symm_toHom_comp_toHom : f.symm.toHom.comp f.toHom = Hom.id := by
+  ext v
+  simp only [RelHom.comp_apply, RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding,
+    RelIso.symm_apply_apply, RelHom.id_apply]
+
+@[simp]
+theorem toHom_comp_symm_toHom : f.toHom.comp f.symm.toHom = Hom.id := by
+  ext v
+  simp only [RelHom.comp_apply, RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding,
+    RelIso.apply_symm_apply, RelHom.id_apply]
 
 /-- An isomorphism of graphs induces an equivalence of edge sets. -/
 @[simps]
@@ -536,8 +567,7 @@ lemma map_symm_apply (f : V ≃ W) (G : SimpleGraph V) (w : W) :
     (SimpleGraph.Iso.map f G).symm w = f.symm w := rfl
 
 /-- Equivalences of types induce isomorphisms of complete graphs on those types. -/
-protected def completeGraph {α β : Type*} (f : α ≃ β) :
-    (⊤ : SimpleGraph α) ≃g (⊤ : SimpleGraph β) :=
+protected def completeGraph {α β : Type*} (f : α ≃ β) : completeGraph α ≃g completeGraph β :=
   { f with map_rel_iff' := by simp }
 
 theorem toEmbedding_completeGraph {α β : Type*} (f : α ≃ β) :
@@ -561,7 +591,7 @@ end Iso
 def induceUnivIso (G : SimpleGraph V) : G.induce Set.univ ≃g G where
   toEquiv := Equiv.Set.univ V
   map_rel_iff' := by simp only [Equiv.Set.univ, Equiv.coe_fn_mk, comap_adj, Embedding.coe_subtype,
-                                Subtype.forall, Set.mem_univ, forall_true_left, implies_true]
+                                implies_true]
 
 section Finite
 

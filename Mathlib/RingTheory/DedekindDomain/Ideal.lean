@@ -4,10 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Pointwise
-import Mathlib.RingTheory.MaximalSpectrum
+import Mathlib.Algebra.Polynomial.FieldDivision
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+import Mathlib.RingTheory.Spectrum.Maximal.Localization
 import Mathlib.RingTheory.ChainOfDivisors
 import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.FractionalIdeal.Operations
+import Mathlib.Algebra.Squarefree.Basic
 
 /-!
 # Dedekind domains and ideals
@@ -17,15 +20,16 @@ Then we prove some results on the unique factorization monoid structure of the i
 
 ## Main definitions
 
- - `IsDedekindDomainInv` alternatively defines a Dedekind domain as an integral domain where
-   every nonzero fractional ideal is invertible.
- - `isDedekindDomainInv_iff` shows that this does note depend on the choice of field of
-   fractions.
- - `IsDedekindDomain.HeightOneSpectrum` defines the type of nonzero prime ideals of `R`.
+- `IsDedekindDomainInv` alternatively defines a Dedekind domain as an integral domain where
+  every nonzero fractional ideal is invertible.
+- `isDedekindDomainInv_iff` shows that this does note depend on the choice of field of
+  fractions.
+- `IsDedekindDomain.HeightOneSpectrum` defines the type of nonzero prime ideals of `R`.
 
 ## Main results:
- - `isDedekindDomain_iff_isDedekindDomainInv`
- - `Ideal.uniqueFactorizationMonoid`
+
+- `isDedekindDomain_iff_isDedekindDomainInv`
+- `Ideal.uniqueFactorizationMonoid`
 
 ## Implementation notes
 
@@ -38,14 +42,13 @@ to add a `(h : ¬ IsField A)` assumption whenever this is explicitly needed.
 ## References
 
 * [D. Marcus, *Number Fields*][marcus1977number]
-* [J.W.S. Cassels, A. Frölich, *Algebraic Number Theory*][cassels1967algebraic]
+* [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
 * [J. Neukirch, *Algebraic Number Theory*][Neukirch1992]
 
 ## Tags
 
 dedekind domain, dedekind ring
 -/
-
 
 variable (R A K : Type*) [CommRing R] [CommRing A] [Field K]
 
@@ -119,8 +122,9 @@ theorem mul_inv_cancel_iff_isUnit {I : FractionalIdeal R₁⁰ K} : I * I⁻¹ =
 variable {K' : Type*} [Field K'] [Algebra R₁ K'] [IsFractionRing R₁ K']
 
 @[simp]
-theorem map_inv (I : FractionalIdeal R₁⁰ K) (h : K ≃ₐ[R₁] K') :
-    I⁻¹.map (h : K →ₐ[R₁] K') = (I.map h)⁻¹ := by rw [inv_eq, map_div, map_one, inv_eq]
+protected theorem map_inv (I : FractionalIdeal R₁⁰ K) (h : K ≃ₐ[R₁] K') :
+    I⁻¹.map (h : K →ₐ[R₁] K') = (I.map h)⁻¹ := by
+  rw [inv_eq, FractionalIdeal.map_div, FractionalIdeal.map_one, inv_eq]
 
 open Submodule Submodule.IsPrincipal
 
@@ -128,7 +132,6 @@ open Submodule Submodule.IsPrincipal
 theorem spanSingleton_inv (x : K) : (spanSingleton R₁⁰ x)⁻¹ = spanSingleton _ x⁻¹ :=
   one_div_spanSingleton x
 
--- @[simp] -- Porting note: not in simpNF form
 theorem spanSingleton_div_spanSingleton (x y : K) :
     spanSingleton R₁⁰ x / spanSingleton R₁⁰ y = spanSingleton R₁⁰ (x / y) := by
   rw [div_spanSingleton, mul_comm, spanSingleton_mul_spanSingleton, div_eq_mul_inv]
@@ -141,7 +144,7 @@ theorem coe_ideal_span_singleton_div_self {x : R₁} (hx : x ≠ 0) :
     (Ideal.span ({x} : Set R₁) : FractionalIdeal R₁⁰ K) / Ideal.span ({x} : Set R₁) = 1 := by
   rw [coeIdeal_span_singleton,
     spanSingleton_div_self K <|
-      (map_ne_zero_iff _ <| NoZeroSMulDivisors.algebraMap_injective R₁ K).mpr hx]
+      (map_ne_zero_iff _ <| FaithfulSMul.algebraMap_injective R₁ K).mpr hx]
 
 theorem spanSingleton_mul_inv {x : K} (hx : x ≠ 0) :
     spanSingleton R₁⁰ x * (spanSingleton R₁⁰ x)⁻¹ = 1 := by
@@ -152,7 +155,7 @@ theorem coe_ideal_span_singleton_mul_inv {x : R₁} (hx : x ≠ 0) :
     (Ideal.span ({x} : Set R₁) : FractionalIdeal R₁⁰ K)⁻¹ = 1 := by
   rw [coeIdeal_span_singleton,
     spanSingleton_mul_inv K <|
-      (map_ne_zero_iff _ <| NoZeroSMulDivisors.algebraMap_injective R₁ K).mpr hx]
+      (map_ne_zero_iff _ <| FaithfulSMul.algebraMap_injective R₁ K).mpr hx]
 
 theorem spanSingleton_inv_mul {x : K} (hx : x ≠ 0) :
     (spanSingleton R₁⁰ x)⁻¹ * spanSingleton R₁⁰ x = 1 := by
@@ -209,12 +212,12 @@ lemma den_mem_inv {I : FractionalIdeal R₁⁰ K} (hI : I ≠ ⊥) :
   rw [← Algebra.smul_def (I.den : R₁) i, ← mem_coe, coe_one]
   suffices Submodule.map (Algebra.linearMap R₁ K) I.num ≤ 1 from
     this <| (den_mul_self_eq_num I).symm ▸ smul_mem_pointwise_smul i I.den I.coeToSubmodule hi
-  apply le_trans <| map_mono (show I.num ≤ 1 by simp only [Ideal.one_eq_top, le_top, bot_eq_zero])
+  apply le_trans <| map_mono (show I.num ≤ 1 by simp only [Ideal.one_eq_top, le_top])
   rw [Ideal.one_eq_top, Submodule.map_top, one_eq_range]
 
 lemma num_le_mul_inv (I : FractionalIdeal R₁⁰ K) : I.num ≤ I * I⁻¹ := by
   by_cases hI : I = 0
-  · rw [hI, num_zero_eq <| NoZeroSMulDivisors.algebraMap_injective R₁ K, zero_mul, zero_eq_bot,
+  · rw [hI, num_zero_eq <| FaithfulSMul.algebraMap_injective R₁ K, zero_mul, zero_eq_bot,
       coeIdeal_bot]
   · rw [mul_comm, ← den_mul_self_eq_num']
     exact mul_right_mono I <| spanSingleton_le_iff_mem.2 (den_mem_inv hI)
@@ -249,12 +252,15 @@ theorem isDedekindDomainInv_iff [Algebra A K] [IsFractionRing A K] :
     FractionalIdeal.mapEquiv (FractionRing.algEquiv A K)
   refine h.toEquiv.forall_congr (fun {x} => ?_)
   rw [← h.toEquiv.apply_eq_iff_eq]
-  simp [h, IsDedekindDomainInv]
+  simp [h]
 
 theorem FractionalIdeal.adjoinIntegral_eq_one_of_isUnit [Algebra A K] [IsFractionRing A K] (x : K)
     (hx : IsIntegral A x) (hI : IsUnit (adjoinIntegral A⁰ x hx)) : adjoinIntegral A⁰ x hx = 1 := by
   set I := adjoinIntegral A⁰ x hx
-  have mul_self : I * I = I := by apply coeToSubmodule_injective; simp [I]
+  have mul_self : IsIdempotentElem I := by
+    apply coeToSubmodule_injective
+    simp only [coe_mul, adjoinIntegral_coe, I]
+    rw [(Algebra.adjoin A {x}).isIdempotentElem_toSubmodule]
   convert congr_arg (· * I⁻¹) mul_self <;>
     simp only [(mul_inv_cancel_iff_isUnit K).mpr hI, mul_assoc, mul_one]
 
@@ -425,13 +431,16 @@ lemma not_inv_le_one_of_ne_bot [IsDedekindDomain A] {I : Ideal A}
     have := Ideal.mem_span_singleton'.mpr ⟨x', IsFractionRing.injective A K h₂_abs⟩
     contradiction
 
-theorem exists_not_mem_one_of_ne_bot [IsDedekindDomain A] {I : Ideal A} (hI0 : I ≠ ⊥)
+theorem exists_notMem_one_of_ne_bot [IsDedekindDomain A] {I : Ideal A} (hI0 : I ≠ ⊥)
     (hI1 : I ≠ ⊤) : ∃ x ∈ (I⁻¹ : FractionalIdeal A⁰ K), x ∉ (1 : FractionalIdeal A⁰ K) :=
   Set.not_subset.1 <| not_inv_le_one_of_ne_bot hI0 hI1
 
+@[deprecated (since := "2025-05-23")]
+alias exists_not_mem_one_of_ne_bot := exists_notMem_one_of_ne_bot
+
 theorem mul_inv_cancel_of_le_one [h : IsDedekindDomain A] {I : Ideal A} (hI0 : I ≠ ⊥)
     (hI : (I * (I : FractionalIdeal A⁰ K)⁻¹)⁻¹ ≤ 1) : I * (I : FractionalIdeal A⁰ K)⁻¹ = 1 := by
-  -- We'll show a contradiction with `exists_not_mem_one_of_ne_bot`:
+  -- We'll show a contradiction with `exists_notMem_one_of_ne_bot`:
   -- `J⁻¹ = (I * I⁻¹)⁻¹` cannot have an element `x ∉ 1`, so it must equal `1`.
   obtain ⟨J, hJ⟩ : ∃ J : Ideal A, (J : FractionalIdeal A⁰ K) = I * (I : FractionalIdeal A⁰ K)⁻¹ :=
     le_one_iff_exists_coeIdeal.mp mul_one_div_le_one
@@ -481,7 +490,7 @@ theorem coe_ideal_mul_inv [h : IsDedekindDomain A] (I : Ideal A) (hI0 : I ≠ �
   clear hi
   induction' i with i ih
   · rw [pow_zero]; exact one_mem_inv_coe_ideal hI0
-  · show x ^ i.succ ∈ (I⁻¹ : FractionalIdeal A⁰ K)
+  · change x ^ i.succ ∈ (I⁻¹ : FractionalIdeal A⁰ K)
     rw [pow_succ']; exact x_mul_mem _ ih
 
 /-- Nonzero fractional ideals in a Dedekind domain are units.
@@ -523,6 +532,21 @@ theorem mul_left_strictMono [IsDedekindDomain A] {I : FractionalIdeal A⁰ K} (h
     StrictMono (I * ·) :=
   strictMono_of_le_iff_le fun _ _ => (mul_left_le_iff hI).symm
 
+instance [IsDedekindDomain A] : PosMulReflectLE (FractionalIdeal A⁰ K) where
+  elim I _ _ := (FractionalIdeal.mul_left_le_iff I.2.ne').mp
+
+instance [IsDedekindDomain A] : MulPosReflectLE (FractionalIdeal A⁰ K) where
+  elim I J K e := by
+    dsimp at *; rwa [mul_comm, mul_comm K, FractionalIdeal.mul_left_le_iff I.2.ne'] at e
+
+instance [IsDedekindDomain A] : PosMulReflectLE (Ideal A) where
+  elim I J K e := by
+    dsimp
+    rwa [← FractionalIdeal.coeIdeal_le_coeIdeal (FractionRing A),
+      ← FractionalIdeal.mul_left_le_iff (J := I) (by simpa using I.2.ne'),
+      ← FractionalIdeal.coeIdeal_mul, ← FractionalIdeal.coeIdeal_mul,
+      FractionalIdeal.coeIdeal_le_coeIdeal]
+
 /-- This is also available as `_root_.div_eq_mul_inv`, using the
 `Semifield` instance defined below.
 -/
@@ -562,8 +586,10 @@ noncomputable instance FractionalIdeal.semifield : Semifield (FractionalIdeal A�
   div_eq_mul_inv := FractionalIdeal.div_eq_mul_inv
   mul_inv_cancel _ := FractionalIdeal.mul_inv_cancel
   nnqsmul := _
-  nnqsmul_def := fun q a => rfl
+  nnqsmul_def := fun _ _ => rfl
 
+#adaptation_note /-- 2025-03-29 for lean4#7717 had to add `mul_left_cancel_of_ne_zero` field.
+TODO(kmill) There is trouble calculating the type of the `IsLeftCancelMulZero` parent. -/
 /-- Fractional ideals have cancellative multiplication in a Dedekind domain.
 
 Although this instance is a direct consequence of the instance
@@ -573,13 +599,29 @@ a computable alternative.
 instance FractionalIdeal.cancelCommMonoidWithZero :
     CancelCommMonoidWithZero (FractionalIdeal A⁰ K) where
   __ : CommSemiring (FractionalIdeal A⁰ K) := inferInstance
+  mul_left_cancel_of_ne_zero := mul_left_cancel₀
 
-instance Ideal.cancelCommMonoidWithZero : CancelCommMonoidWithZero (Ideal A) :=
+instance : PosMulStrictMono (FractionalIdeal A⁰ K) := PosMulMono.toPosMulStrictMono
+
+instance : MulPosStrictMono (FractionalIdeal A⁰ K) := MulPosMono.toMulPosStrictMono
+
+noncomputable instance Ideal.cancelCommMonoidWithZero : CancelCommMonoidWithZero (Ideal A) :=
   { Function.Injective.cancelCommMonoidWithZero (coeIdealHom A⁰ (FractionRing A)) coeIdeal_injective
     (RingHom.map_zero _) (RingHom.map_one _) (RingHom.map_mul _) (RingHom.map_pow _) with }
 
--- Porting note: Lean can infer all it needs by itself
-instance Ideal.isDomain : IsDomain (Ideal A) := { }
+instance Ideal.isDomain : IsDomain (Ideal A) where
+
+instance : PosMulReflectLE (Ideal A) where
+  elim I J K e := by
+    dsimp
+    rwa [← FractionalIdeal.coeIdeal_le_coeIdeal (FractionRing A),
+      ← FractionalIdeal.mul_left_le_iff (J := I) (by simpa using I.2.ne'),
+      ← FractionalIdeal.coeIdeal_mul, ← FractionalIdeal.coeIdeal_mul,
+      FractionalIdeal.coeIdeal_le_coeIdeal]
+
+instance : PosMulStrictMono (Ideal A) := PosMulMono.toPosMulStrictMono
+
+instance : MulPosStrictMono (Ideal A) := MulPosMono.toMulPosStrictMono
 
 /-- For ideals in a Dedekind domain, to divide is to contain. -/
 theorem Ideal.dvd_iff_le {I J : Ideal A} : I ∣ J ↔ J ≤ I :=
@@ -588,9 +630,9 @@ theorem Ideal.dvd_iff_le {I J : Ideal A} : I ∣ J ↔ J ≤ I :=
     · have hJ : J = ⊥ := by rwa [hI, ← eq_bot_iff] at h
       rw [hI, hJ]
     have hI' : (I : FractionalIdeal A⁰ (FractionRing A)) ≠ 0 := coeIdeal_ne_zero.mpr hI
-    have : (I : FractionalIdeal A⁰ (FractionRing A))⁻¹ * J ≤ 1 :=
-      le_trans (mul_left_mono (↑I)⁻¹ ((coeIdeal_le_coeIdeal _).mpr h))
-        (le_of_eq (inv_mul_cancel₀ hI'))
+    have : (I : FractionalIdeal A⁰ (FractionRing A))⁻¹ * J ≤ 1 := by
+      rw [← inv_mul_cancel₀ hI']
+      exact mul_left_mono _ ((coeIdeal_le_coeIdeal _).mpr h)
     obtain ⟨H, hH⟩ := le_one_iff_exists_coeIdeal.mp this
     use H
     refine coeIdeal_injective (show (J : FractionalIdeal A⁰ (FractionRing A)) = ↑(I * H) from ?_)
@@ -606,7 +648,7 @@ theorem Ideal.dvdNotUnit_iff_lt {I J : Ideal A} : DvdNotUnit I J ↔ J < I :=
         hunit),
     fun h =>
     dvdNotUnit_of_dvd_of_not_dvd (Ideal.dvd_iff_le.mpr (le_of_lt h))
-      (mt Ideal.dvd_iff_le.mp (not_le_of_lt h))⟩
+      (mt Ideal.dvd_iff_le.mp (not_le_of_gt h))⟩
 
 instance : WfDvdMonoid (Ideal A) where
   wf := by
@@ -618,22 +660,21 @@ instance : WfDvdMonoid (Ideal A) where
 instance Ideal.uniqueFactorizationMonoid : UniqueFactorizationMonoid (Ideal A) :=
   { irreducible_iff_prime := by
       intro P
-      exact ⟨fun hirr => ⟨hirr.ne_zero, hirr.not_unit, fun I J => by
+      exact ⟨fun hirr => ⟨hirr.ne_zero, hirr.not_isUnit, fun I J => by
         have : P.IsMaximal := by
-          refine ⟨⟨mt Ideal.isUnit_iff.mpr hirr.not_unit, ?_⟩⟩
+          refine ⟨⟨mt Ideal.isUnit_iff.mpr hirr.not_isUnit, ?_⟩⟩
           intro J hJ
           obtain ⟨_J_ne, H, hunit, P_eq⟩ := Ideal.dvdNotUnit_iff_lt.mpr hJ
           exact Ideal.isUnit_iff.mp ((hirr.isUnit_or_isUnit P_eq).resolve_right hunit)
         rw [Ideal.dvd_iff_le, Ideal.dvd_iff_le, Ideal.dvd_iff_le, SetLike.le_def, SetLike.le_def,
           SetLike.le_def]
         contrapose!
-        rintro ⟨⟨x, x_mem, x_not_mem⟩, ⟨y, y_mem, y_not_mem⟩⟩
+        rintro ⟨⟨x, x_mem, x_notMem⟩, ⟨y, y_mem, y_notMem⟩⟩
         exact
           ⟨x * y, Ideal.mul_mem_mul x_mem y_mem,
-            mt this.isPrime.mem_or_mem (not_or_intro x_not_mem y_not_mem)⟩⟩, Prime.irreducible⟩ }
+            mt this.isPrime.mem_or_mem (not_or_intro x_notMem y_notMem)⟩⟩, Prime.irreducible⟩ }
 
-instance Ideal.normalizationMonoid : NormalizationMonoid (Ideal A) :=
-  normalizationMonoidOfUniqueUnits
+noncomputable instance Ideal.normalizationMonoid : NormalizationMonoid (Ideal A) := .ofUniqueUnits
 
 @[simp]
 theorem Ideal.dvd_span_singleton {I : Ideal A} {x : A} : I ∣ Ideal.span {x} ↔ x ∈ I :=
@@ -682,7 +723,7 @@ nonrec theorem Ideal.mem_normalizedFactors_iff {p I : Ideal A} (hI : I ≠ ⊥) 
   rw [← Ideal.dvd_iff_le]
   by_cases hp : p = 0
   · rw [← zero_eq_bot] at hI
-    simp only [hp, zero_not_mem_normalizedFactors, zero_dvd_iff, hI, false_iff, not_and,
+    simp only [hp, zero_notMem_normalizedFactors, zero_dvd_iff, hI, false_iff, not_and,
       not_false_eq_true, implies_true]
   · rwa [mem_normalizedFactors_iff hI, prime_iff_isPrime]
 
@@ -697,9 +738,12 @@ theorem Ideal.pow_lt_self (I : Ideal A) (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) (e :
   dsimp only
   rw [pow_one]
 
-theorem Ideal.exists_mem_pow_not_mem_pow_succ (I : Ideal A) (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) (e : ℕ) :
+theorem Ideal.exists_mem_pow_notMem_pow_succ (I : Ideal A) (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) (e : ℕ) :
     ∃ x ∈ I ^ e, x ∉ I ^ (e + 1) :=
   SetLike.exists_of_lt (I.pow_right_strictAnti hI0 hI1 e.lt_succ_self)
+
+@[deprecated (since := "2025-05-23")]
+alias Ideal.exists_mem_pow_not_mem_pow_succ := Ideal.exists_mem_pow_notMem_pow_succ
 
 open UniqueFactorizationMonoid
 
@@ -744,7 +788,7 @@ open FractionalIdeal
 Let `J ≠ ⊤` be an ideal in a Dedekind domain `A`, and `f ≠ 0` a finite collection
 of elements of `K = Frac(A)`, then we can multiply the elements of `f` by some `a : K`
 to find a collection of elements of `A` that is not completely contained in `J`. -/
-theorem Ideal.exist_integer_multiples_not_mem {J : Ideal A} (hJ : J ≠ ⊤) {ι : Type*} (s : Finset ι)
+theorem Ideal.exist_integer_multiples_notMem {J : Ideal A} (hJ : J ≠ ⊤) {ι : Type*} (s : Finset ι)
     (f : ι → K) {j} (hjs : j ∈ s) (hjf : f j ≠ 0) :
     ∃ a : K,
       (∀ i ∈ s, IsLocalization.IsInteger A (a * f i)) ∧
@@ -763,11 +807,11 @@ theorem Ideal.exist_integer_multiples_not_mem {J : Ideal A} (hJ : J ≠ ⊤) {ι
     · contrapose! hpI
       -- And if all `a`-multiples of `I` are an element of `J`,
       -- then `a` is actually an element of `J / I`, contradiction.
-      refine (mem_div_iff_of_nonzero hI0).mpr fun y hy => Submodule.span_induction hy ?_ ?_ ?_ ?_
+      refine (mem_div_iff_of_nonzero hI0).mpr fun y hy => Submodule.span_induction ?_ ?_ ?_ ?_ hy
       · rintro _ ⟨i, hi, rfl⟩; exact hpI i hi
       · rw [mul_zero]; exact Submodule.zero_mem _
-      · intro x y hx hy; rw [mul_add]; exact Submodule.add_mem _ hx hy
-      · intro b x hx; rw [mul_smul_comm]; exact Submodule.smul_mem _ b hx
+      · intro x y _ _ hx hy; rw [mul_add]; exact Submodule.add_mem _ hx hy
+      · intro b x _ hx; rw [mul_smul_comm]; exact Submodule.smul_mem _ b hx
   -- To show the inclusion of `J / I` into `I⁻¹ = 1 / I`, note that `J < I`.
   calc
     ↑J / I = ↑J * I⁻¹ := div_eq_mul_inv (↑J) I
@@ -778,6 +822,41 @@ theorem Ideal.exist_integer_multiples_not_mem {J : Ideal A} (hJ : J ≠ ⊤) {ι
   exact
     strictMono_of_le_iff_le (fun _ _ => (coeIdeal_le_coeIdeal K).symm)
       (lt_top_iff_ne_top.mpr hJ)
+
+@[deprecated (since := "2025-05-23")]
+alias Ideal.exist_integer_multiples_not_mem := Ideal.exist_integer_multiples_notMem
+
+lemma Ideal.mul_iInf (I : Ideal A) {ι : Type*} [Nonempty ι] (J : ι → Ideal A) :
+    I * ⨅ i, J i = ⨅ i, I * J i := by
+  by_cases hI : I = 0
+  · simp [hI]
+  refine (le_iInf fun i ↦ Ideal.mul_mono_right (iInf_le _ _)).antisymm ?_
+  have H : ⨅ i, I * J i ≤ I := (iInf_le _ (Nonempty.some ‹_›)).trans Ideal.mul_le_right
+  obtain ⟨K, hK⟩ := Ideal.dvd_iff_le.mpr H
+  rw [hK]
+  refine mul_le_mul_left' ?_ I
+  rw [le_iInf_iff]
+  intro i
+  rw [← mul_le_mul_iff_of_pos_left (a := I), ← hK]
+  · exact iInf_le _ _
+  · exact bot_lt_iff_ne_bot.mpr hI
+
+lemma Ideal.iInf_mul (I : Ideal A) {ι : Type*} [Nonempty ι] (J : ι → Ideal A) :
+    (⨅ i, J i) * I = ⨅ i, J i * I := by
+  simp only [mul_iInf, mul_comm _ I]
+
+lemma Ideal.mul_inf (I J K : Ideal A) : I * (J ⊓ K) = I * J ⊓ I * K := by
+  rw [inf_eq_iInf, Ideal.mul_iInf, inf_eq_iInf]
+  congr! 2 with ⟨⟩
+
+lemma Ideal.inf_mul (I J K : Ideal A) : (I ⊓ J) * K = I * K ⊓ J * K := by
+  simp only [Ideal.mul_inf, mul_comm _ K]
+
+lemma FractionalIdeal.mul_inf (I J K : FractionalIdeal A⁰ K) : I * (J ⊓ K) = I * J ⊓ I * K :=
+  mul_inf₀ (zero_le _) _ _
+
+lemma FractionalIdeal.inf_mul (I J K : FractionalIdeal A⁰ K) : (I ⊓ J) * K = I * K ⊓ J * K :=
+  inf_mul₀ (zero_le _) _ _
 
 section Gcd
 
@@ -809,7 +888,7 @@ theorem sup_mul_inf (I J : Ideal A) : (I ⊔ J) * (I ⊓ J) = I * J := by
 
 /-- Ideals in a Dedekind domain have gcd and lcm operators that (trivially) are compatible with
 the normalization operator. -/
-instance : NormalizedGCDMonoid (Ideal A) :=
+noncomputable instance : NormalizedGCDMonoid (Ideal A) :=
   { Ideal.normalizationMonoid with
     gcd := (· ⊔ ·)
     gcd_dvd_left := fun _ _ => by simpa only [dvd_iff_le] using le_sup_left
@@ -842,6 +921,18 @@ theorem factors_span_eq {p : K[X]} : factors (span {p}) = (factors p).map (fun q
   rw [← span_singleton_eq_span_singleton.mpr (factors_prod hp), ← multiset_prod_span_singleton,
     factors_eq_normalizedFactors, normalizedFactors_prod_of_prime this]
 
+lemma _root_.FractionalIdeal.sup_mul_inf (I J : FractionalIdeal A⁰ K) :
+    (I ⊓ J) * (I ⊔ J) = I * J := by
+  apply mul_left_injective₀ (b := spanSingleton A⁰ (algebraMap A K
+    (I.den.1 * I.den.1 * J.den.1 * J.den.1))) (by simp [spanSingleton_eq_zero_iff])
+  have := Ideal.sup_mul_inf (Ideal.span {J.den.1} * I.num) (Ideal.span {I.den.1} * J.num)
+  simp only [← coeIdeal_inj (K := K), coeIdeal_mul, coeIdeal_sup, coeIdeal_inf,
+    ← den_mul_self_eq_num', coeIdeal_span_singleton] at this
+  rw [mul_left_comm, ← mul_add, ← mul_add, ← mul_inf₀ (FractionalIdeal.zero_le _),
+    ← mul_inf₀ (FractionalIdeal.zero_le _)] at this
+  simp only [FractionalIdeal.sup_eq_add, _root_.map_mul, ← spanSingleton_mul_spanSingleton]
+  convert this using 1 <;> ring
+
 end Ideal
 
 end Gcd
@@ -855,7 +946,7 @@ variable {T : Type*} [CommRing T] [IsDedekindDomain T] {I J : Ideal T}
 open Multiset UniqueFactorizationMonoid Ideal
 
 theorem prod_normalizedFactors_eq_self (hI : I ≠ ⊥) : (normalizedFactors I).prod = I :=
-  associated_iff_eq.1 (normalizedFactors_prod hI)
+  associated_iff_eq.1 (prod_normalizedFactors hI)
 
 theorem count_le_of_ideal_ge [DecidableEq (Ideal T)]
     {I J : Ideal T} (h : I ≤ J) (hI : I ≠ ⊥) (K : Ideal T) :
@@ -897,24 +988,27 @@ theorem irreducible_pow_sup [DecidableEq (Ideal T)] (hI : I ≠ ⊥) (hJ : Irred
   rw [sup_eq_prod_inf_factors (pow_ne_zero n hJ.ne_zero) hI, min_comm,
     normalizedFactors_of_irreducible_pow hJ, normalize_eq J, replicate_inter, prod_replicate]
 
-theorem irreducible_pow_sup_of_le [DecidableRel fun (x : Ideal T) x_1 ↦ x ∣ x_1]
-    (hJ : Irreducible J) (n : ℕ) (hn : ↑n ≤ multiplicity J I) :
+theorem irreducible_pow_sup_of_le (hJ : Irreducible J) (n : ℕ) (hn : n ≤ emultiplicity J I) :
     J ^ n ⊔ I = J ^ n := by
   classical
   by_cases hI : I = ⊥
   · simp_all
   rw [irreducible_pow_sup hI hJ, min_eq_right]
-  rwa [multiplicity_eq_count_normalizedFactors hJ hI, PartENat.coe_le_coe, normalize_eq J] at hn
+  rw [emultiplicity_eq_count_normalizedFactors hJ hI, normalize_eq J] at hn
+  exact_mod_cast hn
 
-theorem irreducible_pow_sup_of_ge [DecidableRel fun (x : Ideal T) x_1 ↦ x ∣ x_1]
-    (hI : I ≠ ⊥) (hJ : Irreducible J) (n : ℕ) (hn : multiplicity J I ≤ n) :
-    J ^ n ⊔ I = J ^ (multiplicity J I).get (PartENat.dom_of_le_natCast hn) := by
+theorem irreducible_pow_sup_of_ge (hI : I ≠ ⊥) (hJ : Irreducible J) (n : ℕ)
+    (hn : emultiplicity J I ≤ n) : J ^ n ⊔ I = J ^ multiplicity J I := by
   classical
   rw [irreducible_pow_sup hI hJ, min_eq_left]
   · congr
-    rw [← PartENat.natCast_inj, PartENat.natCast_get,
-      multiplicity_eq_count_normalizedFactors hJ hI, normalize_eq J]
-  · rwa [multiplicity_eq_count_normalizedFactors hJ hI, PartENat.coe_le_coe, normalize_eq J] at hn
+    rw [← Nat.cast_inj (R := ℕ∞), ← FiniteMultiplicity.emultiplicity_eq_multiplicity,
+      emultiplicity_eq_count_normalizedFactors hJ hI, normalize_eq J]
+    rw [← emultiplicity_lt_top]
+    apply hn.trans_lt
+    simp
+  · rw [emultiplicity_eq_count_normalizedFactors hJ hI, normalize_eq J] at hn
+    exact_mod_cast hn
 
 theorem Ideal.eq_prime_pow_mul_coprime [DecidableEq (Ideal T)] {I : Ideal T} (hI : I ≠ ⊥)
     (P : Ideal T) [hpm : P.IsMaximal] :
@@ -944,7 +1038,6 @@ variable [IsDedekindDomain R]
 
 /-- The height one prime spectrum of a Dedekind domain `R` is the type of nonzero prime ideals of
 `R`. Note that this equals the maximal spectrum if `R` has Krull dimension 1. -/
--- Porting note(#5171): removed `has_nonempty_instance`, linter doesn't exist yet
 @[ext, nolint unusedArguments]
 structure HeightOneSpectrum where
   asIdeal : Ideal R
@@ -971,9 +1064,18 @@ theorem associates_irreducible : Irreducible <| Associates.mk v.asIdeal :=
 def equivMaximalSpectrum (hR : ¬IsField R) : HeightOneSpectrum R ≃ MaximalSpectrum R where
   toFun v := ⟨v.asIdeal, v.isPrime.isMaximal v.ne_bot⟩
   invFun v :=
-    ⟨v.asIdeal, v.IsMaximal.isPrime, Ring.ne_bot_of_isMaximal_of_not_isField v.IsMaximal hR⟩
-  left_inv := fun ⟨_, _, _⟩ => rfl
-  right_inv := fun ⟨_, _⟩ => rfl
+    ⟨v.asIdeal, v.isMaximal.isPrime, Ring.ne_bot_of_isMaximal_of_not_isField v.isMaximal hR⟩
+
+/-- An ideal of `R` is not the whole ring if and only if it is contained in an element of
+`HeightOneSpectrum R` -/
+theorem ideal_ne_top_iff_exists (hR : ¬IsField R) (I : Ideal R) :
+    I ≠ ⊤ ↔ ∃ P : HeightOneSpectrum R, I ≤ P.asIdeal := by
+  rw [Ideal.ne_top_iff_exists_maximal]
+  constructor
+  · rintro ⟨M, hMmax, hIM⟩
+    exact ⟨(equivMaximalSpectrum hR).symm ⟨M, hMmax⟩, hIM⟩
+  · rintro ⟨P, hP⟩
+    exact ⟨((equivMaximalSpectrum hR) P).asIdeal, ((equivMaximalSpectrum hR) P).isMaximal, hP⟩
 
 variable (R)
 
@@ -1007,7 +1109,7 @@ variable [IsDedekindDomain A] {I : Ideal R} {J : Ideal A}
 
 /-- The map from ideals of `R` dividing `I` to the ideals of `A` dividing `J` induced by
   a homomorphism `f : R/I →+* A/J` -/
-@[simps] -- Porting note: use `Subtype` instead of `Set` to make linter happy
+@[simps]
 def idealFactorsFunOfQuotHom {f : R ⧸ I →+* A ⧸ J} (hf : Function.Surjective f) :
     {p : Ideal R // p ∣ I} →o {p : Ideal A // p ∣ J} where
   toFun X := ⟨comap (Ideal.Quotient.mk J) (map f (map (Ideal.Quotient.mk I) X)), by
@@ -1020,12 +1122,13 @@ def idealFactorsFunOfQuotHom {f : R ⧸ I →+* A ⧸ J} (hf : Function.Surjecti
     rintro ⟨X, hX⟩ ⟨Y, hY⟩ h
     rw [← Subtype.coe_le_coe, Subtype.coe_mk, Subtype.coe_mk] at h ⊢
     rw [Subtype.coe_mk, comap_le_comap_iff_of_surjective (Ideal.Quotient.mk J)
-      Quotient.mk_surjective, map_le_iff_le_comap, Subtype.coe_mk, comap_map_of_surjective _ hf
-      (map (Ideal.Quotient.mk I) Y)]
+      Ideal.Quotient.mk_surjective, map_le_iff_le_comap, Subtype.coe_mk,
+      comap_map_of_surjective _ hf (map (Ideal.Quotient.mk I) Y)]
     suffices map (Ideal.Quotient.mk I) X ≤ map (Ideal.Quotient.mk I) Y by
       exact le_sup_of_le_left this
     rwa [map_le_iff_le_comap, comap_map_of_surjective (Ideal.Quotient.mk I)
-      Quotient.mk_surjective, ← RingHom.ker_eq_comap_bot, mk_ker, sup_eq_left.mpr <| le_of_dvd hY]
+      Ideal.Quotient.mk_surjective, ← RingHom.ker_eq_comap_bot, mk_ker,
+      sup_eq_left.mpr <| le_of_dvd hY]
 
 @[simp]
 theorem idealFactorsFunOfQuotHom_id :
@@ -1033,7 +1136,7 @@ theorem idealFactorsFunOfQuotHom_id :
   OrderHom.ext _ _
     (funext fun X => by
       simp only [idealFactorsFunOfQuotHom, map_id, OrderHom.coe_mk, OrderHom.id_coe, id,
-        comap_map_of_surjective (Ideal.Quotient.mk J) Quotient.mk_surjective, ←
+        comap_map_of_surjective (Ideal.Quotient.mk J) Ideal.Quotient.mk_surjective, ←
         RingHom.ker_eq_comap_bot (Ideal.Quotient.mk J), mk_ker,
         sup_eq_left.mpr (dvd_iff_le.mp X.prop), Subtype.coe_eta])
 
@@ -1047,13 +1150,12 @@ theorem idealFactorsFunOfQuotHom_comp {f : R ⧸ I →+* A ⧸ J} {g : A ⧸ J �
   rw [idealFactorsFunOfQuotHom, idealFactorsFunOfQuotHom, OrderHom.comp_coe, OrderHom.coe_mk,
     OrderHom.coe_mk, Function.comp_apply, idealFactorsFunOfQuotHom, OrderHom.coe_mk,
     Subtype.mk_eq_mk, Subtype.coe_mk, map_comap_of_surjective (Ideal.Quotient.mk J)
-    Quotient.mk_surjective, map_map]
+    Ideal.Quotient.mk_surjective, map_map]
 
 variable [IsDedekindDomain R] (f : R ⧸ I ≃+* A ⧸ J)
 
 /-- The bijection between ideals of `R` dividing `I` and the ideals of `A` dividing `J` induced by
   an isomorphism `f : R/I ≅ A/J`. -/
--- @[simps] -- Porting note: simpNF complains about the lemmas generated by simps
 def idealFactorsEquivOfQuotEquiv : { p : Ideal R | p ∣ I } ≃o { p : Ideal A | p ∣ J } := by
   have f_surj : Function.Surjective (f : R ⧸ I →+* A ⧸ J) := f.surjective
   have fsym_surj : Function.Surjective (f.symm : A ⧸ J →+* R ⧸ I) := f.symm.surjective
@@ -1087,7 +1189,7 @@ theorem idealFactorsEquivOfQuotEquiv_mem_normalizedFactors_of_mem_normalizedFact
   have hI : I ≠ ⊥ := by
     intro hI
     rw [hI, bot_eq_zero, normalizedFactors_zero, ← Multiset.empty_eq_zero] at hL
-    exact Finset.not_mem_empty _ hL
+    exact Finset.notMem_empty _ hL
   refine mem_normalizedFactors_factor_dvd_iso_of_mem_normalizedFactors hI hJ hL
     (d := (idealFactorsEquivOfQuotEquiv f).toEquiv) ?_
   rintro ⟨l, hl⟩ ⟨l', hl'⟩
@@ -1096,7 +1198,6 @@ theorem idealFactorsEquivOfQuotEquiv_mem_normalizedFactors_of_mem_normalizedFact
 
 /-- The bijection between the sets of normalized factors of I and J induced by a ring
     isomorphism `f : R/I ≅ A/J`. -/
--- @[simps apply] -- Porting note: simpNF complains about the lemmas generated by simps
 def normalizedFactorsEquivOfQuotEquiv (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
     { L : Ideal R | L ∈ normalizedFactors I } ≃ { M : Ideal A | M ∈ normalizedFactors J } where
   toFun j :=
@@ -1109,25 +1210,19 @@ def normalizedFactorsEquivOfQuotEquiv (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
         idealFactorsEquivOfQuotEquiv_mem_normalizedFactors_of_mem_normalizedFactors f.symm hI
           j.prop⟩
   left_inv := fun ⟨j, hj⟩ => by simp
-  right_inv := fun ⟨j, hj⟩ => by
-    simp
-    -- This used to be the end of the proof before leanprover/lean4#2644
-    erw [OrderIso.apply_symm_apply]
+  right_inv := fun ⟨j, hj⟩ => by simp [-Set.coe_setOf]
 
 @[simp]
 theorem normalizedFactorsEquivOfQuotEquiv_symm (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
     (normalizedFactorsEquivOfQuotEquiv f hI hJ).symm =
       normalizedFactorsEquivOfQuotEquiv f.symm hJ hI := rfl
 
-variable [DecidableRel ((· ∣ ·) : Ideal R → Ideal R → Prop)]
-variable [DecidableRel ((· ∣ ·) : Ideal A → Ideal A → Prop)]
-
 /-- The map `normalizedFactorsEquivOfQuotEquiv` preserves multiplicities. -/
-theorem normalizedFactorsEquivOfQuotEquiv_multiplicity_eq_multiplicity (hI : I ≠ ⊥) (hJ : J ≠ ⊥)
+theorem normalizedFactorsEquivOfQuotEquiv_emultiplicity_eq_emultiplicity (hI : I ≠ ⊥) (hJ : J ≠ ⊥)
     (L : Ideal R) (hL : L ∈ normalizedFactors I) :
-    multiplicity (↑(normalizedFactorsEquivOfQuotEquiv f hI hJ ⟨L, hL⟩)) J = multiplicity L I := by
+    emultiplicity (↑(normalizedFactorsEquivOfQuotEquiv f hI hJ ⟨L, hL⟩)) J = emultiplicity L I := by
   rw [normalizedFactorsEquivOfQuotEquiv, Equiv.coe_fn_mk, Subtype.coe_mk]
-  refine multiplicity_factor_dvd_iso_eq_multiplicity_of_mem_normalizedFactors hI hJ hL
+  refine emultiplicity_factor_dvd_iso_eq_emultiplicity_of_mem_normalizedFactors hI hJ hL
     (d := (idealFactorsEquivOfQuotEquiv f).toEquiv) ?_
   exact fun ⟨l, hl⟩ ⟨l', hl'⟩ => idealFactorsEquivOfQuotEquiv_is_dvd_iso f hl hl'
 
@@ -1178,6 +1273,55 @@ theorem Ideal.count_normalizedFactors_eq {p x : Ideal R} [hp : p.IsPrime] {n : �
   count_normalizedFactors_eq' ((Ideal.isPrime_iff_bot_or_prime.mp hp).imp_right Prime.irreducible)
     (normalize_eq _) (Ideal.dvd_iff_le.mpr hle) (mt Ideal.le_of_dvd hlt)
 
+/-- The number of times an ideal `I` occurs as normalized factor of another ideal `J` is stable
+when regarding these ideals as associated elements of the monoid of ideals. -/
+theorem count_associates_factors_eq [DecidableEq (Ideal R)] [DecidableEq <| Associates (Ideal R)]
+    [∀ (p : Associates <| Ideal R), Decidable (Irreducible p)]
+    {I J : Ideal R} (hI : I ≠ 0) (hJ : J.IsPrime) (hJ₀ : J ≠ ⊥) :
+    (Associates.mk J).count (Associates.mk I).factors = Multiset.count J (normalizedFactors I) := by
+  replace hI : Associates.mk I ≠ 0 := Associates.mk_ne_zero.mpr hI
+  have hJ' : Irreducible (Associates.mk J) := by
+    simpa only [Associates.irreducible_mk] using (Ideal.prime_of_isPrime hJ₀ hJ).irreducible
+  apply (Ideal.count_normalizedFactors_eq (p := J) (x := I) _ _).symm
+  all_goals
+    rw [← Ideal.dvd_iff_le, ← Associates.mk_dvd_mk, Associates.mk_pow]
+    simp only [Associates.dvd_eq_le]
+    rw [Associates.prime_pow_dvd_iff_le hI hJ']
+  omega
+
+/-- Variant of `UniqueFactorizationMonoid.count_normalizedFactors_eq` for associated Ideals. -/
+theorem Ideal.count_associates_eq [DecidableEq (Associates (Ideal R))]
+    [∀ (p : Associates <| Ideal R), Decidable (Irreducible p)]
+    {a a₀ x : R} {n : ℕ} (hx : Prime x) (ha : ¬x ∣ a) (heq : a₀ = x ^ n * a) :
+    (Associates.mk (span {x})).count (Associates.mk (span {a₀})).factors = n := by
+  have hx0 : x ≠ 0 := Prime.ne_zero hx
+  classical
+  rw [count_associates_factors_eq, UniqueFactorizationMonoid.count_normalizedFactors_eq]
+  · exact (prime_span_singleton_iff.mpr hx).irreducible
+  · exact normalize_eq _
+  · simp only [span_singleton_pow, heq, dvd_span_singleton]
+    exact Ideal.mul_mem_right _ _ (mem_span_singleton_self (x ^ n))
+  · simp only [span_singleton_pow, heq, dvd_span_singleton, mem_span_singleton]
+    rw [pow_add, pow_one, mul_dvd_mul_iff_left (pow_ne_zero n hx0)]
+    exact ha
+  · simp only [Submodule.zero_eq_bot, ne_eq, span_singleton_eq_bot]
+    aesop
+  · exact (span_singleton_prime hx0).mpr hx
+  · simp only [ne_eq, span_singleton_eq_bot]; exact hx0
+
+/-- Variant of `UniqueFactorizationMonoid.count_normalizedFactors_eq` for associated Ideals. -/
+theorem Ideal.count_associates_eq' [DecidableEq (Associates (Ideal R))]
+    [∀ (p : Associates <| Ideal R), Decidable (Irreducible p)]
+    {a x : R} (hx : Prime x) {n : ℕ} (hle : x ^ n ∣ a) (hlt : ¬x ^ (n + 1) ∣ a) :
+    (Associates.mk (span {x})).count (Associates.mk (span {a})).factors = n := by
+  obtain ⟨q, hq⟩ := hle
+  apply Ideal.count_associates_eq hx _ hq
+  contrapose! hlt with hdvd
+  obtain ⟨q', hq'⟩ := hdvd
+  use q'
+  rw [hq, hq']
+  ring
+
 end
 
 theorem Ideal.le_mul_of_no_prime_factors {I J K : Ideal R}
@@ -1190,26 +1334,6 @@ theorem Ideal.le_mul_of_no_prime_factors {I J K : Ideal R}
   refine mul_dvd_mul_left K
     (UniqueFactorizationMonoid.dvd_of_dvd_mul_right_of_no_prime_factors (b := K) hJ0 ?_ hJ)
   exact fun hPJ hPK => mt Ideal.isPrime_of_prime (coprime _ hPJ hPK)
-
-theorem Ideal.le_of_pow_le_prime {I P : Ideal R} [hP : P.IsPrime] {n : ℕ} (h : I ^ n ≤ P) :
-    I ≤ P := by
-  by_cases hP0 : P = ⊥
-  · simp only [hP0, le_bot_iff] at h ⊢
-    exact pow_eq_zero h
-  rw [← Ideal.dvd_iff_le] at h ⊢
-  exact ((Ideal.prime_iff_isPrime hP0).mpr hP).dvd_of_dvd_pow h
-
-theorem Ideal.pow_le_prime_iff {I P : Ideal R} [_hP : P.IsPrime] {n : ℕ} (hn : n ≠ 0) :
-    I ^ n ≤ P ↔ I ≤ P :=
-  ⟨Ideal.le_of_pow_le_prime, fun h => _root_.trans (Ideal.pow_le_self hn) h⟩
-
-theorem Ideal.prod_le_prime {ι : Type*} {s : Finset ι} {f : ι → Ideal R} {P : Ideal R}
-    [hP : P.IsPrime] : ∏ i ∈ s, f i ≤ P ↔ ∃ i ∈ s, f i ≤ P := by
-  by_cases hP0 : P = ⊥
-  · simp only [hP0, le_bot_iff]
-    rw [← Ideal.zero_eq_bot, Finset.prod_eq_zero_iff]
-  simp only [← Ideal.dvd_iff_le]
-  exact ((Ideal.prime_iff_isPrime hP0).mpr hP).dvd_finset_prod_iff _
 
 /-- The intersection of distinct prime powers in a Dedekind domain is the product of these
 prime powers. -/
@@ -1228,15 +1352,13 @@ theorem IsDedekindDomain.inf_prime_pow_eq_prod {ι : Type*} (s : Finset ι) (f :
   rw [Finset.inf_insert, Finset.prod_insert ha, ih]
   refine le_antisymm (Ideal.le_mul_of_no_prime_factors ?_ inf_le_left inf_le_right) Ideal.mul_le_inf
   intro P hPa hPs hPp
-  obtain ⟨b, hb, hPb⟩ := Ideal.prod_le_prime.mp hPs
+  obtain ⟨b, hb, hPb⟩ := hPp.prod_le.mp hPs
   haveI := Ideal.isPrime_of_prime (prime a (Finset.mem_insert_self a s))
   haveI := Ideal.isPrime_of_prime (prime b (Finset.mem_insert_of_mem hb))
   refine coprime a (Finset.mem_insert_self a s) b (Finset.mem_insert_of_mem hb) ?_ ?_
   · exact (ne_of_mem_of_not_mem hb ha).symm
-  · refine ((Ring.DimensionLeOne.prime_le_prime_iff_eq ?_).mp
-      (Ideal.le_of_pow_le_prime hPa)).trans
-      ((Ring.DimensionLeOne.prime_le_prime_iff_eq ?_).mp
-      (Ideal.le_of_pow_le_prime hPb)).symm
+  · refine ((Ring.DimensionLeOne.prime_le_prime_iff_eq ?_).mp (hPp.le_of_pow_le hPa)).trans
+      ((Ring.DimensionLeOne.prime_le_prime_iff_eq ?_).mp (hPp.le_of_pow_le hPb)).symm
     · exact (prime a (Finset.mem_insert_self a s)).ne_zero
     · exact (prime b (Finset.mem_insert_of_mem hb)).ne_zero
 
@@ -1251,27 +1373,22 @@ noncomputable def IsDedekindDomain.quotientEquivPiOfProdEq {ι : Type*} [Fintype
       simp only [← prod_eq, Finset.inf_eq_iInf, Finset.mem_univ, ciInf_pos,
         ← IsDedekindDomain.inf_prime_pow_eq_prod _ _ _ (fun i _ => prime i)
         (coprime.set_pairwise _)])).trans <|
-    Ideal.quotientInfRingEquivPiQuotient _ fun i j hij => Ideal.coprime_of_no_prime_ge (by
+    Ideal.quotientInfRingEquivPiQuotient _ fun i j hij => Ideal.coprime_of_no_prime_ge <| by
       intro P hPi hPj hPp
       haveI := Ideal.isPrime_of_prime (prime i)
       haveI := Ideal.isPrime_of_prime (prime j)
-      refine coprime hij ?_
-      refine ((Ring.DimensionLeOne.prime_le_prime_iff_eq ?_).mp
-        (Ideal.le_of_pow_le_prime hPi)).trans
-        ((Ring.DimensionLeOne.prime_le_prime_iff_eq ?_).mp
-          (Ideal.le_of_pow_le_prime hPj)).symm
-      · exact (prime i).ne_zero
-      · exact (prime j).ne_zero)
+      exact coprime hij <| ((Ring.DimensionLeOne.prime_le_prime_iff_eq (prime i).ne_zero).mp
+        (hPp.le_of_pow_le hPi)).trans <| Eq.symm <|
+          (Ring.DimensionLeOne.prime_le_prime_iff_eq (prime j).ne_zero).mp (hPp.le_of_pow_le hPj)
 
-open scoped Classical
-
+open scoped Classical in
 /-- **Chinese remainder theorem** for a Dedekind domain: `R ⧸ I` factors as `Π i, R ⧸ (P i ^ e i)`,
 where `P i` ranges over the prime factors of `I` and `e i` over the multiplicities. -/
 noncomputable def IsDedekindDomain.quotientEquivPiFactors {I : Ideal R} (hI : I ≠ ⊥) :
     R ⧸ I ≃+* ∀ P : (factors I).toFinset, R ⧸ (P : Ideal R) ^ (Multiset.count ↑P (factors I)) :=
   IsDedekindDomain.quotientEquivPiOfProdEq _ _ _
     (fun P : (factors I).toFinset => prime_of_factor _ (Multiset.mem_toFinset.mp P.prop))
-    (fun i j hij => Subtype.coe_injective.ne hij)
+    (fun _ _ hij => Subtype.coe_injective.ne hij)
     (calc
       (∏ P : (factors I).toFinset, (P : Ideal R) ^ (factors I).count (P : Ideal R)) =
           ∏ P ∈ (factors I).toFinset, P ^ (factors I).count P :=
@@ -1328,7 +1445,7 @@ end ChineseRemainder
 
 section PID
 
-open multiplicity UniqueFactorizationMonoid Ideal
+open UniqueFactorizationMonoid Ideal
 
 variable {R}
 variable [IsDomain R] [IsPrincipalIdealRing R]
@@ -1354,7 +1471,7 @@ theorem singleton_span_mem_normalizedFactors_of_mem_normalizedFactors [Normaliza
   by_cases hb : b = 0
   · rw [Ideal.span_singleton_eq_bot.mpr hb, bot_eq_zero, normalizedFactors_zero]
     rw [hb, normalizedFactors_zero] at ha
-    exact absurd ha (Multiset.not_mem_zero a)
+    exact absurd ha (Multiset.notMem_zero a)
   · suffices Prime (Ideal.span ({a} : Set R)) by
       obtain ⟨c, hc, hc'⟩ := exists_mem_normalizedFactors_of_dvd ?_ this.irreducible
           (dvd_iff_le.mpr (span_singleton_le_span_singleton.mpr (dvd_of_mem_normalizedFactors ha)))
@@ -1367,30 +1484,26 @@ theorem singleton_span_mem_normalizedFactors_of_mem_normalizedFactors [Normaliza
     · by_contra h
       exact (prime_of_normalized_factor a ha).ne_zero (span_singleton_eq_bot.mp h)
 
-theorem multiplicity_eq_multiplicity_span [DecidableRel ((· ∣ ·) : R → R → Prop)]
-    [DecidableRel ((· ∣ ·) : Ideal R → Ideal R → Prop)] {a b : R} :
-    multiplicity (Ideal.span {a}) (Ideal.span ({b} : Set R)) = multiplicity a b := by
-  by_cases h : Finite a b
-  · rw [← PartENat.natCast_get (finite_iff_dom.mp h)]
-    refine (multiplicity.unique
-      (show Ideal.span {a} ^ (multiplicity a b).get h ∣ Ideal.span {b} from ?_) ?_).symm <;>
+theorem emultiplicity_eq_emultiplicity_span {a b : R} :
+    emultiplicity (Ideal.span {a}) (Ideal.span ({b} : Set R)) = emultiplicity a b := by
+  by_cases h : FiniteMultiplicity a b
+  · rw [h.emultiplicity_eq_multiplicity]
+    apply emultiplicity_eq_of_dvd_of_not_dvd <;>
       rw [Ideal.span_singleton_pow, span_singleton_dvd_span_singleton_iff_dvd]
-    · exact pow_multiplicity_dvd h
-    · exact multiplicity.is_greatest
-        ((PartENat.lt_coe_iff _ _).mpr (Exists.intro (finite_iff_dom.mp h) (Nat.lt_succ_self _)))
-  · suffices ¬Finite (Ideal.span ({a} : Set R)) (Ideal.span ({b} : Set R)) by
-      rw [finite_iff_dom, PartENat.not_dom_iff_eq_top] at h this
-      rw [h, this]
-    exact not_finite_iff_forall.mpr fun n => by
+    · exact pow_multiplicity_dvd a b
+    · apply h.not_pow_dvd_of_multiplicity_lt
+      apply lt_add_one
+  · suffices ¬FiniteMultiplicity (Ideal.span ({a} : Set R)) (Ideal.span ({b} : Set R)) by
+      rw [emultiplicity_eq_top.2 h, emultiplicity_eq_top.2 this]
+    exact FiniteMultiplicity.not_iff_forall.mpr fun n => by
       rw [Ideal.span_singleton_pow, span_singleton_dvd_span_singleton_iff_dvd]
-      exact not_finite_iff_forall.mp h n
+      exact FiniteMultiplicity.not_iff_forall.mp h n
 
 section NormalizationMonoid
 variable [NormalizationMonoid R]
 
 /-- The bijection between the (normalized) prime factors of `r` and the (normalized) prime factors
     of `span {r}` -/
--- @[simps] -- Porting note: simpNF complains about the lemmas generated by simps
 noncomputable def normalizedFactorsEquivSpanNormalizedFactors {r : R} (hr : r ≠ 0) :
     { d : R | d ∈ normalizedFactors r } ≃
       { I : Ideal R | I ∈ normalizedFactors (Ideal.span ({r} : Set R)) } := by
@@ -1409,35 +1522,33 @@ noncomputable def normalizedFactorsEquivSpanNormalizedFactors {r : R} (hr : r �
         (prime_of_normalized_factor i hi).ne_zero).irreducible ?_
       · obtain ⟨a, ha, ha'⟩ := this
         use ⟨a, ha⟩
-        simp only [Subtype.coe_mk, Subtype.mk_eq_mk, ← span_singleton_eq_span_singleton.mpr ha',
+        simp only [← span_singleton_eq_span_singleton.mpr ha',
             Ideal.span_singleton_generator]
       · exact (Submodule.IsPrincipal.mem_iff_generator_dvd i).mp
           ((show Ideal.span {r} ≤ i from dvd_iff_le.mp (dvd_of_mem_normalizedFactors hi))
             (mem_span_singleton.mpr (dvd_refl r)))
 
-variable [DecidableRel ((· ∣ ·) : R → R → Prop)] [DecidableRel ((· ∣ ·) : Ideal R → Ideal R → Prop)]
-
 /-- The bijection `normalizedFactorsEquivSpanNormalizedFactors` between the set of prime
     factors of `r` and the set of prime factors of the ideal `⟨r⟩` preserves multiplicities. See
-    `count_normalizedFactorsSpan_eq_count` for the version stated in terms of multisets `count`.-/
-theorem multiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_multiplicity {r d : R}
+    `count_normalizedFactorsSpan_eq_count` for the version stated in terms of multisets `count`. -/
+theorem emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_emultiplicity {r d : R}
     (hr : r ≠ 0) (hd : d ∈ normalizedFactors r) :
-    multiplicity d r =
-      multiplicity (normalizedFactorsEquivSpanNormalizedFactors hr ⟨d, hd⟩ : Ideal R)
+    emultiplicity d r =
+      emultiplicity (normalizedFactorsEquivSpanNormalizedFactors hr ⟨d, hd⟩ : Ideal R)
         (Ideal.span {r}) := by
-  simp only [normalizedFactorsEquivSpanNormalizedFactors, multiplicity_eq_multiplicity_span,
+  simp only [normalizedFactorsEquivSpanNormalizedFactors, emultiplicity_eq_emultiplicity_span,
     Subtype.coe_mk, Equiv.ofBijective_apply]
 
 /-- The bijection `normalized_factors_equiv_span_normalized_factors.symm` between the set of prime
     factors of the ideal `⟨r⟩` and the set of prime factors of `r` preserves multiplicities. -/
-theorem multiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_multiplicity {r : R}
+theorem emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_emultiplicity {r : R}
     (hr : r ≠ 0) (I : { I : Ideal R | I ∈ normalizedFactors (Ideal.span ({r} : Set R)) }) :
-    multiplicity ((normalizedFactorsEquivSpanNormalizedFactors hr).symm I : R) r =
-      multiplicity (I : Ideal R) (Ideal.span {r}) := by
+    emultiplicity ((normalizedFactorsEquivSpanNormalizedFactors hr).symm I : R) r =
+      emultiplicity (I : Ideal R) (Ideal.span {r}) := by
   obtain ⟨x, hx⟩ := (normalizedFactorsEquivSpanNormalizedFactors hr).surjective I
   obtain ⟨a, ha⟩ := x
   rw [hx.symm, Equiv.symm_apply_apply, Subtype.coe_mk,
-    multiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_multiplicity hr ha]
+    emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_emultiplicity hr ha]
 
 variable [DecidableEq R] [DecidableEq (Ideal R)]
 
@@ -1448,9 +1559,9 @@ variable [DecidableEq R] [DecidableEq (Ideal R)]
 theorem count_span_normalizedFactors_eq {r X : R} (hr : r ≠ 0) (hX : Prime X) :
     Multiset.count (Ideal.span {X} : Ideal R) (normalizedFactors (Ideal.span {r}))  =
         Multiset.count (normalize X) (normalizedFactors r) := by
-  have := multiplicity_eq_multiplicity_span (R := R) (a := X) (b := r)
-  rw [multiplicity_eq_count_normalizedFactors (Prime.irreducible hX) hr,
-    multiplicity_eq_count_normalizedFactors (Prime.irreducible ?_), normalize_apply,
+  have := emultiplicity_eq_emultiplicity_span (R := R) (a := X) (b := r)
+  rw [emultiplicity_eq_count_normalizedFactors (Prime.irreducible hX) hr,
+    emultiplicity_eq_count_normalizedFactors (Prime.irreducible ?_), normalize_apply,
     normUnit_eq_one, Units.val_one, one_eq_top, mul_top, Nat.cast_inj] at this
   · simp only [normalize_apply, this]
   · simp only [Submodule.zero_eq_bot, ne_eq, span_singleton_eq_bot, hr, not_false_eq_true]
@@ -1460,26 +1571,52 @@ theorem count_span_normalizedFactors_eq_of_normUnit {r X : R}
     (hr : r ≠ 0) (hX₁ : normUnit X = 1) (hX : Prime X) :
       Multiset.count (Ideal.span {X} : Ideal R) (normalizedFactors (Ideal.span {r})) =
         Multiset.count X (normalizedFactors r) := by
-  simpa [hX₁] using count_span_normalizedFactors_eq hr hX
+  simpa [hX₁, normalize_apply] using count_span_normalizedFactors_eq hr hX
 
 end NormalizationMonoid
 
-variable [DecidableEq (Ideal R)]
-
-/-- The number of times an ideal `I` occurs as normalized factor of another ideal `J` is stable
-  when regarding at these ideals as associated elements of the monoid of ideals.-/
-theorem count_associates_factors_eq [DecidableEq <| Associates (Ideal R)]
-    [∀ (p : Associates <| Ideal R), Decidable (Irreducible p)]
-    (I J : Ideal R) (hI : I ≠ 0) (hJ : J.IsPrime) (hJ₀ : J ≠ ⊥) :
-    (Associates.mk J).count (Associates.mk I).factors = Multiset.count J (normalizedFactors I) := by
-  replace hI : Associates.mk I ≠ 0 := Associates.mk_ne_zero.mpr hI
-  have hJ' : Irreducible (Associates.mk J) := by
-    simpa only [Associates.irreducible_mk] using (Ideal.prime_of_isPrime hJ₀ hJ).irreducible
-  apply (Ideal.count_normalizedFactors_eq (p := J) (x := I) _ _).symm
-  all_goals
-    rw [← Ideal.dvd_iff_le, ← Associates.mk_dvd_mk, Associates.mk_pow]
-    simp only [Associates.dvd_eq_le]
-    rw [Associates.prime_pow_dvd_iff_le hI hJ']
-  linarith
-
 end PID
+
+section primesOverFinset
+
+open UniqueFactorizationMonoid Ideal
+
+open scoped Classical in
+/-- The finite set of all prime factors of the pushforward of `p`. -/
+noncomputable abbrev primesOverFinset {A : Type*} [CommRing A] (p : Ideal A) (B : Type*)
+    [CommRing B] [IsDedekindDomain B] [Algebra A B] : Finset (Ideal B) :=
+  (factors (p.map (algebraMap A B))).toFinset
+
+variable {A : Type*} [CommRing A] {p : Ideal A} (hpb : p ≠ ⊥) [hpm : p.IsMaximal]
+  (B : Type*) [CommRing B] [IsDedekindDomain B] [Algebra A B] [NoZeroSMulDivisors A B]
+
+include hpb in
+theorem coe_primesOverFinset : primesOverFinset p B = primesOver p B := by
+  classical
+  ext P
+  rw [primesOverFinset, factors_eq_normalizedFactors, Finset.mem_coe, Multiset.mem_toFinset]
+  exact (P.mem_normalizedFactors_iff (map_ne_bot_of_ne_bot hpb)).trans <| Iff.intro
+    (fun ⟨hPp, h⟩ => ⟨hPp, ⟨hpm.eq_of_le (comap_ne_top _ hPp.ne_top) (le_comap_of_map_le h)⟩⟩)
+    (fun ⟨hPp, h⟩ => ⟨hPp, map_le_of_le_comap h.1.le⟩)
+
+variable (p) [Algebra.IsIntegral A B]
+
+theorem primesOver_finite : (primesOver p B).Finite := by
+  by_cases hpb : p = ⊥
+  · rw [hpb] at hpm ⊢
+    haveI : IsDomain A := IsDomain.of_bot_isPrime A
+    rw [primesOver_bot A B]
+    exact Set.finite_singleton ⊥
+  · rw [← coe_primesOverFinset hpb B]
+    exact (primesOverFinset p B).finite_toSet
+
+theorem primesOver_ncard_ne_zero : (primesOver p B).ncard ≠ 0 := by
+  rcases exists_ideal_liesOver_maximal_of_isIntegral p B with ⟨P, hPm, hp⟩
+  exact Set.ncard_ne_zero_of_mem ⟨hPm.isPrime, hp⟩ (primesOver_finite p B)
+
+theorem one_le_primesOver_ncard : 1 ≤ (primesOver p B).ncard :=
+  Nat.one_le_iff_ne_zero.mpr (primesOver_ncard_ne_zero p B)
+
+end primesOverFinset
+
+set_option linter.style.longFile 1700

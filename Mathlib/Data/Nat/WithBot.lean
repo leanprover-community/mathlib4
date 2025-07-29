@@ -3,10 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Algebra.Order.Monoid.WithTop
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.GroupWithZero.Canonical
 import Mathlib.Data.Nat.Cast.WithTop
+import Mathlib.Order.Nat
 
 /-!
 # `WithBot ℕ`
@@ -28,15 +28,11 @@ theorem add_eq_zero_iff {n m : WithBot ℕ} : n + m = 0 ↔ n = 0 ∧ m = 0 := b
   · simp [WithBot.bot_add]
   cases m
   · simp [WithBot.add_bot]
-  simp [← WithBot.coe_add, add_eq_zero_iff_of_nonneg]
+  simp [← WithBot.coe_add]
 
-#adaptation_note
-/--
-After nightly-2024-09-06 we can remove the `_root_` prefix below.
--/
 theorem add_eq_one_iff {n m : WithBot ℕ} : n + m = 1 ↔ n = 0 ∧ m = 1 ∨ n = 1 ∧ m = 0 := by
   cases n
-  · simp only [WithBot.bot_add, WithBot.bot_ne_one, WithBot.bot_ne_zero, false_and, _root_.or_self]
+  · simp only [WithBot.bot_add, WithBot.bot_ne_one, WithBot.bot_ne_zero, false_and, or_self]
   cases m
   · simp [WithBot.add_bot]
   simp [← WithBot.coe_add, Nat.add_eq_one_iff]

@@ -3,7 +3,6 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Aurélien Saue, Anne Baanen
 -/
-import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Tactic.NormNum.Inv
 import Mathlib.Tactic.NormNum.Pow
 import Mathlib.Util.AtomM
@@ -75,10 +74,14 @@ This feature wasn't needed yet, so it's not implemented yet.
 ring, semiring, exponent, power
 -/
 
+assert_not_exists OrderedAddCommMonoid
+
 namespace Mathlib.Tactic
 namespace Ring
 
 open Mathlib.Meta Qq NormNum Lean.Meta AtomM
+
+attribute [local instance] monadLiftOptionMetaM
 
 open Lean (MetaM Expr mkRawNatLit)
 
@@ -262,7 +265,8 @@ def ExProd.mkNegNat (_ : Q(Ring $α)) (n : ℕ) : (e : Q($α)) × ExProd sα e :
   ⟨q((Int.negOfNat $lit).rawCast : $α), .const (-n) none⟩
 
 /--
-Constructs the expression corresponding to `.const (-n)`.
+Constructs the expression corresponding to `.const q h` for `q = n / d`
+and `h` a proof that `(d : α) ≠ 0`.
 (The `.const` constructor does not check that the expression is correct.)
 -/
 def ExProd.mkRat (_ : Q(DivisionRing $α)) (q : ℚ) (n : Q(ℤ)) (d : Q(ℕ)) (h : Expr) :
@@ -509,9 +513,8 @@ mutual
 partial def ExBase.evalNatCast {a : Q(ℕ)} (va : ExBase sℕ a) : AtomM (Result (ExBase sα) q($a)) :=
   match va with
   | .atom _ => do
-    let a' : Q($α) := q($a)
-    let i ← addAtom a'
-    pure ⟨a', ExBase.atom i, (q(Eq.refl $a') : Expr)⟩
+    let (i, ⟨b', _⟩) ← addAtomQ q($a)
+    pure ⟨b', ExBase.atom i, q(Eq.refl $b')⟩
   | .sum va => do
     let ⟨_, vc, p⟩ ← va.evalNatCast
     pure ⟨_, .sum vc, p⟩
@@ -660,7 +663,7 @@ def evalPowAtom {a : Q($α)} {b : Q(ℕ)} (va : ExBase sα a) (vb : ExProd sℕ 
 theorem const_pos (n : ℕ) (h : Nat.ble 1 n = true) : 0 < (n.rawCast : ℕ) := Nat.le_of_ble_eq_true h
 
 theorem mul_exp_pos {a₁ a₂ : ℕ} (n) (h₁ : 0 < a₁) (h₂ : 0 < a₂) : 0 < a₁ ^ n * a₂ :=
-  Nat.mul_pos (Nat.pos_pow_of_pos _ h₁) h₂
+  Nat.mul_pos (Nat.pow_pos h₁) h₂
 
 theorem add_pos_left {a₁ : ℕ} (a₂) (h : 0 < a₁) : 0 < a₁ + a₂ :=
   Nat.lt_of_lt_of_le h (Nat.le_add_right ..)
@@ -885,7 +888,7 @@ def evalPow {a : Q($α)} {b : Q(ℕ)} (va : ExSum sα a) (vb : ExSum sℕ b) :
     return ⟨_, vd, q(pow_add $pc₁ $pc₂ $pd)⟩
 
 /-- This cache contains data required by the `ring` tactic during execution. -/
-structure Cache {α : Q(Type u)} (sα : Q(CommSemiring $α)) :=
+structure Cache {α : Q(Type u)} (sα : Q(CommSemiring $α)) where
   /-- A ring instance on `α`, if available. -/
   rα : Option Q(Ring $α)
   /-- A division ring instance on `α`, if available. -/
@@ -949,11 +952,11 @@ Evaluates an atom, an expression where `ring` can find no additional structure.
 def evalAtom (e : Q($α)) : AtomM (Result (ExSum sα) e) := do
   let r ← (← read).evalAtom e
   have e' : Q($α) := r.expr
-  let i ← addAtom e'
-  let ve' := (ExBase.atom i (e := e')).toProd (ExProd.mkNat sℕ 1).2 |>.toSum
+  let (i, ⟨a', _⟩) ← addAtomQ e'
+  let ve' := (ExBase.atom i (e := a')).toProd (ExProd.mkNat sℕ 1).2 |>.toSum
   pure ⟨_, ve', match r.proof? with
   | none => (q(atom_pf $e) : Expr)
-  | some (p : Q($e = $e')) => (q(atom_pf' $p) : Expr)⟩
+  | some (p : Q($e = $a')) => (q(atom_pf' $p) : Expr)⟩
 
 theorem inv_mul {R} [DivisionRing R] {a₁ a₂ a₃ b₁ b₃ c}
     (_ : (a₁⁻¹ : R) = b₁) (_ : (a₃⁻¹ : R) = b₃)
@@ -974,9 +977,8 @@ variable (dα : Q(DivisionRing $α))
 
 /-- Applies `⁻¹` to a polynomial to get an atom. -/
 def evalInvAtom (a : Q($α)) : AtomM (Result (ExBase sα) q($a⁻¹)) := do
-  let a' : Q($α) := q($a⁻¹)
-  let i ← addAtom a'
-  pure ⟨a', ExBase.atom i, (q(Eq.refl $a') : Expr)⟩
+  let (i, ⟨b', _⟩) ← addAtomQ q($a⁻¹)
+  pure ⟨b', ExBase.atom i, q(Eq.refl $b')⟩
 
 /-- Inverts a polynomial `va` to get a normalized result polynomial.
 
@@ -1033,7 +1035,7 @@ def evalDiv {a b : Q($α)} (rα : Q(DivisionRing $α)) (czα : Option Q(CharZero
     (vb : ExSum sα b) : AtomM (Result (ExSum sα) q($a / $b)) := do
   let ⟨_c, vc, pc⟩ ← vb.evalInv sα rα czα
   let ⟨d, vd, (pd : Q($a * $_c = $d))⟩ ← evalMul sα va vc
-  pure ⟨d, vd, (q(div_pf $pc $pd) : Expr)⟩
+  pure ⟨d, vd, q(div_pf $pc $pd)⟩
 
 theorem add_congr (_ : a = a') (_ : b = b') (_ : a' + b' = c) : (a + b : R) = c := by
   subst_vars; rfl
@@ -1108,54 +1110,54 @@ partial def eval {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
       let ⟨_, va, pa⟩ ← eval sα c a
       let ⟨_, vb, pb⟩ ← eval sα c b
       let ⟨c, vc, p⟩ ← evalAdd sα va vb
-      pure ⟨c, vc, (q(add_congr $pa $pb $p) : Expr)⟩
+      pure ⟨c, vc, q(add_congr $pa $pb $p)⟩
     | _ => els
   | ``HMul.hMul, _, _ | ``Mul.mul, _, _ => match e with
     | ~q($a * $b) =>
       let ⟨_, va, pa⟩ ← eval sα c a
       let ⟨_, vb, pb⟩ ← eval sα c b
       let ⟨c, vc, p⟩ ← evalMul sα va vb
-      pure ⟨c, vc, (q(mul_congr $pa $pb $p) : Expr)⟩
+      pure ⟨c, vc, q(mul_congr $pa $pb $p)⟩
     | _ => els
   | ``HSMul.hSMul, _, _ => match e with
     | ~q(($a : ℕ) • ($b : «$α»)) =>
       let ⟨_, va, pa⟩ ← eval sℕ .nat a
       let ⟨_, vb, pb⟩ ← eval sα c b
       let ⟨c, vc, p⟩ ← evalNSMul sα va vb
-      pure ⟨c, vc, (q(nsmul_congr $pa $pb $p) : Expr)⟩
+      pure ⟨c, vc, q(nsmul_congr $pa $pb $p)⟩
     | _ => els
   | ``HPow.hPow, _, _ | ``Pow.pow, _, _ => match e with
     | ~q($a ^ $b) =>
       let ⟨_, va, pa⟩ ← eval sα c a
       let ⟨_, vb, pb⟩ ← eval sℕ .nat b
       let ⟨c, vc, p⟩ ← evalPow sα va vb
-      pure ⟨c, vc, (q(pow_congr $pa $pb $p) : Expr)⟩
+      pure ⟨c, vc, q(pow_congr $pa $pb $p)⟩
     | _ => els
   | ``Neg.neg, some rα, _ => match e with
     | ~q(-$a) =>
       let ⟨_, va, pa⟩ ← eval sα c a
       let ⟨b, vb, p⟩ ← evalNeg sα rα va
-      pure ⟨b, vb, (q(neg_congr $pa $p) : Expr)⟩
+      pure ⟨b, vb, q(neg_congr $pa $p)⟩
     | _ => els
   | ``HSub.hSub, some rα, _ | ``Sub.sub, some rα, _ => match e with
     | ~q($a - $b) => do
       let ⟨_, va, pa⟩ ← eval sα c a
       let ⟨_, vb, pb⟩ ← eval sα c b
       let ⟨c, vc, p⟩ ← evalSub sα rα va vb
-      pure ⟨c, vc, (q(sub_congr $pa $pb $p) : Expr)⟩
+      pure ⟨c, vc, q(sub_congr $pa $pb $p)⟩
     | _ => els
   | ``Inv.inv, _, some dα => match e with
     | ~q($a⁻¹) =>
       let ⟨_, va, pa⟩ ← eval sα c a
       let ⟨b, vb, p⟩ ← va.evalInv sα dα c.czα
-      pure ⟨b, vb, (q(inv_congr $pa $p) : Expr)⟩
+      pure ⟨b, vb, q(inv_congr $pa $p)⟩
     | _ => els
   | ``HDiv.hDiv, _, some dα | ``Div.div, _, some dα => match e with
     | ~q($a / $b) => do
       let ⟨_, va, pa⟩ ← eval sα c a
       let ⟨_, vb, pb⟩ ← eval sα c b
       let ⟨c, vc, p⟩ ← evalDiv sα dα c.czα va vb
-      pure ⟨c, vc, (q(div_congr $pa $pb $p) : Expr)⟩
+      pure ⟨c, vc, q(div_congr $pa $pb $p)⟩
     | _ => els
   | _, _, _ => els
 
@@ -1184,13 +1186,13 @@ theorem of_lift {α β} [inst : CSLift α β] {a b : α} {a' b' : β}
     [h1 : CSLiftVal a a'] [h2 : CSLiftVal b b'] (h : a' = b') : a = b :=
   inst.2 <| by rwa [← h1.1, ← h2.1]
 
-open Lean Parser.Tactic Elab Command Elab.Tactic Meta Qq
+open Lean Parser.Tactic Elab Command Elab.Tactic
 
 theorem of_eq {α} {a b c : α} (_ : (a : α) = c) (_ : b = c) : a = b := by subst_vars; rfl
 
 /--
 This is a routine which is used to clean up the unsolved subgoal
-of a failed `ring1` application. It is overridden in `Mathlib.Tactic.Ring.RingNF`
+of a failed `ring1` application. It is overridden in `Mathlib/Tactic/Ring/RingNF.lean`
 to apply the `ring_nf` simp set to the goal.
 -/
 initialize ringCleanupRef : IO.Ref (Expr → MetaM Expr) ← IO.mkRef pure

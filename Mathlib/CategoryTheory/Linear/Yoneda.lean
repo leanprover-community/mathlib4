@@ -21,16 +21,13 @@ TODO: In fact, `linearYoneda` itself is additive and `R`-linear.
 
 universe w v u
 
-open Opposite
+open Opposite CategoryTheory.Functor
 
 namespace CategoryTheory
 
 variable (R : Type w) [Ring R] {C : Type u} [Category.{v} C] [Preadditive C] [Linear R C]
 variable (C)
 
--- Porting note: inserted specific `ModuleCat.ofHom` in the definition of `linearYoneda`
--- and similarly in `linearCoyoneda`, otherwise many simp lemmas are not triggered automatically.
--- Eventually, doing so allows more proofs to be automatic!
 /-- The Yoneda embedding for `R`-linear categories `C`,
 sending an object `X : C` to the `ModuleCat R`-valued presheaf on `C`,
 with value on `Y : Cᵒᵖ` given by `ModuleCat.of R (unop Y ⟶ X)`. -/

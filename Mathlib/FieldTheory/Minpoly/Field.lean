@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Johan Commelin
 -/
 import Mathlib.Algebra.Polynomial.FieldDivision
+import Mathlib.Algebra.Polynomial.Lifts
 import Mathlib.FieldTheory.Minpoly.Basic
-import Mathlib.RingTheory.Algebraic
+import Mathlib.RingTheory.Algebraic.Integral
+import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Minimal polynomials on an algebra over a field
@@ -17,7 +19,6 @@ are irreducible, and uniquely determined by their defining property.
 -/
 
 
-open scoped Classical
 open Polynomial Set Function minpoly
 
 namespace minpoly
@@ -52,7 +53,7 @@ theorem unique {p : A[X]} (pmonic : p.Monic) (hp : Polynomial.aeval x p = 0)
   have hx : IsIntegral A x := ⟨p, pmonic, hp⟩
   symm; apply eq_of_sub_eq_zero
   by_contra hnz
-  apply degree_le_of_ne_zero A x hnz (by simp [hp]) |>.not_lt
+  apply degree_le_of_ne_zero A x hnz (by simp [hp]) |>.not_gt
   apply degree_sub_lt _ (minpoly.ne_zero hx)
   · rw [(monic hx).leadingCoeff, pmonic.leadingCoeff]
   · exact le_antisymm (min A x pmonic hp) (pmin (minpoly A x) (monic hx) (aeval A x))
@@ -67,7 +68,7 @@ theorem dvd {p : A[X]} (hp : Polynomial.aeval x p = 0) : minpoly A x ∣ p := by
   rw [← modByMonic_eq_zero_iff_dvd (monic hx)]
   by_contra hnz
   apply degree_le_of_ne_zero A x hnz
-    ((aeval_modByMonic_eq_self_of_root (monic hx) (aeval _ _)).trans hp) |>.not_lt
+    ((aeval_modByMonic_eq_self_of_root (monic hx) (aeval _ _)).trans hp) |>.not_gt
   exact degree_modByMonic_lt _ (monic hx)
 
 variable {A x} in
@@ -77,14 +78,14 @@ lemma dvd_iff {p : A[X]} : minpoly A x ∣ p ↔ Polynomial.aeval x p = 0 :=
 theorem isRadical [IsReduced B] : IsRadical (minpoly A x) := fun n p dvd ↦ by
   rw [dvd_iff] at dvd ⊢; rw [map_pow] at dvd; exact IsReduced.eq_zero _ ⟨n, dvd⟩
 
-theorem dvd_map_of_isScalarTower (A K : Type*) {R : Type*} [CommRing A] [Field K] [CommRing R]
+theorem dvd_map_of_isScalarTower (A K : Type*) {R : Type*} [CommRing A] [Field K] [Ring R]
     [Algebra A K] [Algebra A R] [Algebra K R] [IsScalarTower A K R] (x : R) :
     minpoly K x ∣ (minpoly A x).map (algebraMap A K) := by
   refine minpoly.dvd K x ?_
   rw [aeval_map_algebraMap, minpoly.aeval]
 
 theorem dvd_map_of_isScalarTower' (R : Type*) {S : Type*} (K L : Type*) [CommRing R]
-    [CommRing S] [Field K] [CommRing L] [Algebra R S] [Algebra R K] [Algebra S L] [Algebra K L]
+    [CommRing S] [Field K] [Ring L] [Algebra R S] [Algebra R K] [Algebra S L] [Algebra K L]
     [Algebra R L] [IsScalarTower R K L] [IsScalarTower R S L] (s : S) :
     minpoly K (algebraMap S L s) ∣ map (algebraMap R K) (minpoly R s) := by
   apply minpoly.dvd K (algebraMap S L s)
@@ -99,6 +100,22 @@ theorem aeval_of_isScalarTower (R : Type*) {K T U : Type*} [CommRing R] [Field K
   aeval_map_algebraMap K y (minpoly R x) ▸
     eval₂_eq_zero_of_dvd_of_eval₂_eq_zero (algebraMap K U) y
       (minpoly.dvd_map_of_isScalarTower R K x) hy
+
+/-- If a subfield `F` of `E` contains all the coefficients of `minpoly E a`, then
+`minpoly F a` maps to `minpoly E a` via `algebraMap F E`. -/
+theorem map_algebraMap {F E A : Type*} [Field F] [Field E] [CommRing A]
+    [Algebra F E] [Algebra E A] [Algebra F A] [IsScalarTower F E A]
+    {a : A} (ha : IsIntegral F a) (h : minpoly E a ∈ lifts (algebraMap F E)) :
+    (minpoly F a).map (algebraMap F E) = minpoly E a := by
+  refine eq_of_monic_of_dvd_of_natDegree_le (minpoly.monic ha.tower_top)
+    ((algebraMap F E).injective.monic_map_iff.mp <| minpoly.monic ha)
+    (minpoly.dvd E a (by simp)) ?_
+  obtain ⟨g, hg, hgdeg, hgmon⟩ := lifts_and_natDegree_eq_and_monic h (minpoly.monic ha.tower_top)
+  rw [natDegree_map, ← hgdeg]
+  refine natDegree_le_of_dvd (minpoly.dvd F a ?_) hgmon.ne_zero
+  rw [← aeval_map_algebraMap A, IsScalarTower.algebraMap_eq F E A, ← coe_mapRingHom,
+    ← mapRingHom_comp, RingHom.comp_apply, coe_mapRingHom, coe_mapRingHom, hg,
+    aeval_map_algebraMap, minpoly.aeval]
 
 /-- See also `minpoly.ker_eval` which relaxes the assumptions on `A` in exchange for
 stronger assumptions on `B`. -/
@@ -117,6 +134,15 @@ theorem eq_of_irreducible_of_monic [Nontrivial B] {p : A[X]} (hp1 : Irreducible 
   eq_of_monic_of_associated hp3 (monic ⟨p, ⟨hp3, hp2⟩⟩) <|
     mul_one (minpoly A x) ▸ hq.symm ▸ Associated.mul_left _
       (associated_one_iff_isUnit.2 <| (hp1.isUnit_or_isUnit hq).resolve_left <| not_isUnit A x)
+
+theorem eq_iff_aeval_eq_zero [Nontrivial B] {p : A[X]} (irr : Irreducible p) (monic : p.Monic) :
+    p = minpoly A x ↔ Polynomial.aeval x p = 0 :=
+  ⟨(· ▸ aeval A x), (eq_of_irreducible_of_monic irr · monic)⟩
+
+theorem eq_iff_aeval_minpoly_eq_zero [IsDomain B] {C} [Ring C] [Algebra A C] [Nontrivial C]
+    {b : B} (h : IsIntegral A b) {c : C} :
+    minpoly A b = minpoly A c ↔ Polynomial.aeval c (minpoly A b) = 0 :=
+  eq_iff_aeval_eq_zero (irreducible h) (monic h)
 
 theorem eq_of_irreducible [Nontrivial B] {p : A[X]} (hp1 : Irreducible p)
     (hp2 : Polynomial.aeval x p = 0) : p * C p.leadingCoeff⁻¹ = minpoly A x := by
@@ -144,22 +170,42 @@ theorem add_algebraMap {B : Type*} [CommRing B] [Algebra A B] (x : B)
     refine fun h ↦ hx ?_
     simpa only [add_sub_cancel_right] using IsIntegral.sub h (isIntegral_algebraMap (x := a))
 
-theorem sub_algebraMap {B : Type*} [CommRing B] [Algebra A B] {x : B}
+theorem sub_algebraMap {B : Type*} [CommRing B] [Algebra A B] (x : B)
     (a : A) : minpoly A (x - algebraMap A B a) = (minpoly A x).comp (X + C a) := by
   simpa [sub_eq_add_neg] using add_algebraMap x (-a)
 
+theorem neg {B : Type*} [Ring B] [Algebra A B] (x : B) :
+    minpoly A (- x) = (-1) ^ (natDegree (minpoly A x)) * (minpoly A x).comp (- X) := by
+  by_cases hx : IsIntegral A x
+  · refine (minpoly.unique _ _ ((minpoly.monic hx).neg_one_pow_natDegree_mul_comp_neg_X)
+        ?_ fun q qmo hq => ?_).symm
+    · simp [aeval_comp]
+    · have : (Polynomial.aeval x) ((-1) ^ q.natDegree * q.comp (- X)) = 0 := by
+        simpa [aeval_comp] using hq
+      have H := minpoly.min A x qmo.neg_one_pow_natDegree_mul_comp_neg_X this
+      have n1 := ((minpoly.monic hx).neg_one_pow_natDegree_mul_comp_neg_X).ne_zero
+      have n2 := qmo.neg_one_pow_natDegree_mul_comp_neg_X.ne_zero
+      rw [degree_eq_natDegree qmo.ne_zero,
+        degree_eq_natDegree n1, natDegree_mul (by simp) (right_ne_zero_of_mul n1), natDegree_comp]
+      rw [degree_eq_natDegree (minpoly.ne_zero hx),
+        degree_eq_natDegree qmo.neg_one_pow_natDegree_mul_comp_neg_X.ne_zero,
+        natDegree_mul (by simp) (right_ne_zero_of_mul n2), natDegree_comp] at H
+      simpa using H
+  · rw [minpoly.eq_zero hx, minpoly.eq_zero, zero_comp]
+    · simp only [natDegree_zero, pow_zero, mul_zero]
+    · exact IsIntegral.neg_iff.not.mpr hx
+
 section AlgHomFintype
 
+open scoped Classical in
 /-- A technical finiteness result. -/
 noncomputable def Fintype.subtypeProd {E : Type*} {X : Set E} (hX : X.Finite) {L : Type*}
     (F : E → Multiset L) : Fintype (∀ x : X, { l : L // l ∈ F x }) :=
-  @Pi.fintype _ _ _ (Finite.fintype hX) _
+  @Pi.instFintype _ _ _ (Finite.fintype hX) _
 
 variable (F E K : Type*) [Field F] [Ring E] [CommRing K] [IsDomain K] [Algebra F E] [Algebra F K]
   [FiniteDimensional F E]
 
--- Porting note (#11083): removed `noncomputable!` since it seems not to be slow in lean 4,
--- though it isn't very computable in practice (since neither `finrank` nor `finBasis` are).
 /-- Function from Hom_K(E,L) to pi type Π (x : basis), roots of min poly of x -/
 def rootsOfMinPolyPiType (φ : E →ₐ[F] K)
     (x : range (Module.finBasis F E : _ → E)) :
@@ -271,15 +317,15 @@ lemma minpoly_algEquiv_toLinearMap (σ : L ≃ₐ[K] L) (hσ : IsOfFinOrder σ) 
     apply hq.ne_zero
     simpa using Fintype.linearIndependent_iff.mp
       (((linearIndependent_algHom_toLinearMap' K L L).comp _ AlgEquiv.coe_algHom_injective).comp _
-        (Subtype.val_injective.comp ((finEquivPowers σ hσ).injective)))
+        (Subtype.val_injective.comp ((finEquivPowers hσ).injective)))
       (q.coeff ∘ (↑)) hs ⟨_, H⟩
 
 /-- The minimal polynomial (over `K`) of `σ : Gal(L/K)` is `X ^ (orderOf σ) - 1`. -/
 lemma minpoly_algHom_toLinearMap (σ : L →ₐ[K] L) (hσ : IsOfFinOrder σ) :
     minpoly K σ.toLinearMap = X ^ (orderOf σ) - C 1 := by
   have : orderOf σ = orderOf (AlgEquiv.algHomUnitsEquiv _ _ hσ.unit) := by
-    rw [← MonoidHom.coe_coe, orderOf_injective (AlgEquiv.algHomUnitsEquiv K L)
-      (AlgEquiv.algHomUnitsEquiv K L).injective, ← orderOf_units, IsOfFinOrder.val_unit]
+    rw [← MonoidHom.coe_coe, orderOf_injective, ← orderOf_units, IsOfFinOrder.val_unit]
+    exact (AlgEquiv.algHomUnitsEquiv K L).injective
   rw [this, ← minpoly_algEquiv_toLinearMap]
   · apply congr_arg
     ext
