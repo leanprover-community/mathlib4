@@ -6,6 +6,8 @@ import Lean.Meta.Tactic.Clear
 import Batteries.CodeAction -- to enable the hole code action
 import Lean.Meta.Tactic.Grind.Main
 import Lean.Util.Heartbeats
+import Mathlib.Tactic.ExtractGoal
+import Mathlib.Tactic.MinImports
 
 open Lean Elab Term Command Linter
 
@@ -63,20 +65,20 @@ end Lean.Elab.ContextInfo
 
 namespace TacticAnalysis
 
-inductive TriggerCondition
+inductive TriggerCondition (ctx : Type _)
   | skip
-  | continue
-  | accept
+  | continue (context : ctx)
+  | accept (context : ctx)
 deriving BEq
 
 /-- Specifies which analysis steps to take. -/
-structure Config (α) where
+structure Config (out ctx) where
   /-- Which (sequences of) tactics to analyze. -/
-  trigger (precedingSequence : Array Syntax) (currentTactic : Syntax) : TriggerCondition
+  trigger (context : Option ctx) (currentTactic : Syntax) : TriggerCondition ctx
   /-- Code to run in the context of the tactic, for example an alternative tactic. -/
-  test (goal : MVarId) : MetaM α
+  test (context : ctx) (goal : MVarId) : MetaM out
   /-- Decides what to report to the user. -/
-  tell (stx : Syntax) (original : List MVarId × Nat) (new : α × Nat) : Option MessageData
+  tell (stx : Syntax) (original : List MVarId × Nat) (new : out × Nat) : Option MessageData
 
 def findTacticSeqs (stx : Syntax) (tree : InfoTree) : CommandElabM (Array (Array (ContextInfo × TacticInfo))) := do
   let some enclosingRange := stx.getRange? | throw (Exception.error stx m!"operating on syntax without range")
@@ -119,30 +121,35 @@ def findTacticSeqs (stx : Syntax) (tree : InfoTree) : CommandElabM (Array (Array
         return (none, childSequences))
   return (out.map Prod.snd).getD #[]
 
-def filterTactics {α} (config : Config α) (seq : Array (ContextInfo × TacticInfo)) : CommandElabM Unit := do
-  let mut acc := #[]
-  for (ctx, i) in seq do
-    acc := acc.push (ctx, i)
+def filterTactics {out ctx} (config : Config out ctx) (seq : Array (ContextInfo × TacticInfo)) : CommandElabM Unit := do
+  let mut acc := none
+  let mut firstInfo := none
+  for (ctxI, i) in seq do
+    if firstInfo.isNone then
+      firstInfo := some (ctxI, i)
     let stx := i.stx
-    match config.trigger #[] stx with
-    | .continue => pure ()
-    | .skip => acc := #[]
-    | .accept => do
-      if let some (ctx, i) := acc[0]? then
+    match config.trigger acc stx with
+    | .continue ctx =>
+      acc := ctx
+    | .skip =>
+      acc := none
+      firstInfo := none
+    | .accept ctx =>
+      if let some (ctxI, i) := firstInfo then
         if let [goal] := i.goalsBefore then -- TODO: support more than 1 goal. Probably by requiring all tests to succeed in a row
-          let old ← withHeartbeats <| ctx.runTactic i goal fun goal => do
+          let old ← withHeartbeats <| ctxI.runTactic i goal fun goal => do
             try
               Lean.Elab.runTactic goal stx
             catch e =>
               logWarningAt stx m!"original tactic '{stx}' failed: {e.toMessageData}"
               return ([goal], {})
-          let new ← withHeartbeats <| ctx.runTactic i goal config.test
+          let new ← withHeartbeats <| ctxI.runTactic i goal <| config.test ctx
           if let some msg := config.tell stx (old.1.1, old.2) new then
             Linter.logLint linter.tactic_analysis stx msg
       else
         logWarningAt stx m!"internal error in tactic analysis: accepted an empty sequence."
 
-def filterTacticsList {α} (config : Config α) (stx : Syntax)
+def filterTacticsList {out ctx} (config : Config out ctx) (stx : Syntax)
     (trees : PersistentArray InfoTree) : CommandElabM Unit :=
   for i in trees do
     let seqs ← findTacticSeqs stx i
@@ -150,24 +157,37 @@ def filterTacticsList {α} (config : Config α) (stx : Syntax)
     for seq in seqs do
       filterTactics config seq
 
-def grindReplacement : Config (List MVarId × Term.State) where
+/-- Run a tactic, returning any new messages rather than adding them to the message log.
+
+Copied from `Mathlib.Tactic.Hint.withMessageLog`.
+-/
+def withMessageLog (t : MetaM Unit) : MetaM MessageLog := do
+  let initMsgs ← modifyGetThe Core.State fun st => (st.messages, { st with messages := {} })
+  t
+  modifyGetThe Core.State fun st => (st.messages, { st with messages := initMsgs })
+
+def grindReplacement : Config (List MVarId × MessageData) Syntax where
   trigger _ stx := if
       stx.getKind ∈
         [`Mathlib.Tactic.linarith, `Lean.Parser.Tactic.omega, `Mathlib.Tactic.RingNF.ring]
-    then .accept else .skip
-  test goal := withOptions (fun opts => opts.set `grind.warning false) do
+    then .accept stx else .skip
+  test stx goal := withOptions (fun opts => opts.set `grind.warning false) do
     let tac ← `(tactic| grind)
     try
-      Lean.Elab.runTactic goal tac
-    catch _ =>
-      return ([goal], {}) -- Failure is not an issue here.
+      let (goals, _) ← Lean.Elab.runTactic goal tac
+      return (goals, m!"")
+    catch e => -- Grind throws an error if it fails.
+      let name ← mkAuxDeclName `extracted
+      let ((sig, _, modules), _) ← (Mathlib.Tactic.ExtractGoal.goalSignature name goal).run
+      let imports := modules.toList.map (s!"import {·}")
+      return ([goal], m!"{"\n".intercalate imports}\n\ntheorem {sig} := by\n  fail_if_success grind\n  {stx}")
   tell stx old new :=
     if new.1.1 != [] then
-      m!"'grind' failed where '{stx}' succeeded"
+      m!"'grind' failed where '{stx}' succeeded. Counterexample:\n{new.1.2}"
     /-
     else
       if old.2 * 2 < new.2 then
-        m!"'grind' is slower than '{stx}': {new.2 / 1000} versus {old.2 / 1000} heartbeats"
+        return m!"'grind' is slower than '{stx}': {new.2 / 1000} versus {old.2 / 1000} heartbeats"
     -/
     else none
 
