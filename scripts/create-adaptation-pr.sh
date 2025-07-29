@@ -286,6 +286,7 @@ if git diff --name-only bump/$BUMPVERSION bump/nightly-$NIGHTLYDATE | grep -q .;
 
   if [ -n "$existing_pr" ]; then
     echo "PR #$existing_pr already exists for branch 'bump/nightly-$NIGHTLYDATE'"
+    echo "Link: https://github.com/leanprover-community/mathlib4-nightly-testing/pull/$existing_pr"
     pr_number="$existing_pr"
   else
     echo "Creating a pull request. Setting the base of the PR to 'bump/$BUMPVERSION'"
