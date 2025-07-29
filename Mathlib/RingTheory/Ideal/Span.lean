@@ -272,7 +272,7 @@ theorem ker_toSpanSingleton_eq_span :
   refine ⟨fun h ↦ ⟨x, by rw [mul_sub, show x * e = 0 from h, mul_one, sub_zero]⟩, fun h ↦ ?_⟩
   obtain ⟨x, rfl⟩ := h
   change x * (1 - e) * e = 0
-  rw [mul_assoc, sub_mul, one_mul, he, sub_self, mul_zero]
+  rw [mul_assoc, sub_mul, one_mul, he.eq, sub_self, mul_zero]
 
 theorem ker_toSpanSingleton_one_sub_eq_span :
     LinearMap.ker (LinearMap.toSpanSingleton R R (1 - e)) = Ideal.span {e} := by

@@ -168,7 +168,7 @@ protected theorem IsSelfAdjoint.mul_self_nonneg {a : R} (ha : IsSelfAdjoint a) :
 
 /-- A star projection is non-negative in a star-ordered ring. -/
 theorem IsStarProjection.nonneg {p : R} (hp : IsStarProjection p) : 0 ≤ p :=
-  hp.isIdempotentElem ▸ hp.isSelfAdjoint.mul_self_nonneg
+  hp.isIdempotentElem.eq ▸ hp.isSelfAdjoint.mul_self_nonneg
 
 @[aesop safe apply]
 theorem conjugate_nonneg {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ star c * a * c := by
