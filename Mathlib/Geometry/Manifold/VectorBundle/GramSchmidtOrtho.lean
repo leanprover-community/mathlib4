@@ -144,9 +144,9 @@ theorem gramSchmidt_ne_zero (s : ι → (x : B) → E x) (n : ι) (h₀ : Linear
     gramSchmidt s n x ≠ 0 :=
   InnerProductSpace.gramSchmidt_ne_zero _ h₀
 
--- No version of `gramSchmidt_triangular` at the moment, for technical reasons: it would expect a
--- `Basis` (of vectors in `E x`) as input, whereas we would want a hypothesis "the section values
--- `s i x` form a basis" instead.
+-- For technical reasons, no version of `gramSchmidt_triangular` is provided so far:
+-- it would expect a `Basis` (of vectors in `E x`) as input, whereas we would want a hypothesis
+-- "the section values `s i x` form a basis" instead.
 
 /-- `gramSchmidt` produces point-wise linearly independent sections when given linearly
 independent sections. -/
@@ -200,7 +200,6 @@ system of sections after removing the sections which become zero in the process.
 theorem gramSchmidtNormed_orthonormal' (s : ι → (x : B) → E x) (x) :
     Orthonormal ℝ fun i : { i | gramSchmidtNormed s i x ≠ 0 } => gramSchmidtNormed s i x :=
   InnerProductSpace.gramSchmidtNormed_orthonormal' _
-
 
 theorem span_gramSchmidtNormed (s : ι → (x : B) → E x) (t : Set ι) :
     span ℝ ((gramSchmidtNormed s · x) '' t) = span ℝ ((gramSchmidt s · x) '' t) :=
