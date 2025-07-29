@@ -103,6 +103,7 @@ theorem rat_rawCast_pos {R} [DivisionRing R] :
 theorem rat_rawCast_neg {R} [DivisionRing R] :
     (Rat.rawCast (.negOfNat n) d : R) = Int.rawCast (.negOfNat n) / Nat.rawCast d := by simp
 
+/-- A cleanup routine, which simplifies normalized polynomials to a more human-friendly format. -/
 def cleanup (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
   match cfg.mode with
   | .raw => pure r

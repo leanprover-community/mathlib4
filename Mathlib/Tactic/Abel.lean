@@ -441,6 +441,8 @@ structure AbelNF.Config extends AtomM.Recurse.Config where
 /-- Function elaborating `AbelNF.Config`. -/
 declare_config_elab elabAbelNFConfig AbelNF.Config
 
+/-- A cleanup routine, which simplifies expressions in `abel` normal form to a more human-friendly
+format. -/
 def cleanup (cfg : AbelNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
   match cfg.mode with
   | .raw => pure r
