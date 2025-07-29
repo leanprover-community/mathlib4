@@ -19,6 +19,27 @@ assert_not_exists RelIso
 
 universe u v w
 
+section neg_mul
+
+variable {R S : Type*} [Mul R] [HasDistribNeg R] [SetLike S R] [MulMemClass S R] {s : S}
+
+@[aesop unsafe 80% (rule_sets := [SetLike])]
+/- The Aesop rule `mul_mem` doesn't work in the absense of `neg_mem`
+because `-x * y` simplifies to `-(x * y)`. -/
+theorem neg_mul_mem {x y : R} (hx : -x ∈ s) (hy : y ∈ s) : -(x * y) ∈ s := by
+  simpa using mul_mem hx hy
+
+@[aesop unsafe 80% (rule_sets := [SetLike])]
+/- The Aesop rule `mul_mem` doesn't work in the absense of `neg_mem`
+because `x * -y` simplifies to `-(x * y)`. -/
+theorem mul_neg_mem {x y : R} (hx : x ∈ s) (hy : -y ∈ s) : -(x * y) ∈ s := by
+  simpa using mul_mem hx hy
+
+example {x y z : R} (hx : x ∈ s) (hy : -y ∈ s) (hz : z ∈ s) :
+    x * (-y) * z ∈ s := by aesop
+
+end neg_mul
+
 variable {R : Type u} {S : Type v} {T : Type w} [NonUnitalNonAssocSemiring R]
 
 /-- `NonUnitalSubsemiringClass S R` states that `S` is a type of subsets `s ⊆ R` that
@@ -84,23 +105,6 @@ instance toNonUnitalCommSemiring {R} [NonUnitalCommSemiring R] [SetLike S R]
     fun _ _ => rfl
 
 /-! Note: currently, there are no ordered versions of non-unital rings. -/
-
-variable {s} in
-@[aesop unsafe 80% (rule_sets := [SetLike])]
-/- The Aesop rule `mul_mem` doesn't work in the absense of `neg_mem`
-because `-x * y` simplifies to `-(x * y)`. -/
-theorem neg_mul_mem [HasDistribNeg R] {x y : R} (hx : -x ∈ s) (hy : y ∈ s) : -(x * y) ∈ s := by
-  simpa using mul_mem hx hy
-
-variable {s} in
-@[aesop unsafe 80% (rule_sets := [SetLike])]
-/- The Aesop rule `mul_mem` doesn't work in the absense of `neg_mem`
-because `x * -y` simplifies to `-(x * y)`. -/
-theorem mul_neg_mem [HasDistribNeg R] {x y : R} (hx : x ∈ s) (hy : -y ∈ s) : -(x * y) ∈ s := by
-  simpa using mul_mem hx hy
-
-example [HasDistribNeg R] {x y z : R} (hx : x ∈ s) (hy : -y ∈ s) (hz : z ∈ s) :
-    x * (-y) * z ∈ s := by aesop
 
 end NonUnitalSubsemiringClass
 
