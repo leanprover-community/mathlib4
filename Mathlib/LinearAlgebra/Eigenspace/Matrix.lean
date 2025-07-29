@@ -67,18 +67,16 @@ lemma hasEigenvalue_toLin'_diagonal_iff [NoZeroDivisors R] (d : n → R) {μ : R
     HasEigenvalue (toLin' (diagonal d)) μ ↔ (∃ i, d i = μ) :=
   hasEigenvalue_toLin_diagonal_iff _ <| Pi.basisFun R n
 
+end NontrivialCommRing
 namespace Matrix
 
-variable (d : n → R) {μ : R} (b : Basis n R M)
-omit [Nontrivial R]
+variable [CommRing R] [AddCommGroup M] [Module R M] (d : n → R) {μ : R} (b : Basis n R M)
 
 @[simp]
 lemma iSup_eigenspace_toLin_diagonal_eq_top :
     ⨆ μ, eigenspace ((diagonal d).toLin b b) μ = ⊤ := by
-  rw [Submodule.eq_top_iff_forall_basis_mem b]
-  intro j
-  suffices b j ∈ eigenspace ((diagonal d).toLin b b) (d j) from Submodule.mem_iSup_of_mem (d j) this
-  simp [diagonal_apply]
+  refine (Submodule.eq_top_iff_forall_basis_mem b).mpr fun j ↦ ?_
+  exact Submodule.mem_iSup_of_mem (d j) <| by simp [diagonal_apply]
 
 @[simp]
 lemma iSup_eigenspace_toLin'_diagonal_eq_top :
@@ -109,8 +107,6 @@ lemma maxGenEigenspace_toLin'_diagonal_eq_eigenspace :
   maxGenEigenspace_toLin_diagonal_eq_eigenspace d <| Pi.basisFun R n
 
 end Matrix
-
-end NontrivialCommRing
 
 /-- The spectrum of the diagonal operator is the range of the diagonal viewed as a function. -/
 @[simp] lemma spectrum_diagonal [Field R] (d : n → R) :
