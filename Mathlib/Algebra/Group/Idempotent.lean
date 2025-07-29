@@ -89,6 +89,10 @@ lemma pow (n : ℕ) (h : IsIdempotentElem a) : IsIdempotentElem (a ^ n) :=
 lemma pow_succ_eq (n : ℕ) (h : IsIdempotentElem a) : a ^ (n + 1) = a :=
   Nat.recOn n ((Nat.zero_add 1).symm ▸ pow_one a) fun n ih => by rw [pow_succ, ih, h.eq]
 
+theorem pow_eq (h : IsIdempotentElem a) {n : ℕ} (hn : n ≠ 0) : a ^ n = a := by
+  obtain ⟨i, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero hn
+  exact h.pow_succ_eq _
+
 theorem iff_eq_one_of_isUnit (h : IsUnit a) : IsIdempotentElem a ↔ a = 1 where
   mp idem := by
     have ⟨q, eq⟩ := h.exists_left_inv

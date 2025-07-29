@@ -179,7 +179,7 @@ instance [CompactSpace X] [QuasiSeparatedSpace Y] (f g : X ⟶ Y) :
 theorem QuasiSeparated.of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiSeparated (f ≫ g)] :
     QuasiSeparated f := by
   let 𝒰 := (Z.affineCover.pullbackCover g).bind fun x => Scheme.affineCover _
-  have (i) : IsAffine (𝒰.obj i) := by dsimp [𝒰]; infer_instance
+  have (i : _) : IsAffine (𝒰.obj i) := by dsimp [𝒰]; infer_instance
   apply HasAffineProperty.of_openCover
     ((Z.affineCover.pullbackCover g).bind fun x => Scheme.affineCover _)
   rintro ⟨i, j⟩; dsimp at i j
@@ -228,10 +228,10 @@ theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux (X : Scheme
         (((f |_ U₁) ^ n₂ * y₁) |_ S.1)
         (((f |_ U₂) ^ n₁ * y₂) |_ S.1)).mp <| by
     apply exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux_aux (e₁ := e₁) (e₂ := e₂)
-    · show X.basicOpen _ ≤ _
+    · change X.basicOpen _ ≤ _
       simp only [TopCat.Presheaf.restrictOpenCommRingCat_apply, Scheme.basicOpen_res]
       exact inf_le_inf h₁ le_rfl
-    · show X.basicOpen _ ≤ _
+    · change X.basicOpen _ ≤ _
       simp only [TopCat.Presheaf.restrictOpenCommRingCat_apply, Scheme.basicOpen_res]
       exact inf_le_inf h₂ le_rfl
   use n
@@ -239,7 +239,7 @@ theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux (X : Scheme
   rw [← tsub_add_cancel_of_le hm]
   simp only [TopCat.Presheaf.restrictOpenCommRingCat_apply,
     pow_add, map_pow, map_mul, mul_assoc, ← Functor.map_comp, ← op_comp, homOfLE_comp,
-    Subtype.coe_mk, ← CommRingCat.comp_apply] at e ⊢
+    ← CommRingCat.comp_apply] at e ⊢
   rw [e]
 
 theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U : X.Opens)
@@ -277,13 +277,11 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
     haveI := hs'.to_subtype
     cases nonempty_fintype s
     replace hs : S ⊓ U.1 = iSup fun i : s => (i : X.Opens) := by ext1; simpa using hs
-    have hs₁ : ∀ i : s, i.1.1 ≤ S := by
-      intro i; change (i : X.Opens) ≤ S
+    have hs₁ (i : s) : i.1.1 ≤ S := by
       refine le_trans ?_ (inf_le_left (b := U.1))
       rw [hs]
       exact le_iSup (fun (i : s) => (i : X.Opens)) i
-    have hs₂ : ∀ i : s, i.1.1 ≤ U.1 := by
-      intro i; change (i : X.Opens) ≤ U
+    have hs₂ (i : s) : i.1.1 ≤ U.1 := by
       refine le_trans ?_ (inf_le_right (a := S))
       rw [hs]
       exact le_iSup (fun (i : s) => (i : X.Opens)) i
@@ -305,7 +303,7 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
       · exact le_of_eq hs
       · intro i
         -- This unfolds `X.sheaf`
-        show (X.presheaf.map _) _ = (X.presheaf.map _) _
+        change (X.presheaf.map _) _ = (X.presheaf.map _) _
         simp only [← CommRingCat.comp_apply, ← Functor.map_comp, ← op_comp]
         apply hn
         exact Finset.le_sup (Finset.mem_univ _)
@@ -316,12 +314,12 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
     refine (X.sheaf.objSupIsoProdEqLocus_inv_eq_iff _ _ _ (X.basicOpen_res _
       (homOfLE le_sup_left).op) (X.basicOpen_res _ (homOfLE le_sup_right).op)).mpr ⟨?_, ?_⟩
     · -- This unfolds `X.sheaf`
-      show (X.presheaf.map _) _ = (X.presheaf.map _) _
+      change (X.presheaf.map _) _ = (X.presheaf.map _) _
       rw [add_assoc, add_comm n₁]
       simp only [pow_add, map_pow, map_mul, hy₁, ← CommRingCat.comp_apply, ← mul_assoc,
         ← Functor.map_comp, ← op_comp, homOfLE_comp]
     · -- This unfolds `X.sheaf`
-      show (X.presheaf.map _) _ = (X.presheaf.map _) _
+      change (X.presheaf.map _) _ = (X.presheaf.map _) _
       simp only [pow_add, map_pow, map_mul, hy₂, ← CommRingCat.comp_apply, ← mul_assoc,
         ← Functor.map_comp, ← op_comp, homOfLE_comp]
 
@@ -332,7 +330,7 @@ theorem isLocalization_basicOpen_of_qcqs {X : Scheme} {U : X.Opens} (hU : IsComp
     IsLocalization.Away f (Γ(X, X.basicOpen f)) := by
   constructor
   · rintro ⟨_, n, rfl⟩
-    simp only [map_pow, Subtype.coe_mk, RingHom.algebraMap_toAlgebra]
+    simp only [map_pow, RingHom.algebraMap_toAlgebra]
     exact IsUnit.pow _ (RingedSpace.isUnit_res_basicOpen _ f)
   · intro z
     obtain ⟨n, y, e⟩ := exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated X U hU hU' f z

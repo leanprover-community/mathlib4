@@ -34,7 +34,7 @@ outer measure, Carathéodory-measurable, Carathéodory's criterion
 
 -/
 
-assert_not_exists Basis
+assert_not_exists Module.Basis
 
 noncomputable section
 

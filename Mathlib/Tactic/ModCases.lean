@@ -80,7 +80,7 @@ Int case of `mod_cases h : e % n`.
 def modCases (h : TSyntax `Lean.binderIdent) (e : Q(ℤ)) (n : ℕ) : TacticM Unit := do
   let ⟨u, p, g⟩ ← inferTypeQ (.mvar (← getMainGoal))
   have lit : Q(ℕ) := mkRawNatLit n
-  let p₁ : Nat.ble 1 $lit =Q true := ⟨⟩
+  have p₁ : Nat.ble 1 $lit =Q true := ⟨⟩
   let (p₂, gs) ← proveOnModCases lit e (mkRawNatLit 0) p
   let gs ← gs.mapM fun g => do
     let (fvar, g) ← match h with
