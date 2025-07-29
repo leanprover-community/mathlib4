@@ -187,7 +187,7 @@ abbrev ι' : (⨁ i, A i) →ₗ[R] FreeProduct R A :=
   (mkAlgHom R A).toLinearMap ∘ₗ TensorAlgebra.ι R (M := ⨁ i, A i)
 
 @[simp] theorem ι_apply (x : ⨁ i, A i) :
-  ⟨Quot.mk (Rel <| rel R A) (TensorAlgebra.ι R x)⟩ = ι' R A x := by
+    ⟨Quot.mk (Rel <| rel R A) (TensorAlgebra.ι R x)⟩ = ι' R A x := by
     aesop (add simp [ι', mkAlgHom, RingQuot.mkAlgHom, mkRingHom])
 
 /-- The injection into the free product of any `1 : A i` is the 1 of the free product. -/
