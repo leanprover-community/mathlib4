@@ -28,8 +28,6 @@ structure Config where
   red := TransparencyMode.reducible
   /-- if true, local let variables can be unfolded -/
   zetaDelta := false
-  /-- if true, atoms inside ring expressions will be reduced recursively -/
-  recursive := true
   deriving Inhabited, BEq, Repr
 
 /-- The read-only state of the `AtomRec` monad. -/
@@ -82,11 +80,8 @@ partial def M.run
   let rec
     /-- The recursive context. -/
     rctx := { red := cfg.red, evalAtom },
-    /-- The atom evaluator calls either `AtomRec.rewrite` recursively,
-    or nothing depending on `cfg.recursive`. -/
-    evalAtom e := if cfg.recursive
-      then rewrite bar e false nctx rctx s
-      else pure { expr := e }
+    /-- The atom evaluator calls `AtomRec.rewrite` recursively. -/
+    evalAtom e := rewrite bar e false nctx rctx s
   withConfig ({ · with zetaDelta := cfg.zetaDelta }) <| x nctx rctx s
 
 def foo (s : IO.Ref AtomM.State) (cfg : Config) (nctx : AtomRec.Context)

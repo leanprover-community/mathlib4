@@ -117,7 +117,7 @@ def mkInit (cfg : RingNF.Config) : MetaM AtomRec.Context := do
 
 /-- Overrides the default error message in `ring1` to use a prettified version of the goal. -/
 initialize ringCleanupRef.set fun e => do
-  let nctx ← mkInit { recursive := false }
+  let nctx ← mkInit {}
   return (← nctx.simp { expr := e }).expr
 
 open Elab.Tactic Parser.Tactic
