@@ -42,7 +42,7 @@ def testTagAppFns (n : Name) : TermElabM Unit := do
   let e ← elabTermAndSynthesize stx none
   let f ← Meta.ppExprWithInfos e
   -- Find tags for the constant `n`
-  let tags : Array Nat := f.infos.fold (init := #[]) fun tags tag info =>
+  let tags : Array Nat := f.infos.foldl (init := #[]) fun tags tag info =>
     match info with
     | .ofTermInfo info | .ofDelabTermInfo info =>
       if info.expr.isConstOf n then
@@ -211,7 +211,7 @@ section test_scoped
 
 scoped[MyNotation] notation3 "π" => (3 : Nat)
 
-/-- error: unknown identifier 'π' -/
+/-- error: Unknown identifier `π` -/
 #guard_msgs in #check π
 
 open scoped MyNotation

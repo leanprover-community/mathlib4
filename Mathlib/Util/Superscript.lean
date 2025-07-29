@@ -303,7 +303,7 @@ initialize register_parser_alias subscript
 /-- Returns true if every character in `stx : Syntax` can be superscripted
 (or subscripted). -/
 private partial def Superscript.isValid (m : Mapping) : Syntax → Bool
-  | .node _ kind args => !(scripted kind) && args.all (isValid m)
+  | .node _ kind args => kind == hygieneInfoKind || (!(scripted kind) && args.all (isValid m))
   | .atom _ s => valid s
   | .ident _ _ s _ => valid s.toString
   | _ => false
