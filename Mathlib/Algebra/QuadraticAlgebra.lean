@@ -169,9 +169,14 @@ instance [Sub R] : Sub (QuadraticAlgebra R a b) where
 theorem mk_sub_mk [Sub R] (x1 y1 x2 y2 : R) :
     (mk x1 y1 : QuadraticAlgebra R a b) - mk x2 y2 = mk (x1 - x2) (y1 - y2) := rfl
 
+@[norm_cast, simp]
+theorem coe_sub (r1 r2 : R) [SubNegZeroMonoid R] :
+    ((r1 - r2 : R) : QuadraticAlgebra R a b) = r1 - r2 :=
+  QuadraticAlgebra.ext rfl zero_sub_zero.symm
+
 end AddGroup
 
-section Ring
+section Mul
 
 variable [Mul R] [Add R]
 
@@ -189,7 +194,7 @@ theorem mk_mul_mk (x1 y1 x2 y2 : R) :
     (mk x1 y1 : QuadraticAlgebra R a b) * mk x2 y2 =
     mk (x1 * x2 + b * y1 * y2) (x1 * y2 + y1 * x2 + a * y1 * y2) := rfl
 
-end Ring
+end Mul
 
 section SMul
 
@@ -256,6 +261,11 @@ instance [AddCommMonoidWithOne R] : AddCommMonoidWithOne (QuadraticAlgebra R a b
   natCast_zero := by ext <;> simp
   natCast_succ n := by ext <;> simp
 
+@[simp, norm_cast]
+theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] [AddCommMonoidWithOne R] :
+    ((ofNat(n) : R) : QuadraticAlgebra R a b) = (ofNat(n) : QuadraticAlgebra R a b) := by
+  ext <;> rfl
+
 variable [AddCommGroupWithOne R]
 
 instance : AddCommGroupWithOne (QuadraticAlgebra R a b) where
@@ -289,56 +299,7 @@ theorem coe_intCast (n : ℤ) : ↑(n : R) = (n : QuadraticAlgebra R a b) := rfl
 
 end AddCommGroupWithOne
 
-section CommRing
-
-instance instCommSemiring [CommSemiring R] : CommSemiring (QuadraticAlgebra R a b) where
-  __ := inferInstanceAs (AddCommMonoidWithOne (QuadraticAlgebra R a b))
-  left_distrib _ _ _ := by ext <;> simpa using by ring
-  right_distrib _ _ _ := by ext <;> simpa using by ring
-  zero_mul _ := by ext <;> simp
-  mul_zero _ := by ext <;> simp
-  mul_assoc _ _ _ := by ext <;> simpa using by ring
-  one_mul _ := by ext <;> simp
-  mul_one _ := by ext <;> simp
-  mul_comm _ _ := by ext <;> simpa using by ring
-
-instance instCommRing [CommRing R] : CommRing (QuadraticAlgebra R a b) where
-  __ := inferInstanceAs (AddCommGroupWithOne (QuadraticAlgebra R a b))
-  __ := inferInstanceAs (CommSemiring (QuadraticAlgebra R a b))
-
-@[simp, norm_cast]
-theorem coe_mul (x y : R) [Semiring R] :
-    ((x * y : R) : QuadraticAlgebra R a b) = x * y := by ext <;> simp
-
-@[simp, norm_cast]
-theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] [AddCommMonoidWithOne R] :
-    ((ofNat(n) : R) : QuadraticAlgebra R a b) = (ofNat(n) : QuadraticAlgebra R a b) := by
-  ext <;> rfl
-
-
-instance [CommSemiring S] [CommSemiring R] [Algebra S R] :
-    Algebra S (QuadraticAlgebra R a b) where
-  algebraMap.toFun s := coe (algebraMap S R s)
-  algebraMap.map_one' := by ext <;> simp
-  algebraMap.map_mul' x y:= by ext <;> simp
-  algebraMap.map_zero' := by ext <;> simp
-  algebraMap.map_add' x y:= by ext <;> simp
-  commutes' s z := by ext <;> simp [Algebra.commutes]
-  smul_def' s x := by ext <;> simp [Algebra.smul_def]
-
-variable [CommSemiring R]
-
-theorem algebraMap_eq (r : R) : algebraMap R (QuadraticAlgebra R a b) r = ⟨r, 0⟩ := rfl
-
-theorem algebraMap_injective : (algebraMap R (QuadraticAlgebra R a b) : _ → _).Injective :=
-  fun _ _ ↦ by simp [algebraMap_eq]
-
-instance [NoZeroDivisors R] : NoZeroSMulDivisors R (QuadraticAlgebra R a b) :=
-  ⟨by simp [QuadraticAlgebra.ext_iff, or_and_left]⟩
-
-end CommRing
-
-section
+section Semiring
 
 variable (a b) [Semiring R]
 
@@ -388,32 +349,71 @@ theorem rank_eq_two [StrongRankCondition R] : Module.rank R (QuadraticAlgebra R 
 theorem finrank_eq_two [StrongRankCondition R] : Module.finrank R (QuadraticAlgebra R a b) = 2 := by
   simp [Module.finrank, rank_eq_two]
 
-end
+@[simp, norm_cast]
+theorem coe_mul (x y : R) : ((x * y : R) : QuadraticAlgebra R a b) = x * y := by ext <;> simp
 
-section
+end Semiring
+
+section CommSemiring
+
+variable [CommSemiring R]
+
+instance instCommSemiring : CommSemiring (QuadraticAlgebra R a b) where
+  __ := inferInstanceAs (AddCommMonoidWithOne (QuadraticAlgebra R a b))
+  left_distrib _ _ _ := by ext <;> simpa using by ring
+  right_distrib _ _ _ := by ext <;> simpa using by ring
+  zero_mul _ := by ext <;> simp
+  mul_zero _ := by ext <;> simp
+  mul_assoc _ _ _ := by ext <;> simpa using by ring
+  one_mul _ := by ext <;> simp
+  mul_one _ := by ext <;> simp
+  mul_comm _ _ := by ext <;> simpa using by ring
+
+instance [CommSemiring S] [CommSemiring R] [Algebra S R] :
+    Algebra S (QuadraticAlgebra R a b) where
+  algebraMap.toFun s := coe (algebraMap S R s)
+  algebraMap.map_one' := by ext <;> simp
+  algebraMap.map_mul' x y:= by ext <;> simp
+  algebraMap.map_zero' := by ext <;> simp
+  algebraMap.map_add' x y:= by ext <;> simp
+  commutes' s z := by ext <;> simp [Algebra.commutes]
+  smul_def' s x := by ext <;> simp [Algebra.smul_def]
+
+theorem algebraMap_eq (r : R) : algebraMap R (QuadraticAlgebra R a b) r = ⟨r, 0⟩ := rfl
+
+theorem algebraMap_injective : (algebraMap R (QuadraticAlgebra R a b) : _ → _).Injective :=
+  fun _ _ ↦ by simp [algebraMap_eq]
+
+instance [NoZeroDivisors R] : NoZeroSMulDivisors R (QuadraticAlgebra R a b) :=
+  ⟨by simp [QuadraticAlgebra.ext_iff, or_and_left]⟩
 
 @[norm_cast, simp]
-theorem coe_sub (r1 r2 : R) [SubNegZeroMonoid R] : ((r1 - r2 : R) : QuadraticAlgebra R a b) = r1 - r2 :=
-  QuadraticAlgebra.ext rfl zero_sub_zero.symm
-
-@[norm_cast, simp]
-theorem coe_pow (n : ℕ) (r : R) [CommSemiring R] : ((r ^ n : R) : QuadraticAlgebra R a b) =
+theorem coe_pow (n : ℕ) (r : R) : ((r ^ n : R) : QuadraticAlgebra R a b) =
     (r : QuadraticAlgebra R a b) ^ n :=
   (algebraMap R (QuadraticAlgebra R a b)).map_pow r n
 
-theorem coe_mul_eq_smul (r : R) (x : QuadraticAlgebra R a b) [CommSemiring R] :
+theorem coe_mul_eq_smul (r : R) (x : QuadraticAlgebra R a b) :
     (r * x : QuadraticAlgebra R a b) = r • x := Algebra.smul_def r x |>.symm
 
-theorem mul_coe_eq_smul (r : R) (x : QuadraticAlgebra R a b) [CommSemiring R] :
+theorem mul_coe_eq_smul (r : R) (x : QuadraticAlgebra R a b) :
     (x * r : QuadraticAlgebra R a b) = r • x := by
   rw [mul_comm, coe_mul_eq_smul r x]
 
 @[norm_cast, simp]
-theorem coe_algebraMap [CommSemiring R] : ⇑(algebraMap R (QuadraticAlgebra R a b)) = coe := rfl
+theorem coe_algebraMap : ⇑(algebraMap R (QuadraticAlgebra R a b)) = coe := rfl
 
-theorem smul_coe (r1 r2 : R) [CommSemiring R] :
+theorem smul_coe (r1 r2 : R) :
     r1 • (r2 : QuadraticAlgebra R a b) = ↑(r1 * r2) := by rw [coe_mul, coe_mul_eq_smul]
 
-end
+end CommSemiring
+
+section CommRing
+
+instance instCommRing [CommRing R] : CommRing (QuadraticAlgebra R a b) where
+  __ := inferInstanceAs (AddCommGroupWithOne (QuadraticAlgebra R a b))
+  __ := inferInstanceAs (CommSemiring (QuadraticAlgebra R a b))
+
+end CommRing
+
 
 end QuadraticAlgebra
