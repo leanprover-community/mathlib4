@@ -1072,8 +1072,7 @@ theorem isEmbedding_sumElim :
     rw [Sum.elim_injective] at hfg
     exact ⟨⟨hf₁, hfg.1⟩, ⟨hg₁, hfg.2.1⟩, hFg, hfG⟩
   · intro ⟨⟨hf₁, hf₂⟩, ⟨hg₁, hg₂⟩, hFg, hfG⟩
-    use ⟨hf₁, hg₁, hFg, hfG⟩
-    apply hf₂.sumElim hg₂
+    refine ⟨⟨hf₁, hg₁, hFg, hfG⟩, hf₂.sumElim hg₂ ?_⟩
     exact fun a b ↦ hfG.ne_of_mem (mem_range_self a) (subset_closure (mem_range_self b))
 
 /-- If `f` and `g` are embeddings whose ranges are separated, `Sum.elim f g` is an embedding. -/
