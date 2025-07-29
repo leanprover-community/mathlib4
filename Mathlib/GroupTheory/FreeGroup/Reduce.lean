@@ -322,9 +322,12 @@ theorem IsReduced.reduce_eq (h : IsReduced L) : reduce L = L := by
 
 @[to_additive]
 theorem IsReduced.of_reduce_eq (h : reduce L = L) : IsReduced L := by
-    rw [IsReduced, List.chain'_iff_forall_rel_of_append_cons_cons]
-    rintro ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ l₁ l₂ hl ⟨rfl, rfl⟩
-    exact reduce.not (h.trans hl)
+  rw [IsReduced, List.chain'_iff_forall_rel_of_append_cons_cons]
+  rintro ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ l₁ l₂ hl rfl
+  symm
+  rw [← Bool.ne_not]
+  rintro rfl
+  exact reduce.not (h.trans hl)
 
 @[to_additive]
 theorem isReduced_iff_reduce_eq : IsReduced L ↔ reduce L = L where
