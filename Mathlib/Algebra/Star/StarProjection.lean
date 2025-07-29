@@ -123,7 +123,7 @@ theorem sub_iff_mul_eq_right [NonUnitalRing R] [StarRing R] [IsAddTorsionFree R]
   simp [star_mul, hp.isSelfAdjoint.star_eq, hq.isSelfAdjoint.star_eq,
     sub_iff_mul_eq_left hp hq]
 
-theorem add_sub_mul_of_commute [Ring R] [StarRing R]
+theorem add_sub_mul_of_commute [NonUnitalRing R] [StarRing R]
     (hpq : Commute p q) (hp : IsStarProjection p) (hq : IsStarProjection q) :
     IsStarProjection (p + q - p * q) where
   isIdempotentElem := hp.isIdempotentElem.add_sub_mul_of_commute hpq hq.isIdempotentElem

@@ -67,16 +67,17 @@ lemma of_mul_add (mul : a * b = 0) (add : a + b = 1) : IsIdempotentElem a ∧ Is
 
 end Semiring
 
-section Ring
-variable [Ring R] {a b : R}
+section NonUnitalRing
+variable [NonUnitalRing R] {a b : R}
 
-lemma add_sub_mul_of_commute (h : Commute a b) (hp : IsIdempotentElem a) (hq : IsIdempotentElem b) :
+lemma add_sub_mul_of_commute (h : Commute a b) (ha : IsIdempotentElem a) (hb : IsIdempotentElem b) :
     IsIdempotentElem (a + b - a * b) := by
-  convert (hp.one_sub.mul_of_commute ?_ hq.one_sub).one_sub using 1
-  · simp_rw [sub_mul, mul_sub, one_mul, mul_one, sub_sub, sub_sub_cancel, add_sub, add_comm]
-  · simp_rw [commute_iff_eq, sub_mul, mul_sub, one_mul, mul_one, sub_sub, add_sub, add_comm, h.eq]
+  rw [IsIdempotentElem]
+  simp only [h.eq, mul_sub, mul_add, sub_mul, add_mul, ha.eq, mul_assoc, add_sub_cancel_right,
+    hb.eq, hb.mul_self_mul, add_sub_cancel_left, sub_right_inj]
+  rw [← h.eq, ha.mul_self_mul, h.eq, hb.mul_self_mul, add_sub_cancel_right]
 
-end Ring
+end NonUnitalRing
 
 section CommRing
 variable [CommRing R] {a b : R}
