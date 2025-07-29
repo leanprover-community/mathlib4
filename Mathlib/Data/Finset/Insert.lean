@@ -603,8 +603,8 @@ def insertPiProdEquiv [DecidableEq α] {s : Finset α} (f : α → Type*) {a : �
     · rw [dif_neg h]
   right_inv _ := by
     ext _ hi
-    · dsimp only [insertPiProd_fst, prodPiInsert, cast_eq]; simp only [↓reduceDIte]
-    · dsimp only [insertPiProd_snd]
+    · simp [prodPiInsert]
+    · simp only [insertPiProd_snd]
       exact dif_neg (ne_of_mem_of_not_mem hi has)
 
 -- useful rules for calculations with quantifiers

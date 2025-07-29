@@ -607,12 +607,12 @@ example (k : ℤ) (h : k < 1) (h₁ : -1 < k) : k = 0 := by
   change _ at h₁
   linarith
 
-/-- error: unknown identifier 'garbage' -/
+/-- error: Unknown identifier `garbage` -/
 #guard_msgs in
 example (q : Prop) (p : ∀ (x : ℤ), q → 1 = 2) : 1 = 2 := by
   linarith [p _ garbage]
 
-/-- error: unknown identifier 'garbage' -/
+/-- error: Unknown identifier `garbage` -/
 #guard_msgs in
 example (q : Prop) (p : ∀ (x : ℤ), q → 1 = 2) : 1 = 2 := by
   nlinarith [p _ garbage]
