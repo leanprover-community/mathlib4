@@ -75,6 +75,10 @@ theorem intDegree_mul {x y : RatFunc K} (hx : x ≠ 0) (hy : y ≠ 0) :
     RatFunc.num_denom_mul]
 
 @[simp]
+theorem intDegree_inv (x : RatFunc K) : intDegree (x⁻¹) = - intDegree (x) := by
+  by_cases hx : x = 0 <;> simp [hx, eq_neg_iff_add_eq_zero, ← intDegree_mul (inv_ne_zero hx) hx]
+
+@[simp]
 theorem intDegree_neg (x : RatFunc K) : intDegree (-x) = intDegree x := by
   by_cases hx : x = 0
   · rw [hx, neg_zero]
