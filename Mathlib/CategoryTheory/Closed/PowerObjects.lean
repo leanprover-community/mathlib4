@@ -17,7 +17,7 @@ This ongoing work formalizes the elementary definition of a topos and the direct
 
 universe u v
 
-open CategoryTheory Category Functor Limits MonoidalCategory Opposite
+open CategoryTheory Functor MonoidalCategory Opposite
 
 variable {ℰ : Type u} [Category.{v} ℰ] [CartesianMonoidalCategory ℰ]
 

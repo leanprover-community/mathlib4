@@ -175,7 +175,7 @@ theorem walkingParallelPairOpEquiv_counitIso_one :
   rfl
 
 variable {C : Type u} [Category.{v} C]
-variable {X Y : C}
+variable {X Y Z : C}
 
 /-- `parallelPair f g` is the diagram in `C` consisting of the two morphisms `f` and `g` with
     common domain and codomain. -/
@@ -364,6 +364,15 @@ theorem Fork.ofι_eq_self (w : Fork f g) : Fork.ofι w.ι w.condition = w :=
   let ext (w w' : Fork f g) (hp : w.pt = w'.pt) (hπ : w.π = hp ▸ w'.π) : w = w' := by
     cases w; cases hp; cases hπ; rfl
   have (X : WalkingParallelPair) : (Fork.ofι w.ι w.condition).π.app X = w.π.app X := by
+    cases X <;> simp
+  ext _ w (by rfl) (NatTrans.ext (funext this))
+
+@[simp]
+theorem Cofork.ofπ_eq_self (w : Cofork f g) : Cofork.ofπ w.π w.condition = w :=
+  let ext (w w' : Cofork f g) (hp : w.pt = w'.pt) (hι : w.ι = hp ▸ w'.ι) : w = w' := by
+    cases w; cases hp; cases hι; rfl
+  have (X : WalkingParallelPair) :
+    (Cofork.ofπ w.π w.condition).ι.app X = w.ι.app X := by
     cases X <;> simp
   ext _ w (by rfl) (NatTrans.ext (funext this))
 
@@ -713,6 +722,18 @@ def Cofork.isColimitOfIsos {X' Y' : C} (c : Cofork f g) (hc : IsColimit c)
     (comm₃ : e₁.inv ≫ c.π ≫ e.hom = c'.π := by aesop_cat) : IsColimit c' :=
   (Cofork.isColimitEquivOfIsos c c' e₀ e₁ e) hc
 
+lemma eq_of_lift_eq_diag [HasBinaryProduct Z Z] {e : X ⟶ Y} {f g : Y ⟶ Z} {h : X ⟶ Z}
+    (eq : e ≫ prod.lift f g = h ≫ diag Z) : e ≫ f = e ≫ g :=
+  by calc
+    e ≫ f = h     := by simpa using congr($eq ≫ prod.fst)
+    _     = e ≫ g := by simpa using congr($eq.symm ≫ prod.snd)
+
+lemma eq_of_desc_eq_codiag [HasBinaryCoproduct X X] {e : Y ⟶ Z} {f g : X ⟶ Y} {h : X ⟶ Z}
+    (eq : coprod.desc f g ≫ e = codiag X ≫ h) : f ≫ e = g ≫ e :=
+  by calc
+    f ≫ e = h     := by simpa using congr(coprod.inl ≫ $eq)
+    _     = g ≫ e := by simpa using congr(coprod.inr ≫ $eq.symm)
+
 variable (f g)
 
 section
@@ -913,6 +934,15 @@ theorem coequalizer.condition : f ≫ coequalizer.π f g = g ≫ coequalizer.π 
 noncomputable def coequalizerIsCoequalizer :
     IsColimit (Cofork.ofπ (coequalizer.π f g) (coequalizer.condition f g)) :=
   IsColimit.ofIsoColimit (colimit.isColimit _) (Cofork.ext (Iso.refl _) (by simp))
+
+/-- The cofork built from `coequalizer.π f g` is colimiting. -/
+noncomputable def coequalizerIsCoequalizer' : IsColimit (coequalizer.cofork f g) :=
+  IsColimit.ofIsoColimit (colimit.isColimit _) (Cofork.ext (Iso.refl _) (by simp))
+
+@[simp]
+theorem coequalizer.cofork_ofπ :
+    Cofork.ofπ (coequalizer.cofork f g).π (coequalizer.condition f g) = coequalizer.cofork f g :=
+  Cofork.ofπ_eq_self (coequalizer.cofork f g)
 
 variable {f g}
 

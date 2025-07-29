@@ -18,7 +18,7 @@ ideally up to the proof of existence of exponential objects and colimits.
 
 universe u v
 
-open CategoryTheory Category Functor Limits MonoidalCategory PowerObject
+open CategoryTheory Limits MonoidalCategory PowerObject
 
 variable (ℰ : Type u) [Category.{v} ℰ] [CartesianMonoidalCategory ℰ]
 
