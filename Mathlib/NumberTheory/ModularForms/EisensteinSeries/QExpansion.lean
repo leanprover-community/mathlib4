@@ -30,7 +30,7 @@ lemma iteratedDerivWithin_cexp_mul_const (k m : ℕ) (c : ℂ) (p : ℝ) {S : Se
   rw [iteratedDeriv_const_mul (by fun_prop)]
   have : (fun s ↦ cexp (2 * ↑π * Complex.I * ↑m * s / ↑p)) =
       (fun s ↦ cexp (((2 * ↑π * Complex.I * ↑m) / p) * s)) := by
-      ext z ; ring_nf
+      ext z; ring_nf
   simp only [this, iteratedDeriv_cexp_const_mul]
   ring_nf
 
@@ -42,7 +42,7 @@ private lemma aux_IsBigO_mul (k : ℕ) (p : ℝ) {f : ℕ → ℂ}
     (fun n => (↑(n ^ (k)) : ℝ)) := by
     have h1 : (fun n : ℕ => (2 * ↑π * Complex.I * ↑n / p) ^ k) =
       (fun n : ℕ => ((2 * ↑π * Complex.I / p) ^ k) * ↑n ^ k) := by
-      ext z ; ring
+      ext z; ring
     simpa [h1] using (Complex.isBigO_ofReal_right.mp (Asymptotics.isBigO_const_mul_self
       ((2 * ↑π * Complex.I / p) ^ k) (fun (n : ℕ) ↦ (↑(n ^ k) : ℝ)) atTop))
   simp only [Nat.cast_pow] at *
