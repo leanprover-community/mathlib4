@@ -25,7 +25,7 @@ vector bundle, bundle metric, orthonormal frame, Gram-Schmidt
 
 -/
 
-open Manifold Bundle ContinuousLinearMap ENat Bornology
+open Manifold Bundle Module
 open scoped ContDiff Topology
 
 -- Let `E` be a topological vector bundle over a topological space `B`,
@@ -58,19 +58,19 @@ omit [TopologicalSpace B]
 /-- This lemma uses `∑ i in` instead of `∑ i :`. -/
 theorem gramSchmidt_def (s : ι → (x : B) → E x) (n : ι) (x) :
     gramSchmidt s n x =
-      s n x - ∑ i ∈ Iio n, (ℝ ∙ gramSchmidt s i x).orthogonalProjection (s n x) := by
-  simp only [gramSchmidt, InnerProductSpace.gramSchmidt_def]
+      s n x - ∑ i ∈ Iio n, (ℝ ∙ gramSchmidt s i x).starProjection (s n x) := by
+  rw [gramSchmidt, InnerProductSpace.gramSchmidt_def]
+  congr
 
 theorem gramSchmidt_def' (s : ι → (x : B) → E x) (n : ι) (x) :
     s n x = gramSchmidt s n x +
-      ∑ i ∈ Iio n, (ℝ ∙ gramSchmidt s i x).orthogonalProjection (s n x) := by
+      ∑ i ∈ Iio n, (ℝ ∙ gramSchmidt s i x).starProjection (s n x) := by
   rw [gramSchmidt_def, sub_add_cancel]
 
 theorem gramSchmidt_def'' (s : ι → (x : B) → E x) (n : ι) (x) :
     s n x = gramSchmidt s n x + ∑ i ∈ Iio n,
-      (⟪gramSchmidt s i x, s n x⟫ / (‖gramSchmidt s i x‖) ^ 2) • gramSchmidt s i x := by
-  convert gramSchmidt_def' s n x
-  simp [starProjection_singleton, RCLike.ofReal_pow]
+      (⟪gramSchmidt s i x, s n x⟫ / (‖gramSchmidt s i x‖) ^ 2) • gramSchmidt s i x :=
+  InnerProductSpace.gramSchmidt_def'' ℝ (s · x) n
 
 @[simp]
 lemma gramSchmidt_apply (s : ι → (x : B) → E x) (n : ι) (x) :
@@ -131,22 +131,8 @@ variable {x : B}
 /-- If the section values `s i x` are orthogonal, `gramSchmidt` yields the same values at `x`. -/
 theorem gramSchmidt_of_orthogonal (hs : Pairwise fun i j ↦ ⟪s i x, s j x⟫ = 0) :
     ∀ i₀, gramSchmidt s i₀ x = s i₀ x := by
-  intro i
-  rw [gramSchmidt_def]
-  trans s i x - 0
-  · congr
-    apply Finset.sum_eq_zero
-    intro j hj
-    rw [Submodule.coe_eq_zero]
-    suffices span ℝ ((s · x) '' Set.Iic j) ⟂ ℝ ∙ s i x by
-      apply orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero
-      rw [mem_orthogonal_singleton_iff_inner_left, ← mem_orthogonal_singleton_iff_inner_right]
-      exact this <| gramSchmidt_mem_span _ _ le_rfl
-    rw [isOrtho_span]
-    rintro u ⟨k, hk, rfl⟩ v (rfl : v = s i x)
-    apply hs
-    exact (lt_of_le_of_lt hk (Finset.mem_Iio.mp hj)).ne
-  · simp
+  simp_rw [gramSchmidt]
+  exact fun i ↦ congrFun (InnerProductSpace.gramSchmidt_of_orthogonal ℝ hs) i
 
 theorem gramSchmidt_ne_zero_coe (n : ι)
     (h₀ : LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic n → ι))) : gramSchmidt s n x ≠ 0 :=
