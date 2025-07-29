@@ -443,10 +443,9 @@ instance functorEquivFunctorWhiskeringFunctorOfTransformObjSquare
                 (transform C₁|>.obj ψ|>.obj <| ofSquare T L R B)|>.snd.app <|
                   J.obj x)
           dsimp at this
-          simp only [Category.comp_id, Category.id_comp, Category.assoc] at this
-          simp only [← Functor.map_comp_assoc, ← Functor.map_comp] at this
-          simp only [← NatTrans.comp_app, ← comp_fst, ← comp_snd,
-            Iso.inv_hom_id, Iso.hom_inv_id] at this
+          simp only [Category.comp_id, Category.id_comp, Category.assoc,
+            ← Functor.map_comp_assoc, ← Functor.map_comp, ← NatTrans.comp_app,
+            ← comp_fst, ← comp_snd, Iso.inv_hom_id, Iso.hom_inv_id] at this
           simpa using this.symm ))
       (fun {_ _} f ↦ by ext x <;> simp [functorOfTransform])
 
