@@ -341,7 +341,7 @@ lemma ae_tendsTo_birkhoffAverage_sub_condExp_nonneg {ε : ℝ} (hε : 0 < ε)
     exact hn k (Nat.le_of_succ_le hk)
   intro n hn
   have : μ[φ|invariants f] ∘ f = μ[φ|invariants f] :=
-    invariant_of_measurable_invariants stronglyMeasurable_condExp.measurable
+    comp_eq_of_measurable_invariants stronglyMeasurable_condExp.measurable
   simp [ψ, birkhoffAverage_sub, birkhoffAverage_add, birkhoffAverage_of_invariant ℝ
     (show _ = fun _ ↦ ε from rfl) hn, birkhoffAverage_of_invariant ℝ this hn]
 

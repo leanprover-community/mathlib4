@@ -7,6 +7,7 @@ import Mathlib.GroupTheory.OreLocalization.OreSet
 import Mathlib.Tactic.Common
 import Mathlib.Algebra.Group.Submonoid.MulAction
 import Mathlib.Algebra.Group.Units.Defs
+import Mathlib.Algebra.Group.Basic
 
 /-!
 
@@ -582,7 +583,7 @@ instance [SMulCommClass R M M] : SMulCommClass R M[S⁻¹] X[S⁻¹] where
 
 @[to_additive]
 instance [SMul Rᵐᵒᵖ M] [SMul Rᵐᵒᵖ X] [IsScalarTower Rᵐᵒᵖ M M] [IsScalarTower Rᵐᵒᵖ M X]
-  [IsCentralScalar R M] : IsCentralScalar R X[S⁻¹] where
+    [IsCentralScalar R M] : IsCentralScalar R X[S⁻¹] where
   op_smul_eq_smul r x := by
     rw [← smul_one_oreDiv_one_smul, ← smul_one_oreDiv_one_smul, op_smul_eq_smul]
 

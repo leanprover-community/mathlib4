@@ -343,7 +343,7 @@ theorem orderOf_submonoid {H : Submonoid G} (y : H) : orderOf (y : G) = orderOf 
 
 @[to_additive]
 theorem orderOf_units {y : Gˣ} : orderOf (y : G) = orderOf y :=
-  orderOf_injective (Units.coeHom G) Units.ext y
+  orderOf_injective (Units.coeHom G) Units.val_injective y
 
 /-- If the order of `x` is finite, then `x` is a unit with inverse `x ^ (orderOf x - 1)`. -/
 @[to_additive (attr := simps) "If the additive order of `x` is finite, then `x` is an additive
@@ -843,7 +843,7 @@ theorem injective_zpow_iff_not_isOfFinOrder : (Injective fun n : ℤ => x ^ n) �
 @[to_additive]
 lemma Subgroup.zpowers_eq_zpowers_iff {x y : G} (hx : ¬IsOfFinOrder x) :
     zpowers x = zpowers y ↔ x = y ∨ x⁻¹ = y := by
-  refine ⟨fun h ↦ ?_, by rintro (rfl|rfl) <;> simp⟩
+  refine ⟨fun h ↦ ?_, by rintro (rfl | rfl) <;> simp⟩
   have hx_mem : x ∈ zpowers y := by simp [← h]
   have hy_mem : y ∈ zpowers x := by simp [h]
   obtain ⟨k, rfl⟩ := mem_zpowers_iff.mp hy_mem
@@ -940,7 +940,8 @@ theorem orderOf_dvd_natCard {G : Type*} [Group G] (x : G) : orderOf x ∣ Nat.ca
 
 @[to_additive]
 nonrec lemma Subgroup.orderOf_dvd_natCard {G : Type*} [Group G] (s : Subgroup G) {x} (hx : x ∈ s) :
-  orderOf x ∣ Nat.card s := by simpa using orderOf_dvd_natCard (⟨x, hx⟩ : s)
+    orderOf x ∣ Nat.card s := by
+  simpa using orderOf_dvd_natCard (⟨x, hx⟩ : s)
 
 @[to_additive]
 lemma Subgroup.orderOf_le_card {G : Type*} [Group G] (s : Subgroup G) (hs : (s : Set G).Finite)
