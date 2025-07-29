@@ -1069,9 +1069,8 @@ theorem isEmbedding_sumElim :
   simp_rw [isEmbedding_iff, isInducing_sumElim]
   constructor
   · intro ⟨⟨hf₁, hg₁, hFg, hfG⟩, hfg⟩
-    have hf₂ : Injective f := Sum.elim_comp_inl f g ▸ hfg.comp inl_injective
-    have hg₂ : Injective g := Sum.elim_comp_inr f g ▸ hfg.comp inr_injective
-    exact ⟨⟨hf₁, hf₂⟩, ⟨hg₁, hg₂⟩, ⟨hFg, hfG⟩⟩
+    rw [Sum.elim_injective] at hfg
+    exact ⟨⟨hf₁, hfg.1⟩, ⟨hg₁, hfg.2.1⟩, hFg, hfG⟩
   · intro ⟨⟨hf₁, hf₂⟩, ⟨hg₁, hg₂⟩, hFg, hfG⟩
     use ⟨hf₁, hg₁, hFg, hfG⟩
     apply hf₂.sumElim hg₂
