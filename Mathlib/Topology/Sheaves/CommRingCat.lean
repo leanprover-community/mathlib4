@@ -174,11 +174,12 @@ instance (F : X.Sheaf CommRingCat.{w}) : Mono F.presheaf.toTotalQuotientPresheaf
   set m := _
   change Function.Injective (algebraMap _ (Localization m))
   refine IsLocalization.injective (M := m) (S := Localization m) ?_
+  rw [← nonZeroDivisorsRight_eq_nonZeroDivisors]
   intro s hs t e
   apply section_ext F (unop U)
   intro x hx
   rw [RingHom.map_zero]
-  apply Submonoid.mem_iInf.mp hs ⟨x, hx⟩
+  apply (Submonoid.mem_iInf.mp hs ⟨x, hx⟩).2
   rw [← map_mul, e, map_zero]
 
 end SubmonoidPresheaf
@@ -375,7 +376,7 @@ theorem objSupIsoProdEqLocus_inv_eq_iff {X : TopCat.{u}} (F : X.Sheaf CommRingCa
   constructor
   · rintro rfl
     rw [← TopCat.Sheaf.objSupIsoProdEqLocus_inv_fst, ← TopCat.Sheaf.objSupIsoProdEqLocus_inv_snd]
-    simp only [← CommRingCat.comp_apply, ← Functor.map_comp, ← op_comp, Category.assoc,
+    simp only [← CommRingCat.comp_apply, ← Functor.map_comp, ← op_comp,
       homOfLE_comp, and_self]
   · rintro ⟨e₁, e₂⟩
     refine F.eq_of_locally_eq₂
@@ -383,10 +384,10 @@ theorem objSupIsoProdEqLocus_inv_eq_iff {X : TopCat.{u}} (F : X.Sheaf CommRingCa
     · rw [← inf_sup_right]
       exact le_inf e le_rfl
     · rw [← e₁, ← TopCat.Sheaf.objSupIsoProdEqLocus_inv_fst]
-      simp only [← CommRingCat.comp_apply, ← Functor.map_comp, ← op_comp, Category.assoc,
+      simp only [← CommRingCat.comp_apply, ← Functor.map_comp, ← op_comp,
         homOfLE_comp]
     · rw [← e₂, ← TopCat.Sheaf.objSupIsoProdEqLocus_inv_snd]
-      simp only [← CommRingCat.comp_apply, ← Functor.map_comp, ← op_comp, Category.assoc,
+      simp only [← CommRingCat.comp_apply, ← Functor.map_comp, ← op_comp,
         homOfLE_comp]
 
 end TopCat.Sheaf

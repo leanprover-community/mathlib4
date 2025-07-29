@@ -18,9 +18,10 @@ import Mathlib.LinearAlgebra.Quotient.Pi
 
 -/
 
-namespace Submodule
-
+open Module
 open scoped DirectSum
+
+namespace Submodule
 
 variable {ι R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 variable [IsDomain R] [IsPrincipalIdealRing R] [Finite ι]
@@ -58,7 +59,7 @@ noncomputable def quotientEquivPiSpan (N : Submodule R M) (b : Basis ι R M)
   have : Submodule.map (b'.equivFun : M →ₗ[R] ι → R) N = N' := by
     ext x
     simp only [N', Submodule.mem_map, Submodule.mem_pi, mem_span_singleton, Set.mem_univ,
-      Submodule.restrictScalars_mem, mem_I_iff, smul_eq_mul, forall_true_left, LinearEquiv.coe_coe,
+      mem_I_iff, smul_eq_mul, forall_true_left, LinearEquiv.coe_coe,
       Basis.equivFun_apply, mul_comm _ (a _), eq_comm (b := (x _))]
     constructor
     · rintro ⟨y, hy, rfl⟩ i
@@ -99,6 +100,16 @@ theorem finiteQuotientOfFreeOfRankEq [Module.Free ℤ M] [Module.Finite ℤ M]
 
 @[deprecated (since := "2025-03-15")] alias fintypeQuotientOfFreeOfRankEq :=
   finiteQuotientOfFreeOfRankEq
+
+theorem finiteQuotient_iff [Module.Free ℤ M] [Module.Finite ℤ M] (N : Submodule ℤ M) :
+    Finite (M ⧸ N) ↔ Module.finrank ℤ N = Module.finrank ℤ M := by
+  refine ⟨fun h ↦ le_antisymm (finrank_le N) <|
+    ((LinearMap.lsmul ℤ M (Nat.card (M ⧸ N))).codRestrict N
+      fun x ↦ ?_).finrank_le_finrank_of_injective ?_, fun h ↦ finiteQuotientOfFreeOfRankEq N h⟩
+  · simpa using AddSubgroup.nsmul_index_mem N.toAddSubgroup x
+  · refine (LinearMap.lsmul_injective ?_).codRestrict _
+    exact Int.ofNat_ne_zero.mpr <| Nat.card_ne_zero.mpr
+      ⟨Set.nonempty_iff_univ_nonempty.mpr Set.univ_nonempty, h⟩
 
 variable (F : Type*) [CommRing F] [Algebra F R] [Module F M] [IsScalarTower F R M]
   (b : Basis ι R M) {N : Submodule R M}

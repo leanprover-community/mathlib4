@@ -324,7 +324,7 @@ theorem compl_compl_image [BooleanAlgebra α] (s : Set α) :
 theorem image_insert_eq {f : α → β} {a : α} {s : Set α} :
     f '' insert a s = insert (f a) (f '' s) := by
   ext
-  simp [and_or_left, exists_or, eq_comm, or_comm, and_comm]
+  simp [and_or_left, exists_or, eq_comm, and_comm]
 
 theorem image_pair (f : α → β) (a b : α) : f '' {a, b} = {f a, f b} := by
   simp only [image_insert_eq, image_singleton]
@@ -336,15 +336,15 @@ theorem preimage_subset_image_of_inverse {f : α → β} {g : β → α} (I : Le
     f ⁻¹' s ⊆ g '' s := fun b h => ⟨f b, h, I b⟩
 
 theorem range_inter_ssubset_iff_preimage_ssubset {f : α → β} {s s' : Set β} :
-  range f ∩ s ⊂ range f ∩ s' ↔ f ⁻¹' s ⊂ f ⁻¹' s' := by
-    simp only [Set.ssubset_iff_exists]
-    apply and_congr ?_ (by aesop)
-    constructor
-    all_goals
-      intro r x hx
-      simp_all only [subset_inter_iff, inter_subset_left, true_and, mem_preimage,
-        mem_inter_iff, mem_range, true_and]
-      aesop
+    range f ∩ s ⊂ range f ∩ s' ↔ f ⁻¹' s ⊂ f ⁻¹' s' := by
+  simp only [Set.ssubset_iff_exists]
+  apply and_congr ?_ (by aesop)
+  constructor
+  all_goals
+    intro r x hx
+    simp_all only [subset_inter_iff, inter_subset_left, true_and, mem_preimage,
+      mem_inter_iff, mem_range, true_and]
+    aesop
 
 theorem image_eq_preimage_of_inverse {f : α → β} {g : β → α} (h₁ : LeftInverse g f)
     (h₂ : RightInverse g f) : image f = preimage g :=
@@ -679,6 +679,16 @@ theorem range_eq_empty_iff {f : ι → α} : range f = ∅ ↔ IsEmpty ι := by
 theorem range_eq_empty [IsEmpty ι] (f : ι → α) : range f = ∅ :=
   range_eq_empty_iff.2 ‹_›
 
+@[simp]
+theorem range_eq_singleton_iff [Nonempty ι] {y} :
+    Set.range f = {y} ↔ ∀ (x : ι), f x = y := by
+  simp_rw [Set.ext_iff, Set.mem_range, Set.mem_singleton_iff]
+  exact ⟨fun h _ => by simp_rw [← h, exists_apply_eq_apply],
+      fun h _ => by simp_rw [h, exists_const, eq_comm]⟩
+
+theorem range_eq_singleton [Nonempty ι] {y} (hy : ∀ (x : ι), f x = y) :
+    Set.range f = {y} := range_eq_singleton_iff.mpr hy
+
 instance instNonemptyRange [Nonempty ι] (f : ι → α) : Nonempty (range f) :=
   (range_nonempty f).to_subtype
 
@@ -773,8 +783,8 @@ theorem range_eval {α : ι → Sort _} [∀ i, Nonempty (α i)] (i : ι) :
     range (eval i : (∀ i, α i) → α i) = univ :=
   (surjective_eval i).range_eq
 
-theorem range_inl : range (@Sum.inl α β) = {x | Sum.isLeft x} := by ext (_|_) <;> simp
-theorem range_inr : range (@Sum.inr α β) = {x | Sum.isRight x} := by ext (_|_) <;> simp
+theorem range_inl : range (@Sum.inl α β) = {x | Sum.isLeft x} := by ext (_ | _) <;> simp
+theorem range_inr : range (@Sum.inr α β) = {x | Sum.isRight x} := by ext (_ | _) <;> simp
 
 theorem isCompl_range_inl_range_inr : IsCompl (range <| @Sum.inl α β) (range Sum.inr) :=
   IsCompl.of_le
@@ -876,10 +886,8 @@ theorem range_const_subset {c : α} : (range fun _ : ι => c) ⊆ {c} :=
   range_subset_iff.2 fun _ => rfl
 
 @[simp]
-theorem range_const : ∀ [Nonempty ι] {c : α}, (range fun _ : ι => c) = {c}
-  | ⟨x⟩, _ =>
-    (Subset.antisymm range_const_subset) fun _ hy =>
-      (mem_singleton_iff.1 hy).symm ▸ mem_range_self x
+theorem range_const : ∀ [Nonempty ι] {c : α}, (range fun _ : ι => c) = {c} :=
+  range_eq_singleton (fun _ => rfl)
 
 theorem range_subtype_map {p : α → Prop} {q : β → Prop} (f : α → β) (h : ∀ x, p x → q (f x)) :
     range (Subtype.map f h) = (↑) ⁻¹' (f '' { x | p x }) := by
@@ -897,7 +905,7 @@ theorem preimage_singleton_eq_empty {f : α → β} {y : β} : f ⁻¹' {y} = �
   not_nonempty_iff_eq_empty.symm.trans preimage_singleton_nonempty.not
 
 theorem range_subset_singleton {f : ι → α} {x : α} : range f ⊆ {x} ↔ f = const ι x := by
-  simp [range_subset_iff, funext_iff, mem_singleton]
+  simp [funext_iff]
 
 theorem image_compl_preimage {f : α → β} {s : Set β} : f '' (f ⁻¹' s)ᶜ = range f \ s := by
   rw [compl_eq_univ_diff, image_diff_preimage, image_univ]
@@ -942,7 +950,7 @@ theorem range_ite_subset {p : α → Prop} [DecidablePred p] {f g : α → β} :
     (range fun x => if p x then f x else g x) ⊆ range f ∪ range g := by
   rw [range_subset_iff]; intro x; by_cases h : p x
   · simp only [if_pos h, mem_union, mem_range, exists_apply_eq_apply, true_or]
-  · simp [if_neg h, mem_union, mem_range_self]
+  · simp [if_neg h, mem_union]
 
 @[simp]
 theorem preimage_range (f : α → β) : f ⁻¹' range f = univ :=
@@ -1276,8 +1284,6 @@ end Subtype
 /-! ### Images and preimages on `Option` -/
 
 
-open Set
-
 namespace Option
 
 theorem injective_iff {α β} {f : Option α → β} :
@@ -1294,8 +1300,6 @@ theorem range_eq {α β} (f : Option α → β) : range f = insert (f none) (ran
 end Option
 
 namespace Set
-
-open Function
 
 /-! ### Injectivity and surjectivity lemmas for image and preimage -/
 

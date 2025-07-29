@@ -81,26 +81,20 @@ end Module
 
 /-! ### Linear maps between normed spaces are differentiable -/
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-we needed to add the named arguments `𝕜 := 𝕜` and `F := ((F₂ →L[𝕜] F₃) →L[𝕜] F₁ →L[𝕜] F₃))`
-to `ContinuousLinearMap.differentiable`. -/
 theorem MDifferentiableWithinAt.clm_precomp {f : M → F₁ →L[𝕜] F₂} {s : Set M} {x : M}
     (hf : MDifferentiableWithinAt I 𝓘(𝕜, F₁ →L[𝕜] F₂) f s x) :
     MDifferentiableWithinAt I 𝓘(𝕜, (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃))
       (fun y ↦ (f y).precomp F₃ : M → (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) s x :=
-  Differentiable.comp_mdifferentiableWithinAt (g := (ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃).flip)
-    (ContinuousLinearMap.differentiable (𝕜 := 𝕜) (F := ((F₂ →L[𝕜] F₃) →L[𝕜] F₁ →L[𝕜] F₃))
+  Differentiable.comp_mdifferentiableWithinAt
+    (ContinuousLinearMap.differentiable
       (ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃).flip) hf
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-we needed to add the named arguments `𝕜 := 𝕜` and `F := ((F₂ →L[𝕜] F₃) →L[𝕜] F₁ →L[𝕜] F₃))`
-to `ContinuousLinearMap.differentiable`. -/
 nonrec theorem MDifferentiableAt.clm_precomp {f : M → F₁ →L[𝕜] F₂} {x : M}
     (hf : MDifferentiableAt I 𝓘(𝕜, F₁ →L[𝕜] F₂) f x) :
     MDifferentiableAt I 𝓘(𝕜, (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃))
       (fun y ↦ (f y).precomp F₃ : M → (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) x :=
-  Differentiable.comp_mdifferentiableAt (g := (ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃).flip)
-    (ContinuousLinearMap.differentiable (𝕜 := 𝕜) (F := ((F₂ →L[𝕜] F₃) →L[𝕜] F₁ →L[𝕜] F₃))
+  Differentiable.comp_mdifferentiableAt
+    (ContinuousLinearMap.differentiable
       (ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃).flip) hf
 
 theorem MDifferentiableOn.clm_precomp {f : M → F₁ →L[𝕜] F₂} {s : Set M}
@@ -115,28 +109,20 @@ theorem MDifferentiable.clm_precomp
       (fun y ↦ (f y).precomp F₃ : M → (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) := fun x ↦
   (hf x).clm_precomp
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-we needed to add the named arguments `𝕜 := 𝕜` and `F := ((F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃))`
-to `ContinuousLinearMap.differentiable`. -/
 theorem MDifferentiableWithinAt.clm_postcomp {f : M → F₂ →L[𝕜] F₃} {s : Set M} {x : M}
     (hf : MDifferentiableWithinAt I 𝓘(𝕜, F₂ →L[𝕜] F₃) f s x) :
     MDifferentiableWithinAt I 𝓘(𝕜, (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃))
       (fun y ↦ (f y).postcomp F₁ : M → (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃)) s x :=
-  Differentiable.comp_mdifferentiableWithinAt (F' := (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃))
-    (g := ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃)
-    (ContinuousLinearMap.differentiable (𝕜 := 𝕜) (F := ((F₁ →L[𝕜] F₂) →L[𝕜] F₁ →L[𝕜] F₃))
+  Differentiable.comp_mdifferentiableWithinAt
+    (ContinuousLinearMap.differentiable
       (ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃)) hf
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-we needed to add the named arguments `𝕜 := 𝕜` and `F := ((F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃))`
-to `ContinuousLinearMap.differentiable`. -/
 theorem MDifferentiableAt.clm_postcomp {f : M → F₂ →L[𝕜] F₃} {x : M}
     (hf : MDifferentiableAt I 𝓘(𝕜, F₂ →L[𝕜] F₃) f x) :
     MDifferentiableAt I 𝓘(𝕜, (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃))
       (fun y ↦ (f y).postcomp F₁ : M → (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃)) x :=
-  Differentiable.comp_mdifferentiableAt (F' := (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃))
-    (g := ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃)
-    (ContinuousLinearMap.differentiable (𝕜 := 𝕜) (F := ((F₁ →L[𝕜] F₂) →L[𝕜] F₁ →L[𝕜] F₃))
+  Differentiable.comp_mdifferentiableAt
+    (ContinuousLinearMap.differentiable
       (ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃)) hf
 
 nonrec theorem MDifferentiableOn.clm_postcomp {f : M → F₂ →L[𝕜] F₃} {s : Set M}

@@ -85,7 +85,7 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
         Quiver.Hom.unop_op, stdSimplex.map_apply, Quiver.Hom.unop_op]
       dsimp [CosimplicialObject.δ]
       rw [stdSimplex.yonedaEquiv_map]
-      simp only [Fin.isValue, Equiv.apply_symm_apply, triangle]
+      simp only [Equiv.apply_symm_apply, triangle]
       rw [mkOfSucc_δ_eq heq]
       fin_cases z <;> rfl
 

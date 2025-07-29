@@ -6,6 +6,7 @@ Authors: Niels Voss
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.Order.Filter.Cofinite
+import Mathlib.Tactic.GCongr
 
 /-!
 # Fermat Pseudoprimes

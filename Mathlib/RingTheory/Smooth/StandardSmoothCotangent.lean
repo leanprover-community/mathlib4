@@ -35,7 +35,7 @@ section
 
 variable {R S ι σ : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
-open Extension MvPolynomial
+open Extension Module MvPolynomial
 
 namespace PreSubmersivePresentation
 
@@ -99,7 +99,7 @@ lemma cotangentComplexAux_injective [Finite σ] : Function.Injective P.cotangent
     have := this c.support (fun i ↦ aeval P.val (c i))
       (by intro i; simp only [Finsupp.mem_support_iff, ne_eq, not_not]; intro h; simp [h]) heq2
     exact this i
-  show _ ∈ P.ker ^ 2
+  change _ ∈ P.ker ^ 2
   rw [← hc]
   apply Ideal.sum_mem
   intro i hi
@@ -184,7 +184,7 @@ lemma sectionCotangent_zero_of_notMem_range (i : ι) (hi : i ∉ Set.range P.map
   contrapose hi
   rw [sectionCotangent_eq_iff] at hi
   simp only [Basis.repr_self, map_zero, Pi.zero_apply, not_forall,
-    Finsupp.single_apply, ite_eq_right_iff, Classical.not_imp, exists_and_right] at hi
+    Finsupp.single_apply, ite_eq_right_iff] at hi
   obtain ⟨j, hij, _⟩ := hi
   simp only [Set.mem_range, not_exists, not_forall, not_not]
   use j
@@ -212,7 +212,7 @@ noncomputable def basisKaehlerOfIsCompl {κ : Type*} {f : κ → ι}
     classical
     ext i j
     simp only [Function.comp_apply, Basis.repr_self, Finsupp.linearEquivFunOnFinite_apply,
-      Pi.basisFun_apply, Finsupp.single_apply_left P.map_inj, Finsupp.single_eq_pi_single]
+      Pi.basisFun_apply]
     simp [Finsupp.single_eq_pi_single]
   · exact hcompl.2
 
@@ -237,7 +237,7 @@ attribute [local instance] Fintype.ofFinite in
 of relations. -/
 theorem rank_kaehlerDifferential [Nontrivial S] [Finite ι]
     (P : SubmersivePresentation R S ι σ) : Module.rank S (Ω[S⁄R]) = P.dimension := by
-  simp only [rank_eq_card_basis P.basisKaehler, Nat.cast_inj, Fintype.card_compl_set,
+  simp only [rank_eq_card_basis P.basisKaehler, Fintype.card_compl_set,
     Presentation.dimension, Nat.card_eq_fintype_card, Set.card_range_of_injective P.map_inj]
 
 end SubmersivePresentation

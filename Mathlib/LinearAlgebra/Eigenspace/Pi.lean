@@ -129,10 +129,8 @@ lemma independent_iInf_maxGenEigenspace_of_forall_mapsTo
     exact h l χ₁
   · rw [map_add, hk, zero_add]
     suffices (s.sup fun χ ↦ (⨅ i, (f i).maxGenEigenspace (χ i))).map (g ^ k) ≤
-        s.sup fun χ ↦ (⨅ i, (f i).maxGenEigenspace (χ i)) by
-      refine this (Submodule.mem_map_of_mem ?_)
-      simp_rw [Finset.sup_eq_iSup, ← Finset.sup_eq_iSup] at hz
-      exact hz
+        s.sup fun χ ↦ (⨅ i, (f i).maxGenEigenspace (χ i)) from
+      this (Submodule.mem_map_of_mem hz)
     simp_rw [Finset.sup_eq_iSup, Submodule.map_iSup (ι := ι → R), Submodule.map_iSup (ι := _ ∈ s)]
     refine iSup₂_mono fun χ _ ↦ ?_
     rintro - ⟨u, hu, rfl⟩
