@@ -1179,20 +1179,11 @@ lemma functorOfTransform_map_app_snd {ψ ψ' : CatCospanTransform R B R' B'}
     α.right.app (L.obj x) :=
   rfl
 
-@[simp]
-lemma functorOfTransform_obj_obj_iso_hom (ψ : CatCospanTransform R B R' B')
-    (x : C₁) :
-    (functorOfTransform T L (π₁ R' B') (π₂ R' B')|>.obj ψ|>.obj x).iso =
-    ((ψ.squareLeft.iso.app (T.obj x)).symm ≪≫
-      ψ.base.mapIso ((CatCommSq.iso T L R B).app x) ≪≫
-      (ψ.squareRight.iso.app (L.obj x))) := by
-  ext
-  simp [functorOfTransform]
-
 end
 
 end CategoricalPullback
 
+variable {R B} in
 omit [CatPullbackSquare T L R B] in
 /-- A constructor for categorical pullback squares: given a
 - a `CatCommSq (T : C₁ ⥤ _) L R B`
@@ -1202,7 +1193,7 @@ omit [CatPullbackSquare T L R B] in
 `e.functor ≅ functorOfTransform T L T' L' ψ.transform`
 Construct a `CatPullbackSquare` structure on the `CatCommSq T L R B`.
 
-This structure will be characterized (TODO) by the fact that the induced
+This structure is characterized by the fact that the induced
 equivalence `C₁ ≌ D₁` that comes from the unicity up to equivalence of
 categorical pullback squares is precisely the given equivalence `e`. -/
 def ofEquivCatPullbackSquare
