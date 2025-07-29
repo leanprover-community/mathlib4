@@ -24,7 +24,7 @@ section NonAssocRing
 variable [NonAssocRing R] {a : R}
 
 lemma one_sub (h : IsIdempotentElem a) : IsIdempotentElem (1 - a) := by
-  rw [IsIdempotentElem, mul_sub, mul_one, sub_mul, one_mul, h.eq, sub_self, sub_zero]
+  rw [isIdempotentElem_iff, mul_sub, mul_one, sub_mul, one_mul, h.eq, sub_self, sub_zero]
 
 @[simp]
 lemma one_sub_iff : IsIdempotentElem (1 - a) ↔ IsIdempotentElem a :=
@@ -60,7 +60,7 @@ section Semiring
 variable [Semiring R] {a b : R}
 
 lemma of_mul_add (mul : a * b = 0) (add : a + b = 1) : IsIdempotentElem a ∧ IsIdempotentElem b := by
-  simp_rw [IsIdempotentElem]; constructor
+  simp_rw [isIdempotentElem_iff]; constructor
   · conv_rhs => rw [← mul_one a, ← add, mul_add, mul, add_zero]
   · conv_rhs => rw [← one_mul b, ← add, add_mul, mul, zero_add]
 

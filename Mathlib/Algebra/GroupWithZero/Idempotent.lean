@@ -19,7 +19,8 @@ namespace IsIdempotentElem
 section MulZeroClass
 variable [MulZeroClass M₀]
 
-lemma zero : IsIdempotentElem (0 : M₀) := mul_zero _
+lemma zero : IsIdempotentElem (0 : M₀) where
+  mul_self := mul_zero _
 
 instance : Zero { p : M₀ // IsIdempotentElem p } where zero := ⟨0, zero⟩
 
@@ -32,8 +33,8 @@ variable [CancelMonoidWithZero M₀]
 
 @[simp]
 lemma iff_eq_zero_or_one {p : G₀} : IsIdempotentElem p ↔ p = 0 ∨ p = 1 where
-  mp h := or_iff_not_imp_left.mpr fun hp ↦ mul_left_cancel₀ hp (h.trans (mul_one p).symm)
-  mpr h := h.elim (fun hp => hp.symm ▸ zero) fun hp => hp.symm ▸ one
+  mp h := or_iff_not_imp_left.mpr fun hp ↦ mul_left_cancel₀ hp (h.eq.trans (mul_one p).symm)
+  mpr h := h.elim (fun hp => hp.symm ▸ zero) fun hp => hp.symm ▸ one _
 
 end CancelMonoidWithZero
 end IsIdempotentElem
