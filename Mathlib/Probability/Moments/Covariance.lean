@@ -385,7 +385,7 @@ lemma integral_continuousLinearMap_prod' {L : E × F →L[ℝ] G}
   · exact (hLμ.comp_fst ν).integrable le_rfl
   · exact (hLν.comp_snd μ).integrable le_rfl
 
-lemma integral_continuousLinearMap_prod {L : (E × F) →L[ℝ] G}
+lemma integral_continuousLinearMap_prod {L : E × F →L[ℝ] G}
     (hμ : MemLp id 1 μ) (hν : MemLp id 1 ν) :
     (μ.prod ν)[L] = μ[L.comp (.inl ℝ E F)] + ν[L.comp (.inr ℝ E F)] :=
   integral_continuousLinearMap_prod' (ContinuousLinearMap.comp_memLp' _ hμ)
