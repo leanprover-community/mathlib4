@@ -95,9 +95,9 @@ noncomputable def ClassGroup.mk : (FractionalIdeal R⁰ K)ˣ →* ClassGroup R :
     (Units.map (FractionalIdeal.canonicalEquiv R⁰ K (FractionRing R)))
 
 lemma ClassGroup.mk_def (I : (FractionalIdeal R⁰ K)ˣ) :
-  ClassGroup.mk I =
-    (QuotientGroup.mk' (toPrincipalIdeal R (FractionRing R)).range)
-      (Units.map (FractionalIdeal.canonicalEquiv R⁰ K (FractionRing R)) I) := rfl
+    ClassGroup.mk I =
+      (QuotientGroup.mk' (toPrincipalIdeal R (FractionRing R)).range)
+        (Units.map (FractionalIdeal.canonicalEquiv R⁰ K (FractionRing R)) I) := rfl
 
 -- Can't be `@[simp]` because it can't figure out the quotient relation.
 theorem ClassGroup.Quot_mk_eq_mk (I : (FractionalIdeal R⁰ (FractionRing R))ˣ) :
@@ -344,7 +344,7 @@ theorem ClassGroup.mk0_eq_mk0_inv_iff [IsDedekindDomain R] {I J : (Ideal R)⁰} 
   refine ⟨fun ⟨a, ha⟩ ↦ ⟨a, ?_, ha⟩, fun ⟨a, _, ha⟩ ↦ ⟨a, ha⟩⟩
   by_contra!
   rw [this, Submodule.span_zero_singleton] at ha
-  exact nonZeroDivisors.coe_ne_zero _ <| J.prop _ ha
+  exact nonZeroDivisors.coe_ne_zero _ <| J.prop.2 _ ha
 
 /-- The class group of principal ideal domain is finite (in fact a singleton).
 

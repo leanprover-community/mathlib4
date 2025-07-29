@@ -28,6 +28,7 @@ By definition, it then satisfies the predicate `IsRiemannianManifold I M`.
 
 The following code block is the standard way to say "Let `M` be a `C^∞` Riemannian manifold".
 ```
+open scoped Bundle
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
@@ -447,7 +448,7 @@ lemma setOf_riemmanianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
     ContMDiffOn.comp (I' := I) (t := (chartAt H x).source) contMDiffOn_extChartAt
       γ_smooth.contMDiffOn (fun t' ht' ↦ uc' <| t₁_mem ht')
   have : ‖γ' t₁ - γ' 0‖ₑ < r := by
-    rcases ht₁0.eq_or_lt with rfl|h't'
+    rcases ht₁0.eq_or_lt with rfl | h't'
     · simp [r_pos]
     calc
       ‖γ' t₁ - γ' 0‖ₑ
