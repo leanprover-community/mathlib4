@@ -138,6 +138,9 @@ theorem forget₂Grp_comp_forget : forget₂Grp_ C ⋙ Grp_.forget C = forget C 
 @[simp]
 theorem forget₂CommMon_comp_forget : forget₂CommMon_ C ⋙ CommMon_.forget C = forget C := rfl
 
+instance {G H : CommGrp_ C} {f : G ⟶ H} [IsIso f] : IsIso f.hom :=
+  inferInstanceAs <| IsIso <| (forget C).map f
+
 end
 
 /-- Construct an isomorphism of commutative group objects by giving a monoid isomorphism between the
