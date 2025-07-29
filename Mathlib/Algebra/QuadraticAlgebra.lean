@@ -415,5 +415,4 @@ instance instCommRing [CommRing R] : CommRing (QuadraticAlgebra R a b) where
 
 end CommRing
 
-
 end QuadraticAlgebra
