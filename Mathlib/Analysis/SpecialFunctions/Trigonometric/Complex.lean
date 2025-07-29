@@ -136,17 +136,30 @@ theorem tan_sub {x y : ℂ}
     (h : ((∀ k : ℤ, x ≠ (2 * k + 1) * π / 2) ∧ ∀ l : ℤ, y ≠ (2 * l + 1) * π / 2) ∨
       (∃ k : ℤ, x = (2 * k + 1) * π / 2) ∧ ∃ l : ℤ, y = (2 * l + 1) * π / 2) :
     tan (x - y) = (tan x - tan y) / (1 + tan x * tan y) := by
-  rcases h with (⟨h1, h2⟩ | ⟨⟨k, rfl⟩, ⟨l, rfl⟩⟩)
-  · rw [tan, sin_sub, cos_sub, ←
-      div_div_div_cancel_right₀ (mul_ne_zero (cos_ne_zero_iff.mpr h1) (cos_ne_zero_iff.mpr h2)),
-      sub_div, add_div]
-    simp only [← div_mul_div_comm, tan, mul_one, one_mul, div_self (cos_ne_zero_iff.mpr h1),
-      div_self (cos_ne_zero_iff.mpr h2)]
-  · haveI t := tan_int_mul_pi_div_two
-    obtain ⟨hx, hy, hxy⟩ := t (2 * k + 1), t (2 * l + 1), t (2 * k + 1 - (2 * l + 1))
-    simp only [Int.cast_add, Int.cast_two, Int.cast_mul, Int.cast_one, Int.cast_sub] at hx hy hxy
-    rw [hx, hy, sub_zero, zero_div, mul_div_assoc, mul_div_assoc, ←
-      sub_mul (2 * (k : ℂ) + 1) (2 * l + 1) (π / 2), ← mul_div_assoc, hxy]
+  have := tan_add (x := x) (y := -y) (by
+    rcases h with ⟨x_ne, minus_y_ne⟩ | ⟨x_eq, minus_y_eq⟩
+    · left
+      constructor
+      · exact x_ne
+      · intro l
+        specialize minus_y_ne (-l - 1)
+        intro minus_y_eq
+        apply minus_y_ne
+        convert congrArg (-·) minus_y_eq using 1
+        · ring
+        · push_cast
+          ring
+    · right
+      constructor
+      · exact x_eq
+      · rcases minus_y_eq with ⟨l, rfl⟩
+        use -l - 1
+        push_cast
+        ring
+  )
+  rw [tan_neg] at this
+  convert this using 2
+  · ring
 
 theorem tan_sub' {x y : ℂ}
     (h : (∀ k : ℤ, x ≠ (2 * k + 1) * π / 2) ∧ ∀ l : ℤ, y ≠ (2 * l + 1) * π / 2) :
