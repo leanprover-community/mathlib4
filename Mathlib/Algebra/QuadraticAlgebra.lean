@@ -393,8 +393,8 @@ end
 section
 
 @[norm_cast, simp]
-theorem coe_sub (r1 r2 : R) [CommRing R] : ((r1 - r2 : R) : QuadraticAlgebra R a b) = r1 - r2 :=
-  (algebraMap R (QuadraticAlgebra R a b)).map_sub r1 r2
+theorem coe_sub (r1 r2 : R) [SubNegZeroMonoid R] : ((r1 - r2 : R) : QuadraticAlgebra R a b) = r1 - r2 :=
+  QuadraticAlgebra.ext rfl zero_sub_zero.symm
 
 @[norm_cast, simp]
 theorem coe_pow (n : ℕ) (r : R) [CommSemiring R] : ((r ^ n : R) : QuadraticAlgebra R a b) =
