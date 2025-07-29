@@ -125,13 +125,10 @@ section BPosAndNeOne
 variable (b_pos : 0 < b) (b_ne_one : b ≠ 1)
 include b_pos b_ne_one
 
-private theorem log_b_ne_zero : log b ≠ 0 :=
-  log_ne_zero_of_pos_of_ne_one b_pos b_ne_one
-
 @[simp]
 theorem logb_rpow : logb b (b ^ x) = x := by
   rw [logb, div_eq_iff, log_rpow b_pos]
-  exact log_b_ne_zero b_pos b_ne_one
+  exact log_ne_zero_of_pos_of_ne_one b_pos b_ne_one
 
 theorem rpow_logb_eq_abs (hx : x ≠ 0) : b ^ logb b x = |x| := by
   apply log_injOn_pos
@@ -139,7 +136,7 @@ theorem rpow_logb_eq_abs (hx : x ≠ 0) : b ^ logb b x = |x| := by
     apply rpow_pos_of_pos b_pos
   · simp only [abs_pos, mem_Ioi, Ne, hx, not_false_iff]
   rw [log_rpow b_pos, logb, log_abs]
-  field_simp [log_b_ne_zero b_pos b_ne_one]
+  field_simp [log_ne_zero_of_pos_of_ne_one b_pos b_ne_one]
 
 @[simp]
 theorem rpow_logb (hx : 0 < x) : b ^ logb b x = x := by

@@ -120,11 +120,11 @@ lemma covariance_smul_left (c : ℝ) : cov[c • X, Y; μ] = c * cov[X, Y; μ] :
 lemma covariance_smul_right (c : ℝ) : cov[X, c • Y; μ] = c * cov[X, Y; μ] := by
   rw [covariance_comm, covariance_smul_left, covariance_comm]
 
-lemma covariance_mul_left (c : ℝ) :
-  cov[fun ω ↦ c * X ω, Y; μ] = c * cov[X, Y; μ] := covariance_smul_left c
+lemma covariance_mul_left (c : ℝ) : cov[fun ω ↦ c * X ω, Y; μ] = c * cov[X, Y; μ] :=
+  covariance_smul_left c
 
-lemma covariance_mul_right (c : ℝ) :
-  cov[X, fun ω ↦ c * Y ω; μ] = c * cov[X, Y; μ] := covariance_smul_right c
+lemma covariance_mul_right (c : ℝ) : cov[X, fun ω ↦ c * Y ω; μ] = c * cov[X, Y; μ] :=
+  covariance_smul_right c
 
 @[simp]
 lemma covariance_neg_left : cov[-X, Y; μ] = -cov[X, Y; μ] := by
@@ -196,16 +196,14 @@ variable {ι : Type*} {X : ι → Ω → ℝ} {s : Finset ι} [IsFiniteMeasure �
 lemma covariance_sum_left' (hX : ∀ i ∈ s, MemLp (X i) 2 μ) (hY : MemLp Y 2 μ) :
     cov[∑ i ∈ s, X i, Y; μ] = ∑ i ∈ s, cov[X i, Y; μ] := by
   classical
-  revert hX
-  refine Finset.induction
-    (motive := fun s ↦
-      (∀ i ∈ s, MemLp (X i) 2 μ) → cov[∑ i ∈ s, X i, Y; μ] = ∑ i ∈ s, cov[X i, Y; μ])
-    (by simp) (fun i s hi h_ind hX ↦ ?_) s
-  rw [Finset.sum_insert hi, Finset.sum_insert hi, covariance_add_left, h_ind]
-  · exact fun j hj ↦ hX j (by simp [hj])
-  · exact hX i (by simp)
-  · exact memLp_finset_sum' s (fun j hj ↦ hX j (by simp [hj]))
-  · exact hY
+  induction s using Finset.induction with
+  | empty => simp
+  | insert i s hi h_ind =>
+    rw [Finset.sum_insert hi, Finset.sum_insert hi, covariance_add_left, h_ind]
+    · exact fun j hj ↦ hX j (by simp [hj])
+    · exact hX i (by simp)
+    · exact memLp_finset_sum' s (fun j hj ↦ hX j (by simp [hj]))
+    · exact hY
 
 lemma covariance_sum_left [Fintype ι] (hX : ∀ i, MemLp (X i) 2 μ) (hY : MemLp Y 2 μ) :
     cov[∑ i, X i, Y; μ] = ∑ i, cov[X i, Y; μ] :=
@@ -293,15 +291,13 @@ variable {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'}
 
 lemma covariance_map_equiv (X Y : Ω → ℝ) (Z : Ω' ≃ᵐ Ω) :
     cov[X, Y; μ.map Z] = cov[X ∘ Z, Y ∘ Z; μ] := by
-  simp_rw [covariance, integral_map_equiv]
-  rfl
+  simp_rw [covariance, integral_map_equiv, Function.comp_apply]
 
 lemma covariance_map {Z : Ω' → Ω} (hX : AEStronglyMeasurable X (μ.map Z))
     (hY : AEStronglyMeasurable Y (μ.map Z)) (hZ : AEMeasurable Z μ) :
     cov[X, Y; μ.map Z] = cov[X ∘ Z, Y ∘ Z; μ] := by
-  simp_rw [covariance]
+  simp_rw [covariance, Function.comp_apply]
   repeat rw [integral_map]
-  · rfl
   any_goals assumption
   exact (hX.sub aestronglyMeasurable_const).mul (hY.sub aestronglyMeasurable_const)
 
