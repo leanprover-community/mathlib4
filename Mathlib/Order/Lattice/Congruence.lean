@@ -71,8 +71,8 @@ private lemma transitive [Lattice α] {r : α → α → Prop}
       conv_rhs => rw [← inf_eq_right.mpr (le_trans inf_le_left le_sup_right)]
       exact (h₄ inf_le_sup (h₂.mp hxy)).1) (h₂.mp hyz)) (by
       conv_rhs => rw [sup_comm x, sup_assoc, sup_sup_distrib_left, sup_comm _ x]
-      conv_lhs => rw [← sup_eq_right.mpr (le_trans inf_le_right le_sup_left)]
-      exact (h₄ inf_le_sup (h₂.mp hxy)).2))
+      simpa [sup_eq_right.mpr (le_trans (b := y) inf_le_right le_sup_left)] using
+        (h₄ (t := y⊔z) inf_le_sup (h₂.mp hxy)).2))
 
 /-- Alternative conditions for a lattice congruence. -/
 def mk3 [Lattice α] (r : α → α → Prop) (h₁ : IsRefl α r)
