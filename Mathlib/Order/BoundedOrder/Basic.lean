@@ -26,8 +26,6 @@ instances for `Prop` and `fun`.
 
 assert_not_exists Monotone
 
-open Function OrderDual
-
 universe u v
 
 variable {α : Type u} {β : Type v}
