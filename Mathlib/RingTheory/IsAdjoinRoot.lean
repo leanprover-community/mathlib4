@@ -261,7 +261,7 @@ protected def isAdjoinRootMonic (hf : Monic f) : IsAdjoinRootMonic (AdjoinRoot f
   monic := hf
 
 @[simp]
-lemma isAdjoinRootMonic_toAdjoinRoot (hf : Monic f) :
+theorem isAdjoinRootMonic_toAdjoinRoot (hf : Monic f) :
     (AdjoinRoot.isAdjoinRootMonic f hf).toIsAdjoinRoot = AdjoinRoot.isAdjoinRoot f := rfl
 
 theorem isAdjoinRoot_map_eq_mkₐ : (AdjoinRoot.isAdjoinRoot f).map = AdjoinRoot.mkₐ f := rfl
