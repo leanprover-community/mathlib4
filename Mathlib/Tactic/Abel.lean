@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Kim Morrison
 -/
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.TryThis
-import Mathlib.Util.AtomRec
+import Mathlib.Util.AtomM.Recurse
 
 /-!
 # The `abel` tactic
@@ -434,7 +434,7 @@ inductive AbelMode where
   | raw
 
 /-- Configuration for `abel_nf`. -/
-structure AbelNF.Config extends AtomRec.Config where
+structure AbelNF.Config extends AtomM.Recurse.Config where
   /-- The normalization style. -/
   mode := AbelMode.term
 
@@ -452,8 +452,15 @@ def cleanup (cfg : AbelNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
     pure <| ←
       r.mkEqTrans (← Simp.main r.expr ctx (methods := ← Lean.Meta.Simp.mkDefaultMethods)).1
 
--- for good performance, this should fail on a term which will be interpreted as an atom
-def bar (e : Expr) : AtomM Simp.Result := do
+/--
+Evaluate an expression into its `abel` normal form.
+
+This is a variant of `Mathlib.Tactic.Abel.eval`, the main driver of the `abel` tactic.
+It differs in
+* outputting a `Simp.Result`, rather than a `NormalExpr × Expr`;
+* throwing an error if the expression `e` is an atom for the `abel` tactic.
+-/
+def evalExpr (e : Expr) : AtomM Simp.Result := do
   let e ← withReducible <| whnf e
   guard e.isApp -- all interesting group expressions are applications
   let (a, pa) ← eval e (← mkContext e)
@@ -465,7 +472,7 @@ open Parser.Tactic
 def abelNFTarget (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) : TacticM Unit := withMainContext do
   let goal ← getMainGoal
   let tgt ← withReducible goal.getType'
-  let r ← AtomRec.foo s cfg.toConfig (cleanup cfg) bar tgt
+  let r ← AtomM.recurse s cfg.toConfig evalExpr (cleanup cfg) tgt
   if r.expr.isConstOf ``True then
     goal.assign (← mkOfEqTrue (← r.getProof))
     replaceMainGoal []
@@ -478,7 +485,7 @@ def abelNFLocalDecl (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) (fvarId : FVa
     TacticM Unit := withMainContext do
   let tgt ← instantiateMVars (← fvarId.getType)
   let goal ← getMainGoal
-  let myres ← AtomRec.foo s cfg.toConfig (cleanup cfg) bar tgt
+  let myres ← AtomM.recurse s cfg.toConfig evalExpr (cleanup cfg) tgt
   if myres.expr == tgt then throwError "abel_nf made no progress"
   match ← applySimpResultToLocalDecl goal fvarId myres false with
   | none => replaceMainGoal []
@@ -508,7 +515,7 @@ def elabAbelNFConv : Tactic := fun stx ↦ match stx with
     if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
     let s ← IO.mkRef {}
     Conv.applySimpResult
-      (← AtomRec.foo s cfg.toConfig (cleanup cfg) bar (← instantiateMVars (← Conv.getLhs)))
+      (← AtomM.recurse s cfg.toConfig evalExpr (cleanup cfg) (← instantiateMVars (← Conv.getLhs)))
   | _ => Elab.throwUnsupportedSyntax
 
 @[inherit_doc abel]

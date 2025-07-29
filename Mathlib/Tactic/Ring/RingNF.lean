@@ -6,7 +6,7 @@ Authors: Mario Carneiro, Anne Baanen
 import Mathlib.Tactic.Ring.Basic
 import Mathlib.Tactic.TryThis
 import Mathlib.Tactic.Conv
-import Mathlib.Util.AtomRec
+import Mathlib.Util.AtomM.Recurse
 import Mathlib.Util.Qq
 
 /-!
@@ -58,7 +58,7 @@ inductive RingMode where
   deriving Inhabited, BEq, Repr
 
 /-- Configuration for `ring_nf`. -/
-structure Config extends AtomRec.Config where
+structure Config extends AtomM.Recurse.Config where
   /-- if true, then fail if no progress is made -/
   failIfUnchanged := true
   /-- The normalization style. -/
@@ -68,8 +68,15 @@ structure Config extends AtomRec.Config where
 /-- Function elaborating `RingNF.Config`. -/
 declare_config_elab elabConfig Config
 
--- for good performance, this should fail on a term which will be interpreted as an atom
-def bar (e : Expr) : AtomM Simp.Result := do
+/--
+Evaluates an expression `e` into a normalized representation as a polynomial.
+
+This is a variant of `Mathlib.Tactic.Ring.eval`, the main driver of the `ring` tactic.
+It differs in
+* operating on `Expr` (input) and `Simp.Result` (output), rather than typed `Qq` versions of these;
+* throwing an error if the expression `e` is an atom for the `ring` tactic.
+-/
+def evalExpr (e : Expr) : AtomM Simp.Result := do
   let e ← withReducible <| whnf e
   guard e.isApp -- all interesting ring expressions are applications
   let ⟨u, α, e⟩ ← inferTypeQ' e
@@ -120,7 +127,7 @@ open Elab.Tactic Parser.Tactic
 def ringNFTarget (s : IO.Ref AtomM.State) (cfg : Config) : TacticM Unit := withMainContext do
   let goal ← getMainGoal
   let tgt ← instantiateMVars (← goal.getType)
-  let r ← AtomRec.foo s cfg.toConfig (cleanup cfg) bar tgt
+  let r ← AtomM.recurse s cfg.toConfig evalExpr (cleanup cfg) tgt
   if r.expr.consumeMData.isConstOf ``True then
     goal.assign (← mkOfEqTrue (← r.getProof))
     replaceMainGoal []
@@ -135,7 +142,7 @@ def ringNFLocalDecl (s : IO.Ref AtomM.State) (cfg : Config) (fvarId : FVarId) :
     TacticM Unit := withMainContext do
   let tgt ← instantiateMVars (← fvarId.getType)
   let goal ← getMainGoal
-  let myres ← AtomRec.foo s cfg.toConfig (cleanup cfg) bar tgt
+  let myres ← AtomM.recurse s cfg.toConfig evalExpr (cleanup cfg) tgt
   match ← applySimpResultToLocalDecl goal fvarId myres false with
   | none => replaceMainGoal []
   | some (_, newGoal) =>
@@ -183,7 +190,7 @@ elab (name := ring1NF) "ring1_nf" tk:"!"? cfg:optConfig : tactic => do
   let mut cfg ← elabConfig cfg
   if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
   let s ← IO.mkRef {}
-  liftMetaMAtMain fun g ↦ AtomRec.M.run s cfg.toConfig (cleanup cfg) bar <| proveEq g
+  liftMetaMAtMain fun g ↦ AtomM.RecurseM.run s cfg.toConfig evalExpr (cleanup cfg) <| proveEq g
 
 @[inherit_doc ring1NF] macro "ring1_nf!" cfg:optConfig : tactic =>
   `(tactic| ring1_nf ! $cfg:optConfig)
@@ -195,7 +202,7 @@ elab (name := ring1NF) "ring1_nf" tk:"!"? cfg:optConfig : tactic => do
     if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
     let s ← IO.mkRef {}
     Conv.applySimpResult
-      (← AtomRec.foo s cfg.toConfig (cleanup cfg) bar (← instantiateMVars (← Conv.getLhs)))
+      (← AtomM.recurse s cfg.toConfig evalExpr (cleanup cfg) (← instantiateMVars (← Conv.getLhs)))
   | _ => Elab.throwUnsupportedSyntax
 
 @[inherit_doc ringNF] macro "ring_nf!" cfg:optConfig : conv =>
