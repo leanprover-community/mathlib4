@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Kim Morrison
 -/
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.TryThis
-import Mathlib.Util.AtomM
+import Mathlib.Util.AtomRec
 
 /-!
 # The `abel` tactic
@@ -434,29 +434,14 @@ inductive AbelMode where
   | raw
 
 /-- Configuration for `abel_nf`. -/
-structure AbelNF.Config where
-  /-- the reducibility setting to use when comparing atoms for defeq -/
-  red := TransparencyMode.reducible
-  /-- if true, local let variables can be unfolded -/
-  zetaDelta := false
-  /-- if true, atoms inside ring expressions will be reduced recursively -/
-  recursive := true
+structure AbelNF.Config extends AtomRec.Config where
   /-- The normalization style. -/
   mode := AbelMode.term
 
 /-- Function elaborating `AbelNF.Config`. -/
 declare_config_elab elabAbelNFConfig AbelNF.Config
 
-/--
-The core of `abel_nf`, which rewrites the expression `e` into `abel` normal form.
-
-* `s`: a reference to the mutable state of `abel`, for persisting across calls.
-  This ensures that atom ordering is used consistently.
-* `cfg`: the configuration options
-* `e`: the expression to rewrite
--/
-partial def abelNFCore
-    (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) (e : Expr) : MetaM Simp.Result := do
+def mkInit (cfg : AbelNF.Config) : MetaM AtomRec.Context := do
   let simp ← match cfg.mode with
   | .raw => pure pure
   | .term =>
@@ -469,39 +454,23 @@ partial def abelNFCore
   let ctx ← Simp.mkContext (config := { zetaDelta := cfg.zetaDelta, singlePass := true })
     (simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}])
     (congrTheorems := ← getSimpCongrTheorems)
-  let rec
-    /-- The recursive case of `abelNF`.
-    * `root`: true when the function is called directly from `abelNFCore`
-      and false when called by `evalAtom` in recursive mode.
-    * `parent`: The input expression to simplify. In `pre` we make use of both `parent` and `e`
-      to determine if we are at the top level in order to prevent a loop
-      `go -> eval -> evalAtom -> go` which makes no progress.
-    -/
-    go root parent :=
-      let pre : Simp.Simproc := fun e =>
-        try
-          guard <| root || parent != e -- recursion guard
-          let e ← withReducible <| whnf e
-          guard e.isApp -- all interesting group expressions are applications
-          let (a, pa) ← eval e (← mkContext e) { red := cfg.red, evalAtom } s
-          guard !a.isAtom
-          let r ← liftMetaM <| simp { expr := a, proof? := pa }
-          if ← withReducible <| isDefEq r.expr e then return .done { expr := r.expr }
-          pure (.done r)
-        catch _ => pure <| .continue
-      let post : Simp.Simproc := Simp.postDefault #[]
-      (·.1) <$> Simp.main parent ctx (methods := { pre, post }),
-    /-- The `evalAtom` implementation passed to `eval` calls `go` if `cfg.recursive` is true,
-    and does nothing otherwise. -/
-    evalAtom := if cfg.recursive then go false else fun e ↦ pure { expr := e }
-  withConfig ({ · with zetaDelta := cfg.zetaDelta }) <| go true e
+  return { ctx, simp }
+
+-- for good performance, this should fail on a term which will be interpreted as an atom
+def bar (e : Expr) : AtomM Simp.Result := do
+  let e ← withReducible <| whnf e
+  guard e.isApp -- all interesting group expressions are applications
+  let (a, pa) ← eval e (← mkContext e)
+  guard !a.isAtom
+  return { expr := a, proof? := pa }
 
 open Parser.Tactic
 /-- Use `abel_nf` to rewrite the main goal. -/
 def abelNFTarget (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) : TacticM Unit := withMainContext do
   let goal ← getMainGoal
   let tgt ← withReducible goal.getType'
-  let r ← abelNFCore s cfg tgt
+  let nctx ← mkInit cfg
+  let r ← AtomRec.foo s cfg.toConfig nctx bar tgt
   if r.expr.isConstOf ``True then
     goal.assign (← mkOfEqTrue (← r.getProof))
     replaceMainGoal []
@@ -514,7 +483,8 @@ def abelNFLocalDecl (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) (fvarId : FVa
     TacticM Unit := withMainContext do
   let tgt ← instantiateMVars (← fvarId.getType)
   let goal ← getMainGoal
-  let myres ← abelNFCore s cfg tgt
+  let nctx ← mkInit cfg
+  let myres ← AtomRec.foo s cfg.toConfig nctx bar tgt
   if myres.expr == tgt then throwError "abel_nf made no progress"
   match ← applySimpResultToLocalDecl goal fvarId myres false with
   | none => replaceMainGoal []
@@ -542,7 +512,10 @@ def elabAbelNFConv : Tactic := fun stx ↦ match stx with
   | `(conv| abel_nf $[!%$tk]? $cfg:optConfig) => withMainContext do
     let mut cfg ← elabAbelNFConfig cfg
     if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
-    Conv.applySimpResult (← abelNFCore (← IO.mkRef {}) cfg (← instantiateMVars (← Conv.getLhs)))
+    let s ← IO.mkRef {}
+    let nctx ← mkInit cfg
+    Conv.applySimpResult
+      (← AtomRec.foo s cfg.toConfig nctx bar (← instantiateMVars (← Conv.getLhs)))
   | _ => Elab.throwUnsupportedSyntax
 
 @[inherit_doc abel]
