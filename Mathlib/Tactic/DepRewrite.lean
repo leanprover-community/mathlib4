@@ -96,9 +96,10 @@ structure Context where
   /-- A proof of `p = x`. Must be an fvar. -/
   h : Expr
   /-- The array of free variables corresponding to opened binders,
-    along with a motive to cast back. -/
+  along with a motive to cast back. -/
   Δ : Array (FVarId × Expr)
-  /-- The array of let variables corresponding to opened binders, along with their values. -/
+  /-- The array of let variables corresponding to opened binders,
+  along with their abstracted values. -/
   δ : Array (FVarId × Expr)
   -- TODO: use `@[computed_field]`s below when `structure` supports that
   /-- Cached `p.toHeadIndex`. -/
@@ -127,25 +128,23 @@ def checkCastAllowed (e t : Expr) (castMode : CastMode) : MetaM Unit := do
 
 /-- If `e : te` is a term whose type mentions `x` or `h` (the generalization variables),
 return `⋯ ▸ e : te[p/x,rfl/h]`.
-Otherwise return `e`. -/
-def castBack (e te x h : Expr) (Δ δ : Array (FVarId × Expr)) : MetaM Expr := do
+Otherwise return `none`. -/
+def castBack? (e te x h : Expr) (Δ δ : Array (FVarId × Expr)) : MetaM (Option Expr) := do
   if !te.hasAnyFVar (fun f => f == x.fvarId! || f == h.fvarId! ||
       Δ.any (·.1 == f) || δ.any (·.1 == f)) then
-    return e
+    return none
   let rec motive : MetaM Expr := do
     withLocalDeclD `x' (← inferType x) fun x' => do
     withLocalDeclD `h' (← mkEq x x') fun h' => do
-      let last := Δ.reverse.findIdx (te.containsFVar ·.1)
       let mut te := te
       for i in δ do te := te.replaceFVar (.fvar i.1) i.2
       te := te.replaceFVars #[x, h] #[x', ← mkEqTrans h h']
-      for hi : i in [:Δ.size] do
-        te := te.replaceFVar (.fvar Δ[i].1) (← mkEqRec Δ[i].2 (.fvar Δ[i].1) h')
-        if i = last then break
+      for i in Δ do
+        te := te.replaceFVar (.fvar i.1) (← mkEqRec i.2 (.fvar i.1) h')
       mkLambdaFVars #[x', h'] te
   let e' ← mkEqRec (← motive) e (← mkEqSymm h)
   trace[Tactic.depRewrite.cast] "casting (x ↦ p):{indentExpr e'}"
-  return e'
+  return some e'
 
 /-- Cast `e : te[p/x,rfl/h]` to `h ▸ e : te`. -/
 def castFwd (e te p x h : Expr) (Δ δ : Array (FVarId × Expr)) : MetaM Expr := do
@@ -155,14 +154,12 @@ def castFwd (e te p x h : Expr) (Δ δ : Array (FVarId × Expr)) : MetaM Expr :=
   let motive ← do
     withLocalDeclD `x' (← inferType x) fun x' => do
     withLocalDeclD `h' (← mkEq p x') fun h' => do
-      let last := Δ.reverse.findIdx (te.containsFVar ·.1)
       let mut te := te
       for i in δ do te := te.replaceFVar (.fvar i.1) i.2
       te := te.replaceFVars #[x, h] #[x', h']
-      for hi : i in [:Δ.size] do
-        te := te.replaceFVar (.fvar Δ[i].1)
-          (← mkEqRec Δ[i].2 (.fvar Δ[i].1) (← mkEqTrans (← mkEqSymm h) h'))
-        if i = last then break
+      for i in Δ do
+        te := te.replaceFVar (.fvar i.1)
+          (← mkEqRec i.2 (.fvar i.1) (← mkEqTrans (← mkEqSymm h) h'))
       mkLambdaFVars #[x', h'] te
   let e' ← mkEqRec motive e h
   trace[Tactic.depRewrite.cast] "casting (p ↦ x):{indentExpr e'}"
@@ -197,13 +194,15 @@ partial def visitAndCast (e : Expr) (et? : Option Expr) : M Expr := do
   /- Try casting from the inferred type (x ↦ p),
   and to the expected type (p ↦ x).
   In certain cases we need to cast in both directions (see `bool_dep_test`). -/
-  let e'' ← castBack e' te' ctx.x ctx.h ctx.Δ ctx.δ
-  let te'' ← inferType e''
-  if ← withAtLeastTransparency .default <| withNewMCtxDepth <| isDefEq te'' et then
-    return e''
+  match ← castBack? e' te' ctx.x ctx.h ctx.Δ ctx.δ with
+  | some e'' =>
+    let te'' ← inferType e''
+    if ← withAtLeastTransparency .default <| withNewMCtxDepth <| isDefEq te'' et then
+      return e''
 
-  let e''' ← castFwd e'' et ctx.p ctx.x ctx.h ctx.Δ ctx.δ
-  return e'''
+    castFwd e'' et ctx.p ctx.x ctx.h ctx.Δ ctx.δ
+  | none =>
+    castFwd e' et ctx.p ctx.x ctx.h ctx.Δ ctx.δ
 
 /-- Like `visitAndCast`, but does not insert casts at the top level.
 The expected types of certain subterms are computed from `et?`. -/
@@ -255,7 +254,7 @@ partial def visit (e : Expr) (et? : Option Expr) : M Expr :=
     let vup ← visitAndCast v tup
     if nondep || !vup.hasAnyFVar (fun f => f == ctx.x.fvarId! || f == ctx.h.fvarId!) then
       return ← withLetDecl n tup vup (nondep := nondep) fun r => do
-        let motive ← castBack.motive tup ctx.x ctx.h ctx.Δ ctx.δ
+        let motive ← castBack?.motive tup ctx.x ctx.h ctx.Δ ctx.δ
         let bup ← withReader (fun ctx => { ctx with Δ := ctx.Δ.push (r.fvarId!, motive) })
           (visitAndCast (b.instantiate1 r) et?)
         return .letE n tup vup (bup.abstract #[r]) nondep
@@ -269,14 +268,14 @@ partial def visit (e : Expr) (et? : Option Expr) : M Expr :=
     withLocalDecl n bi tup fun r => do
       -- TODO(WN): there should be some way to propagate the expected type here,
       -- but it is not easy to do correctly (see `lam (as argument)` tests).
-      let motive ← castBack.motive tup ctx.x ctx.h ctx.Δ ctx.δ
+      let motive ← castBack?.motive tup ctx.x ctx.h ctx.Δ ctx.δ
       let bup ← withReader (fun ctx => { ctx with Δ := ctx.Δ.push (r.fvarId!, motive) })
         (visit (b.instantiate1 r) none)
       return .lam n tup (bup.abstract #[r]) bi
   | .forallE n t b bi =>
     let tup ← visit t none
     withLocalDecl n bi tup fun r => do
-      let motive ← castBack.motive tup ctx.x ctx.h ctx.Δ ctx.δ
+      let motive ← castBack?.motive tup ctx.x ctx.h ctx.Δ ctx.δ
       let bup ← withReader (fun ctx => { ctx with Δ := ctx.Δ.push (r.fvarId!, motive) })
         (visit (b.instantiate1 r) none)
       return .forallE n tup (bup.abstract #[r]) bi
@@ -352,7 +351,7 @@ def _root_.Lean.MVarId.depRewrite (mvarId : MVarId) (e : Expr) (heq : Expr)
                   "internal error: expected 2 arguments in{indentExpr eAbst}"
                 let eBodyTp ← inferType eBody
                 checkCastAllowed eBody eBodyTp config.castMode
-                let eBody ← castBack eBody eBodyTp x h #[] #[]
+                let eBody := (← castBack? eBody eBodyTp x h #[] #[]).getD eBody
                 let motive ← mkLambdaFVars xs eBodyTp
                 pure (
                   eBody.replaceFVars #[x, h] #[rhs, heq],
