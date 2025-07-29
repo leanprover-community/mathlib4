@@ -1337,17 +1337,18 @@ theorem starProjection_isSymmetric [K.HasOrthogonalProjection] :
 
 open ContinuousLinearMap in
 /-- `U.starProjection` is a symmetric projection. -/
-theorem isSymmetricProjection_starProjection {U : Submodule 𝕜 E} [U.HasOrthogonalProjection] :
+theorem _root_.LinearMap.isSymmetricProjection_starProjection
+    {U : Submodule 𝕜 E} [U.HasOrthogonalProjection] :
     U.starProjection.IsSymmetricProjection :=
   ⟨by simpa [IsIdempotentElem, mul_def, ← coe_comp, Module.End.mul_eq_comp]
     using U.isIdempotentElem_starProjection, U.starProjection_isSymmetric⟩
 
 open ContinuousLinearMap in
 /-- An operator is a symmetric projection if and only if it is an orthogonal projection. -/
-theorem isSymmetricProjection_iff_eq_starProjection_range {p : E →L[𝕜] E} :
+theorem _root_.LinearMap.isSymmetricProjection_iff_eq_starProjection_range {p : E →L[𝕜] E} :
     p.IsSymmetricProjection ↔ ∃ (_ : (LinearMap.range p).HasOrthogonalProjection),
     p = (LinearMap.range p).starProjection := by
-  refine ⟨fun hp ↦ ?_, fun ⟨h, hp⟩ ↦ hp ▸ isSymmetricProjection_starProjection⟩
+  refine ⟨fun hp ↦ ?_, fun ⟨h, hp⟩ ↦ hp ▸ LinearMap.isSymmetricProjection_starProjection⟩
   have : (LinearMap.range p).HasOrthogonalProjection := hp.hasOrthogonalProjection_range
   refine ⟨this, Eq.symm ?_⟩
   ext x
@@ -1356,6 +1357,19 @@ theorem isSymmetricProjection_iff_eq_starProjection_range {p : E →L[𝕜] E} :
   · simpa using congr($hp.isIdempotentElem.mul_one_sub_self x)
   · simpa [IsIdempotentElem, mul_def, ← coe_comp, Module.End.mul_eq_comp]
       using hp.isIdempotentElem.eq
+
+open LinearMap in
+/-- Symmetric projections are equal iff their range are. -/
+theorem _root_.LinearMap.IsSymmetricProjection.ext_iff {S T : E →ₗ[𝕜] E}
+    (hS : S.IsSymmetricProjection) (hT : T.IsSymmetricProjection) :
+    S = T ↔ LinearMap.range S = LinearMap.range T := by
+  refine ⟨fun h => h ▸ rfl, fun h => ?_⟩
+  rw [hS.isIdempotentElem.ext_iff hT.isIdempotentElem,
+    ← hT.isIdempotentElem.isSymmetric_iff_orthogonal_range.mp hT.isSymmetric,
+    ← hS.isIdempotentElem.isSymmetric_iff_orthogonal_range.mp hS.isSymmetric]
+  simp [h]
+
+alias ⟨_, _root_.LinearMap.IsSymmetricProjection.ext⟩ := LinearMap.IsSymmetricProjection.ext_iff
 
 theorem starProjection_apply_eq_zero_iff [K.HasOrthogonalProjection] {v : E} :
     K.starProjection v = 0 ↔ v ∈ Kᗮ := by
