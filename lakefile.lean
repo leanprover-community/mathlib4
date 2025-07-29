@@ -109,6 +109,11 @@ lean_exe shake where
   root := `Shake.Main
   supportInterpreter := true
 
+/-- `lake exe refactor` checks files for unnecessary imports. -/
+lean_exe refactor where
+  root := `Refactor.Main
+  supportInterpreter := true
+
 /-- `lake exe lint-style` runs text-based style linters. -/
 lean_exe «lint-style» where
   srcDir := "scripts"
