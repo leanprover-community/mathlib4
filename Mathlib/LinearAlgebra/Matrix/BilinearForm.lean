@@ -205,10 +205,11 @@ theorem BilinForm.dotProduct_toMatrix_mulVec (B : BilinForm R₁ M₁) (x y : n 
 lemma BilinForm.apply_eq_dotProduct_toMatrix_mulVec (B : BilinForm R₁ M₁) (x y : M₁) :
     B x y = (b.repr x) ⬝ᵥ (BilinForm.toMatrix b B) *ᵥ (b.repr y) := by
   nth_rw 1 [← b.sum_repr x, ← b.sum_repr y]
-  simp [dotProduct, Matrix.mulVec_eq_sum, Finset.mul_sum]
-  rw [Finset.sum_comm]
-  refine Finset.sum_congr rfl (fun i _ ↦ Finset.sum_congr rfl fun j _ ↦ ?_)
-  ring
+  suffices ∑ j, ∑ i, (b.repr y) j * (b.repr x i * B (b i) (b j)) =
+           ∑ j, ∑ i, (b.repr x) j * (b.repr y i * B (b j) (b i)) by
+    simpa [dotProduct, Matrix.mulVec_eq_sum, Finset.mul_sum, -Basis.sum_repr]
+  simp_rw [mul_comm (b.repr y _), mul_assoc]
+  exact Finset.sum_comm
 
 @[simp]
 theorem Matrix.toBilin_apply (M : Matrix n n R₁) (x y : M₁) :
