@@ -54,6 +54,7 @@ lemma sum_range_modEq_sum_of_contra (hS : ¬∃ a b, a ≠ b ∧ (n ! : ℤ) ∣
     simp only [f, Subtype.mk.injEq] at he
     exact Int.ModEq.dvd he.symm
   let e : Perm (Fin n) ≃ Ico (0 : ℤ) n ! := ofBijective _ bijf
+  -- TODO
   change _ % _ = _ % _; rw [sum_int_mod]; congr 1
   change _ = ∑ i, (e i).1; rw [Equiv.sum_comp]
   change _ = ∑ i : { x // x ∈ _ }, id i.1; simp_rw [sum_coe_sort, id_eq]
