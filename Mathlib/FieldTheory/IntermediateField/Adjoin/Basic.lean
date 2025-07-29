@@ -491,8 +491,7 @@ theorem adjoin_minpoly_coeff_of_exists_primitive_element
     intro K
     have := adjoin.finrank (.of_finite K α)
     rw [adjoin_eq_top_of_adjoin_eq_top F hprim] at this
-    erw [finrank_top K E] at this
-    exact this
+    simp_all
   refine eq_of_le_of_finrank_le' hsub ?_
   simp_rw [finrank_eq]
   convert natDegree_le_of_dvd dvd_g

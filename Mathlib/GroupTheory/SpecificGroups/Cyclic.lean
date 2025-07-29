@@ -701,7 +701,7 @@ lemma not_isCyclic_iff_exponent_eq_prime [Group α] {p : ℕ} (hp : p.Prime)
   /- in the forward direction, we apply `exponent_eq_prime_iff`, and the reverse direction follows
   immediately because if `α` has exponent `p`, it has no element of order `p ^ 2`. -/
   refine ⟨fun h_cyc ↦ (Monoid.exponent_eq_prime_iff hp).mpr fun g hg ↦ ?_, fun h_exp h_cyc ↦ by
-    obtain (rfl|rfl) := eq_zero_or_one_of_sq_eq_self <| hα ▸ h_exp ▸ (h_cyc.exponent_eq_card).symm
+    obtain (rfl | rfl) := eq_zero_or_one_of_sq_eq_self <| hα ▸ h_exp ▸ (h_cyc.exponent_eq_card).symm
     · exact Nat.not_prime_zero hp
     · exact Nat.not_prime_one hp⟩
   /- we must show every non-identity element has order `p`. By Lagrange's theorem, the only possible
@@ -1023,3 +1023,11 @@ theorem Group.isCyclic_prod_iff {M N : Type*} [Group M] [Group N] :
     exact isCyclic_of_coprime_card_ker f h Prod.snd_surjective
 
 end prod
+
+section WithZero
+
+instance (G : Type*) [Group G] [IsCyclic G] : IsCyclic (WithZero G)ˣ := by
+    apply isCyclic_of_injective (G := (WithZero G)ˣ) (WithZero.unitsWithZeroEquiv).toMonoidHom
+    apply Equiv.injective
+
+end WithZero
