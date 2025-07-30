@@ -5,6 +5,7 @@ Authors: Kim Morrison, Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.Types.Yoneda
+import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 import Mathlib.Util.AssertExists
 
 /-!
@@ -192,7 +193,6 @@ instance uliftYonedaFunctor_preservesLimits :
     PreservesLimitsOfSize.{t, w} (uliftYoneda.{w'} : C ⥤ _) := by
   apply preservesLimits_of_evaluation
   intro K
-  have : PreservesLimitsOfSize.{t, w} (uliftFunctor.{w', v}) := sorry
   change PreservesLimitsOfSize.{t, w} (coyoneda.obj K ⋙ uliftFunctor.{w'})
   infer_instance
 
