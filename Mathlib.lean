@@ -6049,6 +6049,8 @@ import Mathlib.Tactic.TautoSet
 import Mathlib.Tactic.TermCongr
 import Mathlib.Tactic.ToAdditive
 import Mathlib.Tactic.ToAdditive.Frontend
+import Mathlib.Tactic.ToAdditive.ToDual
+import Mathlib.Tactic.ToDual
 import Mathlib.Tactic.ToExpr
 import Mathlib.Tactic.ToLevel
 import Mathlib.Tactic.Trace
