@@ -235,6 +235,7 @@ instance : Std.Commutative Xor' := ⟨xor_comm⟩
 theorem xor_not_not : Xor' (¬a) (¬b) ↔ Xor' a b := by grind
 
 protected theorem Xor'.or (h : Xor' a b) : a ∨ b := by grind
+
 /-! ### Declarations about `and` -/
 
 alias Iff.and := and_congr
