@@ -219,9 +219,9 @@ section sqrt
 noncomputable def sqrt (a : A) : A := cfcₙ NNReal.sqrt a
 
 @[simp]
-lemma sqrt_nonneg {a : A} : 0 ≤ sqrt a := cfcₙ_predicate _ a
+lemma sqrt_nonneg (a : A) : 0 ≤ sqrt a := cfcₙ_predicate _ a
 
-lemma sqrt_eq_nnrpow {a : A} : sqrt a = a ^ (1 / 2 : ℝ≥0) := by
+lemma sqrt_eq_nnrpow (a : A) : sqrt a = a ^ (1 / 2 : ℝ≥0) := by
   simp only [sqrt]
   congr
   ext
@@ -536,7 +536,7 @@ lemma nnrpow_eq_rpow {a : A} {x : ℝ≥0} (hx : 0 < x) : a ^ x = a ^ (x : ℝ) 
 
 lemma sqrt_eq_rpow {a : A} : sqrt a = a ^ (1 / 2 : ℝ) := by
   have : a ^ (1 / 2 : ℝ) = a ^ ((1 / 2 : ℝ≥0) : ℝ) := rfl
-  rw [this, ← nnrpow_eq_rpow (by norm_num), sqrt_eq_nnrpow (A := A)]
+  rw [this, ← nnrpow_eq_rpow (by norm_num), sqrt_eq_nnrpow a]
 
 lemma sqrt_eq_cfc {a : A} : sqrt a = cfc NNReal.sqrt a := by
   unfold sqrt
@@ -585,7 +585,7 @@ lemma rpow_sqrt_nnreal {a : A} {x : ℝ≥0}
     (ha : 0 ≤ a := by cfc_tac) : (sqrt a) ^ (x : ℝ) = a ^ (x / 2 : ℝ) := by
   by_cases hx : x = 0
   case pos =>
-    have ha' : 0 ≤ sqrt a := sqrt_nonneg
+    have ha' : 0 ≤ sqrt a := sqrt_nonneg _
     simp [hx, rpow_zero _ ha', rpow_zero _ ha]
   case neg =>
     have h₁ : 0 ≤ (x : ℝ) := NNReal.zero_le_coe

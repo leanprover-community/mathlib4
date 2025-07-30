@@ -3,6 +3,7 @@ Copyright (c) 2021 Stuart Presnell. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell
 -/
+import Batteries.Data.List.Count
 import Mathlib.Data.Finsupp.Multiset
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.NumberTheory.Padics.PadicVal.Defs
@@ -82,7 +83,7 @@ theorem Prime.factorization_pos_of_dvd {n p : ℕ} (hp : p.Prime) (hn : n ≠ 0)
 
 theorem multiplicity_eq_factorization {n p : ℕ} (pp : p.Prime) (hn : n ≠ 0) :
     multiplicity p n = n.factorization p := by
-  simp [factorization, pp, padicValNat_def' pp.ne_one hn.bot_lt]
+  simp [factorization, pp, padicValNat_def' pp.ne_one hn]
 
 /-! ### Basic facts about factorization -/
 
