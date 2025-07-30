@@ -189,13 +189,13 @@ lemma findGreatest_eq_iff :
       · rintro rfl
         exact ⟨le_refl _, fun _ ↦ hk, fun n hlt hle ↦ by omega⟩
       · rintro ⟨hle, h0, hm⟩
-        rcases Decidable.lt_or_eq_of_le hle with hlt | rfl
+        rcases Decidable.lt_or_eq_of_le hle with (hlt | rfl)
         exacts [(hm hlt (le_refl _) hk).elim, rfl]
     · rw [findGreatest_of_not hk, ihk]
       constructor
       · rintro ⟨hle, hP, hm⟩
         refine ⟨le_trans hle k.le_succ, hP, fun n hlt hle ↦ ?_⟩
-        rcases Decidable.lt_or_eq_of_le hle with hlt' | rfl
+        rcases Decidable.lt_or_eq_of_le hle with (hlt' | rfl)
         exacts [hm hlt <| Nat.lt_succ_iff.1 hlt', hk]
       · rintro ⟨hle, hP, hm⟩
         refine ⟨Nat.lt_succ_iff.1 (lt_of_le_of_ne hle ?_), hP,

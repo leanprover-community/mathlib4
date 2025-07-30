@@ -137,6 +137,20 @@ theorem le_imp_le_of_lt_imp_lt {α β} [Preorder α] [LinearOrder β] {a b : α}
 lemma min_def (a b : α) : min a b = if a ≤ b then a else b := by rw [LinearOrder.min_def a]
 lemma max_def (a b : α) : max a b = if a ≤ b then b else a := by rw [LinearOrder.max_def a]
 
+theorem max_def' (a b : α) : max a b = if b ≤ a then a else b := by
+  rw [max_def]
+  rcases lt_trichotomy a b with (lt | eq | gt)
+  · rw [if_pos (le_of_lt lt), if_neg (not_le.mpr lt)]
+  · rw [if_pos (le_of_eq eq), if_pos (ge_of_eq eq), eq]
+  · rw [if_neg (not_le.mpr gt), if_pos (le_of_lt gt)]
+
+theorem min_def' (a b : α) : min a b = if b ≤ a then b else a := by
+  rw [min_def]
+  rcases lt_trichotomy a b with (lt | eq | gt)
+  · rw [if_pos (le_of_lt lt), if_neg (not_le.mpr lt)]
+  · rw [if_pos (le_of_eq eq), if_pos (ge_of_eq eq), eq]
+  · rw [if_neg (not_le.mpr gt), if_pos (le_of_lt gt)]
+
 lemma min_le_left (a b : α) : min a b ≤ a := by
   if h : a ≤ b
   then simp [min_def, if_pos h, le_refl]
