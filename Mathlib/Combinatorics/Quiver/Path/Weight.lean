@@ -3,8 +3,9 @@ Copyright (c) 2025 Matteo Cipollina. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina
 -/
-import Mathlib.Combinatorics.Quiver.Path.Basic
+import Mathlib.Combinatorics.Quiver.Path
 import Mathlib.Algebra.Order.Ring.Defs
+
 
 /-!
 # Path weights in a Quiver
@@ -47,9 +48,7 @@ def addWeight {R : Type*} [AddMonoid R] (w : ∀ {i j : V}, (i ⟶ j) → R) : �
 attribute [to_additive existing addWeight] weight
 
 /-- The weight of a path, where the weight of an edge is defined by a function on its endpoints. -/
-@[to_additive addWeightOfEPs
-"The additive weight of a path, where the weight of an edge is defined by a
-  function on its endpoints."]
+@[to_additive addWeightOfEPs]
 def weightOfEPs (w : V → V → R) : ∀ {i j : V}, Path i j → R :=
   weight (fun {i j} (_ : i ⟶ j) => w i j)
 
