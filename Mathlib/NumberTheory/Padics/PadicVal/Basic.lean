@@ -138,10 +138,12 @@ theorem of_nat {n : ℕ} : padicValInt p n = padicValNat p n := by simp [padicVa
 /-- If `p ≠ 0` and `p ≠ 1`, then `padicValInt p p` is `1`. -/
 theorem self (hp : 1 < p) : padicValInt p p = 1 := by simp [padicValNat.self hp]
 
+@[simp]
+theorem eq_zero_iff {z : ℤ} : padicValInt p z = 0 ↔ p = 1 ∨ z = 0 ∨ ¬(p : ℤ) ∣ z := by
+  rw [padicValInt, padicValNat.eq_zero_iff, Int.natAbs_eq_zero, ← Int.ofNat_dvd_left]
+
 theorem eq_zero_of_not_dvd {z : ℤ} (h : ¬(p : ℤ) ∣ z) : padicValInt p z = 0 := by
-  rw [padicValInt, padicValNat.eq_zero_iff]
-  right; right
-  rwa [← Int.ofNat_dvd_left]
+  simp [h]
 
 end padicValInt
 

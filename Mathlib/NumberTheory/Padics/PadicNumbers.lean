@@ -58,6 +58,60 @@ Coercions from `ℚ` to `ℚ_[p]` are set up to work with the `norm_cast` tactic
 p-adic, p adic, padic, norm, valuation, cauchy, completion, p-adic completion
 -/
 
+open WithZero
+
+/-- The p-adic valuation on rationals, sending `p` to `(exp (-1) : ℤᵐ⁰)` -/
+def Rat.padicValuation (p : ℕ) [Fact p.Prime] : Valuation ℚ ℤᵐ⁰ where
+  toFun x := if x = 0 then 0 else exp (-padicValRat p x)
+  map_zero' := by simp
+  map_one' := by simp
+  map_mul' := by
+    intros
+    split_ifs <;>
+    simp_all [padicValRat.mul, exp_add, mul_comm]
+  map_add_le_max' := by
+    intros
+    split_ifs
+    any_goals simp_all
+    rw [← min_le_iff]
+    exact padicValRat.min_le_padicValRat_add ‹_›
+
+/-- The p-adic valuation on integers, sending `p` to `(exp (-1) : ℤᵐ⁰)` -/
+def Int.padicValuation (p : ℕ) [Fact p.Prime] : Valuation ℤ ℤᵐ⁰ :=
+  (Rat.padicValuation p).comap (Int.castRingHom ℚ)
+
+lemma Rat.padicValuation_cast (p : ℕ) [Fact p.Prime] (x : ℤ) :
+    Rat.padicValuation p (Int.cast x) = Int.padicValuation p x :=
+  rfl
+
+@[simp]
+lemma Rat.padicValuation_self (p : ℕ) [Fact p.Prime] :
+    Rat.padicValuation p p = exp (-1) := by
+  simp [Rat.padicValuation, Nat.Prime.ne_zero Fact.out]
+
+@[simp]
+lemma Int.padicValuation_self (p : ℕ) [Fact p.Prime] :
+    Int.padicValuation p p = exp (-1) := by
+  simp [← Rat.padicValuation_cast]
+
+lemma Int.padicValuation_le_one (p : ℕ) [Fact p.Prime] (x : ℤ) :
+    Int.padicValuation p x ≤ 1 := by
+  simp only [← Rat.padicValuation_cast, Rat.padicValuation, Valuation.coe_mk,
+    MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, Rat.intCast_eq_zero, padicValRat.of_int]
+  split_ifs
+  · simp
+  · rw [← le_log_iff_exp_le] <;>
+    simp_all
+
+lemma Int.padicValuation_eq_one_iff {p : ℕ} [Fact p.Prime] {x : ℤ} :
+    Int.padicValuation p x = 1 ↔ ¬ (p : ℤ) ∣ x := by
+  simp only [← Rat.padicValuation_cast, Rat.padicValuation, Valuation.coe_mk,
+    MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, Rat.intCast_eq_zero, padicValRat.of_int]
+  split_ifs
+  · simp_all
+  · rw [← exp_zero, exp_injective.eq_iff]
+    simp_all [Nat.Prime.ne_one Fact.out]
+
 noncomputable section
 
 open Nat padicNorm CauSeq CauSeq.Completion Metric
