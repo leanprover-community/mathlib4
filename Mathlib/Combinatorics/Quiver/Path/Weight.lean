@@ -56,7 +56,7 @@ lemma weight_nil (w : ∀ {i j : V}, (i ⟶ j) → R) (a : V) :
     weight w (Path.nil : Path a a) = 1 := by
   simp [weight]
 
-@[simp]
+@[to_additive (attr := simp) addWeight_cons]
 lemma weight_cons (w : ∀ {i j : V}, (i ⟶ j) → R) {a b c : V} (p : Path a b) (e : b ⟶ c) :
     weight w (p.cons e) = weight w p * w e := by
   simp [weight]
