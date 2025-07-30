@@ -381,10 +381,10 @@ theorem pow_two_sub_pow (hyx : y < x) (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n : 
   simp only [← Nat.cast_inj (R := ℕ∞), Nat.cast_add]
   iterate 4 rw [padicValNat_eq_emultiplicity]
   · exact Nat.two_pow_sub_pow hxy hx hneven
-  · exact hn.bot_lt
-  · exact Nat.sub_pos_of_lt hyx
+  · exact hn
+  · exact Nat.sub_ne_zero_of_lt hyx
   · omega
-  · simp only [tsub_pos_iff_lt, Nat.pow_lt_pow_left hyx hn]
+  · simp [← Nat.pos_iff_ne_zero, tsub_pos_iff_lt, Nat.pow_lt_pow_left hyx hn]
 
 variable {p : ℕ} [hp : Fact p.Prime] (hp1 : Odd p)
 include hp hp1
@@ -394,9 +394,9 @@ theorem pow_sub_pow (hyx : y < x) (hxy : p ∣ x - y) (hx : ¬p ∣ x) {n : ℕ}
   rw [← Nat.cast_inj (R := ℕ∞), Nat.cast_add]
   iterate 3 rw [padicValNat_eq_emultiplicity]
   · exact Nat.emultiplicity_pow_sub_pow hp.out hp1 hxy hx n
-  · exact hn.bot_lt
-  · exact Nat.sub_pos_of_lt hyx
-  · exact Nat.sub_pos_of_lt (Nat.pow_lt_pow_left hyx hn)
+  · exact hn
+  · exact Nat.sub_ne_zero_of_lt hyx
+  · exact Nat.sub_ne_zero_of_lt (Nat.pow_lt_pow_left hyx hn)
 
 theorem pow_add_pow (hxy : p ∣ x + y) (hx : ¬p ∣ x) {n : ℕ} (hn : Odd n) :
     padicValNat p (x ^ n + y ^ n) = padicValNat p (x + y) + padicValNat p n := by
@@ -405,8 +405,8 @@ theorem pow_add_pow (hxy : p ∣ x + y) (hx : ¬p ∣ x) {n : ℕ} (hn : Odd n) 
   rw [← Nat.cast_inj (R := ℕ∞), Nat.cast_add]
   iterate 3 rw [padicValNat_eq_emultiplicity]
   · exact Nat.emultiplicity_pow_add_pow hp.out hp1 hxy hx hn
-  · exact Odd.pos hn
-  · simp only [add_pos_iff, Nat.succ_pos', or_true]
-  · exact Nat.lt_add_left _ (pow_pos y.succ_pos _)
+  · exact (Odd.pos hn).ne'
+  · simp only [← Nat.pos_iff_ne_zero, add_pos_iff, Nat.succ_pos', or_true]
+  · exact (Nat.lt_add_left _ (pow_pos y.succ_pos _)).ne'
 
 end padicValNat
