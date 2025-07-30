@@ -140,7 +140,7 @@ end PrimrecRel
 namespace Primrec
 
 /-- A helper lemma for proofs about bounded quantifiers on decidable relations. -/
-lemma nat_rel_list_filter (f : ℕ → ℕ → Prop) (s : ℕ) [DecidableRel f] (hf : PrimrecRel f) :
+lemma nat_rel_list_filter ⦃f : ℕ → ℕ → Prop⦄ (s : ℕ) [DecidableRel f] (hf : PrimrecRel f) :
     Primrec fun n ↦ ((range (s)).filter (fun y ↦ f y n)) := by
   let g (n : ℕ) : ℕ → Option Nat := (fun y ↦ (if f y n = True then y else Option.none))
   have h (n : ℕ) : (range (s)).filter (fun y ↦ f y n) = filterMap (g n) (range s) := by
@@ -163,7 +163,7 @@ general case involving a primitive recursive relation. -/
 lemma bounded_exists (hf : PrimrecRel f) : PrimrecPred (fun n ↦ ∃ y < s, (f y n)) := by
   have h(n) : decide (∃ y < s, f y n) = decide ((List.range s).filter (f · n) ≠ []) := by simp
   simp only [PrimrecPred, h]
-  exact PrimrecPred.not (PrimrecRel.comp Primrec.eq (nat_rel_list_filter _ _ hf) (const []))
+  exact PrimrecPred.not (PrimrecRel.comp Primrec.eq (nat_rel_list_filter _ hf) (const []))
 
 /-- If `f a b` is decidable, then for any fixed `n` and `y`, `"∀ x < n, f x y"` is a
 primitive recursive predicate in `n`. This is sometimes easier to work with than the fully
@@ -172,6 +172,6 @@ lemma bounded_forall (hf : PrimrecRel f) : PrimrecPred (fun n ↦ ∀ y < s, (f 
   have h1 : (fun n ↦ decide (∀ y < s, f y n)) =
             (fun n ↦ decide ((range s).filter (fun y ↦ f y n) = range s)) := by simp
   simp only [PrimrecPred, h1]
-  exact PrimrecRel.comp Primrec.eq (nat_rel_list_filter _ _ hf) (Primrec.const (range s))
+  exact PrimrecRel.comp Primrec.eq (nat_rel_list_filter _ hf) (Primrec.const (range s))
 
 end PrimrecPred
