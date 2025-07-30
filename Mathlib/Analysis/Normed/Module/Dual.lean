@@ -56,7 +56,7 @@ variable (E : Type*) [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 /-- The topological dual of a seminormed space `E`. -/
-abbrev Dual : Type _ := E →L[𝕜] 𝕜
+abbrev Dual : Type _ := TopologicalSpace.Dual 𝕜 E
 
 /-- The inclusion of a normed space in its double (topological) dual, considered
 as a bounded linear map. -/
