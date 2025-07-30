@@ -36,7 +36,7 @@ theorem fst_one : (1 : M × N).1 = 1 :=
 theorem snd_one : (1 : M × N).2 = 1 :=
   rfl
 
-@[to_additive]
+@[to_additive (attr := grind =)]
 theorem one_eq_mk : (1 : M × N) = (1, 1) :=
   rfl
 
@@ -66,7 +66,7 @@ theorem fst_mul (p q : M × N) : (p * q).1 = p.1 * q.1 := rfl
 @[to_additive (attr := simp)]
 theorem snd_mul (p q : M × N) : (p * q).2 = p.2 * q.2 := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, grind =)]
 theorem mk_mul_mk (a₁ a₂ : M) (b₁ b₂ : N) : (a₁, b₁) * (a₂, b₂) = (a₁ * a₂, b₁ * b₂) := rfl
 
 @[to_additive (attr := simp)]
@@ -91,11 +91,14 @@ theorem fst_inv (p : G × H) : p⁻¹.1 = p.1⁻¹ := rfl
 @[to_additive (attr := simp)]
 theorem snd_inv (p : G × H) : p⁻¹.2 = p.2⁻¹ := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, grind =)]
 theorem inv_mk (a : G) (b : H) : (a, b)⁻¹ = (a⁻¹, b⁻¹) := rfl
 
 @[to_additive (attr := simp)]
 theorem swap_inv (p : G × H) : p⁻¹.swap = p.swap⁻¹ := rfl
+
+@[to_additive]
+theorem inv_def (p : G × H) : p⁻¹ = (p.1⁻¹, p.2⁻¹) := rfl
 
 end Inv
 
@@ -113,7 +116,7 @@ theorem fst_div (a b : G × H) : (a / b).1 = a.1 / b.1 := rfl
 @[to_additive (attr := simp)]
 theorem snd_div (a b : G × H) : (a / b).2 = a.2 / b.2 := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, grind =)]
 theorem mk_div_mk (x₁ x₂ : G) (y₁ y₂ : H) : (x₁, y₁) / (x₂, y₂) = (x₁ / x₂, y₁ / y₂) := rfl
 
 @[to_additive (attr := simp)]
@@ -134,7 +137,7 @@ instance instSMul : SMul M (α × β) where smul a p := (a • p.1, a • p.2)
 
 @[to_additive (attr := simp)] lemma smul_snd (a : M) (x : α × β) : (a • x).2 = a • x.2 := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, grind =)]
 lemma smul_mk (a : M) (b : α) (c : β) : a • (b, c) = (a • b, a • c) := rfl
 
 @[to_additive]
@@ -157,7 +160,7 @@ lemma pow_fst (p : α × β) (c : E) : (p ^ c).fst = p.fst ^ c := rfl
 @[to_additive existing (attr := simp) (reorder := 6 7) smul_snd]
 lemma pow_snd (p : α × β) (c : E) : (p ^ c).snd = p.snd ^ c := rfl
 
-@[to_additive existing (attr := simp) (reorder := 6 7 8) smul_mk]
+@[to_additive existing (attr := simp, grind =) (reorder := 6 7 8) smul_mk]
 lemma pow_mk (a : α) (b : β) (c : E) : Prod.mk a b ^ c = Prod.mk (a ^ c) (b ^ c) := rfl
 
 @[to_additive existing (reorder := 6 7) smul_def]

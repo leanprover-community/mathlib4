@@ -161,7 +161,7 @@ theorem mulSingle_eq_of_ne {i i' : ι} (h : i' ≠ i) (x : M i) : mulSingle i x 
 theorem mulSingle_eq_of_ne' {i i' : ι} (h : i ≠ i') (x : M i) : mulSingle i x i' = 1 :=
   mulSingle_eq_of_ne h.symm x
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, grind =)]
 theorem mulSingle_one (i : ι) : mulSingle i (1 : M i) = 1 :=
   Function.update_eq_self _ _
 

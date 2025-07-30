@@ -47,7 +47,7 @@ alias nmem_mulSupport := notMem_mulSupport
 theorem compl_mulSupport {f : α → M} : (mulSupport f)ᶜ = { x | f x = 1 } :=
   ext fun _ => notMem_mulSupport
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, grind =)]
 theorem mem_mulSupport {f : α → M} {x : α} : x ∈ mulSupport f ↔ f x ≠ 1 :=
   Iff.rfl
 
@@ -140,7 +140,7 @@ lemma range_eq_image_or_of_mulSupport_subset {f : α → M} {k : Set α} (h : mu
   refine Or.inl (subset_antisymm ?_ (image_subset_range _ _))
   rwa [← diff_singleton_eq_self h1, diff_singleton_subset_iff]
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, grind =)]
 theorem mulSupport_one' : mulSupport (1 : α → M) = ∅ :=
   mulSupport_eq_empty_iff.2 rfl
 
@@ -185,8 +185,7 @@ theorem mulSupport_comp_eq_preimage (g : β → M) (f : α → β) :
 @[to_additive support_prod_mk]
 theorem mulSupport_prod_mk (f : α → M) (g : α → N) :
     (mulSupport fun x => (f x, g x)) = mulSupport f ∪ mulSupport g :=
-  Set.ext fun x => by
-    simp only [mulSupport, not_and_or, mem_union, mem_setOf_eq, Prod.mk_eq_one, Ne]
+  Set.ext fun x => by grind
 
 @[to_additive support_prod_mk']
 theorem mulSupport_prod_mk' (f : α → M × N) :
@@ -280,11 +279,11 @@ theorem mulSupport_mulSingle_of_ne (h : b ≠ 1) : mulSupport (mulSingle a b) = 
 
 @[to_additive]
 theorem mulSupport_mulSingle [DecidableEq B] :
-    mulSupport (mulSingle a b) = if b = 1 then ∅ else {a} := by split_ifs with h <;> simp [h]
+    mulSupport (mulSingle a b) = if b = 1 then ∅ else {a} := by grind [mulSupport_mulSingle_of_ne]
 
 @[to_additive]
 theorem mulSupport_mulSingle_disjoint {b' : B} (hb : b ≠ 1) (hb' : b' ≠ 1) {i j : A} :
     Disjoint (mulSupport (mulSingle i b)) (mulSupport (mulSingle j b')) ↔ i ≠ j := by
-  rw [mulSupport_mulSingle_of_ne hb, mulSupport_mulSingle_of_ne hb', disjoint_singleton]
+  simp [*]
 
 end Pi
