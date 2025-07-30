@@ -374,7 +374,7 @@ open scoped Topology
 
 variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
 
-/- A point `x` is in the support of `μ` iff `∃ᶠ u in (𝓝 x).smallSets, 0 < μ u`, which means
+/-- A point `x` is in the support of `μ` iff `∃ᶠ u in (𝓝 x).smallSets, 0 < μ u`, which means
 `{u : Set X | 0 < μ x} ∉ (𝓝 x).smallSets`, i.e. any neighborhood of `x` contains a
 subset with positive measure. -/
 protected def support (μ : Measure X) : Set X := {x : X | ∃ᶠ u in (𝓝 x).smallSets, 0 < μ u}
