@@ -583,25 +583,31 @@ initialize addLinter showLinter
 end Style.show
 
 /-- docstring TODO -/
-register_option linter.style.indenting : Bool := {
+register_option linter.style.indentation : Bool := {
   defValue := false
-  descr := "enable the indenting linter"
+  descr := "enable the indentation linter"
 }
 
-register_option linter.style.indenting.strictlyIncrease : Bool := {
+/-- docstring TODO -/
+register_option linter.style.indentation.continueWhenFailed : Bool := {
   defValue := false
-  descr := "TODO"
 }
 
-namespace Style.indenting
+/-- docstring TODO -/
+register_option linter.style.indentation.debug : Bool := {
+  defValue := false
+}
+
+namespace Style.indentation
 
 /-- docstring TODO -/
 inductive PositionInfo where
-| node (pos : Option String.Pos) (children : Array PositionInfo) (stx : Syntax)
-| leaf (pos : Option String.Pos) (stx : Syntax)
+  | node (pos : Option String.Pos) (children : Array PositionInfo) (stx : Syntax)
+  | leaf (pos : Option String.Pos) (stx : Syntax)
+deriving Repr
 
 /-- docstring TODO -/
-def PositionInfo.pos (p : PositionInfo) : Option String.Pos :=
+def PositionInfo.pos? (p : PositionInfo) : Option String.Pos :=
   match p with
   | .node pos ..
   | .leaf pos _ => pos
@@ -612,83 +618,237 @@ def PositionInfo.stx (p : PositionInfo) : Syntax :=
   | .node _ _ stx
   | .leaf _ stx => stx
 
-/-- docstring TODO -/
-def PositionInfo.headTail (p : PositionInfo) : Option <| PositionInfo × Array PositionInfo :=
-  match p with
-  | .node _ children _ =>
-    children[0]?.map fun head ↦ (head, children[1:])
-  | .leaf .. => .none
+/-- docstringTODO -/
+def PositionInfo.headTailOfChildren (children : Array PositionInfo) :
+    Subarray PositionInfo × Option (PositionInfo × Subarray PositionInfo) :=
+  match children.findFinIdx? (·.pos?.isSome) with
+  | .some idxOfHead => (children[:idxOfHead], .some (children[idxOfHead], children[idxOfHead:]))
+  | .none => (children.toSubarray, .none)
 
 /-- docstring TODO -/
-partial def PositionInfo.ofSyntax (stx : Syntax) : Option PositionInfo :=
+def PositionInfo.headTail (p : PositionInfo) :
+    Subarray PositionInfo × Option (PositionInfo × Subarray PositionInfo) :=
+  match p with
+  | .node _ children _ =>
+    PositionInfo.headTailOfChildren children
+  | .leaf .. => (#[].toSubarray, .none)
+
+/-- docstring TODO -/
+def PositionInfo.ofSyntax (stx : Syntax) : PositionInfo :=
   match stx with
   | .atom s ..
   | .ident s .. =>
     let pos : Option String.Pos := match s with
       | .original _ start _ _ => .some start
-      | _ => .none
-    .some <| .leaf pos stx
+      | _ => unreachable!
+    .leaf pos stx
   | .node _ _ args =>
-    let children := args.map PositionInfo.ofSyntax |>.filterMap id
-    children[0]?.map (.node ·.pos children stx)
-  | .missing => .none
+    let children := args.map PositionInfo.ofSyntax
+    let ⟨_, headTail⟩ := PositionInfo.headTailOfChildren children
+    .node (headTail.map (·.fst.pos? |>.get!)) children stx
+  | .missing => .node .none #[] stx
 
 /-- docstring TODO -/
-def spacesBefore (str : String) (pos : String.Pos) : Option Nat :=
+partial def PositionInfo.lastPos? (posInfo : PositionInfo) : Option String.Pos :=
+  match posInfo with
+  | .node (.some _) children _ => children.findSomeRev? (·.lastPos?)
+  | .leaf (.some _) stx =>
+    match stx.getInfo? with
+    | .some (.original _ _ _ endPos) => .some endPos
+    | _ => unreachable!
+  | _ => .none
+
+/-- docstring TODO -/
+def indentationOfPos (str : String) (pos : String.Pos) : Option Nat :=
   let beforePos : Substring := ⟨str, str.findLineStart pos, pos⟩
   if beforePos.all (· == ' ') then .some beforePos.bsize else .none
 
-/-- docstring TODO.
+/-- docstring TODO -/
+def indentationBeforePos (str : String) (pos : String.Pos) : Nat :=
+  let beforePos : Substring := ⟨str, str.findLineStart pos, pos⟩
+  beforePos.takeWhile (· == ' ') |>.bsize
 
-TODO: enable `strictlyIncrease` for specific (hard-coded) kinds of syntax?
--/
-partial def checkIndenting (src : String) (posInfo : PositionInfo)
-    (strictlyIncrease : Bool := false) (oldIndenting : Option Nat := .none)
-    (continueWhenFailed : Bool := true) : CommandElabM Unit := do
-  let warn (msg) : CommandElabM Unit := do
-    logLint linter.style.indenting posInfo.stx msg
-  if let .leaf .. := posInfo then -- warn only in leaf to avoid duplicating warnings
-    if let .some pos := posInfo.pos then
-      if let .some spaces := spacesBefore src pos then
-        match oldIndenting with
-        | .none =>
-          if spaces != 0 then
-            warn "here should be no space at the beginning of the line"
-            if !continueWhenFailed then return
-        | .some oldIndenting =>
-          let atLeast := if strictlyIncrease then oldIndenting + 2 else oldIndenting
-          if spaces < atLeast then
-            warn s!"too few spaces, which should be at least {atLeast}"
-            if !continueWhenFailed then return
+/-- docstring TODO -/
+def warn (stx : Syntax) (msg : MessageData) : CommandElabM Unit :=
+  logLint Mathlib.Linter.linter.style.indentation stx msg
 
-  if let .node pos children stx := posInfo then
-      let .some head := children[0]? | unreachable!
-      checkIndenting src head strictlyIncrease oldIndenting continueWhenFailed
-      let tail := children[1:]
-      if tail.size = 0 then return
-      let parentIndentationOfTail ← show CommandElabM Nat from do
-        for ⟨_, cat⟩ in (parserExtension.getState (← getEnv)).categories do
-          if cat.kinds.contains stx.getKind then
-            let oldIndenting := oldIndenting.getD 0
-            return pos.map (spacesBefore src · |>.getD oldIndenting) |>.getD oldIndenting
-        pure <| oldIndenting.getD 0
-      for child in tail do
-        checkIndenting src child strictlyIncrease parentIndentationOfTail continueWhenFailed
+/-- docstring TODO -/
+structure Limitation where
+  src : String
+  atLeast : Nat := 0
+  atMost : Option Nat := .none
+  continueWhenFailed : Bool
 
-@[inherit_doc Mathlib.Linter.linter.style.indenting]
-partial def indentingLinter : Linter where run := withSetOptionIn fun stx => do
-  unless getLinterValue linter.style.indenting (← getLinterOptions) do
+/-- docstring TODO -/
+abbrev IndentationLinter := (posInfo : PositionInfo) → (limit : Limitation) → CommandElabM Bool
+
+/-- docstring TODO -/
+def checkIndentationAt (posInfo : PositionInfo) (limit : Limitation)
+    (msgLtAtLeast : Nat → MessageData := (m!"too few spaces, which should be at least {·}"))
+    (msgGtAtMost : Nat → MessageData := (m!"too many spaces, which should be at most {·}")) :
+    CommandElabM Bool := do
+  let .some pos := posInfo.pos? | return true
+  let .some spaces := indentationOfPos limit.src pos | return true
+  if spaces < limit.atLeast then
+    warn posInfo.stx (msgLtAtLeast limit.atLeast)
+    return false
+  else if let .some atMost := limit.atMost then
+    if spaces > atMost then
+      warn posInfo.stx (msgGtAtMost limit.atLeast)
+      return false
+  return true
+
+/-- docstring TODO -/
+def checkIndentationAtNode (posInfo : PositionInfo) (limit : Limitation)
+    (msg : Nat → MessageData := (m!"too few spaces, which should be at least {·}"))
+    (checkInCategories : Bool := true) : CommandElabM (Option Limitation) := do
+  let pass ← checkIndentationAt posInfo limit msg
+  if !(limit.continueWhenFailed || pass) then return .none
+  if let .some pos := posInfo.pos? then
+    let atLeast := indentationOfPos limit.src pos |>.getD limit.atLeast
+    if !checkInCategories then
+      return .some {limit with atLeast := atLeast, atMost := .none}
+    for ⟨_, cat⟩ in (parserExtension.getState (← getEnv)).categories do
+      if cat.kinds.contains posInfo.stx.getKind then
+        return .some {limit with atLeast := atLeast, atMost := .none}
+  return .some { limit with atMost := .none }
+
+mutual
+  partial def declModifiersLinter : IndentationLinter :=
+    fun posInfo limit ↦ do
+      match posInfo with
+      | .node _ children _ =>
+        for child in children do
+          let pass ← checkIndentation child limit
+          if !(limit.continueWhenFailed || pass) then return false
+        return true
+      | _ => unreachable!
+
+  /-- docstring TODO.
+  https://leanprover-community.github.io/contribute/style.html#structuring-definitions-and-theorems -/
+  partial def declarationLinter : IndentationLinter :=
+    fun posInfo limit ↦ do
+      let .node (.some pos) children stx := posInfo | unreachable!
+      let .some initIndent := indentationOfPos limit.src pos | defaultLinter posInfo limit
+      let pass ← checkIndentationAt posInfo limit
+      if !(limit.continueWhenFailed || pass) then return false
+      let kind := stx.getKind
+      match kind with
+      | ``declaration | `«lemma» => pure ()
+      | _ => unreachable!
+
+      let #[modifiers@(_), .node _ declArgs nameStx@(.node _ name _)] := children | unreachable!
+      match name with
+      | ``«abbrev» | ``definition | ``«theorem» | ``«opaque» | ``«axiom» | ``«example»
+      | ``«instance» | `group =>
+        pure ()
+      | ``«inductive» => return (← defaultLinter posInfo limit) -- TODO
+      | ``«structure» => return (← defaultLinter posInfo limit) -- TODO
+      | ``«classInductive» => return (← defaultLinter posInfo limit) -- TODO
+      | _ => warn nameStx m!"unknown declaration `{name}`, please send us feedback"; unreachable!
+
+      let .some idxOfDeclHead :=
+        declArgs.findFinIdx? (if let .atom .. := ·.stx then true else false) | unreachable!
+      let idxOfValue :=
+        (declArgs[idxOfDeclHead:].toArray).findFinIdx? (
+          match ·.stx with
+          | .node _ ``declValSimple _ | .node _ ``declValEqns _ | .node _ ``whereStructInst _
+          | .node _ `null #[.node _ ``declValSimple _] => true
+          | _ => false)
+      let idxOfValue := idxOfValue.map Fin.val |>.getD declArgs.size
+      let pass ←
+        checkIndentation modifiers { limit with atLeast := initIndent, atMost := initIndent}
+      if !(limit.continueWhenFailed || pass) then return false
+
+      for child in declArgs[: idxOfDeclHead] do
+        let pass ←
+          checkIndentation child { limit with atLeast := initIndent, atMost := initIndent}
+        if !(limit.continueWhenFailed || pass) then return false
+
+      for child in declArgs[idxOfDeclHead + 1 : idxOfValue] do
+        match child with
+        | .leaf (.some pos) stx@(.atom _ ":") =>
+          if (indentationOfPos limit.src pos).isSome then
+            warn stx "`:` should not be at the beginning of a line"
+        | _ =>
+          let pass ←
+            checkIndentation child { limit with atLeast := (initIndent + 4), atMost := .none }
+          if !(limit.continueWhenFailed || pass) then return false
+
+      for child in declArgs[idxOfValue :] do
+        let pass ←
+          checkIndentation child { limit with atLeast := initIndent, atMost := .none }
+        if !(limit.continueWhenFailed || pass) then return false
+
+      return true
+
+  partial def stringLinter : IndentationLinter :=
+    fun posInfo limit ↦ do
+      let .some pos := posInfo.pos? | defaultLinter posInfo limit
+      let .some indent := (indentationOfPos limit.src pos) | defaultLinter posInfo limit
+      let endPos := limit.src.next posInfo.lastPos?.get!
+      if Substring.any ⟨limit.src, pos, endPos⟩ (· == '\n') then
+        if indent = 0 then return true
+        checkIndentationAt posInfo limit
+          (m!"multi-line literal here should be \
+            either at the beginning of a line without indentation or \
+            indented by at least {·} spaces")
+      else
+        defaultLinter posInfo limit
+
+  /-- docstring TODO
+
+  `Unit` here is a workaround for `invalid use of 'partial'` (when with `partial`) and
+  `cannot mix partial and non-partial definitions` (when without `partial`).
+  -/
+  partial def nodeLinters (_ : Unit := ()) : Std.HashMap SyntaxNodeKind IndentationLinter :=
+     .ofList [
+      (``declModifiers, declModifiersLinter),
+      (``declaration, declarationLinter), (`«lemma», declarationLinter),
+      (`str, stringLinter), (``termS!_, stringLinter), (``termM!_, stringLinter),
+      (``Std.termF!_, stringLinter), (interpolatedStrKind, stringLinter)
+    ]
+
+  partial def defaultLinter : IndentationLinter :=
+    fun posInfo limit ↦ do
+      match posInfo with
+      | .node _ children _ =>
+        let .some limit ← checkIndentationAtNode posInfo limit | return false
+        for child in children do
+          let pass ← checkIndentation child limit
+          if !(limit.continueWhenFailed || pass) then return false
+        pure true
+      | _ => checkIndentationAt posInfo limit
+
+  partial def checkIndentation : IndentationLinter :=
+    fun p limit ↦
+      match p with
+      | .node _ _ stx => (nodeLinters.getD stx.getKind defaultLinter) p limit
+      | _ => defaultLinter p limit
+
+end
+
+@[inherit_doc Mathlib.Linter.linter.style.indentation]
+partial def indentationLinter : Linter where run := withSetOptionIn fun stx => do
+  unless getLinterValue Mathlib.Linter.linter.style.indentation (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
     return
+  let debug := getLinterValue Mathlib.Linter.linter.style.indentation.debug (← getLinterOptions)
+  let continueWhenFailed :=
+    getLinterValue Mathlib.Linter.linter.style.indentation.continueWhenFailed (← getLinterOptions)
   let posInfo := PositionInfo.ofSyntax stx
-  let .some posInfo := posInfo | return
+  if debug then
+    IO.println (repr stx)
+  let .some initialPos := posInfo.pos? | return
   let src := (← getFileMap).source
-  checkIndenting src posInfo
-    (getLinterValue linter.style.indenting.strictlyIncrease (← getLinterOptions))
+  let _ ← checkIndentation posInfo {
+      src := src,
+      atMost := .some 0,
+      continueWhenFailed := continueWhenFailed}
 
-initialize addLinter indentingLinter
+initialize addLinter indentationLinter
 
-end Style.indenting
+end Style.indentation
 
 end Mathlib.Linter
