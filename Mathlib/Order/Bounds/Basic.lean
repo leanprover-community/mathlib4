@@ -119,6 +119,16 @@ abbrev IsGreatest.orderTop (h : IsGreatest s a) :
   top := ⟨a, h.1⟩
   le_top := Subtype.forall.2 h.2
 
+theorem Minimal.isLeast [LinearOrder γ] {P : γ → Prop} {x : γ} (h : Minimal P x) :
+    IsLeast {y | P y} x := by
+  refine ⟨h.1, fun y hy ↦ ?_⟩
+  by_contra! hx
+  exact (h.le_of_le hy hx.le).not_gt hx
+
+theorem Maximal.isGreatest [LinearOrder γ] {P : γ → Prop} {x : γ} (h : Maximal P x) :
+    IsGreatest {y | P y} x :=
+  Minimal.isLeast (γ := γᵒᵈ) h
+
 theorem isLUB_congr (h : upperBounds s = upperBounds t) : IsLUB s a ↔ IsLUB t a := by
   rw [IsLUB, IsLUB, h]
 
