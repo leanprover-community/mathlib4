@@ -485,7 +485,8 @@ variable {A B C : Type*} [Category A] [Category B] [Category C]
     (𝔄 : CatCospanAdjunction F G F' G')
 
 variable (F G) in
-@[simps!]
+/-- The identity `CatCospanAdjunction`. -/
+@[simps]
 def id : CatCospanAdjunction F G F G where
   leftAdjoint := .id F G
   rightAdjoint := .id F G
@@ -619,9 +620,10 @@ variable {A B C : Type*} [Category A] [Category B] [Category C]
     (𝔈 : CatCospanEquivalence F G F' G')
 
 variable (F G) in
-@[simps!]
+/-- The identity `CatCospanEquivalence`. -/
+@[simps counitInv counitInv]
 def refl : CatCospanEquivalence F G F G where
-  __ := CatCospanAdjunction.id F G
+  toCatCospanAdjunction := CatCospanAdjunction.id F G
   unitInv := (λ_ _).hom
   counitInv := (ρ_ _).inv
 
@@ -638,6 +640,14 @@ lemma refl_transform : (CatCospanEquivalence.refl F G).transform = .id F G := rf
 variable (F G) in
 @[simp]
 lemma refl_inverse : (CatCospanEquivalence.refl F G).inverse = .id F G := rfl
+
+variable (F G) in
+@[simp]
+lemma refl_unit : (CatCospanEquivalence.refl F G).unit = (λ_ _).inv := rfl
+
+variable (F G) in
+@[simp]
+lemma refl_counit : (CatCospanEquivalence.refl F G).counit = (ρ_ _).hom := rfl
 
 /-- The unit of the `CatCospanEquivalence` as an isomorphism. -/
 @[simps]
