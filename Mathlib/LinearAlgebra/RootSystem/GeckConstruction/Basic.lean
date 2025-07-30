@@ -52,6 +52,9 @@ There seems to be no known construction of a Lie algebra from a root system with
 a base: https://mathoverflow.net/questions/495434/
 
 ## TODO
+* Use `RootPairing.GeckConstruction.instIsIrreducible` and
+  `LieAlgebra.hasTrivialRadical_of_isIrreducible_of_isFaithful` to prove the Geck construction
+  yields semisimple Lie algebras.
 * Lemma stating `LinearIndependent R h` (easy using `RootPairing.Base.cartanMatrix_nondegenerate`).
 * Instance stating `(cartanSubalgebra' b).IsCartanSubalgebra`
   (included in Lemma 4.6 from [Geck](Geck2017)).
@@ -1182,10 +1185,7 @@ lemma foo
   | add u v _ _ hu hv => simp [hu, hv]
   | smul t u _ hu => simp [hu]
 
-/-- Lemma 4.2 from [Geck](Geck2017).
-
-TODO Drop the redundant assumption about the Cartan matrix not having eigenvalue 4 by proving
-elsewhere that this is always true, and then promote this to an `instance` -/
+/-- Lemma 4.2 from [Geck](Geck2017). -/
 instance instIsIrreducible [P.IsIrreducible] [Nonempty ι] :
     LieModule.IsIrreducible K (lieAlgebra b) (b.support ⊕ ι → K) := by
   refine LieModule.IsIrreducible.mk fun U hU ↦ ?_
