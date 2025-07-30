@@ -47,7 +47,7 @@ theorem isCyclicallyReduced_iff :
 @[to_additive]
 theorem isCyclicallyReduced_cons_append_iff {a b : α × Bool} :
     IsCyclicallyReduced (b :: L ++ [a]) ↔
-    IsReduced (b :: L ++ [a]) ∧ ¬(a.1 = b.1 ∧ (!a.2) = b.2) := by
+    IsReduced (b :: L ++ [a]) ∧ (a.1 = b.1 → a.2 = b.2) := by
   rw [isCyclicallyReduced_iff,List.getLast?_concat]
   simp
 
