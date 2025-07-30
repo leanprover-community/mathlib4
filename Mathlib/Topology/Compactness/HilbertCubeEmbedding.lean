@@ -15,7 +15,7 @@ embedded into the Hilbert cube (`ℕ → unitInterval`).
 /-- Every compact metric space can be embedded into the Hilbert cube. -/
 theorem exists_closed_embedding_to_hilbert_cube (X : Type*) [MetricSpace X] [CompactSpace X] :
     ∃ f : X → (ℕ → unitInterval), Topology.IsClosedEmbedding f := by
-  obtain _|_ := subsingleton_or_nontrivial X
+  obtain _ | _ := subsingleton_or_nontrivial X
   · use Function.const _ 0
     exact continuous_const.isClosedEmbedding <| Function.injective_of_subsingleton _
   let s := TopologicalSpace.denseSeq X
