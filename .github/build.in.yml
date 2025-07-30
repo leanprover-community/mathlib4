@@ -240,6 +240,7 @@ jobs:
         id: build
         run: |
           cd pr-branch
+          echo "::group::{test curl}"
           # Test curl - should fail when landrun network isolation is working
           if curl --silent --head --fail https://www.example.com/ >/dev/null 2>&1; then
             echo "ERROR: curl to example.com succeeded, but it should fail when landrun is working correctly!"
@@ -247,15 +248,27 @@ jobs:
           else
             echo "curl to example.com failed as expected - landrun network isolation is working"
           fi
-          bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
+          echo "::endgroup::"
+
           counter=0
           max_tries=5
-          # run again in case an olean fails to build properly
-          while ! lake build --no-build -v Mathlib; do
-            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
+          # ensure that lake build --no-build succeeds before proceeding
+          while true; do
             counter=$((counter + 1))
+            echo "::group::{lake build: attempt $counter}"
+            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
+            echo "::endgroup::"
+
+            echo "::group::{lake build --no-build: attempt $counter}"
+            lake build --no-build -v Mathlib
+            result=$?
+            echo "::endgroup::"
+            if [ $result -eq 0 ]; then
+              echo "lake build --no-build succeded!"
+              exit 0
+            fi
             if [ $counter -ge $max_tries ]; then
-              echo "Failed to build good oleans for Mathlib after $max_tries attempts"
+              echo "Failed to build good oleans for Mathlib after $max_tries attempts!"
               exit 1
             fi
           done
@@ -311,15 +324,26 @@ jobs:
         continue-on-error: true
         run: |
           cd pr-branch
-          bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail Archive"
+
           counter=0
           max_tries=5
-          # run again in case an olean fails to build properly
-          while ! lake build --no-build -v Archive; do
-            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail Archive"
+          # ensure that lake build --no-build succeeds before proceeding
+          while true; do
             counter=$((counter + 1))
+            echo "::group::{lake build: attempt $counter}"
+            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail Archive"
+            echo "::endgroup::"
+
+            echo "::group::{lake build --no-build: attempt $counter}"
+            lake build --no-build -v Archive
+            result=$?
+            echo "::endgroup::"
+            if [ $result -eq 0 ]; then
+              echo "lake build --no-build succeded!"
+              exit 0
+            fi
             if [ $counter -ge $max_tries ]; then
-              echo "Failed to build good oleans for Archive after $max_tries attempts"
+              echo "Failed to build good oleans for Archive after $max_tries attempts!"
               exit 1
             fi
           done
@@ -329,15 +353,26 @@ jobs:
         continue-on-error: true
         run: |
           cd pr-branch
-          bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail Counterexamples"
+
           counter=0
           max_tries=5
-          # run again in case an olean fails to build properly
-          while ! lake build --no-build -v Archive; do
-            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail Counterexamples"
+          # ensure that lake build --no-build succeeds before proceeding
+          while true; do
             counter=$((counter + 1))
+            echo "::group::{lake build: attempt $counter}"
+            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail Counterexamples"
+            echo "::endgroup::"
+
+            echo "::group::{lake build --no-build: attempt $counter}"
+            lake build --no-build -v Counterexamples
+            result=$?
+            echo "::endgroup::"
+            if [ $result -eq 0 ]; then
+              echo "lake build --no-build succeded!"
+              exit 0
+            fi
             if [ $counter -ge $max_tries ]; then
-              echo "Failed to build good oleans for Counterexamples after $max_tries attempts"
+              echo "Failed to build good oleans for Counterexamples after $max_tries attempts!"
               exit 1
             fi
           done
@@ -481,9 +516,15 @@ jobs:
 
       - name: verify that everything was available in the cache
         run: |
+          echo "::group::{verify Mathlib cache}"
           lake build --no-build -v Mathlib
+          echo "::endgroup::"
+          echo "::group::{verify Archive cache}"
           lake build --no-build -v Archive
+          echo "::endgroup::"
+          echo "::group::{verify Counterexamples cache}"
           lake build --no-build -v Counterexamples
+          echo "::endgroup::"
 
       - name: check declarations in db files
         run: |
