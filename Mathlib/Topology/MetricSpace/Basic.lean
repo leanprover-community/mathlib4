@@ -193,3 +193,35 @@ instance SeparationQuotient.instMetricSpace {α : Type u} [PseudoMetricSpace α]
     surjective_mk.forall₂.2 dist_edist
 
 end EqRel
+
+section Discrete
+
+namespace MetricSpace
+
+variable {X : Type*}
+/-- The trivial metric space, where every distinct element is 1 away from another.
+This takes an explicit `DiscreteTopology` instance to ensure that the forgetful
+inheritance to topology matches. -/
+def ofDiscreteTopology [TopologicalSpace X]
+    [DiscreteTopology X] [DecidableEq X] : MetricSpace X where
+  __ := PseudoMetricSpace.ofDiscreteTopology (X := X)
+  eq_of_dist_eq_zero := by simp [PseudoMetricSpace.ofDiscreteTopology_dist_def]
+
+variable [TopologicalSpace X] [DiscreteTopology X] [DecidableEq X]
+
+lemma ofDiscreteTopology_dist_def (x y : X) :
+    letI := ofDiscreteTopology (X := X)
+    dist x y = if x = y then 0 else 1 :=
+  rfl
+
+lemma ofDiscreteTopology_uniformSpace_eq_bot :
+    (MetricSpace.ofDiscreteTopology (X := X)).toUniformSpace = ⊥ :=
+  PseudoMetricSpace.ofDiscreteTopology_uniformSpace_eq_bot
+
+lemma ofDiscreteTopology_discreteUniformity :
+    @DiscreteUniformity X (ofDiscreteTopology (X := X)).toUniformSpace :=
+  PseudoMetricSpace.ofDiscreteTopology_discreteUniformity
+
+end MetricSpace
+
+end Discrete

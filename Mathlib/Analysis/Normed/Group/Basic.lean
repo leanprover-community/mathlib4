@@ -378,6 +378,56 @@ abbrev GroupNorm.toNormedCommGroup [CommGroup E] (f : GroupNorm E) : NormedCommG
   { f.toNormedGroup with
     mul_comm := mul_comm }
 
+section Discrete
+
+variable {G : Type*}
+
+/-- The trivial norm on a group that already has a discrete topology,
+where every distinct element is 1 away from another.
+This takes an explicit `DiscreteTopology` instance to ensure that the forgetful
+inheritance to topology matches. -/
+@[to_additive "The trivial seminorm on an additive group that already has a discrete topology,
+where every distinct element is 1 away from another.
+This takes an explicit `DiscreteTopology` instance to ensure that the forgetful
+inheritance to topology matches."]
+def SeminormedGroup.ofDiscreteTopology [TopologicalSpace G] [DiscreteTopology G]
+    [Group G] [DecidableEq G] : SeminormedGroup G where
+  __ := PseudoMetricSpace.ofDiscreteTopology (X := G)
+  norm x := if x = 1 then 0 else 1
+  dist_eq x y := by
+    rw [PseudoMetricSpace.ofDiscreteTopology_dist_def]
+    split_ifs <;>
+    simp_all [div_eq_one]
+
+/-- The trivial norm on a group that already has a discrete topology,
+where every distinct element is 1 away from another.
+This takes an explicit `DiscreteTopology` instance to ensure that the forgetful
+inheritance to topology matches. -/
+@[to_additive "The trivial seminorm on an additive group that already has a discrete topology,
+where every distinct element is 1 away from another.
+This takes an explicit `DiscreteTopology` instance to ensure that the forgetful
+inheritance to topology matches."]
+def NormedGroup.ofDiscreteTopology [TopologicalSpace G] [DiscreteTopology G]
+    [Group G] [DecidableEq G] : NormedGroup G where
+  __ := MetricSpace.ofDiscreteTopology (X := G)
+  __ := SeminormedGroup.ofDiscreteTopology
+
+variable [TopologicalSpace G] [DiscreteTopology G] [Group G] [DecidableEq G]
+
+@[to_additive]
+lemma SeminormedGroup.ofDiscreteTopology_norm_def (x : G) :
+    letI := SeminormedGroup.ofDiscreteTopology (G := G)
+    ‖x‖ = if x = 1 then 0 else 1 :=
+  rfl
+
+@[to_additive]
+lemma NormedGroup.ofDiscreteTopology_norm_def (x : G) :
+    letI := NormedGroup.ofDiscreteTopology (G := G)
+    ‖x‖ = if x = 1 then 0 else 1 :=
+  rfl
+
+end Discrete
+
 section SeminormedGroup
 
 variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {s : Set E}
