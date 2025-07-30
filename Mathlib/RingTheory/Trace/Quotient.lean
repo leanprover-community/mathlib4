@@ -3,7 +3,7 @@ Copyright (c) 2024 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Riccardo Brasca
 -/
-
+import Mathlib.RingTheory.Localization.AtPrime.Extension
 import Mathlib.RingTheory.DedekindDomain.Dvr
 import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 import Mathlib.RingTheory.LocalRing.Quotient
@@ -57,113 +57,12 @@ variable [IsLocalRing Rₚ] [Algebra S Sₚ] [Algebra R Sₚ] [Algebra Rₚ Sₚ
 variable [IsLocalization (Algebra.algebraMapSubmonoid S p.primeCompl) Sₚ]
 variable [IsScalarTower R S Sₚ] [IsScalarTower R Rₚ Sₚ]
 
-variable (Rₚ)
-
-attribute [local instance] Ideal.Quotient.field
-
-/-- The isomorphism `R ⧸ p ≃+* Rₚ ⧸ maximalIdeal Rₚ`, where `Rₚ` satisfies
-`IsLocalization.AtPrime Rₚ p`. In particular, localization preserves the residue field. -/
-noncomputable
-def equivQuotMaximalIdealOfIsLocalization : R ⧸ p ≃+* Rₚ ⧸ maximalIdeal Rₚ := by
-  refine (Ideal.quotEquivOfEq ?_).trans
-    (RingHom.quotientKerEquivOfSurjective (f := algebraMap R (Rₚ ⧸ maximalIdeal Rₚ)) ?_)
-  · rw [IsScalarTower.algebraMap_eq R Rₚ, ← RingHom.comap_ker,
-      Ideal.Quotient.algebraMap_eq, Ideal.mk_ker, IsLocalization.AtPrime.comap_maximalIdeal Rₚ p]
-  · intro x
-    obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-    obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective p.primeCompl x
-    obtain ⟨s', hs⟩ := Ideal.Quotient.mk_surjective (I := p) (Ideal.Quotient.mk p s)⁻¹
-    simp only [IsScalarTower.algebraMap_eq R Rₚ (Rₚ ⧸ _),
-      Ideal.Quotient.algebraMap_eq, RingHom.comp_apply]
-    use x * s'
-    rw [← sub_eq_zero, ← map_sub, Ideal.Quotient.eq_zero_iff_mem]
-    have : algebraMap R Rₚ s ∉ maximalIdeal Rₚ := by
-      rw [← Ideal.mem_comap, IsLocalization.AtPrime.comap_maximalIdeal Rₚ p]
-      exact s.prop
-    refine ((inferInstanceAs <| (maximalIdeal Rₚ).IsPrime).mem_or_mem ?_).resolve_left this
-    rw [mul_sub, IsLocalization.mul_mk'_eq_mk'_of_mul, IsLocalization.mk'_mul_cancel_left,
-      ← map_mul, ← map_sub, ← Ideal.mem_comap, IsLocalization.AtPrime.comap_maximalIdeal Rₚ p,
-      mul_left_comm, ← Ideal.Quotient.eq_zero_iff_mem, map_sub, map_mul, map_mul, hs,
-      mul_inv_cancel₀, mul_one, sub_self]
-    rw [Ne, Ideal.Quotient.eq_zero_iff_mem]
-    exact s.prop
-
-lemma IsLocalization.AtPrime.map_eq_maximalIdeal :
-    p.map (algebraMap R Rₚ) = maximalIdeal Rₚ := by
-  convert congr_arg (Ideal.map (algebraMap R Rₚ))
-    (IsLocalization.AtPrime.comap_maximalIdeal Rₚ p).symm
-  rw [map_comap p.primeCompl]
+variable (S Sₚ Rₚ)
 
 local notation "pS" => Ideal.map (algebraMap R S) p
 local notation "pSₚ" => Ideal.map (algebraMap Rₚ Sₚ) (maximalIdeal Rₚ)
 
-lemma comap_map_eq_map_of_isLocalization_algebraMapSubmonoid :
-    (Ideal.map (algebraMap R Sₚ) p).comap (algebraMap S Sₚ) = pS := by
-  rw [IsScalarTower.algebraMap_eq R S Sₚ, ← Ideal.map_map, eq_comm]
-  apply Ideal.le_comap_map.antisymm
-  intro x hx
-  obtain ⟨α, hα, hαx⟩ : ∃ α ∉ p, α • x ∈ pS := by
-    have ⟨⟨y, s⟩, hy⟩ := (IsLocalization.mem_map_algebraMap_iff
-      (Algebra.algebraMapSubmonoid S p.primeCompl) Sₚ).mp hx
-    rw [← map_mul,
-      IsLocalization.eq_iff_exists (Algebra.algebraMapSubmonoid S p.primeCompl)] at hy
-    obtain ⟨c, hc⟩ := hy
-    obtain ⟨α, hα, e⟩ := (c * s).prop
-    refine ⟨α, hα, ?_⟩
-    rw [Algebra.smul_def, e, Submonoid.coe_mul, mul_assoc, mul_comm _ x, hc]
-    exact Ideal.mul_mem_left _ _ y.prop
-  obtain ⟨β, γ, hγ, hβ⟩ : ∃ β γ, γ ∈ p ∧ β * α = 1 + γ := by
-    obtain ⟨β, hβ⟩ := Ideal.Quotient.mk_surjective (I := p) (Ideal.Quotient.mk p α)⁻¹
-    refine ⟨β, β * α - 1, ?_, ?_⟩
-    · rw [← Ideal.Quotient.eq_zero_iff_mem, map_sub, map_one,
-        map_mul, hβ, inv_mul_cancel₀, sub_self]
-      rwa [Ne, Ideal.Quotient.eq_zero_iff_mem]
-    · rw [add_sub_cancel]
-  have := Ideal.mul_mem_left _ (algebraMap _ _ β) hαx
-  rw [← Algebra.smul_def, smul_smul, hβ, add_smul, one_smul] at this
-  refine (Submodule.add_mem_iff_left _ ?_).mp this
-  rw [Algebra.smul_def]
-  apply Ideal.mul_mem_right
-  exact Ideal.mem_map_of_mem _ hγ
-
-variable (S Sₚ)
-
-/-- The isomorphism `S ⧸ pS ≃+* Sₚ ⧸ pSₚ`. -/
-noncomputable
-def quotMapEquivQuotMapMaximalIdealOfIsLocalization : S ⧸ pS ≃+* Sₚ ⧸ pSₚ := by
-  haveI h : pSₚ = Ideal.map (algebraMap S Sₚ) pS := by
-    rw [← IsLocalization.AtPrime.map_eq_maximalIdeal p Rₚ, Ideal.map_map,
-      ← IsScalarTower.algebraMap_eq, Ideal.map_map, ← IsScalarTower.algebraMap_eq]
-  refine (Ideal.quotEquivOfEq ?_).trans
-    (RingHom.quotientKerEquivOfSurjective (f := algebraMap S (Sₚ ⧸ pSₚ)) ?_)
-  · rw [IsScalarTower.algebraMap_eq S Sₚ, Ideal.Quotient.algebraMap_eq, ← RingHom.comap_ker,
-      Ideal.mk_ker, h, Ideal.map_map, ← IsScalarTower.algebraMap_eq,
-      comap_map_eq_map_of_isLocalization_algebraMapSubmonoid]
-  · intro x
-    obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-    obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective
-      (Algebra.algebraMapSubmonoid S p.primeCompl) x
-    obtain ⟨α, hα : α ∉ p, e⟩ := s.prop
-    obtain ⟨β, γ, hγ, hβ⟩ : ∃ β γ, γ ∈ p ∧ α * β = 1 + γ := by
-      obtain ⟨β, hβ⟩ := Ideal.Quotient.mk_surjective (I := p) (Ideal.Quotient.mk p α)⁻¹
-      refine ⟨β, α * β - 1, ?_, ?_⟩
-      · rw [← Ideal.Quotient.eq_zero_iff_mem, map_sub, map_one,
-          map_mul, hβ, mul_inv_cancel₀, sub_self]
-        rwa [Ne, Ideal.Quotient.eq_zero_iff_mem]
-      · rw [add_sub_cancel]
-    use β • x
-    rw [IsScalarTower.algebraMap_eq S Sₚ (Sₚ ⧸ pSₚ), Ideal.Quotient.algebraMap_eq,
-      RingHom.comp_apply, ← sub_eq_zero, ← map_sub, Ideal.Quotient.eq_zero_iff_mem]
-    rw [h, IsLocalization.mem_map_algebraMap_iff
-      (Algebra.algebraMapSubmonoid S p.primeCompl) Sₚ]
-    refine ⟨⟨⟨γ • x, ?_⟩, s⟩, ?_⟩
-    · rw [Algebra.smul_def]
-      apply Ideal.mul_mem_right
-      exact Ideal.mem_map_of_mem _ hγ
-    simp only
-    rw [mul_comm, mul_sub, IsLocalization.mul_mk'_eq_mk'_of_mul,
-      IsLocalization.mk'_mul_cancel_left, ← map_mul, ← e, ← Algebra.smul_def, smul_smul,
-      hβ, ← map_sub, add_smul, one_smul, add_comm x, add_sub_cancel_right]
+open IsLocalization.AtPrime IsLocalRing FiniteDimensional Submodule
 
 lemma trace_quotient_eq_trace_localization_quotient (x) :
     Algebra.trace (R ⧸ p) (S ⧸ pS) (Ideal.Quotient.mk pS x) =

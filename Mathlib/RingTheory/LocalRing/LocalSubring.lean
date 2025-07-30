@@ -5,7 +5,7 @@ Authors: Andrew Yang, Yaël Dillies, Javier López-Contreras
 -/
 import Mathlib.Tactic.FieldSimp
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
-import Mathlib.RingTheory.Localization.AtPrime
+import Mathlib.RingTheory.Localization.AtPrime.Basic
 
 
 /-!

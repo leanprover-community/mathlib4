@@ -111,7 +111,7 @@ theorem under_top : under A (⊤ : Ideal B) = ⊤ := comap_top
 variable {A}
 
 /-- `P` lies over `p` if `p` is the preimage of `P` of the `algebraMap`. -/
-class LiesOver : Prop where
+@[mk_iff] class LiesOver : Prop where
   over : p = P.under A
 
 instance over_under : P.LiesOver (P.under A) where over := rfl
@@ -175,6 +175,22 @@ theorem LiesOver.trans [𝔓.LiesOver P] [P.LiesOver p] : 𝔓.LiesOver p where
 
 theorem LiesOver.tower_bot [hp : 𝔓.LiesOver p] [hP : 𝔓.LiesOver P] : P.LiesOver p where
   over := by rw [𝔓.over_def p, 𝔓.over_def P, under_under]
+
+theorem under_map {C D : Type*} [CommSemiring C] [Semiring D] [Algebra A C] [Algebra C D]
+    [Algebra A D] [Algebra B D] [IsScalarTower A C D] [IsScalarTower A B D] (h₀ : p = under A P)
+    (h₁ : (map (algebraMap A C) p).IsMaximal) (h₂ : map (algebraMap B D) P ≠ ⊤) :
+    under C (map (algebraMap B D) P) = map (algebraMap A C) p := by
+  rw [← IsCoatom.le_iff_eq (isMaximal_def.mp h₁) (comap_ne_top (algebraMap C D) h₂), h₀]
+  apply le_comap_of_map_le
+  rw [map_map, ← IsScalarTower.algebraMap_eq, map_le_iff_le_comap,
+    IsScalarTower.algebraMap_eq A B D, ← comap_comap]
+  exact comap_mono <| le_comap_map
+
+theorem disjoint_primeCompl_of_liesOver [p.IsPrime] [hPp : 𝔓.LiesOver p] :
+  Disjoint ((Algebra.algebraMapSubmonoid C p.primeCompl) : Set C) (𝔓 : Set C) := by
+  rw [liesOver_iff, under_def, SetLike.ext'_iff, coe_comap] at hPp
+  simpa only [Algebra.algebraMapSubmonoid, primeCompl, hPp, ← le_compl_iff_disjoint_left]
+    using Set.subset_compl_comm.mp (by simp)
 
 variable (B)
 
@@ -303,6 +319,12 @@ instance primesOver.liesOver (Q : primesOver p B) : Q.1.LiesOver p :=
 /-- If an ideal `P` of `B` is prime and lying over `p`, then it is in `primesOver p B`. -/
 abbrev primesOver.mk (P : Ideal B) [hPp : P.IsPrime] [hp : P.LiesOver p] : primesOver p B :=
   ⟨P, ⟨hPp, hp⟩⟩
+
+variable {p} in
+theorem ne_bot_of_mem_primesOver {S : Type*} [Ring S] [Algebra R S] [Nontrivial S]
+    [NoZeroSMulDivisors R S] {p : Ideal R} (hp : p ≠ ⊥) {P : Ideal S}
+    (hP : P ∈ p.primesOver S) :
+    P ≠ ⊥ := @ne_bot_of_liesOver_of_ne_bot _ _ _ _ _ _ _ _ hp P hP.2
 
 end primesOver
 
