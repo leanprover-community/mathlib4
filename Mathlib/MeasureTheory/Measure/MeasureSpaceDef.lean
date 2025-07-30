@@ -386,7 +386,7 @@ lemma mem_support_iff {x : X} : x ∈ μ.support ↔
     ∃ᶠ u in (𝓝 x).smallSets, 0 < μ u := Iff.rfl
 
 lemma mem_support_iff_forall (x : X) : x ∈ μ.support ↔ ∀ U ∈ 𝓝 x, 0 < μ U := by
-  simp [mem_support_iff, Filter.frequently_smallSets]
+  simp only [mem_support_iff, frequently_smallSets]
   constructor
   · intro h U hU
     obtain ⟨t, htsub, htpos⟩ := h U hU
