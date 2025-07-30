@@ -374,14 +374,14 @@ given maps on the factors. -/
 def map {G H : ι → Type*}
     {C : (i : ι) → Set (G i)}
     {D : (i : ι) → Set (H i)} (φ : (i : ι) → G i → H i)
-    (hφ : ∀ᶠ i in 𝓕, Set.MapsTo (φ i) (C i) (D i))
+    (hφ : ∀ᶠ i in 𝓕, MapsTo (φ i) (C i) (D i))
     (x : Πʳ i, [G i, C i]_[𝓕]) : (Πʳ i, [H i, D i]_[𝓕]) :=
   mapAlong G H id Filter.tendsto_id φ hφ x
 
 @[simp]
 lemma map_apply {G H : ι → Type*} {C : (i : ι) → Set (G i)}
     {D : (i : ι) → Set (H i)} (φ : (i : ι) → G i → H i)
-    (hφ : ∀ᶠ i in 𝓕, Set.MapsTo (φ i) (C i) (D i))
+    (hφ : ∀ᶠ i in 𝓕, MapsTo (φ i) (C i) (D i))
     (x : Πʳ i, [G i, C i]_[𝓕]) (j : ι) :
     x.map φ hφ j = φ j (x j) :=
   rfl

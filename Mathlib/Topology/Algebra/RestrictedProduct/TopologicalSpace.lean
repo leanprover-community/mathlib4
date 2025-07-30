@@ -650,7 +650,7 @@ variable (f : ι₂ → ι₁) (hf : Tendsto f 𝓕₂ 𝓕₁)
 
 variable (φ : ∀ j, R₁ (f j) → R₂ j) (hφ : ∀ᶠ j in 𝓕₂, MapsTo (φ j) (A₁ (f j)) (A₂ j))
 
-theorem map_continuous (φ_cont : ∀ j, Continuous (φ j)) :
+theorem mapAlong_continuous (φ_cont : ∀ j, Continuous (φ j)) :
     Continuous (mapAlong R₁ R₂ f hf φ hφ) := by
   rw [continuous_dom]
   intro S hS
