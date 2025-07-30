@@ -144,7 +144,6 @@ theorem lie_mem {x y : L} (hx : x ∈ L') (hy : y ∈ L') : (⁅x, y⁆ : L) ∈
 theorem mem_carrier {x : L} : x ∈ L'.carrier ↔ x ∈ (L' : Set L) :=
   Iff.rfl
 
-@[simp]
 theorem mem_mk_iff (S : Set L) (h₁ h₂ h₃ h₄) {x : L} :
     x ∈ (⟨⟨⟨⟨S, h₁⟩, h₂⟩, h₃⟩, h₄⟩ : LieSubalgebra R L) ↔ x ∈ S :=
   Iff.rfl

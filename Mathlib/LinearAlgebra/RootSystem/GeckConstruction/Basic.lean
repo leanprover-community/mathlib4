@@ -1022,7 +1022,7 @@ lemma baz :
     | add u v _ _ hu hv => simp [hu, hv]
     | smul t u _ hu => simp [hu]
 
-/-- An auxiliary lemma en route to `RootPairing.GeckConstruction.isIrreducible` (where the same
+/-- An auxiliary lemma en route to `RootPairing.GeckConstruction.instIsIrreducible` (where the same
 conclusion is proved with the hypothesis `hi` weakened to just `U ≠ ⊥`). -/
 private lemma instIsIrreducible_aux₀ [P.IsIrreducible]
     {U : LieSubmodule K (lieAlgebra b) (b.support ⊕ ι → K)} {i : ι}
@@ -1132,8 +1132,12 @@ lemma bar' (U : LieSubmodule K (cartanSubalgebra' b) (b.support ⊕ ι → K))
   rw [← aux, LieModule.iSup_genWeightSpace_eq_top K H U]
   simp
 
+-- TODO Turn this `variable` into a lemma: it is always true and may be proved via Perron-Frobenius
+-- See https://leanprover.zulipchat.com/#narrow/channel/116395-maths/topic/Eigenvalues.20of.20Cartan.20matrices/near/516844801
+variable [Fact ((4 - b.cartanMatrix).det ≠ 0)]
+
 open LieModule Submodule in
-lemma foo (hCM : (4 - b.cartanMatrix).det ≠ 0)
+lemma foo
     (U : LieSubmodule K (lieAlgebra b) (b.support ⊕ ι → K)) (hU : U ≠ ⊥) :
     ∃ i, Pi.single (Sum.inr i) 1 ∈ U := by
   let u (i : b.support) : b.support ⊕ ι → K := Pi.single (Sum.inl i) 1
@@ -1149,6 +1153,7 @@ lemma foo (hCM : (4 - b.cartanMatrix).det ≠ 0)
   obtain ⟨c, hc⟩ : ∃ c : b.support → K, ∑ i, c i • u i = x :=
     (mem_span_range_iff_exists_fun K).mp <| hU hx
   suffices c = 0 by simp [this, ← hc]
+  have hCM : (4 - b.cartanMatrix).det ≠ 0 := Fact.out
   contrapose! hCM
   suffices ((Int.castRingHom K).mapMatrix (4 - b.cartanMatrix)).det = 0 by
     simpa only [← RingHom.map_det, eq_intCast, Int.cast_eq_zero] using this
@@ -1181,13 +1186,13 @@ lemma foo (hCM : (4 - b.cartanMatrix).det ≠ 0)
 
 TODO Drop the redundant assumption about the Cartan matrix not having eigenvalue 4 by proving
 elsewhere that this is always true, and then promote this to an `instance` -/
-lemma isIrreducible [P.IsIrreducible] [Nonempty ι] (hCM : (4 - b.cartanMatrix).det ≠ 0) :
+instance instIsIrreducible [P.IsIrreducible] [Nonempty ι] :
     LieModule.IsIrreducible K (lieAlgebra b) (b.support ⊕ ι → K) := by
   refine LieModule.IsIrreducible.mk fun U hU ↦ ?_
   let v (i : ι) : b.support ⊕ ι → K := Pi.single (Sum.inr i) 1
   set H := cartanSubalgebra' b
   suffices ∃ i, v i ∈ U by obtain ⟨i, hi⟩ := this; exact instIsIrreducible_aux₀ hi
-  exact foo hCM U hU
+  exact foo U hU
 
 end Field
 
