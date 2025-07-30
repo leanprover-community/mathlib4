@@ -23,7 +23,7 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
-open Limits
+open Limits Functor
 
 variable {C : Type u₁} [Category.{v₁} C]
 

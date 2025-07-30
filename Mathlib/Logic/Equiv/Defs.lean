@@ -96,12 +96,10 @@ instance : EquivLike (α ≃ β) α β where
   right_inv := Equiv.right_inv
   coe_injective' e₁ e₂ h₁ h₂ := by cases e₁; cases e₂; congr
 
-/-- Helper instance when inference gets stuck on following the normal chain
-`EquivLike → FunLike`.
-
-TODO: this instance doesn't appear to be necessary: remove it (after benchmarking?)
--/
-instance : FunLike (α ≃ β) α β where
+/-- Deprecated helper instance for when inference gets stuck on following the normal chain
+`EquivLike → FunLike`. -/
+@[deprecated EquivLike.toFunLike (since := "2025-06-20")]
+def instFunLike : FunLike (α ≃ β) α β where
   coe := Equiv.toFun
   coe_injective' := DFunLike.coe_injective
 
@@ -109,7 +107,7 @@ instance : FunLike (α ≃ β) α β where
 lemma _root_.EquivLike.coe_coe {F} [EquivLike F α β] (e : F) :
     ((e : α ≃ β) : α → β) = e := rfl
 
-@[simp] theorem coe_fn_mk (f : α → β) (g l r) : (Equiv.mk f g l r : α → β) = f :=
+@[simp, grind =] theorem coe_fn_mk (f : α → β) (g l r) : (Equiv.mk f g l r : α → β) = f :=
   rfl
 
 /-- The map `(r ≃ s) → (r → s)` is injective. -/
@@ -162,6 +160,12 @@ protected def trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
 @[simps]
 instance : Trans Equiv Equiv Equiv where
   trans := Equiv.trans
+
+/-- `Equiv.symm` defines an equivalence between `α ≃ β` and `β ≃ α`. -/
+@[simps!]
+def symmEquiv (α β : Sort*) : (α ≃ β) ≃ (β ≃ α) where
+  toFun := .symm
+  invFun := .symm
 
 @[simp, mfld_simps] theorem toFun_as_coe (e : α ≃ β) : e.toFun = e := rfl
 
@@ -233,9 +237,9 @@ theorem Perm.coe_subsingleton {α : Type*} [Subsingleton α] (e : Perm α) : (e 
 
 @[simp] theorem trans_apply (f : α ≃ β) (g : β ≃ γ) (a : α) : (f.trans g) a = g (f a) := rfl
 
-@[simp] theorem apply_symm_apply (e : α ≃ β) (x : β) : e (e.symm x) = x := e.right_inv x
+@[simp, grind =] theorem apply_symm_apply (e : α ≃ β) (x : β) : e (e.symm x) = x := e.right_inv x
 
-@[simp] theorem symm_apply_apply (e : α ≃ β) (x : α) : e.symm (e x) = x := e.left_inv x
+@[simp, grind =] theorem symm_apply_apply (e : α ≃ β) (x : α) : e.symm (e x) = x := e.left_inv x
 
 @[simp] theorem symm_comp_self (e : α ≃ β) : e.symm ∘ e = id := funext e.symm_apply_apply
 
@@ -278,8 +282,8 @@ theorem apply_eq_iff_eq_symm_apply {x : α} {y : β} (f : α ≃ β) : f x = y �
     (Equiv.cast h).trans (Equiv.cast h2) = Equiv.cast (h.trans h2) :=
   ext fun x => by substs h h2; rfl
 
-theorem cast_eq_iff_heq {α β} (h : α = β) {a : α} {b : β} : Equiv.cast h a = b ↔ HEq a b := by
-  subst h; simp [coe_refl]
+theorem cast_eq_iff_heq {α β} (h : α = β) {a : α} {b : β} : Equiv.cast h a = b ↔ a ≍ b := by
+  subst h; simp
 
 theorem symm_apply_eq {α β} (e : α ≃ β) {x y} : e.symm x = y ↔ x = e y :=
   ⟨fun H => by simp [H.symm], fun H => by simp [H]⟩
@@ -327,13 +331,18 @@ theorem bijective_comp (e : α ≃ β) (f : β → γ) : Bijective (f ∘ e) ↔
 theorem comp_bijective (f : α → β) (e : β ≃ γ) : Bijective (e ∘ f) ↔ Bijective f :=
   EquivLike.comp_bijective f e
 
+@[simp]
+theorem extend_apply {f : α ≃ β} (g : α → γ) (e' : β → γ) (b : β) :
+    extend f g e' b = g (f.symm b) := by
+  rw [← f.apply_symm_apply b, f.injective.extend_apply, apply_symm_apply]
+
 /-- If `α` is equivalent to `β` and `γ` is equivalent to `δ`, then the type of equivalences `α ≃ γ`
 is equivalent to the type of equivalences `β ≃ δ`. -/
 def equivCongr {δ : Sort*} (ab : α ≃ β) (cd : γ ≃ δ) : (α ≃ γ) ≃ (β ≃ δ) where
   toFun ac := (ab.symm.trans ac).trans cd
   invFun bd := ab.trans <| bd.trans <| cd.symm
-  left_inv ac := by ext x; simp only [trans_apply, comp_apply, symm_apply_apply]
-  right_inv ac := by ext x; simp only [trans_apply, comp_apply, apply_symm_apply]
+  left_inv ac := by ext x; simp only [trans_apply, symm_apply_apply]
+  right_inv ac := by ext x; simp only [trans_apply, apply_symm_apply]
 
 @[simp] theorem equivCongr_refl {α β} :
     (Equiv.refl α).equivCongr (Equiv.refl β) = Equiv.refl (α ≃ β) := by ext; rfl
@@ -375,7 +384,7 @@ theorem permCongr_symm_apply (p : Equiv.Perm β') (x) :
 
 theorem permCongr_trans (p p' : Equiv.Perm α') :
     (e.permCongr p).trans (e.permCongr p') = e.permCongr (p.trans p') := by
-  ext; simp only [trans_apply, comp_apply, permCongr_apply, symm_apply_apply]
+  ext; simp only [trans_apply, permCongr_apply, symm_apply_apply]
 
 end permCongr
 
@@ -647,15 +656,15 @@ abbrev sigmaCongrRight {α} {β : α → Sort _} (F : ∀ a, Perm (β a)) : Perm
 @[simp] theorem sigmaCongrRight_trans {α} {β : α → Sort _}
     (F : ∀ a, Perm (β a)) (G : ∀ a, Perm (β a)) :
     (sigmaCongrRight F).trans (sigmaCongrRight G) = sigmaCongrRight fun a => (F a).trans (G a) :=
-  Equiv.sigmaCongrRight_trans F G
+  rfl
 
 @[simp] theorem sigmaCongrRight_symm {α} {β : α → Sort _} (F : ∀ a, Perm (β a)) :
     (sigmaCongrRight F).symm = sigmaCongrRight fun a => (F a).symm :=
-  Equiv.sigmaCongrRight_symm F
+  rfl
 
 @[simp] theorem sigmaCongrRight_refl {α} {β : α → Sort _} :
     (sigmaCongrRight fun a => Equiv.refl (β a)) = Equiv.refl (Σ a, β a) :=
-  Equiv.sigmaCongrRight_refl
+  rfl
 
 end Perm
 
@@ -689,7 +698,7 @@ def sigmaCongr {α₁ α₂} {β₁ : α₁ → Sort _} {β₂ : α₂ → Sort 
   (sigmaCongrRight F).trans (sigmaCongrLeft f)
 
 /-- `Sigma` type with a constant fiber is equivalent to the product. -/
-@[simps (config := { attrs := [`mfld_simps] }) apply symm_apply]
+@[simps (attrs := [`mfld_simps]) apply symm_apply]
 def sigmaEquivProd (α β : Type*) : (Σ _ : α, β) ≃ α × β :=
   ⟨fun a => ⟨a.1, a.2⟩, fun a => ⟨a.1, a.2⟩, fun ⟨_, _⟩ => rfl, fun ⟨_, _⟩ => rfl⟩
 

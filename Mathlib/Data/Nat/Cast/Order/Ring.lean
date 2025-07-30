@@ -105,12 +105,12 @@ lemma mul_le_pow {a : ℕ} (ha : a ≠ 1) (b : ℕ) :
   | zero => simp
   | succ b hb =>
     rw [mul_add_one, pow_succ]
-    rcases a with (_|_|a)
+    rcases a with (_ | _ | a)
     · simp
     · simp at ha
     · rw [mul_add_one, mul_add_one, add_comm (_ * a), add_assoc _ (_ * a)]
-      rcases b with (_|b)
-      · simp [add_assoc, add_comm]
+      rcases b with (_ | b)
+      · simp [add_comm]
       refine add_le_add (hb (by simp)) ?_
       rw [pow_succ']
       refine (le_add_left ?_ ?_).trans' ?_

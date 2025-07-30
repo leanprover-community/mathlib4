@@ -100,12 +100,12 @@ theorem spectrum_eq_preimage_range (f : C(X, R)) :
     spectrum 𝕜 f = algebraMap _ _ ⁻¹' Set.range f := by
   ext x
   simp only [spectrum.mem_iff, isUnit_iff_forall_ne_zero, not_forall, sub_apply,
-    algebraMap_apply, mul_one, Classical.not_not, Set.mem_range,
+    Classical.not_not, Set.mem_range,
     sub_eq_zero, @eq_comm _ (x • 1 : R) _, Set.mem_preimage, Algebra.algebraMap_eq_smul_one,
     smul_apply, one_apply]
 
 theorem spectrum_eq_range [CompleteSpace 𝕜] (f : C(X, 𝕜)) : spectrum 𝕜 f = Set.range f := by
-  rw [spectrum_eq_preimage_range, Algebra.id.map_eq_id]
+  rw [spectrum_eq_preimage_range, Algebra.algebraMap_self]
   exact Set.preimage_id
 
 end NormedField

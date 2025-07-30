@@ -174,7 +174,7 @@ theorem Submartingale.upcrossings_ae_lt_top' [IsFiniteMeasure μ] (hf : Submarti
           exact norm_nonneg _
       · finiteness
     · simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le]
-  · left;simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le, true_or]
+  · left; simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le]
   · left; finiteness
 
 theorem Submartingale.upcrossings_ae_lt_top [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
@@ -391,7 +391,7 @@ theorem Integrable.tendsto_ae_condExp (hg : Integrable g μ)
   induction s, hs
     using MeasurableSpace.induction_on_inter (MeasurableSpace.measurableSpace_iSup_eq ℱ) hpi with
   | empty =>
-    simp only [measure_empty, Measure.restrict_empty, integral_zero_measure]
+    simp only [Measure.restrict_empty, integral_zero_measure]
   | basic s hs =>
     rcases hs with ⟨n, hn⟩
     exact this n _ hn
