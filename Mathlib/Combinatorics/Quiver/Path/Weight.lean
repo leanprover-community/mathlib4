@@ -65,6 +65,7 @@ lemma weight_cons (w : ∀ {i j : V}, (i ⟶ j) → R) {a b c : V} (p : Path a b
 lemma weightOfEPs_nil (w : V → V → R) (a : V) :
     weightOfEPs w (Path.nil : Path a a) = 1 := by simp [weightOfEPs]
 
+@[to_additive addWeightOfEPs_cons]
 lemma weightOfEPs_cons (w : V → V → R) {a b c : V} (p : Path a b) (e : b ⟶ c) :
     weightOfEPs w (p.cons e) = weightOfEPs w p * w b c := by unfold weightOfEPs; simp
 
