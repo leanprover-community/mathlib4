@@ -78,7 +78,7 @@ lemma dualEmbedding_isSurjective : Function.Surjective (WeakBilin.eval B) := by
     rw [← top_eq]
     rfl
   have test5 :
-    ↑f₁ ∈ Submodule.span 𝕜 (Set.range (ContinuousLinearMap.toLinearMap₁₂
+    ↑f₁ ∈ Submodule.span 𝕜 (Set.range (ContinuousLinearMap.toLinearMap₂
         (WeakBilin.eval B))) := by
       rw [LinearMap.mem_span_iff_continuous _]
       exact c1
@@ -88,7 +88,7 @@ lemma dualEmbedding_isSurjective : Function.Surjective (WeakBilin.eval B) := by
   use Finsupp.linearCombination 𝕜 (id (M :=F) (R := 𝕜)) l
   rw [←ContinuousLinearMap.coe_inj, ← hl2, WeakBilin.eval, coe_mk, AddHom.coe_mk]
   simp only
-  rw [ContinuousLinearMap.toLinearMap₁₂, ContinuousLinearMap.coeLMₛₗ,
+  rw [ContinuousLinearMap.toLinearMap₂, ContinuousLinearMap.coeLMₛₗ,
     Finsupp.linearCombination_apply]
     --, Finsupp.linearCombination_apply,
   rw [map_finsuppSum]
