@@ -63,7 +63,7 @@ where
     | .forallE n t b bi =>
       if pos[i] = 0 then do
         unless (← isProp t) || expr.isArrow do
-          throwError m!"conv mode only supports rewriting binder types \
+          throwError m!"conv mode only supports rewriting forall binder types \
             when the binder type is a proposition{indentExpr expr}"
         Path.type <$> go t pos i.succ
       else if pos[i] = 1 then do
