@@ -1136,6 +1136,16 @@ noncomputable def mulValuation : Valuation ℚ_[p] ℤᵐ⁰ where
     any_goals simp_all
     simpa using le_valuation_add ‹_›
 
+lemma comap_mulValuation_eq_padicValuation :
+    (mulValuation (p := p)).comap (Rat.castHom _) = Rat.padicValuation p := by
+  ext
+  simp [Rat.padicValuation]
+
+lemma comap_mulValuation_eq_int_padicValuation :
+    (mulValuation (p := p)).comap (Int.castRingHom _) = Int.padicValuation p := by
+  ext
+  simp [← Rat.padicValuation_cast, ← comap_mulValuation_eq_padicValuation]
+
 /-- The additive `p`-adic valuation on `ℚ_[p]`, as an `addValuation`. -/
 def addValuation : AddValuation ℚ_[p] (WithTop ℤ) :=
   AddValuation.of addValuationDef AddValuation.map_zero AddValuation.map_one AddValuation.map_add
