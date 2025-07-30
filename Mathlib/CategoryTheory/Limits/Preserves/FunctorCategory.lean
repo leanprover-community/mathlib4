@@ -6,8 +6,9 @@ Authors: Bhavik Mehta
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.Limits.Yoneda
+import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 import Mathlib.CategoryTheory.Limits.Presheaf
+import Mathlib.CategoryTheory.Limits.Yoneda
 
 /-!
 # Preservation of (co)limits in the functor category
@@ -191,8 +192,9 @@ instance whiskeringRightPreservesColimits {C : Type*} [Category C] {D : Type*} [
 lemma preservesLimit_of_lan_preservesLimit {C D : Type u} [SmallCategory C]
     [SmallCategory D] (F : C ⥤ D) (J : Type u) [SmallCategory J]
     [PreservesLimitsOfShape J (F.op.lan : _ ⥤ Dᵒᵖ ⥤ Type u)] : PreservesLimitsOfShape J F := by
-  apply @preservesLimitsOfShape_of_reflects_of_preserves _ _ _ _ _ _ _ _ F yoneda ?_
-  exact preservesLimitsOfShape_of_natIso (Presheaf.compYonedaIsoYonedaCompLan F).symm
+  apply @preservesLimitsOfShape_of_reflects_of_preserves _ _ _ _ _ _ _ _ F uliftYoneda.{u} ?_
+  exact preservesLimitsOfShape_of_natIso
+    (Presheaf.compULiftYonedaIsoULiftYonedaCompLan.{u} F).symm
 
 /-- `F : C ⥤ D ⥤ E` preserves finite limits if it does for each `d : D`. -/
 lemma preservesFiniteLimits_of_evaluation {D : Type*} [Category D] {E : Type*} [Category E]

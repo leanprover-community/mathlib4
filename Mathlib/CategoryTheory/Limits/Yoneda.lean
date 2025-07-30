@@ -20,7 +20,7 @@ assert_not_exists AddCommMonoid
 
 open Opposite CategoryTheory Limits
 
-universe t w v u
+universe t w w' v u
 
 namespace CategoryTheory
 
@@ -187,6 +187,14 @@ noncomputable instance yonedaFunctor_reflectsLimits :
 
 noncomputable instance coyonedaFunctor_reflectsLimits :
     ReflectsLimitsOfSize.{t, w} (@coyoneda C _) := inferInstance
+
+instance uliftYonedaFunctor_preservesLimits :
+    PreservesLimitsOfSize.{t, w} (uliftYoneda.{w'} : C ⥤ _) := by
+  apply preservesLimits_of_evaluation
+  intro K
+  have : PreservesLimitsOfSize.{t, w} (uliftFunctor.{w', v}) := sorry
+  change PreservesLimitsOfSize.{t, w} (coyoneda.obj K ⋙ uliftFunctor.{w'})
+  infer_instance
 
 namespace Functor
 
