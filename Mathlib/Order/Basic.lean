@@ -449,6 +449,13 @@ theorem forall_gt_iff_le : (∀ ⦃c⦄, a < c → b < c) ↔ b ≤ a :=
 @[deprecated (since := "2025-06-07")] alias le_of_forall_lt' := le_of_forall_gt
 @[deprecated (since := "2025-06-07")] alias forall_lt_iff_le' := forall_gt_iff_le
 
+theorem le_of_forall_ne (H : ∀ c < a, c ≠ b) : a ≤ b := by
+  by_contra hb
+  exact H b (lt_of_not_ge hb) rfl
+
+theorem le_iff_forall_ne : (∀ c < a, c ≠ b) ↔ a ≤ b :=
+  ⟨le_of_forall_ne, fun ha _ hc ↦ (hc.trans_le ha).ne⟩
+
 theorem eq_of_forall_lt_iff (h : ∀ c, c < a ↔ c < b) : a = b :=
   (le_of_forall_lt fun _ ↦ (h _).1).antisymm <| le_of_forall_lt fun _ ↦ (h _).2
 
