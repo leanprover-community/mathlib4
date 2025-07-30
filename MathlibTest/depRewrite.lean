@@ -231,14 +231,17 @@ theorem let_defeq_test (b : Nat) (eq : 1 = b) (f : (n : Nat) → n = 1 → Nat) 
   guard_target = let n := b; P (f n _)
   exact test_sorry
 
+-- Test definitional equalities that get broken by rewriting.
 example (b : Bool) (h : true = b)
     (s : Bool → Prop)
     (q : (c : Bool) → s c → Prop)
     (f : (h : s (true || !false)) → q true h → Bool) :
     ∀ (i : s (true || true)) (u : q (true || !true) i), s (f i u) := by
-  rw! [h]
+  rewrite! [h]
+  guard_target = ∀ (i : s (b || b)) (u : q (b || !b) _), s (f _ _)
   exact test_sorry
 
+-- As above.
 example (b : Bool) (h : true = b)
     (s : Bool → Prop)
     (q : (c : Bool) → s c → Prop)
@@ -246,9 +249,11 @@ example (b : Bool) (h : true = b)
     (j : (h : s (true || false)) → (i : q (!false) h) → (k : f h i = true) → False) :
     ∀ (i : s (true || true)) (u : q (true || !true) i)
       (k : f i u = true), False.elim.{1} (j i u k) := by
-  rw! [h]
+  rewrite! [h]
+  guard_target = ∀ (i : s (b || b)) (u : q (b || !b) _) (k : f _ _ = b), False.elim.{1} _
   exact test_sorry
 
+-- As above.
 example (b : Bool) (h : true = b)
     (s : Bool → Prop)
     (q : (c : Bool) → s c → Prop)
@@ -256,5 +261,36 @@ example (b : Bool) (h : true = b)
     (j : (c : Bool) → (h : s (true || c)) → (i : q (!false) h) → (k : f h i = !c) → False) :
     ∀ (i : s (true || true)) (u : q (true || !true) i)
       (k : f i u = true), False.elim.{1} (j (!true) i u k) := by
-  rw! [h]
+  rewrite! [h]
+  guard_target = ∀ (i : s (b || b)) (u : q (b || !b) _) (k : f _ _ = b), False.elim.{1} _
+  exact test_sorry
+
+-- Rewrite in nested lets whose values and types depend on prior lets.
+#guard_msgs in
+example
+    (F : Nat → Type)
+    (G : (n : Nat) → F n → Type)
+    (r : (n : Nat) → (f : F n) → G n f → Nat)
+    (f : F n) (g : G n f) :
+    P <|
+      let a : Nat := n
+      let B : Type := G a f
+      let c : B := g
+      let c' : G n f := g
+      r n f c = r n f c' := by
+  rewrite! (castMode := .all) [eq]
+  exact test_sorry
+
+/-! ## Tests for `occs` -/
+
+-- Test `.pos`.
+example (f : Nat → Nat → Nat) : P (f (id n) (id n)) := by
+  rewrite! (occs := .pos [1]) [eq]
+  guard_target =ₐ P (f (id m) (id n))
+  exact test_sorry
+
+-- Test `.neg`.
+example (f : Nat → Nat → Nat) : P (f (id n) (id n)) := by
+  rewrite! (occs := .neg [1]) [eq]
+  guard_target =ₐ P (f (id n) (id m))
   exact test_sorry
