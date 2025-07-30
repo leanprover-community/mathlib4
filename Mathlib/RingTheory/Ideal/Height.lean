@@ -130,11 +130,11 @@ lemma Ideal.height_le_ringKrullDim_of_ne_top {I : Ideal R} (h : I ≠ ⊤) :
   simpa using iInf₂_le _ hP
 
 /-- In a trivial commutative ring, the height of any ideal is `∞`. -/
-lemma Ideal.height_of_bot_eq_top_in_subsingleton [Subsingleton R] : I.height = ⊤ := by
+lemma Ideal.height_of_subsingleton [Subsingleton R] : I.height = ⊤ := by
   rw [Subsingleton.elim I ⊤, Ideal.height_top]
 
 /-- In a nontrivial commutative ring, the height of the zero ideal is zero. -/
-lemma Ideal.height_of_bot_eq_bot [Nontrivial R] : (⊥ : Ideal R).height = 0 := by
+lemma Ideal.height_bot_eq_zero [Nontrivial R] : (⊥ : Ideal R).height = 0 := by
   have : Nonempty (Ideal.minimalPrimes (⊥ : Ideal R)) := Ideal.nonempty_minimalPrimes bot_ne_top
   let P := this.some
   simp only [height, primeHeight, Order.height]
