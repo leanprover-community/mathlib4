@@ -7,7 +7,6 @@ import Mathlib.Algebra.GroupWithZero.Idempotent
 import Mathlib.Algebra.Ring.Commute
 import Mathlib.Order.Notation
 import Mathlib.Tactic.Convert
-import Mathlib.Tactic.NoncommRing
 import Mathlib.Algebra.Group.Torsion
 
 /-!
@@ -98,7 +97,7 @@ theorem add_iff [NonUnitalNonAssocSemiring R] [IsCancelAdd R]
     {a b : R} (ha : IsIdempotentElem a) (hb : IsIdempotentElem b) :
     IsIdempotentElem (a + b) ↔ a * b + b * a = 0 := by
   refine ⟨fun h ↦ ?_, ha.add hb⟩
-  have := by simpa [add_mul, mul_add, ha.eq, hb.eq] using h.eq
+  have : a + b * a + (a * b + b) = a + b := by simpa [add_mul, mul_add, ha.eq, hb.eq] using h.eq
   rw [← add_right_cancel_iff (a := b), add_assoc, ← add_left_cancel_iff (a := a),
     ← add_assoc, add_add_add_comm]
   simpa [add_mul, mul_add, ha.eq, hb.eq] using h.eq
@@ -131,11 +130,11 @@ theorem sub_iff [NonUnitalRing R] [IsAddTorsionFree R] {p q : R}
     (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) :
     IsIdempotentElem (q - p) ↔ p * q = p ∧ q * p = p := by
   refine ⟨fun hqp ↦ ?_, fun ⟨h1, h2⟩ => hp.sub hq h1 h2⟩
-  have h := hp.add_iff hqp |>.mp ((add_sub_cancel p q).symm ▸ hq)
-  have hpq := by simpa using hp.commute_of_anticommute h |>.add_right <| .refl p
+  have h : p * (q - p) + (q - p) * p = 0 := hp.add_iff hqp |>.mp ((add_sub_cancel p q).symm ▸ hq)
+  have hpq : Commute p q := by simpa using hp.commute_of_anticommute h |>.add_right <| .refl p
   rw [hpq.eq, and_self, ← nsmul_right_inj two_ne_zero, ← zero_add (2 • p)]
   convert congrArg (· + 2 • p) h using 1
-  simp [sub_mul, mul_sub, hp.eq, hpq.eq]
-  noncomm_ring
+  simp [sub_mul, mul_sub, hp.eq, hpq.eq, two_nsmul,
+    sub_add, sub_sub]
 
 end IsIdempotentElem
