@@ -77,11 +77,7 @@ lemma right_fac_of_isStrictlyLE {X Y : CochainComplex C ℤ} (f : Q.obj X ⟶ Q.
       CochainComplex.truncLEMap g n ≫ Y.ιTruncLE n, ?_⟩
   · rw [Q.map_comp]
     infer_instance
-  · have eq := Q.congr_map (CochainComplex.ιTruncLE_naturality s n)
-    have eq' := Q.congr_map (CochainComplex.ιTruncLE_naturality g n)
-    simp only [Functor.map_comp] at eq eq'
-    simp only [Functor.map_comp, ← cancel_epi (Q.map (CochainComplex.truncLEMap s n) ≫
-      Q.map (CochainComplex.ιTruncLE X n)), IsIso.hom_inv_id_assoc, assoc, reassoc_of% eq, eq']
+  · simp
 
 /-- Any morphism `f : Q.obj X ⟶ Q.obj Y` in the derived category with `Y` strictly `≥ n`
 can be written as `f = Q.map g ≫ inv (Q.map s)` with `g : X ⟶ Y'` and `s : Y ⟶ Y'`

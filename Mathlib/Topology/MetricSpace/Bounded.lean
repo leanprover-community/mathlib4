@@ -31,7 +31,7 @@ This file contains one definition, and various results on boundedness in pseudo-
 metric, pseudo_metric, bounded, diameter, Heine-Borel theorem
 -/
 
-assert_not_exists Basis
+assert_not_exists Module.Basis
 
 open Set Filter Bornology
 open scoped ENNReal Uniformity Topology Pointwise

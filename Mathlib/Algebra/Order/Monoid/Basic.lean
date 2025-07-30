@@ -33,6 +33,15 @@ lemma Function.Injective.isOrderedMonoid [IsOrderedMonoid α] [One β] [Mul β]
   { mul_le_mul_left a b ab c := show f (c * a) ≤ f (c * b) by
       rw [mul, mul]; apply mul_le_mul_left'; exact ab }
 
+/-- Pullback an `IsOrderedMonoid` under a strictly monotone map. -/
+@[to_additive "Pullback an `IsOrderedAddMonoid` under a strictly monotone map."]
+lemma StrictMono.isOrderedMonoid [IsOrderedMonoid α] [CommMonoid β] [LinearOrder β]
+    (f : β → α) (hf : StrictMono f) (mul : ∀ x y, f (x * y) = f x * f y) :
+    IsOrderedMonoid β where
+  mul_le_mul_left _ _ h _ := by
+    simp_rw [← hf.le_iff_le, mul] at h ⊢
+    simpa using mul_le_mul_left' h _
+
 /-- Pullback an `IsOrderedCancelMonoid` under an injective map. -/
 @[to_additive Function.Injective.isOrderedCancelAddMonoid
     "Pullback an `IsOrderedCancelAddMonoid` under an injective map."]
@@ -47,6 +56,14 @@ lemma Function.Injective.isOrderedCancelMonoid [IsOrderedCancelMonoid α] [One �
   { __ := hf.isOrderedMonoid f one mul npow
     le_of_mul_le_mul_left a b c (bc : f (a * b) ≤ f (a * c)) :=
       (mul_le_mul_iff_left (f a)).1 (by rwa [← mul, ← mul]) }
+
+/-- Pullback an `IsOrderedCancelMonoid` under a strictly monotone map. -/
+@[to_additive "Pullback an `IsOrderedAddCancelMonoid` under a strictly monotone map."]
+lemma StrictMono.isOrderedCancelMonoid [IsOrderedCancelMonoid α] [CommMonoid β] [LinearOrder β]
+    (f : β → α) (hf : StrictMono f) (mul : ∀ x y, f (x * y) = f x * f y) :
+    IsOrderedCancelMonoid β where
+  __ := hf.isOrderedMonoid f mul
+  le_of_mul_le_mul_left a b c h := by simpa [← hf.le_iff_le, mul] using h
 
 @[deprecated (since := "2025-04-10")]
 alias Function.Injective.orderedCommMonoid := Function.Injective.isOrderedMonoid
