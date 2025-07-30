@@ -124,12 +124,8 @@ def _root_.Lean.Meta.Occurrences.allIn (s d : Nat) : Occurrences → Bool
   | .neg l => l.all fun p => p < s || s+d ≤ p
 
 def canUseCache (cacheOcc dCacheOcc currOcc : Nat) (occs : Occurrences) : Bool :=
-  if occs.allIn currOcc dCacheOcc then -- all occurrences hit
-    occs.allIn cacheOcc dCacheOcc
-  else if !occs.anyIn currOcc dCacheOcc then -- no occurrences hit
-    !occs.anyIn cacheOcc dCacheOcc
-  else
-    false
+  (occs.allIn currOcc dCacheOcc && occs.allIn cacheOcc dCacheOcc) ||
+  (!occs.anyIn currOcc dCacheOcc && !occs.anyIn cacheOcc dCacheOcc)
 
 /-- Monad for computing `dabstract`.
 The cache is for `visit` (not `visitAndCast`, which has two arguments),
@@ -255,21 +251,14 @@ partial def visit (e : Expr) (et? : Option Expr) : M Expr :=
     | .ok e' => pure m!"{e} => {e'} (et: {et?})"
     | .error _ => pure m!"{e} => 💥️") <| Meta.withIncRecDepth do
   let ctx ← read
-  match (← MonadCache.findCached? { val := e : ExprStructEq }) with
-  | some (eup, cacheOcc, dCacheOcc) =>
+  if let some (eup, cacheOcc, dCacheOcc) ← MonadCache.findCached? { val := e : ExprStructEq } then
     if canUseCache cacheOcc dCacheOcc (← get) ctx.cfg.occs then
       modify (· + dCacheOcc)
       return eup
-    else
-      let initOccs ← get
-      let eup ← visitInner e et?
-      MonadCache.cache { val := e : ExprStructEq } (eup, initOccs, (← get) - initOccs)
-      return eup
-  | none => do
-    let initOccs ← get
-    let eup ← visitInner e et?
-    MonadCache.cache { val := e : ExprStructEq } (eup, initOccs, (← get) - initOccs)
-    return eup
+  let initOccs ← get
+  let eup ← visitInner e et?
+  MonadCache.cache { val := e : ExprStructEq } (eup, initOccs, (← get) - initOccs)
+  return eup
 
 -- TODO(WN): further speedup might come from returning whether anything
 -- was rewritten inside a `visit`,
