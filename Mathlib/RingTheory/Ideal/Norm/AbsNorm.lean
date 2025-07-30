@@ -8,7 +8,7 @@ import Mathlib.LinearAlgebra.FreeModule.Determinant
 import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
 import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 import Mathlib.RingTheory.DedekindDomain.Dvr
-import Mathlib.RingTheory.DedekindDomain.Ideal
+import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 import Mathlib.RingTheory.Ideal.Basis
 import Mathlib.RingTheory.Norm.Basic
 import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
