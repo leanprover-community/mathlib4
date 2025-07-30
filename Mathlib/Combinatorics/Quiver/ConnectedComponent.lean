@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
 import Mathlib.Combinatorics.Quiver.Subquiver
-import Mathlib.Combinatorics.Quiver.Path
+import Mathlib.Combinatorics.Quiver.Path.Basic
 import Mathlib.Combinatorics.Quiver.Symmetric
 
 /-!
