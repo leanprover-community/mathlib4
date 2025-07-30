@@ -89,7 +89,7 @@ theorem bijective_of_isAlgClosed_of_isLocalRing
      algebraMap_eq_smul_one, hf₁, sub_self]
   have hf₃ : IsIdempotentElem (1 - f 1) := by
     apply IsIdempotentElem.one_sub
-    rw [IsIdempotentElem, ← smul_eq_mul, ← map_smul, hf₁]
+    rw [isIdempotentElem_iff, ← smul_eq_mul, ← map_smul, hf₁]
   have hf₄ : f 1 = 1 := by
     obtain ⟨n, hn⟩ := hA
     have : (1 - f 1) ^ n = 0 := by

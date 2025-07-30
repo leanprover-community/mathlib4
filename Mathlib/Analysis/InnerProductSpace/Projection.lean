@@ -606,7 +606,7 @@ theorem starProjection_eq_self_iff {v : E} : K.starProjection v = v ↔ v ∈ K 
 variable (K) in
 @[simp]
 lemma isIdempotentElem_starProjection : IsIdempotentElem K.starProjection :=
-  ContinuousLinearMap.ext fun x ↦ starProjection_eq_self_iff.mpr <| by simp
+  ⟨ContinuousLinearMap.ext fun x ↦ starProjection_eq_self_iff.mpr <| by simp⟩
 
 @[simp]
 lemma range_starProjection (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
