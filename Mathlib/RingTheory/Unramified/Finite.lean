@@ -69,7 +69,7 @@ theorem iff_exists_tensorProduct [EssFiniteType R S] :
     rw [← sub_sub_self 1 t] at ht₁; generalize 1 - t = e at *
     constructor
     · suffices e ∈ (Submodule.span (S ⊗[R] S) {1 - e}).annihilator by
-        simpa [IsIdempotentElem, mul_sub, sub_eq_zero, eq_comm, -Ideal.submodule_span_eq,
+        simpa [isIdempotentElem_iff, mul_sub, sub_eq_zero, eq_comm, -Ideal.submodule_span_eq,
           Submodule.mem_annihilator_span_singleton] using this
       exact (show Ideal.span _ ≤ _ by simpa only [Ideal.span_le, Set.range_subset_iff,
         Submodule.mem_annihilator_span_singleton, SetLike.mem_coe]) ht₂
