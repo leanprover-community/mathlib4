@@ -30,11 +30,10 @@ open scoped ContDiff Topology
 
 -- Let `E` be a topological vector bundle over a topological space `B`,
 -- with a continuous Riemannian structure.
--- Continuity is not used for the definition, but will be needed for continuity statements later.
+-- (Continuity is only used for proving that Gram-Schmidt preserves continuity of sections.)
 variable {B F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
   {E : B → Type*} [TopologicalSpace (TotalSpace F E)] [∀ x, NormedAddCommGroup (E x)]
   [∀ x, InnerProductSpace ℝ (E x)]
-
 variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrderBot ι] [WellFoundedLT ι]
 
 local notation "⟪" x ", " y "⟫" => inner ℝ x y
@@ -265,3 +264,118 @@ theorem gramSchmidtOrthonormalBasis_apply_of_orthonormal [Fintype ι]
   simp [gramSchmidtNormed_apply_of_orthonormal hs]
 
 end VectorBundle
+
+/-! The Gram-Schmidt process preserves continuity of sections -/
+section continuity
+
+variable [TopologicalSpace B]
+  [FiberBundle F E] [VectorBundle ℝ F E] [IsContinuousRiemannianBundle F E]
+
+-- TODO: need continuity analogues of ContMDiff.{smul_section,sub_section}
+
+section helper
+
+variable {s t : (x : B) → E x} {u : Set B} {x : B}
+
+-- TODO: give a much better name!
+lemma continuousWithinAt_aux
+    (hs : ContinuousWithinAt (T% s) u x) (ht : ContinuousWithinAt (T% t) u x) (hs' : s x ≠ 0) :
+    ContinuousWithinAt (fun x ↦ ⟪s x, t x⟫ / (‖s x‖ ^ 2)) u x := by
+  have := (hs.inner_bundle ht).smul ((hs.inner_bundle hs).inv₀ (inner_self_ne_zero.mpr hs'))
+  apply this.congr
+  · intro y hy
+    congr
+    simp [inner_self_eq_norm_sq_to_K]
+  · congr
+    rw [← real_inner_self_eq_norm_sq]
+
+lemma continuousAt_aux (hs : ContinuousAt (T% s) x) (ht : ContinuousAt (T% t) x) (hs' : s x ≠ 0) :
+    ContinuousAt (fun x ↦ ⟪s x, t x⟫ / (‖s x‖ ^ 2)) x := by
+  rw [← continuousWithinAt_univ] at hs ht ⊢
+  exact continuousWithinAt_aux hs ht hs'
+
+def ContinuousWithinAt.starProjection
+    (hs : ContinuousWithinAt (T% s) u x) (ht : ContinuousWithinAt (T% t) u x) (hs' : s x ≠ 0) :
+    -- TODO: leaving out the type ascription yields a horrible error message, add test and fix!
+    letI S : (x : B) → E x := fun x ↦ (Submodule.span ℝ {s x}).orthogonalProjection (t x);
+    ContinuousWithinAt (T% S) u x := by
+  simp [Submodule.starProjection_singleton]
+  sorry -- missing API! exact (continuousWithinAt_aux hs ht hs').smul_section hs
+
+lemma continuousWithinAt_inner (hs : ContinuousWithinAt (T% s) u x) :
+    ContinuousWithinAt (‖s ·‖) u x := by
+  convert (Real.continuous_sqrt.continuousWithinAt).comp (hs.inner_bundle hs) (Set.mapsTo_image _ u)
+  simp [← norm_eq_sqrt_real_inner]
+
+end helper
+
+variable {s : ι → (x : B) → E x} {u : Set B} {x : B} {i : ι}
+
+attribute [local instance] IsWellOrder.toHasWellFounded
+
+lemma gramSchmidt_continuousWithinAt (hs : ∀ i, ContinuousWithinAt (T% (s i)) u x)
+    {i : ι} (hs' : LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι))) :
+    ContinuousWithinAt (T% (VectorBundle.gramSchmidt s i)) u x := by
+  sorry /- simp_rw [VectorBundle.gramSchmidt_def]
+  apply (hs i).sub_section
+  apply ContMDiffWithinAt.sum_section
+  intro i' hi'
+  let aux : { x // x ∈ Set.Iic i' } → { x // x ∈ Set.Iic i } :=
+    fun ⟨x, hx⟩ ↦ ⟨x, hx.trans (Finset.mem_Iio.mp hi').le⟩
+  have : LinearIndependent ℝ ((fun x_1 ↦ s x_1 x) ∘ @Subtype.val ι fun x ↦ x ∈ Set.Iic i') := by
+    apply hs'.comp aux
+    intro ⟨x, hx⟩ ⟨x', hx'⟩ h
+    simp_all only [Subtype.mk.injEq, aux]
+  apply ContMDiffWithinAt.orthogonalProjection (gramSchmidt_contMDiffWithinAt hs this) (hs i)
+  apply VectorBundle.gramSchmidt_ne_zero_coe _ this -/
+-- termination_by i
+-- decreasing_by exact (LocallyFiniteOrderBot.finset_mem_Iio i i').mp hi'
+
+lemma gramSchmidt_continuousAt (hs : ∀ i, ContinuousAt (T% (s i)) x)
+    (hs' : LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι))) :
+    ContinuousAt (T% (VectorBundle.gramSchmidt s i)) x := by
+  simp_rw [← continuousWithinAt_univ] at hs ⊢
+  exact gramSchmidt_continuousWithinAt (fun i ↦ hs i) hs'
+
+lemma gramSchmidt_continuousOn (hs : ∀ i, ContinuousOn (T% (s i)) u)
+    (hs' : ∀ x ∈ u, LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι))) :
+    ContinuousOn (T% (VectorBundle.gramSchmidt s i)) u :=
+  fun x hx ↦ gramSchmidt_continuousWithinAt (fun i ↦ hs i x hx) (hs' _ hx)
+
+lemma gramSchmidt_continuous (hs : ∀ i, Continuous (T% (s i)))
+    (hs' : ∀ x, LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι))) :
+    Continuous (T% (VectorBundle.gramSchmidt s i)) := by
+  simp_rw [continuous_iff_continuousAt] at hs ⊢
+  exact fun x ↦ gramSchmidt_continuousAt (fun i ↦ hs i x) (hs' x)
+
+lemma gramSchmidtNormed_continuousWithinAt (hs : ∀ i, ContinuousWithinAt (T% (s i)) u x)
+    (hs' : LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι))) :
+    ContinuousWithinAt (T% (VectorBundle.gramSchmidtNormed s i)) u x := by
+  have : ContinuousWithinAt (T%
+      (fun x ↦ ‖VectorBundle.gramSchmidt s i x‖⁻¹ • VectorBundle.gramSchmidt s i x)) u x := by
+    sorry
+  --   refine ContMDiffWithinAt.smul_section ?_ (gramSchmidt_contMDiffWithinAt hs hs')
+  --   refine ContMDiffWithinAt.inv₀ ?_ ?_
+  --   · refine contMDiffWithinAt_inner (gramSchmidt_contMDiffWithinAt hs hs') ?_
+  --     simpa using InnerProductSpace.gramSchmidt_ne_zero_coe i hs'
+  --   · simpa using InnerProductSpace.gramSchmidt_ne_zero_coe i hs'
+  exact this.congr (fun y hy ↦ by congr) (by congr)
+
+lemma gramSchmidtNormed_continuousAt (hs : ∀ i, ContinuousAt (T% (s i)) x)
+    (hs' : LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι))) :
+    ContinuousAt (T% (VectorBundle.gramSchmidtNormed s i)) x := by
+  simp_rw [← continuousWithinAt_univ] at hs ⊢
+  exact gramSchmidtNormed_continuousWithinAt (fun i ↦ hs i) hs'
+
+lemma gramSchmidtNormed_continuousOn (hs : ∀ i, ContinuousOn (T% (s i)) u)
+    (hs' : ∀ x ∈ u, LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι))) :
+    ContinuousOn (T% (VectorBundle.gramSchmidtNormed s i)) u :=
+  fun x hx ↦ gramSchmidtNormed_continuousWithinAt (fun i ↦ hs i x hx) (hs' _ hx)
+
+lemma gramSchmidtNormed_continuous (hs : ∀ i, Continuous (T% (s i)))
+    (hs' : ∀ x, LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι))) :
+    Continuous (T% (VectorBundle.gramSchmidtNormed s i)) := by
+  simp_rw [continuous_iff_continuousAt] at hs ⊢
+  exact fun x ↦ gramSchmidtNormed_continuousAt (fun i ↦ hs i x) (hs' x)
+
+end continuity
