@@ -391,13 +391,11 @@ variable
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
   {E : B → Type*} [TopologicalSpace (TotalSpace F E)] [∀ x, NormedAddCommGroup (E x)]
   [∀ x, InnerProductSpace ℝ (E x)] [FiberBundle F E] [VectorBundle ℝ F E]
-  [IsManifold IB k B] [ContMDiffVectorBundle n F E IB]
+  [IsManifold IB k B]
   [IsContMDiffRiemannianBundle IB n F E]
 
 -- TODO: fix pretty-printing of the new differential geometry elaborators!
 set_option linter.style.commandStart false
-
-variable [IsContMDiffRiemannianBundle IB n F E]
 
 section helper
 
@@ -420,7 +418,7 @@ lemma contMDiffAt_aux (hs : CMDiffAt n (T% s) x) (ht : CMDiffAt n (T% t) x) (hs'
   rw [← contMDiffWithinAt_univ] at hs ht ⊢
   exact contMDiffWithinAt_aux hs ht hs'
 
-def ContMDiffWithinAt.orthogonalProjection
+def ContMDiffWithinAt.starProjection
     (hs : CMDiffAt[u] n (T% s) x) (ht : CMDiffAt[u] n (T% t) x) (hs' : s x ≠ 0) :
     -- TODO: leaving out the type ascription yields a horrible error message, add test and fix!
     letI S : (x : B) → E x := fun x ↦ (Submodule.span ℝ {s x}).starProjection (t x);
@@ -449,7 +447,11 @@ attribute [local instance] IsWellOrder.toHasWellFounded
 lemma gramSchmidt_contMDiffWithinAt (hs : ∀ i, CMDiffAt[u] n (T% (s i)) x)
     {i : ι} (hs' : LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι))) :
     CMDiffAt[u] n (T% (VectorBundle.gramSchmidt s i)) x := by
-  sorry /-simp_rw [VectorBundle.gramSchmidt_def]
+  suffices CMDiffAt[u] n (T% (fun x ↦ (s i x -
+      ∑ i_1 ∈ Iio i, (span ℝ {VectorBundle.gramSchmidt s i_1 x}).starProjection (s i x)))) x by
+    apply ContMDiffWithinAt.congr this
+    · simp_rw [VectorBundle.gramSchmidt_def s i]; intros; trivial
+    · rw [VectorBundle.gramSchmidt_def s i]
   apply (hs i).sub_section
   apply ContMDiffWithinAt.sum_section
   intro i' hi'
@@ -459,10 +461,10 @@ lemma gramSchmidt_contMDiffWithinAt (hs : ∀ i, CMDiffAt[u] n (T% (s i)) x)
     apply hs'.comp aux
     intro ⟨x, hx⟩ ⟨x', hx'⟩ h
     simp_all only [Subtype.mk.injEq, aux]
-  apply ContMDiffWithinAt.orthogonalProjection (gramSchmidt_contMDiffWithinAt hs this) (hs i)
+  apply ContMDiffWithinAt.starProjection (gramSchmidt_contMDiffWithinAt hs this) (hs i)
   apply VectorBundle.gramSchmidt_ne_zero_coe _ this
 termination_by i
-decreasing_by exact (LocallyFiniteOrderBot.finset_mem_Iio i i').mp hi' -/
+decreasing_by exact (LocallyFiniteOrderBot.finset_mem_Iio i i').mp hi'
 
 lemma gramSchmidt_contMDiffAt (hs : ∀ i, CMDiffAt n (T% (s i)) x)
     (hs' : LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι))) :
