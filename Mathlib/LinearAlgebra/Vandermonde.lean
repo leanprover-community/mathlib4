@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Peter Nelson
 -/
 import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.GeomSum
 import Mathlib.LinearAlgebra.Matrix.Block
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.Matrix.Nondegenerate
