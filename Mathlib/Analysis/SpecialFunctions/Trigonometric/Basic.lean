@@ -993,6 +993,11 @@ theorem sin_eq_zero_iff_cos_eq {z : ℂ} : sin z = 0 ↔ cos z = 1 ∨ cos z = -
   rw [← mul_self_eq_one_iff, ← sin_sq_add_cos_sq, sq, sq, ← sub_eq_iff_eq_add, sub_self]
   exact ⟨fun h => by rw [h, mul_zero], eq_zero_of_mul_self_eq_zero ∘ Eq.symm⟩
 
+theorem cos_eq_zero_iff_sin_eq {z : ℂ} : cos z = 0 ↔ sin z = 1 ∨ sin z = -1 := by
+  rw [← mul_self_eq_one_iff, ← sin_sq_add_cos_sq, sq, sq, add_comm, 
+      ← sub_eq_iff_eq_add, sub_self]
+  exact ⟨fun h => by rw [h, mul_zero], eq_zero_of_mul_self_eq_zero ∘ Eq.symm⟩
+
 @[simp]
 theorem cos_pi_div_two : cos (π / 2) = 0 :=
   calc
