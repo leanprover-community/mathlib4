@@ -602,8 +602,9 @@ theorem add_le_iff_of_isSuccLimit {a b c : Ordinal} (hb : IsSuccLimit b) :
 @[deprecated (since := "2025-07-08")]
 alias add_le_of_limit := add_le_iff_of_isSuccLimit
 
-theorem isNormal_add_right (a : Ordinal) : IsNormal (a + ·) :=
-  ⟨fun b => (add_lt_add_iff_left a).2 (lt_succ b), fun _b l _c => add_le_iff_of_isSuccLimit l⟩
+theorem isNormal_add_right (a : Ordinal) : IsNormal (a + ·) := by
+  rw [isNormal_iff_strictMono_limit]
+  exact ⟨add_left_strictMono, fun _ l _ ↦ (add_le_iff_of_isSuccLimit l).2⟩
 
 theorem isSuccLimit_add (a : Ordinal) {b : Ordinal} : IsSuccLimit b → IsSuccLimit (a + b) :=
   (isNormal_add_right a).isSuccLimit

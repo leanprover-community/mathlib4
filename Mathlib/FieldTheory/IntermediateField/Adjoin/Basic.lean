@@ -491,8 +491,7 @@ theorem adjoin_minpoly_coeff_of_exists_primitive_element
     intro K
     have := adjoin.finrank (.of_finite K α)
     rw [adjoin_eq_top_of_adjoin_eq_top F hprim] at this
-    erw [finrank_top K E] at this
-    exact this
+    simp_all
   refine eq_of_le_of_finrank_le' hsub ?_
   simp_rw [finrank_eq]
   convert natDegree_le_of_dvd dvd_g
@@ -588,8 +587,9 @@ noncomputable def fintypeOfAlgHomAdjoinIntegral (h : IsIntegral F α) : Fintype 
 
 theorem card_algHom_adjoin_integral (h : IsIntegral F α) (h_sep : IsSeparable F α)
     (h_splits : (minpoly F α).Splits (algebraMap F K)) :
-    @Fintype.card (F⟮α⟯ →ₐ[F] K) (fintypeOfAlgHomAdjoinIntegral F h) = (minpoly F α).natDegree := by
-  rw [AlgHom.card_of_powerBasis] <;>
+    Nat.card (F⟮α⟯ →ₐ[F] K) = (minpoly F α).natDegree := by
+  let _ : Fintype (F⟮α⟯ →ₐ[F] K) := fintypeOfAlgHomAdjoinIntegral F h
+  rw [Nat.card_eq_fintype_card, AlgHom.card_of_powerBasis] <;>
     simp only [IsSeparable, adjoin.powerBasis_dim, adjoin.powerBasis_gen, minpoly_gen, h_splits]
   exact h_sep
 
