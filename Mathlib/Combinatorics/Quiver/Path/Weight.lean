@@ -51,7 +51,7 @@ attribute [to_additive existing addWeight] weight
 def weightOfEPs (w : V → V → R) : ∀ {i j : V}, Path i j → R :=
   weight (fun {i j} (_ : i ⟶ j) => w i j)
 
-@[simp]
+@[to_additive (attr := simp) addWeight_nil]
 lemma weight_nil (w : ∀ {i j : V}, (i ⟶ j) → R) (a : V) :
     weight w (Path.nil : Path a a) = 1 := by
   simp [weight]
