@@ -118,6 +118,9 @@ theorem mul_lt_mul_iff_right [MulRightStrictMono α]
     b * a < c * a ↔ b < c :=
   rel_iff_cov α α (swap (· * ·)) (· < ·) a
 
+-- Note: in this section, we use `@[gcongr high]` so that these lemmas have a higher priority than
+-- lemmas like `mul_lt_mul_of_pos_left`, which have an extra side condition.
+
 @[to_additive (attr := gcongr high) add_lt_add_left]
 theorem mul_lt_mul_left' [MulLeftStrictMono α] {b c : α} (bc : b < c) (a : α) :
     a * b < a * c :=
@@ -162,6 +165,9 @@ lemma mul_left_strictMono [MulLeftStrictMono α] {a : α} : StrictMono (a * ·) 
 @[to_additive]
 lemma mul_right_strictMono [MulRightStrictMono α] {a : α} : StrictMono (· * a) :=
   fun _ _ h ↦ mul_lt_mul_right' h _
+
+-- Note: in this section, we use `@[gcongr high]` so that these lemmas have a higher priority than
+-- lemmas like `mul_le_mul_of_nonneg`, which have an extra side condition.
 
 @[to_additive (attr := gcongr high)]
 theorem mul_lt_mul_of_lt_of_lt [MulLeftStrictMono α]
