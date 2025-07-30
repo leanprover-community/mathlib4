@@ -140,6 +140,8 @@ lemma sum_outerProduct (f g : ι → E) (x : E) :
     (∑ i, outerProduct 𝕜 (f i) (g i)) x = ∑ i, outerProduct 𝕜 (f i) (g i) x := by
   simp only [sum_apply]
 
+variable {𝕜}
+
 lemma sum_outerProduct_OrthonormalBasis (b : OrthonormalBasis ι 𝕜 E) :
     ∑i, outerProduct 𝕜 (b i) (b i) = 1 := by
   ext x
@@ -158,6 +160,6 @@ lemma trace_outerProduct (x y : E) (b : OrthonormalBasis ι 𝕜 E) :
     intro i
     apply mul_comm
   simp +contextual [this, ← inner_smul_right, ← outerProduct_def]
-  rw [← inner_sum, ← sum_outerProduct, sum_outerProduct_OrthonormalBasis 𝕜 b, Module.End.one_apply]
+  rw [← inner_sum, ← sum_outerProduct, sum_outerProduct_OrthonormalBasis b, Module.End.one_apply]
 
 end LinearMap
