@@ -151,7 +151,7 @@ theorem reduceCyclically_sound (w : List (α × Bool)) :
       exists [a], [b]
     case isFalse h =>
       rw [isCyclicallyReduced_cons_append_iff]
-      trivial
+      simp_all
 
 >>>>>>> c961bb07ae (feat(GroupTheory/FreeGroup): add cyclical reduction)
 end FreeGroup
