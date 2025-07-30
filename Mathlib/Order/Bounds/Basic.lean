@@ -119,6 +119,12 @@ abbrev IsGreatest.orderTop (h : IsGreatest s a) :
   top := ⟨a, h.1⟩
   le_top := Subtype.forall.2 h.2
 
+theorem IsLeast.minimal {P : Set α} {x : α} (h : IsLeast P x) : Minimal (· ∈ P) x :=
+  ⟨h.1, fun _ hy _ ↦ h.2 hy⟩
+
+theorem IsGreatest.maximal {P : Set α} {x : α} (h : IsGreatest P x) : Maximal (· ∈ P) x :=
+  ⟨h.1, fun _ hy _ ↦ h.2 hy⟩
+
 theorem Minimal.isLeast [LinearOrder γ] {P : γ → Prop} {x : γ} (h : Minimal P x) :
     IsLeast {y | P y} x := by
   refine ⟨h.1, fun y hy ↦ ?_⟩
@@ -128,6 +134,14 @@ theorem Minimal.isLeast [LinearOrder γ] {P : γ → Prop} {x : γ} (h : Minimal
 theorem Maximal.isGreatest [LinearOrder γ] {P : γ → Prop} {x : γ} (h : Maximal P x) :
     IsGreatest {y | P y} x :=
   Minimal.isLeast (γ := γᵒᵈ) h
+
+theorem minimal_iff_isLeast [LinearOrder γ] {P : γ → Prop} {x : γ} :
+    Minimal P x ↔ IsLeast {y | P y} x :=
+  ⟨Minimal.isLeast, IsLeast.minimal⟩
+
+theorem maximal_iff_isGreatest [LinearOrder γ] {P : γ → Prop} {x : γ} :
+    Maximal P x ↔ IsGreatest {y | P y} x :=
+  ⟨Maximal.isGreatest, IsGreatest.maximal⟩
 
 theorem isLUB_congr (h : upperBounds s = upperBounds t) : IsLUB s a ↔ IsLUB t a := by
   rw [IsLUB, IsLUB, h]
