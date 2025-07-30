@@ -330,8 +330,11 @@ def reorderMulThree' {α : Type _} [Mul α] (x y z : α) : α := x * y * z
 @[to_additive (reorder := 3 4 5)]
 alias reorderMulThree_alias := reorderMulThree
 
+@[to_additive (reorder := 3 4 2)]
+alias reorderMulThree_alias' := reorderMulThree
+
 @[to_additive (reorder := 3 4 5)]
-def reorderMulThree_alias' {α : Type _} [Mul α] (x y : α) : α → α := reorderMulThree x y
+def reorderMulThree_alias'' {α : Type _} [Mul α] (x y : α) : α → α := reorderMulThree x y
 
 example {α : Type _} [Add α] (x y z : α) : reorderAddThree z x y = x + y + z := rfl
 

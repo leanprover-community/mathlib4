@@ -645,7 +645,8 @@ It also expands all kernel projections that have as head a constant `n` in `reor
 def expand (e : Expr) : MetaM Expr := do
   let env ← getEnv
   let reorderFn : Name → List (List ℕ) := fun nm ↦ (reorderAttr.find? env nm |>.getD [])
-  let e₂ ← Lean.Meta.transform (input := e) (post := fun e => return .done e) fun e ↦
+  let e₂ ← Lean.Meta.transform (input := e) (skipConstInApp  := true)
+    (post := fun e => return .done e) fun e ↦
     e.withApp fun f args ↦ do
     match f with
     | .proj n i s =>
@@ -663,9 +664,7 @@ def expand (e : Expr) : MetaM Expr := do
         -- no need to expand if nothing needs reordering
         return .continue
       let needed_n := reorder.flatten.foldr Nat.max 0 + 1
-      -- the second disjunct is a temporary fix to avoid infinite loops. We may need to use
-      -- `replaceRec` or something similar to not change the head of an application
-      if needed_n ≤ args.size || args.size == 0 then
+      if needed_n ≤ args.size then
         return .continue
       else
         -- in this case, we need to reorder arguments that are not yet
