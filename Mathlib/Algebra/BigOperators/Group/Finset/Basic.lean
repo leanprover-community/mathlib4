@@ -369,19 +369,9 @@ lemma prod_congr_of_eq_on_inter {ι M : Type*} {s₁ s₂ : Finset ι} {f g : ι
 theorem prod_eq_mul_of_mem {s : Finset ι} {f : ι → M} (a b : ι) (ha : a ∈ s) (hb : b ∈ s)
     (hn : a ≠ b) (h₀ : ∀ c ∈ s, c ≠ a ∧ c ≠ b → f c = 1) : ∏ x ∈ s, f x = f a * f b := by
   haveI := Classical.decEq ι; let s' := ({a, b} : Finset ι)
-  have hu : s' ⊆ s := by
-    refine insert_subset_iff.mpr ?_
-    apply And.intro ha
-    apply singleton_subset_iff.mpr hb
-  have hf : ∀ c ∈ s, c ∉ s' → f c = 1 := by
-    intro c hc hcs
-    apply h₀ c hc
-    apply not_or.mp
-    intro hab
-    apply hcs
-    rw [mem_insert, mem_singleton]
-    exact hab
-  rw [← prod_subset hu hf]
+  have hu : s' ⊆ s := by grind [Finset.insert_subset_iff, Finset.singleton_subset_iff]
+  have hf : ∀ c ∈ s, c ∉ s' → f c = 1 := by grind [Finset.mem_insert, Finset.mem_singleton]
+  rw [← Finset.prod_subset hu hf]
   exact Finset.prod_pair hn
 
 @[to_additive]
