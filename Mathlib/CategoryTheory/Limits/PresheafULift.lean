@@ -504,8 +504,6 @@ lemma presheafHom_naturality {P Q : Cᵒᵖ ⥤ Type max w v₁ v₂} (f : P ⟶
 
 variable [∀ (P : Cᵒᵖ ⥤ Type max w v₁ v₂), F.op.HasLeftKanExtension P]
 
-#exit
-
 /-- Given functors `F : C ⥤ D` and `G : (Cᵒᵖ ⥤ Type v₁) ⥤ (Dᵒᵖ ⥤ Type v₁)`,
 and a natural transformation `φ : F ⋙ yoneda ⟶ yoneda ⋙ G`, this is
 the canonical natural transformation `F.op.lan ⟶ G`, which is part of the
@@ -520,30 +518,34 @@ noncomputable def natTrans : F.op.lan ⟶ G where
     rw [Functor.descOfIsLeftKanExtension_fac_assoc, ← reassoc_of% eq,
       Functor.descOfIsLeftKanExtension_fac, presheafHom_naturality]
 
-lemma natTrans_app_yoneda_obj (X : C) : (natTrans φ).app (yoneda.obj X) =
-    (compYonedaIsoYonedaCompLan F).inv.app X ≫ φ.app X := by
+lemma natTrans_app_uliftYoneda_obj (X : C) :
+    (natTrans.{w} φ).app (uliftYoneda.{max w v₂}.obj X) =
+      (compULiftYonedaIsoULiftYonedaCompLan.{w} F).inv.app X ≫ φ.app X := by
   dsimp [natTrans]
-  apply (F.op.lan.obj (yoneda.obj X)).hom_ext_of_isLeftKanExtension (F.op.lanUnit.app _)
+  apply (F.op.lan.obj (uliftYoneda.obj X)).hom_ext_of_isLeftKanExtension (F.op.lanUnit.app _)
   rw [Functor.descOfIsLeftKanExtension_fac]
-  apply yonedaEquiv.injective
-  rw [yonedaEquiv_presheafHom_yoneda_obj]
-  exact congr_arg _ (compYonedaIsoYonedaCompLan_inv_app_app_apply_eq_id F X).symm
+  apply uliftYonedaEquiv.injective
+  rw [uliftYonedaEquiv_presheafHom_uliftYoneda_obj]
+  exact congr_arg _ (compULiftYonedaIsoULiftYonedaCompLan_inv_app_app_apply_eq_id F X).symm
 
 end
 
-variable [∀ (P : Cᵒᵖ ⥤ Type v₁), F.op.HasLeftKanExtension P]
+variable [∀ (P : Cᵒᵖ ⥤ Type max w v₁ v₂), F.op.HasLeftKanExtension P]
 
 /-- Given a functor `F : C ⥤ D`, this definition is part of the verification that
 `Functor.LeftExtension.mk F.op.lan (compYonedaIsoYonedaCompLan F).hom`
 is universal, i.e. that  `F.op.lan : (Cᵒᵖ ⥤ Type v₁) ⥤ Dᵒᵖ ⥤ Type v₁` is the
 left Kan extension of `F ⋙ yoneda : C ⥤ Dᵒᵖ ⥤ Type v₁`
 along `yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁`. -/
-noncomputable def extensionHom (Φ : yoneda.LeftExtension (F ⋙ yoneda)) :
-    Functor.LeftExtension.mk F.op.lan (compYonedaIsoYonedaCompLan F).hom ⟶ Φ :=
+noncomputable def extensionHom
+    (Φ : uliftYoneda.{max w v₂}.LeftExtension (F ⋙ uliftYoneda.{max w v₁})) :
+    Functor.LeftExtension.mk F.op.lan (compULiftYonedaIsoULiftYonedaCompLan.{w} F).hom ⟶ Φ :=
   StructuredArrow.homMk (natTrans Φ.hom) (by
     ext X : 2
     dsimp
-    rw [natTrans_app_yoneda_obj, Iso.hom_inv_id_app_assoc])
+    rw [natTrans_app_uliftYoneda_obj, Iso.hom_inv_id_app_assoc])
+
+#exit
 
 @[ext]
 lemma hom_ext {Φ : yoneda.LeftExtension (F ⋙ yoneda)}
