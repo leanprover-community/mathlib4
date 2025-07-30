@@ -1308,6 +1308,17 @@ noncomputable def catPullbackSquare [IsCatPullbackSquare T L R B] :
   nonempty_catPullbackSquare T L R B|>.some
 
 open CatPullbackSquare in
+/-- To check equality of two morphisms in the top
+left corner of a `CatCommSq T L R B` such that `IsCatPullbackSquare T L R B`,
+it suffices to do so after applying the projections. -/
+@[ext (iff := false)]
+lemma hom_ext {c c' : C₁} {f g : c ⟶ c'} (h₁ : T.map f = T.map g)
+    [IsCatPullbackSquare T L R B] (h₂ : L.map f = L.map g) : f = g := by
+  letI : CatPullbackSquare T L R B := catPullbackSquare T L R B
+  apply (equivalence T L R B).fullyFaithfulFunctor.map_injective
+  ext <;> simpa
+
+open CatPullbackSquare in
 /-- To check equality of two natural transformations of functors to the top
 left corner of a `CatCommSq T L R B` such that `IsCatPullbackSquare T L R B`,
 it suffices to do so after whiskering with the projections. -/
@@ -1318,9 +1329,7 @@ lemma natTrans_ext {X : Type u₅} [Category.{v₅} X] [IsCatPullbackSquare T L 
     (e₂ : Functor.whiskerRight α L = Functor.whiskerRight β L) :
     α = β := by
   ext x
-  letI : CatPullbackSquare T L R B := catPullbackSquare T L R B
-  apply (equivalence T L R B).fullyFaithfulFunctor.map_injective
-  ext
+  apply hom_ext T L R B
   · simpa using congrArg (fun t ↦ t.app x) e₁
   · simpa using congrArg (fun t ↦ t.app x) e₂
 
