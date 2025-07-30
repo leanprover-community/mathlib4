@@ -367,10 +367,6 @@ end MeasureTheory
 
 section Support
 
-/- Ok. Prove all of the *obvious* results (invisible mathematics) you can think of
-surrounding this topic, as well as the basic things one would want to know about it. It's probably
-a good exercise to just write out a bunch of basic theorems like this so that the statements parse.
-That can be the next exercise.-/
 namespace MeasureTheory
 namespace Measure
 
@@ -378,13 +374,20 @@ open scoped Topology
 
 variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
 
+/- A point `x` is in the support of `μ` iff `∃ᶠ u in (𝓝 x).smallSets, 0 < μ u`, which means
+`{u : Set X | 0 < μ x} ∉ (𝓝 x).smallSets`, i.e. any neighborhood of `x` contains a
+subset with positive measure. -/
 protected def support (μ : Measure X) : Set X := {x : X | ∃ᶠ u in (𝓝 x).smallSets, 0 < μ u}
 
 variable {μ : Measure X}
 
+/-- A point `x` is in the support of measure `μ` iff any neighborhood of `x` contains a
+subset with positive measure. -/
 lemma mem_support_iff {x : X} : x ∈ μ.support ↔
     ∃ᶠ u in (𝓝 x).smallSets, 0 < μ u := Iff.rfl
 
+/-- A point `x` is in the support of measure `μ` iff every neighborhood of `x` has positive
+measure. -/
 lemma mem_support_iff_forall (x : X) : x ∈ μ.support ↔ ∀ U ∈ 𝓝 x, 0 < μ U := by
   simp only [mem_support_iff, frequently_smallSets]
   constructor
@@ -394,9 +397,12 @@ lemma mem_support_iff_forall (x : X) : x ∈ μ.support ↔ ∀ U ∈ 𝓝 x, 0 
   · intro h U hU
     exact ⟨U, Subset.refl U, h U hU⟩
 
+/-- A point `x` lies outside the support of `μ` iff all of the subsets of one of its neighborhoods
+have measure zero. -/
 lemma notMem_support_iff {x : X} : x ∉ μ.support ↔ ∀ᶠ u in (𝓝 x).smallSets, μ u = 0 := by
   simp [mem_support_iff]
 
+/-- A point `x` lies outside the support of `μ` iff some neighborhood of `x` has measure zero. -/
 lemma notMem_support_iff_exists {x : X} : x ∉ μ.support ↔ ∃ U ∈ 𝓝 x, μ U = 0 := by
   simp [mem_support_iff_forall]
 
@@ -406,10 +412,13 @@ lemma _root_.Filter.HasBasis.mem_measureSupport {ι : Sort*} {p : ι → Prop}
   simp only [mem_support_iff_forall]
   exact hl.forall_iff (fun U V hUV hUpos => lt_of_lt_of_le hUpos (measure_mono hUV))
 
+/-- The support of a measure equals the set of points whose open neighborhoods
+all have positive measure. -/
 lemma support_eq_forall_isOpen : μ.support =
     {x : X | ∀ u : Set X, x ∈ u → IsOpen u → 0 < μ u} := by
   simp [Set.ext_iff, (nhds_basis_opens _).mem_measureSupport]
 
+/-- If `x` is in the support of measure `μ` then all of its neighborhoods have positive measure. -/
 lemma measure_pos_of_mem_support {x : X} (h : x ∈ μ.support) :
   ∀ U ∈ 𝓝 x, 0 < μ U := by rwa [mem_support_iff_forall] at h
 
