@@ -3,8 +3,6 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
-import Mathlib.Probability.Decision.Binary
-import Mathlib.Probability.Decision.BoolMeasure
 import Mathlib.Probability.Decision.RiskIncrease
 
 /-!
@@ -135,5 +133,68 @@ lemma deGrootInfo_eq_min_sub_iInf_measurableSet (μ ν : Measure 𝓧) [IsFinite
     deGrootInfo μ ν π = min (π {false} * μ univ) (π {true} * ν univ)
       - ⨅ E, ⨅ (_ : MeasurableSet E), π {false} * μ E + π {true} * ν Eᶜ := by
   rw [deGrootInfo_eq_min_sub, bayesBinaryRisk_eq_iInf_measurableSet]
+
+lemma ENNReal.add_sub_add_eq_sub_right {a c b : ℝ≥0∞} (hc : c ≠ ∞) :
+    (a + c) - (b + c) = a - b := by
+  lift c to ℝ≥0 using hc
+  cases a <;> cases b
+  · simp
+  · simp
+  · simp
+  · norm_cast
+    rw [add_tsub_add_eq_tsub_right]
+
+lemma ENNReal.add_sub_add_eq_sub_left {a c b : ℝ≥0∞} (hc : c ≠ ∞) :
+    (c + a) - (c + b) = a - b := by
+  simp_rw [add_comm c]
+  exact ENNReal.add_sub_add_eq_sub_right hc
+
+lemma deGrootInfo_eq_iSup_measurableSet_of_measure_univ_le (μ ν : Measure 𝓧) [IsFiniteMeasure μ]
+    [IsFiniteMeasure ν] (π : Measure Bool) [IsFiniteMeasure π]
+    (h : π {true} * ν univ ≤ π {false} * μ univ) :
+    deGrootInfo μ ν π = ⨆ E, ⨆ (_ : MeasurableSet E), π {true} * ν E - π {false} * μ E := by
+  rw [deGrootInfo_eq_min_sub_iInf_measurableSet, min_eq_right h]
+  calc π {true} * ν univ - ⨅ (E) (_ : MeasurableSet E), π {false} * μ E + π {true} * ν Eᶜ
+  _ = π {true} * ν univ - ⨅ (E) (_ : MeasurableSet E), π {false} * μ E +
+      (π {true} * ν univ - π {true} * ν E) := by
+    congr with E
+    congr with hE
+    congr
+    rw [measure_compl hE (measure_ne_top _ _), ENNReal.mul_sub (by simp)]
+  _ = ⨆ (E) (_ : MeasurableSet E), π {true} * ν E - π {false} * μ E := by
+    simp_rw [ENNReal.sub_iInf]
+    congr with E
+    congr with hE
+    rcases le_total (π {true} * ν E) (π {false} * μ E) with hE_le | hE_le
+    · rw [tsub_eq_zero_of_le hE_le]
+      refine tsub_eq_zero_of_le ?_
+      calc π {true} * ν univ
+      _ = π {true} * ν E + (π {true} * ν univ - π {true} * ν E) := by
+        rw [add_comm, ENNReal.sub_add_eq_add_sub, ENNReal.add_sub_cancel_right]
+        · finiteness
+        · have : E ⊆ univ := subset_univ E
+          gcongr
+        · finiteness
+      _ ≤ π {false} * μ E + (π {true} * ν univ - π {true} * ν E) := by gcongr
+    · rw [add_comm]
+      calc π {true} * ν univ - (π {true} * ν univ - π {true} * ν E + π {false} * μ E)
+      _ = (π {true} * ν univ - π {true} * ν E + π {true} * ν E)
+          - (π {true} * ν univ - π {true} * ν E + π {false} * μ E) := by
+        congr
+        rw [ENNReal.sub_add_eq_add_sub, ENNReal.add_sub_cancel_right]
+        · finiteness
+        · have : E ⊆ univ := subset_univ E
+          gcongr
+        · finiteness
+      _ = π {true} * ν E - π {false} * μ E := by
+        rw [ENNReal.add_sub_add_eq_sub_left (by finiteness)]
+
+lemma deGrootInfo_eq_iSup_measurableSet_of_measure_univ_le' (μ ν : Measure 𝓧) [IsFiniteMeasure μ]
+    [IsFiniteMeasure ν] (π : Measure Bool) [IsFiniteMeasure π]
+    (h : π {false} * μ univ ≤ π {true} * ν univ) :
+    deGrootInfo μ ν π = ⨆ E, ⨆ (_ : MeasurableSet E), π {false} * μ E - π {true} * ν E := by
+  rw [deGrootInfo_comm, deGrootInfo_eq_iSup_measurableSet_of_measure_univ_le]
+  · simp
+  · simpa using h
 
 end ProbabilityTheory

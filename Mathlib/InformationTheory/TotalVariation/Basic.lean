@@ -10,27 +10,12 @@ import Mathlib.Probability.Decision.DeGrootInfo
 
 ## Main definitions
 
-* `FooBar`
+* `tvDist μ ν`: the total variation distance between two measures `μ` and `ν`.
 
 ## Main statements
 
 * `fooBar_unique`
 
-## Notation
-
-
-
-## Implementation details
-
-
-
-## References
-
-* [F. Bar, *Quuxes*][bibkey]
-
-## Tags
-
-Foobars, barfoos
 -/
 
 open MeasureTheory Bool
@@ -56,22 +41,17 @@ instance : IsFiniteMeasure (boolMeasure 1 1) := by constructor; simp
 lemma tvDist_nonneg : 0 ≤ tvDist μ ν := ENNReal.toReal_nonneg
 
 lemma tvDist_comm : tvDist μ ν = tvDist ν μ := by
-  unfold tvDist
-  rw [deGrootInfo_comm]
+  rw [tvDist, deGrootInfo_comm]
   congr
   ext
   · simp only [boolMeasure_apply_false]
-    rw [Measure.map_apply]
-    · have : not ⁻¹' {false} = {true} := by ext; simp
-      simp [this]
-    · fun_prop
-    · exact .of_discrete
+    rw [Measure.map_apply (by fun_prop) .of_discrete]
+    have : not ⁻¹' {false} = {true} := by ext; simp
+    simp [this]
   · simp only [boolMeasure_apply_true]
-    rw [Measure.map_apply]
-    · have : not ⁻¹' {true} = {false} := by ext; simp
-      simp [this]
-    · fun_prop
-    · exact .of_discrete
+    rw [Measure.map_apply (by fun_prop) .of_discrete]
+    have : not ⁻¹' {true} = {false} := by ext; simp
+    simp [this]
 
 lemma tvDist_le [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     tvDist μ ν ≤ min (μ.real .univ) (ν.real .univ) := by
@@ -134,5 +114,55 @@ lemma tvDist_eq_one_sub_iInf_measurableSet (μ ν : Measure 𝓧) [IsProbability
     [IsProbabilityMeasure ν] :
     tvDist μ ν = 1 - ⨅ (E : {E // MeasurableSet E}), μ.real E + ν.real E.1ᶜ := by
   simp [tvDist_eq_min_sub_iInf_measurableSet]
+
+lemma tvDist_eq_iSup_measurableSet_of_measure_univ_le [IsFiniteMeasure μ]
+    [IsFiniteMeasure ν] (h : ν .univ ≤ μ .univ) :
+    tvDist μ ν = (⨆ E, ⨆ (_ : MeasurableSet E), ν E - μ E).toReal := by
+  rw [tvDist, deGrootInfo_eq_iSup_measurableSet_of_measure_univ_le]
+  · simp
+  · simpa
+
+lemma tvDist_eq_iSup_measurableSet_of_measure_univ_le' [IsFiniteMeasure μ]
+    [IsFiniteMeasure ν] (h : μ .univ ≤ ν .univ) :
+    tvDist μ ν = (⨆ E, ⨆ (_ : MeasurableSet E), μ E - ν E).toReal := by
+  rw [tvDist, deGrootInfo_eq_iSup_measurableSet_of_measure_univ_le']
+  · simp
+  · simpa
+
+-- todo: generalize this and the below to deGrootInfo
+lemma tvDist_eq_zero_of_le [IsFiniteMeasure μ] [IsFiniteMeasure ν] (hνμ : ν ≤ μ) :
+    tvDist μ ν = 0 := by
+  have h_le s : ν s ≤ μ s := hνμ s
+  rw [tvDist_eq_iSup_measurableSet_of_measure_univ_le (h_le .univ)]
+  simp only [ENNReal.toReal_eq_zero_iff, ENNReal.iSup_eq_zero, tsub_eq_zero_iff_le, h_le,
+    implies_true, _root_.true_or]
+
+-- todo: finite and equal measure for univ suffices
+lemma Measure.eq_of_le_of_isProbabilityMeasure [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
+    (hμν : μ ≤ ν) : μ = ν := by
+  ext s hs
+  refine le_antisymm (hμν s) ?_
+  by_contra! h_lt
+  have : Set.univ = s ∪ sᶜ := by simp
+  have h_disj : Disjoint s sᶜ := Set.disjoint_compl_right_iff_subset.mpr subset_rfl
+  have h_univ : ν .univ ≤ μ .univ := by simp
+  rw [this, measure_union h_disj hs.compl, measure_union h_disj hs.compl] at h_univ
+  refine absurd h_univ ?_
+  push_neg
+  refine ENNReal.add_lt_add_of_lt_of_le (by finiteness) h_lt (hμν sᶜ)
+
+lemma tvDist_eq_zero_iff [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
+    tvDist μ ν = 0 ↔ μ = ν := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
+  refine Measure.eq_of_le_of_isProbabilityMeasure ?_
+  refine Measure.le_intro fun s hs _ ↦ ?_
+  rw [tvDist_eq_iSup_measurableSet_of_measure_univ_le' (by simp)] at h
+  simp only [ENNReal.toReal_eq_zero_iff, ENNReal.iSup_eq_zero, tsub_eq_zero_iff_le] at h
+  cases h with
+  | inl h => exact h s hs
+  | inr h =>
+    refine absurd h ?_
+    refine ne_top_of_le_ne_top (b := μ .univ) (by simp) ?_
+    exact iSup₂_le fun E hE ↦ tsub_le_self.trans (measure_mono (Set.subset_univ _))
 
 end ProbabilityTheory
