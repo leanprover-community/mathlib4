@@ -60,20 +60,22 @@ theorem TensorProduct.isTensorProduct : IsTensorProduct (TensorProduct.mk R M N)
     simp
   · exact Function.bijective_id
 
+namespace IsTensorProduct
+
 variable {R M N}
 
 /-- If `M` is the tensor product of `M₁` and `M₂`, it is linearly equivalent to `M₁ ⊗[R] M₂`. -/
 @[simps! apply]
-noncomputable def IsTensorProduct.equiv (h : IsTensorProduct f) : M₁ ⊗[R] M₂ ≃ₗ[R] M :=
+noncomputable def equiv (h : IsTensorProduct f) : M₁ ⊗[R] M₂ ≃ₗ[R] M :=
   LinearEquiv.ofBijective _ h
 
 @[simp]
-theorem IsTensorProduct.equiv_toLinearMap (h : IsTensorProduct f) :
+theorem equiv_toLinearMap (h : IsTensorProduct f) :
     h.equiv.toLinearMap = TensorProduct.lift f :=
   rfl
 
 @[simp]
-theorem IsTensorProduct.equiv_symm_apply (h : IsTensorProduct f) (x₁ : M₁) (x₂ : M₂) :
+theorem equiv_symm_apply (h : IsTensorProduct f) (x₁ : M₁) (x₂ : M₂) :
     h.equiv.symm (f x₁ x₂) = x₁ ⊗ₜ x₂ := by
   apply h.equiv.injective
   refine (h.equiv.apply_symm_apply _).trans ?_
@@ -81,27 +83,26 @@ theorem IsTensorProduct.equiv_symm_apply (h : IsTensorProduct f) (x₁ : M₁) (
 
 /-- If `M` is the tensor product of `M₁` and `M₂`, we may lift a bilinear map `M₁ →ₗ[R] M₂ →ₗ[R] M'`
 to a `M →ₗ[R] M'`. -/
-noncomputable def IsTensorProduct.lift (h : IsTensorProduct f) (f' : M₁ →ₗ[R] M₂ →ₗ[R] M') :
+noncomputable def lift (h : IsTensorProduct f) (f' : M₁ →ₗ[R] M₂ →ₗ[R] M') :
     M →ₗ[R] M' :=
   (TensorProduct.lift f').comp h.equiv.symm.toLinearMap
 
-theorem IsTensorProduct.lift_eq (h : IsTensorProduct f) (f' : M₁ →ₗ[R] M₂ →ₗ[R] M') (x₁ : M₁)
+theorem lift_eq (h : IsTensorProduct f) (f' : M₁ →ₗ[R] M₂ →ₗ[R] M') (x₁ : M₁)
     (x₂ : M₂) : h.lift f' (f x₁ x₂) = f' x₁ x₂ := by
-  delta IsTensorProduct.lift
-  simp
+  simp [lift]
 
 /-- The tensor product of a pair of linear maps between modules. -/
-noncomputable def IsTensorProduct.map (hf : IsTensorProduct f) (hg : IsTensorProduct g)
+noncomputable def map (hf : IsTensorProduct f) (hg : IsTensorProduct g)
     (i₁ : M₁ →ₗ[R] N₁) (i₂ : M₂ →ₗ[R] N₂) : M →ₗ[R] N :=
   hg.equiv.toLinearMap.comp ((TensorProduct.map i₁ i₂).comp hf.equiv.symm.toLinearMap)
 
-theorem IsTensorProduct.map_eq (hf : IsTensorProduct f) (hg : IsTensorProduct g) (i₁ : M₁ →ₗ[R] N₁)
+@[simp]
+theorem map_eq (hf : IsTensorProduct f) (hg : IsTensorProduct g) (i₁ : M₁ →ₗ[R] N₁)
     (i₂ : M₂ →ₗ[R] N₂) (x₁ : M₁) (x₂ : M₂) : hf.map hg i₁ i₂ (f x₁ x₂) = g (i₁ x₁) (i₂ x₂) := by
-  delta IsTensorProduct.map
-  simp
+  simp [map]
 
 @[elab_as_elim]
-theorem IsTensorProduct.inductionOn (h : IsTensorProduct f) {motive : M → Prop} (m : M)
+theorem inductionOn (h : IsTensorProduct f) {motive : M → Prop} (m : M)
     (zero : motive 0) (tmul : ∀ x y, motive (f x y))
     (add : ∀ x y, motive x → motive y → motive (x + y)) : motive m := by
   rw [← h.equiv.right_inv m]
@@ -116,17 +117,159 @@ theorem IsTensorProduct.inductionOn (h : IsTensorProduct f) {motive : M → Prop
     rw [map_add]
     apply add <;> assumption
 
-lemma IsTensorProduct.of_equiv (e : M₁ ⊗[R] M₂ ≃ₗ[R] M) (he : ∀ x y, e (x ⊗ₜ y) = f x y) :
+lemma of_equiv (e : M₁ ⊗[R] M₂ ≃ₗ[R] M) (he : ∀ x y, e (x ⊗ₜ y) = f x y) :
     IsTensorProduct f := by
   have : TensorProduct.lift f = e := by
     ext x y
     simp [he]
   simpa [IsTensorProduct, this] using e.bijective
 
+theorem map_comp {P₁ P₂ P : Type*} [AddCommMonoid P₁] [AddCommMonoid P₂]
+    [AddCommMonoid P] [Module R P₁] [Module R P₂] [Module R P] {p : P₁ →ₗ[R] P₂ →ₗ[R] P}
+    (hf : IsTensorProduct f) (hg : IsTensorProduct g) (hp : IsTensorProduct p)
+    (i₁ : N₁ →ₗ[R] P₁) (j₁ : M₁ →ₗ[R] N₁) (i₂ : N₂ →ₗ[R] P₂) (j₂ : M₂ →ₗ[R] N₂) :
+    hf.map hp (i₁ ∘ₗ j₁) (i₂ ∘ₗ j₂) = hg.map hp i₁ i₂ ∘ₗ hf.map hg j₁ j₂ :=
+  LinearMap.ext <| fun x ↦ hf.inductionOn x (by simp) (by simp) (fun _ _ h₁ h₂ ↦ by simp [h₁, h₂])
+
+theorem map_map {P₁ P₂ P : Type*} [AddCommMonoid P₁] [AddCommMonoid P₂]
+    [AddCommMonoid P] [Module R P₁] [Module R P₂] [Module R P] {p : P₁ →ₗ[R] P₂ →ₗ[R] P}
+    (hf : IsTensorProduct f) (hg : IsTensorProduct g) (hp : IsTensorProduct p)
+    (i₁ : N₁ →ₗ[R] P₁) (j₁ : M₁ →ₗ[R] N₁) (i₂ : N₂ →ₗ[R] P₂) (j₂ : M₂ →ₗ[R] N₂) (x : M) :
+    hg.map hp i₁ i₂ ((hf.map hg j₁ j₂) x) = hf.map hp (i₁ ∘ₗ j₁) (i₂ ∘ₗ j₂) x :=
+  DFunLike.congr_fun (hf.map_comp hg hp i₁ j₁ i₂ j₂).symm x
+
+@[simp]
+theorem map_id (hf : IsTensorProduct f) :
+    hf.map hf (LinearMap.id : M₁ →ₗ[R] M₁) (LinearMap.id : M₂ →ₗ[R] M₂) = LinearMap.id :=
+  LinearMap.ext <| fun x ↦ hf.inductionOn x (by simp) (by simp) (fun _ _ h₁ h₂ ↦ by simp [h₁, h₂])
+
+@[simp]
+protected theorem map_one (hf : IsTensorProduct f) :
+    hf.map hf (1 : M₁ →ₗ[R] M₁) (1 : M₂ →ₗ[R] M₂) = 1 :=
+  hf.map_id
+
+protected theorem map_mul (hf : IsTensorProduct f) (i₁ i₂ : M₁ →ₗ[R] M₁) (j₁ j₂ : M₂ →ₗ[R] M₂) :
+    hf.map hf (i₁ * i₂) (j₁ * j₂) = hf.map hf i₁ j₁ * hf.map hf i₂ j₂ :=
+  hf.map_comp hf hf i₁ i₂ j₁ j₂
+
+protected theorem map_pow (hf : IsTensorProduct f) (i : M₁ →ₗ[R] M₁) (j : M₂ →ₗ[R] M₂) (n : ℕ) :
+    hf.map hf i j ^ n = hf.map hf (i ^ n) (j ^ n) := by
+  induction n with
+  | zero => simp
+  | succ n ih => simp only [pow_succ, ih, hf.map_mul]
+
+section lTensor
+
+variable {g : M₁ →ₗ[R] N₂ →ₗ[R] N} (hf : IsTensorProduct f) (hg : IsTensorProduct g)
+  (r : R) (i i₁ i₂ : M₂ →ₗ[R] N₂)
+
+/-- If `M` is the tensor product of `M₁` and `M₂`, `N` is the tensor product of `M₁` and `N₂`, then
+  `IsTensorProduct.lTensor hf hg i : M →ₗ[R] N` is the linear map induced by `i : M₂ →ₗ[R] N₂`. -/
+noncomputable def lTensor : M →ₗ[R] N := hf.map hg LinearMap.id i
+
+theorem lTensor_def : hf.lTensor hg i = hf.map hg LinearMap.id i := rfl
+
+@[simp]
+theorem lTensor_eq (m₁ : M₁) (m₂ : M₂) : hf.lTensor hg i (f m₁ m₂) = g m₁ (i m₂) := by
+  simp [lTensor]
+
+theorem lTensor_comp (m : M₁) : hf.lTensor hg i ∘ₗ f m = g m ∘ₗ i :=
+  LinearMap.ext <| fun _ ↦ by simp
+
+/-- If `M` is the tensor product of `M₁` and `M₂`, `N` is the tensor product of `M₁` and `N₂`, then
+  `IsTensorProduct.lTensorHom hf hg` is the natural linear map that sends a linear map
+  `f : M₂ →ₗ[R] N₂` to `M₁ ⊗ f`. -/
+noncomputable def lTensorHom : (M₂ →ₗ[R] N₂) →ₗ[R] M →ₗ[R] N where
+  toFun := hf.lTensor hg
+  map_add' _ _ := LinearMap.ext <|
+    fun x ↦ hf.inductionOn x (by simp) (by simp) (fun _ _ h₁ h₂ ↦ by simpa [h₁, h₂] using by abel)
+  map_smul' _ _ := LinearMap.ext <|
+    fun x ↦ hf.inductionOn x (by simp) (by simp) (fun _ _ h₁ h₂ ↦ by simp [h₁, h₂])
+
+@[simp]
+theorem coe_lTensorHom : (hf.lTensorHom hg : (M₂ →ₗ[R] N₂) → M →ₗ[R] N) = hf.lTensor hg :=
+  rfl
+
+theorem lTensor_add : hf.lTensor hg (i₁ + i₂) = hf.lTensor hg i₁ + hf.lTensor hg i₂ :=
+  (hf.lTensorHom hg).map_add i₁ i₂
+
+@[simp]
+theorem lTensor_zero : hf.lTensor hg (0 : M₂ →ₗ[R] N₂) = 0 :=
+  (hf.lTensorHom hg).map_zero
+
+theorem lTensor_smul : hf.lTensor hg (r • i)= r • hf.lTensor hg i :=
+  (hf.lTensorHom hg).map_smul r i
+
+@[simp]
+theorem lTensor_id : hf.lTensor hf (LinearMap.id : M₂ →ₗ[R] M₂) = LinearMap.id :=
+  hf.map_id
+
+end lTensor
+
+section rTensor
+
+variable {g : N₁ →ₗ[R] M₂ →ₗ[R] N} (hf : IsTensorProduct f) (hg : IsTensorProduct g)
+  (r : R) (i i₁ i₂ : M₁ →ₗ[R] N₁)
+
+/-- If `M` is the tensor product of `M₁` and `M₂`, `N` is the tensor product of `N₁` and `M₂`, then
+  `IsTensorProduct.rTensor hf hg i : M →ₗ[R] N` is the linear map induced by `i : M₁ →ₗ[R] N₁`. -/
+noncomputable def rTensor : M →ₗ[R] N := hf.map hg i LinearMap.id
+
+theorem rTensor_def : hf.rTensor hg i = hf.map hg i LinearMap.id := rfl
+
+@[simp]
+theorem rTensor_eq (m₁ : M₁) (m₂ : M₂) : hf.rTensor hg i (f m₁ m₂) = g (i m₁) m₂ := by
+  simp [rTensor]
+
+theorem rTensor_comp_flip (m : M₂) : hf.rTensor hg i ∘ₗ f.flip m = g.flip m ∘ₗ i :=
+  LinearMap.ext <| fun _ ↦ by simp
+
+/-- If `M` is the tensor product of `M₁` and `M₂`, `N` is the tensor product of `N₁` and `M₂`, then
+  `IsTensorProduct.rTensorHom hf hg` is the natural linear map that sends a linear map
+  `f : M₁ →ₗ[R] N₁` to `f ⊗ M₂`. -/
+noncomputable def rTensorHom : (M₁ →ₗ[R] N₁) →ₗ[R] M →ₗ[R] N where
+  toFun := hf.rTensor hg
+  map_add' _ _ := LinearMap.ext <|
+    fun x ↦ hf.inductionOn x (by simp) (by simp) (fun _ _ h₁ h₂ ↦ by simpa [h₁, h₂] using by abel)
+  map_smul' _ _ := LinearMap.ext <|
+    fun x ↦ hf.inductionOn x (by simp) (by simp) (fun _ _ h₁ h₂ ↦ by simp [h₁, h₂])
+
+@[simp]
+theorem coe_rTensorHom : (hf.rTensorHom hg : (M₁ →ₗ[R] N₁) → M →ₗ[R] N) = hf.rTensor hg :=
+  rfl
+
+theorem rTensor_add : hf.rTensor hg (i₁ + i₂) = hf.rTensor hg i₁ + hf.rTensor hg i₂ :=
+  (hf.rTensorHom hg).map_add i₁ i₂
+
+@[simp]
+theorem rTensor_zero : hf.rTensor hg (0 : M₁ →ₗ[R] N₁) = 0 :=
+  (hf.rTensorHom hg).map_zero
+
+theorem rTensor_smul : hf.rTensor hg (r • i)= r • hf.rTensor hg i :=
+  (hf.rTensorHom hg).map_smul r i
+
+@[simp]
+theorem rTensor_id : hf.rTensor hf (LinearMap.id : M₁ →ₗ[R] M₁) = LinearMap.id :=
+  hf.map_id
+
+end rTensor
+
+@[simp]
+theorem lTensor_comp_rTensor {P : Type*} [AddCommMonoid P] [Module R P] {p : N₁ →ₗ[R] M₂ →ₗ[R] P}
+    (hf : IsTensorProduct f) (hg : IsTensorProduct g) (hp : IsTensorProduct p) (i₁ : M₁ →ₗ[R] N₁)
+    (i₂ : M₂ →ₗ[R] N₂) : (hp.lTensor hg i₂) ∘ₗ (hf.rTensor hp i₁) = hf.map hg i₁ i₂ := by
+  simp [lTensor, rTensor, ← map_comp]
+
+@[simp]
+theorem rTensor_comp_lTensor {P : Type*} [AddCommMonoid P] [Module R P] {p : M₁ →ₗ[R] N₂ →ₗ[R] P}
+    (hf : IsTensorProduct f) (hg : IsTensorProduct g) (hp : IsTensorProduct p) (i₁ : M₁ →ₗ[R] N₁)
+    (i₂ : M₂ →ₗ[R] N₂) : (hp.rTensor hg i₁) ∘ₗ (hf.lTensor hp i₂) = hf.map hg i₁ i₂ := by
+  simp [lTensor, rTensor, ← map_comp]
+
 end IsTensorProduct
 
 section IsBaseChange
-
+/--/
 variable {R : Type*} {M : Type v₁} {N : Type v₂} (S : Type v₃)
 variable [AddCommMonoid M] [AddCommMonoid N] [CommSemiring R]
 variable [CommSemiring S] [Algebra R S] [Module R M] [Module R N] [Module S N] [IsScalarTower R S N]
