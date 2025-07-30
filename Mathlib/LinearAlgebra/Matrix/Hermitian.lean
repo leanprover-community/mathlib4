@@ -46,7 +46,11 @@ instance (A : Matrix n n α) [Decidable (Aᴴ = A)] : Decidable (IsHermitian A) 
 theorem IsHermitian.eq {A : Matrix n n α} (h : A.IsHermitian) : Aᴴ = A := h
 
 protected theorem IsHermitian.isSelfAdjoint {A : Matrix n n α} (h : A.IsHermitian) :
-    IsSelfAdjoint A := h
+    IsSelfAdjoint A := ⟨h⟩
+
+theorem isHermitian_iff_isSelfAdjoint {A : Matrix n n α} :
+    A.IsHermitian ↔ IsSelfAdjoint A :=
+  ⟨fun h ↦ h.isSelfAdjoint, fun h ↦ h.star_eq⟩
 
 theorem IsHermitian.ext {A : Matrix n n α} : (∀ i j, star (A j i) = A i j) → A.IsHermitian := by
   intro h; ext i j; exact h i j
@@ -89,8 +93,8 @@ section InvolutiveStar
 variable [InvolutiveStar α]
 
 @[simp]
-theorem isHermitian_conjTranspose_iff (A : Matrix n n α) : Aᴴ.IsHermitian ↔ A.IsHermitian :=
-  IsSelfAdjoint.star_iff
+theorem isHermitian_conjTranspose_iff (A : Matrix n n α) : Aᴴ.IsHermitian ↔ A.IsHermitian := by
+  simpa only [isHermitian_iff_isSelfAdjoint] using IsSelfAdjoint.star_iff
 
 /-- A block matrix `A.from_blocks B C D` is hermitian,
     if `A` and `D` are hermitian and `Bᴴ = C`. -/
@@ -120,7 +124,7 @@ variable [AddMonoid α] [StarAddMonoid α]
 theorem isHermitian_diagonal_of_self_adjoint [DecidableEq n] (v : n → α) (h : IsSelfAdjoint v) :
     (diagonal v).IsHermitian :=
   (-- TODO: add a `pi.has_trivial_star` instance and remove the `funext`
-        diagonal_conjTranspose v).trans <| congr_arg _ h
+        diagonal_conjTranspose v).trans <| congr_arg _ h.star_eq
 
 /-- A diagonal matrix is hermitian if each diagonal entry is self-adjoint -/
 lemma isHermitian_diagonal_iff [DecidableEq n] {d : n → α} :
@@ -136,12 +140,12 @@ theorem isHermitian_diagonal [TrivialStar α] [DecidableEq n] (v : n → α) :
 
 @[simp]
 theorem isHermitian_zero : (0 : Matrix n n α).IsHermitian :=
-  IsSelfAdjoint.zero _
+  IsSelfAdjoint.zero _ |>.star_eq
 
 @[simp]
 theorem IsHermitian.add {A B : Matrix n n α} (hA : A.IsHermitian) (hB : B.IsHermitian) :
     (A + B).IsHermitian :=
-  IsSelfAdjoint.add hA hB
+  IsSelfAdjoint.add ⟨hA⟩ ⟨hB⟩ |>.star_eq
 
 end AddMonoid
 
@@ -150,10 +154,10 @@ section AddCommMonoid
 variable [AddCommMonoid α] [StarAddMonoid α]
 
 theorem isHermitian_add_transpose_self (A : Matrix n n α) : (A + Aᴴ).IsHermitian :=
-  IsSelfAdjoint.add_star_self A
+  IsSelfAdjoint.add_star_self A |>.star_eq
 
 theorem isHermitian_transpose_add_self (A : Matrix n n α) : (Aᴴ + A).IsHermitian :=
-  IsSelfAdjoint.star_add_self A
+  IsSelfAdjoint.star_add_self A |>.star_eq
 
 end AddCommMonoid
 
@@ -163,12 +167,12 @@ variable [AddGroup α] [StarAddMonoid α]
 
 @[simp]
 theorem IsHermitian.neg {A : Matrix n n α} (h : A.IsHermitian) : (-A).IsHermitian :=
-  IsSelfAdjoint.neg h
+  IsSelfAdjoint.neg ⟨h⟩ |>.star_eq
 
 @[simp]
 theorem IsHermitian.sub {A B : Matrix n n α} (hA : A.IsHermitian) (hB : B.IsHermitian) :
     (A - B).IsHermitian :=
-  IsSelfAdjoint.sub hA hB
+  IsSelfAdjoint.sub ⟨hA⟩ ⟨hB⟩ |>.star_eq
 
 end AddGroup
 
@@ -195,8 +199,8 @@ theorem isHermitian_mul_mul_conjTranspose [Fintype m] {A : Matrix m m α} (B : M
   simp only [IsHermitian, conjTranspose_mul, conjTranspose_conjTranspose, hA.eq, Matrix.mul_assoc]
 
 lemma commute_iff [Fintype n] {A B : Matrix n n α}
-    (hA : A.IsHermitian) (hB : B.IsHermitian) : Commute A B ↔ (A * B).IsHermitian :=
-  hA.isSelfAdjoint.commute_iff hB.isSelfAdjoint
+    (hA : A.IsHermitian) (hB : B.IsHermitian) : Commute A B ↔ (A * B).IsHermitian := by
+  simpa only [isHermitian_iff_isSelfAdjoint] using hA.isSelfAdjoint.commute_iff hB.isSelfAdjoint
 
 end NonUnitalSemiring
 
@@ -215,7 +219,7 @@ theorem isHermitian_natCast [DecidableEq n] (d : ℕ) : (d : Matrix n n α).IsHe
   conjTranspose_natCast _
 
 theorem IsHermitian.pow [Fintype n] [DecidableEq n] {A : Matrix n n α} (h : A.IsHermitian) (k : ℕ) :
-    (A ^ k).IsHermitian := IsSelfAdjoint.pow h _
+    (A ^ k).IsHermitian := IsSelfAdjoint.pow ⟨h⟩ _ |>.star_eq
 
 end Semiring
 
