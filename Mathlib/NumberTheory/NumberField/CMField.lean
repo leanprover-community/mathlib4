@@ -214,7 +214,7 @@ theorem of_forall_isConj {σ : K ≃ₐ[ℚ] K} (hσ : ∀ φ : K →+* ℂ, IsC
     let φ : K →+* ℂ := Classical.choice (inferInstance : Nonempty _)
     have hσ' : σ ≠ 1 :=
       (isConj_ne_one_iff (hσ φ)).mpr <| IsTotallyComplex.complexEmbedding_not_isReal φ
-    rw [finrank_fixedField_eq_card, Fintype.card_zpowers, orderOf_isConj_two_of_ne_one (hσ φ) hσ']⟩
+    rw [finrank_fixedField_eq_card, Nat.card_zpowers, orderOf_isConj_two_of_ne_one (hσ φ) hσ']⟩
   exact ofCMExtension (fixedField (Subgroup.zpowers σ)) K
 
 /--
