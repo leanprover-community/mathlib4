@@ -20,7 +20,7 @@ variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
 
 /-- The outer product of two vectors -/
 def outerProduct (x : E) (y : F) : F →ₗ[𝕜] E where
-  toFun := fun z => inner 𝕜 y z • x
+  toFun := fun z ↦ inner 𝕜 y z • x
   map_add' z w := by
     rw [← Module.add_smul, inner_add_right y z w]
   map_smul' m z := by
