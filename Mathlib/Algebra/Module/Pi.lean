@@ -5,6 +5,7 @@ Authors: Simon Hudon, Patrick Massot
 -/
 import Mathlib.Algebra.GroupWithZero.Action.Pi
 import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Module.LinearMap.Defs
 import Mathlib.Algebra.Regular.SMul
 import Mathlib.Algebra.Ring.Pi
 
@@ -61,5 +62,27 @@ instance module' {g : I → Type*} {r : ∀ i, Semiring (f i)} {m : ∀ i, AddCo
     intros
     ext1
     rw [zero_smul]
+
+section Evaluation
+
+variable {ι : Type*} (R : Type*) [Semiring R]
+
+/-- Evaluation as a linear map. -/
+@[simps] def evalLinear' (M : ι → Type*) [Π i, AddCommMonoid (M i)] [Π i, Module R (M i)] (i : ι) :
+    (Π j, M j) →ₗ[R] M i where
+  toFun f := f i
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+/-- Evaluation as a linear map.
+
+See also `Pi.evalLinear'` for the dependent version. -/
+@[simps] def evalLinear (M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] (i : ι) :
+    (ι → M) →ₗ[R] M where
+  toFun f := f i
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+end Evaluation
 
 end Pi
