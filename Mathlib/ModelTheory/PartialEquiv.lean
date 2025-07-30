@@ -97,7 +97,7 @@ theorem le_def (f g : M ≃ₚ[L] N) : f ≤ g ↔ ∃ h : f.dom ≤ g.dom,
 @[gcongr] theorem cod_le_cod {f g : M ≃ₚ[L] N} : f ≤ g → f.cod ≤ g.cod := by
   rintro ⟨_, eq_fun⟩ n hn
   let m := f.toEquiv.symm ⟨n, hn⟩
-  have  : ((subtype _).comp f.toEquiv.toEmbedding) m = n := by simp only [m, Embedding.comp_apply,
+  have : ((subtype _).comp f.toEquiv.toEmbedding) m = n := by simp only [m, Embedding.comp_apply,
     Equiv.coe_toEmbedding, Equiv.apply_symm_apply, coe_subtype]
   rw [← this, ← eq_fun]
   simp only [Embedding.comp_apply, coe_inclusion, Equiv.coe_toEmbedding, coe_subtype,

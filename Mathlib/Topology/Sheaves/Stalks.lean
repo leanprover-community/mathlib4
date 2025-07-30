@@ -121,7 +121,8 @@ theorem germ_res_apply' (F : X.Presheaf C)
 
 lemma Γgerm_res_apply (F : X.Presheaf C)
     {U : Opens X} {i : U ⟶ ⊤} (x : X) (hx : x ∈ U) [ConcreteCategory C FC] (s) :
-  F.germ U x hx (F.map i.op s) = F.Γgerm x s := F.germ_res_apply i x hx s
+    F.germ U x hx (F.map i.op s) = F.Γgerm x s :=
+  F.germ_res_apply i x hx s
 
 /-- A morphism from the stalk of `F` at `x` to some object `Y` is completely determined by its
 composition with the `germ` morphisms.

@@ -356,8 +356,8 @@ def pullbackP1Iso (i : 𝒰.J) : pullback (p1 𝒰 f g) (𝒰.map i) ≅ pullbac
   · exact
       pullback.lift (pullback.snd _ _) (pullback.fst _ _ ≫ p2 𝒰 f g)
         (by rw [← pullback.condition_assoc, Category.assoc, p_comm])
-  · apply pullback.lift ((gluing 𝒰 f g).ι i) (pullback.fst _ _)
-    rw [gluing_ι, p1, Multicoequalizer.π_desc]
+  · exact pullback.lift ((gluing 𝒰 f g).ι i) (pullback.fst _ _)
+      (by rw [gluing_ι, p1, Multicoequalizer.π_desc])
   · apply pullback.hom_ext
     · simpa using lift_comp_ι 𝒰 f g i
     · simp_rw [Category.assoc, pullback.lift_snd, pullback.lift_fst, Category.id_comp]
@@ -624,7 +624,7 @@ over a scheme `Spec R` and the `Spec` of the tensor product `S ⊗[R] T`. -/
 noncomputable
 def pullbackSpecIso :
     pullback (Spec.map (CommRingCat.ofHom (algebraMap R S)))
-      (Spec.map (CommRingCat.ofHom (algebraMap R T))) ≅ Spec (.of <| S ⊗[R] T) :=
+      (Spec.map (CommRingCat.ofHom (algebraMap R T))) ≅ Spec(S ⊗[R] T) :=
   letI H := IsLimit.equivIsoLimit (PullbackCone.eta _)
     (PushoutCocone.isColimitEquivIsLimitOp _ (CommRingCat.pushoutCoconeIsColimit R S T))
   limit.isoLimitCone ⟨_, isLimitPullbackConeMapOfIsLimit Scheme.Spec _ H⟩

@@ -189,7 +189,7 @@ theorem IsCompact.nhdsSet_inter_eq [T2Space X] {s t : Set X} (hs : IsCompact s) 
   refine le_antisymm (nhdsSet_inter_le _ _) ?_
   simp_rw [hs.nhdsSet_inf_eq_biSup, ht.inf_nhdsSet_eq_biSup, nhdsSet, sSup_image]
   refine iSup₂_le fun x hxs ↦ iSup₂_le fun y hyt ↦ ?_
-  rcases eq_or_ne x y with (rfl|hne)
+  rcases eq_or_ne x y with (rfl | hne)
   · exact le_iSup₂_of_le x ⟨hxs, hyt⟩ (inf_idem _).le
   · exact (disjoint_nhds_nhds.mpr hne).eq_bot ▸ bot_le
 
@@ -384,7 +384,7 @@ instance Pi.t2Space {Y : X → Type v} [∀ a, TopologicalSpace (Y a)]
   inferInstance
 
 instance Sigma.t2Space {ι} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ a, T2Space (X a)] :
-    T2Space (Σi, X i) := by
+    T2Space (Σ i, X i) := by
   constructor
   rintro ⟨i, x⟩ ⟨j, y⟩ neq
   rcases eq_or_ne i j with (rfl | h)
@@ -575,24 +575,23 @@ end SeparatedFinset
 
 /-- In a `T2Space`, every compact set is closed. -/
 theorem IsCompact.isClosed [T2Space X] {s : Set X} (hs : IsCompact s) : IsClosed s :=
-  isOpen_compl_iff.1 <| isOpen_iff_forall_mem_open.mpr fun x hx =>
-    let ⟨u, v, _, vo, su, xv, uv⟩ :=
-      SeparatedNhds.of_isCompact_isCompact hs isCompact_singleton (disjoint_singleton_right.2 hx)
-    ⟨v, (uv.mono_left <| show s ≤ u from su).subset_compl_left, vo, by simpa using xv⟩
+  isClosed_iff_forall_filter.2 fun _x _f _ hfs hfx =>
+    let ⟨_y, hy, hfy⟩ := hs.exists_clusterPt hfs
+    mem_of_eq_of_mem (eq_of_nhds_neBot (hfy.mono hfx).neBot).symm hy
 
 theorem IsCompact.preimage_continuous [CompactSpace X] [T2Space Y] {f : X → Y} {s : Set Y}
     (hs : IsCompact s) (hf : Continuous f) : IsCompact (f ⁻¹' s) :=
   (hs.isClosed.preimage hf).isCompact
 
-lemma Pi.isCompact_iff {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
-    [∀ i, T2Space (π i)] {s : Set (Π i, π i)} :
+lemma Pi.isCompact_iff {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
+    [∀ i, T2Space (X i)] {s : Set (Π i, X i)} :
     IsCompact s ↔ IsClosed s ∧ ∀ i, IsCompact (eval i '' s) := by
   constructor <;> intro H
   · exact ⟨H.isClosed, fun i ↦ H.image <| continuous_apply i⟩
   · exact IsCompact.of_isClosed_subset (isCompact_univ_pi H.2) H.1 (subset_pi_eval_image univ s)
 
-lemma Pi.isCompact_closure_iff {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
-    [∀ i, T2Space (π i)] {s : Set (Π i, π i)} :
+lemma Pi.isCompact_closure_iff {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
+    [∀ i, T2Space (X i)] {s : Set (Π i, X i)} :
     IsCompact (closure s) ↔ ∀ i, IsCompact (closure <| eval i '' s) := by
   simp_rw [← exists_isCompact_superset_iff, Pi.exists_compact_superset_iff, image_subset_iff]
 
