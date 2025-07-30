@@ -6,7 +6,9 @@ Authors: Amir Livne Bar-on, Bernhard Reinke
 import Mathlib.Data.List.Induction
 import Mathlib.GroupTheory.FreeGroup.Basic
 import Mathlib.GroupTheory.FreeGroup.Reduce
+import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Tactic.Group
+import Mathlib.Tactic.Linarith
 
 /-!
 This file defines some extra lemmas for free groups, in particular about cyclically reduced words.
@@ -14,6 +16,10 @@ This file defines some extra lemmas for free groups, in particular about cyclica
 ## Main declarations
 
 * `FreeGroup.IsCyclicallyReduced`: the predicate for cyclically reduced words
+
+## Main statements
+* `FreeGroup.infinite_order`: nontrivial elements of a free group have infinite order
+* `FreeGroup.zpow_left_injective`: taking n-th powers is an injective function on the free group
 
 -/
 open List
@@ -200,4 +206,79 @@ theorem reduce_flatten_replicate (h : IsReduced L) (n : ℕ) :
   | n + 1 => reduce_flatten_replicate_succ h n
 
 end reduceCyclically
+
+section pow_left_inj
+variable [DecidableEq α]
+open reduceCyclically
+
+@[to_additive FreeAddGroup.nsmul_right_inj]
+theorem pow_left_inj {x y : FreeGroup α} {n : ℕ} (hn : n ≠ 0) : x ^ n = y ^ n ↔ x = y := by
+  refine ⟨fun heq => ?_, congr_arg (· ^ n)⟩
+  have heq₂ : x ^ (2 * n) = y ^ (2 * n) := by
+    apply_fun (· ^ 2) at heq
+    rwa [mul_comm, pow_mul, pow_mul]
+  have hn₂ : 2 * n ≠ 0 := by omega
+  apply_fun toWord at heq heq₂
+  rw [toWord_pow, toWord_pow, reduce_flatten_replicate x.isReduced_toWord,
+  reduce_flatten_replicate y.isReduced_toWord] at heq heq₂
+  simp only [hn, ↓reduceIte, append_assoc, hn₂] at heq heq₂
+  have leq := congr_arg List.length heq
+  have leq₂ := congr_arg List.length heq₂
+  simp only [length_append, length_flatten, map_replicate, sum_replicate, smul_eq_mul,
+    invRev_length] at leq leq₂
+  have hm : (reduceCyclically x.toWord).length = (reduceCyclically y.toWord).length := by
+    apply Nat.mul_left_cancel (Nat.ne_zero_iff_zero_lt.mp hn)
+    linarith
+  have hc : conjugator x.toWord = conjugator y.toWord := by
+    have : (conjugator x.toWord).length =
+      (conjugator y.toWord).length :=
+      by linarith
+    apply_fun (·.take (conjugator x.toWord).length) at heq
+    rwa [take_left' rfl, this, take_left' rfl] at heq
+  have hm : reduceCyclically x.toWord = reduceCyclically y.toWord := by
+    simp [hc] at heq
+    apply_fun (·.take (reduceCyclically x.toWord).length) at heq
+    match n with
+    | 0 => contradiction
+    | n + 1 =>
+      rw [replicate_succ, flatten_cons, take_left' rfl] at heq
+      rwa [replicate_succ, flatten_cons, hm, take_left' rfl] at heq
+  have := congr_arg mk <| (conj_conjugator_reduceCyclically x.toWord).symm
+  rwa [hc, hm, conj_conjugator_reduceCyclically (y.toWord), mk_toWord, mk_toWord] at this
+
+@[to_additive FreeAddGroup.nsmul_right_injective]
+theorem pow_left_injective {n : ℕ} (hn : n ≠ 0) :
+    Function.Injective ((· ^ n) : FreeGroup α → FreeGroup α) := fun _ _ => (pow_left_inj hn).mp
+
+@[to_additive FreeAddGroup.zsmul_right_inj]
+theorem zpow_left_inj {x y : FreeGroup α} {n : ℤ} (hn : n ≠ 0) : x ^ n = y ^ n ↔ x = y := by
+  nth_rw 2 [← pow_left_inj (Int.natAbs_ne_zero.mpr hn)]
+  rcases Int.natAbs_eq n with h | h
+  · rw [h, Int.natAbs_natCast, zpow_natCast, zpow_natCast]
+  · rw [h, Int.natAbs_neg, Int.natAbs_natCast, zpow_neg, zpow_neg, inv_inj, zpow_natCast,
+    zpow_natCast]
+
+@[to_additive FreeAddGroup.zsmul_right_injective]
+theorem zpow_left_injective {n : ℤ} (hn : n ≠ 0) :
+    Function.Injective ((· ^ n) : FreeGroup α → FreeGroup α) := fun _ _ => (zpow_left_inj hn).mp
+
+@[to_additive]
+theorem infinite_order {x : FreeGroup α} (hx : x ≠ 1) : ¬IsOfFinOrder x := by
+  rw [isOfFinOrder_iff_pow_eq_one]
+  rintro ⟨n, hn, eq⟩
+  rw [← one_pow n, pow_left_inj (by omega)] at eq
+  exact hx eq
+
+@[to_additive]
+theorem ne_inv_of_ne_one {x : FreeGroup α} (hx : x ≠ 1) : x ≠ x⁻¹ := by
+  apply_fun (fun r => x*r)
+  simp only [mul_inv_cancel, ne_eq]
+  intro eq
+  apply infinite_order hx
+  rw [isOfFinOrder_iff_pow_eq_one]
+  use 2, (by decide)
+  rw [← eq]
+  exact pow_two x
+
+end pow_left_inj
 end FreeGroup
