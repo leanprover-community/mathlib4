@@ -148,10 +148,10 @@ variable [PseudoMetricSpace X] -- Could probably generalize to PseudoEMetricSpac
 variable (S : Set (ProbabilityMeasure X))
 
 lemma lt_geom_series (D : ℕ → X) (ε : ℝ≥0∞) (μ : ProbabilityMeasure X) (hs : μ ∈ S) (km : ℕ → ℕ)
-    (hbound : ∀ k : ℕ, ∀ μ ∈ S, (μ (⋃ i, ⋃ (_ : i ≤ km k), ball (D i) (1 / (↑k + 1)))) >
+    (hbound : ∀ k : ℕ, ∀ μ ∈ S, μ (⋃ i, ⋃ (_ : i ≤ km k), ball (D i) (1 / (↑k + 1))) >
     1 - ε * 2 ^ (-k : ℤ)) :
   ∑' (m : ℕ), (1 - μ.toMeasure (⋃ i, ⋃ (_ : i ≤ km (m + 1)), closure (ball (D i) (1 / (↑m + 1))))) ≤
-  ∑' (m : ℕ), (ε: ENNReal) * 2 ^ (-((m:ℤ) + 1)) := by
+  ∑' (m : ℕ), (ε : ENNReal) * 2 ^ (-((m : ℤ) + 1)) := by
   refine ENNReal.tsum_le_tsum ?_
   intro m
   specialize hbound (m+1) μ hs
@@ -232,7 +232,7 @@ lemma MeasOpenCoverTendstoMeasUniv (U : ℕ → Set X) (O : ∀ i, IsOpen (U i))
         exact toReal_le_of_le_ofReal (zero_le_one' ℝ) (by rw [ofReal_one]; exact hεbound)
       rw [ofReal_coe_nnreal]
       apply le_trans (hcontradiction (sub c))
-      rw [← ofReal_one, ENNReal.ENNReal_ofReal_one_sub_ENNReal_toReal_eq];
+      rw [← ofReal_one, ENNReal.ofReal_one_sub_toReal_eq];
       refine le_of_eq ?_
       norm_cast; exact hεbound
   have accumulation : Tendsto (fun n ↦ μlim (⋃ i ≤ n, U i)) atTop (𝓝 (μlim (⋃ i, U i))) := by
@@ -249,7 +249,7 @@ lemma MeasOpenCoverTendstoMeasUniv (U : ℕ → Set X) (O : ∀ i, IsOpen (U i))
   have booosh : ((μlim (⋃ i, ⋃ (_ : i ≤ n), U i)) : ℝ) ≥ (1 - ε / 2).toReal := by
     exact toReal_le_coe_of_le_coe hn
   have := booosh.trans Measurebound
-  rw [one_sub_ENNReal_toReal_eq ε hεbound] at this
+  rw [one_sub_toReal_eq ε hεbound] at this
   simp only [ne_eq, sub_eq_top_iff, one_ne_top, false_and,
    not_false_eq_true, toReal_le_toReal] at this
   have εfin : ε ≠ ⊤ := by
@@ -269,8 +269,8 @@ variable [CompleteSpace X]
 
 lemma mul_shifted_geom_series (ε : ENNReal) : (∑' (m : ℕ), ε * 2 ^ (-(m+1) : ℤ)) = ε := by
   rw [ENNReal.tsum_mul_left]
-  nth_rw 2 [←mul_one (a :=ε)]; congr; simp_rw [← Nat.cast_one (R := ℤ), ← Nat.cast_add,
-  ENNReal.zpow_neg (x:= 2) (by norm_num) (by norm_num), zpow_natCast,
+  nth_rw 2 [←mul_one (a := ε)]; congr; simp_rw [← Nat.cast_one (R := ℤ), ← Nat.cast_add,
+  ENNReal.zpow_neg (x := 2) (by norm_num) (by norm_num), zpow_natCast,
   ENNReal.inv_pow, ENNReal.tsum_geometric_add_one]
   norm_num; rw [ENNReal.inv_mul_cancel]; all_goals norm_num
 
@@ -294,9 +294,9 @@ theorem IsTight_of_isRelativelyCompact (hcomp : IsCompact (closure S)) :
   simp only [not_isEmpty_iff] at hempty
   intro ε εpos
   obtain ⟨D, hD⟩ := exists_dense_seq X
-  have hcov (m : ℕ): ⋃ i, ball (D i) (1 / (m+1)) = univ := by
+  have hcov (m : ℕ): ⋃ i, ball (D i) (1 / (m + 1)) = univ := by
     rw [denseRange_iff] at hD; ext p
-    exact ⟨fun a ↦ trivial,fun _ ↦ mem_iUnion.mpr <| hD p (1 / (m+1)) Nat.one_div_pos_of_nat⟩
+    exact ⟨fun a ↦ trivial,fun _ ↦ mem_iUnion.mpr <| hD p (1 / (m + 1)) Nat.one_div_pos_of_nat⟩
   by_cases hεbound : ε > 1
   · use ∅
     constructor;
@@ -305,24 +305,24 @@ theorem IsTight_of_isRelativelyCompact (hcomp : IsCompact (closure S)) :
     simp only [mem_setOf_eq] at hμ
     obtain ⟨μ', hμ', rfl⟩ := hμ
     rw [compl_empty,measure_univ]; exact le_of_lt hεbound
-  have byclaim (m : ℕ) : ∃ (k : ℕ),∀ μ ∈ S, μ (⋃ i ≤ k, ball (D i) (1 / (m+1))) >
+  have byclaim (m : ℕ) : ∃ (k : ℕ), ∀ μ ∈ S, μ (⋃ i ≤ k, ball (D i) (1 / (m + 1))) >
   1 - (ε * 2 ^ (- m : ℤ) : ℝ≥0∞) := by
-    let ε' :=  (ε) * 2 ^ (-m : ℤ)
-    refine (MeasOpenCoverTendstoMeasUniv (S := S) (U := fun i ↦ ball (D i) (1 / (m+1)))
+    let ε' :=  ε * 2 ^ (-m : ℤ)
+    refine (MeasOpenCoverTendstoMeasUniv (S := S) (U := fun i ↦ ball (D i) (1 / (m + 1)))
     (ε := ε') (hε := ?_) (fun i ↦ isOpen_ball) hcomp) ?_ (hcov m)
     · simp [ε']; exact ⟨εpos,(ENNReal.zpow_pos (Ne.symm (NeZero.ne' 2)) (ofNat_ne_top) (-↑m))⟩
     · simp [ε']; exact Left.mul_le_one (le_of_not_gt hεbound)
         (mod_cast (NNReal_pow_le_one (-m) 2 (by simp) (by simp)))
   choose! km hbound using id byclaim
   -- This is a set we can construct to show tightness
-  let bigK := ⋂ m, ⋃ (i ≤ km (m+1)), closure (ball (D i) (1 / (m+1)))
+  let bigK := ⋂ m, ⋃ (i ≤ km (m + 1)), closure (ball (D i) (1 / (m + 1)))
   have bigcalc (μ : ProbabilityMeasure X) (hs : μ ∈ S) := calc
     μ.toMeasure (bigK)ᶜ
-    _ = μ.toMeasure (⋃ m,(⋃ (i ≤ km (m+1)), closure (ball (D i) (1 / (m+1))))ᶜ) := by
+    _ = μ.toMeasure (⋃ m,(⋃ (i ≤ km (m + 1)), closure (ball (D i) (1 / (m + 1))))ᶜ) := by
       simp only [bigK, compl_iInter, compl_iUnion]
-    _ ≤ ∑' m, μ.toMeasure ((⋃ (i ≤ km (m+1)), closure (ball (D i) (1 / (m+1))))ᶜ) := by
+    _ ≤ ∑' m, μ.toMeasure ((⋃ (i ≤ km (m + 1)), closure (ball (D i) (1 / (m + 1))))ᶜ) := by
       apply measure_iUnion_le
-    _ = ∑' m, (1 - μ.toMeasure (⋃ (i ≤ km (m+1)), closure (ball (D i) (1 / (m+1))))) := by
+    _ = ∑' m, (1 - μ.toMeasure (⋃ (i ≤ km (m + 1)), closure (ball (D i) (1 / (m + 1))))) := by
       congr! with m
       rw [measure_compl ?_ (by simp)]
       · simp
@@ -331,7 +331,7 @@ theorem IsTight_of_isRelativelyCompact (hcomp : IsCompact (closure S)) :
           refine BddAbove.finite <| bddAbove_def.mpr ?_
           use (km (m + 1) + 1)
           exact fun y a ↦ Nat.le_add_right_of_le a
-    _ ≤ (∑' (m : ℕ), (ε : ENNReal) * 2 ^ (-(m+1) : ℤ)) := by
+    _ ≤ (∑' (m : ℕ), (ε : ENNReal) * 2 ^ (-(m + 1) : ℤ)) := by
       apply lt_geom_series S D ε μ hs km hbound
     _ = ε := by exact mul_shifted_geom_series ε
   -- Final proof
@@ -356,7 +356,7 @@ theorem IsTight_of_isRelativelyCompact (hcomp : IsCompact (closure S)) :
     · simp only [one_div, bigK]
       refine isClosed_iInter ?_; intro n
       refine Finite.isClosed_biUnion ?_ (fun _ _ ↦ isClosed_closure)
-      · refine Finite.ofFinset (Finset.Iic (km (n+1))) fun x ↦ ?_
+      · refine Finite.ofFinset (Finset.Iic (km (n + 1))) fun x ↦ ?_
         simp only [Finset.mem_Iic, Nat.le_eq]; exact Eq.to_iff rfl
   simp only [mem_setOf_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
   exact bigcalc
