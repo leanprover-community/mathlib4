@@ -423,46 +423,18 @@ lemma isOpen_compl_support {μ : Measure X} : IsOpen μ.supportᶜ :=
 
 open Set
 
-lemma support_eq_compl_Union_open_null :
-  μ.support = (⋃₀ {U : Set X | IsOpen U ∧ μ U = 0})ᶜ  := by
-    ext x
-    simp only [mem_compl_iff, mem_sUnion, mem_setOf_eq, not_exists, not_and, and_imp,
-         mem_support_iff_forall] at *
-    constructor
-    · exact fun hx _ hU hμU hxx ↦ (ne_of_lt <| hx _ <| IsOpen.mem_nhds hU hxx).symm hμU
-    · intro hx _ hU_nhds
-      rcases (mem_nhds_iff.mp hU_nhds) with ⟨V, hV_sub, hV_open, hVₓ⟩
-      exact measure_pos_of_superset hV_sub <| fun a ↦ hx V hV_open a hVₓ
-
 /-- If the complement of the support is Lindelöf, then the support of a measure is conull. -/
 lemma support_mem_ae_of_isLindelof (h : IsLindelof μ.supportᶜ) : μ.support ∈ ae μ := by
   refine compl_compl μ.support ▸ h.compl_mem_sets_of_nhdsWithin fun s hs ↦ ?_
   simpa [compl_mem_ae_iff, isOpen_compl_support.nhdsWithin_eq hs]
     using notMem_support_iff_exists.mp hs
 
-/-- Maybe the following can be proved from the prior one. -/
-lemma exists_mem_support_of_open_pos [HereditarilyLindelofSpace X] {U : Set X}
-    (_ : IsOpen U) (hμ : 0 < μ U) : (U ∩ μ.support).Nonempty := by
-  by_contra hn
-  have : U ⊆ (μ.support)ᶜ := fun x hxU hxS => hn ⟨x, hxU, hxS⟩
-  rcases (isLindelof_iff_countable_subcover.mp <| HereditarilyLindelof_LindelofSets U)
-    (fun W : {W // IsOpen W ∧ μ W = 0} => W.val) (fun W => W.prop.1)
-    (by simpa only [← sUnion_range (fun W : { W // IsOpen W ∧ μ W = 0 } => W.val),
-      Subtype.range_coe_subtype, support_eq_compl_Union_open_null, compl_compl])
-    with ⟨T, hTcount, hTcov⟩
-  exact (lt_self_iff_false (0 : ℝ≥0∞)).mp <| by
-    calc
-      0 < μ U                 := hμ
-      _ ≤ μ (⋃ i ∈ T, i.val)  := measure_mono hTcov
-      _ ≤ ∑' i : T, μ (i.val) := measure_biUnion_le μ hTcount (·.1)
-      _ = 0                   := by refine ENNReal.tsum_eq_zero.mpr fun i =>
-                                    (i.val.property.2 : μ (i.val) = 0)
-
 end Measure
 
 end MeasureTheory
 
 end Support
+
 section
 
 open MeasureTheory
