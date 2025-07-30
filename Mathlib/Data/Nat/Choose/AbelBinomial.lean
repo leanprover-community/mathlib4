@@ -1,4 +1,10 @@
-import Mathlib
+import Mathlib.Algebra.Group.ForwardDiff
+import Mathlib.Algebra.Order.Ring.Star
+import Mathlib.Analysis.Calculus.Deriv.Mul
+import Mathlib.Analysis.Calculus.Deriv.Pow
+import Mathlib.Data.Int.Star
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
+import Mathlib.Topology.Algebra.Module.ModuleTopology
 
 open scoped BigOperators
 open MeasureTheory intervalIntegral Real fwdDiff fwdDiff_aux Polynomial
@@ -17,8 +23,10 @@ theorem fwdDiff_iter_pow_eq_zero_of_lt' {j n : ℕ} (h : j < n) :
     have : ((fwdDiffₗ ℝ ℝ (-1)) fun X ↦ X ^ j) =
         ∑ i ∈ Finset.range j, j.choose i • fun X ↦ (-1) ^ (j - i) *X ^ i := by
       ext x
-      simp only [fwdDiffₗ_apply, nsmul_eq_mul, fwdDiff, add_pow, Finset.sum_range_succ,]
-      sorry
+      simp only [fwdDiffₗ_apply, nsmul_eq_mul, fwdDiff, add_pow, Finset.sum_range_succ, tsub_self,
+      pow_zero, mul_one, Nat.choose_self, Nat.cast_one, add_sub_cancel_right, Finset.sum_apply,
+       Pi.mul_apply, Pi.natCast_apply]
+      simp_rw [mul_comm]
     rw [this, map_sum]
     simp_rw [coe_fwdDiffₗ_pow, fwdDiff_iter_const_smul, ← coe_fwdDiffₗ_pow]
     refine
@@ -29,10 +37,10 @@ theorem fwdDiff_iter_pow_eq_zero_of_lt' {j n : ℕ} (h : j < n) :
     simp only [nsmul_eq_mul, zero_add]
     have aux : (fun X : ℝ ↦ (-1) ^ (j - k) * X ^ (k:ℕ)) =
        (-1) ^ (j - k) • (fun X : ℝ ↦ X ^ (k:ℕ)) := by
-      sorry
-    simp_rw [aux]
-    simp_rw [coe_fwdDiffₗ_pow, fwdDiff_iter_const_smul, ← coe_fwdDiffₗ_pow]
-    sorry
+      simp only [Int.reduceNeg, zsmul_eq_mul, Int.cast_pow, Int.cast_neg, Int.cast_one]
+      rfl
+    simp_rw [aux, coe_fwdDiffₗ_pow, fwdDiff_iter_const_smul, ← coe_fwdDiffₗ_pow]
+    simp [ih (by linarith)]
 
 lemma aux_sum (t : ℕ) (z : ℝ) :
   ∑ j : Fin (t+2), (Nat.choose (t+1) j) * (-1)^(j :ℕ) * (z - j) ^ t = 0 := by
@@ -58,14 +66,15 @@ lemma aux_sum (t : ℕ) (z : ℝ) :
       have hsplit : (-1 : ℝ) ^ (t + 1) =
         (-1 ) ^ (t + 1 - i) * (-1 ) ^ i := by
         have p:= (pow_add (-1 : ℝ) (t + 1 - i) i)
-        sorry
+        rw [pow_sub_mul_pow (-1) ineq]
       simp only [hsplit, mul_assoc, ← pow_add (-1:ℝ) i i]
-      sorry
-    rw [this] at sum_shift
-    rw [zero_eq_mul] at sum_shift
-    sorry
-
-
+      rw [@npow_mul_comm, ← mul_two, mul_comm i 2, pow_mul, neg_one_sq, one_pow, one_mul]
+    rw [this, zero_eq_mul] at sum_shift
+    simp only [ne_eq, Nat.add_eq_zero, one_ne_zero, and_false, not_false_eq_true, pow_eq_zero_iff,
+      neg_eq_zero, false_or, Finset.sum_range] at sum_shift
+    rw [← sum_shift]
+    congr with i
+    ring_nf
 
 lemma integral_add_pow
     (m : ℕ) {w r s : ℝ} :
@@ -73,7 +82,9 @@ lemma integral_add_pow
     = ((r + w) ^ ((m:ℤ) + 1)/(m+1) - ((s + w) ^ ((m:ℤ) + 1))/(m+1)) := by
    refine integral_deriv_eq_sub' (fun {r} ↦ (r + w) ^ (↑m + 1) / (↑m + 1)) ?_ ?_ ?_
    · ext x
-     simp
+     simp only [deriv_div_const, differentiableAt_fun_id, differentiableAt_const,
+       DifferentiableAt.fun_add, deriv_fun_pow, Nat.cast_add, Nat.cast_one, add_tsub_cancel_right,
+       deriv_fun_add, deriv_id'', deriv_const', add_zero, mul_one, zpow_natCast]
      rw [@mul_div_right_comm]
      nth_rw 2 [← one_mul (x+w)]
      rw [mul_pow, one_pow]
@@ -86,7 +97,6 @@ lemma integral_add_pow
      apply Continuous.continuousOn
      apply Continuous.pow
      exact continuous_id.add continuous_const
-
 
 lemma integral_pow_succ_div
     (m : ℕ) {w z : ℝ} :
@@ -104,8 +114,8 @@ lemma integral_pow_succ_div
                          ((m + 1 : ℝ) * (x + w + m) ^ m) x := by
       have := (hasDerivAt_id x).add_const (w + m)
       have := this.pow (m+1)
-      dsimp at this
-      simp only [Nat.cast_add, Nat.cast_one, mul_one] at this
+      simp only [id_eq, Nat.add_one_sub_one, Nat.cast_add,
+      Nat.cast_one, mul_one] at this
       simp_rw [← add_assoc] at this
       exact this
     simpa [F, div_eq_mul_inv, mul_comm, mul_left_comm, mul_assoc]
@@ -126,9 +136,9 @@ lemma integral_pow_succ_div
     simpa using h.deriv
   have hInt : IntervalIntegrable (deriv F) volume (-w - m) (z + 1) := by
     have hCont : Continuous fun s : ℝ ↦ ((m + 1 : ℝ) * (s + w + m) ^ m) / w := by
-      simp [mul_comm, div_eq_mul_inv]
+      simp only [mul_comm, div_eq_mul_inv]
       apply Continuous.mul
-      · apply continuous_const
+      · exact continuous_const
       · apply Continuous.mul
         · apply Continuous.pow
           simp_rw [add_assoc]
@@ -157,26 +167,25 @@ theorem abel_binomial {m : ℕ} : (w z : ℝ)→ (hw : w ≠ 0)→
  induction m with
  | zero =>
    intro w z hw
-   rw [add_assoc, Nat.cast_zero, add_zero, Nat.cast_zero]
-   rw [@Fin.sum_univ_one]
+   rw [add_assoc, Nat.cast_zero, add_zero, Nat.cast_zero, Fin.sum_univ_one]
    simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Fin.val_eq_zero, Nat.choose_self,
    Nat.cast_one, CharP.cast_eq_zero, sub_self, add_zero, zero_sub, Int.reduceNeg, zpow_neg,
      zpow_one, one_mul, zpow_zero, mul_one, one_div]
  | succ m ih =>
    intro w z hw
    by_cases P : m = 0
-   ·  simp [P]
+   ·  simp only [Nat.succ_eq_add_one, P, zero_add, Nat.cast_one, sub_sub_cancel_left, zpow_neg,
+     zpow_natCast, zpow_one]
       rw [P]
       simp only [Nat.reduceAdd, Fin.sum_univ_two, Fin.isValue, Fin.val_zero,
         Nat.choose_succ_self_right, zero_add, Nat.cast_one, CharP.cast_eq_zero, sub_zero, pow_zero,
         inv_one, mul_one, add_zero, Fin.val_one, Nat.choose_self, sub_self, pow_one, one_mul]
-      rw [@inv_mul_eq_div, one_add_div hw, ← add_assoc]
+      rw [inv_mul_eq_div, one_add_div hw, ← add_assoc]
       ring_nf
    ·  simp only [Nat.succ_eq_add_one, Nat.cast_add, Nat.cast_one, zpow_natCast]
       symm
       calc (z + w + (m + 1)) ^ ((m:ℤ) + 1) / w
          = let f (s : ℝ) := (s + w + m)^(m + 1) / w; f (z + 1) - f (-w - m) := by
-            dsimp
             field_simp
             nth_rw 1 [add_comm (m:ℝ) 1, add_assoc, ← add_assoc w 1 (m :ℝ),
                add_comm w 1, ← add_assoc, ← add_assoc]
@@ -184,12 +193,12 @@ theorem abel_binomial {m : ℕ} : (w z : ℝ)→ (hw : w ≠ 0)→
             congr 1
             ring_nf
       _ = ((m : ℝ) +1) * ∫ (s : ℝ) in (-w - m)..(z+1), (s + w + m)^m / w := by
-            dsimp
-            rw [integral_pow_succ_div] --you can use `integral_pow_succ_div`
+            simp only [intervalIntegral.integral_div]
+            rw [integral_pow_succ_div]
             field_simp
       _ = ((m : ℝ) +1) * (∫ (s : ℝ) in (-w - m)..(z+1), ∑ k : Fin (m+1),
          ↑(m.choose k) * (w + (m - k)) ^ ((m : ℤ)- k - 1) * (s + k)^(k:ℤ)) := by
-            have := fun s ↦ ih w s hw --induction hypothesis
+            have := fun s ↦ ih w s hw
             simp_rw [this]
             simp only [intervalIntegral.integral_div, zpow_natCast]
       _ = ((m : ℝ) +1) * ∑ k : Fin (m+1), (∫ (s : ℝ) in (-w - m)..(z+1),
@@ -209,7 +218,7 @@ theorem abel_binomial {m : ℕ} : (w z : ℝ)→ (hw : w ≠ 0)→
             ring_nf
       _ = ∑ k : Fin (m+1), ((m : ℝ) +1) * ↑(m.choose k) * (w + (m - k))^((m : ℤ)- k - 1) *
          (let f (s : ℝ) := (s + k)^((k:ℤ) + 1) / (k +1) ; f (z + 1) - f (-w - m)) := by
-            dsimp
+            simp only [zpow_natCast]
             apply Finset.sum_congr rfl
             intro x xfin
             congr
@@ -218,16 +227,13 @@ theorem abel_binomial {m : ℕ} : (w z : ℝ)→ (hw : w ≠ 0)→
          (z + 1 + k)^((k:ℤ) + 1) / (k + 1)
          - ∑ k : Fin (m+1), ((m : ℝ) +1) * ↑(m.choose k) * (w + (m - k))^((m : ℤ)- k - 1) *
          (-w -m + k)^((k:ℤ) + 1) / (k + 1) := by
-            dsimp
-            simp_rw [mul_sub] -- a few simp_rw should be enough
-            simp_rw [Finset.sum_sub_distrib]
+            simp_rw [mul_sub, Finset.sum_sub_distrib]
             field_simp
       _ = ∑ k : Fin (m+1), ((m : ℝ) +1) / (k + 1) * ↑(m.choose k) * (z + 1 + k)^((k:ℤ) + 1) *
          (w + (m - k))^((m : ℤ)- k - 1)
          - ∑ k : Fin (m+1), ((m : ℝ) +1) / (k + 1) * ↑(m.choose k) * (-w -m + k)^((k:ℤ) + 1) *
          (w + (m - k))^((m : ℤ)- k - 1) := by
-            simp_rw [mul_comm, mul_div_assoc]
-            simp_rw [← mul_assoc, mul_comm] -- a few simp_rw should be enough
+            simp_rw [mul_comm, mul_div_assoc, ← mul_assoc, mul_comm]
             simp only [sub_left_inj]
             field_simp
       _ = ∑ k : Fin (m+1), ↑((m+1).choose (k+1)) * (z + 1 + k)^((k:ℤ) + 1) *
@@ -239,16 +245,13 @@ theorem abel_binomial {m : ℕ} : (w z : ℝ)→ (hw : w ≠ 0)→
              intro k
              have h_nat : ((k : ℕ) + 1) * (m + 1).choose ((k : ℕ) + 1)
                   = (m + 1) * m.choose (k : ℕ) := by
-               rw [Nat.succ_mul_choose_eq]
-               simp_rw [Nat.succ_eq_add_one]
-               rw [mul_comm]
+               simp_rw [Nat.succ_mul_choose_eq, Nat.succ_eq_add_one, mul_comm]
              have h_real : ((k : ℝ) + 1) * ((m + 1).choose ((k : ℕ) + 1) : ℝ)
                   = ((m : ℝ) + 1) * (m.choose (k : ℕ) : ℝ) := by
                simpa using congrArg (fun n : ℕ ↦ (n : ℝ)) h_nat
              have hk1 : ((k : ℝ) + 1) ≠ 0 := by
                exact_mod_cast Nat.succ_ne_zero (k : ℕ)
-             field_simp [hk1] at h_real
-             field_simp
+             field_simp [hk1] at h_real ⊢
              rw [← h_real,mul_comm]
             simp_rw [this]
       _ = ∑ k : Fin (m+1), ↑((m+1).choose (k+1)) * (z + 1 + k)^((k:ℤ) + 1) *
@@ -262,7 +265,7 @@ theorem abel_binomial {m : ℕ} : (w z : ℝ)→ (hw : w ≠ 0)→
             congr 1
             rw [sub_add_comm, add_comm_sub]
             by_cases p : (w + (↑m - ↑↑k)) =0
-            · simp [p]
+            · simp only [p, zpow_natCast]
               rw [zero_pow P]
               simp only [mul_eq_zero]
               left
@@ -274,7 +277,7 @@ theorem abel_binomial {m : ℕ} : (w z : ℝ)→ (hw : w ≠ 0)→
          (w + (m - j + 1))^((m : ℤ)- j)
          - ∑ j : Fin ((m+1) +1), ↑((m+1).choose j) * (-1)^(j:ℤ) *
          (w + (m - j + 1))^(m : ℤ) := by
-            simp
+            simp only [zpow_natCast]
             nth_rw 3 [@Fin.sum_univ_succ]
             nth_rw 4 [@Fin.sum_univ_succ]
             simp only [Fin.coe_ofNat_eq_mod, Nat.zero_mod, Nat.choose_zero_right, Nat.cast_one,
@@ -294,8 +297,9 @@ theorem abel_binomial {m : ℕ} : (w z : ℝ)→ (hw : w ≠ 0)→
                     repeat rw [← add_assoc]
                     congr 1
                     nth_rw 4 [sub_eq_add_neg]
-                    rw [← add_assoc, neg_eq_neg_one_mul, mul_add, ← add_assoc, neg_one_mul, neg_one_mul]
-                    rw [← sub_eq_add_neg, sub_add, sub_self, sub_zero, add_assoc, ← sub_eq_add_neg]
+                    rw [← add_assoc, neg_eq_neg_one_mul, mul_add, ← add_assoc, neg_one_mul,
+                    neg_one_mul, ← sub_eq_add_neg, sub_add, sub_self, sub_zero, add_assoc,
+                     ← sub_eq_add_neg]
               simp only [mul_eq_mul_left_iff, mul_eq_zero, Nat.cast_eq_zero, ne_eq, Nat.add_eq_zero,
                 Fin.val_eq_zero_iff, one_ne_zero, and_false, not_false_eq_true, pow_eq_zero_iff]
               left
