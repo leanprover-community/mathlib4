@@ -137,6 +137,12 @@ instance essSurj_functor : (functor r).EssSurj where
             ext
             rfl)⟩⟩
 
+instance [Unique C] : Unique (Quotient r) where
+  uniq a := by ext; subsingleton
+
+instance [∀ (x y : C), Subsingleton (x ⟶ y)] (x y : Quotient r) :
+    Subsingleton (x ⟶ y) := (full_functor r).map_surjective.subsingleton
+
 protected theorem induction {P : ∀ {a b : Quotient r}, (a ⟶ b) → Prop}
     (h : ∀ {x y : C} (f : x ⟶ y), P ((functor r).map f)) :
     ∀ {a b : Quotient r} (f : a ⟶ b), P f := by
@@ -264,7 +270,7 @@ def natTransLift {F G : Quotient r ⥤ D} (τ : Quotient.functor r ⋙ F ⟶ Quo
 @[simp]
 lemma natTransLift_app (F G : Quotient r ⥤ D)
     (τ : Quotient.functor r ⋙ F ⟶ Quotient.functor r ⋙ G) (X : C) :
-  (natTransLift r τ).app ((Quotient.functor r).obj X) = τ.app X := rfl
+    (natTransLift r τ).app ((Quotient.functor r).obj X) = τ.app X := rfl
 
 @[reassoc]
 lemma comp_natTransLift {F G H : Quotient r ⥤ D}
