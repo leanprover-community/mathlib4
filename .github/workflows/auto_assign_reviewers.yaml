@@ -10,20 +10,17 @@ jobs:
     name: assign automatically proposed reviewers
     runs-on: ubuntu-latest
     steps:
-      - name: download auto-assignments
+      - name: download the list of proposed assignments
         run: |
           curl --output assignments.json https://leanprover-community.github.io/queueboard/automatic_assignments.json
 
-      # The Hoskinson runners may not have jq installed, so do that now.
-      - name: 'Setup jq'
-        uses: dcarbone/install-jq-action@f0e10f46ff84f4d32178b4b76e1ef180b16f82c3 # v3.1.1
-
-      # Parse the json file
       - name: parse assignments file and assign reviewers
         run: |
-          python3 write_assignments.py
-          echo "Wrote assignment file 'assign_users.sh'"
+          # We use a slightly roundabout way (shelling out to Python to parse the file and write
+          # the shell script we execute), as this is the easiest way to get around variable
+          # quotient issues.
+          # Rewriting this (or deciding that Python is nicer than shell and keeping it) is welcome.
+          python3 scripts/write_assignments.py
           chmod u+x assign_users.sh
-          echo 'File contents are:'
           cat assign_users.sh
           ./assign_users.sh
