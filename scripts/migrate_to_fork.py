@@ -339,7 +339,7 @@ def setup_remotes(username: str, fork_url: str, auto_accept: bool = False) -> st
     # Handle upstream remote
     upstream_remote = None
     for name, url in remotes.items():
-        if url == 'https://github.com/leanprover-community/mathlib4.git' or url == 'git@github.com:leanprover-community/mathlib4.git':
+        if re.fullmatch(r'.*[/:]leanprover-community/mathlib4(\.git)?', url):
             upstream_remote = name
             break
 
