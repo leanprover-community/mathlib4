@@ -568,7 +568,7 @@ instance : skeletalFunctor.Faithful where
 
 instance : skeletalFunctor.EssSurj where
   mem_essImage X :=
-    ⟨mk (Fintype.card X - 1 : ℕ),
+    ⟨⦋(Fintype.card X - 1 : ℕ)⦌,
       ⟨by
         have aux : Fintype.card X = Fintype.card X - 1 + 1 :=
           (Nat.succ_pred_eq_of_pos <| Fintype.card_pos_iff.mpr ⟨⊥⟩).symm
@@ -732,9 +732,9 @@ theorem iso_eq_iso_refl {x : SimplexCategory} (e : x ≅ x) : e = Iso.refl x := 
 theorem eq_id_of_isIso {x : SimplexCategory} (f : x ⟶ x) [IsIso f] : f = 𝟙 _ :=
   congr_arg (fun φ : _ ≅ _ => φ.hom) (iso_eq_iso_refl (asIso f))
 
-theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk (n + 1) ⟶ Δ')
+theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : ⦋n + 1⦌ ⟶ Δ')
     (i : Fin (n + 1)) (hi : θ.toOrderHom (Fin.castSucc i) = θ.toOrderHom i.succ) :
-    ∃ θ' : mk n ⟶ Δ', θ = σ i ≫ θ' := by
+    ∃ θ' : ⦋n⦌ ⟶ Δ', θ = σ i ≫ θ' := by
   use δ i.succ ≫ θ
   ext x : 3
   simp only [len_mk, σ, mkHom, comp_toOrderHom, Hom.toOrderHom_mk, OrderHom.comp_coe,
@@ -763,9 +763,9 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk 
         Nat.lt_succ_iff, Fin.ext_iff] at h' h'' ⊢
       omega
 
-theorem eq_σ_comp_of_not_injective {n : ℕ} {Δ' : SimplexCategory} (θ : mk (n + 1) ⟶ Δ')
+theorem eq_σ_comp_of_not_injective {n : ℕ} {Δ' : SimplexCategory} (θ : ⦋n + 1⦌ ⟶ Δ')
     (hθ : ¬Function.Injective θ.toOrderHom) :
-    ∃ (i : Fin (n + 1)) (θ' : mk n ⟶ Δ'), θ = σ i ≫ θ' := by
+    ∃ (i : Fin (n + 1)) (θ' : ⦋n⦌ ⟶ Δ'), θ = σ i ≫ θ' := by
   simp only [Function.Injective, exists_prop, not_forall] at hθ
   -- as θ is not injective, there exists `x<y` such that `θ x = θ y`
   -- and then, `θ x = θ (x+1)`
@@ -783,8 +783,8 @@ theorem eq_σ_comp_of_not_injective {n : ℕ} {Δ' : SimplexCategory} (θ : mk (
   · rw [Fin.castSucc_castPred, h₁]
     exact θ.toOrderHom.monotone ((Fin.succ_castPred_le_iff _).mpr h₂)
 
-theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ ⟶ mk (n + 1))
-    (i : Fin (n + 2)) (hi : ∀ x, θ.toOrderHom x ≠ i) : ∃ θ' : Δ ⟶ mk n, θ = θ' ≫ δ i := by
+theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ ⟶ ⦋n + 1⦌)
+    (i : Fin (n + 2)) (hi : ∀ x, θ.toOrderHom x ≠ i) : ∃ θ' : Δ ⟶ ⦋n⦌, θ = θ' ≫ δ i := by
   use θ ≫ σ (.predAbove (.last n) i)
   ext x : 3
   suffices ∀ j ≠ i, i.succAbove (((Fin.last n).predAbove i).predAbove j) = j by
@@ -793,9 +793,9 @@ theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ 
   intro j hj
   cases i using Fin.lastCases <;> simp [hj]
 
-theorem eq_comp_δ_of_not_surjective {n : ℕ} {Δ : SimplexCategory} (θ : Δ ⟶ mk (n + 1))
+theorem eq_comp_δ_of_not_surjective {n : ℕ} {Δ : SimplexCategory} (θ : Δ ⟶ ⦋n + 1⦌)
     (hθ : ¬Function.Surjective θ.toOrderHom) :
-    ∃ (i : Fin (n + 2)) (θ' : Δ ⟶ mk n), θ = θ' ≫ δ i := by
+    ∃ (i : Fin (n + 2)) (θ' : Δ ⟶ ⦋n⦌), θ = θ' ≫ δ i := by
   obtain ⟨i, hi⟩ := not_forall.mp hθ
   use i
   exact eq_comp_δ_of_not_surjective' θ i (not_exists.mp hi)
@@ -817,7 +817,7 @@ theorem eq_id_of_epi {x : SimplexCategory} (i : x ⟶ x) [Epi i] : i = 𝟙 _ :=
     eq_self_iff_true, and_true]
   infer_instance
 
-theorem eq_σ_of_epi {n : ℕ} (θ : mk (n + 1) ⟶ mk n) [Epi θ] : ∃ i : Fin (n + 1), θ = σ i := by
+theorem eq_σ_of_epi {n : ℕ} (θ : ⦋n + 1⦌ ⟶ ⦋n⦌) [Epi θ] : ∃ i : Fin (n + 1), θ = σ i := by
   rcases eq_σ_comp_of_not_injective θ (by
     by_contra h
     simpa using le_of_mono (mono_iff_injective.mpr h)) with ⟨i, θ', h⟩
@@ -828,7 +828,7 @@ theorem eq_σ_of_epi {n : ℕ} (θ : mk (n + 1) ⟶ mk n) [Epi θ] : ∃ i : Fin
   haveI := CategoryTheory.epi_of_epi (σ i) θ'
   rw [h, eq_id_of_epi θ', Category.comp_id]
 
-theorem eq_δ_of_mono {n : ℕ} (θ : mk n ⟶ mk (n + 1)) [Mono θ] : ∃ i : Fin (n + 2), θ = δ i := by
+theorem eq_δ_of_mono {n : ℕ} (θ : ⦋n⦌ ⟶ ⦋n + 1⦌) [Mono θ] : ∃ i : Fin (n + 2), θ = δ i := by
   rcases eq_comp_δ_of_not_surjective θ (by
     by_contra h
     simpa using le_of_epi (epi_iff_surjective.mpr h)) with ⟨i, θ', h⟩
@@ -887,5 +887,22 @@ def toCat : SimplexCategory ⥤ Cat.{0} :=
   SimplexCategory.skeletalFunctor ⋙ forget₂ NonemptyFinLinOrd LinOrd ⋙
       forget₂ LinOrd Lat ⋙ forget₂ Lat PartOrd ⋙
       forget₂ PartOrd Preord ⋙ preordToCat
+
+theorem toCat.obj_eq_Fin (n : ℕ) : toCat.obj ⦋n⦌ = Fin (n + 1) := rfl
+
+instance uniqueHomToZero {Δ : SimplexCategory} : Unique (Δ ⟶ ⦋0⦌) where
+  default := Δ.const _ 0
+  uniq := eq_const_to_zero
+
+/-- The object `⦋0⦌` is terminal in `SimplexCategory`. -/
+def isTerminalZero : IsTerminal (⦋0⦌ : SimplexCategory) :=
+  IsTerminal.ofUnique ⦋0⦌
+
+instance : HasTerminal SimplexCategory :=
+  IsTerminal.hasTerminal isTerminalZero
+
+/-- The isomorphism between the terminal object in `SimplexCategory` and `⦋0⦌`. -/
+noncomputable def topIsoZero : ⊤_ SimplexCategory ≅ ⦋0⦌ :=
+  terminalIsoIsTerminal isTerminalZero
 
 end SimplexCategory

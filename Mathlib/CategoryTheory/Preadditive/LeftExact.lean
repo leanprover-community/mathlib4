@@ -69,8 +69,8 @@ attribute [local instance] preservesBinaryProduct_of_preservesKernels
 /-- A kernel preserving functor between preadditive categories preserves binary products. -/
 lemma preservesBinaryProducts_of_preservesKernels
     [∀ {X Y} (f : X ⟶ Y), PreservesLimit (parallelPair f 0) F] :
-  PreservesLimitsOfShape (Discrete WalkingPair) F where
-    preservesLimit := preservesLimit_of_iso_diagram F (diagramIsoPair _).symm
+    PreservesLimitsOfShape (Discrete WalkingPair) F where
+  preservesLimit := preservesLimit_of_iso_diagram F (diagramIsoPair _).symm
 
 attribute [local instance] preservesBinaryProducts_of_preservesKernels
 

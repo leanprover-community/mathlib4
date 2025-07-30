@@ -531,8 +531,8 @@ def isColimitOfReflects (F : C ⥤ D) {c : Cocone K} (t : IsColimit (F.mapCocone
 instance reflectsLimit_subsingleton (K : J ⥤ C) (F : C ⥤ D) : Subsingleton (ReflectsLimit K F) := by
   constructor; rintro ⟨a⟩ ⟨b⟩; congr!
 
-instance
-  reflectsColimit_subsingleton (K : J ⥤ C) (F : C ⥤ D) : Subsingleton (ReflectsColimit K F) := by
+instance reflectsColimit_subsingleton (K : J ⥤ C) (F : C ⥤ D) :
+    Subsingleton (ReflectsColimit K F) := by
   constructor; rintro ⟨a⟩ ⟨b⟩; congr!
 
 instance reflectsLimitsOfShape_subsingleton (J : Type w) [Category.{w'} J] (F : C ⥤ D) :
@@ -543,8 +543,8 @@ instance reflectsColimitsOfShape_subsingleton (J : Type w) [Category.{w'} J] (F 
     Subsingleton (ReflectsColimitsOfShape J F) := by
   constructor; rintro ⟨a⟩ ⟨b⟩; congr!
 
-instance
-  reflects_limits_subsingleton (F : C ⥤ D) : Subsingleton (ReflectsLimitsOfSize.{w', w} F) := by
+instance reflects_limits_subsingleton (F : C ⥤ D) :
+    Subsingleton (ReflectsLimitsOfSize.{w', w} F) := by
   constructor; rintro ⟨a⟩ ⟨b⟩; congr!
 
 instance reflects_colimits_subsingleton (F : C ⥤ D) :
