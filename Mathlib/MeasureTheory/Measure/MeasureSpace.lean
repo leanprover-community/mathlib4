@@ -803,6 +803,7 @@ section Support
 
 variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
 
+/-- The support of the sum of two measures is the union of their supports. -/
 lemma support_add (μ ν : Measure X) :
   (μ + ν).support = μ.support ∪ ν.support := by
   ext; simp [mem_support_iff]
