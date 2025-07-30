@@ -104,23 +104,34 @@ where
         else arg (u + 1) true <$> go acc[u] p i
       else arg 0 false <$> go e p i
 
-private def getName (n : Name) : String :=
-  match n with
-  | Name.str _ s => s
-  | _ => "_"
-
-private def pathToString (path : Path) (spc : String) : String :=
-  let c := go path
-  let cc := List.replicate c.2 "fun"
-  s!"\n{spc}  ".intercalate (if c.1 = [] then cc else s!"enter [{", ".intercalate c.1}]" :: cc)
+private def getName {m} [Monad m] [MonadEnv m] (n : Name) : m String := do
+  let table ← Parser.getTokenTable <$> getEnv
+  let isToken s := (table.find? s).isSome
+  return (toString? n.eraseMacroScopes isToken).getD "_"
 where
-  go : Path → List String × Nat
-    | Path.node => ([], 0)
-    | Path.arg arg all next =>
-      (s!"{if all then "@" else ""}{arg}" :: (go next).1, (go next).2)
-    | Path.fun depth => ([], depth)
-    | Path.type next => ("1" :: (go next).1, (go next).2)
-    | Path.body name next => (getName name.eraseMacroScopes :: (go next).1, (go next).2)
+  toString? (n : Name) (isToken : String → Bool := fun _ => false) : Option String :=
+  match n with
+  | .str .anonymous s => Lean.Name.escapePart s (isToken s)
+  | .str n s => do
+    let r ← toString? n isToken
+    let r' := r ++ "." ++ (Lean.Name.escapePart s false).getD s
+    if isToken r' then return r ++ "." ++ (← Lean.Name.escapePart s true) else return r'
+  | _ => none
+
+private def pathToString {m} [Monad m] [MonadEnv m] (path : Path) (spc : String) : m String := do
+  let c ← go path
+  let cc := List.replicate c.2 "fun"
+  return s!"\n{spc}  ".intercalate
+    (if c.1 = [] then cc else s!"enter [{", ".intercalate c.1}]" :: cc)
+where
+  go : Path → m (List String × Nat)
+    | Path.node => pure ([], 0)
+    | Path.arg arg all next => do
+      pure (s!"{if all then "@" else ""}{arg}" :: (← go next).1, (← go next).2)
+    | Path.fun depth => pure ([], depth)
+    | Path.type next => do pure ("1" :: (← go next).1, (← go next).2)
+    | Path.body name next => do
+      pure ((← getName name.eraseMacroScopes) :: (← go next).1, (← go next).2)
 
 open Lean Syntax in
 /-- Return the link text and inserted text above and below of the conv widget. -/
@@ -138,7 +149,7 @@ def insertEnter (locations : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
   -- prepare `enter` indentation
   let spc := String.replicate (SelectInsertParamsClass.replaceRange params).start.character ' '
   -- build `enter [...]` string
-  let enterString := pathToString path spc
+  let enterString ← pathToString path spc
   let loc ← match fvar with
   | some fvarId => pure s!"at {← fvarId.getUserName} "
   | none => pure ""
