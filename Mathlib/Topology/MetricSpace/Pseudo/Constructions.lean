@@ -241,9 +241,11 @@ section Discrete
 namespace PseudoMetricSpace
 
 variable {X : Type*}
+
 /-- The trivial metric space, where every distinct element is 1 away from another.
 This takes an explicit `DiscreteTopology` instance to ensure that the forgetful
 inheritance to topology matches. -/
+@[nolint unusedArguments]
 def ofDiscreteTopology [TopologicalSpace X]
     [DiscreteTopology X] [DecidableEq X] : PseudoMetricSpace X where
   dist x y := if x = y then 0 else 1
