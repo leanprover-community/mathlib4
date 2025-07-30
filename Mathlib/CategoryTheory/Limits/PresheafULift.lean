@@ -586,16 +586,12 @@ instance : F.op.lan.IsLeftKanExtension (compULiftYonedaIsoULiftYonedaCompLan.{w}
 
 end
 
-section
-
-variable {C : Type u₁} [Category.{v₁} C] (P : Cᵒᵖ ⥤ Type max w v₁)
-
 /-- For a presheaf `P`, consider the forgetful functor from the category of representable
     presheaves over `P` to the category of presheaves. There is a tautological cocone over this
     functor whose leg for a natural transformation `V ⟶ P` with `V` representable is just that
     natural transformation. -/
 @[simps]
-def tautologicalCocone :
+def tautologicalCocone' (P : Cᵒᵖ ⥤ Type max w v₁) :
     Cocone (CostructuredArrow.proj uliftYoneda.{w} P ⋙ uliftYoneda.{w}) where
   pt := P
   ι := { app X := X.hom }
@@ -604,30 +600,36 @@ def tautologicalCocone :
     representables.
 
     Proposition 2.6.3(i) in [Kashiwara2006] -/
-def isColimitTautologicalCocone : IsColimit (tautologicalCocone.{w} P) where
-  desc s :=
-    ⟨fun X t => uliftYonedaEquiv (s.ι.app (CostructuredArrow.mk (uliftYonedaEquiv.symm t))), by
-      intros X Y f
-      ext t
-      dsimp
-      rw [uliftYonedaEquiv_naturality, uliftYonedaEquiv_symm_map]
-      simpa using (s.ι.naturality (CostructuredArrow.homMk'
-        (CostructuredArrow.mk (uliftYonedaEquiv.symm t)) f.unop)).symm⟩
-  fac := by
-    intro s t
-    dsimp
-    apply uliftYonedaEquiv.injective
-    rw [uliftYonedaEquiv_comp]
-    dsimp only
-    rw [Equiv.symm_apply_apply]
-    rfl
-  uniq := by
-    intro s j h
-    ext V x
-    obtain ⟨t, rfl⟩ := uliftYonedaEquiv.surjective x
-    dsimp
-    rw [Equiv.symm_apply_apply, ← uliftYonedaEquiv_comp]
-    exact congr_arg _ (h (CostructuredArrow.mk t))
+noncomputable def isColimitTautologicalCocone' (P : Cᵒᵖ ⥤ Type max w v₁) :
+    IsColimit (tautologicalCocone'.{w} P) :=
+  (IsColimit.whiskerEquivalenceEquiv
+    (CategoryOfElements.costructuredArrowULiftYonedaEquivalence.{w} P)).2
+      (colimitOfRepresentable.{w} P)
+
+
+/-- For a presheaf `P`, consider the forgetful functor from the category of representable
+    presheaves over `P` to the category of presheaves. There is a tautological cocone over this
+    functor whose leg for a natural transformation `V ⟶ P` with `V` representable is just that
+    natural transformation. -/
+@[simps]
+def tautologicalCocone (P : Cᵒᵖ ⥤ Type v₁) :
+    Cocone (CostructuredArrow.proj yoneda P ⋙ yoneda) where
+  pt := P
+  ι := { app X := X.hom }
+
+/-- The tautological cocone with point `P` is a colimit cocone, exhibiting `P` as a colimit of
+    representables.
+
+    Proposition 2.6.3(i) in [Kashiwara2006] -/
+noncomputable def isColimitTautologicalCocone (P : Cᵒᵖ ⥤ Type v₁) :
+    IsColimit (tautologicalCocone P) := by
+  let e : functorToRepresentables.{v₁} P ≅
+    ((CategoryOfElements.costructuredArrowYonedaEquivalence P).functor ⋙
+      CostructuredArrow.proj yoneda P ⋙ yoneda) :=
+    NatIso.ofComponents (fun e ↦ NatIso.ofComponents (fun X ↦ Equiv.ulift.toIso))
+  exact (IsColimit.whiskerEquivalenceEquiv
+    (CategoryOfElements.costructuredArrowYonedaEquivalence P)).2
+      ((IsColimit.precomposeHomEquiv e _).1 (colimitOfRepresentable.{v₁} P))
 
 variable {I : Type v₁} [SmallCategory I] (F : I ⥤ C)
 
@@ -655,8 +657,6 @@ theorem final_toCostructuredArrow_comp_pre {c : Cocone (F ⋙ yoneda)} (hc : IsC
     (colimit.isColimit ((c.toCostructuredArrow ⋙ CostructuredArrow.pre F yoneda c.pt) ⋙
       CostructuredArrow.toOver yoneda c.pt))
   exact Over.isoMk (hc.coconePointUniqueUpToIso isc) (hc.hom_ext fun i => by simp)
-
-end
 
 end Presheaf
 
