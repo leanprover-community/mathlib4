@@ -109,10 +109,10 @@ private def getName (n : Name) : String :=
   | Name.str _ s => s
   | _ => "_"
 
-private def pathToString (path : Path) : String :=
+private def pathToString (path : Path) (spc : String) : String :=
   let c := go path
   let cc := List.replicate c.2 "fun"
-  "; ".intercalate (if c.1 = [] then cc else s!"enter [{", ".intercalate c.1}]" :: cc)
+  s!"\n{spc}  ".intercalate (if c.1 = [] then cc else s!"enter [{", ".intercalate c.1}]" :: cc)
 where
   go : Path → List String × Nat
     | Path.node => ([], 0)
@@ -135,10 +135,10 @@ def insertEnter (locations : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
   let expr ← instantiateMVars expr
   -- generate list of commands for `enter`
   let path ← Path.ofSubExprPos expr subexprPos
-  -- build `enter [...]` string
-  let enterString := pathToString path
   -- prepare `enter` indentation
   let spc := String.replicate (SelectInsertParamsClass.replaceRange params).start.character ' '
+  -- build `enter [...]` string
+  let enterString := pathToString path spc
   let loc ← match fvar with
   | some fvarId => pure s!"at {← fvarId.getUserName} "
   | none => pure ""
