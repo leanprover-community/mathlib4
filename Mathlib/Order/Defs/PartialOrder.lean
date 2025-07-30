@@ -120,10 +120,20 @@ lemma le_of_lt_or_eq (h : a < b ∨ a = b) : a ≤ b := h.elim le_of_lt le_of_eq
 @[to_dual le_of_eq_or_lt']
 lemma le_of_eq_or_lt (h : a = b ∨ a < b) : a ≤ b := h.elim le_of_eq le_of_lt
 
-@[to_dual instTransGE] instance instTransLE : @Trans α α α LE.le LE.le LE.le := ⟨le_trans⟩
-@[to_dual instTransGT] instance instTransLT : @Trans α α α LT.lt LT.lt LT.lt := ⟨lt_trans⟩
-@[to_dual instTransGTGE] instance instTransLTLE : @Trans α α α LT.lt LE.le LT.lt := ⟨lt_of_lt_of_le⟩
-@[to_dual instTransGEGT] instance instTransLELT : @Trans α α α LE.le LT.lt LT.lt := ⟨lt_of_le_of_lt⟩
+instance (priority := 900) instTransLE : @Trans α α α LE.le LE.le LE.le := ⟨le_trans⟩
+instance (priority := 900) instTransLT : @Trans α α α LT.lt LT.lt LT.lt := ⟨lt_trans⟩
+instance (priority := 900) instTransLTLE : @Trans α α α LT.lt LE.le LT.lt := ⟨lt_of_lt_of_le⟩
+instance (priority := 900) instTransLELT : @Trans α α α LE.le LT.lt LT.lt := ⟨lt_of_le_of_lt⟩
+-- applying `to_dual` on the instances above breaks `calc`, since the types end up expressed
+-- in terms of things like `(fun a a_1 ↦ a_1 ≤ a)` instead of `GE.ge`
+@[to_dual existing instTransLE]
+instance (priority := 900) instTransGE : @Trans α α α GE.ge GE.ge GE.ge := ⟨ge_trans⟩
+@[to_dual existing instTransLT]
+instance (priority := 900) instTransGT : @Trans α α α GT.gt GT.gt GT.gt := ⟨gt_trans⟩
+@[to_dual existing instTransLTLE]
+instance (priority := 900) instTransGTGE : @Trans α α α GT.gt GE.ge GT.gt := ⟨lt_of_lt_of_le'⟩
+@[to_dual existing instTransLELT]
+instance (priority := 900) instTransGEGT : @Trans α α α GE.ge GT.gt GT.gt := ⟨lt_of_le_of_lt'⟩
 
 /-- `<` is decidable if `≤` is. -/
 def decidableLTOfDecidableLE [DecidableLE α] : DecidableLT α
