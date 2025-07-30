@@ -506,11 +506,15 @@ variable {𝕜 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜] [NormedField 𝕜₂]
   {σ₁₃ : 𝕜 →+* 𝕜₃} {σ₂₃ : 𝕜₂ →+* 𝕜₃}
 
 /-- Send a continuous bilinear map to an abstract bilinear map (forgetting continuity). -/
-def toLinearMap₂ (L : E →SL[σ₁₃] F →SL[σ₂₃] G) : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G :=
+def toLinearMap₁₂ (L : E →SL[σ₁₃] F →SL[σ₂₃] G) : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G :=
   (coeLMₛₗ σ₂₃).comp L.toLinearMap
 
-@[simp] lemma toLinearMap₂_apply (L : E →SL[σ₁₃] F →SL[σ₂₃] G) (v : E) (w : F) :
-    L.toLinearMap₂ v w = L v w := rfl
+@[deprecated (since := "2025-07-28")] alias toLinearMap₂ := toLinearMap₁₂
+
+@[simp] lemma toLinearMap₁₂_apply (L : E →SL[σ₁₃] F →SL[σ₂₃] G) (v : E) (w : F) :
+    L.toLinearMap₁₂ v w = L v w := rfl
+
+@[deprecated (since := "2025-07-28")] alias toLinearMap₂_apply := toLinearMap₁₂_apply
 
 end BilinearMaps
 
