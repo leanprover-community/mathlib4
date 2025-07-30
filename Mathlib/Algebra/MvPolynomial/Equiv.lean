@@ -597,7 +597,7 @@ lemma totalDegree_coeff_finSuccEquiv_add_le (f : MvPolynomial (Fin (n + 1)) R) (
   have ⟨σ, hσ1, hσ2⟩ := Finset.exists_mem_eq_sup (support _) hf'_sup
                           (fun s => Finsupp.sum s fun _ e => e)
   -- Then cons i σ is a monomial index of p with total degree equal to the desired bound
-  let σ' : Fin (n+1) →₀ ℕ := cons i σ
+  let σ' : Fin (n + 1) →₀ ℕ := cons i σ
   convert le_totalDegree (s := σ') _
   · rw [totalDegree, hσ2, sum_cons, add_comm]
   · rw [← support_coeff_finSuccEquiv]
@@ -631,9 +631,7 @@ theorem image_support_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} {i : ℕ} 
     ext
     rw [mem_support_iff, finSuccEquiv_coeff_coeff, Ne]
   constructor
-  · rintro ⟨m', ⟨h, hm'⟩⟩
-    simp only [← hm']
-    exact ⟨h, by rw [cons_zero]⟩
+  · grind [cons_zero]
   · intro h
     use tail m
     rw [← h.2, cons_tail]

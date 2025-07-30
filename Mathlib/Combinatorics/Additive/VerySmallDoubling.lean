@@ -182,7 +182,9 @@ lemma invMulSubgroup_eq_mul_inv (A : Finset G) (h) : (invMulSubgroup A h : Set G
   exact mul_inv_eq_inv_mul_of_doubling_lt_two (by qify at h ⊢; linarith)
 
 instance (A : Finset G) (h) : Fintype (invMulSubgroup A h) := by
-  simp only [invMulSubgroup, ← coe_mul, Subgroup.mem_mk, mem_coe]; infer_instance
+  simp only [invMulSubgroup, ← coe_mul, Subgroup.mem_mk, Submonoid.mem_mk, Subsemigroup.mem_mk,
+    mem_coe]
+  infer_instance
 
 private lemma weak_invMulSubgroup_bound (h : #(A * A) < (3 / 2 : ℚ) * #A) :
     #(A⁻¹ * A) < 2 * #A := by

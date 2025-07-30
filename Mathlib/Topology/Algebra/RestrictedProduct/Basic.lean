@@ -30,7 +30,7 @@ of `ι`. The associated restricted product `Πʳ i, [R i, A i]_[𝓟 s]` is the 
 We endow these types with the obvious algebraic structures. We also show various compatibility
 results.
 
-See also the file Mathlib.Topology.Algebra.RestrictedProduct.TopologicalSpace , which
+See also the file `Mathlib/Topology/Algebra/RestrictedProduct/TopologicalSpace.lean`, which
 puts the structure of a topological space on a restricted product of topological spaces.
 
 ## Main definitions

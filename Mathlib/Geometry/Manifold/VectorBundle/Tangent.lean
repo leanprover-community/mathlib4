@@ -274,7 +274,7 @@ theorem symmL_trivializationAt_eq_core {b₀ b : M} (hb : b ∈ (chartAt H b₀)
   simp [hb]
 
 @[deprecated (since := "2025-07-03")]
-alias trivializationAt_symmL  := symmL_trivializationAt_eq_core
+alias trivializationAt_symmL := symmL_trivializationAt_eq_core
 
 -- Porting note: `simp` simplifies LHS to `.id _ _`
 @[simp high, mfld_simps]

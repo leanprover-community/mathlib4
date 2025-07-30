@@ -32,14 +32,8 @@ lemma support_add [DecidableEq ι] : (g₁ + g₂).support ⊆ g₁.support ∪ 
 
 lemma support_add_eq [DecidableEq ι] (h : Disjoint g₁.support g₂.support) :
     (g₁ + g₂).support = g₁.support ∪ g₂.support :=
-  le_antisymm support_zipWith fun a ha =>
-    (Finset.mem_union.1 ha).elim
-      (fun ha => by
-        have : a ∉ g₂.support := disjoint_left.1 h ha
-        simp only [mem_support_iff, not_not] at *; simpa only [add_apply, this, add_zero] )
-      fun ha => by
-      have : a ∉ g₁.support := disjoint_right.1 h ha
-      simp only [mem_support_iff, not_not] at *; simpa only [add_apply, this, zero_add]
+  le_antisymm support_zipWith fun a ha => by
+    cases (Finset.mem_union_of_disjoint h).mp ha <;> simp_all
 
 instance instAddZeroClass : AddZeroClass (ι →₀ M) :=
   fast_instance% DFunLike.coe_injective.addZeroClass _ coe_zero coe_add
@@ -59,6 +53,10 @@ noncomputable def _root_.AddEquiv.finsuppUnique {ι : Type*} [Unique ι] :
     (ι →₀ M) ≃+ M where
   __ := Equiv.finsuppUnique
   map_add' _ _ := rfl
+
+@[simp]
+lemma _root_.AddEquiv.finsuppUnique_apply {ι : Type*} [Unique ι] (v : ι →₀ M) :
+    AddEquiv.finsuppUnique v = Equiv.finsuppUnique v := rfl
 
 instance instIsRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd (ι →₀ M) where
   add_right_cancel _ _ _ h := ext fun x => add_right_cancel <| DFunLike.congr_fun h x
