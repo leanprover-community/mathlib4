@@ -85,7 +85,7 @@ lemma IsCompact.measure_eq_biInf_integral_hasCompactSupport
     · exact Eventually.of_forall f_nonneg
     · exact fun x hx ↦ by simp [fk hx]
   · apply le_of_forall_gt (fun r hr ↦ ?_)
-    simp only [iInf_lt_iff, exists_prop, exists_and_left]
+    simp only [iInf_lt_iff, exists_prop]
     obtain ⟨U, kU, U_open, mu_U⟩ : ∃ U, k ⊆ U ∧ IsOpen U ∧ μ U < r :=
       hk.exists_isOpen_lt_of_lt r hr
     obtain ⟨⟨f, f_cont⟩, fk, fU, f_comp, f_range⟩ : ∃ (f : C(X, ℝ)), EqOn f 1 k ∧ EqOn f 0 Uᶜ
@@ -732,7 +732,7 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
           (Set.inv_mem_inv.mpr ((mem_leftCoset_iff y).mp zy))
         exact mem_leftCoset x this
       exact mem_biUnion xm this
-  rcases eq_empty_or_nonempty m with rfl|hm
+  rcases eq_empty_or_nonempty m with rfl | hm
   · simp only [mem_empty_iff_false, iUnion_of_empty, iUnion_empty, subset_empty_iff] at sm
     simp [sm]
   by_cases h'm : Set.Countable m
@@ -832,7 +832,7 @@ lemma measure_isMulLeftInvariant_eq_smul_of_ne_top [LocallyCompactSpace G]
     apply le_antisymm
     · exact (measure_mono inter_subset_right).trans (measure_toMeasurable s).le
     · exact measure_mono st
-  simp only [← mu'_t, smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply, ← mu_t,
+  simp only [← mu'_t, ← mu_t,
     nnreal_smul_coe_apply]
   apply B
   · exact (measurableSet_toMeasurable _ _).inter (measurableSet_toMeasurable _ _)

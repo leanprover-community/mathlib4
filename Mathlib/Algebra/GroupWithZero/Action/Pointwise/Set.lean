@@ -79,7 +79,7 @@ lemma Nonempty.zero_smul (ht : t.Nonempty) : (0 : Set α) • t = 0 :=
 
 /-- A nonempty set is scaled by zero to the singleton set containing 0. -/
 @[simp] lemma zero_smul_set {s : Set β} (h : s.Nonempty) : (0 : α) • s = (0 : Set β) := by
-  simp only [← image_smul, image_eta, zero_smul, h.image_const, singleton_zero]
+  simp only [← image_smul, zero_smul, h.image_const, singleton_zero]
 
 lemma zero_smul_set_subset (s : Set β) : (0 : α) • s ⊆ 0 :=
   image_subset_iff.2 fun x _ ↦ zero_smul α x
@@ -105,7 +105,7 @@ end SMulWithZero
 /-- If the scalar multiplication `(· • ·) : α → β → β` is distributive,
 then so is `(· • ·) : α → Set β → Set β`. -/
 protected noncomputable def distribSMulSet [AddZeroClass β] [DistribSMul α β] :
-   DistribSMul α (Set β) where
+    DistribSMul α (Set β) where
   smul_add _ _ _ := image_image2_distrib <| smul_add _
 
 scoped[Pointwise] attribute [instance] Set.distribSMulSet

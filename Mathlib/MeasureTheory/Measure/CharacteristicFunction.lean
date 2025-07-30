@@ -66,7 +66,8 @@ lemma innerProbChar_zero : innerProbChar (0 : E) = 1 := by simp [innerProbChar]
 /-- The bounded continuous map `x ↦ exp (L x * I)`, for a continuous linear form `L`. -/
 noncomputable
 def probCharDual (L : Dual ℝ F) : F →ᵇ ℂ :=
-  char continuous_probChar (L := isBoundedBilinearMap_apply.symm.toContinuousLinearMap.toLinearMap₂)
+  char continuous_probChar
+    (L := isBoundedBilinearMap_apply.symm.toContinuousLinearMap.toLinearMap₁₂)
     isBoundedBilinearMap_apply.symm.continuous L
 
 lemma probCharDual_apply (L : Dual ℝ F) (x : F) : probCharDual L x = exp (L x * I) := rfl
@@ -105,7 +106,7 @@ theorem ext_of_integral_char_eq (he : Continuous e) (he' : e ≠ 1)
       fun a ha => Integrable.const_mul (integrable P (char he hL a)) _
   rw [hsum P, hsum P']
   apply Finset.sum_congr rfl fun i _ => ?_
-  simp only [smul_eq_mul, MeasureTheory.integral_const_mul, mul_eq_mul_left_iff]
+  simp only [MeasureTheory.integral_const_mul, mul_eq_mul_left_iff]
   exact Or.inl (h i)
 
 end ext
@@ -330,7 +331,7 @@ theorem Measure.ext_of_charFunDual [CompleteSpace E]
     ?_ ?_ (fun L ↦ funext_iff.mp h L)
   · intro v hv
     rw [ne_eq, LinearMap.ext_iff]
-    simp only [ContinuousLinearMap.toLinearMap₂_apply, LinearMap.zero_apply, not_forall]
+    simp only [ContinuousLinearMap.toLinearMap₁₂_apply, LinearMap.zero_apply, not_forall]
     change ∃ L : Dual ℝ E, L v ≠ 0
     by_contra! h
     exact hv (NormedSpace.eq_zero_of_forall_dual_eq_zero _ h)
@@ -342,7 +343,7 @@ lemma charFunDual_conv {μ ν : Measure E} [IsFiniteMeasure μ] [IsFiniteMeasure
     charFunDual (μ ∗ ν) L = charFunDual μ L * charFunDual ν L := by
   simp_rw [charFunDual_apply]
   rw [integral_conv]
-  · simp [inner_add_left, add_mul, Complex.exp_add, integral_const_mul, integral_mul_const]
+  · simp [add_mul, Complex.exp_add, integral_const_mul, integral_mul_const]
   · exact (integrable_const (1 : ℝ)).mono (by fun_prop) (by simp)
 
 end NormedSpace

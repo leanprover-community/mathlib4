@@ -26,8 +26,6 @@ comment `--pi_instance` is inserted before all fields which were previously deri
 -- We enforce to only import `Algebra.Group.Defs` and basic logic
 assert_not_exists Set.range MonoidHom MonoidWithZero DenselyOrdered
 
-open Function
-
 universe u v₁ v₂ v₃
 
 variable {I : Type u}
@@ -257,24 +255,14 @@ theorem extend_mul [Mul γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ :
     Function.extend f (g₁ * g₂) (e₁ * e₂) = Function.extend f g₁ e₁ * Function.extend f g₂ e₂ := by
   classical
   funext x
-  simp only [not_exists, extend_def, Pi.mul_apply, apply_dite₂, dite_eq_ite, ite_self]
--- Porting note: The Lean3 statement was
--- `funext <| λ _, by convert (apply_dite2 (*) _ _ _ _ _).symm`
--- which converts to
--- `funext fun _ => by convert (apply_dite₂ (· * ·) _ _ _ _ _).symm`
--- However this does not work, and we're not sure why.
+  simp [Function.extend_def, apply_dite₂]
 
 @[to_additive]
 theorem extend_inv [Inv γ] (f : α → β) (g : α → γ) (e : β → γ) :
     Function.extend f g⁻¹ e⁻¹ = (Function.extend f g e)⁻¹ := by
   classical
   funext x
-  simp only [not_exists, extend_def, Pi.inv_apply, apply_dite Inv.inv]
--- Porting note: The Lean3 statement was
--- `funext <| λ _, by convert (apply_dite has_inv.inv _ _ _).symm`
--- which converts to
--- `funext fun _ => by convert (apply_dite Inv.inv _ _ _).symm`
--- However this does not work, and we're not sure why.
+  simp [Function.extend_def, apply_dite Inv.inv]
 
 @[to_additive]
 theorem extend_div [Div γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ : β → γ) :
@@ -282,11 +270,6 @@ theorem extend_div [Div γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ :
   classical
   funext x
   simp [Function.extend_def, apply_dite₂]
--- Porting note: The Lean3 statement was
--- `funext <| λ _, by convert (apply_dite2 (/) _ _ _ _ _).symm`
--- which converts to
--- `funext fun _ => by convert (apply_dite₂ (· / ·) _ _ _ _ _).symm`
--- However this does not work, and we're not sure why.
 
 end Extend
 

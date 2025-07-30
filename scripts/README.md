@@ -55,6 +55,18 @@ to learn about it as well!
   * Provides comprehensive status reporting and next steps guidance
   Run with `python3 scripts/migrate_to_fork.py` (interactive) or `python3 scripts/migrate_to_fork.py -y` (auto-accept).
   Requires GitHub CLI (`gh`) installed and authenticated. Safe to run multiple times.
+- `githelper.py`
+  The subcommand `githelper.py fix` helps contributors fix their git repository setup
+  by step-by-step converting it from its current state to a well defined target state.
+  The target state mostly matches the state after of a freshly cloned fork (`gh repo clone <fork>`)
+  and looks like this:
+
+  - The remote `upstream` points to `leanprover-community/mathlib4`
+  - The remote `origin` points to the contributor's own fork
+  - The `gh` default repo points to `leanprover-community/mathlib4`
+  - `master`s remote is `upstream` but its pushRemote is `origin`
+
+  Other subcommands to automate git-related actions may be added in the future.
 
 **Analyzing Mathlib's import structure**
 - `unused_in_pole.sh` (followed by an optional `<target>`, defaulting to `Mathlib`)
@@ -152,6 +164,8 @@ please do not add new entries to these files. PRs removing (the need for) entrie
   This reaction is ✌️ (`:peace_sign:`) for delegated, `:bors:` for PRs sent to bors,
   `:merge` for merged PRs, ✍️ (`:writing:`) for PRs awaiting-author,
   🔨 (`:hammer:`) for maintainer-merged PRs and `:closed-pr:` for closed PRs.
+  PRs which were migrated to a fork (as indicated by the `migrated-to-fork` label)
+  additionally receive a reaction ... (`skip_forward`).
   Two of these are custom emojis configured on zulip.
 - `late_importers.sh` is the main script used by the `latest_import.yml` action: it formats
   the `linter.minImports` output, summarizing the data in a table.  See the module docs of

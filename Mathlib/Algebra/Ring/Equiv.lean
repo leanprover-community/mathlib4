@@ -533,10 +533,10 @@ def prodCongr {R R' S S' : Type*} [NonUnitalNonAssocSemiring R] [NonUnitalNonAss
   toEquiv := Equiv.prodCongr f g
   map_mul' _ _ := by
     simp only [Equiv.toFun_as_coe, Equiv.prodCongr_apply, EquivLike.coe_coe,
-      Prod.map, Prod.fst_mul, map_mul, Prod.snd_mul, Prod.mk_mul_mk]
+      Prod.map, map_mul, Prod.mk_mul_mk]
   map_add' _ _ := by
     simp only [Equiv.toFun_as_coe, Equiv.prodCongr_apply, EquivLike.coe_coe,
-      Prod.map, Prod.fst_add, map_add, Prod.snd_add, Prod.mk_add_mk]
+      Prod.map, map_add, Prod.mk_add_mk]
 
 @[simp]
 theorem coe_prodCongr {R R' S S' : Type*} [NonUnitalNonAssocSemiring R]
@@ -886,6 +886,23 @@ theorem ofRingHom_symm (f : R →+* S) (g : S →+* R) (h₁ h₂) :
     (ofRingHom f g h₁ h₂).symm = ofRingHom g f h₂ h₁ :=
   rfl
 
+variable (α β R) in
+/-- `Equiv.sumArrowEquivProdArrow` as a ring isomorphism. -/
+def sumArrowEquivProdArrow : (α ⊕ β → R) ≃+* (α → R) × (β → R) where
+  __ := Equiv.sumArrowEquivProdArrow α β R
+  map_mul' _ _ := rfl
+  map_add' _ _ := rfl
+
+-- Priority `low` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
+@[simp low]
+lemma sumArrowEquivProdArrow_apply (x) :
+    sumArrowEquivProdArrow α β R x = Equiv.sumArrowEquivProdArrow α β R x := rfl
+
+-- Priority `low` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
+@[simp low]
+lemma sumArrowEquivProdArrow_symm_apply (x : (α → R) × (β → R)) :
+    (sumArrowEquivProdArrow α β R).symm x = (Equiv.sumArrowEquivProdArrow α β R).symm x := rfl
+
 end RingEquiv
 
 namespace MulEquiv
@@ -902,5 +919,29 @@ protected theorem isDomain {A : Type*} (B : Type*) [Semiring A] [Semiring B] [Is
   { e.injective.isLeftCancelMulZero e (map_zero e) (map_mul e),
     e.injective.isRightCancelMulZero e (map_zero e) (map_mul e) with
     exists_pair_ne := ⟨e.symm 0, e.symm 1, e.symm.injective.ne zero_ne_one⟩ }
+
+theorem isDomain_iff {A B : Type*} [Semiring A] [Semiring B] (e : A ≃* B) :
+    IsDomain A ↔ IsDomain B where
+  mp _ := e.symm.isDomain
+  mpr _ := e.isDomain
+
+variable {A B : Type*} [MulZeroClass A] [MulZeroClass B]
+
+theorem noZeroDivisors_iff (e : A ≃* B) : NoZeroDivisors A ↔ NoZeroDivisors B where
+  mp _ := e.symm.noZeroDivisors
+  mpr _ := e.noZeroDivisors
+
+theorem isLeftCancelMulZero_iff (e : A ≃* B) : IsLeftCancelMulZero A ↔ IsLeftCancelMulZero B where
+  mp _ := e.symm.injective.isLeftCancelMulZero _ (map_zero _) (map_mul _)
+  mpr _ := e.injective.isLeftCancelMulZero _ (map_zero _) (map_mul _)
+
+theorem isRightCancelMulZero_iff (e : A ≃* B) :
+    IsRightCancelMulZero A ↔ IsRightCancelMulZero B where
+  mp _ := e.symm.injective.isRightCancelMulZero _ (map_zero _) (map_mul _)
+  mpr _ := e.injective.isRightCancelMulZero _ (map_zero _) (map_mul _)
+
+theorem isCancelMulZero_iff (e : A ≃* B) : IsCancelMulZero A ↔ IsCancelMulZero B where
+  mp _ := e.symm.injective.isCancelMulZero _ (map_zero _) (map_mul _)
+  mpr _ := e.injective.isCancelMulZero _ (map_zero _) (map_mul _)
 
 end MulEquiv

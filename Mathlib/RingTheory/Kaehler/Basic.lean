@@ -91,7 +91,7 @@ theorem Derivation.tensorProductTo_mul (D : Derivation R S M) (x y : S ⊗[R] S)
     rw [mul_add, map_add, map_add, map_add, add_smul, smul_add, h₁, h₂, add_add_add_comm]
   intro x y
   simp only [TensorProduct.tmul_mul_tmul, Derivation.tensorProductTo,
-    TensorProduct.AlgebraTensorModule.lift_apply, TensorProduct.lift.tmul',
+    TensorProduct.AlgebraTensorModule.lift_apply,
     TensorProduct.lmul'_apply_tmul]
   dsimp
   rw [D.leibniz]
@@ -155,25 +155,25 @@ instance KaehlerDifferential.module : Module (S ⊗[R] S) (KaehlerDifferential R
   Ideal.Cotangent.moduleOfTower _
 
 @[inherit_doc KaehlerDifferential]
-notation:100 "Ω[" S "⁄" R "]" => KaehlerDifferential R S
+notation "Ω[" S "⁄" R "]" => KaehlerDifferential R S
 
-instance : Nonempty (Ω[S⁄R]) := ⟨0⟩
+instance : Nonempty Ω[S⁄R] := ⟨0⟩
 
 instance KaehlerDifferential.module' {R' : Type*} [CommRing R'] [Algebra R' S]
     [SMulCommClass R R' S] :
-    Module R' (Ω[S⁄R]) :=
+    Module R' Ω[S⁄R] :=
   Submodule.Quotient.module' _
 
-instance : IsScalarTower S (S ⊗[R] S) (Ω[S⁄R]) :=
+instance : IsScalarTower S (S ⊗[R] S) Ω[S⁄R] :=
   Ideal.Cotangent.isScalarTower _
 
 instance KaehlerDifferential.isScalarTower_of_tower {R₁ R₂ : Type*} [CommRing R₁] [CommRing R₂]
     [Algebra R₁ S] [Algebra R₂ S] [SMul R₁ R₂]
     [SMulCommClass R R₁ S] [SMulCommClass R R₂ S] [IsScalarTower R₁ R₂ S] :
-    IsScalarTower R₁ R₂ (Ω[S⁄R]) :=
+    IsScalarTower R₁ R₂ Ω[S⁄R] :=
   Submodule.Quotient.isScalarTower _ _
 
-instance KaehlerDifferential.isScalarTower' : IsScalarTower R (S ⊗[R] S) (Ω[S⁄R]) :=
+instance KaehlerDifferential.isScalarTower' : IsScalarTower R (S ⊗[R] S) Ω[S⁄R] :=
   Submodule.Quotient.isScalarTower _ _
 
 /-- The quotient map `I → Ω[S⁄R]` with `I` being the kernel of `S ⊗[R] S → S`. -/
@@ -195,21 +195,21 @@ theorem KaehlerDifferential.DLinearMap_apply (s : S) :
         ⟨1 ⊗ₜ s - s ⊗ₜ 1, KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R s⟩ := rfl
 
 /-- The universal derivation into `Ω[S⁄R]`. -/
-def KaehlerDifferential.D : Derivation R S (Ω[S⁄R]) :=
+def KaehlerDifferential.D : Derivation R S Ω[S⁄R] :=
   { toLinearMap := KaehlerDifferential.DLinearMap R S
     map_one_eq_zero' := by
       dsimp [KaehlerDifferential.DLinearMap_apply, Ideal.toCotangent_apply]
       congr
       rw [sub_self]
     leibniz' := fun a b => by
-      have : LinearMap.CompatibleSMul { x // x ∈ ideal R S } (Ω[S⁄R]) S (S ⊗[R] S) := inferInstance
+      have : LinearMap.CompatibleSMul { x // x ∈ ideal R S } Ω[S⁄R] S (S ⊗[R] S) := inferInstance
       dsimp [KaehlerDifferential.DLinearMap_apply]
       rw [← LinearMap.map_smul_of_tower (ideal R S).toCotangent,
         ← LinearMap.map_smul_of_tower (ideal R S).toCotangent,
         ← map_add (ideal R S).toCotangent, Ideal.toCotangent_eq, pow_two]
       convert Submodule.mul_mem_mul (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R a :)
         (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R b :) using 1
-      simp only [AddSubgroupClass.coe_sub, Submodule.coe_add, Submodule.coe_mk,
+      simp only [Submodule.coe_add,
         TensorProduct.tmul_mul_tmul, mul_sub, sub_mul, mul_comm b, Submodule.coe_smul_of_tower,
         smul_sub, TensorProduct.smul_tmul', smul_eq_mul, mul_one]
       ring_nf }
@@ -243,8 +243,8 @@ theorem KaehlerDifferential.span_range_derivation :
 /-- `Ω[S⁄R]` is trivial if `R → S` is surjective.
 Also see `Algebra.FormallyUnramified.iff_subsingleton_kaehlerDifferential`. -/
 lemma KaehlerDifferential.subsingleton_of_surjective (h : Function.Surjective (algebraMap R S)) :
-    Subsingleton (Ω[S⁄R]) := by
-  suffices (⊤ : Submodule S (Ω[S⁄R])) ≤ ⊥ from
+    Subsingleton Ω[S⁄R] := by
+  suffices (⊤ : Submodule S Ω[S⁄R]) ≤ ⊥ from
     (subsingleton_iff_forall_eq 0).mpr fun y ↦ this trivial
   rw [← KaehlerDifferential.span_range_derivation, Submodule.span_le]
   rintro _ ⟨x, rfl⟩; obtain ⟨x, rfl⟩ := h x; simp
@@ -409,7 +409,7 @@ local instance instSS : Module (S ⊗[R] S) (KaehlerDifferential.ideal R S).cota
 /-- Derivations into `Ω[S⁄R]` is equivalent to derivations
 into `(KaehlerDifferential.ideal R S).cotangentIdeal`. -/
 noncomputable def KaehlerDifferential.endEquivDerivation' :
-    Derivation R S (Ω[S⁄R]) ≃ₗ[R] Derivation R S (ideal R S).cotangentIdeal :=
+    Derivation R S Ω[S⁄R] ≃ₗ[R] Derivation R S (ideal R S).cotangentIdeal :=
   LinearEquiv.compDer ((KaehlerDifferential.ideal R S).cotangentEquivIdeal.restrictScalars S)
 
 /-- (Implementation) An `Equiv` version of `KaehlerDifferential.End_equiv_aux`.
@@ -426,7 +426,7 @@ The endomorphisms of `Ω[S⁄R]` corresponds to sections of the surjection `S �
 with `J` being the kernel of the multiplication map `S ⊗[R] S →ₐ[R] S`.
 -/
 noncomputable def KaehlerDifferential.endEquiv :
-    Module.End S (Ω[S⁄R]) ≃
+    Module.End S Ω[S⁄R] ≃
       { f // (TensorProduct.lmul' R : S ⊗[R] S →ₐ[R] S).kerSquareLift.comp f = AlgHom.id R S } :=
   (KaehlerDifferential.linearMapEquivDerivation R S).toEquiv.trans <|
     (KaehlerDifferential.endEquivDerivation' R S).toEquiv.trans <|
@@ -448,7 +448,7 @@ theorem KaehlerDifferential.ideal_fg [EssFiniteType R S] :
     rintro _ ⟨x, rfl⟩
     let I : Ideal (S ⊗[R] S) := Ideal.span
       ((EssFiniteType.finset R S).image (fun s ↦ (1 : S) ⊗ₜ[R] s - s ⊗ₜ[R] (1 : S)))
-    show _ - _ ∈ I
+    change _ - _ ∈ I
     have : (IsScalarTower.toAlgHom R (S ⊗[R] S) (S ⊗[R] S ⧸ I)).comp TensorProduct.includeRight =
         (IsScalarTower.toAlgHom R (S ⊗[R] S) (S ⊗[R] S ⧸ I)).comp TensorProduct.includeLeft := by
       apply EssFiniteType.algHom_ext
@@ -462,7 +462,7 @@ theorem KaehlerDifferential.ideal_fg [EssFiniteType R S] :
     simpa [Ideal.Quotient.mk_eq_mk_iff_sub_mem] using AlgHom.congr_fun this x
 
 instance KaehlerDifferential.finite [EssFiniteType R S] :
-    Module.Finite S (Ω[S⁄R]) := by
+    Module.Finite S Ω[S⁄R] := by
   classical
   let s := (EssFiniteType.finset R S).image (fun s ↦ D R S s)
   refine ⟨⟨s, top_le_iff.mp ?_⟩⟩
@@ -716,7 +716,7 @@ theorem KaehlerDifferential.ker_map :
   simp only [linearCombination_apply, Function.comp_apply, LinearMap.coe_comp, lmapDomain_apply,
     Finsupp.mapRange.linearMap_apply]
   rw [Finsupp.sum_mapRange_index, Finsupp.sum_mapDomain_index]
-  · simp [ofId]
+  · simp
   · simp
   · simp [add_smul]
   · simp
@@ -751,7 +751,7 @@ theorem KaehlerDifferential.map_surjective :
 /-- The lift of the map `Ω[A⁄R] →ₗ[A] Ω[B⁄R]` to the base change along `A → B`.
 This is the first map in the exact sequence `B ⊗[A] Ω[A⁄R] → Ω[B⁄R] → Ω[B⁄A] → 0`. -/
 noncomputable def KaehlerDifferential.mapBaseChange : B ⊗[A] Ω[A⁄R] →ₗ[B] Ω[B⁄R] :=
-  (TensorProduct.isBaseChange A (Ω[A⁄R]) B).lift (KaehlerDifferential.map R R A B)
+  (TensorProduct.isBaseChange A Ω[A⁄R] B).lift (KaehlerDifferential.map R R A B)
 
 @[simp]
 theorem KaehlerDifferential.mapBaseChange_tmul (x : B) (y : Ω[A⁄R]) :
@@ -835,7 +835,7 @@ theorem KaehlerDifferential.range_kerCotangentToTensor
     simp only [kerCotangentToTensor_toCotangent, Submodule.restrictScalars_mem, LinearMap.mem_ker,
       mapBaseChange_tmul, map_D, RingHom.mem_ker.mp x.2, map_zero, smul_zero]
   · intro hx
-    obtain ⟨x, rfl⟩ := LinearMap.rTensor_surjective (Ω[A⁄R]) (g := Algebra.linearMap A B) h x
+    obtain ⟨x, rfl⟩ := LinearMap.rTensor_surjective Ω[A⁄R] (g := Algebra.linearMap A B) h x
     obtain ⟨x, rfl⟩ := (TensorProduct.lid _ _).symm.surjective x
     replace hx : x ∈ LinearMap.ker (KaehlerDifferential.map R R A B) := by simpa using hx
     rw [KaehlerDifferential.ker_map_of_surjective R A B h] at hx
@@ -844,12 +844,11 @@ theorem KaehlerDifferential.range_kerCotangentToTensor
       Algebra.linearMap_apply, map_one]
     rw [← Finsupp.sum_single x, Finsupp.sum, ← Finset.sum_fiberwise_of_maps_to
       (fun _ ↦ Finset.mem_image_of_mem (algebraMap A B))]
-    simp only [Function.comp_apply, map_sum (s := x.support.image (algebraMap A B)),
+    simp only [map_sum (s := x.support.image (algebraMap A B)),
       TensorProduct.tmul_sum]
     apply sum_mem
     intro c _
-    simp only [Finset.filter_congr_decidable, TensorProduct.lid_symm_apply, LinearMap.rTensor_tmul,
-      AlgHom.toLinearMap_apply, map_one, LinearMap.mem_range]
+    simp only [LinearMap.mem_range]
     simp only [map_sum, Finsupp.linearCombination_single]
     have : ∑ i ∈ x.support with algebraMap A B i = c, x i ∈ RingHom.ker (algebraMap A B) := by
       simpa [Finsupp.mapDomain, Finsupp.sum, Finsupp.finset_sum_apply, RingHom.mem_ker,

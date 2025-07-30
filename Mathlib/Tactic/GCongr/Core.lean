@@ -30,11 +30,12 @@ x ^ 2 * ?_ + ?_
 (with inputs `a`, `c` on the left and `b`, `d` on the right); after the use of
 `gcongr`, we have the simpler goals `a ≤ b` and `c ≤ d`.
 
-A pattern can be provided explicitly; this is useful if a non-maximal match is desired:
+A depth limit, or a pattern can be provided explicitly;
+this is useful if a non-maximal match is desired:
 ```
 example {a b c d x : ℝ} (h : a + c + 1 ≤ b + d + 1) :
     x ^ 2 * (a + c) + 5 ≤ x ^ 2 * (b + d) + 5 := by
-  gcongr x ^ 2 * ?_ + 5
+  gcongr x ^ 2 * ?_ + 5 -- or `gcongr 2`
   linarith
 ```
 
@@ -404,11 +405,15 @@ is a user-provided template, first check that the template asks us to descend th
 match. -/
 partial def _root_.Lean.MVarId.gcongr
     (g : MVarId) (template : Option Expr) (names : List (TSyntax ``binderIdent))
-    (inGRewrite : Bool := false)
+    (depth : Nat := 1000000)
+    (grewriteHole : Option MVarId := none)
     (mainGoalDischarger : MVarId → MetaM Unit := gcongrForwardDischarger)
     (sideGoalDischarger : MVarId → MetaM Unit := gcongrDischarger) :
     MetaM (Bool × List (TSyntax ``binderIdent) × Array MVarId) := g.withContext do
   withTraceNode `Meta.gcongr (fun _ => return m!"gcongr: ⊢ {← g.getType}") do
+  match depth with
+  | 0 => try mainGoalDischarger g; return (true, names, #[]) catch _ => return (false, names, #[g])
+  | depth + 1 =>
   match template with
   | none =>
     -- A. If there is no template, try to resolve the goal by the provided tactic
@@ -421,10 +426,12 @@ partial def _root_.Lean.MVarId.gcongr
     -- then try to resolve the goal by the provided tactic `mainGoalDischarger`;
     -- if this fails, stop and report the existing goal.
     if let .mvar mvarId := tpl.getAppFn then
-      if let .syntheticOpaque ← mvarId.getKind then
-        try mainGoalDischarger g; return (true, names, #[])
-        catch ex =>
-          if inGRewrite then throw ex else return (false, names, #[g])
+      if let some hole := grewriteHole then
+        if hole == mvarId then mainGoalDischarger g; return (true, names, #[])
+      else
+        if let .syntheticOpaque ← mvarId.getKind then
+          try mainGoalDischarger g; return (true, names, #[])
+          catch _ => return (false, names, #[g])
     -- (ii) if the template is *not* `?_` then continue on.
   -- Check that the goal is of the form `rel (lhsHead _ ... _) (rhsHead _ ... _)`
   let rel ← withReducible g.getType'
@@ -440,14 +447,17 @@ partial def _root_.Lean.MVarId.gcongr
   let tplArgs ← if let some tpl := template then
     let some (tplHead, tplArgs) := getCongrAppFnArgs tpl
       | throwError "gcongr failed, the head of {tpl} is not a constant"
-    unless tplHead == lhsHead && tplArgs.size == rhsArgs.size do
-      throwError "expected {tplHead}, got {lhsHead}\n{lhs}"
-    unless tplHead == rhsHead && tplArgs.size == rhsArgs.size do
-      throwError "expected {tplHead}, got {rhsHead}\n{rhs}"
-    -- and also build an array of `Expr` corresponding to the arguments `_ ... _` to `tplHead` in
-    -- the template (these will be used in recursive calls later), and an array of booleans
-    -- according to which of these contain `?_`
-    tplArgs.mapM fun tpl => return (some tpl, ← containsHole tpl)
+    if let some hole := grewriteHole then
+      pure <| tplArgs.map fun tpl => (some tpl, (tpl.findMVar? (· == hole)).isSome)
+    else
+      unless tplHead == lhsHead && tplArgs.size == rhsArgs.size do
+        throwError "expected {tplHead}, got {lhsHead}\n{lhs}"
+      unless tplHead == rhsHead && tplArgs.size == rhsArgs.size do
+        throwError "expected {tplHead}, got {rhsHead}\n{rhs}"
+      -- and also build an array of `Expr` corresponding to the arguments `_ ... _` to `tplHead` in
+      -- the template (these will be used in recursive calls later), and an array of booleans
+      -- according to which of these contain `?_`
+      tplArgs.mapM fun tpl => return (some tpl, ← containsHole tpl)
   -- A. If there is no template, check that `lhs = rhs`
   else
     unless lhsHead == rhsHead && lhsArgs.size == rhsArgs.size do
@@ -508,7 +518,7 @@ partial def _root_.Lean.MVarId.gcongr
           pure e
         -- Recurse: call ourself (`Lean.MVarId.gcongr`) on the subgoal with (if available) the
         -- appropriate template
-        let (_, names2, subgoals2) ← mvarId.gcongr tpl names2 inGRewrite mainGoalDischarger
+        let (_, names2, subgoals2) ← mvarId.gcongr tpl names2 depth grewriteHole mainGoalDischarger
           sideGoalDischarger
         (names, subgoals) := (names2, subgoals ++ subgoals2)
       let mut out := #[]
@@ -557,11 +567,12 @@ x ^ 2 * ?_ + ?_
 (with inputs `a`, `c` on the left and `b`, `d` on the right); after the use of
 `gcongr`, we have the simpler goals `a ≤ b` and `c ≤ d`.
 
-A pattern can be provided explicitly; this is useful if a non-maximal match is desired:
+A depth limit, or a pattern can be provided explicitly;
+this is useful if a non-maximal match is desired:
 ```
 example {a b c d x : ℝ} (h : a + c + 1 ≤ b + d + 1) :
     x ^ 2 * (a + c) + 5 ≤ x ^ 2 * (b + d) + 5 := by
-  gcongr x ^ 2 * ?_ + 5
+  gcongr x ^ 2 * ?_ + 5 -- or `gcongr 2`
   linarith
 ```
 
@@ -575,23 +586,35 @@ using the generalized congruence lemmas `add_le_add` and `mul_le_mul_of_nonneg_l
 The tactic attempts to discharge side goals to these "generalized congruence" lemmas (such as the
 side goal `0 ≤ x ^ 2` in the above application of `mul_le_mul_of_nonneg_left`) using the tactic
 `gcongr_discharger`, which wraps `positivity` but can also be extended. Side goals not discharged
-in this way are left for the user. -/
+in this way are left for the user.
+
+`gcongr` will descend into binders (for example sums or suprema). To name the bound variables,
+use `with`:
+```
+example {f g : ℕ → ℝ≥0∞} (h : ∀ n, f n ≤ g n) : ⨆ n, f n ≤ ⨆ n, g n := by
+  gcongr with i
+  exact h i
+```
+-/
 elab "gcongr" template:(colGt term)?
     withArg:((" with" (ppSpace colGt binderIdent)+)?) : tactic => do
   let g ← getMainGoal
   g.withContext do
   let some (_rel, lhs, _rhs) := getRel (← withReducible g.getType')
     | throwError "gcongr failed, not a relation"
-  -- Elaborate the template (e.g. `x * ?_ + _`), if the user gave one
-  let template ← template.mapM fun e => do
-    let template ← Term.elabPattern e (← inferType lhs)
-    unless ← containsHole template do
-      throwError "invalid template {template}, it doesn't contain any `?_`"
-    pure template
   -- Get the names from the `with x y z` list
   let names := (withArg.raw[1].getArgs.map TSyntax.mk).toList
   -- Time to actually run the core tactic `Lean.MVarId.gcongr`!
-  let (progress, _, unsolvedGoalStates) ← g.gcongr template names
+  let (progress, _, unsolvedGoalStates) ← match template with
+    | none => g.gcongr none names
+    | some e => match e.raw.isNatLit? with
+      | some depth => g.gcongr none names (depth := depth)
+      | none =>
+        -- Elaborate the template (e.g. `x * ?_ + _`)
+        let template ← Term.elabPattern e (← inferType lhs)
+        unless ← containsHole template do
+          throwError "invalid template {template}, it doesn't contain any `?_`"
+        g.gcongr template names
   if progress then
     replaceMainGoal unsolvedGoalStates.toList
   else
