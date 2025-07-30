@@ -450,8 +450,8 @@ theorem dense_of_exists_between [OrderTopology α] [Nontrivial α] {s : Set α}
 
 theorem IsUpperSet.isClosed [OrderTopology α] [WellFoundedLT α] {s : Set α} (h : IsUpperSet s) :
     IsClosed s := by
-  obtain ⟨a, rfl⟩ | rfl := h.eq_Ici_or_empty
-  exacts [isClosed_Ici, isClosed_empty]
+  obtain rfl | ⟨a, rfl⟩ := h.eq_empty_or_Ici
+  exacts [isClosed_empty, isClosed_Ici]
 
 theorem IsLowerSet.isClosed [OrderTopology α] [WellFoundedGT α] {s : Set α} (h : IsLowerSet s) :
     IsClosed s :=
