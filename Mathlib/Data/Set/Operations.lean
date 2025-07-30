@@ -237,9 +237,10 @@ def EqOn (f₁ f₂ : α → β) (s : Set α) : Prop := ∀ ⦃x⦄, x ∈ s →
 @[grind]
 def MapsTo (f : α → β) (s : Set α) (t : Set β) : Prop := ∀ ⦃x⦄, x ∈ s → f x ∈ t
 
-@[grind ←]
+@[simp, grind ←]
 theorem mapsTo_image (f : α → β) (s : Set α) : MapsTo f s (f '' s) := fun _ ↦ mem_image_of_mem f
 
+@[simp, grind ←]
 theorem mapsTo_preimage (f : α → β) (t : Set β) : MapsTo f (f ⁻¹' t) t := fun _ ↦ id
 
 /-- Given a map `f` sending `s : Set α` into `t : Set β`, restrict domain of `f` to `s`
