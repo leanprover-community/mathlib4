@@ -145,7 +145,7 @@ lemma inner_sum_left {ι : Type*} {s : Finset ι} {x : ι → E} {y : E} :
 end StarModule
 
 @[simp]
-lemma isSelfAdjoint_inner_self {x : E} : IsSelfAdjoint ⟪x, x⟫ := star_inner _ _
+lemma isSelfAdjoint_inner_self {x : E} : IsSelfAdjoint ⟪x, x⟫ := ⟨star_inner _ _⟩
 
 end general
 

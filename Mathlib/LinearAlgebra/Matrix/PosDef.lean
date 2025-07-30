@@ -49,7 +49,7 @@ def PosSemidef (M : Matrix n n R) :=
 
 protected theorem PosSemidef.diagonal [StarOrderedRing R] [DecidableEq n] {d : n → R} (h : 0 ≤ d) :
     PosSemidef (diagonal d) :=
-  ⟨isHermitian_diagonal_of_self_adjoint _ <| funext fun i => IsSelfAdjoint.of_nonneg (h i),
+  ⟨isHermitian_diagonal_of_self_adjoint _ <| ⟨funext fun i => (h i).star_eq⟩,
     fun x => by
       refine Fintype.sum_nonneg fun i => ?_
       simpa only [mulVec_diagonal, ← mul_assoc] using conjugate_nonneg (h i) _⟩
@@ -400,7 +400,7 @@ theorem transpose_iff {M : Matrix n n R} : Mᵀ.PosDef ↔ M.PosDef :=
 protected theorem diagonal [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
     {d : n → R} (h : ∀ i, 0 < d i) :
     PosDef (diagonal d) :=
-  ⟨isHermitian_diagonal_of_self_adjoint _ <| funext fun i => IsSelfAdjoint.of_nonneg (h i).le,
+  ⟨isHermitian_diagonal_of_self_adjoint _ <| ⟨funext fun i => (h i).le.star_eq⟩,
     fun x hx => by
       refine Fintype.sum_pos ?_
       simp_rw [mulVec_diagonal, ← mul_assoc, Pi.lt_def]

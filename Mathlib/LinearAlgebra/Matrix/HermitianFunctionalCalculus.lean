@@ -118,7 +118,7 @@ lemma cfcAux_id : hA.cfcAux (.restrict (spectrum ℝ A) (.id ℝ)) = A := by
 instance instContinuousFunctionalCalculus :
     ContinuousFunctionalCalculus ℝ (Matrix n n 𝕜) IsSelfAdjoint where
   exists_cfc_of_predicate a ha := by
-    replace ha : IsHermitian a := ha
+    replace ha : IsHermitian a := ha.star_eq
     refine ⟨ha.cfcAux, ha.isClosedEmbedding_cfcAux, ha.cfcAux_id, fun f ↦ ?map_spec,
       fun f ↦ ?hermitian⟩
     case map_spec =>
@@ -141,7 +141,7 @@ instance instContinuousFunctionalCalculus :
     obtain (h | h) := isEmpty_or_nonempty n
     · obtain ⟨x, y, hxy⟩ := exists_pair_ne (Matrix n n 𝕜)
       exact False.elim <| Matrix.of.symm.injective.ne hxy <| Subsingleton.elim _ _
-    · exact eigenvalues_eq_spectrum_real ha ▸ Set.range_nonempty _
+    · exact eigenvalues_eq_spectrum_real ha.star_eq ▸ Set.range_nonempty _
   predicate_zero := .zero _
 
 /-- The continuous functional calculus of a Hermitian matrix as a triple product using the
@@ -154,7 +154,7 @@ protected noncomputable def cfc (f : ℝ → ℝ) : Matrix n n 𝕜 :=
     * star (eigenvectorUnitary hA : Matrix n n 𝕜)
 
 lemma cfc_eq (f : ℝ → ℝ) : cfc f A = hA.cfc f := by
-  have hA' : IsSelfAdjoint A := hA
+  have hA' : IsSelfAdjoint A := ⟨hA⟩
   have := cfcHom_eq_of_continuous_of_map_id hA' hA.cfcAux hA.isClosedEmbedding_cfcAux.continuous
     hA.cfcAux_id
   rw [cfc_apply f A hA' (by rw [continuousOn_iff_continuous_restrict]; fun_prop), this]

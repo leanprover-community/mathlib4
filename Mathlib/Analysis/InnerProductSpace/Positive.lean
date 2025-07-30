@@ -79,7 +79,7 @@ theorem IsPositive.isSelfAdjoint [FiniteDimensional 𝕜 E] {T : E →ₗ[𝕜] 
     IsSelfAdjoint T := (isSymmetric_iff_isSelfAdjoint _).mp hT.isSymmetric
 
 theorem IsPositive.adjoint_eq [FiniteDimensional 𝕜 E] {T : E →ₗ[𝕜] E} (hT : IsPositive T) :
-    T.adjoint = T := hT.isSelfAdjoint
+    T.adjoint = T := hT.isSelfAdjoint.star_eq
 
 open ComplexOrder in
 theorem isPositive_iff (T : E →ₗ[𝕜] E) :
@@ -129,7 +129,7 @@ theorem IsPositive.smul_of_nonneg {T : E →ₗ[𝕜] E} (hT : T.IsPositive) {c 
     simp [conj_eq_iff_im, ← (le_iff_re_im.mp hc).right]
   refine ⟨hT.left.smul hc', fun x => ?_⟩
   rw [smul_apply, inner_smul_left, hc', mul_re, conj_eq_iff_im.mp hc', zero_mul, sub_zero]
-  exact mul_nonneg ((re_nonneg_of_nonneg hc').mpr hc) (re_inner_nonneg_left hT x)
+  exact mul_nonneg ((re_nonneg_of_nonneg ⟨hc'⟩).mpr hc) (re_inner_nonneg_left hT x)
 
 theorem IsPositive.nonneg_eigenvalues [FiniteDimensional 𝕜 E]
     {T : E →ₗ[𝕜] E} {n : ℕ} (hT : T.IsPositive)
@@ -360,7 +360,7 @@ end PartialOrder
 theorem IsIdempotentElem.isPositive_iff_isSelfAdjoint
     {p : E →L[𝕜] E} (hp : IsIdempotentElem p) : p.IsPositive ↔ IsSelfAdjoint p := by
   rw [← isPositive_toLinearMap_iff, IsIdempotentElem.isPositive_iff_isSymmetric
-    (congr(LinearMapClass.linearMap $hp.eq))]
+    ⟨congr(LinearMapClass.linearMap $hp.eq)⟩]
   exact isSelfAdjoint_iff_isSymmetric.symm
 
 /-- A star projection operator is positive.

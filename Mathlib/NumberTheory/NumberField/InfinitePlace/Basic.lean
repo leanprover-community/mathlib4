@@ -168,7 +168,7 @@ theorem isComplex_iff {w : InfinitePlace K} :
 @[simp]
 theorem conjugate_embedding_eq_of_isReal {w : InfinitePlace K} (h : IsReal w) :
     ComplexEmbedding.conjugate (embedding w) = embedding w :=
-  ComplexEmbedding.isReal_iff.mpr (isReal_iff.mp h)
+  ComplexEmbedding.isReal_iff.mpr (isReal_iff.mp h).star_eq |>.star_eq
 
 @[simp]
 theorem not_isReal_iff_isComplex {w : InfinitePlace K} : ¬IsReal w ↔ IsComplex w := by
@@ -452,6 +452,7 @@ theorem nrRealPlaces_eq_zero_of_two_lt (hk : 2 < k) (hζ : IsPrimitiveRoot ζ k)
   have him : (f ζ).im = 0 := by
     rw [← Complex.conj_eq_iff_im, ← NumberField.ComplexEmbedding.conjugate_coe_eq]
     congr
+    exact hwreal.star_eq
   have hre : (f ζ).re = 1 ∨ (f ζ).re = -1 := by
     rw [← Complex.abs_re_eq_norm] at him
     have := Complex.norm_eq_one_of_pow_eq_one hζ'.pow_eq_one (by omega)
@@ -492,6 +493,6 @@ instance : Subsingleton (InfinitePlace ℚ) where
   allEq a b := by ext; simp
 
 lemma isReal_infinitePlace : InfinitePlace.IsReal (infinitePlace) :=
-  ⟨Rat.castHom ℂ, by ext; simp, rfl⟩
+  ⟨Rat.castHom ℂ, ⟨by ext; simp⟩, rfl⟩
 
 end Rat

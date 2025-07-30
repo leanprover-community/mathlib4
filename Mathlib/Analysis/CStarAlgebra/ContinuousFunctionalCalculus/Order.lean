@@ -292,10 +292,10 @@ lemma le_iff_norm_sqrt_mul_rpow {a b : A} (hbu : IsUnit b) (ha : 0 ≤ a) (hb : 
   have hbab : 0 ≤ (b : A) ^ (-(1 / 2) : ℝ) * a * (b : A) ^ (-(1 / 2) : ℝ) :=
     conjugate_nonneg_of_nonneg ha rpow_nonneg
   #adaptation_note /-- 2024-11-10
-  added `(R := A)` -/
+  added `(a := a)` -/
   conv_rhs =>
     rw [← sq_le_one_iff₀ (norm_nonneg _), sq, ← CStarRing.norm_star_mul_self, star_mul,
-      IsSelfAdjoint.of_nonneg (R := A) sqrt_nonneg, IsSelfAdjoint.of_nonneg rpow_nonneg,
+      sqrt_nonneg (a := a) |>.star_eq, rpow_nonneg.star_eq,
       ← mul_assoc, mul_assoc _ _ (sqrt a), sqrt_mul_sqrt_self a,
       CStarAlgebra.norm_le_one_iff_of_nonneg _ hbab]
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
@@ -331,8 +331,7 @@ protected lemma inv_le_inv {a b : Aˣ} (ha : 0 ≤ (a : A))
     ← CStarRing.norm_star_mul_self] at hab
   rw [le_iff_norm_sqrt_mul_sqrt_inv hb_inv ha_inv, inv_inv, ← sq_le_one_iff₀ (norm_nonneg _), sq,
     ← CStarRing.norm_self_mul_star]
-  rwa [star_mul, IsSelfAdjoint.of_nonneg sqrt_nonneg,
-    IsSelfAdjoint.of_nonneg sqrt_nonneg] at hab ⊢
+  rwa [star_mul, sqrt_nonneg.star_eq, sqrt_nonneg.star_eq] at hab ⊢
 
 /-- In a unital C⋆-algebra, if `0 ≤ a` and `0 ≤ b` and `a` and `b` are units, then `a⁻¹ ≤ b⁻¹`
 if and only if `b ≤ a`. -/
@@ -444,8 +443,9 @@ lemma isClosed_nonneg : IsClosed {a : A | 0 ≤ a} := by
     simp only [Set.mem_image, Set.mem_setOf_eq, Set.mem_inter_iff, Set.mem_range, ← exists_and_left]
     congr! 2 with x
     exact and_congr_left fun h ↦ by simp [← h]
-  simp only [nonneg_iff_isSelfAdjoint_and_spectrumRestricts,
-    and_congr_right (SpectrumRestricts.nnreal_iff_nnnorm · le_rfl), Set.setOf_and]
+  simp_rw [nonneg_iff_isSelfAdjoint_and_spectrumRestricts,
+    and_congr_right (SpectrumRestricts.nnreal_iff_nnnorm · le_rfl), Set.setOf_and,
+    isSelfAdjoint_iff]
   refine isClosed_eq ?_ ?_ |>.inter <| isClosed_le ?_ ?_
   all_goals fun_prop
 
