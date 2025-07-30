@@ -28,7 +28,7 @@ def inf [SemilatticeInf α] (x : Sym2 α) : α := Sym2.lift ⟨(· ⊓ ·), inf_
 @[simp] theorem inf_mk [SemilatticeInf α] (a b : α) : s(a, b).inf = a ⊓ b := rfl
 
 protected theorem inf_le_sup [Lattice α] (s : Sym2 α) : s.inf ≤ s.sup := by
-  cases s using Sym2.ind; simp [_root_.inf_le_sup]
+  cases s using Sym2.ind; simp
 
 /-- In a linear order, symmetric squares are canonically identified with ordered pairs. -/
 @[simps!]
