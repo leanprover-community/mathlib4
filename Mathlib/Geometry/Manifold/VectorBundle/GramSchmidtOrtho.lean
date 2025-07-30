@@ -30,11 +30,10 @@ open scoped ContDiff Topology
 
 -- Let `E` be a topological vector bundle over a topological space `B`,
 -- with a continuous Riemannian structure.
-variable {B F : Type*} [TopologicalSpace B]
-  [NormedAddCommGroup F] [NormedSpace ℝ F]
+-- Continuity is not used for the definition, but will be needed for continuity statements later.
+variable {B F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
   {E : B → Type*} [TopologicalSpace (TotalSpace F E)] [∀ x, NormedAddCommGroup (E x)]
-  [∀ x, InnerProductSpace ℝ (E x)] [FiberBundle F E] [VectorBundle ℝ F E]
-  [IsContinuousRiemannianBundle F E]
+  [∀ x, InnerProductSpace ℝ (E x)]
 
 variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrderBot ι] [WellFoundedLT ι]
 
@@ -52,8 +51,6 @@ noncomputable def gramSchmidt (s : ι → (x : B) → E x) (n : ι) : (x : B) �
 
 -- Let `s i` be a collection of sections in `E`, indexed by `ι`.
 variable {s : ι → (x : B) → E x}
-
-omit [TopologicalSpace B]
 
 /-- This lemma uses `∑ i in` instead of `∑ i :`. -/
 theorem gramSchmidt_def (s : ι → (x : B) → E x) (n : ι) (x) :
