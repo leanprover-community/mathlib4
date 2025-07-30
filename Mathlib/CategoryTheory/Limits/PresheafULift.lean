@@ -545,57 +545,58 @@ noncomputable def extensionHom
     dsimp
     rw [natTrans_app_uliftYoneda_obj, Iso.hom_inv_id_app_assoc])
 
-#exit
-
 @[ext]
-lemma hom_ext {Φ : yoneda.LeftExtension (F ⋙ yoneda)}
-    (f g : Functor.LeftExtension.mk F.op.lan (compYonedaIsoYonedaCompLan F).hom ⟶ Φ) :
+lemma hom_ext {Φ : uliftYoneda.{max w v₂}.LeftExtension (F ⋙ uliftYoneda.{max w v₁})}
+    (f g : Functor.LeftExtension.mk F.op.lan (compULiftYonedaIsoULiftYonedaCompLan F).hom ⟶ Φ) :
     f = g := by
   ext P : 3
   apply (F.op.lan.obj P).hom_ext_of_isLeftKanExtension (F.op.lanUnit.app P)
-  apply (colimitOfRepresentable P).hom_ext
+  apply (colimitOfRepresentable.{max w v₂} P).hom_ext
   intro x
-  have eq := F.op.lanUnit.naturality (yonedaEquiv.symm x.unop.2)
+  have eq := F.op.lanUnit.naturality (uliftYonedaEquiv.{max w v₂}.symm x.unop.2)
   have eq₁ := congr_fun (congr_app (congr_app (StructuredArrow.w f) x.unop.1.unop)
-    (F.op.obj x.unop.1)) (𝟙 _)
+    (F.op.obj x.unop.1)) (ULift.up (𝟙 _))
   have eq₂ := congr_fun (congr_app (congr_app (StructuredArrow.w g) x.unop.1.unop)
-    (F.op.obj x.unop.1)) (𝟙 _)
+    (F.op.obj x.unop.1)) (ULift.up (𝟙 _))
   dsimp at eq₁ eq₂ eq ⊢
-  simp only [reassoc_of% eq, ← whiskerLeft_comp]
+  simp only [reassoc_of% eq, ← Functor.whiskerLeft_comp]
   congr 2
-  simp only [← cancel_epi ((compYonedaIsoYonedaCompLan F).hom.app x.unop.1.unop),
+  simp only [← cancel_epi ((compULiftYonedaIsoULiftYonedaCompLan F).hom.app x.unop.1.unop),
     NatTrans.naturality]
-  apply yonedaEquiv.injective
-  dsimp [yonedaEquiv_apply]
+  apply uliftYonedaEquiv.injective
+  dsimp [uliftYonedaEquiv_apply]
   rw [eq₁, eq₂]
 
 end compULiftYonedaIsoULiftYonedaCompLan
 
-variable [∀ (P : Cᵒᵖ ⥤ Type v₁), F.op.HasLeftKanExtension P]
+variable [∀ (P : Cᵒᵖ ⥤ Type max w v₁ v₂), F.op.HasLeftKanExtension P]
 
-noncomputable instance (Φ : StructuredArrow (F ⋙ yoneda)
-    ((whiskeringLeft C (Cᵒᵖ ⥤ Type v₁) (Dᵒᵖ ⥤ Type v₁)).obj yoneda)) :
-    Unique (Functor.LeftExtension.mk F.op.lan (compYonedaIsoYonedaCompLan F).hom ⟶ Φ) where
-  default := compYonedaIsoYonedaCompLan.extensionHom Φ
-  uniq _ := compYonedaIsoYonedaCompLan.hom_ext _ _
+noncomputable instance (Φ : StructuredArrow (F ⋙ uliftYoneda.{max w v₁})
+    ((Functor.whiskeringLeft C (Cᵒᵖ ⥤ Type max w v₁ v₂)
+      (Dᵒᵖ ⥤ Type max w v₁ v₂)).obj uliftYoneda.{max w v₂})) :
+    Unique (Functor.LeftExtension.mk F.op.lan
+      (compULiftYonedaIsoULiftYonedaCompLan.{w} F).hom ⟶ Φ) where
+  default := compULiftYonedaIsoULiftYonedaCompLan.extensionHom Φ
+  uniq _ := compULiftYonedaIsoULiftYonedaCompLan.hom_ext _ _
 
 /-- Given a functor `F : C ⥤ D`, `F.op.lan : (Cᵒᵖ ⥤ Type v₁) ⥤ Dᵒᵖ ⥤ Type v₁` is the
 left Kan extension of `F ⋙ yoneda : C ⥤ Dᵒᵖ ⥤ Type v₁` along `yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁`. -/
-instance : F.op.lan.IsLeftKanExtension (compYonedaIsoYonedaCompLan F).hom :=
+instance : F.op.lan.IsLeftKanExtension (compULiftYonedaIsoULiftYonedaCompLan.{w} F).hom :=
   ⟨⟨Limits.IsInitial.ofUnique _⟩⟩
 
 end
 
 section
 
-variable {C : Type u₁} [Category.{v₁} C] (P : Cᵒᵖ ⥤ Type v₁)
+variable {C : Type u₁} [Category.{v₁} C] (P : Cᵒᵖ ⥤ Type max w v₁)
 
 /-- For a presheaf `P`, consider the forgetful functor from the category of representable
     presheaves over `P` to the category of presheaves. There is a tautological cocone over this
     functor whose leg for a natural transformation `V ⟶ P` with `V` representable is just that
     natural transformation. -/
 @[simps]
-def tautologicalCocone : Cocone (CostructuredArrow.proj yoneda P ⋙ yoneda) where
+def tautologicalCocone :
+    Cocone (CostructuredArrow.proj uliftYoneda.{w} P ⋙ uliftYoneda.{w}) where
   pt := P
   ι := { app X := X.hom }
 
@@ -603,29 +604,29 @@ def tautologicalCocone : Cocone (CostructuredArrow.proj yoneda P ⋙ yoneda) whe
     representables.
 
     Proposition 2.6.3(i) in [Kashiwara2006] -/
-def isColimitTautologicalCocone : IsColimit (tautologicalCocone P) where
-  desc s := by
-    refine ⟨fun X t => yonedaEquiv (s.ι.app (CostructuredArrow.mk (yonedaEquiv.symm t))), ?_⟩
-    intros X Y f
-    ext t
-    dsimp
-    rw [yonedaEquiv_naturality', yonedaEquiv_symm_map]
-    simpa using (s.ι.naturality
-      (CostructuredArrow.homMk' (CostructuredArrow.mk (yonedaEquiv.symm t)) f.unop)).symm
+def isColimitTautologicalCocone : IsColimit (tautologicalCocone.{w} P) where
+  desc s :=
+    ⟨fun X t => uliftYonedaEquiv (s.ι.app (CostructuredArrow.mk (uliftYonedaEquiv.symm t))), by
+      intros X Y f
+      ext t
+      dsimp
+      rw [uliftYonedaEquiv_naturality, uliftYonedaEquiv_symm_map]
+      simpa using (s.ι.naturality (CostructuredArrow.homMk'
+        (CostructuredArrow.mk (uliftYonedaEquiv.symm t)) f.unop)).symm⟩
   fac := by
     intro s t
     dsimp
-    apply yonedaEquiv.injective
-    rw [yonedaEquiv_comp]
+    apply uliftYonedaEquiv.injective
+    rw [uliftYonedaEquiv_comp]
     dsimp only
     rw [Equiv.symm_apply_apply]
     rfl
   uniq := by
     intro s j h
     ext V x
-    obtain ⟨t, rfl⟩ := yonedaEquiv.surjective x
+    obtain ⟨t, rfl⟩ := uliftYonedaEquiv.surjective x
     dsimp
-    rw [Equiv.symm_apply_apply, ← yonedaEquiv_comp]
+    rw [Equiv.symm_apply_apply, ← uliftYonedaEquiv_comp]
     exact congr_arg _ (h (CostructuredArrow.mk t))
 
 variable {I : Type v₁} [SmallCategory I] (F : I ⥤ C)
@@ -646,7 +647,7 @@ theorem final_toCostructuredArrow_comp_pre {c : Cocone (F ⋙ yoneda)} (hc : IsC
     apply IsTerminal.ofIso this
     refine ?_ ≪≫ (preservesColimitIso (overEquivPresheafCostructuredArrow c.pt).inverse _).symm
     apply HasColimit.isoOfNatIso
-    exact isoWhiskerLeft _
+    exact Functor.isoWhiskerLeft _
       (CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow c.pt).isoCompInverse
 
   apply IsTerminal.ofIso Over.mkIdTerminal
