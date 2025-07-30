@@ -76,6 +76,7 @@ lemma weight_comp (w : ∀ {i j : V}, (i ⟶ j) → R) {a b c : V} (p : Path a b
   | nil => simp
   | cons _ _ ih => simp [ih, mul_assoc]
 
+@[to_additive addWeightOfEPs_comp]
 lemma weightOfEPs_comp (w : V → V → R) {a b c : V} (p : Path a b) (q : Path b c) :
     weightOfEPs w (p.comp q) = weightOfEPs w p * weightOfEPs w q := by
   simp [weightOfEPs, weight_comp]
