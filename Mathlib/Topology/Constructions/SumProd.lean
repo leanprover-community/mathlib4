@@ -897,7 +897,7 @@ def sumCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : X ⊕ Y ≃ₜ X' ⊕ Y
 
 @[simp]
 lemma sumCongr_symm (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') :
-  (sumCongr h₁ h₂).symm = sumCongr h₁.symm h₂.symm := rfl
+    (sumCongr h₁ h₂).symm = sumCongr h₁.symm h₂.symm := rfl
 
 @[simp]
 theorem sumCongr_refl : sumCongr (.refl X) (.refl Y) = .refl (X ⊕ Y) := by

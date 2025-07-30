@@ -589,12 +589,21 @@ theorem rpow_add {x : ℝ≥0∞} (y z : ℝ) (hx : x ≠ 0) (h'x : x ≠ ⊤) :
 theorem rpow_add_of_nonneg {x : ℝ≥0∞} (y z : ℝ) (hy : 0 ≤ y) (hz : 0 ≤ z) :
     x ^ (y + z) = x ^ y * x ^ z := by
   induction x using recTopCoe
-  · rcases hy.eq_or_lt with rfl|hy
+  · rcases hy.eq_or_lt with rfl | hy
     · rw [rpow_zero, one_mul, zero_add]
-    rcases hz.eq_or_lt with rfl|hz
+    rcases hz.eq_or_lt with rfl | hz
     · rw [rpow_zero, mul_one, add_zero]
     simp [top_rpow_of_pos, hy, hz, add_pos hy hz]
   simp [← coe_rpow_of_nonneg, hy, hz, add_nonneg hy hz, NNReal.rpow_add_of_nonneg _ hy hz]
+
+lemma rpow_add_of_add_pos {x : ℝ≥0∞} (hx : x ≠ ⊤) (y z : ℝ) (hyz : 0 < y + z) :
+    x ^ (y + z) = x ^ y * x ^ z := by
+  obtain (rfl | hx') := eq_or_ne x 0
+  · by_cases hy' : 0 < y
+    · simp [ENNReal.zero_rpow_of_pos hyz, ENNReal.zero_rpow_of_pos hy']
+    · have hz' : 0 < z := by linarith
+      simp [ENNReal.zero_rpow_of_pos hyz, ENNReal.zero_rpow_of_pos hz']
+  · rw [ENNReal.rpow_add _ _ hx' hx]
 
 theorem rpow_neg (x : ℝ≥0∞) (y : ℝ) : x ^ (-y) = (x ^ y)⁻¹ := by
   cases x with
@@ -753,6 +762,11 @@ theorem rpow_le_rpow_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x ^ z ≤ y
 
 theorem rpow_lt_rpow_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x ^ z < y ^ z ↔ x < y :=
   (strictMono_rpow_of_pos hz).lt_iff_lt
+
+lemma max_rpow {x y : ℝ≥0∞} {p : ℝ} (hp : 0 ≤ p) : max x y ^ p = max (x ^ p) (y ^ p) := by
+  rcases le_total x y with hxy | hxy
+  · rw [max_eq_right hxy, max_eq_right (rpow_le_rpow hxy hp)]
+  · rw [max_eq_left hxy, max_eq_left (rpow_le_rpow hxy hp)]
 
 theorem le_rpow_inv_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x ≤ y ^ z⁻¹ ↔ x ^ z ≤ y := by
   nth_rw 1 [← rpow_one x]
@@ -947,6 +961,13 @@ theorem rpow_left_bijective {x : ℝ} (hx : x ≠ 0) : Function.Bijective fun y 
 
 lemma _root_.Real.enorm_rpow_of_nonneg {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) :
     ‖x ^ y‖ₑ = ‖x‖ₑ ^ y := by simp [enorm, nnnorm_rpow_of_nonneg hx, coe_rpow_of_nonneg _ hy]
+
+lemma add_rpow_le_two_rpow_mul_rpow_add_rpow {p : ℝ} (a b : ℝ≥0∞) (hp : 0 ≤ p) :
+    (a + b) ^ p ≤ 2 ^ p * (a ^ p + b ^ p) := calc
+  (a + b) ^ p ≤ (2 * max a b) ^ p := by rw [two_mul]; gcongr <;> simp
+  _ = 2 ^ p * (max a b) ^ p := mul_rpow_of_nonneg _ _ hp
+  _ = 2 ^ p * max (a ^ p) (b ^ p) := by rw [max_rpow hp]
+  _ ≤ 2 ^ p * (a ^ p + b ^ p) := by gcongr; apply max_le_add_of_nonneg <;> simp
 
 end ENNReal
 
