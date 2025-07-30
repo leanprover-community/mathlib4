@@ -388,14 +388,10 @@ lemma mem_support_iff {x : X} : x ∈ μ.support ↔
 
 /-- A point `x` is in the support of measure `μ` iff every neighborhood of `x` has positive
 measure. -/
-lemma mem_support_iff_forall (x : X) : x ∈ μ.support ↔ ∀ U ∈ 𝓝 x, 0 < μ U := by
-  simp only [mem_support_iff, frequently_smallSets]
-  constructor
-  · intro h U hU
-    obtain ⟨t, htsub, htpos⟩ := h U hU
-    exact lt_of_lt_of_le htpos (measure_mono htsub)
-  · intro h U hU
-    exact ⟨U, Subset.refl U, h U hU⟩
+lemma mem_support_iff_forall (x : X) : x ∈ μ.support ↔ ∀ U ∈ 𝓝 x, 0 < μ U :=
+  mem_support_iff.trans <| frequently_smallSets.trans
+    ⟨fun h U hU ↦ let ⟨_, ht, μt⟩ := h U hU; μt.trans_le (measure_mono ht),
+     fun h U hU ↦ ⟨U, Subset.rfl, h U hU⟩⟩
 
 /-- A point `x` lies outside the support of `μ` iff all of the subsets of one of its neighborhoods
 have measure zero. -/
