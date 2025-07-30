@@ -82,6 +82,14 @@ lemma finiteRingKrullDim_iff_ne_bot_and_top :
     FiniteRingKrullDim R ↔ (ringKrullDim R ≠ ⊥ ∧ ringKrullDim R ≠ ⊤) :=
   (Order.finiteDimensionalOrder_iff_krullDim_ne_bot_and_top (α := PrimeSpectrum R))
 
+lemma ringKrullDim_ne_bot [FiniteRingKrullDim R] : ringKrullDim R ≠ ⊥ :=
+  (finiteRingKrullDim_iff_ne_bot_and_top.mp ‹_›).1
+
+lemma Nontrivial.of_finiteRingKrullDim [FiniteRingKrullDim R] : Nontrivial R := by
+  by_contra!
+  rw [not_nontrivial_iff_subsingleton] at this
+  exact ringKrullDim_ne_bot (R := R) ringKrullDim_eq_bot_of_subsingleton
+
 proof_wanted MvPolynomial.fin_ringKrullDim_eq_add_of_isNoetherianRing
     [IsNoetherianRing R] (n : ℕ) :
     ringKrullDim (MvPolynomial (Fin n) R) = ringKrullDim R + n
