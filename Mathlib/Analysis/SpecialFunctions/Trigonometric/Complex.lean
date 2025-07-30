@@ -136,30 +136,21 @@ theorem tan_sub {x y : ℂ}
     (h : ((∀ k : ℤ, x ≠ (2 * k + 1) * π / 2) ∧ ∀ l : ℤ, y ≠ (2 * l + 1) * π / 2) ∨
       (∃ k : ℤ, x = (2 * k + 1) * π / 2) ∧ ∃ l : ℤ, y = (2 * l + 1) * π / 2) :
     tan (x - y) = (tan x - tan y) / (1 + tan x * tan y) := by
-  have := tan_add (x := x) (y := -y) (by
+  have := tan_add (x := x) (y := -y) <| by
     rcases h with ⟨x_ne, minus_y_ne⟩ | ⟨x_eq, minus_y_eq⟩
-    · left
-      constructor
-      · exact x_ne
-      · intro l
-        specialize minus_y_ne (-l - 1)
-        intro minus_y_eq
-        apply minus_y_ne
-        convert congrArg (-·) minus_y_eq using 1
-        · ring
-        · push_cast
-          ring
-    · right
-      constructor
-      · exact x_eq
-      · rcases minus_y_eq with ⟨l, rfl⟩
-        use -l - 1
-        push_cast
-        ring
-  )
+    · refine .inl ⟨x_ne, fun l => ?_⟩
+      rw [Ne, neg_eq_iff_eq_neg]
+      convert minus_y_ne (-l - 1) using 2
+      push_cast
+      ring
+    · refine .inr ⟨x_eq, ?_⟩
+      rcases minus_y_eq with ⟨l, rfl⟩
+      use -l - 1
+      push_cast
+      ring
   rw [tan_neg] at this
   convert this using 2
-  · ring
+  ring
 
 theorem tan_sub' {x y : ℂ}
     (h : (∀ k : ℤ, x ≠ (2 * k + 1) * π / 2) ∧ ∀ l : ℤ, y ≠ (2 * l + 1) * π / 2) :
