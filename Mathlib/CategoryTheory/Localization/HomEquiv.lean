@@ -52,7 +52,6 @@ noncomputable def homMap (f : L₁.obj X ⟶ L₁.obj Y) :
 lemma homMap_map (f : X ⟶ Y) :
     Φ.homMap L₁ L₂ (L₁.map f) = L₂.map (Φ.functor.map f) := by
   dsimp [homMap]
-  erw [← NatTrans.naturality_assoc]
   simp
 
 variable (X) in
