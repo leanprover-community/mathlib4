@@ -826,12 +826,12 @@ variable {R A}
 
 unseal mul in
 theorem assoc_aux_1 (a₁ a₂ : A) (b₁ b₂ : B) (c₁ c₂ : C) :
-    (TensorProduct.assoc R A B C) (((a₁ * a₂) ⊗ₜ[R] (b₁ * b₂)) ⊗ₜ[R] (c₁ * c₂)) =
-      (TensorProduct.assoc R A B C) ((a₁ ⊗ₜ[R] b₁) ⊗ₜ[R] c₁) *
-        (TensorProduct.assoc R A B C) ((a₂ ⊗ₜ[R] b₂) ⊗ₜ[R] c₂) :=
+    (TensorProduct.assoc R A B C) ((a₁ * a₂) ⊗ₜ[R] (b₁ * b₂) ⊗ₜ[R] (c₁ * c₂)) =
+      (TensorProduct.assoc R A B C) (a₁ ⊗ₜ[R] b₁ ⊗ₜ[R] c₁) *
+        (TensorProduct.assoc R A B C) (a₂ ⊗ₜ[R] b₂ ⊗ₜ[R] c₂) :=
   rfl
 
-theorem assoc_aux_2 : (TensorProduct.assoc R A B C) ((1 ⊗ₜ[R] 1) ⊗ₜ[R] 1) = 1 :=
+theorem assoc_aux_2 : (TensorProduct.assoc R A B C) (1 ⊗ₜ[R] 1 ⊗ₜ[R] 1) = 1 :=
   rfl
 
 variable (R A C D)

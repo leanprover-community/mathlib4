@@ -46,7 +46,7 @@ lemma TensorProduct.map_injective_of_flat_flat_of_isDomain
   congr! 1
   ext p q
   -- `simp` solves the goal but it times out
-  change (1 : K) ⊗ₜ[R] f p ⊗ₜ[R] g q = (AlgebraTensorModule.assoc R R K K M N)
+  change (1 : K) ⊗ₜ[R] (f p ⊗ₜ[R] g q) = (AlgebraTensorModule.assoc R R K K M N)
     (((1 : K) • (algebraMap R K) 1 ⊗ₜ[R] f p) ⊗ₜ[R] g q)
   simp only [map_one, one_smul, AlgebraTensorModule.assoc_tmul]
 
