@@ -294,7 +294,6 @@ variable (M : Type v) [AddCommMonoid M] [Module R M]
 -- without this notation, one needs to work with `s : (restrictScalars f).obj ⟨S⟩`.
 scoped[ChangeOfRings] notation:100 s:100 "⊗ₜ[" R "," f "]" m:101 =>
   @TensorProduct.tmul R _ _ _ _ _ (Module.compHom _ f) _ s m
-  @TensorProduct.tmul R _ _ _ _ _ (Module.compHom _ f) _ s m
 
 end Unbundled
 
