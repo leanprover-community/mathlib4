@@ -87,7 +87,13 @@ syntax (name := to_additive_dont_translate) "to_additive_dont_translate" : attr
 
 /-- An `attr := ...` option for `to_additive`. -/
 syntax toAdditiveAttrOption := &"attr" " := " Parser.Term.attrInstance,*
-/-- A `reorder := ...` option for `to_additive`. -/
+/--
+`reorder := ...` reorders the arguments/hypotheses in the generated declaration.
+It uses cycle notation. For example `(reorder := 1 2, 5 6)` swaps the first two
+arguments with each other and the fifth and the sixth argument and `(reorder := 3 4 5)` will move
+the fifth argument before the third argument. This is used in `to_dual` to swap the arguments in
+`≤`, `<` and `⟶`. It is also used in `to_additive` to translate from `^` to `•`.
+-/
 syntax toAdditiveReorderOption := &"reorder" " := " (num+),+
 /-- Options to `to_additive`. -/
 syntax toAdditiveOption := "(" toAdditiveAttrOption <|> toAdditiveReorderOption ")"
@@ -1202,9 +1208,19 @@ def elabToAdditive : Syntax → CoreM Config
       | `(toAdditiveOption| (attr := $[$stxs],*)) =>
         attrs := attrs ++ stxs
       | `(toAdditiveOption| (reorder := $[$[$reorders:num]*],*)) =>
-        reorder := reorder ++ reorders.toList.map (·.toList.map (·.raw.isNatLit?.get! - 1))
+        for cycle in reorders do
+          if h : cycle.size = 1 then
+            throwErrorAt cycle[0] "\
+              invalid `reorder` argument `{cycle[0].getNat}`, it must have length at least 2. \
+              `(reorder := ...)` uses cycle notation to specify a permutation.\n\
+              For example `(reorder := 1 2, 5 6)` swaps the first two arguments with each other \
+              and the fifth and the sixth argument and `(reorder := 3 4 5)` will move \
+              the fifth argument before the third argument."
+          let cycle ← cycle.toList.mapM fun n => match n.getNat with
+            | 0 => throwErrorAt n "invalid `reorder` argument `0`, it must be at least 1."
+            | n+1 => pure n
+          reorder := cycle :: reorder
       | _ => throwUnsupportedSyntax
-    reorder := reorder.reverse
     let (existing, self) := match existing? with
       | `(toAdditiveNameHint| existing) => (true, false)
       | `(toAdditiveNameHint| self) => (true, true)
