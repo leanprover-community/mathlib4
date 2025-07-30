@@ -40,6 +40,12 @@ def weight (w : ∀ {i j : V}, (i ⟶ j) → R) : ∀ {i j : V}, Path i j → R
   | _, _, Path.nil => 1
   | _, _, Path.cons p e => weight w p * w e
 
+/-- The additive weight of a path is the sum of the weights of its edges. -/
+def addWeight {R : Type*} [AddMonoid R] (w : ∀ {i j : V}, (i ⟶ j) → R) : ∀ {i j : V}, Path i j → R
+  | _, _, Path.nil => 0
+  | _, _, Path.cons p e => addWeight w p + w e
+
+attribute [to_additive existing addWeight] weight
 /-- The weight of a path, where the weight of an edge is defined by a function on its endpoints. -/
 def weightOfEPs (w : V → V → R) : ∀ {i j : V}, Path i j → R :=
   weight (fun {i j} (_ : i ⟶ j) => w i j)
