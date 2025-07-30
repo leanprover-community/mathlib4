@@ -214,27 +214,27 @@ lemma Iff.ne_right {α β : Sort*} {a b : α} {c d : β} : (a ≠ b ↔ c = d) �
 /-- `Xor' a b` is the exclusive-or of propositions. -/
 def Xor' (a b : Prop) := (a ∧ ¬b) ∨ (b ∧ ¬a)
 
+@[grind =] theorem xor_def {a b : Prop} : Xor' a b ↔ (a ∧ ¬b) ∨ (b ∧ ¬a) := Iff.rfl
+
 instance [Decidable a] [Decidable b] : Decidable (Xor' a b) := inferInstanceAs (Decidable (Or ..))
 
-@[simp] theorem xor_true : Xor' True = Not := by
-  simp +unfoldPartialApp [Xor']
+@[simp] theorem xor_true : Xor' True = Not := by grind
 
-@[simp] theorem xor_false : Xor' False = id := by ext; simp [Xor']
+@[simp] theorem xor_false : Xor' False = id := by grind
 
-theorem xor_comm (a b : Prop) : Xor' a b = Xor' b a := by simp [Xor', or_comm]
+theorem xor_comm (a b : Prop) : Xor' a b = Xor' b a := by grind
 
 instance : Std.Commutative Xor' := ⟨xor_comm⟩
 
-@[simp] theorem xor_self (a : Prop) : Xor' a a = False := by simp [Xor']
+@[simp] theorem xor_self (a : Prop) : Xor' a a = False := by grind
 
-@[simp] theorem xor_not_left : Xor' (¬a) b ↔ (a ↔ b) := by by_cases a <;> simp [*]
+@[simp] theorem xor_not_left : Xor' (¬a) b ↔ (a ↔ b) := by grind
 
-@[simp] theorem xor_not_right : Xor' a (¬b) ↔ (a ↔ b) := by by_cases a <;> simp [*]
+@[simp] theorem xor_not_right : Xor' a (¬b) ↔ (a ↔ b) := by grind
 
-theorem xor_not_not : Xor' (¬a) (¬b) ↔ Xor' a b := by simp [Xor', or_comm, and_comm]
+theorem xor_not_not : Xor' (¬a) (¬b) ↔ Xor' a b := by grind
 
-protected theorem Xor'.or (h : Xor' a b) : a ∨ b := h.imp And.left And.left
-
+protected theorem Xor'.or (h : Xor' a b) : a ∨ b := by grind
 /-! ### Declarations about `and` -/
 
 alias Iff.and := and_congr
