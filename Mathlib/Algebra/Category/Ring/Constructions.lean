@@ -153,12 +153,12 @@ def coproductCocone : BinaryCofan A B :=
     (ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom : B ⟶  of (A ⊗[ℤ] B))
 
 @[simp]
-theorem coproductCocone_inl : (coproductCocone A B).inl =
-  ofHom (Algebra.TensorProduct.includeLeft (S := ℤ)).toRingHom := rfl
+theorem coproductCocone_inl :
+    (coproductCocone A B).inl = ofHom (Algebra.TensorProduct.includeLeft (S := ℤ)).toRingHom := rfl
 
 @[simp]
-theorem coproductCocone_inr : (coproductCocone A B).inr =
-  ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom := rfl
+theorem coproductCocone_inr :
+    (coproductCocone A B).inr = ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom := rfl
 
 /-- The tensor product `A ⊗[ℤ] B` is a coproduct for `A` and `B`. -/
 @[simps]

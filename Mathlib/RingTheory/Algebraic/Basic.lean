@@ -362,13 +362,13 @@ theorem IsAlgebraic.of_pow {r : A} {n : ℕ} (hn : 0 < n) (ht : IsAlgebraic R (r
 theorem Transcendental.pow {r : A} (ht : Transcendental R r) {n : ℕ} (hn : 0 < n) :
     Transcendental R (r ^ n) := fun ht' ↦ ht <| ht'.of_pow hn
 
-lemma IsAlgebraic.invOf {x : S} [Invertible x] (h : IsAlgebraic R x) : IsAlgebraic R (⅟ x) := by
+lemma IsAlgebraic.invOf {x : S} [Invertible x] (h : IsAlgebraic R x) : IsAlgebraic R (⅟x) := by
   obtain ⟨p, hp, hp'⟩ := h
   refine ⟨p.reverse, by simpa using hp, ?_⟩
   rwa [Polynomial.aeval_def, Polynomial.eval₂_reverse_eq_zero_iff, ← Polynomial.aeval_def]
 
 lemma IsAlgebraic.invOf_iff {x : S} [Invertible x] :
-    IsAlgebraic R (⅟ x) ↔ IsAlgebraic R x :=
+    IsAlgebraic R (⅟x) ↔ IsAlgebraic R x :=
   ⟨IsAlgebraic.invOf, IsAlgebraic.invOf⟩
 
 lemma IsAlgebraic.inv_iff {K} [Field K] [Algebra R K] {x : K} :
@@ -543,7 +543,7 @@ theorem IsAlgebraic.exists_nonzero_coeff_and_aeval_eq_zero
   obtain ⟨q, hpq, hq⟩ := exists_eq_pow_rootMultiplicity_mul_and_not_dvd p hp0 0
   simp only [C_0, sub_zero, X_pow_mul, X_dvd_iff] at hpq hq
   rw [hpq, map_mul, aeval_X_pow] at hp
-  exact ⟨q, hq, (nonZeroDivisors S).pow_mem hs (rootMultiplicity 0 p) (aeval s q) hp⟩
+  exact ⟨q, hq, (S⁰.pow_mem hs (rootMultiplicity 0 p)).2 (aeval s q) hp⟩
 
 theorem IsAlgebraic.exists_nonzero_eq_adjoin_mul {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ S⁰) :
     ∃ᵉ (t ∈ Algebra.adjoin R {s}) (r ≠ (0 : R)), s * t = algebraMap R S r := by
