@@ -87,17 +87,17 @@ theorem notMem_setOf_iff {a : α} {p : α → Prop} : a ∉ { x | p x } ↔ ¬p 
 
 @[simp] theorem setOf_mem_eq {s : Set α} : { x | x ∈ s } = s := rfl
 
-@[simp, mfld_simps] theorem mem_univ (x : α) : x ∈ @univ α := trivial
+@[simp, mfld_simps, grind ←] theorem mem_univ (x : α) : x ∈ @univ α := trivial
 
 /-! ### Operations -/
 
 instance : HasCompl (Set α) := ⟨fun s ↦ {x | x ∉ s}⟩
 
-@[simp] theorem mem_compl_iff (s : Set α) (x : α) : x ∈ sᶜ ↔ x ∉ s := Iff.rfl
+@[simp, grind =] theorem mem_compl_iff (s : Set α) (x : α) : x ∈ sᶜ ↔ x ∉ s := Iff.rfl
 
 theorem diff_eq (s t : Set α) : s \ t = s ∩ tᶜ := rfl
 
-@[simp] theorem mem_diff {s t : Set α} (x : α) : x ∈ s \ t ↔ x ∈ s ∧ x ∉ t := Iff.rfl
+@[simp, grind =] theorem mem_diff {s t : Set α} (x : α) : x ∈ s \ t ↔ x ∈ s ∧ x ∉ t := Iff.rfl
 
 theorem mem_diff_of_mem {s t : Set α} {x : α} (h1 : x ∈ s) (h2 : x ∉ t) : x ∈ s \ t := ⟨h1, h2⟩
 
@@ -108,7 +108,7 @@ def preimage (f : α → β) (s : Set β) : Set α := {x | f x ∈ s}
 /-- `f ⁻¹' t` denotes the preimage of `t : Set β` under the function `f : α → β`. -/
 infixl:80 " ⁻¹' " => preimage
 
-@[simp, mfld_simps]
+@[simp, mfld_simps, grind =]
 theorem mem_preimage {f : α → β} {s : Set β} {a : α} : a ∈ f ⁻¹' s ↔ f a ∈ s := Iff.rfl
 
 /-- `f '' s` denotes the image of `s : Set α` under the function `f : α → β`. -/
@@ -180,7 +180,7 @@ variable {a : α} {b : β} {s : Set α} {t : Set β} {p : α × β}
 
 theorem mem_prod_eq : (p ∈ s ×ˢ t) = (p.1 ∈ s ∧ p.2 ∈ t) := rfl
 
-@[simp, mfld_simps]
+@[simp, mfld_simps, grind =]
 theorem mem_prod : p ∈ s ×ˢ t ↔ p.1 ∈ s ∧ p.2 ∈ t := .rfl
 
 @[mfld_simps]
@@ -201,12 +201,12 @@ def diagonal (α : Type*) : Set (α × α) := {p | p.1 = p.2}
 
 theorem mem_diagonal (x : α) : (x, x) ∈ diagonal α := rfl
 
-@[simp] theorem mem_diagonal_iff {x : α × α} : x ∈ diagonal α ↔ x.1 = x.2 := .rfl
+@[simp, grind =] theorem mem_diagonal_iff {x : α × α} : x ∈ diagonal α ↔ x.1 = x.2 := .rfl
 
 /-- The off-diagonal of a set `s` is the set of pairs `(a, b)` with `a, b ∈ s` and `a ≠ b`. -/
 def offDiag (s : Set α) : Set (α × α) := {x | x.1 ∈ s ∧ x.2 ∈ s ∧ x.1 ≠ x.2}
 
-@[simp]
+@[simp, grind =]
 theorem mem_offDiag {x : α × α} {s : Set α} : x ∈ s.offDiag ↔ x.1 ∈ s ∧ x.2 ∈ s ∧ x.1 ≠ x.2 :=
   Iff.rfl
 
@@ -223,18 +223,21 @@ def pi (s : Set ι) (t : ∀ i, Set (α i)) : Set (∀ i, α i) := {f | ∀ i �
 
 variable {s : Set ι} {t : ∀ i, Set (α i)} {f : ∀ i, α i}
 
-@[simp] theorem mem_pi : f ∈ s.pi t ↔ ∀ i ∈ s, f i ∈ t i := .rfl
+@[simp, grind =] theorem mem_pi : f ∈ s.pi t ↔ ∀ i ∈ s, f i ∈ t i := .rfl
 
 theorem mem_univ_pi : f ∈ pi univ t ↔ ∀ i, f i ∈ t i := by simp
 
 end Pi
 
 /-- Two functions `f₁ f₂ : α → β` are equal on `s` if `f₁ x = f₂ x` for all `x ∈ s`. -/
+@[grind]
 def EqOn (f₁ f₂ : α → β) (s : Set α) : Prop := ∀ ⦃x⦄, x ∈ s → f₁ x = f₂ x
 
 /-- `MapsTo f s t` means that the image of `s` is contained in `t`. -/
+@[grind]
 def MapsTo (f : α → β) (s : Set α) (t : Set β) : Prop := ∀ ⦃x⦄, x ∈ s → f x ∈ t
 
+@[grind ←]
 theorem mapsTo_image (f : α → β) (s : Set α) : MapsTo f s (f '' s) := fun _ ↦ mem_image_of_mem f
 
 theorem mapsTo_preimage (f : α → β) (t : Set β) : MapsTo f (f ⁻¹' t) t := fun _ ↦ id
