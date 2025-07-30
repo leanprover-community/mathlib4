@@ -59,8 +59,10 @@ example (lt : 0 < n) : P (fst% ((⟨0, lt⟩, ()) : Fin n × Unit)) := by
   guard_target =ₐ P (fst% ((⟨0, eq ▸ lt⟩, ()) : Fin m × Unit))
   exact test_sorry
 
+private def prod (α : Type) := α × Nat
+
 -- Ensure projection structures are detected modulo reduction.
-example (tup : (α : Type) → α → (fun α => α × Nat) Nat) :
+example (tup : (α : Type) → α → prod Nat) :
     P (fst% tup Nat n) := by
   rewrite! [eq]
   guard_target =ₐ P (fst% tup Nat m)

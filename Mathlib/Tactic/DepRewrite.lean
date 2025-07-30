@@ -336,13 +336,13 @@ partial def visitInner (e : Expr) (et? : Option Expr) : M Expr := do
   | .proj n i b =>
     let bup ← visit b none
     let tbup ← inferType bup
-    if (← whnf tbup).isAppOf n then
+    if (← withAtLeastTransparency .default <| whnf tbup).isAppOf n then
       return .proj n i bup
 
     -- Otherwise the term in structure position was rewritten to a non-structure,
     -- so cast it back to one.
     let some bup' ← castBack? bup tbup ctx.x ctx.h ctx.Δ ctx.δ
-      | throwError "internal error: unexpected castBack failure on{indentExpr bup}"
+      | throwError "structure that has projections expected, got{indentExpr bup}"
     return .proj n i bup'
   | .letE n t v b nondep =>
     let tup ← visit t none
