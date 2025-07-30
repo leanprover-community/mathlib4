@@ -309,7 +309,7 @@ Weak convergence of probability measures implies that the liminf of the measures
 is at least the measure of the open set under the limit probability measure.
 -/
 theorem ProbabilityMeasure.le_liminf_measure_open_of_tendsto {Ω ι : Type*} {L : Filter ι}
-    [MeasurableSpace Ω] [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω] [HasOuterApproxClosed Ω]
+    [MeasurableSpace Ω] [TopologicalSpace Ω] [OpensMeasurableSpace Ω] [HasOuterApproxClosed Ω]
     {μ : ProbabilityMeasure Ω} {μs : ι → ProbabilityMeasure Ω} (μs_lim : Tendsto μs L (𝓝 μ))
     {G : Set Ω} (G_open : IsOpen G) :
     (μ : Measure Ω) G ≤ L.liminf fun i ↦ (μs i : Measure Ω) G :=
@@ -319,7 +319,7 @@ theorem ProbabilityMeasure.le_liminf_measure_open_of_tendsto {Ω ι : Type*} {L 
     (h_closeds _ (isClosed_compl_iff.mpr G_open))
 
 theorem ProbabilityMeasure.tendsto_measure_of_null_frontier_of_tendsto' {Ω ι : Type*}
-    {L : Filter ι} [MeasurableSpace Ω] [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω]
+    {L : Filter ι} [MeasurableSpace Ω] [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
     [HasOuterApproxClosed Ω] {μ : ProbabilityMeasure Ω} {μs : ι → ProbabilityMeasure Ω}
     (μs_lim : Tendsto μs L (𝓝 μ)) {E : Set Ω} (E_nullbdry : (μ : Measure Ω) (frontier E) = 0) :
     Tendsto (fun i ↦ (μs i : Measure Ω) E) L (𝓝 ((μ : Measure Ω) E)) :=
@@ -336,11 +336,21 @@ A version with coercions to ordinary `ℝ≥0∞`-valued measures is
 `MeasureTheory.ProbabilityMeasure.tendsto_measure_of_null_frontier_of_tendsto'`.
 -/
 theorem ProbabilityMeasure.tendsto_measure_of_null_frontier_of_tendsto {Ω ι : Type*} {L : Filter ι}
-    [MeasurableSpace Ω] [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω] [HasOuterApproxClosed Ω]
+    [MeasurableSpace Ω] [TopologicalSpace Ω] [OpensMeasurableSpace Ω] [HasOuterApproxClosed Ω]
     {μ : ProbabilityMeasure Ω} {μs : ι → ProbabilityMeasure Ω} (μs_lim : Tendsto μs L (𝓝 μ))
     {E : Set Ω} (E_nullbdry : μ (frontier E) = 0) : Tendsto (fun i ↦ μs i E) L (𝓝 (μ E)) := by
   have key := tendsto_measure_of_null_frontier_of_tendsto' μs_lim (by simpa using E_nullbdry)
   exact (ENNReal.tendsto_toNNReal (measure_ne_top (↑μ) E)).comp key
+
+/-- One implication of the portmanteau theorem:
+Weak convergence of probability measures implies that if a set is clopen, then the limit of the
+measures of the set equals the measure of the set under the limit probability measure.
+-/
+theorem ProbabilityMeasure.tendsto_measure_of_isClopen_of_tendsto {Ω ι : Type*} {L : Filter ι}
+    [MeasurableSpace Ω] [TopologicalSpace Ω] [OpensMeasurableSpace Ω] [HasOuterApproxClosed Ω]
+    {μ : ProbabilityMeasure Ω} {μs : ι → ProbabilityMeasure Ω} (μs_lim : Tendsto μs L (𝓝 μ))
+    {E : Set Ω} (hE : IsClopen E) : Tendsto (fun i ↦ μs i E) L (𝓝 (μ E)) :=
+  ProbabilityMeasure.tendsto_measure_of_null_frontier_of_tendsto μs_lim (by simp [hE])
 
 end ConvergenceImpliesLimsupClosedLE --section
 
@@ -369,7 +379,9 @@ Combining with a earlier proven implications, we get that (B) implies also
 
 open ENNReal
 
-variable {Ω : Type*} [PseudoEMetricSpace Ω] [MeasurableSpace Ω] [OpensMeasurableSpace Ω]
+section PseudoMetricSpace
+
+variable {Ω : Type*} [PseudoMetricSpace Ω] [MeasurableSpace Ω] [OpensMeasurableSpace Ω]
 
 theorem exists_null_frontier_thickening (μ : Measure Ω) [SFinite μ] (s : Set Ω) {a b : ℝ}
     (hab : a < b) : ∃ r ∈ Ioo a b, μ (frontier (Metric.thickening r s)) = 0 := by
@@ -394,17 +406,23 @@ theorem exists_null_frontiers_thickening (μ : Measure Ω) [SFinite μ] (s : Set
       (fun n ↦ (obs n).choose_spec.1.1.le) fun n ↦ (obs n).choose_spec.1.2.le
   · exact fun n ↦ ⟨(obs n).choose_spec.1.1, (obs n).choose_spec.2⟩
 
+end PseudoMetricSpace
+
+open TopologicalSpace
+
 /-- One implication of the portmanteau theorem:
 Assuming that for all Borel sets E whose boundary ∂E carries no probability mass under a
 candidate limit probability measure μ we have convergence of the measures μsᵢ(E) to μ(E),
 then for all closed sets F we have the limsup condition limsup μsᵢ(F) ≤ μ(F). -/
 lemma limsup_measure_closed_le_of_forall_tendsto_measure
-    {Ω ι : Type*} {L : Filter ι} [MeasurableSpace Ω] [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω]
+    {Ω ι : Type*} {L : Filter ι} [MeasurableSpace Ω] [TopologicalSpace Ω]
+    [PseudoMetrizableSpace Ω] [OpensMeasurableSpace Ω]
     {μ : Measure Ω} [IsFiniteMeasure μ] {μs : ι → Measure Ω}
     (h : ∀ {E : Set Ω}, MeasurableSet E → μ (frontier E) = 0 →
             Tendsto (fun i ↦ μs i E) L (𝓝 (μ E)))
     (F : Set Ω) (F_closed : IsClosed F) :
     L.limsup (fun i ↦ μs i F) ≤ μ F := by
+  letI : PseudoMetricSpace Ω := TopologicalSpace.pseudoMetrizableSpacePseudoMetric Ω
   rcases L.eq_or_neBot with rfl | _
   · simp only [limsup_bot, bot_eq_zero', zero_le]
   have ex := exists_null_frontiers_thickening μ F
@@ -436,8 +454,8 @@ Assuming that for all Borel sets E whose boundary ∂E carries no probability ma
 candidate limit probability measure μ we have convergence of the measures μsᵢ(E) to μ(E),
 then for all open sets G we have the limsup condition μ(G) ≤ liminf μsᵢ(G). -/
 lemma le_liminf_measure_open_of_forall_tendsto_measure
-    {Ω ι : Type*} {L : Filter ι}
-    [MeasurableSpace Ω] [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω]
+    {Ω ι : Type*} {L : Filter ι} [MeasurableSpace Ω] [TopologicalSpace Ω]
+    [PseudoMetrizableSpace Ω] [OpensMeasurableSpace Ω]
     {μ : Measure Ω} [IsProbabilityMeasure μ] {μs : ι → Measure Ω} [∀ i, IsProbabilityMeasure (μs i)]
     (h : ∀ {E}, MeasurableSet E → μ (frontier E) = 0 → Tendsto (fun i ↦ μs i E) L (𝓝 (μ E)))
     (G : Set Ω) (G_open : IsOpen G) :
@@ -516,7 +534,7 @@ lemma integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure
 /-- One implication of the portmanteau theorem:
 If for all open sets G we have the liminf condition `μ(G) ≤ liminf μsₙ(G)`, then the measures
 μsₙ converge weakly to the measure μ. -/
-theorem tendsto_of_forall_isOpen_le_liminf {μ : ProbabilityMeasure Ω}
+theorem tendsto_of_forall_isOpen_le_liminf_nat {μ : ProbabilityMeasure Ω}
     {μs : ℕ → ProbabilityMeasure Ω}
     (h_opens : ∀ G, IsOpen G → μ G ≤ atTop.liminf (fun i ↦ μs i G)) :
     atTop.Tendsto (fun i ↦ μs i) (𝓝 μ) := by
@@ -536,6 +554,28 @@ theorem tendsto_of_forall_isOpen_le_liminf {μ : ProbabilityMeasure Ω}
   simp only [ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure, aux] at obs
   convert obs
   simp only [Function.comp_apply, ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure]
+
+/-- One implication of the portmanteau theorem:
+If for all open sets G we have the liminf condition `μ(G) ≤ liminf μsₙ(G)`, then the measures
+μsₙ converge weakly to the measure μ. Formulated here for countably generated filters. -/
+theorem tendsto_of_forall_isOpen_le_liminf {ι : Type*} {μ : ProbabilityMeasure Ω}
+    {μs : ι → ProbabilityMeasure Ω} {L : Filter ι} [L.IsCountablyGenerated]
+    (h_opens : ∀ G, IsOpen G → μ G ≤ L.liminf (fun i ↦ μs i G)) :
+    L.Tendsto (fun i ↦ μs i) (𝓝 μ) := by
+  apply Filter.tendsto_of_seq_tendsto (fun u hu ↦ ?_)
+  apply tendsto_of_forall_isOpen_le_liminf_nat (fun G hG ↦ ?_)
+  apply (h_opens G hG).trans
+  simp only [Function.comp_apply]
+  change _ ≤ atTop.liminf ((fun i ↦ μs i G) ∘ u)
+  rw [liminf_comp]
+  apply liminf_le_liminf_of_le ?_ ?_ ?_
+  · exact hu
+  · refine ⟨0, by simp⟩
+  · refine ⟨1, ?_⟩
+    simp only [ge_iff_le, map_map, eventually_map, Function.comp_apply, eventually_atTop,
+      forall_exists_index]
+    intro a x hx
+    exact  (hx x le_rfl).trans (by simp)
 
 end le_liminf_open_implies_convergence
 
