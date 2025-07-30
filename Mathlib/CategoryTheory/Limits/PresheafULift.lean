@@ -434,68 +434,77 @@ lemma compULiftYonedaIsoULiftYonedaCompLan_inv_app_app_apply_eq_id (X : C) :
     (uliftYonedaMap.{w} F X) (op X)) (ULift.up (𝟙 X))).trans (by simp [uliftYonedaMap])
 
 end
-#exit
 
-namespace compYonedaIsoYonedaCompLan
+namespace compULiftYonedaIsoULiftYonedaCompLan
 
 variable {F}
 
 section
 
-variable {X : C} {G : (Cᵒᵖ ⥤ Type v₁) ⥤ Dᵒᵖ ⥤ Type v₁} (φ : F ⋙ yoneda ⟶ yoneda ⋙ G)
+variable {X : C} {G : (Cᵒᵖ ⥤ Type (max w v₁ v₂)) ⥤ Dᵒᵖ ⥤ Type (max w v₁ v₂)}
+  (φ : F ⋙ uliftYoneda.{max w v₁} ⟶ uliftYoneda.{max w v₂} ⋙ G)
 
 /-- Auxiliary definition for `presheafHom`. -/
-def coconeApp {P : Cᵒᵖ ⥤ Type v₁} (x : P.Elements) :
-    yoneda.obj x.1.unop ⟶ F.op ⋙ G.obj P := yonedaEquiv.symm
-      ((G.map (yonedaEquiv.symm x.2)).app _ ((φ.app x.1.unop).app _ (𝟙 _)))
+def coconeApp {P : Cᵒᵖ ⥤ Type max w v₁ v₂} (x : P.Elements) :
+    uliftYoneda.{max w v₂}.obj x.1.unop ⟶ F.op ⋙ G.obj P :=
+  uliftYonedaEquiv.symm
+    ((G.map (uliftYonedaEquiv.{max w v₂}.symm x.2)).app _
+      ((φ.app x.1.unop).app _ (ULift.up (𝟙 _))))
 
 @[reassoc (attr := simp)]
-lemma coconeApp_naturality {P : Cᵒᵖ ⥤ Type v₁} {x y : P.Elements} (f : x ⟶ y) :
-    yoneda.map f.1.unop ≫ coconeApp φ x = coconeApp φ y := by
-  have eq₁ : yoneda.map f.1.unop ≫ yonedaEquiv.symm x.2 = yonedaEquiv.symm y.2 :=
-    yonedaEquiv.injective
-      (by simpa only [Equiv.apply_symm_apply, ← yonedaEquiv_naturality] using f.2)
-  have eq₂ := congr_fun ((G.map (yonedaEquiv.symm x.2)).naturality (F.map f.1.unop).op)
-    ((φ.app x.1.unop).app _ (𝟙 _))
-  have eq₃ := congr_fun (congr_app (φ.naturality f.1.unop) _) (𝟙 _)
+lemma coconeApp_naturality {P : Cᵒᵖ ⥤ Type max w v₁ v₂} {x y : P.Elements} (f : x ⟶ y) :
+    uliftYoneda.map f.1.unop ≫ coconeApp.{w} φ x = coconeApp φ y := by
+  have eq₁ : uliftYoneda.map f.1.unop ≫ uliftYonedaEquiv.symm x.2 =
+      uliftYonedaEquiv.{max w v₂}.symm y.2 :=
+    uliftYonedaEquiv.injective
+      (by simpa only [Equiv.apply_symm_apply, ← uliftYonedaEquiv_naturality] using f.2)
+  have eq₂ := congr_fun ((G.map (uliftYonedaEquiv.{max w v₂}.symm x.2)).naturality
+    (F.map f.1.unop).op) ((φ.app x.1.unop).app _ (ULift.up (𝟙 _)))
+  have eq₃ := congr_fun (congr_app (φ.naturality f.1.unop) _) (ULift.up (𝟙 _))
   have eq₄ := congr_fun ((φ.app x.1.unop).naturality (F.map f.1.unop).op)
   dsimp at eq₂ eq₃ eq₄
-  apply yonedaEquiv.injective
+  apply uliftYonedaEquiv.{max w v₂}.injective
   dsimp only [coconeApp]
-  rw [Equiv.apply_symm_apply, ← yonedaEquiv_naturality, Equiv.apply_symm_apply]
-  simp [← eq₁, ← eq₂, ← eq₃, ← eq₄, Functor.map_comp, FunctorToTypes.comp, id_comp, comp_id]
+  rw [Equiv.apply_symm_apply, ← uliftYonedaEquiv_naturality, Equiv.apply_symm_apply]
+  simp only [← eq₁, ← eq₂, ← eq₃, ← eq₄, op_unop, Functor.comp_obj,
+    Functor.op_obj, yoneda_obj_obj, Functor.comp_map,
+    Functor.op_map, Functor.map_comp, FunctorToTypes.comp,]
+  simp [uliftYoneda]
 
 /-- Given functors `F : C ⥤ D` and `G : (Cᵒᵖ ⥤ Type v₁) ⥤ (Dᵒᵖ ⥤ Type v₁)`, and
 a natural transformation `φ : F ⋙ yoneda ⟶ yoneda ⋙ G`, this is the
 (natural) morphism `P ⟶ F.op ⋙ G.obj P` for all `P : Cᵒᵖ ⥤ Type v₁` that is
 determined by `φ`. -/
-noncomputable def presheafHom (P : Cᵒᵖ ⥤ Type v₁) : P ⟶ F.op ⋙ G.obj P :=
+noncomputable def presheafHom (P : Cᵒᵖ ⥤ Type max w v₁ v₂) : P ⟶ F.op ⋙ G.obj P :=
   (colimitOfRepresentable P).desc
-    (Cocone.mk _ { app x := coconeApp φ x.unop })
+    (Cocone.mk _ { app x := coconeApp.{w} φ x.unop })
 
-lemma yonedaEquiv_ι_presheafHom (P : Cᵒᵖ ⥤ Type v₁) {X : C} (f : yoneda.obj X ⟶ P) :
-    yonedaEquiv (f ≫ presheafHom φ P) =
-      (G.map f).app (Opposite.op (F.obj X)) ((φ.app X).app _ (𝟙 _)) := by
-  obtain ⟨x, rfl⟩ := yonedaEquiv.symm.surjective f
+lemma uliftYonedaEquiv_ι_presheafHom (P : Cᵒᵖ ⥤ Type max w v₁ v₂) {X : C}
+    (f : uliftYoneda.{max w v₂}.obj X ⟶ P) :
+    uliftYonedaEquiv (f ≫ presheafHom.{w} φ P) =
+      (G.map f).app (Opposite.op (F.obj X)) ((φ.app X).app _ (ULift.up (𝟙 _))) := by
+  obtain ⟨x, rfl⟩ := uliftYonedaEquiv.symm.surjective f
   erw [(colimitOfRepresentable P).fac _ (Opposite.op (P.elementsMk _ x))]
   dsimp only [coconeApp]
   apply Equiv.apply_symm_apply
 
-lemma yonedaEquiv_presheafHom_yoneda_obj (X : C) :
-    yonedaEquiv (presheafHom φ (yoneda.obj X)) =
-      ((φ.app X).app (F.op.obj (Opposite.op X)) (𝟙 _)) := by
-  simpa using yonedaEquiv_ι_presheafHom φ (yoneda.obj X) (𝟙 _)
+lemma uliftYonedaEquiv_presheafHom_uliftYoneda_obj (X : C) :
+    uliftYonedaEquiv.{max w v₂} (presheafHom.{w} φ (uliftYoneda.{max w v₂}.obj X)) =
+      ((φ.app X).app (F.op.obj (Opposite.op X)) (ULift.up (𝟙 _))) := by
+  simpa using uliftYonedaEquiv_ι_presheafHom.{w} φ (uliftYoneda.obj X) (𝟙 _)
 
 @[reassoc (attr := simp)]
-lemma presheafHom_naturality {P Q : Cᵒᵖ ⥤ Type v₁} (f : P ⟶ Q) :
-    presheafHom φ P ≫ whiskerLeft F.op (G.map f) = f ≫ presheafHom φ Q :=
-  hom_ext_yoneda (fun X p => yonedaEquiv.injective (by
-    rw [← assoc p f, yonedaEquiv_ι_presheafHom, ← assoc,
-      yonedaEquiv_comp, yonedaEquiv_ι_presheafHom,
-      whiskerLeft_app, Functor.map_comp, FunctorToTypes.comp]
+lemma presheafHom_naturality {P Q : Cᵒᵖ ⥤ Type max w v₁ v₂} (f : P ⟶ Q) :
+    presheafHom.{w} φ P ≫ Functor.whiskerLeft F.op (G.map f) = f ≫ presheafHom φ Q :=
+  hom_ext_uliftYoneda.{max w v₂} (fun X p ↦ uliftYonedaEquiv.injective (by
+    rw [← assoc p f, uliftYonedaEquiv_ι_presheafHom, ← assoc,
+      uliftYonedaEquiv_comp, uliftYonedaEquiv_ι_presheafHom,
+      Functor.map_comp, FunctorToTypes.comp]
     dsimp))
 
-variable [∀ (P : Cᵒᵖ ⥤ Type v₁), F.op.HasLeftKanExtension P]
+variable [∀ (P : Cᵒᵖ ⥤ Type max w v₁ v₂), F.op.HasLeftKanExtension P]
+
+#exit
 
 /-- Given functors `F : C ⥤ D` and `G : (Cᵒᵖ ⥤ Type v₁) ⥤ (Dᵒᵖ ⥤ Type v₁)`,
 and a natural transformation `φ : F ⋙ yoneda ⟶ yoneda ⋙ G`, this is
@@ -558,7 +567,7 @@ lemma hom_ext {Φ : yoneda.LeftExtension (F ⋙ yoneda)}
   dsimp [yonedaEquiv_apply]
   rw [eq₁, eq₂]
 
-end compYonedaIsoYonedaCompLan
+end compULiftYonedaIsoULiftYonedaCompLan
 
 variable [∀ (P : Cᵒᵖ ⥤ Type v₁), F.op.HasLeftKanExtension P]
 
@@ -644,7 +653,7 @@ theorem final_toCostructuredArrow_comp_pre {c : Cocone (F ⋙ yoneda)} (hc : IsC
       CostructuredArrow.toOver yoneda c.pt))
   exact Over.isoMk (hc.coconePointUniqueUpToIso isc) (hc.hom_ext fun i => by simp)
 
-end-/
+end
 
 end Presheaf
 

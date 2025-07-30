@@ -712,6 +712,16 @@ lemma uliftYonedaEquiv_uliftYoneda_map {X Y : C} (f : X ⟶ Y) :
         uliftYonedaEquiv.{w} (uliftYoneda.map f) = ULift.up f := by
   simp [uliftYonedaEquiv, uliftYoneda]
 
+/-- Two morphisms of presheaves of types `P ⟶ Q` coincide if the precompositions
+with morphisms `uliftYoneda.obj X ⟶ P` agree. -/
+lemma hom_ext_uliftYoneda {P Q : Cᵒᵖ ⥤ Type max w v₁} {f g : P ⟶ Q}
+    (h : ∀ (X : C) (p : uliftYoneda.{w}.obj X ⟶ P), p ≫ f = p ≫ g) :
+    f = g := by
+  ext X x
+  have := congr_arg uliftYonedaEquiv.{w} (h _ (uliftYonedaEquiv.symm x))
+  simp only [uliftYonedaEquiv_comp] at this
+  simpa using this
+
 end YonedaLemma
 
 section CoyonedaLemma

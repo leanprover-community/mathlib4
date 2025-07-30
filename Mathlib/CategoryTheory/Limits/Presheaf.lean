@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Elements
 import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.Limits.Over
+import Mathlib.CategoryTheory.Limits.PresheafULift
 
 /-!
 # Colimit of representables
@@ -44,7 +45,7 @@ colimit, representable, presheaf, free cocompletion
 * https://ncatlab.org/nlab/show/Yoneda+extension
 -/
 
-namespace CategoryTheory
+/-namespace CategoryTheory
 
 open Category Limits
 
@@ -580,3 +581,4 @@ end
 end Presheaf
 
 end CategoryTheory
+-/
