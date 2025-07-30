@@ -129,8 +129,8 @@ lemma measurePreserving_eval [∀ i, IsProbabilityMeasure (μ i)] (i : ι) :
   rw [Measure.pi_map_eval, Finset.prod_eq_one, one_smul]
   exact fun _ _ ↦ measure_univ
 
-lemma integral_eval_pi [NormedSpace ℝ E] [CompleteSpace E]
-    [∀ i, IsProbabilityMeasure (μ i)] {i : ι} {f : X i → E} (hf : AEStronglyMeasurable f (μ i)) :
+lemma integral_eval_pi [NormedSpace ℝ E] [∀ i, IsProbabilityMeasure (μ i)] {i : ι} {f : X i → E}
+    (hf : AEStronglyMeasurable f (μ i)) :
     ∫ (x : Π i, X i), f (x i) ∂Measure.pi μ = ∫ x, f x ∂μ i := by
   simp_rw [← Function.eval_apply (β := X) (x := i)]
   rw [← integral_map, (measurePreserving_eval i).map_eq]
