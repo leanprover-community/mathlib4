@@ -319,6 +319,7 @@ def functorEquivInverseWhiskeringIsoSnd :
 
 variable {R B X}
 
+@[reassoc]
 lemma counitCoherence_hom_app (S : CatCommSqOver R B X) (x : X) :
     R.map (((functorEquiv T L R B X).counitIso.hom.app S).fst.app x) ≫
       S.iso.hom.app x =
