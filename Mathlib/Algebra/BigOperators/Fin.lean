@@ -165,21 +165,15 @@ theorem prod_congr' {a b : ℕ} (f : Fin b → M) (h : a = b) :
 
 @[to_additive]
 theorem prod_mul_eq_prod_product {a b : ℕ} {f : ℕ → M} :
-  ∏ x : Fin (a * b), f x =
-  ∏ p : Fin a × Fin b,
-    f (b * p.fst + p.snd : ℕ) := by
+    ∏ x : Fin (a * b), f x = ∏ i : Fin a, ∏ j : Fin b, f (b * i + j) := by
   have := @Equiv.prod_comp M _ _ _ (ι := Fin a × Fin b) (κ := Fin (a * b))
     (e := finProdFinEquiv) (g := fun x => f x)
-  simp [<- this, add_comm]
+  simp [<- this, add_comm, <- Finset.prod_product']
 
 @[to_additive]
 theorem prod_range_mul_eq_prod_product {a b : ℕ} {f : ℕ → M} :
-  ∏ x ∈ Finset.range (a * b), f x =
-  ∏ p ∈ Finset.range a ×ˢ Finset.range b,
-    f (b * p.fst + p.snd) := by
-  simp [prod_mul_eq_prod_product, Finset.prod_range, Fintype.prod_prod_type,
-    Finset.prod_product
-  ]
+    ∏ x ∈ Finset.range (a * b), f x = ∏ i : Fin a, ∏ j : Fin b, f (b * i + j) := by
+  simp [prod_mul_eq_prod_product, Finset.prod_range]
 
 @[to_additive]
 theorem prod_univ_add {a b : ℕ} (f : Fin (a + b) → M) :
