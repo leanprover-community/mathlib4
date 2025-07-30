@@ -161,7 +161,7 @@ protected theorem map_pow (hf : IsTensorProduct f) (i : M₁ →ₗ[R] M₁) (j 
 section lTensor
 
 variable {g : M₁ →ₗ[R] N₂ →ₗ[R] N} (hf : IsTensorProduct f) (hg : IsTensorProduct g)
-  (r : R) (i i₁ i₂ : M₂ →ₗ[R] N₂)
+  (r : R) (i j : M₂ →ₗ[R] N₂)
 
 /-- If `M` is the tensor product of `M₁` and `M₂`, `N` is the tensor product of `M₁` and `N₂`, then
   `IsTensorProduct.lTensor hf hg i : M →ₗ[R] N` is the linear map induced by `i : M₂ →ₗ[R] N₂`. -/
@@ -190,8 +190,8 @@ noncomputable def lTensorHom : (M₂ →ₗ[R] N₂) →ₗ[R] M →ₗ[R] N whe
 theorem coe_lTensorHom : (hf.lTensorHom hg : (M₂ →ₗ[R] N₂) → M →ₗ[R] N) = hf.lTensor hg :=
   rfl
 
-theorem lTensor_add : hf.lTensor hg (i₁ + i₂) = hf.lTensor hg i₁ + hf.lTensor hg i₂ :=
-  (hf.lTensorHom hg).map_add i₁ i₂
+theorem lTensor_add : hf.lTensor hg (i + j) = hf.lTensor hg i + hf.lTensor hg j :=
+  (hf.lTensorHom hg).map_add i j
 
 @[simp]
 theorem lTensor_zero : hf.lTensor hg (0 : M₂ →ₗ[R] N₂) = 0 :=
@@ -209,7 +209,7 @@ end lTensor
 section rTensor
 
 variable {g : N₁ →ₗ[R] M₂ →ₗ[R] N} (hf : IsTensorProduct f) (hg : IsTensorProduct g)
-  (r : R) (i i₁ i₂ : M₁ →ₗ[R] N₁)
+  (r : R) (i j : M₁ →ₗ[R] N₁)
 
 /-- If `M` is the tensor product of `M₁` and `M₂`, `N` is the tensor product of `N₁` and `M₂`, then
   `IsTensorProduct.rTensor hf hg i : M →ₗ[R] N` is the linear map induced by `i : M₁ →ₗ[R] N₁`. -/
@@ -238,8 +238,8 @@ noncomputable def rTensorHom : (M₁ →ₗ[R] N₁) →ₗ[R] M →ₗ[R] N whe
 theorem coe_rTensorHom : (hf.rTensorHom hg : (M₁ →ₗ[R] N₁) → M →ₗ[R] N) = hf.rTensor hg :=
   rfl
 
-theorem rTensor_add : hf.rTensor hg (i₁ + i₂) = hf.rTensor hg i₁ + hf.rTensor hg i₂ :=
-  (hf.rTensorHom hg).map_add i₁ i₂
+theorem rTensor_add : hf.rTensor hg (i + j) = hf.rTensor hg i + hf.rTensor hg j :=
+  (hf.rTensorHom hg).map_add i j
 
 @[simp]
 theorem rTensor_zero : hf.rTensor hg (0 : M₁ →ₗ[R] N₁) = 0 :=
@@ -257,19 +257,49 @@ end rTensor
 @[simp]
 theorem lTensor_comp_rTensor {P : Type*} [AddCommMonoid P] [Module R P] {p : N₁ →ₗ[R] M₂ →ₗ[R] P}
     (hf : IsTensorProduct f) (hg : IsTensorProduct g) (hp : IsTensorProduct p) (i₁ : M₁ →ₗ[R] N₁)
-    (i₂ : M₂ →ₗ[R] N₂) : (hp.lTensor hg i₂) ∘ₗ (hf.rTensor hp i₁) = hf.map hg i₁ i₂ := by
+    (i₂ : M₂ →ₗ[R] N₂) : hp.lTensor hg i₂ ∘ₗ hf.rTensor hp i₁ = hf.map hg i₁ i₂ := by
   simp [lTensor, rTensor, ← map_comp]
+
+@[simp]
+theorem map_comp_lTensor {P Q : Type*} [AddCommMonoid P] [Module R P] [AddCommMonoid Q] [Module R Q]
+    {p : M₁ →ₗ[R] P →ₗ[R] Q} (hf : IsTensorProduct f) (hg : IsTensorProduct g)
+    (hp : IsTensorProduct p) (i₁ : M₁ →ₗ[R] N₁) (i₂ : P →ₗ[R] N₂) (j : M₂ →ₗ[R] P) :
+    hp.map hg i₁ i₂ ∘ₗ hf.lTensor hp j = hf.map hg i₁ (i₂ ∘ₗ j) := by
+  simp [lTensor, ← map_comp]
+
+@[simp]
+theorem lTensor_comp_map {P Q : Type*} [AddCommMonoid P] [Module R P] [AddCommMonoid Q] [Module R Q]
+    {p : N₁ →ₗ[R] P →ₗ[R] Q} (hf : IsTensorProduct f) (hg : IsTensorProduct g)
+    (hp : IsTensorProduct p) (j : P →ₗ[R] N₂) (i₁ : M₁ →ₗ[R] N₁) (i₂ : M₂ →ₗ[R] P) :
+    hp.lTensor hg j ∘ₗ hf.map hp i₁ i₂ = hf.map hg i₁ (j ∘ₗ i₂) := by
+  simp [lTensor, ← map_comp]
 
 @[simp]
 theorem rTensor_comp_lTensor {P : Type*} [AddCommMonoid P] [Module R P] {p : M₁ →ₗ[R] N₂ →ₗ[R] P}
     (hf : IsTensorProduct f) (hg : IsTensorProduct g) (hp : IsTensorProduct p) (i₁ : M₁ →ₗ[R] N₁)
-    (i₂ : M₂ →ₗ[R] N₂) : (hp.rTensor hg i₁) ∘ₗ (hf.lTensor hp i₂) = hf.map hg i₁ i₂ := by
+    (i₂ : M₂ →ₗ[R] N₂) : hp.rTensor hg i₁ ∘ₗ hf.lTensor hp i₂ = hf.map hg i₁ i₂ := by
   simp [lTensor, rTensor, ← map_comp]
+
+@[simp]
+theorem map_comp_rTensor {P Q : Type*} [AddCommMonoid P] [Module R P] [AddCommMonoid Q] [Module R Q]
+    {p : P →ₗ[R] M₂ →ₗ[R] Q} (hf : IsTensorProduct f) (hg : IsTensorProduct g)
+    (hp : IsTensorProduct p) (i₁ : P →ₗ[R] N₁) (i₂ : M₂ →ₗ[R] N₂) (j : M₁ →ₗ[R] P) :
+    hp.map hg i₁ i₂ ∘ₗ hf.rTensor hp j = hf.map hg (i₁ ∘ₗ j) i₂ := by
+  simp [rTensor, ← map_comp]
+
+@[simp]
+theorem rTensor_comp_map {P Q : Type*} [AddCommMonoid P] [Module R P] [AddCommMonoid Q] [Module R Q]
+    {p : P →ₗ[R] N₂ →ₗ[R] Q} (hf : IsTensorProduct f) (hg : IsTensorProduct g)
+    (hp : IsTensorProduct p) (j : P →ₗ[R] N₁) (i₁ : M₁ →ₗ[R] P) (i₂ : M₂ →ₗ[R] N₂) :
+    hp.rTensor hg j ∘ₗ hf.map hp i₁ i₂ = hf.map hg (j ∘ₗ i₁) i₂ := by
+  simp [rTensor, ← map_comp]
+
+end IsTensorProduct
 
 end IsTensorProduct
 
 section IsBaseChange
-/--/
+
 variable {R : Type*} {M : Type v₁} {N : Type v₂} (S : Type v₃)
 variable [AddCommMonoid M] [AddCommMonoid N] [CommSemiring R]
 variable [CommSemiring S] [Algebra R S] [Module R M] [Module R N] [Module S N] [IsScalarTower R S N]
