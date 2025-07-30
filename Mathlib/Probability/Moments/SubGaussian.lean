@@ -5,6 +5,7 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Probability.Kernel.Condexp
 import Mathlib.Probability.Moments.MGFAnalytic
+import Mathlib.Probability.Moments.Tilted
 
 /-!
 # Sub-Gaussian random variables
@@ -71,6 +72,8 @@ as special cases of a notion of sub-Gaussianity with respect to a kernel and a m
 
 * `measure_sum_ge_le_of_iIndepFun`: Hoeffding's inequality for sums of independent sub-Gaussian
   random variables.
+* `hasSubgaussianMGF_of_mem_Icc_of_integral_eq_zero`: Hoeffding's lemma for random variables with
+  expectation zero.
 * `measure_sum_ge_le_of_HasCondSubgaussianMGF`: the Azuma-Hoeffding inequality for sub-Gaussian
   random variables.
 
@@ -724,6 +727,56 @@ lemma measure_sum_range_ge_le_of_iIndepFun {X : ℕ → Ω → ℝ} (h_indep : i
 end Add
 
 end HasSubgaussianMGF
+
+section HoeffdingLemma
+
+protected lemma mgf_le_of_mem_Icc_of_integral_eq_zero [IsProbabilityMeasure μ] {a b t : ℝ}
+    (hm : AEMeasurable X μ) (hb : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) (hc : μ[X] = 0) (ht : 0 < t) :
+    mgf X μ t ≤ exp ((‖b - a‖₊ / 2) ^ 2 * t ^ 2 / 2) := by
+  have hi (u : ℝ) : Integrable (fun ω ↦ exp (u * X ω)) μ := integrable_exp_mul_of_mem_Icc hm hb
+  have hs : Set.Icc 0 t ⊆ interior (integrableExpSet X μ) := by simp [hi, integrableExpSet]
+  obtain ⟨u, h1, h2⟩ := exists_cgf_eq_iteratedDeriv_two_cgf_mul ht hc hs
+  rw [← exp_cgf (hi t), exp_le_exp, h2]
+  gcongr
+  calc
+  _ = Var[X; μ.tilted (u * X ·)] := by
+    rw [← variance_tilted_mul (hs (Set.mem_Icc_of_Ioo h1))]
+  _ ≤ ((b - a) / 2) ^ 2 := by
+    convert variance_le_sq_of_bounded ((tilted_absolutelyContinuous μ (u * X ·)) hb) _
+    · exact isProbabilityMeasure_tilted (hi u)
+    · exact hm.mono_ac (tilted_absolutelyContinuous μ (u * X ·))
+  _ = (‖b - a‖₊ / 2) ^ 2 := by field_simp
+
+/-- **Hoeffding's lemma**: with respect to a probability measure `μ`, if `X` is a random variable
+that has expectation zero and is almost surely in `Set.Icc a b` for some `a ≤ b`, then `X` has a
+sub-Gaussian moment generating function with parameter `((b - a) / 2) ^ 2`. -/
+lemma hasSubgaussianMGF_of_mem_Icc_of_integral_eq_zero [IsProbabilityMeasure μ] {a b : ℝ}
+    (hm : AEMeasurable X μ) (hb : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) (hc : μ[X] = 0) :
+    HasSubgaussianMGF X ((‖b - a‖₊ / 2) ^ 2) μ where
+  integrable_exp_mul t := integrable_exp_mul_of_mem_Icc hm hb
+  mgf_le t := by
+    obtain ht | ht | ht := lt_trichotomy 0 t
+    · exact ProbabilityTheory.mgf_le_of_mem_Icc_of_integral_eq_zero hm hb hc ht
+    · simp [← ht]
+    calc
+    _ = mgf (-X) μ (-t) := by simp [mgf]
+    _ ≤ exp ((‖-a - -b‖₊ / 2) ^ 2 * (-t) ^ 2 / 2) := by
+      apply ProbabilityTheory.mgf_le_of_mem_Icc_of_integral_eq_zero (hm.neg)
+      · filter_upwards [hb] with ω ⟨hl, hr⟩ using ⟨neg_le_neg_iff.2 hr, neg_le_neg_iff.2 hl⟩
+      · rw [integral_neg, hc, neg_zero]
+      · rwa [Left.neg_pos_iff]
+    _ = exp (((‖b - a‖₊ / 2) ^ 2) * t ^ 2 / 2) := by ring_nf
+
+/-- A corollary of Hoeffding's lemma for bounded random variables. -/
+lemma hasSubgaussianMGF_of_mem_Icc [IsProbabilityMeasure μ] {a b : ℝ} (hm : AEMeasurable X μ)
+    (hb : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
+    HasSubgaussianMGF (fun ω ↦ X ω - μ[X]) ((‖b - a‖₊ / 2) ^ 2) μ := by
+  rw [← sub_sub_sub_cancel_right b a μ[X]]
+  apply hasSubgaussianMGF_of_mem_Icc_of_integral_eq_zero (hm.sub_const _)
+  · filter_upwards [hb] with ω hab using by simpa using hab
+  · simp [integral_sub (Integrable.of_mem_Icc a b hm hb) (integrable_const _)]
+
+end HoeffdingLemma
 
 section Martingale
 

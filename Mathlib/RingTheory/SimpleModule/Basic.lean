@@ -192,6 +192,18 @@ theorem extension_property {P} [AddCommGroup P] [Module R P] (f : N →ₗ[R] M)
   have ⟨m, compl⟩ := exists_isCompl (LinearMap.range f)
   ⟨g ∘ₗ LinearMap.linearProjOfIsCompl _ f hf compl, by ext; simp⟩
 
+theorem lifting_property (f : M →ₗ[R] N) (hf : Function.Surjective f) :
+    ∃ h : N →ₗ[R] M, f ∘ₗ h = LinearMap.id := by
+  have ⟨m, compl⟩ := exists_isCompl (LinearMap.ker f)
+  use Submodule.subtype _ ∘ₗ ((f.quotKerEquivOfSurjective hf).symm ≪≫ₗ
+    Submodule.quotientEquivOfIsCompl _ m compl).toLinearMap
+  ext x
+  dsimp
+  obtain ⟨z, rfl⟩ := hf x
+  rw [← LinearMap.sub_mem_ker_iff, ← Submodule.Quotient.mk_eq_zero, ← Submodule.mkQ_apply,
+    map_sub, Submodule.mkQ_apply, Submodule.mkQ_apply, Submodule.mk_quotientEquivOfIsCompl_apply,
+    ← LinearMap.quotKerEquivOfSurjective_apply_mk f hf, LinearEquiv.symm_apply_apply, sub_self]
+
 theorem eq_bot_or_exists_simple_le (N : Submodule R M) : N = ⊥ ∨ ∃ m ≤ N, IsSimpleModule R m := by
   simpa only [isSimpleModule_iff_isAtom, and_comm] using eq_bot_or_exists_atom_le _
 
@@ -345,7 +357,8 @@ theorem IsSemisimpleModule.sup {p q : Submodule R M}
     IsSemisimpleModule R ↥(p ⊔ q) := by
   let f : Bool → Submodule R M := Bool.rec q p
   rw [show p ⊔ q = ⨆ i ∈ Set.univ, f i by rw [iSup_univ, iSup_bool_eq]]
-  exact isSemisimpleModule_biSup_of_isSemisimpleModule_submodule (by rintro (_|_) _ <;> assumption)
+  exact isSemisimpleModule_biSup_of_isSemisimpleModule_submodule
+    (by rintro (_ | _) _ <;> assumption)
 
 instance IsSemisimpleRing.isSemisimpleModule [IsSemisimpleRing R] : IsSemisimpleModule R M :=
   have : IsSemisimpleModule R (M →₀ R) := isSemisimpleModule_of_isSemisimpleModule_submodule'

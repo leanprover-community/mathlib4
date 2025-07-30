@@ -27,7 +27,7 @@ section secondDerivativeAPI
 ## Supporting API
 
 The definition of the Laplacian of a function `f : E → F` involves the notion of the second
-derivative, which can be seen as a continous multilinear map `ContinuousMultilinearMap 𝕜 (fun (i :
+derivative, which can be seen as a continuous multilinear map `ContinuousMultilinearMap 𝕜 (fun (i :
 Fin 2) ↦ E) F`, a bilinear map `E →ₗ[𝕜] E →ₗ[𝕜] F`, or a linear map on tensors `E ⊗[𝕜] E →ₗ[𝕜]
 F`. This section provides convenience API to convert between these notions.
 -/
@@ -44,7 +44,7 @@ Convenience reformulation of the second iterated derivative, as a map from `E` t
 `E →ₗ[ℝ] E →ₗ[ℝ] ℝ
 -/
 noncomputable def bilinearIteratedFDerivWithinTwo (f : E → F) (s : Set E) : E → E →ₗ[𝕜] E →ₗ[𝕜] F :=
-  fun x ↦ (fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x).toLinearMap₂
+  fun x ↦ (fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x).toLinearMap₁₂
 
 variable (𝕜) in
 /--
@@ -52,7 +52,7 @@ Convenience reformulation of the second iterated derivative, as a map from `E` t
 `E →ₗ[ℝ] E →ₗ[ℝ] ℝ
 -/
 noncomputable def bilinearIteratedFDerivTwo (f : E → F) : E → E →ₗ[𝕜] E →ₗ[𝕜] F :=
-  fun x ↦ (fderiv 𝕜 (fderiv 𝕜 f) x).toLinearMap₂
+  fun x ↦ (fderiv 𝕜 (fderiv 𝕜 f) x).toLinearMap₁₂
 
 /--
 Expression of `bilinearIteratedFDerivWithinTwo` in terms of `iteratedFDerivWithin`.
@@ -92,16 +92,15 @@ lemma tensorIteratedFDerivWithinTwo_eq_iteratedFDerivWithin {e : E} {s : Set E} 
     (hs : UniqueDiffOn 𝕜 s) (he : e ∈ s) (e₁ e₂ : E) :
     tensorIteratedFDerivWithinTwo 𝕜 f s e (e₁ ⊗ₜ[𝕜] e₂) =
       iteratedFDerivWithin 𝕜 2 f s e ![e₁, e₂] := by
-  rw [← bilinearIteratedFDerivWithinTwo_eq_iteratedFDeriv f hs he, tensorIteratedFDerivWithinTwo]
-  rfl
+  rw [← bilinearIteratedFDerivWithinTwo_eq_iteratedFDeriv f hs he, tensorIteratedFDerivWithinTwo,
+    lift.tmul]
 
 /--
 Expression of `tensorIteratedFDerivTwo` in terms of `iteratedFDeriv`.
 -/
 lemma tensorIteratedFDerivTwo_eq_iteratedFDeriv (f : E → F) (e e₁ e₂ : E) :
     tensorIteratedFDerivTwo 𝕜 f e (e₁ ⊗ₜ[𝕜] e₂) = iteratedFDeriv 𝕜 2 f e ![e₁, e₂] := by
-  rw [← bilinearIteratedFDerivTwo_eq_iteratedFDeriv, tensorIteratedFDerivTwo]
-  rfl
+  rw [← bilinearIteratedFDerivTwo_eq_iteratedFDeriv, tensorIteratedFDerivTwo, lift.tmul]
 
 end secondDerivativeAPI
 
@@ -282,6 +281,19 @@ theorem laplacian_smul (v : ℝ) (hf : ContDiffAt ℝ 2 f x) : Δ (v • f) x = 
   simp [laplacian_eq_iteratedFDeriv_stdOrthonormalBasis, iteratedFDeriv_const_smul_apply hf,
     Finset.smul_sum]
 
+/-- The Laplacian commutes with scalar multiplication. -/
+theorem laplacianWithin_smul_nhds
+    (v : ℝ) (hf : ContDiffWithinAt ℝ 2 f s x) (hs : UniqueDiffOn ℝ s) :
+    Δ[s] (v • f) =ᶠ[𝓝[s] x] v • (Δ[s] f) := by
+  filter_upwards [(hf.eventually (by simp)).filter_mono (nhdsWithin_mono _ (Set.subset_insert ..)),
+    eventually_mem_nhdsWithin] with a h₁a using laplacianWithin_smul v h₁a hs
+
+/-- The Laplacian commutes with scalar multiplication. -/
+theorem laplacian_smul_nhds (v : ℝ) (h : ContDiffAt ℝ 2 f x) :
+    Δ (v • f) =ᶠ[𝓝 x] v • (Δ f) := by
+  filter_upwards [h.eventually (by simp)] with a ha
+  simp [laplacian_smul v ha]
+
 /-!
 ## Commutativity of Δ with Linear Operators
 
@@ -300,6 +312,19 @@ theorem _root_.ContDiffWithinAt.laplacianWithin_CLM_comp_left {l : F →L[ℝ] G
 theorem _root_.ContDiffAt.laplacian_CLM_comp_left {l : F →L[ℝ] G} (h : ContDiffAt ℝ 2 f x) :
     Δ (l ∘ f) x = (l ∘ (Δ f)) x := by
   simp [laplacian_eq_iteratedFDeriv_stdOrthonormalBasis, l.iteratedFDeriv_comp_left h]
+
+/-- The Laplacian commutes with left composition by continuous linear maps. -/
+theorem _root_.ContDiffWithinAt.laplacianWithin_CLM_comp_left_nhds {l : F →L[ℝ] G}
+    (h : ContDiffWithinAt ℝ 2 f s x) (hs : UniqueDiffOn ℝ s) :
+    Δ[s] (l ∘ f) =ᶠ[𝓝[s] x] l ∘ Δ[s] f := by
+  filter_upwards [(h.eventually (by simp)).filter_mono (nhdsWithin_mono _ (Set.subset_insert ..)),
+    eventually_mem_nhdsWithin] with a h₁a using h₁a.laplacianWithin_CLM_comp_left hs
+
+/-- The Laplacian commutes with left composition by continuous linear maps. -/
+theorem _root_.ContDiffAt.laplacian_CLM_comp_left_nhds {l : F →L[ℝ] G} (h : ContDiffAt ℝ 2 f x) :
+    Δ (l ∘ f) =ᶠ[𝓝 x] l ∘ (Δ f) := by
+  filter_upwards [h.eventually (by simp)] with a ha
+  rw [ha.laplacian_CLM_comp_left]
 
 /-- The Laplacian commutes with left composition by continuous linear equivalences. -/
 theorem laplacianWithin_CLE_comp_left {l : F ≃L[ℝ] G} (hs : UniqueDiffOn ℝ s) (hx : x ∈ s) :
