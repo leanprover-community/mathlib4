@@ -81,7 +81,7 @@ structure Config where
 
   For example, given `P : Nat → Prop`, `f : (n : Nat) → P n → Nat` and `h : P n₀`,
   rewriting `f n₀ h` by `eq : n₀ = n₁` produces `f n₁ h`,
-  where `h : P n₁` does not typecheck.
+  where `h` does not typecheck at `P n₁`.
   The tactic will cast `h` to `eq ▸ h : P n₁` iff `.proofs ≤ castMode`. -/
   castMode : CastMode := .proofs
 
@@ -95,9 +95,18 @@ structure Context where
   x : Expr
   /-- A proof of `p = x`. Must be an fvar. -/
   h : Expr
-  /-- The array of free variables corresponding to opened binders,
-  along with a motive to cast back. -/
+  /-- The list of *value-less* binders (`cdecl`s and nondependent `ldecl`s)
+  that we have introduced.
+  Together with each binder, we store its type abstracted over `x` and `h`,
+  and with all occurrences of previous entries in `Δ`
+  casted along the abstracting equation.
+
+  E.g., if the local context is `a : T, b : U`,
+  we store `(a, Ma)` where `Ma := fun (x' : α) (h' : x = x') => T[x'/x, h'/h]`
+  and `(b, fun (x' : α) (h' : x = x') => U[x'/x, h'/h, (Eq.rec (motive := Ma) a h)/a])`
+  See the docstring on `visitAndCast`. -/
   Δ : Array (FVarId × Expr)
+  /-- The set of all *dependent* `ldecl`s that we have introduced. -/
   δ : Std.HashSet FVarId
   -- TODO: use `@[computed_field]`s below when `structure` supports that
   /-- Cached `p.toHeadIndex`. -/
@@ -120,10 +129,17 @@ def canUseCache (cacheOcc dCacheOcc currOcc : Nat) : Occurrences → Bool
     return prevOccs == currOccs
 
 /-- Monad for computing `dabstract`.
-The cache is for `visit` (not `visitAndCast`, which has two arguments),
-and the `Nat` tracks which occurrence of the pattern we are currently seeing.
-We must also cache the _number of occurrences in a subterm_
-because even if the cache hits, we should bump our state by this number. -/
+
+The `Nat` state tracks which occurrence of the pattern we are about to see, 1-indexed
+(so the initial value is `1`).
+
+The cache stores results of `visit` together with
+- the `Nat` state before the cached call; and
+- the difference in the state resulting from the call.
+We store these because even if the cache hits,
+we must update the state as if the call had been made.
+Storing the difference suffices because the state increases monotonically.
+See also `canUseCache`. -/
 abbrev M := ReaderT Context <| MonadCacheT ExprStructEq (Expr × Nat × Nat) <|
   StateRefT Nat MetaM
 
@@ -139,7 +155,7 @@ def checkCastAllowed (e t : Expr) (castMode : CastMode) : MetaM Unit := do
     if !(← isProp t) then
       throwMismatch ()
 
-/-- Inline the values of `ldecl`s present in `fvars`. -/
+/-- In `e`, inline the values of those `ldecl`s that appear in `fvars`. -/
 def zetaDelta (e : Expr) (fvars : Std.HashSet FVarId) : MetaM Expr :=
   let unfold? (fvarId : FVarId) : MetaM (Option Expr) := do
     if fvars.contains fvarId then
@@ -152,8 +168,9 @@ def zetaDelta (e : Expr) (fvars : Std.HashSet FVarId) : MetaM Expr :=
     return .visit val
   transform e (pre := pre)
 
-/-- If `e : te` is a term whose type mentions `x` or `h` (the generalization variables),
-return `⋯ ▸ e : te[p/x,rfl/h]`.
+/-- If `e : te` is a term whose type mentions `x`, `h` (the generalization variables)
+or entries in `Δ`/`δ`,
+return `h.symm ▸ e : te[p/x, rfl/h, …]`.
 Otherwise return `none`. -/
 def castBack? (e te x h : Expr) (Δ : Array (FVarId × Expr)) (δ : Std.HashSet FVarId) :
     MetaM (Option Expr) := do
@@ -164,9 +181,21 @@ def castBack? (e te x h : Expr) (Δ : Array (FVarId × Expr)) (δ : Std.HashSet 
   trace[Tactic.depRewrite.cast] "casting (x ↦ p):{indentExpr e'}"
   return some e'
 where
+  /-- Compute the motive that casts `e` back to `te[p/x, rfl/h, …]`. -/
   motive : MetaM Expr := do
     withLocalDeclD `x' (← inferType x) fun x' => do
     withLocalDeclD `h' (← mkEq x x') fun h' => do
+      /- The motive computation below operates syntactically, i.e.,
+      it looks for the fvars `x` and `h`.
+      This breaks in the presence of `let`-binders:
+      if we traverse into `b` in `let a := n; b` with `n` as the pattern,
+      we will have `a := x` in the local context.
+      If the type-correctness of `b` depends on the defeq `a ≡ n`,
+      because `b` does not depend on `x` syntactically,
+      a `replaceFVars` substitution will not suffice to fix `b`.
+      Thus we unfold the necessary dependent `ldecl`s when computing motives.
+      If their values depend on `x`,
+      this will be visible in the syntactic form of `te`. -/
       let te ← zetaDelta te δ
       let mut fs := #[x, h]
       let mut es := #[x', ← mkEqTrans h h']
@@ -176,7 +205,7 @@ where
       let te := te.replaceFVars fs es
       mkLambdaFVars #[x', h'] te
 
-/-- Cast `e : te[p/x,rfl/h]` to `h ▸ e : te`. -/
+/-- Cast `e : te[p/x, rfl/h, ...]` to `h ▸ e : te`. -/
 def castFwd (e te p x h : Expr) (Δ : Array (FVarId × Expr)) (δ : Std.HashSet FVarId) :
     MetaM Expr := do
   if !te.hasAnyFVar (fun f => f == x.fvarId! || f == h.fvarId! ||
@@ -199,18 +228,26 @@ def castFwd (e te p x h : Expr) (Δ : Array (FVarId × Expr)) (δ : Std.HashSet 
 
 mutual
 
-/-- Given `e`, return `e[x/p]` (i.e., `e` with occurrences of `p` replaced by `x`).
+/-- Given `e`, return `e'` where `e'` has had
+- the occurrences of `p` in `ctx.cfg.occs` replaced by `x`; and
+- subterms cast as appropriate in order to make `e'` type-correct.
+
 If `et?` is not `none`, the output is guaranteed to have type (defeq to) `et?`.
 
-Does _not_ assume that `e` is well-typed,
-but assumes that for all subterms `e'` of `e`,
-`e'[x/p]` is well-typed.
+We do _not_ assume that `e` is well-typed.
 We use this when processing binders:
-to traverse `fun (x : α) => b`,
-we add `x : α[x/p]` to the local context
-and continue traversing `b`.
-`x : α[x/p] ⊢ b` may be ill-typed,
-but the output `x : α[x/p] ⊢ b[x/p]` is well-typed. -/
+to traverse `∀ (x : α), β`,
+we obtain `α' ← visit α`,
+add `x : α'` to the local context
+and continue traversing `β`.
+Although `x : α' ⊢ β` may not hold,
+the output `β'` should have `x : α' ⊢ β'` (otherwise we have a bug).
+
+To achieve this, we maintain the invariant
+that all entries in the local context that we have introduced
+can be translated back to their original (pre-`visit`) types
+using the motive computed by `castBack?.motive`.
+(But we have not attempted to prove this.) -/
 partial def visitAndCast (e : Expr) (et? : Option Expr) : M Expr := do
   let e' ← visit e et?
   let some et := et? | return e'
@@ -308,7 +345,7 @@ partial def visitInner (e : Expr) (et? : Option Expr) : M Expr := do
   | .lam n t b bi =>
     let tup ← visit t none
     withLocalDecl n bi tup fun r => do
-      -- TODO(WN): there should be some way to propagate the expected type here,
+      -- NOTE(WN): there should be some way to propagate the expected type here,
       -- but it is not easy to do correctly (see `lam (as argument)` tests).
       let motive ← castBack?.motive tup ctx.x ctx.h ctx.Δ ctx.δ
       let bup ← withReader (fun ctx => { ctx with Δ := ctx.Δ.push (r.fvarId!, motive) })
