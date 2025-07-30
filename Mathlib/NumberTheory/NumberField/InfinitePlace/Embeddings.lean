@@ -177,7 +177,7 @@ theorem place_conjugate (φ : K →+* ℂ) : place (conjugate φ) = place φ := 
 /-- An embedding into `ℂ` is real if it is fixed by complex conjugation. -/
 abbrev IsReal (φ : K →+* ℂ) : Prop := IsSelfAdjoint φ
 
-theorem isReal_iff {φ : K →+* ℂ} : IsReal φ ↔ conjugate φ = φ := isSelfAdjoint_iff
+theorem isReal_iff {φ : K →+* ℂ} : IsReal φ ↔ conjugate φ = φ := isSelfAdjoint_iff _
 
 theorem isReal_conjugate_iff {φ : K →+* ℂ} : IsReal (conjugate φ) ↔ IsReal φ :=
   IsSelfAdjoint.star_iff
@@ -187,7 +187,7 @@ def IsReal.embedding {φ : K →+* ℂ} (hφ : IsReal φ) : K →+* ℝ where
   toFun x := (φ x).re
   map_one' := by simp only [map_one, one_re]
   map_mul' := by
-    simp only [Complex.conj_eq_iff_im.mp (RingHom.congr_fun hφ _), map_mul, mul_re,
+    simp only [Complex.conj_eq_iff_im.mp (RingHom.congr_fun hφ.star_eq _), map_mul, mul_re,
       mul_zero, tsub_zero, forall_const]
   map_zero' := by simp only [map_zero, zero_re]
   map_add' := by simp only [map_add, add_re, forall_const]
@@ -198,10 +198,10 @@ theorem IsReal.coe_embedding_apply {φ : K →+* ℂ} (hφ : IsReal φ) (x : K) 
   apply Complex.ext
   · rfl
   · rw [ofReal_im, eq_comm, ← Complex.conj_eq_iff_im]
-    exact RingHom.congr_fun hφ x
+    exact RingHom.congr_fun hφ.star_eq x
 
 lemma IsReal.comp (f : k →+* K) {φ : K →+* ℂ} (hφ : IsReal φ) :
-    IsReal (φ.comp f) := by ext1 x; simpa using RingHom.congr_fun hφ (f x)
+    IsReal (φ.comp f) := ⟨by ext1 x; simpa using RingHom.congr_fun hφ.star_eq (f x)⟩
 
 lemma isReal_comp_iff {f : k ≃+* K} {φ : K →+* ℂ} :
     IsReal (φ.comp (f : k →+* K)) ↔ IsReal φ :=
@@ -236,11 +236,12 @@ lemma IsConj.ext_iff {σ₁ σ₂ : K ≃ₐ[k] K} (h₁ : IsConj φ σ₁) : σ
   ⟨fun e ↦ e ▸ h₁, h₁.ext⟩
 
 lemma IsConj.isReal_comp (h : IsConj φ σ) : IsReal (φ.comp (algebraMap k K)) := by
+  rw [isReal_iff]
   ext1 x
   simp only [conjugate_coe_eq, RingHom.coe_comp, Function.comp_apply, ← h.eq,
     starRingEnd_apply, AlgEquiv.commutes]
 
-lemma isConj_one_iff : IsConj φ (1 : K ≃ₐ[k] K) ↔ IsReal φ := Iff.rfl
+lemma isConj_one_iff : IsConj φ (1 : K ≃ₐ[k] K) ↔ IsReal φ := isReal_iff.symm
 
 alias ⟨_, IsReal.isConjGal_one⟩ := ComplexEmbedding.isConj_one_iff
 
