@@ -1344,7 +1344,7 @@ namespace CatPullbackSquare
 variable [CatCommSq T L R B] [CatPullbackSquare T L R B]
 open CategoryTheory.Limits.CategoricalPullback
 
-/-- The `functorOfTransform'  maps the identity
+/-- The `functorOfTransform' maps the identity
 `CatCospanTransform` to the canonical functor to the categorical pullback. -/
 @[simps!]
 def functorOfTransformIdIsoEquivalenceFunctor :
