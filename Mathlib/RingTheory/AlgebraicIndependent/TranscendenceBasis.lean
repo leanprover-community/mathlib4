@@ -350,7 +350,7 @@ theorem matroid_spanning_iff [IsDomain A] {s : Set A} :
   simp_rw [Matroid.spanning_iff, matroid_e, subset_univ, and_true, eq_univ_iff_forall,
     matroid_closure_eq, SetLike.mem_coe, mem_algebraicClosure, Algebra.isAlgebraic_def]
 
-open Subsingleton -- brings the Subsingleton.noZeroDivisors instance into scope
+open Subsingleton -- brings the Subsingleton.to_noZeroDivisors instance into scope
 
 theorem matroid_isFlat_of_subsingleton [Subsingleton A] (s : Set A) : (matroid R A).IsFlat s := by
   simp_rw [Matroid.isFlat_iff, matroid_e, subset_univ,
