@@ -105,27 +105,19 @@ structure Context where
   /-- Cached `p.toNumArgs`. -/
   pNumArgs : Nat := p.headNumArgs
 
-/-- `true` iff `occs` intersects `[s, s+d)`. -/
-def _root_.Lean.Meta.Occurrences.anyIn (s d : Nat) : Occurrences → Bool
-  | .all => d != 0
-  | .pos l => l.any fun p => s ≤ p && p < s+d
-  | .neg l => Id.run do
-    for i in [s:s+d] do
-      if l.all (· != i) then return true
-    return false
-
-/-- `true` iff `[s, s+d) ⊆ occs`. -/
-def _root_.Lean.Meta.Occurrences.allIn (s d : Nat) : Occurrences → Bool
+/-- We use a cache entry iff the upcoming traversal would abstract exactly the same occurrences
+as the cached traversal. -/
+def canUseCache (cacheOcc dCacheOcc currOcc : Nat) : Occurrences → Bool
   | .all => true
-  | .pos l => Id.run do
-    for i in [s:s+d] do
-      if l.all (· != i) then return false
-    return true
-  | .neg l => l.all fun p => p < s || s+d ≤ p
-
-def canUseCache (cacheOcc dCacheOcc currOcc : Nat) (occs : Occurrences) : Bool :=
-  (occs.allIn currOcc dCacheOcc && occs.allIn cacheOcc dCacheOcc) ||
-  (!occs.anyIn currOcc dCacheOcc && !occs.anyIn cacheOcc dCacheOcc)
+  | .pos l | .neg l => Id.run do
+    let mut prevOccs := #[]
+    let mut currOccs := #[]
+    for p in l.toArray.qsort do
+      if cacheOcc ≤ p && p < cacheOcc + dCacheOcc then
+        prevOccs := prevOccs.push (p - cacheOcc)
+      if currOcc ≤ p && p < currOcc + dCacheOcc then
+        currOccs := currOccs.push (p - currOcc)
+    return prevOccs == currOccs
 
 /-- Monad for computing `dabstract`.
 The cache is for `visit` (not `visitAndCast`, which has two arguments),
