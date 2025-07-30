@@ -56,7 +56,7 @@ instance Subtype.canLift {α : Sort*} (p : α → Prop) :
 
 namespace Mathlib.Tactic
 
-open Lean Parser Tactic Elab Tactic Meta
+open Lean Parser Elab Tactic Meta
 
 /-- Lift an expression to another type.
 * Usage: `'lift' expr 'to' expr ('using' expr)? ('with' id (id id?)?)?`.
@@ -160,20 +160,11 @@ def Lift.main (e t : TSyntax `term) (hUsing : Option (TSyntax `term))
   if hUsing.isNone then withMainContext <| setGoals (prf.mvarId! :: (← getGoals))
 
 elab_rules : tactic
-  | `(tactic| lift $e to $t $[using $h]?) => withMainContext <| Lift.main e t h none none false
-
-elab_rules : tactic | `(tactic| lift $e to $t $[using $h]?
-    with $newVarName) => withMainContext <| Lift.main e t h newVarName none false
-
-elab_rules : tactic | `(tactic| lift $e to $t $[using $h]?
-    with $newVarName $newEqName) => withMainContext <| Lift.main e t h newVarName newEqName false
-
-elab_rules : tactic | `(tactic| lift $e to $t $[using $h]?
-    with $newVarName $newEqName $newPrfName) => withMainContext do
-  if h.isNone then Lift.main e t h newVarName newEqName false
-  else
-    let some h := h | unreachable!
-    if h.raw == newPrfName then Lift.main e t h newVarName newEqName true
-    else Lift.main e t h newVarName newEqName false
+| `(tactic| lift $e to $t $[using $h]? $[with $newVarName $[$newEqName]? $[$newPrfName]?]?) =>
+  withMainContext <|
+    let keepUsing := match h, newPrfName.join with
+      | some h, some newPrfName => h.raw == newPrfName
+      | _, _ => false
+    Lift.main e t h newVarName newEqName.join keepUsing
 
 end Mathlib.Tactic

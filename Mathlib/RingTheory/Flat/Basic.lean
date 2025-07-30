@@ -115,7 +115,7 @@ theorem rTensor_preserves_injective_linearMap [Flat R M] (f : N →ₗ[R] P)
   refine rTensor_injective_of_fg fun N P Nfg Pfg le ↦ ?_
   rw [← Finite.iff_fg] at Nfg Pfg
   have := Finite.small R P
-  let se := (Shrink.linearEquiv.{_, u} P R).symm
+  let se := (Shrink.linearEquiv R P).symm
   have := Module.Finite.equiv se
   rw [rTensor_injective_iff_subtype (fun _ _ ↦ (Subtype.ext <| hf <| Subtype.ext_iff.mp ·)) se]
   exact (flat_iff R M).mp ‹_› _ (Finite.iff_fg.mp inferInstance)
@@ -132,7 +132,7 @@ lemma iff_rTensor_preserves_injective_linearMapₛ [Small.{v'} R] : Flat R M ↔
       (f : N →ₗ[R] N'), Function.Injective f → Function.Injective (f.rTensor M) :=
   ⟨by introv _; apply rTensor_preserves_injective_linearMap, fun h ↦ ⟨fun P _ _ _ _ _ ↦ by
     have := Finite.small.{v'} R P
-    rw [rTensor_injective_iff_subtype Subtype.val_injective (Shrink.linearEquiv.{_, v'} P R).symm]
+    rw [rTensor_injective_iff_subtype Subtype.val_injective (Shrink.linearEquiv R P).symm]
     exact h _ Subtype.val_injective⟩⟩
 
 /-- `M` is flat if and only if `𝟙 M ⊗ f` is injective whenever `f` is an injective linear map
@@ -187,11 +187,11 @@ lemma of_ulift [Flat R (ULift.{v'} M)] : Flat R M :=
   of_linearEquiv ULift.moduleEquiv.symm
 
 instance shrink [Small.{v'} M] [Flat R M] : Flat R (Shrink.{v'} M) :=
-  of_linearEquiv (Shrink.linearEquiv M R)
+  of_linearEquiv (Shrink.linearEquiv R M)
 
 -- Making this an instance causes an infinite sequence `M → Shrink M → Shrink (Shrink M) → ...`.
 lemma of_shrink [Small.{v'} M] [Flat R (Shrink.{v'} M)] : Flat R M :=
-  of_linearEquiv (Shrink.linearEquiv M R).symm
+  of_linearEquiv (Shrink.linearEquiv R M).symm
 
 section DirectSum
 
