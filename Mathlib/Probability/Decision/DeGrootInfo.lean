@@ -26,6 +26,53 @@ open MeasureTheory Set
 
 open scoped ENNReal NNReal
 
+lemma ENNReal.add_sub_add_eq_sub_right {a c b : ℝ≥0∞} (hc : c ≠ ∞) :
+    (a + c) - (b + c) = a - b := by
+  lift c to ℝ≥0 using hc
+  cases a <;> cases b
+  · simp
+  · simp
+  · simp
+  · norm_cast
+    rw [add_tsub_add_eq_tsub_right]
+
+lemma ENNReal.add_sub_add_eq_sub_left {a c b : ℝ≥0∞} (hc : c ≠ ∞) :
+    (c + a) - (c + b) = a - b := by
+  simp_rw [add_comm c]
+  exact ENNReal.add_sub_add_eq_sub_right hc
+
+lemma ENNReal.mul_min (a b c : ℝ≥0∞) : a * min b c = min (a * b) (a * c) := mul_left_mono.map_min
+
+namespace MeasureTheory
+
+variable {α : Type*} {mα : MeasurableSpace α} {μ ν : Measure α}
+
+lemma Measure.eq_of_le_of_measure_univ_eq [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+    (hμν : μ ≤ ν) (h_univ : μ .univ = ν .univ) : μ = ν := by
+  ext s hs
+  refine le_antisymm (hμν s) ?_
+  by_contra! h_lt
+  have : Set.univ = s ∪ sᶜ := by simp
+  have h_disj : Disjoint s sᶜ := Set.disjoint_compl_right_iff_subset.mpr subset_rfl
+  replace h_univ : ν .univ ≤ μ .univ := h_univ.symm.le
+  rw [this, measure_union h_disj hs.compl, measure_union h_disj hs.compl] at h_univ
+  refine absurd h_univ ?_
+  push_neg
+  refine ENNReal.add_lt_add_of_lt_of_le (by finiteness) h_lt (hμν sᶜ)
+
+lemma Measure.eq_of_le_of_isProbabilityMeasure [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
+    (hμν : μ ≤ ν) : μ = ν :=
+  eq_of_le_of_measure_univ_eq hμν (by simp)
+
+lemma isFiniteMeasure_smul {c : ℝ≥0∞} (hc : c ≠ ∞) (μ : Measure α) [IsFiniteMeasure μ] :
+    IsFiniteMeasure (c • μ) := by
+  lift c to ℝ≥0 using hc
+  have : (c : ℝ≥0∞) • μ = c • μ := rfl
+  rw [this]
+  infer_instance
+
+end MeasureTheory
+
 namespace ProbabilityTheory
 
 variable {𝓧 𝓨 : Type*} {m𝓧 : MeasurableSpace 𝓧} {m𝓨 : MeasurableSpace 𝓨}
@@ -81,6 +128,12 @@ lemma deGrootInfo_comp_le (μ ν : Measure 𝓧) (π : Measure Bool) (η : Kerne
   refine tsub_le_tsub ?_ (bayesBinaryRisk_le_bayesBinaryRisk_comp _ _ _ _)
   simp [Measure.bind_apply .univ (Kernel.aemeasurable _)]
 
+lemma deGrootInfo_eq_deGrootInfo_one_one :
+    deGrootInfo μ ν π = deGrootInfo (π {false} • μ) (π {true} • ν) (Bool.boolMeasure 1 1) := by
+  rw [deGrootInfo, bayesBinaryRisk_eq_bayesBinaryRisk_one_one]
+  nth_rw 2 [bayesBinaryRisk_eq_bayesBinaryRisk_one_one]
+  simp [deGrootInfo]
+
 lemma deGrootInfo_boolMeasure_le_deGrootInfo {E : Set 𝓧} (hE : MeasurableSet E) :
     deGrootInfo (Bool.boolMeasure (μ Eᶜ) (μ E)) (Bool.boolMeasure (ν Eᶜ) (ν E)) π
       ≤ deGrootInfo μ ν π := by
@@ -104,8 +157,6 @@ lemma deGrootInfo_eq_min_sub_lintegral (μ ν : Measure 𝓧) [IsFiniteMeasure �
       - ∫⁻ x, min (π {false} * μ.rnDeriv (boolKernel μ ν ∘ₘ π) x)
       (π {true} * ν.rnDeriv (boolKernel μ ν ∘ₘ π) x) ∂(boolKernel μ ν ∘ₘ π) := by
   rw [deGrootInfo_eq_min_sub, bayesBinaryRisk_eq_lintegral_min]
-
-lemma ENNReal.mul_min (a b c : ℝ≥0∞) : a * min b c = min (a * b) (a * c) := mul_left_mono.map_min
 
 lemma deGrootInfo_eq_min_sub_lintegral' {ζ : Measure 𝓧} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     [SigmaFinite ζ] (π : Measure Bool) [IsFiniteMeasure π] (hμζ : μ ≪ ζ) (hνζ : ν ≪ ζ) :
@@ -133,21 +184,6 @@ lemma deGrootInfo_eq_min_sub_iInf_measurableSet (μ ν : Measure 𝓧) [IsFinite
     deGrootInfo μ ν π = min (π {false} * μ univ) (π {true} * ν univ)
       - ⨅ E, ⨅ (_ : MeasurableSet E), π {false} * μ E + π {true} * ν Eᶜ := by
   rw [deGrootInfo_eq_min_sub, bayesBinaryRisk_eq_iInf_measurableSet]
-
-lemma ENNReal.add_sub_add_eq_sub_right {a c b : ℝ≥0∞} (hc : c ≠ ∞) :
-    (a + c) - (b + c) = a - b := by
-  lift c to ℝ≥0 using hc
-  cases a <;> cases b
-  · simp
-  · simp
-  · simp
-  · norm_cast
-    rw [add_tsub_add_eq_tsub_right]
-
-lemma ENNReal.add_sub_add_eq_sub_left {a c b : ℝ≥0∞} (hc : c ≠ ∞) :
-    (c + a) - (c + b) = a - b := by
-  simp_rw [add_comm c]
-  exact ENNReal.add_sub_add_eq_sub_right hc
 
 lemma deGrootInfo_eq_iSup_measurableSet_of_measure_univ_le (μ ν : Measure 𝓧) [IsFiniteMeasure μ]
     [IsFiniteMeasure ν] (π : Measure Bool) [IsFiniteMeasure π]
@@ -196,5 +232,25 @@ lemma deGrootInfo_eq_iSup_measurableSet_of_measure_univ_le' (μ ν : Measure �
   rw [deGrootInfo_comm, deGrootInfo_eq_iSup_measurableSet_of_measure_univ_le]
   · simp
   · simpa using h
+
+lemma deGrootInfo_eq_zero_of_le [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteMeasure π]
+    (hνμ : π {true} • ν ≤ π {false} • μ) :
+    deGrootInfo μ ν π = 0 := by
+  have h_le s : π {true} * ν s ≤ π {false} * μ s := hνμ s
+  rw [deGrootInfo_eq_iSup_measurableSet_of_measure_univ_le _ _ _ (h_le .univ)]
+  simp [tsub_eq_zero_iff_le, h_le]
+
+lemma deGrootInfo_eq_zero_iff [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteMeasure π]
+    (h_univ : π {false} * μ univ = π {true} * ν univ) :
+    deGrootInfo μ ν π = 0 ↔ π {false} • μ = π {true} • ν := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · have : IsFiniteMeasure (π {false} • μ) := isFiniteMeasure_smul (by finiteness) _
+    have : IsFiniteMeasure (π {true} • ν) := isFiniteMeasure_smul (by finiteness) _
+    refine Measure.eq_of_le_of_measure_univ_eq ?_ (by simp [h_univ])
+    refine Measure.le_intro fun s hs _ ↦ ?_
+    rw [deGrootInfo_eq_iSup_measurableSet_of_measure_univ_le' _ _ _ h_univ.le] at h
+    simp only [ENNReal.iSup_eq_zero, tsub_eq_zero_iff_le] at h
+    exact h s hs
+  · rw [deGrootInfo_eq_deGrootInfo_one_one, h, deGrootInfo_self]
 
 end ProbabilityTheory

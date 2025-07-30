@@ -316,6 +316,24 @@ lemma bayesRiskPrior_eq_bayesRiskPrior_discard_of_subsingleton [Subsingleton �
     bayesRiskPrior ℓ P π = bayesRiskPrior ℓ (Kernel.discard Θ) π := by
   simp [bayesRiskPrior_of_subsingleton hl]
 
+lemma bayesianRisk_withDensity (hl : Measurable (Function.uncurry ℓ))
+    (P : Kernel Θ 𝓧) [IsSFiniteKernel P] (κ : Kernel 𝓧 𝓨) [IsSFiniteKernel κ]
+    (π : Measure Θ) [SFinite π] {f : Θ → ℝ≥0∞} (hf : Measurable f) :
+    bayesianRisk ℓ (P.withDensity (fun θ _ ↦ f θ)) κ π = bayesianRisk ℓ P κ (π.withDensity f) := by
+  simp only [bayesianRisk, risk]
+  rw [lintegral_withDensity_eq_lintegral_mul _ hf (by fun_prop)]
+  congr with θ
+  rw [Kernel.comp_apply, Kernel.withDensity_apply _ (by fun_prop), Pi.mul_apply, Kernel.comp_apply]
+  simp
+
+lemma bayesRiskPrior_withDensity (hl : Measurable (Function.uncurry ℓ))
+    (P : Kernel Θ 𝓧) [IsSFiniteKernel P] (π : Measure Θ) [SFinite π]
+    {f : Θ → ℝ≥0∞} (hf : Measurable f) :
+    bayesRiskPrior ℓ (P.withDensity (fun θ _ ↦ f θ)) π = bayesRiskPrior ℓ P (π.withDensity f) := by
+  simp_rw [bayesRiskPrior]
+  congr! 3 with κ hκ
+  rw [bayesianRisk_withDensity hl P κ π hf]
+
 section BayesRiskLeMinimaxRisk
 
 lemma bayesianRisk_le_iSup_risk (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) (κ : Kernel 𝓧 𝓨)

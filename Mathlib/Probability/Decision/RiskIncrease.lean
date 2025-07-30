@@ -30,27 +30,18 @@ open scoped ENNReal NNReal
 
 namespace ProbabilityTheory
 
-lemma _root_.Measurable.smul_measure {α β : Type*} {_ : MeasurableSpace α} {_ : MeasurableSpace β}
-    {f : α → ℝ≥0∞}
-    (hf : Measurable f) (μ : Measure β) :
-    Measurable (fun x ↦ f x • μ) := by
-  refine Measure.measurable_of_measurable_coe _ fun s hs ↦ ?_
-  simp only [Measure.smul_apply, smul_eq_mul]
-  fun_prop
-
-@[simp]
-lemma Kernel.comp_discard' {α β : Type*} {_ : MeasurableSpace α} {_ : MeasurableSpace β}
-    (κ : Kernel α β) :
-    discard β ∘ₖ κ =
-      { toFun a := κ a .univ • Measure.dirac ()
-        measurable' := (κ.measurable_coe .univ).smul_measure _ } := by
+lemma Kernel.withDensity_comp {α β γ : Type*} {_ : MeasurableSpace α} {_ : MeasurableSpace β}
+    {_ : MeasurableSpace γ} {κ : Kernel α β} [IsSFiniteKernel κ]
+    {η : Kernel β γ} [IsSFiniteKernel η] {f : α → ℝ≥0∞} (hf : Measurable f) :
+    (η ∘ₖ κ).withDensity (fun a _ ↦ f a) = η ∘ₖ (κ.withDensity (fun a _ ↦ f a)) := by
   ext a s hs
-  simp [comp_apply' _ _ _ hs, mul_comm]
-
-instance {α : Type*} [MeasurableSpace α] [Countable α] [DiscreteMeasurableSpace α]
-    {μ : Measure α} : SFinite μ := by
-  rw [← Measure.sum_smul_dirac μ]
-  infer_instance
+  rw [Kernel.withDensity_apply _ (by fun_prop), Kernel.comp_apply, Kernel.comp_apply]
+  simp only [withDensity_const, Measure.smul_apply, smul_eq_mul]
+  conv_rhs => rw [Measure.bind_apply hs (by fun_prop)]
+  rw [lintegral_withDensity _ (by fun_prop)]
+  swap; · exact η.measurable_coe hs
+  rw [Measure.bind_apply hs (Kernel.aemeasurable _), lintegral_const_mul]
+  exact η.measurable_coe hs
 
 variable {Θ 𝓧 𝓨 : Type*} {mΘ : MeasurableSpace Θ} {m𝓧 : MeasurableSpace 𝓧} [MeasurableSpace 𝓨]
   {π : Measure Θ} {P : Kernel Θ 𝓧} {ℓ : Θ → 𝓨 → ℝ≥0∞}
@@ -98,7 +89,7 @@ lemma riskIncrease_le_iInf (hl : Measurable (uncurry ℓ)) [IsMarkovKernel P] [S
   riskIncrease_eq_iInf_sub hl P π ▸ tsub_le_self
 
 lemma riskIncrease_lt_top' [Nonempty 𝓨] (hl : Measurable (uncurry ℓ))
-    [IsFiniteKernel P] [IsFiniteMeasure π] {y : 𝓨} (h_finite : ∫⁻ θ, P θ univ * ℓ θ y ∂π ≠ ⊤) :
+    [IsFiniteMeasure π] {y : 𝓨} (h_finite : ∫⁻ θ, P θ univ * ℓ θ y ∂π ≠ ⊤) :
     riskIncrease ℓ P π < ⊤ :=
   (riskIncrease_le_iInf' hl).trans_lt (iInf_lt_top.mpr ⟨y, h_finite.lt_top⟩)
 
@@ -113,5 +104,12 @@ lemma riskIncrease_comp_le (P : Kernel Θ 𝓧) (π : Measure Θ) (η : Kernel �
   refine tsub_le_tsub ?_ (bayesRiskPrior_le_bayesRiskPrior_comp _ _ _ _)
   rw [← Kernel.comp_assoc]
   simp
+
+lemma riskIncrease_withDensity (hl : Measurable (Function.uncurry ℓ))
+    (P : Kernel Θ 𝓧) [IsSFiniteKernel P] (π : Measure Θ) [SFinite π]
+    {f : Θ → ℝ≥0∞} (hf : Measurable f) :
+    riskIncrease ℓ (P.withDensity (fun θ _ ↦ f θ)) π = riskIncrease ℓ P (π.withDensity f) := by
+  rw [riskIncrease, ← Kernel.withDensity_comp hf, bayesRiskPrior_withDensity hl _ π hf,
+    bayesRiskPrior_withDensity hl _ π hf, riskIncrease]
 
 end ProbabilityTheory

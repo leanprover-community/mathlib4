@@ -30,6 +30,28 @@ open scoped ENNReal NNReal
 
 namespace ProbabilityTheory
 
+lemma _root_.Measurable.smul_measure {α β : Type*} {_ : MeasurableSpace α} {_ : MeasurableSpace β}
+    {f : α → ℝ≥0∞}
+    (hf : Measurable f) (μ : Measure β) :
+    Measurable (fun x ↦ f x • μ) := by
+  refine Measure.measurable_of_measurable_coe _ fun s hs ↦ ?_
+  simp only [Measure.smul_apply, smul_eq_mul]
+  fun_prop
+
+@[simp]
+lemma Kernel.comp_discard' {α β : Type*} {_ : MeasurableSpace α} {_ : MeasurableSpace β}
+    (κ : Kernel α β) :
+    discard β ∘ₖ κ =
+      { toFun a := κ a .univ • Measure.dirac ()
+        measurable' := (κ.measurable_coe .univ).smul_measure _ } := by
+  ext a s hs
+  simp [comp_apply' _ _ _ hs, mul_comm]
+
+instance {α : Type*} [MeasurableSpace α] [Countable α] [DiscreteMeasurableSpace α]
+    {μ : Measure α} : SFinite μ := by
+  rw [← Measure.sum_smul_dirac μ]
+  infer_instance
+
 @[simp]
 lemma _root_.MeasureTheory.Measure.discard_comp {α : Type*} {_ : MeasurableSpace α}
     (μ : Measure α) :

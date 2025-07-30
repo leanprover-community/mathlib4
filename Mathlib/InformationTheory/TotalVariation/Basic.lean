@@ -129,40 +129,15 @@ lemma tvDist_eq_iSup_measurableSet_of_measure_univ_le' [IsFiniteMeasure μ]
   · simp
   · simpa
 
--- todo: generalize this and the below to deGrootInfo
 lemma tvDist_eq_zero_of_le [IsFiniteMeasure μ] [IsFiniteMeasure ν] (hνμ : ν ≤ μ) :
     tvDist μ ν = 0 := by
-  have h_le s : ν s ≤ μ s := hνμ s
-  rw [tvDist_eq_iSup_measurableSet_of_measure_univ_le (h_le .univ)]
-  simp only [ENNReal.toReal_eq_zero_iff, ENNReal.iSup_eq_zero, tsub_eq_zero_iff_le, h_le,
-    implies_true, _root_.true_or]
+  rw [tvDist, ENNReal.toReal_eq_zero_iff]
+  exact Or.inl <| deGrootInfo_eq_zero_of_le (by simpa)
 
--- todo: finite and equal measure for univ suffices
-lemma Measure.eq_of_le_of_isProbabilityMeasure [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
-    (hμν : μ ≤ ν) : μ = ν := by
-  ext s hs
-  refine le_antisymm (hμν s) ?_
-  by_contra! h_lt
-  have : Set.univ = s ∪ sᶜ := by simp
-  have h_disj : Disjoint s sᶜ := Set.disjoint_compl_right_iff_subset.mpr subset_rfl
-  have h_univ : ν .univ ≤ μ .univ := by simp
-  rw [this, measure_union h_disj hs.compl, measure_union h_disj hs.compl] at h_univ
-  refine absurd h_univ ?_
-  push_neg
-  refine ENNReal.add_lt_add_of_lt_of_le (by finiteness) h_lt (hμν sᶜ)
-
+@[simp]
 lemma tvDist_eq_zero_iff [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
     tvDist μ ν = 0 ↔ μ = ν := by
-  refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
-  refine Measure.eq_of_le_of_isProbabilityMeasure ?_
-  refine Measure.le_intro fun s hs _ ↦ ?_
-  rw [tvDist_eq_iSup_measurableSet_of_measure_univ_le' (by simp)] at h
-  simp only [ENNReal.toReal_eq_zero_iff, ENNReal.iSup_eq_zero, tsub_eq_zero_iff_le] at h
-  cases h with
-  | inl h => exact h s hs
-  | inr h =>
-    refine absurd h ?_
-    refine ne_top_of_le_ne_top (b := μ .univ) (by simp) ?_
-    exact iSup₂_le fun E hE ↦ tsub_le_self.trans (measure_mono (Set.subset_univ _))
+  rw [tvDist, ENNReal.toReal_eq_zero_iff]
+  simp [deGrootInfo_ne_top, deGrootInfo_eq_zero_iff]
 
 end ProbabilityTheory
