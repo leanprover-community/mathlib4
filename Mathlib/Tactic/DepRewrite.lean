@@ -45,6 +45,7 @@ inductive CastMode where
   /-- Only insert casts on proofs.
 
   In this mode, it is *not* permitted to cast subterms of proofs that are not themselves proofs. -/
+  -- TODO: should we relax this restriction and switch `castMode` when visiting a proof?
   | proofs
   /- TODO: `proofs` plus "good" user-defined casts such as `Fin.cast`.
   See https://leanprover.zulipchat.com/#narrow/channel/239415-metaprogramming-.2F-tactics/topic/dependent.20rewrite.20tactic/near/497185687 -/
@@ -292,6 +293,7 @@ partial def visit (e : Expr) (et? : Option Expr) : M Expr :=
 -- TODO(WN): further speedup might come from returning whether anything
 -- was rewritten inside a `visit`,
 -- and then skipping the type correctness check if it wasn't.
+/-- See `visit`. -/
 partial def visitInner (e : Expr) (et? : Option Expr) : M Expr := do
   let ctx ← read
   if e.hasLooseBVars then
