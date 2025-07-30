@@ -5,9 +5,11 @@ as assignees.
 """
 import json
 
+# Create the github API call to assign mathlib PR |number| to user |handle|.
+# Any existing assignee is kept; specifying a non-existent user does nothing.
+# Github's assignment syntax is documented at
+# https://docs.github.com/en/rest/issues/assignees?apiVersion=2022-11-28#add-assignees-to-an-issue.
 def call(number: int, handle: str) -> str:
-    # This keeps any existing assignee on the PR.
-    # Calling this with a non-existent user does nothing (in particular, keeps existing assignees).
     raw = f'''curl --location --request POST --header "Accept: application/vnd.github+json" \\
         --header "authorization: Bearer ${{ secrets.ASSIGN_REVIEWERS }}" \\
         --header "X-GitHub-Api-Version: 2022-11-28" \\
