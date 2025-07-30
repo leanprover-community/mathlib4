@@ -336,7 +336,7 @@ partial def visitInner (e : Expr) (et? : Option Expr) : M Expr := do
   | .proj n i b =>
     let bup ← visit b none
     let tbup ← inferType bup
-    if tbup.isAppOf n then
+    if (← whnf tbup).isAppOf n then
       return .proj n i bup
 
     -- Otherwise the term in structure position was rewritten to a non-structure,
