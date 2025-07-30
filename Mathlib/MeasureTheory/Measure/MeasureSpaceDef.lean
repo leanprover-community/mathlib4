@@ -390,8 +390,8 @@ lemma mem_support_iff {x : X} : x ∈ μ.support ↔
 measure. -/
 lemma mem_support_iff_forall (x : X) : x ∈ μ.support ↔ ∀ U ∈ 𝓝 x, 0 < μ U :=
   mem_support_iff.trans <| frequently_smallSets.trans
-    ⟨fun h U hU ↦ let ⟨_, ht, μt⟩ := h U hU; μt.trans_le (measure_mono ht),
-     fun h U hU ↦ ⟨U, Subset.rfl, h U hU⟩⟩
+    ⟨fun h _ hU ↦ let ⟨_, ht, μt⟩ := h _ hU; μt.trans_le (measure_mono ht),
+     fun h _ hU ↦ ⟨_, Subset.rfl, h _ hU⟩⟩
 
 /-- A point `x` lies outside the support of `μ` iff all of the subsets of one of its neighborhoods
 have measure zero. -/
