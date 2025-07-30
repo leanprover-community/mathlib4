@@ -105,7 +105,7 @@ private lemma degreeOf_zero_t {a : k} (ha : a ≠ 0) : ((T f) (monomial v a)).de
     pow_ne_zero (v i.succ) (leadingCoeff_ne_zero.mp <| by simp [add_comm, leadingCoeff_X_pow_add_C])
   rw [natDegree_mul (by simp [ha]) (mul_ne_zero (by simp) (Finset.prod_ne_zero_iff.mpr
     (fun i _ ↦ h i))), natDegree_mul (by simp) (Finset.prod_ne_zero_iff.mpr (fun i _ ↦ h i)),
-    natDegree_prod _  _ (fun i _ ↦ h i), natDegree_finSuccEquiv, degreeOf_C]
+    natDegree_prod _ _ (fun i _ ↦ h i), natDegree_finSuccEquiv, degreeOf_C]
   simpa only [natDegree_pow, zero_add, natDegree_X, mul_one, Fin.val_zero, pow_zero, one_mul,
     add_right_inj] using Finset.sum_congr rfl (fun i _ ↦ by
     rw [add_comm (Polynomial.C _), natDegree_X_pow_add_C, mul_comm])
@@ -194,7 +194,7 @@ private noncomputable abbrev eqv1 :
     g.toRingEquiv.symm_toRingHom_comp_toRingHom
   calc
     _ = Ideal.map ((RingHom.id _).comp <| T f) I := by rw [id_comp, Ideal.map_coe]
-    _ = (I.map (T f)).map (RingHom.id _)  := by simp only [← Ideal.map_map, Ideal.map_coe]
+    _ = (I.map (T f)).map (RingHom.id _) := by simp only [← Ideal.map_map, Ideal.map_coe]
     _ = (I.map (T f)).map (g.symm.toAlgHom.toRingHom.comp g) :=
       congrFun (congrArg Ideal.map this.symm) (I.map (T f))
     _ = _ := by simp [← Ideal.map_map, Ideal.map_coe]
@@ -202,8 +202,8 @@ private noncomputable abbrev eqv1 :
 /- `eqv2` is the isomorphism from `k[X_0,...,X_n]/T(I)` into `k[X_0,...,X_n]/I`,
 induced by `T`. -/
 private noncomputable abbrev eqv2 :
-    (MvPolynomial (Fin (n + 1)) k ⧸ I.map (T f)) ≃ₐ[k] MvPolynomial (Fin (n + 1)) k ⧸ I
-  := quotientEquivAlg (R₁ := k) (I.map (T f)) I (T f).symm <| by
+    (MvPolynomial (Fin (n + 1)) k ⧸ I.map (T f)) ≃ₐ[k] MvPolynomial (Fin (n + 1)) k ⧸ I :=
+  quotientEquivAlg (R₁ := k) (I.map (T f)) I (T f).symm <| by
   calc
     _ = I.map ((T f).symm.toRingEquiv.toRingHom.comp (T f)) := by
       have : (T f).symm.toRingEquiv.toRingHom.comp (T f) = RingHom.id _ :=

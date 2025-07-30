@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.MonoidAlgebra.Basic
+import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Algebra.Regular.Pow
 import Mathlib.Data.Finsupp.Antidiagonal
@@ -164,6 +165,11 @@ theorem algebraMap_eq : algebraMap R (MvPolynomial σ R) = C :=
 
 variable {R σ}
 
+@[simp]
+theorem algebraMap_apply [Algebra R S₁] (r : R) :
+    algebraMap R (MvPolynomial σ S₁) r = C (algebraMap R S₁ r) :=
+  rfl
+
 /-- `X n` is the degree `1` monomial $X_n$. -/
 def X (n : σ) : MvPolynomial σ R :=
   monomial (Finsupp.single n 1) 1
@@ -237,6 +243,16 @@ instance infinite_of_nonempty (σ : Type*) (R : Type*) [Nonempty σ] [CommSemiri
     [Nontrivial R] : Infinite (MvPolynomial σ R) :=
   Infinite.of_injective ((fun s : σ →₀ ℕ => monomial s 1) ∘ Finsupp.single (Classical.arbitrary σ))
     <| (monomial_left_injective one_ne_zero).comp (Finsupp.single_injective _)
+
+instance [CommSemiring R] [NoZeroDivisors R] : NoZeroDivisors (MvPolynomial σ R) :=
+  inferInstanceAs (NoZeroDivisors (AddMonoidAlgebra ..))
+
+instance [CommSemiring R] [IsCancelAdd R] [IsCancelMulZero R] :
+    IsCancelMulZero (MvPolynomial σ R) :=
+  inferInstanceAs (IsCancelMulZero (AddMonoidAlgebra ..))
+
+/-- The multivariate polynomial ring over an integral domain is an integral domain. -/
+instance [CommSemiring R] [IsCancelAdd R] [IsDomain R] : IsDomain (MvPolynomial σ R) where
 
 theorem C_eq_coe_nat (n : ℕ) : (C ↑n : MvPolynomial σ R) = n := by
   induction n <;> simp [*]
@@ -860,12 +876,12 @@ lemma coeffs_add [DecidableEq R] {p q : MvPolynomial σ R} (h : Disjoint p.suppo
   have hr (n : σ →₀ ℕ) (hne : q.coeff n ≠ 0) : p.coeff n = 0 :=
     notMem_support_iff.mp <| h.notMem_of_mem_right_finset (mem_support_iff.mpr hne)
   have hor (n) (h : ¬coeff n p + coeff n q = 0) : coeff n p ≠ 0 ∨ coeff n q ≠ 0 := by
-    by_cases hp : coeff n p = 0 <;> aesop
+    by_cases hp : coeff n p = 0 <;> simp_all
   refine ⟨fun ⟨n, hn1, hn2⟩ ↦ ?_, ?_⟩
-  · obtain (h|h) := hor n hn1
+  · obtain (h | h) := hor n hn1
     · exact Or.inl ⟨n, by simp [h, hn2, hl n h]⟩
     · exact Or.inr ⟨n, by simp [h, hn2, hr n h]⟩
-  · rintro (⟨n, hn, rfl⟩|⟨n, hn, rfl⟩)
+  · rintro (⟨n, hn, rfl⟩ | ⟨n, hn, rfl⟩)
     · exact ⟨n, by simp [hl n hn, hn]⟩
     · exact ⟨n, by simp [hr n hn, hn]⟩
 

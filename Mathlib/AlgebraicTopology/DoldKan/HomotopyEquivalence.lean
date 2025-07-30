@@ -58,7 +58,7 @@ def homotopyPInftyToId : Homotopy (PInfty : K[X] ⟶ _) (𝟙 _) where
   hom i j := (homotopyPToId X (j + 1)).hom i j
   zero i j hij := Homotopy.zero _ i j hij
   comm n := by
-    rcases n with _|n
+    rcases n with _ | n
     · simpa only [Homotopy.dNext_zero_chainComplex, Homotopy.prevD_chainComplex,
         PInfty_f, P_f_0_eq, zero_add] using (homotopyPToId X 2).comm 0
     · simpa only [Homotopy.dNext_succ_chainComplex, Homotopy.prevD_chainComplex,
