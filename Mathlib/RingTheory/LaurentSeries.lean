@@ -1011,7 +1011,7 @@ instance : TopologicalSpace (LaurentSeriesPkg K).space :=
 theorem LaurentSeries_coe (x : RatFunc K) : (LaurentSeriesPkg K).coe x = (x : K⸨X⸩) :=
   rfl
 
-/-- Reinterpret the extension of `coe : RatFunc K → K⸨X⸩` as ring homomorphism -/
+/-- Reinterpret the extension of `coe : RatFunc K → K⸨X⸩` as a ring homomorphism -/
 abbrev extensionAsRingHom :=
   UniformSpace.Completion.extensionHom (coeAlgHom K).toRingHom
 
