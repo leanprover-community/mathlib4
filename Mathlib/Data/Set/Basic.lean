@@ -270,9 +270,11 @@ instance : IsNonstrictStrictOrder (Set α) (· ⊆ ·) (· ⊂ ·) :=
   ⟨fun _ _ => Iff.rfl⟩
 
 -- TODO(Jeremy): write a tactic to unfold specific instances of generic notation?
+@[grind =]
 theorem subset_def : (s ⊆ t) = ∀ x, x ∈ s → x ∈ t :=
   rfl
 
+@[grind =]
 theorem ssubset_def : (s ⊂ t) = (s ⊆ t ∧ ¬t ⊆ s) :=
   rfl
 
@@ -444,11 +446,11 @@ theorem Nonempty.of_subtype [Nonempty (↥s)] : s.Nonempty := nonempty_subtype.m
 theorem empty_def : (∅ : Set α) = { _x : α | False } :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem mem_empty_iff_false (x : α) : x ∈ (∅ : Set α) ↔ False :=
   Iff.rfl
 
-@[simp]
+@[simp, grind =]
 theorem setOf_false : { _a : α | False } = ∅ :=
   rfl
 
@@ -458,7 +460,7 @@ theorem setOf_false : { _a : α | False } = ∅ :=
 theorem empty_subset (s : Set α) : ∅ ⊆ s :=
   nofun
 
-@[simp]
+@[simp, grind =]
 theorem subset_empty_iff {s : Set α} : s ⊆ ∅ ↔ s = ∅ :=
   (Subset.antisymm_iff.trans <| and_iff_left (empty_subset _)).symm
 
@@ -537,7 +539,7 @@ Mathematically it is the same as `α` but it has a different type.
 -/
 
 
-@[simp]
+@[simp, grind =]
 theorem setOf_true : { _x : α | True } = univ :=
   rfl
 
@@ -551,10 +553,10 @@ theorem univ_eq_empty_iff : (univ : Set α) = ∅ ↔ IsEmpty α :=
 theorem empty_ne_univ [Nonempty α] : (∅ : Set α) ≠ univ := fun e =>
   not_isEmpty_of_nonempty α <| univ_eq_empty_iff.1 e.symm
 
-@[simp]
+@[simp, grind]
 theorem subset_univ (s : Set α) : s ⊆ univ := fun _ _ => trivial
 
-@[simp]
+@[simp, grind =]
 theorem univ_subset_iff {s : Set α} : univ ⊆ s ↔ s = univ :=
   @top_le_iff _ _ _ s
 
@@ -614,7 +616,7 @@ theorem MemUnion.elim {x : α} {a b : Set α} {P : Prop} (H₁ : x ∈ a ∪ b) 
     (H₃ : x ∈ b → P) : P :=
   Or.elim H₁ H₂ H₃
 
-@[simp]
+@[simp, grind =]
 theorem mem_union (x : α) (a b : Set α) : x ∈ a ∪ b ↔ x ∈ a ∨ x ∈ b :=
   Iff.rfl
 
@@ -729,7 +731,7 @@ theorem ssubset_union_right_iff : t ⊂ s ∪ t ↔ ¬ s ⊆ t :=
 theorem inter_def {s₁ s₂ : Set α} : s₁ ∩ s₂ = { a | a ∈ s₁ ∧ a ∈ s₂ } :=
   rfl
 
-@[simp, mfld_simps]
+@[simp, mfld_simps, grind =]
 theorem mem_inter_iff (x : α) (a b : Set α) : x ∈ a ∩ b ↔ x ∈ a ∧ x ∈ b :=
   Iff.rfl
 
@@ -958,7 +960,7 @@ theorem mem_powerset {x s : Set α} (h : x ⊆ s) : x ∈ 𝒫 s := @h
 
 theorem subset_of_mem_powerset {x s : Set α} (h : x ∈ 𝒫 s) : x ⊆ s := @h
 
-@[simp]
+@[simp, grind =]
 theorem mem_powerset_iff (x s : Set α) : x ∈ 𝒫 s ↔ x ⊆ s :=
   Iff.rfl
 
