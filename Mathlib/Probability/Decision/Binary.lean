@@ -92,7 +92,7 @@ lemma isGenBayesEstimator_binaryBayesEstimator (μ ν : Measure 𝓧) [IsFiniteM
   · simp [hπ, not_le.mp hπ]
   · simpa [hπ, not_le.mp hπ] using (not_le.mp hπ).le
 
-noncomputable instance (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+instance (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (π : Measure Bool) [IsFiniteMeasure π] :
     HasGenBayesEstimator binaryLoss (boolKernel μ ν) π :=
   ⟨binaryBayesEstimator μ ν π, isGenBayesEstimator_binaryBayesEstimator μ ν π⟩

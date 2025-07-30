@@ -34,6 +34,58 @@ estimator, then the Bayesian risk attains the risk lower bound
 open MeasureTheory
 open scoped ENNReal NNReal
 
+namespace MeasurableEmbedding
+-- PRed by Gaëtan
+
+open Set
+variable {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {f : α → β}
+
+lemma equivRange_apply (hf : MeasurableEmbedding f) (x : α) :
+    hf.equivRange x = ⟨f x, mem_range_self x⟩ := by
+  suffices f x = (hf.equivRange x).1 by simp [this]
+  simp [MeasurableEmbedding.equivRange, MeasurableEquiv.cast, MeasurableEquiv.Set.univ,
+    MeasurableEmbedding.equivImage]
+
+lemma equivRange_symm_apply_mk (hf : MeasurableEmbedding f) (x : α) :
+    hf.equivRange.symm ⟨f x, mem_range_self x⟩ = x := by
+  have : x = hf.equivRange.symm (hf.equivRange x) := EquivLike.inv_apply_eq.mp rfl
+  conv_rhs => rw [this, hf.equivRange_apply]
+
+/-- The left-inverse of a MeasurableEmbedding -/
+protected noncomputable
+def invFun [Nonempty α] (hf : MeasurableEmbedding f) [∀ x, Decidable (x ∈ range f)] (x : β) : α :=
+  if hx : x ∈ range f then hf.equivRange.symm ⟨x, hx⟩ else (Nonempty.some inferInstance)
+
+@[fun_prop]
+lemma measurable_invFun [Nonempty α] [∀ x, Decidable (x ∈ range f)]
+    (hf : MeasurableEmbedding f) :
+    Measurable (hf.invFun : β → α) :=
+  Measurable.dite (by fun_prop) measurable_const hf.measurableSet_range
+
+lemma leftInverse_invFun [Nonempty α] [∀ x, Decidable (x ∈ range f)]
+    (hf : MeasurableEmbedding f) :
+    Function.LeftInverse hf.invFun f := by
+  intro x
+  simp only [MeasurableEmbedding.invFun, mem_range, exists_apply_eq_apply, ↓reduceDIte]
+  exact hf.equivRange_symm_apply_mk x
+
+end MeasurableEmbedding
+
+lemma measurable_encode {α : Type*} {_ : MeasurableSpace α} [Encodable α]
+    [MeasurableSingletonClass α] :
+    Measurable (Encodable.encode (α := α)) := by
+  refine measurable_to_nat fun a ↦ ?_
+  have : Encodable.encode ⁻¹' {Encodable.encode a} = {a} := by ext; simp
+  rw [this]
+  exact measurableSet_singleton _
+
+lemma measurableEmbedding_encode (α : Type*) {_ : MeasurableSpace α} [Encodable α]
+    [MeasurableSingletonClass α] :
+    MeasurableEmbedding (Encodable.encode (α := α)) where
+  injective := Encodable.encode_injective
+  measurable := measurable_encode
+  measurableSet_image' _ _ := .of_discrete
+
 namespace ProbabilityTheory
 
 variable {Θ 𝓧 𝓨 : Type*} {mΘ : MeasurableSpace Θ} {m𝓧 : MeasurableSpace 𝓧} {m𝓨 : MeasurableSpace 𝓨}
@@ -82,10 +134,17 @@ lemma IsGenBayesEstimator.isBayesEstimator (hf : IsGenBayesEstimator ℓ P f π)
 
 /-- The estimation problem admits a generalized Bayes estimator with respect to the prior `π`. -/
 class HasGenBayesEstimator {𝓨 : Type*} [MeasurableSpace 𝓨]
-    (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) [IsFiniteKernel P] (π : Measure Θ) [IsFiniteMeasure π] where
-  /-- The Generalized Bayes estimator. -/
-  estimator : 𝓧 → 𝓨
-  isGenBayesEstimator : IsGenBayesEstimator ℓ P estimator π
+    (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) [IsFiniteKernel P] (π : Measure Θ) [IsFiniteMeasure π] :
+    Prop where
+  exists_isGenBayesEstimator : ∃ f : 𝓧 → 𝓨, IsGenBayesEstimator ℓ P f π
+
+noncomputable
+def HasGenBayesEstimator.estimator (h : HasGenBayesEstimator ℓ P π) : 𝓧 → 𝓨 :=
+  h.exists_isGenBayesEstimator.choose
+
+lemma HasGenBayesEstimator.isGenBayesEstimator (h : HasGenBayesEstimator ℓ P π) :
+    IsGenBayesEstimator ℓ P h.estimator π :=
+  h.exists_isGenBayesEstimator.choose_spec
 
 /-- If the estimation problem admits a generalized Bayes estimator, then the Bayesian risk
 attains the risk lower bound `∫⁻ x, ⨅ y, ∫⁻ θ, ℓ θ y ∂((P†π) x) ∂(P ∘ₘ π)`. -/
@@ -95,74 +154,71 @@ lemma bayesRiskPrior_eq_of_hasGenBayesEstimator
   rw [← h.isGenBayesEstimator.isBayesEstimator hl,
     h.isGenBayesEstimator.bayesianRisk_eq_lintegral_iInf hl]
 
-lemma measurableSet_isMin {α : Type*} {_ : MeasurableSpace α} [TopologicalSpace α] [PartialOrder α]
+section Finite
+
+variable {α : Type*} {_ : MeasurableSpace α} [TopologicalSpace α] [LinearOrder α]
     [OpensMeasurableSpace α] [OrderClosedTopology α] [SecondCountableTopology α]
-    [Countable 𝓨]
+
+lemma measurableSet_isMin [Countable 𝓨]
     {f : 𝓧 → 𝓨 → α} (hf : ∀ y, Measurable (fun x ↦ f x y)) (y : 𝓨) :
-    MeasurableSet {x | IsMinOn (f x) .univ y} := by
-  simp only [isMinOn_univ_iff]
+    MeasurableSet {x | ∀ z, f x y ≤ f x z} := by
   rw [show {x | ∀ y', f x y ≤ f x y'} = ⋂ y', {x | f x y ≤ f x y'} by ext; simp]
   exact MeasurableSet.iInter fun z ↦ measurableSet_le (by fun_prop) (by fun_prop)
 
-lemma exists_isMinOn {α : Type*} {_ : MeasurableSpace α} [TopologicalSpace α] [LinearOrder α]
-    [OpensMeasurableSpace α] [OrderClosedTopology α] [SecondCountableTopology α]
-    [Nonempty 𝓨] [Finite 𝓨] (f : 𝓧 → 𝓨 → α) (x : 𝓧) :
-    ∃ y, IsMinOn (f x) .univ y := by
-  simpa only [isMinOn_univ_iff] using Finite.exists_min (f x)
+lemma exists_isMinOn' {α : Type*} [LinearOrder α]
+    [Nonempty 𝓨] [Finite 𝓨] [Encodable 𝓨] (f : 𝓧 → 𝓨 → α) (x : 𝓧) :
+    ∃ n : ℕ, ∃ y, n = Encodable.encode y ∧ ∀ z, f x y ≤ f x z := by
+  obtain ⟨y, h⟩ := Finite.exists_min (f x)
+  exact ⟨Encodable.encode y, y, rfl, h⟩
 
-lemma exists_isMinOn' {α : Type*} {_ : MeasurableSpace α} [TopologicalSpace α] [LinearOrder α]
-    [OpensMeasurableSpace α] [OrderClosedTopology α] [SecondCountableTopology α]
-    [Nonempty 𝓨] [Finite 𝓨] (f : 𝓧 → 𝓨 → α) (x : 𝓧) :
-    ∃ n : ℕ, ∃ y, n = (Encodable.ofCountable 𝓨).encode y ∧ IsMinOn (f x) .univ y := by
-  obtain ⟨y, h⟩ := exists_isMinOn f x
-  exact ⟨(Encodable.ofCountable 𝓨).encode y, y, rfl, h⟩
-
-open Classical in
 noncomputable
-def measurableArgmin {α : Type*} {_ : MeasurableSpace α} [TopologicalSpace α] [LinearOrder α]
-    [OpensMeasurableSpace α] [OrderClosedTopology α] [SecondCountableTopology α]
-    [Nonempty 𝓨] [Finite 𝓨]
-    (f : 𝓧 → 𝓨 → α) (x : 𝓧) :
+def measurableArgmin [Nonempty 𝓨] [Finite 𝓨] [Encodable 𝓨] [MeasurableSingletonClass 𝓨]
+    [(x : ℕ) → Decidable (x ∈ Set.range (Encodable.encode (α := 𝓨)))]
+    (f : 𝓧 → 𝓨 → α)
+    [∀ x, DecidablePred fun n ↦ ∃ y, n = Encodable.encode y ∧ ∀ (z : 𝓨), f x y ≤ f x z]
+    (x : 𝓧) :
     𝓨 :=
-  sorry
+  (measurableEmbedding_encode 𝓨).invFun (Nat.find (exists_isMinOn' f x))
 
-lemma measurable_measurableArgmin {α : Type*} {_ : MeasurableSpace α}
-    [TopologicalSpace α] [LinearOrder α]
-    [OpensMeasurableSpace α] [OrderClosedTopology α] [SecondCountableTopology α]
-    [Nonempty 𝓨] [Finite 𝓨]
-    {f : 𝓧 → 𝓨 → α} (hf : ∀ y, Measurable (fun x ↦ f x y))
-    (h_exists : ∀ x, ∃ y, IsMinOn (f x) .univ y) :
+lemma measurable_measurableArgmin [Nonempty 𝓨] [Finite 𝓨] [Encodable 𝓨] [MeasurableSingletonClass 𝓨]
+    [(x : ℕ) → Decidable (x ∈ Set.range (Encodable.encode (α := 𝓨)))]
+    {f : 𝓧 → 𝓨 → α}
+    [∀ x, DecidablePred fun n ↦ ∃ y, n = Encodable.encode y ∧ ∀ (z : 𝓨), f x y ≤ f x z]
+    (hf : ∀ y, Measurable (fun x ↦ f x y)) :
     Measurable (measurableArgmin f) := by
-  unfold measurableArgmin
-  sorry
+  refine (MeasurableEmbedding.measurable_invFun (measurableEmbedding_encode 𝓨)).comp ?_
+  refine measurable_find _ fun n ↦ ?_
+  have : {x | ∃ y, n = Encodable.encode y ∧ ∀ (z : 𝓨), f x y ≤ f x z}
+      = ⋃ y, ({x | n = Encodable.encode y} ∩ {x | ∀ z, f x y ≤ f x z}) := by ext; simp
+  rw [this]
+  refine MeasurableSet.iUnion fun y ↦ (MeasurableSet.inter (by simp) ?_)
+  exact measurableSet_isMin (by fun_prop) y
 
-lemma isMinOn_measurableArgmin {α : Type*} {_ : MeasurableSpace α}
-    [TopologicalSpace α] [LinearOrder α]
-    [OpensMeasurableSpace α] [OrderClosedTopology α] [SecondCountableTopology α]
-    [Nonempty 𝓨] [Finite 𝓨]
-    {f : 𝓧 → 𝓨 → α} (hf : ∀ y, Measurable (fun x ↦ f x y))
-    (h_exists : ∀ x, ∃ y, IsMinOn (f x) .univ y) (x : 𝓧) :
-    IsMinOn (f x) .univ (measurableArgmin f x) := by
-  sorry
+lemma isMinOn_measurableArgmin {α : Type*} [LinearOrder α]
+    [Nonempty 𝓨] [Finite 𝓨] [Encodable 𝓨] [MeasurableSingletonClass 𝓨]
+    [(x : ℕ) → Decidable (x ∈ Set.range (Encodable.encode (α := 𝓨)))]
+    (f : 𝓧 → 𝓨 → α)
+    [∀ x, DecidablePred fun n ↦ ∃ y, n = Encodable.encode y ∧ ∀ (z : 𝓨), f x y ≤ f x z]
+    (x : 𝓧) (z : 𝓨) :
+    f x (measurableArgmin f x) ≤ f x z := by
+  obtain ⟨y, h_eq, h_le⟩ := Nat.find_spec (exists_isMinOn' f x)
+  refine le_trans (le_of_eq ?_) (h_le z)
+  rw [measurableArgmin, h_eq,
+    MeasurableEmbedding.leftInverse_invFun (measurableEmbedding_encode 𝓨) y]
 
-lemma todo [Nonempty 𝓨] [Finite 𝓨] (hl : Measurable (Function.uncurry ℓ)) (y : 𝓨) :
-    Measurable (fun x ↦ ∫⁻ θ, ℓ θ y ∂(P†π) x) :=
-  (Measure.measurable_lintegral (by fun_prop)).comp (by fun_prop)
-
-lemma todo' [Nonempty 𝓨] [Finite 𝓨] (x : 𝓧) :
-    ∃ y, IsMinOn ((fun x y ↦ ∫⁻ (θ : Θ), ℓ θ y ∂(P†π) x) x) Set.univ y := by
-  simp only [isMinOn_univ_iff]
-  exact Finite.exists_min _
-
-noncomputable instance [Nonempty 𝓨] [Finite 𝓨] (hl : Measurable (Function.uncurry ℓ)) :
+lemma hasGenBayesEstimator_of_finite [Nonempty 𝓨] [Finite 𝓨] [MeasurableSingletonClass 𝓨]
+    (hl : Measurable (Function.uncurry ℓ)) :
     HasGenBayesEstimator ℓ P π where
-  estimator x := measurableArgmin (fun x y ↦ ∫⁻ θ, ℓ θ y ∂(P†π) x) x
-  isGenBayesEstimator :=
-    { measurable := measurable_measurableArgmin (todo hl) todo'
-      property := by
-        refine ae_of_all _ fun x ↦ ?_
-        have h := isMinOn_measurableArgmin (f := fun x y ↦ ∫⁻ θ, ℓ θ y ∂(P†π) x) (todo hl)
-         todo' x
-        exact le_antisymm (by simpa [isMinOn_univ_iff] using h) (iInf_le _ _) }
+  exists_isGenBayesEstimator := by
+    classical
+    have : Encodable 𝓨 := Encodable.ofCountable 𝓨
+    have h_meas y : Measurable (fun x ↦ ∫⁻ θ, ℓ θ y ∂(P†π) x) :=
+      (Measure.measurable_lintegral (by fun_prop)).comp (by fun_prop)
+    refine ⟨measurableArgmin (fun x y ↦ ∫⁻ θ, ℓ θ y ∂(P†π) x),
+      measurable_measurableArgmin h_meas, ae_of_all _ fun x ↦ ?_⟩
+    have h := isMinOn_measurableArgmin (fun x y ↦ ∫⁻ θ, ℓ θ y ∂(P†π) x) x
+    exact le_antisymm (by simpa using h) (iInf_le _ _)
+
+end Finite
 
 end ProbabilityTheory
