@@ -215,8 +215,8 @@ jobs:
         run: |
           cd pr-branch
 
-          echo "Attempting: lake build --no-build Mathlib.Init (this runs under landrun)"
-          lake build --no-build Mathlib.Init
+          echo "Attempting: lake build --no-build -v Mathlib.Init (this runs under landrun)"
+          lake build --no-build -v Mathlib.Init
 
       - name: get cache (3/3 - finalize cache operation)
         id: get
@@ -228,7 +228,7 @@ jobs:
 
             ../master-branch/.lake/build/bin/cache get
           else
-            echo "WARNING: 'lake build --no-build Mathlib.Init' failed."
+            echo "WARNING: 'lake build --no-build -v Mathlib.Init' failed."
             echo "No cache for 'Mathlib.Init' available or it could not be prepared."
           fi
 
@@ -258,6 +258,17 @@ jobs:
             echo "curl to example.com failed as expected - landrun network isolation is working"
           fi
           bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
+          counter=0
+          max_tries=5
+          # run again in case an olean fails to build properly
+          while ! lake build --no-build -v Mathlib; do
+            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
+            counter=$((counter + 1))
+            if [ $counter -ge $max_tries ]; then
+              echo "Failed to build good oleans for Mathlib after $max_tries attempts"
+              exit 1
+            fi
+          done
       - name: end gh-problem-match-wrap for build step
         uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
         with:
@@ -307,15 +318,43 @@ jobs:
 
       - name: build archive
         id: archive
+        continue-on-error: true
         run: |
           cd pr-branch
-          bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build Archive"
+          bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail Archive"
+          counter=0
+          max_tries=5
+          # run again in case an olean fails to build properly
+          while ! lake build --no-build -v Archive; do
+            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail Archive"
+            counter=$((counter + 1))
+            if [ $counter -ge $max_tries ]; then
+              echo "Failed to build good oleans for Archive after $max_tries attempts"
+              exit 1
+            fi
+          done
 
       - name: build counterexamples
         id: counterexamples
+        continue-on-error: true
         run: |
           cd pr-branch
-          bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build Counterexamples"
+          bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail Counterexamples"
+          counter=0
+          max_tries=5
+          # run again in case an olean fails to build properly
+          while ! lake build --no-build -v Archive; do
+            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail Counterexamples"
+            counter=$((counter + 1))
+            if [ $counter -ge $max_tries ]; then
+              echo "Failed to build good oleans for Counterexamples after $max_tries attempts"
+              exit 1
+            fi
+          done
+
+      - name: Check if building Archive or Counterexamples failed
+        if: steps.archive.outcome == 'failure' || steps.counterexamples.outcome == 'failure'
+        run: exit 1
 
       # The cache secrets are available here, so we must not run any untrusted code.
       - name: put archive and counterexamples cache
@@ -452,9 +491,9 @@ jobs:
 
       - name: verify that everything was available in the cache
         run: |
-          lake build --no-build Mathlib
-          lake build --no-build Archive
-          lake build --no-build Counterexamples
+          lake build --no-build -v Mathlib
+          lake build --no-build -v Archive
+          lake build --no-build -v Counterexamples
 
       - name: check declarations in db files
         run: |
