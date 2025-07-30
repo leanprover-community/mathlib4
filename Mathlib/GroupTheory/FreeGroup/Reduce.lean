@@ -324,8 +324,7 @@ theorem IsReduced.reduce_eq (h : IsReduced L) : reduce L = L := by
 theorem IsReduced.of_reduce_eq (h : reduce L = L) : IsReduced L := by
   rw [IsReduced, List.chain'_iff_forall_rel_of_append_cons_cons]
   rintro ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ l₁ l₂ hl rfl
-  symm
-  rw [← Bool.ne_not]
+  rw [eq_comm, ← Bool.ne_not]
   rintro rfl
   exact reduce.not (h.trans hl)
 
