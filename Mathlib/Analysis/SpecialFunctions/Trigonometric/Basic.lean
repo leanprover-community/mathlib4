@@ -507,9 +507,8 @@ theorem sin_eq_zero_iff_cos_eq {x : ℝ} : sin x = 0 ↔ cos x = 1 ∨ cos x = -
   exact ⟨fun h => by rw [h, mul_zero], eq_zero_of_mul_self_eq_zero ∘ Eq.symm⟩
 
 theorem cos_eq_zero_iff_sin_eq {x : ℝ} : cos x = 0 ↔ sin x = 1 ∨ sin x = -1 := by
-  rw [← mul_self_eq_one_iff, ← sin_sq_add_cos_sq x, sq, sq, add_comm,
-      ← sub_eq_iff_eq_add, sub_self]
-  exact ⟨fun h => by rw [h, mul_zero], eq_zero_of_mul_self_eq_zero ∘ Eq.symm⟩
+  rw [← mul_self_eq_one_iff, ← sin_sq_add_cos_sq x, sq, sq]
+  simp
 
 theorem cos_eq_one_iff (x : ℝ) : cos x = 1 ↔ ∃ n : ℤ, (n : ℝ) * (2 * π) = x :=
   ⟨fun h =>
@@ -994,9 +993,8 @@ theorem sin_eq_zero_iff_cos_eq {z : ℂ} : sin z = 0 ↔ cos z = 1 ∨ cos z = -
   exact ⟨fun h => by rw [h, mul_zero], eq_zero_of_mul_self_eq_zero ∘ Eq.symm⟩
 
 theorem cos_eq_zero_iff_sin_eq {z : ℂ} : cos z = 0 ↔ sin z = 1 ∨ sin z = -1 := by
-  rw [← mul_self_eq_one_iff, ← sin_sq_add_cos_sq, sq, sq, add_comm, 
-      ← sub_eq_iff_eq_add, sub_self]
-  exact ⟨fun h => by rw [h, mul_zero], eq_zero_of_mul_self_eq_zero ∘ Eq.symm⟩
+  rw [← mul_self_eq_one_iff, ← sin_sq_add_cos_sq z, sq, sq]
+  simp
 
 @[simp]
 theorem cos_pi_div_two : cos (π / 2) = 0 :=
