@@ -85,10 +85,9 @@ lemma dualEmbedding_isSurjective : Function.Surjective (WeakBilin.eval B) := by
   rw [← Set.image_univ, Finsupp.mem_span_image_iff_linearCombination] at test5
   obtain ⟨l, _, hl2⟩ := test5
   use Finsupp.linearCombination 𝕜 (id (M :=F) (R := 𝕜)) l
-  simp [←ContinuousLinearMap.coe_inj, ← hl2, WeakBilin.eval, coe_mk, AddHom.coe_mk,
-    ContinuousLinearMap.toLinearMap₂, ContinuousLinearMap.coeLMₛₗ,
+  rw [←ContinuousLinearMap.coe_inj, ← hl2, WeakBilin.eval, coe_mk, AddHom.coe_mk]
+  simp [ContinuousLinearMap.toLinearMap₂, ContinuousLinearMap.coeLMₛₗ,
     Finsupp.linearCombination_apply, map_finsuppSum]
-
 
 lemma dualEmbedding_isInjective_of_separatingRight (hr : B.SeparatingRight) :
     Function.Injective (WeakBilin.eval B) := (injective_iff_map_eq_zero _).mpr (fun f hf =>
