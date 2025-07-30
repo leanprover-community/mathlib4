@@ -313,20 +313,35 @@ partial def visitInner (e : Expr) (et? : Option Expr) : M Expr := do
   match e with
   | .mdata d b => return .mdata d (← visitAndCast b et?)
   | .app f a =>
-    let fup ← visit f none
-    let tfup ← inferType fup
-    withAtLeastTransparency .default <| forallBoundedTelescope tfup (some 1) fun xs _ => do
-      let #[r] := xs |
-        throwError m!"term in function position was rewritten to a non-function{indentExpr fup}"
-      let tr ← inferType r
-      let aup ← visitAndCast a tr
-      return .app fup aup
+    let (fup, tr) ← do
+      let fup ← visit f none
+      let tfup ← inferType fup
+      withAtLeastTransparency .default <| forallBoundedTelescope tfup (some 1) fun xs _ => do
+        match xs with
+        | #[r] => return (fup, ← inferType r)
+        | _ =>
+          -- The term in function position was rewritten to a non-function,
+          -- so cast it back to one.
+          let some fup' ← castBack? fup tfup ctx.x ctx.h ctx.Δ ctx.δ
+            | throwError "internal error: unexpected castBack failure on{indentExpr fup}"
+          let tfup' ← inferType fup'
+          withAtLeastTransparency .default <| forallBoundedTelescope tfup' (some 1) fun xs _ => do
+            let #[r] := xs | throwError "internal error: function expected, got{indentExpr fup'}"
+            return (fup', ← inferType r)
+
+    let aup ← visitAndCast a tr
+    return .app fup aup
   | .proj n i b =>
     let bup ← visit b none
     let tbup ← inferType bup
-    if !tbup.isAppOf n then
-      throwError m!"projection type mismatch{indentExpr <| .proj n i bup}"
-    return .proj n i bup
+    if tbup.isAppOf n then
+      return .proj n i bup
+
+    -- Otherwise the term in structure position was rewritten to a non-structure,
+    -- so cast it back to one.
+    let some bup' ← castBack? bup tbup ctx.x ctx.h ctx.Δ ctx.δ
+      | throwError "internal error: unexpected castBack failure on{indentExpr bup}"
+    return .proj n i bup'
   | .letE n t v b nondep =>
     let tup ← visit t none
     let vup ← visitAndCast v tup

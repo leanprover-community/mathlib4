@@ -41,12 +41,10 @@ example (f : (k : Nat) → 0 < k → Type) (lt : 0 < n) : P (mdata% f n lt) := b
   exact test_sorry
 
 -- Rewrite the function in an application into a non-function.
-/-- error: term in function position was rewritten to a non-function
-  any x -/
-#guard_msgs in
 example (any : (α : Type) → α) (eq : (Nat → Nat) = Bool) :
     P (any (Nat → Nat) 0) := by
   rewrite! [eq]
+  guard_target =ₐ P ((eq.symm ▸ any Bool) 0)
   exact test_sorry
 
 -- Rewrite the argument in an application.
@@ -62,12 +60,10 @@ example (lt : 0 < n) : P (fst% ((⟨0, lt⟩, ()) : Fin n × Unit)) := by
   exact test_sorry
 
 -- Rewrite the structure in a projection into a non-projectible structure.
-/-- error: projection type mismatch
-  (any x).1 -/
-#guard_msgs in
 example (any : (α : Type) → α) (eq : (Nat × Nat) = Nat) :
     P (fst% any (Nat × Nat)) := by
-  rw! [eq]
+  rewrite! [eq]
+  guard_target =ₐ P (fst% (Eq.rec (motive := fun T _ => T) (any Nat) eq.symm))
   exact test_sorry
 
 -- Rewrite the value of a dependent let-binding.
@@ -232,9 +228,7 @@ theorem bool_dep_test
 theorem let_defeq_test (b : Nat) (eq : 1 = b) (f : (n : Nat) → n = 1 → Nat) :
     let n := 1; P (f n rfl) := by
   rewrite! [eq]
-  guard_target =
-    let n := b
-    P (f n _)
+  guard_target = let n := b; P (f n _)
   exact test_sorry
 
 example (b : Bool) (h : true = b)
