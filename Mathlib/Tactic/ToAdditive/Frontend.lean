@@ -1211,13 +1211,13 @@ def elabToAdditive : Syntax → CoreM Config
         for cycle in reorders do
           if h : cycle.size = 1 then
             throwErrorAt cycle[0] "\
-              invalid `reorder` argument `{cycle[0].getNat}`, it must have length at least 2. \
+              invalid cycle `{cycle[0]}`, a cycle must have at least 2 elements.\n\
               `(reorder := ...)` uses cycle notation to specify a permutation.\n\
               For example `(reorder := 1 2, 5 6)` swaps the first two arguments with each other \
               and the fifth and the sixth argument and `(reorder := 3 4 5)` will move \
               the fifth argument before the third argument."
           let cycle ← cycle.toList.mapM fun n => match n.getNat with
-            | 0 => throwErrorAt n "invalid `reorder` argument `0`, it must be at least 1."
+            | 0 => throwErrorAt n "invalid position `{n}`, positions are counted starting from 1."
             | n+1 => pure n
           reorder := cycle :: reorder
       | _ => throwUnsupportedSyntax
