@@ -351,10 +351,9 @@ lemma even_nat_card_aut_of_not_isUnramified [IsGalois k K] (hw : ¬ IsUnramified
     by_contra e
     exact H (Nat.finite_of_card_ne_zero e)
 
-lemma even_card_aut_of_not_isUnramified [IsGalois k K] [FiniteDimensional k K]
-    (hw : ¬ IsUnramified k w) :
-    Even (Fintype.card <| K ≃ₐ[k] K) :=
-  Nat.card_eq_fintype_card (α := K ≃ₐ[k] K) ▸ even_nat_card_aut_of_not_isUnramified hw
+lemma even_card_aut_of_not_isUnramified [IsGalois k K] (hw : ¬ IsUnramified k w) :
+    Even (Nat.card <| K ≃ₐ[k] K) :=
+  even_nat_card_aut_of_not_isUnramified hw
 
 lemma even_finrank_of_not_isUnramified [IsGalois k K]
     (hw : ¬ IsUnramified k w) : Even (finrank k K) := by
@@ -379,9 +378,9 @@ lemma isUnramifiedIn_comap [IsGalois k K] {w : InfinitePlace K} :
   obtain ⟨σ, rfl⟩ := exists_smul_eq_of_comap_eq hv
   rwa [isUnramified_smul_iff] at H
 
-lemma even_card_aut_of_not_isUnramifiedIn [IsGalois k K] [FiniteDimensional k K]
+lemma even_card_aut_of_not_isUnramifiedIn [IsGalois k K]
     {w : InfinitePlace k} (hw : ¬ w.IsUnramifiedIn K) :
-    Even (Fintype.card <| K ≃ₐ[k] K) := by
+    Even (Nat.card <| K ≃ₐ[k] K) := by
   obtain ⟨v, rfl⟩ := comap_surjective (K := K) w
   rw [isUnramifiedIn_comap] at hw
   exact even_card_aut_of_not_isUnramified hw
@@ -413,7 +412,8 @@ lemma card_isUnramified [NumberField k] [IsGalois k K] :
       rw [mem_filter, mem_filter_univ, Set.mem_toFinset, mem_orbit_iff, @eq_comm _ (comap w' _),
         and_iff_right_iff_imp]
       intro e; rwa [← isUnramifiedIn_comap, ← e]
-    · rw [← MulAction.card_orbit_mul_card_stabilizer_eq_card_group _ w,
+    · rw [Nat.card_eq_fintype_card,
+        ← MulAction.card_orbit_mul_card_stabilizer_eq_card_group _ w,
         ← Nat.card_eq_fintype_card (α := Stab w), card_stabilizer, if_pos,
         mul_one, Set.toFinset_card]
       rwa [← isUnramifiedIn_comap]
@@ -436,7 +436,8 @@ lemma card_isUnramified_compl [NumberField k] [IsGalois k K] :
       rw [mem_filter, compl_filter, mem_filter_univ, @eq_comm _ (comap w' _), Set.mem_toFinset,
         mem_orbit_iff, and_iff_right_iff_imp]
       intro e; rwa [← isUnramifiedIn_comap, ← e]
-    · rw [← MulAction.card_orbit_mul_card_stabilizer_eq_card_group _ w,
+    · rw [Nat.card_eq_fintype_card,
+        ← MulAction.card_orbit_mul_card_stabilizer_eq_card_group _ w,
         ← Nat.card_eq_fintype_card (α := Stab w), InfinitePlace.card_stabilizer, if_neg,
         Nat.mul_div_cancel _ zero_lt_two, Set.toFinset_card]
       rwa [← isUnramifiedIn_comap]
@@ -493,8 +494,8 @@ lemma NumberField.InfinitePlace.isUnramifiedIn [IsUnramifiedAtInfinitePlaces k K
 
 variable {K}
 
-lemma IsUnramifiedAtInfinitePlaces_of_odd_card_aut [IsGalois k K] [FiniteDimensional k K]
-    (h : Odd (Fintype.card <| K ≃ₐ[k] K)) : IsUnramifiedAtInfinitePlaces k K :=
+lemma IsUnramifiedAtInfinitePlaces_of_odd_card_aut [IsGalois k K]
+    (h : Odd (Nat.card <| K ≃ₐ[k] K)) : IsUnramifiedAtInfinitePlaces k K :=
   ⟨fun _ ↦ not_not.mp (Nat.not_even_iff_odd.2 h ∘ InfinitePlace.even_card_aut_of_not_isUnramified)⟩
 
 lemma IsUnramifiedAtInfinitePlaces_of_odd_finrank [IsGalois k K]
