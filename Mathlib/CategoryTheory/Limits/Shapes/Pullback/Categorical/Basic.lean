@@ -41,13 +41,6 @@ equivalent to `CatCommSqOver F G X`.
   example 5.3.9, although we take a slightly different (equivalent) model of the object.
 
 ## TODOs:
-* 2-functoriality of the construction with respect to "transformation of categorical
-  cospans".
-* Full equivalence-invariance of the notion (follows from suitable 2-functoriality).
-* Define a `CatPullbackSquare` typeclass extending `CatCommSq`that encodes the
-  fact that a given `CatCommSq` defines an equivalence between the top left
-  corner and the categorical pullback of its legs.
-* Define a `IsCatPullbackSquare` propclass.
 * Define the "categorical fiber" of a functor at an object of the target category.
 * Pasting calculus for categorical pullback squares.
 * Categorical pullback squares attached to Grothendieck constructions of pseudofunctors.
@@ -341,8 +334,14 @@ def CatCommSqOver.toFunctorToCategoricalPullback :
           snd := φ.snd.app x } }
 
 /-- The universal property of categorical pullbacks, stated as an equivalence
-of categories between functors `X ⥤ (F ⊡ G)` and categorical commutative squares
-over X. -/
+of categories between functors `X ⥤ (F ⊡ G)` and categorical commutative
+squares over X.
+Note that this equivalence should be considered as an
+implementation detail. Should you want to use the universal property, you should
+use the equivalence `CatPullbackSquare.functorEquiv` defined in
+`Mathlib/CategoryTheory/Limits/Shapes/Pullback/Categorical/Square.lean` instead,
+which provides a similar equivalence thanks to a
+`CatPullbackSquare (π₁ F G) (π₂ F G) F G` instance. -/
 @[simps]
 def functorEquiv : (X ⥤ F ⊡ G) ≌ CatCommSqOver F G X where
   functor := toCatCommSqOver F G X
