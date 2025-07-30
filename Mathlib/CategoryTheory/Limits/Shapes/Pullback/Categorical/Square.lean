@@ -318,14 +318,14 @@ def functorEquivInverseWhiskeringIsoSnd :
 
 variable {R B X}
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma counitCoherence_hom_app (S : CatCommSqOver R B X) (x : X) :
     R.map (((functorEquiv T L R B X).counitIso.hom.app S).fst.app x) ≫
       S.iso.hom.app x =
     (CatCommSq.iso T L R B).hom.app
       (((functorEquiv T L R B X).inverse.obj S).obj x) ≫
-      B.map (((functorEquiv T L R B X).counitIso.hom.app S).snd.app x) :=
-  functorEquiv.counitCoherence_hom_app' T L R B X S x
+      B.map (((functorEquiv T L R B X).counitIso.hom.app S).snd.app x) := by
+  simp
 
 @[reassoc (attr := simp)]
 lemma counitCoherence_inv_app (S : CatCommSqOver R B X) (x : X) :
