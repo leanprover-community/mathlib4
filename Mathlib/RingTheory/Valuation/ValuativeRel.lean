@@ -510,12 +510,8 @@ lemma exists_valuation_div_valuation_eq (γ : ValueGroupWithZero R) :
 
 -- See `exists_valuation_div_valuation_eq` for the version that works for all rings.
 theorem valuation_surjective {K : Type*} [Field K] [ValuativeRel K] :
-    Function.Surjective (valuation K) := by
-  intro a
-  induction a using ValueGroupWithZero.ind with
-  | mk x y =>
-    rw [ValueGroupWithZero.mk_eq_valuation]
-    exact ⟨_, rfl⟩
+    Function.Surjective (valuation K) :=
+  ValueGroupWithZero.ind fun x y ↦ ValueGroupWithZero.mk_eq_valuation x y ▸ ⟨_, rfl⟩
 
 /-- Construct a valuative relation on a ring using a valuation. -/
 def ofValuation
