@@ -200,14 +200,14 @@ theorem finSuccEquivLast_symm_some (i : Fin n) :
 /-- An embedding `e : Fin (n+1) ↪ ι` corresponds to an embedding `f : Fin n ↪ ι` (corresponding
 the last `n` coordinates of `e`) together with a value not taken by `f` (corresponding to `e 0`). -/
 def Equiv.embeddingFinSucc (n : ℕ) (ι : Type*) :
-    (Fin (n+1) ↪ ι) ≃ (Σ (e : Fin n ↪ ι), {i // i ∉ Set.range e}) :=
+    (Fin (n + 1) ↪ ι) ≃ (Σ (e : Fin n ↪ ι), {i // i ∉ Set.range e}) :=
   ((finSuccEquiv n).embeddingCongr (Equiv.refl ι)).trans
     (Function.Embedding.optionEmbeddingEquiv (Fin n) ι)
 
-@[simp] lemma Equiv.embeddingFinSucc_fst {n : ℕ} {ι : Type*} (e : Fin (n+1) ↪ ι) :
+@[simp] lemma Equiv.embeddingFinSucc_fst {n : ℕ} {ι : Type*} (e : Fin (n + 1) ↪ ι) :
     ((Equiv.embeddingFinSucc n ι e).1 : Fin n → ι) = e ∘ Fin.succ := rfl
 
-@[simp] lemma Equiv.embeddingFinSucc_snd {n : ℕ} {ι : Type*} (e : Fin (n+1) ↪ ι) :
+@[simp] lemma Equiv.embeddingFinSucc_snd {n : ℕ} {ι : Type*} (e : Fin (n + 1) ↪ ι) :
     ((Equiv.embeddingFinSucc n ι e).2 : ι) = e 0 := rfl
 
 @[simp] lemma Equiv.coe_embeddingFinSucc_symm {n : ℕ} {ι : Type*}
@@ -237,6 +237,11 @@ theorem finSumFinEquiv_apply_right (i : Fin n) :
 theorem finSumFinEquiv_symm_apply_castAdd (x : Fin m) :
     finSumFinEquiv.symm (Fin.castAdd n x) = Sum.inl x :=
   finSumFinEquiv.symm_apply_apply (Sum.inl x)
+
+@[simp]
+theorem finSumFinEquiv_symm_apply_castSucc (x : Fin m) :
+    finSumFinEquiv.symm (Fin.castSucc x) = Sum.inl x :=
+  finSumFinEquiv_symm_apply_castAdd x
 
 @[simp]
 theorem finSumFinEquiv_symm_apply_natAdd (x : Fin n) :

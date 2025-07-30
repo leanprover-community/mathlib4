@@ -52,7 +52,7 @@ additive combinatorics, number theory, sumset, cauchy-davenport
 open Finset Function Monoid MulOpposite Subgroup
 open scoped Pointwise
 
-variable {α : Type*}
+variable {G α : Type*}
 
 /-! ### General case -/
 
@@ -90,7 +90,7 @@ private lemma devosMulRel_of_le (mul : #(x.1 * x.2) ≤ #(y.1 * y.2))
 private lemma devosMulRel_of_le_of_le (mul : #(x.1 * x.2) ≤ #(y.1 * y.2))
     (hadd : #y.1 + #y.2 ≤ #x.1 + #x.2) (hone : #x.1 < #y.1) : DevosMulRel x y :=
   devosMulRel_iff.2 <|
-    mul.lt_or_eq.imp_right fun h ↦ hadd.gt_or_eq.imp (And.intro h) fun h' ↦ ⟨h, h', hone⟩
+    mul.lt_or_eq.imp_right fun h ↦ hadd.lt_or_eq'.imp (And.intro h) fun h' ↦ ⟨h, h', hone⟩
 
 @[to_additive]
 private lemma wellFoundedOn_devosMulRel :
@@ -176,17 +176,20 @@ lemma cauchy_davenport_minOrder_mul (hs : s.Nonempty) (ht : t.Nonempty) :
       (WithTop.coe_le_coe.2 aux2).trans' fun h ↦
         hstg.le.trans <| h.trans <| add_le_add_right aux2 _
 
+end General
+
 /-- The **Cauchy-Davenport Theorem** for torsion-free groups. The size of `s * t` is lower-bounded
 by `|s| + |t| - 1`. -/
 @[to_additive
 "The **Cauchy-Davenport theorem** for torsion-free groups. The size of `s + t` is lower-bounded
 by `|s| + |t| - 1`."]
-lemma cauchy_davenport_mul_of_isTorsionFree (h : IsTorsionFree α)
-    (hs : s.Nonempty) (ht : t.Nonempty) : #s + #t - 1 ≤ #(s * t) := by
-  simpa only [h.minOrder, min_eq_right, le_top, Nat.cast_le]
+lemma cauchy_davenport_of_isMulTorsionFree [DecidableEq G] [Group G] [IsMulTorsionFree G]
+    {s t : Finset G} (hs : s.Nonempty) (ht : t.Nonempty) : #s + #t - 1 ≤ #(s * t) := by
+  simpa only [Monoid.minOrder_eq_top, min_eq_right, le_top, Nat.cast_le]
     using cauchy_davenport_minOrder_mul hs ht
 
-end General
+@[to_additive (attr := deprecated cauchy_davenport_of_isMulTorsionFree (since := "2025-04-23"))]
+alias cauchy_davenport_mul_of_isTorsionFree := cauchy_davenport_of_isMulTorsionFree
 
 /-! ### $$ℤ/nℤ$$ -/
 

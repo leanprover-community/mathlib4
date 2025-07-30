@@ -6,6 +6,7 @@ Authors: Moritz Doll, Frédéric Dupuis, Heather Macbeth
 import Mathlib.Analysis.InnerProductSpace.Subspace
 import Mathlib.Analysis.Normed.Operator.Banach
 import Mathlib.LinearAlgebra.SesquilinearForm
+import Mathlib.Analysis.InnerProductSpace.Orthogonal
 
 /-!
 # Symmetric linear maps in an inner product space
@@ -95,6 +96,12 @@ theorem IsSymmetric.smul {c : 𝕜} (hc : conj c = c) {T : E →ₗ[𝕜] E} (hT
     c • T |>.IsSymmetric := by
   intro x y
   simp only [smul_apply, inner_smul_left, hc, hT x y, inner_smul_right]
+
+theorem IsSymmetric.natCast (n : ℕ) : IsSymmetric (n : E →ₗ[𝕜] E) := fun x y => by
+  simp [← Nat.cast_smul_eq_nsmul 𝕜, inner_smul_left, inner_smul_right]
+
+theorem IsSymmetric.intCast (n : ℤ) : IsSymmetric (n : E →ₗ[𝕜] E) := fun x y => by
+  simp [← Int.cast_smul_eq_zsmul 𝕜, inner_smul_left, inner_smul_right]
 
 @[aesop 30% apply]
 lemma IsSymmetric.mul_of_commute {S T : E →ₗ[𝕜] E} (hS : S.IsSymmetric) (hT : T.IsSymmetric)
@@ -240,6 +247,43 @@ theorem ker_le_ker_of_range {S T : E →ₗ[𝕜] E} (hS : S.IsSymmetric) (hT : 
   rw [mem_ker] at hv ⊢
   obtain ⟨y, hy⟩ : ∃ y, T y = S (S v) := by simpa using @h (S (S v))
   rw [← inner_self_eq_zero (𝕜 := 𝕜), ← hS, ← hy, hT, hv, inner_zero_right]
+
+open Submodule in
+/-- A linear projection onto `U` along its complement `V` is symmetric if
+and only if `U` and `V` are pairwise orthogonal. -/
+theorem _root_.Submodule.IsCompl.projection_isSymmetric_iff
+    {U V : Submodule 𝕜 E} (hUV : IsCompl U V) :
+    hUV.projection.IsSymmetric ↔ U ⟂ V := by
+  rw [IsCompl.projection]
+  refine ⟨fun h u hu v hv => ?_, fun h x y => ?_⟩
+  · rw [← Subtype.coe_mk u hu, ← Subtype.coe_mk v hv,
+      ← Submodule.linearProjOfIsCompl_apply_left hUV ⟨u, hu⟩, ← U.subtype_apply, ← comp_apply,
+      ← h, comp_apply, linearProjOfIsCompl_apply_right hUV ⟨v, hv⟩,
+      map_zero, inner_zero_left]
+  · nth_rw 2 [← linearProjOfIsCompl_add_linearProjOfIsCompl_eq_self hUV x]
+    nth_rw 1 [← linearProjOfIsCompl_add_linearProjOfIsCompl_eq_self hUV y]
+    rw [isOrtho_iff_inner_eq] at h
+    simp [inner_add_right, inner_add_left, h, inner_eq_zero_symm]
+
+open Submodule LinearMap in
+/-- An idempotent operator is symmetric if and only if its range is
+pairwise orthogonal to its kernel. -/
+theorem IsIdempotentElem.isSymmetric_iff_isOrtho_range_ker {T : E →ₗ[𝕜] E}
+    (hT : IsIdempotentElem T) : T.IsSymmetric ↔ (LinearMap.range T) ⟂ (LinearMap.ker T) := by
+  rw [← IsCompl.projection_isSymmetric_iff hT.isProj_range.isCompl, ← hT.eq_isCompl_projection]
+
+theorem IsSymmetric.orthogonal_range {T : E →ₗ[𝕜] E} (hT : LinearMap.IsSymmetric T) :
+    (LinearMap.range T)ᗮ = LinearMap.ker T := by
+  ext x
+  constructor
+  · simpa [Submodule.mem_orthogonal, hT _ x] using ext_inner_left 𝕜 (x := T x) (y := 0)
+  · simp_all [Submodule.mem_orthogonal, hT _ x]
+
+open Submodule LinearMap in
+theorem IsIdempotentElem.isSymmetric_iff_orthogonal_range {T : E →ₗ[𝕜] E}
+    (h : IsIdempotentElem T) : T.IsSymmetric ↔ (LinearMap.range T)ᗮ = (LinearMap.ker T) :=
+  ⟨fun hT => hT.orthogonal_range, fun hT =>
+    h.isSymmetric_iff_isOrtho_range_ker.eq ▸ hT.symm ▸ isOrtho_orthogonal_right _⟩
 
 end LinearMap
 

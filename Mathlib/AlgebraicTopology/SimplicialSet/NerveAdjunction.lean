@@ -76,8 +76,6 @@ def nerve₂Adj.counit : nerveFunctor₂ ⋙ hoFunctor₂.{u} ⟶ 𝟭 Cat where
   app _ := nerve₂Adj.counit.app _
   naturality _ _ _ := nerve₂Adj.counit.naturality _
 
-local notation (priority := high) "[" n "]" => SimplexCategory.mk n
-
 variable {C : Type u} [SmallCategory C] {X : SSet.Truncated.{u} 2}
     (F : SSet.oneTruncation₂.obj X ⟶ ReflQuiv.of C)
 
@@ -306,8 +304,8 @@ theorem toNerve₂.ext (F G : X ⟶ nerveFunctor₂.obj (Cat.of C))
   | 2 =>
     apply Functor.hext (fun i : Fin 3 => ?_) (fun (i j : Fin 3) k => ?_)
     · let pt : ⦋0⦌₂ ⟶ ⦋2⦌₂ := SimplexCategory.const _ _ i
-      refine congr(($(congr_fun (F.naturality pt.op) x)).obj 0).symm.trans ?_
-      refine .trans ?_ congr(($(congr_fun (G.naturality pt.op) x)).obj 0)
+      refine congr(($(F.naturality pt.op) x).obj 0).symm.trans ?_
+      refine .trans ?_ congr(($(G.naturality pt.op) x).obj 0)
       exact congr($(eq₀ _).obj 0)
     · let ar : ⦋1⦌₂ ⟶ ⦋2⦌₂ := mkOfLe _ _ k.le
       have h1 := congr_arg_heq (fun x => x.map' 0 1) (congr_fun (F.naturality (op ar)) x)
@@ -440,15 +438,15 @@ instance nerveFunctor₂.full : nerveFunctor₂.{u, u}.Full where
       rw [eq0] at lem0
       rw [eq1] at lem1
       rw [eq2] at lem2
-      replace lem0 : HEq (uF'.map k) (Fhk.map' 1 2) := by
+      replace lem0 : uF'.map k ≍ Fhk.map' 1 2 := by
         refine HEq.trans (b := Fk.map' 0 1) ?_ lem0
         simp [uF', nerveFunctor₂, SSet.truncation,
           ReflQuiv.comp_eq_comp, OneTruncation₂.nerveHomEquiv, Fk, uF]
-      replace lem2 : HEq (uF'.map h) (Fhk.map' 0 1) := by
+      replace lem2 : uF'.map h ≍ Fhk.map' 0 1 := by
         refine HEq.trans (b := Fh.map' 0 1) ?_ lem2
         simp [uF', nerveFunctor₂, SSet.truncation,
           ReflQuiv.comp_eq_comp, OneTruncation₂.nerveHomEquiv, uF, ComposableArrows.hom, Fh]
-      replace lem1 : HEq (uF'.map (h ≫ k)) (Fhk.map' 0 2) := by
+      replace lem1 : uF'.map (h ≫ k) ≍ Fhk.map' 0 2 := by
         refine HEq.trans (b := Fhk'.map' 0 1) ?_ lem1
         simp only [Nat.reduceAdd,
           Fin.zero_eta, Fin.isValue, Fin.mk_one,

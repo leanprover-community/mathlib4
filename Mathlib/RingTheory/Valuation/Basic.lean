@@ -49,10 +49,7 @@ sense. Note that we use 1.27(iii) of [wedhorn_adic] as the definition of equival
 
 ## Notation
 
-In the `DiscreteValuation` locale:
-
-* `ℕₘ₀` is a shorthand for `WithZero (Multiplicative ℕ)`
-* `ℤₘ₀` is a shorthand for `WithZero (Multiplicative ℤ)`
+In the `WithZero` locale, `Mᵐ⁰` is a shorthand for `WithZero (Multiplicative M)`.
 
 ## TODO
 
@@ -482,6 +479,22 @@ theorem ne_zero (h : v₁.IsEquiv v₂) {r : R} : v₁ r ≠ 0 ↔ v₂ r ≠ 0 
   have : v₁ r ≠ v₁ 0 ↔ v₂ r ≠ v₂ 0 := not_congr h.val_eq
   rwa [v₁.map_zero, v₂.map_zero] at this
 
+lemma lt_iff_lt (h : v₁.IsEquiv v₂) {x y : R} :
+    v₁ x < v₁ y ↔ v₂ x < v₂ y := by
+  rw [← le_iff_le_iff_lt_iff_lt, h]
+
+lemma le_one_iff_le_one (h : v₁.IsEquiv v₂) {x : R} :
+    v₁ x ≤ 1 ↔ v₂ x ≤ 1 := by
+  rw [← v₁.map_one, h, map_one]
+
+lemma eq_one_iff_eq_one (h : v₁.IsEquiv v₂) {x : R} :
+    v₁ x = 1 ↔ v₂ x = 1 := by
+  rw [← v₁.map_one, h.val_eq, map_one]
+
+lemma lt_one_iff_lt_one (h : v₁.IsEquiv v₂) {x : R} :
+    v₁ x < 1 ↔ v₂ x < 1 := by
+  rw [← v₁.map_one, h.lt_iff_lt, map_one]
+
 end IsEquiv
 
 -- end of namespace
@@ -498,8 +511,6 @@ theorem isEquiv_iff_val_lt_val [LinearOrderedCommMonoidWithZero Γ₀]
   simp only [IsEquiv, le_iff_le_iff_lt_iff_lt]
   exact forall_comm
 
-alias ⟨IsEquiv.lt_iff_lt, _⟩ := isEquiv_iff_val_lt_val
-
 theorem isEquiv_of_val_le_one [LinearOrderedCommGroupWithZero Γ₀]
     [LinearOrderedCommGroupWithZero Γ'₀] {v : Valuation K Γ₀} {v' : Valuation K Γ'₀}
     (h : ∀ {x : K}, v x ≤ 1 ↔ v' x ≤ 1) : v.IsEquiv v' := by
@@ -512,16 +523,14 @@ theorem isEquiv_of_val_le_one [LinearOrderedCommGroupWithZero Γ₀]
 theorem isEquiv_iff_val_le_one [LinearOrderedCommGroupWithZero Γ₀]
     [LinearOrderedCommGroupWithZero Γ'₀] {v : Valuation K Γ₀} {v' : Valuation K Γ'₀} :
     v.IsEquiv v' ↔ ∀ {x : K}, v x ≤ 1 ↔ v' x ≤ 1 :=
-  ⟨fun h x => by simpa using h x 1, isEquiv_of_val_le_one⟩
-
-alias ⟨IsEquiv.le_one_iff_le_one, _⟩ := isEquiv_iff_val_le_one
+  ⟨IsEquiv.le_one_iff_le_one, isEquiv_of_val_le_one⟩
 
 theorem isEquiv_iff_val_eq_one [LinearOrderedCommGroupWithZero Γ₀]
     [LinearOrderedCommGroupWithZero Γ'₀] {v : Valuation K Γ₀} {v' : Valuation K Γ'₀} :
     v.IsEquiv v' ↔ ∀ {x : K}, v x = 1 ↔ v' x = 1 := by
   constructor
   · intro h x
-    simpa using @IsEquiv.val_eq _ _ _ _ _ _ v v' h x 1
+    rw [h.eq_one_iff_eq_one]
   · intro h
     apply isEquiv_of_val_le_one
     intro x
@@ -551,15 +560,12 @@ theorem isEquiv_iff_val_eq_one [LinearOrderedCommGroupWithZero Γ₀]
       · rw [← h] at hx'
         exact le_of_eq hx'
 
-alias ⟨IsEquiv.eq_one_iff_eq_one, _⟩ := isEquiv_iff_val_eq_one
-
 theorem isEquiv_iff_val_lt_one [LinearOrderedCommGroupWithZero Γ₀]
     [LinearOrderedCommGroupWithZero Γ'₀] {v : Valuation K Γ₀} {v' : Valuation K Γ'₀} :
     v.IsEquiv v' ↔ ∀ {x : K}, v x < 1 ↔ v' x < 1 := by
   constructor
   · intro h x
-    simp only [lt_iff_le_and_ne,
-      and_congr h.le_one_iff_le_one h.eq_one_iff_eq_one.not]
+    rw [h.lt_one_iff_lt_one]
   · rw [isEquiv_iff_val_eq_one]
     intro h x
     by_cases hx : x = 0
@@ -579,8 +585,6 @@ theorem isEquiv_iff_val_lt_one [LinearOrderedCommGroupWithZero Γ₀]
       | inr h_2 =>
         rw [← inv_one, ← inv_eq_iff_eq_inv, ← map_inv₀] at hh
         exact hh.not_lt (h.1 ((one_lt_val_iff v hx).1 h_2))
-
-alias ⟨IsEquiv.lt_one_iff_lt_one, _⟩ := isEquiv_iff_val_lt_one
 
 theorem isEquiv_iff_val_sub_one_lt_one [LinearOrderedCommGroupWithZero Γ₀]
     [LinearOrderedCommGroupWithZero Γ'₀] {v : Valuation K Γ₀} {v' : Valuation K Γ'₀} :
@@ -992,8 +996,8 @@ lemma ofAddValuation_symm_eq : ofAddValuation.symm = toAddValuation (R := R) (Γ
 lemma toAddValuation_symm_eq : toAddValuation.symm = ofAddValuation (R := R) (Γ₀ := Γ₀) := rfl
 
 @[simp]
-lemma ofAddValuation_toAddValuation (v : Valuation R Γ₀) :
-  ofAddValuation (toAddValuation v) = v := rfl
+lemma ofAddValuation_toAddValuation (v : Valuation R Γ₀) : ofAddValuation (toAddValuation v) = v :=
+  rfl
 
 @[simp]
 lemma toValuation_ofValuation (v : AddValuation R (Additive Γ₀)ᵒᵈ) :

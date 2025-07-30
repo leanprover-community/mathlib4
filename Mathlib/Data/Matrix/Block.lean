@@ -605,7 +605,7 @@ theorem blockDiagonal'_transpose (M : ∀ i, Matrix (m' i) (n' i) α) :
     (blockDiagonal' M)ᵀ = blockDiagonal' fun k => (M k)ᵀ := by
   ext ⟨ii, ix⟩ ⟨ji, jx⟩
   simp only [transpose_apply, blockDiagonal'_apply]
-  split_ifs <;> cc
+  split_ifs <;> grind
 
 @[simp]
 theorem blockDiagonal'_conjTranspose {α} [AddMonoid α] [StarAddMonoid α]

@@ -122,6 +122,18 @@ def isLimitEquiv : IsLimit (coneEquiv.functor.obj t) ≃ IsLimit t := IsLimit.of
 
 end WithTerminal
 
+open WithTerminal in
+lemma Over.hasLimit_of_hasLimit_liftFromOver {X : C} (F : J ⥤ Over X)
+    [HasLimit (liftFromOver.obj F)] : HasLimit F :=
+  ⟨_, isLimitEquiv <| .ofIsoLimit
+    (limit.isLimit (liftFromOver.obj F)) (coneEquiv.counitIso.app _).symm⟩
+
+instance (X : C) [HasLimitsOfShape (WithTerminal J) C] :
+    HasLimitsOfShape J (Over X) where
+  has_limit _ := Over.hasLimit_of_hasLimit_liftFromOver ..
+
+instance (X : C) [HasLimitsOfSize.{w, w'} C] : HasLimitsOfSize.{w, w'} (Over X) where
+
 namespace WithInitial
 variable {X : C} {K : J ⥤ Under X} {F : C ⥤ D} {t : Cocone K}
 
@@ -213,7 +225,7 @@ lemma coconeEquiv_functor_obj_ι_app_star : (coconeEquiv.functor.obj t).ι.app s
 
 @[simp]
 lemma coconeEquiv_functor_obj_ι_app_of (Y : J) :
-   (coconeEquiv.functor.obj t).ι.app (of Y) = (t.ι.app Y).right := rfl
+    (coconeEquiv.functor.obj t).ι.app (of Y) = (t.ι.app Y).right := rfl
 
 /-- A cocone `t` of `K : J ⥤ Under X` is a colimit if and only if the corresponding cocone
 `coconeLift t` of `liftFromUnder.obj K : WithInitial K ⥤ C` is a colimit. -/
@@ -222,3 +234,15 @@ def isColimitEquiv : IsColimit (coconeEquiv.functor.obj t) ≃ IsColimit t :=
   IsColimit.ofCoconeEquiv coconeEquiv
 
 end CategoryTheory.WithInitial
+
+open WithInitial in
+lemma Under.hasColimit_of_hasColimit_liftFromUnder {X : C} (F : J ⥤ Under X)
+    [HasColimit (liftFromUnder.obj F)] : HasColimit F :=
+  ⟨_, isColimitEquiv <| .ofIsoColimit
+    (colimit.isColimit (liftFromUnder.obj F)) (coconeEquiv.counitIso.app _).symm⟩
+
+instance (X : C) [HasColimitsOfShape (WithInitial J) C] :
+    HasColimitsOfShape J (Under X) where
+  has_colimit _ := Under.hasColimit_of_hasColimit_liftFromUnder ..
+
+instance (X : C) [HasColimitsOfSize.{w, w'} C] : HasColimitsOfSize.{w, w'} (Under X) where

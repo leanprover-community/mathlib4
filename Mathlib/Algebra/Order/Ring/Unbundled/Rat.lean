@@ -94,10 +94,7 @@ protected theorem lt_iff (a b : ℚ) : a < b ↔ a.num * b.den < b.num * a.den :
         (na < 0 ∧ 0 ≤ nb ∨ if na = 0 then 0 < nb else (na ≤ 0 ∨ 0 < nb) ∧ na * ↑db < nb * da) ↔
         na * db < nb * da by simpa [Rat.blt]
       split_ifs with h
-      · suffices 0 < nb ↔ 0 < nb * da by simpa [h]
-        refine ⟨(Int.mul_pos · (by omega)), ?_⟩
-        contrapose!
-        exact (Int.mul_nonpos_of_nonpos_of_nonneg · (by omega))
+      · simp_all
       · constructor
         · refine (·.elim ?_ And.right)
           rintro ⟨hna, nb0⟩
@@ -149,6 +146,29 @@ instance linearOrder : LinearOrder ℚ where
   toDecidableLE := inferInstance
   toDecidableLT := inferInstance
   lt_iff_le_not_ge _ _ := by rw [← Rat.not_le, and_iff_right_of_imp Rat.le_total.resolve_left]
+
+theorem mkRat_nonneg_iff (a : ℤ) {b : ℕ} (hb : b ≠ 0) : 0 ≤ mkRat a b ↔ 0 ≤ a :=
+  divInt_nonneg_iff_of_pos_right (show 0 < (b : ℤ) by simpa using Nat.pos_of_ne_zero hb)
+
+theorem mkRat_pos_iff (a : ℤ) {b : ℕ} (hb : b ≠ 0) : 0 < mkRat a b ↔ 0 < a := by
+  grind [lt_iff_le_and_ne, mkRat_nonneg_iff, Rat.mkRat_eq_zero]
+
+theorem mkRat_pos {a : ℤ} (ha : 0 < a) {b : ℕ} (hb : b ≠ 0) : 0 < mkRat a b :=
+  (mkRat_pos_iff a hb).mpr ha
+
+theorem mkRat_nonpos_iff (a : ℤ) {b : ℕ} (hb : b ≠ 0) : mkRat a b ≤ 0 ↔ a ≤ 0 := by
+  grind [lt_iff_not_ge, mkRat_pos_iff]
+
+theorem mkRat_nonpos {a : ℤ} (ha : a ≤ 0) (b : ℕ) : mkRat a b ≤ 0 := by
+  obtain rfl | hb := eq_or_ne b 0
+  · simp
+  · exact (mkRat_nonpos_iff a hb).mpr ha
+
+theorem mkRat_neg_iff (a : ℤ) {b : ℕ} (hb : b ≠ 0) : mkRat a b < 0 ↔ a < 0 := by
+  grind [lt_iff_not_ge, mkRat_nonneg_iff]
+
+theorem mkRat_neg {a : ℤ} (ha : a < 0) {b : ℕ} (hb : b ≠ 0) : mkRat a b < 0 :=
+  (mkRat_neg_iff a hb).mpr ha
 
 /-!
 ### Extra instances to short-circuit type class resolution
