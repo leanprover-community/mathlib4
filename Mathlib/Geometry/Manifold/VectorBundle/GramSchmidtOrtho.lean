@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Michael Rothgang
 -/
 import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
+import Mathlib.Analysis.SpecialFunctions.Sqrt
 import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
 import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
 import Mathlib.Geometry.Manifold.Elaborators
@@ -434,7 +435,7 @@ lemma contMDiffWithinAt_inner (hs : CMDiffAt[u] n (T% s) x) (hs' : s x ≠ 0) :
     have h1 : CMDiffAt[(F '' u)] n (Real.sqrt) (F x) := by
       apply ContMDiffAt.contMDiffWithinAt
       rw [contMDiffAt_iff_contDiffAt]
-      sorry --exact Real.contDiffAt_sqrt (by simp [F, hs'])
+      exact Real.contDiffAt_sqrt (by simp [F, hs'])
     exact h1.comp x (hs.inner_bundle hs) (Set.mapsTo_image _ u)
   convert aux
   simp [F, ← norm_eq_sqrt_real_inner]
