@@ -273,7 +273,7 @@ theorem le_iff_forall_one_lt_le_mul₀ {α : Type*}
     [Semifield α] [LinearOrder α] [IsStrictOrderedRing α]
     {a b : α} (hb : 0 ≤ b) : a ≤ b ↔ ∀ ε, 1 < ε → a ≤ b * ε := by
   refine ⟨fun h _ hε ↦ h.trans <| le_mul_of_one_le_right hb hε.le, fun h ↦ ?_⟩
-  obtain rfl|hb := hb.eq_or_lt
+  obtain rfl | hb := hb.eq_or_lt
   · simp_rw [zero_mul] at h
     exact h 2 one_lt_two
   refine le_of_forall_gt_imp_ge_of_dense fun x hbx => ?_
@@ -415,23 +415,23 @@ theorem lt_inv_of_neg (ha : a < 0) (hb : b < 0) : a < b⁻¹ ↔ b < a⁻¹ :=
 
 
 theorem sub_inv_antitoneOn_Ioi :
-    AntitoneOn (fun x ↦ (x-c)⁻¹) (Set.Ioi c) :=
+    AntitoneOn (fun x ↦ (x - c)⁻¹) (Set.Ioi c) :=
   antitoneOn_iff_forall_lt.mpr fun _ ha _ hb hab ↦
     inv_le_inv₀ (sub_pos.mpr hb) (sub_pos.mpr ha) |>.mpr <| sub_le_sub (le_of_lt hab) le_rfl
 
 theorem sub_inv_antitoneOn_Iio :
-    AntitoneOn (fun x ↦ (x-c)⁻¹) (Set.Iio c) :=
+    AntitoneOn (fun x ↦ (x - c)⁻¹) (Set.Iio c) :=
   antitoneOn_iff_forall_lt.mpr fun _ ha _ hb hab ↦
     inv_le_inv_of_neg (sub_neg.mpr hb) (sub_neg.mpr ha) |>.mpr <| sub_le_sub (le_of_lt hab) le_rfl
 
 theorem sub_inv_antitoneOn_Icc_right (ha : c < a) :
-    AntitoneOn (fun x ↦ (x-c)⁻¹) (Set.Icc a b) := by
+    AntitoneOn (fun x ↦ (x - c)⁻¹) (Set.Icc a b) := by
   by_cases hab : a ≤ b
   · exact sub_inv_antitoneOn_Ioi.mono <| (Set.Icc_subset_Ioi_iff hab).mpr ha
   · simp [hab, Set.Subsingleton.antitoneOn]
 
 theorem sub_inv_antitoneOn_Icc_left (ha : b < c) :
-    AntitoneOn (fun x ↦ (x-c)⁻¹) (Set.Icc a b) := by
+    AntitoneOn (fun x ↦ (x - c)⁻¹) (Set.Icc a b) := by
   by_cases hab : a ≤ b
   · exact sub_inv_antitoneOn_Iio.mono <| (Set.Icc_subset_Iio_iff hab).mpr ha
   · simp [hab, Set.Subsingleton.antitoneOn]

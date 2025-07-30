@@ -101,8 +101,6 @@ abbrev Function.swap₂ {ι₁ ι₂ : Sort*} {κ₁ : ι₁ → Sort*} {κ₂ :
 
 end Miscellany
 
-open Function
-
 /-!
 ### Declarations about propositional connectives
 -/
@@ -336,13 +334,13 @@ theorem and_iff_not_or_not : a ∧ b ↔ ¬(¬a ∨ ¬b) :=
 @[simp] theorem not_xor (P Q : Prop) : ¬Xor' P Q ↔ (P ↔ Q) := by
   simp only [not_and, Xor', not_or, not_not, ← iff_iff_implies_and_implies]
 
-theorem xor_iff_not_iff (P Q : Prop) : Xor' P Q ↔ ¬ (P ↔ Q) := (not_xor P Q).not_right
+theorem xor_iff_not_iff (P Q : Prop) : Xor' P Q ↔ ¬(P ↔ Q) := (not_xor P Q).not_right
 
 theorem xor_iff_iff_not : Xor' a b ↔ (a ↔ ¬b) := by simp only [← @xor_not_right a, not_not]
 
 theorem xor_iff_not_iff' : Xor' a b ↔ (¬a ↔ b) := by simp only [← @xor_not_left _ b, not_not]
 
-theorem xor_iff_or_and_not_and (a b : Prop) : Xor' a b ↔ (a ∨ b) ∧ (¬ (a ∧ b)) := by
+theorem xor_iff_or_and_not_and (a b : Prop) : Xor' a b ↔ (a ∨ b) ∧ (¬(a ∧ b)) := by
   rw [Xor', or_and_right, not_and_or, and_or_left, and_not_self_iff, false_or,
     and_or_left, and_not_self_iff, or_false]
 
@@ -515,10 +513,10 @@ theorem not_forall_not : (¬∀ x, ¬p x) ↔ ∃ x, p x :=
 
 export Classical (not_exists_not)
 
-lemma forall_or_exists_not (P : α → Prop) : (∀ a, P a) ∨ ∃ a, ¬ P a := by
+lemma forall_or_exists_not (P : α → Prop) : (∀ a, P a) ∨ ∃ a, ¬P a := by
   rw [← not_forall]; exact em _
 
-lemma exists_or_forall_not (P : α → Prop) : (∃ a, P a) ∨ ∀ a, ¬ P a := by
+lemma exists_or_forall_not (P : α → Prop) : (∃ a, P a) ∨ ∀ a, ¬P a := by
   rw [← not_exists]; exact em _
 
 theorem forall_imp_iff_exists_imp {α : Sort*} {p : α → Prop} {b : Prop} [ha : Nonempty α] :
@@ -930,7 +928,7 @@ end
 
 variable {P Q}
 
-theorem ite_prop_iff_or : (if P then Q else R) ↔ (P ∧ Q ∨ ¬ P ∧ R) := by
+theorem ite_prop_iff_or : (if P then Q else R) ↔ (P ∧ Q ∨ ¬P ∧ R) := by
   by_cases p : P <;> simp [p]
 
 theorem dite_prop_iff_or {Q : P → Prop} {R : ¬P → Prop} :
@@ -938,7 +936,7 @@ theorem dite_prop_iff_or {Q : P → Prop} {R : ¬P → Prop} :
   by_cases h : P <;> simp [h, exists_prop_of_false, exists_prop_of_true]
 
 -- TODO make this a simp lemma in a future PR
-theorem ite_prop_iff_and : (if P then Q else R) ↔ ((P → Q) ∧ (¬ P → R)) := by
+theorem ite_prop_iff_and : (if P then Q else R) ↔ ((P → Q) ∧ (¬P → R)) := by
   by_cases p : P <;> simp [p]
 
 theorem dite_prop_iff_and {Q : P → Prop} {R : ¬P → Prop} :
