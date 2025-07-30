@@ -499,22 +499,27 @@ end BoundedSets
 section BilinearMaps
 
 variable {𝕜 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜] [NormedField 𝕜₂] [NormedField 𝕜₃] {E F G : Type*}
-  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+  [AddCommGroup E] [Module 𝕜 E]
   [AddCommGroup F] [Module 𝕜₂ F] [TopologicalSpace F]
   [AddCommGroup G] [Module 𝕜₃ G]
   [TopologicalSpace G] [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G]
   {σ₁₃ : 𝕜 →+* 𝕜₃} {σ₂₃ : 𝕜₂ →+* 𝕜₃}
 
-/-- Send a continuous bilinear map to an abstract bilinear map (forgetting continuity). -/
-def toLinearMap₂ (L : E →SL[σ₁₃] F →SL[σ₂₃] G) : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G :=
-  (coeLMₛₗ σ₂₃).comp L.toLinearMap
-
 /-- Send a bilinear map continuous in the second variable to a bilinear map. -/
-def toLinearMap₁₂ (L : E →ₛₗ[σ₁₃] F →SL[σ₂₃] G) : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G :=
+def toLinearMap₂ (L : E →ₛₗ[σ₁₃] F →SL[σ₂₃] G) : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G :=
   (coeLMₛₗ σ₂₃).comp L
 
-@[simp] lemma toLinearMap₂_apply (L : E →SL[σ₁₃] F →SL[σ₂₃] G) (v : E) (w : F) :
-    L.toLinearMap₂ v w = L v w := rfl
+@[simp] lemma toLinearMap₂_apply (L : E →ₛₗ[σ₁₃] F →SL[σ₂₃] G) (v : E) (w : F) :
+    ContinuousLinearMap.toLinearMap₂ L v w = L v w := rfl
+
+variable [TopologicalSpace E]
+
+/-- Send a continuous bilinear map to an abstract bilinear map (forgetting continuity). -/
+def toLinearMap₁₂ (L : E →SL[σ₁₃] F →SL[σ₂₃] G) : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G :=
+  (coeLMₛₗ σ₂₃).comp L.toLinearMap
+
+@[simp] lemma toLinearMap₁₂_apply (L : E →SL[σ₁₃] F →SL[σ₂₃] G) (v : E) (w : F) :
+    L.toLinearMap₁₂ v w = L v w := rfl
 
 end BilinearMaps
 
