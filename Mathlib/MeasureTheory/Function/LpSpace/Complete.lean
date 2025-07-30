@@ -70,7 +70,7 @@ theorem eLpNorm_lim_le_liminf_eLpNorm {f : ℕ → α → E}
     (hf : ∀ n, AEStronglyMeasurable (f n) μ) (f_lim : α → E)
     (h_lim : ∀ᵐ x : α ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (f_lim x))) :
     eLpNorm f_lim p μ ≤ atTop.liminf fun n => eLpNorm (f n) p μ := by
-  obtain rfl|hp0 := eq_or_ne p 0
+  obtain rfl | hp0 := eq_or_ne p 0
   · simp
   by_cases hp_top : p = ∞
   · simp_rw [hp_top]
