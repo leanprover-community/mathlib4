@@ -109,14 +109,14 @@ private def getName {m} [Monad m] [MonadEnv m] (n : Name) : m String := do
   let isToken s := (table.find? s).isSome
   return (toString? n.eraseMacroScopes isToken).getD "_"
 where
-  toString? (n : Name) (isToken : String → Bool := fun _ => false) : Option String :=
-  match n with
-  | .str .anonymous s => Lean.Name.escapePart s (isToken s)
-  | .str n s => do
-    let r ← toString? n isToken
-    let r' := r ++ "." ++ (Lean.Name.escapePart s false).getD s
-    if isToken r' then return r ++ "." ++ (← Lean.Name.escapePart s true) else return r'
-  | _ => none
+  toString? (n : Name) (isToken : String → Bool) : Option String :=
+    match n with
+    | .str .anonymous s => Lean.Name.escapePart s (isToken s)
+    | .str n s => do
+      let r ← toString? n isToken
+      let r' := r ++ "." ++ (Lean.Name.escapePart s false).getD s
+      if isToken r' then return r ++ "." ++ (← Lean.Name.escapePart s true) else return r'
+    | _ => none
 
 private def pathToString {m} [Monad m] [MonadEnv m] (path : Path) (spc : String) : m String := do
   let c ← go path
