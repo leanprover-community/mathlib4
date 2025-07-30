@@ -1339,6 +1339,112 @@ alias __root__.CategoryTheory.Limits.CategoricalPullback.natTrans_ext :=
 
 end IsCatPullbackSquare
 
+namespace CatPullbackSquare
+
+variable [CatCommSq T L R B] [CatPullbackSquare T L R B]
+open CategoryTheory.Limits.CategoricalPullback
+
+/-- The `functorOfTransform'  maps the identity
+`CatCospanTransform` to the canonical functor to the categorical pullback. -/
+@[simps!]
+def functorOfTransformIdIsoEquivalenceFunctor :
+    (equivalence T L R B).functor ≅
+    (functorOfTransform T L (π₁ R B) (π₂ R B)).obj (.id R B) :=
+  mkNatIso (π₁ R B) (π₂ R B) R B _ (.refl _) (.refl _)
+
+/-- The forward direction of functorOfTransform maps the identity
+`CatCospanTransform` to the canonical functor to the categorical pullback. -/
+def functorOfTransformIdIsoEquivalenceInverse :
+    (functorOfTransform (π₁ R B) (π₂ R B) T L).obj (.id R B) ≅
+    (equivalence T L R B).inverse :=
+  (functorEquiv T L R B R ⊡ B|>.inverse.mapIso <|
+    CatCommSqOver.transformObjId (R ⊡ B) R B|>.app default) ≪≫
+    functorEquivInverseDefault T L R B
+
+/-- A coherence lemma: we have *a priori* two possible identifications
+between `functorOfTransform (π₁ R B) (π₂ R B) T L).obj (.id R B)` and
+`(equivalence T L R B).inverse`: the one defined in
+`functorOfTransformIdIsoEquivalenceInverse` (which is
+`functorEquivInverseDefault` under the hood), and the one induced on
+inverses by the equivalence `functorOfTransformIdIsoEquivalenceFunctor`.
+This shows these identifications are in fact equal. -/
+lemma functorOfTransformIdIsoEquivalenceInverse_eq :
+    (conjugateIsoEquiv
+      (equivalenceOfCatCospanEquivalence T L (π₁ R B) (π₂ R B)
+        (CatCospanEquivalence.refl R B)).toAdjunction
+      (equivalence T L R B).toAdjunction)
+      (functorOfTransformIdIsoEquivalenceFunctor T L R B) =
+    functorOfTransformIdIsoEquivalenceInverse T L R B := by
+  apply (conjugateIsoEquiv
+          (equivalenceOfCatCospanEquivalence T L (π₁ R B) (π₂ R B)
+            (CatCospanEquivalence.refl R B)).toAdjunction
+          ((equivalence T L R B).toAdjunction))|>.symm.injective
+  simp only [equivalence_functor, equivalenceOfCatCospanEquivalence_functor,
+    CatCospanEquivalence.refl_transform,
+    equivalenceOfCatCospanEquivalence_inverse, CatCospanEquivalence.refl_inverse,
+    Equiv.symm_apply_apply]
+  ext1
+  apply IsCatPullbackSquare.natTrans_ext (π₁ R B) (π₂ R B) R B
+  · ext x
+    dsimp
+    suffices h :
+      𝟙 (T.obj x) =
+      (functorEquiv T L R B R ⊡ B|>.counitIso.inv.app default).fst.app
+        ((functorEquiv (π₁ R B) (π₂ R B) R B C₁|>.inverse.obj <|
+          CatCommSqOver.transform C₁|>.obj (.id R B)|>.obj <|
+            .ofSquare T L R B).obj x) ≫
+        (equivalence T L R B|>.counit.app <|
+          (functorEquiv (π₁ R B) (π₂ R B) R B C₁|>.inverse.obj <|
+            CatCommSqOver.transform C₁|>.obj (.id R B)|>.obj
+              (.ofSquare T L R B)).obj x).fst by
+      simpa [equivalenceOfCatCospanEquivalence, CatCospanEquivalence.refl,
+        CatCospanEquivalence.inverse, CatCospanEquivalence.transform,
+        CatCospanAdjunction.id,
+        functorEquivInverseDefault,
+        functorOfTransformIdIsoEquivalenceInverse,
+        functorOfTransformObjComp_hom_app_fst,
+        functorOfTransform_map_app_fst, functorOfTransformObjId,
+        CatCommSq.iso, functorOfTransform]
+    dsimp [functorEquiv, functorEquiv.inverse, functorEquiv.counitIsoAppFst]
+    simp only [Category.id_comp, Category.comp_id]
+    change
+      𝟙 (T.obj x) =
+      ((equivalence T L R B).counitIso.inv.app <|
+        functorOfTransform T L (π₁ R B) (π₂ R B)|>.obj (.id R B)|>.obj x).fst ≫
+        (equivalence T L R B|>.counit.app <|
+          functorOfTransform T L (π₁ R B) (π₂ R B)|>.obj (.id R B)|>.obj x).fst
+    simp [← comp_fst]
+  · ext x
+    suffices h :
+      𝟙 (L.obj x) =
+      ((functorEquiv T L R B R ⊡ B).counitIso.inv.app default).snd.app
+        (((functorEquiv (π₁ R B) (π₂ R B) R B C₁).inverse.obj
+          (((CatCommSqOver.transform C₁).obj (.id R B)).obj
+            (.ofSquare T L R B))).obj x) ≫
+        ((equivalence T L R B).counit.app
+          (((functorEquiv (π₁ R B) (π₂ R B) R B C₁).inverse.obj
+            (((CatCommSqOver.transform C₁).obj (.id R B)).obj
+              (.ofSquare T L R B))).obj x)).snd by
+      simpa [equivalenceOfCatCospanEquivalence, CatCospanEquivalence.refl,
+        CatCospanEquivalence.inverse, CatCospanEquivalence.transform,
+        CatCospanAdjunction.id,
+        functorEquivInverseDefault,
+        functorOfTransformIdIsoEquivalenceInverse,
+        functorOfTransformObjComp_hom_app_snd,
+        functorOfTransform_map_app_snd, functorOfTransformObjId,
+        CatCommSq.iso, functorOfTransform]
+    dsimp [functorEquiv, functorEquiv.inverse, functorEquiv.counitIsoAppSnd]
+    simp only [Category.id_comp, Category.comp_id]
+    change
+      𝟙 (L.obj x) =
+      ((equivalence T L R B).counitIso.inv.app <|
+        functorOfTransform T L (π₁ R B) (π₂ R B)|>.obj (.id R B)|>.obj x).snd ≫
+        (equivalence T L R B|>.counit.app <|
+          functorOfTransform T L (π₁ R B) (π₂ R B)|>.obj (.id R B)|>.obj x).snd
+    simp [← comp_snd]
+
+end CatPullbackSquare
+
 end
 
 end CategoryTheory.Limits
