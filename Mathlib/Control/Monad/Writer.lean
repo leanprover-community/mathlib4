@@ -21,7 +21,7 @@ computation progresses.
 
 universe u v
 
-/-- Adds a writeable output of type `ω` to a monad.
+/-- Adds a writable output of type `ω` to a monad.
 
 The instances on this type assume that either `[Monoid ω]` or `[EmptyCollection ω] [Append ω]`.
 

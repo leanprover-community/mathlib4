@@ -73,7 +73,7 @@ lemma reorderRestrictProd_restrict_compl (x : Sᶜ.restrict ⁻¹' (Sᶜ.restric
     reorderRestrictProd S s ⟨⟨Sᶜ.restrict x, x.2⟩, fun i ↦ (x : Π j, α j) i⟩ = (x : Π j, α j) := by
   ext; simp [reorderRestrictProd]
 
-/-- Homeomorphism between the set of functions that concide with a given set of functions away
+/-- Homeomorphism between the set of functions that coincide with a given set of functions away
 from a given set `S`, and dependent functions away from `S` times any value on `S`. -/
 noncomputable
 def _root_.Homeomorph.preimageImageRestrict (α : ι → Type*) [∀ i, TopologicalSpace (α i)]

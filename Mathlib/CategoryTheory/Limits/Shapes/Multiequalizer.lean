@@ -318,7 +318,7 @@ theorem ι_sndSigmaMap (b) : Sigma.ι I.left b ≫ I.sndSigmaMap = I.snd b ≫ S
 
 /--
 Taking the multicoequalizer over the multispan index is equivalent to taking the coequalizer over
-the two morphsims `∐ I.left ⇉ ∐ I.right`. This is the diagram of the latter.
+the two morphisms `∐ I.left ⇉ ∐ I.right`. This is the diagram of the latter.
 -/
 protected noncomputable abbrev parallelPairDiagram :=
   parallelPair I.fstSigmaMap I.sndSigmaMap

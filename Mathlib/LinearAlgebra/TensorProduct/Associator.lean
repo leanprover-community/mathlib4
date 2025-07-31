@@ -249,7 +249,7 @@ composition of linear maps.
 E.g., composition of linear maps gives a map `(M → N) ⊗ (N → P) → (M → P)`, and applying
 `dual_tensor_hom_equiv.symm` to the three hom-modules gives a map
 `(M.dual ⊗ N) ⊗ (N.dual ⊗ P) → (M.dual ⊗ P)`, which agrees with the application of `contractRight`
-on `N ⊗ N.dual` after the suitable rebracketting.
+on `N ⊗ N.dual` after the suitable rebracketing.
 -/
 def tensorTensorTensorAssoc : M ⊗[R] N ⊗[R] (P ⊗[R] Q) ≃ₗ[R] M ⊗[R] (N ⊗[R] P) ⊗[R] Q :=
   (TensorProduct.assoc R (M ⊗[R] N) P Q).symm ≪≫ₗ

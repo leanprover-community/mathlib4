@@ -10,7 +10,7 @@ import Mathlib.Init
 
 This module implements the `existsAndEq` simproc that triggers on goals of the form `∃ a, body` and
 checks whether `body` has the form `... ∧ a = a' ∧ ...` or `... ∧ a' = a ∧ ...` for some `a'` that
-is independent of `a`. If so, it replaces all occurancies of `a` with `a'` and removes the
+is independent of `a`. If so, it replaces all occurrences of `a` with `a'` and removes the
 quantifier.
 -/
 
@@ -66,7 +66,7 @@ end existsAndEq
 
 /-- Triggers on goals of the form `∃ a, body` and checks whether `body` has the
 form `... ∧ a = a' ∧ ...` or `... ∧ a' = a ∧ ...` for some `a'` that is independent of `a`.
-If so, it replaces all occurancies of `a` with `a'` and removes the quantifier. -/
+If so, it replaces all occurrences of `a` with `a'` and removes the quantifier. -/
 simproc existsAndEq (Exists (fun _ => And _ _)) := fun e => do
   match e.getAppFnArgs with
   | (``Exists, #[_, p]) =>

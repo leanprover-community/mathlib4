@@ -334,7 +334,7 @@ theorem ODE_solution_unique_of_mem_Ioo
       (fun _ ht'' ↦ (hg _ <| hss <| Ico_subset_Icc_self ht'').2) heq
       ⟨h, le_rfl⟩
 
-/-- Local unqueness of ODE solutions. -/
+/-- Local uniqueness of ODE solutions. -/
 theorem ODE_solution_unique_of_eventually
     (hv : ∀ᶠ t in 𝓝 t₀, LipschitzOnWith K (v t) (s t))
     (hf : ∀ᶠ t in 𝓝 t₀, HasDerivAt f (v t (f t)) t ∧ f t ∈ s t)

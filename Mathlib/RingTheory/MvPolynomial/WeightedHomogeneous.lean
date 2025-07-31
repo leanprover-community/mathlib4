@@ -550,7 +550,7 @@ section LinearOrderedAddCommMonoid
 variable [AddCommMonoid M] [LinearOrder M] [OrderBot M] [CanonicallyOrderedAdd M]
   {w : σ → M} (φ : MvPolynomial σ R)
 
-/-- A multivatiate polynomial is weighted homogeneous of weighted degree zero if and only if
+/-- A multivariate polynomial is weighted homogeneous of weighted degree zero if and only if
   its weighted total degree is equal to zero. -/
 theorem isWeightedHomogeneous_zero_iff_weightedTotalDegree_eq_zero {p : MvPolynomial σ R} :
     IsWeightedHomogeneous w p 0 ↔ p.weightedTotalDegree w = 0 := by

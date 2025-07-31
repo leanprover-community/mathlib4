@@ -371,7 +371,7 @@ def map (r : Setoid α) (f : α → β) : Setoid β :=
 def mapOfSurjective (r : Setoid α) (f : α → β) (h : ker f ≤ r) (hf : Surjective f) : Setoid β :=
   ⟨Relation.Map r f f, Relation.map_equivalence r.iseqv f hf h⟩
 
-/-- A special case of the equivalence closure of an equivalence relation r equalling r. -/
+/-- A special case of the equivalence closure of an equivalence relation r equaling r. -/
 theorem mapOfSurjective_eq_map (h : ker f ≤ r) (hf : Surjective f) :
     map r f = mapOfSurjective r f h hf := by
   rw [← eqvGen_of_setoid (mapOfSurjective r f h hf)]; rfl

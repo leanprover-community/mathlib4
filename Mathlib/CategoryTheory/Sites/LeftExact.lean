@@ -257,7 +257,7 @@ instance preservesLimitsOfShape_presheafToSheaf
     reflectsLimitsOfShape_of_reflectsIsomorphisms
   apply isLimitOfPreserves (J.sheafification D) hS
 
-instance preservesfiniteLimits_presheafToSheaf [PreservesLimits (forget D)]
+instance preservesFiniteLimits_presheafToSheaf [PreservesLimits (forget D)]
     [∀ X : C, Small.{t, max u v} (J.Cover X)ᵒᵖ] [HasFiniteLimits D] :
     PreservesFiniteLimits (plusPlusSheaf J D) := by
   apply preservesFiniteLimits_of_preservesFiniteLimitsOfSize.{t}

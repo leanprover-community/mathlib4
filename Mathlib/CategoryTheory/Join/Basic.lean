@@ -177,9 +177,9 @@ instance inclLeftFull : (inclLeft C D).Full := inclLeftFullyFaithful C D |>.full
 
 instance inclRightFull : (inclRight C D).Full := inclRightFullyFaithful C D |>.full
 
-instance inclLeftFaithFull : (inclLeft C D).Faithful := inclLeftFullyFaithful C D |>.faithful
+instance inclLeftFaithful : (inclLeft C D).Faithful := inclLeftFullyFaithful C D |>.faithful
 
-instance inclRightFaithfull : (inclRight C D).Faithful := inclRightFullyFaithful C D |>.faithful
+instance inclRightFaithful : (inclRight C D).Faithful := inclRightFullyFaithful C D |>.faithful
 
 variable {C} in
 /-- A situational lemma to help putting identities in the form `(inclLeft _ _).map _` when using

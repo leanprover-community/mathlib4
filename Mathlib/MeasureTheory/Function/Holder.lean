@@ -40,7 +40,7 @@ variable {α 𝕜 E F G : Type*} {m : MeasurableSpace α} {μ : Measure α}
 namespace ContinuousLinearMap
 
 variable (r) in
-/-- The map between `MeasuryTheory.Lp` spaces satisfying `ENNReal.HolderTriple`
+/-- The map between `MeasureTheory.Lp` spaces satisfying `ENNReal.HolderTriple`
 induced by a continuous bilinear map on the underlying spaces. -/
 def holder (f : Lp E p μ) (g : Lp F q μ) : Lp G r μ :=
   MemLp.toLp (fun x ↦ B (f x) (g x)) <| by

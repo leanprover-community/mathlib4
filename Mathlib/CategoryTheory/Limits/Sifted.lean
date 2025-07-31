@@ -33,7 +33,7 @@ variable (C : Type u) [Category.{v} C]
 /-- A category `C` `IsSiftedOrEmpty` if the diagonal functor `C ⥤ C × C` is final. -/
 abbrev IsSiftedOrEmpty : Prop := Final (diag C)
 
-/-- A category `C` `IsSfited` if
+/-- A category `C` `IsSifted` if
 1. the diagonal functor `C ⥤ C × C` is final.
 2. there exists some object. -/
 class IsSifted : Prop extends IsSiftedOrEmpty C where

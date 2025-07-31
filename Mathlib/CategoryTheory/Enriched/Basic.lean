@@ -54,7 +54,7 @@ so there may not be an "honest" underlying category at all!
 class EnrichedCategory (C : Type u₁) where
   /-- `X ⟶[V] Y` is the `V` object of morphisms from `X` to `Y`. -/
   Hom : C → C → V
-  /-- The identity morphism of this catgeory -/
+  /-- The identity morphism of this category -/
   id (X : C) : 𝟙_ V ⟶ Hom X X
   /-- Composition of two morphisms in this category -/
   comp (X Y Z : C) : Hom X Y ⊗ Hom Y Z ⟶ Hom X Z

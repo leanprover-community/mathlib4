@@ -49,7 +49,7 @@ example (X : TopCat.{u₁}) (F : Presheaf CommRingCat.{u₁} X)
 
 /-- Deprecated: usage of this definition should be replaceable with `TopCat.Presheaf.restrictOpen`.
 
-Before, we had to specialze `restrictOpen` to `CommRingCat` because inferring `C := CommRingCat`
+Before, we had to specialize `restrictOpen` to `CommRingCat` because inferring `C := CommRingCat`
 was not reliable. Unification hints appear to solve that issue.
 
 The following still holds for `restrictOpen`: instead of unfolding the definition, rewrite with
