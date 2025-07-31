@@ -43,6 +43,20 @@ lemma MeasureTheory.Measure.ext_of_bool {π₁ π₂ : Measure Bool}
     (h_false : π₁ {false} = π₂ {false}) (h_true : π₁ {true} = π₂ {true}) : π₁ = π₂ :=
   Measure.ext_of_singleton fun a ↦ by cases a; exacts [h_false, h_true]
 
+@[simp]
+lemma preimage_not_true : Bool.not ⁻¹' {true} = {false} := by ext x; simp
+
+@[simp]
+lemma preimage_not_false : Bool.not ⁻¹' {false} = {true} := by ext x; simp
+
+@[simp]
+lemma Measure.map_not_apply_true (π : Measure Bool) : π.map Bool.not {true} = π {false} := by
+  rw [Measure.map_apply (by exact fun _ a ↦ a) (by trivial)]; simp
+
+@[simp]
+lemma Measure.map_not_apply_false (π : Measure Bool) : π.map Bool.not {false} = π {true} := by
+  rw [Measure.map_apply (by exact fun _ a ↦ a) (by trivial)]; simp
+
 namespace Bool
 
 lemma lintegral_bool {f : Bool → ℝ≥0∞} (π : Measure Bool) :

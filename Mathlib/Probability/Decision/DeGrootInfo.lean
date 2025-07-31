@@ -26,51 +26,6 @@ open MeasureTheory Set
 
 open scoped ENNReal NNReal
 
-lemma ENNReal.add_sub_add_eq_sub_right {a c b : ℝ≥0∞} (hc : c ≠ ∞) :
-    (a + c) - (b + c) = a - b := by
-  lift c to ℝ≥0 using hc
-  cases a <;> cases b
-  · simp
-  · simp
-  · simp
-  · norm_cast
-    rw [add_tsub_add_eq_tsub_right]
-
-lemma ENNReal.add_sub_add_eq_sub_left {a c b : ℝ≥0∞} (hc : c ≠ ∞) :
-    (c + a) - (c + b) = a - b := by
-  simp_rw [add_comm c]
-  exact ENNReal.add_sub_add_eq_sub_right hc
-
-namespace MeasureTheory
-
-variable {α : Type*} {mα : MeasurableSpace α} {μ ν : Measure α}
-
-lemma Measure.eq_of_le_of_measure_univ_eq [IsFiniteMeasure μ] [IsFiniteMeasure ν]
-    (hμν : μ ≤ ν) (h_univ : μ .univ = ν .univ) : μ = ν := by
-  ext s hs
-  refine le_antisymm (hμν s) ?_
-  by_contra! h_lt
-  have : Set.univ = s ∪ sᶜ := by simp
-  have h_disj : Disjoint s sᶜ := Set.disjoint_compl_right_iff_subset.mpr subset_rfl
-  replace h_univ : ν .univ ≤ μ .univ := h_univ.symm.le
-  rw [this, measure_union h_disj hs.compl, measure_union h_disj hs.compl] at h_univ
-  refine absurd h_univ ?_
-  push_neg
-  refine ENNReal.add_lt_add_of_lt_of_le (by finiteness) h_lt (hμν sᶜ)
-
-lemma Measure.eq_of_le_of_isProbabilityMeasure [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
-    (hμν : μ ≤ ν) : μ = ν :=
-  eq_of_le_of_measure_univ_eq hμν (by simp)
-
-lemma isFiniteMeasure_smul {c : ℝ≥0∞} (hc : c ≠ ∞) (μ : Measure α) [IsFiniteMeasure μ] :
-    IsFiniteMeasure (c • μ) := by
-  lift c to ℝ≥0 using hc
-  have : (c : ℝ≥0∞) • μ = c • μ := rfl
-  rw [this]
-  infer_instance
-
-end MeasureTheory
-
 namespace ProbabilityTheory
 
 variable {𝓧 𝓨 : Type*} {m𝓧 : MeasurableSpace 𝓧} {m𝓨 : MeasurableSpace 𝓨}

@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
 
-import Mathlib.Probability.Decision.Risk
+import Mathlib.Probability.Decision.Risk.Basic
+import Mathlib.Probability.Kernel.Posterior
 
 /-!
 # Bayes estimator and generalized Bayes estimator
@@ -34,62 +35,53 @@ estimator, then the Bayesian risk attains the risk lower bound
 open MeasureTheory
 open scoped ENNReal NNReal
 
-namespace MeasurableEmbedding
--- PRed by Gaëtan
-
-open Set
-variable {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {f : α → β}
-
-lemma equivRange_apply (hf : MeasurableEmbedding f) (x : α) :
-    hf.equivRange x = ⟨f x, mem_range_self x⟩ := by
-  suffices f x = (hf.equivRange x).1 by simp [this]
-  simp [MeasurableEmbedding.equivRange, MeasurableEquiv.cast, MeasurableEquiv.Set.univ,
-    MeasurableEmbedding.equivImage]
-
-lemma equivRange_symm_apply_mk (hf : MeasurableEmbedding f) (x : α) :
-    hf.equivRange.symm ⟨f x, mem_range_self x⟩ = x := by
-  have : x = hf.equivRange.symm (hf.equivRange x) := EquivLike.inv_apply_eq.mp rfl
-  conv_rhs => rw [this, hf.equivRange_apply]
-
-/-- The left-inverse of a MeasurableEmbedding -/
-protected noncomputable
-def invFun [Nonempty α] (hf : MeasurableEmbedding f) [∀ x, Decidable (x ∈ range f)] (x : β) : α :=
-  if hx : x ∈ range f then hf.equivRange.symm ⟨x, hx⟩ else (Nonempty.some inferInstance)
-
-@[fun_prop]
-lemma measurable_invFun [Nonempty α] [∀ x, Decidable (x ∈ range f)]
-    (hf : MeasurableEmbedding f) :
-    Measurable (hf.invFun : β → α) :=
-  Measurable.dite (by fun_prop) measurable_const hf.measurableSet_range
-
-lemma leftInverse_invFun [Nonempty α] [∀ x, Decidable (x ∈ range f)]
-    (hf : MeasurableEmbedding f) :
-    Function.LeftInverse hf.invFun f := by
-  intro x
-  simp only [MeasurableEmbedding.invFun, mem_range, exists_apply_eq_apply, ↓reduceDIte]
-  exact hf.equivRange_symm_apply_mk x
-
-end MeasurableEmbedding
-
-lemma measurable_encode {α : Type*} {_ : MeasurableSpace α} [Encodable α]
-    [MeasurableSingletonClass α] :
-    Measurable (Encodable.encode (α := α)) := by
-  refine measurable_to_nat fun a ↦ ?_
-  have : Encodable.encode ⁻¹' {Encodable.encode a} = {a} := by ext; simp
-  rw [this]
-  exact measurableSet_singleton _
-
-lemma measurableEmbedding_encode (α : Type*) {_ : MeasurableSpace α} [Encodable α]
-    [MeasurableSingletonClass α] :
-    MeasurableEmbedding (Encodable.encode (α := α)) where
-  injective := Encodable.encode_injective
-  measurable := measurable_encode
-  measurableSet_image' _ _ := .of_discrete
-
 namespace ProbabilityTheory
 
 variable {Θ 𝓧 𝓨 : Type*} {mΘ : MeasurableSpace Θ} {m𝓧 : MeasurableSpace 𝓧} {m𝓨 : MeasurableSpace 𝓨}
   {ℓ : Θ → 𝓨 → ℝ≥0∞} {P : Kernel Θ 𝓧} {κ : Kernel 𝓧 𝓨} {π : Measure Θ}
+
+section Posterior
+
+variable [StandardBorelSpace Θ] [Nonempty Θ]
+
+/-- The Bayesian risk of an estimator `κ` with respect to a prior `π` can be expressed as
+an integral in the following way: `R_π(κ) = ((P†π × κ) ∘ P ∘ π)[(θ, z) ↦ ℓ(y(θ), z)]`. -/
+lemma bayesianRisk_eq_lintegral_posterior_prod
+    (hl : Measurable (Function.uncurry ℓ)) (P : Kernel Θ 𝓧) [IsFiniteKernel P] (κ : Kernel 𝓧 𝓨)
+    (π : Measure Θ) [IsFiniteMeasure π] [IsSFiniteKernel κ] :
+    bayesianRisk ℓ P κ π = ∫⁻ θy, ℓ θy.1 θy.2 ∂(((P†π) ×ₖ κ) ∘ₘ (P ∘ₘ π)) := by
+  simp only [bayesianRisk]
+  rw [← Measure.lintegral_compProd (f := fun θy ↦ ℓ θy.1 θy.2) (by fun_prop)]
+  congr
+  calc π ⊗ₘ (κ ∘ₖ P) = (Kernel.id ∥ₖ κ) ∘ₘ (π ⊗ₘ P) := Measure.parallelComp_comp_compProd.symm
+  _ = (Kernel.id ∥ₖ κ) ∘ₘ ((P†π) ×ₖ Kernel.id) ∘ₘ P ∘ₘ π := by rw [posterior_prod_id_comp]
+  _ = ((P†π) ×ₖ κ) ∘ₘ P ∘ₘ π := by
+      rw [Measure.comp_assoc, Kernel.parallelComp_comp_prod, Kernel.id_comp, Kernel.comp_id]
+
+lemma bayesianRisk_eq_lintegral_lintegral_lintegral
+    (hl : Measurable (Function.uncurry ℓ)) (P : Kernel Θ 𝓧) [IsFiniteKernel P] (κ : Kernel 𝓧 𝓨)
+    (π : Measure Θ) [IsFiniteMeasure π] [IsSFiniteKernel κ] :
+    bayesianRisk ℓ P κ π = ∫⁻ x, ∫⁻ y, ∫⁻ θ, ℓ θ y ∂(P†π) x ∂κ x ∂(P ∘ₘ π) := by
+  rw [bayesianRisk_eq_lintegral_posterior_prod hl,
+    Measure.lintegral_bind ((P†π) ×ₖ κ).aemeasurable (by fun_prop)]
+  congr with x
+  rw [Kernel.prod_apply, lintegral_prod_symm' _ (by fun_prop)]
+
+lemma lintegral_iInf_posterior_le_bayesianRisk
+    (hl : Measurable (Function.uncurry ℓ)) (P : Kernel Θ 𝓧) [IsFiniteKernel P] (κ : Kernel 𝓧 𝓨)
+    (π : Measure Θ) [IsFiniteMeasure π] [IsMarkovKernel κ] :
+    ∫⁻ x, ⨅ y : 𝓨, ∫⁻ θ, ℓ θ y ∂((P†π) x) ∂(P ∘ₘ π) ≤ bayesianRisk ℓ P κ π := by
+  rw [bayesianRisk_eq_lintegral_lintegral_lintegral hl]
+  gcongr with x
+  exact iInf_le_lintegral _ _
+
+lemma lintegral_iInf_posterior_le_bayesRiskPrior
+    (hl : Measurable (Function.uncurry ℓ)) (P : Kernel Θ 𝓧) [IsFiniteKernel P]
+    (π : Measure Θ) [IsFiniteMeasure π] :
+    ∫⁻ x, ⨅ y : 𝓨, ∫⁻ θ, ℓ θ y ∂((P†π) x) ∂(P ∘ₘ π) ≤ bayesRiskPrior ℓ P π :=
+  le_iInf₂ fun κ _ ↦ lintegral_iInf_posterior_le_bayesianRisk hl P κ π
+
+end Posterior
 
 /-- An estimator is a Bayes estimator for a prior `π` if it attains the Bayes risk for `π`. -/
 def IsBayesEstimator (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) (κ : Kernel 𝓧 𝓨) (π : Measure Θ) : Prop :=
