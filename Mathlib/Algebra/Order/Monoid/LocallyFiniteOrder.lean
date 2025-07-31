@@ -9,8 +9,9 @@ import Mathlib.Algebra.Order.Hom.MonoidWithZero
 import Mathlib.Algebra.Order.Hom.TypeTags
 import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Data.Nat.Cast.Order.Ring
-import Mathlib.Order.WellQuasiOrder
 import Mathlib.Tactic.Abel
+import Mathlib.Algebra.Group.Embedding
+import Mathlib.Order.Interval.Finset.Basic
 
 /-!
 
