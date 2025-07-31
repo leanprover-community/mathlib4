@@ -51,7 +51,7 @@ of that file.
 ## Dependent graded products
 
 This also introduces `List.dProd`, which takes the (possibly non-commutative) product of a list
-of graded elements of type `A i`. This definition primarily exist to allow `GradedMonoid.mk`
+of graded elements of type `A i`. This definition primarily exists to allow `GradedMonoid.mk`
 and `DirectSum.of` to be pulled outside a product, such as in `GradedMonoid.mk_list_dProd` and
 `DirectSum.of_list_dProd`.
 
@@ -562,7 +562,7 @@ theorem pow_mem_graded (n : ℕ) {r : R} {i : ι} (h : r ∈ A i) : r ^ n ∈ A 
   | 0 =>
     rw [pow_zero, zero_nsmul]
     exact one_mem_graded _
-  | n+1 =>
+  | n + 1 =>
     rw [pow_succ', succ_nsmul']
     exact mul_mem_graded h (pow_mem_graded n h)
 
