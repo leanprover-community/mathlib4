@@ -24,7 +24,7 @@ lemma Ideal.ofList_spanFinrank_le_length (rs : List R) :
   classical
   simp only [Ideal.ofList, ← List.coe_toFinset]
   apply le_trans (Submodule.spanFinrank_span_le_ncard_of_finite (Finset.finite_toSet rs.toFinset))
-  rw [Set.ncard_coe_Finset]
+  rw [Set.ncard_coe_finset]
   apply List.toFinset_card_le
 
 lemma Ideal.ofList_height_le_length (rs : List R) (h : Ideal.ofList rs ≠ ⊤) :
@@ -170,7 +170,7 @@ lemma maximalIdeal_mem_ofList_append_minimalPrimes_of_ofList_height_eq_length [I
 
 lemma maximalIdeal_mem_minimalPrimes_of_surjective {R S : Type*} [CommRing R] [CommRing S]
     [IsLocalRing R] [IsLocalRing S] (f : R →+* S) (h : Function.Surjective f) {I : Ideal R}
-    {J : Ideal S} (le : I ≤ J.comap f) (min : maximalIdeal R ∈ I.minimalPrimes) (ne : J ≠ ⊤):
+    {J : Ideal S} (le : I ≤ J.comap f) (min : maximalIdeal R ∈ I.minimalPrimes) (ne : J ≠ ⊤) :
     maximalIdeal S ∈ J.minimalPrimes := by
   refine ⟨⟨Ideal.IsMaximal.isPrime' _, le_maximalIdeal ne⟩, fun q ⟨hq, Jle⟩ _ ↦ ?_⟩
   have eq_map : maximalIdeal S = Ideal.map f (maximalIdeal R) := by
@@ -281,7 +281,7 @@ lemma isRegular_of_ofList_height_eq_length_of_isCohenMacaulayLocalRing [IsCohenM
     simpa [List.getElem_append_left' hi rs'] using this
   · simpa using (ne_top_of_le_ne_top Ideal.IsPrime.ne_top' (span_le.mpr mem)).symm
 
-lemma Ideal.depth_le_height [IsLocalRing R] (I : Ideal R) (netop : I ≠ ⊤):
+lemma Ideal.depth_le_height [IsLocalRing R] (I : Ideal R) (netop : I ≠ ⊤) :
     I.depth (ModuleCat.of R R) ≤ I.height := by
   simp only [IsLocalRing.ideal_depth_eq_sSup_length_regular I netop (ModuleCat.of R R), exists_prop,
     sSup_le_iff, Set.mem_setOf_eq, forall_exists_index, and_imp]
