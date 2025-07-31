@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Michael Rothgang
 -/
 import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
-import Mathlib.Topology.VectorBundle.Basic
+import Mathlib.Data.Bundle
 
 /-!
 # Gram-Schmidt orthonormalization on sections of Riemannian vector bundles
