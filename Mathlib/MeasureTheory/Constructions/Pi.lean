@@ -372,7 +372,7 @@ lemma pi_map_eval [DecidableEq ι] (i : ι) :
    refine Finset.prod_congr rfl fun j hj ↦ ?_
    simp [Function.update, Finset.ne_of_mem_erase hj]
 
-lemma measurePreserving_eval [∀ i, IsProbabilityMeasure (μ i)] (i : ι) :
+lemma _root_.MeasureTheory.measurePreserving_eval [∀ i, IsProbabilityMeasure (μ i)] (i : ι) :
     MeasurePreserving (Function.eval i) (Measure.pi μ) (μ i) := by
   refine ⟨measurable_pi_apply i, ?_⟩
   classical

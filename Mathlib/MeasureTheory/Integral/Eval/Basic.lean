@@ -99,19 +99,7 @@ lemma eval_integral (hf : ∀ i, Integrable (f i) μ) (i : ι) :
   exact Integrable.of_eval hf
 
 variable {X : ι → Type*} {mX : ∀ i, MeasurableSpace (X i)} {μ : (i : ι) → Measure (X i)}
-
-lemma Measure.pi_map_eval [∀ i, SigmaFinite (μ i)] [DecidableEq ι] (i : ι) :
-    (Measure.pi μ).map (Function.eval i) = (∏ j ∈ Finset.univ.erase i, μ j Set.univ) • (μ i) := by
-  ext s hs
-  classical
-  rw [Measure.map_apply (measurable_pi_apply i) hs, ← Set.univ_pi_update_univ, Measure.pi_pi,
-    Measure.smul_apply, smul_eq_mul, ← Finset.prod_erase_mul _ _ (a := i) (by simp)]
-  congrm ?_ * ?_
-  swap; · simp
-  refine Finset.prod_congr rfl fun j hj ↦ ?_
-  simp [Function.update, Finset.ne_of_mem_erase hj]
-
-variable {E : Type*} [NormedAddCommGroup E]
+    {E : Type*} [NormedAddCommGroup E]
 
 lemma integrable_eval_pi [∀ i, IsFiniteMeasure (μ i)] {i : ι} {f : X i → E}
     (hf : Integrable f (μ i)) :
@@ -122,20 +110,13 @@ lemma integrable_eval_pi [∀ i, IsFiniteMeasure (μ i)] {i : ι} {f : X i → E
   rw [Measure.pi_map_eval]
   exact hf.smul_measure <| ENNReal.prod_ne_top (fun _ _ ↦ measure_ne_top _ _)
 
-lemma measurePreserving_eval [∀ i, IsProbabilityMeasure (μ i)] (i : ι) :
-    MeasurePreserving (Function.eval i) (Measure.pi μ) (μ i) := by
-  refine ⟨measurable_pi_apply i, ?_⟩
-  classical
-  rw [Measure.pi_map_eval, Finset.prod_eq_one, one_smul]
-  exact fun _ _ ↦ measure_univ
-
 lemma integral_eval_pi [NormedSpace ℝ E] [∀ i, IsProbabilityMeasure (μ i)] {i : ι} {f : X i → E}
     (hf : AEStronglyMeasurable f (μ i)) :
     ∫ (x : Π i, X i), f (x i) ∂Measure.pi μ = ∫ x, f x ∂μ i := by
   simp_rw [← Function.eval_apply (β := X) (x := i)]
-  rw [← integral_map, (measurePreserving_eval i).map_eq]
+  rw [← integral_map, (measurePreserving_eval μ i).map_eq]
   · exact Measurable.aemeasurable (by fun_prop)
-  · rwa [(measurePreserving_eval i).map_eq]
+  · rwa [(measurePreserving_eval μ i).map_eq]
 
 end Pi
 
