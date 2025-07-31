@@ -133,7 +133,7 @@ theorem Continuous.matrix_diagonal [Zero R] [DecidableEq n] {A : X → n → R} 
 @[continuity, fun_prop]
 protected theorem Continuous.dotProduct [Fintype n] [Mul R] [AddCommMonoid R] [ContinuousAdd R]
     [ContinuousMul R] {A : X → n → R} {B : X → n → R} (hA : Continuous A) (hB : Continuous B) :
-    Continuous fun x => A x ⬝ᵥ B x := by
+    Continuous fun x => A x ·ᵥ B x := by
   dsimp only [dotProduct]
   fun_prop
 

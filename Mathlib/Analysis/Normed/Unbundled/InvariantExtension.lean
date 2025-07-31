@@ -11,7 +11,7 @@ import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 # algNormOfAlgEquiv and invariantExtension
 
 Let `K` be a nonarchimedean normed field and `L/K` be a finite algebraic extension. In the comments,
-`‖ ⬝ ‖` denotes any power-multiplicative `K`-algebra norm on `L` extending the norm on `K`.
+`‖ · ‖` denotes any power-multiplicative `K`-algebra norm on `L` extending the norm on `K`.
 
 ## Main Definitions
 
@@ -47,7 +47,7 @@ namespace IsUltrametricDist
 section algNormOfAlgEquiv
 
 /-- Given a normed field `K`, a finite algebraic extension `L/K` and `σ : L ≃ₐ[K] L`, the function
-`L → ℝ` sending `x : L` to `‖ σ x ‖`, where `‖ ⬝ ‖` is any power-multiplicative algebra norm on `L`
+`L → ℝ` sending `x : L` to `‖ σ x ‖`, where `‖ · ‖` is any power-multiplicative algebra norm on `L`
 extending the norm on `K`, is an algebra norm on `K`. -/
 def algNormOfAlgEquiv (σ : L ≃ₐ[K] L) :
     AlgebraNorm K L where

@@ -97,7 +97,7 @@ variable (n : ℕ)
 
 The corresponding Coxeter-Dynkin diagram is:
 ```
-    o --- o --- o ⬝ ⬝ ⬝ ⬝ o --- o
+    o --- o --- o · · · · o --- o
 ```
 -/
 def Aₙ : CoxeterMatrix (Fin n) where
@@ -115,7 +115,7 @@ set_option maxHeartbeats 400000 in
 The corresponding Coxeter-Dynkin diagram is:
 ```
        4
-    o --- o --- o ⬝ ⬝ ⬝ ⬝ o --- o
+    o --- o --- o · · · · o --- o
 ```
 -/
 def Bₙ : CoxeterMatrix (Fin n) where
@@ -133,7 +133,7 @@ The corresponding Coxeter-Dynkin diagram is:
 ```
     o
      \
-      o --- o ⬝ ⬝ ⬝ ⬝ o --- o
+      o --- o · · · · o --- o
      /
     o
 ```
