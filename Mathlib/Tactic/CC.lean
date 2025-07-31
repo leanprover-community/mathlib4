@@ -212,7 +212,12 @@ derives `a = b` from `Nat.succ a = Nat.succ b`, and `Nat.succ a != Nat.zero` for
 def _root_.Lean.MVarId.cc (m : MVarId) (cfg : CCConfig := {}) : MetaM Unit := do
   -- Check if warning should be shown
   if ← getBoolOption `mathlib.tactic.cc.warning true then
-    logWarning "The tactic `cc` is deprecated since 2025-07-31, please use `grind` instead."
+    logWarning "The tactic `cc` is deprecated since 2025-07-31, please use `grind` instead.\n\n\
+      Please report any regressions at https://github.com/leanprover/lean4/issues/.\n\
+      Note that `cc` supports some goals that `grind` doesn't,\n\
+      but these rely on higher-order unification and can result in unpredictable performance.\n\
+      If a downstream library is relying on this functionality,\n\
+      please report this in an issue and we'll help find a solution."
 
   let (_, m) ← m.intros
   m.withContext do
