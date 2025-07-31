@@ -5,6 +5,7 @@ Authors: Frédéric Dupuis
 -/
 
 import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Integral
 
 /-!
 # Integral representations of `rpow`
@@ -139,6 +140,26 @@ lemma monotoneOn_rpowIntegrand₀₁ (hp : p ∈ Ioo 0 1) (ht : 0 ≤ t) :
     by_cases 0 < t
     · apply add_pos_of_pos_of_nonneg <;> grind
     · apply add_pos_of_nonneg_of_pos <;> grind [← lt_of_le_of_ne]
+
+lemma continuousOn_rpowIntegrand₀₁_uncurry (hp : p ∈ Ioo 0 1) (s : Set ℝ) (hs : s ⊆ Ici 0) :
+    ContinuousOn (rpowIntegrand₀₁ p).uncurry (Ioi 0 ×ˢ s) := by
+  let g : ℝ × ℝ → ℝ := fun q => q.1 ^ (p - 1) * q.2 / (q.1 + q.2)
+  refine ContinuousOn.congr (f := g) ?_ fun q => ?_
+  · simp only [g]
+    refine ContinuousOn.mul ?_ ?_
+    · refine ContinuousOn.mul ?_ (by fun_prop)
+      exact ContinuousOn.rpow_const (by fun_prop) fun _ _ => Or.inl (by aesop)
+    · refine ContinuousOn.inv₀ (by fun_prop) fun t ht => ?_
+      simp only [mem_Ioo] at *
+      have h₁ : (0 : ℝ) < t.1 := ht.1
+      have h₂ : (0 : ℝ) ≤ t.2 := hs ht.2
+      linarith
+  · intro hq
+    simp only [Function.uncurry, g, rpowIntegrand₀₁_eq_pow_div hp (le_of_lt hq.1) (hs hq.2)]
+
+lemma continuousOn_rpowIntegrand₀₁_Ici (hp : p ∈ Ioo 0 1) (ht : 0 < t) :
+    ContinuousOn (rpowIntegrand₀₁ p t) (Ici 0) :=
+  (continuousOn_rpowIntegrand₀₁_uncurry hp _ fun _ a => a).uncurry_left _ ht
 
 lemma rpowIntegrand₀₁_le_rpow_sub_two_mul_self (hp : p ∈ Ioo 0 1) (ht : 0 < t) (hx : 0 ≤ x) :
     rpowIntegrand₀₁ p t x ≤ t ^ (p - 2) * x := calc
@@ -295,29 +316,62 @@ lemma rpow_eq_const_mul_integral (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
     rw [integral_rpowIntegrand₀₁_eq_rpow_mul_const hp hx, mul_comm, mul_assoc, mul_inv_cancel₀
       this, mul_one]
 
-/-- The integral representation of the function `x ↦ x^p` (where `p ∈ (0, 1)`) . -/
+/-- The integral representation of the function `x ↦ x ^ p` (where `p ∈ (0, 1)`) . -/
 lemma exists_measure_rpow_eq_integral (hp : p ∈ Ioo 0 1) :
-    ∃ μ : Measure ℝ, (∀ᵐ t ∂μ, 0 < t) ∧ ∀ x, 0 ≤ x → x ^ p = ∫ t, rpowIntegrand₀₁ p t x ∂μ := by
+    ∃ μ : Measure ℝ, ∀ x ∈ Ici 0,
+      (IntegrableOn (fun t => rpowIntegrand₀₁ p t x) (Ioi 0) μ)
+      ∧ x ^ p = ∫ t in Ioi 0, rpowIntegrand₀₁ p t x ∂μ := by
   let C : ℝ≥0 :=
     { val := (∫ t in Ioi 0, rpowIntegrand₀₁ p t 1)⁻¹
       property := by
         rw [inv_nonneg]
         exact le_of_lt <| integral_rpowIntegrand₀₁_one_pos hp }
-  let μ : Measure ℝ := C • volume.restrict (Ioi 0)
-  refine ⟨μ, ?_, fun x hx => ?_⟩
-  · refine Measure.ae_smul_measure ?_ _
-    filter_upwards [ae_restrict_mem measurableSet_Ioi] with t ht
-    exact ht
-  · rw [integral_smul_nnreal_measure, rpow_eq_const_mul_integral hp hx]
-    simp [C, NNReal.smul_def]
+  let μ : Measure ℝ := C • volume
+  refine ⟨μ, fun x hx => ⟨?_, ?_⟩⟩
+  · unfold μ IntegrableOn
+    rw [Measure.restrict_smul]
+    exact Integrable.smul_measure_nnreal <| integrableOn_rpowIntegrand₀₁_Ioi hp hx
+  · unfold μ
+    rw [Measure.restrict_smul, integral_smul_nnreal_measure, rpow_eq_const_mul_integral hp hx]
+    rfl
 
 end Real
 
-lemma continuousOn_left_of_continuousOn_uncurry {X Y Z : Type*} (f : X → Y → Z) [TopologicalSpace X]
-    [TopologicalSpace Y] [TopologicalSpace Z] {sx : Set X} {sy : Set Y}
-    (hf : ContinuousOn f.uncurry (sx ×ˢ sy)) {x : X} (hx : x ∈ sx) : ContinuousOn (f x) sy := by
-  let g : Y → Z := f.uncurry ∘ (fun y => (x, y))
-  refine ContinuousOn.congr (f := g) ?_ (fun y => by simp [g])
-  exact ContinuousOn.comp hf (by fun_prop) (by grind [Set.MapsTo, = Set.mem_prod])
+namespace CFC
 
-#find_home continuousOn_left_of_continuousOn_uncurry
+open Real
+
+variable {A : Type*} [NormedRing A] [StarRing A] [NormedAlgebra ℝ A]
+  [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
+  [IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
+
+lemma cfc_rpowIntegrand₀₁_eq_cfc_rpowIntegrand₀₁_one (hp : p ∈ Ioo 0 1) (ht : 0 < t) (a : A) (ha : 0 ≤ a) :
+    cfc (rpowIntegrand₀₁ p t) a = t ^ (p - 1) • cfc (rpowIntegrand₀₁ p 1) (t⁻¹ • a) := by
+  have hspec : spectrum ℝ a ⊆ Ici 0 := fun r hr => spectrum_nonneg_of_nonneg ha hr
+  calc _ = cfc (fun x => t ^ ((p : ℝ) - 1) * (rpowIntegrand₀₁ p 1 (t⁻¹ • x))) a := by
+          refine cfc_congr ?_
+          refine Set.EqOn.mono ?_ (rpowIntegrand₀₁_eqOn_mul_rpowIntegrand₀₁_one ht)
+          exact fun r hr => spectrum_nonneg_of_nonneg ha hr
+    _ = t ^ ((p : ℝ) - 1) • cfc (fun x => rpowIntegrand₀₁ p 1 (t⁻¹ • x)) a := by
+          refine cfc_smul (R := ℝ) (t ^ ((p : ℝ) - 1)) _ a ?_
+          refine ContinuousOn.mono ?_ hspec
+          refine ContinuousOn.comp (t := Ici 0) (g := fun x => rpowIntegrand₀₁ p 1 x) (f := fun x => t⁻¹ • x) ?_ ?_ ?_
+          · exact continuousOn_rpowIntegrand₀₁_Ici hp zero_lt_one
+          · fun_prop
+          · intro x (hx : 0 ≤ x)
+            simp only [smul_eq_mul, mem_Ici]
+            positivity
+    _ = t ^ ((p : ℝ) - 1) • cfc (rpowIntegrand₀₁ p 1) (t⁻¹ • a) := by
+          congr 1
+          refine cfc_comp_smul (R := ℝ) t⁻¹ (fun x => rpowIntegrand₀₁ p 1 x) a ?_
+          refine ContinuousOn.mono (s := Ici 0) ?_ ?_
+          · exact continuousOn_rpowIntegrand₀₁_Ici hp zero_lt_one
+          · intro x hx
+            rw [Set.mem_image] at hx
+            obtain ⟨r, hr₁, hr₂⟩ := hx
+            rw [← hr₂]
+            change 0 ≤ t⁻¹ • r
+            have : 0 ≤ r := spectrum_nonneg_of_nonneg ha hr₁
+            positivity
+
+end CFC
