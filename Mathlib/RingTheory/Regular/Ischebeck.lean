@@ -316,12 +316,12 @@ theorem depth_le_ringKrullDim_associatedPrime [IsNoetherianRing R] [IsLocalRing 
       (quotient_prime_ringKrullDim_ne_bot ass.1) := by
   let _ := Quotient.nontrivial ass.1.ne_top'
   let _ : Module.Finite R (Shrink.{v} (R ⧸ P)) :=
-    Module.Finite.equiv (Shrink.linearEquiv (R ⧸ P) R).symm
+    Module.Finite.equiv (Shrink.linearEquiv R (R ⧸ P)).symm
   let _ : Nontrivial (Shrink.{v} (R ⧸ P)) :=
-    (Shrink.linearEquiv (R ⧸ P) R).nontrivial
+    (Shrink.linearEquiv R (R ⧸ P)).nontrivial
   have dep0 : moduleDepth (of R (Shrink.{v} (R ⧸ P))) M = 0 := by
     rw [moduleDepth_eq_zero_of_hom_nontrivial,
-      (LinearEquiv.congrLeft M R (Shrink.linearEquiv (R ⧸ P) R)).nontrivial_congr]
+      (LinearEquiv.congrLeft M R (Shrink.linearEquiv R (R ⧸ P))).nontrivial_congr]
     rcases ((isAssociatedPrime_iff_exists_injective_linearMap P M).mp
       (AssociatePrimes.mem_iff.mp ass)).2 with ⟨f, hf⟩
     exact nontrivial_of_ne f 0 (ne_zero_of_injective hf)
@@ -329,7 +329,7 @@ theorem depth_le_ringKrullDim_associatedPrime [IsNoetherianRing R] [IsLocalRing 
   simp only [dep0, ge_iff_le, nonpos_iff_eq_zero, tsub_eq_zero_iff_le] at this
   convert this
   rw [← Module.supportDim_quotient_eq_ringKrullDim,
-    Module.supportDim_eq_of_equiv (Shrink.linearEquiv (R ⧸ P) R)]
+    Module.supportDim_eq_of_equiv (Shrink.linearEquiv R (R ⧸ P))]
 
 theorem depth_le_supportDim [IsNoetherianRing R] [IsLocalRing R] [Small.{v, u} R]
     (M : ModuleCat.{v} R) [Module.Finite R M] [Nontrivial M] :
