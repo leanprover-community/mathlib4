@@ -14,7 +14,7 @@ import Mathlib.RingTheory.Spectrum.Prime.Basic
 In this file, we show a ring is a Dedekind domain iff all fractional ideals are invertible,
 and prove instances such as the unique factorization of ideals.
 Further results on the structure of ideals in a Dedekind domain are found in
-`Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas`.
+`Mathlib/RingTheory/DedekindDomain/Ideal/Lemmas.lean`.
 
 ## Main definitions
 

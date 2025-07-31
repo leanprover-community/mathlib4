@@ -14,7 +14,7 @@ import Mathlib.RingTheory.Spectrum.Maximal.Localization
 
 In this file, we prove some results on the unique factorization monoid structure of the ideals.
 The unique factorization of ideals and invertibility of fractional ideals can be found in
-`Mathlib.RingTheory.DedekindDomain.Ideal.Basic`.
+`Mathlib/RingTheory/DedekindDomain/Ideal/Basic.lean`.
 
 ## Main definitions
 
