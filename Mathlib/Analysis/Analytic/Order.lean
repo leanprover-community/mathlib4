@@ -371,14 +371,7 @@ theorem isClopen_setOf_analyticOrderAt_eq_top (hf : AnalyticOnNhd 𝕜 f U) :
     simp only [isOpen_induced h₂t', mem_preimage, h₃t', and_self, and_true]
     intro w hw
     simp only [mem_setOf_eq]
-    -- Trivial case: w = z
-    by_cases h₁w : w = z
-    · rw [h₁w]
-      tauto
-    -- Nontrivial case: w ≠ z
-    use t' \ {z.1}, fun y h₁y ↦ h₁t' y h₁y.1, h₂t'.sdiff isClosed_singleton
-    apply (mem_diff w).1
-    exact ⟨hw, mem_singleton_iff.not.1 (Subtype.coe_ne_coe.2 h₁w)⟩
+    grind [Set.mem_preimage, Set.mem_seq_iff]
 
 /-- On a connected set, there exists a point where a meromorphic function `f` has finite order iff
 `f` has finite order at every point. -/
