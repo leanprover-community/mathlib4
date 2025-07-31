@@ -13,8 +13,8 @@ import Mathlib.Logic.Pairwise
 /-!
 # Extra lemmas about products of monoids and groups
 
-This file proves lemmas about the instances defined in `Mathlib/Algebra/Group/Pi/Basic.lean` that require more
-imports.
+This file proves lemmas about the instances defined in `Mathlib/Algebra/Group/Pi/Basic.lean` that
+require more imports.
 -/
 
 assert_not_exists AddMonoidWithOne MonoidWithZero
