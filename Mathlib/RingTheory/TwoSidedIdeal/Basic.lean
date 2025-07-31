@@ -100,7 +100,7 @@ lemma ringCon_injective : Function.Injective (TwoSidedIdeal.ringCon (R := R)) :=
   rintro ⟨x⟩ ⟨y⟩ rfl; rfl
 
 lemma ringCon_le_iff {I J : TwoSidedIdeal R} : I ≤ J ↔ I.ringCon ≤ J.ringCon :=
-  orderIsoRingCon.map_rel_iff.symm
+  orderIsoRingCon.le_iff_le.symm
 
 @[ext]
 lemma ext {I J : TwoSidedIdeal R} (h : ∀ x, x ∈ I ↔ x ∈ J) : I = J :=
@@ -237,7 +237,7 @@ Two-sided-ideals of `A` and that of `Aᵒᵖ` corresponds bijectively to each ot
 def opOrderIso : TwoSidedIdeal R ≃o TwoSidedIdeal Rᵐᵒᵖ where
   toFun := op
   invFun := unop
-  map_rel_iff' {I' J'} := by simpa [ringCon_le_iff] using RingCon.opOrderIso.map_rel_iff
+  map_rel_iff' {I' J'} := by simpa [ringCon_le_iff] using RingCon.opOrderIso.le_iff_le
 
 end NonUnitalNonAssocRing
 

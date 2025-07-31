@@ -478,12 +478,34 @@ theorem ext {f g : α ↪o β} (h : (f : α → β) = g) : f = g := DFunLike.ext
 
 /-- Identity map is a relation embedding. -/
 @[refl, simps!]
-protected def refl (α) [Preorder α] : α ↪o α :=
+def refl (α) [Preorder α] : α ↪o α :=
   ⟨Function.Embedding.refl _, Iff.rfl⟩
 
+@[simp]
+theorem coe_refl : ⇑(refl α) = id :=
+  rfl
+
 /-- Composition of two relation embeddings is a relation embedding. -/
-protected def trans (f : α ↪o β) (g : β ↪o γ) : α ↪o γ :=
+def trans (f : α ↪o β) (g : β ↪o γ) : α ↪o γ :=
   ⟨f.1.trans g.1, by simp [f.le_iff_le, g.le_iff_le]⟩
+
+@[simp]
+theorem coe_trans (e : α ↪o β) (e' : β ↪o γ) : ⇑(e.trans e') = e' ∘ e :=
+  rfl
+
+@[simp]
+theorem trans_apply (e : α ↪o β) (e' : β ↪o γ) (x : α) : e.trans e' x = e' (e x) :=
+  rfl
+
+@[simp]
+theorem refl_trans (e : α ↪o β) : (refl α).trans e = e := by
+  ext x
+  rfl
+
+@[simp]
+theorem trans_refl (e : α ↪o β) : e.trans (refl β) = e := by
+  ext x
+  rfl
 
 instance : Inhabited (α ↪o α) := ⟨OrderEmbedding.refl _⟩
 
@@ -596,7 +618,7 @@ together with a proof that it satisfies `f a ≤ f b ↔ a ≤ b`.
 def ofMapLEIff {α β} [PartialOrder α] [Preorder β] (f : α → β) (hf : ∀ a b, f a ≤ f b ↔ a ≤ b) :
     α ↪o β where
   toFun := f
-  inj' _ _ h := antisymm ((hf _ _).1 (h ▸ refl _)) ((hf _ _).1 (h ▸ refl _))
+  inj' _ _ h := antisymm ((hf _ _).1 (h ▸ le_refl _)) ((hf _ _).1 (h ▸ le_refl _))
   map_rel_iff' := hf _ _
 
 @[simp]

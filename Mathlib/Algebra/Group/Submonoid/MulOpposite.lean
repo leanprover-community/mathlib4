@@ -82,10 +82,10 @@ theorem op_injective : (@Submonoid.op M _).Injective := opEquiv.injective
 theorem unop_injective : (@Submonoid.unop M _).Injective := opEquiv.symm.injective
 
 @[to_additive (attr := simp)]
-theorem op_inj {S T : Submonoid M} : S.op = T.op ↔ S = T := opEquiv.eq_iff_eq
+theorem op_inj {S T : Submonoid M} : S.op = T.op ↔ S = T := opEquiv.apply_eq_iff_eq
 
 @[to_additive (attr := simp)]
-theorem unop_inj {S T : Submonoid Mᵐᵒᵖ} : S.unop = T.unop ↔ S = T := opEquiv.symm.eq_iff_eq
+theorem unop_inj {S T : Submonoid Mᵐᵒᵖ} : S.unop = T.unop ↔ S = T := opEquiv.symm.apply_eq_iff_eq
 
 @[to_additive (attr := simp)]
 theorem op_bot : (⊥ : Submonoid M).op = ⊥ := opEquiv.map_bot

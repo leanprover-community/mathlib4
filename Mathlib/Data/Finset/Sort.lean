@@ -198,7 +198,7 @@ theorem orderEmbOfFin_mem (s : Finset α) {k : ℕ} (h : s.card = k) (i : Fin k)
 theorem range_orderEmbOfFin (s : Finset α) {k : ℕ} (h : s.card = k) :
     Set.range (s.orderEmbOfFin h) = s := by
   simp only [orderEmbOfFin, Set.range_comp ((↑) : _ → α) (s.orderIsoOfFin h),
-  RelEmbedding.coe_trans, Set.image_univ, Finset.orderEmbOfFin, RelIso.range_eq,
+  OrderEmbedding.coe_trans, Set.image_univ, Finset.orderEmbOfFin, OrderIso.range_eq,
     OrderEmbedding.coe_subtype, OrderIso.coe_toOrderEmbedding,
     Subtype.range_coe_subtype, Finset.setOf_mem]
 
@@ -252,7 +252,7 @@ theorem orderEmbOfFin_unique {s : Finset α} {k : ℕ} (h : s.card = k) {f : Fin
 the increasing bijection `orderEmbOfFin s h`. -/
 theorem orderEmbOfFin_unique' {s : Finset α} {k : ℕ} (h : s.card = k) {f : Fin k ↪o α}
     (hfs : ∀ x, f x ∈ s) : f = s.orderEmbOfFin h :=
-  RelEmbedding.ext <| funext_iff.1 <| orderEmbOfFin_unique h hfs f.strictMono
+  OrderEmbedding.ext <| orderEmbOfFin_unique h hfs f.strictMono
 
 /-- Two parametrizations `orderEmbOfFin` of the same set take the same value on `i` and `j` if
 and only if `i = j`. Since they can be defined on a priori not defeq types `Fin k` and `Fin l`
@@ -272,7 +272,7 @@ def orderEmbOfCardLe (s : Finset α) {k : ℕ} (h : k ≤ s.card) : Fin k ↪o �
 
 theorem orderEmbOfCardLe_mem (s : Finset α) {k : ℕ} (h : k ≤ s.card) (a) :
     orderEmbOfCardLe s h a ∈ s := by
-  simp only [orderEmbOfCardLe, RelEmbedding.coe_trans, Finset.orderEmbOfFin_mem,
+  simp only [orderEmbOfCardLe, OrderEmbedding.coe_trans, Finset.orderEmbOfFin_mem,
     Function.comp_apply]
 
 lemma orderEmbOfFin_compl_singleton {n : ℕ} {i : Fin (n + 1)} {k : ℕ}

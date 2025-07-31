@@ -72,7 +72,7 @@ instance [Preorder α] : FunLike (ClosureOperator α) α α where
   coe_injective' := by rintro ⟨⟩ ⟨⟩ h; obtain rfl := DFunLike.ext' h; congr with x; simp_all
 
 instance [Preorder α] : OrderHomClass (ClosureOperator α) α α where
-  map_rel f _ _ h := f.mono h
+  monotone f  := f.monotone'
 
 initialize_simps_projections ClosureOperator (toFun → apply, IsClosed → isClosed)
 
