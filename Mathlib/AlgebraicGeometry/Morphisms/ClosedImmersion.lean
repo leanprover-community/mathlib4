@@ -50,7 +50,6 @@ lemma Scheme.Hom.isClosedEmbedding {X Y : Scheme} (f : X.Hom Y)
 
 namespace IsClosedImmersion
 
-
 lemma eq_inf : @IsClosedImmersion = (topologically IsClosedEmbedding) ⊓
     @SurjectiveOnStalks := by
   ext X Y f
