@@ -77,7 +77,6 @@ lemma support_eq_univ [μ.IsOpenPosMeasure] : μ.support = Set.univ := by
   exact fun _ a ↦ measure_pos_of_mem_nhds μ a
 
 lemma support_mono {ν : Measure X} (h : μ ≤ ν) : μ.support ≤ ν.support := by
-  simp only [Set.le_eq_subset]
   intro x hx
   simp only [mem_support_iff_forall] at *
   intro U hU
@@ -87,6 +86,14 @@ lemma support_mono {ν : Measure X} (h : μ ≤ ν) : μ.support ≤ ν.support 
 have measure zero. -/
 lemma notMem_support_iff {x : X} : x ∉ μ.support ↔ ∀ᶠ u in (𝓝 x).smallSets, μ u = 0 := by
   simp [mem_support_iff]
+
+theorem _root_.Filter.HasBasis.notMem_measureSupport {ι : Sort*} {p : ι → Prop}
+    {s : ι → Set X} {x : X} (hl : (𝓝 x).HasBasis p s) :
+    x ∉ μ.support ↔ ∃ (i : ι), p i ∧ μ (s i) = 0 := by
+  rw [← not_iff_not]
+  push_neg
+  have := (hl.mem_measureSupport : x ∈ μ.support ↔ ∀ i, p i → 0 < μ (s i))
+  simpa only [pos_iff_ne_zero, ne_eq]
 
 @[simp]
 lemma support_zero : (0 : Measure X).support = ∅ := by
@@ -113,13 +120,25 @@ lemma isOpen_compl_support {μ : Measure X} : IsOpen μ.supportᶜ :=
   isOpen_compl_iff.mpr μ.isClosed_support
 
 lemma subset_compl_support_of_isOpen ⦃t : Set X⦄ (ht : IsOpen t) (h : μ t = 0) :
-    t ⊆ μ.supportᶜ := by sorry
+    t ⊆ μ.supportᶜ := by
+      intro x hx
+      simp only [Set.mem_compl_iff, notMem_support_iff_exists]
+      use t
+      constructor
+      · exact IsOpen.mem_nhds ht hx
+      · exact h
 
 lemma compl_support_eq_sUnion : μ.supportᶜ = ⋃₀ {t : Set X | IsOpen t ∧ μ t = 0} := by
-  sorry
+  ext x
+  have A (t : Set X) := and_comm (a := IsOpen t) (b := x ∈ t)
+  simp only [Set.mem_compl_iff, Set.mem_sUnion, Set.mem_setOf_eq, and_right_comm,
+     (nhds_basis_opens x).notMem_measureSupport, A]
 
 lemma support_eq_sInter : μ.support = ⋂₀ {t : Set X | IsClosed t ∧ μ tᶜ = 0} := by
+  ext x
+  simp only [(nhds_basis_opens x).mem_measureSupport, and_imp, Set.mem_sInter, Set.mem_setOf_eq]
   sorry
+
 
 open Set
 
@@ -136,7 +155,7 @@ lemma support_mem_ae [HereditarilyLindelofSpace X] : μ.support ∈ ae μ :=
 variable [HereditarilyLindelofSpace X]
 
 @[simp]
-lemma measure_compl_support : μ (μ.support)ᶜ = 0 := sorry
+lemma measure_compl_support : μ (μ.support)ᶜ = 0 := support_mem_ae
 
 lemma nonempty_inter_support_of_pos {s : Set X} (hμ : 0 < μ s) :
     (s ∩ μ.support).Nonempty :=
