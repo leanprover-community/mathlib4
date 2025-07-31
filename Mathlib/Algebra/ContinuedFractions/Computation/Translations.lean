@@ -28,9 +28,9 @@ The file consists of three sections:
 
 ## Main Theorems
 
-- `succ_nth_stream_eq_some_iff` gives as a recurrence to compute the `n + 1`th value of the sequence
+- `succ_nth_stream_eq_some_iff` gives a recurrence to compute the `n + 1`th value of the sequence
   of integer and fractional parts of a value in case of non-termination.
-- `succ_nth_stream_eq_none_iff` gives as a recurrence to compute the `n + 1`th value of the sequence
+- `succ_nth_stream_eq_none_iff` gives a recurrence to compute the `n + 1`th value of the sequence
   of integer and fractional parts of a value in case of termination.
 - `get?_of_eq_some_of_succ_get?_intFractPair_stream` and
   `get?_of_eq_some_of_get?_intFractPair_stream_fr_ne_zero` show how the entries of the sequence
