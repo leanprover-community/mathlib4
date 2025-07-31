@@ -96,6 +96,12 @@ Schreier domain if it is moreover integrally closed. -/
 theorem exists_dvd_and_dvd_of_dvd_mul [DecompositionMonoid α] {b c a : α} (H : a ∣ b * c) :
     ∃ a₁ a₂, a₁ ∣ b ∧ a₂ ∣ c ∧ a = a₁ * a₂ := DecompositionMonoid.primal a H
 
+@[gcongr]
+theorem mul_dvd_mul_left (a : α) (h : b ∣ c) : a * b ∣ a * c := by
+  obtain ⟨d, rfl⟩ := h
+  use d
+  rw [mul_assoc]
+
 end Semigroup
 
 section Monoid
@@ -128,12 +134,6 @@ lemma dvd_pow (hab : a ∣ b) : ∀ {n : ℕ} (_ : n ≠ 0), a ∣ b ^ n
 alias Dvd.dvd.pow := dvd_pow
 
 lemma dvd_pow_self (a : α) {n : ℕ} (hn : n ≠ 0) : a ∣ a ^ n := dvd_rfl.pow hn
-
-@[gcongr]
-theorem mul_dvd_mul_left (a : α) (h : b ∣ c) : a * b ∣ a * c := by
-  obtain ⟨d, rfl⟩ := h
-  use d
-  rw [mul_assoc]
 
 end Monoid
 
