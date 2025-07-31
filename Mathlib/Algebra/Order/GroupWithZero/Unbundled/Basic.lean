@@ -299,8 +299,9 @@ theorem mul_lt_iff_lt_one_left [MulPosStrictMono α] [MulPosReflectLT α] (b0 : 
 
 /-! Lemmas of the form `1 ≤ b → a ≤ a * b`.
 
-Variants with `< 0` and `≤ 0` instead of `0 <` and `0 ≤` appear in `Mathlib/Algebra/Order/Ring/Defs.lean`
-(which imports this file) as they need additional results which are not yet available here. -/
+Variants with `< 0` and `≤ 0` instead of `0 <` and `0 ≤` appear in
+`Mathlib/Algebra/Order/Ring/Defs.lean` (which imports this file) as they need additional results
+which are not yet available here. -/
 
 theorem mul_le_of_le_one_left [MulPosMono α] (hb : 0 ≤ b) (h : a ≤ 1) : a * b ≤ b := by
   simpa only [one_mul] using mul_le_mul_of_nonneg_right h hb
