@@ -6,7 +6,6 @@ Authors: Frédéric Dupuis
 
 import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Integral
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Isometric
 import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
 
 /-!
