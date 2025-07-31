@@ -6,6 +6,7 @@ Authors: Frédéric Dupuis
 
 import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Integral
+import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Isometric
 
 /-!
 # Integral representations of `rpow`
@@ -200,6 +201,25 @@ lemma rpowIntegrand₀₁_one_ge_rpow_sub_two (hp : p ∈ Ioo 0 1) (ht : 1 ≤ t
   _ = rpowIntegrand₀₁ p t 1 := by
             rw [rpowIntegrand₀₁_eq_pow_div hp (by linarith) zero_le_one, mul_div_assoc]
 
+lemma rpowIntegrand₀₁_eqOn_mul_rpowIntegrand₀₁_one (ht : 0 < t) :
+    (Ici 0).EqOn (rpowIntegrand₀₁ p t)
+      (fun x => t ^ (p - 1) * (rpowIntegrand₀₁ p 1 (t⁻¹ • x))) := by
+  intro x hx
+  calc _ = t ^ p * (t⁻¹ - t⁻¹ * (1 + x * t⁻¹)⁻¹) := by
+          rw [rpowIntegrand₀₁]
+          congr
+          field_simp
+    _ = t ^ (p - 1) * (1 - (1 + x * t⁻¹)⁻¹) := by
+          have : t ≠ 0 := ne_of_gt ht
+          rw [Real.rpow_sub_one this, div_eq_mul_inv, mul_assoc]
+          congr
+          field_simp [this]
+    _ = t ^ (p - 1) * (1⁻¹ - (1 + x * t⁻¹)⁻¹) := by simp
+    _ = t ^ (p - 1) * (rpowIntegrand₀₁ p 1 (x * t⁻¹)) := by simp [rpowIntegrand₀₁]
+    _ = _ := by
+          congr 2
+          rw [mul_comm, smul_eq_mul]
+
 /- This lemma is private because it is strictly weaker than `integrableOn_rpowIntegrand₀₁_Ioi` -/
 private lemma integrableOn_rpowIntegrand₀₁_Ioc (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
     IntegrableOn (rpowIntegrand₀₁ p · x) (Ioc 0 1) := by
@@ -345,7 +365,8 @@ variable {A : Type*} [NormedRing A] [StarRing A] [NormedAlgebra ℝ A]
   [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
   [IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
-lemma cfc_rpowIntegrand₀₁_eq_cfc_rpowIntegrand₀₁_one (hp : p ∈ Ioo 0 1) (ht : 0 < t) (a : A) (ha : 0 ≤ a) :
+lemma cfc_rpowIntegrand₀₁_eq_cfc_rpowIntegrand₀₁_one {p t : ℝ} (hp : p ∈ Ioo 0 1) (ht : 0 < t)
+    (a : A) (ha : 0 ≤ a) :
     cfc (rpowIntegrand₀₁ p t) a = t ^ (p - 1) • cfc (rpowIntegrand₀₁ p 1) (t⁻¹ • a) := by
   have hspec : spectrum ℝ a ⊆ Ici 0 := fun r hr => spectrum_nonneg_of_nonneg ha hr
   calc _ = cfc (fun x => t ^ ((p : ℝ) - 1) * (rpowIntegrand₀₁ p 1 (t⁻¹ • x))) a := by
@@ -355,7 +376,7 @@ lemma cfc_rpowIntegrand₀₁_eq_cfc_rpowIntegrand₀₁_one (hp : p ∈ Ioo 0 1
     _ = t ^ ((p : ℝ) - 1) • cfc (fun x => rpowIntegrand₀₁ p 1 (t⁻¹ • x)) a := by
           refine cfc_smul (R := ℝ) (t ^ ((p : ℝ) - 1)) _ a ?_
           refine ContinuousOn.mono ?_ hspec
-          refine ContinuousOn.comp (t := Ici 0) (g := fun x => rpowIntegrand₀₁ p 1 x) (f := fun x => t⁻¹ • x) ?_ ?_ ?_
+          refine ContinuousOn.comp (t := Ici 0) (g := fun x => rpowIntegrand₀₁ p 1 x) ?_ ?_ ?_
           · exact continuousOn_rpowIntegrand₀₁_Ici hp zero_lt_one
           · fun_prop
           · intro x (hx : 0 ≤ x)
@@ -373,5 +394,61 @@ lemma cfc_rpowIntegrand₀₁_eq_cfc_rpowIntegrand₀₁_one (hp : p ∈ Ioo 0 1
             change 0 ≤ t⁻¹ • r
             have : 0 ≤ r := spectrum_nonneg_of_nonneg ha hr₁
             positivity
+
+variable (A) in
+/-- The integral representation of the function `x ↦ x ^ p` (where `p ∈ (0, 1)`). -/
+lemma exists_measure_nnrpow_eq_integral_cfc_rpowIntegrand₀₁ [CompleteSpace A] {p : ℝ≥0}
+    (hp : p ∈ Ioo 0 1) :
+    ∃ μ : Measure ℝ, ∀ a ∈ Ici (0 : A),
+      (IntegrableOn (fun t => cfc (rpowIntegrand₀₁ p t) a) (Ioi 0) μ)
+      ∧ a ^ p = ∫ t in Ioi 0, cfc (rpowIntegrand₀₁ p t) a ∂μ := by
+  obtain ⟨μ, hμ⟩ := exists_measure_rpow_eq_integral hp
+  refine ⟨μ, fun a (ha : 0 ≤ a) => ?_⟩
+  by_cases hnontrivial : Nontrivial A
+  case neg =>
+    rw [not_nontrivial_iff_subsingleton] at hnontrivial
+    simp [Subsingleton.eq_zero a]
+  case pos =>
+    have p_pos : 0 < (p : ℝ) := by exact_mod_cast hp.1
+    let f t := rpowIntegrand₀₁ p t
+    let maxr := sSup (spectrum ℝ a)
+    have maxr_nonneg : 0 ≤ maxr := by
+      let r := Classical.choose <| CFC.spectrum_nonempty ℝ a (LE.le.isSelfAdjoint ha)
+      have hr := Classical.choose_spec <| CFC.spectrum_nonempty ℝ a (LE.le.isSelfAdjoint ha)
+      refine le_csSup_of_le (b := r) (IsCompact.bddAbove (spectrum.isCompact _)) hr ?_
+      exact spectrum_nonneg_of_nonneg ha hr
+    let bound (t : ℝ) := ‖f t maxr‖
+    have hf : ContinuousOn (Function.uncurry f) (Ioi 0 ×ˢ spectrum ℝ a) := by
+      refine continuousOn_rpowIntegrand₀₁_uncurry hp (spectrum ℝ a) ?_
+      exact fun _ hr => spectrum_nonneg_of_nonneg ha hr
+    have hbound : ∀ᵐ t ∂μ.restrict (Ioi 0), ∀ z ∈ spectrum ℝ a, ‖f t z‖ ≤ bound t := by
+      filter_upwards [ae_restrict_mem measurableSet_Ioi] with t ht
+      intro z hz
+      have hz' : 0 ≤ z := spectrum_nonneg_of_nonneg ha hz
+      unfold bound f
+      rw [Real.norm_of_nonneg (rpowIntegrand₀₁_nonneg p_pos (le_of_lt ht) hz'),
+          Real.norm_of_nonneg (rpowIntegrand₀₁_nonneg p_pos (le_of_lt ht) maxr_nonneg)]
+      refine monotoneOn_rpowIntegrand₀₁ hp (le_of_lt ht) hz' maxr_nonneg ?_
+      exact le_csSup (IsCompact.bddAbove (spectrum.isCompact _)) hz
+    have hbound_finite_integral : HasFiniteIntegral bound (μ.restrict (Ioi 0)) := by
+      rw [hasFiniteIntegral_norm_iff]
+      exact (hμ maxr maxr_nonneg).1.2
+    refine ⟨?integrable, ?integral⟩
+    case integrable =>
+      exact integrableOn_cfc measurableSet_Ioi _ bound a hf hbound hbound_finite_integral
+    case integral =>
+      calc a ^ p = cfc (fun r => ∫ t in Ioi 0, rpowIntegrand₀₁ p t r ∂μ) a := by
+                  have hp' : p ≠ 0 := by grind [= lt_iff_le_and_ne]
+                  rw [nnrpow_def, cfcₙ_eq_cfc, cfc_nnreal_eq_real]
+                  refine cfc_congr ?_
+                  intro r hr
+                  have hp' : (p : ℝ) ∈ Ioo 0 1 := by exact_mod_cast hp
+                  simp only [NNReal.nnrpow_def, NNReal.coe_rpow, coe_toNNReal',
+                    spectrum_nonneg_of_nonneg ha hr, sup_of_le_left]
+                  refine (hμ r ?_).2
+                  exact spectrum_nonneg_of_nonneg ha hr
+        _ = _ := cfc_setIntegral measurableSet_Ioi _ bound a hf hbound
+                    hbound_finite_integral ha.isSelfAdjoint
+
 
 end CFC
