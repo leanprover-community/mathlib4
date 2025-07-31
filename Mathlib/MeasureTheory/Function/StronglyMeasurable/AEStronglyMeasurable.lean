@@ -613,9 +613,6 @@ theorem _root_.Topology.IsEmbedding.aestronglyMeasurable_comp_iff [PseudoMetriza
   · rcases (aestronglyMeasurable_iff_aemeasurable_separable.1 H).2 with ⟨t, ht, h't⟩
     exact ⟨g ⁻¹' t, hg.isSeparable_preimage ht, h't⟩
 
-@[deprecated (since := "2024-10-26")]
-alias _root_.Embedding.aestronglyMeasurable_comp_iff := IsEmbedding.aestronglyMeasurable_comp_iff
-
 /-- An almost everywhere sequential limit of almost everywhere strongly measurable functions is
 almost everywhere strongly measurable. -/
 theorem _root_.aestronglyMeasurable_of_tendsto_ae {ι : Type*} [PseudoMetrizableSpace β]
@@ -911,5 +908,3 @@ theorem aefinStronglyMeasurable_of_aemeasurable {_m0 : MeasurableSpace α} (μ :
   (aefinStronglyMeasurable_iff_aemeasurable μ).mpr hf
 
 end SecondCountableTopology
-
-end MeasureTheory

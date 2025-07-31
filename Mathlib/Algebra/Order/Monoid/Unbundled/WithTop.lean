@@ -680,3 +680,5 @@ protected def _root_.AddMonoidHom.withBotMap {M N : Type*} [AddZeroClass M] [Add
 -- instance linearOrderedAddCommMonoid [LinearOrderedAddCommMonoid α] :
 --     LinearOrderedAddCommMonoid (WithBot α) :=
 --   { WithBot.linearOrder, WithBot.orderedAddCommMonoid with }
+
+end WithBot
