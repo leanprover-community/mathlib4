@@ -6,12 +6,10 @@ Authors: Damiano Testa
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.Units.Defs
+import Mathlib.Algebra.Regular.Defs
 
 /-!
 # Regular elements
-
-We introduce left-regular, right-regular and regular elements, along with their `to_additive`
-analogues add-left-regular, add-right-regular and add-regular elements.
 
 By definition, a regular element in a commutative ring is a non-zero divisor.
 Lemma `isRegular_of_ne_zero` implies that every non-zero element of an integral domain is regular.
@@ -24,51 +22,6 @@ by adding one further `0`.
 
 The final goal is to develop part of the API to prove, eventually, results about non-zero-divisors.
 -/
-
-
-variable {R : Type*}
-
-section Mul
-
-variable [Mul R]
-
-/-- A left-regular element is an element `c` such that multiplication on the left by `c`
-is injective. -/
-@[to_additive "An add-left-regular element is an element `c` such that addition
-    on the left by `c` is injective."]
-def IsLeftRegular (c : R) :=
-  (c * ·).Injective
-
-/-- A right-regular element is an element `c` such that multiplication on the right by `c`
-is injective. -/
-@[to_additive "An add-right-regular element is an element `c` such that addition
-    on the right by `c` is injective."]
-def IsRightRegular (c : R) :=
-  (· * c).Injective
-
-/-- An add-regular element is an element `c` such that addition by `c` both on the left and
-on the right is injective. -/
-structure IsAddRegular {R : Type*} [Add R] (c : R) : Prop where
-  /-- An add-regular element `c` is left-regular -/
-  left : IsAddLeftRegular c -- Porting note: It seems like to_additive is misbehaving
-  /-- An add-regular element `c` is right-regular -/
-  right : IsAddRightRegular c
-
-/-- A regular element is an element `c` such that multiplication by `c` both on the left and
-on the right is injective. -/
-structure IsRegular (c : R) : Prop where
-  /-- A regular element `c` is left-regular -/
-  left : IsLeftRegular c
-  /-- A regular element `c` is right-regular -/
-  right : IsRightRegular c
-
-attribute [simp] IsRegular.left IsRegular.right
-
-attribute [to_additive] IsRegular
-
-@[to_additive]
-theorem isRegular_iff {c : R} : IsRegular c ↔ IsLeftRegular c ∧ IsRightRegular c :=
-  ⟨fun ⟨h1, h2⟩ => ⟨h1, h2⟩, fun ⟨h1, h2⟩ => ⟨h1, h2⟩⟩
 
 theorem IsLeftRegular.right_of_commute {a : R}
     (ca : ∀ b, Commute a b) (h : IsLeftRegular a) : IsRightRegular a :=
@@ -245,18 +198,3 @@ lemma IsRegular.pow_iff {n : ℕ} (n0 : 0 < n) : IsRegular (a ^ n) ↔ IsRegular
   mpr h := ⟨.pow n h.left, .pow n h.right⟩
 
 end Monoid
-
-/-- If all multiplications cancel on the left then every element is left-regular. -/
-@[to_additive "If all additions cancel on the left then every element is add-left-regular."]
-theorem IsLeftRegular.all [Mul R] [IsLeftCancelMul R] (g : R) : IsLeftRegular g :=
-  mul_right_injective g
-
-/-- If all multiplications cancel on the right then every element is right-regular. -/
-@[to_additive "If all additions cancel on the right then every element is add-right-regular."]
-theorem IsRightRegular.all [Mul R] [IsRightCancelMul R] (g : R) : IsRightRegular g :=
-  mul_left_injective g
-
-/-- If all multiplications cancel then every element is regular. -/
-@[to_additive "If all additions cancel then every element is add-regular."]
-theorem IsRegular.all [Mul R] [IsCancelMul R] (g : R) : IsRegular g :=
-  ⟨mul_right_injective g, mul_left_injective g⟩
