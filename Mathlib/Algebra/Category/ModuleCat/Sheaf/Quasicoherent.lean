@@ -83,7 +83,7 @@ class IsQuasicoherent : Prop where
   nonempty_quasicoherentData : Nonempty M.QuasicoherentData
 
 /-- A sheaf of modules is finitely presented if it is locally the cokernel of a
-morphism between coproducts of finitely many copies of the sheaf of rings.. -/
+morphism between coproducts of finitely many copies of the sheaf of rings. -/
 class IsFinitePresentation : Prop where
   exists_quasicoherentData :
     ∃ (σ : M.QuasicoherentData), ∀ (i : σ.I), (Finite (σ.presentation i).generators.I ∧

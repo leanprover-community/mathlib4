@@ -61,7 +61,7 @@ variable {f : α × β → ℚ → ℝ}
 /-- a function `f : α × β → ℚ → ℝ` is called a rational conditional kernel CDF of `κ` with respect
 to `ν` if is measurable, if `fun b ↦ f (a, b) x` is `(ν a)`-integrable for all `a : α` and `x : ℝ`
 and for all measurable sets `s : Set β`, `∫ b in s, f (a, b) x ∂(ν a) = (κ a).real (s ×ˢ Iic x)`.
-Also the `ℚ → ℝ` function `f (a, b)` should satisfy the properties of a Sieltjes function for
+Also the `ℚ → ℝ` function `f (a, b)` should satisfy the properties of a Stieltjes function for
 `(ν a)`-almost all `b : β`. -/
 structure IsRatCondKernelCDF (f : α × β → ℚ → ℝ) (κ : Kernel α (β × ℝ)) (ν : Kernel α β) :
     Prop where
