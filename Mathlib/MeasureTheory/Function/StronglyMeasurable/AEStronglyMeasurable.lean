@@ -908,3 +908,5 @@ theorem aefinStronglyMeasurable_of_aemeasurable {_m0 : MeasurableSpace α} (μ :
   (aefinStronglyMeasurable_iff_aemeasurable μ).mpr hf
 
 end SecondCountableTopology
+
+end MeasureTheory
