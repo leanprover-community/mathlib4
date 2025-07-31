@@ -109,8 +109,6 @@ protected theorem lt_sup {r : α → α → Prop} (wf : WellFounded r) {s : Set 
     (hx : x ∈ s) : r x (wf.sup s h) :=
   min_mem wf { x | ∀ a ∈ s, r a x } h x hx
 
-
-
 end WellFounded
 
 section LinearOrder

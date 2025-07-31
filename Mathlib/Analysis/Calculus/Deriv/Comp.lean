@@ -292,28 +292,20 @@ theorem derivWithin_comp (hh₂ : DifferentiableWithinAt 𝕜' h₂ s' (h x))
   · exact (hh₂.hasDerivWithinAt.comp x hh.hasDerivWithinAt hs).derivWithin hsx
   · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
-
-
 theorem derivWithin_comp_of_eq (hh₂ : DifferentiableWithinAt 𝕜' h₂ s' y)
     (hh : DifferentiableWithinAt 𝕜 h s x) (hs : MapsTo h s s')
     (hy : h x = y) :
     derivWithin (h₂ ∘ h) s x = derivWithin h₂ s' (h x) * derivWithin h s x := by
   subst hy; exact derivWithin_comp x hh₂ hh hs
 
-
-
 theorem deriv_comp (hh₂ : DifferentiableAt 𝕜' h₂ (h x)) (hh : DifferentiableAt 𝕜 h x) :
     deriv (h₂ ∘ h) x = deriv h₂ (h x) * deriv h x :=
   (hh₂.hasDerivAt.comp x hh.hasDerivAt).deriv
-
-
 
 theorem deriv_comp_of_eq (hh₂ : DifferentiableAt 𝕜' h₂ y) (hh : DifferentiableAt 𝕜 h x)
     (hy : h x = y) :
     deriv (h₂ ∘ h) x = deriv h₂ (h x) * deriv h x := by
   subst hy; exact deriv_comp x hh₂ hh
-
-
 
 protected nonrec theorem HasDerivAtFilter.iterate {f : 𝕜 → 𝕜} {f' : 𝕜}
     (hf : HasDerivAtFilter f f' x L) (hL : Tendsto f L L) (hx : f x = x) (n : ℕ) :

@@ -219,8 +219,6 @@ theorem HasFDerivWithinAt.mono_of_mem_nhdsWithin
     HasFDerivWithinAt f f' s x :=
   h.mono <| nhdsWithin_le_iff.mpr hst
 
-
-
 nonrec theorem HasFDerivWithinAt.mono (h : HasFDerivWithinAt f f' t x) (hst : s ⊆ t) :
     HasFDerivWithinAt f f' s x :=
   h.mono <| nhdsWithin_mono _ hst
