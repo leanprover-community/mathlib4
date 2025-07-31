@@ -55,7 +55,7 @@ theorem tmul_tensorMap_apply
 
 namespace Isometry
 
-/-- `TensorProduct.map` for `Quadraticform.Isometry`s -/
+/-- `TensorProduct.map` for `QuadraticForm.Isometry`s -/
 def _root_.QuadraticMap.Isometry.tmul
     {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
     {Q₃ : QuadraticForm R M₃} {Q₄ : QuadraticForm R M₄}

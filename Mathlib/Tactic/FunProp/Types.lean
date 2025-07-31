@@ -72,7 +72,7 @@ structure Config where
   from differentiability and then differentiability from smoothness (`ContDiff ℝ ∞`) requires
   `maxTransitionDepth = 2`. The default value of one expects that transition theorems are
   transitively closed e.g. there is a transition theorem that infers continuity directly from
-  smoothenss.
+  smoothness.
 
   Setting `maxTransitionDepth` to zero will disable all transition theorems. This can be very
   useful when `fun_prop` should fail quickly. For example when using `fun_prop` as discharger in
@@ -146,7 +146,7 @@ structure Result where
 def defaultUnfoldPred : Name → Bool :=
   defaultNamesToUnfold.contains
 
-/-- Get predicate on names indicating if theys shoulds be unfolded. -/
+/-- Get predicate on names indicating if theys should be unfolded. -/
 def unfoldNamePred : FunPropM (Name → Bool) := do
   let toUnfold := (← read).constToUnfold
   return fun n => toUnfold.contains n

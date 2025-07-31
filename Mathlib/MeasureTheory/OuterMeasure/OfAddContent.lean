@@ -46,7 +46,7 @@ namespace MeasureTheory.AddContent
 
 variable {α : Type*} {C : Set (Set α)} {s : Set α}
 
-/-- For `m : AddContent C` sigma-sub-aditive, finite on `C`, the `OuterMeasure` given by `m`
+/-- For `m : AddContent C` sigma-sub-additive, finite on `C`, the `OuterMeasure` given by `m`
 coincides with `m` on `C`. -/
 theorem ofFunction_eq (hC : IsSetSemiring C) (m : AddContent C)
     (m_sigma_subadd : m.IsSigmaSubadditive) (m_top : ∀ s ∉ C, m s = ∞) (hs : s ∈ C) :
