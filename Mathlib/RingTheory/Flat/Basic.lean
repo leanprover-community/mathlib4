@@ -243,25 +243,6 @@ theorem linearIndependent_one_tmul {S} [Semiring S] [Algebra R S] [Flat R S] {ι
     Finsupp.linearCombination_one_tmul]
   simpa using lTensor_preserves_injective_linearMap _ hv
 
-theorem _root_.IsBaseChange.lift_injective_of_flat
-    {S : Type*} [CommSemiring S] [Algebra R S] [Flat R S]
-    {M' : Type*} [AddCommMonoid M'] [Module R M'] [Module S M'] [IsScalarTower R S M']
-    {gm : M →ₗ[R] M'} (hm : IsBaseChange S gm)
-    {N' : Type*} [AddCommMonoid N'] [Module R N'] [Module S N'] [IsScalarTower R S N']
-    {gn : N →ₗ[R] N'} (hn : IsBaseChange S gn)
-    (f : M →ₗ[R] N) (hf : Function.Injective f) : Function.Injective (hm.lift (gn ∘ₗ f)) := by
-  have h : hm.lift (gn ∘ₗ f) = hn.equiv ∘ ((LinearMap.lTensor S f) ∘ hm.equiv.symm) := by
-    ext x
-    refine hm.inductionOn x _ (by simp) ?_ ?_ ?_
-    · intro _
-      simp [hm.lift_eq, hm.equiv_symm_apply, hn.equiv_tmul]
-    · intro s m h
-      simp only [map_smul, h, Function.comp_apply]
-      rw [← map_smul, f.smul_lTensor s (hm.equiv.symm m)]
-    · intro _ _ h₁ h₂
-      simp [h₁, h₂]
-  simpa [h] using lTensor_preserves_injective_linearMap f hf
-
 end Flat
 
 end Semiring
@@ -644,9 +625,14 @@ variable {R S M N : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S] [Flat
 
 theorem IsSMulRegular.of_flat_of_isBaseChange {f : M →ₗ[R] N} (hf : IsBaseChange S f) {x : R}
     (reg : IsSMulRegular M x) : IsSMulRegular N (algebraMap R S x) := by
-  have h := hf.lift_injective_of_flat hf ((LinearMap.lsmul R M) x) reg
-  rwa [show hf.lift (f ∘ₗ (LinearMap.lsmul R M) x) = (LinearMap.lsmul S N) (algebraMap R S x)
-    from hf.algHom_ext _ _ (fun _ ↦ by simp [hf.lift_eq])] at h
+  have h := hf.lTensor_injective_of_flat hf ((LinearMap.lsmul R M) x) reg
+  have eq : hf.lTensor hf ((LinearMap.lsmul R M) x) = (LinearMap.lsmul S N) (algebraMap R S x) := by
+    ext y
+    refine IsTensorProduct.inductionOn hf y (by simp) ?_ (fun _ _ ha hb ↦ by simp [ha, hb])
+    intro s m
+    rw [hf.lTensor_eq hf]
+    simpa using smul_comm x s (f m)
+  rwa [eq] at h
 
 theorem IsSMulRegular.of_flat {x : R} (reg : IsSMulRegular R x) :
     IsSMulRegular S (algebraMap R S x) :=
