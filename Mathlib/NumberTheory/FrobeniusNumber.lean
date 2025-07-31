@@ -177,11 +177,11 @@ theorem exists_mem_closure_of_ge : ∃ n, ∀ m ≥ n, setGcd s ∣ m → m ∈ 
   ⟨n, fun m ge dvd ↦ (Submodule.span_nat_eq_addSubmonoid_closure s).le
     (Submodule.span_mono hts (hn m ge dvd))⟩
 
-theorem finite_setOf_setGcd_dvd_and_mem_closure :
-    {n | setGcd s ∣ n ∧ n ∉ AddSubmonoid.closure s}.Finite :=
+theorem finite_setOf_setGcd_dvd_and_mem_span :
+    {n | setGcd s ∣ n ∧ n ∉ Ideal.span s}.Finite :=
   have ⟨n, hn⟩ := exists_mem_closure_of_ge s
-  (Finset.range n).finite_toSet.subset
-    fun m h ↦ Finset.mem_range.mpr <| lt_of_not_ge fun ge ↦ h.2 (hn m ge h.1)
+  (Finset.range n).finite_toSet.subset fun m h ↦ Finset.mem_range.mpr <|
+    lt_of_not_ge fun ge ↦ h.2 <| (Submodule.span_nat_eq_addSubmonoid_closure s).ge (hn m ge h.1)
 
 /-- `ℕ` is a Noetherian `ℕ`-module, i.e., `ℕ` is a Noetherian semiring. -/
 instance : IsNoetherian ℕ ℕ where
@@ -232,22 +232,58 @@ two players, invented by John H. Conway. The two players take turns naming posit
 that are not the sum of nonnegative multiples of previously named integers.
 The player who names 1 loses. -/
 
-/-- `SylverCoinageRel t s` means that `s ⟶ t` is a valid move in the game of Sylver coinage. -/
+/-- `SylverCoinage.Rel t s` means that `s ⟶ t` is a valid move in the game of Sylver coinage. -/
 protected inductive Rel : Set ℕ → Set ℕ → Prop
-  | move (s : Set ℕ) (n : ℕ) (hns : n ∉ AddSubmonoid.closure s) (h1 : 1 < n) :
+  | move (s : Set ℕ) (n : ℕ) (hns : n ∉ Ideal.span s) (h1 : n ≠ 1) :
       SylverCoinage.Rel (insert n s) s
 
 /-- Sylver coinage is a well-founded game, i.e. it always terminates. -/
 theorem wellFounded_rel : WellFounded SylverCoinage.Rel := by
   let f (s : Set ℕ) : ℕ × {t : Set ℕ // t.Finite} :=
-    (setGcd s, ⟨_, finite_setOf_setGcd_dvd_and_mem_closure s⟩)
+    (setGcd s, ⟨_, finite_setOf_setGcd_dvd_and_mem_span s⟩)
   refine Subrelation.wf ?_ (InvImage.wf f (wellFounded_dvdNotUnit.prod_lex wellFounded_lt))
   rintro _ s ⟨_, n, hns, _⟩
   apply Prod.lex_def.mpr
   by_cases dvd : setGcd s ∣ n
-  · exact .inr ⟨setGcd_insert_of_dvd dvd, fun m hm ↦ ⟨(setGcd_insert_of_dvd dvd).symm.dvd.trans
-      hm.1, fun mem ↦ hm.2 (AddSubmonoid.closure_mono (Set.subset_insert ..) mem)⟩, Set.not_subset.2
-      ⟨n, ⟨dvd, hns⟩, fun mem ↦ mem.2 (AddSubmonoid.subset_closure <| Set.mem_insert ..)⟩⟩
+  · exact .inr ⟨setGcd_insert_of_dvd dvd, fun m h ↦ ⟨(setGcd_insert_of_dvd dvd).symm.dvd.trans h.1,
+      fun mem ↦ h.2 (Ideal.span_mono (Set.subset_insert ..) mem)⟩, Set.not_subset.2
+      ⟨n, ⟨dvd, hns⟩, fun mem ↦ mem.2 (Ideal.subset_span <| Set.mem_insert ..)⟩⟩
   · exact .inl (dvdNotUnit_setGcd_insert dvd)
+
+/-- A position in the game of Sylver coinage is a P-position (i.e., a win for the previous player)
+if every move leads to an N-position (i.e., a win for the next player). -/
+def IsPPosition (s : Set ℕ) : Prop :=
+  ∀ t (_ : SylverCoinage.Rel t s), ¬ IsPPosition t
+termination_by wellFounded_rel.wrap s
+
+variable {s : Set ℕ}
+
+lemma isPPosition_iff : IsPPosition s ↔
+    ∀ n, n ∉ Ideal.span s → n ≠ 1 → ¬ IsPPosition (insert n s) := by
+  rw [IsPPosition]
+  refine ⟨fun h n hns h1 ↦ h _ ⟨_, n, hns, h1⟩, ?_⟩
+  rintro h _ ⟨_, n, hns, h1⟩; exact h n hns h1
+
+lemma not_isPPosition_iff : ¬ IsPPosition s ↔
+    ∃ n, n ∉ Ideal.span s ∧ n ≠ 1 ∧ IsPPosition (insert n s) := by
+  rw [isPPosition_iff]; simp
+
+lemma isPPosition_two_three : IsPPosition {2, 3} := by
+  refine isPPosition_iff.mpr fun x hx h1 ↦ (hx ?_).elim
+  rwa [← maximalIdeal_eq_span_two_three, mem_maximalIdeal_iff]
+
+lemma not_isPPosition_two : ¬ IsPPosition {2} :=
+  not_isPPosition_iff.mpr ⟨3, by rw [Ideal.mem_span_singleton]; norm_num, by norm_num,
+    Set.pair_comm .. ▸ isPPosition_two_three⟩
+
+lemma not_isPPosition_three : ¬ IsPPosition {3} :=
+  not_isPPosition_iff.mpr ⟨2, by rw [Ideal.mem_span_singleton]; norm_num,
+    by norm_num, isPPosition_two_three⟩
+
+/- TODO: Hutchings' Theorem and corollaries:
+* If `a` and `b` are coprime and {a, b} ≠ {2, 3} then {a, b} is an N-position (strategy stealing).
+* If `p ≥ 5` is prime, then {p} is an P-position.
+* If `n` is a composite number not of the form `2^a * 3^b`, then {n} is an N-position.
+Reference: https://www.math.cmu.edu/users/math/mslusky/presentations/Sylver_Coinage.pdf -/
 
 end SylverCoinage
