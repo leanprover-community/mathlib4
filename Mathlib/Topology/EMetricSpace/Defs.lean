@@ -805,5 +805,8 @@ theorem edist_ofDual (a b : Xᵒᵈ) : edist (ofDual a) (ofDual b) = edist a b :
 
 end
 
+instance [TopologicalSpace X] [WeakPseudoEMetricSpace X] : WeakPseudoEMetricSpace Xᵒᵈ :=
+  ‹WeakPseudoEMetricSpace X›
 instance [PseudoEMetricSpace X] : PseudoEMetricSpace Xᵒᵈ := ‹PseudoEMetricSpace X›
+instance [TopologicalSpace X] [WeakEMetricSpace X] : WeakEMetricSpace Xᵒᵈ := ‹WeakEMetricSpace X›
 instance [EMetricSpace X] : EMetricSpace Xᵒᵈ := ‹EMetricSpace X›
