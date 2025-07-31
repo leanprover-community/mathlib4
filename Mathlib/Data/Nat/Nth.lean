@@ -276,6 +276,64 @@ lemma nth_mem_anti {a b : ℕ} (hab : a ≤ b) (h : p (nth p b)) : p (nth p a) :
     rw [ha0]
     rwa [hb0] at h
 
+/-- `Nat.nth p` is the least strictly monotone function whose image is contained in `setOf p` -/
+lemma nth_le_of_strictMonoOn_of_mapsTo {p : ℕ → Prop} (f : ℕ → ℕ)
+    (hmaps : Set.MapsTo f { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card } (setOf p))
+    (hmono : StrictMonoOn f { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card }) {n : ℕ} :
+    nth p n ≤ f n := by
+  by_cases hn : (∀ hf : Set.Finite (setOf p), n < hf.toFinset.card)
+  · induction n using Nat.strong_induction_on with
+    | _ n ih =>
+      rw [nth_eq_sInf]
+      refine csInf_le (by simp) ?_
+      simp only [Set.mem_setOf_eq]
+      refine ⟨?_, ?_⟩
+      · exact hmaps hn
+      · intro k hk
+        refine lt_of_le_of_lt (ih k hk (fun hf => lt_trans hk (hn hf))) ?_
+        rwa [hmono.lt_iff_lt (fun hf => lt_trans hk (hn hf)) hn]
+  · simp only [not_forall, not_lt] at hn
+    rcases hn with ⟨hf, hn⟩
+    rw [nth, dif_pos hf, List.getD_eq_default _ _ (by simp [hn])]
+    exact Nat.zero_le _
+
+/-- `Nat.nth p` is the greatest monotone function whose image contains `setOf p` -/
+lemma le_nth_of_MonotoneOn_of_surjOn {p : ℕ → Prop} (f : ℕ → ℕ)
+    (hsurj : Set.SurjOn f { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card } (setOf p))
+    (hmono : MonotoneOn f { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card }) {n : ℕ}
+    (hn : ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card) : f n ≤ nth p n := by
+  induction n with
+  | zero =>
+    rw [Nat.nth_zero]
+    refine le_csInf ⟨_, nth_mem _ hn⟩ ?_
+    intro b hb
+    rcases hsurj hb with ⟨k, hk, rfl⟩
+    exact hmono hn hk (Nat.zero_le _)
+  | succ n ih =>
+    rw [nth_eq_sInf]
+    refine le_csInf ?_ ?_
+    · use nth p (n + 1), nth_mem _ hn
+      intro k hk
+      exact nth_lt_nth' hk hn
+    rintro b ⟨hb, h⟩
+    have fnb : f n < b := lt_of_le_of_lt (ih (fun hf => Nat.lt_of_succ_lt (hn hf)))
+      (h n (Nat.lt_succ_self _))
+    rcases hsurj hb with ⟨m, hm, rfl⟩
+    apply hmono hn hm
+    rw [Nat.succ_le]
+    exact hmono.reflect_lt (fun hf => Nat.lt_of_succ_lt (hn hf)) hm fnb
+
+/-- `Nat.nth p` is the unique strictly monotone function whose image is `setOf p` -/
+lemma eq_nth_of_strictMonoOn_of_mapsTo_of_surjOn {p : ℕ → Prop} (f : ℕ → ℕ)
+    (hsurj : Set.SurjOn f { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card } (setOf p))
+    (hmaps: Set.MapsTo f { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card } (setOf p))
+    (hmono : StrictMonoOn f { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card }) :
+    Set.EqOn f (nth p) {n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card} := by
+  intro i hi
+  exact le_antisymm
+    (Nat.le_nth_of_MonotoneOn_of_surjOn _ hsurj hmono.monotoneOn hi)
+    (Nat.nth_le_of_strictMonoOn_of_mapsTo _ hmaps hmono)
+
 lemma nth_comp_of_strictMono {n : ℕ} {f : ℕ → ℕ} (hf : StrictMono f)
     (h0 : ∀ k, p k → k ∈ Set.range f) (h : ∀ hfi : (setOf p).Finite, n < hfi.toFinset.card) :
     f (nth (fun i ↦ p (f i)) n) = nth p n := by
