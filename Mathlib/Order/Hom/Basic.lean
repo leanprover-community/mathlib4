@@ -431,7 +431,16 @@ instance (priority := 100) OrderIsoClass.toOrderHomClass [Preorder α] [Preorder
 
 namespace OrderEmbedding
 
-variable [Preorder α] [Preorder β] (f : α ↪o β)
+variable [Preorder α] [Preorder β] [Preorder γ] (f : α ↪o β)
+
+/-- Convert an `OrderEmbedding` to an `OrderHom`. -/
+@[simps]
+def toOrderHom (f : α ↪o β) : α →o β where
+  toFun := f.toEmbedding
+  monotone' := fun _ _ => (map_rel_iff' f).mpr
+
+instance : Coe (α ↪o β) (α →o β) :=
+  ⟨toOrderHom⟩
 
 instance : FunLike (α ↪o β) α β where
   coe f := f.toFun
@@ -439,6 +448,9 @@ instance : FunLike (α ↪o β) α β where
     rcases f with ⟨⟨⟩⟩
     rcases g with ⟨⟨⟩⟩
     congr
+
+instance : OrderHomClass (α ↪o β) α β where
+  monotone f := fun _ _ => (map_rel_iff' f).mpr
 
 instance : EmbeddingLike (α ↪o β) α β where
   injective' f := f.inj'
@@ -452,10 +464,6 @@ def Simps.apply (h : α ↪o β) : α → β := h
 
 initialize_simps_projections OrderEmbedding (toFun → apply)
 
--- See note [partially-applied ext lemmas]
-@[ext]
-theorem ext {f g : α ↪o β} (h : (f : α → β) = g) : f = g := DFunLike.ext' h
-
 @[simp]
 theorem le_iff_le {a b} : f a ≤ f b ↔ a ≤ b :=
   f.map_rel_iff'
@@ -463,6 +471,21 @@ theorem le_iff_le {a b} : f a ≤ f b ↔ a ≤ b :=
 @[simp]
 theorem lt_iff_lt {a b} : f a < f b ↔ a < b := by
   simp only [lt_iff_le_not_ge, le_iff_le]
+
+-- See note [partially-applied ext lemmas]
+@[ext]
+theorem ext {f g : α ↪o β} (h : (f : α → β) = g) : f = g := DFunLike.ext' h
+
+/-- Identity map is a relation embedding. -/
+@[refl, simps!]
+protected def refl (α) [Preorder α] : α ↪o α :=
+  ⟨Function.Embedding.refl _, Iff.rfl⟩
+
+/-- Composition of two relation embeddings is a relation embedding. -/
+protected def trans (f : α ↪o β) (g : β ↪o γ) : α ↪o γ :=
+  ⟨f.1.trans g.1, by simp [f.le_iff_le, g.le_iff_le]⟩
+
+instance : Inhabited (α ↪o α) := ⟨OrderEmbedding.refl _⟩
 
 /-- Converts an `OrderIso` into a `RelEmbedding (≤) (≤)`. -/
 def toRelEmbeddingLE (e : α ↪o β) : ((· ≤ ·) : α → α → Prop) ↪r ((· ≤ ·) : β → β → Prop) :=
@@ -540,9 +563,6 @@ theorem toRelEmbeddingLT_ofRelEmbeddingLT {α β} [PartialOrder α] [PartialOrde
 theorem eq_iff_eq {a b} : f a = f b ↔ a = b :=
   f.injective.eq_iff
 
-instance : OrderHomClass (α ↪o β) α β where
-  monotone f := fun _ _ => f.le_iff_le.2
-
 protected theorem monotone : Monotone f := OrderHomClass.monotone f
 
 protected theorem strictMono : StrictMono f := fun _ _ => f.lt_iff_lt.2
@@ -615,12 +635,6 @@ def _root_.Subtype.orderEmbedding {p q : α → Prop} (h : ∀ a, p a → q a) :
   { Subtype.impEmbedding _ _ h with
     map_rel_iff' := by aesop }
 
-/-- Convert an `OrderEmbedding` to an `OrderHom`. -/
-@[simps]
-def toOrderHom {X Y : Type*} [Preorder X] [Preorder Y] (f : X ↪o Y) : X →o Y where
-  toFun := f
-  monotone' := f.monotone
-
 /-- The trivial embedding from an empty preorder to another preorder -/
 @[simps] def ofIsEmpty [IsEmpty α] : α ↪o β where
   toFun := isEmptyElim
@@ -636,8 +650,17 @@ namespace OrderIso
 
 variable [Preorder α] [Preorder β] [Preorder γ]
 
+/-- Reinterpret an order isomorphism as an order embedding. -/
+def toOrderEmbedding (e : α ≃o β) : α ↪o β :=
+  ⟨e.toEquiv.toEmbedding, e.map_rel_iff'⟩
+
+theorem toEquiv_injective : Function.Injective (toEquiv : α ≃o β → α ≃ β)
+  | ⟨e₁, o₁⟩, ⟨e₂, _⟩, h => by congr
+
+instance : CoeOut (α ≃o β) (α ↪o β) := ⟨toOrderEmbedding⟩
+
 instance : FunLike (α ≃o β) α β where
-  coe f := f.toFun
+  coe f := f
   coe_injective' f g h₁ := by
     obtain ⟨⟨_, _, h₂, _⟩, _⟩ := f
     obtain ⟨⟨_, _, _, h₃⟩, _⟩ := g
@@ -679,13 +702,20 @@ instance : OrderIsoClass (α ≃o β) α β where
 theorem toFun_eq_coe {f : α ≃o β} : f.toFun = f :=
   rfl
 
+@[simp]
+theorem coe_fn_mk (f : α ≃ β) (o : ∀ ⦃a b⦄, f a ≤ f b ↔ a ≤ b) :
+    (OrderIso.mk f @o : α → β) = f := rfl
+
+@[simp]
+theorem coe_fn_toEquiv (f : α ≃o β) : (f.toEquiv : α → β) = f := rfl
+
+/-- The map `DFunLike.coe : (α ≃o β) → (α → β)` is injective. -/
+theorem coe_fn_injective : Function.Injective fun f : α ≃o β => (f : α → β) :=
+  DFunLike.coe_injective
+
 -- See note [partially-applied ext lemmas]
 @[ext]
 theorem ext {f g : α ≃o β} (h : (f : α → β) = g) : f = g := DFunLike.ext' h
-
-/-- Reinterpret an order isomorphism as an order embedding. -/
-def toOrderEmbedding (e : α ≃o β) : α ↪o β :=
-  ⟨e.toEquiv.toEmbedding, e.map_rel_iff'⟩
 
 @[simp]
 theorem coe_toOrderEmbedding (e : α ≃o β) : ⇑e.toOrderEmbedding = e :=

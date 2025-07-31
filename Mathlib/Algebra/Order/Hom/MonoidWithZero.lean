@@ -97,7 +97,7 @@ instance : MonoidWithZeroHomClass (α →*₀o β) α β where
   map_zero f := f.map_zero'
 
 instance : OrderHomClass (α →*₀o β) α β where
-  map_rel f _ _ h := f.monotone' h
+  monotone f := f.monotone'
 
 -- Other lemmas should be accessed through the `FunLike` API
 @[ext]

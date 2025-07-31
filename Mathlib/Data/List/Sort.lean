@@ -281,6 +281,14 @@ theorem sorted_gt_listMap (e : α ↪o β) {l : List α} :
     (l.map e).Sorted (· > ·) ↔ l.Sorted (· > ·) :=
   e.toRelEmbeddingLT.sorted_swap_listMap
 
+@[simp]
+theorem sorted_le_listMap (e : α ↪o β) {l : List α} :
+    (l.map e).Sorted (· ≤ ·) ↔ l.Sorted (· ≤ ·) := e.toRelEmbeddingLE.sorted_listMap
+
+@[simp]
+theorem sorted_ge_listMap (e : α ↪o β) {l : List α} :
+    (l.map e).Sorted (· ≥ ·) ↔ l.Sorted (· ≥ ·) := e.toRelEmbeddingLE.sorted_swap_listMap
+
 end OrderEmbedding
 
 namespace RelIso
@@ -303,6 +311,16 @@ namespace OrderIso
 variable {α β : Type*} [Preorder α] [Preorder β]
 
 @[simp]
+theorem sorted_le_listMap (e : α ≃o β) {l : List α} :
+    (l.map e).Sorted (· ≤ ·) ↔ l.Sorted (· ≤ ·) :=
+  e.toOrderEmbedding.sorted_le_listMap
+
+@[simp]
+theorem sorted_ge_listMap (e : α ≃o β) {l : List α} :
+    (l.map e).Sorted (· ≥ ·) ↔ l.Sorted (· ≥ ·) :=
+  e.toOrderEmbedding.sorted_ge_listMap
+
+@[simp]
 theorem sorted_lt_listMap (e : α ≃o β) {l : List α} :
     (l.map e).Sorted (· < ·) ↔ l.Sorted (· < ·) :=
   e.toOrderEmbedding.sorted_lt_listMap
@@ -320,11 +338,11 @@ variable {α β : Type*} [LinearOrder α] [Preorder β] {f : α → β} {l : Lis
 
 theorem sorted_le_listMap (hf : StrictMono f) :
     (l.map f).Sorted (· ≤ ·) ↔ l.Sorted (· ≤ ·) :=
-  (OrderEmbedding.ofStrictMono f hf).sorted_listMap
+  (OrderEmbedding.ofStrictMono f hf).sorted_le_listMap
 
 theorem sorted_ge_listMap (hf : StrictMono f) :
     (l.map f).Sorted (· ≥ ·) ↔ l.Sorted (· ≥ ·) :=
-  (OrderEmbedding.ofStrictMono f hf).sorted_swap_listMap
+  (OrderEmbedding.ofStrictMono f hf).sorted_ge_listMap
 
 theorem sorted_lt_listMap (hf : StrictMono f) :
     (l.map f).Sorted (· < ·) ↔ l.Sorted (· < ·) :=

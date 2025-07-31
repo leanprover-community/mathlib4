@@ -208,7 +208,7 @@ variable [Preorder α] [Preorder β]
 
 /-- Makes a Galois connection from an order-preserving bijection. -/
 lemma to_galoisConnection (e : α ≃o β) : GaloisConnection e e.symm :=
-  fun _ _ => e.rel_symm_apply.symm
+  fun _ _ => e.le_symm_apply.symm
 
 /-- Makes a Galois insertion from an order-preserving bijection. -/
 protected def toGaloisInsertion (e : α ≃o β) : GaloisInsertion e e.symm where

@@ -297,8 +297,8 @@ lemma mem_iff_forall_le_or_ge : a ∈ s ↔ ∀ ⦃b⦄, b ∈ s → a ≤ b ∨
 
 /-- Flags are preserved under order isomorphisms. -/
 def map (e : α ≃o β) : Flag α ≃ Flag β where
-  toFun s := ofIsMaxChain _ (s.maxChain.image e)
-  invFun s := ofIsMaxChain _ (s.maxChain.image e.symm)
+  toFun s := ofIsMaxChain _ (s.maxChain.image e.toRelIsoLE)
+  invFun s := ofIsMaxChain _ (s.maxChain.image e.symm.toRelIsoLE)
   left_inv s := ext <| e.symm_image_image s
   right_inv s := ext <| e.image_symm_image s
 
