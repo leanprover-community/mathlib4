@@ -352,6 +352,7 @@ theorem toSet_singleton (x : ZFSet) : ({x} : ZFSet).toSet = {x} := by
   ext
   simp
 
+@[simp]
 theorem insert_nonempty (u v : ZFSet) : (insert u v).Nonempty :=
   ⟨u, mem_insert u v⟩
 
@@ -484,6 +485,7 @@ theorem mem_sUnion {x y : ZFSet.{u}} : y ∈ ⋃₀ x ↔ ∃ z ∈ x, y ∈ z :
   Quotient.inductionOn₂ x y fun _ _ => PSet.mem_sUnion.trans
     ⟨fun ⟨z, h⟩ => ⟨⟦z⟧, h⟩, fun ⟨z, h⟩ => Quotient.inductionOn z (fun z h => ⟨z, h⟩) h⟩
 
+@[simp]
 theorem mem_sInter {x y : ZFSet} (h : x.Nonempty) : y ∈ ⋂₀ x ↔ ∀ z ∈ x, y ∈ z := by
   unfold sInter
   simp only [and_iff_right_iff_imp, mem_sep]
@@ -592,6 +594,10 @@ theorem mem_diff {x y z : ZFSet.{u}} : z ∈ x \ y ↔ z ∈ x ∧ z ∉ y :=
 @[simp]
 theorem sUnion_pair {x y : ZFSet.{u}} : ⋃₀ ({x, y} : ZFSet.{u}) = x ∪ y :=
   rfl
+
+@[simp]
+theorem sInter_pair {x y : ZFSet} : ⋂₀ {x, y} = x ∩ y := by
+  ext; simp
 
 theorem mem_wf : @WellFounded ZFSet (· ∈ ·) :=
   (wellFounded_lift₂_iff (H := fun a b c d hx hy =>

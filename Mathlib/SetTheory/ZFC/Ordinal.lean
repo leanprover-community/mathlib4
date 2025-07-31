@@ -48,10 +48,11 @@ theorem isTransitive_iff_mem_trans : z.IsTransitive ↔ ∀ {x y : ZFSet}, x ∈
 
 alias ⟨IsTransitive.mem_trans, _⟩ := isTransitive_iff_mem_trans
 
-protected theorem IsTransitive.inter (hx : x.IsTransitive) (hy : y.IsTransitive) :
-    (x ∩ y).IsTransitive := fun z hz w hw => by
-  rw [mem_inter] at hz ⊢
-  exact ⟨hx.mem_trans hw hz.1, hy.mem_trans hw hz.2⟩
+theorem IsTransitive.empty_mem {x : ZFSet} (hx : x.IsTransitive) (hx₀ : x ≠ ∅) : ∅ ∈ x := by
+  obtain ⟨y, hy, hxy⟩ := regularity x hx₀
+  obtain rfl | ⟨z, hz⟩ := y.eq_empty_or_nonempty
+  · exact hy
+  · simpa [hxy] using mem_inter.2 ⟨hx _ hy hz, hz⟩
 
 /-- The union of a transitive set is transitive. -/
 protected theorem IsTransitive.sUnion (h : x.IsTransitive) :
@@ -65,14 +66,22 @@ theorem IsTransitive.sUnion' (H : ∀ y ∈ x, IsTransitive y) :
   rcases mem_sUnion.1 hy with ⟨w, hw, hw'⟩
   exact mem_sUnion_of_mem ((H w hw).mem_trans hz hw') hw
 
-protected theorem IsTransitive.union (hx : x.IsTransitive) (hy : y.IsTransitive) :
+protected theorem IsTransitive.sInter {x : ZFSet} (hx : ∀ y ∈ x, IsTransitive y) :
+    IsTransitive (⋂₀ x) := by
+  obtain rfl | hx₀ := x.eq_empty_or_nonempty; simp
+  intro y hy z hz
+  rw [mem_sInter hx₀] at hy ⊢
+  exact fun w hw ↦ (hx w hw) _ (hy w hw) hz
+
+protected theorem IsTransitive.union {x y : ZFSet} (hx : x.IsTransitive) (hy : y.IsTransitive) :
     (x ∪ y).IsTransitive := by
-  rw [← sUnion_pair]
-  apply IsTransitive.sUnion'
-  intro
-  rw [mem_pair]
-  rintro (rfl | rfl)
-  assumption'
+  convert IsTransitive.sUnion' (x := {x, y}) _ using 1
+  simp_all
+
+protected theorem IsTransitive.inter {x y : ZFSet} (hx : x.IsTransitive) (hy : y.IsTransitive) :
+    (x ∩ y).IsTransitive := by
+  convert IsTransitive.sInter (x := {x, y}) _ using 1 <;>
+  simp_all
 
 protected theorem IsTransitive.powerset (h : x.IsTransitive) : (powerset x).IsTransitive :=
   fun y hy z hz => by
@@ -113,6 +122,27 @@ theorem subset_of_mem (h : x.IsOrdinal) : y ∈ x → y ⊆ x :=
 
 theorem mem_trans (h : z.IsOrdinal) : x ∈ y → y ∈ z → x ∈ z :=
   h.isTransitive.mem_trans
+
+protected theorem sUnion (hx : ∀ y ∈ x, IsOrdinal y) : (⋃₀ x).IsOrdinal := by
+  refine ⟨IsTransitive.sUnion' fun y hy ↦ (hx y hy).isTransitive, @fun z a b hza hab hb ↦ ?_⟩
+  rw [mem_sUnion] at hb
+  obtain ⟨c, hcx, hbc⟩ := hb
+  exact (hx c hcx).mem_trans' hza hab hbc
+
+protected theorem sInter (hx : ∀ y ∈ x, IsOrdinal y) : (⋂₀ x).IsOrdinal := by
+  obtain rfl | hx₀ := x.eq_empty_or_nonempty; simp
+  refine ⟨IsTransitive.sInter fun y hy ↦ (hx y hy).isTransitive, @fun z a b hza hab hb ↦ ?_⟩
+  rw [mem_sInter hx₀] at hb
+  obtain ⟨c, hc⟩ := hx₀
+  exact (hx _ hc).mem_trans' hza hab (hb c hc)
+
+protected theorem union (hx : x.IsTransitive) (hy : y.IsTransitive) : (x ∪ y).IsTransitive := by
+  convert IsTransitive.sUnion' (x := {x, y}) _ using 1
+  simp_all
+
+protected theorem inter (hx : x.IsTransitive) (hy : y.IsTransitive) : (x ∩ y).IsTransitive := by
+  convert IsTransitive.sInter (x := {x, y}) _ using 1 <;>
+  simp_all
 
 protected theorem isTrans (h : x.IsOrdinal) : IsTrans _ (Subrel (· ∈ ·) (· ∈ x)) :=
   ⟨fun _ _ c hab hbc => h.mem_trans' hab hbc c.2⟩
