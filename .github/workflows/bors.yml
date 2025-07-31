@@ -260,28 +260,7 @@ jobs:
           fi
           echo "::endgroup::"
 
-          counter=0
-          max_tries=5
-          # ensure that lake build --no-build succeeds before proceeding
-          while true; do
-            counter=$((counter + 1))
-            echo "::group::{lake build: attempt $counter}"
-            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
-            echo "::endgroup::"
-
-            echo "::group::{lake build --no-build: attempt $counter}"
-            lake build --no-build -v Mathlib
-            result=$?
-            echo "::endgroup::"
-            if [ $result -eq 0 ]; then
-              echo "lake build --no-build succeded!"
-              exit 0
-            fi
-            if [ $counter -ge $max_tries ]; then
-              echo "Failed to build good oleans for Mathlib after $max_tries attempts!"
-              exit 1
-            fi
-          done
+          ../master-branch/scripts/lake-build-with-retry.sh Mathlib
       - name: end gh-problem-match-wrap for build step
         uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
         with:
@@ -334,58 +313,14 @@ jobs:
         continue-on-error: true
         run: |
           cd pr-branch
-
-          counter=0
-          max_tries=5
-          # ensure that lake build --no-build succeeds before proceeding
-          while true; do
-            counter=$((counter + 1))
-            echo "::group::{lake build: attempt $counter}"
-            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail Archive"
-            echo "::endgroup::"
-
-            echo "::group::{lake build --no-build: attempt $counter}"
-            lake build --no-build -v Archive
-            result=$?
-            echo "::endgroup::"
-            if [ $result -eq 0 ]; then
-              echo "lake build --no-build succeded!"
-              exit 0
-            fi
-            if [ $counter -ge $max_tries ]; then
-              echo "Failed to build good oleans for Archive after $max_tries attempts!"
-              exit 1
-            fi
-          done
+          ../master-branch/scripts/lake-build-with-retry.sh Archive
 
       - name: build counterexamples
         id: counterexamples
         continue-on-error: true
         run: |
           cd pr-branch
-
-          counter=0
-          max_tries=5
-          # ensure that lake build --no-build succeeds before proceeding
-          while true; do
-            counter=$((counter + 1))
-            echo "::group::{lake build: attempt $counter}"
-            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail Counterexamples"
-            echo "::endgroup::"
-
-            echo "::group::{lake build --no-build: attempt $counter}"
-            lake build --no-build -v Counterexamples
-            result=$?
-            echo "::endgroup::"
-            if [ $result -eq 0 ]; then
-              echo "lake build --no-build succeded!"
-              exit 0
-            fi
-            if [ $counter -ge $max_tries ]; then
-              echo "Failed to build good oleans for Counterexamples after $max_tries attempts!"
-              exit 1
-            fi
-          done
+          ../master-branch/scripts/lake-build-with-retry.sh Counterexamples
 
       - name: Check if building Archive or Counterexamples failed
         if: steps.archive.outcome == 'failure' || steps.counterexamples.outcome == 'failure'
