@@ -135,14 +135,15 @@ protected theorem PseudoEMetricSpace.ext {α : Type*} {m m' : PseudoEMetricSpace
 
 variable [PseudoEMetricSpace α]
 
-export PseudoEMetricSpace (edist_self edist_comm edist_triangle)
+--export PseudoEMetricSpace (edist_self edist_comm edist_triangle)
 
-attribute [simp] edist_self
+attribute [simp] PseudoEMetricSpace.edist_self
 
 /-- Reformulation of the uniform structure in terms of the extended distance -/
 theorem uniformity_pseudoedist : 𝓤 α = ⨅ ε > 0, 𝓟 { p : α × α | edist p.1 p.2 < ε } :=
   PseudoEMetricSpace.uniformity_edist
 
+open PseudoEMetricSpace in
 theorem uniformSpace_edist :
     ‹PseudoEMetricSpace α›.toUniformSpace =
       uniformSpaceOfEDist edist edist_self edist_comm edist_triangle :=
@@ -166,20 +167,26 @@ instance PseudoEMetricSpace.toWeakPseudoEMetricSpace (α : Type u) [PseudoEMetri
     apply le_of_eq
     rw [uniformSpace_edist]
 
+section WeakPseudoEMetricSpace
+
+variable {α : Type u} [TopologicalSpace α] [WeakPseudoEMetricSpace α]
+
+export WeakPseudoEMetricSpace (edist_self edist_comm edist_triangle)
+
 /-- Triangle inequality for the extended distance -/
 theorem edist_triangle_left (x y z : α) : edist x y ≤ edist z x + edist z y := by
-  rw [edist_comm z]; apply edist_triangle
+  rw [edist_comm z]; apply WeakPseudoEMetricSpace.edist_triangle
 
 theorem edist_triangle_right (x y z : α) : edist x y ≤ edist x z + edist y z := by
-  rw [edist_comm y]; apply edist_triangle
+  rw [edist_comm y]; apply WeakPseudoEMetricSpace.edist_triangle
 
 theorem edist_congr_right {x y z : α} (h : edist x y = 0) : edist x z = edist y z := by
   apply le_antisymm
   · rw [← zero_add (edist y z), ← h]
-    apply edist_triangle
+    apply WeakPseudoEMetricSpace.edist_triangle
   · rw [edist_comm] at h
     rw [← zero_add (edist x z), ← h]
-    apply edist_triangle
+    apply WeakPseudoEMetricSpace.edist_triangle
 
 theorem edist_congr_left {x y z : α} (h : edist x y = 0) : edist z x = edist z y := by
   rw [edist_comm z x, edist_comm z y]
@@ -194,6 +201,8 @@ theorem edist_triangle4 (x y z t : α) : edist x t ≤ edist x y + edist y z + e
   calc
     edist x t ≤ edist x z + edist z t := edist_triangle x z t
     _ ≤ edist x y + edist y z + edist z t := add_le_add_right (edist_triangle x y z) _
+
+end WeakPseudoEMetricSpace
 
 /-- Given `f : β → ℝ≥0∞`, if `f` sends `{i | p i}` to a set of positive numbers
 accumulating to zero, then `f i`-neighborhoods of the diagonal form a basis of `𝓤 α`.
@@ -661,10 +670,10 @@ See note [reducible non-instances].
 abbrev EMetricSpace.replaceUniformity {γ} [U : UniformSpace γ] (m : EMetricSpace γ)
     (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) : EMetricSpace γ where
   edist := @edist _ m.toEDist
-  edist_self := edist_self
+  edist_self := PseudoEMetricSpace.edist_self
   eq_of_edist_eq_zero := @eq_of_edist_eq_zero _ _
-  edist_comm := edist_comm
-  edist_triangle := edist_triangle
+  edist_comm := PseudoEMetricSpace.edist_comm
+  edist_triangle := PseudoEMetricSpace.edist_triangle
   toUniformSpace := U
   uniformity_edist := H.trans (@PseudoEMetricSpace.uniformity_edist γ _)
 
@@ -678,10 +687,10 @@ See note [reducible non-instances].
 abbrev EMetricSpace.replaceTopology {γ} [T : TopologicalSpace γ] (m : EMetricSpace γ)
     (H : T = m.toUniformSpace.toTopologicalSpace) : EMetricSpace γ where
   edist := @edist _ m.toEDist
-  edist_self := edist_self
+  edist_self := PseudoEMetricSpace.edist_self
   eq_of_edist_eq_zero := @eq_of_edist_eq_zero _ _
-  edist_comm := edist_comm
-  edist_triangle := edist_triangle
+  edist_comm := PseudoEMetricSpace.edist_comm
+  edist_triangle := PseudoEMetricSpace.edist_triangle
   toUniformSpace := m.toUniformSpace.replaceTopology H
   uniformity_edist := PseudoEMetricSpace.uniformity_edist
 
