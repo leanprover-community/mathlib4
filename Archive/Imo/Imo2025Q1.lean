@@ -628,35 +628,50 @@ lemma no_config_3_2 (c : Config 3 2) : False := by
         _ = 1 := by rw [c.card]
       omega
 
-lemma no_config_without_vert_horiz_diag_contr_line {n k} (hn : 3 < n) (c : Config (n + 1) k)
+lemma no_config_without_vert_horiz_diag_contr_line {n k} (hn : 3 ≤ n) (c : Config (n + 1) k)
     (hvert : line[ℝ, !₂[1, 0], !₂[1, 1]] ∉ c.ls)
     (hhoriz : line[ℝ, !₂[0, 1], !₂[1, 1]] ∉ c.ls)
     (hdiag : line[ℝ, !₂[(n : ℝ) + 1, 1], !₂[1, (n : ℝ) + 1]] ∉ c.ls)
-    {m : ℕ} (hm : 1 ≤ m) (hm' : m < n)
-    {l} (hl : l ∈ c.ls) (meml : !₂[1, (m : ℝ)] ∈ l) (hQ : !₂[(n : ℝ), 1] ∉ l) :
+    {m} (hm : 1 < m) (hm' : m ≤ n)
+    {l} (hl : l ∈ c.ls) (meml : !₂[1, (m : ℝ)] ∈ l) (hQ : !₂[(n : ℝ) + 1, 1] ∉ l) :
     False := by
   -- find point `∈ l` on bottom line
   obtain ⟨m₂, hm₂⟩ : ∃ m₂ : ℕ, !₂[(m₂ : ℝ), 1] ∈ l := sorry
-  have : m₂ > 1 := sorry
+  have : 1 < m₂ := sorry
   -- find point `∈ l` on main diag
   obtain ⟨m₃, hm₃⟩ : ∃ m₃ : ℕ, !₂[(m₃ : ℝ), n + 2 - m₃] ∈ l := sorry
-  have : m₃ > 1 := sorry
   suffices h : finrank ℝ l.direction = 2
   · have := c.rank l hl
     omega
+  have : 1 < m₃ := sorry
   have : m₂ < n := sorry
   have : m₃ < n := sorry
-  apply l.finrank_eq_two_of_ne hm₂ meml hm₃
+  -- This should be solvable by `grind` or so
+  apply l.finrank_eq_two_of_ne hm₃ meml hm₂
   simp
-  -- This should be solvable by `grind` or so, probably we still miss preconditions
-  sorry
+  rw [mul_comm, ← div_eq_div_iff
+    (by norm_cast; rw [Int.subNatNat_of_le (by omega)]; simp; omega)
+    (by norm_cast; rw [Int.subNatNat_of_le (by omega)]; simp; omega)]
+  apply ne_of_lt
+  apply lt_of_lt_of_le (b := (1 - (m : ℝ)) / n)
+  · -- the line from `!₂[1, ↑m]` to `!₂[↑m₂, 1]` lies below the line `!₂[1, ↑m]` to `!₂[↑n + 1, 1]`
+    rw [div_lt_div_iff₀ (by simpa) (by simp; omega)]
+    apply mul_lt_mul_of_neg_left _ (by simpa)
+    norm_cast
+    rw [Int.subNatNat_of_le (by omega)]
+    simp
+    omega
+  · -- the line from `!₂[1, ↑m]` to `!₂[↑m₃, ↑n + 2 - ↑m₃]` lies above the line `!₂[1, ↑m]`
+    -- to `!₂[↑n + 1, 1]`
+    rw [le_div_iff₀ (by simp; assumption)]
+    sorry
 
-lemma no_config_without_vert_horiz_diag {n k} (hn : 3 < n) (c : Config (n + 1) k)
+lemma no_config_without_vert_horiz_diag {n k} (hn : 3 ≤ n) (c : Config (n + 1) k)
     (hvert : line[ℝ, !₂[1, 0], !₂[1, 1]] ∉ c.ls)
     (hhoriz : line[ℝ, !₂[0, 1], !₂[1, 1]] ∉ c.ls)
     (hdiag : line[ℝ, !₂[(n : ℝ) + 1, 1], !₂[1, (n : ℝ) + 1]] ∉ c.ls) : False := by
-  have ⟨l₁, hl₁, meml₁⟩ := c.cover 1 (n - 1)
-  by_cases hQ : !₂[(n : ℝ), 1] ∈ l₁
+  have ⟨l₁, hl₁, meml₁⟩ := c.cover 1 n
+  by_cases hQ : !₂[(n : ℝ) + 1, 1] ∈ l₁
   · have ⟨l₂, hl₂, meml₂⟩ := c.cover 1 2
     norm_cast at meml₂ meml₁
     apply no_config_without_vert_horiz_diag_contr_line hn c hvert hhoriz hdiag
@@ -674,12 +689,12 @@ lemma no_config_without_vert_horiz_diag {n k} (hn : 3 < n) (c : Config (n + 1) k
         by_contra! h
         apply hhoriz
         convert hl
+        -- TODO this is missing an extensionality for rank 1 affine subspaces
         sorry)
-      n (by simp; omega) l₁ hl₁ l₂ hl₂ hQ h
-    apply c.not_rank_2 hl₁
-    apply l₁.finrank_eq_two_of_ne h meml₁ meml₂
+      (n + 1) (by simp) l₁ hl₁ l₂ hl₂ (by simp [hQ]) (by push_cast; assumption)
+    apply c.not_rank_2 hl₁ <| l₁.finrank_eq_two_of_ne h meml₁ meml₂ _
     simp only [Fin.isValue, PiLp.toLp_apply, Matrix.cons_val_zero, Matrix.cons_val_one,
-      Matrix.cons_val_fin_one, sub_self, mul_zero, ne_eq, mul_eq_zero, sub_eq_zero, Nat.cast_eq_one,
+      Matrix.cons_val_fin_one, sub_self, mul_zero, ne_eq, mul_eq_zero, sub_eq_zero,
       not_or]
     norm_cast
     omega
