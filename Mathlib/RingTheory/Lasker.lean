@@ -143,9 +143,9 @@ lemma _root_.InfIrred.isPrimary {I : Ideal R} (h : InfIrred I) : I.IsPrimary := 
            ← Ideal.add_mem_iff_left _ (Ideal.mul_mem_right _ _ hs)]
     · simpa only [mem_colon_singleton] using mul_mem_right _ _
     · simp
-  rcases h with (h|h)
+  rcases h with (h | h)
   · replace h : I = I.colon (span {b}) := by
-      rcases eq_or_ne n 0 with rfl|hn'
+      rcases eq_or_ne n 0 with rfl | hn'
       · simpa [f] using hn 1 zero_le_one
       refine le_antisymm ?_ (h.le.trans' (Submodule.colon_mono le_rfl ?_))
       · intro

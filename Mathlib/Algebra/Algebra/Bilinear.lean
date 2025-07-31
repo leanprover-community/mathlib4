@@ -27,7 +27,7 @@ variable [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
 section left
 variable {A} [SMulCommClass R A A]
 
-/-- The multiplication on the left in a algebra is a linear map.
+/-- The multiplication on the left in an algebra is a linear map.
 
 Note that this only assumes `SMulCommClass R A A`, so that it also works for `R := Aᵐᵒᵖ`.
 

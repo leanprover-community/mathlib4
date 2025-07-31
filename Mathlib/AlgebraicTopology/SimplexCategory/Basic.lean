@@ -401,39 +401,11 @@ then `factor_δ f j` is a morphism `⦋m⦌ ⟶ ⦋n⦌` such that
 def factor_δ {m n : ℕ} (f : ⦋m⦌ ⟶ ⦋n + 1⦌) (j : Fin (n + 2)) : ⦋m⦌ ⟶ ⦋n⦌ :=
   f ≫ σ (Fin.predAbove 0 j)
 
-open Fin in
 lemma factor_δ_spec {m n : ℕ} (f : ⦋m⦌ ⟶ ⦋n + 1⦌) (j : Fin (n + 2))
     (hj : ∀ (k : Fin (m + 1)), f.toOrderHom k ≠ j) :
     factor_δ f j ≫ δ j = f := by
   ext k : 3
-  specialize hj k
-  dsimp [factor_δ, δ, σ]
-  cases j using cases with
-  | zero =>
-    ext
-    unfold predAbove
-    simp only [castSucc_zero, lt_self_iff_false, ↓reduceDIte]
-    split
-    · simp
-    · simp only [zero_succAbove, val_succ, coe_castPred]
-      simp_all
-  | succ j =>
-    rw [predAbove_of_castSucc_lt 0 _ (by simp), pred_succ]
-    rcases hj.lt_or_gt with (hj | hj)
-    · rw [predAbove_of_le_castSucc j _]
-      swap
-      · exact (le_castSucc_iff.mpr hj)
-      · rw [succAbove_of_castSucc_lt]
-        swap
-        · rwa [castSucc_lt_succ_iff, castPred_le_iff, le_castSucc_iff]
-        rw [castSucc_castPred]
-    · rw [predAbove_of_castSucc_lt]
-      swap
-      · exact (castSucc_lt_succ _).trans hj
-      rw [succAbove_of_le_castSucc]
-      swap
-      · rwa [succ_le_castSucc_iff, lt_pred_iff]
-      rw [succ_pred]
+  cases j using Fin.cases <;> simp_all [factor_δ, δ, σ]
 
 @[simp]
 lemma δ_zero_mkOfSucc {n : ℕ} (i : Fin n) :
@@ -568,7 +540,7 @@ instance : skeletalFunctor.Faithful where
 
 instance : skeletalFunctor.EssSurj where
   mem_essImage X :=
-    ⟨mk (Fintype.card X - 1 : ℕ),
+    ⟨⦋(Fintype.card X - 1 : ℕ)⦌,
       ⟨by
         have aux : Fintype.card X = Fintype.card X - 1 + 1 :=
           (Nat.succ_pred_eq_of_pos <| Fintype.card_pos_iff.mpr ⟨⊥⟩).symm
@@ -732,9 +704,9 @@ theorem iso_eq_iso_refl {x : SimplexCategory} (e : x ≅ x) : e = Iso.refl x := 
 theorem eq_id_of_isIso {x : SimplexCategory} (f : x ⟶ x) [IsIso f] : f = 𝟙 _ :=
   congr_arg (fun φ : _ ≅ _ => φ.hom) (iso_eq_iso_refl (asIso f))
 
-theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk (n + 1) ⟶ Δ')
+theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : ⦋n + 1⦌ ⟶ Δ')
     (i : Fin (n + 1)) (hi : θ.toOrderHom (Fin.castSucc i) = θ.toOrderHom i.succ) :
-    ∃ θ' : mk n ⟶ Δ', θ = σ i ≫ θ' := by
+    ∃ θ' : ⦋n⦌ ⟶ Δ', θ = σ i ≫ θ' := by
   use δ i.succ ≫ θ
   ext x : 3
   simp only [len_mk, σ, mkHom, comp_toOrderHom, Hom.toOrderHom_mk, OrderHom.comp_coe,
@@ -763,9 +735,9 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk 
         Nat.lt_succ_iff, Fin.ext_iff] at h' h'' ⊢
       omega
 
-theorem eq_σ_comp_of_not_injective {n : ℕ} {Δ' : SimplexCategory} (θ : mk (n + 1) ⟶ Δ')
+theorem eq_σ_comp_of_not_injective {n : ℕ} {Δ' : SimplexCategory} (θ : ⦋n + 1⦌ ⟶ Δ')
     (hθ : ¬Function.Injective θ.toOrderHom) :
-    ∃ (i : Fin (n + 1)) (θ' : mk n ⟶ Δ'), θ = σ i ≫ θ' := by
+    ∃ (i : Fin (n + 1)) (θ' : ⦋n⦌ ⟶ Δ'), θ = σ i ≫ θ' := by
   simp only [Function.Injective, exists_prop, not_forall] at hθ
   -- as θ is not injective, there exists `x<y` such that `θ x = θ y`
   -- and then, `θ x = θ (x+1)`
@@ -783,8 +755,8 @@ theorem eq_σ_comp_of_not_injective {n : ℕ} {Δ' : SimplexCategory} (θ : mk (
   · rw [Fin.castSucc_castPred, h₁]
     exact θ.toOrderHom.monotone ((Fin.succ_castPred_le_iff _).mpr h₂)
 
-theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ ⟶ mk (n + 1))
-    (i : Fin (n + 2)) (hi : ∀ x, θ.toOrderHom x ≠ i) : ∃ θ' : Δ ⟶ mk n, θ = θ' ≫ δ i := by
+theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ ⟶ ⦋n + 1⦌)
+    (i : Fin (n + 2)) (hi : ∀ x, θ.toOrderHom x ≠ i) : ∃ θ' : Δ ⟶ ⦋n⦌, θ = θ' ≫ δ i := by
   use θ ≫ σ (.predAbove (.last n) i)
   ext x : 3
   suffices ∀ j ≠ i, i.succAbove (((Fin.last n).predAbove i).predAbove j) = j by
@@ -793,9 +765,9 @@ theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ 
   intro j hj
   cases i using Fin.lastCases <;> simp [hj]
 
-theorem eq_comp_δ_of_not_surjective {n : ℕ} {Δ : SimplexCategory} (θ : Δ ⟶ mk (n + 1))
+theorem eq_comp_δ_of_not_surjective {n : ℕ} {Δ : SimplexCategory} (θ : Δ ⟶ ⦋n + 1⦌)
     (hθ : ¬Function.Surjective θ.toOrderHom) :
-    ∃ (i : Fin (n + 2)) (θ' : Δ ⟶ mk n), θ = θ' ≫ δ i := by
+    ∃ (i : Fin (n + 2)) (θ' : Δ ⟶ ⦋n⦌), θ = θ' ≫ δ i := by
   obtain ⟨i, hi⟩ := not_forall.mp hθ
   use i
   exact eq_comp_δ_of_not_surjective' θ i (not_exists.mp hi)
@@ -817,7 +789,7 @@ theorem eq_id_of_epi {x : SimplexCategory} (i : x ⟶ x) [Epi i] : i = 𝟙 _ :=
     eq_self_iff_true, and_true]
   infer_instance
 
-theorem eq_σ_of_epi {n : ℕ} (θ : mk (n + 1) ⟶ mk n) [Epi θ] : ∃ i : Fin (n + 1), θ = σ i := by
+theorem eq_σ_of_epi {n : ℕ} (θ : ⦋n + 1⦌ ⟶ ⦋n⦌) [Epi θ] : ∃ i : Fin (n + 1), θ = σ i := by
   rcases eq_σ_comp_of_not_injective θ (by
     by_contra h
     simpa using le_of_mono (mono_iff_injective.mpr h)) with ⟨i, θ', h⟩
@@ -828,7 +800,7 @@ theorem eq_σ_of_epi {n : ℕ} (θ : mk (n + 1) ⟶ mk n) [Epi θ] : ∃ i : Fin
   haveI := CategoryTheory.epi_of_epi (σ i) θ'
   rw [h, eq_id_of_epi θ', Category.comp_id]
 
-theorem eq_δ_of_mono {n : ℕ} (θ : mk n ⟶ mk (n + 1)) [Mono θ] : ∃ i : Fin (n + 2), θ = δ i := by
+theorem eq_δ_of_mono {n : ℕ} (θ : ⦋n⦌ ⟶ ⦋n + 1⦌) [Mono θ] : ∃ i : Fin (n + 2), θ = δ i := by
   rcases eq_comp_δ_of_not_surjective θ (by
     by_contra h
     simpa using le_of_epi (epi_iff_surjective.mpr h)) with ⟨i, θ', h⟩
