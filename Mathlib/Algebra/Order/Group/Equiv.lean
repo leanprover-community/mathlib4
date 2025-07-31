@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang
 -/
 import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Algebra.Order.Group.Synonym
 import Mathlib.Algebra.Order.Monoid.Lex
-import Mathlib.Data.Prod.Lex
 
 /-!
 # Add/Mul equivalence for order type synonyms
@@ -39,11 +37,11 @@ theorem coe_ofLexMulEquiv [Mul α] : ⇑(ofLexMulEquiv α) = ofLex := rfl
 theorem coe_symm_ofLexMulEquiv [Mul α] : ⇑(ofLexMulEquiv α).symm = toLex := rfl
 
 @[simp]
-lemma toEquiv_toLexMulEquiv (G H : Type*) [MulOneClass G] [MulOneClass H] :
-    ⇑(toLexMulEquiv (G × H) : G × H ≃ G ×ₗ H) = toLex :=
+lemma toEquiv_toLexMulEquiv [Mul α] :
+    ⇑(toLexMulEquiv α : α ≃ Lex α) = toLex :=
   rfl
 
 @[simp]
-lemma toEquiv_symm_toLexMulEquiv (G H : Type*) [MulOneClass G] [MulOneClass H] :
-    ⇑((toLexMulEquiv (G × H)).symm : G ×ₗ H ≃ G × H) = ofLex :=
+lemma toEquiv_symm_toLexMulEquiv [Mul α] :
+    ⇑((toLexMulEquiv α).symm : Lex α ≃ α) = ofLex :=
   rfl
