@@ -545,6 +545,9 @@ lemma pow_right_strictAnti₀ (h₀ : 0 < a) (h₁ : a < 1) : StrictAnti (a ^ ·
   strictAnti_nat_of_succ_lt fun n => by
     simpa only [pow_succ, mul_one] using mul_lt_mul_of_pos_left h₁ (pow_pos h₀ n)
 
+lemma pow_le_pow_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) : a ^ m ≤ a ^ n ↔ n ≤ m :=
+  (pow_right_strictAnti₀ ha₀ ha₁).le_iff_le
+
 lemma pow_lt_pow_iff_right_of_lt_one₀ (h₀ : 0 < a) (h₁ : a < 1) : a ^ m < a ^ n ↔ n < m :=
   (pow_right_strictAnti₀ h₀ h₁).lt_iff_lt
 
