@@ -16,10 +16,11 @@ for predicates `C → Prop`.
 
 ## TODO
 
-* refactor the file `Mathlib/CategoryTheory/Limits/FullSubcategory.lean` in order to rename `ClosedUnderLimitsOfShape`
-  as `ObjectProperty.IsClosedUnderLimitsOfShape` (and make it a type class)
-* refactor the file `Mathlib/CategoryTheory/Triangulated/Subcategory.lean` in order to make it a type class
-  regarding terms in `ObjectProperty C` when `C` is pretriangulated
+* refactor the file `Mathlib/CategoryTheory/Limits/FullSubcategory.lean` in order to rename
+  `ClosedUnderLimitsOfShape` as `ObjectProperty.IsClosedUnderLimitsOfShape` (and make it a type
+  class)
+* refactor the file `Mathlib/CategoryTheory/Triangulated/Subcategory.lean` in order to make it a
+  type class regarding terms in `ObjectProperty C` when `C` is pretriangulated
 
 -/
 
