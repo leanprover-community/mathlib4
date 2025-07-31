@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Analysis.InnerProductSpace.Continuous
-import Mathlib.Analysis.Normed.Module.Dual
 import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
 import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
