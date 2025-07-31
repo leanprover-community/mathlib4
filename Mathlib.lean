@@ -5056,13 +5056,15 @@ import Mathlib.Probability.CondVar
 import Mathlib.Probability.ConditionalExpectation
 import Mathlib.Probability.ConditionalProbability
 import Mathlib.Probability.Decision.AuxLemmas
+import Mathlib.Probability.Decision.BayesEstimator
 import Mathlib.Probability.Decision.Binary
 import Mathlib.Probability.Decision.BoolMeasure
 import Mathlib.Probability.Decision.DeGrootInfo
-import Mathlib.Probability.Decision.Risk.Defs
 import Mathlib.Probability.Decision.Risk.Basic
 import Mathlib.Probability.Decision.Risk.Countable
+import Mathlib.Probability.Decision.Risk.Defs
 import Mathlib.Probability.Decision.RiskIncrease
+import Mathlib.Probability.Decision.ZeroOneLoss
 import Mathlib.Probability.Density
 import Mathlib.Probability.Distributions.Exponential
 import Mathlib.Probability.Distributions.Gamma
