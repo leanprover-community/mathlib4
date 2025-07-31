@@ -672,3 +672,5 @@ theorem HasGroupoid.comp
         mfld_set_tac }
 
 end LocalStructomorph
+
+end StructureGroupoid

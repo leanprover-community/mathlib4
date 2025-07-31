@@ -594,7 +594,7 @@ theorem contMDiff_infty : ContMDiff I I' ∞ f ↔ ∀ n : ℕ, ContMDiff I I' n
 
 theorem contMDiffWithinAt_iff_nat {n : ℕ∞} :
     ContMDiffWithinAt I I' n f s x ↔ ∀ m : ℕ, (m : ℕ∞) ≤ n → ContMDiffWithinAt I I' m f s x := by
-  refine ⟨fun h m hm => h.of_le (mod_cast hm), fun h ↦ ?_⟩
+  refine ⟨fun h m hm => h.of_le (mod_cast hm), fun h => ?_⟩
   obtain - | n := n
   · exact contMDiffWithinAt_infty.2 fun n => h n le_top
   · exact h n le_rfl

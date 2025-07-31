@@ -54,12 +54,8 @@ theorem isOpenMap_im : IsOpenMap im :=
 theorem isQuotientMap_re : IsQuotientMap re :=
   isHomeomorphicTrivialFiberBundle_re.isQuotientMap_proj
 
-
-
 theorem isQuotientMap_im : IsQuotientMap im :=
   isHomeomorphicTrivialFiberBundle_im.isQuotientMap_proj
-
-
 
 theorem interior_preimage_re (s : Set ℝ) : interior (re ⁻¹' s) = re ⁻¹' interior s :=
   (isOpenMap_re.preimage_interior_eq_interior_preimage continuous_re _).symm
