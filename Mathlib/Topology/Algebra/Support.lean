@@ -159,13 +159,15 @@ theorem exists_compact_iff_hasCompactMulSupport [R1Space α] :
 
 namespace HasCompactMulSupport
 
+variable {K : Set α}
+
 @[to_additive]
-theorem intro [R1Space α] {K : Set α} (hK : IsCompact K) (hfK : ∀ x, x ∉ K → f x = 1) :
+theorem intro [R1Space α] (hK : IsCompact K) (hfK : ∀ x, x ∉ K → f x = 1) :
     HasCompactMulSupport f :=
   exists_compact_iff_hasCompactMulSupport.mp ⟨K, hK, hfK⟩
 
 @[to_additive]
-theorem intro' {K : Set α} (hK : IsCompact K) (h'K : IsClosed K) (hfK : ∀ x, x ∉ K → f x = 1) :
+theorem intro' (hK : IsCompact K) (h'K : IsClosed K) (hfK : ∀ x, x ∉ K → f x = 1) :
     HasCompactMulSupport f := by
   have : mulTSupport f ⊆ K := by
     rw [← h'K.closure_eq]
@@ -173,7 +175,7 @@ theorem intro' {K : Set α} (hK : IsCompact K) (h'K : IsClosed K) (hfK : ∀ x, 
   exact IsCompact.of_isClosed_subset hK ( isClosed_mulTSupport f) this
 
 @[to_additive]
-theorem of_mulSupport_subset_isCompact [R1Space α] {K : Set α} (hK : IsCompact K) (h : mulSupport f ⊆ K) :
+theorem of_mulSupport_subset_isCompact [R1Space α] (hK : IsCompact K) (h : mulSupport f ⊆ K) :
     HasCompactMulSupport f :=
   hK.closure_of_subset h
 
@@ -187,7 +189,7 @@ theorem _root_.hasCompactMulSupport_iff_eventuallyEq :
 
 @[to_additive]
 theorem _root_.isCompact_range_of_mulSupport_subset_isCompact [TopologicalSpace β]
-    (hf : Continuous f) {k : Set α} (hk : IsCompact k) (h'f : mulSupport f ⊆ k) :
+    (hf : Continuous f) (hk : IsCompact K) (h'f : mulSupport f ⊆ K) :
     IsCompact (range f) := by
   rcases range_eq_image_or_of_mulSupport_subset h'f with h2 | h2 <;> rw [h2]
   exacts [hk.image hf, (hk.image hf).insert 1]
@@ -234,9 +236,9 @@ theorem comp₂_left (hf : HasCompactMulSupport f)
   simp_rw [hx, hx₂, Pi.one_apply, hm]
 
 @[to_additive]
-lemma isCompact_preimage [TopologicalSpace β]
-    (h'f : HasCompactMulSupport f) (hf : Continuous f) {k : Set β} (hk : IsClosed k)
-    (h'k : 1 ∉ k) : IsCompact (f ⁻¹' k) := by
+lemma isCompact_preimage [TopologicalSpace β] {K : Set β}
+    (h'f : HasCompactMulSupport f) (hf : Continuous f) (hk : IsClosed K) (h'k : 1 ∉ K) :
+    IsCompact (f ⁻¹' K) := by
   apply IsCompact.of_isClosed_subset h'f (hk.preimage hf) (fun x hx ↦ ?_)
   apply subset_mulTSupport
   aesop
