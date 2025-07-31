@@ -462,7 +462,7 @@ variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [NormedSpace ℝ A] [S
   [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
   [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
-lemma cfcₙ_rpowIntegrand₀₁_eq_cfcₙ_rpowIntegrand₀₁_one' {p t : ℝ} (hp : p ∈ Ioo 0 1) (ht : 0 < t)
+lemma cfcₙ_rpowIntegrand₀₁_eq_cfcₙ_rpowIntegrand₀₁_one {p t : ℝ} (hp : p ∈ Ioo 0 1) (ht : 0 < t)
     (a : A) (ha : 0 ≤ a) :
     cfcₙ (rpowIntegrand₀₁ p t) a = t ^ (p - 1) • cfcₙ (rpowIntegrand₀₁ p 1) (t⁻¹ • a) := by
   have hspec : quasispectrum ℝ a ⊆ Ici 0 := fun r hr => quasispectrum_nonneg_of_nonneg a ha r hr
@@ -508,9 +508,8 @@ lemma exists_measure_nnrpow_eq_integral_cfcₙ_rpowIntegrand₀₁ [CompleteSpac
     have p_pos : 0 < (p : ℝ) := by exact_mod_cast hp.1
     let f t := rpowIntegrand₀₁ p t
     let maxr := sSup (quasispectrum ℝ a)
-    have maxr_nonneg : 0 ≤ maxr := by
-      refine le_csSup_of_le (b := 0) ?_ (by simp) (by simp)
-      sorry
+    have maxr_nonneg : 0 ≤ maxr :=
+      le_csSup_of_le (b := 0) (IsCompact.bddAbove (by grind)) (by simp) (by simp)
     let bound (t : ℝ) := ‖f t maxr‖
     have hf : ContinuousOn (Function.uncurry f) (Ioi (0 : ℝ) ×ˢ quasispectrum ℝ a) := by
       refine continuousOn_rpowIntegrand₀₁_uncurry hp (quasispectrum ℝ a) ?_
@@ -528,7 +527,8 @@ lemma exists_measure_nnrpow_eq_integral_cfcₙ_rpowIntegrand₀₁ [CompleteSpac
       rw [hasFiniteIntegral_norm_iff]
       exact (hμ maxr maxr_nonneg).1.2
     have hmapzero : ∀ᵐ (x : ℝ) ∂μ.restrict (Ioi 0), rpowIntegrand₀₁ p x 0 = 0 := by
-      sorry
+      filter_upwards [ae_restrict_mem measurableSet_Ioi]
+      simp
     refine ⟨?integrable, ?integral⟩
     case integrable =>
       exact integrableOn_cfcₙ measurableSet_Ioi _ bound a hf hmapzero hbound hbound_finite_integral
@@ -542,11 +542,118 @@ lemma exists_measure_nnrpow_eq_integral_cfcₙ_rpowIntegrand₀₁ [CompleteSpac
                   have hr' : 0 ≤ r := by grind
                   simp only [sup_of_le_left hr', NNReal.nnrpow_def, NNReal.coe_rpow, coe_toNNReal']
                   exact (hμ r hr').2
-        _ = _ := by
-                  refine cfcₙ_setIntegral measurableSet_Ioi _ bound a hf hmapzero hbound
+        _ = _ := cfcₙ_setIntegral measurableSet_Ioi _ bound a hf hmapzero hbound
                     hbound_finite_integral ha.isSelfAdjoint
 
 end NonUnitalCFC
+
+section NonUnital
+
+variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+open Real
+
+/-- `rpowIntegrand₀₁ p t` is operator monotone for all `p ∈ Ioo 0 1` and all `t ∈ Ioi 0`. -/
+lemma monotoneOn_cfcₙ_rpowIntegrand₀₁ {p : ℝ} {t : ℝ} (hp : p ∈ Ioo 0 1) (ht : 0 < t) :
+    MonotoneOn (cfcₙ (rpowIntegrand₀₁ p t)) (Ici (0 : A)) := by
+  have hmain : MonotoneOn (cfcₙ (fun x : ℝ => 1 - (1 + x)⁻¹)) (Ici (0 : A)) := by
+    intro a (ha : 0 ≤ a) b (hb : 0 ≤ b) hab
+    calc _ = cfcₙ (fun x : ℝ≥0 => 1 - (1 + x)⁻¹) a := by
+            rw [cfcₙ_nnreal_eq_real _ ha]
+            refine cfcₙ_congr ?_
+            intro x hx
+            have hx' : 0 ≤ x := by grind
+            simp [hx']
+      _ ≤ cfcₙ (fun x : ℝ≥0 => 1 - (1 + x)⁻¹) b :=
+            CFC.monotoneOn_one_sub_one_add_inv ha hb hab
+      _ = cfcₙ (fun x : ℝ => 1 - (1 + x)⁻¹) b := by
+            rw [cfcₙ_nnreal_eq_real _ hb]
+            refine cfcₙ_congr ?_
+            intro x hx
+            have hx' : 0 ≤ x := by grind
+            simp [hx']
+  intro a (ha : 0 ≤ a) b (hb : 0 ≤ b) hab
+  have ha' : IsSelfAdjoint a := ha.isSelfAdjoint
+  have hb' : IsSelfAdjoint b := hb.isSelfAdjoint
+  calc _ = t ^ ((p : ℝ) - 1) • cfcₙ (rpowIntegrand₀₁ p 1) (t⁻¹ • a) := by
+          rw [cfcₙ_rpowIntegrand₀₁_eq_cfcₙ_rpowIntegrand₀₁_one hp ht a ha]
+    _ ≤ t ^ ((p : ℝ) - 1) • cfcₙ (rpowIntegrand₀₁ p 1) (t⁻¹ • b) := by
+          gcongr
+          unfold rpowIntegrand₀₁
+          simp only [Real.one_rpow, one_mul, inv_one]
+          refine hmain ?_ ?_ (by gcongr)
+          · change 0 ≤ t⁻¹ • a
+            positivity
+          · change 0 ≤ t⁻¹ • b
+            positivity
+    _ = cfcₙ (rpowIntegrand₀₁ p t) b := by
+          rw [cfcₙ_rpowIntegrand₀₁_eq_cfcₙ_rpowIntegrand₀₁_one hp ht b hb]
+
+/-- This is an intermediate result; use the more general `CFC.monotone_nnrpow` instead. -/
+private lemma monotoneOn_nnrpow_Ioo {p : ℝ≥0} (hp : p ∈ Ioo 0 1) :
+    MonotoneOn (fun a : A => a ^ p) (Ici 0) := by
+  obtain ⟨μ, hμ⟩ := exists_measure_nnrpow_eq_integral_cfcₙ_rpowIntegrand₀₁ A hp
+  have h₃' : (Ici 0).EqOn (fun a : A => a ^ p)
+      (fun a : A => ∫ t in Ioi 0, cfcₙ (rpowIntegrand₀₁ p t) a ∂μ) :=
+    fun a ha => (hμ a ha).2
+  refine MonotoneOn.congr ?_ h₃'.symm
+  refine MeasureTheory.integral_monotoneOn_of_integrand_ae ?_ fun a ha => (hμ a ha).1
+  filter_upwards [ae_restrict_mem measurableSet_Ioi] with t ht
+  exact monotoneOn_cfcₙ_rpowIntegrand₀₁ hp ht
+
+/-- `a ↦ a ^ p` is operator monotone for `p ∈ [0,1]`. -/
+lemma monotone_nnrpow {p : ℝ≥0} (hp : p ∈ Icc 0 1) :
+    Monotone (fun a : A => a ^ p) := by
+  intro a b hab
+  by_cases ha : 0 ≤ a
+  · have hb : 0 ≤ b := ha.trans hab
+    have hIcc : Icc (0 : ℝ≥0) 1 = Ioo 0 1 ∪ {0} ∪ {1} := by ext; simp
+    rw [hIcc] at hp
+    obtain (hp|hp)|hp := hp
+    · exact monotoneOn_nnrpow_Ioo hp ha hb hab
+    · simp only [mem_singleton_iff] at hp
+      simp [hp]
+    · simp only [mem_singleton_iff] at hp
+      simp only [hp]
+      have : (Ici 0).EqOn (fun a : A => a ^ (1 : ℝ≥0)) id := by
+        intro a ha
+        simp [nnrpow_one a]
+      simp [nnrpow_one a, nnrpow_one b, hab]
+  · have : a ^ p = 0 := cfcₙ_apply_of_not_predicate a ha
+    simp [this]
+
+--lemma monotone_rpow {p : ℝ} (hp : p ∈ Icc 0 1) : Monotone (fun a : A => a ^ p) := by
+--  let q : ℝ≥0 := ⟨p, hp.1⟩
+--  change Monotone (fun a : A => a ^ (q : ℝ))
+--  by_cases hq : q > 0
+--  · simp_rw [← CFC.nnrpow_eq_rpow hq]
+--    exact monotone_nnrpow hp
+--  · have hq : q = 0 := by simpa using hq
+--    simp [hq]
+--    intro a b hab
+--    by_cases ha : 0 ≤ a
+--    · have hb : 0 ≤ b := ha.trans hab
+--      simp [CFC.rpow_zero a, CFC.rpow_zero b]
+--    · have : a ^ (0 : ℝ) = 0 := cfc_apply_of_not_predicate a ha
+--      simp [this]
+
+lemma monotone_sqrt : Monotone (sqrt : A → A) := by
+  have : CFC.sqrt (A := A) = fun a => a ^ ((1 : ℝ≥0) / 2) := by ext; exact CFC.sqrt_eq_nnrpow
+  rw [this]
+  exact monotone_nnrpow (by norm_num)
+
+@[gcongr]
+lemma nnrpow_le_nnrpow {p : ℝ≥0} (hp : p ∈ Icc 0 1) (a b : A) (hab : a ≤ b) :
+    a ^ p ≤ b ^ p := monotone_nnrpow hp hab
+
+--@[gcongr]
+--lemma rpow_le_rpow {p : ℝ} (hp : p ∈ Icc 0 1) (a b : A) (hab : a ≤ b) :
+--    a ^ p ≤ b ^ p := monotone_rpow hp hab
+
+@[gcongr]
+lemma sqrt_le_sqrt (a b : A) (hab : a ≤ b) : sqrt a ≤ sqrt b :=
+  monotone_sqrt hab
+
+end NonUnital
 
 section Unital
 
