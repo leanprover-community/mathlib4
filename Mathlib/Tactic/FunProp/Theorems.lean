@@ -216,7 +216,7 @@ def getTheoremsForFunction (funName : Name) (funPropName : Name) :
 def GeneralTheorem.getProof (thm : GeneralTheorem) : MetaM Expr := do
   mkConstWithFreshMVarLevels thm.thmName
 
-/-- Extendions for transition or morphism theorems -/
+/-- Extensions for transition or morphism theorems -/
 abbrev GeneralTheoremsExt := SimpleScopedEnvExtension GeneralTheorem GeneralTheorems
 
 /-- Environment extension for transition theorems. -/

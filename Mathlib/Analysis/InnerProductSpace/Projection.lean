@@ -1283,6 +1283,13 @@ theorem norm_sq_eq_add_norm_sq_starProjection (x : E) (S : Submodule 𝕜 E)
     ‖x‖ ^ 2 = ‖S.starProjection x‖ ^ 2 + ‖Sᗮ.starProjection x‖ ^ 2 :=
   norm_sq_eq_add_norm_sq_projection x S
 
+theorem mem_iff_norm_starProjection (U : Submodule 𝕜 E)
+    [U.HasOrthogonalProjection] (v : E) :
+    v ∈ U ↔ ‖U.starProjection v‖ = ‖v‖ := by
+  refine ⟨fun h => norm_starProjection_apply _ h, fun h => ?_⟩
+  simpa [h, sub_eq_zero, eq_comm (a := v), starProjection_eq_self_iff] using
+    U.norm_sq_eq_add_norm_sq_starProjection v
+
 /-- In a complete space `E`, the projection maps onto a complete subspace `K` and its orthogonal
 complement sum to the identity. -/
 theorem id_eq_sum_starProjection_self_orthogonalComplement [K.HasOrthogonalProjection] :
@@ -1638,11 +1645,7 @@ theorem maximal_orthonormal_iff_orthogonalComplement_eq_bot (hv : Orthonormal �
       rintro ⟨a, ha'⟩
       rcases eq_or_mem_of_mem_insert ha' with ha | ha
       · rintro ⟨b, hb'⟩ hab'
-        have hb : b ∈ v := by
-          refine mem_of_mem_insert_of_ne hb' ?_
-          intro hbe'
-          apply hab'
-          simp [ha, hbe']
+        have hb : b ∈ v := by grind [Set.mem_of_mem_insert_of_ne]
         rw [inner_eq_zero_symm]
         simpa [ha] using h_end b hb
       rintro ⟨b, hb'⟩ hab'
