@@ -466,7 +466,7 @@ end Group
 section DirectSum
 
 variable {k G : Type*} [CommSemiring k] [Monoid G]
-variable {ι : Type*} (V : ι → Type*)
+variable {ι : Type*} {V : ι → Type*}
 variable [(i : ι) → AddCommMonoid (V i)] [(i : ι) → Module k (V i)]
 variable (ρ : (i : ι) → Representation k G (V i))
 
