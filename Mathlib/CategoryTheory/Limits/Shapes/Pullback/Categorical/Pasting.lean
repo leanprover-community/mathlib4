@@ -166,15 +166,14 @@ def hCompUnitIso :
 
 /-- If two `CatPullbackSquare`s are pasted horizontally, the resulting square
 is a `CatPullbackSquare`. -/
-def hComp :
-    CatPullbackSquare (T₁ ⋙ T₂) V₁ V₃ (B₁ ⋙ B₂) :=
-  { inverse := hCompInverse T₁ T₂ V₁ V₂ V₃ B₁ B₂
-    unitIso := hCompUnitIso T₁ T₂ V₁ V₂ V₃ B₁ B₂ h
-    counitIso := hCompCounitIso T₁ T₂ V₁ V₂ V₃ B₁ B₂ h
-    functorEquiv_inverse_obj_unitIso_comp x := by
-      ext <;> dsimp [hCompUnitIso, hCompCounitIso]
-      · simp [← Functor.map_comp_assoc]
-      · simp }
+def hComp : CatPullbackSquare (T₁ ⋙ T₂) V₁ V₃ (B₁ ⋙ B₂) where
+  inverse := hCompInverse T₁ T₂ V₁ V₂ V₃ B₁ B₂
+  unitIso := hCompUnitIso T₁ T₂ V₁ V₂ V₃ B₁ B₂ h
+  counitIso := hCompCounitIso T₁ T₂ V₁ V₂ V₃ B₁ B₂ h
+  functorEquiv_inverse_obj_unitIso_comp x := by
+    ext <;> dsimp [hCompUnitIso, hCompCounitIso]
+    · simp [← Functor.map_comp_assoc]
+    · simp
 
 end
 
@@ -272,17 +271,16 @@ def ofHCompCounitIso :
 
 /-- If two `CatCommSq`s are pasted horizontally and if the right outer squares
 are `CatPullbackSquare`s, then the left square is a `CatPullbackSquare`. -/
-def ofHComp :
-    CatPullbackSquare T₁ V₁ V₂ B₁ :=
-  { inverse := ofHCompInverse T₁ T₂ V₁ V₂ V₃ B₁ B₂
-    unitIso := ofHCompUnitIso T₁ T₂ V₁ V₂ V₃ B₁ B₂ h
-    counitIso := ofHCompCounitIso T₁ T₂ V₁ V₂ V₃ B₁ B₂ h
-    functorEquiv_inverse_obj_unitIso_comp x := by
-      ext <;> dsimp [ofHCompUnitIso, ofHCompCounitIso]
-      · apply IsCatPullbackSquare.hom_ext T₂ V₂ V₃ B₂
-        · simp [← Functor.comp_map]
-        · simp [← Functor.map_comp_assoc]
-      · simp }
+def ofHComp : CatPullbackSquare T₁ V₁ V₂ B₁ where
+  inverse := ofHCompInverse T₁ T₂ V₁ V₂ V₃ B₁ B₂
+  unitIso := ofHCompUnitIso T₁ T₂ V₁ V₂ V₃ B₁ B₂ h
+  counitIso := ofHCompCounitIso T₁ T₂ V₁ V₂ V₃ B₁ B₂ h
+  functorEquiv_inverse_obj_unitIso_comp x := by
+    ext <;> dsimp [ofHCompUnitIso, ofHCompCounitIso]
+    · apply IsCatPullbackSquare.hom_ext T₂ V₂ V₃ B₂
+      · simp [← Functor.comp_map]
+      · simp [← Functor.map_comp_assoc]
+    · simp
 
 end
 
