@@ -26,58 +26,37 @@ def «end» {a : V} : ∀ {b : V}, Path a b → V
   | b, _ => b
 
 @[simp]
-lemma end_cons {a b c : V} (p : Path a b) (e : b ⟶ c) : «end» (p.cons e) = c := rfl
+lemma end_cons {a b c : V} (p : Path a b) (e : b ⟶ c) : (p.cons e).end = c := rfl
 
 /-- The list of vertices in a path, including the start and end vertices. -/
 def vertices {a : V} : ∀ {b : V}, Path a b → List V
   | _, nil => [a]
-  | _, cons p e => (p.vertices).concat («end» (p.cons e))
-
-/-- The set of vertices in a path. -/
-def vertices_set {a b : V} (p : Path a b) : Set V :=
-  {v | v ∈ p.vertices}
-
-/-- The finset of vertices in a path. -/
-def vertices_finset [DecidableEq V] {a b : V} (p : Path a b) : Finset V :=
-  p.vertices.toFinset
-
-/-- The finset of vertices in a path, excluding the final vertex. -/
-def init_finset [DecidableEq V] {a b : V} (p : Path a b) : Finset V :=
-  p.vertices.dropLast.toFinset
+  | _, cons p e => (p.vertices).concat (p.cons e).end
 
 @[simp]
-lemma mem_vertices_set_iff {a b : V} (p : Path a b) (v : V) :
-    v ∈ p.vertices_set ↔ v ∈ p.vertices := Iff.rfl
+lemma mem_verticesSet_iff {a b : V} (p : Path a b) (v : V) :
+    v ∈ {v | v ∈ p.vertices} ↔ v ∈ p.vertices := Iff.rfl
 
 @[simp]
-lemma mem_vertices_finset_iff [DecidableEq V] {a b : V} (p : Path a b) {x : V} :
-    x ∈ p.vertices_finset ↔ x ∈ p.vertices :=
+lemma mem_verticesFinset_iff [DecidableEq V] {a b : V} (p : Path a b) {x : V} :
+    x ∈ p.vertices.toFinset ↔ x ∈ p.vertices :=
   List.mem_toFinset
 
 @[simp]
-lemma mem_init_finset_iff [DecidableEq V] {a b : V} (p : Path a b) {x : V} :
-    x ∈ p.init_finset ↔ x ∈ p.vertices.dropLast :=
+lemma mem_initFinset_iff [DecidableEq V] {a b : V} (p : Path a b) {x : V} :
+    x ∈ p.vertices.dropLast.toFinset ↔ x ∈ p.vertices.dropLast :=
   List.mem_toFinset
 
+@[simp]
 lemma vertices_nil (a : V) : (nil : Path a a).vertices = [a] := rfl
 
 @[simp]
 lemma vertices_cons {a b c : V} (p : Path a b) (e : b ⟶ c) :
   (p.cons e).vertices = p.vertices.concat c := rfl
 
--- Vertices of a path are always non-empty
-lemma vertices_nonempty' {V : Type*} [Quiver V] {a b : V} (p : Path a b) :
-    p.vertices.length > 0 := by
-  induction p with
-  | nil => simp only [vertices_nil, List.length_cons, List.length_nil, Nat.zero_add, gt_iff_lt,
-      Nat.lt_add_one]
-  | cons p' e ih =>
-    rw [vertices_cons]
-    simp only [List.concat_eq_append, List.length_append, List.length_cons, List.length_nil,
-      zero_add, gt_iff_lt, lt_add_iff_pos_left, add_pos_iff, ih, Nat.lt_one_iff, pos_of_gt, or_self]
 
-lemma mem_vertices_set {a b : V} (p : Path a b) (v : V) :
-    v ∈ p.vertices_finset' ↔ v ∈ p.vertices := Iff.rfl
+lemma mem_verticesSet [DecidableEq V] {a b : V} (p : Path a b) (v : V) :
+    v ∈ p.vertices.toFinset ↔ v ∈ p.vertices := by simp
 
 /-- The vertex list of `cons` — convenient `simp` form. -/
 lemma mem_vertices_cons {a b c : V} (p : Path a b)
@@ -86,16 +65,16 @@ lemma mem_vertices_cons {a b c : V} (p : Path a b)
   simp only [vertices_cons]
   simp_all only [concat_eq_append, mem_append, mem_cons, not_mem_nil, or_false]
 
-lemma vertices_set_nil {a : V} : vertices_set (nil : Path a a) = {a} := by
-  simp only [vertices_set, vertices_nil, List.mem_singleton, Set.ext_iff, Set.mem_singleton_iff]
+lemma verticesSet_nil {a : V} : {v | v ∈ (nil : Path a a).vertices} = {a} := by
+  simp only [vertices_nil, List.mem_singleton, Set.ext_iff, Set.mem_singleton_iff]
   exact fun x ↦ Set.mem_setOf
 
 @[simp]
-lemma vertices_set_cons {a b c : V} (p : Path a b) (e : b ⟶ c) :
-  vertices_set (p.cons e) = vertices_set p ∪ {c} := by
+lemma verticesSet_cons {a b c : V} (p : Path a b) (e : b ⟶ c) :
+  {v | v ∈ (p.cons e).vertices} = {v | v ∈ p.vertices} ∪ {c} := by
   simp only [Set.union_singleton]
   ext v
-  simp only [mem_vertices_set_iff, Set.mem_insert_iff]
+  simp only [mem_verticesSet_iff, Set.mem_insert_iff]
   rw [or_comm]; exact mem_vertices_cons p e
 
 /-- The length of vertices list equals path length plus one -/
@@ -106,6 +85,9 @@ lemma vertices_length {V : Type*} [Quiver V] {a b : V} (p : Path a b) :
   | nil => simp only [vertices_nil, List.length_cons, List.length_nil, zero_add, length_nil]
   | cons p' e ih =>
     simp only [vertices_cons, length_cons, List.length_concat, ih]
+
+lemma length_vertices_pos {a b : V} (p : Path a b) :
+    0 < p.vertices.length := by simp
 
 lemma vertices_nonempty {a : V} {b : V} (p : Path a b) : p.vertices ≠ [] := by
   rw [← List.length_pos_iff_ne_nil, vertices_length]; omega
@@ -143,7 +125,7 @@ lemma vertices_comp {a b c : V} (p : Path a b) (q : Path b c) :
   induction q with
   | nil =>
     simp only [comp_nil, vertices_nil]
-    have h_nonempty : p.vertices.length > 0 := vertices_nonempty' p
+    have h_nonempty : p.vertices.length > 0 := by simp
     have h_ne_nil : p.vertices ≠ [] := List.ne_nil_of_length_pos h_nonempty
     rw [← List.dropLast_append_getLast h_ne_nil, vertices_getLast p h_ne_nil]
     simp_all only [gt_iff_lt, ne_eq, List.cons_ne_self, not_false_eq_true,
@@ -242,17 +224,17 @@ lemma end_mem_vertices {a b : V} (p : Path a b) : b ∈ p.vertices := by
 
 lemma mem_vertices_to_set {V : Type*} [Quiver V]
     {a b : V} {p : Path a b} {x : V} :
-    x ∈ p.vertices → x ∈ p.vertices_set:= by
+    x ∈ p.vertices → x ∈ {v | v ∈ p.vertices} := by
   intro hx
   induction p with
   | nil =>
-      simpa [vertices_nil, vertices_set_nil] using hx
+      simpa [vertices_nil, verticesSet_nil] using hx
   | cons p' e ih =>
       rcases (mem_vertices_cons (p := p') (e := e) (x := x)).1 hx with h | rfl
-      · have : x ∈ p'.vertices_set:= ih h
+      · have : x ∈ {v | v ∈ p'.vertices} := ih h
         simp_all only [imp_self, vertices_cons, concat_eq_append, mem_append, mem_cons,
-          not_mem_nil, or_false, true_or, vertices_set_cons, Set.union_singleton,
+          not_mem_nil, or_false, true_or, verticesSet_cons, Set.union_singleton,
           Set.mem_insert_iff, or_true]
-      · simp [vertices_set_cons]
+      · simp [verticesSet_cons]
 
 end Quiver.Path
