@@ -355,6 +355,30 @@ theorem pi_eval_preimage_null {i : ι} {s : Set (α i)} (hs : μ i s = 0) :
   apply Finset.prod_eq_zero (Finset.mem_univ i)
   simp [hμt]
 
+theorem quasiMeasurePreserving_eval (i : ι) :
+    QuasiMeasurePreserving (Function.eval i) (Measure.pi μ) (μ i) := by
+  classical
+  refine ⟨by fun_prop, AbsolutelyContinuous.mk fun s hs h2s => ?_⟩
+  rw [map_apply (by fun_prop) hs, pi_eval_preimage_null μ h2s]
+
+lemma pi_map_eval [DecidableEq ι] (i : ι) :
+     (Measure.pi μ).map (Function.eval i) = (∏ j ∈ Finset.univ.erase i, μ j Set.univ) • (μ i) := by
+   ext s hs
+   classical
+   rw [Measure.map_apply (measurable_pi_apply i) hs, ← Set.univ_pi_update_univ, Measure.pi_pi,
+     Measure.smul_apply, smul_eq_mul, ← Finset.prod_erase_mul _ _ (a := i) (by simp)]
+   congrm ?_ * ?_
+   swap; · simp
+   refine Finset.prod_congr rfl fun j hj ↦ ?_
+   simp [Function.update, Finset.ne_of_mem_erase hj]
+
+lemma _root_.MeasureTheory.measurePreserving_eval [∀ i, IsProbabilityMeasure (μ i)] (i : ι) :
+    MeasurePreserving (Function.eval i) (Measure.pi μ) (μ i) := by
+  refine ⟨measurable_pi_apply i, ?_⟩
+  classical
+  rw [Measure.pi_map_eval, Finset.prod_eq_one, one_smul]
+  exact fun _ _ ↦ measure_univ
+
 theorem pi_hyperplane (i : ι) [NoAtoms (μ i)] (x : α i) :
     Measure.pi μ { f : ∀ i, α i | f i = x } = 0 :=
   show Measure.pi μ (eval i ⁻¹' {x}) = 0 from pi_eval_preimage_null _ (measure_singleton x)
