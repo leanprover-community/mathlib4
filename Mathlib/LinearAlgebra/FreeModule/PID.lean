@@ -96,7 +96,7 @@ variable {M : Type*} [AddCommGroup M] [Module R M] {b : ι → M}
 
 section StrongRankCondition
 
-variable [IsDomain R] [IsPrincipalIdealRing R]
+variable [IsPrincipalIdealRing R]
 
 open Submodule.IsPrincipal
 
@@ -131,6 +131,8 @@ theorem generator_maximal_submoduleImage_dvd {N O : Submodule R M} (hNO : N ≤ 
     rw [← span_singleton_generator (ϕ.submoduleImage N)]
     exact Ideal.span_singleton_le_span_singleton.mpr d_dvd_left
   · exact subset_span (mem_insert _ _)
+
+variable [IsDomain R]
 
 /-- The induction hypothesis of `Submodule.basisOfPid` and `Submodule.smithNormalForm`.
 
